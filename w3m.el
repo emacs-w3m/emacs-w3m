@@ -1349,8 +1349,9 @@ want to always use emacs-w3m to see local files."
 
 (defcustom w3m-local-directory-view-method 'w3m-cgi
   "*Symbol of the method to view a local directory tree.
-The valid values include `w3m-cgi' using the dirlist.cgi feature of
-the w3m command and `w3m-dtree' using the w3m-dtree Lisp module."
+The valid values include `w3m-cgi' using the CGI program specified by
+the `w3m-dirlist-cgi-program' variable (which see), and `w3m-dtree'
+using the w3m-dtree Lisp module."
   :group 'w3m
   :type '(radio (const :format "Dirlist CGI  " w3m-cgi)
 		(const :tag "Directory tree" w3m-dtree)))
@@ -1361,8 +1362,8 @@ the w3m command and `w3m-dtree' using the w3m-dtree Lisp module."
 	((memq system-type '(OS/2 emx))
 	 (expand-file-name "dirlist.cmd" (getenv "W3M_LIB_DIR")))
 	(t nil))
-  "*Name of the directory list CGI Program.
-If nil, use an internal CGI of w3m."
+  "*Name of the CGI program to list a local directory.
+If it is nil, the dirlist.cgi module of the w3m command will be used."
   :group 'w3m
   :type (` (radio
 	    (const :tag "w3m internal CGI" nil)
@@ -1381,10 +1382,13 @@ If nil, use an internal CGI of w3m."
 	    (symbol-value 'w3m-add-referer))
     (cons "\\`http:"
 	  "\\`http://\\(localhost\\|127\\.0\\.0\\.1\\)/"))
-  "*Cons of two regexps to allow and not to allow sending a reference
-information to HTTP servers.  If a reference matches the car of this
-value and it does not match the cdr of this value, it will be sent.
-You may set the cdr of this value to inhibit sending references which
+  "*Cons of two regexps matching and not matching with url strings
+which are allowed to be sent to foreign web servers as referers.  Nil
+for the regexp matches any url.
+
+A url string will be sent as a referer if it matches the car of the
+value of this variable and it does not match the cdr of the value.
+You may set the cdr of this value to inhibit sending referers which
 will disclose your private informations, for example:
 
 \(setq w3m-add-referer-regexps
@@ -1400,9 +1404,10 @@ will disclose your private informations, for example:
 			    (regexp :format "%t: %v\n" :size 0)
 			    (const :tag "Allow all" nil)))))
 
-(defcustom w3m-touch-command
-  (w3m-which-command "touch")
-  "*Name of the executable file of touch utilty."
+(defcustom w3m-touch-command (w3m-which-command "touch")
+  "*Name of the executable file of the touch command.
+Note that the command is required to be able to modify file's
+timestamp with the `-t' option."
   :group 'w3m
   :type '(string :size 0))
 
@@ -1416,20 +1421,30 @@ will disclose your private informations, for example:
     ("\\`archie:" w3m-search-uri-replace "iij-archie")
     ("\\`urn:ietf:rfc:\\([0-9]+\\)" w3m-pattern-uri-replace
      "http://www.ietf.org/rfc/rfc\\1.txt"))
-  "*Alist of a regexp matching a uri and its replacement.
+  "*Alist of regexps matching URIs, and some types of replacements.
+It can be used universally to replace URI strings in the local rule to
+the valid forms in the Internet.
 
-Each element of this alist is (REGEXP FUNCTION OPTIONS...).  FUNCTION
-should take one or more arguments, a uri and OPTIONS.  When this
-FUNCTION is called, sub-strings found in matching REGEXP can be
-refered.  Here are some predefined functions meant for use in this
-way:
+Each element looks like the `(REGEXP FUNCTION OPTIONS...)' form.
+FUNCTION takes one or more arguments, a uri and OPTIONS.  You can use
+the grouping constructs \"\\\\(...\\\\)\" in REGEXP, and they can be
+referred by the \"\\N\" forms in a replacement (which is one of OPTIONS).
+
+Here are some predefined functions which can be used for those ways:
 
 `w3m-pattern-uri-replace'
-    Replace a uri with PATTERN.  In PATTERN, `\' is treated as special
-    in the same manner of `replace-match'.
+    Replace a URI using PATTERN (which is just an OPTION).  It is
+    allowed that PATTERN contains the \"\\N\" forms in the same manner
+    of `replace-match'.
 
 `w3m-search-uri-replace'
-    Generate a query from a uri for specified engine.
+    Generate the valid forms to query words to some specified search
+    engines.  For example, the element
+
+    (\"\\\\`gg:\" w3m-search-uri-replace \"google\")
+
+    makes it possible to replace the URI \"gg:emacs\" to the form to
+    query the word \"emacs\" to the Google site.\
 "
   :group 'w3m
   :type '(repeat
@@ -6445,6 +6460,7 @@ the current page."
 			      (string-match nomatch base-url)))
 		    (setq file (w3m-url-to-file-name base-url))
 		    (file-exists-p file)
+		    (not (file-directory-p file))
 		    (prog1
 			t
 		      (funcall (if (functionp w3m-local-find-file-function)
