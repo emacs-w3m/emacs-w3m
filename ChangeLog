@@ -1,5 +1,10 @@
 2003-11-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-favicon.el (w3m-favicon-retrieve): Abolish the 4th argument
+	`handler' and wrap the asynchronous processing forms with
+	`w3m-process-with-null-handler', in order to clarify this
+	function's purpose.
+
 	* w3m.el (w3m-message): Use `walk-windows' instead of `window-list',
 	because the latter is not available at Meadow and Mule2.
 	(w3m-w3m-retrieve): Check the status code.

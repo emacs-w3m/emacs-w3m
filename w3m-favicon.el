@@ -233,7 +233,7 @@ favicon is ready."
 	   (make-image-instance (vector w3m-favicon-type :data img)))
 	(create-image img w3m-favicon-type t :ascent 'center)))))
 
-(defun w3m-favicon-retrieve (url type target &optional handler)
+(defun w3m-favicon-retrieve (url type target)
   "Retrieve favicon from URL and convert it to image as TYPE in TARGET.
 TYPE is a symbol like `ico' and TARGET is a buffer where the image is
 stored in the `w3m-favicon-image' buffer-local variable."
@@ -247,17 +247,18 @@ stored in the `w3m-favicon-image' buffer-local variable."
     (lexical-let ((url url)
 		  (type type)
 		  (target target))
-		 (w3m-process-do-with-temp-buffer
-		     (ok (w3m-retrieve url 'raw nil nil nil handler))
-		   (let (idata image)
-		     (if ok
-			 (setq idata (buffer-string)
-			       image (w3m-favicon-convert idata type))
-		       (w3m-message "Reading %s...done (no favicon)" url))
-		     (with-current-buffer target
-		       (w3m-favicon-set-image image)
-		       (push (list url idata (current-time) w3m-favicon-image)
-			     w3m-favicon-cache-data))))))
+      (w3m-process-with-null-handler
+	(w3m-process-do-with-temp-buffer
+	    (ok (w3m-retrieve url 'raw nil nil nil handler))
+	  (let (idata image)
+	    (if ok
+		(setq idata (buffer-string)
+		      image (w3m-favicon-convert idata type))
+	      (w3m-message "Reading %s...done (no favicon)" url))
+	    (with-current-buffer target
+	      (w3m-favicon-set-image image)
+	      (push (list url idata (current-time) w3m-favicon-image)
+		    w3m-favicon-cache-data)))))))
   (w3m-static-unless (featurep 'xemacs)
     ;; Emacs frame needs to be redisplayed to make favicon come out.
     (run-at-time 1 nil
