@@ -1,3 +1,32 @@
+2002-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (infodir): Add a variable.
+	(default): Use `all'.
+	(all, all-ja): New rules.
+	(lisp): Renamed from `default'.
+	(what-where): Pass `infodir' to `w3mhack-what-where'.
+	(info, info-ja): New rules.
+	(install): Use `install-lisp' and `install-info'.
+	(install-ja): New rule.
+	(install-lisp): Renamed from `install'.
+	(install-info, install-info-ja): New rules.
+	(install-package): Use `install-lisp' instead of `install';
+	install info files as well.
+	(install-package-ja): New rule.
+	(clean): Remove info files as well.
+	(distclean): Remove doc.Makefile as well.
+
+	* aclocal.m4 (AC_PATH_LISPDIR, AC_PATH_ICONDIR): Modify a message
+	for `install-package'.
+
+	* configure.in: Check for the makeinfo command; create
+	doc/Makefile.
+
+	* w3mhack.el (w3mhack-make-package): Add info file names into
+	a MANIFEST file.
+	(w3mhack-what-where): Show where info files will go.
+	(w3mhack-makeinfo): New function.
+
 2002-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-search.el (w3m-search-engine-alist): Specify coding-system

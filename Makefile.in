@@ -2,6 +2,7 @@ INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 prefix       = @prefix@
 datadir      = @datadir@
+infodir      = @infodir@
 lispdir      = @lispdir@
 PACKAGEDIR   = @PACKAGEDIR@
 ICONDIR      = @ICONDIR@
@@ -20,17 +21,32 @@ DOCS    = COPYING ChangeLog ChangeLog.1 FAQ FAQ.ja README README.ja \
 	  README.namazu.ja README.shimbun.ja TIPS TIPS.ja
 DISTS   = Makefile.in aclocal.m4 configure configure.in install-sh mkinstalldirs
 
+default: all
 
-default: Makefile
+all: lisp info
+
+all-ja: lisp info info-ja
+
+lisp: Makefile
 	env test ! -f w3m-util.elc -o w3m-util.elc -nt w3m-util.el || $(MAKE) clean
 	env test ! -f w3m-proc.elc -o w3m-proc.elc -nt w3m-proc.el || $(MAKE) clean
 	$(EMACS) $(FLAGS) -f w3mhack-compile
 
 what-where:
 	@$(EMACS) $(FLAGS) -f w3mhack-what-where\
-	"$(lispdir)" "$(ICONDIR)" "$(PACKAGEDIR)"
+	"$(lispdir)" "$(ICONDIR)" "$(PACKAGEDIR)" "$(infodir)"
 
-install: default
+info:
+	cd doc && $(MAKE) EMACS="$(EMACS)"
+
+info-ja:
+	cd doc && $(MAKE) EMACS="$(EMACS)" ja
+
+install: install-lisp install-info
+
+install-ja: install-lisp install-info install-info-ja
+
+install-lisp: lisp
 	@$(SHELL) ./mkinstalldirs $(lispdir);\
 	for p in ChangeLog* *.el; do\
 	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
@@ -64,13 +80,32 @@ install-icons:
 	  done;\
 	fi
 
+install-info: info
+	cd doc && $(MAKE) EMACS="$(EMACS)" infodir="$(infodir)" install
+
+install-info-ja: info-ja
+	cd doc && $(MAKE) EMACS="$(EMACS)" infodir="$(infodir)" install-ja
+
 install-package:
 	@if test $(PACKAGEDIR) = NONE; then\
 	  echo "What a pity!  Your \"$(EMACS)\" does not support"\
 		"a package system.";\
 	else\
-	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install;\
+	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install-lisp;\
 	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons;\
+	  $(MAKE) infodir="$(PACKAGEDIR)/info" install-info;\
+	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
+	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
+	fi
+
+install-package-ja:
+	@if test $(PACKAGEDIR) = NONE; then\
+	  echo "What a pity!  Your \"$(EMACS)\" does not support"\
+		"a package system.";\
+	else\
+	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install-lisp;\
+	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons;\
+	  $(MAKE) infodir="$(PACKAGEDIR)/info" install-info-ja;\
 	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
 	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
 	fi
@@ -107,10 +142,11 @@ tarball: $(DOCS) $(DISTS)
 	rm -rf $(DISTDIR)
 
 clean:
-	-rm -rf *~ *.elc shimbun/*.elc $(PACKAGE)* w3m-kwds.el
+	-rm -rf *~ *.elc shimbun/*.elc $(PACKAGE)* w3m-kwds.el;\
+	rm -f doc/*~ doc/*.info doc/*.info-[0-9] doc/*.info-[0-9][0-9]
 
 distclean: clean
-	-rm -f config.log config.status config.cache Makefile;\
+	-rm -f config.log config.status config.cache Makefile doc/Makefile;\
 	rm -fr autom4te*.cache
 
 ## Rules for the developers to check a portability for each module.
