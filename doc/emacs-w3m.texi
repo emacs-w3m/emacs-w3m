@@ -43,8 +43,7 @@ license to the document, as described in section 6 of the license.
 @titlepage
 @sp 10
 @title Emacs-w3m User's Manual
-@subtitle An Emacs interface to w3m
-@subtitle for emacs-w3m version @value{VERSION}
+@subtitle An Emacs interface to w3m for emacs-w3m version @value{VERSION}
 @author The emacs-w3m development team
 @page
 
@@ -164,7 +163,7 @@ See also the emacs-w3m official page: @uref{http://emacs-w3m.namazu.org/}
 
 Emacs-w3m may have already been installed on your system, in which case
 you can skip this section and begin to use the program at once.  If
-you're not that lucky, read on to learn how to install Emacs-w3m.
+you're not that lucky, read on to learn how to install emacs-w3m.
 
 @menu
 * Required Emacs Version::      What version of Emacs can be used?
