@@ -29,6 +29,15 @@
 ;;    http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/
 
 
+;;; How to install:
+
+;; Please put this file to appropriate directory, and if you want
+;; byte-compile it.  And add following lisp expressions to your
+;; ~/.emacs.
+;;
+;;     (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
+
+
 ;;; Code:
 
 (defgroup w3m nil
@@ -546,6 +555,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 
 
 (defun w3m (url)
+  "Interface for w3m on Emacs."
   (interactive (list (w3m-input-url)))
   (set-buffer (get-buffer-create "*w3m*"))
   (or (eq major-mode 'w3m-mode)
