@@ -4,6 +4,7 @@
 	for the newly created frame in Emacs 19.
 
 	* w3m.el (w3m-about-retrieve): Load base64 for Emacs 19.
+	(w3m-minor-mode-command-alist): Add w3m-print-this-url.
 
 	* w3m-bitmap.el (w3m-bitmap-image-insert): Don't put the evaporate
 	property on empty overlays (revert 2004-04-07 change).
