@@ -32,7 +32,7 @@
 ;; Install this file to an appropriate directory, and add these
 ;; expressions to your ~/.emacs-w3m.
 
-;;      (autoload 'w3m-link-numbering "w3m-lnum" nil t)
+;;      (autoload 'w3m-link-numbering-mode "w3m-lnum" nil t)
 ;;	(add-hook 'w3m-mode-hook 'w3m-link-numbering-mode)
 
 ;;; Code:
