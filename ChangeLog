@@ -1,5 +1,10 @@
 2002-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-filter.el (w3m-filter-server-regexp): Fix the value;
+	translate the comment into English.
+
+2002-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-lynx-like-map): Bind key M-] to `w3m-zoom-in-image';
 	bind key M-[ to `w3m-zoom-out-image'.
 	(w3m-info-like-map): Ditto.
