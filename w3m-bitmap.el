@@ -460,19 +460,22 @@ and its cdr element is used as height."
 	  (setq fmt (replace-match "" nil nil type)
 		data (buffer-string))
 	  (w3m-process-do
-	      (resized (or (w3m-resize-image-by-rate data rate handler)
-			   data))
-	    (w3m-process-do-with-temp-buffer
-		(success (progn
-			   (w3m-static-if (boundp 'MULE)
-			       (setq mc-flag nil)
-			     (set-buffer-multibyte nil))
-			   (insert resized)
-			   (apply 'w3m-imagick-start-convert-buffer
-				  handler fmt "xbm"
-				  w3m-bitmap-convert-arguments)))
-	      (when success
-		(w3m-bitmap-image-buffer (current-buffer))))))))))
+	      (resized (w3m-resize-image-by-rate data rate handler))
+	    (when resized
+	      (w3m-process-do-with-temp-buffer
+		  (success (progn
+			     (w3m-static-if (boundp 'MULE)
+				 (setq mc-flag nil)
+			       (set-buffer-multibyte nil))
+			     (insert resized)
+			     (apply 'w3m-imagick-start-convert-buffer
+				    handler fmt "xbm"
+				    w3m-bitmap-convert-arguments)))
+		(when success
+		  (w3m-static-if (boundp 'MULE)
+		      (setq mc-flag t)
+		    (set-buffer-multibyte t))
+		  (w3m-bitmap-image-buffer (current-buffer)))))))))))
 
 (defun w3m-insert-image (beg end image url)
   "Display image on the current buffer.

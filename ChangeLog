@@ -1,5 +1,16 @@
 2002-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-bitmap.el (w3m-create-resized-image): Return nil when
+	resizing is failed; set buffer multibyte before converting xbm to
+	bitmap.
+
+	* w3m-xmas.el (w3m-create-resized-image): Return nil when resizing
+	is failed.
+
+	* w3m-image.el (w3m-resize-image-by-rate): Undo last change.
+
+2002-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-bitmap.el (w3m-create-resized-image): New function.
 
 	* w3m-e19.el (w3m-create-resized-image): Alias to `ignore'.
