@@ -1,7 +1,7 @@
 2003-06-18  NAKAJIMA Mikio  <minakaji@namazu.org>
 
-	* shimbun/sb-pocketgames.el (shimbun-pocketgames-headers-1): Call
-	`shimbun-mime-encode-string' not to destroy last regexp search.
+	* shimbun/shimbun.el (shimbun-mime-encode-string): Use
+	`save-match-data'.
 
 2003-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
