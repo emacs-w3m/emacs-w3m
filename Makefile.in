@@ -26,7 +26,7 @@ default: Makefile
 
 install: default
 	@$(SHELL) ./mkinstalldirs $(lispdir);\
-	for p in ChangeLog *.el; do\
+	for p in ChangeLog* *.el; do\
 	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
 	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
 	done;\

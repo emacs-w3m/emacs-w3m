@@ -1,3 +1,9 @@
+2002-03-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (install): Install all ChangeLog files.
+	* w3mhack.el (w3mhack-make-package): List all ChangeLog files
+	in the manifest.
+
 2002-03-05  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-local-dirlist-cgi): Set `w3m-current-url' for avoid
