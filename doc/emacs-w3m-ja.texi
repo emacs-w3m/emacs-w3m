@@ -5292,11 +5292,12 @@ Emacs-w3m $B$r;H$C$F!"(B@code{yahtml-mode} $B$G$^$5$KJT=8Cf$N(B HTML $B%U%!
 
 Emacs $B$G$O(B Mule-UCS $B%Q%C%1!<%8$K4^$^$l$F$$$k(B @code{jis0213} $B%b%8%e!<%k$r(B
 $B;H$&$3$H$K$h$C$F!"(BJIS X 0213 $BJ8;z%;%C%H$r;H$&$3$H$,$G$-$^$9!#(BEmacs 21 $B$G(B
-$B$O(B @code{jis0213} $B$,(B @code{mucs} $B$rFI$_9~$_!"(B@code{mucs} $B$,>e=q$-$7$F$7(B
-$B$^$&$?$a$K(B @code{decode-char} $B4X?t$,(B @code{ucs} CCS $B$KBP$7$F@5$7$/F0:n$7(B
-$B$J$/$J$C$F$7$^$$$^$9$,!"$5$i$K(B @code{unicode} $B%b%8%e!<%k$rFI$_9~$`$3$H$K(B
-$B$h$C$F!"$=$NLdBj$,2r7h$5$l$k$h$&$K8+$($k$H$$$&Js9p$,$"$j$^$7$?!#M}M3$O$^(B
-$B$@2rL@$5$l$F$$$^$;$s!#(B@file{~/.emacs} $B%U%!%$%kMQ$NNc$G$9(B:
+$B$O(B @code{decode-char} $B4X?t$,(B @code{mucs} $B$K$h$C$F>e=q$-$5$l$F$7$^(B
+$B$&(B (@code{jis0213} $B$,(B @code{mucs} $B$rFI$_9~$`(B) $B$?$a$K!"(B@code{ucs} CCS $B$K(B
+$BBP$7$F@5$7$/F0:n$7$J$/$J$C$F$7$^$$$^$9$,!"$5$i$K(B @code{unicode} $B%b%8%e!<(B
+$B%k$rFI$_9~$`$3$H$K$h$C$F!"$=$NLdBj$,2r7h$5$l$k$h$&$K8+$($k$H$$$&Js9p$,$"(B
+$B$j$^$7$?!#M}M3$O$^$@2rL@$5$l$F$$$^$;$s!#(B@file{~/.emacs} $B%U%!%$%kMQ$NNc$G(B
+$B$9(B:
 
 @lisp
 (require 'unicode)
