@@ -4573,8 +4573,9 @@ described in Section 5.2 of RFC 2396.")
 	  (set-window-configuration wconfig))
 	(when (and pos ;; The new session is created.
 		   (with-current-buffer buffer
-		     (or (not w3m-current-url)
-			 (zerop (buffer-size)))))
+		     (not (or w3m-current-process
+			      w3m-current-url
+			      (not (zerop (buffer-size)))))))
 	  ;; Remove useless newly created buffer.
 	  (kill-buffer buffer))
 	;; FIXME: What we should actually do is to modify the `w3m-goto-url'
@@ -6336,9 +6337,10 @@ the current session.  Otherwise, the new session will start afresh."
 			nil nil interactive-p))
 	(w3m-goto-url url reload charset post-data referer
 		      nil nil interactive-p)
-	(when (with-current-buffer buffer
-		(or (not w3m-current-url)
-		    (zerop (buffer-size))))
+	(unless (with-current-buffer buffer
+		  (or w3m-current-process
+		      w3m-current-url
+		      (not (zerop (buffer-size)))))
 	  ;; Remove useless newly created buffer.
 	  (kill-buffer buffer)))
     (w3m url t)))

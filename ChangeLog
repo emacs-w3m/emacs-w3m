@@ -1,5 +1,11 @@
 2003-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-view-this-url-1): Don't kill the emacs-w3m buffer
+	when a process is in progress.
+	(w3m-goto-url-new-session): Ditto.
+
+2003-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-view-previous-page): Specify a history element of
 	the previous page to the `w3m-goto-url' function as the 7th arg.
 	(w3m-goto-url): Accept a history element as the 7th argument;
