@@ -91,13 +91,13 @@ compile-time."
 
 (defmacro w3m-cleanup-plist (plist)
   "Remove properties with the value `nil' in PLIST."
-  `(let ((plist ,plist)
-	 property value rest)
-     (while (prog1
-		(setq property (pop plist))
-	      (when (setq value (pop plist))
-		(setq rest (nconc rest (list property value))))))
-     rest))
+  (` (let ((plist (, plist))
+	   property value rest)
+       (while (prog1
+		  (setq property (pop plist))
+		(when (setq value (pop plist))
+		  (setq rest (nconc rest (list property value))))))
+       rest)))
 
 (provide 'w3m-macro)
 
