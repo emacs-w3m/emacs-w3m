@@ -1,3 +1,11 @@
+2001-04-03  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-process-message): Removed.
+	(w3m-exec-process): Clean up.
+	(w3m-w3m-dump-head-source): Removed code which refers
+	`w3m-process-message'.
+	(w3m-w3m-dump-source): Ditto.
+
 2001-04-03  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-mime-text/html-w3m): Store/restore window start

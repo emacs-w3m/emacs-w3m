@@ -531,7 +531,6 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 (defvar w3m-arrived-db nil)		; nil means un-initialized.
 (defvar w3m-arrived-user-list nil)
 
-(defvar w3m-process-message nil "Function to message status.")
 (defvar w3m-process-user nil)
 (defvar w3m-process-passwd nil)
 (defvar w3m-process-user-counter 0)
@@ -1327,24 +1326,21 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		(w3m-process-user-counter 2)
 		(proc (apply 'start-process w3m-command (current-buffer) w3m-command args)))
 	    (set-process-filter proc 'w3m-exec-filter)
-	    (set-process-sentinel proc (lambda (proc event) nil))
+	    (set-process-sentinel proc 'ignore)
 	    (process-kill-without-query proc)
             (unwind-protect
-                (progn
-                  (while (eq (process-status proc) 'run)
-                    (if (functionp w3m-process-message)
-                        (funcall w3m-process-message))
-                    (sleep-for 0.2)
-                    (discard-input))
-                  (prog1 (process-exit-status proc)
-                    (and w3m-current-url
-                         w3m-process-user
-                         (setq w3m-arrived-user-list
-                               (cons
-                                (cons w3m-current-url
-                                      (list w3m-process-user w3m-process-passwd))
-                                (delete (assoc w3m-current-url w3m-arrived-user-list)
-                                        w3m-arrived-user-list))))))
+                (prog2
+		    (while (eq (process-status proc) 'run)
+		      (accept-process-output proc 0 200))
+		    (process-exit-status proc)
+		  (and w3m-current-url
+		       w3m-process-user
+		       (setq w3m-arrived-user-list
+			     (cons
+			      (cons w3m-current-url
+				    (list w3m-process-user w3m-process-passwd))
+			      (delete (assoc w3m-current-url w3m-arrived-user-list)
+				      w3m-arrived-user-list)))))
               (delete-process proc)));; Clean up resources of process.
 	;; call-process
 	(apply 'call-process w3m-command nil t nil args)))))
@@ -1605,11 +1601,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 
 (defun w3m-w3m-dump-head-source (url)
   (and (let ((w3m-current-url url)
-	     (w3m-w3m-retrieve-length)
-	     (w3m-process-message
-	      (lambda ()
-		(w3m-message "Reading... %s"
-			     (w3m-pretty-length (buffer-size))))))
+	     (w3m-w3m-retrieve-length))
 	 (w3m-message "Reading...")
 	 (prog1 (zerop (w3m-exec-process "-dump_extra" url))
 	   (w3m-message "Reading... done")
@@ -1630,17 +1622,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
       (let ((type   (car headers))
 	    (length (nth 2 headers)))
 	(when (let* ((w3m-current-url url)
-		     (w3m-w3m-retrieve-length length)
-		     (w3m-process-message
-		      (lambda ()
-			(if w3m-w3m-retrieve-length
-			    (w3m-message
-			     "Reading... %s of %s (%d%%)"
-			     (w3m-pretty-length (buffer-size))
-			     (w3m-pretty-length w3m-w3m-retrieve-length)
-			     (/ (* (buffer-size) 100) w3m-w3m-retrieve-length))
-			  (w3m-message "Reading... %s"
-				       (w3m-pretty-length (buffer-size)))))))
+		     (w3m-w3m-retrieve-length length))
 		(w3m-message "Reading...")
 		(prog1 (zerop (w3m-exec-process "-dump_source" url))
 		  (w3m-message "Reading... done")))
