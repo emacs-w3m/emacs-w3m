@@ -363,6 +363,7 @@ If no field in forward, return nil without moving."
 			     (type :case-ignore)
 			     (width :integer)
 			     (maxlength :integer)
+			     (hseq :integer)
 			     name value)
 	(search-forward "</input_alt>")
 	(goto-char (match-end 0))
@@ -398,12 +399,18 @@ If no field in forward, return nil without moving."
 	      (add-text-properties start (point)
 				   (list 'face 'w3m-form-face
 					 'w3m-action
-					 `(w3m-form-input-textarea ,form ,name)
+					 `(w3m-form-input-textarea ,form ,hseq)
 					 'w3m-submit
-					 `(w3m-form-submit ,form ,name
-							   (w3m-form-get ,form ,name))
-					 'w3m-cursor-anchor
-					 `(w3m-form-input-textarea ,form ,name))))
+					 `(w3m-form-submit
+					   ,form ,name
+					   (w3m-form-get ,form ,name))
+					 'w3m-form-hseq hseq))
+	      (when (> hseq 0) 
+		(add-text-properties start (point)
+				     (list 'w3m-cursor-anchor
+					   `(w3m-form-input-textarea
+					     ,form ,hseq)
+					   'w3m-form-name name))))
 	     ((string= type "select")
 	      (add-text-properties start (point)
 				   (list 'face 'w3m-form-face
@@ -568,6 +575,56 @@ If no field in forward, return nil without moving."
   :group 'w3m
   :type 'hook)
 
+(defun w3m-form-text-chop (text)
+  "Return a list of substrings of TEXT which are separated by newline character."
+  (let ((start 0) parts)
+    (while (string-match "\n" text start)
+      (setq parts (cons (substring text start (match-beginning 0)) parts)
+	    start (match-end 0)))
+    (nreverse (cons (substring text start) parts))))
+
+(defun w3m-form-textarea-replace (hseq string)
+  (save-excursion
+    (let ((s (get-text-property (point) 'w3m-form-hseq))
+	  (hseq (abs hseq))
+	  (chopped (w3m-form-text-chop string))
+	  cs next)
+      (unless (and s (eq s hseq))
+	(goto-char (point-min))
+	(while (and (not (eobp))
+		    (not (eq hseq (get-text-property (point) 'w3m-form-hseq))))
+	  (goto-char (next-single-property-change (point)
+						  'w3m-form-hseq))))
+      (while chopped
+	(w3m-form-replace (car chopped))
+	(goto-char (next-single-property-change (point) 'w3m-form-hseq)) ; end
+	(when (setq next (next-single-property-change (point) 'w3m-form-hseq))
+	  (goto-char next))
+	(setq cs (get-text-property (point) 'w3m-form-hseq))
+	(setq chopped
+	      (if (and cs (eq (abs cs) hseq))
+		  (cdr chopped)))))))
+
+(defun w3m-form-textarea-info ()
+  "Return a cons cell of (NAME . LINE) for current text area."
+  (let ((s (w3m-get-text-property-around 'w3m-form-hseq))
+	(lines 0)
+	next)
+    (save-excursion
+      (when (and s (not (> s 0)))
+	(while (and (not (bobp))
+		    (not (eq (abs s) (get-text-property (point)
+							'w3m-form-hseq))))
+	  (goto-char (previous-single-property-change 
+		      (point) 'w3m-form-hseq))
+	  (when (and (get-text-property (point) 'w3m-form-hseq)
+		     (setq next (previous-single-property-change 
+				 (point)
+				 'w3m-form-hseq))
+		     (goto-char next)))
+	  (incf lines)))
+      (cons (get-text-property (point) 'w3m-form-name) lines))))
+
 (defvar w3m-form-input-textarea-keymap nil)
 (unless w3m-form-input-textarea-keymap
   (setq w3m-form-input-textarea-keymap (make-sparse-keymap))
@@ -580,12 +637,12 @@ If no field in forward, return nil without moving."
   
 (defvar w3m-form-input-textarea-buffer nil)
 (defvar w3m-form-input-textarea-form nil)
-(defvar w3m-form-input-textarea-name nil)
+(defvar w3m-form-input-textarea-hseq nil)
 (defvar w3m-form-input-textarea-point nil)
 (defvar w3m-form-input-textarea-wincfg nil)
 (make-variable-buffer-local 'w3m-form-input-textarea-buffer)
 (make-variable-buffer-local 'w3m-form-input-textarea-form)
-(make-variable-buffer-local 'w3m-form-input-textarea-name)
+(make-variable-buffer-local 'w3m-form-input-textarea-hseq)
 (make-variable-buffer-local 'w3m-form-input-textarea-point)
 (make-variable-buffer-local 'w3m-form-input-textarea-wincfg)
 
@@ -595,7 +652,7 @@ If no field in forward, return nil without moving."
   (run-hooks 'w3m-form-input-textarea-set-hook)
   (let ((input (buffer-string))
 	(buffer (current-buffer))
-	(name w3m-form-input-textarea-name)
+	(hseq w3m-form-input-textarea-hseq)
 	(form w3m-form-input-textarea-form)
 	(point w3m-form-input-textarea-point)
 	(w3mbuffer w3m-form-input-textarea-buffer)
@@ -607,8 +664,8 @@ If no field in forward, return nil without moving."
       (set-window-configuration wincfg)
       (when (and form point)
 	(goto-char point)
-	(w3m-form-put form name input)
-	(w3m-form-replace input)))))
+	(w3m-form-put form (car (w3m-form-textarea-info)) input)
+	(w3m-form-textarea-replace hseq input)))))
 
 (defun w3m-form-input-textarea-exit ()
   "Exit from w3m form textarea mode."
@@ -636,8 +693,9 @@ If no field in forward, return nil without moving."
   (use-local-map w3m-form-input-textarea-keymap)
   (run-hooks 'w3m-form-input-textarea-mode-hook))
 
-(defun w3m-form-input-textarea (form name)
-  (let* ((value (w3m-form-get form name))
+(defun w3m-form-input-textarea (form hseq)
+  (let* ((info  (w3m-form-textarea-info))
+	 (value (w3m-form-get form (car info)))
 	 (cur-win (selected-window))
 	 (wincfg (current-window-configuration))
 	 (w3mbuffer (current-buffer))
@@ -660,12 +718,13 @@ If no field in forward, return nil without moving."
       (switch-to-buffer buffer)
       (set-buffer buffer)
       (setq w3m-form-input-textarea-form form)
-      (setq w3m-form-input-textarea-name name)      
+      (setq w3m-form-input-textarea-hseq hseq)
       (setq w3m-form-input-textarea-buffer w3mbuffer)
       (setq w3m-form-input-textarea-point point)
       (setq w3m-form-input-textarea-wincfg wincfg)
       (if value (insert value))
       (goto-char (point-min))
+      (forward-line (1- (cdr info)))
       (w3m-form-input-textarea-mode))))
 
 ;;; SELECT

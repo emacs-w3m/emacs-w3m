@@ -2,6 +2,17 @@
 
 	* w3m-form.el (w3m-form-make-form-data): Fixed typo.
 	(w3m-form-input-file): Rewrite.
+	(w3m-fontify-forms): Parse hseq attribute as well;
+	Changed textarea properties.
+	(w3m-form-text-chop): New function.
+	(w3m-form-input-textarea-hseq): New buffer local variable.
+	(w3m-form-input-textarea-name): Eliminated.
+	(w3m-form-input-textarea-set): Use `w3m-form-textarea-info',
+	`w3m-form-textarea-replace' and `w3m-form-input-textarea-hseq'.
+	(w3m-form-input-textarea): Use `w3m-form-textarea-info';
+	Adjust cursor line at start time.
+	(w3m-form-textarea-replace): New function.
+	(w3m-form-textarea-info): Ditto.
 
 2001-08-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
