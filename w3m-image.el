@@ -37,6 +37,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'cl))
+
 (require 'w3m-util)
 (require 'w3m-proc)
 
