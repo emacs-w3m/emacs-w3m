@@ -1,3 +1,9 @@
+2004-02-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-sankei.el (shimbun-sankei-content-start): Improve.
+	(shimbun-sankei-content-end): Improve.
+	(shimbun-get-headers): Improve regexps.
+
 2004-02-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-favicon.el (w3m-favicon-retrieve): Because some broken
