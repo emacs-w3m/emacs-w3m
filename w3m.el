@@ -3256,6 +3256,7 @@ If this function is called by redirection, ORIG-URL must be set."
 	  (delete-file temp-file))
 	(when attributes
 	  (or no-decode
+	      w3m-current-redirect
 	      (w3m-decode-encoded-contents (nth 3 attributes))
 	      (error "Can't decode encoded contents: %s" url))
 	  (car attributes))))))

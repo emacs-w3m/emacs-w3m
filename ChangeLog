@@ -1,3 +1,8 @@
+2002-05-29  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-w3m-retrieve-1): Don't decode the contents when
+	redirect.
+
 2002-05-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (define-ccl-program): Remove advice when non-MULE.
