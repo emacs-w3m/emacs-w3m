@@ -33,7 +33,7 @@
 
 ;;; Commentary:
 
-;; emacs-w3m is the interface program of w3m on Emacs.  For more
+;; Emacs-w3m is an Emacs interface to the w3m program.  For more
 ;; detail about w3m, see:
 ;;
 ;;    http://w3m.sourceforge.net/
@@ -41,32 +41,34 @@
 
 ;;; How to install:
 
-;; See README and verify that the latest version of w3m is available.
+;; See the README file in any case.  We also recommend you check
+;; whether a newer version of w3m is released.
 ;;
-;; In the top level directory of the emacs-w3m distribution, run the
-;; program `configure' and then type `make install'.  See README file
-;; for more information.
+;; The outline of installation is: run the `configure' script and type
+;; `make install' in the top directory of the emacs-w3m distribution.
 
 
 ;;; Code:
 
 ;; Developers, you must not use the cl functions (e.g. `butlast',
 ;; `coerce', `merge', etc.) in any emacs-w3m or shimbun modules.  To
-;; exclude a run-time cl is the policy of emacs-w3m.  However, XEmacs
-;; employs a cl package for all the time, or that functions were
-;; possibly provided in the other modules as such as APEL, so you may
-;; use them only in w3m-xmas.el or w3m-om.el.
+;; exclude run-time cl is the policy of emacs-w3m.  However, XEmacs
+;; employs the cl package for all time, or those functions are
+;; possibly provided in the other modules like APEL, so you may use
+;; them only in w3m-xmas.el or w3m-om.el.
 (eval-when-compile
   (require 'cl))
 
-;; Override the macro `dolist' which may have been defined in egg.el.
+;; Override the `dolist' macro which may be faultily provided by old
+;; egg.el.
 (eval-when-compile
   (unless (dolist (var nil t))
     (load "cl-macs" nil t)))
 
-;; The following variables will be referred by the external modules
-;; which bind such variables only when compiling themselves.  And some
-;; module(s) use `defadvice' which will do byte-compile at run-time.
+;; The following variables will be referred to by the external modules
+;; which bind such variables only when compiling themselves.  And also
+;; some modules have the `defadvice' forms including them and run
+;; `byte-compile' at run-time.
 (eval-and-compile
   (defvar w3m-current-title nil "Title of this buffer.")
   (defvar w3m-current-url nil "URL of this buffer."))
@@ -98,22 +100,22 @@
 (eval-and-compile
   (autoload 'w3m-bookmark-view "w3m-bookmark" nil t)
   (autoload 'w3m-bookmark-add-this-url "w3m-bookmark"
-    "Add link under cursor to bookmark." t)
+    "Add a link under point to the bookmark." t)
   (autoload 'w3m-bookmark-add-current-url "w3m-bookmark"
-    "Add link of current page to bookmark." t)
+    "Add a link address of the current page to the bookmark." t)
   (autoload 'w3m-search "w3m-search"
-    "Search QUERY using SEARCH-ENGINE." t)
+    "Search a word using search engines." t)
   (autoload 'w3m-search-uri-replace "w3m-search")
   (autoload 'w3m-weather "w3m-weather"
-    "Display weather report." t)
+    "Display a weather report." t)
   (autoload 'w3m-about-weather "w3m-weather")
   (autoload 'w3m-antenna "w3m-antenna"
-    "Display antenna report." t)
+    "Report changes of web sites." t)
   (autoload 'w3m-antenna-add-current-url "w3m-antenna"
-    "Add link of current page to antenna." t)
+    "Add a link address of the current page to the antenna database." t)
   (autoload 'w3m-about-antenna "w3m-antenna")
   (autoload 'w3m-dtree "w3m-dtree"
-    "Display directory tree." t)
+    "Display a directory tree." t)
   (autoload 'w3m-about-dtree "w3m-dtree")
   (autoload 'w3m-namazu "w3m-namazu"
     "Search files with Namazu." t)
@@ -149,31 +151,30 @@
   "Version number of this package.")
 
 (defconst w3m-treat-drive-letter (memq system-type '(windows-nt OS/2 emx))
-  "Operating system has a drive letter.")
+  "Say whether the system uses drive letters.")
 
 (defgroup w3m nil
-  "w3m - the web browser of choice."
+  "Emacs-w3m - the web browser of choice."
   :group 'hypermedia)
 
 (defgroup w3m-face nil
-  "Faces for w3m."
+  "Faces used for emacs-w3m."
   :group 'w3m
   :prefix "w3m-")
 
 (defcustom w3m-command nil
-  "*Name of the executable file of w3m."
+  "*Name of the executable file of the w3m command."
   :group 'w3m
   :type '(radio (const :format "Not specified " nil)
 		(string :format "Command: %v\n" :size 0)))
 
-(defvar w3m-type nil "Type of w3m.
-These values are acceptable: w3m, w3mmee, w3m-m17n.")
-(defvar w3m-compile-options nil "Compile options of w3m.")
-(defvar w3m-version nil "Version string of w3m command.")
+(defvar w3m-type nil "Type of the w3m command.
+The valid values include: w3m, w3mmee, w3m-m17n.")
+(defvar w3m-compile-options nil "Compile options that w3m was built with.")
+(defvar w3m-version nil "Version string of the w3m command.")
 
 ;; Set w3m-command, w3m-type, w3m-version and w3m-compile-options
-(if noninteractive
-    ;; Don't call the external command when compiling.
+(if noninteractive ;; Don't call the external command when compiling.
     (unless w3m-command
       (setq w3m-command "w3m"))
   (when (or (null w3m-command)
@@ -211,12 +212,12 @@ These values are acceptable: w3m, w3mmee, w3m-m17n.")
 
 (defcustom w3m-user-agent (concat "Emacs-w3m/" emacs-w3m-version
 				  " " w3m-version)
-  "User agent string of this package."
+  "String used for the User-Agent field.  See also `w3m-add-user-agent'."
   :group 'w3m
   :type '(string :size 0))
 
 (defcustom w3m-add-user-agent t
-  "Add User-Agent field to the request header.
+  "Non-nil means add the User-Agent field to the request header.
 The value of `w3m-user-agent' is used for the field body."
   :group 'w3m
   :type 'boolean)
@@ -227,7 +228,7 @@ The value of `w3m-user-agent' is used for the field body."
 			(symbol-value 'current-language-environment)))
 	  (boundp 'MULE))
       "Japanese")
-  "*Language of w3m."
+  "*Your preferred language used in emacs-w3m sessions."
   :group 'w3m
   :type '(radio (const :format "%v " "Japanese")
 		(const :tag "Other" nil))
@@ -243,15 +244,15 @@ The value of `w3m-user-agent' is used for the field body."
 (defcustom w3m-command-arguments
   (if (eq w3m-type 'w3mmee) '("-o" "concurrent=0" "-F") nil)
   "*List of the default arguments passed to the w3m command.  See also
-the documentation for the option `w3m-command-arguments-alist'."
+the documentation for the `w3m-command-arguments-alist' variable."
   :group 'w3m
   :type '(repeat (string :format "Argument: %v\n" :size 0)))
 
 (defcustom w3m-command-arguments-alist nil
   "*Alist of a regexp matching urls and additional arguments passed to
-the w3m command.  This lets you, for instance, use or not use proxy
-server for the particular hosts.  The first match made will be used.
-Here is an example of how to set this option:
+the w3m command.  This lets you, for instance, use or not use the
+proxy server for the particular hosts.  The first match made will be
+used.  Here is an example of how to set this variable:
 
 \(setq w3m-command-arguments-alist
       '(;; Don't use any additional options to visit local web pages.
@@ -264,7 +265,7 @@ Here is an example of how to set this option:
 Where the first element matches the url that the scheme is \"http\" and
 the hostname is either \"your-company.com\" or a name ended with
 \".your-company.com\".  If you are a novice on the regexps, you can use
-the option `w3m-no-proxy-domains' instead."
+the `w3m-no-proxy-domains' variable instead."
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 4
 		       (regexp :format "%t: %v\n" :size 0)
@@ -1641,7 +1642,7 @@ This variable will be made buffer-local under Emacs 21 or XEmacs.")
 	w3m-current-redirect nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url base title forms cs char icon next prev
+  (let (url base title cs char icon next prev
 	    start toc hseq refresh ssl redirect)
     (with-current-buffer from-buffer
       (setq url w3m-current-url
@@ -4705,10 +4706,9 @@ the beginning of a line, only the links displayed in the beginning of
 lines are picked up.  If ARG is non-nil, force reload all links."
   (interactive "r\nP")
   (let ((buffer (current-buffer))
-	(window (selected-window))
 	(prev start)
 	(url (w3m-url-valid (w3m-anchor start)))
-	urls all height)
+	urls all)
     (when url
       (setq urls (list url)))
     (save-excursion
@@ -5897,8 +5897,7 @@ TYPE is either 'left or 'right and COLS is columns."
 			    (max 0
 				 (+ (w3m-window-hscroll)
 				    (if (eq type 'left) cols (- cols)))))
-    (let ((hs (w3m-window-hscroll))
-	  (pos (point)))
+    (let ((hs (w3m-window-hscroll)))
       (unless (and (>= (- (current-column) hs) 0)
 		   (< (- (current-column) hs) (window-width)))
 	(move-to-column (if (eq type 'left) hs

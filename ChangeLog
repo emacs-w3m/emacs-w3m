@@ -1,3 +1,9 @@
+2003-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Fix some comments and docstrings (to be continued).
+	(w3m-copy-local-variables, w3m-open-all-links-in-new-session,
+	w3m-horizontal-scroll): Remove unused non-global variables.
+
 2003-10-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-cnet.el (shimbun-make-contents): Keep tag strings to
