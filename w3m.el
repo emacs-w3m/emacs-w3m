@@ -370,6 +370,20 @@ In other environment, use 'native."
 					   (stringp 'file 'url))))
 	    (function :tag "Function")))))
 
+(defcustom w3m-decoder-alist
+  '((gzip "gunzip" nil)
+    (bzip "bunzip2" nil)
+    (deflate "inflate" nil))
+  "Associative list of DECODER."
+  :group 'w3m
+  :type '(repeat
+	  (list (choice :tag "Encoding"
+			(const gzip)
+			(const bzip)
+			(const deflate))
+		(string :tag "Command")
+		(repeat :tag "Arguments" string))))
+
 (defcustom w3m-charset-coding-system-alist
   (let ((rest
 	 '((us-ascii      . raw-text)
@@ -416,6 +430,11 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
   :type 'boolean
   :require 'w3m-form)
+
+(defcustom w3m-mnc nil
+  "*When using w3m with M.N.C. patch, set non-nil value."
+  :group 'w3m
+  :type 'boolean)
 
 (defconst w3m-extended-characters-table
   '(("\xa0" . " ")
@@ -481,6 +500,16 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 			 "\\|")))))
 (defvar w3m-entity-db nil)		; nil means un-initialized
 (defconst w3m-entity-db-size 13)	; size of obarray
+
+(defconst w3m-encoding-alist
+  (eval-when-compile
+    (apply 'nconc
+	   (mapcar (lambda (elem)
+	       (mapcar (lambda (x) (cons x (car elem)))
+		       (cdr elem)))
+		   '((gzip . ("gzip" "x-gzip" "compress" "x-compress"))
+		     (bzip . ("x-bzip" "bzip" "bzip2"))
+		     (deflate . ("x-deflate" "deflate")))))))
 
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
@@ -601,6 +630,7 @@ elements are:
  2. Size in bytes.
  3. Encoding of contents.
  4. Last modification time.
+ 5. Real URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
   (cond
    ((string-match "^about:" url)
@@ -612,14 +642,16 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 
 (defmacro w3m-content-type (url &optional no-cache)
   (` (car (w3m-attributes (, url) (, no-cache)))))
-;;(defmacro w3m-content-charset (url &optional no-cache)
-;;  (` (nth 1 (w3m-attributes (, url) (, no-cache)))))
+(defmacro w3m-content-charset (url &optional no-cache)
+  (` (nth 1 (w3m-attributes (, url) (, no-cache)))))
 (defmacro w3m-content-length (url &optional no-cache)
   (` (nth 2 (w3m-attributes (, url) (, no-cache)))))
-;;(defmacro w3m-content-encoding (url &optional no-cache)
-;;  (` (nth 3 (w3m-attributes (, url) (, no-cache)))))
+(defmacro w3m-content-encoding (url &optional no-cache)
+  (` (nth 3 (w3m-attributes (, url) (, no-cache)))))
 (defmacro w3m-last-modified (url &optional no-cache)
   (` (nth 4 (w3m-attributes (, url) (, no-cache)))))
+(defmacro w3m-real-url (url &optional no-cache)
+  (` (nth 5 (w3m-attributes (, url) (, no-cache)))))
 
 (defsubst w3m-anchor (&optional point)
   (get-text-property (or point (point)) 'w3m-href-anchor))
@@ -680,15 +712,17 @@ nil, it is regarded as the oldest time."
 (defun w3m-sub-list (list n)
   "Make new list from LIST with top most N items.
 If N is negative, last N items of LIST is returned."
-  (if (< n 0)
-      ;; N is negative, get items from tail of list
-      (if (>= (- n) (length list))
-	  (copy-sequence list)
-	(nthcdr (+ (length list) n) (copy-sequence list)))
-    ;; N is non-negative, get items from top of list
-    (if (>= n (length list))
-	(copy-sequence list)
-      (nreverse (nthcdr (- (length list) n) (reverse list))))))
+  (if (integerp n)
+      (if (< n 0)
+	  ;; N is negative, get items from tail of list
+	  (if (>= (- n) (length list))
+	      (copy-sequence list)
+	    (nthcdr (+ (length list) n) (copy-sequence list)))
+	;; N is non-negative, get items from top of list
+	(if (>= n (length list))
+	    (copy-sequence list)
+	  (nreverse (nthcdr (- (length list) n) (reverse list)))))
+    (copy-sequence list)))
 
 (defun w3m-load-list (file coding)
   "Load list from FILE with CODING and return list."
@@ -711,8 +745,10 @@ If N is negative, last N items of LIST is returned."
 	(w3m-static-if (fboundp 'pp)
 	    (pp list (current-buffer))
 	  (print list (current-buffer)))
-	(write-region (point-min) (point-max)
-		      file nil 'nomsg)))))
+	(let ((mode (and (file-exists-p file)
+			 (file-modes file))))
+	  (write-region (point-min) (point-max) file nil 'nomsg)
+	  (when mode (set-file-modes file mode)))))))
 
 (defun w3m-arrived-add (url &optional title modified-time arrived-time)
   "Add URL to hash database of arrived URLs."
@@ -1152,6 +1188,14 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
   (setq w3m-cache-hashtb nil
 	w3m-cache-articles nil))
 
+(defun w3m-cache-available-p (url)
+  "Return non-nil value, when the URL's header and contents are stored in cache."
+  (w3m-cache-setup)
+  (let ((ident (intern url w3m-cache-hashtb)))
+    (and (boundp ident)
+	 (memq ident w3m-cache-articles)
+	 ident)))
+
 (defun w3m-cache-header (url header)
   "Store up URL's HEADER in cache."
   (w3m-cache-setup)
@@ -1357,36 +1401,51 @@ This function is imported from mcharset.el."
     (if (find-coding-system cs)
 	cs)))
 
-(defun w3m-decode-buffer (type charset)
-  (if (and (not charset) (string= type "text/html"))
-      (setq charset
-	    (let ((case-fold-search t))
-	      (goto-char (point-min))
-	      (and (or (re-search-forward
-			w3m-meta-content-type-charset-regexp nil t)
-		       (re-search-forward
-			w3m-meta-charset-content-type-regexp nil t))
-		   (buffer-substring-no-properties (match-beginning 2)
-						   (match-end 2))))))
-  (decode-coding-region
-   (point-min) (point-max)
-   (if charset
-       (w3m-charset-to-coding-system charset)
-     (let ((default (condition-case nil
-			(coding-system-category w3m-coding-system)
-		      (error nil)))
-	   (candidate (detect-coding-region (point-min) (point-max))))
-       (unless (listp candidate)
-	 (setq candidate (list candidate)))
-       (catch 'coding
-	 (dolist (coding candidate)
-	   (if (eq default (coding-system-category coding))
-	       (throw 'coding coding)))
-	 (if (eq (coding-system-category 'binary)
-		 (coding-system-category (car candidate)))
-	     w3m-coding-system
-	   (car candidate))))))
-  (set-buffer-multibyte t))
+
+;;; Handle encoding of contents:
+(defun w3m-decode-encoded-buffer (encoding)
+  (let ((x (and (stringp encoding)
+		(assoc encoding w3m-encoding-alist))))
+    (when (and x (setq x (cdr (assq (cdr x) w3m-decoder-alist))))
+      (let ((coding-system-for-write 'binary)
+	    (coding-system-for-read 'binary)
+	    (default-process-coding-system (cons 'binary 'binary)))
+	(apply 'call-process-region
+	       (point-min) (point-max) (car x) t t nil (nth 1 x))))))
+
+(defun w3m-decode-buffer (url)
+  (let ((type (w3m-content-type url))
+	(charset (w3m-content-charset url))
+	(encoding (w3m-content-encoding url)))
+    (w3m-decode-encoded-buffer encoding)
+    (if (and (not charset) (string= type "text/html"))
+	(setq charset
+	      (let ((case-fold-search t))
+		(goto-char (point-min))
+		(and (or (re-search-forward
+			  w3m-meta-content-type-charset-regexp nil t)
+			 (re-search-forward
+			  w3m-meta-charset-content-type-regexp nil t))
+		     (match-string-no-properties 2)))))
+    (decode-coding-region
+     (point-min) (point-max)
+     (if charset
+	 (w3m-charset-to-coding-system charset)
+       (let ((default (condition-case nil
+			  (coding-system-category w3m-coding-system)
+			(error nil)))
+	     (candidate (detect-coding-region (point-min) (point-max))))
+	 (unless (listp candidate)
+	   (setq candidate (list candidate)))
+	 (catch 'coding
+	   (dolist (coding candidate)
+	     (if (eq default (coding-system-category coding))
+		 (throw 'coding coding)))
+	   (if (eq (coding-system-category 'binary)
+		   (coding-system-category (car candidate)))
+	       w3m-coding-system
+	     (car candidate))))))
+    (set-buffer-multibyte t)))
 
 
 ;;; Retrieve local data:
@@ -1405,6 +1464,7 @@ elements are:
  2. Size in bytes.
  3. Encoding of contents.
  4. Last modification time.
+ 5. Real URL.
 "
   (let* ((file (w3m-url-to-file-name url))
 	 (attr (when (file-exists-p file)
@@ -1413,7 +1473,8 @@ elements are:
 	  nil
 	  (nth 7 attr)
 	  nil
-	  (nth 5 attr))))
+	  (nth 5 attr)
+	  (w3m-expand-file-name-as-url (file-truename file)))))
 
 (defun w3m-local-retrieve (url &optional no-decode &rest args)
   "Retrieve content of local URL and insert it to the working buffer.
@@ -1471,6 +1532,7 @@ elements are:
  2. Size in bytes.
  3. Encoding of contents.
  4. Last modification time.
+ 5. Real URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
   (let ((header (w3m-w3m-get-header url no-cache)))
     (cond
@@ -1494,13 +1556,14 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(and v (string-to-number v)))
 	      (cdr (assoc "content-encoding" alist))
 	      (let ((v (cdr (assoc "last-modified" alist))))
-		(and v (w3m-time-parse-string v))))))
+		(and v (w3m-time-parse-string v)))
+	      (or (cdr (assoc "w3m-current-url" alist))
+		  url))))
      ;; FIXME: adhoc implementation
      ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
      ;; HTTP/1.0 501 Method Not Implemented
      ((and header (string-match "HTTP/1\\.[0-9] 50[0-9]" header))
       (list "text/html")))))
-
 
 (defun w3m-pretty-length (n)
   ;; This function imported from url.el.
@@ -1512,11 +1575,37 @@ If optional argument NO-CACHE is non-nil, cache is not used."
    (t
     (format "%2.2fM" (/ n (* 1024 1024.0))))))
 
+(defun w3m-w3m-dump-head-source (url &optional no-cache)
+  (or (and (not no-cache) (w3m-cache-available-p url))
+      (with-temp-buffer
+	(set-buffer-multibyte nil)
+	(and w3m-mnc
+	     (let ((w3m-current-url url)
+		   (w3m-w3m-retrieve-length)
+		   (w3m-process-message
+		    (lambda ()
+		      (w3m-message "Reading... %s"
+				   (w3m-pretty-length (buffer-size))))))
+	       (prog2 (w3m-message "Reading...")
+		   (zerop (w3m-exec-process "-dump_head_source" url))
+		 (w3m-message "Reading... done")))
+	     (progn
+	       (goto-char (point-min))
+	       ;; FIXME: Adhoc support for deflated contents.
+	       (when (re-search-forward "^Content-Encoding: .*\n" nil t)
+		 (delete-region (match-beginning 0) (match-end 0)))
+	       (re-search-forward "^w3m-current-url: .*\n\n" nil t))
+	     (progn
+	       (w3m-cache-header url (buffer-substring (point-min) (point)))
+	       (delete-region (point-min) (point))
+	       (w3m-cache-contents url (current-buffer)))))))
+
 (defun w3m-w3m-retrieve (url &optional no-decode no-cache)
   "Retrieve content of URL with w3m and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
 to nil."
+  (setq no-cache (not (w3m-w3m-dump-head-source url no-cache)))
   (let ((headers (w3m-w3m-attributes url no-cache)))
     (when headers
       (let ((type    (car headers))
@@ -1530,7 +1619,7 @@ to nil."
 	     (when (w3m-cache-request-contents url)
 	       (and (string-match "^text/" type)
 		    (unless no-decode
-		      (w3m-decode-buffer type charset)))
+		      (w3m-decode-buffer url)))
 	       type))
 	   (let* ((buflines)
 		  (w3m-current-url url)
@@ -1575,7 +1664,7 @@ to nil."
 	     (w3m-cache-contents url (current-buffer))
 	     (and (string-match "^text/" type)
 		  (not no-decode)
-		  (w3m-decode-buffer type charset))
+		  (w3m-decode-buffer url))
 	     type)))))))
 
 (defsubst w3m-url-local-p (url)
@@ -1657,6 +1746,11 @@ to nil."
       (goto-char (point-min))
       (insert
        (with-current-buffer buf
+	 (goto-char (point-min))
+	 ;; FIXME: Adhoc support for w3m with patch in [w3m-dev 01876].
+	 (and (looking-at "<!DOCTYPE w3mhalfdump public")
+	      (search-forward "\n<pre>\n" nil t)
+	      (delete-region (point-min) (1+ (match-beginning 0))))
 	 (w3m-decode-extended-characters)
 	 (decode-coding-region (point-min) (point-max) w3m-output-coding-system)
 	 (set-buffer-multibyte t)
@@ -1687,7 +1781,7 @@ this function returns t.  Otherwise, returns nil."
 	  (cond
 	   ((string-match "^text/" type)
 	    (let (buffer-read-only)
-	      (setq w3m-current-url url)
+	      (setq w3m-current-url (w3m-real-url url))
 	      (setq w3m-url-history (cons url w3m-url-history))
 	      (setq-default w3m-url-history
 			    (cons url (default-value 'w3m-url-history)))
@@ -1702,7 +1796,7 @@ this function returns t.  Otherwise, returns nil."
 	   ((and (w3m-image-type-available-p (w3m-image-type type))
 		 (string-match "^image/" type))
 	    (let (buffer-read-only)
-	      (setq w3m-current-url url)
+	      (setq w3m-current-url (w3m-real-url url))
 	      (setq w3m-url-history (cons url w3m-url-history))
 	      (setq-default w3m-url-history
 			    (cons url (default-value 'w3m-url-history)))
@@ -1793,9 +1887,10 @@ this function returns t.  Otherwise, returns nil."
 (defun w3m-expand-url (url base)
   "Convert URL to absolute, and canonicalise it."
   (save-match-data
-    (if (not base) (setq base ""))
-    (if (string-match "^[^:/]+://[^/]*$" base)
-	(setq base (concat base "/")))
+    (unless base
+      (setq base ""))
+    (when (string-match "^[^:/]+://[^/]*$" base)
+      (setq base (concat base "/")))
     (cond
      ;; URL is relative on BASE.
      ((string-match "^#" url)

@@ -1,3 +1,25 @@
+2001-03-29  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Support deflated contents and redirected URLs.
+	(w3m-decoder-alist, w3m-mnc): New variable.
+	(w3m-encoding-alist): New constant.
+	(w3m-attributes, w3m-w3m-attributes, w3m-local-attributes): Spec
+	of return value is changed.
+	(w3m-content-charset, w3m-content-encoding, w3m-real-url): New
+	macro.
+	(w3m-cache-available-p): New function.
+	(w3m-decode-encoded-buffer): Ditto.
+	(w3m-decode-buffer): Changed arguments spec.  Call
+	`w3m-decode-encoded-buffer' to process encoded contents.
+	(w3m-w3m-dump-head-source): New function.
+	(w3m-w3m-retrieve): Call `w3m-w3m-dump-head-source' when `w3m-mnc'
+	is non-nil value.  Follow change of `w3m-decode-buffer'.
+	(w3m-exec): Call `w3m-real-url' to process redirected URLs.
+	(w3m-sub-list): When N is nil, no elements in LIST should be
+	deleted.
+	(w3m-save-list): Preserve file permission when file is
+	overwritten.
+
 2001-03-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-compile): New function.
