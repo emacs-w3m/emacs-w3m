@@ -1,7 +1,6 @@
 ;;; sb-xemacs.el --- shimbun backend for xemacs.org
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
+;; Author: Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Keywords: news
