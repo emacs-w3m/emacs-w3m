@@ -5617,7 +5617,7 @@ frame or a window in the frame is succeeded."
 		  (w3m-fontify-after-hook w3m-header-line-insert
 					  w3m-update-tab-line)
 		  (w3m-display-hook w3m-select-buffer-update
-				    w3m-setup-favicon
+				    w3m-favicon-setup
 				    w3m-xmas-update-tab-in-gutter)
 		  (w3m-delete-buffer-hook w3m-select-buffer-update
 					  w3m-update-tab-line)))
@@ -6145,8 +6145,7 @@ appropriate buffer and select it."
 		   w3m-modeline-status-off))))
 	      (w3m-static-if (featurep 'xemacs)
 		  '(w3m-use-favicon
-		    (w3m-current-favicon-image
-		     ("  " w3m-current-favicon-image) " / ")
+		    (w3m-favicon-image ("  " w3m-favicon-image) " / ")
 		    " / ")
 		" / ")
 	      'w3m-current-title)))

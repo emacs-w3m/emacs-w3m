@@ -1,3 +1,21 @@
+2003-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-favicon.el (w3m-favicon-retrieve): Redisplay Emacs frame;
+	rename from `w3m-retrieve-favicon'.
+	(w3m-favicon-image): Rename from `w3m-current-favicon-image'.
+	(w3m-favicon-setup): Rename from `w3m-setup-favicon'.
+	(w3m-favicon-image-of): Rename from `w3m-buffer-favicon'.
+	(w3m-favicon-convert): Rename from `w3m-convert-favicon'.
+	(w3m-favicon-retrieve): Rename from `w3m-retrieve-favicon'.
+
+	* w3m-e21.el (w3m-tab-line): Rename `w3m-buffer-favicon' with
+	`w3m-favicon-image-of'.
+
+	* w3m.el (w3m-clean-hook-options): Rename `w3m-setup-favicon' with
+	`w3m-favicon-setup'.
+	(w3m-buffer-setup): Rename `w3m-current-favicon-image' with
+	`w3m-favicon-image'.
+
 2003-09-23  OHASHI Akira  <bg66@koka-in.org>
 
 	* w3m.el (w3m-process-connection-type): Set nil when system-type
