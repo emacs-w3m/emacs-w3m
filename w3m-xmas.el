@@ -106,8 +106,15 @@ Buffer string between BEG and END are replaced with IMAGE."
 	(error "Icon file %s not found" up)))))
 
 (defun w3m-setup-toolbar ()
+  "Setup toolbar."
   (when w3m-use-toolbar
     (w3m-xmas-make-toolbar-buttons w3m-toolbar-buttons)
+    (set-specifier default-toolbar
+		   (cons (current-buffer) w3m-toolbar))))
+
+(defun w3m-update-toolbar ()
+  "Update toolbar."
+  (when w3m-use-toolbar
     (set-specifier default-toolbar
 		   (cons (current-buffer) w3m-toolbar))))
 

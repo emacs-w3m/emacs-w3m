@@ -935,7 +935,9 @@ If N is negative, last N items of LIST is returned."
       "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
       nil))
   (unless (fboundp 'w3m-setup-toolbar)
-    (defun w3m-setup-toolbar ())))
+    (defun w3m-setup-toolbar ()))
+  (unless (fboundp 'w3m-update-toolbar)
+    (defun w3m-update-toolbar ())))
 
 (defun w3m-fontify-images ()
   "Fontify image alternate strings in this buffer which contains half-dumped data."
@@ -2234,10 +2236,7 @@ or prefix ARG columns."
 		 (file-name-directory (w3m-url-to-file-name url))
 	       w3m-profile-directory)))
       (w3m-arrived-add orig w3m-current-title)
-      (w3m-static-if (featurep 'xemacs)
-	  (when w3m-use-toolbar
-	    (set-specifier default-toolbar
-			   (cons (current-buffer) w3m-toolbar))))
+      (w3m-update-toolbar)
       (switch-to-buffer (current-buffer))))))
 
 
