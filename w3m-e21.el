@@ -41,6 +41,8 @@
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
 (eval-when-compile
+  (defvar w3m-current-url)
+  (defvar w3m-current-title)
   (defvar w3m-current-image-status)
   (defvar w3m-icon-directory)
   (defvar w3m-mode-map)
@@ -331,7 +333,9 @@ Buffer string between BEG and END are replaced with IMAGE."
 		  "mouse-2 prompts to input URL")))))))
 
 (defun w3m-insert-header-line ()
-  (when (and w3m-use-tab w3m-use-header-line (symbol-value 'w3m-current-url)
+  (when (and w3m-use-tab
+	     w3m-use-header-line
+	     (stringp w3m-current-url)
 	     (eq 'w3m-mode major-mode))
     (goto-char (point-min))
     (insert "Location: ")
@@ -339,7 +343,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 		       'face 'w3m-header-line-location-title-face)
     (let ((start (point))
 	  (help "button2 prompts to input URL"))
-      (insert (symbol-value 'w3m-current-url))
+      (insert w3m-current-url)
       (add-text-properties start (point)
 			   (list 'face
 				 'w3m-header-line-location-content-face
@@ -375,14 +379,14 @@ Buffer string between BEG and END are replaced with IMAGE."
     (dolist (buffer (buffer-list))
       (with-current-buffer buffer
         (when (eq major-mode 'w3m-mode)
-          (setq orig (if (symbol-value 'w3m-current-title)
-                         (symbol-value 'w3m-current-title)
-                       (directory-file-name
-                        (if (string-match "^[^/:]+:/+"
-                                          (symbol-value 'w3m-current-url))
-                            (substring (symbol-value 'w3m-current-url)
-                                       (match-end 0))
-                          (symbol-value 'w3m-current-url))))
+          (setq orig (if (stringp w3m-current-title)
+                         w3m-current-title
+		       (if (stringp w3m-current-url)
+			   (directory-file-name
+			    (if (string-match "^[^/:]+:/+" w3m-current-url)
+				(substring w3m-current-url (match-end 0))
+			      w3m-current-url))
+			 ""))
                 name (concat " "
 			     (if (and 
 				  (> w3m-tab-width 0)
