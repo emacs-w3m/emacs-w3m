@@ -1,3 +1,8 @@
+2001-12-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el (w3m-e21-toolbar-configurations): Replace
+	`auto-resize-tool-bar' to `auto-resize-tool-bars'.
+
 2001-12-17  OHASHI Akira  <bg66@koka-in.org>
 
 	* README.shimbun.ja: Add information for sb-debian-jp.el

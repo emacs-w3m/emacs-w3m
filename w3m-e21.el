@@ -207,7 +207,7 @@ Buffer string between BEG and END are replaced with IMAGE."
   :type 'boolean)
 
 (defvar w3m-e21-toolbar-configurations
-  '((auto-resize-tool-bar        . t)
+  '((auto-resize-tool-bars       . t)
     (auto-raise-tool-bar-buttons . t)
     (tool-bar-button-margin      . 0)
     (tool-bar-button-relief      . 2)))
