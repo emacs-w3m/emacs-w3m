@@ -1,7 +1,11 @@
+2002-04-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el: Require `pcustom' for old Emacsen.
+
 2002-04-05  Takenobu Sugiyama  <sugiyama@ae.advantest.co.jp>
 
 	* shimbun/sb-nikkansports.el: Follow the change of the Web site.
-	
+
 2002-04-05  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-w3m-retrieve): Revert previous change.

@@ -66,7 +66,8 @@
 	(not (boundp 'emacs-major-version))
 	(< emacs-major-version 20))
     (require 'poe)
-    (require 'poem))))
+    (require 'poem)
+    (require 'pcustom))))
 
 (eval-and-compile
   (cond ((boundp 'MULE)
