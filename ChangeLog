@@ -1,3 +1,17 @@
+2001-08-01  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-w3m-retrieve): Bind coding-system-for-write as 'binary.
+
+	* w3m-form.el (w3m-form-make-form-data): New function.
+	(w3m-form-make-form-urlencoded): Eliminated.
+	(w3m-fontify-forms): Added 'file' input processing.
+	(w3m-form-input-file): New function.
+	(w3m-form-input-textarea-keymap): Bind "\C-c\C-k" as well.
+	(w3m-form-input-select-keymap): Ditto.
+	(w3m-form-input-map-keymap): Ditto.
+	(w3m-form-submit): Call `w3m-form-make-form-data' instead of
+	`w3m-form-make-form-urlencoded'.
+
 2001-07-31  Yuuichi Teranishi  <teranisi@gohome.org>
 
 

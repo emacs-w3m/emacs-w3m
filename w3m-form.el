@@ -103,11 +103,10 @@ If no field in forward, return nil without moving."
 	(goto-char next)
       nil)))
 
-(defun w3m-form-make-form-urlencoded (form)
-  (current-buffer)
+(defun w3m-form-make-form-data (form &optional urlencode)
   (let ((plist (w3m-form-plist form))
 	(coding (w3m-form-charlst form))
-	buf)
+	buf multipart)
     (setq coding
 	  (or (catch 'det
 		(while coding
@@ -122,6 +121,10 @@ If no field in forward, return nil without moving."
 	    (value (cadr plist)))
 	(cond
 	 ((and (consp value)
+	       (eq (car value) 'file))
+	  (setq multipart t)
+	  (setq buf (cons (cons name value) buf)))
+	 ((and (consp value)
 	       (consp (cdr value))
 	       (consp (cadr value)))	; select.
 	  (setq buf (cons (cons name (car value)) buf)))
@@ -132,11 +135,48 @@ If no field in forward, return nil without moving."
 	  (setq buf (cons (cons name value) buf))))
 	(setq plist (cddr plist))))
     (when buf
-      (mapconcat (lambda (elem)
-		   (format "%s=%s" 
-			   (w3m-url-encode-string (car elem) coding)
-			   (w3m-url-encode-string (cdr elem) coding)))
-		 buf "&"))))
+      (if (and multipart
+	       (not urlencode))
+	  (let ((boundary (apply 'format "--_%d_%d_%d" (current-time)))
+		file type)
+	    (setq buf (nreverse buf))
+	    (cons
+	     (concat "multipart-form-data; boundary=" boundary)
+	     (with-temp-buffer
+	       (while buf
+		 (if (and (consp (cdr (car buf)))
+			  (eq (car (cdr (car buf))) 'file))
+		     (progn
+		       (setq file (expand-file-name (cdr (cdr (car buf)))))
+		       (if (string= (setq type (w3m-local-content-type file))
+				    "unknown")
+			   (setq type "application/octet-stream"))
+		       (insert boundary "\r\n"
+			       "Content-Disposition: form-data; name=\""
+			       (car (car buf))
+			       "\"; filename=\"" file "\"\r\n"
+			       "Content-Type: " type "\r\n"
+			       "Content-Transfer-Encoding: binary\r\n\r\n")
+		       (when (file-exists-p file)
+			 (insert-file-contents-literally file)
+			 (goto-char (point-max)))
+		       (insert "\r\n"))
+		   (insert boundary "\r\n"
+			   "Content-Disposition: form-data; name=\"" (car (car buf))
+			   "\"\r\n\r\n"
+			   (cdr (car buf))
+			   "\r\n"))
+		 (setq buf (cdr buf)))
+	       (insert boundary "--\r\n")
+	       (buffer-string))))
+	(mapconcat (lambda (elem)
+		     (format "%s=%s" 
+			     (w3m-url-encode-string (car elem) coding)
+			     (w3m-url-encode-string (if (stringp (cdr elem))
+							(cdr elem)
+						      "")
+						    coding)))
+		   buf "&")))))
 
 ;;;###autoload
 (defun w3m-form-parse-region (start end &optional charset)
@@ -404,6 +444,16 @@ If no field in forward, return nil without moving."
 							   (w3m-form-get ,form ,name))
 					 'w3m-cursor-anchor
 					 `(w3m-form-input-radio ,form ,name ,value))))
+	     ((string= type "file")
+	      (add-text-properties start (point)
+				   (list 'face 'w3m-form-face
+					 'w3m-action
+					 `(w3m-form-input-file ,form ,name ,value)
+					 'w3m-submit
+					 `(w3m-form-submit ,form ,name
+							   (w3m-form-get ,form ,name))
+					 'w3m-cursor-anchor
+					 `(w3m-form-input-file ,form ,name ,value))))
 	     (t ;; input button.
 	      (add-text-properties start (point)
 				   (list 'face 'w3m-form-face
@@ -494,6 +544,13 @@ If no field in forward, return nil without moving."
   (w3m-form-put form name value)
   (w3m-form-replace "*"))
 
+(defun w3m-form-input-file (form name value)
+  (let ((input (call-interactively 
+		(lambda (f) (interactive "fFile name: ") f))))
+    (w3m-form-put form name (or
+			     (w3m-form-get form name)
+			     (cons 'file input)))
+    (w3m-form-replace input)))
 
 ;;; TEXTAREA
 
@@ -518,6 +575,8 @@ If no field in forward, return nil without moving."
   (define-key w3m-form-input-textarea-keymap "\C-c\C-c"
     'w3m-form-input-textarea-set)
   (define-key w3m-form-input-textarea-keymap "\C-c\C-q"
+    'w3m-form-input-textarea-exit)
+  (define-key w3m-form-input-textarea-keymap "\C-c\C-k"
     'w3m-form-input-textarea-exit))
   
 (defvar w3m-form-input-textarea-buffer nil)
@@ -642,6 +701,8 @@ If no field in forward, return nil without moving."
   (define-key w3m-form-input-select-keymap "\C-m"
     'w3m-form-input-select-set)
   (define-key w3m-form-input-select-keymap "\C-c\C-q"
+    'w3m-form-input-select-exit)
+  (define-key w3m-form-input-select-keymap "\C-c\C-k"
     'w3m-form-input-select-exit)
   (define-key w3m-form-input-select-keymap "q"
     'w3m-form-input-select-exit)
@@ -801,6 +862,8 @@ If no field in forward, return nil without moving."
     'w3m-form-input-map-set)
   (define-key w3m-form-input-map-keymap "\C-c\C-q"
     'w3m-form-input-map-exit)
+  (define-key w3m-form-input-map-keymap "\C-c\C-k"
+    'w3m-form-input-map-exit)
   (define-key w3m-form-input-map-keymap "q"
     'w3m-form-input-map-exit)
   (if (featurep 'xemacs)
@@ -919,10 +982,10 @@ If no field in forward, return nil without moving."
 		   (t w3m-current-url))))
     (cond ((eq 'get (w3m-form-method form))
 	   (w3m-goto-url
-	    (concat url "?" (w3m-form-make-form-urlencoded form))))
+	    (concat url "?" (w3m-form-make-form-data form 'urlencode))))
 	  ((eq 'post (w3m-form-method form))
 	   (w3m-goto-url url 'reload nil
-			 (w3m-form-make-form-urlencoded form)
+			 (w3m-form-make-form-data form)
 			 w3m-current-url))
 	  (t
 	   (w3m-message "This form's method has not been supported: %s"

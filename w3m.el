@@ -2226,6 +2226,7 @@ to nil."
     (delete-region (point-min) (point-max))
     (set-buffer-multibyte nil)
     (let ((w3m-command-arguments w3m-command-arguments)
+	  (coding-system-for-write 'binary)
 	  type file modes)
       (and no-cache
 	   w3m-broken-proxy-cache
