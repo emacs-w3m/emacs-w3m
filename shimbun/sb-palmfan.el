@@ -1,4 +1,4 @@
-;;; sb-palmfan.el --- shimbun backend class for palmfan web site.
+;;; sb-palmfan.el --- shimbun backend class for palmfan web site. -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 
@@ -31,7 +31,7 @@
 
 (defvar shimbun-palmfan-content-hash-length 31)
 (defvar shimbun-palmfan-url "http://www.palmfan.com")
-;;(defvar shimbun-palmfan-coding-system 'japanese-shift-jis-mac)
+(defvar shimbun-palmfan-coding-system 'japanese-shift-jis-mac)
 (defconst shimbun-palmfan-group-path-alist
   '(("news" . "")
     ("palmwarefan" . "PWF/")
@@ -97,7 +97,8 @@
     (with-temp-buffer
       (shimbun-retrieve-url url 'no-cache 'no-decode)
       (decode-coding-region
-       (point-min) (point-max) 'japanese-shift-jis-mac)
+       (point-min) (point-max)
+       (shimbun-coding-system-internal shimbun))
       (set-buffer-multibyte t)
       (subst-char-in-region (point-min) (point-max) ?\t ?  t)
       (goto-char (point-min))
@@ -202,7 +203,8 @@
     (with-temp-buffer
       (shimbun-retrieve-url url 'no-cache 'no-decode)
       (decode-coding-region
-       (point-min) (point-max) 'japanese-shift-jis-mac)
+       (point-min) (point-max)
+       (shimbun-coding-system-internal shimbun))
       (set-buffer-multibyte t)
       (subst-char-in-region (point-min) (point-max) ?\t ?  t)
       (goto-char (point-min))

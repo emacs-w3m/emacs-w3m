@@ -3,7 +3,13 @@
 	* shimbun/sb-palmfan.el (shimbun-palmfan-get-first-article-date):
 	Declare temporary variable properly.
 	(shimbun-palmfan-news-headers): Ditto.
-	* shimbun/sb-dennou.el (shimbun-headers): Ditto.
+	(shimbun-palmfan-coding-system): New constant.
+	(shimbun-palmfan-palmwarefan-headers): Refer coding-system using
+	`shimbun-coding-system-internal'.
+	(shimbun-palmfan-news-headers): Ditto.
+
+	* shimbun/sb-dennou.el (shimbun-headers): Declare temporary
+	variable properly.
 
 2003-02-23  NAKAJIMA Mikio  <minakaji@namazu.org>
 
