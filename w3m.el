@@ -2076,13 +2076,9 @@ with ^ as `cat -v' does."
       (setq prenames (get-text-property start 'w3m-name-anchor))
       (w3m-parse-attributes (id)
 	(delete-region start (point))
-	(when (re-search-forward "<\\|\n" nil t)
-	  (setq end (match-beginning 0))
-	  (when (= start end)
-	    (setq end (min (1+ end) (point-max))))
-	  (w3m-add-text-properties start end
-				   (list 'w3m-name-anchor
-					 (cons id prenames))))))
+	(w3m-add-text-properties start (point-max)
+				 (list 'w3m-name-anchor
+				       (cons id prenames)))))
     (goto-char (point-min))
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
@@ -2111,19 +2107,17 @@ with ^ as `cat -v' does."
 						   'w3m-anchor-face)
 					   'w3m-href-anchor href
 					   'mouse-face 'highlight
-					   'w3m-name-anchor
-					   (delq nil (cons name prenames))
 					   'w3m-anchor-sequence hseq
 					   'help-echo help
-					   'balloon-help balloon))))
+					   'balloon-help balloon))
+	    (when name
+	      (w3m-add-text-properties start (point-max)
+				       (list 'w3m-name-anchor
+					     (cons name prenames))))))
 	 (name
-	  (when (re-search-forward "[<\n]" nil t)
-	    (goto-char (setq end (match-beginning 0)))
-	    (when (= start end)
-	      (setq end (min (1+ end) (point-max))))
-	    (w3m-add-text-properties start end
-				     (list 'w3m-name-anchor
-					   (cons name prenames))))))))
+	  (w3m-add-text-properties start (point-max)
+				   (list 'w3m-name-anchor
+					 (cons name prenames)))))))
     (when w3m-icon-data
       (setq w3m-icon-data (cons (w3m-expand-url (car w3m-icon-data))
 				(or (w3m-image-type (cdr w3m-icon-data))
@@ -2385,21 +2379,8 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (w3m-decode-entities 'reserve-prop)
     (goto-char (point-min))
     (when w3m-delete-duplicated-empty-lines
-      ;; keep 'w3m-name-anchor
       (while (re-search-forward "^[ \t]*\n\\([ \t]*\n\\)+" nil t)
-	(let* ((start (match-beginning 0))
-	       (pos start)
-	       (end (match-end 0))
-	       props)
-	  (while (not (eq (setq pos
-				(next-single-property-change pos 'w3m-name-anchor
-							     nil end))
-			  end))
-	    (setq props (append (get-text-property pos 'w3m-name-anchor)
-				props)))
-	  (w3m-add-text-properties (1- end) end
-				   (list 'w3m-name-anchor props))
-	  (delete-region start (1- end)))))
+	(delete-region (match-beginning 0) (1- (match-end 0)))))
     (w3m-message "Fontifying...done")
     (run-hooks 'w3m-fontify-after-hook)))
 
@@ -3843,6 +3824,8 @@ argument.  Otherwise, it will be called with nil."
       (while (setq pos (next-single-property-change pos 'w3m-name-anchor))
 	(when (member name (get-text-property pos 'w3m-name-anchor))
 	  (goto-char pos)
+	  (when (eolp) (forward-line))
+	  (w3m-horizontal-on-screen)
 	  (throw 'found t)))
       (unless quiet
 	(message "No such anchor: %s" name))
