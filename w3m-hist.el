@@ -605,7 +605,7 @@ accesses the buffer-local properties."
     (w3m-history-add-properties (list :window-start (window-start)
 				      :position (point)))
     (when (interactive-p)
-      (message "The current cursor position has registered"))))
+      (message "The current cursor position has stored"))))
 
 (defun w3m-history-restore-position ()
   "Restore the saved cursor position for the page."
