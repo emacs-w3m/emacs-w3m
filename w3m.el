@@ -3198,8 +3198,12 @@ to this buffer."
   (cond
    ((string= "about://emacs-w3m.gif" url)
     (when (fboundp 'base64-decode-string)
-      (insert (eval (list 'base64-decode-string
-			  w3m-emacs-w3m-icon)))
+      (let ((icon (base64-decode-string w3m-emacs-w3m-icon)))
+	(if (featurep 'xemacs)
+	    (insert icon)
+	  (set-buffer-multibyte (multibyte-string-p icon))
+	  (insert icon)
+	  (set-buffer-multibyte nil)))
       "image/gif"))
    ((string-match "\\`about://source/" url)
     (w3m-process-do

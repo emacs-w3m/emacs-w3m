@@ -45,6 +45,11 @@
   :group 'w3m
   :type 'string)
 
+(defcustom w3m-imagick-convert-async-exec (not (featurep 'meadow))
+  "*If non-nil, `convert' is executed as an asynchronous process."
+  :group 'w3m
+  :type 'boolean)
+
 ;;; Image handling functions.
 (defcustom w3m-resize-images (and w3m-imagick-convert-program t)
   "*If non-nil, resize images to the specified width and height."
@@ -54,21 +59,27 @@
 ;;; Synchronous image conversion.
 (defun w3m-imagick-convert-buffer (from-type to-type &rest args)
   (when w3m-imagick-convert-program
-    (let* ((coding-system-for-read 'binary)
+    (let* ((in-file (make-temp-name
+		     (expand-file-name "w3mel" w3m-profile-directory)))
+	   (file-coding-system 'binary)
+	   (buffer-file-coding-system 'binary)
+	   (coding-system-for-read 'binary)
 	   (coding-system-for-write 'binary)
 	   (default-process-coding-system (cons 'binary 'binary))
-	   (return (apply 'call-process-region
-			  (point-min) (point-max)
+	   return)
+      (write-region (point-min) (point-max) in-file nil 'nomsg)
+      (setq return (apply 'call-process
 			  w3m-imagick-convert-program
-			  t t nil (append args (list
-						(concat
-						 (if from-type
-						     (concat from-type ":"))
-						 "-")
-						(concat
-						 (if to-type
-						     (concat to-type ":"))
-						 "-"))))))
+			  nil t nil
+			  (append args (list
+					(concat
+					 (if from-type
+					     (concat from-type ":"))
+					 in-file)
+					(if to-type
+					    (concat to-type ":-")
+					  "-")))))
+      (when (file-exists-p in-file) (delete-file in-file))
       (if (and (numberp return)
 	       (zerop return))
 	  t
@@ -132,7 +143,7 @@
 (defun w3m-imagick-start (handler &rest arguments)
   "Run ImageMagick's convert as an asynchronous process."
   (let ((w3m-command w3m-imagick-convert-program))
-    (if w3m-async-exec
+    (if (and w3m-async-exec w3m-imagick-convert-async-exec)
 	(w3m-process-do
 	    (exit-status (w3m-process-push handler arguments))
 	  (w3m-process-start-after exit-status))

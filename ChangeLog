@@ -1,3 +1,15 @@
+2002-04-10  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-about-retrieve): Change behavior according to
+	whether the return value of `base64-decode-string' is multibyte or
+	not.
+
+	* w3m-image.el (w3m-imagick-convert-async-exec): New user option.
+	(w3m-imagick-start): Use `call-process' when
+	`w3m-imagick-convert-async-exec' is nil.
+	(w3m-imagick-convert-buffer): Don't use stdin because `convert'
+	can not handle an animation GIF that it input from stdin.
+
 2002-04-10  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-bitmap.el (w3m-create-image): Use w3m-process-do-with-temp-buffer
