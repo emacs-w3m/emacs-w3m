@@ -1498,7 +1498,7 @@ Here are some predefined functions which can be used for those ways:
 		       (repeat :extra-offset 2 :tag "Options"
 			       (sexp :format "%t: %v\n" :size 0))))))))))
 
-(defconst w3m-entity-alist		; html character entities and values
+(defconst w3m-entity-alist
   (append
    (eval-when-compile
      (let ((basic-entity-alist
@@ -1579,7 +1579,7 @@ Here are some predefined functions which can be used for those ways:
 	    '((32 . (("OElig" . 114) ("oelig" . 115)))
 	      (33 . (("Scaron" . 32) ("scaron" . 33) ("Yuml" . 56)))))
 	   (latin-extended-b '((33 . (("fnof" . 82)))))
-					;(spacing-modifier-letters '(36 . (("circ" . 120) ("tilde" . 124))))
+	   ;;(spacing-modifier-letters '(36 . (("circ" . 120) ("tilde" . 124))))
 	   (general-punctuation
 	    '((114 .
 		   (("ensp" . 98) ("emsp" . 99) ("thinsp" . 105) ("zwnj" . 108)
@@ -1646,13 +1646,18 @@ Here are some predefined functions which can be used for those ways:
 	    (cons (car entity)
 		  (char-to-string
 		   (make-char 'mule-unicode-2500-33ff (car (cdr entity)) (cdr (cdr entity)))))))
-	 suit))))))
+	 suit)))))
+  "Alist of html character entities and values.")
 
 (defconst w3m-entity-regexp
-  "&\\([a-z][a-z0-9]*\\|#[0-9]+\\|#x[0-9a-f]+\\)\\(;\\)?")
+  "&\\([a-z][a-z0-9]*\\|#[0-9]+\\|#x[0-9a-f]+\\)\\(;\\)?"
+  "Regexp matching html character entities.")
 
-(defvar w3m-entity-db nil)		; nil means un-initialized
-(defconst w3m-entity-db-size 13)	; size of obarray
+(defvar w3m-entity-db nil
+  "Hash table of `w3m-entity-alist'.
+The nil value means it has not been initialized.")
+
+(defconst w3m-entity-db-size 13 "Size of `w3m-entity-db'.")
 
 (defconst w3m-encoding-alist
   (eval-when-compile
@@ -1662,7 +1667,9 @@ Here are some predefined functions which can be used for those ways:
 			     (cdr elem)))
 		   '((gzip . ("gzip" "x-gzip" "compress" "x-compress"))
 		     (bzip . ("x-bzip" "bzip" "bzip2"))
-		     (deflate . ("x-deflate" "deflate")))))))
+		     (deflate . ("x-deflate" "deflate"))))))
+  "Alist of content encoding types and decoder symbols.
+Decoders are specified by `w3m-decoder-alist' (which see).")
 
 (defconst w3m-emacs-w3m-icon "\
 R0lGODlhUwAOAPIFAP///38AvwAAv1Uq/AC/AL9/Af8AAAAAACH/C05FVFNDQVBFMi4wAwEA
@@ -1677,46 +1684,51 @@ OtAITmS4fCYsuzHZnqhsg/geb7hKAgAh+QQEIQD/ACwXAAQAFAAIAAADJSgKzDKjAQjbYrXO
 uJ3AnEZZytdJoAZcKuqKIeduchaidjPOQAIAIfkEBCEA/wAsJgAEABUACAAAAyA4OtD+gJAm
 GVAQyodz3s5iRVI5RR/ordTJapP6OuacJQAh+QQEIQD/ACw2AAEAEAALAAADJgi6XO4sAqio
 nGU5ogjH0VZlYFN8VPoARAZZGviSlzpKdmneF5AAADs="
-  "A small icon image for the url about://emacs-w3m.gif.  It is encoded
-in the optimized interlaced endlessly animated gif format and base64.")
+  "A small image to be displayed in the about: page.
+It is encoded in the optimized interlaced endlessly animated gif format
+and base64.  Emacs can display only the 1st frame of an animation, but
+XEmacs can fully display it with the help of the gifsicle program.")
 
 (defcustom w3m-process-modeline-format " loaded: %s"
-  "*A format to show status of retrieving process."
+  "*Format used when displaying the progress of the external w3m process
+which is retrieving data from web servers."
   :group 'w3m
   :type '(choice (string :tag "Format") function))
 
 (defvar w3m-modeline-process-status-on "<PRC>"
-  "Modeline string which is displayed when the process is runnning.
+  "Modeline control for displaying the status when the process is running.
 The value will be modified for displaying the graphic icon.")
 
 (defvar w3m-modeline-image-status-on "[IMG]"
-  "Modeline string which is displayed when inline images are on.
+  "Modeline control to display the status when inline images are turned on.
 The value will be modified for displaying the graphic icon.")
 
 (defvar w3m-modeline-status-off "[ - ]"
-  "Modeline string which is displayed by default.
+  "Modeline control for displaying the status for the default.
 The value will be modified for displaying the graphic icon.")
 
 (defvar w3m-modeline-ssl-image-status-on "[IMG(SSL)]"
-  "Modeline string which is displayed when inline image and SSL are on.
+  "Modeline control for displaying the status when images and SSL are on.
 The value will be modified for displaying the graphic icon.")
 
 (defvar w3m-modeline-ssl-status-off "[SSL]"
-  "Modeline string which is displayed when SSL is on.
+  "Modeline control for displaying the status when SSL is turned on.
 The value will be modified for displaying the graphic icon.")
 
 (defvar w3m-modeline-separator " / "
-  "Modeline string used to separate a status indicator and a title.")
+  "String used to separate a status and a title in the modeline.")
 
 (defvar w3m-modeline-favicon nil
-  "Modeline string used to show a favicon.
+  "Modeline control for displaying a favicon.
 This variable will be made buffer-local under Emacs 21 or XEmacs.")
 
 (defvar w3m-favicon-image nil
   "Favicon image of the page.
 This variable will be made buffer-local under Emacs 21 or XEmacs.")
 
-(defvar w3m-current-process nil "Current retrieving process of this buffer.")
+(defvar w3m-current-process nil
+  "Flag used to say whether the external process is running in the buffer.
+This variable will be made buffer-local.")
 (make-variable-buffer-local 'w3m-current-process)
 
 (defvar w3m-refresh-timer nil "Timer of refresh process,")
