@@ -2073,6 +2073,8 @@ to nil."
   (w3m-with-work-buffer
     (delete-region (point-min) (point-max))
     (set-buffer-multibyte nil)
+    (when (string-match "#\\([^#]+\\)$" url)
+      (setq url (substring url 0 (match-beginning 0))))
     (let ((type
 	   (or (unless no-cache
 		 (and (w3m-cache-request-contents url)
