@@ -30,7 +30,9 @@
 ;;
 ;;    http://emacs-w3m.namazu.org/
 
-;; This modules requires `Mule-UCS' package.
+;; This module requires `Mule-UCS' package.  It can be downloaded from:
+;;
+;;    ftp://ftp.m17n.org/pub/mule/Mule-UCS/
 
 
 ;;; How to install:
