@@ -1,7 +1,7 @@
 2003-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-sankei.el (shimbun-sankei-x-face-alist): New variable.
-	(shimbun-get-headers): Fix url for news pages.
+	(shimbun-get-headers): Fix url for news pages; modify ID string.
 
 2003-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 

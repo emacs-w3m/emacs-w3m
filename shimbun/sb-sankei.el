@@ -126,7 +126,12 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
 				       (string-to-number (match-string 6))
 				       (match-string 7))
 	     ;; id
-	     (concat "<" (match-string 2) "%" group "."
+	     (concat "<"
+		     (mapconcat 'identity
+				(save-match-data
+				  (split-string (match-string 2) "/"))
+				".")
+		     "%" group "."
 		     shimbun-sankei-top-level-domain ">")
 	     ;; references, chars, lines
 	     "" 0 0
