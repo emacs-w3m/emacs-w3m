@@ -1,3 +1,8 @@
+2001-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-om.el (read-string): Advise the function to allow the 4th
+	argument `default-value'.
+
 2001-10-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* mime-w3m.el (mime-w3m-remove-text-properties): New advice to
