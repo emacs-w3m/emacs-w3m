@@ -59,6 +59,11 @@
     ("person" "ひと" "news/person.htm")
     ("dead" "おくやみ" "news/dead.htm")))
 
+(defvar shimbun-sankei-x-face-alist
+  '(("default" . "X-Face: J@?(qGKd~^Tfa]pqTbgVxl61=+G<g7\\$mJ4}jj\
+z*[c{L!Zi-@2H~S{M>\"Y?}\"]ly',1[6oe\n *b+4?PL^)c5+h&[O=$SZ}D\"I%>\
+DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
+
 (defvar shimbun-sankei-expiration-days 7)
 
 (luna-define-method shimbun-groups ((shimbun shimbun-sankei))
@@ -126,7 +131,7 @@
 	     ;; references, chars, lines
 	     "" 0 0
 	     ;; xref
-	     (shimbun-expand-url (match-string 1) shimbun-sankei-url))
+	     (concat shimbun-sankei-url "news/" (match-string 1)))
 	    headers))
     headers))
 
