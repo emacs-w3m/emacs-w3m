@@ -1997,9 +1997,10 @@ in the order of <META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">.")
   "Regexp matching the META tag containing content and refresh
 in the order of <META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">.")
 
-(defconst w3m-html-string-regexp
-  "\\(\"\\([^\"]+\\)\"\\|'\\([^\']+\\)'\\|[^\"\'<> \t\r\f\n]*\\)"
-  "Regexp matching a string of the field-value like <a href=\"VALUE\">.")
+(eval-and-compile
+  (defconst w3m-html-string-regexp
+    "\\(\"\\([^\"]+\\)\"\\|'\\([^\']+\\)'\\|[^\"\'<> \t\r\f\n]*\\)"
+    "Regexp matching a string of the field-value like <a href=\"VALUE\">."))
 
 (defconst w3m-dump-head-source-command-arguments
   (cond ((eq w3m-type 'w3mmee)

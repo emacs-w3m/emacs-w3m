@@ -1,3 +1,9 @@
+2003-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-html-string-regexp): Fix my fault; enclose it with
+	`eval-and-compile' which is needed for compiling since it is used
+	in a macro.
+
 2003-11-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el (shimbun-real-url): New function.
