@@ -1,7 +1,6 @@
 2004-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/shimbun.el (shimbun-make-date-string): Add a day of week;
-	use the local timezone instead of +0900 by default.
+	* shimbun/shimbun.el (shimbun-make-date-string): Add a day of week.
 
 2004-03-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
