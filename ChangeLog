@@ -1,3 +1,12 @@
+2002-05-13  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-horizontal-shift-columns): New user option.
+	(w3m-shift-left, w3m-shift-right): New commands.
+	(w3m-lynx-like-map, w3m-info-like-map): Add keybind
+	`w3m-shift-left' and `w3m-shift-right'.
+	(w3m-mode): Modify doc-string for new commands. Bind
+	`auto-show-mode' to nil.
+
 2002-05-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers): New function;

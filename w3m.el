@@ -845,6 +845,11 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
   :type 'integer)
 
+(defcustom w3m-horizontal-shift-columns 2
+  "*Column size to shift horizontally."
+  :group 'w3m
+  :type 'integer)
+
 (defcustom w3m-use-form t
   "*Non-nil means form extension is activated. (EXPERIMENTAL)"
   :group 'w3m
@@ -4617,6 +4622,8 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "N" 'w3m-namazu)
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
+    (define-key map "." 'w3m-shift-left)
+    (define-key map "," 'w3m-shift-right)
     (define-key map "\M-l" 'w3m-horizontal-recenter)
     (define-key map "\C-a" 'w3m-beginning-of-line)
     (define-key map "\C-e" 'w3m-end-of-line)
@@ -4723,6 +4730,8 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "?" 'describe-mode)
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
+    (define-key map [right] 'w3m-shift-left)
+    (define-key map [left] 'w3m-shift-right)
     (define-key map "\M-l" 'w3m-horizontal-recenter)
     (define-key map "\C-a" 'w3m-beginning-of-line)
     (define-key map "\C-e" 'w3m-end-of-line)
@@ -4863,6 +4872,8 @@ Return t if deleting current frame or window is succeeded."
 \\[w3m-scroll-down-or-previous-url]	Scroll down or go to previous url.
 \\[w3m-scroll-left]	Scroll to left.
 \\[w3m-scroll-right]	Scroll to right.
+\\[w3m-shift-left]	Shift to left.
+\\[w3m-shift-right]	Shift to right.
 \\[w3m-horizontal-recenter]	Recenter horizontally.
 \\[w3m-beginning-of-line]	Go to the entire beginning of line.
 \\[w3m-end-of-line]	Go to the entire end of line.
@@ -4918,6 +4929,8 @@ Return t if deleting current frame or window is succeeded."
   (use-local-map w3m-mode-map)
   (setq truncate-lines t
 	w3m-display-inline-images w3m-default-display-inline-images)
+  (when (and (boundp 'auto-show-mode) auto-show-mode)
+    (set (make-local-variable 'auto-show-mode) nil))
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-hook))
@@ -4963,6 +4976,32 @@ or prefix ARG columns."
 	 (if arg
 	     (prefix-numeric-value arg)
 	   w3m-horizontal-scroll-columns)))
+    (call-interactively 'scroll-right)))
+
+(defun w3m-shift-left (arg)
+  "Shift to left.
+Shift size is `w3m-horizontal-shift-columns' columns
+or prefix ARG columns."
+  (interactive "P")
+  ;; When `scroll-left' is called non-interactively in Emacs21, it
+  ;; doesn't work correctly.
+  (let ((current-prefix-arg
+	 (if arg
+	     (prefix-numeric-value arg)
+	   w3m-horizontal-shift-columns)))
+    (call-interactively 'scroll-left)))
+
+(defun w3m-shift-right (arg)
+  "Shift to right.
+Shift size is `w3m-horizontal-shift-columns' columns
+or prefix ARG columns."
+  (interactive "P")
+  ;; When `scroll-right' is called non-interactively in Emacs21, it
+  ;; doesn't work correctly.
+  (let ((current-prefix-arg
+	 (if arg
+	     (prefix-numeric-value arg)
+	   w3m-horizontal-shift-columns)))
     (call-interactively 'scroll-right)))
 
 (defun w3m-horizontal-recenter (&optional arg)
