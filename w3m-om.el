@@ -31,6 +31,10 @@
 
 (eval-when-compile (require 'cl))
 
+(require 'poe)
+(require 'poem)
+(require 'pcustom)
+
 ;; Generate some coding-systems which have a modern name.
 ;; No need to contain the eol-type variants in the folloing alist
 ;; because they will also be generated for each coding-system.
