@@ -1,5 +1,9 @@
 2001-10-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-expand-url): Fix the last change.
+	(w3m-url-hierarchical-schemes): Add `file'.
+	(w3m-goto-url): Use `\`' instead of `^' as a meta character.
+
 	* w3m.el (w3m-fontify-anchors): Fix.
 	(w3m-url-fallback-base): New constant.
 	(w3m-expand-url): Make it robust against illegal base-URL.

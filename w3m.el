@@ -2997,7 +2997,7 @@ fragment identifier of a URI reference.  For more detail, see Appendix
 B of RFC2396 <URL:http://www.ietf.org/rfc/rfc2396.txt>.")
 
 (defconst w3m-url-hierarchical-schemes
-  '("http" "https" "ftp")
+  '("http" "https" "ftp" "file")
   "List of schemes which may have hierarchical parts.  This list is
 refered in `w3m-expand-url' to keep backward compatibility which is
 described in Section 5.2 of RFC 2396.")
@@ -3008,11 +3008,15 @@ described in Section 5.2 of RFC 2396.")
   "Convert URL to absolute, and canonicalize it."
   (save-match-data
     (if base
-	(unless (and (string-match w3m-url-components-regexp base)
-		     (match-beginning 1)
-		     (match-beginning 3))
-	  (error "BASE must have a scheme part and a net-location part: %s"
-		 base))
+	(if (and (string-match w3m-url-components-regexp base)
+		 (match-beginning 1))
+	    (and (not (match-beginning 3))
+		 (member (match-string 2 base) w3m-url-hierarchical-schemes)
+		 (setq base (concat
+			     (substring base 0 (match-end 1))
+			     "//"
+			     (substring base (match-beginning 5)))))
+	  (error "BASE must have a scheme part: %s" base))
       (setq base (or w3m-current-base-url
 		     w3m-current-url
 		     w3m-url-fallback-base)))
@@ -3050,15 +3054,19 @@ described in Section 5.2 of RFC 2396.")
 	  ;; part of URL has an absolute spec.
 	  (progn
 	    (string-match w3m-url-components-regexp base)
-	    (concat (substring base 0 (match-end 3)) url))
+	    (concat (substring base 0 (or (match-end 3) (match-end 1)))
+		    url))
 	;; The hierarchical part of URL has a relative spec.
 	(let ((path-end (match-end 5)))
 	  (string-match w3m-url-components-regexp base)
 	  (concat
 	   (substring base 0 (match-beginning 5))
-	   (w3m-expand-path-name
-	    (concat (file-name-directory (match-string 5 base))
-		    (substring url 0 path-end)))
+	   (if (member (match-string 2 base) w3m-url-hierarchical-schemes)
+	       (w3m-expand-path-name
+		(concat (file-name-directory (match-string 5 base))
+			(substring url 0 path-end)))
+	     (concat (file-name-directory (match-string 5 base))
+		     (substring url 0 path-end)))
 	   (substring url path-end)))))
      ((match-beginning 6)
       ;; URL has a query part.
@@ -3740,7 +3748,7 @@ of the request."
    (list
     (w3m-input-url nil
 		   (when (stringp w3m-current-url)
-		     (if (string-match "about://\\(header\\|source\\)/"
+		     (if (string-match "\\`about://\\(header\\|source\\)/"
 				       w3m-current-url)
 			 (substring w3m-current-url (match-end 0))
 		       w3m-current-url)))
@@ -3751,10 +3759,10 @@ of the request."
   (setq w3m-image-only-page nil)
   (cond
    ;; process mailto: protocol
-   ((string-match "^mailto:\\(.*\\)" url)
+   ((string-match "\\`mailto:\\(.*\\)" url)
     (w3m-goto-mailto-url url))
    ;; process ftp: protocol
-   ((and (string-match "^ftp://" url)
+   ((and (string-match "\\`ftp://" url)
 	 (not (string= "text/html" (w3m-local-content-type url))))
     (w3m-goto-ftp-url url))
    (t
