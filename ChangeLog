@@ -1,3 +1,7 @@
+2004-07-20  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* doc/ptexinfmt.el: Support @s.
+
 2004-07-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Release emacs-w3m-1.4.2 from emacs-w3m-1_4 branch.
