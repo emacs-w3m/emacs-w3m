@@ -1,3 +1,8 @@
+2004-04-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-antenna.el (w3m-antenna-hns-last-modified): Use 32400 as a
+	correct timezone instead of JST (suggested by YAMAOKA-san).
+
 2004-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-prepare-article): Break
