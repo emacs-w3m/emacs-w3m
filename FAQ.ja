@@ -16,8 +16,8 @@
 	Emacs-21
 	XEmacs-21.1 with Mule
 	XEmacs-21.2 with Mule (beta37以降)
-	XEmacs-21.4 with Mule 
-	XEmacs-21.5 with Mule 
+	XEmacs-21.4 with Mule
+	XEmacs-21.5 with Mule
 	Meadow
 
    なお，Mule-2.3 及び XEmacs では APEL が必要となります．APEL は
@@ -44,10 +44,9 @@
    てください．
 
 ** Q. リンクが辿れません．
- 
+
    -header オプションを受け付ける w3m コマンドが必要です．w3m のバージョ
-   ンを確認してください．w3m-m17n を使う場合は，patches/post-header.patch
-   を適用してください．
+   ンを確認してください．
 
 ** Q. 文字化けします．
 
@@ -67,14 +66,14 @@
        で，対処してください．
 
        (a) Mule-UCS をインストールすると，Unicode で定義されている範囲の
-           文字は表示できるようになります．インストール後，オプション 
+           文字は表示できるようになります．インストール後，オプション
            w3m-use-mule-ucs が nil 以外の値に設定されていることを確認し
            てください．なお，EUC-JISX0213 や ISO-2022-JP-3 などの文字コー
            ドの場合は，Mule-UCS に附属の jisx0213.el もインストールする
            必要があります．
 
-       (b) w3mmee や w3m-m17n をインストールして，オプション w3m-command 
-           に適切な値を設定してください．このように設定すると，emacs-w3m 
+       (b) w3mmee や w3m-m17n をインストールして，オプション w3m-command
+           に適切な値を設定してください．このように設定すると，emacs-w3m
            は，これらのプログラムが提供する多言語機能を利用するようにな
            ります．
 
@@ -112,8 +111,7 @@
    ください．
 
    この機能を使うには，-post オプションを認識する w3m コマンドが必要です．
-   w3m のバージョンを確認してください．w3m-m17n を使う場合は，
-   patches/post-header.patch を適用してください．
+   w3m のバージョンを確認してください．
 
 ** Q. フレームがレンダリングされません．
 
