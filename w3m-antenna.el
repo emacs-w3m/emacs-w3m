@@ -108,24 +108,58 @@
   :type 'coding-system)
 
 (defvar w3m-antenna-alist nil
-  "A list of site information.  nil means that antenna database is not
-initialised.  Each site information is a list whose elements are:
- 0. URL.
+  "A list of site information (internal variable).  nil means that
+antenna database is not initialised.  Each site information is a list
+whose elements are:
+ 0. Format string of URL.
  1. Title.
  2. Class (Normal or HNS).
- 3. Last modification time.
- 4. Size in bytes.
- 5. Size modification detected time.
+ 3. Real URL.
+ 4. Last modification time.
+ 5. Size in bytes.
+ 6. Time when size modification is detected.
 ")
 
+(defmacro w3m-antenna-site-key (site)
+  (` (car (, site))))
+(defmacro w3m-antenna-site-title (site)
+  (` (nth 1 (, site))))
+(defmacro w3m-antenna-site-class (site)
+  (` (nth 2 (, site))))
+(defmacro w3m-antenna-site-url (site)
+  (` (nth 3 (, site))))
+(defmacro w3m-antenna-site-last-modified (site)
+  (` (nth 4 (, site))))
+(defmacro w3m-antenna-site-size (site)
+  (` (nth 5 (, site))))
+(defmacro w3m-antenna-site-size-detected (site)
+  (` (nth 6 (, site))))
 
 (defun w3m-antenna-setup ()
   (unless w3m-antenna-alist
     (setq w3m-antenna-alist
 	  (w3m-load-list w3m-antenna-file w3m-antenna-file-coding-system))
+    ;; Convert old format of antenna database file, which is used
+    ;; before revision 1.5.
+    (and w3m-antenna-alist
+	 (not (stringp (nth 3 (car w3m-antenna-alist))))
+	 (setq w3m-antenna-alist
+	       (mapcar
+		(lambda (site)
+		  (append (list (car site)
+				(nth 1 site)
+				(nth 2 site)
+				(format-time-string
+				 (car site)
+				 (current-time)))
+			  (nthcdr 3 site)))
+		w3m-antenna-alist)))
     (unless w3m-antenna-sites
-      (dolist (elem w3m-antenna-alist)
-	(push (list (car elem) (nth 1 elem) (nth 2 elem)) w3m-antenna-sites)))))
+      (dolist (site w3m-antenna-alist)
+	(push (list (w3m-antenna-site-key site)
+		    (w3m-antenna-site-title site)
+		    (w3m-antenna-site-class site))
+	      w3m-antenna-sites)))))
 
 (defun w3m-antenna-shutdown ()
   (when w3m-antenna-alist
@@ -173,23 +207,52 @@ initialised.  Each site information is a list whose elements are:
 	  (w3m-with-work-buffer
 	    (buffer-size))))))
 
+(defun w3m-antenna-check-sites ()
+  "Check all sites specified in `w3m-antenna-sites' and return the antenna database alist."
+  (let (alist)
+    (dolist (site w3m-antenna-sites)
+      (let* ((url  (format-time-string (car site) (current-time)))
+	     (time (w3m-antenna-last-modified
+		    url (w3m-antenna-site-class site) t))
+	     (size (w3m-antenna-size
+		    url (w3m-antenna-site-class site)))
+	     (pre (assoc (w3m-antenna-site-key site) w3m-antenna-alist)))
+	(push (append site
+		      (list url
+			    time
+			    size
+			    (and size
+				 (nth 5 pre)
+				 (if (/= size (nth 5 pre))
+				     (current-time)
+				   (nth 6 pre)))))
+	      alist)))
+    alist))
+
 (defun w3m-antenna-make-summary (site)
   (format "<li><a href=\"%s\">%s</a> %s"
-	  (car site)
-	  (nth 1 site)
+	  (w3m-antenna-site-url site)
+	  (w3m-antenna-site-title site)
 	  (cond
-	   ((nth 3 site) (current-time-string (nth 3 site)))
-	   ((nth 4 site) "Size")
+	   ((w3m-antenna-site-last-modified site)
+	    (current-time-string (w3m-antenna-site-last-modified site)))
+	   ((w3m-antenna-site-size site) "Size")
 	   (t ""))))
 
 (defun w3m-antenna-sort-sites-by-time (sites)
-  (sort sites (lambda (a b)
-		(w3m-time-newer-p (or (nth 3 a) (nth 5 a))
-				  (or (nth 3 b) (nth 5 b))))))
+  (sort sites
+	(lambda (a b)
+	  (w3m-time-newer-p
+	   (or (w3m-antenna-site-last-modified a)
+	       (w3m-antenna-site-size-detected a))
+	   (or (w3m-antenna-site-last-modified b)
+	       (w3m-antenna-site-size-detected b))))))
 
 (defun w3m-antenna-sort-sites-by-title (sites)
-  (sort sites (lambda (a b)
-		(string< (nth 1 a) (nth 1 b)))))
+  (sort sites
+	(lambda (a b)
+	  (string< (w3m-antenna-site-title a)
+		   (w3m-antenna-site-title b)))))
 
 (defun w3m-antenna-make-contents (changed-sites unchanged-sites)
   (insert w3m-antenna-html-skeleton)
@@ -211,29 +274,18 @@ initialised.  Each site information is a list whose elements are:
 
 (defun w3m-about-antenna (url &optional no-decode no-cache)
   (unwind-protect
-    (let (alist changed unchanged)
+    (let (changed unchanged)
       (w3m-antenna-setup)
       ;; Check sites.
-      (dolist (site w3m-antenna-sites)
-	(let* ((url  (format-time-string (car site) (current-time)))
-	       (time (w3m-antenna-last-modified url (nth 2 site) no-cache))
-	       (size (w3m-antenna-size url (nth 2 site)))
-	       (pre (assoc (car site) w3m-antenna-alist)))
-	  (push (append site
-			(list time
-			      size
-			      (and size
-				   (nth 4 pre)
-				   (if (/= size (nth 4 pre))
-				       (current-time)
-				     (nth 5 pre)))))
-		alist)
-	  (setq site (cons url (cdar alist)))
-	  (if (w3m-time-newer-p (or time (nth 5 site))
-				(w3m-arrived-last-modified url))
-	      (push site changed)
-	    (push site unchanged))))
-      (setq w3m-antenna-alist alist)
+      (if no-cache
+	  (setq w3m-antenna-alist (w3m-antenna-check-sites)))
+      (dolist (site w3m-antenna-alist)
+	(if (w3m-time-newer-p (or (w3m-antenna-site-last-modified site)
+				  (w3m-antenna-site-size-detected site))
+			      (w3m-arrived-last-modified
+			       (w3m-antenna-site-url site)))
+	    (push site changed)
+	  (push site unchanged)))
       (w3m-with-work-buffer
 	(delete-region (point-min) (point-max))
 	(set-buffer-multibyte t)

@@ -2282,7 +2282,7 @@ ex.) c:/dir/file => //c/dir/file"
       (delete-region (point-min) (point-max))
       (insert "<head><title>URL history</title></head><body>\n")
       (dolist (url history)
-	(unless (string-match "^about://\\(header\\|source\\|history\\)/" url)
+	(unless (string-match "^about://\\(header\\|source\\|history\\|antenna\\)/" url)
 	  (insert (format "<a href=\"%s\">%s</a><br>\n" url url))))
       (insert "</body>")))
   "text/html")

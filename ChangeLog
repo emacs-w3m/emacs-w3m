@@ -1,3 +1,18 @@
+2001-03-17  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m-antenna.el: Changed antenna database format.
+	(w3m-antenna-site-key, w3m-antenna-site-title,
+	w3m-antenna-site-class, w3m-antenna-site-url,
+	w3m-antenna-site-last-modified, w3m-antenna-site-size,
+	w3m-antenna-site-size-detected): New macros.
+	(w3m-antenna-setup): Follow change of database format.
+	(w3m-antenna-check-sites): New function.
+	(w3m-antenna-make-summary, w3m-antenna-sort-sites-by-time,
+	w3m-antenna-sort-sites-by-title): Use macros to refer database.
+	(w3m-about-antenna): Use w3m-antenna-check-sites.
+
+	* w3m.el (w3m-about-history): Don't print "about://antenna/".
+
 2001-03-17  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* icons/antenna-up.xpm: New file.
