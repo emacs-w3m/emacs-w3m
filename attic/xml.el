@@ -67,6 +67,20 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'cl))
+
+;; Override the macro `dolist' which may have been defined in egg.el.
+(eval-when-compile
+  (unless (dolist (var nil t))
+    (load "cl-macs" nil t)))
+
+(eval-and-compile
+  (if (or (featurep 'xemacs)
+	  (not (boundp 'emacs-major-version))
+	  (< emacs-major-version 20))
+      (require 'poe)))
+
 ;;*******************************************************************
 ;;**
 ;;**  Macros to parse the list

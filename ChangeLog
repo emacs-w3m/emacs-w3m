@@ -1,6 +1,7 @@
 2003-07-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* attic/xml.el: Import contrib/xml.el of Oort Gnus.
+	* attic/xml.el: Import contrib/xml.el of Oort Gnus.  Require cl
+	and poe.
 
 2003-07-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
