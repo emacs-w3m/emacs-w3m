@@ -32,7 +32,7 @@
 
 (require 'shimbun)
 (require 'sb-text)
-(luna-define-class shimbun-asahi (shimbun) ())
+(luna-define-class shimbun-asahi (shimbun-text) ())
 
 (defvar shimbun-asahi-url "http://spin.asahi.com/")
 (defvar shimbun-asahi-groups '("national" "business" "politics"

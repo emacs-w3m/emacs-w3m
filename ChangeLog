@@ -4,8 +4,6 @@
 
 2001-04-12  Yuuichi Teranishi  <teranisi@gohome.org>
 
-	* shimbun/sb-asahi.el (shimbun-asahi): Don't inherit sb-text.
-
 	* shimbun/sb-tcup.el (shimbun-get-headers): Don't decode buffer.
 
 2001-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
