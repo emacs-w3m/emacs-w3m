@@ -1504,30 +1504,32 @@ Here are some predefined functions which can be used for those ways:
 	      ("tilde" . "~")))
 	   (latin1-entity
 	    '(;("nbsp" . 160)
-	      ("iexcl" . 161) ("cent" . 162) ("pound" . 163)
-	      ("curren" . 164) ("yen" . 165) ("brvbar" . 166) ("sect" . 167)
-	      ("uml" . 168) ("copy" . 169) ("ordf" . 170) ("laquo" . 171)
-	      ("not" . 172)  ("shy" . 173) ("reg" . 174) ("macr" . 175)
-	      ("deg" . 176) ("plusmn" . 177) ("sup2" . 178) ("sup3" . 179)
-	      ("acute" . 180) ("micro" . 181) ("para" . 182) ("middot" . 183)
-	      ("cedil" . 184) ("sup1" . 185) ("ordm" . 186) ("raquo" . 187)
-	      ("frac14" . 188) ("frac12" . 189) ("frac34" . 190) ("iquest" . 191)
-	      ("Agrave" . 192) ("Aacute" . 193) ("Acirc" . 194) ("Atilde" . 195)
-	      ("Auml" . 196) ("Aring" . 197) ("AElig" . 198) ("Ccedil" . 199)
-	      ("Egrave" . 200) ("Eacute" . 201) ("Ecirc" . 202) ("Euml" . 203)
-	      ("Igrave" . 204) ("Iacute" . 205) ("Icirc" . 206) ("Iuml" . 207)
-	      ("ETH"  . 208) ("Ntilde" . 209) ("Ograve" . 210) ("Oacute" . 211)
-	      ("Ocirc" . 212) ("Otilde" . 213) ("Ouml" . 214) ("times" . 215)
-	      ("Oslash" . 216) ("Ugrave" . 217) ("Uacute" . 218) ("Ucirc" . 219)
-	      ("Uuml" . 220) ("Yacute" . 221) ("THORN" . 222) ("szlig" . 223)
-	      ("agrave" . 224) ("aacute" . 225) ("acirc" . 226) ("atilde" . 227)
-	      ("auml" . 228) ("aring" . 229) ("aelig" . 230) ("ccedil" . 231)
-	      ("egrave" . 232) ("eacute" . 233) ("ecirc" . 234) ("euml" . 235)
-	      ("igrave" . 236) ("iacute" . 237) ("icirc" . 238) ("iuml" . 239)
-	      ("eth" . 240) ("ntilde" . 241) ("ograve" . 242) ("oacute" . 243)
+	      ("iexcl" . 161) ("cent" . 162) ("pound" . 163) ("curren" . 164)
+	      ("yen" . 165) ("brvbar" . 166) ("sect" . 167) ("uml" . 168)
+	      ("copy" . 169) ("ordf" . 170) ("laquo" . 171) ("not" . 172)
+	      ("shy" . 173) ("reg" . 174) ("macr" . 175) ("deg" . 176)
+	      ("plusmn" . 177) ("sup2" . 178) ("sup3" . 179) ("acute" . 180)
+	      ("micro" . 181) ("para" . 182) ("middot" . 183) ("cedil" . 184)
+	      ("sup1" . 185) ("ordm" . 186) ("raquo" . 187) ("frac14" . 188)
+	      ("frac12" . 189) ("frac34" . 190) ("iquest" . 191)
+	      ("Agrave" . 192) ("Aacute" . 193) ("Acirc" . 194)
+	      ("Atilde" . 195) ("Auml" . 196) ("Aring" . 197) ("AElig" . 198)
+	      ("Ccedil" . 199) ("Egrave" . 200) ("Eacute" . 201)
+	      ("Ecirc" . 202) ("Euml" . 203) ("Igrave" . 204) ("Iacute" . 205)
+	      ("Icirc" . 206) ("Iuml" . 207) ("ETH"  . 208) ("Ntilde" . 209)
+	      ("Ograve" . 210) ("Oacute" . 211) ("Ocirc" . 212)
+	      ("Otilde" . 213) ("Ouml" . 214) ("times" . 215) ("Oslash" . 216)
+	      ("Ugrave" . 217) ("Uacute" . 218) ("Ucirc" . 219) ("Uuml" . 220)
+	      ("Yacute" . 221) ("THORN" . 222) ("szlig" . 223) ("agrave" . 224)
+	      ("aacute" . 225) ("acirc" . 226) ("atilde" . 227) ("auml" . 228)
+	      ("aring" . 229) ("aelig" . 230) ("ccedil" . 231) ("egrave" . 232)
+	      ("eacute" . 233) ("ecirc" . 234) ("euml" . 235) ("igrave" . 236)
+	      ("iacute" . 237) ("icirc" . 238) ("iuml" . 239) ("eth" . 240)
+	      ("ntilde" . 241) ("ograve" . 242) ("oacute" . 243)
 	      ("ocirc" . 244) ("otilde" . 245) ("ouml" . 246) ("divide" . 247)
-	      ("oslash" . 248) ("ugrave" . 249) ("uacute" . 250) ("ucirc" . 251)
-	      ("uuml" . 252) ("yacute" . 253) ("thorn" . 254) ("yuml" . 255)))
+	      ("oslash" . 248) ("ugrave" . 249) ("uacute" . 250)
+	      ("ucirc" . 251) ("uuml" . 252) ("yacute" . 253) ("thorn" . 254)
+	      ("yuml" . 255)))
 	   (greek-entity
 	    '(("Alpha" . 65) ("Beta" . 66) ("Gamma" . 67) ("Delta" . 68)
 	      ("Epsilon" . 69) ("Zeta" . 70) ("Eta" . 71) ("Theta" . 72)
@@ -1571,13 +1573,14 @@ Here are some predefined functions which can be used for those ways:
 	    '((32 . (("OElig" . 114) ("oelig" . 115)))
 	      (33 . (("Scaron" . 32) ("scaron" . 33) ("Yuml" . 56)))))
 	   (latin-extended-b '((33 . (("fnof" . 82)))))
-	   ;;(spacing-modifier-letters '(36 . (("circ" . 120) ("tilde" . 124))))
+	 ;;(spacing-modifier-letters '(36 . (("circ" . 120) ("tilde" . 124))))
 	   (general-punctuation
 	    '((114 .
 		   (("ensp" . 98) ("emsp" . 99) ("thinsp" . 105) ("zwnj" . 108)
 		    ("zwj" . 109) ("lrm" . 110) ("rlm" . 111) ("ndash" . 115)
-		    ("mdash" . 116) ("lsquo" . 120) ("rsquo" . 121) ("sbquo" . 122)
-		    ("ldquo" . 124) ("rdquo" . 125) ("bdquo" . 126)))
+		    ("mdash" . 116) ("lsquo" . 120) ("rsquo" . 121)
+		    ("sbquo" . 122) ("ldquo" . 124) ("rdquo" . 125)
+		    ("bdquo" . 126)))
 	      (115 .
 		   (("dagger" . 32) ("Dagger" . 33) ("permil" . 48)
 		    ("lsaquo" . 57) ("rsaquo" . 58)
@@ -1609,10 +1612,12 @@ Here are some predefined functions which can be used for those ways:
 	      (121 .
 		   (("ne" . 32) ("equiv" . 33) ("le" . 36) ("ge" . 37)
 		    ("sub" . 66) ("sup" . 67) ("nsub" . 68) ("sube" . 70)
-		    ("supe" . 71) ("oplus" . 85) ("otimes" . 87) ("perp" . 101)))
+		    ("supe" . 71) ("oplus" . 85) ("otimes" . 87)
+		    ("perp" . 101)))
 	      (122 . (("sdot" . 37)))))
 	   (miscellaneous-technical
-	    '((122 . (("lceil" . 104) ("rceil" . 105) ("lfloor" . 106) ("rfloor" . 107)))
+	    '((122 . (("lceil" . 104) ("rceil" . 105) ("lfloor" . 106)
+		      ("rfloor" . 107)))
 	      (123 . (("lang" . 41) ("rang" . 42)))))
 	   (suit
 	    '(("loz" . (34 . 42)) ("spades" . (35 . 96)) ("clubs" . (35 . 99))
@@ -1627,17 +1632,19 @@ Here are some predefined functions which can be used for those ways:
 		      (lambda (entity)
 			(cons (car entity)
 			      (char-to-string
-			       (make-char 'mule-unicode-0100-24ff code1 (cdr entity)))))
+			       (make-char 'mule-unicode-0100-24ff
+					  code1 (cdr entity)))))
 		      (cdr entities)))))
 		`(,@latin-extended-a ,@latin-extended-b ,@general-punctuation
-		  ,@greek ,@letterlike-symbols ,@arrows ,@mathematical-operators
-		  ,@miscellaneous-technical)))
+		  ,@greek ,@letterlike-symbols ,@arrows
+		  ,@mathematical-operators ,@miscellaneous-technical)))
 	(mapcar
 	 (function
 	  (lambda (entity)
 	    (cons (car entity)
 		  (char-to-string
-		   (make-char 'mule-unicode-2500-33ff (car (cdr entity)) (cdr (cdr entity)))))))
+		   (make-char 'mule-unicode-2500-33ff
+			      (car (cdr entity)) (cdr (cdr entity)))))))
 	 suit)))))
   "Alist of html character entities and values.")
 
@@ -2089,7 +2096,8 @@ to this function."
     (setq url
 	  (if (and w3m-treat-drive-letter
 		   (string-match
-		    "\\`/\\(\\([a-zA-Z]\\)[|:]?\\|cygdrive/\\([a-zA-Z]\\)\\)/" url))
+		    "\\`/\\(\\([a-zA-Z]\\)[|:]?\\|cygdrive/\\([a-zA-Z]\\)\\)/"
+		    url))
 	      (concat (or (match-string 2 url) (match-string 3 url))
 		      ":/"
 		      (substring url (match-end 0)))
@@ -2297,14 +2305,16 @@ is specified by `w3m-arrived-file'."
 ;;; Generic macros and inline functions:
 (defun w3m-attributes (url &optional no-cache handler)
   "Return a list of attributes of URL.
-Value is nil if retrieval of header is failed.  Otherwise, list
-elements are:
+Value is nil if retrieval of header is failed.  Otherwise, a list
+includes the following elements:
+
  0. Type of contents.
  1. Charset of contents.
  2. Size in bytes.
  3. Encoding of contents.
  4. Last modification time.
  5. Real URL.
+
 If optional argument NO-CACHE is non-nil, cache is not used."
   (if (not handler)
       (condition-case nil
@@ -2377,7 +2387,11 @@ If optional argument NO-CACHE is non-nil, cache is not used."
     `(nth 5 (w3m-attributes ,url ,no-cache))))
 
 (defmacro w3m-make-help-echo (property)
-  "Make a function for showing a `help-echo' string."
+  "Make a function returning a string used for the `help-echo' message.
+PROPERTY is a symbol (which doesn't need to be quoted) of a text
+property (in XEmacs, it is an extent) with the value of a string which
+should be in the place where having to show a help message.  If you
+need to know what function will be made, use `macroexpand'."
   (if (featurep 'xemacs)
       `(if (>= emacs-major-version 21)
 	   (function
@@ -2396,7 +2410,11 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 				     (window-buffer window)))))))))
 
 (defmacro w3m-make-balloon-help (property)
-  "Make a function for showing a `balloon-help' under XEmacs."
+  "Make a function returning a string used for the `balloon-help' message
+in XEmacs.  It returns an interned symbol of a function.  PROPERTY is
+a symbol (which doesn't need to be quoted) of an extent with the value
+of a string which should be in the place where having to show a help
+message."
   (when (featurep 'xemacs)
     `(let ((fn (intern (format "w3m-balloon-help-for-%s"
 			       ',property))))
@@ -2414,7 +2432,16 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	   (byte-compile fn))))))
 
 (defun w3m-message (&rest args)
-  "Alternative function of `message' for emacs-w3m."
+  "Alternative function of `message'.
+It behaves identically as `message' with ARGS at the condition (which
+is rather complicated) listed below:
+
+\(1) `w3m-verbose' is non-nil, and
+\(2) the external asynchronous w3m process is not in progress, or
+\(3) that process is running in a visible window of the current frame.
+
+Otherwise, this is the same function as `format' simply returning a
+string."
   (if (and w3m-verbose
 	   (or (not (bufferp w3m-current-buffer))
 	       (get-buffer-window w3m-current-buffer)))
@@ -2422,15 +2449,14 @@ If optional argument NO-CACHE is non-nil, cache is not used."
     (apply (function format) args)))
 
 (defun w3m-time-parse-string (string)
-  "Parse the time-string STRING and return its time as Emacs style."
+  "Parse the time-string STRING into a time in the Emacs style."
   (ignore-errors
     (let ((x (timezone-fix-time string nil nil)))
       (encode-time (aref x 5) (aref x 4) (aref x 3)
 		   (aref x 2) (aref x 1) (aref x 0)
 		   (aref x 6)))))
 
-;; When buggy timezone.el is loaded, parse-time.el will be used
-;; instead of timezone.el.
+;; When a buggy timezone.el is loaded, we use parse-time.el instead.
 (unless (equal (w3m-time-parse-string "Thursday, 01-Jan-1970 00:00:00 GMT")
 	       '(0 0))
   (ignore-errors
@@ -2444,23 +2470,26 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	  (apply (function encode-time) (funcall fn string)))))))
 
 (defun w3m-sub-list (list n)
-  "Make new list from LIST with top most N items.
-If N is negative, last N items of LIST is returned."
+  "Return a list of the first N elements of LIST.
+If N is negative, return a list of the last N elements of LIST."
   (if (integerp n)
       (if (< n 0)
-	  ;; N is negative, get items from tail of list
+	  ;; N is negative, extract the last items
 	  (if (>= (- n) (length list))
 	      (copy-sequence list)
 	    (nthcdr (+ (length list) n) (copy-sequence list)))
-	;; N is non-negative, get items from top of list
+	;; N is positive, extract the first items
 	(if (>= n (length list))
 	    (copy-sequence list)
 	  (nreverse (nthcdr (- (length list) n) (reverse list)))))
     (copy-sequence list)))
 
 (defun w3m-load-list (file &optional coding-system)
-  "Return contents of FILE as a list.  CODING-SYSTEM is used to read FILE
-which defaults to the value of `w3m-file-coding-system-for-read'."
+  "Read an emacs-w3m data file FILE and return contents as a list.
+It is used for loading `w3m-arrived-file', `w3m-cookie-file',
+`w3m-favicon-cache-file' and `w3m-antenna-file' (which see).
+CODING-SYSTEM is used to read FILE which defaults to the value of
+`w3m-file-coding-system-for-read'."
   (when (and (file-readable-p file)
 	     ;; XEmacs 21.4 might crash when inserting a directory.
 	     (not (file-directory-p file)))
@@ -2489,10 +2518,10 @@ which defaults to the value of `w3m-file-coding-system-for-read'."
 	   nil))))))
 
 (defun w3m-save-list (file list &optional coding-system escape-ctl-chars)
-  "Save LIST form into FILE.  Contents will be encoded with CODING-SYSTEM
-which defaults to the value of `w3m-file-coding-system'.  Optional
-ESCAPE-CTL-CHARS if it is non-nil, control chars will be represented
-with ^ as `cat -v' does."
+  "Save a LIST form into the emacs-w3m data file FILE.
+Contents will be encoded with CODING-SYSTEM which defaults to the
+value of `w3m-file-coding-system'.  Optional ESCAPE-CTL-CHARS if it is
+non-nil, control chars will be represented with ^ as `cat -v' does."
   (when (and list (file-writable-p file))
     (with-temp-buffer
       (let ((file-coding-system (or coding-system w3m-file-coding-system))
@@ -2550,7 +2579,7 @@ with ^ as `cat -v' does."
 	      "+")
 	     (t
 	      (format "%%%02x" ch))))	; escape
-	  ;; Coerce a string to a list of chars.
+	  ;; Coerce a string into a list of chars.
 	  (append (encode-coding-string (or str "")
 					(or coding
 					    w3m-default-coding-system
@@ -2561,7 +2590,8 @@ with ^ as `cat -v' does."
 (defun w3m-url-decode-string (str &optional coding)
   (let ((start 0)
 	(buf))
-    (while (string-match "+\\|%\\(0D%0A\\|\\([0-9a-fA-F][0-9a-fA-F]\\)\\)" str start)
+    (while (string-match "+\\|%\\(0D%0A\\|\\([0-9a-fA-F][0-9a-fA-F]\\)\\)"
+			 str start)
       (push (substring str start (match-beginning 0)) buf)
       (push (cond
 	     ((match-beginning 2)
@@ -2578,12 +2608,14 @@ with ^ as `cat -v' does."
 	 'iso-2022-7bit))))
 
 (defsubst w3m-url-transfer-encode-string (url &optional coding)
-  "Encode all non-ASCII characters included in URL to sequences of
-escaped octets in the specified coding system.
-This function is designed for conversion for safe transmission of URL.
-Therefore, this function handles only non-ASCII characters that can
-not be transmitted safely with network streams.  In general, you
-should use `w3m-url-encode-string' instead of this."
+  "Encode non-ascii characters in URL into the sequence of escaped octets
+in the coding system CODING which defaults to the value of the
+`w3m-current-coding-system' buffer-local variable (which see).
+
+This function is designed for conversion for safe transmission of URL,
+i.e., it handles only non-ASCII characters that can not be transmitted
+safely through the network.  For the other general purpose, you should
+use `w3m-url-encode-string' instead."
   (let ((start 0)
 	(buf))
     (while (string-match "[^\x21-\x7e]+" url start)
@@ -2604,7 +2636,7 @@ should use `w3m-url-encode-string' instead of this."
 
 ;;; HTML character entity handling:
 (defun w3m-entity-db-setup ()
-  ;; initialize entity database (obarray)
+  "Initialize the hash table of `w3m-entity-alist'."
   (setq w3m-entity-db (make-vector w3m-entity-db-size 0))
   (dolist (elem w3m-entity-alist)
     (set (intern (car elem) w3m-entity-db)
@@ -2613,16 +2645,25 @@ should use `w3m-url-encode-string' instead of this."
 (eval-and-compile
   (unless (fboundp 'w3m-ucs-to-char)
     (defun w3m-ucs-to-char (codepoint)
-      ;; case of immediate character (accept only 0x20 .. 0x7e)
+      "A dummy function defined since nothing provided the regular function.
+This function simply returns the arg if it is between 0x20 and 0x7e,
+otherwise returns the tilde character."
       (if (or (< codepoint 32) (< 127 codepoint))
-	  ?~				; un-supported character
+	  ?~ ;; unsupported character
 	codepoint))))
 
 (defun w3m-entity-value (name strict)
-  ;; initialize if need
+  "Extract a char corresponding to NAME from the html character entities
+database (see `w3m-entity-db').  If STRICT is non-nil, the exact match
+with NAME is made.  Otherwise, it allows trailing extra characters in
+NAME, but those characters appear in the return value.  For example:
+
+\(w3m-entity-value \"ampersand\" t) => nil
+\(w3m-entity-value \"ampersand\" nil) => \"&ersand\""
   (unless w3m-entity-db
+    ;; Initialize the hash table.
     (w3m-entity-db-setup))
-  ;; return value of specified entity, or nil if unknown.
+  ;; Return a value of the specified entity, or nil if it is unknown.
   (if (char-equal (string-to-char name) ?#)
       (progn
 	(setq name (substring name 1))
@@ -3356,10 +3397,11 @@ Like `ffap-url-at-point', except that text props will be stripped."
   (w3m-cache-setup)
   (let ((ident (intern url w3m-cache-hashtb)))
     (if (boundp ident)
-	(if (and (not overwrite)
-		 (string=
-		  (w3m-cache-header-delete-variable-part header)
-		  (w3m-cache-header-delete-variable-part (symbol-value ident))))
+	(if (and
+	     (not overwrite)
+	     (string=
+	      (w3m-cache-header-delete-variable-part header)
+	      (w3m-cache-header-delete-variable-part (symbol-value ident))))
 	    (symbol-value ident)
 	  (w3m-cache-remove url)
 	  (set ident header))
@@ -3679,10 +3721,11 @@ succeed."
 		 (cons "LOCAL_COOKIE" lcookie)
 		 (cons "LOCAL_COOKIE_FILE" cfile)
 		 (cons "QUERY_STRING"
-		       (format "dir=%s&cookie=%s"
-			       (encode-coding-string (w3m-url-to-file-name url)
-						     w3m-file-name-coding-system)
-			       lcookie)))
+		       (format
+			"dir=%s&cookie=%s"
+			(encode-coding-string (w3m-url-to-file-name url)
+					      w3m-file-name-coding-system)
+			lcookie)))
 	      (call-process w3m-dirlist-cgi-program nil t nil))
 	    ;; delete local cookie file
 	    (when (and (file-exists-p cfile) (file-writable-p cfile))
@@ -3702,7 +3745,8 @@ succeed."
 		(delete-region beg end)
 		(goto-char beg)
 		(insert (encode-coding-string
-			 (w3m-url-decode-string file w3m-file-name-coding-system)
+			 (w3m-url-decode-string file
+						w3m-file-name-coding-system)
 			 w3m-file-name-coding-system)))))
 	(error "Can't execute: %s" w3m-dirlist-cgi-program))
     ;; execute w3m internal CGI
@@ -4211,7 +4255,8 @@ type as a string argument, when retrieve is complete."
   (if (not handler)
       (condition-case nil
 	  (w3m-process-with-wait-handler
-	    (w3m-retrieve url no-decode no-cache post-data referer handler))
+	    (w3m-retrieve url
+			  no-decode no-cache post-data referer handler))
 	(w3m-process-timeout nil))
     (unless (and w3m-safe-url-regexp
 		 (not (string-match w3m-safe-url-regexp url)))
@@ -4219,13 +4264,15 @@ type as a string argument, when retrieve is complete."
       (set-buffer-multibyte nil)
       (cond
        ((string-match "\\`about:" url)
-	(w3m-about-retrieve url no-decode no-cache post-data referer handler))
+	(w3m-about-retrieve url
+			    no-decode no-cache post-data referer handler))
        ((string-match "\\`cid:" url)
 	(w3m-cid-retrieve url no-decode no-cache))
        ((w3m-url-local-p url)
 	(w3m-local-retrieve url no-decode))
        (t
-	(w3m-w3m-retrieve url no-decode no-cache post-data referer handler))))))
+	(w3m-w3m-retrieve url
+			  no-decode no-cache post-data referer handler))))))
 
 
 ;;;###autoload
@@ -4266,8 +4313,9 @@ type as a string argument, when retrieve is complete."
 		  jam-zcat-filename-list
 		  format-alist)
 	      (when (or (not (file-exists-p filename))
-			(y-or-n-p (format "File(%s) already exists. Overwrite? "
-					  filename)))
+			(y-or-n-p
+			 (format "File(%s) already exists. Overwrite? "
+				 filename)))
 		(write-region (point-min) (point-max) filename)
 		(w3m-touch-file filename (w3m-last-modified url))
 		t))
@@ -4970,7 +5018,8 @@ session."
 	    (cond
 	     ((not method)
 	      (if (w3m-url-local-p url)
-		  (error "No method to view `%s' is registered. Use `w3m-edit-this-url'"
+		  (error "\
+No method to view `%s' is registered. Use `w3m-edit-this-url'"
 			 (file-name-nondirectory (w3m-url-to-file-name url)))
 		(w3m-download url nil no-cache handler)))
 	     ((functionp method)
@@ -5926,19 +5975,27 @@ sessions will also be closed.  See also `w3m-quit'."
    Major mode to browsing w3m buffer.
 
 \\[w3m-view-this-url]	View this url.
-	You may use the prefix arg `2' or `\\[universal-argument] \\<universal-argument-map>\\[universal-argument-more]\\<w3m-mode-map>' to make a new session.
+	You may use the prefix arg `2' or\
+ `\\[universal-argument] \\<universal-argument-map>\
+\\[universal-argument-more]\\<w3m-mode-map>' to make a new session.
 \\[w3m-mouse-view-this-url]	View this url use mouse.
-	If w3m-use-form is t, \\[w3m-view-this-url] and \\[w3m-mouse-view-this-url] action a form input.
-	You may use the prefix arg `2' or `\\[universal-argument] \\<universal-argument-map>\\[universal-argument-more]\\<w3m-mode-map>' to make a new session.
+	If w3m-use-form is t, \\[w3m-view-this-url] and\
+ \\[w3m-mouse-view-this-url] action a form input.
+	You may use the prefix arg `2' or\
+ `\\[universal-argument] \\<universal-argument-map>\
+\\[universal-argument-more]\\<w3m-mode-map>' to make a new session.
 \\[w3m-view-this-url-new-session]	View this url in a new session.
-\\[w3m-mouse-view-this-url-new-session]	View this url in a new session use mouse.
+\\[w3m-mouse-view-this-url-new-session]	View this url in a new session use\
+ mouse.
 \\[w3m-submit-form]	Submit the form at point.
 
 \\[w3m-reload-this-page]	Reload this page.
 \\[w3m-redisplay-this-page]	Redisplay this page.
-\\[w3m-redisplay-with-content-type]	Redisplay this page with specified content-type.
+\\[w3m-redisplay-with-content-type]	Redisplay this page with specified\
+ content-type.
 \\[w3m-redisplay-with-charset]	Redisplay this page with specified charset.
-\\[w3m-redisplay-and-reset]	Redisplay this page and reset of specified charset and content-type.
+\\[w3m-redisplay-and-reset]	Redisplay this page and reset of specified\
+ charset and content-type.
 
 \\[w3m-next-anchor]	Jump to next anchor.
 \\[w3m-previous-anchor]	Jump to previous anchor.
@@ -5959,7 +6016,8 @@ sessions will also be closed.  See also `w3m-quit'."
 \\[w3m-print-this-url]	Print this url.
 \\[w3m-view-image]	View image.
 \\[w3m-save-image]	Save image.
-\\[w3m-toggle-inline-images]	Toggle displaying of inline images on current buffer.
+\\[w3m-toggle-inline-images]	Toggle displaying of inline images on current\
+ buffer.
 \\[w3m-zoom-out-image]	Zoom out image on cursor point.
 \\[w3m-zoom-in-image]	Zoom in image on cursor point.
 
@@ -5967,7 +6025,8 @@ sessions will also be closed.  See also `w3m-quit'."
 \\[w3m-view-url-with-external-browser]	View current url with external browser.
 \\[w3m-view-source]	Display source of this current buffer.
 \\[w3m-view-header]	Display header of this current buffer.
-\\[w3m-edit-current-url]	Edit the local file pointed by the URL of current page.
+\\[w3m-edit-current-url]	Edit the local file pointed by the URL of\
+ current page.
 \\[w3m-edit-this-url]	Edit the local file by the under the point.
 
 \\[w3m-scroll-up-or-next-url]	Scroll up or go to next url.
@@ -5991,7 +6050,8 @@ sessions will also be closed.  See also `w3m-quit'."
 \\[w3m-history-restore-position]	Goto the last position.
 
 \\[w3m-history]	Display arrived history.
-	If called with '\\[universal-argument]', this command displays arrived-DB history.
+	If called with '\\[universal-argument]', this command displays\
+ the arrived URLs database.
 \\[w3m-antenna]	Display the report change of WEB sites.
 	If called with '\\[universal-argument]', this command reloads report.
 \\[w3m-antenna-add-current-url]	Add the current page to antenna.
@@ -6000,13 +6060,15 @@ sessions will also be closed.  See also `w3m-quit'."
 \\[w3m-weather]	Display weather report.
 	If called with '\\[universal-argument]', you can choose local area.
 \\[w3m-dtree]	Display directory tree.
-	If called with '\\[universal-argument]', view all directories and files.
+	If called with '\\[universal-argument]', view all directories and\
+ files.
 \\[w3m-namazu]	Search files with Namazu.
 	If called with '\\[universal-argument]', you can choose index.
 
 \\[w3m-bookmark-view]	w3m-bookmark-view.
 \\[w3m-bookmark-add-current-url]	Add link of current page to bookmark.
-	If called with  '\\[universal-argument]', ask new url to add instead of current page.
+	If called with  '\\[universal-argument]', ask new url to add instead\
+ of current page.
 \\[w3m-bookmark-add-this-url]	Add link under cursor to bookmark.
 
 \\[w3m-copy-buffer]	Create a twin copy of the current buffer.
@@ -6140,7 +6202,8 @@ or prefix ARG columns."
 		  (forward-char hs)
 		(error (goto-char (point-max))))
 	      (if (< epos (point))
-		  (+ hs (- (string-width (buffer-substring spos epos)) (- epos spos)))
+		  (+ hs (- (string-width (buffer-substring spos epos))
+			   (- epos spos)))
 		(string-width (buffer-substring spos (point))))))))
 
       (defmacro w3m-current-column ()
@@ -7281,9 +7344,10 @@ showing a tree-structured history by the command `w3m-about-history'.")
     (insert "<html><head><title>URL history in DataBase</title>"
 	    (if prev (format "<link rel=\"prev\" href=\"%s\">\n" prev) "")
 	    (if next (format "<link rel=\"next\" href=\"%s\">\n" next) "")
-	    (format "</head>\n<body>\n<h1>Arrived URL history in DataBase%s</h1>\n"
-		    (if (and page total)
-			(format " (%d/%d)" page total) "")))
+	    (format
+	     "</head>\n<body>\n<h1>Arrived URL history in DataBase%s</h1>\n"
+	     (if (and page total)
+		 (format " (%d/%d)" page total) "")))
     (setq prev
 	  (if (or prev next)
 	      (setq next
