@@ -85,12 +85,6 @@
 	      (and (setq shell (executable-find "bash"))
 		   (funcall test shell)
 		   (setq shell-file-name shell))
-	      (not (member (nth 1 (or (member "-f" command-line-args)
-				      (member "-funcall" command-line-args)
-				      (member "--funcall" command-line-args)
-				      (member "-e" command-line-args)))
-			   '("w3mhack-batch-compile" "w3mhack-compile"
-			     "w3mhack-makeinfo" "w3mhack-make-package")))
 	      (error "%s" "\n\
 There seems to be no shell command which is equivalent to /bin/sh.
  Try ``make SHELL=foo [option...]'', where `foo' is the absolute
