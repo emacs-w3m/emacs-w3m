@@ -59,24 +59,9 @@
     ("sangyo" "企業" ,(concat shimbun-nikkei-url "news/sangyo/")
      shimbun-nikkei-get-headers-default
      shimbun-nikkei-prepare-article-default)
-
-    ("stockjp" "国内株"
-     "http://markets.nikkei.co.jp/stockjp/jpnews/"
-     shimbun-nikkei-get-headers-markets
-     shimbun-nikkei-prepare-article-markets)
-    ("exchange" "為替"
-     "http://markets.nikkei.co.jp/exchange/exchangenews/"
-     shimbun-nikkei-get-headers-markets
-     shimbun-nikkei-prepare-article-markets)
-    ("stockwo-us" "米国株"
-     "http://markets.nikkei.co.jp/stockwo/usnews/"
-     shimbun-nikkei-get-headers-markets
-     shimbun-nikkei-prepare-article-markets)
-    ("stockwo-eu" "欧州株"
-     "http://markets.nikkei.co.jp/stockwo/euroasia/"
-     shimbun-nikkei-get-headers-markets
-     shimbun-nikkei-prepare-article-markets)
-
+    ("market" "株・為替" ,(concat shimbun-nikkei-url "news/market/")
+     shimbun-nikkei-get-headers-market
+     shimbun-nikkei-prepare-article-market)
     ("kaigai" "国際" ,(concat shimbun-nikkei-url "news/kaigai/")
      shimbun-nikkei-get-headers-default
      shimbun-nikkei-prepare-article-default)
@@ -288,63 +273,84 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    headers))
     (shimbun-nikkei-get-headers-default group folder headers)))
 
-(defun shimbun-nikkei-get-headers-markets (group folder)
-  "Function used to fetch headers for the markets groups."
-  (let (cyear cmonth day month year url headers)
-    (setq cyear (decode-time)
-	  cmonth (nth 4 cyear)
-	  cyear (nth 5 cyear))
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat ">" s0
-			;; 1. month
-			"\\([01][0-9]\\)"
-			"/"
-			;; 2. day
-			"\\([0-3][0-9]\\)"
-			s1
-			;; 3. hour:minute
-			"\\("
-			;; 4. hour
-			"\\([012][0-9]\\)"
-			":"
-			;; 5. minute
-			"\\([0-5][0-9]\\)"
-			"\\)\\(" s0 "\\(<[^a]\\|<a[^\t\n ]\\)[^>]+>\\)+"
-			s0 "<a" s1 "href=\""
-			;; 8. url
-			"\\([^\"<>]+\\)"
-			"\"" s0 ">\\(" s0 "<[^>]+>\\)*" s0
-			;; 10. subject
-			"\\([^<]+\\)")))
-	    nil t)
-      (setq day (string-to-number (match-string 2))
-	    month (string-to-number (match-string 1))
-	    year (cond ((>= (- month cmonth) 2)
-			(1- cyear))
-		       ((and (= 1 month) (= 12 cmonth))
-			(1+ cyear))
-		       (t
-			cyear))
-	    url (match-string 8))
-      (push (shimbun-create-header
-	     0
-	     (match-string 10)
-	     shimbun-nikkei-from-address
-	     (shimbun-nikkei-make-date-string year month day (match-string 3))
-	     (format "<%d%02d%02d%s%s.%s%%%s.markets.%s>"
-		     year month day (match-string 4) (match-string 5)
-		     (save-match-data
-		       (if (string-match "[&?]id=\\([^&]+\\)" url)
-			   (match-string 1 url)
-			 "no-id"))
-		     group shimbun-nikkei-top-level-domain)
-	     "" 0 0
-	     (shimbun-nikkei-expand-url url folder))
-	    headers))
-    (shimbun-sort-headers headers)))
+(defun shimbun-nikkei-get-headers-market (group folder)
+  "Function used to fetch headers for the market group."
+  (let ((subregexp
+	 (eval-when-compile
+	   (let ((s0 "[\t\n ]*")
+		 (s1 "[\t\n ]+"))
+	     (concat "class=\"sub_bar\"" s0 ">" s0
+		     ;; 1. subtitle
+		     "\\([^\t\n <]+\\)"
+		     ".+class=\"sub_bar_time\"" s0 ">" s0
+		     "更新" s0 "：" s0
+		     ;; 2. month
+		     "\\([01]?[0-9]\\)"
+		     "月"
+		     ;; 3. day
+		     "\\([0-3]?[0-9]\\)"
+		     "日\\(" s1
+		     ;; 5. hour:minute
+		     "\\([012]?[0-9]:[0-5]?[0-9]\\)"
+		     "\\)?"))))
+	subdata start end subtitle month day time from year headers)
+    (when (re-search-forward subregexp nil t)
+      (setq subdata (copy-sequence (match-data))
+	    start (point))
+      (while start
+	(if (re-search-forward subregexp nil t)
+	    (progn
+	      (setq subdata (prog1
+				(copy-sequence (match-data))
+			      (set-match-data subdata))
+		    end (point))
+	      (goto-char start))
+	  (setq end nil))
+	(setq subtitle (match-string 1)
+	      month (string-to-number (match-string 2))
+	      day (string-to-number (match-string 3))
+	      time (match-string 5))
+	(setq from (shimbun-replace-in-string
+		    shimbun-nikkei-from-address
+		    ")" (concat "/"
+				(shimbun-replace-in-string
+				 subtitle "\\(&nbsp;\\)+" "")
+				")")))
+	(while (re-search-forward
+		(eval-when-compile
+		  (let ((s0 "[\t\n ]*")
+			(s1 "[\t\n ]+"))
+		    (concat "<a" s1 "href=\""
+			    ;; 1. url
+			    "\\([^\">]+"
+			    ;; 2. id
+			    "\\("
+			    ;; 3. year
+			    "\\(20[0-9][0-9]\\)"
+			    "\\([^.]+\\)"
+			    "\\)"
+			    "\\.html\\)\""
+			    s0 ">\\(" s0 "<[^>]+>\\)*" s0
+			    ;; 6. subject
+
+			    "\\([^<]+\\)"
+			    s0)))
+		end t)
+	  (setq year (string-to-number (match-string 3)))
+	  (push (shimbun-create-header
+		 0
+		 (match-string 6)
+		 from
+		 (shimbun-nikkei-make-date-string year month day time)
+		 (format "<%s%%%s.%s>"
+			 (match-string 2) group
+			 shimbun-nikkei-top-level-domain)
+		 "" 0 0
+		 (shimbun-nikkei-expand-url (match-string 1)
+					    shimbun-nikkei-url))
+		headers))
+	(setq start end))
+      (shimbun-sort-headers headers))))
 
 (defun shimbun-nikkei-get-headers-sports (group folder)
   "Function used to fetch headers for the sports group."
@@ -557,10 +563,10 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
       (delete-backward-char 1))
     (goto-char (point-min))
     (when (fboundp fn)
-      (funcall fn)
+      (funcall fn header)
       (goto-char (point-min)))))
 
-(defun shimbun-nikkei-prepare-article-default ()
+(defun shimbun-nikkei-prepare-article-default (&rest args)
   "Default function used to prepare contents of an article."
   (let (photo-end body)
     (when (re-search-forward "<table[\t\n ]+id=\"photonews" nil t)
@@ -568,15 +574,15 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
       (when (search-forward "</table>" nil t)
 	(setq photo-end (point))))
     (when (or (and (re-search-forward "\
-<!--[\n\t ]*FJZONE[\t\n ]+START[\t\n ]+NAME=\"HONBUN\"[\t\n ]+-->[\t\n ]*"
+<!--[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME=\"HONBUN\"[\t\n ]+-->[\t\n ]*"
 				      nil t)
 		   (setq body (point))
 		   (re-search-forward "\
-\[\t\n ]*<!--[\n\t ]*FJZONE[\t\n ]*END[\t\n ]*NAME=\"HONBUN\""
+\[\t\n ]*<!--[\t\n ]*FJZONE[\t\n ]*END[\t\n ]*NAME=\"HONBUN\""
 				      nil t))
 	      ;; The following section will be used for the `main' group.
 	      (and (re-search-forward "\
-<!--[\n\t ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"MIDASHI\""
+<!--[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"MIDASHI\""
 				      nil t)
 		   (search-forward "<p>" nil t)
 		   (setq body (match-beginning 0))
@@ -595,19 +601,19 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	(goto-char body))
       (insert shimbun-nikkei-content-start))))
 
-(defun shimbun-nikkei-prepare-article-sports ()
+(defun shimbun-nikkei-prepare-article-sports (&rest args)
   "Function used to prepare contents of an article for the sports group."
   (when (re-search-forward "\
-<!--[\n\t ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"MIDASHI\"[\t\n ]*-->"
+<!--[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"MIDASHI\"[\t\n ]*-->"
 			   nil t)
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "\
-<!--[\n\t ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-->"
+<!--[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-->"
 			     nil t)
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end))))
 
-(defun shimbun-nikkei-prepare-article-newpro ()
+(defun shimbun-nikkei-prepare-article-newpro (&rest args)
   "Function used to prepare contents of an article for the newpro group."
   (let (photo-end body)
     (when (re-search-forward "<table[\t\n ]+id=\"photonews" nil t)
@@ -615,11 +621,11 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
       (when (search-forward "</table>" nil t)
 	(setq photo-end (point))))
     (when (and (re-search-forward "\
-<!--[\n\t ]*FJZONE[\t\n ]+START[\t\n ]+NAME=\"HONBUN\"[\t\n ]+-->[\t\n ]*"
+<!--[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME=\"HONBUN\"[\t\n ]+-->[\t\n ]*"
 				  nil t)
 	       (setq body (point))
 	       (re-search-forward "\
-\[\t\n ]*<!--[\n\t ]*FJZONE[\t\n ]*END[\t\n ]*NAME=\"HONBUN\""
+\[\t\n ]*<!--[\t\n ]*FJZONE[\t\n ]*END[\t\n ]*NAME=\"HONBUN\""
 				  nil t))
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end)
@@ -630,7 +636,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	(goto-char body))
       (insert shimbun-nikkei-content-start))))
 
-(defun shimbun-nikkei-prepare-article-release ()
+(defun shimbun-nikkei-prepare-article-release (&rest args)
   "Function used to prepare contents of an article for the release group."
   (when (re-search-forward "<span[\t\n ]+class=\"midasi\">[\t\n ]*" nil t)
     (insert shimbun-nikkei-content-start)
@@ -638,28 +644,34 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end))))
 
-(defun shimbun-nikkei-prepare-article-markets ()
-  "Function used to prepare contents of an article for the markets groups."
-  (when (re-search-forward
-	 "<DIV[\t\n ]+ID=\"topic\"[^>]+>[\t\n ]*\
-\\(<\\([^/]\\|/[^D]\\|/D[^I]\\|/DI[^V]\\|/DIV[^>]\\)[^>]*>[\t\n ]*\\)*"
-	 nil t)
+(defun shimbun-nikkei-prepare-article-market (header)
+  "Function used to prepare contents of an article for the market group."
+  (when (re-search-forward "\
+<!--[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-->"
+			   nil t)
     (insert shimbun-nikkei-content-start)
-    (let ((pt (point)))
-      (when (re-search-forward "[\t\n ]*\\(<[^>]+>[\t\n ]*\\)*</DIV>" nil t)
-	(goto-char (match-beginning 0))
-	(if (= pt (point))
-	    (erase-buffer)
-	  (insert shimbun-nikkei-content-end))))))
+    (when (re-search-forward "\\((\\([012]?[0-9]:[0-5]?[0-9]\\))[\t\n ]*\\)?\
+<!--[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-->"
+			     nil t)
+      (if (match-beginning 2)
+	  (progn
+	    (goto-char (1+ (match-end 2)))
+	    (let ((new (match-string 2))
+		  (date (shimbun-header-date header)))
+	      (when (string-match "[012]?[0-9]:[0-5]?[0-9]" date)
+		(shimbun-header-set-date
+		 header (replace-match new nil nil date)))))
+	(goto-char (match-beginning 0)))
+      (insert shimbun-nikkei-content-end))))
 
-(defun shimbun-nikkei-prepare-article-okuyami ()
+(defun shimbun-nikkei-prepare-article-okuyami (&rest args)
   "Function used to prepare contents of an article for the okuyami group."
   (when (re-search-forward "\
-<!--[\n\t ]*FJZONE[\t\n ]+START[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-->"
+<!--[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-->"
 			   nil t)
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "\
-<!--[\n\t ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-->"
+<!--[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-->"
 			     nil t)
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end))))
