@@ -1,3 +1,13 @@
+2002-11-27  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
+
+	* doc/emacs-w3m-en.texi: New files.
+	* doc/emacs-w3m-ja.texi:
+	* doc/ptexinfmt.el:
+	* doc/texinfo.tex:
+	* doc/txi-en.tex:
+	* doc/txi-ja.tex:
+	* doc/version.texi:
+
 2002-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-tabmenu.el (w3m-tab-menubar-update): Do nothing when there's
