@@ -1,3 +1,8 @@
+2003-07-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el (shimbun-servers-list): Count byte-compiled
+	files also.
+
 2003-07-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-namazu.el (w3m-namazu-command, w3m-namazu-arguments,

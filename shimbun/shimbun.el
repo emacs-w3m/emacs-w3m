@@ -112,7 +112,7 @@ dJrT4Cd<Ls?U!G4}0S%FA~KegR;YZWieoc%`|$4M\\\"i*2avWm?"
 		       shimbun-server-additional-path))
       (when (file-directory-p dir)
 	(dolist (file (directory-files dir nil nil t))
-	  (and (string-match "\\`sb-\\(.*\\)\\.el\\'" file)
+	  (and (string-match "\\`sb-\\(.*\\)\\.elc?\\'" file)
 	       (not (member (setq file (match-string 1 file))
 			    '("fml" "glimpse" "lump" "mailarc"
 			      "mailman" "mhonarc" "rss" "text")))
