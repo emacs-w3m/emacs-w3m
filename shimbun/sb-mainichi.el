@@ -250,6 +250,11 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	(format "%02d:%02d"
 		(string-to-number (match-string 4))
 		(string-to-number (match-string 5))))))
+    ;; Break continuous lines.
+    (when (string-match "\\`余録：" (shimbun-header-subject header 'no-encode))
+      (goto-char (point-min))
+      (while (search-forward "▲" nil t)
+	(replace-match "。<br>\\&<br>")))
     ;; Break long lines.
     (shimbun-break-long-japanese-lines shimbun)))
 
