@@ -1,6 +1,6 @@
 2003-11-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m-antenna.el (w3m-antenna-sittes): Allow a list that consists
+	* w3m-antenna.el (w3m-antenna-sites): Allow a list that consists
 	of a function and its options, as the third element of each site.
 	(w3m-antenna-html-skeleton): Remove the link to the antenna editor.
 	(w3m-antenna-setup): Make it prefer `w3m-antenna-sites' than a
