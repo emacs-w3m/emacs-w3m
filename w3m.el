@@ -50,6 +50,7 @@
 	   (>= emacs-major-version 20))
       (progn
 	(require 'poe)
+	(require 'poem)
 	(require 'pcustom))))
 
 (if (featurep 'xemacs)
@@ -61,8 +62,9 @@
 (eval-when-compile (require 'cl))
 
 (put 'w3m-static-if 'lisp-indent-function 2)
-(defmacro w3m-static-if (cond then &rest else)
-  (if (eval cond) then (` (progn  (,@ else)))))
+(eval-and-compile
+  (defmacro w3m-static-if (cond then &rest else)
+    (if (eval cond) then (` (progn  (,@ else))))))
 
 (w3m-static-if (not (fboundp 'find-coding-system))
     (w3m-static-if (fboundp 'coding-system-p)
@@ -208,7 +210,7 @@ This value is default and used only when spec defined by
   :type 'file)
 
 (defcustom w3m-arrived-file-coding-system
-  (w3m-static-if (boundp 'MULE) '*euc-japan 'euc-japan)
+  (w3m-static-if (boundp 'MULE) '*euc-japan* 'euc-japan)
   "*Coding system for arrived file."
   :group 'w3m
   :type 'symbol)
@@ -627,7 +629,9 @@ See also `w3m-search-engine-alist'."
 		  (lambda (entity)
 		    (cons (car entity)
 			  (char-to-string
-			   (make-char 'latin-iso8859-1 (cdr entity))))))
+			   (make-char
+			    (w3m-static-if (boundp 'MULE) lc-ltn1 'latin-iso8859-1)
+			    (cdr entity))))))
 		 latin1-entity))))))
 (defconst w3m-entity-regexp
   (eval-when-compile
@@ -686,6 +690,10 @@ See also `w3m-search-engine-alist'."
   "An alist of CONTENT-TYPE and IMAGE-TYPE.")
 
 (defvar w3m-cid-retrieve-function-alist nil)
+
+(eval-and-compile
+  (defconst :case-ignore ':case-ignore)
+  (defconst :integer ':integer))
 
 (defvar w3m-work-buffer-list nil)
 (defconst w3m-work-buffer-name " *w3m-work*")
@@ -868,17 +876,19 @@ If N is negative, last N items of LIST is returned."
        (eq (aref 0 obj) 'w3m-form-object)))
 
 (defmacro w3m-form-method (form)
-  `(aref ,form 1))
+  (` (aref (, form) 1)))
 (defmacro w3m-form-action (form)
-  `(aref ,form 2))
+  (` (aref (, form) 2)))
 (defmacro w3m-form-plist (form)
-  `(aref ,form 3))
+  (` (aref (, form) 3)))
 (defmacro w3m-form-put (form name value)
   (let ((tempvar (make-symbol "formobj")))
-    `(let ((,tempvar ,form))
-       (aset ,tempvar 3 (plist-put (w3m-form-plist ,tempvar) (intern ,name) ,value)))))
+    (` (let (((, tempvar) (, form)))
+	 (aset (, tempvar) 3
+	       (plist-put (w3m-form-plist (, tempvar))
+			  (intern (, name)) (, value)))))))
 (defmacro w3m-form-get (form name)
-  `(plist-get (w3m-form-plist ,form) (intern ,name)))
+  (` (plist-get (w3m-form-plist (, form)) (intern (, name)))))
 
 (defun w3m-url-encode-string (str &optional coding)
   (apply (function concat)
@@ -1400,17 +1410,6 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 	(setq prop (text-properties-at (match-beginning 0)))
 	(replace-match (w3m-entity-value (match-string 1)) nil t)
 	(if prop (add-text-properties (match-beginning 0) (point) prop))))
-    ;; Decode w3m-specific extended charcters.
-    (let ((x (w3m-static-if (boundp 'MULE)
-		 mc-flag
-	       enable-multibyte-characters)))
-      (set-buffer-multibyte nil)
-      (dolist (elem w3m-extended-charcters-table)
-	(goto-char (point-min))
-	(while (search-forward (car elem) nil t)
-	  (delete-region (match-beginning 0) (match-end 0))
-	  (insert (cdr elem))))
-      (set-buffer-multibyte x))
     (goto-char (point-min))
     (if w3m-delete-duplicated-empty-lines
 	(while (re-search-forward "^[ \t]*\n\\([ \t]*\n\\)+" nil t)
@@ -1720,6 +1719,9 @@ This function is imported from mcharset.el."
     (if (find-coding-system cs)
 	cs)))
 
+(w3m-static-if (not (fboundp 'coding-system-category))
+    (defalias 'coding-system-category 'get-code-mnemonic))
+
 (defun w3m-decode-buffer (type charset)
   (if (and (not charset) (string= type "text/html"))
       (setq charset
@@ -1987,37 +1989,59 @@ are retrieved."
 		   (substring url (match-end 2))))
       (error "URL is strange.")))
 
-(defun w3m-rendering-region (start end)
-  "Rendering data in current buffer as HTML."
-  (let ((coding-system-for-read w3m-output-coding-system)
-	(coding-system-for-write w3m-input-coding-system)
-	(default-process-coding-system
-	  (cons w3m-output-coding-system w3m-input-coding-system)))
-    (w3m-message "Rendering...")
-    (if w3m-use-form
-	(w3m-form-parse-region start end))
-    (apply 'call-process-region
-	   start end w3m-command t t nil
-	   (mapcar (lambda (x)
-		     (if (stringp x)
-			 x
-		       (prin1-to-string (eval x))))
-		   w3m-command-arguments))
+(defsubst w3m-decode-extended-characters ()
+  "Decode w3m-specific extended charcters in this buffer."
+  (dolist (elem w3m-extended-charcters-table)
     (goto-char (point-min))
-    (w3m-message "Rendering... done")
-    (let (title)
-      (mapcar (lambda (regexp)
-		(goto-char 1)
-		(when (re-search-forward regexp nil t)
-		  (setq title (match-string 1))
-		  (delete-region (match-beginning 0) (match-end 0))))
-	      '("<title_alt[ \t\n]+title=\"\\([^\"]+\\)\">"
-		"<title>\\([^<]\\)</title>"))
-      (if (and (null title)
-	       (stringp w3m-current-url)
-	       (< 0 (length (file-name-nondirectory w3m-current-url))))
-	  (setq title (file-name-nondirectory w3m-current-url)))
-      (setq w3m-current-title (or title "<no-title>")))))
+    (while (search-forward (car elem) nil t)
+      (delete-region (match-beginning 0) (match-end 0))
+      (insert (cdr elem)))))
+
+(defun w3m-rendering-region (start end)
+  "Do rendering of contents in this buffer as HTML and return title."
+  (save-restriction
+    (narrow-to-region start end)
+    (let ((buf (w3m-get-buffer-create " *w3m-rendering-region*"))
+	  (coding-system-for-write w3m-input-coding-system)
+	  (coding-system-for-read
+	   (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
+	  (default-process-coding-system
+	    (cons (w3m-static-if (boundp 'MULE) '*noconv* 'binary)
+		  w3m-input-coding-system)))
+      (with-current-buffer buf
+	(delete-region (point-min) (point-max))
+	(set-buffer-multibyte nil))
+      (if w3m-use-form
+	  (w3m-form-parse-region start end))
+      (w3m-message "Rendering...")
+      (apply 'call-process-region
+	     start end w3m-command t buf nil
+	     (mapcar (lambda (x)
+		       (if (stringp x)
+			   x
+			 (prin1-to-string (eval x))))
+		     w3m-command-arguments))
+      (w3m-message "Rendering... done")
+      (goto-char (point-min))
+      (insert
+       (with-current-buffer buf
+	 (w3m-decode-extended-characters)
+	 (decode-coding-region (point-min) (point-max) w3m-output-coding-system)
+	 (set-buffer-multibyte t)
+	 (buffer-string)))
+      (goto-char (point-min))
+      (let (title)
+	(dolist (regexp '("<title_alt[ \t\n]+title=\"\\([^\"]+\\)\">"
+			  "<title>\\([^<]\\)</title>"))
+	  (goto-char (point-min))
+	  (when (re-search-forward regexp nil t)
+	    (setq title (match-string 1))
+	    (delete-region (match-beginning 0) (match-end 0))))
+	(if (and (null title)
+		 (stringp w3m-current-url)
+		 (< 0 (length (file-name-nondirectory w3m-current-url))))
+	    (setq title (file-name-nondirectory w3m-current-url)))
+	(setq w3m-current-title (or title "<no-title>"))))))
 
 (defun w3m-exec (url &optional buffer no-cache)
   "Download URL with w3m to the BUFFER.

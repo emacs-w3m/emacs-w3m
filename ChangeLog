@@ -1,3 +1,18 @@
+2001-03-13  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>,
+	    TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Require `poem' when Mule 2.3 is running.  Bind keywods
+	`:case-ignore' and `:integer' for Mule 2.3.
+	(coding-system-category): New alias when Mule 2.3 is running.
+	(w3m-arrived-file-coding-system): Fix typo.
+	(w3m-entity-alist): Fix for Mule 2.3.
+	(w3m-form-method, w3m-form-action, w3m-form-plist, w3m-form-put,
+	w3m-form-get): Convert to old style of macro definition.
+	(w3m-fontify): Removed code to decode w3m-specific characters.
+	(w3m-decode-extended-characters): New function.
+	(w3m-rendering-region): Use an unibyte temporary buffer and call
+	`w3m-decode-extended-characters'.
+
 2001-03-13  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-exec-process): Return process exit status.
