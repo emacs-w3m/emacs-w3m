@@ -1,3 +1,11 @@
+2002-08-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el: Require `cl' when compiling to provide the function
+	`gensym'.  It is needed to byte-compile this file alone because of
+	the w3m-proc macros.
+	* w3m-image.el: Ditto.
+	* w3m-bitmap.el: Don't bother to load cl-macs.
+
 2002-08-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-display-message-enable-logging): New variable.

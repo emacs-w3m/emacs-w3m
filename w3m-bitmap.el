@@ -32,9 +32,7 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl)
-  ;; Pickup `gensym'.
-  (load "cl-macs" nil t))
+  (require 'cl))
 
 (require 'w3m-util)
 (require 'w3m-proc)

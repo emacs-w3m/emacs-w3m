@@ -1,6 +1,6 @@
 ;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs-21
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -33,6 +33,10 @@
 
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
+
 (require 'w3m-util)
 (require 'w3m-proc)
 (require 'w3m-image)
