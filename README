@@ -186,25 +186,14 @@
    We recommend using the ~/.emacs-w3m file (which is the default
    value of `w3m-init-file') when you twiddle some variables of
    emacs-w3m.  This file is similar to ~/.emacs, but is read when
-   emacs-w3m starts.  However, note that there are commands which
-   shouldn't be put there, for example, the autoload definitions.
+   emacs-w3m starts.  However, note that there are options which
+   shouldn't be put there, for example, `w3m-command'.
 
 4.1. Essential Configuration
 
      Put this line into your ~/.emacs file:
 
-         (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
-
-     If you want to use contributed programs, some additional settings
-     are required.  See the header of those program files for more
-     details.  If you are unsure of them, put the following lines in
-     your ~/.emacs file:
-
-         (autoload 'w3m-find-file "w3m" "Find a local file using emacs-w3m." t)
-         (autoload 'w3m-search "w3m-search" "Search words using emacs-w3m." t)
-         (autoload 'w3m-weather "w3m-weather" "Display a weather report." t)
-         (autoload 'w3m-antenna "w3m-antenna" "Report changes of web sites." t)
-         (autoload 'w3m-namazu "w3m-namazu" "Search files with Namazu." t)
+         (require 'w3m-load)
 
 4.2. mime-w3m.el
 
