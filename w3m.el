@@ -740,18 +740,20 @@ of the original request method. -- RFC2616"
   :group 'w3m
   :type 'hook)
 
-(defcustom w3m-async-exec (not (memq system-type '(macos)))
-  "*If non-nil, w3m is executed as an asynchronous process.  Note that
-setting this option to t is harmful on some platforms.  As far as we
-know, Emacs 20/21 under MacOS X might not handle the asynchronous
-processes correctly that the final kilobyte or so gets cut off when
-downloading something from a url."
+(defcustom w3m-async-exec t
+  "*If non-nil, w3m is executed as an asynchronous process."
   :group 'w3m
   :type 'boolean)
 
+;; As far as we know, Emacs 20/21 under MacOS X and XEmacs under Solaris
+;; won't run the asynchronous operations correctly when both `w3m-async-exec'
+;; and `w3m-process-connection-type' are non-nil; the final kilobytes or so
+;; might get lost from raw data downloaded from a web site.
+
 (defcustom w3m-process-connection-type
-  (not (and (featurep 'xemacs)
-	    (string-match "solaris" system-configuration)))
+  (not (or (memq system-type '(macos))
+	   (and (featurep 'xemacs)
+		(string-match "solaris" system-configuration))))
   "*Process connection type for w3m execution."
   :group 'w3m
   :type 'boolean)

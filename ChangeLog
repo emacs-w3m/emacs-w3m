@@ -1,9 +1,8 @@
-2003-01-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+2003-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+	Suggested by KURIHARA Kenichi <kenichi_kurihara@nifty.com>
 
-	* w3mhack.el (w3mhack-makeinfo): Insert one excessive newline
-	after a @foo{bar} thing to prevent clinging of a line and a line
-	(old texinfmt bug?) if it should be considered only one thing in a
-	line.
+	* w3m.el (w3m-async-exec): Always default to `t'.
+	(w3m-process-connection-type): Default to `nil' under MacOS X.
 
 2003-01-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
