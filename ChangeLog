@@ -1,5 +1,16 @@
 2001-11-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-w3m-get-header, w3m-w3m-attributes): Asynchronized.
+	(w3m-w3m-retrieve): Argument spec is changed.
+	(w3m-copy-buffer): Removed redundant code.
+	(w3m-about-header): Follow change of `w3m-w3m-get-header'.
+
+	* w3m-proc.el (w3m-process-with-wait-handler): Reimplemented.
+	(w3m-process-do): The generated asynchronous process in the post
+	handler is started at the end of `w3m-process-sentinel'.
+	(w3m-process-do-with-temp-buffer): Ditto.
+	(w3m-process-sentinel): Fixed.
+
 	* w3m.el (w3m-download): Use `progn' instead of `inline', in order
 	to make debugging be easy.
 	(w3m-retrieve-and-render): Ditto.

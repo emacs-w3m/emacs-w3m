@@ -256,44 +256,22 @@ handler."
 (defmacro w3m-process-with-wait-handler (&rest body)
   "Generate the waiting handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the handler
-which will wait for the end of the evaluation."
-  `(let ((handler (symbol-function 'identity))
-	 (w3m-async-exec))
-     ,@body))
-;; ASYNC: 本当は、以下のように非同期に実行(= process-filter を利用)し
-;; て、非同期プロセスの終了を待つように実装する必要があるのだが、どう
-;; しても、バグの原因が分からなかったので、adhoc に対処している。その
-;; ため、パスワードなどの入力が必要な場合に不具合が生じることがある。
-;;
-;;    (defmacro w3m-process-with-wait-handler (&rest body)
-;;      "Generate the waiting handler, and evaluate BODY.
-;;    When BODY is evaluated, the local variable `handler' keeps the handler
-;;    which will wait for the end of the evaluation."
-;;      (let ((process (gensym "--process--"))
-;;            (result (gensym "--result--")))
-;;        `(let ((,process)
-;;               (,result ',result))
-;;           (let ((handler (lambda (x) (setq ,result x))))
-;;             (if (w3m-process-p (setq ,process (progn ,@body)))
-;;                 (progn
-;;                   (w3m-process-start-process ,process)
-;;                   (while (eq ,result ',result)
-;;                     (sit-for 0.2))
-;;                   ,result)
-;;               ,process)))))
-;;
-;; 具体的には、[emacs-w3m:02167] で報告した以下の式が正常に評価できる
-;; ように修正する必要がある。
-;;
-;;     (with-current-buffer (get-buffer-create "*TEST*")
-;;       (pop-to-buffer (current-buffer))
-;;       (require 'w3m)
-;;       (w3m-process-with-null-handler
-;;         (w3m-process-do
-;;             (success (w3m-process-start handler "-version"))
-;;           (w3m-process-with-wait-handler
-;;             (w3m-process-start handler "-version")))))
-;;
+which will wait for the end of the evaluation.
+
+WARNING: This macro in asynchronous context will cause an endless loop
+because capturing the end of the generated sub-process fails."
+  (let ((process (gensym "--process--"))
+	(result (gensym "--result--")))
+    `(let ((,process)
+	   (,result ',result))
+       (let ((handler (lambda (x) (setq ,result x))))
+	 (if (w3m-process-p (setq ,process (progn ,@body)))
+	     (progn
+	       (w3m-process-start-process ,process)
+	       (while (eq ,result ',result)
+		 (sit-for 0.2))
+	       ,result)
+	   ,process)))))
 (put 'w3m-process-with-wait-handler 'lisp-indent-function 0)
 (put 'w3m-process-with-wait-handler 'edebug-form-spec '(body))
 
@@ -331,23 +309,26 @@ which will wait for the end of the evaluation."
 ;; し、それ以外の場合は post-body の値を返す。
 ;;
 (defmacro w3m-process-do (spec &rest body)
-  "(w3m-process-do (VAR ASYNC-FORM) POST-BODY...): Evaluate ASYNC-FORM
-and return a `w3m-process' object immediately.  After an asynchronous
-sub-process which is started in ASYNC-FORM, POST-BODY will be
-evaluated with the variable VAR which will be set to the result of
-ASYNC-FORM."
+  "(w3m-process-do (VAR FORM) BODY...): Eval the body BODY asynchronously.
+If an asynchronous process is generated in the evaluation of the form
+FORM, this macro returns its object immdiately, and the body BODY will
+be evaluated after the end of the process with the variable VAR which
+is set to the result of the form FORM.  Otherwise, the body BODY is
+evaluated at the same time, and this macro returns the result of the
+body BODY."
   (let ((var (car spec))
 	(form (cdr spec))
 	(this-handler (gensym "--this-handler--")))
     `(let ((,this-handler handler))
-       (labels ((post-body (,var handler)
-			   (progn ,@body))
-		(post-handler (,var handler)
-			      (if (w3m-process-p
-				   (setq ,var (post-body ,var handler)))
-				  (w3m-process-start-process ,var)
-				(funcall (or handler (function identity))
-					 ,var))))
+       (labels ((post-body (,var handler) ,@body)
+		(post-handler
+		 (,var handler)
+		 (if (w3m-process-p (setq ,var (post-body ,var handler)))
+		     ;; The generated async process will be started at
+		     ;; the end of `w3m-process-sentinel', so that
+		     ;; there is nothing to do at this part.
+		     nil
+		   (funcall (or handler (function identity)) ,var))))
 	 (let ((,var
 		(let ((handler
 		       (list 'lambda (list ',var)
@@ -367,9 +348,9 @@ ASYNC-FORM."
 (put 'w3m-process-do 'edebug-form-spec '((symbolp form) def-body))
 
 (defmacro w3m-process-do-with-temp-buffer (spec &rest body)
-  "(w3m-process-do-with-temp-buffer (VAR ASYNC-FORM) POST-BODY...):
-Like `w3m-process-do', but all forms are evaluated in a temporary
-buffer."
+  "(w3m-process-do-with-temp-buffer (VAR FORM) BODY...):
+Like `w3m-process-do', but the form FORM and the body BODY are
+evaluated in a temporary buffer."
   (let ((var (car spec))
 	(form (cdr spec))
 	(this-handler (gensym "--this-handler--"))
@@ -384,10 +365,9 @@ buffer."
 				 ,@body)
 			     (w3m-kill-buffer ,temp-buffer)))
 		(post-handler (,var handler ,temp-buffer)
-			      (if (w3m-process-p
-				   (setq ,var (post-body ,var handler
-							 ,temp-buffer)))
-				  (w3m-process-start-process ,var)
+			      (unless (w3m-process-p
+				       (setq ,var (post-body ,var handler
+							     ,temp-buffer)))
 				(funcall (or handler (function identity))
 					 ,var))))
 	 (let ((,var
@@ -465,9 +445,10 @@ buffer."
 			       exit-status)))))))
 	;; Something wrong has been occured.
 	(catch 'last
-	  (dolist (obj (copy-sequence w3m-process-queue))
+	  (dolist (obj w3m-process-queue)
 	    (when (eq process (w3m-process-process obj))
-	      (setq w3m-process-queue (delq obj w3m-process-queue))))))
+	      (setq w3m-process-queue (delq obj w3m-process-queue))
+	      (throw 'last nil)))))
     (delete-process process)
     (w3m-process-start-queued-processes)))
 

@@ -2481,20 +2481,22 @@ succeed."
     (substring str 0
 	       (and (string-match "[ \t\r\f\n]+$" str) (match-beginning 0)))))
 
-(defun w3m-w3m-get-header (url &optional no-cache)
+(defun w3m-w3m-get-header (url no-cache handler)
   "Return the header string of the URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
   (or (unless no-cache
 	(w3m-cache-request-header url))
-      (with-temp-buffer
-	(let ((w3m-current-url url))
-	  (w3m-message "Request sent, waiting for response...")
-	  (when (prog1 (w3m-process-with-wait-handler
-			 (w3m-process-start handler "-dump_head" url))
-		  (w3m-message "Request sent, waiting for response...done"))
+      (lexical-let ((url url))
+	(w3m-message "Request sent, waiting for response...")
+	(w3m-process-do-with-temp-buffer
+	    (success (progn
+		       (setq w3m-current-url url)
+		       (w3m-process-start handler "-dump_head" url)))
+	  (w3m-message "Request sent, waiting for response...done")
+	  (when success
 	    (w3m-cache-header url (buffer-string)))))))
 
-(defun w3m-w3m-attributes (url &optional no-cache)
+(defun w3m-w3m-attributes (url &optional no-cache handler)
   "Return a list of attributes of URL.
 Value is nil if retrieval of header is failed.  Otherwise, list
 elements are:
@@ -2506,45 +2508,50 @@ elements are:
  5. Real URL.
  6. Base URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
-  (let ((header (w3m-w3m-get-header url no-cache)))
-    (cond
-     ((and header (string-match "HTTP/1\\.[0-9] 200 " header))
-      (let (alist type charset)
-	(dolist (line (split-string header "\n"))
-	  (when (string-match "^\\([^:]+\\):[ \t]*" line)
-	    (push (cons (downcase (match-string 1 line))
-			(substring line (match-end 0)))
-		  alist)))
-	(when (setq type (cdr (assoc "content-type" alist)))
-	  (if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" type)
-	      (setq charset (w3m-remove-redundant-spaces
-			     (match-string 1 type))
-		    type (w3m-remove-redundant-spaces
-			  (substring type 0 (match-beginning 0))))
-	    (setq type (w3m-remove-redundant-spaces type))
-	    (when (string-match ";$" type)
-	      (setq type (substring type 0 (match-beginning 0))))))
-	(list (or type (w3m-local-content-type url))
-	      (or charset
-		  (and (memq w3m-type '(w3mmee w3m-m17n))
-		       (setq charset
-			     (cdr (assoc "w3m-document-charset" alist)))
-		       (car (split-string charset))))
-	      (let ((v (cdr (assoc "content-length" alist))))
-		(and v (setq v (string-to-number v)) (> v 0) v))
-	      (cdr (assoc "content-encoding" alist))
-	      (let ((v (cdr (assoc "last-modified" alist))))
-		(and v (w3m-time-parse-string v)))
-	      (or (cdr (assoc "w3m-current-url" alist))
-		  url)
-	      (or (cdr (assoc "w3m-base-url" alist))
-		  (cdr (assoc "w3m-current-url" alist))
-		  url))))
-     ;; FIXME: adhoc implementation
-     ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
-     ;; HTTP/1.0 501 Method Not Implemented
-     ((and header (string-match "HTTP/1\\.[0-9] 50[0-9]" header))
-      (list "text/html" nil nil nil nil url url)))))
+  (if (not handler)
+      (w3m-process-with-wait-handler
+	(w3m-w3m-attributes url no-cache handler))
+    (lexical-let ((url url))
+      (w3m-process-do
+	  (header (w3m-w3m-get-header url no-cache handler))
+	(cond
+	 ((and header (string-match "HTTP/1\\.[0-9] 200 " header))
+	  (let (alist type charset)
+	    (dolist (line (split-string header "\n"))
+	      (when (string-match "^\\([^:]+\\):[ \t]*" line)
+		(push (cons (downcase (match-string 1 line))
+			    (substring line (match-end 0)))
+		      alist)))
+	    (when (setq type (cdr (assoc "content-type" alist)))
+	      (if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" type)
+		  (setq charset (w3m-remove-redundant-spaces
+				 (match-string 1 type))
+			type (w3m-remove-redundant-spaces
+			      (substring type 0 (match-beginning 0))))
+		(setq type (w3m-remove-redundant-spaces type))
+		(when (string-match ";$" type)
+		  (setq type (substring type 0 (match-beginning 0))))))
+	    (list (or type (w3m-local-content-type url))
+		  (or charset
+		      (and (memq w3m-type '(w3mmee w3m-m17n))
+			   (setq charset
+				 (cdr (assoc "w3m-document-charset" alist)))
+			   (car (split-string charset))))
+		  (let ((v (cdr (assoc "content-length" alist))))
+		    (and v (setq v (string-to-number v)) (> v 0) v))
+		  (cdr (assoc "content-encoding" alist))
+		  (let ((v (cdr (assoc "last-modified" alist))))
+		    (and v (w3m-time-parse-string v)))
+		  (or (cdr (assoc "w3m-current-url" alist))
+		      url)
+		  (or (cdr (assoc "w3m-base-url" alist))
+		      (cdr (assoc "w3m-current-url" alist))
+		      url))))
+	 ;; FIXME: adhoc implementation
+	 ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
+	 ;; HTTP/1.0 501 Method Not Implemented
+	 ((and header (string-match "HTTP/1\\.[0-9] 50[0-9]" header))
+	  (list "text/html" nil nil nil nil url url)))))))
 
 (defmacro w3m-w3m-expand-arguments (arguments)
   (` (delq nil
@@ -2562,10 +2569,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 (defun w3m-w3m-dump-head-source (url handler)
   "Retrive headers and content pointed by URL, and call the HANDLER
 function with attributes of the retrieved content when retrieval is
-complete.
-
-NOTE: This function must be called in asynchronous context, and its
-return value is nonsense."
+complete."
   (lexical-let ((url url))
     (w3m-message "Reading %s..." url)
     (w3m-process-do
@@ -2586,14 +2590,10 @@ return value is nonsense."
 	    (w3m-cache-contents url (current-buffer))
 	    (w3m-w3m-attributes url)))))))
 
-(defun w3m-w3m-retrieve
-  (url &optional no-decode no-cache post-data referer handler)
+(defun w3m-w3m-retrieve (url no-decode no-cache post-data referer handler)
   "Retrieve content pointed by URL with w3m, insert it to this buffer,
 and call the HANDLER function with its content type as a string
-argument, when retrieve is complete.
-
-NOTE: This function must be called in asynchronous context, and its
-return value is nonsense."
+argument, when retrieve is complete."
   (let ((w3m-command-arguments w3m-command-arguments)
 	(temp-file))
     (and no-cache
@@ -3503,33 +3503,21 @@ If EMPTY is non-nil, the created buffer has empty content."
   (when (string-match "<[0-9]+>\\'" newname)
     (setq newname (substring newname 0 (match-beginning 0))))
   (with-current-buffer buf
-    (let ((ptmin (point-min))
-	  (ptmax (point-max))
-	  (url w3m-current-url)
+    (let ((url w3m-current-url)
 	  (images w3m-display-inline-images)
 	  (mode major-mode)
-	  (lvars (buffer-local-variables))
 	  (new (generate-new-buffer newname)))
       (with-current-buffer new
-	(funcall mode)			;still needed??  -sm
+	(w3m-mode)
 	(if w3m-toggle-inline-images-permanently
 	    (setq w3m-display-inline-images images)
 	  (setq w3m-display-inline-images w3m-default-display-inline-images))
-	(unless empty (w3m-goto-url url))
-	(dolist (v lvars)
-	  (cond ((not (consp v))
-		 (makunbound v))
-		((memq (car v) '(w3m-history w3m-history-flat)))
-		(t
-		 (condition-case ()	;in case var is read-only
-		     (set (make-local-variable (car v))
-			  (if (consp (cdr v))
-			      (copy-sequence (cdr v))
-			    (cdr v)))
-		   (error nil)))))
+	(unless empty
+	  (w3m-goto-url url))
 	;; Make copies of `w3m-history' and `w3m-history-flat'.
 	(w3m-history-copy buf)
-	(when empty (setq w3m-current-url nil))
+	(when empty
+	  (w3m-clear-local-variables))
 	(when and-pop
 	  (let* ((pop-up-windows w3m-pop-up-windows)
 		 (pop-up-frames w3m-pop-up-frames)
@@ -4448,7 +4436,8 @@ works on Emacs.
 	(insert "\nDocument Code:  " charset)))
     (let (header)
       (and (not (w3m-url-local-p url))
-	   (setq header (w3m-w3m-get-header url no-cache))
+	   (setq header (w3m-process-with-wait-handler
+			  (w3m-w3m-get-header url no-cache handler)))
 	   (insert
 	    (if (string= w3m-language "Japanese")
 		"\n\n━━━━━━━━━━━━━━━━━━━\n\nHeader information\n\n"
