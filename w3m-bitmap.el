@@ -78,8 +78,12 @@ manuals in the emacs-w3m distribution.")
     (put 'current-column 'byte-compile nil)
 
     (if noninteractive
-	(message "BROKEN FACILITY DETECTED: \
-Emacs won't manage columns on bitmap chars with props.")
+	(message "%s%s%s"
+		 "BROKEN FACILITY DETECTED: "
+		 (if (boundp 'MULE)
+		     "Mule"
+		   "Emacs")
+		 " won't manage columns on bitmap chars with props.")
       (let ((buffer (get-buffer-create "*notification@emacs-w3m*")))
 	(unwind-protect
 	    (save-window-excursion
@@ -220,7 +224,8 @@ managing column numbers on bitmap characters."
   (defvar w3m-display-inline-images)
   (defvar w3m-mode-map)
   (defvar w3m-work-buffer-name)
-  (autoload 'w3m-retrieve "w3m"))
+  (autoload 'w3m-retrieve "w3m")
+  (autoload 'move-to-column-force "w3m-om"))
 
 (defface w3m-bitmap-image-face
   '((((background light))

@@ -1,6 +1,6 @@
 ;;; w3m-hist.el --- a history management system for w3m
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -31,7 +31,19 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile
+  (require 'cl))
+
+(eval-and-compile
+  (dont-compile
+    (condition-case nil
+	:symbol-for-testing-whether-colon-keyword-is-available-or-not
+      (void-variable
+       (let (w3m-colon-keywords)
+	 (load "w3m-kwds.el" nil t t)
+	 (while w3m-colon-keywords
+	   (set (car w3m-colon-keywords) (car w3m-colon-keywords))
+	   (setq w3m-colon-keywords (cdr w3m-colon-keywords))))))))
 
 (defvar w3m-history nil
   "A buffer-local variable which contains a tree-structured complex list

@@ -1,3 +1,21 @@
+2002-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make emacs-w3m can be compiled by `make slow' with no warnings.
+	* Makefile.in (slow): Don't echo the values for EMACS and FLAGS.
+	* octet.el: Require `w3m-util' for `w3m-insert-string'.
+	* w3m-bitmap.el: Autoload w3m-om for `move-to-column-force'.
+	* w3m-hist.el: Load w3m-kwds.el for old Emacsen.
+	* w3m-image.el: Require `pcustom' for old Emacsen; bind some
+	external vars when compiling.
+	* w3m.el: Enclose the definitions for `w3m-current-title' and
+	`w3m-current-url' with `eval-and-compile', and move them forward.
+	(w3m-url-at-point): Enclose with `eval-and-compile'.
+	(w3m-add-local-hook): Ditto.
+	(w3m-about-retrieve): Call `base64-decode-string' indirectly to
+	avoid compile warn under old Emacsen.
+
+	* w3m-util.el (w3m-insert-string): Fix doc-string.
+
 2002-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-2ch.el (shimbun-article): Don't encode with base64;

@@ -1,6 +1,6 @@
 ;;; w3m-image.el --- Image conversion routines.
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -39,6 +39,18 @@
 
 (require 'w3m-util)
 (require 'w3m-proc)
+
+(eval-when-compile
+  (if (not (fboundp 'defcustom))
+      (require 'pcustom)))
+
+;; Functions and variables which should be defined in the other module
+;; at run-time.
+(eval-when-compile
+  (defvar w3m-async-exec)
+  (defvar w3m-current-url)
+  (defvar w3m-profile-directory)
+  (defvar w3m-work-buffer-name))
 
 (defcustom w3m-imagick-convert-program (w3m-which-command "convert")
   "*Program name of ImageMagick's `convert'."

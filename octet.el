@@ -44,7 +44,7 @@
 ;; (require 'octet)
 ;;
 ;; To display octet data file, execute following command.
-;; 
+;;
 ;; M-x octet-find-file
 ;;
 ;; If you use SEMI, put following lines in your setting file:
@@ -55,7 +55,7 @@
 ;; Then you can toggle displaying application/octet-stream messages.
 
 ;;; History:
-;; 
+;;
 ;; This file is created in 2000/05/19.
 ;; All part was rewrote in 2002/01/28.
 ;; Added to emacs-w3m repository in 2002/01/29.
@@ -65,6 +65,7 @@
 (require 'pces)    ; as-binary-process
 (require 'mime)    ; SEMI
 (require 'static)
+(require 'w3m-util); w3m-insert-string
 
 (defvar octet-temp-directory "/tmp"
   "A directory to create temporal files.")
@@ -91,19 +92,19 @@
   "Alist of suffix-to-octet-type.")
 
 (defvar octet-content-type-alist
-  '(("application/vnd\\.ms-excel"       . msexcel)
-    ("application/vnd\\.ms-powerpoint"  . msppt)
-    ("application/x-msexcel"            . msexcel)
-    ("application/msword"               . msword)
-    ("image/jpeg"                       . jpeg)
-    ("image/gif"                        . gif)
-    ("image/png"                        . png)
-    ("image/tiff"                       . tiff)
-    ("audio/midi"                       . ignore)
-    ("video/mpeg"                       . ignore)
-    ("text/html"                        . html-un)
-    ("application/x-tar"                . tar)
-    ("application/pdf"                  . pdf))
+  '(("application/vnd\\.ms-excel"	. msexcel)
+    ("application/vnd\\.ms-powerpoint"	. msppt)
+    ("application/x-msexcel"		. msexcel)
+    ("application/msword"		. msword)
+    ("image/jpeg"			. jpeg)
+    ("image/gif"			. gif)
+    ("image/png"			. png)
+    ("image/tiff"			. tiff)
+    ("audio/midi"			. ignore)
+    ("video/mpeg"			. ignore)
+    ("text/html"			. html-un)
+    ("application/x-tar"		. tar)
+    ("application/pdf"			. pdf))
   "Alist of content-type-regexp-to-octet-type.")
 
 (defvar octet-magic-type-alist
@@ -114,10 +115,10 @@
     ("^MM\000\\*"			image tiff)
     ("^MThd"				audio midi)
     ("^\000\000\001\263"		video mpeg)
-    ("^<!doctype html"		        text  html)
-    ("^<head"		                text  html)
-    ("^<title"		                text  html)
-    ("^<html"		                text  html))
+    ("^<!doctype html"			text  html)
+    ("^<head"				text  html)
+    ("^<title"				text  html)
+    ("^<html"				text  html))
   "*Alist of regexp about magic-number vs. corresponding content-types.
 Each element looks like (REGEXP TYPE SUBTYPE).
 REGEXP is a regular expression to match against the beginning of the
@@ -126,23 +127,23 @@ TYPE is symbol to indicate primary type of content-type.
 SUBTYPE is symbol to indicate subtype of content-type.")
 
 (defvar octet-type-filter-alist
-  `((msexcel octet-filter-call1       "xlhtml" ("-te")  html-u8)
-    (msppt   octet-filter-call1       "ppthtml" nil     html-u8)
-    (msword  octet-filter-call2-extra "wvHtml"  nil     html-u8)
-    (html    octet-render-html        nil       nil     nil)
-    (html-u8 octet-decode-u8-text     nil       nil     html)
-    (html-un octet-decode-text        nil       nil     html)
-    (gzip    octet-filter-call1       "gunzip"  ("-c")  guess)
-    (text    octet-decode-text        nil       nil     nil)
-    (ignore  ignore                   nil       nil     nil)
-    (jpeg    octet-decode-image       nil       jpeg    nil)
-    (gif     octet-decode-image       nil       gif     nil)
-    (png     octet-decode-image       nil       png     nil)
-    (tiff    octet-decode-image       nil       tiff    nil)
-    (guess   octet-filter-guess       nil       nil     nil)
-    (lzh     octet-filter-call1       "lha"     ("-v")  text)
-    (tar     octet-tar-mode           nil       nil     nil)
-    (pdf     octet-filter-call2      "pdftotext" ("-q" "-eucjp" "-raw") text)
+  `((msexcel octet-filter-call1	      "xlhtml" ("-te")	html-u8)
+    (msppt   octet-filter-call1	      "ppthtml" nil	html-u8)
+    (msword  octet-filter-call2-extra "wvHtml"	nil	html-u8)
+    (html    octet-render-html	      nil	nil	nil)
+    (html-u8 octet-decode-u8-text     nil	nil	html)
+    (html-un octet-decode-text	      nil	nil	html)
+    (gzip    octet-filter-call1	      "gunzip"	("-c")	guess)
+    (text    octet-decode-text	      nil	nil	nil)
+    (ignore  ignore		      nil	nil	nil)
+    (jpeg    octet-decode-image	      nil	jpeg	nil)
+    (gif     octet-decode-image	      nil	gif	nil)
+    (png     octet-decode-image	      nil	png	nil)
+    (tiff    octet-decode-image	      nil	tiff	nil)
+    (guess   octet-filter-guess	      nil	nil	nil)
+    (lzh     octet-filter-call1	      "lha"	("-v")	text)
+    (tar     octet-tar-mode	      nil	nil	nil)
+    (pdf     octet-filter-call2	     "pdftotext" ("-q" "-eucjp" "-raw") text)
     )
   "Alist of type-to-filter-program.
 Each element should have the form like:
@@ -205,7 +206,7 @@ nil in NEW-TYPE means filtering is completed.")
 			glyph)
 		       0)
 	      1))
-	1)))) 
+	1))))
  ((and (boundp 'emacs-major-version)
        (>= emacs-major-version 21))
   (defun octet-decode-image (ignore &rest args)
@@ -270,7 +271,7 @@ Returns 0 if succeed."
 		     (zerop result))
 	    (erase-buffer)
 	    (insert-file-contents-as-binary outfile)
-	    (dolist (attach (directory-files "." nil (concat 
+	    (dolist (attach (directory-files "." nil (concat
 						      (regexp-quote outfile)
 						      ".*\\..*")))
 	      (setq octet-attachments
@@ -492,13 +493,13 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 	'((mode . "play")
 	  (type . application)(subtype . excel)
 	  (method . mime-view-octet)))
-       
+
        (ctree-set-calist-strictly
 	'mime-acting-condition
 	'((mode . "play")
 	  (type . application)(subtype . x-msexcel)
 	  (method . mime-view-octet)))
-       
+
        (ctree-set-calist-strictly
 	'mime-acting-condition
 	'((mode . "play")
@@ -516,7 +517,7 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 	'((mode . "play")
 	  (type . application)(subtype . octet-stream)
 	  (method . mime-view-octet)))
-       
+
        (ctree-set-calist-strictly
 	'mime-preview-condition
 	'((type . application)(subtype . t)

@@ -470,10 +470,8 @@ pairs from PLIST whose value is nil."
   properties)
 
 (defmacro w3m-insert-string (string)
-  "Insert STRING at point, AS-IS.
-Point and before-insertion markers move forward to end up
-after the inserted text.
-Any other markers at the point of insertion remain before the text."
+  "Insert STRING at point without conversions in either case the
+multibyteness of the buffer."
   (if (and (fboundp 'string-as-multibyte)
 	   (subrp (symbol-function 'string-as-multibyte)))
       `(let ((string ,string))

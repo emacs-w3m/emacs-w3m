@@ -116,9 +116,7 @@ distclean: clean
 	$(EMACS) $(FLAGS) -f batch-byte-compile $*.el
 
 slow: Makefile
-	@echo "EMACS=$(EMACS)";\
-	echo "FLAGS=$(FLAGS)";\
-	for i in `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
+	@for i in `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
 	do $(MAKE) -s $$i; done
 
 ## Create the file w3m-kwds.el if it is needed for $(EMACS).

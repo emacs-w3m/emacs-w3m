@@ -63,15 +63,15 @@
   (unless (dolist (var nil t))
     (load "cl-macs" nil t)))
 
+;; The following variables will be referred by the external modules
+;; which bind such variables only when compiling themselves.  And some
+;; module(s) use `defadvice' which will do byte-compile at run-time.
+(eval-and-compile
+  (defvar w3m-current-title nil "Title of this buffer.")
+  (defvar w3m-current-url nil "URL of this buffer."))
+
 (require 'w3m-util)
 (require 'w3m-proc)
-
-;; The following variables will be referred by the version specific
-;; modules which bind such variables only when compiling themselves.
-;; And some module(s) use `defadvice' which will do byte-compile at
-;; the run-time.
-(defvar w3m-current-title nil "Title of this buffer.")
-(defvar w3m-current-url nil "URL of this buffer.")
 
 (eval-and-compile
   (cond
@@ -1171,7 +1171,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 
 (defsubst w3m-copy-local-variables (from-buffer)
   (let (url base title forms cs icon next prev
-        start toc hseq refresh ssl redirect)
+	    start toc hseq refresh ssl redirect)
     (with-current-buffer from-buffer
       (setq url w3m-current-url
 	    base w3m-current-base-url
@@ -2365,33 +2365,34 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
      ((eq flag 'lambda)
       (if (w3m-arrived-p url) t nil)))))
 
-(cond
- ((locate-library "ffap")
-  (autoload 'ffap-url-at-point "ffap")
-  (if (featurep 'xemacs)
-      (defun w3m-url-at-point ()
-	"Like `ffap-url-at-point', except that text props will be stripped."
-	(let (ffap-xemacs)
-	  (ffap-url-at-point)))
-    (defalias 'w3m-url-at-point 'ffap-url-at-point))
-  (eval-after-load "ffap"
-    ;; Under Emacs 19, 20 or XEmacs, `ffap-url-regexp' won't match to
-    ;; https urls by default.
-    '(if (and (not (string-match ffap-url-regexp "https://foo"))
-	      (string-match "\\((\\|\\\\|\\)\\(http\\)\\(\\\\|\\|\\\\)\\)"
-			    ffap-url-regexp))
-	 (setq ffap-url-regexp (replace-match "\\1\\2s?\\3"
-					      nil nil ffap-url-regexp)))))
- ((locate-library "thingatpt")
-  (autoload 'thing-at-point "thingatpt")
-  (defun w3m-url-at-point ()
-    "Return url from around point if it exists, or nil."
-    (let ((url (thing-at-point 'url)))
-      (when url
-	(set-text-properties 0 (length url) nil url)
-	url))))
- (t
-  (defalias 'w3m-url-at-point 'ignore)))
+(eval-and-compile
+  (cond
+   ((locate-library "ffap")
+    (autoload 'ffap-url-at-point "ffap")
+    (if (featurep 'xemacs)
+	(defun w3m-url-at-point ()
+	  "Like `ffap-url-at-point', except that text props will be stripped."
+	  (let (ffap-xemacs)
+	    (ffap-url-at-point)))
+      (defalias 'w3m-url-at-point 'ffap-url-at-point))
+    (eval-after-load "ffap"
+      ;; Under Emacs 19, 20 or XEmacs, `ffap-url-regexp' won't match to
+      ;; https urls by default.
+      '(if (and (not (string-match ffap-url-regexp "https://foo"))
+		(string-match "\\((\\|\\\\|\\)\\(http\\)\\(\\\\|\\|\\\\)\\)"
+			      ffap-url-regexp))
+	   (setq ffap-url-regexp (replace-match "\\1\\2s?\\3"
+						nil nil ffap-url-regexp)))))
+   ((locate-library "thingatpt")
+    (autoload 'thing-at-point "thingatpt")
+    (defun w3m-url-at-point ()
+      "Return url from around point if it exists, or nil."
+      (let ((url (thing-at-point 'url)))
+	(when url
+	  (set-text-properties 0 (length url) nil url)
+	  url))))
+   (t
+    (defalias 'w3m-url-at-point 'ignore))))
 
 (defun w3m-input-url (&optional prompt initial default quick-start)
   "Read a URL from the minibuffer, prompting with string PROMPT."
@@ -2994,7 +2995,7 @@ to add the option \"-no-proxy\"."
   "Make `-request' or `-header' arguments.
 METHOD is an HTTP method name.
 TEMP-FILE is a name of temporal file to write request content to.
-Optional BODY is the body content string. 
+Optional BODY is the body content string.
 Second optional REFERER is the Referer: field content.
 Third optional CONTENT-TYPE is the Content-Type: field content."
   (with-temp-buffer
@@ -3048,7 +3049,7 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
   "Make `-header' arguments.
 METHOD is an HTTP method name.
 TEMP-FILE is a name of temporal file to write post body to.
-Optional BODY is the post body content string. 
+Optional BODY is the post body content string.
 Second optional REFERER is the Referer: field content.
 Third optional CONTENT-TYPE is the Content-Type: field content."
   (let ((modes (default-file-modes))
@@ -3117,15 +3118,15 @@ argument, when retrieve is complete."
 		   ((eq (car w3m-current-redirect) 307)
 		    ;; Use POST.
 		    (setq quit (not
-				(y-or-n-p 
+				(y-or-n-p
 				 (format "Send POST data to '%s'?" url)))))
 		   ((or (eq (car w3m-current-redirect) 302)
 			(eq (car w3m-current-redirect) 301))
 		    (if w3m-redirect-with-get
 			(setq post-data nil)
-		      (setq quit 
+		      (setq quit
 			    (not
-			     (y-or-n-p 
+			     (y-or-n-p
 			      (format "Send POST data to '%s'?" url))))))))
 		(if quit
 		    (funcall orig-handler nil)
@@ -3141,8 +3142,8 @@ argument, when retrieve is complete."
 					post-data
 					nil redirect-handler)))))))
     ;; The first retrieval.
-    (prog1 (setq return (w3m-w3m-retrieve-1 
-			 url nil no-decode no-cache post-data referer 
+    (prog1 (setq return (w3m-w3m-retrieve-1
+			 url nil no-decode no-cache post-data referer
 			 redirect-handler))
       (setq sync (w3m-process-p return)))))
 
@@ -3205,7 +3206,9 @@ to this buffer."
   (cond
    ((string= "about://emacs-w3m.gif" url)
     (when (fboundp 'base64-decode-string)
-      (let ((icon (base64-decode-string w3m-emacs-w3m-icon)))
+      (let* ((b64d 'base64-decode-string)
+	     ;; Avoid compile warn under old Emacsen.
+	     (icon (funcall b64d w3m-emacs-w3m-icon)))
 	(if (featurep 'xemacs)
 	    (insert icon)
 	  (set-buffer-multibyte (multibyte-string-p icon))
@@ -3225,8 +3228,8 @@ to this buffer."
 		  (set-buffer-multibyte t)
 		  (if (and (string-match "\\`about://\\([^/]+\\)/" url)
 			   (setq func
-				 (intern-soft
-				  (concat "w3m-about-" (match-string 1 url))))
+				 (intern-soft (concat "w3m-about-"
+						      (match-string 1 url))))
 			   (fboundp func))
 		      (funcall func url no-decode no-cache
 			       post-data referer handler)
@@ -4965,12 +4968,13 @@ it will prompt user where to save a file."
 	(copy-file ftp filename)
 	(message "Wrote %s" filename)))))
 
-(unless (fboundp 'w3m-add-local-hook)
-  (defun w3m-add-local-hook (hook function &optional append)
-    "Add to the buffer-local value of HOOK the function FUNCTION.
+(eval-and-compile
+  (unless (fboundp 'w3m-add-local-hook)
+    (defun w3m-add-local-hook (hook function &optional append)
+      "Add to the buffer-local value of HOOK the function FUNCTION.
 Note: This function is designed for the other emacsen than Emacs21."
-    (make-local-hook hook)
-    (add-hook hook function append t)))
+      (make-local-hook hook)
+      (add-hook hook function append t))))
 
 (defvar w3m-current-position -1)
 (make-variable-buffer-local 'w3m-current-position)
