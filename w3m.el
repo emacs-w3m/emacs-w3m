@@ -1371,6 +1371,8 @@ for a refresh indication")
 	       "-o" "ext_halfdump=1"
 	       '(if charset "-I") 'charset
 	       "-O" "ISO-2022-JP-2" "-o" "strict_iso2022=0"))
+	(w3m-accept-japanese-characters
+	 (list "-halfdump" "-I" "e"))
 	(t (list "-halfdump")))
   "Arguments for 'halfdump' execution of w3m.")
 

@@ -1,3 +1,8 @@
+2002-04-17  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-halfdump-command-arguments): Add `-I e' option to
+	w3m under Japanese environment.
+
 2002-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mime-w3m.el (mime-w3m-cid-retrieve): Use `mime-decode-string',
