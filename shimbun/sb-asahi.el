@@ -34,7 +34,8 @@
 (require 'shimbun)
 (require 'sb-text)
 
-(luna-define-class shimbun-asahi (shimbun-text) ())
+(luna-define-class shimbun-asahi
+		   (shimbun-japanese-newspaper shimbun-text) ())
 
 (defvar shimbun-asahi-top-level-domain "asahi.com"
   "Name of the top level domain for the Asahi shimbun.")
@@ -139,16 +140,22 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 
 (defvar shimbun-asahi-expiration-days 6)
 
+(luna-define-method shimbun-server-name ((shimbun shimbun-asahi))
+  "朝日新聞")
+
 (luna-define-method shimbun-groups ((shimbun shimbun-asahi))
   (mapcar 'car shimbun-asahi-group-table))
 
+(luna-define-method shimbun-current-group-name ((shimbun shimbun-asahi))
+  (nth 1 (assoc (shimbun-current-group-internal shimbun)
+		shimbun-asahi-group-table)))
+
 (luna-define-method shimbun-from-address ((shimbun shimbun-asahi))
-  (concat (shimbun-mime-encode-string
-	   (concat "朝日新聞 ("
-		   (nth 1 (assoc (shimbun-current-group-internal shimbun)
-				 shimbun-asahi-group-table))
-		   ")"))
-	  " <webmaster@www." shimbun-asahi-top-level-domain ">"))
+  (shimbun-mime-encode-string
+   (format "%s (%s) <webmaster@www.%s>"
+	   (shimbun-server-name shimbun)
+	   (shimbun-current-group-name shimbun)
+	   shimbun-asahi-top-level-domain)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-asahi))
   (let ((group (shimbun-current-group-internal shimbun)))

@@ -32,9 +32,8 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-mainichi (shimbun shimbun-text) ())
+(luna-define-class shimbun-mainichi (shimbun-japanese-newspaper shimbun) ())
 
 (defvar shimbun-mainichi-url "http://www.mainichi.co.jp/")
 (defvar shimbun-mainichi-server-name "毎日新聞")

@@ -1,4 +1,4 @@
-;;; shimbun.el --- interfacing with web newspapers
+;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
@@ -130,6 +130,20 @@ Return content-type of URL as string when retrieval succeeded."
 	  (goto-char (point-min))))
       type)))
 
+(defun shimbun-fetch-url (shimbun url &optional no-cache no-decode)
+  "Retrieve contents specified by URL for SHIMBUN.
+This function is exacly similar to `shimbun-retrieve-url', but
+considers the `coding-system' slot of SHIMBUN when estimating a coding
+system of retrieved contents."
+  (if (shimbun-coding-system-internal shimbun)
+      (let ((w3m-coding-system-priority-list
+	     (cons (shimbun-coding-system-internal shimbun)
+		   w3m-coding-system-priority-list)))
+	(inline
+	  (shimbun-retrieve-url url no-cache no-decode)))
+    (inline
+      (shimbun-retrieve-url url no-cache no-decode))))
+
 (defalias 'shimbun-content-type 'w3m-content-type)
 (defsubst shimbun-url-exists-p (url &optional no-cache)
   (string= "text/html"
@@ -252,7 +266,8 @@ content-type if `shimbun-encapsulate-images' is non-nil."
 					 (set-buffer-multibyte nil)
 					 (setq
 					  type
-					  (shimbun-retrieve-url
+					  (shimbun-fetch-url
+					   shimbun
 					   (shimbun-expand-url
 					    url
 					    (shimbun-header-xref header))
@@ -306,7 +321,8 @@ content-type if `shimbun-encapsulate-images' is non-nil."
       (insert "<html>\n<head>\n<base href=\""
 	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
       (goto-char (point-max))
-      (insert "\n</body>\n</html>\n"))
+      (insert (shimbun-footer shimbun header t)
+	      "\n</body>\n</html>\n"))
     (shimbun-make-mime-article shimbun header)
     (buffer-string)))
 
@@ -403,6 +419,13 @@ Optional MUA is a `shimbun-mua' instance."
   "Return the server name of SHIMBUN."
   (shimbun-server-internal shimbun))
 
+(luna-define-generic shimbun-server-name (shimbun)
+  "Return the server name of SHIMBUN in human-readable style.")
+
+(luna-define-method shimbun-server-name ((shimbun shimbun))
+  (or (shimbun-server-name-internal shimbun)
+      (shimbun-server-internal shimbun)))
+
 (luna-define-generic shimbun-groups (shimbun)
   "Return a list of groups which are available in the SHIMBUN.")
 
@@ -411,6 +434,12 @@ Optional MUA is a `shimbun-mua' instance."
 
 (defun shimbun-current-group (shimbun)
   "Return the current group of SHIMBUN."
+  (shimbun-current-group-internal shimbun))
+
+(luna-define-generic shimbun-current-group-name (shimbun)
+  "Return the current group name of SHIMBUN in human-readable style.")
+
+(luna-define-method shimbun-current-group-name ((shimbun shimbun))
   (shimbun-current-group-internal shimbun))
 
 (defun shimbun-open-group (shimbun group)
@@ -440,7 +469,7 @@ Return nil if all pages should be retrieved."
 
 (luna-define-method shimbun-headers ((shimbun shimbun) &optional range)
   (with-temp-buffer
-    (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload)
+    (shimbun-fetch-url shimbun (shimbun-index-url shimbun) 'reload)
     (shimbun-get-headers shimbun range)))
 
 (luna-define-generic shimbun-reply-to (shimbun)
@@ -471,19 +500,6 @@ Return nil if all pages should be retrieved."
 Return nil when articles are not expired."
   (shimbun-expiration-days-internal shimbun))
 
-(luna-define-generic shimbun-server-name (shimbun)
-  "Return the server name.")
-
-(luna-define-method shimbun-server-name ((shimbun shimbun))
-  (or (shimbun-server-name-internal shimbun)
-      (shimbun-server-internal shimbun)))
-
-(luna-define-generic shimbun-current-group-name (shimbun)
-  "Return the current group name.")
-
-(luna-define-method shimbun-current-group-name ((shimbun shimbun))
-  (shimbun-current-group-internal shimbun))
-
 (luna-define-generic shimbun-from-address (shimbun)
   "Make a From address like \"SERVER (GROUP) <ADDRESS>\".")
 
@@ -504,7 +520,7 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
     (with-current-buffer (or outbuf (current-buffer))
       (w3m-insert-string
        (or (with-temp-buffer
-	     (shimbun-retrieve-url (shimbun-article-url shimbun header))
+	     (shimbun-fetch-url shimbun (shimbun-article-url shimbun header))
 	     (message "shimbun: Make contents...")
 	     (goto-char (point-min))
 	     (prog1 (shimbun-make-contents shimbun header)
@@ -518,21 +534,11 @@ HEADER is a header structure obtained via `shimbun-headers'.")
 (luna-define-method shimbun-make-contents ((shimbun shimbun) header)
   (shimbun-make-html-contents shimbun header))
 
-(defun shimbun-header-insert-and-buffer-string (shimbun header &optional charset html)
-  "Insert headers which are generated from SHIMBUN and HEADER, and
-return the contents of this buffer as an encoded string."
-  (unless charset (setq charset "ISO-2022-JP"))
-  (goto-char (point-min))
-  (shimbun-header-insert shimbun header)
-  (insert "Content-Type: text/" (if html "html" "plain") "; charset=" charset
-	  "\nMIME-Version: 1.0\n\n")
-  (when html
-    (insert "<html><head><base href=\"" (shimbun-header-xref header)
-	    "\"></head><body>")
-    (goto-char (point-max))
-    (insert "</body></html>"))
-  (encode-coding-string (buffer-string)
-			(mime-charset-to-coding-system charset)))
+(luna-define-generic shimbun-footer (shimbun header &optional html)
+  "Make a footer string for SHIMBUN and HEADER.")
+
+(luna-define-method shimbun-footer ((shimbun shimbun) header &optional html)
+  "")
 
 (luna-define-generic shimbun-index-url (shimbun)
   "Return a index URL of SHIMBUN.")
@@ -550,7 +556,46 @@ integer n:    Retrieve n pages of header indices.")
 (luna-define-method shimbun-close ((shimbun shimbun))
   (shimbun-close-group shimbun))
 
+;;; Virtual class for Japanese Newspapers:
+(luna-define-class shimbun-japanese-newspaper () ())
+(luna-define-method shimbun-footer ((shimbun shimbun-japanese-newspaper) header
+				    &optional html)
+  (if html
+      (concat "\n<p align=\"left\">\n-- <br>\nこの記事の著作権は、"
+	      (shimbun-server-name shimbun)
+	      "社に帰属します。\n原物は <a href=\""
+	      (shimbun-header-xref header) "\">"
+	      (shimbun-header-xref header)
+	      "</a> で公開されています。\n</p>\n")
+    (concat "\n-- \nこの記事の著作権は、"
+	    (shimbun-server-name shimbun)
+	    "社に帰属します。\n原物は "
+	    (shimbun-header-xref header)
+	    " で公開されています。\n")))
+
 ;;; Misc Functions
+(defun shimbun-header-insert-and-buffer-string (shimbun header
+							&optional charset html)
+  "Insert headers which are generated from SHIMBUN and HEADER, and
+return the contents of this buffer as an encoded string."
+  (unless charset
+    (setq charset "ISO-2022-JP"))
+  (goto-char (point-min))
+  (shimbun-header-insert shimbun header)
+  (insert "Content-Type: text/" (if html "html" "plain") "; charset=" charset
+	  "\nMIME-Version: 1.0\n\n")
+  (if html
+      (progn
+	(insert "<html><head><base href=\"" (shimbun-header-xref header)
+		"\"></head><body>")
+	(goto-char (point-max))
+	(insert (shimbun-footer shimbun header html)
+		"\n</body></html>"))
+    (goto-char (point-max))
+    (insert (shimbun-footer shimbun header html)))
+  (encode-coding-string (buffer-string)
+			(mime-charset-to-coding-system charset)))
+
 (defun shimbun-mime-encode-string (string)
   (condition-case nil
       (mapconcat

@@ -1,4 +1,4 @@
-;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp
+;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2001, 2002
 ;; Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
@@ -32,16 +32,26 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-nikkei (shimbun shimbun-text) ())
+(luna-define-class shimbun-nikkei (shimbun-japanese-newspaper) ())
 
 (defvar shimbun-nikkei-url "http://www.nikkei.co.jp/news/")
 
-(defvar shimbun-nikkei-groups
-  '("main" "keizai" "seiji" "kaigai" "market" "sangyo" "tento" "shakai"
-    "retto" "shasetsu" "zinzi" "okuyami"))
+(defvar shimbun-nikkei-group-table
+  '(("main"   . "主要")
+    ("keizai" . "経済")
+    ("seiji"  . "政治")
+    ("kaigai" . "国際")
+    ("market" . "株・為替")
+    ("sangyo" . "企業")
+    ("tento"  . "ベンチャー")
+    ("shakai" . "社会")
+    ("retto"  . "地域経済")
+    ("shasetsu" . "社説")
+    ("zinzi"  . "トップ人事")
+    ("okuyami" . "おくやみ")))
 
+(defvar shimbun-nikkei-server-name "日本経済新聞")
 (defvar shimbun-nikkei-from-address "webmaster@nikkei.co.jp")
 (defvar shimbun-nikkei-content-start "<!--FJZONE START NAME=\"HONBUN\" -->")
 (defvar shimbun-nikkei-content-end   "<!--FJZONE END NAME=\"HONBUN\" -->")
@@ -52,6 +62,13 @@ w?yVB`L_vBG:j~~vhEoHC^Hjq`V(RMFQqa>9jqkt1<G[FMZTb:F@NT\n mcE[_Z\
 _hl5zM,zn?WC*iun#*nJ'YRj}%;:|Y&X)kTXeM#lE*Y^E5}QMe?<pJjd</ktdg\\\
 w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 (defvar shimbun-nikkei-expiration-days 7)
+
+(luna-define-method shimbun-groups ((shimbun shimbun-nikkei))
+  (mapcar 'car shimbun-nikkei-group-table))
+
+(luna-define-method shimbun-current-group-name ((shimbun shimbun-nikkei))
+  (cdr (assoc (shimbun-current-group-internal shimbun)
+	      shimbun-nikkei-group-table)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-nikkei))
   (format "%s%s/index.html"
