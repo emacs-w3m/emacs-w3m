@@ -102,7 +102,9 @@
 (defun shimbun-retrieve-url (url &optional no-cache)
   "Rertrieve URL contents and insert to current buffer."
   (when (w3m-retrieve url nil no-cache)
-    (insert-buffer w3m-work-buffer-name)))
+    (unless (eq (current-buffer)
+		(get-buffer w3m-work-buffer-name))
+      (insert-buffer w3m-work-buffer-name))))
 
 (defun shimbun-retrieve-url-buffer (url &optional no-cache)
   "Return a buffer which contains the URL contents."

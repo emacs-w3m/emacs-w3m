@@ -70,38 +70,37 @@
 	     nil t)
 	    (setq auxs (append auxs (list (match-string 1))))))
       (while auxs
-	(with-temp-buffer
-	  (shimbun-retrieve-url
-	   (shimbun-xemacs-concat-url shimbun
-				      (concat (setq aux (car auxs)) "/"))
-	   t)
-	  (let ((case-fold-search t)
-		id url subject)
-	    (goto-char (point-max))
-	    (while (re-search-backward
-		    "<A[^>]*HREF=\"\\(msg\\([0-9]+\\).html\\)\">\\([^<]+\\)<"
-		    nil t)
-	      (setq url (shimbun-xemacs-concat-url
-			 shimbun
-			 (concat aux "/" (match-string 1)))
-		    id (format "<%s%05d%%%s>"
-			       aux
-			       (string-to-number (match-string 2))
-			       (shimbun-current-group-internal shimbun))
-		    subject (match-string 3))
-	      (forward-line 1)
-	      (if (shimbun-search-id shimbun id)
-		  (throw 'stop headers)
-		(push (shimbun-make-header
-		       0
-		       (shimbun-mime-encode-string subject)
-		       (if (looking-at "<td><em>\\([^<]+\\)<")
-			   (match-string 1)
-			 "")
-		       "" id "" 0 0 url)
-		      headers)
-		(forward-line -2))))
-	  (setq auxs (cdr auxs)))))
+	(shimbun-retrieve-url
+	 (shimbun-xemacs-concat-url shimbun
+				    (concat (setq aux (car auxs)) "/"))
+	 t)
+	(let ((case-fold-search t)
+	      id url subject)
+	  (goto-char (point-max))
+	  (while (re-search-backward
+		  "<A[^>]*HREF=\"\\(msg\\([0-9]+\\).html\\)\">\\([^<]+\\)<"
+		  nil t)
+	    (setq url (shimbun-xemacs-concat-url
+		       shimbun
+		       (concat aux "/" (match-string 1)))
+		  id (format "<%s%05d%%%s>"
+			     aux
+			     (string-to-number (match-string 2))
+			     (shimbun-current-group-internal shimbun))
+		  subject (match-string 3))
+	    (forward-line 1)
+	    (if (shimbun-search-id shimbun id)
+		(throw 'stop headers)
+	      (push (shimbun-make-header
+		     0
+		     (shimbun-mime-encode-string subject)
+		     (if (looking-at "<td><em>\\([^<]+\\)<")
+			 (match-string 1)
+		       "")
+		     "" id "" 0 0 url)
+		    headers)
+	      (forward-line -2))))
+	(setq auxs (cdr auxs))))
     headers))
 
 (provide 'sb-xemacs)

@@ -64,35 +64,34 @@
 	    (push (match-string 1) months)))
       (setq months (nreverse months))
       (dolist (month months)
-	(with-temp-buffer
-	  (shimbun-retrieve-url
-	   (shimbun-airs-concat-url shimbun (concat month "/index.html"))
-	   t)
-	  (let (id url subject)
-	    (goto-char (point-max))
-	    (while (re-search-backward
-		    "<A[^>]*HREF=\"\\(msg\\([0-9]+\\)\\.html\\)\">\\([^<]+\\)</A>"
-		    nil t)
-	      (setq url (shimbun-airs-concat-url
-			 shimbun
-			 (concat month "/" (match-string 1)))
-		    id (format "<%s%05d%%%s>"
-			       month
-			       (string-to-number (match-string 2))
-			       (shimbun-current-group-internal shimbun))
-		    subject (match-string 3))
-	      (if (shimbun-search-id shimbun id)
-		  (throw 'stop headers)
-		(save-excursion
-		  (goto-char (match-end 0))
-		  (push (shimbun-make-header
-			 0
-			 (shimbun-mime-encode-string subject)
-			 (if (looking-at "</STRONG> *<EM>\\([^<]+\\)<")
-			     (shimbun-mime-encode-string (match-string 1))
-			   "")
-			 "" id "" 0 0 url)
-			headers))))))))
+	(shimbun-retrieve-url
+	 (shimbun-airs-concat-url shimbun (concat month "/index.html"))
+	 t)
+	(let (id url subject)
+	  (goto-char (point-max))
+	  (while (re-search-backward
+		  "<A[^>]*HREF=\"\\(msg\\([0-9]+\\)\\.html\\)\">\\([^<]+\\)</A>"
+		  nil t)
+	    (setq url (shimbun-airs-concat-url
+		       shimbun
+		       (concat month "/" (match-string 1)))
+		  id (format "<%s%05d%%%s>"
+			     month
+			     (string-to-number (match-string 2))
+			     (shimbun-current-group-internal shimbun))
+		  subject (match-string 3))
+	    (if (shimbun-search-id shimbun id)
+		(throw 'stop headers)
+	      (save-excursion
+		(goto-char (match-end 0))
+		(push (shimbun-make-header
+		       0
+		       (shimbun-mime-encode-string subject)
+		       (if (looking-at "</STRONG> *<EM>\\([^<]+\\)<")
+			   (shimbun-mime-encode-string (match-string 1))
+			 "")
+		       "" id "" 0 0 url)
+		      headers)))))))
     headers))
 
 (provide 'sb-airs)

@@ -1,5 +1,12 @@
 2001-04-13  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* shimbun/sb-xemacs.el (shimbun-get-headers): Undo last change.
+
+	* shimbun/sb-airs.el (shimbun-get-headers): Ditto.
+
+	* shimbun/shimbun.el (shimbun-retrieve-url): Copy buffer content only
+	if it is not the work buffer of w3m.
+
 	* shimbun/sb-xemacs.el (shimbun-get-headers): Retrieve header
 	to the temp buffer.
 
