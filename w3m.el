@@ -3536,6 +3536,8 @@ If the user enters null input, return second argument DEFAULT."
 	      (coding-system-for-read 'binary)
 	      (default-process-coding-system (cons 'binary 'binary)))
 	  (w3m-process-with-environment w3m-command-environment
+	    (w3m-static-if (featurep 'xemacs)
+		(goto-char (point-max)))
 	    (zerop (apply 'call-process-region
 			  (point-min) (point-max)
 			  (w3m-which-command (car x))
@@ -3598,6 +3600,8 @@ If the user enters null input, return second argument DEFAULT."
 	    (append args (list "-o" "-cs" (symbol-name w3m-coding-system))))
       (setq charset w3m-coding-system))
     (w3m-process-with-environment w3m-command-environment
+      (w3m-static-if (featurep 'xemacs)
+	  (goto-char (point-max)))
       (apply 'call-process-region (point-min) (point-max)
 	     w3m-mbconv-command t t nil args))
     charset))
@@ -4408,6 +4412,13 @@ type as a string argument, when retrieve is complete."
 	 (default-process-coding-system
 	   (cons coding-system-for-read coding-system-for-write)))
     (w3m-process-with-environment w3m-command-environment
+      ;; `call-process-region' provided by XEmacs of versions 21.5.7
+      ;; through 21.5.?? is evil.  It requires the point to have to be
+      ;; in the beginning or the end of the region when the 4th arg is t.
+      ;; See the following report:
+      ;; http://list-archive.xemacs.org/xemacs-beta/200311/msg002??.html
+      (w3m-static-if (featurep 'xemacs)
+	  (goto-char (point-max)))
       (apply 'call-process-region
 	     (point-min)
 	     (point-max)

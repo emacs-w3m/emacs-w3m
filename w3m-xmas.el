@@ -735,6 +735,7 @@ italic font in the modeline."
 			   format-alist)
 		       (with-temp-buffer
 			 (insert-file-contents file)
+			 (goto-char (point-max))
 			 (call-process-region
 			  (point-min) (point-max) w3m-gifsicle-program t t nil
 			  "--careful" "--delay" "10" "--loopcount=forever"

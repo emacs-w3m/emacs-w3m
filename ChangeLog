@@ -1,5 +1,18 @@
 2003-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-rendering-half-dump): Move point to the end of the
+	region in order to avoid a bug of `call-process-region' in XEmacs
+	21.5.7+ (see the comment).
+	(w3m-decode-encoded-contents): Ditto.
+	(w3m-x-moe-decode-buffer): Ditto.
+
+	* w3m-perldoc.el (w3m-about-perldoc): Ditto.
+
+	* w3m-xmas.el (w3m-initialize-graphic-icons): Ditto.
+
+	* w3m-favicon.el (w3m-favicon-retrieve): Say "no favicon" if it is
+	not available.
+
 	* w3m-proc.el (w3m-process-with-environment): Rely on the
 	`temp-directory' function and modify TEMP and TMPDIR env vars for
 	XEmacs.

@@ -74,12 +74,15 @@
       (setenv "HOME" (expand-file-name w3m-profile-directory))
       (and (zerop (call-process w3m-perldoc-command
 				nil t nil "-u" docname))
-	   (zerop (apply (function call-process-region)
-			 (point-min) (point-max)
-			 w3m-perldoc-pod2html-command
-			 t '(t nil) nil
-			 (append w3m-perldoc-pod2html-arguments
-				 '("--htmlroot=about://perldoc"))))
+	   (progn
+	     (w3m-static-if (featurep 'xemacs)
+		 (goto-char (point-max)))
+	     (zerop (apply (function call-process-region)
+			   (point-min) (point-max)
+			   w3m-perldoc-pod2html-command
+			   t '(t nil) nil
+			   (append w3m-perldoc-pod2html-arguments
+				   '("--htmlroot=about://perldoc")))))
 	   (let ((case-fold-search t))
 	     (goto-char (point-min))
 	     (while (re-search-forward
