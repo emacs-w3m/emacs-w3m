@@ -1,6 +1,6 @@
 2003-01-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-image-type): Move backward.
+	* w3m.el (w3m-image-type): Move forward.
 	(w3m-fontify-images): Use `w3m-action' and `w3m-anchor' instead of
 	`get-text-property'.
 	(w3m-toggle-inline-images-internal): Use `w3m-image' instead of
