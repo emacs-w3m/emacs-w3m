@@ -104,14 +104,11 @@
 
 (luna-define-method shimbun-headers ((shimbun shimbun-rss) &optional range)
   (with-temp-buffer
-    (let ((case-fold-search t)
-	  encoding)
+    (let ((case-fold-search t))
       (shimbun-retrieve-url
        (shimbun-index-url shimbun) 'no-cache 'no-decode)
       (goto-char (point-min))
-      (setq encoding (intern-soft (concat
-				   (downcase (shimbun-rss-get-encoding)) "-dos")))
-      (decode-coding-region (point-min) (point-max) encoding)
+      (decode-coding-region (point-min) (point-max) (shimbun-rss-get-encoding))
       (set-buffer-multibyte t)
       (shimbun-get-headers shimbun range))))
 
@@ -158,19 +155,19 @@
 ;;; XML functions
 
 (defun shimbun-rss-get-encoding ()
-  (let (end)
+  (let (end encoding)
     (cond
-     ((search-forward "<?")
-      (let (pos)
-	(setq pos (point))
+     ((search-forward "<?" nil t nil)
+      (let ((pos (point)))
 	(setq end (search-forward "?>"))
 	(goto-char pos))
-      (if (re-search-forward "encoding=\"\\(.+\\)\"" end t)
-	  (match-string-no-properties 1)
-	"utf-8"))
-     (t	;; XML Default encoding.
-      "utf-8"
-      ))))
+      (setq encoding
+	    (if (re-search-forward "encoding=\"\\([^ ]+\\)\"" end t)
+		(downcase (match-string-no-properties 1))
+	      "utf-8")))
+     (t ;; XML Default encoding.
+      (setq encoding "utf-8")))
+    (intern-soft (concat encoding "-dos"))))
 
 (defun shimbun-rss-node-text (namespace local-name element)
   (let* ((node (assq (intern (concat namespace (symbol-name local-name)))

@@ -1,3 +1,9 @@
+2003-07-02  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-rss.el (shimbun-rss-get-encoding): Bug fixed.
+	Return interned encoding with suffix `-dos'.
+	(shimbun-headers): Simplified.
+
 2003-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-kde.el (shimbun-kde-x-face-alist): New.
@@ -36,6 +42,7 @@
 	(w3m-check-refresh-attribute): Condition relaxed.
 	(w3m-region): Disable checking refresh attribute.
 
+>>>>>>> 1.1661
 2003-06-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Some miscellaneous changes and large changes to make a
