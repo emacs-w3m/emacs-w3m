@@ -140,7 +140,9 @@
 ;; Avoid byte-compile warnings.
 (eval-when-compile
   (autoload 'rfc2368-parse-mailto-url "rfc2368")
-  (autoload 'widget-convert-button "wid-edit"))
+  (autoload 'widget-convert-button "wid-edit")
+  (unless (fboundp 'char-to-int)
+    (defalias 'char-to-int 'identity)))
 
 (defconst emacs-w3m-version
   (eval-when-compile
@@ -3145,10 +3147,37 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
    ((locate-library "ffap")
     (autoload 'ffap-url-at-point "ffap")
     (if (featurep 'xemacs)
-	(defun w3m-url-at-point ()
-	  "Like `ffap-url-at-point', except that text props will be stripped."
-	  (let (ffap-xemacs)
-	    (ffap-url-at-point)))
+	(if (featurep 'mule)
+	    (defun w3m-url-at-point ()
+	      "\
+Like `ffap-url-at-point', except that text props will be stripped and
+iso646 characters are unified into ascii characters."
+	      (let ((left (buffer-substring-no-properties (point-at-bol)
+							  (point)))
+		    (right (buffer-substring-no-properties (point)
+							   (point-at-eol)))
+		    (regexp (format "[%c-%c]"
+				    (make-char 'latin-jisx0201 33)
+				    (make-char 'latin-jisx0201 126)))
+		    (diff (- (char-to-int (make-char 'latin-jisx0201 33)) 33))
+		    index)
+		(while (setq index (string-match regexp left))
+		  (aset left index (- (aref left index) diff)))
+		(while (setq index (string-match regexp right))
+		  (aset right index (- (aref right index) diff)))
+		(with-temp-buffer
+		  (insert right)
+		  (goto-char (point-min))
+		  (insert left)
+		  (ffap-url-at-point))))
+	  (defun w3m-url-at-point ()
+	    "\
+Like `ffap-url-at-point', except that text props will be stripped."
+	    (unless (fboundp 'ffap-url-at-point)
+	      ;; It is necessary to bind `ffap-xemacs'.
+	      (load "ffap" nil t))
+	    (let (ffap-xemacs)
+	      (ffap-url-at-point))))
       (defalias 'w3m-url-at-point 'ffap-url-at-point))
     (eval-after-load "ffap"
       '(progn
