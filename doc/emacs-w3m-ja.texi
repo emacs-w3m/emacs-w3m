@@ -3916,7 +3916,7 @@ fml mailing list server/manager.  詳細は
 @url{http://www.fml.org/software/fml/} をご覧下さい。
 
 @item mailarc
-
+詳細は @url{http://cvs.namazu.org/mailarc/} をご覧下さい。
 @end itemize
 
 貴方が @xref{Getting web page and header information} のステップで、取得した

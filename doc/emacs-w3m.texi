@@ -3353,8 +3353,9 @@ See @url{http://www.oac.uci.edu/indiv/ehood/mhonarc.html} for detail.
 @item fml
 fml mailing list server/manager.  See
 @url{http://www.fml.org/software/fml/} for detail.
-@item mailarc
 
+@item mailarc
+See @url{http://cvs.namazu.org/mailarc/} for detail.
 @end itemize
 
 If you find out one of such mailing list managers' names in a web page
