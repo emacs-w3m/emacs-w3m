@@ -1,3 +1,8 @@
+2004-09-01  Hiroaki Irokawa  <irorin@terra.dti.ne.jp>
+
+	* shimbun/sb-vinelinux.el (shimbun-vinelinux-group-path-alist):
+	Add errata.3x.i386, errata.3x.ppc and errata.3x.alpha groups.
+
 2004-08-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist): Fetch

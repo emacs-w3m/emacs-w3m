@@ -1,6 +1,6 @@
 ;;; sb-vinelinux.el --- shimbun backend class for vinelinux web site. -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -32,7 +32,10 @@
 
 (defconst shimbun-vinelinux-url "http://www.vinelinux.org")
 (defconst shimbun-vinelinux-group-path-alist
-  '(("errata.25x.i386" . "errata/25x/i386.html")
+  '(("errata.3x.i386" . "errata/3x/i386.html")
+    ("errata.3x.ppc" . "errata/3x/ppc.html")
+    ("errata.3x.alpha" . "errata/3x/alpha.html")
+    ("errata.25x.i386" . "errata/25x/i386.html")
     ("errata.25x.ppc" . "errata/25x/ppc.html")
     ("errata.25x.sparc" . "errata/25x/sparc.html")
     ("errata.25x.alpha" . "errata/25x/alpha.html")

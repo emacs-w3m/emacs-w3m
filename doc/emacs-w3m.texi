@@ -4852,6 +4852,8 @@ all contents of a page.
 @end lisp
 
 @item @uref{http://www.vinelinux.org, VineLinux Errata}
+vinelinux.errata.3x.i386 vinelinux.errata.3x.ppc
+vinelinux.errata.3x.alpha
 vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
 vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
