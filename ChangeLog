@@ -1,3 +1,26 @@
+2003-06-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-pocketgames.el (shimbun-reply-to): Insert docstring
+	to avoid the bug of XEmacs's byte compiler.
+
+	* shimbun/sb-pilot-mailsync.el (shimbun-reply-to): Ditto.
+
+	* shimbun/sb-pcweb-column.el (shimbun-reply-to): Ditto.
+
+	* shimbun/sb-dennou.el (shimbun-reply-to): Ditto.
+
+	* shimbun/sb-security-memo.el (shimbun-reply-to): Ditto.
+
+	* w3m.el (w3m-arrived-ignored-regexp): Use "\`" instead of "^".
+	(w3m-history-ignored-regexp): Ditto.
+	(w3m-url-transfer-encode-string): New inline function.
+	(w3m-fontify-anchors): Encode URL with the attribute `charset'.
+	(w3m-input-url): Encode URL with `w3m-default-coding-system'.
+	(w3m-about-header): Display the current anchor information.
+
+	* w3m-form.el (w3m-form-parse-and-fontify): Encode URL with the
+	attribute `charset'.
+
 2003-06-18  Koichiro Ohba  <koichiro@meadowy.org>
 
 	* shimbun/sb-bbc-rss.el: New backend.
@@ -18,11 +41,11 @@
 
 	* shimbun/sb-sourceforge-jp.el: New backend.
 
-	* shimbun/shimbun.el (shimbun-footer): Insert docstring to aboid
+	* shimbun/shimbun.el (shimbun-footer): Insert docstring to avoid
 	the bug of XEmacs's byte compiler.
 
 	* shimbun/sb-w3m-dev.el (shimbun-reply-to): Insert docstring to
-	aboid the bug of XEmacs's byte compiler.
+	avoid the bug of XEmacs's byte compiler.
 
 2003-06-17  NAKAJIMA Mikio  <minakaji@namazu.org>
 

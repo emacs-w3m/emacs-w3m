@@ -36,6 +36,7 @@
 (defvar shimbun-security-memo-coding-system 'euc-japan)
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-security-memo))
+  "Return the mailing list address."
   "memo@memo.st.ryukoku.ac.jp")
 
 (provide 'sb-security-memo)
