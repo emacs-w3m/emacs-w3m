@@ -1,3 +1,8 @@
+2001-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (TopLevel): Don't byte-compile the source form to bind
+	colon keywords for old Emacsen.
+
 2001-10-01  Masatake YAMATO  <jet@gyve.org>
 
 	* w3m.el (w3m-mode): Added `w3m-toggle-inline-images' to the

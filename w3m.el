@@ -64,13 +64,15 @@
     (load "cl-macs" nil t)))
 
 (eval-and-compile
-  (condition-case nil
-      :symbol-for-testing-whether-colon-keyword-is-available-or-not
-    (void-variable
-     (let (w3m-colon-keywords)
-       (load "w3m-kwds.el" nil t t)
-       (dolist (keyword w3m-colon-keywords)
-	 (set keyword keyword))))))
+  (eval
+   '(condition-case nil
+	:symbol-for-testing-whether-colon-keyword-is-available-or-not
+      (void-variable
+       (let (w3m-colon-keywords)
+	 (load "w3m-kwds.el" nil t t)
+	 (while w3m-colon-keywords
+	   (set (car w3m-colon-keywords) (car w3m-colon-keywords))
+	   (setq w3m-colon-keywords (cdr w3m-colon-keywords))))))))
 
 (require 'w3m-macro)
 
