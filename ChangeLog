@@ -1,3 +1,28 @@
+2003-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-modeline-image-status-on,
+	w3m-modeline-process-status-on, w3m-modeline-ssl-image-status-on,
+	w3m-modeline-ssl-status-off, w3m-modeline-status-off): Use `defvar'
+	instead of `defconst'.
+	(w3m-buffer-setup): Call `w3m-initialize-graphic-icons' instead of
+	`w3m-make-spinner-image'; simplify the value for
+	`mode-line-buffer-identification'.
+
+	* w3m-xmas.el (w3m-xmas-space-before-modeline-icon): Rename from
+	`w3m-xmas-space-before-spinner'.
+	(w3m-modeline-process-status-on-icon,
+	w3m-modeline-image-status-on-icon, w3m-modeline-status-off-icon,
+	w3m-modeline-ssl-image-status-on-icon,
+	w3m-modeline-ssl-status-off-icon): New variables.
+	(w3m-spinner-image): Abolish.
+	(w3m-make-spinner-image): Abolish.
+	(w3m-initialize-graphic-icons): New function.
+
+	* icons/state-00.xpm:
+	* icons/state-01.xpm:
+	* icons/state-10.xpm:
+	* icons/state-11.xpm: New files.
+
 2003-10-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-halfdump-command-arguments): Add "ucs_conv" option
