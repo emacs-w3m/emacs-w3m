@@ -106,7 +106,7 @@
 				   headers))))
 
 (defvar shimbun-mhonarc-optional-headers
-  '("x-ml-count" "x-ml-name" "user-agent"))
+  '("x-ml-count" "x-mail-count" "x-ml-name" "user-agent"))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-mhonarc)
 					   header)
