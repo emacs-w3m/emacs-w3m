@@ -46,6 +46,7 @@
 (defvar shimbun-yomiuri-group-table
   (let* ((s0 "[\t\n ]*")
 	 (s1 "[\t\n ]+")
+	 (no-nl "[^\n]+")
 	 (default
 	   (list
 	    (concat
@@ -85,7 +86,7 @@
 		"\\([０-３]?[０-９]\\)"
 		"日付・"
 		;; 6. subject
-		"\\(.+\\)" s0 "</a>")
+		"\\(" no-nl "\\)" s0 "</a>")
        1 2 3 6 4 5)
       ("kyoiku" "教育メール" "main.htm"
        ,(concat "<a" s1 "href=\"/"
@@ -115,7 +116,7 @@
 		"\\.htm\\)"
 		"\">" s0
 		;; 4. subject
-		"\\(.+\\)"
+		"\\(" no-nl "\\)"
 		s0 "("
 		;; 5. month
 		"\\([01]?[0-9]\\)"
@@ -361,7 +362,7 @@ information available, removing useless contents, etc."
 	(case-fold-search t)
 	end)
     (if (string-equal group "kyoiku")
-	(when (re-search-forward "^◆<b>.+</b>[\t\n ]*" nil t)
+	(when (re-search-forward "^◆<b>[^\n]+</b>[\t\n ]*" nil t)
 	  (delete-region (point-min) (point))
 	  (while (re-search-forward "[\t\n ]*\\(<\\([^<>]+\\)>[\t\n ]*\\)+"
 				    nil t)

@@ -1,3 +1,14 @@
+2003-10-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	We shouldn't use too simple elements like ".+" in the deep nested
+	regexps.  It may cause high cpu or may make Emacs hang.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Improve regexp.
+	* shimbun/sb-mainichi.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-sankei.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Ditto.
+	(shimbun-yomiuri-prepare-article): Ditto.
+
 2003-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-sankei.el (shimbun-sankei-content-start): Improve the
