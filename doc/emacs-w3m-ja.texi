@@ -1104,8 +1104,8 @@ URL をアンテナ・データベースに加えます。接頭引数付きで呼ばれた場合は、現
 
 @table @kbd
 @item A
-Visit the Antenna page.  If called with a prefix argument, update the
-Antenna database before displaying it (@code{w3m-antenna}).
+アンテナのページに行きます。接頭引数付きで呼ばれた場合は、表示する前にア
+ンテナ・データベースを更新します (@code{w3m-antenna})。
 @end table
 
 @node Showing Directory Tree
