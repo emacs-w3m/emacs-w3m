@@ -128,7 +128,7 @@ Emacs-w3m $B3+H/%A!<%`(B
 @menu
 * Introduction::                $B$O$8$a$K(B
 * Getting Started::             Emacs-w3m $B$r;H$$;O$a$k$N$O$H$C$F$b4JC1(B
-* Shimbun Library::             $B?7J9$rJXMx$KFI$`$?$a$NF;6q(B
+* Shimbun Library::             $B%&%'%V>e$N?7J9$rFI$`$?$a$NF;6q(B
 * Index::                       $B:w0z(B
 
 @detailmenu
@@ -311,9 +311,9 @@ Emacs 19.34 ($B4^(B Mule 2.3) $B$KIT2D7g$G$9!#%U%!%$(B
 
 @item FLIM
 Shimbun $B%i%$%V%i%j(B (@pxref{Shimbun Library}) $B$r;H$&$?$a$K$O(B FLIM $B%Q%C%1!<(B
-$B%8$,I,MW$G$9!#(BShimbun $B%i%$%V%i%j$O!"%&%'%V>e$N?7J9$rJXMx$KFI$`$?$a$NF;6q(B
-$BN`$N%3%l%/%7%g%s$G!"(BGnus$B!"(BMew$B!"(BNana-gnus$B!"(BT-gnus$B!"(BWanderlust $B$J$I$H$H$b(B
-$B$K;H$&$3$H$,$G$-$^$9!#(B@xref{Shimbun Library}$B!#(B
+$B%8$,I,MW$G$9!#(BShimbun $B%i%$%V%i%j$O%&%'%V>e$N?7J9$rFI$`$?$a$NF;6qN`$N%3%l(B
+$B%/%7%g%s$G!"(BGnus$B!"(BMew$B!"(BNana-gnus$B!"(BT-gnus$B!"(BWanderlust $B$J$I$H$H$b$K;H$&$3(B
+$B$H$,$G$-$^$9!#(B@xref{Shimbun Library}$B!#(B
 
 $B$?$H$((B Emacs 20.x $B$+(B Emacs 21.x $B$r;H$C$F$$$k>l9g$G$b!"(BFLIM $B%Q%C%1!<%8$K(B
 $B$O(B APEL $B%Q%C%1!<%8$,I,MW$G$"$k$3$H$KCm0U$7$F2<$5$$!#$7$?$,$C(B
@@ -330,7 +330,7 @@ Shimbun $B%i%$%V%i%j(B (@pxref{Shimbun Library}) $B$r;H$&$?$a$K$O(B FLIM $B
 
 
 @node Shimbun Library
-@chapter $B?7J9$rJXMx$KFI$`$?$a$NF;6q(B
+@chapter $B%&%'%V>e$N?7J9$rFI$`$?$a$NF;6q(B
 @cindex shimbun
 
 

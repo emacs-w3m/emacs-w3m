@@ -87,7 +87,7 @@ This manual corresponds to emacs-w3m version @value{VERSION}.
 @menu
 * Introduction::                Preliminary remarks to emacs-w3m
 * Getting Started::             It's so easy to begin to use emacs-w3m
-* Shimbun Library::             A tool for reading a newspaper conveniently
+* Shimbun Library::             A tool for reading a web newspaper
 * Index::                       Index
 
 @detailmenu
@@ -261,9 +261,9 @@ emacs-w3m distributin.  You may simply copy it into somewhere (e.g.
 
 @item FLIM
 The FLIM package is required for using the shimbun library.  The shimbun
-library is a collection of tools for reading a web newspaper
-conveniently, you can use it with Gnus, Mew, Nana-gnus, T-gnus,
-Wanderlust, etc.  @xref{Shimbun Library}.
+library is a collection of tools for reading a web newspaper, you can
+use it with Gnus, Mew, Nana-gnus, T-gnus, Wanderlust, etc.
+@xref{Shimbun Library}.
 
 Note that the FLIM package requires the APEL package even if you are
 using Emacs 20.x or Emacs 21.x.  Therefore, you must install both APEL
@@ -280,7 +280,7 @@ is available in:
 
 
 @node Shimbun Library
-@chapter A tool for reading a newspaper conveniently
+@chapter A tool for reading a newspaper
 @cindex shimbun
 
 
