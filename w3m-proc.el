@@ -283,8 +283,10 @@ which have no handler."
 		     (dolist (handler (w3m-process-handlers obj))
 		       (w3m-kill-buffer (w3m-process-handler-buffer handler)))
 		     nil)))
-	       w3m-process-queue))
-	w3m-current-process nil)
+	       w3m-process-queue)))
+  (when (buffer-name buffer)
+    (with-current-buffer buffer
+      (setq w3m-current-process nil)))
   (w3m-process-start-queued-processes)
   (w3m-static-when (boundp 'header-line-format)
     ;; Redisplay the header-line.

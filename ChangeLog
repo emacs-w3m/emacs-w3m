@@ -1,3 +1,9 @@
+2003-11-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-proc.el (w3m-process-stop): Change `w3m-current-process' in
+	the buffer specified in the argument, instead of changing it in
+	the current buffer.
+
 2003-11-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-w3m-canonicalize-url): New function.
