@@ -73,6 +73,7 @@ gnome 関連	gnome.balsa-list gnome.calendar-list
 		gnome.guppi-list gnome.libart gnome.libart-hackers
 		gnome.orbit-list gnome.vote gnome.wm-spec-list
 		gnome.xml gnome.xslt
+gs-cjk		gyve.gs-cjk
 h14m 関連	h14m.hns-dev h14m.hns-users
 linux-ce	linux-ce.users
 mule-ja		m17n.mule-ja
