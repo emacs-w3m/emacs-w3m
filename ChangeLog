@@ -1,3 +1,55 @@
+2003-07-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-bookmark.el (w3m-bookmark-add): Encode special charactes
+	included in a URL and a title.
+
+	* w3m-antenna.el (w3m-antenna-check-all-sites): Use
+	`w3m-antenna-alist' instead of `w3m-antenna-sites'; this change
+	must have no ill effects because `w3m-use-setup' merges site
+	informations kept by `w3m-antenna-sites' into `w3m-antenna-alist'.
+	(w3m-about-antenna): Fix.
+	(w3m-antenna-add-current-url): Encode special charactes included
+	in `w3m-current-title'.
+
+	* w3m.el: Changes of functions handling the arrived database, and
+	clean up w3m-retrieve-and-render() and related parts.
+	(w3m-content-type-alist): Change spec.
+	(w3m-attributes): Strip authentication part from URL before
+	checking charsets given by a user.
+	(w3m-arrived-add-1): Removed.
+	(w3m-arrived-add): Reimplemented.
+	(w3m-arrived-modify): Removed.
+	(w3m-arrived-time): Define its `setf' method.
+	(w3m-arrived-get, w3m-arrived-put): New inline functions.
+	(w3m-arrived-title): Define as a macro using `w3m-arrived-get'.
+	(w3m-arrived-last-modified): Ditto
+	(w3m-arrived-content-charset): Ditto
+	(w3m-arrived-content-type): Ditto.
+	(w3m-arrived-shutdown): Modify a predicate used for comparing
+	arrived elements, to ensure that every URL precedes its variants
+	with fragments.
+	(w3m-encode-specials-string): New function.
+	(w3m-safe-decode-buffer): New function.
+	(w3m-rendering-extract-title): Simplified.
+	(w3m-rendering-half-dump): Define as a normal function.
+	(w3m-rendering-buffer): Do not call `w3m-filter'.
+	(w3m-retrieve-and-render): Reimplemented.
+	(w3m-show-error-information): Change its argument spec.
+	(w3m-content-prepare-functions): Abolished.
+	(w3m-prepare-content): Reimplemented.
+	(w3m-prepare-text-content, w3m-prepare-image-content): Removed.
+	(w3m-create-text-page, w3m-create-image-page): New functions; the
+	successors of the aboves.
+	(w3m-create-page): New function.
+	(w3m-goto-url): Follow above changes and clean up.
+	(w3m-redisplay-and-reset): Call `setf' methods instead of using
+	`w3m-arrived-modify'.
+	(w3m-redisplay-with-charset): Ditto.
+	(w3m-redisplay-with-content-type): Ditto.
+	(w3m-about-header): Strip authentication part from URL before
+	extracting titles.  Encode special characters in the title.
+	(w3m-about-db-history): Encode special characters in the title.
+
 2003-07-02  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-atmarkit.el: Rename from sb-atmarkit-rss.el.
@@ -7,14 +59,13 @@
 
 	* shimbun/sb-wiki.el: Rename from sb-pukiwiki-rss.el.
 	(shimbun-wiki-group-alist): Add optional 4th and 5th elements to
-	each inner list.
-	Add doc string.
+	each inner list.  Add doc string.
 	(shimbun-headers): New method.
 	(shimbun-make-contents): Ditto.
 	(shimbun-rss-build-message-id): Modify regexp to support Hiki.
 	Build message-id without string `rss'.
 	(shimbun-index-url): Pick up URL from shimbun-wiki-group-alist and
-	simply return it.	
+	simply return it.
 	(shimbun-wiki-group-alist): Modify ADDRESS of hiki.
 	(shimbun-rss-build-message-id): Modify message-id format.
 

@@ -296,7 +296,9 @@ Optional argument TITLE is title of link."
     (when (or (not title)
 	      (string-match title "^ *$"))
       (error "%s" "You must specify title"))
-    (w3m-bookmark-write-file url title section)))
+    (w3m-bookmark-write-file url
+			     (w3m-encode-specials-string title)
+			     (w3m-encode-specials-string section))))
 
 ;;;###autoload
 (defun w3m-bookmark-add-this-url ()

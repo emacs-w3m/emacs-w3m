@@ -306,7 +306,11 @@ whose elements are:
 			     (buffer-name ,buffer)
 			     (with-current-buffer ,buffer
 			       (funcall ,handler (w3m-antenna-shutdown)))))))
-	(dolist (site w3m-antenna-sites)
+	(dolist (site (mapcar (lambda (elem)
+				(list (w3m-antenna-site-key elem)
+				      (w3m-antenna-site-title elem)
+				      (w3m-antenna-site-class elem)))
+			      w3m-antenna-alist))
 	  (when (w3m-process-p
 		 (setq tmp (w3m-antenna-check-site site t handler)))
 	    (push tmp processes)
@@ -385,7 +389,7 @@ whose elements are:
       (dolist (site alist)
 	(if (w3m-time-newer-p (or (w3m-antenna-site-last-modified site)
 				  (w3m-antenna-site-size-detected site))
-			      (w3m-arrived-last-modified
+			      (w3m-arrived-time
 			       (w3m-antenna-site-url site)))
 	    (push site changed)
 	  (push site unchanged)))
@@ -408,7 +412,7 @@ whose elements are:
 With prefix, ask new url to add instead of current page."
   (interactive "P")
   (w3m-antenna-add (if arg (w3m-input-url) w3m-current-url)
-		   w3m-current-title))
+		   (w3m-encode-specials-string w3m-current-title)))
 
 (defun w3m-antenna-add (url &optional title)
   "Add URL to antenna.
