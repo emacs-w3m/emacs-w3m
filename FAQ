@@ -12,6 +12,7 @@
    The following "Emacsen" have been checked for emacs-w3m support.
 
 	Mule-2.3 @ Emacs-19.34
+	Emacs-19.34
 	Emacs-20
 	Emacs-21
 	XEmacs-21.1 with Mule
@@ -20,8 +21,8 @@
 	XEmacs-21.5 with Mule
 	Meadow
 
-   For Mule-2.3 and XEmacs, it is necessary to use APEL.  APEL is
-   available from ftp://ftp.m17n.org/pub/mule/apel/
+   For Mule-2.3, Emacs-19.34 and XEmacs, it is necessary to use APEL.
+   APEL is available from ftp://ftp.m17n.org/pub/mule/apel/
 
    emacs-w3m-1.2 works on XEmacs without Mule except for several
    commands, such as the command to look weather forecasts in Japan.
@@ -108,6 +109,13 @@
    If you use versions prior to w3m-0.2.1, graphics are not rendered
    correctly.  If you use those versions, it is recommended that you
    upgrade.
+
+** Q. Why does browsing pages required cookie not work?
+
+   (This is still experimental functionality.)
+
+   Check if the option variable `w3m-use-cookies' is set to a value
+   other than nil.
 
 ** Q. Why does inputting into a form not work?
 
