@@ -1,5 +1,16 @@
 2001-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-xmas.el: Require `wid-edit' when the widget `coding-system'
+	is not available.
+
+	* mime-w3m.el: Add autoload for `font-set-face-background' since it
+	is not auto-autoload'ed in XEmacs.
+
+	* w3mhack.el: Require `bytecomp'; make XEmacs don't warn for unused
+	non-global variables.
+
+2001-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el: Bind colon keywords only if it is not available.
 	(rfc2368-parse-mailto-url):
 	(w3m-form-parse-region):

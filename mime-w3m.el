@@ -54,6 +54,10 @@
 (defvar mime-w3m-message-structure nil)
 (make-variable-buffer-local 'mime-w3m-message-structure)
 
+(eval-and-compile
+  (when (featurep 'xemacs)
+    (autoload 'font-set-face-background "font" nil t)))
+
 (put 'mime-w3m-save-background-color 'edebug-form-spec '(&rest body))
 (defmacro mime-w3m-save-background-color (&rest body)
   (if (featurep 'xemacs)

@@ -84,6 +84,8 @@ Buffer string between BEG and END are replaced with IMAGE."
 (unless (get 'coding-system 'widget-type)
 ;; To avoid of lack of definition at old wid-edit.el.
 ;; These codes are imported from wid-edit.el of Emacs-20.7.
+(require 'wid-edit)
+
 (defvar widget-coding-system-prompt-value-history nil
   "History of input to `widget-coding-system-prompt-value'.")
 

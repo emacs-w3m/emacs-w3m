@@ -73,11 +73,17 @@
 	(princ (format "%sc " module))))))
 
 ;; Byte optimizers.
+(require 'bytecomp)
+
 (put 'truncate-string 'byte-optimizer
      (lambda (form)
        (if (fboundp 'truncate-string-to-width)
 	   (cons 'truncate-string-to-width (cdr form))
 	 form)))
+
+(when (featurep 'xemacs)
+  (setq byte-compile-warnings
+	(delq 'unused-vars (copy-sequence byte-compile-default-warnings))))
 
 (defun w3mhack-version ()
   "Print version of w3m.el."
