@@ -195,6 +195,34 @@ It fixes an XEmacs 21.5 bug."
       (goto-char (point-max))
       ad-do-it)))
 
+;; Add `configure-package-path' to `load-path' for XEmacs.  Those paths
+;; won't appear in `load-path' when XEmacs starts with the `-vanilla'
+;; option or the `-no-autoloads' option because of a bug. :<
+(when (and (featurep 'xemacs)
+	   (boundp 'configure-package-path)
+	   (listp configure-package-path))
+  (let ((paths
+	 (apply 'nconc
+		(mapcar
+		 (lambda (path)
+		   (when (and (stringp path)
+			      (not (string-equal path ""))
+			      (file-directory-p
+			       (setq path (expand-file-name "lisp" path))))
+		     (directory-files path t)))
+		 configure-package-path)))
+	path adds)
+    (while paths
+      (setq path (car paths)
+	    paths (cdr paths))
+      (when (and path
+		 (not (or (string-match "/\\.\\.?\\'" path)
+			  (member (file-name-as-directory path) load-path)
+			  (member path load-path)))
+		 (file-directory-p path))
+	(push (file-name-as-directory path) adds)))
+    (setq load-path (nconc (nreverse adds) load-path))))
+
 ;; Add supplementary directories to `load-path'.
 (let ((addpath (or (pop command-line-args-left) "NONE"))
       path paths)

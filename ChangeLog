@@ -1,5 +1,8 @@
 2005-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el: Add early-package-load-path to load-path for XEmacs
+	21.5.
+
 	* shimbun/sb-asahi.el: Rewrite to follow the change of the site.
 	(shimbun-asahi-make-regexp): New function.
 	(shimbun-asahi-group-table): Use it; remove the groups borderless,
