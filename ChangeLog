@@ -1,3 +1,11 @@
+2002-11-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-bookmark.el (w3m-bookmark-file-coding-system): Fix its
+	docstring.
+	(w3m-bookmark-verify-modtime): Keep buffer modified status.
+	(w3m-bookmark-safe-string): New function.
+	(w3m-bookmark-write-file): Call it to make given strings be safe.
+
 2002-11-04  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-visit-folder): New

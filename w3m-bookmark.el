@@ -44,12 +44,12 @@
   :type 'file)
 
 (defcustom w3m-bookmark-file-coding-system 'euc-japan
-  "Coding system of bookmark file.
+  "Coding system for a created bookmark file.
 This option is used when a new bookmark file is created, or when an
-existing bookmark file does not include non-ASCII characters.  If the
-coding system which is used to encode your using bookmark file is
-different from the value of this option, emacs-w3m does not change the
-encoding of your bookmark file."
+existing bookmark file includes ASCII characters only.  If the coding
+system which is used to encode your using bookmark file is different
+from the value of this option, emacs-w3m does not change the encoding
+of your bookmark file."
   :group 'w3m
   :type 'coding-system)
 
@@ -180,14 +180,15 @@ exist, returns (0 . 0)."
 		 (w3m-bookmark-file-modtime))
     (if (buffer-file-name)
 	(ask-user-about-supersession-threat w3m-bookmark-file)
-      (let ((name (buffer-name)))
+      (let ((modified (buffer-modified-p))
+	    (name (buffer-name)))
 	(unwind-protect
 	    (progn
 	      (set-visited-file-name w3m-bookmark-file)
 	      (ask-user-about-supersession-threat w3m-bookmark-file))
 	  (set-visited-file-name nil)
 	  (rename-buffer name)
-	  (set-buffer-modified-p nil))))))
+	  (set-buffer-modified-p modified))))))
 
 (defun w3m-bookmark-sections ()
   "Return collection of registered sections."
@@ -228,10 +229,29 @@ exist, returns (0 . 0)."
 	    (delete-file file)
 	  (file-error nil)))))))
 
+(defun w3m-bookmark-safe-string (string coding format)
+  (labels ((filter (s c) (decode-coding-string (encode-coding-string s c) c)))
+    (if (or (string= string (filter string coding))
+	    (when w3m-use-mule-ucs
+	      (string= (setq string
+			     (filter string
+				     (if w3m-accept-japanese-characters
+					 'w3m-euc-japan
+				       'w3m-iso-latin-1)))
+		       (filter string coding))))
+	string
+      (error format string))))
+
 (defun w3m-bookmark-write-file (url title section)
   "Make new bookmark with specified spec, and save it."
   (save-excursion
     (set-buffer (w3m-bookmark-buffer))
+    (setq title (w3m-bookmark-safe-string
+		 title buffer-file-coding-system
+		 "Specified title includes unsafe character(s): %s")
+	  section (w3m-bookmark-safe-string
+		   section buffer-file-coding-system
+		   "Specified section includes unsafe character(s): %s"))
     (if (zerop (buffer-size))
 	;; New bookmark file.
 	(progn
