@@ -42,8 +42,9 @@
 (defvar shimbun-nikkei-content-start "<!--FJZONE START NAME=\"HONBUN\" -->")
 (defvar shimbun-nikkei-content-end   "<!--FJZONE END NAME=\"HONBUN\" -->")
 (defvar shimbun-nikkei-x-face-alist
-  '(("default" .   "X-Face: Ygq$6P.,%Xt$U)DS)cRY@k$VkW!7(X'X'?U{{osjjFG\"E]hND;SPJ-J?O?R|a?L
-        g2$0rVng=O3Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%")))
+  '(("default" . "X-Face: Ygq$6P.,%Xt$U)DS)cRY@k$VkW\
+!7(X'X'?U{{osjjFG\"E]hND;SPJ-J?O?R|a?Lg2$0rVng\n =O3\
+Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%")))
 (defvar shimbun-nikkei-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-nikkei))

@@ -41,11 +41,10 @@
   "<FONT color=\"#ff0000\" size=\"-1\">.*</FONT>\n")
 (defvar shimbun-wired-content-end "<DIV ALIGN=\"RIGHT\">\\[")
 (defvar shimbun-wired-x-face-alist
-  '(("default" .
-     "X-Face: \"yhMDxMBowCFKt;5Q$s_Wx)/'L][0@c\"#n2BwH{7mg]5^w1D]\"K^R
-        ]&fZ5xtt1Ynu6V;Cv(@BcZUf9IV$($6TZ`L)$,cegh`b:Uwy`8}#D
-        b-kyCsr_UMRz=,U|>-:&`05lXB4(;h{[&~={Imb-az7&U5?|&X_8c
-        ;#'L|f.P,]|\\50pgSVw_}byL+%m{TrS[\"Ew;dbskaBL[ipk2m4V")))
+  '(("default" . "X-Face: \"yhMDxMBowCFKt;5Q$s_Wx)/'L][0@c\"#n\
+2BwH{7mg]5^w1D]\"K^R]&fZ5xtt1Ynu6V;Cv(\n @BcZUf9IV$($6TZ`L)$,c\
+egh`b:Uwy`8}#Db-kyCsr_UMRz=,U|>-:&`05lXB4(;h{[&~={Imb-az7\n &U\
+5?|&X_8c;#'L|f.P,]|\\50pgSVw_}byL+%m{TrS[\"Ew;dbskaBL[ipk2m4V")))
 (defvar shimbun-wired-expiration-days 7)
 
 (luna-define-method shimbun-get-group-header-alist ((shimbun shimbun-wired))

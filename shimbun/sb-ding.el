@@ -32,9 +32,9 @@
 (defvar shimbun-ding-groups '("ding" "ding-announce" "ding-cvslog"))
 (defvar shimbun-ding-coding-system 'iso-8859-1)
 (defvar shimbun-ding-x-face-alist
-  '(("default" .
-     "X-Face: &w!^oO<W.WBH]FsTP:P0f9X6M-ygaADlA_)eF$<UwQzj7:C=Gi<a?/_4$LX^@$Qq7-O&XHp
- lDARi8e8iT<(A$LWAZD*xjk^')/wI5nG;1cNB>~dS|}-P0~ge{$c!h\\<y")))
+  '(("default" . "X-Face: &w!^oO<W.WBH]FsTP:P0f9X6M-y\
+gaADlA_)eF$<UwQzj7:C=Gi<a?/_4$LX^@$Qq7-O&XHp\n lDARi8\
+e8iT<(A$LWAZD*xjk^')/wI5nG;1cNB>~dS|}-P0~ge{$c!h\\<y")))
 (defvar shimbun-ding-reverse-flag nil)
 (defvar shimbun-ding-litemplate-regexp
   "<td><strong><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a></strong>\n<td><em>\\([^<]+\\)</em>")
