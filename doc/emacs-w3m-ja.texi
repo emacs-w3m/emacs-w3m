@@ -3302,6 +3302,10 @@ yomiuri.sports yomiuri.world
 
 朝日新聞の場合と同様に、画像を含む記事を生成する @samp{yomiuri-html} も
 利用できます。
+
+@item @uref{http://www.sankei.co.jp/, 産経新聞}
+sankei.shakai sankei.sports sankei.keizai sankei.seiji sankei.kokusai
+sankei.bungei sankei.book sankei.person sankei.dead
 @end table
 
 @node News Sites Supported by Shimbun
