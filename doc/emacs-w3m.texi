@@ -1852,35 +1852,13 @@ does the same thing.
 
 @node Setting up Antenna
 @subsection How to add your web sites to Antenna
-@cindex about://antenna-edit/
+@vindex w3m-antenna-sites
 
-Antenna has a specific customization interface accessible via the
-``Edit'' button in the Antenna page, or via the special
-@uref{about://antenna-edit/} URL.  It is pretty self-explanatory, to add
-a website, do the following:
-
-@enumerate
-@item
-In the ``Key'' field, put the complete URL of the web page you want to
-watch, for example ``http://my.website.com/index.html''.
-
-@item
-In the ``Title'' field, type a title for your webpage, such as ``My
-website''.
-
-@item
-In the ``Time'' field, choose either ``Normal'', ``Time'' or ``HNS''.
-You probably want the first choice.
-@end enumerate
-
-Once all the fields are filled, hit the ``New'' button.  Your website
-is now added to the Antenna database; repeat the same steps for the
-other sites you want to track.
-
-An alternative way to add a website to Antenna is to go to this site,
-and to use the @kbd{+} key.  You will be taken to the Antenna
-customization buffer, with all fields already set up for you.  You just
-have to hit the buttons ``Save for future sessions'' and ``Finish''.
+If you want to add the visiting web site to Antenna, type the @kbd{+}
+key.  You will be taken to the customization buffer of
+@code{w3m-antenna-sites}, with all fields already set up for you.  You
+just have to hit the buttons ``Save for future sessions'' and
+``Finish''.
 
 @table @kbd
 @item +
