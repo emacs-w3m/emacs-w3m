@@ -189,12 +189,11 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	     ;; number
 	     0
 	     ;; subject
-	     (save-match-data
-	       (shimbun-mime-encode-string
-		(if (nth 6 numbers)
-		    (concat (match-string (nth 6 numbers)) ": "
-			    (match-string (nth 2 numbers)))
-		  (match-string (nth 2 numbers)))))
+	     (shimbun-mime-encode-string
+	      (if (nth 6 numbers)
+		  (concat (match-string (nth 6 numbers)) ": "
+			  (match-string (nth 2 numbers)))
+		(match-string (nth 2 numbers))))
 	     ;; from
 	     from
 	     ;; date

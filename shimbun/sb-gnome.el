@@ -106,10 +106,8 @@
 		(push
 		 (shimbun-make-header
 		  0
-		  (save-match-data
-		    (shimbun-mime-encode-string (match-string 3))) ; subject
-		  (save-match-data
-		    (shimbun-mime-encode-string (match-string 4))) ; from
+		  (shimbun-mime-encode-string (match-string 3)) ; subject
+		  (shimbun-mime-encode-string (match-string 4)) ; from
 		  date
 		  id
 		  "" 0 0
