@@ -76,13 +76,6 @@
   (format "%s%%%s%%rss@atmarkit.co.jp" (match-string-no-properties 1 url)
 	  (shimbun-current-group-internal shimbun)))
 
-(luna-define-method shimbun-article
-  :around ((shimbun shimbun-atmarkit-rss) header &optional outbuf)
-  (let ((w3m-coding-system-priority-list
-	 (cons (shimbun-coding-system-internal shimbun)
-	       w3m-coding-system-priority-list)))
-    (luna-call-next-method)))
-
 (provide 'sb-atmarkit-rss)
 
 ;;; sb-atmarkit-rss.el ends here

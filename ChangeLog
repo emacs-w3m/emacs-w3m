@@ -9,6 +9,10 @@
 	* shimbun/sb-w3m-dev.el (shimbun-get-headers, shimbun-article):
 	Removed.
 
+	* shimbun/sb-atmarkit-rss.el (shimbun-article): Removed.
+
+	* shimbun/sb-slashdot-jp-rss.el (shimbun-article): Removed.
+
 	* shimbun/shimbun.el: Changes to add a copyright notice to every
 	article.
 	(shimbun-footer): New method.

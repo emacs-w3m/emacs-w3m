@@ -52,13 +52,6 @@
     (error "Cannot find message-id base"))
   (concat (match-string-no-properties 1 url) "%%rss@slashdot.jp"))
 
-(luna-define-method shimbun-article
-  :around ((shimbun shimbun-slashdot-jp-rss) header &optional outbuf)
-  (let ((w3m-coding-system-priority-list
-	 (cons (shimbun-coding-system-internal shimbun)
-	       w3m-coding-system-priority-list)))
-    (luna-call-next-method)))
-
 (provide 'sb-slashdot-jp-rss)
 
 ;;; sb-slashdot-jp-rss.el ends here
