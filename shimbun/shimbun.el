@@ -230,7 +230,7 @@ Optional MUA is a `shimbun-mua' instance."
 	     (cdr (assoc "default" (shimbun-x-face-alist-internal shimbun)))
 	     shimbun-x-face))
 	(with-temp-buffer
-	  (shimbun-retrieve-url (shimbun-index-url shimbun))
+	  (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload)
 	  (shimbun-set-headers-internal shimbun
 					(shimbun-get-headers shimbun))))
     (error "No such group %s" group)))

@@ -1,5 +1,7 @@
 2001-04-05  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* shimbun/shimbun.el (shimbun-open-group): Reload header index.
+
 	* shimbun/sb-namazu.el (shimbun-namazu-group-url-alist): New variable.
 	(shimbun-index-url): Use it.
 	(shimbun-get-headers): Set path argument of
