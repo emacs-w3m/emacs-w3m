@@ -103,7 +103,6 @@
     (let* ((case-fold-search t)
 	   (url (shimbun-index-url shimbun))
 	   headers)
-      (shimbun-retrieve-url url)
       (if (string-match "top" (car (assoc (shimbun-current-group-internal
 					   shimbun)
 					  shimbun-x51-group-alist)))
@@ -133,10 +132,11 @@
 	  (setq indexes (nreverse indexes))
 	  (catch 'stop
 	    (dolist (index indexes)
+	      (erase-buffer)
 	      (shimbun-retrieve-url index t) ;; retrieve target page
 	      (goto-char (point-min))
 	      (re-search-forward "<!-- *top article *-->")
-	      (setq beg (match-beginning 0))
+	      (setq beg (match-end 0))
 	      (re-search-forward "<!--/ *middle bar *-->")
 	      (setq end (match-beginning 0))
 	      (goto-char beg)

@@ -4380,8 +4380,8 @@ cnet.security cnet.networking cnet.personal.technology cnet.newsmakers
 cnet.perspectives
 
 @item @uref{http://japan.cnet.com/, CNET Japan}
-cnet-jp.news cnet-jp.blog.inoue cnet-jp.blog.kenn cnet-jp.blog.lessig
-cnet-jp.blog.mori cnet-jp.blog.umeda cnet-jp.blog.watanabe
+cnet-jp.news cnet-jp.blog.kenn cnet-jp.blog.lessig cnet-jp.blog.watanabe
+cnet-jp.blog.editors
 
 @item @uref{http://www.cnn.co.jp/, CNN Japan}
 cnn-jp.business cnn-jp.fringe cnn-jp.science cnn-jp.showbiz
@@ -4730,6 +4730,12 @@ tdiary-ml.devel tdiary-ml.theme
 @item @uref{http://arch.bluegate.org/mailman/listinfo, arch.bluegate.org Mailing Lists}
 arch-bluegate.subversion-jp arch-bluegate.arch-jp arch-bluegate.mailman
 arch-bluegate.viewarch
+
+@item @uref{http://www.tigris.org/, Tigris.org:Open Source Software Engineering}
+All archives served by Tigris.org are supported by @samp{shimbun}
+library.  Add a group name of your favorite archive to the variable
+@code{shimbun-tigris-group-alist}, and you can browse it.
+Group name is tigris.<project>.<mailinglist>.
 
 @end table
 

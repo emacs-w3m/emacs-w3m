@@ -1,3 +1,13 @@
+2005-02-09  Tsuyoshi CHO  <cho@namazu.org>
+
+	* shimbun/sb-tigris.el: New File.
+
+	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-group-alist): Remove closed blog entiry : "inoue","mori","umeda";
+	Add blog entiry : "editors".
+
+	* shimbun/sb-x51.el (shimbun-get-headers): Remove duplicate webpage retrieving;
+	Add buffer erasing before webpage retrieving.
+
 2005-02-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/nnshimbun.el (gnus-group-make-shimbun-group): Display
