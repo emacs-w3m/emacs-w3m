@@ -24,6 +24,16 @@
 
           http://www.lcdf.org/gifsicle/
 
+      Emacs-w3m は regexp-opt.el(c) モジュールを必要としますが，古い
+      Emacsen (例えば Mule 2) にはありません．もしあなたがそんなバージョ
+      ンの Emacs を使っているのならば，emacs-w3m をインストールする前
+      に以下のように regexp-opt.el(c) モジュールをインストールしなけれ
+      ばなりません．
+
+          % cp attic/regexp-opt.el /usr/local/share/mule/site-lisp
+          % cd /usr/local/share/mule/site-lisp
+          % mule -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
+
    b) 同梱されている emacs-lisp のソースファイルを適当なディレクトリにイ
       ンストールするため，次のコマンドを実行してください．
 

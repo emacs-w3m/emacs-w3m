@@ -22,6 +22,15 @@ This package contains a interface program of w3m.
 
           http://www.lcdf.org/gifsicle/
 
+      Emacs-w3m requires the module regexp-opt.el(c) which might not
+      be provided in the old Emacsen (e.g. Mule 2).  If you are using
+      such versions of Emacs, you have to install the module regexp-
+      opt.el(c) before installing emacs-w3m as follows:
+
+          % cp attic/regexp-opt.el /usr/local/share/mule/site-lisp
+          % cd /usr/local/share/mule/site-lisp
+          % mule -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
+
    b) Execlute these commands to put emacs-lisp programs of this package
       to an appropriate directory.
 

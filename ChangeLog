@@ -1,3 +1,11 @@
+2001-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* attic/regexp-opt.el: New file.
+
+	* README.ja, README: Emacs-w3m requires the module regexp-opt.
+
+	* w3m-weather.el: Autoload regexp-opt for old Emacsen.
+
 2001-10-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-safe-url-regexp): New variable.
