@@ -85,10 +85,26 @@
 		 (t
 		  (require 'pces)))
 
+;; Add-on programs:
+(eval-and-compile
+  (autoload 'w3m-bookmark-view "w3m-bookmark" nil t)
+  (autoload 'w3m-bookmark-add-this-url "w3m-bookmark"
+    "*Add link under cursor to bookmark." t)
+  (autoload 'w3m-bookmark-add-current-url "w3m-bookmark"
+    "*Add link of current page to bookmark." t)
+  (autoload 'w3m-search "w3m-search"
+    "*Search QUERY using SEARCH-ENGINE." t)
+  (autoload 'w3m-weather "w3m-weather"
+    "*Display weather report." t)
+  (autoload 'w3m-about-weather "w3m-weather")
+  (autoload 'w3m-antenna "w3m-antenna"
+    "*Display antenna report." t)
+  (autoload 'w3m-about-antenna "w3m-antenna")
+  (autoload 'w3m-fontify-forms "w3m-form")
+  (autoload 'w3m-form-parse-region "w3m-form"))
+
 ;; Avoid byte-compile warnings.
 (eval-when-compile
-  (autoload 'w3m-fontify-forms "w3m-form")
-  (autoload 'w3m-form-parse-region "w3m-form")
   (autoload 'rfc2368-parse-mailto-url "rfc2368")
   (autoload 'w3m-remove-image (if (featurep 'xemacs)
 				  "w3m-xmas"
@@ -398,7 +414,6 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
   :type 'boolean
   :require 'w3m-form)
-(when w3m-use-form (require 'w3m-form))
 
 (defconst w3m-extended-characters-table
   '(("\xa0" . " ")
@@ -2441,26 +2456,6 @@ ex.) c:/dir/file => //c/dir/file"
 		 (current-buffer)
 		 "fiber.exe"
 		 (w3m-url-to-file-name url)))
-
-
-;; Add-on programs:
-(when (locate-library "w3m-bookmark.el")
-  (autoload 'w3m-bookmark-view "w3m-bookmark" nil t)
-  (autoload 'w3m-bookmark-add-this-url "w3m-bookmark"
-    "*Add link under cursor to bookmark." t)
-  (autoload 'w3m-bookmark-add-current-url "w3m-bookmark"
-    "*Add link of current page to bookmark." t))
-(when (locate-library "w3m-search.el")
-  (autoload 'w3m-search "w3m-search"
-    "*Search QUERY using SEARCH-ENGINE." t))
-(when (locate-library "w3m-weather.el")
-  (autoload 'w3m-weather "w3m-weather"
-    "*Display weather report." t)
-  (autoload 'w3m-about-weather "w3m-weather"))
-(when (locate-library "w3m-antenna.el")
-  (autoload 'w3m-antenna "w3m-antenna"
-    "*Display antenna report." t)
-  (autoload 'w3m-about-antenna "w3m-antenna"))
 
 (provide 'w3m)
 ;;; w3m.el ends here.

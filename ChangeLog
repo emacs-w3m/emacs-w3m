@@ -1,7 +1,8 @@
 2001-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el: Encolose the defining procedures for the unbound
-	functions with `eval-and-compile'.
+	* w3m.el: Make `w3m-fontify-forms' and `w3m-form-parse-region' to
+	be always autoloaded; encolose the defining procedures for the
+	unbound functions with `eval-and-compile'.
 	(browse-url-interactive-arg): Bind it only at the compile-time as
 	an autoload'ed function.
 	* w3m-xmas.el: Provide `w3m-xmas' and then require `w3m'.
