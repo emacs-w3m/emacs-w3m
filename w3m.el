@@ -48,6 +48,9 @@
       (require 'poe)
       (require 'pcustom)))
 
+(and (string-match "XEmacs" emacs-version)
+     (require 'poem))
+
 (defgroup w3m nil
   "w3m - the web browser of choice."
   :group 'hypermedia)
@@ -306,12 +309,18 @@ and 'w3m-arrived-ct-file'."
     (set-text-properties 0 (length url) nil url)
     (setq w3m-arrived-anchor-list
 	  (cons url (delete url w3m-arrived-anchor-list)))))
-	  
+
 (defun w3m-fontify ()
   "Fontify this buffer."
   (let ((case-fold-search t))
     (run-hooks 'w3m-fontify-before-hook)
+    ;; Delete <?xml ... ?> tag
+    (if (search-forward "<?xml" nil t)
+	(let ((start (match-beginning 0)))
+	  (search-forward "?>" nil t)
+	  (delete-region start (match-end 0))))
     ;; Delete extra title tag.
+    (goto-char (point-min))
     (let (start)
       (and (search-forward "<title>" nil t)
 	   (setq start (match-beginning 0))
@@ -433,7 +442,7 @@ and 'w3m-arrived-ct-file'."
 	      w3m-backlog-hashtb)
     (setq url (completing-read (or prompt "URL: ")
 			       candidates nil nil
-			       default 'w3m-input-url-history default))
+			       default 'w3m-input-url-history))
     ;; remove duplication
     (setq w3m-input-url-history (cons url (delete url w3m-input-url-history)))
     ;; return value
