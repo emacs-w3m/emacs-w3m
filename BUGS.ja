@@ -23,12 +23,6 @@ $Date$
 
    --> 説明文書の整備
 
-   --> autoconf + installer
-
-   --> ローカルのファイルの場合、たとえファイル形式が拡張子からは自動的
-       に判別できなくとも、そのファイルを save するか、という質問は不適
-       切だ。できれば、text file か否かを別の方法でも検査出来ると良い。
-
    --> w3m-filter.
 
    --> [emacs-w3m:00011] などのメーリングリストのヘッダ文字列を自動的に 
@@ -37,25 +31,16 @@ $Date$
 
 ■ 既知の問題
 
-(1) Redirection をうまく処理できない
-    Ex) http://pine.kuee.kyoto-u.ac.jp/member/tsuchiya/emacs-w3m/
-	http://pine.kuee.kyoto-u.ac.jp/member/tsuchiya
-
-
-(2) Content-Encoding: を処理していない
-    Ex) http://cvs.m17n.org/~akr/diary/
-
-
-(3) 文書内の別の部分を指定する終点側 anchor (ex. <a name=foo>)に移動する
+(1) 文書内の別の部分を指定する終点側 anchor (ex. <a name=foo>)に移動する
     と、カーソルの場所の保存がおかしくなる。これを解決するために、ヒスト
     リ管理をより完全なものにしたい。
 
 
-(4) 同じ anchor が複数行に分割されて表示されている場合、TAB で移動すると
+(2) 同じ anchor が複数行に分割されて表示されている場合、TAB で移動すると
     余分にカーソルが止まってしまう。
 
 
-(5) TAB で次の anchor に移動した時、その anchor が表示領域外ならば、きち
+(3) TAB で次の anchor に移動した時、その anchor が表示領域外ならば、きち
     んと表示されるように画面全体を移動して欲しい。<table> を利用して極端
     に横長のページを作ると、横方向に移動するとカーソルが見えなくなる。し
     かも、その後で前のページに戻ると横幅がおかしくなっている。
@@ -102,6 +87,18 @@ $Date$
 
     --> w3m-download で変換してしまっていた [emacs-w3m:00281] (Tnx. 有沢さん)
 
+
+(7) Redirection をうまく処理できない
+    Ex) http://pine.kuee.kyoto-u.ac.jp/member/tsuchiya/emacs-w3m/
+	http://pine.kuee.kyoto-u.ac.jp/member/tsuchiya
+
+    --> w3m 本体にパッチをあてることにより解決 [emacs-w3m:00422]
+
+
+(8) Content-Encoding: を処理していない
+    Ex) http://cvs.m17n.org/~akr/diary/
+
+    --> 復号するためのコードを追加 [emacs-w3m:00386]
 
 
 
