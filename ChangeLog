@@ -1,5 +1,8 @@
 2002-01-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m-e21.el (w3m-setup-favicon): If url is `ftp://', not retrieve
+	a favicon data.
+
 	* w3m.el (w3m-current-directory): New function.
 	(w3m-goto-url): Use `w3m-current-directory' when set
 	`default-directory'.

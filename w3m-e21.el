@@ -389,18 +389,22 @@ Each information is a list whose elements are:
 	w3m-current-favicon-image nil)
   (when (and w3m-use-favicon
 	     (w3m-image-type-available-p 'xpm))
-    (if (string-match "\\`about://\\([^/]+\\)/" url)
-	(let ((icon (intern-soft (concat "w3m-about-" (match-string 1 url)
-					 "-favicon"))))
-	  (if (and (fboundp 'base64-decode-string)
-		   icon)
-	      (with-current-buffer w3m-current-buffer
-		(setq w3m-current-favicon-data
-		      (eval (list 'base64-decode-string
-				  (symbol-value icon)))))))
+    (cond
+     ((string-match "\\`about://\\([^/]+\\)/" url)
+      (let ((icon (intern-soft (concat "w3m-about-" (match-string 1 url)
+				       "-favicon"))))
+	(if (and (fboundp 'base64-decode-string)
+		 icon)
+	    (with-current-buffer w3m-current-buffer
+	      (setq w3m-current-favicon-data
+		    (eval (list 'base64-decode-string
+				(symbol-value icon))))))))
+     ((string-match "\\`ftp://" url)
+      nil)
+     (t
       (w3m-retrieve-favicon
        (w3m-expand-url (concat "/" w3m-favicon-name) url)
-       w3m-current-buffer))))
+       w3m-current-buffer)))))
 
 (defun w3m-buffer-favicon (buffer)
   (with-current-buffer buffer
