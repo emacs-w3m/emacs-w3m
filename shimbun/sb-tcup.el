@@ -38,8 +38,7 @@
 
 (defvar shimbun-tcup-url "http://www.tcup.com/")
 (defvar shimbun-tcup-groups (mapcar 'car shimbun-tcup-group-alist))
-(defvar shimbun-tcup-coding-system (static-if (boundp 'MULE) 
-				       '*sjis* 'shift_jis))
+(defvar shimbun-tcup-coding-system 'shift_jis)
 (defvar shimbun-tcup-content-hash-length 31)
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-tcup)
@@ -99,8 +98,6 @@
 (luna-define-method shimbun-get-headers ((shimbun shimbun-tcup))
   (let ((case-fold-search t)
 	headers from subject date id url stime st body)
-    (decode-coding-region (point-min) (point-max)
-			  (shimbun-coding-system-internal shimbun))
     (goto-char (point-min))
     (while (re-search-forward "<b>\\([^<]+\\)</b></font>　投稿者：" nil t)
       (setq subject (match-string 1))
