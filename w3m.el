@@ -1210,6 +1210,11 @@ will disclose your private informations, for example:
     ("\\`bts:" w3m-search-uri-replace "debian-bts")
     ("\\`dpkg:" w3m-search-uri-replace "debian-pkg")
     ("\\`archie:" w3m-search-uri-replace "iij-archie")
+    ("\\`rpm:" w3m-search-uri-replace "rpmfind")
+    ("\\`waei:" w3m-search-uri-replace "waei")
+    ("\\`eiwa:" w3m-search-uri-replace "eiwa")
+    ("\\`kokugo:" w3m-search-uri-replace "kokugo")
+    ("\\`eiei:" w3m-search-uri-replace "eiei")
     ("\\`urn:ietf:rfc:\\([0-9]+\\)" w3m-pattern-uri-replace
      "http://www.ietf.org/rfc/rfc\\1.txt"))
   "*Alist of a regexp matching a uri and its replacement.
@@ -2985,8 +2990,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
       (when (stringp url)
 	(setq w3m-input-url-history
 	      (cons url (delete url w3m-input-url-history))))
-      ;; return value
-      (w3m-url-transfer-encode-string url w3m-default-coding-system))))
+      url)))
 
 
 ;;; Cache:
@@ -6039,7 +6043,8 @@ the `w3m-search' function and the variable `w3m-uri-replace-alist'."
     nil ;; handler
     t)) ;; qsearch
   (set-text-properties 0 (length url) nil url)
-  (setq url (w3m-uri-replace url))
+  (setq url (w3m-url-transfer-encode-string (w3m-uri-replace url)
+					    w3m-default-coding-system))
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:" url)
