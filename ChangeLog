@@ -1,3 +1,12 @@
+2002-04-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-horizontal-recenter): New command.
+	(w3m-beginning-of-line): New command.
+	(w3m-end-of-line): New command.
+	(w3m-lynx-like-map): Bind them.
+	(w3m-info-like-map): Bind them.
+	(w3m-mode): Document them.
+
 2002-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bitmap.el (w3m-bitmap-image-face-inherit): Default to t.

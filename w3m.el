@@ -4556,6 +4556,9 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "N" 'w3m-namazu)
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
+    (define-key map "\M-l" 'w3m-horizontal-recenter)
+    (define-key map "\C-a" 'w3m-beginning-of-line)
+    (define-key map "\C-e" 'w3m-end-of-line)
     (define-key map "\\" 'w3m-view-source)
     (define-key map "=" 'w3m-view-header)
     (define-key map "s" 'w3m-history)
@@ -4653,6 +4656,9 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "?" 'describe-mode)
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
+    (define-key map "\M-l" 'w3m-horizontal-recenter)
+    (define-key map "\C-a" 'w3m-beginning-of-line)
+    (define-key map "\C-e" 'w3m-end-of-line)
     (define-key map "." 'beginning-of-buffer)
     (define-key map "^" 'w3m-view-parent-page)
     (define-key map "]" 'w3m-next-form)
@@ -4782,6 +4788,9 @@ Return t if deleting current frame or window is succeeded."
 \\[w3m-scroll-down-or-previous-url]	Scroll down or go to previous url.
 \\[w3m-scroll-left]	Scroll to left.
 \\[w3m-scroll-right]	Scroll to right.
+\\[w3m-horizontal-recenter]	Recenter horizontally.
+\\[w3m-beginning-of-line]	Go to the entire beginning of line.
+\\[w3m-end-of-line]	Go to the entire end of line.
 
 \\[next-line]	Next line.
 \\[previous-line]	Previous line.
@@ -4878,6 +4887,66 @@ or prefix ARG columns."
 	     (prefix-numeric-value arg)
 	   w3m-horizontal-scroll-columns)))
     (call-interactively 'scroll-right)))
+
+(defun w3m-horizontal-recenter (&optional arg)
+  "Recenter horizontally.  With ARG, put point on column ARG."
+  (interactive "P")
+  (cond ((< (current-column) (window-hscroll))
+	 (move-to-column (window-hscroll))
+	 (setq arg 0))
+	((>= (current-column) (+ (window-hscroll) (window-width)))
+	 (move-to-column (+ (window-hscroll) (window-width) -2))
+	 (setq arg -1))
+	((listp arg)
+	 (setq arg (car arg))))
+  (set-window-hscroll (selected-window)
+		      (if (numberp arg)
+			  (if (>= arg 0)
+			      (max (- (current-column) arg) 0)
+			    (let* ((home (point))
+				   (inhibit-point-motion-hooks t)
+				   (maxcolumn (prog2
+						  (end-of-line)
+						  (1- (current-column))
+						(goto-char home))))
+			      (max (min (- (current-column)
+					   (window-width)
+					   arg
+					   -2)
+					maxcolumn)
+				   0)))
+			(max (- (current-column) (/ (window-width) 2) -1)
+			     0))))
+
+(defun w3m-beginning-of-line (&optional arg)
+  "Like `beginning-of-line', except that set window-hscroll to zero first."
+  (interactive "P")
+  (when (listp arg)
+    (setq arg (car arg)))
+  (set-window-hscroll (selected-window) 0)
+  (beginning-of-line arg))
+
+(defun w3m-end-of-line (&optional arg)
+  "Like `end-of-line', except that scroll left to make the line end
+positions around there (+/-3 lines) visible."
+  (interactive "P")
+  (when (listp arg)
+    (setq arg (car arg)))
+  (forward-line (1- (or arg 1)))
+  (let ((inhibit-point-motion-hooks t)
+	home)
+    (end-of-line)
+    (setq home (point)
+	  arg (current-column))
+    (dolist (n '(-3 -2 -1 1 2 3))
+      (forward-line n)
+      (end-of-line)
+      (setq arg (max (current-column) arg))
+      (goto-char home)))
+  (setq temporary-goal-column arg
+	this-command 'next-line)
+  (set-window-hscroll (selected-window)
+		      (max (- arg (window-width) -2) 0)))
 
 (defun w3m-goto-mailto-url (url &optional post-data)
   (if (and (symbolp w3m-mailto-url-function)
