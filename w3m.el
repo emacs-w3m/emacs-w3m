@@ -700,9 +700,14 @@ If nil, use an internal CGI of w3m."
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
 (defvar w3m-initial-frame nil "Initial frame of this session.")
+(defvar w3m-current-post-data nil "POST data of this buffer.")
+(defvar w3m-current-referer nil "Referer of this buffer.")
+
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-title)
 (make-variable-buffer-local 'w3m-initial-frame)
+(make-variable-buffer-local 'w3m-current-post-data)
+(make-variable-buffer-local 'w3m-current-referer)
 
 (defvar w3m-current-buffer nil "The current w3m buffer.")
 
@@ -3341,6 +3346,8 @@ the request."
 	      url (substring url 0 (match-beginning 0))))
       (let ((ct (w3m-arrived-content-type url))
 	    (cs (or charset (w3m-arrived-content-charset url))))
+	(setq w3m-current-post-data post-data)
+	(setq w3m-current-referer referer)
 	(if ct
 	    (when reload
 	      (let* ((minibuffer-setup-hook
@@ -3411,7 +3418,12 @@ the request."
   "Reload current page without cache."
   (interactive "P")
   (let ((w3m-display-inline-image (if arg t w3m-display-inline-image)))
-    (w3m-goto-url w3m-current-url 'reload)))
+    (if w3m-current-post-data
+	(if (y-or-n-p "Repost form data? ")
+	    (w3m-goto-url w3m-current-url 'reload nil w3m-current-post-data
+			  w3m-current-referer)
+	  (message ""))
+      (w3m-goto-url w3m-current-url 'reload nil nil w3m-current-referer))))
 
 ;; FIXME: 現在はどの文字コードとして解釈されているのか表示して欲しい
 (defun w3m-redisplay-with-charset (&optional arg)

@@ -2,6 +2,11 @@
 
 	* w3m.el (w3m-toggle-inline-images): Display "Showing images..."
 	message only when there is at least one inline image.
+	(w3m-current-post-data): New buffer local variable.
+	(w3m-current-referer): Ditto.
+	(w3m-goto-url): Set up `w3m-current-post-data' and
+	`w3m-current-referer'.
+	(w3m-reload-this-page): Process post-data and referer.
 
 2001-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
