@@ -58,13 +58,6 @@
 (defalias 'w3m-display-graphic-p 'ignore)
 (defalias 'w3m-display-inline-image-p 'ignore)
 
-;; Generic functions.
-(defsubst w3m-find-coding-system (obj)
-  "Return OBJ if it is a coding-system."
-  (if (coding-system-p obj) obj))
-
-(defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
-
 ;; Generate some coding-systems which have a modern name.
 ;; No need to contain the eol-type variants in the following alist
 ;; because they will also be generated for each coding-system.
@@ -103,6 +96,73 @@
 	  (set variant variant)
 	  (put variant 'coding-system to)
 	  (put variant 'eol-type (setq i (1+ i))))))))
+
+
+;; Functions to handle coding-system.
+(defalias 'coding-system-category 'get-code-mnemonic)
+
+(unless (fboundp 'coding-system-list)
+  (defun coding-system-list ()
+    "Return a list of all existing non-subsidiary coding systems."
+    (let ((codings nil))
+      (mapatoms
+       (function
+	(lambda (arg)
+	  (if (eq arg '*noconv*)
+	      nil
+	    (if (and (or (vectorp (get arg 'coding-system))
+			 (vectorp (get arg 'eol-type)))
+		     (null (get arg 'pre-write-conversion))
+		     (null (get arg 'post-read-conversion)))
+		(setq codings (cons arg codings)))))))
+      codings)))
+
+(defsubst w3m-find-coding-system (obj)
+  "Return OBJ if it is a coding-system."
+  (if (coding-system-p obj) obj))
+
+(defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
+
+
+;;; Generic functions.
+(defun w3m-expand-path-name (name &optional base)
+  "Convert filename NAME to absolute, and canonicalize it.
+This function is implemented to absorb the difference between
+`expand-file-name' of Mule2 and the same one of other Emacsen.
+They handle non-initial \"~\" in the different way."
+  (let (start buf)
+    (setq name
+	  (apply
+	   (function expand-file-name)
+	   (mapcar
+	    (lambda (str)
+	      (when (stringp str)
+		(setq start 1
+		      buf (list (if (string-match "\\`_" str)
+				    "_u"
+				  (char-to-string
+				   (string-to-char str)))))
+		(while (string-match "[~_]" str start)
+		  (setq buf
+			(cons (if (string= "_" (match-string 0 str)) "_u" "_t")
+			      (cons (substring str start (match-beginning 0))
+				    buf))
+			start (match-end 0)))
+		(apply
+		 (function concat)
+		 (nreverse (cons (substring str start) buf)))))
+	    (list name (or base default-directory)))))
+    (setq start 0
+	  buf nil)
+    (while (string-match "_[ut]" name start)
+      (setq buf
+	    (cons (if (string= "_u" (match-string 0 name)) "_" "~")
+		  (cons (substring name start (match-beginning 0))
+			buf))
+	    start (match-end 0)))
+    (apply
+     (function concat)
+     (nreverse (cons (substring name start) buf)))))
 
 
 (eval-and-compile
@@ -145,25 +205,6 @@ empty input."
 	  (or pass default ""))))))
 
 
-(defalias 'coding-system-category 'get-code-mnemonic)
-
-(unless (fboundp 'coding-system-list)
-  (defun coding-system-list ()
-    "Return a list of all existing non-subsidiary coding systems."
-    (let ((codings nil))
-      (mapatoms
-       (function
-	(lambda (arg)
-	  (if (eq arg '*noconv*)
-	      nil
-	    (if (and (or (vectorp (get arg 'coding-system))
-			 (vectorp (get arg 'eol-type)))
-		     (null (get arg 'pre-write-conversion))
-		     (null (get arg 'post-read-conversion)))
-		(setq codings (cons arg codings)))))))
-      codings)))
-
-
 ;;; Widget:
 (defun w3m-om-define-missing-widgets ()
   "Define some missing widget(s)."
@@ -181,34 +222,6 @@ as the value."
       :value 'other)))
 
 (eval-after-load "wid-edit" '(w3m-om-define-missing-widgets))
-
-;; `expand-file-name' of mule 2 expands non-initial "~".
-(defun w3m-expand-path-name (name)
-  "Convert path string NAME to the canonicalized one."
-  (with-temp-buffer
-    (insert name)
-    (let (p q path)
-      (goto-char (point-min))
-      (save-match-data
-	(while (search-forward "/" nil t)
-	  (setq p (match-beginning 0)
-		q (match-end 0))
-	  (if (search-forward "/" nil t)
-	      (goto-char (match-beginning 0))
-	    (goto-char (point-max)))
-	  (setq path (buffer-substring q (point)))
-	  (cond
-	   ((string= path ".")
-	    (delete-region q (if (eobp) (point) (match-end 0))))
-	   ((string= path "..")
-	    (setq q (point))
-	    (when (search-backward "/" nil t)
-	      (search-backward "/" nil t)
-	      (delete-region (match-end 0) q)))
-	   ((eq (length path) 0)
-	    (unless (eobp) (delete-region p (point))))))
-	(setq path (buffer-string)))
-      (if (eq (length path) 0) "/" path))))
 
 (provide 'w3m-om)
 

@@ -255,8 +255,6 @@ Buffer string between BEG and END are replaced with IMAGE."
 	      (w3m-add-text-properties (car elem) (cadr elem)
 				       (cons 'face (cddr elem))))))
 
-(defalias 'w3m-expand-path-name 'expand-file-name)
-
 (provide 'w3m-e21)
 
 ;;; w3m-e21.el ends here.

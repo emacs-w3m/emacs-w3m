@@ -2895,9 +2895,10 @@ forward is performed.  Otherwise, COUNT is treated as 1 by default."
 times in the history.  If COUNT is a negative integer, moving backward
 is performed.  Otherwise, COUNT is treated as 1 by default."
   (interactive "p")
-  (w3m-view-previous-page (if (integerp count)
-			      (- count)
-			    -1)))
+  (w3m-view-previous-page (if (integerp count) (- count) -1)))
+
+(unless (fboundp 'w3m-expand-path-name)
+  (defalias 'w3m-expand-path-name 'expand-file-name))
 
 (defun w3m-expand-url (url base)
   "Convert URL to absolute, and canonicalize it."

@@ -1,3 +1,16 @@
+2001-09-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-expand-path-name): Except Mule2, define alias of
+	`expand-file-name'.
+
+	* w3m-om.el (w3m-expand-path-name): Re-implemented.
+
+	* w3m-e20.el (w3m-expand-path-name): Removed.
+
+	* w3m-e21.el (w3m-expand-path-name): Ditto.
+
+	* w3m-xmas.el (w3m-expand-path-name): Ditto.
+
 2001-09-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-generate-colon-keywords-file): Renamed from
