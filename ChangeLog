@@ -1,3 +1,9 @@
+2004-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-canonicalize-url): Don't make sure arg is a string.
+	(w3m-input-url): Don't use w3m-canonicalize-url for non-string url
+	which may be the symbol popup.
+
 2004-06-27  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
 	* shimbun/sb-exconn.el: New module.
