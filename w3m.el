@@ -163,37 +163,41 @@ These values are acceptable: w3m, w3mmee, w3m-m17n.")
 (defvar w3m-version nil "Version string of w3m command.")
 
 ;; Set w3m-command, w3m-type, w3m-version and w3m-compile-options
-(when (or (null w3m-command)
-	  (null w3m-type)
-	  (null w3m-version)
-	  (null w3m-compile-options))
-  (let ((command (or w3m-command
-		     (w3m-which-command "w3m")
-		     (w3m-which-command "w3mmee")
-		     (w3m-which-command "w3m-m17n"))))
-    (when command
-      (setq w3m-command command)
-      (with-temp-buffer
-	(call-process command nil t nil "-version")
-	(goto-char (point-min))
-	(when (re-search-forward "version \\(w3m/0\\.3\
+(if noninteractive
+    ;; Don't call the external command when compiling.
+    (unless w3m-command
+      (setq w3m-command "w3m"))
+  (when (or (null w3m-command)
+	    (null w3m-type)
+	    (null w3m-version)
+	    (null w3m-compile-options))
+    (let ((command (or w3m-command
+		       (w3m-which-command "w3m")
+		       (w3m-which-command "w3mmee")
+		       (w3m-which-command "w3m-m17n"))))
+      (when command
+	(setq w3m-command command)
+	(with-temp-buffer
+	  (call-process command nil t nil "-version")
+	  (goto-char (point-min))
+	  (when (re-search-forward "version \\(w3m/0\\.3\
 \\(\\.[0-9\\]\\)*\\(\\+cvs\\(-[0-9]+\\.[0-9]+\\)?\\)?\
 \\(-inu\\|\\(-m17n\\|\\(\\+mee\\)\\)\\)?[^,]*\\)" nil t)
-	  (setq w3m-version (match-string 1))
-	  (setq w3m-type
-		(cond
-		 ((match-beginning 7) 'w3mmee)
-		 ((match-beginning 6) 'w3m-m17n)
-		 ((match-beginning 1) 'w3m)
-		 (t 'other))))
-	(when (re-search-forward "options +" nil t)
-	  (setq w3m-compile-options
-		(or (split-string (buffer-substring
-				   (match-end 0)
-				   (save-excursion (end-of-line)
-						   (point)))
-				  ",")
-		    (list nil))))))))
+	    (setq w3m-version (match-string 1))
+	    (setq w3m-type
+		  (cond
+		   ((match-beginning 7) 'w3mmee)
+		   ((match-beginning 6) 'w3m-m17n)
+		   ((match-beginning 1) 'w3m)
+		   (t 'other))))
+	  (when (re-search-forward "options +" nil t)
+	    (setq w3m-compile-options
+		  (or (split-string (buffer-substring
+				     (match-end 0)
+				     (save-excursion (end-of-line)
+						     (point)))
+				    ",")
+		      (list nil)))))))))
 
 (defcustom w3m-user-agent (concat "Emacs-w3m/" emacs-w3m-version
 				  " " w3m-version)
@@ -324,7 +328,8 @@ It is valid only when `w3m-treat-image-size' is non-nil."
 		 (integer :tag "Specify Pixels")))
 
 (defvar w3m-accept-japanese-characters
-  (and (featurep 'mule)
+  (and (not noninteractive)
+       (featurep 'mule)
        (or (memq w3m-type '(w3mmee w3m-m17n))
 	   ;; Detect that the internal character set of `w3m-command'
 	   ;; is EUC-JP.
