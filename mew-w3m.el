@@ -232,7 +232,7 @@ This variable effected only XEmacs or Emacs 21."
 		    (downcase (car (mew-syntax-get-ct cidstx))))
 		(run-hooks 'mew-w3m-cid-retrieve-hook)))))))))
     
-(when (fboundp 'mew-syntax-get-entry-by-cid)
+(when w3m-mew-support-cid
   (push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
 	w3m-cid-retrieve-function-alist))
 
