@@ -1,3 +1,20 @@
+2001-04-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist: Made the history management system to keep properties
+	of each history element to be shared by all the w3m buffers.
+	(w3m-history-remove-properties): Share properties.
+	(w3m-history-add-properties): Ditto.
+	(w3m-history-plist-put): Ditto.
+	(w3m-history-copy, w3m-history-copy-1): Ditto.
+	(w3m-history-push): Ditto.
+	(w3m-history-assoc): Ditto.
+	(w3m-history-share-properties): New function.
+	(w3m-history-seek-properties): New function.
+
+	(w3m-history-rename-url): Allow the 4th arg `this-buffer'.
+	(w3m-history-with-elements): Bind only the variable `element' to
+	have a history element of `w3m-history-flat'.
+
 2001-04-18  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-hns.el: New file.
