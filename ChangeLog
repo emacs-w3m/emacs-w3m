@@ -1,5 +1,7 @@
 2001-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-hist.el (w3m-history-flat): Don't funcall itself recursively.
+
 	* w3m.el (w3m-fontify-images): Only put text properties `w3m-image'
 	and `w3m-image-redundant' if there is a property `w3m-href-anchor'.
 

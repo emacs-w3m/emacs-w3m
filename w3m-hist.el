@@ -361,35 +361,42 @@ non-nil."
 			 (< (setq count (1+ count)) 0)))))
       (w3m-history-current-1 (cadar w3m-history)))))
 
-(defun w3m-history-flat (&optional history position alist)
+(defun w3m-history-flat ()
   "Set the buffer-local variable `w3m-history-flat' with the value of a
 flattened alist of `w3m-history'.  See the documentation for the
-variable `w3m-history-flat' for details.  Note that the optional
-arguments should only be used to recursive funcall itself internally,
-so don't specify them for the normal use."
-  (if (or history
-	  (setq history (cdr w3m-history)))
-      (progn
-	(unless position
-	  (setq position '(t)))
-	(let ((i 0)
-	      element branches j)
-	  (while (setq element (pop history))
-	    (setcar (nthcdr (1- (length position)) position) i)
-	    (setq i (1+ i))
-	    (push (list (car element) (cadr element) (copy-sequence position))
-		  alist)
-	    (when (setq branches (nthcdr 2 element))
-	      (setq j 0)
-	      (while branches
-		(setq alist (w3m-history-flat (pop branches)
-					      (append position (list j t))
-					      alist)
-		      j (1+ j)))))
-	  (if (cdr position)
-	      alist
-	    (setq w3m-history-flat (nreverse alist)))))
-    (setq w3m-history-flat nil)))
+variable `w3m-history-flat' for details."
+  (setq w3m-history-flat nil)
+  (when w3m-history
+    (let ((history (cdr w3m-history))
+	  (position (list 0))
+	  element branches flag children)
+      (while (setq element (pop history))
+	(if (stringp (car element))
+	    (progn
+	      (push (list (car element) (cadr element) (reverse position))
+		    w3m-history-flat)
+	      (if (setq element (cddr element))
+		  (progn
+		    (setq history (append element history)
+			  position (append (list 0 0) position))
+		    (push (length element) branches))
+		(setcar position (1+ (car position)))
+		(setq flag t)
+		(while (and flag
+			    children
+			    (zerop (setcar children (1- (car children)))))
+		  (setq children (cdr children))
+		  (if (zerop (setcar branches (1- (car branches))))
+		      (progn
+			(setq branches (cdr branches)
+			      position (cddr position))
+			(setcar position (1+ (car position))))
+		    (setcar position 0)
+		    (setcar (cdr position) (1+ (cadr position)))
+		    (setq flag nil)))))
+	  (setq history (append element history))
+	  (push (length element) children))))
+    (setq w3m-history-flat (nreverse w3m-history-flat))))
 
 (defun w3m-history-tree ()
   "Make a tree-structured history in the variable `w3m-history' from the
