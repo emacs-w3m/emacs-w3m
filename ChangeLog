@@ -1,7 +1,7 @@
 2003-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mime-w3m.el (mime-w3m-display-inline-images): Improve the
-	customizing widgets.
+	customizing widget.
 
 	* w3m.el (w3m-language, w3m-command-environment,
 	w3m-content-type-alist, w3m-encoding-type-alist, w3m-decoder-alist,
