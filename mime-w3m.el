@@ -193,11 +193,11 @@ map.")))
 			      (string &optional replace) activate)
     "Advised by emacs-w3m.
 Strip `keymap' or `local-map' properties from a killed string."
-    (if (text-property-any 0 (length string)
-			   'text-rendered-by-mime-w3m t string)
-	(remove-text-properties 0 (length string)
+    (if (text-property-any 0 (length (ad-get-arg 0))
+			   'text-rendered-by-mime-w3m t (ad-get-arg 0))
+	(remove-text-properties 0 (length (ad-get-arg 0))
 				'(keymap nil local-map nil)
-				string))))
+				(ad-get-arg 0)))))
 
 (mime-w3m-insinuate)
 
