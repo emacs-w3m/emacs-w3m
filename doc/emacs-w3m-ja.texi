@@ -175,6 +175,26 @@ Getting Started
 
 いろいろなバージョンの Emacsen で emacs-w3m を動作させることができます。
 
+@table @samp
+
+@item Emacs 21.x
+追加のパッケージは不要です。
+
+@item Emacs 20.x
+追加のパッケージは不要です。さらに BITMAP-MULE パッケージを使うと、白黒
+のビットマップ画像をインライン表示することができます。@xref{Other
+Requirements}。
+
+@item XEmacs 21.x
+APEL パッケージと @samp{gifsicle} プログラムが必要です (@pxref{Other
+Requirements})。最も安定している最新の XEmacs 21.4 を使うことを推奨しま
+す。
+
+@item Emacs 19.34 (含 Mule 2.3)
+APEL パッケージ、@samp{新しい custom} パッケージおよ
+び @file{regexp-opt.el} モジュールが必要です。@xref{Other Requirements}。
+
+@end table
 
 @node You Need w3m
 @section You Need w3m

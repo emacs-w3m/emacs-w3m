@@ -133,6 +133,26 @@ person; read it over again when you install a new version of emacs-w3m.
 
 You can run emacs-w3m in various versions of Emacsen.
 
+@table @samp
+
+@item Emacs 21.x
+No additional package is required.
+
+@item Emacs 20.x
+No additional package is required.  Furthermore, you can see monochrome
+bitmap images inline by using the BITMAP-MULE package.  @xref{Other
+Requirements}.
+
+@item XEmacs 21.x
+The APEL package and the @samp{gifsicle} program are required
+(@pxref{Other Requirements}).  We recommend using the most recent XEmacs
+21.4 since that version of XEmacs seems to be most stable.
+
+@item Emacs 19.34 (including Mule 2.3)
+The APEL package, the @samp{new custom} package and the
+@file{regexp-opt.el} module are required.  @xref{Other Requirements}.
+
+@end table
 
 @node You Need w3m
 @section You Need w3m
