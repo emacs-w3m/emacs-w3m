@@ -2,7 +2,8 @@
 
 	* w3m.el (w3m-x-moe-decode-buffer): Use 'w3m-coding-system'
 	instead of 'euc-jp.
-	
+	(w3m-w32-browser-with-fiber): Ignore process output.
+
 	* w3m-form.el (w3m-form-mouse-face): New user option.
 	(w3m-form-input-select): Add mouse-face.
 	(w3m-form-input-map): Ditto.
