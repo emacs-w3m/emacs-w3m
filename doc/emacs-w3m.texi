@@ -81,7 +81,7 @@ license to the document, as described in section 6 of the license.
 
 
 @ifinfo
-@node Top, Introduction, (dir), (dir)
+@node Top
 @top Emacs-w3m User's Manual
 
 @flushright
@@ -98,7 +98,7 @@ This manual corresponds to emacs-w3m version @value{VERSION}.
 @end menu
 
 
-@node Introduction, Index, Top, Top
+@node Introduction
 @chapter Preliminary remarks to emacs-w3m
 @cindex Introduction
 
@@ -109,7 +109,7 @@ there are any problems, all responsibility is in us the emacs-w3m
 development team, but there is no warranty as you know.  The emacs-w3m
 program was first created by TSUCHIYA Masatoshi in June 2000.
 
-@node Index,  , Introduction, Top
+@node Index
 @unnumbered Index
 
 @menu
@@ -119,19 +119,19 @@ program was first created by TSUCHIYA Masatoshi in June 2000.
 * Function Index::              Function Index
 @end menu
 
-@node Concept Index, Key Index, Index, Index
+@node Concept Index
 @unnumberedsec Concept Index
 @printindex cp
 
-@node Key Index, Variable Index, Concept Index, Index
+@node Key Index
 @unnumberedsec Key Index
 @printindex ky
 
-@node Variable Index, Function Index, Key Index, Index
+@node Variable Index
 @unnumberedsec Variable Index
 @printindex vr
 
-@node Function Index,  , Variable Index, Index
+@node Function Index
 @unnumberedsec Function Index
 @printindex fn
 

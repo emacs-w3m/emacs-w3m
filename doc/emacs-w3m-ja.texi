@@ -122,7 +122,7 @@ license to the document, as described in section 6 of the license.
 
 
 @ifinfo
-@node Top, Introduction, (dir), (dir)
+@node Top
 @top Emacs-w3m ユーザマニュアル
 
 @flushright
@@ -138,18 +138,18 @@ Emacs-w3m 開発チーム
 * Index::                    索引
 @end menu
 
-@node Introduction, Index, Top, Top
+@node Introduction
 @chapter はじめに
 @cindex Introduction
 
 すばらしい w3m プログラムを開発してくれた伊藤彰則さんとそのお仲間に、特
 別な感謝を捧げます。W3m は emacs-w3m の実現に不可欠です。さらにコメント、
 提案およびバグの修正をしてくれたすべての人々に感謝します。たとえ問題があっ
-ても、責任はすべて私たち emacs-w3m開発チームにあります。もっとも、ご承知
-の通り保証はありません。Emacs-w3m は 2000年6月に土屋雅稔によって初めて作
-られました。
+ても、責任はすべて私たち emacs-w3m 開発チームにあります。もっとも、ご承
+知の通り保証はありません。Emacs-w3m は 2000年6月に土屋雅稔によって初めて
+作られました。
 
-@node Index,  , Introduction, Top
+@node Index
 @unnumbered 索引
 
 @menu
@@ -159,19 +159,19 @@ Emacs-w3m 開発チーム
 * Function Index::              関数索引
 @end menu
 
-@node Concept Index, Key Index, Index, Index
+@node Concept Index
 @unnumberedsec 概念索引
 @printindex cp
 
-@node Key Index, Variable Index, Concept Index, Index
+@node Key Index
 @unnumberedsec キーバインド索引
 @printindex ky
 
-@node Variable Index, Function Index, Key Index, Index
+@node Variable Index
 @unnumberedsec 変数索引
 @printindex vr
 
-@node Function Index,  , Variable Index, Index
+@node Function Index
 @unnumberedsec 関数索引
 @printindex fn
 
