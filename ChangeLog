@@ -1,3 +1,7 @@
+2000-09-19  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el (w3m): Sorry, over paren.
+
 2000-09-18  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 	
 	* w3m.el (w3m-exec): Get title correctly within -halfdump format
