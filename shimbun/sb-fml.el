@@ -64,7 +64,7 @@
       (while auxs
 	(with-temp-buffer
 	  (shimbun-retrieve-url
-	   (concat (shimbun-url-internal shimbun) (setq aux (car auxs)) "/")
+	   (concat (shimbun-index-url shimbun) (setq aux (car auxs)) "/")
 	   'reload)
 	  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
 	  (let ((case-fold-search t)
@@ -73,7 +73,7 @@
 	    (while (re-search-forward
 		    "<LI><A HREF=\"\\([0-9]+\\.html\\)\">Article .*</A> <DIV><SPAN CLASS=article>Article <SPAN CLASS=article-value>\\([0-9]+\\)</SPAN></SPAN> at <SPAN CLASS=Date-value>\\([^<]*\\)</SPAN> <SPAN CLASS=Subject>Subject: <SPAN CLASS=Subject-value>\\([^<]*\\)</SPAN></SPAN></DIV><DIV><SPAN CLASS=From>From: <SPAN CLASS=From-value>\\([^<]*\\)</SPAN></SPAN></DIV>"
 		    nil t)
-	      (setq url (concat (shimbun-url-internal shimbun)
+	      (setq url (concat (shimbun-index-url shimbun)
 				aux "/" (match-string 1))
 		    id (format "<%s%05d%%%s>"
 			       aux

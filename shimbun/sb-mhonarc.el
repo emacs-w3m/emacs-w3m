@@ -108,6 +108,29 @@
 (defvar shimbun-mhonarc-optional-headers
   '("x-ml-count" "x-mail-count" "x-ml-name" "user-agent"))
 
+(defconst shimbun-mhonarc-rot13-table
+  (let ((table (make-vector 128 nil))
+	(i 0))
+    (while (< i 28)
+      (aset table (+ (% (+ i 14) 28) ?@) (make-string 1 (+ i ?@)))
+      (setq i (1+ i)))
+    (setq i 0)
+    (while (< i 26)
+      (aset table (+ (% (+ i 13) 26) ?a) (make-string 1 (+ i ?a)))
+      (setq i (1+ i)))
+    table))
+
+(defun shimbun-mhonarc-rot13-decode (str)
+  "Decode STR encoded by mrot13() defined in mhonarc/ewhutil.pl."
+  (with-temp-buffer
+    (insert str)
+    (goto-char (point-min))
+    (while (and (skip-chars-forward "^a-zA-Z@\\[")
+		(not (eobp)))
+      (insert (aref shimbun-mhonarc-rot13-table (char-after)))
+      (delete-char 1))
+    (buffer-string)))
+
 (luna-define-method shimbun-make-contents ((shimbun shimbun-mhonarc)
 					   header)
   (if (search-forward "<!--X-Head-End-->" nil t)
@@ -140,6 +163,11 @@
 	       ((looking-at "From: +")
 		(shimbun-header-set-from header
 					 (shimbun-mime-encode-string
+					  (shimbun-header-field-value)))
+		(delete-region (point) (progn (forward-line 1) (point))))
+	       ((looking-at "From-R13: +")
+		(shimbun-header-set-from header
+					 (shimbun-mhonarc-rot13-decode
 					  (shimbun-header-field-value)))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Date: +")

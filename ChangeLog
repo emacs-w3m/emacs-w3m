@@ -1,3 +1,23 @@
+2002-08-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-check-header-tags): Ignore case of tags.
+
+2002-08-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-mhonarc.el (shimbun-mhonarc-rot13-table): New
+	constant.
+	(shimbun-mhonarc-rot13-decode): New function.
+	(shimbun-make-contents): Call the above function to decode the
+	field of X-From-R13.
+
+2002-08-21  OHASHI Akira  <bg66@koka-in.org>
+
+	* shimbun/sb-macosx-jp.el: New file.
+	* shimbun/sb-fml.el (shimbun-get-headers): Use `shimbun-index-url'
+	instead of `shimbun-url-internal'.
+
+	* shimbun/sb-redhat.el: Fix.
+
 2002-08-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-delete-other-buffers): New user command.

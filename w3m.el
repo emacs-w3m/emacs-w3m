@@ -3580,7 +3580,7 @@ type as a string argument, when retrieve is complete."
 	(narrow-to-region (point-min) (point))
 	(goto-char (point-min))
 	(while (re-search-forward "<\\(link\\|base\\)[ \t\r\f\n]+" nil t)
-	  (setq tag (match-string 1))
+	  (setq tag (downcase (match-string 1)))
 	  (cond
 	   ((string= tag "link")
 	    (w3m-parse-attributes ((rel :case-ignore) href type)
