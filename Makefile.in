@@ -20,7 +20,7 @@ TARBALL = $(PACKAGE)-$(VERSION).tar.gz
 DISTDIR = $(PACKAGE)-$(VERSION)
 DOCS    = COPYING ChangeLog ChangeLog.1 README README.ja
 DISTS   = Makefile.in aclocal.m4 configure configure.in install-sh mkinstalldirs
-SUBDIRS = attic doc icons patches shimbun
+SUBDIRS = attic doc icons icons30 patches shimbun
 
 default: all
 
@@ -88,6 +88,17 @@ install-icons:
 	  done;\
 	fi
 
+install-icons30:
+	@if test $(ICONDIR) = NONE; then\
+	  echo "You don't have to install icon files for \"$(EMACS)\".";\
+	else\
+	  $(SHELL) $(srcdir)/mkinstalldirs $(ICONDIR);\
+	  for i in `cd icons30 && echo *.xpm`; do\
+	    echo " $(INSTALL_DATA) icons30/$$i $(ICONDIR)/$$i";\
+	    $(INSTALL_DATA) icons30/$$i $(ICONDIR)/$$i;\
+	  done;\
+	fi
+
 install-info: info
 	cd doc && $(MAKE) EMACS="$(EMACS)" infodir="$(infodir)" install
 
@@ -103,7 +114,7 @@ install-package:
 		"a package system.";\
 	else\
 	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install-lisp;\
-	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons;\
+	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons30;\
 	  $(MAKE) infodir="$(PACKAGEDIR)/info" install-info;\
 	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
 	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
@@ -115,7 +126,7 @@ install-package-ja:
 		"a package system.";\
 	else\
 	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install-lisp;\
-	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons;\
+	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons30;\
 	  $(MAKE) infodir="$(PACKAGEDIR)/info" install-info-ja;\
 	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
 	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
