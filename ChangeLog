@@ -1,3 +1,11 @@
+2003-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-local-find-file-regexps): New user option.
+	(w3m-local-find-file-function): New user option.
+	(w3m-goto-url): Use the function specified by the
+	`w3m-local-find-file-function' variable for local files when
+	the file name matches the `w3m-local-find-file-regexps' variable.
+
 2003-04-07  ARISAWA Akihiro  <ari@namazu.org>
 
 	* shimbun/sb-ding.el: Removed.
