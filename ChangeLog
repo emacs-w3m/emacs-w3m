@@ -1,3 +1,8 @@
+2003-01-19  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (toplevel): Strict checking that buggy
+	`w3m-time-parse-string' is used.
+
 2003-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-savannah.el (shimbun-savannah-reverse-flag): New var.
