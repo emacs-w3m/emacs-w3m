@@ -456,6 +456,19 @@ a built-in special form, nil is returned."
 	  nil
 	(length (delq '&optional arglist))))))
 
+(defun w3m-modify-plist (plist &rest properties)
+  "Change values in PLIST corresponding to PROPERTIES.  This is similar
+to `plist-put', but handles plural symbol and value pairs and remove
+pairs from PLIST whose value is nil."
+  (while properties
+    (setq plist (plist-put plist (car properties) (cadr properties))
+	  properties (cddr properties)))
+  (while plist
+    (if (cadr plist)
+	(setq properties (nconc properties (list (car plist) (cadr plist)))))
+    (setq plist (cddr plist)))
+  properties)
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here

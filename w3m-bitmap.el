@@ -96,11 +96,6 @@ bitmap chars as well."
 	      column)
 	  (signal 'wrong-type-argument (list 'wholenump column)))))))
 
-(defun w3m-bitmap-image-cleanup ()
-  "Clean up bitmap-image overlays."
-  (dolist (ovr (overlays-in (point-min) (point-max)))
-    (delete-overlay ovr)))
-
 (defun w3m-bitmap-image-buffer (buffer)
   "Create bitmap-image from BUFFER."
   (let* ((cmp (bitmap-decode-xbm (bitmap-read-xbm-buffer buffer)))
@@ -113,16 +108,21 @@ bitmap chars as well."
     (nreverse list)))
 
 (defun w3m-bitmap-image-get-overlay (pos)
-  "Get bitmap-image overlay at POS."
-  (let ((home (point)))
+  "Return an overlay which has the `bitmap-image' property at POS, and
+clear the `evaorate' property in that overlay temporally."
+  (let ((home (point))
+	ovrs ovr)
     (goto-char pos)
-    (prog1
-	(catch  'loop
-	  (dolist (o (overlays-in (line-beginning-position)
-				  (line-end-position)))
-	    (when (overlay-get o 'w3m-bitmap-image-line)
-	      (throw 'loop o))))
-      (goto-char home))))
+    (setq ovrs (overlays-in (line-beginning-position) (line-end-position)))
+    (while (and (not ovr)
+		ovrs)
+      (if (overlay-get (car ovrs) 'w3m-bitmap-image-line)
+	  (setq ovr (car ovrs))
+	(setq ovrs (cdr ovrs))))
+    (goto-char home)
+    (when ovr
+      (overlay-put ovr 'evaporate nil)
+      ovr)))
 
 (defun w3m-bitmap-image-insert-internal (pos image &optional props)
   (save-excursion
@@ -156,18 +156,15 @@ bitmap chars as well."
 	(setq image (cdr image))
 	(forward-line))
       (move-overlay ovr (min ovrbeg (overlay-start ovr))
-		    (1- (point))))))
+		    (1- (point)))
+      (overlay-put ovr 'evaporate t)
+      ovr)))
 
 (defun w3m-bitmap-image-insert (pos image props)
   "Insert IMAGE to POS."
-  (w3m-bitmap-image-insert-internal pos image props)
-  (let ((ovr (w3m-bitmap-image-get-overlay pos)))
+  (let ((ovr (w3m-bitmap-image-insert-internal pos image props)))
     (overlay-put ovr 'w3m-bitmap-image-count
 		 (1+ (or (overlay-get ovr 'w3m-bitmap-image-count) 0)))))
-
-(defun w3m-bitmap-image-insert-string (pos str)
-  "Insert STR to POS same as bitmap-image."
-  (w3m-bitmap-image-insert-internal pos (list str)))
 
 (defun w3m-bitmap-image-delete-internal (pos &optional width)
   (save-excursion
@@ -280,17 +277,15 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
   (when image
-    (save-excursion
-      (let ((properties (text-properties-at beg))
-	    (name (buffer-substring beg end)))
-	(w3m-bitmap-image-delete-string beg (- end beg))
-	(goto-char beg)
-	(w3m-bitmap-image-insert (point) image
-				 (append (list 'w3m-image-status 'on
-					       'face 'w3m-bitmap-image-face
-					       'w3m-bitmap-image t
-					       'w3m-image-name name)
-					 properties))))))
+    (let ((properties (text-properties-at beg))
+	  (name (buffer-substring beg end)))
+      (w3m-bitmap-image-delete-string beg (- end beg))
+      (w3m-bitmap-image-insert beg image
+			       (w3m-modify-plist properties
+						 'w3m-image-status 'on
+						 'face 'w3m-bitmap-image-face
+						 'w3m-bitmap-image t
+						 'w3m-image-name name)))))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END.
@@ -298,7 +293,7 @@ Buffer string between BEG and END are replaced with IMAGE."
   (let ((name (get-text-property beg 'w3m-image-name)))
     (when name
       (w3m-bitmap-image-delete beg)
-      (w3m-bitmap-image-insert-string beg name)
+      (w3m-bitmap-image-insert-internal beg (list name))
       (+ beg (length name)))))
 
 (defun w3m-image-type-available-p (image-type)

@@ -1,3 +1,21 @@
+2002-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bitmap.el (w3m-bitmap-image-cleanup): Remove.
+	(w3m-bitmap-image-get-overlay): Clear the `evaorate' property in
+	an overlay temporally.
+	(w3m-bitmap-image-insert-internal): Put the `evaorate' property in
+	an overlay; return an overlay.
+	(w3m-bitmap-image-insert): Use the return value of
+	`w3m-bitmap-image-insert-internal' instead of to call
+	`w3m-bitmap-image-get-overlay'.
+	(w3m-bitmap-image-insert-string): Remove.
+	(w3m-insert-image): Use `w3m-modify-plist' to cleanup plist; don't
+	move the point.
+	(w3m-remove-image): Replace `w3m-bitmap-image-insert-string' with
+	`w3m-bitmap-image-insert-internal'.
+
+	* w3m-util.el (w3m-modify-plist): New function.
+
 2002-04-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-proc.el (w3m-process-kill-surely): New internal variable.
