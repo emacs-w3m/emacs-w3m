@@ -1894,8 +1894,10 @@ Put the following line in your @file{~/.gnus.el} file:
 (autoload 'gnus-group-make-shimbun-group "nnshimbun" nil t)
 @end lisp
 
-See also @ref{Gnus} for rendering HTML messages with emacs-w3m.  Note
-that you have nothing to be done if you use T-gnus, not Gnus.
+Note: it isn't necessary if you are using T-gnus.
+
+See also @ref{Gnus} for rendering HTML messages with emacs-w3m if you
+use Gnus, see @ref{SEMI MUAs} for T-gnus or Nana-gnus instead.
 
 @findex gnus-group-make-shimbun-group
 @c @kindex G n (Group)
