@@ -107,7 +107,8 @@ tarball: $(DOCS) $(DISTS)
 	rm -rf $(DISTDIR)
 
 clean:
-	-rm -rf *~ *.elc shimbun/*.elc $(PACKAGE)* w3m-kwds.el
+	-rm -rf *~ *.elc shimbun/*.elc $(PACKAGE)*;\
+	rm -f w3m-kwds.el shimbun/shimbun-servers.el*
 
 distclean: clean
 	-rm -f config.log config.status config.cache Makefile;\
