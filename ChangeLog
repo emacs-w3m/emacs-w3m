@@ -1,3 +1,8 @@
+2001-05-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-decode-buffer): Removed reference of
+	`w3m-coding-system'.
+
 2001-05-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-dtree.el (w3m-dtree-directory-depth): New variable.

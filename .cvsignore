@@ -4,5 +4,5 @@ w3m_el*
 Makefile
 config.cache
 config.log
-config.status
+config.status*
 configure

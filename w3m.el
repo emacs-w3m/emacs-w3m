@@ -783,6 +783,8 @@ for a charset indication")
   "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\|dtree\\)/.*\\)?$"
   "Regexp of urls to be ignored in a history.")
 
+(defvar w3m-mode-map nil "Keymap used in w3m-mode buffers.")
+
 ;; Generic macros and inline functions:
 (defsubst w3m-attributes (url &optional no-cache)
   "Return a list of attributes of URL.
@@ -1793,38 +1795,24 @@ If the user enters null input, return second argument DEFAULT."
 			t '(t nil) nil (nth 1 x)))))))
 
 (defun w3m-decode-buffer (url &optional content-charset content-type)
-  (let ((cs (w3m-charset-to-coding-system
-	     (or content-charset
-		 (w3m-content-charset url)
-		 (when (string= "text/html"
-				(or content-type
-				    (w3m-content-type url)))
-		   (let ((case-fold-search t))
-		     (goto-char (point-min))
-		     (when (or (re-search-forward
-				w3m-meta-content-type-charset-regexp nil t)
-			       (re-search-forward
-				w3m-meta-charset-content-type-regexp nil t))
-		       (match-string-no-properties 2))))))))
-    (decode-coding-region
-     (point-min) (point-max)
-     (if cs
-	 cs
-       (let ((default (condition-case nil
-			  (coding-system-category w3m-coding-system)
-			(error nil)))
-	     (candidate (detect-coding-region (point-min) (point-max))))
-	 (unless (listp candidate)
-	   (setq candidate (list candidate)))
-	 (catch 'coding
-	   (dolist (coding candidate)
-	     (if (eq default (coding-system-category coding))
-		 (throw 'coding coding)))
-	   (if (eq (coding-system-category 'binary)
-		   (coding-system-category (car candidate)))
-	       w3m-coding-system
-	     (car candidate))))))
-    (set-buffer-multibyte t)))
+  (unless content-charset
+    (setq content-charset
+	  (or (w3m-content-charset url)
+	      (when (string= "text/html"
+			     (or content-type (w3m-content-type url)))
+		(let ((case-fold-search t))
+		  (goto-char (point-min))
+		  (when (or (re-search-forward
+			     w3m-meta-content-type-charset-regexp nil t)
+			    (re-search-forward
+			     w3m-meta-charset-content-type-regexp nil t))
+		    (match-string-no-properties 2)))))))
+  (decode-coding-region
+   (point-min) (point-max)
+   (if content-charset
+       (w3m-charset-to-coding-system content-charset)
+     (car (detect-coding-region (point-min) (point-max)))))
+  (set-buffer-multibyte t))
 
 
 ;;; Retrieve local data:
@@ -2744,8 +2732,6 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (bury-buffer (current-buffer))
   (set-window-buffer (selected-window) (other-buffer)))
 
-
-(defvar w3m-mode-map nil "Keymap used in w3m-mode buffers.")
 (unless w3m-mode-map
   (setq w3m-mode-map
 	(if (eq w3m-key-binding 'info)
