@@ -1,10 +1,8 @@
 ;;; sb-muchy.el --- shimbun backend for Muchy's Palmware Review!
+;; Copyright (C) 2001 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
-
 ;; Keywords: news
-
-;;; Copyright:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -205,4 +203,5 @@
    (buffer-string) (mime-charset-to-coding-system "ISO-2022-JP")))
 
 (provide 'sb-muchy)
+
 ;;; sb-muchy.el ends here

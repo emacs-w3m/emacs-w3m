@@ -1,3 +1,11 @@
+2001-11-19  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-ibm-dev.el: Add copyright notice.
+	* shimbun/sb-muchy.el: Ditto.
+	* shimbun/sb-ruby.el: Ditto.
+	* shimbun/sb-vinelinux.el: Ditto.
+	* shimbun/sb-w3m-dev.el: Ditto.
+
 2001-11-19  Kazuhiko  <kazuhiko@ring.gr.jp>
 
 	* w3m-xmac.el (w3m-create-image): Fix a problem in handling XBM
