@@ -128,7 +128,7 @@ Emacs-w3m $B3+H/%A!<%`(B
 @menu
 * Introduction::                $B$O$8$a$K(B
 * Getting Started::             Emacs-w3m $B$r;H$$;O$a$k$N$O$H$C$F$b4JC1(B
-* Shimbun Libraries::           $B?7J9$rJXMx$KFI$`$?$a$NF;6q(B
+* Shimbun Library::             $B?7J9$rJXMx$KFI$`$?$a$NF;6q(B
 * Index::                       $B:w0z(B
 
 @detailmenu
@@ -141,7 +141,7 @@ Getting Started
 * Other Requirements::          Emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
 * Installing Emacs-w3m::        Emacs-w3m $B$r%$%s%9%H!<%k$9$k(B
 
-Shimbun Libraries
+Shimbun Library
 
 @end detailmenu
 @end menu
@@ -310,11 +310,15 @@ Emacs 19.34 ($B4^(B Mule 2.3) $B$KIT2D7g$G$9!#%U%!%$(B
 @end example
 
 @item FLIM
-Shimbun $B%i%$%V%i%j(B (@pxref{Shimbun Libraries}) $B$r;H$&$?$a$K$O(B FLIM $B%Q%C(B
-$B%1!<%8$,I,MW$G$9!#$?$H$((B Emacs 20.x $B$+(B Emacs 21.x $B$r;H$C$F$$$k>l9g$G$b!"(B
-FLIM $B%Q%C%1!<%8$K$O(B APEL $B%Q%C%1!<%8$,I,MW$G$"$k$3$H$KCm0U$7$F2<$5$$!#$7(B
-$B$?$,$C$F(B shimbun $B%i%$%V%i%j$r;H$&$K$O!"(BAPEL $B$H(B FLIM $B$NN>J}$r%$%s%9%H!<%k(B
-$B$7$J$1$l$P$J$j$^$;$s!#(BFLIM $B%Q%C%1!<%8$O0J2<$N>l=j$K$"$j$^$9(B:
+Shimbun $B%i%$%V%i%j(B (@pxref{Shimbun Library}) $B$r;H$&$?$a$K$O(B FLIM $B%Q%C%1!<(B
+$B%8$,I,MW$G$9!#(BShimbun $B%i%$%V%i%j$O!"%&%'%V>e$N?7J9$rJXMx$KFI$`$?$a$NF;6q(B
+$BN`$N%3%l%/%7%g%s$G!"(BGnus$B!"(BMew$B!"(BNana-gnus$B!"(BT-gnus$B!"(BWanderlust $B$J$I$H$H$b(B
+$B$K;H$&$3$H$,$G$-$^$9!#(B@xref{Shimbun Library}$B!#(B
+
+$B$?$H$((B Emacs 20.x $B$+(B Emacs 21.x $B$r;H$C$F$$$k>l9g$G$b!"(BFLIM $B%Q%C%1!<%8$K(B
+$B$O(B APEL $B%Q%C%1!<%8$,I,MW$G$"$k$3$H$KCm0U$7$F2<$5$$!#$7$?$,$C(B
+$B$F(B shimbun $B%i%$%V%i%j$r;H$&$K$O!"(BAPEL $B$H(B FLIM $B$NN>J}$r%$%s%9%H!<%k$7$J$1(B
+$B$l$P$J$j$^$;$s!#(BFLIM $B%Q%C%1!<%8$O0J2<$N>l=j$K$"$j$^$9(B:
 
 @uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
 
@@ -325,7 +329,7 @@ FLIM $B%Q%C%1!<%8$K$O(B APEL $B%Q%C%1!<%8$,I,MW$G$"$k$3$H$KCm0U$7$F2<$5$$!#$7
 @cindex install
 
 
-@node Shimbun Libraries
+@node Shimbun Library
 @chapter $B?7J9$rJXMx$KFI$`$?$a$NF;6q(B
 @cindex shimbun
 
