@@ -208,7 +208,7 @@ server for the particular hosts.  The first match made will be used.
 Here is an example of how to set this option:
 
 \(setq w3m-command-arguments-alist
-      '(;; Don't use any additional options to visit local hosts.
+      '(;; Don't use proxy server to visit local hosts.
 	(\".*\\\\.your-company\\\\.com$\" \"-no-proxy\")
 	;; Use the proxy server to visit any foreign hosts.
 	(\"\" \"-o\" \"http://proxy.your-company.com:8080/\")))"
