@@ -1,8 +1,10 @@
 ;;; sb-w3m-dev.el --- shimbun backend for w3m-dev
 
-;; Copyright (C) 2001 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2001 NAKAJIMA Mikio
+;; Copyright (C) 2005 Tsuyoshi CHO
 
-;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
+;; Authors: NAKAJIMA Mikio <minakaji@namazu.org>,
+;;          Tsuyoshi CHO <mfalcon_sky@emailuser.net>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
@@ -31,13 +33,31 @@
 
 (luna-define-class shimbun-w3m-dev (shimbun-fml) ())
 
-(defvar shimbun-w3m-dev-url "http://mi.med.tohoku.ac.jp/~satodai/w3m-dev/")
-(defvar shimbun-w3m-dev-groups '("w3m-dev"))
+(defvar shimbun-w3m-dev-url "http://www.sic.med.tohoku.ac.jp/~satodai/")
+(defvar shimbun-w3m-dev-group-alist
+  '(("w3m-dev"    . "w3m-dev")
+    ("w3m-dev-en" . "w3m-dev-en")))
+
+(defvar shimbun-w3m-dev-groups
+  (mapcar 'car shimbun-w3m-dev-group-alist))
+
 (defvar shimbun-w3m-dev-coding-system 'euc-japan)
+
+(luna-define-method shimbun-index-url ((shimbun shimbun-w3m-dev))
+  (concat
+   (shimbun-expand-url
+    (cdr (assoc (shimbun-current-group-internal shimbun)
+		shimbun-w3m-dev-group-alist))
+    (shimbun-url-internal shimbun))
+   "/"))
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-w3m-dev))
   "Return w3m-dev mailing list address."
-  "w3m-dev@mi.med.tohoku.ac.jp")
+  (concat
+   (cdr (assoc (shimbun-current-group-internal shimbun)
+	       shimbun-w3m-dev-group-alist))
+   (shimbun-url-internal shimbun)
+   "@mi.med.tohoku.ac.jp"))
 
 (provide 'sb-w3m-dev)
 
