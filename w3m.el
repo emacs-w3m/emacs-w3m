@@ -5046,6 +5046,8 @@ COUNT is treated as 1 by default if it is omitted."
 	(let ((inhibit-file-name-handlers '(cygwin-mount-name-hook-function
 					    cygwin-mount-map-drive-hook-function))
 	      (inhibit-file-name-operation 'expand-file-name)
+	      ;; It is ?\ by default in XEmacs on Windows (native, not Cygwin).
+	      (directory-sep-char ?/)
 	      path)
 	  (setq path (expand-file-name name base))
 	  (if (string-match "\\`.:" path)
