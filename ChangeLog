@@ -1,5 +1,35 @@
 2000-09-18  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
+	* w3m.el (w3m-input-url): Enter url with completion. Candidates
+	are visited url kept in w3m-backlog-hashtb.
+	(w3m-backlog-setup): Change hash size as prime number and
+	initialized with value 0 for obarray.
+	(w3m-backlog-remove): Remove unused 2nd arg NUMBER and remove when
+	block to check NUMBER.
+	(w3m-exec): Show message "Loading..." while loading.
+	(w3m-save-position): New function to keep display position in
+	Emacs window into hash symbol, but I think this is not best way.
+	(w3m-restore-position): New function to restore display position.
+	(w3m-view-previous-page): Restore display position.
+	(w3m-expand-url): Canonicalize url, ex. "http://www.host.org" to
+	"http://www.host.org/".  Change regexp to allow "mailto:"
+	protocol.  Remove drive letter as side-effect using
+	expand-file-name to expand url for Win32 emacen.
+	(w3m-expand-file-name): New function to alternates
+	expand-file-name function with convert drive letter prefixed path
+	to cygwin path.  i.e. c:/users/home to /cygdrive/c/users/home
+	(w3m-view-bookmark): Expand bookmark filename as cygwin path
+	format to pass to w3m.
+	(w3m-mode-map): Add new key binding 'B' to back to previous page.
+	Add new key binding 'R' to force reloading current page.
+	(w3m-mailto-url): New function to support mailto: protocol.  It
+	use rfc2368.el if available.
+	(w3m-goto-url): Ad-hoc support mailto: protocol. We should
+	consider more...
+	(w3m-reload-this-page): New function to reload current page.
+
+2000-09-18  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
 	* w3m.el (w3m): Add 2nd arguemnt to use with browse url.  This is
 	patch from Satoru Takabayashi <satoru-t@is.aist-nara.ac.jp> in
 	ELF-ML, Seq# 875.
