@@ -1,3 +1,10 @@
+2001-10-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-ccl-write-repeat): Accept optional arguments to
+	avoid difference between Emacesn on CCL.
+	(w3m-iso-latin-1-decoder): Call `w3m-ccl-write-repeat' with
+	optional argument.
+
 2001-10-29  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-terminal-coding-system): Changed default value

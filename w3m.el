@@ -244,7 +244,7 @@ width using expression (+ (frame-width) VALUE)."
 	    (skip-chars-forward "a-zA-Z<>/_ \n")
 	    (string= (buffer-substring (point) (min (+ 4 (point)) (point-max)))
 		     (string ?\264 ?\301 ?\273 ?\372))))))
-  "Non-nil means that `w3m' accepts Japanese characters.")
+  "Non-nil means that `w3m-command' accepts Japanese characters.")
 
 (defcustom w3m-coding-system
   'iso-2022-7bit
@@ -2749,15 +2749,15 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	     (progn
 	       (goto-char (point-min))
 	       (search-forward " -header " nil t)))))
-  "Non-nil means that `w3m' accepts `-post' option and `-header' option.")
+  "Non-nil means that `w3m-command' accepts `-post' option and `-header' option.")
 
 (defvar w3m-accept-dump-extra-option
   (or (memq w3m-type '(w3m w3mmee))
       (with-temp-buffer
 	(call-process w3m-command nil t nil "-dump_extra" "http://localhost/")
 	(goto-char (point-min))
-	(if (looking-at "version") nil t)))
-  "Non-nil means that `w3m' accepts `-dump_extra' option.")
+	(not (looking-at "version"))))
+  "Non-nil means that `w3m-command' accepts `-dump_extra' option.")
 
 (defun w3m-w3m-retrieve (url &optional no-decode no-cache post-data referer)
   "Retrieve content of URL with w3m and insert it to the working buffer.
@@ -2946,7 +2946,11 @@ to nil.
 (w3m-static-when (or (featurep 'mule) (boundp 'MULE))
 (require 'ccl)
 (eval-and-compile
-  (defun w3m-ccl-write-repeat (charset)
+  (defun w3m-ccl-write-repeat (charset &optional r0 r1)
+    (unless r0
+      (setq r0 'r0))
+    (unless r1
+      (setq r1 (if (eq r0 'r1) 'r0 'r1)))
     (let* ((spec (cdr
 		  (assq charset
 			'((latin-iso8859-1 .   (nil . lc-ltn1))
@@ -2957,16 +2961,16 @@ to nil.
 			 (cdr spec)
 		       '(charset-id charset)))))
       (if (fboundp 'ccl-compile-write-multibyte-character)
-	  (` ((r1 &= ?\x7f)
+	  (` (((, r1) &= ?\x7f)
 	      (,@ (when (car spec)
-		    '((r1 |= ((r0 & ?\x7f) << 7)))))
-	      (r0 = (, id))
-	      (write-multibyte-character r0 r1)
+		    (` (((, r1) |= (((, r0) & ?\x7f) << 7))))))
+	      ((, r0) = (, id))
+	      (write-multibyte-character (, r0) (, r1))
 	      (repeat)))
 	(` ((write (, id))
 	    (,@ (when (car spec)
-		  '((write r0))))
-	    (write-repeat r1)))))))
+		  (` ((write (, r0))))))
+	    (write-repeat (, r1))))))))
 
 (define-ccl-program w3m-euc-japan-decoder
   (` (2
@@ -3012,8 +3016,7 @@ to nil.
 	   (write-repeat r0))
        ;; Process Latin-1 characters.
        (if (r0 > ?\xa0)
-	   ((r1 = (r0 | 0)) ; Use `|' for avoiding Mule-2.3 bug.
-	    (,@ (w3m-ccl-write-repeat 'latin-iso8859-1))))
+	   ((,@ (w3m-ccl-write-repeat 'latin-iso8859-1 'r1))))
        ;; Process internal characters used in w3m.
        (,@ (mapcar (lambda (pair)
 		     (` (if (r0 == (, (car pair)))
