@@ -3862,7 +3862,7 @@ type as a string argument, when retrieve is complete."
 		      ;; Image size conscious rendering
 		      (if (member "image" w3m-compile-options)
 			  (if (and w3m-treat-image-size
-				   (w3m-display-graphic-p))
+				   (w3m-display-inline-images-p))
 			      (append
 			       (list "-o" "display_image=on")
 			       (when (w3m-display-graphic-p)
@@ -6143,8 +6143,8 @@ ex.) c:/dir/file => //c/dir/file"
 <body>
 <center>
 Welcome to <a href=\"http://emacs-w3m.namazu.org/\">\
-<img src=\"about://emacs-w3m.gif\" alt=\"emacs-w3m\"></a>!
-<br><br>
+<img src=\"about://emacs-w3m.gif\" alt=\"emacs-w3m\" width=\"83\"
+height=\"14\"></a>!<br><br>
 emacs-w3m is an interface program of
 <a href=\"http://w3m.sourceforge.net/\">w3m</a>,
 works on Emacs.

@@ -1,3 +1,11 @@
+2002-10-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-rendering-half-dump): To decide whether
+	`w3m-treat-image-size' is ignored, use
+	`w3m-display-inline-images-p' instead of `w3m-display-graphic-p'.
+	Thanks to Mito for his report.
+	(w3m-about): Add `witdh' and `height' property to <img> tag.
+
 2002-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-emacs-w3m-icon): Use helvetica-bold to widen image.
