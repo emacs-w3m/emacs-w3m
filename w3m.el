@@ -3804,8 +3804,8 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "\C-c\C-p" 'w3m-previous-buffer)
     (define-key map "\C-c\C-n" 'w3m-next-buffer)
     (define-key map "\C-c\C-w" 'w3m-delete-buffer)
-    (define-key map "\C-c\C-b" 'w3m-switch-buffer)
     (define-key map "\C-c\C-s" 'w3m-select-buffer)
+    (define-key map "\C-c\C-a" 'w3m-switch-buffer)
     (define-key map "R" 'w3m-reload-this-page)
     (define-key map "C" 'w3m-redisplay-with-charset)
     (define-key map "?" 'describe-mode)
@@ -3854,6 +3854,9 @@ If EMPTY is non-nil, the created buffer has empty content."
 	    'w3m-mouse-view-this-url-new-session))
       (define-key map [mouse-2] 'w3m-mouse-view-this-url)
       (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
+    (define-key map "\C-c\C-@" 'w3m-history-store-position)
+    (define-key map [?\C-c?\C- ] 'w3m-history-store-position)
+    (define-key map "\C-c\C-b" 'w3m-history-restore-position)
     (define-key map " " 'w3m-scroll-up-or-next-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
@@ -3888,8 +3891,8 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "\C-c\C-p" 'w3m-previous-buffer)
     (define-key map "\C-c\C-n" 'w3m-next-buffer)
     (define-key map "\C-c\C-w" 'w3m-delete-buffer)
-    (define-key map "\C-c\C-b" 'w3m-switch-buffer)
     (define-key map "\C-c\C-s" 'w3m-select-buffer)
+    (define-key map "\C-c\C-a" 'w3m-switch-buffer)
     (define-key map "o" 'w3m-history)
     (define-key map "O" 'w3m-db-history)
     (define-key map "p" 'w3m-view-previous-page)
@@ -4060,8 +4063,9 @@ Return t if deleting current frame or window is succeeded."
 \\[w3m-copy-buffer]	Create a twin copy of the current buffer.
 \\[w3m-next-buffer]	Switch to next w3m buffer.
 \\[w3m-previous-buffer]	Switch to previous w3m buffer.
-\\[w3m-delete-buffer]	Kill current w3m buffer.
 \\[w3m-select-buffer]	Select one buffer of all w3m buffers.
+\\[w3m-switch-buffer]	Switch one buffer of all w3m buffers.
+\\[w3m-delete-buffer]	Kill current w3m buffer.
 
 \\[w3m]	w3m.
 \\[w3m-close-window]	Close this window and make the other buffer current.

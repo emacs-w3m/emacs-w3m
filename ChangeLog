@@ -1,3 +1,12 @@
+2001-11-13  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-lynx-like-map): Bind `C-cC-a' as the key to call
+	`w3m-switch-buffer'.
+	(w3m-info-like-map): Ditto. Bind `\C-c\C-@' and `C-c\C- ' as the
+	key to call `w3m-history-store-position'. Bind `C-cC-b' as the key
+	to call `w3m-history-restore-position'.
+	(w3m-mode): Modify doc-string.
+
 2001-11-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-select-buffer-horizontal-window): New user option.
