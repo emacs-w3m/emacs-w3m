@@ -834,7 +834,11 @@ install-package[-ja]:
 (defun w3mhack-makeinfo ()
   "Emacs makeinfo in batch mode.
 NOTE: This function must be called from the top directory."
-  (load "doc/ptexinfmt.el" nil t t)
+  (condition-case nil
+      (load "doc/ptexinfmt.el" nil t t)
+    ;; This is a temporally fix to help users who don't have APEL.
+    (error
+     (require 'texinfmt)))
   (cd "doc")
   (let ((file (pop command-line-args-left))
 	auto-save-default
