@@ -12,6 +12,7 @@
 	(shimbun-muchy-get-headers): Remove unnecessary temporary variable
 	COUNT.
 	(shimbun-get-headers): Ditto.
+	(shimbun-muchy-get-headers): Remove unnecessary `mapcar'.
 
 2001-10-20  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 

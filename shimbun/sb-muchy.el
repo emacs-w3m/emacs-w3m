@@ -147,10 +147,8 @@
 	    (setq id (format "<%s%08d%%%s>" url
 			     (string-to-number
 			      (mapconcat
-			       'identity
-			       (mapcar
-				'number-to-string
-				(shimbun-muchy-parse-time (car date-list)))
+			       'number-to-string
+			       (shimbun-muchy-parse-time (car date-list))
 			       ""))
 			     group))
 	    (if (shimbun-search-id shimbun id)
