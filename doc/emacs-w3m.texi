@@ -175,12 +175,13 @@ Emacs-w3m Functions
 @chapter Preliminary remarks
 @cindex Introduction
 
-@uref{http://www.cs.indiana.edu/elisp/w3/docs.html, W3} is known as the
-most popular WEB browser on Emacs, but it works so slowly that we want a
-simple and speedy alternative.  @uref{http://w3m.sourceforge.net/, w3m}
-is a pager with WWW capability, developed by Akinori ITO.  Although it
-is a pager, it can be used as a text-mode WWW browser.  So we developed
-a simple Emacs interface to w3m.
+@uref{http://www.cs.indiana.edu/elisp/w3/docs.html, Emacs/W3} was the
+most popular web browser on Emacs once.  However, it worked so slowly
+that we wanted a speedy alternative.  On the other hand,
+@uref{http://w3m.sourceforge.net/, w3m} was a pager with WWW capability,
+developed by Akinori ITO.  Although it was a pager, it was possible to
+use it as a text-mode WWW browser.  So, we started developing an Emacs
+interface to w3m.
 
 Our special thanks go to Akinori ITO and the w3m team for the excellent
 w3m program.  We would also like to thank everybody who has submitted
@@ -222,8 +223,8 @@ No additional package is required.
 
 @item XEmacs 21.x
 The @acronym{APEL} package and the @samp{gifsicle} program are required
-(@pxref{Other Requirements}).  We recommend using the most recent XEmacs
-21.4 since that version of XEmacs seems to be most stable.
+(@pxref{Other Requirements}).  We recommend using the latest XEmacs 21.4
+which seems stable.
 
 @item Emacs 20.x
 No additional package is required.  Furthermore, you can see monochrome

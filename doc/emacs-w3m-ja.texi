@@ -207,17 +207,13 @@ Emacs-w3m Functions
 @chapter はじめに
 @cindex Introduction
 
-Emacs 上で動作するブラウザと言えば、
-普通は @uref{http://www.cs.indiana.edu/elisp/w3/docs.html, W3} のことで
-すが、動作が非常に遅いので、なかなか常用しようという気になれません。それ
-に対して、@uref{http://w3m.sourceforge.net/, w3m} というテキストベースで
-動作するブラウザがあり、非常に軽快に動作するので重宝しているのですが、端
-末に移動しなければいけないのが面倒です。
-
-そこで、w3m を HTML の rendering engine として使用し、表示とインタフェー
-スのみを Emacs で動かすようにすればいいんじゃないだろうか、ということを
-考えました。つまり、emacs-w3m は、w3m を emacs 上で動かすインターフェー
-スプログラムですが、emacs 上で動くウェブブラウザとして使うこともできます。
+@uref{http://www.cs.indiana.edu/elisp/w3/docs.html, Emacs/W3} は、以前
+は Emacs 上で動作する最もポピュラーな web ブラウザーでした。しかし動作が
+非常に遅かったので、私たちはそれに代わる速いものを欲しました。一方、
+@uref{http://w3m.sourceforge.net/, w3m} というページャーがありました。そ
+れはページャーでしたが、テキストモード WWW ブラウザーとして使うことがで
+きたのです。そこで私たちは、w3m への Emacs インターフェースの開発を始め
+ました。
 
 すばらしい w3m プログラムを開発してくれた伊藤彰則さんと w3m チームのみな
 さんに、格段の感謝を捧げます。さらにコメント、提案およびバグの修正をして
