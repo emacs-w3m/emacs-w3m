@@ -626,13 +626,48 @@ objects will not be deleted:
   (and url (not (string-match w3m-url-invalid-regexp url))
        url))
 
-(defmacro w3m-tag-regexp-of (&rest names)
-  "Return a regexp string, not a funtion form.  A regexp should match tags
-which are started with \"<\" and one of NAMES.  NAMES should be string
-constants, any other expressions are not allowed."
-  (concat "<\\("
-	  (mapconcat 'identity names "\\|")
-	  "\\)\\([ \t\r\f\n]+[^>]*\\)?/?>"))
+(defun w3m-search-tag-1 (regexp)
+  "Subroutine used by `w3m-search-tag'."
+  (let ((start (point))
+	begin end)
+    (if (and (re-search-forward regexp nil t)
+	     (setq begin (match-beginning 0)
+		   end (match-end 0))
+	     (or (looking-at "/?>")
+		 (and (looking-at "[ \t\f\n]")
+		      (search-forward ">" nil t))))
+	(prog1
+	    (goto-char (match-end 0))
+	  (set-match-data
+	   (cond ((= end (match-beginning 0))
+		  (list begin (match-end 0)
+			(1+ begin) end))
+		 ((eq (char-before (match-beginning 0)) ?/)
+		  (if (= end (1- (match-beginning 0)))
+		      (list begin (match-end 0)
+			    (1+ begin) end)
+		    (list begin (match-end 0)
+			  (1+ begin) end
+			  end (- (match-end 0) 2))))
+		 (t
+		  (list begin (match-end 0)
+			(1+ begin) end
+			end (1- (match-end 0)))))))
+      (set-match-data nil)
+      (goto-char start)
+      nil)))
+
+(defmacro w3m-search-tag (&rest names)
+  "Search forward for a tag which begins with one of NAMES.
+This macro generates the form equivalent to:
+
+\(re-search-forward \"<\\\\(NAMES\\\\)\\\\([ \\t\\f\\n]+[^>]*\\\\)?/?>\" nil t)
+
+but it works even if the tag is considerably large.
+
+Note: this macro allows only strings for NAMES, that is, a form
+something like `(if foo \"bar\" \"baz\")' cannot be used."
+  `(w3m-search-tag-1 ,(concat "<" (regexp-opt names t))))
 
 (defsubst w3m-time-newer-p (a b)
   "Return t, if A is newer than B.  Otherwise return nil.

@@ -485,14 +485,11 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	tag start end internal-start textareas selects forms maps mapval
 	form)
     (goto-char (point-min))
-    (while (re-search-forward (if (eq w3m-type 'w3mmee)
-				  (w3m-tag-regexp-of
-				   "_f" "map" "img_alt" "input_alt"
-				   "/input_alt")
-				(w3m-tag-regexp-of
-				   "form_int" "map" "img_alt" "input_alt"
-				   "/input_alt"))
-			      nil t)
+    (while (if (eq w3m-type 'w3mmee)
+	       (w3m-search-tag "_f" "map" "img_alt" "input_alt"
+			       "/input_alt")
+	     (w3m-search-tag "form_int" "map" "img_alt" "input_alt"
+			     "/input_alt"))
       (setq tag (downcase (match-string 1)))
       (goto-char (match-end 1))
       (setq start (match-end 0))
@@ -539,8 +536,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
        ((string= tag "map")
 	(let (candidates)
 	  (w3m-parse-attributes (name)
-	    (while (and (re-search-forward
-			 (w3m-tag-regexp-of "area" "/map") nil t)
+	    (while (and (w3m-search-tag "area" "/map")
 			(not (char-equal
 			      (char-after (match-beginning 1))
 			      ?/)))
@@ -557,7 +553,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			    (nreverse candidates))))))
        ((string= tag "img_alt")
 	(w3m-parse-attributes (usemap)
-	  (re-search-forward (w3m-tag-regexp-of "/img_alt") nil t)
+	  (w3m-search-tag "/img_alt")
 	  (when (or usemap mapval)
 	    (unless maps (setq maps (w3m-form-new "map" ".")))
 	    (unless usemap (setq usemap mapval))
@@ -736,9 +732,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		  current candidates)
 	      (when selectinfo
 		;; Parse FORM SELECT fields until </SELECT> (or </FORM>)
-		(while (and (re-search-forward
-			     (w3m-tag-regexp-of "option_int" "/select_int")
-			     nil t)
+		(while (and (w3m-search-tag "option_int" "/select_int")
 			    (not (char-equal (char-after (match-beginning 1))
 					     ?/)))
 		  ;; <option_int> is found
