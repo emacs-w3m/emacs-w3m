@@ -108,10 +108,9 @@
 	     (locate-library "bitmap"))
 	;; Against the error "Already defined charset: 242".
 	(when (locate-library "un-define")
+	  (require 'un-define)
 	  (setq bitmap-alterable-charset 'tibetan-1-column)
-	  (setq bitmap-use-alterable-charset-anyway t)
-	  (require 'bitmap)
-	  (require 'un-define))
+	  (require 'bitmap))
       (push "w3m-bitmap.el" ignores))
     ;; To byte-compile w3m-util.el and a version specific module first.
     (princ "w3m-util.elc ")

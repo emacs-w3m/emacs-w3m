@@ -1,3 +1,8 @@
+2002-04-10  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3mhack.el (w3mhack-examine-modules): Reverse the turn of the
+	load with `bitmap' and `un-define'.
+
 2002-04-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bitmap.el (w3m-bitmap-image-face): New face.
