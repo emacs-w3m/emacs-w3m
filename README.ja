@@ -17,7 +17,8 @@
 
 2. 動作環境
 
-   最初に，emacs-w3m を使うために必要な環境について説明します．
+   emacs-w3m をインストールする前に，必要な環境が整っているか調べてくだ
+   さい．
 
    emacs-w3m を動かすには，最新の w3m が必要です．最新版は，2002年3月6日
    に公開された w3m-0.3 で，以下の場所から入手できます．
@@ -27,8 +28,8 @@
    emacs-w3m は，w3m のバージョンに強く依存していますので，既にインストー
    ル済みの w3m を利用する場合は，そのバージョンを再確認してください．
 
-   emacs-w3m に同梱されている shimbun ライブラリを利用するためには，FLIM 
-   を前もってインストールしておく必要があります．詳細については，
+   emacs-w3m に同梱して配布されている shimbun ライブラリを利用するために
+   は，FLIM を前もってインストールしておく必要があります．詳細については，
    README.shimbun.ja を確認してください．
 
    a) Emacs-21.x
@@ -52,40 +53,42 @@
        も) 相性が良くありません．ですから，オリジナルの APEL をインストー
        ルすることをお勧めします．
 
-      XEmacs-21.x に emacs-w3m をインストールする場合は，必ず gifsicle 
-      プログラムもインストールして下さい．現在すべての XEmacs-21.x には
+      XEmacs 21.x に emacs-w3m をインストールする場合は，必ず gifsicle
+      プログラムもインストールして下さい．現在すべての XEmacs 21.x には
       オプティマイズされたアニメーション gif が正常に表示されなかったり
       ある種のインターレース gif を表示しようとするとクラッシュしてしま
       うバグがあります．emacs-w3m は gifsicle を利用して，gif データを
-      XEmacs-21.x で扱える形式に変換します．gifsicle は次の場所から入手
-      することができます．
+      XEmacs 21.x で扱える形式に変換します．これは次の場所から入手するこ
+      とができます．
 
           http://www.lcdf.org/gifsicle/
 
    d) Mule-2.3 (based on Emacs-19.34)
-      APEL と「新しい custom」と regexp-opt.el(c) モジュールが必要です．
-      詳しくは，次の Emacs-19.34 についての説明を参照してください．
+      APEL を前もってインストールしておく必要があります．更に，「新しい
+      custom」と regexp-opt.el(c) モジュールも必要です．詳しくは，次の
+      Emacs-19.34 についての説明を参照してください．
 
       BITMAP-MULE パッケージを用いて WEB ページのインライン画像を白黒表
-      示させる場合には，付属のパッチ(patches/mule-2.3@19.34.patch)を適用
-      して Mule を作り直すことを強くお勧めします．そうしないと，高い確率
-      で Mule が固まってしまい，そして kill する以外に窮地を抜けられなく
-      なってしまうでしょう．
+      示させる場合には，付属のパッチを適用して Mule を作り直すことを強く
+      お勧めします．そうしないと，高い確率で Mule が固まってしまい，そし
+      て kill する以外に窮地を抜けられなくなってしまうでしょう．パッチは，
+      patches/mule-2.3@19.34.patch という名前で，本パッケージに同梱され
+      ています．
 
    e) Emacs-19.34 (without MULE)
       APEL を前もってインストールしておく必要があります．
 
-      emacs-w3m は「新しい custom」パッケージを必要とします．Emacs-19.34 
+      emacs-w3m は「新しい custom」パッケージを必要とします．Emacs-19.34
       または Mule-2.3 を使っている場合は，emacs-w3m をインストールする前
       にそれをインストールしなければなりません．「新しい custom」パッケー
       ジについて，詳細は http://www.dina.kvl.dk/~abraham/custom/ を参照
-      してください．特に，Mule-2.3 を使う場合は APEL に附属している
+      してください．特に Mule-2.3 を使う場合は APEL に附属している
       README.ja も必ず調べて下さい．
 
       また，emacs-w3m は regexp-opt.el(c) モジュールを必要としますが，
       Emacs-19.34 や Mule-2.3 などの古い Emacsen には含まれていません．
-      あなたが使っている Emacs が該当する場合には，前もって，以下のよう
-      に regexp-opt.el(c) モジュールをインストールする必要があります．
+      あなたが使っている Emacsen が該当する場合には，前もって，以下のよ
+      うに regexp-opt.el(c) モジュールをインストールする必要があります．
 
           % cp attic/regexp-opt.el /usr/local/share/mule/site-lisp
           % cd /usr/local/share/mule/site-lisp
@@ -94,10 +97,7 @@
 
 3. インストール
 
-   最初に，emacs-w3m を利用するために必要な動作環境が満たされているか確
-   認してください．
-
-3.1. 一般的な UNIX 環境にインストールする場合
+3.1. 一般的な UNIX 環境の場合
 
      最初に，configure スクリプトを実行してください．
 
@@ -109,16 +109,16 @@
 
          % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 
-     次に，同梱されている emacs-lisp のプログラムを適当なディレクトリに
-     インストールするため，以下のコマンドを実行してください．
+     次に，同梱されている emacs-lisp のソースファイルを適当なディレクト
+     リにインストールするため，次のコマンドを実行してください．
 
          % make
-         # make install
+         % make install
 
      加えて，XEmacs や Emacs-21 用のアイコンを，以下のようにインストール
      することができます．
 
-         # make install-icons
+         % make install-icons
 
      install の代わりに install-package を使うと，XEmacs の package とし
      てインストールすることもできます．
@@ -128,7 +128,7 @@
 
      この場合 install-icons を実行する必要はありません．
 
-3.2. 非 UNIX 環境にインストールする場合
+3.2. 非 UNIX 環境の場合
 
      configure スクリプトを実行できない，または make コマンドが存在しな
      い環境の場合は，以下のコマンドを実行してください．
@@ -146,7 +146,7 @@
 
 4.1. 基本
 
-     最初に，以下の設定を ~/.emacs に追加してください．
+     次の設定を ~/.emacs に追加してください．
 
          (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
 

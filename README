@@ -21,11 +21,11 @@
 
        http://prdownloads.sourceforge.net/w3m/w3m-0.3.tar.gz
 
-   Because emacs-w3m is sensitive to version of w3m, you should confirm
-   version of your using w3m.
+   Because this program is sensitive to version of w3m, you should
+   confirm your using w3m.
 
-   In order to use shimbun library which is distributed with this
-   package, FLIM package have to be installed.  For more detail about
+   If you want to use shimbun library which is distributed with
+   emacs-w3m, you have to install FLIM package.  For more detail abut
    shimbun library, see README.shimbun.ja (sorry, Japanese only).
 
    a) Emacs-21.x
@@ -35,22 +35,23 @@
       No additional package is required.
 
       When BITMAP-MULE package is installed, emacs-w3m converts inline
-      images into black-and-white images, and displays them on Emacs.
+      images are converted into black-and-white images, and displays
+      them on Emacs.
 
    c) XEmacs
       APEL package is required.
 
-      If you are using XEmacs-21.x, you should install the program
-      "gifsicle".  There is a known bug in the whole XEmacs-21.x series
+      If you are using XEmacs 21.x, you should install the program
+      "gifsicle".  There is a known bug in the whole XEmacs 21.x series
       so far that it won't display optimized animated gifs correctly or
       it may crash when some kind of an interlaced gif image is
       displayed.  emacs-w3m will use it to convert gif data to be
-      suitable for XEmacs-21.x.  It is available from:
+      suitable for XEmacs 21.x.  It is available from:
 
           http://www.lcdf.org/gifsicle/
 
    d) Mule-2.3 (based on Emacs-19.34)
-      APEL package, "new custom" package, and the module regexp-opt.el(c)
+      APEL package, "new custom" package, the module regexp-opt.el(c)
       are required.  For more detail, please check the next section
       about Emacs-19.34.
 
@@ -62,18 +63,19 @@
       the difficulty except kill Mule.
 
    e) Emacs-19.34 (without MULE)
-      APEL package, "new custom" package, and the module regexp-opt.el(c)
+      APEL package, "new custom" package, the module regexp-opt.el(c)
       are required.
 
-      Emacs-w3m requires "new custom" package.  If you use Emacs-19.34
-      or Mule-2.3, you have to install it before installing emacs-w3m.
-      For more detail, see http://www.dina.kvl.dk/~abraham/custom/, and
-      especially for Mule-2.3, see also README.en distributed with APEL.
+      Emacs-w3m requires "new custom" package. If you use Emacs 19.34 or
+      Mule 2.3, you have to install it before installing emacs-w3m. For
+      more detail, see http://www.dina.kvl.dk/~abraham/custom/, and
+      especially for Mule 2.3, see also README.en distributed with APEL.
 
       Emacs-w3m also requires the module regexp-opt.el(c) which might
-      not be provided in the old Emacsen such as Emacs-19.34 and Mule-2.3.
-      If you are using such versions of Emacs, you have to install the
-      module regexp-opt.el(c) before installing emacs-w3m as follows:
+      not be provided in the old Emacsen (e.g. Emacs 19.34 and Mule
+      2.3).  If you are using such versions of Emacs, you have to
+      install the module regexp-opt.el(c) before installing emacs-w3m as
+      follows:
 
           % cp attic/regexp-opt.el /usr/local/share/mule/site-lisp
           % cd /usr/local/share/mule/site-lisp
@@ -82,18 +84,15 @@
 
 3. Installation
 
-   Before installing emacs-w3m, you have to check whether your
-   environment meets the requirement described above.
-
-3.1. Install to ordinary UNIX-like systems
+3.1. UNIX
 
      At the first, run `configure' script.
 
          % ./configure
 
-     When required packages, such as APEL, are installed to unusual
-     places, `configure' script may miss them.  In this case, you will
-     have to tell their places to it with `--with-addpath' option.
+     If you have installed modules such as APEL and FLIM into unstandard
+     directories, you will have to use `--with-addpath' option in order
+     to specify them.
 
          % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 
@@ -101,34 +100,34 @@
      package to an appropriate directory.
 
          % make
-         # make install
+         % make install
 
      In addition, you can install some image files used to the icons for
      XEmacs or Emacs 21 as follows.
 
-         # make install-icons
+         % make install-icons
 
      You can also install program files as an XEmacs package using
-     `install-package' target instead of `install' target.
+     `install-package' instead of `install'.
 
          % make
-         # make install-package
+         % make install-package
 
      In this case, you have no need to execute `install-icons' command.
 
-3.2. Install to non-UNIX systems
+3.2. Non-UNIX
 
      In order to install emacs-w3m to non-UNIX systems which lack an
      ability to execute `configure' script or have no `make' utility,
-     execute the following command.
+     execute this command.
 
-         # emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
+         % emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
 
      When required packages, such as APEL, are installed into unusual
      places, the installer may miss them.  In this case, it is necessary
      to tell their places to the installer, as follows:
 
-         # emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
+         % emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
 
 
 4. Configuration
