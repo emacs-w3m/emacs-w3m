@@ -4,6 +4,13 @@
 	only if the method is not internal;
 	Add internal form to the w3m-current-forms;
 	Treat input type `image' as same as `submit'.
+	(w3m-form-mee-attr-unquote): New function.
+	(w3m-string-to-char-list): New function/alias.
+	(w3m-form-mee-new): New function.
+	(w3m-form-parse-and-fontify): Parse w3mmee's form info.
+	(w3m-form-input-textarea-keymap): Bind C-g.
+	(w3m-form-input-select-keymap): Bind C-g, h,j,k,l.
+	(w3m-form-input-map-keymap): Ditto.
 
 2002-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 

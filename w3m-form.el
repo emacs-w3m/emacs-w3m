@@ -272,6 +272,50 @@ If no field in forward, return nil without moving."
       "Make button on the region from START to END."
       (add-text-properties start end (append '(face w3m-form-face) properties)))))
 
+;;; w3mmee
+;;
+(defmacro w3m-form-mee-attr-unquote (x)
+  "Unquote form attribute of w3mmee."
+  '(let (attr)
+     (when (eq (car x) ?T)
+       (setq x (cdr x))
+       (while (and x (not (eq (car x) 0)))
+	 (setq attr (concat attr (char-to-string (car x))))
+	 (setq x (cdr x))))
+     attr))
+
+(if (fboundp 'string-to-char-list)
+    (defalias 'w3m-string-to-char-list 'string-to-char-list)
+  (defun w3m-string-to-char-list (str)
+    (mapcar 'car str)))
+
+(defun w3m-form-mee-new (x)
+  "Decode form information of w3mmee."
+  (setq x (w3m-string-to-char-list (w3m-url-decode-string x)))
+  (let (method enctype action charset target name)
+    (setq method (case (/ (car x) 16)
+		   (0 "get")
+		   (1 "post")
+		   (2 "internal")
+		   (3 "head"))
+	  enctype (case (% (car x) 16) ; not used.
+		    (0 "urlencoded")
+		    (1 "multipart"))) 
+    (setq x (cdr x))
+    (setq action (w3m-form-mee-attr-unquote x))
+    (setq x (cdr x))
+    (if (member "lang=many" w3m-compile-options)
+	(setq charset (w3m-form-mee-attr-unquote x))
+      (setq charset (case (car x)
+		      (?e "euc-jp")
+		      (?s "shift-jis")
+		      (?n "iso-2022-7bit"))))
+    (setq x (cdr x))
+    (setq target (w3m-form-mee-attr-unquote x)) ; not used.
+    (setq x (cdr x))
+    (setq name (w3m-form-mee-attr-unquote x))   ; not used.
+    (w3m-form-new method action nil (and charset (list charset)))))
+
 (defun w3m-form-parse-and-fontify (&optional reuse-forms)
   "Parse forms of the half-dumped data in this buffer and fontify them.
 Result form structure is saved to the local variable `w3m-current-forms'.
@@ -280,42 +324,40 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	tag start end internal-start textareas selects forms maps
 	form)
     (goto-char (point-min))
-    (while (re-search-forward (w3m-tag-regexp-of
-			       "form_int" "map" "img_alt"
-			       "input_alt" "/input_alt") nil t)
+    (while (re-search-forward (if (eq w3m-type 'w3mmee)
+				  (w3m-tag-regexp-of
+				   "_f" "map" "img_alt" "input_alt"
+				   "/input_alt")
+				(w3m-tag-regexp-of
+				   "form_int" "map" "img_alt" "input_alt"
+				   "/input_alt"))
+			      nil t)
       (setq tag (downcase (match-string 1)))
       (goto-char (match-end 1))
       (setq start (match-end 0))
       (cond
-       ((string= tag "form_int")
-	(w3m-parse-attributes (action (method :case-ignore)
-				      (accept-charset :case-ignore)
-				      (charset :case-ignore))
-	  (if accept-charset
-	      (setq accept-charset (split-string accept-charset ","))
-	    (when (and charset (eq w3m-type 'w3mmee))
-	      (cond
-	       ((string= charset "e")	;; w3mee without libmoe
-		(setq accept-charset (list "euc-jp")))
-	       ((string= charset "s")	;; w3mee without libmoe
-		(setq accept-charset (list "shift-jis")))
-	       ((string= charset "n")	;; w3mee without libmoe
-		(setq accept-charset (list "iso-2022-7bit")))
-	       (t				;; w3mee with libmoe
-		(setq accept-charset (list charset))))))
-	  (push (w3m-form-new
-		 (or method "get")
-		 (or action (and w3m-current-url
-				 (string-match w3m-url-components-regexp 
-					       w3m-current-url)
-				 (substring w3m-current-url 0
-					    (or (match-beginning 6)
-						(match-beginning 8)))))
-		 nil
-		 accept-charset)
-		forms)
-	  (unless (string= method "internal")
-	    (setq form (car forms)))))
+       ((string= tag (if (eq w3m-type 'w3mmee) "_f" "form_int"))
+	(if (eq w3m-type 'w3mmee)
+	    (w3m-parse-attributes (_x)
+	      (push (w3m-form-mee-new _x) forms))
+	  (w3m-parse-attributes (action (method :case-ignore)
+					(accept-charset :case-ignore)
+					(charset :case-ignore))
+	    (push (w3m-form-new
+		   (or method "get")
+		   (or action (and w3m-current-url
+				   (string-match w3m-url-components-regexp 
+						 w3m-current-url)
+				   (substring w3m-current-url 0
+					      (or (match-beginning 6)
+						  (match-beginning 8)))))
+		   nil
+		   (if accept-charset
+		       (setq accept-charset
+			     (split-string accept-charset ","))))
+		  forms)))
+	(unless (eq (w3m-form-method (car forms)) 'internal)
+	  (setq form (car forms))))
        ((string= tag "map")
 	(let (candidates)
 	  (w3m-parse-attributes (name)
@@ -523,9 +565,9 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			      (w3m-decode-entities-string
 			       (buffer-substring start (point))))))))))
       (when (search-forward "</internal>" nil t)
-	(delete-region internal-start (match-end 0)))
-      (setq w3m-current-forms (nreverse forms))
-      (w3m-form-resume (or reuse-forms w3m-current-forms)))))
+	(delete-region internal-start (match-end 0))))
+    (setq w3m-current-forms (nreverse forms))
+    (w3m-form-resume (or reuse-forms w3m-current-forms))))
 
 (defun w3m-form-replace (string &optional invisible)
   (let* ((start (text-property-any
@@ -675,6 +717,8 @@ character."
   (setq w3m-form-input-textarea-keymap (make-sparse-keymap))
   (define-key w3m-form-input-textarea-keymap "\C-c\C-c"
     'w3m-form-input-textarea-set)
+  (define-key w3m-form-input-textarea-keymap "\C-g"
+    'w3m-form-input-textarea-exit)
   (define-key w3m-form-input-textarea-keymap "\C-c\C-q"
     'w3m-form-input-textarea-exit)
   (define-key w3m-form-input-textarea-keymap "\C-c\C-k"
@@ -809,6 +853,12 @@ character."
     'w3m-form-input-select-exit)
   (define-key w3m-form-input-select-keymap "q"
     'w3m-form-input-select-exit)
+  (define-key w3m-form-input-select-keymap "\C-g"
+    'w3m-form-input-select-exit)
+  (define-key w3m-form-input-select-keymap "h" 'backward-char)
+  (define-key w3m-form-input-select-keymap "j" 'next-line)
+  (define-key w3m-form-input-select-keymap "k" 'previous-line)
+  (define-key w3m-form-input-select-keymap "l" 'forward-char)
   (if (featurep 'xemacs)
       (define-key w3m-form-input-select-keymap [(button2)]
 	'w3m-form-input-select-set-mouse)
@@ -971,6 +1021,12 @@ character."
     'w3m-form-input-map-exit)
   (define-key w3m-form-input-map-keymap "q"
     'w3m-form-input-map-exit)
+  (define-key w3m-form-input-map-keymap "\C-g"
+    'w3m-form-input-map-exit)  
+  (define-key w3m-form-input-map-keymap "h" 'backward-char)
+  (define-key w3m-form-input-map-keymap "j" 'next-line)
+  (define-key w3m-form-input-map-keymap "k" 'previous-line)
+  (define-key w3m-form-input-map-keymap "l" 'forward-char)  
   (if (featurep 'xemacs)
       (define-key w3m-form-input-map-keymap [(button2)]
 	'w3m-form-input-map-set-mouse)
