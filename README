@@ -8,7 +8,15 @@
 
        http://w3m.sourceforge.net/
 
-   Emacs-w3m is a simple Emacs interface to w3m.
+   Emacs-w3m is a simple Emacs interface to w3m.  Its official web page
+   is available at:
+
+        http://emacs-w3m.namazu.org/
+
+   You can find more detailed version of the following explanations
+   in the form of HTML'ized info:
+
+        http://emacs-w3m.namazu.org/info/
 
 
 2. Requirements
