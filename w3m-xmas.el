@@ -330,42 +330,43 @@ Third optional argument SIZE is currently ignored."
 	  (type (condition-case err
 		    (w3m-retrieve url 'raw no-cache nil referer handler)
 		  (error (message "While retrieving %s: %s" url err) nil)))
-	(let ((data (buffer-string))
-	      glyph)
-	  (setq glyph
-		(when (w3m-image-type-available-p (setq type
-							(w3m-image-type type)))
-		  (or (and (eq type 'gif)
-			   (or w3m-should-unoptimize-animated-gifs
-			       w3m-should-convert-interlaced-gifs)
-			   w3m-gifsicle-program
-			   (w3m-fix-gif url data no-cache))
-		      (w3m-make-glyph data type))))
-	  (if (and w3m-resize-images set-size)
-	      (progn
-		(setq size (cons (glyph-width glyph)
-				 (glyph-height glyph)))
-		(if (and (null (car set-size)) (cdr set-size))
-		    (setcar set-size
-			    (/ (* (car size) (cdr set-size))
-			       (cdr size))))
-		(if (and (null (cdr set-size)) (car set-size))
-		    (setcdr set-size
-			    (/ (* (cdr size) (car set-size))
-			       (car size))))
-		(if (or (not (eq (car size)
-				 (car set-size)))  ; width is different
-			(not (eq (cdr size)
-				 (cdr set-size)))) ; height is different
-		    (lexical-let ((type type))
-		      (w3m-process-do
-			  (resized (w3m-resize-image
-				    data
-				    (car set-size)(cdr set-size)
-				    handler))
-			(w3m-make-glyph resized type)))
-		  glyph))
-	    glyph))))))
+	(when type
+	  (let ((data (buffer-string))
+		glyph)
+	    (setq glyph
+		  (when (w3m-image-type-available-p
+			 (setq type (w3m-image-type type)))
+		    (or (and (eq type 'gif)
+			     (or w3m-should-unoptimize-animated-gifs
+				 w3m-should-convert-interlaced-gifs)
+			     w3m-gifsicle-program
+			     (w3m-fix-gif url data no-cache))
+			(w3m-make-glyph data type))))
+	    (if (and w3m-resize-images set-size)
+		(progn
+		  (setq size (cons (glyph-width glyph)
+				   (glyph-height glyph)))
+		  (if (and (null (car set-size)) (cdr set-size))
+		      (setcar set-size
+			      (/ (* (car size) (cdr set-size))
+				 (cdr size))))
+		  (if (and (null (cdr set-size)) (car set-size))
+		      (setcdr set-size
+			      (/ (* (cdr size) (car set-size))
+				 (car size))))
+		  (if (or (not (eq (car size)
+				   (car set-size))) ;; width is different
+			  (not (eq (cdr size)
+				   (cdr set-size)))) ;; height is different
+		      (lexical-let ((type type))
+			(w3m-process-do
+			    (resized (w3m-resize-image
+				      data
+				      (car set-size)(cdr set-size)
+				      handler))
+			  (w3m-make-glyph resized type)))
+		    glyph))
+	      glyph)))))))
 
 (defun w3m-create-resized-image (url rate &optional referer size handler)
   "Resize an cached image object.
