@@ -78,7 +78,7 @@ but do not execute them.")
   (load "cl-macs" nil t))
 (require 'bytecomp)
 
-;; Since FSF Emacs won't optimize the butlast elements of the arguments
+;; Since Emacs won't optimize the butlast elements of the arguments
 ;; for the functions and/or, we do it by ourselves.
 (when (equal
        (cadr

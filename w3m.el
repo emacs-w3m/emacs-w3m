@@ -2617,7 +2617,7 @@ should use `w3m-url-encode-string' instead of this."
 (eval-and-compile
   (unless (featurep 'xemacs)
     (defun w3m-setup-menu ()
-      "Define menubar buttons for FSF Emacsen."
+      "Define menubar buttons for Emacsen."
       (let ((items (mapcar 'car (cdr (lookup-key global-map [menu-bar])))))
 	(when items
 	  ;; Locate W3M menu in the forefront of the menubar.
@@ -6097,7 +6097,7 @@ it will prompt user where to save a file."
 	file)
     (if (or (string-equal "/" (substring ftp -1))
 	    ;; `file-directory-p' takes a long time for remote files.
-	    ;; `file-directory-p' returns 't' in FSF Emacsen, anytime.
+	    ;; `file-directory-p' returns `t' in Emacsen, anytime.
 	    (w3m-file-directory-p ftp))
 	(dired-other-window ftp)
       (setq file (file-name-nondirectory ftp))
