@@ -2336,18 +2336,20 @@ If the user enters null input, return second argument DEFAULT."
 
 (defun w3m-decode-get-refresh (url)
   "Get REFRESH attribute in META tags."
-  (goto-char (point-min))
   (setq w3m-current-refresh nil)
-  (let ((case-fold-search t)
-	sec refurl)
+  (when (and w3m-use-refresh
+	     (not (string-match "\\`about://" url)))
     (goto-char (point-min))
-    (when (or (re-search-forward w3m-meta-refresh-content-regexp nil t)
-	      (re-search-forward w3m-meta-content-refresh-regexp nil t))
-      (setq sec (match-string-no-properties 1))
-      (setq refurl (match-string-no-properties 2))
-      (when (string-match "[0-9]+" sec)
-	(setq w3m-current-refresh (cons (string-to-number sec)
-					(w3m-expand-url refurl url)))))))
+    (let ((case-fold-search t)
+	  sec refurl)
+      (goto-char (point-min))
+      (when (or (re-search-forward w3m-meta-refresh-content-regexp nil t)
+		(re-search-forward w3m-meta-content-refresh-regexp nil t))
+	(setq sec (match-string-no-properties 1))
+	(setq refurl (match-string-no-properties 2))
+	(when (string-match "^[0-9]+$" sec)
+	  (setq w3m-current-refresh (cons (string-to-number sec)
+					  (w3m-expand-url refurl url))))))))
 
 (defun w3m-x-moe-decode-buffer ()
   (let ((args '("-i" "-cs" "x-moe-internal"))
@@ -4286,7 +4288,6 @@ field for this request."
     (w3m-static-if (fboundp 'universal-coding-system-argument)
 	coding-system-for-read)))
   (set-text-properties 0 (length url) nil url)
-  (w3m-cancel-refresh-timer (current-buffer))
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:\\(.*\\)" url)
@@ -4299,6 +4300,7 @@ field for this request."
     (w3m-buffer-setup)			; Setup buffer.
     (w3m-arrived-setup)			; Setup arrived database.
     (switch-to-buffer (current-buffer))
+    (w3m-cancel-refresh-timer (current-buffer))
     (when w3m-current-process
       (error "%s" "Can not run two w3m processes simultaneously"))
     (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.

@@ -1,3 +1,10 @@
+2001-12-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-decode-get-refresh): Not run Refresh timer if the
+	URI is matched `about://', .
+	(w3m-goto-url): Modify the timing to call
+	`w3m-cancel-refresh-timer'.
+
 2001-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el: Autoload "timer" for the function `cancel-timer'
