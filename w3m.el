@@ -585,6 +585,14 @@ cookies between redirections."
   :group 'w3m
   :type 'integer)
 
+(defcustom w3m-redirect-with-get nil
+  "*If non-nil, use GET method after redirection.
+When automatically redirecting a POST request after receiving a
+302/301 status code, some existing user agents will erroneously change
+it into a GET request. But some broken web sites assume this behavior."
+  :group 'w3m
+  :type 'boolean)
+
 (defface w3m-anchor-face
   '((((class color) (background light)) (:foreground "blue"))
     (((class color) (background dark)) (:foreground "cyan"))
@@ -3035,7 +3043,7 @@ argument, when retrieve is complete."
 		(referer referer)
 		(orig-handler handler)
 		redirect-handler
-		sync return)
+		sync return quit)
     (setq redirect-handler
 	  (lambda (type)
 	    (if (or (null w3m-follow-redirection)
@@ -3052,16 +3060,23 @@ argument, when retrieve is complete."
 		(setq i (1- i))
 		(setq url w3m-current-redirect)
 		(erase-buffer)
-		;; XXX Cache is not used,
-		;; POST method is automatically changed to GET.
-		(if sync
-		    (condition-case nil
-			(w3m-process-with-wait-handler
-			  (w3m-w3m-retrieve-1 url no-decode 'no-cache nil
-					      nil redirect-handler))
-		      (w3m-process-timeout nil))
-		  (w3m-w3m-retrieve-1 url no-decode 'no-cache nil
-				      nil redirect-handler))))))
+		(when post-data
+		  (if w3m-redirect-with-get
+		      (setq post-data nil)
+		    (setq quit (not
+				(y-or-n-p 
+				 (format "Send POST data to '%s'?" url))))))
+		(if quit
+		    (funcall orig-handler nil)
+		  (if sync
+		      (condition-case nil
+			  (w3m-process-with-wait-handler
+			    (w3m-w3m-retrieve-1 url no-decode 'no-cache
+						post-data nil
+						redirect-handler))
+			(w3m-process-timeout nil))
+		    (w3m-w3m-retrieve-1 url no-decode 'no-cache post-data
+					nil redirect-handler)))))))
     ;; The first retrieval.
     (prog1 (setq return (w3m-w3m-retrieve-1 
 			 url no-decode no-cache post-data referer 

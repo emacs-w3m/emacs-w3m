@@ -1,5 +1,9 @@
 2002-04-02  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m.el (w3m-redirect-with-get): New user option.
+	(w3m-w3m-retrieve): If w3m-redirect-with-get is non-nil, use GET
+	method after redirection; Ask user to use POST data after redirection.
+
 	* octet.el (mime-preview-octet): Change behavior according to
 	whether the return value of mime-entity-content is multibyte or not.
 	(mime-view-octet): Ditto.
