@@ -1,6 +1,7 @@
 ;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp
 
-;; Copyright (C) 2001 Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
+;; Copyright (C) 2001, 2002
+;; Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
 
 ;; Author: Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
 ;; Keywords: news
@@ -55,26 +56,29 @@ Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%")))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-nikkei)
 					 &optional range)
-  (let ((case-fold-search t)
-	p headers begin end str)
+  (let ((from (shimbun-from-address-internal shimbun))
+	(group (shimbun-current-group-internal shimbun))
+	(parent (shimbun-url-internal shimbun))
+	(case-fold-search t)
+	basename headers)
     (goto-char (point-min))
-    (while (re-search-forward "<!-- aLink -->\\(<\\|<!-- \\)a href=\"\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)[0-9A-Z]+\\).html\"\\(>\\| -->\\)\\([0-9][0-9]/[0-9][0-9] \\([0-9][0-9]:[0-9][0-9]\\) - \\)?<!-- headline -->\\([^<]+\\)<!-- /headline -->" nil t)
-      (let* ((id (format "<%s%s>" (shimbun-current-group-internal shimbun)
-			 (match-string 2)))
-	     (file (format "%s.html" (match-string 2)))
-	     (year  (string-to-number (match-string 3)))
-	     (month (string-to-number (match-string 4)))
-	     (day   (string-to-number (match-string 5)))
-	     (time  (or (match-string 8) "00:00"))
-	     (group (shimbun-current-group-internal shimbun))
-	     (url (format "%s%s/%s" (shimbun-url-internal shimbun) group file))
-	     (title (match-string 9)))
+    (while (re-search-forward
+	    "<!-- aLink --><\\(!-- \\)?a href=\"\\(.+\\)\\.html"
+	    nil t)
+      (setq basename (match-string 2))
+      (when (re-search-forward
+	     "<!-- headline -->\\(.+\\)<!-- /headline -->"
+	     nil t)
 	(push (shimbun-make-header
 	       0
-	       (shimbun-mime-encode-string title)
-	       (shimbun-from-address-internal shimbun)
-	       (shimbun-make-date-string year month day time)
-	       id "" 0 0  url)
+	       (shimbun-mime-encode-string (match-string 1))
+	       from
+	       ""
+	       (concat "<" basename "@" group ">")
+	       ""
+	       0
+	       0
+	       (concat parent group "/" basename ".html"))
 	      headers)))
     headers))
 
