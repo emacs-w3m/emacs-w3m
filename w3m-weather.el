@@ -42,6 +42,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
 (require 'w3m)
 
 (defconst w3m-weather-completion-table
@@ -169,7 +170,7 @@
 	      ("41/8510" "佐賀県・南部" "sagakennanbu")
 	      ("41/8520" "佐賀県・北部" "sagakenhokubu")
 	      ("42/700" "長崎県・壱岐対馬"
-	       "nagasakikeniktsushima" "iki" "tsushima")
+	       "nagasakikeniktsushima" "iki" "tsushima" "ikitsushima")
 	      ("42/800" "長崎県・五島" "nagasakikengotou" "gotou")
 	      ("42/8410" "長崎県・南部" "nagasakikennanbu")
 	      ("42/8420" "長崎県・北部" "nagasakikenhokubu")
@@ -184,8 +185,8 @@
 	      ("44/8340" "大分県・南部" "ooitakennanbu")
 	      ("45/8710" "宮崎県・南部平野部" "miyazakikennanbuheiyabu")
 	      ("45/8720" "宮崎県・北部平野部" "miyazakikenhokubuheiyabu")
-	      ("45/8730" "宮崎県・南部山沿い" "miyazakikennabuyamazoi")
-	      ("45/8740" "宮崎県・北部山沿い" "miyazakikennanbuyamazoi")
+	      ("45/8730" "宮崎県・南部山沿い" "miyazakikennanbuyamazoi")
+	      ("45/8740" "宮崎県・北部山沿い" "miyazakikenhokubuyamazoi")
 	      ("46/8810" "鹿児島県・薩摩" "kagoshimakensatsuma" "satsuma")
 	      ("46/8820" "鹿児島県・大隅" "kagoshimakenoosumi" "oosumi")
 	      ("46/900" "鹿児島県・種子島・屋久島"
@@ -225,7 +226,6 @@
 	   (hepburn-regexp
 	    (format "\\(\\`\\|[aiueo]\\)\\(n\\([^aiueoy]\\)\\|%s\\)"
 		    (regexp-opt (mapcar (function car) hepburn-table))))
-	   (hepburn-candidates)
 	   ;; 長音の有無による派生形の表
 	   (prolonged-table
 	    (let (table)
@@ -258,65 +258,63 @@
 	   ;; 派生形の表に乗っている文字列を探す正規表現
 	   (prolonged-regexp (format "\\(\\`\\|[aiueo]\\)\\(%s\\)"
 				     (regexp-opt (mapcar (function car)
-							 prolonged-table))))
-	   (prolonged-candidates)
-	   (romaji-candidates))
-      (setq hepburn-candidates
-	    (lambda (str)
-	      "ヘボン式と訓令式の差によって生じる派生形を得る"
-	      (if (string-match hepburn-regexp str)
-		  (let ((prefix (substring str 0 (match-beginning 2)))
-			(candidates (if (match-beginning 3)
-					'("n" "nn")
-				      (assoc (match-string 2 str)
-					     hepburn-table)))
-			(suffixes
-			 (funcall hepburn-candidates
-				  (substring str (or (match-beginning 3)
-						     (match-end 0)))))
-			(buf))
-		    (dolist (x candidates)
-		      (dolist (y suffixes)
-			(push (concat prefix x y) buf)))
-		    buf)
-		(list str)))
-	    prolonged-candidates
-	    (lambda (str)
-	      "長音の有無によって生じる派生形を得る"
-	      (let (buf)
-		(if (string-match prolonged-regexp str)
+							 prolonged-table)))))
+      (labels ((hepburn-candidates
+		(str)
+		"ヘボン式と訓令式の差によって生じる派生形を得る"
+		(if (string-match hepburn-regexp str)
 		    (let ((prefix (substring str 0 (match-beginning 2)))
-			  (candidates (assoc (match-string 2 str)
-					     prolonged-table))
-			  (suffixes (funcall prolonged-candidates
-					     (substring str (match-end 0)))))
+			  (candidates (if (match-beginning 3)
+					  '("n" "nn")
+					(assoc (match-string 2 str)
+					       hepburn-table)))
+			  (suffixes
+			   (hepburn-candidates
+			    (substring str (or (match-beginning 3)
+					       (match-end 0)))))
+			  (buf))
 		      (dolist (x candidates)
 			(dolist (y suffixes)
-			  (push (concat prefix x y) buf))))
-		  (setq buf (list str)))
-		(dolist (x buf)
-		  (when (string-match "\\(\\`\\|[aiue]\\)oo" x)
-		    (let ((prefix (substring x 0 (match-end 1)))
-			  (suffix (substring x (match-end 0))))
-		      (dolist (y '("o" "oh" "o-"))
-			(push (concat prefix y suffix) buf)))))
-		buf))
-	    romaji-candidates
-	    (lambda (str)
-	      "全ての派生形を得る"
-	      (let (buf)
-		(dolist (x (funcall hepburn-candidates str))
-		  (dolist (y (funcall prolonged-candidates x))
-		    (push y buf)))
-		buf)))
-      (dolist (area alist)
-	(let ((url (format format (car area)))
-	      (kanji (cadr area)))
-	  (push (list kanji (nth 2 area) url) table)
-	  (dolist (romaji (cddr area))
-	    (dolist (x (funcall romaji-candidates romaji))
-	      (push (list x kanji) table)))))
-      (nreverse table)))
+			  (push (concat prefix x y) buf)))
+		      buf)
+		  (list str)))
+	       (prolonged-candidates
+		(str)
+		"長音の有無によって生じる派生形を得る"
+		(let (buf)
+		  (if (string-match prolonged-regexp str)
+		      (let ((prefix (substring str 0 (match-beginning 2)))
+			    (candidates (assoc (match-string 2 str)
+					       prolonged-table))
+			    (suffixes (prolonged-candidates
+				       (substring str (match-end 0)))))
+			(dolist (x candidates)
+			  (dolist (y suffixes)
+			    (push (concat prefix x y) buf))))
+		    (setq buf (list str)))
+		  (dolist (x buf)
+		    (when (string-match "\\(\\`\\|[aiue]\\)oo" x)
+		      (let ((prefix (substring x 0 (match-end 1)))
+			    (suffix (substring x (match-end 0))))
+			(dolist (y '("o" "oh" "o-"))
+			  (push (concat prefix y suffix) buf)))))
+		  buf))
+	       (romaji-candidates
+		(str)
+		"全ての派生形を得る"
+		(let (buf)
+		  (dolist (x (hepburn-candidates str))
+		    (dolist (y (prolonged-candidates x))
+		      (push y buf)))
+		  buf)))
+	(dolist (area alist)
+	  (let ((url (format format (car area)))
+		(kanji (cadr area)))
+	    (push (list kanji (nth 2 area) url) table)
+	    (dolist (romaji (cddr area))
+	      (dolist (x (romaji-candidates romaji))
+		(push (list x kanji) table)))))
+	(nreverse table))))
   "Completion table of areas and urls.")
 
 (defcustom w3m-weather-default-area

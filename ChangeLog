@@ -1,3 +1,9 @@
+2002-06-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-weather.el: Require CL when this module is byte-compiled.
+	(w3m-weather-completion-table): Fix typos, which are noticed by
+	Ando Tsutomu <ando-tom@ff.iij4u.or.jp> in [emacs-w3m:03487].
+
 2002-06-03  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-kde.el (shimbun-kde-reverse-flag): Set this variable
