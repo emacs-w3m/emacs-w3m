@@ -339,26 +339,26 @@ otherwise properties of an element will be replaced with NEWPROPS."
 of a new history element and new position pointers of the history.
 The position pointers of `w3m-history' will not change.  If COUNT is
 omitted, it defaults to number one.  If COUNT is negative, moving
-forward is performed.  If there is no room in the history, move as far
-as possible."
+forward is performed.  Return nil if there is no previous element."
   (when w3m-history
     (let ((oposition (copy-sequence (car w3m-history)))
-	  position)
+	  position last)
       (cond ((or (unless count
 		   (setq count 1))
 		 (> count 0))
 	     (while (and (> count 0)
 			 (setq position (caar w3m-history)))
-	       (w3m-history-set-current position)
+	       (w3m-history-set-current (setq last position))
 	       (decf count)))
 	    ((< count 0)
 	     (while (and (< count 0)
 			 (setq position (caddar w3m-history)))
-	       (w3m-history-set-current position)
+	       (w3m-history-set-current (setq last position))
 	       (incf count))))
       (prog1
-	  (cons (w3m-history-element (cadar w3m-history))
-		(car w3m-history))
+	  (when last
+	    (cons (w3m-history-element (cadar w3m-history))
+		  (car w3m-history)))
 	(setcar w3m-history oposition)))))
 
 (defun w3m-history-forward (&optional count)
