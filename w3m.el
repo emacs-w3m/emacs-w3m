@@ -322,17 +322,6 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-linefeed-type
-  (if (memq system-type '(windows-nt OS/2 emx))
-      'crlf				; xxx, crlf on win32 and OS/2 by default
-    'lf)
-  "*Linefeed type of w3m program output.
-Value is 'crlf or 'lf.
-'crlf is mainly used for win32 or OS/2 environment.
-In other environment, use 'lf."
-  :group 'w3m
-  :type '(choice (const cygwin) (const native)))
-
 ;; FIXME: 本当は mailcap を適切に読み込んで設定する必要がある
 (defcustom w3m-content-type-alist
   (if (eq system-type 'windows-nt)
@@ -455,6 +444,16 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   "*When using w3m with M.N.C. patch, set non-nil value."
   :group 'w3m
   :type 'boolean)
+
+(defcustom w3m-linefeed-type
+  (and (null w3m-mnc)
+       (memq system-type '(windows-nt OS/2 emx))
+       'crlf)
+  "*Linefeed type of w3m program output.
+Value is 'crlf or nil.
+'crlf is mainly used for win32 or OS/2 environment if 'w3m-mnc' is nil."
+  :group 'w3m
+  :type '(choice (const :tag "CRLF" crlf) (const :tag "native" nil)))
 
 (defcustom w3m-track-mouse t
   "Whether to track the mouse and message the url under the mouse.

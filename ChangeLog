@@ -1,3 +1,10 @@
+2001-04-23  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-linefeed-type): Change default value.
+
+	* w3m-0.2.1-mnc.patch: Define setmode(fileno(stdout), O_BINARY) if
+	win32 or OS/2. Define lrand48() and srand48() used if they don't have.
+
 2001-04-23  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-about-db-history): Set w3m work buffer as multibyte.
