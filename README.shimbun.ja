@@ -158,8 +158,8 @@ mew-shimbun.el は Mew version 2.0 以降を使って shimbun を楽しむ elisp で
 ~/.mew.el の最後に以下のように書きます。
 
 ;;; mew-shimbun のロード、キー定義
-;; (setq mew-shimbun-use-unseen t) ;;; (*1)
-;; (setq mew-shimbun-use-unseen-cache-save t) ;;; (*2)
+;; (setq mew-shimbun-use-unseen t)		;;; (*1)
+;; (setq mew-shimbun-use-unseen-cache-save t)	;;; (*2)
 (require 'mew-shimbun)
 (define-key mew-summary-mode-map "G"  (make-sparse-keymap))
 (define-key mew-summary-mode-map "Gg" 'mew-shimbun-goto-folder)
@@ -175,11 +175,13 @@ mew-shimbun.el は Mew version 2.0 以降を使って shimbun を楽しむ elisp で
 ;;; 必ず (require 'mew-shimbun) の前で設定しないといけません。
 
 ;;; 変数の設定の例
-;; ハイパー日記システムを読むときは例えば以下のように設定します。
+;; ハイパー日記システムのサイトを読むときは例えば以下のように設定します。
+;; (これは、Mew に限らずすべての MUA で共通の方式です)
+
 (setq shimbun-hns-group-alist
-      '(("koseki"					;; グループ名
-	 "http://cgi.NetLaputa.ne.jp/~kose/diary/"	;; URL
-	 "kose@meadowy.org")				;; From: に挿入するメールアドレス
+      '(("arisawa"				;; グループ名
+	 "http://www.nijino.com/ari/diary/"	;; URL
+	 "ari@mbf.sphere.ne.jp")		;; From: に挿入するメールアドレス
 	("miyoshi"
 	 "http://www.be.wakwak.com/cgi-bin/sbox/~miyoshi/hns/"
 	 "miyoshi@meadowy.org")
@@ -187,35 +189,44 @@ mew-shimbun.el は Mew version 2.0 以降を使って shimbun を楽しむ elisp で
 	 "http://www.taiyo.co.jp/~gotoh/diary/"
 	 "gotoh@meadowy.org")))
 
-;; Mew で購読する shimbun group を設定します。
-;; それぞれ、("server/group" . range) で range には all, last, 数字が指
-;; 定できます。以下に例を示します。
-(setq mew-shimbun-groups
-      '(("asahi/national" . 2)
-	("asahi/international" . 2)
-	("asahi-html/sports" . 2)
-	("mew/mew-int" . last)
-	("mew/mgp-users-jp" . last)
-	("xemacs/xemacs-beta-ja" . last)
-	("xemacs/xemacs-users-ja" . last)
-	("hns/goto" . last)
-	("hns/koseki" . last)
-	("hns/miyoshi" . last)
-	("tcup/meadow" . last)
-	("security-memo/memo" . last)
-	("slashdot-jp/story" . last)
-	("cnet/comp" . last)
-	("zdnet/comp" . last)))
+;; mew-shimbun-folder-groups に Mew で購読する shimbun server 及び group
+;; を設定します。
+;; それぞれ、("folder" (("server.group" . range) ...)) で range には
+;; all, last, 数字が指定できます。以下に例を示します。
+
+(setq mew-shimbun-folder-groups
+      '(("yomiuri"		  ;; +shimbun/yomiuri という folder に
+	 ("yomiuri.shakai" . 2)   ;; yomiuri.shakai, yomiuri.sports
+	 ("yomiuri.sports". 2)	  ;; などを一括して取得します。
+	 ("yomiuri.kokusai". 2))
+	("security-memo"
+	 ("security-memo.memo" . 2))
+	("slashdot-jp"
+	 ("slashdot-jp.story" . last))
+	("comp"			  ;; このように、異なる server の group
+	 ("cnet.comp" . last)     ;; も一つの folder (+shimbun/comp) で
+	 ("zdnet.comp" . last))   ;; 読むことができます。
+	("hns/arisawa"
+	 ("hns.arisawa" . last))
+	("hns/goto"
+	 ("hns.goto" . last))
+	("hns/miyoshi"
+	 ("hns.miyoshi" . last))
+	("mew/mgp"
+	 ("mew.mgp-users" . last)
+	 ("mew.mgp-users-jp" . last))))
 
 ;;; 以上で基本的な設定は終了です。
+;;; あとのユーザ定義変数は custom するかソースを見てください。
 
 3.2 記事の購読
 
 (1) 最初の購読
 上記の設定をしたあと、まず、"GI (mew-shimbun-retrieve-all)" しましょう。
-mew-shimbun-groups で設定した shimbun folder が "asahi/national" なら、
-"+shimbun/asahi/national" に出来ています。また、新たに group を追加した
-ときも "GI" しましょう。
+mew-shimbun-folder-groups で設定した shimbun folder が "+shimbun" 以下に
+出来ています。また、新たに group を追加したときも "GI" すると便利です。
+なお、"+shimbun" は mew-shimbun-folder という変数で好みのものに変更でき
+ます。
 
 (2) shimbun folder への移動
 通常の "g (mew-summary-goto-folder)" でも shimbun folder への移動はでき
@@ -232,11 +243,11 @@ folder で新規記事を取得します。
 特定の記事を表示した状態で "Gr (mew-shimbun-re-retrieve)" すると、その記
 事が更新されていたら更新し、同時に新規記事も取得します。
 "C-u Gr" とすると、mew-shimbun-mark-re-retrieve に指定したマーク(デファ
-ルトは '@') の記事の更新を試みます。CNET などでお使い下さい。
+ルトは '@') の記事の更新を試みます。CNET などで使うと便利でしょう。
 
 "GR (mew-shimbun-re-retrieve-all)" では、すべての記事の新規性を調べ取得
 しなおします。"C-u GR" ではリージョンで指定した範囲の記事を対象とします。
-おそらくハイパー日記システムの記事で有意義なコマンドでしょう。
+おそらくハイパー日記システムの日記サイト有意義なコマンドでしょう。
 
 3.3 未読管理
 
@@ -245,12 +256,16 @@ mew-shimbun-mark-unseen で設定したマーク(デファルトは '*') がつくように
 なり、読むと自動的に消えます。また、通常、Mew の summary モードでマーク
 をつける、あるいは消した後、scan をしないと .mew-cache に反映されません
 が、(setq mew-shimbun-use-unseen-cache-save t) とすることにより、Mew の
-終了時や folder の kill(C-cC-q を使ったとき)に自動的に .mew-cache を保存
-するようになります。
+終了時や folder の kill(C-cC-q を使ったとき)に shimbun folder は自動的に
+.mew-cache を保存するようになります。ただし、現状では、100%確実 (*3) に
+保存するわけではありません。既読になった情報を確実に cache に保存するに
+は、その folder を読み終わったときに "scan update" をする習慣をつけると
+良いでしょう。
 
-弊害として、動作が遅くなる、複数の Emacs でおなじ shimbun を読んでいると、
-それぞれの Emacs 間で矛盾が生じる、といったことがあげられますので、注意
-して使ってください。また、未読管理自体も *力づく* で実現しています。
+未読管理を使うと弊害として、動作が遅くなる、複数の Emacs で同じ shimbun
+folder を読んでいると、それぞれの Emacs 間で矛盾が生じる、といったことが
+あげられますので、注意して使ってください。矛盾が生じたときは "scan all"
+すれば復旧します。
 
 その他の未読管理サポートとして、現在の folder をすべて既読にするには 
 "GU (mew-shimbun-remove-unseen-all)" を使います。"C-u GU" でリージョン内
@@ -268,6 +283,8 @@ http://www.mew.org/ml/mew-dist-2.0/msg01251.html
 を参考にして新しいマークを定義してください。"C-u N" でそのマークを指定す
 ると楽しい未読ライフをおくることができると思います。
 
+(*3) mew-touch-folder-p が 't' の人はほとんど 100% 保存できますが、'nil'
+  の人が保存できる可能性はほとんど 0% だと思われます。
 
 
 Local Variables:

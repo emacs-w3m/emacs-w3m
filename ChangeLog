@@ -1,3 +1,18 @@
+2001-11-06  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-groups): Remove user option.
+	(mew-shimbun-folder-groups): New user option.
+	(mew-shimbun-element-body): New macro.
+	(mew-shimbun-retrieve): Use `mew-shimbun-folder-groups' instead of
+	`mew-shimbun-groups'. Use `mew-shimbun-element-body' macro.
+	(mew-shimbun-retrieve-all): Ditto.
+	(mew-shimbun-re-retrieve): Ditto.
+	(mew-shimbun-re-retrieve-all): Ditto.
+	(mew-shimbun-retrieve-article): Change mandatory option.
+	(mew-shimbun-db-setup): Throw out old format support.
+
+	* README.shimbun.ja (mew-shimbun.el): Modify description.
+
 2001-11-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-index-url, shimbun-get-headers):
