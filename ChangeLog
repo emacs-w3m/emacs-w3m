@@ -1,4 +1,4 @@
-2004-08-12  Kazuhiro UCHIDA  <kayoujin@yahoo.co.jp>
+2004-08-15  Kazuhiro UCHIDA  <kayoujin@yahoo.co.jp>
 
 	* w3m.el (w3m-remove-meta-charset-tags): Check that a content
 	field has a valid value before parsing it.
