@@ -1280,10 +1280,21 @@ If N is negative, last N items of LIST is returned."
 
 (defun w3m-fontify-anchors ()
   "Fontify anchor tags in this buffer which contains half-dumped data."
-  (goto-char (point-min))
   (let ((help (w3m-make-help-echo w3m-href-anchor))
 	(balloon (w3m-make-balloon-help w3m-href-anchor))
 	start end)
+    (goto-char (point-min))
+    (while (re-search-forward "<_id[ \t\r\f\n]+" nil t)
+      (setq start (match-beginning 0))
+      (w3m-parse-attributes (id)
+	(delete-region start (point))
+	(when (re-search-forward "<\\|\n" nil t)
+	  (setq end (match-beginning 0))
+	  (when (= start end)
+	    (setq end (min (1+ end) (point-max))))
+	  (w3m-add-text-properties start end
+				   (list 'w3m-name-anchor id)))))
+    (goto-char (point-min))
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
       (w3m-parse-attributes (href name)

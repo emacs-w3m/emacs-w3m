@@ -1,3 +1,9 @@
+2001-06-09  Kiyokazu SUTO  <suto@ks-and-ks.ne.jp>,
+	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-fontify-anchors): Process w3m internal tag `<_id>'
+	which represents ID properties.
+
 2001-06-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-zdnet.el (shimbun-zdnet-expiration-days): Removed.
