@@ -2655,7 +2655,7 @@ Mew Shimbun $B$O(B @samp{shimbun} $B$H(B Mew (version 2.1 $B0J9_(B) $B$H$
 
 ;; @code{mew-shimbun-folder-groups} $B$K(B Mew $B$G9XFI$9$k(B @samp{shimbun} servers $B5Z$S(B
 ;; group $B$r@_Dj$7$^$9!#$=$l$>$l$NMWAG$O(B
-;; @code{("folder" (("server.group" . range) ...))} $B$N7A<0$G$9!#(B@code{range} $B$K$O(B
+;; @code{("folder" ("server.group" . range) ...)} $B$N7A<0$G$9!#(B@code{range} $B$K$O(B
 ;; @code{all}, @code{last}, $B$*$h$S?t;z$,;XDj$G$-$^$9!#(B
 
 (setq mew-shimbun-folder-groups
