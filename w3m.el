@@ -826,29 +826,37 @@ If N is negative, last N items of LIST is returned."
 	  (write-region (point-min) (point-max) file nil 'nomsg)
 	  (when mode (set-file-modes file mode)))))))
 
+(eval-when-compile
+  (defmacro w3m-arrived-add-1 (ident title modified-time
+				     arrived-time coding-system)
+    (` (progn
+	 (put (, ident) 'title (, title))
+	 (put (, ident) 'last-modified (, modified-time))
+	 (put (, ident) 'coding-system (, coding-system))
+	 (set (, ident) (, arrived-time))))))
+
 (defun w3m-arrived-add (url &optional title modified-time
 			    arrived-time coding-system)
   "Add URL to hash database of arrived URLs."
-  (when (> (length url) 5);; ignore short
-    (set-text-properties 0 (length url) nil url)
-    (let ((ident (intern url w3m-arrived-db))
-	  (x (if (string-match "#\\([^#]+\\)$" url)
-		 (substring url 0 (match-beginning 0))
-	       url)))
-      (put ident 'title title)
-      (put ident 'last-modified
-	   (setq modified-time
-		 (or modified-time
-		     (w3m-last-modified x)
-		     (current-time))))
-      (put ident 'coding-system coding-system)
-      (set ident
-	   (setq arrived-time
-		 (or arrived-time
-		     (current-time))))
-      (unless (eq x url)
-	(w3m-arrived-add x title modified-time arrived-time coding-system))
-      ident)))
+  (when (> (length url) 5);; ignore trifles.
+    (let ((parent (when (string-match "#\\([^#]+\\)$" url)
+		    (substring url 0 (match-beginning 0))))
+	  ident)
+      (unless (and modified-time arrived-time)
+	(let ((ct (current-time)))
+	  (unless modified-time
+	    (setq modified-time (or (w3m-last-modified (or parent url))
+				    ct)))
+	  (unless arrived-time
+	    (setq arrived-time ct))))
+      (prog1
+	  (setq ident (intern url w3m-arrived-db))
+	(w3m-arrived-add-1 ident title modified-time
+			   arrived-time coding-system)
+	(when parent
+	  (setq ident (intern parent w3m-arrived-db))
+	  (w3m-arrived-add-1 ident title modified-time
+			     arrived-time coding-system))))))
 
 (defsubst w3m-arrived-p (url)
   "If URL has been arrived, return non-nil value.  Otherwise return nil."
@@ -1039,10 +1047,9 @@ If N is negative, last N items of LIST is returned."
       (if (not (char-equal (string-to-char name) ?#))
 	  (concat "&" name)		; unknown entity
 	;; case of immediate character (accept only 0x20 .. 0x7e)
-	(let ((char (string-to-int (substring name 1)))
-	      sym)
+	(let ((char (string-to-int (substring name 1))))
 	  ;; make character's representation with learning
-	  (set (setq sym (intern name w3m-entity-db))
+	  (set (intern name w3m-entity-db)
 	       (if (or (< char 32) (< 127 char))
 		   "~"			; un-supported character
 		 (char-to-string char)))))))
@@ -1399,7 +1406,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
   (let ((ident (intern url w3m-cache-hashtb)))
     (when (memq ident w3m-cache-articles)
       ;; It was in the cache.
-      (let (beg end type charset)
+      (let (beg end)
 	(save-excursion
 	  (set-buffer w3m-cache-buffer)
 	  (if (setq beg (text-property-any
@@ -1724,8 +1731,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	(delete-region (- (point) 2) (1- (point)))))))
 
 (defun w3m-w3m-dump-head-source (url)
-  (and (let ((w3m-current-url url)
-	     (w3m-w3m-retrieve-length))
+  (and (let ((w3m-current-url url))
 	 (w3m-message "Reading...")
 	 (prog1 (zerop (w3m-exec-process "-dump_extra" url))
 	   (w3m-message "Reading... done")
@@ -1745,8 +1751,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
     (when headers
       (let ((type   (car headers))
 	    (length (nth 2 headers)))
-	(when (let* ((w3m-current-url url)
-		     (w3m-w3m-retrieve-length length))
+	(when (let ((w3m-current-url url))
 		(w3m-message "Reading...")
 		(prog1 (zerop (w3m-exec-process "-dump_source" url))
 		  (w3m-message "Reading... done")))
@@ -1924,14 +1929,14 @@ this function returns t.  Otherwise, returns nil."
 	   ((and (w3m-image-type-available-p (w3m-image-type type))
 		 (string-match "^image/" type))
 	    (let (buffer-read-only)
-	      (setq w3m-current-url (w3m-real-url url))
+	      (setq w3m-current-url (w3m-real-url url)
+		    w3m-current-title (file-name-nondirectory url))
 	      (delete-region (point-min) (point-max))
-	      (insert (file-name-nondirectory url))
-	      (set-text-properties (point-min)(point-max)
+	      (insert w3m-current-title)
+	      (add-text-properties (point-min) (point-max)
 				   (list 'face 'w3m-image-face
 					 'w3m-image url
 					 'mouse-face 'highlight))
-	      (setq w3m-current-title (file-name-nondirectory url))
 	      (w3m-history-push url (list ':title w3m-current-title))
 	      t))
 	   (t (w3m-external-view url)
@@ -2509,6 +2514,7 @@ or prefix ARG columns."
 			 (substring w3m-current-url (match-end 0))
 		       w3m-current-url)))
     current-prefix-arg))
+  (set-text-properties 0 (length url) nil url)
   (cond
    ;; process mailto: protocol
    ((string-match "^mailto:\\(.*\\)" url)
