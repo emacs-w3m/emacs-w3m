@@ -1,3 +1,8 @@
+2003-07-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-examine-modules): Ignore w3m-ccl.el when
+	XEmacs doesn't provide the mule feature.
+
 2003-07-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-correct-charset-alist): New user option.
