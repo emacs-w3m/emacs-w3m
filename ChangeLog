@@ -1,3 +1,14 @@
+2003-11-05  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-delete-buffer, w3m-delete-other-buffers)
+	(w3m-select-buffer-delete-buffer): Call `w3m-process-stop'.
+
+	* w3m-proc.el (w3m-process-kill-stray-processes): New function.
+	(w3m-process-start-queued-processes): Call
+	`w3m-process-kill-stray-processes'.
+	(w3m-process-filter): When parent-buffer was killed, call
+	`w3m-process-kill-stray-processes'
+
 2003-11-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-pop-up-windows): Default to t.

@@ -5424,6 +5424,7 @@ new buffer is shows itself with `pop-to-buffer' which is affected by
       (w3m-quit force)
     (let ((buffer (current-buffer)))
       (w3m-next-buffer -1)
+      (w3m-process-stop buffer)
       (kill-buffer buffer)
       (run-hooks 'w3m-delete-buffer-hook)))
   (w3m-select-buffer-update))
@@ -5455,6 +5456,7 @@ The optional argument BUFFER will be used exclusively by the command
 	  ;; Otherwise, delete a window.
 	  (delete-window window)))
       ;; Kill a buffer.
+      (w3m-process-stop buffer)
       (kill-buffer buffer)))
   (run-hooks 'w3m-delete-buffer-hook)
   (w3m-select-buffer-update))
@@ -7495,6 +7497,7 @@ menu line."
     (forward-line -1)
     (unless (and (eq buffer (w3m-select-buffer-current-buffer))
 		 (progn (forward-line 1) (eobp)))
+      (w3m-process-stop buffer)
       (kill-buffer buffer)
       (run-hooks 'w3m-delete-buffer-hook)
       (w3m-select-buffer-generate-contents

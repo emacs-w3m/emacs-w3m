@@ -214,20 +214,32 @@ generated asynchronous process is ignored.  Otherwise,
 	    (process-kill-without-query proc))))))
   nil)	;; The return value of `w3m-process-start-process'.
 
+(defun w3m-process-kill-stray-processes ()
+  "Kill stray processes."
+  (dolist (obj w3m-process-queue)
+    (if (buffer-name (w3m-process-buffer obj))
+	(save-excursion
+	  (set-buffer (w3m-process-buffer obj))
+	  (dolist (x (w3m-process-handlers w3m-process-object))
+	    (unless (buffer-name (w3m-process-handler-parent-buffer x))
+	      (setq w3m-process-queue (delq obj w3m-process-queue))
+	      (when (w3m-process-process obj)
+		(w3m-process-kill-process (w3m-process-process obj))))))
+      (setq w3m-process-queue (delq obj w3m-process-queue))
+      (when (w3m-process-process obj)
+	(w3m-process-kill-process (w3m-process-process obj))))))
+
 (defun w3m-process-start-queued-processes ()
   "Start a process which is registerd in `w3m-process-queue' if the
 number of current working processes is less than `w3m-process-max'."
+  (w3m-process-kill-stray-processes)
   (let ((num 0))
     (catch 'last
       (dolist (obj (reverse w3m-process-queue))
-	(if (buffer-name (w3m-process-buffer obj))
-	    (if (> (incf num) w3m-process-max)
-		(throw 'last nil)
-	      (w3m-process-start-process obj))
-	  ;; Something wrong has occuered ?
-	  (setq w3m-process-queue (delq obj w3m-process-queue))
-	  (when (w3m-process-process obj)
-	    (w3m-process-kill-process (w3m-process-process obj))))))))
+	(when (buffer-name (w3m-process-buffer obj))
+	  (if (> (incf num) w3m-process-max)
+	      (throw 'last nil)
+	    (w3m-process-start-process obj)))))))
 
 (defun w3m-process-stop (buffer)
   "Remove handlers related to the buffer BUFFER, and stop processes
@@ -614,8 +626,11 @@ evaluated in a temporary buffer."
 	      (save-current-buffer
 		(dolist (handler (w3m-process-handlers w3m-process-object))
 		  (when (setq buf (w3m-process-handler-parent-buffer handler))
-		    (set-buffer buf)
-		    (setq w3m-process-modeline-string str))))))))))))
+		    (if (buffer-name buf)
+			(progn
+			  (set-buffer buf)
+			  (setq w3m-process-modeline-string str))
+		      (w3m-process-kill-stray-processes)))))))))))))
 
 (defun w3m-process-modeline-format (str)
   (ignore-errors
