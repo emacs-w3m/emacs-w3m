@@ -2796,7 +2796,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	    (setq w3m-current-ssl (cdr (assoc "w3m-ssl-certificate" alist)))
 	    (list (or type (w3m-local-content-type url))
 		  (or charset
-		      (and (memq w3m-type '(w3mmee w3m-m17n))
+		      (and (eq w3m-type 'w3mmee)
 			   (setq charset
 				 (cdr (assoc "w3m-document-charset" alist)))
 			   (car (split-string charset))))

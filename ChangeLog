@@ -1,3 +1,8 @@
+2002-03-19  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-w3m-attributes): Ignore `w3m-document-charset' when
+	w3m-m17n.
+
 2002-03-19  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-fontify-images): Parse width and height attributes of
