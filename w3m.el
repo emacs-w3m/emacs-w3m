@@ -3059,33 +3059,50 @@ non-nil, cached data will not be used."
 	    (w3m-toggle-inline-images-internal status no-cache url))
 	(w3m-message "No image at point")))))
 
+(defun w3m-safe-toggle-inline-image (&optional force no-cache)
+  "Toggle the visibility of an image under point.
+This function is mostly equivalent to `w3m-toggle-inline-image', but
+the value of `w3m-safe-url-regexp' is bound to \"\\\\`cid:\" while
+displaying an image.  You can invalidate it (treat as nil) by
+specifying the prefix argument if you don't mind it may cause a
+security problem."
+  (interactive "P")
+  (let ((w3m-safe-url-regexp (unless (and force
+					  (yes-or-no-p "\
+Are you sure you really want to show this image (maybe unsecure)? "))
+			       "\\`cid:")))
+    (w3m-toggle-inline-image force no-cache)))
+
 (defun w3m-toggle-inline-images (&optional force no-cache)
   "Toggle the visibility of all images in the buffer.
 If FORCE is non-nil, displaying images is forced.  If NO-CACHE is
-non-nil, cached data will not be used.
-
-This command can be invoked from not only an emacs-w3m buffer but also
-a summary buffer of Gnus, Mew, Wanderlust or VM in order to toggle the
-appearance of images in the article buffer."
+non-nil, cached data will not be used."
   (interactive "P")
-  (w3m-with-w3m-buffer
-   (let ((status w3m-display-inline-images))
-     (unless (w3m-display-graphic-p)
-       (error "Can't display images in this environment"))
-     (if (and force
-	      (yes-or-no-p "\
+  (let ((status w3m-display-inline-images))
+    (unless (w3m-display-graphic-p)
+      (error "Can't display images in this environment"))
+    (if force (setq w3m-display-inline-images nil
+		    status nil))
+    (unwind-protect
+	(w3m-toggle-inline-images-internal (if w3m-display-inline-images
+					       'on 'off)
+					   no-cache nil)
+      (unless (setq w3m-display-inline-images (not status))
+	(w3m-process-stop (current-buffer)))
+      (force-mode-line-update))))
+
+(defun w3m-safe-toggle-inline-images (&optional force no-cache)
+  "Toggle the visibility of all images in the buffer.
+This function is mostly equivalent to `w3m-toggle-inline-images', but
+the value of `w3m-safe-url-regexp' is bound to \"\\\\`cid:\" while
+displaying images.  You can invalidate it (treat as nil) by specifying
+the prefix argument if you don't mind it may cause a security problem."
+  (interactive "P")
+  (let ((w3m-safe-url-regexp (unless (and force
+					  (yes-or-no-p "\
 Are you sure you really want to show all images (maybe unsecure)? "))
-	 ;; `w3m-safe-url-regexp' is already bound by `w3m-with-w3m-buffer'.
-	 (setq w3m-safe-url-regexp nil
-	       w3m-display-inline-images nil
-	       status nil))
-     (unwind-protect
-	 (w3m-toggle-inline-images-internal (if w3m-display-inline-images
-						'on 'off)
-					    no-cache nil)
-       (unless (setq w3m-display-inline-images (not status))
-	 (w3m-process-stop (current-buffer)))
-       (force-mode-line-update)))))
+			       "\\`cid:")))
+    (w3m-toggle-inline-images force no-cache)))
 
 (defsubst w3m-resize-inline-image-internal (url rate)
   "Resize an inline image on the cursor position.
@@ -8074,7 +8091,11 @@ differences: (1) this command accepts no arguments, (2) this command
 does not handle forms, and (3) this command does not consider URL-like
 strings under the cursor.  When a unsecure page which may contain
 vicious forms is viewed, this command should be used instead of
-`w3m-view-this-url'."
+`w3m-view-this-url'.
+
+Note that this command depends on the value of `w3m-safe-url-regexp'
+\(which see) to consider whether the URL is safe.  You need to keep in
+mind that there may be pages which cause security problems."
   (interactive)
   (let ((url (w3m-url-valid (w3m-anchor))))
     (cond
@@ -8096,8 +8117,8 @@ vicious forms is viewed, this command should be used instead of
     (w3m-previous-anchor)
     (w3m-next-image)
     (w3m-previous-image)
-    (w3m-toggle-inline-image)
-    (w3m-toggle-inline-images)
+    (w3m-toggle-inline-image . w3m-safe-toggle-inline-image)
+    (w3m-toggle-inline-images . w3m-safe-toggle-inline-images)
     (w3m-view-this-url . w3m-safe-view-this-url)
     (w3m-mouse-view-this-url . w3m-mouse-safe-view-this-url))
   "Alist of commands and commands to be defined in `w3m-minor-mode-map'.

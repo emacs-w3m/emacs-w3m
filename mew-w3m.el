@@ -139,7 +139,9 @@ This variable effected only XEmacs or Emacs 21."
      (save-excursion
        (set-buffer (mew-buffer-message))
        (let* ((image (get-text-property (point-min) 'w3m-images))
-	      (w3m-display-inline-images image))
+	      (w3m-display-inline-images image)
+	      (w3m-safe-url-regexp (when mew-w3m-use-safe-url-regexp
+				     mew-w3m-safe-url-regexp)))
 	 (w3m-toggle-inline-images)
 	 (mew-elet
 	  (put-text-property (point-min) (1+ (point-min))
