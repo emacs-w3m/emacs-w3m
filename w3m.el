@@ -667,12 +667,8 @@ of the original request method. -- RFC2616"
   "Face used to fontify underlined part."
   :group 'w3m-face)
 
-(defcustom w3m-mode-hook
-  (when (featurep 'w3m-e21)
-    '(w3m-setup-header-line
-      w3m-setup-widget-faces
-      w3m-update-tab-line))
-  "*Hook run before `w3m-mode' called."
+(defcustom w3m-mode-hook nil
+  "*Hook run after `w3m-mode' called."
   :group 'w3m
   :type 'hook)
 
@@ -681,23 +677,18 @@ of the original request method. -- RFC2616"
   :group 'w3m
   :type 'hook)
 
-(defcustom w3m-fontify-after-hook
-  (cons 'w3m-header-line-insert
-	(when (featurep 'w3m-e21) '(w3m-update-tab-line)))
+(defcustom w3m-fontify-after-hook nil
   "*Hook run after `w3m-fontify' called."
   :group 'w3m
   :type 'hook)
 
 (defcustom w3m-display-hook
-  (nconc
-   '(w3m-move-point-for-localcgi
-     w3m-history-highlight-current-url
-     w3m-select-buffer-update)
-   (when (featurep 'w3m-e21) '(w3m-setup-favicon))
-   (when (featurep 'w3m-xmas) '(w3m-xmas-update-tab-in-gutter)))
+  '(w3m-move-point-for-localcgi
+    w3m-history-highlight-current-url)
   "*Hook run at the end of `w3m-goto-url'."
   :group 'w3m
-  :type 'hook)
+  :type 'hook
+  :initialize 'w3m-custom-hook-initialize)
 
 (defcustom w3m-after-cursor-move-hook
   '(w3m-highlight-current-anchor
@@ -705,31 +696,17 @@ of the original request method. -- RFC2616"
     w3m-auto-show)
   "*Hook run after cursor moved in w3m buffers."
   :group 'w3m
-  :type 'hook)
-
-(defcustom w3m-arrived-setup-hook
-  (when (featurep 'w3m-e21) '(w3m-favicon-load-cache-file))
-  "*Hook run at the end of `w3m-arrived-setup'."
-  :group 'w3m
-  :type 'hook)
-
-(defcustom w3m-arrived-shutdown-hook
-  (when (featurep 'w3m-e21) '(w3m-favicon-save-cache-file))
-  "*Hook run at the end of `w3m-arrived-shutdown'."
-  :group 'w3m
-  :type 'hook)
+  :type 'hook
+  :initialize 'w3m-custom-hook-initialize)
 
 (defcustom w3m-delete-buffer-hook
-  (nconc
-   '(w3m-pack-buffer-numbers
-     w3m-select-buffer-update)
-   (when (featurep 'w3m-e21) '(w3m-update-tab-line)))
+  '(w3m-pack-buffer-numbers)
   "*Hook run when any w3m buffers are deleted."
   :group 'w3m
-  :type 'hook)
+  :type 'hook
+  :initialize 'w3m-custom-hook-initialize)
 
-(defcustom w3m-select-buffer-hook
-  (when (featurep 'w3m-e21) '(w3m-update-tab-line))
+(defcustom w3m-select-buffer-hook nil
   "*Hook run when a different w3m buffer is selected."
   :group 'w3m
   :type 'hook)
@@ -878,14 +855,14 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
 	   (windows-1256  . cp1256)
 	   (windows-1257  . cp1257)
 	   (windows-1258  . cp1258)
-	   (euc-jp        . euc-japan)
+	   (euc-jp	  . euc-japan)
 	   (shift-jis     . shift_jis)
 	   (shift_jis     . shift_jis)
-	   (sjis          . shift_jis)
+	   (sjis	  . shift_jis)
 	   (x-euc-jp      . euc-japan)
 	   (x-shift-jis   . shift_jis)
 	   (x-shift_jis   . shift_jis)
-	   (x-sjis        . shift_jis)))
+	   (x-sjis	  . shift_jis)))
 	dest)
     (while rest
       (or (w3m-find-coding-system (car (car rest)))
@@ -1328,6 +1305,10 @@ in the optimized interlaced endlessly animated gif format and base64.")
 
 (defconst w3m-arrived-db-size 1023)
 (defvar w3m-arrived-db nil)		; nil means un-initialized.
+(defvar w3m-arrived-setup-functions nil
+  "Internal functions run at the end of `w3m-arrived-setup'.")
+(defvar w3m-arrived-shutdown-functions nil
+  "Functions run at the end of `w3m-arrived-shutdown'.")
 
 (defconst w3m-image-type-alist
   '(("image/jpeg" . jpeg)
@@ -1535,6 +1516,11 @@ fragment identifier of a URI reference.  For more detail, see Appendix
 B of RFC2396 <URL:http://www.ietf.org/rfc/rfc2396.txt>.")
 
 (defvar w3m-mode-map nil "Keymap used in w3m-mode buffers.")
+
+(defvar w3m-mode-setup-functions nil
+  "Functions run after `w3m-mode' called.")
+(defvar w3m-display-functions nil
+  "Functions run at the end of `w3m-goto-url'.")
 
 
 ;; Generic functions:
@@ -1981,7 +1967,7 @@ with ^ as `cat -v' does."
 	  (w3m-arrived-add (car elem) nil (cdr elem) (cdr elem))))
       (unless w3m-input-url-history
 	(setq w3m-input-url-history (mapcar (function car) list))))
-    (run-hooks 'w3m-arrived-setup-hook)))
+    (run-hooks 'w3m-arrived-setup-functions)))
 
 (defun w3m-arrived-shutdown ()
   "Save hash database of arrived URLs to `w3m-arrived-file'."
@@ -2023,7 +2009,7 @@ with ^ as `cat -v' does."
 		      w3m-keep-arrived-urls)
 		     nil t))
     (setq w3m-arrived-db nil)
-    (run-hooks 'w3m-arrived-shutdown-hook)))
+    (run-hooks 'w3m-arrived-shutdown-functions)))
 
 (add-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
 
@@ -2449,7 +2435,11 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
       (while (re-search-forward "^[ \t]*\n\\([ \t]*\n\\)+" nil t)
 	(delete-region (match-beginning 0) (1- (match-end 0)))))
     (w3m-message "Fontifying...done")
+    (w3m-header-line-insert)
     (run-hooks 'w3m-fontify-after-hook)))
+
+;; To avoid that double header lines are inserted.
+(remove-hook 'w3m-fontify-after-hook 'w3m-header-line-insert)
 
 ;;
 
@@ -4644,7 +4634,8 @@ If EMPTY is non-nil, the created buffer has empty content."
       (switch-to-buffer
        (or (nth arg (memq (current-buffer) buffers))
 	   (nth (1- arg) buffers))))
-    (run-hooks 'w3m-select-buffer-hook)))
+    (run-hooks 'w3m-select-buffer-hook)
+    (w3m-select-buffer-update)))
 
 (defun w3m-previous-buffer (arg)
   "Select the ARG'th different w3m buffer in the opposite order."
@@ -4659,7 +4650,8 @@ If EMPTY is non-nil, the created buffer has empty content."
     (let ((buffer (current-buffer)))
       (w3m-next-buffer -1)
       (kill-buffer buffer)))
-  (run-hooks 'w3m-delete-buffer-hook))
+  (run-hooks 'w3m-delete-buffer-hook)
+  (w3m-select-buffer-update))
 
 (defun w3m-pack-buffer-numbers ()
   "Pack w3m buffer numbers."
@@ -4689,7 +4681,8 @@ The optional argument BUFFER will be used exclusively by the command
 	  (delete-window window)))
       ;; Kill a buffer.
       (kill-buffer buffer)))
-  (run-hooks 'w3m-delete-buffer-hook))
+  (run-hooks 'w3m-delete-buffer-hook)
+  (w3m-select-buffer-update))
 
 (defvar w3m-lynx-like-map nil
   "Lynx-like keymap used in w3m-mode buffers.")
@@ -5112,6 +5105,7 @@ frame or a window in the frame is succeeded."
   (make-local-variable 'list-buffers-directory)
   (w3m-setup-toolbar)
   (w3m-setup-menu)
+  (run-hooks 'w3m-mode-setup-functions)
   (run-hooks 'w3m-mode-hook))
 
 (defun w3m-scroll-up-or-next-url (arg)
@@ -5616,6 +5610,8 @@ field for this request."
 	    ;; must be `w3m-current-url'
 	    (setq default-directory (w3m-current-directory w3m-current-url))
 	    (w3m-update-toolbar)
+	    (w3m-select-buffer-update)
+	    (run-hook-with-args 'w3m-display-functions (or real-url url))
 	    (run-hook-with-args 'w3m-display-hook (or real-url url))
 	    ;; restore position must call after hooks for localcgi.
 	    (when (or reload redisplay)
@@ -6301,10 +6297,14 @@ buffers.  User can type following keys:
   (w3m-select-buffer-mode)
   (or nomsg (w3m-display-message w3m-select-buffer-message)))
 
+(unless (fboundp 'w3m-update-tab-line)
+  (defalias 'w3m-update-tab-line 'ignore))
+
 (defun w3m-select-buffer-update (&rest args)
   (when (get-buffer-window w3m-select-buffer-name)
     (save-selected-window
-      (w3m-select-buffer nil 'update))))
+      (w3m-select-buffer nil 'update)))
+  (w3m-update-tab-line))
 
 (defun w3m-select-buffer-generate-contents (current-buffer)
   (let (buffer-read-only)

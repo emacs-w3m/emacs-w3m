@@ -520,6 +520,16 @@ multibyteness of the buffer."
 versions prior to 21 won't inherit the `dafault' face colors by default,
 we will use this value for the default `defface' color spec.")
 
+(defun w3m-custom-hook-initialize (symbol value)
+  "Initialize the hook option pointed by the SYMBOL with the default VALUE."
+  (if (boundp symbol)
+      (progn
+	(setq value (eval value))
+	(while value
+	  (add-hook symbol (car value))
+	  (setq value (cdr value))))
+    (custom-initialize-set symbol value)))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here

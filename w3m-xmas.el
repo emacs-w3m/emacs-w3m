@@ -524,6 +524,9 @@ option, it is recommended a bit that setting both the option
 	     (or (boundp 'gutter-buffers-tab-enabled)
 		 (setq value nil))
 	     (set-default symbol value)
+	   (if value
+	       (add-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter)
+	     (remove-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter))
 	   (condition-case nil
 	       (progn
 		 (if value
@@ -584,8 +587,10 @@ title contains non-ascii characters, show a url name by default."
 
   (defun w3m-xmas-update-tab-in-gutter (&rest args)
     "Update the tab control in the gutter area."
-    (when w3m-xmas-show-current-title-in-buffer-tab
-      (update-tab-in-gutter (selected-frame)))))
+    (update-tab-in-gutter (selected-frame)))
+
+  (when (symbol-value 'gutter-buffers-tab-enabled)
+    (add-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter)))
 
 ;;; Miscellaneous:
 (if (featurep 'mule)

@@ -1,5 +1,42 @@
 2002-08-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el: Clean up hook options.
+	(toplevel): Remove `w3m-header-line-insert' from
+	`w3m-fontify-after-hook', and define the dummy function of
+	`w3m-update-tab-line'.
+	(w3m-mode-hook, w3m-fontify-after-hook, w3m-select-buffer-hook):
+	Clean up its default value to nil.
+	(w3m-display-hook, w3m-delete-buffer-hook): Minimize its default
+	value and use `w3m-custom-hook-initialize' as the initialize
+	function.
+	(w3m-arrived-setup-hook, w3m-arrived-shutdown-hook): Abolished.
+	(w3m-arrived-setup-functions, w3m-arrived-shutdown-functions,
+	w3m-mode-setup-functions, w3m-display-functions): New interanal
+	variables.
+	(w3m-arrived-setup): Refer `w3m-arrived-setup-functions' instead
+	of `w3m-arrived-setup-hook'.
+	(w3m-arrived-shutdown): Refer `w3m-arrived-shutdown-functions'
+	instead of `w3m-arrived-shutdown-hook'.
+	(w3m-fontify): Call `w3m-header-line-insert' by itself.
+	(w3m-next-buffer, w3m-delete-buffer, w3m-delete-other-buffers):
+	Call `w3m-select-buffer-update' by itself.
+	(w3m-mode): Run functions registered to
+	`w3m-mode-setup-functions'.
+	(w3m-goto-url): Call `w3m-select-buffer-update' by itself, and Run
+	functions registered to `w3m-display-functions'.
+	(w3m-select-buffer-update): Call `w3m-update-tab-line'.
+
+	* w3m-util.el (w3m-custom-hook-initialize): New function.
+
+	* w3m-xmas.el: Cancel the last change and refer
+	`w3m-display-functions' instead of `w3m-display-hook'.
+
+	* w3m-e21.el (toplevel): Add `w3m-setup-favicon' to
+	`w3m-display-functions', `w3m-favicon-load-cache-file' to
+	`w3m-arrived-setup-functions', `w3m-favicon-save-cache-file' to
+	`w3m-arrived-shutdown-functions', and add `w3m-setup-header-line'
+	and `w3m-setup-widget-faces' to `w3m-mode-setup-functions'
+
 	* w3mhack.el (w3mhack-load-path) [Mule]: Add the path of bitmap.el
 	to `load-path'.
 

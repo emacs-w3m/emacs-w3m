@@ -329,6 +329,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (make-variable-buffer-local 'w3m-current-favicon-data)
 (make-variable-buffer-local 'w3m-current-favicon-image)
 (make-variable-buffer-local 'w3m-favicon-converted)
+(add-hook 'w3m-display-functions 'w3m-setup-favicon)
 
 (defun w3m-favicon-usable-p ()
   "Check whether ImageMagick's `convert' supports a Windoze ico format in
@@ -482,6 +483,9 @@ Each information is a list whose elements are:
 	   (or w3m-favicon-cache-file
 	       (expand-file-name ".favicon" w3m-profile-directory))
 	   'binary))))
+
+(add-hook 'w3m-arrived-setup-functions 'w3m-favicon-load-cache-file)
+(add-hook 'w3m-arrived-shutdown-functions 'w3m-favicon-save-cache-file)
 
 ;;; Header line & Tabs
 (defcustom w3m-tab-width 16
@@ -642,6 +646,9 @@ Each information is a list whose elements are:
   "Update tab line."
   (when w3m-use-tab
     (set-cursor-color (frame-parameter (selected-frame) 'cursor-color))))
+
+(add-hook 'w3m-mode-setup-functions 'w3m-setup-header-line)
+(add-hook 'w3m-mode-setup-functions 'w3m-setup-widget-faces)
 
 (provide 'w3m-e21)
 
