@@ -88,6 +88,7 @@ This manual corresponds to emacs-w3m version @value{VERSION}.
 * Tips::                        Some knick-knacks using emacs-w3m
 * Mailing List::                Mailing list and submitting bug reports
 * Emacs-w3m Functions::         Details of some emacs-w3m functions
+* Authors::                     Persons who wrote this manual
 * Index::                       Index
 
 @detailmenu
@@ -4118,6 +4119,27 @@ in its body to @samp{emacs-w3m-ctl@@namazu.org}.
 @chapter Details of some emacs-w3m functions
 @cindex Functions details
 
+
+@node Authors
+@chapter Persons who wrote this manual
+
+@itemize @bullet
+@c alphabetical order in the family names.
+@item
+Romain FRANCOISE
+@item
+NAKAJIMA Mikio
+@item
+Yoichi NAKAYAMA
+@item
+Katsumi Yamaoka
+@item
+Masatake YAMATO
+@item
+Hideyuki SHIRAI
+@item
+TSUCHIYA Masatoshi
+@end itemize
 
 @node Index
 @unnumbered Index

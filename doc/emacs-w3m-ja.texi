@@ -120,6 +120,7 @@ Emacs-w3m 開発チーム
 * Tips::                        Emacs-w3m を使う洒落た小物たち
 * Mailing List::                メーリングリスト、バグリポート
 * Emacs-w3m Functions::         Emacs-w3m の関数の詳しい説明
+* Authors::                     このマニュアルを書いた人たち
 * Index::                       索引
 
 @detailmenu
@@ -4310,6 +4311,27 @@ subscribe ANATANO Namae
 @chapter Emacs-w3m の関数の詳しい説明
 @cindex Functions details
 
+
+@node Authors
+@chapter Persons who wrote this manual
+
+@itemize @bullet
+@c 50音順
+@item
+白井 秀行
+@item
+土屋 雅稔
+@item
+中島幹夫
+@item
+中山 洋一
+@item
+Romain FRANCOISE
+@item
+山岡 克美
+@item
+大和 正武
+@end itemize
 
 @node Index
 @unnumbered 索引
