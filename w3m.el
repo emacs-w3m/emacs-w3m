@@ -1347,12 +1347,14 @@ is nil, all data will be inserted in the current buffer."
 	  (set-marker (process-mark process) (point))
 	  (forward-line 0)
 	  (cond
-	   ((looking-at "Username: Password: ")
+	   ((looking-at "Password: ")
+	    (delete-region (point-min) (match-end 0))
 	    (setq w3m-process-passwd
 		  (or (nth 1 (w3m-exec-get-user w3m-current-url))
 		      (w3m-read-passwd "Password: "))
 		  str w3m-process-passwd))
 	   ((looking-at "Username: ")
+	    (delete-region (point-min) (match-end 0))
 	    (setq w3m-process-user
 		  (or (nth 0 (w3m-exec-get-user w3m-current-url))
 		      (read-from-minibuffer "Username: "))
@@ -1470,8 +1472,9 @@ are retrieved."
 			    (substring type 0 (match-beginning 0))))
 	      (setq type (w3m-remove-redundant-spaces type)))))
       (goto-char (point-min))
-      (if (re-search-forward "^content-length:\\([^\r\n]+\\)\r*$" nil t)
-	  (setq length (string-to-number (match-string 1))))
+      (when (and (looking-at "HTTP/1\\.[0-9] 200")
+		 (re-search-forward "^content-length:\\([^\r\n]+\\)\r*$" nil t))
+	(setq length (string-to-number (match-string 1))))
       (list (or type (w3m-local-content-type url) "unknown")
 	    charset
 	    length))))
@@ -1511,7 +1514,8 @@ are retrieved."
        (if headers
 	   (let ((type    (car headers))
 		 (charset (nth 1 headers))
-		 (length  (nth 2 headers)))
+		 (length  (nth 2 headers))
+		 buflines)		 
 	     (when (or (not accept-type-regexp)
 		       (string-match accept-type-regexp type))
 	       (let* ((w3m-current-url url)
@@ -1530,39 +1534,29 @@ are retrieved."
 		 (delete-region (point-min) (point-max))
 		 (w3m-exec-process "-dump_source" url)
 		 (w3m-message "Reading... done"))
-	       (if length
-		   (if (eq w3m-executable-type 'cygwin)
-		       (cond
-			;; No authentication and no bugs in output.
-			((= (buffer-size) length))
-			;; No authentication but new-line character is replaced to CRLF.
-			((= (buffer-size)
-			    (+ length (count-lines (point-min) (point-max))))
-			 (while (search-forward "\r\n" nil t)
-			   (delete-region (- (point) 2) (1- (point)))))
-			(t;; Authentication
-			 (while (and
-				 (re-search-forward "^Username: Password: \n" nil t)
-				 (cond
-				  ((= (- (point-max) (point)) length)
-				   (delete-region (point-min) (point))
-				   nil)
-				  ((= (- (point-max) (point))
-				      (+ length (count-lines (point) (point-max))))
-				   (delete-region (point-min) (point))
-				   (while (search-forward "\r\n" nil t)
-				     (delete-region (- (point) 2) (1- (point))))))))))
-		     (delete-region (point-min) (- (point-max) length)))
-		 (when (string= "text/html" type)
-		   ;; Remove cookies.
-		   (goto-char (point-min))
-		   (while (and (not (eobp))
-			       (looking-at "Received cookie: "))
-		     (forward-line 1))
-		   (skip-chars-forward " \t\r\f\n")
-		   (if (or (looking-at "<!DOCTYPE")
-			   (looking-at "<HTML>")) ; for eGroups.
-		       (delete-region (point-min) (point)))))
+	       (cond
+		((and length (eq w3m-executable-type 'cygwin))
+		 (setq buflines (count-lines (point-min) (point-max)))
+		 (cond
+		  ;; no bugs in output.
+		  ((= (buffer-size) length))
+		  ;; new-line character is replaced to CRLF.
+		  ((or (= (buffer-size) (+ length buflines))
+		       (= (buffer-size) (+ length buflines -1)))
+		   (while (search-forward "\r\n" nil t)
+		     (delete-region (- (point) 2) (1- (point)))))))
+		(length
+		 (delete-region (point-min) (- (point-max) length)))
+		((string= "text/html" type)
+		 ;; Remove cookies.
+		 (goto-char (point-min))
+		 (while (and (not (eobp))
+			     (looking-at "Received cookie: "))
+		   (forward-line 1))
+		 (skip-chars-forward " \t\r\f\n")
+		 (if (or (looking-at "<!DOCTYPE")
+			 (looking-at "<HTML>")) ; for eGroups.
+		     (delete-region (point-min) (point)))))
 	       (w3m-backlog-enter url type charset (current-buffer))
 	       (and (string-match "^text/" type)
 		    (not no-decode)
