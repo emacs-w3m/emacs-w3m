@@ -1,3 +1,9 @@
+2002-07-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-accept-japanese-characters): Don't call the external
+	command when compiling.
+	(examining the value for `w3m-command'): Ditto.
+
 2002-07-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-lynx-like-map): Use the key `(control space)'
