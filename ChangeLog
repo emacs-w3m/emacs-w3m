@@ -1,8 +1,8 @@
 2004-03-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi-mytown.el (shimbun-asahi-mytown-get-headers):
-	Adjust the number of years correctly even if there are very old
-	articles.
+	Adjust the number of years correctly even if an article is very
+	old.
 	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Ditto.
 	* shimbun/sb-sankei.el (shimbun-get-headers): Ditto.
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-get-headers): Ditto.
