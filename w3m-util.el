@@ -321,6 +321,12 @@ START and END are lists which represent time in Emacs-style."
      (cadr end)
      (- (cadr start))))
 
+(defsubst w3m-time-less-p (t1 t2)
+  "Say whether time T1 is less than time T2."
+  (or (< (car t1) (car t2))
+      (and (= (car t1) (car t2))
+	   (< (nth 1 t1) (nth 1 t2)))))
+
 (defsubst w3m-url-dtree-p (url)
   "If URL points a 'w3m-dtree', return non-nil value.  Otherwise return
 nil."

@@ -175,9 +175,9 @@ If ask, ask user whether accept bad cookies or not."
 	expires	cookies)
     (dolist (c w3m-cookies)
       (if (and (w3m-cookie-expires c)
-	       (> (w3m-time-lapse-seconds (w3m-time-parse-string
-					   (w3m-cookie-expires c))
-					  (current-time)) 0))
+	       (w3m-time-less-p (w3m-time-parse-string
+				 (w3m-cookie-expires c))
+				(current-time)))
 	  (push c expires)
 	(when (and (string-match (concat 
 				  (regexp-quote (w3m-cookie-domain c)) "$")
@@ -385,8 +385,8 @@ If ask, ask user whether accept bad cookies or not."
 	  ;; If a CGI script wishes to delete a cookie, it can do so by
 	  ;; returning a cookie with the same name, and an expires time
 	  ;; which is in the past.
-	  (when (> (w3m-time-lapse-seconds (w3m-time-parse-string expires)
-					   (current-time)) 0)
+	  (when (w3m-time-less-p (w3m-time-parse-string expires)
+				 (current-time))
 	    (w3m-cookie-remove domain path (car elem)))
 	  (w3m-cookie-store
 	   (w3m-cookie-create :url url

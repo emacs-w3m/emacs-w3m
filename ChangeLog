@@ -1,5 +1,11 @@
 2002-03-25  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-cookie.el (w3m-cookie-1-set): Use w3m-time-less-p instead of
+	w3m-time-lapse-seconds.
+	(w3m-cookie-retrieve): Ditto.
+
+	* w3m-util.el (w3m-time-less-p): New inline function.
+
 	* w3m.el (w3m-current-redirect): New buffer local variable.
 	(w3m-clear-local-variables): Add w3m-current-redirect.
 	(w3m-copy-local-variables): Treat w3m-current-redirect.
