@@ -10,7 +10,8 @@
 	`type' and `charset'.
 	(w3m-entity-value): Removed not-used bound variable `sym'.
 	(w3m-arrived-add): Use `w3m-arrived-add-1'; don't funcall itself
-	recursively to get rid of redundancy.
+	recursively to get rid of redundancy; don't use
+	`set-text-properties' here.
 	(w3m-arrived-add-1): New macro.
 
 	* w3mhack.el (XEmacs): Byte-optimize `set-text-properties' to make
