@@ -46,8 +46,10 @@
   (defvar w3m-toolbar-buttons)
   (defvar w3m-use-header-line)
   (defvar w3m-work-buffer-name)
-  (defalias 'w3m-retrieve 'ignore)
-  (defalias 'w3m-image-type 'ignore))
+  (defvar w3m-history)
+  (defvar w3m-history-flat)
+  (autoload 'w3m-retrieve "w3m")
+  (autoload 'w3m-image-type "w3m"))
 
 ;; Generic functions.
 (defsubst w3m-find-coding-system (obj)

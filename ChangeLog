@@ -1,3 +1,23 @@
+2001-09-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (top): Require `ccl'.
+	(w3m-make-ccl-coding-system): New function for Emacs20 / Emacs21.
+	(w3m-euc-japan): Define with `w3m-make-ccl-coding-system'.
+
+	* w3m-macro.el (top): Delete garbage.
+
+	* w3m-e21.el (top): Fix to avoid byte-compile warnings.
+
+	* w3m-xmas.el (top): Require `pccl' and fix to avoid byte-compile
+	warnings.
+	(w3m-make-ccl-coding-system): New alias to `make-ccl-coding-system'.
+
+	* w3m-om.el (top): Require `pccl'.
+	(w3m-make-ccl-coding-system): New alias to `make-ccl-coding-system'.
+
+	* w3m-search.el (w3m-search): Fixed search engine specification
+	error when interactively called with prefix arguments.
+
 2001-09-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-macro.el (w3m-with-work-buffer): Keep `w3m-history' and

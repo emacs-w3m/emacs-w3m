@@ -57,10 +57,6 @@ compile-time."
   (if clauses
       (cons 'progn (cdr (car clauses)))))
 
-(eval-when-compile ;; To avoid byte-compile warnings.
-  (defvar w3m-history)
-  (defvar w3m-history-flat))
-
 (defmacro w3m-with-work-buffer (&rest body)
   "Execute the forms in BODY with working buffer as the current buffer."
   (let ((temp-hist (make-symbol "hist"))

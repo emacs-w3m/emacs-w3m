@@ -48,14 +48,18 @@
   (defvar w3m-toolbar-buttons)
   (defvar w3m-use-header-line)
   (defvar w3m-work-buffer-name)
+  (defvar w3m-history)
+  (defvar w3m-history-flat)
   (defalias 'w3m-retrieve 'ignore)
   (defalias 'w3m-image-type 'ignore))
 
 (require 'path-util)
 (require 'poe)
 (require 'poem)
+(require 'pccl)
 
 (defalias 'w3m-find-coding-system 'find-coding-system)
+(defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
 
 ;;; Handle images:
 

@@ -105,7 +105,10 @@ engine deinfed in `w3m-search-engine-alist'.  Otherwise use
 		      (format "%s search (default %s): " engine default)
 		    (format "%s search: " engine)))
 	  (query (read-string prompt nil nil default)))
-     (list engine query)))
+     (list (if (string= engine "")
+	       w3m-search-default-engine
+	     engine)
+	   query)))
   (unless (string= query "")
     (let ((info (assoc search-engine w3m-search-engine-alist)))
       (if info

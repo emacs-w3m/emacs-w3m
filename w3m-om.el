@@ -37,6 +37,7 @@
 (require 'poe)
 (require 'poem)
 (require 'pcustom)
+(require 'pccl)
 
 (eval-when-compile
   (unless (fboundp 'custom-declare-variable)
@@ -61,6 +62,8 @@
 (defsubst w3m-find-coding-system (obj)
   "Return OBJ if it is a coding-system."
   (if (coding-system-p obj) obj))
+
+(defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
 
 ;; Generate some coding-systems which have a modern name.
 ;; No need to contain the eol-type variants in the following alist
