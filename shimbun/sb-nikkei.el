@@ -648,9 +648,9 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
     (let ((pt (point)))
       (when (re-search-forward "[\t\n ]*\\(<[^>]+>[\t\n ]*\\)*</DIV>" nil t)
 	(goto-char (match-beginning 0))
-	(when (= pt (point))
-	  (insert "This article seems to have been expired in the server."))
-	(insert shimbun-nikkei-content-end)))))
+	(if (= pt (point))
+	    (erase-buffer)
+	  (insert shimbun-nikkei-content-end))))))
 
 (defun shimbun-nikkei-prepare-article-okuyami ()
   "Function used to prepare contents of an article for the okuyami group."
