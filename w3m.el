@@ -389,21 +389,6 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :group 'w3m
   :type 'directory)
 
-(defconst w3m-emacs-w3m-icon "\
-R0lGODlhQgAOAPIAAEFp4f+MAJkyzC6LV////yCyqv9FAP8AACH5BAQhAP8ALAAAAABCAA4A
-AAOjSLrc/jDKSau9OOt6+tlgSHwLKZ6VwZgR4AqKIMvLDCtDPixFX0QBRVDV+Hg6DQBDCbs1
-GbDdYvfjQYKEIJZg6CqM36WYGYPSbg0pz9fLCt0NFXi0dNkJZILTqYcMqhA9AYNbCypyYQtK
-SXhlaH2PDmoPVViFh1yJCoubjYt5ek81BJOTDVWVDEOZdHUunZ8xZ7I0ODoSqAuElqxEKL/A
-wcIKCQAh+QQFIQAAACwAAAAAAQABAAACAkQBACH5BAUhAAAALAAAAAABAAEAAAICRAEAIfkE
-BSEAAAAsAgACAD4ACgAAAxhIutz+MMpJq7046827/2AojmRpnmiqhgkAIfkEBSEAAQAsAgAF
-AA0ABwAAAhMMHqkK25teNPDYJmelemJveVEBACH5BAUhAAAALAYABQAXAAcAAAIdFCCZh8r/
-jEGUTQjnbRLHo2mV920diV2LiYKruxQAIfkEBSEAAAAsFwAFAA0ABwAAAg/EPqCruc4ig3LW
-Su27KBUAIfkEBSEAAAAsHgAFABMABwAAAxYItQX+ELY3o72MXVdx39YHStwYTUUCACH5BAUh
-AAAALCwABQAPAAcAAAIUDGCni2fJnITRhVtjolkqzlwYUgAAIfkEBSEAAAAsMQAEAA8ACAAA
-AxQIYNre7Elp6rzxOpY1XxoEhuKSAAA7"
-  "A small icon image for the url about://emacs-w3m.gif.  It is currently
-encoded in the optimized animated gif format and base64.")
-
 (defcustom w3m-broken-proxy-cache nil
   "*If non nil, cache on proxy server is not used.
 This feature should be enabled only if the caching configuration of
@@ -697,13 +682,17 @@ See the file balloon-help.el for more information."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-use-tab-menubar (not (featurep 'xemacs))
-  "*If non-nil, create 'W3M-TAB' menubar."
+(defcustom w3m-use-tab t
+  "Use w3m as a tab browser."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-pop-up-windows
-  (if (boundp 'w3m-use-tab) (not (symbol-value 'w3m-use-tab)) t)
+  (if (or (featurep 'xemacs)
+	  (and (boundp 'emacs-major-version)
+	       (>= emacs-major-version 21)))
+      (not w3m-use-tab)
+    t)
   "Like `pop-up-windows', except that it only affects the command
 `w3m-copy-buffer'.  If this value is non-nil and the value of the
 option `w3m-pop-up-frames' is nil, split the windows when a new
@@ -849,6 +838,21 @@ will disclose your private informations, for example:
 		   '((gzip . ("gzip" "x-gzip" "compress" "x-compress"))
 		     (bzip . ("x-bzip" "bzip" "bzip2"))
 		     (deflate . ("x-deflate" "deflate")))))))
+
+(defconst w3m-emacs-w3m-icon "\
+R0lGODlhQgAOAPIAAEFp4f+MAJkyzC6LV////yCyqv9FAP8AACH5BAQhAP8ALAAAAABCAA4A
+AAOjSLrc/jDKSau9OOt6+tlgSHwLKZ6VwZgR4AqKIMvLDCtDPixFX0QBRVDV+Hg6DQBDCbs1
+GbDdYvfjQYKEIJZg6CqM36WYGYPSbg0pz9fLCt0NFXi0dNkJZILTqYcMqhA9AYNbCypyYQtK
+SXhlaH2PDmoPVViFh1yJCoubjYt5ek81BJOTDVWVDEOZdHUunZ8xZ7I0ODoSqAuElqxEKL/A
+wcIKCQAh+QQFIQAAACwAAAAAAQABAAACAkQBACH5BAUhAAAALAAAAAABAAEAAAICRAEAIfkE
+BSEAAAAsAgACAD4ACgAAAxhIutz+MMpJq7046827/2AojmRpnmiqhgkAIfkEBSEAAQAsAgAF
+AA0ABwAAAhMMHqkK25teNPDYJmelemJveVEBACH5BAUhAAAALAYABQAXAAcAAAIdFCCZh8r/
+jEGUTQjnbRLHo2mV920diV2LiYKruxQAIfkEBSEAAAAsFwAFAA0ABwAAAg/EPqCruc4ig3LW
+Su27KBUAIfkEBSEAAAAsHgAFABMABwAAAxYItQX+ELY3o72MXVdx39YHStwYTUUCACH5BAUh
+AAAALCwABQAPAAcAAAIUDGCni2fJnITRhVtjolkqzlwYUgAAIfkEBSEAAAAsMQAEAA8ACAAA
+AxQIYNre7Elp6rzxOpY1XxoEhuKSAAA7"
+  "A small icon image for the url about://emacs-w3m.gif.  It is currently
+encoded in the optimized animated gif format and base64.")
 
 (defconst w3m-modeline-image-status-on "[IMG]"
   "Modeline string which is displayed when inline image is on.")
@@ -1808,67 +1812,7 @@ If N is negative, last N items of LIST is returned."
 							(aref def 1)))
 	    (put (aref def 1) 'menu-enable (aref def 2)))
 	  ;; (define-key map [separator-eval] '("--"))
-	  ))
-      (when (and w3m-use-tab-menubar
-		 (not (lookup-key w3m-mode-map [menu-bar w3m-tab])))
-	(define-key-after
-	  (lookup-key w3m-mode-map [menu-bar])
-	  [w3m-tab]
-	  (cons "TAB" (cons 'keymap (w3m-tab-menubar-make-items))) t)
-	(add-hook 'menu-bar-update-hook 'w3m-tab-menubar-update)))
-    ))
-
-(defun w3m-tab-menubar-open-buffer ()
-  "Open w3m buffer from tab menubar."
-  (interactive)
-  (switch-to-buffer last-command-event))
-
-(defun w3m-tab-menubar-update ()
-  "Update w3m tab menubar."
-  (when (eq major-mode 'w3m-mode)
-    (define-key w3m-mode-map [menu-bar w3m-tab]
-      (cons "TAB" (cons 'keymap (w3m-tab-menubar-make-items))))))
-
-(defsubst w3m-tab-menubar-pull-bufnum (bufname)
-  (cond
-   ((string= "*w3m*" bufname) 1)
-   ((string-match "\\*w3m\\*<\\([0-9]+\\)>" bufname)
-    (string-to-number (match-string 1 bufname)))
-   (t 100)))
-
-(defun w3m-tab-menubar-make-items ()
-  "Create w3m tab menu items."
-  (let ((cbuf (current-buffer))
-	menus bufs title)
-    (dolist (buf (buffer-list))
-      (with-current-buffer buf
-	(when (eq major-mode 'w3m-mode)
-	  (setq title (cond
-		       ((and (stringp w3m-current-title)
-			     (not (string= w3m-current-title "<no-title>")))
-			w3m-current-title)
-		       ((stringp w3m-current-url)
-			(directory-file-name
-			 (if (string-match "^[^/:]+:/+" w3m-current-url)
-			     (substring w3m-current-url (match-end 0))
-			   w3m-current-url)))
-		       (t "No title")))
-	  (setq bufs (cons (list (buffer-name) title (eq cbuf buf)) bufs)))))
-    (setq bufs
-	  (sort bufs (lambda (x y)
-		       (< (w3m-tab-menubar-pull-bufnum (car x))
-			  (w3m-tab-menubar-pull-bufnum (car y))))))
-    (dolist (elem  bufs)
-      (setq menus
-	    (cons
-	     (nconc (list (nth 0 elem)
-			  (format "%s %s"
-				  (if (nth 2 elem) "*" " ")
-				  (nth 1 elem))
-			  (cons nil nil))
-		    'w3m-tab-menubar-open-buffer)
-	     menus)))
-    (nreverse menus)))
+	  )))))
 
 (defun w3m-fontify-images ()
   "Fontify image alternate strings in this buffer which contains
@@ -1888,7 +1832,8 @@ half-dumped data."
 	(w3m-add-text-properties start end (list 'w3m-image src
 						 'w3m-image-status 'off
 						 'w3m-image-redundant upper))
-	(unless (get-text-property start 'w3m-href-anchor)
+	(unless (or (get-text-property start 'w3m-href-anchor)
+		    (get-text-property start 'w3m-action))
 	  ;; No need to use `w3m-add-text-properties' here.
 	  (add-text-properties start end (list 'face 'w3m-image-face
 					       'mouse-face 'highlight
@@ -2048,9 +1993,9 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (w3m-fontify-bold)
     (w3m-fontify-underline)
     (w3m-fontify-anchors)
-    (w3m-fontify-images)
     (when w3m-use-form
       (w3m-fontify-forms))
+    (w3m-fontify-images)
     ;; Remove other markups.
     (goto-char (point-min))
     (while (re-search-forward "</?[A-Za-z_][^>]*>" nil t)
@@ -3996,7 +3941,13 @@ Return t if deleting current frame or window is succeeded."
   (interactive)
   (unless (prog1
 	      (w3m-delete-frame-maybe)
-	    (bury-buffer (current-buffer)))
+	    (let ((cur) (buffers (list (current-buffer))))
+	      (bury-buffer (current-buffer))
+	      (while (with-current-buffer (setq cur (other-buffer))
+		       (and (not (memq (current-buffer) buffers))
+			    (eq major-mode 'w3m-mode)))
+		(bury-buffer cur)
+		(push cur buffers))))
     (set-window-buffer (selected-window) (other-buffer))))
 
 (unless w3m-mode-map
@@ -4004,6 +3955,10 @@ Return t if deleting current frame or window is succeeded."
 	(if (eq w3m-key-binding 'info)
 	    w3m-info-like-map
 	  w3m-lynx-like-map)))
+
+(eval-and-compile
+  (unless (fboundp 'w3m-setup-tab)
+    (autoload 'w3m-setup-tab "w3m-tab")))
 
 (defun w3m-mode ()
   "\\<w3m-mode-map>
@@ -4094,6 +4049,7 @@ Return t if deleting current frame or window is succeeded."
   (setq truncate-lines t)
   (w3m-setup-toolbar)
   (w3m-setup-menu)
+  (when w3m-use-tab (w3m-setup-tab))
   (run-hooks 'w3m-mode-hook))
 
 (defun w3m-scroll-up-or-next-url (arg)

@@ -80,14 +80,21 @@
   (` (aref (, form) 3)))
 (defmacro w3m-form-plist (form)
   (` (aref (, form) 4)))
+(defsubst w3m-form-put-property (form name property value)
+  (aset form 4
+	(plist-put (w3m-form-plist form)
+		   (setq name (intern name))
+		   (plist-put (plist-get (w3m-form-plist form) name)
+			      property value)))
+  value)
+(defmacro w3m-form-get-property (form name property)
+  (` (plist-get (plist-get (w3m-form-plist (, form))
+			   (intern (, name)))
+		(, property))))
 (defmacro w3m-form-put (form name value)
-  (let ((tempvar (make-symbol "formobj")))
-    (` (let (((, tempvar) (, form)))
-	 (aset (, tempvar) 4
-	       (plist-put (w3m-form-plist (, tempvar))
-			  (intern (, name)) (, value)))))))
+  (` (w3m-form-put-property (, form) (, name) :value (, value))))
 (defmacro w3m-form-get (form name)
-  (` (plist-get (w3m-form-plist (, form)) (intern (, name)))))
+  (` (w3m-form-get-property (, form) (, name) :value)))
 
 (defun w3m-form-goto-next-field ()
   "Move to next form field and return the point.
@@ -117,7 +124,7 @@ If no field in forward, return nil without moving."
 	      w3m-default-coding-system))
     (while plist
       (let ((name (symbol-name (car plist)))
-	    (value (cadr plist)))
+	    (value (plist-get (cadr plist) :value)))
 	(cond
 	 ((and (consp value)
 	       (eq (car value) 'file))
@@ -269,13 +276,18 @@ return them with the flag."
 	   ((string= tag "input")
 	    ;; When <INPUT> is found.
 	    (w3m-parse-attributes (name (value :decode-entity)
-					(type :case-ignore) (checked :bool))
-	      (when name
+					(type :case-ignore)
+					(checked :bool)
+					src)
+	      (cond
+	       ((string= type "submit")
+		;; Submit button input, not set name and value here.
+		;; They are set in `w3m-form-submit'.
+		nil)
+	       ((string= type "image")
+		(w3m-form-put-property (car forms) (or name "") :src src))
+	       (name
 		(cond
-		 ((string= type "submit")
-		  ;; Submit button input, not set name and value here.
-		  ;; They are set in `w3m-form-submit'.
-		  nil)
 		 ((string= type "checkbox")
 		  ;; Check box input, one name has multiple values
 		  ;; Value is list of item VALUE which has same NAME.
@@ -294,7 +306,7 @@ return them with the flag."
 		  (w3m-form-put (car forms)
 				name
 				(or value (w3m-form-get (car forms)
-							name))))))))
+							name)))))))))
 	   ((string= tag "textarea")
 	    ;; When <TEXTAREA> is found.
 	    (w3m-parse-attributes (name)
@@ -355,7 +367,8 @@ return them with the flag."
 		type (match-string 2 fid)
 		name (match-string 3 fid))
 	  (cond
-	   ((string= type "submit")
+	   ((or (string= type "submit")
+		(string= type "image"))
 	    ;; Remove status to support forms containing multiple
 	    ;; submit buttons.
 	    (w3m-form-put form name nil))
@@ -448,6 +461,23 @@ return them with the flag."
 		 w3m-submit (w3m-form-submit ,form ,name
 					     (w3m-form-get ,form ,name))
 		 w3m-cursor-anchor (w3m-form-submit ,form))))
+	     ((string= type "image")
+	      (let ((end (point-marker))
+		    (src (w3m-form-get-property form name :src)))
+		(when src
+		  (goto-char start)
+		  (insert (format "<img_alt src=\"%s\">" src))
+		  (setq start (point))
+		  (goto-char end)
+		  (insert "</img_alt>"))
+		(add-text-properties
+		 start end
+		 `(face
+		   w3m-form-face
+		   w3m-action (w3m-form-submit ,form ,name ,value)
+		   w3m-submit (w3m-form-submit ,form ,name
+					       (w3m-form-get ,form ,name))
+		   w3m-cursor-anchor (w3m-form-submit ,form)))))
 	     ((string= type "reset")
 	      (w3m-form-make-button
 	       start (point)

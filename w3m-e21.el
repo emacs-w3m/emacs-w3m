@@ -48,6 +48,7 @@
   (defvar w3m-mode-map)
   (defvar w3m-toolbar)
   (defvar w3m-toolbar-buttons)
+  (defvar w3m-use-tab)
   (defvar w3m-use-header-line)
   (defvar w3m-work-buffer-name)
   (defvar w3m-history)
@@ -275,11 +276,6 @@ Buffer string between BEG and END are replaced with IMAGE."
   "*Face for header-line location content."
   :group 'w3m-face)
 
-(defcustom w3m-use-tab t
-  "Use w3m as a tab browser."
-  :group 'w3m
-  :type 'boolean)
-
 (defcustom w3m-tab-width 11
   "w3m tab width."
   :group 'w3m
@@ -373,6 +369,8 @@ Buffer string between BEG and END are replaced with IMAGE."
   (setq widget-button-face 'w3m-form-button-face)
   (setq widget-mouse-face 'w3m-form-button-mouse-face)
   (setq widget-button-pressed-face 'w3m-form-button-pressed-face))
+
+(defalias 'w3m-setup-tab 'ignore)
 
 (defun w3m-tab-make-keymap (buffer)
   (let ((map (make-sparse-keymap))

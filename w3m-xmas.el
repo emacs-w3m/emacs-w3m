@@ -409,6 +409,8 @@ as the value."
 	(insert "\n")))))
 
 ;;; Gutter:
+(defalias 'w3m-setup-tab 'ignore)
+
 (defcustom w3m-xmas-show-current-title-in-buffer-tab
   (and (boundp 'gutter-buffers-tab-enabled)
        (symbol-value 'gutter-buffers-tab-enabled))

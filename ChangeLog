@@ -1,3 +1,39 @@
+2001-11-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-use-tab-menubar): Abolished.
+	(w3m-pop-up-windows): Changed the expression to decide its default
+	value.
+	(w3m-setup-menu): Removed the code to set the menubar item of TAB.
+	(w3m-fontify-images): Accept an image-type input tag.
+	(w3m-fontify): To accept an image-type input tag, changed the
+	order of calling fontify functions.
+	(top): Add autoload of `w3m-setup-tab'.
+	(w3m-mode): Call `w3m-setup-tab'.
+	(w3m-tab-menubar-open-buffer): Moved to `w3m-tab.el'.
+	(w3m-tab-menubar-update): Ditto.
+	(w3m-tab-menubar-pull-bufnum): Ditto.
+	(w3m-tab-menubar-make-items): Ditto.
+
+	* w3m-tab.el: New file.
+
+	* w3m-e21.el (top): Define `w3m-use-tab' to avoid byte-compile
+	warning.
+	(w3m-use-tab): Moved to `w3m.el'.
+	(w3m-setup-tab): Define as a dummy function.
+
+	* w3m-xmas.el (w3m-setup-tab): Define as a dummy function.
+
+	* w3m-form.el: Changes of the structure of the `w3m-form' object.
+	(w3m-form-put-property): New inline function.
+	(w3m-form-get-property): New macro.
+	(w3m-form-put): Use `w3m-form-put-property'.
+	(w3m-form-get): Use `w3m-form-get-property'.
+	(w3m-form-make-form-data): Follow change of structure of the
+	`w3m-form' object.
+	(w3m-form-parse-forms): Accept an image-type input tag.
+	(w3m-form-resume): Ditto.
+	(w3m-form-fontify): Ditto.
+
 2001-11-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-get-headers): Look for the new news
