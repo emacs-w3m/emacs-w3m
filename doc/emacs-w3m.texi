@@ -1846,8 +1846,8 @@ safe (that is, you can display such images without modifying the
 
 Shimbun sounds like ``she-n-boon'', but actually any vowels shouldn't be
 prolonged.  It strictly means a newspaper in Japanese.  The
-@samp{shimbun} library is a collection of various modules and each one
-is unable to do nothing by itself.  This section explains typical three
+@samp{shimbun} library is a collection of various modules, each one is
+unable to do nothing by itself.  This section explains typical three
 @samp{shimbun} applications (two of whom are included in the
 @samp{shimbun} library) and how to make @samp{shimbun} modules by
 yourself (you need to be able to write Emacs Lisp programs).  All those
@@ -1876,7 +1876,304 @@ here it is (@pxref{Other Requirements}).
 
 @node Nnshimbun
 @section Making Gnus into a web browser!
+@cindex nnshimbun
+@cindex Web Newspaper
 
+@samp{Nnshimbin} is one of the Gnus back ends, but it is distributed
+with emacs-w3m, not Gnus, exceptionally.  @samp{Nnshimbun} is able to
+make Gnus into an exceptionally useful web browser.  You can skim
+through the articles in the web server of the newspaper publishing
+company without troubling in a lot of advertisement.  You can read
+articles in the mailing list archive as if you were subscribed to the
+list.  You can read a submission in the bulletin board, however you
+should use emacs-w3m if you'd like to followup to.
+
+Put the following line in your @file{~/.gnus.el} file:
+
+@lisp
+(autoload 'gnus-group-make-shimbun-group "nnshimbun" nil t)
+@end lisp
+
+Note: it isn't necessary if you are using T-gnus, not Gnus.
+
+@findex gnus-group-make-shimbun-group
+@c @kindex G n (Group)
+The easiest way to get started with @samp{nnshimbun} is to say
+something like the following in the group buffer:
+
+@kbd{M-x gnus-group-make-shimbun-group RET asahi RET national RET}
+@c @kbd{G n asahi RET national RET}
+
+Substitute the @samp{asahi} and the @samp{national} with the symbol of
+the server you'd like to connect to and the group you're interested in
+respectively.  You can complete both of those names by typing @key{TAB}
+or @key{SPC}.
+
+If there's a room in the @code{gnus-group-mode-map} fortunately, you can
+add something like the following thing in your @file{~/.gnus.el} file:
+
+@lisp
+(eval-after-load "gnus-group"
+  '(define-key gnus-group-mode-map "Gn"
+     'gnus-group-make-shimbun-group))
+@end lisp
+
+Then, you can use @kbd{G n} instead of @kbd{M-x
+gnus-group-make-shimbun-group}.
+
+@emph{Could someone book this keystroke at the Gnus Tower?}
+
+@c Otherwise, you can also see articles by browsing the back end using
+@c @kbd{B nnshimbun RET asahi RET}.
+
+@samp{Nnshimbun} simply fetches HTML contents from the web server and
+display it as an article, but it will never save articles in the local
+file system, except for making persistent articles
+(@pxref{(gnus)Persistent Articles}).  @samp{Nnshimbun} uses @sc{nov}
+file for each @samp{nnshimbun} group which is almost the same as the
+@samp{nnml} back end.
+
+The following @samp{nnshimbun} variables can be altered:
+
+@table @code
+@item nnshimbun-directory
+@vindex nnshimbun-directory
+Directory where @samp{nnshimbun} saves @sc{nov} files.  The default
+value is @samp{~/News/shimbun}.
+@end table
+
+@cindex group parameters
+You can use the specially made group parameter for @samp{nnshimbun} in
+addition to the standard group parameters provided by Gnus@footnote{The
+easiest way to specify group parameters is to type @kbd{G c} in the
+group buffer after moving the point to the group you'd like to customize
+(@pxref{(gnus)Group Parameters}).}.  Several parameters for
+@samp{nnshimbun} are collected into the single group parameter
+@code{nnshimbun-group-parameters} which is a property list (the values
+can be different for every group).  Here's an example:
+
+@lisp
+'(index-range all prefetch-articles off encapsulate-images on
+              expiry-wait 6)
+@end lisp
+
+Actually, a Lisp object with which the @code{nnshimbun-group-parameters}
+symbol is added to the forefront of such a list will be used (and it
+will also be saved in the @file{~/.newsrc.eld} file).  Below is the
+documentation for those group parameters and related variables.
+
+@table @code
+@item prefetch-articles
+@vindex nnshimbun-pre-fetch-article
+In the group where this group parameter is set to other than @code{off}
+or @code{nil}, @samp{nnshimbun} not only checks for new articles, but
+will download them.  Though it will slow checking of new articles down,
+you won't be kept waiting when reading articles.  In the group where
+this group parameter is not set or its value is @code{nil}, the value of
+the @code{nnshimbun-pre-fetch-article} variable (@code{off} by default)
+is used instead.
+
+@item encapsulate-images
+@vindex nnshimbun-encapsulate-images
+In the group where this group parameter is set to other than @code{off}
+or @code{nil}, @samp{nnshimbun} will put image data embedded in the
+original contents into an article as @samp{multipart/related} parts of
+the MIME format.  In the group where this group parameter is not set or
+its value is @code{nil}, the value of the
+@code{nnshimbun-encapsulate-images} variable is used instead.  The
+default value for the @code{nnshimbun-encapsulate-images} variable is
+the value of the @code{shimbun-encapsulate-images} variable which is
+provided in the @samp{shimbun} library (the default value for that
+variable is probably @code{t}).
+
+@item index-range
+@vindex nnshimbun-index-range
+You can specify the range of articles to be fetched from a web server
+using the @code{index-range} group parameter.  To specify the range, use
+the following values:
+
+@table @code
+@item nil
+@item all
+all pages
+
+@item last
+only the latest page
+@end table
+
+@table @samp
+@item integer N
+the latest N pages
+@end table
+
+@samp{Nnshimbun} checks whether there are new articles by examining the
+index page of the server.  It is possible that there are two or more
+index pages in the server.  For instance, in the case of the mailing
+list servers, index pages are generally classified according to the date
+to which the article was posted.  It would take a time considerably to
+check those many huge index pages especially if you are connecting to a
+slow line.
+
+If it is possible, @samp{nnshimbun} won't check the index page which has
+already been checked at the time of the last connection.  If you want to
+save time more, use @code{last}.  It makes @samp{nnshimbun} refer to
+only the latest index page for checking new news.
+
+In the group where the @code{index-range} group parameter is not set or
+its value is @code{nil}, the value of the @code{nnshimbun-index-range}
+variable (@code{nil} by default) is used.
+
+@item nnshimbun-group-parameters-alist
+@vindex nnshimbun-group-parameters-alist
+This is an Emacs-Lisp variable, an alist of regexp of group name and the
+@samp{nnshimbun} group parameters.  The default value is @code{nil}.
+Each element may have the form @samp{(REGEXP KEYWORD VALUE KEYWORD
+VALUE...)}, for example:
+
+@lisp
+'("^nnshimbun\\+asahi:" index-range all prefetch-articles off
+  encapsulate-images on expiry-wait 6)
+@end lisp
+
+Since you can use this variable to specify the same @samp{nnshimbun}
+group parameters for two or more groups which have similar names (i.e.,
+those groups are likely to have similar characteristics each other), it
+is useful that it can be used instead of specifying the @samp{nnshimbun}
+group parameters to several groups respectively.  If the group parameter
+has already been set in a group, that takes precedence over this
+variable.
+@end table
+
+@cindex article expiry
+@cindex auto-expire
+@cindex expiry-wait
+@vindex nnmail-expiry-wait-function
+@vindex nnmail-expiry-wait
+You can instruct @samp{nnshimbun} to expire articles@footnote{There are
+mainly two ways to expire articles in the @samp{nnshimbun} groups.  One
+is to add the regular expression of group name which begins with
+``^nnshimbun\\+'' to the @code{gnus-auto-expirable-newsgroups} variable
+and to put the expiry period for each group into the
+@code{nnmail-expiry-wait-function} variable.  Another is to set the
+@code{auto-expire} group parameter to @code{t} and to set the expiry
+period with the @code{expiry-wait} group parameter in every
+@samp{nnshimbun} group which you want to expire.  See
+@ref{(gnus)Expiring Mail} for more information.  In the group to which
+the @code{expiry-wait} group parameter is not specified, a default
+expiry period will be applied.}.  Ah, even if you've set the expiry
+period to three days, it will never cause a happening that articles in
+the server of the newspaper publishing company of more than three days
+ago get disappeared.  What is deleted is the line in your own @sc{nov}
+file for @samp{nnshimbun}@footnote{A @sc{nov} file for @samp{nnshimbun}
+is named like ``~/News/shimbun/asahi/national/.overview''.}
+corresponding to the article to be expired.  Then the article won't
+appear in the summary buffer forever and ever.
+
+If you don't expire articles in @samp{nnshimbun} groups, the @sc{nov}
+files will continue growing fat infinitely and you may see very old
+articles in the summary buffer as they were existent (in fact, they have
+been expired three years ago! in the server of the newspaper publishing
+company).  Even if you try to read such an article, nothing will appear
+in the article buffer.  On the other hand, not a few mailing list
+servers generally offer all the past articles.  You may not feel like
+expiring articles in such groups in order to look back with nostalgia to
+the good old days and to read a series of article with which you amused
+yourself.
+
+You can mark @samp{nnshimbun} articles as expirable and specify the
+expiry period in each @samp{nnshimbun} group as well as the other mail
+back ends.  However, there are a little differences between
+@samp{nnshimbun} and the other mail back ends:
+
+@itemize @bullet
+@item
+First, the expiry period is determined with the following priorities.
+Note that a certain shimbun module may be related to the default value.
+
+@enumerate
+@item
+The value of the @code{expiry-wait} group parameter in a group.
+
+@item
+A value produced by evaluating the @code{nnmail-expiry-wait-function}
+variable for a group.
+
+@item
+The default value provided by the shimbun module corresponding to a
+group.
+
+@item
+The value of the @code{nnmail-expiry-wait} variable.
+@end enumerate
+
+@item
+Second, the argument to be passed to the function held by the
+@code{nnmail-expiry-wait-function} variable will contain the names of
+the back end and the server like ``nnshimbun+asahi:national'', while
+only the group name will be given in the case of the other mail back
+ends.  Here's one example:
+
+@lisp
+(setq nnmail-expiry-wait-function
+      (lambda (group)
+        (cond ((string-equal group "ding") 7)
+              ((string-equal group "nnshimbun+ding:ding") 'never))))
+@end lisp
+
+This means that there are two groups for the same ding mailing list;
+one is subscribed as a list member, the other is for reading from the
+mailing list archive of the Gnus tower.  Ahem, isn't it clever?  The
+local mail files in the ``ding'' group will be expired in seven days
+and your local disk space will be saved, but you can read even the
+articles of the last century in the second group (if it is really
+needed, though).
+
+@item
+Third, it is written in order that you may remember it when you feel
+doubtful; @samp{nnshimbun} leaves only the last one without deleting
+even if the time when all articles in a group should be expired has
+come.  This is not for satisfying your indecisive heart, but is a
+solution for not fetching old articles from the server again
+(@samp{nnshimbun} fetches articles in new order, and it stops fetching
+when an article with the same Message-ID with that last article is
+found).
+@end itemize
+
+The group parameter and the variable related to expiring
+@samp{nnshimbun} articles are as follows:
+
+@table @code
+@item expiry-wait
+@cindex expiry-wait
+Don't be confused, please.  The @code{expiry-wait} group parameter is
+provided as one of the elements of @code{nnshimbun-group-parameters},
+the specially made group parameter for @samp{nnshimbun}.  It has the
+same name and the same meaning with the standard group parameter.  You
+may use whichever you like.  If nnshimbun's one is set to non-@code{nil}
+value, it takes precedence over the standard one.  It is provided in
+order to concentrate things related to @samp{nnshimbun} at one place of
+the ``Gnus Customize'' buffer (which will appear by typing @kbd{G c} in
+the group buffer) and to realize managing collectively by the
+@code{nnshimbun-group-parameters-alist} variable@footnote{We've already
+prepared the answer to the question that why @code{auto-expire}
+etc. aren't included in the nnshimbun's special group parameter?  The
+answer is, @code{expiry-wait} is handled by the @samp{nnshimbun} back
+end, but @code{auto-expire} is handled by the Gnus core.  Therefore, it
+is contrary to the design policy of Gnus to extend the Gnus core
+function so that it may work for one particular back end (i.e. reading a
+value from the nnshimbun's special group parameter).}.  The values which
+can be used are a number of expiry period, @code{never} or
+@code{immediate} as well as the standard group parameter.
+
+@item nnshimbun-keep-unparsable-dated-articles
+@vindex nnshimbun-keep-unparsable-dated-articles
+If this variable is non-@code{nil}, the articles of which the time
+created or the time sent is unknown will never be expired.  Since the
+period is unknown at any rate.  The default is @code{t}.  If you set
+this variable to @code{nil}, the articles of which the time is unknown
+will also be expired unconditionally when the time to expire has come.
+Well, it might be useful for a general cleaning of the end of a year.
+@end table
 
 @node Mew Shimbun
 @section Reading web newspapers with Mew
