@@ -602,8 +602,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "textarea")
 	      (if (eq w3m-type 'w3mmee)
-		  (w3m-form-put form name
-				id
+		  (w3m-form-put form id
+				name
 				(decode-coding-string
 				 (w3m-url-decode-string value)
 				 w3m-output-coding-system))
