@@ -39,11 +39,11 @@ ftp://ftp.m17n.org/pub/mule/flim/
 Japan CNET	cnet.comp
 インプレス	impress.internet impress.pc impress.akiba impress.game
 		impress.av impress.jijinews impress.sports
+slashdot-jp	slashdot-jp.story
 HotWired	wired.business wired.culture wired.technology
 YAHOO!JAPAN	yahoo.cpt yahoo.dom yahoo.int yahoo.bus yahoo.brf
 		yahoo.biz yahoo.ent yahoo.spo yahoo.nkn yahoo.clm
 ZDNet		zdnet.comp zdnet.gamespot
-slashdot-jp	slashdot-jp.story
 
 2-3. Mailing List
 
@@ -75,6 +75,7 @@ gnome 関連	gnome.balsa-list gnome.calendar-list
 		gnome.xml gnome.xslt
 h14m 関連	h14m.hns-dev h14m.hns-users
 linux-ce	linux-ce.users
+mule-ja		m17n.mule-ja
 meadow 関連	meadow.meadow-develop meadow.meadow-users-jp
 namazu 関連	namazu.namazu-users-ja namazu.namazu-win32-users-ja
 		namazu.namazu-users-en namazu.namazu-devel-ja
@@ -100,7 +101,10 @@ xemacs 関連	xemacs.xemacs-announce xemacs.xemacs-beta-ja
 2-4. その他
 
 ゆうτοπια掲示板	tcup.yutopia
-Meadow 掲示板	tcup.meadow
+Meadow 掲示板		tcup.meadow
+vinelinux web サイト	vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
+			vinelinux.errata.2x.sparc
+			vinelinux.errata.2x.alpha vinelinux.errata.1x
 HNS による日記
 
 Local Variables:

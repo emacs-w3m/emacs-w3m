@@ -129,10 +129,13 @@
   :type '(choice (const :tag "w3m" 'w3m)
 		 (const :tag "w3m with MNC patch" 'w3m-mnc)
 		 (const :tag "w3mmee" 'w3mmee)
+		 (const :tag "w3m-m17n" 'w3m-m17n)
 		 (symbol :tag "other" nil)))
 
 (defcustom w3m-command
-  (if (eq w3m-type 'w3mmee) "w3mmee" "w3m")
+  (cond ((eq w3m-type 'w3mmee) "w3mmee")
+	((eq w3m-type 'w3m-m17n) "w3m-m17n")
+	(t "w3m"))
   "*Name of the executable file of w3m."
   :group 'w3m
   :type 'string)
@@ -182,13 +185,15 @@ width using expression (+ (frame-width) VALUE)."
   :type 'coding-system)
 
 (defcustom w3m-input-coding-system
-  (if (eq w3m-type 'w3mmee) 'binary 'iso-2022-7bit)
+  (if (memq w3m-type '(w3mmee w3m-m17n)) 'binary 'iso-2022-7bit)
   "*Coding system for write operations to `w3m'."
   :group 'w3m
   :type 'coding-system)
 
 (defcustom w3m-output-coding-system
-  (if (eq w3m-type 'w3mmee) 'ctext 'w3m-euc-japan)
+  (cond ((eq w3m-type 'w3mmee) 'ctext)
+	((eq w3m-type 'w3m-m17n) 'iso-2022-7bit-ss2)
+	(t 'w3m-euc-japan))
   "*Coding system for read operations of `w3m'."
   :group 'w3m
   :type 'coding-system)
@@ -813,12 +818,17 @@ for a charset indication")
   "Name of the executable file of w3m. If nil use 'w3m-command'.")
 
 (defconst w3m-halfdump-command-arguments
-  (if (eq w3m-type 'w3mmee)
-      (list "-dump=half-buffer"
-	    '(if charset "-I")
-	    'charset
-	    "-o" "concurrent=0")
-    (list "-halfdump"))
+  (cond ((eq w3m-type 'w3mmee)
+	 (list "-dump=half-buffer"
+	       '(if charset "-I")
+	       'charset
+	       "-o" "concurrent=0"))
+	((eq w3m-type 'w3m-m17n)
+	 (list "-halfdump"
+	       "-o" "ext_halfdump=1"
+	       '(if charset "-I") 'charset
+	       "-O" "ISO-2022-JP-2" "-o" "strict_iso2022=0"))
+	(t (list "-halfdump")))
   "Arguments for 'halfdump' execution of w3m.")
 
 (defconst w3m-halfdump-command-common-arguments
@@ -2329,7 +2339,7 @@ this function returns t.  Otherwise, returns nil."
 		      (w3m-with-work-buffer
 			(if (string= "text/html" type)
 			    (progn
-			      (unless (eq w3m-type 'w3mmee)
+			      (unless (memq w3m-type '(w3mmee w3m-m17n))
 				(w3m-decode-buffer url content-charset type))
 			      (w3m-rendering-region (point-min) (point-max)
 						    content-charset))
@@ -3228,7 +3238,7 @@ ex.) c:/dir/file => //c/dir/file"
   (interactive "r")
   (save-restriction
     (narrow-to-region start end)
-    (when (eq w3m-type 'w3mmee)
+    (when (memq w3m-type '(w3mmee w3m-m17n))
       (encode-coding-region (point-min) (point-max) w3m-coding-system))
     (setq w3m-current-buffer (current-buffer)
 	  w3m-current-title

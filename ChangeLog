@@ -1,3 +1,14 @@
+2001-06-12  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-m17n.el: New file.
+
+	* w3m.el: Added support code for w3m-m17n.
+	(w3m-type): Add new candidate.
+	(w3m-command, w3m-input-coding-system, w3m-output-coding-system) 
+	(w3m-halfdump-command-arguments): Add default value for w3m-m17n.
+	(w3m-exec) [w3m-m17n]: No call `w3m-decode-buffer'.
+	(w3m-region) [w3m-m17n]: No call `encode-coding-region'.
+
 2001-06-12  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/shimbun.el (shimbun-make-mime-article): Fixed search
