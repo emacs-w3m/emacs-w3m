@@ -1,3 +1,10 @@
+2001-11-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-form.el (w3m-form-parse-forms): Adhoc support of the
+	attribute `image' of `input' tag.
+	(w3m-form-resume): Ditto.
+	(w3m-form-fontify): Ditto.
+
 2001-11-08  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 
 	* w3m.el (w3m-start-url, w3m-contents-url): New buffer-local vars.

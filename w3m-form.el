@@ -272,7 +272,8 @@ return them with the flag."
 					(type :case-ignore) (checked :bool))
 	      (when name
 		(cond
-		 ((string= type "submit")
+		 ((or (string= type "submit")
+		      (string= type "image"))
 		  ;; Submit button input, not set name and value here.
 		  ;; They are set in `w3m-form-submit'.
 		  nil)
@@ -355,7 +356,8 @@ return them with the flag."
 		type (match-string 2 fid)
 		name (match-string 3 fid))
 	  (cond
-	   ((string= type "submit")
+	   ((or (string= type "submit")
+		(string= type "image"))
 	    ;; Remove status to support forms containing multiple
 	    ;; submit buttons.
 	    (w3m-form-put form name nil))
@@ -441,7 +443,8 @@ return them with the flag."
 		 w3m-form-face
 		 w3m-action (w3m-form-input-map ,form ,name)
 		 w3m-cursor-anchor (w3m-form-input-map ,form ,name))))
-	     ((string= type "submit")
+	     ((or (string= type "submit")
+		  (string= type "image"))
 	      (w3m-form-make-button
 	       start (point)
 	       `(w3m-action (w3m-form-submit ,form ,name ,value)
