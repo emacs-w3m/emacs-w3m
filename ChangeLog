@@ -1,3 +1,7 @@
+2002-09-21  Kahlil HODGSON <dorge@tpg.com.au>
+
+	* w3m.el (ffap-url-regexp): Make sure it is non-nil.
+
 2002-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 	Follow the change in Gnus.
 
