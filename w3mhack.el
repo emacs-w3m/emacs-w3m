@@ -294,6 +294,15 @@ emacs-w3m.")
 	  (setq bitmap-alterable-charset 'tibetan-1-column)
 	  (require 'bitmap))
       (push "w3m-bitmap.el" ignores))
+    ;; Shimbun modules which need xml.el.
+    (unless (locate-library "xml")
+      (setq ignores (nconc ignores
+			   (mapcar (lambda (sb) (concat shimbun-dir sb))
+				   '("sb-atmarkit-rss.el"
+				     "sb-bbc-rss.el"
+				     "sb-cnet-rss.el"
+				     "sb-rss.el"
+				     "sb-slashdot-jp-rss.el")))))
     ;; To byte-compile w3m-util.el and a version specific module first.
     (princ "w3m-util.elc ")
     (setq modules (delete "w3m-util.el" modules))

@@ -1,5 +1,10 @@
 2003-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el (w3mhack-examine-modules): Ignore the shimbun modules
+	which need xml.el if it is not available.
+
+2003-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Don't use
 	`save-match-data'
 	* shimbun/sb-gnome.el (shimbun-get-headers): Ditto.
