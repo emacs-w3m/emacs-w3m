@@ -1,3 +1,11 @@
+2001-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-current-referer, w3m-current-post-data): Abolished.
+	(w3m-copy-local-variables, w3m-clear-local-variables): Don't
+	handle them.
+	(w3m-reload-this-page, w3m-goto-url): Don't use them; use the
+	history instead.
+
 2001-09-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-add-referer): Removed.

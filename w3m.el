@@ -735,8 +735,6 @@ will disclose your private informations, for example:
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
 (defvar w3m-current-forms nil "Forms of this buffer.")
-(defvar w3m-current-post-data nil "POST data of this buffer.")
-(defvar w3m-current-referer nil "Referer of this buffer.")
 (defvar w3m-current-coding-system nil "Current coding-system of this buffer.")
 (defvar w3m-next-url nil "Next URL of this buffer.")
 (defvar w3m-previous-url nil "Previous URL of this buffer.")
@@ -744,8 +742,6 @@ will disclose your private informations, for example:
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-title)
 (make-variable-buffer-local 'w3m-current-forms)
-(make-variable-buffer-local 'w3m-current-post-data)
-(make-variable-buffer-local 'w3m-current-referer)
 (make-variable-buffer-local 'w3m-current-coding-system)
 (make-variable-buffer-local 'w3m-next-url)
 (make-variable-buffer-local 'w3m-previous-url)
@@ -754,8 +750,6 @@ will disclose your private informations, for example:
   (setq w3m-current-url nil
 	w3m-current-title nil
 	w3m-current-forms nil
-	w3m-current-post-data nil
-	w3m-current-referer nil
 	w3m-current-coding-system nil
 	w3m-next-url nil
 	w3m-previous-url nil))
@@ -767,16 +761,12 @@ will disclose your private informations, for example:
       (setq url w3m-current-url
 	    title w3m-current-title
 	    forms w3m-current-forms
-	    post w3m-current-post-data
-	    referer w3m-current-referer
 	    cs w3m-current-coding-system
 	    next w3m-next-url
 	    prev w3m-previous-url))
     (setq w3m-current-url url
 	  w3m-current-title title
 	  w3m-current-forms forms
-	  w3m-current-post-data post
-	  w3m-current-referer referer
 	  w3m-current-coding-system cs
 	  w3m-next-url next
 	  w3m-previous-url prev)))
@@ -3663,13 +3653,10 @@ the request."
 				(list :title (file-name-nondirectory url)))
 	      (w3m-history-push w3m-current-url)
 	      (w3m-refontify-anchor))
-	  (setq w3m-current-post-data post-data
-		w3m-current-referer referer)
 	  (w3m-history-push w3m-current-url
-			    (w3m-cleanup-plist
-			     (list :title w3m-current-title
-				   :referer w3m-current-referer
-				   :post-data w3m-current-post-data)))
+			    (w3m-cleanup-plist (list :title w3m-current-title
+						     :referer referer
+						     :post-data post-data)))
 	  (or (and name (w3m-search-name-anchor name))
 	      (goto-char (point-min)))
 	  (setq w3m-display-inline-image-status 'off)
@@ -3717,13 +3704,14 @@ the request."
 (defun w3m-reload-this-page (&optional arg)
   "Reload current page without cache."
   (interactive "P")
-  (let ((w3m-display-inline-image (if arg t w3m-display-inline-image)))
-    (if w3m-current-post-data
+  (let ((w3m-display-inline-image (if arg t w3m-display-inline-image))
+	(post-data (w3m-history-plist-get :post-data))
+	(referer (w3m-history-plist-get :referer)))
+    (if post-data
 	(if (y-or-n-p "Repost form data? ")
-	    (w3m-goto-url w3m-current-url 'reload nil w3m-current-post-data
-			  w3m-current-referer)
+	    (w3m-goto-url w3m-current-url 'reload nil post-data referer)
 	  (message ""))
-      (w3m-goto-url w3m-current-url 'reload nil nil w3m-current-referer))))
+      (w3m-goto-url w3m-current-url 'reload nil nil referer))))
 
 ;; FIXME: 現在はどの文字コードとして解釈されているのか表示して欲しい
 ;; FIXME: 一旦、このコマンドによって指定された文字コードの記録を解除する方法は?
