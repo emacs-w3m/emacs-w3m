@@ -1,3 +1,7 @@
+2001-12-18  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-tcup.el (shimbun-tcup-group-alist): Add skk bbs.
+
 2001-12-18  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-e21.el (w3m-favicon-use-cache-file): New user option.

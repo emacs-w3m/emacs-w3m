@@ -36,7 +36,8 @@
 
 (defvar shimbun-tcup-group-alist
   '(("yutopia" "http://www61.tcup.com/6116/yutopia.html")
-    ("meadow" "http://www66.tcup.com/6629/yutopia.html"))
+    ("meadow" "http://www66.tcup.com/6629/yutopia.html")
+    ("skk" "http://www67.tcup.com/6718/yutopia.html"))
   "An alist of tcup bbs shimbun group definition.
 Each element looks like
  (NAME URL SUBJECT-REGEXP FROM-START-REGEXP DATE-START-REGEXP
