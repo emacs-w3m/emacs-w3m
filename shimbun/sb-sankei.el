@@ -141,9 +141,12 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
 
 (luna-define-method shimbun-clear-contents :before ((shimbun shimbun-sankei)
 						    header)
-  ;; Remove advertisement.
-  (shimbun-remove-tags "<!--[\t\n ]*AdSpace"
+  ;; Remove advertisements.
+  (shimbun-remove-tags "<!--[\t\n ]*AdSpace\\(.+=.+\\)+-->"
 		       "<!--[\t\n ]*/AdSpace[\t\n ]*-->")
+  ;; Remove an advertisement between photo and hombun.
+  (shimbun-remove-tags "<!--[\t\n ]*photo\\.end[\t\n ]*-->"
+		       "<!--[\t\n ]*hombun[\t\n ]*-->")
   (goto-char (point-min)))
 
 (provide 'sb-sankei)
