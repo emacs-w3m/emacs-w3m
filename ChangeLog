@@ -1,3 +1,14 @@
+2001-12-17  Taiki SUGAWARA  <t-suga@atomsystem.co.jp>
+	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-form.el (w3m-form-parse-forms): Change the separater string
+	for option tag.
+
+2001-12-12  Taiki SUGAWARA  <t-suga@atomsystem.co.jp>
+
+	* w3m-form.el (w3m-form-parse-forms): If not find selected, first
+	element is made into default.
+
 2001-12-14  YAMASHITA Junji  <ysjj@unixuser.org>
 
 	* shimbun/sb-ibm-dev.el (shimbun-make-contents): Condition to

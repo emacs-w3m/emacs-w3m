@@ -336,23 +336,31 @@ return them with the flag."
 		  (w3m-parse-attributes ((value :decode-entity)
 					 (selected :bool))
 		    (setq vbeg (point))
-		    (skip-chars-forward "^<")
+		    (if (re-search-forward
+			 (w3m-tag-regexp-of "/?option" "/optgroup" "/select" "/form")
+			 nil t)
+			(goto-char (match-beginning 0))
+		      (skip-chars-forward "^<"))
+		    (skip-chars-backward " \t\r\f\n")
 		    (setq svalue
 			  (w3m-decode-entities-string
 			   (mapconcat 'identity
 				      (split-string
-				       (buffer-substring vbeg (point)) "\n")
-				      "")))
+				       (buffer-substring vbeg (point))
+				       "[ \t\r\f\n]+")
+				      " ")))
 		    (unless value
 		      (setq value svalue))
 		    (when selected
 		      (setq cvalue value))
 		    (push (cons value svalue) candidates)))
+		(setq candidates (nreverse candidates))
 		(when name
-		  (w3m-form-put (car forms) name (cons
-						  cvalue ; current value
-						  (nreverse
-						   candidates))))))))))))
+		  (w3m-form-put (car forms)
+				name
+				(cons (or cvalue ; current value
+					  (caar candidates))
+				      candidates)))))))))))
     forms))
 
 (defun w3m-form-resume (forms)
