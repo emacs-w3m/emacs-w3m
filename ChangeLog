@@ -1,6 +1,9 @@
 2003-04-28  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-sml.el: New file.
+	* shimbun/sb-squeak-ja.el (shimbun-headers): Removed (use
+	sb-mailman.el's original method).	
+	(shimbun-squeak-ja-headers): Removed.
 
 2003-04-26  NAKAJIMA Mikio  <minakaji@namazu.org>
 
