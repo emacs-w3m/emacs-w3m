@@ -75,7 +75,7 @@
   :group 'w3m
   :type '(directory :size 0))
 
-(defcustom w3m-form-textarea-edit-mode 'fundamental-mode
+(defcustom w3m-form-textarea-edit-mode 'text-mode
   "*Major mode to edit textarea."
   :group 'w3m
   :type '(choice
@@ -1115,13 +1115,13 @@ Minor mode to edit form textareas of w3m.
 		(not w3m-form-input-textarea-mode)))
     (run-hooks 'w3m-form-input-textarea-mode-hook)))
 
-(defun w3m-form-input-textarea-mode-setup ()
+(defun w3m-form-input-textarea-mode-setup (caller-buffer)
   (funcall (if (functionp w3m-form-textarea-edit-mode)
 	       w3m-form-textarea-edit-mode
-	     (or (when (buffer-live-p w3m-form-input-textarea-buffer)
-		   (with-current-buffer w3m-form-input-textarea-buffer
+	     (or (when (buffer-live-p caller-buffer)
+		   (with-current-buffer caller-buffer
 		     (catch 'found-mode
-		       (dolist (elem)
+		       (dolist (elem w3m-form-textarea-edit-mode)
 			 (when (or (when (stringp (car elem))
 				     (string-match (car elem) w3m-current-url))
 				   (when (functionp (car elem))
@@ -1129,7 +1129,7 @@ Minor mode to edit form textareas of w3m.
 				   (when (listp (car elem))
 				     (eval (car elem))))
 			   (throw 'found-mode (cdr elem)))))))
-		 'fundamental-mode)))
+		 'text-mode)))
   (w3m-form-input-textarea-mode 1)
   (message "%s"
 	   (substitute-command-keys "Type \
@@ -1188,7 +1188,7 @@ textarea")))
 	(insert value)
 	(goto-char (point-min))
 	(forward-line (1- (nth 2 info)))
-	(w3m-form-input-textarea-mode-setup)
+	(w3m-form-input-textarea-mode-setup w3mbuffer)
 	(setq w3m-form-input-textarea-form form
 	      w3m-form-input-textarea-hseq hseq
 	      w3m-form-input-textarea-buffer w3mbuffer

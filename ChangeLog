@@ -1,3 +1,14 @@
+2005-02-21  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>,
+	Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (w3m-form-input-textarea-mode-setup): Fix.
+	(w3m-form-input-textarea): Follow the above change.
+
+2005-02-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-form.el (w3m-form-textarea-edit-mode): Changed its default
+	value to `text-mode'.
+
 2005-02-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (install-package): Change the default directory in
