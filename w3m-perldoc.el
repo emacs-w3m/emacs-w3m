@@ -1,6 +1,6 @@
 ;;; w3m-perldoc.el --- The add-on program to view Perl documents.
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, perldoc
@@ -41,18 +41,26 @@
 (defcustom w3m-perldoc-command "perldoc"
   "*Name of the executable file of perldoc."
   :group 'w3m-perldoc
-  :type 'string)
+  :type '(string :size 0))
 
 (defcustom w3m-perldoc-pod2html-command "pod2html"
   "*Name of the executable file of pod2html."
   :group 'w3m-perldoc
-  :type 'string)
+  :type '(string :size 0))
 
 (defcustom w3m-perldoc-pod2html-arguments
   '("--noindex")
   "*Arguments of pod2html."
   :group 'w3m-perldoc
-  :type '(repeat string))
+  :type '(repeat (string :format "Argument: %v\n" :size 0))
+  :get (lambda (symbol)
+	 (delq nil (delete "" (mapcar (lambda (x) (if (stringp x) x))
+				      (default-value symbol)))))
+  :set (lambda (symbol value)
+	 (set-default
+	  symbol
+	  (delq nil (delete "" (mapcar (lambda (x) (if (stringp x) x))
+				       value))))))
 
 ;;;###autoload
 (defun w3m-about-perldoc (url &optional no-decode no-cache &rest args)

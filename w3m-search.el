@@ -126,16 +126,16 @@ If omitted, `w3m-default-coding-system' is used.
 "
   :group 'w3m
   :type '(repeat
-	  (list
-	   (string :tag "Engine")
-	   (string :tag "Action")
-	   (coding-system))))
+	  (group :indent 2
+		 (string :format "Engine: %v\n" :size 0)
+		 (string :format "       Action: %v\n" :size 0)
+		 (coding-system :format "%t: %v\n" :size 0))))
 
 (defcustom w3m-search-default-engine "google"
   "*Name of the default search engine.
 See also `w3m-search-engine-alist'."
   :group 'w3m
-  :type 'string)
+  :type '(string :size 0))
 
 (defcustom w3m-search-word-at-point t
   "*Non-nil means that the word at point is used as initial string."
