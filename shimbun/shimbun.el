@@ -1072,28 +1072,36 @@ Use ## to put a single # into the output.  If `shimbun-verbose' is nil,
 it will run silently.  The `shimbun-message-enable-logging' variable
 controls whether this function should preserve a message in the
 *Messages* buffer."
-  (let (rest server string case-fold-search)
-    (when (string-match "#[#gsS]" fmt)
-      (setq rest (shimbun-replace-in-string fmt "##" "#")
-	    rest (shimbun-replace-in-string
-		  rest "#g" (shimbun-current-group-internal shimbun))
-	    rest (shimbun-replace-in-string
-		  rest "#s" (setq server (shimbun-server-internal shimbun)))
-	    fmt (shimbun-replace-in-string
-		 rest "#S" (or (shimbun-server-name-internal shimbun)
-			       server))))
-    (if shimbun-verbose
-	(static-if (featurep 'xemacs)
-	    (prog1
-		(setq string (apply 'format fmt args))
-	      (if shimbun-message-enable-logging
-		  (display-message 'message string)
-		(display-message 'no-log string)))
-	  (if shimbun-message-enable-logging
-	      (apply 'message fmt args)
-	    (let (message-log-max)
-	      (apply 'message fmt args))))
-      (apply 'format fmt args))))
+  (let ((default-enable-multibyte-characters t)
+	specifier)
+    (with-temp-buffer
+      (insert fmt)
+      (goto-char (point-min))
+      (while (search-forward "#" nil t)
+	(setq specifier (char-after))
+	(delete-region (1- (point)) (1+ (point)))
+	(cond ((eq specifier ?#)
+	       (insert "#"))
+	      ((eq specifier ?g)
+	       (insert (shimbun-current-group-internal shimbun)))
+	      ((eq specifier ?s)
+	       (insert (shimbun-server-internal shimbun)))
+	      ((eq specifier ?S)
+	       (insert (or (shimbun-server-name-internal shimbun)
+			   (shimbun-server-internal shimbun))))))
+      (setq fmt (buffer-string))))
+  (if shimbun-verbose
+      (static-if (featurep 'xemacs)
+	  (let ((string (apply 'format fmt args)))
+	    (if shimbun-message-enable-logging
+		(display-message 'message string)
+	      (display-message 'no-log string))
+	    string)
+	(if shimbun-message-enable-logging
+	    (apply 'message fmt args)
+	  (let (message-log-max)
+	    (apply 'message fmt args))))
+    (apply 'format fmt args)))
 
 (provide 'shimbun)
 
