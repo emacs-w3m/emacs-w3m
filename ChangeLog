@@ -1,3 +1,8 @@
+2002-07-08  SAITO Takuya  <reed@lily.freemail.ne.jp>
+
+	* shimbun/sb-mhonarc.el (shimbun-make-contents): Not insert
+	`Reply-To' header.
+
 2002-07-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Release emacs-w3m-1.3 from emacs-w3m-1_3 branch.
