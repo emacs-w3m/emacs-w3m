@@ -201,7 +201,7 @@
 	      (when (search-forward "\nMime-Version:" nil t)
 		(forward-line 0)
 		(dolist (p alist)
-		  (insert (car p) " " (cdr p) "\n")))
+		  (insert (car p) ": " (cdr p) "\n")))
 	      (goto-char (point-max)))))
 	;; Processing body.
 	(save-restriction

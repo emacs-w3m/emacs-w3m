@@ -1,3 +1,8 @@
+2002-02-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-mhonarc.el (shimbun-make-contents): Fix the last
+	change.
+
 2002-02-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-mhonarc.el (shimbun-mhonarc-optional-headers): New
