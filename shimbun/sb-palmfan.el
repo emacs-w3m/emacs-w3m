@@ -215,7 +215,7 @@
 	(delete-region (point) (point-max)))
       (goto-char (point-min))
       (catch 'stop
-	(let (date-end)
+	(let (date-end end)
 	  (while (or first-article
 		     (re-search-forward "<!-- *日付 *-->" nil t nil))
 	    (let ((start (point))
@@ -282,7 +282,7 @@
       headers)))
 
 (defun shimbun-palmfan-get-first-article-date ()
-  (let (first-date first-artile date)
+  (let (first-date first-article date)
     (save-excursion
       (setq first-date (re-search-forward "<!-- *日付 *-->" nil t nil))
       (goto-char (point-min))

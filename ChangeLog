@@ -1,5 +1,12 @@
 2003-02-23  NAKAJIMA Mikio  <minakaji@namazu.org>
 
+	* shimbun/sb-palmfan.el (shimbun-palmfan-get-first-article-date):
+	Declare temporary variable properly.
+	(shimbun-palmfan-news-headers): Ditto.
+	* shimbun/sb-dennou.el (shimbun-headers): Ditto.
+
+2003-02-23  NAKAJIMA Mikio  <minakaji@namazu.org>
+
 	* shimbun/sb-dennou.el (shimbun-headers): Bug fixed.
 	(shimbun-reply-to): Ditto.
 
