@@ -1,4 +1,4 @@
-;;; sb-anthy.el --- shimbun backend for Smalltalkers' Salon Mailing List archive
+;;; sb-sml.el --- shimbun backend for Smalltalkers' Salon Mailing List archive
 
 ;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 
