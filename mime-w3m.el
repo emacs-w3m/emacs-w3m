@@ -58,7 +58,7 @@
   (when (featurep 'xemacs)
     (autoload 'font-set-face-background "font" nil t)))
 
-(put 'mime-w3m-save-background-color 'edebug-form-spec '(body))
+(def-edebug-spec mime-w3m-save-background-color t)
 (defmacro mime-w3m-save-background-color (&rest body)
   (if (featurep 'xemacs)
       `(let ((color (color-name (face-background 'default))))

@@ -129,7 +129,8 @@
 	  ;; 実装するのに等しい労力が必要であるので、今回は手抜きして
 	  ;; おく。
 	  )))
-      (set (make-local-variable 'w3m-current-forms) (nreverse forms)))))
+      (with-current-buffer w3m-current-buffer
+	(setq w3m-current-forms (nreverse forms))))))
 
 ;;;###autoload
 (defun w3m-fontify-forms ()

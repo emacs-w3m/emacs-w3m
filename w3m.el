@@ -842,6 +842,8 @@ elements are:
  4. Last modification time.
  5. Real URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
+  (when (string-match "#[^#]+$" url)
+    (setq url (substring url 0 (match-beginning 0))))
   (cond
    ((string-equal "about://emacs-w3m.gif" url)
     (list "image/gif" nil nil nil nil url))
@@ -1036,7 +1038,7 @@ If N is negative, last N items of LIST is returned."
   "Add URL to hash database of arrived URLs."
   (unless (or (<= (length url) 5);; ignore trifles or about:*.
 	      (string-match w3m-arrived-ignored-regexp url))
-    (let ((parent (when (string-match "#\\([^#]+\\)$" url)
+    (let ((parent (when (string-match "#[^#]+$" url)
 		    (substring url 0 (match-beginning 0))))
 	  ident)
       (unless (and modified-time arrived-time)
@@ -1177,7 +1179,8 @@ If N is negative, last N items of LIST is returned."
 		  nil))))
 
 (put 'w3m-parse-attributes 'lisp-indent-function '1)
-(put 'w3m-parse-attributes 'edebug-form-spec '(form))
+(def-edebug-spec w3m-parse-attributes
+  ((&rest &or (symbolp &optional symbolp) symbolp) body))
 (defmacro w3m-parse-attributes (attributes &rest form)
   (` (let ((,@ (mapcar
 		(lambda (attr)
@@ -2084,8 +2087,6 @@ to nil."
   (w3m-with-work-buffer
     (delete-region (point-min) (point-max))
     (set-buffer-multibyte nil)
-    (when (string-match "#\\([^#]+\\)$" url)
-      (setq url (substring url 0 (match-beginning 0))))
     (let ((type
 	   (or (unless no-cache
 		 (and (w3m-cache-request-contents url)
@@ -2145,6 +2146,8 @@ to nil."
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
 to nil."
+  (when (string-match "#[^#]+$" url)
+    (setq url (substring url 0 (match-beginning 0))))
   (let ((v (cond
 	    ((string-match "^about:" url)
 	     (w3m-about-retrieve url no-decode no-cache))

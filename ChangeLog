@@ -1,3 +1,18 @@
+2001-06-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-attributes): Remove URL fragments before checking
+	its attributes.
+	(w3m-retrieve): Remove URL fragments before getting its contents.
+	(w3m-w3m-retrieve): Follow changes in `w3m-retrieve'.
+	(w3m-arrived-add): Simplified regular expression.
+	(w3m-parse-attributes): Changed form spec for edebug.
+
+	* w3m-form.el (w3m-form-parse-region): Set `w3m-current-forms' in
+	the buffer `w3m-current-buffer'.
+
+	* mime-w3m.el (mime-w3m-save-background-color): Changed form spec
+	for edebug.
+
 2001-06-09  Kiyokazu SUTO  <suto@ks-and-ks.ne.jp>,
 	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
