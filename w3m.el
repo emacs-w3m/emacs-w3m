@@ -6156,7 +6156,7 @@ If called with 'prefix argument', display arrived-DB history."
   (interactive "P")
   (if (null arg)
       (w3m-goto-url "about://history/")
-    (w3m-goto-url "about://db-history/")))
+    (w3m-db-history nil w3m-db-history-display-size)))
 
 (defun w3m-history-highlight-current-url (url)
   ;; Highlight the current url if it is a page for the history.
