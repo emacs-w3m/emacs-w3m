@@ -44,7 +44,8 @@ $Date$
 
 (1) XEmacs で ">" "," すると，カーソルが隠れる時がある．
     XEmacs で w3m-horizontal-shift-columns の値を char-width より小さく
-    すると，"," が動かないときがある．
+    すると，"," が動かないときがある．XEmacs は表示幅が異なる文字が混在
+    している場合の制御が未完成なので，仕方が無いのだが．
 
 (2) <a id="..."> という書式で指定されたアンカーにジャンプできない．
     [emacs-w3m:05816]
@@ -54,7 +55,7 @@ $Date$
 ■ Wishlist and Idea Notes
 
    --> Fontify pages display text/plain sources.
-       source code の text/plain なページを閲覧しているときは font-lock 
+       source code の text/plain なページを閲覧しているときは font-lock
        してくれると嬉しいかもしれない．
 
    --> w3mnav.el 相当の処理ができるように w3m-filter /
