@@ -1,7 +1,7 @@
 2001-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-make-html-contents): Define it before
-	it is use.
+	it is used.
 	(shimbun-make-html-contents): Ditto.
 
 2001-05-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
