@@ -1,6 +1,9 @@
 2001-10-20  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-ibm-dev.el: New file.
+	(shimbun-make-contents): Move a reference to a PDF file to the end
+	of buffer.
+	Remove font class attribute from a subject string.
 
 2001-10-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

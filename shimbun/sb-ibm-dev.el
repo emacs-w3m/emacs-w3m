@@ -56,9 +56,9 @@
 	(subst-char-in-region (point-min) (point-max) ?\t ?  t)
 	(goto-char (point-min))
 	(while (re-search-forward
+		;; getting URL and SUBJECT
 		"<td width=\"100%\"><a href=\"\\(.*\\.html\\)\">\\(.*\\)</a>"
 		nil t)
-	  ;; getting URL and SUBJECT
 	  (setq url (match-string 1)
 		subject (match-string 2))
 	  ;; getting DATE
@@ -69,13 +69,16 @@
 				   (string-to-number (match-string 2))
 				   (string-to-number (match-string 3)))
 		    date (apply 'shimbun-make-date-string datelist)))
+	  ;; adjusting URL
 	  (setq url (cond ((string-match
-			    ;; XXX
+			    ;; same group
 			    ;;<td width="100%"><a href="/jp/developerworks/linux/010511/j_l-p560.html">洗練されたPerl:
 			    (concat "^/jp/developerworks/" group "/") url)
 			   (concat baseurl group "/" url))
+			  ;; other group
 			  ((string-match "^/jp/developerworks/" url)
 			   (concat baseurl (substring url (match-end 0))))
+			  ;; relative url
 			  (t (concat baseurl group "/" url))))
 	  ;; building ID
 	  (setq aux (if (string-match "\\([^/]+\\)\\.html" url)
@@ -123,26 +126,44 @@
 (luna-define-method shimbun-make-contents ((shimbun shimbun-ibm-dev) header)
   (catch 'stop
     ;; cleaning up
-    (if (re-search-forward "<!--[ 　]*Title[ 　]*-->" nil t nil)
-	(delete-region (point-min) (point))
-      (throw 'stop nil))
-    ;;(while (re-search-forward "<!--[ 　]*PDF Mail[ 　]*-->" nil t nil)
-    ;;  (delete-region (progn (beginning-of-line) (point))
-    ;;                 (progn (re-search-forward "</table>" nil t nil))))
-    (goto-char (point-min))
-    (if (re-search-forward "<!--[ 　]*Contents[ 　]*-->" nil t nil)
-        (delete-region (progn (beginning-of-line) (point))
-                       (progn (re-search-forward "</table>" nil t nil))))
-    (if (re-search-forward "<!--[ 　]*End of Contents[ 　]*-->" nil t nil)
-	(progn
-	  (beginning-of-line)
-	  (delete-region (point) (point-max)))
-      (throw 'stop nil))
+    (let (beg end buffer subject)
+      (if (re-search-forward "<!--[ 　]*Title[ 　]*-->" nil t nil)
+	  (delete-region (point-min) (point))
+	(throw 'stop nil))
+      (while (re-search-forward "<!--[ 　]*PDF Mail[ 　]*-->" nil t nil)
+	(setq beg (progn (beginning-of-line) (point))
+	      end (progn (re-search-forward "</table>" nil t nil) (point)))
+	(or buffer
+	    (let (case-fold-search)
+	      (goto-char beg)
+	      (when (re-search-forward
+		     "<a href=\"\\(.*\\.pdf\\)\">.+alt=\"\\(PDF *- *[0-9]+[A-Z]+\\)\".*>"
+		     end t nil)
+		(setq buffer (format "<a href=\"%s\">%s</a>"
+				     (match-string 1) (match-string 2))))))
+	(delete-region beg end))
+      (goto-char (point-min))
+      (if (re-search-forward "<!--[ 　]*Contents[ 　]*-->" nil t nil)
+	  (delete-region (progn (beginning-of-line) (point))
+			 (progn (re-search-forward "</table>" nil t nil))))
+      (if (re-search-forward "<!--[ 　]*End of Contents[ 　]*-->" nil t nil)
+	  (progn
+	    (beginning-of-line)
+	    (delete-region (point) (point-max)))
+	(throw 'stop nil))
+      (when buffer
+	(goto-char (point-max))
+	(insert buffer)))
     (goto-char (point-min))
     ;; getting SUBJECT field infomation (really necessary?  already have it)
     (if (re-search-forward "<h1>\\(.*\\)</h1>" nil t nil)
-	(shimbun-header-set-subject
-	 header (shimbun-mime-encode-string (match-string 1))))
+	(progn
+	  (setq subject (match-string 1))
+	  (while (string-match "\\(<font class=\".+\">\\|</font>\\)" subject)
+	    (setq subject (concat (substring subject 0 (match-beginning 0))
+				  (substring subject (match-end 0)))))
+	  (shimbun-header-set-subject
+	   header (shimbun-mime-encode-string subject))))
     ;; getting FROM field information
     (let (author address)
       (if (re-search-forward
