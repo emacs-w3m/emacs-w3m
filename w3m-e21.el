@@ -517,7 +517,13 @@ Buffer string between BEG and END are replaced with IMAGE."
     (when window
       (unless (eq (window-buffer window) buffer)
 	(select-window window)
-	(switch-to-buffer buffer)))))
+	(switch-to-buffer buffer)
+	(w3m-e21-wobble-window-size)))))
+
+(defun w3m-tab-click-mouse-function (event buffer)
+  (select-window (posn-window (event-start event)))
+  (switch-to-buffer buffer)
+  (w3m-e21-wobble-window-size))
 
 (defvar w3m-tab-map nil)
 (make-variable-buffer-local 'w3m-tab-map)
@@ -534,7 +540,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 			   (w3m-tab-drag-mouse-function e ,buffer)))
 	   (up-action `(lambda (e)
 			 (interactive "e")
-			 (switch-to-buffer ,buffer))))
+			 (w3m-tab-click-mouse-function e ,buffer))))
       (define-key w3m-tab-map [header-line down-mouse-1] 'ignore)
       (define-key w3m-tab-map [header-line down-mouse-2] 'ignore)
       (define-key w3m-tab-map [header-line drag-mouse-1] drag-action)

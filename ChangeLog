@@ -1,3 +1,10 @@
+2004-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el (w3m-tab-drag-mouse-function): Call
+	`w3m-e21-wobble-window-size'.
+	(w3m-tab-click-mouse-function): New function.
+	(w3m-tab-make-keymap): Use it.
+
 2004-02-27  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-form.el (w3m-form-mee-new): Use `w3m-form-normalize-action'
