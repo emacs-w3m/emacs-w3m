@@ -622,13 +622,11 @@ This section explains only the most fundamental usage of the commands.
 see @ref{Customizable Options} for details on user options.
 
 @table @code
-
 @item w3m
 @findex w3m
 @vindex w3m-home-page
 @vindex w3m-quick-start
 @cindex Using emacs-w3m as a batch command
-
 Start emacs-w3m.  At that time, the homepage specified as the option
 @code{w3m-home-page} is displayed.  The default value for
 @code{w3m-home-page} is ``about:''.  Set the option
@@ -649,16 +647,13 @@ To specify a URL, say like this:
 
 @item w3m-find-file
 @findex w3m-find-file
-
 Specify a local file which you want to browse and start emacs-w3m.
 
 @item w3m-browse-url
 @findex w3m-browse-url
-
 Specify a URL which you want to visit and start emacs-w3m.  You will be
 prompted for a URL in the minibuffer.  This command is provided, if
 anything, in order to start emacs-w3m from other application programs.
-
 @end table
 
 Looking around in a web page being displayed in an emacs-w3m buffer
@@ -674,18 +669,14 @@ which is specified by the face @code{w3m-anchor-face} (see
 @pxref{Customizable Options}).
 
 @table @key
-
-@item RET @code{(lynx, info)}
-@itemx M-x w3m-view-this-url
+@item RET
 @kindex RET
 @findex w3m-view-this-url
-
 Display a page which a link in the current position points to.
 
 The behavior of this command will be altered variously by a property of
 a link under point or a prefix argument which you may specify.  See
 @ref{Emacs-w3m Functions} for details.
-
 @end table
 
 This section explained to you as mentioned above that you can specify a
@@ -695,11 +686,9 @@ in an emacs-w3m buffer, there also be two popular ways to specify a URL
 when displaying a page.
 
 @table @key
-@item RET @code{(lynx, info)}
-@itemx M-x w3m-view-this-url
+@item RET
 @kindex RET
 @findex w3m-view-this-url
-
 In an emacs-w3m buffer, you can specify a URL in the minibuffer and make
 emacs-w3m display the corresponding page by typing the @key{RET} key
 after moving point to a URL which displayed in the @samp{header-line}.
@@ -707,34 +696,26 @@ This feature would make you feel familiarity if you are experienced with
 GUI-based web browsers like Mozilla.  More detailed explanation about
 this command is mentioned in @xref{Emacs-w3m Functions}.
 
-@item g @code{(lynx, info)}
-@itemx M-x w3m-goto-url
+@item g
+@kindex g
 @findex w3m-goto-url
-
 You can specify a URL in the minibuffer and display the corresponding
 page by typing the @key{g} key unrelated to the current position in an
 emacs-w3m buffer.  This feature may impress you familiarity if you are
 using Gnus or Mew.
 
-@item c @code{lynx}
-@itemx M-x w3m-print-this-url
+@item c
 @kindex c
 @findex w3m-print-this-url
-
 Display a URL of the page being displayed in the echo area and put it
 into @code{kill-ring} (that is, you can yank it in the other place
 later).
 
-@item u @code{lynx}
-@itemx y @code{info}
-@itemx M-x w3m-print-this-url
+@item u
 @kindex u
-@kindex y
 @findex w3m-print-this-url
-
 Display a URL under point in the echo area and put it into
 @code{kill-ring} (that is, you can yank it in the other place later).
-
 @end table
 
 If the page which you are reading is the news of the day or someone's
@@ -744,13 +725,10 @@ Even if the displayed page seems to have been broken, you may be able to
 get the right display with this command.
 
 @table @key
-
-@item R @code{(lynx, info)}
-@itemx M-x w3m-reload-this-page
+@item R
+@kindex R
 @findex w3m-reload-this-page
-
 Reload the page which is currently displayed.
-
 @end table
 
 @node Moving in a page
