@@ -381,11 +381,16 @@ whose elements are:
 		   (w3m-load-list w3m-antenna-file))))
     (let (changed unchanged)
       (dolist (site alist)
-	(if (w3m-time-newer-p (or (w3m-antenna-site-last-modified site)
-				  (w3m-antenna-site-size-detected site))
-			      (w3m-arrived-time
-			       (w3m-antenna-site-url site)))
-	    (push site changed)
+	(if (if (w3m-antenna-site-last-modified site)
+		(w3m-time-newer-p (w3m-antenna-site-last-modified site)
+				  (w3m-arrived-last-modified
+				   (w3m-antenna-site-url site)))
+	      (w3m-time-newer-p (w3m-antenna-site-size-detected site)
+				(w3m-arrived-time
+				 (w3m-antenna-site-url site))))
+	    (progn
+	      (w3m-cache-remove (w3m-antenna-site-url site))
+	      (push site changed))
 	  (push site unchanged)))
       (w3m-antenna-make-contents
        (funcall w3m-antenna-sort-changed-sites-function (nreverse changed))

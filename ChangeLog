@@ -1,5 +1,8 @@
 2003-07-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-antenna.el (w3m-about-antenna): Fix the expression to decide
+	changed sites.
+
 	* w3m.el (w3m-arrived-add-1): Removed.
 	(w3m-arrived-add): Reimplemented.
 	(w3m-arrived-shutdown): Modify a predicate used for comparing
