@@ -1,5 +1,7 @@
 2001-05-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* shimbun/sb-mew.el: Removed.
+
 	* shimbun/sb-impress.el (shimbun-get-headers): Remove CRLF characters
 	from subject string.
 
