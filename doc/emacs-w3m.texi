@@ -116,7 +116,7 @@ Basic Usage
 * Tracing History::             Going back through time and space
 * Managing Bookmarks::          That's a favorite with me!
 * Using Tabs::                  This is the tab browser of fashion
-* Selecting Buffers::           Choosing one from many sessions
+* Working with buffers::        Creating, killing and moving across buffers
 * Downloading::                 Downloading a file
 * Submitting Forms::            Filling in HTML forms
 
@@ -159,7 +159,7 @@ Shimbun Library
 
 * Nnshimbun::                   Making Gnus into a web browser!
 * Mew Shimbun::                 Reading web newspapers with Mew
-* Shimbun with Wanderlus::      Reading web newspapers with Wanderlust
+* Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
 * Shimbun Basics::              How to make your own shimbun modules
 
 Mailing List
@@ -589,8 +589,8 @@ variable to use regexps to specify the @code{no-proxy} hosts.
 * Inline Images::               Toggle displaying inline images
 * Tracing History::             Going back through time and space
 * Managing Bookmarks::          That's a favorite with me!
-* Using Tabs::                  This is the tab browser of fashion
-* Selecting Buffers::           Choosing one from many sessions
+* Using Tabs::                  Everybody likes tabs
+* Working with buffers::        Creating, killing and moving across buffers
 * Downloading::                 Downloading a file
 * Submitting Forms::            Filling in HTML forms
 @end menu
@@ -1159,9 +1159,6 @@ Visit the bookmarks page (@code{w3m-bookmark-view}).
 @node Editing Bookmarks
 @subsection How to change your bookmarks
 @cindex Editing bookmarks
-@findex w3m-bookmark-kill-entry
-@findex w3m-bookmark-edit
-@findex w3m-bookmark-undo
 
 The bookmark minor mode (@pxref{Consulting Bookmarks}) offers several
 key bindings related to bookmark edition, most noticeably @kbd{C-k} to
@@ -1174,26 +1171,230 @@ basics of HTML, the file should otherwise be quite self-explanatory.
 
 @table @kbd
 @item C-k
+@findex w3m-bookmark-kill-entry
 Kill the bookmark under point (@code{w3m-bookmark-kill-entry}).
 
 @item E
+@findex w3m-bookmark-edit
 Visit the bookmarks file (@code{w3m-bookmark-edit}).
 
 @item C-_
+@findex w3m-bookmark-undo
 Undo the last changes (@code{w3m-bookmark-undo}).
 @end table
 
 @node Using Tabs
-@section This is the tab browser of fashion
+@section Everybody likes tabs
 
+Unlike most other text-based browsers, emacs-w3m has support for tabbed
+browsing.  What is tabbed browsing, you might ask?  It's very simple: it
+is a way to represent all active emacs-w3m buffers in a single window,
+by showing a line at the top which shows all the buffers in a simple and
+self-explaining way, each buffer being shown as a ``tab''.  This line
+stays visible all the time and does not scroll with the rest of the
+buffer, so that you can switch to another buffer, or use the feedback it
+provides at any moment.
 
-@node Selecting Buffers
-@section Choosing one from many sessions
+The easiest way to get the feeling of it is to just try, so go on and
+open an emacs-w3m session.  If you didn't change anything to the
+configuration, the tabs line is active by default, it is this bright
+line at the top with a smaller rectangle that shows the title of the
+current page.  Now create another w3m buffer (with @kbd{G}, for
+example): now you have two of these rectangles.  These are tabs.
 
+The most obvious use of tabs is switching: by clicking with the
+@kbd{mouse-1} button on a tab, you make the buffer it represents active.
+It also works with the @kbd{mouse-2} button.  It's a very quick and easy
+way to work with several emacs-w3m buffers, you just have to point and
+click.
+
+Another nifty feature is the feedback it provides.  If you are on a
+color terminal or window system, emacs-w3m shows the text in the tab in
+different colors to show the status of the page.  For example, when the
+page is being loaded, the text is in red, and goes back to its default
+color (usually black) when the loading is complete.  This way you can
+tell with a single glance at the tabs line if the page you're awaiting
+for has arrived or not.
+
+Finally, if the web page provides a favicon, it will be shown in the
+tab as well.  More eye-candy for the emacs-w3m user!
+
+User options:
+
+@table @code
+@item w3m-use-tab
+@vindex w3m-use-tab
+Whether to activate tabbed browsing or not.
+@end table
+
+@node Working with buffers
+@section Creating, killing and moving across buffers
+
+Sooner or later, you will be addicted to emacs-w3m, and you'll have to
+manage all your browsing needs with it.  To help you with this daunting
+task, we have imagined many different ways to work with emacs-w3m
+buffers.
+
+@menu
+* Creating and killing buffers:: Creating and killing buffers
+* Moving across buffers::        Moving across buffers
+* Selecting buffers::            Selecting buffers from a list
+@end menu
+
+@node Creating and killing buffers
+@subsection Creating and killing buffers
+@cindex Creating new buffers
+@cindex Killing buffers
+
+It is sometimes useful to create a new buffer without opening a new web
+page in it.  This operation is called ``creating a twin copy'' of a
+buffer, in emacs-w3m lingo.  It will simply create a new buffer whose
+contents are identical to the currently active buffer.
+
+The opposite of this is closing buffers: you can just close one buffer
+(because you're not interested in its contents anymore) or you can
+decide to close all buffers but the current one.  Emacs-w3m lets you do
+this with the following commands:
+
+@table @kbd
+@item C-c C-t
+@kindex C-c C-t
+@findex w3m-copy-buffer
+Create an identical copy of the currently active buffer, under a new
+name.  This is used to start a new session without loading a web page in
+the new buffer (@code{w3m-copy-buffer}).
+
+@item C-c C-w
+@kindex C-c C-w
+@findex w3m-delete-buffer
+Close the current emacs-w3m buffer (@code{w3m-delete-buffer}).
+
+@item C-c M-w
+@kindex C-c M-w
+@findex w3m-delete-other-buffers
+Close all emacs-w3m buffers, but the active one
+(@code{w3m-delete-other-buffers}).
+@end table
+
+@node Moving across buffers 
+@subsection Moving across buffers
+
+The commands you will problably use most often are those who allow you
+to go to an adjacent buffer; that is a buffer just ``after'' or
+``before'' the current one.  The meaning of this will be obvious if you
+use tabs: the next buffer is the one just after the active one, on the
+right, and the previous buffer is the one on the left.  The key bindings
+for these commands are @kbd{C-c C-p} and @kbd{C-c C-n}.
+
+These commands understand the numeric argument convention, i.e. if you
+call them with a number N as argument, you will be taken N buffers away
+from the current one.  For example, to go two buffers on the right from
+the current position, use @kbd{C-u 2 C-c C-n}.
+
+@table @kbd
+@item C-c C-p
+@kindex C-c C-p
+@findex w3m-previous-buffer
+Move to the previous emacs-w3m buffer.  This is usually the next buffer
+to the left in the tabs line.  If called with a numeric argument N, move
+N buffers to the left (@code{w3m-previous-buffer}).
+
+@item C-c C-n
+@kindex C-c C-n
+@findex w3m-next-buffer
+Move to the next emacs-w3m buffer.  This is usually the next buffer to
+the right in the tabs line.  If called with a numeric argument N, move N
+buffers to the right (@code{w3m-next-buffer}).
+@end table
+
+Also note that if these commands don't fit you well despite our efforts,
+you might find what you need in ``generalist'' buffer management
+packages such as ibuffer or iswitchb---since emacs-w3m buffers are
+regular Emacs buffers, they will work fine too.
+
+@node Selecting buffers 
+@subsection Selecting buffers from a list
+
+There are two ways to select emacs-w3m buffers from a list.  The first
+one is a minibuffer-based interface, called with @kbd{C-c C-a}.  You can
+choose the buffer you want to display using the @kbd{M-p} and @kbd{M-n}
+keys (or the ``up'' and `''down'' arrow keys), they will make you cycle
+through the list.  You can also edit the prompt and type the title of an
+existing web page, using @kbd{TAB} for completion.  For example, if you
+have a ``Google Search'' page opened, you can type ``Goo'' then hit
+@kbd{TAB} and the page title will be completed.  After the page name,
+the buffer name is given (between brackets).  Then use @kbd{RET} to
+switch to the buffer you have chosen.
+
+The second and more sophisticated interface is called the emacs-w3m
+buffer list, it is invoked with @kbd{C-C C-s}.  It shows you the list of
+all opened buffers in a separate window (either a vertical or a
+horizontal window---@kbd{C-c C-s} toggles between the two modes) and
+allows you to view the buffers in real-time: when you move the point in
+the buffer list, the buffer under point is displayed in the main window,
+which allows you to have direct visual feedback of the buffer you're
+switching to.
+
+To move in the buffer list, you can use the @kbd{p} and @kbd{n} keys
+(or the arrow keys).  In the buffer list, @kbd{DEL} and @kbd{SPC} allow
+you to scroll the buffer displayed in the main window, which is handy
+if you want to check that you're seeing the right buffer.  To select
+the buffer under point, you can use the @kbd{RET} key, in which case
+the buffer list will be buried, or the @kbd{w} key, in which case the
+buffer list will remain visible and the focus given to the main window.
+
+You can also close and create buffers from this menu, using the same
+bindings as the one used in regular buffers (@pxref{Creating and killing
+buffers}).
+
+Finally, the @kbd{?} key shows a short help, @kbd{g} refreshes the list
+and the @kbd{q} key exits the buffer list, not changing the active
+buffer.
+
+@table @kbd
+@item C-c C-a
+@kindex C-c C-a
+@findex w3m-switch-buffer
+@cindex Switching buffers using the minibuffer
+Prompt for a buffer name in the minibuffer.  @kbd{M-p} and @kbd{M-n}
+cycle through the list of existing buffers and @kbd{TAB} completes
+(@code{w3m-switch-buffer}).
+
+@item C-c C-s
+@kindex C-c C-s
+@findex w3m-select-buffer
+@cindex Switching buffers using the buffer list
+Show the buffer list in a separate window (@code{w3m-select-buffer}).
+In this window, @kbd{C-c C-s} toggles between horizontal and vertical
+modes, @kbd{RET} selects the buffer under point and buries the buffer
+list, @kbd{w} selects the buffer under point and gives it the focus,
+@kbd{n}, @kbd{p} and the arrow keys can be used to move down or up.
+@end table
 
 @node Downloading
 @section Downloading a file
 
+It is possible to download (i.e. fetch, but not display) any web page or
+file with emacs-w3m: just put the point on the link you want to
+download and hit @kbd{d}.  You will be prompted for a filename under
+which to save the file locally, by default it will be the name of the
+file on the remote server.  Confirm with @kbd{RET}.  The download will
+be asynchronous and not block your Emacs session, you can continue your
+emacs-w3m browsing in another buffer if you want.
+
+Please note that this download mechanism uses w3m to download things,
+you might want to use the more powerful wget downloader instead.  Have a
+look at our friend project ``emacs-wget'', its homepage is at
+@uref{http://pop-club.hp.infoseek.co.jp/emacs/emacs-wget/}.
+
+@table @kbd
+@item d
+@kindex d
+@findex w3m-download-this-url
+@cindex Downloading files
+Download the file or page pointed by the link under point
+(@code{w3m-download-this-url}).
+@end table
 
 @node Submitting Forms
 @section Filling in HTML forms
@@ -1275,9 +1476,6 @@ information about this feature, see @ref{Quick Searching}.
 @node The Search Interface
 @subsection How to search with emacs-w3m
 @cindex Searching
-@kindex S
-@findex w3m-search
-@vindex w3m-search-default-engine
 
 You can fire up the regular search interface by using the @kbd{S} key in
 an emacs-w3m buffer (provided you use the default keymap).  You will see
@@ -1303,6 +1501,9 @@ search results.
 
 @table @kbd
 @item S
+@kindex S
+@findex w3m-search
+@vindex w3m-search-default-engine
 Begin a new search.  If called with a prefix argument, prompt for the
 engine to use (@code{w3m-search}).
 @end table
@@ -1474,8 +1675,6 @@ does the same thing.
 @node Setting up Antenna
 @subsection How to add your web sites to Antenna
 @cindex about://antenna-edit/
-@kindex +
-@findex w3m-antenna-add-current-url
 
 Antenna has a specific customization interface accessible via the
 ``Edit'' button in the Antenna page, or via the special
@@ -1507,6 +1706,8 @@ have to hit the buttons ``Save for future sessions'' and ``Finish''.
 
 @table @kbd
 @item +
+@kindex +
+@findex w3m-antenna-add-current-url
 Add a URL to the Antenna database.  If called with a prefix argument,
 ask for a URL instead of adding the current page
 (@code{w3m-antenna-add-current-url}).
@@ -1515,8 +1716,6 @@ ask for a URL instead of adding the current page
 @node Daily web tracking
 @subsection Tracking changes with Antenna
 @cindex The Antenna interface
-@kindex A
-@findex w3m-antenna
 
 On the Antenna page, you will see two sections: one called ``Updated''
 and another called ``Visited''.  In the ``Updated'' section, you will
@@ -1548,6 +1747,8 @@ example).
 
 @table @kbd
 @item A
+@kindex A
+@findex w3m-antenna
 Visit the Antenna page.  If called with a prefix argument, update the
 Antenna database before displaying it (@code{w3m-antenna}).
 @end table
@@ -1737,17 +1938,17 @@ words, @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el} and
 @node Hooking into MUAs
 @chapter Hooking emacs-w3m into mail/newsreaders
 
-This section introduces to you three kind of Message User Agents (MUAs).
-All those MUAs can display HTML mails properly by using emacs-w3m.
-There are HowTo's and some notes for setting up and using emacs-w3m and
-each MUA.
+This section introduces three Message User Agents (MUAs).  All those
+MUAs can display HTML mails properly using emacs-w3m.  You'll find here
+HowTo's and some notes about setting up and using emacs-w3m with each
+of these MUAs.
 
-A note on a different convention; what does @samp{message} mean?@*
-When a Gnus user says @samp{message}, it often means a draft of a
-message to be sent as a mail or a news.  However, it is the term to call
-a received message for users of Mew or Wanderlust.  They use
-@samp{draft} for a draft of a message to be sent.  On the other hand, a
-received message is called an @samp{article} by Gnus users.
+Quick note about the conventions we use: what does @samp{message}
+mean?@* When a Gnus user says @samp{message}, it often means a draft of
+a message to be sent as mail or news.  However, it is the term used by
+Mew or Wanderlust users for received mail.  They use @samp{draft} for
+the draft of a message to be sent.  On the other hand, a received
+message is called an @samp{article} by Gnus users.
 
 @menu
 * Gnus::                        Reading HTML mails in Gnus
@@ -1816,12 +2017,13 @@ following line too:
 Notes
 
 The above description about spam and ham is not for kidding, it's just
-here to get your attention.  Some HTML mails might contain a trick of
-spammers, using the @samp{<img>} tag which is far more evil than the
-@samp{Click Here!} button.  It is most likely intended to check whether
-the ominous spam mail has reached your eyes.  It is done by embedding an
-identifier string into a URL which you might automatically retrieve when
-displaying the image.  By default, the
+here to get your attention.  Some HTML mails might contain a nasty trick
+used by spammers, using the @samp{<img>} tag which is far more evil than
+the @samp{Click Here!} button.  It is most likely intended to check
+whether the ominous spam mail has reached your eyes or not, in which
+case the spammer knows for sure that your email address is valid.  It is
+done by embedding an identifier string into a URL that you might
+automatically retrieve when displaying the image.  By default, the
 @code{mm-inline-text-html-with-images} variable is @code{nil} and Gnus
 will never connect to the spammer's site arbitrarily.
 
@@ -1854,13 +2056,13 @@ With just this, an HTML mail will be displayed in the message window as
 if it were a plain text.  You can still use the @kbd{C-c C-e} command
 (@code{mew-summary-execute-external}) there.
 
-Recently, we often see a mail containing the same informations by the
-@samp{Mulatipart/Alternative} format which consists of both a
-@samp{Text/Plain} part and a @samp{Text/Html} part (what a waste of
-bandwidth it is).  Mew displays only a @samp{Text/Plain} part of such a
-mail by default.  However, you perhaps want to see a @samp{Text/Plain}
-part since you are using emacs-w3m.  If so, add the following lines to
-the @file{~/.mew.el} file:
+It is also quite common these days to see mails containing the same
+information twice, they use the @samp{multipart/alternative} format
+which consists of both a @samp{text/plain} part and a @samp{text/html}
+part (what a waste of bandwidth it is).  Mew displays only the
+@samp{text/plain} part of such a mail by default.  However, you perhaps
+want to see the @samp{text/plain} part since you are using emacs-w3m.
+If so, add the following lines to the @file{~/.mew.el} file:
 
 @lisp
 (setq mew-mime-multipart-alternative-list
@@ -1872,7 +2074,7 @@ There are some customizable variables related to Mew:
 @table @code
 @item mew-use-w3m-minor-mode
 If non-@code{nil}, the @code{w3m-minor-mode} is turned on in the message
-buffer where a Text/Html part is displayed, and you can use the same
+buffer where a text/html part is displayed, and you can use the same
 main keys as the keys of emacs-w3m, for instance, @key{RET} is for
 visiting a page which a link in the current position points to.  Those
 keys are defined in the @code{w3m-minor-mode-command-alist} variable.
@@ -1881,10 +2083,9 @@ for security reasons.  The default value is @code{nil}.
 
 @item mew-w3m-auto-insert-image
 If non-@code{nil}, you can see images inline in the message buffer when
-you read a Multipart/Related message.  Note that mew-w3m allows only the
-image which is contained in the mail message itself with the @samp{cid:}
-URL, that is, we consider only such an image is safe.  The default value
-is @code{nil}.
+you read a multipart/related message.  Note that mew-w3m only allows
+images contained in the message body with a @samp{cid:} URL to be
+displayed (as we consider them safe).  The default value is @code{nil}.
 
 @item mew-w3m-cid-retrieve-hook
 A hook run just after retrieving a @samp{cid:} URL.  The default value
@@ -1898,7 +2099,7 @@ See also @ref{Mew Shimbun}.
 
 You can display HTML mails as human-readable, using emacs-w3m and
 @sc{semi} MUAs, for example, Wanderlust, T-gnus, etc.  Since those MUAs
-depend for MIME functions on @sc{semi} (and also @sc{flim}), we
+depend on @sc{semi} (and also @sc{flim}) for MIME functions, we
 generically call them @sc{semi} MUAs.  Although @sc{semi} uses Emacs/W3
 for rendering HTML mails by default, it can easily be altered to
 emacs-w3m and it will make your cyber life still more comfortable.
@@ -1909,9 +2110,9 @@ You simply need to put the following line in @file{~/.emacs} file:
 (require 'mime-w3m)
 @end lisp
 
-As the @code{mime-w3m} module rhymes with the @code{mime-w3} module by
-those names (the later is included in the @sc{semi} package), both are
-functionally alike.
+The @code{mime-w3m} and @code{mime-w3} modules are functionally alike,
+as you might have guessed (see how the names rhyme?).  The latter is
+included in the @sc{semi} package
 
 On HTML parts of an article buffer, the @code{w3m-minor-mode} is turned
 on and you can use the same main keys as the keys of emacs-w3m, for
@@ -1956,49 +2157,49 @@ See also @ref{Nnshimbun} if you are using T-gnus or Nana-gnus.
 @chapter A tool for reading a newspaper
 @cindex Shimbun library
 
-Shimbun sounds like ``she-n-boon'', but actually any vowels shouldn't be
-prolonged.  It strictly means a newspaper in Japanese.  The
-@samp{shimbun} library is a collection of various modules, each one is
-unable to do nothing by itself.  This section explains typical three
-@samp{shimbun} applications (two of whom are included in the
+Shimbun is pronounced ``she-n-boon'' (but actually vowels shouldn't be
+prolonged), it means ``newspaper'' in Japanese.  The @samp{shimbun}
+library is a collection of many modules, but each of them serves no
+useful purpose alone.  This section explains three typical
+@samp{shimbun} applications (two of which are included in the
 @samp{shimbun} library) and how to make @samp{shimbun} modules by
-yourself (you need to be able to write Emacs Lisp programs).  All those
-three applications make it possible to fetch the new informations (which
-are updated every moment) from the web sites in the world and to read
-them as if you were reading mail messages usually.
+yourself (you need to be able to write Emacs Lisp programs).  All three
+applications make it possible to fetch continuously-updating information
+from web sites around the world and to read them as if you were reading
+mail messages.
 
-Recently, newspapers, mailing list archives, bulletin boards, and some
-individual diaries are open to the public through the web.  The
-@samp{shimbun} library currently supports Asahi Shimbun, Yomiuri On-line,
-Emacs Devel, XEmacs Beta, mailing lists for Gnus, Mew, Wanderlust, etc.,
-the Japanese Prime Minister Koizumi's mail magazine, Slashdot Japan, and
-a lot of others.
+More and more newspapers, mailing list archives, bulletin boards, and
+individual diaries (weblogs or blogs) are open to the public through the
+web.  The @samp{shimbun} library currently supports Asahi Shimbun,
+Yomiuri On-line, Emacs Devel, XEmacs Beta, mailing lists for Gnus, Mew,
+Wanderlust, etc., the Japanese Prime Minister Koizumi's mail magazine,
+Slashdot Japan, and a lot of others.
 
 Note that you need to have installed the @sc{flim} package (and Gnus if
 you'd like to use @samp{nnshimbun}) before building and installing
-emacs-w3m.  The @sc{flim} package requires the @sc{apel} package.  So,
-here it is (@pxref{Other Requirements}).
+emacs-w3m.  The @sc{flim} package requires the @sc{apel} package.  You
+might also want to see @xref{Other Requirements}.
 
 @menu
-* Nnshimbun::                   Making Gnus into a web browser!
+* Nnshimbun::                   Turning Gnus into a web browser!
 * Mew Shimbun::                 Reading web newspapers with Mew
-* Shimbun with Wanderlus::      Reading web newspapers with Wanderlust
+* Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
 * Shimbun Basics::              How to make your own shimbun modules
 @end menu
 
 @node Nnshimbun
-@section Making Gnus into a web browser!
+@section Turning Gnus into a web browser!
 @cindex nnshimbun
 @cindex Web Newspaper
 
-@samp{Nnshimbun} is one of the Gnus back ends, but it is distributed
-with emacs-w3m, not Gnus, exceptionally.  @samp{Nnshimbun} is able to
-make Gnus into an exceptionally useful web browser.  You can skim
-through the articles in the web server of the newspaper publishing
-company without troubling in a lot of advertisement.  You can read
-articles in the mailing list archive as if you were subscribed to the
-list.  You can read a submission in the bulletin board, however you
-should use emacs-w3m if you'd like to followup to.
+@samp{Nnshimbun} is a Gnus backend, but it is distributed with
+emacs-w3m, not Gnus, exceptionally.  @samp{Nnshimbun} allows you to turn
+Gnus into an exceptionally useful web browser.  You can skim through the
+articles on a newspaper's web server without having to see all the
+advertisement.  You can read articles in mailing list archives as if you
+were subscribed to the list.  You can also read submissions in bulletin
+boards, etc...  Note that if you want to followup, you still need to use
+emacs-w3m as Gnus can't post via the web with nnshimbun.
 
 Put the following line in your @file{~/.gnus.el} file:
 
@@ -2013,22 +2214,22 @@ use Gnus, see @ref{SEMI MUAs} for T-gnus or Nana-gnus instead.
 
 @findex gnus-group-make-shimbun-group
 @c @kindex G n (Group)
-The easiest way to get started with @samp{nnshimbun} is to say
-something like the following in the group buffer:
+The easiest way to get started with @samp{nnshimbun} is to use
+something like the following in the Group buffer:
 
 @kbd{M-x gnus-group-make-shimbun-group RET asahi RET national RET}
 @c @kbd{G n asahi RET national RET}
 
 @noindent
-Substitute @samp{asahi} and @samp{national} with the symbol of the
-server you'd like to connect to and the group you're interested in
-respectively.  You can complete both of those names by typing @key{TAB}
-or @key{SPC}.
+Replace @samp{asahi} and @samp{national} with the keyword corresponding
+to the server you'd like to connect to and the group you're interested
+in respectively.  You can complete both of those names by using
+@key{TAB} or @key{SPC}.
 
-If there's a room in the @code{gnus-group-mode-map} fortunately, you can
-add something like the following thing in your @file{~/.gnus.el} file
-(you don't need to bother to add it, since there's already the similar
-thing in T-gnus):
+You can also bind that to a key if there's enough room in the
+@code{gnus-group-mode-map} map, you can add something like the following
+in your @file{~/.gnus.el} file (T-gnus users, you don't need to bother
+to add it, since there's already the similar thing in T-gnus):
 
 @lisp
 (eval-after-load "gnus-group"
@@ -2046,13 +2247,13 @@ gnus-group-make-shimbun-group}.
 @c @kbd{B nnshimbun RET asahi RET}.
 
 @samp{Nnshimbun} simply fetches HTML contents from the web server and
-display it as an article, but it will never save articles in the local
-file system, except for making persistent articles
+displays them as an article, but it will never save articles in the
+local file system, except if you use persistent articles
 (@pxref{(gnus)Persistent Articles}).  @samp{Nnshimbun} uses @sc{nov}
-file for each @samp{nnshimbun} group which is almost the same as the
-@samp{nnml} back end.
+files for each @samp{nnshimbun} group, and its backend is almost the
+same as @samp{nnml}.
 
-The following @samp{nnshimbun} variables can be altered:
+The following @samp{nnshimbun} variables can be customized:
 
 @table @code
 @item nnshimbun-directory
@@ -2077,29 +2278,32 @@ can be different for every group).  Here's an example:
 @end lisp
 
 @noindent
-Actually, a Lisp object with which the @code{nnshimbun-group-parameters}
-symbol is added to the forefront of such a list will be used (and it
-will also be saved in the @file{~/.newsrc.eld} file).  Below is the
-documentation for those group parameters and related variables.
+@c FIXME: What could be the meaning of this?  :)
+@c Actually, a Lisp object with which the @code{nnshimbun-group-parameters}
+@c symbol is added to the forefront of such a list will be used (and it
+@c will also be saved in the @file{~/.newsrc.eld} file).
+
+Below is the documentation for those group parameters and related
+variables.
 
 @table @code
 @item prefetch-articles
 @vindex nnshimbun-pre-fetch-article
-In the group where this group parameter is set to other than @code{off}
-or @code{nil}, @samp{nnshimbun} not only checks for new articles, but
-also will download them.  Though it will slow checking of new articles
-down, you won't be kept waiting when reading articles.  In the group
-where this group parameter is not set or its value is @code{nil}, the
-value of the @code{nnshimbun-pre-fetch-article} variable (@code{off} by
-default) is used instead.
+In a group where this group parameter is set to something else than
+@code{off} or @code{nil}, @samp{nnshimbun} not only checks for new
+articles, but also downloads them.  Though it will slow checking of new
+articles down, you won't be kept waiting when reading articles.  In the
+group where this group parameter is not set or its value is @code{nil},
+the value of the @code{nnshimbun-pre-fetch-article} variable (@code{off}
+by default) is used instead.
 
 @item encapsulate-images
 @vindex nnshimbun-encapsulate-images
-In the group where this group parameter is set to other than @code{off}
-or @code{nil}, @samp{nnshimbun} will put image data embedded in the
-original contents into an article as @samp{multipart/related} parts of
-the MIME format.  In the group where this group parameter is not set or
-its value is @code{nil}, the value of the
+In a group where this group parameter is set to something else than
+@code{off} or @code{nil}, @samp{nnshimbun} will put image data embedded
+in the original contents into an article as @samp{multipart/related}
+parts of the MIME format.  In the group where this group parameter is
+not set or its value is @code{nil}, the value of the
 @code{nnshimbun-encapsulate-images} variable is used instead.  The
 default value for the @code{nnshimbun-encapsulate-images} variable is
 the value of the @code{shimbun-encapsulate-images} variable which is
@@ -2108,7 +2312,7 @@ provided in the @samp{shimbun} library (the default value is probably
 
 @item index-range
 @vindex nnshimbun-index-range
-You can specify the range of articles to be fetched from a web server
+You can specify the range of articles to be fetched from the web server
 using the @code{index-range} group parameter.  To specify the range, use
 the following values:
 
@@ -2128,16 +2332,16 @@ the latest N pages
 
 @samp{Nnshimbun} checks whether there are new articles by parsing the
 index page of the server.  It is possible that there are two or more
-index pages in the server.  For instance, in the case of the mailing
+index pages on the server.  For instance, in the case of the mailing
 list servers, index pages are generally classified according to the date
-to which the article was posted.  It would take a time considerably to
-check those many huge index pages especially if you are connecting to a
-slow line.
+on which the article was posted.  It would take a considerable amount of
+time to check all those huge index pages especially if you are
+connecting via a slow line.
 
-If it is possible, @samp{nnshimbun} won't check the index page which has
-already been checked at the time of the last connection.  If you want to
-save time more, use @code{last}.  It makes @samp{nnshimbun} refer to
-only the latest index page for checking new articles.
+If it is possible, @samp{nnshimbun} won't check index pages which have
+already been checked at the last connection.  If you want to save even
+more time, use @code{last}.  It makes @samp{nnshimbun} refer to only the
+latest index page for checking new articles.
 
 In the group where the @code{index-range} group parameter is not set or
 its value is @code{nil}, the value of the @code{nnshimbun-index-range}
@@ -2145,7 +2349,7 @@ variable (@code{nil} by default) is used.
 
 @item nnshimbun-group-parameters-alist
 @vindex nnshimbun-group-parameters-alist
-This is an Emacs Lisp variable, an alist of regexp of group name and the
+This is an Emacs Lisp variable, an alist of regexp of group names and
 @samp{nnshimbun} group parameters.  The default value is @code{nil}.
 Each element may have the form @samp{(REGEXP KEYWORD VALUE KEYWORD
 VALUE...)}, for example:
@@ -2171,8 +2375,8 @@ variable.
 @vindex nnmail-expiry-wait
 You can instruct @samp{nnshimbun} to expire articles@footnote{There are
 mainly two ways to expire articles automatically in the @samp{nnshimbun}
-groups.  One is to add the regular expression of group name which begins
-with ``^nnshimbun\\+'' to the @code{gnus-auto-expirable-newsgroups}
+groups.  One is to add a group name regular expression (it should begin
+with ``^nnshimbun\\+'') to the @code{gnus-auto-expirable-newsgroups}
 variable and to put the expiry period for each group into the
 @code{nnmail-expiry-wait-function} variable.  Another is to set the
 @code{auto-expire} group parameter to @code{t} and to set the expiry
@@ -2180,43 +2384,41 @@ period with the @code{expiry-wait} group parameter in every
 @samp{nnshimbun} group which you want to expire automatically.  See
 @ref{(gnus)Expiring Mail} for more information.  In the group to which
 the @code{expiry-wait} group parameter is not specified, a default
-expiry period will be applied.}.  Ah, even if you've set the expiry
-period to three days, it will never cause a happening that articles in
-the server of the newspaper publishing company of more than three days
-ago get disappeared.  What is deleted is the line in your own @sc{nov}
-file for @samp{nnshimbun}@footnote{A @sc{nov} file for @samp{nnshimbun}
-is named like ``~/News/shimbun/asahi/national/.overview''.}
+expiry period will be applied.}. Keep in mind that when an article is
+expired, it is not deleted from the remote server, it's still available
+there.  What is deleted is the line in your own @sc{nov} file for
+@samp{nnshimbun}@footnote{The @sc{nov} file for @samp{nnshimbun} is
+named something like ``~/News/shimbun/asahi/national/.overview''.}
 corresponding to the article to be expired.  Then the article won't
-appear in the summary buffer forever and ever.
+appear in the Summary buffer, forever and ever.
 
 If you don't expire articles in @samp{nnshimbun} groups, the @sc{nov}
-files will continue growing fat infinitely and you may see very old
-articles in the summary buffer as they were existing (in fact, they have
-been expired three years ago! in the server of the newspaper publishing
-company).  Even if you try to read such an article, nothing will appear
-in the article buffer.  On the other hand, not a few mailing list
-servers generally offer all the past articles.  You may not feel like
-expiring articles in such groups in order to look back with nostalgia to
-the good old days and to read a series of article with which you amused
-yourself.
+files will continue to grow fat indefinitely and you may see very old
+articles in the Summary buffer as if they were existing (in fact, they
+might have expired three years ago on the remote server!).  Even if you
+try to read such an article, nothing will appear in the article buffer.
+On the other hand, most mailing list servers generally offer all the
+past articles.  You may not feel like expiring articles in such groups
+in order to look back with nostalgia to the good old days and to be able
+to read, eyes filled with tears, articles which you thought long gone.
 
 You can mark @samp{nnshimbun} articles as expirable and specify the
 expiry period in each @samp{nnshimbun} group as well as the other mail
-back ends.  However, there are a little differences between
-@samp{nnshimbun} and the other mail back ends:
+backends.  However, there are a little differences between
+@samp{nnshimbun} and the other mail backends:
 
 @itemize @bullet
 @item
-First, the expiry period is determined with the following priorities.
-Note that a certain @samp{shimbun} module may be related to the default
-value.
+First of all, the expiry period is determined with the following
+priorities.  Note that the default value might be different from group
+to group.
 
 @enumerate
 @item
 The value of the @code{expiry-wait} group parameter in a group.
 
 @item
-A value produced by evaluating the @code{nnmail-expiry-wait-function}
+The value produced by evaluating the @code{nnmail-expiry-wait-function}
 variable for a group.
 
 @item
@@ -2228,11 +2430,11 @@ The value of the @code{nnmail-expiry-wait} variable.
 @end enumerate
 
 @item
-Second, the argument to be passed to the function specified by the
-@code{nnmail-expiry-wait-function} variable will contain the names of
-the back end and the server like ``nnshimbun+asahi:national'', while
-only the group name will be given in the case of the other mail back
-ends.  Here's one example:
+Second of all, the argument to be passed to the function specified by
+the @code{nnmail-expiry-wait-function} variable will contain the names
+of the backend and the server like ``nnshimbun+asahi:national'', while
+only the group name will be given in the case of the other mail
+backends.  Here's an example:
 
 @lisp
 (setq nnmail-expiry-wait-function
@@ -2241,27 +2443,25 @@ ends.  Here's one example:
               ((string-equal group "nnshimbun+ding:ding") 'never))))
 @end lisp
 
-This means that there are two groups for the same ding mailing list;
-one is subscribed as a list member, the other is for reading from the
-mailing list archive of the Gnus tower.  Ahem, isn't it clever?  The
-local mail files in the ``ding'' group will be expired in seven days
-and your local disk space will be saved, but you can read even the
-articles of the last century in the second group (if it is really
-needed, though).
+This means that there are two groups for the same ding mailing list; one
+is subscribed as a list member, the other is for reading from the
+mailing list archive at the Gnus Towers.  Ahem, isn't it clever?  The
+local mail files in the ``ding'' group will be expired in seven days and
+your local disk space will be saved, but you can read even the articles
+of the last century in the second group (if it is really needed,
+though).
 
 @item
-Third, it is written in order that you may remember it when you feel
-doubtful; @samp{nnshimbun} leaves only the last one without deleting
-even if the time when all articles in a group should be expired has
-come.  This is not for satisfying your indecisive heart, but is a
-solution for not fetching old articles from the server again
-(@samp{nnshimbun} will check articles in new order and stops checking
-when an article with the same Message-ID with that last article is
-found).
+Third of all, and this is written down so that you can remember it when
+you're filled with doubt: even when all articles from a @samp{nnshimbun}
+group should be expired, the most recent one will be kept.  This is not
+to satisfy your indecisive heart, it's because the next time you fetch
+new articles for this group, @samp{nnshimbun} will know where to begin
+and not fetch all the articles all over again.
 @end itemize
 
-The group parameter and the variable related to expiring
-@samp{nnshimbun} articles are as follows:
+The group parameters and the variables related to expiring
+@samp{nnshimbun} articles are:
 
 @table @code
 @item expiry-wait
@@ -2269,8 +2469,8 @@ The group parameter and the variable related to expiring
 Don't be confused, please.  The @code{expiry-wait} group parameter is
 provided as one of the elements of @code{nnshimbun-group-parameters},
 the specially made group parameter for @samp{nnshimbun}.  It has the
-same name and the same meaning with the standard group parameter.  You
-may use whichever you like.  If nnshimbun's one is set to non-@code{nil}
+same name and the same meaning as the standard group parameter.  You may
+use whichever you like.  If nnshimbun's one is set to non-@code{nil}
 value, it takes precedence over the standard one.  It is provided in
 order to concentrate things related to @samp{nnshimbun} at one place of
 the ``Gnus Customize'' buffer (which will appear by typing @kbd{G c} in
@@ -2278,43 +2478,45 @@ the group buffer) and to realize managing collectively by the
 @code{nnshimbun-group-parameters-alist} variable@footnote{We've already
 prepared the answer to the question that why @code{auto-expire}
 etc. aren't included in the nnshimbun's special group parameter?  The
-answer is, @code{expiry-wait} is handled by the @samp{nnshimbun} back
-end, but @code{auto-expire} is handled by the Gnus core.  Therefore, it
-is contrary to the design policy of Gnus to extend the Gnus core
-function so that it may work for one particular back end (i.e. reading a
+answer is, @code{expiry-wait} is handled by the @samp{nnshimbun}
+backend, but @code{auto-expire} is handled by the Gnus core.  Therefore,
+it is contrary to the design policy of Gnus to extend the Gnus core
+functions so that it may work for one particular backend (i.e. reading a
 value from the nnshimbun's special group parameter).}.  The values which
 can be used are a number of expiry period, @code{never} or
 @code{immediate} as well as the standard group parameter.
 
 @item nnshimbun-keep-unparsable-dated-articles
 @vindex nnshimbun-keep-unparsable-dated-articles
-If this variable is non-@code{nil}, the articles of which the time
-created or the time sent is unknown will never be expired.  Since the
-period is unknown at any rate.  The default is @code{t}.  If you set
-this variable to @code{nil}, the articles of which the time is unknown
-will also be expired unconditionally when the time to expire has come.
-Well, it might be useful for a general cleaning of the end of a year.
+If this variable is non-@code{nil}, the articles of which the time of
+creation (or the time of arrival) is unknown will never be expired,
+since their age is unknown.  The default is @code{t}.  If you set this
+variable to @code{nil}, the articles of which the time is unknown will
+also be expired unconditionally when the time to expire has come.  Well,
+it might prove useful for a general cleaning at the end of a year.
 @end table
 
 @node Mew Shimbun
 @section Reading web newspapers with Mew
 
-Mew Shimbun is an Emacs Lisp program for enjoying yourself with
-@samp{shimbun} using the Mew version 2.1 and later.  The
-@file{mew-shimbun} module will be installed together with emacs-w3m if
-there have been Mew, @sc{apel}, and @sc{flim} installed.
+Mew Shimbun is an Emacs Lisp program meant to be used with
+@samp{shimbun} and Mew (version 2.1 and later).  The @file{mew-shimbun}
+module will be installed together with emacs-w3m if Mew, @sc{apel}, and
+@sc{flim} are also installed.
 
 We recommend you also see @ref{Mew}.
 
 @enumerate
 @item
-Setting up
+Setting things up
 
 Put the following lines in the last of the @file{~/.mew.el} file:
 
 @format
 ;;; Loading mew-shimbun, defining keys.
-;; (setq mew-shimbun-use-unseen t)              ;;; (*1)
+;; (setq mew-shimbun-use-unseen t)              ;;; @footnote{Uncomment
+this line if you'd like to manage unseen messages.  It must be placed
+before the @code{(require 'mew-shimbun)} line.}
 (require 'mew-shimbun)
 (define-key mew-summary-mode-map "G"  (make-sparse-keymap))
 (define-key mew-summary-mode-map "Gg" 'mew-shimbun-goto-folder)
@@ -2325,10 +2527,6 @@ Put the following lines in the last of the @file{~/.mew.el} file:
 (define-key mew-summary-mode-map "GR" 'mew-shimbun-re-retrieve-all)
 (define-key mew-summary-mode-map "Ge" 'mew-shimbun-expire)
 (define-key mew-summary-mode-map "GE" 'mew-shimbun-expire-all)
-
-;;; (*1) Uncomment this line if you'd like to manage unseen messages
-;;; (see below).  It must be placed before the @code{(require 'mew-shimbun)}
-;;; line.
 
 ;; Specifying @samp{shimbun} servers and groups to be read with Mew in the
 ;; @code{mew-shimbun-folder-groups} variable.  Each element has the form
@@ -2372,9 +2570,9 @@ Reading @samp{shimbun} messages
 @item
 Getting started
 
-Type @kbd{G I} (@code{mew-shimbun-retrieve-all}) first, after setting up
-as mentioned above.  The @samp{shimbun} folders specified by the
-@code{mew-shimbun-folder-groups} variable will be created under the
+Type @kbd{G I} (@code{mew-shimbun-retrieve-all}) first, after setting
+things up as mentioned above.  The @samp{shimbun} folders specified by
+the @code{mew-shimbun-folder-groups} variable will be created under the
 @samp{+shimbun} parent folder.  Typing @kbd{G I} is also useful when you
 have added new groups.  You can change the name of the parent folder
 (@samp{+shimbun} by default) by customizing the
@@ -2389,7 +2587,7 @@ You can move to any folder (including @samp{shimbun}) by typing @kbd{g}
 @samp{shimbun} folder.  In addition, folders which have new messages
 (in other words, folders which have not been scanned) will be displayed
 when using a prefix argument with @kbd{G g} (i.e. @kbd{C-u G g}).  A
-prefix argument similarly affects to @kbd{G G} as well.
+prefix argument similarly affects @kbd{G G} as well.
 
 @item
 Fetching messages in each folder
@@ -2409,10 +2607,11 @@ which are marked with the mark specified by the
 would be useful for CNET, etc.
 
 The @kbd{G R} command (@code{mew-shimbun-re-retrieve-all}) checks the
-freshness of all messages and re-fetch the updated messages.  If a
+freshness of all messages and re-fetches the updated messages.  If a
 prefix argument is given (i.e. @kbd{C-u G R}), the messages within the
-region will be processed.  It is probably worthwhile in the site running
-the hyper nikki system (@samp{nikki} means a diary in Japanese).
+region will be processed.  It is probably worthwhile if the site is
+running the hyper nikki system (@samp{nikki} means ``diary'' in
+Japanese).
 @end enumerate
 
 @item
@@ -2438,19 +2637,18 @@ Mew summary mode, but if you add the following line to the
 @end lisp
 
 the unseen marks will be saved in the @file{.mew-cache} file
-automatically for the @samp{shimbun} groups when finishing Mew or
-killing a folder (using @kbd{C-c C-q}).  However, it is not securely
-saved (*2).  To do this securely, you had better have the habit of
-performing the @samp{scan update} command after reading the folder.
+automatically for the @samp{shimbun} groups when exiting Mew or killing
+a folder (using @kbd{C-c C-q}).  However, it is not securely saved
+@footnote{People who have set the @code{mew-touch-folder-p} variable to
+@code{t} will succeed 100% in saving marks, but people who use
+@code{nil} value seem not to be 0% successful.}.  To do this securely,
+you had better have the habit of performing the @samp{scan update}
+command after reading the folder.
 
 If you don't like the @samp{*} mark for unseen messages, customize
 the @code{mew-shimbun-mark-unseen} variable (see above).  By specifying
 the mark by @kbd{C-u N}, you will be able to lead a better life with
 taking care of unseen messages.
-
-(*2) Persons who have set the @code{mew-touch-folder-p} variable to
-@code{t} will succeed 100% in saving marks, but persons who use
-@code{nil} value seem not to be 0% successful.
 
 @item
 Expiring messages
@@ -2467,14 +2665,14 @@ variable beforehand.  For example:
 @end lisp
 
 If you set this variable as shown above, you can specify the expiry
-periods; 7 days for @samp{+shimbun/yomiuri}, 1 day for
+period; 7 days for @samp{+shimbun/yomiuri}, 1 day for
 @samp{+shimbun/asahi}.  Messages in the @samp{shimbun} folder where the
 expiry period is not specified will never be expired.  You can use the
 @kbd{G e} command (@code{mew-shimbun-expire}) to expire the expirable
 messages in the current folder.  The @kbd{G E} command
 (@code{mew-shimbun-expire-all}) is for expiring the expirable messages
 in all the @samp{shimbun} folders.  Note that once the messages have
-been expired, you cannot restore them.
+been expired, you cannot recover them.
 
 @item
 How to mark messages with @samp{$} as unseen
@@ -2533,11 +2731,11 @@ like to replace the @samp{$} mark with another.
 @end format
 @end enumerate
 
-@node Shimbun with Wanderlus
+@node Shimbun with Wanderlust
 @section Reading web newspapers with Wanderlust
 
 Wanderlust includes @samp{elmo-shimbun} as an ELMO module, so you can
-read @samp{shimbun} by just accessing folder beginning with @samp{@@}
+read @samp{shimbun} by just accessing a folder beginning with @samp{@@}
 (@pxref{(wl)Shimbun Folder}).
 
 @node Shimbun Basics
@@ -2549,20 +2747,22 @@ read @samp{shimbun} by just accessing folder beginning with @samp{@@}
 @cindex Subscribing to the emacs-w3m mailing list
 @cindex Reporting bugs
 
-We have a mailing list
+We have set up a mailing list to discuss all things Emacs-w3m. You can
+post without subscribing.  If you find a bug, have a feature request, or
+have written some code, don't hesitate to post to the list.  And if
+you're just a user and like the program, please tell us too!
+
+The address is: 
 
 @display
 Emacs-w3m Mailing List @t{<emacs-w3m@@namazu.org>}
 @end display
 
-to discuss Emacs-w3m. You can post without subscribing. If you find some
-bug, have feature request, or have written some code, post to the list,
-please.
-
-Language used in this list are English and Japanese (since many of its
-members are Japanese). Articles posted to the list are opened to the
-public and you can read them on the web (@uref{http://emacs-w3m.namazu.org/ml/}),
-or in NetNews (group @samp{gmane.emacs.w3m} on the server @samp{news.gmane.org}).
+English and Japanese can be used when posting to this list, since many
+of its members are Japanese.  Articles posted to the list are opened to
+the public and you can read them on the web (at
+@uref{http://emacs-w3m.namazu.org/ml/}), or in NetNews (group
+@samp{gmane.emacs.w3m} on the server @samp{news.gmane.org}).
 
 If you want to receive articles by mail, send a mail containing
 
@@ -2572,7 +2772,7 @@ subscribe Your Name
 
 (please write your name, not your email address) in its body to
 @samp{emacs-w3m-ctl@@namazu.org}, then you can subscribe to the list.
-To unsubscribe it, send a mail containing just
+To unsubscribe from it, send a mail containing just
 
 @example
 # bye
