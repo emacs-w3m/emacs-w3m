@@ -85,7 +85,7 @@
       "http://d.dominodeveloper.net/members/tsuruo/bbs/NotesBBS.nsf/wMainViewPage!OpenPage")))
 
 (luna-define-method shimbun-get-headers
-  ((shimbun shimbun-lotusex) header &optional outbuf)
+  ((shimbun shimbun-lotusex) &optional outbuf)
   (let ((group (shimbun-current-group-internal shimbun)))
     (if (string= group "bbs")
 	(shimbun-lotusex-bbs-headers shimbun)

@@ -51,7 +51,7 @@
 	      (string-to-number (match-string 3 str))))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-muchy)
-					 header &optional outbuf)
+					 &optional range)
   (let ((url (concat (shimbun-url-internal shimbun) "/" "whatsold.html"))
 	case-fold-search date-list headers)
     (catch 'stop
