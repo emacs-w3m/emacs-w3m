@@ -39,7 +39,12 @@
   (require 'cl)
   (require 'w3m)
   (require 'mime)
-  (defvar mime-setup-enable-inline-html))
+  (defvar mime-setup-enable-inline-html)
+  (defvar mime-preview-condition))
+
+(eval-and-compile
+  (when (featurep 'xemacs)
+    (require 'font)))
 
 (defcustom mime-w3m-display-inline-images 'default
   "Non-nil means that inline images are displayed."
@@ -63,22 +68,33 @@ consider all the urls to be safe."
 (defvar mime-w3m-message-structure nil)
 (make-variable-buffer-local 'mime-w3m-message-structure)
 
-(eval-and-compile
-  (when (featurep 'xemacs)
-    (require 'font)))
-
 (defun mime-w3m-insinuate ()
   "Insinuate `mime-w3m' module to SEMI."
   (setq mime-setup-enable-inline-html nil)
-  (eval-after-load "mime-view"
-    '(progn
-       (ctree-set-calist-strictly
-	'mime-preview-condition
-	'((type . text)
-	  (subtype . html)
-	  (body . visible)
-	  (body-presentation-method . mime-w3m-preview-text/html)))
-       (set-alist 'mime-view-type-subtype-score-alist '(text . html) 3))))
+  (let (flag)
+    (when (boundp 'mime-preview-condition)
+      (labels ((overwrite (x)
+		(if (symbolp x)
+		    (if (eq x 'mime-preview-text/html)
+			(setq flag 'mime-w3m-preview-text/html)
+		      (when (eq x 'mime-w3m-preview-text/html)
+			(setq flag t))
+		      x)
+		  (if (consp x)
+		      (cons (overwrite (car x)) (overwrite (cdr x)))
+		    x))))
+	(setq mime-preview-condition
+	      (overwrite mime-preview-condition))))
+    (unless flag
+      (eval-after-load "mime-view"
+	'(progn
+	   (ctree-set-calist-strictly
+	    'mime-preview-condition
+	    '((type . text)
+	      (subtype . html)
+	      (body . visible)
+	      (body-presentation-method . mime-w3m-preview-text/html)))
+	   (set-alist 'mime-view-type-subtype-score-alist '(text . html) 3))))))
 
 (defvar mime-w3m-mode-command-alist
   '((backward-char)

@@ -1,3 +1,11 @@
+2002-07-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* mime-w3m.el (toplevel): Bind `mime-preview-condition' to avoid
+	byte-compile warnings.
+	(mime-w3m-insinuate): Install code to overwrite
+	`mime-preview-condition' which is already initialized before this
+	functions is called.
+
 2002-07-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-image-viewer): New option.
