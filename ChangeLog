@@ -1,3 +1,7 @@
+2003-09-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* icons/*.xpm: Remove text.
+
 2003-09-17  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-new): Use
