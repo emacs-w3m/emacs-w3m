@@ -1,5 +1,8 @@
 2004-11-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-mainichi.el (shimbun-mainichi-prepare-article): Break
+	continuous lines in editorials.
+
 	* w3m-form.el (w3m-char-to-int, w3m-string-to-char-list,
 	w3m-int-to-char): Silence byte-compiler.
 	* w3m-ccl.el (charset-id): Ditto.
