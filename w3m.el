@@ -1408,7 +1408,8 @@ elements are:
  4. Last modification time.
 If optional argument NO-CACHE is non-nil, cache is not used."
   (let ((header (w3m-w3m-get-header url no-cache)))
-    (when (and header (string-match "HTTP/1\\.[0-9] 200 OK" header))
+    (cond
+     ((and header (string-match "HTTP/1\\.[0-9] 200 OK" header))
       (let (alist type charset)
 	(dolist (line (split-string (substring header (match-end 0)) "\n"))
 	  (when (string-match "^\\([^:]+\\):[ \t]*" line)
@@ -1429,7 +1430,13 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	      (cdr (assoc "content-encoding" alist))
 	      (let ((v (cdr (assoc "last-modified" alist))))
 		(and v (apply (function encode-time)
-			      (w3m-time-parse-string v)))))))))
+			      (w3m-time-parse-string v)))))))
+     ;; FIXME: adhoc implementation
+     ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
+     ;; HTTP/1.0 501 Method Not Implemented
+     ((and header (string-match "HTTP/1\\.[0-9] 50[0-9]" header))
+      (list "text/html")))))
+	   
 
 (defun w3m-pretty-length (n)
   ;; This function imported from url.el.

@@ -6,6 +6,8 @@
 	(w3m-about-history): If 'titile' is '<no-title>', show 'URL' instead
 	of 'title'. Use w3m-about-history-except-regex.
 	(w3m-history): If exec with 'C-u', goto 'about://db-history/'.
+	(w3m-w3m-attributes): Adhoc implementation when server return
+	'HTTP/1.x 500x'.
 
 2001-03-19  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
