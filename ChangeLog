@@ -1,3 +1,8 @@
+2004-06-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m): Run w3m-mode before popping to the newly created
+	buffer up.
+
 2004-06-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-rss.el (shimbun-rss-process-date): Simplified and
