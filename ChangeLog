@@ -1,3 +1,8 @@
+2001-07-09  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-remove-comments): New function.
+	(w3m-rendering-region): Call it.
+
 2001-07-06  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-default-coding-system): Changed default value
