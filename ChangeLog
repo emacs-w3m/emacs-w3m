@@ -1,3 +1,10 @@
+2003-12-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-xmas-run-at-time): Rewrite w/o using fsf-compat.
+
+	* w3m.el (w3m-run-at-time): New function alias.
+	(w3m-refresh-at-time): Use it.
+
 2003-12-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-xmas-run-at-time): New function.

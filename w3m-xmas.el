@@ -771,30 +771,38 @@ italic font in the modeline."
   (defalias 'w3m-mule-unicode-p 'ignore))
 
 (defun w3m-xmas-run-at-time (time repeat function &rest args)
-  "Emulating function run as `run-at-time' in the right way."
-  (if (or (not time)
-	  (= 0 time))
-      (apply #'run-at-time nil repeat function args)
-    (let ((timers (list nil)))
-      (setcar
-       timers
-       (apply #'run-at-time nil time
-	      (lambda (timers repeat function &rest args)
+  "Emulating function run as `run-at-time' in the right way.
+TIME should be nil meaning now or a number of seconds from now.
+Return an itimer object which can be used in either `delete-itimer'
+or `cancel-timer'."
+  (let ((itimers (list nil)))
+    (setcar
+     itimers
+     (apply #'start-itimer "w3m-run-at-time"
+	    (lambda (itimers repeat function &rest args)
+	      (let ((itimer (car itimers)))
 		(if repeat
-		    (timer-set-function
-		     (car timers)
-		     (lambda (timer repeat function &rest args)
-		       (timer-set-time timer (list 0 0 0) repeat)
-		       (timer-set-function timer function args)
-		       (apply function args))
-		     (append timers (list repeat function) args))
-		  (timer-set-function
-		   (car timers)
-		   (lambda (timer function &rest args)
-		     (cancel-timer timer)
-		     (apply function args))
-		   (append timers (list function) args))))
-	      timers repeat function args)))))
+		    (progn
+		      (set-itimer-function
+		       itimer
+		       (lambda (itimer repeat function &rest args)
+			 (set-itimer-restart itimer repeat)
+			 (set-itimer-function itimer function)
+			 (set-itimer-function-arguments itimer args)
+			 (apply function args)))
+		      (set-itimer-function-arguments
+		       itimer
+		       (append (list itimer repeat function) args)))
+		  (set-itimer-function
+		   itimer
+		   (lambda (itimer function &rest args)
+		     (delete-itimer itimer)
+		     (apply function args)))
+		  (set-itimer-function-arguments
+		   itimer
+		   (append (list itimer function) args)))))
+	    1e-9 (if time (max time 1e-9) 1e-9)
+	    nil t itimers repeat function args))))
 
 (provide 'w3m-xmas)
 
