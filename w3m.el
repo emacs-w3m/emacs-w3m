@@ -2348,7 +2348,7 @@ ex.) c:/dir/file => //c/dir/file"
     (w3m-with-work-buffer
       (delete-region (point-min) (point-max))
       (insert "<head><title>URL history</title></head><body>\n")
-      (insert "<h1>arraived URL history</h1>\n")
+      (insert "<h1>arrived URL history</h1>\n")
       (dolist (url history)
 	(unless (string-match w3m-about-history-except-regex url)
 	  (setq title (or (w3m-arrived-title url) url))
@@ -2377,7 +2377,7 @@ ex.) c:/dir/file => //c/dir/file"
     (w3m-with-work-buffer
       (delete-region (point-min) (point-max))
       (insert "<html><head><title>URL history in DataBase</title></head><body>\n")
-      (insert "<h1>arraived URL history in DataBase</h1>\n")
+      (insert "<h1>arrived URL history in DataBase</h1>\n")
       (if (null alist)
 	  (insert "<h2>Nothing in DataBase.</h2>\n")
 	(insert "<table cellpadding=0>\n")
