@@ -817,95 +817,173 @@ Gnus や Mew を利用している人には親しみやすいものかもしれません。
 
 @node Moving in a page
 @subsection ページ内を飛びまわる
+@cindex Moving in a page
+@findex w3m-scroll-up-or-next-url
+@findex w3m-scroll-down-or-previous-url
+@findex w3m-scroll-right
+@vindex w3m-horizontal-scroll-columns
+@findex w3m-horizontal-recenter
+@findex w3m-next-anchor
+@findex w3m-previous-anchor
+@findex w3m-next-form
+@findex w3m-previous-form
+@findex w3m-next-image
+@findex w3m-previous-image
+使い慣れたEmacsのコマンド(あるいは、キーバインド)が@code{w3m-mode}のバッ
+ファでもそのまま機能することが、Emacs-w3mの大きな魅力であるのは間違いあ
+りません。スクロールのために、あるいはページ内のポイント移動のためにキー
+操作を改めて覚える負担がありません。しかし@code{w3m-mode}には、スクロー
+ルとポイント移動のためのコマンドが一式用意されています。これらのコマンド
+を使いこなせば、キーストロークを節約したり、より迅速な閲覧を行なうことが
+できます。
 
-使い慣れたEmacsのコマンド(あるいは、キーバインド)がw3mモードのバッファで
-もそのまま機能することが、Emacs-w3mの大きな魅力であるのは間違いありませ
-ん。スクロールのために、あるいはページ内のポイント移動のためにキー操作を
-改めて覚える負担がありません。しかしw3mモードには、スクロールとポイント
-移動用のコマンドが一式用意されています。これらのコマンドを使いこなせば、
-キーストロークを節約したり、より迅速な閲覧を行なうことができます。
+Emacsの標準のキーバインドに比べて@code{w3m-mode}では、より短いキーストロー
+クでスクロールコマンド群を呼び出せるよう、キーが割当てられています。ウェ
+ブページを閲覧している場合、バッファ内でテキストを入力する個所は限られて
+います。従って多くのキー(@code{self-insert}が割当てられているキー)は、
+「空いて」います。@code{w3m-mode}では、それらの「空いて」いるキーに色々
+なコマンドを割当てています。
 
-Emacsの標準のキーバインドに比べてw3mモードでは、より短いキーストロークで
-スクロールコマンド群を呼び出せるよう、キーが割当てられています。ウェブペー
-ジを閲覧している場合、バッファ内でテキストを入力する個所は限られています。
-従って多くのキー(@code{self-insert}が割当てられているキー)は、「空いて」
-います。w3mモードでは、それらのキーに色々なコマンドを割当てています。
-
-@c
-@c scroll
-@c
+@c スクロール
 @table @key
 @item SPC
-順方向にスクロールします。lessコマンドやEmacsのview-modeを使ったことがあれば、
-馴染みがあるはずです。(FIXME: 数引数について書く。)
+@itemx M-x w3m-scroll-up-or-next-url
+@kindex SPC
+@findex w3m-scroll-up-or-next-url
+順方向に縦スクロールします。moreコマンドやlessコマンド、Emacsの
+@code{view-mode}を使ったことがあれば、馴染みがあるはずです。
 @end table
 
 @table @key
 @item DEL
-逆方向にスクロールします。lessコマンドやEmacsのview-modeを使ったことがあれば、
-馴染みがあるはずです。(FIXME: 数引数について書く。)
+@itemx M-x w3m-scroll-down-or-previous-url
+@kindex DEL
+@findex w3m-scroll-down-or-previous-url
+逆方向に縦スクロールします。lessコマンドやEmacsの@code{view-mode} を使っ
+たことがあれば、馴染みがあるはずです。
 @end table
 
 @table @kbd
 @item >
-左にスクロールをします。(FIXME: 数引数について書く。)
+@itemx M-x w3m-scroll-left
+@kindex >
+@findex w3m-scroll-left
+@vindex w3m-horizontal-scroll-columns
+左にスクロールします。スクロールの量は@code{w3m-horizontal-scroll-columns}
+で与えます。@code{w3m-horizontal-scroll-columns}のデフォルトの値は10です。
 @end table
 
 @table @kbd
 @item <
-右にスクロールをします。(FIXME: 数引数について書く。)
+@itemx M-x w3m-scroll-right
+@kindex <
+@findex w3m-scroll-right
+@vindex w3m-horizontal-scroll-columns
+右にスクロールします。スクロールの量は@code{w3m-horizontal-scroll-columns}
+で与えます。@code{w3m-horizontal-scroll-columns}のデフォルトの値は10です。
 @end table
 
 @table @kbd
 @item .
-左にシフトします(?)。小刻みに？(FIXME: 数引数について書く。内容も確認)
+@itemx M-x w3m-shift-left
+@kindex .
+@findex w3m-shift-left
+@vindex w3m-horizontal-shift-columns
+左にシフトします(小刻みな水平スクロール)。シフトの量は@code{w3m-horizontal-shift-columns}
+で与えます。@code{w3m-horizontal-shift-columns}のデフォルトの値は2です。
 @end table
 
 @table @kbd
 @item ,
-右にシフトします(?)。小刻みに？(FIXME: 数引数について書く。内容も確認)
+@itemx M-x w3m-shift-right
+@kindex ,
+@findex w3m-shift-right
+@vindex w3m-horizontal-shift-columns
+右にシフトします(小刻みに水平スクロールです)。シフトの量は@code{w3m-horizontal-shift-columns}
+で与えます。@code{w3m-horizontal-shift-columns}のデフォルトの値は2です。
 @end table
 
 @table @kbd
 @item M-l
+@itemx M-x w3m-horizontal-recenter
+@kindex M-l
+@findex w3m-horizontal-recenter
 現在ポイントがある位置のテキストが、水平方向に関して中心になるように
-スクロールします。(FIXME: 数引数について書く。)
+スクロールします。
 @end table
 
-@c
-@c 移動
-@c
-w3mでは、ウェブページの持つ構造に基づいたポイント移動用のコマンドがあります。
-少ないキーストロークで、目的の個所にポイントを移動できるよう、利用しています。
+@c 移動, 「ポイントを移動させる」ではなくて、ポイントを移動するで統一した。
+@code{w3m-mode}には、ウェブページ内の3種類の「オブジェクト」に対して、そ
+の「オブジェクト」へポイントを移動するためのコマンドが定義されています。
+移動先となるオブジェクトは3種類あります。アンカー、入力フォーム(フォーム)、
+画像です。アンカーは、リンクとフォームの両方を含みます。各種類毎に移動コ
+マンドが定義されています。オブジェクトへの移動コマンドが有効な例として、
+@example
+http://www.google.com
+@end example
+にて、ある文字列を検索する場合を考えます。@code{w3m}等のコマンドでウェブ
+ページを開いた後、フォームへの移動コマンド(@kbd{]})を一度呼び出せば、検
+索文字列の入力フォームへポイントを移動することができます。フォームへの移
+動コマンドを用いない場合、入力フォームへポイントを移動するには、ページの
+レイアウトとその表示に応じて、行単位や文字単位の移動コマンド(@kbd{C-n}や
+@kbd{C-f}など)を繰り返し呼び出す必要があります。
 
 @table @key
 @item TAB
-Jump to next anchor.
+@itemx M-x w3m-next-anchor
+@kindex TAB
+@findex w3m-next-anchor
+次のアンカーへポイントを移動します。より厳密には、
+ポイントの位置から順方向で最も近いアンカーへ移動します。
 @end table
 
 @table @kbd
 @item M-@key{TAB}
-Jump to previous anchor.
+@itemx S-@key{TAB}
+@itemx M-x w3m-previous-anchor
+@kindex M-@key{TAB}
+@kindex S-@key{TAB}
+@findex w3m-previous-anchor
+前のアンカーへポイントを移動します。より厳密には、
+ポイントの位置から逆方向で最も近いアンカーへ移動します。
 @end table
 
 @table @kbd
 @item ]
-Jump to next form.
+@itemx M-x w3m-next-form
+@kindex ]
+@findex w3m-next-form
+次のフォームへポイントを移動します。より厳密には、
+ポイントの位置から順方向で最も近いフォームへ移動します。
 @end table
 
 @table @kbd
 @item [
-Jump to previous form.
-@end table
-
-@table @kbd
-@item @{
-Jump to next image.
+@itemx M-x w3m-previous-form
+@kindex [
+@findex w3m-previous-form
+前のフォームへポイントを移動します。より厳密には、
+ポイントの位置から逆方向で最も近いフォームへ移動します。
 @end table
 
 @table @kbd
 @item @}
-Jump to previous image.
+@itemx M-x w3m-next-image
+@kindex @}
+@findex w3m-next-image
+次の画像へポイントを移動します。より厳密には、ポイントの位置から順方向で
+最も近い画像へ移動します。このコマンドの振舞いに、画像が実際にバッファへ
+描画されているかどうかは関係ありません。
+@end table
+
+@table @kbd
+@item @{
+@itemx M-x w3m-previous-image
+@kindex @{
+@findex w3m-previous-image
+前の画像へポイントを移動します。より厳密には、ポイントの位置から逆方向で
+最も近い画像へ移動します。このコマンドの振舞いに、画像が実際にバッファへ
+描画されているかどうかは関係ありません。
 @end table
 
 @node Moving over pages
@@ -979,13 +1057,6 @@ Quit browsing WWW after updating arrived URLs list.
 @example
 G	Goto URL in the new session.
 
-I	View image.
-M-i	Save image.
-T	Toggle displaying of inline images on current buffer.
-M-[	Zoom out image on cursor point.
-M-]	Zoom in image on cursor point.
-
-
 M	View current url with external browser.
 \	Display source of this current buffer.
 =	Display header of this current buffer.
@@ -1022,6 +1093,13 @@ C-c M-w	Kill other w3m buffers.
 @node Inline Images
 @section 画像表示を ON/OFF する
 
+@example
+I	View image.
+M-i	Save image.
+T	Toggle displaying of inline images on current buffer.
+M-[	Zoom out image on cursor point.
+M-]	Zoom in image on cursor point.
+@end example
 
 @node Tracing History
 @section 過去のページを振り返る
