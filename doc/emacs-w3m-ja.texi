@@ -990,24 +990,23 @@ Emacs-w3m は利用可能な多くの検索エンジンを持っています。あなたのお気に入
 @section 一つの URL で複数のウェブページを見る
 @cindex Grouping URLs
 
-Emacs-w3m can manipulate ``group URLs'': special URLs that contain
-several real URLs.  When you open these group URLs, emacs-w3m will open
-one buffer for each URL in the group, allowing you to open several pages
-in one go.
+Emacs-w3m は ``group URLs'' という、複数の実際の URL を一つにまとめた特
+別な URL を扱うことができます。そのようなグループ URL を開くと、
+emacs-w3m は一度に複数のページを開くために、そのグループに含まれるそれぞ
+れの URL に対して一つのバッファを開きます。
 
-To build group URLs, you just have to put together (i.e. concatenate)
-all the addresses you want to open, separating them with the ampersand
-symbol (that's ``&''), and prefixing the grouped URLs with ``group:''.
-For example, suppose you want to visit the GNU Project's homepage,
-@uref{http://www.gnu.org/}, and the Savannah homepage,
-@uref{http://savannah.nongnu.org/}: the group URL would be
+グループ URL を作るには、開きたいすべてのページを単にアンパサンド記
+号 (``&'') で一緒にして (すなわち結合して)、グループ URL を表す接頭辞
+の ``group:'' を付ければ良いのです。例を挙げると、GNU プロジェクトのホー
+ムページ @uref{http://www.gnu.org/} と Savannah ホームページを見たいもの
+とすれば、グループ URL は次のようなものになるでしょう。
 
 @uref{group:http://www.gnu.org/&http://savannah.nongnu.org/}
 
-Since this syntax can be quite hard to use on a daily basis, this
-feature will be most useful when used with very short URLs (Quicksearch
-URLs for example, see @ref{Quick Searching}); or in non-interactive
-contexts.
+
+この構文を日常的に使うのはかなり辛いものがありますが、非常に短い URL (例
+えばクイックサーチ URL、@ref{Quick Searching} を参照) や非対話型で使う状
+況では、この機能はおおいに役立つでしょう。
 
 @node Weather Information
 @section 明日の天気は晴れでしょう
