@@ -7238,7 +7238,10 @@ If the prefix arg ARG is given, it toggles the visibility of images."
       (w3m-message "Can't redisplay this page")
     (when arg
       (setq w3m-display-inline-images (not w3m-display-inline-images)))
-    (w3m-goto-url w3m-current-url 'redisplay)))
+    (let ((w3m-history-reuse-history-elements
+	   ;; Don't move the history position.
+	   'reload))
+      (w3m-goto-url w3m-current-url 'redisplay))))
 
 (defun w3m-redisplay-and-reset (&optional arg)
   "Redisplay the current page and reset the user-specified values.
