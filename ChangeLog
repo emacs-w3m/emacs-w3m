@@ -1,3 +1,17 @@
+2001-04-05  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-namazu.el (shimbun-namazu-group-url-alist): New variable.
+	(shimbun-index-url): Use it.
+	(shimbun-get-headers): Set path argument of
+	`shimbun-namazu-get-headers-1';
+	Catch 'stop signal.
+	(shimbun-namazu-get-headers-1): Added argument `path';
+	Set relative path to xref;
+	Throw 'stop and return headers if `shimbun-search-id' returns non-nil.
+
+	* shimbun/sb-asahi.el (shimbun-asahi): Don't inherit shimbun.
+	(shimbun-asahi-coding-system): Fixed redundant definition.
+
 2001-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-tcup.el (shimbun-article): Changed argument `id' to

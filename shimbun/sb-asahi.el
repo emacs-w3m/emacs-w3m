@@ -32,13 +32,12 @@
 
 (require 'shimbun)
 (require 'sb-text)
-(luna-define-class shimbun-asahi (shimbun shimbun-text) ())
+(luna-define-class shimbun-asahi (shimbun-text) ())
 
 (defvar shimbun-asahi-url "http://spin.asahi.com/")
 (defvar shimbun-asahi-groups '("national" "business" "politics"
 			       "international" "sports"))
-(defvar shimbun-asahi-coding-system (static-if (boundp 'MULE) '*sjis*
-				      'shift_jis))
+(defvar shimbun-asahi-coding-system 'shift_jis)
 (defvar shimbun-asahi-from-address "webmaster@www.asahi.com")
 
 (defvar shimbun-asahi-content-start "\n<!-- Start of kiji -->\n")
