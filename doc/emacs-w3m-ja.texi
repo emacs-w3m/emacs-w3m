@@ -1759,7 +1759,7 @@ Emacs-w3m は利用可能な多くの検索エンジンを持っています。あなたのお気に入
                     "http://my.searchengine.com/?query=%s"
                     nil))
      (add-to-list 'w3m-uri-replace-alist
-                  '("my" w3m-search-uri-replace "My engine"))))
+                  '("\\`my:" w3m-search-uri-replace "My engine"))))
 @end lisp
 
 これにより、@uref{my:foobar} のような URL を使って、あなたの検索エンジン
