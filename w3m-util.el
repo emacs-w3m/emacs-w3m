@@ -545,26 +545,6 @@ variable `w3m-display-message-enable-logging'."
   (goto-char (point-min))
   (sit-for 0))
 
-(if (featurep 'xemacs)
-    (defalias 'w3m-function-max-args 'function-max-args)
-  (eval-and-compile
-    (require 'advice))
-  (defun w3m-function-max-args (function)
-    "Return the maximum number of arguments a function may be called with.
-The function may be any form that can be passed to `funcall',
-any special form, or any macro.
-If the function takes an arbitrary number of arguments or is
-a built-in special form, nil is returned."
-    (let ((arglist (ad-arglist (if (symbolp function)
-				   (symbol-function function)
-				 function))))
-      (cond ((memq '&rest arglist)
-	     nil)
-	    ((memq '&optional arglist)
-	     (1- (length arglist)))
-	    (t
-	     (length arglist))))))
-
 (defun w3m-modify-plist (plist &rest properties)
   "Change values in PLIST corresponding to PROPERTIES.  This is similar
 to `plist-put', but handles plural symbol and value pairs and remove
