@@ -1,5 +1,10 @@
 2001-05-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-hist.el (w3m-history-copy): New implementation without
+	recursive funcall'ing using `w3m-history-tree'.
+	(w3m-history-tree): Allow the optional argument `newpos'.
+	(w3m-history-copy-1): Removed.
+
 	* w3m.el (w3m-gohome): New command.
 	(w3m-setup-menu): Use `w3m-menubar'.
 	(w3m-menubar): New constant.

@@ -265,21 +265,6 @@ an error with ERROR-MESSAGE-IF-NO-ELEMENTS."
   (put 'w3m-history-with-element 'lisp-indent-function 'defun))
 
 ;; Functions for internal use.
-(defun w3m-history-copy-1 (tree)
-  "Function used to be called by `w3m-history-copy' and itself
-recursively."
-  (let (element rest branches copy)
-    (while tree
-      (setq element (car tree)
-	    tree (cdr tree)
-	    rest (list (cadr element) (car element))
-	    branches (cddr element))
-      (while branches
-	(setq rest (cons (w3m-history-copy-1 (car branches)) rest)
-	      branches (cdr branches)))
-      (setq copy (cons (nreverse rest) copy)))
-    (nreverse copy)))
-
 (defun w3m-history-seek-properties (url)
   "Seek properties corresponding to URL in all the w3m buffers except for
 the current-buffer."
@@ -398,10 +383,11 @@ variable `w3m-history-flat' for details."
 	  (push (length element) children))))
     (setq w3m-history-flat (nreverse w3m-history-flat))))
 
-(defun w3m-history-tree ()
+(defun w3m-history-tree (&optional newpos)
   "Make a tree-structured history in the variable `w3m-history' from the
-value of `w3m-history-flat'.  The position pointers will be set to the
-beginning of a history."
+value of `w3m-history-flat'.  The optional NEWPOS should be a list
+of pointers which will be the `car' of the new value of `w3m-history'
+if it is specified.  It defaults to the beginning of a history."
   (if w3m-history-flat
       (let ((flat w3m-history-flat)
 	    element positions rest position)
@@ -425,8 +411,10 @@ beginning of a history."
 	      (setq rest (nth (+ position 2) rest))))
 	  (setcar rest (car element))
 	  (setcar (cdr rest) (cadr element)))
-	(setq w3m-history (cons (list nil nil (list 0)) w3m-history))
-	(w3m-history-forward-1)
+	(if newpos
+	    (setq w3m-history (cons newpos w3m-history))
+	  (setq w3m-history (cons (list nil nil (list 0)) w3m-history))
+	  (w3m-history-forward-1))
 	w3m-history)
     (setq w3m-history nil)))
 
@@ -560,23 +548,23 @@ properties.  See the documentation for the variables `w3m-history' and
 from BUFFER to the current buffer.  This function keeps properties of
 each history element to be shared between BUFFER and the current
 buffer."
-  (let (flat position tree)
+  (let (position flat)
     (with-current-buffer buffer
-      (setq flat w3m-history-flat
-	    position (car w3m-history)
-	    tree (cons (list (copy-sequence (car position))
-			     (copy-sequence (cadr position))
-			     (copy-sequence (caddr position)))
-		       (w3m-history-copy-1 (cdr w3m-history)))))
-    ;; Remove buffer-local properties.
-    (let (element rest)
-      (while flat
-	(setq element (copy-sequence (car flat))
-	      flat (cdr flat))
-	(setcdr (cddr element) nil)
-	(push element rest))
-      (setq w3m-history-flat (nreverse rest)))
-    (setq w3m-history tree)))
+      (when w3m-history
+	(setq position (list (copy-sequence (caar w3m-history))
+			     (copy-sequence (cadar w3m-history))
+			     (copy-sequence (caddar w3m-history)))
+	      flat w3m-history-flat)))
+    (when position
+      ;; Remove buffer-local properties from the new `w3m-history-flat'.
+      (let (element rest)
+	(while flat
+	  (setq element (copy-sequence (car flat))
+		flat (cdr flat))
+	  (setcdr (cddr element) nil)
+	  (push element rest))
+	(setq w3m-history-flat (nreverse rest)))
+      (w3m-history-tree position))))
 
 (defun w3m-history-plist-get (keyword &optional url set-current local)
   "Extract a value from the properties of a history element.  KEYWORD is
