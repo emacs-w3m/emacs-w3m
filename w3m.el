@@ -284,7 +284,7 @@ width using expression (+ (frame-width) VALUE)."
     'native)
   "*Executable binary type of w3m program.
 Value is 'native or 'cygwin.
-This value is maily used for win32 environment.
+This value is mainly used for win32 environment.
 In other environment, use 'native."
   :group 'w3m
   :type '(choice (const cygwin) (const native)))
@@ -377,7 +377,7 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :type '(repeat (cons symbol coding-system)))
 
 (defcustom w3m-horizontal-scroll-columns 10
-  "*Column size to scroll horizontaly."
+  "*Column size to scroll horizontally."
   :group 'w3m
   :type 'integer)
 
@@ -388,7 +388,7 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :require 'w3m-form)
 (when w3m-use-form (require 'w3m-form))
 
-(defconst w3m-extended-charcters-table
+(defconst w3m-extended-characters-table
   '(("\xa0" . " ")
     ("\x80" . " ")))
 
@@ -761,14 +761,14 @@ If N is negative, last N items of LIST is returned."
 ;;; HTML character entity handling:
 
 (defun w3m-entity-db-setup ()
-  ;; initialize entity database (obarray)
+  ;; initialise entity database (obarray)
   (setq w3m-entity-db (make-vector w3m-entity-db-size 0))
   (dolist (elem w3m-entity-alist)
     (set (intern (car elem) w3m-entity-db)
 	 (cdr elem))))
 
 (defsubst w3m-entity-value (name)
-  ;; initialize if need
+  ;; initialise if need
   (if (null w3m-entity-db)
       (w3m-entity-db-setup))
     ;; return value of specified entity, or empty string for unknown entity.
@@ -1032,7 +1032,7 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 
 ;;; Cache:
 (defun w3m-cache-setup ()
-  "Initialize cache variables."
+  "Initialise cache variables."
   (unless (and (bufferp w3m-cache-buffer)
 	       (buffer-live-p w3m-cache-buffer))
     (save-excursion
@@ -1506,7 +1506,7 @@ to nil."
 	      jam-zcat-filename-list
 	      format-alist)
 	  (if (or (not (file-exists-p filename))
-		  (y-or-n-p (format "File(%s) is aleready exists. Overwrite? " filename)))
+		  (y-or-n-p (format "File(%s) is already exists. Overwrite? " filename)))
 	      (write-region (point-min) (point-max) filename))))
     (error "Unknown URL: %s" url)))
 
@@ -1542,8 +1542,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 
 ;;; Retrieve data:
 (defsubst w3m-decode-extended-characters ()
-  "Decode w3m-specific extended charcters in this buffer."
-  (dolist (elem w3m-extended-charcters-table)
+  "Decode w3m-specific extended characters in this buffer."
+  (dolist (elem w3m-extended-characters-table)
     (goto-char (point-min))
     (while (search-forward (car elem) nil t)
       (delete-region (match-beginning 0) (match-end 0))
@@ -1596,7 +1596,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 (defun w3m-exec (url &optional buffer no-cache)
   "Download URL with w3m to the BUFFER.
 If BUFFER is nil, all data is placed to the current buffer.  When new
-content is retrieved and hald-dumped data is placed in the BUFFER,
+content is retrieved and half-dumped data is placed in the BUFFER,
 this function returns t.  Otherwise, returns nil."
   (save-excursion
     (if buffer (set-buffer buffer))
@@ -1709,7 +1709,7 @@ this function returns t.  Otherwise, returns nil."
   (w3m-arrived-restore-position w3m-current-url))
 
 (defun w3m-expand-url (url base)
-  "Convert URL to absolute, and canonicalize it."
+  "Convert URL to absolute, and canonicalise it."
   (save-match-data
     (if (not base) (setq base ""))
     (if (string-match "^[^:/]+://[^/]*$" base)
@@ -2006,7 +2006,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     nil))
 
 (defun w3m-quit (&optional force)
-  "Quit browsing WWW after updateing arrived URLs list."
+  "Quit browsing WWW after updating arrived URLs list."
   (interactive "P")
   (when (or force
 	    (y-or-n-p "Do you want to exit w3m? "))
@@ -2160,7 +2160,7 @@ or prefix ARG columns."
     ;; Setup arrived database.
     (w3m-arrived-setup)
     (w3m-arrived-store-position w3m-current-url)
-    ;; Retrive.
+    ;; Retrieve.
     (let ((orig url)
 	  (name))
       (when (string-match "#\\([^#]+\\)$" url)
@@ -2312,10 +2312,10 @@ ex.) c:/dir/file => //c/dir/file"
   (autoload 'w3m-weather "w3m-weather"
     "*Display weather report." t)
   (autoload 'w3m-about-weather "w3m-weather"))
-(when (locate-library "w3m-antena.el")
-  (autoload 'w3m-antena "w3m-antena"
-    "*Display antena report." t)
-  (autoload 'w3m-about-antena "w3m-antena"))
+(when (locate-library "w3m-antenna.el")
+  (autoload 'w3m-antenna "w3m-antenna"
+    "*Display antenna report." t)
+  (autoload 'w3m-about-antenna "w3m-antenna"))
 
 (provide 'w3m)
 ;;; w3m.el ends here.
