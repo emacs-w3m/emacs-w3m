@@ -48,10 +48,10 @@ with this document; if not, you can either send email to this document's
 maintainer or write to: The Free Software Foundation, Inc.; 59 Temple
 Place, Suite 330; Boston, MA 02111-1307, USA.
 
-$B$"$J$?$O(B, $B$3$NJ8=q$H0l=o$K(BGNU$B0lHL8xM-;HMQ5vBz$N<L$7$r<u$1<h$C$F$$$k$O$:(B
-$B$G$9(B. $B$=$&$G$J$$>l9g$O(B, $BJ8=q$N4IM}<T$K%a!<%k$rAw$k$+!"$^$?$O!"%U%j!<%=%U(B
-$B%H%&%'%":bCD(B(675 Mass Ave, Cambridge, MA 02139, USA)$B$K<j;f$r=q$$$F$/$@$5(B
-$B$$!#(B
+$B$"$J$?$O(B, $B$3$NJ8=q$H0l=o$K(B GNU $B0lHL8xM-;HMQ5vBz$N<L$7$r<u$1<h$C$F$$$k$O(B
+$B$:$G$9(B. $B$=$&$G$J$$>l9g$O(B, $BJ8=q$N4IM}<T$K%a!<%k$rAw$k$+!"$^$?$O!"%U%j!<%=(B
+$B%U%H%&%'%":bCD(B (675 Mass Ave, Cambridge, MA 02139, USA) $B$K<j;f$r=q$$$F$/(B
+$B$@$5$$!#(B
 @end ifinfo
 
 @titlepage
@@ -90,10 +90,10 @@ with this document; if not, you can either send email to this document's
 maintainer or write to: The Free Software Foundation, Inc.; 59 Temple
 Place, Suite 330; Boston, MA 02111-1307, USA.
 
-$B$"$J$?$O(B, $B$3$NJ8=q$H0l=o$K(BGNU$B0lHL8xM-;HMQ5vBz$N<L$7$r<u$1<h$C$F$$$k$O$:(B
-$B$G$9(B. $B$=$&$G$J$$>l9g$O(B, $BJ8=q$N4IM}<T$K%a!<%k$rAw$k$+!"$^$?$O!"%U%j!<%=%U(B
-$B%H%&%'%":bCD(B(675 Mass Ave, Cambridge, MA 02139, USA)$B$K<j;f$r=q$$$F$/$@$5(B
-$B$$!#(B
+$B$"$J$?$O(B, $B$3$NJ8=q$H0l=o$K(B GNU $B0lHL8xM-;HMQ5vBz$N<L$7$r<u$1<h$C$F$$$k$O(B
+$B$:$G$9(B. $B$=$&$G$J$$>l9g$O(B, $BJ8=q$N4IM}<T$K%a!<%k$rAw$k$+!"$^$?$O!"%U%j!<%=(B
+$B%U%H%&%'%":bCD(B (675 Mass Ave, Cambridge, MA 02139, USA) $B$K<j;f$r=q$$$F$/(B
+$B$@$5$$!#(B
 @end titlepage
 
 @ifnottex
@@ -1043,13 +1043,13 @@ Scroll down or go to previous url.
 @node Browsing With Mouse Operations
 @subsection $B%^%&%9$G%5!<%U%#%s(B
 
-Emacs-w3m$B$N3+H/<TC#$O!"(BEmacs$B%.!<%/$G$J$$$^$H$b$J?M$K$b(BEmacs-w3m$B$r;H$C$F$b(B
-$B$i$($k$h$&$KEXNO$7$^$7$?!#(BURL$B$r4^$`%F%-%9%H$NF~NO$r=|$/$[$H$s$I$N%&%'%V%V(B
-$B%i%&%:A`:n$r%^%&%9$@$1$G9T$J$&$3$H$,$G$-$^$9!#=$>~%-!<$H$7$F%7%U%H%-!<$,(B
-$BI,MW$K$J$k>l9g$,$"$j$^$9$,!"(BEmacs-w3m$B$N3+H/<TC#$,$=$b$=$b(BEmacs$B%.!<%/$J$N(B
-$B$G(B...
+Emacs-w3m $B$N3+H/<TC#$O!"(BEmacs $B%.!<%/$G$J$$$^$H$b$J?M$K$b(B Emacs-w3m $B$r;H$C(B
+$B$F$b$i$($k$h$&$KEXNO$7$^$7$?!#(BURL $B$r4^$`%F%-%9%H$NF~NO$r=|$/$[$H$s$I$N%&%'(B
+$B%V%V%i%&%:A`:n$r%^%&%9$@$1$G9T$J$&$3$H$,$G$-$^$9!#=$>~%-!<$H$7$F%7%U%H%-!<(B
+$B$,I,MW$K$J$k>l9g$,$"$j$^$9$,!"(BEmacs-w3m $B$N3+H/<TC#$,$=$b$=$b(B Emacs $B%.!<(B
+$B%/$J$N$G(B@dots{}
 
-$B%&%'%V1\Mw$N4pK\$H$J$k!V%j%s%/$rC)$kA`:n!W$K$O(B@kbd{mouse-2}$B$r;H$$$^$9!#(B
+$B%&%'%V1\Mw$N4pK\$H$J$k!V%j%s%/$rC)$kA`:n!W$K$O(B @kbd{mouse-2} $B$r;H$$$^$9!#(B
 @table @kbd
 @item mouse-2
 @kindex mouse-2
@@ -1057,28 +1057,25 @@ Emacs-w3m$B$N3+H/<TC#$O!"(BEmacs$B%.!<%/$G$J$$$^$H$b$J?M$K$b(BEmacs-w3m$B$r
 $B%^%&%9%+!<%=%k$N2<$K$"$k%j%s%/$rC)$j$^$9(B
 (@code{w3m-mouse-view-this-url})$B!#(B
 
-
 @item S-mouse-2
 @kindex S-mouse-2
 @findex w3m-mouse-view-this-url-new-session
-$B?7$7$$%;%C%7%g%s(B(@pxref{Tracing History})$B$N$b$H$G%^%&%9%+!<%=%k$N2<$K(B
-$B$"$k%j%s%/$rC)$j$^$9(B(@code{w3m-mouse-view-this-url-new-session})$B!#(B
-
+$B?7$7$$%;%C%7%g%s(B (@pxref{Tracing History}) $B$N$b$H$G%^%&%9%+!<%=%k$N2<$K(B
+$B$"$k%j%s%/$rC)$j$^$9(B (@code{w3m-mouse-view-this-url-new-session})$B!#(B
 @end table
 
-$B%9%/%m!<%k%P!<!"%a%K%e!<5Z$S%D!<%k%P!<$O!"%^%&%9$G(BEmacs-w3m$B$r;H$&$N$KLrN)(B
-$B$A$^$9!#$?$@$7!"$*;H$$$N(BEmacsen$B$,%5%]!<%H$7$F$$$F$+$D!"%+%9%?%^%$%:$7$F$=(B
-$B$l$i$r!V%*%U!W$K$7$F$$$J$$$3$H$,>r7o$H$J$j$^$9!#8@$&$^$G$b$J$$$G$9$,!"%9(B
-$B%/%m!<%k%P!<$rF0$+$7$FI=<($r%9%/%m!<%k$5$;$k$3$H$,$G$-$^$9!#!V(BFile$B!W$r2!(B
-$B$7$N$1$F%a%K%e!<%P!<$N0lHV:8$K0LCV$9$k!V(BW3M$B!W%a%K%e!<$+$i!"$3$N(Binfo$B%I%-%e(B
-$B%a%s%H$G>R2p$7$F$$$k(Bemacs-w3m$B$NMM!9$J5!G=$r8F$S=P$9$3$H$,$G$-$^$9!#<gMW$J(B
-$B5!G=$K$D$$$F$O%a%K%e!<%"%$%F%`$rA*$V$^$G$b$J$/!"%D!<%k%P!<>e$N%\%?%s(B
-$B%"%$%F%`$r2!$;$P8F$S=P$;$^$9!#(B
+$B%9%/%m!<%k%P!<!"%a%K%e!<5Z$S%D!<%k%P!<$O!"%^%&%9$G(B Emacs-w3m $B$r;H$&$N$K(B
+$BLrN)$A$^$9!#$?$@$7!"$*;H$$$N(B Emacsen $B$,%5%]!<%H$7$F$$$F$+$D!"%+%9%?%^%$(B
+$B%:$7$F$=$l$i$r!V%*%U!W$K$7$F$$$J$$$3$H$,>r7o$H$J$j$^$9!#8@$&$^$G$b$J$$$G(B
+$B$9$,!"%9%/%m!<%k%P!<$rF0$+$7$FI=<($r%9%/%m!<%k$5$;$k$3$H$,$G$-$^$9!#(B
+$B!V(BFile$B!W$r2!$7$N$1$F%a%K%e!<%P!<$N0lHV:8$K0LCV$9$k!V(BW3M$B!W%a%K%e!<$+$i!"(B
+$B$3$N(B info $B%I%-%e%a%s%H$G>R2p$7$F$$$k(B emacs-w3m $B$NMM!9$J5!G=$r8F$S=P$9$3(B
+$B$H$,$G$-$^$9!#<gMW$J5!G=$K$D$$$F$O%a%K%e!<%"%$%F%`$rA*$V$^$G$b$J$/!"%D!<(B
+$B%k%P!<>e$N%\%?%s%"%$%F%`$r2!$;$P8F$S=P$;$^$9!#(B
 
-$B%?%V(B(@pxref{Using Tabs})$B$r@Z$jBX$($k$K$O!"(B
-$B%&%#%s%I%&$N$F$C$Z$s$N9T$r(B@kbd{mouse-2}$B$GD>@\%/%j%C%/$7$^$9!#(B
-$B$"$k$$$O!V(BW3M$B!W%a%K%e!<$N$H$J$j$K$"$k!V(BTAB$B!W%a%K%e!<$+$i%"%$(B
-$B%F%`$r;XDj$7$^$9!#(B
+$B%?%V(B (@pxref{Using Tabs}) $B$r@Z$jBX$($k$K$O!"%&%#%s%I%&$N$F$C$Z$s$N9T(B
+$B$r(B @kbd{mouse-2}$B$GD>@\%/%j%C%/$7$^$9!#$"$k$$$O!V(BW3M$B!W%a%K%e!<$N$H$J$j$K(B
+$B$"$k!V(BTAB$B!W%a%K%e!<$+$i%"%$%F%`$r;XDj$7$^$9!#(B
 
 @node Leaving for daily hacking and/or daily writing
 @subsection $BIaCJ$N@83h$KLa$k$K$O(B
