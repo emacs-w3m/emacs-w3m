@@ -1,5 +1,8 @@
 2001-10-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-info-like-map): Bind `\M-g' as the key to call
+	`goto-line'.
+
 	* w3m.el (w3m-use-mule-ucs): More safe default value.
 	(w3m-accept-japanese-characters): Improved automatic detection.
 	(w3m-ccl-write-repeat): Fix typo.
