@@ -574,6 +574,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		   (re-search-forward "\
 \[\t\n ]*<!--[\n\t ]*FJZONE[\t\n ]*END[\t\n ]*NAME=\"HONBUN\""
 				      nil t))
+	      ;; The following section will be used for the `main' group.
 	      (and (re-search-forward "\
 <!--[\n\t ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"MIDASHI\""
 				      nil t)
