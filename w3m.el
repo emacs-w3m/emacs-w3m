@@ -453,6 +453,7 @@ If N is negative, last N items of LIST is returned."
 	(buffer-read-only))
     (run-hooks 'w3m-fontify-before-hook)
     ;; Delete <?xml ... ?> tag
+    (goto-char (point-min))
     (if (search-forward "<?xml" nil t)
 	(let ((start (match-beginning 0)))
 	  (search-forward "?>" nil t)
