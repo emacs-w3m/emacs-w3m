@@ -372,7 +372,7 @@ display pages written in UTF-8, etc.  It is available at:
 
 If you are an XEmacs user, the compiled package is here:
 
-@uref{ftp.xemacs.org:/packages/mule-ucs-1.04-pkg.tar.gz}
+@uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.04-pkg.tar.gz}
 @end table
 
 @node Installing Emacs-w3m
