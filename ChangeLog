@@ -1,3 +1,8 @@
+2001-04-19  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* shimbun/sb-hns.el (shimbun-get-headers): Generate pseudo time
+	using section number of article for sorting by date.
+
 2001-04-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-setup-header-line): Check `major-mode' to decide
