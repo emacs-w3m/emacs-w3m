@@ -1,5 +1,8 @@
 2001-11-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* Makefile.in (default): Reintroduce of checking time stamps of
+	w3m-util.elc and w3m-proc.elc.
+
 	* w3m-proc.el (w3m-process-temp-file): Abolishded.
 
 	* w3m.el (w3m-content-charset, w3m-content-encoding,
