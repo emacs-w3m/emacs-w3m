@@ -188,6 +188,32 @@
 (defsubst shimbun-header-set-extra (header extra)
   (aset header 9 extra))
 
+;; Inline functions for the internal use.
+(defsubst shimbun-article-url (shimbun header)
+  "Return URL string from SHIMBUN and HEADER."
+  (if (and (shimbun-header-xref header)
+	   (eq (aref (shimbun-header-xref header) 0) ?/))
+      (concat (shimbun-url-internal shimbun)
+	      (shimbun-header-xref header))
+    (shimbun-header-xref header)))
+
+(defsubst shimbun-make-html-contents (shimbun header)
+  (let (start)
+    (when (and (re-search-forward (shimbun-content-start-internal shimbun)
+				  nil t)
+	       (setq start (point))
+	       (re-search-forward (shimbun-content-end-internal shimbun)
+				  nil t))
+      (delete-region (match-beginning 0) (point-max))
+      (delete-region (point-min) start))
+    (goto-char (point-min))
+    (shimbun-header-insert shimbun header)
+    (insert "Content-Type: text/html; charset=ISO-2022-JP\n"
+	    "MIME-Version: 1.0\n\n")
+    (encode-coding-string (buffer-string)
+			  (mime-charset-to-coding-system "ISO-2022-JP"))))
+
+
 (defun shimbun-header-insert (shimbun header)
   (insert "Subject: " (or (shimbun-header-subject header) "(none)") "\n"
 	  "From: " (or (shimbun-header-from header) "(nobody)") "\n"
@@ -286,14 +312,6 @@ Optional MUA is a `shimbun-mua' instance."
   (when (shimbun-mua-internal shimbun)
     (shimbun-mua-search-id (shimbun-mua-internal shimbun) id)))
 
-(defsubst shimbun-article-url (shimbun header)
-  "Return URL string from SHIMBUN and HEADER."
-  (if (and (shimbun-header-xref header)
-	   (eq (aref (shimbun-header-xref header) 0) ?/))
-      (concat (shimbun-url-internal shimbun)
-	      (shimbun-header-xref header))
-    (shimbun-header-xref header)))
-
 (luna-define-generic shimbun-article (shimbun header &optional outbuf)
   "Retrieve a SHIMBUN article which corresponds to HEADER to the OUTBUF.
 HEADER is a shimbun-header which is obtained by `shimbun-headers'.
@@ -310,22 +328,6 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
 	     (prog1 (shimbun-make-contents shimbun header)
 	       (message "shimbun: Make contents...done")))
 	   "")))))
-
-(defsubst shimbun-make-html-contents (shimbun header)
-  (let (start)
-    (when (and (re-search-forward (shimbun-content-start-internal shimbun)
-				  nil t)
-	       (setq start (point))
-	       (re-search-forward (shimbun-content-end-internal shimbun)
-				  nil t))
-      (delete-region (match-beginning 0) (point-max))
-      (delete-region (point-min) start))
-    (goto-char (point-min))
-    (shimbun-header-insert shimbun header)
-    (insert "Content-Type: text/html; charset=ISO-2022-JP\n"
-	    "MIME-Version: 1.0\n\n")
-    (encode-coding-string (buffer-string)
-			  (mime-charset-to-coding-system "ISO-2022-JP"))))
 
 (luna-define-generic shimbun-make-contents (shimbun header)
   "Return a content string of SHIMBUN article using current buffer content.
