@@ -944,7 +944,9 @@ cursor position and around there."
 		(>= emacs-major-version 21))
 	   (function (lambda (window object pos)
 		       (if w3m-track-mouse
-			   (get-text-property pos (quote (, property))))))))))
+			   (get-text-property pos
+					      (quote (, property))
+					      (window-buffer window)))))))))
 
 (defmacro w3m-make-balloon-help (property)
   "Make a function for showing a `balloon-help' under XEmacs."
