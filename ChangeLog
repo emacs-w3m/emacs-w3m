@@ -1,3 +1,11 @@
+2002-02-10  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-ruby.el (shimbun-make-contents): Bug fixed.
+
+2002-02-10  Takaaki MORIYAMA  <aka@iris.eonet.ne.jp>
+
+	* shimbun/sb-ruby.el (shimbun-get-headers): Fixed the regexp.
+
 2002-02-10  OHASHI Akira  <bg66@koka-in.org>
 
 	* shimbun/sb-debian.el (shimbun-debian-groups): Add `debian-med'.
@@ -14,6 +22,7 @@
 	(shimbun-make-contents): Optional headers which are registerd in
 	the variable are inserted to an article.
 
+>>>>>>> 1.982
 2002-02-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-icon-data): New buffer local variable.
