@@ -1,3 +1,8 @@
+2003-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-savannah.el (shimbun-savannah-get-headers): Revoke
+	the last change.
+
 2003-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-savannah.el (shimbun-savannah-group-path-alist): Add
