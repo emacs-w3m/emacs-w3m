@@ -3257,6 +3257,29 @@ described in Section 5.2 of RFC 2396.")
       (concat (substring base 0 (match-beginning 8))
 	      url)))))
 
+(defsubst w3m-view-this-url-1 (url reload new-session)
+  (lexical-let (pos)
+    (when new-session
+      (setq pos (point-marker))
+      (switch-to-buffer (w3m-copy-buffer nil nil t 'empty))
+      ;; When new URL has `name' portion, we have to goto the base url
+      ;; because generated buffer has no content at this moment.
+      (when (and (string-match w3m-url-components-regexp url)
+		 (match-beginning 8))
+	(let ((name (match-string 9 url))
+	      (url (substring url 0 (match-beginning 8))))
+	  (w3m-goto-url url reload nil nil w3m-current-url))))
+    (let (handler)
+      (w3m-process-do
+	  (success (w3m-goto-url url reload nil nil w3m-current-url handler))
+	;; FIXME: 本当は w3m-goto-url() が適当な返り値を返すように
+	;; 変更して、その値を検査するべきだ
+	(when (and pos (buffer-name (marker-buffer pos)))
+	  (save-excursion
+	    (set-buffer (marker-buffer pos))
+	    (goto-char pos)
+	    (w3m-refontify-anchor)))))))
+
 (defun w3m-view-this-url (&optional arg new-session)
   "View the URL of the link under point.  If ARG is the number 2 or the
 list of the number 16 (you may produce this by typing `C-u' twice) or
@@ -3270,33 +3293,15 @@ also make a new frame for the copied session."
   (let ((url (w3m-anchor))
 	(act (w3m-action)))
     (cond
-     (url
-      (lexical-let (pos)
-	(when new-session
-	  (setq pos (point-marker))
-	  (switch-to-buffer (w3m-copy-buffer nil nil t 'empty))
-	  ;; When new URL has `name' portion, we have to goto the base url
-	  ;; because generated buffer has no content at this moment.
-	  (when (and (string-match w3m-url-components-regexp url)
-		     (match-beginning 8))
-	    (let ((name (match-string 9 url))
-		  (url (substring url 0 (match-beginning 8))))
-	      (w3m-goto-url url arg nil nil w3m-current-url))))
-	(let (handler)
-	  (w3m-process-do
-	      (success (w3m-goto-url url arg nil nil w3m-current-url handler))
-	    ;; FIXME: 本当は w3m-goto-url() が適当な返り値を返すように
-	    ;; 変更して、その値を検査するべきだ
-	    (when (and pos (buffer-name (marker-buffer pos)))
-	      (save-excursion
-		(set-buffer (marker-buffer pos))
-		(goto-char pos)
-		(w3m-refontify-anchor)))))))
+     (url (w3m-view-this-url-1 url arg new-session))
      (act (eval act))
      ((w3m-image)
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
 	(w3m-view-image)))
+     ((setq url (w3m-url-at-point))
+      (when (y-or-n-p (format "Browse <%s> ? " url))
+	(w3m-view-this-url-1 url arg new-session)))
      (t (message "No URL at point")))))
 
 (defun w3m-mouse-view-this-url (event &optional arg)

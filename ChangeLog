@@ -2,6 +2,9 @@
 
 	* w3m.el (w3m-goto-url): Use a URL-like string under the cursor as
 	the initial value of the target URL when interactively called.
+	(w3m-view-this-url): When a URL-like string is found under the
+	cursor, view it.
+	(w3m-view-this-url-1): New internal function.
 
 2002-01-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
