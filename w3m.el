@@ -2588,7 +2588,7 @@ complete."
 	    (w3m-cache-header url (buffer-substring (point-min) (point)) t)
 	    (delete-region (point-min) (point))
 	    (w3m-cache-contents url (current-buffer))
-	    (w3m-w3m-attributes url)))))))
+	    (w3m-w3m-attributes url nil handler)))))))
 
 (defun w3m-w3m-retrieve (url no-decode no-cache post-data referer handler)
   "Retrieve content pointed by URL with w3m, insert it to this buffer,
