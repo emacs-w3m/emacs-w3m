@@ -102,6 +102,15 @@
       (push "octet.el" ignores))
     (unless (featurep 'mule)
       (push "w3m-weather.el" ignores))
+    (if (and (>= emacs-major-version 20)
+	     (locate-library "bitmap"))
+	;; Against the error "Already defined charset: 242".
+	(when (locate-library "un-define")
+	  (setq bitmap-alterable-charset 'tibetan-1-column)
+	  (setq bitmap-use-alterable-charset-anyway t)
+	  (require 'bitmap)
+	  (require 'un-define))
+      (push "w3m-bitmap.el" ignores))
     ;; To byte-compile w3m-util.el and a version specific module first.
     (princ "w3m-util.elc ")
     (setq modules (delete "w3m-util.el" modules))
@@ -115,16 +124,6 @@
     (dolist (module modules)
       (unless (member module ignores)
 	(princ (format "%sc " module))))))
-
-;; Against the error on Emacs20, "Already defined charset: 242".
-(when (and (boundp 'emacs-major-version)
-	   (= emacs-major-version 20)
-	   (locate-library "un-define")
-	   (locate-library "bitmap"))
-  (setq bitmap-alterable-charset 'tibetan-1-column)
-  (setq bitmap-use-alterable-charset-anyway t)
-  (require 'bitmap)
-  (require 'un-define))
 
 (require 'bytecomp)
 

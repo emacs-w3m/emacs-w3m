@@ -1,5 +1,24 @@
 2002-04-09  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
 
+	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
+	w3m-bitmap.el if bitmap.el is not installed.
+
+	* w3m-bitmap.el: New file.
+	
+	* w3m-e20.el (w3m-create-image, w3m-insert-image,
+	w3m-remove-image, w3m-image-type-available-p,
+	w3m-display-graphic-p, w3m-display-inline-images-p): Alias to
+	`ignore'. Bitmap image implementation is moved to w3m-bitmap.el.
+	(w3m-bitmap-image-cache-alist, w3m-bitmap-image-use-cache,
+	w3m-bitmap-image-cleanup, w3m-bitmap-image-buffer,
+	w3m-bitmap-image-get-overlay, w3m-bitmap-image-insert-internal,
+	w3m-bitmap-image-insert, w3m-bitmap-image-insert-string,
+	w3m-bitmap-image-delete-internal, w3m-bitmap-image-delete,
+	w3m-bitmap-image-delete-string,
+	w3m-bitmap-image-add-text-properties): Move to w3m-bitmap.el.
+
+2002-04-09  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
+
 	* w3m-e20.el (w3m-create-image): Return nil if
 	w3m-imagick-convert-buffer is failed.
 	(w3m-insert-image): Not insert image if image is nil.
