@@ -237,7 +237,7 @@ In other environment, use 'native."
 ;; FIXME: 本当は mailcap を適切に読み込んで設定する必要がある
 (defcustom w3m-content-type-alist
   '(("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
-    ("text/html" "\\.s?html$" ("netscape" url))
+    ("text/html" "\\.s?html?$" ("netscape" url))
     ("application/image" "\\.jpg$" ("xv" file))
     ("application/postscript" "\\.\\(ps\\|eps\\|pdf\\)$" ("gv" file)))
   "Alist of file suffixes vs. content type."
@@ -541,8 +541,7 @@ If N is negative, last N items of LIST is returned."
 (defun w3m-backlog-enter (url buffer)
   (w3m-backlog-setup)
   (let ((ident (intern url w3m-backlog-hashtb)))
-    (if (memq ident w3m-backlog-articles)
-	()				; It's already kept.
+    (unless (memq ident w3m-backlog-articles)
       ;; Remove the oldest article, if necessary.
       (and (numberp w3m-keep-backlog)
 	   (>= (length w3m-backlog-articles) w3m-keep-backlog)
@@ -558,6 +557,10 @@ If N is negative, last N items of LIST is returned."
 	    ;; Tag the beginning of the article with the ident.
 	    (when (> (point-max) b)
 	      (put-text-property b (1+ b) 'w3m-backlog ident)
+	      (put-text-property b (1+ b) 'w3m-backlog-title
+				 (save-current-buffer
+				   (set-buffer buffer)
+				   w3m-current-title))
 	      (setq w3m-backlog-articles (cons ident w3m-backlog-articles)))
 	    ))))))
 
@@ -600,25 +603,25 @@ If N is negative, last N items of LIST is returned."
   (let ((ident (intern url w3m-backlog-hashtb)))
     (when (memq ident w3m-backlog-articles)
       ;; It was in the backlog.
-      (let (beg end)
+      (let (beg end title)
 	(save-excursion
 	  (set-buffer w3m-backlog-buffer)
-	  (if (not (setq beg (text-property-any
-			      (point-min) (point-max) 'w3m-backlog ident)))
-	      ;; It wasn't in the backlog after all.
-	      (setq w3m-backlog-articles (delq ident w3m-backlog-articles))
-	    ;; Find the end (i. e., the beginning of the next article).
-	    (setq end
-		  (next-single-property-change
-		   (1+ beg) 'w3m-backlog (current-buffer) (point-max)))))
+	  (if (setq beg (text-property-any
+			 (point-min) (point-max) 'w3m-backlog ident))
+	      ;; Find the end (i. e., the beginning of the next article).
+	      (setq title (get-text-property beg 'w3m-backlog-title)
+		    end (next-single-property-change
+			 (1+ beg) 'w3m-backlog (current-buffer) (point-max)))
+	    ;; It wasn't in the backlog after all.
+	    (setq w3m-backlog-articles (delq ident w3m-backlog-articles))))
 	(and beg
 	     end
 	     (save-excursion
 	       (and buffer (set-buffer buffer))
 	       (let (buffer-read-only)
 		 (insert-buffer-substring w3m-backlog-buffer beg end))
-	       (set (make-local-variable 'w3m-current-url) url)
-	       t))))))
+	       (set (make-local-variable 'w3m-current-title) title)
+	       (set (make-local-variable 'w3m-current-url) url)))))))
 
 
 ;;; Handle process:
@@ -761,17 +764,18 @@ This function is imported from mcharset.el."
     (if (find-coding-system cs)
 	cs)))
 
-(defun w3m-html-decode-buffer (charset)
+(defun w3m-html-decode-buffer (type charset)
   (unless charset
     (setq charset
 	  (let ((case-fold-search t))
 	    (goto-char (point-min))
-	    (if (or (re-search-forward
-		     w3m-meta-content-type-charset-regexp nil t)
-		    (re-search-forward
-		     w3m-meta-charset-content-type-regexp nil t))
-		(buffer-substring-no-properties (match-beginning 2)
-						(match-end 2))))))
+	    (and (string= type "text/html")
+		 (or (re-search-forward
+		      w3m-meta-content-type-charset-regexp nil t)
+		     (re-search-forward
+		      w3m-meta-charset-content-type-regexp nil t))
+		 (buffer-substring-no-properties (match-beginning 2)
+						 (match-end 2))))))
   (decode-coding-region
    (point-min) (point-max)
    (if charset
@@ -872,7 +876,7 @@ This function is imported from mcharset.el."
 	  (delete-region (point-min) (- (point-max) length)))
       (and (string-match "^text/" type)
 	   (not no-decode)
-	   (w3m-html-decode-buffer charset))
+	   (w3m-html-decode-buffer type charset))
       type)))
 
 (defun w3m-retrieve (url &optional no-decode)
@@ -929,8 +933,6 @@ This function is imported from mcharset.el."
 			 x
 		       (prin1-to-string (eval x))))
 		   w3m-command-arguments))
-    ;; Setting buffer local variables.
-    (set (make-local-variable 'w3m-current-url) url)
     (goto-char (point-min))
     (let (title)
       (mapcar (lambda (regexp)
@@ -950,25 +952,27 @@ This function is imported from mcharset.el."
 If BUFFER is nil, all data is placed to the current buffer."
   (save-excursion
     (if buffer (set-buffer buffer))
-    (let (buffer-read-only)
-      (delete-region (point-min) (point-max))
-      (cond
-       ;; backlog exist.
-       ((w3m-backlog-request url) nil)
-       ;; ange|efs-ftp 
-       ((and (string-match "^ftp://" url)
+    (if (and (string-match "^ftp://" url)
 	     (not (string= "text/html" (w3m-local-content-type url))))
-	(w3m-exec-ftp url) t)
-       ;; text/html
-       ((string= "text/html" (w3m-retrieve url))
-	(insert-buffer w3m-work-buffer-name)
-	(w3m-rendering-region (point-min) (point-max))
-	(w3m-backlog-enter url (current-buffer))
+	(progn (w3m-exec-ftp url) t)
+      ;; backlog exist.
+      (let (buffer-read-only)
+	(delete-region (point-min) (point-max))
+	(or (w3m-backlog-request url)
+	    (let ((type (w3m-retrieve url)))
+	      (when (string-match "^text/" type)
+		(insert-buffer w3m-work-buffer-name)
+		(set (make-local-variable 'w3m-current-url) url)
+		(if (string= "text/html" type)
+		    (w3m-rendering-region (point-min) (point-max))
+		  (set (make-local-variable 'w3m-current-title)
+		       (file-name-nondirectory url)))
+		(w3m-backlog-enter url (current-buffer)))))
 	(set (make-local-variable 'w3m-url-history)
 	     (cons url w3m-url-history))
 	(setq-default w3m-url-history
 		      (cons url (default-value 'w3m-url-history)))
-	nil)))))
+	nil))))
 
 
 (defun w3m-search-name-anchor (name &optional quiet)
