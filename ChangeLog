@@ -1,7 +1,10 @@
 2001-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-arrived-add): Don't put url into an arrived-db when
-	url matches `w3m-about-history-ignored-regexp'.
+	* w3m.el (w3m-about-history): Enhance the last link.
+	(w3m-arrived-p): Return non-nil when url matches
+	`w3m-about-history-ignored-regexp'.
+	(w3m-arrived-add): Don't put url into an arrived-db when url
+	matches `w3m-about-history-ignored-regexp'.
 	(w3m-about-history-ignored-regexp): Renamed from
 	`w3m-about-history-except-regex'.
 
