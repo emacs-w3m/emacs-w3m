@@ -1,3 +1,7 @@
+2004-02-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-edit-url): Define as a command.
+
 2004-02-04  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-gnome.el (shimbun-get-headers): Removed last argument.
