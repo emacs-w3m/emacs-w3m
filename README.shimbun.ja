@@ -92,7 +92,7 @@ Java カンファレンス関連	javaconf.servlet-ml javaconf.business-ml
 		javaconf.JGT-ml javaconf.jini-ml javaconf.ejb-ml
 		javaconf.cm-ml javaconf.horb-ml javaconf.talk-ml
 linux-ce	linux-ce.users
-mule-ja		m17n.mule-ja
+mule   		m17n.mule-ja m17n.mule
 meadow 関連	meadow.meadow-develop meadow.meadow-users-jp
 mew 関連	mew.mew-dist mew.mew-win32 mew.mew-int
 mgp 関連	mew.mgp-users mew.mgp-users-jp
