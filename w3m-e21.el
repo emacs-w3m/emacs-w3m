@@ -54,19 +54,20 @@ Buffer string between BEG and END are replaced with IMAGE."
 		       (list 'display image
 			     'intangible image
 			     'invisible nil))
-  (let ((face (get-text-property beg 'face)))
-    (when (and face
-	       (face-underline-p face))
-      (setq beg (set-marker (make-marker)
-			    (or (previous-single-property-change
-				 (1+ beg) 'face)
-				(point-min)))
-	    end (set-marker (make-marker)
-			    (or (next-single-property-change beg 'face)
-				(point-max))))
-      (add-text-properties beg end
-			   (list 'face nil
-				 'w3m-hidden-face (list beg end face))))))
+  ;; Detach an underlined face if it exists.
+  (unless (car w3m-cache-underline-faces)
+    (let ((face (get-text-property beg 'face)))
+      (when (and face
+		 (face-underline-p face))
+	(setq beg (set-marker (make-marker)
+			      (or (previous-single-property-change
+				   (1+ beg) 'face)
+				  (point-min)))
+	      end (set-marker (make-marker)
+			      (or (next-single-property-change beg 'face)
+				  (point-max))))
+	(put-text-property beg end 'face nil)
+	(push (list beg end face) (cdr w3m-cache-underline-faces))))))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."

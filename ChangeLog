@@ -1,3 +1,15 @@
+2001-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fontify): Initialize the value of
+	`w3m-cache-underline-faces'.
+	(w3m-toggle-inline-images): Remove or restore the underlined faces.
+	(w3m-cache-underline-faces): New buffer-local variable used to
+	detach underlined faces from a buffer.
+
+	* w3m-xmas.el (w3m-insert-image): Detach an underlined face in
+	`w3m-cache-underline-faces'.
+	* w3m-e21.el (w3m-insert-image): Ditto.
+
 2001-05-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-toggle-inline-images): Restore hidden faces in the

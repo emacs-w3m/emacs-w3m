@@ -1270,6 +1270,13 @@ half-dumped data."
 					       'help-echo help
 					       'balloon-help balloon)))))))
 
+(defvar w3m-cache-underline-faces nil
+  "Cache used to detach underlined faces from a buffer when showing
+images inline.  It is a buffer-local variable which contains a list of
+a flag and lists of a beginning position, an end position and a face.
+Flag will be set to t when caching is completed.")
+(make-variable-buffer-local 'w3m-cache-underline-faces)
+
 (defun w3m-toggle-inline-images (&optional force no-cache)
   "Toggle displaying of inline images on current buffer.
 If optional argument FORCE is non-nil, displaying is forced.
@@ -1281,6 +1288,10 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 	  point end url image)
       (if (or force (eq w3m-display-inline-image-status 'off))
 	  (save-excursion
+	    (when (car w3m-cache-underline-faces)
+	      ;; Detach the underlined faces.
+	      (dolist (elem (cdr w3m-cache-underline-faces))
+		(put-text-property (car elem) (cadr elem) 'face nil)))
 	    (goto-char (point-min))
 	    (while (if (get-text-property (point) 'w3m-image)
 		       (setq point (point))
@@ -1310,6 +1321,8 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 		    (w3m-insert-image point end image)
 		    ;; Redisplay
 		    (and w3m-force-redisplay (sit-for 0))))))
+	    ;; Set a flag as the caching underlined faces is completed.
+	    (setcar w3m-cache-underline-faces t)
 	    (setq w3m-display-inline-image-status 'on))
 	(save-excursion
 	  (goto-char (point-min))
@@ -1332,22 +1345,9 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 	      ;; Remove dummy string.
 	      (delete-region point end))
 	     (t (w3m-remove-image point end))))
-	  ;; Restore the hidden faces.
-	  (goto-char (setq end (point-min)))
-	  (let (spec)
-	    (while (if (get-text-property end 'w3m-hidden-face)
-		       (setq point end)
-		     (setq point
-			   (next-single-property-change end
-							'w3m-hidden-face)))
-	      (setq end (or (next-single-property-change point
-							 'w3m-hidden-face)
-			    (point-max))
-		    spec (get-text-property point 'w3m-hidden-face))
-	      (goto-char end)
-	      (add-text-properties (car spec) (cadr spec)
-				   (list 'face (caddr spec)
-					 'w3m-hidden-face nil))))
+	  ;; Restore the detached faces.
+	  (dolist (elem (cdr w3m-cache-underline-faces))
+	    (put-text-property (car elem) (cadr elem) 'face (caddr elem)))
 	  (setq w3m-display-inline-image-status 'off))))))
 
 (defun w3m-decode-entities (&optional reserve-prop)
@@ -1369,6 +1369,8 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 	(buffer-read-only))
     (run-hooks 'w3m-fontify-before-hook)
     (w3m-message "Fontify...")
+    ;; Clear the cache for underlined faces.
+    (setq w3m-cache-underline-faces (list nil))
     ;; Delete <?xml ... ?> tag
     (goto-char (point-min))
     (if (search-forward "<?xml" nil t)
