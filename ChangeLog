@@ -3,7 +3,7 @@
 	* mew-w3m.el (mew-w3m-cid-retrieve): Support w3m-bitmap.el when
 	retrieve `cid image' (Mew cache has multibyte strings, but work
 	buffer is unibyte).
-	
+
 2002-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (TopLevel): Not to get the byte-code for
@@ -21,8 +21,8 @@
 	The following changes are for old Emacsen.
 	(w3m-bitmap-emacs-broken-p): New constant.
 	(TopLevel): Warn if Emacs has a bug on managing column numbers.
-	(w3m-bitmap-move-to-column): Allow the 2nd arg `strictly'; don't
-	modify the buffer contents unless the 2nd arg has been set.
+	(w3m-bitmap-move-to-column): Allow the 3rd arg `strictly'; don't
+	modify the buffer contents unless the 3rd arg has been set.
 	(w3m-bitmap-defadvice-if-broken): New macro; use it to advise the
 	functions `current-column', `move-to-column',
 	`move-to-column-force', `next-line' and `previous-line' to work
