@@ -1,3 +1,8 @@
+2001-10-22  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-dtree.el (w3m-dtree-indent-strings, w3m-dtree-stop-strings):
+	Throw out the "Japanese Character" for non-mule's environments.
+
 2001-10-21  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-muchy.el (shimbun-get-headers): Bug fixed.

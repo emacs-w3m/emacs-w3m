@@ -1,4 +1,4 @@
-;;; w3m-dtree.el --- The add-on program to display local directory tree. -*- coding: iso-2022-7bit -*-
+;;; w3m-dtree.el --- The add-on program to display local directory tree.
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -56,20 +56,11 @@ If use default value or choice 'ASCII', display like this,
  +-shimbun/
     +-CVS/
 
-If choice 'Japanese', display like this,
-/home/shirai/work/emacs-w3m/
- ├CVS/
- ├icons/
- │ └CVS/
- └shimbun/
- 　 └CVS/
-
 If you care for another style, set manually and try it :-).
 "
   :group 'w3m
   :type '(choice
 	  (const :tag "ASCII" ["|-" "+-" "|  " "   "])
-	  (const :tag "Japanese" ["├" "└" "│ " "　 "])
 	  (vector :tag "Others" string string string string)))
 
 (defcustom w3m-dtree-stop-strings ["|=" "+="]
@@ -79,7 +70,6 @@ over the 'w3m-dtree-directory-depth'."
   :type '(choice
 	  (const :tag "ASCII" ["|=" "+="])
 	  (const :tag "ASCII Bold" ["<b>|-</b>" "<b>+-</b>"])
-	  (const :tag "Japanese" ["┣" "┗"])
 	  (vector :tag "Others" string string)))
 
 (defsubst w3m-dtree-expand-file-name (path)
