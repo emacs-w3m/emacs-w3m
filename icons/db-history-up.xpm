@@ -4,7 +4,7 @@ static char * db_history_up_xpm[] = {
 "    34    30        5            1",
 /* colors */
 "  c #b6b2b6 s backgroundToolBarColor",
-"* c #ff5951",
+"* c #fff749",
 "% c #6992cf",
 "# c #30009e",
 "$ c #000000",
