@@ -168,10 +168,9 @@ system of retrieved contents."
     (inline
       (shimbun-retrieve-url url no-cache no-decode))))
 
-(defalias 'shimbun-content-type 'w3m-content-type)
-(defsubst shimbun-url-exists-p (url &optional no-cache)
-  (string= "text/html"
-	   (shimbun-content-type url no-cache)))
+(defun shimbun-real-url (url &optional no-cache)
+  "Return a real URL."
+  (w3m-real-url url no-cache))
 
 (defalias 'shimbun-decode-entities 'w3m-decode-entities)
 (defalias 'shimbun-expand-url 'w3m-expand-url)

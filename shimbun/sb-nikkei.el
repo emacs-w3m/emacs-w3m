@@ -293,8 +293,7 @@ w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 				   "\\([^<>]+\\)" s0)))
 		       nil t))
 	     (setq subject (match-string 1))
-	     (let* ((real-url (nth 5 (w3m-attributes
-				      (shimbun-index-url shimbun))))
+	     (let* ((real-url (shimbun-real-url (shimbun-index-url shimbun)))
 		    (id (file-name-sans-extension
 			 (file-name-nondirectory real-url))))
 	       (push (shimbun-make-header

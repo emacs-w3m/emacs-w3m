@@ -1,3 +1,11 @@
+2003-11-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el (shimbun-real-url): New function.
+	(shimbun-content-type, shimbun-url-exists-p): Removed.
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers): Call
+	`shimbun-real-url' instead of calling `w3m-attributes' directly.
+
 2003-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers): Extract a
