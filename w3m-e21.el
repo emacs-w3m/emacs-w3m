@@ -1,6 +1,6 @@
 ;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs-21
 
-;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -408,7 +408,22 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defcustom w3m-favicon-size nil
   "*Size of favicon. This value is used as geometry argument for `convert'."
   :group 'w3m
-  :type 'string)
+  :get (lambda (symbol)
+	 (let ((value (default-value symbol)))
+	   (if (and (stringp value)
+		    (string-match "\
+\\`[\t\n ]*\\([0-9]+\\)[\t\n ]*[Xx][\t\n ]*\\([0-9]+\\)[\t\n ]*\\'"
+				  value))
+	       (cons (string-to-number (match-string 1 value))
+		     (string-to-number (match-string 2 value))))))
+  :set (lambda (symbol value)
+	 (custom-set-default symbol
+			     (if (consp value)
+				 (format "%dx%d" (car value) (cdr value)))))
+  :type '(radio (const :tag "Not specified" nil)
+		(cons :format "%v"
+		      (integer :format "Width: %v " :size 0 :value 16)
+		      (integer :format "Height: %v " :size 0 :value 16))))
 
 (defconst w3m-favicon-name "favicon.ico"
   "The favicon name.")
@@ -430,13 +445,14 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defcustom w3m-favicon-cache-file nil
   "Filename of saving favicon cache."
   :group 'w3m
-  :type 'file)
+  :type '(radio (const :format "Not specified\n")
+		(file :format "%t: %v\n" :size 0)))
 
 (defcustom w3m-favicon-cache-expire-wait (* 30 24 60 60)
   "*The cache will be expired after specified seconds passed since retrieval.
 If this variable is nil, never expired."
   :group 'w3m
-  :type 'integer)
+  :type '(integer :size 0))
 
 
 (defcustom w3m-favicon-type (let ((types '(pbm png gif xpm bmp)))
@@ -447,10 +463,12 @@ If this variable is nil, never expired."
 				  (setq types (cdr types)))))
   "*Image type of display favicon."
   :group 'w3m
-  :type (cons 'choice
-	      (mapcar (lambda (x)
-			`(const :tag ,(symbol-name x) ,x))
-		      (delq 'postscript (copy-sequence image-types)))))
+  :type (cons 'radio
+	      (let ((types (delq 'postscript (copy-sequence image-types))))
+		(nconc (mapcar (lambda (x)
+				 `(const :format "%v  " ,x))
+			       (butlast types))
+		       `((const ,(car (last types))))))))
 
 (defvar w3m-favicon-type-alist '((pbm . ppm))
   "A list of a difference type of image between Emacs and ImageMagick.
@@ -573,7 +591,7 @@ Each information is a list whose elements are:
 (defcustom w3m-tab-width 16
   "w3m tab width."
   :group 'w3m
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defface w3m-tab-unselected-face
   '((((type x w32 mac) (class color))

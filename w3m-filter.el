@@ -1,6 +1,6 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites.
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -47,12 +47,18 @@
   "Rules to filter advertisements on WEB sites."
   :group 'w3m
   :type '(repeat
-	  (cons
-	   (string :tag "URL")
-	   (choice
-	    (list (string :tag "Start pattern")
-		  (string :tag "End pattern"))
-	    (function :tag "Filtering function")))))
+	  (group
+	   :indent 4 :inline t
+	   (cons
+	    :format "%v" :offset 2
+	    (string :format "URL: %v\n" :size 0)
+	    (choice
+	     :format "%[Value Menu%] %v"
+	     (list :tag "Start and End patterns"
+		   (string :size 0 :format "Start: %v\n")
+		   (string :size 0 :format "  End: %v\n"))
+	     (function :format "Filtering function:\n      Function: %v\n"
+		       :size 0 :value ignore))))))
 
 
 (defvar w3m-filter-db nil) ; nil means non-initialized.

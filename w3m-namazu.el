@@ -1,6 +1,6 @@
 ;;; w3m-namazu.el --- The add-on program to search files with Namazu.
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia, namazu
@@ -55,7 +55,7 @@
 (defcustom w3m-namazu-command "namazu"
   "*Name of the executable file of Namazu."
   :group 'w3m-namazu
-  :type 'string)
+  :type '(string :size 0))
 
 (defcustom w3m-namazu-arguments
   '("-h"			; print in HTML format.
@@ -65,9 +65,10 @@
   "*Arguments of Namazu."
   :group 'w3m-namazu
   :type '(repeat
-	  (restricted-sexp :tag "Argument"
+	  (restricted-sexp :format "Argument: %v\n"
 			   :match-alternatives
-			   (stringp 'w3m-namazu-page-max 'whence))))
+			   (stringp 'w3m-namazu-page-max 'whence)
+			   :size 0)))
 
 (defcustom w3m-namazu-page-max
   (if (boundp 'namazu-search-num)
@@ -75,14 +76,14 @@
     30)
   "*A maximum number of documents which are retrieved by one-time search."
   :group 'w3m-namazu
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defconst w3m-namazu-default-index-customize-spec
   '(` (choice
        (const :tag "No default index" nil)
        (,@ (mapcar (lambda (x) (list 'const (car x)))
 		   w3m-namazu-index-alist))
-       (directory :tag "Index directory"))))
+       (directory :format "Index directory: %v\n" :size 0))))
 
 (defcustom w3m-namazu-index-alist
   (when (boundp 'namazu-dir-alist)
@@ -93,9 +94,13 @@
   "*Alist of alias and index directories."
   :group 'w3m-namazu
   :type '(repeat
-	  (cons :format "%v"
-		(string :tag "Alias")
-		(repeat (directory :tag "Index directory"))))
+	  (group
+	   :indent 0 :inline t
+	   (cons :format "%v"
+		 (string :format "Alias: %v\n" :size 0)
+		 (repeat
+		  :format "%v%i\n" :indent 8
+		  (directory :format "Index directory: %v\n" :size 0)))))
   :set (lambda (symbol value)
 	 (set-default symbol value)
 	 (put 'w3m-namazu-default-index 'custom-type
@@ -121,7 +126,7 @@ argument."
       'euc-japan-unix))
   "*Coding system for namazu process."
   :group 'w3m-namazu
-  :type 'coding-system)
+  :type '(coding-system :size 0))
 
 (defcustom w3m-namazu-input-coding-system
   (if (boundp 'namazu-cs-read)
@@ -129,7 +134,7 @@ argument."
     'undecided)
   "*Coding system for namazu process."
   :group 'w3m-namazu
-  :type 'coding-system)
+  :type '(coding-system :size 0))
 
 
 (defsubst w3m-namazu-call-process (index query whence)

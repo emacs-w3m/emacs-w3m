@@ -1,6 +1,6 @@
 ;;; w3m-antenna.el --- Utility to detect changes of WEB
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -76,10 +76,11 @@ with :default-value-from."
   "List of WEB sites, watched by `w3m-antenna'."
   :group 'w3m-antenna
   :type '(repeat
-	  (list
-	   (string-with-default :tag "URL"
+	  (group
+	   :indent 7
+	   (string-with-default :format "URL: %v\n" :size 0
 				:value-from w3m-antenna-tmp-url)
-	   (string-with-default :tag "Title"
+	   (string-with-default :format "Title: %v\n" :size 0
 				:value-from w3m-antenna-tmp-title)
 	   (choice :tag "Class"
 		   (const :tag "Normal" nil)
@@ -103,38 +104,41 @@ with :default-value-from."
   "Function to make summary of site information."
   :group 'w3m-antenna
   :type '(choice
+	  :format "%{%t%}:\n %[Value Menu%] %v"
 	  (function-item :tag "Simple style." w3m-antenna-make-summary)
 	  (function-item :tag "Natsumican style."
 			 w3m-antenna-make-summary-like-natsumican)
-	  (function :tag "User function.")))
+	  (function :format "User function: %v\n" :size 0)))
 
 (defcustom w3m-antenna-sort-changed-sites-function
   'w3m-antenna-sort-sites-by-time
   "Function to sort list of changed sites."
   :group 'w3m-antenna
   :type '(choice
+	  :format "%{%t%}:\n %[Value Menu%] %v"
 	  (function-item :tag "Sort by last modification time."
 			 w3m-antenna-sort-sites-by-time)
 	  (function-item :tag "Sort by title." w3m-antenna-sort-sites-by-title)
 	  (function-item :tag "Do nothing." identity)
-	  (function :tag "User function.")))
+	  (function :format "User function: %v\n" :size 0)))
 
 (defcustom w3m-antenna-sort-unchanged-sites-function
   'w3m-antenna-sort-sites-by-time
   "Function to sort list of unchanged sites."
   :group 'w3m-antenna
   :type '(choice
+	  :format "%{%t%}:\n %[Value Menu%] %v"
 	  (function-item :tag "Sort by last modification time."
 			 w3m-antenna-sort-sites-by-time)
 	  (function-item :tag "Sort by title." w3m-antenna-sort-sites-by-title)
 	  (function-item :tag "Do nothing." identity)
-	  (function :tag "User function.")))
+	  (function :format "User function: %v\n" :size 0)))
 
 (defcustom w3m-antenna-file
   (expand-file-name ".antenna" w3m-profile-directory)
   "File which has list of antenna URLs."
   :group 'w3m-antenna
-  :type 'file)
+  :type '(file :size 0))
 
 (defvar w3m-antenna-alist nil
   "A list of site information (internal variable).  nil means that

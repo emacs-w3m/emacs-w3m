@@ -810,7 +810,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 (defcustom w3m-form-input-textarea-buffer-lines 10
   "*Buffer lines for form textarea buffer."
   :group 'w3m
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defcustom w3m-form-input-textarea-mode-hook nil
   "*A hook called after w3m-form-input-textarea-mode."
@@ -976,7 +976,7 @@ character."
 (defcustom w3m-form-input-select-buffer-lines 10
   "*Buffer lines for form select buffer."
   :group 'w3m
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defcustom w3m-form-input-select-mode-hook nil
   "*A hook called after w3m-form-input-select-mode."
@@ -1150,7 +1150,7 @@ character."
 (defcustom w3m-form-input-map-buffer-lines 10
   "*Buffer lines for form select map buffer."
   :group 'w3m
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defcustom w3m-form-input-map-mode-hook nil
   "*A hook called after w3m-form-input-map-mode."

@@ -1,3 +1,33 @@
+2003-07-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-namazu.el (w3m-namazu-command, w3m-namazu-arguments,
+	w3m-namazu-page-max, w3m-namazu-default-index-customize-spec,
+	w3m-namazu-index-alist, w3m-namazu-output-coding-system,
+	w3m-namazu-input-coding-system): Improve the customizing widgets.
+	* w3m-image.el (w3m-imagick-convert-program): Ditto.
+	* w3m-form.el (w3m-form-input-textarea-buffer-lines,
+	w3m-form-input-select-buffer-lines,
+	w3m-form-input-map-buffer-lines): Ditto.
+	* w3m-filter.el (w3m-filter-rules): Ditto.
+	* w3m-e21.el (w3m-favicon-size, w3m-favicon-cache-file,
+	w3m-favicon-cache-expire-wait, w3m-favicon-type, w3m-tab-width):
+	Diito.
+	* w3m-dtree.el (w3m-dtree-directory-depth,
+	w3m-dtree-indent-strings, w3m-dtree-stop-strings): Ditto.
+	* w3m-cookie.el (w3m-cookie-accept-domains,
+	w3m-cookie-reject-domains, w3m-cookie-accept-bad-cookies,
+	w3m-cookie-file): Ditto.
+	* w3m-bookmark.el (w3m-bookmark-file,
+	w3m-bookmark-file-coding-system, w3m-bookmark-default-section):
+	Ditto.
+	* w3m-bitmap.el (w3m-bitmap-convert-arguments): Ditto.
+	* w3m-antenna.el (w3m-antenna-sites,
+	w3m-antenna-make-summary-function,
+	w3m-antenna-sort-changed-sites-function,
+	w3m-antenna-sort-unchanged-sites-function, w3m-antenna-file):
+	Ditto.
+	* mime-w3m.el (mime-w3m-safe-url-regexp): Ditto.
+
 2003-07-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el (shimbun-server-list): Check duplicate
