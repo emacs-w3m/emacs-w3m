@@ -3357,7 +3357,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
     (if (null alist)
 	(insert "<h2>Nothing in DataBase.</h2>\n")
       (insert "<table cellpadding=0>\n")
-      (insert "<tr><td><h2> Titile/URL </h2></td><td><h2>Time/Date</h2></td></tr>\n")
+      (insert "<tr><td><h2> Title/URL </h2></td><td><h2>Time/Date</h2></td></tr>\n")
       (while alist
 	(setq url (car (car alist)))
 	(setq title (w3m-arrived-title url))

@@ -1,3 +1,7 @@
+2001-06-04  Pavel Janik  <Pavel@Janik.cz>
+
+	* w3m.el (w3m-about-db-history): Fix typo Titile -> Title.
+
 2001-06-05  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-slashdot-jp.el: New file.
