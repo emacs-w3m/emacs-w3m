@@ -5,11 +5,6 @@
 	(w3m-fontify-underline): Use `w3m-underline-face' instead of
 	`underline'.
 
-2002-01-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
-
-	* w3m.el (w3m-url-to-file-name): Decode paths of local files.
-	(w3m-expand-file-name-as-url): Encode paths of local files.
-
 2002-01-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-w32-browser-with-fiber): Fix handling of the local url.
