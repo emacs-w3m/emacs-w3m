@@ -36,7 +36,7 @@
 				    "international" "sports" "culture"))
 (defvar shimbun-asahi-html-from-address "webmaster@www.asahi.com")
 
-(defvar shimbun-asahi-html-content-start "\n<!-- Start of photo1 -->\n")
+(defvar shimbun-asahi-html-content-start "\n<!-- Start of photo1? -->\n")
 (defvar shimbun-asahi-html-content-end "\n<!-- End of kiji -->\n")
 (defvar shimbun-asahi-html-x-face-alist
   '(("default" . "X-Face: +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|\
