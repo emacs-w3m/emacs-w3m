@@ -92,6 +92,13 @@
 (luna-define-generic shimbun-mua-search-id (mua id)
   "Return non-nil when MUA found a message structure which corresponds to ID.")
 
+(luna-define-generic shimbun-mua-use-entire-index (mua)
+  "Return non-nil when MUA requires entire index.")
+
+;; Default is use entire index.
+(luna-define-method shimbun-mua-use-entire-index ((mua shimbun-mua))
+  t)
+
 ;;; emacs-w3m implementation of url retrieval and entity decoding.
 (require 'w3m)
 (defun shimbun-retrieve-url (url &optional no-cache)
@@ -187,17 +194,17 @@
 
 (defconst shimbun-attributes
   '(url groups coding-system from-address content-start content-end
-	use-entire-index x-face-alist))
+	x-face-alist))
 
 (defun shimbun-open (server &optional mua)
   "Open a shimbun for SERVER.
 Optional MUA is a `shimbun-mua' instance."
   (require (intern (concat "sb-" server)))
   (let (url groups coding-system from-address content-start content-end
-	    use-entire-index x-face-alist)
+	    x-face-alist)
     (dolist (attr shimbun-attributes)
       (set attr
-	   (symbol-value (intern-soft 
+	   (symbol-value (intern-soft
 			  (concat "shimbun-" server "-" (symbol-name attr))))))
     (luna-make-entity (intern (concat "shimbun-" server))
 		      :mua mua
@@ -208,7 +215,8 @@ Optional MUA is a `shimbun-mua' instance."
 		      :from-address from-address
 		      :content-start content-start
 		      :content-end content-end
-		      :use-entire-index use-entire-index
+		      :use-entire-index
+		      (if mua (shimbun-mua-use-entire-index mua))
 		      :x-face-alist x-face-alist)))
 
 (defun shimbun-groups (shimbun)

@@ -39,7 +39,6 @@
 (defvar shimbun-bbdb-ml-groups '("bbdb-ml"))
 (defvar shimbun-bbdb-ml-coding-system (static-if (boundp 'MULE)
 					  '*iso-2022-jp* 'iso-2022-jp))
-(defvar shimbun-bbdb-ml-use-entire-index nil)
 
 (provide 'sb-bbdb-ml)
 

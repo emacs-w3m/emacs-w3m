@@ -1,5 +1,17 @@
 2001-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* shimbun/shimbun.el (shimbun-mua-use-entire-index): New method.
+	(shimbun-attributes): Removed use-entire-index.
+	(shimbun-open): Call `shimbun-mua-use-entire-index' to set
+	use-entire-index slot.
+
+	* shimbun/sb-airs.el (shimbun-airs-use-entire-index): Abolish.
+
+	* shimbun/sb-bbdb-ml.el (shimbun-bbdb-ml-use-entire-index): Ditto.
+
+	* shimbun/sb-fml.el (shimbun-get-headers): Stop when
+	`shimbun-search-id' returns non-nil.
+
 	* shimbun/shimbun.el (shimbun): Added `mua' slot.
 	(shimbun-mua): New class.
 	(shimbun-mua-search-id): New method.

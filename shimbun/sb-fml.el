@@ -44,33 +44,36 @@
       ;; Only latest month.
       (if (re-search-forward "<a href=\"\\([0-9]+\\(\\.week\\|\\.month\\)?\\)/index.html\">" nil t)
 	  (setq auxs (append auxs (list (match-string 1))))))
-    (while auxs
-      (with-temp-buffer
-	(shimbun-retrieve-url
-	 (concat (shimbun-url-internal shimbun) (setq aux (car auxs)) "/"))
-	(subst-char-in-region (point-min) (point-max) ?\t ?  t)
-	(let ((case-fold-search t)
-	      id url date subject from)
-	  (goto-char (point-min))
-	  (while (re-search-forward
-		  "<LI><A HREF=\"\\([0-9]+\\.html\\)\">Article .*</A> <DIV><SPAN CLASS=article>Article <SPAN CLASS=article-value>\\([0-9]+\\)</SPAN></SPAN> at <SPAN CLASS=Date-value>\\([^<]*\\)</SPAN> <SPAN CLASS=Subject>Subject: <SPAN CLASS=Subject-value>\\([^<]*\\)</SPAN></SPAN></DIV><DIV><SPAN CLASS=From>From: <SPAN CLASS=From-value>\\([^<]*\\)</SPAN></SPAN></DIV>"
+    (catch 'stop
+      (while auxs
+	(with-temp-buffer
+	  (shimbun-retrieve-url
+	   (concat (shimbun-url-internal shimbun) (setq aux (car auxs)) "/"))
+	  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
+	  (let ((case-fold-search t)
+		id url date subject from)
+	    (goto-char (point-min))
+	    (while (re-search-forward
+		    "<LI><A HREF=\"\\([0-9]+\\.html\\)\">Article .*</A> <DIV><SPAN CLASS=article>Article <SPAN CLASS=article-value>\\([0-9]+\\)</SPAN></SPAN> at <SPAN CLASS=Date-value>\\([^<]*\\)</SPAN> <SPAN CLASS=Subject>Subject: <SPAN CLASS=Subject-value>\\([^<]*\\)</SPAN></SPAN></DIV><DIV><SPAN CLASS=From>From: <SPAN CLASS=From-value>\\([^<]*\\)</SPAN></SPAN></DIV>"
 		    nil t)
-	    (setq url (concat (shimbun-url-internal shimbun)
-			      aux "/" (match-string 1))
-		  id (format "<%s%05d%%%s>"
-			     aux
-			     (string-to-number (match-string 2))
-			     (shimbun-current-group-internal shimbun))
-		  date (match-string 3)
-		  subject (match-string 4)
-		  from (match-string 5))
-	    (forward-line 1)
-	    (push (shimbun-make-header
-		   0
-		   (shimbun-mime-encode-string subject)
-		   from date id "" 0 0 url)
-		  headers)))
-	(setq auxs (cdr auxs))))
+	      (setq url (concat (shimbun-url-internal shimbun)
+				aux "/" (match-string 1))
+		    id (format "<%s%05d%%%s>"
+			       aux
+			       (string-to-number (match-string 2))
+			       (shimbun-current-group-internal shimbun))
+		    date (match-string 3)
+		    subject (match-string 4)
+		    from (match-string 5))
+	      (if (shimbun-search-id shimbun id)
+		  (throw 'stop nil))
+	      (forward-line 1)
+	      (push (shimbun-make-header
+		     0
+		     (shimbun-mime-encode-string subject)
+		     from date id "" 0 0 url)
+		    headers)))
+	  (setq auxs (cdr auxs)))))
     headers))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-fml) header)
