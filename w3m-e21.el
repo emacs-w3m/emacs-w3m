@@ -35,6 +35,7 @@
 ;;; Code:
 
 (require 'w3m-macro)
+(require 'w3m-fsf)
 
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
@@ -50,11 +51,6 @@
   (defvar w3m-history-flat)
   (autoload 'w3m-retrieve "w3m")
   (autoload 'w3m-image-type "w3m"))
-
-;; Generic functions.
-(defsubst w3m-find-coding-system (obj)
-  "Return OBJ if it is a coding-system."
-  (if (coding-system-p obj) obj))
 
 ;; Image handling functions.
 
@@ -256,5 +252,4 @@ Buffer string between BEG and END are replaced with IMAGE."
 				       (cons 'face (cddr elem))))))
 
 (provide 'w3m-e21)
-
 ;;; w3m-e21.el ends here.

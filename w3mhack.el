@@ -58,14 +58,17 @@
   (let* ((modules (directory-files default-directory nil "^[^#]+\\.el$"))
 	 (version-specific-modules '("w3m-e20.el" "w3m-e21.el"
 				     "w3m-om.el" "w3m-xmas.el"))
-	 (ignores (delete (cond ((featurep 'xemacs)
-				 "w3m-xmas.el")
-				((boundp 'MULE)
-				 "w3m-om.el")
-				((boundp 'emacs-major-version)
-				 (if (>= emacs-major-version 21)
-				     "w3m-e21.el"
-				   "w3m-e20.el")))
+	 (ignores (delete (cond
+			   ((featurep 'xemacs)
+			    (push "w3m-fsf.el" version-specific-modules)
+			    "w3m-xmas.el")
+			   ((boundp 'MULE)
+			    (push "w3m-fsf.el" version-specific-modules)
+			    "w3m-om.el")
+			   ((boundp 'emacs-major-version)
+			    (if (>= emacs-major-version 21)
+				"w3m-e21.el"
+			      "w3m-e20.el")))
 			  (append version-specific-modules
 				  (list "w3mhack.el"
 					w3mhack-colon-keywords-file))))

@@ -99,8 +99,6 @@
 
 
 ;; Functions to handle coding-system.
-(defalias 'coding-system-category 'get-code-mnemonic)
-
 (unless (fboundp 'coding-system-list)
   (defun coding-system-list ()
     "Return a list of all existing non-subsidiary coding systems."
@@ -123,6 +121,16 @@
 
 (defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
 
+(defun w3m-detect-coding-region (start end &optional highest)
+  "Detect coding system of the text in the region between START and END
+Return a list of possible coding systems ordered by priority.
+
+If optional argument HIGHEST is non-nil, return the coding system of
+highest priority."
+  (let ((x (detect-coding-region start end)))
+    (if highest
+	(if (consp x) (car x) x)
+      x)))
 
 ;;; Generic functions.
 (defun w3m-expand-path-name (name)

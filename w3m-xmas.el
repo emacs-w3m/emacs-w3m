@@ -40,6 +40,7 @@
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
 (eval-when-compile
+  (defvar w3m-default-coding-system)
   (defvar w3m-current-url)
   (defvar w3m-display-inline-image)
   (defvar w3m-icon-directory)
@@ -58,8 +59,33 @@
 (require 'poem)
 (require 'pccl)
 
+;;; Handle coding system:
 (defalias 'w3m-find-coding-system 'find-coding-system)
 (defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
+
+(defun w3m-detect-coding-region (start end &optional highest)
+  "Detect coding system of the text in the region between START and END
+Return a list of possible coding systems ordered by priority.
+
+If optional argument HIGHEST is non-nil, return the coding system of
+highest priority."
+  (let ((x
+	 (let (category)
+	   (if (and w3m-default-coding-system
+		    (setq category
+			  (coding-system-type w3m-default-coding-system)))
+	       (let ((orig (copy-sequence (coding-priority-list))))
+		 (unwind-protect
+		     (progn
+		       (set-coding-priority-list
+			(cons category
+			      (delq category (coding-priority-list))))
+		       (detect-coding-region start end))
+		   (set-coding-priority-list orig)))
+	     (detect-coding-region start end)))))
+    (if highest
+	(if (consp x) (car x) x)
+      x)))
 
 ;;; Handle images:
 
@@ -340,10 +366,6 @@ as the value."
       :value 'other)))
 
 (eval-after-load "wid-edit" '(w3m-xmas-define-missing-widgets))
-
-;;; Coding systems:
-(unless (fboundp 'coding-system-category)
-  (defalias 'coding-system-category 'coding-system-type))
 
 ;;; Header line (emulating Emacs 21).
 (defvar w3m-header-line-map (make-sparse-keymap))

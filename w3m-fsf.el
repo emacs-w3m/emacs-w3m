@@ -1,4 +1,4 @@
-;;; w3m-e20.el --- Emacs 20 specific functions for w3m.
+;;; w3m-fsf.el --- Common functions through FSF Emacsen.
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -31,21 +31,45 @@
 
 ;;; Commentary:
 
-;; This module provides Emacs 20 specific functions.  Visit
+;; This module provides common functions through FSF Emacsen.  Visit
 ;; <URL:http://emacs-w3m.namazu.org/> for more details of emacs-w3m.
 
 ;;; Code:
 
-(require 'w3m-fsf)
+(eval-when-compile
+  (defvar w3m-default-coding-system))
 
-;; Dummy functions.
-(defalias 'w3m-create-image 'ignore)
-(defalias 'w3m-insert-image 'ignore)
-(defalias 'w3m-image-type-available-p 'ignore)
-(defalias 'w3m-setup-toolbar 'ignore)
-(defalias 'w3m-update-toolbar 'ignore)
-(defalias 'w3m-display-graphic-p 'ignore)
-(defalias 'w3m-display-inline-image-p 'ignore)
+(defsubst w3m-find-coding-system (obj)
+  "Return OBJ if it is a coding-system."
+  (if (coding-system-p obj) obj))
 
-(provide 'w3m-e20)
-;;; w3m-e20.el ends here.
+(defun w3m-detect-coding-region (start end &optional highest)
+  "Detect coding system of the text in the region between START and END
+Return a list of possible coding systems ordered by priority.
+
+If optional argument HIGHEST is non-nil, return the coding system of
+highest priority."
+  (let (category)
+    (if (and w3m-default-coding-system
+	     (setq category
+		   (coding-system-category w3m-default-coding-system)))
+	(let ((orig coding-category-list))
+	  (unwind-protect
+	      (progn
+		(set-coding-priority
+		 (cons category
+		       (delq category
+			     (copy-sequence coding-category-list))))
+		(detect-coding-region start end highest))
+	    (set-coding-priority orig)))
+      (detect-coding-region start end highest))))
+
+(defun w3m-make-ccl-coding-system
+  (coding-system mnemonic docstring decoder encoder)
+  "Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
+CODING-SYSTEM, DECODER and ENCODER must be symbol."
+  (make-coding-system coding-system 4 mnemonic docstring
+		      (cons decoder encoder)))
+
+(provide 'w3m-fsf)
+;;; w3m-fsf.el ends here.

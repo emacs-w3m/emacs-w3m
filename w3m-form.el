@@ -49,11 +49,6 @@
   "*Face to fontify forms."
   :group 'w3m-face)
 
-(defcustom w3m-form-default-coding-system 'shift_jis
-  "*Default coding system for form encoding."
-  :group 'w3m
-  :type 'coding-system)
-
 ;;; w3m-form structure:
 
 (defun w3m-form-new (method action &optional baseurl charlst)
@@ -114,7 +109,7 @@ If no field in forward, return nil without moving."
 	      w3m-current-coding-system
 	      (w3m-charset-to-coding-system
 	       (w3m-content-charset w3m-current-url))
-	      w3m-form-default-coding-system))
+	      w3m-default-coding-system))
     (while plist
       (let ((name (symbol-name (car plist)))
 	    (value (cadr plist)))

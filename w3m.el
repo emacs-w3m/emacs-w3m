@@ -247,6 +247,15 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :group 'w3m
   :type 'coding-system)
 
+(defcustom w3m-default-coding-system
+  (and (boundp 'current-language-environment)
+       (string= "Japanese"
+		(symbol-value 'current-language-environment))
+       'shift_jis)
+  "*Default coding system."
+  :group 'w3m
+  :type 'coding-system)
+
 (defcustom w3m-key-binding
   nil
   "*This variable decides default key mapping used in w3m-mode buffers."
@@ -2244,10 +2253,7 @@ If the user enters null input, return second argument DEFAULT."
    (setq w3m-current-coding-system
 	 (if content-charset
 	     (w3m-charset-to-coding-system content-charset)
-	   (let ((codesys (detect-coding-region (point-min) (point-max))))
-	     (if (consp codesys)
-		 (car codesys)
-	       codesys)))))
+	   (w3m-detect-coding-region (point-min) (point-max) t))))
   (set-buffer-multibyte t))
 
 (defun w3m-x-moe-decode-buffer ()
@@ -2698,15 +2704,6 @@ to nil.
 (unless (get 'w3m-euc-japan-encoder 'ccl-program-idx)
   (define-ccl-program w3m-euc-japan-encoder
     `(1 (loop (read r0) (write-repeat r0)))))
-
-(eval-and-compile
-  (unless (fboundp 'w3m-make-ccl-coding-system)
-    (defun w3m-make-ccl-coding-system
-      (coding-system mnemonic docstring decoder encoder)
-      "Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
-CODING-SYSTEM, DECODER and ENCODER must be symbol."
-      (make-coding-system coding-system 4 mnemonic docstring
-			  (cons decoder encoder)))))
 
 (w3m-make-ccl-coding-system
  'w3m-euc-japan ?E

@@ -1,5 +1,30 @@
 2001-09-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3mhack.el (w3mhack-examine-modules): Handle `w3m-fsf.el'.
+
+	* w3m.el (w3m-default-coding-system): New option.
+	(w3m-decode-buffer): Call `w3m-detect-coding-region' instead of
+	`detect-coding-region'.
+	(w3m-make-ccl-coding-system): Export it to `w3m-fsf.el'.
+
+	* w3m-xmas.el (coding-system-category): Removed.
+	(w3m-detect-coding-region): New function.
+
+	* w3m-om.el (coding-system-category): Removed.
+	(w3m-detect-coding-region): New function.
+
+	* w3m-fsf.el: New file.
+
+	* w3m-form.el (w3m-form-default-coding-system): Abolished.
+	(w3m-form-make-form-data): Refer `w3m-default-coding-system'
+	instead of `w3m-form-default-coding-system'.
+
+	* w3m-e21.el (top): Require `w3m-fsf'.
+	(w3m-find-coding-system): Export it to `w3m-fsf.el'.
+
+	* w3m-e20.el (top): Require `w3m-fsf'.
+	(w3m-find-coding-system): Export it to `w3m-fsf.el'.
+
 	* w3m.el (w3m-goto-url): Change effect of the 3rd argument
 	`charset'.
 	(w3m-redisplay-with-charset): Reimplemented.
