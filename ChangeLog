@@ -1,3 +1,8 @@
+2002-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-server-regexp): Fix the value;
+	translate the comment into English.
+
 2002-10-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-ibm-dev.el (shimbun-make-contents): Strip SPAN tag

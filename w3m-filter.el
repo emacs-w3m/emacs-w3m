@@ -58,8 +58,8 @@
 (defvar w3m-filter-db nil) ; nil means non-initialized.
 (defconst w3m-filter-db-size 1023)
 
-;; FIXME: 本当は URL をきちんと解析する関数が必要
-(defconst w3m-filter-server-regexp "^\\([-+\\.A-z0-9]+://[^/]+/\\)")
+;; FIXME: In fact, the function which analyzes URL exactly is required.
+(defconst w3m-filter-server-regexp "^\\([-+.A-z0-9]+://[^/]+/\\)")
 
 
 (defun w3m-filter-setup ()
