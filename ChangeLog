@@ -1,5 +1,11 @@
 2002-08-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* Makefile.in (very-slow): New rule.
+
+	* attic/addpath.el: New file.
+
+2002-08-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-e21.el: Require `cl' when compiling to provide the function
 	`gensym'.  It is needed to byte-compile this file alone because of
 	the w3m-proc macros.
