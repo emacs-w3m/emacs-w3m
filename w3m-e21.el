@@ -69,6 +69,12 @@
   (autoload 'w3m-image-type "w3m")
   (autoload 'w3m-retrieve "w3m"))
 
+(eval-and-compile
+  (unless (fboundp 'frame-current-scroll-bars)
+    (defalias 'frame-current-scroll-bars 'ignore))
+  (unless (fboundp 'window-fringes)
+    (defalias 'window-fringes 'ignore)))
+
 ;;; Coding system.
 
 (defun w3m-make-ccl-coding-system
@@ -407,32 +413,37 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defcustom w3m-tab-width 16
   "w3m tab width."
   :group 'w3m
+  :set (lambda (symbol value)
+	 (custom-set-default symbol
+			     (if (and (numberp value) (> value 0))
+				 value
+			       16)))
   :type '(integer :size 0))
 
 (defface w3m-tab-unselected-face
   '((((type x w32 mac) (class color))
      :background "Gray50" :foreground "Gray20"
-     :underline "Gray85" :box (:line-width -1 :style released-button))
+     :box (:line-width -1 :style released-button))
     (((class color))
-     (:background "cyan" :foreground "black" :underline "blue")))
+     (:background "cyan" :foreground "black")))
   "*Face to fontify unselected tabs."
   :group 'w3m-face)
 
 (defface w3m-tab-unselected-retrieving-face
   '((((type x w32 mac) (class color))
      :background "Gray50" :foreground "OrangeRed"
-     :underline "Gray85" :box (:line-width -1 :style released-button))
+     :box (:line-width -1 :style released-button))
     (((class color))
-     (:background "cyan" :foreground "OrangeRed" :underline "blue")))
+     (:background "cyan" :foreground "OrangeRed")))
   "*Face to fontify unselected tabs which are retrieving their pages."
   :group 'w3m-face)
 
 (defface w3m-tab-selected-face
   '((((type x w32 mac) (class color))
      :background "Gray85" :foreground "black"
-     :underline "Gray85" :box (:line-width -1 :style released-button))
+     :box (:line-width -1 :style released-button))
     (((class color))
-     (:background "blue" :foreground "black" :underline "blue"))
+     (:background "blue" :foreground "black"))
     (t (:underline t)))
   "*Face to fontify selected tab."
   :group 'w3m-face)
@@ -440,19 +451,18 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defface w3m-tab-selected-retrieving-face
   '((((type x w32 mac) (class color))
      :background "Gray85" :foreground "red"
-     :underline "Gray85" :box (:line-width -1 :style released-button))
+     :box (:line-width -1 :style released-button))
     (((class color))
-     (:background "blue" :foreground "red" :underline "blue"))
+     (:background "blue" :foreground "red"))
     (t (:underline t)))
   "*Face to fontify selected tab which is retrieving its page."
   :group 'w3m-face)
 
 (defface w3m-tab-background-face
   '((((type x w32 mac) (class color))
-     :background "LightSteelBlue" :foreground "black"
-     :underline "Gray85")
+     :background "LightSteelBlue" :foreground "black")
     (((class color))
-     (:background "white" :foreground "black" :underline "blue")))
+     (:background "white" :foreground "black")))
   "*Face to fontify background of tab line."
   :group 'w3m-face)
 
@@ -535,28 +545,47 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defvar w3m-tab-line-format nil
   "Internal variable used to keep contents to be shown in the header-line.")
 
-(defvar w3m-tab-line-timer nil
+(defvar w3m-tab-timer nil
   "Internal variable used to say time has not gone by after the tab-line
 was updated last time.  It is used to control the `w3m-tab-line'
 function running too frequently, set by the function itself and
 cleared by a timer.")
 
+(defvar w3m-tab-half-space
+  (propertize " " 'display '(space :relative-width 0.5))
+  "The space of half width.")
+
+(defvar w3m-tab-separator
+  (propertize " "
+	      'face 'w3m-tab-background-face
+	      'display '(space :relative-width 0.5))
+  "String used to separate tabs.")
+
 (defun w3m-tab-line ()
-  (or (and w3m-tab-line-timer w3m-tab-line-format)
+  (or (and w3m-tab-timer w3m-tab-line-format)
       (let* ((current (current-buffer))
 	     (buffers (w3m-list-buffers))
-	     (width (if (> (* (length buffers) (+ 5 w3m-tab-width))
-			   (window-width))
-			(max (- (/ (window-width) (length buffers)) 5) 1)
-		      w3m-tab-width))
+	     (fringes (window-fringes))
+	     (width (+ (window-width)
+		       (/ (float (+ (or (car fringes) 0)
+				    (or (nth 1 fringes) 0)))
+			  (frame-char-width))
+		       (if (car (frame-current-scroll-bars)) 2 0)))
+	     (margin (+ (if w3m-show-graphic-icons-in-header-line 3.0 0.5)
+			;; Leading and trailing shadows.
+			(/ 2.0 (frame-char-width))))
 	     (window (get-buffer-window current t))
 	     (spinner (when w3m-process-queue
 			(w3m-make-spinner-image)))
 	     process face keymap icon title)
-	(setq w3m-tab-line-timer
+	(setq width
+	      (if (> (* (length buffers) (+ margin w3m-tab-width)) width)
+		  (max (truncate (- (/ width (length buffers)) margin)) 1)
+		w3m-tab-width))
+	(setq w3m-tab-timer
 	      (run-at-time 0.1 nil
 			   (lambda (window)
-			     (setq w3m-tab-line-timer nil)
+			     (setq w3m-tab-timer nil)
 			     (if (and (eq (selected-window) window)
 				      w3m-process-queue)
 				 ;; Wobble the window size to force
@@ -600,9 +629,11 @@ cleared by a timer.")
 	      icon
 	      (propertize
 	       (concat
-		(unless icon "  ")
-		(if (and (> width 0)
-			 (> (string-width title) width))
+		(when w3m-show-graphic-icons-in-header-line
+		  (if icon
+		      w3m-tab-half-space
+		    (concat "  " w3m-tab-half-space)))
+		(if (> (string-width title) width)
 		    (if (> width 6)
 			(concat (truncate-string-to-width title
 							  (max 0 (- width 3)))
@@ -610,14 +641,13 @@ cleared by a timer.")
 		      (truncate-string-to-width title width))
 		  (concat title
 			  (make-string (max 0 (- width (string-width title)))
-				       ?\ )))
-		"  ")
+				       ?\ ))))
 	       'mouse-face 'highlight
 	       'face face
 	       'local-map keymap
 	       'help-echo title)))
 	   buffers
-	   (propertize " " 'face 'w3m-tab-background-face))
+	   w3m-tab-separator)
 	  (propertize (make-string (window-width) ?\ )
 		      'face 'w3m-tab-background-face))))))
 

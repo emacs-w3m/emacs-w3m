@@ -238,6 +238,7 @@ stored in the `w3m-favicon-image' buffer-local variable."
 		     (ok (w3m-retrieve url 'raw nil nil nil handler))
 		   (let (idata image)
 		     (when ok
+		       (w3m-message "")
 		       (setq idata (buffer-string)
 			     image (w3m-favicon-convert idata type)))
 		     (with-current-buffer target
