@@ -57,13 +57,13 @@
 	(regexp (format
 		 "<a href=\"\\(%s\\|/\\)\\(news/news/\\(%s\\)/story/\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)[0-9]+\\)\\.html\\)[^>]*\">"
 		 (regexp-quote (shimbun-url-internal shimbun))
-		 (shimbun-regexp-opt (shimbun-groups-internal shimbun)))))
-      (dolist (xover (list (concat (shimbun-url-internal shimbun)
-				   "news/news/index.html")
-			   (concat (shimbun-url-internal shimbun)
-				   "news/news/last_seven.html")))
-	(erase-buffer)
-	(shimbun-retrieve-url xover t)
+		 (shimbun-regexp-opt (shimbun-groups-internal shimbun))))
+	ids)
+    (dolist (xover (list (concat (shimbun-url-internal shimbun)
+				 "news/news/index.html")
+			 (concat (shimbun-url-internal shimbun)
+				 "news/news/last_seven.html")))
+      (with-current-buffer (shimbun-retrieve-url-buffer xover t)
 	(goto-char (point-min))
 	(while (re-search-forward regexp nil t)
 	  (let* ((url   (concat (shimbun-url-internal shimbun)
@@ -87,8 +87,10 @@
 			  (shimbun-from-address-internal shimbun)
 			  date id "" 0 0 url))
 		 (x (assoc group group-header-alist)))
-	    (setcdr x (cons header (cdr x))))))
-      group-header-alist))
+	    (unless (member id ids)
+	      (setq ids (cons id ids))
+	      (setcdr x (cons header (cdr x))))))))
+    group-header-alist))
 
 (provide 'sb-wired)
 

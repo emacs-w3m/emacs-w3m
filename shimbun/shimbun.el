@@ -247,8 +247,10 @@ Optional MUA is a `shimbun-mua' instance."
   (when (shimbun-current-group-internal shimbun)
     (shimbun-set-current-group-internal shimbun nil)))
 
-(defun shimbun-headers (shimbun)
-  "Return a SHIMBUN header list."
+(luna-define-generic shimbun-headers (shimbun)
+  "Return a SHIMBUN header list.")
+
+(luna-define-method shimbun-headers ((shimbun shimbun))
   (with-current-buffer (shimbun-retrieve-url-buffer 
 			(shimbun-index-url shimbun) 'reload)
     (shimbun-get-headers shimbun)))
@@ -305,7 +307,7 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
 
 (luna-define-generic shimbun-make-contents (shimbun header)
   "Return a content string of SHIMBUN article using current buffer content.
-HEADER is a header structure obtained via `shimbun-get-headers'.")
+HEADER is a header structure obtained via `shimbun-headers'.")
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun) header)
   (shimbun-make-html-contents shimbun header))

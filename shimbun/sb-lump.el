@@ -45,7 +45,7 @@
 (defun shimbun-lump-check-p (shimbun)
   (or (null (shimbun-lump-last-check-internal shimbun))
       (and (shimbun-lump-last-check-internal shimbun)
-	   (< (shimbun-lump-lapse-seconds
+	   (> (shimbun-lump-lapse-seconds
 	       (shimbun-lump-last-check-internal shimbun))
 	      shimbun-lump-check-interval))))
 
@@ -55,7 +55,7 @@
 (luna-define-generic shimbun-get-group-header-alist (shimbun)
   "Return an alist of group and header list.")
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-lump))
+(luna-define-method shimbun-headers ((shimbun shimbun-lump))
   (when (shimbun-lump-check-p shimbun)
     (shimbun-lump-set-group-header-alist-internal
      shimbun (shimbun-get-group-header-alist shimbun))

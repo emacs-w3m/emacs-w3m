@@ -1,3 +1,13 @@
+2001-04-12  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun-headers): Define as generic function.
+
+	* shimbun/sb-wired.el (shimbun-get-group-header-alist): Don't return
+	headers with duplicated message-id.
+
+	* shimbun/sb-lump.el (shimbun-lump-check-p): Revert the checking logic.
+	(shimbun-headers): Renamed from shimbun-get-headers.
+
 2001-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-track-mouse): Default to t.
