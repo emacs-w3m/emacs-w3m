@@ -2700,65 +2700,74 @@ works on Emacs.
 		      (substring w3m-current-url (match-end 0))
 		    (concat "about://header/" w3m-current-url)))))
 
-(defun w3m-about-history-1 (history source depth)
-  "Internal function used to `w3m-about-history' for recursive funcall."
-  (let (element url title about children)
-    (while history
-      (setq element (car history)
-	    history (cdr history)
-	    url (car element)
-	    title (plist-get (cadr element) ':title)
-	    about (string-match w3m-about-history-ignored-regexp url)
-	    source (concat source
-			   (if (zerop depth)
-			       ""
-			     (make-string depth ?│))
-			   (if history
-			       "├"
-			     "└")
-			   "<a href=\"" url "\">"
-			   (when about
-			     "&lt;")
-			   (if (or (not title)
-				   (string-equal "<no-title>" title)
-				   (string-match "^[\t 　]*$" title))
-			       url
-			     title)
-			   (when about
-			     "&gt;")
-			   "</a>\n")
-	    children (cddr element))
-      (when children
-	(setq source (w3m-about-history-1 (apply 'append children)
-					  source (1+ depth))))))
-  source)
-
 (defun w3m-about-history (&rest args)
   "Show a tree-structured history."
-  (let ((source (w3m-about-history-1 (cdr w3m-history)
-				     "\
-<head><title>URL history</title></head><body>
-<h1>List of all the links you have visited in this session.</h1><pre>\n"
-				     0))
-	(previous w3m-current-url))
+  (let ((debugging nil)
+	(history (copy-sequence (cdr w3m-history)))
+	(current w3m-current-url)
+	element url about title hierarchy)
     (w3m-with-work-buffer
       (erase-buffer)
-      (set-buffer-multibyte t)
-      (insert source)
+      (insert "\
+<head><title>URL history</title></head><body>
+<h1>List of all the links you have visited in this session.</h1><pre>\n")
+      (while history
+	(setq element (car history)
+	      url (car element))
+	(if (stringp url)
+	    (progn
+	      (setq about (string-match w3m-about-history-ignored-regexp url)
+		    title (plist-get (cadr element) ':title)
+		    element (cddr element))
+	      (if debugging
+		  (when hierarchy
+		    (insert (format "%s" hierarchy)))
+		(if hierarchy
+		    (progn
+		      (insert " ")
+		      (insert-char ?│ (length hierarchy))
+		      (insert (if (eq 1 (car hierarchy))
+				  "└"
+				"├")))
+		  (insert " "
+			  (if (cdr history)
+			      "├"
+			    "└"))))
+	      (insert "<a href=\"" url "\">"
+		      (if about "&lt;" "")
+		      (if (or (not title)
+			      (string-equal "<no-title>" title)
+			      (string-match "^[\t 　]*$" title))
+			  url
+			title)
+		      (if about "&gt;" "")
+		      "</a>\n")
+	      (if element
+		  (setq history (append element (cdr history)))
+		(cond ((eq 1 (car hierarchy))
+		       (when (and (setq hierarchy (cdr hierarchy))
+				  (not (eq 1 (car hierarchy))))
+			 (setcar hierarchy (1- (car hierarchy)))))
+		      (hierarchy
+		       (setcar hierarchy (1- (car hierarchy)))))
+		(setq history (cdr history))))
+	  (push (length element) hierarchy)
+	  (setq history (append element (cdr history)))))
+      (insert "</pre></body>")
       (goto-char (point-min))
       (when (re-search-forward "\\(└\\)\\|\\(├\\)" nil t)
 	(replace-match (if (match-beginning 1)
 			   "─"
-			 "┬")))
-      (goto-char (point-min))
-      (when (and previous
+			 "┬"))
+	(goto-char (point-min)))
+      (when (and current
 		 (re-search-forward (concat "\\(<a href=\""
-					    (regexp-quote previous)
+					    (regexp-quote current)
 					    "\">.+</a>\\)")
 				    nil t))
-	(replace-match "◆\\1◆"))
-      (goto-char (point-max))
-      (insert "</pre></body>")))
+	(beginning-of-line)
+	(delete-char 1)
+	(insert ">"))))
   "text/html")
 
 (defun w3m-about-db-history (&rest args)

@@ -1,3 +1,9 @@
+2001-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-about-history): New implementation without recursive
+	funcall'ing.
+	(w3m-about-history-1): Removed.
+
 2001-04-26  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-gnome.el (shimbun-get-headers):
