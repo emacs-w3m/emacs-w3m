@@ -38,6 +38,8 @@
 (defconst report-emacs-w3m-bug-system-informations
   '(emacs-w3m-version
     emacs-version
+    mule-version
+    Meadow-version
     system-type
     w3m-version
     w3m-type
@@ -132,9 +134,17 @@ System Info to help track down your bug:
       (prin1 info)
       (insert "\n => ")
       (cond ((symbolp info)
-	     (if (boundp info)
-		 (prin1 (symbol-value info))
-	       (insert "(not bound)\n")))
+	     (cond ((fboundp info)
+		    (condition-case code
+			(prin1 (funcall info))
+		      (error
+		       (if (boundp info)
+			   (prin1 (symbol-value info))
+			 (prin1 code)))))
+		   ((boundp info)
+		    (prin1 (symbol-value info)))
+		   (t
+		    (insert "(not bound)\n"))))
 	    ((functionp info)
 	     (condition-case code
 		 (prin1 (funcall info))

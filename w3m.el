@@ -1282,25 +1282,43 @@ in the optimized interlaced endlessly animated gif format and base64.")
 
 (defconst w3m-menubar
   '("W3M"
+    ["Go to Home Page" w3m-gohome w3m-home-page]
     ["Back to Previous Page" w3m-view-previous-page
      (w3m-history-previous-link-available-p)]
     ["Forward to Next Page" w3m-view-next-page
      (w3m-history-next-link-available-p)]
     ["Upward to Parent Page" w3m-view-parent-page
      (w3m-parent-page-available-p)]
+    ;;
     ["Reload This Page" w3m-reload-this-page w3m-current-url]
-    ["Go to..." w3m-goto-url t]
-    ["Go to Home Page" w3m-gohome w3m-home-page]
-    ["Search the Internet" w3m-search t]
+    ["Cancel Process" w3m-process-stop t]
     ["Toggle Images" w3m-toggle-inline-images (w3m-display-graphic-p)]
+    ;;
+    ["Redisplay This Page" w3m-redisplay-this-page w3m-current-url]
+    ["Redisplay This Page with Charset"
+     w3m-redisplay-with-charset w3m-current-url]
+    ["Redisplay This Page with Content-type"
+     w3m-redisplay-with-content-type w3m-current-url]
+    ["Reset Charset and Content-type" w3m-redisplay-and-reset w3m-current-url]
+    ;;
+    ["Go to..." w3m-goto-url t]
+    ["Go to... in the New Session" w3m-goto-url-new-session t]
     ["Make a Copy of This Session" w3m-copy-buffer t]
+    ;;
+    ["View Bookmark" w3m-bookmark-view t]
+    ["Search the Internet" w3m-search t]
     ["Weather Forecast" w3m-weather t]
     ["Investigate with Antenna" w3m-antenna t]
+    ;;
+    ["View Source" w3m-view-source t]
+    ["View Header" w3m-view-header t]
     ["Show a History" w3m-history t]
     ["Show a DB History" w3m-db-history t]
+    ;;
     ["Download This URL" w3m-download-this-url t]
     ["Print Current URL" w3m-print-current-url t]
-    ["View Bookmark" w3m-bookmark-view t]
+    ;;
+    ["Report Bug" report-emacs-w3m-bug t]
     )
   "Menubar definition for w3m.")
 

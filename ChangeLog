@@ -1,3 +1,11 @@
+2002-04-27  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-bug.el (report-emacs-w3m-bug-system-informations): Add
+	`mule-version' and `Meadow-version'.
+	(report-emacs-w3m-bug): Fix when info is a function.
+
+	* w3m.el (w3m-menubar): Add many functions.
+
 2002-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bug.el: New file.
