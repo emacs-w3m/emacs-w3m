@@ -1,3 +1,9 @@
+2002-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (byte-optimize-form-code-walker): Advise to make it
+	optimize throughout the and/or forms.
+	(max-specpdl-size): Increase the value by 5 times for Mule 2.
+
 2002-07-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-accept-japanese-characters): Don't call the external

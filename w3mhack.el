@@ -71,6 +71,37 @@ but do not execute them.")
   (load "cl-macs" nil t))
 (require 'bytecomp)
 
+;; Since FSF Emacs won't optimize the butlast elements of the arguments
+;; for the functions and/or, we do it by ourselves.
+(when (equal
+       (cadr
+	(byte-optimize-form
+	 '(and
+	   (< 0 1)
+	   (message "The subform `(< 0 1)' should be optimized to `t'"))
+	 'for-effect))
+       '(< 0 1))
+  (setq max-specpdl-size (* 5 max-specpdl-size));; Needed for Mule 2.
+  (defadvice byte-optimize-form-code-walker
+    (around fix-bug-in-and/or-forms (form for-effect) activate)
+    "Fix a bug in the optimizing and/or forms.
+It has already been fixed in XEmacs since 1999-12-06."
+    (if (and for-effect (memq (car-safe form) '(and or)))
+	(let ((fn (car form))
+	      (backwards (reverse (cdr form))))
+	  (while (and backwards
+		      (null (setcar backwards
+				    (byte-optimize-form (car backwards) t))))
+	    (setq backwards (cdr backwards)))
+	  (if (and (cdr form) (null backwards))
+	      (byte-compile-log
+	       "  all subforms of %s called for effect; deleted" form))
+	  (when backwards
+	    (setcdr backwards
+		    (mapcar 'byte-optimize-form (cdr backwards))))
+	  (setq ad-return-value (cons fn (nreverse backwards))))
+      ad-do-it)))
+
 (defconst w3mhack-emacs-major-version (if (boundp 'emacs-major-version)
 					  emacs-major-version
 					(string-to-int emacs-version)))
