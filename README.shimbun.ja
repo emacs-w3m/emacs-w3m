@@ -215,7 +215,23 @@ SKK 掲示板		tcup.skk
 vinelinux web サイト	vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
 			vinelinux.errata.2x.sparc
 			vinelinux.errata.2x.alpha vinelinux.errata.1x
+2ch
+設定例:
+(setq shimbun-2ch-group-alist
+      '(("Meadow" . "http://pc.2ch.net/test/read.cgi/software/1005469775")
+	("emacs-w3m" . "http://pc.2ch.net/test/read.cgi/unix/1013710106")))
+      ;; (グループ名 . URL)
+
 HNS による日記
+設定例:
+(setq shimbun-hns-group-alist
+      '(("arisawa"			     ;; グループ名
+	 "http://www.nijino.com/ari/diary/"  ;; URL
+	 "ari@mbf.sphere.ne.jp")	     ;; From: に挿入するメールアドレス
+	("miyoshi"
+	 "http://www.be.wakwak.com/cgi-bin/sbox/~miyoshi/hns/"
+	 "miyoshi@meadowy.org")))
+
 小泉内閣メールマガジン  kantei.m-magazine
 IBM developerWorks	ibm-dev.components ibm-dev.java ibm-dev.linux
 			ibm-dev.opensource ibm-dev.security
@@ -269,18 +285,6 @@ mew-shimbun.el は Mew version 2.1 以降を使って shimbun を楽しむ elisp で
 
 ;;; (*1) は後述する未読管理をするときに設定します。この変数は、
 ;;; 必ず (require 'mew-shimbun) の前で設定しないといけません。
-
-;;; 変数の設定の例
-;; ハイパー日記システムのサイトを読むときは例えば以下のように設定します。
-;; (これは、Mew に限らずすべての MUA で共通の方式です)
-
-(setq shimbun-hns-group-alist
-      '(("arisawa"				;; グループ名
-	 "http://www.nijino.com/ari/diary/"	;; URL
-	 "ari@mbf.sphere.ne.jp")		;; From: に挿入するメールアドレス
-	("miyoshi"
-	 "http://www.be.wakwak.com/cgi-bin/sbox/~miyoshi/hns/"
-	 "miyoshi@meadowy.org")))
 
 ;; mew-shimbun-folder-groups に Mew で購読する shimbun server 及び group
 ;; を設定します。
