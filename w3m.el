@@ -1309,7 +1309,7 @@ for a refresh indication")
 
 (defconst w3m-halfdump-command-arguments
   (cond ((eq w3m-type 'w3mmee)
-	 (list "-dump=half-buffer"
+	 (list "-dump=half-buffer,image"
 	       '(if charset "-I")
 	       'charset
 	       "-o" "concurrent=0"))

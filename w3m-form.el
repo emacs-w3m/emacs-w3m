@@ -432,6 +432,13 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		   w3m-action (w3m-form-reset ,form)
 		   w3m-anchor-sequence ,abs-hseq)))
 	       ((string= type "textarea")
+		(if (eq w3m-type 'w3mmee)
+		    (w3m-form-put form name 
+				  (decode-coding-string
+				   (w3m-url-decode-string value)
+				   w3m-current-coding-system))
+		  (setq textareas (cons (list textareanumber form name)
+					textareas)))
 		(add-text-properties
 		 start end
 		 `(w3m-form-field-id
@@ -442,8 +449,6 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					       (w3m-form-get ,form ,name))
 		   w3m-form-hseq ,hseq
 		   w3m-anchor-sequence ,abs-hseq))
-		(setq textareas (cons (list textareanumber form name)
-				      textareas))
 		(when (> hseq 0)
 		  (add-text-properties start end `(w3m-form-name ,name))))
 	       ((string= type "select")
