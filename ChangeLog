@@ -1,3 +1,7 @@
+2002-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-savannah.el (shimbun-savannah-x-face-alist): New.
+
 2002-12-20  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-about-db-history): Display the information of page.
