@@ -173,6 +173,7 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-impress)
 					 &optional range)
+  (shimbun-remove-tags "<!--" "-->") ;; clear comment-outed html source
   (cond
    ;; k-tai and bb
    ((or (equal "k-tai" (shimbun-current-group-internal shimbun))
