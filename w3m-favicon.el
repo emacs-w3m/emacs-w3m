@@ -171,7 +171,7 @@ the cache file.")
 	    (list ""
 		  'w3m-space-before-favicon
 		  (propertize "  " 'display w3m-favicon-image)
-		  (propertize " " 'display '(space :relative-width 0.5)))))))
+		  (propertize " " 'display '(space :width 0.5)))))))
 
 (defun w3m-favicon-setup (url)
   "Set up the favicon data in the current buffer.  The buffer-local
