@@ -1,3 +1,8 @@
+2001-04-20  Taiki SUGAWARA <taiki.s@cityfujisawa.ne.jp>
+
+	* w3m.el (w3m-expand-file-name-as-url): Use "file:///cygdrive/"
+	instead of "/cygdrive/" when `w3m-use-cygdrive' is non-nil.
+
 2001-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-add-arrived-db): New command.
