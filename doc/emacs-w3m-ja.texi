@@ -3559,7 +3559,11 @@ URL の web page を取得し、@code{shimbun-get-headers} がその we
 
 上記のように記事の URL が相対パス表示されている場合は、
 @code{w3m-expand-url} を使用し、絶対パス表示に変更してからヘッダに収めま
-しょう。
+しょう。記事の URL がヘッダの URL と同じ、つまり記事独自に URL を持たな
+い構造の web page もあります。この場合は少しやっかいで、ヘッダ情報取得の
+段階で、記事の内容も取得しておき、Emacs のメモリに収めておく必要がありま
+す。具体的には @file{sb-palmfan.el}, @file{sb-dennou.el},
+@file{sb-tcup.el} などをご参照下さい。
 
 web page によっては Date が特定できないものがあります。そういう場合は無
 理に特定せずとも @code{""} を入れておけば OK です。記事の内容を見て初め
