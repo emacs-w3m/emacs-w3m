@@ -4346,7 +4346,13 @@ It will put the retrieved contents into the current buffer.  See
 `w3m-retrieve' for how does it work asynchronously with the arguments."
   (cond
    ((string= "about://emacs-w3m.gif" url)
-    (when (fboundp 'base64-decode-string)
+    (when (or (fboundp 'base64-decode-string)
+	      (condition-case nil
+		  ;; Emacs 19 doesn't provide the internal base64 functions.
+		  (require 'base64)
+		(error
+		 (message "You need to install the base64.el(c) module")
+		 nil)))
       (let* ((b64d 'base64-decode-string)
 	     ;; Avoid compile warning under old Emacsen.
 	     (icon (funcall b64d w3m-emacs-w3m-icon)))

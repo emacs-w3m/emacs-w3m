@@ -501,7 +501,12 @@ Emacs 20,21     after-make-frame-functions
 Emacs 19        after-make-frame-hook\
 "
   (unless frame
-    (setq frame (selected-frame)))
+    (setq frame (if (and (= emacs-major-version 19)
+			 ;; See frame.el in Emacs 19.
+			 (boundp 'nframe)
+			 (framep (symbol-value 'nframe)))
+		    (symbol-value 'nframe)
+		  (selected-frame))))
   (with-current-buffer (window-buffer (frame-first-window frame))
     (when (eq major-mode 'w3m-mode)
       (push frame w3m-initial-frames))))
