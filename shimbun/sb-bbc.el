@@ -36,7 +36,8 @@
   "http://www.bbc.co.uk/syndication/feeds/news/ukfs_news/world/rss091.xml")
 (defvar shimbun-bbc-groups '("news"))
 (defvar shimbun-bbc-from-address  "newsonline@bbc.co.uk")
-(defvar shimbun-bbc-content-start "\\(<!-- [ES] IIMA -->\\|<!-- S IBOX -->\\)")
+(defvar shimbun-bbc-content-start
+  "\\(<!-- \\(E I\\(BYL\\|IMA\\)\\|S I\\(BOX\\|IMA\\)\\) -->\\)")
 (defvar shimbun-bbc-content-end "<!-- E BO -->")
 
 (luna-define-method shimbun-rss-build-message-id
