@@ -3805,12 +3805,13 @@ Return t if current line has a same anchor sequence."
     (save-excursion
       (beginning-of-line)
       (setq pos (point))
-      (while (and (< pos limit)
+      (while (and pos
+		  (< pos limit)
 		  (not (eq seq (setq pseq (get-text-property 
 					   pos
 					   'w3m-anchor-sequence)))))
 	(setq pos (next-single-property-change pos 'w3m-anchor-sequence)))
-      (when (and (< pos limit) (eq seq pseq))
+      (when (and pos (< pos limit) (eq seq pseq))
 	(setq beg pos)
 	(setq pos (next-single-property-change pos 'w3m-anchor-sequence))
 	(setq ov (make-overlay beg pos))
