@@ -865,7 +865,7 @@ AxQIYNre7Elp6rzxOpY1XxoEhuKSAAA7"
   "A small icon image for the url about://emacs-w3m.gif.  It is currently
 encoded in the optimized animated gif format and base64.")
 
-(defconst w3m-modeline-process-status-on "[PRC]"
+(defconst w3m-modeline-process-status-on "<PRC>"
   "Modeline string which is displayed when the process is runnning now.")
 
 (defconst w3m-modeline-image-status-on "[IMG]"
@@ -882,6 +882,14 @@ encoded in the optimized animated gif format and base64.")
 
 (defvar w3m-current-process nil "Current retrieving process of this buffer.")
 (make-variable-buffer-local 'w3m-current-process)
+
+(defvar w3m-modeline-process-string nil "Retrieving process string of this buffer.")
+(make-variable-buffer-local 'w3m-modeline-process-string)
+
+(defcustom w3m-modeline-process-string-format " Reading: %sKByte"
+  "*A format of modeline process string. %s is substuted the size of fetching HTML."
+  :group 'w3m
+  :type 'string)
 
 (defvar w3m-current-base-url nil "Base URL of this buffer.")
 (defvar w3m-current-forms nil "Forms of this buffer.")
@@ -4184,15 +4192,20 @@ appropriate buffer and select it."
     (set-buffer (get-buffer-create "*w3m*"))
     (unless (eq major-mode 'w3m-mode)
       (w3m-mode)))
-  (setq mode-line-buffer-identification (list "%b"))
-  (nconc mode-line-buffer-identification
-	 (list " " '((w3m-current-process
-		      w3m-modeline-process-status-on
-		      (w3m-display-inline-images
-		       w3m-modeline-image-status-on
-		       w3m-modeline-status-off)))))
-  (nconc mode-line-buffer-identification
-	 (list " / " 'w3m-current-title)))
+  (setq mode-line-buffer-identification
+	(list "%b "
+	      '((w3m-current-process
+		 w3m-modeline-process-status-on
+		 (w3m-display-inline-images
+		  w3m-modeline-image-status-on
+		  w3m-modeline-status-off)))
+	      " / "
+	      'w3m-current-title))
+  (or (assq 'w3m-current-process mode-line-process)
+      (setq mode-line-process
+	    (cons '(w3m-current-process
+		    w3m-modeline-process-string)
+		  mode-line-process))))
 
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler)
@@ -4296,10 +4309,13 @@ field for this request."
 		   'cursor-moved)
 	       (setq w3m-image-only-page nil
 		     w3m-current-buffer (current-buffer)
+		     w3m-modeline-process-string
+		     (format w3m-modeline-process-string-format "-.-")
 		     w3m-current-process
 		     (w3m-retrieve-and-render url reload cs ct post-data
 					      referer handler))))
 	  (with-current-buffer w3m-current-buffer
+	    (setq w3m-modeline-process-string nil)
 	    (setq w3m-current-process nil)
 	    (cond
 	     ((not action)

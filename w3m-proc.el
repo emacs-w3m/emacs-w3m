@@ -51,6 +51,8 @@
   (defvar w3m-current-url)
   (defvar w3m-current-buffer)
   (defvar w3m-current-process)
+  (defvar w3m-modeline-process-string)
+  (defvar w3m-modeline-process-string-format)
   (defvar w3m-profile-directory)
   (defvar w3m-terminal-coding-system)
   (defvar w3m-command)
@@ -506,10 +508,16 @@ evaluated in a temporary buffer."
   (when (buffer-name (process-buffer process))
     (with-current-buffer (process-buffer process)
       (let ((buffer-read-only nil)
-	    (case-fold-search nil))
+	    (case-fold-search nil)
+	    bufsize)
 	(goto-char (process-mark process))
 	(insert string)
 	(set-marker (process-mark process) (point))
+	(setq bufsize (buffer-size))
+	(with-current-buffer w3m-current-buffer
+	  (setq w3m-modeline-process-string
+		(format w3m-modeline-process-string-format
+			(format "%.1f" (/ bufsize 1024.0)))))
 	(unless (string= "" string)
 	  (goto-char (point-min))
 	  (cond

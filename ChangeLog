@@ -1,3 +1,14 @@
+2001-12-03  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-modeline-process-status-on): Modify default value.
+	(w3m-modeline-process-string): New buffer local value.
+	(w3m-modeline-process-string-format): New option.
+	(w3m-buffer-setup): Simplified `mode-line-buffer-identification'.
+	Set up `mode-line-process'.
+	(w3m-goto-url): Set `w3m-modeline-process-string'.
+
+	* w3m-proc.el (w3m-process-filter): Set `w3m-modeline-process-string'.
+
 2001-11-29  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-e21.el (w3m-imagick-convert-program): New user option.
