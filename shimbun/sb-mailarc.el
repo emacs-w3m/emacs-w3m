@@ -33,7 +33,7 @@
     (catch 'stop
       (goto-char (point-min))
       (while (re-search-forward
-	      "<li>\\([0-9]+\\) <strong><a href='\\([^']+\\)'>\\([^<]*\\)</a>\n</strong>\n<em>\\([^<]*\\)</em>\n</li>\n"
+	      "<li>\\([0-9]+\\) <strong><a href=['\"]\\([^'\"]+\\)['\"]>\\([^<]*\\)</a>\n</strong>\n<em>\\([^<]*\\)</em>\n</li>\n"
 	      nil t)
 	(let ((id (format "<%s%%%s>" (match-string 1)
 			  (shimbun-current-group-internal shimbun)))

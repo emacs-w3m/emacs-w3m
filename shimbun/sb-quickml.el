@@ -36,6 +36,7 @@
 				 "pdumpfs"
 				 "quickml-server"
 				 "quickml-users"
+				 "software-patent"
 				 "stationery"
 				 "tty-mania"))
 

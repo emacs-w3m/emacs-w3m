@@ -3431,7 +3431,8 @@ netbsd.www-changes-ja
 @item @uref{http://namazu.org/~satoru/archives/, QuickML}
 quickml.quickml-users quickml.quickml-server
 quickml.chatty quickml.dotnet quickml.linux-zaurus quickml.ming
-quickml.pdumpfs quickml.stationery quickml.tty-mania
+quickml.pdumpfs quickml.software-patent quickml.stationery
+quickml.tty-mania
 
 @item @uref{http://blade.nagaokaut.ac.jp/, Ruby Mailing List}
 ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
