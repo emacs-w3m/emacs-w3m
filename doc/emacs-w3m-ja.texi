@@ -2565,11 +2565,12 @@ a buffer.
 
 @item w3m-make-new-session
 @vindex w3m-make-new-session
-Non-@code{nil} means the @code{w3m} command mostly makes a new emacs-w3m
-buffer.  It does so if a user specifies a url string when invoking the
-command.  Otherwise, the @code{w3m} command uses an existing emacs-w3m
-buffer to show the specified page or simply pops it up.  The default
-value is @code{nil}.
+Non-@code{nil} means making new emacs-w3m buffers when visiting new
+pages.  If it is non-@code{nil} and there are already emacs-w3m buffers,
+the @code{w3m} command makes a new emacs-w3m buffer if a user specifies
+a url string in the minibuffer, and the @code{w3m-safe-view-this-url}
+command also makes a new buffer at any rate.  The default value is
+@code{nil}.
 
 @item w3m-mbconv-command
 @vindex w3m-mbconv-command
