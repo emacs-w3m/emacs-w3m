@@ -1,3 +1,8 @@
+2002-04-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-om.el: Require `w3m-bitmap' if BITMAP-MULE is available.
+	(move-to-column-force): Define it if void.
+
 2002-04-09  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-bitmap.el: Convert CRLF to LF.
@@ -19,7 +24,7 @@
 	(w3mhack-examine-modules): Add condition to w3m-bitmap.el check.
 
 	* w3m-bitmap.el: New file.
-	
+
 	* w3m-e20.el (w3m-create-image, w3m-insert-image,
 	w3m-remove-image, w3m-image-type-available-p,
 	w3m-display-graphic-p, w3m-display-inline-images-p): Alias to

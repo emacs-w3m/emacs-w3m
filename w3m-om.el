@@ -50,15 +50,20 @@
   (defvar w3m-menubar)
   (defvar w3m-default-coding-system))
 
+(eval-and-compile
+  (if (locate-library "bitmap")
+      (require 'w3m-bitmap)
+    ;; Dummy functions.
+    (defalias 'w3m-create-image 'ignore)
+    (defalias 'w3m-insert-image 'ignore)
+    (defalias 'w3m-remove-image 'ignore)
+    (defalias 'w3m-image-type-available-p 'ignore)
+    (defalias 'w3m-display-graphic-p 'ignore)
+    (defalias 'w3m-display-inline-images-p 'ignore)))
+
 ;; Dummy functions.
-(defalias 'w3m-create-image 'ignore)
-(defalias 'w3m-insert-image 'ignore)
-(defalias 'w3m-remove-image 'ignore)
-(defalias 'w3m-image-type-available-p 'ignore)
 (defalias 'w3m-setup-toolbar 'ignore)
 (defalias 'w3m-update-toolbar 'ignore)
-(defalias 'w3m-display-graphic-p 'ignore)
-(defalias 'w3m-display-inline-images-p 'ignore)
 
 ;; Required for old Emacsen.  See the file README for details.
 (eval-and-compile
@@ -358,7 +363,26 @@ as the value."
 (eval-after-load "wid-edit" '(w3m-om-define-missing-widgets))
 
 ;;; Miscellaneous:
-(defalias 'multibyte-string-p 'stringp)
+(unless (fboundp 'multibyte-string-p)
+  (defalias 'multibyte-string-p 'stringp))
+
+(unless (fboundp 'move-to-column-force)
+  (defun move-to-column-force (column &optional flag)
+    "Move point to column COLUMN rigidly in the current line.
+If COLUMN is within a multi-column character, replace it by
+spaces and tab.
+
+As for `move-to-column', passing anything but nil or t in FLAG will move to
+the desired column only if the line is long enough."
+    (let ((col (move-to-column column (or flag t))))
+      (if (> col column)
+	  (let (pos)
+	    (delete-char -1)
+	    (insert-char ?  (- column (current-column)))
+	    (setq pos (point))
+	    (indent-to col)
+	    (goto-char pos)))
+      column)))
 
 (provide 'w3m-om)
 
