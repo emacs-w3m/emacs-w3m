@@ -46,7 +46,7 @@
 (defvar shimbun-yomiuri-group-table
   (let* ((s0 "[\t\n ]*")
 	 (s1 "[\t\n ]+")
-	 (no-nl "[^\n]+")
+	 (no-nl "[^\n<>]+")
 	 (default
 	   (list
 	    (concat
@@ -57,7 +57,7 @@
 	     "\\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\\([0-9a-z]+\\)"
 	     "\\.htm\\)\">" s0
 	     ;; 4. subject
-	     "\\([^<>]+\\)"
+	     "\\(" no-nl "\\)"
 	     s0 "("
 	     ;; 5. month
 	     "\\([01]?[0-9]\\)"
@@ -102,9 +102,9 @@
 		"\\([0-3][0-9]\\)"
 		"\\)\\([0-9a-z]+\\)"
 		"\\.htm\\)\""
-		s1 "target=\"_top\">" s0 "\\(<[^<>]+>" s0 "\\)+◆?"
+		s1 "target=\"_top\">" s0 "\\(<" no-nl ">" s0 "\\)+◆?"
 		;; 8. subject
-		"\\([^<>]+\\)" s0)
+		"\\(" no-nl "\\)" s0)
        1 3 6 8 4 5 nil 2)
       ("national" "社会" "index.htm" ,@default)
       ("obit" "おくやみ" "index.htm"
@@ -362,7 +362,7 @@ information available, removing useless contents, etc."
 	(case-fold-search t)
 	end)
     (if (string-equal group "kyoiku")
-	(when (re-search-forward "^◆<b>[^\n]+</b>[\t\n ]*" nil t)
+	(when (re-search-forward "^◆<b>[^\n<>]+</b>[\t\n ]*" nil t)
 	  (delete-region (point-min) (point))
 	  (while (re-search-forward "[\t\n ]*\\(<\\([^<>]+\\)>[\t\n ]*\\)+"
 				    nil t)
