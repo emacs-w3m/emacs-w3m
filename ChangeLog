@@ -5,6 +5,11 @@
 	(w3m-meta-refresh-content-regexp)
 	(w3m-meta-content-refresh-regexp): Remove redundant double quote.
 
+	* w3m.el (w3m-content-prepare-functions): New internal contsant.
+	(w3m-prepare-content): Refer it.
+	(w3m-prepare-text-content): New function.
+	(w3m-prepare-image-content): Ditto.
+
 2002-02-05  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-meta-charset-content-type-regexp)

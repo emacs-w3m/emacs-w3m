@@ -3188,30 +3188,45 @@ argument.  Otherwise, it will be called with nil."
 			 ""))
 	  nil)))))
 
+(defconst w3m-content-prepare-functions
+  '(("\\`text/" . w3m-prepare-text-content)
+    ("\\`image/" . w3m-prepare-image-content)))
+
 (defun w3m-prepare-content (url type output-buffer &optional content-charset)
-  (cond
-   ((string-match "\\`text/" type)
-    (setq w3m-current-url (w3m-real-url url)
-	  w3m-current-base-url (w3m-base-url url)
-	  w3m-current-title
-	  (if (string= "text/html" type)
-	      (w3m-rendering-unibyte-buffer url content-charset)
-	    (w3m-decode-buffer url content-charset type)
-	    (or (when (string-match "\\`about://\\(source\\|header\\)/" url)
-		  (w3m-arrived-title (substring url (match-end 0))))
-		(file-name-nondirectory url))))
-    (let ((result-buffer (current-buffer)))
-      (with-current-buffer output-buffer
-	(let (buffer-read-only)
-	  (widen)
-	  (delete-region (point-min) (point-max))
-	  (insert-buffer result-buffer)
-	  (w3m-copy-local-variables result-buffer)
-	  (set-buffer-file-coding-system w3m-current-coding-system)
-	  (when (string= "text/html" type) (w3m-fontify))
-	  t))))
-   ((and (w3m-image-type-available-p (w3m-image-type type))
-	 (string-match "\\`image/" type))
+  (catch 'content-prepared
+    (dolist (elem w3m-content-prepare-functions)
+      (and (string-match (car elem) type)
+	   (funcall (cdr elem) url type output-buffer content-charset)
+	   (throw 'content-prepared t)))
+    (with-current-buffer output-buffer
+      (w3m-external-view url))
+    nil))
+
+(defun w3m-prepare-text-content (url type output-buffer
+				     &optional content-charset)
+  (setq w3m-current-url (w3m-real-url url)
+	w3m-current-base-url (w3m-base-url url)
+	w3m-current-title
+	(if (string= "text/html" type)
+	    (w3m-rendering-unibyte-buffer url content-charset)
+	  (w3m-decode-buffer url content-charset type)
+	  (or (when (string-match "\\`about://\\(source\\|header\\)/" url)
+		(w3m-arrived-title (substring url (match-end 0))))
+	      (file-name-nondirectory url))))
+  (let ((result-buffer (current-buffer)))
+    (with-current-buffer output-buffer
+      (let (buffer-read-only)
+	(widen)
+	(delete-region (point-min) (point-max))
+	(insert-buffer result-buffer)
+	(w3m-copy-local-variables result-buffer)
+	(set-buffer-file-coding-system w3m-current-coding-system)
+	(when (string= "text/html" type) (w3m-fontify))
+	t))))
+
+(defun w3m-prepare-image-content (url type output-buffer
+				      &optional content-charset)
+  (when (w3m-image-type-available-p (w3m-image-type type))
     (with-current-buffer output-buffer
       (let (buffer-read-only)
 	(w3m-clear-local-variables)
@@ -3225,10 +3240,7 @@ argument.  Otherwise, it will be called with nil."
 				 (list 'face 'w3m-image-face
 				       'w3m-image url
 				       'mouse-face 'highlight))
-	t)))
-   (t (with-current-buffer output-buffer
-	(w3m-external-view url))
-      nil)))
+	t))))
 
 (defun w3m-search-name-anchor (name &optional quiet)
   (interactive "sName: ")
