@@ -5225,12 +5225,12 @@ with the @code{yahtml-mode}.  Here is an example:
 
 You can use JIS X 0213 character set in Emacs using the @code{jis0213}
 module which is bundled in the Mule-UCS package.  Although the
-@code{decode-char} function in Emacs 21 stops working properly since
-@code{jis0213} loads @code{mucs} and @code{mucs} overrides that
-function, it has been reported that also to load the @code{unicode}
-module seems to solve the problem.  The reason has not been made clear.
-Here is an example for the @file{~/.emacs} file, but it may not be
-right:
+@code{decode-char} function in Emacs 21 stops working properly for the
+@code{ucs} coded character set since @code{jis0213} loads @code{mucs}
+and @code{mucs} overrides that function, it has been reported that also
+to load the @code{unicode} module seems to solve the problem.  The
+reason has not been made clear yet.  Here is an example for the
+@file{~/.emacs} file:
 
 @lisp
 (require 'unicode)
