@@ -6941,10 +6941,25 @@ FROM-COMMAND is defined to `w3m-minor-mode-map' for same keys in
 				 keymap w3m-mode-map))
     keymap))
 
-(defvar w3m-minor-mode-map (w3m-make-minor-mode-keymap))
+(defvar w3m-minor-mode-map (w3m-make-minor-mode-keymap)
+  "Keymap for `w3m-minor-mode'.")
 
-(define-minor-mode w3m-minor-mode
-  "Minor mode to view HTML part in articles." nil " w3m")
+(defcustom w3m-minor-mode-hook nil
+  "*Hook run at the end of function `w3m-minor-mode'."
+  :group 'w3m
+  :type 'hook)
+
+(defvar w3m-minor-mode nil "Non-nil if w3m minor mode is enabled.")
+(make-variable-buffer-local 'w3m-minor-mode)
+
+(defun w3m-minor-mode (&optional arg)
+  "Minor mode to view HTML part in articles."
+  (interactive)
+  (prog1 (setq w3m-minor-mode
+	       (if arg
+		   (> (prefix-numeric-value arg) 0)
+		 (not w3m-minor-mode)))
+    (run-hooks 'w3m-minor-mode-hook)))
 
 
 (provide 'w3m)

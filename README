@@ -57,8 +57,8 @@
 
    d) Mule 2.3 (based on Emacs 19.34)
       APEL package, "new custom" package, the module regexp-opt.el(c)
-      and easy-mmode.el(c) are required.  For more detail, please check
-      the next section about Emacs 19.34.
+      are required.  For more detail, please check the next section
+      about Emacs 19.34.
 
       If you wish to use BITMAP-MULE package to show black and white
       images inline on the web pages, we strongly recommend you apply
@@ -69,26 +69,22 @@
 
    e) Emacs 19.34 (without Mule)
       APEL package, "new custom" package, the module regexp-opt.el(c)
-      and easy-mmode.el(c) are required.
+      are required.
 
       Emacs-w3m requires "new custom" package. If you use Emacs 19.34 or
       Mule 2.3, you have to install it before installing emacs-w3m. For
       more detail, see http://www.dina.kvl.dk/~abraham/custom/, and
       especially for Mule 2.3, see also README.en distributed with APEL.
 
-      Emacs-w3m also requires the modules regexp-opt.el(c) and
-      easy-mmode.el(c) which might not be provided in the old Emacsen
-      (e.g. Emacs 19.34 and Mule 2.3).  If you are using such versions
-      of Emacs, you have to install the modules regexp-opt.el(c) and
-      easy-mmode.el(c) before installing emacs-w3m as follows:
+      Emacs-w3m also requires the module regexp-opt.el(c) which might
+      not be provided in the old Emacsen (e.g. Emacs 19.34 and Mule
+      2.3).  If you are using such versions of Emacs, you have to
+      install the module regexp-opt.el(c) before installing emacs-w3m as
+      follows:
 
           % cp attic/regexp-opt.el /usr/local/share/emacs/site-lisp
           % cd /usr/local/share/emacs/site-lisp
           % emacs -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
-
-          % cp attic/easy-mmode.el /usr/local/share/emacs/site-lisp
-          % cd /usr/local/share/emacs/site-lisp
-          % emacs -q -no-site-file -batch -f batch-byte-compile easy-mmode.el
 
       (You will likely need to say `mule' instead of `emacs' for the
       path name and the executable name if you are using Mule.)

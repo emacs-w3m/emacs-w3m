@@ -68,11 +68,7 @@
 
 ;; Required for old Emacsen.  See the file README for details.
 (eval-and-compile
-  (unless (fboundp 'regexp-opt)
-    (require 'regexp-opt))
-  (unless (fboundp 'define-minor-mode)
-    (require 'easy-mmode)
-    (defalias 'define-minor-mode 'easy-mmode-define-minor-mode)))
+  (autoload 'regexp-opt "regexp-opt"))
 
 (defvar w3m-om-coding-system-alist
   '((alternativnyj	. *alternativnyj*)

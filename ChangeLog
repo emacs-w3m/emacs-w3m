@@ -1,3 +1,16 @@
+2002-10-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-minor-mode): Define without `define-minor-mode'.
+	(w3m-minor-mode): Ditto.
+	(w3m-minor-mode-hook): Ditto.
+
+	* w3m-e19.el: Cancel the last change to define
+	`define-minor-mode'.
+	* w3m-fsf.el: Ditto.
+	* w3m-om.el: Ditto.
+
+	* attic/easy-mmode.el: Removed.
+
 2002-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e19.el: Require `easy-mmode'; make the alias
