@@ -1021,7 +1021,7 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
        (or (null (eq w3m-output-coding-system 'utf-8))
 	   (and (charsetp 'mule-unicode-0100-24ff)
 		(charsetp 'mule-unicode-2500-33ff)
-		(or window-system (eq terminal-coding-system 'utf-8))))
+		(or window-system (eq (terminal-coding-system) 'utf-8))))
        t)
   "*Non-nil means replacing symbol."
   :group 'w3m
