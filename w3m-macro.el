@@ -50,15 +50,7 @@
 
 ;;; Things should be defined in advance:
 
-(defsubst w3m-url-dtree-p (url)
-  "If URL points a 'w3m-dtree', return non-nil value.  Otherwise return
-nil."
-  (string-match "^about://dtree/" url))
-
-(defsubst w3m-url-local-p (url)
-  "If URL points a file on the local system, return non-nil value.
-Otherwise return nil."
-  (string-match "^\\(file:\\|/\\)" url))
+;; (There are no objects so far.)
 
 
 ;;; Control structures:
@@ -143,113 +135,6 @@ cursor position and around there."
     (` (get-text-property (point) 'w3m-cursor-anchor))))
 
 
-;;; Attributes:
-
-(defun w3m-attributes (url &optional no-cache)
-  "Return a list of attributes of URL.
-Value is nil if retrieval of header is failed.  Otherwise, list
-elements are:
- 0. Type of contents.
- 1. Charset of contents.
- 2. Size in bytes.
- 3. Encoding of contents.
- 4. Last modification time.
- 5. Real URL.
- 6. Base URL.
-If optional argument NO-CACHE is non-nil, cache is not used."
-  (when (string-match "\\`\\([^#]*\\)#" url)
-    (setq url (substring url 0 (match-end 1))))
-  (cond
-   ((string= "about://emacs-w3m.gif" url)
-    (list "image/gif" nil nil nil nil url url))
-   ((string-match "\\`about://source/" url)
-    (let* ((src (substring url (match-end 0)))
-	   (attrs (w3m-attributes src no-cache)))
-      (list "text/plain"
-	    (or (w3m-arrived-content-charset src) (cadr attrs))
-	    (nth 2 attrs)
-	    (nth 3 attrs)
-	    (nth 4 attrs)
-	    (concat "about://source/" (nth 5 attrs))
-	    (nth 6 attrs))))
-   ((string-match "\\`about:" url)
-    (list "text/html" w3m-coding-system nil nil nil url url))
-   ((w3m-url-local-p url)
-    (w3m-local-attributes url))
-   (t
-    (w3m-w3m-attributes url no-cache))))
-
-(defmacro w3m-base-url (url &optional no-cache)
-  (` (nth 6 (w3m-attributes (, url) (, no-cache)))))
-(defmacro w3m-content-charset (url &optional no-cache)
-  (` (nth 1 (w3m-attributes (, url) (, no-cache)))))
-(defmacro w3m-content-encoding (url &optional no-cache)
-  (` (nth 3 (w3m-attributes (, url) (, no-cache)))))
-(defmacro w3m-content-length (url &optional no-cache)
-  (` (nth 2 (w3m-attributes (, url) (, no-cache)))))
-(defmacro w3m-content-type (url &optional no-cache)
-  (` (car (w3m-attributes (, url) (, no-cache)))))
-(defmacro w3m-last-modified (url &optional no-cache)
-  (` (nth 4 (w3m-attributes (, url) (, no-cache)))))
-(defmacro w3m-real-url (url &optional no-cache)
-  (` (nth 5 (w3m-attributes (, url) (, no-cache)))))
-
-(put 'w3m-parse-attributes 'lisp-indent-function '1)
-(def-edebug-spec w3m-parse-attributes
-  ((&rest &or (symbolp &optional symbolp) symbolp) body))
-(defmacro w3m-parse-attributes (attributes &rest form)
-  (` (let ((,@ (mapcar
-		(lambda (attr)
-		  (if (listp attr) (car attr) attr))
-		attributes)))
-       (skip-chars-forward " \t\r\f\n")
-       (while
-	   (cond
-	    (,@ (mapcar
-		 (lambda (attr)
-		   (or (symbolp attr)
-		       (and (listp attr)
-			    (<= (length attr) 2)
-			    (symbolp (car attr)))
-		       (error "Internal error, type mismatch"))
-		   (let ((sexp (quote
-				(w3m-remove-redundant-spaces
-				 (or (match-string-no-properties 2)
-				     (match-string-no-properties 3)
-				     (match-string-no-properties 1)))))
-			 type)
-		     (when (listp attr)
-		       (setq type (nth 1 attr))
-		       (cond
-			((eq type :case-ignore)
-			 (setq sexp (list 'downcase sexp)))
-			((eq type :integer)
-			 (setq sexp (list 'string-to-number sexp)))
-			((eq type :bool)
-			 (setq sexp t))
-			((eq type :decode-entity)
-			 (setq sexp (list 'w3m-decode-entities-string sexp)))
-			((nth 1 attr)
-			 (error "Internal error, unknown modifier")))
-		       (setq attr (car attr)))
-		     (` ((looking-at
-			  (, (if (eq type :bool)
-				 (symbol-name attr)
-			       (format "%s[ \t\r\f\n]*=[ \t\r\f\n]*%s"
-				       (symbol-name attr)
-				       w3m-html-string-regexp))))
-			 (setq (, attr) (, sexp))))))
-		 attributes))
-	    ((looking-at
-	      (, (concat "[A-Za-z]*[ \t\r\f\n]*=[ \t\r\f\n]*" w3m-html-string-regexp))))
-	    ((looking-at "[^<> \t\r\f\n]+")))
-	 (goto-char (match-end 0))
-	 (skip-chars-forward " \t\r\f\n"))
-       (skip-chars-forward "^>")
-       (forward-char)
-       (,@ form))))
-
-
 ;;; Miscellaneous:
 
 (defsubst w3m-get-buffer-create (name)
@@ -288,6 +173,16 @@ nil, it is regarded as the oldest time."
 	   (or (> (car a) (car b))
 	       (and (= (car a) (car b))
 		    (> (nth 1 a) (nth 1 b)))))))
+
+(defsubst w3m-url-dtree-p (url)
+  "If URL points a 'w3m-dtree', return non-nil value.  Otherwise return
+nil."
+  (string-match "^about://dtree/" url))
+
+(defsubst w3m-url-local-p (url)
+  "If URL points a file on the local system, return non-nil value.
+Otherwise return nil."
+  (string-match "^\\(file:\\|/\\)" url))
 
 (defsubst w3m-which-command (command)
   (if (and (file-name-absolute-p command)

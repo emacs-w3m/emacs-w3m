@@ -1,3 +1,13 @@
+2001-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Moved back some macros and inline functions from
+	w3m-macro.el.
+
+	* w3m-macro.el (w3m-parse-attributes, w3m-real-url,
+	w3m-last-modified, w3m-content-type, w3m-content-length,
+	w3m-content-encoding, w3m-content-charset, w3m-base-url,
+	w3m-attributes): Moved back to w3m.el.
+
 2001-11-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-w3m-retrieve) Call `w3m-w3m-attributes' instead of
@@ -1117,7 +1127,7 @@
 	Add new section 2. c), 2. e) about APEL, FLIM, shimbun library.
 	* README: Ditto.
 
-	* FAQ.ja (Q. 動作する Emacs は?): Add description about where to
+	* FAQ.ja (Q. 動作する Emacs は?): Add description about where to
 	get APEL.
 
 2001-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
