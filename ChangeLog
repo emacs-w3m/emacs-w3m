@@ -1,3 +1,8 @@
+2002-04-21  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-mailman.el: New file.
+	* shimbun/sb-pilot-link.el: Ditto.
+
 2002-04-20  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-w3m-attributes): Set type to downcase.
