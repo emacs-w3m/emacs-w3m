@@ -359,7 +359,8 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
     ("yahoo-ja" "http://search.yahoo.co.jp/bin/search?p=%s" euc-japan)
     ("google" "http://www.google.com/search?q=%s" nil)
     ("google-ja" "http://www.google.com/search?q=%s&hl=ja&lr=" shift_jis)
-    ("goo-ja" "http://www.goo.ne.jp/default.asp?MT=%s" euc-japan))
+    ("goo-ja" "http://www.goo.ne.jp/default.asp?MT=%s" euc-japan)
+    ("rpmfind" "http://rpmfind.net/linux/rpm2html/search.php?query=%s"))
   "*An alist of search engines.
 Each elemnt looks like (ENGINE ACTION CODING)
 ENGINE is a string, the name of the search engine.
