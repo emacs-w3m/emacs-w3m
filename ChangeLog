@@ -1,5 +1,8 @@
 2002-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* Makefile.in (distclean): Remove autom4te*.cache rather than
+	autom4te*.cache.
+
 	* w3m-bitmap.el (w3m-bitmap-transparent-face): New face.
 	(w3m-bitmap-image-insert): Put `w3m-bitmap-transparent-face' to
 	overlays; don't use overlays to highlight bitmap images.

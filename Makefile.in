@@ -106,7 +106,7 @@ clean:
 
 distclean: clean
 	-rm -f config.log config.status config.cache Makefile;\
-	rm -fr autom4te.cache
+	rm -fr autom4te*.cache
 
 ## Rule for the developers to check a portability for each module.
 .SUFFIXES: .elc .el
