@@ -179,13 +179,13 @@ With prefix, ask new url to add instead of current page."
   "Add link of the group of current urls to the bookmark."
   (interactive)
   (w3m-bookmark-add 
-   (concat "about://group/"
-	   (base64-encode-string
-	    (prin1-to-string
-	     (mapcar (lambda (buffer)
-		       (with-current-buffer buffer w3m-current-url))
-		     (w3m-list-buffers)))
-	    'no-line-break))
+   (concat "group:"
+	   (mapconcat
+	    'w3m-url-encode-string
+	    (mapcar (lambda (buffer)
+		      (with-current-buffer buffer w3m-current-url))
+		    (w3m-list-buffers))
+	    "&"))
    "")
   (message "Added as URL group"))
 
