@@ -193,13 +193,15 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 		   (and (or name buffer-file-name)
 			(octet-guess-type-from-name
 			 (or name buffer-file-name)))
-		   (cdr (assoc (completing-read "Octet Type(text): "
-						(mapcar
-						 (lambda (pair)
-						   (list (symbol-name
-							  (cdr pair))))
-						 octet-suffix-type-alist)
-						nil 'require-match)
+		   (cdr (assoc (condition-case nil
+				   (completing-read "Octet Type(text): "
+						    (mapcar
+						     (lambda (pair)
+						       (list (symbol-name
+							      (cdr pair))))
+						     octet-suffix-type-alist)
+						    nil 'require-match)
+				 (quit))
 			       octet-suffix-type-alist))
 		   'text))
     (while (setq type (octet-filter-buffer type)))))

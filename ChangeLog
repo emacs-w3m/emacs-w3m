@@ -5,6 +5,7 @@
 	(octet-content-type-alist): New variable.
 	(octet-guess-type-from-content-type): New function.
 	(octet-buffer): Added optional argument `content-type'.
+	(octet-buffer): Ignore `quit'.
 
 2002-01-29  Yuuichi Teranishi  <teranisi@gohome.org>
 
