@@ -176,15 +176,15 @@ These values are acceptable: w3m, w3mmee, w3m-m17n.")
       (with-temp-buffer
 	(call-process command nil t nil "-version")
 	(goto-char (point-min))
-	(when (re-search-forward "version \\(w3m/0\\.\\(2\\.1\\|\
-\\(2\\.[2-9]\\(\\.[0-9]\\)*\\|3\\(\\.[0-9\\]\\)*\\)\\)\\(-inu\
-\\|\\(-m17n\\|\\(\\+mee\\)\\)\\)?[^,]*\\)" nil t)
+	(when (re-search-forward "version \\(w3m/0\\.3\
+\\(\\.[0-9\\]\\)*\\(\\+cvs\\(-[0-9]+\\.[0-9]+\\)?\\)?\
+\\(-inu\\|\\(-m17n\\|\\(\\+mee\\)\\)\\)?[^,]*\\)" nil t)
 	  (setq w3m-version (match-string 1))
 	  (setq w3m-type
 		(cond
-		 ((match-beginning 8) 'w3mmee)
-		 ((match-beginning 7) 'w3m-m17n)
-		 ((or (match-beginning 6) (match-beginning 3)) 'w3m)
+		 ((match-beginning 7) 'w3mmee)
+		 ((match-beginning 6) 'w3m-m17n)
+		 ((match-beginning 1) 'w3m)
 		 (t 'other))))
 	(when (re-search-forward "options +" nil t)
 	  (setq w3m-compile-options
@@ -4786,8 +4786,8 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "?" 'describe-mode)
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
-    (define-key map [right] 'w3m-shift-left)
-    (define-key map [left] 'w3m-shift-right)
+    (define-key map [S-right] 'w3m-shift-left)
+    (define-key map [S-left] 'w3m-shift-right)
     (define-key map "\M-l" 'w3m-horizontal-recenter)
     (define-key map "\C-a" 'w3m-beginning-of-line)
     (define-key map "\C-e" 'w3m-end-of-line)
