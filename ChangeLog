@@ -1,3 +1,9 @@
+2001-05-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-linuxce-jp.el: New file.
+
+	* shimbun/sb-toshiba.el: New file.
+
 2001-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (XEmacs): Require `byte-optimize' expressly before
