@@ -152,8 +152,8 @@
   (eval-when-compile
     (let ((rev "$Revision$"))
       (and (string-match "\\.\\([0-9]+\\) \\$\\'" rev)
-	   (setq rev (- (string-to-number (match-string 1 rev)) 1006))
-	   (concat "1.3.85" (if (> rev 0) (format ".%d" rev) "")))))
+	   (setq rev (- (string-to-number (match-string 1 rev)) 1020))
+	   (concat "1.3.90" (if (> rev 0) (format ".%d" rev) "")))))
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -1536,7 +1536,7 @@ Here are some predefined functions which can be used for those ways:
 		       (repeat :extra-offset 2 :tag "Options"
 			       (sexp :format "%t: %v\n" :size 0))))))))))
 
-(defcustom w3m-relationship-estimate-rules
+(defvar w3m-relationship-estimate-rules
   `((w3m-relationship-simple-estimate
      "\\`http://www\\.google\\.[^/]+/search"
      ,(concat "<a href=" w3m-html-string-regexp
@@ -1550,20 +1550,9 @@ Here are some predefined functions which can be used for those ways:
      ,(concat "<a href=" w3m-html-string-regexp ">前のページ</a>")
      nil nil)
     (w3m-relationship-magicpoint-estimate))
-  "*Rules to estimate relationships between a retrieved page and others."
-  :group 'w3m
-  :type '(repeat
-	  (choice
-	   (group :tag "Estimate relationships from anchors matching"
-		 (function :format "" w3m-relationship-simple-estimate)
-		 (regexp :tag "URL")
-		 (regexp :tag "Next")
-		 (regexp :tag "Previous")
-		 (regexp :tag "Start")
-		 (regexp :tag "Contents"))
-	   (list :tag "Estimate with a user defined function"
-		 function
-		 (repeat :tag "Arguments" sexp)))))
+  "*Rules to estimate relationships between a retrieved page and others.
+Note that this option is installed experimentally.  Its syntax will be
+changed, when we implement more flexible framework.")
 
 (defconst w3m-entity-alist
   (append
