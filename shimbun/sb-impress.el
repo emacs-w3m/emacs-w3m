@@ -69,6 +69,9 @@
 	  (setq subject (buffer-substring pos (match-beginning 0))
 		subject (with-temp-buffer
 			  (insert subject)
+			  (goto-char (point-min))
+			  (while (re-search-forward "[\r\n]" nil t)
+			    (replace-match ""))
 			  (shimbun-remove-markup)
 			  (buffer-string))))
 	(setq id (format "<%d%d%d%s%%%s@www.watch.impress.co.jp>"
