@@ -246,7 +246,7 @@ The value of `w3m-user-agent' is used for the field body."
 (defcustom w3m-command-arguments
   (if (eq w3m-type 'w3mmee) '("-o" "concurrent=0" "-F") nil)
   "*List of the default arguments passed to the w3m command.  See also
-the documentation for the `w3m-command-arguments-alist' variable."
+`w3m-command-arguments-alist'."
   :group 'w3m
   :type '(repeat (string :format "Argument: %v\n" :size 0)))
 
@@ -1009,7 +1009,7 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
       (setq rest (cdr rest)))
     dest)
   "Alist of MIME charsets and coding systems.
-Both charsets and coding systems must be symbol."
+Both charsets and coding systems must be symbols."
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 2
 		       (symbol :format "%t: %v\n" :size 0)
@@ -1057,12 +1057,13 @@ The term `shifting' means a fine level scrolling."
   :require 'w3m-form)
 
 (defcustom w3m-use-cookies nil
-  "Non-nil means using cookies. (EXPERIMENTAL)"
+  "Non-nil means use cookies. (EXPERIMENTAL)"
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-use-filter nil
-  "*Non-nil means filtering of WEB is used."
+  "*Non-nil means use filter programs to convert web contents.
+See also `w3m-filter-rules'."
   :group 'w3m
   :type 'boolean
   :require 'w3m-filter)
@@ -1070,17 +1071,21 @@ The term `shifting' means a fine level scrolling."
 (defcustom w3m-use-symbol
   (and (featurep 'mule)
        (eq w3m-type 'w3m-m17n)
-       (or (null (eq w3m-output-coding-system 'utf-8))
+       (or (not (eq w3m-output-coding-system 'utf-8))
 	   (and (w3m-mule-unicode-p)
 		(or window-system (eq (terminal-coding-system) 'utf-8))))
        t)
-  "*Non-nil means replacing symbol."
+  "*Non-nil means replace symbols that the <_SYMBOL> tags lead into.
+It is meaningful only when the w3m-m17n command is used and (X)Emacs
+handles unicode charsets."
   :group 'w3m
   :type 'boolean
   :require 'w3m-symbol)
 
 (defcustom w3m-edit-function 'find-file
-  "*Function used for editing local files."
+  "*Function used for editing local files.
+It is used when the `\\<w3m-mode-map>\\[w3m-edit-current-url]' command\
+ or the `\\[w3m-edit-this-url]' command is invoked."
   :group 'w3m
   :type '(radio
 	  (const :tag "Edit it in the current window" find-file)
@@ -1096,7 +1101,12 @@ The term `shifting' means a fine level scrolling."
      (lambda (pair)
        (cons (cdr pair) (car pair)))
      (symbol-value 'yahtml-path-url-alist)))
-  "*Alist of URLs and local directories."
+  "*Alist of URLs and local directories.
+If directory names of a given URL and the car of an element are the
+same, emacs-w3m assumes that the file exists in the local directory
+where the cdr of an element points to.  The default value will be set
+to a value of the `yahtml-path-url-alist' variable which exchanged the
+car and the cdr in each element if it is available."
   :type '(repeat
 	  (cons :format "%v" :indent 3
 		(string :format "URL: %v\n" :size 0)
@@ -1106,11 +1116,14 @@ The term `shifting' means a fine level scrolling."
 (defcustom w3m-track-mouse t
   "*Whether to track the mouse and message the url under the mouse.
 This feature does not work under Emacs or XEmacs versions prior to 21.
-See also the documentation for the variable `show-help-function' if
-you are using Emacs 21.  You can also use the `balloon-help' feature
-under XEmacs by the command M-x balloon-help-mode with arg 1.  If the
-window manager decorates the balloon-help frame, and that is not to
-your taste, you may strip it off with the following directives.
+See also `show-help-function' if you are using Emacs 21.
+
+A tip for XEmacs users:
+
+You can also use the `balloon-help' feature by the
+`M-x balloon-help-mode' command with arg 1.  If the window manager
+decorates the balloon-help frame, and that is not to your taste, you
+may strip it off with the following directives:
 
 For ol[v]wm use this in .Xdefaults:
    olvwm.NoDecor: balloon-help
@@ -1125,22 +1138,31 @@ or
 For twm use this in your .twmrc:
    NoTitle { \"balloon-help\" }
 
-See the file balloon-help.el for more information."
+See the balloon-help.el file for more information."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-use-tab t
-  "Use w3m as a tab browser."
+  "Non-nil means make emacs-w3m a tab browser.
+It makes it possible to show all emacs-w3m buffers in a single window
+with the tabs line, and you can choose one by clicking a mouse on it.
+Unfortunately, users of Emacs 20 and less cannot enjoy the benefit.
+See also `w3m-use-tab-menubar'."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-use-tab-menubar t
-  "Use 'TAB' menubar."
+  "Non-nil means use the TAB pull-down menu in the menubar.
+It makes it possible to show all emacs-w3m buffers in a single window,
+and you can choose one by clicking a mouse on it.  This feature
+requires that Emacs has been built to be able to display multilingual
+text in the menubar if you often visit web sites written in non-ascii
+text.  See also `w3m-use-tab'."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-use-favicon (featurep 'w3m-image)
-  "*Non-nil means the favicon images can be displayed in this system.
+  "*Non-nil means show favicon images if they are available.
 It will be set to nil automatically if ImageMagick's `convert' program
 does not support the ico format."
   :get (lambda (symbol)
@@ -1179,28 +1201,13 @@ meaningless under XEmacs."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-pop-up-windows
-  (if (or (featurep 'xemacs)
-	  (and (boundp 'emacs-major-version)
-	       (>= emacs-major-version 21)))
-      (not w3m-use-tab)
-    t)
-  "Like `pop-up-windows', except that it only affects the command
-`w3m-copy-buffer'.  If this value is non-nil and the value of the
-option `w3m-pop-up-frames' is nil, split the windows when a new
-session is created.  If you are using XEmacs with the buffers tab in
-the gutter area, it is recommended a bit that setting both this option
-and the option `w3m-pop-up-frames' to nil and you turn on the option
-`w3m-xmas-show-current-title-in-buffer-tab'."
+(defcustom w3m-pop-up-windows t
+  "Non-nil means split the windows when a new emacs-w3m session is created."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-pop-up-frames nil
-  "Like `pop-up-frames', except that it only affects the `w3m' commands.
-If you are using XEmacs with the buffers tab in the gutter area, it is
-recommended a bit that setting both this option and the option
-`w3m-pop-up-windows' to nil and you turn on the option
-`w3m-xmas-show-current-title-in-buffer-tab'."
+  "Non-nil means popup a new frame for an emacs-w3m session."
   :group 'w3m
   :type 'boolean)
 
@@ -2335,6 +2342,18 @@ interactively."
 	(if (featurep 'xemacs)
 	    '(device-on-window-system-p)
 	  'window-system)))
+
+(defmacro w3m-pop-up-window-p ()
+  "Return non-nil if `w3m-pop-up-windows' is non-nil and the present
+situation allows it."
+  (cond ((featurep 'xemacs)
+	 '(and w3m-pop-up-windows (not w3m-use-tab)))
+	((boundp 'MULE)
+	 'w3m-pop-up-windows)
+	(t
+	 '(and w3m-pop-up-windows
+	       (or (< emacs-major-version 21)
+		   (not w3m-use-tab))))))
 
 (defun w3m-message (&rest args)
   "Alternative function of `message' for emacs-w3m."
@@ -5326,18 +5345,19 @@ new buffer is shows itself with `pop-to-buffer' which is affected by
   (interactive (list (current-buffer)
 		     (if current-prefix-arg (read-string "Name: "))
 		     t))
-  (when (and w3m-pop-up-windows
-	     (not (string= (buffer-name) w3m-select-buffer-name))
-	     (get-buffer-window w3m-select-buffer-name))
-    ;; Delete the too thin selection window.
-    (delete-windows-on (get-buffer w3m-select-buffer-name)))
   (unless buffer
     (setq buffer (current-buffer)))
   (unless newname
     (setq newname (buffer-name buffer)))
   (when (string-match "<[0-9]+>\\'" newname)
     (setq newname (substring newname 0 (match-beginning 0))))
-  (let (url images init-frame new)
+  (let ((pop-up-windows (w3m-pop-up-window-p))
+	url images init-frame new)
+    (when (and pop-up-windows
+	       (not (string= (buffer-name) w3m-select-buffer-name))
+	       (get-buffer-window w3m-select-buffer-name))
+      ;; Delete the selection window.
+      (delete-windows-on (get-buffer w3m-select-buffer-name)))
     (with-current-buffer buffer
       (setq url (or w3m-current-url
 		    (car (w3m-history-element (cadar w3m-history))))
@@ -5363,8 +5383,7 @@ new buffer is shows itself with `pop-to-buffer' which is affected by
 			  (w3m-history-element (cadr positions) t))
 	    (setcar w3m-history positions))))
       (when and-pop
-	(let* ((pop-up-windows w3m-pop-up-windows)
-	       (pop-up-frames w3m-pop-up-frames)
+	(let* ((pop-up-frames w3m-pop-up-frames)
 	       (pop-up-frame-alist (w3m-pop-up-frame-parameters))
 	       (pop-up-frame-plist pop-up-frame-alist)
 	       (window (get-buffer-window buffer t))
