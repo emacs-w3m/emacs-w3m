@@ -1,5 +1,7 @@
 2004-01-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-slashdot-jp.el: Succeeded by sb-slashdot-jp-rss.el.
+
 	* w3m.el (w3m-w3m-dump-extra): Check cache control headers before
 	caching headers and contents.  This change is suggested by
 	Mr. Amagai in [emacs-w3m:06255].

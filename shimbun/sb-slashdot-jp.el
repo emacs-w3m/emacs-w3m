@@ -1,10 +1,10 @@
 ;;; sb-slashdot-jp.el --- shimbun backend for slashdot.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 
-;; Author: Yuuichi Teranishi  <teranisi@gohome.org>,
-;;         TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
+;; Created: Jun 14, 2003
 
 ;; This file is a part of shimbun.
 
@@ -25,269 +25,100 @@
 
 ;;; Commentary:
 
+;;; History:
+
+;; This backend was created by Yuuichi Teranishi <teranisi@gohome.org>
+;; at July 5th, 2001.
+
+;; Because the site desgin had been changed, this backend was
+;; completly rewritten by TSUCHIYA Masatoshi <tsuchiya@namazu.org> at
+;; February 28th, 2002.
+
+;; NAKAJIMA Mikio <minakaji@namazu.org> created a new backend,
+;; sb-slashdot-jp-rss.el, at July 15th, 2003.  It was an alternative
+;; backend of slashdot.jp based on RSS.
+
+;; In order to reduce the cost to maintain both backends, the backend
+;; based on the traditional approach was succeeded by the backend
+;; based on RSS at January 18th, 2004.
+
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-lump)
-(eval-when-compile (require 'cl))
+(require 'sb-rss)
 
-(luna-define-class shimbun-slashdot-jp (shimbun-lump) ())
-
-(defconst shimbun-slashdot-jp-groups '("story"))
-
-(eval-and-compile
-  (defconst shimbun-slashdot-jp-domain "slashdot.jp"))
-
-(defconst shimbun-slashdot-jp-url
-  (eval-when-compile (format "http://%s/" shimbun-slashdot-jp-domain)))
-
-(defcustom shimbun-slashdot-jp-threshold -1
-  "*Lower threshold of accept comments."
+(defcustom shimbun-slashdot-jp-comment-arguments
+  '((threshold . 1)
+    (mode . nested)
+    (commentsort . 0))
+  "*Arguments to view comment pages."
   :group 'shimbun
-  :type '(radio
-	  (const :format "Stories only " nil)
-	  (const :format "All comments " -1)
-	  (integer :format "Score: %v\n"
-		   :match (lambda (widget value)
-			    (and (numberp value) (/= value -1)))
-		   :size 0)))
+  :type '(list
+	  (cons :tag "Score threshold" :format "%t: %v"
+		(const :tag "" threshold) integer)
+	  (cons :tag "Threading mode" :format "%t: %v"
+		(const :tag "" mode)
+		(choice (const flat)
+			(const nested)
+			(const nocomment)
+			(const thread)))
+	  (cons :tag "Sorting order" :format "%t: %v"
+		(const :tag "" commentsort)
+		(choice (const :tag "Oldest first" 0)
+			(const :tag "Newest first" 1)
+			(const :tag "Highest scores first" 3)
+			(const :tag "Oldest first (Ignore threads)" 4)
+			(const :tag "Newest first (Ignore threads)" 5)))))
 
-(defmacro shimbun-slashdot-jp-article-url (shimbun)
-  `(shimbun-expand-url "article.pl" (shimbun-url-internal ,shimbun)))
+(luna-define-class shimbun-slashdot-jp (shimbun-rss) ())
 
-(defmacro shimbun-slashdot-jp-sid-url (shimbun sid)
-  `(if shimbun-slashdot-jp-threshold
-       (format "%s?sid=%s&threshold=%d&mode=flat&commentsort=0"
-	       (shimbun-slashdot-jp-article-url shimbun)
-	       ,sid shimbun-slashdot-jp-threshold)
-     (format "%s?sid=%s&mode=nocomment"
-	     (shimbun-slashdot-jp-article-url shimbun) ,sid)))
+(defvar shimbun-slashdot-jp-url "http://slashdot.jp/slashdot.rdf")
+(defvar shimbun-slashdot-jp-groups '("story"))
+(defvar shimbun-slashdot-jp-from-address  "webmaster@slashdot.jp")
+(defvar shimbun-slashdot-jp-coding-system 'euc-japan)
+(defvar shimbun-slashdot-jp-content-start
+  "\n<!-- start template: ID [0-9]+,.*dispStory.* -->\n")
+(defvar shimbun-slashdot-jp-content-end
+  "\n<!-- end template: ID [0-9]+,.*dispStory.*-->\n")
 
-(defsubst shimbun-slashdot-jp-extract-sid-and-cid (id)
-  (when (string-match "\\`<\\([/0-9]+\\)\\(#\\([0-9]+\\)\\)?@[^>]+>\\'" id)
-    (list (match-string 1 id)
-	  (match-string 3 id))))
+(luna-define-method shimbun-index-url ((shimbun shimbun-slashdot-jp))
+  shimbun-slashdot-jp-url)
 
-(defmacro shimbun-slashdot-jp-make-message-id (sid &optional cid)
-  (if cid
-      `(concat "<" ,sid "#" ,cid "@" shimbun-slashdot-jp-domain ">")
-    `(concat "<" ,sid "@" shimbun-slashdot-jp-domain ">")))
+(luna-define-method shimbun-rss-build-message-id
+  ((shimbun shimbun-slashdot-jp) url date)
+  (unless (string-match
+	   "\\`http://slashdot.jp/article.pl\\?sid=\\([/0-9]+\\)&" url)
+    (error "Cannot find message-id base"))
+  (concat "<" (match-string-no-properties 1 url) "@slashdot.jp>"))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-slashdot-jp) head)
-  (multiple-value-bind (sid cid)
-      (shimbun-slashdot-jp-extract-sid-and-cid (shimbun-header-id head))
-    (let ((case-fold-search t))
-      (if cid
-	  (shimbun-slashdot-jp-make-comment-article shimbun head sid cid)
-	(shimbun-slashdot-jp-make-story-article shimbun head)))))
-
-(defsubst shimbun-slashdot-jp-make-article-after (shimbun head)
-  (goto-char (point-min))
-  (insert "<html>
-<head><base href=\"" (shimbun-header-xref head) "\"></head>
-<body>\n")
-  (goto-char (point-max))
-  (insert "\n</body>\n</html>\n")
-  (shimbun-make-mime-article shimbun head)
-  (buffer-string))
-
-(defconst shimbun-slashdot-jp-story-article-start-pattern
-  "<!-- start template: ID 88, dispStory;misc;default -->")
-(defconst shimbun-slashdot-jp-story-article-end-pattern
-  "<!-- end template: ID 88, dispStory;misc;default -->")
-
-(defun shimbun-slashdot-jp-make-story-article (shimbun head)
-  (with-temp-buffer
-    (let (begin)
-      (when (and (shimbun-retrieve-url (shimbun-header-xref head))
-		 (goto-char (point-min))
-		 (search-forward
-		  shimbun-slashdot-jp-story-article-start-pattern nil t)
-		 (setq begin (point))
-		 (search-forward
-		  shimbun-slashdot-jp-story-article-end-pattern nil t))
-	(delete-region (match-beginning 0) (point-max))
-	(delete-region (point-min) begin)
-	(shimbun-slashdot-jp-make-article-after shimbun head)))))
-
-(defun shimbun-slashdot-jp-make-comment-article (shimbun head sid cid)
-  (with-temp-buffer
-    (when (and (shimbun-retrieve-url (shimbun-header-xref head))
-	       (goto-char (point-min))
-	       (shimbun-slashdot-jp-search-comment-head shimbun sid cid)
-	       (re-search-forward "<table[^>]*><tr><td[^>]*>" nil t))
-      (delete-region (point-min) (match-beginning 0))
-      (when (re-search-forward "</td></tr></table>" nil t)
-	(delete-region (point) (point-max))
-	(shimbun-slashdot-jp-make-article-after shimbun head)))))
-
-(luna-define-method shimbun-get-group-header-alist ((shimbun shimbun-slashdot-jp)
-						    &optional range)
-  (list (cons (car (shimbun-groups-internal shimbun))
-	      (shimbun-slashdot-jp-make-headers shimbun range))))
-
-(defconst shimbun-slashdot-jp-story-count 30)
-
-(defun shimbun-slashdot-jp-make-headers (shimbun range)
-  (cond
-   ((not range) (setq range shimbun-slashdot-jp-story-count))
-   ((eq range 'all) (setq range nil))
-   ((eq range 'last) (setq range 1)))
-  (let ((case-fold-search t) headers head stories (num 0))
-    (catch 'range-check
-      (while (progn
-	       (unless stories
-		 (setq stories (shimbun-slashdot-jp-make-story-headers shimbun num))
-		 (incf num))
-	       (setq head (pop stories)))
-	(unless (shimbun-search-id shimbun (shimbun-header-id head))
-	  (push head headers))
-	(when shimbun-slashdot-jp-threshold
-	  (setq headers
-		(nconc
-		 (shimbun-slashdot-jp-make-comment-headers
-		  shimbun
-		  (car (shimbun-slashdot-jp-extract-sid-and-cid
-			(shimbun-header-id head)))
-		  head)
-		 headers)))
-	(and range
-	     (= 0 (decf range))
-	     (throw 'range-check headers)))
-      headers)))
-
-(defsubst shimbun-slashdot-jp-parse-date-string ()
-  (let (month day hour min)
-    (when (looking-at " *\\([0-9]+\\)年\\([01][0-9]\\)月\\([0123][0-9]\\)日\
- *\\(\\([0-9]+\\)時\\([0-9]+\\)分\\|\\([0-9]+:[0-9]+\\)\\)")
-      (shimbun-make-date-string (string-to-number (match-string 1))
-				(string-to-number (match-string 2))
-				(string-to-number (match-string 3))
-				(if (match-beginning 4)
-				    (concat
-				     (match-string 5) ":" (match-string 6))
-				  (match-string 7))))))
-
-(defconst shimbun-slashdot-jp-story-head-start-pattern
-  "<!-- start template: ID 45, storysearch;search;default -->")
-(defconst shimbun-slashdot-jp-story-head-end-pattern
-  "<!-- end template: ID 45, storysearch;search;default -->")
-
-(defun shimbun-slashdot-jp-make-story-headers (shimbun num)
-  (let (headers begin)
-    (with-temp-buffer
-      (when (and (shimbun-retrieve-url
-		  (shimbun-expand-url
-		   (format "search.pl?threshold=0&op=stories&start=%d"
-			   (* num shimbun-slashdot-jp-story-count))
-		   (shimbun-url-internal shimbun))
-		  'reload)
-		 (goto-char (point-min))
-		 (search-forward
-		  shimbun-slashdot-jp-story-head-start-pattern nil t)
-		 (setq begin (point))
-		 (search-forward
-		  shimbun-slashdot-jp-story-head-end-pattern nil t))
-	(delete-region (point) (point-max))
-	(delete-region (point-min) begin)
-	(goto-char (point-min))
-	(while (re-search-forward
-		(format "<a href=\"%s\\?sid=\\([/0-9]+\\)[^>]*>"
-			(regexp-quote
-			 (shimbun-slashdot-jp-article-url shimbun)))
-		nil t)
-	  (let ((x (match-string 1))
-		(head (shimbun-make-header)))
-	    (shimbun-header-set-xref head
-				     (shimbun-slashdot-jp-sid-url shimbun x))
-	    (shimbun-header-set-id head
-				   (shimbun-slashdot-jp-make-message-id x))
-	    (when (looking-at "\\([^<]+\\)</a>")
-	      (shimbun-header-set-subject head
-					  (concat "[story] "
-						  (shimbun-mime-encode-string
-						   (match-string 1)))))
-	    (forward-line 1)
-	    (when (looking-at
-		   "[ \t]+by \\([^ \t\r\f\n]+\\) with [0-9]+ comments <[^>]+>on ")
-	      (shimbun-header-set-from head
-				       (shimbun-mime-encode-string
-					(match-string 1)))
-	      (goto-char (match-end 0))
-	      (when (setq x (shimbun-slashdot-jp-parse-date-string))
-		(shimbun-header-set-date head x)
-		(push head headers)))
-	    (forward-line 1)))))
-    (nreverse headers)))
-
-(defun shimbun-slashdot-jp-make-comment-headers (shimbun sid parent)
-  (let (head headers)
-    (with-temp-buffer
-      (when (shimbun-retrieve-url
-	     (shimbun-slashdot-jp-sid-url shimbun sid) 'reload)
-	(goto-char (point-min))
-	(while (setq head
-		     (shimbun-slashdot-jp-search-comment-head shimbun sid
-							      nil parent))
-	  (unless (shimbun-search-id shimbun (shimbun-header-id head))
-	    (push head headers)))))
-    (nreverse headers)))
-
-(defun shimbun-slashdot-jp-search-comment-head (shimbun sid &optional
-							cid parent)
-  (when (re-search-forward
-	 (format "<a name=\"%s\">" (or cid "\\([0-9]+\\)")) nil t)
-    (let ((head (shimbun-make-header)))
-      (unless cid
-	(setq cid (match-string 1)))
-      (shimbun-header-set-id head
-			     (shimbun-slashdot-jp-make-message-id sid cid))
+(luna-define-method shimbun-get-headers :around
+  ((shimbun shimbun-slashdot-jp) &optional range)
+  (let ((headers (luna-call-next-method)))
+    (dolist (head headers)
       (shimbun-header-set-xref head
-			       (concat
-				(shimbun-slashdot-jp-sid-url shimbun sid)
-				"#" cid))
-      (when (looking-at "<b>\\([^>]*\\)</b></a>")
-	(shimbun-header-set-subject head
-				    (shimbun-mime-encode-string
-				     (match-string 1))))
-      (when (search-forward "<font size=" nil t)
-	(forward-line 1)
-	(shimbun-header-set-from
-	 head
-	 (shimbun-mime-encode-string
-	  (cond
-	   ((looking-at "<a href=\"mailto:\\([^\"]*\\)\">\\([^<]*\\)")
-	    (concat (match-string 2) " <" (match-string 1) ">"))
-	   ((re-search-forward " *\\(.*\\) のコメント:" nil t)
-	    (match-string 1))))))
-      (forward-line 1)
-      (when parent
-	(let ((date (shimbun-time-parse-string (shimbun-header-date parent))))
-	  (shimbun-header-set-date
-	   head
-	   (or (shimbun-slashdot-jp-parse-date-string)
-	       (progn
-		 (forward-line 1)
-		 (shimbun-slashdot-jp-parse-date-string))))))
-      (forward-line 1)
-      (when parent
-	(let ((pos (point)))
-	  (when (re-search-forward
-		 (format (eval-when-compile
-			   (concat
-			    "<a href=\"%scomments\\.pl\\?sid=[0-9]+&[^>]+"
-			    "&cid=\\([0-9]+\\)\">親コメント</A>"))
-			 (regexp-quote (shimbun-url-internal shimbun)))
-		 nil t)
-	    (shimbun-header-set-references
-	     head
-	     (if (equal "0" (setq cid (match-string 1)))
-		 (shimbun-slashdot-jp-make-message-id sid)
-	       (concat (shimbun-slashdot-jp-make-message-id sid)
-		       " "
-		       (shimbun-slashdot-jp-make-message-id sid cid)))))
-	  (goto-char pos)))
-      head)))
+			       (concat (shimbun-header-xref head)
+				       "&mode=nocomment")))
+    headers))
+
+(defun shimbun-slashdot-jp-comment-url (url)
+  (mapconcat 'identity
+	     (cons (if (string-match "&mode=nocomment\\'" url)
+		       (substring url 0 (match-beginning 0))
+		     url)
+		   (mapcar (lambda (x)
+			     (format "%s=%s" (car x) (cdr x)))
+			   shimbun-slashdot-jp-comment-arguments))
+	     "&"))
+
+(luna-define-method shimbun-clear-contents :around
+  ((shimbun shimbun-slashdot-jp) header)
+  (when (luna-call-next-method)
+    (shimbun-remove-tags "<!-- begin ad code -->" "<!-- end ad code -->")
+    (goto-char (point-max))
+    (insert "\n<p align=left>[<a href=\""
+	    (shimbun-slashdot-jp-comment-url (shimbun-header-xref header))
+	    "\">もっと読む…</a>]</p>")
+    t))
 
 (provide 'sb-slashdot-jp)
 
