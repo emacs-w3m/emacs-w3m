@@ -1,7 +1,7 @@
 2003-08-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add kansai and
-	kansai-special.
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Improve the
+	default regexp; add kansai and kansai-special.
 	(shimbun-index-url): Add a special treatment for kansai-special.
 	(shimbun-asahi-get-headers): Ditto.
 
