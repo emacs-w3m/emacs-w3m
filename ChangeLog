@@ -1,3 +1,14 @@
+2001-09-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-form.el (w3m-fontify-forms): Restore a string for the input
+	button from the history if it is available.
+	(w3m-form-replace-string): New function.
+
+	* w3m.el (w3m): Clear the startup screen on the new frame.
+	(w3m-reload-this-page, w3m-goto-url, w3m-view-previous-page):
+	Save/restore post-data and referer as buffer-local properties in
+	the history.
+
 2001-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-url): Register the value of `w3m-current-forms'

@@ -1,4 +1,4 @@
-;;; w3m-form.el --- Stuffs to handle <form> tag.
+;;; w3m-form.el --- Stuffs to handle <form> tag
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -163,7 +163,8 @@ If no field in forward, return nil without moving."
 			 (goto-char (point-max)))
 		       (insert "\r\n"))
 		   (insert boundary "\r\n"
-			   "Content-Disposition: form-data; name=\"" (car (car buf))
+			   "Content-Disposition: form-data; name=\""
+			   (car (car buf))
 			   "\"\r\n\r\n"
 			   (cdr (car buf))
 			   "\r\n"))
@@ -234,11 +235,14 @@ If no field in forward, return nil without moving."
 			 (concat "<map +name=\"" usemap "\"[^>]*>") nil t)
 		    (while (and (re-search-forward
 				 (w3m-tag-regexp-of "area" "/map") nil t)
-				(not (char-equal (char-after (match-beginning 1)) ?/)))
+				(not (char-equal
+				      (char-after (match-beginning 1))
+				      ?/)))
 		      (goto-char (match-end 1))
 		      (w3m-parse-attributes (href alt)
 			(when href
-			  (setq candidates (cons (cons href (or alt href)) candidates)))))
+			  (setq candidates (cons (cons href (or alt href))
+						 candidates)))))
 		    (when candidates
 		      (w3m-form-put (car forms)
 				    "link"
@@ -303,7 +307,8 @@ If no field in forward, return nil without moving."
 		  ;; ordinaly text input
 		  (w3m-form-put (car forms)
 				name
-				(or value (w3m-form-get (car forms) name))))))))
+				(or value (w3m-form-get (car forms)
+							name))))))))
 	   ((string= tag "textarea")
 	    ;; When <TEXTAREA> is found.
 	    (w3m-parse-attributes (name)
@@ -324,7 +329,8 @@ If no field in forward, return nil without moving."
 		(while (and (re-search-forward
 			     (w3m-tag-regexp-of "option" "/select" "/form")
 			     nil t)
-			    (not (char-equal (char-after (match-beginning 1)) ?/)))
+			    (not (char-equal (char-after (match-beginning 1))
+					     ?/)))
 		  ;; <OPTION> is found
 		  (goto-char (match-end 1)) ; goto very after "<xxxx"
 
@@ -345,6 +351,24 @@ If no field in forward, return nil without moving."
 						  (nreverse
 						   candidates))))))))))))
     forms))
+
+(defun w3m-form-replace-string (start end string width)
+  "Replace text between START and END with STRING and goto the end of
+text.  STRING will be truncated to end at the column WIDTH, width of
+text will not be changed.  It does nothing if the length of STRING is
+zero.
+
+Note that this is a kludge to replace a text between `start' and `end'
+with just a `string', because there are not only a `string' but also
+some markups.  However, markups have become worthless at the time, so
+there is no real problem."
+  (unless (zerop (length string))
+    (delete-region (goto-char start) end)
+    (when (prog1
+	      (and width
+		   (setq string (truncate-string string width)))
+	    (insert string))
+      (insert-char ?\  (- width (string-width string))))))
 
 ;;;###autoload
 (defun w3m-fontify-forms ()
@@ -367,118 +391,107 @@ If no field in forward, return nil without moving."
 	    (cond
 	     ((and (string= type "hidden")
 		   (string= name "link"))
-	      (add-text-properties start (point)
-				   (list 'face 'w3m-form-face
-					 'w3m-action
-					 `(w3m-form-input-map ,form ,name)
-					 'w3m-cursor-anchor
-					 `(w3m-form-input-map ,form ,name))))
+	      (add-text-properties
+	       start (point)
+	       `(face
+		 w3m-form-face
+		 w3m-action (w3m-form-input-map ,form ,name)
+		 w3m-cursor-anchor (w3m-form-input-map ,form ,name))))
 	     ((string= type "submit")
-	      (add-text-properties start (point)
-				   (list 'face 'w3m-form-face
-					 'w3m-action
-					 `(w3m-form-submit ,form ,name ,value)
-					 'w3m-submit
-					 `(w3m-form-submit ,form ,name
-							   (w3m-form-get ,form ,name))
-					 'w3m-cursor-anchor
-					 `(w3m-form-submit ,form))))
+	      (add-text-properties
+	       start (point)
+	       `(face
+		 w3m-form-face
+		 w3m-action (w3m-form-submit ,form ,name ,value)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-cursor-anchor (w3m-form-submit ,form))))
 	     ((string= type "reset")
-	      (add-text-properties start (point)
-				   (list 'face 'w3m-form-face
-					 'w3m-action
-					 `(w3m-form-reset ,form)
-					 'w3m-cursor-anchor
-					 `(w3m-form-reset ,form))))
+	      (add-text-properties
+	       start (point)
+	       `(face
+		 w3m-form-face
+		 w3m-action (w3m-form-reset ,form)
+		 w3m-cursor-anchor (w3m-form-reset ,form))))
 	     ((string= type "textarea")
-	      (add-text-properties start (point)
-				   (list 'face 'w3m-form-face
-					 'w3m-action
-					 `(w3m-form-input-textarea ,form ,hseq)
-					 'w3m-submit
-					 `(w3m-form-submit
-					   ,form ,name
-					   (w3m-form-get ,form ,name))
-					 'w3m-form-hseq hseq))
+	      (add-text-properties
+	       start (point)
+	       `(face
+		 w3m-form-face
+		 w3m-action (w3m-form-input-textarea ,form ,hseq)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-form-hseq ,hseq))
 	      (when (> hseq 0)
-		(add-text-properties start (point)
-				     (list 'w3m-cursor-anchor
-					   `(w3m-form-input-textarea
-					     ,form ,hseq)
-					   'w3m-form-name name))))
+		(add-text-properties
+		 start (point)
+		 `(w3m-cursor-anchor
+		   (w3m-form-input-textarea ,form ,hseq)
+		   w3m-form-name ,name))))
 	     ((string= type "select")
-	      (add-text-properties start (point)
-				   (list 'face 'w3m-form-face
-					 'w3m-action
-					 `(w3m-form-input-select ,form ,name)
-					 'w3m-submit
-					 `(w3m-form-submit ,form ,name
-							   (w3m-form-get ,form ,name))
-					 'w3m-cursor-anchor
-					 `(w3m-form-input-select ,form ,name))))
+	      (add-text-properties
+	       start (point)
+	       `(face
+		 w3m-form-face
+		 w3m-action (w3m-form-input-select ,form ,name)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-cursor-anchor (w3m-form-input-select ,form ,name))))
 	     ((string= type "password")
-	      (add-text-properties start (point)
-				   (list 'face 'w3m-form-face
-					 'w3m-action
-					 `(w3m-form-input-password ,form ,name)
-					 'w3m-submit
-					 `(w3m-form-submit ,form ,name
-							   (w3m-form-get ,form ,name))
-					 'w3m-cursor-anchor
-					 `(w3m-form-input-password ,form ,name))))
+	      (add-text-properties
+	       start (point)
+	       `(face
+		 w3m-form-face
+		 w3m-action (w3m-form-input-password ,form ,name)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-cursor-anchor (w3m-form-input-password ,form ,name))))
 	     ((string= type "checkbox")
-	      (add-text-properties start (point)
-				   (list 'face 'w3m-form-face
-					 'w3m-action
-					 `(w3m-form-input-checkbox ,form ,name ,value)
-					 'w3m-submit
-					 `(w3m-form-submit ,form ,name
-							   (w3m-form-get ,form ,name))
-					 'w3m-cursor-anchor
-					 `(w3m-form-input-checkbox ,form ,name ,value))))
+	      (add-text-properties
+	       start (point)
+	       `(face
+		 w3m-form-face
+		 w3m-action (w3m-form-input-checkbox ,form ,name ,value)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-cursor-anchor (w3m-form-input-checkbox ,form ,name
+							    ,value))))
 	     ((string= type "radio")
-	      (add-text-properties start (point)
-				   (list 'face 'w3m-form-face
-					 'w3m-action
-					 `(w3m-form-input-radio ,form ,name ,value)
-					 'w3m-submit
-					 `(w3m-form-submit ,form ,name
-							   (w3m-form-get ,form ,name))
-					 'w3m-cursor-anchor
-					 `(w3m-form-input-radio ,form ,name ,value))))
+	      (add-text-properties
+	       start (point)
+	       `(face
+		 w3m-form-face
+		 w3m-action (w3m-form-input-radio ,form ,name ,value)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-cursor-anchor (w3m-form-input-radio ,form ,name ,value))))
 	     ((string= type "file")
-	      (add-text-properties start (point)
-				   (list 'face 'w3m-form-face
-					 'w3m-action
-					 `(w3m-form-input-file ,form ,name ,value)
-					 'w3m-submit
-					 `(w3m-form-submit ,form ,name
-							   (w3m-form-get ,form ,name))
-					 'w3m-cursor-anchor
-					 `(w3m-form-input-file ,form ,name ,value))))
+	      (add-text-properties
+	       start (point)
+	       `(face
+		 w3m-form-face
+		 w3m-action (w3m-form-input-file ,form ,name ,value)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-cursor-anchor (w3m-form-input-file ,form ,name ,value))))
 	     (t ;; input button.
-	      (add-text-properties start (point)
-				   (list 'face 'w3m-form-face
-					 'w3m-action
-					 `(w3m-form-input ,form
-							  ,name
-							  ,type
-							  ,width
-							  ,maxlength
-							  ,value)
-					 'w3m-submit
-					 `(w3m-form-submit ,form ,name
-							   (w3m-form-get ,form ,name))
-					 'w3m-cursor-anchor
-					 `(w3m-form-input ,form
-							  ,name
-							  ,type
-							  ,width
-							  ,maxlength
-							  ,value)))))))
+	      (w3m-form-replace-string start (point)
+				       (w3m-form-get form name) width)
+	      (add-text-properties
+	       start (point)
+	       `(face
+		 w3m-form-face
+		 w3m-action (w3m-form-input ,form ,name ,type
+					    ,width ,maxlength ,value)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-cursor-anchor (w3m-form-input ,form ,name ,type
+						   ,width ,maxlength
+						   ,value)))))))
 	(put-text-property start (point)
 			   'w3m-form-field-id
 			   (format "fid=%d/type=%s/name=%s" fid type name))))))
+
 
 (defun w3m-form-replace (string &optional invisible)
   (save-excursion
@@ -571,7 +584,8 @@ If no field in forward, return nil without moving."
   :type 'hook)
 
 (defun w3m-form-text-chop (text)
-  "Return a list of substrings of TEXT which are separated by newline character."
+  "Return a list of substrings of TEXT which are separated by newline
+character."
   (let ((start 0) parts)
     (while (string-match "\n" text start)
       (setq parts (cons (substring text start (match-beginning 0)) parts)
@@ -1060,9 +1074,12 @@ If no field in forward, return nil without moving."
 		       (next-single-property-change pos 'w3m-action))))
       (while (setq pos (next-single-property-change (point) 'w3m-action))
 	(goto-char pos)
-	(goto-char (or (w3m-form-real-reset form (get-text-property pos 'w3m-action))
+	(goto-char (or (w3m-form-real-reset form
+					    (get-text-property pos
+							       'w3m-action))
 		       (next-single-property-change pos 'w3m-action)))))))
 
 
 (provide 'w3m-form)
-;;; w3m-form.el ends here.
+
+;;; w3m-form.el ends here

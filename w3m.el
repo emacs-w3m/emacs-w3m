@@ -2891,8 +2891,8 @@ forward is performed.  Otherwise, COUNT is treated as 1 by default."
 	       (w3m-history-backward))))
     (when url
       (w3m-goto-url url nil nil
-		    (w3m-history-plist-get :post-data)
-		    (w3m-history-plist-get :referer))
+		    (w3m-history-plist-get :post-data nil nil t)
+		    (w3m-history-plist-get :referer nil nil t))
       ;; restore last position
       (w3m-history-restore-position url))))
 
@@ -3657,9 +3657,10 @@ the request."
 				(list :title (file-name-nondirectory url)))
 	      (w3m-history-push w3m-current-url)
 	      (w3m-refontify-anchor))
-	  (w3m-history-push w3m-current-url (list :title w3m-current-title
-						  :referer referer
-						  :post-data post-data))
+	  (w3m-history-push w3m-current-url (list :title w3m-current-title))
+	  (w3m-history-add-properties (list :referer referer
+					    :post-data post-data)
+				      nil nil t)
 	  (or (and name (w3m-search-name-anchor name))
 	      (goto-char (point-min)))
 	  (setq w3m-display-inline-image-status 'off)
@@ -3708,8 +3709,8 @@ the request."
   "Reload current page without cache."
   (interactive "P")
   (let ((w3m-display-inline-image (if arg t w3m-display-inline-image))
-	(post-data (w3m-history-plist-get :post-data))
-	(referer (w3m-history-plist-get :referer)))
+	(post-data (w3m-history-plist-get :post-data nil nil t))
+	(referer (w3m-history-plist-get :referer nil nil t)))
     (if post-data
 	(if (y-or-n-p "Repost form data? ")
 	    (w3m-goto-url w3m-current-url 'reload nil post-data referer)
@@ -3778,12 +3779,15 @@ called non-interactively."
 		 (when popup-frame-p
 		   (funcall focusing-function
 			    (setq frame (make-frame params))))
-		 (switch-to-buffer url))))
+		 (switch-to-buffer url)))
+	  (setq w3m-initial-frame frame))
       (when popup-frame-p
-	(funcall focusing-function (setq frame (make-frame params))))
-      (w3m-goto-url url))
-    (when frame
-      (setq w3m-initial-frame frame))))
+	(funcall focusing-function (setq frame (make-frame params)))
+	(switch-to-buffer (or (w3m-alive-p)
+			      (get-buffer-create "*w3m*"))))
+      (unwind-protect
+	  (w3m-goto-url url)
+	(setq w3m-initial-frame frame)))))
 
 (eval-when-compile
   (autoload 'browse-url-interactive-arg "browse-url"))
