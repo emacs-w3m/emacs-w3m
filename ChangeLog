@@ -1,3 +1,7 @@
+2004-06-10  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-namazu.el: Rewrite.
+
 2004-06-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-make-new-session): Doc fix.
