@@ -316,7 +316,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 	(let ((icon (intern-soft (concat "w3m-about-" (match-string 1 url)
 					 "-favicon"))))
 	  (if (and (fboundp 'base64-decode-string)
-		   (boundp icon))
+		   icon)
 	      (with-current-buffer w3m-current-buffer
 		(setq w3m-current-favicon-data
 		      (eval (list 'base64-decode-string
