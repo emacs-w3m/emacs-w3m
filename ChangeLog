@@ -1,5 +1,11 @@
 2002-05-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers): New function;
+	parse a date string though it is defective; change the id format.
+	(shimbun-get-headers): Use it.
+
+2002-05-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-hist.el (w3m-history-add-arrived-db): Force update the page.
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-x-face-alist): New face.
