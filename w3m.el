@@ -282,7 +282,7 @@ This value is default and used only when spec defined by
   :type 'boolean)
 
 (defcustom w3m-executable-type
-  (if (memq window-system '(w32 win32))
+  (if (eq system-type 'windows-nt)
       'cygwin ; xxx, cygwin on win32 by default
     'native)
   "*Executable binary type of w3m program.
@@ -294,7 +294,7 @@ In other environment, use 'native."
 
 ;; FIXME: 本当は mailcap を適切に読み込んで設定する必要がある
 (defcustom w3m-content-type-alist
-  (if (memq window-system '(w32 win32))
+  (if (eq system-type 'windows-nt)
       '(("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
 	("text/html" "\\.s?html?$" w3m-w32-browser-with-fiber)
 	("image/jpeg" "\\.jpe?g$" ("fiber.exe" file))
