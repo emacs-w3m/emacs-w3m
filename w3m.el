@@ -1605,6 +1605,8 @@ If N is negative, last N items of LIST is returned."
 			 (setq sexp (list 'string-to-number sexp)))
 			((eq type :bool)
 			 (setq sexp t))
+			((eq type :decode-entity)
+			 (setq sexp (list 'w3m-decode-entities-string sexp)))
 			((nth 1 attr)
 			 (error "Internal error, unknown modifier")))
 		       (setq attr (car attr)))
@@ -1917,6 +1919,13 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 		       nil t)
 	(if (and reserve-prop prop)
 	    (w3m-add-text-properties (match-beginning 0) (point) prop))))))
+
+(defun w3m-decode-entities-string (string)
+  "Decode entities in the STRING."
+  (with-temp-buffer
+    (insert string)
+    (save-match-data (w3m-decode-entities))
+    (buffer-string)))
 
 (defun w3m-fontify ()
   "Fontify this buffer."

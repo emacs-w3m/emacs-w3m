@@ -268,8 +268,8 @@ return them with the flag."
 	  (cond
 	   ((string= tag "input")
 	    ;; When <INPUT> is found.
-	    (w3m-parse-attributes (name value (type :case-ignore)
-					(checked :bool))
+	    (w3m-parse-attributes (name (value :decode-entity)
+					(type :case-ignore) (checked :bool))
 	      (when name
 		(cond
 		 ((string= type "submit")
@@ -537,7 +537,7 @@ return them with the flag."
 		   (point-min)
 		   (point-max)
 		   'w3m-action
-		   (get-text-property (point) 'w3m-action)))
+		   (w3m-get-text-property-around 'w3m-action)))
 	   (width (string-width
 		   (buffer-substring
 		    start
