@@ -1,5 +1,25 @@
 2003-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-e21.el (w3m-tab-unselected-face,
+	w3m-tab-unselected-retrieving-face, w3m-tab-selected-face,
+	w3m-tab-selected-face): Exchange the default TTY colors between
+	selected faces and unselected faces.
+	(w3m-tab-line): Make all tab widths the same even if there are
+	wide characters; never use graphic icons in TTY; close the left
+	margin unless there's an icon.
+	(w3m-initialize-graphic-icons): Don't make graphic icons for TTY.
+
+	* w3m-favicon.el: Bind `w3m-modeline-favicon' when compiling.
+
+	* w3m-util.el (w3m-current-title): New function.
+	(w3m-buffer-title): Use it.
+
+	* w3m.el: Silence the byte-compiler for `w3m-info-like-map',
+	`w3m-lynx-like-map', `w3m-minor-mode-map', `w3m-mode-map', and
+	`w3m-setup-menu'.
+
+2003-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-favicon.el: Silence the compile warning for `w3m-message'.
 
 	* w3m.el (w3m-url-to-file-name): Enable it to interpret

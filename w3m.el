@@ -74,6 +74,10 @@
 (require 'w3m-util)
 (require 'w3m-proc)
 
+;; Silence the Emacs' byte-compiler that says ``might not be defined''.
+(eval-when-compile
+  (defalias 'w3m-setup-menu 'ignore))
+
 (eval-and-compile
   (cond
    ((featurep 'xemacs)
@@ -497,10 +501,11 @@ reason.  The value will be referred by the function `w3m-load-list'.")
 		  (boundp 'w3m-info-like-map)
 		  (boundp 'w3m-lynx-like-map))
 		 ;; It won't be bound at the first time.
-		 (setq w3m-mode-map (if (eq value 'info)
-					w3m-info-like-map
-				      w3m-lynx-like-map)
-		       w3m-minor-mode-map (w3m-make-minor-mode-keymap)))
+		 (eval
+		  '(setq w3m-mode-map (if (eq value 'info)
+					  w3m-info-like-map
+					w3m-lynx-like-map)
+			 w3m-minor-mode-map (w3m-make-minor-mode-keymap))))
 	     (let ((buffers (buffer-list)))
 	       (save-excursion
 		 (while buffers
@@ -508,7 +513,7 @@ reason.  The value will be referred by the function `w3m-load-list'.")
 		   (if (eq major-mode 'w3m-mode)
 		       (condition-case nil
 			   (progn
-			     (use-local-map w3m-mode-map)
+			     (use-local-map (symbol-value 'w3m-mode-map))
 			     (w3m-setup-toolbar)
 			     (w3m-setup-menu))
 			 (error)))
@@ -2660,7 +2665,7 @@ should use `w3m-url-encode-string' instead of this."
       "Define menubar buttons for Emacsen."
       (let ((items (mapcar 'car (cdr (lookup-key global-map [menu-bar])))))
 	(when items
-	  ;; Locate W3M menu in the forefront of the menubar.
+	  ;; Place the W3M menu in the forefront of the menubar.
 	  (set (make-local-variable 'menu-bar-final-items)
 	       (delq 'w3m items))))
       (unless (keymapp (lookup-key w3m-mode-map [menu-bar w3m]))
@@ -2672,7 +2677,7 @@ should use `w3m-url-encode-string' instead of this."
 	    (define-key map (vector (aref def 1)) (cons (aref def 0)
 							(aref def 1)))
 	    (put (aref def 1) 'menu-enable (aref def 2)))
-	  ;; (define-key map [separator-eval] '("--"))
+	  ;;(define-key map [separator-eval] '("--"))
 	  )))))
 
 (defun w3m-fontify-images ()

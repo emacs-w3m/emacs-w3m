@@ -425,7 +425,7 @@ Buffer string between BEG and END are replaced with IMAGE."
      :background "Gray50" :foreground "Gray20"
      :box (:line-width -1 :style released-button))
     (((class color))
-     (:background "cyan" :foreground "black")))
+     (:background "blue" :foreground "black")))
   "*Face to fontify unselected tabs."
   :group 'w3m-face)
 
@@ -434,7 +434,7 @@ Buffer string between BEG and END are replaced with IMAGE."
      :background "Gray50" :foreground "OrangeRed"
      :box (:line-width -1 :style released-button))
     (((class color))
-     (:background "cyan" :foreground "OrangeRed")))
+     (:background "blue" :foreground "OrangeRed")))
   "*Face to fontify unselected tabs which are retrieving their pages."
   :group 'w3m-face)
 
@@ -443,7 +443,7 @@ Buffer string between BEG and END are replaced with IMAGE."
      :background "Gray85" :foreground "black"
      :box (:line-width -1 :style released-button))
     (((class color))
-     (:background "blue" :foreground "black"))
+     (:background "cyan" :foreground "black"))
     (t (:underline t)))
   "*Face to fontify selected tab."
   :group 'w3m-face)
@@ -453,7 +453,7 @@ Buffer string between BEG and END are replaced with IMAGE."
      :background "Gray85" :foreground "red"
      :box (:line-width -1 :style released-button))
     (((class color))
-     (:background "blue" :foreground "red"))
+     (:background "cyan" :foreground "red"))
     (t (:underline t)))
   "*Face to fontify selected tab which is retrieving its page."
   :group 'w3m-face)
@@ -565,23 +565,26 @@ cleared by a timer.")
   (or (and w3m-tab-timer w3m-tab-line-format)
       (let* ((current (current-buffer))
 	     (buffers (w3m-list-buffers))
+	     (min-width 1)
 	     (fringes (window-fringes))
 	     (width (+ (window-width)
 		       (/ (float (+ (or (car fringes) 0)
 				    (or (nth 1 fringes) 0)))
 			  (frame-char-width))
+		       ;; Assume that the vertical scroll-bar has
+		       ;; the width of two space characters.
 		       (if (car (frame-current-scroll-bars)) 2 0)))
-	     (margin (+ (if w3m-show-graphic-icons-in-header-line 3.0 0.5)
-			;; Leading and trailing shadows.
-			(/ 2.0 (frame-char-width))))
-	     (window (get-buffer-window current t))
+	     (nbuf (length buffers))
+	     (graphic (and window-system
+			   w3m-show-graphic-icons-in-header-line))
+	     (margin (if window-system
+			 (+ (if graphic 3 0.5)
+			    ;; Leading and trailing shadows.
+			    (/ 2.0 (frame-char-width)))
+		       1))
 	     (spinner (when w3m-process-queue
 			(w3m-make-spinner-image)))
-	     process face keymap icon title)
-	(setq width
-	      (if (> (* (length buffers) (+ margin w3m-tab-width)) width)
-		  (max (truncate (- (/ width (length buffers)) margin)) 1)
-		w3m-tab-width))
+	     buffer title data datum process face icon breadth line)
 	(setq w3m-tab-timer
 	      (run-at-time 0.1 nil
 			   (lambda (window)
@@ -593,24 +596,38 @@ cleared by a timer.")
 				 (let ((window-min-height 0))
 				   (shrink-window 1)
 				   (enlarge-window 1))))
-			   window))
-	(setq
-	 w3m-tab-line-format
-	 (concat
-	  (mapconcat
-	   (lambda (buffer)
-	     (set-buffer buffer)
-	     (setq process w3m-current-process
-		   face (if process
-			    (if (eq buffer current)
-				'w3m-tab-selected-retrieving-face
-			      'w3m-tab-unselected-retrieving-face)
-			  (if (eq buffer current)
-			      'w3m-tab-selected-face
-			    'w3m-tab-unselected-face))
-		   keymap w3m-tab-map
-		   icon (when w3m-show-graphic-icons-in-header-line
-			  (if process
+			   (get-buffer-window current t)))
+	(save-current-buffer
+	  (while buffers
+	    (set-buffer (setq buffer (pop buffers)))
+	    (setq min-width
+		  (max min-width
+		       ;; There may be a wide character in the beginning of
+		       ;; the title.
+		       (char-width (aref (setq title (w3m-current-title)) 0))))
+	    (push (list (eq current buffer)
+			w3m-current-process
+			title
+			(when w3m-use-favicon w3m-favicon-image)
+			w3m-tab-map)
+		  data)))
+	(setq width (if (> (* nbuf (+ margin w3m-tab-width)) width)
+			(max (truncate (- (/ width nbuf) margin)) min-width)
+		      w3m-tab-width))
+	(while data
+	  (setq datum (pop data)
+		current (car datum)
+		process (nth 1 datum)
+		title (nth 2 datum)
+		face (if process
+			 (if current
+			     'w3m-tab-selected-retrieving-face
+			   'w3m-tab-unselected-retrieving-face)
+		       (if current
+			   'w3m-tab-selected-face
+			 'w3m-tab-unselected-face))
+		icon (when graphic
+		       (cond (process
 			      (when spinner
 				(propertize
 				 "  "
@@ -618,38 +635,42 @@ cleared by a timer.")
 				 'mouse-face 'highlight
 				 'face face
 				 'local-map w3m-tab-spinner-map
-				 'help-echo w3m-spinner-map-help-echo))
-			    (when (and w3m-use-favicon
-				       w3m-favicon-image)
-			      (propertize "  "
-					  'display w3m-favicon-image)))))
-	     (set-buffer current)
-	     (setq title (w3m-buffer-title buffer))
+				 'help-echo w3m-spinner-map-help-echo)))
+			     ((nth 3 datum)
+			      (propertize "  " 'display (nth 3 datum)))))
+		breadth (if icon
+			    width
+			  (+ 2 width)))
+	  (push
+	   (list
+	    icon
+	    (propertize
 	     (concat
-	      icon
-	      (propertize
-	       (concat
-		(when w3m-show-graphic-icons-in-header-line
-		  (if icon
-		      w3m-tab-half-space
-		    (concat "  " w3m-tab-half-space)))
-		(if (> (string-width title) width)
-		    (if (> width 6)
-			(concat (truncate-string-to-width title
-							  (max 0 (- width 3)))
-				"...")
-		      (truncate-string-to-width title width))
-		  (concat title
-			  (make-string (max 0 (- width (string-width title)))
-				       ?\ ))))
-	       'mouse-face 'highlight
-	       'face face
-	       'local-map keymap
-	       'help-echo title)))
-	   buffers
-	   w3m-tab-separator)
-	  (propertize (make-string (window-width) ?\ )
-		      'face 'w3m-tab-background-face))))))
+	      w3m-tab-half-space
+	      (if (and (> (string-width title) breadth)
+		       (> breadth 6))
+		  (truncate-string-to-width
+		   (concat (truncate-string-to-width title
+						     (max 0 (- breadth 3)))
+			   "...")
+		   breadth nil ?.)
+		(truncate-string-to-width title breadth nil ?\ )))
+	     'mouse-face 'highlight
+	     'face face
+	     'local-map (nth 4 datum)
+	     'help-echo title)
+	    w3m-tab-separator)
+	   line))
+	(setq w3m-tab-line-format
+	      (concat (apply 'concat (apply 'nconc line))
+		      (if window-system
+			  (propertize
+			   " "
+			   'face 'w3m-tab-background-face
+			   'display (list 'space
+					  :relative-width (window-width)))
+			(propertize (make-string (window-width) ?\ )
+				    'face 'w3m-tab-background-face)))))))
 
 (defun w3m-update-tab-line ()
   "Update tab line."
@@ -706,7 +727,8 @@ italic font in the modeline."
 	    icon (car def)
 	    file (expand-file-name (nth 1 def) w3m-icon-directory)
 	    status (nth 2 def))
-      (if (and w3m-show-graphic-icons-in-mode-line
+      (if (and window-system
+	       w3m-show-graphic-icons-in-mode-line
 	       (display-images-p)
 	       (image-type-available-p 'xpm)
 	       (file-exists-p file))
@@ -742,7 +764,8 @@ italic font in the modeline."
 	'w3m-process-stop)
       (put 'w3m-modeline-process-status-on 'risky-local-variable t)
       (put 'w3m-modeline-process-status-on-icon 'risky-local-variable t))
-    (if (and w3m-show-graphic-icons-in-mode-line
+    (if (and window-system
+	     w3m-show-graphic-icons-in-mode-line
 	     w3m-spinner-image-file)
 	(progn
 	  (when (stringp w3m-modeline-process-status-on)
