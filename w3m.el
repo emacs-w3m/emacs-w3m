@@ -4556,8 +4556,11 @@ buffers.  User can type following keys:
     (setq w3m-select-buffer-window selected-window)
     (let ((w (or (get-buffer-window w3m-select-buffer-name)
 		 (split-window selected-window
-			       (- (window-width)
-				  w3m-select-buffer-window-size)
+			       (-
+				(if w3m-select-buffer-horizontal-window
+				    (window-width)
+				  (window-height))
+				w3m-select-buffer-window-size)
 			       w3m-select-buffer-horizontal-window))))
       (set-window-buffer w (current-buffer))
       (select-window w))
@@ -4604,6 +4607,12 @@ buffers.  User can type following keys:
      'w3m-delete-buffer 'w3m-select-buffer-delete-buffer map w3m-mode-map)
     (substitute-key-definition
      'w3m-select-buffer 'w3m-select-buffer-quit map w3m-mode-map)
+    (substitute-key-definition
+     'w3m-scroll-up-or-next-url
+     'w3m-select-buffer-show-this-line map w3m-mode-map)
+    (substitute-key-definition
+     'w3m-scroll-down-or-previous-url
+     'w3m-select-buffer-show-this-line-and-down map w3m-mode-map)
     (define-key map " " 'w3m-select-buffer-show-this-line)
     (define-key map "g" 'w3m-select-buffer-recheck)
     (define-key map "j" 'w3m-select-buffer-next-line)
@@ -4626,7 +4635,8 @@ Major mode to select a buffer from the set of w3m-mode buffers.
 
 \\[w3m-select-buffer-next-line]	Next line.
 \\[w3m-select-buffer-previous-line]	Previous line.
-\\[w3m-select-buffer-show-this-line]	Show the current buffer.
+\\[w3m-select-buffer-show-this-line]	Show the current buffer or scroll up.
+\\[w3m-select-buffer-show-this-line-and-down]	Show the current buffer or scroll down.
 \\[w3m-select-buffer-show-this-line-and-switch]	Show the current buffer and set cusor to w3m buffer.
 \\[w3m-select-buffer-show-this-line-and-quit]	Show the current buffer and quit menu.
 \\[w3m-select-buffer-quit]	Quit menu.
@@ -4653,10 +4663,12 @@ select them."
   `(get-text-property (point) 'w3m-select-buffer))
 
 (defun w3m-select-buffer-show-this-line ()
-  "Show the current buffer on this menu line."
+  "Show the current buffer on this menu line or scroll up its."
   (interactive)
   (forward-line 0)
-  (let ((buffer (w3m-select-buffer-current-buffer)))
+  (let ((obuffer (and (window-live-p w3m-select-buffer-window)
+		      (window-buffer w3m-select-buffer-window)))
+	(buffer (w3m-select-buffer-current-buffer)))
     (unless buffer
       (error "No buffer at point"))
     (unless (window-live-p w3m-select-buffer-window)
@@ -4665,13 +4677,31 @@ select them."
 	    (setq w3m-select-buffer-window (selected-window))
 	    (select-window
 	     (split-window nil
-			   (- (window-width)
-			      w3m-select-buffer-window-size)
+			   (-
+			    (if w3m-select-buffer-horizontal-window
+				(window-width)
+			      (window-height))
+			    w3m-select-buffer-window-size)
 			   w3m-select-buffer-horizontal-window)))
 	(setq w3m-select-buffer-window (get-largest-window))))
     (set-window-buffer w3m-select-buffer-window buffer)
+    (when (and (interactive-p) (eq obuffer buffer))
+      (save-selected-window
+	(pop-to-buffer buffer)
+	(w3m-scroll-up-or-next-url nil)))
     (message w3m-select-buffer-message)
     buffer))
+
+(defun w3m-select-buffer-show-this-line-and-down ()
+  "Show the current buffer on this menu line or scroll down its."
+  (interactive)
+  (let ((obuffer (and (window-live-p w3m-select-buffer-window)
+		      (window-buffer w3m-select-buffer-window)))
+	(buffer (w3m-select-buffer-show-this-line)))
+    (when (eq obuffer buffer)
+      (save-selected-window
+	(pop-to-buffer buffer)
+	(w3m-scroll-down-or-previous-url nil)))))
 
 (defun w3m-select-buffer-next-line (&optional n)
   "Move cursor vertically down ARG lines and show the buffer on the

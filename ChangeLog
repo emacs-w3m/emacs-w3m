@@ -1,3 +1,16 @@
+2001-11-15  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-select-buffer): Fix window height calculation when
+	w3m-select-buffer-horizontal-window is nil.
+	(w3m-select-buffer-mode-map): Add the key bind of
+	`w3m-select-buffer-show-this-line-and-down'. Modify the key bind
+	of `w3m-select-buffer-show-this-line'.
+	(w3m-select-buffer-show-this-line): Fix window height calculation
+	when w3m-select-buffer-horizontal-window is nil. If already
+	displayed w3m-buffer and call interactively, call
+	`w3m-scroll-up-or-next-url'.
+	(w3m-select-buffer-show-this-line-and-down): New function.
+
 2001-11-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Merge experimental-async branch to main trunk.
