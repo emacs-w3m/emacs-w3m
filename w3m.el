@@ -609,8 +609,11 @@ If N is negative, last N items of LIST is returned."
   (when (and list (file-writable-p file))
     (with-temp-buffer
       (let ((file-coding-system coding)
-	    (coding-system-for-write coding))
-	(print list (current-buffer))
+	    (coding-system-for-write coding)
+	    print-length print-level)
+	(w3m-static-if (fboundp 'pp)
+	    (pp list (current-buffer))
+	  (print list (current-buffer)))
 	(write-region (point-min) (point-max)
 		      file nil 'nomsg)))))
 
