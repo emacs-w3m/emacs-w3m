@@ -121,8 +121,18 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 
 (defvar shimbun-yomiuri-expiration-days 7)
 
-(luna-define-method shimbun-server-name ((shimbun shimbun-yomiuri))
-  "讀売新聞")
+(luna-define-method initialize-instance :after ((shimbun shimbun-yomiuri)
+						 &rest init-args)
+  (shimbun-set-server-name-internal shimbun "讀売新聞")
+  (shimbun-set-from-address-internal shimbun
+				     (concat "webmaster@www."
+					     shimbun-yomiuri-top-level-domain))
+  ;; To share class variables between `shimbun-yomiuri' and its
+  ;; successor `shimbun-yomiuri-html'.
+  (shimbun-set-x-face-alist-internal shimbun shimbun-yomiuri-x-face-alist)
+  (shimbun-set-expiration-days-internal shimbun
+					shimbun-yomiuri-expiration-days)
+  shimbun)
 
 (luna-define-method shimbun-groups ((shimbun shimbun-yomiuri))
   (mapcar 'car shimbun-yomiuri-group-table))
@@ -130,13 +140,6 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 (luna-define-method shimbun-current-group-name ((shimbun shimbun-yomiuri))
   (nth 1 (assoc (shimbun-current-group-internal shimbun)
 		shimbun-yomiuri-group-table)))
-
-(luna-define-method shimbun-from-address ((shimbun shimbun-yomiuri))
-  (shimbun-mime-encode-string
-   (format "%s (%s) <webmaster@www.%s>"
-	   (shimbun-server-name shimbun)
-	   (shimbun-current-group-name shimbun)
-	   shimbun-yomiuri-top-level-domain)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-yomiuri))
   (let ((group (shimbun-current-group-internal shimbun)))

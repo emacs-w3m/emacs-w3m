@@ -1,3 +1,21 @@
+2003-06-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-asahi.el (shimbun-server-name): Removed.
+	(shimbun-from-address): Removed.
+	(initialize-instance): Initialize `server-name', `from-address',
+	`x-face-alist' and `expiration-days'.
+
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html-x-face-alist):
+	(shimbun-asahi-html-expiration-days): Abolished.
+
+	* shimbun/sb-yomiuri.el (shimbun-server-name): Removed.
+	(shimbun-from-address): Removed.
+	(initialize-instance): Initialize `server-name', `from-address',
+	`x-face-alist' and `expiration-days'.
+
+	* shimbun/sb-yomiuri-html.el (shimbun-yomiuri-html-x-face-alist):
+	(shimbun-yomiuri-html-expiration-days): Abolished.
+
 2003-06-17  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-rss.el (shimbun-rss-process-date): Handle UTC

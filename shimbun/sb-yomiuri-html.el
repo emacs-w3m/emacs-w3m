@@ -37,10 +37,6 @@
 
 (defvar shimbun-yomiuri-html-content-end  "\n<!--  honbun end  -->\n")
 
-(defvar shimbun-yomiuri-html-x-face-alist shimbun-yomiuri-x-face-alist)
-
-(defvar shimbun-yomiuri-html-expiration-days shimbun-yomiuri-expiration-days)
-
 (luna-define-method shimbun-make-contents ((shimbun shimbun-yomiuri-html)
 					   header)
   (shimbun-yomiuri-adjust-date-header shimbun header)
