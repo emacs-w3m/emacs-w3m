@@ -108,7 +108,7 @@
    最新の w3m-0.2.1-inu-patch を適用しておく必要があります．以下のページ
    で探してください．
 
-      http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/index.html
+      http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/index.html
 
    w3m-m17n / w3mmee などの w3m から派生したプログラムを利用する場合には，
    patches/ 以下の必要なパッチを適用して，再コンパイルしてください．
