@@ -68,7 +68,6 @@
 (require 'eword-encode)
 (require 'luna)
 (require 'std11)
-(require 'w3m)
 
 (eval-and-compile
   (luna-define-class shimbun ()
@@ -144,10 +143,14 @@ for a charset indication")
   (eval-and-compile
     (defalias-maybe 'coding-system-category 'get-code-mnemonic)))
 
+;;; emacs-w3m implementation of url retrieval and entity decoding.
+(require 'w3m)
 (defun shimbun-retrieve-url (url &optional no-cache)
   "Rertrieve URL contents and insert to current buffer."
   (when (w3m-retrieve url nil no-cache)
     (insert-buffer w3m-work-buffer-name)))
+
+(defalias 'shimbun-decode-entities 'w3m-decode-entities)
 
 ;;; Implementation of Header API.
 (defun shimbun-make-header (&optional number subject from date id
@@ -453,13 +456,6 @@ is enclosed by at least one regexp grouping construct."
   (when (skip-chars-backward "\n")
     (delete-region (point) (point-max)))
   (insert "\n"))
-
-(defun shimbun-decode-entities ()
-  "Decode entities in the current buffer."
-  (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward w3m-entity-regexp nil t)
-      (replace-match (w3m-entity-value (match-string 1)) nil t))))
 
 (defun shimbun-decode-entities-string (string)
   "Decode entities in the STRING."

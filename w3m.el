@@ -1122,6 +1122,19 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 	     (t (w3m-remove-image point end))))
 	  (setq w3m-display-inline-image-status 'off))))))
 
+(defun w3m-decode-entities (&optional reserve-prop)
+  "Decode entities in the current buffer.
+If optional RESERVE-PROP is non-nil, text property is reserved."
+  (save-excursion
+    (goto-char (point-min))
+    (let (prop)
+      (while (re-search-forward w3m-entity-regexp nil t)
+	(if reserve-prop
+	    (setq prop (text-properties-at (match-beginning 0))))
+	(replace-match (w3m-entity-value (match-string 1)) nil t)
+	(if (and reserve-prop prop)
+	    (add-text-properties (match-beginning 0) (point) prop))))))
+
 (defun w3m-fontify ()
   "Fontify this buffer."
   (let ((case-fold-search t)
@@ -1151,12 +1164,7 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
     (while (re-search-forward "</?[A-z_][^>]*>" nil t)
       (delete-region (match-beginning 0) (match-end 0)))
     ;; Decode escaped characters (entities).
-    (goto-char (point-min))
-    (let (prop)
-      (while (re-search-forward w3m-entity-regexp nil t)
-	(setq prop (text-properties-at (match-beginning 0)))
-	(replace-match (w3m-entity-value (match-string 1)) nil t)
-	(if prop (add-text-properties (match-beginning 0) (point) prop))))
+    (w3m-decode-entities 'reserve-prop)
     (goto-char (point-min))
     (if w3m-delete-duplicated-empty-lines
 	(while (re-search-forward "^[ \t]*\n\\([ \t]*\n\\)+" nil t)

@@ -79,7 +79,7 @@ tarball:
 	rm -rf $(DISTDIR)
 
 clean:
-	-rm -rf *~ *.elc $(PACKAGE)*
+	-rm -rf *~ *.elc shimbun/*.elc $(PACKAGE)*
 
 distclean: clean
 	-rm -f config.log config.status config.cache Makefile

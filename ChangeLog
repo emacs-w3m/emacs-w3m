@@ -1,3 +1,16 @@
+2001-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* Makefile.in (clean): Remove shimbun modules.
+
+	* w3mhack.el (shimbun-module-directory): New constant.
+	(w3mhack-examine-modules): Add shimbun modules if mime is installed.
+
+	* w3m.el (w3m-decode-entities): New function.
+	(w3m-fontify): Use it.
+
+	* shimbun/shimbun.el (shimbun-decode-entities):
+	Define as an alias for `w3m-decode-entities'.
+
 2001-04-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-print-this-url): New optional argument

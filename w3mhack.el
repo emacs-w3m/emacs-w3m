@@ -46,6 +46,8 @@
 ;; Needed for interdependencies between w3m modules.
 (push default-directory load-path)
 
+(defconst shimbun-module-directory "shimbun")
+
 (defun w3mhack-examine-modules ()
   "Examine w3m modules should be byte-compile'd."
   (let ((modules (directory-files default-directory nil "^[^#]+\\.el$"))
@@ -67,6 +69,17 @@
       (push "mime-w3m.el" deletes))
     (unless (locate-library "mew")
       (push "mew-w3m.el" deletes))
+    ;; shimbun modules
+    (when mime
+      (setq modules
+	    (nconc modules
+		   (mapcar
+		    (lambda (file)
+		      (concat shimbun-module-directory "/" file))
+		    (directory-files (expand-file-name
+				      shimbun-module-directory
+				      default-directory) nil
+				      "^[^#]+\\.el$")))))
     (dolist (module modules)
       (unless (member module deletes)
 	(princ (format "%sc " module))))))
