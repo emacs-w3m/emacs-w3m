@@ -245,7 +245,7 @@ that consists of:
 			  (string-to-number (match-string 3))
 			  (string-to-number (match-string 2))
 			  (string-to-number (match-string 1))
-			  "JST")))))))
+			  32400)))))))
 
 (defun w3m-antenna-check-hns (site handler)
   "Check the page served by HNS (Hyper Nikki System) asynchronously."
