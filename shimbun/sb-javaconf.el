@@ -1,10 +1,11 @@
 ;;; sb-javaconf.el --- shimbun backend class for java-conference archive.
+;;
+;; Copyright (C) 2001 ABE Yasushi <yasushi@stbbs.net>
 
 ;; Author: ABE Yasushi <yasushi@stbbs.net>
-
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

@@ -1,10 +1,11 @@
 ;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp
+;;
+;; Copyright (C) 2001 Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
 
 ;; Author: Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
-
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it a>nd/or modify
 ;; it under the terms of the GNU General Public License as published by
