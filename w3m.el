@@ -143,6 +143,9 @@
 		   (- (string-to-number (match-string 1 rev)) 642)))))
   "Version number of this package.")
 
+(defconst w3m-treat-drive-letter (memq system-type '(windows-nt OS/2 emx))
+  "Operating system has a drive letter.")
+
 (defgroup w3m nil
   "w3m - the web browser of choice."
   :group 'hypermedia)
@@ -1569,8 +1572,9 @@ When URL does not point any local files, it returns nil."
     (setq url (substring url (match-end 1)))
     ;; Process abs_path part in Windows.
     (setq url
-	  (if (string-match
-	       "\\`/\\(\\([a-zA-Z]\\)[|:]?\\|cygdrive/\\([a-zA-Z]\\)\\)/" url)
+	  (if (and w3m-treat-drive-letter
+		   (string-match
+		    "\\`/\\(\\([a-zA-Z]\\)[|:]?\\|cygdrive/\\([a-zA-Z]\\)\\)/" url))
 	      (concat (or (match-string 2 url) (match-string 3 url))
 		      ":/"
 		      (substring url (match-end 0)))
