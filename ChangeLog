@@ -1,5 +1,13 @@
 2004-01-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-edit-function-alist): New option.
+	(w3m-edit-url): Refer the above alist to find a suitable function
+	for editing a specified page.
+	(w3m-edit-function, w3m-edit-current-url): Its docstring is
+	modified to follow the above change.
+	(w3m-edit-this-url): Its docstring is modified likewise, and it is
+	simplified.
+
 	* shimbun/nnshimbun.el: Changes to make nnshimbun.el more robust.
 	(nnshimbun-goto-url): Abolished.
 	(gnus-summary-refer-shimbun-article): New command.

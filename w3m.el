@@ -1108,8 +1108,8 @@ handles unicode charsets."
 
 (defcustom w3m-edit-function 'find-file
   "*Function used for editing local files.
-It is used when the `\\<w3m-mode-map>\\[w3m-edit-current-url]' command\
- or the `\\[w3m-edit-this-url]' command is invoked."
+It is used when either `w3m-edit-current-url' or `w3m-edit-this-url'
+is invoked for local pages."
   :group 'w3m
   :type '(radio
 	  (const :tag "Edit it in the current window" find-file)
@@ -1118,6 +1118,18 @@ It is used when the `\\<w3m-mode-map>\\[w3m-edit-current-url]' command\
 	  (const :tag "View it in another window" view-file-other-window)
 	  (function :format "Other function: %v\n" :size 0
 		    :value view-file)))
+
+(defcustom w3m-edit-function-alist
+  '(("\\`[^?]+/hiki\\.cgi\\?" . hiki-edit-url))
+  "*Alist of functions used for editing pages.
+This option is refered to decide which function shouled be used to
+edit a specified page, when either `w3m-edit-current-url' or
+`w3m-edit-this-url' is invoked.  When no suitable function is found
+from this alist, `w3m-edit-function' is used."
+  :group 'w3m
+  :type '(repeat (cons :format "%v" :indent 3
+		       (regexp :format "URL: %v\n" :size 0)
+		       (function))))
 
 (defcustom w3m-url-local-directory-alist
   (when (boundp 'yahtml-path-url-alist)
@@ -5394,25 +5406,29 @@ Return t if highlighting is successful."
   "A subroutine for `w3m-edit-current-url' and `w3m-edit-this-url'."
   (when (string-match "\\`about://\\(header\\|source\\)/" url)
     (setq url (substring url (match-end 0))))
-  (funcall w3m-edit-function
-	   (or (w3m-url-to-file-name url)
-	       (error "URL:%s is not a local file" url))))
+  (catch 'found
+    (dolist (pair w3m-edit-function-alist)
+      (when (and (string-match (car pair) url)
+		 (fboundp (cdr pair)))
+	(throw 'found (funcall (cdr pair) url))))
+    (funcall w3m-edit-function
+	     (or (w3m-url-to-file-name url)
+		 (error "URL:%s is not a local file" url)))))
 
 (defun w3m-edit-current-url ()
-  "Edit the local file which is displayed in the current buffer."
+  "Edit this viewing page."
   (interactive)
   (if w3m-current-url
       (w3m-edit-url w3m-current-url)
     (w3m-message "No URL")))
 
-(defun w3m-edit-this-url (&optional url)
-  "Edit the local file which is pointed to by URL under point."
+(defun w3m-edit-this-url ()
+  "Edit the page which is pointed to by URL under point."
   (interactive)
-  (unless url
-    (setq url (w3m-anchor)))
-  (if (w3m-url-valid url)
-      (w3m-edit-url url)
-    (w3m-message "No URL at point")))
+  (let ((url (w3m-url-valid (w3m-anchor))))
+    (if url
+	(w3m-edit-url url)
+      (w3m-message "No URL at point"))))
 
 (defvar w3m-goto-anchor-hist nil)
 (make-variable-buffer-local 'w3m-goto-anchor-hist)
