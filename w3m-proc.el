@@ -161,8 +161,7 @@ return it."
       (push x w3m-process-queue))
     (push (w3m-process-handler-new (current-buffer) w3m-current-buffer handler)
 	  (w3m-process-handlers x))
-    (with-current-buffer
-	(w3m-process-handler-buffer (car (last (w3m-process-handlers x))))
+    (with-current-buffer (w3m-process-buffer x)
       (setq w3m-process-object x))))
 
 (defsubst w3m-process-kill-process (process)
