@@ -30,16 +30,11 @@
 ;; This package is for viewing formatted (rendered) Text/Html content
 ;; in Mew's message buffer.
 
-;;; Instalation:
+;;; Installation:
 
 ;; (1) Simply load this file and add followings in your ~/.mew file.
 ;;
 ;; (require 'mew-w3m)
-;; (setq mew-prog-html '(mew-mime-text/html-w3m nil nil))
-;;  or
-;; (require 'mew-w3m)
-;; (setq mew-prog-text/html 'mew-mime-text/html-w3m)
-;;;; (setq mew-prog-text/html-ext 'mew-mime-text/html-w3m)
 ;;
 ;; (2) And you can use keymap of w3m-mode as mew-w3m-minor-mode.
 ;; To activate this feaeture, add followings also:
@@ -55,6 +50,18 @@
 ;;
 ;; Press "T": Display the images included its message only.
 ;; Press "C-uT": Display the all images included its Text/Html part."
+;;
+;; (4) You can use emacs-w3m to fetch and/or browse
+;; `external-body with URL access'. To activate this feaeture,
+;; add followings also:
+;; 
+;; (setq mew-ext-url-alist
+;;      '(("^application/" "Fetch by emacs-w3m" mew-w3m-ext-url-fetch nil)
+;;        (t "Browse by emacs-w3m" mew-w3m-ext-url-show nil)))
+;;  or
+;; (setq mew-ext-url-alist
+;;      '((t "Browse by emacs-w3m" mew-w3m-ext-url-show nil)))
+;;
 
 ;;; Usage:
 
@@ -100,6 +107,15 @@ This variable effected only XEmacs or Emacs 21."
   :type 'hook)
 
 (defconst mew-w3m-safe-url-regexp "\\`cid:")
+
+;; Avoid bytecompile error and warnings.
+(eval-when-compile
+  (defun mew-window-configure (&rest args) ())
+  (unless (fboundp 'mew-current-get-fld)
+    (autoload 'mew-current-get-fld "mew")
+    (autoload 'mew-current-get-msg "mew")
+    (autoload 'mew-syntax-get-entry-by-cid "mew")
+    (defun mew-cache-hit (&rest args) ())))
 
 (defun mew-w3m-minor-mode-setter ()
   "Check message buffer and activate w3m-minor-mode."
@@ -198,14 +214,6 @@ This variable effected only XEmacs or Emacs 21."
 
 (defvar w3m-mew-support-cid (fboundp 'mew-syntax-get-entry-by-cid))
 
-;; Avoid bytecompile error and warnings (Mew 1.94.2 or earlier).
-(eval-when-compile
-  (unless (fboundp 'mew-current-get-fld)
-    (autoload 'mew-current-get-fld "mew")
-    (autoload 'mew-current-get-msg "mew")
-    (autoload 'mew-syntax-get-entry-by-cid "mew")
-    (defun mew-cache-hit (&rest args) ())))
-
 (defun mew-w3m-cid-retrieve (url &rest args)
   (let ((output-buffer (current-buffer)))
     (with-current-buffer w3m-current-buffer
@@ -233,6 +241,25 @@ This variable effected only XEmacs or Emacs 21."
 (when w3m-mew-support-cid
   (push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
 	w3m-cid-retrieve-function-alist))
+
+(defun mew-w3m-ext-url-show (dummy url)
+  (condition-case nil
+      (mew-window-configure 'message)
+    (error (mew-window-configure (buffer-name) 'message)))
+  (w3m url))
+
+(defun mew-w3m-ext-url-fetch (dummy url)
+  (lexical-let ((url url)
+		(name (file-name-nondirectory url))
+		handler)
+    (w3m-process-do
+	(success (prog1
+		     (w3m-download url nil nil handler)
+		   (message "Download: %s..." name)))
+      (if success
+	  (message "Download: %s...done" name)
+	(message "Download: %s...failed" name))
+      (sit-for 1))))
 
 ;;;
 (provide 'mew-w3m)
