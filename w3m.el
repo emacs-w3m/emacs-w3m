@@ -1154,7 +1154,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
       (condition-case nil
 	  (w3m-process-with-wait-handler
 	    (w3m-attributes url no-cache handler))
-	(w3m-process-timeout nil))
+	(w3m-process-error nil))
     (when (string-match "\\`\\([^#]*\\)#" url)
       (setq url (substring url 0 (match-end 1))))
     (cond
@@ -2599,7 +2599,7 @@ type as a string argument, when retrieve is complete."
       (condition-case nil
 	  (w3m-process-with-wait-handler
 	    (w3m-retrieve url no-decode no-cache post-data referer handler))
-	(w3m-process-timeout nil))
+	(w3m-process-error nil))
     (unless (and w3m-safe-url-regexp
 		 (not (string-match w3m-safe-url-regexp url)))
       (when (string-match "\\`\\([^#]*\\)#" url)
@@ -4521,7 +4521,7 @@ works on Emacs.
 	   (setq header (condition-case nil
 			    (w3m-process-with-wait-handler
 			      (w3m-w3m-get-header url no-cache handler))
-			  (w3m-process-timeout nil)))
+			  (w3m-process-error nil)))
 	   (insert
 	    (if (string= w3m-language "Japanese")
 		"\n\n━━━━━━━━━━━━━━━━━━━\n\nHeader information\n\n"

@@ -1,3 +1,12 @@
+2001-11-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-proc.el (w3m-process-failure): New error symbol.
+	(w3m-process-timeout): Change its error condition.
+	(w3m-process-with-wait-handler): Install adhoc workaround.
+
+	* w3m.el (w3m-attributes, w3m-retrieve, w3m-about-header): Follow
+	change of `w3m-process-with-wait-handler'.
+
 2001-11-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-modeline-process-status-on): New constant.

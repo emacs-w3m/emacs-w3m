@@ -274,7 +274,12 @@ handler."
 (put 'w3m-process-with-null-handler 'edebug-form-spec '(body))
 
 ;; Error symbol:
-(put 'w3m-process-timeout 'error-conditions '(error w3m-process-timeout))
+(put 'w3m-process-failure 'error-conditions
+     '(error w3m-process-error w3m-process-failure))
+(put 'w3m-process-failure 'error-message
+     "Failed detection of process exit status")
+(put 'w3m-process-timeout 'error-conditions
+     '(error w3m-process-error  w3m-process-timeout))
 (put 'w3m-process-timeout 'error-message "Time out")
 
 (defmacro w3m-process-with-wait-handler (&rest body)
@@ -292,9 +297,11 @@ because capturing the end of the generated sub-process fails."
 	     (,start (current-time))
 	     (handler (lambda (x) (setq ,result x))))
 	 (if (w3m-process-p (setq ,process (progn ,@body)))
-	     (let (w3m-process-inhibit-quit inhibit-quit)
+	     (let ((w3m-current-process ,process)
+		   w3m-process-inhibit-quit inhibit-quit)
 	       (w3m-process-start-process ,process)
-	       (while (eq ,result ',result)
+	       (setq ,process (w3m-process-process ,process))
+	       (while (eq (process-status ,process) 'run)
 		 (sit-for 0.2)
 		 (and w3m-process-timeout
 		      (< w3m-process-timeout
@@ -305,6 +312,13 @@ because capturing the end of the generated sub-process fails."
 			(w3m-process-kill-process
 			 (w3m-process-process ,process))
 			(signal 'w3m-process-timeout nil))))
+	       ;; Adhoc waiting for asynchronous processes to finish.
+	       (setq ,start 0)
+	       (while (and (< ,start 10) (eq ,result ',result))
+		 (sit-for 0.2)
+		 (setq ,start (1+ ,start)))
+	       (when (eq ,result ',result)
+		 (signal 'w3m-process-failure nil))
 	       ,result)
 	   ,process)))))
 (put 'w3m-process-with-wait-handler 'lisp-indent-function 0)
