@@ -30,7 +30,7 @@
 ;;
 ;;    http://emacs-w3m.namazu.org/
 ;;
-;; Routines in this file requires ImageMagick's convert.
+;; Routines in this file require ImageMagick's convert.
 ;; For more detail about ImageMagick, see:
 ;;
 ;;    http://www.imagemagick.org/
