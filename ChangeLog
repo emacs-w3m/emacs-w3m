@@ -1,3 +1,29 @@
+2002-01-31  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-hns.el (shimbun-hns-expiration-days): New variable.
+
+	* shimbun/sb-tcup.el (shimbun-headers): Check whether the header
+	is already retrieved.
+
+2002-01-29  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-meadow.el (shimbun-headers): Fixed problem when
+	yearly index is one page.
+
+2002-01-11  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-url-encode-string): Fixed for Mule2.
+	
+2002-01-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-quit): Don't remove `w3m-arrived-shutdown' from
+	`kill-emacs-hook'.
+
+2001-12-10  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-form.el (w3m-form-parse-forms): Use `w3m-decode-entities-string'
+	to value in the textarea and option menu.
+
 2002-01-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.2.4.
@@ -91,8 +117,6 @@
 	* w3m.el (w3m-type): Changed condition to decide type.
 	(w3m-decoder-alist): Use `w3m-command' for inflate command path.
 	(w3m-dirlist-cgi-program): Use `w3m-command'.
-	(w3m-dump-head-source-command-arguments) [w3mmee]: Don't add "-o
-	accept_language=xxx".
 
 2001-11-16  OKAZAKI Tetsurou <okazaki@be.to>
 

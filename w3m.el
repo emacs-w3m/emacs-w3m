@@ -1548,7 +1548,7 @@ which defaults to the value of `w3m-file-coding-system-for-read'."
 	     ((char-equal ch ?\x20)	; space
 	      "+")
 	     (t
-	      (format "%%%02X" ch))))	; escape
+	      (format "%%%02x" ch))))	; escape
 	  ;; Coerce a string to a list of chars.
 	  (append (encode-coding-string (or str "")
 					(or coding
@@ -4151,7 +4151,6 @@ Return t if deleting current frame or window is succeeded."
       ;; If no w3m is running, then destruct all data.
       (w3m-cache-shutdown)
       (w3m-arrived-shutdown)
-      (remove-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
       (w3m-kill-all-buffer))))
 
 (defun w3m-close-window ()

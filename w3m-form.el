@@ -302,7 +302,8 @@ return them with the flag."
 	      (let ((start (point))
 		    value)
 		(skip-chars-forward "^<")
-		(setq value (buffer-substring start (point)))
+		(setq value (w3m-decode-entities-string
+			     (buffer-substring start (point))))
 		(when name
 		  (w3m-form-put (car forms)
 				name
@@ -324,10 +325,12 @@ return them with the flag."
 		    (setq vbeg (point))
 		    (skip-chars-forward "^<")
 		    (setq svalue
-			  (mapconcat 'identity
-				     (split-string
-				      (buffer-substring vbeg (point)) "\n")
-				     ""))
+			  (w3m-decode-entities-string
+			   (mapconcat 'identity
+				      (split-string
+				       (buffer-substring vbeg (point))
+				       "[ \t\r\f\n]+")
+				      " ")))
 		    (unless value
 		      (setq value svalue))
 		    (when selected
