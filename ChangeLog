@@ -1,3 +1,7 @@
+2001-04-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (TopLevel): Set w3m-mode-map if not exec w3m-mode() yet.
+
 2001-04-12  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi): Don't inherit sb-text.
@@ -1972,4 +1976,3 @@
 2000-06-25  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el: New file.
->
