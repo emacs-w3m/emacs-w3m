@@ -6,6 +6,15 @@
 	(octet-guess-type-from-content-type): New function.
 	(octet-buffer): Added optional argument `content-type'.
 	(octet-buffer): Ignore `quit'.
+	(octet-suffix-type-alist): Added images.
+	(octet-content-type-alist): Ditto.
+	(octet-type-filter-alist): Ditto.
+	(octet-magic-type-alist): Renamed from mime-magic-type-alist.
+	(octet-decode-image): New function.
+	(octet-guess-type-from-magic): New function.
+	(octet-buffer): Use it.
+	(octet-insert-buffer): New function.
+	(mime-preview-octet): Use it.
 
 2002-01-29  Yuuichi Teranishi  <teranisi@gohome.org>
 

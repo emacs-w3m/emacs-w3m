@@ -77,14 +77,41 @@
     ("doc"  . msword)
     ("gz"   . gzip)
     ("html" . html)
+    ("jpg"  . jpeg)
+    ("jpeg" . jpeg)
+    ("gif"  . gif)
+    ("gif"  . png)
+    ("tif"  . tiff)
+    ("tiff" . tiff)
     ("txt"  . text))
   "Alist of suffix-to-octet-type.")
 
 (defvar octet-content-type-alist
   '(("application/vnd\\.ms-excel"       . msexcel)
     ("application/vnd\\.ms-powerpoint"  . msppt)
-    ("application/msword"               . msword))
+    ("application/msword"               . msword)
+    ("image/jpeg"                       . jpeg)
+    ("image/gif"                        . gif)
+    ("image/png"                        . png)
+    ("image/tiff"                       . tiff)
+    ("audio/midi"                       . ignore)
+    ("video/mpeg"                       . ignore))
   "Alist of content-type-regexp-to-octet-type.")
+
+(defvar octet-magic-type-alist
+  '(("^\377\330\377[\340\356]..JFIF"	image jpeg)
+    ("^\211PNG"				image png)
+    ("^GIF8[79]"			image gif)
+    ("^II\\*\000"			image tiff)
+    ("^MM\000\\*"			image tiff)
+    ("^MThd"				audio midi)
+    ("^\000\000\001\263"		video mpeg))
+  "*Alist of regexp about magic-number vs. corresponding content-types.
+Each element looks like (REGEXP TYPE SUBTYPE).
+REGEXP is a regular expression to match against the beginning of the
+content of entity.
+TYPE is symbol to indicate primary type of content-type.
+SUBTYPE is symbol to indicate subtype of content-type.")
 
 (defvar octet-type-filter-alist
   `((msexcel octet-filter-call1       "xlhtml" ("-te")  html-u8)
@@ -93,10 +120,15 @@
     (html    octet-render-html        nil       nil     nil)
     (html-u8 octet-decode-u8-text     nil       nil     html)
     (gzip    octet-filter-call1       "gunzip"  ("-c")  text) ; should guess.
-    (text    octet-decode-text        nil       nil     nil))
+    (text    octet-decode-text        nil       nil     nil)
+    (ignore  ignore                   nil       nil     nil)
+    (jpeg    octet-decode-image       nil       jpeg    nil)
+    (gif     octet-decode-image       nil       gif     nil)
+    (png     octet-decode-image       nil       png     nil)
+    (tiff    octet-decode-image       nil       tiff    nil))
   "Alist of type-to-filter-program.
 Each element should have the form like:
-\(TYPE FUNCTION FILTER_PROGRAM ARGUMENT_LIST NEW-TYPE\)")
+\(TYPE FUNCTION FILTER_PROGRAM ARGUMENT NEW-TYPE\)")
 
 (defun octet-render-html (&rest args)
   (funcall octet-html-render-function (point-min) (point-max))
@@ -108,6 +140,37 @@ Each element should have the form like:
     (set-buffer-multibyte t)
     (insert (decode-coding-string string 'undecided)))
   0)
+
+;; Decode image
+(static-cond
+ ((featurep 'xemacs)
+  (defun octet-decode-image (ignore &rest args)
+    (let (glyph)
+      (if (memq (car args) (image-instantiator-format-list))
+	  (progn
+	    (setq glyph (make-glyph (vector (car args) :data (buffer-string))))
+	    (if glyph
+		(progn (erase-buffer)
+		       (set-extent-end-glyph
+			(make-extent (point-min)(point-min))
+			glyph)
+		       0)
+	      1))
+	1)))) 
+ ((and (boundp 'emacs-major-version)
+       (>= emacs-major-version 21))
+  (defun octet-decode-image (ignore &rest args)
+    (let (image)
+      (if (image-type-available-p (car args))
+	  (progn
+	    (setq image (create-image (buffer-string) (car args) 'data))
+	    (if image
+		(progn (erase-buffer)
+		       (insert-image image) 0)
+	      1))
+	1))))
+ (t
+  (defalias 'octet-decode-image 'ignore)))
 
 (defun octet-decode-u8-text (&rest args)
   (let ((string (buffer-string)))
@@ -172,6 +235,21 @@ Returns 0 if succeed."
       (setq alist (cdr alist)))
     type))
 
+(defun octet-guess-type-from-magic ()
+  (let ((rest octet-magic-type-alist)
+	type subtype)
+    (goto-char (point-min))
+    (while (not (let ((cell (car rest)))
+		  (if cell
+		      (if (looking-at (car cell))
+			  (setq type (nth 1 cell)
+				subtype (nth 2 cell)))
+		    t)))
+      (setq rest (cdr rest)))
+    (if type
+	(octet-guess-type-from-content-type
+	 (concat (symbol-name type) "/" (symbol-name subtype))))))
+
 (defun octet-filter-buffer (type)
   "Call a filter function in `octet-type-filter-alist'.
 TYPE is the symbol of type.
@@ -190,6 +268,7 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
     (setq type (or (and content-type
 			(octet-guess-type-from-content-type
 			 content-type))
+		   (octet-guess-type-from-magic)
 		   (and (or name buffer-file-name)
 			(octet-guess-type-from-name
 			 (or name buffer-file-name)))
@@ -205,6 +284,19 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 			       octet-suffix-type-alist))
 		   'text))
     (while (setq type (octet-filter-buffer type)))))
+
+(static-if (featurep 'xemacs)
+    (defun octet-insert-buffer (from)
+      "Insert after point the contents of BUFFER and the image."
+      (let (extent glyph)
+	(with-current-buffer from
+	  (if (setq extent (extent-at (point-min) nil nil nil 'at))
+	      (setq glyph (extent-end-glyph extent))))
+	(insert-buffer from)
+	(if glyph
+	    (set-extent-end-glyph (make-extent (point) (point))
+				  glyph))))
+  (defalias 'octet-insert-buffer 'insert-buffer))
 
 ;;;###autoload
 (defun octet-find-file (file)
@@ -224,46 +316,33 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 ;;
 (defvar mime-view-octet-hook nil)
 
-;; From EMIKO.
-(defvar mime-magic-type-alist
-  '(("^\377\330\377[\340\356]..JFIF"	image jpeg)
-    ("^\211PNG"				image png)
-    ("^GIF8[79]"			image gif)
-    ("^II\\*\000"			image tiff)
-    ("^MM\000\\*"			image tiff)
-    ("^MThd"				audio midi)
-    ("^\000\000\001\263"		video mpeg))
-  "*Alist of regexp about magic-number vs. corresponding media-types.
-Each element looks like (REGEXP TYPE SUBTYPE).
-REGEXP is a regular expression to match against the beginning of the
-content of entity.
-TYPE is symbol to indicate primary type of media-type.
-SUBTYPE is symbol to indicate subtype of media-type.")
-
 ;;;###autoload
 (defun mime-preview-octet (entity situation)
   "A method for mime-view to preview octet message."
   (goto-char (point-max))
   (let ((p (point))
-	(name (mime-entity-filename entity)))
+	(name (mime-entity-filename entity))
+	from-buf to-buf)
     (insert "\n")
     (goto-char p)
     (save-restriction
       (narrow-to-region p p)
-      (insert (with-temp-buffer
-		(set-buffer-multibyte nil)
-		(insert (mime-entity-content entity))
-		(octet-buffer name)
-		(set-buffer-multibyte t)
-		(buffer-string))))))
+      (setq to-buf (current-buffer))
+      (with-temp-buffer
+	(setq from-buf (current-buffer))
+	(set-buffer-multibyte nil)
+	(insert (mime-entity-content entity))
+	(octet-buffer name)
+	(set-buffer-multibyte t)
+	(with-current-buffer to-buf
+	  (octet-insert-buffer from-buf))))))
 
 ;;;###autoload
 (defun mime-view-octet (entity situation)
   "A method for mime-view to display octet message."
   (let (type subtype)
-    ;; Guess by magic stolen from EMIKO.
     (let ((mdata (mime-entity-content entity))
-	  (rest mime-magic-type-alist))
+	  (rest octet-magic-type-alist))
       (while (not (let ((cell (car rest)))
 		    (if cell
 			(if (string-match (car cell) mdata)
