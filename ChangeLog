@@ -1,3 +1,15 @@
+2002-08-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-check-header-tags): Ignore case of tags.
+	(w3m-about-db-history): Accept range specification in URL.
+	(w3m-db-history-display-size): New option.
+	(w3m-db-history): Refer it.
+
+	* w3m-antenna.el (w3m-antenna-html-skeleton): Add link to
+	about://antenna-edit/.
+	(w3m-about-antenna-edit): New function.  This is an experimental
+	imprement of the editor for Antenna sites.
+
 2002-08-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (char-after): Byte-optimize it for old Emacsen.

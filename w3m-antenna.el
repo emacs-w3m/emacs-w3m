@@ -77,9 +77,9 @@ with :default-value-from."
   :group 'w3m-antenna
   :type '(repeat
 	  (list
-	   (string-with-default :tag "URL" 
+	   (string-with-default :tag "URL"
 				:value-from w3m-antenna-tmp-url)
-	   (string-with-default :tag "Title" 
+	   (string-with-default :tag "Title"
 				:value-from w3m-antenna-tmp-title)
 	   (choice :tag "Class"
 		   (const :tag "Normal" nil)
@@ -92,7 +92,8 @@ with :default-value-from."
 	    "<html>\n<head>\n<title>Antenna</title>\n</head>\n<body>\n"
 	    "<h1>Antenna</h1>\n<h2>Updated</h2>\n<ul>\n%C</ul>\n"
 	    "<h2>Visited</h2>\n<ul>\n%U</ul>\n"
-	    "</body>\n</html>\n"))
+	    "<p align=\"left\">[<a href=\"about://antenna-edit/\">Edit</a>]"
+	    "</p>\n</body>\n</html>\n"))
   "HTML skeleton of antenna."
   :group 'w3m-antenna
   :type 'string)
@@ -369,6 +370,140 @@ Optional argument TITLE is title of link."
   (widget-button-press (point))
   (re-search-forward "State:")
   (backward-char 2))
+
+(defun w3m-about-antenna-edit (url &optional no-decode no-cache post-data
+				   &rest args)
+  (let ((alist (w3m-load-list w3m-antenna-file))
+	(width (- (if (< 0 w3m-fill-column)
+		      w3m-fill-column
+		    (+ (window-width) (or w3m-fill-column -1)))
+		  28)))
+    (when (and post-data
+	       (string= "about://antenna-edit/"
+			(with-current-buffer w3m-current-buffer
+			  w3m-current-url)))
+      (let (add delete id key title class unknown site)
+	(dolist (pair (split-string post-data "&"))
+	  (cond
+	   ((string-match "\\`op=\\(OK\\|\\(NEW\\|\\(DEL\\)\\)\\)\\'" pair)
+	    (or (setq delete (match-beginning 3))
+		(setq add (match-beginning 2))))
+	   ((string-match "\\`id=\\([0-9]+\\)\\'" pair)
+	    (setq id (string-to-number (match-string 1 pair))))
+	   ((string-match "\\`key=\\(.*\\)\\'" pair)
+	    (setq key (w3m-url-decode-string (match-string 1 pair)
+					     w3m-coding-system)))
+	   ((string-match "\\`title=\\(.*\\)\\'" pair)
+	    (setq title (w3m-url-decode-string (match-string 1 pair)
+					       w3m-coding-system)))
+	   ((string-match "\\`class=\\(nil\\|time\\|hns\\)\\'" pair)
+	    (setq class (intern (match-string 1 pair))))
+	   (t (setq unknown t))))
+	(cond
+	 (unknown)
+	 (add
+	  (and key
+	       title
+	       (push (list key
+			   title
+			   class
+			   (format-time-string key (current-time))
+			   nil		; last-modified
+			   nil		; size
+			   nil)		; size-detected
+		     alist)
+	       (w3m-save-list w3m-antenna-file alist nil t)))
+	 (delete
+	  (when (and (setq site (nth id alist))
+		     (yes-or-no-p (format "Delete %s from Antenna ? "
+					  (w3m-antenna-site-title site))))
+	    (setq alist (delq site alist))
+	    (w3m-save-list w3m-antenna-file alist nil t)))
+	 ((setq site (nth id alist))	; Modify
+	  (setf (w3m-antenna-site-key site) key)
+	  (setf (w3m-antenna-site-title site) title)
+	  (setf (w3m-antenna-site-class site) class)
+	  (w3m-save-list w3m-antenna-file alist nil t)))))
+    (insert "\
+<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">
+<html><head><title>w3m-antenna-sites editor</title></head><body><ul>
+")
+    (let ((id -1))
+      (dolist (site alist)
+	(insert
+	 (format "\
+<li><form method=\"post\" action=\"about://antenna-edit/\">
+    <input type=\"hidden\" name=\"id\" value=\"%d\">
+    <a href=\"%s\">%s</a>
+    <table>
+      <tr>
+        <th align=\"left\">Key:</th>
+        <td><input type=\"text\" name=\"key\" size=\"%d\" value=\"%s\"></td>
+      </tr>
+      <tr>
+        <th>Title:</th>
+        <td><input type=\"text\" name=\"title\" size=\"%d\" value=\"%s\"></td>
+      </tr>
+      <tr>
+        <th>Class:</th>
+        <td>
+          <input type=\"radio\" name=\"class\" value=\"nil\"%s>Normal</input>
+          <input type=\"radio\" name=\"class\" value=\"time\"%s>Time</input>
+          <input type=\"radio\" name=\"class\" value=\"hns\"%s>HNS</input>
+        </td>
+      </tr>
+      <tr>
+        <th></th>
+        <td>
+          <input type=\"submit\" name=\"op\" value=\"OK\">
+          <input type=\"submit\" name=\"op\" value=\"DEL\">
+        </td>
+      </tr>
+    </table>
+    </form>
+    </li>
+"
+		 (incf id)
+		 (or (w3m-antenna-site-url site)
+		     (w3m-antenna-site-key site))
+		 (w3m-antenna-site-title site)
+		 width (w3m-antenna-site-key site)
+		 width (w3m-antenna-site-title site)
+		 (if (not (w3m-antenna-site-class site)) " checked" "")
+		 (if (eq (w3m-antenna-site-class site) 'time) " checked" "")
+		 (if (eq (w3m-antenna-site-class site) 'hns) " checked" "")))))
+    (insert
+     (format "\
+<li><form method=\"post\" action=\"about://antenna-edit/\">
+    New site
+    <table>
+      <tr>
+        <th align=\"left\">Key:</th>
+        <td><input type=\"text\" name=\"key\" size=\"%d\"></td>
+      </tr>
+      <tr>
+        <th>Title:</th>
+        <td><input type=\"text\" name=\"title\" size=\"%d\"></td>
+      </tr>
+      <tr>
+        <th>Class:</th>
+        <td>
+          <input type=\"radio\" name=\"class\" value=\"nil\" checked>Normal</input>
+          <input type=\"radio\" name=\"class\" value=\"time\">Time</input>
+          <input type=\"radio\" name=\"class\" value=\"hns\">HNS</input>
+        </td>
+      </tr>
+      <tr>
+        <th></th>
+        <td>
+          <input type=\"submit\" name=\"op\" value=\"NEW\">
+        </td>
+      </tr>
+    </table>
+    </form>
+    </li>
+</ul></body></html>\n" width width))
+    "text/html"))
 
 (provide 'w3m-antenna)
 

@@ -3590,7 +3590,7 @@ type as a string argument, when retrieve is complete."
 	(narrow-to-region (point-min) (point))
 	(goto-char (point-min))
 	(while (re-search-forward "<\\(link\\|base\\)[ \t\r\f\n]+" nil t)
-	  (setq tag (match-string 1))
+	  (setq tag (downcase (match-string 1)))
 	  (cond
 	   ((string= tag "link")
 	    (w3m-parse-attributes ((rel :case-ignore) href type)
@@ -6035,13 +6035,20 @@ showing a tree-structured history by the command `w3m-about-history'.")
 	     (insert "&gt;"))))
     "text/html"))
 
-(defun w3m-about-db-history (&rest args)
-  (let ((width (- (if (< 0 w3m-fill-column)
+(defun w3m-about-db-history (url &rest args)
+  (let ((start 0)
+	(size nil)
+	(width (- (if (< 0 w3m-fill-column)
 		      w3m-fill-column
 		    (+ (window-width) (or w3m-fill-column -1)))
 		  18))
 	(now (current-time))
-	url title time alist date)
+	title time alist date prev next)
+    (when (string-match "\\`about://db-history/\\?" url)
+      (dolist (s (split-string (substring url (match-end 0)) "&"))
+	(when (string-match "\\`\\(start\\|\\(size\\)\\)=" s)
+	  (set (if (match-beginning 2) 'size 'start)
+	       (string-to-number (substring s (match-end 0)))))))
     (when w3m-arrived-db
       (mapatoms
        (lambda (sym)
@@ -6054,13 +6061,40 @@ showing a tree-structured history by the command `w3m-about-history'.")
       (setq alist (sort alist
 			(lambda (a b)
 			  (w3m-time-newer-p (cdr a) (cdr b))))))
-    (insert "<html><head><title>URL history in DataBase</title></head><body>\n")
-    (insert "<h1>arrived URL history in DataBase</h1>\n")
+    (setq alist (nthcdr start alist))
+    (when size
+      (when (> start 0)
+	(setq prev
+	      (format "about://db-history/?start=%d&size=%d"
+		      (max 0 (- start size)) size)))
+      (when (> (length alist) size)
+	(setq next
+	      (format "about://db-history/?start=%d&size=%d"
+		      (+ start size) size))))
+    (insert "<html><head><title>URL history in DataBase</title>"
+	    (if prev (format "<link rel=\"prev\" href=\"%s\">\n" prev) "")
+	    (if next (format "<link rel=\"next\" href=\"%s\">\n" next) "")
+	    "</head>\n<body>\n<h1>Arrived URL history in DataBase</h1>\n")
+    (setq prev
+	  (if (or prev next)
+	      (setq next
+		    (concat
+		     "<p align=\"left\">"
+		     (if prev
+			 (format "[<a href=\"%s\">Prev History</a>]" prev)
+		       "")
+		     (if next
+			 (format "[<a href=\"%s\">Next History</a>]" next)
+		       "")
+		     "</p>\n"))
+	    ""))
     (if (null alist)
-	(insert "<h2>Nothing in DataBase.</h2>\n")
-      (insert "<table cellpadding=0>\n")
-      (insert "<tr><td><h2> Title/URL </h2></td><td><h2>Time/Date</h2></td></tr>\n")
-      (while alist
+	(insert "<em>Nothing in DataBase.</em>\n")
+      (insert prev "<table cellpadding=0>
+<tr><td><h2> Title/URL </h2></td><td><h2>Time/Date</h2></td></tr>\n")
+      (while (and alist
+		  (or (not size)
+		      (>= (decf size) 0)))
 	(setq url (car (car alist)))
 	(setq title (w3m-arrived-title url))
 	(if (or (null title)
@@ -6088,7 +6122,9 @@ showing a tree-structured history by the command `w3m-about-history'.")
 	  (insert "<td>" date "</td>"))
 	(insert "</tr>\n")
 	(setq alist (cdr alist)))
-      (insert "</table>"))
+      (insert "</table>"
+	      (if next "\n<br>\n<hr>\n" "")
+	      prev))
     (insert "</body></html>\n"))
   "text/html")
 
@@ -6114,9 +6150,18 @@ If called with 'prefix argument', display arrived-DB history."
 	(set-buffer-modified-p nil)))))
 (add-hook 'w3m-display-hook 'w3m-history-highlight-current-url)
 
-(defun w3m-db-history ()
-  (interactive)
-  (w3m-goto-url "about://db-history/"))
+(defcustom w3m-db-history-display-size
+  (and (> w3m-keep-arrived-urls 500) 500)
+  "*Number of entries displayed when `w3m-db-history' is called."
+  :group 'w3m
+  :type '(choice (const :tag "All entries are displayed." nil) integer))
+
+(defun w3m-db-history (&optional start size)
+  (interactive
+   (list nil w3m-db-history-display-size))
+  (w3m-goto-url (concat
+		 (format "about://db-history/?start=%d" (or start 0))
+		 (if size (format "&size=%d" size) ""))))
 
 (defun w3m-w32-browser-with-fiber (url)
   (let ((proc (start-process "w3m-w32-browser-with-fiber"
