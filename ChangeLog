@@ -1,3 +1,15 @@
+2002-04-01  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-form.el (w3m-form-new): Added argumnet enctype.
+	(w3m-form-enctype): New macro.
+	(w3m-form-plist): Changed definition.
+	(w3m-form-put-property): Ditto.
+	(w3m-form-make-form-data): Removed optional argument urlencode;
+	Encode form data acording to w3m-form-enctype.
+	(w3m-form-mee-new): Set enctype field.
+	(w3m-form-parse-and-fontify): Parse enctype.
+	(w3m-form-submit): Don't pass enctype argumnet.
+
 2002-04-01  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-fontify-anchors): Put a property of

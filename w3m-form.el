@@ -57,7 +57,7 @@
 
 ;;; w3m-form structure:
 
-(defun w3m-form-new (method action &optional baseurl charlst)
+(defun w3m-form-new (method action &optional baseurl charlst enctype)
   "Return new form object."
   (vector 'w3m-form-object
 	  (if (stringp method)
@@ -66,6 +66,7 @@
 	  (and action
 	       (w3m-expand-url action baseurl))
 	  charlst
+	  (or enctype 'urlencoded)
 	  nil))
 
 (defsubst w3m-form-p (obj)
@@ -80,10 +81,12 @@
   (` (aref (, form) 2)))
 (defmacro w3m-form-charlst (form)
   (` (aref (, form) 3)))
-(defmacro w3m-form-plist (form)
+(defmacro w3m-form-enctype (form)
   (` (aref (, form) 4)))
+(defmacro w3m-form-plist (form)
+  (` (aref (, form) 5)))
 (defsubst w3m-form-put-property (form name property value)
-  (aset form 4
+  (aset form 5
 	(plist-put (w3m-form-plist form)
 		   (setq name (intern name))
 		   (plist-put (plist-get (w3m-form-plist form) name)
@@ -110,10 +113,10 @@ If no field in forward, return nil without moving."
 	(goto-char next)
       nil)))
 
-(defun w3m-form-make-form-data (form &optional urlencode)
+(defun w3m-form-make-form-data (form)
   (let ((plist (w3m-form-plist form))
 	(coding (w3m-form-charlst form))
-	buf multipart)
+	buf)
     (setq coding
 	  (or (catch 'det
 		(while coding
@@ -130,7 +133,6 @@ If no field in forward, return nil without moving."
 	(cond
 	 ((and (consp value)
 	       (eq (car value) 'file))
-	  (setq multipart t)
 	  (setq buf (cons (cons name value) buf)))
 	 ((and (consp value)
 	       (consp (cdr value))
@@ -143,8 +145,7 @@ If no field in forward, return nil without moving."
 	  (setq buf (cons (cons name value) buf))))
 	(setq plist (cddr plist))))
     (when buf
-      (if (and multipart
-	       (not urlencode))
+      (if (eq (w3m-form-enctype form) 'multipart)
 	  (let ((boundary (apply 'format "--_%d_%d_%d" (current-time)))
 		file type)
 	    (setq buf (nreverse buf))
@@ -307,9 +308,9 @@ If no field in forward, return nil without moving."
 		   (1 "post")
 		   (2 "internal")
 		   (3 "head"))
-	  enctype (case (% (car x) 16) ; not used.
-		    (0 "urlencoded")
-		    (1 "multipart"))) 
+	  enctype (case (% (car x) 16)
+		    (0 'urlencoded)
+		    (1 'multipart)))
     (setq x (cdr x))
     (setq action (w3m-form-mee-attr-unquote x))
     (setq x (cdr x))
@@ -323,7 +324,7 @@ If no field in forward, return nil without moving."
     (setq target (w3m-form-mee-attr-unquote x)) ; not used.
     (setq x (cdr x))
     (setq name (w3m-form-mee-attr-unquote x))   ; not used.
-    (w3m-form-new method action nil (and charset (list charset)))))
+    (w3m-form-new method action nil (and charset (list charset)) enctype)))
 
 (defun w3m-form-mee-select-value (value)
   "Decode select form information of w3mmee."
@@ -377,6 +378,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	  (w3m-parse-attributes (action (method :case-ignore)
 					(fid :integer)
 					(accept-charset :case-ignore)
+					(enctype :case-ignore)
 					(charset :case-ignore))
 	    (setq forms
 		  (cons
@@ -393,7 +395,10 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		     nil
 		     (if accept-charset
 			 (setq accept-charset
-			       (split-string accept-charset ",")))))
+			       (split-string accept-charset ",")))
+		     (if enctype
+			 (intern enctype)
+		       'urlencoded)))
 		   forms)))))
        ((string= tag "map")
 	(let (candidates)
@@ -1195,7 +1200,7 @@ character."
 		   w3m-current-url))))
     (cond ((eq 'get (w3m-form-method form))
 	   (w3m-goto-url
-	    (concat url "?" (w3m-form-make-form-data form 'urlencode))))
+	    (concat url "?" (w3m-form-make-form-data form))))
 	  ((eq 'post (w3m-form-method form))
 	   (w3m-goto-url url 'reload nil
 			 (w3m-form-make-form-data form)
