@@ -82,7 +82,7 @@ AC_DEFUN(AC_PATH_LISPDIR, [
     lispdir=${withval})
   AC_MSG_CHECKING([where lisp files should go])
   if test -z "$lispdir"; then
-    dnl Set default value
+    dnl Set the default value.
     theprefix=$prefix
     if test "x$theprefix" = "xNONE"; then
 	theprefix=$ac_default_prefix
@@ -114,3 +114,23 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
       AC_MSG_RESULT($ADDITIONAL_LOAD_PATH)],
     ADDITIONAL_LOAD_PATH="NONE")
   AC_SUBST(ADDITIONAL_LOAD_PATH)])
+
+AC_DEFUN(AC_PATH_ICONDIR,
+ [dnl Examin icon directory.
+  dnl This function requires AC_PATH_LISPDIR has already been executed.
+  if test ${EMACS_FLAVOR} = "xemacs" -o ${EMACS_FLAVOR} = "emacs21"; then
+    AC_ARG_WITH(icondir,
+     [  --with-icondir=ICONDIR  directory for icons[DATA-DIRECTORY/w3m/icons]],
+      ICONDIR=${withval})
+    AC_MSG_CHECKING([where icon files should go])
+    if test -z "$ICONDIR"; then
+      dnl Set the default value.
+      AC_EMACS_LISP(icondir,
+        (expand-file-name \"w3m/icons\" data-directory),"noecho")
+      ICONDIR=$EMACS_cv_SYS_icondir
+    fi
+    AC_MSG_RESULT($ICONDIR)
+  else
+    ICONDIR="NONE"
+  fi
+  AC_SUBST(ICONDIR)])

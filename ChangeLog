@@ -1,3 +1,11 @@
+2001-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (install-icons): New rule.
+	(ICONDIR): New variable.
+
+	* aclocal.m4 (AC_PATH_ICONDIR): New function.
+	* configure.in: Call it.
+
 2001-03-16  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* icons: New directory (Some toolbar icons are contained).

@@ -3,6 +3,7 @@ lispdir = @lispdir@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 ADDITIONAL_LOAD_PATH = @ADDITIONAL_LOAD_PATH@
+ICONDIR = @ICONDIR@
 
 @SET_MAKE@
 EMACS   = @EMACS@
@@ -42,6 +43,21 @@ install: default
 	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
 	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
 	done
+
+install-icons:
+	@if test $(ICONDIR) = NONE; then\
+	  echo "You don't have to install icons for $(EMACS).";\
+	else\
+	  if test -d $(ICONDIR); then\
+	    cd icons;\
+	    for i in *.xpm; do\
+	      echo " $(INSTALL_DATA) $$i $(ICONDIR)/$$i";\
+	      $(INSTALL_DATA) $$i $(ICONDIR)/$$i;\
+	    done;\
+	  else\
+	    echo "You shuold mkdir $(ICONDIR) in advance.";\
+	  fi\
+	fi
 
 dist:
 	$(MAKE) VERSION=`$(EMACS) $(FLAGS) -f w3mhack-version 2>/dev/null` tarball
