@@ -71,7 +71,7 @@
 
 (eval-and-compile
   (luna-define-class shimbun ()
-		     (mua server current-group groups headers
+		     (mua server current-group groups
 			  x-face x-face-alist
 			  url coding-system from-address
 			  content-start content-end use-entire-index))
@@ -103,6 +103,11 @@
   "Rertrieve URL contents and insert to current buffer."
   (when (w3m-retrieve url nil no-cache)
     (insert-buffer w3m-work-buffer-name)))
+
+(defun shimbun-retrieve-url-buffer (url &optional no-cache)
+  "Return a buffer which contains the URL contents."
+  (when (w3m-retrieve url nil no-cache)
+    (get-buffer w3m-work-buffer-name)))
 
 (defalias 'shimbun-decode-entities 'w3m-decode-entities)
 
@@ -234,22 +239,19 @@ Optional MUA is a `shimbun-mua' instance."
 	 shimbun
 	 (or (cdr (assoc group (shimbun-x-face-alist-internal shimbun)))
 	     (cdr (assoc "default" (shimbun-x-face-alist-internal shimbun)))
-	     shimbun-x-face))
-	(with-temp-buffer
-	  (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload)
-	  (shimbun-set-headers-internal shimbun
-					(shimbun-get-headers shimbun))))
+	     shimbun-x-face)))
     (error "No such group %s" group)))
 
 (defun shimbun-close-group (shimbun)
   "Close opened group of SHIMBUN."
   (when (shimbun-current-group-internal shimbun)
-    (shimbun-set-current-group-internal shimbun nil)
-    (shimbun-set-headers-internal shimbun nil)))
+    (shimbun-set-current-group-internal shimbun nil)))
 
 (defun shimbun-headers (shimbun)
   "Return a SHIMBUN header list."
-  (shimbun-headers-internal shimbun))
+  (with-current-buffer (shimbun-retrieve-url-buffer 
+			(shimbun-index-url shimbun) 'reload)
+    (shimbun-get-headers shimbun)))
 
 (defun shimbun-search-id (shimbun id)
   "Return non-nil when MUA found a message structure which corresponds to ID."
