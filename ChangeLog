@@ -4,6 +4,8 @@
 	examining modules.
 
 	* w3m.el: Add autoload for `w3m-remove-image' when compiling.
+	(w3m-charset-coding-system-alist): Use `coding-system-p' if the
+	function `find-coding-system' is not bound.
 
 	* w3mhack.el: Use `require' instead of `load' for loading "w3m" to
 	avoid undesirable newlines in stdout.
