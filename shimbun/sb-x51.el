@@ -1,6 +1,6 @@
 ;;; sb-x51.el --- shimbun backend for x51.org -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2004 Tsuyoshi CHO <mfalcon21@hotmail.com>
+;; Copyright (C) 2004, 2005 Tsuyoshi CHO <mfalcon21@hotmail.com>
 
 ;; Author: Tsuyoshi CHO <mfalcon21@hotmail.com>
 ;; Keywords: news blog
