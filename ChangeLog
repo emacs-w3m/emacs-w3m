@@ -1,8 +1,13 @@
+2001-06-15  ABE Yasushi  <yasushi@stbbs.net>
+
+	* shimbun/sb-javaconf.el (shimbun-javaconf-groups): Add some groups.
+	(shimbun-get-headers): Follow the change above.
+
 2001-06-14  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-mhonarc.el (shimbun-make-contents): Fixed reference order.
 
-2001-06-14  ABE Yasushi <yasushi@stbbs.net>
+2001-06-14  ABE Yasushi  <yasushi@stbbs.net>
 
 	* shimbun/sb-javaconf.el: New file.
 

@@ -31,7 +31,9 @@
 (luna-define-class shimbun-javaconf (shimbun-mhonarc) ())
 
 (defvar shimbun-javaconf-url "http://www.java-conf.gr.jp/archives/")
-(defvar shimbun-javaconf-groups '("servlet-ml"))
+(defvar shimbun-javaconf-groups '("servlet-ml" "business-ml" "duke-in-the-box-ml"
+				  "jfriends-ml" "JGT-ml" "jini-ml" "ejb-ml" "cm-ml"
+				  "horb-ml" "talk-ml"))
 (defvar shimbun-javaconf-reverse-flag nil)
 (defvar shimbun-javaconf-litemplate-regexp
   "<strong><a NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+\.html\\)\">\\([^<]+\\)\n</a></strong> <em>\\([^<]+\\)\n</em>")
@@ -48,7 +50,7 @@
 (luna-define-method shimbun-get-headers ((shimbun shimbun-javaconf)
 					 &optional range)
   (let* ((group (shimbun-current-group-internal shimbun))
-	 (regexp (format "<a href=\"\\(%s/mail\\([0-9]+\\)\.html\\)\"" (regexp-quote group)))
+	 (regexp (format "<a href=\"\\(%s/\\(mail[0-9]+\.html\\)?\\)\"" (regexp-quote group)))
 	 (case-fold-search t)
 	 (pages (shimbun-header-index-pages range))
 	 (count 0)
