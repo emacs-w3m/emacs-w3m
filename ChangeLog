@@ -1,3 +1,8 @@
+2001-06-08  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-slashdot-jp.el (shimbun-make-contents):
+	Decide charset dynamically.
+
 2001-06-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-unoptimize-animated-gif): Truncate an animated

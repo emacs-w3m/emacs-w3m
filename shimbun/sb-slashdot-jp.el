@@ -162,7 +162,7 @@ One page contains 30 comments.")
 (luna-define-method shimbun-make-contents ((shimbun shimbun-slashdot-jp)
 					   header)
   (let ((case-fold-search t)
-	start num)
+	start num charset)
     (when (progn
 	    ;; for comments.
 	    (and (string-match "\\(#[0-9]+\\)$"
@@ -182,10 +182,16 @@ One page contains 30 comments.")
       (delete-region (point-min) start))
     (goto-char (point-min))
     (shimbun-header-insert shimbun header)
-    (insert "Content-Type: text/html; charset=ISO-2022-JP\n"
+    (setq charset
+	  (upcase (symbol-name
+		   (detect-mime-charset-region (point)(point-max)))))
+    (insert "Content-Type: text/html; charset="
+	    charset "\n"
 	    "MIME-Version: 1.0\n\n")
-    (encode-coding-string (buffer-string)
-			  (mime-charset-to-coding-system "ISO-2022-JP"))))
+    (encode-coding-region (point-min) (point-max)
+			  (mime-charset-to-coding-system charset))
+    (buffer-string)))
+
 
 
 (provide 'sb-slashdot-jp)
