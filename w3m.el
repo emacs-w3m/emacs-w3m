@@ -2055,15 +2055,15 @@ Those are in the order of:
  <META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">.")
 
 (defconst w3m-meta-refresh-content-regexp
-  "<meta[ \t\n]+http-equiv=\"?refresh\"?[ \t\n]+content\
-=\"?\\([^;]+\\);[ \t\n]*url=\\([^\"]+\\)\"?[ \t\n]*/?>"
+  "<meta[ \t\n]+http-equiv=[\"']?refresh[\"']?[ \t\n]+content\
+=[\"']?\\([^;]+\\);[ \t\n]*url=[\"']?\\([^\"']+\\)[\"']?[\"']?[ \t\n]*/?>"
   "Regexp matching the META tag containing refresh and content.
 Those are in the order of:
  <META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">.")
 
 (defconst w3m-meta-content-refresh-regexp
-  "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*url\
-=\\([^\"]+\\)\"?[ \t\n]+http-equiv=\"?refresh\"?[ \t\n]*/?>"
+  "<meta[ \t\n]+content=[\"']?\\([^;]+\\);[ \t\n]*url\
+=[\"']?\\([^\"']+\\)[\"']?[ \t\n]+http-equiv=[\"']?refresh[\"']?[\"']?[ \t\n]*/?>"
   "Regexp matching the META tag containing content and refresh.
 Those are in the order of:
  <META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">.")
@@ -4596,7 +4596,10 @@ POST-DATA and REFERER will be sent to the web server with a request."
       (when (or (re-search-forward w3m-meta-refresh-content-regexp nil t)
 		(re-search-forward w3m-meta-content-refresh-regexp nil t))
 	(setq sec (match-string-no-properties 1))
-	(setq refurl (match-string-no-properties 2))
+	(setq refurl (w3m-decode-entities-string
+		      (match-string-no-properties 2)))
+	(when (string-match "\\`[\"']\\(.*\\)[\"']\\'" refurl)
+	  (setq refurl (match-string 1 refurl)))
 	(unless (string-match "[^0-9]" sec)
 	  (setq w3m-current-refresh (cons (string-to-number sec)
 					  (w3m-expand-url refurl))))))))

@@ -1,3 +1,9 @@
+2004-04-16  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-meta-refresh-content-regexp): Allow quoted string as url.
+	(w3m-meta-content-refresh-regexp): Ditto.
+	(w3m-check-refresh-attribute): Decode entities.
+
 2004-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add the
