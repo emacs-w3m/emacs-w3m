@@ -1,6 +1,7 @@
 ;;; w3m-hist.el --- the history management system for emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -605,7 +606,7 @@ accesses the buffer-local properties."
     (w3m-history-add-properties (list :window-start (window-start)
 				      :position (point)))
     (when (interactive-p)
-      (message "The current cursor position has stored"))))
+      (message "The current cursor position saved"))))
 
 (defun w3m-history-restore-position ()
   "Restore the saved cursor position for the page."
@@ -615,10 +616,11 @@ accesses the buffer-local properties."
 	  position)
       (cond ((and start
 		  (setq position (w3m-history-plist-get :position)))
-	     (set-window-start nil start)
-	     (goto-char position))
+	     (when (<= start (point-max))
+	       (set-window-start nil start)
+	       (goto-char (min position (point-max)))))
 	    ((interactive-p)
-	     (message "No cursor position registered"))))))
+	     (message "No cursor position saved"))))))
 
 (defun w3m-history-minimize ()
   "Minimize the history so that there is only the current page."
