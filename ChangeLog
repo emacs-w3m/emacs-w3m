@@ -1,5 +1,18 @@
 2004-01-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-cnet-rss.el: Add blog groups.
+	(shimbun-cnet-rss-group-alist): New variable.
+	(shimbun-cnet-rss-url, shimbun-cnet-rss-groups): Abolished.
+	(shimbun-cnet-rss-content-start): Follow the change of the site
+	design.
+	(shimbun-cnet-rss-content-end): Ditto.
+	(shimbun-groups): New method.
+	(shimbun-index-url): Refer `shimbun-cnet-rss-group-alist' instead
+	of `shimbun-cnet-rss-url'.
+	(shimbun-clear-contents): New method.
+	(shimbun-rss-build-message-id): Add a regular expression to create
+	message IDs for blog groups.
+
 	* w3m-proc.el (w3m-process-do-with-temp-buffer): Save the current
 	buffer while executing an asynchronous body.
 

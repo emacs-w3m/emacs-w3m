@@ -32,23 +32,43 @@
 
 (luna-define-class shimbun-cnet-rss (shimbun-rss) ())
 
-(defvar shimbun-cnet-rss-url "http://japan.cnet.com/rss/index.rdf")
-(defvar shimbun-cnet-rss-groups '("news"))
+(defvar shimbun-cnet-rss-group-alist
+  '(("news" . "http://japan.cnet.com/rss/index.rdf")
+    ("blog.umeda" . "http://blog.japan.cnet.com/umeda/index.rdf")
+    ("blog.lessig" . "http://blog.japan.cnet.com/lessig/index.rdf")
+    ("blog.mori" . "http://blog.japan.cnet.com/mori/index.rdf")
+    ("blog.kenn" . "http://blog.japan.cnet.com/kenn/index.rdf")))
+
 (defvar shimbun-cnet-rss-from-address  "webmaster@japan.cnet.com")
-(defvar shimbun-cnet-rss-content-start "\n<!-- MAIN -->\n")
-(defvar shimbun-cnet-rss-content-end "\n<!-- END MAIN -->\n")
+(defvar shimbun-cnet-rss-content-start "<div class=\"leaf_body\">")
+(defvar shimbun-cnet-rss-content-end "<!--NEWS LETTER SUB-->")
+
+(luna-define-method shimbun-groups ((shimbun shimbun-cnet-rss))
+  (mapcar 'car shimbun-cnet-rss-group-alist))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-cnet-rss))
-  shimbun-cnet-rss-url)
+  (cdr (assoc (shimbun-current-group shimbun) shimbun-cnet-rss-group-alist)))
+
+(luna-define-method shimbun-clear-contents :before
+  ((shimbun shimbun-cnet-rss) header)
+  (goto-char (point-min))
+  (while (search-forward "\r\n" nil t)
+    (delete-region (match-beginning 0) (1+ (match-beginning 0))))
+  (shimbun-remove-tags "<script" "</script>")
+  (shimbun-remove-tags "<noscript" "</noscript>"))
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-cnet-rss) url date)
-  (unless (string-match
-	   "http://japan.cnet.com/\\(.+\\)/\\([,0-9]+\\)\\.htm\\?ref=rss"
-	   url)
-    (error "Cannot find message-id base"))
-  (concat "<" (match-string-no-properties 2 url) "%%"
-	  (match-string-no-properties 1 url) "%%rss@japan.cnet.com>"))
+  (if (or
+       ;; For news group
+       (string-match "http://japan\\.cnet\\.com/\
+\\(.+\\)/\\([,0-9]+\\)\\.htm\\?ref=rss" url)
+       ;; For blog group
+       (string-match "http://blog\\.japan\\.cnet\\.com/\
+\\([^/]+\\)/archives/\\([0-9]+\\)\\.html" url))
+      (concat "<" (match-string-no-properties 2 url) "%%"
+	      (match-string-no-properties 1 url) "%%rss@japan.cnet.com>")
+    (error "Cannot find message-id base")))
 
 (provide 'sb-cnet-rss)
 
