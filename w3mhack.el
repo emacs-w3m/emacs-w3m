@@ -719,8 +719,12 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 	 (makefile (expand-file-name "Makefile" srcdir))
 	 (buffer (get-buffer-create " *colon keywords*"))
 	 (dirs '("./" "./shimbun/"))
-	 keywords ignores files file directories dir
-	 form elem make-backup-files)
+	 ;; This program ignores the `defface' form since the custom package
+	 ;; supports all the colon keywords used for the face attributes.
+	 ;; However, there is one exception which is not available in the old
+	 ;; custom package:
+	 (keywords '(:strike-through))
+	 ignores files file directories dir form elem make-backup-files)
     (save-excursion
       (set-buffer buffer)
       (let (buffer-file-format
