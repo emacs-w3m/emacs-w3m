@@ -62,9 +62,7 @@
     (require 'pces)))
 
 ;; this package using a few CL macros
-(eval-when-compile
-  (require 'cl)
-  (load "cl-macs"))
+(eval-when-compile (require 'cl))
 
 (put 'w3m-static-if 'lisp-indent-function 2)
 (defmacro w3m-static-if (cond then &rest else)
@@ -339,9 +337,10 @@ In other environment, use 'native."
 	   (x-shift_jis   . shift_jis)
 	   (x-sjis        . shift_jis)))
 	dest)
-    (dolist (pair rest)
-      (or (find-coding-system (car pair))
-	  (setq dest (cons pair dest))))
+    (while rest
+      (or (find-coding-system (car (car rest)))
+	  (setq dest (cons (car rest) dest)))
+      (setq rest (cdr rest)))
     dest)
   "Alist MIME CHARSET vs CODING-SYSTEM.
 MIME CHARSET and CODING-SYSTEM must be symbol."
