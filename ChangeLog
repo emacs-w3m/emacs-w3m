@@ -1,6 +1,28 @@
+2005-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-prepare-article-release):
+	Remove print button.
+
+2005-01-06  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Add kansai,
+	it, kokunai, markets, kawase, kinri, ft, dj, ngyoseki and gyoseki
+	groups.
+	(shimbun-nikkei-get-headers-kansai): New function.
+	(shimbun-nikkei-get-headers-it): New function.
+	(shimbun-nikkei-get-headers-markets): New function.
+	(shimbun-nikkei-get-headers-kawase): New function.
+	(shimbun-nikkei-get-headers-kinri): New function.
+	(shimbun-nikkei-get-headers-ft): New function.
+	(shimbun-nikkei-get-headers-dj): New function.
+	(shimbun-nikkei-get-headers-gyoseki): New function.
+	(shimbun-nikkei-prepare-article-kansai): New function.
+	(shimbun-nikkei-prepare-article-default3): New function.
+	(shimbun-nikkei-prepare-article-release): Improve regexps.
+
 2005-01-05  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
-	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist): Follow 
+	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist): Follow
 	the change of ITmedia Games.
 
 2005-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
