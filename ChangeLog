@@ -1,3 +1,8 @@
+2005-02-21  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-impress.el (shimbun-get-headers): Add comment-outed html
+	source removal.
+
 2005-02-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-form.el (w3m-form-input-textarea): Fix.
