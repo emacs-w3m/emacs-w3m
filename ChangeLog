@@ -1,6 +1,48 @@
+2002-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (srcdir): New variable.
+	(FLAGS): Specify an absolute path to w3mhack.el.
+	(all-en): New rule.
+	(all-ja): Made it make only Japanese info.
+	(info-en): New rule.
+	(install-en): New rule.
+	(install-ja): Made it install only Japanese info.
+	(install-lisp): Use `$(srcdir)/' instead of `./'.
+	(install-icons): Ditto.
+	(install-info-en): New rule.
+	(Makefile): Use `$(srcdir)/' instead of `./'.
+	(config.status): Ditto.
+	(very-slow): Specify an absolute path to attic/addpath.el.
+
+	* doc/.cvsignore: Add version.texi.
+
+	* doc/ChangeLog: Removed.
+
+	* doc/Makefile.in (srcdir, subdir, top_srcdir): New variables.
+	(FLAGS): Specify an absolute path to w3mhack.el.
+	(EMACSINFO): Use `$(top_srcdir)' instead of `..'.
+	(INFO_DEPS): Include both emacs-w3m.info and emacs-w3m-ja.info.
+	(INFO_DEPS_EN): New variable.
+	(en): New rule.
+	(version.texi): New rule.
+	(emacs-w3m.info): Made it depend on version.texi.
+	(emacs-w3m-ja.info): Ditto.
+	(install): Use `$(top_srcdir)/' instead of `../'.
+	(install-en): New rule.
+
+	* doc/version.texi: Removed from the CVS repository.
+
+2002-11-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* doc/Makefile.in (clean): Fix target.
+
 2002-11-29  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3mhack.el (w3mhack-nonunix-install): Create parent directories.
+
+2002-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* doc/texinfo.tex: Replaced with the latest version.
 
 2002-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -36,10 +78,34 @@
 	(w3mhack-what-where): Show where info files will go.
 	(w3mhack-makeinfo): New function.
 
+2002-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* doc/Makefile.in, .cvsignore: New file.
+
+	* doc/emacs-w3m.texi, emacs-w3m-ja.texi: Correct copyright holder.
+
+	* doc/emacs-w3m.texi: Renamed from emacs-w3m-en.texi.
+
+	* doc/txi.tex: Renamed from txi-en.tex.
+
 2002-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-search.el (w3m-search-engine-alist): Specify coding-system
 	for the waei and kokugo entries.  Suggested by Hideyuki SHIRAI.
+
+2002-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* doc/emacs-w3m-en.texi, emacs-w3m-en.texi: Convert to GFDL.
+
+2002-11-27  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
+
+	* doc/emacs-w3m-en.texi: New files.
+	* doc/emacs-w3m-ja.texi:
+	* doc/ptexinfmt.el:
+	* doc/texinfo.tex:
+	* doc/txi-en.tex:
+	* doc/txi-ja.tex:
+	* doc/version.texi:
 
 2002-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 

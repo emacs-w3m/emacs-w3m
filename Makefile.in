@@ -4,6 +4,7 @@ prefix       = @prefix@
 datadir      = @datadir@
 infodir      = @infodir@
 lispdir      = @lispdir@
+srcdir       = @srcdir@
 PACKAGEDIR   = @PACKAGEDIR@
 ICONDIR      = @ICONDIR@
 ADDITIONAL_LOAD_PATH = @ADDITIONAL_LOAD_PATH@
@@ -12,7 +13,7 @@ SHELL        = /bin/sh
 
 @SET_MAKE@
 EMACS   = @EMACS@
-FLAGS   = -q -no-site-file -batch -l w3mhack.el $(ADDITIONAL_LOAD_PATH)
+FLAGS   = -q -no-site-file -batch -l $(srcdir)/w3mhack.el $(ADDITIONAL_LOAD_PATH)
 
 PACKAGE = emacs-w3m
 TARBALL = $(PACKAGE)-$(VERSION).tar.gz
@@ -25,7 +26,9 @@ default: all
 
 all: lisp info
 
-all-ja: lisp info info-ja
+all-en: lisp info-en
+
+all-ja: lisp info-ja
 
 lisp: Makefile
 	env test ! -f w3m-util.elc -o w3m-util.elc -nt w3m-util.el || $(MAKE) clean
@@ -39,15 +42,20 @@ what-where:
 info:
 	cd doc && $(MAKE) EMACS="$(EMACS)"
 
+info-en:
+	cd doc && $(MAKE) EMACS="$(EMACS)" en
+
 info-ja:
 	cd doc && $(MAKE) EMACS="$(EMACS)" ja
 
 install: install-lisp install-info
 
-install-ja: install-lisp install-info install-info-ja
+install-en: install-lisp install-info-en
+
+install-ja: install-lisp install-info-ja
 
 install-lisp: lisp
-	@$(SHELL) ./mkinstalldirs $(lispdir);\
+	@$(SHELL) $(srcdir)/mkinstalldirs $(lispdir);\
 	for p in ChangeLog* *.el; do\
 	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
 	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
@@ -73,7 +81,7 @@ install-icons:
 	@if test $(ICONDIR) = NONE; then\
 	  echo "You don't have to install icon files for \"$(EMACS)\".";\
 	else\
-	  $(SHELL) ./mkinstalldirs $(ICONDIR);\
+	  $(SHELL) $(srcdir)/mkinstalldirs $(ICONDIR);\
 	  for i in `cd icons && echo *.xpm`; do\
 	    echo " $(INSTALL_DATA) icons/$$i $(ICONDIR)/$$i";\
 	    $(INSTALL_DATA) icons/$$i $(ICONDIR)/$$i;\
@@ -82,6 +90,9 @@ install-icons:
 
 install-info: info
 	cd doc && $(MAKE) EMACS="$(EMACS)" infodir="$(infodir)" install
+
+install-info-en: info-en
+	cd doc && $(MAKE) EMACS="$(EMACS)" infodir="$(infodir)" install-en
 
 install-info-ja: info-ja
 	cd doc && $(MAKE) EMACS="$(EMACS)" infodir="$(infodir)" install-ja
@@ -114,10 +125,10 @@ dist: Makefile
 	$(MAKE) VERSION=`$(EMACS) $(FLAGS) -f w3mhack-version 2>/dev/null` tarball
 
 Makefile: Makefile.in config.status
-	./config.status
+	$(srcdir)/config.status
 
 config.status: configure
-	./config.status --recheck
+	$(srcdir)/config.status --recheck
 
 configure: configure.in aclocal.m4
 	autoconf
@@ -162,7 +173,7 @@ slow: Makefile
 
 very-slow: clean Makefile
 	@args="-q -no-site-file -batch";\
-	args="$$args -l attic/addpath.el $(ADDITIONAL_LOAD_PATH)";\
+	args="$$args -l $(srcdir)/attic/addpath.el $(ADDITIONAL_LOAD_PATH)";\
 	echo "=========================================";\
 	echo "Compiling 1st stage-----without elc files";\
 	echo "=========================================";\
