@@ -215,7 +215,11 @@ generated asynchronous process is ignored.  Otherwise,
 			      (current-buffer) command
 			      (w3m-process-arguments object)))
 		 (authinfo (when w3m-current-url
-			     (w3m-url-authinfo w3m-current-url))))
+			     (w3m-url-authinfo w3m-current-url)))
+		 (set-process-query-on-exit-flag
+		  (if (fboundp 'set-process-query-on-exit-flag)
+		      'set-process-query-on-exit-flag
+		    'process-kill-without-query)))
 	    (setq w3m-process-user (car authinfo)
 		  w3m-process-passwd (cdr authinfo)
 		  w3m-process-realm nil)
@@ -224,7 +228,7 @@ generated asynchronous process is ignored.  Otherwise,
 	    (set-process-sentinel proc (if no-sentinel
 					   'ignore
 					 'w3m-process-sentinel))
-	    (process-kill-without-query proc))))))
+	    (funcall set-process-query-on-exit-flag proc nil))))))
   nil)	;; The return value of `w3m-process-start-process'.
 
 (defun w3m-process-kill-stray-processes ()

@@ -1,5 +1,8 @@
 2004-05-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-proc.el (w3m-process-start-process): Use
+	set-process-query-on-exit-flag if it is available.
+
 	* w3m.el (w3m-w3m-dump-extra): Trust the magic at the beginning of
 	image data rather than the content-type header.
 
