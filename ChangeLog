@@ -1,5 +1,9 @@
 2004-04-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el, w3m-favicon.el: Move snippets managing
+	`w3m-arrived-setup-functions' and `w3m-arrived-shutdown-functions'
+	from w3m.el into w3m-favicon.el.
+
 	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-group-alist): Add
 	blog.inoue and blog.watanabe.
 
