@@ -1,3 +1,15 @@
+2001-11-15  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el: Marge main trunk fix of `charset is void on w3mmee and
+	w3m-m17n', work of TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
+	(w3m-rendering-half-dump): Accept an optional argument for w3mmee
+	and w3m-m17n.
+	(w3m-rendering-buffer-1): Accept one optional argument for w3mmee
+	and w3m-m17n.
+	(w3m-rendering-unibyte-buffer): Call w3m-rendering-buffer-1 with
+	one argument `charset'.
+	(w3m-rendering-multibyte-buffer): Ditto.
+
 2001-11-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.2.1.

@@ -3161,7 +3161,7 @@ to nil.
 	(setq title (file-name-nondirectory w3m-current-url)))
     (or title "<no-title>")))
 
-(defsubst w3m-rendering-half-dump ()
+(defsubst w3m-rendering-half-dump (&optional charset)
   (let ((coding-system-for-read w3m-output-coding-system)
 	(coding-system-for-write w3m-input-coding-system)
 	(default-process-coding-system
@@ -3187,7 +3187,7 @@ to nil.
 		  (append w3m-halfdump-command-arguments
 			  w3m-halfdump-command-common-arguments))))))
 
-(defun w3m-rendering-buffer-1 ()
+(defun w3m-rendering-buffer-1 (&optional content-charset)
   (w3m-message "Rendering...")
   (when w3m-use-filter (w3m-filter w3m-current-url))
   (w3m-remove-comments)
@@ -3199,7 +3199,7 @@ to nil.
 	(delete-region (point-min) (point-max))
 	(insert-buffer
 	 (with-current-buffer (get-buffer w3m-work-binary-buffer-name)
-	   (w3m-rendering-half-dump)
+	   (w3m-rendering-half-dump content-charset)
 	   (current-buffer))))
     (w3m-rendering-half-dump))
   ;; for Emacsen without Mule.
@@ -3224,7 +3224,7 @@ to nil.
 	(set-buffer-multibyte t)
 	(w3m-copy-local-variables original-buffer))))
   (w3m-decode-buffer w3m-current-url content-charset "text/html")
-  (w3m-rendering-buffer-1))
+  (w3m-rendering-buffer-1 content-charset))
 
 (defun w3m-rendering-multibyte-buffer ()
   "Do rendering of contents in this buffer as HTML and return title."
@@ -3238,7 +3238,7 @@ to nil.
 	(encode-coding-region (point-min) (point-max)
 			      w3m-coding-system)
 	(w3m-copy-local-variables original-buffer))))
-  (w3m-rendering-buffer-1))
+  (w3m-rendering-buffer-1 w3m-coding-system))
 
 (defun w3m-exec (url &optional buffer no-cache content-charset
 		     content-type post-data referer)
