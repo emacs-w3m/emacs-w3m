@@ -215,8 +215,8 @@ show below example,
 (defsubst mew-shimbun-folder-p (fld)
   (if (string-match mew-shimbun-folder-regex fld) t nil))
 
-(defvar mew-shimbun-lock-format1 "SHIMBUN(%s@%s)")
-(defvar mew-shimbun-lock-format2 "SHIMBUN(%s@%s:%d/%d/%d)")
+(defvar mew-shimbun-lock-format1 "<%s@%s>")
+(defvar mew-shimbun-lock-format2 "<%s@%s:%d/%d/%d>")
 
 (defmacro mew-shimbun-element-body (sgr group server &rest body)
   `(when (string-match "\\([^.]+\\)\\.\\(.+\\)" (car ,sgr))

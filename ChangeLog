@@ -1,3 +1,15 @@
+2002-01-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-display-hook): Change default variable to `nil'.
+	(top): Use `add-hook' when `w3m-history-highlight-current-url',
+	`w3m-move-point-for-localcgi' and `w3m-select-buffer-update' set
+	to `w3m-display-hook'.
+	(w3m-local-dirlist-cgi): When use `dirlist.cgi', decode filename
+	tag.
+
+	* shimbun/mew-shimbun.el (mew-shimbun-lock-format1)
+	(mew-shimbun-lock-format2): Modify default variables.
+
 2002-01-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-url-to-file-name): When the pointed file is not

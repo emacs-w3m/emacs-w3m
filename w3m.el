@@ -500,13 +500,14 @@ to input URL when URL-like string is not detected under the cursor."
   :group 'w3m
   :type 'hook)
 
-(defcustom w3m-display-hook
-  '(w3m-history-highlight-current-url
-    w3m-move-point-for-localcgi
-    w3m-select-buffer-update)
+(defcustom w3m-display-hook nil
   "*Hook run at the end of `w3m-goto-url'."
   :group 'w3m
   :type 'hook)
+
+(add-hook 'w3m-display-hook 'w3m-history-highlight-current-url)
+(add-hook 'w3m-display-hook 'w3m-move-point-for-localcgi)
+(add-hook 'w3m-display-hook 'w3m-select-buffer-update)
 
 (defcustom w3m-async-exec t
   "*If non-nil, w3m is executed as an asynchronous process."
@@ -2479,7 +2480,9 @@ succeed."
 		  (setq file (w3m-expand-file-name-as-url file)))
 		(delete-region beg end)
 		(goto-char beg)
-		(insert file))))
+		(insert (encode-coding-string
+			 (w3m-url-decode-string file w3m-file-name-coding-system)
+			 w3m-file-name-coding-system)))))
 	(error "Can't execute: %s" w3m-dirlist-cgi-program))
     ;; execute w3m internal CGI
     (w3m-process-with-wait-handler
