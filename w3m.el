@@ -1454,9 +1454,6 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (defvar w3m-initial-frame nil "Initial frame of this session.")
 (make-variable-buffer-local 'w3m-initial-frame)
 
-(defvar w3m-image-only-page nil "Non-nil if image only page.")
-(make-variable-buffer-local 'w3m-image-only-page)
-
 (defvar w3m-current-process nil "Current retrieving process of this buffer.")
 (make-variable-buffer-local 'w3m-current-process)
 
@@ -4237,11 +4234,10 @@ argument.  Otherwise, it will be called with nil."
 	    (ding)
 	    (when (eq (car w3m-current-forms) t)
 	      (setq w3m-current-forms (cdr w3m-current-forms)))
-	    (prog1
-		(when (and w3m-show-error-information
-			   (not (or (w3m-url-local-p url)
-				    (string-match "\\`about:" url))))
-		  (w3m-show-error-information url charset page-buffer))
+	    (prog1 (when (and w3m-show-error-information
+			      (not (or (w3m-url-local-p url)
+				       (string-match "\\`about:" url))))
+		     (w3m-show-error-information url charset page-buffer))
 	      (w3m-message "Cannot retrieve URL: %s%s"
 			   url
 			   (if w3m-process-exit-status
@@ -4277,7 +4273,8 @@ argument.  Otherwise, it will be called with nil."
 	(goto-char (match-end 0)))
       (insert "\n<br><br><hr><br><br><h2>Header information</h2><br>\n<pre>"
 	      header "</pre>\n"))
-    (w3m-create-page url "text/html" charset page-buffer)))
+    (w3m-create-page url "text/html" charset page-buffer)
+    nil)) ; Always return nil.
 
 (defun w3m-prepare-content (url type charset)
   "Prepare a content in this buffer based on TYPE."
@@ -4311,7 +4308,7 @@ argument.  Otherwise, it will be called with nil."
 	(w3m-copy-local-variables result-buffer)
 	(set-buffer-file-coding-system w3m-current-coding-system)
 	(when (string= "text/html" type) (w3m-fontify))
-	t))))
+	'text-page))))
 
 (defun w3m-create-image-page (url type charset page-buffer)
   (when (w3m-image-type-available-p (w3m-image-type type))
@@ -4319,8 +4316,7 @@ argument.  Otherwise, it will be called with nil."
       (let (buffer-read-only)
 	(w3m-clear-local-variables)
 	(setq w3m-current-url (w3m-real-url url)
-	      w3m-current-title (file-name-nondirectory url)
-	      w3m-image-only-page t)
+	      w3m-current-title (file-name-nondirectory url))
 	(widen)
 	(delete-region (point-min) (point-max))
 	(insert w3m-current-title)
@@ -4328,7 +4324,7 @@ argument.  Otherwise, it will be called with nil."
 				 (list 'face 'w3m-image-face
 				       'w3m-image url
 				       'mouse-face 'highlight))
-	t))))
+	'image-page))))
 
 (defun w3m-create-page (url type charset page-buffer)
   ;; Select a content type.
@@ -4356,7 +4352,7 @@ argument.  Otherwise, it will be called with nil."
    (t
     (with-current-buffer page-buffer
       (w3m-external-view url)
-      nil))))
+      'external-view))))
 
 (defun w3m-search-name-anchor (name &optional quiet)
   (interactive "sName: ")
@@ -5099,7 +5095,8 @@ If EMPTY is non-nil, the created buffer has empty content."
 	;; Make copies of `w3m-history' and `w3m-history-flat'.
 	(w3m-history-copy buf)
 	(when empty
-	  (w3m-clear-local-variables))
+	  (w3m-process-with-wait-handler
+	    (w3m-goto-url url nil nil nil handler)))
 	(when and-pop
 	  (let* ((pop-up-windows w3m-pop-up-windows)
 		 (pop-up-frames w3m-pop-up-frames)
@@ -6051,8 +6048,10 @@ the `w3m-search' function and the variable `w3m-uri-replace-alist'."
     nil ;; handler
     t)) ;; qsearch
   (set-text-properties 0 (length url) nil url)
-  (setq url (w3m-url-transfer-encode-string (w3m-uri-replace url)
-					    w3m-default-coding-system))
+  (setq url (w3m-uri-replace url))
+  (unless (or (w3m-url-local-p url)
+	      (string-match "\\`about:" url))
+    (setq url (w3m-url-transfer-encode-string url w3m-default-coding-system)))
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:" url)
@@ -6148,6 +6147,7 @@ Cannot run two w3m processes simultaneously \
 	     (match-beginning 8)
 	     (setq name (match-string 9 url)
 		   url (substring url 0 (match-beginning 8))))
+	(setq w3m-current-buffer (current-buffer))
 	(w3m-process-do
 	    (action
 	     (if (and (not reload)
@@ -6157,21 +6157,19 @@ Cannot run two w3m processes simultaneously \
 		 (progn
 		   (w3m-refontify-anchor)
 		   'cursor-moved)
-	       (setq w3m-image-only-page nil
-		     w3m-current-buffer (current-buffer)
-		     w3m-current-process
-		     (w3m-retrieve-and-render orig reload charset post-data
-					      referer handler))))
+	       (setq w3m-current-process
+		     (w3m-retrieve-and-render orig reload charset
+					      post-data referer handler))))
 	  (with-current-buffer w3m-current-buffer
-	    (setq w3m-current-process nil)
-	    (let ((real-url (w3m-real-url url)))
-	      (cond
-	       ((not action)
-		(w3m-history-push real-url
-				  (list :title (file-name-nondirectory url)))
-		(w3m-history-push w3m-current-url)
-		(w3m-refontify-anchor))
-	       ((not (eq action 'cursor-moved))
+	    (setq w3m-current-buffer nil
+		  w3m-current-process nil)
+	    (if (not action)
+		(goto-char (point-min))
+	      (if (and name (w3m-search-name-anchor name))
+		  (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
+			(w3m-arrived-time url))
+		(goto-char (point-min)))
+	      (unless (eq action 'cursor-moved)
 		(w3m-history-push w3m-current-url
 				  (list :title w3m-current-title))
 		(w3m-history-add-properties (list :referer referer
@@ -6184,27 +6182,23 @@ Cannot run two w3m processes simultaneously \
 		       (and w3m-force-redisplay (sit-for 0))
 		       (w3m-toggle-inline-images 'force reload))
 		      ((and (w3m-display-graphic-p)
-			    w3m-image-only-page)
+			    (eq action 'image-page))
 		       (and w3m-force-redisplay (sit-for 0))
-		       (w3m-toggle-inline-image 'force reload)))
-		(setq buffer-read-only t)
-		(set-buffer-modified-p nil)))
-	      (when action
-		(if (and name (w3m-search-name-anchor name))
-		    (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
-			  (w3m-arrived-time url))
-		  (goto-char (point-min))))
-	      (setq list-buffers-directory w3m-current-title)
-	      ;; must be `w3m-current-url'
-	      (setq default-directory (w3m-current-directory w3m-current-url))
-	      (w3m-update-toolbar)
-	      (w3m-select-buffer-update)
-	      (run-hook-with-args 'w3m-display-functions (or real-url url))
-	      (run-hook-with-args 'w3m-display-hook (or real-url url))
-	      ;; restore position must call after hooks for localcgi.
-	      (when (or reload redisplay)
-		(w3m-history-restore-position))
-	      (w3m-refresh-at-time)))))))
+		       (w3m-toggle-inline-image 'force reload)))))
+	    (setq buffer-read-only t)
+	    (set-buffer-modified-p nil)
+	    (setq list-buffers-directory w3m-current-title)
+	    ;; must be `w3m-current-url'
+	    (setq default-directory (w3m-current-directory w3m-current-url))
+	    (w3m-update-toolbar)
+	    (w3m-select-buffer-update)
+	    (let ((real-url (or (w3m-real-url url) url)))
+	      (run-hook-with-args 'w3m-display-functions real-url)
+	      (run-hook-with-args 'w3m-display-hook real-url))
+	    ;; restore position must call after hooks for localcgi.
+	    (when (or reload redisplay)
+	      (w3m-history-restore-position))
+	    (w3m-refresh-at-time))))))
    (t (w3m-message "Invalid URL: %s" url))))
 
 (defun w3m-current-directory (url)

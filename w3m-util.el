@@ -379,15 +379,10 @@ START and END are lists which represent time in Emacs-style."
      (cadr end)
      (- (cadr start))))
 
-(defsubst w3m-url-dtree-p (url)
-  "If URL points a 'w3m-dtree', return non-nil value.  Otherwise return
-nil."
-  (string-match "\\`about://dtree/" url))
-
 (defsubst w3m-url-local-p (url)
   "If URL points a file on the local system, return non-nil value.
 Otherwise return nil."
-  (string-match "\\`\\(file:\\|/\\|[a-zA-Z]:/\\)" url))
+  (string-match "\\`file:" url))
 
 (defconst w3m-url-authinfo-regexp
   "\\`\\([^:/?#]+:\\)?//\\([^/?#:]+\\)\\(:\\([^/?#@]+\\)\\)?@"
