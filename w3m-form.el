@@ -604,6 +604,11 @@ If no field in forward, return nil without moving."
   :group 'w3m
   :type 'hook)
 
+(defcustom w3m-form-mouse-face 'highlight
+  "*Mouse face to highlight selected value."
+  :group 'w3m
+  :type 'face)
+
 (defvar w3m-form-input-select-keymap nil)
 (unless w3m-form-input-select-keymap
   (setq w3m-form-input-select-keymap (make-sparse-keymap))
@@ -705,8 +710,9 @@ If no field in forward, return nil without moving."
 	(dolist (candidate value)
 	  (setq pos (point))
 	  (insert (cdr candidate))
-	  (put-text-property pos (point) 'w3m-form-select-value
-			     (car candidate))
+	  (add-text-properties pos (point)
+			       (list 'w3m-form-select-value (car candidate)
+				     'mouse-face w3m-form-mouse-face))
 	  (insert "\n")))
       (goto-char (point-min))
       (while (and (not (eobp))
@@ -717,6 +723,7 @@ If no field in forward, return nil without moving."
       (set-buffer-modified-p nil)
       (beginning-of-line)
       (w3m-form-input-select-mode))))
+
 
 ;;; MAP
 
@@ -812,8 +819,9 @@ If no field in forward, return nil without moving."
 	(dolist (candidate value)
 	  (setq pos (point))
 	  (insert (cdr candidate))
-	  (put-text-property pos (point) 'w3m-form-map-value
-			     (car candidate))
+	  (add-text-properties pos (point)
+			       (list 'w3m-form-map-value (car candidate)
+				     'mouse-face w3m-form-mouse-face))
 	  (insert "\n")))
       (goto-char (point-min))
       (set-buffer-modified-p nil)

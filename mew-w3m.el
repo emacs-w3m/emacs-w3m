@@ -36,6 +36,10 @@
 ;;
 ;; (require 'mew-w3m)
 ;; (setq mew-prog-html '(mew-mime-text/html-w3m nil nil))
+;;  or 
+;; (require 'mew-w3m)
+;; (setq mew-prog-text/html 'mew-mime-text/html-w3m)
+;;;; (setq mew-prog-text/html-ext 'mew-mime-text/html-w3m)
 ;;
 ;; And you can use keymap of w3m-mode as mew-w3m-minor-mode.
 ;; To activate this feaeture, add followings also: 
@@ -62,6 +66,7 @@
 
 (require 'mew)
 (require 'w3m)
+(eval-when-compile (require 'cl))
 
 ;;; initializer for mew
 (defgroup mew-w3m nil
@@ -102,32 +107,55 @@ This variable effected only XEmacs or Emacs 21."
 	charset wcs
 	cache begin end params execute)
     (if (= (length args) 2)
-	;; Mew 1.95b120 or later
+	;; Mew-2
 	(setq begin (nth 0 args) end (nth 1 args))
+      ;; Old Mew
       (setq cache (nth 0 args))
       (setq begin (nth 1 args))
       (setq end (nth 2 args))
       (setq params (nth 3 args))
       (setq execute (nth 4 args)))
     (if (and cache (or execute (<= end begin)))
+	;; 'C-cC-e' + Old Mew
 	(apply 'mew-mime-text/html (list cache begin end params execute))
       (mew-elet
-       (setq charset (mew-syntax-get-param params "charset"))
-       (if charset
-	   (setq wcs (mew-charset-to-cs charset))
-	 (setq wcs mew-cs-text-for-write))
-       (mew-frwlet
-	mew-cs-dummy wcs
-	(if cache
-	    (w3m-region (point)
-			(progn (insert-buffer-substring cache begin end) 
-			       (point)))
-	  ;; Mew 1.95b120 or later
-	  (w3m-region begin end))
-	(put-text-property (point-min) (1+ (point-min)) 'w3m t))))))
+       (cond
+	((and (null cache) (eq w3m-type 'w3m-m17n))
+	 ;; Mew-2 + w3m-m17n.
+	 ;; Coding-system and charset are decided by Mew.
+	 (let ((w3m-input-coding-system w3m-input-coding-system)
+	       (w3m-output-coding-system w3m-output-coding-system)
+	       (w3m-halfdump-command-arguments w3m-halfdump-command-arguments))
+	   (when (setq charset (mew-charset-guess-region begin end))
+	     (setq wcs (mew-charset-to-cs charset)))
+	   (when (and charset wcs (mew-coding-system-p wcs))
+	     ;; guess correctly and not us-ascii
+	     (setq w3m-input-coding-system wcs)
+	     (setq w3m-output-coding-system wcs)
+	     (setq w3m-halfdump-command-arguments
+		   (list "-halfdump"
+			 "-I" charset "-O" charset
+			 "-o" "ext_halfdump=1"
+			 "-o" "pre_conv=1"
+			 "-o" "strict_iso2022=0")))
+	   (w3m-region begin end)))
+	((null cache)	;; Mew-2 + w3m, w3mmee
+	 (w3m-region begin end))
+	(t		;; Old Mew
+	 (setq charset (or (mew-syntax-get-param params "charset")
+			   (mew-charset-guess-region begin end)))
+	 (if charset
+	     (setq wcs (mew-charset-to-cs charset))
+	   (setq wcs mew-cs-text-for-write))
+	 (mew-frwlet
+	  mew-cs-dummy wcs
+	  (w3m-region (point)
+		      (progn (insert-buffer-substring cache begin end) 
+			     (point))))))
+       (put-text-property (point-min) (1+ (point-min)) 'w3m t)))))
 
 (defvar w3m-mew-support-cid (fboundp 'mew-syntax-get-entry-by-cid))
-    
+
 (defun mew-w3m-cid-retrieve (url &rest args)
   (save-excursion
     (when (and w3m-mew-support-cid

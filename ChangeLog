@@ -1,3 +1,17 @@
+2001-07-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-x-moe-decode-buffer): Use 'w3m-coding-system'
+	instead of 'euc-jp.
+	
+	* w3m-form.el (w3m-form-mouse-face): New user option.
+	(w3m-form-input-select): Add mouse-face.
+	(w3m-form-input-map): Ditto.
+
+	* mew-w3m.el (toplevel): Require 'cl, when byte-compile.
+	(mew-mime-text/html-w3m): Guess charset with the use of the Mew's
+	funcion and use its charset, if executed a combination of Mew
+	Ver.2 and w3m-m17n.
+
 2001-07-25  NAKAGAWA Takayuki  <tknakaga@kanagawa.hitachi.co.jp>
 
 	* w3m.el (w3m-fontify-anchors): Don't delete trailing whitespaces,
