@@ -2321,9 +2321,14 @@ ex.) c:/dir/file => //c/dir/file"
   (interactive)
   (w3m-goto-url (concat "about://header/" w3m-current-url)))
 
+(defconst w3m-about-history-except-regex
+  "^about://\\(header\\|source\\|history\\|db-history\\|antenna\\)/"
+  "Regexp for not show histroy .")
+
 (defun w3m-about-history (&rest args)
   (let* ((history (copy-sequence w3m-url-history))
-	 (tmp history))
+	 (tmp history)
+	 title)
     (while tmp
       (setq tmp (setcdr tmp (delete (car tmp) (cdr tmp)))))
     (w3m-with-work-buffer
@@ -2331,15 +2336,72 @@ ex.) c:/dir/file => //c/dir/file"
       (insert "<head><title>URL history</title></head><body>\n")
       (insert "<h1>arraived URL history</h1>\n")
       (dolist (url history)
-	(unless (string-match "^about://\\(header\\|source\\|history\\|antenna\\)/" url)
-	  (insert (format "<a href=\"%s\">%s</a><br>\n" url
-			  (or (w3m-arrived-title url) url)))))
+	(unless (string-match w3m-about-history-except-regex url)
+	  (setq title (or (w3m-arrived-title url) url))
+	  (when (string= "<no-title>" title)
+	    (setq title url))
+	  (insert (format "<a href=\"%s\">%s</a><br>\n" url title))))
       (insert "</body>")))
   "text/html")
 
-(defun w3m-history ()
-  (interactive)
-  (w3m-goto-url "about://history/"))
+(defun w3m-about-db-history-sort-time (x1 y1)
+  (let ((x (cdr x1)) (y (cdr y1)))
+    (cond
+     ((null x) nil)
+     ((null y) t)
+     ((> (nth 0 x) (nth 0 y)) t)
+     ((= (nth 0 x) (nth 0 y))
+      (if (> (nth 1 x) (nth 1 y)) t nil))
+     (t nil))))
+
+(defun w3m-about-db-history (&rest args)
+  (let* ((width (- (if (< 0 w3m-fill-column)
+		       w3m-fill-column
+		     (+ (frame-width) (or w3m-fill-column -1)))
+		   26))
+	 url title time alist)
+    (when w3m-arrived-db
+      (mapatoms
+       (lambda (sym)
+	 (when (and sym
+		    (setq url (symbol-name sym))
+		    (not (string-match w3m-about-history-except-regex url)))
+	   (setq time (w3m-arrived-last-modified url))
+	   (setq alist (cons (cons url time) alist))))
+       w3m-arrived-db)
+      (setq alist (sort alist (function w3m-about-db-history-sort-time))))
+    (w3m-with-work-buffer
+      (delete-region (point-min) (point-max))
+      (insert "<html><head><title>URL history in DataBase</title></head><body>\n")
+      (insert "<h1>arraived URL history in DataBase</h1>\n")
+      (if (null alist)
+	  (insert "<h2>Nothing in DataBase.</h2>\n")
+	(insert "<table cellpadding=0>\n")
+	(insert "<tr><td><h2> Titile/URL </h2></td><td><h2>time</h2></td></tr>\n")
+	(while alist
+	  (setq url (car (car alist)))
+	  (setq title (w3m-arrived-title url))
+	  (when (or (null title)
+		    (string= "<no-title>" title))
+	    (setq title (if (<= (length url) width)
+			    url
+			  (substring url 0 width)))) ;; only ASCII characters.
+	  (insert (format "<tr><td><a href=\"%s\">%s</a></td>" url title))
+	  (when (cdr (car alist))
+	    (insert "<td>"
+		    (format-time-string "%Y-%m-%d %T" (cdr (car alist)))
+		    "</td>"))
+	  (insert "</tr>\n")
+	  (setq alist (cdr alist)))
+	(insert "</table>"))
+      (insert "</body></html>\n")))
+  "text/html")
+
+(defun w3m-history (&optional arg)
+  (interactive "P")
+  (if (null arg)
+      (w3m-goto-url "about://history/")
+    (w3m-goto-url "about://db-history/")))
 
 (defun w3m-w32-browser-with-fiber (url)
   (start-process "w3m-w32-browser-with-fiber"
