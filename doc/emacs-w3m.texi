@@ -1849,6 +1849,30 @@ using emacs-w3m.  If so, add the following to @file{~/.mew.el}:
       '("Text/Html" "Text/Plain" ".*"))
 @end lisp
 
+There are some customizable variables related to Mew:
+
+@table @code
+@item mew-use-w3m-minor-mode
+If non-@code{nil}, the @code{w3m-minor-mode} is turned on in the message
+buffer where a Text/Html part is displayed, and you can use the same
+main keys as the keys of emacs-w3m, for instance, @key{RET} is for
+visiting a page which a link in the current position points to.  Those
+keys are defined in the @code{w3m-minor-mode-command-alist} variable.
+Keep in mind that some commands are replaced by others similar to them,
+for security reasons.  The default value is @code{nil}.
+
+@item mew-w3m-auto-insert-image
+If non-@code{nil}, you can see images inline in the message buffer when
+you read a Multipart/Related message.  Note that mew-w3m allows only the
+image which is contained in the mail message itself with the @samp{cid:}
+URL, that is, we consider only such an image is safe.  The default value
+is @code{nil}.
+
+@item mew-w3m-cid-retrieve-hook
+A hook run just after retrieving a @samp{cid:} URL.  The default value
+is @code{nil}.
+@end table
+
 See also @ref{Mew Shimbun}.
 
 @node SEMI MUAs

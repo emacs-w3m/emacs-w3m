@@ -1962,6 +1962,30 @@ Emacs-w3m $B$r;H$&$3$H$K$h$C$F!"(BText/Html $B$r(B Message $B%b!<%I$KI=<($G
       '("Text/Html" "Text/Plain" ".*"))
 @end lisp
 
+Mew $B$K4XO"$9$k$$$/$D$+$N%+%9%?%^%$%:2DG=$JJQ?t$,$"$j$^$9(B:
+
+@table @code
+@item mew-use-w3m-minor-mode
+$BHs(B-@code{nil} $B$K$9$k$H!"(BText/Html $B%Q!<%H$,I=<($5$l$F$$$k%a%C%;!<%8%P%C%U%!(B
+$B$K$*$$$F(B @code{w3m-minor-mode} $B$,(B on $B$K$J$j!"(Bemacs-w3m $B$N$HF1$8<gMW$J%-!<(B
+$B$r;H$&$3$H$,$G$-$^$9!#Nc$($P(B @key{RET} $B$O!"8=:_0LCV$N%j%s%/$,;X$7<($9%Z!<(B
+$B%8$K9T$-$^$9!#$=$l$i$N%-!<$OJQ?t(B @code{w3m-minor-mode-command-alist} $B$G(B
+$BDj5A$5$l$F$$$^$9!#J]0B>e$NM}M3$+$i!"$$$/$D$+$N%3%^%s%I$O$=$l$K;w$?JL$N%3(B
+$B%^%s%I$GCV$-49$($i$l$F$$$k$3$H$r?4$KN1$a$F$*$$$F2<$5$$!#%G%U%)%k%H(B
+$B$O(B @code{nil} $B$G$9!#(B
+
+@item mew-w3m-auto-insert-image
+$BHs(B-@code{nil} $B$K$9$k$H!"(BMultipart/Related $B$J%a%C%;!<%8$rFI$s$G$$$k$H$-$K!"(B
+$B%a%C%;!<%8%P%C%U%!$G2hA|$r%$%s%i%$%sI=<($5$;$k$3$H$,$G$-$^$9!#(Bmew-w3m $B$O!"(B
+$B%a!<%k%a%C%;!<%8<+?H$K4^$^$l$?(B @samp{cid:} URL $B$r;}$D2hA|$@$1$r5v2D$9$k(B
+$B$3$H$KCm0U$7$F2<$5$$!#$9$J$o$A!";d$?$A$O$=$N$h$&$J2hA|$@$1$,0BA4$@$H9M$((B
+$B$F$$$^$9!#%G%U%)%k%H$O(B @code{nil} $B$G$9!#(B
+
+@item mew-w3m-cid-retrieve-hook
+@samp{cid:} URL $B$r<h$j=P$7$?8e$G<B9T$5$l$k%U%C%/$G$9!#%G%U%)%k%H(B
+$B$O(B @code{nil} $B$G$9!#(B
+@end table
+
 @ref{Mew Shimbun} $B$b;2>H$7$F2<$5$$!#(B
 
 @node SEMI MUAs
