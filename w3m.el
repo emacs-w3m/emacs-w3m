@@ -1877,8 +1877,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
   "Get user from arrived-user-alist."
   (if (= w3m-process-user-counter 0)
       nil
-    (let ((root (w3m-get-server-root url))
-	  userlst)
+    (let (userlst)
       (setq userlst
 	    (cdr (assoc realm
 			(cdr (assoc (w3m-get-server-root url)
