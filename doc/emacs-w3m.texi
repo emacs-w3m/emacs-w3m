@@ -160,7 +160,7 @@ The APEL package, the @samp{new custom} package and the
 
 Emacs-w3m uses the external w3m command as a back end to retrieve web
 contents or a HTML rendering engine.  Since Emacs has been exempted from
-those such jobs, we could realize accelerated Emacs web browser and
+those such jobs, we could realize an accelerated Emacs web browser and
 asynchronous operations.  You must install the latest w3m command.  It
 is available in:
 
