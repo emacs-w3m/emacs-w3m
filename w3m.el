@@ -1589,7 +1589,7 @@ Here are some predefined functions which can be used for those ways:
 
 (defvar w3m-relationship-estimate-rules
   `((w3m-relationship-simple-estimate
-     "\\`http://www\\.google\\.[^/]+/search"
+     "\\`http://\\(www\\|groups\\)\\.google\\.[^/]+/\\(search\\|groups\\)"
      ,(concat "<a href=" w3m-html-string-regexp
 	      "><img src=/\\(intl/[^/]+/\\)?nav_next\\.gif")
      ,(concat "<a href=" w3m-html-string-regexp
