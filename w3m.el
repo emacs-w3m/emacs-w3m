@@ -236,7 +236,7 @@ The value will be referred by the function `w3m-save-list'."
   :type 'coding-system)
 
 (defvar w3m-file-coding-system-for-read nil
-  "*Coding system for reading configuration files in `w3m'.  Is is strongly
+  "*Coding system for reading configuration files in `w3m'.  It is strongly
 recommended that you do not set this variable if there is no particular
 reason.  The value will be referred by the function `w3m-load-list'.")
 
@@ -447,7 +447,7 @@ It will be used for the w3m system internal for Emacs 21.")
 It will be used for the w3m system internal for Emacs 21.")
 
 (defcustom w3m-async-exec t
-  "*If non-nil, w3m is executed by an asynchronous process."
+  "*If non-nil, w3m is executed as an asynchronous process."
   :group 'w3m
   :type 'boolean)
 
@@ -753,6 +753,7 @@ will disclose your private informations, for example:
 (make-variable-buffer-local 'w3m-initial-frame)
 
 (defvar w3m-current-url nil "URL of this buffer.")
+(defvar w3m-current-base-url nil "Base URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
 (defvar w3m-current-forms nil "Forms of this buffer.")
 (defvar w3m-current-coding-system nil "Current coding-system of this buffer.")
@@ -760,6 +761,7 @@ will disclose your private informations, for example:
 (defvar w3m-previous-url nil "Previous URL of this buffer.")
 
 (make-variable-buffer-local 'w3m-current-url)
+(make-variable-buffer-local 'w3m-current-base-url)
 (make-variable-buffer-local 'w3m-current-title)
 (make-variable-buffer-local 'w3m-current-forms)
 (make-variable-buffer-local 'w3m-current-coding-system)
@@ -768,6 +770,7 @@ will disclose your private informations, for example:
 
 (defsubst w3m-clear-local-variables ()
   (setq w3m-current-url nil
+	w3m-current-base-url nil
 	w3m-current-title nil
 	w3m-current-forms nil
 	w3m-current-coding-system nil
@@ -775,16 +778,18 @@ will disclose your private informations, for example:
 	w3m-previous-url nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url title forms cs next prev)
+  (let (url base title forms cs next prev)
     (save-current-buffer
       (when from-buffer (set-buffer from-buffer))
       (setq url w3m-current-url
+	    base w3m-current-base-url
 	    title w3m-current-title
 	    forms w3m-current-forms
 	    cs w3m-current-coding-system
 	    next w3m-next-url
 	    prev w3m-previous-url))
     (setq w3m-current-url url
+	  w3m-current-base-url base
 	  w3m-current-title title
 	  w3m-current-forms forms
 	  w3m-current-coding-system cs
@@ -977,14 +982,15 @@ elements are:
  3. Encoding of contents.
  4. Last modification time.
  5. Real URL.
+ 6. Base URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
   (when (string-match "#[^#]+$" url)
     (setq url (substring url 0 (match-beginning 0))))
   (cond
    ((string-equal "about://emacs-w3m.gif" url)
-    (list "image/gif" nil nil nil nil url))
+    (list "image/gif" nil nil nil nil url url))
    ((string-match "^about:" url)
-    (list "text/html" w3m-coding-system nil nil nil url))
+    (list "text/html" w3m-coding-system nil nil nil url url))
    ((string-match "^\\(file:\\|/\\)" url)
     (w3m-local-attributes url))
    (t
@@ -1002,6 +1008,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
   (` (nth 4 (w3m-attributes (, url) (, no-cache)))))
 (defmacro w3m-real-url (url &optional no-cache)
   (` (nth 5 (w3m-attributes (, url) (, no-cache)))))
+(defmacro w3m-base-url (url &optional no-cache)
+  (` (nth 6 (w3m-attributes (, url) (, no-cache)))))
 
 (defmacro w3m-get-text-property-around (prop &optional position)
   "Search for the text property PROP in the POSITION and return a value
@@ -1559,8 +1567,7 @@ If N is negative, last N items of LIST is returned."
 	  (when (re-search-forward "[ \t\r\f\n]*\\(</a>\\)" nil t)
 	    (setq end (match-beginning 0))
 	    (delete-region (match-beginning 1) (match-end 1))
-	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)
-				       w3m-current-url))
+	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)))
 	    (w3m-add-text-properties start end
 				     (list 'face (if (w3m-arrived-p href)
 						     'w3m-arrived-anchor-face
@@ -1579,11 +1586,9 @@ If N is negative, last N items of LIST is returned."
 	    (w3m-add-text-properties start end
 				     (list 'w3m-name-anchor name)))))))
     (when w3m-next-url
-      (setq w3m-next-url
-	    (w3m-expand-url w3m-next-url w3m-current-url)))
+      (setq w3m-next-url (w3m-expand-url w3m-next-url)))
     (when w3m-previous-url
-      (setq w3m-previous-url
-	    (w3m-expand-url w3m-previous-url w3m-current-url)))))
+      (setq w3m-previous-url (w3m-expand-url w3m-previous-url)))))
 
 (defun w3m-image-type (content-type)
   "Return image type which corresponds to CONTENT-TYPE."
@@ -1621,8 +1626,7 @@ half-dumped data."
 	    upper (string= (match-string 1) "IMG_ALT")
 	    start (match-beginning 0))
       (delete-region start (match-end 0))
-      (setq src (w3m-expand-url (w3m-decode-anchor-string src)
-				w3m-current-url))
+      (setq src (w3m-expand-url (w3m-decode-anchor-string src)))
       (when (search-forward "</img_alt>" nil t)
 	(delete-region (setq end (match-beginning 0)) (match-end 0))
 	(w3m-add-text-properties start end (list 'w3m-image src
@@ -1658,7 +1662,7 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 			    (point-max)))
 	      (goto-char end)
 	      (if (setq url (w3m-image point))
-		  (setq url (w3m-expand-url url w3m-current-url)))
+		  (setq url (w3m-expand-url url)))
 	      (if (get-text-property point 'w3m-image-redundant)
 		  (progn
 		    ;; Insert dummy string instead of redundant image.
@@ -2285,6 +2289,7 @@ elements are:
  3. Encoding of contents.
  4. Last modification time.
  5. Real URL.
+ 6. Base URL.
 "
   (let* ((file (w3m-url-to-file-name url))
 	 (attr (when (file-exists-p file)
@@ -2294,6 +2299,9 @@ elements are:
 	  (nth 7 attr)
 	  nil
 	  (nth 5 attr)
+	  (w3m-expand-file-name-as-url (file-truename file))
+	  ;; FIXME: ファイルに含まれている <base> タグの指定を解釈する
+	  ;; 必要がある。
 	  (w3m-expand-file-name-as-url (file-truename file)))))
 
 (defun w3m-local-retrieve (url &optional no-decode &rest args)
@@ -2394,6 +2402,7 @@ elements are:
  3. Encoding of contents.
  4. Last modification time.
  5. Real URL.
+ 6. Base URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
   (let ((header (w3m-w3m-get-header url no-cache)))
     (cond
@@ -2424,6 +2433,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	      (cdr (assoc "content-encoding" alist))
 	      (let ((v (cdr (assoc "last-modified" alist))))
 		(and v (w3m-time-parse-string v)))
+	      (or (cdr (assoc "w3m-current-url" alist))
+		  url)
 	      (or (cdr (assoc "w3m-base-url" alist))
 		  (cdr (assoc "w3m-current-url" alist))
 		  url))))
@@ -2431,7 +2442,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
      ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
      ;; HTTP/1.0 501 Method Not Implemented
      ((and header (string-match "HTTP/1\\.[0-9] 50[0-9]" header))
-      (list "text/html" nil nil nil nil url)))))
+      (list "text/html" nil nil nil nil url url)))))
 
 (defun w3m-w3m-dump-head-source (url)
   (and (let ((w3m-current-url url))
@@ -2818,6 +2829,7 @@ this function returns t.  Otherwise, returns nil."
 		(w3m-with-work-buffer
 		  (w3m-clear-local-variables)
 		  (setq w3m-current-url (w3m-real-url url)
+			w3m-current-base-url (w3m-base-url url)
 			w3m-current-title
 			(if (string= "text/html" type)
 			    (progn
@@ -2920,11 +2932,13 @@ is performed.  Otherwise, COUNT is treated as 1 by default."
 (unless (fboundp 'w3m-expand-path-name)
   (defalias 'w3m-expand-path-name 'expand-file-name))
 
-(defun w3m-expand-url (url base)
+(defun w3m-expand-url (url &optional base)
   "Convert URL to absolute, and canonicalize it."
   (save-match-data
     (unless base
-      (setq base ""))
+      (setq base (or w3m-current-base-url
+		     w3m-current-url
+		     "")))
     (when (string-match "^[^:/]+://[^/]*$" base)
       (setq base (concat base "/")))
     (cond

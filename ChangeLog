@@ -1,3 +1,26 @@
+2001-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Fix the bug reported in [emacs-w3m:01564].
+	(w3m-current-base-url): New buffer-local variable.
+	(w3m-clear-local-variables): Handle `w3m-current-base-url'.
+	(w3m-copy-local-variables): Ditto.
+	(w3m-attributes): Change spec of return value.
+	(w3m-w3m-attributes): Ditto.
+	(w3m-local-attributes): Ditto.
+	(w3m-base-url): New macro.
+	(w3m-expand-url): Make the second argument `base' optional, and
+	refer `w3m-current-base-url' when a relative URL is canonicalized.
+	(w3m-fontify-anchors): Follow change of `w3m-expand-url'.
+	(w3m-fontify-images): Ditto.
+	(w3m-toggle-inline-images): Ditto.
+	(w3m-exec): Call `w3m-base-url' to set `w3m-current-base-url'.
+
+	* w3m-form.el (w3m-form-new): Canonicalize `action' whenever this
+	function is called.
+	(w3m-form-parse-forms): Follow change of `w3m-form-new'.
+	(w3m-form-submit): Ditto.
+	(w3m-form-input-map-set): Follow change of `w3m-expand-url'.
+
 2001-09-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-url): Position point to the current url and

@@ -62,9 +62,7 @@
 	  (if (stringp method)
 	      (intern method)
 	    method)
-	  (if baseurl
-	      (w3m-expand-url action baseurl)
-	    action)
+	  (w3m-expand-url action baseurl)
 	  charlst
 	  nil))
 
@@ -220,10 +218,7 @@ return them with the flag."
 		(setq forms (cons nil forms)) ;; Sure ?
 	      (setq usemap (substring usemap 1))
 	      (setq forms
-		    (cons (w3m-form-new "map"
-					usemap
-					w3m-current-url
-					nil)
+		    (cons (w3m-form-new "map" usemap)
 			  forms))
 	      (save-excursion
 		(goto-char (point-min))
@@ -266,7 +261,7 @@ return them with the flag."
 	  (setq forms
 		(cons (w3m-form-new (or method "get")
 				    (or action w3m-current-url)
-				    w3m-current-url
+				    nil
 				    accept-charset)
 		    forms)))
 	;; Parse form fields until </FORM>
@@ -1010,7 +1005,7 @@ character."
       (pop-to-buffer w3mbuffer)
       (set-window-configuration wincfg)
       (when point (goto-char point))
-      (w3m-goto-url (w3m-expand-url map w3m-current-url)))))
+      (w3m-goto-url (w3m-expand-url map)))))
 
 (defun w3m-form-input-map-exit ()
   "Exit from w3m form select map mode."
@@ -1085,11 +1080,10 @@ character."
 (defun w3m-form-submit (form &optional name value)
   (when (and name (not (zerop (length name))))
     (w3m-form-put form name value))
-  (let ((url (cond ((w3m-form-action form)
-		    (w3m-expand-url (w3m-form-action form) w3m-current-url))
-		   ((string-match "\\?" w3m-current-url)
-		    (substring w3m-current-url 0 (match-beginning 0)))
-		   (t w3m-current-url))))
+  (let ((url (or (w3m-form-action form)
+		 (if (string-match "\\?" w3m-current-url)
+		     (substring w3m-current-url 0 (match-beginning 0))
+		   w3m-current-url))))
     (cond ((eq 'get (w3m-form-method form))
 	   (w3m-goto-url
 	    (concat url "?" (w3m-form-make-form-data form 'urlencode))))
