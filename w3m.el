@@ -2322,10 +2322,14 @@ ex.) c:/dir/file => //c/dir/file"
   (w3m-goto-url (concat "about://header/" w3m-current-url)))
 
 (defun w3m-about-history (&rest args)
-  (let ((history w3m-url-history))
+  (let* ((history (copy-sequence w3m-url-history))
+	 (tmp history))
+    (while tmp
+      (setq tmp (setcdr tmp (delete (car tmp) (cdr tmp)))))
     (w3m-with-work-buffer
       (delete-region (point-min) (point-max))
       (insert "<head><title>URL history</title></head><body>\n")
+      (insert "<h1>arraived URL history</h1>\n")
       (dolist (url history)
 	(unless (string-match "^about://\\(header\\|source\\|history\\|antenna\\)/" url)
 	  (insert (format "<a href=\"%s\">%s</a><br>\n" url

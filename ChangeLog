@@ -12,6 +12,7 @@
 	Windows.
 	(w3m-expand-file-name-as-url): Use 'file:///c|/xxxx' format if
 	non-cygwin Windows.
+	(w3m-about-history): Uniq history. Insert exposition of html.
 
 2001-03-19  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
