@@ -1,3 +1,7 @@
+2003-08-10  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-japantimes.el (shimbun-japantimes-coding-system): Removed.
+
 2003-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-reuse-history-elements): New user
