@@ -533,9 +533,9 @@ you want to use no database."
   "Open a shimbun for SERVER.
 Optional MUA is a `shimbun-mua' instance."
   (let ((load-path
-	 (nconc (cons (file-name-directory (locate-library "shimbun"))
-		      shimbun-backend-additional-path)
-		load-path)))
+	 (append (cons (file-name-directory (locate-library "shimbun"))
+		       shimbun-backend-additional-path)
+		 load-path)))
     (require (intern (concat "sb-" server))))
   (let (url groups coding-system server-name from-address
 	    content-start content-end x-face-alist shimbun expiration-days)
