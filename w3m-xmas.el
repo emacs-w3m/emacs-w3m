@@ -301,7 +301,7 @@ as the value."
 		   (and (= emacs-major-version 20)
 			(= emacs-minor-version 2)
 			(>= emacs-patch-level 19)))
-    (define-ccl-program ari-euc-japan-decoder
+    (define-ccl-program w3m-euc-japan-decoder
       `(2
 	(loop
 	 (read r0)

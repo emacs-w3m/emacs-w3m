@@ -1,3 +1,7 @@
+2001-05-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-xmas.el (w3m-euc-japan-decoder): Fix typo.
+
 2001-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	NOTE: `emacs-patch-level' vs `emacs-beta-version'
@@ -13,7 +17,7 @@
 	XEmacs versions earlier than 21.1.1, and also `emacs-beta-version'
 	does not exist in FSFmacs or in XEmacs versions earlier than 20.3.
 
-	* w3m-xmas.el (ari-euc-japan-decoder): Don't check for the constant
+	* w3m-xmas.el (w3m-euc-japan-decoder): Don't check for the constant
 	`emacs-patch-level' when the beta versions of XEmacs is running.
 
 2001-05-24  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
