@@ -3496,8 +3496,8 @@ mozilla-jp.users
 
 @end table
 
-なお、moz-users はアドレス回収ロボット対策で userid と passowrd を求めら
-れるので @file{~/.w3m/passwd} に
+なお、@samp{mozilla-jp.users} はアドレス回収ロボット対策で userid と 
+passowrd を求められるので @file{~/.w3m/passwd} に
 
 @example
 machine www.mozilla.gr.jp
@@ -3507,8 +3507,8 @@ passwd mozilla
 @end example
 
 @noindent
-と書き、上記ファイルから group, others のアクセス権を取り除いておかなく
-ちゃなりませんよ。
+と書き、上記ファイルから group, others のアクセス権を取り除いておく必要
+があります。
 
 @node Sport Sites Supported by Shimbun
 @subsection スポーツ

@@ -3362,8 +3362,8 @@ mozilla-jp.users
 
 @end table
 
-Please note that userid and passowrd are required for moz-users so you
-have to write;
+Please note that userid and passowrd are required for
+@samp{mozilla-jp.users} so you have to write;
 
 @example
 machine www.mozilla.gr.jp
