@@ -29,6 +29,8 @@
 
 	* shimbun/sb-wired-jp.el (shimbun-headers): Simplified.
 	(shimbun-article-url): New method.
+	(shimbun-clear-contents): Call the above instead of calling
+	`shimbun-header-xref'.
 
 2005-02-23  Felix E. Klee <felix.klee@inka.de>
 

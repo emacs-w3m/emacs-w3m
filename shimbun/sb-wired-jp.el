@@ -123,7 +123,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAQBAMAAACigOGCAAAABGdBTUEAALGPC/xhBQAAADB
 	(elem (assoc (shimbun-current-group shimbun)
 		     shimbun-wired-jp-group-table)))
     (when (string-match "/news/print/[0-9]+\\.html\\'"
-			(shimbun-header-xref header))
+			(shimbun-article-url shimbun header))
       (goto-char (point-min))
       (when (re-search-forward "<font[^>]*>\\([0-9]+\\)年\\([0-9]+\\)月\
 \\([0-9]+\\)日 +\\([0-9]+\\):\\([0-9]+\\)\\([ap]m\\) +\\([A-Z]+\\)</font>"
