@@ -1,3 +1,34 @@
+2003-06-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Some miscellaneous changes and large changes to make a
+	filter module cooperate with w3mmee and w3m-m17n.
+	(w3m-language): Stricten its customize spec.
+	(w3m-attributes): Call `w3m-url-strip-fragment' instead of using a
+	literal regular expression.
+	(w3m-arrived-load-list): New function.
+	(w3m-arrived-setup, w3m-arrived-shutdown): Use the above.
+	(w3m-url-decode-string): Call `vector' instead of `string' to
+	avoid making unexpected multibyte characters.
+	(w3m-decode-buffer): Do not call `w3m-decode-get-refresh'.
+	(w3m-decode-get-refresh): Removed.
+	(w3m-check-refresh-attribute): New function, the successor of the
+	above.
+	(w3m-rendering-half-dump): Encode a content for w3mmee and
+	w3m-m17n with `w3m-current-coding-system' instead of giving it as
+	a binary data.  Because `w3m-current-coding-system' keeps a coding
+	system used to decode the current buffer, all characters should be
+	recovered by this encoding.
+	(w3m-rendering-buffer-1): Removed.
+	(w3m-rendering-buffer): New function, the successor of the above.
+	(w3m-rendering-unibyte-buffer): Removed.
+	(w3m-rendering-multibyte-buffer): Removed.
+	(w3m-prepare-text-content): Always call `w3m-decode-buffer'. Call
+	`w3m-rendering-buffer' instead of `w3m-rendering-unibyte-buffer'.
+	(w3m-goto-url): Fix regular expressions.
+	(w3m-region): Accept the 4th optional argument, `charset'.  Set
+	`w3m-current-coding-system' to the coding system based on the
+	given charset.  Call `w3m-rendering-buffer' with the charset.
+
 2003-06-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-makeinfo): Include other files first.

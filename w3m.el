@@ -229,7 +229,9 @@ The value of `w3m-user-agent' is used for the field body."
       "Japanese")
   "*Language of w3m."
   :group 'w3m
-  :type 'string)
+  :type '(choice
+	  (const "Japanese")
+	  (const nil tag: "Other")))
 
 (defcustom w3m-command-arguments
   (if (eq w3m-type 'w3mmee) '("-o" "concurrent=0" "-F") nil)
@@ -1809,8 +1811,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	  (w3m-process-with-wait-handler
 	    (w3m-attributes url no-cache handler))
 	(w3m-process-timeout nil))
-    (when (string-match "\\`\\([^#]*\\)#" url)
-      (setq url (substring url 0 (match-end 1))))
+    (setq url (w3m-url-strip-fragment url))
     (cond
      ((string= "about://emacs-w3m.gif" url)
       (list "image/gif" nil nil nil nil url url))
@@ -2160,29 +2161,45 @@ with ^ as `cat -v' does."
   (let ((v (intern-soft url w3m-arrived-db)))
     (and v (get v 'content-type))))
 
+(defun w3m-arrived-load-list ()
+  (let ((list (w3m-load-list w3m-arrived-file)))
+    ;; When arrived URL database is too old, its data is ignored.
+    (when (or
+	   ;; Before the revision 1.120, every element of the list was
+	   ;; a string that represented an arrived URL.
+	   (stringp (car list))
+	   ;; Before the revision 1.135, every element was a cons
+	   ;; cell: its car kept a URL, and its cdr kept a time when
+	   ;; the URL was arrived.
+	   ;; Before the revision 1.178, every element was a 4-tuple
+	   ;; that consisted of a URL, a title, a modified time, and
+	   ;; an arrived time.
+	   ;; An element of the modern database is a 6-tuple that
+	   ;; consisted of a URL, a title, a modified time, an arrived
+	   ;; time, a charset, and a content type.
+	   ;; Thus, the following condition eliminates the revision
+	   ;; 1.177 and olders.
+	   (<= (length (car list)) 4))
+      (setq list nil)
+      (delete-file w3m-arrived-file))
+    list))
+
 (defun w3m-arrived-setup ()
   "Load arrived url list from `w3m-arrived-file' and setup hash database."
   (unless w3m-arrived-db
     (setq w3m-arrived-db (make-vector w3m-arrived-db-size 0))
-    (let ((list (w3m-load-list w3m-arrived-file)))
-      (when (stringp (car list))
-	;; When arrived URL database is too old, its data is ignored.
-	(setq list nil)
-	(delete-file w3m-arrived-file))
+    (let ((list (w3m-arrived-load-list)))
       (dolist (elem list)
-	(if (or (not (nth 1 elem)) (stringp (nth 1 elem)))
-	    ;; Process new format of arrived URL database.
-	    (w3m-arrived-add (if (string-match "^/" (car elem))
-				 (w3m-expand-file-name-as-url (car elem))
-			       (car elem))
-			     (nth 1 elem)
-			     (nth 2 elem)
-			     (or (nth 3 elem) (nth 2 elem))
-			     (when (stringp (nth 4 elem)) (nth 4 elem))
-			     (nth 5 elem))
-	  ;; Process old format of arrived URL database, is used
-	  ;; before revision 1.135.
-	  (w3m-arrived-add (car elem) nil (cdr elem) (cdr elem))))
+	;; Ignore an element that lacks an arrived time information.
+	(when (nth 3 elem)
+	  (w3m-arrived-add (if (string-match "\\`/" (car elem))
+			       (w3m-expand-file-name-as-url (car elem))
+			     (car elem))
+			   (nth 1 elem)
+			   (nth 2 elem)
+			   (nth 3 elem)
+			   (when (stringp (nth 4 elem)) (nth 4 elem))
+			   (nth 5 elem))))
       (unless w3m-input-url-history
 	(setq w3m-input-url-history (mapcar (function car) list))))
     (run-hooks 'w3m-arrived-setup-functions)))
@@ -2192,25 +2209,23 @@ with ^ as `cat -v' does."
   (when w3m-arrived-db
     ;; Re-read arrived DB file, and check sites which are arrived on
     ;; the other emacs process.
-    (dolist (elem (w3m-load-list w3m-arrived-file))
-      (and
-       ;; Check format of arrived DB file.
-       (or (not (nth 1 elem)) (stringp (nth 1 elem)))
-       (w3m-time-newer-p (nth 3 elem) (w3m-arrived-time (car elem)))
-       (w3m-arrived-add (if (string-match "^/" (car elem))
-			    (w3m-expand-file-name-as-url (car elem))
-			  (car elem))
-			(nth 1 elem)
-			(nth 2 elem)
-			(nth 3 elem)
-			(when (stringp (nth 4 elem)) (nth 4 elem))
-			(nth 5 elem))))
+    (dolist (elem (w3m-arrived-load-list))
+      (when (w3m-time-newer-p (nth 3 elem) (w3m-arrived-time (car elem)))
+	(w3m-arrived-add (if (string-match "\\`/" (car elem))
+			     (w3m-expand-file-name-as-url (car elem))
+			   (car elem))
+			 (nth 1 elem)
+			 (nth 2 elem)
+			 (nth 3 elem)
+			 (when (stringp (nth 4 elem)) (nth 4 elem))
+			 (nth 5 elem))))
     ;; Convert current arrived DB to a list.
     (let (list)
       (mapatoms
        (lambda (sym)
 	 (and sym
 	      (boundp sym)
+	      (symbol-value sym) ; Ignore an entry lacks an arrived time.
 	      (push (list (symbol-name sym)
 			  (get sym 'title)
 			  (get sym 'last-modified)
@@ -2260,7 +2275,7 @@ with ^ as `cat -v' does."
       (push (substring str start (match-beginning 0)) buf)
       (push (cond
 	     ((match-beginning 2)
-	      (string (string-to-number (match-string 2 str) 16)))
+	      (vector (string-to-number (match-string 2 str) 16)))
 	     ((match-beginning 1) "\n")
 	     (t " "))
 	    buf)
@@ -3156,7 +3171,6 @@ If the user enters null input, return second argument DEFAULT."
 			  t '(t nil) nil (cadr x))))))))
 
 (defun w3m-decode-buffer (url &optional content-charset content-type)
-  (w3m-decode-get-refresh url)
   (let (cs)
     (unless content-charset
       (setq content-charset
@@ -3188,23 +3202,6 @@ If the user enters null input, return second argument DEFAULT."
 		    nil
 		  w3m-coding-system-priority-list)))))
     (set-buffer-multibyte t)))
-
-(defun w3m-decode-get-refresh (url)
-  "Get REFRESH attribute in META tags."
-  (setq w3m-current-refresh nil)
-  (when (and w3m-use-refresh
-	     (not (string-match "\\`about://" url)))
-    (goto-char (point-min))
-    (let ((case-fold-search t)
-	  sec refurl)
-      (goto-char (point-min))
-      (when (or (re-search-forward w3m-meta-refresh-content-regexp nil t)
-		(re-search-forward w3m-meta-content-refresh-regexp nil t))
-	(setq sec (match-string-no-properties 1))
-	(setq refurl (match-string-no-properties 2))
-	(when (string-match "^[0-9]+$" sec)
-	  (setq w3m-current-refresh (cons (string-to-number sec)
-					  (w3m-expand-url refurl url))))))))
 
 (defun w3m-x-moe-decode-buffer ()
   (let ((args '("-i" "-cs" "x-moe-internal"))
@@ -4064,6 +4061,24 @@ type as a string argument, when retrieve is complete."
 	    (w3m-parse-attributes (href)
 	      (setq w3m-current-base-url href)))))))))
 
+(defun w3m-check-refresh-attribute ()
+  "Get REFRESH attribute in META tags."
+  (setq w3m-current-refresh nil)
+  (when (and w3m-use-refresh
+	     w3m-current-url
+	     (string-match "\\`\\(http\\|ftp\\)s?://" w3m-current-url))
+    (goto-char (point-min))
+    (let ((case-fold-search t)
+	  sec refurl)
+      (goto-char (point-min))
+      (when (or (re-search-forward w3m-meta-refresh-content-regexp nil t)
+		(re-search-forward w3m-meta-content-refresh-regexp nil t))
+	(setq sec (match-string-no-properties 1))
+	(setq refurl (match-string-no-properties 2))
+	(unless (string-match "[^0-9]" sec)
+	  (setq w3m-current-refresh (cons (string-to-number sec)
+					  (w3m-expand-url refurl))))))))
+
 (defun w3m-remove-meta-charset-tags ()
   (let ((case-fold-search t))
     (goto-char (point-min))
@@ -4098,13 +4113,15 @@ type as a string argument, when retrieve is complete."
 	(setq title (file-name-nondirectory w3m-current-url)))
     (or title "<no-title>")))
 
-(defsubst w3m-rendering-half-dump (&optional charset)
-  (let ((coding-system-for-read w3m-output-coding-system)
-	(coding-system-for-write w3m-input-coding-system)
-	(default-process-coding-system
-	  (cons w3m-output-coding-system w3m-input-coding-system)))
-    (when (and (memq w3m-type '(w3mmee w3m-m17n)) (not charset))
-      (setq charset w3m-current-content-charset))
+(defsubst w3m-rendering-half-dump (charset)
+  ;; `charset' is used by `w3m-w3m-expand-arguments' to generate
+  ;; arguments for w3mmee and w3m-m17n from `w3m-halfdump-command-arguments'.
+  (let* ((coding-system-for-read w3m-output-coding-system)
+	 (coding-system-for-write (if (eq 'binary w3m-input-coding-system)
+				      w3m-current-coding-system
+				    w3m-input-coding-system))
+	 (default-process-coding-system
+	   (cons coding-system-for-read coding-system-for-write)))
     (w3m-process-with-environment w3m-command-environment
       (apply 'call-process-region
 	     (point-min)
@@ -4139,55 +4156,17 @@ type as a string argument, when retrieve is complete."
 					      (frame-char-width)))))))
 			    (list "-o" "display_image=off")))))))))
 
-(defun w3m-rendering-buffer-1 (&optional content-charset binary-buffer)
+(defun w3m-rendering-buffer (&optional charset)
+  "Do rendering of contents in this buffer as HTML and return title."
   (w3m-message "Rendering...")
   (when w3m-use-filter (w3m-filter w3m-current-url))
   (w3m-remove-comments)
   (w3m-check-header-tags)
+  (w3m-check-refresh-attribute)
   (w3m-remove-meta-charset-tags)
-  (if binary-buffer
-      (let ((cbuf (current-buffer)))
-	(delete-region (point-min) (point-max))
-	(insert-buffer
-	 (with-current-buffer binary-buffer
-	   (w3m-copy-local-variables cbuf)
-	   (w3m-rendering-half-dump content-charset)
-	   (current-buffer)))
-	(w3m-kill-buffer binary-buffer))
-    (w3m-rendering-half-dump))
+  (w3m-rendering-half-dump charset)
   (w3m-message "Rendering...done")
   (w3m-rendering-extract-title))
-
-(defun w3m-rendering-unibyte-buffer (url &optional content-charset)
-  "Do rendering of contents in this buffer as HTML and return title."
-  (let (binary-buffer)
-    (when (memq w3m-type '(w3mmee w3m-m17n))
-      (let ((original-buffer (current-buffer)))
-	(with-current-buffer
-	    (setq binary-buffer
-		  (w3m-get-buffer-create
-		   (generate-new-buffer-name w3m-work-buffer-name)))
-	  (set-buffer-multibyte nil)
-	  (insert-buffer-substring original-buffer)
-	  (set-buffer-multibyte t)
-	  (w3m-copy-local-variables original-buffer))))
-    (w3m-decode-buffer url content-charset "text/html")
-    (w3m-rendering-buffer-1 content-charset binary-buffer)))
-
-(defun w3m-rendering-multibyte-buffer ()
-  "Do rendering of contents in this buffer as HTML and return title."
-  (let (binary-buffer)
-    (when (memq w3m-type '(w3mmee w3m-m17n))
-      (let ((original-buffer (current-buffer)))
-	(with-current-buffer
-	    (setq binary-buffer
-		  (w3m-get-buffer-create
-		   (generate-new-buffer-name w3m-work-buffer-name)))
-	  (set-buffer-multibyte t)
-	  (insert-buffer-substring original-buffer)
-	  (encode-coding-region (point-min) (point-max) w3m-coding-system)
-	  (w3m-copy-local-variables original-buffer))))
-    (w3m-rendering-buffer-1 w3m-coding-system binary-buffer)))
 
 (defun w3m-retrieve-and-render (url &optional no-cache content-charset
 				    content-type post-data referer handler)
@@ -4303,11 +4282,11 @@ argument.  Otherwise, it will be called with nil."
 
 (defun w3m-prepare-text-content (url type output-buffer
 				     &optional content-charset)
+  (w3m-decode-buffer url content-charset type)
   (setq w3m-current-url (w3m-real-url url)
 	w3m-current-title
 	(if (string= "text/html" type)
-	    (w3m-rendering-unibyte-buffer url content-charset)
-	  (w3m-decode-buffer url content-charset type)
+	    (w3m-rendering-buffer content-charset)
 	  (or (when (string-match "\\`about://\\(source\\|header\\)/" url)
 		(w3m-arrived-title (substring url (match-end 0))))
 	      (file-name-nondirectory url))))
@@ -6033,11 +6012,11 @@ the `w3m-search' function and the variable `w3m-uri-replace-alist'."
   (setq url (w3m-uri-replace url))
   (cond
    ;; process mailto: protocol
-   ((string-match "\\`mailto:\\(.*\\)" url)
+   ((string-match "\\`mailto:" url)
     (w3m-goto-mailto-url url post-data))
    ;; process ftp: protocol
    ((and w3m-use-ange-ftp
-	 (string-match "\\`ftp://" url)
+	 (string-match "\\`ftps?://" url)
 	 (not (string= "text/html" (w3m-local-content-type url))))
     (w3m-goto-ftp-url url))
    ;; find-file directly
@@ -6493,7 +6472,7 @@ ex.) c:/dir/file => //c/dir/file"
     path))
 
 ;;;###autoload
-(defun w3m-region (start end &optional url)
+(defun w3m-region (start end &optional url charset)
   "Render region in current buffer and replace with result."
   (interactive
    (list (region-beginning)
@@ -6507,7 +6486,10 @@ ex.) c:/dir/file => //c/dir/file"
     (setq w3m-current-buffer (current-buffer)
 	  w3m-current-url url
 	  w3m-current-base-url url
-	  w3m-current-title (w3m-rendering-multibyte-buffer))
+	  w3m-current-coding-system (if charset
+					(w3m-charset-to-coding-system charset)
+				      w3m-coding-system)
+	  w3m-current-title (w3m-rendering-buffer charset))
     (w3m-fontify)
     (when (w3m-display-inline-images-p)
       (and w3m-force-redisplay (sit-for 0))
