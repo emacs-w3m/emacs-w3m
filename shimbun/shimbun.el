@@ -116,6 +116,7 @@ dJrT4Cd<Ls?U!G4}0S%FA~KegR;YZWieoc%`|$4M\\\"i*2avWm?"
 	       (not (member (setq file (match-string 1 file))
 			    '("fml" "glimpse" "lump" "mailarc"
 			      "mailman" "mhonarc" "rss" "text")))
+	       (not (member file servers))
 	       (push file servers)))))
     (sort servers 'string-lessp)))
 
