@@ -104,7 +104,7 @@
       (subst-char-in-region (point-min) (point-max) ?\t ?  t)
       (goto-char (point-min))
       (when (and (re-search-forward
-		  "^<!--Palmware Release Infomation-->$" nil t nil)
+		  "^<!--Palmware Release Information-->$" nil t nil)
 		 (re-search-forward
 		  shimbun-palmfan-palmwarefan-date-regexp nil t nil))
 	(beginning-of-line 1)
