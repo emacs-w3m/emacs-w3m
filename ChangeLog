@@ -2,6 +2,7 @@
 
 	* w3m.el (w3m-backlog-enter): Overwrite backlog data when
 	specified URL is duplicated.
+	(w3m-home-page): Changed official w3m page's address to namazu.org.
 
 2001-03-02  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 

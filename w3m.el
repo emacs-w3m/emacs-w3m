@@ -167,7 +167,7 @@
       (getenv "WWW_HOME")
       (if (file-readable-p w3m-bookmark-file)
 	  (w3m-expand-file-name-as-url w3m-bookmark-file)
-	"http://www-nagao.kuee.kyoto-u.ac.jp/member/tsuchiya/w3m/"))
+	"http://namazu.org/~tsuchiya/emacs-w3m/"))
   "*Home page of w3m.el."
   :group 'w3m
   :type 'string)
