@@ -75,7 +75,7 @@
 	  (no-cache t)
 	  (headers))
       (dolist (page (shimbun-cgi-board-get-pages range))
-	(let (buffer)
+	(let (buffer header)
 	  (unwind-protect
 	      (with-temp-buffer
 		(when (shimbun-fetch-url shimbun
@@ -90,13 +90,15 @@
 		      (when (shimbun-search-id shimbun id)
 			(throw 'found headers))
 		      (unless buffer
-			(setq buffer (generate-new-buffer " *temp*"))
-			(with-current-buffer buffer
+			(with-current-buffer
+			    (setq buffer (generate-new-buffer " *temp*"))
 			  (shimbun-fetch-url shimbun
 					     (concat base "&thread&_f=" page))))
-		      (push (with-current-buffer buffer
-			      (shimbun-cgi-board-extract-header base fragment))
-			    headers)))))
+		      (when (setq header
+				  (with-current-buffer buffer
+				    (shimbun-cgi-board-extract-header base
+								      fragment)))
+			(push header headers))))))
 	    (when buffer
 	      (kill-buffer buffer))))
 	(setq no-cache nil))
