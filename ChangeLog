@@ -1,5 +1,9 @@
 2002-03-15  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-form.el (w3m-form-mee-select-value): Use w3m-output-coding-system
+	instead of w3m-current-coding-system.
+	(w3m-form-parse-and-fontify)[w3mmee]: Ditto.
+
 	* w3m-form.el (w3m-form-mee-select-value): New function.
 	(w3m-form-parse-and-fontify)[w3mmee]: Set select value.
 

@@ -333,10 +333,12 @@ If no field in forward, return nil without moving."
 	(setq val (concat val (char-to-string (car clist))))
 	(setq clist (cdr clist)))
       (if selected (setq selected val))
-      (push (cons (and val (decode-coding-string val 
-						 w3m-current-coding-system))
-		  (and label (decode-coding-string label 
-						   w3m-current-coding-system)))
+      (push (cons (and val (decode-coding-string
+			    val
+			    w3m-output-coding-system))
+		  (and label (decode-coding-string
+			      label
+			      w3m-output-coding-system)))
 	    candidates)
       (setq clist (cdr clist)))
     (cons selected (nreverse candidates))))
@@ -461,7 +463,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		    (w3m-form-put form name 
 				  (decode-coding-string
 				   (w3m-url-decode-string value)
-				   w3m-current-coding-system))
+				   w3m-output-coding-system))
 		  (setq textareas (cons (list textareanumber form name)
 					textareas)))
 		(add-text-properties
