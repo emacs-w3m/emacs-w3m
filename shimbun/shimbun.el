@@ -1081,6 +1081,22 @@ is enclosed by at least one regexp grouping construct."
 	  (setq start (- (length string) tail))))
       string))))
 
+(if (fboundp 'subst-char-in-string)
+    (defalias 'shimbun-subst-char-in-string 'subst-char-in-string)
+  (defun shimbun-subst-char-in-string (fromchar tochar string
+						&optional inplace)
+    "Replace characters in STRING from FROMCHAR to TOCHAR.
+Unless optional argument INPLACE is non-nil, return a new string."
+    (let ((string (if inplace string (copy-sequence string)))
+	  (len (length string))
+	  (idx 0))
+      ;; Replace all occurrences of FROMCHAR with TOCHAR.
+      (while (< idx len)
+	(when (= (aref string idx) fromchar)
+	  (aset string idx tochar))
+	(setq idx (1+ idx)))
+      string)))
+
 (defun shimbun-message (shimbun fmt &rest args)
   "Function equivalent to `message' enabling to handle special formats.
 SHIMBUN is a shimbun entity object.  FMT and ARGS are the same as the
