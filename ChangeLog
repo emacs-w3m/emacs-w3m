@@ -1,13 +1,6 @@
 2003-07-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m.el: Move functions handling the arrived database forward in
-	order to avoid byte compile errors.
-	(w3m-about-db-history): Ignroe URLs that include fragments.
-
-	* w3m.el (w3m-about-history): Encode special charactes included in
-	a title.
-
-	* w3m-bookmark.el (w3m-bookmark-add): Encode special charactes
+	* w3m-bookmark.el (w3m-bookmark-add): Encode special characters
 	included in a URL and a title.
 
 	* w3m-antenna.el (w3m-antenna-check-all-sites): Use
@@ -15,7 +8,7 @@
 	must have no ill effects because `w3m-use-setup' merges site
 	informations kept by `w3m-antenna-sites' into `w3m-antenna-alist'.
 	(w3m-about-antenna): Fix.
-	(w3m-antenna-add-current-url): Encode special charactes included
+	(w3m-antenna-add-current-url): Encode special characters included
 	in `w3m-current-title'.
 
 	* w3m.el: Changes of functions handling the arrived database, and
@@ -55,7 +48,10 @@
 	(w3m-redisplay-with-content-type): Ditto.
 	(w3m-about-header): Strip authentication part from URL before
 	extracting titles.
+	(w3m-about-history): Encode special characters included in a
+	title.
 	(w3m-about-db-history): Encode special characters in the title.
+	Ignore URLs that include fragments.
 
 2003-07-02  NAKAJIMA Mikio  <minakaji@namazu.org>
 
