@@ -148,6 +148,7 @@ Hooking into MUAs
 * Gnus::                        Reading HTML mails in Gnus
 * Mew::                         Reading HTML mails in Mew
 * SEMI MUAs::                   Reading HTML mails in @acronym{SEMI} MUAs
+* VM::                          VM (vieW maiL) is not Wanderlust
 
 Frequently Asked Questions
 
@@ -2959,6 +2960,7 @@ message is called an @samp{article} by Gnus users.
 * Gnus::                        Reading HTML mails in Gnus
 * Mew::                         Reading HTML mails in Mew
 * SEMI MUAs::                   Reading HTML mails in @acronym{SEMI} MUAs
+* VM::                          VM (vieW maiL) is not Wanderlust
 @end menu
 
 @node Gnus
@@ -3049,6 +3051,21 @@ for @code{mm-w3m-safe-url-regexp} is @samp{"\\`cid:"} which means we
 consider that images included in a mail with the @samp{cid:} URL are
 safe (that is, you can display such images without modifying the
 @code{mm-w3m-safe-url-regexp} variable).
+
+@item
+Giveaway
+
+Even when you are in the summary buffer, you can use the
+@code{w3m-toggle-inline-images} command in order to toggle displaying of
+images in the article buffer.  It is effective only when those images
+are displayed by emacs-w3m, though.  You may want to add the command key
+as follows:
+
+@lisp
+(eval-after-load "gnus-sum"
+  '(define-key gnus-summary-mode-map
+     "\C-i" 'w3m-toggle-inline-images))
+@end lisp
 @end itemize
 
 See also @ref{Nnshimbun}.
@@ -3158,6 +3175,15 @@ module and @acronym{SEMI}.  The default value is @code{nil}.
 @end table
 
 See also @ref{Nnshimbun} if you are using T-gnus or Nana-gnus.
+
+@node VM
+@section VM (vieW maiL) is not Wanderlust
+
+Emacs-w3m is not supporting VM positively.  It is simply because there
+is no VM user in the emacs-w3m team.  However, don't be pessimistic.
+There is the @file{vm-w3m.el} module in the attic directory of the
+emacs-w3m distribution.  You are a lucky person if it is helpful to you.
+Try it anyhow.  You can find how to use it in the file itself.
 
 @node Frequently Asked Questions
 @chapter There isn't always an answer

@@ -180,6 +180,7 @@ Hooking into MUAs
 * Gnus::                        Gnus $B$G(B HTML $B%a!<%k$rFI$`(B
 * Mew::                         Mew $B$G(B HTML $B%a!<%k$rFI$`(B
 * SEMI MUAs::                   @acronym{SEMI} MUA $B$G(B HTML $B%a!<%k$rFI$`(B
+* VM::                          VM (vieW maiL) $B$O(B Wanderlust $B$K$"$i$:(B
 
 Frequently Asked Questions
 
@@ -3065,6 +3066,7 @@ effect if your XEmacs does not support the gutter items.
 * Gnus::                        Gnus $B$G(B HTML $B%a!<%k$rFI$`(B
 * Mew::                         Mew $B$G(B HTML $B%a!<%k$rFI$`(B
 * SEMI MUAs::                   @acronym{SEMI} MUA $B$G(B HTML $B%a!<%k$rFI$`(B
+* VM::                          VM (vieW maiL) $B$O(B Wanderlust $B$K$"$i$:(B
 @end menu
 
 @node Gnus
@@ -3155,6 +3157,20 @@ Customization})$B!#:G$b4JC1$JJ}K!$O!"0J2<$N9T$r(B @file{~/.gnus.el} $B%U%!%$%
 $B$O;d$?$A$,(B @samp{cid:} URL $B$K$h$C$F%a!<%k$K4^$^$l$F$$$k2hA|$,0BA4$@$H9M(B
 $B$($F$$$k$3$H$r0UL#$7$^$9(B ($B$9$J$o$A!"(B@code{mm-w3m-safe-url-regexp} $B$rJQ99(B
 $B$7$J$/$F$b!"$=$N$h$&$J2hA|$OI=<($9$k$3$H$,$G$-$^$9(B)$B!#(B
+
+@item
+$B$*$^$1(B
+
+$B35N,%P%C%U%!$K$$$k$H$-$G$b!"(B@code{w3m-toggle-inline-images} $B%3%^%s%I$G5-(B
+$B;v%P%C%U%!$N2hA|I=<($r%H%0%k$K@Z$j49$($k$3$H$,$G$-$^$9!#$=$l$i$N2hA|(B
+$B$,(B emacs-w3m $B$K$h$C$FI=<($5$l$k>l9g$@$1$G$9$1$l$I$M!#0J2<$N$h$&$K%3%^%s(B
+$B%I!&%-!<$rDI2C$9$kI,MW$,$"$k$+$b$7$l$^$;$s(B:
+
+@lisp
+(eval-after-load "gnus-sum"
+  '(define-key gnus-summary-mode-map
+     "\C-i" 'w3m-toggle-inline-images))
+@end lisp
 @end itemize
 
 @ref{Nnshimbun} $B$b;2>H$7$F2<$5$$!#(B
@@ -3261,6 +3277,15 @@ emacs-w3m $B$N$HF1$8<gMW$J%-!<$r;H$&$3$H$,$G$-$^$9!#Nc$($P(B @key{RET} $B$O!"
 @end table
 
 T-gnus $B$+(B Nana-gnus $B$r$*;H$$$J$i$P(B @ref{Nnshimbun} $B$b;2>H$7$F2<$5$$!#(B
+
+@node VM
+@section VM (vieW maiL) $B$O(B Wanderlust $B$K$"$i$:(B
+
+Emacs-w3m $B$O(B VM $B$r@Q6KE*$K%5%]!<%H$7$F$$$^$;$s!#$=$l$OC1$K(B emacs-w3m $B%A!<(B
+$B%`$K(B VM $B%f!<%6$,$$$J$$$+$i$G$9!#$7$+$7Ha4Q$7$J$$$G!#(BEmacs-w3m $B$NG[I[(B
+$B$N(B attic $B%G%#%l%/%H%j$K(B @file{vm-w3m.el} $B%b%8%e!<%k$,$"$j$^$9!#$=$l$,;H(B
+$B$($l$P$a$C$1$b$s$G$9!#$H$K$+$/;n$7$F8+$F2<$5$$!#;H$$J}$O$=$N%U%!%$%k$K$"(B
+$B$j$^$9!#(B
 
 @node Frequently Asked Questions
 @chapter $BI,$:Ez$,$"$k$H$O8B$i$J$$(B
