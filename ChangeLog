@@ -1,3 +1,9 @@
+2003-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-strike-through-face): Use the :strikethru attribute
+	in XEmacs.
+	(w3m-fontify-strike-through): Enable it also for XEmacs.
+
 2003-10-22  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* shimbun/sb-2ch.el (shimbun-headers): Correct the index of

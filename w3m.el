@@ -497,7 +497,7 @@ to emacs-w3m."
 (defcustom w3m-key-binding nil
   "*Type of key binding set used in emacs-w3m sessions.
 The valid values include `info' which provides Info-like keys, and
-`nil' which provides Lynx-like keys."
+nil which provides Lynx-like keys."
   :group 'w3m
   :type '(choice
 	  (const :tag "Use Info-like key mapping." info)
@@ -536,14 +536,14 @@ The valid values include `info' which provides Info-like keys, and
 		   (setq buffers (cdr buffers)))))))))
 
 (defcustom w3m-use-cygdrive (eq system-type 'windows-nt)
-  "*If non-nil, use /cygdrive/ rule when expand-file-name."
+  "*If non-nil, use the /cygdrive/ rule when performing `expand-file-name'."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-profile-directory
   (concat "~/." (file-name-sans-extension
 		 (file-name-nondirectory w3m-command)))
-  "*Directory of w3m profiles."
+  "*Directory where emacs-w3m config files are loaded from or saved to."
   :group 'w3m
   :type '(directory :size 0))
 
@@ -552,18 +552,16 @@ The valid values include `info' which provides Info-like keys, and
 If a file with the `.el' or `.elc' suffixes exists, it will be read
 instead.
 
-Note: The file pointed by this variable is used as the startup file
-for emacs-w3m, but is *NOT* used as a startup file for w3m which works
-on terminal.  In order to modify configurations of w3m which works on
-terminal, you must edit the startup file for itself, whose name is
-~/.w3m/config typically."
+Note: This file is used as the startup configuration *NOT* for the w3m
+command but for emacs-w3m.  In order to modify configurations for the
+w3m command, edit the file named \"~/.w3m/config\" normally."
   :group 'w3m
   :type '(file :size 0))
 
 (defcustom w3m-default-save-directory
   (concat "~/." (file-name-sans-extension
 		 (file-name-nondirectory w3m-command)))
-  "*Default directory for save file."
+  "*Default directory where downloaded files will be saved to."
   :group 'w3m
   :type '(directory :size 0))
 
@@ -577,7 +575,9 @@ terminal, you must edit the startup file for itself, whose name is
 	      (delete "" (split-string (match-string 1))))))
 	(when (string= w3m-language "Japanese")
 	  '("ja" "en"))))
-  "*Prioirity for acceptable languages."
+  "*List of acceptable languages in descending order of priority.
+The default value is set based on the accept_language entry of the w3m
+configuration file (normally \"~/.w3m/config\")."
   :group 'w3m
   :type '(repeat (string :format "Lang: %v\n" :size 0)))
 
@@ -587,23 +587,30 @@ terminal, you must edit the startup file for itself, whose name is
   :type 'boolean)
 
 (defvar w3m-display-inline-images nil
-  "Non-nil means images are displayed inline in the w3m buffer.
+  "Internal variable controls whether to show images in emacs-w3m buffers.
 This variable is buffer-local which defaults to the value of
-`w3m-default-display-inline-images'.
-You should not set it directly; You can toggle the value of this variable by
-using the command \\<w3m-mode-map>`\\[w3m-toggle-inline-images]'.")
+`w3m-default-display-inline-images'.  Don't set it directly; modify
+the `w3m-default-display-inline-images' variable or use the\
+ `\\<w3m-mode-map>\\[w3m-toggle-inline-images]' command
+to change the appearance of images.
+See also `w3m-toggle-inline-images-permanently'.")
 (make-variable-buffer-local 'w3m-display-inline-images)
 
 (defcustom w3m-default-display-inline-images nil
-  "Default value of `w3m-display-inline-images' for buffers not overriding it."
+  "Default initial value used for the `w3m-display-inline-images'
+variable in each emacs-w3m buffer.
+See also `w3m-toggle-inline-images-permanently'."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-toggle-inline-images-permanently t
-  "*If nil, apply the value of `w3m-default-display-inline-images' to
-`w3m-display-inline-images' in the current w3m buffer when you visit a
-new page for each time.  Otherwise, the value of
-`w3m-display-inline-images' won't be changed."
+  "If non-nil, once the value of `w3m-display-inline-images' has been set
+to the value of `w3m-default-display-inline-images', or changed by the
+`\\<w3m-mode-map>\\[w3m-toggle-inline-images]'\
+ command in the buffer, it will not be changed even if you visit a
+new page.  Otherwise, the value of `w3m-display-inline-images' will be
+set to the value of `w3m-default-display-inline-images' in the buffer
+each time you visit a new page."
   :group 'w3m
   :type 'boolean)
 
@@ -614,23 +621,21 @@ new page for each time.  Otherwise, the value of
 				   data-directory)))
       (if (file-directory-p icons)
 	  icons)))
-  "*Icon directory for w3m (XEmacs or Emacs 21)."
+  "*Directory where emacs-w3m should find icon files."
   :group 'w3m
   :type '(radio (const :tag "Not specified")
 		(directory :format "%t: %v\n" :size 0)))
 
 (defcustom w3m-broken-proxy-cache nil
-  "*If non nil, cache on proxy server is not used.
-This feature should be enabled only if the caching configuration of
-your proxy server is broken.  In order to use this feature, you must
-apply the patch posted in [emacs-w3m:01119]."
+  "*Set this variable to t if the proxy server seems not to work properly
+in caching.  It may not be effective if you are using old w3m command."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-quick-start t
-  "*This switch controls the action when `w3m' is interactively called.
-When it is equal to the value other than nil, `w3m' displays no prompt
-to input URL when URL-like string is not detected under the cursor."
+  "*Non-nil means don't let the `M-x w3m' command prompt you for a URL
+if a string like URL exists around the cursor.  Otherwise, the
+`M-x w3m' command always ask you for the confirmation."
   :group 'w3m
   :type 'boolean)
 
@@ -638,88 +643,92 @@ to input URL when URL-like string is not detected under the cursor."
   (or (getenv "HTTP_HOME")
       (getenv "WWW_HOME")
       "about:")
-  "*Home page of emacs-w3m."
+  "*Don't say HP, which is the abbreviated name of a certain company. ;-)
+This variable specifies the URL string to open when emacs-w3m starts."
   :group 'w3m
   :type '(string :size 0))
 
 (defcustom w3m-arrived-file
   (expand-file-name ".arrived" w3m-profile-directory)
-  "*File which keep the list of arrived URLs."
+  "*Name of the file to keep the arrived URLs database."
   :group 'w3m
   :type '(file :size 0))
 
 (defcustom w3m-keep-arrived-urls 500
-  "*Maximum number of arrived URLs."
+  "*Maximum number of URLs which the arrived URLs database keeps."
   :group 'w3m
   :type '(integer :size 0))
 
 (defcustom w3m-keep-cache-size 300
-  "*Cache size of w3m."
+  "*Maximum number of pages to be cached in emacs-w3m."
   :group 'w3m
   :type '(integer :size 0))
 
 (defcustom w3m-follow-redirection 9
-  "*Follow this number of redirections.
-If this value is nil, w3m command itself follows redirection.
-If you want to use cookies, (i.e. set `w3m-use-cookies' as non-nil),
-you should not set this value as nil because many cookie enabled pages set
-cookies between redirections."
-  :group 'w3m
-  :type '(integer :size 0))
-
-(defcustom w3m-resize-image-scale 50
-  "*A number of percent used to resize inline images."
+  "*Maximum number of redirections which emacs-w3m honors and follows.
+If nil, redirections are followed by the w3m command.  Don't set it to
+nil if you allow to use cookies (i.e. you have set `w3m-use-cookies'
+to non-nil) since cookies may be shared among many redirected pages."
   :group 'w3m
   :type '(integer :size 0))
 
 (defcustom w3m-redirect-with-get t
-  "*If non-nil, use GET method after redirection by 301/302.
-RFC 1945 and RFC 2068 specify that the client is not allowed
+  "*If non-nil, use the GET method after redirection when a server
+responds the code 301 or 302.  Here is an extract from RFC2616:
+
+Note: RFC 1945 and RFC 2068 specify that the client is not allowed
 to change the method on the redirected request.  However, most
 existing user agent implementations treat 302 as if it were a 303
 response, performing a GET on the Location field-value regardless
-of the original request method. -- RFC2616"
+of the original request method."
   :group 'w3m
   :type 'boolean)
+
+(defcustom w3m-resize-image-scale 50
+  "*Number of step in percent used when resizing images."
+  :group 'w3m
+  :type '(integer :size 0))
 
 (defface w3m-anchor-face
   '((((class color) (background light)) (:foreground "blue"))
     (((class color) (background dark)) (:foreground "cyan"))
     (t (:underline t)))
-  "Face used to fontify anchors."
+  "Face used for displaying anchors."
   :group 'w3m-face)
 
 (defface w3m-arrived-anchor-face
   '((((class color) (background light)) (:foreground "navy"))
     (((class color) (background dark)) (:foreground "LightSkyBlue"))
     (t (:underline t)))
-  "Face used to fontify anchors, if arrived."
+  "Face used for displaying anchors which have already arrived."
   :group 'w3m-face)
 
 (defface w3m-current-anchor-face
   `((t (:underline t :bold t)))
-  "Face used to highlight current anchor."
+  "Face used to highlight the current anchor."
   :group 'w3m-face)
 
 (defface w3m-image-face
   '((((class color) (background light)) (:foreground "ForestGreen"))
     (((class color) (background dark)) (:foreground "PaleGreen"))
     (t (:underline t)))
-  "Face used to fontify image alternate strings."
+  "Face used for displaying alternate strings of images."
   :group 'w3m-face)
 
 (defface w3m-history-current-url-face
-  ;; Merge the face attributes of `base' into `w3m-arrived-anchor-face'.
+  ;; The following strange code compounds the attributes of the
+  ;; `secondary-selection' face and the `w3m-arrived-anchor-face' face,
+  ;; and generates the new attributes for this face.
   (let ((base 'secondary-selection)
 	(fn (if (featurep 'xemacs)
 		'face-custom-attributes-get
 	      'custom-face-attributes-get));; What a perverseness it is.
 	;; Both `face-custom-attributes-get' in XEmacs and
 	;; `custom-face-attributes-get' in CUSTOM 1.9962 attempt to
-	;; require `font' in Emacs/w3 and `cl' unconditionally. :-(
+	;; require `font' in Emacs/w3 and `cl' arbitrarily. :-/
 	(features (cons 'font features))
 	base-attributes attributes attribute)
-    (require 'wid-edit);; Needed for only Emacs 20.
+    (require 'wid-edit) ;; Needed only in Emacs 20.
     (setq base-attributes (funcall fn base nil)
 	  attributes (funcall fn 'w3m-arrived-anchor-face nil))
     (while base-attributes
@@ -729,24 +738,30 @@ of the original request method. -- RFC2616"
 				    (cadr base-attributes))))
       (setq base-attributes (cddr base-attributes)))
     (list (list t attributes)))
-  "Face used to highlight the current url in \"about://history/\"."
+  "Face used to highlight the current url in the \"about://history/\" page."
   :group 'w3m-face)
 
 (defface w3m-bold-face `((t (,@w3m-default-face-colors :bold t)))
-  "Face used to fontify bold characters."
+  "Face used for displaying bold text."
   :group 'w3m-face)
 
 (defface w3m-underline-face `((t (,@w3m-default-face-colors :underline t)))
-  "Face used to fontify underlined part."
+  "Face used for displaying underlined text."
   :group 'w3m-face)
 
-(defface w3m-strike-through-face `((t (,@w3m-default-face-colors :strike-through t)))
-  "Face used to fontify strike-through part."
+(defface w3m-strike-through-face
+  `((t (,@w3m-default-face-colors ,(if (featurep 'xemacs)
+				       :strikethru
+				     :strike-through)
+				  t)))
+  "Face used for displaying strike-through text."
   :group 'w3m-face)
 
-(defcustom w3m-fontify-strike-through
-  (and (featurep 'w3m-e21) window-system)
-  "*Fontify strike-through part."
+(defcustom w3m-fontify-strike-through (or (and (featurep 'w3m-e21)
+					       window-system)
+					  (and (featurep 'w3m-xmas)
+					       (device-on-window-system-p)))
+  "*Non-nil means use `strike-through' attribute to display deleted text."
   :group 'w3m
   :type 'boolean)
 
@@ -1031,7 +1046,7 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :type 'boolean)
 
 (defcustom w3m-use-filter nil
-  "*Non nil means filtering of WEB is used."
+  "*Non-nil means filtering of WEB is used."
   :group 'w3m
   :type 'boolean
   :require 'w3m-filter)
@@ -6115,7 +6130,7 @@ it will prompt user where to save a file."
 	file)
     (if (or (string-equal "/" (substring ftp -1))
 	    ;; `file-directory-p' takes a long time for remote files.
-	    ;; `file-directory-p' returns `t' in Emacsen, anytime.
+	    ;; `file-directory-p' returns t in Emacsen, anytime.
 	    (w3m-file-directory-p ftp))
 	(dired-other-window ftp)
       (setq file (file-name-nondirectory ftp))
