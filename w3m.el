@@ -169,7 +169,7 @@
 		(string :format "Command: %v\n" :size 0)))
 
 (defvar w3m-type nil "Type of the w3m command.
-The valid values include: w3m, w3mmee, w3m-m17n.")
+The valid values include `w3m', `w3mmee', and `w3m-m17n'.")
 (defvar w3m-compile-options nil "Compile options that w3m was built with.")
 (defvar w3m-version nil "Version string of the w3m command.")
 
@@ -249,10 +249,10 @@ the documentation for the `w3m-command-arguments-alist' variable."
   :type '(repeat (string :format "Argument: %v\n" :size 0)))
 
 (defcustom w3m-command-arguments-alist nil
-  "*Alist of a regexp matching urls and additional arguments passed to
-the w3m command.  This lets you, for instance, use or not use the
-proxy server for the particular hosts.  The first match made will be
-used.  Here is an example of how to set this variable:
+  "*Alist of regexps matching urls and additional arguments passed to the
+w3m command.  A typical usage of this variable is to specify whether
+to use the proxy server for the particular hosts.  The first match
+made will be used.  Here is an example of how to set this variable:
 
 \(setq w3m-command-arguments-alist
       '(;; Don't use any additional options to visit local web pages.
@@ -264,8 +264,9 @@ used.  Here is an example of how to set this variable:
 
 Where the first element matches the url that the scheme is \"http\" and
 the hostname is either \"your-company.com\" or a name ended with
-\".your-company.com\".  If you are a novice on the regexps, you can use
-the `w3m-no-proxy-domains' variable instead."
+\".your-company.com\", and the proxy server is not used for those hosts.
+If you are a novice on the regexps, you can use the
+`w3m-no-proxy-domains' variable instead."
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 4
 		       (regexp :format "%t: %v\n" :size 0)
@@ -294,16 +295,19 @@ the latter common part of the host names, not a regexp."
 		(string :format "    Value: %v\n" :size 0))))
 
 (defcustom w3m-fill-column -1
-  "*Fill column of w3m.
-Value is integer.
-Positive value is for fixed column rendering.
-Zero or negative value is for fitting w3m output with current frame
-width using expression (+ (window-width) VALUE)."
+  "*Integer used as the value for `fill-column' in emacs-w3m buffers.
+If it is positive, pages will be displayed within the columns of that
+number.  If it is zero or negative, the number of columns which
+subtracted that number from the window width is applied to the maximum
+width of pages.  Note that XEmacs does not always obey this setting."
   :group 'w3m
   :type '(integer :size 0))
 
 (defcustom w3m-mailto-url-function nil
-  "*Mailto handling Function."
+  "*Function used to handle the `mailto' urls.
+Function is called with one argument, just a url.  If it is nil, a
+function specified by the `mail-user-agent' variable will be used for
+composing mail messages."
   :group 'w3m
   :type '(radio (const :tag "Not specified" nil)
 		(function :format "%t: %v\n" :size 0)))
@@ -329,7 +333,7 @@ nil while popping up a buffer."
 
 (defcustom w3m-use-mule-ucs
   (and (eq w3m-type 'w3m) (featurep 'un-define))
-  "*Non nil means using multi-script support with Mule-UCS."
+  "*Non-nil means use the multi-script support with Mule-UCS."
   :group 'w3m
   :type 'boolean
   :require 'w3m-ucs)
@@ -345,31 +349,31 @@ nil while popping up a buffer."
   :type 'boolean)
 
 (defcustom w3m-imitate-widget-button '(eq major-mode 'gnus-article-mode)
-  "*If non-nil, imitate the widget button on link (anchor) buttons.
+  "*If non-nil, imitate the widget buttons on link (anchor) buttons.
 It is useful for moving about in a Gnus article buffer using TAB key.
 It can also be any Lisp form that should return a boolean value."
   :group 'w3m
   :type '(sexp :size 0))
 
 (defcustom w3m-treat-image-size (and (member "image" w3m-compile-options) t)
-  "*Non-nil means to let the w3m HTML rendering be conscious of image size.
-`w3m-pixels-per-character' is used for the `-ppc' argument of the w3m command.
-`w3m-pixels-per-line' is used for the `-ppl' argument of the w3m command."
+  "*Non-nil means make the w3m command work paying attention to the ratio
+of the size of images and text.  See also `w3m-pixels-per-character'
+and `w3m-pixels-per-line'."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-pixels-per-line 64
-  "*This value is used for the `-ppl' argument of the w3m command.
-If nil, the height of the default face font is used.
-It is valid only when `w3m-treat-image-size' is non-nil."
+  "*Integer used for the `-ppl' argument of the w3m command.
+If nil, the height of the default face is used.  It is valid only when
+`w3m-treat-image-size' is non-nil."
   :group 'w3m
   :type '(choice (const :tag "Auto Detect" nil)
 		 (integer :tag "Specify Pixels")))
 
 (defcustom w3m-pixels-per-character nil
-  "*This value is used for the `-ppc' argument of the w3m command.
-If nil, the width of the default face font is used.
-It is valid only when `w3m-treat-image-size' is non-nil."
+  "*Integer used for the `-ppc' argument of the w3m command.
+If nil, the width of the default face is used.  It is valid only when
+`w3m-treat-image-size' is non-nil."
   :group 'w3m
   :type '(radio (const :tag "Auto Detect" nil)
 		(integer :format "Specify Pixels: %v\n" :size 0)))
@@ -378,8 +382,8 @@ It is valid only when `w3m-treat-image-size' is non-nil."
   (and (not noninteractive)
        (featurep 'mule)
        (or (memq w3m-type '(w3mmee w3m-m17n))
-	   ;; Detect that the internal character set of `w3m-command'
-	   ;; is EUC-JP.
+	   ;; Examine whether the w3m command specified by `w3m-command'
+	   ;; uses `euc-japan' for the internal character set.
 	   (let ((str
 		  (eval-when-compile
 		    (format
@@ -401,21 +405,25 @@ It is valid only when `w3m-treat-image-size' is non-nil."
 		 (and (re-search-forward (string ?\264 ?\301 ?\273 ?\372)
 					 nil t)
 		      t))))))
-  "Non-nil means that `w3m-command' accepts Japanese characters.")
+  "Non-nil means that the w3m command accepts Japanese characters.")
 
 (defcustom w3m-coding-system (if (featurep 'mule)
 				 (if (eq w3m-type 'w3mmee)
 				     'iso-2022-7bit-ss2
 				   'iso-2022-7bit)
 			       'iso-8859-1)
-  "*Basic coding system for `w3m'."
+  "*Default coding system used to communicate with the w3m command."
   :group 'w3m
   :type '(coding-system :size 0))
 
 (defcustom w3m-terminal-coding-system
   (if w3m-accept-japanese-characters
       'euc-japan 'iso-8859-1)
-  "*Coding system for keyboard input to `w3m'."
+  "*Default coding system used when writing to w3m processes.
+It is just a default value to set process' coding system initially.
+\(This variable name is analogically derived from the behavior of the
+w3m command which accepts data from Emacs just like reads from the
+terminal.)"
   :group 'w3m
   :type '(coding-system :size 0))
 
@@ -433,7 +441,10 @@ It is valid only when `w3m-treat-image-size' is non-nil."
 	(if (featurep 'w3m-e21)
 	    'w3m-iso-latin-1
 	  'iso-8859-1))))
-  "*Coding system for write operations to `w3m'."
+  "*Coding system used when writing to w3m processes.
+It overrides `coding-system-for-write' if it is not `binary'.
+Otherwise, the value of the `w3m-current-coding-system' variable is
+used instead."
   :group 'w3m
   :type '(coding-system :size 0))
 
@@ -445,44 +456,48 @@ It is valid only when `w3m-treat-image-size' is non-nil."
     (if (featurep 'un-define) 'utf-8 'iso-2022-7bit-ss2))
    (w3m-accept-japanese-characters 'w3m-euc-japan)
    (t 'w3m-iso-latin-1))
-  "*Coding system for read operations of `w3m'."
+  "*Coding system used when reading from w3m processes."
   :group 'w3m
   :type '(coding-system :size 0))
 
 (defcustom w3m-file-coding-system (if (featurep 'mule)
 				      'iso-2022-7bit
 				    'iso-8859-1)
-  "*Coding system for writing configuration files in `w3m'.
-The value will be referred by the function `w3m-save-list'."
+  "*Coding system used when writing configuration files.
+This value will be referred to by the `w3m-save-list' function."
   :group 'w3m
   :type '(coding-system :size 0))
 
 (defvar w3m-file-coding-system-for-read nil
-  "*Coding system for reading configuration files in `w3m'.  It is strongly
-recommended that you do not set this variable if there is no particular
-reason.  The value will be referred by the function `w3m-load-list'.")
+  "*Coding system used when reading configuration files.
+It is strongly recommended that you do not set this variable if there
+is no particular reason.  The value will be referred to by the
+`w3m-load-list' function.")
 
 (defcustom w3m-file-name-coding-system
   (if (memq system-type '(windows-nt OS/2 emx))
       'shift_jis 'euc-japan)
-  "*Coding system for encoding file names of `w3m'."
+  "*Coding system used to convert pathnames when accessing files related
+to emacs-w3m."
   :group 'w3m
   :type '(coding-system :size 0))
 
 (defcustom w3m-default-coding-system
   (if (equal "Japanese" w3m-language) 'shift_jis 'iso-8859-1)
-  "*Default coding system to encode URL strings and post-data."
+  "*Default coding system used to encode URL strings and post-data."
   :group 'w3m
   :type '(coding-system :size 0))
 
 (defcustom w3m-coding-system-priority-list
   (if (equal "Japanese" w3m-language) '(shift_jis))
-  "*Priority for detect coding-system."
+  "*Coding systems in order of priority used for emacs-w3m sessions."
   :group 'w3m
   :type '(repeat (coding-system :format "%t: %v\n" :size 0)))
 
 (defcustom w3m-key-binding nil
-  "*This variable decides default key mapping used in w3m-mode buffers."
+  "*Type of key binding set used in emacs-w3m sessions.
+The valid values include `info' which provides Info-like keys, and
+`nil' which provides Lynx-like keys."
   :group 'w3m
   :type '(choice
 	  (const :tag "Use Info-like key mapping." info)
