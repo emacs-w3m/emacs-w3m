@@ -1,3 +1,8 @@
+2002-12-07  YAMASHITA Junji  <ysjj@unixuser.org>
+
+	* shimbun/sb-ibm-dev.el (shimbun-get-headers): Follow the change
+	of date format.
+
 2002-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-what-where): Don't say [-ja] especially.
