@@ -828,6 +828,16 @@ deactivated after evaluating the current command."
       (list 'region-active-p)
     (list 'and 'transient-mark-mode 'mark-active)))
 
+(defun w3m-goto-info-page (&optional arg)
+  "Read documentation for emacs-w3m in the info system."
+  (interactive "P")
+  (let ((ja (equal "Japanese" w3m-language)))
+    (require 'info)
+    (Info-goto-node
+     (if (if arg (not ja) ja)
+	 "(emacs-w3m-ja.info)"
+       "(emacs-w3m.info)"))))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here
