@@ -20,8 +20,6 @@ DISTS   = Makefile.in aclocal.m4 configure configure.in install-sh mkinstalldirs
 
 
 default: Makefile
-	test ! -f w3m-util.elc -o w3m-util.elc -nt w3m-util.el || $(MAKE) clean
-	test ! -f w3m-proc.elc -o w3m-proc.elc -nt w3m-proc.el || $(MAKE) clean
 	$(EMACS) $(FLAGS) -f w3mhack-compile
 
 install: default

@@ -1,3 +1,24 @@
+2001-11-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-attributes): Establish the error handler for
+	`w3m-process-timeout' when the argument `handler' is equal to nil.
+	(w3m-retrieve): Ditto.
+	(w3m-about-header): Establish the error handler for
+	`w3m-process-timeout' before `w3m-w3m-get-header' is called.
+	(w3m-select-buffer-close-window): Check whether the menu's window
+	exists.
+
+	* w3m-proc.el: Changes to avoid endless loop.
+	(w3m-process-start-process): Changed the spec of its return value.
+	(w3m-process-timeout): New error symbol.
+	(w3m-process-with-wait-handler): Bind `inhibit-quit' to nil, in
+	order to accept user's quit; Signal `w3m-process-timeout' when
+	time out is detected.
+	(w3m-process-do): Accept null variable.
+	(w3m-process-do-with-temp-buffer): Ditto.
+
+	* Makefile.in (default): Cancel the last change.
+
 2001-11-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (default): When files which define macros and inline

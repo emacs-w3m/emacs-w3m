@@ -1148,8 +1148,10 @@ elements are:
  6. Base URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
   (if (not handler)
-      (w3m-process-with-wait-handler
-	(w3m-attributes url no-cache handler))
+      (condition-case nil
+	  (w3m-process-with-wait-handler
+	    (w3m-attributes url no-cache handler))
+	(w3m-process-timeout nil))
     (when (string-match "\\`\\([^#]*\\)#" url)
       (setq url (substring url 0 (match-end 1))))
     (cond
@@ -1173,20 +1175,20 @@ If optional argument NO-CACHE is non-nil, cache is not used."
      (t
       (w3m-w3m-attributes url no-cache handler)))))
 
-(defmacro w3m-base-url (url &optional no-cache handler)
-  (` (nth 6 (w3m-attributes (, url) (, no-cache) (, handler)))))
-(defmacro w3m-content-charset (url &optional no-cache handler)
-  (` (nth 1 (w3m-attributes (, url) (, no-cache) (, handler)))))
-(defmacro w3m-content-encoding (url &optional no-cache handler)
-  (` (nth 3 (w3m-attributes (, url) (, no-cache) (, handler)))))
-(defmacro w3m-content-length (url &optional no-cache handler)
-  (` (nth 2 (w3m-attributes (, url) (, no-cache) (, handler)))))
 (defmacro w3m-content-type (url &optional no-cache handler)
   (` (car (w3m-attributes (, url) (, no-cache) (, handler)))))
+(defmacro w3m-content-charset (url &optional no-cache handler)
+  (` (nth 1 (w3m-attributes (, url) (, no-cache) (, handler)))))
+(defmacro w3m-content-length (url &optional no-cache handler)
+  (` (nth 2 (w3m-attributes (, url) (, no-cache) (, handler)))))
+(defmacro w3m-content-encoding (url &optional no-cache handler)
+  (` (nth 3 (w3m-attributes (, url) (, no-cache) (, handler)))))
 (defmacro w3m-last-modified (url &optional no-cache handler)
   (` (nth 4 (w3m-attributes (, url) (, no-cache) (, handler)))))
 (defmacro w3m-real-url (url &optional no-cache handler)
   (` (nth 5 (w3m-attributes (, url) (, no-cache) (, handler)))))
+(defmacro w3m-base-url (url &optional no-cache handler)
+  (` (nth 6 (w3m-attributes (, url) (, no-cache) (, handler)))))
 
 (defmacro w3m-make-help-echo (property)
   "Make a function for showing a `help-echo' string."
@@ -2591,8 +2593,10 @@ function returns nil immediately and the specified content is retrived
 asynchronously.  The HANDLER function will be called with its content
 type as a string argument, when retrieve is complete."
   (if (not handler)
-      (w3m-process-with-wait-handler
-	(w3m-retrieve url no-decode no-cache post-data referer handler))
+      (condition-case nil
+	  (w3m-process-with-wait-handler
+	    (w3m-retrieve url no-decode no-cache post-data referer handler))
+	(w3m-process-timeout nil))
     (unless (and w3m-safe-url-regexp
 		 (not (string-match w3m-safe-url-regexp url)))
       (when (string-match "\\`\\([^#]*\\)#" url)
@@ -4341,8 +4345,10 @@ works on Emacs.
 	(insert "\nDocument Code:  " charset)))
     (let (header)
       (and (not (w3m-url-local-p url))
-	   (setq header (w3m-process-with-wait-handler
-			  (w3m-w3m-get-header url no-cache handler)))
+	   (setq header (condition-case nil
+			    (w3m-process-with-wait-handler
+			      (w3m-w3m-get-header url no-cache handler))
+			  (w3m-process-timeout nil)))
 	   (insert
 	    (if (string= w3m-language "Japanese")
 		"\n\n━━━━━━━━━━━━━━━━━━━\n\nHeader information\n\n"
@@ -4792,10 +4798,11 @@ w3m-mode buffers."
 
 (defun w3m-select-buffer-close-window ()
   "Close the window which displays the menu to select w3m-mode buffers."
-  (if (one-window-p)
-      (set-window-buffer (get-buffer-window w3m-select-buffer-name)
-			 (other-buffer))
-    (delete-window (get-buffer-window w3m-select-buffer-name))))
+  (let ((window (get-buffer-window w3m-select-buffer-name)))
+    (when window
+      (if (one-window-p)
+	  (set-window-buffer window (other-buffer))
+	(delete-window window)))))
 
 (defun w3m-select-buffer-toggle-style()
   "Toggle the style of select-buffer."

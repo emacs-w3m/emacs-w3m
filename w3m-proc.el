@@ -62,7 +62,7 @@
 (defvar w3m-process-inhibit-quit t
   "`w3m-process-sentinel' binds `inhibit-quit' according to this variable.")
 (defvar w3m-process-timeout 300
-  "Number of seconds idle time waiting the finish of asynchronous process.")
+  "Number of seconds idle time waiting for processes to terminate.")
 
 (defconst w3m-process-max 5 "The maximum limit of the working processes.")
 (defvar w3m-process-queue nil "Queue of processes.")
@@ -96,10 +96,10 @@
 	 (process-connection-type w3m-process-connection-type))
      ,@body))
 (put 'w3m-process-with-coding-system 'lisp-indent-function 0)
-(put 'w3m-process-with-coding-system 'edebug-form-spec '(form body))
+(put 'w3m-process-with-coding-system 'edebug-form-spec '(body))
 
 (defmacro w3m-process-with-environment (alist &rest body)
-  "Set the environment variables provided by ALIST, and evaluate BODY."
+  "Set the environment variables according to ALIST, and evaluate BODY."
   `(let ((process-environment process-environment)
 	 (temporary-file-directory
 	  (if (file-directory-p w3m-profile-directory)
@@ -174,7 +174,7 @@ return it."
       (kill-process process))))
 
 (defun w3m-process-start-process (object)
-  "Start a process spcified by the OBJECT."
+  "Start a process spcified by the OBJECT, return always nil."
   (unless (w3m-process-process object)
     (with-current-buffer (w3m-process-buffer object)
       (w3m-process-with-coding-system
@@ -190,7 +190,8 @@ return it."
 		  w3m-process-realm nil)
 	    (set-process-filter proc 'w3m-process-filter)
 	    (set-process-sentinel proc 'w3m-process-sentinel)
-	    (process-kill-without-query proc)))))))
+	    (process-kill-without-query proc)
+	    nil))))))
 
 (defun w3m-process-start-queued-processes ()
   "Start a process which is registerd in `w3m-process-queue' if the
@@ -272,6 +273,10 @@ handler."
 (put 'w3m-process-with-null-handler 'lisp-indent-function 0)
 (put 'w3m-process-with-null-handler 'edebug-form-spec '(body))
 
+;; Error symbol:
+(put 'w3m-process-timeout 'error-conditions '(error w3m-process-timeout))
+(put 'w3m-process-timeout 'error-message "Time out")
+
 (defmacro w3m-process-with-wait-handler (&rest body)
   "Generate the waiting handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the handler
@@ -287,7 +292,7 @@ because capturing the end of the generated sub-process fails."
 	     (,start (current-time))
 	     (handler (lambda (x) (setq ,result x))))
 	 (if (w3m-process-p (setq ,process (progn ,@body)))
-	     (let (w3m-process-inhibit-quit)
+	     (let (w3m-process-inhibit-quit inhibit-quit)
 	       (w3m-process-start-process ,process)
 	       (while (eq ,result ',result)
 		 (sit-for 0.2)
@@ -299,7 +304,7 @@ because capturing the end of the generated sub-process fails."
 			      (delq ,process w3m-process-queue))
 			(w3m-process-kill-process
 			 (w3m-process-process ,process))
-			(error "%s" "Time out"))))
+			(signal 'w3m-process-timeout nil))))
 	       ,result)
 	   ,process)))))
 (put 'w3m-process-with-wait-handler 'lisp-indent-function 0)
@@ -346,7 +351,7 @@ be evaluated after the end of the process with the variable VAR which
 is set to the result of the form FORM.  Otherwise, the body BODY is
 evaluated at the same time, and this macro returns the result of the
 body BODY."
-  (let ((var (car spec))
+  (let ((var (or (car spec) (gensym "--tempvar--")))
 	(form (cdr spec))
 	(this-handler (gensym "--this-handler--")))
     `(let ((,this-handler handler))
@@ -381,7 +386,7 @@ body BODY."
   "(w3m-process-do-with-temp-buffer (VAR FORM) BODY...):
 Like `w3m-process-do', but the form FORM and the body BODY are
 evaluated in a temporary buffer."
-  (let ((var (car spec))
+  (let ((var (or (car spec) (gensym "--tempvar--")))
 	(form (cdr spec))
 	(this-handler (gensym "--this-handler--"))
 	(temp-buffer (gensym "--temp-buffer--")))
