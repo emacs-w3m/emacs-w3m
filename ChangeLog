@@ -1,3 +1,21 @@
+2003-06-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-asahi.el (shimbun-server-name): Removed.
+	(shimbun-from-address): Removed.
+	(initialize-instance): Initialize `server-name', `from-address',
+	`x-face-alist' and `expiration-days'.
+
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html-x-face-alist):
+	(shimbun-asahi-html-expiration-days): Abolished.
+
+	* shimbun/sb-yomiuri.el (shimbun-server-name): Removed.
+	(shimbun-from-address): Removed.
+	(initialize-instance): Initialize `server-name', `from-address',
+	`x-face-alist' and `expiration-days'.
+
+	* shimbun/sb-yomiuri-html.el (shimbun-yomiuri-html-x-face-alist):
+	(shimbun-yomiuri-html-expiration-days): Abolished.
+
 2003-06-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei): Make it inherit `shimbun'
@@ -11,10 +29,6 @@
 
 	* shimbun/sb-w3m-dev.el (shimbun-get-headers, shimbun-article):
 	Removed.
-
-	* shimbun/sb-atmarkit-rss.el (shimbun-article): Removed.
-
-	* shimbun/sb-slashdot-jp-rss.el (shimbun-article): Removed.
 
 	* shimbun/shimbun.el: Changes to add a copyright notice to every
 	article.

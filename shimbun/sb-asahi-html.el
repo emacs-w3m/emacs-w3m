@@ -39,10 +39,6 @@
   "<!--[\t\n ]*End of related link[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
 
-(defvar shimbun-asahi-html-x-face-alist shimbun-asahi-x-face-alist)
-
-(defvar shimbun-asahi-html-expiration-days shimbun-asahi-expiration-days)
-
 (luna-define-method shimbun-make-contents ((shimbun shimbun-asahi-html)
 					   header)
   (shimbun-asahi-adjust-date-header shimbun header)
