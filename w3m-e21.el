@@ -349,8 +349,9 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defvar w3m-e21-toolbar-configurations
   '((auto-resize-tool-bars       . t)
     (auto-raise-tool-bar-buttons . t)
-    (tool-bar-button-margin      . 0)
-    (tool-bar-button-relief      . 2)))
+    ;;(tool-bar-button-margin      . 0)
+    ;;(tool-bar-button-relief      . 2)
+    ))
 
 (defun w3m-e21-setup-toolbar (keymap defs)
   (let ((configs w3m-e21-toolbar-configurations)
