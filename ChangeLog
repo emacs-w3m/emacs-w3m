@@ -1,9 +1,7 @@
 2002-08-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Clean up hook options.
-	(toplevel): Remove `w3m-header-line-insert' from
-	`w3m-fontify-after-hook', and define the dummy function of
-	`w3m-update-tab-line'.
+	(toplevel): Define the dummy function of `w3m-update-tab-line'.
 	(w3m-mode-hook, w3m-fontify-after-hook, w3m-select-buffer-hook):
 	Clean up its default value to nil.
 	(w3m-display-hook, w3m-delete-buffer-hook): Minimize its default
@@ -20,8 +18,9 @@
 	(w3m-fontify): Call `w3m-header-line-insert' by itself.
 	(w3m-next-buffer, w3m-delete-buffer, w3m-delete-other-buffers):
 	Call `w3m-select-buffer-update' by itself.
-	(w3m-mode): Run functions registered to
-	`w3m-mode-setup-functions'.
+	(w3m-clean-hook-options): New function.
+	(w3m-mode): Call `w3m-clean-hook-options', and run functions
+	registered to `w3m-mode-setup-functions'.
 	(w3m-goto-url): Call `w3m-select-buffer-update' by itself, and Run
 	functions registered to `w3m-display-functions'.
 	(w3m-select-buffer-update): Call `w3m-update-tab-line'.
