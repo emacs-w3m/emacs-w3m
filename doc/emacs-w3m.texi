@@ -3880,7 +3880,7 @@ If you want to make an article from a line in a web page source, like:
 use the following regexp:
 
 @example
-"<a href=\"\\(\\([0-9][0-9][0-9][0-9]\\)\\.html\\)\">\\([^<(]+\\)(posted by \\([^<]+\\))<\/a>"
+"<a href=\"\\(\\([0-9][0-9][0-9][0-9]\\)[0-9][0-9]\\.html\\)\">\\([^<(]+\\)(posted by \\([^<]+\\))<\/a>"
 @end example
 
 @noindent
