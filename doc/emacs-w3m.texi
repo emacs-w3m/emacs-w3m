@@ -1829,6 +1829,27 @@ See also @ref{Nnshimbun}.
 @node Mew
 @section Reading HTML mails in Mew
 
+By using emacs-w3m, Text/Html can be displayed in Message mode of Mew.
+Add the following to @file{~/.mew.el}:
+
+@lisp
+(require 'mew-w3m)
+@end lisp
+
+With this, Text/Html can be displayed in Message mode as if it were
+Text/Plain.  Even in this situation, @kbd{C-c C-e} is a valid operation.
+
+Recently there are many message whose have Mulatipart/Alternative, which
+consists of Text/Plain and Text/Html.  By default, Mew selects
+Text/Plain.  However, you may want to choose Text/Html since you are
+using emacs-w3m.  If so, add the following to @file{~/.mew.el}:
+
+@lisp
+(setq mew-mime-multipart-alternative-list
+      '("Text/Html" "Text/Plain" ".*"))
+@end lisp
+
+See also @ref{Mew Shimbun}.
 
 @node SEMI MUAs
 @section Reading HTML mails in SEMI MUAs
@@ -2237,6 +2258,8 @@ Mew Shimbun is an Emacs Lisp program for enjoying yourself with
 @samp{shimbun} using the Mew version 2.1 and later.  The
 @file{mew-shimbun} module will be installed together with emacs-w3m if
 there have been Mew, @sc{apel}, and @sc{flim} installed.
+
+We recommend you also see @ref{Mew}.
 
 @enumerate
 @item

@@ -1941,6 +1941,28 @@ Gnus が勝手に spammer のサイトに接続することはありません。
 @node Mew
 @section Mew で HTML メールを読む
 
+Emacs-w3m を使うことによって、Text/Html を Message モードに表示できるよ
+うになります。以下の設定を @file{~/.mew.el} に加えて下さい:
+
+@lisp
+(require 'mew-w3m)
+@end lisp
+
+これで、あたかも Text/Plain であるかのように、Text/Html を Message モー
+ドに表示できるようになります。この際も、@kbd{C-c C-e} の操作は有効です。
+
+最近、Multipart/Alternative の中に Text/Plain と Text/Html の両方が入っ
+ており、どちらかを選ぶようになっているメッセージを多く見掛けます。Mew は、
+標準では Text/Plain の方を優先して表示します。あなたは emacs-w3m を使っ
+ているのですから、Text/Html の方を優先したくなるかもしれません。その場合、
+以下の設定を @file{~/.mew.el} に加えて下さい:
+
+@lisp
+(setq mew-mime-multipart-alternative-list
+      '("Text/Html" "Text/Plain" ".*"))
+@end lisp
+
+@ref{Mew Shimbun} も参照して下さい。
 
 @node SEMI MUAs
 @section SEMI MUA で HTML メールを読む
@@ -2333,6 +2355,8 @@ Gnus が一つの特定のバックエンドのために働く (すなわち、
 Mew Shimbun は Mew version 2.1 以降を使って @samp{shimbun} を楽しむため
 の Emacs Lisp プログラムです。Mew, @sc{apel}, @sc{flim} がインストールさ
 れていれば、emacs-w3m をインストールするときに一緒にインストールされます。
+
+@ref{Mew} も参照することをお勧めします。
 
 @enumerate
 @item
