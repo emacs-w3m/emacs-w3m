@@ -7316,7 +7316,9 @@ NEW-SESSION specifies whether to create a new emacs-w3m session.  URL
 defaults to the string looking like a url around the cursor position.
 Pop up a window a frame according to `w3m-pop-up-windows' and
 `w3m-pop-up-frames'."
-  (interactive (browse-url-interactive-arg "Emacs-w3m URL: "))
+  (interactive (progn
+		 (require 'browse-url)
+		 (browse-url-interactive-arg "Emacs-w3m URL: ")))
   (when (stringp url)
     (if new-session
 	(w3m-goto-url-new-session url)

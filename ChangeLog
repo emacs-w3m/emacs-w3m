@@ -1,3 +1,8 @@
+2004-04-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-browse-url): Load `browse-url' before calling
+	`browse-url-interactive-arg'.
+
 2004-04-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el: Rewrite.
