@@ -1,6 +1,6 @@
 2002-05-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/sb-nikkei.el (shimbun-asahi-x-face-alist): New face.
+	* shimbun/sb-nikkei.el (shimbun-nikkei-x-face-alist): New face.
 	(shimbun-get-headers): Rewrite to adapt it for the new forms on
 	the server.
 
