@@ -1,3 +1,9 @@
+2003-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-copy-buffer): Copy the history before visiting a
+	page in order to show the about://history/ page correctly; adjust
+	the position in the history after copying.
+
 2003-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-view-this-url-1): Don't kill the emacs-w3m buffer
