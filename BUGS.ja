@@ -2,65 +2,76 @@ $Date$
 
 ■ TODO
 
-   --> w3m-copy-buffer() で、history に格納されている buffer-local
-       properties (form data などを含む) を捨てずにコピーする。--ky
+   --> w3m-prepare-content() / w3m-filter() の整理 [emacs-w3m:05526]
 
-   --> about: で始まる url のページを既存の history とは別扱いにする。
+   --> URL の encode 問題の解決 [emacs-w3m:05387], [emacs-w3m:05576]
+
+   --> shimbun ライブラリの分割 [emacs-w3m:05607]
+
+   --> w3m-copy-buffer() で，history に格納されている buffer-local
+       properties (form data などを含む) を捨てずにコピーする．--ky
+
+   --> about: で始まる url のページを既存の history とは別扱いにする．
        [emacs-w3m:05670] -- ky
 
-   --> https なページの閲覧に関わる諸問題の解明と対策。
+   --> https なページの閲覧に関わる諸問題の解明と対策．
        [emacs-w3m:04901, 04857]
 
-   --> file-name- 系の関数を url 文字列の処理に使うのは問題あり。
+   --> file-name- 系の関数を url 文字列の処理に使うのは問題あり．
        [emacs-w3m:04799]
 
-   --> 変数/関数の docstring と comment の英語の整備。-- ky
+   --> 変数/関数の docstring と comment の英語の整備．-- ky
 
    --> configure 時に --with-icondir=... で指定した値を自動的に
        w3m-icon-directory の初期値として反映してほしい．[emacs-w3m:03912]
 
    --> frame 対応
 
-   --> w3m-about-* の整理
-       --> w3m-*-contents / w3m-*-attributes に分割
-       --> about://icons/ の新設
-
-   --> source code の text/plain なページを閲覧しているときは font-lock
-       してくれると嬉しいかもしれない。
-
-   --> Info / man 閲覧機能の追加
-
-   --> Bookmark と BBDB の連携などが出来たら嬉しいかも知れない。
-
-   --> キャッシュ機構の整理と永続コンテンツ [emacs-w3m:01076]
-
    --> ソースコード中の FIXME を直す
 
    --> エラーチェックが手抜きなのを直す
+
+
+
+■ Known BUGs
+
+(1) XEmacs で ">" "," すると，カーソルが隠れる時がある．
+    XEmacs で w3m-horizontal-shift-columns の値を char-width より小さく
+    すると，"," が動かないときがある．
+
+(2) <a id="..."> という書式で指定されたアンカーにジャンプできない．
+    [emacs-w3m:05816]
+
+
+
+■ Wishlist and Idea Notes
+
+   --> Fontify pages display text/plain sources.
+       source code の text/plain なページを閲覧しているときは font-lock 
+       してくれると嬉しいかもしれない．
+
+   --> w3mnav.el 相当の処理ができるように w3m-filter /
+       w3m-prepare-content / w3m-display-hook などを見直す．
+
+   --> Info / man 閲覧機能の追加
+
+   --> Bookmark と BBDB or LSDB の連携などが出来たら嬉しいかも知れない．
+
+   --> キャッシュ機構の整理と永続コンテンツ [emacs-w3m:01076]
 
    --> ソースの整理
 
    --> 説明文書の整備
 
    --> [emacs-w3m:00011] などのメーリングリストのヘッダ文字列を自動的に
-       URL に変換してジャンプする機能がほしい。
+       URL に変換してジャンプする機能がほしい．
+
+   --> [emacs-w3m:05901] 406 Not Accetable & Alternates なページを閲覧す
+       る方法が欲しい．
 
    --> shimbun
-       --> shimbun-header 構造体によって保持される値の性質をきちんと規定
-           しておく。[emacs-w3m:01008], [emacs-w3m:01082]
        --> ML archive の検索エンジンとの連動
 
-
-
-■ 既知の問題
-
-(1) XEmacs で ">" "," すると、カーソルが隠れる時がある。
-    XEmacs で w3m-horizontal-shift-columns の値を char-width より小さく
-    すると、"," が動かないときがある。
-
-
-(2) 表示中のバッファを narrowing しておいて、URL の移動を行うと表示がお
-    かしくなる。
 
 Local Variables:
 mode: indented-text
