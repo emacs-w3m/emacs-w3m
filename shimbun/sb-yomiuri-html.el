@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
-;; Author: Yuuichi Teranishi <teranisi@gohome.org>
+;; Author: Yuuichi Teranishi <teranisi@gohome.org>,
 ;;         Katsumi Yamaoka   <yamaoka@jpl.org>
 ;; Keywords: news
 
@@ -39,7 +39,7 @@
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-yomiuri-html)
 					   header)
-  (shimbun-yomiuri-adjust-date-header shimbun header)
+  (shimbun-yomiuri-prepare-article shimbun header)
   (shimbun-make-html-contents shimbun header))
 
 (provide 'sb-yomiuri-html)
