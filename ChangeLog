@@ -1,3 +1,29 @@
+2001-09-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-current-forms): Definition imported from
+	`w3m-form.el'.
+	(w3m-current-coding-system): New buffer local variable.
+	(w3m-clear-local-variables): New function.
+	(w3m-copy-local-variables): Ditto.
+	(w3m-arrived-p): Cancel the last change.
+	(w3m-arrived-auto-detected-coding-system): Removed.
+	(w3m-arrived-set-auto-detected-coding-system): Ditto.
+	(w3m-fontify-anchors): Expand `w3m-next-url' and
+	`w3m-previous-url' on `w3m-current-url'.
+	(w3m-decode-buffer): Set auto-detected coding system to
+	`w3m-current-coding-system'.
+	(w3m-remove-comments): Simplified.  No point is saved.
+	(w3m-check-link-tags): `w3m-next-url' and `w3m-previous-url' are
+	not reseted.
+	(w3m-remove-meta-tags): New function.
+	(w3m-rendering-region): Call `w3m-remove-meta-tags'.
+	(w3m-exec): Clean up codes.
+	(w3m-redisplay-with-charset): Refer `w3m-current-coding-system'.
+	(w3m-region): Call `w3m-clear-local-variables'.
+
+	* w3m-form.el (w3m-current-forms): Definition moved to `w3m.el'.
+	(w3m-form-make-form-data): Refer `w3m-current-coding-system'.
+
 2001-09-10  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-expand-url): Changed regexp for detecting absolute spec;

@@ -39,15 +39,15 @@
 
 (require 'w3m)
 
+(eval-when-compile
+  (defvar w3m-current-forms))
+
 (defface w3m-form-face
   '((((class color) (background light)) (:foreground "cyan" :underline t))
     (((class color) (background dark)) (:foreground "red" :underline t))
     (t (:underline t)))
   "*Face to fontify forms."
   :group 'w3m-face)
-
-(defvar w3m-current-forms nil "Forms of this buffer.")
-(make-variable-buffer-local 'w3m-current-forms)
 
 (defcustom w3m-form-default-coding-system 'shift_jis
   "*Default coding system for form encoding."
@@ -113,9 +113,9 @@ If no field in forward, return nil without moving."
 		  (if (w3m-charset-to-coding-system (car coding))
 		      (throw 'det (w3m-charset-to-coding-system (car coding)))
 		    (setq coding (cdr coding)))))
+	      w3m-current-coding-system
 	      (w3m-charset-to-coding-system
 	       (w3m-content-charset w3m-current-url))
-	      (w3m-arrived-auto-detected-coding-system w3m-current-url)
 	      w3m-form-default-coding-system))
     (while plist
       (let ((name (symbol-name (car plist)))

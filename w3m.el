@@ -703,18 +703,56 @@ If nil, use an internal CGI of w3m."
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
 (defvar w3m-initial-frame nil "Initial frame of this session.")
+(defvar w3m-current-forms nil "Forms of this buffer.")
 (defvar w3m-current-post-data nil "POST data of this buffer.")
 (defvar w3m-current-referer nil "Referer of this buffer.")
+(defvar w3m-current-coding-system nil "Current coding-system of this buffer.")
 (defvar w3m-next-url nil "Next URL of this buffer.")
 (defvar w3m-previous-url nil "Previous URL of this buffer.")
 
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-title)
 (make-variable-buffer-local 'w3m-initial-frame)
+(make-variable-buffer-local 'w3m-current-forms)
 (make-variable-buffer-local 'w3m-current-post-data)
 (make-variable-buffer-local 'w3m-current-referer)
+(make-variable-buffer-local 'w3m-current-coding-system)
 (make-variable-buffer-local 'w3m-next-url)
 (make-variable-buffer-local 'w3m-previous-url)
+
+(defsubst w3m-clear-local-variables ()
+  (setq w3m-current-url nil
+	w3m-current-title nil
+	w3m-initial-frame nil
+	w3m-current-forms nil
+	w3m-current-post-data nil
+	w3m-current-referer nil
+	w3m-current-coding-system nil
+	w3m-next-url nil
+	w3m-previous-url nil))
+
+(defsubst w3m-copy-local-variables (from-buffer)
+  (let (url title frame forms post referer cs next prev)
+    (save-current-buffer
+      (when from-buffer (set-buffer from-buffer))
+      (setq url w3m-current-url
+	    title w3m-current-title
+	    frame w3m-initial-frame
+	    forms w3m-current-forms
+	    post w3m-current-post-data
+	    referer w3m-current-referer
+	    cs w3m-current-coding-system
+	    next w3m-next-url
+	    prev w3m-previous-url))
+    (setq w3m-current-url url
+	  w3m-current-title title
+	  w3m-initial-frame frame
+	  w3m-current-forms forms
+	  w3m-current-post-data post
+	  w3m-current-referer referer
+	  w3m-current-coding-system cs
+	  w3m-next-url next
+	  w3m-previous-url prev)))
 
 (defvar w3m-current-buffer nil "The current w3m buffer.")
 
@@ -1217,8 +1255,7 @@ If N is negative, last N items of LIST is returned."
 (defsubst w3m-arrived-p (url)
   "If URL has been arrived, return non-nil value.  Otherwise return nil."
   (or (string-match w3m-arrived-ignored-regexp url)
-      (let ((v (intern-soft url w3m-arrived-db)))
-	(and v (boundp v)))))
+      (intern-soft url w3m-arrived-db)))
 
 (defun w3m-arrived-time (url)
   "If URL has been arrived, return its arrived time.  Otherwise return nil."
@@ -1246,16 +1283,6 @@ If N is negative, last N items of LIST is returned."
   Otherwise return nil."
   (let ((v (intern-soft url w3m-arrived-db)))
     (and v (get v 'content-type))))
-
-(defun w3m-arrived-auto-detected-coding-system (url)
-  "Return URL's coding-system detected by `w3m-decode-buffer'."
-  (let ((v (intern-soft url w3m-arrived-db)))
-    (and v (get v 'auto-detected-coding-system))))
-
-(defun w3m-arrived-set-auto-detected-coding-system (url coding-system)
-  "Stor URL's CODING-SYSTEM for future access."
-  (put (intern url w3m-arrived-db)
-       'auto-detected-coding-system coding-system))
 
 (defun w3m-arrived-setup ()
   "Load arrived url list from `w3m-arrived-file' and setup hash database."
@@ -1528,7 +1555,13 @@ If N is negative, last N items of LIST is returned."
 	    (when (= start end)
 	      (setq end (min (1+ end) (point-max))))
 	    (w3m-add-text-properties start end
-				     (list 'w3m-name-anchor name)))))))))
+				     (list 'w3m-name-anchor name)))))))
+    (when w3m-next-url
+      (setq w3m-next-url
+	    (w3m-expand-url w3m-next-url w3m-current-url)))
+    (when w3m-previous-url
+      (setq w3m-previous-url
+	    (w3m-expand-url w3m-previous-url w3m-current-url)))))
 
 (defun w3m-image-type (content-type)
   "Return image type which corresponds to CONTENT-TYPE."
@@ -2176,14 +2209,13 @@ If the user enters null input, return second argument DEFAULT."
     (setq content-charset (w3m-x-moe-decode-buffer)))
   (decode-coding-region
    (point-min) (point-max)
-   (w3m-arrived-set-auto-detected-coding-system
-    url
-    (if content-charset
-	(w3m-charset-to-coding-system content-charset)
-      (let ((codesys (detect-coding-region (point-min) (point-max))))
-	(if (consp codesys)
-	    (car codesys)
-	  codesys)))))
+   (setq w3m-current-coding-system
+	 (if content-charset
+	     (w3m-charset-to-coding-system content-charset)
+	   (let ((codesys (detect-coding-region (point-min) (point-max))))
+	     (if (consp codesys)
+		 (car codesys)
+	       codesys)))))
   (set-buffer-multibyte t))
 
 (defun w3m-x-moe-decode-buffer ()
@@ -2643,18 +2675,15 @@ to nil.
 
 (defun w3m-remove-comments ()
   "Remove HTML comments in the current buffer."
-  (save-excursion
-    (goto-char (point-min))
-    (let (beg)
-      (while (search-forward "<!--" nil t)
-	(setq beg (match-beginning 0))
-	(if (search-forward "-->" nil t)
-	    (delete-region beg (point)))))))
+  (goto-char (point-min))
+  (let (beg)
+    (while (search-forward "<!--" nil t)
+      (setq beg (match-beginning 0))
+      (if (search-forward "-->" nil t)
+	  (delete-region beg (point))))))
 
 (defun w3m-check-link-tags ()
   "Process <LINK> tags in the current buffer."
-  (setq w3m-next-url nil
-	w3m-previous-url nil)
   (let ((case-fold-search t))
     (goto-char (point-min))
     (when (search-forward "</head>" nil t)
@@ -2669,6 +2698,15 @@ to nil.
 	       ((member "next" rel) (setq w3m-next-url href))
 	       ((member "prev" rel) (setq w3m-previous-url href))))))))))
 
+(defun w3m-remove-meta-tags ()
+  (let ((case-fold-search t))
+    (goto-char (point-min))
+    (when (or (re-search-forward
+	       w3m-meta-content-type-charset-regexp nil t)
+	      (re-search-forward
+	       w3m-meta-charset-content-type-regexp nil t))
+      (delete-region (match-beginning 0) (match-end 0)))))
+
 (defun w3m-rendering-region (start end &optional charset)
   "Do rendering of contents in this buffer as HTML and return title."
   (save-restriction
@@ -2676,6 +2714,7 @@ to nil.
     (set-buffer-multibyte t)
     (w3m-remove-comments)
     (w3m-check-link-tags)
+    (w3m-remove-meta-tags)
     (when w3m-use-form
       (w3m-form-parse-region (point-min) (point-max) charset))
     (w3m-message "Rendering...")
@@ -2738,15 +2777,15 @@ this function returns t.  Otherwise, returns nil."
     (let ((type (w3m-retrieve url nil no-cache post-data referer)))
       (if type
 	  (progn
-	    (when content-type (setq type content-type))
-	    (setq w3m-next-url nil
-		  w3m-previous-url nil)
+	    (when content-type
+	      (setq type content-type))
 	    (cond
 	     ((string-match "^text/" type)
 	      (let (buffer-read-only)
-		(setq w3m-current-url (w3m-real-url url)
-		      w3m-current-title
-		      (w3m-with-work-buffer
+		(w3m-with-work-buffer
+		  (w3m-clear-local-variables)
+		  (setq w3m-current-url (w3m-real-url url)
+			w3m-current-title
 			(if (string= "text/html" type)
 			    (progn
 			      (unless (memq w3m-type '(w3mmee w3m-m17n))
@@ -2757,12 +2796,7 @@ this function returns t.  Otherwise, returns nil."
 			  (file-name-nondirectory url))))
 		(delete-region (point-min) (point-max))
 		(insert-buffer w3m-work-buffer-name)
-		(let (next prev)
-		  (w3m-with-work-buffer
-		    (setq next w3m-next-url
-			  prev w3m-previous-url))
-		  (setq w3m-next-url (and next (w3m-expand-url next w3m-current-url))
-			w3m-previous-url (and prev (w3m-expand-url prev w3m-current-url))))
+		(w3m-copy-local-variables w3m-work-buffer-name)
 		(when (string= "text/html" type) (w3m-fontify))
 		t))
 	     ((and (w3m-image-type-available-p (w3m-image-type type))
@@ -3651,8 +3685,8 @@ If input is nil, use default coding-system on w3m."
   (interactive "P")
   (let ((w3m-display-inline-image (if arg t w3m-display-inline-image))
 	(default
-	  (or (w3m-content-charset w3m-current-url)
-	      (w3m-arrived-auto-detected-coding-system w3m-current-url))))
+	  (or w3m-current-coding-system
+	      (w3m-content-charset w3m-current-url))))
     (w3m-goto-url w3m-current-url nil
 		  (w3m-read-content-charset
 		   (if default
@@ -3747,6 +3781,7 @@ ex.) c:/dir/file => //c/dir/file"
     (narrow-to-region start end)
     (when (memq w3m-type '(w3mmee w3m-m17n))
       (encode-coding-region (point-min) (point-max) w3m-coding-system))
+    (w3m-clear-local-variables)
     (setq w3m-current-buffer (current-buffer)
 	  w3m-current-title
 	  (w3m-rendering-region (point-min) (point-max)))
