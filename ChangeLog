@@ -23,7 +23,8 @@
 
 	* attic/addpath.el: Make it work with old Emacsen even if cl is
 	not loaded; load custom, bind defcustom'ed variables and make the
-	locate-library function run quietly for Emacs 19.
+	locate-library function run quietly for Emacs 19; synch the code
+	testing the shell command with w3mhack.el.
 	(char-after): Add a byte-optimizer for Emacs 19.
 
 	* w3m-ccl.el: Load w3m-om instead of autoloading it for charset-id.
