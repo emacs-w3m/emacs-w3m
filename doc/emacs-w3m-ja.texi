@@ -4924,7 +4924,8 @@ Requirements}) をインストールしておく必要があります。
 
 @table @asis
 @item @uref{http://www.tcup.com/, Tea Cup 掲示板}
-初期設定の状態で、以下の3つの掲示板が閲覧できます。
+Tea Cup Communication によって提供される、様々な掲示板を講読することがで
+きます。デフォルトでは、以下の三つの掲示板が用意されています。
 
 @table @asis
 @item tcup.meadow
@@ -4937,8 +4938,36 @@ Requirements}) をインストールしておく必要があります。
 @uref{http://www61.tcup.com/6116/yutopia.html, ゆうτοπια掲示板}
 @end table
 
-変数 @code{shimbun-tcup-group-alist} に適切な設定を加えると、
-@uref{http://www.tcup.com/} 上で運営されている他の掲示板も閲覧できます。
+新たに掲示板をリストに追加するには、それらの名前と URL を調べて、
+@code{shimbun-tcup-group-alist} を変更して下さい。二つの掲示
+板 @samp{foo} と @samp{bar} を追加する例です。
+
+@lisp
+(eval-after-load "sb-tcup"
+  '(setq shimbun-tcup-group-alist
+         (append
+          '(("foo" "http://MMMM.teacup.com/foo/bbs")
+            ("bar" "http://NNNN.teacup.com/bar/bbs"))
+          shimbun-tcup-group-alist)))
+@end lisp
+
+このモジュールは、デフォルトではコンテンツが @code{euc-jp} でエンコード
+されていることを想定しますが、@code{shift_jis} でエンコードされているも
+のもあります。例えば、@samp{foo} 掲示板がコンテンツのエンコード
+に @code{shift_jis} を使っていると、それの講読に失敗するでしょう。そのよ
+うな場合は、このモジュールが @samp{foo} 掲示板から取り込んだコンテンツの
+デコードに @code{shift_jis} を使うように、coding system を指定してみて下
+さい。それをするための例です。
+
+@lisp
+(eval-after-load "sb-tcup"
+  '(setq shimbun-tcup-group-alist
+         (append
+          '(("foo" "http://MMMM.teacup.com/foo/bbs"
+             nil nil nil nil nil shift_jis)
+            ("bar" "http://NNNN.teacup.com/bar/bbs"))
+          shimbun-tcup-group-alist)))
+@end lisp
 
 @item 2ch
 グループ名と URL を調べて、以下のように設定して使います。

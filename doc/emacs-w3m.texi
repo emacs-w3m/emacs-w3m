@@ -3602,7 +3602,7 @@ character sets EUC-JISX0213 and ISO-2022-JP-3, you have to install the
 Install w3mmee or w3m-m17n, and set the @code{w3m-command} variable to
 the appropriate value.  And emacs-w3m will use the multi-lingual
 features provided by one of those programs.
-However, a page written by a coding-system which Emacs doesn't support
+However, a page written by a coding system which Emacs doesn't support
 may not be displayed correctly. So please install Mule-UCS package if
 necessary.
 @end enumerate
@@ -4865,8 +4865,9 @@ serial publications are included.
 
 @table @asis
 @item @uref{http://www.tcup.com/, Tea Cup Bulletin Boards}
-These three boards are supported by the default version of
-@samp{sb-tcup}.
+You can subscribe to various bulletin boards provided by Tea Cup
+Communication.  By default, there are three pre-configured boards listed
+below:
 
 @table @asis
 @item tcup.yutopia
@@ -4879,9 +4880,36 @@ These three boards are supported by the default version of
 @uref{http://www67.tcup.com/6718/yutopia.html, SKK BBS}
 @end table
 
-Add appropriate configurations to the variable
-@code{shimbun-tcup-group-alist}, you can browse other bulletin board
-systems that are provided at @uref{http://www.tcup.com/}.
+To add new boards to the list, look up the names and the urls and modify
+the @code{shimbun-tcup-group-alist} variable.  The following form is an
+example to add two boards, @samp{foo} and @samp{bar}, to the list:
+
+@lisp
+(eval-after-load "sb-tcup"
+  '(setq shimbun-tcup-group-alist
+         (append
+          '(("foo" "http://MMMM.teacup.com/foo/bbs")
+            ("bar" "http://NNNN.teacup.com/bar/bbs"))
+          shimbun-tcup-group-alist)))
+@end lisp
+
+This module assumes by default that contents are encoded with
+@code{euc-jp}, but there are ones encoded with @code{shift_jis} too.
+For instance, if the @samp{foo} board uses @code{shift_jis} to encode
+contents, you will fail in subscribing to it.  In such a case, try
+specifying the coding system so that this module uses @code{shift_jis}
+to decode contents fetched from the @samp{foo} board.  Here is an
+example to do that:
+
+@lisp
+(eval-after-load "sb-tcup"
+  '(setq shimbun-tcup-group-alist
+         (append
+          '(("foo" "http://MMMM.teacup.com/foo/bbs"
+             nil nil nil nil nil shift_jis)
+            ("bar" "http://NNNN.teacup.com/bar/bbs"))
+          shimbun-tcup-group-alist)))
+@end lisp
 
 @item 2ch
 This is an example to browse Meadow BBS and emacs-w3m BBS on 2ch.
