@@ -34,6 +34,7 @@
 
 ;;; Code:
 
+(require 'w3m-util)
 (require 'w3m)
 (require 'easymenu)
 
@@ -98,42 +99,20 @@
 
 (defun w3m-tab-menubar-make-items (&optional nomenu)
   "Create w3m tab menu items."
-  (let ((cbuf (current-buffer))
-	bufs title menus)
-    (dolist (buf (buffer-list))
-      (with-current-buffer buf
-	(when (eq major-mode 'w3m-mode)
-	  (setq title (cond
-		       ((and (stringp w3m-current-title)
-			     (not (string= w3m-current-title "<no-title>")))
-			w3m-current-title)
-		       ((stringp w3m-current-url)
-			(directory-file-name
-			 (if (string-match "^[^/:]+:/+" w3m-current-url)
-			     (substring w3m-current-url (match-end 0))
-			   w3m-current-url)))
-		       (t "No title")))
-	  (setq bufs (cons (list (buffer-name) title (eq cbuf buf)) bufs)))))
-    (setq bufs
-	  (sort bufs (lambda (x y)
-		       (< (w3m-pullout-buffer-number (car x))
-			  (w3m-pullout-buffer-number (car y))))))
-    (dolist (elem  bufs)
-      (setq menus
-	    (cons
-	     (if nomenu
-		 (list (nth 0 elem)
-		       (format "%s%s"
-			       (if (nth 2 elem) "* " "")
-			       (nth 1 elem)))
-	       (vector (format "%d: %s%s"
-			       (w3m-pullout-buffer-number (nth 0 elem))
-			       (if (nth 2 elem) "* " "  ")
-			       (nth 1 elem))
-		       (list 'w3m-tab-menubar-open-item (nth 0 elem))
-		       (get-buffer (nth 0 elem))))
-	     menus)))
-    (nreverse menus)))
+  (let ((i 0) (current (current-buffer)) (title))
+    (mapcar
+     (lambda (buffer)
+       (if nomenu
+	   (list (buffer-name buffer)
+		 (w3m-buffer-title buffer))
+	 (vector (format "%d: %s%s"
+			 (incf i)
+			 (if (eq buffer current) "* " "  ")
+			 (w3m-buffer-title buffer))
+		 `(w3m-tab-menubar-open-item ,(buffer-name buffer))
+		 buffer)))
+     (w3m-list-buffers))))
 
 (provide 'w3m-tabmenu)
+
 ;;; w3m-tabmenu.el ends here

@@ -34,7 +34,8 @@
 
 ;;; Code:
 
-(require 'w3m-macro)
+(require 'w3m-util)
+(require 'w3m-proc)
 (require 'w3m-fsf)
 (require 'wid-edit)
 
@@ -81,19 +82,21 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 circumstances."
   (and w3m-display-inline-images (display-images-p)))
 
-(defun w3m-create-image (url &optional no-cache referer)
+(defun w3m-create-image (url &optional no-cache referer handler)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used.
 If second optional argument REFERER is non-nil, it is used as Referer: field."
-  (condition-case err
-      (let ((type (w3m-retrieve url 'raw no-cache nil referer)))
+  (if (not handler)
+      (w3m-process-with-wait-handler
+	(w3m-create-image url no-cache referer handler))
+    (w3m-process-do-with-temp-buffer
+	(type (w3m-retrieve url 'raw no-cache nil referer handler))
+      (ignore-errors
 	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-	  (w3m-with-work-buffer
-	    (create-image (buffer-string)
-			  type
-			  t
-			  :ascent 'center))))
-    (error nil)))
+	  (create-image (buffer-string)
+			type
+			t
+			:ascent 'center))))))
 
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
@@ -379,56 +382,31 @@ Buffer string between BEG and END are replaced with IMAGE."
     map))
 
 (defun w3m-tab-line ()
-  (let (buffer-read-only
-	buffers name orig line)
-    (dolist (buffer (buffer-list))
-      (with-current-buffer buffer
-	(when (eq major-mode 'w3m-mode)
-	  (setq orig (if (stringp w3m-current-title)
-			 w3m-current-title
-		       (if (stringp w3m-current-url)
-			   (directory-file-name
-			    (if (string-match "^[^/:]+:/+" w3m-current-url)
-				(substring w3m-current-url (match-end 0))
-			      w3m-current-url))
-			 ""))
-		name (concat " "
-			     (if (and
-				  (> w3m-tab-width 0)
-				  (> (string-width orig) w3m-tab-width))
-				 (concat (truncate-string-to-width
-					  orig
-					  (max 0 (- w3m-tab-width 3)))
-					 "...")
-			       orig) " "))
-	  (setq buffers (cons (list buffer name orig) buffers)))))
-    (setq buffers (sort buffers
-			(lambda (x y)
-			  (< (w3m-pullout-buffer-number (car x))
-			     (w3m-pullout-buffer-number (car y))))))
-    (while buffers
-      (setq line (concat
-		  line
-		  (propertize
-		   (nth 1 (car buffers))
-		   'mouse-face 'highlight
-		   'face (if (eq (car (car buffers))
-				 (current-buffer))
-			     'w3m-tab-selected-face
-			   'w3m-tab-unselected-face)
-		   'local-map (w3m-tab-make-keymap (car (car buffers)))
-		   'help-echo  (nth 2 (car buffers)))))
-      (if (cdr buffers) (setq line (concat line
-					   (propertize
-					    " "
-					    'face 'w3m-tab-background-face))))
-      (setq buffers (cdr buffers)))
-    (setq line
-	  (concat
-	   line
-	   (propertize (make-string (window-width) ?\ )
-		       'face 'w3m-tab-background-face)))
-    line))
+  (let ((current (current-buffer)))
+    (concat
+     (mapconcat
+      (lambda (buffer)
+	(let ((title (w3m-buffer-title buffer)))
+	  (propertize
+	   (concat " "
+		   (if (and (> w3m-tab-width 0)
+			    (> (string-width title) w3m-tab-width))
+		       (concat (truncate-string-to-width
+				title
+				(max 0 (- w3m-tab-width 3)))
+			       "...")
+		     title)
+		   " ")
+	   'mouse-face 'highlight
+	   'face (if (eq buffer current)
+		     'w3m-tab-selected-face
+		   'w3m-tab-unselected-face)
+	   'local-map (w3m-tab-make-keymap buffer)
+	   'help-echo title)))
+      (w3m-list-buffers)
+      (propertize " " 'face 'w3m-tab-background-face))
+     (propertize (make-string (window-width) ?\ )
+		 'face 'w3m-tab-background-face))))
 
 (add-hook 'w3m-mode-hook 'w3m-setup-header-line)
 (add-hook 'w3m-mode-hook 'w3m-setup-widget-faces)

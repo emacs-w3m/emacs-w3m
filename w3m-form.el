@@ -37,6 +37,7 @@
 
 ;;; Code:
 
+(require 'w3m-util)
 (require 'w3m)
 
 (eval-when-compile

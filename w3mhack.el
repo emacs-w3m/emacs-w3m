@@ -97,9 +97,11 @@
 	  (unless (locate-library "mew")
 	    (push (concat shimbun-dir "mew-shimbun.el") ignores)))
       (push "mime-w3m.el" ignores))
-    ;; To byte-compile w3m-macro.el and a version specific module first.
-    (princ "w3m-macro.elc ")
-    (setq modules (delete "w3m-macro.el" modules))
+    ;; To byte-compile w3m-util.el and a version specific module first.
+    (princ "w3m-util.elc ")
+    (setq modules (delete "w3m-util.el" modules))
+    (princ "w3m-proc.elc ")
+    (setq modules (delete "w3m-proc.el" modules))
     (dolist (module version-specific-modules)
       (when (and (not (member module ignores))
 		 (member module modules))

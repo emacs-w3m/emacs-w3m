@@ -46,9 +46,10 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+(require 'w3m-util)
 (require 'w3m)
 (require 'mime)
-(eval-when-compile (require 'cl))
 
 (defcustom mime-w3m-display-inline-images w3m-default-display-inline-images
   "Non-nil means that inline images are displayed."
@@ -106,12 +107,11 @@
 
 (defun mime-w3m-cid-retrieve (url &rest args)
   (let ((entity (mime-find-entity-from-content-id
-		 (mime-uri-parse-cid url) mime-w3m-message-structure)))
+		 (mime-uri-parse-cid url)
+		 (with-current-buffer w3m-current-buffer
+		   mime-w3m-message-structure))))
     (when entity
-      (w3m-with-work-buffer
-       (delete-region (point-min) (point-max))
-       (set-buffer-multibyte nil)
-       (mime-insert-entity-content entity))
+      (mime-insert-entity-content entity)
       (mime-entity-type/subtype entity))))
 
 (push (cons 'mime-view-mode 'mime-w3m-cid-retrieve)
@@ -159,4 +159,5 @@ Protect `kill-ring-save' against the `local-map' text property."
 			    (car kill-ring)))))
 
 (provide 'mime-w3m)
+
 ;;; mime-w3m.el ends here

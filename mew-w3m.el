@@ -197,25 +197,24 @@ This variable effected only XEmacs or Emacs 21."
 (defvar w3m-mew-support-cid (fboundp 'mew-syntax-get-entry-by-cid))
 
 (defun mew-w3m-cid-retrieve (url &rest args)
-  (save-excursion
-    (when (and w3m-mew-support-cid
-	       (string-match "^cid:\\(.+\\)" url))
-      (setq url (match-string 1 url))
-      (let ((fld (mew-current-get-fld (mew-frame-id))))
-	(set-buffer fld)
-	(let* ((msg (mew-current-get-msg (mew-frame-id)))
-	       (cache (mew-cache-hit fld msg 'must-hit))
-	       (syntax (mew-cache-decode-syntax cache))
-	       cidstx beg end)
-	  (setq cidstx (mew-syntax-get-entry-by-cid syntax url))
-	  (when cidstx
-	    (setq beg (mew-syntax-get-begin cidstx))
-	    (setq end (mew-syntax-get-end cidstx))
-	    (w3m-with-work-buffer
-	      (delete-region (point-min) (point-max))
-	      (set-buffer-multibyte nil)
-	      (insert-buffer-substring cache beg end))
-	    (car (mew-syntax-get-ct cidstx))))))))
+  (let ((output-buffer (current-buffer)))
+    (with-current-buffer w3m-current-buffer
+      (when (and w3m-mew-support-cid
+		 (string-match "^cid:\\(.+\\)" url))
+	(setq url (match-string 1 url))
+	(let ((fld (mew-current-get-fld (mew-frame-id))))
+	  (set-buffer fld)
+	  (let* ((msg (mew-current-get-msg (mew-frame-id)))
+		 (cache (mew-cache-hit fld msg 'must-hit))
+		 (syntax (mew-cache-decode-syntax cache))
+		 cidstx beg end)
+	    (setq cidstx (mew-syntax-get-entry-by-cid syntax url))
+	    (when cidstx
+	      (setq beg (mew-syntax-get-begin cidstx))
+	      (setq end (mew-syntax-get-end cidstx))
+	      (with-current-buffer output-buffer
+		(insert-buffer-substring cache beg end))
+	      (car (mew-syntax-get-ct cidstx)))))))))
 
 (push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
       w3m-cid-retrieve-function-alist)

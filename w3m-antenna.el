@@ -1,4 +1,4 @@
-;;; w3m-antenna.el --- Utility to detect changes of WEB.
+;;; w3m-antenna.el --- Utility to detect changes of WEB
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -43,6 +43,7 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl))
+(require 'w3m-util)
 (require 'w3m)
 
 (defgroup w3m-antenna nil
@@ -190,8 +191,8 @@ whose elements are:
     (setq w3m-antenna-alist nil)))
 
 (defun w3m-antenna-hns-last-modified (url &optional no-cache)
-  (when (w3m-retrieve (w3m-expand-url "di.cgi" url) nil no-cache)
-    (w3m-with-work-buffer
+  (with-temp-buffer
+    (when (w3m-retrieve (w3m-expand-url "di.cgi" url) nil no-cache)
       (let (start str)
 	(or
 	 ;; Process a line such as "Tue, 27 Mar 2001 12:43:16 GMT<br>".
@@ -226,8 +227,8 @@ whose elements are:
 (defun w3m-antenna-size (url class &optional no-cache)
   (unless (memq class '(hns time))
     (or (w3m-content-length url no-cache)
-	(let ((type (w3m-retrieve url nil no-cache)))
-	  (w3m-with-work-buffer
+	(with-temp-buffer
+	  (let ((type (w3m-retrieve url nil no-cache)))
 	    (w3m-decode-buffer url nil type)
 	    (w3m-remove-comments)
 	    (when w3m-use-filter
@@ -331,12 +332,9 @@ whose elements are:
 				 (w3m-antenna-site-url site)))
 	      (push site changed)
 	    (push site unchanged)))
-	(w3m-with-work-buffer
-	  (delete-region (point-min) (point-max))
-	  (set-buffer-multibyte t)
-	  (w3m-antenna-make-contents
-	   (funcall w3m-antenna-sort-changed-sites-function (nreverse changed))
-	   (funcall w3m-antenna-sort-unchanged-sites-function (nreverse unchanged))))
+	(w3m-antenna-make-contents
+	 (funcall w3m-antenna-sort-changed-sites-function (nreverse changed))
+	 (funcall w3m-antenna-sort-unchanged-sites-function (nreverse unchanged)))
 	(w3m-antenna-shutdown)
 	"text/html")
     (setq w3m-antenna-alist nil)))
@@ -369,4 +367,5 @@ Optional argument TITLE is title of link."
   (backward-char 2))
 
 (provide 'w3m-antenna)
-;;; w3m-antenna.el ends here.
+
+;;; w3m-antenna.el ends here

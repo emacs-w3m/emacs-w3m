@@ -415,7 +415,7 @@
 	     (setq area (substring url (match-end 0))
 		   furl (nth 2 (assoc area w3m-weather-completion-table)))
 	     (w3m-retrieve furl nil no-cache))
-	(w3m-with-work-buffer
+	(inline
 	  (w3m-decode-buffer furl)
 	  (run-hook-with-args 'w3m-weather-filter-functions area furl)
 	  "text/html")

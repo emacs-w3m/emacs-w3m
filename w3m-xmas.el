@@ -1,4 +1,4 @@
-;;; w3m-xmas.el --- The stuffs to use emacs-w3m on XEmacs.
+;;; w3m-xmas.el --- The stuffs to use emacs-w3m on XEmacs
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -35,7 +35,8 @@
 
 ;;; Code:
 
-(require 'w3m-macro)
+(require 'w3m-util)
+(require 'w3m-proc)
 
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
@@ -234,23 +235,25 @@ new glyph image.  See also the documentation for the variable
       ;; Use a cached glyph.
       (cdr cache))))
 
-(defun w3m-create-image (url &optional no-cache referer)
+(defun w3m-create-image (url &optional no-cache referer handler)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used.
 If second optional argument REFERER is non-nil, it is used as Referer: field."
-  (let ((type (condition-case err
+  (if (not handler)
+      (w3m-process-with-wait-handler
+	(w3m-create-image url no-cache referer handler))
+    (w3m-process-do-with-temp-buffer
+	(type (condition-case err
 		  (w3m-retrieve url 'raw no-cache nil referer)
-		(error
-		 (message "While retrieving %s: %s" url err)
-		 nil))))
-    (when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-      (let ((data (w3m-with-work-buffer (buffer-string))))
-	(or (and (eq type 'gif)
-		 (or w3m-should-unoptimize-animated-gifs
-		     w3m-should-convert-interlaced-gifs)
-		 w3m-gifsicle-program
-		 (w3m-fix-gif url data no-cache))
-	    (make-glyph (vector type :data data)))))))
+		(error (message "While retrieving %s: %s" url err) nil)))
+      (when (w3m-image-type-available-p (setq type (w3m-image-type type)))
+	(let ((data (buffer-string)))
+	  (or (and (eq type 'gif)
+		   (or w3m-should-unoptimize-animated-gifs
+		       w3m-should-convert-interlaced-gifs)
+		   w3m-gifsicle-program
+		   (w3m-fix-gif url data no-cache))
+	      (make-glyph (vector type :data data))))))))
 
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.

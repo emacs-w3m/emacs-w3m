@@ -114,25 +114,20 @@
 Return content-type of URL as string when retrieval succeeded."
   (let (type)
     (when (and url (setq type (w3m-retrieve url no-decode no-cache)))
-      (w3m-with-work-buffer
-	(unless no-decode
-	  (w3m-decode-buffer url)))
-      (unless (eq (current-buffer)
-		  (get-buffer w3m-work-buffer-name))
-	(when no-decode
-	  (set-buffer-multibyte nil))
-	(insert-buffer w3m-work-buffer-name)))
-    type))
+      (unless no-decode
+	(w3m-decode-buffer url))
+      type)))
 
 (defun shimbun-retrieve-url-buffer (url &optional no-cache no-decode)
   "Return a buffer which contains the URL contents."
-  (if (and url (w3m-retrieve url no-decode no-cache))
-      (w3m-with-work-buffer
-	(unless no-decode
-	  (w3m-decode-buffer url))
-	(current-buffer))
-    (with-current-buffer (get-buffer w3m-work-buffer-name)
-      (erase-buffer)
+  (with-current-buffer (get-buffer-create " *shimbun-work*")
+    (erase-buffer)
+    (if (and url (w3m-retrieve url no-decode no-cache))
+	(inline
+	  (unless no-decode
+	    (w3m-decode-buffer url))
+	  (current-buffer))
+      (delete-region (point-min) (point-max))
       (current-buffer))))
 
 (defalias 'shimbun-content-type 'w3m-content-type)
