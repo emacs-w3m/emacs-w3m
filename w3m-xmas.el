@@ -40,7 +40,7 @@
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
 (eval-when-compile
-  (defvar w3m-current-image-status)
+  (defvar w3m-display-inline-images)
   (defvar w3m-current-url)
   (defvar w3m-current-title)
   (defvar w3m-default-coding-system)
@@ -86,10 +86,10 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 ;; show images inline.
 (defalias 'w3m-display-graphic-p 'device-on-window-system-p)
 
-(defun w3m-display-inline-image-p ()
+(defun w3m-display-inline-images-p ()
   "Returns non-nil when images can be displayed under the present
 circumstances."
-  (and w3m-current-image-status (device-on-window-system-p)))
+  (and w3m-display-inline-images (device-on-window-system-p)))
 
 (defvar w3m-should-unoptimize-animated-gifs
   (and (= emacs-major-version 21)

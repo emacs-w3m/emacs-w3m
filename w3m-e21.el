@@ -44,7 +44,7 @@
 (eval-when-compile
   (defvar w3m-current-url)
   (defvar w3m-current-title)
-  (defvar w3m-current-image-status)
+  (defvar w3m-display-inline-images)
   (defvar w3m-icon-directory)
   (defvar w3m-mode-map)
   (defvar w3m-toolbar)
@@ -77,10 +77,10 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 ;; show images inline.
 (defalias 'w3m-display-graphic-p 'display-images-p)
 
-(defun w3m-display-inline-image-p ()
+(defun w3m-display-inline-images-p ()
   "Returns non-nil when images can be displayed under the present
 circumstances."
-  (and w3m-current-image-status (display-images-p)))
+  (and w3m-display-inline-images (display-images-p)))
 
 (defun w3m-create-image (url &optional no-cache referer)
   "Retrieve data from URL and create an image object.

@@ -369,8 +369,24 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-display-inline-image nil
-  "Whether to display images inline."
+(defvar w3m-display-inline-images nil
+  "Non-nil means images are displayed inline in the w3m buffer.
+This variable is buffer-local which defaults to the value of
+`w3m-default-display-inline-images'.
+You should not set it directly; You can toggle the value of this variable by
+using the command \\<w3m-mode-map>`\\[w3m-toggle-inline-images]'.")
+(make-variable-buffer-local 'w3m-display-inline-images)
+
+(defcustom w3m-default-display-inline-images nil
+  "Default value of `w3m-display-inline-images' for buffers not overriding it."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-toggle-inline-images-permanently t
+  "*If nil, apply the value of `w3m-default-display-inline-images' to
+`w3m-display-inline-images' in the current w3m buffer when you visit a
+new page for each time.  Otherwise, the value of
+`w3m-display-inline-images' won't be changed."
   :group 'w3m
   :type 'boolean)
 
@@ -866,9 +882,6 @@ encoded in the optimized animated gif format and base64.")
 
 (defvar w3m-image-only-page nil "Non-nil if image only page.")
 (make-variable-buffer-local 'w3m-image-only-page)
-
-(defvar w3m-current-image-status w3m-display-inline-image)
-(make-variable-buffer-local 'w3m-current-image-status)
 
 (defvar w3m-current-base-url nil "Base URL of this buffer.")
 (defvar w3m-current-forms nil "Forms of this buffer.")
@@ -1922,6 +1935,9 @@ If URL is specified, only the image with URL is toggled."
 	    (w3m-add-text-properties beg end '(w3m-image-status off))))))))
 
 (defun w3m-toggle-inline-image (&optional force no-cache)
+  "Toggle displaying of inline image on cursor point.
+If FORCE is non-nil, image displaying is forced.
+If NO-CACHE is non-nil, cache is not used."
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
@@ -1936,19 +1952,22 @@ If URL is specified, only the image with URL is toggled."
       (message "No image at point"))))
 
 (defun w3m-toggle-inline-images (&optional force no-cache)
+  "Toggle displaying of inline images on current buffer.
+If FORCE is non-nil, image displaying is forced.
+If NO-CACHE is non-nil, cache is not used."
   (interactive "P")
-  (unless (w3m-display-graphic-p)
-    (error "Can't display images in this environment"))
-  (if force (setq w3m-current-image-status nil))
-  (unwind-protect
-      (progn
-	(w3m-toggle-inline-images-internal (if w3m-current-image-status
+  (let ((status w3m-display-inline-images))
+    (unless (w3m-display-graphic-p)
+      (error "Can't display images in this environment"))
+    (if force (setq w3m-display-inline-images nil
+		    status nil))
+    (unwind-protect
+	(w3m-toggle-inline-images-internal (if w3m-display-inline-images
 					       'on 'off)
 					   no-cache nil)
-	(setq w3m-current-image-status
-	      (not w3m-current-image-status)))
-    (set-buffer-modified-p nil)
-    (force-mode-line-update)))
+      (setq w3m-display-inline-images (not status))
+      (set-buffer-modified-p nil)
+      (force-mode-line-update))))
 
 (defun w3m-decode-entities (&optional reserve-prop)
   "Decode entities in the current buffer.
@@ -3481,7 +3500,7 @@ session."
   "View this URL."
   (interactive)
   (let ((url (or (w3m-anchor)
-		 (unless w3m-current-image-status
+		 (unless w3m-display-inline-images
 		   (w3m-image))
 		 (when (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
 		   w3m-current-url))))
@@ -3644,11 +3663,15 @@ If EMPTY is non-nil, the created buffer has empty content."
     (let ((ptmin (point-min))
 	  (ptmax (point-max))
 	  (url w3m-current-url)
+	  (images w3m-display-inline-images)
 	  (mode major-mode)
 	  (lvars (buffer-local-variables))
 	  (new (generate-new-buffer newname)))
       (with-current-buffer new
 	(funcall mode)			;still needed??  -sm
+	(if w3m-toggle-inline-images-permanently
+	    (setq w3m-display-inline-images images)
+	  (setq w3m-display-inline-images w3m-default-display-inline-images))
 	(unless empty (w3m-goto-url url))
 	(dolist (v lvars)
 	  (cond ((not (consp v))
@@ -4049,7 +4072,8 @@ Return t if deleting current frame or window is succeeded."
   (setq major-mode 'w3m-mode)
   (setq mode-name "w3m")
   (use-local-map w3m-mode-map)
-  (setq truncate-lines t)
+  (setq truncate-lines t
+	w3m-display-inline-images w3m-default-display-inline-images)
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (when w3m-use-tab-menubar (w3m-setup-tab-menu))
@@ -4201,7 +4225,7 @@ field for this request."
     (setq mode-line-buffer-identification (list "%b"))
     (if (w3m-display-graphic-p)
 	(nconc mode-line-buffer-identification
-	       (list " " '((w3m-current-image-status
+	       (list " " '((w3m-display-inline-images
 			    w3m-modeline-image-status-on
 			    w3m-modeline-image-status-off)))))
     (nconc mode-line-buffer-identification
@@ -4270,7 +4294,9 @@ field for this request."
 				      nil nil t)
 	  (or (and name (w3m-search-name-anchor name))
 	      (goto-char (point-min)))
-	  (cond ((w3m-display-inline-image-p)
+	  (unless w3m-toggle-inline-images-permanently
+	    (setq w3m-display-inline-images w3m-default-display-inline-images))
+	  (cond ((w3m-display-inline-images-p)
 		 (and w3m-force-redisplay (sit-for 0))
 		 (w3m-toggle-inline-images 'force reload))
 		((and (w3m-display-graphic-p)
@@ -4376,7 +4402,7 @@ If input is nil, use default coding-system on w3m."
 	  t ;; Default action is reseting charset entry in arrived DB.
 	  )))
     (when arg
-      (setq w3m-current-image-status (not w3m-current-image-status)))
+      (setq w3m-display-inline-images (not w3m-display-inline-images)))
     (w3m-goto-url w3m-current-url nil charset)))
 
 
@@ -4502,7 +4528,7 @@ ex.) c:/dir/file => //c/dir/file"
 	  w3m-current-base-url url
 	  w3m-current-title (w3m-rendering-multibyte-buffer))
     (w3m-fontify)
-    (when (w3m-display-inline-image-p)
+    (when (w3m-display-inline-images-p)
       (and w3m-force-redisplay (sit-for 0))
       (w3m-toggle-inline-images 'force))))
 

@@ -1,3 +1,48 @@
+2001-11-12  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* mew-w3m.el (mew-mime-text/html-w3m): Bind `w3m-display-inline-images'
+	instead of `w3m-current-image-status'.
+
+	* mime-w3m.el (mime-w3m-display-inline-images): Renamed from
+	`mime-w3m-display-inline-image'.
+	(mime-w3m-preview-text/html): Follow the change above;
+	Bind `w3m-display-inline-images' instead of `w3m-current-image-status'.
+
+	* w3m-xmas.el (w3m-display-inline-images-p): Renamed from
+	`w3m-display-inline-image-p'; Refer `w3m-display-inline-images'
+	instead of `w3m-current-image-status'.
+
+	* w3m-e21.el (w3m-display-inline-images-p): Renamed from
+	`w3m-display-inline-image-p'; Refer `w3m-display-inline-images'
+	instead of `w3m-current-image-status'.
+
+	* w3m.el (w3m-display-inline-image): Abolish.
+	(w3m-current-image-status): Ditto.
+	(w3m-display-inline-images): New buffer local variable.
+	(w3m-default-display-inline-images): New user option.
+	(w3m-toggle-inline-images-permanently): Ditto.
+	(w3m-toggle-inline-image): Added docstring.
+	(w3m-toggle-inline-images): Ditto;
+	Refer `w3m-display-inline-images' instead of
+	`w3m-current-image-status'.
+	(w3m-view-url-with-external-browser): Ditto.
+	(w3m-goto-url): Ditto.
+	(w3m-toggle-inline-images): Change the value of
+	`w3m-display-inline-images' even when displaying images is not
+	completed.
+	(w3m-copy-buffer): Set `w3m-display-inline-images' according to
+	`w3m-toggle-inline-images-permanently'.
+	(w3m-mode): Set value of `w3m-display-inline-images'
+	according to `w3m-default-display-inline-images'.
+	(w3m-goto-url):  Set `w3m-display-inline-images' according to
+	`w3m-toggle-inline-images-permanently';
+	Use `w3m-display-inline-images-p' instead of
+	`w3m-display-inline-image-p'.
+	(w3m-redisplay-with-charset): Use `w3m-display-inline-images'
+	instead of `w3m-display-inline-image'.
+	(w3m-region): Use `w3m-display-inline-images-p' instead of
+	`w3m-display-inline-image-p'.
+
 2001-11-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (Top): Abolished autoload of `w3m-setup-tab'.
@@ -29,7 +74,7 @@
 
 	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
 	`w3m-tabmenu.el' when XEmacs.
-	
+
 2001-11-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-expand-url): Remove the last segment of the base URL
