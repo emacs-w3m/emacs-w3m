@@ -49,6 +49,8 @@
   "Return OBJ if it is a coding-system."
   (if (coding-system-p obj) obj))
 
+(defalias 'w3m-expand-path-name 'expand-file-name)
+
 (provide 'w3m-e20)
 
 ;;; w3m-e20.el ends here.

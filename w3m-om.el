@@ -182,6 +182,34 @@ as the value."
 
 (eval-after-load "wid-edit" '(w3m-om-define-missing-widgets))
 
+;; `expand-file-name' of mule 2 expands non-initial "~".
+(defun w3m-expand-path-name (name)
+  "Convert path string NAME to the canonicalized one."
+  (with-temp-buffer
+    (insert name)
+    (let (p q path)
+      (goto-char (point-min))
+      (save-match-data
+	(while (search-forward "/" nil t)
+	  (setq p (match-beginning 0)
+		q (match-end 0))
+	  (if (search-forward "/" nil t)
+	      (goto-char (match-beginning 0))
+	    (goto-char (point-max)))
+	  (setq path (buffer-substring q (point)))
+	  (cond
+	   ((string= path ".")
+	    (delete-region q (if (eobp) (point) (match-end 0))))
+	   ((string= path "..")
+	    (setq q (point))
+	    (when (search-backward "/" nil t)
+	      (search-backward "/" nil t)
+	      (delete-region (match-end 0) q)))
+	   ((eq (length path) 0)
+	    (unless (eobp) (delete-region p (point))))))
+	(setq path (buffer-string)))
+      (if (eq (length path) 0) "/" path))))
+
 (provide 'w3m-om)
 
 ;;; w3m-om.el ends here

@@ -374,6 +374,8 @@ as the value."
       (unless (eolp)
 	(insert "\n")))))
 
+(defalias 'w3m-expand-path-name 'expand-file-name)
+
 (provide 'w3m-xmas)
 
 ;;; w3m-xmas.el ends here.

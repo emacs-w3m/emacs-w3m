@@ -1,3 +1,17 @@
+2001-09-17  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-expand-url): Use `w3m-expand-path-name' instead of
+	`expand-file-name'.
+
+	* w3m-om.el (w3m-expand-path-name): New function.
+
+	* w3m-e20.el (w3m-expand-path-name): New alias.
+
+	* w3m-xmas.el (w3m-expand-path-name): Ditto.
+
+	* w3m-e21.el (w3m-expand-path-name): Ditto.
+
+
 2001-09-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-search.el (w3m-search-engine-alist): Changed default value
