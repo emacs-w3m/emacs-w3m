@@ -1,5 +1,19 @@
 2001-03-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-hist.el (w3m-history-push): Rewrite for following the change
+	of `w3m-url-history'.
+	(w3m-history-assoc): Ditto.
+	(w3m-history-backward): Ditto.
+	(w3m-history-forward): Ditto.
+	(w3m-history-current): Ditto.
+	(w3m-history-current-1): New macro.
+	(w3m-history-next-link-available-p): New function.
+	(w3m-history-previous-link-available-p): New function.
+	(w3m-url-history): Make it to have the previous and the next
+	position pointers.
+
+2001-03-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-hist.el (w3m-history-push): New function.
 
 2001-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
