@@ -115,7 +115,7 @@ Basic Usage
 * Inline Images::               Toggle displaying inline images
 * Tracing History::             Going back through time and space
 * Managing Bookmarks::          That's a favorite with me!
-* Using Tabs::                  This is the tab browser of fashion
+* Using Tabs::                  Everybody likes tabs
 * Working with buffers::        Creating, killing and moving across buffers
 * Downloading::                 Downloading a file
 * Submitting Forms::            Filling in HTML forms
@@ -1187,13 +1187,14 @@ Undo the last changes (@code{w3m-bookmark-undo}).
 @section Everybody likes tabs
 
 Unlike most other text-based browsers, emacs-w3m has support for tabbed
-browsing.  What is tabbed browsing, you might ask?  It's very simple: it
-is a way to represent all active emacs-w3m buffers in a single window,
-by showing a line at the top which shows all the buffers in a simple and
-self-explaining way, each buffer being shown as a ``tab''.  This line
-stays visible all the time and does not scroll with the rest of the
-buffer, so that you can switch to another buffer, or use the feedback it
-provides at any moment.
+browsing@footnote{It's nobody's fault but Emacs 19 or 20 users cannot
+use tabs.}.  What is tabbed browsing, you might ask?  It's very simple:
+it is a way to represent all active emacs-w3m buffers in a single
+window, by showing a line at the top which shows all the buffers in a
+simple and self-explaining way, each buffer being shown as a ``tab''.
+This line stays visible all the time and does not scroll with the rest
+of the buffer, so that you can switch to another buffer, or use the
+feedback it provides at any moment.
 
 The easiest way to get the feeling of it is to just try, so go on and
 open an emacs-w3m session.  If you didn't change anything to the
@@ -1210,14 +1211,18 @@ click.
 
 Another nifty feature is the feedback it provides.  If you are on a
 color terminal or window system, emacs-w3m shows the text in the tab in
-different colors to show the status of the page.  For example, when the
-page is being loaded, the text is in red, and goes back to its default
-color (usually black) when the loading is complete.  This way you can
-tell with a single glance at the tabs line if the page you're awaiting
-for has arrived or not.
+different colors to show the status of the page@footnote{Although XEmacs
+shows all tabs in the same colors at every moment, you can easily
+distinguish the selected tab and others and see the status of the
+current page in the modeline.}.  For example, when the page is being
+loaded, the text is in red, and goes back to its default color (usually
+black) when the loading is complete.  This way you can tell with a
+single glance at the tabs line if the page you're awaiting for has
+arrived or not.
 
 Finally, if the web page provides a favicon, it will be shown in the
-tab as well.  More eye-candy for the emacs-w3m user!
+tab as well@footnote{Under XEmacs, favicons will currently not be shown
+in the tabs line.}.  More eye-candy for the emacs-w3m user!
 
 User options:
 
@@ -1276,7 +1281,7 @@ Close all emacs-w3m buffers, but the active one
 (@code{w3m-delete-other-buffers}).
 @end table
 
-@node Moving across buffers 
+@node Moving across buffers
 @subsection Moving across buffers
 
 The commands you will problably use most often are those who allow you
@@ -1312,7 +1317,7 @@ you might find what you need in ``generalist'' buffer management
 packages such as ibuffer or iswitchb---since emacs-w3m buffers are
 regular Emacs buffers, they will work fine too.
 
-@node Selecting buffers 
+@node Selecting buffers
 @subsection Selecting buffers from a list
 
 There are two ways to select emacs-w3m buffers from a list.  The first
@@ -2112,7 +2117,7 @@ You simply need to put the following line in @file{~/.emacs} file:
 
 The @code{mime-w3m} and @code{mime-w3} modules are functionally alike,
 as you might have guessed (see how the names rhyme?).  The latter is
-included in the @sc{semi} package
+included in the @sc{semi} package.
 
 On HTML parts of an article buffer, the @code{w3m-minor-mode} is turned
 on and you can use the same main keys as the keys of emacs-w3m, for
@@ -2169,11 +2174,11 @@ from web sites around the world and to read them as if you were reading
 mail messages.
 
 More and more newspapers, mailing list archives, bulletin boards, and
-individual diaries (weblogs or blogs) are open to the public through the
-web.  The @samp{shimbun} library currently supports Asahi Shimbun,
-Yomiuri On-line, Emacs Devel, XEmacs Beta, mailing lists for Gnus, Mew,
-Wanderlust, etc., the Japanese Prime Minister Koizumi's mail magazine,
-Slashdot Japan, and a lot of others.
+individual diaries (hyper nikki system, weblogs or blogs) are open to
+the public through the web.  The @samp{shimbun} library currently
+supports Asahi Shimbun, Yomiuri On-line, Emacs Devel, XEmacs Beta,
+mailing lists for Gnus, Mew, Wanderlust, etc., the Japanese Prime
+Minister Koizumi's mail magazine, Slashdot Japan, and a lot of others.
 
 Note that you need to have installed the @sc{flim} package (and Gnus if
 you'd like to use @samp{nnshimbun}) before building and installing
@@ -2192,14 +2197,14 @@ might also want to see @xref{Other Requirements}.
 @cindex nnshimbun
 @cindex Web Newspaper
 
-@samp{Nnshimbun} is a Gnus backend, but it is distributed with
+@samp{Nnshimbun} is a Gnus back end, but it is distributed with
 emacs-w3m, not Gnus, exceptionally.  @samp{Nnshimbun} allows you to turn
 Gnus into an exceptionally useful web browser.  You can skim through the
 articles on a newspaper's web server without having to see all the
 advertisement.  You can read articles in mailing list archives as if you
 were subscribed to the list.  You can also read submissions in bulletin
 boards, etc...  Note that if you want to followup, you still need to use
-emacs-w3m as Gnus can't post via the web with nnshimbun.
+emacs-w3m as Gnus can't post via the web with @samp{nnshimbun}.
 
 Put the following line in your @file{~/.gnus.el} file:
 
@@ -2250,7 +2255,7 @@ gnus-group-make-shimbun-group}.
 displays them as an article, but it will never save articles in the
 local file system, except if you use persistent articles
 (@pxref{(gnus)Persistent Articles}).  @samp{Nnshimbun} uses @sc{nov}
-files for each @samp{nnshimbun} group, and its backend is almost the
+files for each @samp{nnshimbun} group, and its back end is almost the
 same as @samp{nnml}.
 
 The following @samp{nnshimbun} variables can be customized:
@@ -2276,12 +2281,6 @@ can be different for every group).  Here's an example:
 '(index-range all prefetch-articles off encapsulate-images on
               expiry-wait 6)
 @end lisp
-
-@noindent
-@c FIXME: What could be the meaning of this?  :)
-@c Actually, a Lisp object with which the @code{nnshimbun-group-parameters}
-@c symbol is added to the forefront of such a list will be used (and it
-@c will also be saved in the @file{~/.newsrc.eld} file).
 
 Below is the documentation for those group parameters and related
 variables.
@@ -2404,8 +2403,8 @@ to read, eyes filled with tears, articles which you thought long gone.
 
 You can mark @samp{nnshimbun} articles as expirable and specify the
 expiry period in each @samp{nnshimbun} group as well as the other mail
-backends.  However, there are a little differences between
-@samp{nnshimbun} and the other mail backends:
+back ends.  However, there are a little differences between
+@samp{nnshimbun} and the other mail back ends:
 
 @itemize @bullet
 @item
@@ -2432,9 +2431,9 @@ The value of the @code{nnmail-expiry-wait} variable.
 @item
 Second of all, the argument to be passed to the function specified by
 the @code{nnmail-expiry-wait-function} variable will contain the names
-of the backend and the server like ``nnshimbun+asahi:national'', while
+of the back end and the server like ``nnshimbun+asahi:national'', while
 only the group name will be given in the case of the other mail
-backends.  Here's an example:
+back ends.  Here's an example:
 
 @lisp
 (setq nnmail-expiry-wait-function
@@ -2479,12 +2478,12 @@ the group buffer) and to realize managing collectively by the
 prepared the answer to the question that why @code{auto-expire}
 etc. aren't included in the nnshimbun's special group parameter?  The
 answer is, @code{expiry-wait} is handled by the @samp{nnshimbun}
-backend, but @code{auto-expire} is handled by the Gnus core.  Therefore,
-it is contrary to the design policy of Gnus to extend the Gnus core
-functions so that it may work for one particular backend (i.e. reading a
-value from the nnshimbun's special group parameter).}.  The values which
-can be used are a number of expiry period, @code{never} or
-@code{immediate} as well as the standard group parameter.
+back end, but @code{auto-expire} is handled by the Gnus core.
+Therefore, it is contrary to the design policy of Gnus to extend the
+Gnus core functions so that it may work for one particular back end
+(i.e. reading a value from the nnshimbun's special group parameter).}.
+The values which can be used are a number of expiry period, @code{never}
+or @code{immediate} as well as the standard group parameter.
 
 @item nnshimbun-keep-unparsable-dated-articles
 @vindex nnshimbun-keep-unparsable-dated-articles
@@ -2747,12 +2746,12 @@ read @samp{shimbun} by just accessing a folder beginning with @samp{@@}
 @cindex Subscribing to the emacs-w3m mailing list
 @cindex Reporting bugs
 
-We have set up a mailing list to discuss all things Emacs-w3m. You can
+We have set up a mailing list to discuss all things emacs-w3m.  You can
 post without subscribing.  If you find a bug, have a feature request, or
 have written some code, don't hesitate to post to the list.  And if
 you're just a user and like the program, please tell us too!
 
-The address is: 
+The address is:
 
 @display
 Emacs-w3m Mailing List @t{<emacs-w3m@@namazu.org>}
