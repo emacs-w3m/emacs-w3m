@@ -844,7 +844,7 @@ integer n:    Retrieve n pages of header indices.")
   (if html
       (concat "\n<p align=\"left\">\n-- <br>\nこの記事の著作権は、"
 	      (shimbun-server-name shimbun)
-	      "社に帰属します。\n原物は <a href=\""
+	      "社に帰属します。<br>\n原物は <a href=\""
 	      (shimbun-header-xref header) "\">"
 	      (shimbun-header-xref header)
 	      "</a> で公開されています。\n</p>\n")
