@@ -4945,9 +4945,9 @@ lotusex.tips lotusex.practical lotusex.qanda lotusex.lounge
 lotusex.bbs
 
 @item @uref{http://www.atmarkit.co.jp, @@IT forum}
-atmarkit.fwin2k atmarkit.fdotnet atmarkit.fsys atmarkit.fxml
-atmarkit.flinux atmarkit.fnetwork atmarkit.fjava
-atmarkit.fsecurity atmarkit.fbiz atmarkit.jibun
+atmarkit.news atmarkit.fwin2k atmarkit.fdotnet atmarkit.fsys atmarkit.fxml
+atmarkit.fdb atmarkit.flinux atmarkit.fnetwork atmarkit.fjava
+atmarkit.fsecurity atmarkit.farc atmarkit.fbiz atmarkit.jibun
 
 @item @uref{http://www.matsusaka-u.ac.jp/~okumura/texfaq/qa/, TeX Q&A Bulletin Board}
 texfaq.qanda
