@@ -47,6 +47,9 @@
 ;;; Code:
 (require 'w3m)
 
+(eval-and-compile
+  (autoload 'w3m-search-read-query "w3m-search"))
+
 (defgroup w3m-namazu nil
   "w3m-namazu front-end for Emacs."
   :group 'w3m
@@ -246,14 +249,15 @@ argument."
 			    w3m-namazu-default-index))
 	       (s (completing-read
 		   (if default
-		       (format "Namazu Index (default %s): " default)
-		     "Namazu Index: ")
+		       (format "Namazu index (default %s): " default)
+		     "Namazu index: ")
 		   'w3m-namazu-complete-index nil t nil
 		   'w3m-namazu-index-history)))
 	  (if (string= s "") default s))
       (or w3m-namazu-default-index
 	  (car w3m-namazu-index-history)))
-    (read-string "Namazu Query: " nil 'w3m-namazu-query-history)))
+    (w3m-search-read-query "Namazu query: " "Namazu query (default %s): "
+			   'w3m-namazu-query-history)))
   (unless (stringp index)
     (error "%s" "Index is required"))
   (unless (stringp query)

@@ -1,3 +1,11 @@
+2004-01-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-namazu.el (w3m-namazu): Use `w3m-search-read-query' to read
+	a query from the minibuffer.
+
+	* w3m-search.el (w3m-search-read-query): New function.
+	(w3m-search): Use the above function.
+
 2004-01-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-search.el (w3m-search): Use the region as an initial string

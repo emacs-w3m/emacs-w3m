@@ -151,6 +151,30 @@ as an initial string."
    (split-string str)
    "+"))
 
+(defun w3m-search-read-query (prompt prompt-with-default &optional history)
+  "Read a query from the minibuffer, prompting with string PROMPT.
+When a default value for the query is discovered, prompt with string
+PROMPT-WITH-DEFAULT instead of string PROMPT."
+  (let ((default
+	  (if (and transient-mark-mode mark-active)
+	      (buffer-substring (mark) (point))
+	    (unless (eq (get-text-property (line-beginning-position) 'face)
+			'w3m-header-line-location-title-face)
+	      (thing-at-point 'word))))
+	(initial))
+    (when default
+      (set-text-properties 0 (length default) nil default))
+    (when (or w3m-search-word-at-point
+	      (and transient-mark-mode mark-active))
+      (setq initial default
+	    default nil))
+    (when mark-active
+      (deactivate-mark))
+    (read-string (if default
+		     (format prompt-with-default default)
+		   prompt)
+		 initial history default)))
+
 ;;;###autoload
 (defun w3m-search (search-engine query)
   "Search QUERY using SEARCH-ENGINE.
@@ -163,33 +187,16 @@ and deactivate the mark."
    (let ((engine
 	  (if current-prefix-arg
 	      (let ((completion-ignore-case t))
-		(completing-read
-		 (format "Which Engine? (%s): " w3m-search-default-engine)
-		 w3m-search-engine-alist nil t))
-	    w3m-search-default-engine))
-	 (default
-	   (if (and transient-mark-mode mark-active)
-	       (prog1 (buffer-substring (mark) (point))
-		 (deactivate-mark))
-	     (unless (eq (get-text-property (line-beginning-position) 'face)
-			 'w3m-header-line-location-title-face)
-	       (thing-at-point 'word))))
-	 initial)
-     (when default
-       (set-text-properties 0 (length default) nil default))
-     (when (or w3m-search-word-at-point
-	       (and transient-mark-mode mark-active))
-       (setq initial default
-	     default nil))
-     (setq query
-	   (read-string (if default
-			    (format "%s search (default %s): " engine default)
-			  (format "%s search: " engine))
-			initial nil default))
-     (list (if (string= engine "")
-	       w3m-search-default-engine
-	     engine)
-	   query)))
+		(completing-read (format "Which engine? (default %s): "
+					 w3m-search-default-engine)
+				 w3m-search-engine-alist nil t))
+	    w3m-search-default-engine)))
+     (when (string= engine "")
+       (setq engine w3m-search-default-engine))
+     (list engine
+	   (w3m-search-read-query
+	    (format "%s search: " engine)
+	    (format "%s search (default %%s): " engine)))))
   (unless (string= query "")
     (let ((info (assoc search-engine w3m-search-engine-alist)))
       (if info
