@@ -1094,7 +1094,7 @@ it's a miracle                                            2003-01-06
 You can get this history by passing a prefix argument to the previous
 command, i.e. using @kbd{C-u s}.  The number of URLs showed in this page
 is customizable, see the @code{w3m-keep-arrived-urls} variable.  It
-cannot exceed 500.  @xref{Customizable Variables}.
+cannot exceed 500 by default.  @xref{Customizable Variables}.
 
 Of course, in all cases all the lines showed in the examples are links,
 you can go to any of the pages you visited previously just like if you
