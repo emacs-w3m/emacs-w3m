@@ -207,6 +207,9 @@
   :group 'w3m
   :type 'boolean)
 
+(defconst w3m-extended-charcters-table
+  '(("\xa0" . " ")))
+  
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
 (defvar w3m-url-history nil "History of URL.")
@@ -378,6 +381,16 @@ and 'w3m-arrived-ct-file'."
 		      (if (match-beginning 5) "&"
 			(if (match-beginning 6) "\"" "'"))))))
 	(if prop (add-text-properties (1- (point)) (point) prop))))
+    ;; Decode w3m-specific extended charcters.
+    (let ((x enable-multibyte-characters)
+	  (table w3m-extended-charcters-table))
+      (set-buffer-multibyte nil)
+      (while table
+	(while (search-forward (car (car table)) nil t)
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (insert (cdr (car table))))
+	(setq table (cdr table)))
+      (set-buffer-multibyte x))
     (run-hooks 'w3m-fontify-after-hook)))
 
 
