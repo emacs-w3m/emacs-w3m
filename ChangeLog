@@ -1,3 +1,8 @@
+2004-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-antenna.el (w3m-antenna-function): New widget.
+	(w3m-antenna-sites): Use it.
+
 2004-02-20  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-expand-path-name): Protect expand-file-name from
@@ -10,6 +15,7 @@
 
 	* w3m-antenna.el (w3m-antenna-sites): Fix mis-implemented
 	customizing widgets in Emacs 20.7 through 21.3 and XEmacs.
+	(w3m-antenna-add): Support Emacs 20.
 
 	* w3m-util.el (widget-default-get): Remove advice.
 

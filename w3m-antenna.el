@@ -1,6 +1,7 @@
 ;;; w3m-antenna.el --- Utility to detect changes of WEB
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -71,6 +72,27 @@ with :default-value-from."
 		    value)))
   (widget-default-create widget))
 
+(eval-when-compile
+  ;; Compiler warning in Emacs 19.
+  (autoload 'widget-default-get "wid-edit"))
+
+(apply 'define-widget 'w3m-antenna-function 'function
+       "Bug-fixed version of the `function' widget.
+In Emacs 20.7 through 21.3 and XEmacs, it doesn't represent a value as
+a string internally, converts it into a string in the customization
+buffer, and provides the default value as `ignore'."
+       (if (and (fboundp 'widget-default-get)
+		(widget-default-get
+		 '(function :value-to-external ignore :value foo)))
+	   '(:value-create
+	     (lambda (widget)
+	       (widget-put widget :value
+			   (widget-sexp-value-to-internal widget value))
+	       (widget-field-value-create widget))
+	     :value-to-internal
+	     (lambda (widget value) value)
+	     :value ignore)))
+
 (defvar w3m-antenna-alist nil
   "A list of site information (internal variable).  nil means that
 antenna database is not initialized.  Each site information is a list
@@ -132,25 +154,10 @@ that consists of:
 		  (regexp :value "")
 		  (integer :value 0))
 	    (cons :tag "Check with a user defined function"
-		  (function
+		  (w3m-antenna-function
 		   :match (lambda (widget value)
 			    (and (functionp value)
-				 (not (eq value 'w3m-antenna-check-anchor))))
-		   ,@(if (and (fboundp 'widget-default-get)
-			      (widget-default-get
-			       '(function :value-to-external ignore
-					  :value foo)))
-			 ;; Fix mis-implemented customizing widgets
-			 ;; in Emacs 20.7 through 21.3 and XEmacs.
-			 '(:value-create
-			   (lambda (widget)
-			     (widget-put widget :value
-					 (widget-sexp-value-to-internal widget
-									value))
-			     (widget-field-value-create widget))
-			   :value-to-internal
-			   (lambda (widget value) value)
-			   :value ignore)))
+				 (not (eq value 'w3m-antenna-check-anchor)))))
 		  (repeat :tag "Arguments" sexp))))))
 
 (defcustom w3m-antenna-html-skeleton
