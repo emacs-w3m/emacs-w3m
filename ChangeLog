@@ -1,3 +1,9 @@
+2001-03-06  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el (TOP): No need to load cl-macs explicitly.
+	(w3m-charset-coding-system-alist): Do not use doloop in defcustom
+	because it is not expanded in compile time.
+
 2001-03-05  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* w3m.el: apply patch from Keisuke Nishida.
