@@ -1088,10 +1088,9 @@ See the file balloon-help.el for more information."
   :type 'boolean)
 
 (defcustom w3m-use-favicon (featurep 'w3m-image)
-  "*If non-nil, use favicon.
-It will be set to nil automatically if ImageMagick's
-`convert' does not support a ico format.  You can inhibit the
-use of ImageMagick absolutely by setting this option to nil."
+  "*Non-nil means the favicon images can be displayed in this system.
+It will be set to nil automatically if ImageMagick's `convert' program
+does not support the ico format."
   :get (lambda (symbol)
 	 (and (not noninteractive)
 	      (default-value symbol)
@@ -1102,6 +1101,27 @@ use of ImageMagick absolutely by setting this option to nil."
 				  value
 				  (featurep 'w3m-image)
 				  (w3m-favicon-usable-p))))
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-show-graphic-icons-in-mode-line t
+  "Non-nil means show graphic status indicators in the mode-line.
+If it is nil, also the favicon won't be shown in the mode-line even if
+`w3m-use-favicon' is non-nil."
+  :set (lambda (symbol value)
+	 (prog1
+	     (set-default symbol value)
+	   (if (and (not noninteractive)
+		    (fboundp 'w3m-initialize-graphic-icons))
+	       (w3m-initialize-graphic-icons))))
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-show-graphic-icons-in-header-line t
+  "Non-nil means show graphic status indicators in the header-line.
+If it is nil, also the favicon won't be shown in the header-line even
+if `w3m-use-favicon' is non-nil.  This variable is currently
+meaningless under XEmacs."
   :group 'w3m
   :type 'boolean)
 
@@ -6177,9 +6197,11 @@ appropriate buffer and select it."
 	    (w3m-display-inline-images
 	     w3m-modeline-image-status-on
 	     w3m-modeline-status-off)))
-	  (w3m-use-favicon
-	   (w3m-favicon-image
-	    w3m-modeline-favicon
+	  (w3m-show-graphic-icons-in-mode-line
+	   (w3m-use-favicon
+	    (w3m-favicon-image
+	     w3m-modeline-favicon
+	     w3m-modeline-separator)
 	    w3m-modeline-separator)
 	   w3m-modeline-separator)
 	  w3m-current-title))

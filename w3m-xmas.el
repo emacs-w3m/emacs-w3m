@@ -53,6 +53,7 @@
   (defvar w3m-icon-directory)
   (defvar w3m-menubar)
   (defvar w3m-modeline-process-status-on)
+  (defvar w3m-show-graphic-icons-in-mode-line)
   (defvar w3m-toolbar)
   (defvar w3m-toolbar-buttons)
   (defvar w3m-use-tab-menubar)
@@ -647,84 +648,106 @@ italic font in the modeline."
 (defun w3m-initialize-graphic-icons (&optional force)
   "Make icon images which will be displayed in the modeline."
   (interactive "P")
-  (when (device-on-window-system-p)
-    (let ((defs '((w3m-modeline-status-off-icon
-		   "state-00.xpm"
-		   w3m-modeline-status-off)
-		  (w3m-modeline-image-status-on-icon
-		   "state-01.xpm"
-		   w3m-modeline-image-status-on)
-		  (w3m-modeline-ssl-status-off-icon
-		   "state-10.xpm"
-		   w3m-modeline-ssl-status-off)
-		  (w3m-modeline-ssl-image-status-on-icon
-		   "state-11.xpm"
-		   w3m-modeline-ssl-image-status-on)))
-	  def glyph file extent keymap)
-      (when (featurep 'xpm)
-	(while defs
-	  (setq def (car defs)
-		defs (cdr defs)
-		glyph (car def))
-	  (when (and (or force (not (symbol-value glyph)))
-		     (file-exists-p
-		      (setq file (expand-file-name (nth 1 def)
-						   w3m-icon-directory))))
-	    (set glyph (make-glyph
-			(make-image-instance (vector 'xpm :file file))))
-	    (unless extent
-	      (setq extent (make-extent nil nil)
-		    keymap (make-sparse-keymap))
-	      (define-key keymap 'button2
-		(make-modeline-command-wrapper 'w3m-reload-this-page))
-	      (set-extent-keymap extent keymap)
-	      (set-extent-property extent 'help-echo
-				   "button2 reloads this page"))
-	    (set (nth 2 def) (list '("" w3m-space-before-modeline-icon)
-				   (cons extent glyph))))))
-      ;; Spinner
-      (when (and (or force (not w3m-modeline-process-status-on-icon))
-		 (featurep 'gif)
-		 (file-exists-p
-		  (setq file (expand-file-name "spinner.gif"
-					       w3m-icon-directory))))
-	(setq
-	 w3m-modeline-process-status-on-icon
-	 (make-glyph
-	  (if w3m-gifsicle-program
-	      ;; XEmacs doesn't support a transparent color on gifs,
-	      ;; so we should replace the background color of the image
-	      ;; with the modeline's one.
-	      (make-image-instance
-	       (vector
-		'gif
-		:data
-		(let ((coding-system-for-read 'binary)
-		      (coding-system-for-write 'binary)
-		      format-alist)
-		  (with-temp-buffer
-		    (insert-file-contents file)
-		    (call-process-region
-		     (point-min) (point-max) w3m-gifsicle-program t t nil
-		     "--careful" "--delay" "10" "--loopcount=forever"
-		     "--change-color" "255,255,255"
-		     (mapconcat
-		      (lambda (c) (number-to-string (% c 256)))
-		      (color-rgb-components
-		       (face-background 'modeline))
-		      ","))
-		    (buffer-string)))))
-	    (make-image-instance (vector 'gif :file file)))))
-	(setq extent (make-extent nil nil)
-	      keymap (make-sparse-keymap))
-	(define-key keymap 'button2
-	  (make-modeline-command-wrapper 'w3m-process-stop))
-	(set-extent-keymap extent keymap)
-	(set-extent-property extent 'help-echo
-			     "button2 kills the current process")
+  (let ((defs '((w3m-modeline-status-off-icon
+		 "state-00.xpm"
+		 w3m-modeline-status-off)
+		(w3m-modeline-image-status-on-icon
+		 "state-01.xpm"
+		 w3m-modeline-image-status-on)
+		(w3m-modeline-ssl-status-off-icon
+		 "state-10.xpm"
+		 w3m-modeline-ssl-status-off)
+		(w3m-modeline-ssl-image-status-on-icon
+		 "state-11.xpm"
+		 w3m-modeline-ssl-image-status-on)))
+	def icon file status extent keymap)
+    (while defs
+      (setq def (car defs)
+	    defs (cdr defs)
+	    icon (car def)
+	    file (expand-file-name (nth 1 def) w3m-icon-directory)
+	    status (nth 2 def))
+      (if (and w3m-show-graphic-icons-in-mode-line
+	       (device-on-window-system-p)
+	       (featurep 'xpm)
+	       (file-exists-p file))
+	  (progn
+	    (when (or force (not (symbol-value icon)))
+	      (unless extent
+		(setq extent (make-extent nil nil)
+		      keymap (make-sparse-keymap))
+		(define-key keymap 'button2
+		  (make-modeline-command-wrapper 'w3m-reload-this-page))
+		(set-extent-keymap extent keymap)
+		(set-extent-property extent 'help-echo
+				     "button2 reloads this page"))
+	      (set icon
+		   (cons extent
+			 (make-glyph
+			  (make-image-instance (vector 'xpm :file file))))))
+	    (when (stringp (symbol-value status))
+	      ;; Save the original status strings as properties.
+	      (put status 'string (symbol-value status)))
+	    (set status (list '("" w3m-space-before-modeline-icon) icon)))
+	;; Don't use graphic icons.
+	(when (get status 'string)
+	  (set status (get status 'string)))))
+    ;; Spinner.
+    (if (and w3m-show-graphic-icons-in-mode-line
+	     (device-on-window-system-p)
+	     (featurep 'gif)
+	     (file-exists-p
+	      (setq file (expand-file-name "spinner.gif"
+					   w3m-icon-directory))))
+	(progn
+	  (when (or force (not w3m-modeline-process-status-on-icon))
+	    (setq extent (make-extent nil nil)
+		  keymap (make-sparse-keymap))
+	    (define-key keymap 'button2
+	      (make-modeline-command-wrapper 'w3m-process-stop))
+	    (set-extent-keymap extent keymap)
+	    (set-extent-property extent 'help-echo
+				 "button2 kills the current process")
+	    (setq
+	     w3m-modeline-process-status-on-icon
+	     (cons
+	      extent
+	      (make-glyph
+	       (if w3m-gifsicle-program
+		   ;; XEmacs doesn't support a transparent color on gifs,
+		   ;; so we should replace the background color of the image
+		   ;; with the modeline's one.
+		   (make-image-instance
+		    (vector
+		     'gif
+		     :data
+		     (let ((coding-system-for-read 'binary)
+			   (coding-system-for-write 'binary)
+			   format-alist)
+		       (with-temp-buffer
+			 (insert-file-contents file)
+			 (call-process-region
+			  (point-min) (point-max) w3m-gifsicle-program t t nil
+			  "--careful" "--delay" "10" "--loopcount=forever"
+			  "--change-color" "255,255,255"
+			  (mapconcat
+			   (lambda (c) (number-to-string (% c 256)))
+			   (color-rgb-components
+			    (face-background 'modeline))
+			   ","))
+			 (buffer-string)))))
+		 (make-image-instance (vector 'gif :file file)))))))
+	  (when (stringp w3m-modeline-process-status-on)
+	    ;; Save the original status string as a property.
+	    (put 'w3m-modeline-process-status-on 'string
+		 w3m-modeline-process-status-on))
+	  (setq w3m-modeline-process-status-on
+		'(("" w3m-space-before-modeline-icon)
+		  w3m-modeline-process-status-on-icon)))
+      ;; Don't use spinner.
+      (when (get 'w3m-modeline-process-status-on 'string)
 	(setq w3m-modeline-process-status-on
-	      (list '("" w3m-space-before-modeline-icon)
-		    (cons extent 'w3m-modeline-process-status-on-icon)))))))
+	      (get 'w3m-modeline-process-status-on 'string))))))
 
 ;;; Miscellaneous:
 (if (featurep 'mule)

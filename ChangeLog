@@ -1,3 +1,17 @@
+2003-10-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-use-favicon): Modify the doc-string.
+	(w3m-show-graphic-icons-in-mode-line): New variable.
+	(w3m-show-graphic-icons-in-header-line): New variable.
+	(w3m-buffer-setup): Modify the value for
+	`mode-line-buffer-identification' not to show favicon if
+	`w3m-show-graphic-icons-in-mode-line' is nil.
+
+	* w3m-xmas.el: Bind `w3m-show-graphic-icons-in-mode-line' when
+	compiling.
+	(w3m-initialize-graphic-icons): Don't make graphic icons if
+	`w3m-show-graphic-icons-in-mode-line' is nil.
+
 2003-10-05  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-replace): Call `set-buffer-modified-p'.
