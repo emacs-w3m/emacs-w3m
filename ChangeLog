@@ -1,3 +1,14 @@
+2005-02-11  Tsuyoshi CHO  <cho@namazu.org>
+
+	* shimbun/sb-x51.el (shimbun-get-headers): Remove temp-buffer
+	ignored when previous committing.
+
+	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-content-start): Fix value for new
+	page design.
+	(shimbun-cnn-jp-content-end): Ditto.
+	(shimbun-get-headers): Ditto.
+	(shimbun-cnn-jp-prepare-article): Ditto.
+
 2005-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Load w3m-e21.el even if the version of Emacs is 22.x

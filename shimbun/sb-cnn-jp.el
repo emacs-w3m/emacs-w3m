@@ -40,8 +40,8 @@
 (defvar shimbun-cnn-jp-server-name "CNN Japan")
 (defvar shimbun-cnn-jp-from-address "webmaster@cnn.co.jp")
 (defvar shimbun-cnn-jp-content-start
-  "Web posted at:[^<]*</font>\n?\\(<br>\n?\\)*")
-(defvar shimbun-cnn-jp-content-end "</td>")
+  "Web\\(\\s \\|&nbsp;\\)+posted\\(\\s \\|&nbsp;\\)+at:[^<]*<br>")
+(defvar shimbun-cnn-jp-content-end "<div class=\"box\">")
 (defvar shimbun-cnn-jp-expiration-days 14)
 
 (defvar shimbun-cnn-jp-group-alist
@@ -74,50 +74,52 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAWAgMAAAD7mfc/AAAABGdBTUEAALGPC/xhBQAAAAx
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-cnn-jp)
 					 &optional range)
-  (with-temp-buffer
-    (let ((url (shimbun-index-url shimbun))
-	  (case-fold-search t)
-	  headers beg end)
-      (shimbun-retrieve-url (shimbun-index-url shimbun))
+  (let ((case-fold-search t)
+	(beg (point-min)) (end (point-max))
+	headers)
+    (goto-char (point-min))
+    (when (re-search-forward
+	   "FULL STORY" nil t)
+      (setq beg (match-end 0)))
+    (when (re-search-forward
+	   "<!-- *ＣＮＮ *ラージタイル *[0-9]+\\*[0-9]+ *★? *ここから *-->" nil t)
+      (setq end (match-beginning 0)))
+    (save-excursion
+      (narrow-to-region beg end)
       (goto-char (point-min))
-      (re-search-forward "FULL STORY" nil t)
-      (setq beg (point))
-      (re-search-forward "<!-- ?↓* ?ＣＮＮ日本語右ナビ ?↓* ?-->" nil t)
-      (setq end (point))
-      (save-excursion
-	(narrow-to-region beg end)
-	(goto-char (point-min))
-	(let (title url date id str)
-	  (while (re-search-forward
-		  "<a href=\"\\([^\"]*\\)\">\\([^<]*\\)</a>"
-		  nil t)
-	    (setq title (match-string 2))
-	    (setq str   (substring (match-string 1) 1))
-	    (setq url   (shimbun-expand-url (concat shimbun-cnn-jp-url str)))
-	    (let (year month day)
-	      (string-match
-	       "\\([^/]*\\)/\\([^0-9]*\\)\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9]*\\)"
-	       str)
+      (let (title url date id str)
+	(while (re-search-forward
+		"<a href=\"\\([^\"]*\\)\">\\([^<]*\\)</a>"
+		nil t)
+	  (setq title (match-string-no-properties 2))
+	  (setq str   (substring (match-string-no-properties 1) 1))
+	  (setq url   (shimbun-expand-url (concat shimbun-cnn-jp-url str)))
+	  (let ((year 0) (month 0) (day 0))
+	    (when (string-match
+		   "\\([^/]*\\)/\\([^0-9]*\\)\\([0-9][0-9][0-9][0-9]\\)\
+\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9]*\\)"
+		   str)
 	      (setq year  (match-string-no-properties 3 str)
 		    month (match-string-no-properties 4 str)
-		    day   (match-string-no-properties 5 str))
-	      (setq id (format "<%s%s%s%s%s%%%s@%s>"
-			       (match-string-no-properties 2 str) ; news provider
-			       year month day ; date
-			       (match-string-no-properties 6 str) ; number
-			       (match-string-no-properties 1 str) ; category
-			       shimbun-cnn-jp-top-level-domain))  ; domain
-	      (setq date (shimbun-make-date-string (string-to-int year)
-						   (string-to-int month)
-						   (string-to-int day)))
-	      (push (shimbun-create-header
-		     0
-		     title
-		     (shimbun-from-address shimbun)
-		     date
-		     id "" 0 0 url)
-		    headers)))))
-      headers)))
+		    day   (match-string-no-properties 5 str)))
+	    (setq id (format "<%s%s%s%s%s%%%s@%s>"
+			     (match-string-no-properties 2 str)	; news provider
+			     year month day ; date
+			     (match-string-no-properties 6 str)	; number
+			     (match-string-no-properties 1 str)	; category
+			     shimbun-cnn-jp-top-level-domain)) ; domain
+	    (setq date (shimbun-make-date-string
+			(string-to-int year)
+			(string-to-int month)
+			(string-to-int day)))
+	    (push (shimbun-create-header
+		   0
+		   title
+		   (shimbun-from-address shimbun)
+		   date
+		   id "" 0 0 url)
+		  headers)))))
+    headers))
 
 ;; date normalize
 (defun shimbun-cnn-jp-prepare-article (shimbun header)
@@ -125,19 +127,23 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAWAgMAAAD7mfc/AAAABGdBTUEAALGPC/xhBQAAAAx
 information available."
   (let ((case-fold-search t))
     (when (re-search-forward
-	   ">\\(20[0-9][0-9]\\).\\([01][0-9]\\).\\([0-3][0-9]\\)<br>\nWeb posted at: *\n\\([012][0-9]:[0-5][0-9]\\)"
-	   ;;<font size="2" color="#333333">2004.05.24<br>
-	   ;;Web posted at:
-	   ;;13:45
-	   ;; JST</font>
+	   ">\\(20[0-9][0-9]\\).\\([01][0-9]\\).\\([0-3][0-9]\\)<br>\n\
+Web\\(\\s \\|&nbsp;\\)+posted\\(\\s \\|&nbsp;\\)+at:[^0-9]*\
+\\([0-9][0-9]:[0-9][0-9]\\)\\(\\s \\|&nbsp;\\)*\\([A-Z]+\\)<br>"
+	   ;; <p class="date">2005.02.10<br>
+	   ;; Web&nbsp;posted&nbsp;at:&nbsp;
+	   ;; 10:23
+	   ;; &nbsp;JST<br>
 	   nil t)
       (shimbun-header-set-date
        header
        (shimbun-make-date-string
-	(string-to-number (match-string 1))
-	(string-to-number (match-string 2))
-	(string-to-number (match-string 3))
-	(match-string 4)))
+	(string-to-number (match-string-no-properties 1))
+	(string-to-number (match-string-no-properties 2))
+	(string-to-number (match-string-no-properties 3))
+	(match-string-no-properties 6)
+	(match-string-no-properties 8)
+	))
       (goto-char (point-min)))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-cnn-jp)
