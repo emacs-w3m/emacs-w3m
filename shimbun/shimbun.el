@@ -236,13 +236,15 @@ Optional MUA is a `shimbun-mua' instance."
       (shimbun-mua-set-shimbun-internal mua shimbun))
     shimbun))
 
-(defun shimbun-groups (shimbun)
-  "Return a list of groups which are available in the SHIMBUN."
+(luna-define-generic shimbun-groups (shimbun)
+  "Return a list of groups which are available in the SHIMBUN.")
+
+(luna-define-method shimbun-groups ((shimbun shimbun))
   (shimbun-groups-internal shimbun))
 
 (defun shimbun-open-group (shimbun group)
   "Open a SHIMBUN GROUP."
-  (if (member group (shimbun-groups-internal shimbun))
+  (if (member group (shimbun-groups shimbun))
       (progn
 	(shimbun-set-current-group-internal shimbun group)
 	(shimbun-set-x-face-internal
