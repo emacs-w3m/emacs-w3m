@@ -17,7 +17,7 @@
 @ifinfo
 This file documents emacs-w3m, an Emacs interface to w3m.
 
-Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}
+Copyright @copyright{} 2000, 2001, 2002, 2003, 2004 @w{TSUCHIYA Masatoshi}
 
 This edition is for emacs-w3m version @value{VERSION}.
 
@@ -44,7 +44,7 @@ Place, Suite 330; Boston, MA 02111-1307, USA.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}
+Copyright @copyright{} 2000, 2001, 2002, 2003, 2004 @w{TSUCHIYA Masatoshi}
 
 This manual corresponds to emacs-w3m version @value{VERSION}.
 
@@ -88,7 +88,7 @@ This manual corresponds to emacs-w3m version @value{VERSION}.
 * Tips::                        Some knick-knacks using emacs-w3m
 * Mailing List::                Mailing list and submitting bug reports
 * Emacs-w3m Functions::         Details of some emacs-w3m functions
-* Authors::                     Persons who wrote this manual
+* Authors::                     People who wrote this manual
 * Index::                       Index
 
 @detailmenu
@@ -121,7 +121,7 @@ Pretty Good Features
 * Grouping URLs::               Visiting several web pages in one URL
 * Weather Information::         It will be fine tomorrow
 * Using Antenna::               Raise your antenna
-* Showing Directory Tree::      Showing the tree structure of local directory
+* Showing Directory Tree::      Showing the tree structure of local directories
 * Viewing Perl Documents::      Viewing Perl Documents
 * Using Namazu::                Searching files with Namazu
 * Octet::                       Viewing data in various octal form
@@ -160,7 +160,7 @@ Known Problems
 
 Shimbun Library
 
-* Nnshimbun::                   Making Gnus into a web browser!
+* Nnshimbun::                   Turning Gnus into a web browser!
 * Mew Shimbun::                 Reading web newspapers with Mew
 * Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
 * Shimbun Sites::               Sites supported by Shimbun
@@ -179,12 +179,12 @@ Emacs-w3m Functions
 @chapter Preliminary remarks
 @cindex Introduction
 
-@uref{http://www.cs.indiana.edu/elisp/w3/docs.html, Emacs/W3} was the
-most popular web browser on Emacs once.  However, it worked so slowly
+@uref{http://www.cs.indiana.edu/elisp/w3/docs.html, Emacs/W3} once was
+the most popular web browser on Emacs.  However, it worked so slowly
 that we wanted a speedy alternative.  On the other hand,
 @uref{http://w3m.sourceforge.net/, w3m} was a pager with WWW capability,
 developed by Akinori ITO.  Although it was a pager, it was possible to
-use it as a text-mode WWW browser.  So, we started developing an Emacs
+use it as a text-mode WWW browser, so we started developing an Emacs
 interface to w3m.
 
 Our special thanks go to Akinori ITO and the w3m team for the excellent
@@ -223,8 +223,8 @@ You can run emacs-w3m in various versions of Emacsen listed below:
 @table @samp
 
 @item Emacs 21.x
-No additional package is required.  When you use Emacs of the CVS head,
-it needs to be the version on and after March, 2004.
+No additional package is required.  If you use Emacs from CVS HEAD, make
+sure you're using a version from March 2004 or newer.
 
 @item XEmacs 21.x
 The @acronym{APEL} package and the @samp{gifsicle} program are required
@@ -302,15 +302,15 @@ to make it possible to be handled by XEmacs 21.x.  It is available at:
 
 @item ImageMagick
 If the @samp{convert} program bundled with the ImageMagick package is
-available on your system, emacs-w3m will use it for resizing images or
-converting @samp{favicon} images into a format Emacs can handle.
-Emacs-w3m works without ImageMagick, but it will improve the appearance
-of web pages.  You can get the ImageMagick package from:
+available on your system, emacs-w3m will use it to resize images or to
+convert @samp{favicon} images into a format Emacs can handle.
+Emacs-w3m will work without ImageMagick, but installing it will improve
+your surfing experience.  You can get the ImageMagick package from:
 
 @uref{ftp://ftp.imagemagick.org/pub/ImageMagick/}
 
-We have roughly checked that the ImageMagick version 5.4.0-5 and later
-can be used for manipulating @samp{favicon} images.
+To manipulate @samp{favicon} images, we recommend version 5.4.0-5 and
+later, previous versions may work but we didn't check them thoroughly.
 
 @item BITMAP-MULE
 Used to display monochrome bitmap images inline in Emacs 20.x or Mule
@@ -361,7 +361,7 @@ the emacs-w3m distribution.  You may simply copy it somewhere (e.g.
 @item @acronym{FLIM}
 The @acronym{FLIM} package is required to use the @samp{shimbun}
 library.  The @samp{shimbun} library is a collection of tools for
-reading a web newspaper, you can use it with Gnus, Mew, Nana-gnus,
+reading web newspapers, you can use it with Gnus, Mew, Nana-gnus,
 T-gnus, Wanderlust, etc. @xref{Shimbun Library}.
 
 Note that the @acronym{FLIM} package requires the @acronym{APEL} package
@@ -374,8 +374,8 @@ the @samp{shimbun} library.  The @acronym{FLIM} package is available at:
 @item xml.el
 This file is required to use @samp{shimbun} modules designed for sites
 which provide update information with RSS format.  Because it is
-distributed with Emacs 21.x, you do not need to install it when you use
-Emacs 21.x.  Otherwise, you may simply copy it somewhere (e.g.
+distributed with Emacs 21.x, you do not need to install it if you use
+Emacs 21.x.  Otherwise, you may simply copy it somewhere (e.g. the Emacs
 @file{site-lisp/} directory) and perform byte-compilation as follows:
 
 @example
@@ -384,7 +384,7 @@ Emacs 21.x.  Otherwise, you may simply copy it somewhere (e.g.
 # emacs -batch -q -no-site-file -f batch-byte-compile xml.el
 @end example
 
-When you use Emacs 19.34 (including Mule 2.3), additional options are
+If you use Emacs 19.34 (including Mule 2.3), additional options are
 required for byte-compilation as follows:
 
 @example
@@ -400,7 +400,7 @@ display pages written in UTF-8, etc.  It is available at:
 
 When Mule-UCS is installed for Emacs-21.2, it is necessary
 to apply
-@uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html, the
+@uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html, this
 patch} before installation.
 
 If you are an XEmacs user, the compiled package is here:
@@ -584,10 +584,10 @@ in your @file{~/.emacs} file:
 @vindex w3m-init-file
 
 We recommend using the @file{~/.emacs-w3m} file (which is the default
-value of @code{w3m-init-file}) when you twiddle some variables of
-emacs-w3m.  This file is similar to @file{~/.emacs}, but is read when
-emacs-w3m starts.  However, note that there are some options which
-shouldn't be modified there, for example, @code{w3m-command}.
+value of @code{w3m-init-file}) if you need to twiddle some emacs-w3m
+variables.  This file is similar to @file{~/.emacs}, but is read when
+emacs-w3m starts.  Note that some options shouldn't be modified there,
+for example, @code{w3m-command}.
 
 @item Proxy Gateway
 @cindex Firewall
@@ -596,11 +596,10 @@ shouldn't be modified there, for example, @code{w3m-command}.
 @vindex w3m-command-arguments
 @vindex w3m-no-proxy-domains
 
-If you are behind a firewall and only have access to foreign web sites
-through the proxy gateway, you need to instruct w3m to use the proxy
-gateway.
+If you are behind a firewall and access the Internet through a proxy
+gateway, you need to instruct w3m to use it.
 
-There are some ways to do this, one is to set the @code{http_proxy}
+There are several ways to do this, one is to set the @code{http_proxy}
 environment variable globally in the shell something like:
 
 @example
@@ -619,18 +618,19 @@ This can also be done in your @file{~/.emacs-w3m} file as shown below:
              '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
 @end lisp
 
-To specify @code{no_proxy} hosts, which shouldn't be connected to with
-proxy gateways, you can set the @code{no_proxy} (note that it is not
-@code{no-proxy}) environment variable with the comma separated host
-names, or set the @code{w3m-no-proxy-domains} variable with a list of
-domain names (not host names) as follows:
+To specify hosts for which the proxy shouldn't be used (Intranet sites
+and the like), set the @code{no_proxy} (note that it is not
+@code{no-proxy}) environment variable to a comma-separated list of
+hostnames.  Alternatively, you can set the @code{w3m-no-proxy-domains}
+variable to a list of domain names (not host names) as follows:
 
 @lisp
 (setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
 @end lisp
 
 See also the documentation for the @code{w3m-command-arguments-alist}
-variable to use regexps to specify the @code{no_proxy} hosts.
+variable for instructions on how to use regexps to specify the
+@code{no_proxy} hosts.
 
 @end table
 
@@ -656,7 +656,7 @@ variable to use regexps to specify the @code{no_proxy} hosts.
 * Launching and Jumping::       Go ahead, just try it
 * Moving in a page::            Moving from place to place in a page
 * Moving over pages::           Moving from page to page
-* Browsing with Mouse Operations::   Surfing with mouse
+* Browsing with Mouse Operations::   Surfing using the mouse
 * Going Back to Daily Hacking and/or Daily Writing::    Return to an Ordinary Life
 @end menu
 
@@ -771,7 +771,7 @@ Display the URL under point in the echo area and put it into the
 @code{kill-ring} (@code{w3m-print-this-url}).
 @end table
 
-If the page you are reading is today's news or someone's diary, it may
+If the page you're reading is today's news or someone's diary, it may
 have been updated since you loaded it.  You can fetch the newest
 contents of the page by using the following command.  (This command can
 also be useful to force a full redisplay of the page if it looks
@@ -975,40 +975,40 @@ keystroke, by typing @kbd{^}!
 @item SPC
 @findex w3m-scroll-up-or-next-url
 When the current point is located at the end of the buffer and you
-cannot scroll down further, hit the @key{SPC} key to go on to the'' next
+cannot scroll down further, hit the @key{SPC} key to go on to the ``next
 page'' (@code{w3m-scroll-up-or-next-url}).  Here, the ``next page''
 means the page containing the coming-up urls that are designated in the
 ``next'' field in the header of the current page.  This function has
 nothing to do with the history.
 
-Some websites display their huge volume of contents dividedly in a
-number of pages partly because it takes less time to complete
-transferring. For instance, the search result at a search site appears
-in that way.  In order to access the whole contents which are displayed
-dividedly, users need to follow the links listed in each page
-explicitly.  
+You probably noticed that some websites split their contents over
+several small pages, partly because it's not comfortable for users to
+wait for huge contents to transfer in one go.  For example, search
+results of search engines often appear like that.  On such sites, users
+often need to follow links manually from one page to the next in order
+the access all the information.
 
-However, hopefully, emacs-w3m attempts to enable you to browse a series
-of contents over pages as if you were viewing them in a single page, by
+Hopefully emacs-w3m attempts to enable you to browse a series of
+contents over pages as if you were viewing them in a single page, by
 combining two operations: explicitly following links and scrolling.
 
-Actually, these kinds of websites often have fields such as ``next'',
-``prev'' or ``previous''in the header of their web pages.  These fields
-contain information about links between divided pages. Emacs-w3m
-utilizes these fields.
+That's how it works: these kinds of websites often have fields such as
+``next'', ``prev'' or ``previous''in the header of their web pages.
+These fields contain information about links between divided pages.
+Emacs-w3m uses these fields to know what to follow.
 
-Let's take an example of Google case again to explain how two operations
-(following links and scrolling) are combined.  Open
-@uref{http://www.google.com} and search for a word.  Usually, when you
-type a very common word for searching (e.g. ``hamburger''), you will get tons
-of search results.  Google returns the first page of search results,
-after having sorted them by Google's own algorithm and divided them into
-some pages.  When the window is filled with the contents of the web
+Let's take an example with Google again to explain how the two
+operations (following links and scrolling) are combined.  Open
+@uref{http://www.google.com} and search for a word.  If you type a very
+common word for searching (e.g. ``hamburger''), you will get tons of
+search results.  Google returns the first page of search results, after
+having sorted them by Google's own algorithm and divided them into
+several pages.  When the window is filled with the contents of the web
 page, users can read further by hitting @key{SPC} to scroll.  Keep
 scrolling until you come to see the end of the web page in the window.
-Here, a goody is waiting for you.  If you use web browser other than emacs-w3m
-and want to see the rest of the search results, one way to get it done is to
-click one of the numbers listed under
+Here, a goody is waiting for you.  If you use a web browser other than
+emacs-w3m and want to see the rest of the search results, one way to get
+it done is to click one of the numbers listed under
 
 @example
 Gooooooogle
@@ -1020,54 +1020,54 @@ Gooooooogle
 @end example
 
 
-to follow the link.  But when you are using emacs-w3m, you can follow
-the link by just typing @key{SPC} as you do the same when scrolling.
+to follow the link.  But with emacs-w3m, you can follow the link by just
+typing @key{SPC}, just as if you were scrolling!
  
 
 @item DEL
 @findex w3m-scroll-down-or-previous-url
-When the current point is located at the beginning of the buffer and you
-cannot scroll upward, hit the @key{DEL} to go to the ``previous'' page
+When the point is located at the beginning of the buffer and you cannot
+scroll upward, hit the @key{DEL} to go to the ``previous'' page
 (@code{w3m-scroll-down-or-previous-url}).  Here, the ``previous'' page
 means the page which is assigned to the ``prev'' or ``previous'' fields
 in the header of the current page.  This function has nothing to do with
-the history, and works oppositely as the
-@key{SPC}(w3m-scroll-up-or-next-url) does.
+the history, and works like @key{SPC}(w3m-scroll-up-or-next-url).
 @end table
 
 
 @node Browsing with Mouse Operations
-@subsection Surfing with mouse
+@subsection Surfing using the mouse
 
-The emacs-w3m developers made an effort so that honest people who aren't
-Emacs otaku can also use emacs-w3m.  You can perform almost web browsing
-operations only with a mouse except for entering text, e.g. URL.
-Sometimes you need to use modifier keys since the emacs-w3m
-developers are Emacs otaku at all@dots{}
+The emacs-w3m developers went to some trouble to ensure that normal
+people who aren't Emacs otaku can also use emacs-w3m.  You can perform
+most web browsing operations using only the mouse except for entering
+text, e.g. URL, forms, etc.  Note that sometimes you might still need to
+use modifier keys since the emacs-w3m developers are all Emacs
+otaku@dots{}
 
-Use @kbd{mouse-2} for the ``following a link'' operation which is the
-basics of web browsing.
+Use @kbd{mouse-2} for the ``following a link'' operation which the first
+basic of web browsing.
 
 @table @kbd
 @item mouse-2
 @kindex mouse-2
 @findex w3m-mouse-view-this-url
-Follow a link under the mouse pointer (@code{w3m-mouse-view-this-url}).
+Follow the link under the mouse pointer (@code{w3m-mouse-view-this-url}).
 
 @item S-mouse-2
 @kindex S-mouse-2
 @findex w3m-mouse-view-this-url-new-session
-Follow a link under the mouse pointer in a new session
+Follow the link under the mouse pointer in a new session
 (@code{w3m-mouse-view-this-url-new-session}).
 @end table
 
-Scrollbar, menubar and toolbar are helpful in emacs-w3m when using a
-mouse (you need Emacs supporting them and not to invalidate them).
-You can scroll an emacs-w3m window using scrollbar.  You can invoke many
-emacs-w3m commands described in this manual from the ``W3M'' menu which
-appears in the leftmost menubar pushing the ``File'' menu aside.  And
-further, it isn't necessary to use menubar for the typical emacs-w3m
-commands.  Use toolbar items instead.
+Scrollbar, menubar and toolbar are helpful in emacs-w3m when you use a
+mouse (your Emacs must support them, and you must have enabled them).
+You can scroll an emacs-w3m window using the scrollbar.  You can invoke
+many emacs-w3m commands described in this manual from the ``W3M'' menu
+which appears in the leftmost menubar next to the ``File'' menu.  Note:
+it's not necessary to use the menubar for most emacs-w3m commands, you
+can use the toolbar icons instead.
 
 To switch an emacs-w3m window using ``Tabs'' (@pxref{Using Tabs}), click
 the topmost line in an emacs-w3m window directory using @kbd{mouse-2} or
@@ -1076,17 +1076,17 @@ choose one from the ``TAB'' menu which appears next to the ``W3M'' menu.
 @node Going Back to Daily Hacking and/or Daily Writing
 @subsection Return to an Ordinary Life
 
-Think again. This time, probably you started Emacs not for browsing the
-web, but for replacing a built-in interpreter in an editor with scheme,
-making Info documents, writing your opinion to the government about
-software license, etc. While using Emacs, you ran into the need to
-browse the web for your work. But you happened to be able to see the web
-page without leaving Emacs at all. Wow.
+Think back.  You probably didn't start Emacs to browse the web, but to,
+say, replace some editor's built-in interpreter with scheme, write Info
+documentation or put into print your opinion about software
+patents@dots{} who knows?  While you were using Emacs, you ran into the
+need to browse the web for your work.  But you happened to be able to
+see the web page without leaving Emacs at all.  Wow.
 
-Now the time has come when returning to the work.  Keep it up or the
-world won't change!  Type @kbd{q} if there may be a need to browse web
-again.  Type @kbd{Q} if you don't have an intention to go back to
-emacs-w3m for a long while.
+Now the time has come to return to work.  Keep it up or the world won't
+change!  Type @kbd{q} if you think you might need to browse the web
+again.  Type @kbd{Q} if you don't have any intention to go back to
+emacs-w3m for a while.
 
 @table @kbd
 @item q
@@ -1200,24 +1200,22 @@ still access the pages you visited so far.  This is different from the
 way Mozilla and others work; in these browsers the history always starts
 from scratch in new buffers.
 
-
-In addition to the information just about ``the page you visited,'' the
-more detailed one, that is, ``the specific location within that page''
-can be recorded as a part of history.  Press @kbd{C-c C-@@}, and the
-location of the cursor point will be stored as information specific to that
-page.  In order to go back to that particular location within the page,
-press @kbd{C-c C-v} in the emacs-w3m buffer holding that web
-page.
+Emacs-w3m can do more than just record which pages you visited, it can
+also save specific locations in those pages, in case you want to go back
+to the exact same place in the page.  Press @kbd{C-c C-@@}, and the
+location of the cursor will be stored in history.  In order to go back
+to that particular location within the page, press @kbd{C-c C-v} in the
+emacs-w3m buffer visiting the page.
 
 @table @kbd
 @item G
 @kindex G
 @findex w3m-goto-url-new-session
-Type a URL in the minibuffer, and you can have the page displayed under
-a new session.  This function works as the same as @kbd{g}(@key{M-x
-w3m-goto-url}) does, except that it openes a new session.  When you use
-emacs-w3m on Emacs21 / XEmacs, opening a new session means displaying a
-page in a new tab.  For using tabs, please refer to @ref{Using Tabs}
+Prompt for a URL in the minibuffer, and display it in a new session.
+This function works just like @kbd{g}(@key{M-x w3m-goto-url}), except
+that it opens a new session.  When you use emacs-w3m on Emacs21 /
+XEmacs, opening a new session means displaying the page in a new tab.
+For more information about tabs, please refer to @ref{Using Tabs}
 (@code{w3m-goto-url-new-session}).
 
 @item s
@@ -1228,8 +1226,7 @@ Display the list of visited URLs in this session.
 @item C-c C-@@
 @kindex C-c C-@@
 @findex w3m-history-store-position
-Record the position of the cursor in the page as the information
-specific to the currently displayed page.
+Record the position of the cursor in the page in history.
 
 @item C-c C-v
 @kindex C-c C-v
@@ -1282,7 +1279,7 @@ prefix argument, show the list of arrived URLs instead
 
 Also see the @ref{Moving over pages} section, it explains how to move in
 the history with simple keybindings, i.e. the ``Back'' and ``Next''
-feature.
+features.
 
 @node Managing Bookmarks
 @section That's a favorite with me!
@@ -1410,7 +1407,9 @@ The most obvious use of tabs is switching: by clicking with the
 @kbd{mouse-1} button on a tab, you make the buffer it represents active.
 It also works with the @kbd{mouse-2} button.  It's a very quick and easy
 way to work with several emacs-w3m buffers, you just have to point and
-click.
+click.  (Yeah yeah, I hear you.  You want to switch using the keyboard.
+Don't worry, it's also possible.  It's explained in the next section.
+Now keep quiet and read on!)
 
 Another nifty feature is the feedback it provides.  If you are on a
 color terminal or window system, emacs-w3m shows the text in the tab in
@@ -1454,7 +1453,7 @@ buffers.
 @cindex Creating new buffers
 @cindex Killing buffers
 
-It is sometimes useful to create a new buffer without opening a new web
+It is sometimes useful to just create a new buffer without opening a web
 page in it.  This operation is called ``creating a twin copy'' of a
 buffer, in emacs-w3m lingo.  It will simply create a new buffer whose
 contents are identical to the currently active buffer.
@@ -1650,24 +1649,24 @@ Quit editing the form item, leaving changes.
 @node HTML File Information
 @section Support for web page editing and hacking
 
-For those who usually use Emacs for writing documents or programs, it
-would be very convenient if they can browse the web in the same Emacs.
-If you are editing a HTML file in Emacs, you can preview it without
-launching other web-browsing program. Also, you can quickly copy sample
-codes from the documents of library during programming.
+For those who usually use Emacs to write documentation or programs, it's
+very convenient to be able to browse the web in the same Emacs session.
+For example, if you are editing a HTML file in Emacs, you can preview it
+without launching an external browser.  You can also quickly copy sample
+code from technical documentation during a programming marathon@dots{}
 
-How about the opposite? That is, you can edit or refer to the source of
-the web page in a web browser.  Don't you think it cool if you can do
-it? For instance, you found an error in your document after previewing
-it in emacs-w3m. You probably want to correct it soon. Or if you are a
-programmer specialized in web technology, sometimes you might want to
-see the raw HTML file for the current web page@dots{} especially if you
-are an author of a Shimbun module (@pxref{Shimbun Basics}).
+How about the opposite?  (That is, being able to edit the source of a
+web page in a web browser.)  Wouldn't that be cool?  Imagine you found
+an error in your document after previewing it in emacs-w3m; you probably
+want to fix it right away.  Or if you are a programmer specialized in
+web technology, sometimes you might want to see the raw HTML file for
+the current web page@dots{} especially if you are the author of a
+Shimbun module (@pxref{Shimbun Basics}).
 
-It is possible to switch Emacs buffers loading HTML files by pointing
-out a specific buffer name, but emacs-w3m has an specially-assigned key
-for it.  Emacs-w3m knows the URL of the web page that it is currently
-displaying.  Why don't you take advantage of such information?
+It is usually possible to switch to an Emacs buffer visiting an HTML
+file by using the buffer name, but emacs-w3m adds a specific keybinding
+for this.  Emacs-w3m knows the URL of the web page it is visiting, so
+why not take advantage of this?
 
 @table @kbd
 @item \
@@ -1697,14 +1696,14 @@ Edit the local file pointed by URL under point(@code{w3m-edit-this-url}).
 @findex w3m-view-url-with-external-browser
 Launch an external browser (other than emacs-w3m) and display the same
 web page as currently displayed in
-emacs-w3m(@code{w3m-view-url-with-external-browser}).The external
+emacs-w3m(@code{w3m-view-url-with-external-browser}).  The external
 browser to be used is defined by the variable
-@code{w3m-content-type-alist}, depending on the kind of URLs.
+@code{w3m-content-type-alist}, depending on the kind of URL.
 
 @end table
 
-The section (@pxref{Tips}) explains more examples to integrate emacs-w3m
-with other commands and sub systems of Emacs.
+The (@pxref{Tips}) section gives more examples on how to integrate
+emacs-w3m with other commands and Emacs subsystems.
 
 @node Pretty Good Features
 @chapter Pretty good features
@@ -1714,7 +1713,7 @@ with other commands and sub systems of Emacs.
 * Grouping URLs::               Visiting several web pages in one URL
 * Weather Information::         It will be fine tomorrow
 * Using Antenna::               Raise your antenna
-* Showing Directory Tree::      Showing the tree structure of local directory
+* Showing Directory Tree::      Showing the tree structure of local directories
 * Viewing Perl Documents::      Viewing Perl Documents
 * Using Namazu::                Searching files with Namazu
 * Octet::                       Viewing data in various octal form
@@ -2003,8 +2002,8 @@ Antenna database before displaying it (@code{w3m-antenna}).
 @end table
 
 @node Showing Directory Tree
-@section Showing the tree structure of local directory
-@cindex Showing the tree structure of local directory
+@section Showing the tree structure of local directories
+@cindex Showing the tree structure of local directories
 
 Using the @code{w3m-dtree} command, you can display a tree of all
 subdirectories of a local directory, and browse it like a regular web
@@ -2187,11 +2186,11 @@ a function: emacs-w3m send referers when this function which has two
 arguments, URL and REFERER, returns non-nil.
 @end enumerate
 
-If you become nervous about leak of your private WEB browsing history,
-set `nil' or `lambda' to this option.  When your computer belongs to a
-secret network, you may set a pair of regular expressions to inhibit
-sending referers which will disclose your private informations, as
-follows:
+If you're nervous about leaking private WEB browsing history
+information, set this option to `nil' or `lambda'.  If your computer
+belongs to a secret network, you may set a pair of regular expressions
+to inhibit sending referers which will disclose your private
+information, as follows:
 
 @lisp
 (setq w3m-add-referer
@@ -2211,11 +2210,11 @@ Name of the file to keep the arrived @acronym{URL}s database.
 @item w3m-auto-show
 @vindex w3m-auto-show
 Non-@code{nil} means provide the ability to horizontally scroll the
-window.  Automatic horizontal scrolling is made when the point gets away
+window.  Automatic horizontal scrolling happens when the point gets away
 from both ends of the window, but nothing occurs if
 @code{truncate-lines} is set to @code{nil}.
 
-This feature works with the specially made program in emacs-w3m; usual
+This feature works with specific emacs-w3m code; usual
 @code{auto-hscroll-mode}, @code{automatic-hscrolling},
 @code{auto-show-mode} or @code{hscroll-mode} will all be invalidated in
 emacs-w3m buffers.
@@ -2237,16 +2236,16 @@ Coding systems in order of priority used for emacs-w3m sessions.
 @vindex w3m-command
 Name of the executable file of the @samp{w3m} command.  You normally
 don't have to specify the value, since emacs-w3m looks for the existing
-commands in order of @samp{w3m}, @samp{w3mmee} and @samp{w3m-m17n} in
-the @code{exec-path} directories in order if it is @code{nil} in the
+commands @samp{w3m}, @samp{w3mmee} and @samp{w3m-m17n} (in this order)
+in the @code{exec-path} directories in order if it is @code{nil} in the
 beginning.
 
 If you want to use the other @samp{w3m} command, specify the value of
 this variable explicitly in the .emacs file or customize the value and
-save it.  In this case, you need to restart Emacs and emacs-w3m.  That
-is, there is currently no way to apply the changing of the @samp{w3m}
-command to all the emacs-w3m programs safely after loading the
-@file{w3m.elc} module.
+save it.  In this case, you need to restart Emacs and emacs-w3m: there
+is currently no way to apply the changing of the @samp{w3m} command to
+all the emacs-w3m programs safely after loading the @file{w3m.elc}
+module.
 
 @item w3m-command-arguments
 @c @vindex w3m-command-arguments
@@ -2257,8 +2256,8 @@ also @code{w3m-command-arguments-alist}.
 @vindex w3m-command-arguments-alist
 Alist of regexps matching urls and additional arguments passed to
 @samp{w3m}.  A typical usage of this variable is to specify whether to
-use the proxy server for the particular hosts.  The first match made
-will be used.  Here is an example of how to set this variable:
+use a proxy server for particular hosts.  The first match made will be
+used.  Here is an example of how to set this variable:
 
 @lisp
 (setq w3m-command-arguments-alist
@@ -2271,11 +2270,11 @@ will be used.  Here is an example of how to set this variable:
 @end lisp
 
 @noindent
-Where the first element matches the url that the scheme is @samp{http}
-and the hostname is either @samp{your-company.com} or a name ended with
-@samp{.your-company.com}, and the proxy server is not used for those
-hosts.  If you are a novice on the regexps, you can use the
-@code{w3m-no-proxy-domains} variable instead.
+Here the first element matches any url where the scheme is @samp{http}
+and the hostname is either @samp{your-company.com} or a name ending with
+@samp{.your-company.com}; the proxy server is not used for those hosts.
+If you are a regexp novice, you can use the @code{w3m-no-proxy-domains}
+variable instead.
 
 @item w3m-command-environment
 @vindex w3m-command-environment
@@ -2358,7 +2357,7 @@ among many redirected pages.
 @item w3m-home-page
 @c @vindex w3m-home-page
 This variable specifies the url string to open when emacs-w3m starts.
-Don't say HP, which is the abbreviated name of a certain company. ;-)
+Don't say HP, it's the abbreviated name of a certain company. ;-)
 
 @item w3m-horizontal-scroll-columns
 @c @vindex w3m-horizontal-scroll-columns
@@ -2498,7 +2497,7 @@ instead of the @samp{w3m} command.  See also @code{w3m-command}.
 
 @item w3m-no-proxy-domains
 @c @vindex w3m-no-proxy-domains
-List of domain names with which emacs-w3m will not use a proxy server.
+List of domain names for which emacs-w3m will not use a proxy server.
 Each element should be exactly a domain name which means the latter
 common part of the host names, not a regexp.
 
@@ -2652,16 +2651,16 @@ manner of @code{replace-match}.
 
 @item w3m-search-uri-replace
 @findex w3m-search-uri-replace
-Generate the valid forms to query words to some specified search
-engines.  For example, the element
+Generate valid URLs to query words on some specified search engines.
+For example, the element
 
 @lisp
 ("\\`gg:" w3m-search-uri-replace "google")
 @end lisp
 
 @noindent
-makes it possible to replace the @acronym{URI} @samp{gg:emacs} to the
-form to query the word @samp{emacs} to the Google site.
+makes it possible to replace the @acronym{URI} @samp{gg:emacs} to a
+query for the word @samp{emacs} on the Google search engine.
 @end table
 
 @item w3m-url-local-directory-alist
@@ -2718,7 +2717,7 @@ and (X)Emacs handles unicode charsets.
 Non-@code{nil} means make emacs-w3m a tab browser.  It makes it possible
 to show all emacs-w3m buffers in a single window with the tabs line, and
 you can choose one by clicking a mouse on it.  Unfortunately, users of
-Emacs 20 and less cannot enjoy the benefit.  See also
+Emacs 20 and less cannot enjoy this feature.  See also
 @code{w3m-use-tab-menubar}.
 
 @item w3m-use-tab-menubar
@@ -2758,7 +2757,7 @@ emacs-w3m session.
 @item w3m-default-display-inline-images
 @vindex w3m-default-display-inline-images
 Non-@code{nil} means display images inline in emacs-w3m buffers.  You
-can toggle the visibility of images by the
+can toggle the visibility of images with the
 @code{w3m-toggle-inline-images} command.  See also
 @code{w3m-toggle-inline-images-permanently}.
 
@@ -3062,8 +3061,7 @@ brought about users' dissatisfaction.  For example, if a user visits the
 pages A -> B -> C -> B in order, the operation BACK on the second B
 brings a user to A.  @emph{That's weird!}  The reason why it occurred is
 that the @code{w3m-history} variable only had the list @code{(A B C)} as
-a history and B
-is the current position for that time.
+a history and B is the current position for that time.
 
 The default value for this variable is @code{nil}, and the
 @code{w3m-history} variable can have the list @code{(A B C B)}.  Where
@@ -5485,12 +5483,12 @@ in its body to @samp{emacs-w3m-ctl@@namazu.org}.
 
 
 @node Authors
-@chapter Persons who wrote this manual
+@chapter People who wrote this manual
 
 @itemize @bullet
 @c alphabetical order in the family names.
 @item
-Romain FRANCOISE
+Romain Francoise
 @item
 NAKAJIMA Mikio
 @item
