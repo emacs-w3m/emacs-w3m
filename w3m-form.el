@@ -428,6 +428,7 @@ If no field in forward, return nil without moving."
 						 (w3m-form-get ,form ,id))
 		     w3m-form-hseq ,hseq
 		     w3m-anchor-sequence ,abs-hseq
+		     w3m-form-id ,id
 		     w3m-form-name ,name)))
 		(when (setq text (w3m-form-get form id))
 		  (w3m-form-textarea-replace hseq text))))))))))
@@ -595,7 +596,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 				(decode-coding-string
 				 (w3m-url-decode-string value)
 				 w3m-output-coding-system))
-		(setq textareas (cons (list textareanumber form name)
+		(setq textareas (cons (list textareanumber form id name)
 				      textareas)))
 	      (add-text-properties
 	       start end
@@ -738,7 +739,9 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		  (goto-char (point-min))
 		  (while (search-forward "\r\n" nil t) (replace-match "\n"))
 		  (setq text (buffer-string)))
-		(w3m-form-put (nth 0 textareainfo) id (nth 1 textareainfo)
+		(w3m-form-put (nth 0 textareainfo)
+			      (nth 1 textareainfo)
+			      (nth 2 textareainfo)
 			      text)))))))
       (when (search-forward "</internal>" nil t)
 	(delete-region internal-start (match-end 0))))

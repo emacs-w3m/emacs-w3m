@@ -26,6 +26,8 @@
 	(w3m-form-parse-and-fontify): Put id for selectinfo.
 	(w3m-form-resume): Fixed regexp.
 	(w3m-form-input-textarea): Fixed line number.
+	(w3m-fontify-textareas): Put w3m-form-id property.
+	(w3m-form-parse-and-fontify): Store id to the textareainfo.
 
 2003-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
