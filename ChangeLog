@@ -1,3 +1,8 @@
+2004-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-prepare-article): Break
+	continuous lines in editorials.
+
 2004-11-21  Tsuyoshi CHO  <mfalcon21@hotmail.com>
 
 	* shimbun/sb-wikimedia.el: New file.
