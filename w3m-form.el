@@ -140,7 +140,7 @@ If no field in forward, return nil without moving."
 
 ;;;###autoload
 (defun w3m-form-parse-region (start end &optional charset)
-  "Parse HTML data in this buffer and return form objects."
+  "Parse HTML data in this buffer and return form/map objects."
   (save-restriction
     (narrow-to-region start end)
     (let (forms str)
@@ -171,111 +171,143 @@ If no field in forward, return nil without moving."
 	(setq w3m-current-forms (nreverse forms))))))
 
 (defun w3m-form-parse-forms ()
-  "Parse Form objects in this buffer."
+  "Parse Form/usemap objects in this buffer."
   (let ((case-fold-search t)
 	forms tag)
     (goto-char (point-min))
-    (while (re-search-forward (w3m-tag-regexp-of "form") nil t)
+    (while (re-search-forward (w3m-tag-regexp-of "form" "img") nil t)
+      (setq tag (downcase (match-string 1)))
       (goto-char (match-end 1))
-      ;; Parse attribute of FORM tag
-      ;; accept-charset <= charset,charset,...
-      ;; charset <= valid only w3mmee with frame
-      (w3m-parse-attributes (action (method :case-ignore)
-				    (accept-charset :case-ignore)
-				    (charset :case-ignore))
-	(if accept-charset
-	    (setq accept-charset (split-string accept-charset ","))
-	  (when (and charset (eq w3m-type 'w3mmee))
-	    (cond
-	     ((string= charset "e")	;; w3mee without libmoe
-	      (setq accept-charset (list "euc-jp")))
-	     ((string= charset "s")	;; w3mee without libmoe
-	      (setq accept-charset (list "shift-jis")))
-	     ((string= charset "n")	;; w3mee without libmoe
-	      (setq accept-charset (list "iso-2022-7bit")))
-	     (t				;; w3mee with libmoe
-	      (setq accept-charset (list charset))))))
-	(setq forms
-	      (cons (w3m-form-new (or method "get")
-				  (or action w3m-current-url)
-				  w3m-current-url
-				  accept-charset)
-		    forms)))
-      ;; Parse form fields until </FORM>
-      (while (and (re-search-forward 
-		   (w3m-tag-regexp-of "input" "textarea" "select" "/form")
-		   nil t)
-		  (not (char-equal (char-after (match-beginning 1)) ?/)))
-	(setq tag (downcase (match-string 1)))
-	(goto-char (match-end 1))	; go to end of tag name
-	(cond
-	 ((string= tag "input") 
-	  ;; When <INPUT> is found.
-	  (w3m-parse-attributes (name value (type :case-ignore)
-				      (checked :bool))
-	    (when name
+      (cond
+       ((string= tag "img")
+	;; Parse USEMAP property of IMG tag
+	(w3m-parse-attributes (usemap)
+	  (when usemap
+	    (if (not (string-match "^#" usemap))
+		(setq forms (cons nil forms)) ;; Sure ?
+	      (setq usemap (substring usemap 1))
+	      (setq forms
+		    (cons (w3m-form-new "map"
+					usemap
+					w3m-current-url
+					nil)
+			  forms))
+	      (save-excursion
+		(goto-char (point-min))
+		(let (candidates)
+		  (when (re-search-forward
+			 (concat "<map +name=\"" usemap "\"[^>]*>") nil t)
+		    (while (and (re-search-forward
+				 (w3m-tag-regexp-of "area" "/map") nil t)
+				(not (char-equal (char-after (match-beginning 1)) ?/)))
+		      (goto-char (match-end 1))
+		      (w3m-parse-attributes (href alt)
+			(when href
+			  (setq candidates (cons (cons href (or alt href)) candidates)))))
+		    (when candidates
+		      (w3m-form-put (car forms)
+				    "link"
+				    (nreverse candidates))))))))))
+       (t
+	;; Parse attribute of FORM tag
+	;; accept-charset <= charset,charset,...
+	;; charset <= valid only w3mmee with frame
+	(w3m-parse-attributes (action (method :case-ignore)
+				      (accept-charset :case-ignore)
+				      (charset :case-ignore))
+	  (if accept-charset
+	      (setq accept-charset (split-string accept-charset ","))
+	    (when (and charset (eq w3m-type 'w3mmee))
 	      (cond
-	       ((string= type "submit")
-		;; Submit button input, not set name and value here.
-		;; They are set in `w3m-form-submit'.
-		nil)
-	       ((string= type "checkbox")
-		;; Check box input, one name has multiple values
-		;; Value is list of item VALUE which has same NAME.
-		(let ((cvalue (w3m-form-get (car forms) name)))
+	       ((string= charset "e")	;; w3mee without libmoe
+		(setq accept-charset (list "euc-jp")))
+	       ((string= charset "s")	;; w3mee without libmoe
+		(setq accept-charset (list "shift-jis")))
+	       ((string= charset "n")	;; w3mee without libmoe
+		(setq accept-charset (list "iso-2022-7bit")))
+	       (t				;; w3mee with libmoe
+		(setq accept-charset (list charset))))))
+	  (setq forms
+		(cons (w3m-form-new (or method "get")
+				    (or action w3m-current-url)
+				    w3m-current-url
+				    accept-charset)
+		    forms)))
+	;; Parse form fields until </FORM>
+	(while (and (re-search-forward 
+		     (w3m-tag-regexp-of "input" "textarea" "select" "/form")
+		     nil t)
+		    (not (char-equal (char-after (match-beginning 1)) ?/)))
+	  (setq tag (downcase (match-string 1)))
+	  (goto-char (match-end 1))	; go to end of tag name
+	  (cond
+	   ((string= tag "input") 
+	    ;; When <INPUT> is found.
+	    (w3m-parse-attributes (name value (type :case-ignore)
+					(checked :bool))
+	      (when name
+		(cond
+		 ((string= type "submit")
+		  ;; Submit button input, not set name and value here.
+		  ;; They are set in `w3m-form-submit'.
+		  nil)
+		 ((string= type "checkbox")
+		  ;; Check box input, one name has multiple values
+		  ;; Value is list of item VALUE which has same NAME.
+		  (let ((cvalue (w3m-form-get (car forms) name)))
+		    (w3m-form-put (car forms) name
+				  (if checked
+				      (cons value cvalue)
+				    cvalue))))
+		 ((string= type "radio")
+		  ;; Radio button input, one name has one value
 		  (w3m-form-put (car forms) name
-				(if checked
-				    (cons value cvalue)
-				  cvalue))))
-	       ((string= type "radio")
-		;; Radio button input, one name has one value
-		(w3m-form-put (car forms) name
-			      (if checked value
-				(w3m-form-get (car forms) name))))
-	       (t
-		;; ordinaly text input
-		(w3m-form-put (car forms)
-			      name
-			      (or value (w3m-form-get (car forms) name))))))))
-	 ((string= tag "textarea")
-	  ;; When <TEXTAREA> is found.
-	  (w3m-parse-attributes (name)
-	    (let ((start (point))
-		  value)
-	      (setq value (buffer-substring start (point)))
-	      (when name
-		(w3m-form-put (car forms)
-			      name
-			      (or value (w3m-form-get (car forms) name)))))))
-	 ;; When <SELECT> is found.
-	 ((string= tag "select")
-	  (let (vbeg svalue cvalue candidates)
-	    (goto-char (match-end 1)) 
+				(if checked value
+				  (w3m-form-get (car forms) name))))
+		 (t
+		  ;; ordinaly text input
+		  (w3m-form-put (car forms)
+				name
+				(or value (w3m-form-get (car forms) name))))))))
+	   ((string= tag "textarea")
+	    ;; When <TEXTAREA> is found.
 	    (w3m-parse-attributes (name)
-	      ;; Parse FORM SELECT fields until </SELECT> (or </FORM>)
-	      (while (and (re-search-forward 
-			   (w3m-tag-regexp-of "option" "/select" "/form")
-			   nil t)
-			  (not (char-equal (char-after (match-beginning 1)) ?/)))
-		;; <OPTION> is found
-		(goto-char (match-end 1)) ; goto very after "<xxxx"
-
-		(w3m-parse-attributes (value (selected :bool))
-		  (setq vbeg (point))
-		  (skip-chars-forward "^<")
-		  (setq svalue
-			(mapconcat 'identity
-				   (split-string
-				    (buffer-substring vbeg (point)) "\n")
-				   ""))
-		  (if selected (setq cvalue value))
-		  (setq candidates (cons (cons value svalue)
-					 candidates))))
-	      (when name
-		(w3m-form-put (car forms) name (cons
-						cvalue ; current value
-						(nreverse
-						 candidates))))))))))
+	      (let ((start (point))
+		    value)
+		(setq value (buffer-substring start (point)))
+		(when name
+		  (w3m-form-put (car forms)
+				name
+				(or value (w3m-form-get (car forms) name)))))))
+	   ;; When <SELECT> is found.
+	   ((string= tag "select")
+	    (let (vbeg svalue cvalue candidates)
+	      (goto-char (match-end 1)) 
+	      (w3m-parse-attributes (name)
+		;; Parse FORM SELECT fields until </SELECT> (or </FORM>)
+		(while (and (re-search-forward 
+			     (w3m-tag-regexp-of "option" "/select" "/form")
+			     nil t)
+			    (not (char-equal (char-after (match-beginning 1)) ?/)))
+		  ;; <OPTION> is found
+		  (goto-char (match-end 1)) ; goto very after "<xxxx"
+		  
+		  (w3m-parse-attributes (value (selected :bool))
+		    (setq vbeg (point))
+		    (skip-chars-forward "^<")
+		    (setq svalue
+			  (mapconcat 'identity
+				     (split-string
+				      (buffer-substring vbeg (point)) "\n")
+				     ""))
+		    (if selected (setq cvalue value))
+		    (setq candidates (cons (cons value svalue)
+					   candidates))))
+		(when name
+		  (w3m-form-put (car forms) name (cons
+						  cvalue ; current value
+						  (nreverse
+						   candidates))))))))))))
     forms))
 
 ;;;###autoload
@@ -296,6 +328,14 @@ If no field in forward, return nil without moving."
 	(let ((form (nth fid w3m-current-forms)))
 	  (when form
 	    (cond
+	     ((and (string= type "hidden")
+		   (string= name "link"))
+	      (add-text-properties start (point)
+				   (list 'face 'w3m-form-face
+					 'w3m-action
+					 `(w3m-form-input-map ,form ,name)
+					 'w3m-cursor-anchor
+					 `(w3m-form-input-map ,form ,name))))
 	     ((string= type "submit")
 	      (add-text-properties start (point)
 				   (list 'face 'w3m-form-face
@@ -480,10 +520,12 @@ If no field in forward, return nil without moving."
 (defvar w3m-form-input-textarea-form nil)
 (defvar w3m-form-input-textarea-name nil)
 (defvar w3m-form-input-textarea-point nil)
+(defvar w3m-form-input-textarea-wincfg nil)
 (make-variable-buffer-local 'w3m-form-input-textarea-buffer)
 (make-variable-buffer-local 'w3m-form-input-textarea-form)
 (make-variable-buffer-local 'w3m-form-input-textarea-name)
 (make-variable-buffer-local 'w3m-form-input-textarea-point)
+(make-variable-buffer-local 'w3m-form-input-textarea-wincfg)
 
 (defun w3m-form-input-textarea-set ()
   "Save and exit from w3m form textarea mode."
@@ -494,11 +536,13 @@ If no field in forward, return nil without moving."
 	(name w3m-form-input-textarea-name)
 	(form w3m-form-input-textarea-form)
 	(point w3m-form-input-textarea-point)
-	(w3mbuffer w3m-form-input-textarea-buffer))
+	(w3mbuffer w3m-form-input-textarea-buffer)
+	(wincfg w3m-form-input-textarea-wincfg))
     (when (buffer-live-p w3mbuffer)
       (or (one-window-p) (delete-window))
       (kill-buffer buffer)
       (pop-to-buffer w3mbuffer)
+      (set-window-configuration wincfg)
       (when (and form point)
 	(goto-char point)
 	(w3m-form-put form name input)
@@ -514,6 +558,7 @@ If no field in forward, return nil without moving."
 (defun w3m-form-input-textarea (form name)
   (let* ((value (w3m-form-get form name))
 	 (cur-win (selected-window))
+	 (wincfg (current-window-configuration))
 	 (w3mbuffer (current-buffer))
 	 (point (point))
 	 (size (min
@@ -523,7 +568,12 @@ If no field in forward, return nil without moving."
 		   (max window-min-height
 			(1+ w3m-form-input-textarea-buffer-lines)))))
 	 (buffer (generate-new-buffer "*w3m form textarea*")))
-    (split-window cur-win (if (> size 0) size window-min-height))
+    (condition-case nil
+	(split-window cur-win (if (> size 0) size window-min-height))
+      (error
+       (delete-other-windows)
+       (split-window cur-win (- (window-height cur-win)
+				w3m-form-input-textarea-buffer-lines))))
     (select-window (next-window))
     (let ((pop-up-windows nil))
       (switch-to-buffer buffer)
@@ -532,6 +582,7 @@ If no field in forward, return nil without moving."
       (setq w3m-form-input-textarea-name name)      
       (setq w3m-form-input-textarea-buffer w3mbuffer)
       (setq w3m-form-input-textarea-point point)
+      (setq w3m-form-input-textarea-wincfg wincfg)
       (if value (insert value))
       (goto-char (point-min))
       (w3m-form-input-textarea-mode))))
@@ -567,11 +618,13 @@ If no field in forward, return nil without moving."
 (defvar w3m-form-input-select-name nil)
 (defvar w3m-form-input-select-point nil)
 (defvar w3m-form-input-select-candidates nil)
+(defvar w3m-form-input-select-wincfg nil)
 (make-variable-buffer-local 'w3m-form-input-select-buffer)
 (make-variable-buffer-local 'w3m-form-input-select-form)
 (make-variable-buffer-local 'w3m-form-input-select-name)
 (make-variable-buffer-local 'w3m-form-input-select-point)
 (make-variable-buffer-local 'w3m-form-input-select-candidates)
+(make-variable-buffer-local 'w3m-form-input-select-wincfg)
 
 (defun w3m-form-input-select-set ()
   "Save and exit from w3m form select mode."
@@ -584,6 +637,7 @@ If no field in forward, return nil without moving."
 	 (form w3m-form-input-select-form)
 	 (point w3m-form-input-select-point)
 	 (w3mbuffer w3m-form-input-select-buffer)
+	 (wincfg w3m-form-input-select-wincfg)
 	 input)
     (setcar w3m-form-input-select-candidates cur)
     (setq input w3m-form-input-select-candidates)
@@ -591,6 +645,7 @@ If no field in forward, return nil without moving."
       (or (one-window-p) (delete-window))
       (kill-buffer buffer)
       (pop-to-buffer w3mbuffer)
+      (set-window-configuration wincfg)
       (when (and form point)
 	(goto-char point)
 	(w3m-form-put form name input)
@@ -607,6 +662,7 @@ If no field in forward, return nil without moving."
 (defun w3m-form-input-select (form name)
   (let* ((value (w3m-form-get form name))
 	 (cur-win (selected-window))
+	 (wincfg (current-window-configuration))
 	 (w3mbuffer (current-buffer))
 	 (point (point))
 	 (size (min
@@ -617,7 +673,12 @@ If no field in forward, return nil without moving."
 			(1+ w3m-form-input-select-buffer-lines)))))
 	 (buffer (generate-new-buffer "*w3m form select*"))
 	 cur pos)
-    (split-window cur-win (if (> size 0) size window-min-height))
+    (condition-case nil
+	(split-window cur-win (if (> size 0) size window-min-height))
+      (error
+       (delete-other-windows)
+       (split-window cur-win (- (window-height cur-win)
+				w3m-form-input-select-buffer-lines))))
     (select-window (next-window))
     (let ((pop-up-windows nil))
       (switch-to-buffer buffer)
@@ -627,6 +688,7 @@ If no field in forward, return nil without moving."
       (setq w3m-form-input-select-buffer w3mbuffer)
       (setq w3m-form-input-select-point point)
       (setq w3m-form-input-select-candidates value)
+      (setq w3m-form-input-select-wincfg wincfg)
       (when value
 	(setq cur (car value))
 	(setq value (cdr value))
@@ -645,6 +707,98 @@ If no field in forward, return nil without moving."
       (set-buffer-modified-p nil)
       (beginning-of-line)
       (w3m-form-input-select-mode))))
+
+;;; MAP
+
+(defcustom w3m-form-input-map-buffer-lines 10
+  "*Buffer lines for form select map buffer."
+  :group 'w3m
+  :type 'integer)
+
+(defcustom w3m-form-input-map-mode-hook nil
+  "*A hook called after w3m-form-input-map-mode."
+  :group 'w3m
+  :type 'hook)
+
+(defcustom w3m-form-input-map-set-hook nil
+  "*A Hook called before w3m-form-input-map-set."
+  :group 'w3m
+  :type 'hook)
+
+(defvar w3m-form-input-map-keymap nil)
+(unless w3m-form-input-map-keymap
+  (setq w3m-form-input-map-keymap (make-sparse-keymap))
+  (define-key w3m-form-input-map-keymap "\C-c\C-c"
+    'w3m-form-input-map-set)
+  (define-key w3m-form-input-map-keymap "\r"
+    'w3m-form-input-map-set)
+  (define-key w3m-form-input-map-keymap "\C-m"
+    'w3m-form-input-map-set))
+(defvar w3m-form-input-map-buffer nil)
+(defvar w3m-form-input-map-wincfg nil)
+(make-variable-buffer-local 'w3m-form-input-map-buffer)
+(make-variable-buffer-local 'w3m-form-input-map-wincfg)
+
+(defun w3m-form-input-map-set ()
+  "Save and exit from w3m form select mode."
+  (interactive)
+  (run-hooks 'w3m-form-input-map-set-hook)
+  (let* ((map (get-text-property (point) 'w3m-form-map-value))
+	 (buffer (current-buffer))
+	 (w3mbuffer w3m-form-input-map-buffer)
+	 (wincfg w3m-form-input-map-wincfg)
+	 input)
+    (when (buffer-live-p w3mbuffer)
+      (or (one-window-p) (delete-window))
+      (kill-buffer buffer)
+      (pop-to-buffer w3mbuffer)
+      (set-window-configuration wincfg)
+      (w3m-goto-url (w3m-expand-url map w3m-current-url)))))
+
+(defun w3m-form-input-map-mode ()
+  "Major mode for w3m map select."
+  (setq mode-name "w3m map select"
+	major-mode 'w3m-form-input-map-mode)
+  (setq buffer-read-only t)
+  (use-local-map w3m-form-input-map-keymap)
+  (run-hooks 'w3m-form-input-map-mode-hook))
+
+(defun w3m-form-input-map (form name)
+  (let* ((value (w3m-form-get form name))
+	 (cur-win (selected-window))
+	 (wincfg (current-window-configuration))
+	 (w3mbuffer (current-buffer))
+	 (size (min
+		(- (window-height cur-win)
+		   window-min-height 1)
+		(- (window-height cur-win)
+		   (max window-min-height
+			(1+ w3m-form-input-map-buffer-lines)))))
+	 (buffer (generate-new-buffer "*w3m map select*"))
+	 cur pos)
+    (condition-case nil
+	(split-window cur-win (if (> size 0) size window-min-height))
+      (error
+       (delete-other-windows)
+       (split-window cur-win (- (window-height cur-win)
+				w3m-form-input-map-buffer-lines))))
+    (select-window (next-window))
+    (let ((pop-up-windows nil))
+      (switch-to-buffer buffer)
+      (set-buffer buffer)
+      (setq w3m-form-input-map-buffer w3mbuffer)
+      (setq w3m-form-input-map-wincfg wincfg)
+      (when value
+	(dolist (candidate value)
+	  (setq pos (point))
+	  (insert (cdr candidate))
+	  (put-text-property pos (point) 'w3m-form-map-value
+			     (car candidate))
+	  (insert "\n")))
+      (goto-char (point-min))
+      (set-buffer-modified-p nil)
+      (beginning-of-line)
+      (w3m-form-input-map-mode))))
 
 ;;; 
 

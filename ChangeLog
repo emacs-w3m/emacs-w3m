@@ -1,3 +1,25 @@
+2001-07-19  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (w3m-form-parse-forms): Support the USEMAP attribute
+	of the IMG element.
+	(w3m-fontify-forms): Ditto.
+	(w3m-form-input-textarea-wincfg): New buffer local variable.
+	(w3m-form-input-select-wincfg): Ditto.
+	(w3m-form-input-textarea): Save the configuration of current window.
+	Guard error of the minimum height of window.
+	(w3m-form-input-select): Ditto.
+	(w3m-form-input-textarea-set): Restore the configuration of window.
+	(w3m-form-input-select-set): Ditto.
+	(w3m-form-input-map-buffer-lines): New user option.
+	(w3m-form-input-map-mode-hook): Ditto.
+	(w3m-form-input-map-set-hook): Ditto.
+	(w3m-form-input-map-keymap): New keymap.
+	(w3m-form-input-map-buffer): New buffer local variable.
+	(w3m-form-input-map-wincfg): Ditto.
+	(w3m-form-input-map-set): New function.
+	(w3m-form-input-map-mode): Ditto.
+	(w3m-form-input-map): Ditto.
+
 2001-07-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-submit): New defmacro.
