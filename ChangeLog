@@ -1,3 +1,7 @@
+2004-07-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Release 1.4.1.
+
 2004-07-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-weather.el: Reconstructed to follow the change of site

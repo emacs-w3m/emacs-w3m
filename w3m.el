@@ -148,7 +148,7 @@
   (unless (fboundp 'char-to-int)
     (defalias 'char-to-int 'identity)))
 
-(defconst emacs-w3m-version "1.4"
+(defconst emacs-w3m-version "1.4.1"
   "Version number of this package.")
 
 (defgroup w3m nil
