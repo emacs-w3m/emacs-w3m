@@ -1,7 +1,15 @@
+2003-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-spinner-image): New variable.
+	(w3m-make-spinner-image): New function.
+
+	* w3m.el (w3m-buffer-setup): Call `w3m-make-spinner-image', show a
+	spinner in the modeline under XEmacs.
+
 2003-09-24  Yuuichi Teranishi  <teranisi@gohome.org>
 
-	* w3m-form.el (w3m-form-put-property): Don't call intern if it is not 
-	a string.
+	* w3m-form.el (w3m-form-put-property): Don't call intern if it is
+	not a string.
 	(w3m-form-get-property): Ditto.
 	(w3m-form-put): Added argument ID.
 	(w3m-form-get): Changed argument from NAME to ID.

@@ -631,6 +631,43 @@ title contains non-ascii characters, show a url name by default."
   (when (symbol-value 'gutter-buffers-tab-enabled)
     (add-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter)))
 
+;;; Spinner.
+(defvar w3m-spinner-image nil
+  "Glyph used to show a spinner in the mode-line.")
+
+(defun w3m-make-spinner-image ()
+  "Make a glyph used to show a spinner image in the mode-line."
+  (when (and (device-on-window-system-p)
+	     (not w3m-spinner-image))
+    (let ((spinner ;; 16x14, 3 frames gif animation, non-LZW
+	   (base64-decode-string "\
+R0lGODlhEAAOAPMAALDi/39/f7/v///6+l5eXv///0BAQOXl5Y22zbOzswAAAAAAAAAAAAAA
+AAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQICgD/ACwAAAAAEAAOAAAEXrDISau91+jN
+KwlGgGhIYASERBBJEiQaYiRBux74kRwEsB6J3GFAHCQGgkBAMEgUB8LEYQUgHBLCVitwMAA0
+h4A2sVoZCAgNgmAoEySEhCGhQRgShgShwukbMICBGBEAIfkECAoA/wAsAAAAABAADgAABF6w
+yEmrvdfozSsJRqAhRmAEhEQQSRIkBqIlQbse+JEcwAocidxhQBwkBoGAIDBIFAfCxIEAWB0S
+wlYrcABoAIeANrFaGQgahIFgKBMkhIQhYUBoEoYEocLpGzCAgRgRACH5BAgKAP8ALAAAAAAQ
+AA4AAAResMhJq73X6M0rCUZgIFpgBIREEEkSJIiGJEG7HviRHCtAHIncYUAcJAYBQSAwSBQH
+wsQBsAIcEsJWK3DQAAyHgDaxWhkIBoSGYCgTJISEIYHQIBKGBKHC6RswgIEYEQA7"))
+	  (background (mapconcat
+		       (lambda (c) (number-to-string (% c 256)))
+		       (color-rgb-components (face-background 'modeline))
+		       ","))
+	  (coding-system-for-read 'binary)
+	  (coding-system-for-write 'binary))
+      (with-temp-buffer
+	(insert spinner)
+	;; XEmacs doesn't support a transparent color on gifs, so we should
+	;; replace the background color of the image with the modeline's one.
+	(call-process-region (point-min) (point-max)
+			     w3m-gifsicle-program t t nil
+			     "--careful" "--delay" "10"
+			     "--loopcount=forever"
+			     "--change-color" "255,255,255" background)
+	(setq w3m-spinner-image
+	      (make-glyph (make-image-instance
+			   (vector 'gif :data (buffer-string)))))))))
+
 ;;; Miscellaneous:
 (if (featurep 'mule)
     (defalias 'multibyte-string-p 'stringp)
