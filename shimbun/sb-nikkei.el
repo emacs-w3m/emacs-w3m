@@ -99,6 +99,10 @@
      "http://markets.nikkei.co.jp/kokunai/gyoseki.cfm"
      shimbun-nikkei-get-headers-gyoseki
      shimbun-nikkei-prepare-article-default3)
+    ("gyosuuchi" "業績数値"
+     "http://markets.nikkei.co.jp/kokunai/bunkatsu3.cfm?genre=m4"
+     shimbun-nikkei-get-headers-bunkatsu2
+     shimbun-nikkei-prepare-article-bunkatsu2)
     ("gyoseki" "海外企業業績" "http://markets.nikkei.co.jp/kaigai/gyoseki.cfm"
      shimbun-nikkei-get-headers-gyoseki
      shimbun-nikkei-prepare-article-default3)
@@ -618,6 +622,62 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	      (format "%02d:%02d"
 		      (string-to-number (match-string 9))
 		      (string-to-number (match-string 10))))
+	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
+		     "%" group "." shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	    headers))
+    (shimbun-sort-headers headers)))
+
+(defun shimbun-nikkei-get-headers-bunkatsu2 (group folder)
+  "Function used to fetch headers for the kawase group."
+  (let (headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<a" s1 "href=\""
+			;; 1. base
+			"\\(bunkatsu3\\.cfm\\?genre=m4"
+			;; 2. url
+			"\\(&id="
+			;; 3. serial number
+			"\\([^\"]+\\)"
+			s0
+			;; 4. year
+			"\\(20[0-9][0-9]\\)"
+			s0
+			;; 5. serial number
+			"\\([01][0-9][0-3][0-9]"
+			;; 6. serial number
+			"\\([^\"]+\\)\\)\\)\\)"
+			s0 "\">" s0
+			;; 7. subject
+			"\\([^<]+\\)" s0 "（"
+			;; 8. month
+			"\\([01]?[0-9]\\)"
+			"/"
+			;; 9. day
+			"\\([0-3]?[0-9]\\)"
+			s1
+			;; 10. hour
+			"\\([0-2]?[0-9]\\)"
+			":"
+			;; 11. minute
+			"\\([0-5]?[0-9]\\)"
+			"）" s0 "</a>")))
+	    nil t)
+      (push (shimbun-create-header
+	     0
+	     (match-string 7)
+	     shimbun-nikkei-from-address
+	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 8))
+	      (string-to-number (match-string 9))
+	      (format "%02d:%02d"
+		      (string-to-number (match-string 10))
+		      (string-to-number (match-string 11))))
 	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
 		     "%" group "." shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
@@ -1247,6 +1307,14 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			   nil t)
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "[\t\n ]<ul[\t\n ]+id=\"tool\">" nil t)
+      (goto-char (match-beginning 0))
+      (insert shimbun-nikkei-content-end))))
+
+(defun shimbun-nikkei-prepare-article-bunkatsu2 (&rest args)
+  "Function used to prepare contents of an article for some groups."
+  (when (re-search-forward "[\t\n ]<div[\t\n ]+class=\"bg_gray\">" nil t)
+    (insert shimbun-nikkei-content-start)
+    (when (re-search-forward "[\t\n ]<div[\t\n ]+class=\"column\">" nil t)
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end))))
 
