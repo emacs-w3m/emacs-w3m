@@ -455,7 +455,8 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
 
 (defun w3m-form-mee-new (x)
   "Decode form information of w3mmee."
-  (setq x (w3m-string-to-char-list (w3m-url-decode-string x)))
+  (setq x (w3m-string-to-char-list
+	   (w3m-url-decode-string x w3m-current-coding-system)))
   (let (method enctype action charset target name)
     (setq method (case (/ (w3m-char-to-int (car x)) 16)
 		   (0 "get")
@@ -483,7 +484,8 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
 
 (defun w3m-form-mee-select-value (value)
   "Decode select form information of w3mmee."
-  (let ((clist (w3m-string-to-char-list (w3m-url-decode-string value)))
+  (let ((clist (w3m-string-to-char-list
+		(w3m-url-decode-string value w3m-current-coding-system)))
 	label val s selected candidates)
     (while clist
       (setq s (eq (car clist) (w3m-int-to-char 1))
@@ -710,7 +712,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		  (w3m-form-put form id
 				name
 				(decode-coding-string
-				 (w3m-url-decode-string value)
+				 (w3m-url-decode-string value
+							w3m-current-coding-system)
 				 w3m-output-coding-system))
 		(setq textareas (cons (list textareanumber form id name)
 				      textareas)))
