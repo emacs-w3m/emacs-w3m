@@ -44,24 +44,17 @@
 
 ;;; Code:
 
-(or (and (boundp 'emacs-major-version)
-	 (>= emacs-major-version 20))
-    (progn
-      (require 'poe)
-      (require 'pcustom)))
+(eval-and-compile
+  (or (and (boundp 'emacs-major-version)
+	   (>= emacs-major-version 20))
+      (progn
+	(require 'poe)
+	(require 'pcustom))))
 
 (if (featurep 'xemacs)
     (require 'poem))
 
 (require 'thingatpt)
-
-(eval-and-compile
-  (unless (fboundp 'find-coding-system)
-    (if (fboundp 'coding-system-p)
-	(defsubst find-coding-system (obj)
-	  "Return OBJ if it is a coding-system."
-	  (if (coding-system-p obj) obj))
-      (require 'pces))))
 
 ;; this package using a few CL macros
 (eval-when-compile (require 'cl))
@@ -69,6 +62,13 @@
 (put 'w3m-static-if 'lisp-indent-function 2)
 (defmacro w3m-static-if (cond then &rest else)
   (if (eval cond) then (` (progn  (,@ else)))))
+
+(w3m-static-if (not (fboundp 'find-coding-system))
+    (w3m-static-if (fboundp 'coding-system-p)
+	(defsubst find-coding-system (obj)
+	  "Return OBJ if it is a coding-system."
+	  (if (coding-system-p obj) obj))
+      (require 'pces)))
 
 (defconst emacs-w3m-version
   (eval-when-compile
@@ -1213,7 +1213,7 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
   (unless (and force (eq w3m-display-inline-image-status 'on))
     (let ((cur-point (point)) 
 	  (buffer-read-only)
-	  point end url image delim)
+	  point end url image)
       (if (or force (eq w3m-display-inline-image-status 'off))
 	  (save-excursion
 	    (goto-char (point-min))

@@ -1,3 +1,10 @@
+2001-03-09  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-toggle-inline-images): Eliminated needless local
+	variable.
+	(toplevel): Encloses old emacs judgement with eval-and-compile;
+	Define `find-coding-system' using `w3m-static-if'.
+
 2001-03-08  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el: All w3m-backlog-* symbols are renamed into w3m-cache-*,
