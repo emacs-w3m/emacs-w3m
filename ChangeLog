@@ -1,5 +1,10 @@
 2003-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/nnshimbun.el (nnshimbun-keep-backlog): Improve the
+	customizing widgets.
+	(nnshimbun-group-parameters-custom): Use `integer' instead of
+	`number' for the expiry days.
+
 	* shimbun/mew-shimbun.el (mew-shimbun-folder,
 	mew-shimbun-folder-groups, mew-shimbun-db-file,
 	mew-shimbun-expires, mew-shimbun-db-length,
