@@ -556,31 +556,7 @@ the @file{w3m/auto-autoloads.el} file.  If not, put the following line
 in your @file{~/.emacs} file:
 
 @lisp
-(autoload 'w3m "w3m"
-  "Visit the WWW page using w3m" t)
-@end lisp
-
-In addition to this, put the following setups if needed:
-
-@lisp
-(autoload 'w3m-find-file "w3m"
-  "Find a local file using emacs-w3m." t)
-(autoload 'w3m-browse-url "w3m"
-  "Ask emacs-w3m to show a URL." t)
-(autoload 'w3m-antenna "w3m-antenna"
-  "Report changes of web sites." t)
-(autoload 'w3m-bookmark-view "w3m-bookmark"
-  "Show bookmarks." t)
-(autoload 'w3m-dtree "w3m-dtree"
-  "Display a directory tree." t)
-(autoload 'w3m-namazu "w3m-namazu"
-  "Search files with Namazu." t)
-(autoload 'w3m-perldoc "w3m-perldoc"
-  "View Perl documents" t)
-(autoload 'w3m-search "w3m-search"
-  "Search words using emacs-w3m." t)
-(autoload 'w3m-weather "w3m-weather"
-  "Display a weather report." t)
+(require 'w3m-load)
 @end lisp
 
 @item Startup File
@@ -590,9 +566,8 @@ In addition to this, put the following setups if needed:
 We recommend using the @file{~/.emacs-w3m} file (which is the default
 value of @code{w3m-init-file}) when you twiddle some variables of
 emacs-w3m.  This file is similar to @file{~/.emacs}, but is read when
-emacs-w3m starts.  However, note that there are commands which shouldn't
-be put there, for example, the autoload definitions as
-mentioned above.
+emacs-w3m starts.  However, note that there are some options which
+shouldn't be modified there, for example, @code{w3m-command}.
 
 @item Proxy Gateway
 @cindex Firewall
@@ -3615,14 +3590,6 @@ were subscribed to the list.  You can also read submissions in bulletin
 boards, etc...  Note that if you want to followup, you still need to use
 emacs-w3m as Gnus can't post via the web with @samp{nnshimbun}.
 
-Put the following line in your @file{~/.gnus.el} file:
-
-@lisp
-(autoload 'gnus-group-make-shimbun-group "nnshimbun" nil t)
-@end lisp
-
-Note: it isn't necessary if you are using T-gnus.
-
 See also @ref{Gnus} for rendering HTML messages with emacs-w3m if you
 use Gnus, see @ref{SEMI MUAs} for T-gnus or Nana-gnus instead.
 
@@ -5153,7 +5120,6 @@ put the following lines in your @file{~/.emacs} file:
 
 @lisp
 (setq browse-url-browser-function 'w3m-browse-url)
-(autoload 'w3m-browse-url "w3m" "Ask emacs-w3m to show a URL." t)
 (global-set-key "\C-xm" 'browse-url-at-point)
 @end lisp
 
@@ -5204,7 +5170,6 @@ Put the following lines in your @file{~/.emacs} file and type the
 @kbd{C-c C-b} key in an @code{hnf-mode} buffer:
 
 @lisp
-(autoload 'w3m-browse-url "w3m" nil t)
 (defun w3m-hnf-browse-url-w3m (url &optional new-window)
   (interactive (browse-url-interactive-arg "URL: "))
   (save-selected-window
@@ -5260,7 +5225,6 @@ You can use emacs-w3m to preview an HTML file that just you are editing
 with the @code{yahtml-mode}.  Here is an example:
 
 @lisp
-(autoload 'w3m-goto-url "w3m")
 (defadvice yahtml-browse-html
   (around w3m-yahtml-browse-html activate compile)
   (w3m-goto-url (ad-get-arg 0) t))

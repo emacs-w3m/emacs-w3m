@@ -588,31 +588,7 @@ autoload $B$N@_Dj$r9T$J$&I,MW$O$"$j$^$;$s!#$=$&$G$J$1$l$P!"0J2<$N9T(B
 $B$r(B @file{~/.emacs} $B%U%!%$%k$KF~$l$F2<$5$$(B:
 
 @lisp
-(autoload 'w3m "w3m"
-  "Visit the WWW page using w3m" t)
-@end lisp
-
-$B$3$l0J30$K!"I,MW$K1~$8$F0J2<$N$h$&$J@_Dj$rDI2C$7$F2<$5$$!#(B
-
-@lisp
-(autoload 'w3m-find-file "w3m"
-  "Find a local file using emacs-w3m." t)
-(autoload 'w3m-browse-url "w3m"
-  "Ask emacs-w3m to show a URL." t)
-(autoload 'w3m-antenna "w3m-antenna"
-  "Report changes of web sites." t)
-(autoload 'w3m-bookmark-view "w3m-bookmark"
-  "Show bookmarks." t)
-(autoload 'w3m-dtree "w3m-dtree"
-  "Display a directory tree." t)
-(autoload 'w3m-namazu "w3m-namazu"
-  "Search files with Namazu." t)
-(autoload 'w3m-perldoc "w3m-perldoc"
-  "View Perl documents" t)
-(autoload 'w3m-search "w3m-search"
-  "Search words using emacs-w3m." t)
-(autoload 'w3m-weather "w3m-weather"
-  "Display a weather report." t)
+(require 'w3m-load)
 @end lisp
 
 @item Startup File
@@ -621,9 +597,9 @@ autoload $B$N@_Dj$r9T$J$&I,MW$O$"$j$^$;$s!#$=$&$G$J$1$l$P!"0J2<$N9T(B
 Emacs-w3m $B$N$$$m$s$JJQ?t$r$$$8$k$H$-$O!"(B@file{~/.emacs-w3m} $B%U%!%$(B
 $B%k(B ($B$3$l$O(B @code{w3m-init-file} $B$H$$$&JQ?t$N%G%U%)%k%HCM$G$9(B) $B$NMxMQ$r?d(B
 $B>)$7$^$9!#$3$N%U%!%$%k$O(B @file{~/.emacs} $B$H;w$F$$$^$9$,!"$3$A$i(B
-$B$O(B emacs-w3m $B$,5/F0$9$k$H$-$KFI$_9~$^$l$^$9!#$7$+$7!"Nc$($PA0=R(B
-$B$N(B autoload $B$NDj5A$N$h$&$K!"$=$3$K=q$/$Y$-$G$O$J$$%3%^%s%I$,$"$k$3$H$KCm(B
-$B0U$7$F2<$5$$!#(B
+$B$O(B emacs-w3m $B$,5/F0$9$k$H$-$KFI$_9~$^$l$^$9!#(B
+$B$7$+$7!"(B@code{w3m-command} $B$J$I4v$D$+$N%*%W%7%g%s$O!"$3$N%U%!%$%k$G$OJQ(B
+$B99$G$-$J$$$3$H$KCm0U$7$F2<$5$$!#(B
 
 @item Proxy Gateway
 @cindex Firewall
@@ -3708,14 +3684,6 @@ XEmacs Beta$B!"(BGnus/Mew/Wanderlust $B$J$I$N%a!<%j%s%0%j%9%H!">.@tF|K\9q<sAj
 $B%U%)%m!<$7$?$$$H$-$O(B emacs-w3m $B$r;H$o$J$1$l$P$$$1$J$$$3$H$KCm0U$7$F2<$5(B
 $B$$!#(B
 
-$B0J2<$N9T$r(B @file{~/.gnus.el} $B%U%!%$%k$KF~$l$F2<$5$$(B:
-
-@lisp
-(autoload 'gnus-group-make-shimbun-group "nnshimbun" nil t)
-@end lisp
-
-$B$4Cm0U(B: T-gnus $B$r;H$C$F$$$k>l9g!"$3$l$OITMW$G$9!#(B
-
 $B$5$i$K(B emacs-w3m $B$G(B HTML $B%a%C%;!<%8$r@07A$9$k$K$O(B @ref{Gnus} $B$b;2>H$7$F(B
 $B2<$5$$!#(BT-gnus $B$+(B Nana-gnus $BMQ$K$O!"Be$o$j$K(B @ref{SEMI MUAs} $B$r8+$F2<$5(B
 $B$$!#(B
@@ -5216,7 +5184,6 @@ fml mailing list server/manager.  $B>\:Y(B
 
 @lisp
 (setq browse-url-browser-function 'w3m-browse-url)
-(autoload 'w3m-browse-url "w3m" "Ask emacs-w3m to show a URL." t)
 (global-set-key "\C-xm" 'browse-url-at-point)
 @end lisp
 
@@ -5268,7 +5235,6 @@ emacs-w3m $B$r;H$C$F(B HTML $B%U%!%$%k$r1\Mw$9$k$3$H$,$G$-$^$9!#(B
 $B%U%!$G(B @kbd{C-c C-b} $B%-!<$r%?%$%W$7$F2<$5$$(B:
 
 @lisp
-(autoload 'w3m-browse-url "w3m" nil t)
 (defun w3m-hnf-browse-url-w3m (url &optional new-window)
   (interactive (browse-url-interactive-arg "URL: "))
   (save-selected-window
@@ -5323,7 +5289,6 @@ Emacs-w3m $B$r;H$C$F!"(B@code{yahtml-mode} $B$G$^$5$KJT=8Cf$N(B HTML $B%U%!
 $B$r2<8+(B (preview) $B$9$k$3$H$,$G$-$^$9!#Nc$G$9(B:
 
 @lisp
-(autoload 'w3m-goto-url "w3m")
 (defadvice yahtml-browse-html
   (around w3m-yahtml-browse-html activate compile)
   (w3m-goto-url (ad-get-arg 0) t))
