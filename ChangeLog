@@ -1,3 +1,7 @@
+2003-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi-mytown.el: New file.
+
 2003-08-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Fix last change.
