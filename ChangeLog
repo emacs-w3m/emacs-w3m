@@ -1,3 +1,11 @@
+2004-05-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+	Suggested by Yoichi NAKAYAMA <yoichi@geiin.org>
+
+	* w3m-util.el (w3m-replace-in-string): New function which is a
+	copy of shimbun-replace-in-string.
+	* w3m.el (w3m-active-region-or-url-at-point): Use it; remove all
+	whitespace in region.
+
 2004-05-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-w3m-view-inline-image): Bind
