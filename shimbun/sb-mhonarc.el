@@ -167,8 +167,9 @@
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "From-R13: +")
 		(shimbun-header-set-from header
-					 (shimbun-mhonarc-rot13-decode
-					  (shimbun-header-field-value)))
+					 (shimbun-mime-encode-string
+					  (shimbun-mhonarc-rot13-decode
+					   (shimbun-header-field-value))))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Date: +")
 		(let ((date (shimbun-header-field-value)))
