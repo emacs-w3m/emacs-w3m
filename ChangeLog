@@ -1,5 +1,20 @@
 2003-03-09  NAKAJIMA Mikio  <minakaji@namazu.org>
 
+	* shimbun/sb-dennou.el (shimbun-dennou-expiration-days): New user
+	variable.
+	(shimbun-article): Sync up with `shimbun-article' of
+	sb-pocketgames.el.
+	
+	* shimbun/sb-muchy.el (shimbun-muchy-expiration-days): New user
+	variable.
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-pickup-date): Pick up
+	Japanese style date information, too.
+	(shimbun-article): Sync up with `shimbun-article' of
+	sb-pocketgames.el.
+	(shimbun-palmfan-palmwarefan-headers): Don't expand relative path.
+	(shimbun-palmfan-expiration-days): New user variable.
+	
 	* shimbun/sb-anthy.el: New file.
 
 2003-03-08  NAKAJIMA Mikio  <minakaji@namazu.org>

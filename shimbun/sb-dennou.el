@@ -34,6 +34,8 @@
 (defvar shimbun-dennou-groups '("report"))
 (defvar shimbun-dennou-coding-system 'shift_jis)
 
+(defvar shimbun-dennou-expiration-days 6)
+
 (luna-define-method initialize-instance :after ((shimbun shimbun-dennou)
 						&rest init-args)
   (shimbun-dennou-set-content-hash-internal
@@ -57,6 +59,8 @@
 				     &optional range)
   (let* ((case-fold-search t)
 	 (url (shimbun-index-url shimbun))
+	 (baseurl (and (string-match "\\(\.+/\\)[^/]+.html" url)
+		       (match-string 1 url)))
 	 ;;(count -1)
 	 (from "pc3s-nnb@asahi-net.or.jp")
 	 month day subject date id start end body headers)
@@ -89,38 +93,36 @@
 	  (setq start (point)
 		end (re-search-forward "^<!-- *report end *-->" nil t nil))
 	  (setq body (buffer-substring-no-properties start end))
-	  (while (string-match "<img src=\"\\(images\\)/" body)
-	    (setq body (concat (substring body 0 (match-beginning 1))
-			       url "images"
-			       (substring body (match-end 1)))))
 	  (set (intern id (shimbun-dennou-content-hash-internal shimbun))
 	       body)
 	  (push (shimbun-make-header
 		 0 (shimbun-mime-encode-string subject)
-		 from date id "" 0 0 id)
+		 from date id "" 0 0 baseurl)
 		headers)))
       (nreverse headers))))
 
-(luna-define-method shimbun-article ((shimbun shimbun-dennou) header
-				     &optional outbuf)
-  (when (shimbun-current-group-internal shimbun)
+(luna-define-method shimbun-article
+  ((shimbun shimbun-dennou) header &optional outbuf)
+  (let (string)
     (with-current-buffer (or outbuf (current-buffer))
-      (insert
-       (with-temp-buffer
-	 (let ((sym (intern-soft (shimbun-header-xref header)
-				 (shimbun-dennou-content-hash-internal
-				  shimbun))))
-	   (if (boundp sym)
-	       (insert (symbol-value sym)))
-	   (goto-char (point-min))
-	   (shimbun-header-insert shimbun header)
-	   (insert "Content-Type: " "text/html"
-		   "; charset=ISO-2022-JP\n"
-		   "MIME-Version: 1.0\n")
-	   (insert "\n")
-	   (encode-coding-string
-	    (buffer-string)
-	    (mime-charset-to-coding-system "ISO-2022-JP"))))))))
+      (with-temp-buffer
+	(let ((sym (intern-soft (shimbun-header-id header)
+				(shimbun-dennou-content-hash-internal
+				 shimbun))))
+	  (when (and (boundp sym) (symbol-value sym))
+	    (insert (symbol-value sym))
+	    (goto-char (point-min))
+	    (insert "<html>\n<head>\n<base href=\""
+		    (shimbun-header-xref header) "\">\n</head>\n<body>\n")
+	    (goto-char (point-max))
+	    (insert "\n</body>\n</html>\n")
+	    (encode-coding-string
+	     (buffer-string)
+	     (mime-charset-to-coding-system "ISO-2022-JP"))
+	    (shimbun-make-mime-article shimbun header)
+	    (setq string (buffer-string)))))
+      (when string
+	(w3m-insert-string string)))))
 
 (provide 'sb-dennou)
 
