@@ -1,5 +1,11 @@
 2002-04-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-bitmap.el (w3m-bitmap-image-get-overlay): Use
+	`line-beginning-position' and/or `line-end-position'.
+	(w3m-bitmap-image-insert-internal): Ditto.
+	(w3m-bitmap-image-delete-internal): Ditto.
+	(w3m-bitmap-image-add-text-properties): Ditto.
+
 	* w3m-om.el: Require `w3m-bitmap' if BITMAP-MULE is available.
 	(move-to-column-force): Define it if void.
 

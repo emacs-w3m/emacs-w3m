@@ -1,6 +1,6 @@
 ;;; w3m-bitmap.el --- Display bitmap image functions for w3m
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Taiki SUGAWARA <taiki.s@cityfujisawa.ne.jp>
 ;; Keywords: w3m, WWW, hypermedia
@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; This module requires `Bitmap-Mule' package.  It can be downloaded from:
+;; This module requires BITMAP-MULE package.  It can be downloaded from:
 ;;
 ;;    http://www.jpl.org/elips/bitmap/
 
@@ -67,43 +67,40 @@
   "Get bitmap-image overlay at POINT."
   (save-excursion
     (goto-char (point))
-    (let ((bol (progn (beginning-of-line) (point)))
-	  (eol (progn (end-of-line) (point))))
-      (catch  'loop
-	(dolist (o (overlays-in bol eol))
-	  (when (overlay-get o 'w3m-bitmap-image-line)
-	    (throw 'loop o)))))))
-  
+    (catch  'loop
+      (dolist (o (overlays-in (line-beginning-position)
+			      (line-end-position)))
+	(when (overlay-get o 'w3m-bitmap-image-line)
+	  (throw 'loop o))))))
+
 (defun w3m-bitmap-image-insert-internal (pos image)
   (save-excursion
     (goto-char pos)
-    (let (ovr ovrbeg)
-      (setq ovrbeg (progn (beginning-of-line) (point)))
-      (setq ovr (w3m-bitmap-image-get-overlay ovrbeg))
+    (let* ((ovrbeg (line-beginning-position))
+	   (ovr (w3m-bitmap-image-get-overlay ovrbeg))
+	   (col (current-column))
+	   indent-tabs-mode end-col ovrend)
       (unless ovr
 	(setq ovr (make-overlay ovrbeg ovrbeg))
 	(overlay-put ovr 'w3m-bitmap-image-line t))
-      (goto-char pos)
-      (let ((col (current-column))
-	    (indent-tabs-mode nil)
-	    end-col)
-	(insert (car image))
-	(setq end-col (current-column))
+      (insert (car image))
+      (setq end-col (current-column)
+	    ovrend (overlay-end ovr)
+	    image (cdr image))
+      (forward-line)
+      (while (or image (< (point) ovrend))
+	(when (>= (point) ovrend)
+	  (beginning-of-line)
+	  (insert "\n")
+	  (forward-line -1))
+	(move-to-column-force col)
+	(if image
+	    (insert (car image))
+	  (indent-to-column end-col))
 	(setq image (cdr image))
-	(forward-line)
-	(while (or image (< (point) (overlay-end ovr)))
-	  (when (>= (point) (overlay-end ovr))
-	    (beginning-of-line)
-	    (insert "\n")
-	    (forward-line -1))
-	  (move-to-column-force col)
-	  (if image
-	      (insert (car image))
-	    (indent-to-column end-col))
-	  (setq image (cdr image))
-	  (forward-line))
-	(move-overlay ovr (min ovrbeg (overlay-start ovr))
-		      (1- (point)))))))
+	(forward-line))
+      (move-overlay ovr (min ovrbeg (overlay-start ovr))
+		    (1- (point))))))
 
 (defun w3m-bitmap-image-insert (pos image)
   "Insert IMAGE to POS."
@@ -125,12 +122,11 @@
 	    (while (< (point) (overlay-end ovr))
 	      (move-to-column-force col)
 	      (delete-region (point)
-			     (min (+ (point) width)
-				  (save-excursion (end-of-line) (point))))
+			     (min (+ (point) width) (line-end-position)))
 	      (forward-line)))
 	(delete-region (point)
 		       (min (+ (point) width)
-			    (save-excursion (end-of-line) (point))))))))
+			    (line-end-position)))))))
 
 (defun w3m-bitmap-image-delete (pos width)
   "Delete bitmap-image with a WIDTH on POS."
@@ -163,16 +159,13 @@
 	      (move-to-column-force col)
 	      (w3m-add-text-properties (point)
 				       (min (+ (point) width)
-					    (save-excursion
-					      (end-of-line) (point)))
+					    (line-end-position))
 				       properties)
 	      (forward-line)))
 	(w3m-add-text-properties (point)
 				 (min (+ (point) width)
-				      (save-excursion
-					(end-of-line) (point)))
+				      (line-end-position))
 				 properties)))))
-    
 
 ;;; Handle images:
 
@@ -194,7 +187,7 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
       (w3m-process-with-wait-handler
 	(w3m-create-image url no-cache referer handler))
     (if (and w3m-bitmap-image-use-cache
-	     (assoc url w3m-bitmap-image-cache-alist))	      
+	     (assoc url w3m-bitmap-image-cache-alist))
 
 	(cdr (assoc url w3m-bitmap-image-cache-alist))
       (w3m-process-do-with-temp-buffer
