@@ -406,7 +406,7 @@
    (list (if current-prefix-arg
 	     (w3m-weather-input-area)
 	   w3m-weather-default-area)))
-  (w3m (format "about://weather/%s" area)))
+  (w3m-goto-url (format "about://weather/%s" area)))
 
 ;;;###autoload
 (defun w3m-about-weather (url no-decode no-cache post-data referer handler)

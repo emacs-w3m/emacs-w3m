@@ -1230,16 +1230,6 @@ is ignored when creating the second or more emacs-w3m session."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-obey-w3m-pop-up-frames t
-  "Non-nil means popup a new frame when a command which calls `w3m' (e.g.
-`w3m-search') is performed and `w3m-pop-up-frames' is non-nil and
-there is no emacs-w3m frame in the screen.  It is just for backward
-conpatibility.  Set it to nil if you prefer the old behavior that the
-`w3m-search' command doesn't popup a frame even if `w3m-pop-up-frames'
-is non-nil."
-  :group 'w3m
-  :type 'boolean)
-
 (defcustom w3m-view-this-url-new-session-in-background nil
   "Run `w3m-view-this-url' without switching to the newly created buffer.
 It is useful if you enabled the tabs line or the selection window for
@@ -6892,10 +6882,10 @@ the command line like: ``emacs -f w3m'' or ``emacs -f w3m url''."
   "Visit World Wide Web pages using the external w3m command.
 
 When you invoke this command interactively for the first time, it will
-visit a page which is pointed to by a string like url under the cursor
-or the home page specified by the `w3m-home-page' variable, but you
-will be prompted for a URL if `w3m-quick-start' is nil (default t) or
-`w3m-home-page' is nil.
+visit a page which is pointed to by a string like url around the
+cursor position or the home page specified by the `w3m-home-page'
+variable, but you will be prompted for a URL if `w3m-quick-start' is
+nil (default t) or `w3m-home-page' is nil.
 
 The variables `w3m-pop-up-windows' and `w3m-pop-up-frames' control
 whether this command should pop up a window or a frame for the session.
@@ -6918,11 +6908,18 @@ variables `w3m-pop-up-windows' and `w3m-pop-up-frames' will be ignored
 \(treated as nil) and it will run emacs-w3m at the current (or the
 initial) window.
 
-The optional NEW-SESSION and INTERACTIVE-P are for the internal use."
+The optional NEW-SESSION is for the internal use; if it is non-nil,
+this function makes a new emacs-w3m buffer.  The optional
+INTERACTIVE-P is also for the internal use; it is mainly used to check
+whether Emacs 21.4 calls this function as an interactive command in
+the batch mode."
   (interactive
    (let ((url
 	  ;; Emacs 21.4 calls a Lisp command interactively even if it
-	  ;; is in the batch mode.
+	  ;; is in the batch mode.  If the following function returns
+	  ;; non-nil value, it means this function is called in the
+	  ;; batch mode, and we don't treat it as what it is called to
+	  ;; interactively.
 	  (w3m-examine-command-line-args)))
      (list
       ;; url
@@ -6954,6 +6951,8 @@ The optional NEW-SESSION and INTERACTIVE-P are for the internal use."
 		      "about:")
 	      nofetch nil)))
     (unless buffer
+      ;; It means `new-session' is non-nil or there's no emacs-w3m buffer.
+      ;; At any rate, we create a new emacs-w3m buffer in this case.
       (with-current-buffer (setq buffer (generate-new-buffer "*w3m*"))
 	(w3m-mode)))
     (if nofetch
@@ -7440,10 +7439,10 @@ buffers.  User can type following keys:
 	   (delete-other-windows)))
 	((eq major-mode 'w3m-select-buffer-mode))
 	(t
-	 (w3m (if (w3m-alive-p)
-		  'popup
-		(or w3m-home-page "about:"))
-	      nil t)
+	 (let ((buffer (w3m-alive-p t)))
+	   (if buffer
+	       (w3m-popup-buffer buffer)
+	     (w3m-goto-url (or w3m-home-page "about:"))))
 	 (delete-other-windows)))
   (let ((selected-window (selected-window))
 	(current-buffer (current-buffer)))
@@ -7815,7 +7814,7 @@ vicious forms is viewed, this command should be used instead of
   (interactive)
   (let ((url (w3m-url-valid (w3m-anchor))))
     (cond
-     (url (w3m url))
+     (url (w3m-goto-url url))
      ((w3m-url-valid (w3m-image))
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
