@@ -1,3 +1,16 @@
+2005-02-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el (shimbun-make-mime-article): Call
+	`shimbun-article-url' instead of `shimbun-header-xref'.
+	(shimbun-header-insert-and-buffer-string): Ditto.
+	(shimbun-footer): Call `shimbun-article-base-url' instead of
+	`shimbun-header-xref'.
+
+	* shimbun/sb-atmarkit.el (shimbun-make-contents): Removed.
+	(shimbun-atmarkit-content-start): New variable.
+	(shimbun-atmarkit-content-end): Ditto.
+	(shimbun-clear-contents): Defined as a before method.
+
 2005-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el: Autoload cancel-timer for XEmacs.

@@ -578,7 +578,8 @@ content-type if `shimbun-encapsulate-images' is non-nil."
     (when shimbun-encapsulate-images
       (setq images
 	    (shimbun-mime-replace-image-tags base-cid
-					     (shimbun-header-xref header))))
+					     (shimbun-article-url shimbun
+								  header))))
     (let ((body (shimbun-make-text-entity "text/html" (buffer-string))))
       (erase-buffer)
       (when images
@@ -932,13 +933,13 @@ integer n:    Retrieve n pages of header indices.")
       (concat "\n<p align=\"left\">\n-- <br>\nこの記事の著作権は、"
 	      (shimbun-server-name shimbun)
 	      "社に帰属します。<br>\n原物は <a href=\""
-	      (shimbun-header-xref header) "\">"
-	      (shimbun-header-xref header)
+	      (shimbun-article-base-url shimbun header) "\">"
+	      (shimbun-article-base-url shimbun header)
 	      "</a> で公開されています。\n</p>\n")
     (concat "\n-- \nこの記事の著作権は、"
 	    (shimbun-server-name shimbun)
 	    "社に帰属します。\n原物は "
-	    (shimbun-header-xref header)
+	    (shimbun-article-base-url shimbun header)
 	    " で公開されています。\n")))
 
 ;;; Misc Functions
@@ -980,7 +981,8 @@ return the contents of this buffer as an encoded string."
 	  "\nMIME-Version: 1.0\n\n")
   (if html
       (progn
-	(insert "<html><head><base href=\"" (shimbun-header-xref header)
+	(insert "<html><head><base href=\""
+		(shimbun-article-url shimbun header)
 		"\"></head><body>")
 	(goto-char (point-max))
 	(insert (shimbun-footer shimbun header html)

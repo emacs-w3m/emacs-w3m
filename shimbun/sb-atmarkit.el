@@ -34,6 +34,8 @@
 
 (defvar shimbun-atmarkit-from-address  "info@atmarkit.co.jp")
 (defvar shimbun-atmarkit-coding-system 'euc-japan)
+(defvar shimbun-atmarkit-content-start "<body[^>]*>")
+(defvar shimbun-atmarkit-content-end "</body[^>]*>")
 
 (defvar shimbun-atmarkit-group-path-alist
   '( ;; ニュース系
@@ -65,7 +67,6 @@
     ;; obsolete フォーラム系
     ;; Business Computingフォーラム
     ("fbiz"  . "http://www.atmarkit.co.jp/rss/fbiz/rss2dc.xml")
-
     ;; ＠IT自分戦略研究所
     ("jibun" . "http://jibun.atmarkit.co.jp/rss/rss2dc.xml")
     ))
@@ -87,16 +88,8 @@
 (luna-define-method shimbun-article-url ((shimbun shimbun-atmarkit) header)
   "http://www.atmarkit.co.jp/club/print/print.php")
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-atmarkit) header)
-  (re-search-forward "<body[^>]*>" nil t)
-  (delete-region (point-min) (point))
-  (goto-char (point-max))
-  (re-search-backward "</body[^>]*>" nil t)
-  (delete-region (point) (point-max))
-  (goto-char (point-min))
-  (shimbun-make-html-contents shimbun header))
-
-(luna-define-method shimbun-clear-contents ((shimbun shimbun-atmarkit) header)
+(luna-define-method shimbun-clear-contents :before ((shimbun shimbun-atmarkit)
+						    header)
   (shimbun-remove-tags "<script" "</script *>")
   (shimbun-remove-tags "<noscript" "</noscript *>")
   (shimbun-remove-tags "<form" "</form *>"))
