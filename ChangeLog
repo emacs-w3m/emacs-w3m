@@ -1,3 +1,8 @@
+2001-07-12  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-remove-redundant-spaces): Don't cause an error when str
+	contains only spaces.
+
 2001-07-12  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* mew-w3m.el: Hand-over of copyright of this file from Goto to
@@ -13,7 +18,7 @@
 	temporally buffer.
 	(w3m-form-parse-forms): New function.
 
-2001-07-11  Akihiro Arisawa  <ari@atesoft.advantest.co.jp>
+2001-07-11  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* w3m-form.el (w3m-form-parse-region): Don't extract value from
 	submit button, again.
