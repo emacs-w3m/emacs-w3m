@@ -219,15 +219,22 @@ If no field in forward, return nil without moving."
 			      'invisible)
 	    (unless (eq form cform)
 	      (w3m-form-put cform name (w3m-form-get form name))))
-	   ((or (string= type "checkbox")
-		(string= type "radio"))
-	    (when (stringp (w3m-form-get form name))
-	      (w3m-form-replace
-	       (if (string= (w3m-form-get form name)
-			    (nth 3 (w3m-action)))
-		   "*" " "))
+	   ((string= type "radio")
+	    (let ((value (w3m-form-get form name)))
+	      (when value
+		(w3m-form-replace
+		 (if (string= value (nth 3 (w3m-action)))
+		     "*" " ")))
 	      (unless (eq form cform)
-		(w3m-form-put cform name (w3m-form-get form name)))))
+		(w3m-form-put cform name value))))
+	   ((string= type "checkbox")
+	    (let ((value (w3m-form-get form name)))
+	      (when value
+		(w3m-form-replace
+		 (if (member (nth 3 (w3m-action)) value)
+		     "*" " ")))
+	      (unless (eq form cform)
+		(w3m-form-put cform name value))))
 	   ((string= type "select")
 	    (let ((selects (w3m-form-get form name)))
 	      (when (car selects)
@@ -504,8 +511,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					       (w3m-form-get ,form ,name))
 		   w3m-anchor-sequence ,abs-hseq)))
 	       ((string= type "checkbox")
-		(let ((cvalue (w3m-form-get (car forms) name)))
-		  (w3m-form-put (car forms) name
+		(let ((cvalue (w3m-form-get form name)))
+		  (w3m-form-put form name
 				(if checked
 				    (cons value cvalue)
 				  cvalue)))
@@ -522,7 +529,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		;; Radio button input, one name has one value
 		(w3m-form-put (car forms) name
 			      (if checked value
-				(w3m-form-get (car forms) name)))
+				(w3m-form-get form name)))
 		(add-text-properties
 		 start end
 		 `(w3m-form-field-id
@@ -545,7 +552,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	       (t
 		(w3m-form-put (car forms)
 			      name
-			      (or value (w3m-form-get (car forms) name)))
+			      (or value (w3m-form-get form name)))
 		(add-text-properties
 		 start end
 		 `(w3m-form-field-id
