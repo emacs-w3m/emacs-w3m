@@ -1,3 +1,8 @@
+2001-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fontify-images): Don't put any text properties if
+	there is a property `w3m-href-anchor'.
+
 2001-05-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-tree): New function.
