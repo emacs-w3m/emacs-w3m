@@ -320,11 +320,14 @@ set this to `never' if you never want to use BBDB."
 (defun shimbun-header-insert (shimbun header)
   (let ((from (shimbun-header-from header))
 	(refs (shimbun-header-references header))
+	(reply-to (shimbun-reply-to shimbun))
 	x-face)
     (insert "Subject: " (or (shimbun-header-subject header) "(none)") "\n"
 	    "From: " (or from "(nobody)") "\n"
 	    "Date: " (or (shimbun-header-date header) "") "\n"
 	    "Message-ID: " (shimbun-header-id header) "\n")
+    (when reply-to
+      (insert "Reply-To: " reply-to "\n"))
     (when (and refs
 	       (string< "" refs))
       (insert "References: " refs "\n"))

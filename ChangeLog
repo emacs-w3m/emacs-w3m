@@ -1,3 +1,10 @@
+2002-05-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el (shimbun-header-insert): Insert `Reply-To'
+	header.
+
+	* shimbun/sb-geocrawler.el: New file.
+
 2002-05-26  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-kde.el: New file.
