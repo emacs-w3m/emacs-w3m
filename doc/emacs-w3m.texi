@@ -598,6 +598,7 @@ See also the documentation for the option
 
 @menu
 * Launching and Jumping::       Go ahead, just try it
+* Moving in a page::            Moving from place to place in a page
 @end menu
 
 @node Launching and Jumping
@@ -752,6 +753,160 @@ Reload the page which is currently displayed.
 
 @end table
 
+@node Moving in a page
+@subsection Moving from place to place in a page
+@cindex Moving in a page
+@findex w3m-scroll-up-or-next-url
+@findex w3m-scroll-down-or-previous-url
+@findex w3m-scroll-right
+@findex w3m-scroll-left
+@vindex w3m-horizontal-scroll-columns
+@findex w3m-shift-left
+@findex w3m-shift-right
+@vindex w3m-horizontal-shift-columns
+@findex w3m-horizontal-recenter
+@findex w3m-next-anchor
+@findex w3m-previous-anchor
+@findex w3m-next-form
+@findex w3m-previous-form
+@findex w3m-next-image
+@findex w3m-previous-image
+
+It is surely a fascination of emacs-w3m that we can use the familiar
+Emacs' commands (or key bindings) in an emacs-w3m buffer as they are.
+There is no burden to learn operations of keys anew for scrolling or
+moving a point in a page.  However, there is a set of commands prepared
+in an emacs-w3m buffer for scrolling and moving a point.  If you master
+those commands, you can save keystrokes and do quicker browsing.
+
+The keys are assigned so that scroll commands can be called by the
+shorter keystrokes than the standard key bindings of Emacs.  Text areas
+that you can input are limited in a web page.  Therefore, many keys
+(which are assigned to @code{self-insert-command}) are @emph{unbound}.
+In the @code{w3m-mode} (the major mode for an emacs-w3m buffer), those
+@emph{unbound} keys are assigned to the scrolling commands and others.
+
+@c Scrolling
+@table @key
+@item SPC
+@kindex SPC
+@findex w3m-scroll-up-or-next-url
+Scroll forwards vertically.  You may be used to it if you have been
+using the @samp{more} command, the @samp{less} command, or the
+@code{view-mode} on Emacs.
+
+@item DEL
+@kindex DEL
+@findex w3m-scroll-down-or-previous-url
+Scroll backwards vertically.  You may be used to it if you have been
+using the @samp{less} command or the @code{view-mode} on Emacs.
+@end table
+
+@table @kbd
+@item >
+@kindex >
+@findex w3m-scroll-left
+@vindex w3m-horizontal-scroll-columns
+Scroll to the left.  The scroll step is given by the
+@code{w3m-horizontal-scroll-columns} option.  The default value for
+@code{w3m-horizontal-scroll-columns} is 10.
+
+@item <
+@kindex <
+@findex w3m-scroll-right
+@vindex w3m-horizontal-scroll-columns
+Scroll to the right.  The scroll step is given by the
+@code{w3m-horizontal-scroll-columns} option.  The default value for
+@code{w3m-horizontal-scroll-columns} is 10.
+
+@item .
+@kindex .
+@findex w3m-shift-left
+@vindex w3m-horizontal-shift-columns
+Shift to the left (a fine level horizontal scrolling).  The shift step
+is given by the @code{w3m-horizontal-shift-columns} option.  The default
+value for @code{w3m-horizontal-shift-columns} is 2.
+
+@item ,
+@kindex ,
+@findex w3m-shift-right
+@vindex w3m-horizontal-shift-columns
+Shift to the right (a fine level horizontal scrolling).  The shift step
+is given by the @code{w3m-horizontal-shift-columns} option.  The default
+value for @code{w3m-horizontal-shift-columns} is 2.
+
+@item M-l
+@kindex M-l
+@findex w3m-horizontal-recenter
+Scroll horizontally so that the current position may become center.
+
+@end table
+
+@c Moving
+The commands for moving a point to the @emph{object} corresponding to
+each of three kinds of @emph{objects} in a web page are defined in the
+@code{w3m-mode}.  Objects which a point goes to are an anchor, an input
+form (a form) and an image.  An anchor includes a link and a form.  The
+move commands are defined for every various kinds.  As an example that
+the move command to an object is effective, consider a case of searching
+a word in:
+
+@example
+http://www.google.com
+@end example
+
+After opening the web page by the @code{w3m} command and so on, you can
+move a point to the input form for search words once you invoke the move
+command to a form (@kbd{]}).  If you don't use the move command to a
+form, you need to invoke the line-wise commands and character-wise
+commands (e.g. @kbd{C-n}, @kbd{C-f}, etc.) repeatedly depending on the
+layout and its display of a page.
+
+@table @key
+@item TAB
+@kindex TAB
+@findex w3m-next-anchor
+Move a point to the next anchor.  More strictly speaking, move forward a
+point to the nearest anchor from the position.
+@end table
+
+@table @kbd
+@item M-@key{TAB}
+@itemx S-@key{TAB}
+@kindex M-@key{TAB}
+@kindex S-@key{TAB}
+@findex w3m-previous-anchor
+Move a point to the previous anchor.  More strictly speaking, move
+backward a point to the nearest anchor from the position.
+
+@item ]
+@kindex ]
+@findex w3m-next-form
+Move a point to the next form.  More strictly speaking, move forward a
+point to the nearest form from the position.
+
+@item [
+@kindex [
+@findex w3m-previous-form
+Move a point to the previous form.  More strictly speaking, move
+backward a point to the nearest form from the position.
+
+@item @}
+@kindex @}
+@findex w3m-next-image
+Move a point to the next image.  More strictly speaking, move forward a
+point to the nearest image from the position.  There is no relation to
+the behavior of this command whether images are actually displayed or
+not in a buffer.
+
+@item @{
+@kindex @{
+@findex w3m-previous-image
+Move a point to the previous image.  More strictly speaking, move
+backward a point to the nearest image from the position.  There is no
+relation to the behavior of this command whether images are actually
+displayed or not in a buffer.
+@end table
 
 @node Inline Images
 @section Toggle displaying inline images
@@ -829,7 +984,7 @@ section, each line being one bookmark.  You can browse them exactly
 like you would browse any other page.
 
 On the bookmarks page a w3m minor mode is activated, the bookmark mode.
-It adds key bindings to edit the bookmarks. @xref{Editing Bookmarks}.
+It adds key bindings to edit the bookmarks.  @xref{Editing Bookmarks}.
 
 @table @kbd
 @item v
@@ -1270,7 +1425,7 @@ Emacs Lisp expressions in your emacs-w3m initialization file, which is
 
 would set the default homepage to @uref{http://emacs-w3m.namazu.org/}.
 The syntax to use is the same as in your @file{.emacs}
-file. @xref{(emacs)Init File}.
+file.  @xref{(emacs)Init File}.
 
 Please note that some options from external modules could be undefined
 at the time the @file{~/.emacs-w3m} file is loaded, thus making them
