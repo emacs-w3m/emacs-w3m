@@ -112,7 +112,7 @@
 				  "w3m-xmas"
 				"w3m-e21")))
 
-(defconst emacs-w3m-version "1.0pre1"
+(defconst emacs-w3m-version "1.0"
   "Version number of this package.")
 
 (defgroup w3m nil
