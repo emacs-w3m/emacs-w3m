@@ -74,7 +74,7 @@
   (unless (fboundp 'MEW-SHIMBUN-STS)
     (defun MEW-SHIMBUN-STS () ())))
   (unless (fboundp 'mew-set-file-modes)
-    (defun mew-set-file-modes ()))
+    (defun mew-set-file-modes (path)))
   (defvar mew-file-mode)
   (defvar mew-folder-list)
   (defvar mew-local-folder-list)
