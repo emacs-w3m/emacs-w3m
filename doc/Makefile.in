@@ -72,8 +72,10 @@ install: $(INFO_DEPS)
 		| fgrep -s -v -i debian'>/dev/null 2>&1; then\
 	  list='$(INFO_DEPS)';\
 	  for file in $$list; do\
-	    echo " $(INSTALL_INFO) --info-dir=$(infodir) $(infodir)/$$file";\
-	    $(INSTALL_INFO) --info-dir=$(infodir) $(infodir)/$$file || :;\
+	    if test -f $(infodir)/$$file; then\
+	      echo " $(INSTALL_INFO) --info-dir=$(infodir) $(infodir)/$$file";\
+	      $(INSTALL_INFO) --info-dir=$(infodir) $(infodir)/$$file || :;\
+	    else : ; fi\
 	  done;\
 	else : ; fi
 
