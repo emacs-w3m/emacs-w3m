@@ -1369,31 +1369,35 @@ Parsed bookmark data is hold in `w3m-bookmark-data'."
 	entries)
     (or file
 	(setq file w3m-bookmark-file)) ; default name
-    (with-temp-buffer
-      ;; print beginning of html
-      (insert "<html><head><title>Bookmarks</title></head>\n"
-	      "<body>\n"
-	      "<h1>Bookmarks</h1>\n")
-      (while bookmark
-	(setq entries (car bookmark)
-	      bookmark (cdr bookmark))
-	(insert "<h2>" (car entries) "</h2>\n")
-	(setq entries (cdr entries))
-	(insert "<ul>\n")
-	(while entries
-	  (insert "<li><a href=\"" (cdr (car entries)) "\">"
-		  (car (car entries)) "</a>\n")
-	  (setq entries (cdr entries)))
-	(insert "<!--End of section (do not delete this comment)-->\n"
-		"</ul>\n"))
-      ;; print end of html
-      (insert "</body>\n"
-	      "</html>\n")
-      ;; write to file!
-      (let ((coding-system-for-write w3m-bookmark-file-coding-system))
-	(write-region (point-min) (point-max) file))
-      (setq w3m-bookmark-file-time-stamp (elt (file-attributes file) 5))
-      (message "Saved to '%s'" file))))
+    ;; check output directory
+    (if (not (file-writable-p file))
+	(message "Can't write! Bookmark file is not saved.")
+      ;;
+      (with-temp-buffer
+	;; print beginning of html
+	(insert "<html><head><title>Bookmarks</title></head>\n"
+		"<body>\n"
+		"<h1>Bookmarks</h1>\n")
+	(while bookmark
+	  (setq entries (car bookmark)
+		bookmark (cdr bookmark))
+	  (insert "<h2>" (car entries) "</h2>\n")
+	  (setq entries (cdr entries))
+	  (insert "<ul>\n")
+	  (while entries
+	    (insert "<li><a href=\"" (cdr (car entries)) "\">"
+		    (car (car entries)) "</a>\n")
+	    (setq entries (cdr entries)))
+	  (insert "<!--End of section (do not delete this comment)-->\n"
+		  "</ul>\n"))
+	;; print end of html
+	(insert "</body>\n"
+		"</html>\n")
+	;; write to file!
+	(let ((coding-system-for-write w3m-bookmark-file-coding-system))
+	  (write-region (point-min) (point-max) file))
+	(setq w3m-bookmark-file-time-stamp (elt (file-attributes file) 5))
+	(message "Saved to '%s'" file)))))
 
 (defun w3m-bookmark-data-prepare ()
   "Prepare for bookmark operation.
