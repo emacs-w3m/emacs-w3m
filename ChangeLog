@@ -1,4 +1,4 @@
-2004-05-24  MATSUURA Kyo <kyo@chimons.org>
+2004-05-24  MATSUURA Kyo  <kyo@chimons.org>
 
 	* sb-security-memo.el (shimbun-security-memo-url): Reduced.
 	(shimbun-security-memo-group-alist): New variable.
