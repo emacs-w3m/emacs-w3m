@@ -1,3 +1,13 @@
+2005-02-17  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-impress.el (shimbun-impress-groups-alist): Add new
+	groups:"enterprise" "dc" "k-tai" "bb" "forest".
+	(shimbun-impress-get-headers-date): Rename from shimbun-get-headers.
+	(shimbun-impress-get-headers-sequence): New function.
+	(shimbun-get-headers): Redefine method; function calling branched by
+	groups.
+	(shimbun-make-contents): Add date fix routine.
+
 2005-02-17  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-yahoo-auctions.el: New file.

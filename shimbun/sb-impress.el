@@ -26,16 +26,47 @@
 
 ;;; Code:
 (require 'shimbun)
+(require 'md5)
+(eval-when-compile
+  (require 'cl))
+
 (luna-define-class shimbun-impress (shimbun) ())
 
 (defvar shimbun-impress-url "http://www.watch.impress.co.jp/")
 
 (defvar shimbun-impress-groups-alist
-  '(("internet" "<a href=\"\\(cda/news/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- 本文開始 -->" "<!-- 本文終了 -->" "http://internet.watch.impress.co.jp/")
-    ("pc" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- 記事見出し -->" "<!-- /記事署名 -->" "http://pc.watch.impress.co.jp/")
-    ("akiba" "<a href=\"\\(hotline/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- ↑↑　★2002/10/01 Modify End★　↑↑ -->" "\\(<!-- ↓↓　★2002/10/01 Modify start★　↓↓ -->\\|<!-- 500x144 -->\\)")
-    ("game" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "\\(<tr>\n<td valign=TOP>\\|<!-- 本文開始 -->\\)" "<!-- /記事署名 -->")
-    ("av" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "\\(<!-- title -->\\|<hr size=3>\\)" "\\(<!-- /記事署名 -->\\|<!-- 500x144 -->\\)")
+  '( ;; group link-regexp start end address?
+    ("enterprise" "<a href=\"\\(/?cda/[^/]*/\\([0-9][0-9][0-9][0-9]\\)/\
+\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">"
+     "<!-- 本文開始 -->" "<!-- 本文終了 -->" "http://enterprise.watch.impress.co.jp/")
+    ("pc" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)\
+\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">"
+     "<!-- 記事見出し -->" "<!-- /記事署名 -->" "http://pc.watch.impress.co.jp/")
+    ("dc" "<a href=\"\\(cda/[^/]*/\\([0-9][0-9][0-9][0-9]\\)/\
+\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">"
+     "<!-- 本文開始 -->" "<!-- 本文終了 -->" "http://dc.watch.impress.co.jp/")
+    ("akiba" "<a href=\"\\(hotline/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\
+\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- ↑↑　★2002/10/01 Modify End★　↑↑ -->"
+"\\(<!-- ↓↓　★2002/10/01 Modify start★　↓↓ -->\\|<!-- 500x144 -->\\)")
+    ("av" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\
+\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">"
+     "\\(<!-- title -->\\|<hr size=3>\\)" "\\(<!-- /記事署名 -->\\|<!-- 500x144 -->\\)")
+    ("game" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\
+\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">"
+     "\\(<tr>\n<td valign=TOP>\\|<!-- 本文開始 -->\\)" "<!-- /記事署名 -->")
+    ("k-tai" "<a href=\"\\(/?cda/[^/]*/[^/]*/\\([0-9]+\\)[^>\"]*\\)\">"
+     "<!-- ?本文開始 ?-->" "<!-- ?本文終了 ?-->" "http://k-tai.impress.co.jp/")
+    ("internet" "<a href=\"\\(cda/news/\\([0-9][0-9][0-9][0-9]\\)/\
+\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">"
+     "<!-- 本文開始 -->" "<!-- 本文終了 -->" "http://internet.watch.impress.co.jp/")
+    ("bb" "<a href=\"\\(/?cda/[^/]*/\\([0-9]+\\)[^>\"]*\\)\">"
+     "<!-- ?本文開始 ?-->" "<!-- ?本文終了 ?-->" "http://bb.watch.impress.co.jp/")
+    ("forest"
+     "<a href=\"\\(/?article/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)/\
+\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">"
+     "<!-- ?\\(▲▲▲ダイレクト関連▲▲▲\\|本文開始\\) ?-->"
+     "<!-- ?\\(本文終了\\|■■■■本文セル右スペースセル■■■■\\|■goostick開始■\\) ?-->"
+     "http://www.forest.impress.co.jp/")
     ))
 
 (defvar shimbun-impress-groups (mapcar 'car shimbun-impress-groups-alist))
@@ -53,8 +84,8 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
       (concat (shimbun-url-internal shimbun)
 	      (shimbun-current-group-internal shimbun) "/")))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-impress)
-					 &optional range)
+(defsubst shimbun-impress-get-headers-date (shimbun &optional range)
+  "get headers for url is date.target is all groups \"k-tai\" and \"bb\"is not included."
   (let ((case-fold-search t)
 	(regexp (nth 1 (assoc (shimbun-current-group-internal shimbun)
 			      shimbun-impress-groups-alist)))
@@ -98,12 +129,90 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 		headers))))
     headers))
 
+(defsubst shimbun-impress-get-headers-sequence (shimbun &optional range)
+  "get headers for url is sequence number.target is  \"k-tai\" and \"bb\"."
+  (let ((case-fold-search t)
+	(regexp (nth 1 (assoc (shimbun-current-group-internal shimbun)
+			      shimbun-impress-groups-alist)))
+	ids
+	headers)
+    (goto-char (point-min))
+    (while (re-search-forward regexp nil t)
+      (let* ((apath (match-string 1))
+	     (number (string-to-number (match-string 2)))
+	     (url (shimbun-expand-url apath (shimbun-index-url shimbun)))
+	     (pos (point))
+	     subject
+	     id)
+	(when (re-search-forward "</TD>" nil t)
+	  (setq subject (buffer-substring pos (match-beginning 0))
+		subject (with-temp-buffer
+			  (insert subject)
+			  (goto-char (point-min))
+			  (when (re-search-forward "<br>\\(−\\|〜\\).*" nil t)
+			    (replace-match "")
+			    (goto-char (point-min)))
+			  (while (re-search-forward "[\r\n]" nil t)
+			    (replace-match ""))
+			  (shimbun-remove-markup)
+			  (buffer-string))))
+	(setq id (concat "<" (md5 url) "%" (shimbun-current-group shimbun)
+			 "www.watch.impress.co.jp>"))
+	(unless (member id ids)
+	  (setq ids (cons id ids))
+	  (push (shimbun-create-header
+		 number
+		 (or subject "")
+		 (shimbun-from-address shimbun)
+		 ""
+		 id
+		 "" 0 0
+		 url)
+		headers))))
+    headers))
+
+(luna-define-method shimbun-get-headers ((shimbun shimbun-impress)
+					 &optional range)
+  (cond
+   ;; k-tai and bb
+   ((or (equal "k-tai" (shimbun-current-group-internal shimbun))
+	(equal "bb"    (shimbun-current-group-internal shimbun)))
+    (shimbun-impress-get-headers-sequence shimbun range))
+   ;; all others
+   (t
+    (shimbun-impress-get-headers-date shimbun range)
+    )
+   ))
+
 (luna-define-method shimbun-make-contents :around ((shimbun shimbun-impress)
 						   &optional header)
   (let ((entry (assoc (shimbun-current-group-internal shimbun)
 		      shimbun-impress-groups-alist)))
     (shimbun-set-content-start-internal shimbun (nth 2 entry))
     (shimbun-set-content-end-internal shimbun (nth 3 entry))
+    (goto-char (point-min))
+    (when  (and (re-search-forward "<!--\\(■*記事公開日■*\\| *公開日 *\\| *date *\\)-->" nil t)
+		(or (re-search-forward "[^(（]*[(（]\\([0-9][0-9]\\)/\
+\\([0-9][0-9]\\)/\\([0-9][0-9]\\)[ 　]*\\([0-9][0-9]:[0-9][0-9]\\)?" nil t)
+		    (re-search-forward "[^<]*<br ?/?>[^0-9]*\\([0-9][0-9][0-9][0-9]\\)/\
+\\([0-9][0-9]\\)/\\([0-9][0-9]\\) *\\([0-9][0-9]:[0-9][0-9]\\)?" nil t)
+		    (re-search-forward "\\([0-9][0-9][0-9][0-9]\\)/\
+\\([0-9][0-9]\\)/\\([0-9][0-9]\\) *\\([0-9][0-9]:[0-9][0-9]\\)?" nil t)))
+      (let ((year  (string-to-number (match-string-no-properties 1)))
+	    (month (string-to-number (match-string-no-properties 2)))
+	    (day   (string-to-number (match-string-no-properties 3)))
+	    (time  (or (match-string-no-properties 4)
+		       "00:00"))
+	    (date nil))
+	(when (> 100 year)
+	  (if (< 70 year)
+	      (setq year (+ year 1900))
+	    (setq year (+ year 2000))))
+	(setq date (shimbun-make-date-string
+		    year month day time))
+	(when date
+	  (shimbun-header-set-date header date))))
+    (goto-char (point-min))
     (luna-call-next-method)))
 
 (provide 'sb-impress)

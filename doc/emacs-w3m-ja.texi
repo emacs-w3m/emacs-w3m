@@ -4449,8 +4449,8 @@ excite.bit-koneta excite.world-odd
 heise.news heise.telepolis
 
 @item @uref{http://www.watch.impress.co.jp/, インプレス}
-impress.internet impress.pc impress.akiba impress.game impress.av
-impress.jijinews impress.sports
+impress.enterprise impress.pc impress.dc impress.akiba impress.av impress.game
+impress.k-tai impress.internet impress.bb impress.forest
 
 @item @uref{http://www.itmedia.co.jp/, ITmedia}
 itmedia.anchordesk itmedia.bursts itmedia.enterprise itmedia.games
