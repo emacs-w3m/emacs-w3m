@@ -193,9 +193,9 @@ element.  The position pointers of `w3m-history' will have new values."
 	   (setcdr (cdar w3m-history) nil)
 	   (setcar w3m-history (cons previous (car w3m-history)))))))
 
-  (defmacro w3m-history-with-elements (url set-current
-					   error-message-if-no-elements
-					   &rest forms)
+  (defmacro w3m-history-with-element (url set-current
+					  error-message-if-no-elements
+					  &rest forms)
     "Bind the variable `element' and evaluate FORMS like `progn'.  The
 variable `element' will have a history element which comes from
 `w3m-history-flat'.  URL specifies the position in the history
@@ -214,7 +214,7 @@ error with ERROR-MESSAGE-IF-NO-ELEMENTS."
 	     (progn
 	       (,@ forms))
 	   (error "%s" (, error-message-if-no-elements))))))
-  (put 'w3m-history-with-elements 'lisp-indent-function 'defun))
+  (put 'w3m-history-with-element 'lisp-indent-function 'defun))
 
 ;; Functions for internal use.
 (defun w3m-history-copy-1 (tree)
@@ -494,7 +494,7 @@ VALUE is any object.  If the optional third argument URL is omitted,
 it is performed on the current history element.  If the optional
 fourth argument SET-CURRENT is non-nil, the position pointer will come
 to point the element in the history structure."
-  (w3m-history-with-elements url set-current
+  (w3m-history-with-element url set-current
     "No history element found to be modified."
     (let* ((shared-plist (cadr element))
 	   (plist (plist-put shared-plist keyword value))
@@ -523,7 +523,7 @@ otherwise.  If the optional second argument URL is omitted, it is
 performed on the current history element.  If the optional third
 argument SET-CURRENT is non-nil, the position pointer will come to
 point the element in the history structure."
-  (w3m-history-with-elements url set-current
+  (w3m-history-with-element url set-current
     "No history element found to add properties."
     (let* ((shared-plist (cadr element))
 	   (plist shared-plist)
@@ -561,7 +561,7 @@ otherwise.  If the optional second argument URL is omitted, it is
 performed on the current history element.  If the optional third
 argument SET-CURRENT is non-nil, the position pointer will come to
 point the element in the history structure."
-  (w3m-history-with-elements url set-current
+  (w3m-history-with-element url set-current
     "No history element found to remove properties."
     (let* ((shared-plist (cadr element))
 	   (plist shared-plist))
@@ -598,7 +598,7 @@ the current history element.  If the optional third argument
 SET-CURRENT is non-nil, the position pointer will come to point the
 element in the history structure.  If the fourth argument THIS-BUFFER
 is nil, renaming will be done for all the w3m buffers."
-  (w3m-history-with-elements old-url set-current
+  (w3m-history-with-element old-url set-current
     "No history element found to be renamed."
     (setcar element new-url)
     (setcar (w3m-history-current-1 (caddr element)) new-url))
