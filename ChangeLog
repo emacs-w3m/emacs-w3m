@@ -1,3 +1,11 @@
+2002-12-18  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-impress.el (shimbun-impress-groups-alist): Add url
+	for "internet" and "pc".
+	(shimbun-index-url): Treat 4th element of 
+	`shimbun-impress-groups-alist' as index url.
+	(shimbun-get-headers): Use `shimbun-expand-url'.
+
 2002-12-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-type): Suppert `stable version notation' of
