@@ -348,23 +348,18 @@ Returns the exit status of the PROCESS when it exit normally,
 otherwise returns nil."
   (catch 'timeout
     (let ((start (current-time)))
-      (while (or (w3m-static-cond
-		  ((featurep 'xemacs)
-		   (not (sit-for 0.2 t)))
-		  ((<= emacs-major-version 20)
-		   (not (sit-for 0 200 t)))
-		  (t
-		   (accept-process-output process 0 200)))
+      (while (or (w3m-static-if (and (not (featurep 'xemacs))
+				     (>= emacs-major-version 21))
+		     (accept-process-output process 1)
+		   (not (sit-for 1)))
 		 (memq (process-status process) '(run stop)))
 	(and seconds
 	     (< seconds (w3m-time-lapse-seconds start (current-time)))
 	     (throw 'timeout nil)))
-      (w3m-static-cond
-       ((featurep 'xemacs)
-	(sit-for 0.05 t))
-       ((<= emacs-major-version 20)
-	(sit-for 0 50 t))
-       (t (accept-process-output process 0 0)))
+      (w3m-static-if (and (not (featurep 'xemacs))
+			  (>= emacs-major-version 21))
+	  (accept-process-output process 0 0)
+	(sit-for 0))
       (process-exit-status process))))
 
 (defun w3m-process-start-and-wait (w3m-current-process wait-function)
