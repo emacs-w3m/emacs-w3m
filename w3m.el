@@ -644,24 +644,28 @@ If optional argument NO-CACHE is non-nil, cache is not used."
       (apply (function message) args)
     (apply (function format) args)))
 
-(eval-and-compile
-  (if (equal (vector 2001 1 31 18 36 30 (current-time-zone))
-	     (timezone-fix-time "Wednesday, 31-Jan-01 09:36:30 GMT" nil nil))
-      (defun w3m-time-parse-string (string)
-	"Parse the time-string STRING and return its time as Emacs style."
-	(ignore-errors
-	  (let ((x (timezone-fix-time string nil nil)))
-	    (encode-time (aref x 5) (aref x 4) (aref x 3)
-			 (aref x 2) (aref x 1) (aref x 0)
-			 (aref x 6)))))
-    (eval-and-compile
-      (ignore-errors
-	(require 'parse-time)))
-    (defun w3m-time-parse-string (string)
-      "Parse the time-string STRING and return its time as Emacs style."
-      (ignore-errors
-	(apply (function encode-time)
-	       (parse-time-string string))))))
+(defun w3m-time-parse-string (string)
+  "Parse the time-string STRING and return its time as Emacs style."
+  (ignore-errors
+    (let ((x (timezone-fix-time string nil nil)))
+      (encode-time (aref x 5) (aref x 4) (aref x 3)
+		   (aref x 2) (aref x 1) (aref x 0)
+		   (aref x 6)))))
+
+;; When buggy timezone.el is loaded, parse-time.el will be used
+;; instead of timezone.el.
+(unless (let* ((x (current-time))
+	       (y (w3m-time-parse-string
+		   (format-time-string "%A, %d-%b-%y %T %Z" x))))
+	  (and (eq (car x) (car y)) (eq (nth 1 x) (nth 1 y))))
+  (eval-and-compile
+    (ignore-errors
+      (require 'parse-time)))
+  (defun w3m-time-parse-string (string)
+    "Parse the time-string STRING and return its time as Emacs style."
+    (ignore-errors
+      (apply (function encode-time)
+	     (parse-time-string string)))))
 
 (defsubst w3m-time-newer-p (a b)
   "Return t, if A is newer than B.  Otherwise return nil.

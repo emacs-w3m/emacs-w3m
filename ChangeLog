@@ -1,5 +1,8 @@
 2001-03-23  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
+	* w3m.el (w3m-time-parse-string): Fix condition to detect
+	timezone.el includes bug.
+
 	* w3m-time.el: Removed.
 
 	* w3m.el (TopLevel): Require `timezone' instead of `w3m-time'.
