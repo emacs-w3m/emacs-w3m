@@ -34,9 +34,10 @@
 ;;(defvar shimbun-palmfan-coding-system 'japanese-shift-jis-mac)
 (defconst shimbun-palmfan-group-path-alist
   '(("news" . "")
+    ("palmwarefan" . "PWF/")
     ;; not yet
-    ;;("nm502i" . "/cgi/tnote.cgi?book=book2")
-    ;;("hotsync" . "/cgi/tnote.cgi?book=book3")
+    ;;("nm502i" . "cgi/tnote.cgi?book=book2")
+    ;;("hotsync" . "cgi/tnote.cgi?book=book3")
     ))
 
 (defvar shimbun-palmfan-groups
@@ -45,6 +46,9 @@
 (defconst shimbun-palmfan-date-regexp
   ;;<P><A name="Apr,13.2002"></A><B>　Apr,13.2002</B><A href="#Apr,12.2002">▼</A>
   "^<P><A name=\"\\(Jan\\|Feb\\|Mar\\|Apr\\|May\\|Jun\\|Jul\\|Aug\\|Sep\\|Oct\\|Nov\\|Dec\\|\\),\\([0-9]+\\)\\.\\([0-9]+\\)\"></A><B>.*▼</A>$")
+
+(defconst shimbun-palmfan-palmwarefan-date-regexp
+  "<!-- \\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]*\\)/\\([0-9][0-9]*\\) -->$")
 
 (defconst shimbun-palmfan-month-alist
   '(("Jan" . 1) ("Feb" . 2) ("Mar" . 3) ("Apr" . 4)
@@ -59,7 +63,11 @@
   shimbun)
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-palmfan))
-  "hirose@palmfan.com")
+  (let ((group (shimbun-current-group-internal shimbun)))
+    (cond ((string= group "palmwarefan")
+	   "brian@palmfan.com")
+	  (t
+	   "hirose@palmfan.com"))))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-palmfan))
   (concat (shimbun-url-internal shimbun)
@@ -70,9 +78,114 @@
 (luna-define-method shimbun-headers ((shimbun shimbun-palmfan)
 				     &optional range)
   (let ((group (shimbun-current-group-internal shimbun)))
-    (if (string= group "news")
-	(shimbun-palmfan-news-headers shimbun range)
-      (shimbun-palmfan-bbs-headers shimbun range))))
+    (cond ((string= group "news")
+	   (shimbun-palmfan-news-headers shimbun range))
+	  ((string= group "palmwarefan")
+	   (shimbun-palmfan-palmwarefan-headers shimbun range))
+	  (t
+	   (shimbun-palmfan-bbs-headers shimbun range)))))
+
+(defun shimbun-palmfan-palmwarefan-headers (shimbun &optional range)
+  (let* ((case-fold-search t)
+	 (url (shimbun-index-url shimbun))
+	 (idbase (concat "palmwarefan."
+			 (if (string-match "^http://\\([^/]+\\)/" url)
+			     (match-string 1 url)
+			   url)
+			 ))
+	 (from "brian@palmfan.com")
+	 headers)
+    (with-temp-buffer
+      (shimbun-retrieve-url url 'no-cache 'no-decode)
+      (decode-coding-region
+       (point-min) (point-max) 'japanese-shift-jis-mac)
+      (set-buffer-multibyte t)
+      (subst-char-in-region (point-min) (point-max) ?\t ?  t)
+      (goto-char (point-min))
+      (when (and (re-search-forward
+		  "^<!--Palmware Release Infomation-->$" nil t nil)
+		 (re-search-forward
+		  shimbun-palmfan-palmwarefan-date-regexp nil t nil))
+	(beginning-of-line 1)
+	(delete-region (point-min) (point)))
+      (when (re-search-forward "^<!--Palmware Release Infomation 終了--><BR>$"
+			       nil t nil)
+	(beginning-of-line 1)
+	(delete-region (point) (point-max)))
+      (goto-char (point-max))
+      (catch 'stop
+	(let ((count 0)
+	      lastdate)
+	  (while (search-backward "</TABLE>" nil t nil)
+	    (let ((start (point))
+		  end year month day date)
+	      (re-search-backward shimbun-palmfan-palmwarefan-date-regexp)
+	      (setq year (string-to-number (match-string 1))
+		    month (string-to-number (match-string 2))
+		    day (string-to-number (match-string 3))
+		    date (shimbun-make-date-string year month day)
+		    end (progn (search-forward "<TABLE" start)
+			       (beginning-of-line)
+			       (point)))
+	      (if (and lastdate (string= lastdate date))
+		  (setq count (1+ count))
+		(setq count 0
+		      lastdate date))
+	      (goto-char start)
+	      (re-search-backward
+	       ;;<TD colspan="2"><S><B>SilverScreen 2.7</B></S><IMG src="img/i/jloc.gif" alt="日本語ローカライザあり" width="31" height="12"><IMG src="img/i/65k.gif" alt="65K色カラー対応" width="31" height="12"><IMG src="img/i/clie_jog.gif" alt="CLIE ジョグダイアル対応" width="31" height="12"><IMG src="img/i/clie_hires.gif" alt="CLIE ハイレゾ対応" width="31" height="12"><IMG src="img/i/clie_nrhires.gif" alt="CLIE NR ハイレゾ対応" width="31" height="12"><IMG src="img/i/i_vfs.gif" alt="VFS対応" width="31" height="12"></TD>
+	       ;;<TD colspan="2"><A href="http://hotspace.jp/%7Ehirock/"><B>PtFtp 0.1.0</B></A><IMG src="img/i/jmenu.gif" alt="日本語メニュー" width="31" height="12"><IMG src="img/i/256.gif" alt="256色カラー対応" width="31" height="12"></TD>
+	       "<TD colspan=[^>]+>\\(<A href=\"\\(http://[^>]+\\)\">\\)*\\(<S>\\)*<B>\\([^<]+\\)</B>\\(</S>\\)*\\(</A>\\)*\\(<IMG src=\"\\(.+\\)\">\\)*"
+	       end)
+	      (let (subject link addition id body)
+		(setq id (format "<%02d%04d%02d%02d@%s>" count year month day idbase))
+		(when (shimbun-search-id shimbun id)
+		  (throw 'stop nil))
+		(setq subject (match-string 4)
+		      link (match-string 2)
+		      addition (match-string 7)
+		      body (buffer-substring-no-properties start end))
+		;; move file size to SUBJECT
+		;;<TD align="center" width="45">8KB</TD>
+		(when (string-match "<TD \\( *nowrap *\\)*align=\"[^>]+>\\([0-9]+KB\\)</TD>" body)
+		  (setq subject (concat subject "/" (match-string 2 body)) ; move to subject
+			body (concat (substring body 0 (match-beginning 0))
+				     (substring body (match-end 0)))))
+		;; move price to SUBJECT
+		;;<TD align="center" width="50">Freeware</TD>
+		(when (string-match "<TD \\( *nowrap *\\)*align=\"[^>]+>\\([^<]+\\)</TD>" body)
+		  (setq subject (concat subject "/" (match-string 2 body)) ; move to subject
+			body (concat (substring body 0 (match-beginning 0))
+				     (substring body (match-end 0)))))
+		;; remove duplicated information
+		;;<TD colspan="2" align="center">05/16/02</TD>
+		(when (string-match
+		       "<TD colspan=\"[^>]+>[0-9][0-9]/[0-9][0-9]/[0-9][0-9]</TD>"
+		       body)
+		  (setq body (concat (substring body 0 (match-beginning 0))
+				     "<P>" ; insert return
+				     (substring body (match-end 0)))))
+		;; expand relative path
+		;;<TD><IMG src="img/i/etsuko.gif" alt="●" width="32" height="32"></TD>
+		(while (string-match "<IMG src=\"\\(img\\)/" body)
+		  (setq body (concat (substring body 0 (match-beginning 1))
+				     url "img"
+				     (substring body (match-end 1)))))
+		;; remove table tags -- should be transacted in the last step
+		(while (string-match "</*T\\(R\\|D\\)[^>]*>" body)
+		  (setq body (concat (substring body 0 (match-beginning 0))
+				     (substring body (match-end 0)))))
+		(set (intern id (shimbun-palmfan-content-hash-internal shimbun))
+		     body)
+		(when addition
+		  (while (string-match "alt=\"\\([^\"]+\\)\"" addition)
+		    (setq subject (concat subject "/" (match-string 1 addition))
+			  addition (substring addition (match-end 0)))))
+		(push (shimbun-make-header
+		       0 (shimbun-mime-encode-string subject)
+		       from date id "" 0 0 id)
+		      headers))))))
+    (nreverse headers))))
 
 (defun shimbun-palmfan-bbs-headers (shimbun &optional range)
   ;; not yet
@@ -159,7 +272,7 @@
 			 0 (shimbun-mime-encode-string subject)
 			 from date id "" 0 0 id)
 			headers)))))))
-      (nreverse headers))))
+      headers)))
 
 (luna-define-method shimbun-article ((shimbun shimbun-palmfan) header
 				     &optional outbuf)

@@ -1,3 +1,15 @@
+2002-05-19  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-group-path-alist): Add
+	palmwarefan entry.
+	(shimbun-palmfan-palmwarefan-date-regexp): New constant.
+	(shimbun-reply-to): Change email address to brian@palmfan.com
+	if GROUP is "palmwarefan".
+	(shimbun-palmfan-palmwarefan-headers): New function.
+	(shimbun-headers): Call `shimbun-palmfan-palmwarefan-headers' if
+	GROUP is "palmwarefan".
+	(shimbun-palmfan-news-headers): Do not use nreverse for HEADERS.
+
 2002-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (tarball): Chmod 755 configure.
