@@ -86,7 +86,10 @@
   "*If non-nil, nnshimbun will keep read articles for later re-retrieval.
 If it is a number N, then nnshimbun will only keep the last N articles
 read.  If it is neither nil nor a number, nnshimbun will keep all read
-articles.  This is not a good idea."
+articles.  This is not a good idea.
+
+Note that smaller values may spoil the `prefetch-articles' feature,
+since nnshimbun uses the backlog to keep the prefetched articles."
   :group 'nnshimbun
   :type '(choice (const :tag "off" nil)
 		 integer
