@@ -286,7 +286,7 @@ Buffer string between BEG and END are replaced with IMAGE."
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-favicon-size "16x16"
+(defcustom w3m-favicon-size nil
   "*Size of favicon. This value is used as geometry argument for `convert'."
   :group 'w3m
   :type 'string)
@@ -412,9 +412,12 @@ Each information is a list whose elements are:
   (with-current-buffer buffer
     (when w3m-current-favicon-data
       (or w3m-current-favicon-image
-	  (let ((xpm (w3m-imagick-convert-data
-		      w3m-current-favicon-data
-		      "ico" "xpm" "-geometry" w3m-favicon-size)))
+	  (let* ((height (number-to-string (frame-char-height)))
+		 (xpm (w3m-imagick-convert-data
+		       w3m-current-favicon-data
+		       "ico" "xpm" "-geometry" (or 
+						w3m-favicon-size
+						(concat height "x" height)))))
 	    (if xpm
 		(setq w3m-current-favicon-image
 		      (create-image xpm

@@ -1,5 +1,9 @@
 2002-02-07  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-e21.el (w3m-favicon-size): Set default value to nil.
+	(w3m-buffer-favicon): If w3m-favicon-size is nil, detect frame char
+	height and use it.
+
 	* w3m.el (w3m-command): Set default value to nil.
 	(w3m-type): Ditto.
 	(w3m-options): New user option.
