@@ -251,7 +251,9 @@ emacs-w3m.")
 			    (copy-sequence version-specific-modules))))
 	 (shimbun-dir (file-name-as-directory shimbun-module-directory))
 	 print-level print-length)
-    (unless (locate-library "mew")
+    (unless (and (boundp 'emacs-major-version) ; Mew 2.x and later do not
+		 (>= emacs-major-version 20)   ; support Mule2.3/Emacs19.
+		 (locate-library "mew"))
       (push "mew-w3m.el" ignores))
     (unless (if (featurep 'xemacs)
 		(and (featurep 'mule) (locate-library "pccl"))
@@ -276,7 +278,9 @@ emacs-w3m.")
 					 nil "^[^#]+\\.el$"))
 	    (setq modules (nconc modules (list (concat shimbun-dir file)))))
 	  ;; mew-shimbun check
-	  (unless (locate-library "mew-nntp")
+	  (unless (and (boundp 'emacs-major-version) ; Mew 2.x and later do not
+		       (>= emacs-major-version 20)   ; support Mule2.3/Emacs19.
+		       (locate-library "mew-nntp"))
 	    (push (concat shimbun-dir "mew-shimbun.el") ignores))
 	  ;; nnshimbun check
 	  (unless (let ((gnus (locate-library "gnus")))
