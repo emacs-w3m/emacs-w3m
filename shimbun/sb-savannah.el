@@ -42,6 +42,12 @@
 (defvar shimbun-savannah-groups
   (mapcar 'car shimbun-savannah-group-path-alist))
 
+(defvar shimbun-savannah-x-face-alist
+  '(("default" . "X-Face: \"ve{jUI{XipH\"!p<$d]|*@,jKlwo,H{bJL~s@_/L\
+<v\\(w1Fl@;[>_e)S*v59YRxw.-Xo`/z\n SJ3XL'Em*Qn#@<CbHA]{(nLVMcWhP{iRz\
+eg#>v@W)6Ei!X,[sn+a=B0Tzj~QLWT+QLO'leRXxBKh-9\n )!C/L|Al):n[Cb!eSD]b\
+xIUL{1DS0vSlMbcV0&W(;bg\"/)^j&L+VMB7<L*Zf@w:O!r!$n)(t\\qsxX~\n TXKI")))
+
 (luna-define-method shimbun-index-url ((shimbun shimbun-mailman))
   (concat (shimbun-url-internal shimbun) "/"
 	  (cdr (assoc (shimbun-current-group-internal shimbun)
