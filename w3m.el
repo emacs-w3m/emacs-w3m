@@ -181,7 +181,10 @@ width using expression (+ (frame-width) VALUE)."
   :type 'function)
 
 (defcustom w3m-use-mule-ucs
-  (and (eq w3m-type 'w3m) (locate-library "un-define.el"))
+  (and (eq w3m-type 'w3m)
+       (locate-library "un-define.el")
+       (boundp 'emacs-major-version)
+       (>= (symbol-value 'emacs-major-version) 20))
   "*Non nil means using multi-script support with Mule-UCS."
   :group 'w3m
   :type 'boolean
@@ -2522,8 +2525,48 @@ to nil.
 
 
 ;;; Retrieve data:
-(unless (get 'w3m-euc-japan-decoder 'ccl-program-idx)
-  (define-ccl-program w3m-euc-japan-decoder
+(define-ccl-program w3m-euc-japan-decoder
+  (w3m-static-if (fboundp 'ccl-compile-write-multibyte-character)
+      ;; Note that the above function has implemented in XEmacs
+      ;; 21.2.19, however, the early version is buggy.  Because of
+      ;; this, the following program won't work under the versions of
+      ;; XEmacs between 21.2.19 and 21.2.36.  It is recommended to
+      ;; upgrade your XEmacs if you are using that one.
+      `(2
+	(loop
+	 (read r0)
+	 ;; Process normal EUC characters.
+	 (if (r0 < ?\x80)
+	     (write-repeat r0))
+	 (if (r0 > ?\xa0)
+	     ((read r1)
+	      (r1 &= ?\x7f)
+	      (r1 |= ((r0 & ?\x7f) << 7))
+	      (r0 = ,(charset-id 'japanese-jisx0208))
+	      (write-multibyte-character r0 r1)
+	      (repeat)))
+	 (if (r0 == ?\x8e)
+	     ((read r1)
+	      (r0 = ,(charset-id 'katakana-jisx0201))
+	      (write-multibyte-character r0 r1)
+	      (repeat)))
+	 (if (r0 == ?\x8f)
+	     ((read r0 r1)
+	      (r1 &= ?\x7f)
+	      (r1 |= ((r0 & ?\x7f) << 7))
+	      (r0 = ,(charset-id 'japanese-jisx0212))
+	      (write-multibyte-character r0 r1)
+	      (repeat)))
+	 ;; Process internal characters used in w3m.
+	 (if (r0 == ?\x80)	     ; Old ANSP (w3m-0.1.11pre+kokb23)
+	     (write-repeat 32))
+	 (if (r0 == ?\x90)		; ANSP (use for empty anchor)
+	     (write-repeat 32))
+	 (if (r0 == ?\x91)		; IMSP (blank around image)
+	     (write-repeat 32))
+	 (if (r0 == ?\xa0)		; NBSP (non breakble space)
+	     (write-repeat 32))
+	 (write-repeat r0)))
     `(2
       (loop
        (read r0)
@@ -2661,9 +2704,9 @@ to nil.
 	  (setq title (match-string 1))
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (with-temp-buffer
-	      (insert title)
-	      (w3m-decode-entities)
-	      (setq title (buffer-string)))))
+	    (insert title)
+	    (w3m-decode-entities)
+	    (setq title (buffer-string)))))
       (if (and (null title)
 	       (stringp w3m-current-url)
 	       (< 0 (length (file-name-nondirectory w3m-current-url))))
@@ -3665,7 +3708,10 @@ called non-interactively."
 (defun w3m-find-file (file)
   "w3m Interface function for local file."
   (interactive "fFilename: ")
-  (w3m-goto-url (w3m-expand-file-name-as-url file)))
+  (w3m-goto-url (w3m-expand-file-name-as-url file)
+		nil
+		(if (fboundp 'universal-coding-system-argument)
+		    (symbol-value 'coding-system-for-read))))
 
 
 (defun w3m-cygwin-path (path)

@@ -73,13 +73,19 @@
 	     ;; (3) Katakana Part of Japanese JISX0201.1976
 	     ((write ?\x8e)
 	      (write-repeat r0))
-	   ((if (r0 > 255)
+	   (;; (4) Other characters are represented in NCR (Numeric
+	    ;; Character References).
+	    ;; (4.1) Convert a set of r1 (charset-id) and r0 (codepoint)
+	    ;; to a character in Emacs internal representation.
+	    (if (r0 > 255)
 		((r4 = (r0 & 127))
 		 (r0 = (((r0 >> 7) * 96) + r4))
 		 (r0 |= (r1 << 16)))
 	      ((r0 |= (r1 << 16))))
-	    ;; (4) Other characters are mapped into Unicode codepoint.
+	    ;; (4.2) Convert a character in Emacs to a UCS codepoint.
 	    (call emacs-char-to-ucs-codepoint-conversion)
+	    ;; (4.3) Generate a string which represents a UCS
+	    ;; codepoint in NCR.
 	    (r1 = 0)
 	    (r2 = 0)
 	    (loop

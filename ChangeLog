@@ -1,3 +1,13 @@
+2001-09-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-use-mule-ucs): Strict checking.
+	(w3m-euc-japan-decode): Use `write-multibyte-character' except
+	Mule2 and XEmacs21.1.
+	(w3m-find-file): Refer `coding-system-for-read' which is specified
+	by `universal-coding-system-argument'.
+
+	* w3m-xmas.el (w3m-euc-japan-decoder): Removed.
+
 2001-09-09  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* shimbun/sb-yahoo.el: Follow the renewal of the Web site.
