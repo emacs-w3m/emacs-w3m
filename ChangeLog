@@ -1,5 +1,8 @@
 2003-07-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-uri-replace-alist): Revert 2003-07-09 change;
+	improve the customizing widget.
+
 	* doc/ptexinfmt.el (texinfo-discard-command-and-arg): New function
 	for old Emacsen.
 

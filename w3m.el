@@ -1184,11 +1184,6 @@ will disclose your private informations, for example:
     ("\\`bts:" w3m-search-uri-replace "debian-bts")
     ("\\`dpkg:" w3m-search-uri-replace "debian-pkg")
     ("\\`archie:" w3m-search-uri-replace "iij-archie")
-    ("\\`rpm:" w3m-search-uri-replace "rpmfind")
-    ("\\`waei:" w3m-search-uri-replace "waei")
-    ("\\`eiwa:" w3m-search-uri-replace "eiwa")
-    ("\\`kokugo:" w3m-search-uri-replace "kokugo")
-    ("\\`eiei:" w3m-search-uri-replace "eiei")
     ("\\`urn:ietf:rfc:\\([0-9]+\\)" w3m-pattern-uri-replace
      "http://www.ietf.org/rfc/rfc\\1.txt"))
   "*Alist of a regexp matching a uri and its replacement.
@@ -1208,17 +1203,46 @@ way:
 "
   :group 'w3m
   :type '(repeat
-	  (cons
-	   (string :tag "Regexp" :value "")
-	   (choice (list :tag "Replacement Using Pattern"
-			 (function-item :format "" w3m-pattern-uri-replace)
-			 (string :tag "Pattern" :value ""))
-		   (list :tag "Quick Search"
-			 (function-item :format "" w3m-search-uri-replace)
-			 (string :tag "Engine"))
-		   (list :tag "User Defined Function"
-			 (function)
-			 (repeat :tag "Options" sexp))))))
+	  (list
+	   :convert-widget
+	   (lambda (widget)
+	     (require 'w3m-search)
+	     (list
+	      'choice
+	      :args
+	      (append
+	       '((list :tag "Replacement Using Pattern"
+		       (string :tag "Regexp" :value "")
+		       (function-item :format "" w3m-pattern-uri-replace)
+		       (string :tag "Pattern" :value ""))
+		 (list :tag "Quick Search"
+		       (string :tag "Regexp" :value "")
+		       (function-item :format "" w3m-search-uri-replace)
+		       (string :tag "Engine")))
+	       (delq
+		nil
+		(mapcar
+		 (lambda (elem)
+		   (let ((engine (car elem))
+			 scheme)
+		     (if (rassoc (list 'w3m-search-uri-replace engine)
+				 w3m-uri-replace-alist)
+			 nil
+		       (setq scheme (mapconcat
+				     'identity
+				     (split-string (downcase engine))
+				     "-"))
+		       (list
+			'list :tag (concat "Quick Search: " scheme)
+			(list 'string :tag "Regexp" :value
+			      (concat "\\`" (regexp-quote scheme) ":"))
+			'(function-item :format "" w3m-search-uri-replace)
+			(list 'string :tag "Engine" engine)))))
+		 w3m-search-engine-alist))
+	       '((list :tag "User Defined Function"
+		       (string :tag "Regexp" :value "")
+		       (function)
+		       (repeat :tag "Options" sexp)))))))))
 
 (eval-and-compile
   (defconst w3m-entity-alist		; html character entities and values
