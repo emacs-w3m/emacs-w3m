@@ -1,3 +1,28 @@
+2001-07-05  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-0.2.1-mnc.patch: Added [-post body] option.
+
+	* w3m.el (w3m-url-encode-string): Don't cause an error when str is nil.
+	(w3m-goto-url): Added post-body argument;
+	Set -post option if post-body is specified.
+
+	* w3m-form.el (w3m-form-make-form-urlencoded): New function.
+	(w3m-form-make-get-string): Use `w3m-form-make-form-urlencoded'.
+	(w3m-form-parse-region): Add textarea processing.
+	(w3m-form-replace): Delete newline characters.
+	(w3m-form-input): Added textarea processing.
+	(w3m-form-submit): If form method is POST, then set post-body
+	argument of `w3m-goto-url'.
+	(w3m-form-input-textarea-buffer-lines): New user option.
+	(w3m-form-input-textarea-mode-hook): Ditto.
+	(w3m-form-input-textarea-keymap): New keymap.
+	(w3m-form-input-textarea-buffer): New buffer local variable.
+	(w3m-form-input-textarea-form): Ditto.
+	(w3m-form-input-textarea-name): Ditto.
+	(w3m-form-input-textarea-set): New function.
+	(w3m-form-input-textarea-mode): Ditto.
+	(w3m-form-input-textarea): Ditto.
+
 2001-07-04  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-url): Changed url.

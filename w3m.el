@@ -1193,7 +1193,7 @@ If N is negative, last N items of LIST is returned."
 	     (t
 	      (format "%%%02X" ch))))	; escape
 	  ;; Coerce a string to a list of chars.
-	  (append (encode-coding-string str (or coding 'iso-2022-jp))
+	  (append (encode-coding-string (or str "") (or coding 'iso-2022-jp))
 		  nil))))
 
 (put 'w3m-parse-attributes 'lisp-indent-function '1)
@@ -3013,7 +3013,7 @@ or prefix ARG columns."
       (copy-file ftp (w3m-read-file-name nil nil file)))))
 
 ;;;###autoload
-(defun w3m-goto-url (url &optional reload charset)
+(defun w3m-goto-url (url &optional reload charset post-body)
   "Retrieve contents of URL."
   (interactive
    (list
@@ -3079,7 +3079,12 @@ or prefix ARG columns."
 				 w3m-default-content-type)
 			 w3m-content-type-alist nil t)))
 		 (setq ct (if (string= "" s) w3m-default-content-type s)))))
-	(if (not (w3m-exec url nil reload cs ct))
+	(if (not (let ((w3m-command-arguments
+			(if post-body
+			    (append w3m-command-arguments
+				    (list "-post" post-body))
+			  w3m-command-arguments)))
+		   (w3m-exec url nil reload cs ct)))
 	    (w3m-refontify-anchor)
 	  (w3m-history-push w3m-current-url
 			    (list ':title w3m-current-title))

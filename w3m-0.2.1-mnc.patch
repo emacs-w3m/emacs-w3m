@@ -91,8 +91,8 @@
  char *
  mybasename(char *s)
  {
---- main.c.orig	Fri Mar 23 11:15:02 2001
-+++ main.c	Mon Apr 23 19:45:40 2001
+--- main.c.orig	Thu Jul  5 23:38:56 2001
++++ main.c	Thu Jul  5 23:39:19 2001
 @@ -59,8 +59,10 @@
  int w3m_dump = 0;
  int w3m_dump_source = 0;
@@ -104,7 +104,15 @@
  int prec_num = 0;
  int prev_key = -1;
  int on_target = 1;
-@@ -234,16 +236,64 @@
+@@ -110,6 +112,7 @@
+     fprintf(f, "    +<num>           goto <num> line\n");
+     fprintf(f, "    -num             show line number\n");
+     fprintf(f, "    -no-proxy        don't use proxy\n");
++    fprintf(f, "    -post body       use POST method with body\n");
+ #ifdef MOUSE
+     fprintf(f, "    -no-mouse        don't use mouse\n");
+ #endif				/* MOUSE */
+@@ -234,16 +237,64 @@
  	    }
  	    else if (!strcmp("-h", argv[i]))
  		help();
@@ -174,7 +182,7 @@
  #ifdef USE_COOKIE
      initCookie();
  #endif				/* USE_COOKIE */
-@@ -367,36 +417,6 @@
+@@ -367,36 +418,6 @@
  		    WrapSearch = TRUE;
  		}
  	    }
@@ -211,7 +219,19 @@
  	    else if (!strcmp("-halfload", argv[i])) {
  		w3m_halfload = TRUE;
  		w3m_dump = FALSE;
-@@ -526,13 +546,20 @@
+@@ -431,6 +452,11 @@
+ 		showLineNum = TRUE;
+ 	    else if (!strcmp("-no-proxy", argv[i]))
+ 		Do_not_use_proxy = TRUE;
++	    else if (!strcmp("-post", argv[i])) {
++		if (++i >= argc)
++		    usage();
++		post_body = argv[i];
++	    }	    
+ #ifdef MOUSE
+ 	    else if (!strcmp("-no-mouse", argv[i])) {
+ 		mouse_end();
+@@ -526,13 +552,20 @@
      }
      if (w3m_backend)
  	backend();
@@ -233,7 +253,7 @@
  	if (!isatty(0)) {
  	    redin = newFileStream(fdopen(dup(0), "rb"), (void (*)()) pclose);
  	    newbuf = openGeneralPagerBuffer(redin);
-@@ -594,7 +621,7 @@
+@@ -594,13 +627,23 @@
      }
      for (; i < load_argc; i++) {
  	if (i >= 0) {
@@ -242,7 +262,24 @@
  		request = New(FormList);
  		request->method = FORM_METHOD_HEAD;
  		newbuf = loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0, request);
-@@ -632,23 +659,6 @@
+ 	    }
+ 	    else {
+-		newbuf = loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0, NULL);
++	        if (post_body) {
++		    request = newFormList (NULL, "post", NULL, NULL, NULL, NULL);
++		    request->body = post_body;
++		    request->boundary = NULL;
++		    request->length = strlen (post_body);
++		}
++		else {
++		  request = NULL;
++		}
++	        
++		newbuf = loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0, request);
+ 	    }
+ 	    if (newbuf == NULL) {
+ 		fprintf(stderr, "w3m: Can't load %s\n", load_argv[i]);
+@@ -632,23 +675,6 @@
  	    deleteFiles();
  	    exit(0);
  	}
@@ -266,7 +303,7 @@
  	if (Currentbuf == NULL)
  	    Firstbuf = Currentbuf = newbuf;
  	else {
-@@ -660,11 +670,40 @@
+@@ -660,11 +686,40 @@
  	    rFrame();
  	    Currentbuf = newbuf;
  	}
@@ -307,7 +344,7 @@
      if (!Firstbuf || Firstbuf == NO_BUFFER) {
  	if (newbuf == NO_BUFFER) {
  	    if (fmInitialized)
-@@ -776,6 +815,17 @@
+@@ -776,6 +831,17 @@
  	printf("%s", ti->ptr);
      }
      puts("");
@@ -325,3 +362,13 @@
  }
  
  void
+--- fm.h.orig	Thu Jul  5 23:15:30 2001
++++ fm.h	Wed Jul  4 00:30:03 2001
+@@ -660,6 +660,7 @@
+ global int w3m_debug;
+ global int w3m_halfdump init(FALSE);
+ global int w3m_halfload init(FALSE);
++global char *post_body init(NULL);
+ 
+ #ifdef COLOR
+ global int useColor init(TRUE);
