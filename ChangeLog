@@ -1,3 +1,11 @@
+2001-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-about-history): New implementation.
+	(w3m-about-history-indent-level): New variable.
+	(w3m-about-history-max-indentation): New variable.
+
+	* icons/history-up.xpm: Replaced a pixmap with a new pattern.
+
 2001-05-16  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-dtree.el (w3m-dtree-default-allfiles): Modify default value.
