@@ -23,6 +23,7 @@ default:
 	@modules="`$(MODULES) 2>/dev/null`";\
 	if test -z "$$modules"; then\
 	  echo "Error has occurred while examining w3m modules;";\
+	  echo "$(MODULES)";\
 	  $(MODULES);\
 	else\
 	  echo "$(MAKE) -k $$modules";\
