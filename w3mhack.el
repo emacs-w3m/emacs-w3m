@@ -183,7 +183,7 @@ to remove some obsolete variables in the first argument VARLIST."
 	   (elcs (with-temp-buffer
 		   (let ((standard-output (current-buffer)))
 		     (w3mhack-examine-modules)
-		     (split-string (buffer-string) " \\|shimbun/"))))
+		     (split-string (buffer-string) " \\(shimbun/\\)?"))))
 	   (icons (directory-files (expand-file-name "icons/") nil
 				   "^[^#]+\\.xpm$"))
 	   (si:message (symbol-function 'message))
