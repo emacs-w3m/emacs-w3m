@@ -181,17 +181,11 @@ that consists of:
 	  (function :format "User function: %v\n" :size 0)))
 
 (defun w3m-antenna-alist ()
-  (let ((alist (delq nil
-		     (mapcar (lambda (site)
-			       (when (assoc (w3m-antenna-site-key site)
-					    w3m-antenna-sites)
-				 site))
-			     (w3m-load-list w3m-antenna-file)))))
-    (dolist (site w3m-antenna-sites)
-      (unless (assoc (w3m-antenna-site-key site) alist)
-	(push (append site (list nil nil nil nil))
-	      alist)))
-    alist))
+  (let ((alist (w3m-load-list w3m-antenna-file)))
+    (mapcar (lambda (site)
+	      (or (assoc (w3m-antenna-site-key site) alist)
+		  (append site (list nil nil nil nil))))
+	    w3m-antenna-sites)))
 
 (defun w3m-antenna-hns-last-modified (url handler)
   (w3m-process-do-with-temp-buffer
@@ -505,10 +499,10 @@ Minor mode to edit antenna.
 \\[w3m-antenna-edit]	Customize `w3m-antenna-sites'.
 "
   (interactive "P")
-  (prog1 (setq w3m-antenna-mode
-	       (if arg
-		   (> (prefix-numeric-value arg) 0)
-		 (not w3m-antenna-mode)))
+  (when (setq w3m-antenna-mode
+	      (if arg
+		  (> (prefix-numeric-value arg) 0)
+		(not w3m-antenna-mode)))
     (run-hooks 'w3m-antenna-mode-hook)))
 
 (defun w3m-antenna-mode-setter (url)

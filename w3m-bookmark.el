@@ -119,10 +119,10 @@ Minor mode to edit bookmark.
 \\[w3m-bookmark-edit]	Open `w3m-bookmark-file'.
 "
   (interactive "P")
-  (prog1 (setq w3m-bookmark-mode
-	       (if arg
-		   (> (prefix-numeric-value arg) 0)
-		 (not w3m-bookmark-mode)))
+  (when (setq w3m-bookmark-mode
+	      (if arg
+		  (> (prefix-numeric-value arg) 0)
+		(not w3m-bookmark-mode)))
     (run-hooks 'w3m-bookmark-mode-hook)))
 
 (defun w3m-bookmark-mode-setter (url)

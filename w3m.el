@@ -7953,10 +7953,10 @@ FROM-COMMAND is defined to `w3m-minor-mode-map' for same keys in
 (defun w3m-minor-mode (&optional arg)
   "Minor mode to view text/html part in articles."
   (interactive "P")
-  (prog1 (setq w3m-minor-mode
-	       (if arg
-		   (> (prefix-numeric-value arg) 0)
-		 (not w3m-minor-mode)))
+  (when (setq w3m-minor-mode
+	      (if arg
+		  (> (prefix-numeric-value arg) 0)
+		(not w3m-minor-mode)))
     (run-hooks 'w3m-minor-mode-hook)))
 
 

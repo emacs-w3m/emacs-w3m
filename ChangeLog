@@ -1,3 +1,12 @@
+2003-11-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-minor-mode): Run hooks only when this minor mode is
+	enabled.
+	* w3m-bookmark.el (w3m-bookmark-mode): Ditto.
+	* w3m-antenna.el (w3m-antenna-mode): Ditto.
+
+	* w3m-antenna.el (w3m-antenna-alist): Simplified.
+
 2003-11-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el: Define a new minor mode `w3m-antenna-mode'.
