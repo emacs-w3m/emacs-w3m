@@ -1891,10 +1891,10 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "\M-I" 'w3m-save-image)
     (define-key map "c" 'w3m-print-current-url)
     (define-key map "M" 'w3m-view-current-url-with-external-browser)
-    (define-key map "g" 'w3m)
+    (define-key map "g" 'w3m-goto-url)
     (define-key map "t" 'w3m-toggle-inline-images)
-    (define-key map "U" 'w3m)
-    (define-key map "V" 'w3m)
+    (define-key map "U" 'w3m-goto-url)
+    (define-key map "V" 'w3m-goto-url)
     (define-key map "v" 'w3m-bookmark-view)
     (define-key map "q" 'w3m-close-window)
     (define-key map "Q" 'w3m-quit)
@@ -2051,7 +2051,9 @@ or prefix ARG columns."
       (dired-other-window ftp))))
 
 (defun w3m-goto-url (url &optional reload)
-  "Retrieve URL and display it in this buffer."
+  "*Retrieve contents of URL."
+  (interactive
+   (list (w3m-input-url) current-prefix-arg))
   (cond
    ;; process mailto: protocol
    ((string-match "^mailto:\\(.*\\)" url)

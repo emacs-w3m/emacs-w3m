@@ -14,6 +14,7 @@
 	asking url.
 	(w3m-view-parent-page, w3m-browse-url, w3m-view-source,
 	w3m-history): Use `w3m-goto-url' instead of `w3m'.
+	(w3m-mode-map): Replace `w3m' with `w3m-goto-url'.
 
 2001-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
