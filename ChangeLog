@@ -1,5 +1,12 @@
 2003-09-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el (w3mhack-nonunix-install): Use icons30 for XEmacs.
+	(w3mhack-make-package): Use icons30.
+
+	* Makefile.in (SUBDIRS): Add icons30.
+	(install-icons30): New rule.
+	(install-package, install-package-ja): Use it.
+
 	* icons/*.xpm: Shrink the size of all icons.
 	* icons30/: Old icons are here.
 

@@ -500,6 +500,16 @@ Emacs 21 $B$^$?$O(B XEmacs $B$r;H$C$F$$$k$J$i$P!"%"%$%3%s2hA|$N%U%!%$%k$r%$%s
 % make install-icons
 @end example
 
+@noindent
+$B$^$?$O(B
+
+@example
+% make install-icons30
+@end example
+
+@noindent
+$B8e<T$O$A$g$C$HBg$-$J%"%$%3%s2hA|$r;H$&$?$a$N$b$N$G$9!#(B
+
 @item
 $B0J2<$N$h$&$K(B @samp{make install} $B$NBe$o$j(B
 $B$K(B @samp{make install-package} $B$r;H$&$3$H$K$h$C$F!"(B
@@ -510,7 +520,8 @@ emacs-w3m $B$r(B XEmacs $B%Q%C%1!<%8$H$7$F%$%s%9%H!<%k$9$k$3$H$b$G$-$^$9(B:
 % make install-package
 @end example
 
-$B$3$N>l9g(B @samp{make install-icons} $B$r<B9T$9$kI,MW$O$"$j$^$;$s!#(B
+$B$3$N>l9g(B @samp{make install-icons} $B$^$?$O(B @samp{make install-icons30} $B$r(B
+$B<B9T$9$kI,MW$O$"$j$^$;$s!#(B
 
 $B%Q%C%1!<%8!&%G%#%l%/%H%j$r;XDj$9$k$K$OFs$D$NJ}K!$,$"$j$^$9(B:
 

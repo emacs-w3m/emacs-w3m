@@ -151,6 +151,10 @@
      インストールした方が良いでしょう．それを行なうには:
 
          % make install-icons
+     または
+         % make install-icons30
+
+     後者はちょっと大きなアイコン画像を使うためのものです．
 
      install の代わりに install-package を使うと，XEmacs の package とし
      てインストールすることもできます．
@@ -158,7 +162,8 @@
          % make
          % make install-package
 
-     この場合 install-icons を実行する必要はありません．
+     この場合 install-icons または make install-icons30 を実行する必要は
+     ありません．
 
      `make install' または `make install-package' によって info ファイル
      もインストールされます．
