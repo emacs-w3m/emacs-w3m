@@ -389,9 +389,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		   (if accept-charset
 		       (setq accept-charset
 			     (split-string accept-charset ","))))
-		  forms)))
-	(unless (eq (w3m-form-method (car forms)) 'internal)
-	  (setq form (car forms))))
+		  forms))))
        ((string= tag "map")
 	(let (candidates)
 	  (w3m-parse-attributes (name)
@@ -441,6 +439,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	  (let ((abs-hseq (or (and (null hseq) 0) (abs hseq))))
 	    (setq w3m-max-anchor-sequence 
 		  (max abs-hseq w3m-max-anchor-sequence))
+	    (setq form (nth fid forms))
 	    (when form
 	      (cond
 	       ((and (string= type "hidden")
@@ -527,7 +526,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		   w3m-anchor-sequence ,abs-hseq)))
 	       ((string= type "radio")
 		;; Radio button input, one name has one value
-		(w3m-form-put (car forms) name
+		(w3m-form-put form name
 			      (if checked value
 				(w3m-form-get form name)))
 		(add-text-properties
@@ -550,7 +549,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					       (w3m-form-get ,form ,name))
 		   w3m-anchor-sequence ,abs-hseq)))
 	       (t
-		(w3m-form-put (car forms)
+		(w3m-form-put form
 			      name
 			      (or value (w3m-form-get form name)))
 		(add-text-properties
