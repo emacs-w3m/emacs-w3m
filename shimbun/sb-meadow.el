@@ -1,8 +1,8 @@
 ;;; sb-meadow.el --- shimbun backend for meadow-ml
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
-;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
-;;         Yuuichi Teranishi <teranisi@gohome.org>
+;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>,
+;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
+;;         Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Keywords: news
 
@@ -42,30 +42,41 @@
 (defvar shimbun-meadow-litemplate-regexp
   "<STRONG><A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a> \\([^<]+\\)</STRONG>")
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-meadow))
-  (concat (shimbun-url-internal shimbun) 
-	  (shimbun-current-group-internal shimbun)
-	  (format-time-string "/%Y/")))
-
-(luna-define-method shimbun-get-headers ((shimbun shimbun-meadow))
-  (let ((case-fold-search t)
-	  headers)
-      (goto-char (point-min))
-      (when (re-search-forward
-	     "<A[^>]*HREF=\"mail\\([0-9]+\\)\\.html\">\\[?Last Page\\]?</A>"
-	     nil t)
-	(let ((aux (string-to-number (match-string 1)))
-	      url)
-	  (catch 'stop
-	    (while (> aux 0)
-	      (setq url (concat (shimbun-index-url shimbun)
-				(if (= aux 1) "" (format "mail%d.html" aux))))
-	      (erase-buffer)
-	      (shimbun-retrieve-url url)
-	      (shimbun-mhonarc-get-headers shimbun url headers
-					   (format-time-string "%Y"))
-	      (setq aux (1- aux))))))
-      headers))
+(luna-define-method shimbun-headers ((shimbun shimbun-meadow))
+  (with-temp-buffer
+    (shimbun-retrieve-url shimbun-meadow-url)
+    (let* ((group (shimbun-current-group-internal shimbun))
+	   (regexp (format
+		    "<a href=\"\\(%s/\\([1-9][0-9][0-9][0-9]\\)/\\)\""
+		    (regexp-quote group)))
+	   (case-fold-search t)
+	   (indexes)
+	   (headers))
+      (while (re-search-forward regexp nil t)
+	(push (cons (match-string 2)
+		    (w3m-expand-url (match-string 1) shimbun-meadow-url))
+	      indexes))
+      (unless (shimbun-use-entire-index-internal shimbun)
+	(setq indexes (list (car indexes))))
+      (catch 'stop
+	(dolist (elem indexes)
+	  (delete-region (point-min) (point-max))
+	  (shimbun-retrieve-url (cdr elem) t)
+	  (goto-char (point-min))
+	  (when (re-search-forward
+		 "<A[^>]*HREF=\"mail\\([0-9]+\\)\\.html\">\\[?Last Page\\]?</A>"
+		 nil t)
+	    (let ((aux (string-to-number (match-string 1)))
+		  url)
+	      (while (> aux 0)
+		(setq url (if (= aux 1)
+			      (cdr elem)
+			    (w3m-expand-url (format "mail%d.html" aux) (cdr elem))))
+		(delete-region (point-min) (point-max))
+		(shimbun-retrieve-url url)
+		(shimbun-mhonarc-get-headers shimbun url headers (car elem))
+		(setq aux (1- aux))))))
+	headers))))
 
 (provide 'sb-meadow)
 

@@ -1,8 +1,9 @@
-;;; sb-sponichi.el --- shimbun backend for www.sponichi.co.jp
+;;; sb-sponichi.el --- shimbun backend for www.sponichi.co.jp -*- coding: iso-2022-7bit -*-
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>
-;;         Yuuichi Teranishi <teranisi@gohome.org>
+;; Author: Tatsuya Ichikawa   <ichikawa@erc.epson.com>,
+;;         TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>,
+;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>,
+;;         Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Keywords: news
 
@@ -25,8 +26,8 @@
 
 ;;; Commentary:
 
-;; Original code was nnshimbun.el written by
-;; TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>.
+;; Original code was posted in [semi-gnus-ja:5245] by
+;; Tatsuya Ichikawa <ichikawa@erc.epson.com>.
 
 ;;; Code:
 
