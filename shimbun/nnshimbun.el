@@ -1,6 +1,6 @@
 ;;; nnshimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2000,2001,2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000,2001,2002,2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Akihiro Arisawa    <ari@atesoft.advantest.co.jp>,
@@ -68,7 +68,8 @@
   :group 'gnus)
 
 (defvar nnshimbun-group-parameters-custom
-  '(list :format "%v"
+  '(list :format "Nnshimbun group parameters.\
+  Check the leftmost button for customizing.\n%v"
 	 (checklist :inline t
 		    (list :inline t :format "%v"
 			  (const :format "" index-range)
@@ -76,7 +77,7 @@
 				  :value all
 				  (const all)
 				  (const last)
-				  (integer :tag "days")))
+				  (integer :tag "pages")))
 		    (list :inline t :format "%v"
 			  (const :format "" prefetch-articles)
 			  (choice :tag "Prefetch articles"
