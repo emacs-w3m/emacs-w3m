@@ -1,8 +1,10 @@
 2005-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/sb-rss.el (shimbun-rss-process-date): Support the date
-	format in the RFC822 style which RSS 2.0 allows.  Suggested by
-	David Hansen <david.hansen@physik.fu-berlin.de>.
+	* w3m-rss.el (w3m-rss-parse-date-string): Support the date format
+	in the RFC822 style which RSS 2.0 allows.
+	Suggested by David Hansen <david.hansen@physik.fu-berlin.de>.
+
+	* shimbun/sb-rss.el (shimbun-rss-process-date): Ditto.
 
 2005-01-25  David Hansen  <david.hansen@physik.fu-berlin.de>
 

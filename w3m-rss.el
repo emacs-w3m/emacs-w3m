@@ -1,6 +1,6 @@
 ;;; w3m-rss.el --- RSS functions
 
-;; Copyright (C) 2004 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2004, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -42,9 +42,13 @@
 (eval-when-compile (require 'cl))
 (autoload 'xml-parse-region "xml")
 
+(autoload 'timezone-parse-date "timezone")
+(autoload 'timezone-parse-time "timezone")
+
 (defun w3m-rss-parse-date-string (date)
-  "Decode DATE string written in ISO 8601 format into a time
-in the Emacs style.  Acceptable formats are:
+  "Decode DATE string written in the ISO 8601 format or the RFC822 style.
+Return a list of numbers which conforms to the Emacs internal format.
+Valid types in the ISO 8601 format include:
 
     Year:
        YYYY (eg 1997)
@@ -71,31 +75,49 @@ where:
   TZD  = time zone designator (Z or +hh:mm or -hh:mm)
 
 For more detail about ISO 8601 date format, see
-http://www.w3.org/TR/NOTE-datetime.
-"
-  (when (and date
-	     (string-match "\
+<URL:http://www.w3.org/TR/NOTE-datetime>.
+
+In addition to the above, it also supports the date format in the
+RFC822 style which RSS 2.0 allows.  Valid types are the same as ones
+which are supported by the `timezone-parse-date' function (which see)."
+  (cond ((not date) nil)
+	((string-match " [0-9]+ " date)
+	 (let* ((vector (timezone-parse-date date))
+		(year (string-to-number (aref vector 0)))
+		time)
+	   (when (>= year 1970)
+	     (setq time (timezone-parse-time (aref vector 3)))
+	     (encode-time
+	      (string-to-number (aref time 2))
+	      (string-to-number (aref time 1))
+	      (string-to-number (aref time 0))
+	      (string-to-number (aref vector 2))
+	      (string-to-number (aref vector 1))
+	      year
+	      (aref vector 4)))))
+	((string-match "\
 \\([0-9][0-9][0-9][0-9]\\)\\(-\\([0-9][0-9]\\)\\)?\\(-\\([0-9][0-9]\\)\\)?\
 T?\\(\\([0-9][0-9]\\):\\([0-9][0-9]\\)\\(:\\([.0-9]+\\)\\)?\\)?\
 \\(\\([-+]\\)\\([0-9][0-9]\\):?\\([0-9][0-9]\\)\\|Z\\)?"
-			   date))
-    (labels ((substr (n default)
-		     (if (match-beginning n)
-			 (string-to-number
-			  (match-string-no-properties n date))
-		       default)))
-      (encode-time (substr 10 0)	; seconds
-		   (substr 8  0)	; minitue
-		   (substr 7  0)	; hour
-		   (substr 5  1)	; day
-		   (substr 3  1)	; month
-		   (substr 1  0)	; year
-		   (if (match-beginning 12)
-		       (funcall (intern (match-string-no-properties 12 date))
-				0
-				(* 3600 (substr 13 0))
-				(* 60 (substr 14 0)))
-		     0)))))
+		       date)
+	 (labels ((substr (n default)
+			  (if (match-beginning n)
+			      (string-to-number
+			       (match-string-no-properties n date))
+			    default)))
+	   (encode-time
+	    (substr 10 0) ;; seconds
+	    (substr 8  0) ;; minitue
+	    (substr 7  0) ;; hour
+	    (substr 5  1) ;; day
+	    (substr 3  1) ;; month
+	    (substr 1  0) ;; year
+	    (if (match-beginning 12)
+		(funcall (intern (match-string-no-properties 12 date))
+			 0
+			 (* 3600 (substr 13 0))
+			 (* 60 (substr 14 0)))
+	      0))))))
 
 (defun w3m-rss-find-el (tag data)
   "Find the all matching elements in the data.  Careful with this on
