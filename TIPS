@@ -1,0 +1,127 @@
+** browse-url
+
+   By following setting, "C-x m" on URL like string calls w3m. And you
+   can preview HTML file by "C-c C-v" on html-mode which is distributed
+   with Emacs21.
+
+(setq browse-url-browser-function 'w3m-browse-url)
+(autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
+(global-set-key "\C-xm" 'browse-url-at-point)
+
+
+
+** dired
+
+   By "C-x m" on html file in dired-mode, you can open the file by w3m.
+
+(add-hook 'dired-mode-hook
+          (lambda ()
+              (define-key dired-mode-map "\C-xm" 'dired-w3m-find-file)))
+(defun dired-w3m-find-file ()
+  (interactive)
+  (require 'w3m)
+  (let ((file (dired-get-filename)))
+    (if (y-or-n-p (format "Open 'w3m' %s " (file-name-nondirectory file)))
+        (w3m-find-file file))))
+
+
+
+** hnf-mode
+
+   With following setting, you can see newest diary via emacs-w3m by
+   "C-c C-b" in hnf-mode.
+
+(autoload 'w3m-browse-url "w3m" nil t)
+(defun w3m-hnf-browse-url-w3m (url &optional new-window)
+  (interactive (browse-url-interactive-arg "URL: "))
+  (save-selected-window
+    (pop-to-buffer (get-buffer-create "*w3m*"))
+    (w3m-browse-url url new-window)))
+(setq hnf-browse-url-browser-function (function w3m-hnf-browse-url-w3m))
+
+
+
+** Gnus
+
+   Even if you use Oort Gnus, Gnus v5.8.8 or v5.9, you can read articles
+   via nnshimbun. Copy "nnshimbun.el" distributed with newest T-gnus
+   6.15 to lisp/ directory and then "make install". In addition, if you
+   want to use Emacs-W3M instead of Emacs-W3 for text/html contents, add
+   following setting to your ".gnus".
+
+;; From: greg@visiontech-dml.com
+;; Newsgroups: gnu.emacs.help
+;; Subject: Re: w3m-mode and images
+;; Date: 19 Jul 2001 10:59:19 +0300
+;; Message-ID: <2fasnftcpt4.fsf@broadcom.com>
+
+(defvar gnus-w3m-minor-mode nil)
+
+(make-variable-buffer-local 'gnus-w3m-minor-mode)
+(add-to-list 'minor-mode-alist '(gnus-w3m-minor-mode " w3m"))
+(add-to-list 'minor-mode-map-alist (cons 'gnus-w3m-minor-mode w3m-mode-map))
+
+(defadvice mm-inline-text (around use-w3m-instead (handle) activate)
+  (let ((type (mm-handle-media-subtype handle)))
+    (if (not (equal type "html"))
+	ad-do-it
+      (let ((text (mm-get-part handle))
+	    (b (point)))
+	(save-excursion
+	  (insert text)
+	  (save-restriction
+	    (narrow-to-region b (point))
+	    (goto-char (point-min))
+	    (w3m-region (point-min) (point-max))
+	    (setq gnus-w3m-minor-mode t))
+	  (mm-handle-set-undisplayer
+	   handle
+	   `(lambda ()
+	      (let (buffer-read-only)
+		(setq gnus-w3m-minor-mode nil)
+		(if (functionp 'remove-specifier)
+		    (mapcar (lambda (prop)
+			      (remove-specifier
+			       (face-property 'default prop)
+			       (current-buffer)))
+			    '(background background-pixmap foreground)))
+		(delete-region ,(point-min-marker)
+			       ,(point-max-marker))))))))))
+
+;; Date: Fri, 27 Jul 2001 12:51:12 +0900
+;; Message-ID: <yosuwv4v3u8f.fsf@jpl.org>
+;; From: Katsumi Yamaoka <yamaoka@jpl.org>
+;; To: semi-gnus-ja@meadowy.org
+;; Subject: [nnshimbun] toggle inline images
+
+;; Display multipart/related pictures.
+;; The place might be something wrong :-)
+
+(eval-after-load "gnus-art"
+  '(or (assoc "multipart/related" gnus-mime-multipart-functions)
+       (setq gnus-mime-multipart-functions
+	     (cons
+	      (cons
+	       "multipart/related"
+	       (byte-compile
+		(lambda (handle)
+		  (gnus-mime-display-mixed (cdr handle)))))
+	      gnus-mime-multipart-functions))))
+
+
+
+** yahtml-mode
+
+   You can preview html file via emacs-w3m which you are editing in
+   yahtml-mode.
+
+(autoload 'w3m-goto-url "w3m")
+(defadvice yahtml-browse-html
+  (around w3m-yahtml-browse-html activate compile)
+  (w3m-goto-url (ad-get-arg 0) t))
+
+
+Local Variables:
+mode: indented-text
+fill-column: 72
+End:
