@@ -13,7 +13,7 @@ This package contains a interface program of w3m.
 
 2. Installation
 
-   a) This package requires the latest version of w3m (see section 3),
+   a) This package requires the latest version of w3m (see section 4),
       please install it in the first step.
 
    b) In addition, if you are using XEmacs 21.x, you should install the
