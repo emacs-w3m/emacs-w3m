@@ -26,6 +26,7 @@
 ;;; Code:
 
 (require 'shimbun)
+(require 'sb-mhonarc)
 
 (luna-define-class shimbun-gnome (shimbun-mhonarc) ())
 
