@@ -1643,7 +1643,7 @@ which defaults to the value of `w3m-file-coding-system-for-read'."
 	     ((char-equal ch ?\x20)	; space
 	      "+")
 	     (t
-	      (format "%%%02X" ch))))	; escape
+	      (format "%%%02x" ch))))	; escape
 	  ;; Coerce a string to a list of chars.
 	  (append (encode-coding-string (or str "")
 					(or coding

@@ -1,3 +1,12 @@
+2002-01-11  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-url-encode-string): Fixed for Mule2.
+
+	* w3m-util.el (w3m-truncate-string): New function.
+
+	* w3m-form.el (w3m-form-replace): Use `w3m-truncate-string'
+	instead of `truncate-string'.
+
 2002-01-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-region): Process <base> tag.

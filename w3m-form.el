@@ -597,7 +597,7 @@ return them with the flag."
 		      (make-string (length string) ?.)
 		    (mapconcat 'identity
 			       (split-string
-				(truncate-string string width) "\n")
+				(w3m-truncate-string string width) "\n")
 			       "")))
 	    (make-string (- width (string-width string)) ?\ ))
     (delete-region (point)
