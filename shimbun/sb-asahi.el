@@ -48,7 +48,7 @@
         gW5)Q]N{MmnL]suPpL|gFjV{S|]a-:)\\FR7GRf9uL:ue5_=;h{V%@()={u
         Td@l?eXBppF%`6W%;h`#]2q+f*81n$Bh|t")))
 
-(defvar shimbun-asahi-expiration-days 7)
+(defvar shimbun-asahi-expiration-days 6)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-asahi))
   (format "%s%s/update/list.html"

@@ -1,3 +1,11 @@
+2001-06-11  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-expiration-days): Changed
+	default value as 6.
+
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html-expiration-days):
+	New variable.
+
 2001-06-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-dump-head-source-command-argument): Its old name is

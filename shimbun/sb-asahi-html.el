@@ -44,6 +44,8 @@
         gW5)Q]N{MmnL]suPpL|gFjV{S|]a-:)\\FR7GRf9uL:ue5_=;h{V%@()={u
         Td@l?eXBppF%`6W%;h`#]2q+f*81n$Bh|t")))
 
+(defvar shimbun-asahi-html-expiration-days 6)
+
 (provide 'sb-asahi-html)
 
 ;;; sb-asahi-html.el ends here
