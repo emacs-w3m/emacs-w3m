@@ -4421,9 +4421,15 @@ currently viewing \"http://foo/bar/\"."
 COUNT times in the history.  If COUNT is a negative integer, moving
 forward is performed.  Otherwise, COUNT is treated as 1 by default."
   (interactive "p")
+  (unless w3m-current-url
+    ;; This page may have not been registered in the history since an
+    ;; accident has probably occurred, so we should skip the page.
+    (if (integerp count)
+	(when (> count 0)
+	  (decf count))
+      (setq count 0)))
   (let ((hist ;; Cons of a new history element and position pointers.
-	 (if (and (integerp count)
-		  (not (zerop count)))
+	 (if (integerp count)
 	     (w3m-history-backward count)
 	   (w3m-history-backward)))
 	;; Inhibit sprouting a new history.
@@ -6175,13 +6181,13 @@ Cannot run two w3m processes simultaneously \
 		    (charset charset)
 		    (post-data post-data)
 		    (referer referer)
-		    (name))
+		    (name)
+		    (history-position (get-text-property (point)
+							 'history-position)))
 	(when w3m-current-forms
 	  ;; Store the current forms in the history structure.
 	  (w3m-history-plist-put :forms w3m-current-forms))
-	(let ((w3m-current-buffer (current-buffer))
-	      (history-position (get-text-property (point)
-						   'history-position)))
+	(let ((w3m-current-buffer (current-buffer)))
 	  (unless element
 	    (setq element
 		  (if (and (equal referer "about://history/")
