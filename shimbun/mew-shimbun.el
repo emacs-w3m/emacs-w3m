@@ -64,7 +64,6 @@
   (require 'mew))
 
 ;; Avoid byte-compile warnings,
-;; these functions are created by Mew automatically.
 (eval-when-compile
   (unless (fboundp 'MEW-FLD)
     (defun MEW-FLD () ()))
@@ -74,6 +73,9 @@
     (defun MEW-TO () ())
   (unless (fboundp 'MEW-SHIMBUN-STS)
     (defun MEW-SHIMBUN-STS () ())))
+  (unless (fboundp 'mew-set-file-modes)
+    (defun mew-set-file-modes ()))
+  (defvar mew-file-mode)
   (defvar mew-folder-list)
   (defvar mew-local-folder-list)
   (defvar mew-local-folder-alist))
@@ -428,7 +430,9 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		    (mew-frwlet
 		     mew-cs-dummy mew-cs-text-for-write
 		     (write-region (point-min) (point-max) file nil 'nomsg))
-		    (set-file-modes file mew-file-mode))))
+		    (if (boundp 'mew-file-mode)
+			(set-file-modes file mew-file-mode)
+		      (mew-set-file-modes file)))))
 	      (setq dispcount (1+ dispcount))
 	      (mew-shimbun-mode-display group server count dispcount sum))))
       (kill-buffer buf)
@@ -598,7 +602,9 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 		      (mew-frwlet
 		       mew-cs-dummy mew-cs-text-for-write
 		       (write-region (point-min) (point-max) file nil 'nomsg))
-		      (set-file-modes file mew-file-mode)
+		      (if (boundp 'mew-file-mode)
+			  (set-file-modes file mew-file-mode)
+			(mew-set-file-modes file))
 		      (when (stringp oldmd5)
 			;; replace
 			(mew-shimbun-scan-replace fld msg))))))
