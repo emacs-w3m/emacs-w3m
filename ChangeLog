@@ -1,5 +1,14 @@
 2003-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/shimbun.el (shimbun-x-face,
+	shimbun-server-additional-path, shimbun-x-face-database-function):
+	Improve the customizing widgets.
+	* shimbun/sb-sourceforge-jp.el
+	(shimbun-sourceforge-jp-mailing-lists): Ditto.
+	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-threshold): Diito.
+	* shimbun/sb-marc-aims.el (shimbun-marc-aims-group-alist): Ditto.
+	* shimbun/sb-geocrawler.el (shimbun-geocrawler-group-alist): Ditto.
+
 	* shimbun/nnshimbun.el (nnshimbun-keep-backlog): Improve the
 	customizing widget.
 	(nnshimbun-group-parameters-custom): Use `integer' instead of

@@ -1,6 +1,6 @@
 ;;; sb-slashdot-jp.el --- shimbun backend for slashdot.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;         TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -44,10 +44,13 @@
 (defcustom shimbun-slashdot-jp-threshold -1
   "*Lower threshold of accept comments."
   :group 'shimbun
-  :type '(choice
-	  (const :tag "Stories only" nil)
-	  (const :tag "All comments" -1)
-	  (integer :tag "Score")))
+  :type '(radio
+	  (const :format "Stories only " nil)
+	  (const :format "All comments " -1)
+	  (integer :format "Score: %v\n"
+		   :match (lambda (widget value)
+			    (and (numberp value) (/= value -1)))
+		   :size 0)))
 
 (defmacro shimbun-slashdot-jp-article-url (shimbun)
   `(shimbun-expand-url "article.pl" (shimbun-url-internal ,shimbun)))

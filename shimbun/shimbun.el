@@ -97,13 +97,13 @@
 dJrT4Cd<Ls?U!G4}0S%FA~KegR;YZWieoc%`|$4M\\\"i*2avWm?"
   "*Default X-Face field for shimbun."
   :group 'shimbun
-  :type 'string)
+  :type '(string :format "%{%t%}:\n%v" :size 0))
 
 (defcustom shimbun-server-additional-path
   nil
   "*List of additional directories to search for shimbun servers."
   :group 'shimbun
-  :type '(repeat directory))
+  :type '(repeat (directory :format "%t: %v\n" :size 0)))
 
 (defun shimbun-servers-list ()
   "Return a list of shimbun servers."
@@ -434,12 +434,12 @@ When its initial value is nil and BBDB or LSDB is loaded, it will be
 set to an appropriate default value.  You can set this to `never' if
 you want to use no database."
   :group 'shimbun
-  :type '(choice
+  :type '(radio
 	  (const :tag "Default" nil)
 	  (const :tag "Use no database" never)
 	  (const :tag "Use BBDB" shimbun-bbdb-get-x-face)
 	  (const :tag "Use LSDB" shimbun-lsdb-get-x-face)
-	  (function :tag "User defined function")))
+	  (function :format "User defined function: %v\n" :size 0)))
 
 (defun shimbun-header-insert (shimbun header)
   (let ((from (shimbun-header-from header))
