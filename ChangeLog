@@ -1,5 +1,23 @@
 2003-07-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-ccl.el (toplevel): Add autoload for `charset-id' defined at
+	w3m-om.el.
+	(w3m-ccl-write-repeat): Simplified.
+	(w3m-ccl-write-euc-japan-character): Set nil, when
+	`read-multibyte-character' is not available.
+	(w3m-ccl-write-iso-latin-1-character): Ditto.
+
+	* w3m-om.el: Remove redundant `function'.
+	(w3m-om-character-set-alist): New variable.
+	(charset-id): New function.
+	(w3m-euc-japan-encoder, w3m-iso-latin-1-decoder): New dummy
+	encoders.
+
+	* w3m.el (w3m-input-coding-system): Change its default value for
+	Mule2.3 and Emacsen without Mule.
+
+2003-07-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
 	* w3mhack.el (w3mhack-examine-modules): Ignore w3m-ccl.el when
 	ccl.el is missing.
 

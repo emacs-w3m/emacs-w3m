@@ -407,11 +407,14 @@ It is valid only when `w3m-treat-image-size' is non-nil."
 (defcustom w3m-input-coding-system
   (if (memq w3m-type '(w3mmee w3m-m17n))
       'binary
-    (if w3m-accept-japanese-characters
+    (if (and (not (boundp 'MULE)) (featurep 'w3m-ccl))
 	(if w3m-use-mule-ucs
-	    'w3m-euc-japan-mule-ucs 'w3m-euc-japan)
-      (if w3m-use-mule-ucs
-	  'w3m-iso-latin-1-mule-ucs 'w3m-iso-latin-1)))
+	    (if w3m-accept-japanese-characters
+		'w3m-euc-japan-mule-ucs 'w3m-iso-latin-1-mule-ucs)
+	  (if w3m-accept-japanese-characters
+	      'w3m-euc-japan 'w3m-iso-latin-1))
+      (if w3m-accept-japanese-characters
+	  'euc-japan 'iso-latin-1)))
   "*Coding system for write operations to `w3m'."
   :group 'w3m
   :type 'coding-system)

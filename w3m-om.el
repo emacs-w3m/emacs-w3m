@@ -38,7 +38,6 @@
 (require 'poem)
 (require 'pcustom)
 (require 'pccl)
-(require 'w3m-ccl)
 
 (eval-when-compile
   (unless (fboundp 'custom-declare-variable)
@@ -106,6 +105,33 @@ The car of each element will be provided as a new coding-system by
 copying of the cdr of an element.  No need to contain the eol-type
 variants in this alist.")
 
+(eval-and-compile
+  (defvar w3m-om-character-set-alist
+    '((ascii			. lc-ascii)
+      (latin-iso8859-1		. lc-ltn1)
+      (latin-iso8859-2		. lc-ltn2)
+      (latin-iso8859-3		. lc-ltn3)
+      (latin-iso8859-4		. lc-ltn4)
+      (thai-tis620		. lc-thai)
+      (greek-iso8859-7		. lc-grk)
+      (arabic-iso8859-6		. lc-arb)
+      (hebrew-iso8859-8		. lc-hbw)
+      (katakana-jisx0201	. lc-kana)
+      (latin-jisx0201		. lc-roman)
+      (cyrillic-iso8859-5	. lc-crl)
+      (latin-iso8859-9		. lc-ltn5)
+      (japanese-jisx0208-1978	. lc-jpold)
+      (chinese-gb2312		. lc-cn)
+      (japanese-jisx0208	. lc-jp)
+      (korean-ksc5601		. lc-kr)
+      (japanese-jisx0212	. lc-jp2)
+      (chinese-cns11643-1	. lc-cns1)
+      (chinese-cns11643-2	. lc-cns2)
+      (chinese-big5-1		. lc-big5-1)
+      (chinese-big5-2		. lc-big5-2))
+    "*Alist of a modern character set and a symbol holding its
+identification number."))
+
 (defvar w3m-om-coding-category-alist
   '((alternativnyj	. *coding-category-iso-8-1*)
     (big5		. *coding-category-big5*)
@@ -169,20 +195,18 @@ variants in this alist.")
 ;; Functions to handle coding-system.
 (unless (fboundp 'coding-system-list)
   (defalias 'coding-system-list
-    (function
-     (lambda (&optional base-only)
-       "Return a list of all existing non-subsidiary coding systems.
+    (lambda (&optional base-only)
+      "Return a list of all existing non-subsidiary coding systems.
 The optional argument is ignored."
-       (let ((codings nil))
-	 (mapatoms
-	  (function
-	   (lambda (arg)
-	     (if (and (or (vectorp (get arg 'coding-system))
-			  (vectorp (get arg 'eol-type)))
-		      (null (get arg 'pre-write-conversion))
-		      (null (get arg 'post-read-conversion)))
-		 (setq codings (cons arg codings))))))
-	 codings)))))
+      (let ((codings nil))
+	(mapatoms
+	 (lambda (arg)
+	   (if (and (or (vectorp (get arg 'coding-system))
+			(vectorp (get arg 'eol-type)))
+		    (null (get arg 'pre-write-conversion))
+		    (null (get arg 'post-read-conversion)))
+	       (setq codings (cons arg codings)))))
+	codings))))
 
 (defsubst w3m-find-coding-system (obj)
   "Return OBJ if it is a coding-system."
@@ -239,6 +263,24 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 					  x))
       (when opriority
 	(set-coding-priority opriority)))))
+
+(eval-and-compile
+  (unless (fboundp 'charset-id)
+    (defalias 'charset-id
+      (lambda (charset)
+	"Return charset identification number of CHARSET."
+	(symbol-value (cdr (assq charset w3m-om-character-set-alist)))))))
+
+;; charset-id() is required in w3m-ccl.el.
+(require 'w3m-ccl)
+
+;; Dummy encoders.
+(define-ccl-program w3m-euc-japan-encoder
+  (` (1 (loop (read r0) (write-repeat r0)))))
+
+(define-ccl-program w3m-iso-latin-1-encoder
+  (` (1 (loop (read r0) (write-repeat r0)))))
+
 
 ;;; Generic functions.
 (defun w3m-expand-path-name (name &optional base)
@@ -364,14 +406,13 @@ spaces and tab."
 
 (unless (fboundp 'compose-mail)
   (defalias 'compose-mail
-    (function
-     (lambda (&optional to subject other-headers continue
-			switch-function yank-action send-actions)
-       "Start composing a mail message to send."
-       (interactive (list nil nil nil current-prefix-arg))
-       (let ((function (get mail-user-agent 'composefunc)))
-	 (funcall function to subject other-headers continue
-		  switch-function yank-action send-actions))))))
+    (lambda (&optional to subject other-headers continue
+		       switch-function yank-action send-actions)
+      "Start composing a mail message to send."
+      (interactive (list nil nil nil current-prefix-arg))
+      (let ((function (get mail-user-agent 'composefunc)))
+	(funcall function to subject other-headers continue
+		 switch-function yank-action send-actions)))))
 
 ;;; Faces:
 (defvar w3m-om-use-overstrike-to-make-face-bold 'w3m
