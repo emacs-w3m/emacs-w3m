@@ -56,14 +56,25 @@ w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 	  (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun)))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-nikkei)
-					 &optional range)
+(defun shimbun-nikkei-get-headers (shimbun range)
   (let ((from (shimbun-from-address-internal shimbun))
 	(group (shimbun-current-group-internal shimbun))
 	(parent (shimbun-url-internal shimbun))
+	(date "")
 	(case-fold-search t)
 	basename headers)
     (goto-char (point-min))
+    (when (re-search-forward "<!-- timeStamp -->\
+\\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\) \
+\\([0-2][0-9]:[0-5][0-9]\\)\
+<!-- /timeStamp -->"
+			     nil t)
+      (setq date
+	    (shimbun-make-date-string (string-to-number (match-string 1))
+				      (string-to-number (match-string 2))
+				      (string-to-number (match-string 3))
+				      (match-string 4)))
+      (goto-char (point-min)))
     (while (re-search-forward
 	    "<!-- aLink --><\\(!-- \\)?a href=\"\\(.+\\)\\.html"
 	    nil t)
@@ -75,14 +86,18 @@ w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 	       0
 	       (shimbun-mime-encode-string (match-string 1))
 	       from
-	       ""
-	       (concat "<" basename "@" group ">")
+	       date
+	       (concat "<" basename "%" group ".nikkei>")
 	       ""
 	       0
 	       0
 	       (concat parent group "/" basename ".html"))
 	      headers)))
     headers))
+
+(luna-define-method shimbun-get-headers ((shimbun shimbun-nikkei)
+					 &optional range)
+  (shimbun-nikkei-get-headers shimbun range))
 
 (provide 'sb-nikkei)
 
