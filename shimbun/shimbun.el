@@ -421,17 +421,20 @@ Generated article have a multipart/related content-type."
 (defun shimbun-make-text-entity (type data &optional cid)
   (luna-make-entity 'shimbun-text-entity :type type :data data :cid cid))
 
-(luna-define-generic shimbun-text-entity-charset (entity)
+(luna-define-generic shimbun-text-entity-charset (entity &optional begin end)
   "Return MIME charset of ENTITY.")
-(luna-define-method shimbun-text-entity-charset ((entity shimbun-text-entity))
+(luna-define-method shimbun-text-entity-charset ((entity shimbun-text-entity)
+						 &optional begin end)
   (or (shimbun-text-entity-charset-internal entity)
       (shimbun-text-entity-set-charset-internal
        entity
        (upcase
 	(symbol-name
-	 (with-temp-buffer
-	   (insert (shimbun-entity-data-internal entity))
-	   (detect-mime-charset-region (point-min) (point-max))))))))
+	 (if (and begin end)
+	     (detect-mime-charset-region begin end)
+	   (with-temp-buffer
+	     (insert (shimbun-entity-data-internal entity))
+	     (detect-mime-charset-region (point-min) (point-max)))))))))
 
 (luna-define-method shimbun-entity-type ((entity shimbun-text-entity))
   (concat (shimbun-entity-type-internal entity)
@@ -441,13 +444,9 @@ Generated article have a multipart/related content-type."
 						    shimbun-text-entity))
   (let ((begin (point)))
     (insert (shimbun-entity-data-internal entity))
-    (unless (shimbun-text-entity-charset-internal entity)
-      (shimbun-text-entity-set-charset-internal
-       entity
-       (upcase (symbol-name (detect-mime-charset-region begin (point))))))
     (encode-coding-region begin (point)
 			  (mime-charset-to-coding-system
-			   (shimbun-text-entity-charset-internal entity)))
+			   (shimbun-text-entity-charset entity begin (point))))
     (save-excursion
       (goto-char begin)
       (luna-call-next-method))))

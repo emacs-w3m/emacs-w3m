@@ -9,6 +9,7 @@
 	(initialize-instance) [shimbun-text-entity]: Removed.
 	(shimbun-text-entity-charset): New method.
 	(shimbun-entity-type) [shimbun-text-entity]: Use the above.
+	(shimbun-entity-insert) [shimbun-text-entity]: Ditto.
 	(initialize-instance) [shimbun-image-entity]: Do not set a default
 	value of a media type.
 
