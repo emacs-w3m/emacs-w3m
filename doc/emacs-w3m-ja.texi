@@ -1354,175 +1354,175 @@ Emacs-w3m ユーザにもっと視覚効果を!
 タブによる閲覧を活かすかどうか。
 @end table
 
-@c TRANSLATEME
 @node Working with buffers
 @section バッファを作る/消す/移動する
 
-Sooner or later, you will be addicted to emacs-w3m, and you'll have to
-manage all your browsing needs with it.  To help you with this daunting
-task, we have imagined many different ways to work with emacs-w3m
-buffers.
+遅かれ早かれあなたは emacs-w3m 中毒になって、すべてのウェブの閲覧をそれ
+で賄わなければならなくなるでしょう。あなたがめげてしまいそうなこの任務を
+手伝うために、emacs-w3m のバッファで動作するたくさんの違う手段を考えまし
+た。
 
 @menu
-* Creating and killing buffers:: Creating and killing buffers
-* Moving across buffers::        Moving across buffers
-* Selecting buffers::            Selecting buffers from a list
+* Creating and killing buffers:: バッファを作ったり消したり
+* Moving across buffers::        バッファ間の移動
+* Selecting buffers::            リストからバッファを選ぶ
 @end menu
 
 @node Creating and killing buffers
-@subsection Creating and killing buffers
+@subsection バッファを作ったり消したり
 @cindex Creating new buffers
 @cindex Killing buffers
 
-It is sometimes useful to create a new buffer without opening a new web
-page in it.  This operation is called ``creating a twin copy'' of a
-buffer, in emacs-w3m lingo.  It will simply create a new buffer whose
-contents are identical to the currently active buffer.
+時に、新しいウェブページを開かないで新しいバッファーを作ることが役に立つ
+ことがあります。この操作を emacs-w3m の用語では「ふたごのコピーを作る」
+(creating a twin copy) と言います。これは単に、その内容が現在のバッファ
+と同一な新しいバッファを作ります。
 
-The opposite of this is closing buffers: you can just close one buffer
-(because you're not interested in its contents anymore) or you can
-decide to close all buffers but the current one.  Emacs-w3m lets you do
-this with the following commands:
+この反対はバッファーを閉じることで、今はその内容に興味が無い一つのバッファ
+を、単に閉じることができます。あるいは、現在のバッファ以外のすべてを閉じ
+ることを決断しても良いです。以下のコマンドでそれを行なって下さい:
 
 @table @kbd
 @item C-c C-t
 @kindex C-c C-t
 @findex w3m-copy-buffer
-Create an identical copy of the currently active buffer, under a new
-name.  This is used to start a new session without loading a web page in
-the new buffer (@code{w3m-copy-buffer}).
+現在のバッファと同一のコピーを新しい名前で作ります。これは新しいバッファ
+にウェブページを取り込まずに、新しいセッションを始めるのに使いま
+す (@code{w3m-copy-buffer})。
 
 @item C-c C-w
 @kindex C-c C-w
 @findex w3m-delete-buffer
-Close the current emacs-w3m buffer (@code{w3m-delete-buffer}).
+現在の emacs-w3m のバッファを閉じます (@code{w3m-delete-buffer})。
 
 @item C-c M-w
 @kindex C-c M-w
 @findex w3m-delete-other-buffers
-Close all emacs-w3m buffers, but the active one
-(@code{w3m-delete-other-buffers}).
+現在のもの以外のすべての emacs-w3m のバッファを閉じま
+す (@code{w3m-delete-other-buffers})。
 @end table
 
 @node Moving across buffers
-@subsection Moving across buffers
+@subsection バッファ間の移動
 
-The commands you will problably use most often are those who allow you
-to go to an adjacent buffer; that is a buffer just ``after'' or
-``before'' the current one.  The meaning of this will be obvious if you
-use tabs: the next buffer is the one just after the active one, on the
-right, and the previous buffer is the one on the left.  The key bindings
-for these commands are @kbd{C-c C-p} and @kbd{C-c C-n}.
+最も頻繁に使うコマンドがたぶん隣のバッファに行くものであろうことは、世間
+の認めるところでしょう。それは、現在の「後」か「前」のバッファです。この
+意味はタブを使ってみればよくわかります。次のバッファは現在の右側の一つ後、
+前のバッファは左側です。しかし、残念ながら XEmacs はタブを順不同に表示す
+るので、どれが隣のバッファかを知るには、各タブに表示されている数字に注目
+する必要があります。これらのコマンドに割り当てられているキー
+は @kbd{C-c C-p} と @kbd{C-c C-n} です。
 
-These commands understand the numeric argument convention, i.e. if you
-call them with a number N as argument, you will be taken N buffers away
-from the current one.  For example, to go two buffers on the right from
-the current position, use @kbd{C-u 2 C-c C-n}.
+これらのコマンドは数字接頭引数の習慣を理解します。すなわち、それらを
+数 N を引数として呼ぶと、現在のバッファから N 個離れたバッファに行きます。
+例えば、現在位置から右にバッファを二個分 (すなわちバッファ二個分だけ次
+に) 移動するには、@kbd{2 C-c C-n} を使って下さい@footnote{いつものように、
+@kbd{2 C-c C-n} の代わりに @kbd{C-u 2 C-c C-n} を使っても良いのですが、
+emacs-w3m のバッファではすべての数字キーとマイナス記号が数の接頭引数に割
+り当てられていることを覚えておいて下さい。}。
 
 @table @kbd
 @item C-c C-p
 @kindex C-c C-p
 @findex w3m-previous-buffer
-Move to the previous emacs-w3m buffer.  This is usually the next buffer
-to the left in the tabs line.  If called with a numeric argument N, move
-N buffers to the left (@code{w3m-previous-buffer}).
+前の emacs-w3m バッファに移動します。Emacs 21 では、これは通常タブ行にお
+いて左方向に次です。数の引数 N を付けて使うと、バッファを N 個分前に移動
+します (@code{w3m-previous-buffer})。
 
 @item C-c C-n
 @kindex C-c C-n
 @findex w3m-next-buffer
-Move to the next emacs-w3m buffer.  This is usually the next buffer to
-the right in the tabs line.  If called with a numeric argument N, move N
-buffers to the right (@code{w3m-next-buffer}).
+次の emacs-w3m バッファに移動します。Emacs 21 では、これは通常タブ行にお
+いて右方向に次です。数の引数 N を付けて使うと、バッファを N 個分次に移動
+します (@code{w3m-next-buffer})。
 @end table
 
-Also note that if these commands don't fit you well despite our efforts,
-you might find what you need in ``generalist'' buffer management
-packages such as ibuffer or iswitchb---since emacs-w3m buffers are
-regular Emacs buffers, they will work fine too.
+私たちが骨を折ったにもかかわらず、これらのコマンドがお気に召さないならば、
+あなたが欲しいものが ibuffer や iswitchb のような万能志向の
+人 (generalist) 向けのバッファ管理パッケージの中にあるかどうかを探してみ
+るのも良いかもしれません。emacs-w3m バッファは Emacs の正規のバッファで
+すから、それらもまた良好に動作するでしょう。
 
 @node Selecting buffers
-@subsection Selecting buffers from a list
+@subsection リストからバッファを選ぶ
 
-There are two ways to select emacs-w3m buffers from a list.  The first
-one is a minibuffer-based interface, called with @kbd{C-c C-a}.  You can
-choose the buffer you want to display using the @kbd{M-p} and @kbd{M-n}
-keys (or the ``up'' and `''down'' arrow keys), they will make you cycle
-through the list.  You can also edit the prompt and type the title of an
-existing web page, using @kbd{TAB} for completion.  For example, if you
-have a ``Google Search'' page opened, you can type ``Goo'' then hit
-@kbd{TAB} and the page title will be completed.  After the page name,
-the buffer name is given (between brackets).  Then use @kbd{RET} to
-switch to the buffer you have chosen.
+リストから emacs-w3m のバッファを選ぶための二つのやり方があります。一つ
+目は、@kbd{C-c C-a} で呼び出されるミニバッファ・ベースのインターフェース
+です。表示したいバッファを、@kbd{M-p} と @kbd{M-n} キー (また
+は @kbd{↑} と @kbd{↓} キー) を使って選ぶことができ、それらはリストの中
+で循環します。また、プロンプトを編集して、@kbd{TAB} の補完を使って既存の
+ウェブページのタイトルを書き込むこともできます。例えば、``Google
+Search'' のページを開いてあるならば、``Goo'' に続けて @kbd{TAB} を叩くこ
+とによって、そのページのタイトルが完成します。ページの名前の後ろには、
+(鍵括弧で挟まれた) バッファの名前が付きます。そして @kbd{RET} を使うと、
+あなたが選んだバッファに切り替わります。
 
-The second and more sophisticated interface is called the emacs-w3m
-buffer list, it is invoked with @kbd{C-C C-s}.  It shows you the list of
-all opened buffers in a separate window (either a vertical or a
-horizontal window---@kbd{C-c C-s} toggles between the two modes) and
-allows you to view the buffers in real-time: when you move the point in
-the buffer list, the buffer under point is displayed in the main window,
-which allows you to have direct visual feedback of the buffer you're
-switching to.
+二つ目のもっと洗練されたインターフェースは emacs-w3m バッファリストと言
+い、@kbd{C-c C-s} で起動されます。それは分割されたウィンドゥにすべての開
+いているバッファを表示し (@kbd{C-c C-s} で表示形式が切り替わります)、実
+時間でバッファを見ることができるようになります。そのバッファリストの中で
+ポイントを移動すると、ポイントのところにあるバッファが主ウィンドゥに表示
+され、バッファの切り替えが直接目に見える形で返ってくるのです。
 
-To move in the buffer list, you can use the @kbd{p} and @kbd{n} keys
-(or the arrow keys).  In the buffer list, @kbd{DEL} and @kbd{SPC} allow
-you to scroll the buffer displayed in the main window, which is handy
-if you want to check that you're seeing the right buffer.  To select
-the buffer under point, you can use the @kbd{RET} key, in which case
-the buffer list will be buried, or the @kbd{w} key, in which case the
-buffer list will remain visible and the focus given to the main window.
+バッファリストの中を移動するには @kbd{p} と @kbd{n} キー (または矢印
+キー) を使って下さい。バッファリストでは、@kbd{DEL} と @kbd{SPC} で主ウィ
+ンドゥに表示されているバッファをスクロールさせることが可能で、これは正し
+いバッファを見ているかどうかをチェックしたいときに便利です。ポイントのと
+ころにあるバッファを選びたいときは @kbd{RET} キーを使って下さい。この場
+合はバッファリストが隠されます。あるいは、@kbd{w} キーを使った場合はバッ
+ファリストは表示されたままで、主ウィンドゥにフォーカスします。
 
-You can also close and create buffers from this menu, using the same
-bindings as the one used in regular buffers (@pxref{Creating and killing
-buffers}).
+また、このメニューで普通のバッファで使われるのと同じキー割り当て
+(@pxref{Creating and killing buffers}) で、バッファを閉じたり作ることも
+できます。
 
-Finally, the @kbd{?} key shows a short help, @kbd{g} refreshes the list
-and the @kbd{q} key exits the buffer list, not changing the active
-buffer.
+最後に、@kbd{?} はヘルプの表示、@kbd{g} はリストの作り直し、そし
+て @kbd{q} はバッファリストの終了を主ウィンドゥのバッファは変更せずに、
+それぞれ実行します。
 
 @table @kbd
 @item C-c C-a
 @kindex C-c C-a
 @findex w3m-switch-buffer
 @cindex Switching buffers using the minibuffer
-Prompt for a buffer name in the minibuffer.  @kbd{M-p} and @kbd{M-n}
-cycle through the list of existing buffers and @kbd{TAB} completes
-(@code{w3m-switch-buffer}).
+ミニバッファでバッファ名の入力を求めます。@kbd{M-p} と @kbd{M-n} で既存
+のバッファが循環し、@kbd{TAB} で補完できます (@code{w3m-switch-buffer})。
 
 @item C-c C-s
 @kindex C-c C-s
 @findex w3m-select-buffer
 @cindex Switching buffers using the buffer list
-Show the buffer list in a separate window (@code{w3m-select-buffer}).
-In this window, @kbd{C-c C-s} toggles between horizontal and vertical
-modes, @kbd{RET} selects the buffer under point and buries the buffer
-list, @kbd{w} selects the buffer under point and gives it the focus,
-@kbd{n}, @kbd{p} and the arrow keys can be used to move down or up.
+分割されたウィンドゥにバッファリストを表示しま
+す (@code{w3m-select-buffer})。このウィンドゥでは @kbd{C-c C-s} で水平と
+垂直モードが切り替わり、@kbd{RET} でポイントのところにあるバッファを選ん
+でバッファリストは隠蔽、@kbd{w} でポイントのところにあるバッファを選んで
+それにフォーカス、@kbd{n} と @kbd{p} それに矢印キーが上下の移動に使えま
+す。
 @end table
 
 @node Downloading
 @section ファイルをダウンロードする
-@c d	Download this url.
 
-It is possible to download (i.e. fetch, but not display) any web page or
-file with emacs-w3m: just put the point on the link you want to
-download and hit @kbd{d}.  You will be prompted for a filename under
-which to save the file locally, by default it will be the name of the
-file on the remote server.  Confirm with @kbd{RET}.  The download will
-be asynchronous and not block your Emacs session, you can continue your
-emacs-w3m browsing in another buffer if you want.
+どんなウェブページやファイルも emacs-w3m でダウンロード (すなわち取得、
+表示ではありません) できます。単にダウンロードしたいリンクにポイントを置
+いて @kbd{d} を叩いて下さい。ローカルにセーブするファイル名が尋ねられま
+す。デフォルトでは遠隔サーバーにおけるファイルの名前になります。それで良
+ければ @kbd{RET} を押して下さい。ダウンロードは非同期に実行され、Emacs
+で行なっている他の仕事の邪魔をしないので、そうしたければ他のバッファ
+で emacs-w3m による閲覧を続けることができます。
 
-Please note that this download mechanism uses w3m to download things,
-you might want to use the more powerful wget downloader instead.  Have a
-look at our friend project ``emacs-wget'', its homepage is at
-@uref{http://pop-club.hp.infoseek.co.jp/emacs/emacs-wget/}.
+このダウンロードの仕組みは w3m を使うのですが、代わりにもっと強力
+な wget を使うことも考慮してみて下さい。私たちのお友だちプロジェクトであ
+る ``emacs-wget'' を覗いてみましょう。そのホームページはこ
+こ @uref{http://pop-club.hp.infoseek.co.jp/emacs/emacs-wget/} です。
 
 @table @kbd
 @item d
 @kindex d
 @findex w3m-download-this-url
 @cindex Downloading files
-Download the file or page pointed by the link under point
-(@code{w3m-download-this-url}).
+ポイントのところにあるリンクが指し示すファイルかページをダウンロードしま
+す (@code{w3m-download-this-url})。
 @end table
 
 @node Submitting Forms
