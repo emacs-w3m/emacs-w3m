@@ -44,9 +44,11 @@
 (defvar shimbun-nikkei-content-start "<!--FJZONE START NAME=\"HONBUN\" -->")
 (defvar shimbun-nikkei-content-end   "<!--FJZONE END NAME=\"HONBUN\" -->")
 (defvar shimbun-nikkei-x-face-alist
-  '(("default" . "X-Face: Ygq$6P.,%Xt$U)DS)cRY@k$VkW\
-!7(X'X'?U{{osjjFG\"E]hND;SPJ-J?O?R|a?Lg2$0rVng\n =O3\
-Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%")))
+  '(("default" . "X-Face: \"e7z+~O:s!)$84Dc68C##jE/~I8U:HDUkL@P\
+euEhS<ijhd\"jc63do:naCRWPEr{Y5M?|]5g\n sa8m5@=sm%AIsSRA9*k08-`=\
+w?yVB`L_vBG:j~~vhEoHC^Hjq`V(RMFQqa>9jqkt1<G[FMZTb:F@NT\n mcE[_Z\
+_hl5zM,zn?WC*iun#*nJ'YRj}%;:|Y&X)kTXeM#lE*Y^E5}QMe?<pJjd</ktdg\\\
+w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 (defvar shimbun-nikkei-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-nikkei))
@@ -68,7 +70,7 @@ Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%")))
       (setq basename (match-string 2))
       (when (re-search-forward
 	     "<!-- headline -->\\(.+\\)<!-- /headline -->"
-	     nil t)
+	     (line-end-position) t)
 	(push (shimbun-make-header
 	       0
 	       (shimbun-mime-encode-string (match-string 1))
@@ -84,4 +86,4 @@ Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%")))
 
 (provide 'sb-nikkei)
 
-;;; sb-nikkei.el ends here.
+;;; sb-nikkei.el ends here
