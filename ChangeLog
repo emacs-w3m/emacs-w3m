@@ -1,3 +1,10 @@
+2001-09-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-region): Defined new optional argument, `url'.
+
+	* mime-w3m.el (mime-w3m-preview-text/html): Call `w3m-region' with
+	an optional argument `url'.
+
 2001-09-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-form.el (w3m-fontify-forms): Restore a string for the input

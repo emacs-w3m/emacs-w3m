@@ -75,10 +75,6 @@
 	(xref
 	 (or (mime-entity-fetch-field entity "xref")
 	     (mime-entity-fetch-field mime-w3m-message-structure "xref"))))
-    ;; For nnshimbun.el.
-    (and (stringp xref)
-	 (string-match "^http://" xref)
-	 (setq w3m-current-url xref))
     (goto-char p)
     (insert "\n")
     (goto-char p)
@@ -88,7 +84,11 @@
        (mime-insert-text-content entity)
        (run-hooks 'mime-text-decode-hook)
        (condition-case err
-	   (w3m-region p (point-max))
+	   (w3m-region p
+		       (point-max)
+		       (and (stringp xref)
+			    (string-match "\\`http://" xref)
+			    xref))
 	 (error (message (format "%s" err))))
        (put-text-property p (point-max)
 			  (w3m-static-if (featurep 'xemacs)
