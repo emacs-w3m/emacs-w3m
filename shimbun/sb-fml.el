@@ -94,12 +94,12 @@
     (if (search-forward "<SPAN CLASS=mailheaders>" nil t)
 	(delete-region (point-min) (point))
       (throw 'stop nil))
-    (if (search-forward "</PRE>")
+    (if (search-forward "</PRE>" nil t)
 	(progn
 	  (beginning-of-line)
 	  (delete-region (point) (point-max)))
       (throw 'stop nil))
-    (if (search-backward "</SPAN>")
+    (if (search-backward "</SPAN>" nil t)
 	(progn
 	  (beginning-of-line)
 	  (delete-region (point) (save-excursion (end-of-line) (point))))

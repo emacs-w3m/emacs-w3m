@@ -2,6 +2,9 @@
 
 	* shimbun/sb-namazu.el: Rewrite.
 
+	* shimbun/sb-fml.el (shimbun-make-contents): Guard error at 
+	unsupposed page.
+
 2004-06-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-make-new-session): Doc fix.
