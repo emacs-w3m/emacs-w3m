@@ -1,6 +1,6 @@
 ;;; w3m-weather.el --- Look weather forecast -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -502,8 +502,7 @@
     (w3m-process-do
 	(sisu-list
 	 (w3m-weather-get-seikatu-sisu (match-string 1) no-cache handler))
-      (let ((case-fold-search t)
-	    sisu-name)
+      (let ((case-fold-search t))
 	(goto-char (point-min))
 	(when (search-forward "</table>\n<!--- /WEATHER_TABLE_1 --->\n" nil t)
 	  (goto-char (match-beginning 0))

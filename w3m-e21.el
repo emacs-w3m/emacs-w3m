@@ -51,6 +51,7 @@
 (eval-when-compile
   (defvar w3m-current-process)
   (defvar w3m-current-url)
+  (defvar w3m-current-title)
   (defvar w3m-display-inline-images)
   (defvar w3m-favicon-image)
   (defvar w3m-form-use-fancy-faces)
@@ -66,6 +67,7 @@
   (defvar w3m-use-header-line)
   (defvar w3m-use-tab)
   (defvar w3m-work-buffer-name)
+  (defvar w3m-work-buffer-list)
   (autoload 'w3m-image-type "w3m")
   (autoload 'w3m-retrieve "w3m"))
 

@@ -44,6 +44,7 @@
   (defvar w3m-profile-directory)
   (defvar w3m-use-favicon)
   (defvar w3m-work-buffer-name)
+  (defvar w3m-work-buffer-list)
   (autoload 'w3m-expand-url "w3m")
   (autoload 'w3m-load-list "w3m")
   (autoload 'w3m-message "w3m")

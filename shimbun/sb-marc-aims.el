@@ -78,7 +78,6 @@
   (let ((url (shimbun-index-url shimbun))
 	(yearmonth)
 	(headers)
-	(newest-index t)
 	(case-fold-search t))
     (catch 'stop
       (with-temp-buffer
@@ -88,9 +87,7 @@
 		"b=\\([0-9][0-9][0-9][0-9][0-9][0-9]\\)&" nil t)
 	  (push (match-string 1) yearmonth))
 	(dolist (ym yearmonth)
-	  (let ((surl (concat url "&r=1&b=" ym "&w=4"))
-		(messages)
-		(threads))
+	  (let ((surl (concat url "&r=1&b=" ym "&w=4")))
 	    (while (when surl
 		     (erase-buffer)
 		     (shimbun-retrieve-url surl))

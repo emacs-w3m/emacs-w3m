@@ -28,6 +28,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'cl))
+
 (require 'shimbun)
 
 (eval-and-compile
@@ -168,7 +171,7 @@ Unfortunately, the url name format might have been changed in 2ch"))
   (let ((first t)
 	(count 0)
 	(url (shimbun-index-url shimbun))
-	border headers
+	headers
 	(indices (list "l50"))
 	ita sure)
     (catch 'stop

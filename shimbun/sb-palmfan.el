@@ -137,12 +137,11 @@
 	       ;;<TD colspan="2"><A href="http://hotspace.jp/%7Ehirock/"><B>PtFtp 0.1.0</B></A><IMG src="img/i/jmenu.gif" alt="日本語メニュー" width="31" height="12"><IMG src="img/i/256.gif" alt="256色カラー対応" width="31" height="12"></TD>
 	       "<TD colspan=[^>]+>\\(<A href=\"\\(http://[^>]+\\)\">\\)*\\(<S>\\)*<B>\\([^<]+\\)</B>\\(</S>\\)*\\(</A>\\)*\\(<IMG src=\"\\(.+\\)\">\\)*"
 	       end)
-	      (let (subject link addition id body)
+	      (let (subject addition id body)
 		(setq id (format "<%02d%04d%02d%02d@%s>" count year month day idbase))
 		(when (shimbun-search-id shimbun id)
 		  (throw 'stop nil))
 		(setq subject (match-string 4)
-		      link (match-string 2)
 		      addition (match-string 7)
 		      body (buffer-substring-no-properties start end))
 		;; move file size to SUBJECT
@@ -218,7 +217,7 @@
 	(delete-region (point) (point-max)))
       (goto-char (point-min))
       (catch 'stop
-	(let (date-end end)
+	(let (end)
 	  (while (or first-article
 		     (re-search-forward "<!-- *日付 *-->" nil t nil))
 	    (let ((start (point))

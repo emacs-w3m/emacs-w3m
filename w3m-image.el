@@ -53,7 +53,8 @@
   (defvar w3m-async-exec)
   (defvar w3m-current-url)
   (defvar w3m-profile-directory)
-  (defvar w3m-work-buffer-name))
+  (defvar w3m-work-buffer-name)
+  (defvar w3m-work-buffer-list))
 
 (defcustom w3m-imagick-convert-program (w3m-which-command "convert")
   "*Program name of ImageMagick's `convert'."

@@ -59,6 +59,7 @@
   (defvar w3m-use-tab)
   (defvar w3m-use-tab-menubar)
   (defvar w3m-work-buffer-name)
+  (defvar w3m-work-buffer-list)
   (autoload 'update-tab-in-gutter "gutter-items")
   (autoload 'w3m-image-type "w3m")
   (autoload 'w3m-retrieve "w3m")

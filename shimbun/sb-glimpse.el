@@ -1,6 +1,6 @@
 ;;; sb-glimpse.el --- shimbun backend class for Glimpse archive
 
-;; Copyright (C) 2001 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001, 2002, 2003 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
 ;; Author: Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
 ;; Keywords: news
@@ -25,6 +25,9 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 (require 'sb-mhonarc)

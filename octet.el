@@ -1,6 +1,6 @@
 ;;; octet.el --- An octet stream viewer.
 
-;; Copyright (C) 2000-2002 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2000-2003 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Created: 2000/05/19
@@ -268,7 +268,7 @@ Returns 0 if succeed."
 		  (make-temp-file (expand-file-name "octet"
 						    octet-temp-directory))))
 	(last-dir default-directory)
-	result extras)
+	result)
     (cd octet-temp-directory)
     (write-region-as-binary (point-min) (point-max) infile nil 'no-msg)
     (unwind-protect
@@ -371,24 +371,23 @@ Returns NEW-TYPE."
 Optional NAME is the filename.
 If optional CONTENT-TYPE is specified, it is used for type guess."
   (interactive)
-  (let (type result)
-    (setq type (or (and content-type
-			(octet-guess-type-from-content-type
-			 content-type))
-		   (octet-guess-type-from-magic)
-		   (and (or name buffer-file-name)
-			(octet-guess-type-from-name
-			 (or name buffer-file-name)))
-		   (intern (condition-case nil
-			       (completing-read "Octet Type(text): "
-						(mapcar
-						 (lambda (pair)
-						   (list (symbol-name
-							  (cdr pair))))
-						 octet-suffix-type-alist)
-						nil 'require-match nil nil
-						"text")
-			     (quit "text")))))
+  (let ((type (or (and content-type
+		       (octet-guess-type-from-content-type
+			content-type))
+		  (octet-guess-type-from-magic)
+		  (and (or name buffer-file-name)
+		       (octet-guess-type-from-name
+			(or name buffer-file-name)))
+		  (intern (condition-case nil
+			      (completing-read "Octet Type(text): "
+					       (mapcar
+						(lambda (pair)
+						  (list (symbol-name
+							 (cdr pair))))
+						octet-suffix-type-alist)
+					       nil 'require-match nil nil
+					       "text")
+			    (quit "text"))))))
     (while (setq type (octet-filter-buffer type)))))
 
 (static-if (featurep 'xemacs)
@@ -432,7 +431,7 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
   (goto-char (point-max))
   (let ((p (point))
 	(name (mime-entity-filename entity))
-	from-buf to-buf content)
+	from-buf to-buf)
     (insert "\n")
     (goto-char p)
     (save-restriction
@@ -470,8 +469,7 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 		   'mime-view-octet))
       (let ((buf (get-buffer-create
 		  (format "%s-%s" (buffer-name) (mime-entity-number entity))))
-	    (name (mime-entity-filename entity))
-	    content)
+	    (name (mime-entity-filename entity)))
 	(with-current-buffer buf
 	  (set-buffer-multibyte nil)
 	  (setq buffer-read-only nil)

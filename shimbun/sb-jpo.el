@@ -171,7 +171,7 @@
 		   "shiryou/shiryou_list.htm"))
 	(exceptions-alist
 	 (list (cons "torikumi/" (list "kaisei/" "puresu/" "hiroba/"))))
-	url headers pages urlprefix temp exceptions ex)
+	url headers pages urlprefix temp exceptions)
     (while urllist
       (when (string-match "\\/" (car urllist))
 	(setq urlprefix (substring (car urllist) 0 (1+ (match-beginning 0)))))

@@ -146,7 +146,7 @@
     headers))
 
 (defun shimbun-lotusex-headers (shimbun group)
-  (let (url from date ampm hour time date subject id headers
+  (let (url from date subject id headers
 	     case-fold-search)
     (subst-char-in-region (point-min) (point-max) ?\t ?  t)
     (goto-char (point-min))
@@ -189,7 +189,7 @@
 
 (defun shimbun-lotusex-make-contents (shimbun header)
   (let ((group (shimbun-current-group-internal shimbun))
-	date start)
+	start)
     (when (string= group "bbs")
       (save-excursion
 	(goto-char (point-min))

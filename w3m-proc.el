@@ -1,6 +1,6 @@
 ;;; w3m-proc.el --- Functions and macros to control sub-processes
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -60,7 +60,8 @@
   (defvar w3m-command-environment)
   (defvar w3m-async-exec)
   (defvar w3m-process-connection-type)
-  (defvar w3m-process-modeline-format))
+  (defvar w3m-process-modeline-format)
+  (defvar w3m-work-buffer-list))
 
 (defvar w3m-process-inhibit-quit t
   "`w3m-process-sentinel' binds `inhibit-quit' according to this variable.")

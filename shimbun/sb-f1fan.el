@@ -1,6 +1,6 @@
 ;;; sb-f1fan.el --- shimbun backend for www.ksky.ne.jp/~tahara/f1/  -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2001 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
+;; Copyright (C) 2001, 2002, 2003 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 
 ;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 ;; Keywords: news
@@ -54,10 +54,9 @@
     (goto-char (point-min))
     (while (re-search-forward "<a href=\\.\\(/\\([0-9]+\\)/\\([0-9]+\\)\\.html\\)>\\([^<]+\\)</a><br>" nil t)
       (let ((url (match-string 1))
-	    (month (match-string 2))
+	    ;;(month (match-string 2))
 	    (id (match-string 3))
-	    (subject (match-string 4))
-	    id )
+	    (subject (match-string 4)))
 	(setq id (format "<%s.%s.tahara@ps.ksky.ne.jp>"
 			id (shimbun-current-group-internal shimbun)))
 	(push (shimbun-make-header

@@ -1,6 +1,6 @@
 ;;; sb-debian-jp.el --- shimbun backend for debian.or.jp
 
-;; Copyright (C) 2001 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2001, 2002, 2003 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -25,6 +25,9 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 (require 'sb-mhonarc)

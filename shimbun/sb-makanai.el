@@ -1,6 +1,6 @@
 ;;; sb-makanai.el --- shimbun backend for www.makanai.com -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2001 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
+;; Copyright (C) 2001, 2002, 2003 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 
 ;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 ;; Keywords: news
@@ -64,7 +64,6 @@
 (defun shimbun-makanai-scan-articles (shimbun &optional force-rescan
 					      skip-this-page skip-next-page)
   (let (headers
-	(count 0)
 	(case-fold-search t)
 	(search-next-page t))
     (catch 'stop
@@ -74,7 +73,7 @@
 	  (let* ((year (match-string 1))
 		 (month (match-string 2))
 		 (day (match-string 3))
-		 (day-of-week (match-string 4))
+		 ;;(day-of-week (match-string 4))
 		 (subject (match-string 5))
 		 (article-number (md5 subject))
 		 (article (buffer-substring
