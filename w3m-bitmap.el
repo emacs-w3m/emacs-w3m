@@ -40,8 +40,7 @@
 (require 'bitmap)
 
 ;;; Check for the broken facility:
-(w3m-static-when (or (not (boundp 'emacs-major-version))
-		     (= emacs-major-version 19)
+(w3m-static-when (or (= emacs-major-version 19)
 		     (and (= emacs-major-version 20)
 			  (<= emacs-minor-version 2)))
 

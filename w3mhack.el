@@ -109,11 +109,7 @@ It has already been fixed in XEmacs since 1999-12-06."
 	  (setq ad-return-value (cons fn (nreverse backwards))))
       ad-do-it)))
 
-(defconst w3mhack-emacs-major-version (if (boundp 'emacs-major-version)
-					  emacs-major-version
-					(string-to-int emacs-version)))
-
-(when (<= w3mhack-emacs-major-version 19)
+(when (<= emacs-major-version 19)
   ;; Make `locate-library' run quietly.
   (let (current-load-list)
     ;; Mainly for the compile-time.
@@ -159,7 +155,7 @@ to the specified name LIBRARY (a la calling `load' instead of `load-library')."
 
 ;; Check for the required modules.
 (when (or (featurep 'xemacs)
-	  (<= w3mhack-emacs-major-version 19))
+	  (<= emacs-major-version 19))
   (let ((apel (locate-library "path-util"))
 	(emu (locate-library "pccl")))
     (if (and apel emu)
@@ -237,9 +233,9 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 				   "w3m-xmas.el")
 				  ((boundp 'MULE)
 				   "w3m-om.el")
-				  ((>= w3mhack-emacs-major-version 21)
+				  ((>= emacs-major-version 21)
 				   '("w3m-e21.el" "w3m-fsf.el"))
-				  ((= w3mhack-emacs-major-version 20)
+				  ((= emacs-major-version 20)
 				   '("w3m-e20.el" "w3m-fsf.el"))
 				  (t
 				   "w3m-e19.el"))
@@ -260,7 +256,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 			  (or (> emacs-minor-version 2)
 			      (and (= emacs-major-version 2)
 				   (>= emacs-beta-version 37))))
-		   (>= w3mhack-emacs-major-version 20))
+		   (>= emacs-major-version 20))
 		 (locate-library "un-define"))
       (push "w3m-ucs.el" ignores))
     (if (and (featurep 'mule)
@@ -271,9 +267,10 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 					 nil "^[^#]+\\.el$"))
 	    (setq modules (nconc modules (list (concat shimbun-dir file)))))
 	  ;; mew-shimbun check
-	  (unless (and (boundp 'emacs-major-version) ; Mew 2.x and later do not
-		       (>= emacs-major-version 20)   ; support Mule2.3/Emacs19.
-		       (locate-library "mew-nntp"))
+	  (unless
+	      ;; Mew 2.x and later do not support Mule2.3/Emacs19.
+	      (and (>= emacs-major-version 20)
+		   (locate-library "mew-nntp"))
 	    (push (concat shimbun-dir "mew-shimbun.el") ignores))
 	  ;; nnshimbun check
 	  (unless (let ((gnus (locate-library "gnus")))
@@ -287,7 +284,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
       (push "w3m-weather.el" ignores)
       (push "w3m-symbol.el" ignores))
     (if (and (not (featurep 'xemacs))
-	     (<= w3mhack-emacs-major-version 20)
+	     (<= emacs-major-version 20)
 	     (locate-library "bitmap"))
 	;; Against the error "Already defined charset: 242".
 	(when (locate-library "un-define")
@@ -295,7 +292,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	  (setq bitmap-alterable-charset 'tibetan-1-column)
 	  (require 'bitmap))
       (push "w3m-bitmap.el" ignores))
-    (unless (>= w3mhack-emacs-major-version 21)
+    (unless (>= emacs-major-version 21)
       (push "w3m-favicon.el" ignores))
     ;; List shimbun modules which cannot be byte-compiled with this system.
     (unless (locate-library "xml")
@@ -340,8 +337,8 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
     (kill-buffer buffer)
     rest))
 
-(when (or (<= w3mhack-emacs-major-version 19)
-	  (and (= w3mhack-emacs-major-version 20)
+(when (or (<= emacs-major-version 19)
+	  (and (= emacs-major-version 20)
 	       (<= emacs-minor-version 2)))
   ;; Not to get the byte-code for `current-column' inlined.
   (put 'current-column 'byte-compile nil))
@@ -387,7 +384,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	  (expand-file-name "../../site-lisp/w3m" data-directory)))
   (and (not w3mhack-nonunix-icondir)
        (or (featurep 'xemacs)
-	   (> w3mhack-emacs-major-version 20))
+	   (> emacs-major-version 20))
        (setq w3mhack-nonunix-icondir
 	     (expand-file-name "w3m/icons" data-directory)))
   (labels
@@ -684,7 +681,7 @@ to remove some obsolete variables in the first argument VARLIST."
 	    (insert "info/" info "\n")))
 	(message "Generating %s...done" manifest)))))
 
- ((>= w3mhack-emacs-major-version 21)
+ ((>= emacs-major-version 21)
   ;; Don't warn for the dummy autoloads and mis-judging of the cl
   ;; run-time functions.
   (setq byte-compile-warnings
@@ -696,7 +693,7 @@ to remove some obsolete variables in the first argument VARLIST."
     (put 'make-local-hook 'byte-compile nil)
     (put 'make-local-hook 'byte-obsolete-info nil)))
 
- ((= w3mhack-emacs-major-version 19)
+ ((= emacs-major-version 19)
   ;; Bind defcustom'ed variables.
   (put 'custom-declare-variable 'byte-hunk-handler
        (lambda (form)
@@ -890,11 +887,11 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 		  (or (> emacs-minor-version 2)
 		      (and (= emacs-major-version 2)
 			   (>= emacs-beta-version 37))))
-	   (>= w3mhack-emacs-major-version 20))
+	   (>= emacs-major-version 20))
 	 (setq x (locate-library "un-define"))
 	 (push (file-name-directory x) paths))
     (and (not (featurep 'xemacs))
-	 (<= w3mhack-emacs-major-version 20)
+	 (<= emacs-major-version 20)
 	 (setq x (locate-library "bitmap"))
 	 (push (file-name-directory x) paths))
     (let (print-level print-length)

@@ -44,8 +44,7 @@
 (eval-and-compile
   (cond ((boundp 'MULE)
 	 (autoload 'read-passwd "w3m-om"))
-	((and (boundp 'emacs-major-version)
-	      (= emacs-major-version 19))
+	((= emacs-major-version 19)
 	 (autoload 'read-passwd "w3m-19"))))
 
 (eval-when-compile

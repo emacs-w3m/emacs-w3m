@@ -43,9 +43,9 @@
     (cond
      ((featurep 'xemacs)
       "w3m-xmas")
-     ((and (boundp 'emacs-major-version) (> emacs-major-version 20))
+     ((> emacs-major-version 20)
       "w3m-e21")
-     ((and (boundp 'emacs-major-version) (= emacs-major-version 20))
+     ((= emacs-major-version 20)
       "w3m-e20"))))
 
 (defun w3m-ucs-to-char (codepoint)
