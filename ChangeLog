@@ -1,3 +1,8 @@
+2002-12-17  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-type): Suppert `stable version notation' of
+	w3m-m17n.
+
 2002-12-12  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-use-favicon): Moved from w3m-e21.el.
