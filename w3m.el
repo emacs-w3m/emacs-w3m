@@ -4335,6 +4335,9 @@ described in Section 5.2 of RFC 2396.")
       (setq pos (point-marker))
       (let ((buffer (w3m-copy-buffer
 		     nil nil nil
+		     ;; If a new url has the #name portion, we simply copy
+		     ;; the buffer's contents to the new settion, otherwise
+		     ;; creating an empty buffer.
 		     (not
 		      (and
 		       (string-match w3m-url-components-regexp url)
