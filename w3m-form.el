@@ -319,9 +319,9 @@ If no field in forward, return nil without moving."
 (defun w3m-form-mee-select-value (value)
   "Decode select form information of w3mmee."
   (let ((clist (w3m-string-to-char-list (w3m-url-decode-string value)))
-	label val selected candidates)
+	label val s selected candidates)
     (while clist
-      (setq selected (eq (car clist) 1)
+      (setq s (eq (car clist) 1)
 	    label nil
 	    val nil)
       (setq clist (cdr clist))
@@ -332,7 +332,7 @@ If no field in forward, return nil without moving."
       (while (not (eq (car clist) 0))
 	(setq val (concat val (char-to-string (car clist))))
 	(setq clist (cdr clist)))
-      (if selected (setq selected val))
+      (if s (setq selected val))
       (push (cons (and val (decode-coding-string
 			    val
 			    w3m-output-coding-system))
