@@ -47,7 +47,7 @@
 (defvar shimbun-asahi-group-table
   (let* ((s0 "[\t\n 　]*")
 	 (s1 "[\t\n ]+")
-	 (no-nl "[^\n<>]+")
+	 (no-nl "[^\n]+")
 	 (default (list
 		   (concat
 		    "<a" s1 "href=\"/"
@@ -309,7 +309,10 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	     (shimbun-mime-encode-string
 	      (cond (kansai-special
 		     (concat "[" kansai-special "] "
-			     (match-string (nth 3 numbers))))
+			     (save-match-data
+			       (shimbun-replace-in-string
+				(match-string (nth 3 numbers))
+				"<[^<>]+>" ""))))
 		    ((and (string-equal group "international")
 			  (string-equal (substring serial
 						   0 (min 7 (length serial)))

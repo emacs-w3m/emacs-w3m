@@ -1,3 +1,8 @@
+2004-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Simply remove
+	`<...>'s from a subject when parsing the kansai-special group.
+
 2004-07-30  Romain Francoise <romain@orebokech.com>
 
 	Enable emacs-w3m to be built with Emacs --without-x.
@@ -8,6 +13,11 @@
 	is not available.
 
 	* w3m.el (mouse-set-point): Alias to ignore if it is not available.
+
+2004-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Allow a subject
+	to contain `<...>'s.
 
 2004-07-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 	NOMIYA Masaru <nomiya@ttmy.ne.jp>,
