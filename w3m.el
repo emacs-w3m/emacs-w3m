@@ -3046,16 +3046,22 @@ succeed."
 		  (cons 'binary 'binary))
 		(lcookie (make-temp-name
 			  (format "%s.%d." (user-login-name) (emacs-pid))))
+		(cfile (make-temp-name
+			(expand-file-name "w3melck" w3m-profile-directory)))
 		file beg end)
 	    (w3m-process-with-environment
 		(list
 		 (cons "LOCAL_COOKIE" lcookie)
+		 (cons "LOCAL_COOKIE_FILE" cfile)
 		 (cons "QUERY_STRING"
 		       (format "dir=%s&cookie=%s"
 			       (encode-coding-string (w3m-url-to-file-name url)
 						     w3m-file-name-coding-system)
 			       lcookie)))
 	      (call-process w3m-dirlist-cgi-program nil t nil))
+	    ;; delete local cookie file
+	    (when (and (file-exists-p cfile) (file-writable-p cfile))
+	      (delete-file cfile))
 	    (goto-char (point-min))
 	    (when (re-search-forward "^<html>" nil t)
 	      (delete-region (point-min) (match-beginning 0))
@@ -3077,7 +3083,10 @@ succeed."
     ;; execute w3m internal CGI
     (w3m-process-with-wait-handler
       (setq w3m-current-url url)
-      (w3m-process-start handler "-dump_source" url)))
+      (w3m-process-start handler
+			 w3m-command
+			 (append w3m-command-arguments
+				 (list "-dump_source" url)))))
   ;; bind charset to w3m-file-name-coding-system
   (let ((charset (or (car (rassq w3m-file-name-coding-system
 				 w3m-charset-coding-system-alist))
