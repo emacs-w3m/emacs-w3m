@@ -71,13 +71,47 @@ with :default-value-from."
 		    value)))
   (widget-default-create widget))
 
+(defvar w3m-antenna-alist nil
+  "A list of site information (internal variable).  nil means that
+antenna database is not initialized.  Each site information is a list
+that consists of:
+ 0. Format string of URL.
+ 1. Title.
+ 2. Class (Normal, HNS or TIME).
+ 3. Real URL.
+ 4. Last modification time.
+ 5. Size in bytes.
+ 6. Time when size modification is detected.
+")
+
+(defmacro w3m-antenna-site-key (site)
+  (` (car (, site))))
+(defmacro w3m-antenna-site-title (site)
+  (` (nth 1 (, site))))
+(defmacro w3m-antenna-site-class (site)
+  (` (nth 2 (, site))))
+(defmacro w3m-antenna-site-url (site)
+  (` (nth 3 (, site))))
+(defmacro w3m-antenna-site-last-modified (site)
+  (` (nth 4 (, site))))
+(defmacro w3m-antenna-site-size (site)
+  (` (nth 5 (, site))))
+(defmacro w3m-antenna-site-size-detected (site)
+  (` (nth 6 (, site))))
+
 (defcustom w3m-antenna-file
   (expand-file-name ".antenna" w3m-profile-directory)
   "File which has list of antenna URLs."
   :group 'w3m-antenna
   :type '(file :size 0))
 
-(defcustom w3m-antenna-sites nil
+(defcustom w3m-antenna-sites
+  (unless noninteractive
+    (mapcar (lambda (site)
+	      (list (w3m-antenna-site-key site)
+		    (w3m-antenna-site-title site)
+		    (w3m-antenna-site-class site)))
+	    (w3m-load-list w3m-antenna-file)))
   "List of WEB sites, watched by `w3m-antenna'."
   :group 'w3m-antenna
   :type '(repeat
@@ -87,17 +121,19 @@ with :default-value-from."
 				:value-from w3m-antenna-tmp-url)
 	   (string-with-default :format "Title: %v\n" :size 0
 				:value-from w3m-antenna-tmp-title)
-	   (choice :tag "Class"
-		   (const :tag "Normal" nil)
-		   (const :tag "Modified Time" time)
-		   (const :tag "HNS" hns)
-		   (list :tag "Check anchor specified by regular expression"
-			 (function-item :format "" w3m-antenna-check-anchor)
-			 (regexp)
-			 (integer))
-		   (list :tag "User Defined Function"
-			 function
-			 (repeat :tag "Options" string))))))
+	   (choice
+	    :tag "Procedure"
+	    (const :tag "Check either its last modified time or its size" nil)
+	    (const :tag "Check its last modified time only" time)
+	    (const :tag "Check its current date provided by Hyper Nikki System"
+		   hns)
+	    (list :tag "Check the page linked by the anchor that matches"
+		  (function-item :format "" w3m-antenna-check-anchor)
+		  (regexp)
+		  (integer))
+	    (list :tag "Check with a user defined function"
+		  function
+		  (repeat :tag "Arguments" sexp))))))
 
 (defcustom w3m-antenna-html-skeleton
   (eval-when-compile
@@ -144,61 +180,18 @@ with :default-value-from."
 	  (function-item :tag "Do nothing." identity)
 	  (function :format "User function: %v\n" :size 0)))
 
-(defvar w3m-antenna-alist nil
-  "A list of site information (internal variable).  nil means that
-antenna database is not initialized.  Each site information is a list
-that consists of:
- 0. Format string of URL.
- 1. Title.
- 2. Class (Normal, HNS or TIME).
- 3. Real URL.
- 4. Last modification time.
- 5. Size in bytes.
- 6. Time when size modification is detected.
-")
-
-(defmacro w3m-antenna-site-key (site)
-  (` (car (, site))))
-(defmacro w3m-antenna-site-title (site)
-  (` (nth 1 (, site))))
-(defmacro w3m-antenna-site-class (site)
-  (` (nth 2 (, site))))
-(defmacro w3m-antenna-site-url (site)
-  (` (nth 3 (, site))))
-(defmacro w3m-antenna-site-last-modified (site)
-  (` (nth 4 (, site))))
-(defmacro w3m-antenna-site-size (site)
-  (` (nth 5 (, site))))
-(defmacro w3m-antenna-site-size-detected (site)
-  (` (nth 6 (, site))))
-
-(defun w3m-antenna-setup ()
-  (let ((alist (w3m-load-list w3m-antenna-file)))
-    (unless w3m-antenna-sites
-      (setq w3m-antenna-sites
-	    (mapcar
-	     (lambda (site)
-	       (list (w3m-antenna-site-key site)
-		     (w3m-antenna-site-title site)
-		     (w3m-antenna-site-class site)))
-	     alist)))
-    (unless w3m-antenna-alist
-      (setq w3m-antenna-alist
-	    (delq nil
-		  (mapcar
-		   (lambda (site)
-		     (and (assoc (w3m-antenna-site-key site) w3m-antenna-sites)
-			  site))
-		   alist)))
-      (dolist (site w3m-antenna-sites)
-	(unless (assoc (w3m-antenna-site-key site) w3m-antenna-alist)
-	  (push (append site (list nil nil nil nil))
-		w3m-antenna-alist))))))
-
-(defun w3m-antenna-shutdown ()
-  (prog1 w3m-antenna-alist
-    (w3m-save-list w3m-antenna-file w3m-antenna-alist nil t)
-    (setq w3m-antenna-alist nil)))
+(defun w3m-antenna-alist ()
+  (let ((alist (delq nil
+		     (mapcar (lambda (site)
+			       (when (assoc (w3m-antenna-site-key site)
+					    w3m-antenna-sites)
+				 site))
+			     (w3m-load-list w3m-antenna-file)))))
+    (dolist (site w3m-antenna-sites)
+      (unless (assoc (w3m-antenna-site-key site) alist)
+	(push (append site (list nil nil nil nil))
+	      alist)))
+    alist))
 
 (defun w3m-antenna-hns-last-modified (url handler)
   (w3m-process-do-with-temp-buffer
@@ -364,7 +357,8 @@ asynchronous process that has not finished yet."
 
 (defun w3m-antenna-check-all-sites (&optional handler)
   "Check all sites specified in `w3m-antenna-sites'."
-  (w3m-antenna-setup)
+  (unless w3m-antenna-alist
+    (setq w3m-antenna-alist (w3m-antenna-alist)))
   (if (not handler)
       (w3m-process-with-wait-handler
 	(w3m-antenna-check-all-sites handler))
@@ -373,7 +367,9 @@ asynchronous process that has not finished yet."
 	 (w3m-antenna-mapcar 'w3m-antenna-check-site
 			     w3m-antenna-alist
 			     handler))
-      (w3m-antenna-shutdown))))
+      (prog1 w3m-antenna-alist
+	(w3m-save-list w3m-antenna-file w3m-antenna-alist)
+	(setq w3m-antenna-alist nil)))))
 
 (defun w3m-antenna-make-summary (site)
   (format "<li><a href=\"%s\">%s</a> %s"
@@ -440,8 +436,7 @@ asynchronous process that has not finished yet."
   (w3m-process-do
       (alist (if no-cache
 		 (w3m-antenna-check-all-sites handler)
-	       (or w3m-antenna-alist
-		   (w3m-load-list w3m-antenna-file))))
+	       (or w3m-antenna-alist (w3m-antenna-alist))))
     (let (changed unchanged)
       (dolist (site alist)
 	(if (if (w3m-antenna-site-last-modified site)

@@ -1,23 +1,28 @@
 2003-11-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m-antenna.el (w3m-antenna-sites): Allow a list that consists
-	of a function and its options, as the third element of each site.
+	* w3m-antenna.el (w3m-antenna-sittes): Change its default value.
+	Allow a list that consists of a function and its options, as the
+	third element of each site.
 	(w3m-antenna-html-skeleton): Remove the link to the antenna editor.
-	(w3m-antenna-setup): Make it prefer `w3m-antenna-sites' than a
-	list originated from `w3m-antenna-file'.
-	(w3m-antenna-shutdown): Simplified.
-	(w3m-antenna-site-update): New function.
+	(w3m-antenna-setup): Removed.
+	(w3m-antenna-shutdown): Removed.
+	(w3m-antenna-alist): New function.
+	(w3m-antenna-site-update): Ditto.
 	(w3m-antenna-check-hns): Ditto.
 	(w3m-antenna-check-anchor): Ditto.
 	(w3m-antenna-check-page): Ditto.
 	(w3m-antenna-check-site): Use the above three functions.
-	(w3m-antenna-check-all-sites): Follow the above change.
+	(w3m-antenna-check-all-sites): Follow the above change.  Use
+	w3m-antenna-alist() and w3m-save-list() instead of
+	w3m-antenna-setup() and w3m-antenna-shutdown().
 	(w3m-antenna-check-site-after): Removed.
 	(w3m-antenna-make-summary): Use a key attribute instead of an url
 	attribute, when the latter is not set.
 	(w3m-antenna-make-summary-like-natsumican): Ditto.
+	(w3m-about-antenna): Call w3m-antenna-alist() instead of
+	w3m-load-list().
 	(w3m-about-antenna-edit): Removed.
-	(w3m-antenna-edit-reset-post-data): Ditto..
+	(w3m-antenna-edit-reset-post-data): Ditto.
 
 2003-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
