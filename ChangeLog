@@ -1,3 +1,8 @@
+2003-04-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-retrieve-and-render): Hide a exit status from an
+	error message unless `w3m-process-exit-status'.
+
 2003-04-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-url): Improve and bug fix the find-file code.

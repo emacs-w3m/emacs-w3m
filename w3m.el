@@ -4163,7 +4163,8 @@ argument.  Otherwise, it will be called with nil."
 			 url
 			 (if w3m-process-exit-status
 			     (format " (exit status: %s)"
-				     w3m-process-exit-status))))))))))
+				     w3m-process-exit-status)
+			   "")))))))))
 
 (defun w3m-show-error-information (url output-buffer content-charset)
   "Create and prepare error information."
