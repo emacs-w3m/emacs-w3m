@@ -1,6 +1,6 @@
 ;;; sb-impress.el --- shimbun backend for www.watch.impress.co.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
@@ -32,10 +32,10 @@
 
 (defvar shimbun-impress-groups-alist
   '(("internet" "<a href=\"\\(cda/news/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- 本文開始 -->" "<!-- 本文終了 -->" "http://internet.watch.impress.co.jp/")
-    ("pc" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "\\(<hr>\\|<!-- 本文開始 -->\\)" "<!-- 本文終了 -->" "http://pc.watch.impress.co.jp/")
-    ("akiba" "<a href=\"\\(hotline/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "\\(<hr>\\|<!-- 本文開始 -->\\)" "<!-- 本文終了 -->")
-    ("game" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- 本文開始 -->" "<!-- 本文終了 -->")
-    ("av" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "\\(<!-- 本文開始 -->\\|<!-- title -->\\)" "<!-- 本文終了 -->")
+    ("pc" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- 記事見出し -->" "<!-- /記事署名 -->" "http://pc.watch.impress.co.jp/")
+    ("akiba" "<a href=\"\\(hotline/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- ↑↑　★2002/10/01 Modify End★　↑↑ -->" "\\(<!-- ↓↓　★2002/10/01 Modify start★　↓↓ -->\\|<!-- 500x144 -->\\)")
+    ("game" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "\\(<tr>\n<td valign=TOP>\\|<!-- 本文開始 -->\\)" "<!-- /記事署名 -->")
+    ("av" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "\\(<!-- title -->\\|<hr size=3>\\)" "\\(<!-- /記事署名 -->\\|<!-- 500x144 -->\\)")
     ))
 
 (defvar shimbun-impress-groups (mapcar 'car shimbun-impress-groups-alist))
@@ -50,7 +50,7 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 (luna-define-method shimbun-index-url ((shimbun shimbun-impress))
   (or (nth 4 (assoc (shimbun-current-group-internal shimbun)
 		    shimbun-impress-groups-alist))
-      (concat (shimbun-url-internal shimbun) "/"
+      (concat (shimbun-url-internal shimbun)
 	      (shimbun-current-group-internal shimbun) "/")))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-impress)
@@ -84,9 +84,9 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 					       shimbun)))
 	(unless (member id ids)
 	  (setq ids (cons id ids))
-	  (push (shimbun-make-header
+	  (push (shimbun-create-header
 		 0
-		 (shimbun-mime-encode-string (or subject ""))
+		 (or subject "")
 		 (shimbun-from-address shimbun)
 		 (shimbun-make-date-string year month mday)
 		 id

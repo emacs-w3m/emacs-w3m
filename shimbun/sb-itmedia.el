@@ -75,15 +75,10 @@
 
 (defvar shimbun-itmedia-server-name "ITmedia")
 (defvar shimbun-itmedia-from-address "webmaster@itmedia.co.jp")
-(defvar shimbun-itmedia-content-start "\\(<!--BODY-->\\|<!--DATE-->\\)")
-(defvar shimbun-itmedia-content-end
-  "\\(<!--BODY ?END-->\\|<!--BYLINE ?END-->\\)")
 (defvar shimbun-itmedia-x-face-alist
   '(("default" . "X-Face: %JzFW&0lP]xKGl{Bk3\\`yC0zZp|!;\\KT9'rqE2AIk\
 R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
  j`}1YEnKc;U0:^#LQB*})Q}y=45<lIE4q<gZ88e2qS8a@Tys6S")))
-
-(defvar shimbun-itmedia-expiration-days 31)
 
 (luna-define-method shimbun-groups ((shimbun shimbun-itmedia))
   (mapcar 'car shimbun-itmedia-group-alist))
@@ -147,16 +142,12 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 			 (match-data))
 		  time (when (re-search-forward time-regexp (car next) t)
 			 (match-string 1))))
-	  (push (shimbun-make-header
-		 0
-		 (shimbun-mime-encode-string subject)
+	  (push (shimbun-create-header
+		 0 subject
 		 (shimbun-from-address shimbun)
 		 (shimbun-make-date-string year month day time)
 		 id  "" 0 0
-		 (cond ((equal group "gamespot")
-			(concat (shimbun-index-url shimbun) url))
-		       (t
-			(concat shimbun-itmedia-url url))))
+		 (concat shimbun-itmedia-url url))
 		headers))))
     (shimbun-sort-headers headers)))
 
@@ -165,7 +156,7 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
     (goto-char (point-min))
     (when (and (search-forward "<!--BODY-->" nil t)
 	       (setq start (match-end 0))
-	       (search-forward "<!--BODYEND-->" nil t))
+	       (re-search-forward "<!--BODY ?END-->" nil t))
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start)
       ;; Remove anchors to both the next page and the previous page.
@@ -212,21 +203,15 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-itmedia) header)
   (let ((case-fold-search t))
-    (when (and (search-forward "<!--DATE-->" nil t)
-	       (looking-at "[ 　]+\\([0-9]+\\)年\\(1[012]\\|[2-9]\\)月\
-\\([12][0-9]?\\|3[01]?\\|[4-9]\\)日[ 　]+\
-\\(0[0-9]\\|1[0-2]\\):\\([0-5][0-9]\\)[ 　]+\\([AP]M\\)"))
+    (when (re-search-forward "\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) \
+\\([0-9]+:[0-9]+\\) 更新" nil t)
       (shimbun-header-set-date
        header
        (shimbun-make-date-string
 	(string-to-number (match-string 1))
 	(string-to-number (match-string 2))
 	(string-to-number (match-string 3))
-	(if (string= "PM" (match-string 6))
-	    (format "%02d:%s"
-		    (+ 12 (string-to-number (match-string 4)))
-		    (match-string 5))
-	  (buffer-substring (match-beginning 4) (match-end 5))))))
+	(match-string 4))))
     (let ((base-cid (shimbun-header-id header)))
       (when (string-match "\\`<\\([^>]+\\)>\\'" base-cid)
 	(setq base-cid (match-string 1 base-cid)))
