@@ -1,3 +1,9 @@
+2004-01-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-cnet.el: Rewritten for the original house of CNET.
+
+	* shimbun/sb-cnet-jp.el: Renamed from sb-cnet-rss.el.
+
 2004-01-12  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-lotusex.el (shimbun-get-headers): Remove wrong

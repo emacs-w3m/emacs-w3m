@@ -1,6 +1,6 @@
-;;; sb-cnet.el --- shimbun backend for cnet
+;;; sb-cnet.el --- shimbun backend for CNET
 
-;; Copyright (C) 2001, 2002, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2004 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -26,68 +26,93 @@
 
 ;;; Commentary:
 
-;; Original code was nnshimbun.el written by
+;; The original code for CNET Japan was nnshimbun.el written by
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
+
+;; It was rewritten as a part of Shimbun library by
+;; Yuuichi Teranishi <teranisi@gohome.org> at November 19th, 2001.
+
+;; All stuffs were rewritten for the original house of CNET by
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org> at January 11th, 2004.
 
 ;;; Code:
 
 (require 'shimbun)
+(require 'sb-rss)
+(eval-when-compile
+  (require 'cl))
 
-(luna-define-class shimbun-cnet (shimbun-japanese-newspaper shimbun) ())
+(luna-define-class shimbun-cnet (shimbun-rss shimbun) ())
 
-(defvar shimbun-cnet-url "http://japan.cnet.com/")
-(defvar shimbun-cnet-server-name "CNET Japan")
-(defvar shimbun-cnet-groups '("news"))
-(defvar shimbun-cnet-from-address  "webmaster@japan.cnet.com")
-(defvar shimbun-cnet-content-start "")
-(defvar shimbun-cnet-content-end "<!--NEWS LETTER SUB-->")
+(defvar shimbun-cnet-group-alist
+  '(("news" . "http://news.com.com/2547-1_3-0-20.xml")
+    ("enterprise.software" . "http://news.com.com/2547-7343_3-0-10.xml")
+    ("enterprise.hardware" . "http://news.com.com/2547-1001_3-0-10.xml")
+    ("security" . "http://news.com.com/2547-1009_3-0-10.xml")
+    ("networking" . "http://news.com.com/2547-1035_3-0-10.xml")
+    ("personal.technology" . "http://news.com.com/2547-1040_3-0-10.xml")
+    ("newsmakers" . "http://news.com.com/2547-1082_3-0.xml")
+    ("perspectives" . "http://news.com.com/2547-1071_3-0.xml"))
+  "Alist of readable groups and URLs of their RSSs.
+For more detail, see <URL:http://news.com.com/2009-1090-980549.html>.")
+
+(defvar shimbun-cnet-server-name "CNET")
+(defvar shimbun-cnet-from-address  "webmaster@news.com.com")
+(defvar shimbun-cnet-content-start "<div id=\"\\(story\\|blogs\\)\">")
+(defvar shimbun-cnet-content-end
+  "<div \\(class=\"quote\"\\|id=\"rightcol\"\\)>")
 (defvar shimbun-cnet-x-face-alist
   '(("default" . "X-Face: 0p7.+XId>z%:!$ahe?x%+AEm37Abvn]n\
 *GGh+>v=;[3`a{1lqO[$,~3C3xU_ri>[JwJ!9l0\n ~Y`b*eXAQ:*q=bBI\
 _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
-(defvar shimbun-cnet-expiration-days 7)
+
+(luna-define-method shimbun-groups ((shimbun shimbun-cnet))
+  (mapcar 'car shimbun-cnet-group-alist))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-cnet))
-  (concat shimbun-cnet-url "news/archive.htm"))
+  (cdr (assoc (shimbun-current-group shimbun) shimbun-cnet-group-alist)))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-cnet)
-					 &optional range)
-  (let (pt url subject headers)
-    (while (re-search-forward "\
-<a href=\"/\\(news/[^\"]+\\)\"[^>]*>\\([^<>]+\\)"
-			      nil t)
-      (setq pt (point)
-	    url (match-string 1)
-	    subject (match-string 2))
-      (when (re-search-backward "\
->\\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\)</"
-				nil t)
-	(goto-char pt)
-	(push (shimbun-make-header
-	       0
-	       (shimbun-mime-encode-string subject)
-	       (shimbun-from-address shimbun)
-	       (shimbun-make-date-string (string-to-number (match-string 1))
-					 (string-to-number (match-string 2))
-					 (string-to-number (match-string 3)))
-	       (concat "<"
-		       (shimbun-replace-in-string
-			(if (string-match "\\.[^/]*\\'" url)
-			    (substring url 0 (match-beginning 0))
-			  url)
-			"[,/]" ".")
-		       "%japan.cnet.com>")
-	       "" 0 0
-	       (concat shimbun-cnet-url url))
-	      headers)))
-    headers))
+(luna-define-method shimbun-rss-process-date ((shimbun shimbun-cnet) string)
+  "Convert a slightly corrupted date string to a date string in right format."
+  (multiple-value-bind (sec min hour day month year dow dst zone)
+      (decode-time (shimbun-time-parse-string string))
+    (setq zone (/ zone 60))
+    (shimbun-make-date-string year month day
+			      (format "%02d:%02d" hour min)
+			      (format "%s%02d%02d"
+				      (if (>= zone 0) "+" "-")
+				      (/ zone 60)
+				      (% zone 60)))))
 
-(luna-define-method shimbun-make-contents :before ((shimbun shimbun-cnet)
-						   header)
-  (if (and (search-forward "<div class=\"plmain\">" nil t)
-	   (search-forward "</noscript>" nil t))
-      (delete-region (point-min) (point))
-    (goto-char (point-min))))
+(luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-cnet)
+						  url date)
+  (if (string-match "\\`http://news\\.com\\.com/\\([-_0-9]+\\)\\.html" url)
+      (concat "<" (match-string 1 url) "%"
+	      (shimbun-current-group shimbun) "@news.com.com>")
+    (error "Cannot find message-id base")))
+
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-cnet)
+						    header)
+  (goto-char (point-min))
+  (while (search-forward "\r\n" nil t)
+    (delete-region (match-beginning 0) (1+ (match-beginning 0))))
+  (shimbun-remove-tags "<script" "</script>")
+  (shimbun-remove-tags "<noscript" "</noscript>")
+  (shimbun-remove-tags "<a href=\"[^\"]+\\?tag=st_util_print\">" "</a>")
+  (shimbun-remove-tags "<a href=\"[^\"]+\\?tag=st_util_email\">" "</a>")
+  (shimbun-remove-tags "<a onclick" "</a>")
+  (shimbun-remove-tags "<newselement type=\"table\">" "</newselement>")
+  (shimbun-remove-tags "<img src=\"[^\"]+/story_relatedq.jpg\"[^>]*/>")
+  (goto-char (point-min))
+  (when (re-search-forward "<img src=\"[^\"]+/story_related.jpg\"[^>]*/>"
+			   nil t)
+    (insert "Related stories\n")
+    (delete-region (match-beginning 0) (match-end 0)))
+  (when (luna-call-next-method)
+    (goto-char (point-min))
+    (when (re-search-forward "<a href=\"mailto:\\([^\\?]+\\)\\?subject=" nil t)
+      (shimbun-header-set-from header (match-string 1)))
+    t))
 
 (provide 'sb-cnet)
 
