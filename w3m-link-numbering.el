@@ -87,13 +87,19 @@
 	  (when (w3m-anchor)
 	    (let ((overlay (make-overlay (point) (1+ (point))))
 		  (num (format "[%d]" (incf i))))
-	      (when (featurep 'w3m-e20)
-		(overlay-put overlay 'face (get-text-property (point) 'face)))
-	      (put-text-property 0 (length num)
-				 'face 'w3m-link-numbering-face
-				 num)
+	      (w3m-static-if (featurep 'xemacs)
+		  (progn
+		    (overlay-put overlay 'before-string num)
+		    (set-glyph-face (extent-begin-glyph overlay)
+				    'w3m-link-numbering-face))
+		(when (featurep 'w3m-e20)
+		  (overlay-put overlay
+			       'face (get-text-property (point) 'face)))
+		(put-text-property 0 (length num)
+				   'face 'w3m-link-numbering-face
+				   num)
+		(overlay-put overlay 'before-string num))
 	      (overlay-put overlay 'w3m-link-numbering-overlay i)
-	      (overlay-put overlay 'before-string num)
 	      (overlay-put overlay 'evaporate t))))))))
 
 (defun w3m-view-numbered-link (&optional arg)

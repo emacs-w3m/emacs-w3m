@@ -1,7 +1,8 @@
 2004-04-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-link-numbering.el (w3m-link-numbering): Don't bother to
-	delete overlays.  Suggested by TSUCHIYA-san.
+	* w3m-link-numbering.el (w3m-link-numbering): Add face to
+	before-string correctly under XEmacs; don't bother to delete
+	overlays (suggested by TSUCHIYA-san).
 
 2004-04-14  Hideyuki SHIRAI  <shirai@meadowy.org>
 
