@@ -2376,8 +2376,9 @@ saved (*2).  To do this securely, you had better have the habit of
 performing the @samp{scan update} command after reading the folder.
 
 If you don't like the @samp{*} mark for unseen messages, customize
-the @code{mew-shimbun-mark-unseen} variable (see above).  Specifying the
-mark using @kbd{C-u N} may take you a joyful unseen life.
+the @code{mew-shimbun-mark-unseen} variable (see above).  By specifying
+the mark by @kbd{C-u N}, you will be able to lead a better life with
+taking care of unseen messages.
 
 (*2) Persons who have set the @code{mew-touch-folder-p} variable to
 @code{t} will succeed 100% in saving marks, but persons who use
