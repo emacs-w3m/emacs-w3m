@@ -1,3 +1,7 @@
+2003-02-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-util.el (w3m-url-local-p): Use `\`' instead of `^'.
+
 2003-02-21  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-local-dirlist-cgi):  Treat a `local cookie file', again.
