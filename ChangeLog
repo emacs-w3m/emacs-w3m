@@ -1,3 +1,15 @@
+2004-04-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3mhack.el: Create w3m-load.el.
+	(w3mhack-load-file): New variable.
+	(w3mhack-examine-modules): Ignore `w3mhack-load-file'.
+	(w3mhack-generate-load-file): New function.
+	(w3mhack-compile): Call the above.
+
+	* .cvsignore: Ignore w3m-load.el.
+
+	* Makefile.in (clean): Remove w3m-load.el.
+
 2004-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-prepare-article-markets):

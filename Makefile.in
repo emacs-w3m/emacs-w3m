@@ -165,7 +165,7 @@ tarball: $(DOCS) $(DISTS) $(SUBDIRS)
 
 clean:
 	-rm -rf $(PACKAGE)* ;\
-	rm -f *~ *.elc shimbun/*.elc w3m-kwds.el ;\
+	rm -f *~ *.elc shimbun/*.elc w3m-load.el w3m-kwds.el ;\
 	rm -f doc/*~ doc/*.info doc/*.info-[0-9] doc/*.info-[0-9][0-9]
 
 distclean: clean
