@@ -120,7 +120,10 @@
   (autoload 'w3m-fontify-forms "w3m-form")
   (autoload 'w3m-filter "w3m-filter")
   (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
-  (autoload 'w3m-switch-buffer "w3m-tabmenu"))
+  (autoload 'w3m-switch-buffer "w3m-tabmenu")
+  (autoload 'w3m-cookie-set "w3m-cookie")
+  (autoload 'w3m-cookie-get "w3m-cookie")
+  (autoload 'w3m-cookie-shutdown "w3m-cookie" t))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
@@ -802,6 +805,21 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
   :type 'boolean
   :require 'w3m-form)
+
+(defcustom w3m-use-cookies nil
+  "Non-nil means using cookies. (EXPERIMENTAL)"
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-cookie-accept-domains nil
+  "A list of trusted domain name string."
+  :group 'w3m
+  :type '(repeat string))
+
+(defcustom w3m-cookie-reject-domains nil
+  "A list of untrusted domain name string."
+  :group 'w3m
+  :type '(repeat string))
 
 (defcustom w3m-use-filter nil
   "*Non nil means filtering of WEB is used."
@@ -1570,6 +1588,7 @@ interactively."
 ;; When buggy timezone.el is loaded, parse-time.el will be used
 ;; instead of timezone.el.
 (unless (let* ((x (current-time))
+	       (system-time-locale "C")
 	       (y (w3m-time-parse-string
 		   (format-time-string "%A, %d-%b-%y %T %Z" x))))
 	  (and (eq (car x) (car y)) (eq (nth 1 x) (nth 1 y))))
@@ -2773,7 +2792,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
     (w3m-process-do
 	(header (w3m-w3m-get-header url no-cache handler))
       (when header
-	(let (alist type charset)
+	(let (alist type charset moved)
 	  (dolist (line (split-string header "[\t ]*\n"))
 	    (when (string-match "^\\([^ \t:]+\\):[ \t]*" line)
 	      (push (cons (downcase (match-string 1 line))
@@ -2785,7 +2804,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	    (if (string-match "/\\'" url)
 		(list "text/html" "w3m-euc-japan" nil nil nil url url)
 	      (list (w3m-local-content-type url) nil nil nil nil url url)))
-	   ((string-match "HTTP/1\\.[0-9] 200 " header)
+	   ((or (string-match "HTTP/1\\.[0-9] 200 " header)
+		(setq moved (string-match "HTTP/1\\.[0-9] 30[12] " header)))
 	    (when (setq type (cdr (assoc "content-type" alist)))
 	      (if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" type)
 		  (setq charset (w3m-remove-redundant-spaces
@@ -2795,6 +2815,15 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(setq type (w3m-remove-redundant-spaces type))
 		(when (string-match ";\\'" type)
 		  (setq type (substring type 0 (match-beginning 0))))))
+	    (when w3m-use-cookies
+	      (dolist (pair alist)
+		(when (string= (car pair) "set-cookie")
+		  (w3m-cookie-set url (cdr pair)))))
+	    (when moved
+	      (setq w3m-current-refresh
+		    (cons 0
+			  (w3m-expand-url
+			   (cdr (assoc "location" alist))))))
 	    (setq w3m-current-ssl (cdr (assoc "w3m-ssl-certificate" alist)))
 	    (list (or type (w3m-local-content-type url))
 		  (or charset
@@ -2886,11 +2915,31 @@ to add the option \"-no-proxy\"."
       (push "-no-proxy" args))
     args))
 
+(defun w3m-cookie-command-arguments (url)
+  "Return cookie related arguments for w3m command."
+  (if w3m-use-cookies
+      (append
+       (list "-cookie")
+       (list "-o" "follow_redirection=0") ; Don't follow redirection.
+       (let ((cookie-header (w3m-cookie-get url)))
+	 (when cookie-header
+	   (list "-header" (concat "Cookie: " cookie-header))))
+       (when (consp w3m-cookie-accept-domains)
+	 (list "-o"
+	       (concat "cookie_accept_domains="
+		       (mapconcat 'identity w3m-cookie-accept-domains ","))))
+       (when (consp w3m-cookie-reject-domains)
+	 (list "-o"
+	       (concat "cookie_reject_domains="
+		       (mapconcat 'identity w3m-cookie-reject-domains ",")))))
+    (list "-no-cookie")))
+
 (defun w3m-w3m-retrieve (url no-decode no-cache post-data referer handler)
   "Retrieve content pointed by URL with w3m, insert it to this buffer,
 and call the HANDLER function with its content type as a string
 argument, when retrieve is complete."
   (let ((w3m-command-arguments (append w3m-command-arguments
+				       (w3m-cookie-command-arguments url)
 				       (w3m-additional-command-arguments url)))
 	(temp-file))
     (and no-cache
@@ -3374,6 +3423,8 @@ argument.  Otherwise, it will be called with nil."
 		   (message "The content (%s) has been retrieved in %s"
 			    url (buffer-name output-buffer))))
 	  (ding)
+	  (if (eq (car w3m-current-forms) t)
+	      (setq w3m-current-forms (cdr w3m-current-forms)))
 	  (w3m-message "Cannot retrieve URL: %s%s"
 		       url
 		       (if w3m-process-exit-status
@@ -3387,14 +3438,16 @@ argument.  Otherwise, it will be called with nil."
     ("\\`image/" . w3m-prepare-image-content)))
 
 (defun w3m-prepare-content (url type output-buffer &optional content-charset)
-  (catch 'content-prepared
-    (dolist (elem w3m-content-prepare-functions)
-      (and (string-match (car elem) type)
-	   (funcall (cdr elem) url type output-buffer content-charset)
-	   (throw 'content-prepared t)))
-    (with-current-buffer output-buffer
-      (w3m-external-view url))
-    nil))
+  (unless (and w3m-current-refresh
+	       (eq (car w3m-current-refresh) 0))
+    (catch 'content-prepared
+      (dolist (elem w3m-content-prepare-functions)
+	(and (string-match (car elem) type)
+	     (funcall (cdr elem) url type output-buffer content-charset)
+	     (throw 'content-prepared t)))
+      (with-current-buffer output-buffer
+	(w3m-external-view url))
+      nil)))
 
 (defun w3m-prepare-text-content (url type output-buffer
 				     &optional content-charset)
@@ -4422,6 +4475,8 @@ Return t if deleting current frame or window is succeeded."
     (w3m-cache-shutdown)
     (w3m-arrived-shutdown)
     (w3m-process-shutdown)
+    (when w3m-use-cookies
+      (w3m-cookie-shutdown))
     (w3m-kill-all-buffer)))
 
 (defun w3m-close-window ()

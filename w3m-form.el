@@ -189,6 +189,8 @@ If no field in forward, return nil without moving."
 
 (defun w3m-form-resume (forms)
   "Resume content of all forms in the current buffer using FORMS."
+  (if (eq (car forms) t)
+      (setq forms (cdr forms)))
   (save-excursion
     (goto-char (point-min))
     (let (fid type name form cform textareas)
@@ -373,12 +375,13 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	    (w3m-parse-attributes (_x)
 	      (setq forms (nconc forms (list (w3m-form-mee-new _x)))))
 	  (w3m-parse-attributes (action (method :case-ignore)
+					(fid :integer)
 					(accept-charset :case-ignore)
 					(charset :case-ignore))
 	    (setq forms
-		  (nconc
-		   forms
-		   (list
+		  (cons
+		   (cons
+		    fid
 		    (w3m-form-new
 		     (or method "get")
 		     (or action (and w3m-current-url
@@ -390,7 +393,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		     nil
 		     (if accept-charset
 			 (setq accept-charset
-			       (split-string accept-charset ","))))))))))
+			       (split-string accept-charset ",")))))
+		   forms)))))
        ((string= tag "map")
 	(let (candidates)
 	  (w3m-parse-attributes (name)
@@ -444,7 +448,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		  (max abs-hseq w3m-max-anchor-sequence))
 	    (if (eq w3m-type 'w3mmee)
 		(setq form (nth fid forms))
-	      (setq form (nth (max (- (length forms) 1) 0) forms)))
+	      (setq form (cdr (assq fid forms))))
 	    (when form
 	      (cond
 	       ((and (string= type "hidden")
@@ -611,7 +615,11 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			       (buffer-substring start (point))))))))))
       (when (search-forward "</internal>" nil t)
 	(delete-region internal-start (match-end 0))))
-    (setq w3m-current-forms forms)
+    (setq w3m-current-forms (if (eq w3m-type 'w3mmee)
+				forms
+			      (mapcar 'cdr
+				      (sort forms (lambda (x y)
+						    (< (car x)(car y)))))))
     (w3m-form-resume (or reuse-forms w3m-current-forms))))
 
 (defun w3m-form-replace (string &optional invisible)

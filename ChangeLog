@@ -1,3 +1,28 @@
+2002-03-24  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-cookie: New file.
+
+	* w3m-form.el (w3m-form-resume): Use cdr of forms if car is t
+	(Just in case).
+	(w3m-form-parse-and-fontify)[w3m]: Search form structure according
+	to fid.
+
+	* w3m.el (toplevel): Added autoload setting for w3m-cookie.
+	(w3m-use-cookies): New user option.
+	(w3m-cookie-accept-domains): Ditto.
+	(w3m-cookie-reject-domains): Ditto.
+	(toplevel): Bind system-time-locale as "C" while calling
+	format-time-string.
+	(w3m-w3m-attributes): Call w3m-cookie-set;
+	When 30x response is received, set w3m-current-refresh as
+	(0 . Location).
+	(w3m-cookie-command-arguments): New function.
+	(w3m-w3m-retrieve): Use it.
+	(w3m-retrieve-and-render): Mark w3m-current-forms as `not history'
+	if retrieval failed.
+	(w3m-prepare-content): If w3m-current-refresh rate is 0, do nothing.
+	(w3m-quit): Call `w3m-cookie-shutdown'.
+
 2002-03-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-decode-encoded-contents): Convert encoding to lower
