@@ -1,3 +1,14 @@
+2001-07-13  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (w3m-form-new): Added 'charlst' option.
+	(w3m-form-charlst): New macro.
+	(w3m-form-plist): Move a indent of an array.
+	(w3m-form-put): Ditto.
+	(w3m-form-make-form-urlencoded): Remove 'coding' option.
+	If 'accept-charset' denotes within <form> tag, resolve coding-system
+	according to its list of charset.
+	(w3m-form-parse-forms): Handle value of 'accept-charset'.
+
 2001-07-12  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* w3m.el (w3m-tag-regexp-of): New macro to generate regexp of

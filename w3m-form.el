@@ -56,7 +56,7 @@
 
 ;;; w3m-form structure:
 
-(defun w3m-form-new (method action &optional baseurl)
+(defun w3m-form-new (method action &optional baseurl charlst)
   "Return new form object."
   (vector 'w3m-form-object
 	  (if (stringp method)
@@ -65,6 +65,7 @@
 	  (if baseurl
 	      (w3m-expand-url action baseurl)
 	    action)
+	  charlst
 	  nil))
 
 (defsubst w3m-form-p (obj)
@@ -77,12 +78,14 @@
   (` (aref (, form) 1)))
 (defmacro w3m-form-action (form)
   (` (aref (, form) 2)))
-(defmacro w3m-form-plist (form)
+(defmacro w3m-form-charlst (form)
   (` (aref (, form) 3)))
+(defmacro w3m-form-plist (form)
+  (` (aref (, form) 4)))
 (defmacro w3m-form-put (form name value)
   (let ((tempvar (make-symbol "formobj")))
     (` (let (((, tempvar) (, form)))
-	 (aset (, tempvar) 3
+	 (aset (, tempvar) 4
 	       (plist-put (w3m-form-plist (, tempvar))
 			  (intern (, name)) (, value)))))))
 (defmacro w3m-form-get (form name)
@@ -100,13 +103,20 @@ If no field in forward, return nil without moving."
 	(goto-char next)
       nil)))
 
-(defun w3m-form-make-form-urlencoded (form &optional coding)
+(defun w3m-form-make-form-urlencoded (form)
   (current-buffer)
   (let ((plist (w3m-form-plist form))
-	(coding (or coding (w3m-charset-to-coding-system
-			    (w3m-content-charset w3m-current-url))
-		    w3m-form-default-coding-system))
+	(coding (w3m-form-charlst form))
 	buf)
+    (setq coding
+	  (or (catch 'det
+		(while coding
+		  (if (w3m-charset-to-coding-system (car coding))
+		      (throw 'det (w3m-charset-to-coding-system (car coding)))
+		    (setq coding (cdr coding)))))
+	      (w3m-charset-to-coding-system
+	       (w3m-content-charset w3m-current-url))
+	      w3m-form-default-coding-system))
     (while plist
       (let ((name (symbol-name (car plist)))
 	    (value (cadr plist)))
@@ -158,11 +168,16 @@ If no field in forward, return nil without moving."
     (while (re-search-forward (w3m-tag-regexp-of "form") nil t)
       (goto-char (match-end 1))
       ;; Parse attribute of FORM tag
-      (w3m-parse-attributes (action (method :case-ignore))
+      ;; accept-charset = charset list
+      (w3m-parse-attributes (action (method :case-ignore)
+				    (accept-charset :case-ignore))
+	(when accept-charset
+	  (setq accept-charset (split-string accept-charset ",")))
 	(setq forms
 	      (cons (w3m-form-new (or method "get")
 				  (or action w3m-current-url)
-				  w3m-current-url)
+				  w3m-current-url
+				  accept-charset)
 		    forms)))
       ;; Parse form fields until </FORM>
       (while (and (re-search-forward 
