@@ -1,3 +1,7 @@
+2002-04-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-halfdump-command-arguments): Fix last change.
+
 2002-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bitmap.el (w3m-bitmap-byte-indexed-characters-p): New macro.
