@@ -248,7 +248,8 @@ content-type if `shimbun-encapsulate-images' is non-nil."
 	  (setq end (point))
 	  (goto-char beg)
 	  (when (re-search-forward
-		 "src[ \t\r\f\n]*=[ \t\r\f\n]*\\([^ ]*\\)" end t)
+		 ;; <img src=pics/palm/clieplanet.jpg>
+		 "src[ \t\r\f\n]*=[ \t\r\f\n]*\\([^ >]*\\)" end t)
 	    (save-match-data
 	      (setq url (match-string 1))
 	      (unless (setq img (assoc url imgs))

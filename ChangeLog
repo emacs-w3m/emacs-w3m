@@ -1,3 +1,9 @@
+2003-05-06  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-pocketgames.el
+	(shimbun-pocketgames-make-mime-article): Modify regexp to pick up
+	url properly.
+
 2003-05-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-fontify-anchors): Invalidate the widget keymap in
