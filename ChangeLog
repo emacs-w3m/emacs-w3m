@@ -1,3 +1,7 @@
+2004-01-15  OHASHI Akira  <bg66@koka-in.org>
+
+	* shimbun/sb-tdiary.el (shimbun-tdiary-get-headers): Fix the regexp.
+
 2004-01-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/sb-slashdot-jp.el
