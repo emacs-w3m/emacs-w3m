@@ -1,6 +1,6 @@
 ;;; sb-redhat.el --- shimbun backend for sources.redhat.com mailing lists
 
-;; Copyright (C) 2002 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2002, 2003 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -25,6 +25,9 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 (require 'sb-mhonarc)

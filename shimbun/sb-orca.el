@@ -1,6 +1,6 @@
 ;;; sb-orca.el --- shimbun backend for www.orca.med.or.jp ML archive
 
-;; Copyright (C) 2002 Masamichi Goudge M.D. <Matanuki@Goudge.org>
+;; Copyright (C) 2002, 2003 Masamichi Goudge M.D. <Matanuki@Goudge.org>
 
 ;; Author: Masamichi Goudge M.D. <Matanuki@Goudge.org>
 ;; Keywords: news
@@ -23,6 +23,9 @@
 ;; Inc.; 59 Temple Place, Suite 330; Boston, MA 02111-1307, USA.
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 (require 'sb-mhonarc)

@@ -26,6 +26,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'cl))
+
 (require 'shimbun)
 (require 'sb-text)
 
@@ -58,7 +61,7 @@ ADDRESS is the e-mail address for the diary owner.")
 	       (day (match-string 4))
 	       (url (match-string 5))
 	       (subject (match-string 6))
-	       date id)
+	       date)
 	   (setq date (shimbun-make-date-string (string-to-number year)
 						(string-to-number month)
 						(string-to-number day)))
@@ -80,7 +83,7 @@ ADDRESS is the e-mail address for the diary owner.")
   (let ((case-fold-search t)
 	(pages (shimbun-header-index-pages range))
 	(count 0)
-	headers month months)
+	headers months)
     (goto-char (point-min))
     (while (re-search-forward "<a href=\"\\([0-9][0-9][0-9][0-9]-[0-9][0-9]\\.html\\)\"" nil t)
       (push (match-string 1) months))

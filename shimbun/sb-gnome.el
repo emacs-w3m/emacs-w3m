@@ -1,6 +1,6 @@
 ;;; sb-gnome.el --- shimbun backend for mail.gnome.org
 
-;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
@@ -25,6 +25,9 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 (require 'sb-mhonarc)
@@ -74,7 +77,7 @@
 		 "/" (shimbun-current-group-internal shimbun)
 		 "/" month "/date.html")
 	 'reload)
-	(let (date date-next date-parsed beg end subject id)
+	(let (date date-next date-parsed beg end id)
 	  (goto-char (point-min))
 	  (while (or date-next
 		     (re-search-forward "<strong>\\([^<]+\\)</strong>" nil t))

@@ -112,15 +112,14 @@
 
 (defun shimbun-slashdot-jp-make-comment-article (shimbun head sid cid)
   (with-temp-buffer
-    (let (begin end)
-      (when (and (shimbun-retrieve-url (shimbun-header-xref head))
-		 (goto-char (point-min))
-		 (shimbun-slashdot-jp-search-comment-head shimbun sid cid)
-		 (re-search-forward "<table[^>]*><tr><td[^>]*>" nil t))
-	(delete-region (point-min) (match-beginning 0))
-	(when (re-search-forward "</td></tr></table>" nil t)
-	  (delete-region (point) (point-max))
-	  (shimbun-slashdot-jp-make-article-after shimbun head))))))
+    (when (and (shimbun-retrieve-url (shimbun-header-xref head))
+	       (goto-char (point-min))
+	       (shimbun-slashdot-jp-search-comment-head shimbun sid cid)
+	       (re-search-forward "<table[^>]*><tr><td[^>]*>" nil t))
+      (delete-region (point-min) (match-beginning 0))
+      (when (re-search-forward "</td></tr></table>" nil t)
+	(delete-region (point) (point-max))
+	(shimbun-slashdot-jp-make-article-after shimbun head)))))
 
 (luna-define-method shimbun-get-group-header-alist ((shimbun shimbun-slashdot-jp)
 						    &optional range)

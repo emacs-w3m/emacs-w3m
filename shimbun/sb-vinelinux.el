@@ -61,8 +61,7 @@
 (luna-define-method shimbun-get-headers ((shimbun shimbun-vinelinux)
 					 &optional range)
   (let ((case-fold-search t)
-	(count 0)
-	start end headers aux url id date subject)
+	start end headers url id date subject)
     (subst-char-in-region (point-min) (point-max) ?\t ?  t)
     (setq start (progn
 		  (search-forward "</font>の更新/障害情報です</h4>" nil t nil)

@@ -1,6 +1,6 @@
 ;;; sb-ruby.el --- shimbun backend class for ruby ML archiver.
 
-;; Copyright (C) 2001, 2002 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2001, 2002, 2003 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Keywords: news
@@ -25,6 +25,9 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 
@@ -70,8 +73,7 @@
 	(start (progn (re-search-forward "^<table" nil t nil)
 		      (forward-line 1) (beginning-of-line 1)
 		      (point)))
-	(end (progn (re-search-forward "</table>" nil t nil)
-		    (point)))
+	;;(end (progn (re-search-forward "</table>" nil t nil) (point)))
 	(pages (shimbun-header-index-pages range))
 	(count 0)
 	headers auxs aux)

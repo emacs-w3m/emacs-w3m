@@ -85,7 +85,7 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 (luna-define-method shimbun-get-headers ((shimbun shimbun-yahoo)
 					 &optional range)
   (let ((case-fold-search t)
-	p headers)
+	headers)
     (goto-char (point-min))
     (catch 'stop
       (while (re-search-forward "<!--- /COMMUNITY_CONTENTS -->" nil t)

@@ -1,6 +1,6 @@
 ;;; sb-debian.el --- shimbun backend for debian.org
 
-;; Copyright (C) 2001 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2001, 2002, 2003 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -25,6 +25,9 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 (require 'sb-mhonarc)
@@ -132,7 +135,7 @@
 					 &optional range)
   (let ((case-fold-search t)
 	(pages (shimbun-header-index-pages range))
-	(group (shimbun-current-group-internal shimbun))
+	;;(group (shimbun-current-group-internal shimbun))
 	(count 0)
 	headers paths)
     (goto-char (point-max))

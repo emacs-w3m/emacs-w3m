@@ -1,6 +1,6 @@
 ;;; sb-zdnet.el --- shimbun backend for Zdnet Japan -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2001, 2002 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
@@ -30,7 +30,11 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'cl))
+
 (require 'shimbun)
+
 (luna-define-class shimbun-zdnet (shimbun) ())
 
 (defvar shimbun-zdnet-url "http://www.zdnet.co.jp/")
