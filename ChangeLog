@@ -3,6 +3,8 @@
 	* w3m.el (w3m-decoder-alist): Change default commands to `gzip' and
 	`bzip2' instead of `gunzip' and `bunzip2' because some broken OS
 	and its environment does not work them.
+	(w3m-exec-filter): Avoid the lock of process filter when w3m ask
+	`accept ?' for SSL certificate.
 
 2002-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
