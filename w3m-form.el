@@ -215,15 +215,15 @@ If no field in forward, return nil without moving."
 	  (when
 	      (and fid
 		   (string-match
-	  "fid=\\([^/]+\\)/type=\\([^/]+\\)/hseq=\\([^/]+\\)/name=\\(.*\\)$"
+	  "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
 		    fid))
 	    (setq form (nth (string-to-number (match-string 1 fid))
 			    forms)
 		  cform (nth (string-to-number (match-string 1 fid))
 			     w3m-current-forms)
 		  type (match-string 2 fid)
-		  id (string-to-number (match-string 3 fid))
-		  name (match-string 4 fid))
+		  name (match-string 3 fid)
+		  id (string-to-number (match-string 4 fid)))
 	    (cond
 	     ((or (string= type "submit")
 		  (string= type "image"))
@@ -1004,7 +1004,7 @@ character."
       (setq w3m-form-input-textarea-wincfg wincfg)
       (if value (insert value))
       (goto-char (point-min))
-      (forward-line (1- (cdr info)))
+      (forward-line (1- (nth 2 info)))
       (w3m-form-input-textarea-mode))))
 
 ;;; SELECT
