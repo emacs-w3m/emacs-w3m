@@ -1,3 +1,30 @@
+2002-08-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (toplevel): Remove expressions to register hook functions
+	to `w3m-delete-buffer-hook', `w3m-delete-other-buffers-hook',
+	`w3m-display-hook', and `w3m-fontify-after-hook'.
+	(w3m-mode-hook, w3m-fontify-after-hookk, w3m-display-hook,
+	w3m-arrived-setup-hook, w3m-arrived-shutdown-hook,
+	w3m-delete-buffer-hook, w3m-delete-other-buffers-hook,
+	w3m-previous-buffer-hook, w3m-next-buffer-hook): Changed their
+	default values to avoid inconsistency of their customize.
+	(w3m-toolbar): Fix its help messages.
+	(w3m-arrived-file, w3m-keep-arrived-urls,
+	w3m-db-history-display-size): Fix their docstrings.
+	(w3m-history): Moved to avoid a byte compile warning.
+
+	* w3m-xmas.el (toplevel): Remove an expression to register
+	`w3m-xmas-update-tab-in-gutter' to `w3m-display-hook'.
+	(w3m-xmas-show-current-title-in-buffer-tab): Remove expressions to
+	handle `w3m-display-hook' from the form to change its value.
+
+	* w3m-e21.el (toplevel): Remove expressions to register hook
+	functions to `w3m-display-hook', `w3m-arrived-setup-hook',
+	`w3m-arrived-shutdown-hook', `w3m-mode-hook',
+	`w3m-fontify-after-hook', `w3m-next-buffer-hook',
+	`w3m-previous-buffer-hook', `w3m-delete-buffer-hook' and
+	`w3m-delete-other-buffers-hook'.
+
 2002-08-28  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-delete-buffer-hook): New hook.
