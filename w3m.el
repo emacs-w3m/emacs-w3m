@@ -1318,7 +1318,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
     ["Download This URL" w3m-download-this-url t]
     ["Print Current URL" w3m-print-current-url t]
     ;;
-    ["Report Bug" report-emacs-w3m-bug t]
+    ["Send a Bug Report" report-emacs-w3m-bug t]
     )
   "Menubar definition for w3m.")
 
@@ -4571,7 +4571,7 @@ If EMPTY is non-nil, the created buffer has empty content."
       (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
     (define-key map "\C-c\C-@" 'w3m-history-store-position)
     (define-key map [?\C-c?\C- ] 'w3m-history-store-position)
-    (define-key map "\C-c\C-b" 'w3m-history-restore-position)
+    (define-key map "\C-c\C-v" 'w3m-history-restore-position)
     (define-key map [left] 'w3m-view-previous-page)
     (define-key map "B" 'w3m-view-previous-page)
     (define-key map "N" 'w3m-view-next-page)
@@ -4631,7 +4631,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "Ct" 'w3m-redisplay-with-content-type)
     (define-key map "Cc" 'w3m-redisplay-with-charset)
     (define-key map "CC" 'w3m-redisplay-and-reset)
-    (define-key map "\C-cb" 'report-emacs-w3m-bug)
+    (define-key map "\C-c\C-b" 'report-emacs-w3m-bug)
     (setq w3m-lynx-like-map map)))
 
 (defvar w3m-info-like-map nil
@@ -4662,7 +4662,7 @@ If EMPTY is non-nil, the created buffer has empty content."
       (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
     (define-key map "\C-c\C-@" 'w3m-history-store-position)
     (define-key map [?\C-c?\C- ] 'w3m-history-store-position)
-    (define-key map "\C-c\C-b" 'w3m-history-restore-position)
+    (define-key map "\C-c\C-v" 'w3m-history-restore-position)
     (define-key map " " 'w3m-scroll-up-or-next-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
@@ -4738,7 +4738,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "Ct" 'w3m-redisplay-with-content-type)
     (define-key map "Cc" 'w3m-redisplay-with-charset)
     (define-key map "CC" 'w3m-redisplay-and-reset)
-    (define-key map "\C-cb" 'report-emacs-w3m-bug)
+    (define-key map "\C-c\C-b" 'report-emacs-w3m-bug)
     (setq w3m-info-like-map map)))
 
 (defun w3m-alive-p ()
@@ -4908,6 +4908,8 @@ Return t if deleting current frame or window is succeeded."
 \\[w3m-quit]	Quit browsing WWW after updating arrived URLs list.
 
 \\[describe-mode]	describe-mode.
+
+\\[report-emacs-w3m-bug]	Send a bug report.
 "
   (kill-all-local-variables)
   (buffer-disable-undo)

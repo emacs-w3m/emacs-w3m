@@ -1,5 +1,12 @@
 2002-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-menubar): Modify the label for report-emacs-w3m-bug.
+	(w3m-lynx-like-map): Replace the key `C-c C-b' with `C-c C-v' for
+	`w3m-history-restore-position'; replace the key `C-c b' with
+	`C-c C-b' for `report-emacs-w3m-bug'.
+	(w3m-info-like-map): Ditto.
+	(w3m-mode): Add a document for `report-emacs-w3m-bug'.
+
 	* w3mhack.el: Check for the validity on APEL also for XEmacs with
 	MULE.
 
