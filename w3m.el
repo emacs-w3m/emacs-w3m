@@ -2767,6 +2767,7 @@ works on Emacs.
       (setq alist (sort alist (lambda (a b) (w3m-time-newer-p (cdr a) (cdr b))))))
     (w3m-with-work-buffer
       (delete-region (point-min) (point-max))
+      (set-buffer-multibyte t)
       (insert "<html><head><title>URL history in DataBase</title></head><body>\n")
       (insert "<h1>arrived URL history in DataBase</h1>\n")
       (if (null alist)
