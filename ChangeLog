@@ -1,3 +1,7 @@
+2002-04-09  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-e20.el (top): Require 'w3m-bitmap if have BITMAP.
+
 2002-04-09  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
 
 	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
