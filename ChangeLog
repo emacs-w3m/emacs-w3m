@@ -1,5 +1,8 @@
 2004-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-select-buffer-show-this-line): Call
+	`w3m-e21-wobble-window-size' when Emacs 21 or 22 is running.
+
 	* w3m-e21.el (w3m-tab-line-format): Make it buffer-local variable.
 	(w3m-tab-timer): Ditto.
 	(w3m-e21-wobble-window-size): New function.

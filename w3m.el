@@ -7923,6 +7923,9 @@ buffer list.  The following command keys are available:
       (save-selected-window
 	(pop-to-buffer buffer)
 	(w3m-scroll-up-or-next-url nil)))
+    ;; FIXME: we should use a hook variable for this, maybe.
+    (w3m-static-when (or (featurep 'w3m-e21) (featurep 'w3m-e22))
+      (w3m-e21-wobble-window-size))
     (w3m-message w3m-select-buffer-message)
     buffer))
 
