@@ -1,3 +1,20 @@
+2003-11-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-popup-buffer): Reuse an existing window or frame if
+	it exists; set the value for `w3m-initial-frame' properly; raise,
+	select and focus the new frame.
+	(TopLevel): Make `select-frame-set-input-focus' unbound if it is a
+	dummy.
+	(w3m-view-this-url-1): Show a progress message.
+	(w3m-copy-buffer): Simplify the code to call `w3m-popup-buffer'.
+	(w3m-alive-p): Add an optional arg `visible' (see docs); use
+	inlining `w3m-list-buffers'.
+	(w3m): Simplify the code using `w3m-popup-buffer'; specify the
+	optional arg to `w3m-alive-p'; protect against the case of no url.
+
+	* w3m-util.el (w3m-list-buffers): Make it into a normal function;
+	don't call itself recursively.
+
 2003-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/mew-shimbun.el (static-if): New macro providing only
