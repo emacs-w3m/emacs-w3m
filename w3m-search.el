@@ -108,12 +108,12 @@ encoding=shift-jis"
 &hits=95&nice=Nice")
 	("waei"
 	 "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=1"
-	 shift_jis)
+	 euc-japan)
 	("eiwa"
 	 "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=0")
 	("kokugo"
 	 "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=2"
-	 shift_jis)
+	 euc-japan)
 	("eiei"
 	 "http://www.dictionary.com/cgi-bin/dict.pl?term=%s&r=67")))
   "*An alist of search engines.

@@ -1,3 +1,9 @@
+2003-04-04  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-search.el (w3m-search-engine-alist): Change coding-system to
+	`euc-japan' of "waei" and "kokugo". Tnx, Mr. Saito (sai@yedo.com)
+	for his report.
+
 2003-03-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna-check-all-sites): Call `make-symbol'
