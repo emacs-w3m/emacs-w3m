@@ -1,5 +1,8 @@
 2005-03-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* Makefile.in (tarball): Remove `w3m-e23.el' instead of
+	`w3m-e22.el'.
+
 	* w3m.el (w3m-url-readable-string): Decide a scheme to guess
 	encodings based on the target URL, instead of the current URL.
 	(w3m-show-decoded-url): Doc fix to follow the above change.
@@ -13,8 +16,8 @@
 2005-03-22  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-yahoo-auctions.el (shimbun-yahoo-auctions-content-start)
-	(shimbun-yahoo-auctions-content-end): Follow the change of the site
-	design.
+	(shimbun-yahoo-auctions-content-end): Follow the change of the
+	site design.
 	(shimbun-get-headers): Reverse the order of the return value.
 	(shimbun-article-url): New overridden method.
 	(shimbun-make-contents): Ditto.
