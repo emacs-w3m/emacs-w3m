@@ -112,7 +112,7 @@
 
 (defun shimbun-jpo-headers-1 (shimbun origurl &optional urlregexp unmatchregexp)
   (let ((case-fold-search t)
-	(from (shimbun-from-address-internal shimbun))
+	(from (shimbun-from-address shimbun))
 	(group (shimbun-current-group-internal shimbun))
 	(regexp (format "<td><font color=\"[#0-9A-Z]+\"><a href=\"\\(%s\\.html*\\)\">\\(.*\\)</a>[　 ]*\\([.0-9]+\\)" (or urlregexp "\\(.*\\)")))
 	(urlprefix
@@ -129,7 +129,7 @@
 	      date (match-string-no-properties 4))
 	(when (and unmatchregexp (string-match unmatchregexp pagename))
 	  (throw 'next nil))
-	(setq url (w3m-expand-url pagename urlprefix)
+	(setq url (shimbun-expand-url pagename urlprefix)
 	      subject (with-temp-buffer
 			  (insert subject)
 			  (shimbun-remove-markup)
@@ -175,7 +175,7 @@
     (while urllist
       (when (string-match "\\/" (car urllist))
 	(setq urlprefix (substring (car urllist) 0 (1+ (match-beginning 0)))))
-      (setq url (w3m-expand-url (car urllist) shimbun-jpo-url))
+      (setq url (shimbun-expand-url (car urllist) shimbun-jpo-url))
       (erase-buffer)
       (shimbun-jpo-retrieve-url url 'reload)
       (setq exceptions (cdr (assoc urlprefix exceptions-alist)))
@@ -199,7 +199,7 @@
 	  (dolist (ex exceptions)
 	    (when (string-match ex temp)
 	      (throw 'next nil)))
-	  (setq pages (cons (w3m-expand-url
+	  (setq pages (cons (shimbun-expand-url
 			     temp
 			     (concat shimbun-jpo-url urlprefix)) pages))))
       (while pages

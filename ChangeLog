@@ -1,3 +1,241 @@
+2003-06-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun.el (toplevel): Slot definition order of `shimbun' class
+	is changed to avoid mismatching.
+
+	* shimbun.el: Changes to eliminate dependence between modules
+	caused by compiled macros of internal accesors.
+	(shimbun-server, shimbun-current-group, shimbun-mua-shimbun): New
+	function.
+	(shimbun-header-subject, shimbun-header-set-subject,
+	shimbun-header-from, shimbun-header-set-from, shimbun-header-date,
+	shimbun-header-set-date, shimbun-header-id, shimbun-header-set-id,
+	shimbun-header-references, shimbun-header-set-references,
+	shimbun-header-chars, shimbun-header-set-chars,
+	shimbun-header-lines, shimbun-header-set-lines,
+	shimbun-header-xref, shimbun-header-set-xref,
+	shimbun-header-extra, shimbun-header-set-extra): Use `defun'
+	instead of `defsubst'.
+	(shimbun-header-field-value): Removed.
+
+	* nnshimbun.el (shimbun-mua-search-id):
+	Call `shimbun-current-group' instead of `shimbun-current-group-internal';
+	Call `shimbun-mua-shimbun' instead of `shimbun-mua-shimbun-internal'.
+	(nnshimbun-current-group):
+	Call `shimbun-current-group' instead of `shimbun-current-group-internal'.
+
+	* mew-shimbun.el (mew-shimbun-retrieve-article):
+	Call `shimbun-server' instead of `shimbun-server-internal';
+	Call `shimbun-current-group' instead of `shimbun-current-group-internal';
+	Call `shimbun-mua-shimbun' instead of `shimbun-mua-shimbun-internal'.
+	(mew-shimbun-re-retrieve-article): Ditto.
+
+	* sb-mhonarc.el (shimbun-mhonarc-header-value): New function.
+	(shimbun-make-contents): Call `shimbun-mhonarc-header-value'
+	instead of `shimbun-header-field-value'.
+
+2003-06-06  Koichiro Ohba  <koichiro@meadowy.org>
+
+	* shimbun/sb-tdiary.el: New file.
+
+2003-06-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* doc/emacs-w3m.texi, doc/emacs-w3m-ja.texi: Their license is
+	changed from GNU Free Documentation License to GNU General Public
+	License.
+
+2003-06-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html): Make it inherit
+	the `shimbun-asahi' class instead of the `shimbun' class.
+	(shimbun-groups, shimbun-from-address, shimbun-index-url,
+	shimbun-get-headers): Remove methods.
+	(shimbun-make-contents): Define it for the `shimbun-asahi-html'
+	class independently.
+
+	* shimbun/sb-yomiuri.el: Require `sb-text'.
+	(shimbun-yomiuri): Make it inherit the `shimbun-text' class.
+	(shimbun-yomiuri-groups, shimbun-yomiuri-from-address): Remove.
+	(shimbun-yomiuri-group-table): Rename from
+	`shimbun-yomiuri-group-regexp-alist'; include Japanese
+	translations and index names.
+	(shimbun-groups, shimbun-from-address): New methods.
+	(shimbun-yomiuri-index-url): Remove.
+	(shimbun-index-url): Use `shimbun-yomiuri-group-table'.
+	(shimbun-yomiuri-get-headers): Fit it to
+	`shimbun-yomiuri-group-table'; use `shimbun-yomiuri-url' instead
+	of to call the `shimbun-url-internal' function.
+	(shimbun-yomiuri-make-contents): Remove.
+	(shimbun-yomiuri-adjust-date-header): New function.
+	(shimbun-make-contents): Use `shimbun-yomiuri-adjust-date-header'
+	as a preprocessor.
+
+	* shimbun/sb-yomiuri-html.el (shimbun-yomiuri-html): Make it
+	inherit only the `shimbun-yomiuri' class.
+	(shimbun-yomiuri-html-url, shimbun-yomiuri-html-groups,
+	shimbun-yomiuri-html-from-address): Remove.
+	(shimbun-yomiuri-html-make-contents): Remove.
+	(shimbun-make-contents): Define it for the `shimbun-yomiuri-html'
+	class independently.
+
+2003-06-03  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+
+	* shimbun/sb-nikkansports.el: Follow the change of the Web site.
+	(shimbun-nikkansports-group-table): New variable.
+	(shimbun-nikkansports-groups): Removed and its infomation is moved
+	to `shimbun-nikkansports-group-table'.
+	(shimbun-groups): New method.
+	(shimbun-current-group-name): Ditto.
+
+2003-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el: Require `sb-text'.
+	(shimbun-asahi): Make it inherit the `shimbun-text' class.
+	(shimbun-from-address): Encode names collectively.
+	(shimbun-asahi-adjust-date-header): New function suggested by
+	TSUCHIYA-san.
+	(shimbun-asahi-make-contents): Remove.
+	(shimbun-make-contents): Use `shimbun-asahi-adjust-date-header' as
+	a preprocessor.
+
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html): Make it inherit
+	the `shimbun' class.
+	(shimbun-groups, shimbun-from-address, shimbun-index-url,
+	shimbun-get-headers): New methods copied from sb-asahi.el.
+	(shimbun-asahi-html-make-contents): Remove.
+	(shimbun-make-contents): Use `shimbun-asahi-adjust-date-header' as
+	a preprocessor.
+
+	* shimbun/sb-text.el (shimbun-shallow-rendering): Revert last
+	change.
+
+2003-06-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-server-name): New
+	variable.
+	(shimbun-mainichi-group-table): New variable.
+	(shimbun-mainichi-groups, shimbun-mainichi-group-path-alist):
+	Removed and their infomation is moved to
+	`shimbun-mainichi-group-table'.
+	(shimbun-groups, shimbun-current-group-name): New method.
+	(shimbun-index-url, shimbun-get-headers): Refer
+	`shimbun-mainichi-group-table' instead of
+	`shimbun-mainichi-group-path-alist'.
+
+	* shimbun/sb-zdnet.el (shimbun-zdnet-server-name): New variable.
+
+	* shimbun/shimbun.el (toplevel): Add a new slot `server-name' to
+	`shimbun' class.
+	(shimbun-attributes): Add `server-name'.
+	(shimbun-open): Bind `server-name' locally.
+	(shimbun-server-name): New method.
+	(shimbun-current-group-name): New method.
+
+	* shimbun/sb-gyve.el: Removed.
+
+2003-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-text.el (shimbun-shallow-rendering): Use defun
+	instead of defsubst.
+
+	* shimbun/sb-asahi.el: Autoload sb-text instead of always to
+	require the feature.
+	(shimbun-asahi-make-contents): Make an article in the text/plain
+	format.
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html-make-contents): New
+	function moved from sb-asahi.el.
+
+	* shimbun/sb-yomiuri.el: Autoload sb-text instead of always to
+	require the feature.
+	(shimbun-yomiuri-make-contents): Make an article in the text/plain
+	format.
+	* shimbun/sb-yomiuri-html.el (shimbun-yomiuri-html-make-contents):
+	New function moved from sb-yomiuri.el.
+
+2003-06-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el: Changes to add a server name and a current
+	group name to From: header.
+	(shimbun-from-address): New method.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-groups,
+	shimbun-asahi-group-index-alist,
+	shimbun-asahi-group-regexp-alist): Abolished.
+	(shimbun-asahi-group-table): New variable.
+	(shimbun-groups, shimbun-from-address): New methods.
+	(shimbun-index-url): Reimplemented.
+	(shimbun-asahi-index-url): Removed.
+	(shimbun-asahi-get-headers): Use `shimbun-from-address' instead of
+	`shimbun-from-address-internal'; Refer `shimbun-asahi-group-table'
+	instead of `shimbun-asahi-group-regexp-alist'; Refer
+	`shimbun-asahi-url' instead of using `shimbun-url-internal'.
+
+	* shimbun/sb-asahi-html.el (toplevel): Inherit only from
+	`shimbun-asahi'.
+	(shimbun-asahi-html-url, shimbun-asahi-html-groups,
+	shimbun-asahi-html-from-address): Abolished.
+
+	* shimbun/sb-kantei.el (shimbun-kantei-from-address): Changed its
+	default value.
+	(shimbun-from-address): New method.
+	(shimbun-get-headers): Use `shimbun-from-address' instead of
+	`shimbun-from-address-internal'.
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-palmwarefan-headers): Use
+	`shimbun-from-address' instead of using literal string.
+
+	* shimbun/sb-palmoslove.el (shimbun-palmoslove-from-address): New
+	variable.
+	(shimbun-headers): Use `shimbun-from-address' instead of using
+	literal string.
+
+	* shimbun/sb-vinelinux.el (shimbun-get-headers): Use
+	`shimbun-from-address' instead of using the value of
+	`shimbun-vinelinux-from-address'.
+
+	* shimbun/sb-cnet.el (shimbun-get-headers)
+	* shimbun/sb-dennou.el (shimbun-headers)
+	* shimbun/sb-f1express.el (shimbun-get-headers)
+	* shimbun/sb-f1fan.el (shimbun-get-headers)
+	* shimbun/sb-ibm-dev.el (shimbun-headers)
+	* shimbun/sb-impress.el (shimbun-get-headers)
+	* shimbun/sb-japantimes.el (shimbun-get-headers)
+	* shimbun/sb-jpo.el (shimbun-jpo-headers-1)
+	* shimbun/sb-lotusex.el (shimbun-get-headers)
+	* shimbun/sb-mainichi.el (shimbun-get-headers)
+	* shimbun/sb-makanai.el (shimbun-makanai-scan-articles)
+	* shimbun/sb-muchy.el (shimbun-get-headers)
+	* shimbun/sb-nikkansports.el (shimbun-get-headers)
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers)
+	* shimbun/sb-pcweb-column.el (shimbun-get-headers)
+	* shimbun/sb-sponichi.el (shimbun-get-headers)
+	* shimbun/sb-wincefan.el (shimbun-get-headers)
+	* shimbun/sb-wired.el (shimbun-get-group-header-alist)
+	* shimbun/sb-yahoo.el (shimbun-get-headers)
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-get-headers)
+	* shimbun/sb-zdnet.el (shimbun-get-headers): Use
+	`shimbun-from-address' instead of `shimbun-from-address-internal'.
+
+2003-06-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-jpo.el (shimbun-jpo-headers-1): Use
+	`shimbun-expand-url' instead of `w3m-expand-url'.
+	(shimbun-jpo-headers-group-details): Ditto.
+	(shimbun-jpo-headers-group-details): Ditto.
+
+	* shimbun/sb-ibm-dev.el (shimbun-headers): Ditto.
+	(shimbun-make-contents): Ditto.
+
+	* shimbun/sb-wincefan.el (shimbun-get-headers): Ditto.
+
+	* shimbun/sb-marc-aims.el (shimbun-marc-aims-group-alist):
+	Declared as an option with `defcustom' instead of `defvar'.
+
+2003-05-31  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-yahoo.el (shimbun-get-headers): Modify regexp to pick
+	up all articles.
+
 2003-05-30  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* octet.el (toplevel): Require poe.

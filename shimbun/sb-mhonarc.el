@@ -131,6 +131,12 @@
       (delete-char 1))
     (buffer-string)))
 
+(defsubst shimbun-mhonarc-header-value ()
+  (let ((pt (point)))
+    (prog1
+	(buffer-substring (match-end 0) (std11-field-end))
+      (goto-char pt))))
+
 (luna-define-method shimbun-make-contents ((shimbun shimbun-mhonarc)
 					   header)
   (if (search-forward "<!--X-Head-End-->" nil t)
@@ -158,21 +164,21 @@
 	       ((looking-at "Subject: +")
 		(shimbun-header-set-subject header
 					    (shimbun-mime-encode-string
-					     (shimbun-header-field-value)))
+					     (shimbun-mhonarc-header-value)))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "From: +")
 		(shimbun-header-set-from header
 					 (shimbun-mime-encode-string
-					  (shimbun-header-field-value)))
+					  (shimbun-mhonarc-header-value)))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "From-R13: +")
 		(shimbun-header-set-from header
 					 (shimbun-mime-encode-string
 					  (shimbun-mhonarc-rot13-decode
-					   (shimbun-header-field-value))))
+					   (shimbun-mhonarc-header-value))))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Date: +")
-		(let ((date (shimbun-header-field-value)))
+		(let ((date (shimbun-mhonarc-header-value)))
 		  (shimbun-header-set-date
 		   header
 		   (if (string-match "\\([-+][0-9][0-9][0-9][0-9]\\) +([a-zA-Z][a-zA-Z][a-zA-Z])\\'"
@@ -182,10 +188,10 @@
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Message-Id: +")
 		(shimbun-header-set-id header
-		 (concat "<" (shimbun-header-field-value) ">"))
+		 (concat "<" (shimbun-mhonarc-header-value) ">"))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Reference: +")
-		(push (concat "<" (shimbun-header-field-value) ">") refs)
+		(push (concat "<" (shimbun-mhonarc-header-value) ">") refs)
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Content-Type: ")
 		(delete-region (point) (progn (forward-line 1) (point))))

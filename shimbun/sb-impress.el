@@ -87,7 +87,7 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 	  (push (shimbun-make-header
 		 0
 		 (shimbun-mime-encode-string (or subject ""))
-		 (shimbun-from-address-internal shimbun)
+		 (shimbun-from-address shimbun)
 		 (shimbun-make-date-string year month mday)
 		 id
 		 "" 0 0

@@ -73,7 +73,7 @@
 	(push (shimbun-make-header
 	       0
 	       (shimbun-mime-encode-string subject)
-	       (shimbun-from-address-internal shimbun)
+	       (shimbun-from-address shimbun)
 	       date id "" 0 0 (concat
 			       (shimbun-url-internal shimbun)
 			       url))

@@ -84,8 +84,7 @@
 			  x-face x-face-alist
 			  url coding-system from-address
 			  content-start content-end
-			  expiration-days
-			  server-name))
+			  expiration-days server-name))
   (luna-define-internal-accessors 'shimbun))
 
 (defgroup shimbun nil
@@ -489,11 +488,11 @@ Return nil when articles are not expired."
   "Make a From address like \"SERVER (GROUP) <ADDRESS>\".")
 
 (luna-define-method shimbun-from-address ((shimbun shimbun))
-  (shimbun-mime-encode-string
-   (format "%s (%s) <%s>"
-	   (shimbun-server-name shimbun)
-	   (shimbun-current-group-name shimbun)
-	   (shimbun-from-address-internal shimbun))))
+  (format "%s (%s) <%s>"
+	  (shimbun-mime-encode-string (shimbun-server-name shimbun))
+	  (shimbun-mime-encode-string (shimbun-current-group-name shimbun))
+	  (or (shimbun-from-address-internal shimbun)
+	      (shimbun-reply-to shimbun))))
 
 (luna-define-generic shimbun-article (shimbun header &optional outbuf)
   "Retrieve a SHIMBUN article which corresponds to HEADER to the OUTBUF.

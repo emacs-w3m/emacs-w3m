@@ -29,25 +29,24 @@
 (require 'shimbun)
 (require 'sb-asahi)
 
-(luna-define-class shimbun-asahi-html (shimbun shimbun-asahi) ())
-
-(defvar shimbun-asahi-html-url shimbun-asahi-url)
-(defvar shimbun-asahi-html-groups shimbun-asahi-groups)
-(defvar shimbun-asahi-html-from-address shimbun-asahi-from-address)
+(luna-define-class shimbun-asahi-html (shimbun-asahi) ())
 
 (defvar shimbun-asahi-html-content-start
   "<!--[\t\n ]*Start of photo[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
+
 (defvar shimbun-asahi-html-content-end
   "<!--[\t\n ]*End of related link[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
+
 (defvar shimbun-asahi-html-x-face-alist shimbun-asahi-x-face-alist)
 
 (defvar shimbun-asahi-html-expiration-days shimbun-asahi-expiration-days)
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-asahi-html)
 					   header)
-  (shimbun-asahi-make-contents shimbun header))
+  (shimbun-asahi-adjust-date-header shimbun header)
+  (shimbun-make-html-contents shimbun header))
 
 (provide 'sb-asahi-html)
 

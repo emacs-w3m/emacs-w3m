@@ -290,7 +290,7 @@ default value for all the nnshimbun groups.  You can use the
 		      nnshimbun-directory)))
 
 (defmacro nnshimbun-current-group ()
-  '(shimbun-current-group-internal nnshimbun-shimbun))
+  '(shimbun-current-group nnshimbun-shimbun))
 
 (defmacro nnshimbun-current-directory (&optional group)
   `(nnmail-group-pathname ,(or group '(nnshimbun-current-group))
@@ -795,9 +795,8 @@ article to be expired.  The optional fourth argument FORCE is ignored."
 (luna-define-class shimbun-gnus-mua (shimbun-mua) ())
 
 (luna-define-method shimbun-mua-search-id ((mua shimbun-gnus-mua) id)
-  (nnshimbun-search-id
-   (shimbun-current-group-internal (shimbun-mua-shimbun-internal mua))
-   id))
+  (nnshimbun-search-id (shimbun-current-group (shimbun-mua-shimbun mua))
+		       id))
 
 
 ;; Command to create an nnshimbun group:

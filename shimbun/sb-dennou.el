@@ -61,8 +61,6 @@
 	 (url (shimbun-index-url shimbun))
 	 (baseurl (and (string-match "\\(\.+/\\)[^/]+.html" url)
 		       (match-string 1 url)))
-	 ;;(count -1)
-	 (from "pc3s-nnb@asahi-net.or.jp")
 	 month day subject date id start end body headers)
     (with-temp-buffer
       (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload 'binary)
@@ -95,9 +93,10 @@
 	  (setq body (buffer-substring-no-properties start end))
 	  (set (intern id (shimbun-dennou-content-hash-internal shimbun))
 	       body)
-	  (push (shimbun-make-header
-		 0 (shimbun-mime-encode-string subject)
-		 from date id "" 0 0 baseurl)
+	  (push (shimbun-make-header 0
+				     (shimbun-mime-encode-string subject)
+				     (shimbun-from-address shimbun)
+				     date id "" 0 0 baseurl)
 		headers)))
       (nreverse headers))))
 

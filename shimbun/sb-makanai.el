@@ -101,7 +101,7 @@
 	    (push (shimbun-make-header
 		   0
 		   (shimbun-mime-encode-string subject)
-		   (shimbun-from-address-internal shimbun)
+		   (shimbun-from-address shimbun)
 		   date id "" 0 0 xref)
 		  headers)))
 	(when (and search-next-page  (not skip-next-page)
