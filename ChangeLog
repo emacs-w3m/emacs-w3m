@@ -1,3 +1,8 @@
+2002-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/mew-shimbun.el (toplevel): Make the dummy function
+	`mew-set-file-modes' allow one argument.
+
 2002-07-29  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-pilot-link.el (shimbun-pilot-link-group-path-alist):
