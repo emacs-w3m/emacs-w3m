@@ -1,3 +1,20 @@
+2001-05-27  Yuuichi Teranishi  <teranisi@gohome.org>
+
+
+	* shimbun/sb-ruby.el (shimbun-make-contents): Call
+	`shimbun-decode-entities'.
+
+	* shimbun/sb-nikkei.el (shimbun-get-headers): Don't call `nreverse'.
+
+	* shimbun/sb-yahoo.el (shimbun-get-headers): Ditto.
+
+2001-05-27  NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-ruby.el: New file.
+
+	* shimbun/sb-fml.el (shimbun-fml-parse-time): Removed needless
+	local variables.
+
 2001-05-26  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-local-directory-view-method): Modify default value.
