@@ -1,3 +1,9 @@
+2002-09-20  Kahlil HODGSON  <dorge@tpg.com.au>
+
+	* w3m.el (w3m-fontify-bold): Permit class attributes, newlines or
+	whitespaces in the tag.
+	(w3m-fontify-underline): Ditto.
+
 2002-09-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-treat-drive-letter): New constant.
