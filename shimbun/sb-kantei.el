@@ -71,21 +71,32 @@ x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
 (luna-define-method shimbun-get-headers ((shimbun shimbun-kantei)
 					 &optional range)
   (let (year month mday id url subject headers)
-    (while (re-search-forward "\
-<A HREF=\"\\([^\">]+\\)\">[【[]\
-\\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\)\\(\\]\\|】\\)\
-\\([^<]+\\)"
-			      nil t)
-      (setq year (string-to-number (match-string 2))
-	    month (string-to-number (match-string 3))
-	    mday (string-to-number (match-string 4))
+    (while (re-search-forward
+	    ;; 1. url
+	    ;; 3. year (ja)
+	    ;; 4. month (ja)
+	    ;; 5. mday (ja)
+	    ;; 6. month (en)
+	    ;; 7. mday (en)
+	    ;; 8. year (en)
+	    ;; 9. subject
+	    "\
+<A HREF=\"\\([^\">]+\\)\">\
+\\(\
+【\\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\)】\
+\\|\
+\\[\\([01][0-9]\\)/\\([0-3][0-9]\\)/\\(20[0-9][0-9]\\)\\]\
+\\)\
+\[\t ]*\\([^<]+\\)"
+	    nil t)
+      (setq year (string-to-number (or (match-string 3) (match-string 8)))
+	    month (string-to-number (or (match-string 4) (match-string 6)))
+	    mday (string-to-number (or (match-string 5) (match-string 7)))
 	    url (match-string 1)
-	    id (format "<%s%s%s%s@www.kantei.or.jp>"
-		       (match-string 2)
-		       (match-string 3)
-		       (match-string 4)
+	    id (format "<%d%02d%02d%s@www.kantei.or.jp>"
+		       year month mday
 		       (shimbun-current-group-internal shimbun))
-	    subject (match-string 6))
+	    subject (match-string 9))
       (push (shimbun-make-header
 	     0
 	     (shimbun-mime-encode-string (or subject ""))
