@@ -957,7 +957,7 @@ return the contents of this buffer as an encoded string."
 
 YEAR is a 4-digit number, and MONTH and DAY are also numbers.  TIME is
 a string in the \"HH:MM\" form, where HH is a number of hours and MM is
-a number of minutes.  It defaluts to \"00:00\".
+a number of minutes.  It defaults to \"00:00\".
 
 TIMEZONE defaults to \"+0900\" by the historical reason.  You should
 specify this if a time is represented based on other than the \"+0900\"
