@@ -132,6 +132,18 @@ Pretty Good Features
 
 Customizable Options
 
+* General Options::             General options
+* Image Options::               Options related to images
+* Bookmark Options::            Options related to bookmarks
+* Search Options::              Options related to searching the web
+* Weather Options::             Options related to weather information
+* Dtree Options::               Options related to the dtree feature
+* Antenna Options::             Options related to antenna
+* Perldoc Options::             Options related to perldoc
+* Namazu Options::              Options related to namazu
+* Octet Options::               Options related to the octet feature
+* Other Options::               Other options
+
 Hooking into MUAs
 
 * Gnus::                        Reading HTML mails in Gnus
@@ -739,8 +751,8 @@ want to add, for example:
 where foobar is the term you want to search for.
 
 @item
-Once you have this information, add this to your @file{~/.emacs} file:
-@c FIXME: this should be able to put into .emacs-w3m file.
+Once you have this information, add this to your @file{~/.emacs-w3m}
+file:
 
 @lisp
 (eval-after-load "w3m-search"
@@ -765,8 +777,7 @@ engine, you may need to specify something (e.g. @code{euc-japan}) to it.
 You can now use this engine to search, using the normal @kbd{S} key in
 emacs-w3m.  If you use this engine often, you can also add it to the
 Quicksearch (see @ref{Quick Searching}) engines and give it a small
-prefix, by adding this to your @file{~/.emacs} instead:
-@c FIXME: this should be able to put into .emacs-w3m file.
+prefix, by adding this to your @file{~/.emacs-w3m} instead:
 
 @lisp
 (eval-after-load "w3m-search"
@@ -880,7 +891,7 @@ example).
 
 
 @node Viewing Perl Documents
-@section Viewing perl socuments
+@section Viewing perl documents
 
 
 @node Using Namazu
@@ -893,6 +904,94 @@ example).
 
 @node Customizable Options
 @chapter Customizable options
+@cindex user option
+@vindex w3m-init-file
+
+You can customize all those emacs-w3m options using @kbd{M-x
+customize-option} or @kbd{M-x customize-group} with the @code{w3m}
+argument.  Instead, you may put Lisp expressions directly into the
+@file{~/.emacs-w3m} file as follows:
+
+@lisp
+(setq w3m-home-page "http://emacs-w3m.namazu.org/")
+@end lisp
+
+Where @file{~/.emacs-w3m} is the default value of @code{w3m-init-file}.
+Please note that some options have a significant default value and won't
+be defined when the @file{~/.emacs-w3m} file is loaded. The
+@code{w3m-search-quick-search-engine-alist} option is a typical example
+(see @pxref{Search Options}).
+
+@table @code
+
+@item w3m-init-file
+When emacs-w3m starts, it will read the @code{w3m-init-file} file.  The
+default value is @file{~/.emacs-w3m}.  You probably don't need to change
+this.  This is a normal Emacs Lisp file and can be used to avoid
+cluttering your @file{~/.emacs} and @file{site-init} files with
+emacs-w3m stuff.  Emacs-w3m will also check for files with the same
+names as this, but with @file{.elc} and @file{.el} suffixes.  In other
+words, it will look for @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el},
+and finally @file{~/.emacs-w3m} (in this order).
+
+@end table
+
+@menu
+* General Options::             General options
+* Image Options::               Options related to images
+* Bookmark Options::            Options related to bookmarks
+* Search Options::              Options related to searching the web
+* Weather Options::             Options related to weather information
+* Dtree Options::               Options related to the dtree feature
+* Antenna Options::             Options related to antenna
+* Perldoc Options::             Options related to perldoc
+* Namazu Options::              Options related to namazu
+* Octet Options::               Options related to the octet feature
+* Other Options::               Other options
+@end menu
+
+@node General Options
+@section General options
+
+
+@node Image Options
+@section Options related to images
+
+
+@node Bookmark Options
+@section Options related to bookmarks
+
+
+@node Search Options
+@section Options related to searching the web
+
+
+@node Weather Options
+@section Options related to weather information
+
+
+@node Dtree Options
+@section Options related to the dtree feature
+
+
+@node Antenna Options
+@section Options related to antenna
+
+
+@node Perldoc Options
+@section Options related to perldoc
+
+
+@node Namazu Options
+@section Options related to namazu
+
+
+@node Octet Options
+@section Options related to the octet feature
+
+
+@node Other Options
+@section Other options
 
 
 @node Hooking into MUAs

@@ -173,6 +173,18 @@ Pretty Good Features
 
 Customizable Options
 
+* General Options::             $B0lHLE*$J%f!<%6%*%W%7%g%s(B
+* Image Options::               $B2hA|$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Bookmark Options::            $B%V%C%/%^!<%/$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Search Options::              $B%&%'%V8!:w$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Weather Options::             $BE75$M=Js$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Dtree Options::               dtree $B$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Antenna Options::             $B%"%s%F%J$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Perldoc Options::             Perldoc $B$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Namazu Options::              Namazu $B$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Octet Options::               Octet $B$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Other Options::               $B$=$NB>$N%f!<%6%*%W%7%g%s(B
+
 Hooking into MUAs
 
 * Gnus::                        Gnus $B$G(B HTML $B%a!<%k$rFI$`(B
@@ -722,6 +734,7 @@ Options} $B;2>H(B) $B$r%+%9%?%^%$%:$9$k$3$H$K$h$C$F!"$3$N?6$kIq$$$rJQ99$9$k$3
 @cindex Special URLs
 @vindex w3m-search-quick-search-engine-alist
 @vindex w3m-search-engine-alist
+@vindex w3m-default-coding-system
 
 $B%&%'%V!&%Q%o!<%f!<%6(B ($B$3$l$rFI$s$G$$$k$"$J$?(B) $B$K$O!"?WB.$G8zN(E*$J8!:w$N(B
 $BJ}K!$,I,MW$G$9!#%/%$%C%/%5!<%A$O$=$N0l$D$G$9!#(B
@@ -787,8 +800,7 @@ Emacs-w3m $B$OMxMQ2DG=$JB?$/$N8!:w%(%s%8%s$r;}$C$F$$$^$9!#$"$J$?$N$*5$$KF~(B
 $B$3$3$G(B foobar $B$O$"$J$?$,8!:w$7$?$$8l$G$9!#(B
 
 @item
-$B$3$N>pJs$,<j$KF~$C$?$i!"(B@file{~/.emacs} $B%U%!%$%k$K2C$($F$/$@$5$$(B:
-@c FIXME: this should be able to put into .emacs-w3m file.
+$B$3$N>pJs$,<j$KF~$C$?$i!"(B@file{~/.emacs-w3m} $B%U%!%$%k$K2C$($F$/$@$5$$(B:
 
 @lisp
 (eval-after-load "w3m-search"
@@ -814,8 +826,7 @@ Emacs-w3m $B$OMxMQ2DG=$JB?$/$N8!:w%(%s%8%s$r;}$C$F$$$^$9!#$"$J$?$N$*5$$KF~(B
 $B:#$d$3$N8!:w%(%s%8%s$O!"(Bemacs-w3m $B$GDL>o$N(B @kbd{S} $B%-!<$G;H$&$3$H$,$G$-(B
 $B$^$9!#$3$N%(%s%8%s$rIQHK$K;H$&$N$J$i$P!"C;$$%(%s%8%s$NL>A0$r%/%$%C%/%5!<(B
 $B%A%(%s%8%s(B (@ref{Quick Searching} $B$r;2>H(B) $B$K2C$($k$3$H$b$G$-$^$9!#$=$l$K(B
-$B$O!"0J2<$N%3!<%I$r(B @file{~/.emacs} $B%U%!%$%k$KDI2C$7$F2<$5$$(B:
-@c FIXME: this should be able to put into .emacs-w3m file.
+$B$O!"0J2<$N%3!<%I$r(B @file{~/.emacs-w3m} $B%U%!%$%k$KDI2C$7$F2<$5$$(B:
 
 @lisp
 (eval-after-load "w3m-search"
@@ -937,6 +948,94 @@ sessions'' $B$H(B ``Finish'' $B$N%\%?%s$r2!$;$PNI$$$N$G$9!#(B
 
 @node Customizable Options
 @chapter $B%G%U%)%k%H$N$^$^$G$b7k9=NI$$$H;W$&$1$l$I(B
+@cindex user option
+@vindex w3m-init-file
+
+$B$9$Y$F$N(B emacs-w3m $B$N%f!<%6%*%W%7%g%s$O!"(B@kbd{M-x customize-option} $B$^$?(B
+$B$O0z?t$K(B @code{w3m} $B$r;XDj$7$?(B @kbd{M-x customize-group} $B$G%+%9%?%^%$%:(B
+$B$G$-$^$9!#Be$o$j$K!"0J2<$N$h$&$K(B Lisp $B$N<0$rD>@\(B @file{~/.emacs-w3m} $B$K(B
+$B=q$$$F$b9=$$$^$;$s(B:
+
+@lisp
+(setq w3m-home-page "http://emacs-w3m.namazu.org/")
+@end lisp
+
+$B$3$3$G(B @file{~/.emacs-w3m} $B$O(B @code{w3m-init-file} $B$N%G%U%)%k%HCM$G$9!#(B
+$B$$$/$D$+$N%f!<%6%*%W%7%g%s$O=EMW$J%G%U%)%k%HCM$r;}$A!"(B
+@file{~/.emacs-w3m} $B$,(B load $B$5$l$k$H$-$K$ODj5A$5$l$F$$$J$$$3$H$KCm0U$7$F(B
+$B2<$5$$!#(B@code{w3m-search-quick-search-engine-alist} $B$OE57?E*$JNc$G(B
+$B$9(B (@pxref{Search Options} $B$r;2>H(B)$B!#(B
+
+@table @code
+
+@item w3m-init-file
+Emacs-w3m $B$,5/F0$9$k$H!"(B@code{w3m-init-file} $B%U%!%$%k$rFI$_9~$_$^$9!#%G(B
+$B%U%)%k%HCM$O(B @file{~/.emacs-w3m} $B$G$9!#$?$V$s!"$"$J$?$O$3$l$rJQ99$9$kI,(B
+$BMW$OL5$$$G$7$g$&!#$3$l$OIaDL$N(B Emacs Lisp $B%U%!%$%k$G!"(B
+@file{~/.emacs} $B$d(B @file{site-init} $B%U%!%$%k$r(B emacs-w3m $B4X78$N$b$N$GMp(B
+$B;($K$7$J$$$h$&$K$9$k$?$a$K;H$&$3$H$,$G$-$^$9!#(BEmacs-w3m $B$O$3$l$HF1$8L>A0(B
+$B$K!"@\Hx8l(B @file{.elc} $B$H(B @file{.el} $B$,IU$$$F$$$k$b$N$bD4$Y$^$9!#8@$$49(B
+$B$($l$P!"(Bemacs-w3m $B$O(B @file{~/.emacs-w3m.elc}$B!"(B@file{~/.emacs-w3m.el} $B$r(B
+$BC5$7!":G8e$K(B @file{~/.emacs-w3m} $B$r(B ($B$3$N=gHV$K(B) $BC5$7$^$9!#(B
+
+@end table
+
+@menu
+* General Options::             $B0lHLE*$J%f!<%6%*%W%7%g%s(B
+* Image Options::               $B2hA|$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Bookmark Options::            $B%V%C%/%^!<%/$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Search Options::              $B%&%'%V8!:w$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Weather Options::             $BE75$M=Js$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Dtree Options::               dtree $B$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Antenna Options::             $B%"%s%F%J$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Perldoc Options::             Perldoc $B$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Namazu Options::              Namazu $B$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Octet Options::               Octet $B$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+* Other Options::               $B$=$NB>$N%f!<%6%*%W%7%g%s(B
+@end menu
+
+@node General Options
+@section $B0lHLE*$J%f!<%6%*%W%7%g%s(B
+
+
+@node Image Options
+@section $B2hA|$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+
+
+@node Bookmark Options
+@section $B%V%C%/%^!<%/$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+
+
+@node Search Options
+@section $B%&%'%V8!:w$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+
+
+@node Weather Options
+@section $BE75$M=Js$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+
+
+@node Dtree Options
+@section dtree $B$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+
+
+@node Antenna Options
+@section $B%"%s%F%J$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+
+
+@node Perldoc Options
+@section Perldoc $B$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+
+
+@node Namazu Options
+@section Namazu $B$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+
+
+@node Octet Options
+@section Octet $B$K4XO"$7$?%f!<%6%*%W%7%g%s(B
+
+
+@node Other Options
+@section $B$=$NB>$N%f!<%6%*%W%7%g%s(B
 
 
 @node Hooking into MUAs
