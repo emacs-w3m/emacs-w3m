@@ -681,7 +681,7 @@ the file should otherwise be quite self-explanatory.
 
 @table @kbd
 @item C-k
-Kill the bookmark under point (@code{w3m-bookmark-kill-entry}.
+Kill the bookmark under point (@code{w3m-bookmark-kill-entry}).
 
 @item E
 Visit the bookmarks file (@code{w3m-bookmark-edit}).
