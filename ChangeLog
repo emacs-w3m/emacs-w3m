@@ -1,6 +1,6 @@
 2003-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-initial-frames): Rename from `w3m-initial-frames';
+	* w3m.el (w3m-initial-frames): Rename from `w3m-initial-frame';
 	keep a list of the frame-IDs.
 	(w3m-popup-window-p): Return nil if there is the selection window.
 	(w3m-popup-buffer): Copy a copy of `w3m-initial-frames' from
