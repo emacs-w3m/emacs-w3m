@@ -454,7 +454,7 @@ return them with the flag."
 	      (add-text-properties
 	       start (point)
 	       `(w3m-form-field-id
-		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
 		 face w3m-form-face
 		 w3m-action (w3m-form-input-map ,form ,name)
 		 w3m-anchor-sequence ,abs-hseq)))
@@ -462,7 +462,7 @@ return them with the flag."
 	      (w3m-form-make-button
 	       start (point)
 	       `(w3m-form-field-id
-		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
 		 w3m-action (w3m-form-submit ,form ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,name
 					     (w3m-form-get ,form ,name))
@@ -479,7 +479,7 @@ return them with the flag."
 		(add-text-properties
 		 start end
 		 `(w3m-form-field-id
-		   (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		   ,(format "fid=%d/type=%s/name=%s" fid type name)
 		   face w3m-form-face
 		   w3m-action (w3m-form-submit ,form ,name ,value)
 		   w3m-submit (w3m-form-submit ,form ,name
@@ -489,14 +489,14 @@ return them with the flag."
 	      (w3m-form-make-button
 	       start (point)
 	       `(w3m-form-field-id
-		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
 		 w3m-action (w3m-form-reset ,form)
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "textarea")
 	      (add-text-properties
 	       start (point)
 	       `(w3m-form-field-id
-		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
 		 face w3m-form-face
 		 w3m-action (w3m-form-input-textarea ,form ,hseq)
 		 w3m-submit (w3m-form-submit ,form ,name
@@ -509,7 +509,7 @@ return them with the flag."
 	      (add-text-properties
 	       start (point)
 	       `(w3m-form-field-id
-		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
 		 face w3m-form-face
 		 w3m-action (w3m-form-input-select ,form ,name)
 		 w3m-submit (w3m-form-submit ,form ,name
@@ -519,7 +519,7 @@ return them with the flag."
 	      (add-text-properties
 	       start (point)
 	       `(w3m-form-field-id
-		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
 		 face w3m-form-face
 		 w3m-action (w3m-form-input-password ,form ,name)
 		 w3m-submit (w3m-form-submit ,form ,name
@@ -529,7 +529,7 @@ return them with the flag."
 	      (add-text-properties
 	       start (point)
 	       `(w3m-form-field-id
-		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
 		 face w3m-form-face
 		 w3m-action (w3m-form-input-checkbox ,form ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,name
@@ -539,7 +539,7 @@ return them with the flag."
 	      (add-text-properties
 	       start (point)
 	       `(w3m-form-field-id
-		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
 		 face w3m-form-face
 		 w3m-action (w3m-form-input-radio ,form ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,name
@@ -549,7 +549,7 @@ return them with the flag."
 	      (add-text-properties
 	       start (point)
 	       `(w3m-form-field-id
-		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
 		 face w3m-form-face
 		 w3m-action (w3m-form-input-file ,form ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,name
@@ -559,7 +559,7 @@ return them with the flag."
 	      (add-text-properties
 	       start (point)
 	       `(w3m-form-field-id
-		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
 		 face w3m-form-face
 		 w3m-action (w3m-form-input ,form ,name ,type
 					    ,width ,maxlength ,value)
