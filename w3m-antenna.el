@@ -296,10 +296,10 @@ whose elements are:
       "text/html")
     (setq w3m-antenna-alist nil)))
 
-(defun w3m-antenna ()
+(defun w3m-antenna (&optional no-cache)
   "*Report change of WEB sites, which is specified in `w3m-antenna-sites'."
-  (interactive)
-  (w3m "about://antenna/"))
+  (interactive "P")
+  (w3m-goto-url "about://antenna/" no-cache))
 
 
 (provide 'w3m-antenna)
