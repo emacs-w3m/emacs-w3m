@@ -3156,9 +3156,6 @@ gnome.gtk-i18n-list gnome.gtk-list gnome.gtk-perl-list
 gnome.guppi-list gnome.libart gnome.libart-hackers gnome.orbit-list
 gnome.vote gnome.wm-spec-list gnome.xml gnome.xslt
 
-@item @uref{http://www.h14m.org/ml/, h14m Mailing List}
-h14m.hns-dev h14m.hns-users
-
 @item @uref{http://www.java-conf.gr.jp/archives/, Java Conference Mailing List}
 javaconf.servlet-ml javaconf.business-ml
 javaconf.duke-in-the-box-ml javaconf.jfriends-ml javaconf.JGT-ml
