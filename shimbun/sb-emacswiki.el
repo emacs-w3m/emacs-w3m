@@ -36,7 +36,7 @@
 
 (defvar shimbun-emacswiki-url
   "http://www.emacswiki.org/cgi-bin/wiki.pl?action=rss")
-(defvar shimbun-emacswiki-groups '("diff"))
+(defvar shimbun-emacswiki-groups '("changes" "diff"))
 (defvar shimbun-emacswiki-from-address  "invalid@emacswiki.org")
 (defvar shimbun-emacswiki-content-start "<h1>")
 (defvar shimbun-emacswiki-content-end "<div class=\"footer\">")
@@ -52,21 +52,22 @@ e2ibWOZWTFz8j~/m")))
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-emacswiki)
 						 &optional range)
-  (mapcar
-   (lambda (header)
-     (let ((url (shimbun-header-xref header)))
-       (when (string-match "id=.*?;\\(revision=[0-9]+\\)" url)
-	 (shimbun-header-set-xref
-	  header
-	  (replace-match "diff=1" t nil url 1)))
-       header))
-     (luna-call-next-method)))
+  (let ((headers (luna-call-next-method)))
+    (when (string= (shimbun-current-group shimbun) "diff")
+      (dolist (header headers)
+	(let ((url (shimbun-header-xref header)))
+	  (when (string-match "id=.*?;\\(revision=[0-9]+\\)" url)
+	    (shimbun-header-set-xref
+	     header
+	     (replace-match "diff=1" t nil url 1))))))
+    headers))
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-emacswiki) url date)
   (unless (string-match "id=\\(.*?\\);revision=\\([0-9]+\\)" url)
     (error "Cannot find message-id base"))
-  (concat "<" (match-string 1 url) (match-string 2 url) "@emacswiki.org>"))
+  (concat "<" (match-string 1 url) (match-string 2 url)
+	  "%" (shimbun-current-group shimbun) "@emacswiki.org>"))
 
 (provide 'sb-emacswiki)
 

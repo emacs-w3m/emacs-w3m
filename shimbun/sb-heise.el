@@ -61,7 +61,7 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 		      shimbun-heise-group-path-alist))))
 
 
-(defun shimbun-heise-get-newsticker-headers ()
+(defun shimbun-heise-get-newsticker-headers (shimbun)
   (let ((regexp "<a href=\"meldung/\\([0-9]+\\)\">\\([^<]+\\)</a>")
 	(from "Heise Online News <invalid@heise.de>")
 	(date "") (id) (url) (subject) (headers))
@@ -83,7 +83,7 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
     headers))
 
 
-(defun shimbun-heise-get-telepolis-headers ()
+(defun shimbun-heise-get-telepolis-headers (shimbun)
   (let ((regexp-begin "<!-- NEWS-ENTRY -->")
 	(regexp-article "<a href=\"\\([^\"]+\\)\">\\([^<]+\\)</a>")
 	(from "Heise Telepolis <invalid@heise.de>")
@@ -108,8 +108,8 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 (luna-define-method shimbun-get-headers
   ((shimbun shimbun-heise) &optional range)
   (if (equal (shimbun-current-group-internal shimbun) "news")
-      (shimbun-heise-get-newsticker-headers)
-    (shimbun-heise-get-telepolis-headers)))
+      (shimbun-heise-get-newsticker-headers shimbun)
+    (shimbun-heise-get-telepolis-headers shimbun)))
 
 
 (defun shimbun-heise-wash-newsticker-article (header)

@@ -1,3 +1,14 @@
+2004-05-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-emacswiki.el (shimbun-emacswiki-groups): Add `changes'.
+	(shimbun-get-headers): Rewrite articles' URLs only when the
+	current group is `diff'.
+
+	* shimbun/sb-heise.el (shimbun-heise-get-newsticker-headers):
+	(shimbun-heise-get-telepolis-headers): Takes an argument
+	`shimbun', to suppress byte-compile warnings.
+	(shimbun-get-headers): Follow the above changes.
+
 2004-05-07  David Hansen  <david.hansen@gmx.net>
 
 	* shimbun/sb-emacswiki.el:
