@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; -*- mode: Emacs-Lisp; coding: iso-2022-7bit -*-
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
@@ -80,12 +80,14 @@
 (defun w3m-form-make-get-string (form)
   (when (eq 'get (w3m-form-method form))
     (let ((plist (w3m-form-plist form))
-	  (buf))
+	  (buf) str)
       (while plist
 	(setq buf (cons
 		   (format "%s=%s"
 			   (w3m-url-encode-string (symbol-name (car plist)))
-			   (w3m-url-encode-string (nth 1 plist)))
+			   (if (listp (setq str (nth 1 plist)))
+			       (w3m-url-encode-string (car str))
+			     (w3m-url-encode-string str)))
 		   buf)
 	      plist (nthcdr 2 plist)))
       (if buf

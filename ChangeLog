@@ -1,3 +1,10 @@
+2001-05-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (top-level): Modify string to 'iso-2022-7bit' for
+	set-auto-coding.
+	(w3m-form-make-get-string): Guard error in w3m-url-encode-string()
+	reported [emacs-w3m:00686].
+
 2001-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-about-history): Run `set-buffer-multibyte' after
