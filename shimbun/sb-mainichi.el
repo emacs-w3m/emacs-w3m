@@ -141,9 +141,9 @@
       (insert "<html>\n<head>\n<base href=\""
 	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
       (goto-char (point-max))
-      (insert "\n</body>\n</html>\n"))
-    (shimbun-make-mime-article shimbun header)
-    (buffer-string)))
+      (insert "\n</body>\n</html>\n")
+      (shimbun-make-mime-article shimbun header)
+      (buffer-string))))
 
 (provide 'sb-mainichi)
 
