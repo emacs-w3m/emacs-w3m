@@ -52,43 +52,20 @@
   (or (ucs-to-char codepoint) ?~))
 
 
-(define-ccl-program w3m-euc-japan-encoder
-  `(4
-    (loop
-     (read-multibyte-character r1 r0)
-     (if (r1 == ,(charset-id 'ascii))
-	 ;; (1) ASCII characters
-	 (write-repeat r0))
-     (if (r1 == ,(charset-id 'latin-jisx0201))
-	 ;; (2) Latin Part of Japanese JISX0201.1976
-	 ;;     Convert to ASCII
-	 (write-repeat r0))
-     (if (r1 == ,(charset-id 'japanese-jisx0208))
-	 ;; (3) Characters of Japanese JISX0208.
-	 ((r1 = ((r0 & 127) | 128))
-	  (r0 = ((r0 >> 7) | 128))
-	  (write r0)
-	  (write-repeat r1)))
-     (if (r1 == ,(charset-id 'katakana-jisx0201))
-	 ;; (4) Katakana Part of Japanese JISX0201.1976
-	 ((r0 |= 128)
-	  (write ?\x8e)
-	  (write-repeat r0)))
-     (;; (5) Other characters are represented in NCR (Numeric
-      ;; Character References).
-      ;; (5.1) Convert a set of r1 (charset-id) and r0 (codepoint)
-      ;; to a character in Emacs internal representation.
+(eval-and-compile
+  (defconst w3m-ucs-generate-ncr-program
+    `(;; (1) Convert a set of r1 (charset-id) and r0 (codepoint) to a
+      ;; character in Emacs internal representation.
       (if (r0 > 255)
 	  ((r4 = (r0 & 127))
 	   (r0 = (((r0 >> 7) * 96) + r4))
 	   (r0 |= (r1 << 16)))
 	((r0 |= (r1 << 16))))
-      ;; (5.2) Convert a character in Emacs to a UCS codepoint.
+      ;; (2) Convert a character in Emacs to a UCS codepoint.
       (call emacs-char-to-ucs-codepoint-conversion)
-      ;; (5.3) Generate a string which represents a UCS
-      ;; codepoint in NCR.
+     ;; (3) Generate a string which represents a UCS codepoint in NCR.
       (if (r0 <= 0)
-	  (write ?~)		; unknown character.
+	  (write ?~)			; unknown character.
 	((r1 = 0)
 	 (r2 = 0)
 	 (loop
@@ -112,7 +89,52 @@
 	       (break))
 	    ((r2 -= 1)
 	     (repeat))))))
-      (repeat)))))
+      (repeat))
+    "CCL program to represents other characters in NCR
+(Numeric Character References)."))
+
+
+(define-ccl-program w3m-euc-japan-encoder
+  `(4
+    (loop
+     (read-multibyte-character r1 r0)
+     (if (r1 == ,(charset-id 'ascii))
+	 ;; (1) ASCII characters
+	 (write-repeat r0))
+     (if (r1 == ,(charset-id 'latin-jisx0201))
+	 ;; (2) Latin Part of Japanese JISX0201.1976
+	 ;;     Convert to ASCII
+	 (write-repeat r0))
+     (if (r1 == ,(charset-id 'japanese-jisx0208))
+	 ;; (3) Characters of Japanese JISX0208.
+	 ((r1 = ((r0 & 127) | 128))
+	  (r0 = ((r0 >> 7) | 128))
+	  (write r0)
+	  (write-repeat r1)))
+     (if (r1 == ,(charset-id 'katakana-jisx0201))
+	 ;; (4) Katakana Part of Japanese JISX0201.1976
+	 ((r0 |= 128)
+	  (write ?\x8e)
+	  (write-repeat r0)))
+     ,@w3m-ucs-generate-ncr-program)))
+
+
+(define-ccl-program w3m-iso-latin-1-encoder
+  `(4
+    (loop
+     (read-multibyte-character r1 r0)
+     (if (r1 == ,(charset-id 'ascii))
+	 ;; (1) ASCII characters
+	 (write-repeat r0))
+     (if (r1 == ,(charset-id 'latin-jisx0201))
+	 ;; (2) Latin Part of Japanese JISX0201.1976
+	 ;;     Convert to ASCII
+	 (write-repeat r0))
+     (if (r1 == ,(charset-id 'latin-iso8859-1))
+	 ;; (3) Latin-1 characters
+	 ((r0 |= ?\x80)
+	  (write-repeat r0)))
+     ,@w3m-ucs-generate-ncr-program)))
 
 
 (provide 'w3m-ucs)

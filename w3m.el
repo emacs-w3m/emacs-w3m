@@ -90,9 +90,6 @@
 
 (require 'w3m-hist)
 (require 'timezone)
-(condition-case nil
-    (require 'ccl)
-  (error))
 
 ;; Add-on programs:
 (eval-and-compile
@@ -138,19 +135,26 @@
   :group 'w3m
   :prefix "w3m-")
 
-(defvar w3m-mnc nil
-  "*This is an obsolete option.  It is strongly recomended to use
-`w3m-type' instead of this option.")
-
 (defcustom w3m-type
-  (if w3m-mnc 'w3m-mnc 'w3m-0.2.1)
+  (let ((command (if (boundp 'w3m-command)
+		     (symbol-value 'w3m-command)
+		   (or (w3m-which-command "w3m")
+		       (w3m-which-command "w3mmee")))))
+    (when command
+      (setq w3m-command command)
+      (with-temp-buffer
+	(call-process command nil t nil "-version")
+	(goto-char (point-min))
+	(cond
+	 ((looking-at "version w3m/0\\.2\\.1\n") 'w3m-0.2.1)
+	 ((looking-at "version w3m/0\\.2\\.1-inu") 'w3m)
+	 ((looking-at "version w3m/0\\.2\\.1\\+mee") 'w3mmee)))))
   "*Type of w3m."
   :group 'w3m
   :type '(choice (const :tag "w3m-0.2.1" 'w3m-0.2.1)
 		 (const :tag "w3m-inu" 'w3m)
 		 (const :tag "w3mmee" 'w3mmee)
 		 (const :tag "w3m-m17n" 'w3m-m17n)
-		 (const :tag "w3m-mnc [obsolete]" 'w3m-mnc)
 		 (symbol :tag "other" nil)))
 
 (defcustom w3m-language
@@ -206,7 +210,7 @@ width using expression (+ (frame-width) VALUE)."
   :type 'function)
 
 (defcustom w3m-use-mule-ucs
-  (and (memq w3m-type '(w3m w3m-0.2.1 w3m-mnc))
+  (and (memq w3m-type '(w3m w3m-0.2.1))
        (boundp 'emacs-major-version)
        (if (featurep 'xemacs)
 	   ;; Mule-UCS does not support XEmacs versions prior to 21.2.37.
@@ -224,33 +228,56 @@ width using expression (+ (frame-width) VALUE)."
 (when w3m-use-mule-ucs
   (require 'w3m-ucs))
 
-(defcustom w3m-coding-system 'iso-2022-7bit
+(defvar w3m-accept-japanese-characters
+  (or (memq w3m-type '(w3mmee w3m-m17n))
+      (with-temp-buffer
+	(insert "<hr>\n")
+	(let ((coding-system-for-write 'binary)
+	      (coding-system-for-read 'binary)
+	      (default-process-coding-system (cons 'binary 'binary)))
+	  (call-process-region (point-min) (point-max) w3m-command
+			       t t nil "-T" "text/html" "-dump")
+	  (goto-char (point-min))
+	  (not (eq (char-after (point)) '?-)))))
+  "Non-nil means that `w3m' accepts Japanese characters.")
+
+(defcustom w3m-coding-system
+  'iso-2022-7bit
   "*Basic coding system for `w3m'."
   :group 'w3m
   :type 'coding-system)
 
-(defcustom w3m-terminal-coding-system 'euc-japan
+(defcustom w3m-terminal-coding-system
+  (if w3m-accept-japanese-characters
+      'euc-japan 'iso-latin-1)
   "*Coding system for keyboard input to `w3m'."
   :group 'w3m
   :type 'coding-system)
 
 (defcustom w3m-input-coding-system
-  (cond ((memq w3m-type '(w3mmee w3m-m17n)) 'binary)
-	(w3m-use-mule-ucs 'w3m-euc-japan)
-	(t 'iso-2022-7bit))
+  (if (memq w3m-type '(w3mmee w3m-m17n))
+      'binary
+    (if w3m-use-mule-ucs
+	(if w3m-accept-japanese-characters
+	    'w3m-euc-japan 'w3m-iso-latin-1)
+      (if w3m-accept-japanese-characters
+	  'iso-2022-7bit 'iso-latin-1)))
   "*Coding system for write operations to `w3m'."
   :group 'w3m
   :type 'coding-system)
 
 (defcustom w3m-output-coding-system
-  (cond ((eq w3m-type 'w3mmee) 'ctext)
-	((eq w3m-type 'w3m-m17n) 'iso-2022-7bit-ss2)
-	(t 'w3m-euc-japan))
+  (cond
+   ((eq w3m-type 'w3mmee) 'ctext)
+   ((eq w3m-type 'w3m-m17n) 'iso-2022-7bit-ss2)
+   (w3m-accept-japanese-characters 'w3m-euc-japan)
+   (t 'w3m-iso-latin-1))
   "*Coding system for read operations of `w3m'."
   :group 'w3m
   :type 'coding-system)
 
-(defcustom w3m-file-coding-system 'iso-2022-7bit
+(defcustom w3m-file-coding-system
+  'iso-2022-7bit
   "*Coding system for writing configuration files in `w3m'.
 The value will be referred by the function `w3m-save-list'."
   :group 'w3m
@@ -269,7 +296,7 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :type 'coding-system)
 
 (defcustom w3m-default-coding-system
-  (if (equal "Japanese" w3m-language) 'shift_jis)
+  (if (equal "Japanese" w3m-language) 'shift_jis 'iso-latin-1)
   "*Default coding system to encode URL strings and post-data."
   :group 'w3m
   :type 'coding-system)
@@ -2705,6 +2732,26 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	  (w3m-cache-contents url (current-buffer))
 	  headers)))))
 
+(defvar w3m-accept-post-header-option
+  (or (eq w3m-type 'w3m)
+      (with-temp-buffer
+	(call-process w3m-command nil t nil "-version")
+	(and (progn
+	       (goto-char (point-min))
+	       (search-forward " -post " nil t))
+	     (progn
+	       (goto-char (point-min))
+	       (search-forward " -header " nil t)))))
+  "Non-nil means that `w3m' accepts `-post' option and `-header' option.")
+
+(defvar w3m-accept-dump-extra-option
+  (or (memq w3m-type '(w3m w3mmee))
+      (with-temp-buffer
+	(call-process w3m-command nil t nil "-dump_extra" "http://localhost/")
+	(goto-char (point-min))
+	(if (looking-at "version") nil t)))
+  "Non-nil means that `w3m' accepts `-dump_extra' option.")
+
 (defun w3m-w3m-retrieve (url &optional no-decode no-cache post-data referer)
   "Retrieve content of URL with w3m and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
@@ -2731,7 +2778,7 @@ to nil."
 		(set-default-file-modes (* 64 6))
 		(write-region (point-min) (point-max) file nil 'silent))
 	    (set-default-file-modes modes)))
-	(if (eq w3m-type 'w3m)
+	(if w3m-accept-post-header-option
 	    (setq w3m-command-arguments
 		  (append w3m-command-arguments
 			  (if (consp post-data)
@@ -2745,7 +2792,7 @@ to nil."
 					 referer)))
 		 (car w3m-add-referer-regexps)
 		 (string-match (car w3m-add-referer-regexps) referer))
-	(if (eq w3m-type 'w3m)
+	(if w3m-accept-post-header-option
 	    (setq w3m-command-arguments
 		  (append w3m-command-arguments
 			  (list "-header" (concat "Referer: " referer))))
@@ -2755,7 +2802,7 @@ to nil."
 		(or (unless no-cache
 		      (and (w3m-cache-request-contents url)
 			   (w3m-content-type url)))
-		    (car (if (memq w3m-type '(w3m w3mmee w3m-mnc))
+		    (car (if w3m-accept-dump-extra-option
 			     (w3m-w3m-dump-head-source url)
 			   (w3m-w3m-dump-source url)))))
 	(if file (delete-file file)))
@@ -2862,51 +2909,54 @@ to nil.
 
 
 ;;; Retrieve data:
-(w3m-static-if (featurep 'ccl)
-(progn
+(eval-and-compile
+  (defconst w3m-internal-characters-alist
+    '((?\x90 . ? )			; ANSP (use for empty anchor)
+      (?\x91 . ? )			; IMSP (blank around image)
+      (?\xa0 . ? ))			; NBSP (non breakble space)
+    "Alist of internal characters v.s. ASCII characters."))
+
+(eval-and-compile
+  (defconst w3m-rule-characters-alist
+    '((?\x80 . ?+)
+      (?\x81 . ?|)
+      (?\x82 . ?-)
+      (?\x83 . ?+)
+      (?\x84 . ?|)
+      (?\x85 . ?|)
+      (?\x86 . ?+)
+      (?\x87 . ? )
+      (?\x88 . ?-)
+      (?\x89 . ?+)
+      (?\x8a . ?-)
+      (?\x8b . ? )
+      (?\x8c . ?+)
+      (?\x8d . ? )
+      (?\x8e . ? )
+      (?\x8f . ? ))
+    "Alist of internal characters used for rule v.s. ASCII characters."))
+
+(w3m-static-when (or (featurep 'mule) (boundp 'MULE))
+(require 'ccl)
+(eval-and-compile
+  (defun w3m-ccl-write-repeat (charset)
+    (let ((id (if (boundp 'MULE)
+		  (let ((alist
+			 '((latin-iso8859-1 . lc-ltn1)
+			   (japanese-jisx0208 . lc-jp)
+			   (japanese-jisx0212 . lc-jp2)
+			   (katakana-jisx0201 . lc-kana))))
+		    (eval (cdr (assq charset alist))))
+		(charset-id charset))))
+      (if (fboundp 'ccl-compile-write-multibyte-character)
+	  (` ((r0 = (, id))
+	      (write-multibyte-character r0 r1)
+	      (repeat)))
+	(` ((write (,id))
+	    (write-repeat r1)))))))
+
 (define-ccl-program w3m-euc-japan-decoder
-  (w3m-static-if (fboundp 'ccl-compile-write-multibyte-character)
-      ;; Note that the above function has implemented in XEmacs
-      ;; 21.2.19, however, the early version is buggy.  Because of
-      ;; this, the following program won't work under the versions of
-      ;; XEmacs between 21.2.19 and 21.2.36.  It is recommended to
-      ;; upgrade your XEmacs if you are using that one.
-      `(2
-	(loop
-	 (read r0)
-	 ;; Process normal EUC characters.
-	 (if (r0 < ?\x80)
-	     (write-repeat r0))
-	 (if (r0 > ?\xa0)
-	     ((read r1)
-	      (r1 &= ?\x7f)
-	      (r1 |= ((r0 & ?\x7f) << 7))
-	      (r0 = ,(charset-id 'japanese-jisx0208))
-	      (write-multibyte-character r0 r1)
-	      (repeat)))
-	 (if (r0 == ?\x8e)
-	     ((read r1)
-	      (r0 = ,(charset-id 'katakana-jisx0201))
-	      (write-multibyte-character r0 r1)
-	      (repeat)))
-	 (if (r0 == ?\x8f)
-	     ((read r0 r1)
-	      (r1 &= ?\x7f)
-	      (r1 |= ((r0 & ?\x7f) << 7))
-	      (r0 = ,(charset-id 'japanese-jisx0212))
-	      (write-multibyte-character r0 r1)
-	      (repeat)))
-	 ;; Process internal characters used in w3m.
-	 (if (r0 == ?\x80)		; Old ANSP (w3m-0.1.11pre+kokb23)
-	     (write-repeat 32))
-	 (if (r0 == ?\x90)		; ANSP (use for empty anchor)
-	     (write-repeat 32))
-	 (if (r0 == ?\x91)		; IMSP (blank around image)
-	     (write-repeat 32))
-	 (if (r0 == ?\xa0)		; NBSP (non breakble space)
-	     (write-repeat 32))
-	 (write-repeat r0)))
-    `(2
+  (` (2
       (loop
        (read r0)
        ;; Process normal EUC characters.
@@ -2914,34 +2964,22 @@ to nil.
 	   (write-repeat r0))
        (if (r0 > ?\xa0)
 	   ((read r1)
-	    (write ,(w3m-static-if (boundp 'MULE)
-			lc-jp
-		      (charset-id 'japanese-jisx0208)))
-	    (write r0)
-	    (write-repeat r1)))
+	    (r1 &= ?\x7f)
+	    (r1 |= ((r0 & ?\x7f) << 7))
+	    (,@ (w3m-ccl-write-repeat 'japanese-jisx0208))))
        (if (r0 == ?\x8e)
-	   ((read r0)
-	    (write ,(w3m-static-if (boundp 'MULE)
-			lc-kana
-		      (charset-id 'katakana-jisx0201)))
-	    (write-repeat r0)))
+	   ((read r1)
+	    (,@ (w3m-ccl-write-repeat 'katakana-jisx0201))))
        (if (r0 == ?\x8f)
-	   ((read r0)
-	    (read r1)
-	    (write ,(w3m-static-if (boundp 'MULE)
-			lc-jp2
-		      (charset-id 'japanese-jisx0212)))
-	    (write r0)
-	    (write-repeat r1)))
+	   ((read r0 r1)
+	    (r1 &= ?\x7f)
+	    (r1 |= ((r0 & ?\x7f) << 7))
+	    (,@ (w3m-ccl-write-repeat 'japanese-jisx0212))))
        ;; Process internal characters used in w3m.
-       (if (r0 == ?\x80)		; Old ANSP (w3m-0.1.11pre+kokb23)
-	   (write-repeat 32))
-       (if (r0 == ?\x90)		; ANSP (use for empty anchor)
-	   (write-repeat 32))
-       (if (r0 == ?\x91)		; IMSP (blank around image)
-	   (write-repeat 32))
-       (if (r0 == ?\xa0)		; NBSP (non breakble space)
-	   (write-repeat 32))
+       (,@ (mapcar (lambda (pair)
+		     (` (if (r0 == (, (car pair)))
+			    (write-repeat (, (cdr pair))))))
+		   w3m-internal-characters-alist))
        (write-repeat r0)))))
 
 (unless (get 'w3m-euc-japan-encoder 'ccl-program-idx)
@@ -2953,7 +2991,40 @@ to nil.
  "ISO 2022 based EUC encoding for Japanese with w3m internal characters.
   (generated by `w3m')"
  'w3m-euc-japan-decoder
- 'w3m-euc-japan-encoder)))
+ 'w3m-euc-japan-encoder)
+
+(define-ccl-program w3m-iso-latin-1-decoder
+  (` (2
+      (loop
+       (read r0)
+       ;; Process ASCII characters.
+       (if (r0 < ?\x80)
+	   (write-repeat r0))
+       ;; Process Latin-1 characters.
+       (if (r0 > ?\xa0)
+	   ((r1 = (r0 & ?\x7f))
+	    (,@ (w3m-ccl-write-repeat 'latin-iso8859-1))))
+       ;; Process internal characters used in w3m.
+       (,@ (mapcar (lambda (pair)
+		     (` (if (r0 == (, (car pair)))
+			    (write-repeat (, (cdr pair))))))
+		   w3m-rule-characters-alist))
+       (,@ (mapcar (lambda (pair)
+		     (` (if (r0 == (, (car pair)))
+			    (write-repeat (, (cdr pair))))))
+		   w3m-internal-characters-alist))
+       (write-repeat r0)))))
+
+(unless (get 'w3m-iso-latin-1-encoder 'ccl-program-idx)
+  (define-ccl-program w3m-iso-latin-1-encoder
+    `(1 (loop (read r0) (write-repeat r0)))))
+
+(w3m-make-ccl-coding-system
+ 'w3m-iso-latin-1 ?1
+ "ISO 2022 based 8-bit encoding for Latin-1 with w3m internal characters.
+  (generated by `w3m')"
+ 'w3m-iso-latin-1-decoder
+ 'w3m-iso-latin-1-encoder))
 
 (defun w3m-remove-comments ()
   "Remove HTML comments in the current buffer."
@@ -3055,9 +3126,13 @@ to nil.
 	   (w3m-rendering-half-dump)
 	   (current-buffer))))
     (w3m-rendering-half-dump))
-  ;; for XEmacs without Mule.
-  (w3m-static-if (featurep 'ccl) nil
-    (subst-char-in-region (point-min) (point-max) ?\x90 ? ))
+  ;; for Emacsen without Mule.
+  (w3m-static-unless (or (featurep 'mule) (boundp 'MULE))
+    (dolist (pair w3m-internal-characters-alist)
+      (subst-char-in-region (point-min) (point-max) (car pair) (cdr pair)))
+    (unless w3m-accept-japanese-characters
+      (dolist (pair w3m-rule-characters-alist)
+	(subst-char-in-region (point-min) (point-max) (car pair) (cdr pair)))))
   (w3m-message "Rendering...done")
   (w3m-rendering-extract-title))
 

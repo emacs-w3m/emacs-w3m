@@ -263,24 +263,26 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defun w3m-setup-header-line ()
   "Setup header line."
   (if w3m-use-header-line
-      (setq header-line-format (list
-				(propertize
-				 "Location: "
-				 'face
-				 'w3m-header-line-location-title-face)
-				'(:eval
-				  (propertize
-				   (replace-regexp-in-string "%" "%%"
-							     w3m-current-url)
-				   'face
-				   'w3m-header-line-location-content-face
-				   'local-map
-				   (let ((map (make-sparse-keymap)))
-				     (define-key map [header-line mouse-2]
-				       'w3m-goto-url)
-				     map)
-				   'help-echo
-				   "mouse-2 prompts to input URL"))))))
+      (setq header-line-format
+	    (list
+	     (propertize
+	      "Location: "
+	      'face
+	      'w3m-header-line-location-title-face)
+	     '(:eval
+	       (propertize
+		(if (stringp w3m-current-url)
+		    (replace-regexp-in-string "%" "%%" w3m-current-url)
+		  "")
+		'face
+		'w3m-header-line-location-content-face
+		'local-map
+		(let ((map (make-sparse-keymap)))
+		  (define-key map [header-line mouse-2]
+		    'w3m-goto-url)
+		  map)
+		'help-echo
+		"mouse-2 prompts to input URL"))))))
 
 (defun w3m-setup-widget-faces ()
   (make-local-variable 'widget-button-face)
