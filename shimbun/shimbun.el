@@ -517,11 +517,13 @@ integer n:    Retrieve n pages of header indices.")
 
 ;;; Misc Functions
 (defun shimbun-mime-encode-string (string)
-  (mapconcat
-   #'identity
-   (split-string (or (eword-encode-string
-		      (shimbun-decode-entities-string string)) ""))
-   " "))
+  (condition-case nil
+      (mapconcat
+       #'identity
+       (split-string (or (eword-encode-string
+			  (shimbun-decode-entities-string string)) ""))
+       " ")
+    (error string)))
 
 (defun shimbun-make-date-string (year month day &optional time timezone)
   (format "%02d %s %04d %s %s"
