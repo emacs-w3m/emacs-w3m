@@ -85,7 +85,8 @@ DOCSTRING will be printed if ASSERTION is nil and NO-NOTICE is nil."
 	   (defalias (, name)
 	     (function (lambda (,@ args)))))))))
 
-(defmacro defvar-if-void (&rest args)
+(put 'ptexinfmt-defvar-if-void 'lisp-indent-function 'defun)
+(defmacro ptexinfmt-defvar-if-void (&rest args)
   "Define a variable just like `defvar' unless it is already defined."
   (let ((name (car args)))
     (setq args (cdr args))
@@ -595,11 +596,13 @@ otherwise, insert URL-TITLE followed by URL in parentheses."
 
 
 ;;; @multitable ... @end multitable
-(defvar-if-void texinfo-extra-inter-column-width 0
+(ptexinfmt-defvar-if-void texinfo-extra-inter-column-width 0
   "*Number of extra spaces between entries (columns) in @multitable.")
 
-(defvar-if-void texinfo-multitable-buffer-name "*multitable-temporary-buffer*")
-(defvar-if-void texinfo-multitable-rectangle-name "texinfo-multitable-temp-")
+(ptexinfmt-defvar-if-void texinfo-multitable-buffer-name
+  "*multitable-temporary-buffer*")
+(ptexinfmt-defvar-if-void texinfo-multitable-rectangle-name
+  "texinfo-multitable-temp-")
 
 ;; These commands are defined in texinfo.tex for printed output.
 (put 'multitableparskip 'texinfo-format 'texinfo-discard-line-with-args)
