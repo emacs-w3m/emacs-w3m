@@ -1,3 +1,10 @@
+2002-06-13  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-prepare-content): When cdr of
+	`w3m-content-prepare-functions' element is not function,
+	call `w3m-prepare-content' recursively.
+	(w3m-content-prepare-functions): Add "application/xhtml+xml" entry.
+
 2002-06-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-zdnet.el (shimbun-make-contents): Remove image tags

@@ -3758,13 +3758,17 @@ argument.  Otherwise, it will be called with nil."
 
 (defconst w3m-content-prepare-functions
   '(("\\`text/" . w3m-prepare-text-content)
-    ("\\`image/" . w3m-prepare-image-content)))
+    ("\\`image/" . w3m-prepare-image-content)
+    ("\\`application/xhtml\\+xml" . "text/html")))
 
 (defun w3m-prepare-content (url type output-buffer &optional content-charset retry)
   (catch 'content-prepared
     (dolist (elem w3m-content-prepare-functions)
       (and (string-match (car elem) type)
-	   (funcall (cdr elem) url type output-buffer content-charset)
+	   (if (functionp (cdr elem))
+	       (funcall (cdr elem) url type output-buffer content-charset)
+	     (w3m-prepare-content url (cdr elem) output-buffer
+				  content-charset))
 	   (throw 'content-prepared t)))
     (if (or retry (nth 2 (assoc type w3m-content-type-alist)))
 	(with-current-buffer output-buffer
