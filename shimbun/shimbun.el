@@ -103,7 +103,7 @@
 (require 'w3m)
 (defun shimbun-retrieve-url (url &optional no-cache no-decode)
   "Rertrieve URL contents and insert to current buffer."
-  (when (w3m-retrieve url no-decode no-cache)
+  (when (and url (w3m-retrieve url no-decode no-cache))
     (w3m-with-work-buffer
       (unless no-decode
 	(w3m-decode-buffer url)))
@@ -113,7 +113,7 @@
 
 (defun shimbun-retrieve-url-buffer (url &optional no-cache no-decode)
   "Return a buffer which contains the URL contents."
-  (if (w3m-retrieve url no-decode no-cache)
+  (if (and url (w3m-retrieve url no-decode no-cache))
       (w3m-with-work-buffer
 	(unless no-decode
 	  (w3m-decode-buffer url))
