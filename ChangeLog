@@ -1,3 +1,8 @@
+2001-03-07  Yuuichi Teranishi  <teranisi@isl.ntt.co.jp>
+
+	* w3m.el (w3m-create-image) [XEmacs]: Retrieve header to determine
+	image type when `w3m-local-content-type' failed.
+
 2001-03-07  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-arrived-file-coding-system): Default value is

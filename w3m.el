@@ -1059,13 +1059,15 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defun w3m-create-image (url)
   "Retrieve data from URL and create an image object."
   (w3m-retrieve url t)
-  (with-current-buffer  (get-buffer-create w3m-work-buffer-name)
+  (let ((data (with-current-buffer (get-buffer-create w3m-work-buffer-name)
+		(buffer-string))))
     (make-glyph
      (make-image-instance
       (vector (or (cdr (assoc (w3m-local-content-type url)
 			      w3m-image-type-alist))
-		  'autodetect)
-	      :data (buffer-string))
+		  (cdr (assoc (nth 0 (w3m-w3m-check-header url))
+			      w3m-image-type-alist)))
+	      :data data)
       nil nil 'no-error))))
 
 (defun w3m-insert-image (beg end image)
