@@ -1,3 +1,31 @@
+2001-07-09  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
+
+	* w3m.el (w3m-real-async): New variable.
+	(w3m-exec-handler): Ditto.
+	(w3m-replace-symbol): New function.
+	(w3m-regist-handler): Ditto.
+	(w3m-initialize-handler): Ditto.
+	(w3m-stop-process): Ditto.
+	(w3m-handle-handler): Ditto.
+	(w3m-exec-process-after): Ditto.
+	(w3m-process-sentinel): Ditto.
+	(w3m-exec-process-async): Ditto.
+	(w3m-w3m-dump-source-after): Ditto.
+	(w3m-w3m-dump-head-source-after): Ditto.
+	(w3m-w3m-retrieve-after): Ditto.
+	(w3m-retrieve-after): Ditto.
+	(w3m-exec-after): Ditto.
+	(w3m-goto-url-after-1): Ditto.
+	(w3m-goto-url-after-2): Ditto.
+	(w3m-w3m-get-header): bind `w3m-exec-handler'.
+	(w3m-exec-process): Split function, and change to asynchronous.
+	(w3m-w3m-dump-head-source): Ditto.
+	(w3m-w3m-dump-source): Ditto.
+	(w3m-w3m-retrieve): Ditto.
+	(w3m-retrieve): Ditto.
+	(w3m-exec): Ditto.
+	(w3m-goto-url): Ditto.
+
 2001-07-09  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-make-form-urlencoded): If second value of plist
