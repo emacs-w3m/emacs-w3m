@@ -389,9 +389,22 @@ Run the @samp{configure} script.
 % ./configure
 @end example
 
+@emph{Important notice to the Gnus users}:
+
+If the various versions of Gnusae are installed in your system (it is
+likely that there are the released version and the development version
+of Gnusae), make sure that priority is given to the directory where the
+@file{gnus.elc} file which you use is installed in the @code{load-path}.
+To do that, use the @samp{--with-addpath} option as follows:
+
+@example
+% ./configure --with-addpath=/usr/local/share/emacs/site-lisp/gnus
+@end example
+
 If you've installed @sc{apel}, @sc{flim} or something in non-standard
 directories other than the default @code{load-path}, you must specify
-them using the @samp{--with-addpath} option as follows:
+them using the @samp{--with-addpath} option as follows (you may also
+include the Gnus directory in it separated with @samp{:}):
 
 @example
 % ./configure --with-addpath=/opt/share/apel:/opt/share/flim

@@ -431,10 +431,23 @@ Emacs-w3m $B$r(B CVS $B$G<hF@$7$?$N$J$i$P!"(B@samp{configure} $B%9%/%j%W%H$
 % ./configure
 @end example
 
+@emph{Gnus $B%f!<%6$X$N=EMW$J$*CN$i$;(B}:
+
+$B$$$m$$$m$J%P!<%8%g%s$N(B Gnus $B$,%$%s%9%H!<%k$5$l$F$$$k>l9g(B ($B%j%j!<%9HG$H3+(B
+$BH/HG$N(B Gnus $B$,$"$k$+$b$7$l$^$;$s(B) $B$O!"$"$J$?$,;H$&(B @file{gnus.elc} $B%U%!(B
+$B%$%k$,%$%s%9%H!<%k$5$l$F$$$k%G%#%l%/%H%j$,(B @code{load-path} $B$NCf$GM%@h$5(B
+$B$l$k$h$&$K$7$F2<$5$$!#$=$l$K$O0J2<$N$h$&$K(B @samp{--with-addpath} $B%*%W%7%g(B
+$B%s$r;H$C$F2<$5$$(B:
+
+@example
+% ./configure --with-addpath=/usr/local/share/emacs/site-lisp/gnus
+@end example
+
 @sc{apel}$B!"(B@sc{flim} $B$^$?$OB>$N2?$+$r!"%G%U%)%k%H$N(B @code{load-path} $B0J(B
 $B30$NI8=`$G$O$J$$%G%#%l%/%H%j$K%$%s%9%H!<%k$7$F$"$k>l9g$O!"0J2<$N$h$&(B
 $B$K(B @samp{--with-addpath} $B%*%W%7%g%s$r;H$C$F$=$l$i$r;XDj$7$J$1$l$P$J$j$^(B
-$B$;$s(B:
+$B$;$s(B ($B$5$i$K!"$=$l$K(B @samp{:} $B$GJ,$1$i$l$?(B Gnus $B$N%G%#%l%/%H%j$r4^$a$F$b(B
+$B9=$$$^$;$s(B):
 
 @example
 % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
