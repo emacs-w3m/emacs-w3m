@@ -2802,6 +2802,7 @@ this function returns t.  Otherwise, returns nil."
 	     ((and (w3m-image-type-available-p (w3m-image-type type))
 		   (string-match "^image/" type))
 	      (let (buffer-read-only)
+		(w3m-clear-local-variables)
 		(setq w3m-current-url (w3m-real-url url)
 		      w3m-current-title (file-name-nondirectory url))
 		(delete-region (point-min) (point-max))
@@ -3595,8 +3596,6 @@ the request."
 	      url (substring url 0 (match-beginning 0))))
       (let ((ct (w3m-arrived-content-type url))
 	    (cs (or charset (w3m-arrived-content-charset url))))
-	(setq w3m-current-post-data post-data)
-	(setq w3m-current-referer referer)
 	(if ct
 	    (when reload
 	      (let* ((minibuffer-setup-hook
@@ -3621,6 +3620,8 @@ the request."
 				(list ':title (file-name-nondirectory url)))
 	      (w3m-history-push w3m-current-url)
 	      (w3m-refontify-anchor))
+	  (setq w3m-current-post-data post-data
+		w3m-current-referer referer)
 	  (w3m-history-push w3m-current-url
 			    (list ':title w3m-current-title))
 	  (or (and name (w3m-search-name-anchor name))
