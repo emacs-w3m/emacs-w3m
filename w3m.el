@@ -3970,11 +3970,14 @@ If input is nil, use default coding-system on w3m."
 (defun w3m (&optional url)
   "Visit the World Wide Web page using the external command w3m, w3mmee
 or w3m-m17n.  When you invoke this command interactively, it will
-prompt you for a URL where you wish to go.  Except that if you enters
-the empty string and the buffer for w3m exists, it will just pop up
-the buffer.  URL should be a string which defaults to the value
-of `w3m-home-page' or \"about:\".  Otherwise, you can run this command
-in the batch mode like \"emacs -f w3m http://emacs-w3m.namazu.org/&\".
+prompt you for a URL where you wish to go.  Except that if the prefix
+argument is given or you enter the empty string, and the buffer for
+w3m exists, it will just pop up the buffer.  URL should be a string
+which defaults to the value of `w3m-home-page' or \"about:\".
+Otherwise, you can run this command in the batch mode like:
+
+  emacs -f w3m http://emacs-w3m.namazu.org/ &
+
 The value of `w3m-pop-up-frames' specifies whether to pop up a new
 frame, however, it will be ignored (treated as nil) when this command
 is called non-interactively."
