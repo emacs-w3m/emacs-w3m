@@ -51,9 +51,9 @@ circumstances."
 (defvar w3m-should-unoptimize-animated-gifs
   (or (and (= emacs-major-version 21)
 	   (>= emacs-minor-version 4))
-      (and (= emacs-major-version 20)
+      (and (= emacs-major-version 21)
 	   (= emacs-minor-version 2)
-	   (>= emacs-patch-level 20)))
+	   (>= emacs-beta-version 20)))
   "Specify whether w3m should unoptimize animated gif images for showing.
 It is applicable to XEmacs 21.2.20 or later, since which only support
 to show unoptimized animated gif images.")
@@ -298,9 +298,9 @@ as the value."
 
 (w3m-static-if (or (and (= emacs-major-version 21)
 			(>= emacs-minor-version 4))
-		   (and (= emacs-major-version 20)
+		   (and (= emacs-major-version 21)
 			(= emacs-minor-version 2)
-			(>= emacs-patch-level 19)))
+			(>= emacs-beta-version 19)))
     (define-ccl-program w3m-euc-japan-decoder
       `(2
 	(loop

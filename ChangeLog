@@ -1,3 +1,10 @@
+2001-05-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-euc-japan-decoder): Check if
+	`emacs-major-version' is 21 instead of 20 and check for
+	`emacs-beta-version' instead of `emacs-patch-level'.
+	(w3m-should-unoptimize-animated-gifs): Ditto.
+
 2001-05-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-xmas.el (w3m-euc-japan-decoder): Fix typo.
