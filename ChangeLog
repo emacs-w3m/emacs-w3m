@@ -1,3 +1,22 @@
+2001-05-24  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-mhonarc.el: Added `revers-flag' and `litemplate-regexp'
+	slot.
+	Define internal accessor.
+	(shimbun-mhonarc-litemplate-regexp): New variable.
+	(initialize-instance): New method.
+	(shimbun-get-headers): New method.
+	(shimbun-mhonarc-extract-header-values): New macro.
+	(shimbun-mhonarc-get-headers): New function.
+
+	* shimbun/sb-meadow.el: New file.
+
+	* shimbun/sb-namazu.el (shimbun-namazu-reverse-flag): New variable.
+	(shimbun-namazu-litemplate-regexp): New variable.
+	(shimbun-get-headers): Use `shimbun-mhonarc-get-headers' instead of
+	`shimbun-namazu-get-headers-1'
+	(shimbun-namazu-get-headers-1): Removed.
+
 2001-05-24  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (toplevel): Define make-ccl-coding-system() myself, when

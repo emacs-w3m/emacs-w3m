@@ -1,7 +1,7 @@
 ;;; sb-mhonarc.el --- shimbun backend class for mhonarc
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>
+;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
 ;;         Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Keywords: news
@@ -31,7 +31,65 @@
 ;;; Code:
 
 (require 'shimbun)
-(luna-define-class shimbun-mhonarc (shimbun) ())
+
+(eval-and-compile
+  (luna-define-class shimbun-mhonarc (shimbun)
+		     (reverse-flag litemplate-regexp))
+  (luna-define-internal-accessors 'shimbun-mhonarc))
+
+(defvar shimbun-mhonarc-litemplate-regexp
+  "<strong><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a></strong>\n<ul><li><em>From</em>: \\([^<]+\\)</li></ul>")
+
+(luna-define-method initialize-instance :after ((shimbun shimbun-mhonarc)
+						&rest init-args)
+  (shimbun-mhonarc-set-reverse-flag-internal
+   shimbun
+   (symbol-value
+    (intern-soft (concat "shimbun-" (shimbun-server-internal shimbun)
+			 "-reverse-flag"))))
+  (shimbun-mhonarc-set-litemplate-regexp-internal
+   shimbun
+   (symbol-value
+    (intern-soft (concat "shimbun-" (shimbun-server-internal shimbun)
+			 "-litemplate-regexp"))))
+  shimbun)
+   
+(luna-define-method shimbun-get-headers ((shimbun shimbun-mhonarc))
+  (catch 'stop
+    (shimbun-mhonarc-get-headers shimbun
+				 (shimbun-index-url shimbun))))
+
+(defmacro shimbun-mhonarc-extract-header-values (shimbun url headers aux)
+  `(let ((id (format "<%s%s%%%s>"
+		     (or ,aux "")
+		     (match-string 1)
+		     (shimbun-current-group-internal ,shimbun)))
+	 (url (shimbun-expand-url (match-string 2) ,url))
+	 (subject (subst-char-in-string ?\n ?  (match-string 3)))
+	 (from (subst-char-in-string ?\n ?  (match-string 4))))
+     (if (shimbun-search-id ,shimbun id)
+	 (throw 'stop ,headers)
+       (push (shimbun-make-header 0
+				  (shimbun-mime-encode-string subject)
+				  (shimbun-mime-encode-string from)
+				  "" id "" 0 0 url)
+	     ,headers))))
+  
+(defun shimbun-mhonarc-get-headers (shimbun url &optional headers aux)
+  (let ((case-fold-search t)
+	(regexp (or (shimbun-mhonarc-litemplate-regexp-internal shimbun)
+		    shimbun-mhonarc-litemplate-regexp)))
+    (if (shimbun-mhonarc-reverse-flag-internal shimbun)
+	(progn
+	  (goto-char (point-min))
+	  (while (re-search-forward regexp nil t)
+	    (shimbun-mhonarc-extract-header-values shimbun url headers aux)
+	    (forward-line 1)))
+      (goto-char (point-max))
+      (while (re-search-backward regexp nil t)
+	(shimbun-mhonarc-extract-header-values shimbun url headers aux)
+	(forward-line 0)))
+    headers))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-mhonarc)
 					   header)

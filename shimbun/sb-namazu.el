@@ -41,6 +41,9 @@
 (defvar shimbun-namazu-groups (mapcar 'car shimbun-namazu-group-url-alist))
 (defvar shimbun-namazu-coding-system 'euc-jp)
 (defvar shimbun-namazu-use-entire-index nil)
+(defvar shimbun-namazu-reverse-flag t)
+(defvar shimbun-namazu-litemplate-regexp
+  "<Strong><A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\"> \\([^<]+\\)</a></Strong> <EM>\\([^<]+\\)</EM>")
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-namazu))
   (concat 
@@ -53,42 +56,22 @@
 	  "@namazu.org"))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-namazu))
-  (let ((path (concat "/" (cdr (assoc (shimbun-current-group-internal shimbun)
-				      shimbun-namazu-group-url-alist))))
-	headers aux )
+  (let ((url (shimbun-index-url shimbun))
+	headers aux)
     (catch 'stop
-      (setq headers (shimbun-namazu-get-headers-1 shimbun path))
-      (if (shimbun-use-entire-index-internal shimbun)
-	  (while (and (re-search-forward "<A href=\"\\(mail[0-9]+.html\\)\">Next Index</A>"
-					 nil t)
-		      (not (string-equal (match-string 1) aux)))
-	    (setq aux (match-string 1))
-	    (erase-buffer)
-	    (shimbun-retrieve-url (concat (shimbun-index-url shimbun) aux))
-	    (setq headers
-		  (shimbun-namazu-get-headers-1 shimbun path headers))))
+      (setq headers (shimbun-mhonarc-get-headers shimbun url))
+      (when (shimbun-use-entire-index-internal shimbun)
+	(while (and (re-search-forward
+		     "<A href=\"\\(mail[0-9]+.html\\)\">Next Index</A>"
+		     nil t)
+		    (not (string-equal (match-string 1) aux)))
+	  (setq aux (match-string 1)
+		url (shimbun-expand-url aux url))
+	  (erase-buffer)
+	  (shimbun-retrieve-url url)
+	  (setq headers
+		(shimbun-mhonarc-get-headers shimbun url headers))))
       headers)))
-
-(defun shimbun-namazu-get-headers-1 (shimbun path &optional headers)
-  (while (re-search-forward
-	  "<A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\"> ?\\(.*\\)</A>.*<EM>\\(.*\\)</EM>"
-	  nil t)
-    (let ((id (format "<%s%%%s>"
-		      (match-string 1)
-		      (shimbun-current-group-internal shimbun)))
-	  (url (match-string 2))
-	  (subject (match-string 3))
-	  (from (match-string 4)))
-      (if (shimbun-search-id shimbun id)
-	  (throw 'stop headers)
-	(push (shimbun-make-header
-	       0
-	       (shimbun-mime-encode-string subject)
-	       (shimbun-mime-encode-string from)
-	       "" id "" 0 0 (concat path "/" url))
-	      headers)
-	(forward-line 1))))
-  headers)
 
 (provide 'sb-namazu)
 ;;; sb-namazu.el ends here
