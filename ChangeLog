@@ -1,3 +1,8 @@
+2003-06-18  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-pocketgames.el (shimbun-pocketgames-headers-1): Call
+	`shimbun-mime-encode-string' not to destroy last regexp search.
+
 2003-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-makeinfo): Improve the last change.

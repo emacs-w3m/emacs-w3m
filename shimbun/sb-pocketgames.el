@@ -83,7 +83,7 @@
 	     "Posted by: \\(.+\\) on \\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) (\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))  - \\([0-9][0-9]:[0-9][0-9]\\) JST <\/font>"
 	     end t nil)
 	  (throw 'next nil))
-	(setq from (shimbun-mime-encode-string (match-string 1))
+	(setq from (match-string 1)
 	      year (string-to-number (match-string 2))
 	      month (string-to-number (match-string 3))
 	      day (string-to-number (match-string 4))
@@ -97,6 +97,7 @@
 	      next (or (re-search-forward
 			"\">\\([^<>]+\\)</a></font><br>" nil t nil)
 		       (point-max)))
+	(setq from (shimbun-mime-encode-string from))
 	(goto-char point)
 	(setq headers (shimbun-pocketgames-comment-article
 		       shimbun headers url id next))
