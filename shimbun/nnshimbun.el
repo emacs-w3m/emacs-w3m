@@ -1,6 +1,7 @@
 ;;; nnshimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2000,2001,2002,2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000, 2001, 2002, 2003, 2004
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Akihiro Arisawa    <ari@atesoft.advantest.co.jp>,
@@ -63,9 +64,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl)
-  (require 'static))
+(eval-when-compile (require 'cl))
 
 (require 'nnoo)
 (require 'nnheader)
@@ -286,34 +285,6 @@ default value for all the nnshimbun groups.  You can use the
 (defvoo nnshimbun-status-string "")
 (defvoo nnshimbun-backlog-articles nil)
 (defvoo nnshimbun-backlog-hashtb nil)
-
-(static-cond
- ((fboundp 'point-at-bol)
-  (defalias 'nnshimbun-point-at-bol 'point-at-bol))
- ((fboundp 'line-beginning-position)
-  (defalias 'nnshimbun-point-at-bol 'line-beginning-position))
- (t
-  (defun nnshimbun-point-at-bol ()
-    "Return point at the beginning of the line."
-    (let ((p (point)))
-      (beginning-of-line)
-      (prog1
-	  (point)
-	(goto-char p))))))
-
-(static-cond
- ((fboundp 'point-at-eol)
-  (defalias 'nnshimbun-point-at-eol 'point-at-eol))
- ((fboundp 'line-end-position)
-  (defalias 'nnshimbun-point-at-eol 'line-end-position))
- (t
-  (defun nnshimbun-point-at-eol ()
-    "Return point at the end of the line."
-    (let ((p (point)))
-      (end-of-line)
-      (prog1
-	  (point)
-	(goto-char p))))))
 
 (defmacro nnshimbun-current-server ()
   '(nnoo-current-server 'nnshimbun))
@@ -696,7 +667,7 @@ also be nil."
 		  (search-forward id nil t)) ; We find the ID.
 	;; And the id is in the fourth field.
 	(if (not (and (search-backward "\t" nil t 4)
-		      (not (search-backward "\t" (nnshimbun-point-at-bol) t))))
+		      (not (search-backward "\t" (shimbun-point-at-bol) t))))
 	    (forward-line 1)
 	  (forward-line 0)
 	  (setq found t)))
@@ -705,7 +676,7 @@ also be nil."
 	(setq id (concat "X-Nnshimbun-Id: " id))
 	(while (and (not found)
 		    (search-forward id nil t))
-	  (if (not (search-backward "\t" (nnshimbun-point-at-bol) t 8))
+	  (if (not (search-backward "\t" (shimbun-point-at-bol) t 8))
 	      (forward-line 1)
 	    (forward-line 0)
 	    (setq found t))))
@@ -715,7 +686,7 @@ also be nil."
 ;; This function is defined as the alternative of `nnheader-parse-nov',
 ;; in order to keep compatibility between T-gnus and Oort Gnus.
 (defun nnshimbun-parse-nov ()
-  (let ((eol (nnshimbun-point-at-eol)))
+  (let ((eol (shimbun-point-at-eol)))
     (let ((number  (nnheader-nov-read-integer))
 	  (subject (nnheader-nov-field))
 	  (from    (nnheader-nov-field))
@@ -799,7 +770,7 @@ article to be expired.  The optional fourth argument FORCE is ignored."
 	(while expirable
 	  (setq article (pop expirable))
 	  (when (and (nnheader-find-nov-line article)
-		     (setq end (nnshimbun-point-at-eol))
+		     (setq end (shimbun-point-at-eol))
 		     (not (= (point-max) (1+ end))))
 	    (setq time (and (search-forward "\t" end t)
 			    (search-forward "\t" end t)

@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
@@ -881,6 +881,34 @@ integer n:    Retrieve n pages of header indices.")
 	    " で公開されています。\n")))
 
 ;;; Misc Functions
+(static-cond
+ ((fboundp 'point-at-bol)
+  (defalias 'shimbun-point-at-bol 'point-at-bol))
+ ((fboundp 'line-beginning-position)
+  (defalias 'shimbun-point-at-bol 'line-beginning-position))
+ (t
+  (defun shimbun-point-at-bol ()
+    "Return point at the beginning of the line."
+    (let ((p (point)))
+      (beginning-of-line)
+      (prog1
+	  (point)
+	(goto-char p))))))
+
+(static-cond
+ ((fboundp 'point-at-eol)
+  (defalias 'shimbun-point-at-eol 'point-at-eol))
+ ((fboundp 'line-end-position)
+  (defalias 'shimbun-point-at-eol 'line-end-position))
+ (t
+  (defun shimbun-point-at-eol ()
+    "Return point at the end of the line."
+    (let ((p (point)))
+      (end-of-line)
+      (prog1
+	  (point)
+	(goto-char p))))))
+
 (defun shimbun-header-insert-and-buffer-string (shimbun header
 							&optional charset html)
   "Insert headers which are generated from SHIMBUN and HEADER, and
