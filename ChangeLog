@@ -1,3 +1,8 @@
+2004-05-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-filter.el (w3m-filter-rules): Update its default value and
+	its customize spec.
+
 2004-05-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-w3m-dump-extra): Examine image data briefly to
