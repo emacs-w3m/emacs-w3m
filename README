@@ -16,10 +16,10 @@
    Check whether your system meets the following requirement before
    installing emacs-w3m.
 
-   Emacs-w3m requires the latest version of w3m.  It is w3m-0.3, which
-   is released at March 6th, 2002.  Its source can be downloaded from:
+   Emacs-w3m requires the latest version of w3m.  It is w3m-0.3.1, which
+   is released at July 16th, 2002.  Its source can be downloaded from:
 
-       http://prdownloads.sourceforge.net/w3m/w3m-0.3.tar.gz
+       http://prdownloads.sourceforge.net/w3m/w3m-0.3.1.tar.gz
 
    Because this program is sensitive to version of w3m, you should
    confirm your using w3m.
