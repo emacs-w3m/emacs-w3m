@@ -29,9 +29,11 @@
 
 ;;; Instalation:
 ;; Simply load this file and add followings in your ~/.mew file.
+;; If you can understand Japanese, please read 'README.shimbun.ja'.
 ;;
 ;;; Comment out below one line, if you use 'Mew Shimbun unseen mark'.
 ;;; (setq mew-shimbun-use-unseen t)
+;;;; (setq mew-shimbun-use-unseen-cache-save t)
 ;;
 ;; (require 'mew-shimbun)
 ;; (define-key mew-summary-mode-map "G"  (make-sparse-keymap))
@@ -200,7 +202,6 @@ If alist, each cell has shimbun group names and their max length, an example sho
 If called with '\\[universal-argument]', goto folder to have few new messages."
   (interactive "P")
   (let ((flds mew-folder-list)
-	(regex (mew-folder-regex (concat mew-shimbun-folder "/")))
 	sbflds alst fld cfile)
     (save-excursion
       (dolist (fld flds)
@@ -251,7 +252,7 @@ If called with '\\[universal-argument]', goto folder to have few new messages."
   (when (mew-summary-exclusive-p)
     (mew-summary-only
      (let ((fld (mew-summary-folder-name))
-	   lst shimbun server group range)
+	   lst server group range)
        (if (not (mew-shimbun-folder-p fld))
 	   (message "This command can not execute here")
 	 (setq lst (assoc (substring fld (match-end 0)) mew-shimbun-groups))
@@ -372,7 +373,7 @@ If called with '\\[universal-argument]', re-retrieve messages marked with '@'."
     (mew-summary-only
      (let* ((fld (mew-summary-folder-name))
 	    (msgs (list (mew-summary-message-number)))
-	    id-msgs lst shimbun server group range)
+	    id-msgs lst server group range)
        (if (not (mew-shimbun-folder-p fld))
 	   (message "This command can not execute here")
 	 (setq lst (assoc (substring fld (match-end 0)) mew-shimbun-groups))
@@ -413,7 +414,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
      (let* ((fld (mew-summary-folder-name))
 	    (begend (cons (point-min) (point-max)))
 	    id-msgs begmsg endmsg
-	    lst shimbun server group range)
+	    lst server group range)
        (if (not (mew-shimbun-folder-p fld))
 	   (message "This command can not execute here")
 	 (setq lst (assoc (substring fld (match-end 0)) mew-shimbun-groups))
@@ -622,12 +623,11 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	  (vfld (mew-summary-folder-name 'ext))
 	  (msg (mew-summary-message-number))
 	  (part (mew-syntax-nums))
-	  (win (selected-window))
 	  (file (mew-expand-folder fld msg)))
      (when (and fld msg (null part)
 		(mew-shimbun-folder-p fld)
 		(file-readable-p file))
-       (mew-shimbun-remove-unseen-one fld vfld msg file win all)))))
+       (mew-shimbun-remove-unseen-one fld vfld msg file all)))))
 
 (defun mew-shimbun-remove-unseen-all (&optional arg)
   "Remove 'unseen' mark and 'X-Shimbun-Status:' of all messages in folder.
@@ -649,7 +649,7 @@ If called with '\\[universal-argument]', remove 'unseen' mark in the region."
 	   (setq file (mew-expand-folder fld msg))
 	   (message "Shimbun seen...%s/%s" fld msg)
 	   (when (file-readable-p file)
-	     (mew-shimbun-remove-unseen-one fld vfld msg file nil 'all)))
+	     (mew-shimbun-remove-unseen-one fld vfld msg file 'all)))
 	 (message "Shimbun seen...done")
 	 (if (string= fld vfld)
 	     ;; normal shimbun folder
@@ -671,22 +671,23 @@ If called with '\\[universal-argument]', remove 'unseen' mark in the region."
 	  (vfld (mew-summary-folder-name 'ext))
 	  (msg (mew-summary-message-number))
 	  (part (mew-syntax-nums))
-	  (win (selected-window))
 	  (file (mew-expand-folder fld msg)))
      (when (and fld msg (null part)
 		(mew-shimbun-folder-p fld)
 		(file-readable-p file))
-       (mew-shimbun-remove-unseen-one fld vfld msg file win nil))))
+       (mew-shimbun-remove-unseen-one fld vfld msg file nil))))
 
-(defun mew-shimbun-remove-unseen-one (fld vfld msg file win all)
-  (let ((det nil) cbuf)
+(defun mew-shimbun-remove-unseen-one (fld vfld msg file all)
+  (let ((msgbuf (mew-buffer-message))
+	(det nil) cbuf)
     (unless all
-      ;; messge buffer
-      (mew-window-configure 'message)
-      (save-excursion
-	(goto-char (point-min))
-	(when (search-forward "X-Shimbun-Status: unseen\n" (mew-header-end) t)
-	  (setq det t))))
+      (when (and msgbuf (get-buffer msgbuf))
+	(save-excursion
+	  (set-buffer msgbuf)
+	  ;; message buffer
+	  (goto-char (point-min))
+	  (when (search-forward "X-Shimbun-Status: unseen\n" (mew-header-end) t)
+	    (setq det t)))))
     (when (or all det)
       (with-temp-buffer
 	(mew-insert-message fld msg mew-cs-text-for-read nil)
@@ -703,27 +704,15 @@ If called with '\\[universal-argument]', remove 'unseen' mark in the region."
 	       (mew-cinfo-set
 		fld msg (mew-file-get-time file) (mew-file-get-size file))))))))
     ;; summary buffer
-    (when win (select-window win))
     (save-excursion
       (beginning-of-line)
       (when (looking-at mew-shimbun-unseen-regex)
+	;; in normal or thread folder
 	(mew-mark-unmark)
-	(if (string= fld vfld)
-	    ;; normal shimbun folder
-	    (unless (or mew-summary-buffer-process all)
-	      (when mew-shimbun-use-unseen-cache-save
-		(mew-summary-folder-cache-save))
-	      (set-buffer-modified-p nil))
-	  ;; in thread folder
-	  (when (get-buffer fld)
-	    ;; normal shimbun folder
-	    (mew-summary-unmark-in-physical fld msg)
-	    (set-buffer fld)
-	    (when mew-shimbun-use-unseen-cache-save
-	      (condition-case nil
-		  (mew-summary-folder-cache-save)
-		(error nil)))
-	    (set-buffer-modified-p nil)))))))
+	(set-buffer-modified-p nil)
+	(when (and (not (string= fld vfld)) (get-buffer fld))
+	  ;; thread => normal shimbun folder
+	  (mew-summary-unmark-in-physical fld msg))))))
 
 ;;; Message-ID database:
 (defun mew-shimbun-db-setup (fld)
@@ -859,6 +848,7 @@ If called with '\\[universal-argument]', remove 'unseen' mark in the region."
 
 ;;; Unseen enable
 (defun mew-shimbun-unseen-setup ()
+  "`Shimbun unseen mark' support function."
   (interactive)
   (when mew-shimbun-use-unseen
     (unless (member "X-Shimbun-Status:" mew-scan-fields)
@@ -896,8 +886,24 @@ and 'X-Shimbun-Status:' effect to this function."
 
       (defadvice mew-summary-cursor-postscript (before shimbun-unseen activate)
 	(mew-shimbun-remove-unseen-advice))
-      )))
 
+      (when mew-shimbun-use-unseen-cache-save
+	(defadvice mew-kill-buffer (before shimbun-cache-save activate)
+	  (let* ((buf (or buf (current-buffer)))
+		 (fld (if (bufferp buf) (buffer-name buf) buf)))
+	    (when (and (get-buffer buf) (mew-shimbun-folder-p fld))
+	      (save-excursion
+		(set-buffer buf)
+		(mew-summary-folder-cache-save)))))
+
+	(defadvice mew-remove-buffer (before shimbun-cache-save activate)
+	  (let ((fld (if (bufferp buf) (buffer-name buf) buf)))
+	    (when (and (get-buffer buf) (mew-shimbun-folder-p fld))
+	      (save-excursion
+		(set-buffer buf)
+		(mew-summary-folder-cache-save)))))
+	))))
+	    
 ;;; unseen setup
 (when mew-shimbun-use-unseen
   (mew-shimbun-unseen-setup))

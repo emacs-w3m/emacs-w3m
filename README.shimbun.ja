@@ -244,8 +244,9 @@ folder で新規記事を取得します。
 mew-shimbun-mark-unseen で設定したマーク(デファルトは '*') がつくように
 なり、読むと自動的に消えます。また、通常、Mew の summary モードでマーク
 をつける、あるいは消した後、scan をしないと .mew-cache に反映されません
-が、(setq mew-shimbun-use-unseen-cache-save t) とすることにより、自動的
-に .mew-cache を保存するようになります。
+が、(setq mew-shimbun-use-unseen-cache-save t) とすることにより、Mew の
+終了時や folder の kill(C-cC-q を使ったとき)に自動的に .mew-cache を保存
+するようになります。
 
 弊害として、動作が遅くなる、複数の Emacs でおなじ shimbun を読んでいると、
 それぞれの Emacs 間で矛盾が生じる、といったことがあげられますので、注意

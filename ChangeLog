@@ -1,3 +1,15 @@
+2001-10-30  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-remove-unseen-one): Remove
+	'win' option. Do not save mew-cache.
+	(mew-shimbun-remove-unseen, mew-shimbun-remove-unseen-all) 
+	(mew-shimbun-remove-unseen-advice): Call
+	mew-shimbun-remove-unseen-one() without 'win' option.
+	(mew-shimbun-unseen-setup): New defadvice for mew-kill-buffer()
+	and mew-remove-buffer().
+
+	* README.shimbun.ja (mew-shimbun.el): Modify description.
+
 2001-10-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-form.el (w3m-form-parse-forms): Dismantle `w3m-current-url'
