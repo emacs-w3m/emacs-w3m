@@ -3286,8 +3286,10 @@ nikkansports.society nikkansports.leisure
 
 @item @uref{http://www.nikkei.co.jp/, 日本経済新聞}
 nikkei.main nikkei.keizai nikkei.market nikkei.kaigai nikkei.sangyo
-nikkei.tento nikkei.seiji nikkei.shakai nikkei.newpro nikkei.shasetsu
-nikkei.zinzi nikkei.okuyami nikkei.retto
+nikkei.tento nikkei.seiji nikkei.shakai nikkei.newpro nikkei.newpro-pc
+nikkei.newpro-soft nikkei.newpro-auto nikkei.newpro-av
+nikkei.newpro-life nikkei.newpro-leisure nikkei.newpro-price
+nikkei.shasetsu nikkei.zinzi nikkei.okuyami nikkei.retto
 
 @item @uref{http://www.sponichi.co.jp/, スポニチ}
 sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
