@@ -6825,6 +6825,8 @@ w3m-mode buffers."
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map w3m-mode-map)
     (define-key map [mouse-2] 'w3m-goto-url)
+    ;; Prevent tool-bar from being doubled under Emacs 21.
+    (define-key map [tool-bar] 'undefined)
     (setq w3m-header-line-map map)))
 
 (defun w3m-header-line-insert ()
