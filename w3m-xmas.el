@@ -30,6 +30,7 @@
 
 
 ;;; Code:
+(require 'poe)
 (require 'poem)
 
 (provide 'w3m-xmas);; It is needed to avoid circular dependencies.
