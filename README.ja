@@ -133,13 +133,13 @@
      configure スクリプトを実行できない，または make コマンドが存在しな
      い環境の場合は，以下のコマンドを実行してください．
 
-	 % emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
+         % emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
 
      APEL や FLIM などの必要なモジュールが，標準的ではないディレクトリに
      インストールされている場合には，以下のようにそのディレクトリを指定
      する必要があります．
 
-	 % emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
+         % emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
 
 
 4. 設定

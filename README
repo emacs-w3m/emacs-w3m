@@ -136,7 +136,7 @@
 
      Put this line into your ~/.emacs.
 
-	 (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
+         (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
 
      If you want to use contributed programs, some additional settings
      are required.  Please see the head of those programs for more
