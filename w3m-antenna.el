@@ -180,11 +180,8 @@ whose elements are:
 		(search-forward "\nLast-Modified: " nil t))
 	      (setq start (match-end 0))
 	      (search-forward "<br>" nil t)
-	      (ignore-errors
-		(apply (function encode-time)
-		       (w3m-time-parse-string
-			(buffer-substring start
-					  (match-beginning 0))))))
+	      (w3m-time-parse-string
+	       (buffer-substring start (match-beginning 0))))
 	 ;; Process a line such as "newest day is 2001/03/15".
 	 (and (progn
 		(goto-char (point-min))

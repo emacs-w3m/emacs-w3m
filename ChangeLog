@@ -1,5 +1,17 @@
 2001-03-23  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
+	* w3m-time.el: Removed.
+
+	* w3m.el (TopLevel): Require `timezone' instead of `w3m-time'.
+	(w3m-time-parse-string): Use `timezone-fix-time' and spec of
+	return value is changed.
+	(w3m-time-newer-p): Imported.
+
+	* w3m-antenna.el (w3m-antenna-hns-last-modified): Follow change of
+	`w3m-time-parse-string'.
+
+2001-03-23  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
 	* README, README.ja: Update for w3m-0.2.1.
 
 	* Makefile.in (dist, tarball): Fix that some files are not

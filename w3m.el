@@ -55,7 +55,7 @@
     (require 'w3m-om))))
 
 (require 'thingatpt)
-(require 'w3m-time)
+(require 'timezone)
 
 ;; this package using a few CL macros
 (eval-when-compile
@@ -638,12 +638,40 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	(buffer-disable-undo buf)
 	buf)))
 
-
 (defun w3m-message (&rest args)
   "Alternative function of `message' for w3m.el."
   (if w3m-verbose
       (apply (function message) args)
     (apply (function format) args)))
+
+(eval-and-compile
+  (if (equal (vector 2001 1 31 18 36 30 (current-time-zone))
+	     (timezone-fix-time "Wednesday, 31-Jan-01 09:36:30 GMT" nil nil))
+      (defun w3m-time-parse-string (string)
+	"Parse the time-string STRING and return its time as Emacs style."
+	(ignore-errors
+	  (let ((x (timezone-fix-time string nil nil)))
+	    (encode-time (aref x 5) (aref x 4) (aref x 3)
+			 (aref x 2) (aref x 1) (aref x 0)
+			 (aref x 6)))))
+    (eval-and-compile
+      (ignore-errors
+	(require 'parse-time)))
+    (defun w3m-time-parse-string (string)
+      "Parse the time-string STRING and return its time as Emacs style."
+      (ignore-errors
+	(apply (function encode-time)
+	       (parse-time-string string))))))
+
+(defsubst w3m-time-newer-p (a b)
+  "Return t, if A is newer than B.  Otherwise return nil.
+A and B are lists which represent time in Emacs-style.  If value is
+nil, it is regarded as the oldest time."
+  (and a
+       (or (not b)
+	   (or (> (car a) (car b))
+	       (and (= (car a) (car b))
+		    (> (nth 1 a) (nth 1 b)))))))
 
 (defun w3m-sub-list (list n)
   "Make new list from LIST with top most N items.
@@ -1461,10 +1489,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(and v (string-to-number v)))
 	      (cdr (assoc "content-encoding" alist))
 	      (let ((v (cdr (assoc "last-modified" alist))))
-		(and v (condition-case nil
-			   (apply (function encode-time)
-				  (w3m-time-parse-string v))
-			 (error)))))))
+		(and v (w3m-time-parse-string v))))))
      ;; FIXME: adhoc implementation
      ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
      ;; HTTP/1.0 501 Method Not Implemented
