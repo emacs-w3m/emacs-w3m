@@ -103,13 +103,6 @@
     (when buf
       (mapconcat (function identity) buf "&"))))
     
-(defun w3m-form-make-get-string (form)
-  (if (eq 'get (w3m-form-method form))
-      (let ((arg (w3m-form-make-form-urlencoded form)))
-	(if arg
-	    (format "%s?%s" (w3m-form-action form) arg)
-	  (w3m-form-action form)))))
-
 ;;;###autoload
 (defun w3m-form-parse-region (start end)
   "Parse HTML data in this buffer and return form objects."
@@ -131,7 +124,7 @@
 	 ((match-string 3)
 	  ;; When <INPUT> is found.
 	  (w3m-parse-attributes (name value (type :case-ignore))
-	    (when name
+	    (when (and name (not (string= type "submit")))
 	      (w3m-form-put (car forms)
 			    name
 			    (or value (w3m-form-get (car forms) name))))))
@@ -472,16 +465,21 @@
 
 (defun w3m-form-submit (form &optional name value)
   (when name (w3m-form-put form name value))
-  (let ((url (w3m-form-make-get-string form)))
-    (if url
-	(w3m-goto-url (w3m-expand-url url w3m-current-url))
-      (if (eq 'post (w3m-form-method form))
-	  (w3m-goto-url
-	   (w3m-expand-url (w3m-form-action form) w3m-current-url)
-	   'reload nil (w3m-form-make-form-urlencoded form))
-	(w3m-message "This form's method has not been supported: %s"
-		     (let (print-level print-length)
-		       (prin1-to-string (w3m-form-method form))))))))
+  (let ((url (cond ((w3m-form-action form)
+		    (w3m-expand-url (w3m-form-action form) w3m-current-url))
+		   ((string-match "\\?" w3m-current-url)
+		    (substring w3m-current-url 0 (match-beginning 0)))
+		   (t w3m-current-url))))
+    (cond ((eq 'get (w3m-form-method form))
+	   (w3m-goto-url
+	    (concat url "?" (w3m-form-make-form-urlencoded form))))
+	  ((eq 'post (w3m-form-method form))
+	   (w3m-goto-url url 'reload nil
+			 (w3m-form-make-form-urlencoded form)))
+	  (t
+	   (w3m-message "This form's method has not been supported: %s"
+			(let (print-level print-length)
+			  (prin1-to-string (w3m-form-method form))))))))
 
 (defsubst w3m-form-real-reset (form sexp)
   (and (eq 'w3m-form-input (car sexp))

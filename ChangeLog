@@ -1,3 +1,13 @@
+2001-07-10  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-w3m-attributes): Fixed problem when charset is quoted.
+
+	* w3m-form.el (w3m-form-parse-region): Don't extract value from
+	submit button.
+	(w3m-form-submit): If ACTION is not specified, send data to current
+	url.
+	(w3m-form-make-get-string): Removed.
+	
 2001-07-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Bind `:bool' for old Emacsen.

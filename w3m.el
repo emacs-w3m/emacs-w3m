@@ -2041,9 +2041,9 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 			(substring line (match-end 0)))
 		  alist)))
 	(when (setq type (cdr (assoc "content-type" alist)))
-	  (if (string-match ";[ \t]*charset=" type)
+	  (if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" type)
 	      (setq charset (w3m-remove-redundant-spaces
-			     (substring type (match-end 0)))
+			     (match-string 1 type))
 		    type (w3m-remove-redundant-spaces
 			  (substring type 0 (match-beginning 0))))
 	    (setq type (w3m-remove-redundant-spaces type))
