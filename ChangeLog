@@ -1,7 +1,7 @@
 2003-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mime-w3m.el (mime-w3m-display-inline-images): Improve the
-	customizing widgets.
+	customizing widget.
 
 2003-07-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
