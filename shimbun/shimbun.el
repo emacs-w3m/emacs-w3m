@@ -401,8 +401,6 @@ Generated article have a multipart/related content-type."
 (luna-define-method shimbun-entity-insert :after ((entity
 						   shimbun-multipart-entity))
   (let ((boundary (shimbun-multipart-entity-boundary-internal entity)))
-    (unless (bolp)
-      (insert "\n"))
     (dolist (child (shimbun-entity-data-internal entity))
       (insert "--" boundary "\n")
       (shimbun-entity-insert child)
