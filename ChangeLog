@@ -1,3 +1,8 @@
+2003-07-01  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-mime-text/html-w3m): Add CHARSET argument of
+	`w3m-region' when no w3m-m17n.
+
 2003-07-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el (shimbun-retrieve-url): Remove local binding

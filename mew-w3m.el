@@ -197,7 +197,7 @@ This variable effected only XEmacs or Emacs 21."
 			 "-o" "strict_iso2022=0")))
 	   (w3m-region begin end xref)))
 	((null cache)	;; Mew-2 + w3m, w3mmee
-	 (w3m-region begin end xref))
+	 (w3m-region begin end xref (mew-charset-guess-region begin end)))
 	(t		;; Old Mew
 	 (setq charset (or (mew-syntax-get-param params "charset")
 			   (save-excursion
