@@ -1,3 +1,10 @@
+2001-03-14  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-read-passwd): Removed.
+	(w3m-exec-filter): Use `read-passwd' instead of `w3m-read-passwd'.
+
+	* w3m-om.el (read-passwd): Added.
+
 2001-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-om.el: Rewrite to insert "-" into the name of eol-type
