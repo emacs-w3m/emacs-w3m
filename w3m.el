@@ -1220,9 +1220,9 @@ meaningless under XEmacs."
   "Non-nil means split the windows when a new emacs-w3m session is created.
 This variable is similar to `pop-up-windows' and quite overridden by
 `w3m-pop-up-frames' as if `pop-up-frames' influences.  Furthermore, if
-`w3m-use-tab' is non-nil or there is the selection window (for the
-`w3m-select-buffer' feature), this variable is ignored when creating
-the second or more emacs-w3m session."
+`w3m-use-tab' is non-nil or there is the buffers selection window (for
+the `w3m-select-buffer' feature), this variable is ignored when
+creating the second or more emacs-w3m session."
   :group 'w3m
   :type 'boolean)
 
@@ -1230,18 +1230,18 @@ the second or more emacs-w3m session."
   "Non-nil means popup a new frame for an emacs-w3m session.
 This variable is similar to `pop-up-frames' and does override
 `w3m-pop-up-windows'.  If `w3m-use-tab' is non-nil or there is the
-selection window (for the `w3m-select-buffer' feature), this variable
-is ignored when creating the second or more emacs-w3m session."
+buffers selection window (for the `w3m-select-buffer' feature), this
+variable is ignored when creating the second or more emacs-w3m session."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-view-this-url-new-session-in-background nil
   "Run `w3m-view-this-url' without switching to the newly created buffer.
-It is useful if you enabled the tabs line or the selection window for
-the `w3m-select-buffer' feature.  Note that it is meaningful only when
-specifying a prefix argument to the `w3m-view-this-url' command or
-using the `w3m-view-this-url-new-session' command in order to create a
-new emacs-w3m session."
+It is useful if you enabled the tabs line or the buffers selection
+window for the `w3m-select-buffer' feature.  Note that it is meaningful
+only when specifying a prefix argument to the `w3m-view-this-url'
+command or using the `w3m-view-this-url-new-session' command in order
+to create a new emacs-w3m session."
   :group 'w3m
   :type 'boolean)
 
@@ -2951,7 +2951,7 @@ If URL is specified, only the image with URL is toggled."
 	      (w3m-add-text-properties start end '(w3m-image-status on))
 	      (if (get-text-property start 'w3m-image-redundant)
 		  (progn
-		    ;; Insert dummy string instead of redundant image.
+		    ;; Insert a dummy string instead of a redundant image.
 		    (setq image (make-string
 				 (string-width (buffer-substring start end))
 				 ? ))
@@ -3094,7 +3094,7 @@ resizing an image."
     (w3m-add-text-properties start end (list 'w3m-image-scale scale))
     (if (get-text-property start 'w3m-image-redundant)
 	(progn
-	  ;; Insert dummy string instead of redundant image.
+	  ;; Insert a dummy string instead of a redundant image.
 	  (setq image (make-string
 		       (string-width (buffer-substring start end))
 		       ? ))
@@ -3203,7 +3203,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
       str)))
 
 (defun w3m-fontify ()
-  "Fontify this buffer."
+  "Fontify the current buffer."
   (let ((case-fold-search t)
 	(buffer-read-only))
     (run-hooks 'w3m-fontify-before-hook)
@@ -3507,9 +3507,9 @@ Return symbol to identify its cache data."
 	    ident))))))
 
 (defun w3m-cache-request-contents (url &optional buffer)
-  "Insert URL's data to the BUFFER.
-If URL's data is found in the cache, return t.  Otherwise return nil.
-When BUFFER is nil, all data will be inserted in the current buffer."
+  "Insert contents of URL into BUFFER.
+Return t if the contents are found in the cache, otherwise nil.  When
+BUFFER is nil, all contents will be inserted in the current buffer."
   (w3m-cache-setup)
   (let ((ident (intern url w3m-cache-hashtb)))
     (when (memq ident w3m-cache-articles)
@@ -3519,7 +3519,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	  (set-buffer w3m-cache-buffer)
 	  (if (setq beg (text-property-any
 			 (point-min) (point-max) 'w3m-cache ident))
-	      ;; Find the end (i. e., the beginning of the next article).
+	      ;; Find the end (i.e., the beginning of the next article).
 	      (setq end (next-single-property-change
 			 (1+ beg) 'w3m-cache (current-buffer) (point-max)))
 	    ;; It wasn't in the cache after all.
@@ -3533,9 +3533,9 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		 (insert-buffer-substring w3m-cache-buffer beg end))
 	       t))))))
 
-;; FIXME: リモートで更新されていないか、チェックする機構が必要。
+;; FIXME: we need to check whether contents were updated in remote servers.
 (defun w3m-cache-available-p (url)
-  "Return non-nil, if URL's data is cached."
+  "Return non-nil if contents of URL have already been cached."
   (w3m-cache-setup)
   (and (stringp url)
        (let ((ident (intern url w3m-cache-hashtb)))
@@ -3559,9 +3559,9 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	  (setq file (expand-file-name default file))))
     (expand-file-name file)))
 
-;;; Handle character sets:
+;;; Handling character sets:
 (defun w3m-charset-to-coding-system (charset)
-  "Return coding-system corresponding with CHARSET.
+  "Return a coding system which is most suitable to CHARSET.
 CHARSET is a symbol whose name is MIME charset.
 This function is imported from mcharset.el."
   (if (stringp charset)
@@ -3569,10 +3569,12 @@ This function is imported from mcharset.el."
   (let ((cs (assq charset w3m-charset-coding-system-alist)))
     (w3m-find-coding-system (if cs (cdr cs) charset))))
 
-;; FIXME: 現実に有り得る Content-charset: の調査が必要
+;; FIXME: we need to investigate the kind of Content-Charsets being
+;; actually possible.
 (defun w3m-read-content-charset (prompt &optional default)
   "Read a content charset from the minibuffer, prompting with string PROMPT.
-If the user enters null input, return second argument DEFAULT."
+The second argument DEFAULT is the default value, which is used as the
+value to return if the user enters the empty string."
   (let ((charset (completing-read
 		  prompt
 		  (nconc
@@ -3586,9 +3588,10 @@ If the user enters null input, return second argument DEFAULT."
       charset)))
 
 
-;;; Handle encoding of contents:
+;;; Handling encoding of contents:
 (defun w3m-decode-encoded-contents (encoding)
-  "Decode encoded (gzipped, bzipped, deflated, etc) contents in this buffer."
+  "Decode encoded contents in the current buffer.
+It supports the encoding types of gzip, bzip2, deflate, etc."
   (let ((x (and (stringp encoding)
 		(assoc (downcase encoding) w3m-encoding-alist))))
     (or (not (and x (setq x (cdr (assq (cdr x) w3m-decoder-alist)))))
@@ -3672,9 +3675,9 @@ If the user enters null input, return second argument DEFAULT."
        (string-match "\\`text/" content-type)
        (w3m-decode-buffer url content-charset content-type)))
 
-;;; Retrieve local data:
+;;; Retrieving local data:
 (defun w3m-local-file-type (url)
-  "Return the content type and the content encoding type."
+  "Return the content type and the content encoding type of URL."
   (setq url (or (w3m-url-to-file-name url)
 		(file-name-nondirectory url)))
   (if (and (file-name-absolute-p url)
@@ -3719,9 +3722,9 @@ elements are:
 	  (w3m-expand-file-name-as-url (file-truename file)))))
 
 (defun w3m-local-retrieve (url &optional no-decode &rest args)
-  "Retrieve content of local URL and insert it to this buffer.
-This function will return content-type of URL as string when retrieval
-succeed."
+  "Retrieve contents of local URL and put it into the current buffer.
+This function will return the content-type of URL as a string when
+retrieval is successful."
   (let ((file (w3m-url-to-file-name url)))
     (when (file-readable-p file)
       (if (file-directory-p file)
@@ -3811,9 +3814,9 @@ succeed."
 	(delete-region beg (match-end 0)))))
   (w3m-message "Reading %s...done" url))
 
-;;; Retrieve data via HTTP:
+;;; Retrieving data via HTTP:
 (defun w3m-remove-redundant-spaces (str)
-  "Remove spaces/tabs at the front of a string and at the end of a string"
+  "Remove leading and trailing whitespace from STR."
   (save-match-data
     (when (string-match "\\`[ \t\r\f\n]+" str)
       (setq str (substring str (match-end 0))))
@@ -3823,7 +3826,7 @@ succeed."
 
 (defun w3m-w3m-parse-header (url header)
   "Parse a given string HEADER as a MIME header of URL.
-Return alist, whose elements are:
+Return an alist including:
  0. Status code.
  1. Type of contents.
  2. Charset of contents.
@@ -4139,7 +4142,7 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
 
 (defun w3m-w3m-retrieve (url no-decode no-cache post-data referer handler)
   "Retrieve web contents pointed to by URL using the external w3m command.
-It will insert the retrieved contents in the current buffer.  See
+It will put the retrieved contents into the current buffer.  See
 `w3m-retrieve' for how does it work asynchronously with the arguments."
   (lexical-let ((url (w3m-w3m-canonicalize-url url))
 		(no-decode no-decode)
@@ -4231,7 +4234,7 @@ It will insert the retrieved contents in the current buffer.  See
 (defun w3m-about-retrieve (url &optional no-decode no-cache
 			       post-data referer handler)
   "Retrieve an about: page which is pointed to by URL.
-It will insert the retrieved contents in the current buffer.  See
+It will put the retrieved contents into the current buffer.  See
 `w3m-retrieve' for how does it work asynchronously with the arguments."
   (cond
    ((string= "about://emacs-w3m.gif" url)
@@ -4299,7 +4302,7 @@ NO-CACHE specifies whether functions should not use cached contents."
 (defun w3m-retrieve (url &optional no-decode no-cache
 			 post-data referer handler)
   "Retrieve web contents pointed to by URL.
-It will insert the retrieved contents in the current buffer.
+It will put the retrieved contents into the current buffer.
 
 If HANDLER is nil, this function will retrieve web contents, return
 the content type of the retrieved data, and then come to an end.  This
@@ -4509,7 +4512,7 @@ POST-DATA and REFERER will be sent to the web server with a request."
       (delete-region (match-beginning 0) (match-end 0)))))
 
 (defun w3m-rendering-extract-title ()
-  "Extract the title from the half-dumped data in this buffer."
+  "Extract the title from the halfdump and put it into the current buffer."
   (goto-char (point-min))
   (or (when (re-search-forward "<title_alt[ \t\n]+title=\"\\([^\"]+\\)\">"
 			       nil t)
@@ -4571,7 +4574,7 @@ POST-DATA and REFERER will be sent to the web server with a request."
 			    (list "-o" "display_image=off")))))))))
 
 (defun w3m-rendering-buffer (&optional charset)
-  "Do rendering of contents in this buffer as HTML and return title."
+  "Do rendering of contents in the currenr buffer as HTML and return title."
   (w3m-message "Rendering...")
   (w3m-remove-comments)
   (w3m-check-header-tags)
@@ -4969,7 +4972,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	(when pos ;; The new session is created.
 	  ;; Delete useless newly created buffer if it is empty.
 	  (w3m-delete-buffer-if-empty buffer))
-	;; FIXME: What we should actually do is to modify the `w3m-goto-url'
+	;; FIXME: what we should actually do is to modify the `w3m-goto-url'
 	;; function so that it may return a proper value, and checking it.
 	(when (and pos (buffer-name (marker-buffer pos)))
 	  (save-excursion
@@ -5687,9 +5690,12 @@ passed to the `w3m-quit' function (which see)."
   (w3m-select-buffer-update))
 
 (defun w3m-delete-buffer-if-empty (buffer)
-  "Delete a newly created emacs-w3m buffer BUFFER if it is empty
-or there is only a progress message.  This function also deletes
-windows and frames related to BUFFER."
+  "Delete a newly created emacs-w3m buffer BUFFER if it seems unnecessary.
+Some emacs-w3m commands create a buffer for the new session first, but
+it may be useless if the command is invoked for visiting a local file
+or a mail buffer.  This command will delete BUFFER if it is empty or
+there is only a progress message.  It also deletes windows and frames
+related to BUFFER."
   (with-current-buffer buffer
     (unless (or w3m-current-process
 		w3m-current-url
@@ -5971,10 +5977,11 @@ no visible buffer."
       buf)))
 
 (defun w3m-quit (&optional force)
-  "Return to a peaceful life.  This command lets you quit browsing web
-after updating the arrived URLs database.  Quit browsing immediately
-if the prefix argument FORCE is specified, otherwise prompt you for
-the confirmation.  See also `w3m-close-window'."
+  "Return to a peaceful life (exiting all emacs-w3m sessions).
+This command lets you quit browsing web after updating the arrived
+URLs database.  Quit browsing immediately if the prefix argument FORCE
+is specified, otherwise prompt you for the confirmation.  See also
+`w3m-close-window'."
   (interactive "P")
   (when (or force
 	    (prog1 (y-or-n-p "Do you want to exit w3m? ")
@@ -5992,9 +5999,10 @@ the confirmation.  See also `w3m-close-window'."
     (w3m-kill-all-buffer)))
 
 (defun w3m-close-window ()
-  "Return to a restless life.  This command closes all emacs-w3m windows,
-but all the emacs-w3m buffers remain.  Frames created for emacs-w3m
-sessions will also be closed.  See also `w3m-quit'."
+  "Return to a restless life (quitting all emacs-w3m sessions).
+This command closes all emacs-w3m windows, but all the emacs-w3m
+buffers remain.  Frames created for emacs-w3m sessions will also be
+closed.  See also `w3m-quit'."
   (interactive)
   (let* ((buffers (w3m-list-buffers t))
 	 (bufs buffers)
@@ -6043,9 +6051,9 @@ sessions will also be closed.  See also `w3m-quit'."
 	(remove-hook (car elem) func)))))
 
 (defun w3m-mode ()
-  "\\<w3m-mode-map>
-   Major mode to browsing w3m buffer.
+  "Major mode for browsing web.
 
+\\<w3m-mode-map>\
 \\[w3m-view-this-url]	View this url.
 	You may use the prefix arg `2' or\
  `\\[universal-argument] \\<universal-argument-map>\
@@ -6393,8 +6401,8 @@ window's hscroll."
   (beginning-of-line arg))
 
 (defun w3m-end-of-line (&optional arg)
-  "Move the point to the end of the line and scroll the window left
-so that the ends of upper and lower three lines are visible.  If
+  "Move the point to the end of the line and scroll the window left.
+It makes the ends of upper and lower three lines visible.  If
 `truncate-lines' is nil, it works identically as `end-of-line'."
   (interactive "P")
   (w3m-activate-zmacs-regions)
@@ -6433,8 +6441,8 @@ so that the ends of upper and lower three lines are visible.  If
 		  (cond
 		   ((consp (cdr elem))
 		    (apply (cadr elem) uri (cddr elem)))
-		   ;; Rest conditions are inserted to keep backward
-		   ;; compatibility.
+		   ;; Rest conditions are inserted in order to keep
+		   ;; backward compatibility.
 		   ((functionp (cdr elem))
 		    (funcall (cdr elem) uri))
 		   ((stringp (cdr elem))
@@ -6524,10 +6532,11 @@ so that the ends of upper and lower three lines are visible.  If
 	    (throw 'loop dirp)))))))
 
 (defun w3m-goto-ftp-url (url &optional filename)
-  "Copy a remote file to a local file if URL looks like a file, otherwise
-run `dired-other-window' for URL using `ange-ftp' or `efs'.  Optional
+  "Copy a remote file to the local system or run dired for ftp URLs.
+If URL looks like a file, it will perform the copy.  Otherwise, it
+will run `dired-other-window' using `ange-ftp' or `efs'.  Optional
 FILENAME specifies the name of a local file.  If FILENAME is omitted,
-it will prompt user where to save a file."
+this function will prompt user for it."
   (let ((ftp (w3m-convert-ftp-url-for-emacsen url))
 	file)
     (if (or (string-equal "/" (substring ftp -1))
@@ -6563,24 +6572,26 @@ Note: This function is designed for the other emacsen than Emacs21."
       (add-hook hook function append t))))
 
 (defun w3m-store-current-position ()
-  "Store the current positions to `w3m-current-position' before every
-commands.  This function is designed as the hook function which is
-registered to `pre-command-hook' by `w3m-buffer-setup'."
+  "Store the current positions to before every commands.
+The value will be held in the `w3m-current-position' variable.  This
+function is designed as the hook function which is registered to
+`pre-command-hook' by `w3m-buffer-setup'."
   (setq w3m-current-position (list (point)
 				   (copy-marker (line-beginning-position))
 				   (copy-marker (line-end-position)))))
 
 (defun w3m-check-current-position ()
-  "Call functions set to `w3m-after-cursor-move-hook' after cursor is
-moved.  This function is designed as the hook function which is
-registered to `post-command-hook' by `w3m-buffer-setup'."
+  "Run `w3m-after-cursor-move-hook' if the point gets away from the window.
+This function is designed as the hook function which is registered to
+`post-command-hook' by `w3m-buffer-setup'."
   (when (and truncate-lines
 	     (/= (point) (car w3m-current-position)))
     (run-hooks 'w3m-after-cursor-move-hook)))
 
-(defsubst w3m-buffer-setup ()
-  "When this buffer's major mode is not w3m-mode, generate an
-appropriate buffer and select it."
+(defun w3m-buffer-setup ()
+  "Generate a new buffer, select it and set it up for emacs-w3m.
+When the current buffer has already been prepared, it won't bother to
+generate a new buffer."
   (unless (eq major-mode 'w3m-mode)
     (set-buffer (get-buffer-create "*w3m*"))
     (unless (eq major-mode 'w3m-mode)
@@ -6866,9 +6877,10 @@ Cannot run two w3m processes simultaneously \
 ;;;###autoload
 (defun w3m-goto-url-new-session (url &optional reload charset post-data
 				     referer)
-  "Run the command `w3m-goto-url' in the new session.  If you invoke this
-command in the w3m buffer, the new session will be created by copying
-the current session.  Otherwise, the new session will start afresh."
+  "Run the `w3m-goto-url' command in the new session.
+If you invoke this command in the emacs-w3m buffer, the new session
+will be created by copying the current session.  Otherwise, the new
+session will start afresh."
   (interactive
    (list
     (w3m-input-url nil
@@ -6984,8 +6996,12 @@ If input is nil, use default content-type on w3m."
     (w3m-redisplay-this-page arg)))
 
 (defun w3m-examine-command-line-args ()
-  "Return a url string if it seems that the `w3m' command is invoked from
-the command line like: ``emacs -f w3m'' or ``emacs -f w3m url''."
+  "Return a url when the `w3m' command is invoked from the command line.
+The `w3m' Lisp command can be invoked even in the batch mode, e.g.,
+``emacs -f w3m'' or ``emacs -f w3m url''.  This function is used in
+the very case, it extracts a url string from the command line
+arguments and passes it to the `w3m' command.  If a url is omitted, it
+defaults to the value of `w3m-home-page' or \"about:\"."
   (let ((url (car command-line-args-left))
 	(directives '("-f" "-funcall" "--funcall" "-e"))
 	args directive num)
@@ -6993,9 +7009,9 @@ the command line like: ``emacs -f w3m'' or ``emacs -f w3m url''."
 	     (not (string-match "\\`-" url)))
 	(when (and
 	       (setq args (w3m-static-if (featurep 'xemacs)
-			      ;; Elements aren't identical under XEmacs
-			      ;; between `command-line-args' and
-			      ;; `command-line-args-left'.
+			      ;; Elements of `command-line-args' and
+			      ;; `command-line-args-left' aren't the
+			      ;; identical objects under XEmacs.
 			      (member url command-line-args)
 			    (memq url command-line-args)))
 	       (>= (setq num (- (length command-line-args) (length args) 1))
@@ -7287,13 +7303,14 @@ works on Emacs.
     (w3m-message "Can't view page header")))
 
 (defvar w3m-about-history-max-indentation '(/ (* (window-width) 2) 3)
-  "*Number to limit the indentation when showing a tree-structured
-history by the command `w3m-about-history'.  This value is evaluated
-for each run-time, so it can be any `s' expressions.")
+  "*Number used to limit the identation level when showing a history.
+This value is evaluated whenever a history page is displayed by the
+`w3m-about-history' command.  So, it can be any s-expression returning
+a number.")
 
 (defvar w3m-about-history-indent-level 4
-  "*Number that says how much each sub-tree should be indented when
-showing a tree-structured history by the command `w3m-about-history'.")
+  "*Number used to specify the indentation level when showing a history.
+A history page is invoked by the `w3m-about-history' command.")
 
 (defun w3m-about-history (&rest args)
   "Show a tree-structured history."
@@ -7334,7 +7351,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
 	(while history
 	  (setq element (pop history)
 		url (car element)
-		;; FIXME: Ad-hoc workaround to avoid illegal-type error.
+		;; FIXME: an ad-hoc workaround to avoid illegal-type errors.
 		about (or (not (stringp url))
 			  (string-match w3m-history-ignored-regexp url))
 		title (plist-get (cadr element) :title)
@@ -7556,14 +7573,14 @@ If called with 'prefix argument', display arrived URLs."
       w3m-fill-column
     (+ (if (and w3m-select-buffer-horizontal-window
 		(get-buffer-window w3m-select-buffer-name))
-	   ;; Show pages as if there is no selection window.
+	   ;; Show pages as if there is no buffers selection window.
 	   (frame-width)
 	 (window-width))
        (or w3m-fill-column -1))))
 
 (defun w3m-select-buffer (&optional toggle nomsg)
-  "Display a new buffer to select a buffer among the set of w3m-mode
-buffers.  User can type following keys:
+  "Switch emacs-w3m buffers using the buffer list.
+The following command keys are available:
 
 \\{w3m-select-buffer-mode-map}"
   (interactive "P")
@@ -7667,36 +7684,36 @@ buffers.  User can type following keys:
     (setq w3m-select-buffer-mode-map map)))
 
 (defun w3m-select-buffer-mode ()
-  "\\<w3m-select-buffer-mode-map>
-Major mode to select a buffer from the set of w3m-mode buffers.
+  "Major mode for switching emacs-w3m buffers using the buffer list.
 
+\\<w3m-select-buffer-mode-map>\
 \\[w3m-select-buffer-next-line]\
-	Next line.
+	Next buffer.
 \\[w3m-select-buffer-previous-line]\
-	Previous line.
+	Previous buffer.
 
 \\[w3m-select-buffer-show-this-line]\
-	Show the current buffer or scroll up.
+	Show the buffer on the current menu line or scroll it up.
 \\[w3m-select-buffer-show-this-line-and-down]\
-	Show the current buffer on this menu line or scroll\n\t it down.
+	Show the buffer on the current menu line or scroll it down.
 \\[w3m-select-buffer-show-this-line-and-switch]\
-	Show the current buffer and set cusor to w3m buffer.
+	Show the buffer on the menu and switch to the buffer.
 \\[w3m-select-buffer-show-this-line-and-quit]\
-	Show the current buffer and quit menu.
+	Show the buffer on the menu and quit the buffers selection.
 
 \\[w3m-select-buffer-copy-buffer]\
-	Create a copy of the buffer on the current menu line,\n\tand show it.
+	Create a copy of the buffer on the menu, and show it.
 \\[w3m-select-buffer-delete-buffer]\
 	Delete the buffer on the current menu line.
 \\[w3m-select-buffer-delete-other-buffers]\
-	Delete w3m buffers except for the current menu line.
+	Delete emacs-w3m buffers except for the buffer on the menu.
 
 \\[w3m-select-buffer-toggle-style]\
-	Toggle the type of split which horizon or vertical.
+	Toggle the style of the selection between horizontal and vertical.
 \\[w3m-select-buffer-recheck]\
-	Recheck buffers.
+	Do the roll call to all emacs-w3m buffers.
 \\[w3m-select-buffer-quit]\
-	Quit menu.
+	Quit the buffers selection.
 "
   (setq major-mode 'w3m-select-buffer-mode
 	mode-name "w3m buffers"
@@ -7706,8 +7723,7 @@ Major mode to select a buffer from the set of w3m-mode buffers.
   (run-hooks 'w3m-select-buffer-mode-hook))
 
 (defun w3m-select-buffer-recheck ()
-  "Recheck all w3m-mode buffers and regenerate the menu content to
-select them."
+  "Do the roll call to all emacs-w3m buffers and regenerate the menu."
   (interactive)
   (let ((buffer-read-only nil))
     (erase-buffer))
@@ -7719,7 +7735,7 @@ select them."
   '(get-text-property (line-beginning-position) 'w3m-select-buffer))
 
 (defun w3m-select-buffer-show-this-line (&optional interactive-p)
-  "Show the current buffer on this menu line or scroll up its."
+  "Show the buffer on the current menu line or scroll it up."
   (interactive (list t))
   (forward-line 0)
   (let ((obuffer (and (window-live-p w3m-select-buffer-window)
@@ -7748,7 +7764,7 @@ select them."
     buffer))
 
 (defun w3m-select-buffer-show-this-line-and-down ()
-  "Show the current buffer on this menu line or scroll it down."
+  "Show the buffer on the current menu line or scroll it down."
   (interactive)
   (let ((obuffer (and (window-live-p w3m-select-buffer-window)
 		      (window-buffer w3m-select-buffer-window)))
@@ -7759,8 +7775,7 @@ select them."
 	(w3m-scroll-down-or-previous-url nil)))))
 
 (defun w3m-select-buffer-next-line (&optional n)
-  "Move cursor vertically down ARG lines and show the buffer on the
-new menu line."
+  "Move cursor vertically down N lines and show the buffer on the menu."
   (interactive "p")
   (forward-line n)
   (prog1
@@ -7771,8 +7786,7 @@ new menu line."
 	(select-window w3m-select-buffer-window)))))
 
 (defun w3m-select-buffer-previous-line (&optional n)
-  "Move cursor vertically up ARG lines and show the buffer on the new
-menu line."
+  "Move cursor vertically up N lines and show the buffer on the menu."
   (interactive "p")
   (w3m-select-buffer-next-line (- n)))
 
@@ -7806,13 +7820,13 @@ passed to the `w3m-quit' function (which see)."
       (w3m-select-buffer-show-this-line))))
 
 (defun w3m-select-buffer-delete-other-buffers ()
-  "Delete w3m buffers except for the current menu line."
+  "Delete emacs-w3m buffers except for the buffer on the current menu."
   (interactive)
   (w3m-select-buffer-show-this-line)
   (w3m-delete-other-buffers (w3m-select-buffer-current-buffer)))
 
 (defun w3m-select-buffer-quit ()
-  "Quit the menu to select a buffer from w3m-mode buffers."
+  "Quit the buffers selection."
   (interactive)
   (if (one-window-p t)
       (set-window-buffer (selected-window)
@@ -7826,21 +7840,20 @@ passed to the `w3m-quit' function (which see)."
 	   (delete-windows-on w3m-select-buffer-name)))))
 
 (defun w3m-select-buffer-show-this-line-and-switch ()
-  "Show the current buffer, and quit select a buffer from w3m-mode buffers."
+  "Show the buffer on the menu and switch to the buffer."
   (interactive)
   (pop-to-buffer (w3m-select-buffer-show-this-line))
   (w3m-message ""))
 
 (defun w3m-select-buffer-show-this-line-and-quit ()
-  "Show the current buffer, and quit the menu to select a buffer from
-w3m-mode buffers."
+  "Show the buffer on the menu and quit the buffers selection."
   (interactive)
   (w3m-select-buffer-show-this-line-and-switch)
   (and (get-buffer-window w3m-select-buffer-name)
        (delete-windows-on w3m-select-buffer-name)))
 
 (defun w3m-select-buffer-close-window ()
-  "Close the window which displays the menu to select w3m-mode buffers."
+  "Close the window which displays the buffers selection."
   (let ((window (get-buffer-window w3m-select-buffer-name)))
     (when window
       (if (one-window-p t)
@@ -7848,7 +7861,7 @@ w3m-mode buffers."
 	(delete-window window)))))
 
 (defun w3m-select-buffer-toggle-style()
-  "Toggle the style of select-buffer."
+  "Toggle the style of the selection between horizontal and vertical."
   (interactive)
   (w3m-select-buffer t))
 
@@ -7892,7 +7905,7 @@ w3m-mode buffers."
     (setq w3m-header-line-map map)))
 
 (defun w3m-header-line-insert ()
-  "Insert the header line to this buffer."
+  "Put the header line into the current buffer."
   (when (and (or (featurep 'xemacs)
 		 (< emacs-major-version 21)
 		 (w3m-use-tab-p))
