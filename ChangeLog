@@ -1,3 +1,20 @@
+2001-03-15  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-hook): Removed.
+	(w3m-goto-mailto-url): Old name is `w3m-mailto-url'.
+	(w3m-goto-ftp-url): Old name is `w3m-exec-ftp'.
+	(w3m-convert-ftp-url-for-emacsen): Old name is
+	`w3m-convert-ftp-to-emacsen'.
+	(w3m-exec): Removed code for ftp protocol.
+	(w3m-alive-p): Change spec of return value when w3m is alive.
+	(w3m-goto-url): Made this function safe when it is called at the
+	buffer whose major mode is not equal to w3m-mode.
+	(w3m): If it is interactively called when w3m is alive, it is
+	simply select the appropriate buffer in the current window without
+	asking url.
+	(w3m-view-parent-page, w3m-browse-url, w3m-view-source,
+	w3m-history): Use `w3m-goto-url' instead of `w3m'.
+
 2001-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (MULE): Make `locate-library' run quietly; bind

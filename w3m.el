@@ -241,11 +241,6 @@ width using expression (+ (frame-width) VALUE)."
   "*Face to fontify image alternate strings."
   :group 'w3m-face)
 
-(defcustom w3m-hook nil
-  "*Hook run before w3m called."
-  :group 'w3m
-  :type 'hook)
-
 (defcustom w3m-mode-hook nil
   "*Hook run before w3m-mode called."
   :group 'w3m
@@ -1460,25 +1455,7 @@ are retrieved."
    (t (car (w3m-w3m-check-header url no-cache)))))
 
 
-;;; Retrieve data via FTP:
-(defun w3m-exec-ftp (url)
-  (let ((ftp (w3m-convert-ftp-to-emacsen url))
-	(file (file-name-nondirectory url)))
-    (if (string-match "\\(\\.gz\\|\\.bz2\\|\\.zip\\|\\.lzh\\)$" file)
-	(copy-file ftp (w3m-read-file-name nil nil file))
-      (dired-other-window ftp))))
-
-(defun w3m-convert-ftp-to-emacsen (url)
-  (or (and (string-match "^ftp://?\\([^/@]+@\\)?\\([^/]+\\)\\(/~/\\)?" url)
-	   (concat "/"
-		   (if (match-beginning 1)
-		       (substring url (match-beginning 1) (match-end 1))
-		     "anonymous@")
-		   (substring url (match-beginning 2) (match-end 2))
-		   ":"
-		   (substring url (match-end 2))))
-      (error "URL is strange.")))
-
+;;; Retrieve data:
 (defsubst w3m-decode-extended-characters ()
   "Decode w3m-specific extended charcters in this buffer."
   (dolist (elem w3m-extended-charcters-table)
@@ -1538,46 +1515,43 @@ content is retrieved and hald-dumped data is placed in the BUFFER,
 this function returns t.  Otherwise, returns nil."
   (save-excursion
     (if buffer (set-buffer buffer))
-    (if (and (string-match "^ftp://" url)
-	     (not (string= "text/html" (w3m-local-content-type url))))
-	(progn (w3m-exec-ftp url) nil)
-      (let ((type (w3m-retrieve url nil nil no-cache)))
-	(if type
-	    (cond
-	     ((string-match "^text/" type)
-	      (let (buffer-read-only)
-		(setq w3m-current-url url)
-		(setq w3m-url-history (cons url w3m-url-history))
-		(setq-default w3m-url-history
-			      (cons url (default-value 'w3m-url-history)))
-		(setq w3m-url-yrotsih nil) 
-		(setq-default w3m-url-yrotsih nil)
-		(delete-region (point-min) (point-max))
-		(insert-buffer w3m-work-buffer-name)
-		(if (string= "text/html" type)
-		    (progn (w3m-rendering-region (point-min) (point-max)) t)
-		  (setq w3m-current-title (file-name-nondirectory url))
-		  nil)))
-	     ((and (w3m-image-type-available-p (w3m-image-type type))
-		   (string-match "^image/" type))
-	      (let (buffer-read-only)
-		(setq w3m-current-url url)
-		(setq w3m-url-history (cons url w3m-url-history))
-		(setq-default w3m-url-history
-			      (cons url (default-value 'w3m-url-history)))
-		(setq w3m-url-yrotsih nil) 
-		(setq-default w3m-url-yrotsih nil)
-		(delete-region (point-min) (point-max))
-		(insert (file-name-nondirectory url))
-		(set-text-properties (point-min)(point-max)
-				     (list 'face 'w3m-image-face
-					   'w3m-image url
-					   'mouse-face 'highlight))
+    (let ((type (w3m-retrieve url nil nil no-cache)))
+      (if type
+	  (cond
+	   ((string-match "^text/" type)
+	    (let (buffer-read-only)
+	      (setq w3m-current-url url)
+	      (setq w3m-url-history (cons url w3m-url-history))
+	      (setq-default w3m-url-history
+			    (cons url (default-value 'w3m-url-history)))
+	      (setq w3m-url-yrotsih nil) 
+	      (setq-default w3m-url-yrotsih nil)
+	      (delete-region (point-min) (point-max))
+	      (insert-buffer w3m-work-buffer-name)
+	      (if (string= "text/html" type)
+		  (progn (w3m-rendering-region (point-min) (point-max)) t)
 		(setq w3m-current-title (file-name-nondirectory url))
-		t))
-	     (t (w3m-external-view url)
-		nil))
-	  (error "Unknown URL: %s" url))))))
+		nil)))
+	   ((and (w3m-image-type-available-p (w3m-image-type type))
+		 (string-match "^image/" type))
+	    (let (buffer-read-only)
+	      (setq w3m-current-url url)
+	      (setq w3m-url-history (cons url w3m-url-history))
+	      (setq-default w3m-url-history
+			    (cons url (default-value 'w3m-url-history)))
+	      (setq w3m-url-yrotsih nil) 
+	      (setq-default w3m-url-yrotsih nil)
+	      (delete-region (point-min) (point-max))
+	      (insert (file-name-nondirectory url))
+	      (set-text-properties (point-min)(point-max)
+				   (list 'face 'w3m-image-face
+					 'w3m-image url
+					 'mouse-face 'highlight))
+	      (setq w3m-current-title (file-name-nondirectory url))
+	      t))
+	   (t (w3m-external-view url)
+	      nil))
+	(error "Unknown URL: %s" url)))))
 
 
 (defun w3m-search-name-anchor (name &optional quiet)
@@ -1611,7 +1585,7 @@ this function returns t.  Otherwise, returns nil."
 	     (string-match "^[a-z]+:/+$" parent-url))
 	(setq parent-url nil))
     (if parent-url
-	(w3m parent-url)
+	(w3m-goto-url parent-url)
       (error "No parent page for: %s" w3m-current-url))))
 
 (defun w3m-view-previous-page (&optional arg)
@@ -1937,13 +1911,13 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (setq w3m-mode-map map)))
 
 (defun w3m-alive-p ()
-  "Return t, when w3m is running.  Otherwise return nil."
+  "When w3m is running, return that buffer.  Otherwise return nil."
   (catch 'alive
     (save-current-buffer
       (dolist (buf (buffer-list))
 	(set-buffer buf)
 	(when (eq major-mode 'w3m-mode)
-	  (throw 'alive t))))
+	  (throw 'alive buf))))
     nil))
 
 (defun w3m-quit (&optional force)
@@ -2033,7 +2007,7 @@ or prefix ARG columns."
 		    (prefix-numeric-value arg)
 		  w3m-horizontal-scroll-columns)))
 
-(defun w3m-mailto-url (url)
+(defun w3m-goto-mailto-url (url)
   (if (and (symbolp w3m-mailto-url-function)
 	   (fboundp w3m-mailto-url-function))
       (funcall w3m-mailto-url-function url)
@@ -2058,24 +2032,56 @@ or prefix ARG columns."
 	;; without rfc2368.el.
 	(funcall comp (match-string 1 url))))))
 
+(defun w3m-convert-ftp-url-for-emacsen (url)
+  (or (and (string-match "^ftp://?\\([^/@]+@\\)?\\([^/]+\\)\\(/~/\\)?" url)
+	   (concat "/"
+		   (if (match-beginning 1)
+		       (substring url (match-beginning 1) (match-end 1))
+		     "anonymous@")
+		   (substring url (match-beginning 2) (match-end 2))
+		   ":"
+		   (substring url (match-end 2))))
+      (error "URL is strange.")))
+
+(defun w3m-goto-ftp-url (url)
+  (let ((ftp (w3m-convert-ftp-url-for-emacsen url))
+	(file (file-name-nondirectory url)))
+    (if (string-match "\\(\\.gz\\|\\.bz2\\|\\.zip\\|\\.lzh\\)$" file)
+	(copy-file ftp (w3m-read-file-name nil nil file))
+      (dired-other-window ftp))))
 
 (defun w3m-goto-url (url &optional reload)
   "Retrieve URL and display it in this buffer."
-  (let (name)
-    (cond
-     ;; process mailto: protocol
-     ((string-match "^mailto:\\(.*\\)" url)
-      (w3m-mailto-url url))
-     (t
-      (w3m-arrived-setup)
-      (w3m-arrived-store-position w3m-current-url)
-      (w3m-arrived-add url)
+  (cond
+   ;; process mailto: protocol
+   ((string-match "^mailto:\\(.*\\)" url)
+    (w3m-goto-mailto-url url))
+   ;; process ftp: protocol
+   ((and (string-match "^ftp://" url)
+	 (not (string= "text/html" (w3m-local-content-type url))))
+    (w3m-goto-ftp-url url))
+   (t
+    ;; When this buffer's major mode is not w3m-mode, generate an
+    ;; appropriate buffer and select it.
+    (unless (eq major-mode 'w3m-mode)
+      (set-buffer (get-buffer-create "*w3m*"))
+      (unless (eq major-mode 'w3m-mode)
+	(w3m-mode)
+	(setq mode-line-buffer-identification
+	      (list "%b" " / " 'w3m-current-title))))
+    ;; Setup arrived database.
+    (w3m-arrived-setup)
+    (w3m-arrived-store-position w3m-current-url)
+    ;; Retrive.
+    (let ((orig url)
+	  (name))
       (when (string-match "#\\([^#]+\\)$" url)
 	(setq name (match-string 1 url)
-	      url (substring url 0 (match-beginning 0)))
-	(w3m-arrived-add url))
+	      url (substring url 0 (match-beginning 0))))
       (if (not (w3m-exec url nil reload))
 	  (w3m-refontify-anchor)
+	(w3m-arrived-add orig)
+	(if name (w3m-arrived-add url))
 	(w3m-fontify)
 	(or (and name (w3m-search-name-anchor name))
 	    (goto-char (point-min)))
@@ -2098,15 +2104,13 @@ or prefix ARG columns."
 
 (defun w3m (url &optional args)
   "*Interface for w3m on Emacs."
-  (interactive (list (w3m-input-url)))
-  (set-buffer (get-buffer-create "*w3m*"))
-  (or (eq major-mode 'w3m-mode)
-      (w3m-mode))
-  (setq mode-line-buffer-identification
-	(list "%b" " / " 'w3m-current-title))
-  (w3m-goto-url url)
-  (switch-to-buffer (current-buffer))
-  (run-hooks 'w3m-hook))
+  (interactive
+   (list (or (w3m-alive-p)
+	     (w3m-input-url))))
+  (if (bufferp url)
+      (set-buffer url)
+    (w3m-goto-url url))
+  (switch-to-buffer (current-buffer)))
 
 
 (defun w3m-browse-url (url &optional new-window)
@@ -2116,7 +2120,7 @@ or prefix ARG columns."
      (require 'browse-url)
      (browse-url-interactive-arg "w3m URL: ")))
   (if new-window (split-window))
-  (w3m url))
+  (w3m-goto-url url))
 
 (defun w3m-find-file (file)
   "w3m Interface function for local file."
@@ -2160,7 +2164,7 @@ ex.) c:/dir/file => //c/dir/file"
 (defun w3m-view-source ()
   "*Display source of this current buffer."
   (interactive)
-  (w3m (concat "about://source/" w3m-current-url)))
+  (w3m-goto-url (concat "about://source/" w3m-current-url)))
 
 (defun w3m-about-header (url &optional no-decode accept-type-regexp no-cache)
   (when (string-match "^about://header/" url)
@@ -2174,7 +2178,7 @@ ex.) c:/dir/file => //c/dir/file"
 (defun w3m-view-header ()
   "*Display header of this current buffer."
   (interactive)
-  (w3m (concat "about://header/" w3m-current-url)))
+  (w3m-goto-url (concat "about://header/" w3m-current-url)))
 
 (defun w3m-about-history (&rest args)
   (let ((history w3m-url-history))
@@ -2189,7 +2193,7 @@ ex.) c:/dir/file => //c/dir/file"
 
 (defun w3m-history ()
   (interactive)
-  (w3m "about://history/"))
+  (w3m-goto-url "about://history/"))
 
 (defun w3m-w32-browser-with-fiber (url)
   (cond
