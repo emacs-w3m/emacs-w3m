@@ -167,7 +167,8 @@ Buffer string between BEG and END are replaced with IMAGE."
 				 'w3m-header-line-location-title-face)
 				'(:eval
 				  (propertize
-				   w3m-current-url
+				   (replace-regexp-in-string "%" "%%"
+							     w3m-current-url)
 				   'face
 				   'w3m-header-line-location-content-face
 				   'local-map
