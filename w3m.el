@@ -1539,7 +1539,7 @@ which defaults to the value of `w3m-file-coding-system-for-read'."
 	    (cond
 	     ((eq ch ?\n)		; newline
 	      "%0D%0A")
-	     ((string-match "[-a-zA-Z0-9_:/]" (char-to-string ch)) ; xxx?
+	     ((string-match "[-a-zA-Z0-9_:/.]" (char-to-string ch)) ; xxx?
 	      (char-to-string ch))	; printable
 	     ((char-equal ch ?\x20)	; space
 	      "+")
