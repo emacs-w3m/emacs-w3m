@@ -274,6 +274,7 @@ If no field in forward, return nil without moving."
 	    (w3m-parse-attributes (name)
 	      (let ((start (point))
 		    value)
+		(skip-chars-forward "^<")
 		(setq value (buffer-substring start (point)))
 		(when name
 		  (w3m-form-put (car forms)
