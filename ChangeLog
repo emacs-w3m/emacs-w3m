@@ -1,3 +1,23 @@
+2003-07-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* Makefile.in (clean): Do not remove `shimbun-servers.el'.
+
+	* shimbun/shimbun.el: Do not require `shimbun-servers.el'.
+	(shimbun-backend-additional-path): New option.
+	(shimbun-servers-list, shimbun-servers-alist): New functions.
+	(shimbun-open): Use the above option to override `load-path'.
+
+	* w3mhack.el: Do not generate `shimbun-servers.el'.
+	(shimbun-servers-file): Abolished.
+	(w3mhack-compile, w3mhack-batch-compile): Do not call
+	`w3mhack-check-shimbun-servers-file'.
+	(w3mhack-generate-shimbun-servers-file): Removed.
+	(w3mhack-check-shimbun-servers-file): Removed.
+
+	* w3m.el (w3m-fontify-bold, w3m-fontify-underline): Stricten
+	regular expressions to detect tags.  For more detail, see
+	[emacs-w3m:05600].
+
 2003-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mime-w3m.el (mime-w3m-display-inline-images): Improve the

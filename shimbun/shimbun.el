@@ -76,7 +76,6 @@
 (require 'eword-encode)
 (require 'luna)
 (require 'std11)
-(require 'shimbun-servers)
 
 (eval-and-compile
   (luna-define-class shimbun ()
@@ -99,6 +98,30 @@ dJrT4Cd<Ls?U!G4}0S%FA~KegR;YZWieoc%`|$4M\\\"i*2avWm?"
   "*Default X-Face field for shimbun."
   :group 'shimbun
   :type 'string)
+
+(defcustom shimbun-backend-additional-path
+  nil
+  "*List of additional directories to search for shimbun backends."
+  :group 'shimbun
+  :type '(repeat directory))
+
+(defun shimbun-servers-list ()
+  "Return a list of shimbun backends."
+  (let (servers)
+    (dolist (dir (cons (file-name-directory (locate-library "shimbun"))
+		       shimbun-backend-additional-path))
+      (when (file-directory-p dir)
+	(dolist (file (directory-files dir nil nil t))
+	  (and (string-match "\\`sb-\\(.*\\)\\.el\\'" file)
+	       (not (member (setq file (match-string 1 file))
+			    '("fml" "glimpse" "lump" "mailarc"
+			      "mailman" "mhonarc" "rss" "text")))
+	       (push file servers)))))
+    (sort servers 'string-lessp)))
+
+(defun shimbun-servers-alist ()
+  "Return an associative list of shimbun backends."
+  (mapcar 'list (shimbun-servers-list)))
 
 ;;; Shimbun MUA
 (eval-and-compile
@@ -509,7 +532,11 @@ you want to use no database."
 (defun shimbun-open (server &optional mua)
   "Open a shimbun for SERVER.
 Optional MUA is a `shimbun-mua' instance."
-  (require (intern (concat "sb-" server)))
+  (let ((load-path
+	 (nconc (cons (file-name-directory (locate-library "shimbun"))
+		      shimbun-backend-additional-path)
+		load-path)))
+    (require (intern (concat "sb-" server))))
   (let (url groups coding-system server-name from-address
 	    content-start content-end x-face-alist shimbun expiration-days)
     (dolist (attr shimbun-attributes)
