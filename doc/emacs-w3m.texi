@@ -5220,6 +5220,23 @@ with the @code{yahtml-mode}.  Here is an example:
   (around w3m-yahtml-browse-html activate compile)
   (w3m-goto-url (ad-get-arg 0) t))
 @end lisp
+
+@item jisx0213
+
+You can use JIS X 0213 character set in Emacs using the @code{jis0213}
+module which is bundled in the Mule-UCS package.  Although the
+@code{decode-char} function in Emacs 21 stops working properly since
+@code{jis0213} loads @code{mucs} and @code{mucs} overrides that
+function, it has been reported that also to load the @code{unicode}
+module seems to solve the problem.  The reason has not been made clear.
+Here is an example for the @file{~/.emacs} file, but it may not be
+right:
+
+@lisp
+(require 'unicode)
+(require 'un-define)
+(require 'jisx0213)
+@end lisp
 @end itemize
 
 @node Mailing List
