@@ -4584,7 +4584,8 @@ buffers.  User can type following keys:
   (let ((selected-window (selected-window))
 	(current-buffer (current-buffer)))
     (set-buffer (w3m-get-buffer-create w3m-select-buffer-name))
-    (setq w3m-select-buffer-window selected-window)
+    (unless (eq nomsg 'update)
+      (setq w3m-select-buffer-window selected-window))
     (let ((w (or (get-buffer-window w3m-select-buffer-name)
 		 (split-window selected-window
 			       (w3m-select-buffer-window-size)
@@ -4598,7 +4599,7 @@ buffers.  User can type following keys:
 (defun w3m-select-buffer-update (&rest args)
   (when (get-buffer-window w3m-select-buffer-name)
     (save-selected-window
-      (w3m-select-buffer nil 'nomsg))))
+      (w3m-select-buffer nil 'update))))
 
 (defun w3m-select-buffer-generate-contents (current-buffer)
   (let (buffer-read-only)

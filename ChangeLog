@@ -1,3 +1,11 @@
+2001-11-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-select-buffer): If nomsg eq 'update, don't save
+	selected-window; so called `w3m-select-buffer-update' any window
+	to differ original window executed process, is broken
+	`w3m-select-buffer-window'.
+	(w3m-select-buffer-update): Call `w3m-select-buffer' with 'update.
+
 2001-11-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* mime-w3m.el (mime-w3m-keymap-property): New macro.
