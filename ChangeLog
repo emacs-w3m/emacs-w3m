@@ -1,3 +1,9 @@
+2004-01-23  Hiroshi Fujishima  <pooh@nature.tsukuba.ac.jp>
+
+	* w3m.el (w3m-input-url): Fix a bug which causes an error when
+	there's neither a frame nor a window for the emacs-w3m session and
+	`url' is the symbol `popup'.
+
 2004-01-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-input-url): Add "http://" to its return value, when
