@@ -1,5 +1,8 @@
 2003-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-palmoslove.el (shimbun-headers): Bind the unbound
+	variable `body'.
+
 	* shimbun/sb-savannah.el (shimbun-savannah-get-headers): Revoke
 	the last change.
 
