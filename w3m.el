@@ -2262,6 +2262,10 @@ or prefix ARG columns."
 	       w3m-profile-directory)))
       (w3m-arrived-put-title url w3m-current-title)
       (w3m-arrived-put-arrived-time url)
+      (w3m-static-if (featurep 'xemacs)
+	  (when w3m-use-toolbar
+	    (set-specifier default-toolbar
+			   (cons (current-buffer) w3m-toolbar))))
       (switch-to-buffer (current-buffer))))))
 
 

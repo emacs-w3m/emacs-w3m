@@ -1,3 +1,8 @@
+2001-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Refresh the visibility of toolbar when
+	XEmacs is running.
+
 2001-03-22  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-url-to-file-name): Fix bug reported in
