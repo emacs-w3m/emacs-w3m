@@ -1,13 +1,15 @@
 2004-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/nnshimbun.el (nnshimbun-point-at-bol): New function
+	* shimbun/shimbun.el (shimbun-point-at-bol): New function
 	replacing `gnus-point-at-bol' which has been abolished in the Gnus
 	upstream.
-	(nnshimbun-search-id): Use it.
-	(nnshimbun-point-at-eol): New function replacing
-	`gnus-point-at-eol' which has been abolished in the Gnus upstream.
-	(nnshimbun-parse-nov): Use it.
-	(nnshimbun-request-expire-articles): Use it.
+	(shimbun-point-at-eol): New function replacing `gnus-point-at-eol'
+	which has been abolished in the Gnus upstream.
+
+	* shimbun/nnshimbun.el (nnshimbun-search-id): Use
+	`shimbun-point-at-bol'.
+	(nnshimbun-parse-nov): Use `shimbun-point-at-eol'.
+	(nnshimbun-request-expire-articles): Ditto.
 
 2004-01-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
