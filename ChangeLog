@@ -1,11 +1,15 @@
 2001-12-17  OHASHI Akira  <bg66@koka-in.org>
 
-        * README.shimbun.ja: Add information for sb-debian-jp.el
-        and sb-debian.el.
+	* README.shimbun.ja: Add information for sb-debian-jp.el
+	and sb-debian.el.
 
-        * shimbun/sb-debian-jp.el: New file.
+	* shimbun/sb-debian-jp.el: New file.
 
-        * shimbun/sb-debian.el: Ditto.
+	* shimbun/sb-debian.el: Ditto.
+
+	* shimbun/sb-debian-jp.el (shimbun-debian-jp-x-face-alist): New variable.
+
+	* shimbun/sb-debian.el (shimbun-debian-x-face-alist): Ditto.
 
 2001-12-17  Taiki SUGAWARA  <t-suga@atomsystem.co.jp>
 	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>

@@ -39,6 +39,9 @@
 (defvar shimbun-debian-jp-reverse-flag nil)
 (defvar shimbun-debian-jp-litemplate-regexp
   "<STRONG><A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</A></STRONG> <EM>\\([^<]+\\)</EM>")
+(defvar shimbun-debian-jp-x-face-alist
+  '(("default" . "X-Face: ]SX>@::/@(;bIJSLp?tu'vm&{Q=(T1L_wI)+bH6EY$^PkY|:Fa4VBhLG#EtcZ.#F==O~-vk
+ !A2|wMxaLC|=iA#V$[r(C..3&<fJ-B|E2&SKUivW[C%BXG8AGcfZ5YN8W`r")))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-debian-jp))
   (concat (shimbun-url-internal shimbun) 
