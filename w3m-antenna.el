@@ -76,13 +76,24 @@
   :group 'w3m-antenna
   :type 'function)
 
-(defcustom w3m-antenna-sort-function
+(defcustom w3m-antenna-sort-changed-sites-function
   'w3m-antenna-sort-sites-by-time
-  "Function to sort site list."
+  "Function to sort list of changed sites."
   :group 'w3m-antenna
   :type '(choice
 	  (const :tag "Sort by last modification time." w3m-antenna-sort-sites-by-time)
 	  (const :tag "Sort by title." w3m-antenna-sort-sites-by-title)
+	  (const :tag "Do nothing." identity)
+	  (function :tag "User function.")))
+
+(defcustom w3m-antenna-sort-unchanged-sites-function
+  'w3m-antenna-sort-sites-by-time
+  "Function to sort list of unchanged sites."
+  :group 'w3m-antenna
+  :type '(choice
+	  (const :tag "Sort by last modification time." w3m-antenna-sort-sites-by-time)
+	  (const :tag "Sort by title." w3m-antenna-sort-sites-by-title)
+	  (const :tag "Do nothing." identity)
 	  (function :tag "User function.")))
 
 (defcustom w3m-antenna-file
@@ -173,7 +184,8 @@ initialized.  Each site information is a list whose elements are:
 
 (defun w3m-antenna-sort-sites-by-time (sites)
   (sort sites (lambda (a b)
-		(w3m-time-newer-p (nth 3 a) (nth 3 b)))))
+		(w3m-time-newer-p (or (nth 3 a) (nth 5 a))
+				  (or (nth 3 b) (nth 5 b))))))
 
 (defun w3m-antenna-sort-sites-by-title (sites)
   (sort sites (lambda (a b)
@@ -226,8 +238,8 @@ initialized.  Each site information is a list whose elements are:
 	(delete-region (point-min) (point-max))
 	(set-buffer-multibyte t)
 	(w3m-antenna-make-contents
-	 (funcall w3m-antenna-sort-function changed)
-	 (funcall w3m-antenna-sort-function unchanged)))
+	 (funcall w3m-antenna-sort-changed-sites-function (nreverse changed))
+	 (funcall w3m-antenna-sort-unchanged-sites-function (nreverse unchanged))))
       (w3m-antenna-shutdown)
       "text/html")
     (setq w3m-antenna-alist nil)))
