@@ -1,5 +1,9 @@
 2001-10-31  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-e21.el (w3m-tab-unselected-face): Setup color for tty.
+	(w3m-tab-selected-face): Ditto.
+	(w3m-tab-background-face): Ditto.
+
 	* w3m.el (w3m-next-buffer): New function.
 	(w3m-previous-buffer): Ditto.
 	(w3m-lynx-like-map): Bind `C-tab' as the key to call `w3m-next-buffer';
