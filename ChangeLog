@@ -1,3 +1,11 @@
+2003-07-12  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-zdnet.el (shimbun-zdnet-group-alist): Fix the folder
+	name for `enterprise'.
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-content-start): Exclude
+	an advertisement.
+
 2003-07-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-uri-replace-alist): Revert 2003-07-09 change;
