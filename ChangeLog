@@ -1,3 +1,8 @@
+2004-05-22  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-fontify): Remove tags in the form element except for
+	textarea.
+
 2004-05-21  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-rakuten.el (shimbun-rss-build-message-id): Modify

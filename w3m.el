@@ -3319,9 +3319,10 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     ;; Remove other markups.
     (goto-char (point-min))
     (while (re-search-forward "</?[A-Za-z_][^>]*>" nil t)
-      (if (get-text-property (match-beginning 0) 'w3m-form-field-id)
-	  (goto-char (match-end 0))
-	(delete-region (match-beginning 0) (match-end 0))))
+      (let ((fid (get-text-property (match-beginning 0) 'w3m-form-field-id)))
+	(if (and fid (string-match "/type=textarea/" fid))
+	    (goto-char (match-end 0))
+	  (delete-region (match-beginning 0) (match-end 0)))))
     ;; Decode escaped characters (entities).
     (w3m-decode-entities 'reserve-prop)
     (when w3m-use-form
