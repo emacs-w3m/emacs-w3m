@@ -1,3 +1,29 @@
+2001-03-05  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el: apply patch from Keisuke Nishida.
+	URL is hold in text property as already expanded.
+	Some utility functions (w3m-anchor, w3m-image, w3m-action) is
+	defined and used.
+	(and-let*): New macro.
+	(w3m-fontify-anchors): Hold expanded url in text property.
+	(w3m-fontify-images): Likewise.
+	(w3m-expand-url): Save matching data.
+	Match pattern bug fix (by gotoh).
+	(w3m-anchor): New function.
+	(w3m-image): New function.
+	(w3m-action): New function. (added by gotoh)
+	(w3m-view-this-url): Use new functions to extract text prop.
+	(w3m-mouse-view-this-url): Likewise.
+	(w3m-download-this-url): Likewise.
+	(w3m-print-this-url): Likewise.
+	(w3m-save-this-url): Likewise.
+	(w3m-goto-next-anchor): Likewise, and do not expand url.
+	(w3m-external-view): Remove 1st arg CONTENT-TYPE.
+	(w3m-next-anchor): Use and-let* macro and do not expand url.
+	(w3m-goto-previous-anchor): Use utility functions.
+	(w3m-bookmark-add-this-url): Likewise and refine.
+	(w3m-url-encode-string): Do not escape ':' and '/'.
+
 2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-retrieve): Add support for URLs which has `about:'
