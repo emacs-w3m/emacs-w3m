@@ -117,6 +117,17 @@
 
    w3mmee を使ってください．
 
+** Q. Emacs21 で favicon を表示しようとしたのですが、エラーになります。
+
+   Image Magick の convert が必要です。
+   http://www.imagemagick.org/ から入手してインストールしてください。
+
+** Q. Emacs21 で favicon を表示しようとしたのですが、Emacs がロックしました。
+
+   Image Magick のバージョンを確認してください。
+   ImageMagick-5.2.1 付属の convert ではそうなりました。
+   ImageMagick-5.4.0-5 付属の convert では動作確認がなされています。
+
 * shimbun
 
 ** Q. shimbun/ 以下がインストールされません．
