@@ -1,3 +1,19 @@
+2000-10-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-arrived-ct-file, w3m-arrived-file-cs,
+	w3m-always-html-url-regex): New variables.
+	(w3m-process-type): Change name from w3m-exec-process-type.
+	(w3m-refontify-anchor): New funcition.
+	(w3m-exec): Pre-check content-type.
+	(w3m-exec-w3m-ctcheck): New funcition, check context-type for URL.
+	(w3m-exec-w3m): New funcion, execute w3m.
+	(w3m-exec-ftp): New function, execute dired-other-window() or
+	copy-file(), if URL is 'ftp://'.
+	(w3m-convert-ftp-to-emacsen): Change 'ftp://' to '/user@host:/' from
+	elisp ML.
+	(w3m-download-this-url, w3m-save-image, w3-view-image): Use w3
+	features.
+	
 2000-10-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (top-level): Add authors.
