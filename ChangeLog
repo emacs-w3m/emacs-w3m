@@ -1,3 +1,10 @@
+2001-04-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-setup-header-line): Don't execute the setup-header-line, 
+	if w3m-current-url is 'nil'.
+
+	* w3m-xmas.el (w3m-setup-header-line): Ditto.
+
 2001-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-fontify-images): Use `match-string-no-properties'

@@ -183,7 +183,7 @@ as the value."
 
 (defun w3m-setup-header-line ()
   "Setup header line (emulating Emacs 21)."
-  (when w3m-use-header-line
+  (when (and w3m-use-header-line w3m-current-url)
     (goto-char (point-min))
     (insert "Location: ")
     (set-extent-property (make-extent (point-min) (point))
