@@ -127,7 +127,6 @@ will not be substituted.")
 
 (defsubst mime-w3m-setup ()
   "Setup `mime-w3m' module."
-  (require 'w3m)
   (unless mime-w3m-mode-map
     (setq mime-w3m-mode-map (copy-keymap w3m-mode-map))
     (dolist (def mime-w3m-mode-command-alist)
