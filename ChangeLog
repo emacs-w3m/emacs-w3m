@@ -1,5 +1,22 @@
 2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
+	* w3m.el (w3m-retrieve): Add support for URLs which has `about:'
+	prefix.
+	(w3m-content-type): Likewise.
+	(w3m-about, w3m-about-weather, w3m-weather,
+	w3m-weather-remove-headers, w3m-weather-remove-footers,
+	w3m-weather-remove-weather-images,
+	w3m-weather-remove-washing-images,
+	w3m-weather-remove-futon-images,
+	w3m-weather-remove-week-weather-images, w3m-weather-insert-title):
+	New function.
+	(w3m-about-url-alist): New constant.
+	(w3m-weather-url-alist): New associative list of AREA vs. URL.
+	(w3m-weather-default-area): New customize variable.
+	(w3m-weather-default-area): Ditto.
+
+2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
 	* w3m.el (w3m-url-encode-string): New function.
 	(w3m-escape-query-string): Use `w3m-url-encode-string'.
 	(w3m-form-make-get-string): Ditto.
