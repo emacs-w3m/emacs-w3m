@@ -37,7 +37,7 @@
 
 
 ;; Generate some coding-systems which have a modern name.
-;; No need to contain the eol-type variants in the folloing alist
+;; No need to contain the eol-type variants in the following alist
 ;; because they will also be generated for each coding-system.
 (dolist (elem '((*autoconv*	  undecided)
 		(*ctext*	  ctext)
