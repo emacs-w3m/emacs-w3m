@@ -2511,8 +2511,8 @@ or prefix ARG columns."
       (error "URL is strange.")))
 
 (defun w3m-goto-ftp-url (url)
-  (let ((ftp (w3m-convert-ftp-url-for-emacsen url))
-	(file (file-name-nondirectory url)))
+  (let* ((ftp (w3m-convert-ftp-url-for-emacsen url))
+	 (file (file-name-nondirectory ftp)))
     (if (string-match "\\(\\.gz\\|\\.bz2\\|\\.zip\\|\\.lzh\\)$" file)
 	(copy-file ftp (w3m-read-file-name nil nil file))
       (dired-other-window ftp))))
