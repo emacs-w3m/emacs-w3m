@@ -1,3 +1,7 @@
+2004-06-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-filter.el (w3m-filter-rules): Relax the condition.
+
 2004-06-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-make-new-session): Doc fix.

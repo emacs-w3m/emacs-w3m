@@ -36,7 +36,7 @@
 (require 'w3m)
 
 (defcustom w3m-filter-rules
-  `(("\\`http://www\\.geocities\\.co\\.jp/Technopolis/"
+  `(("\\`http://www\\.geocities\\.co\\.jp/"
      w3m-filter-delete-regions
      "<DIV ALIGN=CENTER>\n<!--*/GeoGuide/*-->" "<!--*/GeoGuide/*-->\n</DIV>")
     ("\\`http://[a-z]+\\.hp\\.infoseek\\.co\\.jp/"
