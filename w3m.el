@@ -755,7 +755,7 @@ will disclose your private informations, for example:
 	w3m-previous-url nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url title forms post referer cs next prev)
+  (let (url title forms cs next prev)
     (save-current-buffer
       (when from-buffer (set-buffer from-buffer))
       (setq url w3m-current-url
@@ -1794,7 +1794,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 
 (defun w3m-input-url (&optional prompt default)
   "Read a URL from the minibuffer, prompting with string PROMPT."
-  (let (url candidates)
+  (let (url)
     (w3m-arrived-setup)
     (unless default
       (setq default (thing-at-point 'url)))
@@ -2034,8 +2034,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	   (tmprealm (cdr (assoc realm tmproot)))
 	   (tmpuser (assoc user tmprealm))
 	   (tmppass (cdr tmpuser))
-	   (w3m-process-user-counter 2)
-	   tmp)
+	   (w3m-process-user-counter 2))
       (cond
        ((and tmproot tmprealm tmpuser tmppass (string= pass tmppass))
 	;; nothing to do
@@ -2052,7 +2051,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
        (t
 	;; add root, realm, user, and passwd
 	(setq w3m-arrived-user-alist
-	      (append 
+	      (append
 	       (list (cons root (list (cons realm (list (cons user pass))))))
 	       w3m-arrived-user-alist)))
        ))))
@@ -2723,7 +2722,7 @@ to nil.
 	       w3m-meta-charset-content-type-regexp nil t))
       (delete-region (match-beginning 0) (match-end 0)))))
 
-(defun w3m-rendering-region (start end &optional charset)
+(defun w3m-rendering-region (start end &optional charset forms)
   "Do rendering of contents in this buffer as HTML and return title."
   (save-restriction
     (narrow-to-region start end)
@@ -2732,7 +2731,9 @@ to nil.
     (w3m-check-link-tags)
     (w3m-remove-meta-tags)
     (when w3m-use-form
-      (w3m-form-parse-region (point-min) (point-max) charset))
+      (setq w3m-current-forms
+	    (or forms
+		(w3m-form-parse-region (point-min) (point-max) charset))))
     (w3m-message "Rendering...")
     (let ((coding-system-for-read w3m-output-coding-system)
 	  (coding-system-for-write w3m-input-coding-system)
@@ -2797,7 +2798,9 @@ this function returns t.  Otherwise, returns nil."
 	      (setq type content-type))
 	    (cond
 	     ((string-match "^text/" type)
-	      (let (buffer-read-only)
+	      (let ((forms (when (w3m-cache-available-p url)
+			     (w3m-history-plist-get :forms url nil t)))
+		    buffer-read-only)
 		(w3m-with-work-buffer
 		  (w3m-clear-local-variables)
 		  (setq w3m-current-url (w3m-real-url url)
@@ -2807,7 +2810,7 @@ this function returns t.  Otherwise, returns nil."
 			      (unless (memq w3m-type '(w3mmee w3m-m17n))
 				(w3m-decode-buffer url content-charset type))
 			      (w3m-rendering-region (point-min) (point-max)
-						    content-charset))
+						    content-charset forms))
 			  (w3m-decode-buffer url content-charset type)
 			  (file-name-nondirectory url))))
 		(delete-region (point-min) (point-max))
@@ -2891,7 +2894,7 @@ forward is performed.  Otherwise, COUNT is treated as 1 by default."
 		    (w3m-history-plist-get :post-data)
 		    (w3m-history-plist-get :referer))
       ;; restore last position
-      (w3m-history-restore-position))))
+      (w3m-history-restore-position url))))
 
 (defun w3m-view-next-page (&optional count)
   "View next page.  If COUNT is a positive integer, move forward COUNT
@@ -3208,10 +3211,9 @@ that is affected by `w3m-pop-up-frames'."
 	  (let* ((pop-up-frames w3m-pop-up-frames)
 		 (pop-up-frame-alist (w3m-pop-up-frame-parameters))
 		 (pop-up-frame-plist pop-up-frame-alist)
-		 (oframe (selected-frame))
-		 nframe)
+		 (oframe (selected-frame)))
 	    (pop-to-buffer new)
-	    (unless (eq oframe (setq nframe (selected-frame)))
+	    (unless (eq oframe (selected-frame))
 	      (setq w3m-initial-frame (selected-frame)))))
 	new))))
 
@@ -3395,10 +3397,9 @@ Return t if deleting current frame or window is succeeded."
 (defun w3m-close-window ()
   "Close this window and make the other buffer current."
   (interactive)
-  (unless (let ((buffer (current-buffer)))
-	    (prog1
-		(w3m-delete-frame-maybe)
-	      (bury-buffer (current-buffer))))
+  (unless (prog1
+	      (w3m-delete-frame-maybe)
+	    (bury-buffer (current-buffer)))
     (set-window-buffer (selected-window) (other-buffer))))
 
 (unless w3m-mode-map
@@ -3452,8 +3453,8 @@ Return t if deleting current frame or window is succeeded."
 \\[backward-char]	Backward char.
 
 \\[goto-line]	Jump to line.
-\\[w3m-history-store-position]	Mark the current position point.
-\\[w3m-history-restore-position]	Goto the last position point.
+\\[w3m-history-store-position]	Mark the current position.
+\\[w3m-history-restore-position]	Goto the last position.
 
 \\[w3m-history]	Display arrived history.
 	If called with '\\[universal-argument]', this command displays arrived-DB history.
@@ -3613,8 +3614,11 @@ the request."
     (setq w3m-current-buffer (current-buffer))
     ;; Setup arrived database.
     (w3m-arrived-setup)
-    ;; Store the current position point in the history structure.
+    ;; Store the current position in the history structure.
     (w3m-history-store-position)
+    (when w3m-current-forms
+      ;; Store the current forms in the history structure.
+      (w3m-history-plist-put :forms w3m-current-forms nil nil t))
     ;; Retrieve.
     (let ((orig url) name localpath localcgi)
       ;; local directory URL check

@@ -1,5 +1,28 @@
 2001-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-goto-url): Register the value of `w3m-current-forms'
+	in the history as a buffer-local property.
+	(w3m-view-previous-page): Specify a url string to
+	`w3m-history-restore-position'.
+	(w3m-exec): Use cached forms if it is valid.
+	(w3m-rendering-region): Allow the optional argument `forms';
+	use `forms' if it is non-nil.
+	(w3m-close-window, w3m-copy-buffer, w3m-exec-set-user,
+	w3m-input-url, w3m-copy-local-variables): Remove unused non-global
+	variables.
+
+	* w3m-hist.el (w3m-history-restore-position): Allow the optional
+	argument `url'.
+	(w3m-history-store-position): Ditto.
+	(w3m-history-plist-get): Return nil instead of to signal an error.
+
+	* w3m-form.el (w3m-form-parse-region): Don't set the value of
+	`w3m-current-forms' here.
+	(w3m-form-input-map, w3m-form-input-map-set): Remove unused non-
+	global variables.
+
+2001-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-goto-url): Don't use `w3m-cleanup-plist'.
 
 	* w3m-macro.el (w3m-cleanup-plist): Abolished.

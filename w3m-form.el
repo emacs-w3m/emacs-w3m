@@ -171,7 +171,7 @@ If no field in forward, return nil without moving."
 	       (insert boundary "--\r\n")
 	       (buffer-string))))
 	(mapconcat (lambda (elem)
-		     (format "%s=%s" 
+		     (format "%s=%s"
 			     (w3m-url-encode-string (car elem) coding)
 			     (w3m-url-encode-string (if (stringp (cdr elem))
 							(cdr elem)
@@ -184,28 +184,26 @@ If no field in forward, return nil without moving."
   "Parse HTML data in this buffer and return form/map objects."
   (save-restriction
     (narrow-to-region start end)
-    (let (forms str)
-      (if (memq w3m-type '(w3mmee w3m-m17n))
-	  ;; *w3m-work* buffer is 'binary.
-	  (let ((str (buffer-string)))
-	    (with-temp-buffer
-	      (insert str)
-	      (goto-char (point-min))
-	      (when (and (eq w3m-type 'w3mmee)
-			 (or (re-search-forward
-			      w3m-meta-content-type-charset-regexp nil t)
-			     (re-search-forward
-			      w3m-meta-charset-content-type-regexp nil t))
-			 (string= "x-moe-internal"
-				  (downcase
-				   (match-string-no-properties 2))))
-		(setq charset (w3m-x-moe-decode-buffer)))
-	      (decode-coding-region (point-min) (point-max)
-				    (or (w3m-charset-to-coding-system charset)
-					'undecided))
-	      (setq forms (w3m-form-parse-forms))))
-	(setq forms (w3m-form-parse-forms)))
-      (setq w3m-current-forms (nreverse forms)))))
+    (if (memq w3m-type '(w3mmee w3m-m17n))
+	;; *w3m-work* buffer is 'binary.
+	(let ((str (buffer-string)))
+	  (with-temp-buffer
+	    (insert str)
+	    (goto-char (point-min))
+	    (when (and (eq w3m-type 'w3mmee)
+		       (or (re-search-forward
+			    w3m-meta-content-type-charset-regexp nil t)
+			   (re-search-forward
+			    w3m-meta-charset-content-type-regexp nil t))
+		       (string= "x-moe-internal"
+				(downcase
+				 (match-string-no-properties 2))))
+	      (setq charset (w3m-x-moe-decode-buffer)))
+	    (decode-coding-region (point-min) (point-max)
+				  (or (w3m-charset-to-coding-system charset)
+				      'undecided))
+	    (nreverse (w3m-form-parse-forms))))
+      (nreverse (w3m-form-parse-forms)))))
 
 (defun w3m-form-parse-forms ()
   "Parse Form/usemap objects in this buffer."
@@ -271,14 +269,14 @@ If no field in forward, return nil without moving."
 				    accept-charset)
 		    forms)))
 	;; Parse form fields until </FORM>
-	(while (and (re-search-forward 
+	(while (and (re-search-forward
 		     (w3m-tag-regexp-of "input" "textarea" "select" "/form")
 		     nil t)
 		    (not (char-equal (char-after (match-beginning 1)) ?/)))
 	  (setq tag (downcase (match-string 1)))
 	  (goto-char (match-end 1))	; go to end of tag name
 	  (cond
-	   ((string= tag "input") 
+	   ((string= tag "input")
 	    ;; When <INPUT> is found.
 	    (w3m-parse-attributes (name value (type :case-ignore)
 					(checked :bool))
@@ -320,16 +318,16 @@ If no field in forward, return nil without moving."
 	   ;; When <SELECT> is found.
 	   ((string= tag "select")
 	    (let (vbeg svalue cvalue candidates)
-	      (goto-char (match-end 1)) 
+	      (goto-char (match-end 1))
 	      (w3m-parse-attributes (name)
 		;; Parse FORM SELECT fields until </SELECT> (or </FORM>)
-		(while (and (re-search-forward 
+		(while (and (re-search-forward
 			     (w3m-tag-regexp-of "option" "/select" "/form")
 			     nil t)
 			    (not (char-equal (char-after (match-beginning 1)) ?/)))
 		  ;; <OPTION> is found
 		  (goto-char (match-end 1)) ; goto very after "<xxxx"
-		  
+
 		  (w3m-parse-attributes (value (selected :bool))
 		    (setq vbeg (point))
 		    (skip-chars-forward "^<")
@@ -402,7 +400,7 @@ If no field in forward, return nil without moving."
 					   ,form ,name
 					   (w3m-form-get ,form ,name))
 					 'w3m-form-hseq hseq))
-	      (when (> hseq 0) 
+	      (when (> hseq 0)
 		(add-text-properties start (point)
 				     (list 'w3m-cursor-anchor
 					   `(w3m-form-input-textarea
@@ -478,7 +476,7 @@ If no field in forward, return nil without moving."
 							  ,width
 							  ,maxlength
 							  ,value)))))))
-	(put-text-property start (point) 
+	(put-text-property start (point)
 			   'w3m-form-field-id
 			   (format "fid=%d/type=%s/name=%s" fid type name))))))
 
@@ -499,7 +497,7 @@ If no field in forward, return nil without moving."
       (insert (setq string
 		    (if invisible
 			(make-string (length string) ?.)
-		      (mapconcat 'identity 
+		      (mapconcat 'identity
 				 (split-string
 				  (truncate-string string width) "\n")
 				 "")))
@@ -612,10 +610,10 @@ If no field in forward, return nil without moving."
 	(while (and (not (bobp))
 		    (not (eq (abs s) (get-text-property (point)
 							'w3m-form-hseq))))
-	  (goto-char (previous-single-property-change 
+	  (goto-char (previous-single-property-change
 		      (point) 'w3m-form-hseq))
 	  (when (and (get-text-property (point) 'w3m-form-hseq)
-		     (setq next (previous-single-property-change 
+		     (setq next (previous-single-property-change
 				 (point)
 				 'w3m-form-hseq))
 		     (goto-char next)))
@@ -631,7 +629,7 @@ If no field in forward, return nil without moving."
     'w3m-form-input-textarea-exit)
   (define-key w3m-form-input-textarea-keymap "\C-c\C-k"
     'w3m-form-input-textarea-exit))
-  
+
 (defvar w3m-form-input-textarea-buffer nil)
 (defvar w3m-form-input-textarea-form nil)
 (defvar w3m-form-input-textarea-hseq nil)
@@ -863,7 +861,7 @@ If no field in forward, return nil without moving."
       (switch-to-buffer buffer)
       (set-buffer buffer)
       (setq w3m-form-input-select-form form)
-      (setq w3m-form-input-select-name name)      
+      (setq w3m-form-input-select-name name)
       (setq w3m-form-input-select-buffer w3mbuffer)
       (setq w3m-form-input-select-point point)
       (setq w3m-form-input-select-candidates value)
@@ -947,8 +945,7 @@ If no field in forward, return nil without moving."
 	 (buffer (current-buffer))
 	 (w3mbuffer w3m-form-input-map-buffer)
 	 (wincfg w3m-form-input-map-wincfg)
-	 (point w3m-form-input-map-point)
-	 input)
+	 (point w3m-form-input-map-point))
     (when (buffer-live-p w3mbuffer)
       (or (one-window-p) (delete-window))
       (kill-buffer buffer)
@@ -998,7 +995,7 @@ If no field in forward, return nil without moving."
 		   (max window-min-height
 			(1+ w3m-form-input-map-buffer-lines)))))
 	 (buffer (generate-new-buffer "*w3m map select*"))
-	 cur pos)
+	 pos)
     (condition-case nil
 	(split-window cur-win (if (> size 0) size window-min-height))
       (error
@@ -1025,7 +1022,7 @@ If no field in forward, return nil without moving."
       (beginning-of-line)
       (w3m-form-input-map-mode))))
 
-;;; 
+;;;
 
 (defun w3m-form-submit (form &optional name value)
   (when (and name (not (zerop (length name))))

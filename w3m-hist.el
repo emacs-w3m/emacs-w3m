@@ -593,8 +593,7 @@ whether to access the buffer-local properties."
 	(plist-get (if local
 		       (cadddr element)
 		     (cadr element))
-		   keyword)
-      (error "No history element found to be extracted"))))
+		   keyword))))
 
 (defun w3m-history-plist-put (keyword value &optional url set-current local)
   "Change value in the properties of a history element of KEYWORD to
@@ -733,25 +732,27 @@ renaming will be done for all the w3m buffers."
 	  (setcar (w3m-history-current-1 (caddr element)) new-url)))
       (set-buffer current))))
 
-(defun w3m-history-store-position ()
-  "Store the current cursor position in the history structure."
+(defun w3m-history-store-position (&optional url)
+  "Store the current cursor position in the history structure.  URL
+defaults to the current link."
   (interactive)
   (when (cadar w3m-history)
     (w3m-history-add-properties (list :window-start (window-start)
 				      :position (point))
-				nil nil t)
+				url nil t)
     (when (interactive-p)
       (message "The current cursor position has registered"))))
 
-(defun w3m-history-restore-position ()
-  "Restore the saved cursor position for the page."
+(defun w3m-history-restore-position (&optional url)
+  "Restore the saved cursor position for the page.  URL defaults to the
+current link."
   (interactive)
   (when (cadar w3m-history)
-    (let ((start (w3m-history-plist-get :window-start nil nil t))
+    (let ((start (w3m-history-plist-get :window-start url nil t))
 	  position)
       (cond ((and start
 		  (setq position (w3m-history-plist-get :position
-							nil nil t)))
+							url nil t)))
 	     (set-window-start nil start)
 	     (goto-char position))
 	    ((interactive-p)
