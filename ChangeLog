@@ -1,3 +1,8 @@
+2002-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-2ch.el (shimbun-article): Don't encode with base64;
+	use `w3m-insert-string' to insert raw encoded article.
+
 2002-04-22  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-palmfan.el (shimbun-palmfan-news-headers): Build
