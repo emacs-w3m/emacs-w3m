@@ -1,3 +1,8 @@
+2002-01-24  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun): New customize group and
+	all customize variable use this.
+
 2002-01-18  OHASHI Akira  <bg66@koka-in.org>
 
 	* w3m.el (w3m-header-line-map): Inherit `w3m-mode-map'.

@@ -76,10 +76,14 @@
     (defun MEW-SHIMBUN-STS () ()))))
 
 ;; Variables
+(defgroup mew-shimbun nil
+  "SHIMBUN environment for Mew."
+  :group 'mew)
+
 (defcustom mew-shimbun-folder "+shimbun"
   "*The folder where SHIMBUN are contained."
   :group 'shimbun
-  :group 'mew
+  :group 'mew-shimbun
   :type 'string)
 
 (defcustom mew-shimbun-folder-groups nil
@@ -101,7 +105,7 @@ show below example,
      (\"mew.mew-int\" . last)))
 "
   :group 'shimbun
-  :group 'mew
+  :group 'mew-shimbun
   :type '(repeat
 	  (cons (string :tag "Folder")
 		(repeat
@@ -114,7 +118,7 @@ show below example,
 (defcustom mew-shimbun-db-file ".mew-shimbun-db"
   "*File name of mew-shimbun database."
   :group 'shimbun
-  :group 'mew
+  :group 'mew-shimbun
   :type 'file)
 
 (defcustom mew-shimbun-db-length nil
@@ -131,7 +135,7 @@ show below example,
     (t . 2000))
 "
   :group 'shimbun
-  :group 'mew
+  :group 'mew-shimbun
   :type '(choice
 	  (const :tag "same 'mew-lisp-max-length'" nil)
 	  (integer :tag "limit for all group" :value 2000)
@@ -145,49 +149,49 @@ show below example,
 (defcustom mew-shimbun-unknown-from "foo@bar.baz"
   "*Shimbun mail address when From header is strange."
   :group 'shimbun
-  :group 'mew
+  :group 'mew-shimbun
   :type 'string)
 
 (defcustom mew-shimbun-mark-re-retrieve mew-mark-multi
   "*Shimbun re-retrieve mark."
   :group 'shimbun
-  :group 'mew
+  :group 'mew-shimbun
   :type 'character)
 
 (defcustom mew-shimbun-mark-unseen mew-mark-review
   "*Shimbun unseen mark."
   :group 'shimbun
-  :group 'mew
+  :group 'mew-shimbun
   :type 'character)
 
 (defcustom mew-shimbun-use-unseen nil
   "*If non-nil, SHIMBUN folder support the 'unseen' mark."
   :group 'shimbun
-  :group 'mew
+  :group 'mew-shimbun
   :type 'boolean)
 
 (defcustom mew-shimbun-use-unseen-cache-save nil
   "*If non-nin, save '.mew-cache' whenever remove the 'unseen' mark."
   :group 'shimbun
-  :group 'mew
+  :group 'mew-shimbun
   :type 'boolean)
 
 (defcustom mew-shimbun-mark-unseen mew-mark-review
   "*Shimbun unseen mark."
   :group 'shimbun
-  :group 'mew
+  :group 'mew-shimbun
   :type 'character)
 
 (defcustom mew-shimbun-before-retrieve-hook nil
   "*Hook run after mew-shimbun-retrieve called."
   :group 'shimbun
-  :group 'mew
+  :group 'mew-shimbun
   :type 'hook)
 
 (defcustom mew-shimbun-retrieve-hook nil
   "*Hook run after mew-shimbun-retrieve called."
   :group 'shimbun
-  :group 'mew
+  :group 'mew-shimbun
   :type 'hook)
 
 (defconst mew-shimbun-id-format "%s+%s:%s")
