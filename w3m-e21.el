@@ -73,6 +73,10 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
   (make-coding-system coding-system 4 mnemonic docstring
 		      (cons decoder encoder)))
 
+(defun w3m-add-local-hook (hook function &optional append)
+  "Add to the buffer-local value of HOOK the function FUNCTION."
+  (add-hook hook function append t))
+
 ;;; Image handling functions.
 
 ;; `display-images-p' has not been available prior to Emacs 21.0.105.

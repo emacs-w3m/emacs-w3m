@@ -4484,11 +4484,12 @@ it will prompt user where to save a file."
 	(copy-file ftp filename)
 	(message "Wrote %s" filename)))))
 
-(defun w3m-add-local-hook (hook function &optional append)
-  "Add to the buffer-local value of HOOK the function FUNCTION."
-  (when (or (featurep 'xemacs) (< emacs-major-version 21))
-    (make-local-hook hook))
-  (add-hook hook function append t))
+(unless (fboundp 'w3m-add-local-hook)
+  (defun w3m-add-local-hook (hook function &optional append)
+    "Add to the buffer-local value of HOOK the function FUNCTION.
+Note: This function is designed for the other emacsen than Emacs21."
+    (make-local-hook hook)
+    (add-hook hook function append t)))
 
 (defvar w3m-current-position -1)
 (make-variable-buffer-local 'w3m-current-position)
