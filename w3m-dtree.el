@@ -29,6 +29,7 @@
 ;;    http://namazu.org/~tsuchiya/emacs-w3m/
 
 ;;; Code:
+(require 'w3m)
 
 (defcustom w3m-dtree-default-allfiles nil
   "*If non-nil, set 'allfiles' to default."
@@ -127,5 +128,4 @@ If called with 'prefix argument', display all directorys and files."
 			(if allfiles "?allfiles=true" ""))))
 
 (provide 'w3m-dtree)
-
 ;;; w3m-dtree.el ends here

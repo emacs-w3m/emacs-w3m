@@ -1,3 +1,8 @@
+2001-05-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-dtree.el (top-level): Require `w3m' to suppress byte-compile
+	warnings.
+
 2001-05-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-view-this-url): Message if there is no link.
