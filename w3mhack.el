@@ -102,7 +102,8 @@
       (push "octet.el" ignores))
     (unless (featurep 'mule)
       (push "w3m-weather.el" ignores))
-    (if (and (>= emacs-major-version 20)
+    (if (and (boundp 'emacs-major-version)
+	     (>= emacs-major-version 20)
 	     (locate-library "bitmap"))
 	;; Against the error "Already defined charset: 242".
 	(when (locate-library "un-define")

@@ -2,6 +2,7 @@
 
 	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
 	w3m-bitmap.el if bitmap.el is not installed.
+	(w3mhack-examine-modules): Add condition to w3m-bitmap.el check.
 
 	* w3m-bitmap.el: New file.
 	
