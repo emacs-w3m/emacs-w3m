@@ -1,0 +1,16 @@
+2000-07-13  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Added handling of name anchors. Add comments.
+
+2000-07-12  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Improved to handle multi buffer. Fix broken cache and
+	order of fontify.
+
+2000-07-01  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Handle &-sequence. Add history and cache.
+
+2000-06-25  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: New file.
