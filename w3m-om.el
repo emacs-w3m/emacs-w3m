@@ -38,8 +38,9 @@
 (provide 'w3m-om);; It is needed to avoid circular dependencies.
 
 (eval-when-compile
-  (defconst w3m-icon-directory nil
-    "This definition is used to avoid byte-compile warnings."))
+  (unless (fboundp 'custom-declare-variable)
+    (defconst w3m-icon-directory nil
+      "This definition is used to avoid byte-compile warnings.")))
 
 (require 'w3m)
 
