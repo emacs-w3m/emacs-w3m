@@ -3040,11 +3040,24 @@ If input is nil, use default coding-system on w3m."
 
 
 ;;;###autoload
-(defun w3m (url &optional args)
-  "Interface for w3m on Emacs."
-  (interactive
-   (list (or (w3m-alive-p)
-	     (w3m-input-url))))
+(defun w3m (&optional url)
+  "Visit to the World Wide Web page using the external command w3m or
+w3mmee.  If you invoke this command interactively for the first time,
+it will prompt you for the URL where you wish to go, otherwise it will
+pop up an existing window or frame.  In addition, you can run this
+command in the batch mode like \"emacs -f w3 URL&\".  URL should be a
+string which defaults to the value of `w3m-home-page' or \"about:\".
+The value of `w3m-pop-up-frames' specifies whether to pop up a new
+frame, however, it will be ignored (treated as nil) when this command
+is called non-interactively."
+  (interactive (list (or (w3m-alive-p)
+			 (w3m-input-url))))
+  (unless url
+    ;; It may be called non-interactively.
+    (setq url (or (when (= 1 (length command-line-args-left))
+		    (pop command-line-args-left))
+		  w3m-home-page
+		  "about:")))
   (let ((focusing-function
 	 (list 'lambda '(frame)
 	       '(raise-frame frame)
@@ -3054,13 +3067,17 @@ If input is nil, use default coding-system on w3m."
 		   '(x-focus-frame frame)
 		 '(focus-frame frame))))
 	(props w3m-pop-up-frame-parameters)
-	window-system-p)
+	popup-frame-p)
     (w3m-static-if (featurep 'xemacs)
 	(progn
-	  (setq window-system-p (device-on-window-system-p))
+	  (setq popup-frame-p (and w3m-pop-up-frames
+				   (interactive-p)
+				   (device-on-window-system-p)))
 	  (when (consp (car-safe props))
 	    (setq props (alist-to-plist props))))
-      (setq window-system-p window-system)
+      (setq popup-frame-p (and w3m-pop-up-frames
+			       (interactive-p)
+			       window-system))
       (when (and props
 		 (not (consp (car-safe props))))
 	(let (alist)
@@ -3078,10 +3095,10 @@ If input is nil, use default coding-system on w3m."
 		(window
 		 (select-window window))
 		(t
-		 (when (and window-system-p w3m-pop-up-frames)
+		 (when popup-frame-p
 		   (funcall focusing-function (make-frame props)))
 		 (switch-to-buffer url))))
-      (when (and window-system-p w3m-pop-up-frames)
+      (when popup-frame-p
 	(funcall focusing-function (make-frame props)))
       (w3m-goto-url url))))
 

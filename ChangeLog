@@ -1,5 +1,8 @@
 2001-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m): Made it can be called non-interactively or a batch
+	job.
+
 	* w3m.el (w3m-goto-url): Add autoload magic cookie.
 	* w3m-weather.el (w3m-about-weather, w3m-weather): Ditto.
 	* w3m-search.el (w3m-search): Ditto.
