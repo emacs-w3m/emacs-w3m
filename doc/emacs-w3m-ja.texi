@@ -3694,8 +3694,8 @@ MUA $B$,(B @samp{foobar} $B%U%)%k%@$N5-;v$N1\Mw$rMW5a$7$?$i!"<B:]$N5-;vFbMF$r
 @code{luna-define-method} $B$N@k8@$,$J$$$b$N$b$"$j$^$9!#(B
 
 $B<B$O!"(B@file{shimbun.el} $B5Z$S3F(B @samp{shimbun} $B%b%8%e!<%k$O!"(B
-@acronym{FLIM} $B$K4^$^$l$F$$$k%*%V%8%'%/%H;V8~%W%m%0%i%_%s%0$r2DG=$H$9(B
-$B$k(B @file{luna.el} $B$rMxMQ$7$F=q$+$l$F$$$^$9!#(B
+Emacs Lisp $B$K$F%*%V%8%'%/%H;V8~%W%m%0%i%_%s%0$r2DG=$H$9$k(B @file{luna.el}
+@footnote{@acronym{FLIM} $B$K4^$^$l$F$$$^$9!#(B} $B$rMxMQ$7$F=q$+$l$F$$$^$9!#(B
 
 @file{shimbun.el} $B$NCf$G$O!"(B@code{shimbun-headers} $B$,$"(B
 $B$k(B URL $B$N%&%'%V%Z!<%8$N%=!<%9$r<hF@$7!"(B@code{shimbun-get-headers} $B$,$=$N(B
@@ -3704,9 +3704,10 @@ MUA $B$,(B @samp{foobar} $B%U%)%k%@$N5-;v$N1\Mw$rMW5a$7$?$i!"<B:]$N5-;vFbMF$r
 $B%V%Z!<%8$N%=!<%9$r!"$=$N9=B$$K9g$o$;$FJQ2=$5$;$k$3$H$,$G$-$^$;$s!#(B
 
 $B$=$3$G(B @code{luna} $B$K$h$j!"%a%=%C%I$,%3!<%k$5$l$k<j=g$@$17h$a$F$*$$$F!"(B
-$B6&DL$G;H$($=$&$J$b$N$O(B @file{shimbun.el} $B$NCf$K%a%=%C%I$N<BBN$bDj5A$7$F(B
-$B$*$-(B ($B$=$l$9$i$b:FDj5A2DG=$G$9$,(B)$B!"(B@samp{shimbun} $B$K$h$jJQ2=$5$;$k$Y$-$H(B
-$B$3$m$O!"%a%=%C%I$N<BBNDj5A$r3F(B @samp{shimbun} $B%b%8%e!<%k$KG$$;$F$$$k$N$G(B
+@samp{shimbun} $B$K$h$jJQ2=$5$;$k$Y$-%a%=%C%I$N<BBNDj5A$r3F(B @samp{shimbun}
+$B%b%8%e!<%k$KG$$;$F$$$k$N$G$9!#3F(B @samp{shimbun} $B%b%8%e!<%k$G6&DL$G;H$($=(B
+$B$&$J%a%=%C%I$O(B @file{shimbun.el} $B$NCf$K%a%=%C%I$N<BBN$bDj5A$7$F$"$j$^$9(B
+$B$,!"$=$l$9$i3F(B @samp{shimbun} $B%b%8%e!<%k$K$*$$$F:FDj5A$r$9$k$3$H$,2DG=$G(B
 $B$9!#(B
 
 $B$b$&$*J,$+$j$N$h$&$K!"(B@code{luna-define-generic} $B$O!"8@$o$P]W$@$1$N@k8@!"(B
@@ -3779,7 +3780,8 @@ Message-ID $B$H$7$FI=<($5$l$^$9!#Nc$($P!"2<5-$N(B
 $B$?$J$$9=B$$N%&%'%V%Z!<%8$b$"$j$^$9!#$3$N>l9g$O>/$7$d$C$+$$$G!"%X%C%@>pJs(B
 $B<hF@$NCJ3,$G!"5-;v$NFbMF$b<hF@$7$F$*$-!"(BEmacs $B$N%a%b%j$K<}$a$F$*$/I,MW$,(B
 $B$"$j$^$9!#6qBNE*$K$O(B @file{sb-palmfan.el}, @file{sb-dennou.el},
-@file{sb-tcup.el} $B$J$I$r;2>H$7$F2<$5$$!#(B
+@file{sb-tcup.el} $B$N(B @file{shimbun-headers} $B%a%=%C%I$NDj5A$r;2>H$7$F2<$5(B
+$B$$!#(B
 
 $B%&%'%V%Z!<%8$K$h$C$F$O(B Date $B$,FCDj$G$-$J$$$b$N$,$"$j$^$9!#$=$&$$$&>l9g$O(B
 $BL5M}$KFCDj$;$:$H$b(B @code{""} $B$rF~$l$F$*$1$P(B OK $B$G$9!#5-;v$NFbMF$r8+$F=i(B
@@ -3928,6 +3930,15 @@ Message-ID $B$H$7$FI=<($5$l$^$9!#Nc$($P!"2<5-$N(B
 
 @noindent
 $B$h$j6qBNE*$JJ}K!$O!"(B@file{sb-ibm-dev.el} $B$,;29M$K$J$k$+$b$7$l$^$;$s!#(B
+
+$B@hDx!"(B@xref{Getting web page and header information} $B$N@a$G!"5-;vKh$K8D(B
+$BJL$K(B URL $B$r;}$?$J$$9=B$$N%&%'%V%Z!<%8$N>l9g!"%X%C%@>pJs<hF@$NCJ3,$G!"5-(B
+$B;v$NFbMF$b<hF@$7$F$*$-!"(BEmacs $B$N%a%b%j$K<}$a$F$*$/I,MW$,$"$k$H?=$7>e$2$^(B
+$B$7$?!#$3$N>l9g!"(B@file{shimbun-article} $B$G$O>e5-$N$h$&$J(B Xref $B>pJs$+$i$N(B
+web page $B$N<hF@$OI,MW$K$J$j$^$;$s$N$G!"$?$@(B Emacs $B$N%a%b%j$+$i<h$j=P$7$F!"(B
+$B%P%C%U%!$K@07A$7$FA^F~$9$l$PB-$j$^$9!#6qBNE*$K$O(B @file{sb-palmfan.el},
+@file{sb-dennou.el}, @file{sb-tcup.el} $B$N(B @file{shimbun-article} $B%a%=%C(B
+$B%I$NDj5A$r;2>H$7$F2<$5$$!#(B
 
 @node Inheriting shimbun module
 @subsection Shimbun $B%b%8%e!<%k$N7Q>5(B

@@ -3559,8 +3559,8 @@ as to some symbols, they are declared with @code{luna-define-generic}
 only, but not with @code{luna-define-method}.
 
 Actually @file{shimbun.el} and other shimbun modules use @file{luna.el}
-of FLIM that enable you to write object oriented programming in Emacs
-Lisp.
+@footnote{it is included in @acronym{FLIM}.} that enables you to write
+object oriented programming in Emacs Lisp.
 
 @file{shimbun.el} fixes a frame, in which @code{shimbun-headers}
 gets a web page of a certain URL, @code{shimbun-get-headers} gathers
@@ -3570,7 +3570,8 @@ number of format of web pages in the world?
 
 @file{shimbun.el} fixes only orders of methods called.  It leaves most
 of actual functions' bodies to each shimbun module.  @file{shimbun.el}
-defines some actual functions' bodies as methods, however, you can
+defines some actual functions' bodies as methods which seem to be
+commonly used for each @samp{shimbun} module, however, you can even
 override them in your new shimbun module, if you want.
 
 Now you can understand that @code{luna-define-generic} provides you with
@@ -3643,7 +3644,8 @@ If URL of an article is a relative path like above, use
 If each article doesn't have a each unique URLs (i.e. URL of headers and
 URL of articles are just same), you have to ask Emacs to remember body
 of an article when gathering headers information, For more detail see
-@file{sb-palmfan.el}, @file{sb-dennou.el} and @file{sb-tcup.el}.
+definitions of @file{shimbun-headers} method of @file{sb-palmfan.el},
+@file{sb-dennou.el} or @file{sb-tcup.el}.
 
 Sometimes you cannot identify Date information when gathering headers
 information only from a web page source.  If so, leave it, just set a
@@ -3792,6 +3794,15 @@ parent method can work properly.
 @noindent
 For more details see @code{shimbun-make-contents} of
 @file{sb-ibm-dev.el}.
+
+I said in the subsection of @xref{Getting web page and header
+information} that if each article doesn't have a each unique URLs you
+have to ask Emacs to remember body of an article when gathering headers
+information,  In such case you don't have to get a web page from URL of
+Xref in @file{shimbun-article} method.  Just get texts from Emacs
+memories and put them with pretty printing.  For more detail see
+definitions of @file{shimbun-article} method of @file{sb-palmfan.el},
+@file{sb-dennou.el} or @file{sb-tcup.el}.
 
 @node Inheriting shimbun module
 @subsection Inheriting shimbun module
