@@ -114,27 +114,10 @@
   "Rertrieve URL contents and insert to current buffer.
 Return content-type of URL as string when retrieval succeeded."
   (let (type)
-    (when (and url (setq type (w3m-retrieve url no-decode no-cache)))
-      (w3m-with-work-buffer
-	(unless no-decode
-	  (w3m-decode-buffer url)))
-      (unless (eq (current-buffer)
-		  (get-buffer w3m-work-buffer-name))
-	(when no-decode
-	  (set-buffer-multibyte nil))
-	(insert-buffer w3m-work-buffer-name)))
-    type))
-
-(defun shimbun-retrieve-url-buffer (url &optional no-cache no-decode)
-  "Return a buffer which contains the URL contents."
-  (if (and url (w3m-retrieve url no-decode no-cache))
-      (w3m-with-work-buffer
-	(unless no-decode
-	  (w3m-decode-buffer url))
-	(current-buffer))
-    (with-current-buffer (get-buffer w3m-work-buffer-name)
-      (erase-buffer)
-      (current-buffer))))
+    (when (and url (setq type (w3m-retrieve url nil no-cache)))
+      (unless no-decode
+	(w3m-decode-buffer url))
+      type)))
 
 (defalias 'shimbun-content-type 'w3m-content-type)
 (defsubst shimbun-url-exists-p (url &optional no-cache)
@@ -234,9 +217,11 @@ If article have inline images, generated article have a multipart/related
 content-type if `shimbun-encapsulate-images' is non-nil."
   (let ((case-fold-search t)
 	(count 0)
+	(msg-id (shimbun-header-id header))
 	beg end
 	url type img imgs boundary charset)
-    (current-buffer)
+    (when (string-match "^<\\([^>]+\\)>$" msg-id)
+      (setq msg-id (match-string 1 msg-id)))
     (setq charset
 	  (upcase (symbol-name
 		   (detect-mime-charset-region (point-min)(point-max)))))
@@ -255,8 +240,9 @@ content-type if `shimbun-encapsulate-images' is non-nil."
 		(setq imgs (cons
 			    (setq img (list
 				       url
-				       (concat (format "shimbun.%d"
-						       (incf count)))
+				       (format "shimbun.%d.%s"
+					       (incf count)
+					       msg-id)
 				       (with-temp-buffer
 					 (set-buffer-multibyte nil)
 					 (setq
@@ -278,11 +264,11 @@ content-type if `shimbun-encapsulate-images' is non-nil."
 	  (setq boundary (apply 'format "===shimbun_%d_%d_%d==="
 				(current-time)))
 	  (insert "Content-Type: multipart/related; type=\"text/html\"; "
-		  "boundary=\"" boundary "\"; start=\"<shimbun.0>\""
+		  "boundary=\"" boundary "\"; start=\"<shimbun.0." msg-id ">\""
 		  "\nMIME-Version: 1.0\n\n"
 		  "--" boundary
 		  "\nContent-Type: text/html; charset=" charset
-		  "\nContent-ID: <shimbun.0>\n\n"))
+		  "\nContent-ID: <shimbun.0." msg-id ">\n\n"))
       (insert "Content-Type: text/html; charset=" charset "\n"
 	      "MIME-Version: 1.0\n\n"))
     (encode-coding-region (point-min) (point-max)
@@ -310,7 +296,12 @@ content-type if `shimbun-encapsulate-images' is non-nil."
 	       (re-search-forward (shimbun-content-end-internal shimbun)
 				  nil t))
       (delete-region (match-beginning 0) (point-max))
-      (delete-region (point-min) start))
+      (delete-region (point-min) start)
+      (goto-char (point-min))
+      (insert "<html>\n<head>\n<base href=\""
+	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
+      (goto-char (point-max))
+      (insert "\n</body>\n</html>\n"))
     (shimbun-make-mime-article shimbun header)
     (buffer-string)))
 
@@ -334,11 +325,14 @@ set this to `never' if you never want to use BBDB."
 (defun shimbun-header-insert (shimbun header)
   (let ((from (shimbun-header-from header))
 	(refs (shimbun-header-references header))
+	(reply-to (shimbun-reply-to shimbun))
 	x-face)
     (insert "Subject: " (or (shimbun-header-subject header) "(none)") "\n"
 	    "From: " (or from "(nobody)") "\n"
 	    "Date: " (or (shimbun-header-date header) "") "\n"
 	    "Message-ID: " (shimbun-header-id header) "\n")
+    (when reply-to
+      (insert "Reply-To: " reply-to "\n"))
     (when (and refs
 	       (string< "" refs))
       (insert "References: " refs "\n"))
@@ -431,8 +425,8 @@ Return nil if all pages should be retrieved."
 	 (, range)))))
 
 (luna-define-method shimbun-headers ((shimbun shimbun) &optional range)
-  (with-current-buffer (shimbun-retrieve-url-buffer
-			(shimbun-index-url shimbun) 'reload)
+  (with-temp-buffer
+    (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload)
     (shimbun-get-headers shimbun range)))
 
 (luna-define-generic shimbun-reply-to (shimbun)
@@ -471,7 +465,7 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
 (luna-define-method shimbun-article ((shimbun shimbun) header &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
     (with-current-buffer (or outbuf (current-buffer))
-      (insert
+      (w3m-insert-string
        (or (with-temp-buffer
 	     (shimbun-retrieve-url (shimbun-article-url shimbun header))
 	     (message "shimbun: Make contents...")

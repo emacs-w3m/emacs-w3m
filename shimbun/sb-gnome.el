@@ -46,7 +46,6 @@
     "gtk-i18n-list" "gtk-list" "gtk-perl-list" "guppi-list" "libart"
     "libart-hackers" "orbit-list" "vote" "wm-spec-list"
     "xml" "xslt"))
-(defvar shimbun-ding-coding-system 'iso-8859-1)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-gnome))
   (concat (shimbun-url-internal shimbun)
@@ -74,10 +73,7 @@
 	 (concat (shimbun-url-internal shimbun)
 		 "/" (shimbun-current-group-internal shimbun)
 		 "/" month "/date.html")
-	 'reload 'binary)
-	(set-buffer-multibyte t)
-	(decode-coding-region (point-min) (point-max)
-			      (shimbun-coding-system-internal shimbun))
+	 'reload)
 	(let (date date-next date-parsed beg end subject id)
 	  (goto-char (point-min))
 	  (while (or date-next

@@ -27,9 +27,8 @@
 
    以下の w3m で動作することが確認されています．
 
-	w3m-0.2.2
-	w3mmee-p19-6
-	w3m-0.2.3.1-m17n
+	w3m-0.3
+	w3mmee-p23-2
 
 * トラブル
 
@@ -79,6 +78,8 @@
 
    (3) Emacsen の問題
 
+       XEmacs-21.1 では SHIFT_JIS のページが化けることがあります．
+
        XEmacs-21.2 では beta36 以前では問題があります．beta36 以前をお使
        いの場合は XEmacs を upgrade してください．
 
@@ -116,6 +117,27 @@
 ** Q. フレームがレンダリングされません．
 
    w3mmee を使ってください．
+
+** Q. Emacs21 の tab bar に favicon を表示しようとしたのですが、エラーに
+   なります。
+
+   Image Magick の "convert" が必要です。
+   http://www.imagemagick.org/ から入手してインストールしてください。
+
+** Q. Emacs21 で favicon を表示しようとしたのですが、Emacs がロックしま
+   した / または emacs-w3m を立ち上げようとしたら、激しくディスクアクセ
+   スした後、"process `convert' exited abnormally with code `10'" などと
+   表示されました。
+
+   Image Magick のバージョンを確認してください。
+   ImageMagick-5.2.1 付属の convert ではそうなりました。
+   ImageMagick-5.4.0-5 以上に付属の convert では動作確認されています。
+
+   もし ImageMagick が使えない/使いたくない場合は .emacs ファイルなどに
+
+   (setq w3m-use-favicon nil)
+
+   の設定を追加して下さい。
 
 * shimbun
 

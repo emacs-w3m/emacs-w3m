@@ -161,7 +161,7 @@ over the 'w3m-dtree-directory-depth'."
     (insert "</pre>\n</body>\n</html>\n")))
 
 ;;;###autoload
-(defun w3m-about-dtree (url &optional nodecode allfiles)
+(defun w3m-about-dtree (url &optional nodecode allfiles &rest args)
   (let ((prelen (length "about://dtree"))
 	(dirprefix "about://dtree")
 	(fileprefix "file://")

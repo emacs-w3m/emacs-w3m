@@ -1,6 +1,6 @@
 ;;; w3mhack.el --- a hack to setup the environment for building w3m
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -30,6 +30,41 @@
 (unless (dolist (var nil t))
   ;; Override the macro `dolist' which may have been defined in egg.el.
   (load "cl-macs" nil t))
+(require 'bytecomp)
+
+(defconst w3mhack-emacs-major-version (if (boundp 'emacs-major-version)
+					  emacs-major-version
+					(string-to-int emacs-version)))
+
+(when (<= w3mhack-emacs-major-version 19)
+  ;; Make `locate-library' run quietly.
+  (let (current-load-list)
+    ;; Mainly for the compile-time.
+    (defun locate-library (library &optional nosuffix)
+      "Show the full path name of Emacs library LIBRARY.
+This command searches the directories in `load-path' like `M-x load-library'
+to find the file that `M-x load-library RET LIBRARY RET' would load.
+Optional second arg NOSUFFIX non-nil means don't add suffixes `.elc' or `.el'
+to the specified name LIBRARY (a la calling `load' instead of `load-library')."
+      (interactive "sLocate library: ")
+      (catch 'answer
+	(mapcar
+	 '(lambda (dir)
+	    (mapcar
+	     '(lambda (suf)
+		(let ((try (expand-file-name (concat library suf) dir)))
+		  (and (file-readable-p try)
+		       (null (file-directory-p try))
+		       (progn
+			 (or noninteractive
+			     (message "Library is file %s" try))
+			 (throw 'answer try)))))
+	     (if nosuffix '("") '(".elc" ".el" ""))))
+	 load-path)
+	(or noninteractive
+	    (message "No library %s in search path" library))
+	nil))
+    (byte-compile 'locate-library)))
 
 ;; Add supplementary directories to `load-path'.
 (let ((addpath (or (pop command-line-args-left) "NONE"))
@@ -45,6 +80,54 @@
   (unless (null paths)
     (setq load-path (nconc (nreverse paths) load-path))))
 
+;; Check for the required modules.
+(when (or (featurep 'xemacs)
+	  (<= w3mhack-emacs-major-version 19))
+  (let ((apel (locate-library "path-util"))
+	(emu (locate-library "pccl")))
+    (if (and apel emu)
+	(when (featurep 'xemacs)
+	  (setq apel (file-name-directory apel)
+		emu (file-name-directory emu))
+	  (if (not (string-equal apel emu))
+	      (setq apel (concat apel "\n  " emu)))
+	  (unless (if (featurep 'mule)
+		      (condition-case nil
+			  (progn
+			    ;; Checking whether APEL has been compiled for
+			    ;; XEmacs with MULE.
+			    (require 'pccl)
+			    (featurep 'pccl-20))
+			(error nil))
+		    (condition-case nil
+			;; Checking whether APEL has been compiled for
+			;; XEmacs without MULE (whether `pccl' does not
+			;; require `ccl').
+			(require 'pccl)
+		      (error nil)))
+	    (error "\nError: %s%s%s%s\n"
+		   (if (featurep 'mule)
+		       "\
+APEL package seems to have been compiled for non-MULE XEmacs,
+ even though you are using XEmacs with MULE to build emacs-w3m."
+		     "\
+APEL package seems to have been compiled for XEmacs with MULE,
+ even though you are using non-MULE XEmacs to build emacs-w3m.")
+		   "  APEL
+ modules are installed in:\n\n  "
+		   apel
+		   "\n
+ If you are using the official APEL XEmacs package (or possibly SUMO),
+ look for the new one (version 1.23 and later) and install it in your
+ system, or send a bug report to the maintainers using
+ `M-x report-xemacs-bug'.  Otherwise, you may rebuild APEL from the
+ source distribution, see manuals where you could get it from.")))
+      (error "
+Error: You have to install APEL before building emacs-w3m, see manuals.
+ If you have already installed APEL in the non-standard Lisp directory,
+ use the `--with-addpath=' configure option with that path name (or
+ colon separated those path names) and run configure again."))))
+
 (defconst shimbun-module-directory "shimbun")
 
 (defconst w3mhack-colon-keywords-file "w3m-kwds.el")
@@ -53,30 +136,42 @@
 (push default-directory load-path)
 (push (expand-file-name shimbun-module-directory default-directory) load-path)
 
+(defun w3mhack-mdelete (elts list)
+  "Like `delete', except that it also works for a list of subtractions."
+  (if elts
+      (if (consp elts)
+	  (let ((rest (delete (car elts) list)))
+	    (while (setq elts (cdr elts))
+	      (setq rest (delete (car elts) rest))
+	      (delete (car elts) list))
+	    rest)
+	(delete elts list))
+    list))
+
 (defun w3mhack-examine-modules ()
   "Examine w3m modules should be byte-compile'd."
   (let* ((modules (directory-files default-directory nil "^[^#]+\\.el$"))
-	 (version-specific-modules '("w3m-e20.el" "w3m-e21.el"
-				     "w3m-om.el" "w3m-xmas.el"))
-	 (ignores (delete (cond
-			   ((featurep 'xemacs)
-			    (push "w3m-fsf.el" version-specific-modules)
-			    "w3m-xmas.el")
-			   ((boundp 'MULE)
-			    (push "w3m-fsf.el" version-specific-modules)
-			    "w3m-om.el")
-			   ((boundp 'emacs-major-version)
-			    (if (>= emacs-major-version 21)
-				"w3m-e21.el"
-			      "w3m-e20.el")))
-			  (append version-specific-modules
-				  (list "w3mhack.el"
-					w3mhack-colon-keywords-file))))
+	 (version-specific-modules '("w3m-e19.el" "w3m-e20.el" "w3m-e21.el"
+				     "w3m-fsf.el" "w3m-om.el" "w3m-xmas.el"))
+	 (ignores;; modules not to be byte-compiled.
+	  (append
+	   (list "w3mhack.el" w3mhack-colon-keywords-file)
+	   (w3mhack-mdelete (cond ((featurep 'xemacs)
+				   "w3m-xmas.el")
+				  ((boundp 'MULE)
+				   "w3m-om.el")
+				  ((>= w3mhack-emacs-major-version 21)
+				   '("w3m-e21.el" "w3m-fsf.el"))
+				  ((= w3mhack-emacs-major-version 20)
+				   '("w3m-e20.el" "w3m-fsf.el"))
+				  (t
+				   "w3m-e19.el"))
+			    (copy-sequence version-specific-modules))))
 	 (shimbun-dir (file-name-as-directory shimbun-module-directory))
 	 print-level print-length)
     (unless (locate-library "mew")
       (push "mew-w3m.el" ignores))
-    (unless (and (boundp 'emacs-major-version)
+    (unless (and (featurep 'mule)
 		 (if (featurep 'xemacs)
 		     ;; Mule-UCS does not support XEmacs versions prior
 		     ;; to 21.2.37.
@@ -84,22 +179,37 @@
 			  (or (> emacs-minor-version 2)
 			      (and (= emacs-major-version 2)
 				   (>= emacs-beta-version 37))))
-		   (>= emacs-major-version 20))
+		   (>= w3mhack-emacs-major-version 20))
 		 (locate-library "un-define"))
       (push "w3m-ucs.el" ignores))
-    (if (locate-library "mime-def")
-	;; Add shimbun modules.
+    (if (and (featurep 'mule)
+	     (locate-library "mime-def"))
 	(progn
+	  ;; Add shimbun modules.
 	  (dolist (file (directory-files (expand-file-name shimbun-dir)
 					 nil "^[^#]+\\.el$"))
 	    (setq modules (nconc modules (list (concat shimbun-dir file)))))
 	  ;; mew-shimbun check
 	  (unless (locate-library "mew")
 	    (push (concat shimbun-dir "mew-shimbun.el") ignores)))
-      (push "mime-w3m.el" ignores))
-    ;; To byte-compile w3m-macro.el and a version specific module first.
-    (princ "w3m-macro.elc ")
-    (setq modules (delete "w3m-macro.el" modules))
+      (push "mime-w3m.el" ignores)
+      (push "octet.el" ignores))
+    (unless (featurep 'mule)
+      (push "w3m-weather.el" ignores))
+    (if (and (not (featurep 'xemacs))
+	     (<= w3mhack-emacs-major-version 20)
+	     (locate-library "bitmap"))
+	;; Against the error "Already defined charset: 242".
+	(when (locate-library "un-define")
+	  (require 'un-define)
+	  (setq bitmap-alterable-charset 'tibetan-1-column)
+	  (require 'bitmap))
+      (push "w3m-bitmap.el" ignores))
+    ;; To byte-compile w3m-util.el and a version specific module first.
+    (princ "w3m-util.elc ")
+    (setq modules (delete "w3m-util.el" modules))
+    (princ "w3m-proc.elc ")
+    (setq modules (delete "w3m-proc.el" modules))
     (dolist (module version-specific-modules)
       (when (and (not (member module ignores))
 		 (member module modules))
@@ -109,7 +219,11 @@
       (unless (member module ignores)
 	(princ (format "%sc " module))))))
 
-(require 'bytecomp)
+(when (or (<= w3mhack-emacs-major-version 19)
+	  (and (= w3mhack-emacs-major-version 20)
+	       (<= emacs-minor-version 2)))
+  ;; Not to get the byte-code for `current-column' inlined.
+  (put 'current-column 'byte-compile nil))
 
 (defun w3mhack-compile ()
   "Byte-compile the w3m modules."
@@ -319,8 +433,9 @@ to remove some obsolete variables in the first argument VARLIST."
 	(message "Generating %s..." manifest)
 	(with-temp-file manifest
 	  (insert "pkginfo/MANIFEST.w3m\n")
-	  (when (file-exists-p (expand-file-name "ChangeLog" lisp-dir))
-	    (insert "lisp/w3m/ChangeLog\n"))
+	  (dolist (log (directory-files lisp-dir nil
+					"^ChangeLog\\(\\.[0-9]+\\)?$"))
+	    (insert "lisp/w3m/" log "\n"))
 	  (dolist (el els)
 	    (insert "lisp/w3m/" el "\n")
 	    (when (member (concat el "c") elcs)
@@ -329,7 +444,7 @@ to remove some obsolete variables in the first argument VARLIST."
 	    (insert "etc/w3m/" icon "\n")))
 	(message "Generating %s...done" manifest)))))
 
- ((boundp 'MULE)
+ ((= w3mhack-emacs-major-version 19)
   ;; Bind defcustom'ed variables.
   (put 'custom-declare-variable 'byte-hunk-handler
        (lambda (form)
@@ -346,34 +461,7 @@ to remove some obsolete variables in the first argument VARLIST."
 	      (fset 'message (function ignore))
 	      (unwind-protect
 		  (, (append '(funcall fn) (cdr form)))
-		(fset 'message msg))))))
-  (let (current-load-list)
-    ;; Mainly for the compile-time.
-    (defun locate-library (library &optional nosuffix)
-      "Show the full path name of Emacs library LIBRARY.
-This command searches the directories in `load-path' like `M-x load-library'
-to find the file that `M-x load-library RET LIBRARY RET' would load.
-Optional second arg NOSUFFIX non-nil means don't add suffixes `.elc' or `.el'
-to the specified name LIBRARY (a la calling `load' instead of `load-library')."
-      (interactive "sLocate library: ")
-      (catch 'answer
-	(mapcar
-	 '(lambda (dir)
-	    (mapcar
-	     '(lambda (suf)
-		(let ((try (expand-file-name (concat library suf) dir)))
-		  (and (file-readable-p try)
-		       (null (file-directory-p try))
-		       (progn
-			 (or noninteractive
-			     (message "Library is file %s" try))
-			 (throw 'answer try)))))
-	     (if nosuffix '("") '(".elc" ".el" ""))))
-	 load-path)
-	(or noninteractive
-	    (message "No library %s in search path" library))
-	nil))
-    (byte-compile 'locate-library))))
+		(fset 'message msg))))))))
 
 (defun w3mhack-generate-colon-keywords-file ()
   "Generate a file which contains a list of colon keywords to be bound at
@@ -402,7 +490,7 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 	     :require :set :tag :type))
 	  ;; Add el(c) files in the following list if necessary.
 	  ;; Each file should be representative file of a package
-	  ;; which will be used together with Emacs-W3M.
+	  ;; which will be used together with emacs-w3m.
 	  (setq files (list (locate-library "mailcap")
 			    (locate-library "mime-def")
 			    (locate-library "path-util")
@@ -458,6 +546,7 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 			  (insert-file-contents temp nil nil nil t)
 			(delete-file temp))))
 		(insert-file-contents file nil nil nil t))
+	      (goto-char (point-min))
 	      (while (setq form (condition-case nil
 				    (read buffer)
 				  (error nil)))
@@ -484,7 +573,7 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 	  (insert ";;; " w3mhack-colon-keywords-file "\
  --- List of colon keywords which will be bound at run-time
 
-;; This file should be generated by make in Emacs-W3M source directory.
+;; This file should be generated by make in emacs-w3m source directory.
 ;; There are some colon keywords which were found in the directories
 ;; listed below:
 ;;
@@ -530,20 +619,52 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 	 (push (file-name-directory x) paths))
     (if (setq x (locate-library "mew"))
 	(push (file-name-directory x) paths))
-    (and (boundp 'emacs-major-version)
-	 (if (featurep 'xemacs)
+    (and (if (featurep 'xemacs)
 	     ;; Mule-UCS does not support XEmacs versions prior to 21.2.37.
 	     (and (>= emacs-major-version 21)
 		  (or (> emacs-minor-version 2)
 		      (and (= emacs-major-version 2)
 			   (>= emacs-beta-version 37))))
-	   (>= emacs-major-version 20))
+	   (>= w3mhack-emacs-major-version 20))
 	 (setq x (locate-library "un-define"))
+	 (push (file-name-directory x) paths))
+    (and (= w3mhack-emacs-major-version 20)
+	 (setq x (locate-library "bitmap"))
 	 (push (file-name-directory x) paths))
     (let (print-level print-length)
       (princ (mapconcat
 	      (function directory-file-name)
 	      (nreverse paths) ":")))))
+
+(defun w3mhack-what-where ()
+  "Show what files should be installed and where should they go."
+  (let ((lisp-dir (pop command-line-args-left))
+	(icon-dir (pop command-line-args-left))
+	(package-dir (pop command-line-args-left)))
+    (message "
+lispdir=%s
+ICONDIR=%s
+PACKAGEDIR=%s"
+	     lisp-dir icon-dir package-dir)
+    (message "
+install:
+  *.el, *.elc, ChangeLog* -> %s"
+	     (file-name-as-directory lisp-dir))
+    (setq icon-dir (file-name-as-directory icon-dir))
+    (unless (string-equal "NONE/" icon-dir)
+      (message "
+install-icons:
+  *.xpm                   -> %s"
+	       icon-dir))
+    (setq package-dir (file-name-as-directory package-dir))
+    (unless (string-equal "NONE/" package-dir)
+      (message "
+install-package:
+  *.el, *.elc, ChangeLog* -> %slisp/w3m/
+  *.xpm                   -> %setc/w3m/
+  MANIFEST.w3m            -> %spkginfo/"
+	       package-dir package-dir package-dir)))
+  (message (if (featurep 'xemacs) "\n" "")))
 
 (defun w3mhack-version ()
   "Print version of w3m.el."

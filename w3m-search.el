@@ -1,6 +1,6 @@
 ;;; w3m-search.el --- The add-on program to access WEB search engines.
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -43,6 +43,10 @@
 
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
+
 (require 'w3m)
 
 (defcustom w3m-search-engine-alist
@@ -82,6 +86,11 @@ See also `w3m-search-engine-alist'."
   :group 'w3m
   :type 'string)
 
+(defcustom w3m-search-word-at-point t
+  "*Non-nil means that the word at point is used as initial string."
+  :group 'w3m
+  :type 'boolean)
+
 (defun w3m-search-escape-query-string (str &optional coding)
   (mapconcat
    (lambda (s)
@@ -96,17 +105,25 @@ When called interactively with prefix argument, you can choose search
 engine deinfed in `w3m-search-engine-alist'.  Otherwise use
 `w3m-search-default-engine'."
   (interactive
-   (let* ((engine
+   (let ((engine
 	  (if current-prefix-arg
 	      (completing-read
 	       (format "Which Engine? (%s): " w3m-search-default-engine)
 	       w3m-search-engine-alist nil t)
 	    w3m-search-default-engine))
-	  (default (thing-at-point 'word))
-	  (prompt (if default
+	 (default (unless (eq (get-text-property (line-beginning-position)
+						 'face)
+			      'w3m-header-line-location-title-face)
+		    (thing-at-point 'word)))
+	 prompt query)
+     (when default
+       (set-text-properties 0 (length default) nil default))
+     (setq prompt (if (and default (not w3m-search-word-at-point))
 		      (format "%s search (default %s): " engine default)
 		    (format "%s search: " engine)))
-	  (query (read-string prompt nil nil default)))
+     (setq query (if w3m-search-word-at-point
+		     (read-string prompt default)
+		   (read-string prompt nil nil default)))
      (list (if (string= engine "")
 	       w3m-search-default-engine
 	     engine)
@@ -120,4 +137,5 @@ engine deinfed in `w3m-search-engine-alist'.  Otherwise use
 
 
 (provide 'w3m-search)
-;;; w3m-search.el ends here.
+
+;;; w3m-search.el ends here

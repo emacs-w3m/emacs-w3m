@@ -38,9 +38,9 @@
     "debian-announce" "debian-commercial" "debian-firewall" "debian-french"
     "debian-isp" "debian-italian" "debian-kde" "debian-laptop" "debian-news"
     "debian-news-german" "debian-news-portuguese" "debian-security-announce"
-    "debian-testing" "debian-user" "debian-user-catalan" "debian-user-french"
-    "debian-user-polish" "debian-user-portuguese" "debian-user-spanish"
-    "debian-user-swedish"
+    "debian-testing" "debian-user" "debian-user-catalan" "debian-user-de"
+    "debian-user-french" "debian-user-german" "debian-user-polish"
+    "debian-user-portuguese" "debian-user-spanish" "debian-user-swedish"
     ;; Developers
     "debian-admintool" "debian-apache" "debian-autobuild" "debian-beowulf"
     "debian-boot" "debian-cd" "debian-ctte" "debian-debbugs" "debian-devel"
@@ -48,13 +48,13 @@
     "debian-devel-spanish" "debian-doc" "debian-dpkg" "debian-emacsen"
     "debian-events-eu" "debian-events-na" "debian-faq" "debian-gcc"
     "debian-glibc" "debian-gtk-gnome" "debian-hams" "debian-ipv6"
-    "debian-java" "debian-jr" "debian-mentors" "debian-newmaint"
-    "debian-newmaint-admin" "debian-ocaml-maint" "debian-openoffice"
-    "debian-perl" "debian-pilot" "debian-policy" "debian-pool"
-    "debian-python" "debian-qa" "debian-qa-private" "debian-release"
-    "debian-security" "debian-snapshots" "debian-tetex-maint"
-    "debian-toolchain" "debian-vote" "debian-wnpp" "debian-www" "debian-x"
-    "deity"
+    "debian-java" "debian-jr" "debian-med" "debian-mentors" "debian-newmaint"
+    "debian-newmaint-admin" "debian-newmaint-discuss" "debian-ocaml-maint"
+    "debian-openoffice" "debian-perl" "debian-pilot" "debian-policy"
+    "debian-pool" "debian-python" "debian-qa" "debian-qa-packages"
+    "debian-qa-private" "debian-release" "debian-security" "debian-snapshots"
+    "debian-ssh" "debian-tetex-maint" "debian-toolchain" "debian-vote"
+    "debian-wnpp" "debian-www" "debian-x" "deity"
     ;; Internationalization and Translations
     "debian-chinese" "debian-chinese-big5" "debian-chinese-gb"
     "debian-esperanto" "debian-i18n" "debian-japanese" "debian-l10n-catalan"
@@ -85,6 +85,7 @@
     "vgui-discuss"
     ))
 (defvar shimbun-debian-coding-system 'iso-8859-1)
+(defvar shimbun-debian-fetch-headers-max 1000)
 (defvar shimbun-debian-reverse-flag nil)
 (defvar shimbun-debian-litemplate-regexp
   "<strong><A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</A></strong> <em>\\([^<]+\\)</em>")
@@ -99,6 +100,34 @@
 (luna-define-method shimbun-reply-to ((shimbun shimbun-debian))
   (concat (shimbun-current-group-internal shimbun) "@debian.org"))
 
+(defmacro shimbun-debian-get-headers (shimbun url headers &optional aux)
+  (` (let ((case-fold-search t)
+	   (regexp (or (shimbun-mhonarc-litemplate-regexp-internal (, shimbun))
+		       shimbun-mhonarc-litemplate-regexp))
+	   (year (and (string-match (concat (regexp-quote (shimbun-index-url shimbun))
+					    "\\([0-9]+\\)")
+				    url)
+		      (match-string 1 url)))
+	   month day date-start date-end)
+       (goto-char (point-max))
+       (while (and (setq date-end (re-search-backward "^</ul>" nil t))
+		   (setq date-start (re-search-backward "^<ul>" nil t)))
+	 (forward-line -1)
+	 (looking-at "^\\(\\w+\\) \\([0-9]+\\)")
+	 (setq month (match-string 1)
+	       day (match-string 2))
+	 (goto-char date-end)
+	 (while (re-search-backward regexp date-start t)
+	   (shimbun-mhonarc-extract-header-values (, shimbun) (, url)
+						  (, headers) (, aux))
+	   (shimbun-header-set-date (car (, headers))
+				    (format "%s %s %s 00:00 +0000"
+					    day month year))
+	   (if (> (length (, headers)) shimbun-debian-fetch-headers-max)
+	       (throw 'stop (, headers)))
+	   (forward-line 0)))
+       (, headers))))
+
 (luna-define-method shimbun-get-headers ((shimbun shimbun-debian)
 					 &optional range)
   (let ((case-fold-search t)
@@ -111,12 +140,23 @@
 		(re-search-backward
 		 (concat "<a href=\"\\([^\"]+\\)/threads.html\">") nil t))
       (push (match-string 1) paths))
-    (setq paths (nreverse paths))
     (catch 'stop
-      (dolist (path paths)
-        (let ((url (concat (shimbun-index-url shimbun) path "/")))
-	  (shimbun-retrieve-url url t)
-	  (shimbun-mhonarc-get-headers shimbun url headers path))))
+      (dolist (path (nreverse paths))
+        (let* ((base-url (concat (shimbun-index-url shimbun)
+				 path "/mail%s.html"))
+	       url)
+	  (shimbun-retrieve-url (format base-url "list") t)
+	  (re-search-forward "<td>Page [0-9]+ of \\([0-9]+\\)</td>")
+	  (let* ((page-max (string-to-int (match-string 1)))
+		 (i page-max))
+	    (while (> i 1)
+	      (setq url (format base-url i))
+	      (shimbun-retrieve-url url t)
+	      (shimbun-debian-get-headers shimbun url headers path)
+	      (setq i (1- i)))
+	    (setq url (format base-url "list"))
+	    (shimbun-retrieve-url url)
+	    (shimbun-debian-get-headers shimbun url headers path)))))
     headers))
 
 (provide 'sb-debian)

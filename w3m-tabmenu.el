@@ -32,6 +32,7 @@
 
 ;;; Code:
 
+(require 'w3m-util)
 (require 'w3m)
 (require 'easymenu)
 

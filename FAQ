@@ -34,9 +34,8 @@
 
    The following w3m versions have been checked for emacs-w3m support:
 
-	w3m-0.2.2
-	w3mmee-p19-6
-	w3m-0.2.3.1-m17n
+        w3m-0.3
+	w3mmee-p23-2
 
 * Troubleshooting
 
@@ -86,6 +85,9 @@
 
    (3) Emacsen incompatibility.
 
+       Regarding XEmacs-21.1, pages with SHIFT_JIS may not be displaied
+       correctly.
+
        Regarding XEmacs-21.2, there is a problem with previous versions
        up to beta36.  If you use those versions, it is recommended that
        you upgrade.
@@ -127,6 +129,24 @@
 ** Q. Why do frames not render?
 
    Use w3mmee.
+
+** Q. Why does `favicon' not show up at tab bar with Emacs21?
+
+   Install "convert" included the ImageMagick. It is available from
+   `http://www.imagemagick.org/'.
+
+** Q. Why do lock Emacs21 when show up `favicon' , or it's very annoying
+   that my computer accesses the disk drive violently and says
+   "process `convert' exited abnormally with code `10'" in the end.
+
+   Do you use the old ImageMagick? Please use the newest it, version
+   5.4.0 or later.
+
+   If you don't want to use ImageMagick, or if you couldn't use the most
+   recent version of ImageMagick, add the following line in your .emacs
+   file:
+
+   (setq w3m-use-favicon nil)
 
 * shimbun
 

@@ -1,9 +1,9 @@
 1. はじめに
 
 shimbun ライブラリでは、新聞やニュースサイト、メーリングリストアーカイブ
-などを適切に取り扱うためのインターフェイスを提供します。
+などの Web 上の情報をメールとして扱えるようにするインターフェイスを提供します。
 
-shimbun ライブラリを利用できるユーザエージェントは、以下の通りです。
+shimbun ライブラリを利用できるメールユーザエージェントは、以下の通りです。
 
 	Wanderlust (2.7.0 以降)
 	T-gnus-6_15
@@ -92,7 +92,7 @@ Java カンファレンス関連	javaconf.servlet-ml javaconf.business-ml
 		javaconf.JGT-ml javaconf.jini-ml javaconf.ejb-ml
 		javaconf.cm-ml javaconf.horb-ml javaconf.talk-ml
 linux-ce	linux-ce.users
-mule-ja		m17n.mule-ja
+mule   		m17n.mule-ja m17n.mule
 meadow 関連	meadow.meadow-develop meadow.meadow-users-jp
 mew 関連	mew.mew-dist mew.mew-win32 mew.mew-int
 mgp 関連	mew.mgp-users mew.mgp-users-jp
@@ -106,6 +106,7 @@ netbsd 関連	netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
 		netbsd.port-mips-ja netbsd.port-powerpc-ja
 		netbsd.hpcmips-changes-ja netbsd.members-ja
 		netbsd.admin-ja netbsd.www-changes-ja
+QuickML 関連	quickml.quickml-users quickml.quickml-server
 ruby 関連	ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
 		ruby.ruby-dev ruby.ruby-ext ruby.ruby-list
 		ruby.ruby-math ruby.ruby-talk
@@ -114,8 +115,8 @@ w3m-dev		w3m-dev.w3m-dev
 digiko-ml	digiko.digiko
 xemacs 関連	xemacs.xemacs-announce xemacs.xemacs-beta-ja
 		xemacs.xemacs-beta xemacs.xemacs-build-reports
-		xemacs.xemacs-cvs xemacs.xemacs-mule xemacs.xemacs-nt
-		xemacs.xemacs-patches xemacs.xemacs-users-ja
+		xemacs.xemacs-cvs xemacs.xemacs-design xemacs.xemacs-mule
+		xemacs.xemacs-nt xemacs.xemacs-patches xemacs.xemacs-users-ja
 		xemacs.xemacs
 セキュリティーMEMO security-memo.memo
 Debian JP 関連	debian-jp.debian-announce debian-jp.debian-devel
@@ -144,7 +145,7 @@ Debian 関連	debian.debian-announce debian.debian-commercial
 		debian.debian-faq debian.debian-gcc
 		debian.debian-glibc debian.debian-gtk-gnome
 		debian.debian-hams debian.debian-ipv6
-		debian.debian-java debian.debian-jr
+		debian.debian-java debian.debian-jr debian.debian-med
 		debian.debian-mentors debian.debian-newmaint
 		debian.debian-newmaint-admin debian.debian-ocaml-maint
 		debian.debian-openoffice debian.debian-perl
@@ -193,6 +194,9 @@ Debian 関連	debian.debian-announce debian.debian-commercial
 		debian.lsb-confcall debian.lsb-discuss debian.lsb-impl
 		debian.lsb-spec debian.lsb-test debian.spi-announce
 		debian.spi-general debian.vgui-discuss
+KDE 関連	kde.Kuser kde.Kdeveloper
+Geocrawler	www.geocrawler.com に保存されている全ての mailing lists.
+MARC		marc.theaimsgroup.com に保存されている全ての mailing lists.
 
 2-4. スポーツ
 
@@ -215,7 +219,23 @@ SKK 掲示板		tcup.skk
 vinelinux web サイト	vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
 			vinelinux.errata.2x.sparc
 			vinelinux.errata.2x.alpha vinelinux.errata.1x
+2ch
+設定例:
+(setq shimbun-2ch-group-alist
+      '(("Meadow" . "http://pc.2ch.net/test/read.cgi/software/1005469775")
+	("emacs-w3m" . "http://pc.2ch.net/test/read.cgi/unix/1013710106")))
+      ;; (グループ名 . URL)
+
 HNS による日記
+設定例:
+(setq shimbun-hns-group-alist
+      '(("arisawa"			     ;; グループ名
+	 "http://www.nijino.com/ari/diary/"  ;; URL
+	 "ari@mbf.sphere.ne.jp")	     ;; From: に挿入するメールアドレス
+	("miyoshi"
+	 "http://www.be.wakwak.com/cgi-bin/sbox/~miyoshi/hns/"
+	 "miyoshi@meadowy.org")))
+
 小泉内閣メールマガジン  kantei.m-magazine
 IBM developerWorks	ibm-dev.components ibm-dev.java ibm-dev.linux
 			ibm-dev.opensource ibm-dev.security
@@ -224,6 +244,27 @@ IBM developerWorks	ibm-dev.components ibm-dev.java ibm-dev.linux
 			ibm-dev.webservices
 			ibm-dev.xml 
 Muchy's Palmware Review! muchy.review
+PalmFan			palmfan.news palmfan.palmwarefan
+pilot-link              pilot-link.announce pilot-link.devel pilot-link.general
+PCWEB COLUMN Square	pcweb-column.gyokai pcweb-column.benri
+			pcweb-column.hitech pcweb-column.business
+			pcweb-column.winxp pcweb-column.bytes
+			pcweb-column.newyork pcweb-column.asia
+			pcweb-column.akiba pcweb-column.rikei
+			pcweb-column.osx pcweb-column.game
+			pcweb-column.smart98 pcweb-column.win2k
+			pcweb-column.msdos pcweb-column.muteki
+			pcweb-column.mobile pcweb-column.win98
+			pcweb-column.ayashii pcweb-column.melon
+			pcweb-column.linux pcweb-column.scrap
+			pcweb-column.siterev pcweb-column.anime
+			pcweb-column.soho pcweb-column.trouble
+			pcweb-column.renai pcweb-column.dream
+			pcweb-column.tworld pcweb-column.camera
+			pcweb-column.denshi pcweb-column.tsushin
+			pcweb-column.shitumon pcweb-column.nandemo
+			pcweb-column.hourou pcweb-column.oshigoto
+			pcweb-column.tech pcweb-column.speed
 
 3. mew-shimbun.el について
 
@@ -249,18 +290,6 @@ mew-shimbun.el は Mew version 2.1 以降を使って shimbun を楽しむ elisp で
 
 ;;; (*1) は後述する未読管理をするときに設定します。この変数は、
 ;;; 必ず (require 'mew-shimbun) の前で設定しないといけません。
-
-;;; 変数の設定の例
-;; ハイパー日記システムのサイトを読むときは例えば以下のように設定します。
-;; (これは、Mew に限らずすべての MUA で共通の方式です)
-
-(setq shimbun-hns-group-alist
-      '(("arisawa"				;; グループ名
-	 "http://www.nijino.com/ari/diary/"	;; URL
-	 "ari@mbf.sphere.ne.jp")		;; From: に挿入するメールアドレス
-	("miyoshi"
-	 "http://www.be.wakwak.com/cgi-bin/sbox/~miyoshi/hns/"
-	 "miyoshi@meadowy.org")))
 
 ;; mew-shimbun-folder-groups に Mew で購読する shimbun server 及び group
 ;; を設定します。

@@ -95,9 +95,8 @@
 	     (dolist (site (symbol-value ident) nil)
 	       (when (string-match (car site) url)
 		 (push (cdr site) functions)))
-	     (w3m-with-work-buffer
-	       (save-match-data
-		 (run-hook-with-args-until-success 'functions url))))))))
+	     (save-match-data
+	       (run-hook-with-args-until-success 'functions url)))))))
 
 (defun w3m-filter-delete-region (start end)
   "Delete region from START pattern to END pattern."

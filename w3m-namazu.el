@@ -153,50 +153,47 @@ argument."
 ;;;###autoload
 (defun w3m-about-namazu (url &optional no-decode no-cache &rest args)
   (let (index query (whence "0"))
-    (when (string-match "^about://namazu/\\?" url)
+    (when (string-match "\\`about://namazu/\\?" url)
       (dolist (s (split-string (substring url (match-end 0)) "&"))
-	(when (string-match "^\\(index\\|\\(query\\)\\|\\(whence\\)\\)=" s)
+	(when (string-match "\\`\\(index\\|\\(query\\)\\|\\(whence\\)\\)=" s)
 	  (set (cond
 		((match-beginning 2) 'query)
 		((match-beginning 3) 'whence)
 		(t 'index))
 	       (substring s (match-end 0)))))
-      (w3m-with-work-buffer
-	(delete-region (point-min) (point-max))
-	(set-buffer-multibyte t)
-	(when (zerop (w3m-namazu-call-process (w3m-url-decode-string index)
-					      (w3m-url-decode-string query)
-					      whence))
-	  (let ((case-fold-search t))
+      (when (zerop (w3m-namazu-call-process (w3m-url-decode-string index)
+					    (w3m-url-decode-string query)
+					    whence))
+	(let ((case-fold-search t))
+	  (goto-char (point-min))
+	  (let ((max (if (re-search-forward "<!-- HIT -->\\([0-9]+\\)<!-- HIT -->" nil t)
+			 (string-to-number (match-string 1))
+		       0))
+		(cur (string-to-number whence)))
 	    (goto-char (point-min))
-	    (let ((max (if (re-search-forward "<!-- HIT -->\\([0-9]+\\)<!-- HIT -->" nil t)
-			   (string-to-number (match-string 1))
-			 0))
-		  (cur (string-to-number whence)))
-	      (goto-char (point-min))
-	      (when (search-forward "<head>")
-		(when (> cur 0)
-		  (insert
-		   (format "\n<link rel=\"prev\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
-			   index
-			   query
-			   (max (- cur w3m-namazu-page-max) 0))))
-		(when (> max (+ cur w3m-namazu-page-max))
-		  (insert
-		   (format "\n<link rel=\"next\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
-			   index
-			   query
-			   (+ cur w3m-namazu-page-max))))))
-	    (goto-char (point-min))
-	    (while (search-forward "<a href=\"/" nil t)
-	      (forward-char -1)
-	      (insert "file://"))
-	    (goto-char (point-min))
-	    (while (search-forward "<a href=\"?&whence=" nil t)
-	      (forward-char -8)
-	      (delete-char -1)
-	      (insert (format "about://namazu/?index=%s&query=%s" index query))))
-	  "text/html")))))
+	    (when (search-forward "<head>" nil t)
+	      (when (> cur 0)
+		(insert
+		 (format "\n<link rel=\"prev\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
+			 index
+			 query
+			 (max (- cur w3m-namazu-page-max) 0))))
+	      (when (> max (+ cur w3m-namazu-page-max))
+		(insert
+		 (format "\n<link rel=\"next\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
+			 index
+			 query
+			 (+ cur w3m-namazu-page-max))))))
+	  (goto-char (point-min))
+	  (while (search-forward "<a href=\"/" nil t)
+	    (forward-char -1)
+	    (insert "file://"))
+	  (goto-char (point-min))
+	  (while (search-forward "<a href=\"?&whence=" nil t)
+	    (forward-char -8)
+	    (delete-char -1)
+	    (insert (format "about://namazu/?index=%s&query=%s" index query))))
+	"text/html"))))
 
 (defun w3m-namazu-complete-index (index predicate flag)
   "Function to complete index name"

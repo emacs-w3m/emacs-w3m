@@ -93,6 +93,11 @@ This variable effected only XEmacs or Emacs 21."
   :group 'mew-w3m
   :type 'boolean)
 
+(defcustom mew-w3m-cid-retrieve-hook nil
+  "*Hook run after cid retrieved"
+  :group 'mew-w3m
+  :type 'hook)
+
 ;; these are defined here.
 ;; It's not reasonable to merge into w3m.el, I think
 (defvar mew-w3m-minor-mode nil)
@@ -111,7 +116,7 @@ This variable effected only XEmacs or Emacs 21."
 (defun mew-w3m-view-inline-image (&optional allimage)
   "Display the images of Text/Html part.
 \\<mew-summary-mode-map>
-'\\[mew-w3m-view-inline-image]'	Display the images included its message only.
+'\\[mew-w3m-view-inline-image]'	Toggle display the images included its message only.
 '\\[universal-argument]\\[mew-w3m-view-inline-image]'	Display the all images included its Text/Html part."
   (interactive "P")
   (mew-summary-msg-or-part
@@ -119,9 +124,8 @@ This variable effected only XEmacs or Emacs 21."
        (let ((mew-w3m-auto-insert-image t)
 	     (mew-w3m-safe-url-regexp nil))
 	 (mew-summary-display 'force))
-     (let ((mew-w3m-auto-insert-image t))
+     (let ((mew-w3m-auto-insert-image (not mew-w3m-auto-insert-image)))
        (mew-summary-display 'force)))))
-
 
 ;; processing Text/Html contents with w3m.
 (defun mew-mime-text/html-w3m (&rest args)
@@ -154,7 +158,7 @@ This variable effected only XEmacs or Emacs 21."
 	    (when (and (re-search-forward "^X-Shimbun-Id: " eoh t)
 		       (goto-char (point-min))
 		       (re-search-forward "^Xref: \\(.+\\)\n" eoh t))
-	      (setq xref (mew-match 1))))))
+	      (setq xref (match-string 1))))))
       (mew-elet
        (cond
 	((and (null cache) (eq w3m-type 'w3m-m17n))
@@ -197,25 +201,28 @@ This variable effected only XEmacs or Emacs 21."
 (defvar w3m-mew-support-cid (fboundp 'mew-syntax-get-entry-by-cid))
 
 (defun mew-w3m-cid-retrieve (url &rest args)
-  (save-excursion
-    (when (and w3m-mew-support-cid
-	       (string-match "^cid:\\(.+\\)" url))
-      (setq url (match-string 1 url))
-      (let ((fld (mew-current-get-fld (mew-frame-id))))
-	(set-buffer fld)
-	(let* ((msg (mew-current-get-msg (mew-frame-id)))
-	       (cache (mew-cache-hit fld msg 'must-hit))
-	       (syntax (mew-cache-decode-syntax cache))
-	       cidstx beg end)
-	  (setq cidstx (mew-syntax-get-entry-by-cid syntax url))
-	  (when cidstx
-	    (setq beg (mew-syntax-get-begin cidstx))
-	    (setq end (mew-syntax-get-end cidstx))
-	    (w3m-with-work-buffer
-	      (delete-region (point-min) (point-max))
-	      (set-buffer-multibyte nil)
-	      (insert-buffer-substring cache beg end))
-	    (car (mew-syntax-get-ct cidstx))))))))
+  (let ((output-buffer (current-buffer)))
+    (with-current-buffer w3m-current-buffer
+      (when (and w3m-mew-support-cid
+		 (string-match "^cid:\\(.+\\)" url))
+	(setq url (match-string 1 url))
+	(let ((fld (mew-current-get-fld (mew-frame-id))))
+	  (set-buffer fld)
+	  (let* ((msg (mew-current-get-msg (mew-frame-id)))
+		 (cache (mew-cache-hit fld msg 'must-hit))
+		 (syntax (mew-cache-decode-syntax cache))
+		 cidstx beg end)
+	    (setq cidstx (mew-syntax-get-entry-by-cid syntax url))
+	    (when cidstx
+	      (setq beg (mew-syntax-get-begin cidstx))
+	      (setq end (mew-syntax-get-end cidstx))
+	      (prog1
+		  (with-current-buffer output-buffer
+		    (set-buffer-multibyte t)
+		    (insert-buffer-substring cache beg end)
+		    (set-buffer-multibyte nil)
+		    (downcase (car (mew-syntax-get-ct cidstx))))
+		(run-hooks 'mew-w3m-cid-retrieve-hook)))))))))
 
 (push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
       w3m-cid-retrieve-function-alist)

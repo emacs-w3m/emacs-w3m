@@ -17,7 +17,7 @@
 
 2. インストール
 
-   a) 最新の w3m をインストールしてください(詳細については第3節を参照)．
+   a) 最新の w3m をインストールしてください(詳細については第4節を参照)．
 
    b) もしあなたが XEmacs 21.x お使いならば，必ず "gifsicle" プログラム
       をインストールして下さい．現在すべての XEmacs 21.x にオプティマイ
@@ -28,29 +28,45 @@
 
           http://www.lcdf.org/gifsicle/
 
-   c) もしあなたが，XEmacs, Mule-2.3 をお使いならば，APEL を先にインストー
-      ルしなければなりません．APEL は ftp://ftp.m17n.org/pub/mule/apel/
-      から入手できます．
+   c) もしあなたが Emacs 19.34 を元にした Mule 2.3 をお使いで，BITMAP-
+      MULE パッケージを使って web ページに白黒のインライン画像を表示した
+      いならば，パッチを当てて Mule を作り直すことを強くお勧めします．
+      mule-2.3@19.34.patch という名前のパッチが patches/ ディレクトリに
+      含まれています．この申し出を受け入れていただけないと Mule が固まっ
+      てしまうかもしれません．そして kill する以外に窮地を抜けられなくなっ
+      てしまうでしょう．
 
-      また，Emacs-w3m は「新しい custom」が必要です．もしあなたが
-      Mule-2.3 をお使いならば，emacs-w3m をインストールする前にそれを
-      インストールしなければなりません．詳細は APEL に附属の README.ja
-      をご覧下さい．
+   d) もしあなたが XEmacs か Mule 2.3 または (Mule ではない) Emacs 19.34
+      をお使いならば，APEL を先にインストールしなければなりません．
+      APEL は ftp://ftp.m17n.org/pub/mule/apel/ から入手できます．
 
-   d) Emacs-w3m は regexp-opt.el(c) モジュールを必要としますが，古い
-      Emacsen (例えば Mule 2) にはありません．もしあなたがそんなバージョ
-      ンの Emacs を使っているのならば，emacs-w3m をインストールする前
-      に以下のように regexp-opt.el(c) モジュールをインストールしなけれ
-      ばなりません．
+      また，Emacs-w3m は「新しい custom」が必要です．もしあなたが Emacs
+      19.34 か Mule 2.3 をお使いならば，emacs-w3m をインストールする前に
+      それをインストールしなければなりません．
+      詳細は http://www.dina.kvl.dk/~abraham/custom/ そして特に Mule 2.3
+      を使う場合は APEL に附属の README.ja も必ずご覧下さい．
+
+      注意: バージョン 1.23 以降の XEmacs 用 APEL パッケージが，MULE あ
+       り/なし両方の XEmacs で emacs-w3m を動作させるために使うことがで
+       きます．しかしそれらのパッケージは std11 モジュールのために FLIM
+       と (そしておそらく他のパッケージ，例えば Wanderlust や T-gnus と
+       も) 相性が良くありません．そこで，もし余力があるならば，上記のオ
+       リジナルの APEL をインストールすることをお勧めします．
+
+   e) Emacs-w3m は regexp-opt.el(c) モジュールを必要としますが，古い
+      Emacsen (例えば Emacs 19.34 や Mule 2.3) にはありません．もしあな
+      たがそんなバージョンの Emacs を使っているのならば，emacs-w3m をイ
+      ンストールする前に以下のように regexp-opt.el(c) モジュールをインス
+      トールしなければなりません．
 
           % cp attic/regexp-opt.el /usr/local/share/mule/site-lisp
           % cd /usr/local/share/mule/site-lisp
           % mule -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
 
-   e) もしあなたが，Emacs-w3m の shimbun ライブラリを使いたいとお思いな
+   f) もしあなたが，Emacs-w3m の shimbun ライブラリを使いたいとお思いな
       らば，FLIM パッケージが必要です．
 
-      FLIM は c) にて前述の APEL に依存していますので，XEmacs/Mule-2.3
+      FLIM は d) にて前述の APEL に依存していますので XEmacs や Mule 2.3
       以外のユーザの方であっても APEL も必要となります (APEL -> FLIM の
       順でインストールする必要があります)．FLIM は
       ftp://ftp.m17n.org/pub/mule/flim/ から取得することができます．
@@ -58,7 +74,7 @@
       shimbun ライブラリについて更に詳しくは，README.shimbun.ja をご覧下
       さい．
 
-   f) configure スクリプトを実行してください．
+   g) configure スクリプトを実行してください．
 
           % ./configure
 
@@ -68,7 +84,7 @@
 
           % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 
-   g) 同梱されている emacs-lisp のソースファイルを適当なディレクトリにイ
+   h) 同梱されている emacs-lisp のソースファイルを適当なディレクトリにイ
       ンストールするため，次のコマンドを実行してください．
 
           % make
@@ -87,30 +103,65 @@
 
       この場合 install-icons を実行する必要はありません．
 
-   h) 次の設定を ~/.emacs に追加してください．
+   i) 次の設定を ~/.emacs に追加してください．
 
           (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
 
-   i) その他の付属プログラムを使用するには，追加の設定が必要です．詳細に
+   j) その他の付属プログラムを使用するには，追加の設定が必要です．詳細に
       ついては，個々の付属プログラムのソースファイルの先頭に記載されてい
-      るコメントを参照してください．
+      るコメントを参照してください．例えば mime-w3m.el は text/html パー
+      トを emacs-w3m を使って SEMI MUA (T-gnus や Wanderlust など) 上で
+      表示するためのもので，.emacs ファイルに以下の行を追加する必要があ
+      ります．
+
+          (require 'mime-w3m)
 
 
-3. w3m のバージョンについて
+3. proxy ゲートウェイの設定
+
+   これにはいくつかの方法があります．一つは環境変数 http_proxy を shell
+   上で，こんなふうにグローバルに設定することです:
+
+      setenv http_proxy http://proxy.hogege.com:8000/
+
+   他に，オプション `w3m-command-arguments' をカスタマイズして，"-o" お
+   よび "http_proxy=http://PROXY_SERVER_NAME:PORT/" を追加する方法があり
+   ます．これは .emacs ファイルで以下のように行なうこともできます．
+
+      (eval-after-load "w3m"
+        '(setq w3m-command-arguments
+               (nconc w3m-command-arguments
+                      '("-o" "http_proxy=http://proxy.hogege.com:8000/"))))
+
+   環境変数 no-proxy にコンマで区分けされたホスト名を設定するか，または
+   以下のようにドメイン名 (ホスト名ではない) のリストをオプション
+   `w3m-no-proxy-domains' に設定することによって，proxy ゲートウェイを使
+   わずに接続するホストを指定することができます．
+
+      (setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
+
+   no-proxy ホストの設定に正規表現を使うには，オプション
+   `w3m-command-arguments-alist' のドキュメントを見て下さい．
+
+
+4. w3m のバージョンについて
 
    このプログラムは，w3m のバージョンに強く依存していますので，なるべく
-   最新の w3m を使うようにしてください．最新は2002年1月7日に公開された
-   w3m-0.2.4 で，そのソースは以下の場所から入手できます．
+   最新の w3m を使うようにしてください．最新は2002年3月6日に公開された
+   w3m-0.3 で，そのソースは以下の場所から入手できます．
 
-      http://prdownloads.sourceforge.net/w3m/w3m-0.2.4.tar.gz
-
-
-4. 連絡先
-
-   メールを <emacs-w3m@namazu.org> 宛に送ってください．
+      http://prdownloads.sourceforge.net/w3m/w3m-0.3.tar.gz
 
 
-5. 謝辞
+5. 連絡先
+
+   バグリポート，改善への貢献，提案，または助けを求めるには，メールを
+   <emacs-w3m@namazu.org> 宛に送ってください．もし `mail-user-agent' を
+   正しく動作するように設定してあれば，`report-emacs-w3m-bug' コマンドか
+   `C-c C-b' キーを使ってバグリポートを送ることもできます．
+
+
+6. 謝辞
 
    伊藤彰則さんによって開発された w3m がなければ，このプログラムは存在し
    ませんでした．最大の謝意を，伊藤さんに捧げたいと思います．

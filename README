@@ -1,4 +1,4 @@
-This package contains a interface program of w3m.
+           This package contains a interface program of w3m.
 
 1. Introduction
 
@@ -13,7 +13,7 @@ This package contains a interface program of w3m.
 
 2. Installation
 
-   a) This package requires the latest version of w3m (see section 3),
+   a) This package requires the latest version of w3m (see section 4),
       please install it in the first step.
 
    b) In addition, if you are using XEmacs 21.x, you should install the
@@ -25,30 +25,46 @@ This package contains a interface program of w3m.
 
          http://www.lcdf.org/gifsicle/
 
-   c) If you use XEmacs or Mule-2.3, you have to install APEL before
-      installing Emacs-w3m.  APEL is available at:
+   c) If you are using Mule 2.3 based on Emacs 19.34, and if you wish to
+      use BITMAP-MULE package to show black and white images inline on
+      the web pages, we strongly recommend you apply the patch and
+      rebuild Mule.  The patch named mule-2.3@19.34.patch is included in
+      patches/ directory.  If you don't accept our recommendation, Mule
+      might be stuck.  And you wouldn't get out of the difficulty except
+      kill Mule.
+
+   d) If you use XEmacs, Mule 2.3 or Emacs 19.34(non-MULE), you have to
+      install APEL before installing Emacs-w3m.  APEL is available at:
 
          ftp://ftp.m17n.org/pub/mule/apel/
 
-      Also, Emacs-w3m requires "new custom". If you use Mule-2.3, you
-      have to install it before installing emacs-w3m. For more detail,
-      see README.en distributed with APEL.
+      Also, Emacs-w3m requires "new custom". If you use Emacs 19.34 or
+      Mule 2.3, you have to install it before installing emacs-w3m. For
+      more detail, see http://www.dina.kvl.dk/~abraham/custom/, and
+      especially for Mule 2.3, see also README.en distributed with APEL.
 
-   d) Emacs-w3m requires the module regexp-opt.el(c) which might not
-      be provided in the old Emacsen (e.g. Mule 2).  If you are using
-      such versions of Emacs, you have to install the module regexp-
-      opt.el(c) before installing emacs-w3m as follows:
+      NOTE: XEmacs APEL package versions 1.23 and later can also be used
+       for both XEmacs with MULE and non-MULE XEmacs to run emacs-w3m.
+       However, those packages are incompatible with FLIM (and possibly
+       with some other packages, e.g. Wanderlust, T-gnus) because of the
+       std11 modules.  So, we recommend you install the original APEL
+       mentioned above if you have energy enough to do that.
+
+   e) Emacs-w3m requires the module regexp-opt.el(c) which might not be
+      provided in the old Emacsen (e.g. Emacs 19.34 and Mule 2.3).  If
+      you are using such versions of Emacs, you have to install the
+      module regexp-opt.el(c) before installing emacs-w3m as follows:
 
          % cp attic/regexp-opt.el /usr/local/share/mule/site-lisp
          % cd /usr/local/share/mule/site-lisp
          % mule -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
 
-   e) If you want to use shimbun library of Emacs-w3m, you have to
+   f) If you want to use shimbun library of Emacs-w3m, you have to
       install FLIM package.
 
-      Since FLIM depends on APEL described in c) above, you have to
+      Since FLIM depends on APEL described in d) above, you have to
       install APEL even if you use one of Emacsen other than
-      XEmacs/Mule-2.3 (you have to install APEL, and succeedingly
+      XEmacs or Mule 2.3 (you have to install APEL, and succeedingly
       FLIM).  You can get FLIM at:
 
          ftp://ftp.m17n.org/pub/mule/flim/
@@ -56,7 +72,7 @@ This package contains a interface program of w3m.
       For more detail abut shimbun library, see README.shimbun.ja
       (sorry, Japanese only).
 
-   f) Run `configure' script.
+   g) Run `configure' script.
 
           % ./configure
 
@@ -66,7 +82,7 @@ This package contains a interface program of w3m.
 
           % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 
-   g) Execute these commands to put emacs-lisp programs of this package
+   h) Execute these commands to put emacs-lisp programs of this package
       to an appropriate directory.
 
           % make
@@ -85,31 +101,67 @@ This package contains a interface program of w3m.
 
       In this case, you have no need to execute `install-icons' command.
 
-   h) Put these lines into your ~/.emacs.
+   i) Put these lines into your ~/.emacs.
 
           (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
 
-   i) If you want to use contributed programs, some additional settings
+   j) If you want to use contributed programs, some additional settings
       are required.  Please see the head of those programs for more
-      detail.
+      details.  For instance, mime-w3m.el is used to show text/html part
+      using emacs-w3m under SEMI MUAs (e.g. T-gnus, Wanderlust, etc.),
+      you have to put the following line in your .emacs file.
+
+          (require 'mime-w3m)
 
 
-3. Version of w3m
+3. How to specify proxy gateways
+
+   There are some ways to do this, one is to set the environment
+   variable http_proxy globally in the shell something like:
+
+      setenv http_proxy http://proxy.hogege.com:8000/
+
+   Another way is to customize the option `w3m-command-arguments' to
+   add the options "-o" and "http_proxy=http://PROXY_SERVER_NAME:PORT/".
+   This can also be done in your .emacs file as shown below:
+
+      (eval-after-load "w3m"
+        '(setq w3m-command-arguments
+               (nconc w3m-command-arguments
+                      '("-o" "http_proxy=http://proxy.hogege.com:8000/"))))
+
+   To specify no-proxy hosts that not to use proxy gateways to connect
+   to, you can set the environment variable no_proxy with the comma
+   separated host names, or set the option `w3m-no-proxy-domains' with a
+   list of domain names (not host names) as follows:
+
+      (setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
+
+   See also the documentation for the option
+   `w3m-command-arguments-alist' to use regexps to specify the no-proxy
+   hosts.
+
+
+4. Version of w3m
 
    Because this program is sensitive to version of w3m, the latest
-   version of w3m should be used.  Its latest official version is 0.2.4,
-   which is released at Jan 7th, 2002.  Its source can be downloaded
+   version of w3m should be used.  Its latest official version is 0.3,
+   which is released at March 6th, 2002.  Its source can be downloaded
    from:
 
-      http://prdownloads.sourceforge.net/w3m/w3m-0.2.4.tar.gz
+      http://prdownloads.sourceforge.net/w3m/w3m-0.3.tar.gz
 
 
-4. Contact
+5. Contact
 
-   In order to contact us, please send a mail to <emacs-w3m@namazu.org>.
+   To contact the emacs-w3m community for reporting bugs, contributing
+   improvements, making a suggestion or asking us for help, send a mail
+   to the open list <emacs-w3m@namazu.org>.  You can also send a bug
+   report using the command `report-emacs-w3m-bug' or the key `C-c C-b'
+   if you have set the option `mail-user-agent' that will work properly.
 
 
-5. Acknowledgments
+6. Acknowledgments
 
    w3m, which is an essential part of this package, was written by
    Akinori ITO.  We'd like to address our thanks to him for his nice

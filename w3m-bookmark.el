@@ -1,4 +1,4 @@
-;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m.
+;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -33,6 +33,8 @@
 
 
 ;;; Code:
+
+(require 'w3m-util)
 (require 'w3m)
 
 (defcustom w3m-bookmark-file
@@ -181,4 +183,5 @@ With prefix, ask new url to add instead of current page."
 
 
 (provide 'w3m-bookmark)
-;;; w3m-bookmark.el ends here.
+
+;;; w3m-bookmark.el ends here

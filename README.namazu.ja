@@ -55,7 +55,7 @@ M-x w3m-namazu として下さい。
 インデックスを変えたい時は、数引数を取って呼び出します。
 その他、変更可能な w3m-namazu のカスタマイズ変数は次の通りです。
 
-w3m-namazu-cammand
+w3m-namazu-command
 w3m-namazu-arguments
 w3m-namazu-page-max
 w3m-namazu-output-coding-system

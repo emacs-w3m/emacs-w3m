@@ -33,8 +33,9 @@
 
 
 ;;; Code:
-
-(require 'w3m-macro)
+(require 'w3m-util)
+(require 'w3m-proc)
+(require 'w3m-image)
 (require 'w3m-fsf)
 (require 'wid-edit)
 
@@ -43,9 +44,12 @@
 (eval-when-compile
   (defvar w3m-current-url)
   (defvar w3m-current-title)
+  (defvar w3m-current-process)
+  (defvar w3m-current-buffer)
   (defvar w3m-display-inline-images)
   (defvar w3m-icon-directory)
   (defvar w3m-mode-map)
+  (defvar w3m-profile-directory)
   (defvar w3m-toolbar)
   (defvar w3m-toolbar-buttons)
   (defvar w3m-use-tab)
@@ -54,8 +58,12 @@
   (defvar w3m-history)
   (defvar w3m-history-flat)
   (defvar w3m-form-use-fancy-faces)
+  (defvar w3m-async-exec)
+  (autoload 'w3m-expand-url "w3m")
   (autoload 'w3m-retrieve "w3m")
-  (autoload 'w3m-image-type "w3m"))
+  (autoload 'w3m-image-type "w3m")
+  (autoload 'w3m-load-list "w3m")
+  (autoload 'w3m-save-list "w3m"))
 
 ;;; Coding system.
 
@@ -66,7 +74,13 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
   (make-coding-system coding-system 4 mnemonic docstring
 		      (cons decoder encoder)))
 
-;;; Image handling functions.
+(unless (fboundp 'w3m-ucs-to-char)
+  (defun w3m-ucs-to-char (codepoint)
+    (decode-char 'ucs codepoint)))
+
+(defun w3m-add-local-hook (hook function &optional append)
+  "Add to the buffer-local value of HOOK the function FUNCTION."
+  (add-hook hook function append t))
 
 ;; `display-images-p' has not been available prior to Emacs 21.0.105.
 (unless (fboundp 'display-images-p)
@@ -81,35 +95,63 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 circumstances."
   (and w3m-display-inline-images (display-images-p)))
 
-(defun w3m-create-image (url &optional no-cache referer)
+(defun w3m-create-image (url &optional no-cache referer size handler)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used.
-If second optional argument REFERER is non-nil, it is used as Referer: field."
-  (condition-case err
-      (let ((type (w3m-retrieve url 'raw no-cache nil referer)))
+If second optional argument REFERER is non-nil, it is used as Referer: field.
+If third optional argument SIZE is non-nil, its car element is used as width
+and its cdr element is used as height."
+  (if (not handler)
+      (w3m-process-with-wait-handler
+	(w3m-create-image url no-cache referer size handler))
+    (lexical-let ((set-size size)
+		  (url url)
+		  image size)
+      (w3m-process-do-with-temp-buffer
+	  (type (progn
+		  (set-buffer-multibyte nil)
+		  (w3m-retrieve url 'raw no-cache nil referer handler)))
 	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-	  (w3m-with-work-buffer
-	    (create-image (buffer-string)
-			  type
-			  t
-			  :ascent 'center))))
-    (error nil)))
+	  (setq image (create-image (buffer-string) type t :ascent 'center))
+	  (if (and w3m-resize-images set-size)
+	      (progn
+		(set-buffer-multibyte t)
+		(setq size (image-size image 'pixels))
+		(if (and (null (car set-size)) (cdr set-size))
+		    (setcar set-size
+			    (/ (* (car size) (cdr set-size)) (cdr size))))
+		(if (and (null (cdr set-size)) (car set-size))
+		    (setcdr set-size
+			    (/ (* (cdr size) (car set-size)) (car size))))
+		(if (or (not (eq (car size)
+				 (car set-size)))  ; width is different
+			(not (eq (cdr size)
+				 (cdr set-size)))) ; height is different
+		    (lexical-let ((image image))
+		      (w3m-process-do
+			  (resized (w3m-resize-image
+				    (plist-get (cdr image) :data)
+				    (car set-size)(cdr set-size)
+				    handler))
+			(if resized (plist-put (cdr image) :data resized))
+			image))
+		  image))
+	    image))))))
 
-(defun w3m-insert-image (beg end image)
+(defun w3m-insert-image (beg end image &rest args)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
-  (add-text-properties beg end (list 'display image
-				     'intangible image
-				     'invisible nil))
-  ;; Hide underlines behind inline images.
-
-  ;; Gerd Moellmann <gerd@gnu.org>, the maintainer of Emacs 21, wrote in
-  ;; the article <86heyi7vks.fsf@gerd.segv.de> in the list emacs-pretest-
-  ;; bug@gnu.org on 18 May 2001 that to show an underline of a text even
-  ;; if it has an image as a text property is the feature of Emacs 21.
-  ;; However, that behavior is not welcome to the w3m buffers, so we do
-  ;; to fix it with the following stuffs.
   (let ((face (get-text-property beg 'face)))
+    (add-text-properties beg end (list 'display image
+				       'intangible image
+				       'invisible nil))
+    ;; Hide underlines behind inline images.
+    ;; Gerd Moellmann <gerd@gnu.org>, the maintainer of Emacs 21, wrote in
+    ;; the article <86heyi7vks.fsf@gerd.segv.de> in the list emacs-pretest-
+    ;; bug@gnu.org on 18 May 2001 that to show an underline of a text even
+    ;; if it has an image as a text property is the feature of Emacs 21.
+    ;; However, that behavior is not welcome to the w3m buffers, so we do
+    ;; to fix it with the following stuffs.
     (when (and face
 	       (face-underline-p face))
       (put-text-property beg end 'face nil)
@@ -194,6 +236,14 @@ Buffer string between BEG and END are replaced with IMAGE."
     (add-text-properties start end (append '(face w3m-form-face)
 					   properties))))
 
+(defun w3m-setup-widget-faces ()
+  (make-local-variable 'widget-button-face)
+  (make-local-variable 'widget-mouse-face)
+  (make-local-variable 'widget-button-pressed-face)
+  (setq widget-button-face 'w3m-form-button-face)
+  (setq widget-mouse-face 'w3m-form-button-mouse-face)
+  (setq widget-button-pressed-face 'w3m-form-button-pressed-face))
+
 ;;; Toolbar
 (defcustom w3m-use-toolbar (w3m-image-type-available-p 'xpm)
   "Non-nil activates toolbar of w3m."
@@ -201,7 +251,7 @@ Buffer string between BEG and END are replaced with IMAGE."
   :type 'boolean)
 
 (defvar w3m-e21-toolbar-configurations
-  '((auto-resize-tool-bar        . t)
+  '((auto-resize-tool-bars       . t)
     (auto-raise-tool-bar-buttons . t)
     (tool-bar-button-margin      . 0)
     (tool-bar-button-relief      . 2)))
@@ -259,23 +309,181 @@ Buffer string between BEG and END are replaced with IMAGE."
 
 (defalias 'w3m-update-toolbar 'ignore)
 
+;;; favicon
+(defcustom w3m-favicon-size nil
+  "*Size of favicon. This value is used as geometry argument for `convert'."
+  :group 'w3m
+  :type 'string)
+
+(defconst w3m-favicon-name "favicon.ico"
+  "The favicon name.")
+
+(defvar w3m-current-favicon-data nil
+  "A cons cell of (IMAGE-DATA . IMAGE-TYPE).")
+(defvar w3m-current-favicon-image nil)
+(defvar w3m-favicon-converted nil)
+(make-variable-buffer-local 'w3m-current-favicon-data)
+(make-variable-buffer-local 'w3m-current-favicon-image)
+(make-variable-buffer-local 'w3m-favicon-converted)
+(add-hook 'w3m-display-hook 'w3m-setup-favicon)
+
+(defun w3m-favicon-usable-p ()
+  "Check whether ImageMagick's `convert' supports a Windoze ico format in
+a large number of bits per pixel."
+  (let ((xpm (condition-case nil
+		 (w3m-imagick-convert-data
+		  (string 0 0 1 0 1 0 2 1 0 0 1 0 24 0 52 0
+			  0 0 22 0 0 0 40 0 0 0 2 0 0 0 2 0
+			  0 0 1 0 24 0 0 0 0 0 0 0 0 0 0 0
+			  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+			  0 255 255 255 0 0 0 0 0 0)
+		  "ico" "xpm")
+	       (error nil))))
+    (and xpm (string-match "\"2 1 2 1\"" xpm) t)))
+
+(defcustom w3m-use-favicon t
+  "*If non-nil, use favicon.
+It will be set to nil automatically if ImageMagick's
+`convert' does not support a ico format.  You can inhibit the
+use of ImageMagick absolutely by setting this option to nil."
+  :get (lambda (symbol)
+	 (and (not noninteractive)
+	      (default-value symbol)
+	      (w3m-favicon-usable-p)))
+  :set (lambda (symbol value)
+	 (custom-set-default symbol
+			     (and (not noninteractive)
+				  value
+				  (w3m-favicon-usable-p))))
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-favicon-use-cache-file nil
+  "*If non-nil, use favicon cache file."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-favicon-cache-file nil
+  "Filename of saving favicon cache."
+  :group 'w3m
+  :type 'file)
+
+(defcustom w3m-favicon-cache-expire-wait (* 30 24 60 60)
+  "*The cache will be expired after specified seconds passed since retrieval.
+If this variable is nil, never expired."
+  :group 'w3m
+  :type 'integer)
+
+(defvar w3m-favicon-cache-data nil
+  "A list of favicon cache (internal variable).
+Each information is a list whose elements are:
+ 0. URL
+ 1. Favicon
+ 2. Retrieved date")
+
+(defmacro w3m-favicon-cache-p (url)
+  `(assoc ,url w3m-favicon-cache-data))
+
+(defmacro w3m-favicon-cache-favicon (url)
+  `(let ((data (nth 1 (assoc ,url w3m-favicon-cache-data))))
+     (if (stringp data) (cons data 'ico) data)))
+
+(defmacro w3m-favicon-cache-retrieved (url)
+  `(nth 2 (assoc ,url w3m-favicon-cache-data)))
+
+(defun w3m-setup-favicon (url)
+  (setq w3m-current-favicon-data nil
+	w3m-current-favicon-image nil
+	w3m-favicon-converted nil)
+  (when (and w3m-use-favicon
+	     w3m-current-url
+	     (w3m-image-type-available-p 'xpm))
+    (cond
+     ((string-match "\\`about://\\([^/]+\\)/" url)
+      (let ((icon (intern-soft (concat "w3m-about-" (match-string 1 url)
+				       "-favicon"))))
+	(if (and (fboundp 'base64-decode-string)
+		 icon)
+	    (with-current-buffer w3m-current-buffer
+	      (setq w3m-current-favicon-data
+		    (cons (eval (list 'base64-decode-string
+				      (symbol-value icon)))
+			  'ico))))))
+     ((string-match "\\`https?://" url)
+      (w3m-retrieve-favicon
+       (or (symbol-value 'w3m-icon-data)
+	   (cons
+	    (w3m-expand-url (concat "/" w3m-favicon-name)
+			    url)
+	    'ico))
+       w3m-current-buffer)))))
+
+(defun w3m-buffer-favicon (buffer)
+  (with-current-buffer buffer
+    (when (and w3m-current-favicon-data (car w3m-current-favicon-data))
+      (or w3m-current-favicon-image
+	  w3m-favicon-converted
+	  (lexical-let ((height (number-to-string (frame-char-height)))
+			(buffer buffer)
+			handler)
+	    (setq w3m-favicon-converted t)
+	    (w3m-process-do
+		(xpm (w3m-imagick-start-convert-data
+		      handler
+		      (car w3m-current-favicon-data)
+		      (symbol-name (cdr w3m-current-favicon-data))
+		      "xpm" "-geometry" (or w3m-favicon-size
+					    (concat height "x" height))))
+	      (with-current-buffer buffer
+		(if xpm
+		    (setq w3m-current-favicon-image
+			  (create-image xpm
+					'xpm
+					t
+					:ascent 'center))
+		  (setq w3m-current-favicon-data nil)))))))))
+
+(defun w3m-retrieve-favicon (pair target &optional handler)
+  (if (and (w3m-favicon-cache-p (car pair))
+	   (or (null w3m-favicon-cache-expire-wait)
+	       (< (- (float-time)
+		     (float-time (w3m-favicon-cache-retrieved
+				  (car pair))))
+		  w3m-favicon-cache-expire-wait)))
+      (setq w3m-current-favicon-data
+	    (w3m-favicon-cache-favicon (car pair)))
+    (lexical-let ((pair pair)
+		  (target target))
+      (w3m-process-do-with-temp-buffer
+	  (ok (w3m-retrieve (car pair) 'raw nil nil nil handler))
+	(let (idata)
+	  (when ok
+	    (setq idata (buffer-string))
+	    (with-current-buffer target
+	      (setq w3m-current-favicon-data (cons idata (cdr pair)))))
+	  (push (list (car pair) (and idata (cons idata (cdr pair)))
+		      (current-time))
+		w3m-favicon-cache-data))))))
+
+(defun w3m-favicon-save-cache-file ()
+  (when w3m-favicon-use-cache-file
+    (w3m-save-list (or w3m-favicon-cache-file
+		       (expand-file-name ".favicon" w3m-profile-directory))
+		   w3m-favicon-cache-data 'binary)))
+
+(defun w3m-favicon-load-cache-file ()
+  (when (and w3m-favicon-use-cache-file
+	     (null w3m-favicon-cache-data))
+    (setq w3m-favicon-cache-data
+	  (w3m-load-list
+	   (or w3m-favicon-cache-file
+	       (expand-file-name ".favicon" w3m-profile-directory))
+	   'binary))))
+
+(add-hook 'w3m-arrived-setup-hook 'w3m-favicon-load-cache-file)
+(add-hook 'w3m-arrived-shutdown-hook 'w3m-favicon-save-cache-file)
+
 ;;; Header line & Tabs
-(defface w3m-header-line-location-title-face
-    '((((class color) (background light))
-       (:foreground "Blue" :background "Gray90"))
-      (((class color) (background dark))
-       (:foreground "Cyan" :background "Gray20")))
-  "*Face for header-line location title."
-  :group 'w3m-face)
-
-(defface w3m-header-line-location-content-face
-  '((((class color) (background light))
-     (:foreground "DarkGoldenrod" :background "Gray90"))
-    (((class color) (background dark))
-     (:foreground "LightGoldenrod" :background "Gray20")))
-  "*Face for header-line location content."
-  :group 'w3m-face)
-
 (defcustom w3m-tab-width 11
   "w3m tab width."
   :group 'w3m
@@ -290,6 +498,15 @@ Buffer string between BEG and END are replaced with IMAGE."
   "*Face to fontify unselected tabs."
   :group 'w3m-face)
 
+(defface w3m-tab-unselected-retrieving-face
+  '((((type x w32 mac) (class color))
+     :background "Gray50" :foreground "OrangeRed"
+     :underline "Gray85" :box (:line-width -1 :style released-button))
+    (((class color))
+     (:background "cyan" :foreground "OrangeRed" :underline "blue")))
+  "*Face to fontify unselected tabs which are retrieving their pages."
+  :group 'w3m-face)
+
 (defface w3m-tab-selected-face
   '((((type x w32 mac) (class color))
      :background "Gray85" :foreground "black"
@@ -298,6 +515,16 @@ Buffer string between BEG and END are replaced with IMAGE."
      (:background "blue" :foreground "black" :underline "blue"))
     (t (:underline t)))
   "*Face to fontify selected tab."
+  :group 'w3m-face)
+
+(defface w3m-tab-selected-retrieving-face
+  '((((type x w32 mac) (class color))
+     :background "Gray85" :foreground "red"
+     :underline "Gray85" :box (:line-width -1 :style released-button))
+    (((class color))
+     (:background "blue" :foreground "red" :underline "blue"))
+    (t (:underline t)))
+  "*Face to fontify selected tab which is retrieving its page."
   :group 'w3m-face)
 
 (defface w3m-tab-background-face
@@ -309,105 +536,98 @@ Buffer string between BEG and END are replaced with IMAGE."
   "*Face to fontify background of tab line."
   :group 'w3m-face)
 
-(defvar w3m-header-line-map (make-sparse-keymap))
-(define-key w3m-header-line-map [mouse-2] 'w3m-goto-url)
-
 (defun w3m-setup-header-line ()
-  (if w3m-use-tab
-      (setq header-line-format (list '(:eval (w3m-tab-line))))
-    (if w3m-use-header-line
-	(setq header-line-format
-	      (list
-	       (propertize
-		"Location: "
-		'face
-		'w3m-header-line-location-title-face)
-	       '(:eval
-		 (propertize
-		  (if (stringp w3m-current-url)
-		      (replace-regexp-in-string "%" "%%" w3m-current-url)
-		    "")
-		  'face
-		  'w3m-header-line-location-content-face
-		  'local-map
-		  (let ((map (make-sparse-keymap)))
-		    (define-key map [header-line mouse-2]
-		      'w3m-goto-url)
-		    map)
-		  'help-echo
-		  "mouse-2 prompts to input URL")))))))
+  (setq header-line-format
+	(cond
+	 (w3m-use-tab
+	  (list '(:eval (w3m-tab-line))))
+	 (w3m-use-header-line
+	  (list
+	   (propertize
+	    "Location: "
+	    'face 'w3m-header-line-location-title-face)
+	   '(:eval
+	     (propertize
+	      (if (stringp w3m-current-url)
+		  (replace-regexp-in-string "%" "%%" w3m-current-url)
+		"")
+	      'face 'w3m-header-line-location-content-face
+	      'local-map (let ((map (make-sparse-keymap)))
+			   (define-key map [header-line mouse-2]
+			     'w3m-goto-url)
+			   map)
+	      'help-echo "mouse-2 prompts to input URL")))))))
 
-(defun w3m-insert-header-line ()
-  (when (and w3m-use-tab
-	     w3m-use-header-line
-	     (stringp w3m-current-url)
-	     (eq 'w3m-mode major-mode))
-    (goto-char (point-min))
-    (insert "Location: ")
-    (put-text-property (point-min) (point)
-		       'face 'w3m-header-line-location-title-face)
-    (let ((start (point))
-	  (help "button2 prompts to input URL"))
-      (insert w3m-current-url)
-      (add-text-properties start (point)
-			   (list 'face
-				 'w3m-header-line-location-content-face
-				 'mouse-face 'highlight
-				 'keymap w3m-header-line-map
-				 'help-echo help
-				 'balloon-help help))
-      (setq start (point))
-      (insert-char ?\  (max 0 (- (window-width) (current-column) 1)))
-      (put-text-property start (point)
-			 'face 'w3m-header-line-location-content-face)
-      (insert "\n"))))
-
-(defun w3m-setup-widget-faces ()
-  (make-local-variable 'widget-button-face)
-  (make-local-variable 'widget-mouse-face)
-  (make-local-variable 'widget-button-pressed-face)
-  (setq widget-button-face 'w3m-form-button-face)
-  (setq widget-mouse-face 'w3m-form-button-mouse-face)
-  (setq widget-button-pressed-face 'w3m-form-button-pressed-face))
+(defun w3m-tab-drag-mouse-function (event buffer)
+  (let ((window (posn-window (event-end event)))
+	mpos)
+    (when (framep window) ; dropped at outside of the frame.
+      (setq window nil
+	    mpos (mouse-position))
+      (and (framep (car mpos))
+	   (car (cdr mpos))
+	   (cdr (cdr mpos))
+	   (setq window (window-at (car (cdr mpos))
+				   (cdr (cdr mpos))
+				   (car mpos)))))
+    (when window
+      (unless (string= (buffer-name (window-buffer window))
+		       buffer)
+	(select-window window)
+	(switch-to-buffer buffer)))))
 
 (defun w3m-tab-make-keymap (buffer)
   (let ((map (make-sparse-keymap))
-	(action `(lambda (e) (interactive "e")
-		   (switch-to-buffer ,(buffer-name buffer)))))
-    (define-key map [header-line down-mouse-1] action)
-    (define-key map [header-line down-mouse-2] action)
+	(drag-action `(lambda (e) (interactive "e")
+			(w3m-tab-drag-mouse-function
+			 e ,(buffer-name buffer))))
+	(up-action `(lambda (e) (interactive "e")
+		      (switch-to-buffer ,(buffer-name buffer)))))
+    (define-key map [header-line down-mouse-1] 'ignore)
+    (define-key map [header-line down-mouse-2] 'ignore)
+    (define-key map [header-line drag-mouse-1] drag-action)
+    (define-key map [header-line drag-mouse-2] drag-action)
+    (define-key map [header-line mouse-1] up-action)
+    (define-key map [header-line mouse-2] up-action)
     map))
 
 (defun w3m-tab-line ()
   (let ((current (current-buffer)))
     (concat
-     (mapconcat
-      (lambda (buffer)
-	(let ((title (w3m-buffer-title buffer)))
-	  (propertize
-	   (concat " "
-		   (if (and (> w3m-tab-width 0)
-			    (> (string-width title) w3m-tab-width))
-		       (concat (truncate-string-to-width
-				title
-				(max 0 (- w3m-tab-width 3)))
-			       "...")
-		     title)
-		   " ")
-	   'mouse-face 'highlight
-	   'face (if (eq buffer current)
-		     'w3m-tab-selected-face
-		   'w3m-tab-unselected-face)
-	   'local-map (w3m-tab-make-keymap buffer)
-	   'help-echo title)))
-      (w3m-list-buffers)
-      (propertize " " 'face 'w3m-tab-background-face))
+     (save-current-buffer
+       (mapconcat
+	(lambda (buffer)
+	  (let ((title (w3m-buffer-title buffer))
+		(favicon (if w3m-use-favicon (w3m-buffer-favicon buffer))))
+	    (propertize
+	     (concat (if favicon
+			 (propertize " " 'display favicon)
+		       " ")
+		     (if (and (> w3m-tab-width 0)
+			      (> (string-width title) w3m-tab-width))
+			 (concat (truncate-string-to-width
+				  title
+				  (max 0 (- w3m-tab-width 3)))
+				 "...")
+		       title)
+		     " ")
+	     'mouse-face 'highlight
+	     'face (if (progn (set-buffer buffer) w3m-current-process)
+		       (if (eq buffer current)
+			   'w3m-tab-selected-retrieving-face
+			 'w3m-tab-unselected-retrieving-face)
+		     (if (eq buffer current)
+			 'w3m-tab-selected-face
+		       'w3m-tab-unselected-face))
+	     'local-map (w3m-tab-make-keymap buffer)
+	     'help-echo title)))
+	(w3m-list-buffers)
+	(propertize " " 'face 'w3m-tab-background-face)))
      (propertize (make-string (window-width) ?\ )
 		 'face 'w3m-tab-background-face))))
 
 (add-hook 'w3m-mode-hook 'w3m-setup-header-line)
 (add-hook 'w3m-mode-hook 'w3m-setup-widget-faces)
-(add-hook 'w3m-fontify-after-hook 'w3m-insert-header-line)
 
 (provide 'w3m-e21)
 

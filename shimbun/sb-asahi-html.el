@@ -31,7 +31,7 @@
 
 (luna-define-class shimbun-asahi-html (shimbun shimbun-asahi) ())
 
-(defvar shimbun-asahi-html-url "http://spin.asahi.com/")
+(defvar shimbun-asahi-html-url "http://www.asahi.com/")
 (defvar shimbun-asahi-html-groups '("national" "business" "politics"
 				    "international" "sports" "culture"))
 (defvar shimbun-asahi-html-from-address "webmaster@www.asahi.com")

@@ -1,6 +1,7 @@
 INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 prefix       = @prefix@
+datadir      = @datadir@
 lispdir      = @lispdir@
 PACKAGEDIR   = @PACKAGEDIR@
 ICONDIR      = @ICONDIR@
@@ -15,16 +16,22 @@ FLAGS   = -q -no-site-file -batch -l w3mhack.el $(ADDITIONAL_LOAD_PATH)
 PACKAGE = w3m_el
 TARBALL = $(PACKAGE)-$(VERSION).tar.gz
 DISTDIR = $(PACKAGE)-$(VERSION)
-DOCS    = COPYING ChangeLog FAQ FAQ.ja README README.ja README.namazu.ja README.shimbun.ja TIPS.ja
+DOCS    = COPYING ChangeLog ChangeLog.1 FAQ FAQ.ja README README.ja README.namazu.ja README.shimbun.ja TIPS.ja
 DISTS   = Makefile.in aclocal.m4 configure configure.in install-sh mkinstalldirs
 
 
 default: Makefile
+	env test ! -f w3m-util.elc -o w3m-util.elc -nt w3m-util.el || $(MAKE) clean
+	env test ! -f w3m-proc.elc -o w3m-proc.elc -nt w3m-proc.el || $(MAKE) clean
 	$(EMACS) $(FLAGS) -f w3mhack-compile
+
+what-where:
+	@$(EMACS) $(FLAGS) -f w3mhack-what-where\
+	"$(lispdir)" "$(ICONDIR)" "$(PACKAGEDIR)"
 
 install: default
 	@$(SHELL) ./mkinstalldirs $(lispdir);\
-	for p in ChangeLog *.el; do\
+	for p in ChangeLog* *.el; do\
 	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
 	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
 	done;\
@@ -34,15 +41,14 @@ install: default
 	    $(INSTALL_DATA) $$p $(lispdir)/$$p;\
 	  fi;\
 	done;\
-	cd shimbun;\
-	if test -f shimbun.elc; then\
-	  for p in *.el; do\
+	if test -f shimbun/shimbun.elc; then\
+	  for p in `cd shimbun && echo *.el`; do\
 	    echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p";\
-	    $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	    $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p;\
 	  done;\
-	  for p in *.elc; do\
+	  for p in `cd shimbun && echo *.elc`; do\
 	    echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p";\
-	    $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	    $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p;\
 	  done;\
 	fi
 
@@ -51,10 +57,9 @@ install-icons:
 	  echo "You don't have to install icon files for \"$(EMACS)\".";\
 	else\
 	  $(SHELL) ./mkinstalldirs $(ICONDIR);\
-	  cd icons;\
-	  for i in *.xpm; do\
+	  for i in `cd icons && echo *.xpm`; do\
 	    echo " $(INSTALL_DATA) icons/$$i $(ICONDIR)/$$i";\
-	    $(INSTALL_DATA) $$i $(ICONDIR)/$$i;\
+	    $(INSTALL_DATA) icons/$$i $(ICONDIR)/$$i;\
 	  done;\
 	fi
 
@@ -93,6 +98,9 @@ tarball: $(DOCS) $(DISTS)
 	cp -p `echo patches/*|sed s,patches/CVS,,` $(DISTDIR)/patches
 	mkdir $(DISTDIR)/shimbun
 	cp -p shimbun/*.el $(DISTDIR)/shimbun
+	find $(DISTDIR) -type d | xargs chmod 755
+	find $(DISTDIR) -type f | xargs chmod 644
+	chmod 755 $(DISTDIR)/configure $(DISTDIR)/install-sh
 	tar -cf `basename $(TARBALL) .gz` $(DISTDIR)
 	gzip -9 `basename $(TARBALL) .gz`
 	rm -rf $(DISTDIR)
@@ -102,7 +110,7 @@ clean:
 
 distclean: clean
 	-rm -f config.log config.status config.cache Makefile;\
-	rm -fr autom4te.cache
+	rm -fr autom4te*.cache
 
 ## Rule for the developers to check a portability for each module.
 .SUFFIXES: .elc .el
@@ -112,9 +120,7 @@ distclean: clean
 	$(EMACS) $(FLAGS) -f batch-byte-compile $*.el
 
 slow: Makefile
-	@echo "EMACS=$(EMACS)";\
-	echo "FLAGS=$(FLAGS)";\
-	for i in `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
+	@for i in `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
 	do $(MAKE) -s $$i; done
 
 ## Create the file w3m-kwds.el if it is needed for $(EMACS).
