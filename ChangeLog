@@ -1,3 +1,9 @@
+2004-01-29  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-follow-cache-control-header): New option.
+	(w3m-w3m-dump-extra): If `w3m-follow-cache-control-header' is
+	nil, do not follow the chache control headers.
+
 2004-01-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (tarball): Because Emacs-22 has not been released,

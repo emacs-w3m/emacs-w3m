@@ -684,6 +684,11 @@ Don't say HP, which is the abbreviated name of a certain company. ;-)"
   :group 'w3m
   :type '(integer :size 0))
 
+(defcustom w3m-follow-cache-control-header t
+  "*Follow the headers of chache control like 'Pragma:' and 'Cache-control:'"
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-keep-cache-size 300
   "*Maximum number of pages to be cached in emacs-w3m."
   :group 'w3m
@@ -4046,12 +4051,13 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 	      (let ((header (buffer-substring (point-min) (point))))
 		(when w3m-use-cookies
 		  (w3m-cookie-set url (point-min) (point)))
-		(unless (prog1 (save-excursion
-				 (or (re-search-backward
-				      "^Pragma:[ \t]+no-cache\n" nil t)
-				     (re-search-backward
-				      "^Cache-control:[ \t]+\\(no-cache\\|max-age=0\\)\n"
-				      nil t)))
+		(unless (prog1 (and w3m-follow-cache-control-header
+				    (save-excursion
+				      (or (re-search-backward
+					   "^Pragma:[ \t]+no-cache\n" nil t)
+					  (re-search-backward
+					   "^Cache-control:[ \t]+\\(no-cache\\|max-age=0\\)\n"
+					   nil t))))
 			  (delete-region (point-min) (point)))
 		  (w3m-cache-header url header)
 		  (w3m-cache-contents url (current-buffer)))
