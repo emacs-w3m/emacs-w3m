@@ -5441,6 +5441,8 @@ frame or a window in the frame is succeeded."
   (setq truncate-lines t
 	w3m-display-inline-images w3m-default-display-inline-images)
   (when w3m-auto-show
+    (when (boundp 'auto-hscroll-mode)
+      (set (make-local-variable 'auto-hscroll-mode) nil))
     (when (boundp 'automatic-hscrolling)
       (set (make-local-variable 'automatic-hscrolling) nil))
     (when (boundp 'auto-show-mode)
