@@ -2903,17 +2903,19 @@ For example:
 	    (setq end (match-beginning 0))
 	    (delete-region (match-beginning 1) (match-end 1))
 	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)))
-	    (setq href (if (and (string-match w3m-url-components-regexp href)
-				(match-beginning 8))
-			   (concat (w3m-url-transfer-encode-string
-				    (substring href 0 (match-beginning 8))
-				    (w3m-charset-to-coding-system charset))
-				   "#" (match-string 9 href))
+	    (unless (w3m-url-local-p href)
+	      (setq href (if (and (string-match w3m-url-components-regexp href)
+				  (match-beginning 8))
+			     (let ((tmp (match-string 9 href)))
+			       (concat (w3m-url-transfer-encode-string
+					(substring href 0 (match-beginning 8))
+					(w3m-charset-to-coding-system charset))
+				       "#" tmp))
 			 (w3m-url-transfer-encode-string
 			  href
-			  (w3m-charset-to-coding-system charset)))
-		  hseq (or (and (null hseq) 0) (abs hseq))
-		  w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
+			  (w3m-charset-to-coding-system charset)))))
+	    (setq hseq (or (and (null hseq) 0) (abs hseq)))
+	    (setq w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
 	    (w3m-add-text-properties start end
 				     (list 'face (if (w3m-arrived-p href)
 						     'w3m-arrived-anchor-face

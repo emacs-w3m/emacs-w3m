@@ -1,3 +1,8 @@
+2004-12-17  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+
+	* w3m.el (w3m-fontify-anchors): Local file is given special
+	treatment for `href'. Fix match data of `href'.
+	
 2004-12-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-update-tab-line): Wobble the window size instead
