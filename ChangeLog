@@ -1,3 +1,7 @@
+2001-08-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-load-list): Retry to read a file when failed.
+
 2001-08-26  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* README.shimbun.ja: Add information on nikkansports.
@@ -8,7 +12,7 @@
 
 	* shimbun/sb-isize-sports.el (shimbun-isize-sports-group-alist):
 	Improved content-start/end of football.
-	
+
 2001-08-24  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* README.shimbun.ja: Add information on makanai, f1fan,

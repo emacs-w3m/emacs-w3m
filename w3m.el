@@ -1071,16 +1071,44 @@ If N is negative, last N items of LIST is returned."
 
 (defun w3m-load-list (file &optional coding-system)
   "Load list from FILE with CODING and return list."
-  (when (file-readable-p file)
+  (when (file-exists-p file)
     (with-temp-buffer
-      (let ((file-coding-system-for-read (or coding-system
-					     w3m-file-coding-system-for-read))
-	    (coding-system-for-read (or coding-system
-					w3m-file-coding-system-for-read)))
-	(insert-file-contents file)
-	(condition-case nil
-	    (read (current-buffer))	; return value
-	  (error nil))))))
+      (when (condition-case err
+		(let* ((coding-system-for-read
+			(or coding-system w3m-file-coding-system-for-read))
+		       (file-coding-system-for-read coding-system-for-read))
+		  (insert-file-contents file))
+	      (error
+	       (message "Error while loading %s; %s" file err)
+	       nil))
+	(let (data)
+	  (unless (condition-case err
+		      (progn
+			;; point is not always moved to the beginning of
+			;; the buffer after `insert-file-contents' is done.
+			(goto-char (point-min))
+			(setq data (read (current-buffer)))
+			t)
+		    (error
+		     (message "Error while reading %s; %s, retrying..."
+			      file err)
+		     nil))
+	    ;; Unfortunately, XEmacsen do not handle the coding-system
+	    ;; magic cookie.  So we should attempt to retry to read.
+	    (goto-char (point-min))
+	    (when (looking-at "\
+^[^\n]*-\\*-[^\n]*coding: \\([^\t\n ;]+\\)[^\n]*-\\*-")
+	      (let* ((coding-system-for-read (intern (match-string 1)))
+		     (file-coding-system-for-read coding-system-for-read))
+		(insert-file-contents file nil nil nil t))
+	      (goto-char (point-min))
+	      (condition-case err
+		  (progn
+		    (setq data (read (current-buffer)))
+		    (message "Retrying to read %s...succeeded" file))
+		(error
+		 (message "Retrying to read %s...failed; %s" err)))))
+	  data)))))
 
 (defun w3m-save-list (file list &optional coding-system)
   "Save LIST into file with CODING."
