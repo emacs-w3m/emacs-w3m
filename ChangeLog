@@ -1,3 +1,10 @@
+2003-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-open-all-links-in-new-session): Improve the regexp.
+	(w3m-examine-command-line-args): Don't let it misunderstand the
+	next command as a url string; modify the arguments in
+	`command-line-args' instead of removing them.
+
 2003-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-open-all-links-in-new-session): Don't use
