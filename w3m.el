@@ -7112,17 +7112,6 @@ works on Emacs.
 	(t (concat "about://source/" w3m-current-url))))
     (w3m-message "Can't view page source")))
 
-(defun w3m-display-width ()
-  "Return the maximum width which should display lines within the value."
-  (if (< 0 w3m-fill-column)
-      w3m-fill-column
-    (+ (if (and w3m-select-buffer-horizontal-window
-		(get-buffer-window w3m-select-buffer-name))
-	   ;; Show pages as if there is no selection window.
-	   (frame-width)
-	 (window-width))
-       (or w3m-fill-column -1))))
-
 (defun w3m-make-separator ()
   (if (string= w3m-language "Japanese")
       (w3m-static-if (boundp 'MULE)
@@ -7467,6 +7456,18 @@ If called with 'prefix argument', display arrived URLs."
 (defvar w3m-select-buffer-window nil)
 (defconst w3m-select-buffer-message
   "n: next buffer, p: previous buffer, q: quit.")
+
+;; Why this function is here abruptly is because of `w-s-b-horizontal-window'.
+(defun w3m-display-width ()
+  "Return the maximum width which should display lines within the value."
+  (if (< 0 w3m-fill-column)
+      w3m-fill-column
+    (+ (if (and w3m-select-buffer-horizontal-window
+		(get-buffer-window w3m-select-buffer-name))
+	   ;; Show pages as if there is no selection window.
+	   (frame-width)
+	 (window-width))
+       (or w3m-fill-column -1))))
 
 (defun w3m-select-buffer (&optional toggle nomsg)
   "Display a new buffer to select a buffer among the set of w3m-mode

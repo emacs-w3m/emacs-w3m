@@ -1,3 +1,7 @@
+2003-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-display-width): Move forward (see the comment).
+
 2003-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-initial-frames): Rename from `w3m-initial-frame';
