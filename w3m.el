@@ -84,9 +84,9 @@
   (cond
    ((featurep 'xemacs)
     (require 'w3m-xmas))
-   ((and (boundp 'emacs-major-version) (> emacs-major-version 20))
+   ((> emacs-major-version 20)
     (require 'w3m-e21))
-   ((and (boundp 'emacs-major-version) (= emacs-major-version 20))
+   ((= emacs-major-version 20)
     (require 'w3m-e20))
    ((boundp 'MULE)
     (require 'w3m-om))
@@ -142,7 +142,9 @@
   (autoload 'rfc2368-parse-mailto-url "rfc2368")
   (autoload 'widget-convert-button "wid-edit")
   (unless (fboundp 'char-to-int)
-    (defalias 'char-to-int 'identity)))
+    (defalias 'char-to-int 'identity))
+  (unless (fboundp 'select-frame-set-input-focus)
+    (defalias 'select-frame-set-input-focus 'ignore)))
 
 (defconst emacs-w3m-version
   (eval-when-compile
@@ -2278,16 +2280,14 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 (defmacro w3m-make-help-echo (property)
   "Make a function for showing a `help-echo' string."
   (if (featurep 'xemacs)
-      `(if (and (boundp 'emacs-major-version)
-		(>= emacs-major-version 21))
+      `(if (>= emacs-major-version 21)
 	   (function
 	    (lambda (extent)
 	      (if (and w3m-track-mouse
 		       (eq (extent-object extent) (current-buffer)))
 		  (get-text-property (extent-start-position extent)
 				     ',property)))))
-    `(if (and (boundp 'emacs-major-version)
-	      (>= emacs-major-version 21))
+    `(if (>= emacs-major-version 21)
 	 (function
 	  (lambda (window object pos)
 	    (if w3m-track-mouse
@@ -2343,12 +2343,12 @@ interactively."
 	    '(device-on-window-system-p)
 	  'window-system)))
 
-(defmacro w3m-pop-up-window-p ()
+(defmacro w3m-popup-window-p ()
   "Return non-nil if `w3m-pop-up-windows' is non-nil and the present
 situation allows it."
   (cond ((featurep 'xemacs)
 	 '(and w3m-pop-up-windows (not w3m-use-tab)))
-	((boundp 'MULE)
+	((<= emacs-major-version 19)
 	 'w3m-pop-up-windows)
 	(t
 	 '(and w3m-pop-up-windows
@@ -2929,8 +2929,7 @@ RATE is resize percentage."
   (let ((buffer-read-only)
 	start end iurl image size iscale scale)
     (if (or (featurep 'xemacs)
-	    (and (boundp 'emacs-major-version)
-		 (>= emacs-major-version 21)))
+	    (>= emacs-major-version 21))
 	(progn
 	  (setq start (point)
 		end (or (next-single-property-change start 'w3m-image)
@@ -4744,7 +4743,12 @@ described in Section 5.2 of RFC 2396.")
 						   0 (match-beginning 8)))))))
 	  (if w3m-view-this-url-new-session-in-background
 	      (set-buffer buffer)
-	    (switch-to-buffer buffer)))
+	    (let ((pop-up-windows (w3m-popup-window-p))
+		  (pop-up-frames (unless w3m-use-tab
+				   w3m-pop-up-frames)))
+	      (if (or pop-up-windows pop-up-frames)
+		  (pop-to-buffer buffer)
+		(switch-to-buffer buffer)))))
       (setq buffer (current-buffer)))
     (let (handler)
       (w3m-process-do
@@ -5351,13 +5355,14 @@ new buffer is shows itself with `pop-to-buffer' which is affected by
     (setq newname (buffer-name buffer)))
   (when (string-match "<[0-9]+>\\'" newname)
     (setq newname (substring newname 0 (match-beginning 0))))
-  (let ((pop-up-windows (w3m-pop-up-window-p))
+  (let ((pop-up-windows (w3m-popup-window-p))
+	(oframe (selected-frame))
 	url images init-frame new)
     (when (and pop-up-windows
 	       (not (string= (buffer-name) w3m-select-buffer-name))
 	       (get-buffer-window w3m-select-buffer-name))
       ;; Delete the selection window.
-      (delete-windows-on (get-buffer w3m-select-buffer-name)))
+      (delete-windows-on w3m-select-buffer-name))
     (with-current-buffer buffer
       (setq url (or w3m-current-url
 		    (car (w3m-history-element (cadar w3m-history))))
@@ -5383,19 +5388,18 @@ new buffer is shows itself with `pop-to-buffer' which is affected by
 			  (w3m-history-element (cadr positions) t))
 	    (setcar w3m-history positions))))
       (when and-pop
-	(let* ((pop-up-frames w3m-pop-up-frames)
+	(let* ((pop-up-frames (unless w3m-use-tab
+				w3m-pop-up-frames))
 	       (pop-up-frame-alist (w3m-pop-up-frame-parameters))
-	       (pop-up-frame-plist pop-up-frame-alist)
-	       (window (get-buffer-window buffer t))
-	       (oframe (when window
-			 (window-frame window))))
-	  (if pop-up-windows
+	       (pop-up-frame-plist pop-up-frame-alist))
+	  (if (or pop-up-windows pop-up-frames)
 	      (pop-to-buffer new)
-	    (switch-to-buffer new))
-	  (setq w3m-initial-frame
-		(if (eq oframe (selected-frame))
-		    init-frame
-		  (selected-frame)))))
+	    (switch-to-buffer new))))
+      (setq w3m-initial-frame
+	    (when w3m-pop-up-frames
+	      (if (eq oframe (selected-frame))
+		  init-frame
+		(selected-frame))))
       new)))
 
 (defun w3m-next-buffer (arg)
@@ -5422,8 +5426,33 @@ new buffer is shows itself with `pop-to-buffer' which is affected by
   (interactive "P")
   (if (= 1 (length (w3m-list-buffers t)))
       (w3m-quit force)
-    (let ((buffer (current-buffer)))
-      (w3m-next-buffer -1)
+    (let ((buffer (current-buffer))
+	  buf bufs num)
+      (save-current-buffer
+	(walk-windows (lambda (window)
+			(set-buffer (setq buf (window-buffer window)))
+			(when (and (eq major-mode 'w3m-mode)
+				   (not (eq buf buffer)))
+			  (push buf bufs)))
+		      'no-minibuf))
+      (setq buf nil)
+      (if w3m-use-tab
+	  (w3m-next-buffer -1)
+	(when (or (null bufs)
+		  (progn
+		    (setq num (1- (length (w3m-list-buffers))))
+		    (while (and (> num 0)
+				(progn
+				  (w3m-next-buffer -1)
+				  (unless buf
+				    (setq buf (current-buffer)))
+				  (memq (current-buffer) bufs)))
+		      (setq num (1- num)))
+		    (zerop num)))
+	  (w3m-delete-frame-maybe)))
+      (when (and (not (eq buf (current-buffer)))
+		 (memq buf bufs))
+	(switch-to-buffer-other-window buf))
       (w3m-process-stop buffer)
       (kill-buffer buffer)
       (run-hooks 'w3m-delete-buffer-hook)))
@@ -6285,8 +6314,7 @@ appropriate buffer and select it."
   (w3m-add-local-hook 'pre-command-hook 'w3m-store-current-position)
   (w3m-add-local-hook 'post-command-hook 'w3m-check-current-position)
   (w3m-static-when (or (featurep 'xemacs)
-		       (and (boundp 'emacs-major-version)
-			    (> emacs-major-version 20)))
+		       (> emacs-major-version 20))
     (w3m-initialize-graphic-icons))
   (setq mode-line-buffer-identification
 	'("%b "
@@ -6391,7 +6419,12 @@ the current page."
    ((w3m-url-valid url)
     (w3m-buffer-setup)			; Setup buffer.
     (w3m-arrived-setup)			; Setup arrived database.
-    (switch-to-buffer (current-buffer))
+    (let ((pop-up-windows (w3m-popup-window-p))
+	  (pop-up-frames (unless w3m-use-tab
+			   w3m-pop-up-frames)))
+      (if (or pop-up-windows pop-up-frames)
+	  (pop-to-buffer (current-buffer))
+	(switch-to-buffer (current-buffer))))
     (w3m-cancel-refresh-timer (current-buffer))
     (when w3m-current-process
       (error "%s"
@@ -6770,19 +6803,16 @@ Optional NEW-SESSION is intended to be used by the command
 	      (w3m-input-url nil nil default w3m-quick-start))))
       nil ;; new-session
       (not url)))) ;; interactive-p
-  (let ((nofetch (eq url 'popup))
-	(buffer (unless new-session
-		  (w3m-alive-p)))
-	(focusing-function
-	 (if (fboundp 'select-frame-set-input-focus)
-	     'select-frame-set-input-focus
-	   (lambda (frame)
-	     (raise-frame frame)
-	     (select-frame frame)
-	     (focus-frame frame))))
-	(params (w3m-pop-up-frame-parameters))
-	(popup-frame-p (w3m-popup-frame-p new-session interactive-p))
-	window frame)
+  (let* ((nofetch (eq url 'popup))
+	 (buffer (unless new-session
+		   (w3m-alive-p)))
+	 (params (w3m-pop-up-frame-parameters))
+	 (pop-up-windows w3m-pop-up-windows)
+	 (pop-up-frames (w3m-popup-frame-p new-session interactive-p))
+	 (pop-up-frame-alist (w3m-pop-up-frame-parameters))
+	 (pop-up-frame-plist pop-up-frame-alist)
+	 (oframe (selected-frame))
+	 window frame)
     (unless (and (stringp url)
 		 (> (length url) 0))
       (if buffer
@@ -6796,22 +6826,22 @@ Optional NEW-SESSION is intended to be used by the command
 	    (setq frame (window-frame window)))
 	  (cond (frame
 		 (unless (eq frame (selected-frame))
-		   (funcall focusing-function frame))
+		   (if (fboundp 'select-frame-set-input-focus)
+		       (select-frame-set-input-focus frame)
+		     (raise-frame frame)
+		     (select-frame frame)
+		     (focus-frame frame)))
 		 (select-window window)
 		 (setq frame nil))
 		(window
 		 (select-window window))
-		(popup-frame-p
-		 (funcall focusing-function (setq frame (make-frame params)))
-		 (switch-to-buffer buffer))
 		(t
-		 (switch-to-buffer buffer))))
-      (setq buffer (generate-new-buffer "*w3m*"))
-      (if popup-frame-p
-	  (progn
-	    (funcall focusing-function (setq frame (make-frame params)))
-	    (switch-to-buffer buffer))
-	(switch-to-buffer buffer))
+		 (pop-to-buffer buffer)
+		 (when (eq oframe (setq frame (selected-frame)))
+		   (setq frame nil)))))
+      (pop-to-buffer (generate-new-buffer "*w3m*"))
+      (when (eq oframe (setq frame (selected-frame)))
+	(setq frame nil))
       (w3m-display-progress-message url)
       (w3m-mode))
     (unwind-protect
@@ -7270,6 +7300,7 @@ If called with 'prefix argument', display arrived URLs."
 	       (integer :format "  Vertically Ratio: %v[%%]\n" :size 0)))
 
 (defvar w3m-select-buffer-window nil)
+(defvar w3m-select-buffer-saved-window-config nil)
 (defconst w3m-select-buffer-message
   "n: next buffer, p: previous buffer, q: quit.")
 
@@ -7279,11 +7310,13 @@ buffers.  User can type following keys:
 
 \\{w3m-select-buffer-mode-map}"
   (interactive "P")
+  (setq w3m-select-buffer-saved-window-config (current-window-configuration))
+  (delete-other-windows)
   (when toggle
     (setq w3m-select-buffer-horizontal-window
 	  (not w3m-select-buffer-horizontal-window))
     (when (get-buffer-window w3m-select-buffer-name)
-      (delete-windows-on (get-buffer w3m-select-buffer-name))))
+      (delete-windows-on w3m-select-buffer-name)))
   (let ((selected-window (selected-window))
 	(current-buffer (current-buffer)))
     (set-buffer (w3m-get-buffer-create w3m-select-buffer-name))
@@ -7483,7 +7516,7 @@ menu line."
   (w3m-select-buffer-show-this-line)
   (let ((selected-window (selected-window))
 	w3m-pop-up-frames w3m-pop-up-windows
-	pop-up-windows)
+	pop-up-frames pop-up-windows)
     (pop-to-buffer (w3m-select-buffer-current-buffer))
     (w3m-copy-buffer (current-buffer))
     (select-window selected-window)
@@ -7513,15 +7546,21 @@ menu line."
 (defun w3m-select-buffer-quit ()
   "Quit the menu to select a buffer from w3m-mode buffers."
   (interactive)
-  (if (one-window-p)
-      (set-window-buffer (selected-window)
-			 (or (w3m-select-buffer-current-buffer)
-			     (w3m-alive-p)))
-    (let ((buf (or (w3m-select-buffer-current-buffer)
-		   (w3m-alive-p))))
-      (pop-to-buffer buf)
-      (and (get-buffer-window w3m-select-buffer-name)
-	   (delete-windows-on (get-buffer w3m-select-buffer-name))))))
+  (let ((buffer (or (w3m-select-buffer-current-buffer)
+		    (w3m-alive-p))))
+    (condition-case nil
+	(set-window-configuration w3m-select-buffer-saved-window-config)
+      (error))
+    (if (one-window-p)
+	(if (buffer-live-p buffer)
+	    (set-window-buffer (selected-window) buffer)
+	  (let (pop-up-windows pop-up-frames)
+	    (pop-to-buffer nil)))
+      (when (buffer-live-p buffer)
+	(let (pop-up-frames)
+	  (pop-to-buffer buffer)))
+      (when (get-buffer-window w3m-select-buffer-name)
+	(delete-windows-on w3m-select-buffer-name)))))
 
 (defun w3m-select-buffer-show-this-line-and-switch ()
   "Show the current buffer, and quit select a buffer from w3m-mode buffers."
@@ -7535,7 +7574,7 @@ w3m-mode buffers."
   (interactive)
   (w3m-select-buffer-show-this-line-and-switch)
   (and (get-buffer-window w3m-select-buffer-name)
-       (delete-windows-on (get-buffer w3m-select-buffer-name))))
+       (delete-windows-on w3m-select-buffer-name)))
 
 (defun w3m-select-buffer-close-window ()
   "Close the window which displays the menu to select w3m-mode buffers."
