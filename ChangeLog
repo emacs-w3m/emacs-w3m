@@ -1,3 +1,11 @@
+2002-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bitmap.el (w3m-bitmap-transparent-face): New face.
+	(w3m-bitmap-image-insert): Put `w3m-bitmap-transparent-face' to
+	overlays; don't use overlays to highlight bitmap images.
+	(w3m-insert-image): Add `w3m-bitmap-image-face' to a bitmap image
+	as a text property.
+
 2002-04-23  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-toggle-inline-images-internal): Call

@@ -271,6 +271,9 @@ property ."
     (goto-char home)
     ovr))
 
+;; Transparent face used to overlays.
+(make-face 'w3m-bitmap-transparent-face)
+
 (defun w3m-bitmap-image-insert (pos image &optional props ovr)
   "Insert IMAGE to POS.  IMAGE should be a list of bitmap image lines or
 a non-list text.  PROPS specifies properties for bitmap images.  OVR
@@ -282,11 +285,12 @@ a new overlay will be created and returned."
     (goto-char pos)
     (let ((ovrbeg (line-beginning-position))
 	  (col (current-column))
-	  indent-tabs-mode end-col face-ovrs)
+	  indent-tabs-mode end-col)
       (unless ovr
 	(setq ovr (make-overlay ovrbeg ovrbeg))
 	(overlay-put ovr 'w3m-bitmap-image-line t)
-	(overlay-put ovr 'w3m-bitmap-image-count 0))
+	(overlay-put ovr 'w3m-bitmap-image-count 0)
+	(overlay-put ovr 'face 'w3m-bitmap-transparent-face))
       (if (consp image)
 	  (progn
 	    (insert-before-markers (car image))
@@ -296,8 +300,7 @@ a new overlay will be created and returned."
 	(insert-before-markers image)
 	(setq image nil))
       (when props
-	(w3m-add-text-properties pos (point) props)
-	(push (make-overlay pos (point)) face-ovrs))
+	(w3m-add-text-properties pos (point) props))
       (setq end-col (current-column))
       (forward-line)
       (while (or image (< (point) (overlay-end ovr)))
@@ -311,20 +314,13 @@ a new overlay will be created and returned."
 	      (setq pos (point))
 	      (insert-before-markers (car image))
 	      (when props
-		(w3m-add-text-properties pos (point) props)
-		(push (make-overlay pos (point)) face-ovrs)))
+		(w3m-add-text-properties pos (point) props)))
 	  (indent-to-column end-col))
 	(setq image (cdr image))
 	(forward-line))
       (move-overlay ovr (min ovrbeg (overlay-start ovr))
 		    (1- (point)))
       (overlay-put ovr 'evaporate t)
-      ;; Since Emacs 20 has a bug(?) that an overlay hides the face
-      ;; text properties, we should also use overlays to highlight
-      ;; bitmap images.
-      (while face-ovrs
-	(overlay-put (car face-ovrs) 'face 'w3m-bitmap-image-face)
-	(overlay-put (pop face-ovrs) 'evaporate t))
       ovr)))
 
 (defun w3m-bitmap-image-delete-internal (pos ovr &optional width)
@@ -445,7 +441,8 @@ Buffer string between BEG and END are replaced with IMAGE."
 			       (w3m-modify-plist properties
 						 'w3m-image-status 'on
 						 'w3m-bitmap-image t
-						 'w3m-image-name name)
+						 'w3m-image-name name
+						 'face 'w3m-bitmap-image-face)
 			       ovr))))
 
 (defun w3m-remove-image (beg end)
