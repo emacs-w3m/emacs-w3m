@@ -1,3 +1,7 @@
+2002-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e19.el: Cancel last change for providing the base64 codec.
+
 2002-10-21  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-goto-url): Use 'group:' scheme instead of
