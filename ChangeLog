@@ -1,6 +1,8 @@
 2001-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-add-referer-regexps): New user option.
+	* w3m.el (w3m-w3m-retrieve): Don't send a referer if it does not
+	satisfy the rule of `w3m-add-referer-regexps'.
+	(w3m-add-referer-regexps): New user option.
 
 2001-09-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

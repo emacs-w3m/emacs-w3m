@@ -2477,7 +2477,12 @@ to nil."
 			  (list "-header" (concat "Content-Type: "
 						  (car post-data))))
 		      (list "-post" file))))
-      (when referer
+      (when (and referer
+		 (not (and (cdr w3m-add-referer-regexps)
+			   (string-match (cdr w3m-add-referer-regexps)
+					 referer)))
+		 (car w3m-add-referer-regexps)
+		 (string-match (car w3m-add-referer-regexps) referer))
 	(setq w3m-command-arguments
 	      (append w3m-command-arguments
 		      (list "-header" (concat "Referer: " referer)))))
