@@ -1,3 +1,19 @@
+2003-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el: Require cl when compiling.
+	(shimbun-nikkei-top-level-domain): New variable.
+	(shimbun-nikkei-url): Don't include subdirectories.
+	(shimbun-nikkei-group-table): Renew; add the "newpro" group.
+	(shimbun-nikkei-content-start): Improve the value.
+	(shimbun-nikkei-content-end): Ditto.
+	(shimbun-current-group-name): Synch to shimbun-nikkei-group-table.
+	(shimbun-index-url): Ditto.
+	(shimbun-nikkei-get-headers): Renew; attempt to fetch the headline
+	news; make correct date headers if possible; modify subjects
+	suitably.
+	(shimbun-nikkei-prepare-article): New function.
+	(shimbun-make-contents): Use it.
+
 2003-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-view-this-url-1): Fix a window configuration only
