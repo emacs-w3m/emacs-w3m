@@ -123,6 +123,19 @@ with <img> tags.")
 		(delete-region ,(point-min-marker)
 			       ,(point-max-marker))))))))))
 
+   By default, Gnus will not apply the treatment variables, for instance
+   `gnus-treat-strip-banner', to text/html parts.  To have them applied
+   to text/html parts automatically, there are two ways to do that:
+
+;; Apply all the treatments to text/html parts.
+(eval-after-load "gnus-art"
+  '(add-to-list 'gnus-article-treat-types "text/html"))
+
+;; Apply a certain treatment to text/html parts.
+(setq gnus-treat-strip-banner '(or t (typep "text/html")))
+
+   See info ``Customizing Articles'' for details.
+
    In additon, the experimental code below is used to display
    multipart/related pictures. The place might be something wrong :-<
 

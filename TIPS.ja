@@ -123,6 +123,19 @@ with <img> tags.")
 		(delete-region ,(point-min-marker)
 			       ,(point-max-marker))))))))))
 
+   デフォルトでは，Gnus は例えば `gnus-treat-strip-banner' のような
+   treatment 変数を text/html パートに適用しません．自動的に行なわせるに
+   は二つの方法があります:
+
+;; すべての treatment を text/html パートに適用する．
+(eval-after-load "gnus-art"
+  '(add-to-list 'gnus-article-treat-types "text/html"))
+
+;; 特定の treatment を text/html パートに適用する．
+(setq gnus-treat-strip-banner '(or t (typep "text/html")))
+
+   詳しいことは info の ``Customizing Articles'' を見て下さい．
+
    加えて，以下の実験的なコードは multipart/related な絵を見るためのもの
    です．表示される場所に難があります．:-<
 
