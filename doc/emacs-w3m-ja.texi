@@ -200,6 +200,13 @@ APEL パッケージ、@samp{新しい custom} パッケージおよ
 @section You Need w3m
 @chapter w3m を使います: emacs-w3m が速いわけ
 
+Emacs-w3m は外部コマンド w3m を web コンテンツを取得するためのバックエン
+ドとして、または HTML の翻訳エンジンとして使用します。Emacs がそのような
+仕事から解放されたので、高速な Emacs web ブラウザーと非同期動作を実現す
+ることができました。あなたは最新の w3m コマンドをインストールしなければ
+なりません。それは以下の場所で取得できます:
+
+@uref{http://prdownloads.sourceforge.net/w3m/}
 
 @node Other Requirements
 @section Other Requirements

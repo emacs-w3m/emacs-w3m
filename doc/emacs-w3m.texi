@@ -158,6 +158,13 @@ The APEL package, the @samp{new custom} package and the
 @section You Need w3m
 @chapter Using w3m: the reason why emacs-w3m is fast
 
+Emacs-w3m uses the external w3m command as a back end to retrieve web
+contents or a HTML rendering engine.  Since Emacs has been exempted from
+those such jobs, we could realize accelerated Emacs web browser and
+asynchronous operations.  You must install the latest w3m command.  It
+is available in:
+
+@uref{http://prdownloads.sourceforge.net/w3m/}
 
 @node Other Requirements
 @section Other Requirements
