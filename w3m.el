@@ -4608,6 +4608,25 @@ If EMPTY is non-nil, the created buffer has empty content."
       (kill-buffer buffer))
     (w3m-select-buffer-update)))
 
+(defun w3m-delete-other-buffers (&optional buffer)
+  "Delete w3m buffers except for the current buffer.
+The optional argument BUFFER will be used exclusively by the command
+`w3m-select-buffer-delete-other-buffers'."
+  (interactive)
+  (let (window)
+    (dolist (buffer (delq (or buffer (current-buffer))
+			  (w3m-list-buffers t)))
+      ;; Delete all windows and frames related to a buffer.
+      (while (setq window (get-buffer-window buffer t))
+	(if (eq window (next-window window))
+	    ;; If there isn't another windows on a frame, delete it.
+	    (delete-frame (window-frame window))
+	  ;; Otherwise, delete a window.
+	  (delete-window window)))
+      ;; Kill a buffer.
+      (kill-buffer buffer)))
+  (w3m-select-buffer-update))
+
 (defvar w3m-lynx-like-map nil
   "Lynx-like keymap used in w3m-mode buffers.")
 (unless w3m-lynx-like-map
@@ -4676,6 +4695,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "\C-c\C-p" 'w3m-previous-buffer)
     (define-key map "\C-c\C-n" 'w3m-next-buffer)
     (define-key map "\C-c\C-w" 'w3m-delete-buffer)
+    (define-key map "\C-cw" 'w3m-delete-other-buffers)
     (define-key map "\C-c\C-s" 'w3m-select-buffer)
     (define-key map "\C-c\C-a" 'w3m-switch-buffer)
     (define-key map "r" 'w3m-redisplay-this-page)
@@ -4780,6 +4800,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "\C-c\C-p" 'w3m-previous-buffer)
     (define-key map "\C-c\C-n" 'w3m-next-buffer)
     (define-key map "\C-c\C-w" 'w3m-delete-buffer)
+    (define-key map "\C-cw" 'w3m-delete-other-buffers)
     (define-key map "\C-c\C-s" 'w3m-select-buffer)
     (define-key map "\C-c\C-a" 'w3m-switch-buffer)
     (define-key map "o" 'w3m-history)
@@ -5000,6 +5021,7 @@ frame or a window in the frame is succeeded."
 \\[w3m-select-buffer]	Select one buffer of all w3m buffers.
 \\[w3m-switch-buffer]	Switch one buffer of all w3m buffers.
 \\[w3m-delete-buffer]	Kill current w3m buffer.
+\\[w3m-delete-other-buffers]	Kill other w3m buffers.
 
 \\[w3m]	w3m.
 \\[w3m-close-window]	Close this window and make the other buffer current.
@@ -6254,6 +6276,9 @@ buffers.  User can type following keys:
     (substitute-key-definition
      'w3m-delete-buffer 'w3m-select-buffer-delete-buffer map w3m-mode-map)
     (substitute-key-definition
+     'w3m-delete-other-buffers
+     'w3m-select-buffer-delete-other-buffers map w3m-mode-map)
+    (substitute-key-definition
      'w3m-scroll-up-or-next-url
      'w3m-select-buffer-show-this-line map w3m-mode-map)
     (substitute-key-definition
@@ -6390,6 +6415,12 @@ menu line."
       (w3m-select-buffer-generate-contents
        (w3m-select-buffer-current-buffer))
       (w3m-select-buffer-show-this-line))))
+
+(defun w3m-select-buffer-delete-other-buffers ()
+  "Delete w3m buffers except for the current menu line."
+  (interactive)
+  (w3m-select-buffer-show-this-line)
+  (w3m-delete-other-buffers (w3m-select-buffer-current-buffer)))
 
 (defun w3m-select-buffer-quit ()
   "Quit the menu to select a buffer from w3m-mode buffers."
