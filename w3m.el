@@ -4894,6 +4894,7 @@ Return t if current line has a same anchor sequence."
 (defun w3m-next-anchor (&optional arg)
   "Move cursor to the next anchor."
   (interactive "p")
+  (w3m-activate-zmacs-regions)
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-anchor w3m-previous-anchor)))
       (when (setq w3m-goto-anchor-hist (w3m-anchor-sequence))
@@ -4942,6 +4943,7 @@ Return t if current line has a same anchor sequence."
 (defun w3m-previous-anchor (&optional arg)
   "Move cursor to the previous anchor."
   (interactive "p")
+  (w3m-activate-zmacs-regions)
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-anchor w3m-previous-anchor)))
       (when (setq w3m-goto-anchor-hist (w3m-anchor-sequence))
@@ -4979,6 +4981,7 @@ Return t if current line has a same anchor sequence."
 (defun w3m-next-form (&optional arg)
   "Move cursor to the next form."
   (interactive "p")
+  (w3m-activate-zmacs-regions)
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-form w3m-previous-form)))
       (when (setq w3m-goto-anchor-hist (w3m-action (point)))
@@ -5016,6 +5019,7 @@ Return t if current line has a same anchor sequence."
 (defun w3m-previous-form (&optional arg)
   "Move cursor to the previous form."
   (interactive "p")
+  (w3m-activate-zmacs-regions)
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-form w3m-previous-form)))
       (when (setq w3m-goto-anchor-hist (w3m-action (point)))
@@ -5051,6 +5055,7 @@ Return t if current line has a same anchor sequence."
 (defun w3m-next-image (&optional arg)
   "Move cursor to the next image."
   (interactive "p")
+  (w3m-activate-zmacs-regions)
   (unless arg (setq arg 1))
   (if (null (memq last-command
 		  '(w3m-next-image w3m-previous-image)))
@@ -5089,6 +5094,7 @@ Return t if current line has a same anchor sequence."
 (defun w3m-previous-image (&optional arg)
   "Move cursor to the previous image."
   (interactive "p")
+  (w3m-activate-zmacs-regions)
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-image w3m-previous-image)))
       (when (setq w3m-goto-anchor-hist (w3m-image (point)))
@@ -5686,6 +5692,7 @@ frame or a window in the frame is succeeded."
 (defun w3m-scroll-up-or-next-url (arg)
   "Scroll text of current window upward ARG lines; or go to next url."
   (interactive "P")
+  (w3m-activate-zmacs-regions)
   (if (pos-visible-in-window-p (point-max))
       (if w3m-next-url
 	  (w3m-goto-url w3m-next-url)
@@ -5695,6 +5702,7 @@ frame or a window in the frame is succeeded."
 (defun w3m-scroll-down-or-previous-url (arg)
   "Scroll text of current window downward ARG lines; or go to previous url."
   (interactive "P")
+  (w3m-activate-zmacs-regions)
   (if (pos-visible-in-window-p (point-min))
       (if w3m-previous-url
 	  (w3m-goto-url w3m-previous-url)
@@ -5865,6 +5873,7 @@ TYPE is either 'left or 'right and COLS is columns."
 (defun w3m-beginning-of-line (&optional arg)
   "Like `beginning-of-line', except that set window-hscroll to zero first."
   (interactive "P")
+  (w3m-activate-zmacs-regions)
   (when (listp arg)
     (setq arg (car arg)))
   (w3m-set-window-hscroll (selected-window) 0)
@@ -5874,6 +5883,7 @@ TYPE is either 'left or 'right and COLS is columns."
   "Like `end-of-line', except that scroll left to make the line end
 positions around there (+/-3 lines) visible."
   (interactive "P")
+  (w3m-activate-zmacs-regions)
   (when (listp arg)
     (setq arg (car arg)))
   (forward-line (1- (or arg 1)))

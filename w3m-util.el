@@ -608,6 +608,13 @@ we will use this value for the default `defface' color spec.")
 	  (setq value (cdr value))))
     (custom-initialize-set symbol value)))
 
+(defmacro w3m-activate-zmacs-regions ()
+  "Set t to the `zmacs-region-stays' variable when a user invoke a command
+interactively under XEmacs."
+  (if (featurep 'xemacs)
+      '(if (interactive-p)
+	   (setq zmacs-region-stays t))))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here
