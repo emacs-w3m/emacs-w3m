@@ -2,7 +2,7 @@ This package contains a interface program of w3m.
 
 1. Introduction
 
-   w3m is a a pager with WWW capability, developed by Akinori ITO.  It
+   w3m is a pager with WWW capability, developed by Akinori ITO.  It
    is a pager, but it can be used as a text-mode WWW browser.  For more
    detail about it, see:
 
@@ -13,8 +13,14 @@ This package contains a interface program of w3m.
 
 2. Installation
 
-   a) This package requires the latest version of w3m (see section 3).
-      Please install it.
+   a) This package requires the latest version of w3m (see section 3),
+      please install it in the first step.
+      In addition, if you are using XEmacs 21.2.20 or later, to use
+      the program "gifsicle" is recommended (it is not always needed,
+      except for showing unoptimized animated gif images).  It is
+      available from:
+
+          http://www.lcdf.org/gifsicle/
 
    b) Execlute these commands to put emacs-lisp programs of this package
       to an appropriate directory.
