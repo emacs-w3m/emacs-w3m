@@ -36,21 +36,27 @@
   "*If non-nil, suppress the explanations given for the sake of novice users.")
 
 (defconst report-emacs-w3m-bug-system-informations
-  '(emacs-w3m-version
-    emacs-version
-    mule-version
-    Meadow-version
-    (featurep 'mule)
-    (featurep 'file-coding)
-    system-type
-    w3m-version
-    w3m-type
-    w3m-compile-options
-    w3m-language
-    w3m-command-arguments
-    w3m-command-arguments-alist
-    w3m-command-environment
-    w3m-use-mule-ucs)
+  (eval
+   '`(emacs-w3m-version
+      emacs-version
+      ,@(if (or (boundp 'mule-version)
+		(functionp 'mule-version))
+	    '(mule-version))
+      ,@(cond ((featurep 'xemacs)
+	       '((featurep 'mule)
+		 (featurep 'file-coding)))
+	      ((or (boundp 'Meadow-version)
+		   (functionp 'Meadow-version))
+	       '(Meadow-version)))
+      system-type
+      w3m-version
+      w3m-type
+      w3m-compile-options
+      w3m-language
+      w3m-command-arguments
+      w3m-command-arguments-alist
+      w3m-command-environment
+      w3m-use-mule-ucs))
   "List of the system informations.  Users should NEVER modify the value."
   ;; For the developers:
   ;; It is possible that it would be a security hole.  To prevent those
@@ -128,7 +134,7 @@ Please also include any Lisp back-traces that you may have.\n"))
     (insert "Dear Bug Team!\n\n")
     (let ((user-point (point))
 	  (print-escape-newlines t)
-	  infos)
+	  infos print-length print-level)
       (insert "\n
 ================================================================
 

@@ -1,3 +1,10 @@
+2002-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bug.el (report-emacs-w3m-bug-system-informations): Don't
+	include useless infos; eval the value for each time to load it.
+	(report-emacs-w3m-bug): Bind `print-length' and `print-level' with
+	nil.
+
 2002-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-menubar): Modify the label for report-emacs-w3m-bug.
