@@ -1655,6 +1655,13 @@ Accept the value.
 Quit editing the form item, leaving changes.
 @end table
 
+Text that you wrote last in the electric window are saved in the local
+file and you will be asked whether to use it when you start editing the
+same form later.  If you never want to use the saved text, set the
+@code{w3m-form-use-textarea-backup} variable to @code{nil}.  Files to
+save text are stored in the directory specified by the
+@code{w3m-form-textarea-directory} variable.
+
 @node HTML File Information
 @section Support for web page editing and hacking
 
@@ -2960,6 +2967,13 @@ Non-@code{nil} means to process textarea size (treat textarea rows).
 @item w3m-form-use-fancy-faces
 @vindex w3m-form-use-fancy-faces
 Use fancy faces to fontify @samp{<form>} tags.
+
+@item w3m-form-use-textarea-backup
+@vindex w3m-form-use-textarea-backup
+@vindex w3m-form-textarea-directory
+Non-@code{nil} means save and restore text that you wrote last in the
+texarea.  Files to save text are stored in the directory specified by
+the @code{w3m-form-textarea-directory} variable.
 @end table
 
 @node Cookie Variables
