@@ -2157,7 +2157,10 @@ this function returns t.  Otherwise, returns nil."
   (catch 'found-command
     (let (bin)
       (dolist (dir exec-path)
-	(when (file-executable-p (setq bin (expand-file-name command dir)))
+	(when (or (file-executable-p
+		   (setq bin (expand-file-name command dir)))
+		  (file-executable-p
+		   (setq bin (expand-file-name (concat command ".exe") dir))))
 	  (throw 'found-command bin))))))
 
 (defun w3m-external-view (url)
