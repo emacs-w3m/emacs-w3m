@@ -1,3 +1,8 @@
+2001-10-31  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-reload-this-page): Change the semantic of the prefix
+	argument to `clear form and post datas'.
+	
 2001-10-31  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-pop-up-windows): Changed default value
