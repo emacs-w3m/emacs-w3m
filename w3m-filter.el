@@ -52,7 +52,7 @@
 (defvar w3m-filter-db nil) ; nil means non-initialized.
 (defconst w3m-filter-db-size 1023)
 
-;; FIXME: ËÜÅö¤Ï URL ¤ò¤­¤Á¤ó¤È²òÀÏ¤¹¤ë´Ø¿ô¤¬É¬Í×
+;; FIXME: $BK\Ev$O(B URL $B$r$-$A$s$H2r@O$9$k4X?t$,I,MW(B
 (defconst w3m-filter-server-regexp "^\\([-+\\.A-z0-9]+://[^/]+/\\)")
 
 

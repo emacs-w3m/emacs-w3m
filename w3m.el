@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; w3m.el --- Interface program of w3m on Emacs
 
 ;; Copyright (C) 2000,2001 TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
@@ -332,7 +332,7 @@ In other environment, use 'native."
   :group 'w3m
   :type '(choice (const cygwin) (const native)))
 
-;; FIXME: ËÜÅö¤Ï mailcap ¤òÅ¬ÀÚ¤ËÆÉ¤ß¹þ¤ó¤ÇÀßÄê¤¹¤ëÉ¬Í×¤¬¤¢¤ë
+;; FIXME: $BK\Ev$O(B mailcap $B$rE,@Z$KFI$_9~$s$G@_Dj$9$kI,MW$,$"$k(B
 (defcustom w3m-content-type-alist
   (if (eq system-type 'windows-nt)
       '(("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
@@ -597,22 +597,22 @@ See the file balloon-help.el for more information."
 (defconst w3m-toolbar
   '([w3m-toolbar-back-icon w3m-view-previous-page
 			   (w3m-history-previous-link-available-p)
-			   "Á°¤Î¥Ú¡¼¥¸¤ËÌá¤ë"]
+			   "$BA0$N%Z!<%8$KLa$k(B"]
     [w3m-toolbar-parent-icon w3m-view-parent-page
 			     (w3m-parent-page-available-p)
-			     "¾å¤Î¥Ç¥£¥ì¥¯¥È¥ê¤Ø°ÜÆ°¤¹¤ë"]
+			     "$B>e$N%G%#%l%/%H%j$X0\F0$9$k(B"]
     [w3m-toolbar-forward-icon w3m-view-next-page
 			      (w3m-history-next-link-available-p)
-			      "¼¡¤Î¥Ú¡¼¥¸¤Ë¿Ê¤à"]
-    [w3m-toolbar-reload-icon w3m-reload-this-page t "¥µ¡¼¥Ð¤«¤é¥Ú¡¼¥¸¤ò¤â¤¦°ìÅÙÆÉ¤ß¹þ¤à"]
-    [w3m-toolbar-open-icon w3m-goto-url t "URL ¤òÆþÎÏ¤·¤Æ¥Ú¡¼¥¸¤ò³«¤¯"]
+			      "$B<!$N%Z!<%8$K?J$`(B"]
+    [w3m-toolbar-reload-icon w3m-reload-this-page t "$B%5!<%P$+$i%Z!<%8$r$b$&0lEYFI$_9~$`(B"]
+    [w3m-toolbar-open-icon w3m-goto-url t "URL $B$rF~NO$7$F%Z!<%8$r3+$/(B"]
     [w3m-toolbar-home-icon
      (lambda () (interactive) (w3m-goto-url w3m-home-page))
-     w3m-home-page "¥Û¡¼¥à¥Ú¡¼¥¸¤Ø¥¸¥ã¥ó¥×"]
-    [w3m-toolbar-search-icon w3m-search t "¥¤¥ó¥¿¡¼¥Í¥Ã¥È¾å¤ò¸¡º÷"]
-    [w3m-toolbar-image-icon w3m-toggle-inline-images t "²èÁü¤ÎÉ½¼¨¤ò¥È¥°¥ë¤¹¤ë"]
-    [w3m-toolbar-weather-icon w3m-weather t "Å·µ¤Í½Êó¤ò¸«¤ë"]
-    [w3m-toolbar-antenna-icon w3m-antenna t "¥¢¥ó¥Æ¥Ê¤Ç¼õ¿®¤¹¤ë"]
+     w3m-home-page "$B%[!<%`%Z!<%8$X%8%c%s%W(B"]
+    [w3m-toolbar-search-icon w3m-search t "$B%$%s%?!<%M%C%H>e$r8!:w(B"]
+    [w3m-toolbar-image-icon w3m-toggle-inline-images t "$B2hA|$NI=<($r%H%0%k$9$k(B"]
+    [w3m-toolbar-weather-icon w3m-weather t "$BE75$M=Js$r8+$k(B"]
+    [w3m-toolbar-antenna-icon w3m-antenna t "$B%"%s%F%J$G<u?.$9$k(B"]
     )
   "Toolbar definition for w3m.")
 
@@ -2688,16 +2688,16 @@ works on Emacs.
 		    source
 		    (if (zerop depth)
 			""
-		      (make-string depth ?¨¢))
+		      (make-string depth ?$B("(B))
 		    (if history
-			"¨§"
-		      "¨¦")
+			"$B('(B"
+		      "$B(&(B")
 		    (if (string-match w3m-about-history-except-regex url)
-			"¡þ"
+			"$B!~(B"
 		      (concat "<a href=\"" url "\">"
 			      (if (or (not title)
 				      (string-equal "<no-title>" title)
-				      (string-match "^[\t ¡¡]*$" title))
+				      (string-match "^[\t $B!!(B]*$" title))
 				  url
 				title)
 			      "</a>"))
@@ -2719,15 +2719,15 @@ works on Emacs.
       (set-buffer-multibyte t)
       (insert source)
       (goto-char (point-min))
-      (when (re-search-forward "\\(¨¦\\)\\|\\(¨§\\)" nil t)
+      (when (re-search-forward "\\($B(&(B\\)\\|\\($B('(B\\)" nil t)
 	(replace-match (if (match-beginning 1)
-			   "¨¡"
-			 "¨¨")))
+			   "$B(!(B"
+			 "$B(((B")))
       (goto-char (point-min))
       (when (prog1
-		(search-forward "¡þ\n" nil t)
+		(search-forward "$B!~(B\n" nil t)
 	      (goto-char (point-max)))
-	(insert "\n;; All \"about://*\" links (¡þ) are deactivated.\n"))
+	(insert "\n;; All \"about://*\" links ($B!~(B) are deactivated.\n"))
       (insert "</pre></body>")))
   "text/html")
 

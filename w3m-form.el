@@ -120,11 +120,11 @@
 			    (cons value (w3m-form-get (car forms) name))))))
 	 ;; When <SELECT> is found.
 	 (t
-	  ;; FIXME: д│д╬╔Ї╩мд╟д╧бв╣╣д╦ <OPTION> е┐е░дЄ╜ш═¤д╖д╞бв╕хдлдщ
-	  ;; ═°═╤д╟дндыдшджд╦├═д╬еъе╣е╚дЄ║ю└од╖бв╩▌┬╕д╖д╞дкдп╔м═╫дмдв
-	  ;; дыбгд╖длд╖бвд│дьдЄ╝┬┴їд╣дыд╬д╧бвд▐д├д╚джд╩ HTML parser дЄ
-	  ;; ╝┬┴їд╣дыд╬д╦┼∙д╖дд╧л╬╧дм╔м═╫д╟двдыд╬д╟бв║г▓єд╧╝ъ╚┤днд╖д╞
-	  ;; дкдпбг
+	  ;; FIXME: $B$3$NItJ,$G$O!"99$K(B <OPTION> $B%?%0$r=hM}$7$F!"8e$+$i(B
+	  ;; $BMxMQ$G$-$k$h$&$KCM$N%j%9%H$r:n@.$7!"J]B8$7$F$*$/I,MW$,$"(B
+	  ;; $B$k!#$7$+$7!"$3$l$r<BAu$9$k$N$O!"$^$C$H$&$J(B HTML parser $B$r(B
+	  ;; $B<BAu$9$k$N$KEy$7$$O+NO$,I,MW$G$"$k$N$G!":#2s$O<jH4$-$7$F(B
+	  ;; $B$*$/!#(B
 	  )))
       (set (make-local-variable 'w3m-current-forms) (nreverse forms)))))
 
@@ -186,8 +186,8 @@
     (add-text-properties start (point) prop)
     (point)))
 
-;;; FIXME: ╦▄┼Ўд╧ type д╬├═д╦╣чдяд╗д╞бв┼м└┌д╩├═д╬д▀дЄ╝їд▒╔╒д▒дыдшджд╦
-;;; е┴езе├епд╖д┐дъбв╞■╬╧╩¤╦бдЄ╩╤дид┐дъд╣дыдшджд╩╝┬┴їдм╔м═╫бг
+;;; FIXME: $BK\Ev$O(B type $B$NCM$K9g$o$;$F!"E,@Z$JCM$N$_$r<u$1IU$1$k$h$&$K(B
+;;; $B%A%'%C%/$7$?$j!"F~NOJ}K!$rJQ$($?$j$9$k$h$&$J<BAu$,I,MW!#(B
 (defun w3m-form-input (form name type width maxlength value)
   (save-excursion
     (let ((input (read-from-minibuffer

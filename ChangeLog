@@ -1,5 +1,8 @@
 2001-04-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el, w3m-weather.el, w3m-filter.el, w3m-form.el: Change
+	coding-system.
+
 	* mime-w3m.el (mime-w3m-use-header-line): New user option.
 	(mime-w3m-preview-text/html): Refer `mime-w3m-use-header-line' to
 	control `w3m-use-header-line'.
