@@ -1,3 +1,8 @@
+2005-01-17  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-form.el (w3m-form-parse-and-fontify): Check if w3m-current-url
+	is available.
+
 2005-01-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Ease limits

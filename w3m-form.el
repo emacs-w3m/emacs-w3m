@@ -654,13 +654,14 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 				 w3m-output-coding-system))
 		(setq textareas (cons (list textareanumber form id name)
 				      textareas)))
-	      (setq filename (expand-file-name
-			      (w3m-form-input-textarea-filename
-			       w3m-current-url
-			       (format "fid=%d/type=%s/name=%s/id=%d" fid type name id))
-			      w3m-form-textarea-directory))
-	      (setq w3m-form-textarea-files
-		    (cons filename w3m-form-textarea-files))
+	      (when w3m-current-url
+		(setq filename (expand-file-name
+				(w3m-form-input-textarea-filename
+				 w3m-current-url
+				 (format "fid=%d/type=%s/name=%s/id=%d" fid type name id))
+				w3m-form-textarea-directory))
+		(setq w3m-form-textarea-files
+		      (cons filename w3m-form-textarea-files)))
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
