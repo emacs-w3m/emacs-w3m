@@ -102,12 +102,15 @@
    最新の w3m を使うようにしてください．最新は2001年12月19日に公開された
    w3m-0.2.3.1 で，そのソースは以下の場所から入手できます．
 
-      http://prdownloads.sourceforge.net/w3m/w3m-0.2.3.1.tar.gz.
+      http://prdownloads.sourceforge.net/w3m/w3m-0.2.3.1.tar.gz
+
+   w3m-m17n / w3mmee などの w3m から派生したプログラムを利用する場合には，
+   patches/ 以下の必要なパッチを適用して，再コンパイルしてください．
 
 
 4. 連絡先
 
-   メーリングリスト <emacs-w3m@namazu.org> に連絡してください．
+   メールを <emacs-w3m@namazu.org> 宛に送ってください．
 
 
 5. 謝辞

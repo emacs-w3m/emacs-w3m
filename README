@@ -101,7 +101,10 @@ This package contains a interface program of w3m.
    0.2.3.1, which is released at Dec 19th, 2001.  Its source can be
    downloaded from:
 
-      http://prdownloads.sourceforge.net/w3m/w3m-0.2.3.1.tar.gz.
+      http://prdownloads.sourceforge.net/w3m/w3m-0.2.3.1.tar.gz
+
+   To use variants such as w3m-m17n and w3mmee, you must apply some
+   patches and must rebuild binary.  See patches/README for more detail.
 
 
 4. Contact
