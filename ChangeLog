@@ -1,3 +1,24 @@
+2003-09-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Add the
+	kyoiku group; include the yyyymmdd data in Message-IDs; remove too
+	much redundant expressions.
+	(shimbun-yomiuri-shorten-brackets-in-string): Save-match-data.
+	(shimbun-yomiuri-get-headers): Attempt to fetch the top news
+	articles; modify url strings for the kyoiku group.
+	(shimbun-yomiuri-prepare-article): Rename from
+	`shimbun-yomiuri-adjust-date-header'; remove useless contents for
+	the kyoiku group.
+
+	* shimbun/sb-yomiuri-html.el (shimbun-make-contents): Rename
+	`shimbun-yomiuri-adjust-date-header' to
+	`shimbun-yomiuri-prepare-article'.
+
+2003-09-05  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Add the
+	culture and the science groups.
+
 2003-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-header-insert): Make it work in a
