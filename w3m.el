@@ -426,7 +426,8 @@ It is valid only when `w3m-treat-image-size' is non-nil."
   (cond
    ((not (featurep 'mule)) 'iso-8859-1)
    ((eq w3m-type 'w3mmee) 'ctext)
-   ((eq w3m-type 'w3m-m17n) (if w3m-use-mule-ucs 'utf-8 'iso-2022-7bit-ss2))
+   ((eq w3m-type 'w3m-m17n)
+    (if (featurep 'un-define) 'utf-8 'iso-2022-7bit-ss2))
    (w3m-accept-japanese-characters 'w3m-euc-japan)
    (t 'w3m-iso-latin-1))
   "*Coding system for read operations of `w3m'."
@@ -1764,7 +1765,9 @@ for a refresh indication")
 	       "-o" "strict_iso2022=0"
 	       '(if charset "-I") 'charset
 	       "-O"
-	       (if w3m-use-mule-ucs "UTF-8" "ISO-2022-JP-2" )))
+	       (if (eq w3m-output-coding-system 'utf-8)
+		   "UTF-8"
+		 "ISO-2022-JP-2" )))
 	((eq w3m-input-coding-system 'w3m-euc-japan)
 	 (list "-halfdump" "-I" "e"))
 	(t (list "-halfdump")))

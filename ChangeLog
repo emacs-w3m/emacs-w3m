@@ -1,3 +1,9 @@
+2003-07-24  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-output-coding-system): Changed condition to use utf-8
+	with w3m-m17n.
+	(w3m-halfdump-command-arguments): Ditto.
+
 2003-07-24  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-parse-and-fontify): 
