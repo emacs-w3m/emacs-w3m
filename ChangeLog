@@ -1,5 +1,11 @@
 2003-06-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/shimbun.el (shimbun-footer): Insert docstring to aboid
+	the bug of XEmacs's byte compiler.
+
+	* shimbun/sb-w3m-dev.el (shimbun-reply-to): Insert docstring to
+	aboid the bug of XEmacs's byte compiler.
+
 	* shimbun/sb-asahi.el (shimbun-server-name): Removed.
 	(shimbun-from-address): Removed.
 	(initialize-instance): Initialize `server-name', `from-address',
