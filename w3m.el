@@ -2426,6 +2426,21 @@ to nil.
     v))
 
 (defun w3m-download (url &optional filename no-cache)
+  (interactive
+   (let* ((url (w3m-input-url
+		nil
+		(when (stringp w3m-current-url)
+		  (if (string-match "about://\\(header\\|source\\)/"
+				    w3m-current-url)
+		      (substring w3m-current-url (match-end 0))
+		    w3m-current-url))))
+	  (basename (file-name-nondirectory url)))
+     (if (string-match "^[\t ]*$" basename)
+	 (error "You should specify the existing file name")
+       (list url
+	     (w3m-read-file-name (format "Download %s to: " basename)
+				 w3m-default-save-directory basename)
+	     current-prefix-arg))))
   (unless filename
     (setq filename (w3m-read-file-name nil nil url)))
   (if (w3m-retrieve url t no-cache)

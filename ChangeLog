@@ -1,3 +1,14 @@
+2001-08-10  Takenobu Sugiyama  <sugiyama@ae.advantest.co.jp>
+
+	* w3m-weather.el (w3m-weather-url-alist): Update data to follow
+	the most recent urls.
+	(w3m-weather-default-area): Ditto.
+	(w3m-weather-remove-weather-images): Ditto.
+
+2001-08-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-download): Made it to work as a command.
+
 2001-08-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-fontify-images): Use `w3m-decode-anchor-string' to
