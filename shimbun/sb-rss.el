@@ -109,11 +109,8 @@
       (shimbun-retrieve-url
        (shimbun-index-url shimbun) 'no-cache 'no-decode)
       (goto-char (point-min))
-      (if (not (looking-at ;;"<\\?xml version=\"1.0\" encoding=\"\\(.+\\)\" *\\?>"))
-		"<\\?xml version=\"1.0\" encoding=\"\\(.+\\)\""))
-	  (error "invalid xml")
-	(setq encoding (intern-soft (concat
-				     (downcase (match-string 1)) "-dos"))))
+      (setq encoding (intern-soft (concat
+				   (downcase (shimbun-rss-get-encoding)) "-dos")))
       (decode-coding-region (point-min) (point-max) encoding)
       (set-buffer-multibyte t)
       (shimbun-get-headers shimbun range))))
@@ -159,6 +156,22 @@
 ;;; Internal functions
 
 ;;; XML functions
+
+(defun shimbun-rss-get-encoding ()
+  (let (encoding end)
+    (cond
+     ((search-forward "<?")
+      (let (pos)
+	(setq pos (point))
+	(setq end (search-forward "?>"))
+	(goto-char pos))
+      (if (re-search-forward "encoding=\"\\(.+\\)\"" end t)
+	  (setq encoding (match-string-no-properties 1))
+	(setq encoding "utf-8")))
+     (t	;; XML Default encoding.
+      (setq encoding "utf-8")
+      ))
+    encoding))
 
 (defun shimbun-rss-node-text (namespace local-name element)
   (let* ((node (assq (intern (concat namespace (symbol-name local-name)))

@@ -1,3 +1,8 @@
+2003-06-18  Koichiro Ohba  <koichiro@meadowy.org>
+
+	* shimbun/sb-rss.el (shimbun-rss-get-encoding): New function.
+	(shimbun-headers): Use (shimbun-rss-get-encoding).
+
 2003-06-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-makeinfo): Encode messages to terminal while
