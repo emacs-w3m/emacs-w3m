@@ -1,5 +1,7 @@
 2003-05-03  NAKAJIMA Mikio  <minakaji@namazu.org>
 
+	* shimbun/sb-squeak-dev.el: New file.
+
 	* shimbun/sb-jpo.el (shimbun-jpo-cleanup-article): Modify regexps.
 	
 	* shimbun/sb-jpilot.el: Require sendmail.
