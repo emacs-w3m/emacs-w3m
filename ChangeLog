@@ -1,3 +1,8 @@
+2001-05-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-create-image): Attempt to extract the first
+	frame of an animated gif when the unoptimization is failed.
+
 2001-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-add-text-properties): Don't specify `end-open' nor

@@ -107,7 +107,17 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 					   w3m-gifsicle-program
 					   t t nil "--unoptimize")
 		      (goto-char (point-min))
-		      (when (looking-at "GIF89a")
+		      (when (or (looking-at "GIF89a")
+				;; Unoptimization is failed. :-<
+				;; Attempt to extract the first frame.
+				(progn
+				  (erase-buffer)
+				  (insert data)
+				  (call-process-region (point-min) (point-max)
+						       w3m-gifsicle-program
+						       t t nil "#0")
+				  (goto-char (point-min))
+				  (looking-at "GIF89a")))
 			;; Perhaps the unoptimization is succeeded.
 			(setq glyph (make-glyph (vector 'gif
 							:data
