@@ -146,8 +146,9 @@
 				 path "/mail%s.html"))
 	       url)
 	  (shimbun-retrieve-url (format base-url "list") t)
-	  (re-search-forward "<td>Page [0-9]+ of \\([0-9]+\\)</td>")
-	  (let* ((page-max (string-to-int (match-string 1)))
+	  (re-search-forward
+	   "<td\\( align=\"center\"><b\\)?>Page [0-9]+ of \\([0-9]+\\)\\(</b><br>\\)?</td>")
+	  (let* ((page-max (string-to-int (match-string 2)))
 		 (i page-max))
 	    (while (> i 1)
 	      (setq url (format base-url i))

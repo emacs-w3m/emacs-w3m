@@ -1,3 +1,9 @@
+2003-02-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-debian.el (shimbun-get-headers): Relax the regexp
+	detecting the maximum limit of pages, in order to follow the
+	change of archive pages.
+
 2003-02-25  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-dennou.el (shimbun-headers): Bug fixed.
