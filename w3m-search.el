@@ -150,7 +150,7 @@ See also `w3m-search-engine-alist'."
    "+"))
 
 ;;;###autoload
-(defun w3m-search (search-engine query)
+(defun w3m-search (search-engine query interactive-p)
   "Search QUERY using SEARCH-ENGINE.
 When called interactively with a prefix argument, you can choose one of
 the search engines defined in `w3m-search-engine-alist'.  Otherwise use
@@ -179,12 +179,14 @@ the search engines defined in `w3m-search-engine-alist'.  Otherwise use
      (list (if (string= engine "")
 	       w3m-search-default-engine
 	     engine)
-	   query)))
+	   query
+	   t))) ;; interactive-p
   (unless (string= query "")
     (let ((info (assoc search-engine w3m-search-engine-alist)))
       (if info
 	  (w3m (format (cadr info)
-		       (w3m-search-escape-query-string query (caddr info))))
+		       (w3m-search-escape-query-string query (caddr info)))
+	       nil (and w3m-obey-w3m-pop-up-frames interactive-p))
 	(error "Unknown search engine: %s" search-engine)))))
 
 ;;;###autoload
