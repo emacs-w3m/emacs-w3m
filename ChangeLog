@@ -1,5 +1,8 @@
 2003-09-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-e21.el (w3m-e21-toolbar-configurations): Don't modify the
+	values for `tool-bar-button-margin' and `tool-bar-button-relief'.
+
 	* w3mhack.el (w3mhack-nonunix-install): Use icons30 for XEmacs.
 	(w3mhack-make-package): Use icons30.
 
