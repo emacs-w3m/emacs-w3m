@@ -62,9 +62,8 @@ time.
 
 The default value for this variable is nil which allows the
 `w3m-history' variable to have the list `(A B C B)'.  Where contents
-of two B's are the identical Lisp objects.  Where contents of two B's
-are the identical Lisp objects.  So, too much wasting the Lisp
-resources will be avoided.
+of two B's are the identical Lisp objects.  So, too much wasting the
+Lisp resources will be avoided.
 
 See the documentation for the variables `w3m-history' and
 `w3m-history-flat' for more information."
@@ -531,10 +530,14 @@ are replaced with NEWPROPS."
       (setcar w3m-history (list (cadar w3m-history) position nil))))))
 
 (defun w3m-history-copy (buffer)
-  "Copy the buffer-local variables `w3m-history' and `w3m-history-flat'
-from BUFFER to the current buffer.  This function is used to share
-properties of each history element between BUFFER and the current
-buffer."
+  "Copy the history structure from BUFFER to the current buffer.
+This function keeps corresponding elements identical Lisp objects
+between buffers while copying the frameworks of `w3m-history' and
+`w3m-history-flat'.  Exceptionally, buffer-local properties contained
+in `w3m-history-flat' will not be copied.  If
+`w3m-history-minimize-in-new-session' is non-nil, the copied history
+structure will be shrunk so that it may contain only the current
+history element."
   (let ((current (current-buffer))
 	position flat element rest)
     (set-buffer buffer)
@@ -559,25 +562,26 @@ buffer."
 	(setq w3m-history-flat (nreverse rest))
 	(w3m-history-tree position)))))
 
-(defun w3m-history-plist-get (keyword &optional global)
+(defun w3m-history-plist-get (keyword &optional not-buffer-local)
   "Extract a value from the properties of the current history element.
 KEYWORD is usually a symbol.  This function returns the value
-corresponding to the KEYWORD, or nil if KEYWORD is not one of the
-keyword on the properties.  If GLOBAL is omitted or nil, this function
-accesses global properties, otherwise accesses the buffer-local
-properties."
+corresponding to KEYWORD, but it returns nil if the properties don't
+contain KEYWORD.  If NOT-BUFFER-LOCAL is nil, this function searches a
+value in buffer-local properties, otherwise looks over the global
+properties instead."
   (let ((element (w3m-history-element (cadar w3m-history) t)))
-    (plist-get (if global
+    (plist-get (if not-buffer-local
 		   (cadr element)
 		 (cdddr element))
 	       keyword)))
 
-(defun w3m-history-add-properties (newprops &optional global)
-  "Add each keyword-value pair of NEWPROPS to the properties of the
-current history element, and return new properties.  If GLOBAL is
-omitted or nil, this function accesses global properties, otherwise
-accesses the buffer-local properties."
-  (if global
+(defun w3m-history-add-properties (newprops &optional not-buffer-local)
+  "Add NEWPROPS to the properties of the current history element.
+NEWPROPS should be a plist, which is merged into the properties.
+Return new properties.  If NOT-BUFFER-LOCAL is nil, NEWPROPS will be
+added to the buffer-local properties.  Otherwise, NEWPROPS will be
+added to the global properties instead."
+  (if not-buffer-local
       (cadr (w3m-history-seek-element
 	     (car (w3m-history-element (cadar w3m-history)))
 	     newprops))
@@ -596,32 +600,33 @@ accesses the buffer-local properties."
 	      (setq properties nil))
 	    (setcdr (cddr element) properties))
 	(message "\
-Warning: the history database may be something corrupted in this session.")
+Warning: the history database in this session seems corrupted.")
 	(sit-for 1)
 	nil))))
 
-(defun w3m-history-plist-put (keyword value &optional global)
-  "Change value in the properties of the current history element of
-KEYWORD to VALUE, and return new properties.  KEYWORD is usually a
-symbol and VALUE is any object.  If GLOBAL is omitted or nil, this
-function accesses global properties, otherwise accesses the
-buffer-local properties."
-  (inline (w3m-history-add-properties (list keyword value) global)))
+(defun w3m-history-plist-put (keyword value &optional not-buffer-local)
+  "Put KEYWORD and VALUE into the current history element.
+Return new properties.  If NOT-BUFFER-LOCAL is nil, KEYWORD and VALUE
+will be put into the buffer-local properties.  Otherwise, KEYWORD and
+VALUE will be put into the global properties instead."
+  (inline (w3m-history-add-properties (list keyword value) not-buffer-local)))
 
-(defun w3m-history-remove-properties (properties &optional global)
-  "Remove each keyword of the keyword-value pair of PROPERTIES from the
-properties of the current history element.  The values in PROPERTIES
-are ignored (treated as nil).  Returns new properties.  If GLOBAL is
-omitted or nil, this function accesses global properties, otherwise
-accesses the buffer-local properties."
+(defun w3m-history-remove-properties (properties &optional not-buffer-local)
+  "Remove PROPERTIES from the current history element.
+PROPERTIES should be one or more keyword-value pairs (i.e., plist) but
+values are ignored (treated as nil).  Return new properties.  If
+NOT-BUFFER-LOCAL is nil, the buffer-local properties will be modified.
+Otherwise, the global properties will be modified instead."
   (let (rest)
     (while properties
       (setq rest (cons nil (cons (car properties) rest))
 	    properties (cddr properties)))
-    (inline (w3m-history-add-properties (nreverse rest) global))))
+    (inline (w3m-history-add-properties (nreverse rest) not-buffer-local))))
 
 (defun w3m-history-store-position ()
-  "Store the current cursor position in the history structure."
+  "Store the current cursor position into the current history element.
+Data consist of the position where the window starts and the cursor
+position.  Naturally, those should be treated as buffer-local."
   (interactive)
   (when (cadar w3m-history)
     (w3m-history-add-properties (list :window-start (window-start)
@@ -630,7 +635,9 @@ accesses the buffer-local properties."
       (message "The current cursor position saved"))))
 
 (defun w3m-history-restore-position ()
-  "Restore the saved cursor position for the page."
+  "Restore the saved cursor position in the page.
+Even if the page has been shrunk (by reloading, for example), somehow
+it works although it may not be perfect."
   (interactive)
   (when (cadar w3m-history)
     (let ((start (w3m-history-plist-get :window-start))
@@ -644,7 +651,7 @@ accesses the buffer-local properties."
 	     (message "No cursor position saved"))))))
 
 (defun w3m-history-minimize ()
-  "Minimize the history so that there is only the current page."
+  "Minimize the history so that there may be the current page only."
   (interactive)
   (let ((position (cadar w3m-history))
 	element)
@@ -661,7 +668,9 @@ accesses the buffer-local properties."
 
 (defun w3m-history-add-arrived-db ()
   "Add the arrived database to the history structure unreasonably.
-It's only a joke, you should NEVER use it."
+This function is useless normally, so you may not want to use it.
+\(The reason it is here is because it is useful once in a while when
+debugging w3m-hist.el.)"
   (interactive)
   (unless (eq 'w3m-mode major-mode)
     (error "`%s' must be invoked from an emacs-w3m buffer" this-command))
