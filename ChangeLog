@@ -2,7 +2,8 @@
 
 	* w3m.el (w3m-input-url): Fix a bug which causes an error when
 	there's neither a frame nor a window for the emacs-w3m session and
-	`url' is the symbol `popup'.
+	`url' is the symbol `popup' (it is because there's a url-like text
+	around the cursor).
 
 2004-01-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
