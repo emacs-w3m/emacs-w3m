@@ -33,72 +33,56 @@
 (require 'shimbun)
 (require 'sb-text)
 
-(luna-define-class shimbun-yomiuri (shimbun shimbun-text) ())
+(luna-define-class shimbun-yomiuri (shimbun-text) ())
 
 (defvar shimbun-yomiuri-top-level-domain "yomiuri.co.jp"
   "Name of the top level domain for the Yomiuri On-line.")
 
-(defvar shimbun-yomiuri-url (concat "http://www."
-				    shimbun-yomiuri-top-level-domain
-				    "/")
+(defvar shimbun-yomiuri-url
+  (concat "http://www." shimbun-yomiuri-top-level-domain "/")
   "Name of the parent url.")
 
-(defvar shimbun-yomiuri-groups
-  '("business" "editorial" "national" "obit" "politics" "sports" "world")
-  "List of available group names.  Each name should be a directory name
-which is in existence under the parent url `shimbun-yomiuri-url'.")
-
-(defvar shimbun-yomiuri-from-address
-  (concat "webmaster@www." shimbun-yomiuri-top-level-domain))
-(defvar shimbun-yomiuri-content-start "\n<!--  honbun start  -->\n")
-(defvar shimbun-yomiuri-content-end  "\n<!--  honbun end  -->\n")
-(defvar shimbun-yomiuri-x-face-alist
-  '(("default" . "X-Face: #sUhc'&(fVr$~<rt#?PkH,u-.fV(>y)\
-i\"#,TNF|j.dEh2dAzfa4=IH&llI]S<-\"dznMW2_j\n [N1a%n{SU&E&\
-Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
-
-(defvar shimbun-yomiuri-expiration-days 7)
-
-(defvar shimbun-yomiuri-group-regexp-alist
-  (let ((default (list
-		  (concat
-		   "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
-		   ;; 1. url
-		   "\\(%s"
-		   "/news/200[0-9][01][0-9][0-3][0-9]"
-		   ;; 2. serial number
-		   "\\([0-9a-z]+\\)" "\\.htm\\)"
-		   "\"[\t\n ]*>[\t\n ]*"
-		   ;; 3. subject
-		   "\\(.+\\)" "[\t\n ]*([\t\n ]*"
-		   ;; 4. month
-		   "\\([0-9]+\\)" "[\t\n ]*/[\t\n ]*"
-		   ;; 5. day
-		   "\\([0-9]+\\)" "[\t\n ]+"
-		   ;; 6. hour:minute
-		   "\\([012][0-9]:[0-5][0-9]\\)"
-		   "[\t\n ]*)[\t\n ]*<[\t\n ]*/a[\t\n ]*>")
-		  1 2 3 4 5 6)))
-    `(("business" ,@default)
-      ("editorial" ,(concat
-		     "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
-		     ;; 1. url
-		     "\\(%s"
-		     "/news/200[0-9][01][0-9][0-3][0-9]"
-		     ;; 2. serial number
-		     "\\([0-9a-z]+\\)" "\\.htm\\)"
-		     "\"[\t\n ]*>[\t\n ]*"
-		     ;; 3. month(ja)
-		     "\\([０１]?[０-９]\\)" "[\t\n 　]*月[\t\n 　]*"
-		     ;; 4. day(ja)
-		     "\\([０-３]?[０-９]\\)"
-		     "[\t\n 　]*日[\t\n 　]*付[\t\n 　・]*"
-		     ;; 5. subject
-		     "\\(.+\\)" "[\t\n ]*<[\t\n ]*/a[\t\n ]*>")
+(defvar shimbun-yomiuri-group-table
+  (let ((default
+	  (list
+	   (concat
+	    "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
+	    ;; 1. url
+	    "\\(%s"
+	    "/news/200[0-9][01][0-9][0-3][0-9]"
+	    ;; 2. serial number
+	    "\\([0-9a-z]+\\)" "\\.htm\\)"
+	    "\"[\t\n ]*>[\t\n ]*"
+	    ;; 3. subject
+	    "\\(.+\\)" "[\t\n ]*([\t\n ]*"
+	    ;; 4. month
+	    "\\([0-9]+\\)" "[\t\n ]*/[\t\n ]*"
+	    ;; 5. day
+	    "\\([0-9]+\\)" "[\t\n ]+"
+	    ;; 6. hour:minute
+	    "\\([012][0-9]:[0-5][0-9]\\)"
+	    "[\t\n ]*)[\t\n ]*<[\t\n ]*/a[\t\n ]*>")
+	   1 2 3 4 5 6)))
+    `(("business" "経済面" "index.htm" ,@default)
+      ("editorial" "社説・コラム" "index.htm"
+       ,(concat "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
+		;; 1. url
+		"\\(%s"
+		"/news/200[0-9][01][0-9][0-3][0-9]"
+		;; 2. serial number
+		"\\([0-9a-z]+\\)" "\\.htm\\)"
+		"\"[\t\n ]*>[\t\n ]*"
+		;; 3. month(ja)
+		"\\([０１]?[０-９]\\)" "[\t\n 　]*月[\t\n 　]*"
+		;; 4. day(ja)
+		"\\([０-３]?[０-９]\\)"
+		"[\t\n 　]*日[\t\n 　]*付[\t\n 　・]*"
+		;; 5. subject
+		"\\(.+\\)" "[\t\n ]*<[\t\n ]*/a[\t\n ]*>")
        1 2 5 nil nil nil 3 4)
-      ("national" ,@default)
-      ("obit" ,(concat
-		"<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
+      ("national" "社会面" "index.htm" ,@default)
+      ("obit" "おくやみ" "index.htm"
+       ,(concat "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
 		;; 1. url
 		"\\(%s"
 		"/news/200[0-9][01][0-9][0-3][0-9]"
@@ -115,22 +99,42 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 		"\\([012][0-9]:[0-5][0-9]\\)?"
 		"[\t\n ]*)[\t\n ]*<[\t\n ]*/a[\t\n ]*>")
        1 2 3 4 5 6)
-      ("politics" ,@default)
-      ("sports" ,@default)
-      ("world" ,@default)))
-  "Alist of group names, regexps and numbers.  Regexp may have the \"%s\"
-token which is replaced with a regexp-quoted group name.  Numbers
-point to the search result in order of a url, a serial number, a
-subject, a month, a day, an hour:minute, a month(ja) and a day(ja).")
+      ("politics" "政治面" "index.htm" ,@default)
+      ("sports" "スポーツ面" "index.htm" ,@default)
+      ("world" "国際面" "index.htm" ,@default)))
+  "Alist of group names, their Japanese translations, index pages,
+regexps and numbers.
+Regexp may have the \"%s\" token which is replaced with a
+regexp-quoted group name.  Numbers point to the search result in order
+of a url, a serial number, a subject, a month, a day, an hour:minute
+and an extra keyword.")
 
-(defun shimbun-yomiuri-index-url (entity)
-  "Return a url for the list page corresponding to the group of ENTITY."
-  (concat (shimbun-url-internal entity)
-	  (shimbun-current-group-internal entity)
-	  "/index.htm"))
+(defvar shimbun-yomiuri-content-start "\n<!--  honbun start  -->\n")
+
+(defvar shimbun-yomiuri-content-end  "\n<!--  honbun end  -->\n")
+
+(defvar shimbun-yomiuri-x-face-alist
+  '(("default" . "X-Face: #sUhc'&(fVr$~<rt#?PkH,u-.fV(>y)\
+i\"#,TNF|j.dEh2dAzfa4=IH&llI]S<-\"dznMW2_j\n [N1a%n{SU&E&\
+Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
+
+(defvar shimbun-yomiuri-expiration-days 7)
+
+(luna-define-method shimbun-groups ((shimbun shimbun-yomiuri))
+  (mapcar 'car shimbun-yomiuri-group-table))
+
+(luna-define-method shimbun-from-address ((shimbun shimbun-yomiuri))
+  (concat (shimbun-mime-encode-string
+	   (concat "読売新聞 ("
+		   (nth 1 (assoc (shimbun-current-group-internal shimbun)
+				 shimbun-yomiuri-group-table))
+		   ")"))
+	  " <webmaster@www." shimbun-yomiuri-top-level-domain ">"))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-yomiuri))
-  (shimbun-yomiuri-index-url shimbun))
+  (let ((group (shimbun-current-group-internal shimbun)))
+    (concat shimbun-yomiuri-url group "/"
+	    (nth 2 (assoc group shimbun-yomiuri-group-table)))))
 
 (defmacro shimbun-yomiuri-japanese-string-to-number (string)
   "Convert a Japanese zenkaku number to just a number."
@@ -190,16 +194,15 @@ It does also shorten too much spaces."
 	(replace-match "")))
     (buffer-string)))
 
-(defun shimbun-yomiuri-get-headers (entity)
+(defun shimbun-yomiuri-get-headers (shimbun)
   "Return a list of headers."
-  (let ((group (shimbun-current-group-internal entity))
-	(parent (shimbun-url-internal entity))
-	(from (shimbun-from-address-internal entity))
+  (let ((group (shimbun-current-group-internal shimbun))
+	(from (shimbun-from-address shimbun))
 	(case-fold-search t)
 	regexp numbers cyear cmonth month year day headers)
-    (setq regexp (assoc group shimbun-yomiuri-group-regexp-alist)
-	  numbers (cddr regexp)
-	  regexp (format (cadr regexp) (regexp-quote group))
+    (setq regexp (assoc group shimbun-yomiuri-group-table)
+	  numbers (nthcdr 4 regexp)
+	  regexp (format (nth 3 regexp) (regexp-quote group))
 	  cyear (decode-time)
 	  cmonth (nth 4 cyear)
 	  cyear (nth 5 cyear))
@@ -250,7 +253,7 @@ It does also shorten too much spaces."
 	     ;; references, chars, lines
 	     "" 0 0
 	     ;; xref
-	     (concat parent (match-string (nth 0 numbers))))
+	     (concat shimbun-yomiuri-url (match-string (nth 0 numbers))))
 	    headers))
     headers))
 
@@ -258,40 +261,32 @@ It does also shorten too much spaces."
 					 &optional range)
   (shimbun-yomiuri-get-headers shimbun))
 
-(defun shimbun-yomiuri-make-contents (entity header)
-  "Return article contents with a correct date header."
+(defun shimbun-yomiuri-adjust-date-header (shimbun header)
+  "Adjust a date header if there is a correct information available."
   (let ((case-fold-search t)
-	start)
-    (when (and (re-search-forward (shimbun-content-start-internal entity)
+	end)
+    (when (and (re-search-forward (shimbun-content-start-internal shimbun)
 				  nil t)
-	       (setq start (point))
-	       (re-search-forward (shimbun-content-end-internal entity)
-				  nil t))
-      (delete-region (match-beginning 0) (point-max))
-      (delete-region (point-min) start)
-      (goto-char (point-max))
-      (forward-line -1)
-      (when (re-search-forward "\\(20[0-9][0-9]\\)/\\(1?[0-9]\\)/\
+	       (re-search-forward (shimbun-content-end-internal shimbun)
+				  nil t)
+	       (progn
+		 (goto-char (setq end (match-beginning 0)))
+		 (forward-line -1)
+		 (re-search-forward "\\(20[0-9][0-9]\\)/\\(1?[0-9]\\)/\
 \\([123]?[0-9]\\)/\\([012][0-9]:[0-5][0-9]\\)"
-			       nil t)
-	(shimbun-header-set-date
-	 header
-	 (shimbun-make-date-string
-	  (string-to-number (match-string 1))
-	  (string-to-number (match-string 2))
-	  (string-to-number (match-string 3))
-	  (match-string 4))))
-      (goto-char (point-min))
-      (insert "<html>\n<head>\n<base href=\""
-	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
-      (goto-char (point-max))
-      (insert "\n</body>\n</html>\n"))
-    (shimbun-make-mime-article entity header)
-    (buffer-string)))
+				    end t)))
+      (shimbun-header-set-date
+       header
+       (shimbun-make-date-string
+	(string-to-number (match-string 1))
+	(string-to-number (match-string 2))
+	(string-to-number (match-string 3))
+	(match-string 4)))))
+  (goto-char (point-min)))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-yomiuri)
-					   header)
-  (shimbun-yomiuri-make-contents shimbun header))
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-yomiuri)
+						   header)
+  (shimbun-yomiuri-adjust-date-header shimbun header))
 
 (provide 'sb-yomiuri)
 

@@ -30,15 +30,12 @@
 (require 'shimbun)
 (require 'sb-yomiuri)
 
-(luna-define-class shimbun-yomiuri-html (shimbun shimbun-yomiuri) ())
+(luna-define-class shimbun-yomiuri-html (shimbun-yomiuri) ())
 
-(defvar shimbun-yomiuri-html-url shimbun-yomiuri-url)
-(defvar shimbun-yomiuri-html-groups shimbun-yomiuri-groups)
-(defvar shimbun-yomiuri-html-from-address shimbun-yomiuri-from-address)
 (defvar shimbun-yomiuri-html-content-start
   "\n<!-- ▼写真テーブル▼ -->\n\\|\n<!--  honbun start  -->\n")
-(defvar shimbun-yomiuri-html-content-end
-  "\n<!--  honbun end  -->\n")
+
+(defvar shimbun-yomiuri-html-content-end  "\n<!--  honbun end  -->\n")
 
 (defvar shimbun-yomiuri-html-x-face-alist shimbun-yomiuri-x-face-alist)
 
@@ -46,7 +43,8 @@
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-yomiuri-html)
 					   header)
-  (shimbun-yomiuri-make-contents shimbun header))
+  (shimbun-yomiuri-adjust-date-header shimbun header)
+  (shimbun-make-html-contents shimbun header))
 
 (provide 'sb-yomiuri-html)
 

@@ -32,7 +32,9 @@
 ;; Shimbun API:
 ;;
 ;; shimbun-open
+;; shimbun-server
 ;; shimbun-groups
+;; shimbun-current-group
 ;; shimbun-open-group
 ;; shimbun-close-group
 ;; shimbun-headers
@@ -82,7 +84,8 @@
 			  x-face x-face-alist
 			  url coding-system from-address
 			  content-start content-end
-			  expiration-days))
+			  expiration-days
+			  server-name))
   (luna-define-internal-accessors 'shimbun))
 
 (defgroup shimbun nil
@@ -104,6 +107,10 @@
 
 (luna-define-generic shimbun-mua-search-id (mua id)
   "Return non-nil when MUA found a message structure which corresponds to ID.")
+
+(defun shimbun-mua-shimbun (mua)
+  "Return the shimbun object created by MUA."
+  (shimbun-mua-shimbun-internal mua))
 
 ;;; BASE 64
 (require 'mel)
@@ -138,67 +145,61 @@ Return content-type of URL as string when retrieval succeeded."
 				      extra)
   (vector number subject from date id references chars lines xref extra))
 
-;;(defsubst shimbun-header-number (header)
+;;(defun shimbun-header-number (header)
 ;;  (aref header 0))
 
-(defsubst shimbun-header-field-value ()
-  (let ((pt (point)))
-    (prog1
-	(buffer-substring (match-end 0) (std11-field-end))
-      (goto-char pt))))
-
-(defsubst shimbun-header-subject (header)
+(defun shimbun-header-subject (header)
   (aref header 1))
 
-(defsubst shimbun-header-set-subject (header subject)
+(defun shimbun-header-set-subject (header subject)
   (aset header 1 subject))
 
-(defsubst shimbun-header-from (header)
+(defun shimbun-header-from (header)
   (aref header 2))
 
-(defsubst shimbun-header-set-from (header from)
+(defun shimbun-header-set-from (header from)
   (aset header 2 from))
 
-(defsubst shimbun-header-date (header)
+(defun shimbun-header-date (header)
   (aref header 3))
 
-(defsubst shimbun-header-set-date (header date)
+(defun shimbun-header-set-date (header date)
   (aset header 3 date))
 
-(defsubst shimbun-header-id (header)
+(defun shimbun-header-id (header)
   (aref header 4))
 
-(defsubst shimbun-header-set-id (header id)
+(defun shimbun-header-set-id (header id)
   (aset header 4 id))
 
-(defsubst shimbun-header-references (header)
+(defun shimbun-header-references (header)
   (aref header 5))
 
-(defsubst shimbun-header-set-references (header references)
+(defun shimbun-header-set-references (header references)
   (aset header 5 references))
 
-(defsubst shimbun-header-chars (header)
+(defun shimbun-header-chars (header)
   (aref header 6))
 
-(defsubst shimbun-header-set-chars (header chars)
+(defun shimbun-header-set-chars (header chars)
   (aset header 6 chars))
 
-(defsubst shimbun-header-lines (header)
+(defun shimbun-header-lines (header)
   (aref header 7))
 
-(defsubst shimbun-header-set-lines (header lines)
+(defun shimbun-header-set-lines (header lines)
   (aset header 7 lines))
 
-(defsubst shimbun-header-xref (header)
+(defun shimbun-header-xref (header)
   (aref header 8))
 
-(defsubst shimbun-header-set-xref (header xref)
+(defun shimbun-header-set-xref (header xref)
   (aset header 8 xref))
 
-(defsubst shimbun-header-extra (header)
+(defun shimbun-header-extra (header)
   (aref header 9))
 
-(defsubst shimbun-header-set-extra (header extra)
+(defun shimbun-header-set-extra (header extra)
   (aset header 9 extra))
 
 ;; Inline functions for the internal use.
@@ -370,15 +371,15 @@ set this to `never' if you never want to use BBDB."
 ;;; Implementation of Shimbun API.
 
 (defconst shimbun-attributes
-  '(url groups coding-system from-address content-start content-end
-	x-face-alist expiration-days))
+  '(url groups coding-system server-name from-address
+	content-start content-end x-face-alist expiration-days))
 
 (defun shimbun-open (server &optional mua)
   "Open a shimbun for SERVER.
 Optional MUA is a `shimbun-mua' instance."
   (require (intern (concat "sb-" server)))
-  (let (url groups coding-system from-address content-start content-end
-	    x-face-alist shimbun expiration-days)
+  (let (url groups coding-system server-name from-address
+	    content-start content-end x-face-alist shimbun expiration-days)
     (dolist (attr shimbun-attributes)
       (set attr
 	   (symbol-value (intern-soft
@@ -386,6 +387,7 @@ Optional MUA is a `shimbun-mua' instance."
     (setq shimbun (luna-make-entity (intern (concat "shimbun-" server))
 				    :mua mua
 				    :server server
+				    :server-name server-name
 				    :url url
 				    :groups groups
 				    :coding-system coding-system
@@ -398,11 +400,19 @@ Optional MUA is a `shimbun-mua' instance."
       (shimbun-mua-set-shimbun-internal mua shimbun))
     shimbun))
 
+(defun shimbun-server (shimbun)
+  "Return the server name of SHIMBUN."
+  (shimbun-server-internal shimbun))
+
 (luna-define-generic shimbun-groups (shimbun)
   "Return a list of groups which are available in the SHIMBUN.")
 
 (luna-define-method shimbun-groups ((shimbun shimbun))
   (shimbun-groups-internal shimbun))
+
+(defun shimbun-current-group (shimbun)
+  "Return the current group of SHIMBUN."
+  (shimbun-current-group-internal shimbun))
 
 (defun shimbun-open-group (shimbun group)
   "Open a SHIMBUN GROUP."
@@ -461,6 +471,29 @@ Return nil if all pages should be retrieved."
   "Return an expiration day number of SHIMBUN.
 Return nil when articles are not expired."
   (shimbun-expiration-days-internal shimbun))
+
+(luna-define-generic shimbun-server-name (shimbun)
+  "Return the server name.")
+
+(luna-define-method shimbun-server-name ((shimbun shimbun))
+  (or (shimbun-server-name-internal shimbun)
+      (shimbun-server-internal shimbun)))
+
+(luna-define-generic shimbun-current-group-name (shimbun)
+  "Return the current group name.")
+
+(luna-define-method shimbun-current-group-name ((shimbun shimbun))
+  (shimbun-current-group-internal shimbun))
+
+(luna-define-generic shimbun-from-address (shimbun)
+  "Make a From address like \"SERVER (GROUP) <ADDRESS>\".")
+
+(luna-define-method shimbun-from-address ((shimbun shimbun))
+  (shimbun-mime-encode-string
+   (format "%s (%s) <%s>"
+	   (shimbun-server-name shimbun)
+	   (shimbun-current-group-name shimbun)
+	   (shimbun-from-address-internal shimbun))))
 
 (luna-define-generic shimbun-article (shimbun header &optional outbuf)
   "Retrieve a SHIMBUN article which corresponds to HEADER to the OUTBUF.
