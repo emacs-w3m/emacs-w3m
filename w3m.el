@@ -2752,8 +2752,8 @@ works on Emacs.
 	(current w3m-current-url)
 	element url about title hierarchy)
     (w3m-with-work-buffer
-      (set-buffer-multibyte t)
       (erase-buffer)
+      (set-buffer-multibyte t)
       (insert "\
 <head><title>URL history</title></head><body>
 <h1>List of all the links you have visited in this session.</h1><pre>\n")
