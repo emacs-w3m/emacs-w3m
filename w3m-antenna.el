@@ -198,9 +198,11 @@ whose elements are:
 			   "JST")))))))
 
 (defun w3m-antenna-last-modified (url class &optional no-cache)
-  (or (and (eq class 'hns)
-	   (w3m-antenna-hns-last-modified url no-cache))
-      (w3m-last-modified url no-cache)))
+  (if (eq class 'hns)
+      (w3m-antenna-hns-last-modified url no-cache)
+    (if (w3m-content-type url no-cache)
+	(w3m-last-modified url)
+      t))) ; t means that specified URL is not found.
 
 (defun w3m-antenna-size (url class &optional no-cache)
   (unless (memq class '(hns time))
@@ -217,18 +219,21 @@ whose elements are:
       (let* ((url  (format-time-string (car site) (current-time)))
 	     (time (w3m-antenna-last-modified
 		    url (w3m-antenna-site-class site) t))
-	     (size (w3m-antenna-size
-		    url (w3m-antenna-site-class site)))
+	     (size (unless (eq t time)
+		     (w3m-antenna-size url (w3m-antenna-site-class site))))
 	     (pre (assoc (w3m-antenna-site-key site) w3m-antenna-alist)))
 	(push (append site
-		      (list url
-			    time
-			    size
-			    (and size
-				 (nth 5 pre)
-				 (if (/= size (nth 5 pre))
-				     (current-time)
-				   (or (nth 6 pre) (current-time))))))
+		      (if (eq t time)
+			  (nthcdr 3 pre)
+			(list url
+			      time
+			      size
+			      (and size
+				   (w3m-antenna-site-size pre)
+				   (if (/= size (w3m-antenna-site-size pre))
+				       (current-time)
+				     (or (w3m-antenna-site-size-detected pre)
+					 (current-time)))))))
 	      alist)))
     alist))
 
@@ -289,28 +294,28 @@ whose elements are:
 	    (goto-char (point-max)))
 	(delete-region (match-beginning 1) (match-end 1))))))
 
-(defun w3m-about-antenna (url &optional no-decode no-cache)
+(defun w3m-about-antenna (url &optional no-decode no-cache &rest args)
   (unwind-protect
-    (let (changed unchanged)
-      (w3m-antenna-setup)
-      ;; Check sites.
-      (if no-cache
-	  (setq w3m-antenna-alist (w3m-antenna-check-sites)))
-      (dolist (site w3m-antenna-alist)
-	(if (w3m-time-newer-p (or (w3m-antenna-site-last-modified site)
-				  (w3m-antenna-site-size-detected site))
-			      (w3m-arrived-last-modified
-			       (w3m-antenna-site-url site)))
-	    (push site changed)
-	  (push site unchanged)))
-      (w3m-with-work-buffer
-	(delete-region (point-min) (point-max))
-	(set-buffer-multibyte t)
-	(w3m-antenna-make-contents
-	 (funcall w3m-antenna-sort-changed-sites-function (nreverse changed))
-	 (funcall w3m-antenna-sort-unchanged-sites-function (nreverse unchanged))))
-      (w3m-antenna-shutdown)
-      "text/html")
+      (let (changed unchanged)
+	(w3m-antenna-setup)
+	;; Check sites.
+	(if no-cache
+	    (setq w3m-antenna-alist (w3m-antenna-check-sites)))
+	(dolist (site w3m-antenna-alist)
+	  (if (w3m-time-newer-p (or (w3m-antenna-site-last-modified site)
+				    (w3m-antenna-site-size-detected site))
+				(w3m-arrived-last-modified
+				 (w3m-antenna-site-url site)))
+	      (push site changed)
+	    (push site unchanged)))
+	(w3m-with-work-buffer
+	  (delete-region (point-min) (point-max))
+	  (set-buffer-multibyte t)
+	  (w3m-antenna-make-contents
+	   (funcall w3m-antenna-sort-changed-sites-function (nreverse changed))
+	   (funcall w3m-antenna-sort-unchanged-sites-function (nreverse unchanged))))
+	(w3m-antenna-shutdown)
+	"text/html")
     (setq w3m-antenna-alist nil)))
 
 (defun w3m-antenna (&optional no-cache)
