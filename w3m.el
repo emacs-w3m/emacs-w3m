@@ -2835,8 +2835,7 @@ works on Emacs.
       (insert "Location: ")
       (put-text-property (point-min) (point)
 			 'face 'w3m-header-line-location-title-face)
-      (let ((start (point))
-	    (help "mouse-2 prompts to input URL"))
+      (let ((start (point)))
 	(insert w3m-current-url)
 	(add-text-properties start (point)
 			     (list 'face
