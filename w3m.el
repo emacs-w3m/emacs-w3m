@@ -3393,6 +3393,14 @@ Like `ffap-url-at-point', except that text props will be stripped."
    (t
     (defalias 'w3m-url-at-point 'ignore))))
 
+(defun w3m-active-region-or-url-at-point ()
+  "Return an active region or a url around the cursor.
+In Transient Mark mode, deactivate the mark."
+  (if (w3m-region-active-p)
+      (prog1 (buffer-substring-no-properties (mark) (point))
+	(deactivate-mark))
+    (w3m-url-at-point)))
+
 (defun w3m-input-url (&optional prompt initial default quick-start)
   "Read a url from the minibuffer, prompting with string PROMPT."
   (let (url)
@@ -3400,7 +3408,7 @@ Like `ffap-url-at-point', except that text props will be stripped."
     (unless default
       (setq default w3m-home-page))
     (unless initial
-      (setq initial (w3m-url-at-point)))
+      (setq initial (w3m-active-region-or-url-at-point)))
     (if (and quick-start
 	     default
 	     (not initial))
@@ -5108,7 +5116,7 @@ point."
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
 	(w3m-view-image)))
-     ((setq url (w3m-url-at-point))
+     ((setq url (w3m-active-region-or-url-at-point))
       (unless (eq 'quit (setq url (w3m-input-url nil url 'quit)))
 	(w3m-view-this-url-1 url arg new-session)))
      (t (w3m-message "No URL at point")))))
@@ -6735,7 +6743,7 @@ the current page."
   (interactive
    (list
     (w3m-input-url nil
-		   (or (w3m-url-at-point)
+		   (or (w3m-active-region-or-url-at-point)
 		       (when (stringp w3m-current-url)
 			 (if (string-match "\\`about://\\(header\\|source\\)/"
 					   w3m-current-url)
