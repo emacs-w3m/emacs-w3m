@@ -131,6 +131,10 @@
 
      この場合 install-icons を実行する必要はありません．
 
+     `make install' または `make install-package' によって info ファイル
+     もインストールされます．日本語版の info も必要ならば，代わりに
+     `make install-ja' または `make install-package-ja' を使って下さい．
+
 3.2. 非 UNIX 環境の場合
 
      configure スクリプトを実行できない，または make コマンドが存在しな

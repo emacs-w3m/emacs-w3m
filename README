@@ -123,6 +123,10 @@
 
      In this case, you have no need to execute `install-icons' command.
 
+     The info files will also be installed by `make install' or
+     `make install-package'.  If you need the Japanese version of info
+     as well, use `make install-ja' or `make install-package-ja' instead.
+
 3.2. Non-UNIX
 
      In order to install emacs-w3m to non-UNIX systems which lack an
