@@ -125,11 +125,11 @@ It can be defined in the `shimbun-hns-x-face-alist', too.
 	  (while (re-search-forward 
 		  "<h3 class=\"new\"><a [^<]*name=\"\\([0-9]+\\)\"" nil t)
 	    (let ((id (match-string 1)))
-	      (when (re-search-forward "</h3>" nil t)
+	      (when (re-search-forward "</a>" nil t)
 		(setq start (point))
 		(when (re-search-forward "<!-- end of R?L?NEW -->" nil t)
 		  (set (intern id (shimbun-hns-content-hash-internal shimbun))
-		       (buffer-substring start (point)))))))
+		       (concat "<h3>" (buffer-substring start (point))))))))
 	  (if (boundp (setq sym (intern-soft uniq
 					     (shimbun-hns-content-hash-internal
 					      shimbun))))

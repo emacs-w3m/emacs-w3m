@@ -1,3 +1,8 @@
+2001-06-21  Mito  <mit@nines.nec.co.jp>
+
+	* shimbun/sb-hns.el (shimbun-hns-article): Add title string to the
+	article buffer.
+
 2001-06-18  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-kantei.el (shimbun-kantei-from-address): Define.
