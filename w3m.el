@@ -2669,11 +2669,11 @@ works on Emacs.
 
 (defun w3m-about-history-1 (history source depth)
   "Internal function used to `w3m-about-history' for recursive funcall."
-  (let (rest)
-    (dolist (element history)
-      (unless (string-match w3m-about-history-except-regex (car element))
-	(push element rest)))
-    (setq history (nreverse rest)))
+;;  (let (rest)
+;;    (dolist (element history)
+;;      (unless (string-match w3m-about-history-except-regex (car element))
+;;	(push element rest)))
+;;    (setq history (nreverse rest)))
   (let (element url title children)
     (while history
       (setq element (car history)
