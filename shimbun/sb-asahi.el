@@ -52,27 +52,27 @@
 		    "<a" s1 "href=\"/"
 		    ;; 1. url
 		    "\\(%s/"
-		    ;; 3 or 5. serial number
+		    ;; 3 or 4. serial number
 		    "\\("
-		    "update/[01][0-9][0-3][0-9]/\\(\\([a-z]+\\)?[0-9]+\\)"
+		    "update/[01][0-9][0-3][0-9]/\\([a-z]*[0-9]+\\)"
 		    "\\|"
-		    "\\(\\(.+/\\)+[^/]*20[0-9][0-9][01][0-9][0-3][0-9][^/]*\\)"
+		    "\\(.+\\)"
 		    "\\)"
 		    "\\.html\\)"
 		    "\">" s0
-		    ;; 7. subject
+		    ;; 5. subject
 		    "\\([^<>]+\\)"
 		    s0 "</a>" s0 "("
-		    ;; 8. month
+		    ;; 6. month
 		    "\\([01][0-9]\\)"
 		    "/"
-		    ;; 9. day
+		    ;; 7. day
 		    "\\([0-3][0-9]\\)"
 		    "\\(" s1
-		    ;; 11. hour:minute
+		    ;; 9. hour:minute
 		    "\\([012][0-9]:[0-5][0-9]\\)"
 		    "\\)?)")
-		   1 3 5 7 8 9 11)))
+		   1 3 4 5 6 7 9)))
     `(("business" "経済" "%s/" ,@default)
       ("culture" "文化・芸能" "%s/" ,@default)
       ("english" "ENGLISH" "%s/"
@@ -125,25 +125,25 @@
 	 ;; 1. url
 	 "\\("
 	 ;; 3 or 5. extra keyword
-	 "\\(%s/\\([a-z]+\\)\\(/.+\\)*\\|\\([a-z]+\\)\\(/.+\\)+\\)"
+	 "\\(%s/\\([a-z]+\\)\\(/.+\\)*\\|\\([a-z]+\\)/.+\\)"
 	 "/"
-	 ;; 7. serial number
-	 "\\([a-z]+20[0-9][0-9][01][0-9][0-3][0-9]+\\)"
+	 ;; 6. serial number
+	 "\\(.+\\)"
 	 "\\.html\\)"
 	 "\">" s0
-	 ;; 8. subject
+	 ;; 7. subject
 	 "\\(.+\\)"
 	 s0 "</a>[\t\n 　]*("
-	 ;; 9. month
+	 ;; 8. month
 	 "\\([01][0-9]\\)"
 	 "/"
-	 ;; 10. day
+	 ;; 9. day
 	 "\\([0-3][0-9]\\)"
 	 "\\(" s1
-	 ;; 12. hour:minute
+	 ;; 11. hour:minute
 	 "\\([012][0-9]:[0-5][0-9]\\)"
 	 "\\)?)")
-       1 nil 7 8 9 10 12 3 5)))
+       1 nil 6 7 8 9 11 3 5)))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the
