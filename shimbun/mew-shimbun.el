@@ -267,6 +267,14 @@ show below example,
 
 (put 'mew-shimbun-element-body 'lisp-indent-function 1)
 
+(defmacro mew-shimbun-headers (shimbun range)
+  (shimbun-headers ,shimbun ,range)
+  (sit-for 0.1))
+
+(defmacro mew-shimbun-article (shimbun head)
+  (shimbun-article ,shimbun ,head)
+  (sit-for 0.1))
+
 (defsubst mew-shimbun-mode-display (group server get count sum)
   (mew-summary-lock 'shimbun
 		    (format mew-shimbun-lock-format2 group server get count sum))
@@ -466,7 +474,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
       (mew-make-directory (mew-expand-folder fld)))
     (mew-shimbun-db-setup fld)
     (unwind-protect
-	(let* ((headers (shimbun-headers shimbun range))
+	(let* ((headers (mew-shimbun-headers shimbun range))
 	       (sum (length headers)))
 	  (setq headers (sort headers
 			      (lambda (x y)
@@ -482,7 +490,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		(with-current-buffer buf
 		  (mew-erase-buffer)
 		  (set-buffer-multibyte nil)
-		  (shimbun-article shimbun head)
+		  (mew-shimbun-article shimbun head)
 		  (setq md5 (mew-shimbun-md5))
 		  (when (and (> (buffer-size) 0)
 			     (mew-shimbun-db-add-id id md5))
@@ -623,7 +631,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
     (shimbun-open-group shimbun group)
     (mew-shimbun-db-setup2 fld id-msgs)
     (unwind-protect
-	(let* ((headers (shimbun-headers shimbun range))
+	(let* ((headers (mew-shimbun-headers shimbun range))
 	       (sum (length headers)))
 	  (setq headers (sort headers
 			      (lambda (x y)
@@ -651,7 +659,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 		(with-current-buffer buf
 		  (mew-erase-buffer)
 		  (set-buffer-multibyte nil)
-		  (shimbun-article shimbun head)
+		  (mew-shimbun-article shimbun head)
 		  (when (> (buffer-size) 0)
 		    (setq newmd5 (mew-shimbun-md5))
 		    (if (and (stringp oldmd5) (string= oldmd5 newmd5))

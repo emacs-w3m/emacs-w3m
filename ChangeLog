@@ -1,3 +1,10 @@
+2004-01-07  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-headers)
+	(mew-shimbun-article): New macro.
+	(mew-shimbun-retrieve-article)
+	(mew-shimbun-re-retrieve-article): Use macros.
+
 2004-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-deactivate-mark): New function alias.
