@@ -122,13 +122,20 @@
   (list (cons (car (shimbun-groups-internal shimbun))
 	      (shimbun-slashdot-jp-make-headers shimbun range))))
 
+(defconst shimbun-slashdot-jp-story-count 30)
+
 (defun shimbun-slashdot-jp-make-headers (shimbun range)
   (cond
+   ((not range) (setq range shimbun-slashdot-jp-story-count))
    ((eq range 'all) (setq range nil))
    ((eq range 'last) (setq range 1)))
-  (let ((case-fold-search t) (headers))
+  (let ((case-fold-search t) headers head stories (num 0))
     (catch 'range-check
-      (dolist (head (shimbun-slashdot-jp-make-story-headers shimbun))
+      (while (progn
+	       (unless stories
+		 (setq stories (shimbun-slashdot-jp-make-story-headers shimbun num))
+		 (incf num))
+	       (setq head (pop stories)))
 	(unless (shimbun-search-id shimbun (shimbun-header-id head))
 	  (push head headers))
 	(when shimbun-slashdot-jp-threshold
@@ -185,14 +192,15 @@
 (defconst shimbun-slashdot-jp-story-head-end-pattern
   "<!-- end template: ID 45, storysearch;search;default -->")
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-slashdot-jp))
-  (shimbun-expand-url "search.pl" (shimbun-url-internal shimbun)))
-
-(defun shimbun-slashdot-jp-make-story-headers (shimbun &optional sid)
+(defun shimbun-slashdot-jp-make-story-headers (shimbun num)
   (let (headers begin)
     (with-temp-buffer
-      (when (and (shimbun-retrieve-url (shimbun-index-url shimbun)
-				       (not sid))
+      (when (and (shimbun-retrieve-url
+		  (shimbun-expand-url
+		   (format "search.pl?threshold=0&op=stories&start=%d"
+			   (* num shimbun-slashdot-jp-story-count))
+		   (shimbun-url-internal shimbun))
+		  'reload)
 		 (search-forward
 		  shimbun-slashdot-jp-story-head-start-pattern nil t)
 		 (setq begin (point))
@@ -202,10 +210,9 @@
 	(delete-region (point-min) begin)
 	(goto-char (point-min))
 	(while (re-search-forward
-		(format "<a href=\"%s\\?sid=\\(%s\\)[^>]*>"
+		(format "<a href=\"%s\\?sid=\\([/0-9]+\\)[^>]*>"
 			(regexp-quote
-			 (shimbun-slashdot-jp-article-url shimbun))
-			(or sid "[/0-9]+"))
+			 (shimbun-slashdot-jp-article-url shimbun)))
 		nil t)
 	  (let ((x (match-string 1))
 		(head (shimbun-make-header)))
@@ -230,13 +237,13 @@
 		(shimbun-header-set-date head x)
 		(push head headers)))
 	    (forward-line 1)))))
-    (if sid (car headers) (nreverse headers))))
+    (nreverse headers)))
 
 (defun shimbun-slashdot-jp-make-comment-headers (shimbun sid parent)
   (let (head headers)
     (with-temp-buffer
       (when (shimbun-retrieve-url
-	     (shimbun-slashdot-jp-sid-url shimbun sid) t)
+	     (shimbun-slashdot-jp-sid-url shimbun sid) 'reload)
 	(while (setq head
 		     (shimbun-slashdot-jp-search-comment-head shimbun sid
 							      nil parent))
@@ -273,10 +280,13 @@
 	    (match-string 1))))))
       (forward-line 1)
       (when parent
-	(shimbun-header-set-date head
-				 (shimbun-slashdot-jp-parse-date-string
-				  (w3m-time-parse-string
-				   (shimbun-header-date parent)))))
+	(let ((date (w3m-time-parse-string (shimbun-header-date parent))))
+	  (shimbun-header-set-date
+	   head
+	   (or (shimbun-slashdot-jp-parse-date-string date)
+	       (progn
+		 (forward-line 1)
+		 (shimbun-slashdot-jp-parse-date-string date))))))
       (forward-line 1)
       (when parent
 	(let ((pos (point)))

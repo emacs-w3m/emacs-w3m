@@ -1,3 +1,15 @@
+2002-03-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-story-count): New
+	internal constant.
+	(shimbun-slashdot-jp-make-headers): The action when range is not
+	set is changed.  Search old stories.
+	(shimbun-index-url): Removed.
+	(shimbun-slashdot-jp-make-story-headers): Change argument spec.
+	Refer the above constant to decide the URL of the index page.
+	(shimbun-slashdot-jp-search-comment-head): Ignore a garbage line
+	between author and date.
+
 2002-03-01  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* octet.el (octet-find-file): Decode even in the read-only buffer.
