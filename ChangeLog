@@ -1,3 +1,8 @@
+2002-06-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-zdnet.el (shimbun-make-contents): Remove image tags
+	to `a1100.g.akamai.net'.
+
 2002-06-12  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-uri-replace-alist): New user option.
