@@ -1,3 +1,9 @@
+2002-07-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-perldoc.el (w3m-about-perldoc): Install workaround to
+	specify the place in which pod2html generates its cache files.
+	Adjust links pointing other perldocs.
+
 2002-07-08  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-namazu.el (shimbun-namazu-group-url-alist): Add
