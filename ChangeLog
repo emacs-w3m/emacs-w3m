@@ -1,3 +1,7 @@
+2002-05-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* Makefile.in (default, what-where): Change order.
+
 2002-05-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el: Modify the error message that XEmacs APEL package
