@@ -102,7 +102,7 @@
     (if (search-backward "</SPAN>")
 	(progn
 	  (beginning-of-line)
- 	  (delete-region (point) (save-excursion (end-of-line) (point))))
+	  (delete-region (point) (save-excursion (end-of-line) (point))))
       (throw 'stop nil))
     (save-restriction
       (narrow-to-region (point-min) (point))

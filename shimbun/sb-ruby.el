@@ -72,7 +72,7 @@
 	(end (progn (re-search-forward "</table>" nil t nil)
 		    (point)))
 	(pages (shimbun-header-index-pages range))
-	(count 0)	
+	(count 0)
 	headers auxs aux)
     ;; Use entire archive.
     (while (and (if pages (<= (incf count) pages) t)

@@ -91,7 +91,7 @@ It can be defined in the `shimbun-hns-x-face-alist', too.
 			    (delete-region (point-min) (point)))
 			(shimbun-remove-markup)
 			(buffer-string))))
-      (setq id (format "<%s%%%s.hns>" uniq 
+      (setq id (format "<%s%%%s.hns>" uniq
 		       ;; Sometimes include kanji.
 		       (eword-encode-string
 			(shimbun-current-group-internal
@@ -122,7 +122,7 @@ It can be defined in the `shimbun-hns-x-face-alist', too.
 	(with-current-buffer (shimbun-retrieve-url-buffer xref 'reload)
 	  ;; Add articles to the content hash.
 	  (goto-char (point-min))
-	  (while (re-search-forward 
+	  (while (re-search-forward
 		  "<h3 class=\"new\"><a [^<]*name=\"\\([0-9]+\\)\"" nil t)
 	    (let ((id (match-string 1)))
 	      (when (re-search-forward "</a>" nil t)
@@ -139,7 +139,7 @@ It can be defined in the `shimbun-hns-x-face-alist', too.
   (or (shimbun-x-face-internal shimbun)
       (shimbun-set-x-face-internal
        shimbun
-       (or 
+       (or
 	(nth 3 (assoc (shimbun-current-group-internal shimbun)
 		      shimbun-hns-group-alist))
 	(cdr (assoc (shimbun-current-group-internal shimbun)

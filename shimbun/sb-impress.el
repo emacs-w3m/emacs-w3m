@@ -39,11 +39,11 @@
     ;;    ("jijinews" "<a href=\"\\.\\./\\(news/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)[0-9]+/\\([^>]*\\)\\)\">" "<!--■■本文■■-->" "<br>" "/main/main.htm")
     ;;    ("sports" "<a href=\"\\.\\./\\(news/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)[0-9]+/\\([^>]*\\)\\)\">" "<!--■■本文■■-->" "<br>" "/main/main.htm")
     ))
-    
+
 (defvar shimbun-impress-groups (mapcar 'car shimbun-impress-groups-alist))
 (defvar shimbun-impress-from-address "www-admin@impress.co.jp")
 (defvar shimbun-impress-x-face-alist
-  '(("default" . 
+  '(("default" .
      "X-Face: F3zvh@X{;Lw`hU&~@uiX9J0dwTeROiIzoSoe'Y.gU#(EqHA5K}v}2ah,QlHa[S^}5ZuTefR
  ZA[pF1_ZNlDB5D_DJzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r9wC\"6
  ebr5rj1[UJ5zDEDsfo`N7~s%;P`\\JK'#y.w^>K]E~{`wZru")))

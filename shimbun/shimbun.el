@@ -25,7 +25,7 @@
 
 ;;; Commentary:
 
-;; Original code was nnshimbun.el written by 
+;; Original code was nnshimbun.el written by
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
 
 ;; Shimbun API:
@@ -244,7 +244,7 @@ content-type if `shimbun-encapsulate-images' is non-nil."
 	(when (search-forward ">" nil t)
 	  (setq end (point))
 	  (goto-char beg)
-	  (when (re-search-forward 
+	  (when (re-search-forward
 		 "src[ \t\r\f\n]*=[ \t\r\f\n]*\"\\([^\"]*\\)\"" end t)
 	    (save-match-data
 	      (setq url (match-string 1))
@@ -428,7 +428,7 @@ Return nil if all pages should be retrieved."
 	 (, range)))))
 
 (luna-define-method shimbun-headers ((shimbun shimbun) &optional range)
-  (with-current-buffer (shimbun-retrieve-url-buffer 
+  (with-current-buffer (shimbun-retrieve-url-buffer
 			(shimbun-index-url shimbun) 'reload)
     (shimbun-get-headers shimbun range)))
 
@@ -496,7 +496,7 @@ integer n:    Retrieve n pages of header indices.")
 
 (luna-define-generic shimbun-close (shimbun)
   "Close a SHIMBUN.")
-  
+
 (luna-define-method shimbun-close ((shimbun shimbun))
   (shimbun-close-group shimbun))
 

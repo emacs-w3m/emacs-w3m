@@ -24,7 +24,7 @@
 ;;; Commentary:
 
 ;; Original code was sb-yomiuri.el which is written by
-;; TSUCHIYA Masatoshi <tsuchiya@namazu.org> and 
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org> and
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;;; Code:
@@ -73,9 +73,9 @@
 	(narrow-to-region start (point))
 	(goto-char start)
 	(while (re-search-forward
-		"<a href=\"\\(\\./\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([a-z]\\)\\([0-9][0-9][0-9][0-9]\\)\\([a-z]\\)\\([0-9][0-9][0-9][0-9][0-9]\\)\\([0-9][0-9][0-9][0-9]\\)\\([a-z]\\)\\)\\.html\\)\"[^>]*>" 
+		"<a href=\"\\(\\./\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([a-z]\\)\\([0-9][0-9][0-9][0-9]\\)\\([a-z]\\)\\([0-9][0-9][0-9][0-9][0-9]\\)\\([0-9][0-9][0-9][0-9]\\)\\([a-z]\\)\\)\\.html\\)\"[^>]*>"
 		nil t)
-	  (let ((url   (concat 
+	  (let ((url   (concat
 			(cdr (assoc (shimbun-current-group-internal shimbun)
 				    shimbun-mainichi-group-path-alist))
 			"/"

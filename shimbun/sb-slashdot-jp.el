@@ -31,7 +31,7 @@
 (defvar shimbun-slashdot-jp-groups '("story"))
 (defvar shimbun-slashdot-jp-url "http://slashdot.jp/")
 
-(defvar shimbun-slashdot-jp-content-start 
+(defvar shimbun-slashdot-jp-content-start
   "cellpadding=\"5\" cellspacing=\"0\">\n?<tr><td bgcolor=\"#FFFFFF\"")
 (defvar shimbun-slashdot-jp-content-end "</td>")
 
@@ -63,7 +63,7 @@ One page contains 30 comments.")
       (while (< count (* pages shimbun-slashdot-jp-comments-per-story))
 	(with-current-buffer (shimbun-retrieve-url-buffer
 			      (concat shimbun-slashdot-jp-url
-				      (format 
+				      (format
 				       "search.pl?op=comments&start=%d"
 				       (* 30 count)))
 			      'reload)
@@ -88,7 +88,7 @@ One page contains 30 comments.")
 	      (setq subject (buffer-substring pos (match-beginning 0))))
 	    (when (re-search-forward
 		   "<a href=\"mailto:\\([^>]*\\)\">\\([^<]*\\)</a>" nil t)
-	      (setq from 
+	      (setq from
 		    (if (zerop (length (match-string 1)))
 			(concat (match-string 2))
 		      (concat (match-string 2) " <" (match-string 1) ">"))))
@@ -96,14 +96,14 @@ One page contains 30 comments.")
 		   "[A-z][a-z]+day \\([A-Z][a-z]+\\) \\([0-9]+\\)" nil t)
 	      (setq month (length
 			   (member (match-string 1) shimbun-slashdot-jp-months)))
-	      (setq mday (string-to-number (match-string 2))))	
+	      (setq mday (string-to-number (match-string 2))))
 	    (when (re-search-forward "@\\([0-9]+\\):\\([0-9]+\\)\\(AM\\|PM\\)"
 				     nil t)
 	      (setq hour (string-to-number (match-string 1)))
 	      (if (string= (match-string 3) "PM")
 		  (setq hour (+ 12 hour)))
 	      (setq min (string-to-number (match-string 2))))
-		(unless refs 
+		(unless refs
 		  (when (re-search-forward
 			 "<A HREF=\".*/article.pl\\?sid=\\([0-9]+/[0-9]+/[0-9]+/[0-9]+\\)"
 			   nil t)
@@ -116,7 +116,7 @@ One page contains 30 comments.")
 					     (format "%02d:%02d" hour min))
 		   id
 		   (format "<%s@slashdot.jp>" refs)
-		   0 0 (concat 
+		   0 0 (concat
 			(shimbun-url-internal shimbun)
 			"comments.pl?sid=" uniq))
 		  headers)))
@@ -160,7 +160,7 @@ One page contains 30 comments.")
 		   (shimbun-make-date-string year month mday
 					     (format "%02d:%02d" hour min))
 		   id
-		   "" 0 0 (concat 
+		   "" 0 0 (concat
 			   (shimbun-url-internal shimbun)
 			   "article.pl?sid=" uniq))
 		  headers)))
@@ -174,7 +174,7 @@ One page contains 30 comments.")
 	    ;; for comments.
 	    (and (string-match "cid=\\([0-9]+\\)$"
 			       (shimbun-header-xref header))
-		 (setq num (substring 
+		 (setq num (substring
 			    (shimbun-header-xref header)
 			    (match-beginning 0)))
 		 (re-search-forward (concat ">#" num "</A>")

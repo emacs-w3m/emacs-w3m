@@ -24,7 +24,7 @@
 ;;; Commentary:
 
 ;; Original code was sb-asahi.el which is written by
-;; TSUCHIYA Masatoshi <tsuchiya@namazu.org> and 
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org> and
 ;; Yuuichi Teranishi <teranisi@gohome.org>.
 
 ;;; Code:
@@ -37,7 +37,7 @@
 (defvar shimbun-nikkei-url "http://www.nikkei.co.jp/news/")
 
 (defvar shimbun-nikkei-groups '("keizai" "seiji" "kaigai" "market" "sangyo" "tento" "shakai" "retto" "shasetsu" "zinzi" "okuyami"))
- 
+
 (defvar shimbun-nikkei-from-address "webmaster@nikkei.co.jp")
 (defvar shimbun-nikkei-content-start "<!--FJZONE START NAME=\"HONBUN\" -->")
 (defvar shimbun-nikkei-content-end   "<!--FJZONE END NAME=\"HONBUN\" -->")
@@ -57,7 +57,7 @@
 	p headers begin end str)
     (goto-char (point-min))
     (while (re-search-forward "<!-- aLink -->\\(<\\|<!-- \\)a href=\"\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)[0-9A-Z]+\\).html\"\\(>\\| -->\\)\\([0-9][0-9]/[0-9][0-9] \\([0-9][0-9]:[0-9][0-9]\\) - \\)?<!-- headline -->\\([^<]+\\)<!-- /headline -->" nil t)
-      (let* ((id (format "<%s%s>" (shimbun-current-group-internal shimbun) 
+      (let* ((id (format "<%s%s>" (shimbun-current-group-internal shimbun)
 			 (match-string 2)))
 	     (file (format "%s.html" (match-string 2)))
 	     (year  (string-to-number (match-string 3)))

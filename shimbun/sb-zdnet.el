@@ -124,7 +124,7 @@
 			   (shimbun-current-group-internal shimbun)
 			   "-get-headers"))
 	   shimbun))
-  
+
 (provide 'sb-zdnet)
 
 ;;; sb-zdnet.el ends here

@@ -353,7 +353,7 @@ return them with the flag."
       (while (w3m-form-goto-next-field)
 	(setq fid (get-text-property (point) 'w3m-form-field-id))
 	(when (and fid
-		   (string-match 
+		   (string-match
 		    "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\(.*\\)$"
 		    fid))
 	  (setq form (nth (string-to-number (match-string 1 fid))
@@ -372,7 +372,7 @@ return them with the flag."
 	   ((or (string= type "checkbox")
 		(string= type "radio"))
 	    (when (stringp (w3m-form-get form name))
-	      (w3m-form-replace 
+	      (w3m-form-replace
 	       (if (string= (w3m-form-get form name)
 			    (nth 3 (w3m-action)))
 		   "*" " "))))

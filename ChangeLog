@@ -1,3 +1,18 @@
+2001-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-f1express.el, shimbun/sb-fml.el, shimbun/sb-h14m.el,
+	shimbun/sb-hns.el, shimbun/sb-impress.el, shimbun/sb-kantei.el,
+	shimbun/sb-mainichi.el, shimbun/sb-makanai.el,
+	shimbun/sb-mhonarc.el, shimbun/sb-nikkansports.el,
+	shimbun/sb-nikkei.el, shimbun/sb-ruby.el,
+	shimbun/sb-slashdot-jp.el, shimbun/sb-tcup.el,
+	shimbun/sb-vinelinux.el, shimbun/sb-yahoo.el, shimbun/sb-zdnet.el,
+	shimbun/shimbun.el, mew-w3m.el, w3m-form.el w3m.el: Remove useless
+	whitespaces.
+
+	* w3m.el (w3m-local-dirlist-cgi): Replace `re-search-forward' to
+	`search-forward'; bind `beg' as a non-global variable.
+
 2001-10-12  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* shimbun/sb-f1express.el (shimbun-f1express-coding-system):

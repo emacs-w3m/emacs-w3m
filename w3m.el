@@ -2451,18 +2451,19 @@ to nil."
   ;; bind charset to w3m-file-name-coding-system
   (let ((charset (or (car (rassq w3m-file-name-coding-system
 				 w3m-charset-coding-system-alist))
-		     w3m-file-name-coding-system)))
+		     w3m-file-name-coding-system))
+	beg)
     (goto-char (point-min))
-    (when (re-search-forward "<head>" nil t)
+    (when (search-forward "<head>" nil t)
       (insert "\n<meta http-equiv=\"CONTENT-TYPE\" "
 	      "content=\"text/html; charset="
 	      (symbol-name charset)
 	      "\">"))
     (goto-char (point-min))
     ;; Remove <form>...</form>
-    (when (re-search-forward "<form " nil t)
+    (when (search-forward "<form " nil t)
       (setq beg (match-beginning 0))
-      (when (re-search-forward "</form>" nil t)
+      (when (search-forward "</form>" nil t)
 	(delete-region beg (match-end 0)))))
   (w3m-message "Reading %s...done" url))
 

@@ -56,7 +56,7 @@
 
 (defun shimbun-makanai-scan-articles (shimbun &optional force-rescan
 					      skip-this-page skip-next-page)
-  (let (headers 
+  (let (headers
 	(count 0)
 	(case-fold-search t)
 	(search-next-page t))
@@ -121,11 +121,11 @@
       (unless (and sym (boundp sym))
 	(goto-char (point-min))
 	(shimbun-makanai-scan-articles shimbun t t)))))
-      
+
 (defun shimbun-makanai-search-article-in-hash (shimbun header)
   (intern-soft (shimbun-header-xref header)
 	       (shimbun-makanai-content-hash-internal shimbun)))
- 
+
 (luna-define-method shimbun-article ((shimbun shimbun-makanai) header
 				     &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
@@ -135,7 +135,7 @@
 	 (let ((sym (shimbun-makanai-search-article-in-hash shimbun header)))
 	   (unless (and sym (boundp sym))
 	     (shimbun-makanai-retrieve-article shimbun header)
-	     (setq sym 
+	     (setq sym
 		   (shimbun-makanai-search-article-in-hash shimbun header)))
 	   (if (and sym (boundp sym))
 	       (insert (symbol-value sym)))

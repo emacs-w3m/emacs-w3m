@@ -69,7 +69,7 @@
 	(end (progn (search-forward "</table>" nil t nil)
 		    (point)))
 	;;(pages (shimbun-header-index-pages range))
-	(count 0)	
+	(count 0)
 	headers aux url id date subject)
     (goto-char start)
     ;; Use entire archive.

@@ -91,7 +91,7 @@
 		   (shimbun-mime-encode-string subject)
 		   (shimbun-from-address-internal shimbun)
 		   date id "" 0 0
-		   (concat 
+		   (concat
 		    (shimbun-url-internal shimbun)
 		    "news/"
 		    (file-name-directory

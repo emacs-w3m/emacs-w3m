@@ -86,7 +86,7 @@ BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'")
 	       shimbun-tcup-group-alist)))
 
 (defun shimbun-tcup-get-group-key (group)
-  (let ((url (cadr (assoc group 
+  (let ((url (cadr (assoc group
 			  shimbun-tcup-group-alist)))
 	(n 3)
 	keys)
@@ -126,7 +126,7 @@ BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'")
 
 (defun shimbun-tcup-make-id (stime group)
   (let ((keys (shimbun-tcup-get-group-key group)))
-    (format "<%s.%s.%s@www%s.tcup.com>" 
+    (format "<%s.%s.%s@www%s.tcup.com>"
 	    stime (nth 2 keys) (nth 1 keys) (nth 0 keys))))
 
 (luna-define-method shimbun-headers ((shimbun shimbun-tcup)
@@ -150,7 +150,7 @@ BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'")
 	(setq subject (match-string 1))
 	(re-search-forward from-regexp)
 	(setq from
-	      (cond 
+	      (cond
 	       ((looking-at "<b><a href=\"mailto:\\([^\"]+\\)\">\\([^<]+\\)<")
 		(concat (match-string 2) " <" (match-string 1) ">"))
 	       ((looking-at "<[^>]+><b>\\([^<]+\\)<")
@@ -158,7 +158,7 @@ BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'")
 	       (t "(none)")))
 	(re-search-forward date-regexp nil t)
 	(setq stime
-	      (cond 
+	      (cond
 	       ((looking-at "[^,]+, Time: \\([^ ]+\\) ")
 		(shimbun-tcup-stime-to-time (match-string 1)))
 	       ((looking-at "\\([^ ]+\\) <")
@@ -175,8 +175,8 @@ BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'")
 	(re-search-forward body-end-regexp)
 	(setq body (buffer-substring st (match-beginning 0)))
 	(forward-line 1)
-	(setq url 
-	      (if (looking-at "<a[^>]+>[^<]+</a>") 
+	(setq url
+	      (if (looking-at "<a[^>]+>[^<]+</a>")
 		  (concat (match-string 0) "\n<p>\n")
 		""))
 	(set (intern stime (shimbun-tcup-content-hash-internal shimbun))

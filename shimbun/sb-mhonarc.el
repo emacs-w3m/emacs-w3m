@@ -53,7 +53,7 @@
     (intern-soft (concat "shimbun-" (shimbun-server-internal shimbun)
 			 "-litemplate-regexp"))))
   shimbun)
-   
+
 (defun shimbun-mhonarc-replace-newline-to-space (string)
   (let ((i (length string)))
     (while (> i 0)
@@ -77,7 +77,7 @@
 				    (shimbun-mime-encode-string from)
 				    "" id "" 0 0 url)
 	       (, headers))))))
-  
+
 (defmacro shimbun-mhonarc-get-headers (shimbun url headers &optional aux)
   (` (let ((case-fold-search t)
 	 (regexp (or (shimbun-mhonarc-litemplate-regexp-internal (, shimbun))

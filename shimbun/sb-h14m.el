@@ -35,7 +35,7 @@
   "<STRONG><A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</A></STRONG>\n<UL><LI><EM>From</EM>: \\([^<]+\\)</LI></UL>")
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-h14m))
-  (concat (shimbun-url-internal shimbun) 
+  (concat (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun) "/maillist.cgi"))
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-h14m))

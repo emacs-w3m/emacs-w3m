@@ -46,7 +46,7 @@
   (concat (shimbun-url-internal shimbun)
 	  "f1express/"
 	  (shimbun-current-group-internal shimbun)
- 	  "/headline.html"))
+	  "/headline.html"))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-f1express)
 					 &optional range)

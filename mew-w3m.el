@@ -36,13 +36,13 @@
 ;;
 ;; (require 'mew-w3m)
 ;; (setq mew-prog-html '(mew-mime-text/html-w3m nil nil))
-;;  or 
+;;  or
 ;; (require 'mew-w3m)
 ;; (setq mew-prog-text/html 'mew-mime-text/html-w3m)
 ;;;; (setq mew-prog-text/html-ext 'mew-mime-text/html-w3m)
 ;;
 ;; And you can use keymap of w3m-mode as mew-w3m-minor-mode.
-;; To activate this feaeture, add followings also: 
+;; To activate this feaeture, add followings also:
 ;;
 ;; (setq mew-use-w3m-minor-mode t)
 ;; (add-hook 'mew-message-hook 'mew-w3m-minor-mode-setter)
@@ -58,7 +58,7 @@
 ;; allowed (as minor-mode-map) and jump links in message buffer.
 ;; NOTE: This feature is not complete. You may confuse.
 ;;
-;; 
+;;
 ;; If use mew-1.95b118 or later on which Emacs-21 or XEmacs,
 ;; can display the images in the Multipart/Related message.
 
@@ -94,7 +94,7 @@ This variable effected only XEmacs or Emacs 21."
 (add-to-list 'minor-mode-alist '(mew-w3m-minor-mode " w3m"))
 (add-to-list 'minor-mode-map-alist (cons 'mew-w3m-minor-mode w3m-mode-map))
 
-(defun mew-w3m-minor-mode-setter () 
+(defun mew-w3m-minor-mode-setter ()
   "Check message buffer and activate mew-w3m-minor-mode."
   (setq mew-w3m-minor-mode (and (get-text-property (point-min) 'w3m)
 				mew-use-w3m-minor-mode)))
@@ -152,7 +152,7 @@ This variable effected only XEmacs or Emacs 21."
 	 (mew-frwlet
 	  mew-cs-dummy wcs
 	  (w3m-region (point)
-		      (progn (insert-buffer-substring cache begin end) 
+		      (progn (insert-buffer-substring cache begin end)
 			     (point))))))
        (put-text-property (point-min) (1+ (point-min)) 'w3m t)))))
 
@@ -168,9 +168,9 @@ This variable effected only XEmacs or Emacs 21."
 	(let* ((msg (mew-current-get-msg (mew-frame-id)))
 	       (cache (mew-cache-hit fld msg 'must-hit))
 	       (syntax (mew-cache-decode-syntax cache))
- 	       cidstx beg end)
- 	  (setq cidstx (mew-syntax-get-entry-by-cid syntax url))
- 	  (when cidstx
+	       cidstx beg end)
+	  (setq cidstx (mew-syntax-get-entry-by-cid syntax url))
+	  (when cidstx
 	    (setq beg (mew-syntax-get-begin cidstx))
 	    (setq end (mew-syntax-get-end cidstx))
 	    (w3m-with-work-buffer

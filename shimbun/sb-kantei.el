@@ -41,13 +41,13 @@ X-Face: .bsmj'!8A`wI\\o+KF!)#0.a0,f1MA~PH/5T0fu$Mg+)_5G~NSk4.0t]&|f@^c3l8-Fuz8'
  7+JOf6v&x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-kantei))
-  (concat (shimbun-url-internal shimbun) 
+  (concat (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun)
 	  "/backnumber/"))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-kantei)
 					 &optional range)
-  (let (year month mday id url subject headers)  
+  (let (year month mday id url subject headers)
     (while (re-search-forward "<A HREF=\"\\(\\([0-9]+\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\.html\\)\">" nil t)
       (setq year (string-to-number (match-string 2))
 	    month (string-to-number (match-string 3))
@@ -63,7 +63,7 @@ X-Face: .bsmj'!8A`wI\\o+KF!)#0.a0,f1MA~PH/5T0fu$Mg+)_5G~NSk4.0t]&|f@^c3l8-Fuz8'
       (push (shimbun-make-header
 	     0
 	     (shimbun-mime-encode-string (or subject ""))
-	     (shimbun-mime-encode-string 
+	     (shimbun-mime-encode-string
 	      (shimbun-from-address-internal shimbun))
 	     (shimbun-make-date-string year month mday)
 	     id "" 0 0 (concat (shimbun-index-url shimbun) url))
