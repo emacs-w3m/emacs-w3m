@@ -4333,18 +4333,13 @@ described in Section 5.2 of RFC 2396.")
   (lexical-let (pos)
     (when new-session
       (setq pos (point-marker))
-      (let ((referer w3m-current-url))
+      (let ((buffer (w3m-copy-buffer
+		     nil nil nil
+		     (not (and (string-match w3m-url-components-regexp url)
+			       (match-beginning 8))))))
 	(if w3m-view-this-url-new-session-in-background
-	    (set-buffer (w3m-copy-buffer nil nil nil 'empty))
-	  (switch-to-buffer (w3m-copy-buffer nil nil t 'empty)))
-	(setq w3m-current-url referer))
-      ;; When new URL has `name' portion, we have to goto the base url
-      ;; because generated buffer has no content at this moment.
-      (when (and (string-match w3m-url-components-regexp url)
-		 (match-beginning 8))
-	(save-window-excursion
-	  (w3m-goto-url (substring url 0 (match-beginning 8))
-			reload nil nil w3m-current-url))))
+	    (set-buffer buffer)
+	  (switch-to-buffer buffer))))
     (let (handler)
       (w3m-process-do
 	  (success
