@@ -2178,7 +2178,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	  (w3m-cache-contents url (current-buffer))
 	  headers)))))
 
-(defun w3m-w3m-retrieve (url &optional no-decode no-cache)
+(defun w3m-w3m-retrieve (url &optional no-decode no-cache post-data)
   "Retrieve content of URL with w3m and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
@@ -2192,6 +2192,13 @@ to nil."
 	   w3m-broken-proxy-cache
 	   (setq w3m-command-arguments
 		 (append w3m-command-arguments '("-o" "no_cache=1"))))
+      (if post-data
+	  (setq w3m-command-arguments
+		(append w3m-command-arguments
+			(if (consp post-data)
+			    (list "-post_ct" (car post-data)
+				  "-post" (cdr post-data))
+			  (list "-post" post-data)))))
       (setq type
 	    (or (unless no-cache
 		  (and (w3m-cache-request-contents url)
@@ -2246,11 +2253,12 @@ to nil."
     (when func
       (funcall func url no-decode no-cache))))
 
-(defun w3m-retrieve (url &optional no-decode no-cache)
+(defun w3m-retrieve (url &optional no-decode no-cache post-data)
   "Retrieve content of URL and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
-to nil."
+to nil.
+"
   (when (string-match "#[^#]+$" url)
     (setq url (substring url 0 (match-beginning 0))))
   (let ((v (cond
@@ -2261,7 +2269,7 @@ to nil."
 	    ((w3m-url-local-p url)
 	     (w3m-local-retrieve url no-decode))
 	    (t
-	     (w3m-w3m-retrieve url no-decode no-cache)))))
+	     (w3m-w3m-retrieve url no-decode no-cache post-data)))))
     (and v
 	 (not no-decode)
 	 w3m-use-filter
@@ -2419,14 +2427,15 @@ to nil."
 	  (setq title (file-name-nondirectory w3m-current-url)))
       (or title "<no-title>"))))
 
-(defun w3m-exec (url &optional buffer no-cache content-charset content-type)
+(defun w3m-exec (url &optional buffer no-cache content-charset
+		     content-type post-data)
   "Download URL with w3m to the BUFFER.
 If BUFFER is nil, all data is placed to the current buffer.  When new
 content is retrieved and half-dumped data is placed in the BUFFER,
 this function returns t.  Otherwise, returns nil."
   (save-excursion
     (when buffer (set-buffer buffer))
-    (let ((type (w3m-retrieve url nil no-cache)))
+    (let ((type (w3m-retrieve url nil no-cache post-data)))
       (if type
 	  (progn
 	    (when content-type (setq type content-type))
@@ -3143,8 +3152,15 @@ or prefix ARG columns."
       (copy-file ftp (w3m-read-file-name nil nil file)))))
 
 ;;;###autoload
-(defun w3m-goto-url (url &optional reload charset post-body)
-  "Retrieve contents of URL."
+(defun w3m-goto-url (url &optional reload charset post-data)
+  "Retrieve contents of URL.
+If second argument RELOAD is non-nil, content is re-loaded.
+Third argument CHARSET specifies content charset.
+Fourth argument POST-DATA should be a string or a cons cell.
+If string is specified, it is used as request body and content-type is
+set as \"x-www-form-urlencoded\".
+If cons cell is specified, car of the cell is used as content-type and
+cdr of the cell is used as body."
   (interactive
    (list
     (w3m-input-url nil
@@ -3209,12 +3225,7 @@ or prefix ARG columns."
 				 w3m-default-content-type)
 			 w3m-content-type-alist nil t)))
 		 (setq ct (if (string= "" s) w3m-default-content-type s)))))
-	(if (not (let ((w3m-command-arguments
-			(if post-body
-			    (append w3m-command-arguments
-				    (list "-post" post-body))
-			  w3m-command-arguments)))
-		   (w3m-exec url nil reload cs ct)))
+	(if (not (w3m-exec url nil reload cs ct post-data))
 	    (w3m-refontify-anchor)
 	  (w3m-history-push w3m-current-url
 			    (list ':title w3m-current-title))

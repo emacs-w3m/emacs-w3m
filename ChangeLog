@@ -1,3 +1,13 @@
+2001-07-18  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-w3m-retrieve): Added argument `post-data'.
+	(w3m-w3m-retrieve): Add -post and -post_ct to `w3m-command-arguments'
+	when `post-data' is specified.
+	(w3m-retrieve): Added argument `post-data'.
+	(w3m-exec): Ditto.
+	(w3m-goto-url): renamed `post-body' to `post-data'.
+	Don't bind w3m-command-arguments here.
+
 2001-07-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-w3m-dump-source, w3m-w3m-dump-head-source,
