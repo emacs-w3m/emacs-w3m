@@ -1,3 +1,14 @@
+2001-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (keywords): New rule.
+	(distclean): Remove the directory autom4te.cache which will be
+	created by autoconf v2.5x.
+	(clean): Remove w3mkwds.el.
+
+	* .cvsignore: Add autom4te.cache.
+
+	* w3mhack.el (w3mhack-bind-colon-keywords): Always define it.
+
 2001-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-current-referer, w3m-current-post-data): Abolished.

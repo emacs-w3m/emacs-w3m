@@ -356,129 +356,140 @@ to the specified name LIBRARY (a la calling `load' instead of `load-library')."
 	nil))
     (byte-compile 'locate-library))))
 
+(defun w3mhack-bind-colon-keywords ()
+  "Bind all the colon keywords for old Emacsen."
+  (let* ((srcdir default-directory)
+	 (cache (expand-file-name "w3mkwds.el" srcdir))
+	 (makefile (expand-file-name "Makefile" srcdir))
+	 (buffer (get-buffer-create " *colon keywords*"))
+	 keywords ignores files file dirs directories dir
+	 form elem make-backup-files)
+    (save-excursion
+      (set-buffer buffer)
+      (let (buffer-file-format
+	    format-alist
+	    insert-file-contents-post-hook
+	    insert-file-contents-pre-hook
+	    jam-zcat-filename-list
+	    jka-compr-compression-info-list)
+	(if (and (file-exists-p cache)
+		 (file-exists-p makefile)
+		 (file-newer-than-file-p cache makefile))
+	    (progn
+	      (insert-file-contents cache nil nil nil t)
+	      (setq keywords (read buffer)))
+	  (setq
+	   ignores
+	   '(:symbol-for-testing-whether-colon-keyword-is-available-or-not
+	     ;; The following keywords will be bound by CUSTOM.
+	     :get :group :initialize :link :load :options :prefix
+	     :require :set :tag :type))
+	  ;; Add el(c) files in the following list if necessary.
+	  ;; Each file should be representative file of a package
+	  ;; which will be used together with Emacs-W3M.
+	  (setq files (list (locate-library "mailcap")
+			    (locate-library "mime-def")
+			    (locate-library "path-util")
+			    (locate-library "poem")))
+	  (setq dirs (list (expand-file-name "./" srcdir)
+			   (expand-file-name "shimbun/" srcdir)))
+	  (while files
+	    (when (setq file (pop files))
+	      (setq dir (file-name-directory file))
+	      (unless (member dir dirs)
+		(push dir dirs))))
+	  (setq directories dirs)
+	  (message "Searching for all the colon keywords in:")
+	  (while dirs
+	    (setq dir (pop dirs))
+	    (message " %s..." dir)
+	    (setq files (directory-files dir t
+					 "\\.el\\(\\.gz\\|\\.bz2\\)?$"))
+	    (while files
+	      (setq file (pop files))
+	      (if (string-match "\\(\\.gz$\\)\\|\\.bz2$" file)
+		  (let ((temp (expand-file-name "w3mtemp.el" srcdir)))
+		    (when
+			(let* ((binary (if (boundp 'MULE)
+					   '*noconv*
+					 'binary))
+			       (coding-system-for-read binary)
+			       (coding-system-for-write binary)
+			       (input-coding-system binary)
+			       (output-coding-system binary)
+			       (default-process-coding-system
+				 (cons binary binary))
+			       call-process-hook)
+			  (insert-file-contents file nil nil nil t)
+			  (when
+			      (condition-case code
+				  (progn
+				    (if (match-beginning 1)
+					(call-process-region
+					 (point-min) (point-max)
+					 "gzip" t buffer nil "-cd")
+				      (call-process-region
+				       (point-min) (point-max)
+				       "bzip2" t buffer nil "-d"))
+				    t)
+				(error
+				 (erase-buffer)
+				 (message "In file %s: %s" file code)
+				 nil))
+			    (write-region (point-min) (point-max) temp
+					  nil 'silent)
+			    t))
+		      (unwind-protect
+			  (insert-file-contents temp nil nil nil t)
+			(delete-file temp))))
+		(insert-file-contents file nil nil nil t))
+	      (while (setq form (condition-case nil
+				    (read buffer)
+				  (error nil)))
+		(while form
+		  (setq elem (pop form))
+		  (unless (memq (car-safe elem)
+				'(\` backquote
+				  defcustom defface defgroup
+				  define-widget quote))
+		    (while (consp elem)
+		      (push (car elem) form)
+		      (setq elem (cdr elem)))
+		    (when (and elem
+			       (symbolp elem)
+			       (not (eq ': elem))
+			       (eq ?: (aref (symbol-name elem) 0))
+			       (not (memq elem ignores))
+			       (not (memq elem keywords)))
+		      (push elem keywords)))))))
+	  (setq keywords (sort keywords
+			       (lambda (a b)
+				 (string-lessp (symbol-name a)
+					       (symbol-name b)))))
+	  (erase-buffer)
+	  (insert "\
+;; List of colon keywords which were found in the following directories:
+
+;; "
+		  (mapconcat 'identity directories "\n;; ")
+		  "\n\n("
+		  (mapconcat 'symbol-name keywords "\n ")
+		  ")\n")
+	  (write-region (point-min) (point) cache nil 'silent)
+	  (message
+	   "The following colon keywords will be bound at run-time:\n %s"
+	   keywords))))
+    (kill-buffer buffer)
+    (defconst w3mhack-colon-keywords keywords)
+    (while keywords
+      (set (car keywords) (car keywords))
+      (setq keywords (cdr keywords)))))
+
+(byte-compile 'w3mhack-bind-colon-keywords)
+
 (condition-case nil
     :symbol-for-testing-whether-colon-keyword-is-available-or-not
   (void-variable
-   (defun w3mhack-bind-colon-keywords ()
-     "Bind all the colon keywords for old Emacsen."
-     (let* ((srcdir default-directory)
-	    (cache (expand-file-name "w3mkwds.el" srcdir))
-	    (makefile (expand-file-name "Makefile" srcdir))
-	    (buffer (get-buffer-create " *colon keywords*"))
-	    keywords ignores files file dirs dir form elem make-backup-files)
-       (save-excursion
-	 (set-buffer buffer)
-	 (let (buffer-file-format
-	       format-alist
-	       insert-file-contents-post-hook
-	       insert-file-contents-pre-hook
-	       jam-zcat-filename-list
-	       jka-compr-compression-info-list)
-	   (if (and (file-exists-p cache)
-		    (file-exists-p makefile)
-		    (file-newer-than-file-p cache makefile))
-	       (progn
-		 (insert-file-contents cache nil nil nil t)
-		 (setq keywords (read buffer)))
-	     (setq
-	      ignores
-	      '(:symbol-for-testing-whether-colon-keyword-is-available-or-not
-		;; The following keywords will be bound by CUSTOM.
-		:get :group :initialize :link :load :options :prefix
-		:require :set :tag :type))
-	     ;; Add el(c) files in the following list if necessary.
-	     ;; Each file should be representative file of a package
-	     ;; which will be used together with Emacs-W3M.
-	     (setq files (list (locate-library "mailcap")
-			       (locate-library "mime-def")
-			       (locate-library "path-util")
-			       (locate-library "poem")))
-	     (setq dirs (list (expand-file-name "./" srcdir)
-			      (expand-file-name "shimbun/" srcdir)))
-	     (while files
-	       (when (setq file (pop files))
-		 (setq dir (file-name-directory file))
-		 (unless (member dir dirs)
-		   (push dir dirs))))
-	     (message "Searching for all the colon keywords in:")
-	     (while dirs
-	       (setq dir (pop dirs))
-	       (message " %s..." dir)
-	       (setq files (directory-files dir t
-					    "\\.el\\(\\.gz\\|\\.bz2\\)?$"))
-	       (while files
-		 (setq file (pop files))
-		 (if (string-match "\\(\\.gz$\\)\\|\\.bz2$" file)
-		     (let ((temp (expand-file-name "w3mtemp.el" srcdir)))
-		       (when
-			   (let* ((binary (if (boundp 'MULE)
-					      '*noconv*
-					    'binary))
-				  (coding-system-for-read binary)
-				  (coding-system-for-write binary)
-				  (input-coding-system binary)
-				  (output-coding-system binary)
-				  (default-process-coding-system
-				    (cons binary binary))
-				  call-process-hook)
-			     (insert-file-contents file nil nil nil t)
-			     (when
-				 (condition-case code
-				     (progn
-				       (if (match-beginning 1)
-					   (call-process-region
-					    (point-min) (point-max)
-					    "gzip" t buffer nil "-cd")
-					 (call-process-region
-					  (point-min) (point-max)
-					  "bzip2" t buffer nil "-d"))
-				       t)
-				   (error
-				    (erase-buffer)
-				    (message "In file %s: %s" file code)
-				    nil))
-			       (write-region (point-min) (point-max) temp
-					     nil 'silent)
-			       t))
-			 (unwind-protect
-			     (insert-file-contents temp nil nil nil t)
-			   (delete-file temp))))
-		   (insert-file-contents file nil nil nil t))
-		 (while (setq form (condition-case nil
-				       (read buffer)
-				     (error nil)))
-		   (while form
-		     (setq elem (pop form))
-		     (unless (memq (car-safe elem)
-				   '(\` backquote
-				     defcustom defface defgroup
-				     define-widget quote))
-		       (while (consp elem)
-			 (push (car elem) form)
-			 (setq elem (cdr elem)))
-		       (when (and elem
-				  (symbolp elem)
-				  (not (eq ': elem))
-				  (eq ?: (aref (symbol-name elem) 0))
-				  (not (memq elem ignores))
-				  (not (memq elem keywords)))
-			 (push elem keywords)))))))
-	     (setq keywords (sort keywords
-				  (lambda (a b)
-				    (string-lessp (symbol-name a)
-						  (symbol-name b)))))
-	     (erase-buffer)
-	     (insert (format "%s" keywords))
-	     (write-region (point-min) (point) cache nil 'silent)
-	     (message
-	      "The following colon keywords will be bound at run-time:\n %s"
-	      keywords))))
-       (kill-buffer buffer)
-       (defconst w3mhack-colon-keywords keywords)
-       (while keywords
-	 (set (car keywords) (car keywords))
-	 (setq keywords (cdr keywords)))))
-   (byte-compile 'w3mhack-bind-colon-keywords)
    (w3mhack-bind-colon-keywords)))
 
 (defun w3mhack-version ()

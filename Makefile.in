@@ -96,10 +96,11 @@ tarball:
 	rm -rf $(DISTDIR)
 
 clean:
-	-rm -rf *~ *.elc shimbun/*.elc $(PACKAGE)*
+	-rm -rf *~ *.elc shimbun/*.elc $(PACKAGE)* w3mkwds.el
 
 distclean: clean
-	-rm -f config.log config.status config.cache Makefile
+	-rm -f config.log config.status config.cache Makefile;\
+	rm -fr autom4te.cache
 
 ## Rule for the developers to check a portability for each module.
 .SUFFIXES: .elc .el
@@ -113,3 +114,14 @@ slow: Makefile
 	echo "FLAGS=$(FLAGS)";\
 	for i in `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
 	do $(MAKE) -s $$i; done
+
+## Create the file w3mkwds.el if it is needed for $(EMACS).
+keywords:
+	@ echo "rm -f w3mkwds.el; $(EMACS) $(FLAGS)";\
+	rm -f w3mkwds.el; $(EMACS) $(FLAGS);\
+	if test -f w3mkwds.el; then\
+	  echo "The file w3mkwds.el is created.";\
+	else\
+	  echo "There is no need to bind colon keywords for \"$(EMACS)\".";\
+	  echo "The file w3mkwds.el is not created.";\
+	fi
