@@ -1,3 +1,15 @@
+2001-03-09  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-cid-retrieve-function-alist): New variable.
+	(w3m-retrieve): Add support for URLs which has `cid:' prefix.
+
+	* mime-w3m.el: Always require `w3m'.
+	Require `cl' when compiling.
+	Set `w3m-cid-retrieve-function-alist'.
+	(mime-w3m-message-structure): New variable.
+	(mime-w3m-preview-text/html): Set `mime-w3m-message-structure'.
+	(mime-w3m-cid-retrieve): New function.
+
 2001-03-09  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-toggle-inline-images): Eliminated needless local

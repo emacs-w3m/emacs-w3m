@@ -2,7 +2,8 @@
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>,
+;;         Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 ;; Keywords: HTML, MIME, multimedia, mail, news
 
 ;; This file is *NOT* yet part of SEMI (Suite of Emacs MIME Interfaces).
@@ -45,10 +46,9 @@
 
 ;;; Code:
 
-(condition-case nil
-    (require 'w3m)
-  (error nil))
+(require 'w3m)
 (require 'mime)
+(eval-when-compile (require 'cl))
 
 (defvar mime-w3m-mode-map nil)
 
@@ -68,8 +68,10 @@
 	   ))
     (cons 'progn body)))
 
+(defvar mime-w3m-message-structure nil)
+
 (defun mime-w3m-preview-text/html (entity situation)
-  (goto-char (point-max))
+  (setq mime-w3m-message-structure (mime-find-root-entity entity))
   (let ((p (point))
 	(xref (mime-entity-fetch-field entity "xref")))
     ;; For nnshimbun.el.
@@ -89,6 +91,20 @@
 	 (error (message (format "%s" err))))
        (mime-put-keymap-region p (point-max) mime-w3m-mode-map)
        ))))
+
+(defun mime-w3m-cid-retrieve (url &optional no-decode accept-type-regexp
+				  no-cache)
+  (let ((entity (mime-find-entity-from-content-id (mime-uri-parse-cid url)
+						  mime-w3m-message-structure)))
+    (when entity
+      (w3m-with-work-buffer
+       (delete-region (point-min) (point-max))
+       (set-buffer-multibyte nil)
+       (mime-insert-entity-content entity))
+      (mime-entity-type/subtype entity))))
+
+(push (cons 'mime-view-mode 'mime-w3m-cid-retrieve)
+      w3m-cid-retrieve-function-alist)
 
 (unless mime-w3m-mode-map
   (let ((map (copy-keymap w3m-mode-map)))
