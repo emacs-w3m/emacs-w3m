@@ -75,7 +75,8 @@
 		       (match-string 1 index-url)
 		     index-url))
 	   auxs aux id url subject from headers)
-      (shimbun-retrieve-url (shimbun-expand-url "index.html" index-url) 'reload)
+      (shimbun-retrieve-url (shimbun-expand-url "index.html" index-url)
+			    'reload)
       (setq case-fold-search t)
       (let ((pages (shimbun-header-index-pages range))
 	    (count 0))
@@ -105,7 +106,8 @@
 			     suffix))
 	    (when (shimbun-search-id shimbun id)
 	      (throw 'stop nil))
-	    (setq url (shimbun-expand-url (concat aux "/" (match-string 1)) index-url)
+	    (setq url (shimbun-expand-url (concat aux "/" (match-string 1))
+					  index-url)
 		  subject (match-string 3)
 		  from (match-string 4))
 	    (setq subject (with-temp-buffer
@@ -159,7 +161,13 @@
        header
        (shimbun-mime-encode-string (concat name " <" address ">")))
 
-      (when (re-search-forward "<I>\\([0-9][0-9][0-9][0-9]\\)年 *\\([0-9][0-9]*\\)月 *\\([0-9][0-9]*\\)日 (\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\)) \\([:0-9]+\\) \\([A-Z]+\\)</I>" end t nil)
+      (when (re-search-forward "<I>\\([0-9][0-9][0-9][0-9]\\)年\
+ *\\([0-9][0-9]*\\)月\
+ *\\([0-9][0-9]*\\)日\
+ (\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))\
+ \\([:0-9]+\\)\
+ \\([A-Z]+\\)</I>"
+			       end t nil)
 	;; <I>Sat, 12 Apr 2003 17:29:51 +0900 (JST)</I> ;; mailman original
 	;; <I>2003年 4月 11日 (金) 02:43:25 CEST</I> ;; squeak-ja
 	(setq date (shimbun-make-date-string

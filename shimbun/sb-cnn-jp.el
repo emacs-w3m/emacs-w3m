@@ -82,7 +82,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAWAgMAAAD7mfc/AAAABGdBTUEAALGPC/xhBQAAAAx
 	   "FULL STORY" nil t)
       (setq beg (match-end 0)))
     (when (re-search-forward
-	   "<!-- *ＣＮＮ *ラージタイル *[0-9]+\\*[0-9]+ *★? *ここから *-->" nil t)
+	   "<!-- *ＣＮＮ *ラージタイル *[0-9]+\\*[0-9]+ *★? *ここから *-->"
+	   nil t)
       (setq end (match-beginning 0)))
     (save-excursion
       (narrow-to-region beg end)
@@ -142,8 +143,7 @@ Web\\(\\s \\|&nbsp;\\)+posted\\(\\s \\|&nbsp;\\)+at:[^0-9]*\
 	(string-to-number (match-string-no-properties 2))
 	(string-to-number (match-string-no-properties 3))
 	(match-string-no-properties 6)
-	(match-string-no-properties 8)
-	))
+	(match-string-no-properties 8)))
       (goto-char (point-min)))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-cnn-jp)
