@@ -4,7 +4,7 @@
 	(w3m-url-hierarchical-schemes): Ditto.
 	(w3m-expand-url): Reimplemented.
 	(w3m-view-this-url): Remove a redundant local variable.
-	(w3m-mouse-view-this-url): Call `mime-w3m-view-this-url'.
+	(w3m-mouse-view-this-url): Call `w3m-view-this-url'.
 	(w3m-goto-url): Refer `w3m-url-components-regexp' to delete a
 	fragment part of URL.
 
