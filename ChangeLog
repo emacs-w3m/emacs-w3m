@@ -1,3 +1,12 @@
+2001-07-12  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el (w3m-tag-regexp-of): New macro to generate regexp of
+	specified tag(s).
+	(w3m-parse-attributes): Skip spaces before parsing.
+
+	* w3m-form.el (w3m-form-parse-forms): More flexible and simple tag
+	finding using `w3m-tag-regexp-of' macro.
+
 2001-07-12  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-charset-coding-system-alist): Added 'us_ascii'.
