@@ -1,8 +1,7 @@
 2003-10-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-halfdump-command-arguments): Add "ucs_conv" option
-	when using w3m-m17n and w3m-output-coding-system is utf-8;
-	check w3m-output-coding-system at run time.
+	when using w3m-m17n; check w3m-output-coding-system at run time.
 
 2003-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
