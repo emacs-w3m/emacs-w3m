@@ -197,6 +197,12 @@
 
          (require 'w3m-load)
 
+     ただし XEmacs package として emacs-w3m をインストールしたのならば，
+     することは何もありません．もし Emacs と XEmacs の両方を使っているな
+     らば，次の方法がお勧めの一つです: 
+
+         (load "w3m-load" t t)
+
 4.2. mime-w3m
 
      T-gnus や Wanderlust などの SEMI MUA 上で，メッセージ中の text/html

@@ -195,6 +195,12 @@
 
          (require 'w3m-load)
 
+     However, you have nothing to do if you have emacs-w3m installed
+     as an XEmacs package.  Supposing you are using both Emacs and
+     XEmacs, the following way is one of recommendations:
+
+         (load "w3m-load" t t)
+
 4.2. mime-w3m.el
 
      In order to handle text/html part with emacs-w3m under SEMI MUAs
