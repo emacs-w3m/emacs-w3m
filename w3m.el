@@ -2411,8 +2411,8 @@ engine deinfed in `w3m-search-engine-alist'.  Otherwise use
 	     (setq area (substring url (match-end 0))
 		   furl (cdr (assoc area w3m-weather-url-alist))))
 	(save-excursion
-	  (set-buffer w3m-work-buffer-name)
 	  (w3m-retrieve furl)
+	  (set-buffer w3m-work-buffer-name)
 	  (run-hook-with-args 'w3m-weather-filter-functions area)
 	  "text/html")
       (w3m-message "Unknown URL: %s" url)
