@@ -1,3 +1,10 @@
+2003-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/nnshimbun.el (nnshimbun-is-compiled-for-modern-gnus):
+	New constant.
+	(nnshimbun-find-group-parameters): Define it if nnshimbun.elc is
+	compiled for the old Gnus but the newer Gnus is running.
+
 2003-02-26  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-w3m-attributes): Allow imperfect Status-Line like no
