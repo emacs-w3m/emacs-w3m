@@ -1,3 +1,33 @@
+2003-11-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (very-slow): Fix echo messages.
+
+	* w3m.el (w3m-follow-redirection): Fix customization type.
+
+	* w3m-e21.el: Bind `w3m-current-title' when compiling.
+
+	* /: Bind `w3m-work-buffer-list' when compiling in: w3m-e21.el,
+	w3m-favicon.el, w3m-image.el, w3m-proc.el and w3m-xmas.el.
+
+	* /: Require `cl' when compiling in: w3m-cookie.el, w3m-form.el
+	and w3m-tabmenu.el.
+
+	* /: Remove unused non-global variables in: octet.el,
+	w3m-cookie.el, w3m-tabmenu.el and w3m-weather.el.
+
+	* shimbun/: Require `cl' when compiling in: sb-2ch.el, sb-airs.el,
+	sb-chalow.el, sb-debian-jp.el, sb-debian.el, sb-digiko.el,
+	sb-fml.el, sb-glimpse.el, sb-gnome.el, sb-javaconf.el, sb-kde.el,
+	sb-m17n.el, sb-meadow.el, sb-namazu.el, sb-netbsd.el,
+	sb-nikkei.el, sb-orca.el, sb-pocketgames.el, sb-redhat.el,
+	sb-ruby.el, sb-savannah.el, sb-tdiary.el and sb-zdnet.el.
+
+	* shimbun/: Remove unused non-global variables in: sb-2ch.el,
+	sb-chalow.el, sb-debian.el, sb-f1fan.el, sb-gnome.el,
+	sb-ibm-dev.el, sb-jpo.el, sb-lotusex.el, sb-makanai.el,
+	sb-marc-aims.el, sb-mhonarc.el, sb-palmfan.el, sb-ruby.el,
+	sb-slashdot-jp.el, sb-vinelinux.el and sb-yahoo.el.
+
 2003-11-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-url): Make `w3m-local-find-file-function' don't
