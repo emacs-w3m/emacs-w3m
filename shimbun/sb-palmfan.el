@@ -39,7 +39,7 @@
     ;;("hotsync" . "/cgi/tnote.cgi?book=book3")
     ))
 
-(defvar shimbun-palmfan-groups 
+(defvar shimbun-palmfan-groups
   (mapcar 'car shimbun-palmfan-group-path-alist))
 
 (defconst shimbun-palmfan-date-regexp
@@ -68,12 +68,12 @@
 		      shimbun-palmfan-group-path-alist))))
 
 (luna-define-method shimbun-headers ((shimbun shimbun-palmfan)
-					 &optional range)
+				     &optional range)
   (let ((group (shimbun-current-group-internal shimbun)))
     (if (string= group "news")
 	(shimbun-palmfan-news-headers shimbun range)
       (shimbun-palmfan-bbs-headers shimbun range))))
-  
+
 (defun shimbun-palmfan-bbs-headers (shimbun &optional range)
   ;; not yet
   )
@@ -120,7 +120,7 @@
 		       ;; <FONT color="#0000AF">●</FONT><B>DCF・Exif・JPEGについて</B>
 		       (re-search-forward
 			"^<FONT color=\"#0000AF\">●</FONT><B>\\(.+\\)</B>" end t nil))
-	      (let (subject id others)
+	      (let (subject id others body)
 		(if (not (member (match-string 1) '("トピック" "ソフト")))
 		    (progn
 		      (setq subject (match-string 1))
