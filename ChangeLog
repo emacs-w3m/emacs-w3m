@@ -1,3 +1,8 @@
+2004-11-16  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+
+	* w3m.el (w3m-input-coding-system): Use `utf-8' if Emacs has
+	internal utf-8, it has no Mule-UCS and w3m-type is `w3m-m17n'.
+
 2004-11-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-prepare-article): Break

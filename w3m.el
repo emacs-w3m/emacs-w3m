@@ -476,19 +476,29 @@ terminal.)"
   :type '(coding-system :size 0))
 
 (defcustom w3m-input-coding-system
-  (if (memq w3m-type '(w3mmee w3m-m17n))
-      w3m-output-coding-system
-    (if w3m-accept-japanese-characters
-	(if w3m-use-mule-ucs
-	    'w3m-euc-japan-mule-ucs
-	  (if (featurep 'w3m-e21)
-	      'w3m-euc-japan
-	    'euc-japan))
-      (if w3m-use-mule-ucs
-	  'w3m-iso-latin-1-mule-ucs
-	(if (featurep 'w3m-e21)
-	    'w3m-iso-latin-1
-	  'iso-8859-1))))
+  (cond
+   ((eq w3m-type 'w3mmee)
+    w3m-output-coding-system)
+   ((eq w3m-type 'w3m-m17n)
+    (if (and (featurep 'w3m-e21)
+	     (not (featurep 'un-define))
+	     (fboundp 'utf-translate-cjk-mode))
+	'utf-8
+      w3m-output-coding-system))
+   (w3m-accept-japanese-characters
+    (cond
+     (w3m-use-mule-ucs
+      'w3m-euc-japan-mule-ucs)
+     ((featurep 'w3m-e21)
+      'w3m-euc-japan)
+     (t
+      'euc-japan)))
+   (w3m-use-mule-ucs
+    'w3m-iso-latin-1-mule-ucs)
+   ((featurep 'w3m-e21)
+    'w3m-iso-latin-1)
+   (t
+    'iso-8859-1))
   "*Coding system used when writing to w3m processes.
 It overrides `coding-system-for-write' if it is not `binary'.
 Otherwise, the value of the `w3m-current-coding-system' variable is
