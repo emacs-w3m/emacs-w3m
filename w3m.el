@@ -3596,9 +3596,8 @@ described in Section 5.2 of RFC 2396.")
       ;; because generated buffer has no content at this moment.
       (when (and (string-match w3m-url-components-regexp url)
 		 (match-beginning 8))
-	(let ((name (match-string 9 url))
-	      (url (substring url 0 (match-beginning 8))))
-	  (w3m-goto-url url reload nil nil w3m-current-url))))
+	(w3m-goto-url (substring url 0 (match-beginning 8))
+		      reload nil nil w3m-current-url)))
     (let (handler)
       (w3m-process-do
 	  (success (w3m-goto-url url reload nil nil w3m-current-url handler))
@@ -4895,9 +4894,8 @@ the current session.  Otherwise, the new session will start afresh."
 	;; because generated buffer has no content at this moment.
 	(when (and (string-match w3m-url-components-regexp url)
 		   (match-beginning 8))
-	  (let ((name (match-string 9 url))
-		(url (substring url 0 (match-beginning 8))))
-	    (w3m-goto-url url reload charset post-data referer)))
+	  (w3m-goto-url (substring url 0 (match-beginning 8))
+			reload charset post-data referer))
 	(w3m-goto-url url reload charset post-data referer))
     (w3m url t)))
 
@@ -5587,9 +5585,9 @@ menu line."
   (w3m-select-buffer-show-this-line)
   (let ((selected-window (selected-window))
 	w3m-pop-up-frames w3m-pop-up-windows
-	pop-up-windows buf)
+	pop-up-windows)
     (pop-to-buffer (w3m-select-buffer-current-buffer))
-    (setq buf (w3m-copy-buffer (current-buffer)))
+    (w3m-copy-buffer (current-buffer))
     (select-window selected-window)
     ;; w3m-select-buffer was updated automatically.
     (w3m-select-buffer-show-this-line)))
