@@ -4957,6 +4957,9 @@ x51.science x51.top x51.ufo x51.uma x51.xfiles
 
 @item @uref{http://www.exconn.net/, eXperts Connection (eXConn)}
 exconn.news
+
+@item @uref{http://haiku-os.org/, Haiku OS}
+haiku-os.news haiku-os.forums haiku-os.newsletters
 @end table
 
 @node Shimbun Basics
