@@ -1,3 +1,26 @@
+2003-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-reuse-history-elements): New user
+	option.
+	(w3m-history-forward): Return a cons of a new history element and
+	new position pointers of a history.
+	(w3m-history-backward): Ditto.
+	(w3m-history-regenerate-pointers): New function.
+	(w3m-history-push): If `w3m-history-reuse-history-elements' is nil,
+	sprout a new history branch even if history elements for the same
+	url already exist.
+	(w3m-history-add-arrived-db): Abolish the optional argument; bind
+	`w3m-history-reuse-history-elements' to t.
+
+	* w3m.el (w3m-view-previous-page): Assume `w3m-history-backward'
+	returns cons data; bind `w3m-history-reuse-history-elements' to t;
+	fix position pointers of a history after visiting a page.
+	(w3m-goto-url): Fix position pointers of a history when a page is
+	referred to by the about://history/ page.
+	(w3m-about-history): Include position pointers in an html form.
+	(w3m-history-highlight-current-url): Make history position data
+	invisible.
+
 2003-08-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Fix last change.

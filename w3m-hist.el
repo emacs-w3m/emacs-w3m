@@ -24,10 +24,10 @@
 
 ;;; Commentary:
 
-;; emacs-w3m keeps history in the buffer-local variables `w3m-history'
+;; Emacs-w3m keeps history in the buffer-local variables `w3m-history'
 ;; and `w3m-history-flat'.  Each variable contains a list of all the
-;; links you have visited.  See the documentations for them for
-;; details.
+;; links you have visited.  See the documentations for those variables
+;; for details.
 
 ;;; Code:
 
@@ -44,6 +44,27 @@
 	 (while w3m-colon-keywords
 	   (set (car w3m-colon-keywords) (car w3m-colon-keywords))
 	   (setq w3m-colon-keywords (cdr w3m-colon-keywords))))))))
+
+(defcustom w3m-history-reuse-history-elements nil
+  "If non-nil, reuse a history element when a user visits a page and it
+has already been registered in the `w3m-history' variable, otherwise a
+new history element will be created.
+
+Emacs-w3m used to do as if it is non-nil, however it sometimes brought
+about users' dissatisfaction.  For example, if a user visits the pages
+A -> B -> C -> B in order, the operation BACK on the second B brings a
+user to A.  ``That's weird!''  The reason why it occurred is that the
+`w3m-history' variable only had the list `(A B C)' as a history and B
+is the current position for that time.
+
+The default value for this variable is `nil', and the `w3m-history'
+variable can have the list `(A B C B)'.  Where contents of two B's are
+the identical Lisp objects, so the Lisp resources won't be much wasted.
+
+See the documentation for the variables `w3m-history' and
+`w3m-history-flat' for more information."
+  :group 'w3m
+  :type '(boolean :format "%{%t%}: %[%v%]" :on "On" :off "Off"))
 
 (defvar w3m-history nil
   "A buffer-local variable which contains a tree-structured complex list
@@ -62,8 +83,8 @@ following:
                                                     |
 \[Branch-2.1.1.0]:                                   +--> U2.1.1.0.0
 
-In this case, the history element U1.0.0.0.0 represents the first link
-of the first branch which is sprouted from the history element U1.0.0.
+In this case, the U1.0.0.0.0 history element represents the first link
+of the first branch which is sprouted from the U1.0.0 history element.
 
 The trunk or each branch is a simple list which will contain some
 history elements.  History elements in the trunk or each branch should
@@ -81,7 +102,7 @@ plist which contains any kind of data to propertize the URL as follows:
 The rest BRANCHes are branches of the history element.  Branches
 should also be arranged in order of increasing precedence (the newest
 one should be located in the rightmost).  Each BRANCH will also be a
-tree-structured complex list.  Therefore the history structure will
+tree-structured complex list.  Therefore, the history structure will
 grow up infinitely.  Do you have enough memories for it? :-p
 
 In order to save the Lisp resources, URL strings and PROPERTIES in the
@@ -96,9 +117,11 @@ one more BACK brings you to U1.  Well, where should we go next when
 the operation FORWARD is performed on U1?  The rule is to select the
 newest link you have visited.  So, that operation should go to U1.0.0.
 
-Another rule is that if you visit the link U4 from U1.0.1 directly,
-jumping to the existing U4 link is performed rather than to sprout the
-new branch from U1.0.1.
+Another rule is that if you visit the U4 link from U1.0.1 directly,
+the new U4 link will be sprouted from U1.0.1 if the value of the
+`w3m-history-reuse-history-elements' variable is `nil'.  Otherwise if
+it is non-nil, jumping to the existing U4 link is performed rather
+than to sprout the new branch from U1.0.1.
 
 In addition, the variable `w3m-history' contains a list of pointers in
 its `car' cell which looks like the following:
@@ -284,8 +307,8 @@ an error with ERROR-MESSAGE-IF-NO-ELEMENTS."
 
 ;; Functions for internal use.
 (defun w3m-history-seek-properties (url)
-  "Seek properties corresponding to URL in all the w3m buffers except for
-the current-buffer."
+  "Seek properties corresponding to URL in all the emacs-w3m buffers
+except for the current-buffer."
   (let* ((current (current-buffer))
 	 (buffers (delq current (buffer-list)))
 	 properties)
@@ -299,7 +322,7 @@ the current-buffer."
 
 (defun w3m-history-share-properties (url properties)
   "Function used to keep properties of each history element to be shared
-by all the w3m buffers."
+by all the emacs-w3m buffers."
   (let ((buffers (buffer-list))
 	(current (current-buffer))
 	flat)
@@ -332,12 +355,12 @@ information."
     (w3m-history-current-1 (cadar w3m-history))))
 
 (defun w3m-history-forward (&optional count set-current)
-  "Move forward COUNT times in the history structure and return a history
-element of the position.  If COUNT is omitted, it defaults to number
-one.  If COUNT is negative, moving backward is performed.  If there is
-no room in the history, move as far as possible.  The position
-pointers of `w3m-history' will have new values when SET-CURRENT is
-non-nil."
+  "Move forward COUNT times in the history structure and return a cons of
+a new history element and new position pointers of the history.
+If COUNT is omitted, it defaults to number one.  If COUNT is negative,
+moving backward is performed.  If there is no room in the history,
+move as far as possible.  The position pointers of `w3m-history' will
+contain new values when SET-CURRENT is non-nil."
   (when w3m-history
     (w3m-history-save-position set-current
       (cond ((or (unless count
@@ -348,15 +371,16 @@ non-nil."
 	    ((< count 0)
 	     (while (and (w3m-history-backward-1)
 			 (< (setq count (1+ count)) 0)))))
-      (w3m-history-current-1 (cadar w3m-history)))))
+      (cons (w3m-history-current-1 (cadar w3m-history))
+	    (car w3m-history)))))
 
 (defun w3m-history-backward (&optional count set-current)
-  "Move backward COUNT times in the history structure and return a history
-element of the position.  If COUNT is omitted, it defaults to number
-one.  If COUNT is negative, moving forward is performed.  If there is
-no room in the history, move as far as possible.  The position
-pointers of `w3m-history' will have new values when SET-CURRENT is
-non-nil."
+  "Move backward COUNT times in the history structure and return a cons
+of a new history element and new position pointers of the history.
+If COUNT is omitted, it defaults to number one.  If COUNT is negative,
+moving forward is performed.  If there is no room in the history, move
+as far as possible.  The position pointers of `w3m-history' will
+contain new values when SET-CURRENT is non-nil."
   (when w3m-history
     (w3m-history-save-position set-current
       (cond ((or (unless count
@@ -367,7 +391,38 @@ non-nil."
 	    ((< count 0)
 	     (while (and (w3m-history-forward-1)
 			 (< (setq count (1+ count)) 0)))))
-      (w3m-history-current-1 (cadar w3m-history)))))
+      (cons (w3m-history-current-1 (cadar w3m-history))
+	    (car w3m-history)))))
+
+(defun w3m-history-regenerate-pointers (position)
+  "Regenerate the `(PREV CURRENT NEXT)' style position pointers only by
+the current POSITION."
+  (let ((next position)
+	(branch (cdr w3m-history))
+	(class (1- (length position)))
+	number element branches previous)
+    (setq number (pop next)
+	  element (nth number branch))
+    (while next
+      (setq branch (nth (pop next) (cddr element))
+	    number (pop next)
+	    element (nth number branch)))
+    (cond ((setq branches (cddr element))
+	   (setq number (1- (length branches))
+		 next (copy-sequence position))
+	   (setcdr (nthcdr (1- (length next)) next) (list number 0)))
+	  ((> (length branch) (setq number (1+ number)))
+	   (setq next (copy-sequence position))
+	   (setcar (nthcdr (1- (length next)) next) number)))
+    (setq number (nth class position))
+    (if (zerop number)
+	(if (zerop class)
+	    (setq previous nil)
+	  (setq previous (copy-sequence position))
+	  (setcdr (nthcdr (- class 2) previous) nil))
+      (setq previous (copy-sequence position))
+      (setcar (nthcdr class previous) (1- number)))
+    (list previous position next)))
 
 (defun w3m-history-flat ()
   "Set the buffer-local variable `w3m-history-flat' with the value of a
@@ -513,63 +568,76 @@ be merged into existing properties."
 as a new current history element.  URL should be a string of an
 address of a link.  PROPERTIES is a plist to propertize the URL.  If
 the history element for URL has already been registered in the history
-structure, URL will be set as the current history element.  If REPLACE-
-PROPS is non-nil, existing properties will be completely replaced with
-PROPERTIES, otherwise PROPERTIES will be merged into existing
-properties.  See the documentation for the variables `w3m-history' and
-`w3m-history-flat' for more information."
-  (let (element position)
-    (cond ((null w3m-history)
-	   ;; The dawn of the history.
-	   (let ((shared-plist (w3m-history-seek-properties url)))
-	     (setq properties (w3m-history-modify-properties
-			       shared-plist properties replace-props))
-	     (when shared-plist
-	       (w3m-history-share-properties url properties)))
-	   (setq element (list url properties)
-		 position '(nil (0) nil)
-		 w3m-history (list position element)
-		 w3m-history-flat (list (append element '((0)))))
-	   position)
-	  ((w3m-history-assoc url t properties replace-props)
-	   ;; URL has been registered in the history.
-	   (car w3m-history))
-	  (t
-	   (let ((shared-plist (w3m-history-seek-properties url)))
-	     (setq properties (w3m-history-modify-properties
-			       shared-plist properties replace-props))
-	     (when shared-plist
-	       (w3m-history-share-properties url properties)))
-	   (let* ((position (copy-sequence (cadar w3m-history)))
-		  (class (1- (length position)))
-		  (number 0))
-	     (setq element (nthcdr (car position) (cdr w3m-history)))
-	     (while (> class number)
-	       (setq number (1+ number)
-		     element (nth (nth number position) (cddar element))
-		     number (1+ number)
-		     element (nthcdr (nth number position) element)))
-	     (if (cdr element)
-		 ;; We should sprout a new branch.
-		 (progn
-		   (setq number (1- (length (car element))))
-		   (setcdr (nthcdr class position) (list (1- number) 0))
-		   (setcdr (nthcdr number (car element))
-			   (list (list (list url properties)))))
-	       ;; The current position is the last of the branch.
-	       (setcar (nthcdr class position)
-		       (1+ (car (nthcdr class position))))
-	       (setcdr element (list (list url properties))))
-	     (setq w3m-history-flat
-		   (nconc w3m-history-flat
-			  (list (list url properties position))))
-	     (setcar w3m-history
-		     (list (cadar w3m-history) position nil)))))))
+structure and the `w3m-history-reuse-history-elements' variable is
+non-nil, that element will be assigned as the current history element.
+Otherwise, a new history element will be created for given URL and set
+as the current history element.  If REPLACE-PROPS is non-nil, existing
+properties will be completely replaced with PROPERTIES, otherwise
+PROPERTIES will be merged into existing properties.  See the
+documentation for the variables `w3m-history' and `w3m-history-flat'
+for more information."
+  (let (shared-plist element position class number)
+    (cond
+     ((null w3m-history)
+      ;; The dawn of the history.
+      (setq shared-plist (w3m-history-seek-properties url)
+	    properties (w3m-history-modify-properties
+			shared-plist properties replace-props))
+      (when shared-plist
+	(w3m-history-share-properties url properties))
+      (setq element (list url properties)
+	    position '(nil (0) nil)
+	    w3m-history (list position element)
+	    w3m-history-flat (list (append element '((0)))))
+      position)
+
+     ((or (equal url (car (w3m-history-current)))
+	  (and w3m-history-reuse-history-elements
+	       (w3m-history-assoc url t properties replace-props)))
+      ;; URL has been registered in the history.
+      (car w3m-history))
+
+     (t
+      ;; sprout a new history element.
+      (setq shared-plist
+	    (if (and (not w3m-history-reuse-history-elements)
+		     (setq element (w3m-history-assoc
+				    url nil properties replace-props)))
+		;; URL has been registered in the history structure.
+		(cadr element)
+	      (w3m-history-seek-properties url)))
+      (setq properties (w3m-history-modify-properties
+			shared-plist properties replace-props))
+      (when shared-plist
+	(w3m-history-share-properties url properties))
+      (setq position (copy-sequence (cadar w3m-history))
+	    class (1- (length position))
+	    number 0
+	    element (nthcdr (car position) (cdr w3m-history)))
+      (while (> class number)
+	(setq number (1+ number)
+	      element (nth (nth number position) (cddar element))
+	      number (1+ number)
+	      element (nthcdr (nth number position) element)))
+      (if (cdr element)
+	  ;; We should sprout a new branch.
+	  (progn
+	    (setq number (1- (length (car element))))
+	    (setcdr (nthcdr class position) (list (1- number) 0))
+	    (setcdr (nthcdr number (car element))
+		    (list (list (list url properties)))))
+	;; The current position is the last of the branch.
+	(setcar (nthcdr class position)
+		(1+ (car (nthcdr class position))))
+	(setcdr element (list (list url properties))))
+      (setq w3m-history-flat (nconc w3m-history-flat
+				    (list (list url properties position))))
+      (setcar w3m-history (list (cadar w3m-history) position nil))))))
 
 (defun w3m-history-copy (buffer)
   "Copy the buffer-local variables `w3m-history' and `w3m-history-flat'
-from BUFFER to the current buffer.  This function keeps properties of
-each history element to be shared between BUFFER and the current
+from BUFFER to the current buffer.  This function is used to share
+properties of each history element between BUFFER and the current
 buffer."
   (let ((current (current-buffer))
 	position flat)
@@ -729,7 +797,7 @@ whether to access the buffer-local properties."
 URL is omitted, renaming is performed on the current history element.
 If SET-CURRENT is non-nil, the history element corresponding to URL
 will be set as the current history element.  If THIS-BUFFER is nil,
-renaming will be done for all the w3m buffers."
+renaming will be done for all the emacs-w3m buffers."
   (w3m-history-with-element old-url set-current
     "No history element found to be renamed"
     (setcar element new-url)
@@ -776,30 +844,28 @@ current link."
   (defvar w3m-arrived-db)
   (autoload 'w3m-goto-url "w3m"))
 
-(defun w3m-history-add-arrived-db (&optional clear-history)
+(defun w3m-history-add-arrived-db ()
   "Add the arrived database to the history structure unreasonably.
-If arg CLEAR-HISTORY is given, the current history will be cleared
-in advance.  It's only a joke, you should NEVER use it."
-  (interactive "P")
+It's only a joke, you should NEVER use it."
+  (interactive)
   (unless (eq 'w3m-mode major-mode)
-    (error "`%s' must be invoked from a w3m buffer" this-command))
+    (error "`%s' must be invoked from an emacs-w3m buffer" this-command))
   (when (and w3m-arrived-db
 	     (prog1
 		 (yes-or-no-p
 		  "Are you sure you really want to destroy the history? ")
 	       (message "")))
-    (when clear-history
-      (setq w3m-history nil
-	    w3m-history-flat nil))
-    (let (url-title title)
-      (mapatoms (function
-		 (lambda (symbol)
-		   (when symbol
-		     (if (setq title (get symbol 'title))
-			 (push (list (symbol-name symbol)
-				     (list :title title))
-			       url-title)
-		       (push (list (symbol-name symbol)) url-title)))))
+    (setq w3m-history nil
+	  w3m-history-flat nil)
+    (let ((w3m-history-reuse-history-elements t)
+	  url-title title)
+      (mapatoms (lambda (symbol)
+		  (when symbol
+		    (if (setq title (get symbol 'title))
+			(push (list (symbol-name symbol)
+				    (list :title title))
+			      url-title)
+		      (push (list (symbol-name symbol)) url-title))))
 		w3m-arrived-db)
       (apply 'w3m-history-push (nth (random (length url-title)) url-title))
       (while url-title
