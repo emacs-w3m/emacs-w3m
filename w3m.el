@@ -575,6 +575,16 @@ See also `w3m-search-engine-alist'."
     ("amp" . "&")
     ("quot" . "\"")
     ("apos" . "'")))
+(defconst w3m-entity-regexp
+  (eval-when-compile
+    (format "&\\(%s\\|#[0-9]+\\);?"
+	    (if (fboundp 'regexp-opt)
+		(regexp-opt (mapcar (function car)
+				    w3m-entity-alist))
+	      (mapconcat (lambda (s)
+			   (regexp-quote (car s)))
+			 w3m-entity-alist
+			 "\\|")))))
 (defvar w3m-entity-db nil)		; nil means un-initialized
 (defconst w3m-entity-db-size 13)	; size of obarray
 
@@ -1037,12 +1047,12 @@ If N is negative, last N items of LIST is returned."
     (set (intern (car elem) w3m-entity-db)
 	 (cdr elem))))
 
-(defun w3m-entity-value (name)
+(defsubst w3m-entity-value (name)
   ;; initialize if need
   (if (null w3m-entity-db)
       (w3m-entity-db-setup))
     ;; return value of specified entity, or empty string for unknown entity.
-    (or (symbol-value (intern-soft (match-string 1) w3m-entity-db))
+    (or (symbol-value (intern-soft name w3m-entity-db))
 	(if (not (char-equal (string-to-char name) ?#))
 	    (concat "&" name)		; unknown entity
 	  ;; case of immediate character (accept only 0x20 .. 0x7e)
@@ -1074,6 +1084,17 @@ If N is negative, last N items of LIST is returned."
 	(delete-region (match-beginning 0) (match-end 0))
 	(put-text-property start (match-beginning 0) 'face 'underline)))))
 
+(defsubst w3m-decode-anchor-string (str)
+  ;; FIXME: This is a quite ad-hoc function to process encoded URL
+  ;;        string.  More discussion about timing &-sequence decode is
+  ;;        required.  See [emacs-w3m:00150] for detail.
+  (let ((start 0) (buf))
+    (while (string-match "&amp;" str start)
+      (setq buf (cons "&" (cons (substring str start (match-beginning 0)) buf))
+	    start (match-end 0)))
+    (apply (function concat)
+	   (nreverse (cons (substring str start) buf)))))
+
 (defun w3m-fontify-anchors ()
   "Fontify anchor tags in this buffer which contains half-dumped data."
   ;; Delete excessive `hseq' elements of anchor tags.
@@ -1100,8 +1121,8 @@ If N is negative, last N items of LIST is returned."
       (delete-region start (match-end 0))
       (cond (url
 	     (when (search-forward "</a>" nil t)
-	       (setq url (w3m-expand-url url w3m-current-url))
 	       (delete-region (setq end (match-beginning 0)) (match-end 0))
+	       (setq url (w3m-expand-url (w3m-decode-anchor-string url) w3m-current-url))
 	       (put-text-property start end 'face
 				  (if (w3m-arrived-p url)
 				      'w3m-arrived-anchor-face
@@ -1306,7 +1327,7 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
     ;; Decode escaped characters (entities).
     (goto-char (point-min))
     (let (prop)
-      (while (re-search-forward "&\\([a-z]+\\|#[0-9]+\\);?" nil t)
+      (while (re-search-forward w3m-entity-regexp nil t)
 	(setq prop (text-properties-at (match-beginning 0)))
 	(replace-match (w3m-entity-value (match-string 1)) nil t)
 	(if prop (add-text-properties (match-beginning 0) (point) prop))))

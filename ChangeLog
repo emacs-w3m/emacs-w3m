@@ -1,3 +1,11 @@
+2001-03-09  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-entity-regexp): New constant.
+	(w3m-fontify): Use `w3m-entity-regexp'.
+	(w3m-entity-value): Use defsubst, and fix typo.
+	(w3m-decode-anchor-string): New function.
+	(w3m-fontify-anchors): Decode `&amp;' exists in URL string.
+
 2001-03-09  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-create-image) [EMACS21,XEMACS]: Guard against error.
