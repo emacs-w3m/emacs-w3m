@@ -902,40 +902,7 @@ emacs-w3m $B$G(B @uref{http://www.google.com} $B$r3+$-$^$9!#%9%F%C%W#2(B: $
 $B$7$^$9!#(B
 @end table
 
-@node Moving over pages
-@subsection $B%Z!<%84V$rEO$jJb$/(B
-
-@table @kbd
-@item B
-Back to previous page.
-@end table
-
-@table @kbd
-@item N
-Forward to next page.
-@end table
-
-@table @kbd
-@item ^
-View the parent page.
-@end table
-
-@table @kbd
-@item H
-Goto home page.
-@end table
-
-@table @key
-@item SPC
-Scroll up or go to next url.
-@end table
-
-@table @key
-@item DEL
-Scroll down or go to previous url.
-@end table
-
-
+@c TODO?
 @c C-a	Go to the entire beginning of line.
 @c C-e	Go to the entire end of line.
 @c j	Next line.
@@ -945,6 +912,81 @@ Scroll down or go to previous url.
 @c h	Backward char.
 
 @c M-g	Jump to line.
+
+@node Moving over pages
+@subsection $B%Z!<%84V$rEO$jJb$/(B
+@findex w3m-view-previous-page
+@findex w3m-view-next-page
+@findex w3m-gohome
+@findex w3m-view-parent-page
+$B$"$k%Z!<%8$+$iB>$N%Z!<%8$X0\F0$9$kJ}K!$r$$$/$D$+>R2p$7$^$9!#%j%s%/$rC)$C(B
+$B$FB>$N%Z!<%8$X0\F0$9$kJ}K!!"B>$N%Z!<%8$N(BURL$B$rD>@\;XDj$7$F0\F0$9$kJ}K!$K(B
+$B$D$$$F$O!"4{$K>R2p$7$^$7$?!#(B
+
+$BB>$N%&%'%V%V%i%&%6$G$O!"!VLa$k!W!"!V?J$`!W!"$H$7$F$*$J$8$_$N(B
+$B0JA0$KK,Ld$7$?%Z!<%8$X0\F0$9$k$?$a$N%3%^%s%I5Z$S!"!V%[!<%`%Z!<%8$X0\F0!W(B
+$B%3%^%s%I$O!"$b$A$m$s(BEmacs-w3m$B$K$b$"$j$^$9!#(BEmacs-w3m$B$O!"0JA0$KK,Ld$7$?%Z!<(B
+$B%8$N%j%9%H(B($BMzNr(B)$B$rFbIt$G87L)$K4IM}$7$F$$$^$9!#C1=c$J!VLa$k!W!"!V?J$`!W$h$j$b9bEY(B
+$B$JMzNr%3%^%s%I$b<BAu$7$F$$$^$9$,!"$3$3$G$O>R2p$9$k$N$O!":G$b4pK\E*$J5!G=(B
+$B$@$1$G$9!#9bEY$JMzNr%3%^%s%I$N>\:Y$O!"(B@pxref{Tracing History}$B$r8fMw2<$5$$!#(B
+
+@table @kbd
+@item B
+@kindex B
+@findex w3m-view-previous-page
+$B0JA0$KK,Ld$7$?%Z!<%8$X0\F0$7$^$9!#8@$$$+$($k$HMzNr$r2a5n$N(B
+$BJ}8~$XC)$j$^$9!#(B
+
+@item N
+@kindex N
+@findex w3m-view-next-page
+@kbd{B}$B$r;H$C$F!"2a5n$K1\Mw$7$?%&%'%V%Z!<%8$rI=<((B
+$B$7$F$$$k;~$K(B@kbd{N}$B$r2!$9$H!"(B@kbd{B}$B$r2!$9A0$K8+$F(B
+$B$$$?%Z!<%8$rI=<($7$^$9!#8@$$$+$($k$HMzNr$rL$Mh$N(B
+$BJ}8~$XC)$j$^$9!#(B
+
+
+@item H
+@kindex H
+@findex w3m-gohome
+@vindex w3m-quick-start
+$B%[!<%`%Z!<%8$X0\F0$7$^$9!#%[!<%`%Z!<%8$O(B@code{w3m-home-page} $B$H$$$&%f!<(B
+$B%6%*%W%7%g%s$G;XDj$7$^$9(B(@pxref{Customizable Options})$B!#(B
+@code{w3m-home-page} $B$N%G%U%)%k%H$NCM$O(B ``about:'' $B$G$9!#(B
+@end table
+
+$B<!$N(B3$B$D$N%3%^%s%I$O!"%&%'%V%V%i%&%6$N5!G=$H$F$O0lHLE*$G$O$"$j$^$;$s$,!"(B
+$B3P$($F$*$$$FB;$O$"$j$^$;$s!#(B
+
+@table @kbd
+@item ^
+@kindex ^
+@findex w3m-view-parent-page
+$B8=:_I=<($7$F$$$k%Z!<%8$N(BURL$B$K4p$E$$$F!"0l$D>e$N%G%#%l%/%H%j$X0\F0$7$^$9!#(B
+$BNc$($P!"(B"http://foo/bar/"$B$rI=<($7$F$$$k>l9g!"(B"http://foo/"$B$X0\F0$7$^$9!#(B
+$B$3$N5!G=$O<!$K=R$Y$k4Q;!7k2L$K4p$E$-<BAu$5$l$^$7$?(B: $B%Z!<%8$,:o=|$5$l$?Ey(B
+$B$NM}M3$K$h$j!"$"$k(BURL$B$,I=<($G$-$J$+$C$?>l9g$G$"$C$F$b!"$=$N8+$k$3$H$,$G(B
+$B$-$J$+$C$?%Z!<%8$K4XO"$7$?>pJs$r$I$&$7$F$bF@$?$$$H$-!"%&%'%V%V%i%&%6$N%f!<(B
+$B%6$O!"NI$/$=$N(BURL$B$NKvHx$N%U%!%$%kL>$d%G%#%l%/%H%jL>(B($BKvHx$N%3%s%]!<%M%s%H(B)
+$B$r=|5n$7$?(BURL$B$X0\F0$9$k$3$H$r;n$_$^$9!#(B
+
+$B0lHL$KB>$N%&%'%V%V%i%&%6$r;H$&>l9g!"I=<($G$-$J$+$C$?%Z!<%8$N(BURL$B$+$i(B
+@key{DEL}$B%-!<EyJ#?t2s;H$C$F<jF0$GKvHx$N%3%s%]!<%M%s%H$r:o=|$9$k<j4V$,I,(B
+$BMW$G$9!#(BEmacs-w3m$B$G$O$3$N$h$&$JE57?E*$JA`:n$r(B@kbd{^}$B0l2!$7$G9T$J$&$3$H$,$G(B
+$B$-$^$9!#(B
+@end table
+
+@table @key
+@item SPC
+@findex w3m-view-next-page
+Scroll up or go to next url.
+(TODO)
+
+@item DEL
+@findex w3m-view-previous-page
+Scroll down or go to previous url.
+(TODO)
+@end table
 
 @node Browsing With Mouse Operations
 @subsection $B%^%&%9$G%5!<%U%#%s(B
