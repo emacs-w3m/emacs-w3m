@@ -81,8 +81,8 @@
 
            http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/index.html
 
-       w3mmee / w3m-m17n を使っている場合は，patches/dump-extra.patch を
-       適用してください．
+       w3m-m17n を使っている場合は，patches/dump-extra.patch を適用して
+       ください．
 
    (4) Emacsen の問題
 
@@ -113,14 +113,23 @@
    (まだ実験的な機能です．)
 
    オプション w3m-use-form に nil 以外の値が設定されていることを確認して
-   ください．なお，この機能を利用する場合には，佐藤大さんによって公開さ
-   れている最新の w3m-0.2.1-inu-patch を適用しておく必要があります．以下
-   のページで探してください．
+   ください．
+
+** Q. フォームを送信できません．
+
+   (まだ実験的な機能です．)
+
+   オプション w3m-use-form に nil 以外の値が設定されていることを確認して
+   ください．
+
+   この機能を使うには，-post オプションを認識する w3m コマンドが必要です．
+   佐藤大さんによって公開されている最新の w3m-0.2.1-inu-patch を適用した
+   の w3m か，または w3mmee-p19-6 以降が利用できます．w3m-0.2.1-inu-patch
+   は，以下のページで探してください．
 
        http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/index.html
 
-   w3mmee / w3m-m17n を使っている場合は，patches/post-header.patch を適
-   用してください．
+   w3m-m17n を使う場合は，patches/post-header.patch を適用してください．
 
 
 ** Q. フレームがレンダリングされません．
