@@ -1,3 +1,9 @@
+2003-05-19  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-w3m-use-safe-url-regexp): variable.
+	(mew-w3m-view-inline-image, mew-mime-text/html-w3m): Use
+	`mew-w3m-use-safe-url-regexp' for `w3m-safe-url-regexp'.
+
 2003-05-18  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-yahoo.el (shimbun-yahoo-groups-alist): Add topnews
