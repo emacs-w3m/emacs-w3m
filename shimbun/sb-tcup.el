@@ -1,10 +1,11 @@
 ;;; sb-tcup.el --- shimbun backend for www.tcup.com.
 
-;; Author: Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
+;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -35,7 +36,8 @@
 
 (defvar shimbun-tcup-group-alist
   '(("yutopia" "http://www61.tcup.com/6116/yutopia.html")
-    ("meadow" "http://www66.tcup.com/6629/yutopia.html"))
+    ("meadow" "http://www66.tcup.com/6629/yutopia.html")
+    ("skk" "http://www67.tcup.com/6718/yutopia.html"))
   "An alist of tcup bbs shimbun group definition.
 Each element looks like
  (NAME URL SUBJECT-REGEXP FROM-START-REGEXP DATE-START-REGEXP

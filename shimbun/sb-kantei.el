@@ -1,10 +1,11 @@
 ;;; sb-kantei.el --- shimbun backend for kantei mail magazine backnumber.
 
-;; Author: Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
+;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

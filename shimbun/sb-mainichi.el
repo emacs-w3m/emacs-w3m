@@ -1,10 +1,11 @@
 ;;; sb-mainichi.el --- shimbun backend for www.mainichi.co.jp
 
-;; Author: Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2001 Koichiro Ohba <koichiro@meadowy.org>
 
+;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -73,7 +74,7 @@
 	(narrow-to-region start (point))
 	(goto-char start)
 	(while (re-search-forward
-		"<a href=\"\\(\\./\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([a-z]\\)\\([0-9][0-9][0-9][0-9]\\)\\([a-z]\\)\\([0-9][0-9][0-9][0-9][0-9]\\)\\([0-9][0-9][0-9][0-9]\\)\\([a-z]\\)\\)\\.html\\)\"[^>]*>"
+		"<a href=\"\\./\\(\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([a-z]\\)\\([0-9][0-9][0-9][0-9]\\)\\([a-z]\\)\\([0-9][0-9][0-9][0-9][0-9]\\)\\([0-9][0-9][0-9][0-9]\\)\\([a-z]\\)\\)\\.html\\)\"[^>]*>"
 		nil t)
 	  (let ((url   (concat
 			(cdr (assoc (shimbun-current-group-internal shimbun)

@@ -1,10 +1,11 @@
 ;;; sb-ding.el --- shimbun backend for gnus.org
 
-;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
+;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
