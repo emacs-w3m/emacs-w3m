@@ -912,17 +912,6 @@ Move the point to the previous image.  More strictly speaking, move the
 point backward to the nearest image (@code{w3m-previous-image}).
 @end table
 
-@c TODO?
-@c C-a  Go to the entire beginning of line.
-@c C-e  Go to the entire end of line.
-@c j    Next line.
-@c k    Previous line.
-
-@c l    Forward char.
-@c h    Backward char.
-
-@c M-g  Jump to line.
-
 @node Moving over pages
 @subsection Moving from page to page
 
@@ -984,15 +973,68 @@ keystroke, by typing @kbd{^}!
 
 @table @key
 @item SPC
-@findex w3m-view-next-page
-Scroll up or go to next url.
-(TODO)
+@findex w3m-scroll-up-or-next-url
+When the current point is located at the end of the buffer and you
+cannot scroll down further, hit the @key{SPC} key to go on to the'' next
+page'' (@code{w3m-scroll-up-or-next-url}).  Here, the ``next page''
+means the page containing the coming-up urls that are designated in the
+``next'' field in the header of the current page.  This function has
+nothing to do with the history.
+
+Some websites display their huge volume of contents dividedly in a
+number of pages partly because it takes less time to complete
+transferring. For instance, the search result at a search site appears
+in that way.  In order to access the whole contents which are displayed
+dividedly, users need to follow the links listed in each page
+explicitly.  
+
+However, hopefully, emacs-w3m attempts to enable you to browse a series
+of contents over pages as if you were viewing them in a single page, by
+combining two operations: explicitly following links and scrolling.
+
+Actually, these kinds of websites often have fields such as ``next'',
+``prev'' or ``previous''in the header of their web pages.  These fields
+contain information about links between divided pages. Emacs-w3m
+utilizes these fields.
+
+Let's take an example of Google case again to explain how two operations
+(following links and scrolling) are combined.  Open
+@uref{http://www.google.com} and search for a word.  Usually, when you
+type a very common word for searching (e.g. ``hamburger''), you will get tons
+of search results.  Google returns the first page of search results,
+after having sorted them by Google's own algorithm and divided them into
+some pages.  When the window is filled with the contents of the web
+page, users can read further by hitting @key{SPC} to scroll.  Keep
+scrolling until you come to see the end of the web page in the window.
+Here, a goody is waiting for you.  If you use web browser other than emacs-w3m
+and want to see the rest of the search results, one way to get it done is to
+click one of the numbers listed under
+
+@example
+Gooooooogle
+@end example
+
+
+@example
+1 2 3 4 5 6 7 8...
+@end example
+
+
+to follow the link.  But when you are using emacs-w3m, you can follow
+the link by just typing @key{SPC} as you do the same when scrolling.
+ 
 
 @item DEL
-@findex w3m-view-previous-page
-Scroll down or go to previous url.
-(TODO)
+@findex w3m-scroll-down-or-previous-url
+When the current point is located at the beginning of the buffer and you
+cannot scroll upward, hit the @key{DEL} to go to the ``previous'' page
+(@code{w3m-scroll-down-or-previous-url}).  Here, the ``previous'' page
+means the page which is assigned to the ``prev'' or ``previous'' fields
+in the header of the current page.  This function has nothing to do with
+the history, and works oppositely as the
+@key{SPC}(w3m-scroll-up-or-next-url) does.
 @end table
+
 
 @node Browsing with Mouse Operations
 @subsection Surfing with mouse
@@ -1158,6 +1200,44 @@ still access the pages you visited so far.  This is different from the
 way Mozilla and others work; in these browsers the history always starts
 from scratch in new buffers.
 
+
+In addition to the information just about ``the page you visited,'' the
+more detailed one, that is, ``the specific location within that page''
+can be recorded as a part of history.  Press @kbd{C-c C-@@}, and the
+location of the cursor point will be stored as information specific to that
+page.  In order to go back to that particular location within the page,
+press @kbd{C-c C-v} in the emacs-w3m buffer holding that web
+page.
+
+@table @kbd
+@item G
+@kindex G
+@findex w3m-goto-url-new-session
+Type a URL in the minibuffer, and you can have the page displayed under
+a new session.  This function works as the same as @kbd{g}(@key{M-x
+w3m-goto-url}) does, except that it openes a new session.  When you use
+emacs-w3m on Emacs21 / XEmacs, opening a new session means displaying a
+page in a new tab.  For using tabs, please refer to @ref{Using Tabs}
+(@code{w3m-goto-url-new-session}).
+
+@item s
+@kindex s
+@findex w3m-history
+Display the list of visited URLs in this session.
+
+@item C-c C-@@
+@kindex C-c C-@@
+@findex w3m-history-store-position
+Record the position of the cursor in the page as the information
+specific to the currently displayed page.
+
+@item C-c C-v
+@kindex C-c C-v
+@findex w3m-history-restore-position
+Move to the position which has been marked with @kbd{C-c
+C-@@}(@code{w3m-goto-url-new-session}) in the currently displayed page.
+@end table
+
 The other way to have information about past pages is the ``arrived
 URLs'' list: it is a list of the last 500 URLs you have visited in
 emacs-w3m.  The list is ordered by date, the most recent coming first,
@@ -1192,6 +1272,8 @@ were visiting a regular page, by following the link.
 @table @kbd
 @item s
 @kindex s
+@item C-u s
+@kindex C-u s
 @findex w3m-history
 Display the list of URLs visited in this session.  If called with a
 prefix argument, show the list of arrived URLs instead
@@ -1613,8 +1695,11 @@ Edit the local file pointed by URL under point(@code{w3m-edit-this-url}).
 @item M
 @kindex M
 @findex w3m-view-url-with-external-browser
-Launch an external browser (other than emacs-w3m) and display the same web
-page as currently displayed in emacs-w3m(@code{w3m-view-url-with-external-browser}).
+Launch an external browser (other than emacs-w3m) and display the same
+web page as currently displayed in
+emacs-w3m(@code{w3m-view-url-with-external-browser}).The external
+browser to be used is defined by the variable
+@code{w3m-content-type-alist}, depending on the kind of URLs.
 
 @end table
 
