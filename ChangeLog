@@ -10,6 +10,7 @@
 	Build message-id without string `rss'.
 	(shimbun-index-url): Pick up URL from shimbun-wiki-group-alist and
 	simply return it.	
+	(shimbun-wiki-group-alist): Modify ADDRESS of hiki.
 
 	* shimbun/sb-rss.el (shimbun-rss-get-encoding): Bug fixed.
 	Return interned encoding with suffix `-dos'.
