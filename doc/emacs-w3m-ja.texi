@@ -4304,9 +4304,6 @@ japantimes.general japantimes.business
 @item @uref{http://slashdot.jp/, Slashdot Japan}
 slashdot-jp.story
 
-@item @uref{http://slashdot.jp/, RSS版 Slashdot Japan}
-slashdot-jp-rss.story
-
 @item @uref{http://headlines.yahoo.co.jp/, Yahoo! Japan}
 yahoo.politics yahoo.society yahoo.people yahoo.business-all
 yahoo.market yahoo.stock yahoo.industry yahoo.international
