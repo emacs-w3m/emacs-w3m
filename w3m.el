@@ -758,7 +758,7 @@ will disclose your private informations, for example:
 	w3m-previous-url nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url title forms cs next prev)
+  (let (url title forms resume cs next prev)
     (save-current-buffer
       (when from-buffer (set-buffer from-buffer))
       (setq url w3m-current-url

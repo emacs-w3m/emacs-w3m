@@ -1,5 +1,12 @@
 2001-09-15  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-form.el (w3m-form-resume): Ignore `hidden' type form;
+	Fixed problem when no item is selected in the select form.
+
+	* w3m.el (w3m-copy-local-variables): Bind local variable resume.
+
+2001-09-14  Yuuichi Teranishi  <teranisi@gohome.org>
+
 	* w3m.el (w3m-resume-forms): New buffer local variable.
 	(w3m-clear-local-variables): Add w3m-resume-forms.
 	(w3m-copy-local-variables): Ditto.

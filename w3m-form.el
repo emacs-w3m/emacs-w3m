@@ -370,6 +370,7 @@ If no field in forward, return nil without moving."
 	  (cond
 	   ((or (string= type "submit")
 		(string= type "clear")
+		(string= type "hidden")
 		;; Do nothing.
 		))
 	   ((string= type "password")
@@ -384,7 +385,8 @@ If no field in forward, return nil without moving."
 		   "*" " "))))
 	   ((string= type "select")
 	    (let ((selects (w3m-form-get form name)))
-	      (w3m-form-replace (cdr (assoc (car selects) (cdr selects))))))
+	      (when (car selects)
+		(w3m-form-replace (cdr (assoc (car selects) (cdr selects)))))))
 	   ((string= type "textarea")
 	    (let ((hseq (nth 2 (w3m-action))))
 	      (when (> hseq 0)
