@@ -529,7 +529,8 @@ image parts, and returns an alist of URLs and image entities."
 	    nil t)
       (setq start (match-beginning 1)
 	    end (match-end 1)
-	    url (or (match-string 3) (match-string 4)))
+	    url (shimbun-expand-url (or (match-string 3) (match-string 4))
+				    base-url))
       (unless (setq img (assoc url images))
 	(with-temp-buffer
 	  (set-buffer-multibyte nil)
