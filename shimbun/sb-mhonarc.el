@@ -127,7 +127,7 @@
 	  (while (search-forward "\t" nil t)
 	    (replace-match " "))
 	  (goto-char (point-min))
-	  (let (buf refs reply-to)
+	  (let (buf refs)
 	    (while (not (eobp))
 	      (cond
 	       ((looking-at "<!--")
@@ -161,8 +161,6 @@
 	       ((looking-at "Content-Type: ")
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       (t (forward-line 1))))
-	    (if (setq reply-to (shimbun-reply-to shimbun))
-		(insert "Reply-To: " reply-to "\n"))
 	    (insert "MIME-Version: 1.0\n")
 	    (insert "Content-Type: text/html; charset=ISO-2022-JP\n")
 	    (if refs
@@ -219,7 +217,12 @@
 	     (point)))
 	  (when (search-forward "\n<!--X-Body-of-Message-End-->\n" nil t)
 	    (forward-line -1)
-	    (delete-region (point) (point-max)))))
+	    (delete-region (point) (point-max)))
+	  (goto-char (point-min))
+	  (insert "<html>\n<head>\n<base href=\""
+		  (shimbun-header-xref header) "\">\n</head>\n</body>\n")
+	  (goto-char (point-max))
+	  (insert "\n</body>\n</html>")))
     (goto-char (point-min))
     (shimbun-header-insert shimbun header)
     (insert

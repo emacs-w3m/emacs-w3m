@@ -39,8 +39,8 @@
 (defvar shimbun-wired-groups '("business" "culture" "technology"))
 (defvar shimbun-wired-from-address "webmaster@www.hotwired.co.jp")
 (defvar shimbun-wired-content-start
-  "<FONT color=\"#ff0000\" size=\"-1\">.*</FONT>\n")
-(defvar shimbun-wired-content-end "<DIV ALIGN=\"RIGHT\">\\[")
+  "\\(\n<!-- articles -->\\|<FONT color=\"#ff0000\" size=\"-1\">.*</FONT>\\)\n")
+(defvar shimbun-wired-content-end "\\(\n<!-- /articles -->\n\\|<DIV ALIGN=\"RIGHT\">\\[\\)")
 (defvar shimbun-wired-x-face-alist
   '(("default" . "X-Face: \"yhMDxMBowCFKt;5Q$s_Wx)/'L][0@c\"#n\
 2BwH{7mg]5^w1D]\"K^R]&fZ5xtt1Ynu6V;Cv(\n @BcZUf9IV$($6TZ`L)$,c\

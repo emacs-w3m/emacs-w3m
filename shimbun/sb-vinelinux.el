@@ -102,11 +102,15 @@
     (delete-region (progn (forward-line 1) (point)) (point-min))
     (shimbun-header-insert shimbun header)
     (insert
-     "Content-Type: text/html; charset=ISO-2022-JP\nMIME-Version: 1.0\n\n")
+     "Content-Type: text/html; charset=ISO-2022-JP\nMIME-Version: 1.0\n\n"
+     "<html><head><base href=\""
+     (shimbun-header-xref header)
+     "\"></head><body>")
     (goto-char (point-min))
     (while (re-search-forward "</*blockquote>\n" nil t nil)
       (delete-region (match-beginning 0) (point)))
     (goto-char (point-max))
+    (insert "</body></html>")
     (encode-coding-string (buffer-string)
 			  (mime-charset-to-coding-system "ISO-2022-JP"))))
 

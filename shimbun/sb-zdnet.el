@@ -118,12 +118,12 @@ RM#72\\p;3XZ~j|7T)QC7\"(A;~Hr\n fP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
 		(search-forward "<!-- AD END -->" nil t))
       (delete-region start (point)))
     (while (re-search-forward
-	    "<IMG [^>]*SRC=\"http://\\(ad\\.zdnet\\.co\\.jp\\|a1100\\.g\\.akamai\\.net\\)/[^>]+>"
+	    "<IMG [^>]*SRC=\"http:/[^\"]*/\\(ad\\.zdnet\\.co\\.jp\\|a1100\\.g\\.akamai\\.net\\)/[^>]+>"
 	    nil t)
       (delete-region (match-beginning 0) (match-end 0)))
     (goto-char (point-min))
     (while (re-search-forward
-	    "<A [^>]*HREF=\"http://\\(ad\\.zdnet\\.co\\.jp\\|a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
+	    "<A [^>]*HREF=\"http:/[^\"]*/\\(ad\\.zdnet\\.co\\.jp\\|a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
 	    nil t)
       (delete-region (match-beginning 0) (match-end 0)))
     (goto-char (point-min))))

@@ -73,7 +73,12 @@
 		   (shimbun-header-set-from header value))))))
       (delete-region (point-min) body-start)
       (delete-region (marker-position body-end) (point-max))
-      (set-marker body-end nil))
+      (set-marker body-end nil)
+      (goto-char (point-min))
+      (insert "<html>\n<head>\n<base href=\""
+	      (shimbun-header-xref header) "\">\n</head>\n</body>\n")
+      (goto-char (point-max))
+      (insert "\n</body>\n</html>"))
     (shimbun-make-mime-article shimbun header)
     (buffer-string)))
 

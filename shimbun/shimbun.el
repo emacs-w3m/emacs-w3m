@@ -481,6 +481,22 @@ HEADER is a header structure obtained via `shimbun-headers'.")
 (luna-define-method shimbun-make-contents ((shimbun shimbun) header)
   (shimbun-make-html-contents shimbun header))
 
+(defun shimbun-header-insert-and-buffer-string (shimbun header &optional charset html)
+  "Insert headers which are generated from SHIMBUN and HEADER, and
+return the contents of this buffer as an encoded string."
+  (unless charset (setq charset "ISO-2022-JP"))
+  (goto-char (point-min))
+  (shimbun-header-insert shimbun header)
+  (insert "Content-Type: text/" (if html "html" "plain") "; charset=" charset
+	  "\nMIME-Version: 1.0\n\n")
+  (when html
+    (insert "<html><head><base href=\"" (shimbun-header-xref header)
+	    "\"></head><body>")
+    (goto-char (point-max))
+    (insert "</body></html>"))
+  (encode-coding-string (buffer-string)
+			(mime-charset-to-coding-system charset)))
+
 (luna-define-generic shimbun-index-url (shimbun)
   "Return a index URL of SHIMBUN.")
 

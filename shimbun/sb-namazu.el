@@ -32,7 +32,8 @@
 (defvar shimbun-namazu-url "http://www.namazu.org/")
 
 (defvar shimbun-namazu-group-url-alist
-  '(("namazu-users-ja" . "ml/namazu-users-ja")
+  '(("migemo" . "http://migemo.namazu.org/ml")
+    ("namazu-users-ja" . "ml/namazu-users-ja")
     ("namazu-win32-users-ja" . "ml/namazu-win32-users-ja")
     ("namazu-users-en" . "ml/namazu-users-en")
     ("namazu-devel-ja" . "ml/namazu-devel-ja")
