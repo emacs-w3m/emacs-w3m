@@ -2971,67 +2971,84 @@ works on Emacs.
 		      (substring w3m-current-url (match-end 0))
 		    (concat "about://header/" w3m-current-url)))))
 
+(defvar w3m-about-history-max-indentation '(/ (* (window-width) 2) 3)
+  "*Number to limit the indentation when showing a tree-structured
+history by the command `w3m-about-history'.  This value is evaluated
+for each run-time, so it can be any `s' expressions.")
+
+(defvar w3m-about-history-indent-level 4
+  "*Number that says how much each sub-tree should be indented when
+showing a tree-structured history by the command `w3m-about-history'.")
+
 (defun w3m-about-history (&rest args)
   "Show a tree-structured history."
-  (let ((debugging nil)
-	(history (copy-sequence (cdr w3m-history)))
+  (let ((history w3m-history-flat)
 	(current w3m-current-url)
-	element url about title hierarchy)
+	start)
     (w3m-with-work-buffer
       (erase-buffer)
       (set-buffer-multibyte t)
       (insert "\
 <head><title>URL history</title></head><body>
 <h1>List of all the links you have visited in this session.</h1><pre>\n")
-      (while history
-	(setq element (car history)
-	      url (car element))
-	(if (stringp url)
-	    (progn
-	      (setq about (string-match w3m-history-ignored-regexp url)
-		    title (plist-get (cadr element) ':title)
-		    element (cddr element))
-	      (if debugging
-		  (when hierarchy
-		    (insert (format "%s" hierarchy)))
-		(if hierarchy
-		    (progn
-		      (insert " ")
-		      (insert-char ?│ (length hierarchy))
-		      (insert (if (eq 1 (car hierarchy))
-				  "└"
-				"├")))
-		  (insert " "
-			  (if (cdr history)
-			      "├"
-			    "└"))))
-	      (insert "<a href=\"" url "\">"
-		      (if about "&lt;" "")
-		      (if (or (not title)
-			      (string-equal "<no-title>" title)
-			      (string-match "^[\t 　]*$" title))
-			  url
-			title)
-		      (if about "&gt;" "")
-		      "</a>\n")
-	      (if element
-		  (setq history (append element (cdr history)))
-		(cond ((eq 1 (car hierarchy))
-		       (when (and (setq hierarchy (cdr hierarchy))
-				  (not (eq 1 (car hierarchy))))
-			 (setcar hierarchy (1- (car hierarchy)))))
-		      (hierarchy
-		       (setcar hierarchy (1- (car hierarchy)))))
-		(setq history (cdr history))))
-	  (push (length element) hierarchy)
-	  (setq history (append element (cdr history)))))
+      (setq start (point))
+      (when history
+	(let ((maxdepth (condition-case nil
+			    ;; Force the value to be a number or nil.
+			    (+ 0 (eval w3m-about-history-max-indentation))
+			  (error nil)))
+	      (form
+	       (format
+		"%%0%dd"
+		(length
+		 (number-to-string
+		  (apply 'max
+			 (apply 'append
+				(mapcar
+				 (function
+				  ;; Don't use `caddr' here, since it won't
+				  ;; be substituted by the compiler macro.
+				  (lambda (e)
+				    (car (cdr (cdr e)))))
+				 history)))))))
+	      (cur (current-buffer))
+	      (margin (if (> w3m-about-history-indent-level 1)
+			  1
+			0))
+	      element url about title position bol)
+	  (while history
+	    (setq element (pop history)
+		  url (car element)
+		  about (string-match w3m-history-ignored-regexp url)
+		  title (plist-get (cadr element) ':title)
+		  position (caddr element))
+	    (insert (format "h%s %d <a href=\"%s\">%s%s%s</a>\n"
+			    (mapconcat (function (lambda (d) (format form d)))
+				       position
+				       "-")
+			    (* w3m-about-history-indent-level
+			       (/ (1- (length position)) 2))
+			    url
+			    (if about "&lt;" "")
+			    (if (or (not title)
+				    (string-equal "<no-title>" title)
+				    (string-match "^[\t 　]*$" title))
+				url
+			      title)
+			    (if about "&gt;" ""))))
+	  (sort-fields 0 start (point-max))
+	  (goto-char start)
+	  (while (not (eobp))
+	    (setq bol (point))
+	    (read cur)
+	    (insert-char ?\  (+ margin (prog1
+					   (if maxdepth
+					       (min maxdepth (read cur))
+					     (read cur))
+					 (delete-region bol (point)))))
+	    (forward-line 1))))
       (insert "</pre></body>")
-      (goto-char (point-min))
-      (when (re-search-forward "\\(└\\)\\|\\(├\\)" nil t)
-	(replace-match (if (match-beginning 1)
-			   "─"
-			 "┬"))
-	(goto-char (point-min)))
+      (goto-char start)
       (when (and current
 		 (re-search-forward (concat "\\(<a href=\""
 					    (regexp-quote current)
