@@ -1,3 +1,11 @@
+2002-08-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-mhonarc.el (shimbun-mhonarc-rot13-table): New
+	constant.
+	(shimbun-mhonarc-rot13-decode): New function.
+	(shimbun-make-contents): Call the above function to decode the
+	field of X-From-R13.
+
 2002-08-23  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-view-this-url-new-session-in-background):
