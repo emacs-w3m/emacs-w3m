@@ -45,6 +45,10 @@
 
 (defvar shimbun-asahi-html-expiration-days shimbun-asahi-expiration-days)
 
+(luna-define-method shimbun-make-contents ((shimbun shimbun-asahi-html)
+					   header)
+  (shimbun-asahi-make-contents shimbun header))
+
 (provide 'sb-asahi-html)
 
 ;;; sb-asahi-html.el ends here

@@ -221,6 +221,43 @@ subject, a month, a day, an hour:minute and an extra keyword.")
 					 &optional range)
   (shimbun-asahi-get-headers shimbun))
 
+(defun shimbun-asahi-make-contents (entity header)
+  "Return article contents with a correct date header."
+  (let ((case-fold-search t)
+	start date)
+    (when (and (re-search-forward (shimbun-content-start-internal entity)
+				  nil t)
+	       (setq start (point))
+	       (re-search-forward (shimbun-content-end-internal entity)
+				  nil t))
+      (delete-region (match-beginning 0) (point-max))
+      (delete-region (point-min) start)
+      (when (and (member (shimbun-current-group-internal entity)
+			 '("science"))
+		 (string-match " \\(00:00\\) "
+			       (setq date (shimbun-header-date header))))
+	(setq start (match-beginning 1))
+	(goto-char (point-max))
+	(forward-line -1)
+	(when (re-search-forward
+	       "([01][0-9]/[0-3][0-9] \\([012][0-9]:[0-5][0-9]\\))"
+	       nil t)
+	  (shimbun-header-set-date header
+				   (concat (substring date 0 start)
+					   (match-string 1)
+					   (substring date (+ start 5))))))
+      (goto-char (point-min))
+      (insert "<html>\n<head>\n<base href=\""
+	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
+      (goto-char (point-max))
+      (insert "\n</body>\n</html>\n"))
+    (shimbun-make-mime-article entity header)
+    (buffer-string)))
+
+(luna-define-method shimbun-make-contents ((shimbun shimbun-asahi)
+					   header)
+  (shimbun-asahi-make-contents shimbun header))
+
 (provide 'sb-asahi)
 
 ;;; sb-asahi.el ends here
