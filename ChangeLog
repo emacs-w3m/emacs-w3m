@@ -1,5 +1,13 @@
 2003-11-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-antenna.el: Define a new minor mode `w3m-antenna-mode'.
+	(w3m-antenna-mode-map, w3m-antenna-mode): New variables.
+	(w3m-antenna-mode, w3m-antenna-mode-setter, w3m-antenna-edit): New
+	functions.
+
+	* w3m-bookmark.el (w3m-bookmark-mode): Change its interactive
+	spec, and improve its document.
+
 	* w3m-favicon.el (w3m-favicon-retrieve): Abolish the 4th argument
 	`handler' and wrap the asynchronous processing forms with
 	`w3m-process-with-null-handler', in order to clarify this
@@ -9,6 +17,7 @@
 	because the latter is not available at Meadow and Mule2.
 	(w3m-w3m-retrieve): Check the status code.
 	(w3m-show-error-information): Also use retrieved error pages.
+	(w3m-minor-mode): Change its interactive spec.
 
 2003-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 

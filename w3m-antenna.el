@@ -484,6 +484,48 @@ Optional argument TITLE is title of link."
   (re-search-forward "State:")
   (backward-char 2))
 
+(defvar w3m-antenna-mode-map
+  (let ((map (make-sparse-keymap)))
+    (substitute-key-definition 'w3m-edit-current-url 'w3m-antenna-edit
+			       map w3m-mode-map)
+    map)
+  "*Keymap for `w3m-antenna-mode'.")
+
+(defvar w3m-antenna-mode nil "Non-nil if w3m antenna mode is enabled.")
+(make-variable-buffer-local 'w3m-antenna-mode)
+(unless (assq 'w3m-antenna-mode minor-mode-alist)
+  (push (list 'w3m-antenna-mode " antenna") minor-mode-alist))
+(unless (assq 'w3m-antenna-mode minor-mode-map-alist)
+  (push (cons 'w3m-antenna-mode w3m-antenna-mode-map) minor-mode-map-alist))
+
+(defun w3m-antenna-mode (&optional arg)
+  "\\<w3m-antenna-mode-map>
+Minor mode to edit antenna.
+
+\\[w3m-antenna-edit]	Customize `w3m-antenna-sites'.
+"
+  (interactive "P")
+  (prog1 (setq w3m-antenna-mode
+	       (if arg
+		   (> (prefix-numeric-value arg) 0)
+		 (not w3m-antenna-mode)))
+    (run-hooks 'w3m-antenna-mode-hook)))
+
+(defun w3m-antenna-mode-setter (url)
+  "Activate `w3m-antenna-mode', when visiting page shows antenna."
+  (w3m-antenna-mode (if (string-match "\\`about://antenna/" url)
+			 (progn
+			   (setq default-directory
+				 (file-name-directory w3m-antenna-file))
+			   1)
+		       0)))
+(add-hook 'w3m-display-functions 'w3m-antenna-mode-setter)
+
+(defun w3m-antenna-edit ()
+  "Start customize of `w3m-antenna-sites'."
+  (interactive)
+  (customize-variable 'w3m-antenna-sites))
+
 (provide 'w3m-antenna)
 
 ;;; w3m-antenna.el ends here

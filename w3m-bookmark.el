@@ -114,11 +114,11 @@ of your bookmark file."
   "\\<w3m-bookmark-mode-map>
 Minor mode to edit bookmark.
 
-\\[w3m-bookmark-kill-entry]
-\\[w3m-bookmark-undo]
-\\[w3m-bookmark-edit]
+\\[w3m-bookmark-kill-entry]	Kill the current entry of this bookmark.
+\\[w3m-bookmark-undo]	Undo some previous changes on this bookmark.
+\\[w3m-bookmark-edit]	Open `w3m-bookmark-file'.
 "
-  (interactive)
+  (interactive "P")
   (prog1 (setq w3m-bookmark-mode
 	       (if arg
 		   (> (prefix-numeric-value arg) 0)
