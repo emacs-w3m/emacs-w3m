@@ -296,9 +296,11 @@ as the value."
 (unless (fboundp 'coding-system-category)
   (defalias 'coding-system-category 'coding-system-type))
 
-(w3m-static-if (and (>= emacs-major-version 21)
-		    (>= emacs-minor-version 2)
-		    (>= emacs-patch-level 19))
+(w3m-static-if (or (and (= emacs-major-version 21)
+			(>= emacs-minor-version 4))
+		   (and (= emacs-major-version 20)
+			(= emacs-minor-version 2)
+			(>= emacs-patch-level 19)))
     (define-ccl-program ari-euc-japan-decoder
       `(2
 	(loop
