@@ -4698,10 +4698,9 @@ called with t as an argument.  Otherwise, it will be called with nil."
 
 (defun w3m-show-error-information (url charset page-buffer)
   "Create and prepare the error information."
-  (or (prog1
-	  (w3m-cache-request-contents url)
-	(w3m-decode-encoded-contents
-	 (nth 4 (w3m-w3m-parse-header url (w3m-cache-request-header url)))))
+  (or (when (w3m-cache-request-contents url)
+	(w3m-decode-encoded-contents (w3m-content-encoding url))
+	t) ; Even if decoding is failed, use the cached contents.
       (let ((case-fold-search t)
 	    (header (w3m-cache-request-header url))
 	    (errmsg (format "\n<br><h1>Cannot retrieve URL: %s%s</h1>"
