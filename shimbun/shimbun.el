@@ -961,8 +961,6 @@ return the contents of this buffer as an encoded string."
 		   ((< year 1000)	; possible 3-digit years.
 		    (+ year 1900))	; why isn't it 1000?
 		   (t year)))
-  (unless timezone
-    (setq timezone "+0900"))
   (let ((cts (current-time-string (encode-time 0 0 0 day month year "+0000"))))
     (format "%s, %02d %s %04d %s %s"
 	    (substring cts 0 3)
@@ -970,7 +968,7 @@ return the contents of this buffer as an encoded string."
 	    (substring cts 4 7)
 	    year
 	    (or time "00:00")
-	    timezone)))
+	    (or timezone "+0900"))))
 
 (autoload 'timezone-fix-time "timezone")
 
