@@ -1,6 +1,6 @@
 ;;; w3m-favicon.el --- utilities for handling favicon in emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,

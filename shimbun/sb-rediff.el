@@ -1,6 +1,6 @@
 ;;; sb-rediff.el --- shimbun backend for rediff.com
 
-;; Copyright (C) 2004 S V N Vishwanathan <vishketan@yahoo.com>
+;; Copyright (C) 2004, 2005 S V N Vishwanathan <vishketan@yahoo.com>
 
 ;; Author: S V N Vishwanathan <vishketan@yahoo.com>
 ;; Keywords: news

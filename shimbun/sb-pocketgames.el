@@ -1,6 +1,6 @@
 ;;; sb-pocketgames.el --- shimbun backend class for www.pocketgames.jp. -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003, 2004 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news

@@ -1,6 +1,6 @@
 ;;; sb-heise.el --- heise online shimbun backend
 
-;; Copyright (C) 2004 David Hansen
+;; Copyright (C) 2004, 2005 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news

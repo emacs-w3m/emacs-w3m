@@ -1,6 +1,6 @@
 ;;; sb-palmfan.el --- shimbun backend class for palmfan web site. -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2002, 2003, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
