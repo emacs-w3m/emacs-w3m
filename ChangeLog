@@ -1,5 +1,9 @@
 2004-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-form.el (w3m-form-parse-and-fontify): Ignore a select form
+	in the case where w3mmee is running if its value is not specified.
+	Reported by Clemens Fischer <ino-qc@spotteswoode.de.eu.org>.
+
 	* w3mhack.el (labels): Remove.
 
 	* shimbun/sb-itmedia.el (shimbun-get-headers): Improve appearance

@@ -643,20 +643,22 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 w3m-form-id ,id
 		 w3m-form-name ,name)))
 	     ((string= type "select")
-	      (if (eq w3m-type 'w3mmee)
-		  (w3m-form-put form id name
-				(w3m-form-mee-select-value value))
-		(setq selects (cons (list selectnumber form id name)
-				    selects)))
-	      (add-text-properties
-	       start end
-	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
-		 face w3m-form-face
-		 w3m-action (w3m-form-input-select ,form ,id ,name)
-		 w3m-submit (w3m-form-submit ,form ,id ,name
-					     (w3m-form-get ,form ,id))
-		 w3m-anchor-sequence ,abs-hseq)))
+	      (when (if (eq w3m-type 'w3mmee)
+			(when value
+			  (w3m-form-put form id name
+					(w3m-form-mee-select-value value))
+			  t)
+		      (setq selects (cons (list selectnumber form id name)
+					  selects)))
+		(add-text-properties
+		 start end
+		 `(w3m-form-field-id
+		   ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
+		   face w3m-form-face
+		   w3m-action (w3m-form-input-select ,form ,id ,name)
+		   w3m-submit (w3m-form-submit ,form ,id ,name
+					       (w3m-form-get ,form ,id))
+		   w3m-anchor-sequence ,abs-hseq))))
 	     ((string= type "password")
 	      (add-text-properties
 	       start end
