@@ -78,6 +78,14 @@ set this value to nil if you consider all the urls to be safe."
   :type '(choice (regexp :format "%t: %v\n" :size 0)
 		 (const :tag "All URLs are safe" nil)))
 
+(defcustom mime-w3m-after-cursor-move-hook
+  '(w3m-print-this-url)
+  "*Hook run each time after the cursor moves in mime-w3m buffers.
+This hook is called by the `mime-w3m-check-current-position' function
+by way of `post-command-hook'."
+  :group 'mime-w3m
+  :type 'hook)
+
 (defcustom mime-w3m-setup-hook nil
   "*Hook run at the end of function `mime-w3m-setup'."
   :group 'mime-w3m
@@ -189,6 +197,25 @@ map."))
 				  (nconc (mime-w3m-local-map-property)
 					 '(text-rendered-by-mime-w3m t))))
 	 (error (message "%s" err)))))))
+
+(let (current-load-list)
+  (defadvice mime-display-message
+    (after mime-w3m-add-local-hook activate compile)
+    "Advised by emacs-w3m.
+Set hooks run arround each command is executed."
+    (when (featurep 'w3m)
+      (w3m-add-local-hook 'pre-command-hook
+			  'w3m-store-current-position)
+      (w3m-add-local-hook 'post-command-hook
+			  'mime-w3m-check-current-position))))
+
+(defun mime-w3m-check-current-position ()
+  "Run `mime-w3m-after-cursor-move-hook' if the cursor has been moved."
+  (when (and (/= (point) (car w3m-current-position))
+	     (ignore-errors
+	       (get-text-property (car w3m-current-position)
+				  'text-rendered-by-mime-w3m)))
+    (run-hooks 'mime-w3m-after-cursor-move-hook)))
 
 ;; To avoid byte-compile warning in `mime-w3m-cid-retrieve'.
 (autoload 'mime-uri-parse-cid "mime-parse")

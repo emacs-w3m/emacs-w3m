@@ -821,6 +821,7 @@ is evaluated by the `w3m-goto-url' function."
   "*Hook run each time after the cursor moves in emacs-w3m buffers.
 This hook is called by the `w3m-check-current-position' function by
 way of `post-command-hook'."
+  :group 'w3m
   :type 'hook
   :initialize 'w3m-custom-hook-initialize)
 
