@@ -49,12 +49,12 @@
 
 ** Q. Why can't I enter a password on pages which require authentication?
 
-   Check if the optional variable w3m-async-exe is set to a value other
+   Check if the optional variable w3m-async-exec is set to a value other
    than nil.
 
 ** Q. Why can't I enter a password for a proxy server which requires authentication?
 
-   Check if the option variable w3m-async-exe is set to a value
+   Check if the option variable w3m-async-exec is set to a value
    other than nil.
 
 ** Q. Why doesn't it traverse links?
