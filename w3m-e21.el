@@ -552,6 +552,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 
 (defvar w3m-tab-line-format nil
   "Internal variable used to keep contents to be shown in the header-line.")
+(make-variable-buffer-local 'w3m-tab-line-format)
 
 (defvar w3m-tab-timer nil
   "Internal variable used to say time has not gone by after the tab-line
