@@ -1,3 +1,8 @@
+2004-04-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-group-alist): Add
+	blog.inoue and blog.watanabe.
+
 2004-04-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna-hns-last-modified): Use 32400 as a

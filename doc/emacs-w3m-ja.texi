@@ -4322,8 +4322,8 @@ cnet.security cnet.networking cnet.personal.technology cnet.newsmakers
 cnet.perspectives
 
 @item @uref{http://japan.cnet.com/, CNET Japan}
-cnet-jp.news cnet-jp.blog.umeda cnet-jp.blog.lessig cnet-jp.blog.mori
-cnet-jp.blog.kenn
+cnet-jp.news cnet-jp.blog.inoue cnet-jp.blog.kenn cnet-jp.blog.lessig
+cnet-jp.blog.mori cnet-jp.blog.umeda cnet-jp.blog.watanabe
 
 @item @uref{http://www.hotwired.co.jp/, HotWired Japan}
 wired.business wired.culture wired.technology

@@ -36,10 +36,12 @@
 
 (defvar shimbun-cnet-jp-group-alist
   '(("news" . "http://japan.cnet.com/rss/index.rdf")
-    ("blog.umeda" . "http://blog.japan.cnet.com/umeda/index.rdf")
+    ("blog.inoue" . "http://blog.japan.cnet.com/inoue/index.rdf")
+    ("blog.kenn" . "http://blog.japan.cnet.com/kenn/index.rdf")
     ("blog.lessig" . "http://blog.japan.cnet.com/lessig/index.rdf")
     ("blog.mori" . "http://blog.japan.cnet.com/mori/index.rdf")
-    ("blog.kenn" . "http://blog.japan.cnet.com/kenn/index.rdf")))
+    ("blog.umeda" . "http://blog.japan.cnet.com/umeda/index.rdf")
+    ("blog.watanabe" . "http://blog.japan.cnet.com/watanabe/index.rdf")))
 
 (defvar shimbun-cnet-jp-server-name "CNET Japan")
 (defvar shimbun-cnet-jp-from-address  "webmaster@japan.cnet.com")
