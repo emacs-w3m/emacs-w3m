@@ -72,9 +72,9 @@ If ask, ask user whether accept bad cookies or not."
 	  (const :tag "Ask accepting bad cookies" ask)
 	  (const :tag "Always accept bad cookies" t)))
 
-(defcustom w3m-cookie-file nil
-  "Filename of saving cache file.
-If nil, `.cookie' file under the `w3m-profile-directory' is assumed."
+(defcustom w3m-cookie-file
+  (expand-file-name ".cookie" w3m-profile-directory)
+  "File in which cookies are kept."
   :group 'w3m
   :type 'file)
 
@@ -446,17 +446,13 @@ If nil, `.cookie' file under the `w3m-profile-directory' is assumed."
 					     (w3m-cookie-expires cookie))
 					    (current-time)) 0))
 	(push cookie cookies)))
-    (w3m-save-list (or w3m-cookie-file
-		       (expand-file-name ".cookie" w3m-profile-directory))
-		   cookies)))
+    (w3m-save-list w3m-cookie-file cookies)))
 
 (defun w3m-cookie-load ()
   "Load cookies."
   (when (null w3m-cookies)
     (setq w3m-cookies
-	  (w3m-load-list
-	   (or w3m-cookie-file
-	       (expand-file-name ".cookie" w3m-profile-directory))))))
+	  (w3m-load-list w3m-cookie-file))))
 
 (defun w3m-cookie-setup ()
   "Setup cookies. Returns immediataly if already initialized."
