@@ -482,12 +482,14 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 ;; "
 		  (mapconcat 'identity directories "\n;; ")
 		  "\n
+\(defvar w3m-colon-keywords)
 \(setq w3m-colon-keywords
       '("
 		  (mapconcat 'symbol-name keywords "\n\t")
 		  "))\n")
 	  (write-region (point-min) (point) kwds-file))))
-    (kill-buffer buffer)))
+    (kill-buffer buffer))
+  (byte-compile-file w3mhack-colon-keywords-file))
 
 (condition-case nil
     (let ((kwds-file (expand-file-name w3mhack-colon-keywords-file)))

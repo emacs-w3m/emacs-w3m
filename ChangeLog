@@ -1,3 +1,8 @@
+2001-10-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3mhack.el (w3mhack-generate-colon-keywords-file): Generate
+	`w3m-kwds.elc' at the same time.
+
 2001-10-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-copy-buffer): Bind `pop-up-windows' to the value of
