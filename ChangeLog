@@ -1,3 +1,7 @@
+2002-01-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-region): Process <base> tag.
+
 2002-01-09  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-local-content-type): Fix handling of the remote url.
