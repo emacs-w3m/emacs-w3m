@@ -38,7 +38,7 @@
 
 
 (defvar shimbun-heise-content-start
-  "\\(<!-- Meldung -->\\|<!-- INHALT -->\\)")
+  "\\(<!-- Meldung -->\\|<!-- INHALT -->\\|<HEISETEXT>\\)")
 (defvar shimbun-heise-content-end
   "\\(<!-- untere News-Navigation -->\\|<!-- INHALT -->\\)")
 
@@ -134,7 +134,7 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 	      "+0000"))))))
 
     ;; get the real from
-    (let ((regexp-from-begin "<!-- Meldung -->")
+    (let ((regexp-from-begin "<!-- Meldung -->\\|<HEISETEXT>")
 	  (regexp-from-end "<!-- untere News-Navigation -->")
 	  (regexp-from (concat "(<a href=\"mailto:\\([^@]+@ct.heise.de\\)\""
 			       "[^>]*>\\([^<]+\\)</a>"))
@@ -154,7 +154,7 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 
     ;; strip ads
     (goto-char (point-min))
-    (let ((regexp-ad-begin "<!-- Meldung -->")
+    (let ((regexp-ad-begin "<!-- Meldung -->\\|<HEISETEXT>")
 	  (regexp-ad-end "<!-- untere News-Navigation -->")
 	  (regexp-ad "<!--OAS AD=\"Middle[0-9]*\"-->")
 	  (tmp-point) (bound-min) (bound-max))

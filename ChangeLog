@@ -1,3 +1,9 @@
+2004-09-19  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* shimbun/sb-heise.el (shimbun-heise-content-start,
+	shimbun-heise-wash-newsticker-article,
+	shimbun-heise-wash-newsticker-article): Relax regexps.
+
 2004-09-18  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-ibm-dev.el (shimbun-headers): Update regexp.
