@@ -1229,7 +1229,7 @@ way:
 	   (lambda (widget)
 	     (require 'w3m-search)
 	     (list
-	      'choice :format "%[Value Menu%] %v"
+	      'choice :format "%[Value Menu%] %v" :tag "Replacing URI with"
 	      :args
 	      (append
 	       '((list :tag "Replacement Using Pattern"
@@ -1237,7 +1237,7 @@ way:
 		       (function-item :format "" w3m-pattern-uri-replace)
 		       (string :tag "Pattern" :value "")))
 	       '((list :format "Quick Search:\n%v" :tag "Quick Search"
-		       (regexp :tag "Prefix URL Regexp")
+		       (regexp :tag "Prefix URI Regexp")
 		       (function-item :format "" w3m-search-uri-replace)
 		       (string :tag "Quick Search Engine")))
 	       (mapcar
