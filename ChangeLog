@@ -1,3 +1,7 @@
+2002-03-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* Release emacs-w3m-1.2.5 from emacs-w3m-1_2 branch.
+
 2002-03-01  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-article) 
