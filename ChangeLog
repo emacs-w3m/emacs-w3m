@@ -4,8 +4,6 @@
 	* shimbun/sb-heise.el:
 	* shimbun/sb-spiegel.el: New files.
 
-2004-05-04  David Hansen  <david.hansen@gmx.net>
-
 	* shimbun/sb-bbc.el (shimbun-bbc-content-start): Relaxed.
 
 2004-05-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
