@@ -40,6 +40,10 @@
 (defvar shimbun-yomiuri-from-address  "webmaster@www.yomiuri.co.jp")
 (defvar shimbun-yomiuri-content-start "\n<!--  honbun start  -->\n")
 (defvar shimbun-yomiuri-content-end  "\n<!--  honbun end  -->\n")
+(defvar shimbun-yomiuri-x-face-alist
+  '(("default" . "X-Face: #sUhc'&(fVr$~<rt#?PkH,u-.fV(>y)\
+i\"#,TNF|j.dEh2dAzfa4=IH&llI]S<-\"dznMW2_j\n [N1a%n{SU&E&\
+Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 
 (defvar shimbun-yomiuri-group-path-alist
   '(("shakai" . "04")
