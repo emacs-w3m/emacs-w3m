@@ -1,3 +1,10 @@
+2002-11-06  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-date-regexp): Updated.
+	(shimbun-palmfan-month-alist): Change month string (full spell,
+	not abbreviation) and number pairs.	
+	(shimbun-palmfan-news-headers): Bug fixed.
+	
 2002-11-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-bookmark.el (w3m-bookmark-safe-string): Abolish its 2nd
