@@ -1,5 +1,22 @@
 2003-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-popup-frame-parameters): Rename from
+	`w3m-pop-up-frame-parameters' to make it easy to complete the
+	`w3m-pop-up-frames' variable name.
+	(w3m-popup-frame-parameters): Rename from
+	`w3m-pop-up-frame-parameters'.
+	(w3m-popup-frame-p): Make it a generic macro.
+	(w3m-use-tab-p): New macro.
+	(w3m-popup-window-p): Use `w3m-use-tab-p'.
+	(w3m-view-this-url-1): Use `w3m-use-tab-p' and `w3m-popup-frame-p'.
+	(w3m-copy-buffer): Ditto.
+	(w3m-delete-buffer): Use `w3m-use-tab-p'.
+	(w3m-goto-url): Use `w3m-use-tab-p' and `w3m-popup-frame-p'.
+	(w3m): Modify to use new `w3m-popup-frame-p'.
+	(w3m-header-line-insert): Use `w3m-use-tab-p'.
+
+2003-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-delete-buffer): New implementation.
 	(w3m-delete-frame-maybe): Abolish.
 	(w3m-delete-frames-and-windows): New function.
