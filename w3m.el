@@ -630,17 +630,6 @@ for a charset indication")
 	      (+ (frame-width) (or w3m-fill-column -1)))) ; fit for frame
   "Arguments for execution of w3m.")
 
-
-(defmacro and-let* (varlist &rest body)
-  (if (null varlist)
-      (cons 'progn body)
-    (` (let ((, (car varlist)))
-	 (if (, (caar varlist))
-	     (and-let* (, (cdr varlist))
-		       (,@ body)))))))
-(put 'and-let* 'lisp-indent-function 1)
-(put 'and-let* 'edebug-form-spec '(varlist &rest body))
-
 (defun w3m-message (&rest args)
   "Alternative function of `message' for w3m.el."
   (if w3m-verbose
@@ -1884,8 +1873,8 @@ this function returns t.  Otherwise, returns nil."
 
 (defun w3m-save-this-url ()
   (interactive)
-  (and-let* ((url (w3m-anchor)))
-    (kill-new url)))
+  (let ((url (w3m-anchor)))
+    (if url (kill-new url))))
 
 (defun w3m-goto-next-anchor ()
   ;; move to the end of the current anchor
