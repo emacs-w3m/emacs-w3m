@@ -1,3 +1,8 @@
+2004-03-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-kantei.el (shimbun-get-headers): Improve regexp in
+	order to fetch articles of the English edition.
+
 2004-03-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi-mytown.el (shimbun-asahi-mytown-get-headers):
