@@ -53,7 +53,7 @@
 (defvar w3m-link-numbering-mode-map
   (let ((keymap (make-sparse-keymap)))
     (substitute-key-definition 'w3m-view-this-url
-			       'w3m-view-numbered-link
+			       'w3m-move-numbered-anchor
 			       keymap w3m-mode-map)
     keymap)
   "Keymap used when `w3m-link-numbering-mode' is active.")
@@ -110,8 +110,10 @@
 		(overlay-put overlay 'evaporate t))
 	      (overlay-put overlay 'w3m-link-numbering-overlay i))))))))
 
-(defun w3m-view-numbered-link (&optional arg)
-  "Display the page pointed to by the specified link."
+(defun w3m-move-numbered-anchor (&optional arg)
+  "Move the point to the specified anchor.
+When no prefix argument is specified, call `w3m-view-this-url' instead
+of moving cursor."
   (interactive "P")
   (if (and arg
 	   (> (setq arg (prefix-numeric-value arg)) 0))
@@ -119,7 +121,9 @@
 	(dolist (overlay (overlays-in (point-min) (point-max)))
 	  (when (eq arg (overlay-get overlay 'w3m-link-numbering-overlay))
 	    (goto-char (overlay-start overlay))
-	    (throw 'found (w3m-view-this-url))))
+	    (push (w3m-anchor-sequence) w3m-goto-anchor-hist)
+	    (w3m-horizontal-on-screen)
+	    (throw 'found (w3m-print-this-url))))
 	(error "Cannot found your specified link: %d" arg))
     (w3m-view-this-url)))
 

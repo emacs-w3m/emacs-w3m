@@ -1,3 +1,10 @@
+2004-04-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-link-numbering.el (w3m-view-numbered-link): Removed.
+	(w3m-move-numbered-anchor): New command.
+	(w3m-link-numbering-mode-map): Use `w3m-move-numbered-anchor'
+	instead of `w3m-view-numbered-link'.
+
 2004-04-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-input-coding-system): Use `w3m-output-coding-system'
