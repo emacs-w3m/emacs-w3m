@@ -1,3 +1,7 @@
+2003-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-makeinfo): Withdraw the change of 2003-01-09.
+
 2003-01-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3mhack.el (w3mhack-examine-modules, w3mhack-load-path): Check
