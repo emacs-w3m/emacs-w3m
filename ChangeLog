@@ -1,3 +1,11 @@
+2002-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-zdnet.el (shimbun-make-contents): Set date string.
+	Remove the part which is not considered as the body.
+
+	* shimbun/shimbun.el (shimbun-make-date-string): Accept the 5th
+	optional argument, `timezone'.
+
 2002-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el: Ignore byte-compile warnings for the dummy autoloads,

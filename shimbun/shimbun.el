@@ -523,8 +523,8 @@ integer n:    Retrieve n pages of header indices.")
 		      (shimbun-decode-entities-string string)) ""))
    " "))
 
-(defun shimbun-make-date-string (year month day &optional time)
-  (format "%02d %s %04d %s +0900"
+(defun shimbun-make-date-string (year month day &optional time timezone)
+  (format "%02d %s %04d %s %s"
 	  day
 	  (aref [nil "Jan" "Feb" "Mar" "Apr" "May" "Jun"
 		     "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]
@@ -536,7 +536,8 @@ integer n:    Retrieve n pages of header indices.")
 		((< year 1000)	; possible 3-digit years.
 		 (+ year 1900))
 		(t year))
-	  (or time "00:00")))
+	  (or time "00:00")
+	  (or timezone "+0900")))
 
 (if (fboundp 'regexp-opt)
     (defalias 'shimbun-regexp-opt 'regexp-opt)
