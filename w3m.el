@@ -490,7 +490,13 @@ reason.  The value will be referred by the function `w3m-load-list'.")
 			     (w3m-setup-toolbar)
 			     (w3m-setup-menu))
 			 (error)))
-		   (setq buffers (cdr buffers)))))))))
+		   (setq buffers (cdr buffers)))))
+	     (if (fboundp 'mime-w3m-setup)
+		 (condition-case nil
+		     (progn
+		       (setq mime-w3m-mode-map nil)
+		       (mime-w3m-setup))
+		   (error)))))))
 
 (defcustom w3m-use-cygdrive (eq system-type 'windows-nt)
   "*If non-nil, use /cygdrive/ rule when expand-file-name."

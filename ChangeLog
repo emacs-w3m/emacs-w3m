@@ -1,5 +1,8 @@
 2002-10-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-key-binding): Revival the code to reset
+	`mime-w3m-mode-map'.
+
 	* mime-w3m.el (mime-w3m-mode-map): Revival.
 	(mime-w3m-setup): Initialize `mime-w3m-mode-map' based on
 	`w3m-minor-mode-map'; Modify it to set its parent map to
