@@ -1,3 +1,32 @@
+2001-10-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-display-inline-image): Update document.
+	(w3m-decoder-alist): Change default value.
+	(w3m-current-image-status): New buffer-local variable.
+	(w3m-which-command): Export to w3m-macro.el.
+	(w3m-decode-encoded-contents): Small change.
+	(w3m-expand-url): Fix to remove an empty query part and an empty
+	fragment part correctly.
+	(w3m-toggle-inline-images): Refer `w3m-current-image-status'
+	instead of `w3m-current-image-status'.
+	(w3m-view-url-with-external-browser): Ditto.
+	(w3m-goto-url): Ditto.
+	(w3m-reload-this-page): Ditto.
+	(w3m-redisplay-with-charset): Ditto.
+
+	* w3m-e21.el (top, w3m-display-inline-image-p): Refer
+	`w3m-current-image-status' instead of `w3m-current-image-status'.
+
+	* w3m-om.el (w3m-expand-path-name): Add 2nd optional argument.
+
+	* w3m-macro.el (w3m-which-command): Import from w3m.el.
+
+	* w3m-xmas.el (top, w3m-display-inline-image-p): Refer
+	`w3m-current-image-status' instead of `w3m-current-image-status'.
+
+	* mew-w3m.el (mew-mime-text/html-w3m): Refer
+	`w3m-current-image-status' instead of `w3m-current-image-status'.
+
 2001-10-11  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-months): Tiny

@@ -227,10 +227,14 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	(set-coding-priority opriority)))))
 
 ;;; Generic functions.
-(defun w3m-expand-path-name (name)
+(defun w3m-expand-path-name (name &optional base)
   "Convert path string NAME to the canonicalized one."
   (with-temp-buffer
-    (insert name)
+    (insert (if base
+		(if (eq ?/ (aref base (1- (length base))))
+		    base (concat base "/"))
+	      "")
+	    name)
     (let (p q path)
       (goto-char (point-min))
       (save-match-data

@@ -99,6 +99,20 @@ constants, any other expressions are not allowed."
 	  (mapconcat 'identity names "\\|")
 	  "\\)\\([ \t\r\f\n]+[^>]*\\)?/?>"))
 
+(defsubst w3m-which-command (command)
+  (if (and (file-name-absolute-p command)
+	   (file-executable-p command))
+      command
+    (setq command (file-name-nondirectory command))
+    (catch 'found-command
+      (let (bin)
+	(dolist (dir exec-path)
+	  (when (or (file-executable-p
+		     (setq bin (expand-file-name command dir)))
+		    (file-executable-p
+		     (setq bin (expand-file-name (concat command ".exe") dir))))
+	    (throw 'found-command bin)))))))
+
 (provide 'w3m-macro)
 
 ;;; w3m-macro.el ends here.

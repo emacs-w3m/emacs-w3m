@@ -42,7 +42,7 @@
 (eval-when-compile
   (defvar w3m-default-coding-system)
   (defvar w3m-current-url)
-  (defvar w3m-display-inline-image)
+  (defvar w3m-current-image-status)
   (defvar w3m-icon-directory)
   (defvar w3m-menubar)
   (defvar w3m-toolbar)
@@ -87,7 +87,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 (defun w3m-display-inline-image-p ()
   "Returns non-nil when images can be displayed under the present
 circumstances."
-  (and w3m-display-inline-image (device-on-window-system-p)))
+  (and w3m-current-image-status (device-on-window-system-p)))
 
 (defvar w3m-should-unoptimize-animated-gifs
   (and (= emacs-major-version 21)

@@ -40,7 +40,7 @@
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
 (eval-when-compile
-  (defvar w3m-display-inline-image)
+  (defvar w3m-current-image-status)
   (defvar w3m-icon-directory)
   (defvar w3m-mode-map)
   (defvar w3m-toolbar)
@@ -66,7 +66,7 @@
 (defun w3m-display-inline-image-p ()
   "Returns non-nil when images can be displayed under the present
 circumstances."
-  (and w3m-display-inline-image (display-images-p)))
+  (and w3m-current-image-status (display-images-p)))
 
 (defun w3m-create-image (url &optional no-cache referer)
   "Retrieve data from URL and create an image object.

@@ -261,7 +261,7 @@ reason.  The value will be referred by the function `w3m-load-list'.")
 
 (defcustom w3m-default-coding-system
   (if (equal "Japanese" w3m-language) 'shift_jis)
-  "*Default coding system."
+  "*Default coding system to encode URL strings and post-data."
   :group 'w3m
   :type 'coding-system)
 
@@ -271,8 +271,7 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :group 'w3m
   :type '(repeat coding-system))
 
-(defcustom w3m-key-binding
-  nil
+(defcustom w3m-key-binding nil
   "*This variable decides default key mapping used in w3m-mode buffers."
   :group 'w3m
   :type '(choice
@@ -302,9 +301,7 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :type 'boolean)
 
 (defcustom w3m-display-inline-image nil
-  "Whether to display images inline.
-The value may be changed by the command `w3m-toggle-inline-images'.
-It will be ignored when there is no condition to display images."
+  "Whether to display images inline."
   :group 'w3m
   :type 'boolean)
 
@@ -491,9 +488,17 @@ apply the patch posted in [emacs-w3m:01119]."
 	    (function :tag "Function")))))
 
 (defcustom w3m-decoder-alist
-  '((gzip "gunzip" nil)
-    (bzip "bunzip2" nil)
-    (deflate "inflate" nil))
+  (` ((gzip "gunzip" nil)
+      (bzip "bunzip2" nil)
+      (deflate
+	(, (let ((file
+		  (expand-file-name "../lib/w3m/inflate"
+				    (file-name-directory
+				     (w3m-which-command "w3m")))))
+	     (if (file-executable-p file)
+		 file
+	       "inflate")))
+	nil)))
   "Associative list of DECODER."
   :group 'w3m
   :type '(repeat
@@ -749,6 +754,9 @@ will disclose your private informations, for example:
 
 (defvar w3m-image-only-page nil "Non-nil if image only page.")
 (make-variable-buffer-local 'w3m-image-only-page)
+
+(defvar w3m-current-image-status w3m-display-inline-image)
+(make-variable-buffer-local 'w3m-current-image-status)
 
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-base-url nil "Base URL of this buffer.")
@@ -1774,14 +1782,14 @@ If URL is specified, only the image with URL is toggled."
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
-  (if force (setq w3m-display-inline-image nil))
+  (if force (setq w3m-current-image-status nil))
   (unwind-protect
       (progn
-	(w3m-toggle-inline-images-internal (if w3m-display-inline-image
+	(w3m-toggle-inline-images-internal (if w3m-current-image-status
 					       'on 'off)
 					   no-cache nil)
-	(setq w3m-display-inline-image
-	      (not w3m-display-inline-image)))
+	(setq w3m-current-image-status
+	      (not w3m-current-image-status)))
     (set-buffer-modified-p nil)
     (force-mode-line-update)))
 
@@ -2286,16 +2294,6 @@ If the user enters null input, return second argument DEFAULT."
 
 
 ;;; Handle encoding of contents:
-(defsubst w3m-which-command (command)
-  (catch 'found-command
-    (let (bin)
-      (dolist (dir exec-path)
-	(when (or (file-executable-p
-		   (setq bin (expand-file-name command dir)))
-		  (file-executable-p
-		   (setq bin (expand-file-name (concat command ".exe") dir))))
-	  (throw 'found-command bin))))))
-
 (defun w3m-decode-encoded-contents (encoding)
   "Decode encoded (gzipped, bzipped, deflated, etc) contents in this buffer."
   (let ((x (and (stringp encoding)
@@ -2310,7 +2308,7 @@ If the user enters null input, return second argument DEFAULT."
 	  (zerop (apply 'call-process-region
 			(point-min) (point-max)
 			(w3m-which-command (car x))
-			t '(t nil) nil (nth 1 x)))))))
+			t '(t nil) nil (cadr x)))))))
 
 (defun w3m-decode-buffer (url &optional content-charset content-type)
   (unless content-charset
@@ -3037,13 +3035,16 @@ described in Section 5.2 of RFC 2396.")
 		     w3m-current-url
 		     w3m-url-fallback-base)))
     (string-match w3m-url-components-regexp url)
-    ;; Remove an empty query part and an empty fragment part.
-    (or (and (match-beginning 6)
-	     (= (match-beginning 7) (match-end 7))
-	     (setq url (substring url 0 (match-beginning 6))))
-	(and (match-beginning 8)
-	     (= (match-beginning 9) (match-end 9))
-	     (setq url (substring url 0 (match-beginning 8)))))
+    ;; Remove an empty fragment part.
+    (when (and (match-beginning 8)
+	       (= (match-beginning 9) (length url)))
+      (setq url (substring url 0 (match-beginning 8)))
+      (string-match w3m-url-components-regexp url))
+    ;; Remove an empty query part.
+    (when (and (match-beginning 6)
+	       (= (match-beginning 7) (length url)))
+      (setq url (substring url 0 (match-beginning 6)))
+      (string-match w3m-url-components-regexp url))
     (cond
      ((match-beginning 1)
       ;; URL has a scheme part. => URL may have an absolute spec.
@@ -3079,10 +3080,9 @@ described in Section 5.2 of RFC 2396.")
 	   (substring base 0 (match-beginning 5))
 	   (if (member (match-string 2 base) w3m-url-hierarchical-schemes)
 	       (w3m-expand-path-name
-		(concat (file-name-directory (match-string 5 base))
-			(substring url 0 path-end)))
-	     (concat (match-string 5 base)
-		     (substring url 0 path-end)))
+		(substring url 0 path-end)
+		(file-name-directory (match-string 5 base)))
+	     (substring url 0 path-end))
 	   (substring url path-end)))))
      ((match-beginning 6)
       ;; URL has a query part.
@@ -3193,7 +3193,7 @@ described in Section 5.2 of RFC 2396.")
   "View this URL."
   (interactive)
   (let ((url (or (w3m-anchor)
-		 (unless w3m-display-inline-image
+		 (unless w3m-current-image-status
 		   (w3m-image))
 		 (when (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
 		   w3m-current-url))))
@@ -3792,7 +3792,7 @@ of the request."
 	      (list "%b"))
 	(if (w3m-display-graphic-p)
 	    (nconc mode-line-buffer-identification
-		   (list " " '((w3m-display-inline-image
+		   (list " " '((w3m-current-image-status
 				w3m-modeline-image-status-on
 				w3m-modeline-image-status-off)))))
 	(nconc mode-line-buffer-identification
@@ -3918,9 +3918,10 @@ of the request."
 (defun w3m-reload-this-page (&optional arg)
   "Reload current page without cache."
   (interactive "P")
-  (let ((w3m-display-inline-image (if arg t w3m-display-inline-image))
-	(post-data (w3m-history-plist-get :post-data nil nil t))
+  (let ((post-data (w3m-history-plist-get :post-data nil nil t))
 	(referer (w3m-history-plist-get :referer nil nil t)))
+    (when arg
+      (setq w3m-current-image-status (not w3m-current-image-status)))
     (if post-data
 	(if (y-or-n-p "Repost form data? ")
 	    (w3m-goto-url w3m-current-url 'reload nil post-data referer)
@@ -3931,13 +3932,14 @@ of the request."
   "Redisplay current page with specified coding-system.
 If input is nil, use default coding-system on w3m."
   (interactive "P")
-  (let ((w3m-display-inline-image (if arg t w3m-display-inline-image))
-	(charset
+  (let ((charset
 	 (w3m-read-content-charset
 	  (format "Content-charset (current %s, default reset): "
 		  w3m-current-coding-system)
 	  t ;; Default action is reseting charset entry in arrived DB.
 	  )))
+    (when arg
+      (setq w3m-current-image-status (not w3m-current-image-status)))
     (w3m-goto-url w3m-current-url nil charset)))
 
 

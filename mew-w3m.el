@@ -102,7 +102,7 @@ This variable effected only XEmacs or Emacs 21."
 ;; processing Text/Html contents with w3m.
 (defun mew-mime-text/html-w3m (&rest args)
   "View Text/Html contents with w3m rendering output."
-  (let ((w3m-display-inline-image mew-w3m-auto-insert-image)
+  (let ((w3m-current-image-status mew-w3m-auto-insert-image)
 	w3m-force-redisplay	;; don't redraw
 	charset wcs
 	cache begin end params execute)
