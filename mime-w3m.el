@@ -57,6 +57,18 @@
   :group 'mime-view
   :type 'boolean)
 
+(defcustom mime-w3m-safe-url-regexp "\\`cid:"
+  "Regexp that matches safe url names.  Some HTML mails might have the
+trick of spammers using <img> tags.  It is likely to be intended to
+verify whether you have read the mail.  You can prevent your personal
+informations from leaking by setting this to the regexp which matches
+the safe url names.  The value of the variable `w3m-safe-url-regexp'
+will be bound with this value.  You may set this value to nil if you
+consider all the urls to be safe."
+  :group 'mime-w3m
+  :type '(choice (regexp :tag "Regexp")
+		 (const :tag "All URLs are safe" nil)))
+
 (defvar mime-w3m-mode-map nil)
 (defvar mime-w3m-message-structure nil)
 (make-variable-buffer-local 'mime-w3m-message-structure)
@@ -64,6 +76,72 @@
 (eval-and-compile
   (when (featurep 'xemacs)
     (require 'font)))
+
+(defvar mime-w3m-mode-command-alist
+  '((backward-char)
+    (describe-mode)
+    (forward-char)
+    (goto-line)
+    (next-line)
+    (previous-line)
+    (w3m-antenna)
+    (w3m-antenna-add-current-url)
+    (w3m-bookmark-add-current-url)
+    (w3m-bookmark-add-this-url)
+    (w3m-bookmark-view)
+    (w3m-close-window)
+    (w3m-copy-buffer)
+    (w3m-dtree)
+    (w3m-edit-current-url)
+    (w3m-edit-this-url)
+    (w3m-gohome)
+    (w3m-goto-url)
+    (w3m-goto-url-new-session)
+    (w3m-history)
+    (w3m-history-restore-position)
+    (w3m-history-store-position)
+    (w3m-mouse-view-this-url . mime-w3m-mouse-view-this-url)
+    (w3m-namazu)
+    (w3m-quit)
+    (w3m-redisplay-with-charset)
+    (w3m-reload-this-page)
+    (w3m-scroll-down-or-previous-url)
+    (w3m-scroll-up-or-next-url)
+    (w3m-search)
+    (w3m-view-header)
+    (w3m-view-parent-page)
+    (w3m-view-previous-page)
+    (w3m-view-source)
+    (w3m-view-this-url . mime-w3m-view-this-url)
+    (w3m-weather))
+  "Alist of commands to use for emacs-w3m in the MIME-View buffer.  Each
+element looks like (FROM-COMMAND . TO-COMMAND); FROM-COMMAND should be
+registered in `w3m-mode-map' which will be substituted by TO-COMMAND
+in `mime-w3m-mode-map'.  If TO-COMMAND is nil, a MIME-View command key
+will not be substituted.")
+
+(defvar mime-w3m-mode-dont-bind-keys nil
+  ;; In Gnus, the default value for the `mm-w3m-mode-dont-bind-keys'
+  ;; is `(list [up] [right] [left] [down])'.
+  "List of keys which should not be bound for the emacs-w3m commands.")
+
+(defsubst mime-w3m-setup ()
+  "Setup `mime-w3m' module."
+  (require 'w3m)
+  (unless mime-w3m-mode-map
+    (setq mime-w3m-mode-map (copy-keymap w3m-mode-map))
+    (dolist (def mime-w3m-mode-command-alist)
+      (condition-case nil
+	  (substitute-key-definition (car def) (cdr def) mime-w3m-mode-map)
+	(error)))
+    (dolist (key mime-w3m-mode-dont-bind-keys)
+      (condition-case nil
+	  (define-key mime-w3m-mode-map key nil)
+	(error)))
+    ;; override widget.
+    (if (featurep 'xemacs)
+	(define-key mime-w3m-mode-map [(button2-down)] 'ignore)
+      (define-key mime-w3m-mode-map [down-mouse-2] 'ignore))))
 
 (def-edebug-spec mime-w3m-save-background-color t)
 (defmacro mime-w3m-save-background-color (&rest body)
@@ -91,19 +169,22 @@
        (mime-insert-text-content entity)
        (run-hooks 'mime-text-decode-hook)
        (condition-case err
-	   (let ((w3m-safe-url-regexp "\\`cid:")
-		 (w3m-current-image-status mime-w3m-display-inline-image))
+	   (let ((w3m-safe-url-regexp mime-w3m-safe-url-regexp)
+		 (w3m-current-image-status mime-w3m-display-inline-image)
+		 w3m-force-redisplay)
 	     (w3m-region p
 			 (point-max)
 			 (and (stringp xref)
 			      (string-match "\\`http://" xref)
-			      xref)))
-	 (error (message (format "%s" err))))
-       (put-text-property p (point-max)
-			  (w3m-static-if (featurep 'xemacs)
-			      'keymap
-			    'local-map)
-			  mime-w3m-mode-map)))))
+			      xref))
+	     (add-text-properties p (point-max)
+				  (list (if (or (featurep 'xemacs)
+						(>= emacs-major-version 21))
+					    'keymap
+					  'local-map)
+					mime-w3m-mode-map
+					'text-rendered-by-mime-w3m t)))
+	 (error (message (format "%s" err))))))))
 
 (defun mime-w3m-cid-retrieve (url &rest args)
   (let ((entity (mime-find-entity-from-content-id
@@ -148,16 +229,16 @@
   (mime-w3m-view-this-url))
 
 (let (current-load-list)
-  (defadvice kill-new (after mime-w3m-remove-text-properties activate compile)
-    "Advised by Emacs-W3M.
-Protect `kill-ring-save' against the `local-map' text property."
-    (and (eq this-command 'kill-ring-save)
-	 (eq major-mode 'mime-view-mode)
-	 (put-text-property 0 (length (car kill-ring))
-			    (w3m-static-if (featurep 'xemacs)
-				'keymap 'local-map)
-			    nil
-			    (car kill-ring)))))
+  (defadvice kill-new (before strip-keymap-properties-from-kill
+			      (string &optional replace) activate)
+    "Advised by emacs-w3m.
+Strip `keymap' or `local-map' properties from a killed string."
+    (if (text-property-any 0 (length string)
+			   'text-rendered-by-mime-w3m t string)
+	(remove-text-properties 0 (length string)
+				'(keymap nil local-map nil)
+				string))))
 
 (provide 'mime-w3m)
+
 ;;; mime-w3m.el ends here

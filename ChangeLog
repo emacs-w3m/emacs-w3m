@@ -75,6 +75,31 @@
 	* w3mhack.el, w3m.el, w3m-xmas.el, w3m-om.el: Say emacs-w3m not
 	Emacs-W3M.
 
+2002-02-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mime-w3m.el (mime-w3m-mode-dont-bind-keys): New variable.
+	(mime-w3m-setup): Don't bind keys listed in the above.
+
+2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mime-w3m.el (mime-w3m-safe-url-regexp): New user option.
+	(mime-w3m-preview-text/html): Use it.
+
+2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mime-w3m.el (mime-w3m-preview-text/html): Bind
+	`w3m-force-redisplay' with nil.
+
+2002-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mime-w3m.el (mime-w3m-mode-command-alist): New variable.
+	(mime-w3m-setup): Use it; invalidate widget button in
+	`mime-w3m-mode-map'.
+	(mime-w3m-preview-text/html): Add `text-rendered-by-mime-w3m' text
+	property to the rendered area.
+	(kill-new): Strip keymap properties from a killed string only if
+	it has `text-rendered-by-mime-w3m' property.
+
 2002-01-31  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-hns.el (shimbun-hns-expiration-days): New variable.
@@ -100,6 +125,11 @@
 
 	* w3m-form.el (w3m-form-parse-forms): Use `w3m-decode-entities-string'
 	to value in the textarea and option menu.
+
+2001-11-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* mime-w3m.el (mime-w3m-setup): New function.
+	(mime-w3m-preview-text/html): Call `mime-w3m-setup'.
 
 
 2002-01-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
