@@ -1,5 +1,9 @@
 2001-07-31  Yuuichi Teranishi  <teranisi@gohome.org>
 
+
+	* w3m.el: Applied patch [emacs-w3m: 01330].
+	(w3m-exec-filter): Changed regexp for authentication realm.
+
 	* w3m.el (w3m-toggle-inline-images): Set `referer' argument of
 	`w3m-create-image'.
 

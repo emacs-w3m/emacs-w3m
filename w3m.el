@@ -1845,6 +1845,9 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	  (setq file (expand-file-name default file))))
     (expand-file-name file)))
 
+(defvar w3m-proxy-user nil)
+(defvar w3m-proxy-passwd nil)
+
 (defun w3m-exec-filter (process string)
   (if (buffer-name (process-buffer process))
       (with-current-buffer (process-buffer process)
@@ -1857,7 +1860,31 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	    (goto-char (point-min))
 	    (cond
 	     ((and (looking-at
-		    "\\(\nWrong username or password\n\\)?Username: Password: ")
+		    "\\(\nWrong username or password\n\\)?Proxy Username for \\(.*\\): Proxy Password: ")
+		   (= (match-end 0) (point-max)))
+	      (unless w3m-proxy-passwd
+		(setq w3m-proxy-passwd
+		      (read-passwd "Proxy Password: ")))
+	      (condition-case nil
+		  (progn
+		    (process-send-string process
+					 (concat w3m-proxy-passwd "\n"))
+		    (delete-region (point-min) (point-max)))
+		(error nil)))
+	     ((and (looking-at
+		    "\\(\nWrong username or password\n\\)?Proxy Username for \\(.*\\): ")
+		   (= (match-end 0) (point-max)))
+	      (unless w3m-proxy-user
+		(setq w3m-proxy-user
+		      (read-from-minibuffer (concat 
+					     "Proxy Username for "
+					     (match-string 2) ": "))))
+	      (condition-case nil
+		  (process-send-string process
+				       (concat w3m-proxy-user "\n"))
+		(error nil)))
+	     ((and (looking-at
+		    "\\(\nWrong username or password\n\\)?Username for \\(.*\\): Password: ")
 		   (= (match-end 0) (point-max)))
 	      (setq w3m-process-passwd
 		    (or (nth 1 (w3m-exec-get-user w3m-current-url))
@@ -1869,11 +1896,13 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		    (delete-region (point-min) (point-max)))
 		(error nil)))
 	     ((and (looking-at
-		    "\\(\nWrong username or password\n\\)?Username: ")
+		    "\\(\nWrong username or password\n\\)?Username for \\(.*\\): ")
 		   (= (match-end 0) (point-max)))
 	      (setq w3m-process-user
 		    (or (nth 0 (w3m-exec-get-user w3m-current-url))
-			(read-from-minibuffer "Username: ")))
+			(read-from-minibuffer (concat
+					       "Username for " (match-string 2)
+					       ": "))))
 	      (condition-case nil
 		  (process-send-string process
 				       (concat w3m-process-user "\n"))
