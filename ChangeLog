@@ -1,3 +1,8 @@
+2003-08-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-rss.el (shimbun-replace-in-string): Silence the
+	byte-compiler (see the comment in the sb-rss.el file).
+
 2003-08-06  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
 
 	* shimbun/sb-impress.el (shimbun-impress-groups-alist): Improve
