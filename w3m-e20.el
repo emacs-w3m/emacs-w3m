@@ -126,7 +126,7 @@
 (defun w3m-bitmap-image-insert (pos image)
   "Insert IMAGE to POS."
   (w3m-bitmap-image-insert-internal pos image)
-  (let ((ovr (w3m-bitmap-image-get-overlay (point))))
+  (let ((ovr (w3m-bitmap-image-get-overlay pos)))
     (overlay-put ovr 'w3m-bitmap-image-count
 		 (1+ (or (overlay-get ovr 'w3m-bitmap-image-count) 0)))))
 
