@@ -2,6 +2,7 @@
 
 	* w3m.el (w3m-goto-url): Remove processing url's forms from the
 	history when post data.
+	(w3m): Use `select-frame-set-input-focus' instead of `x-focus-frame'.
 
 	* w3m-form.el (w3m-form-resume): Fix typo.
 

@@ -4288,13 +4288,12 @@ for neither the interactive use nor the batch mode."
 	(buffer (unless new-session
 		  (w3m-alive-p)))
 	(focusing-function
-	 (append '(lambda (frame)
-		    (raise-frame frame)
-		    (select-frame frame))
-		 ;; `focus-frame' might not work on some environments.
-		 (if (fboundp 'x-focus-frame)
-		     '((x-focus-frame frame))
-		   '((focus-frame frame)))))
+	 (if (fboundp 'select-frame-set-input-focus)
+	     'select-frame-set-input-focus
+	   '(lambda (frame)
+	      (raise-frame frame)
+	      (select-frame frame)
+	      (focus-frame frame))))
 	(params (w3m-pop-up-frame-parameters))
 	(popup-frame-p (w3m-popup-frame-p new-session))
 	window frame)
