@@ -5695,11 +5695,14 @@ the `w3m-search' function and the variable
 			   w3m-current-url))))
     current-prefix-arg
     (w3m-static-if (fboundp 'universal-coding-system-argument)
-	coding-system-for-read)))
+	coding-system-for-read)
+    nil ;; post-data
+    nil ;; referer
+    nil ;; handler
+    t)) ;; qsearch
   (set-text-properties 0 (length url) nil url)
   (setq url (w3m-uri-replace url))
   (when (or qsearch
-	    (interactive-p)
 	    (equal referer "about://bookmark/"))
     ;; quicksearch
     (setq qsearch t
@@ -5887,8 +5890,8 @@ Cannot run two w3m processes simultaneously \
 	(w3m-cancel-refresh-timer buffer)))))
 
 ;;;###autoload
-(defun w3m-goto-url-new-session (url
-				 &optional reload charset post-data referer)
+(defun w3m-goto-url-new-session
+  (url &optional reload charset post-data referer interactive-p)
   "Run the command `w3m-goto-url' in the new session.  If you invoke this
 command in the w3m buffer, the new session will be created by copying
 the current session.  Otherwise, the new session will start afresh."
@@ -5902,10 +5905,13 @@ the current session.  Otherwise, the new session will start afresh."
 		       w3m-current-url)))
     current-prefix-arg
     (w3m-static-if (fboundp 'universal-coding-system-argument)
-	coding-system-for-read)))
+	coding-system-for-read)
+    nil ;; post-data
+    nil ;; referer
+    t)) ;; interactive-p
   (if (eq 'w3m-mode major-mode)
       (progn
-	(switch-to-buffer (w3m-copy-buffer nil nil (interactive-p) 'empty))
+	(switch-to-buffer (w3m-copy-buffer nil nil interactive-p 'empty))
 	(w3m-display-progress-message url)
 	;; When new URL has `name' portion, we have to goto the base url
 	;; because generated buffer has no content at this moment.
@@ -5913,9 +5919,9 @@ the current session.  Otherwise, the new session will start afresh."
 		   (match-beginning 8))
 	  (w3m-goto-url (substring url 0 (match-beginning 8))
 			reload charset post-data referer
-			nil (interactive-p)))
+			nil interactive-p))
 	(w3m-goto-url url reload charset post-data referer
-		      nil (interactive-p)))
+		      nil interactive-p))
     (w3m url t)))
 
 (defun w3m-move-point-for-localcgi (url)
@@ -5997,7 +6003,7 @@ If input is nil, use default content-type on w3m."
     (w3m-redisplay-this-page arg)))
 
 ;;;###autoload
-(defun w3m (&optional url new-session)
+(defun w3m (&optional url new-session interactive-p)
   "Visit the World Wide Web page using the external command w3m, w3mmee
 or w3m-m17n.
 
@@ -6036,7 +6042,9 @@ Optional NEW-SESSION is intended to be used by the command
      (list
       (if current-prefix-arg
 	  default
-	(w3m-input-url nil nil default w3m-quick-start)))))
+	(w3m-input-url nil nil default w3m-quick-start))
+      nil ;; new-session
+      t))) ;; interactive-p
   (let ((nofetch (eq url 'popup))
 	(buffer (unless new-session
 		  (w3m-alive-p)))
@@ -6085,7 +6093,7 @@ Optional NEW-SESSION is intended to be used by the command
       (w3m-mode))
     (unwind-protect
 	(unless nofetch
-	  (w3m-goto-url url nil nil nil nil nil (interactive-p)))
+	  (w3m-goto-url url nil nil nil nil nil interactive-p))
       (unless w3m-current-url
 	(erase-buffer)
 	(set-buffer-modified-p nil))
@@ -6651,9 +6659,9 @@ select them."
 (defmacro w3m-select-buffer-current-buffer ()
   `(get-text-property (point) 'w3m-select-buffer))
 
-(defun w3m-select-buffer-show-this-line ()
+(defun w3m-select-buffer-show-this-line (&optional interactive-p)
   "Show the current buffer on this menu line or scroll up its."
-  (interactive)
+  (interactive (list t))
   (forward-line 0)
   (let ((obuffer (and (window-live-p w3m-select-buffer-window)
 		      (window-buffer w3m-select-buffer-window)))
@@ -6673,7 +6681,7 @@ select them."
 		     w3m-select-buffer-horizontal-window)))
      (t (setq w3m-select-buffer-window (get-largest-window))))
     (set-window-buffer w3m-select-buffer-window buffer)
-    (when (and (interactive-p) (eq obuffer buffer))
+    (when (and interactive-p (eq obuffer buffer))
       (save-selected-window
 	(pop-to-buffer buffer)
 	(w3m-scroll-up-or-next-url nil)))
