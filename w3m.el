@@ -764,7 +764,7 @@ This function is imported from mcharset.el."
     (if (find-coding-system cs)
 	cs)))
 
-(defun w3m-html-decode-buffer (type charset)
+(defun w3m-decode-buffer (type charset)
   (unless charset
     (setq charset
 	  (let ((case-fold-search t))
@@ -873,10 +873,31 @@ This function is imported from mcharset.el."
       (let ((w3m-current-url url))
 	(w3m-exec-process "-dump_source" url))
       (if length
-	  (delete-region (point-min) (- (point-max) length)))
+	  (if (eq w3m-executable-type 'cygwin)
+	      (cond
+	       ;; No authentication and no bugs in output.
+	       ((= (buffer-size) length))
+	       ;; No authentication but new-line character is replaced to CRLF.
+	       ((= (buffer-size)
+		   (+ length (count-lines (point-min) (point-max))))
+		(while (search-forward "\r\n" nil t)
+		  (delete-region (- (point) 2) (1- (point)))))
+	       (t ;; Authentication
+		(while (and
+			(re-search-forward "^Username: Password: \n" nil t)
+			(cond
+			 ((= (- (point-max) (point)) length)
+			  (delete-region (point-min) (point))
+			  nil)
+			 ((= (- (point-max) (point))
+			     (+ length (count-lines (point) (point-max))))
+			  (delete-region (point-min) (point))
+			  (while (search-forward "\r\n" nil t)
+			    (delete-region (- (point) 2) (1- (point))))))))))
+	    (delete-region (point-min) (- (point-max) length))))
       (and (string-match "^text/" type)
 	   (not no-decode)
-	   (w3m-html-decode-buffer type charset))
+	   (w3m-decode-buffer type charset))
       type)))
 
 (defun w3m-retrieve (url &optional no-decode)
