@@ -131,7 +131,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	  cmonth (nth 4 cyear)
 	  cyear (nth 5 cyear))
     (while (and (re-search-forward "<[\t\n\r ]*a[\t\n\r ]+href=\"\
-\\(news[^\t\n\r .]*\\.asp\\?kiji=\\([0-9]+\\)\\)\"" nil t)
+\\(news\\.asp\\?kiji=\\([0-9]+\\)\\)\"" nil t)
 		(setq start (match-end 0)
 		      href (match-string 1)
 		      artnum (match-string 2))
