@@ -1176,7 +1176,6 @@
 	files.
 	(w3m-form-resume): Check `selects' is cons.
 
-
 2005-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-prepare-article-release):
