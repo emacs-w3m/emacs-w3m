@@ -5903,8 +5903,10 @@ windows and frames related to BUFFER."
 (defun w3m-alive-p (&optional visible)
   "Return a buffer in which emacs-w3m is running.
 If there is no emacs-w3m session, return nil.  If the optional VISIBLE
-is non-nil, a visible emacs-w3m buffer is preferred."
-  (let* ((buffers (inline (w3m-list-buffers (not visible))))
+is non-nil, a visible emacs-w3m buffer is preferred.  The last visited
+emacs-w3m buffer is likely to return if VISIBLE is omitted or there is
+no visible buffer."
+  (let* ((buffers (w3m-list-buffers t))
 	 (buf (car buffers)))
     (if visible
 	(progn

@@ -1,7 +1,10 @@
 2003-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-retrieve-and-render): Use `w3m-message' instead of
-	`message'; don't refer to `w3m-verbose'.
+	`message'; don't let it be controlled by `w3m-verbose'.
+	(w3m-alive-p): Don't sort the return value of `list-buffers' so
+	that it returns the last visited emacs-w3m buffer as much as
+	possible; don't inline the `w3m-list-buffers' function.
 
 2003-11-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
