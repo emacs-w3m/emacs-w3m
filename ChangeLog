@@ -1,3 +1,9 @@
+2002-12-07  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-quickml.el (shimbun-quickml-groups): Added some groups.
+
+	* w3m-form.el (w3m-form-text-chop): Added nil check.
+
 2002-12-07  YAMASHITA Junji  <ysjj@unixuser.org>
 
 	* shimbun/sb-ibm-dev.el (shimbun-get-headers): Follow the change

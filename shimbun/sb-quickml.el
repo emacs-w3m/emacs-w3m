@@ -29,7 +29,16 @@
 
 (luna-define-class shimbun-quickml (shimbun-mailarc) ())
 
-(defvar shimbun-quickml-groups '("quickml-users" "quickml-server"))
+(defvar shimbun-quickml-groups '("chatty"
+				 "dotnet"
+				 "linux-zaurus"
+				 "ming"
+				 "pdumpfs"
+				 "quickml-server"
+				 "quickml-users"
+				 "stationery"
+				 "tty-mania"))
+
 (defvar shimbun-quickml-url "http://namazu.org/~satoru/archives/")
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-mailarc))

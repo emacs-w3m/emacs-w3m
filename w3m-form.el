@@ -797,11 +797,12 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 (defun w3m-form-text-chop (text)
   "Return a list of substrings of TEXT which are separated by newline
 character."
-  (let ((start 0) parts)
-    (while (string-match "\n" text start)
-      (setq parts (cons (substring text start (match-beginning 0)) parts)
-	    start (match-end 0)))
-    (nreverse (cons (substring text start) parts))))
+  (when text
+    (let ((start 0) parts)
+      (while (string-match "\n" text start)
+	(setq parts (cons (substring text start (match-beginning 0)) parts)
+	      start (match-end 0)))
+      (nreverse (cons (substring text start) parts)))))
 
 (defun w3m-form-search-textarea (hseq direction)
   (let ((point (point))
