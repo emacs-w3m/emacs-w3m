@@ -38,8 +38,10 @@
 (defvar shimbun-mainichi-url "http://www.mainichi.co.jp/")
 (defvar shimbun-mainichi-server-name "毎日新聞")
 (defvar shimbun-mainichi-from-address  "webmaster@mainichi.co.jp")
-(defvar shimbun-mainichi-content-start "\n</td></tr></table><!--AdSpace--><p>")
-(defvar shimbun-mainichi-content-end  "\n</font>\n")
+(defvar shimbun-mainichi-content-start "<font[\t\n\r ]+class=\"news-text\">\
+\[\t\n\r ]*\\(<[^!<>]+>[\t\n\r ]*\\)+<!--AdSpace-->\
+\[\t\n\r ]*\\(<[^!<>]+>[\t\n\r ]*\\)+<!--AdSpace-->[\t\n\r ]*")
+(defvar shimbun-mainichi-content-end  "\\(<br>[\t\n\r ]*\\)?</font>")
 
 (defvar shimbun-mainichi-group-table
   '(("shakai" "社会面" "news/flash/shakai")
