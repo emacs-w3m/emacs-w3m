@@ -513,29 +513,35 @@ image parts, and returns an alist of URLs and image entities."
   (goto-char (point-min))
   (let ((case-fold-search t)
 	start end url img type)
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((spc "\t\n\f\r "))
-		(concat "<[" spc "]*img[" spc "]+"
-			"\\([^<=>]+=[^<=>]+[" spc "]+\\)*"
-			;; 2. replaceable part
-			"\\(src[" spc "]*=[" spc "]*"
-			"\\(\""
-			;; 4. url quoted with "
-			"\\([^\"]+\\)"
-			"\"\\|'"
-			;; 5. url quoted with '
-			"\\([^']+\\)"
-			"'\\|"
-			;; 6. url unquoted
-			"\\([^" spc "\"'>]+\\)"
-			"\\)\\)")))
-	    nil t)
-      (setq start (match-beginning 2)
-	    end (match-end 2)
-	    url (shimbun-expand-url (or (match-string 4)
-					(match-string 5)
-					(match-string 6))
+    (while (and (re-search-forward "\\(<[\t\n\f\r ]*img\\)[\t\n\f\r ]" nil t)
+		(progn
+		  (setq start (match-end 1))
+		  (search-forward ">" nil 'move))
+		(progn
+		  (setq end (match-beginning 0))
+		  (goto-char start)
+		  (re-search-forward
+		   (eval-when-compile
+		     (let ((spc "\t\n\f\r "))
+		       (concat "[" spc "]+"
+			       ;; 1. replaceable part
+			       "\\(src[" spc "]*=[" spc "]*"
+			       "\\(\""
+			       ;; 3. url quoted with \"
+			       "\\([^\"]+\\)"
+			       "\"\\|'"
+			       ;; 4. url quoted with '
+			       "\\([^']+\\)"
+			       "'\\|"
+			       ;; 5. url unquoted
+			       "\\([^" spc "\"']+\\)"
+			       "\\)\\)")))
+		   end t)))
+      (setq start (match-beginning 1)
+	    end (match-end 1)
+	    url (shimbun-expand-url (or (match-string 3)
+					(match-string 4)
+					(match-string 5))
 				    base-url))
       (unless (setq img (assoc url images))
 	(with-temp-buffer
