@@ -423,13 +423,10 @@ won't be modified.  See the documentation for the variables
 (defun w3m-history-copy (buffer)
   "Copy the buffer-local variables `w3m-history' and `w3m-history-flat'
 from BUFFER to the current buffer."
-  (let (tree flat)
-    (save-excursion
-      (set-buffer buffer)
-      (setq tree (w3m-history-copy-1 w3m-history)
-	    flat (w3m-history-copy-1 w3m-history-flat)))
-    (setq w3m-history tree
-	  w3m-history-flat flat)))
+  (setq w3m-history (save-excursion
+		      (set-buffer buffer)
+		      (w3m-history-copy-1 w3m-history)))
+  (w3m-history-flat))
 
 (defun w3m-history-plist-get (keyword &optional url set-current)
   "Extract a value from the properties of a history element.  KEYWORD is
