@@ -57,7 +57,7 @@ URL is the URL for category or search result."
 	 (elem (assoc group shimbun-yahoo-auctions-group-alist)))
     (if elem
 	(cdr elem)
-      (concat "http://search.auctions.yahoo.co.jp/search_rss?p=" 
+      (concat "http://search.auctions.yahoo.co.jp/search_rss?p="
 	      (shimbun-url-encode-string group 'euc-japan)))))
 
 (luna-define-method shimbun-rss-build-message-id
@@ -68,40 +68,7 @@ URL is the URL for category or search result."
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-yahoo-auctions)
 					 &optional range)
-  (static-when (featurep 'xemacs)
-    ;; It's one of many bugs in XEmacs that the coding systems *-dos
-    ;; provided by Mule-UCS don't convert CRLF to LF when decoding.
-    (shimbun-strip-cr))
-  (let ((xml (condition-case err
-		 (xml-parse-region (point-min) (point-max))
-	       (error
-		(message "Error while parsing %s: %s"
-			 (shimbun-index-url shimbun)
-			 (error-message-string err))
-		nil)))
-	rss-ns headers)
-    (when xml
-      (setq rss-ns (shimbun-rss-get-namespace-prefix
-		    xml "http://purl.org/rss/1.0/"))
-      (dolist (item (shimbun-rss-find-el (intern (concat rss-ns "item")) xml))
-	(let ((url (and (listp item)
-			(eq (intern (concat rss-ns "item")) (car item))
-			(shimbun-rss-node-text rss-ns 'link (cddr item)))))
-	  (when url
-	    (let* ((date (shimbun-rss-node-text rss-ns 'pubDate item))
-		   (id (shimbun-rss-build-message-id shimbun url date))
-		   (description
-		    (shimbun-rss-node-text rss-ns 'description item)))
-	      (push (shimbun-create-header
-		     0
-		     (shimbun-rss-node-text rss-ns 'title item)
-		     (shimbun-from-address shimbun)
-		     (shimbun-rss-process-date shimbun date)
-		     id "" 0 0 url
-		     (when description
-		       (list (cons 'description description))))
-		    headers)))))
-      (nreverse headers))))
+  (shimbun-rss-get-headers shimbun range t t))
 
 (provide 'sb-yahoo-auctions)
 ;;; sb-yahoo-auctions.el ends here

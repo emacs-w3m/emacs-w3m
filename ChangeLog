@@ -1,10 +1,18 @@
+2005-02-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-rss.el (shimbun-rss-get-headers): New function.
+	(shimbun-get-headers): Use the above.
+
+	* shimbun/sb-yahoo-auctions.el (shimbun-get-headers): Use the
+	above.
+
 2005-02-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/nnshimbun.el (nnshimbun-insert-nov): Encode extra field.
 	(nnshimbun-parse-nov): Decode extra field.
 
-	* shimbun/sb-yahoo-auctions.el (shimbun-get-headers): New overridden
-	method.
+	* shimbun/sb-yahoo-auctions.el (shimbun-get-headers): New
+	overridden method.
 
 	* shimbun/sb-rss.el (shimbun-get-headers): Revert last change.
 
