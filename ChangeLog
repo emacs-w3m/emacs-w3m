@@ -1,3 +1,18 @@
+2002-03-27  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-version): New variable.
+	(toplevel): Detect w3m version.
+	(w3m-user-agent): New user option.
+	(w3m-add-user-agent): Ditto.
+	(w3m-w3m-retrieve): Add User-Agent: field if w3m-add-user-agent is
+	non-nil.
+
+	* w3m-e21.el (w3m-tab-drag-mouse-function): New function.
+	(w3m-tab-make-keymap): Add mouse-1, mouse-2, drag-mouse-1 and
+	drag-mouse-2.
+
+	* w3m-cookie.el (w3m-cookie-set): Fixed docstring.
+
 2002-03-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-find-coding-system): Alias to ignore if the

@@ -156,10 +156,12 @@
 (defvar w3m-type nil "Type of w3m.
 These values are acceptable: w3m, w3mmee, w3m-m17n.")
 (defvar w3m-compile-options nil "Compile options of w3m.")
+(defvar w3m-version nil "Version string of w3m command.")
 
-;; Set w3m-command, w3m-type and w3m-compile-options
+;; Set w3m-command, w3m-type, w3m-version and w3m-compile-options
 (when (or (null w3m-command)
 	  (null w3m-type)
+	  (null w3m-version)
 	  (null w3m-compile-options))
   (let ((command (or w3m-command
 		     (w3m-which-command "w3m")
@@ -170,14 +172,15 @@ These values are acceptable: w3m, w3mmee, w3m-m17n.")
       (with-temp-buffer
 	(call-process command nil t nil "-version")
 	(goto-char (point-min))
-	(when (re-search-forward "version w3m/0\\.\\(2\\.1\\|\
+	(when (re-search-forward "version \\(w3m/0\\.\\(2\\.1\\|\
 \\(2\\.[2-9]\\(\\.[0-9]\\)*\\|3\\(\\.[0-9\\]\\)*\\)\\)\\(-inu\
-\\|\\(-m17n\\|\\(\\+mee\\)\\)\\)?" nil t)
+\\|\\(-m17n\\|\\(\\+mee\\)\\)\\)?[^,]*\\)" nil t)
+	  (setq w3m-version (match-string 1))
 	  (setq w3m-type
 		(cond
-		 ((match-beginning 7) 'w3mmee)
-		 ((match-beginning 6) 'w3m-m17n)
-		 ((or (match-beginning 5) (match-beginning 2)) 'w3m)
+		 ((match-beginning 8) 'w3mmee)
+		 ((match-beginning 7) 'w3m-m17n)
+		 ((or (match-beginning 6) (match-beginning 3)) 'w3m)
 		 (t 'other))))
 	(when (re-search-forward "options +" nil t)
 	  (setq w3m-compile-options
@@ -187,6 +190,18 @@ These values are acceptable: w3m, w3mmee, w3m-m17n.")
 						   (point)))
 				  ",")
 		    (list nil))))))))
+
+(defcustom w3m-user-agent (concat "Emacs-w3m/" emacs-w3m-version
+				  " " w3m-version)
+  "User agent string of this package."
+  :group 'w3m
+  :type 'string)
+
+(defcustom w3m-add-user-agent t
+  "Add User-Agent field to the request header.
+The value of `w3m-user-agent' is used for the field body."
+  :group 'w3m
+  :type 'boolean)
 
 (defcustom w3m-language
   (if (or (and (boundp 'current-language-environment)
@@ -2930,6 +2945,12 @@ argument, when retrieve is complete."
 	 w3m-broken-proxy-cache
 	 (setq w3m-command-arguments
 	       (append w3m-command-arguments '("-o" "no_cache=1"))))
+    (if w3m-add-user-agent
+	(setq w3m-command-arguments
+	      (append w3m-command-arguments
+		      (if (eq w3m-type 'w3mmee)
+			  `("-header" ,(concat "User-Agent: " w3m-user-agent))
+			`("-o" ,(concat "user_agent=" w3m-user-agent))))))
     (when post-data
       (setq temp-file (make-temp-name
 		       (expand-file-name "w3mel" w3m-profile-directory)))

@@ -441,8 +441,7 @@ If ask, ask user whether accept bad cookies or not."
 
 ;;;###autoload
 (defun w3m-cookie-set (url beg end)
-  "Register cookies.
-URL is the url which corresponds to the cookie.
+  "Register cookies which correspond to URL.
 BEG and END should be an HTTP response header region on current buffer."
   (w3m-cookie-setup)
   (when (and url beg end)
