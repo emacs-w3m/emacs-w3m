@@ -62,7 +62,9 @@
 
 ;; Dummies to shut some XEmacs variants up.
 (eval-when-compile
-  (autoload 'unicode-to-char "XEmacs-21.5-b6_and_later"))
+  (autoload 'unicode-to-char "XEmacs-21.5-b6_and_later")
+  (unless (featurep 'mule)
+    (defalias 'find-charset 'ignore)))
 
 (require 'path-util)
 (require 'poe)

@@ -1,3 +1,7 @@
+2002-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (find-charset): Alias to ignore if no-Mule.
+
 2002-10-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-entity-alist): Use `w3m-mule-unicode-p' instead of
