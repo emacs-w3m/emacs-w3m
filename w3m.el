@@ -1920,7 +1920,7 @@ half-dumped data."
   (let ((help (w3m-make-help-echo w3m-image))
 	(balloon (w3m-make-balloon-help w3m-image))
 	src upper start end)
-b    (while (re-search-forward
+    (while (re-search-forward
 	    "<\\(img_alt\\)[^>]*src=\"\\([^\"]*\\)\"[^>]*>" nil t)
       (setq src (match-string-no-properties 2)
 	    upper (string= (match-string 1) "IMG_ALT")
