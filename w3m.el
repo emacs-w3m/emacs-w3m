@@ -1680,7 +1680,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(w3m-message "Reading...")
 		(prog1 (zerop (w3m-exec-process "-dump_source" url))
 		  (w3m-message "Reading... done")))
-	  (w3m-crlf-to-lf)	  
+	  (w3m-crlf-to-lf)
 	  (cond
 	   ((and length (> (buffer-size) length))
 	    (delete-region (point-min) (- (point-max) length)))
@@ -2135,18 +2135,25 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 	  (mode major-mode)
 	  (lvars (buffer-local-variables))
 	  (new (generate-new-buffer (or newname (buffer-name))))
-          (pt (point)))	  
+          (pt (point)))
       (with-current-buffer new
 	;;(erase-buffer)
 	(insert content)
 	(narrow-to-region ptmin ptmax)
 	(funcall mode)			;still needed??  -sm
-	(mapcar (lambda (v)
-		  (if (not (consp v)) (makunbound v)
-		    (condition-case ()	;in case var is read-only
-			(set (make-local-variable (car v)) (cdr v))
-		      (error nil))))
-		lvars)
+	(dolist (v lvars)
+	  (cond ((not (consp v))
+		 (makunbound v))
+		((memq (car v) '(w3m-history w3m-history-flat)))
+		(t
+		 (condition-case ()	;in case var is read-only
+		     (set (make-local-variable (car v))
+			  (if (consp (cdr v))
+			      (copy-sequence (cdr v))
+			    (cdr v)))
+		   (error nil)))))
+	;; Make copies of `w3m-history' and `w3m-history-flat'.
+	(w3m-history-copy buf)
 	(goto-char pt)
 	(when and-pop (pop-to-buffer new))
 	new))))

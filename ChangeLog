@@ -1,3 +1,8 @@
+2001-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-copy-buffer): Use `w3m-history-copy' to make copies
+	of `w3m-history' and `w3m-history-flat'.
+
 2001-04-10  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* mime-w3m.el (mime-w3m-mode-map): Refer `w3m-key-binding' to
