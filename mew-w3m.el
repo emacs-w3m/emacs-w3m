@@ -200,6 +200,14 @@ This variable effected only XEmacs or Emacs 21."
 
 (defvar w3m-mew-support-cid (fboundp 'mew-syntax-get-entry-by-cid))
 
+;; Avoid bytecompile error and warnings (Mew 1.94.2 or earlier).
+(eval-when-compile
+  (unless (fboundp 'mew-current-get-fld)
+    (autoload 'mew-current-get-fld "mew")
+    (autoload 'mew-current-get-msg "mew")
+    (autoload 'mew-syntax-get-entry-by-cid "mew")
+    (defun mew-cache-hit (&rest args) ())))
+
 (defun mew-w3m-cid-retrieve (url &rest args)
   (let ((output-buffer (current-buffer)))
     (with-current-buffer w3m-current-buffer
@@ -223,9 +231,10 @@ This variable effected only XEmacs or Emacs 21."
 		    (set-buffer-multibyte nil)
 		    (downcase (car (mew-syntax-get-ct cidstx))))
 		(run-hooks 'mew-w3m-cid-retrieve-hook)))))))))
-
-(push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
-      w3m-cid-retrieve-function-alist)
+    
+(when (fboundp 'mew-syntax-get-entry-by-cid)
+  (push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
+	w3m-cid-retrieve-function-alist))
 
 ;;;
 (provide 'mew-w3m)

@@ -1,3 +1,11 @@
+2002-09-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3mhack.el (w3mhack-examine-modules): Do not compile
+	`mew-shimbun.el' with old Mew.
+
+	* mew-w3m.el (top): Avoid byte-compile error and warning for old
+	Mew. Do not push 'mew-w3m-cid-retrieve' for old Mew.
+	
 2002-09-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-arrived-setup): Use 0 instead of nil as the initial
