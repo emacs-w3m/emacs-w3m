@@ -130,7 +130,7 @@
 		    ))
 		(widen)
 		))
-	    (reverse indexes)
+	    (nreverse indexes)
 	    (catch 'stop
 	      (dolist (elem indexes)
 		(shimbun-retrieve-url (cdr elem) t) ;; retrieve target page
