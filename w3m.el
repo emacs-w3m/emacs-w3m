@@ -143,7 +143,7 @@
       (getenv "WWW_HOME")
       (if (file-readable-p w3m-bookmark-file)
 	  w3m-bookmark-file
-	"http://www-nagao.kuee.kyoto-u.ac.jp/member/tsuchiya/"))
+	"http://www-nagao.kuee.kyoto-u.ac.jp/member/tsuchiya/w3m/"))
   "*Home page of w3m.el."
   :group 'w3m
   :type 'string)
@@ -172,7 +172,7 @@
 
 (defface w3m-anchor-face
   '((((class color) (background light)) (:foreground "red" :underline t))
-    (((class color) (background dark)) (:foreground "blue" :underline t))
+    (((class color) (background dark)) (:foreground "cyan" :underline t))
     (t (:underline t)))
   "*Face to fontify anchors."
   :group 'w3m-face)
@@ -181,7 +181,7 @@
   '((((class color) (background light))
      (:foreground "navy" :underline t :bold t))
     (((class color) (background dark))
-     (:foreground "blue" :underline t :bold t))
+     (:foreground "LightSkyBlue" :underline t :bold nil))
     (t (:underline t)))
   "*Face to fontify anchors, if arrived."
   :group 'w3m-face)
