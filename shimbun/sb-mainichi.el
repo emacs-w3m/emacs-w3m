@@ -249,9 +249,17 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 		(string-to-number (match-string 5))))))
     ;; Break long lines.
     (goto-char (point-min))
-    (while (re-search-forward "<p[^>]*>\\|</p>\\|[、。）」]" nil t)
+    (re-search-forward shimbun-mainichi-content-start nil t)
+    (narrow-to-region
+     (point)
+     (if (re-search-forward shimbun-mainichi-content-end nil t)
+	 (match-beginning 0)
+       (point-max)))
+    (goto-char (point-min))
+    (while (re-search-forward "<p[^>]*>\\|</p>\\|[、。）」]+" nil t)
       (unless (eolp)
-	(insert "\n")))))
+	(insert "\n")))
+    (widen)))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-mainichi)
 						   header)
