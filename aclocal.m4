@@ -81,15 +81,19 @@ AC_DEFUN(AC_EXAMINE_PACKAGEDIR,
  [dnl Examine PACKAGEDIR.
   AC_EMACS_LISP(PACKAGEDIR,
     (let ((prefix \"${prefix}\")\
+	  (dirs (append\
+		 (if (and (boundp (quote configure-package-path))\
+			  (listp configure-package-path))\
+		     (delete \"\" configure-package-path))\
+		 (if (boundp (quote early-packages))\
+		     (append (if early-package-load-path early-packages)\
+			     (if late-package-load-path late-packages)\
+			     (if last-package-load-path last-packages)))))\
 	  package-dir)\
-      (if (boundp (quote early-packages))\
-	  (let ((dirs (append (if early-package-load-path early-packages)\
-			      (if late-package-load-path late-packages)\
-			      (if last-package-load-path last-packages))))\
-	    (while (and dirs (not package-dir))\
-	      (if (file-directory-p (car dirs))\
-		  (setq package-dir (car dirs)\
-			dirs (cdr dirs))))))\
+      (while (and dirs (not package-dir))\
+	(if (file-directory-p (car dirs))\
+	    (setq package-dir (car dirs)\
+		  dirs (cdr dirs))))\
       (if package-dir\
 	  (progn\
 	    (if (string-match \"/\$\" package-dir)\
@@ -175,14 +179,14 @@ AC_DEFUN(AC_PATH_ICONDIR,
 
   if test ${EMACS_FLAVOR} = xemacs -o ${EMACS_FLAVOR} = emacs21; then
     AC_ARG_WITH(icondir,
-     [  --with-icondir=ICONDIR  directory for icons [\$(data-directory)/w3m/icons]],
+     [  --with-icondir=ICONDIR  directory for icons [\$(data-directory)/images/w3m]],
       ICONDIR="${withval}")
     AC_MSG_CHECKING([where icon files should go])
     if test -z "${ICONDIR}"; then
       dnl Set the default value.
       AC_EMACS_LISP(icondir,
         (let ((prefix \"${prefix}\")\
-	      (default (expand-file-name \"w3m/icons\" data-directory)))\
+	      (default (expand-file-name \"images/w3m\" data-directory)))\
 	  (if (and prefix\
 		   (progn\
 		     (setq prefix (file-name-as-directory prefix))\
