@@ -1,8 +1,8 @@
 ;;; sb-pilot-link.el --- shimbun backend for pilot-link
 
-;; Copyright (C) 2002 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 
-;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
@@ -28,6 +28,7 @@
 
 (require 'shimbun)
 (require 'sb-mailman)
+(require 'sendmail)
 
 (luna-define-class shimbun-pilot-link (shimbun-mailman) ())
 
@@ -42,13 +43,30 @@
 (defvar shimbun-pilot-link-groups
   (mapcar 'car shimbun-pilot-link-group-path-alist))
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-mailman))
+(luna-define-method shimbun-index-url ((shimbun shimbun-pilot-link))
   (concat (shimbun-url-internal shimbun) "/"
 	  (cdr (assoc (shimbun-current-group-internal shimbun)
 		      shimbun-pilot-link-group-path-alist))))
 
 ;;(luna-define-method shimbun-reply-to ((shimbun shimbun-pilot-link))
 ;;  "")
+
+(luna-define-method shimbun-make-contents :after
+  ((shimbun shimbun-pilot-link) header)
+  (save-excursion
+    (let ((end (and (mail-position-on-field "From") (point)))
+	  (begin (progn (beginning-of-line) (point)))
+	  (marker (make-marker)))
+      (when end
+	(narrow-to-region begin end)
+	(goto-char (point-min))
+	(when (re-search-forward " at " nil t nil)
+	  (set-marker marker (match-beginning 0))
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (goto-char marker)
+	  (insert "@"))
+	(widen))))
+  (buffer-string))
 
 (provide 'sb-pilot-link)
 ;;; sb-pilot-link.el ends here

@@ -1,3 +1,9 @@
+2003-05-29  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-pilot-link.el: Require sendmail.el.
+	(shimbun-make-contents): New method.
+	(shimbun-index-url): Bug fixed.
+
 2003-05-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* doc/Makefile.in (dvi): New target to create dvi files; related
