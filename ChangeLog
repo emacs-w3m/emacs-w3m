@@ -1,3 +1,7 @@
+2001-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* icons/parent-disabled.xpm: Renamed from parent-down.xpm.
+
 2001-04-16  Masatake YAMATO  <masata-y@gyve.aist-nara.ac.jp>
 
 	* w3m.el (w3m-toolbar): Added w3m-toolbar-parent-icon.
