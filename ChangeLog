@@ -1,3 +1,7 @@
+2001-03-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-view-parent-page): Add a postfix '/' to parent-url.
+
 2001-03-12  Takaaki MORIYAMA  <taka@airlab.cs.ritsumei.ac.jp>
 
 	* w3m.el (w3m-extended-charcters-table): Add '\x80'.

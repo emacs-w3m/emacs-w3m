@@ -2034,14 +2034,14 @@ this function returns t.  Otherwise, returns nil."
     ;; Check whether http://foo/bar/ or http://foo/bar
     (if (string-match "/$" w3m-current-url)
 	(if (string-match "\\(.*\\)/[^/]+/$" w3m-current-url)
-	    ;; http://foo/bar/ -> http://foo
-	    (setq parent-url (match-string 1 w3m-current-url)))
+	    ;; http://foo/bar/ -> http://foo/
+	    (setq parent-url (concat (match-string 1 w3m-current-url) "/")))
       (if (string-match "\\(.*\\)/.+$" w3m-current-url)
-	  ;; http://foo/bar -> http://foo
-	  (setq parent-url (match-string 1 w3m-current-url))))
+	  ;; http://foo/bar -> http://foo/
+	  (setq parent-url (concat (match-string 1 w3m-current-url) "/"))))
     ;; Ignore "http:/"
     (if (and parent-url
-	     (string-match "^[a-z]+:/$" parent-url))
+	     (string-match "^[a-z]+:/+$" parent-url))
 	(setq parent-url nil))
     (if parent-url
 	(w3m parent-url)
