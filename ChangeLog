@@ -17,6 +17,7 @@
 	(w3m-view-previous-point): Ditto.
 	(w3m-quit): Ditto.
 	(w3m-goto-url): Ditto.
+	(w3m-create-image): Clean up codes.
 
 2001-03-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 

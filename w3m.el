@@ -1075,13 +1075,13 @@ If N is negative, last N items of LIST is returned."
 		    (>= emacs-major-version 21)) (progn    
 (defun w3m-create-image (url)
   "Retrieve data from URL and create an image object."
-  (w3m-retrieve url t)
-  (with-current-buffer  (get-buffer-create w3m-work-buffer-name)
-    (create-image (buffer-string) 
-		  (cdr (assoc (w3m-local-content-type url)
-			      w3m-image-type-alist))
-		  t
-		  :ascent 'center)))
+  (let ((type (w3m-retrieve url t)))
+    (when type
+      (with-current-buffer (get-buffer-create w3m-work-buffer-name)
+	(create-image (buffer-string) 
+		      (cdr (assoc type w3m-image-type-alist))
+		      t
+		      :ascent 'center)))))
 
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
@@ -1095,17 +1095,17 @@ Buffer string between BEG and END are replaced with IMAGE."
 (w3m-static-if (featurep 'xemacs) (progn
 (defun w3m-create-image (url)
   "Retrieve data from URL and create an image object."
-  (w3m-retrieve url t)
-  (let ((data (with-current-buffer (get-buffer-create w3m-work-buffer-name)
-		(buffer-string))))
-    (make-glyph
-     (make-image-instance
-      (vector (or (cdr (assoc (w3m-local-content-type url)
-			      w3m-image-type-alist))
-		  (cdr (assoc (nth 0 (w3m-w3m-check-header url))
-			      w3m-image-type-alist)))
-	      :data data)
-      nil nil 'no-error))))
+  (let ((type (w3m-retrieve url t)))
+    (when type
+      (let ((data (with-current-buffer
+		      (get-buffer-create w3m-work-buffer-name)
+		    (buffer-string))))
+	(make-glyph
+	 (make-image-instance
+	  (vector (or (cdr (assoc type w3m-image-type-alist))
+		      'autodetect)
+		  :data data)
+	  nil nil 'no-error))))))
 
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
