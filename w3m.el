@@ -2790,5 +2790,65 @@ works on Emacs.
 		 "fiber.exe"
 		 (w3m-url-to-file-name url)))
 
+
+;;; Header line (emulating Emacs 21).
+(defcustom w3m-use-header-line t
+  "Non-nil activates header-line of w3m."
+  :group 'w3m
+  :type 'boolean)
+
+(when (or (featurep 'xemacs)
+	  (not (boundp 'emacs-major-version))
+	  (<= emacs-major-version 20))
+  ;; Faces for Emacs 21 will be declared in w3m-e21.el.
+  (defface w3m-header-line-location-title-face
+    '((((class color) (background light))
+       (:foreground "Blue" :background "Gray90"))
+      (((class color) (background dark))
+       (:foreground "Cyan" :background "Gray20")))
+    "Face for header-line location title."
+    :group 'w3m-face)
+
+  (defface w3m-header-line-location-content-face
+    '((((class color) (background light))
+       (:foreground "DarkGoldenrod" :background "Gray90"))
+      (((class color) (background dark))
+       (:foreground "LightGoldenrod" :background "Gray20")))
+    "Face for header-line location content."
+    :group 'w3m-face)
+
+  (add-hook 'w3m-fontify-after-hook 'w3m-setup-header-line))
+
+(unless (or (featurep 'xemacs)
+	    (and (boundp 'emacs-major-version)
+		 (>= emacs-major-version 21)))
+  ;; The following definitions are for Emacs 19 and 20, otherwise, the
+  ;; analogs for Emacs 21 or XEmacs will be defined in w3m-e21.el or
+  ;; w3m-xmas.el.
+  (defvar w3m-header-line-map (make-sparse-keymap))
+  (define-key w3m-header-line-map [mouse-2] 'w3m-goto-url)
+
+  (defun w3m-setup-header-line ()
+    "Setup header line (emulating Emacs 21)."
+    (when w3m-use-header-line
+      (goto-char (point-min))
+      (insert "Location: ")
+      (put-text-property (point-min) (point)
+			 'face 'w3m-header-line-location-title-face)
+      (let ((start (point))
+	    (help "mouse-2 prompts to input URL"))
+	(insert w3m-current-url)
+	(add-text-properties start (point)
+			     (list 'face
+				   'w3m-header-line-location-content-face
+				   'mouse-face 'highlight
+				   'local-map w3m-header-line-map))
+	(setq start (point))
+	(insert-char ?\  (max 0 (- (window-width) (current-column) 1)))
+	(put-text-property start (point)
+			   'face 'w3m-header-line-location-content-face)
+	(unless (eolp)
+	  (insert "\n"))))))
+
 (provide 'w3m)
 ;;; w3m.el ends here.
