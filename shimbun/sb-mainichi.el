@@ -246,7 +246,12 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	(string-to-number (match-string 3))
 	(format "%02d:%02d"
 		(string-to-number (match-string 4))
-		(string-to-number (match-string 5))))))))
+		(string-to-number (match-string 5))))))
+    ;; Break long lines.
+    (goto-char (point-min))
+    (while (re-search-forward "<p[^>]*>\\|</p>\\|[、。）」]" nil t)
+      (unless (eolp)
+	(insert "\n")))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-mainichi)
 						   header)
