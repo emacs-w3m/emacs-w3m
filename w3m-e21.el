@@ -41,7 +41,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
       (let ((type (w3m-retrieve url 'raw no-cache)))
 	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
 	  (w3m-with-work-buffer
-	    (create-image (buffer-string) 
+	    (create-image (buffer-string)
 			  type
 			  t
 			  :ascent 'center))))
@@ -54,10 +54,19 @@ Buffer string between BEG and END are replaced with IMAGE."
 		       (list 'display image
 			     'intangible image
 			     'invisible nil))
-  (when (get-text-property beg 'face)
-    (put-text-property (previous-single-property-change (1+ beg) 'face)
-		       (next-single-property-change beg 'face)
-		       'face nil)))
+  (let ((face (get-text-property beg 'face)))
+    (when (and face
+	       (face-underline-p face))
+      (setq beg (set-marker (make-marker)
+			    (or (previous-single-property-change
+				 (1+ beg) 'face)
+				(point-min)))
+	    end (set-marker (make-marker)
+			    (or (next-single-property-change beg 'face)
+				(point-max))))
+      (add-text-properties beg end
+			   (list 'face nil
+				 'w3m-hidden-face (list beg end face))))))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."
@@ -111,7 +120,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 	  (disabled (expand-file-name (concat button "-disabled.xpm")
 				      w3m-icon-directory))
 	  (icon (intern (concat "w3m-toolbar-" button "-icon")))
-	  (props '(:ascent 
+	  (props '(:ascent
 		   center
 		   :color-symbols (("backgroundToolBarColor" . "None")))))
       (unless (boundp icon)
@@ -148,7 +157,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defun w3m-setup-header-line ()
   "Setup header line."
   (if w3m-use-header-line
-      (setq header-line-format (list 
+      (setq header-line-format (list
 				(propertize
 				 "Location: "
 				 'face

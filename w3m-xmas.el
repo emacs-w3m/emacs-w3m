@@ -65,10 +65,19 @@ Buffer string between BEG and END are replaced with IMAGE."
       (set-extent-property extent 'w3m-xmas-icon t)
       (set-extent-end-glyph extent (car glyphs))
       (setq glyphs (cdr glyphs))))
-  (when (get-text-property beg 'face)
-    (put-text-property (previous-single-property-change (1+ beg) 'face)
-		       (next-single-property-change beg 'face)
-		       'face nil)))
+  (let ((face (get-text-property beg 'face)))
+    (when (and face
+	       (face-underline-p face))
+      (setq beg (set-marker (make-marker)
+			    (or (previous-single-property-change
+				 (1+ beg) 'face)
+				(point-min)))
+	    end (set-marker (make-marker)
+			    (or (next-single-property-change beg 'face)
+				(point-max))))
+      (add-text-properties beg end
+			   (list 'face nil
+				 'w3m-hidden-face (list beg end face))))))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."
@@ -197,6 +206,9 @@ as the value."
   (when (and w3m-use-header-line w3m-current-url
 	     (eq 'w3m-mode major-mode))
     (goto-char (point-min))
+    (unless (eobp)
+      ;; Not to inherit the following text properties.
+      (put-text-property (point) (1+ (point)) 'start-open t))
     (insert "Location: ")
     (set-extent-property (make-extent (point-min) (point))
 			 'face 'w3m-header-line-location-title-face)

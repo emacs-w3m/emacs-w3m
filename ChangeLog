@@ -1,3 +1,15 @@
+2001-05-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-toggle-inline-images): Restore hidden faces in the
+	text property `w3m-hidden-face'.
+
+	* w3m-xmas.el (w3m-setup-header-line): Don't inherit existing text
+	properties in a header line.
+
+	* w3m-xmas.el (w3m-insert-image): Hide a face in the text property
+	`w3m-hidden-face' if it is underlined, instead of the removing.
+	* w3m-e21.el (w3m-insert-image): Ditto.
+
 2001-05-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (top-level): Fixed argument of autoload for `w3m-dtree',
