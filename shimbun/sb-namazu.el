@@ -41,7 +41,8 @@
     ("namazu-users-en" . "ml/namazu-users-en")
     ("namazu-devel-ja" . "ml/namazu-devel-ja")
     ("namazu-devel-en" . "ml/namazu-devel-en")
-    ("emacs-w3m" . "http://emacs-w3m.namazu.org/ml")))
+    ("emacs-w3m" . "http://emacs-w3m.namazu.org/ml")
+    ("kakasi-dev" . "http://www.namazu.org/ml/kakasi-dev")))
 
 (defvar shimbun-namazu-groups (mapcar 'car shimbun-namazu-group-url-alist))
 (defvar shimbun-namazu-use-entire-index nil)
@@ -71,10 +72,10 @@
       (shimbun-mhonarc-get-headers shimbun url headers)
       (while (and (if pages (< (incf count) pages) t)
 		  (re-search-forward
-		   "<A href=\"\\(mail[0-9]+.html\\)\">Next Index</A>"
+		   "<A \\(REL=\"next\" \\)?href=\"\\(mail[0-9]+.html\\)\">Next Index</A>"
 		   nil t)
-		  (not (string-equal (match-string 1) aux)))
-	(setq aux (match-string 1)
+		  (not (string-equal (match-string 2) aux)))
+	(setq aux (match-string 2)
 	      url (shimbun-expand-url aux url))
 	(erase-buffer)
 	(shimbun-retrieve-url url)

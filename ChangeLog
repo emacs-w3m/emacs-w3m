@@ -1,3 +1,12 @@
+2004-05-12  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-mhonarc.el (shimbun-mhonarc-get-headers): Enclosed with
+	`save-excursion'.
+
+	* shimbun/sb-namazu.el (shimbun-namazu-group-url-alist): 
+	Added "kakasi-dev".
+	(shimbun-get-headers): Followed tha change of "emacs-w3m" ml archive.
+	
 2004-05-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-filter.el (w3m-filter-rules): Update its default value and
