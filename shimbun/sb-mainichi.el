@@ -44,6 +44,7 @@
 
 (defvar shimbun-mainichi-group-table
   '(("shakai" "社会")
+    ("shakai.edu" "教育")
     ("sports" "スポーツ")
     ("geinou" "芸能")
     ("kurashi" "暮らし")
@@ -115,10 +116,14 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	date))))
 
 (defun shimbun-mainichi-get-headers (shimbun)
-  (let ((group (shimbun-current-group-internal shimbun))
-	(from (shimbun-from-address shimbun))
-	(case-fold-search t)
-	url urls subgroup header topnews headers date)
+  (let* ((group (shimbun-current-group-internal shimbun))
+	 (hierarchy (when (string-match "\\." group)
+		      (mapconcat 'identity
+				 (nreverse (split-string group "\\."))
+				 ".")))
+	 (from (shimbun-from-address shimbun))
+	 (case-fold-search t)
+	 url urls subgroup header topnews headers date)
     (while (search-forward "\r" nil t)
       (delete-backward-char 1))
     (goto-char (point-min))
@@ -186,8 +191,10 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 		    (unless subgroup
 		      ;; It may be a top news.
 		      "23:59:59")))
-		 (concat "<" (match-string 4) "%" (or subgroup "top")
-			 "." group "." shimbun-mainichi-top-level-domain ">")
+		 (concat "<" (match-string 4) "%"
+			 (or hierarchy
+			     (concat (or subgroup "top") "." group))
+			 "." shimbun-mainichi-top-level-domain ">")
 		 "" 0 0
 		 (concat shimbun-mainichi-url (match-string 1))))
 	  (unless subgroup

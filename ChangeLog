@@ -1,3 +1,13 @@
+2004-12-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-get-headers): Reduce
+	redundancies in Message-ID string.
+
+2004-12-24  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Add the
+	shakai.edu group.
+
 2004-12-24  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
 
 	* w3m-hist.el (w3m-history-restore-position): Handling the window
