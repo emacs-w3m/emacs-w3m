@@ -1134,6 +1134,9 @@ NOTE: This function must be called from the top directory."
 ;;
 ;;; Code:
 ")
+	  ;; When missing ^L, `update-file-autoloads' of old emacsen
+	  ;; such as Mule2.3 signals an error.
+	  (insert ?\014)
 	  ;; In Emacs 21.3.50 and up, `update-file-autoloads' requires
 	  ;; the file and contents aren't modified.
 	  (save-buffer)
