@@ -36,6 +36,7 @@
 ;; shimbun-close-group
 ;; shimbun-headers
 ;; shimbun-reply-to
+;; shimbun-x-face
 ;; shimbun-header-insert
 ;; shimbun-search-id
 ;; shimbun-article
@@ -199,8 +200,8 @@
   (insert "Lines: " (number-to-string (or (shimbun-header-lines header) 0)) 
 	  "\n"
 	  "Xref: " (or (shimbun-article-url shimbun header) "") "\n")
-  (when (shimbun-x-face-internal shimbun)
-    (insert (shimbun-x-face-internal shimbun))
+  (when (shimbun-x-face shimbun)
+    (insert (shimbun-x-face shimbun))
     (unless (bolp)
       (insert "\n"))))
 
@@ -246,13 +247,7 @@ Optional MUA is a `shimbun-mua' instance."
 (defun shimbun-open-group (shimbun group)
   "Open a SHIMBUN GROUP."
   (if (member group (shimbun-groups shimbun))
-      (progn
-	(shimbun-set-current-group-internal shimbun group)
-	(shimbun-set-x-face-internal
-	 shimbun
-	 (or (cdr (assoc group (shimbun-x-face-alist-internal shimbun)))
-	     (cdr (assoc "default" (shimbun-x-face-alist-internal shimbun)))
-	     shimbun-x-face)))
+      (shimbun-set-current-group-internal shimbun group)
     (error "No such group %s" group)))
 
 (defun shimbun-close-group (shimbun)
@@ -269,10 +264,22 @@ Optional MUA is a `shimbun-mua' instance."
     (shimbun-get-headers shimbun)))
 
 (luna-define-generic shimbun-reply-to (shimbun)
-  "Return a reply-to field value for SHIMBUN.")
+  "Return a reply-to field body for SHIMBUN.")
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun))
   nil)
+
+(luna-define-generic shimbun-x-face (shimbun)
+  "Return a X-Face field string for SHIMBUN.")
+
+(luna-define-method shimbun-x-face ((shimbun shimbun))
+  (or (shimbun-x-face-internal shimbun)
+      (shimbun-set-x-face-internal
+       shimbun
+       (or (cdr (assoc (shimbun-current-group-internal shimbun)
+		       (shimbun-x-face-alist-internal shimbun)))
+	   (cdr (assoc "default" (shimbun-x-face-alist-internal shimbun)))
+	   shimbun-x-face))))
 
 (defun shimbun-search-id (shimbun id)
   "Return non-nil when MUA found a message structure which corresponds to ID."

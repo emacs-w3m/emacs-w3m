@@ -33,13 +33,43 @@
   (luna-define-class shimbun-tcup (shimbun) (content-hash))
   (luna-define-internal-accessors 'shimbun-tcup))
 
-(defconst shimbun-tcup-group-alist
-  '(("yutopia" "http://www66.tcup.com/6629/yutopia.html")))
+(defvar shimbun-tcup-group-alist
+  '(("yutopia" "http://www61.tcup.com/6116/yutopia.html")
+    ("meadow" "http://www66.tcup.com/6629/yutopia.html"))
+  "An alist of tcup bbs shimbun group definition.
+Each element looks like
+ (NAME URL SUBJECT-REGEXP FROM-START-REGEXP DATE-START-REGEXP
+           BODY-START-REGEXP BODY-END-REGEXP).
+Each element have a following default value,
+SUBJECT-REGEXP: `shimbun-tcup-subject-regexp'
+FROM-START-REGEXP: `shimbun-tcup-from-start-regexp'
+DATE-START-REGEXP: `shimbun-tcup-date-start-regexp'
+BODY-START-REGEXP: `shimbun-tcup-body-start-regexp'
+BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'")
 
-(defvar shimbun-tcup-url "http://www.tcup.com/")
-(defvar shimbun-tcup-groups (mapcar 'car shimbun-tcup-group-alist))
+(defvar shimbun-tcup-subject-regexp "<font size=\"4\"[^>]*><b>\\([^<]+\\)</b></font>"
+  "Default regexp for subject.
+ This have a one parenthesized expression match for subject.")
+(defvar shimbun-tcup-from-start-regexp "投稿者： *"
+  "Default regexp for from start string.")
+(defvar shimbun-tcup-date-start-regexp "投稿日： *"
+  "Default regexp for date start string.")
+(defvar shimbun-tcup-body-start-regexp "<tt><font size=\"3\"[^>]*>"
+  "Default regexp for body start string.")
+(defvar shimbun-tcup-body-end-regexp "\\(<!-- form[^>]+>\\)?</font></tt><p>"
+  "Default regexp for body end string.")
+
 (defvar shimbun-tcup-coding-system 'shift_jis)
 (defvar shimbun-tcup-content-hash-length 31)
+(defvar shimbun-tcup-x-face-alist
+  '(("yutopia" .
+     "X-Face: ,Em61:vG$KP!G`Q]ZsO\\@&g`VXE-kicRnKs\"Wd'ZSFQ*O'i6OJ2(U$x6/gytz:<jCUn+&*e
+ 8$BTg.~1,7OS%tjW#ty4Cp7x%6SD;aNfn(ugANCC]q(-foA:@ULvLAJz_oeP1@a~C+Bxc3I\\+^W<%n
+ y,z@:VoRoJXl'E`kX]3i1m;+I`")
+    ("meadow" .
+     "X-Face: xo];SyM=kg&iWSACakk9gGth>s`0KE!+n9}l[&WSG!QUj`15/+hzWfCvZ\\`R!i<c8{QI=hw
+ Ez}CH&IOYewgffOCh5jTPWx/ehA\\:Qe[;P>8re^8`\\8omn]t;P~wC{X%Y$q/f!zC%IG1RVFj~Jf`c6
+ t98[2O!+vgw!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-tcup)
 						&rest init-args)
@@ -47,6 +77,9 @@
    shimbun
    (make-vector shimbun-tcup-content-hash-length 0))
   shimbun)
+
+(luna-define-method shimbun-groups ((shimbun shimbun-tcup))
+  (mapcar 'car shimbun-tcup-group-alist))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-tcup))
   (cadr (assoc (shimbun-current-group-internal shimbun)
@@ -57,7 +90,8 @@
 			  shimbun-tcup-group-alist)))
 	(n 3)
 	keys)
-    (string-match "www\\([0-9]+\\)[^/]+/\\([0-9]+\\)/\\(.+\\)\\.html" url)
+    (or (string-match "www\\([0-9]+\\)[^/]+/\\([0-9]+\\)/\\(.+\\)\\.html" url)
+	(string-match "www\\.tcup\\([0-9]+\\)[^/]+/\\([0-9]+\\)/\\(.+\\)\\.html" url))
     (while (> n 0)
       (push (substring url (match-beginning n) (match-end n)) keys)
       (setq n (1- n)))
@@ -101,11 +135,19 @@
     (set-buffer-multibyte t)
     (decode-coding-region (point-min) (point-max)
 			  (shimbun-coding-system-internal shimbun))
-    (let ((case-fold-search t)
-	  headers from subject date id url stime st body)
+    (let* ((case-fold-search t)
+	   (group (assoc (shimbun-current-group-internal shimbun)
+			 shimbun-tcup-group-alist))
+	   (subject-regexp (or (nth 2 group) shimbun-tcup-subject-regexp))
+	   (from-regexp (or (nth 3 group) shimbun-tcup-from-start-regexp))
+	   (date-regexp (or (nth 4 group) shimbun-tcup-date-start-regexp))
+	   (body-st-regexp (or (nth 5 group) shimbun-tcup-body-start-regexp))
+	   (body-end-regexp (or (nth 6 group) shimbun-tcup-body-end-regexp))
+	   headers from subject date id url stime st body)
       (goto-char (point-min))
-      (while (re-search-forward "<b>\\([^<]+\\)</b></font>　投稿者：" nil t)
+      (while (re-search-forward subject-regexp nil t)
 	(setq subject (match-string 1))
+	(re-search-forward from-regexp)
 	(setq from
 	      (cond 
 	       ((looking-at "<b><a href=\"mailto:\\([^\"]+\\)\">\\([^<]+\\)<")
@@ -113,7 +155,7 @@
 	       ((looking-at "<[^>]+><b>\\([^<]+\\)<")
 		(match-string 1))
 	       (t "(none)")))
-	(re-search-forward "投稿日：" nil t)
+	(re-search-forward date-regexp nil t)
 	(setq stime
 	      (cond 
 	       ((looking-at "[^,]+, Time: \\([^ ]+\\) ")
@@ -126,9 +168,9 @@
 	(setq id (shimbun-tcup-make-id
 		  stime
 		  (shimbun-current-group-internal shimbun)))
-	(search-forward "<tt><font size=\"3\">")
+	(re-search-forward body-st-regexp)
 	(setq st (match-end 0))
-	(re-search-forward "\\(<!-- form[^>]+>\\)?</font></tt><p>")
+	(re-search-forward body-end-regexp)
 	(setq body (buffer-substring st (match-beginning 0)))
 	(forward-line 1)
 	(setq url 

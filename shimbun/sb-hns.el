@@ -33,12 +33,22 @@
 
 (defvar shimbun-hns-group-alist nil
   "An alist of HNS shimbun group definition.
-Each element looks like (NAME URL ADDRESS).
+Each element looks like (NAME URL ADDRESS X-FACE).
 NAME is a shimbun group name.
 URL is the URL for HNS access point of the group.
-ADDRESS is the e-mail address for the diary owner.")
+ADDRESS is the e-mail address for the diary owner.
+Optional X-FACE is a string for X-Face field.
+It can be defined in the `shimbun-hns-x-face-alist', too.
+(X-FACE in this definition precedes `shimbun-hns-x-face-alist' entry).")
 
 (defvar shimbun-hns-content-hash-length 31)
+
+(defvar shimbun-hns-x-face-alist
+  '(("default" .
+     "X-Face: @a`mMVT%~3Um4-$Sx\\K<}C%MwIx/g]o(Z:3qR3BsyZ_Bp@;$m~@,]+*=`@Y$4754xsoPo~/
+ eJSA]x(_m@-BmURu#F8nZm'M4!vX$a3`)e}~`]8^'3^3s/gg+]|xf}gg2[BZZAR)-5pOF6BgPu(%yx
+ At\\)Z\"e,V#i5>7]N{lif*16&rrh3=:)\"dB[w:{_Mu@7+)~qLo6.z&Bb|Gq0A1}xpj:>9o9$")))
+
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-hns)
 						&rest init-args)
@@ -124,6 +134,18 @@ ADDRESS is the e-mail address for the diary owner.")
 					      shimbun))))
 	      (symbol-value sym)))))))
 
+(luna-define-method shimbun-x-face ((shimbun shimbun-hns))
+  (or (shimbun-x-face-internal shimbun)
+      (shimbun-set-x-face-internal
+       shimbun
+       (or 
+	(nth 3 (assoc (shimbun-current-group-internal shimbun)
+		      shimbun-hns-group-alist))
+	(cdr (assoc (shimbun-current-group-internal shimbun)
+		    (shimbun-x-face-alist-internal shimbun)))
+	(cdr (assoc "default" (shimbun-x-face-alist-internal shimbun)))
+	shimbun-x-face))))
+
 (luna-define-method shimbun-article ((shimbun shimbun-hns) header
 				     &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
@@ -132,10 +154,10 @@ ADDRESS is the e-mail address for the diary owner.")
       (insert "Content-Type: " "text/html" "; charset=ISO-2022-JP\n"
 	      "MIME-Version: 1.0\n"
 	      "\n"
-	      (or (shimbun-hns-article shimbun (shimbun-header-xref header))
-		  ""))
-      (encode-coding-region (point-min) (point-max)
-			    (mime-charset-to-coding-system "ISO-2022-JP")))))
+	      (encode-coding-string
+	       (or (shimbun-hns-article shimbun (shimbun-header-xref header))
+		   "")
+	       (mime-charset-to-coding-system "ISO-2022-JP"))))))
 
 (luna-define-method shimbun-close :after ((shimbun shimbun-hns))
   (shimbun-hns-set-content-hash-internal shimbun nil))

@@ -1,3 +1,44 @@
+2001-05-07  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-hns.el (shimbun-hns-group-alist): Added X-FACE element.
+	(shimbun-article): Use `encode-coding-string' instead of
+	`encode-coding-region'.
+	(shimbun-x-face): Define.
+
+	* shimbun/shimbun.el (shimbun-header-insert): Use shimbun-x-face
+	instead of shimbun-x-face-internal.
+	(shimbun-open-group): Don't setup x-face slot.
+	(shimbun-x-face): New generic function.
+	(shimbun-x-face): Define.
+
+	* shimbun/sb-tcup.el (shimbun-tcup-url): Eliminated.
+	(shimbun-tcup-groups): Ditto.
+	(shimbun-groups): Define.
+
+	* w3m.el (w3m-w3m-retrieve): Fixed problem when no-cache is non-nil
+	and w3m-content-type returns nil.
+
+2001-05-07  Taiki SUGAWARA <taiki.s@cityfujisawa.ne.jp>
+
+	* shimbun/sb-tcup.el: Changes for other tcup groups [emacs-w3m: 00713].
+	(shimbun-tcup-group-alist): Define as variable;
+	Changed structure.
+	(shimbun-tcup-subject-regexp): New variable.
+	(shimbun-tcup-from-start-regexp): Ditto.
+	(shimbun-tcup-date-start-regexp): Ditto.
+	(shimbun-tcup-body-start-regexp): Ditto.
+	(shimbun-tcup-body-end-regexp): Ditto.
+	(shimbun-tcup-get-group-key): Follow changes above.
+	(shimbun-headers): Ditto.
+
+2001-05-06  Mito <mit@nines.nec.co.jp>
+
+	* shimbun/sb-hns.el (shimbun-hns-x-face-alist): New variable.
+
+	* shimbun/sb-tcup.el (shimbun-tcup-x-face-alist): Ditto.
+	(shimbun-tcup-group-alist): Renamed 'yutopia' to 'meadow';
+	Added new group 'yutopia'.
+
 2001-05-07  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/shimbun.el (shimbun-expand-url): Define as an alias for

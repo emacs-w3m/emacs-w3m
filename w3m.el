@@ -1809,10 +1809,11 @@ to nil."
     (or (unless no-cache
 	  (when (w3m-cache-request-contents url)
 	    (let ((type (w3m-content-type url)))
-	      (and (string-match "^text/" type)
-		   (unless no-decode
-		     (w3m-decode-buffer url cs)))
-	      type)))
+	      (when type
+		(and (string-match "^text/" type)
+		     (unless no-decode
+		       (w3m-decode-buffer url cs)))
+		type))))
 	(let ((type (car (if w3m-mnc
 			     (w3m-w3m-dump-head-source url)
 			   (w3m-w3m-dump-source url)))))
