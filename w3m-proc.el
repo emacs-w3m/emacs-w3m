@@ -607,11 +607,13 @@ evaluated in a temporary buffer."
 	      (goto-char (point-max))
 	      (re-search-backward
 	       "^W3m-progress: \\([.0-9]+/[.0-9]+[a-zA-Z]?b\\)$" nil t))
-	    (let ((str (w3m-process-modeline-format (match-string 1))))
-	      (dolist (handler (w3m-process-handlers w3m-process-object))
-		(with-current-buffer
-		    (w3m-process-handler-parent-buffer handler)
-		  (setq w3m-process-modeline-string str)))))))))))
+	    (let ((str (w3m-process-modeline-format (match-string 1)))
+		  (buf))
+	      (save-current-buffer
+		(dolist (handler (w3m-process-handlers w3m-process-object))
+		  (when (setq buf (w3m-process-handler-parent-buffer handler))
+		    (set-buffer buf)
+		    (setq w3m-process-modeline-string str))))))))))))
 
 (defun w3m-process-modeline-format (str)
   (ignore-errors
