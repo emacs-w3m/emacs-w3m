@@ -6,7 +6,7 @@ This package contains a interface program of w3m.
    is a pager, but it can be used as a text-mode WWW browser.  For more
    detail about it, see:
 
-       http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/
+       http://w3m.sourceforge.net/
 
    emacs-w3m is a simple interface program of w3m, which works on Emacs.
 
@@ -97,23 +97,16 @@ This package contains a interface program of w3m.
 3. Version of w3m
 
    Because this program is sensitive to version of w3m, the latest
-   version of w3m should be used.  Its latest official version is 0.2.1,
-   which is released at Mar 23th, 2001.  Its source can be downloaded
-   from:
+   version of w3m should be used.  Its latest official version is
+   0.2.3.1, which is released at Dec 19th, 2001.  Its source can be
+   downloaded from:
 
-      ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/w3m-0.2.1.tar.gz
-
-   In order to use this package, it is highly recommended to use the w3m
-   which is applied the last version of w3m-0.2.1-inu-patch.  It is
-   maintained by Dai Sato and can be downloaded from:
-
-      http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/index.en.html.
+      http://prdownloads.sourceforge.net/w3m/w3m-0.2.3.1.tar.gz.
 
 
 4. Contact
 
-   In order to contact us, please join the mailing list
-   <emacs-w3m@namazu.org>.
+   In order to contact us, please send a mail to <emacs-w3m@namazu.org>.
 
 
 5. Acknowledgments
