@@ -98,7 +98,7 @@ start of each article.")
 			   (match-string-no-properties 3 date)
 			   (match-string-no-properties 4 date)
 			   (match-string-no-properties 5 date)))
-  (format "%s%%%s@%s" datedesc page host)))
+  (format "<%s%%%s@%s>" datedesc page host)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-wiki))
   (cadr (assoc (shimbun-current-group-internal shimbun)

@@ -50,7 +50,7 @@
 	   "http://slashdot.jp/article.pl\\?sid=[\/0-9]+\/\\([0-9]+\\)\\&topic=[0-9]+"
 	   url)
     (error "Cannot find message-id base"))
-  (concat (match-string-no-properties 1 url) "%%rss@slashdot.jp"))
+  (concat "<" (match-string-no-properties 1 url) "%%rss@slashdot.jp>"))
 
 (provide 'sb-slashdot-jp-rss)
 

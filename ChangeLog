@@ -1,3 +1,11 @@
+2003-11-07  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-atmarkit.el (shimbun-rss-build-message-id): Bug fixed.
+	* shimbun/sb-bbc-rss.el (shimbun-rss-build-message-id): Ditto.
+	* shimbun/sb-cnet-rss.el (shimbun-rss-build-message-id): Ditto.
+	* shimbun/sb-slashdot-jp-rss.el (shimbun-rss-build-message-id): Ditto.
+	* shimbun/sb-wiki.el (shimbun-rss-build-message-id): Ditto.
+
 2003-11-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-delete-other-buffers): Use
