@@ -35,7 +35,7 @@
 
 (luna-define-class shimbun-xemacs (shimbun-glimpse) ())
 
-(defvar shimbun-xemacs-url "http://list-archives.xemacs.org/")
+(defvar shimbun-xemacs-url "http://list-archive.xemacs.org/")
 (defvar shimbun-xemacs-groups '("xemacs-announce"
 				"xemacs-beta-ja" "xemacs-beta"
 				"xemacs-build-reports" "xemacs-cvs"

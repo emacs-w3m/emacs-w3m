@@ -62,9 +62,8 @@
 				(if (= aux 1) "" (format "mail%d.html" aux))))
 	      (erase-buffer)
 	      (shimbun-retrieve-url url)
-	      (setq headers
-		    (shimbun-mhonarc-get-headers
-		     shimbun url headers (format-time-string "%Y")))
+	      (shimbun-mhonarc-get-headers shimbun url headers
+					   (format-time-string "%Y"))
 	      (setq aux (1- aux))))))
       headers))
 

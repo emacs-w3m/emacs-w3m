@@ -59,7 +59,7 @@
   (let ((url (shimbun-index-url shimbun))
 	headers aux)
     (catch 'stop
-      (setq headers (shimbun-mhonarc-get-headers shimbun url))
+      (shimbun-mhonarc-get-headers shimbun url headers)
       (when (shimbun-use-entire-index-internal shimbun)
 	(while (and (re-search-forward
 		     "<A href=\"\\(mail[0-9]+.html\\)\">Next Index</A>"
@@ -69,8 +69,7 @@
 		url (shimbun-expand-url aux url))
 	  (erase-buffer)
 	  (shimbun-retrieve-url url)
-	  (setq headers
-		(shimbun-mhonarc-get-headers shimbun url headers))))
+	  (shimbun-mhonarc-get-headers shimbun url headers)))
       headers)))
 
 (provide 'sb-namazu)

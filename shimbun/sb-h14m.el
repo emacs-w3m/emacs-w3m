@@ -46,7 +46,7 @@
   (let ((url (shimbun-index-url shimbun))
 	headers)
     (catch 'stop
-      (setq headers (shimbun-mhonarc-get-headers shimbun url))
+      (shimbun-mhonarc-get-headers shimbun url headers)
       (goto-char (point-min))
       (when (shimbun-use-entire-index-internal shimbun)
 	(while (re-search-forward
@@ -55,8 +55,7 @@
 	  (setq url (shimbun-expand-url (match-string 1) url))
 	  (erase-buffer)
 	  (shimbun-retrieve-url url)
-	  (setq headers
-		(shimbun-mhonarc-get-headers shimbun url headers))
+	  (shimbun-mhonarc-get-headers shimbun url headers)
 	  (goto-char (point-min))))
       headers)))
 

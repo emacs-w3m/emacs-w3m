@@ -60,8 +60,7 @@
 	  (set-buffer-multibyte t)
 	  (decode-coding-region (point-min) (point-max)
 				(shimbun-coding-system-internal shimbun))
-	  (setq headers
-		(shimbun-mhonarc-get-headers shimbun url headers aux)))))
+	  (shimbun-mhonarc-get-headers shimbun url headers aux))))
     headers))
 
 (provide 'sb-glimpse)

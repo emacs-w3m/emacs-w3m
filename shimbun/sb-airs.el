@@ -72,8 +72,7 @@
       (dolist (month months)
 	(let ((url (shimbun-airs-concat-url shimbun (concat month "/"))))
 	  (shimbun-retrieve-url url t)
-	  (setq headers
-		(shimbun-mhonarc-get-headers shimbun url headers month)))))
+	  (shimbun-mhonarc-get-headers shimbun url headers month))))
     headers))
 
 (provide 'sb-airs)
