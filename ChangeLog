@@ -1,3 +1,8 @@
+2002-04-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-history-current-url-face): Provide `font' temporally
+	to avoid loading cl.
+
 2002-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bitmap.el (w3m-bitmap-image-get-overlay): Don't clear the
