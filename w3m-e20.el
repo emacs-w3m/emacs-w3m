@@ -55,6 +55,11 @@
 (defalias 'w3m-setup-toolbar 'ignore)
 (defalias 'w3m-update-toolbar 'ignore)
 
+(w3m-static-unless (featurep 'bitmap)
+  (defalias 'bitmap-decode-xbm 'ignore)
+  (defalias 'bitmap-read-xbm-buffer 'ignore)
+  (defalias 'bitmap-compose 'ignore))
+
 ;;; Bitmap image functions.
 (defvar w3m-bitmap-image-cache-alist nil)
 (defvar w3m-bitmap-image-use-cache t
@@ -250,8 +255,8 @@ Buffer string between BEG and END are replaced with IMAGE."
       (w3m-bitmap-image-insert-string beg name)
       (+ beg (length name)))))
 
-(defun w3m-image-type-available-p (image-type) t)
-
+(defun w3m-image-type-available-p (image-type)
+  (w3m-static-if (featurep 'bitmap) t nil))
 
 ;;; Coding system.
 

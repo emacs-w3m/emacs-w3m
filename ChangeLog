@@ -1,3 +1,9 @@
+2002-04-04  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-e20.el (top): Avoid byte-compile warnings when not found
+	`bitmap'.
+	(w3m-image-type-available-p): Return nil if not have `bitmap'.
+
 2002-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-fontify-anchors): Set default icon type as ico.
