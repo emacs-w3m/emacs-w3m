@@ -335,18 +335,16 @@ If no field in forward, return nil without moving."
       (while (not (eq (car clist) 0))
 	(setq label (concat label (char-to-string (car clist))))
 	(setq clist (cdr clist)))
+      (if label
+	  (setq label (decode-coding-string label w3m-output-coding-system)))
       (setq clist (cdr clist))
       (while (not (eq (car clist) 0))
 	(setq val (concat val (char-to-string (car clist))))
 	(setq clist (cdr clist)))
+      (if val
+	  (setq val (decode-coding-string val w3m-output-coding-system)))
       (if s (setq selected val))
-      (push (cons (and val (decode-coding-string
-			    val
-			    w3m-output-coding-system))
-		  (and label (decode-coding-string
-			      label
-			      w3m-output-coding-system)))
-	    candidates)
+      (push (cons val label) candidates)
       (setq clist (cdr clist)))
     (cons selected (nreverse candidates))))
 
@@ -442,7 +440,9 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	  (let ((abs-hseq (or (and (null hseq) 0) (abs hseq))))
 	    (setq w3m-max-anchor-sequence 
 		  (max abs-hseq w3m-max-anchor-sequence))
-	    (setq form (nth fid forms))
+	    (if (eq w3m-type 'w3mmee)
+		(setq form (nth fid forms))
+	      (setq form (nth (max (- (length forms) 1) 0) forms)))
 	    (when form
 	      (cond
 	       ((and (string= type "hidden")
