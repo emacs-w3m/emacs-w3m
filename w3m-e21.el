@@ -423,7 +423,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defface w3m-tab-unselected-face
   '((((type x w32 mac) (class color))
      :background "Gray50" :foreground "Gray20"
-     :box (:line-width -1 :style released-button))
+     :box (:line-width 1 :style released-button))
     (((class color))
      (:background "blue" :foreground "black")))
   "*Face to fontify unselected tabs."
@@ -432,7 +432,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defface w3m-tab-unselected-retrieving-face
   '((((type x w32 mac) (class color))
      :background "Gray50" :foreground "OrangeRed"
-     :box (:line-width -1 :style released-button))
+     :box (:line-width 1 :style released-button))
     (((class color))
      (:background "blue" :foreground "OrangeRed")))
   "*Face to fontify unselected tabs which are retrieving their pages."
@@ -441,7 +441,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defface w3m-tab-selected-face
   '((((type x w32 mac) (class color))
      :background "Gray85" :foreground "black"
-     :box (:line-width -1 :style released-button))
+     :box (:line-width 1 :style released-button))
     (((class color))
      (:background "cyan" :foreground "black"))
     (t (:underline t)))
@@ -451,7 +451,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defface w3m-tab-selected-retrieving-face
   '((((type x w32 mac) (class color))
      :background "Gray85" :foreground "red"
-     :box (:line-width -1 :style released-button))
+     :box (:line-width 1 :style released-button))
     (((class color))
      (:background "cyan" :foreground "red"))
     (t (:underline t)))
@@ -506,8 +506,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 				   (cdr (cdr mpos))
 				   (car mpos)))))
     (when window
-      (unless (string= (buffer-name (window-buffer window))
-		       buffer)
+      (unless (eq (window-buffer window) buffer)
 	(select-window window)
 	(switch-to-buffer buffer)))))
 
@@ -520,12 +519,13 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defun w3m-tab-make-keymap ()
   (unless w3m-tab-map
     (setq w3m-tab-map (make-sparse-keymap))
-    (let ((drag-action `(lambda (e)
-			  (interactive "e")
-			  (w3m-tab-drag-mouse-function e ,(buffer-name))))
-	  (up-action `(lambda (e)
-			(interactive "e")
-			(switch-to-buffer ,(buffer-name)))))
+    (let* ((buffer (current-buffer))
+	   (drag-action `(lambda (e)
+			   (interactive "e")
+			   (w3m-tab-drag-mouse-function e ,buffer)))
+	   (up-action `(lambda (e)
+			 (interactive "e")
+			 (switch-to-buffer ,buffer))))
       (define-key w3m-tab-map [header-line down-mouse-1] 'ignore)
       (define-key w3m-tab-map [header-line down-mouse-2] 'ignore)
       (define-key w3m-tab-map [header-line drag-mouse-1] drag-action)
@@ -539,7 +539,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 	 (interactive "e")
 	 (save-current-buffer
 	   ;; Why the `(w3m-process-stop BUFFER)' doesn't work?
-	   (set-buffer ,(buffer-name))
+	   (set-buffer ,(current-buffer))
 	   (call-interactively 'w3m-process-stop))))))
 
 (defvar w3m-tab-line-format nil
@@ -565,7 +565,7 @@ cleared by a timer.")
   (or (and w3m-tab-timer w3m-tab-line-format)
       (let* ((current (current-buffer))
 	     (buffers (w3m-list-buffers))
-	     (min-width 1)
+	     (breadth 1)
 	     (fringes (window-fringes))
 	     (width (+ (window-width)
 		       (/ (float (+ (or (car fringes) 0)
@@ -578,13 +578,13 @@ cleared by a timer.")
 	     (graphic (and window-system
 			   w3m-show-graphic-icons-in-header-line))
 	     (margin (if window-system
-			 (+ (if graphic 3 0.5)
-			    ;; Leading and trailing shadows.
-			    (/ 2.0 (frame-char-width)))
+			 (+ (if graphic 3.0 0.5)
+			    ;; Vertical shadows.
+			    (/ (if graphic 4.0 2.0) (frame-char-width)))
 		       1))
 	     (spinner (when w3m-process-queue
 			(w3m-make-spinner-image)))
-	     buffer title data datum process face icon breadth line)
+	     buffer title data datum process face keymap icon line)
 	(setq w3m-tab-timer
 	      (run-at-time 0.1 nil
 			   (lambda (window)
@@ -600,8 +600,8 @@ cleared by a timer.")
 	(save-current-buffer
 	  (while buffers
 	    (set-buffer (setq buffer (pop buffers)))
-	    (setq min-width
-		  (max min-width
+	    (setq breadth
+		  (max breadth
 		       ;; There may be a wide character in the beginning of
 		       ;; the title.
 		       (char-width (aref (setq title (w3m-current-title)) 0))))
@@ -612,7 +612,7 @@ cleared by a timer.")
 			w3m-tab-map)
 		  data)))
 	(setq width (if (> (* nbuf (+ margin w3m-tab-width)) width)
-			(max (truncate (- (/ width nbuf) margin)) min-width)
+			(max (truncate (- (/ width nbuf) margin)) breadth)
 		      w3m-tab-width))
 	(while data
 	  (setq datum (pop data)
@@ -626,51 +626,56 @@ cleared by a timer.")
 		       (if current
 			   'w3m-tab-selected-face
 			 'w3m-tab-unselected-face))
+		keymap (nth 4 datum)
 		icon (when graphic
-		       (cond (process
-			      (when spinner
-				(propertize
-				 "  "
-				 'display spinner
-				 'mouse-face 'highlight
-				 'face face
-				 'local-map w3m-tab-spinner-map
-				 'help-echo w3m-spinner-map-help-echo)))
-			     ((nth 3 datum)
-			      (propertize "  " 'display (nth 3 datum)))))
-		breadth (if icon
-			    width
-			  (+ 2 width)))
+		       (cond
+			(process
+			 (when spinner
+			   (propertize
+			    "  "
+			    'display (cons 'image
+					   (plist-put
+					    (copy-sequence (cdr spinner))
+					    :relief -1))
+			    'mouse-face 'highlight
+			    'local-map w3m-tab-spinner-map
+			    'help-echo w3m-spinner-map-help-echo)))
+			((nth 3 datum)
+			 (propertize
+			  "  "
+			  'display (cons 'image
+					 (plist-put
+					  (copy-sequence (cdr (nth 3 datum)))
+					  :relief 1))
+			  'mouse-face 'highlight
+			  'local-map keymap
+			  'help-echo title))))
+		breadth (cond (icon width)
+			      (graphic (+ 2 width))
+			      (t width)))
 	  (push
 	   (list
 	    icon
 	    (propertize
 	     (concat
-	      w3m-tab-half-space
+	      (when graphic w3m-tab-half-space)
 	      (if (and (> (string-width title) breadth)
 		       (> breadth 6))
 		  (truncate-string-to-width
-		   (concat (truncate-string-to-width title
-						     (max 0 (- breadth 3)))
+		   (concat (truncate-string-to-width title (- breadth 3))
 			   "...")
 		   breadth nil ?.)
 		(truncate-string-to-width title breadth nil ?\ )))
 	     'mouse-face 'highlight
 	     'face face
-	     'local-map (nth 4 datum)
+	     'local-map keymap
 	     'help-echo title)
 	    w3m-tab-separator)
 	   line))
 	(setq w3m-tab-line-format
 	      (concat (apply 'concat (apply 'nconc line))
-		      (if window-system
-			  (propertize
-			   " "
-			   'face 'w3m-tab-background-face
-			   'display (list 'space
-					  :relative-width (window-width)))
-			(propertize (make-string (window-width) ?\ )
-				    'face 'w3m-tab-background-face)))))))
+		      (propertize (make-string (window-width) ?\ )
+				  'face 'w3m-tab-background-face))))))
 
 (defun w3m-update-tab-line ()
   "Update tab line."
