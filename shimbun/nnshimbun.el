@@ -801,6 +801,7 @@ article to be expired.  The optional fourth argument FORCE is ignored."
 Other files in the directory are also deleted."
   (when (nnshimbun-possibly-change-group group server)
     (let ((dir (nnmail-group-pathname group (nnshimbun-server-directory)))
+	  (nov (nnshimbun-nov-buffer-name group))
 	  files file subdir)
       (when (file-directory-p dir)
 	(setq files (directory-files
@@ -817,7 +818,9 @@ Other files in the directory are also deleted."
       (setq dir (expand-file-name ".." dir))
       (unless (directory-files
 	       dir t "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*")
-	(delete-directory dir)))
+	(delete-directory dir))
+      (when (gnus-buffer-live-p nov)
+	(kill-buffer nov)))
     t))
 
 

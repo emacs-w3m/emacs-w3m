@@ -1,5 +1,8 @@
 2004-12-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/nnshimbun.el (nnshimbun-request-delete-group): Delete
+	the internal nov buffer as well.
+
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add the job group.
 	(shimbun-asahi-get-headers): Replace `.' with `/' in group names;
 	remove a special treatment for the international group; don't add
