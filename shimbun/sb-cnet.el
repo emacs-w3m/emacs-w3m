@@ -1,9 +1,10 @@
 ;;; sb-cnet.el --- shimbun backend for cnet -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Yuuichi Teranishi  <teranisi@gohome.org>
+;;         Yuuichi Teranishi  <teranisi@gohome.org>,
+;;         Katsumi Yamaoka    <yamaoka@jpl.org>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
@@ -34,11 +35,11 @@
 
 (luna-define-class shimbun-cnet (shimbun) ())
 
-(defvar shimbun-cnet-url "http://cnet.sphere.ne.jp/")
-(defvar shimbun-cnet-groups '("comp"))
-(defvar shimbun-cnet-from-address  "cnet@sphere.ad.jp")
-(defvar shimbun-cnet-content-start "\n<!--KIJI-->\n")
-(defvar shimbun-cnet-content-end "\n<!--/KIJI-->\n")
+(defvar shimbun-cnet-url "http://japan.cnet.com/")
+(defvar shimbun-cnet-groups '("news"))
+(defvar shimbun-cnet-from-address  "webmaster@japan.cnet.com")
+(defvar shimbun-cnet-content-start "\n<!-- MAIN -->\n")
+(defvar shimbun-cnet-content-end "\n<!--NEWS LETTER SUB-->\n")
 (defvar shimbun-cnet-x-face-alist
   '(("default" . "X-Face: 0p7.+XId>z%:!$ahe?x%+AEm37Abvn]n\
 *GGh+>v=;[3`a{1lqO[$,~3C3xU_ri>[JwJ!9l0\n ~Y`b*eXAQ:*q=bBI\
@@ -46,33 +47,47 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 (defvar shimbun-cnet-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-cnet))
-  (format "%s/News/Oneweek/" (shimbun-url-internal shimbun)))
+  (shimbun-url-internal shimbun))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-cnet)
 					 &optional range)
-  (let ((case-fold-search t) headers)
-    (while (search-forward "\n<!--*****見出し*****-->\n" nil t)
-      (let ((subject (buffer-substring (point) (point-at-eol)))
-	    (point (point)))
-	(forward-line -2)
-	(when (looking-at "<a href=\"/\\(News/\\([0-9][0-9][0-9][0-9]\\)/Item/\\([0-9][0-9]\\([0-9][0-9]\\)\\([0-9][0-9]\\)-[0-9]+\\).html\\)\">")
-	  (let ((url (match-string 1))
-		(id  (format "<%s%s%%%s>"
-			     (match-string 2)
-			     (match-string 3)
-			     (shimbun-current-group-internal shimbun)))
-		(date (shimbun-make-date-string
-		       (string-to-number (match-string 2))
-		       (string-to-number (match-string 4))
-		       (string-to-number (match-string 5)))))
-	    (push (shimbun-make-header
-		   0
-		   (shimbun-mime-encode-string subject)
-		   (shimbun-from-address shimbun)
-		   date id "" 0 0 (concat (shimbun-url-internal shimbun) url))
-		  headers)))
-	(goto-char point)))
+  (let ((case-fold-search t)
+	headers)
+    (while (re-search-forward "\
+\\(20[0-9][0-9]\\)年\\([01]?[0-9]\\)月\\([0-3]?[0-9]\\)日(\\cj)[\t ]*\
+\\([012]?[0-9]\\)時\\([0-5]?[0-9]\\)分.+\n\
+.+<a href=\"/\\(.+\\)\\(\\.html?\\)\">\\(.+\\)</a>" nil t)
+      (push (shimbun-make-header
+	     0
+	     (shimbun-mime-encode-string (match-string 8))
+	     (shimbun-from-address shimbun)
+	     (shimbun-make-date-string
+	      (string-to-number (match-string 1))
+	      (string-to-number (match-string 2))
+	      (string-to-number (match-string 3))
+	      (concat (match-string 4) ":" (match-string 5)))
+	     (concat "<"
+		     (mapconcat 'identity
+				(save-match-data
+				  (split-string (match-string 6) "[,/]+"))
+				".")
+		     "@japan.cnet.com>")
+	     "" 0 0
+	     (concat (shimbun-url-internal shimbun)
+		     (match-string 6)
+		     (match-string 7)))
+	    headers))
     headers))
+
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-cnet)
+						   header)
+  "Remove advertisements embedded with <table *> ... </table> forms."
+  (let (start)
+    (while (search-forward "<table" nil t)
+      (setq start (match-beginning 0))
+      (delete-region start (or (search-forward "</table>" nil t)
+			       start))))
+  (goto-char (point-min)))
 
 (provide 'sb-cnet)
 
