@@ -994,9 +994,9 @@ If N is negative, last N items of LIST is returned."
 		       (error "Internal error, type mismatch."))
 		   (let ((sexp (quote
 				(w3m-remove-redundant-spaces
-				 (or (match-string 2)
-				     (match-string 3)
-				     (match-string 1))))))
+				 (or (match-string-no-properties 2)
+				     (match-string-no-properties 3)
+				     (match-string-no-properties 1))))))
 		     (when (listp attr)
 		       (cond
 			((eq (nth 1 attr) :case-ignore)
@@ -1136,8 +1136,7 @@ half-dumped data."
 	(balloon (w3m-make-balloon-help w3m-image))
 	src upper start end)
     (while (re-search-forward "<\\(img_alt\\) src=\"\\([^\"]*\\)\">" nil t)
-      (setq src (buffer-substring-no-properties (match-beginning 2)
-						(match-end 2))
+      (setq src (match-string-no-properties 2)
 	    upper (string= (match-string 1) "IMG_ALT")
 	    start (match-beginning 0))
       (delete-region start (match-end 0))
