@@ -1067,9 +1067,9 @@ sessions'' と ``Finish'' のボタンを押せば良いのです。
 
 @table @kbd
 @item +
-Add a URL to the Antenna database.  If called with a prefix argument,
-ask for a URL instead of adding the current page
-(@code{w3m-antenna-add-current-url}).
+URL をアンテナ・データベースに加えます。接頭引数付きで呼ばれた場合は、現
+在のページを追加するのではなくて、加える URL を尋ねま
+す (@code{w3m-antenna-add-current-url})。
 @end table
 
 @node Daily web tracking
