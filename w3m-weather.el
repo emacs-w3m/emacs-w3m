@@ -334,7 +334,8 @@
   '(w3m-weather-remove-headers
     w3m-weather-remove-footers
     w3m-weather-expand-anchors
-    w3m-weather-insert-title)
+    w3m-weather-insert-title
+    w3m-weather-insert-seikatu-sisu)
   "Filter functions to remove useless tags."
   :group 'w3m
   :type 'hook)
@@ -465,6 +466,45 @@
 					 (match-string-no-properties 3)
 					 (match-string-no-properties 1)))
 				    url)))))
+
+(defun w3m-weather-get-seikatu-sisu (url &rest args)
+  (with-temp-buffer
+    (w3m-retrieve url)
+    (w3m-decode-buffer url)
+    (goto-char (point-min))
+    (let (sisu-list)
+      (when (search-forward "<td>指　数</td>" nil t)
+	(while (re-search-forward "<td nowrap bgcolor=\"#CCCCFF\">　*\\([^　\n]+\\)　*</td>" nil t)
+	  (let ((name-sisu (match-string 1))
+		sisu)
+	    (dotimes (i 2)
+	      (forward-line 1)
+	      (when (looking-at "<td bgcolor=\"#EEEEEE\">\\([^\n]+\\)</td>")
+		(push (list name-sisu (match-string 1)) sisu)))
+	    (push sisu sisu-list)))
+	(nreverse sisu-list)))))
+
+(defun w3m-weather-insert-seikatu-sisu (&rest args)
+  (goto-char (point-min))
+  (when (re-search-forward "<a href=\"\\([^\"]+\\)\">生活指数</a>" nil t)
+    (let ((sisu-list (w3m-weather-get-seikatu-sisu (match-string 1)))
+	  (case-fold-search t)
+	  sisu-name)
+      (goto-char (point-min))
+      (when (search-forward "</table>\n<!--- /WEATHER_TABLE_1 --->\n" nil t)
+	(goto-char (match-beginning 0))
+	(dolist (seikatu-sisu sisu-list)
+	  (insert "<tr>\n")
+	  (dolist (sisu (reverse seikatu-sisu))
+	    (insert "<td width=\"50%\"><table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td nowrap bgcolor=\"#CCCCFF\" width=\"100\" valign=\"top\">")
+	    (insert (format "%s</td>\n" (car sisu)))
+	    (insert (format "<td bgcolor=\"#eeeeee\" align=\"center\">%s</td>\n</tr>\n</table>\n</td>\n" (cadr sisu))))
+	  (insert "</tr>\n"))
+	(goto-char (point-min))
+	(when (search-forward "<!--- EXPONENT_LINK --->" nil t)
+	  (let ((bg (match-beginning 0)))
+	    (when (search-forward "<!--- /EXPONENT_LINK --->" nil t)
+	      (delete-region bg (match-end 0)))))))))
 
 (provide 'w3m-weather)
 

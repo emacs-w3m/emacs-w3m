@@ -1,3 +1,7 @@
+2001-12-12    Kazuyoshi Koreeda <k_koreed@d2.dion.ne.jp>
+
+	* w3m-weather.el (w3m-weather-insert-seikatu-sisu): New function.
+	(w3m-weather-get-seikatu-sisu): Ditto.
 2001-12-10  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-form.el (w3m-form-parse-forms): Use `w3m-decode-entities-string'
@@ -1642,7 +1646,7 @@
 	Add new section 2. c), 2. e) about APEL, FLIM, shimbun library.
 	* README: Ditto.
 
-	* FAQ.ja (Q. $BF0:n$9$k(B Emacs $B$O(B?): Add description about where to
+	* FAQ.ja (Q. Æ°ºî¤¹¤ë Emacs ¤Ï?): Add description about where to
 	get APEL.
 
 2001-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
