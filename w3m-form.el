@@ -248,11 +248,16 @@ return them with the flag."
 	       (t				;; w3mee with libmoe
 		(setq accept-charset (list charset))))))
 	  (setq forms
-		(cons (w3m-form-new (or method "get")
-				    (or action w3m-current-url)
-				    nil
-				    accept-charset)
-		    forms)))
+		(cons (w3m-form-new
+		       (or method "get")
+		       (or action
+			   (progn
+			     (string-match w3m-url-components-regexp w3m-current-url)
+			     (substring w3m-current-url 0
+					(or (match-beginning 6) (match-beginning 8)))))
+		       nil
+		       accept-charset)
+		      forms)))
 	;; Parse form fields until </FORM>
 	(while (and (re-search-forward
 		     (w3m-tag-regexp-of "input" "textarea" "select" "/form")
