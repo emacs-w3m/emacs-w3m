@@ -1120,13 +1120,15 @@ If N is negative, last N items of LIST is returned."
 (defun w3m-create-image (url &optional no-cache)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used."
-  (let ((type (w3m-retrieve url 'raw nil no-cache)))
-    (when type
-      (w3m-with-work-buffer
-	(create-image (buffer-string) 
-		      (cdr (assoc type w3m-image-type-alist))
-		      t
-		      :ascent 'center)))))
+  (condition-case err
+      (let ((type (w3m-retrieve url 'raw nil no-cache)))
+	(when type
+	  (w3m-with-work-buffer
+	    (create-image (buffer-string) 
+			  (cdr (assoc type w3m-image-type-alist))
+			  t
+			  :ascent 'center))))
+    (error nil)))
 
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
@@ -1145,15 +1147,17 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defun w3m-create-image (url &optional no-cache)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used."
-  (let ((type (w3m-retrieve url 'raw nil no-cache)))
-    (when type
-      (let ((data (w3m-with-work-buffer (buffer-string))))
-	(make-glyph
-	 (make-image-instance
-	  (vector (or (cdr (assoc type w3m-image-type-alist))
-		      'autodetect)
-		  :data data)
-	  nil nil 'no-error))))))
+  (condition-case err
+      (let ((type (w3m-retrieve url 'raw nil no-cache)))
+	(when type
+	  (let ((data (w3m-with-work-buffer (buffer-string))))
+	    (make-glyph
+	     (make-image-instance
+	      (vector (or (cdr (assoc type w3m-image-type-alist))
+			  'autodetect)
+		      :data data)
+	      nil nil 'no-error)))))
+    (error nil)))
 
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.

@@ -1,5 +1,7 @@
 2001-03-09  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m.el (w3m-create-image) [EMACS21,XEMACS]: Guard against error.
+
 	* mew-w3m.el (mew-w3m-auto-insert-image): New variable.
 	(mew-mime-text/html-w3m): Bind 'w3m-display-inline-image' with
 	'mew-w3m-auto-insert-image'.
