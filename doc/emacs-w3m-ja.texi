@@ -237,7 +237,7 @@ Emacs $B>e$GF0:n$9$k%V%i%&%6$H8@$($P!"(B
 $B$A(B (emacs-w3m $B3+H/%A!<%`(B) $B$K$"$j$^$9!#$b$C$H$b!"J]>Z$O$^$C$?$/$"$j$^$;$s(B
 $B$,!#(BEmacs-w3m $B$O(B 2000$BG/(B6$B7n$KEZ202mL-$K$h$C$F:G=i$K:n$i$l$^$7$?!#(B
 
-Emacs-w3m $B$N8x<0%Z!<%8(B @uref{http://emacs-w3m.namazu.org/} $B$bJ;$;$F$4Mw(B
+@uref{http://emacs-w3m.namazu.org/, Emacs-w3m $B$N8x<0%Z!<%8(B}$B$bJ;$;$F$4Mw(B
 $B2<$5$$!#(B
 
 @node Getting Started
@@ -2362,6 +2362,12 @@ XEmacs $B$N(B @acronym{APEL} $B%Q%C%1!<%8(B ($B$9$Y$F$N%b%8%e!<%k$,(B Mule
 Mule $BIU$-$HL5$7N>J}$N(B XEmacs $B$G;H$($k$N$G$9$,!"%*%j%8%J%k(B
 $B$N(B @acronym{APEL} $B$GCV$-49$($k$+?75,$K%$%s%9%H!<%k$9$k$3$H$r4+$a$^$9!#<h(B
 $BF@>l=j$O(B @ref{Other Requirements} $B$r8+$F2<$5$$!#(B
+
+@item
+Q. CVS $B$G:G?7HG$r<hF@$7$?$N$G$9$,!"(B@file{configure} $B%9%/%j%W%H$,8+$D$+$j(B
+$B$^$;$s!#(B
+
+@samp{autoconf} $B$r<B9T$7$F$/$@$5$$!#(B
 @end itemize
 
 @node Trouble FAQ
@@ -3132,7 +3138,7 @@ Wanderlust $B$K$O(B ELMO $B%b%8%e!<%k$N0l$D$H$7$F(B @samp{elmo-shimbun} $B$
 @samp{Shimbun} $B%i%$%V%i%j$,BP1~$7$F$$$k?7J9<R$G$9!#(B
 
 @table @asis
-@item $BD+F|?7J9(B
+@item @uref{http://www.asahi.com/, $BD+F|?7J9(B}
 asahi.business asahi.culture asahi.english asahi.international
 asahi.national asahi.politics asahi.science asahi.sports
 
@@ -3141,26 +3147,26 @@ asahi.national asahi.politics asahi.science asahi.sports
 $B$"$j$^$9!#$3$A$i$rMxMQ$9$k>l9g$O!"(Basahi-html.business $B$H$$$&$h$&$J%0%k!<(B
 $B%WL>$K$J$j$^$9!#(B
 
-@item $BKhF|?7J9(B
+@item @uref{http://www.mainichi.co.jp/, $BKhF|?7J9(B}
 mainichi.shakai mainichi.sports mainichi.seiji mainichi.keizai
 mainichi.kokusai mainichi.fuho
 
-@item $BF|4)%9%]!<%D(B
+@item @uref{http://www.nikkansports.com/, $BF|4)%9%]!<%D(B}
 nikkansports.baseball nikkansports.mlb nikkansports.soccer
 nikkansports.world-soccer nikkansports.sports nikkansports.battle
 nikkansports.horseracing nikkansports.entertainment
 nikkansports.society nikkansports.leisure
 
-@item $BF|K\7P:Q?7J9(B
+@item @uref{http://www.nikkei.co.jp/, $BF|K\7P:Q?7J9(B}
 nikkei.kaigai nikkei.keizai nikkei.main nikkei.market nikkei.okuyami
 nikkei.retto nikkei.sangyo nikkei.seiji nikkei.shakai nikkei.shasetsu
 nikkei.tento nikkei.zinzi
 
-@item $B%9%]%K%A(B
+@item @uref{http://www.sponichi.co.jp/, $B%9%]%K%A(B}
 sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
 sponichi.society sponichi.entertainment sponichi.horseracing
 
-@item $Bl&Gd?7J9(B
+@item @uref{http://www.yomiuri.co.jp/, $Bl&Gd?7J9(B}
 yomiuri.business yomiuri.editorial yomiuri.national yomiuri.obit
 yomiuri.politics yomiuri.sports yomiuri.world
 
@@ -3174,27 +3180,27 @@ yomiuri.politics yomiuri.sports yomiuri.world
 @samp{Shimbun} $B%i%$%V%i%j$,BP1~$7$F$$$k%K%e!<%9%5%$%H$G$9!#(B
 
 @table @asis
-@item Japan CNET
+@item @uref{http://cnet.sphere.ne.jp/, Japan CNET}
 cnet.comp
 
-@item $B%$%s%W%l%9(B
+@item @uref{http://www.watch.impress.co.jp/, $B%$%s%W%l%9(B}
 impress.internet impress.pc impress.akiba impress.game impress.av
 impress.jijinews impress.sports
 
-@item slashdot-jp
+@item @uref{http://slashdot.jp/, Slashdot Japan}
 slashdot-jp.story
 
-@item HotWired
+@item @uref{http://www.hotwired.co.jp/, HotWired Japan}
 wired.business wired.culture wired.technology
 
-@item YAHOO!JAPAN
+@item @uref{http://headlines.yahoo.co.jp/, Yahoo! Japan}
 yahoo.politics yahoo.society yahoo.people yahoo.business-all
 yahoo.market yahoo.stock yahoo.industry yahoo.international
 yahoo.entertainment yahoo.sports yahoo.computer yahoo.hokkaido
 yahoo.tohoku yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
 yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
 
-@item ZDNet
+@item @uref{http://www.zdnet.co.jp/, ZDNet Japan}
 zdnet.comp zdnet.gamespot
 @end table
 
@@ -3206,16 +3212,16 @@ zdnet.comp zdnet.gamespot
 $B$&$3$H$,$G$-$^$9!#(B
 
 @table @asis
-@item semi-gnus-ja
+@item @uref{http://lists.airs.net/semi-gnus/archive/, semi-gnus-ja}
 airs.semi-gnus-ja
 
-@item wanderlust
-airs.wl
+@item @uref{http://lists.airs.net/, Wanderlust}
+airs.wl airs.wl-en
 
-@item bbdb-ml
+@item @uref{http://www.rc.tutrp.tut.ac.jp/bbdb-ml/, bbdb-ml}
 bbdb-ml.bbdb-ml
 
-@item gnome $B4XO"(B
+@item @uref{http://mail.gnome.org/archives/, GNOME}
 gnome.balsa-list gnome.calendar-list gnome.cvs-commits-list
 gnome.foundation-announce gnome.foundation-list gnome.fplan-list
 gnome.gconf-list gnome.gdome gnome.gnome-1.4-list
@@ -3233,84 +3239,84 @@ gnome.gtk-i18n-list gnome.gtk-list gnome.gtk-perl-list
 gnome.guppi-list gnome.libart gnome.libart-hackers gnome.orbit-list
 gnome.vote gnome.wm-spec-list gnome.xml gnome.xslt
 
-@item gs-cjk
+@item @uref{http://www.gyve.org/gs-cjk/archive/, gs-cjk}
 gyve.gs-cjk
 
-@item h14m $B4XO"(B
+@item @uref{http://www.h14m.org/ml/, h14m}
 h14m.hns-dev h14m.hns-users
 
-@item Java $B%+%s%U%!%l%s%94XO"(B
+@item @uref{http://www.java-conf.gr.jp/archives/, Java $B%+%s%U%!%l%s%9(B}
 javaconf.servlet-ml javaconf.business-ml
 javaconf.duke-in-the-box-ml javaconf.jfriends-ml javaconf.JGT-ml
 javaconf.jini-ml javaconf.ejb-ml javaconf.cm-ml javaconf.horb-ml
 javaconf.talk-ml
 
-@item linux-ce
-linux-ce.users
+@item @uref{http://www.peanuts.gr.jp/~kei/ml-archive/, LinuxCE JP}
+linuxce-jp.users
 
-@item mule
+@item @uref{http://www.m17n.org/, Mule}
 m17n.mule-ja m17n.mule
 
-@item meadow $B4XO"(B
+@item @uref{http://www.ysnb.net/meadow/, Meadow}
 meadow.meadow-develop meadow.meadow-users-jp
 
-@item mew $B4XO"(B
+@item @uref{http://www.mew.org/ml/, Mew}
 mew.mew-dist mew.mew-win32 mew.mew-int
 
-@item mgp $B4XO"(B
+@item @uref{http://www.mew.org/ml/, MagicPoint}
 mew.mgp-users mew.mgp-users-jp
 
-@item namazu $B4XO"(B
+@item @uref{http://www.namazu.org/ml/, Namazu}
 namazu.namazu-users-ja namazu.namazu-win32-users-ja
 namazu.namazu-users-en namazu.namazu-devel-ja namazu.namazu-devel-en
 
-@item emacs-w3m
+@item @uref{http://emacs-w3m.namazu.org/ml/, emacs-w3m}
 namazu.emacs-w3m
 
-@item migemo
+@item @uref{http://migemo.namazu.org/ml/, migemo}
 namazu.migemo
 
-@item netbsd $B4XO"(B
+@item @uref{http://www.jp.netbsd.org/ja/JP/ml/, NetBSD JP}
 netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
 netbsd.tech-pkg-ja netbsd.port-arm32-ja netbsd.port-hpcmips-ja
 netbsd.port-mac68k-ja netbsd.port-mips-ja netbsd.port-powerpc-ja
 netbsd.hpcmips-changes-ja netbsd.members-ja netbsd.admin-ja
 netbsd.www-changes-ja
 
-@item QuickML $B4XO"(B
+@item @uref{http://namazu.org/~satoru/archives/, QuickML}
 quickml.quickml-users quickml.quickml-server
 quickml.chatty quickml.dotnet quickml.linux-zaurus quickml.ming
 quickml.pdumpfs quickml.stationery quickml.tty-mania
 
-@item ruby $B4XO"(B
+@item @uref{http://blade.nagaokaut.ac.jp/, Ruby}
 ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
 ruby.ruby-dev ruby.ruby-ext ruby.ruby-list ruby.ruby-math
 ruby.ruby-talk
 
-@item tlinux-users-j
+@item @uref{http://linux.toshiba-dme.co.jp/ML/tlinux-users-j/, Toshiba Linux Users JP}
 toshiba.linux-users-j
 
-@item w3m-dev
+@item @uref{http://mi.med.tohoku.ac.jp/~satodai/w3m-dev/, w3m-dev}
 w3m-dev.w3m-dev
 
-@item digiko-ml
+@item @uref{http://yar-3.net/digiko/, digiko-ml}
 digiko.digiko
 
-@item XEmacs $B4XO"(B
+@item @uref{http://list-archive.xemacs.org/, XEmacs}
 xemacs.xemacs-announce xemacs.xemacs-beta-ja
 xemacs.xemacs-beta xemacs.xemacs-build-reports xemacs.xemacs-cvs
 xemacs.xemacs-design xemacs.xemacs-mule xemacs.xemacs-nt
 xemacs.xemacs-patches xemacs.xemacs-users-ja xemacs.xemacs
 
-@item $B%;%-%e%j%F%#!<(BMEMO
+@item @uref{http://memo.st.ryukoku.ac.jp/archive/, $B%;%-%e%j%F%#!<(BMEMO}
 security-memo.memo
 
-@item Debian JP $B4XO"(B
+@item @uref{http://lists.debian.or.jp/, Debian JP}
 debian-jp.debian-announce debian-jp.debian-devel
 debian-jp.debian-www debian-jp.debian-users debian-jp.debian-policy
 debian-jp.jp-qa
 
-@item Debian $B4XO"(B
+@item @uref{http://lists.debian.org/, Debian}
 debian.debian-announce debian.debian-commercial debian.debian-firewall
 debian.debian-french debian.debian-isp debian.debian-italian
 debian.debian-kde debian.debian-laptop debian.debian-news
@@ -3366,56 +3372,86 @@ debian.lcs-eng debian.lsb-confcall debian.lsb-discuss debian.lsb-impl
 debian.lsb-spec debian.lsb-test debian.spi-announce debian.spi-general
 debian.vgui-discuss
 
-@item KDE $B4XO"(B
+@item @uref{http://www.kde.gr.jp/ml/, KDE}
 kde.Kuser kde.Kdeveloper
 
-@item Geocrawler
-@uref{http://www.geocrawler.com/} $B$KJ]B8$5$l$F$$$kA4$F$N%a!<%j%s%0%j%9%H(B
-$B$r1\Mw$9$k$3$H$,$G$-$^$9!#(B@kbd{M-x shimbun-geocrawler-add-group RET} $B$H(B
-$B$$$&%3%^%s%I$r;H$C$F!"1\Mw$7$?$$%0%k!<%W$r(B
-$BJQ?t(B @code{shimbun-geocrawler-group-alist} $B$KEPO?$7$F$/$@$5$$!#(B
+@item @uref{http://www.geocrawler.com/, Geocrawler}
+Geocrawler $B$KJ]B8$5$l$F$$$kA4$F$N%a!<%j%s%0%j%9%H$r1\Mw$G$-$^$9!#(B
+@kbd{M-x shimbun-geocrawler-add-group RET} $B$H$$$&%3%^%s%I$r;H$C$F!"1\Mw(B
+$B$7$?$$%0%k!<%W$rJQ?t(B @code{shimbun-geocrawler-group-alist} $B$KEPO?$7$F$/(B
+$B$@$5$$!#(B
 
-@item MARC
-@uref{http://marc.theaimsgroup.com} $B$KJ]B8$5$l$F$$$kA4$F$N%a!<%j%s%0%j%9(B
-$B%H$r1\Mw$9$k$3$H$,$G$-$^$9!#1\Mw$7$?$$%0%k!<%W$N%0%k!<%WL>$H(B URL $B$r!"(B
+@item @uref{http://marc.theaimsgroup.com/, Mailing list ARChives}
+Mailing list ARChives (@acronym{MARC}) $B$KJ]B8$5$l$F$$$kA4$F$N%a!<%j%s%0(B
+$B%j%9%H$r1\Mw$G$-$^$9!#1\Mw$7$?$$%0%k!<%W$N%0%k!<%WL>$H(B URL $B$r!"(B
 $BJQ?t(B @code{shimbun-marc-aims-group-alist} $B$KEPO?$7$F$/$@$5$$!#(B
 
-@item RedHat $B4XO"(B
-@uref{http://sources.redhat.com/lists.html}
+@item @uref{http://sources.redhat.com/ml/, RedHat}
+redhat.automake redhat.bug-automake redhat.automake-prs
+redhat.automake-cvs redhat.binutils redhat.binutils-cvs
+redhat.c++-embedded redhat.crossgcc redhat.cgen redhat.cgen-prs
+redhat.cgen-cvs redhat.cygwin redhat.cygwin-xfree redhat.cygwin-announce
+redhat.cygwin-xfree-announce redhat.cygwin-apps redhat.cygwin-patches
+redhat.cygwin-developers redhat.cygwin-cvs redhat.cygwin-apps-cvs
+redhat.docbook-tools-discuss redhat.docbook-tools-announce
+redhat.docbook-tools-cvs redhat.docbook redhat.dssslist
+redhat.sgml-tools redhat.docbook-apps redhat.ecos-announce
+redhat.ecos-devel redhat.ecos-discuss redhat.ecos-maintainers
+redhat.ecos-patches redhat.elix redhat.elix-announce redhat.gdb
+redhat.gdb-announce redhat.gdb-testers redhat.gdb-testresults
+redhat.gdb-patches redhat.gdb-cvs redhat.bug-gdb redhat.gdb-prs
+redhat.libc-alpha redhat.libc-hacker redhat.bug-glibc redhat.glibc-cvs
+redhat.glibc-linux redhat.bug-gnats redhat.gnats-devel
+redhat.gnats-announce redhat.gnats-cvs redhat.gsl-discuss
+redhat.gsl-announce redhat.gsl-cvs redhat.guile redhat.guile-emacs
+redhat.guile-prs redhat.guile-gtk redhat.bug-guile redhat.guile-cvs
+redhat.guile-emacs-cvs redhat.insight redhat.insight-announce
+redhat.insight-prs redhat.installshell redhat.inti redhat.kawa
+redhat.libffi-discuss redhat.libffi-announce redhat.libstdc++
+redhat.libstdc++-cvs redhat.libstdc++-prs redhat.mauve-discuss
+redhat.mauve-announce redhat.newlib redhat.pthreads-win32 redhat.rhdb
+redhat.rhdb-announce redhat.rhug-rhats redhat.rpm2html-cvs
+redhat.rpm2html-prs redhat.rpm2html redhat.sid redhat.sid-announce
+redhat.sid-cvs redhat.sourcenav redhat.sourcenav-announce
+redhat.sourcenav-prs redhat.win32-x11 redhat.xconq7
+redhat.xconq-announce redhat.xconq-cvs
 
-@item MacOSX-jp $B4XO"(B
+@item @uref{http://www.tech-arts.co.jp/macosx/, MacOSX JP}
 macosx-jp.macosx-jp macosx-jp.macosx-dev-jp
 macosx-jp.macosx-ws-jp macosx-jp.webobjects-jp
 
-@item Input Method
-anthy.main canna-dev.main
+@item @uref{http://lists.sourceforge.jp/pipermail/anthy-dev/, Anthy}
+anthy.main
 
-@item Emacsen $BA4HL(B
+@item @uref{http://lists.sourceforge.jp/pipermail/canna-dev/, Canna}
+canna-dev.main
+
+@item @uref{http://heimat.jp/~nakaji/elips/, Elips}
 elips.elips
 
-@item Squeak-ja
+@item @uref{http://lists.squeakfoundation.org/pipermail/squeak-ja/, Squeak-ja}
 squeak-ja.main
 
-@item sml
+@item @uref{http://www.sra.co.jp/smalltalk/SML/archives/, sml}
 sml.main
 
-@item Squeak-dev
+@item @uref{http://lists.squeakfoundation.org/pipermail/squeak-dev/, Squeak-dev}
 squeak-dev.main
 
 @item Plucker
 plucker.announce plucker.list plucker.dev
 
-@item pilot-link
+@item @uref{http://www.pilot-link.org/pipermail/, pilot-link}
 pilot-link.announce pilot-link.devel pilot-link.general
 pilot-link.unix-ng
 
-@item Coldsync
+@item @uref{http://www.thedotin.net/maillists/coldsync-hackers/maillist.html, Coldsync}
 coldsync.main
 
-@item J-Pilot
+@item @uref{http://www.jpilot.org/pipermail/jpilot/, J-Pilot}
 jpilot.main
 
-@item pilot-mailsync
+@item @uref{http://lists.gnu-designs.com/pipermail/pilot-mailsync/, pilot-mailsync}
 pilot-mailsync.main
 @end table
 
@@ -3425,13 +3461,13 @@ pilot-mailsync.main
 @samp{Shimbun} $B%i%$%V%i%j$,BP1~$7$F$$$k%9%]!<%D4X78$N%5%$%H$G$9!#(B
 
 @table @asis
-@item makanai
+@item @uref{http://www.makanai.com/, makanai}
 makanai.f1news
 
-@item F1 $B%U%!%s(B
+@item @uref{http://www.ksky.ne.jp/~tahara/f1/, F1 $B%U%!%s(B}
 f1fan.news
 
-@item $B%H!<%A%e%&(B F1 EXPRESS
+@item @uref{http://f1express.cnc.ne.jp/, $B%H!<%A%e%&(B F1 EXPRESS}
 f1express.F1 f1express.Pari-Dakar f1express.CART f1express.All-Japan
 f1express.WRC f1express.bike f1express.Tuka-CLUB f1express.etc
 f1express.F-Nippon f1express.JGTC f1express.LeMans24 f1express.Indi500
@@ -3448,11 +3484,11 @@ f1express.Imamiya f1express.Toyota-news f1express.F1-release
 f1express.info
 @end table
 
-$B$?$@$7!"%H!<%A%e%&(B F1 EXPRESS $B$r1\Mw$9$k>l9g$O!"(BMule-UCS
-(@uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/}) $B$r%$%s%9%H!<%k$7$F$*$/(B
-$BI,MW$,$"$j$^$9!#(BEmacs-21.2 $B$GMxMQ$9$k>l9g$O!"(BMule-UCS $B$K(B patch
-@uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html}) $B$rE,(B
-$BMQ$7$?$[$&$,$$$$$G$7$g$&!#(B
+$B$?$@$7!"%H!<%A%e%&(B F1 EXPRESS $B$r1\Mw$9$k>l9g$O!"(B
+@uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/, Mule-UCS} $B$r%$%s%9%H!<%k$7(B
+$B$F$*$/I,MW$,$"$j$^$9!#(BEmacs-21.2 $B$GMxMQ$9$k>l9g$O!"(BMule-UCS $B$K(B
+@uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html, patch}
+$B$rE,MQ$7$?$[$&$,$$$$$G$7$g$&!#(B
 
 @node Misc Sites Supported by Shimbun
 @subsection $B$=$NB>(B
@@ -3461,19 +3497,19 @@ f1express.info
 $B:\5-;v$r<gBN$H$9$k$h$&$J%5%$%H$,4^$^$l$F$$$^$9!#(B
 
 @table @asis
-@item $B$f$&&S&O&P&I&A7G<(HD(B
+@item @uref{http://www61.tcup.com/6116/yutopia.html, $B$f$&&S&O&P&I&A7G<(HD(B}
 tcup.yutopia
 
-@item Meadow $B7G<(HD(B
+@item @uref{http://www66.tcup.com/6629/yutopia.html, Meadow $B7G<(HD(B}
 tcup.meadow
 
-@item SKK $B7G<(HD(B
+@item @uref{http://www67.tcup.com/6718/yutopia.html, SKK $B7G<(HD(B}
 tcup.skk
 
 $BJQ?t(B @code{shimbun-tcup-group-alist} $B$KE,@Z$J@_Dj$r2C$($k$H!"(B
 @uref{http://www.tcup.com/} $B>e$G1?1D$5$l$F$$$kB>$N7G<(HD$b1\Mw$G$-$^$9!#(B
 
-@item VineLinux web $B%5%$%H(B
+@item @uref{http://www.vinelinux.org, VineLinux}
 vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
 vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
@@ -3500,36 +3536,35 @@ vinelinux.errata.1x
          "miyoshi@@meadowy.org")))
 @end lisp
 
-@item $B>.@tFb3U%a!<%k%^%,%8%s(B
+@item @uref{http://www.kantei.go.jp/jp/, $B>.@tFb3U%a!<%k%^%,%8%s(B}
 kantei.m-magazine
 
-@item $BFC5vD#(B
+@item @uref{http://www.jpo.go.jp/, $BFC5vD#(B}
 jpo.news jpo.revision jpo.lawguide jpo.details
 
-@item IBM developerWorks
-ibm-dev.components ibm-dev.java ibm-dev.linux ibm-dev.opensource
-ibm-dev.security ibm-dev.unicode ibm-dev.usability ibm-dev.web
-ibm-dev.webservices ibm-dev.xml
+@item @uref{http://www-6.ibm.com/jp/developerworks/, IBM developerWorks}
+ibm-dev.java ibm-dev.linux ibm-dev.opensource ibm-dev.webservices
+ibm-dev.xml
 
-@item Muchy's Palmware Review!
+@item @uref{http://muchy.com/, Muchy's Palmware Review!}
 muchy.review
 
-@item palmoslove
+@item @uref{http://palmoslove.com/, palmoslove}
 palmoslove.webnews palmoslove.pdanews palmoslove.sitenews
 
-@item pocketgames
+@item @uref{http://www.pocketgames.jp/, pocketgames}
 pocketgames.news
 
-@item wincefan
+@item @uref{http://www.wince.ne.jp/, wincefan}
 wincefan.news
 
-@item PalmFan
+@item @uref{http://www.palmfan.com/, PalmFan}
 palmfan.news palmfan.palmwarefan
 
-@item $BEEG>39$N8=>l%l%]!<%H(B
+@item @uref{http://homepage1.nifty.com/akiba/plat.html, $BEEG>39$N8=>l%l%]!<%H(B}
 dennou.report
 
-@item PCWEB COLUMN Square
+@item @uref{http://pcweb.mycom.co.jp/column/, PCWEB COLUMN Square}
 pcweb-column.gyokai pcweb-column.benri pcweb-column.hitech
 pcweb-column.business pcweb-column.winxp pcweb-column.bytes
 pcweb-column.newyork pcweb-column.asia pcweb-column.akiba
@@ -3544,7 +3579,7 @@ pcweb-column.denshi pcweb-column.tsushin pcweb-column.shitumon
 pcweb-column.nandemo pcweb-column.hourou pcweb-column.oshigoto
 pcweb-column.tech pcweb-column.speed
 
-@item $B%N!<%DDDNs4[(B(Notes Exhibition)
+@item @uref{http://tsuruo.dominohosting.biz/members/tsuruo/, $B%N!<%DDDNs4[(B}
 lotusex.news lotusex.library lotusex.operation lotusex.primer
 lotusex.tips lotusex.practical lotusex.qanda lotusex.lounge
 lotusex.bbs
@@ -3849,7 +3884,7 @@ foobar $B$N%0%k!<%W$H$7$F!"(Bfoobar.whatsnew, foobar.ml $B$H$7$F%"%/%;%9$G$-$
 
 $B%a!<%j%s%0%j%9%H%^%M!<%8%c!"%"!<%+%$%P$H$7$FM-L>$J$b$N$,$$$/$D$+$"$j$^$9!#(B
 
-@itemize
+@itemize @bullet
 @item Mailman
 @noindent
 the GNU Mailing List Manager. $B0JA0$O(B pipermail $B$H8F$P$l$F$$$^$7$?!#>\:Y(B
@@ -3860,6 +3895,7 @@ the GNU Mailing List Manager. $B0JA0$O(B pipermail $B$H8F$P$l$F$$$^$7$?!#>\:Y
 @item fml
 
 @item mailarc
+$B>\:Y$O(B @url{http://cvs.namazu.org/mailarc/} $B$r$4Mw2<$5$$!#(B
 @end itemize
 
 @noindent
