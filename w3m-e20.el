@@ -39,6 +39,7 @@
 (require 'w3m-fsf)
 (require 'w3m-util)
 (require 'w3m-proc)
+(require 'w3m-image)
 
 (condition-case nil
     (require 'bitmap)

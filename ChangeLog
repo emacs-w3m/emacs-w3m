@@ -1,3 +1,29 @@
+2002-04-08  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-image.el: New file.
+	
+	* w3m.el (w3m-halfdump-command-arguments): Specify single-row-image
+	dump option instead of image.
+	(w3m-goto-mailto-url): Added optional post-data argument and use it.
+	(w3m-goto-url): Set post-data of w3m-goto-mailto-url.
+
+	* w3m-util.el (w3m-imagick-convert-program,
+	w3m-imagick-convert-buffer, w3m-imagick-convert-data): Moved to
+	w3m-image.el.
+
+	* w3m-e21.el (toplevel): Require 'w3m-image.
+	(w3m-resize-images, w3m-imagick-start-convert-data,
+	w3m-imagick-start-convert-buffer, w3m-imagick-start,
+	w3m-resize-image): Moved to w3m-image.el;
+	(w3m-create-image): Follow the change in w3m-resize-image.
+	(w3m-favicon-usable-p): Renamed from w3m-imagick-convert-usable-p.
+	(w3m-use-favicon): Follow the change above.
+	(w3m-favicon-cache-data): Fixed typo.
+	(w3m-favicon-cache-retrieved): Ditto.
+	(w3m-retrieve-favicon): Ditto.
+
+	* w3m-e20.el (w3m-image): Require 'w3m-image.
+
 2002-04-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (multibyte-string-p): Alias to `stringp' if MULE,

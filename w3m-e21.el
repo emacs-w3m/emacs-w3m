@@ -33,9 +33,9 @@
 
 
 ;;; Code:
-
 (require 'w3m-util)
 (require 'w3m-proc)
+(require 'w3m-image)
 (require 'w3m-fsf)
 (require 'wid-edit)
 
@@ -78,12 +78,6 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
   "Add to the buffer-local value of HOOK the function FUNCTION."
   (add-hook hook function append t))
 
-;;; Image handling functions.
-(defcustom w3m-resize-images (and w3m-imagick-convert-program t)
-  "*If non-nil, resize images to the specified width and height."
-  :group 'w3m
-  :type 'boolean)
-
 ;; `display-images-p' has not been available prior to Emacs 21.0.105.
 (unless (fboundp 'display-images-p)
   (defalias 'display-images-p 'display-graphic-p))
@@ -96,76 +90,6 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
   "Returns non-nil when images can be displayed under the present
 circumstances."
   (and w3m-display-inline-images (display-images-p)))
-
-;;; Asynchronous image conversion.
-(defun w3m-imagick-start-convert-data (handler
-				       data from-type to-type &rest args)
-  (w3m-process-do-with-temp-buffer
-      (success (progn
-		 (set-buffer-multibyte nil)
-		 (insert data)
-		 (apply 'w3m-imagick-start-convert-buffer
-			handler from-type to-type args)))
-    (if success (buffer-string))))
-
-(defun w3m-imagick-start-convert-buffer (handler from-type to-type &rest args)
-  (lexical-let ((in-file (make-temp-name
-			  (expand-file-name "w3mel" w3m-profile-directory)))
-		(out-file (make-temp-name
-			   (expand-file-name "w3mel" w3m-profile-directory)))
-		(out-buffer (current-buffer)))
-    (setq w3m-current-url "non-existent")
-    (let ((file-coding-system 'binary)
-	  (coding-system-for-write 'binary)
-	  (buffer-file-coding-system 'binary)
-	  jka-compr-compression-info-list
-	  jam-zcat-filename-list
-	  format-alist)
-      (write-region (point-min) (point-max) in-file nil 'nomsg))
-    (w3m-process-do
-	(success (progn
-		   (apply
-		    'w3m-imagick-start handler
-		    (append args
-			    (list 
-			     (concat
-			      (if from-type
-				  (concat from-type ":"))
-			      in-file)
-			     (concat
-			      (if to-type
-				  (concat to-type ":"))
-			      out-file))))))
-      (with-current-buffer out-buffer
-	(erase-buffer)
-	(ignore-errors
-	  (insert-file-contents-literally out-file)))
-      (when (file-exists-p in-file)
-	(delete-file in-file))
-      (when (file-exists-p out-file)
-	(delete-file out-file))
-      success)))
-
-(defun w3m-imagick-start (handler &rest arguments)
-  "Run ImageMagick's convert as an asynchronous process."
-  (let ((w3m-command w3m-imagick-convert-program))
-    (if w3m-async-exec
-	(w3m-process-do
-	    (exit-status (w3m-process-push handler arguments))
-	  (w3m-process-start-after exit-status))
-      (w3m-process-start-after
-       (apply 'call-process w3m-command nil t nil arguments)))))
-
-(defun w3m-resize-image (handler data width height)
-  (w3m-process-do
-      (result (w3m-imagick-start-convert-data
-	       handler
-	       data nil nil "-geometry"
-	       (concat (number-to-string width)
-		       "x"
-		       (number-to-string height)
-		       "!")))
-    result))
 
 (defun w3m-create-image (url &optional no-cache referer size handler)
   "Retrieve data from URL and create an image object.
@@ -202,9 +126,9 @@ and its cdr element is used as height."
 		    (lexical-let ((image image))
 		      (w3m-process-do
 			  (resized (w3m-resize-image
-				    handler
 				    (plist-get (cdr image) :data)
-				    (car set-size)(cdr set-size)))
+				    (car set-size)(cdr set-size)
+				    handler))
 			(if resized (plist-put (cdr image) :data resized))
 			image))
 		  image))
@@ -397,7 +321,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (make-variable-buffer-local 'w3m-current-favicon-image)
 (add-hook 'w3m-display-hook 'w3m-setup-favicon)
 
-(defun w3m-imagick-convert-usable-p ()
+(defun w3m-favicon-usable-p ()
   "Check whether ImageMagick's `convert' supports a Windoze ico format in
 a large number of bits per pixel."
   (let ((xpm (condition-case nil
@@ -419,12 +343,12 @@ use of ImageMagick absolutely by setting this option to nil."
   :get (lambda (symbol)
 	 (and (not noninteractive)
 	      (default-value symbol)
-	      (w3m-imagick-convert-usable-p)))
+	      (w3m-favicon-usable-p)))
   :set (lambda (symbol value)
 	 (custom-set-default symbol
 			     (and (not noninteractive)
 				  value
-				  (w3m-imagick-convert-usable-p))))
+				  (w3m-favicon-usable-p))))
   :group 'w3m
   :type 'boolean)
 
@@ -439,7 +363,7 @@ use of ImageMagick absolutely by setting this option to nil."
   :type 'file)
 
 (defcustom w3m-favicon-cache-expire-wait (* 30 24 60 60)
-  "*Number of seconds passed since favicon retrived, the cache will be expired.
+  "*The cache will be expired after specified seconds passed since retrieval.
 If this variable is nil, never expired."
   :group 'w3m
   :type 'integer)
@@ -449,7 +373,7 @@ If this variable is nil, never expired."
 Each information is a list whose elements are:
  0. URL
  1. Favicon
- 2. Retrived date")
+ 2. Retrieved date")
 
 (defmacro w3m-favicon-cache-p (url)
   `(assoc ,url w3m-favicon-cache-data))
@@ -458,7 +382,7 @@ Each information is a list whose elements are:
   `(let ((data (nth 1 (assoc ,url w3m-favicon-cache-data))))
      (if (stringp data) (cons data 'ico) data)))
 
-(defmacro w3m-favicon-cache-retrived (url)
+(defmacro w3m-favicon-cache-retrieved (url)
   `(nth 2 (assoc ,url w3m-favicon-cache-data)))
 
 (defun w3m-setup-favicon (url)
@@ -514,7 +438,7 @@ Each information is a list whose elements are:
   (if (and (w3m-favicon-cache-p (car pair))
 	   (or (null w3m-favicon-cache-expire-wait)
 	       (< (- (float-time)
-		     (float-time (w3m-favicon-cache-retrived
+		     (float-time (w3m-favicon-cache-retrieved
 				  (car pair))))
 		  w3m-favicon-cache-expire-wait)))
       (setq w3m-current-favicon-data

@@ -1355,7 +1355,7 @@ for a refresh indication")
 (defconst w3m-halfdump-command-arguments
   (cond ((eq w3m-type 'w3mmee)
 	 (list '(if w3m-treat-image-size
-		    "-dump=half-buffer,image"
+		    "-dump=half-buffer,single-row-image"
 		  "-dump=half-buffer")
 	       '(if charset "-I")
 	       'charset
@@ -4846,7 +4846,7 @@ or prefix ARG columns."
 	   w3m-horizontal-scroll-columns)))
     (call-interactively 'scroll-right)))
 
-(defun w3m-goto-mailto-url (url)
+(defun w3m-goto-mailto-url (url &optional post-data)
   (if (and (symbolp w3m-mailto-url-function)
 	   (fboundp w3m-mailto-url-function))
       (funcall w3m-mailto-url-function url)
@@ -4867,9 +4867,18 @@ or prefix ARG columns."
       (if (or (featurep 'rfc2368)
 	      (condition-case nil (require 'rfc2368) (error nil)))
 	  (let ((info (rfc2368-parse-mailto-url url)))
-	    (apply comp (mapcar (lambda (x)
-				  (cdr (assoc x info)))
-				'("To" "Subject"))))
+	    (apply comp
+		   (append (mapcar (lambda (x)
+				     (cdr (assoc x info)))
+				   '("To" "Subject"))
+			   (if post-data
+			       (list
+				(list (cons
+				       "body"
+				       (or (and
+					    (consp post-data)
+					    (concat (car post-data) "\n"))
+					   (concat post-data "\n")))))))))
 	;; without rfc2368.el.
 	(funcall comp (match-string 1 url))))))
 
@@ -5005,7 +5014,7 @@ field for this request."
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:\\(.*\\)" url)
-    (w3m-goto-mailto-url url))
+    (w3m-goto-mailto-url url post-data))
    ;; process ftp: protocol
    ((and w3m-use-ange-ftp
 	 (string-match "\\`ftp://" url)
