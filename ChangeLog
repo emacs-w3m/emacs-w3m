@@ -1,6 +1,6 @@
 2002-05-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-mode): Suppress warning under old Emacsen.
+	* w3m.el (w3m-mode): Suppress compile warning under old Emacsen.
 
 	* Makefile.in (what-where): New rule.
 
