@@ -12,7 +12,8 @@
 	(w3m-history-seek-properties): New function.
 
 	(w3m-history-rename-url): Allow the 4th arg `this-buffer'.
-	(w3m-history-with-elements): Bind only the variable `element' to
+	(w3m-history-with-element): Renamed from
+	`w3m-history-with-elements'; bind only the variable `element' to
 	have a history element of `w3m-history-flat'.
 
 2001-04-18  Yuuichi Teranishi  <teranisi@gohome.org>
