@@ -105,16 +105,16 @@
 	      (throw 'stop nil))
 	    (setq url (concat index-url "/" aux "/" (match-string 1))
 		  subject (match-string 3)
-		  from (shimbun-mime-encode-string (match-string 4)))
+		  from (match-string 4))
 	    (setq subject (with-temp-buffer
 			    (insert subject)
 			    (shimbun-decode-entities)
 			    (shimbun-remove-markup)
 			    (buffer-string)))
 	    (push (shimbun-make-header
-		   0
-		   (shimbun-mime-encode-string subject)
-		   from "" id "" 0 0 url)
+		   0 (shimbun-mime-encode-string subject)
+		   (shimbun-mime-encode-string from)
+		   "" id "" 0 0 url)
 		  headers))
 	  (setq auxs (cdr auxs))))
       headers)))
