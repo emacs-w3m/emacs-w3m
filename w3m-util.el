@@ -68,6 +68,10 @@
     (require 'poe)
     (require 'poem))))
 
+(eval-and-compile
+  (cond ((boundp 'MULE)
+	 (autoload 'cancel-timer "timer"))))
+
 ;;; Things should be defined in advance:
 
 ;; (There are no objects so far.)

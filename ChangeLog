@@ -1,3 +1,8 @@
+2001-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el: Autoload "timer" for the function `cancel-timer'
+	when Mule 2 is running.
+
 2001-12-26  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-refresh-at-time): Run `w3m-goto-url-with-timer'
@@ -12,7 +17,7 @@
 	variables.
 	(w3m-clear-local-variables, w3m-copy-local-variables): Handle
 	`w3m-current-refresh'.
-	(w3m-meta-refresh-content-regexp) 
+	(w3m-meta-refresh-content-regexp)
 	(w3m-meta-content-refresh-regexp): New constant.
 	(w3m-decode-buffer): Call `w3m-decode-get-refresh' first.
 	(w3m-decode-get-refresh): New function.
@@ -23,7 +28,7 @@
 	Call `w3m-refresh-at-time' at last; start REFRESH timer.
 	(w3m-goto-url-with-timer): New function.
 	(w3m-refresh-at-time): New function for FSF Emacs.
-	
+
 	* w3m-xmas.el (w3m-refresh-at-time): New function for XEmacs.
 
 	* w3m-util.el (w3m-cancel-refresh-timer): New function.
