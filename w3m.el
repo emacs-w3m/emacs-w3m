@@ -636,18 +636,34 @@ If N is negative, last N items of LIST is returned."
 	       (current-time)))
       (set ident (setq w3m-arrived-seq (1+ w3m-arrived-seq))))))
 
+(defun w3m-arrived-title (url)
+  "Return the stored title of the page, which is pointed by URL."
+  (let ((v (intern-soft url w3m-arrived-db)))
+    (and v (get v 'title))))
+
+(defun w3m-arrived-put-title (url title)
+  "Store TITLE of the page, which is pointed by URL."
+  (let ((v (intern-soft url w3m-arrived-db)))
+    (and v (put v 'title title))))
+
 (defun w3m-arrived-setup ()
-  "Load arrived url list from 'w3m-arrived-file' and setup hash database."
+  "Load arrived url list from `w3m-arrived-file' and setup hash database."
   (unless w3m-arrived-db
     (setq w3m-arrived-db (make-vector w3m-arrived-db-size nil)
 	  w3m-arrived-seq 0)
     (let ((list (w3m-load-list w3m-arrived-file
 			       w3m-arrived-file-coding-system)))
-      (when (consp (car list))
-	(dolist (url list)
-	  (w3m-arrived-add (car url) (cdr url)))
-	(unless w3m-input-url-history
-	  (setq w3m-input-url-history (mapcar (function car) list)))))))
+      (dolist (elem list)
+	(if (or (not (nth 1 elem)) (stringp (nth 1 elem)))
+	    ;; Process new format of arrived URL database.
+	    (progn
+	      (w3m-arrived-add (car elem) (nth 2 elem))
+	      (w3m-arrived-put-title (car elem) (nth 1 elem)))
+	  ;; Process old format of arrived URL database, is used
+	  ;; before revision 1.135.
+	  (w3m-arrived-add (car elem) (cdr elem))))
+      (unless w3m-input-url-history
+	(setq w3m-input-url-history (mapcar (function car) list))))))
 
 (defun w3m-arrived-shutdown ()
   "Save hash database of arrived URLs to 'w3m-arrived-file'."
@@ -657,7 +673,8 @@ If N is negative, last N items of LIST is returned."
        (lambda (sym)
 	 (when sym
 	   (push (cons (symbol-value sym)
-		       (cons (symbol-name sym)
+		       (list (symbol-name sym)
+			     (get sym 'title)
 			     (get sym 'last-modified)))
 		 list)))
        w3m-arrived-db)
@@ -2207,6 +2224,7 @@ or prefix ARG columns."
 	    (if (w3m-url-local-p url)
 		(file-name-directory (w3m-url-to-file-name url))
 	      w3m-profile-directory))
+      (w3m-arrived-put-title url w3m-current-title)
       (switch-to-buffer (current-buffer))))))
 
 
@@ -2310,7 +2328,8 @@ ex.) c:/dir/file => //c/dir/file"
       (insert "<head><title>URL history</title></head><body>\n")
       (dolist (url history)
 	(unless (string-match "^about://\\(header\\|source\\|history\\|antenna\\)/" url)
-	  (insert (format "<a href=\"%s\">%s</a><br>\n" url url))))
+	  (insert (format "<a href=\"%s\">%s</a><br>\n" url
+			  (or (w3m-arrived-title url) url)))))
       (insert "</body>")))
   "text/html")
 

@@ -1,3 +1,11 @@
+2001-03-19  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Format of arrived URL database is changed in order to
+	store page's title.
+	(w3m-arrived-title, w3m-arrived-put-title): New function.
+	(w3m-arrived-setup, w3m-arrived-shutdown): Follow format change.
+	(w3m-about-history): Use page's title to make history contents.
+
 2001-03-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-url-to-file-name): Fix 'file:///c/xxxx' format in
