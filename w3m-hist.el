@@ -235,8 +235,8 @@ will not contain keyword-value pairs whose value is nil."
 	       (while rest
 		 (when (cadr rest)
 		   (setq properties (cons (cadr rest)
-					  (cons (car rest) properties))
-			 rest (cddr rest))))
+					  (cons (car rest) properties))))
+		 (setq rest (cddr rest)))
 	       (nreverse properties))
 	   (while properties
 	     (when (cadr properties)

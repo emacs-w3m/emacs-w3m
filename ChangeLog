@@ -1,3 +1,7 @@
+2001-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-modify-properties): Don't infloop.
+
 2001-09-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-clear-local-variables): Not reset `w3m-initial-frame'.
