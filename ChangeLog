@@ -1,5 +1,14 @@
 2005-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-modeline-title-string): New variable.
+	(w3m-modeline-title-timer): New variable.
+	(w3m-modeline-title): New function used to truncate the title
+	string not to cut the right end of the mode line.  Works only with
+	Emacs 22 and newer.
+	(w3m-buffer-setup): Use it.
+
+2005-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-make-help-echo): Make it work with XEmacs.
 	(w3m-make-balloon-help): Support decoding URIs.
 	(w3m-fontify-anchors): Make the balloon-help show decoded URIs.

@@ -7077,7 +7077,7 @@ generate a new buffer."
 		       (> emacs-major-version 20))
     (w3m-initialize-graphic-icons))
   (setq mode-line-buffer-identification
-	'("%b "
+	`("%b "
 	  (w3m-current-process
 	   w3m-modeline-process-status-on
 	   (w3m-current-ssl
@@ -7095,11 +7095,60 @@ generate a new buffer."
 	    w3m-modeline-separator)
 	   w3m-modeline-separator)
 	  (w3m-current-process
-	   "Loading..." w3m-current-title)))
+	   "Loading..." ,(if (fboundp 'format-mode-line)
+			     '(:eval (w3m-modeline-title))
+			   w3m-current-title))))
   (unless (assq 'w3m-current-process mode-line-process)
     (setq mode-line-process
 	  (cons (list 'w3m-current-process 'w3m-process-modeline-string)
 		mode-line-process))))
+
+(defvar w3m-modeline-title-string nil
+  "Internal variable used to keep contents to be shown in the mode line.
+This is a buffer-local variable.")
+(make-variable-buffer-local 'w3m-modeline-title-string)
+
+(defvar w3m-modeline-title-timer nil
+  "Say time has not gone by after the mode line was updated last time.
+It is used to control the `w3m-modeline-title' function running too
+frequently, set by the function itself and cleared by a timer.")
+(make-variable-buffer-local 'w3m-modeline-title-timer)
+
+(eval-when-compile
+  (unless (fboundp 'format-mode-line)
+    (defalias 'format-mode-line 'ignore)
+    (defalias 'w3m-force-window-update 'ignore)))
+
+(defun w3m-modeline-title ()
+  "Return a truncated title not to cut the right end of the mode line.
+It currently works only with Emacs 22 and newer."
+  (when w3m-current-title
+    (or (and w3m-modeline-title-timer w3m-modeline-title-string)
+	(prog2
+	    (setq w3m-modeline-title-string w3m-current-title
+		  w3m-modeline-title-timer t)
+	    (let ((excess (- (string-width
+			      (condition-case nil
+				  (format-mode-line mode-line-format 1)
+				(error 0)))
+			     (window-width)))
+		  (tlen (string-width w3m-current-title)))
+	      (when (and (> excess 0)
+			 (> tlen 3))
+		(setq w3m-modeline-title-string
+		      (concat (truncate-string-to-width
+			       w3m-current-title (max (- tlen excess) 2))
+			      "...")))
+	      w3m-modeline-title-string)
+	  (run-at-time 0.5 nil
+		       (lambda (buffer)
+			 (when (buffer-live-p buffer)
+			   (with-current-buffer buffer
+			     (setq w3m-modeline-title-timer nil)
+			     (when (eq (selected-window)
+				       (get-buffer-window buffer))
+			       (w3m-force-window-update)))))
+		       (current-buffer))))))
 
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
