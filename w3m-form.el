@@ -414,9 +414,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
  	  (re-search-forward (w3m-tag-regexp-of "/img_alt") nil t)
  	  (when (or usemap mapval)
 	    (unless maps (setq maps (w3m-form-new "map" ".")))
-	    (unless usemap
-	      (setq usemap mapval)
-	      (setq mapval nil))
+	    (unless usemap (setq usemap mapval))
+	    (when mapval (setq mapval nil))
  	    (add-text-properties
  	     start (match-beginning 0)
  	     `(face w3m-form-face

@@ -1,5 +1,9 @@
 2002-03-20  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m.el (w3m-view-this-url): Eval action even when anchor is set.
+
+	* w3m-form.el (w3m-form-parse-and-fontify): Clear mapval if it is set.
+
 	* w3m.el (w3m-halfdump-command-arguments)[w3mmee]: Add `image'
 	to the -dump argument only if `w3m-treat-image-size' is non-nil.
 	

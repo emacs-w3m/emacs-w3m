@@ -3632,8 +3632,8 @@ also make a new frame for the copied session."
   (let ((url (w3m-anchor))
 	(act (w3m-action)))
     (cond
-     (url (w3m-view-this-url-1 url arg new-session))
      (act (eval act))
+     (url (w3m-view-this-url-1 url arg new-session))
      ((w3m-image)
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
