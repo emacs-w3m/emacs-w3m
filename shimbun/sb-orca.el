@@ -32,11 +32,12 @@
 
 (luna-define-class shimbun-orca (shimbun-mhonarc) ())
 
-(defvar shimbun-orca-url "http://www.orca.med.or.jp/ml/ml-archive/")
+(defvar shimbun-orca-url "http://ml.orca.med.or.jp/")
 (defvar shimbun-orca-groups '("orca-users" "orca-dev" "orca-tech" "orca-announce"))
 (defvar shimbun-orca-reverse-flag nil)
 (defvar shimbun-orca-litemplate-regexp
-  "<LI><STRONG><A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</A></STRONG> <EM>\\([^<]+\\)</EM>\n</LI>")
+  "<LI>[^<]*<STRONG><A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\">\
+\\([^<]+\\)</A></STRONG> <EM>\\([^<]+\\)</EM>\n?</LI>")
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-orca))
   (concat (shimbun-url-internal shimbun)

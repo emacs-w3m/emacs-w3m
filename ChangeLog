@@ -1,3 +1,11 @@
+2005-03-12  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-plucker.el (shimbun-plucker-litemplate-regexp): Improve Regexp.
+	(shimbun-plucker-extract-header-values): Fix supporting new regexp.
+
+	* shimbun/sb-orca.el (shimbun-orca-url): Improve url.
+	(shimbun-orca-litemplate-regexp): Improve Regexp.
+
 2005-03-12  MIYOSHI Masanori  <miyoshi@meadowy.org>
 
 	* shimbun/sb-msports-nifty.el: Follow the change of site design.
@@ -5,7 +13,7 @@
 	* shimbun/sb-f1express.el: Removed.
 
 	* shimbun/sb-f1fan.el: Update the email address of the author.
-	
+
 	* shimbun/sb-makanai.el: Ditto.
 
 	* shimbun/sb-nikkansports.el: Ditto.
