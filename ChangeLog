@@ -1,9 +1,7 @@
 2002-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-default-face-colors): New constant.
-	* w3m.el (w3m-current-anchor-face): Use it.
-	(w3m-bold-face): Use it.
-	(w3m-underline-face): Use it.
+	* w3m.el (w3m-bold-face, w3m-underline-face): Use it.
 
 2002-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 

@@ -614,7 +614,7 @@ of the original request method. -- RFC2616"
   :group 'w3m-face)
 
 (defface w3m-current-anchor-face
-  `((t (,@w3m-default-face-colors :underline t :bold t)))
+  `((t (:underline t :bold t)))
   "Face used to highlight current anchor."
   :group 'w3m-face)
 
