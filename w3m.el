@@ -660,6 +660,7 @@ See also `w3m-search-engine-alist'."
 (defvar w3m-bookmark-title-history nil)
 
 (defvar w3m-display-inline-image-status nil) ; 'on means image is displayed
+(make-variable-buffer-local 'w3m-display-inline-image-status)
 
 (defconst w3m-image-type-alist
   '(("image/jpeg" . jpeg)
@@ -1175,6 +1176,10 @@ If N is negative, last N items of LIST is returned."
 	       (setq end (match-beginning 0))
 	       (put-text-property start end 'w3m-name-anchor tag)))))))
 
+(defun w3m-image-type (content-type)
+  "Return image type which corresponds to CONTENT-TYPE."
+  (cdr (assoc content-type w3m-image-type-alist)))
+
 (w3m-static-if (and (not (featurep 'xemacs))
 		    (>= emacs-major-version 21)) (progn    
 (defun w3m-create-image (url &optional no-cache)
@@ -1182,10 +1187,10 @@ If N is negative, last N items of LIST is returned."
 If optional argument NO-CACHE is non-nil, cache is not used."
   (condition-case err
       (let ((type (w3m-retrieve url 'raw nil no-cache)))
-	(when type
+	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
 	  (w3m-with-work-buffer
 	    (create-image (buffer-string) 
-			  (cdr (assoc type w3m-image-type-alist))
+			  type
 			  t
 			  :ascent 'center))))
     (error nil)))
@@ -1201,6 +1206,11 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."
   (remove-text-properties beg end '(display intangible)))
+
+(defun w3m-image-type-available-p (image-type)
+  "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
+  (and (display-graphic-p)
+       (image-type-available-p image-type)))
 ;; end of Emacs 21 definition.
 )
 (w3m-static-if (featurep 'xemacs) (progn
@@ -1209,13 +1219,11 @@ Buffer string between BEG and END are replaced with IMAGE."
 If optional argument NO-CACHE is non-nil, cache is not used."
   (condition-case err
       (let ((type (w3m-retrieve url 'raw nil no-cache)))
-	(when type
+	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
 	  (let ((data (w3m-with-work-buffer (buffer-string))))
 	    (make-glyph
 	     (make-image-instance
-	      (vector (or (cdr (assoc type w3m-image-type-alist))
-			  'autodetect)
-		      :data data)
+	      (vector type :data data)
 	      nil nil 'no-error)))))
     (error nil)))
 
@@ -1247,10 +1255,17 @@ Buffer string between BEG and END are replaced with IMAGE."
 	  (set-extent-end-glyph extent nil))
       (set-extent-property extent 'invisible nil))))
 
+(defun w3m-image-type-available-p (image-type)
+  "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
+  (and (device-on-window-system-p)
+       (featurep image-type)))
 ;; end of XEmacs definition.
 )
 (defun w3m-create-image (url &optional no-cache))
 (defun w3m-insert-image (beg end image))
+(defun w3m-image-type-available-p (image-type)
+  "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
+  nil)
 ;; end of w3m-static-if
 ))
 
@@ -1994,22 +2009,38 @@ this function returns t.  Otherwise, returns nil."
     (if (and (string-match "^ftp://" url)
 	     (not (string= "text/html" (w3m-local-content-type url))))
 	(progn (w3m-exec-ftp url) nil)
-      (let ((type (w3m-retrieve url nil "^text/" no-cache)))
+      (let ((type (w3m-retrieve url nil nil no-cache)))
 	(if type
-	    (if (string-match "^text/" type)
-		(let (buffer-read-only)
-		  (setq w3m-current-url url)
-		  (setq w3m-url-history (cons url w3m-url-history))
-		  (setq-default w3m-url-history
-				(cons url (default-value 'w3m-url-history)))
-		  (delete-region (point-min) (point-max))
-		  (insert-buffer w3m-work-buffer-name)
-		  (if (string= "text/html" type)
-		      (progn (w3m-rendering-region (point-min) (point-max)) t)
-		    (setq w3m-current-title (file-name-nondirectory url))
-		    nil))
-	      (w3m-message "Requested URL has an unsuitable content type: %s" type)
-	      nil)
+	    (cond
+	     ((string-match "^text/" type)
+	      (let (buffer-read-only)
+		(setq w3m-current-url url)
+		(setq w3m-url-history (cons url w3m-url-history))
+		(setq-default w3m-url-history
+			      (cons url (default-value 'w3m-url-history)))
+		(delete-region (point-min) (point-max))
+		(insert-buffer w3m-work-buffer-name)
+		(if (string= "text/html" type)
+		    (progn (w3m-rendering-region (point-min) (point-max)) t)
+		  (setq w3m-current-title (file-name-nondirectory url))
+		  nil)))
+	     ((and (w3m-image-type-available-p (w3m-image-type type))
+		   (string-match "^image/" type))
+	      (let (buffer-read-only)
+		(setq w3m-current-url url)
+		(setq w3m-url-history (cons url w3m-url-history))
+		(setq-default w3m-url-history
+			      (cons url (default-value 'w3m-url-history)))
+		(delete-region (point-min) (point-max))
+		(insert (file-name-nondirectory url))
+		(set-text-properties (point-min)(point-max)
+				     (list 'face 'w3m-image-face
+					   'w3m-image url
+					   'mouse-face 'highlight))
+		(setq w3m-current-title (file-name-nondirectory url))
+		t))
+	     (t (w3m-external-view url)
+		nil))
 	  (error "Unknown URL: %s" url))))))
 
 

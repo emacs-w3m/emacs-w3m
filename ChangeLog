@@ -1,3 +1,15 @@
+2001-03-12  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-display-inline-image-status): Define as buffer local
+	variable.
+	(w3m-image-type): New function.
+	(w3m-image-type-available-p): Ditto.
+	(w3m-create-image): Check image type by `w3m-image-type-available-p'.
+	(w3m-exec): Accept all content-types in `w3m-retrieve';
+	Make an image only page, if the image can be displayed inline;
+	Call `w3m-external-view' if the content-type of retrieved content
+	is not text nor image.
+
 2001-03-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-view-parent-page): Add a postfix '/' to parent-url.
