@@ -2457,7 +2457,13 @@ to nil."
       (insert "\n<meta http-equiv=\"CONTENT-TYPE\" "
 	      "content=\"text/html; charset="
 	      (symbol-name charset)
-	      "\">")))
+	      "\">"))
+    (goto-char (point-min))
+    ;; Remove <form>...</form>
+    (when (re-search-forward "<form " nil t)
+      (setq beg (match-beginning 0))
+      (when (re-search-forward "</form>" nil t)
+	(delete-region beg (match-end 0)))))
   (w3m-message "Reading %s...done" url))
 
 ;;; Retrieve data via HTTP:

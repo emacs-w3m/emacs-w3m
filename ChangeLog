@@ -1,3 +1,7 @@
+2001-10-11  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-local-dirlist-cgi): Remove <from>...</form>.
+
 2001-10-11  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
 
 	* shimbun/sb-tcup.el (shimbun-headers): Reset locale to avoid
