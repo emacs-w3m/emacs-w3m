@@ -41,7 +41,7 @@
    w3m-0.2.1-inu-patch を適用した w3m に更新されることを，強くお勧めしま
    す．
 
-       http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/index.html
+       http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/index.html
 
 ** Q. 認証の必要なページのパスワードが入力できません．
 
@@ -90,10 +90,10 @@
        を適用した w3m か，または w3mmee-p19-3 以降を使う必要があります．
        以下のページで探してください．
 
-           http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/index.html
+           http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/index.html
 
-       w3m-m17n を使っている場合は，patches/dump-extra.patch を適用して
-       ください．
+       w3m-m17n を使っている場合は，patches/w3m-m17n-mnc.patch を適用し
+       てください．
 
    (4) Emacsen の問題
 
@@ -138,9 +138,9 @@
    w3m か，または w3mmee-p19-6 以降が利用できます．w3m-0.2.1-inu-patch
    は，以下のページで探してください．
 
-       http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/index.html
+       http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/index.html
 
-   w3m-m17n を使う場合は，patches/post-header.patch を適用してください．
+   w3m-m17n を使う場合は，patches/w3m-m17n-mnc.patch を適用してください．
 
 
 ** Q. フレームがレンダリングされません．
