@@ -303,11 +303,11 @@ a new overlay will be created and returned."
 	  (overlay-put ovr 'face '((:background) (:foreground)))))
       (if (consp image)
 	  (progn
-	    (insert-before-markers (car image))
+	    (insert (car image))
 	    (setq image (cdr image))
 	    (overlay-put ovr 'w3m-bitmap-image-count
 			 (1+ (overlay-get ovr 'w3m-bitmap-image-count))))
-	(insert-before-markers image)
+	(insert image)
 	(setq image nil))
       (when props
 	(w3m-add-text-properties pos (point) props))
@@ -316,13 +316,13 @@ a new overlay will be created and returned."
       (while (or image (< (point) (overlay-end ovr)))
 	(when (>= (point) (overlay-end ovr))
 	  (beginning-of-line)
-	  (insert-before-markers "\n")
+	  (insert "\n")
 	  (forward-line -1))
 	(move-to-column-force col)
 	(if image
 	    (progn
 	      (setq pos (point))
-	      (insert-before-markers (car image))
+	      (insert (car image))
 	      (when props
 		(w3m-add-text-properties pos (point) props)))
 	  (indent-to-column end-col))

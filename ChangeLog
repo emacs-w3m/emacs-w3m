@@ -1,3 +1,13 @@
+2002-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-toggle-inline-images-internal): Simplify the code.
+	(w3m-resize-inline-image-internal): Remove an existing bitmap
+	image first.
+
+	* w3m-bitmap.el (w3m-bitmap-image-insert): Replace
+	`insert-before-markers' with `insert' (return to the state before
+	2002-04-15).
+
 2002-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bitmap.el (w3m-create-resized-image): Return nil when

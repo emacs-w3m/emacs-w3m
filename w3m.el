@@ -2298,19 +2298,18 @@ If URL is specified, only the image with URL is toggled."
   (interactive "P")
   (let ((cur-point (point))
 	(buffer-read-only)
-	start end iurl image size)
-    (if (equal status 'off)
-	(save-excursion
-	  (goto-char (point-min))
+	(end (point-min))
+	start iurl image size)
+    (save-excursion
+      (if (equal status 'off)
 	  (while (setq start
-		       (if (get-text-property (point) 'w3m-image)
-			   (point)
-			 (next-single-property-change (point) 'w3m-image)))
+		       (if (get-text-property end 'w3m-image)
+			   end
+			 (next-single-property-change end 'w3m-image)))
 	    (setq end (or (next-single-property-change start 'w3m-image)
 			  (point-max))
 		  iurl (w3m-image start)
 		  size (get-text-property start 'w3m-image-size))
-	    (goto-char end)
 	    (when (and (or (not url)
 			   ;; URL is specified and is same as the image URL.
 			   (string= url iurl))
@@ -2324,49 +2323,46 @@ If URL is specified, only the image with URL is toggled."
 				 (string-width (buffer-substring start end))
 				 ? ))
 		    (w3m-add-text-properties start end '(invisible t))
-		    (w3m-add-text-properties (point)
-					     (progn (insert image) (point))
-					     '(w3m-image-dummy t
-					       w3m-image "dummy")))
-		(save-excursion
-		  (goto-char cur-point)
-		  (when iurl
-		    (w3m-process-with-null-handler
-		      (lexical-let ((start (set-marker (make-marker) start))
-				    (end (set-marker (make-marker) end))
-				    (iurl iurl)
-				    (url w3m-current-url))
-			(w3m-process-do
-			    (image (let ((w3m-current-buffer (current-buffer)))
-				     (w3m-create-image
-				      iurl no-cache
-				      w3m-current-url
-				      size handler)))
-			  (when (buffer-live-p (marker-buffer start))
-			    (with-current-buffer (marker-buffer start)
-			      (if image
-				  (when (equal url w3m-current-url)
-				    (let (buffer-read-only)
-				      (w3m-insert-image start end image iurl))
-				    ;; Redisplay
-				    (when w3m-force-redisplay
-				      (sit-for 0)))
-				(let (buffer-read-only)
-				  (w3m-add-text-properties
-				   start end '(w3m-image-status off))))
-			      (set-buffer-modified-p nil))
-			    (set-marker start nil)
-			    (set-marker end nil)))))))))))
-      ;; Remove.
-      (save-excursion
-	(goto-char (point-min))
-	(while (setq start (if (get-text-property (point) 'w3m-image)
-			       (point)
-			     (next-single-property-change (point) 'w3m-image)))
+		    (goto-char end)
+		    (w3m-add-text-properties
+		     end (progn (insert image) (point))
+		     '(w3m-image-dummy t w3m-image "dummy"))
+		    (setq end (point)))
+		(goto-char cur-point)
+		(when iurl
+		  (w3m-process-with-null-handler
+		    (lexical-let ((start (set-marker (make-marker) start))
+				  (end (set-marker (make-marker) end))
+				  (iurl iurl)
+				  (url w3m-current-url))
+		      (w3m-process-do
+			  (image (let ((w3m-current-buffer (current-buffer)))
+				   (w3m-create-image
+				    iurl no-cache
+				    w3m-current-url
+				    size handler)))
+			(when (buffer-live-p (marker-buffer start))
+			  (with-current-buffer (marker-buffer start)
+			    (if image
+				(when (equal url w3m-current-url)
+				  (let (buffer-read-only)
+				    (w3m-insert-image start end image iurl))
+				  ;; Redisplay
+				  (when w3m-force-redisplay
+				    (sit-for 0)))
+			      (let (buffer-read-only)
+				(w3m-add-text-properties
+				 start end '(w3m-image-status off))))
+			    (set-buffer-modified-p nil))
+			  (set-marker start nil)
+			  (set-marker end nil)))))))))
+	;; Remove.
+	(while (setq start (if (get-text-property end 'w3m-image)
+			       end
+			     (next-single-property-change end 'w3m-image)))
 	  (setq end (or (next-single-property-change start 'w3m-image)
 			(point-max))
 		iurl (w3m-image start))
-	  (goto-char end)
 	  ;; IMAGE-ALT-STRING DUMMY-STRING
 	  ;; <--------w3m-image---------->
 	  ;; <---redundant--><---dummy--->
@@ -2379,11 +2375,13 @@ If URL is specified, only the image with URL is toggled."
 	    (cond
 	     ((get-text-property start 'w3m-image-redundant)
 	      ;; Remove invisible property.
-	      (remove-text-properties start end '(invisible nil)))
+	      (put-text-property start end 'invisible nil))
 	     ((get-text-property start 'w3m-image-dummy)
 	      ;; Remove dummy string.
-	      (delete-region start end))
+	      (delete-region start end)
+	      (setq end start))
 	     ((get-text-property start 'w3m-bitmap-image)
+	      (goto-char end)
 	      (setq end (w3m-remove-image start end)))
 	     (t (w3m-remove-image start end)))
 	    (w3m-add-text-properties start end '(w3m-image-status off))))
@@ -2432,10 +2430,32 @@ RATE is resize percentage."
   (interactive "P")
   (let ((buffer-read-only)
 	start end iurl image size iscale scale)
-    (setq start (point))
-    (setq end (or (next-single-property-change start 'w3m-image) (point-max))
-	  iurl (w3m-image start)
-	  size (get-text-property start 'w3m-image-size)
+    (if (or (featurep 'xemacs)
+	    (and (boundp 'emacs-major-version)
+		 (>= emacs-major-version 21)))
+	(progn
+	  (setq start (point)
+		end (or (next-single-property-change start 'w3m-image)
+			(point-max))
+		iurl (w3m-image start)))
+      ;; The case of using BITMAP-MULE:
+      ;; Look for the start and the end positions of the first line of
+      ;; a bitmap image.
+      (setq end (point-min)
+	    iurl "")
+      (while (and (not (string-equal url iurl))
+		  (setq start
+			(if (get-text-property end 'w3m-image)
+			    end
+			  (next-single-property-change end 'w3m-image))))
+	(setq end (or (next-single-property-change start 'w3m-image)
+		      (point-max))
+	      iurl (w3m-image start)))
+      (goto-char start)
+      ;; Remove an existing bitmap image.
+      (let ((inhibit-read-only t))
+	(setq end (or (w3m-remove-image start end) end))))
+    (setq size (get-text-property start 'w3m-image-size)
 	  iscale (or (get-text-property start 'w3m-image-scale) '100))
     (w3m-add-text-properties start end '(w3m-image-status on))
     (setq scale (truncate (* iscale rate 0.01)))
