@@ -287,7 +287,11 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
       (setq fld (substring fld 0 (match-beginning 0)))
       (setcar mew-shimbun-input-hist fld))
     (setq mew-input-folder-hist (cons fld mew-input-folder-hist))
-    (mew-summary-ls (mew-summary-switch-to-folder fld))))
+    (let ((newfld (mew-summary-switch-to-folder fld)))
+      (condition-case nil
+	  (mew-summary-ls newfld newfld)
+	(wrong-number-of-arguments
+	 (mew-summary-ls newfld))))))
 
 ;;;###autoload
 (defun mew-shimbun-retrieve ()

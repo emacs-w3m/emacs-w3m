@@ -1,3 +1,8 @@
+2002-03-01  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-goto-folder): Follow up
+	changes of Mew 3.x.
+
 2002-03-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-threshold):
