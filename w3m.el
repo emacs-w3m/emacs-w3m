@@ -2282,14 +2282,13 @@ When BUFFER is nil, all data will be inserted in the current buffer."
        (let ((ident (intern url w3m-cache-hashtb)))
 	 (and (memq ident w3m-cache-articles) ident))))
 
-(defun w3m-read-file-name (&optional prompt dir default existing initial)
+(defun w3m-read-file-name (&optional prompt dir default existing)
   (let* ((default (and default (file-name-nondirectory default)))
 	 (prompt (or prompt
 		     (if default (format "Save to (%s): " default) "Save to: ")))
-	 (initial (or initial default))
 	 (dir (file-name-as-directory (or dir w3m-default-save-directory)))
 	 (default-directory dir)
-	 (file (read-file-name prompt dir default existing initial)))
+	 (file (read-file-name prompt dir nil existing default)))
     (if (not (file-directory-p file))
 	(setq w3m-default-save-directory
 	      (or (file-name-directory file) w3m-default-save-directory))
@@ -2297,7 +2296,6 @@ When BUFFER is nil, all data will be inserted in the current buffer."
       (if default
 	  (setq file (expand-file-name default file))))
     (expand-file-name file)))
-
 
 ;;; Handle character sets:
 (defun w3m-charset-to-coding-system (charset)

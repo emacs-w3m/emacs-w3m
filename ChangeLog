@@ -1,3 +1,8 @@
+2002-01-11  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-read-file-name): Remove an optional argument
+	`install'. Call `read-file-name' without `default' option.
+
 2002-01-11  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-url-encode-string): Fixed for Mule2.
