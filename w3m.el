@@ -4427,12 +4427,12 @@ forward is performed.  Otherwise, COUNT is treated as 1 by default."
 	(w3m-use-refresh nil))
     (when hist
       (w3m-goto-url (caar hist) nil nil
-		    (w3m-history-plist-get :post-data nil t)
-		    (w3m-history-plist-get :referer nil t))
+		    (w3m-history-plist-get :post-data)
+		    (w3m-history-plist-get :referer))
       ;; Set the position pointers in the history.
       (setcar w3m-history (cdr hist))
-      ;; Restore last position
-      (w3m-history-restore-position (caar hist)))))
+      ;; Restore last position.
+      (w3m-history-restore-position))))
 
 (defun w3m-view-next-page (&optional count)
   "View next page.  If COUNT is a positive integer, move forward COUNT
@@ -6153,17 +6153,17 @@ Cannot run two w3m processes simultaneously \
 		    (name))
 	(when w3m-current-forms
 	  ;; Store the current forms in the history structure.
-	  (w3m-history-plist-put :forms w3m-current-forms nil t))
+	  (w3m-history-plist-put :forms w3m-current-forms))
 	;; Set current forms using the history structure.
 	(when (setq w3m-current-forms
 		    (when (and (null post-data)	; If post, always reload.
 			       (w3m-cache-available-p url))
-		      (w3m-history-plist-get :forms url t)))
+		      (w3m-history-plist-get :forms)))
 	  ;; Mark that the form is from history structure.
 	  (setq w3m-current-forms (cons t w3m-current-forms)))
 	(when (and post-data (w3m-history-assoc url))
 	  ;; Remove processing url's forms from the history structure.
-	  (w3m-history-remove-properties '(:forms) url t))
+	  (w3m-history-remove-properties '(:forms nil)))
 	;; local directory URL check
 	(when (and (w3m-url-local-p url)
 		   (file-directory-p (w3m-url-to-file-name url))
@@ -6215,8 +6215,7 @@ Cannot run two w3m processes simultaneously \
 		    (w3m-history-push w3m-current-url
 				      (list :title w3m-current-title)))
 		  (w3m-history-add-properties (list :referer referer
-						    :post-data post-data)
-					      nil t)
+						    :post-data post-data))
 		  (unless w3m-toggle-inline-images-permanently
 		    (setq w3m-display-inline-images
 			  w3m-default-display-inline-images))
@@ -6345,15 +6344,15 @@ the current session.  Otherwise, the new session will start afresh."
 If called with '\\[universal-argument]', clear form and post datas"
   (interactive "P")
   (if w3m-current-url
-      (let ((post-data (w3m-history-plist-get :post-data nil t))
-	    (form-data (w3m-history-plist-get :forms nil t))
-	    (referer (w3m-history-plist-get :referer nil t)))
+      (let ((post-data (w3m-history-plist-get :post-data))
+	    (form-data (w3m-history-plist-get :forms))
+	    (referer (w3m-history-plist-get :referer)))
 	(when arg
 	  (when form-data
-	    (w3m-history-remove-properties '(:forms) nil t))
+	    (w3m-history-remove-properties '(:forms nil)))
 	  (when post-data
 	    (setq post-data nil)
-	    (w3m-history-remove-properties '(:post-data) nil t))
+	    (w3m-history-remove-properties '(:post-data nil)))
 	  (setq w3m-current-forms nil))
 	(if (and post-data (y-or-n-p "Repost form data? "))
 	    (w3m-goto-url w3m-current-url 'reload nil post-data referer)

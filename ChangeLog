@@ -1,3 +1,38 @@
+2003-08-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-minimize-in-new-session): New user
+	option.
+	(w3m-history-set-current): Redefine as an inline function rather
+	than a macro.
+	(w3m-history-current-1): Abolish the function.
+	(w3m-history-current-2): Abolish the function.
+	(w3m-history-element): New function.
+	(w3m-history-current): Abolish the funtction.
+	(w3m-history-backward): Don't modify the current position pointer
+	in the `w3m-history' variable.
+	(w3m-history-forward): Simplify using `w3m-history-backward'.
+	(w3m-history-copy): Minimize the history when
+	`w3m-history-minimize-in-new-session' is non-nil.
+	(w3m-history-plist-get): Abolish the `url' argument; complement
+	the meaning of the `local' argument.
+	(w3m-history-add-properties): Ditto.
+	(w3m-history-plist-put): Ditto.
+	(w3m-history-remove-properties): Ditto.
+	(w3m-history-store-position): Don't specify the optional arguments
+	to `w3m-history-add-properties'.
+	(w3m-history-restore-position): Abolish the `url' argument; don't
+	specify the optional arguments to `w3m-history-plist-get'.
+	(w3m-history-minimize): Simplify using `w3m-history-element'.
+
+	* w3m.el (w3m-view-previous-page): Don't specify the optional
+	arguments to `w3m-history-plist-get' and
+	`w3m-history-restore-position'.
+	(w3m-goto-url): Don't specify the optional arguments to
+	`w3m-history-plist-put', `w3m-history-plist-get',
+	`w3m-history-remove-properties' and `w3m-history-add-properties'.
+	(w3m-reload-this-page): Don't specify the optional arguments to
+	`w3m-history-plist-get' and `w3m-history-remove-properties'.
+
 2003-08-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-flat): Reduce the deepness of local
