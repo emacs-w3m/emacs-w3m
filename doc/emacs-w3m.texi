@@ -1159,9 +1159,6 @@ emacs-w3m buffer; another possibility is to go to the special URL
 section, each line being one bookmark.  You can browse them exactly
 like you would browse any other page.
 
-On the bookmarks page a w3m minor mode is activated, the bookmark mode.
-It adds key bindings to edit the bookmarks.  @xref{Editing Bookmarks}.
-
 @table @kbd
 @item v
 Visit the bookmarks page (@code{w3m-bookmark-view}).
@@ -1171,27 +1168,15 @@ Visit the bookmarks page (@code{w3m-bookmark-view}).
 @subsection How to change your bookmarks
 @cindex Editing bookmarks
 
-The bookmark minor mode (@pxref{Consulting Bookmarks}) offers several
-key bindings related to bookmark edition, most noticeably @kbd{C-k} to
-kill (i.e. delete) a bookmark, and @kbd{E} to edit the bookmark file.
-
 Bookmarks are kept in an HTML file, so you can edit the file by hand,
 but be very careful: if you erase the comments emacs-w3m needs to
 recognize section names, things can break easily.  If you know the
 basics of HTML, the file should otherwise be quite self-explanatory.
 
 @table @kbd
-@item C-k
-@findex w3m-bookmark-kill-entry
-Kill the bookmark under point (@code{w3m-bookmark-kill-entry}).
-
 @item E
-@findex w3m-bookmark-edit
-Visit the bookmarks file (@code{w3m-bookmark-edit}).
-
-@item C-_
-@findex w3m-bookmark-undo
-Undo the last changes (@code{w3m-bookmark-undo}).
+@findex w3m-edit-current-url
+Edit the local file displayed in this buffer(@code{w3m-edit-current-url}).
 @end table
 
 @node Using Tabs
@@ -1694,44 +1679,11 @@ does the same thing.
 
 @node Setting up Antenna
 @subsection How to add your web sites to Antenna
-@cindex about://antenna-edit/
+@vindex w3m-antenna-sites
 
-Antenna has a specific customization interface accessible via the
-``Edit'' button in the Antenna page, or via the special
-@uref{about://antenna-edit/} URL.  It is pretty self-explanatory, to add
-a website, do the following:
+(Under construction)
 
-@enumerate
-@item
-In the ``Key'' field, put the complete URL of the web page you want to
-watch, for example ``http://my.website.com/index.html''.
-
-@item
-In the ``Title'' field, type a title for your webpage, such as ``My
-website''.
-
-@item
-In the ``Time'' field, choose either ``Normal'', ``Time'' or ``HNS''.
-You probably want the first choice.
-@end enumerate
-
-Once all the fields are filled, hit the ``New'' button.  Your website
-is now added to the Antenna database; repeat the same steps for the
-other sites you want to track.
-
-An alternative way to add a website to Antenna is to go to this site,
-and to use the @kbd{+} key.  You will be taken to the Antenna
-customization buffer, with all fields already set up for you.  You just
-have to hit the buttons ``Save for future sessions'' and ``Finish''.
-
-@table @kbd
-@item +
-@kindex +
-@findex w3m-antenna-add-current-url
-Add a URL to the Antenna database.  If called with a prefix argument,
-ask for a URL instead of adding the current page
-(@code{w3m-antenna-add-current-url}).
-@end table
+Set information of your favorite sites to @code{w3m-antenna-sites}.
 
 @node Daily web tracking
 @subsection Tracking changes with Antenna

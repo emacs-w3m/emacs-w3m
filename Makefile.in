@@ -2,7 +2,9 @@ INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 prefix       = @prefix@
 datadir      = @datadir@
+infodir      = @infodir@
 lispdir      = @lispdir@
+srcdir       = @srcdir@
 PACKAGEDIR   = @PACKAGEDIR@
 ICONDIR      = @ICONDIR@
 ADDITIONAL_LOAD_PATH = @ADDITIONAL_LOAD_PATH@
@@ -11,27 +13,50 @@ SHELL        = /bin/sh
 
 @SET_MAKE@
 EMACS   = @EMACS@
-FLAGS   = -q -no-site-file -batch -l w3mhack.el $(ADDITIONAL_LOAD_PATH)
+FLAGS   = -q -no-site-file -batch -l $(srcdir)/w3mhack.el $(ADDITIONAL_LOAD_PATH)
 
 PACKAGE = emacs-w3m
 TARBALL = $(PACKAGE)-$(VERSION).tar.gz
 DISTDIR = $(PACKAGE)-$(VERSION)
-DOCS    = COPYING ChangeLog ChangeLog.1 FAQ FAQ.ja README README.ja \
+DOCS    = COPYING ChangeLog ChangeLog.1 FAQ FAQ.ja README README.ja\
 	  README.namazu.ja README.shimbun.ja TIPS TIPS.ja
 DISTS   = Makefile.in aclocal.m4 configure configure.in install-sh mkinstalldirs
+SUBDIRS = attic doc icons patches shimbun
 
+default: all
 
-default: Makefile
+all: lisp info
+
+all-en: lisp info-en
+
+all-ja: lisp info-ja
+
+lisp: Makefile
 	env test ! -f w3m-util.elc -o w3m-util.elc -nt w3m-util.el || $(MAKE) clean
 	env test ! -f w3m-proc.elc -o w3m-proc.elc -nt w3m-proc.el || $(MAKE) clean
 	$(EMACS) $(FLAGS) -f w3mhack-compile
 
 what-where:
 	@$(EMACS) $(FLAGS) -f w3mhack-what-where\
-	"$(lispdir)" "$(ICONDIR)" "$(PACKAGEDIR)"
+	"$(lispdir)" "$(ICONDIR)" "$(PACKAGEDIR)" "$(infodir)"
 
-install: default
-	@$(SHELL) ./mkinstalldirs $(lispdir);\
+info:
+	cd doc && $(MAKE) EMACS="$(EMACS)"
+
+info-en:
+	cd doc && $(MAKE) EMACS="$(EMACS)" en
+
+info-ja:
+	cd doc && $(MAKE) EMACS="$(EMACS)" ja
+
+install: install-lisp install-info
+
+install-en: install-lisp install-info-en
+
+install-ja: install-lisp install-info-ja
+
+install-lisp: lisp
+	@$(SHELL) $(srcdir)/mkinstalldirs $(lispdir);\
 	for p in ChangeLog* *.el; do\
 	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
 	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
@@ -57,20 +82,42 @@ install-icons:
 	@if test $(ICONDIR) = NONE; then\
 	  echo "You don't have to install icon files for \"$(EMACS)\".";\
 	else\
-	  $(SHELL) ./mkinstalldirs $(ICONDIR);\
+	  $(SHELL) $(srcdir)/mkinstalldirs $(ICONDIR);\
 	  for i in `cd icons && echo *.xpm`; do\
 	    echo " $(INSTALL_DATA) icons/$$i $(ICONDIR)/$$i";\
 	    $(INSTALL_DATA) icons/$$i $(ICONDIR)/$$i;\
 	  done;\
 	fi
 
+install-info: info
+	cd doc && $(MAKE) EMACS="$(EMACS)" infodir="$(infodir)" install
+
+install-info-en: info-en
+	cd doc && $(MAKE) EMACS="$(EMACS)" infodir="$(infodir)" install-en
+
+install-info-ja: info-ja
+	cd doc && $(MAKE) EMACS="$(EMACS)" infodir="$(infodir)" install-ja
+
 install-package:
 	@if test $(PACKAGEDIR) = NONE; then\
 	  echo "What a pity!  Your \"$(EMACS)\" does not support"\
 		"a package system.";\
 	else\
-	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install;\
+	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install-lisp;\
 	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons;\
+	  $(MAKE) infodir="$(PACKAGEDIR)/info" install-info;\
+	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
+	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
+	fi
+
+install-package-ja:
+	@if test $(PACKAGEDIR) = NONE; then\
+	  echo "What a pity!  Your \"$(EMACS)\" does not support"\
+		"a package system.";\
+	else\
+	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install-lisp;\
+	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons;\
+	  $(MAKE) infodir="$(PACKAGEDIR)/info" install-info-ja;\
 	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
 	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
 	fi
@@ -79,26 +126,24 @@ dist: Makefile
 	$(MAKE) VERSION=`$(EMACS) $(FLAGS) -f w3mhack-version 2>/dev/null` tarball
 
 Makefile: Makefile.in config.status
-	./config.status
+	$(srcdir)/config.status
 
 config.status: configure
-	./config.status --recheck
+	$(srcdir)/config.status --recheck
 
 configure: configure.in aclocal.m4
 	autoconf
 
-tarball: $(DOCS) $(DISTS)
+tarball: $(DOCS) $(DISTS) $(SUBDIRS)
 	-rm -f $(TARBALL) `basename $(TARBALL) .gz`
 	mkdir $(DISTDIR)
 	cp -p $(DOCS) $(DISTS) *.el $(DISTDIR)
-	mkdir $(DISTDIR)/attic
-	cp -p `echo attic/*|sed s,attic/CVS,,` $(DISTDIR)/attic
-	mkdir $(DISTDIR)/icons
-	cp -p icons/*.xpm $(DISTDIR)/icons
-	mkdir $(DISTDIR)/patches
-	cp -p `echo patches/*|sed s,patches/CVS,,` $(DISTDIR)/patches
-	mkdir $(DISTDIR)/shimbun
-	cp -p shimbun/*.el $(DISTDIR)/shimbun
+	for d in $(SUBDIRS); do \
+	  mkdir $(DISTDIR)/$${d} || exit 1 ;\
+	  for f in `egrep '^/' $${d}/CVS/Entries|cut -f2 -d/|grep -v .cvsignore`; do \
+	    cp -p $${d}/$${f} $(DISTDIR)/$${d}/ || exit 1 ;\
+	  done ;\
+	done
 	find $(DISTDIR) -type d | xargs chmod 755
 	find $(DISTDIR) -type f | xargs chmod 644
 	chmod 755 $(DISTDIR)/configure $(DISTDIR)/install-sh
@@ -108,10 +153,11 @@ tarball: $(DOCS) $(DISTS)
 
 clean:
 	-rm -rf *~ *.elc shimbun/*.elc $(PACKAGE)*;\
-	rm -f w3m-kwds.el shimbun/shimbun-servers.el*
+	rm -f w3m-kwds.el shimbun/shimbun-servers.el*;\
+	rm -f doc/*~ doc/*.info doc/*.info-[0-9] doc/*.info-[0-9][0-9]
 
 distclean: clean
-	-rm -f config.log config.status config.cache Makefile;\
+	-rm -f config.log config.status config.cache Makefile doc/Makefile;\
 	rm -fr autom4te*.cache
 
 ## Rules for the developers to check a portability for each module.
@@ -127,7 +173,7 @@ slow: Makefile
 
 very-slow: clean Makefile
 	@args="-q -no-site-file -batch";\
-	args="$$args -l attic/addpath.el $(ADDITIONAL_LOAD_PATH)";\
+	args="$$args -l $(srcdir)/attic/addpath.el $(ADDITIONAL_LOAD_PATH)";\
 	echo "=========================================";\
 	echo "Compiling 1st stage-----without elc files";\
 	echo "=========================================";\

@@ -683,8 +683,7 @@ w3m-lynx-like-map$B$K4p$E$-(BEmacs-w3m$B$N;H$$J}$r5-=R$7$^$9!#(B
 $B$9!#$=$l$i$N%3%^%s%I$N0l$D$r;n$7$F2<$5$$!#%&%'%V%Z!<%8$,(B ``*w3m*'' $B$H$$(B
 $B$&L>A0$N(B Emacs $B$N%P%C%U%!(B (emacs-w3m $B$N%P%C%U%!$N$3$H(B) $B$KI=<($5$l$^$9!#(B
 $B$*$=$i$/5$IU$/$G$7$g$&$1$l$I$b!"(Bemacs-w3m $B$N%P%C%U%!$N%a%8%c!<%b!<%I(B
-$B$O(B @code{w3m-mode} $B$G$9!#B>$K%^%$%J!<%b!<%I(B (@pxref{Managing
-Bookmarks}) $B$b$"$j$^$9!#(B
+$B$O(B @code{w3m-mode} $B$G$9!#(B
 
 $B$3$3$G$O!"$=$l$i$N%3%^%s%I$N:G$b4pK\E*$J;H$$J}$@$1$r@bL@$7$^$9!#8D!9$N%3(B
 $B%^%s%I$K$D$$$F$b$C$H>\$7$/CN$j$?$$>l9g$O!"(B@ref{Emacs-w3m Functions} $B$r;2(B
@@ -1280,10 +1279,6 @@ it's a miracle                                            2003-01-06
 $B$3$G$O!"B>$N%Z!<%8$r1\Mw$9$k$N$HF1$8$h$&$K!"$=$l$i$r3N<B$K1\Mw$9$k$3$H$,(B
 $B$G$-$^$9!#(B
 
-$B%V%C%/%^!<%/$N%Z!<%8$G$O(B bookmark $B%^%$%J!<%b!<%I$,F/$$$F$$$^$9!#$=$l$O!"(B
-$B%V%C%/%^!<%/$rJT=8$9$k$?$a$N%-!<%P%$%s%I$rDI2C$7$^$9!#(B@xref{Editing
-Bookmarks}$B!#(B
-
 @table @kbd
 @item v
 $B%V%C%/%^!<%/$N%Z!<%8$r8F$S=P$7$^$9(B (@code{w3m-bookmark-view})$B!#(B
@@ -1293,11 +1288,6 @@ Bookmarks}$B!#(B
 @subsection $B%V%C%/%^!<%/$rJQ99$9$k$K$O(B?
 @cindex Editing bookmarks
 
-Bookmark $B%^%$%J!<%b!<%I(B (@pxref{Consulting Bookmarks}) $B$O!"%V%C%/%^!<%/(B
-$B$rJT=8$9$k$?$a$K$$$/$D$+$N%-!<%P%$%s%I$r@_$1$F$$$^$9!#Cf$G$b%V%C%/%^!<%/(B
-$B$r(B kill ($B$9$J$o$A>C5n(B) $B$9$k$?$a$N(B @kbd{C-k} $B$H%V%C%/%^!<%/!&%U%!%$%k$rJT(B
-$B=8$9$k$?$a$N(B @kbd{E} $B$O!":G$bCmL\$KCM$7$^$9!#(B
-
 $B%V%C%/%^!<%/$O(B HTML $B%U%!%$%k$K<}$a$i$l$F$$$^$9!#$7$?$,$C$F$=$N%U%!%$%k$O(B
 $B<j$GJT=8$9$k$3$H$,$G$-$^$9$,!"==J,$KCm0U$7$F2<$5$$!#(Bemacs-w3m $B$,9`L\L>$r(B
 $BG'<1$9$k$?$a$KI,MW$J%3%a%s%H$r>C$7$F$7$^$&$3$H$K$h$C$F!"$b$N$4$H$O4JC1$K(B
@@ -1305,18 +1295,10 @@ Bookmark $B%^%$%J!<%b!<%I(B (@pxref{Consulting Bookmarks}) $B$O!"%V%C%/%^!<%/
 $B$NCf?H$O6K$a$FJ,$+$j0W$$$b$N$G$7$g$&!#(B
 
 @table @kbd
-@item C-k
-@findex w3m-bookmark-kill-entry
-$B8=:_0LCV$N%V%C%/%^!<%/$r(B kill $B$7$^$9(B (@code{w3m-bookmark-kill-entry})$B!#(B
-
 @item E
-@findex w3m-bookmark-edit
-$B%V%C%/%^!<%/!&%U%!%$%k$rFI$_9~$s$G!"JT=82DG=$J>uBV$K$7$^(B
-$B$9(B (@code{w3m-bookmark-edit})$B!#(B
-
-@item C-_
-@findex w3m-bookmark-undo
-$B$d$jD>$7$r$7$^$9(B (@code{w3m-bookmark-undo})$B!#(B
+@findex w3m-edit-current-url
+$B8=:_I=<(Cf$N%U%!%$%k$rFI$_9~$s$G!"JT=82DG=$J>uBV$K$7$^(B
+$B$9(B (@code{w3m-edit-current-url})$B!#(B
 @end table
 
 @node Using Tabs
@@ -1809,43 +1791,11 @@ emacs-w3m $B$O0lEY$KJ#?t$N%Z!<%8$r3+$/$?$a$K!"$=$N%0%k!<%W$K4^$^$l$k$=$l$>(B
 
 @node Setting up Antenna
 @subsection $B%&%'%V%5%$%H$r%"%s%F%J$K2C$($k$K$O(B?
-@cindex about://antenna-edit/
+@vindex w3m-antenna-sites
 
-$B%"%s%F%J$O!"%"%s%F%J!&%Z!<%8$K$"$k%+%9%?%^%$%:$N$?$a$N(B ``Edit'' $B%\%?%s!"(B
-$B$^$?$OFCJL$N(B URL @uref{about://antenna-edit/} $B$+$i%+%9%?%^%$%:$9$k$3$H$,(B
-$B$G$-$^$9!#$=$l$O$+$J$jJ,$+$j$d$9$$$b$N$G$9!#%&%'%V%5%$%H$r2C$($k$K$O0J2<(B
-$B$N$3$H$r9T$J$C$F2<$5$$(B:
+(Under construction)
 
-@enumerate
-@item
-$BNc$($P(B ``http://my.website.com/index.html'' $B$N$h$&$J!"4F;k$7$?$$%&%'%V%Z!<(B
-$B%8$N40A4$J(B URL$B$r!"(B``Key'' $B%U%#!<%k%I$KDI2C$7$F2<$5$$!#(B
-
-@item
-``Title'' $B%U%#!<%k%I$K!"(B``My website'' $B$N$h$&$J%?%$%H%k$r5-F~$7$F2<$5$$!#(B
-
-@item
-``Time'' $B%U%#!<%k%I$G!"(B``Normal''$B!"(B``Time'' $B$^$?$O(B ``HNS'' $B$N$I$l$+$rA*(B
-$B$s$G2<$5$$!#$"$J$?$O$?$V$sBh0l8uJd$rK>$`$G$7$g$&!#(B
-@end enumerate
-
-$B$9$Y$F$N%U%#!<%k%I$rK~$?$7$?$i!"(B``New'' $B$N%\%?%s$r2!$7$F2<$5$$!#$9$k$H!"(B
-$B$"$J$?$N%&%'%V%5%$%H$O%"%s%F%J!&%G!<%?%Y!<%9$K2C$($i$l$^$9!#DI@W$7$?$$B>(B
-$B$N%5%$%H$KBP$7$F!"F1$8A`:n$r7+$jJV$7$F2<$5$$!#(B
-
-$B%"%s%F%J$K%&%'%V%5%$%H$r2C$($kB>$NJ}K!$O!"$=$N%5%$%H$K9T$C$F(B @kbd{+} $B%-!<(B
-$B$r;H$&$3$H$G$9!#$9$Y$F$N%U%#!<%k%I$,$9$G$K=q$-$3$^$l$?!"%"%s%F%J$r%+%9%?(B
-$B%^%$%:$9$k$?$a$N%P%C%U%!$,8=$l$k$G$7$g$&!#$"$J$?$OC1$K(B ``Save for future
-sessions'' $B$H(B ``Finish'' $B$N%\%?%s$r2!$;$PNI$$$N$G$9!#(B
-
-@table @kbd
-@item +
-@kindex +
-@findex w3m-antenna-add-current-url
-URL $B$r%"%s%F%J!&%G!<%?%Y!<%9$K2C$($^$9!#@\F,0z?tIU$-$G8F$P$l$?>l9g$O!"8=(B
-$B:_$N%Z!<%8$rDI2C$9$k$N$G$O$J$/$F!"2C$($k(B URL $B$r?R$M$^(B
-$B$9(B (@code{w3m-antenna-add-current-url})$B!#(B
-@end table
+$B9%$_$N%5%$%H$N>pJs$r(B @code{w3m-antenna-sites} $B$KDI2C$7$F$/$@$5$$!#(B
 
 @node Daily web tracking
 @subsection $B%"%s%F%J$GJQ2=$rDI@W$9$k(B
@@ -2935,4 +2885,6 @@ subscribe ANATANO Namae
 
 @c Local Variables:
 @c fill-column: 72
+@c use-kuten-for-period: t
+@c use-touten-for-comma: t
 @c End:

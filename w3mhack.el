@@ -237,7 +237,7 @@ emacs-w3m.")
 				     "w3m-fsf.el" "w3m-om.el" "w3m-xmas.el"))
 	 (ignores;; modules not to be byte-compiled.
 	  (append
-	   (list "w3mhack.el" w3mhack-colon-keywords-file)
+	   (list "w3mhack.el" "w3m-setup.el" w3mhack-colon-keywords-file)
 	   (w3mhack-mdelete (cond ((featurep 'xemacs)
 				   "w3m-xmas.el")
 				  ((boundp 'MULE)
@@ -273,11 +273,18 @@ emacs-w3m.")
 	    (setq modules (nconc modules (list (concat shimbun-dir file)))))
 	  ;; mew-shimbun check
 	  (unless (locate-library "mew-nntp")
-	    (push (concat shimbun-dir "mew-shimbun.el") ignores)))
+	    (push (concat shimbun-dir "mew-shimbun.el") ignores))
+	  ;; nnshimbun check
+	  (unless (let ((gnus (locate-library "gnus")))
+		    (when gnus
+		      (let ((load-path (list (file-name-directory gnus))))
+			(locate-library "nnimap"))))
+	    (push (concat shimbun-dir "nnshimbun.el") ignores)))
       (push "mime-w3m.el" ignores)
       (push "octet.el" ignores))
     (unless (featurep 'mule)
-      (push "w3m-weather.el" ignores))
+      (push "w3m-weather.el" ignores)
+      (push "w3m-symbol.el" ignores))
     (if (and (not (featurep 'xemacs))
 	     (<= w3mhack-emacs-major-version 20)
 	     (locate-library "bitmap"))
@@ -350,7 +357,7 @@ emacs-w3m.")
 	      (unless (file-directory-p dir)
 		(message "mkdir %s" dir)
 		(unless w3mhack-nonunix-dryrun
-		  (make-directory dir))))
+		  (make-directory dir 'parents))))
        (install (srcdir dstdir pattern)
 		(dolist (src (directory-files srcdir t pattern))
 		  (let ((dst (expand-file-name
@@ -547,6 +554,8 @@ to remove some obsolete variables in the first argument VARLIST."
 		     (split-string (buffer-string) " \\(shimbun/\\)?"))))
 	   (icons (directory-files (expand-file-name "icons/") nil
 				   "^[^#]+\\.xpm\\'"))
+	   (infos (directory-files (expand-file-name "doc/") nil
+				   "^[^#]+\\.info\\(-[0-9]+\\)?\\'"))
 	   (si:message (symbol-function 'message))
 	   hardlink manifest make-backup-files noninteractive)
       ;; Non-Mule XEmacs cannot handle .el files containing non-ascii chars.
@@ -630,7 +639,9 @@ to remove some obsolete variables in the first argument VARLIST."
 	    (when (member (concat el "c") elcs)
 	      (insert "lisp/w3m/" el "c\n")))
 	  (dolist (icon icons)
-	    (insert "etc/w3m/" icon "\n")))
+	    (insert "etc/w3m/" icon "\n"))
+	  (dolist (info infos)
+	    (insert "info/" info "\n")))
 	(message "Generating %s...done" manifest)))))
 
  ((>= w3mhack-emacs-major-version 21)
@@ -920,6 +931,8 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 	 (push (file-name-directory x) paths))
     (if (setq x (locate-library "mew"))
 	(push (file-name-directory x) paths))
+    (if (setq x (locate-library "gnus"))
+	(push (file-name-directory x) paths))
     (and (if (featurep 'xemacs)
 	     ;; Mule-UCS does not support XEmacs versions prior to 21.2.37.
 	     (and (>= emacs-major-version 21)
@@ -942,16 +955,20 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
   "Show what files should be installed and where should they go."
   (let ((lisp-dir (pop command-line-args-left))
 	(icon-dir (pop command-line-args-left))
-	(package-dir (pop command-line-args-left)))
+	(package-dir (pop command-line-args-left))
+	(info-dir (pop command-line-args-left)))
     (message "
 lispdir=%s
 ICONDIR=%s
-PACKAGEDIR=%s"
-	     lisp-dir icon-dir package-dir)
+PACKAGEDIR=%s
+infodir=%s"
+	     lisp-dir icon-dir package-dir info-dir)
+    (setq info-dir (file-name-as-directory info-dir))
     (message "
 install:
-  *.el, *.elc, ChangeLog* -> %s"
-	     (file-name-as-directory lisp-dir))
+  *.el, *.elc, ChangeLog* -> %s
+  *.info, *.info-*        -> %s"
+	     (file-name-as-directory lisp-dir) info-dir)
     (setq icon-dir (file-name-as-directory icon-dir))
     (unless (string-equal "NONE/" icon-dir)
       (message "
@@ -959,14 +976,115 @@ install-icons:
   *.xpm                   -> %s"
 	       icon-dir))
     (setq package-dir (file-name-as-directory package-dir))
+    (message "
+install-info:
+  *.info, *.info-*        -> %s"
+	     info-dir)
     (unless (string-equal "NONE/" package-dir)
       (message "
 install-package:
   *.el, *.elc, ChangeLog* -> %slisp/w3m/
   *.xpm                   -> %setc/w3m/
+  *.info, *.info-*        -> %sinfo/
   MANIFEST.w3m            -> %spkginfo/"
-	       package-dir package-dir package-dir)))
+	       package-dir package-dir package-dir package-dir)))
   (message (if (featurep 'xemacs) "\n" "")))
+
+(defun w3mhack-makeinfo ()
+  "Emacs makeinfo in batch mode.
+NOTE: This function must be called from the top directory."
+  (load "doc/ptexinfmt.el" nil t t)
+  (cd "doc")
+  (let ((file (pop command-line-args-left))
+	auto-save-default
+	find-file-run-dired
+	coding-system-for-write
+	output-coding-system
+	(error 0))
+    (if (and (string-match "-ja\\.texi\\'" file)
+	     (not (featurep 'mule)))
+	(message "Cannot format %s with this version of %sEmacs (ignored)"
+		 file
+		 (if (featurep 'xemacs) "X" ""))
+      (condition-case err
+	  (progn
+	    (find-file file)
+	    (setq buffer-read-only nil)
+	    (buffer-disable-undo (current-buffer))
+	    (cond ((boundp 'MULE)
+		   (setq output-coding-system file-coding-system))
+		  ((boundp 'buffer-file-coding-system)
+		   (setq coding-system-for-write
+			 (symbol-value 'buffer-file-coding-system))))
+	    ;; Remove ignored areas first.
+	    (while (re-search-forward "^@ignore[\t\r ]*$" nil t)
+	      (delete-region (match-beginning 0)
+			     (if (re-search-forward
+				  "^@end[\t ]+ignore[\t\r ]*$" nil t)
+				 (1+ (match-end 0))
+			       (point-max))))
+	    ;; Remove unsupported commands.
+	    (goto-char (point-min))
+	    (while (re-search-forward "@\\(end \\)?ifnottex" nil t)
+	      (replace-match ""))
+	    (goto-char (point-min))
+	    (while (search-forward "\n@iflatex\n" nil t)
+	      (delete-region (1+ (match-beginning 0))
+			     (search-forward "\n@end iflatex\n")))
+	    (goto-char (point-min))
+	    ;; process @include before updating node
+	    ;; This might produce some problem if we use @lowersection or
+	    ;; such.
+	    (let ((input-directory default-directory)
+		  (texinfo-command-end))
+	      (while (re-search-forward "^@include" nil t)
+		(setq texinfo-command-end (point))
+		(let ((filename (concat input-directory
+					(texinfo-parse-line-arg))))
+		  (re-search-backward "^@include")
+		  (delete-region (point) (save-excursion
+					   (forward-line 1)
+					   (point)))
+		  (message "Reading included file: %s" filename)
+		  (save-excursion
+		    (save-restriction
+		      (narrow-to-region
+		       (point) (+ (point)
+				  (car (cdr (insert-file-contents filename)))))
+		      (goto-char (point-min))
+		      ;; Remove `@setfilename' line from included file,
+		      ;; if any, so @setfilename command not duplicated.
+		      (if (re-search-forward "^@setfilename"
+					     (save-excursion
+					       (forward-line 100)
+					       (point))
+					     t)
+			  (progn
+			    (beginning-of-line)
+			    (delete-region (point) (save-excursion
+						     (forward-line 1)
+						     (point))))))))))
+	    (texinfo-mode)
+	    (texinfo-every-node-update)
+	    (set-buffer-modified-p nil)
+	    (message "texinfo formatting %s..." file)
+	    (texinfo-format-buffer nil)
+	    (if (buffer-modified-p)
+		(progn (message "Saving modified %s" (buffer-file-name))
+		       (save-buffer))))
+	(error
+	 (message ">> Error: %s" (prin1-to-string err))
+	 (message ">>  point at")
+	 (let ((s (buffer-substring (point) (min (+ (point) 100) (point-max))))
+	       (tem 0))
+	   (while (setq tem (string-match "\n+" s tem))
+	     (setq s (concat (substring s 0 (match-beginning 0))
+			     "\n>>  "
+			     (substring s (match-end 0)))
+		   tem (1+ tem)))
+	   (message ">>  %s" s))
+	 (setq error 1))))
+    (kill-emacs error)))
 
 (defun w3mhack-version ()
   "Print version of w3m.el."
