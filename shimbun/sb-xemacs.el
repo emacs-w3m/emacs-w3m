@@ -41,8 +41,7 @@
 				"xemacs-build-reports" "xemacs-cvs"
 				"xemacs-mule" "xemacs-nt" "xemacs-patches"
 				"xemacs-users-ja" "xemacs"))
-(defvar shimbun-xemacs-coding-system (static-if (boundp 'MULE)
-					 '*euc-japan* 'euc-jp))
+(defvar shimbun-xemacs-coding-system 'euc-jp)
 
 (defmacro shimbun-xemacs-concat-url (shimbun url)
   (` (concat (shimbun-url-internal shimbun)
@@ -55,12 +54,17 @@
   (let ((case-fold-search t)
 	headers auxs aux)
     (catch 'stop
-      ;; Only latest month.
-      (if (re-search-forward
-	   (concat "<A HREF=\"/" (shimbun-current-group-internal shimbun)
-		   "/\\([12][0-9][0-9][0-9][0-1][0-9]\\)/\">\\[Index\\]")
-	   nil t)
-	  (setq auxs (append auxs (list (match-string 1)))))
+      (if (shimbun-use-entire-index-internal shimbun)
+	  (while (re-search-forward
+		  (concat "<A HREF=\"/" (shimbun-current-group-internal shimbun)
+			  "/\\([12][0-9][0-9][0-9][0-1][0-9]\\)/\">\\[Index\\]")
+		  nil t)
+	    (setq auxs (append auxs (list (match-string 1)))))
+	(if (re-search-forward
+	     (concat "<A HREF=\"/" (shimbun-current-group-internal shimbun)
+		     "/\\([12][0-9][0-9][0-9][0-1][0-9]\\)/\">\\[Index\\]")
+	     nil t)
+	    (setq auxs (append auxs (list (match-string 1))))))
       (while auxs
 	(erase-buffer)
 	(shimbun-retrieve-url
@@ -81,16 +85,17 @@
 			     (shimbun-current-group-internal shimbun))
 		  subject (match-string 3))
 	    (forward-line 1)
-	    (push (shimbun-make-header
-		   0
-		   (shimbun-mime-encode-string subject)
-		   (if (looking-at "<td><em>\\([^<]+\\)<")
-		       (match-string 1)
-		     "")
-		   "" id "" 0 0 url)
-		  headers)
-	    ;; (message "%s" id)
-	    (forward-line -2)))
+	    (if (shimbun-search-id shimbun id)
+		(throw 'stop headers)
+	      (push (shimbun-make-header
+		     0
+		     (shimbun-mime-encode-string subject)
+		     (if (looking-at "<td><em>\\([^<]+\\)<")
+			 (match-string 1)
+		       "")
+		     "" id "" 0 0 url)
+		    headers)
+	      (forward-line -2))))
 	(setq auxs (cdr auxs))))
     headers))
 

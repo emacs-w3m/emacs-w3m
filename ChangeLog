@@ -1,3 +1,9 @@
+2001-04-05  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-xemacs.el (shimbun-get-headers): Examine
+	use-entire-index slot and use shimbun-search-id.
+	(shimbun-xemacs-coding-system): Fixed redundant definition.
+
 2001-04-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* Makefile.in (default): Depends `Makefile'.
