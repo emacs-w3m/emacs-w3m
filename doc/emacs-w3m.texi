@@ -2076,7 +2076,7 @@ appear in the summary buffer forever and ever.
 
 If you don't expire articles in @samp{nnshimbun} groups, the @sc{nov}
 files will continue growing fat infinitely and you may see very old
-articles in the summary buffer as they were existent (in fact, they have
+articles in the summary buffer as they were existing (in fact, they have
 been expired three years ago! in the server of the newspaper publishing
 company).  Even if you try to read such an article, nothing will appear
 in the article buffer.  On the other hand, not a few mailing list
@@ -2113,7 +2113,7 @@ The value of the @code{nnmail-expiry-wait} variable.
 @end enumerate
 
 @item
-Second, the argument to be passed to the function held by the
+Second, the argument to be passed to the function specified by the
 @code{nnmail-expiry-wait-function} variable will contain the names of
 the back end and the server like ``nnshimbun+asahi:national'', while
 only the group name will be given in the case of the other mail back
