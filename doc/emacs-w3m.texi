@@ -116,6 +116,8 @@ there are any problems, all responsibility is in us the emacs-w3m
 development team, but there is no warranty as you know.  The emacs-w3m
 program was first created by TSUCHIYA Masatoshi in June 2000.
 
+See also the emacs-w3m official page: @uref{http://emacs-w3m.namazu.org/}
+
 @node Getting Started
 @chapter It's so easy to begin to use emacs-w3m
 @cindex getting started
@@ -278,6 +280,74 @@ is available in:
 @section Installing emacs-w3m
 @cindex install
 
+See the official page @uref{http://emacs-w3m.namazu.org/} for getting
+emacs-w3m.  Is everything ready?  Now, let's begin.
+
+@enumerate
+@item
+First, extract a tarball of emacs-w3m distribution at some place and
+enter the top directory as follows:
+
+@example
+% tar zxf emacs-w3m-@value{VERSION}.tar.gz
+% cd emacs-w3m-@value{VERSION}
+@end example
+
+If you've CVS checked out emacs-w3m, you have to run @samp{autoconf}
+with no argument to generate @samp{configure} script.
+
+@item
+Run @samp{configure} script.
+
+@example
+% ./configure
+@end example
+
+If you've installed APEL, FLIM or something in non-standard directories
+other than the default @code{load-path}, you must specify them using the
+@samp{--with-addpath} option as follows:
+
+@example
+% ./configure --with-addpath=/opt/share/apel:/opt/share/flim
+@end example
+
+@item
+Just run @samp{make} and @samp{make install}.  See also the next step if
+you are using XEmacs.
+
+@example
+% make
+% make install
+@end example
+
+Then all Lisp files and info files will be installed in the appropriate
+directories.  Now, do you know what files will go to where?  To know it
+beforehand, use this:
+
+@example
+% make what-where
+@end example
+
+If you are using Emacs 21 or XEmacs, you had better install icon image
+files.  To do this:
+
+@example
+% make install-icons
+@end example
+
+@item
+You can also install emacs-w3m as an XEmacs package using @samp{make
+install-package} instead of @samp{make install} as follows:
+
+@example
+% make
+% make install-package
+@end example
+
+In this case, you don't have to execute @samp{make install-icons}
+command.
+
+@end enumerate
 
 @node Shimbun Library
 @chapter A tool for reading a newspaper

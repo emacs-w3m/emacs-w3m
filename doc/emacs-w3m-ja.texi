@@ -154,8 +154,11 @@ Shimbun Library
 $BCJ$N46<U$rJ{$2$^$9!#(BW3m $B$O(B emacs-w3m $B$N<B8=$KIT2D7g$G$9!#$5$i$K%3%a%s%H!"(B
 $BDs0F$*$h$S%P%0$N=$@5$r$7$F$/$l$?$9$Y$F$N?M!9$K46<U$7$^$9!#$?$H$(LdBj$,$"$C(B
 $B$F$b!"@UG$$O$9$Y$F;d$?$A(B emacs-w3m $B3+H/%A!<%`$K$"$j$^$9!#$b$C$H$b!"$4>5(B
-$BCN$NDL$jJ]>Z$O$"$j$^$;$s!#(BEmacs-w3m $B$O(B 2000$BG/(B6$B7n$KEZ202mL-$K$h$C$F=i$a$F(B
+$BCN$NDL$jJ]>Z$O$"$j$^$;$s!#(BEmacs-w3m $B$O(B 2000$BG/(B6$B7n$KEZ202mL-$K$h$C$F:G=i$K(B
 $B:n$i$l$^$7$?!#(B
+
+Emacs-w3m $B$N8x<0%Z!<%8(B @uref{http://emacs-w3m.namazu.org/} $B$bJ;$;$F$4Mw(B
+$B2<$5$$!#(B
 
 @node Getting Started
 @chapter Emacs-w3m $B$r;H$$;O$a$k$N$O$H$C$F$b4JC1(B
@@ -328,6 +331,78 @@ Shimbun $B%i%$%V%i%j(B (@pxref{Shimbun Library}) $B$r;H$&$?$a$K$O(B FLIM $B
 @section Emacs-w3m $B$r%$%s%9%H!<%k$9$k(B
 @cindex install
 
+Emacs-w3m $B$N<hF@$K4X$7$F$O8x<0%Z!<(B
+$B%8(B @uref{http://emacs-w3m.namazu.org/} $B$r;2>H$7$F2<$5$$!#$9$Y$F=`Hw$G$-(B
+$B$^$7$?$+(B?  $B$G$O;O$a$^$7$g$&!#(B
+
+@enumerate
+@item
+$B:G=i$K!"0J2<$N$h$&$KG[I[$5$l$?(B emacs-w3m $B$N(B tarball $B$rE,Ev$J>l=j$GE83+$7(B
+$B$F!"@hF,$N%G%#%l%/%H%j$KF~$C$F2<$5$$(B:
+
+@example
+% tar zxf emacs-w3m-@value{VERSION}.tar.gz
+% cd emacs-w3m-@value{VERSION}
+@end example
+
+Emacs-w3m $B$r(B CVS $B$G<hF@$7$?$N$J$i$P!"(B@samp{configure} $B%9%/%j%W%H$r@8@.$9(B
+$B$k$?$a$K0z?tL5$7$G(B @samp{autoconf} $B$r<B9T$7$J$1$l$P$J$j$^$;$s!#(B
+
+@item
+@samp{configure} $B%9%/%j%W%H$r<B9T$7$^$9!#(B
+
+@example
+% ./configure
+@end example
+
+APEL$B!"(BFLIM $B$^$?$OB>$N2?$+$r!"%G%U%)%k%H$N(B @code{load-path} $B0J30$NHsI8=`(B
+$B%G%#%l%/%H%j$K%$%s%9%H!<%k$7$F$"$k>l9g$O!"0J2<$N$h$&(B
+$B$K(B @samp{--with-addpath} $B%*%W%7%g%s$r;H$C$F$=$l$i$r;XDj$7$J$1$l$P$J$j$^(B
+$B$;$s(B:
+
+@example
+% ./configure --with-addpath=/opt/share/apel:/opt/share/flim
+@end example
+
+@item
+$BC1$K(B @samp{make} $B$H(B @samp{make install} $B$r<B9T$7$^$9!#(BXEmacs $B$r;H$C$F$$(B
+$B$k>l9g$O!"$5$i$K<!$NCJMn$b8+$F2<$5$$!#(B
+
+@example
+% make
+% make install
+@end example
+
+$B$9$k$H!"$9$Y$F$N(B Lisp $B%U%!%$%k$H(B info $B%U%!%$%k$,E,@Z$J%G%#%l%/%H%j$K%$%s(B
+$B%9%H!<%k$5$l$k$G$7$g$&!#(B
+
+$B$5$F!"$"$J$?$O$I$s$J%U%!%$%k$,$I$3$K9T$/$+J,$+$j$^$9$+(B?  $B$=$l$rA0$b$C$F(B
+$BCN$k$?$a$K$O!"$3$l$r;H$C$F2<$5$$(B:
+
+@example
+% make what-where
+@end example
+
+Emacs 21 $B$^$?$O(B XEmacs $B$r;H$C$F$$$k$J$i$P!"%"%$%3%s2hA|$N%U%!%$%k$r%$%s(B
+$B%9%H!<%k$7$?J}$,NI$$$G$7$g$&!#$=$l$r9T$J$&$K$O(B:
+
+@example
+% make install-icons
+@end example
+
+@item
+$B0J2<$N$h$&$K(B @samp{make install} $B$NBe$o$j(B
+$B$K(B @samp{make install-package} $B$r;H$&$3$H$K$h$C$F!"(B
+emacs-w3m $B$r(B XEmacs $B%Q%C%1!<%8$H$7$F%$%s%9%H!<%k$9$k$3$H$b$G$-$^$9(B:
+
+@example
+% make
+% make install-package
+@end example
+
+$B$3$N>l9g(B @samp{make install-icons} $B$r<B9T$9$kI,MW$O$"$j$^$;$s!%(B
+
+@end enumerate
 
 @node Shimbun Library
 @chapter $B%&%'%V>e$N?7J9$rFI$`$?$a$NF;6q(B
