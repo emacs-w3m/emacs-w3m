@@ -1,3 +1,15 @@
+2001-03-22  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Structure of hash database of arrived urls is
+	changed.
+	(w3m-arrived-setup): Follow change of DB structure.
+	(w3m-arrived-shutdown): Likewise.
+	(w3m-arrived-add): Likewise, and argument spec is changed.
+	(w3m-arrived-time): New function.
+	(w3m-arrived-seq, w3m-arrived-put-title, w3m-arrived-arrived-time,
+	w3m-arrived-put-arrived-time): Removed.
+	(w3m-goto-url): Follow change or `w3m-arrived-add'.
+
 2001-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-url): Refresh the visibility of toolbar when

@@ -292,7 +292,7 @@ width using expression (+ (frame-width) VALUE)."
 
 (defcustom w3m-executable-type
   (if (eq system-type 'windows-nt)
-      'cygwin ; xxx, cygwin on win32 by default
+      'cygwin				; xxx, cygwin on win32 by default
     'native)
   "*Executable binary type of w3m program.
 Value is 'native or 'cygwin.
@@ -405,7 +405,7 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
     ("\x80" . " ")))
 
 (eval-and-compile
-  (defconst w3m-entity-alist	  ; html character entities and values
+  (defconst w3m-entity-alist		; html character entities and values
     (eval-when-compile
       (let ((basic-entity-alist
 	     '(("nbsp" . " ")
@@ -483,7 +483,6 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 
 (defconst w3m-arrived-db-size 1023)
 (defvar w3m-arrived-db nil)		; nil means un-initialized.
-(defvar w3m-arrived-seq nil)
 (defvar w3m-arrived-user-list nil)
 
 (defvar w3m-process-message nil "Function to message status.")
@@ -571,7 +570,7 @@ for a charset indication")
 
 (defsubst w3m-image (&optional point)
   (get-text-property (or point (point)) 'w3m-image))
- 
+
 (defsubst w3m-action (&optional point)
   (get-text-property (or point (point)) 'w3m-action))
 
@@ -613,67 +612,67 @@ If N is negative, last N items of LIST is returned."
 	    (coding-system-for-write coding))
 	(print list (current-buffer))
 	(write-region (point-min) (point-max)
-	      file nil 'nomsg)))))
+		      file nil 'nomsg)))))
+
+(defun w3m-arrived-add (url &optional title modified-time arrived-time)
+  "Add URL to hash database of arrived URLs."
+  (when (> (length url) 5);; ignore short
+    (set-text-properties 0 (length url) nil url)
+    (let ((ident (intern url w3m-arrived-db))
+	  (x (if (string-match "#\\([^#]+\\)$" url)
+		 (substring url 0 (match-beginning 0))
+	       url)))
+      (put ident 'title title)
+      (put ident 'last-modified
+	   (setq modified-time
+		 (or modified-time
+		     (w3m-last-modified x)
+		     (current-time))))
+      (set ident
+	   (setq arrived-time
+		 (or arrived-time
+		     (current-time))))
+      (unless (eq x url)
+	(w3m-arrived-add x title modified-time arrived-time))
+      ident)))
 
 (defsubst w3m-arrived-p (url)
   "If URL has been arrived, return non-nil value.  Otherwise return nil."
   (intern-soft url w3m-arrived-db))
 
-(defun w3m-arrived-last-modified (url)
-  "If URL has been arrived, return its last modified time.  Otherwise return nil."
+(defun w3m-arrived-time (url)
+  "If URL has been arrived, return its arrived time.  Otherwise return nil."
   (let ((v (intern-soft url w3m-arrived-db)))
-    (and v (get v 'last-modified))))
-
-(defsubst w3m-arrived-add (url &optional time)
-  "Add URL to hash database of arrived URLs."
-  (when (> (length url) 5) ;; ignore short
-    (set-text-properties 0 (length url) nil url)
-    (let ((ident (intern url w3m-arrived-db)))
-      (put ident 'last-modified
-	   (or time
-	       (w3m-last-modified url)
-	       (current-time)))
-      (set ident (setq w3m-arrived-seq (1+ w3m-arrived-seq))))))
+    (and v (boundp v) (symbol-value v))))
 
 (defun w3m-arrived-title (url)
   "Return the stored title of the page, which is pointed by URL."
   (let ((v (intern-soft url w3m-arrived-db)))
     (and v (get v 'title))))
 
-(defun w3m-arrived-put-title (url title)
-  "Store TITLE of the page, which is pointed by URL."
+(defun w3m-arrived-last-modified (url)
+  "If URL has been arrived, return its last modified time.  Otherwise return nil."
   (let ((v (intern-soft url w3m-arrived-db)))
-    (and v (put v 'title title))))
-
-(defun w3m-arrived-arrived-time (url)
-  "If URL has been arrived, return its arrived time.  Otherwise return nil."
-  (let ((v (intern-soft url w3m-arrived-db)))
-    (and v (get v 'arrived-time))))
-
-(defun w3m-arrived-put-arrived-time (url &optional time)
-  "Store TIME of the page, which is pointed by URL."
-  (let ((v (intern-soft url w3m-arrived-db)))
-    (and v (put v 'arrived-time (or time (current-time))))))
+    (and v (get v 'last-modified))))
 
 (defun w3m-arrived-setup ()
   "Load arrived url list from `w3m-arrived-file' and setup hash database."
   (unless w3m-arrived-db
-    (setq w3m-arrived-db (make-vector w3m-arrived-db-size nil)
-	  w3m-arrived-seq 0)
+    (setq w3m-arrived-db (make-vector w3m-arrived-db-size nil))
     (let ((list (w3m-load-list w3m-arrived-file
 			       w3m-arrived-file-coding-system)))
       (dolist (elem list)
 	(if (or (not (nth 1 elem)) (stringp (nth 1 elem)))
 	    ;; Process new format of arrived URL database.
-	    (progn
-	      (w3m-arrived-add (car elem) (nth 2 elem))
-	      (w3m-arrived-put-title (car elem) (nth 1 elem))
-	      (if (nth 3 elem)
-		  (w3m-arrived-put-arrived-time (car elem) (nth 3 elem))
-		(w3m-arrived-put-arrived-time (car elem) (nth 2 elem))))
+	    (w3m-arrived-add (if (string-match "^/" (car elem))
+				 (w3m-expand-file-name-as-url (car elem))
+			       (car elem))
+			     (nth 1 elem)
+			     (nth 2 elem)
+			     (or (nth 3 elem) (nth 2 elem)))
 	  ;; Process old format of arrived URL database, is used
 	  ;; before revision 1.135.
-	  (w3m-arrived-add (car elem) (cdr elem))))
+	  (w3m-arrived-add (car elem) nil (cdr elem) (cdr elem))))
       (unless w3m-input-url-history
 	(setq w3m-input-url-history (mapcar (function car) list))))))
 
@@ -687,29 +686,32 @@ If N is negative, last N items of LIST is returned."
       (and
        ;; Check format of arrived DB file.
        (or (not (nth 1 elem)) (stringp (nth 1 elem)))
-       (w3m-time-newer-p (nth 2 elem)
-			 (w3m-arrived-last-modified (car elem)))
-       (w3m-arrived-add (car elem) (nth 2 elem))
-       (if (nth 3 elem)
-	   (w3m-arrived-put-arrived-time (car elem) (nth 3 elem))
-	 (w3m-arrived-put-arrived-time (car elem) (nth 2 elem)))))
+       (w3m-time-newer-p (nth 3 elem) (w3m-arrived-time (car elem)))
+       (w3m-arrived-add (if (string-match "^/" (car elem))
+			    (w3m-expand-file-name-as-url (car elem))
+			  (car elem))
+			(nth 1 elem)
+			(nth 2 elem)
+			(nth 3 elem))))
     ;; Convert current arrived DB to a list.
     (let (list)
       (mapatoms
        (lambda (sym)
-	 (when sym
-	   (push (cons (symbol-value sym)
-		       (list (symbol-name sym)
-			     (get sym 'title)
-			     (get sym 'last-modified)
-			     (get sym 'arrived-time)))
-		 list)))
+	 (and sym
+	      (boundp sym)
+	      (push (list (symbol-name sym)
+			  (get sym 'title)
+			  (get sym 'last-modified)
+			  (symbol-value sym))
+		    list)))
        w3m-arrived-db)
       (w3m-save-list w3m-arrived-file
 		     w3m-arrived-file-coding-system
-		     (mapcar (function cdr)
-			     (sort list
-				   (lambda (a b) (< (car a) (car b)))))))
+		     (w3m-sub-list
+		      (sort list
+			    (lambda (a b)
+			      (w3m-time-newer-p (nth 3 a) (nth 3 b))))
+		      w3m-keep-arrived-urls)))
     (setq w3m-arrived-db nil)))
 (add-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
 
@@ -830,18 +832,18 @@ If N is negative, last N items of LIST is returned."
   ;; initialise if need
   (if (null w3m-entity-db)
       (w3m-entity-db-setup))
-    ;; return value of specified entity, or empty string for unknown entity.
-    (or (symbol-value (intern-soft name w3m-entity-db))
-	(if (not (char-equal (string-to-char name) ?#))
-	    (concat "&" name)		; unknown entity
-	  ;; case of immediate character (accept only 0x20 .. 0x7e)
-	  (let ((char (string-to-int (substring name 1)))
-		sym)
-	    ;; make character's representation with learning
-	    (set (setq sym (intern name w3m-entity-db))
-		 (if (or (< char 32) (< 127 char))
-		     "~"		; un-supported character
-		   (char-to-string char)))))))
+  ;; return value of specified entity, or empty string for unknown entity.
+  (or (symbol-value (intern-soft name w3m-entity-db))
+      (if (not (char-equal (string-to-char name) ?#))
+	  (concat "&" name)		; unknown entity
+	;; case of immediate character (accept only 0x20 .. 0x7e)
+	(let ((char (string-to-int (substring name 1)))
+	      sym)
+	  ;; make character's representation with learning
+	  (set (setq sym (intern name w3m-entity-db))
+	       (if (or (< char 32) (< 127 char))
+		   "~"			; un-supported character
+		 (char-to-string char)))))))
 
 (defun w3m-fontify-bold ()
   "Fontify bold characters in this buffer which contains half-dumped data."
@@ -955,7 +957,7 @@ If optional argument FORCE is non-nil, displaying is forced.
 If second optional argument NO-CACHE is non-nil, cache is not used."
   (interactive "P")
   (unless (and force (eq w3m-display-inline-image-status 'on))
-    (let ((cur-point (point)) 
+    (let ((cur-point (point))
 	  (buffer-read-only)
 	  point end url image)
       (if (or force (eq w3m-display-inline-image-status 'off))
@@ -1233,7 +1235,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	      (sleep-for 0.2)
 	      (discard-input))
 	    (prog1 (process-exit-status proc)
-	      (delete-process proc) ;; Clean up resources of process.
+	      (delete-process proc);; Clean up resources of process.
 	      (and w3m-current-url
 		   w3m-process-user
 		   (setq w3m-arrived-user-list
@@ -1464,7 +1466,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
      ;; HTTP/1.0 501 Method Not Implemented
      ((and header (string-match "HTTP/1\\.[0-9] 50[0-9]" header))
       (list "text/html")))))
-	   
+
 
 (defun w3m-pretty-length (n)
   ;; This function imported from url.el.
@@ -1684,7 +1686,7 @@ this function returns t.  Otherwise, returns nil."
 	      (setq w3m-url-history (cons url w3m-url-history))
 	      (setq-default w3m-url-history
 			    (cons url (default-value 'w3m-url-history)))
-	      (setq w3m-url-yrotsih nil) 
+	      (setq w3m-url-yrotsih nil)
 	      (setq-default w3m-url-yrotsih nil)
 	      (delete-region (point-min) (point-max))
 	      (insert-buffer w3m-work-buffer-name)
@@ -1699,7 +1701,7 @@ this function returns t.  Otherwise, returns nil."
 	      (setq w3m-url-history (cons url w3m-url-history))
 	      (setq-default w3m-url-history
 			    (cons url (default-value 'w3m-url-history)))
-	      (setq w3m-url-yrotsih nil) 
+	      (setq w3m-url-yrotsih nil)
 	      (setq-default w3m-url-yrotsih nil)
 	      (delete-region (point-min) (point-max))
 	      (insert (file-name-nondirectory url))
@@ -1753,12 +1755,12 @@ this function returns t.  Otherwise, returns nil."
   (unless arg (setq arg 1))
   (let ((url (nth arg w3m-url-history)))
     (when url
-      (let (w3m-url-history w3m-url-yrotsih) 
+      (let (w3m-url-history w3m-url-yrotsih)
 	(w3m-goto-url url))
       ;; restore last position
       (w3m-arrived-restore-position url)
       (while (< 0 arg)
-	(setq w3m-url-yrotsih 
+	(setq w3m-url-yrotsih
 	      (cons (car w3m-url-history) w3m-url-yrotsih)
 	      w3m-url-history (cdr w3m-url-history)
 	      arg (1- arg))))))
@@ -1769,12 +1771,12 @@ this function returns t.  Otherwise, returns nil."
   (setq arg (1- arg))
   (let ((url (nth arg w3m-url-yrotsih)))
     (when url
-      (let (w3m-url-history w3m-url-yrotsih) 
+      (let (w3m-url-history w3m-url-yrotsih)
 	(w3m-goto-url url))
       ;; restore last position
       (w3m-arrived-restore-position url)
       (while (< -1 arg)
-	(setq w3m-url-history 
+	(setq w3m-url-history
 	      (cons (car w3m-url-yrotsih) w3m-url-history)
 	      w3m-url-yrotsih (cdr w3m-url-yrotsih)
 	      arg (1- arg))))))
@@ -1810,7 +1812,7 @@ this function returns t.  Otherwise, returns nil."
 	(if (string-match "^.:" path)
 	    (setq path (substring path (match-end 0))))
 	(concat server path))))))
- 
+
 (defun w3m-view-this-url (&optional arg)
   "*View the URL of the link under point."
   (interactive "P")
@@ -2244,8 +2246,6 @@ or prefix ARG columns."
 	      url (substring url 0 (match-beginning 0))))
       (if (not (w3m-exec url nil reload))
 	  (w3m-refontify-anchor)
-	(w3m-arrived-add orig)
-	(if name (w3m-arrived-add url))
 	(w3m-fontify)
 	(or (and name (w3m-search-name-anchor name))
 	    (goto-char (point-min)))
@@ -2260,8 +2260,7 @@ or prefix ARG columns."
 	     (if (w3m-url-local-p url)
 		 (file-name-directory (w3m-url-to-file-name url))
 	       w3m-profile-directory)))
-      (w3m-arrived-put-title url w3m-current-title)
-      (w3m-arrived-put-arrived-time url)
+      (w3m-arrived-add orig w3m-current-title)
       (w3m-static-if (featurep 'xemacs)
 	  (when w3m-use-toolbar
 	    (set-specifier default-toolbar
@@ -2397,7 +2396,7 @@ ex.) c:/dir/file => //c/dir/file"
 	 (when (and sym
 		    (setq url (symbol-name sym))
 		    (not (string-match w3m-about-history-except-regex url)))
-	   (setq time (w3m-arrived-arrived-time url))
+	   (setq time (w3m-arrived-time url))
 	   (push (cons url time) alist)))
        w3m-arrived-db)
       (setq alist (sort alist (lambda (a b) (w3m-time-newer-p (cdr a) (cdr b))))))
@@ -2416,7 +2415,7 @@ ex.) c:/dir/file => //c/dir/file"
 		    (string= "<no-title>" title))
 	    (setq title (if (<= (length url) width)
 			    url
-			  (substring url 0 width)))) ;; only ASCII characters.
+			  (substring url 0 width))));; only ASCII characters.
 	  (insert (format "<tr><td><a href=\"%s\">%s</a></td>" url title))
 	  (when (cdr (car alist))
 	    (insert "<td>"
