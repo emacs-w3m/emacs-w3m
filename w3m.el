@@ -6637,9 +6637,9 @@ w3m-mode buffers."
 	(insert "\n")))))
 
 
+(provide 'w3m)
+
 (load w3m-init-file t t)
 (run-hooks 'w3m-load-hook)
-
-(provide 'w3m)
 
 ;;; w3m.el ends here

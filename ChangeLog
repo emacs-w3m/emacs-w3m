@@ -1,5 +1,11 @@
 2002-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el: Provide the feature `w3m' before loading an init file or
+	evaluating `w3m-load-hook'.
+	Suggested by Seiichi NAMBA <sn@asahi-net.email.ne.jp>.
+
+2002-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/sb-zdnet.el (shimbun-zdnet-group-alist): Share the
 	regexp templates.
 	(shimbun-zdnet-x-face-alist): Blur the default face.
