@@ -70,7 +70,7 @@
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-nikkansports)
 					 &optional range)
-  (when (re-search-forward "\n<!--\\( End of Header \\|header\\)-->\n" nil t)
+  (when (re-search-forward shimbun-nikkansports-end-of-header-regexp nil t)
     (delete-region (point-min) (point))
     (when (re-search-forward
 	   "\n<!--\\( Start of Footer \\|footer-\\)-->\n" nil t)
@@ -78,8 +78,8 @@
       (delete-region (point) (point-max))
       (goto-char (point-min))
       (let ((case-fold-search t) headers)
-	(while (re-search-forward shimbun-nikkansports-end-of-header-regexp
-				  nil t)
+	(while (re-search-forward
+		"<li><a href=\"\\(.+\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)-\\([0-9]+\\)\\.html\\)\">\\([^<]+\\)</a>" nil t)
 	  (let ((url (match-string 1))
 		(year (match-string 2))
 		(month (match-string 3))
