@@ -1,3 +1,8 @@
+2003-03-04  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-scan-message): Support New
+	Mew after 2003.03.03.
+
 2003-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi-html.el (shimbun-asahi-html-content-start,
