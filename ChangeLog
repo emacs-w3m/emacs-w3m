@@ -1,3 +1,7 @@
+2003-03-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-elips.el: New file.
+
 2003-03-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yomiuri-html.el (shimbun-yomiuri-html-url,
