@@ -3,6 +3,7 @@
 ;; Copyright (c) 2001 Shun-ichi Goto.
 
 ;; Author: Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+;;         Hideyuki SHIRAI <shirai@meadowy.org>,
 ;; Created: Wed Feb 28 03:31:00 2001
 ;; Version: $Revision$
 ;; Keywords: Mew, mail, w3m, WWW, hypermedia
@@ -35,6 +36,10 @@
 ;; If mew-use-w3m-minor-mode is t, key operations of w3m-mode is
 ;; allowed (as minor-mode-map) and jump links in message buffer.
 ;; NOTE: This feature is not complete. You may confuse.
+;;
+;; 
+;; If use mew-1.95b118 or later on which Emacs-21 or XEmacs,
+;; can display the images in the Multipart/Related message.
 
 ;;; Code:
 
@@ -73,6 +78,7 @@ This variable effected only XEmacs or Emacs 21.")
     (mew-elet
      (let ((file (format "%s.html" (mew-make-temp-name)))
 	   (w3m-display-inline-image mew-w3m-auto-insert-image)
+	   (pos (window-start))
 	   charset wcs)
        (setq charset (mew-syntax-get-param params "charset"))
        (if charset 
@@ -83,37 +89,25 @@ This variable effected only XEmacs or Emacs 21.")
 	(w3m-region (point)
 		    (progn (insert-buffer-substring cache begin end) 
 			   (point)))
-	(put-text-property (point-min) (1+ (point-min)) 'w3m t))))))
+	(put-text-property (point-min) (1+ (point-min)) 'w3m t))
+       (set-window-start (selected-window) pos)))))
 
+
+(defvar w3m-mew-support-cid (fboundp 'mew-syntax-get-entry-by-cid))
+    
 (defun mew-w3m-cid-retrieve (url &optional no-decode no-cache)
   (save-excursion
-    (when (string-match "^cid:\\(.+\\)" url)
+    (when (and w3m-mew-support-cid
+	       (string-match "^cid:\\(.+\\)" url))
       (setq url (match-string 1 url))
       (let ((fld (mew-current-get-fld (mew-frame-id))))
 	(set-buffer fld)
 	(let* ((msg (mew-current-get-msg (mew-frame-id)))
-	       (part (mew-syntax-nums))
 	       (cache (mew-cache-hit fld msg 'must-hit))
 	       (syntax (mew-cache-decode-syntax cache))
-	       (part2 1)
-	       len cid cidpart cidstx beg end)
-	  (if (< (length part) 2)
-	      (setq part nil)
-	    (setcdr (nthcdr (- (length part) 2) part) nil))
-	  (setq len
-		(- (length
-		    (mew-syntax-get-part (mew-syntax-get-entry syntax part)))
-		   mew-syntax-magic))
-	  (setq cidpart
-		(catch 'detcid
-		  (while (>= len part2)
-		    (setq cid (mew-syntax-get-cid
-			       (mew-syntax-get-entry syntax (append part (list part2)))))
-		    (when (and cid (string= cid url))
-		      (throw 'detcid (append part (list part2))))
-		    (setq part2 (1+ part2)))))
-	  (when cidpart
-	    (setq cidstx (mew-syntax-get-entry syntax cidpart))
+ 	       cidstx beg end)
+ 	  (setq cidstx (mew-syntax-get-entry-by-cid syntax url))
+ 	  (when cidstx
 	    (setq beg (mew-syntax-get-begin cidstx))
 	    (setq end (mew-syntax-get-end cidstx))
 	    (w3m-with-work-buffer

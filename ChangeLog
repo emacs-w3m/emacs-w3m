@@ -1,3 +1,11 @@
+2001-04-03  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-mime-text/html-w3m): Store/restore window start
+	point.
+	(w3m-mew-support-cid): New variable.
+	(mew-w3m-cid-retrieve): Use mew-syntax-get-entry-by-cid(),
+	Tnx, Kazu Yamamoto <kazu@mew.org>.
+
 2001-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-copy): Make a copy of `w3m-history-flat'
