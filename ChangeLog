@@ -1,3 +1,8 @@
+2001-10-11  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
+
+	* shimbun/sb-tcup.el (shimbun-tcup-make-time): Fix time regexp.
+	(shimbun-headers): Ditto.
+
 2001-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-f1express.el, shimbun/sb-fml.el, shimbun/sb-h14m.el,
@@ -13,7 +18,7 @@
 	* w3m.el (w3m-local-dirlist-cgi): Replace `re-search-forward' to
 	`search-forward'; bind `beg' as a non-global variable.
 
-2001-10-12  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+2001-10-11  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* shimbun/sb-f1express.el (shimbun-f1express-coding-system):
 	Abolished.
