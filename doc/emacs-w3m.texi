@@ -93,6 +93,7 @@ This manual corresponds to emacs-w3m version @value{VERSION}.
 * Frequently Asked Questions::  There isn't always an answer
 * Known Problems::              You can surely solve it
 * Shimbun Library::             A tool for reading a web newspaper
+* Tips::                        Some knick-knacks using emacs-w3m
 * Mailing List::                Mailing list and submitting bug reports
 * Emacs-w3m Functions::         Details of some emacs-w3m functions
 * Index::                       Index
@@ -161,6 +162,8 @@ Shimbun Library
 * Mew Shimbun::                 Reading web newspapers with Mew
 * Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
 * Shimbun Basics::              How to make your own shimbun modules
+
+Tips
 
 Mailing List
 
@@ -1825,7 +1828,7 @@ Emacs Lisp expressions in your emacs-w3m initialization file, which is
 
 @noindent
 would set the default homepage to @uref{http://emacs-w3m.namazu.org/}.
-The syntax to use is the same as in your @file{.emacs}
+The syntax to use is the same as in your @file{~/.emacs}
 file.  @xref{(emacs)Init File}.
 
 Please note that some variables from external modules could be undefined
@@ -2722,6 +2725,135 @@ read @samp{shimbun} by just accessing a folder beginning with @samp{@@}
 @node Shimbun Basics
 @section How to make your own shimbun modules
 
+
+@node Tips
+@chapter Some knick-knacks using emacs-w3m
+@cindex Tips
+
+Here are some tips to use emacs-w3m handily with the other features.
+
+@itemize @bullet
+@item browse-url
+
+You can use emacs-w3m with the @code{browse-url} feature.  For instance,
+put the following lines in your @file{~/.emacs} file:
+
+@lisp
+(setq browse-url-browser-function 'w3m-browse-url)
+(autoload 'w3m-browse-url "w3m" "Ask emacs-w3m to show a URL." t)
+(global-set-key "\C-xm" 'browse-url-at-point)
+@end lisp
+
+Then, emacs-w3m will be invoked when you type the @kbd{C-x m} key on a
+string which looks like a URL in any Emacs buffer.  In addition, you can
+use emacs-w3m to preview an HTML file that you are just editing by
+typing the @kbd{C-c C-v} key (note that you need to use Emacs and the
+@code{html-mode} major mode to edit the HTML file).
+
+If you'd like to use the other web browser rather than emacs-w3m by
+typing the @kbd{C-x m} key only when you are in an emacs-w3m buffer (who
+wants to do so?), add the following advice to @file{~/.emacs} file for
+example:
+
+@lisp
+(defadvice browse-url-at-point
+  (around change-browse-url-browser-function activate)
+  "Use Netscape only when it is invoked in an emacs-w3m buffer."
+  (let ((browse-url-browser-function
+         (if (eq major-mode 'w3m-mode)
+             'browse-url-netscape
+           'w3m-browse-url)))
+    ad-do-it))
+@end lisp
+
+@item dired
+
+You can use emacs-w3m to browse an HTML file in a @code{dired} buffer by
+typing the @kbd{C-x m} key.  Use the following settings in your
+@file{~/.emacs} file:
+
+@lisp
+(eval-after-load "dired"
+  '(define-key dired-mode-map "\C-xm" 'dired-w3m-find-file))
+
+(defun dired-w3m-find-file ()
+  (interactive)
+  (require 'w3m)
+  (let ((file (dired-get-filename)))
+    (if (y-or-n-p (format "Use emacs-w3m to browse %s? "
+                          (file-name-nondirectory file)))
+        (w3m-find-file file))))
+@end lisp
+
+@item hnf-mode
+
+You can see the newest diary using emacs-w3m and the hyper nikki system.
+Put the following lines in your @file{~/.emacs} file and type the
+@kbd{C-c C-b} key in an @code{hnf-mode} buffer:
+
+@lisp
+(autoload 'w3m-browse-url "w3m" nil t)
+(defun w3m-hnf-browse-url-w3m (url &optional new-window)
+  (interactive (browse-url-interactive-arg "URL: "))
+  (save-selected-window
+    (pop-to-buffer (get-buffer-create "*w3m*"))
+    (w3m-browse-url url new-window)))
+(setq hnf-browse-url-browser-function #'w3m-hnf-browse-url-w3m)
+@end lisp
+
+@item Gnus
+
+You've mistaken the entrance if you are a Gnus user and this section is
+the first page you read in this Info.  See @ref{Hooking into MUAs}
+first.
+
+By default, Gnus will not apply the treatment variables, for instance
+@code{gnus-treat-strip-banner}, to @samp{text/html} parts.  To have them
+applied to @samp{text/html} parts automatically, there are two ways to
+do that:
+
+@lisp
+;; Apply all the treatments to text/html parts.
+(eval-after-load "gnus-art"
+  '(add-to-list 'gnus-article-treat-types "text/html"))
+@end lisp
+
+@lisp
+;; Apply a certain treatment to text/html parts.
+(setq gnus-treat-strip-banner '(or t (typep "text/html")))
+@end lisp
+
+Also @xref{Customizing Articles, ,Customizing Articles, gnus, The Gnus
+Manual}, for details.
+
+In additon, the experimental code below is used to display
+@samp{multipart/related} pictures.  The place might be something wrong.
+
+@lisp
+(eval-after-load "gnus-art"
+  '(or (assoc "multipart/related" gnus-mime-multipart-functions)
+       (setq gnus-mime-multipart-functions
+             (cons
+              (cons
+               "multipart/related"
+               (byte-compile
+                (lambda (handle)
+                  (gnus-mime-display-mixed (cdr handle)))))
+              gnus-mime-multipart-functions))))
+@end lisp
+
+@item yahtml-mode
+
+You can use emacs-w3m to preview an HTML file that just you are editing
+with the @code{yahtml-mode}.  Here is an example:
+
+@lisp
+(autoload 'w3m-goto-url "w3m")
+(defadvice yahtml-browse-html
+  (around w3m-yahtml-browse-html activate compile)
+  (w3m-goto-url (ad-get-arg 0) t))
+@end lisp
+@end itemize
 
 @node Mailing List
 @chapter Mailing list and submitting bug reports
