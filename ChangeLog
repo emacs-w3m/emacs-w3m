@@ -1,5 +1,8 @@
 2002-03-27  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-e21.el (w3m-tab-drag-mouse-function): Fix problem when dragged
+	mouse position is outside of the original frame.
+
 	* w3m.el (w3m-version): New variable.
 	(toplevel): Detect w3m version.
 	(w3m-user-agent): New user option.

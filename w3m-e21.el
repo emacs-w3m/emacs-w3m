@@ -587,11 +587,22 @@ Each information is a list whose elements are:
 	      'help-echo "mouse-2 prompts to input URL")))))))
 
 (defun w3m-tab-drag-mouse-function (event buffer)
-  (let ((window (posn-window (event-end event))))
-    (unless (string= (buffer-name (window-buffer window))
-		     buffer)
-      (select-window window)
-      (switch-to-buffer buffer))))
+  (let ((window (posn-window (event-end event)))
+	mpos)
+    (when (framep window) ; dropped at outside of the frame.
+      (setq window nil
+	    mpos (mouse-position))
+      (and (framep (car mpos))
+	   (car (cdr mpos))
+	   (cdr (cdr mpos))
+	   (setq window (window-at (car (cdr mpos))
+				   (cdr (cdr mpos))
+				   (car mpos)))))
+    (when window
+      (unless (string= (buffer-name (window-buffer window))
+		       buffer)
+	(select-window window)
+	(switch-to-buffer buffer)))))
 
 (defun w3m-tab-make-keymap (buffer)
   (let ((map (make-sparse-keymap))
