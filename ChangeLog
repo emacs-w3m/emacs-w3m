@@ -1,3 +1,37 @@
+2003-05-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* Makefile.in (DOCS): FAQ, FAQ.ja, README.namazu.ja,
+	README.shimbun.ja, TIPS and TIPS.ja are merged into Info.
+
+2003-05-29  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-pilot-link.el: Require sendmail.el.
+	(shimbun-make-contents): New method.
+	(shimbun-index-url): Bug fixed.
+
+2003-05-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* doc/Makefile.in (dvi): New target to create dvi files; related
+	targets and macros are installed.
+
+	* doc/.cvsignore: Ignore dvi files.
+
+	* configure.in: Check whether texi2dvi, ptex and jbibtex exists.
+
+2003-05-29  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-ibm-dev.el (shimbun-index-url): Removed.
+	(shimbun-ibm-dev-content-start, shimbun-ibm-dev-content-end): New
+	user variables.
+	(shimbun-get-headers): Rename to shimbun-headers.
+	(shimbun-headers): Use `w3m-expand-url' to expand relative url to
+	absolute one.
+	Build message-id using domain www-6.ibm.com.
+	(shimbun-make-contents): Change its method-qualifier to :before.
+	Use `when' instead of `if' if there aren't `else S expressions'.
+	(shimbun-ibm-dev-groups): Remove "components", "security",
+	"unicode", "usability" and "web" from its default value.
+
 2003-05-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Merge documents on main trunk.
