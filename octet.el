@@ -416,7 +416,7 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 	(setq from-buf (current-buffer))
 	(set-buffer-multibyte nil)
 	(insert (mime-entity-content entity))
-	(octet-buffer name)
+	(octet-buffer name (mime-entity-type/subtype entity))
 	(set-buffer-multibyte t)
 	(with-current-buffer to-buf
 	  (octet-insert-buffer from-buf)
@@ -446,16 +446,13 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 		   'mime-view-octet))
       (let ((buf (get-buffer-create
 		  (format "%s-%s" (buffer-name) (mime-entity-number entity))))
-	    (ctype (concat (symbol-name (cdr (assq 'type situation)))
-			   "/"
-			   (symbol-name (cdr (assq 'subtype situation)))))
 	    (name (mime-entity-filename entity)))
 	(with-current-buffer buf
 	  (set-buffer-multibyte nil)
 	  (setq buffer-read-only nil)
 	  (erase-buffer)
 	  (insert (mime-entity-content entity))
-	  (octet-buffer name ctype)
+	  (octet-buffer name (mime-entity-type/subtype entity))
 	  (setq buffer-read-only t
 		truncate-lines t)
 	  (set-buffer-multibyte t)

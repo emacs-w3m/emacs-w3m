@@ -6,6 +6,7 @@
 	(w3m-about-octet-attachments): Fixed problem when there's
 	no octet-attachment which corresponds to the src url.
 	(mime-view-octet): Set content-type argument for `octet-buffer'.
+	(mime-preview-octet): Ditto.
 
 2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
