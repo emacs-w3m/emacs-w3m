@@ -1,3 +1,8 @@
+2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-key-binding): Don't eval a part of the `set:' form
+	when compiling nnshimbun.el in the Gnus source tree.
+
 2002-02-01  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* octet.el (octet-buffer): Fixed problem when 'Quit'.

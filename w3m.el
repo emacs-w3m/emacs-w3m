@@ -339,7 +339,9 @@ reason.  The value will be referred by the function `w3m-load-list'.")
 		 (custom-set-default symbol value)
 	       ;; XEmacs or Emacs 19 does not have `custom-set-default'.
 	       (set-default symbol value))
-	   (if (boundp 'w3m-mode-map)
+	   (if (and (boundp 'w3m-mode-map);; Gnus bind this var for compiling.
+		    (boundp 'w3m-info-like-map)
+		    (boundp 'w3m-lynx-like-map))
 	       ;; It won't be bound at the first time.
 	       (setq w3m-mode-map
 		     (if (eq value 'info)
