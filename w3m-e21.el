@@ -291,14 +291,23 @@ Buffer string between BEG and END are replaced with IMAGE."
 (add-hook 'w3m-display-hook 'w3m-setup-favicon)
 
 (defun w3m-imagick-convert-buffer (from-type to-type &rest args)
-  (let ((coding-system-for-read 'binary)
-	(coding-system-for-write 'binary)
-	(default-process-coding-system (cons 'binary 'binary)))
-    (zerop (apply 'call-process-region
-		  (point-min) (point-max)
-		  w3m-imagick-convert-program
-		  t t nil (append args (list (concat from-type ":-")
-					     (concat to-type ":-")))))))
+  (let* ((coding-system-for-read 'binary)
+	 (coding-system-for-write 'binary)
+	 (default-process-coding-system (cons 'binary 'binary))
+	 (return (apply 'call-process-region
+			(point-min) (point-max)
+			w3m-imagick-convert-program
+			t t nil (append args (list (concat from-type ":-")
+						   (concat to-type ":-"))))))
+    (if (and (numberp return)
+	     (zerop return))
+	t
+      (message "process `%s' exited abnormally with code `%s'"
+	       w3m-imagick-convert-program
+	       (if (stringp return)
+		   (string-as-multibyte return)
+		 return))
+      nil)))
 
 (defun w3m-imagick-convert-data (data from-type to-type &rest args)
   (with-temp-buffer
