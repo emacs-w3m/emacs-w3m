@@ -2288,7 +2288,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	      (cdr (assoc "content-encoding" alist))
 	      (let ((v (cdr (assoc "last-modified" alist))))
 		(and v (w3m-time-parse-string v)))
-	      (or (cdr (assoc "w3m-current-url" alist))
+	      (or (cdr (assoc "w3m-base-url" alist))
+		  (cdr (assoc "w3m-current-url" alist))
 		  url))))
      ;; FIXME: adhoc implementation
      ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
