@@ -69,6 +69,39 @@
     ("report" "日経の調査" ,(concat shimbun-nikkei-url "report/")
      shimbun-nikkei-get-headers-report
      shimbun-nikkei-prepare-article-report)
+    ("kansai" "関西" ,(concat shimbun-nikkei-url "kansai/")
+     shimbun-nikkei-get-headers-kansai
+     shimbun-nikkei-prepare-article-kansai)
+    ("it" "IT" "http://it.nikkei.co.jp/it/news/"
+     shimbun-nikkei-get-headers-it
+     shimbun-nikkei-prepare-article-default2)
+    ("kokunai" "市場概況" "http://markets.nikkei.co.jp/kokunai/summary.cfm"
+     shimbun-nikkei-get-headers-kawase
+     shimbun-nikkei-prepare-article-default3)
+    ("markets" "海外株概況" "http://markets.nikkei.co.jp/kaigai/summary.cfm"
+     shimbun-nikkei-get-headers-markets
+     shimbun-nikkei-prepare-article-default3)
+    ("kawase" "為替概況" "http://markets.nikkei.co.jp/kawase/summary.cfm"
+     shimbun-nikkei-get-headers-kawase
+     shimbun-nikkei-prepare-article-default3)
+    ("kinri" "短期金利・債権・ＣＢ概況"
+     "http://markets.nikkei.co.jp/kawase/kinri.cfm"
+     shimbun-nikkei-get-headers-kinri
+     shimbun-nikkei-prepare-article-default3)
+    ("ft" "英フィナンシャル・タイムズ"
+     "http://markets.nikkei.co.jp/kaigai/ft.cfm"
+     shimbun-nikkei-get-headers-ft
+     shimbun-nikkei-prepare-article-default3)
+    ("dj" "米ダウ・ジョーンズ" "http://markets.nikkei.co.jp/kaigai/dj.cfm"
+     shimbun-nikkei-get-headers-dj
+     shimbun-nikkei-prepare-article-default3)
+    ("ngyoseki" "企業業績ニュース"
+     "http://markets.nikkei.co.jp/kokunai/gyoseki.cfm"
+     shimbun-nikkei-get-headers-gyoseki
+     shimbun-nikkei-prepare-article-default3)
+    ("gyoseki" "海外企業業績" "http://markets.nikkei.co.jp/kaigai/gyoseki.cfm"
+     shimbun-nikkei-get-headers-gyoseki
+     shimbun-nikkei-prepare-article-default3)
     ("market" "株・為替" ,(concat shimbun-nikkei-url "news/market/")
      shimbun-nikkei-get-headers-market
      shimbun-nikkei-prepare-article-market)
@@ -185,7 +218,8 @@ If URL begins with `http://', FOLDER is ignored."
 	  ;; It should be yesterday's same time.
 	  (progn
 	    (setq ms (1- ms))
-	    (when (< (setq ls (- ls (eval-when-compile (- (* 60 60 24) 65536))))
+	    (when (< (setq ls (- ls (eval-when-compile
+				      (- (* 60 60 24) 65536))))
 		     0)
 	      (setq ms (1- ms)
 		    ls (+ ls 65536)))
@@ -381,6 +415,426 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	     (shimbun-nikkei-expand-url (match-string 1) folder))
 	    headers))
     headers))
+
+(defun shimbun-nikkei-get-headers-kansai (group folder)
+  "Function used to fetch headers for the kansai group."
+  (let ((date (if (re-search-forward
+		   (eval-when-compile
+		     (let ((s0 "[\t\n ]*")
+			   (s1 "[\t\n ]+"))
+		       (concat "class=\"date\"><strong>" s0
+			       ;; 1. year
+			       "\\(20[0-9][0-9]\\)"
+			       "年"
+			       ;; 2. month
+			       "\\([01]?[0-9]\\)"
+			       "月"
+			       ;; 3. day
+			       "\\([0-3]?[0-9]\\)"
+			       "日" s0 "(" "\\([^<]+\\)" ")"
+			       s0 "</strong></td>")))
+		   nil t)
+		  (prog1
+		      (shimbun-make-date-string
+		       (string-to-number (match-string 1))
+		       (string-to-number (match-string 2))
+		       (string-to-number (match-string 3)))
+		    (goto-char (point-min)))
+		(let ((cts (current-time-string)))
+		  (format "%s, %02d %s %s 00:00 +0900"
+			  (substring cts 0 3)
+			  (string-to-number (substring cts 8 10))
+			  (substring cts 4 7)
+			  (substring cts 20)))))
+	headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<a" s1 "href=\"."
+			;; 1. url
+			"\\("
+			;; 2.
+			"\\([^\"<>]+/\\)"
+			;; 3. serial number
+			"\\([^\t\n ]+\\)\\)"
+			s0 "-frame" s0 "\\.html"
+			s0 "\">" s0
+			;; 4. subject
+			"\\([^<]+\\)"
+			s0 "<")))
+	    nil t)
+      (push (shimbun-create-header
+	     0
+	     (match-string 4)
+	     shimbun-nikkei-from-address
+	     date
+	     (concat "<" (match-string 3) "%" group "."
+		     shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url (concat (match-string 1) ".html")
+					folder))
+	    headers))
+    headers))
+
+(defun shimbun-nikkei-get-headers-it (group folder)
+  "Function used to fetch headers for the it group."
+  (let (headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<a" s1 "href=\""
+			;; 1. url
+			"\\(\\./index\\.cfm\\?i="
+			;; 2. serial number
+			"\\("
+			;; 3. year
+			"\\(20[0-9][0-9]\\)"
+			;; 4. month
+			"\\([01][0-9]\\)"
+			;; 5. day
+			"\\([0-3][0-9]\\)"
+			;; 6. serial
+			"\\([0-9a-z]+\\)\\)\\)"
+			;;"\"\\)"
+			s0 "\">" s0
+			;; 7. subject
+			"\\([^<]+\\)" "</a>")))
+	    nil t)
+      (push (shimbun-create-header
+	     0
+	     (match-string 7)
+	     shimbun-nikkei-from-address
+	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 5)))
+	     (concat "<" (match-string 2) "%" group "."
+		     shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url (match-string 1) folder))
+	    headers))
+    headers))
+
+(defun shimbun-nikkei-get-headers-markets (group folder)
+  "Function used to fetch headers for the markets group."
+  (let (headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<a" s1 "href=\""
+			;; 1. base
+			"\\(summary\\.cfm"
+			;; 2. url
+			"\\(\\?genre="
+			;; 3. serial number
+			"\\([^\"]+\\)"
+			s0
+			;; 4. year
+			"\\(20[0-9][0-9]\\)"
+			s0
+			;; 5. serial number
+			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
+			s0 "\">" s0
+			;; 6. subject
+			"\\([^<]+\\)" s0 "（"
+			;; 7. month
+			"\\([01]?[0-9]\\)"
+			"/"
+			;; 8. day
+			"\\([0-3]?[0-9]\\)"
+			s1
+			;; 9. hour
+			"\\([0-2]?[0-9]\\)"
+			":"
+			;; 10. minute
+			"\\([0-5]?[0-9]\\)"
+			"）" s0 "</a>")))
+	    nil t)
+      (push (shimbun-create-header
+	     0
+	     (match-string 6)
+	     shimbun-nikkei-from-address
+	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 7))
+	      (string-to-number (match-string 8))
+	      (format "%02d:%02d"
+		      (string-to-number (match-string 9))
+		      (string-to-number (match-string 10))))
+	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
+		     "%" group "." shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	    headers))
+    (shimbun-sort-headers headers)))
+
+(defun shimbun-nikkei-get-headers-kawase (group folder)
+  "Function used to fetch headers for the kawase group."
+  (let (headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<a" s1 "href=\""
+			;; 1. base
+			"\\(summary\\.cfm"
+			;; 2. url
+			"\\(\\?id="
+			;; 3. serial number
+			"\\([^\"]+\\)"
+			s0
+			;; 4. year
+			"\\(20[0-9][0-9]\\)"
+			s0
+			;; 5. serial number
+			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
+			s0 "\">" s0
+			;; 6. subject
+			"\\([^<]+\\)" s0 "（"
+			;; 7. month
+			"\\([01]?[0-9]\\)"
+			"/"
+			;; 8. day
+			"\\([0-3]?[0-9]\\)"
+			s1
+			;; 9. hour
+			"\\([0-2]?[0-9]\\)"
+			":"
+			;; 10. minute
+			"\\([0-5]?[0-9]\\)"
+			"）" s0 "</a>")))
+	    nil t)
+      (push (shimbun-create-header
+	     0
+	     (match-string 6)
+	     shimbun-nikkei-from-address
+	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 7))
+	      (string-to-number (match-string 8))
+	      (format "%02d:%02d"
+		      (string-to-number (match-string 9))
+		      (string-to-number (match-string 10))))
+	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
+		     "%" group "." shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	    headers))
+    (shimbun-sort-headers headers)))
+
+(defun shimbun-nikkei-get-headers-kinri (group folder)
+  "Function used to fetch headers for the kinri group."
+  (let (headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<a" s1 "href=\""
+			;; 1. base
+			"\\(kinri\\.cfm"
+			;; 2. url
+			"\\(\\?id="
+			;; 3. serial number
+			"\\([^\"]+\\)"
+			s0
+			;; 4. year
+			"\\(20[0-9][0-9]\\)"
+			s0
+			;; 5. serial number
+			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
+			s0 "\">" s0
+			;; 6. subject
+			"\\([^<]+\\)" s0 "（"
+			;; 7. month
+			"\\([01]?[0-9]\\)"
+			"/"
+			;; 8. day
+			"\\([0-3]?[0-9]\\)"
+			s1
+			;; 9. hour
+			"\\([0-2]?[0-9]\\)"
+			":"
+			;; 10. minute
+			"\\([0-5]?[0-9]\\)"
+			"）" s0 "</a>")))
+	    nil t)
+      (push (shimbun-create-header
+	     0
+	     (match-string 6)
+	     shimbun-nikkei-from-address
+	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 7))
+	      (string-to-number (match-string 8))
+	      (format "%02d:%02d"
+		      (string-to-number (match-string 9))
+		      (string-to-number (match-string 10))))
+	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
+		     "%" group "." shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	    headers))
+    (shimbun-sort-headers headers)))
+
+(defun shimbun-nikkei-get-headers-ft (group folder)
+  "Function used to fetch headers for the ft group."
+  (let (headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<a" s1 "href=\""
+			;; 1. base
+			"\\(ft\\.cfm"
+			;; 2. url
+			"\\(\\?id="
+			;; 3. serial number
+			"\\([^\"]+\\)"
+			s0
+			;; 4. year
+			"\\(20[0-9][0-9]\\)"
+			s0
+			;; 5. serial number
+			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
+			s0 "\">" s0
+			;; 6. subject
+			"\\([^<]+\\)" s0 "("
+			;; 7. month
+			"\\([01]?[0-9]\\)"
+			"/"
+			;; 8. day
+			"\\([0-3]?[0-9]\\)"
+;;			s1
+			;; 9. hour, minute
+;;			"\\([0-2]?[0-9]:[0-5]?[0-9]\\)"
+			")※" s0 "</a>")))
+	    nil t)
+      (push (shimbun-create-header
+	     0
+	     (match-string 6)
+	     shimbun-nikkei-from-address
+	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 7))
+	      (string-to-number (match-string 8)))
+;;	      (match-string 9))
+	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
+		     "%" group "." shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	    headers))
+    headers))
+
+(defun shimbun-nikkei-get-headers-dj (group folder)
+  "Function used to fetch headers for the dj group."
+  (let (headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<a" s1 "href=\""
+			;; 1. base
+			"\\(dj\\.cfm"
+			;; 2. url
+			"\\(\\?id="
+			;; 3. serial number
+			"\\([^\"]+\\)"
+			s0
+			;; 4. year
+			"\\(20[0-9][0-9]\\)"
+			s0
+			;; 5. serial number
+			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
+			s0 "\">" s0
+			;; 6. subject
+			"\\([^<]+\\)" s0 "（"
+			;; 7. month
+			"\\([01]?[0-9]\\)"
+			"/"
+			;; 8. day
+			"\\([0-3]?[0-9]\\)"
+			s1
+			;; 9. hour
+			"\\([0-2]?[0-9]\\)"
+			":"
+			;; 10. minute
+			"\\([0-5]?[0-9]\\)"
+			"）" s0 "</a>")))
+	    nil t)
+      (push (shimbun-create-header
+	     0
+	     (match-string 6)
+	     shimbun-nikkei-from-address
+	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 7))
+	      (string-to-number (match-string 8))
+	      (format "%02d:%02d"
+		      (string-to-number (match-string 9))
+		      (string-to-number (match-string 10))))
+	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
+		     "%" group "." shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	    headers))
+    (shimbun-sort-headers headers)))
+
+(defun shimbun-nikkei-get-headers-gyoseki (group folder)
+  "Function used to fetch headers for the gyoseki group."
+  (let (headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<a" s1 "href=\""
+			;; 1. base
+			"\\(gyoseki\\.cfm"
+			;; 2. url
+			"\\(\\?id="
+			;; 3. serial number
+			"\\([^\"]+\\)"
+			s0
+			;; 4. year
+			"\\(20[0-9][0-9]\\)"
+			s0
+			;; 5. serial number
+			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
+			s0 "\">" s0
+			;; 6. subject
+			"\\([^<]+\\)" s0 "（"
+			;; 7. month
+			"\\([01]?[0-9]\\)"
+			"/"
+			;; 8. day
+			"\\([0-3]?[0-9]\\)"
+			s1
+			;; 9. hour
+			"\\([0-2]?[0-9]\\)"
+			":"
+			;; 10. minute
+			"\\([0-5]?[0-9]\\)"
+			"）" s0 "</a>")))
+	    nil t)
+      (push (shimbun-create-header
+	     0
+	     (match-string 6)
+	     shimbun-nikkei-from-address
+	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 7))
+	      (string-to-number (match-string 8))
+	      (format "%02d:%02d"
+		      (string-to-number (match-string 9))
+		      (string-to-number (match-string 10))))
+	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
+		     "%" group "." shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	    headers))
+    (shimbun-sort-headers headers)))
 
 (defun shimbun-nikkei-get-headers-market (group folder)
   "Function used to fetch headers for the market group."
@@ -773,6 +1227,29 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end))))
 
+(defun shimbun-nikkei-prepare-article-kansai (&rest args)
+  "Function used to prepare contents of an article for some groups."
+  (when (re-search-forward "\
+<td[\t\n ]+colspan=\"2\"[\t\n ]+class=\"textm\">"
+			   nil t)
+    (insert shimbun-nikkei-content-start)
+    (when (re-search-forward "\
+<table[\t\n ]+border=\"0\"[\t\n ]+cellspacing=\
+\"0\"[\t\n ]+cellpadding=\"0\"[\t\n ]+width=\"100%\">"
+			     nil t)
+      (goto-char (match-beginning 0))
+      (insert shimbun-nikkei-content-end))))
+
+(defun shimbun-nikkei-prepare-article-default3 (&rest args)
+  "Function used to prepare contents of an article for some groups."
+  (when (re-search-forward "\
+\[\t\n ]<div[\t\n ]+class=\"news\"[\t\n ]+id=\"report\">"
+			   nil t)
+    (insert shimbun-nikkei-content-start)
+    (when (re-search-forward "[\t\n ]<ul[\t\n ]+id=\"tool\">" nil t)
+      (goto-char (match-beginning 0))
+      (insert shimbun-nikkei-content-end))))
+
 (defun shimbun-nikkei-prepare-article-sports (&rest args)
   "Function used to prepare contents of an article for the sports group."
   (when (re-search-forward "\
@@ -810,9 +1287,11 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 
 (defun shimbun-nikkei-prepare-article-release (&rest args)
   "Function used to prepare contents of an article for the release group."
-  (when (re-search-forward "<span[\t\n ]+class=\"midasi\">[\t\n ]*" nil t)
+  (shimbun-remove-tags "<p[\t\n ]+class=\"re_print\"" "</p>")
+  (goto-char (point-min))
+  (when (re-search-forward "<[\t\n ]*TD[\t\n ]+colspan=\"3\">" nil t)
     (insert shimbun-nikkei-content-start)
-    (when (re-search-forward "\\([\t\n ]*<[^>]+>\\)*[\t\n ]*</span>" nil t)
+    (when (re-search-forward "[\t\n ]*<div[\t\n ]+class=\"tokushu\">" nil t)
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end))))
 
