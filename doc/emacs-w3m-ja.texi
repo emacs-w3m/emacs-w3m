@@ -4316,7 +4316,14 @@ linux-ja.opensource linux-ja.security
 japantimes.general japantimes.business
 
 @item @uref{http://slashdot.jp/, Slashdot Japan}
-slashdot-jp.story
+slashdot-jp.story slashdot-jp.askslashdot slashdot-jp.bookreview
+slashdot-jp.bsd slashdot-jp.developers slashdot-jp.interview
+slashdot-jp.linuxkernel slashdot-jp.mac slashdot-jp.mobile
+slashdot-jp.science slashdot-jp.security slashdot-jp.slash
+slashdot-jp.diary.oliver
+
+変数 @code{shimbun-slashdot-jp-group-alist} に適切な設定を加えると、その
+他のユーザーの日記も閲覧できます。
 
 @item @uref{http://headlines.yahoo.co.jp/, Yahoo! Japan}
 yahoo.politics yahoo.society yahoo.people yahoo.business-all
