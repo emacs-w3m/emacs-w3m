@@ -1,3 +1,39 @@
+2005-02-13  Tsuyoshi CHO  <cho@namazu.org>
+
+	* shimbun/sb-mailman.el (shimbun-mailman-headers): Change url enclosing
+	'shimbun-expand-url'.
+	(shimbun-mailman-headers): Ditto.
+
+2005-02-11  Tsuyoshi CHO  <cho@namazu.org>
+
+	* shimbun/sb-x51.el (shimbun-get-headers): Remove temp-buffer
+	ignored when previous committing.
+
+	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-content-start): Fix value for new
+	page design.
+	(shimbun-cnn-jp-content-end): Ditto.
+	(shimbun-get-headers): Ditto.
+	(shimbun-cnn-jp-prepare-article): Ditto.
+
+2005-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Load w3m-e21.el even if the version of Emacs is 22.x
+	when the Emacs CVS HEAD is used.
+
+	* w3mhack.el (w3mhack-module-list): Prefer w3m-e21.el rather than
+	w3m-e22.el if the Emacs CVS HEAD is used.
+
+2005-02-09  Tsuyoshi CHO  <cho@namazu.org>
+
+	* shimbun/sb-tigris.el: New File.
+
+	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-group-alist): Remove
+	closed blog entiry: "inoue","mori","umeda"; add blog entiry:
+	"editors".
+
+	* shimbun/sb-x51.el (shimbun-get-headers): Remove duplicate
+	webpage retrieving; add buffer erasing before webpage retrieving.
+
 2005-02-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/nnshimbun.el (gnus-group-make-shimbun-group): Display

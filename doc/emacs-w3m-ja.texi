@@ -3788,8 +3788,8 @@ XEmacs Beta$B!"(BGnus/Mew/Wanderlust $B$J$I$N%a!<%j%s%0%j%9%H!">.@tF|K\9q<sAj
 $B$N3F!9$OC1FH$G$O2?$NLr$K$bN)$A$^$;$s!#(B
 $B$3$3$G$OBeI=E*$J;0$D$N(B @samp{Shimbun} $B$N%"%W%j%1!<%7%g%s%W%m%0%i%`(B ($B$=$l(B
 $B$i$N$&$A$NFs$D$O(B @samp{Shimbun} $B%i%$%V%i%j$K4^$^$l$F$$$^$9(B) $B$H!"$"$J$?$,(B
-$B<+J,$G(B @samp{Shimbun} $B%b%8%e!<%k$r:n$kJ}K!$K$D$$$F@bL@$7$^$9(B (Emacs Lisp 
-$B%W%m%0%i%`$r=q$/$3$H$,$G$-$kI,MW$,$"$j$^$9(B)$B!#(B
+$B<+J,$G(B @samp{Shimbun} $B%b%8%e!<%k$r:n$kJ}K!$K$D$$$F@bL@$7$^$9(B (Emacs
+Lisp $B%W%m%0%i%`$r=q$/$3$H$,$G$-$kI,MW$,$"$j$^$9(B)$B!#(B
 
 @menu
 * Nnshimbun::                   Gnus $B$r%&%'%V%V%i%&%6$K$9$k(B!
@@ -4435,8 +4435,8 @@ cnet.security cnet.networking cnet.personal.technology cnet.newsmakers
 cnet.perspectives
 
 @item @uref{http://japan.cnet.com/, CNET Japan}
-cnet-jp.news cnet-jp.blog.inoue cnet-jp.blog.kenn cnet-jp.blog.lessig
-cnet-jp.blog.mori cnet-jp.blog.umeda cnet-jp.blog.watanabe
+cnet-jp.news cnet-jp.blog.kenn cnet-jp.blog.lessig cnet-jp.blog.watanabe
+cnet-jp.blog.editors
 
 @item @uref{http://www.cnn.co.jp/, CNN Japan}
 cnn-jp.business cnn-jp.fringe cnn-jp.science cnn-jp.showbiz
@@ -4607,7 +4607,7 @@ security-memo.memo security-memo.free-memo security-memo.social-memo
 
 @example
 machine memo.st.ryukoku.ac.jp
-realm input username/password = archives/archives 
+realm input username/password = archives/archives
 login archives
 passwd archives
 
@@ -4786,6 +4786,11 @@ tdiary-ml.devel tdiary-ml.theme
 @item @uref{http://arch.bluegate.org/mailman/listinfo, arch.bluegate.org Mailing Lists}
 arch-bluegate.subversion-jp arch-bluegate.arch-jp arch-bluegate.mailman
 arch-bluegate.viewarch
+
+@item @uref{http://www.tigris.org/, Tigris.org:Open Source Software Engineering}
+Tigris.org $B$KJ]B8$5$l$F$$$kA4$F$N%a!<%j%s%0%j%9%H$r1\Mw$G$-$^$9!#(B
+$B1\Mw$7$?$$%0%k!<%W$rJQ?t(B @code{shimbun-tigris-group-alist} $B$KEPO?$7$F$/$@$5$$!#(B
+$B%0%k!<%WL>$O(Btigris.<project>.<mailinglist>$B$K$J$j$^$9!#(B
 
 @end table
 

@@ -2,11 +2,11 @@
 
 ;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Copyright (C) 2002       Katsumi Yamaoka <yamaoka@jpl.org>
-;; Copyright (C) 2005       Tsuyoshi CHO <mfalcon21@hotmail.com>
+;; Copyright (C) 2005       Tsuyoshi CHO <cho@namazu.org>
 
 ;; Authors: NAKAJIMA Mikio  <minakaji@namazu.org>,
 ;;          Katsumi Yamaoka <yamaoka@jpl.org>,
-;;          Tsuyoshi CHO    <mfalcon21@hotmail.com>
+;;          Tsuyoshi CHO    <cho@namazu.org>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
@@ -75,7 +75,8 @@
 		       (match-string 1 index-url)
 		     index-url))
 	   auxs aux id url subject from headers)
-      (shimbun-retrieve-url (concat index-url "/index.html") 'reload)
+      (shimbun-retrieve-url (shimbun-expand-url "index.html" index-url)
+			    'reload)
       (setq case-fold-search t)
       (let ((pages (shimbun-header-index-pages range))
 	    (count 0))
@@ -90,9 +91,9 @@
       (catch 'stop
 	(while auxs
 	  (erase-buffer)
-	  (shimbun-retrieve-url (concat index-url "/"
-					(setq aux (car auxs))
-					"/date.html")
+	  (shimbun-retrieve-url (shimbun-expand-url
+				 (concat (setq aux (car auxs)) "/date.html")
+				 index-url)
 				'reload)
 	  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
 	  (goto-char (point-max))
@@ -105,7 +106,8 @@
 			     suffix))
 	    (when (shimbun-search-id shimbun id)
 	      (throw 'stop nil))
-	    (setq url (concat index-url "/" aux "/" (match-string 1))
+	    (setq url (shimbun-expand-url (concat aux "/" (match-string 1))
+					  index-url)
 		  subject (match-string 3)
 		  from (match-string 4))
 	    (setq subject (with-temp-buffer
@@ -159,7 +161,13 @@
        header
        (shimbun-mime-encode-string (concat name " <" address ">")))
 
-      (when (re-search-forward "<I>\\([0-9][0-9][0-9][0-9]\\)年 *\\([0-9][0-9]*\\)月 *\\([0-9][0-9]*\\)日 (\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\)) \\([:0-9]+\\) \\([A-Z]+\\)</I>" end t nil)
+      (when (re-search-forward "<I>\\([0-9][0-9][0-9][0-9]\\)年\
+ *\\([0-9][0-9]*\\)月\
+ *\\([0-9][0-9]*\\)日\
+ (\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))\
+ \\([:0-9]+\\)\
+ \\([A-Z]+\\)</I>"
+			       end t nil)
 	;; <I>Sat, 12 Apr 2003 17:29:51 +0900 (JST)</I> ;; mailman original
 	;; <I>2003年 4月 11日 (金) 02:43:25 CEST</I> ;; squeak-ja
 	(setq date (shimbun-make-date-string
@@ -175,7 +183,6 @@
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-mailman-ja) header)
   (shimbun-mailman-ja-make-contents shimbun header))
-
 
 (provide 'sb-mailman)
 
