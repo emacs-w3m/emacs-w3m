@@ -120,7 +120,7 @@
 		(delete-region ,(point-min-marker)
 			       ,(point-max-marker))))))))))
 
-   In additon, the experimental code below is to display
+   In additon, the experimental code below is used to display
    multipart/related pictures. The place might be something wrong :-<
 
 ;; Date: Fri, 27 Jul 2001 12:51:12 +0900
