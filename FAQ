@@ -1,4 +1,4 @@
-	emacs-w3m FAQ ($Date$)
+        emacs-w3m FAQ ($Date$)
 
 * General emacs-w3m questions
 
@@ -11,32 +11,39 @@
 
    The following "Emacsen" have been checked for emacs-w3m support.
 
-	Mule-2.3 @ Emacs-19.34
-	Emacs-19.34
-	Emacs-20
-	Emacs-21
-	XEmacs-21.1 with Mule
-	XEmacs-21.2 with Mule (beta37 or greater)
-	XEmacs-21.4 with Mule
-	XEmacs-21.5 with Mule
-	Meadow
+        Mule 2.3 (based on Emacs 19.34)
+        Emacs 19.34
+        Emacs 20
+        Emacs 21
+        XEmacs 21.1 with Mule
+        XEmacs 21.2 with Mule (beta37 or greater)
+        XEmacs 21.4 with/without Mule
+        XEmacs 21.5 with/without Mule
+        Meadow
 
-   For Mule-2.3, Emacs-19.34 and XEmacs, it is necessary to use APEL.
-   APEL is available from ftp://ftp.m17n.org/pub/mule/apel/
+   For Mule 2.3, Emacs 19.34 or XEmacs, it is necessary to use APEL.
+   APEL is available from ftp://ftp.m17n.org/pub/mule/apel/.
 
-   emacs-w3m-1.2 works on XEmacs without Mule except for several
-   commands, such as the command to look weather forecasts in Japan.
-   They strongly depends on Mule feature, so that they must not work on
-   XEmacs without Mule.  But, the development version of emacs-w3m will
-   not work on XEmacs which lacks Mule support, because no core
-   development member uses it in daily work.
+   emacs-w3m works on Emacs 19.34 or XEmacs without Mule except for
+   several commands, such as the command to look weather forecasts in
+   Japan.  They strongly depends on Mule feature, so that they must not
+   work on Emacs 19.34 or XEmacs without Mule.
 
 ** Q. Which w3m versions are supported?
 
    The following w3m versions have been checked for emacs-w3m support:
 
         w3m-0.3
-	w3mmee-p23-2
+        w3mmee-p23-2
+
+** Q. I've already installed APEL in XEmacs SUMO package, is it ok?
+
+   There are some problems in the XEmacs APEL package; all modules have
+   been compiled for XEmacs with Mule, the std11 modules conflicts with
+   the FLIM's one, etc.  Even though you can use apel-1.23-pkg.tar.gz or
+   later for both XEmacs with Mule and non-Mule XEmacs if you don't use
+   FLIM for the shimbun features, we recommend you replace it or newly
+   install the original APEL package.  See above where to get it from.
 
 * Troubleshooting
 
@@ -86,10 +93,10 @@
 
    (3) Emacsen incompatibility.
 
-       Regarding XEmacs-21.1, pages with SHIFT_JIS may not be displaied
+       Regarding XEmacs 21.1, pages with SHIFT_JIS may not be displaied
        correctly.
 
-       Regarding XEmacs-21.2, there is a problem with previous versions
+       Regarding XEmacs 21.2, there is a problem with previous versions
        up to beta36.  If you use those versions, it is recommended that
        you upgrade.
 
@@ -97,14 +104,14 @@
 
    It could be caused by the following:
 
-   Depending on the version of libungif in Emacs-21, GIF graphics may or
+   Depending on the version of libungif in Emacs 21, GIF graphics may or
    may not render correctly.  If you are using libungif-4.1.0b1 or
    earlier, it is recommend you upgrade that library.
 
    For XEmacs, install the "gifsicle" program.  Within
    emacs-w3m-supported XEmacs 21.x, there is a bug which can be
-   countered by using this program. (Refer to the README, section 2
-   "Install")
+   countered by using this program (Refer to the README, section 2
+   "Install").
 
    If you use versions prior to w3m-0.2.1, graphics are not rendered
    correctly.  If you use those versions, it is recommended that you
@@ -140,7 +147,7 @@
 
 ** Q. Why does `favicon' not show up at tab bar with Emacs21?
 
-   Install "convert" included the ImageMagick. It is available from
+   Install "convert" included the ImageMagick.  It is available from
    `http://www.imagemagick.org/'.
 
 ** Q. Why do lock Emacs21 when show up `favicon' , or it's very annoying
@@ -154,7 +161,7 @@
    recent version of ImageMagick, add the following line in your .emacs
    file:
 
-   (setq w3m-use-favicon nil)
+        (setq w3m-use-favicon nil)
 
 * shimbun
 
@@ -167,7 +174,7 @@
    determination fails.  In this case, use the --with-addpath configure
    option to explicitly set the FLIM installed directory path.
 
-	% ./configure --with-addpath=$HOME/share/emacs/site-lisp/flim
+        % ./configure --with-addpath=$HOME/share/emacs/site-lisp/flim
 
 Local Variables:
 mode: outline

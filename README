@@ -28,10 +28,10 @@
    emacs-w3m, you have to install FLIM package.  For more detail abut
    shimbun library, see README.shimbun.ja (sorry, Japanese only).
 
-   a) Emacs-21.x
+   a) Emacs 21.x
       No additional package is required.
 
-   b) Emacs-20.x
+   b) Emacs 20.x
       No additional package is required.
 
       When BITMAP-MULE package is installed, emacs-w3m converts inline
@@ -40,6 +40,12 @@
 
    c) XEmacs
       APEL package is required.
+
+      Note: The XEmacs APEL package version 1.23 and later can be used
+       for both XEmacs with Mule and non-Mule XEmacs.  However, those
+       packages aren't suitable for FLIM (and possibly Wanderlust or
+       T-gnus) because of the std11 modules.  So, we recommend you
+       install the original APEL.
 
       If you are using XEmacs 21.x, you should install the program
       "gifsicle".  There is a known bug in the whole XEmacs 21.x series
@@ -50,10 +56,10 @@
 
           http://www.lcdf.org/gifsicle/
 
-   d) Mule-2.3 (based on Emacs-19.34)
+   d) Mule 2.3 (based on Emacs 19.34)
       APEL package, "new custom" package, the module regexp-opt.el(c)
       are required.  For more detail, please check the next section
-      about Emacs-19.34.
+      about Emacs 19.34.
 
       If you wish to use BITMAP-MULE package to show black and white
       images inline on the web pages, we strongly recommend you apply
@@ -62,7 +68,7 @@
       recommendation, Mule might be stuck.  And you wouldn't get out of
       the difficulty except kill Mule.
 
-   e) Emacs-19.34 (without MULE)
+   e) Emacs 19.34 (without Mule)
       APEL package, "new custom" package, the module regexp-opt.el(c)
       are required.
 
