@@ -359,11 +359,43 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	       "\\.xpm\\'"))))
 
 ;; Byte optimizers and version specific functions.
-(put 'truncate-string 'byte-optimizer
-     (lambda (form)
-       (if (fboundp 'truncate-string-to-width)
-	   (cons 'truncate-string-to-width (cdr form))
-	 form)))
+(condition-case nil
+    (char-after)
+  (wrong-number-of-arguments
+   (put 'char-after 'byte-optimizer
+	(lambda (form)
+	  (if (cdr form)
+	      form
+	    '(char-after (point)))))))
+
+(condition-case nil
+    (char-before)
+  (wrong-number-of-arguments
+   (put 'char-before 'byte-optimizer
+	(lambda (form)
+	  (if (cdr form)
+	      form
+	    '(char-before (point))))))
+  (void-function
+   (put 'char-before 'byte-optimizer
+	(lambda (form)
+	  (if (cdr form)
+	      (let ((pos (car (cdr form))))
+		(` (let ((cur (point)))
+		     (prog2
+			 (goto-char (, pos))
+			 (if (bobp)
+			     nil
+			   (preceding-char))
+		       (goto-char cur)))))
+	    '(if (bobp)
+		 nil
+	       (preceding-char)))))))
+
+(if (fboundp 'truncate-string-to-width)
+    (put 'truncate-string 'byte-optimizer
+	 (lambda (form)
+	   (cons 'truncate-string-to-width (cdr form)))))
 
 (put 'match-string-no-properties 'byte-optimizer
      (lambda (form)

@@ -1,3 +1,8 @@
+2002-08-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (char-after): Byte-optimize it for old Emacsen.
+	(char-before): Ditto.
+
 2002-08-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-mhonarc.el (shimbun-mhonarc-rot13-table): New
