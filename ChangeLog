@@ -1,3 +1,15 @@
+2001-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Bind colon keywords only if it is not available.
+	(w3m-form-parse-region, w3m-fontify-forms): Bind them only at the
+	compile-time as autoload'ed functions to avoid compile warnings.
+
+	* w3mhack.el: Byte optimize `truncate-string' for replacing with
+	`truncate-string-to-width' if it is bound.
+
+	* mew-w3m.el (mew-w3m-minor-mode-setter): Defun it after defining
+	some variables.
+
 2001-03-15  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* Makefile.in (default): Add `-k' option to continue byte-compile

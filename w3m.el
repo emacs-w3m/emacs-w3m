@@ -79,6 +79,12 @@
 	  (if (coding-system-p obj) obj))
       (require 'pces)))
 
+;; Avoid byte-compile warnings.
+(eval-when-compile
+  (autoload 'w3m-fontify-forms "w3m-form")
+  (autoload 'w3m-form-parse-region "w3m-form")
+  (autoload 'rfc2368-parse-mailto-url "rfc2368"))
+
 (defconst emacs-w3m-version
   (eval-when-compile
     (let ((rev "$Revision$"))
@@ -466,8 +472,11 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 (defvar w3m-cid-retrieve-function-alist nil)
 
 (eval-and-compile
-  (defconst :case-ignore ':case-ignore)
-  (defconst :integer ':integer))
+  (condition-case nil
+      :symbol-for-testing-whether-colon-keyword-is-available-or-not
+    (void-variable
+     (eval '(defconst :case-ignore ':case-ignore))
+     (eval '(defconst :integer ':integer)))))
 
 (defvar w3m-work-buffer-list nil)
 (defconst w3m-work-buffer-name " *w3m-work*")

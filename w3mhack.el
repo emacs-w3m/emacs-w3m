@@ -72,6 +72,13 @@
       (unless (member module deletes)
 	(princ (format "%sc " module))))))
 
+;; Byte optimizers.
+(put 'truncate-string 'byte-optimizer
+     (lambda (form)
+       (if (fboundp 'truncate-string-to-width)
+	   (cons 'truncate-string-to-width (cdr form))
+	 form)))
+
 (defun w3mhack-version ()
   "Print version of w3m.el."
   (princ emacs-w3m-version))

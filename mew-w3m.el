@@ -43,11 +43,6 @@
 
 ;;; initializer for mew
 
-(defun mew-w3m-minor-mode-setter () 
-  "Check message buffer and activate mew-w3m-minor-mode."
-  (setq mew-w3m-minor-mode (and (get-text-property (point-min) 'w3m)
-				mew-use-w3m-minor-mode)))
-
 (defvar mew-use-w3m-minor-mode nil
   "*Use w3m minor mode in message buffer.
 When viewing Text/Html contents rendering with w3m, use `w3m-minor-mode'
@@ -64,6 +59,10 @@ This variable effected only XEmacs or Emacs 21.")
 (add-to-list 'minor-mode-alist '(mew-w3m-minor-mode " w3m"))
 (add-to-list 'minor-mode-map-alist (cons 'mew-w3m-minor-mode w3m-mode-map))
 
+(defun mew-w3m-minor-mode-setter () 
+  "Check message buffer and activate mew-w3m-minor-mode."
+  (setq mew-w3m-minor-mode (and (get-text-property (point-min) 'w3m)
+				mew-use-w3m-minor-mode)))
 
 ;; processing Text/Html contents with w3m.
 (defun mew-mime-text/html-w3m (cache begin end &optional params execute)
