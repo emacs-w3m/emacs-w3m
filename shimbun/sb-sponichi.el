@@ -33,18 +33,39 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-sponichi (shimbun shimbun-text) ())
+(luna-define-class shimbun-sponichi
+		   (shimbun-japanese-newspaper shimbun) ())
 
 (defvar shimbun-sponichi-url "http://www.sponichi.co.jp/")
-(defvar shimbun-sponichi-groups '("baseball" "soccer" "usa" "others"
-				  "society" "entertainment" "horseracing"
-				  "golf" "battle"))
+(defvar shimbun-sponichi-server-name "スポーツニッポン新聞大阪本社")
+(defvar shimbun-sponichi-group-table
+  '(("baseball" . "野球")
+    ("soccer" . "サッカー")
+    ("usa" . "アメリカ")
+    ("others" . "その他")
+    ("society" . "社会")
+    ("entertainment" . "芸能")
+    ("horseracing" . "競馬")
+    ("golf" . "ゴルフ")
+    ("battle" . "格闘技")))
 (defvar shimbun-sponichi-from-address "webmaster@www.sponichi.co.jp")
 (defvar shimbun-sponichi-content-start "<!--ニュース記事ここから -->")
 (defvar shimbun-sponichi-content-end "<!--ニュース記事ここまで -->")
 (defvar shimbun-sponichi-expiration-days 7)
+
+(luna-define-method shimbun-groups ((shimbun shimbun-sponichi))
+  (mapcar 'car shimbun-sponichi-group-table))
+
+(luna-define-method shimbun-current-group-name ((shimbun shimbun-sponichi))
+  (cdr (assoc (shimbun-current-group-internal shimbun)
+	      shimbun-sponichi-group-table)))
+
+(luna-define-method shimbun-from-address ((shimbun shimbun-sponichi))
+  (shimbun-mime-encode-string
+   (format "スポニチ (%s) <%s>"
+	   (shimbun-current-group-name shimbun)
+	   (shimbun-from-address-internal shimbun))))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-sponichi))
   (format "%s%s/index.html"

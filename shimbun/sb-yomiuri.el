@@ -33,7 +33,8 @@
 (require 'shimbun)
 (require 'sb-text)
 
-(luna-define-class shimbun-yomiuri (shimbun-text) ())
+(luna-define-class shimbun-yomiuri
+		   (shimbun-japanese-newspaper shimbun-text) ())
 
 (defvar shimbun-yomiuri-top-level-domain "yomiuri.co.jp"
   "Name of the top level domain for the Yomiuri On-line.")
@@ -120,16 +121,22 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 
 (defvar shimbun-yomiuri-expiration-days 7)
 
+(luna-define-method shimbun-server-name ((shimbun shimbun-yomiuri))
+  "讀売新聞")
+
 (luna-define-method shimbun-groups ((shimbun shimbun-yomiuri))
   (mapcar 'car shimbun-yomiuri-group-table))
 
+(luna-define-method shimbun-current-group-name ((shimbun shimbun-yomiuri))
+  (nth 1 (assoc (shimbun-current-group-internal shimbun)
+		shimbun-yomiuri-group-table)))
+
 (luna-define-method shimbun-from-address ((shimbun shimbun-yomiuri))
-  (concat (shimbun-mime-encode-string
-	   (concat "読売新聞 ("
-		   (nth 1 (assoc (shimbun-current-group-internal shimbun)
-				 shimbun-yomiuri-group-table))
-		   ")"))
-	  " <webmaster@www." shimbun-yomiuri-top-level-domain ">"))
+  (shimbun-mime-encode-string
+   (format "%s (%s) <webmaster@www.%s>"
+	   (shimbun-server-name shimbun)
+	   (shimbun-current-group-name shimbun)
+	   shimbun-yomiuri-top-level-domain)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-yomiuri))
   (let ((group (shimbun-current-group-internal shimbun)))

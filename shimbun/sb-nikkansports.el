@@ -30,9 +30,9 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-nikkansports (shimbun shimbun-text) ())
+(luna-define-class shimbun-nikkansports
+		   (shimbun-japanese-newspaper shimbun) ())
 
 (defvar shimbun-nikkansports-url "http://www.nikkansports.com/")
 (defvar shimbun-nikkansports-server-name "日刊スポーツ")

@@ -38,20 +38,6 @@
 (luna-define-method shimbun-reply-to ((shimbun shimbun-w3m-dev))
   "w3m-dev@mi.med.tohoku.ac.jp")
 
-(luna-define-method shimbun-get-headers
-  :around ((shimbun shimbun-w3m-dev) &optional range)
-  (let ((w3m-coding-system-priority-list
-	 (cons (shimbun-coding-system-internal shimbun)
-	       w3m-coding-system-priority-list)))
-    (luna-call-next-method)))
-
-(luna-define-method shimbun-article
-  :around ((shimbun shimbun-w3m-dev) header &optional outbuf)
-  (let ((w3m-coding-system-priority-list
-	 (cons (shimbun-coding-system-internal shimbun)
-	       w3m-coding-system-priority-list)))
-    (luna-call-next-method)))
-
 (provide 'sb-w3m-dev)
 
 ;;; sb-w3m-dev.el ends here
