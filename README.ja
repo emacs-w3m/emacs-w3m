@@ -112,11 +112,12 @@
                (nconc w3m-command-arguments
                       '("-o" "http_proxy=http://proxy.hogege.com:8000/"))))
 
-   これは特定のホストに接続するときに proxy ゲートウェイを使わないように
-   する一つの例です．
+   環境変数 no-proxy にコンマで区分けされたホスト名を設定するか，または
+   以下のようにドメイン名 (ホスト名ではない) のリストをオプション
+   `w3m-no-proxy-domains' に設定することによって，proxy ゲートウェイを使
+   わずに接続するホストを指定することができます．
 
-      (setq w3m-no-proxy-hosts
-            '("www.local.com" "www.neighbor.com"))
+      (setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
 
    no-proxy ホストの設定に正規表現を使うには，オプション
    `w3m-command-arguments-alist' のドキュメントを見て下さい．
