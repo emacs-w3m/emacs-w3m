@@ -196,9 +196,27 @@ These values are acceptable: w3m, w3mmee, w3m-m17n.")
 
 (defcustom w3m-command-arguments
   (if (eq w3m-type 'w3mmee) '("-o" "concurrent=0" "-F") nil)
-  "*Arguments for execution of w3m."
+  "*List of the default arguments passed to the w3m command.  See also
+the documentation for the option `w3m-command-arguments-alist'."
   :group 'w3m
   :type '(repeat string))
+
+(defcustom w3m-command-arguments-alist nil
+  "*Alist of a regexp matching hostnames and additional arguments passed
+to the w3m command.  This lets you, for instance, use or not use proxy
+server for the particular hosts.  The first match made will be used.
+Here is an example of how to set this option:
+
+\(setq w3m-command-arguments-alist
+      '(;; Don't use any additional options to visit local hosts.
+	(\".*\\\\.your-company\\\\.com$\" \"-no-proxy\")
+	;; Use the proxy server to visit any foreign hosts.
+	(\"\" \"-o\" \"http://proxy.your-company.com:8080/\")))"
+  :group 'w3m
+  :type '(repeat (cons :format "%v"
+		       (regexp :tag "Host names regexp")
+		       (repeat :tag "Arguments passed to w3m command"
+			       (string :tag "Arg")))))
 
 (defcustom w3m-command-environment
   (delq nil
@@ -557,7 +575,7 @@ to input URL when URL-like string is not detected under the cursor."
 	(fn (if (featurep 'xemacs)
 		'face-custom-attributes-get
 	      'custom-face-attributes-get));; What a perverseness it is.
-	base-attributes attributes attribute value)
+	base-attributes attributes attribute)
     (require 'wid-edit);; Needed for only Emacs 20.
     (setq base-attributes (funcall fn base nil)
 	  attributes (funcall fn 'w3m-arrived-anchor-face nil))
@@ -2818,11 +2836,30 @@ complete."
 	    (w3m-cache-contents url (current-buffer))
 	    (w3m-w3m-attributes url nil handler)))))))
 
+(defun w3m-additional-command-arguments (url)
+  "Return a list of additional arguments passed to the w3m command.
+You may specify additional arguments for the particular hosts using
+the option `w3m-command-arguments-alist'."
+  (when (and w3m-command-arguments-alist
+	     url
+	     (string-match "^[a-z]+://\\([^/]+\\)" url))
+    (let ((hostname (match-string 1 url))
+	  (defs w3m-command-arguments-alist)
+	  def args)
+      (while (and defs
+		  (null args))
+	(setq def (car defs)
+	      defs (cdr defs))
+	(when (string-match (car def) hostname)
+	  (setq args (cdr def))))
+      args)))
+
 (defun w3m-w3m-retrieve (url no-decode no-cache post-data referer handler)
   "Retrieve content pointed by URL with w3m, insert it to this buffer,
 and call the HANDLER function with its content type as a string
 argument, when retrieve is complete."
-  (let ((w3m-command-arguments w3m-command-arguments)
+  (let ((w3m-command-arguments (append w3m-command-arguments
+				       (w3m-additional-command-arguments url)))
 	(temp-file))
     (and no-cache
 	 w3m-broken-proxy-cache
@@ -4043,7 +4080,6 @@ If EMPTY is non-nil, the created buffer has empty content."
   (with-current-buffer buf
     (let ((url w3m-current-url)
 	  (images w3m-display-inline-images)
-	  (mode major-mode)
 	  (new (generate-new-buffer newname)))
       (with-current-buffer new
 	(w3m-mode)
@@ -5100,7 +5136,7 @@ works on Emacs.
 				      (make-char 'japanese-jisx0208 40 44))
 		       (make-string (- (window-width) 4) ?-)))
 	  (case-fold-search t)
-	  header ssl beg end)
+	  header ssl beg)
       (when charset
 	(insert "\nDocument Code:  " charset))
       (when (and (not (w3m-url-local-p url))
