@@ -40,7 +40,7 @@
   "\n<!-- start template: ID [0-9]+,.*dispStory.* -->\n")
 (defvar shimbun-slashdot-jp-rss-content-end
   "\n<!-- end template: ID [0-9]+,.*dispStory.*-->\n")
-  
+
 (luna-define-method shimbun-index-url ((shimbun shimbun-slashdot-jp-rss))
   shimbun-slashdot-jp-rss-url)
 

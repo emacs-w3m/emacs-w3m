@@ -106,7 +106,7 @@
 	      (end (save-excursion
 		     (or (and (nth 1 date-list)
 			      (search-forward
-			       (format 
+			       (format
 				"<font color=white><span class=quotation>%s</span></font>"
 				(nth 1 date-list)) nil t nil)
 			      (progn (beginning-of-line) (point)))
@@ -149,7 +149,7 @@
 			       "/"
 			       (make-string star (string-to-char "★")))))
 	      ;; building ID
-	      (setq id (format "<%08d@%s.%s%%muchy.com>" 
+	      (setq id (format "<%08d@%s.%s%%muchy.com>"
 			       (string-to-number
 				(mapconcat
 				 'number-to-string

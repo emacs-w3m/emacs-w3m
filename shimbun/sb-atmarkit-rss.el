@@ -42,23 +42,23 @@
 (defvar shimbun-atmarkit-rss-group-path-alist
   '(
     ;;Windows Server Insiderフォーラム
-    ("fwin2k" . "http://www.atmarkit.co.jp/rss/fwin2k/rss2dc.xml")     
+    ("fwin2k" . "http://www.atmarkit.co.jp/rss/fwin2k/rss2dc.xml")
     ;;Insider.NETフォーラム
-    ("fdotnet" . "http://www.atmarkit.co.jp/rss/fdotnet/rss2dc.xml")    
+    ("fdotnet" . "http://www.atmarkit.co.jp/rss/fdotnet/rss2dc.xml")
     ;;System Insiderフォーラム
-    ("fsys" . "http://www.atmarkit.co.jp/rss/fsys/rss2dc.xml")       
+    ("fsys" . "http://www.atmarkit.co.jp/rss/fsys/rss2dc.xml")
     ;;XML &amp; Web Servicesフォーラム
-    ("fxml" . "http://www.atmarkit.co.jp/rss/fxml/rss2dc.xml")       
+    ("fxml" . "http://www.atmarkit.co.jp/rss/fxml/rss2dc.xml")
     ;;Linux Squareフォーラム
     ("flinux" . "http://www.atmarkit.co.jp/rss/flinux/rss2dc.xml")
     ;;Master of IP Networkフォーラム
     ("fnetwork" . "http://www.atmarkit.co.jp/rss/fnetwork/rss2dc.xml")
     ;;Java Solutionフォーラム
-    ("fjava" . "http://www.atmarkit.co.jp/rss/fjava/rss2dc.xml")      
+    ("fjava" . "http://www.atmarkit.co.jp/rss/fjava/rss2dc.xml")
     ;;Security&amp;Trustフォーラム
-    ("fsecurity". "http://www.atmarkit.co.jp/rss/fsecurity/rss2dc.xml")  
+    ("fsecurity". "http://www.atmarkit.co.jp/rss/fsecurity/rss2dc.xml")
     ;;Business Computingフォーラム
-    ("fbiz"  . "http://www.atmarkit.co.jp/rss/fbiz/rss2dc.xml")       
+    ("fbiz"  . "http://www.atmarkit.co.jp/rss/fbiz/rss2dc.xml")
     ;;＠IT自分戦略研究所
     ("jibun" . "http://jibun.atmarkit.co.jp/rss/rss2dc.xml")))
 

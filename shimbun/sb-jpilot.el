@@ -55,7 +55,7 @@
 	  (insert "@"))
 	(widen))))
   (buffer-string))
-    
+
 ;;(luna-define-method shimbun-reply-to ((shimbun shimbun-jpilot))
 ;;  "jpilot@jpilot.org")
 

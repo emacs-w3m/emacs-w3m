@@ -37,7 +37,7 @@
 (defvar shimbun-cnet-rss-from-address  "webmaster@japan.cnet.com")
 (defvar shimbun-cnet-rss-content-start "\n<!-- MAIN -->\n")
 (defvar shimbun-cnet-rss-content-end "\n<!-- END MAIN -->\n")
-  
+
 (luna-define-method shimbun-index-url ((shimbun shimbun-cnet-rss))
   shimbun-cnet-rss-url)
 

@@ -88,7 +88,7 @@
 	(setq month (substring month 1)))
       (when (and day (string-match "^-" day))
 	(setq day (substring day 1)))
-      (when timezone 
+      (when timezone
 	(if (string-equal timezone "Z")
 	    (setq timezone "+0000")
 	  (if (string-match ":" timezone)
@@ -112,7 +112,7 @@
       (if (not (looking-at ;;"<\\?xml version=\"1.0\" encoding=\"\\(.+\\)\" *\\?>"))
 		"<\\?xml version=\"1.0\" encoding=\"\\(.+\\)\""))
 	  (error "invalid xml")
-	(setq encoding (intern-soft (concat 
+	(setq encoding (intern-soft (concat
 				     (downcase (match-string 1)) "-dos"))))
       (decode-coding-region (point-min) (point-max) encoding)
       (set-buffer-multibyte t)
@@ -214,7 +214,7 @@ large documents!"
 that gives the URI for which you want to retrieve the namespace
 prefix), return the prefix."
   (let* ((prefix (car (rassoc uri (cadar el))))
-	 (nslist (if prefix 
+	 (nslist (if prefix
 		     (split-string (symbol-name prefix) ":")))
 	 (ns (cond ((eq (length nslist) 1) ; no prefix given
 		    "")

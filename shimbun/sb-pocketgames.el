@@ -68,7 +68,7 @@
 	from year month day time date
 	next point subject id start end body
 	headers)
-    (unless regexp 
+    (unless regexp
       (setq regexp "\">\\([^<>]+\\)</a></font><br>"))
     (while (re-search-forward regexp nil t nil)
       (catch 'next
@@ -159,7 +159,7 @@
 		    day (string-to-number (match-string-no-properties 4))
 		    time (match-string-no-properties 5)
 		    start (point)
-		    end (and (search-forward 
+		    end (and (search-forward
 			      "</font></td></tr></table><br><br><font class=\"pn-normal\">"
 			      nil t nil)
 			     (set-marker (make-marker) (match-beginning 0)))
