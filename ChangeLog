@@ -1,3 +1,7 @@
+2002-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-emacs-w3m-icon): Use helvetica-bold to widen image.
+
 2002-10-15  KAMO Tomoyuki  <kamo@ITmanage.co.jp>
 
 	* shimbun/sb-tcup.el (shimbun-tcup-get-group-key): Return
