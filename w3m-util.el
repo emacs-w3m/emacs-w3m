@@ -810,6 +810,12 @@ This is the XEmacs specific macro."
       '(if (interactive-p)
 	   (setq zmacs-region-stays t))))
 
+(defmacro w3m-region-active-p ()
+  "Say whether the region is active."
+  (if (fboundp 'region-active-p)
+      (list 'region-active-p)
+    (list 'and 'transient-mark-mode 'mark-active)))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here

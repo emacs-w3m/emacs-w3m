@@ -5123,8 +5123,11 @@ point."
   "Open all http links between START and END as new sessions.
 If the page looks like Google's search result and the START point is
 the beginning of a line, only the links displayed in the beginning of
-lines are picked up.  If ARG is non-nil, it forces to reload all links."
+lines are picked up.  If ARG is non-nil, it forces to reload all links.
+If Transient Mark mode, deactivate the mark."
   (interactive "r\nP")
+  (when (w3m-region-active-p)
+    (deactivate-mark))
   (let ((buffer (current-buffer))
 	(prev start)
 	(url (w3m-url-valid (w3m-anchor start)))
@@ -5158,13 +5161,7 @@ lines are picked up.  If ARG is non-nil, it forces to reload all links."
 If the region is active, use the `w3m-open-all-links-in-new-session'
 command instead."
   (interactive)
-  (if (w3m-static-if (featurep 'xemacs)
-	  (region-active-p)
-	;; Copied from `gnus-region-active-p'.
-	(and (boundp 'transient-mark-mode)
-	     transient-mark-mode
-	     (boundp 'mark-active)
-	     mark-active))
+  (if (w3m-region-active-p)
       (call-interactively 'w3m-open-all-links-in-new-session)
     (w3m-view-this-url nil t)))
 

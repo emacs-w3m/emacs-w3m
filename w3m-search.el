@@ -156,7 +156,7 @@ as an initial string."
 When a default value for the query is discovered, prompt with string
 PROMPT-WITH-DEFAULT instead of string PROMPT."
   (let ((default
-	  (if (and transient-mark-mode mark-active)
+	  (if (w3m-region-active-p)
 	      (buffer-substring (mark) (point))
 	    (unless (eq (get-text-property (line-beginning-position) 'face)
 			'w3m-header-line-location-title-face)
@@ -164,11 +164,10 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
 	(initial))
     (when default
       (set-text-properties 0 (length default) nil default)
-      (when (or w3m-search-word-at-point
-		(and transient-mark-mode mark-active))
+      (when (or w3m-search-word-at-point (w3m-region-active-p))
 	(setq initial default
 	      default nil))
-      (when (and transient-mark-mode mark-active)
+      (when (w3m-region-active-p)
 	(deactivate-mark)))
     (read-string (if default
 		     (format prompt-with-default default)
