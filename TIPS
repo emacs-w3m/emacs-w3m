@@ -67,7 +67,7 @@
 
    You can read various contents supported by the shimbun library as if
    you were reading mail or news articles by invoking this command (M-x
-   gnus-group-make-shimbun-group).
+   gnus-group-make-shimbun-group) in the group buffer.
 
    In addition, if you are using Gnus 5.10 (or Oort Gnus versions over
    v0.06), you only have to add the following line in your ~/.gnus.el
