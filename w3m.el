@@ -2895,6 +2895,7 @@ type as a string argument, when retrieve is complete."
 	  nil)))))
 
 (defun w3m-touch-file (file time)
+  "Change the access and/or modification TIME of the specified FILE."
   (and time
        (w3m-which-command w3m-touch-command)
        (file-exists-p file)
