@@ -4477,8 +4477,8 @@ asahi.travel.zeitaku asahi.wakamiya
 これらは、テキストのみの記事を作成しますが、記事中に含まれる写真などをイ
 ンライン表示するように拡張された @samp{asahi-html} というバックエンドも
 あります。こちらを利用する場合は、asahi-html.business というようなグルー
-プ名になります。特に写真がある @samp{borderless} グループを見るには、
-@samp{asahi-html} を使うことを勧めます。
+プ名になります。特に写真があるグループを見るには、@samp{asahi-html} を使
+うことをお勧めします。
 
 @item @uref{http://mytown.asahi.com/, 朝日新聞}
 asahi-mytown.(hokkaido@dots{}okinawa) asahi-mytown.usa
