@@ -122,7 +122,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (eval-when-compile (require 'wid-edit))
 
 (defun w3m-xmas-define-missing-widgets ()
-  "Define some missing widget."
+  "Define some missing widgets."
   (unless (get 'coding-system 'widget-type)
     ;; The following codes are imported from wid-edit.el of Emacs 20.7.
 
