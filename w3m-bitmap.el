@@ -221,20 +221,41 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
       (w3m-process-with-wait-handler
 	(w3m-create-image url no-cache referer handler))
     (if (and w3m-bitmap-image-use-cache
-	     (assoc url w3m-bitmap-image-cache-alist))
-
-	(cdr (assoc url w3m-bitmap-image-cache-alist))
+	     (assoc (if (and w3m-resize-images
+			     (and (consp size)(car size)(cdr size)))
+			(list url size)
+		      url)
+		    w3m-bitmap-image-cache-alist))
+	(cdr (assoc (if (and w3m-resize-images
+			     (consp size)(car size)(cdr size))
+			(list url size)
+		      url)
+		    w3m-bitmap-image-cache-alist))
       (w3m-process-do-with-temp-buffer
 	  (type (w3m-retrieve url nil no-cache nil referer))
 	(ignore-errors
 	  (when (and (stringp type) (string-match "^image/" type))
 	    (setq type (replace-match "" nil nil type))
-	    (when (w3m-imagick-convert-buffer type "xbm")
-	      (let ((str (buffer-string)))
-		(with-temp-buffer
-		  (insert str)
+	    (lexical-let ((url url)
+			  (size size)
+			  set-size)
+	      (if (and w3m-resize-images
+		       (consp size)(car size)(cdr size))
+		  (setq set-size t))
+	      (w3m-process-do
+		  (success (apply 'w3m-imagick-start-convert-buffer
+				  handler type "xbm"
+				  (if set-size
+				      (list "-geometry"
+					    (concat (number-to-string
+						     (car size))
+						    "x"
+						    (number-to-string
+						     (cdr size)) "!")))))
+		(when success
 		  (let ((image (w3m-bitmap-image-buffer (current-buffer))))
-		    (push (cons url image) w3m-bitmap-image-cache-alist)
+		    (push (cons (if set-size (list url size) url)
+				image) w3m-bitmap-image-cache-alist)
 		    image))))))))))
 
 (defun w3m-insert-image (beg end image)
