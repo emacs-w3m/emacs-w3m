@@ -1160,13 +1160,14 @@ textarea")))
       (unless (and (file-exists-p dir) (file-directory-p dir))
 	(make-directory dir)))
     (setq buffer
-	  (or (save-current-buffer
-		(dolist (buffer (buffer-list))
-		  (set-buffer buffer)
-		  (when (and w3m-form-input-textarea-mode
-			     (string= w3m-form-input-textarea-file file))
-		    (throw 'detect (cons t buffer)))))
-	      (generate-new-buffer "*w3m form textarea*")))
+	  (catch 'detect-buffer
+	    (save-current-buffer
+	      (dolist (buffer (buffer-list))
+		(set-buffer buffer)
+		(when (and w3m-form-input-textarea-mode
+			   (string= w3m-form-input-textarea-file file))
+		  (throw 'detect (cons t buffer)))))
+	    (generate-new-buffer "*w3m form textarea*")))
     (unless (consp buffer)
       (when (and (file-exists-p file) (file-readable-p file))
 	(with-temp-buffer
