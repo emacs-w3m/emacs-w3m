@@ -31,7 +31,7 @@
 
 (luna-define-class shimbun-tdiary (shimbun shimbun-text) ())
 
-(defvar shimbun-tdiary-content-start "</h3>")
+(defvar shimbun-tdiary-content-start "<h3>")
 (defvar shimbun-tdiary-content-end "</div>")
 
 (defvar shimbun-tdiary-group-alist nil
@@ -146,21 +146,41 @@ URL is the URL for TDIARY access point of the group.")
 	(shimbun-tdiary-get-headers shimbun url headers author)))
     headers))
 
+(defvar shimbun-tdiary-footnote-regex
+  (concat "<span class=\"footnote\">"
+	  "<a +name=\"\\([^\"]*\\)\" +"
+	  "href=\"\\([^#]*\\)#[^\"]+\" +"
+	  "title=\"\\([^\"]*\\)\">"
+	  "\\(\\*[0-9]+\\)</a></span>")
+  "Regexp of footnote.")
+
 (luna-define-method shimbun-make-contents ((shimbun shimbun-tdiary)
 					   header)
   (let ((case-fold-search t)
 	(id (shimbun-header-id header))
-	(start))
+	start footnotes)
     (when (string-match "\\(p[0-9]+\\)\." id)
       (setq id (substring id (match-beginning 1) (match-end 1)))
-      (re-search-forward (concat "<a name=\"" id) nil t))
+      (re-search-forward (concat "<a name=\"" id) nil t)
+      (and (search-backward shimbun-tdiary-content-start nil t)
+	   (goto-char (match-beginning 0))))
     (when (and (re-search-forward (shimbun-content-start-internal shimbun)
 				  nil t)
-	       (setq start (point))
+	       (setq start (match-beginning 0))
 	       (re-search-forward (shimbun-content-end-internal shimbun)
 				  nil t))
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start))
+    (goto-char (point-min))
+    (while (re-search-forward shimbun-tdiary-footnote-regex nil t)
+      (setq footnotes (cons (format "<a href=\"%s#%s\">%s</a> %s<br>\n"
+				    (match-string 2) (match-string 1)
+				    (match-string 4) (match-string 3))
+			    footnotes)))
+    (when footnotes
+      (goto-char (point-max))
+      (insert "<br><br>\n")
+      (mapcar 'insert (nreverse footnotes)))
     (shimbun-header-insert-and-buffer-string shimbun header nil t)))
 
 (provide 'sb-tdiary)

@@ -1,3 +1,9 @@
+2003-07-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/sb-tdiary.el (shimbun-tdiary-content-start): Change value.
+	(shimbun-tdiary-footnote-regex): New internal variable.
+	(shimbun-make-contents): Keep subtitle in body. Handle footnotes.
+
 2003-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-makeinfo): Force texinfmt.elc to load
