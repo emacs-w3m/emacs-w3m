@@ -46,7 +46,7 @@
 ;; The trunk or each branch is a simple list which will have some
 ;; history elements.  History elements in the trunk or each branch
 ;; should be arranged in order of increasing precedence (the newest
-;; history element should be the first element of the list).
+;; history element should be the last element of the list).
 ;;
 ;; Each history element represents a link which consists of the
 ;; following records:
@@ -63,7 +63,7 @@
 ;;
 ;; The rest BRANCHes are branches of the history element.  Branches
 ;; should also be arranged in order of increasing precedence (the
-;; oldest one should be located in the rightmost).  Each BRANCH will
+;; newest one should be located in the rightmost).  Each BRANCH will
 ;; also be a tree-structured complex list.  Thus the history structure
 ;; will grow up infinitely.  Do you have enough memories for it? :-p
 ;;
