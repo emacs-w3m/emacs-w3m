@@ -134,4 +134,22 @@ Optional DEFAULT is a default password to use instead of empty input."
 	default-coding-system
       (intern ret))))
 
+;;; Widget:
+(defun w3m-om-define-missing-widgets ()
+  "Define some missing widget(s)."
+  (unless (get 'other 'widget-type)
+    ;; The following definition is imported from wid-edit.el of Emacs 20.7.
+    (define-widget 'other 'sexp
+      "Matches any value, but doesn't let the user edit the value.
+This is useful as last item in a `choice' widget.
+You should use this widget type with a default value,
+as in (other DEFAULT) or (other :tag \"NAME\" DEFAULT).
+If the user selects this alternative, that specifies DEFAULT
+as the value."
+      :tag "Other"
+      :format "%t%n"
+      :value 'other)))
+
+(eval-after-load "wid-edit" '(w3m-om-define-missing-widgets))
+
 ;;; w3m-om.el ends here
