@@ -1,3 +1,19 @@
+2005-03-12  MIYOSHI Masanori  <miyoshi@meadowy.org>
+
+	* shimbun/sb-msports-nifty.el: Follow the change of site design.
+
+	* shimbun/sb-f1express.el: Removed.
+
+	* shimbun/sb-f1fan.el: Update the email address of the author.
+	
+	* shimbun/sb-makanai.el: Ditto.
+
+	* shimbun/sb-nikkansports.el: Ditto.
+
+	* doc/emacs-w3m-ja.texi (Sport Sites Supported by Shimbun): Update.
+
+	* doc/emacs-w3m.texi (Sport Sites Supported by Shimbun): Ditto.
+
 2005-03-11  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-squeak-ja.el (shimbun-squeak-ja-url): Improve url.

@@ -1,6 +1,6 @@
 ;;; sb-msports-nifty.el --- shimbun backend for motorsports.nifty.com
 
-;; Copyright (C) 2004 MIYOSHI Masanori <miyoshi@meadowy.org>
+;; Copyright (C) 2004, 2005 MIYOSHI Masanori <miyoshi@meadowy.org>
 
 ;; Author: MIYOSHI Masanori <miyoshi@meadowy.org>
 ;; Keywords: news
@@ -34,7 +34,7 @@
 
 (luna-define-class shimbun-msports-nifty (shimbun shimbun-text) ())
 
-(defvar shimbun-msports-nifty-url "http://motorsports.nifty.com/")
+(defvar shimbun-msports-nifty-url "http://forum.nifty.com/fmotor/")
 (defvar shimbun-msports-nifty-server-name "@nifty:モータースポーツ")
 (defvar shimbun-msports-nifty-group-alist
   '(("F1" . "f1")
@@ -44,9 +44,9 @@
     ("USA" . "usa")))
 (defvar shimbun-msports-nifty-from-address "motorsports_post@nifty.com")
 (defvar shimbun-msports-nifty-content-start
-  "^</DIV>\n\\(</P><P>\\|\n?\\(</P>\\)?<PRE>\\)　?\n")
+  "^<div class=\"entry-body-text\">\n<p><FONT[^>]+>.*\n?.*</FONT>.*\n<img[^>]+>")
 (defvar shimbun-msports-nifty-content-end
-  "^</P>\n</TD></TR>\n")
+  "^</div>\n</div>\n+<div class=\"entry-body-bottom\">")
 
 (luna-define-method shimbun-groups ((shimbun shimbun-msports-nifty))
   (mapcar 'car shimbun-msports-nifty-group-alist))
@@ -62,18 +62,16 @@
   (let ((case-fold-search t) headers)
     (goto-char (point-min))
     (while (re-search-forward
-	    "<A HREF='\.\\(/news/\\([0-9]+\\)/[0-9][0-9]\\([0-9][0-9]\\)\\([0-9][0-9]\\)_\\([0-9]+\\)\.htm\\)'>☆　\\([^<]+\\)</A><BR>" nil t)
+	    "<A HREF='\\(http://.*/\\([0-9]+\\)/\\([0-9][0-9]\\)/index\.html#\\(.*\\)\\)'[^>]*>☆　\\([^<]+\\)<BR>" nil t)
       (let ((url (match-string 1))
 	    (year (match-string 2))
 	    (month (match-string 3))
-	    (day (match-string 4))
-	    (id (match-string 5))
-	    (subject (match-string 6))
-	    date)
-	(setq url (concat (shimbun-url-internal shimbun)
-			  (cdr (assoc (shimbun-current-group-internal shimbun)
-				      shimbun-msports-nifty-group-alist))
-			  url))
+	    (id (match-string 4))
+	    (subject (match-string 5))
+	    (day 1) date)
+	(save-excursion
+	  (when (re-search-backward "[0-9]+/[0-9][0-9]/\\([0-9][0-9]\\)" nil t)
+	    (setq day (match-string 1))))
 	(setq id (format "<%s%s%s%s%%%s%%msports@nifty.com>"
 			 year month day
 			 id (shimbun-current-group-internal shimbun)))
@@ -88,6 +86,19 @@
 	       date id "" 0 0 url)
 	      headers)))
     headers))
+
+(luna-define-method shimbun-make-contents ((shimbun shimbun-msports-nifty)
+					   header)
+  (let ((id (shimbun-header-id header))
+	start)
+    (setq id (substring id 9 20))	; extract anchor
+    (re-search-forward (format "<a id=\"%s\"></a>" id) nil t)
+    (delete-region (point-min) (point))
+    (shimbun-header-insert-and-buffer-string
+     shimbun header "UTF-8"
+     (if (shimbun-clear-contents shimbun header)
+	 (shimbun-shallow-rendering)
+       t))))
 
 (provide 'sb-msports-nifty)
 
