@@ -33,9 +33,6 @@
 (defvar shimbun-coldsync-groups '("main"))
 (defvar shimbun-coldsync-reverse-flag nil)
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-coldsync))
-  shimbun-coldsync-url)
-
 (provide 'sb-coldsync)
 
 ;;; sb-coldsync.el ends here

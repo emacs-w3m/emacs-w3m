@@ -1,6 +1,6 @@
 ;;; sb-asahi-html.el --- shimbun backend for asahi.com (HTML version)
 
-;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi  <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi  <teranisi@gohome.org>
 ;; Keywords: news
@@ -41,7 +41,7 @@
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-asahi-html)
 					   header)
-  (shimbun-asahi-adjust-date-header shimbun header)
+  (shimbun-asahi-prepare-article shimbun header)
   (shimbun-make-html-contents shimbun header))
 
 (provide 'sb-asahi-html)

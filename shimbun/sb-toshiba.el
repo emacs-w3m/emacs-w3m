@@ -38,4 +38,4 @@
 
 (provide 'sb-toshiba)
 
-;;; sb-linuxce-jp.el ends here
+;;; sb-toshiba.el ends here

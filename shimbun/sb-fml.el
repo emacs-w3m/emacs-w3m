@@ -39,9 +39,6 @@
 
 (luna-define-class shimbun-fml (shimbun) ())
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-fml))
-  (shimbun-url-internal shimbun))
-
 (defsubst shimbun-fml-parse-time (str)
   (save-match-data
     (if (string-match
@@ -97,12 +94,12 @@
     (if (search-forward "<SPAN CLASS=mailheaders>" nil t)
 	(delete-region (point-min) (point))
       (throw 'stop nil))
-    (if (search-forward "</PRE>")
+    (if (search-forward "</PRE>" nil t)
 	(progn
 	  (beginning-of-line)
 	  (delete-region (point) (point-max)))
       (throw 'stop nil))
-    (if (search-backward "</SPAN>")
+    (if (search-backward "</SPAN>" nil t)
 	(progn
 	  (beginning-of-line)
 	  (delete-region (point) (save-excursion (end-of-line) (point))))
@@ -135,7 +132,8 @@
 		((string= field "References")
 		 (shimbun-header-set-references header value))
 		(t
-		 (insert (concat field ": " value "\n")))))
+		 (insert (concat field ": "
+				 (shimbun-header-normalize value t) "\n")))))
 	(goto-char (point-min))
 	(shimbun-header-insert shimbun header)
 	(insert

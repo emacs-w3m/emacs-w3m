@@ -222,6 +222,10 @@ The valid values include `w3m', `w3mmee', and `w3m-m17n'.")
 	    (when (member "m17n" w3m-compile-options)
 	      (setq w3m-type 'w3m-m17n))))))))
 
+(when (not (stringp w3m-command))
+  (error "\
+Install w3m command in `exec-path' or set `w3m-command' variable correctly"))
+
 (defcustom w3m-user-agent (concat "Emacs-w3m/" emacs-w3m-version
 				  " " w3m-version)
   "String used for the User-Agent field.  See also `w3m-add-user-agent'."
@@ -331,13 +335,13 @@ composing mail messages."
     (mew-draft-mode . pop-to-buffer)
     (mh-letter-mode . pop-to-buffer)
     (wl-draft-mode . pop-to-buffer))
-  "*Alist of (MAJOR-MODE . FUNCTION) pairs used to popup a mail buffer.
+  "*Alist of (MAJOR-MODE . FUNCTION) pairs used to pop to a mail buffer up.
 If a user clicks on a `mailto' url and a mail buffer is composed by
 `mail-user-agent' with the MAJOR-MODE, FUNCTION will be called with a
 mail buffer as an argument.  Note that the variables
 `special-display-buffer-names', `special-display-regexps',
 `same-window-buffer-names' and `same-window-regexps' will be bound to
-nil while popping up a buffer."
+nil while popping to a buffer up."
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 11
 		       (symbol :format "Major-mode: %v\n" :size 0)
@@ -456,7 +460,10 @@ terminal.)"
    ((not (featurep 'mule)) 'iso-8859-1)
    ((eq w3m-type 'w3mmee) 'ctext)
    ((eq w3m-type 'w3m-m17n)
-    (if (featurep 'un-define) 'utf-8 'iso-2022-7bit-ss2))
+    (if (or (equal "Japanese" w3m-language)
+	    (not (w3m-find-coding-system 'utf-8)))
+	'iso-2022-7bit-ss2
+      'utf-8))
    (w3m-accept-japanese-characters 'w3m-euc-japan)
    (t 'w3m-iso-latin-1))
   "*Coding system used when reading from w3m processes."
@@ -681,7 +688,21 @@ Otherwise, you will be prompted for that url with the editing form."
   "*This variable specifies the url string to open when emacs-w3m starts.
 Don't say HP, which is the abbreviated name of a certain company. ;-)"
   :group 'w3m
-  :type '(string :size 0))
+  :type '(list :convert-widget
+	       (lambda (widget)
+		 `(radio :args
+			 ,(append
+			   (if (getenv "HTTP_HOME")
+			       (list (list 'const
+					   :format "HTTP_HOME: \"%v\"\n"
+					   (getenv "HTTP_HOME"))))
+			   (if (getenv "WWW_HOME")
+			       (list (list 'const
+					   :format "WWW_HOME: \"%v\"\n"
+					   (getenv "WWW_HOME"))))
+			   '((const :tag "About emacs-w3m" "about:")
+			     (const :tag "Blank page" "about:blank")
+			     (string :format "URL: %v\n" :size 0)))))))
 
 (defcustom w3m-arrived-file
   (expand-file-name ".arrived" w3m-profile-directory)
@@ -1208,6 +1229,16 @@ text.  See also `w3m-use-tab'."
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-make-new-session nil
+  "*Non-nil means making new emacs-w3m buffers when visiting new pages.
+If it is non-nil and there are already emacs-w3m buffers, the `w3m'
+command makes a new emacs-w3m buffer if a user specifies a url string
+in the minibuffer, and the `w3m-safe-view-this-url' command also makes
+a new buffer if a user invokes it in a buffer not being running the
+`w3m-mode'."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-use-favicon (featurep 'w3m-image)
   "*Non-nil means show favicon images if they are available.
 It will be set to nil automatically if ImageMagick's `convert' program
@@ -1259,7 +1290,7 @@ creating the second or more emacs-w3m session."
   :type 'boolean)
 
 (defcustom w3m-pop-up-frames nil
-  "Non-nil means popup a new frame for an emacs-w3m session.
+  "Non-nil means pop to a new frame up for an emacs-w3m session.
 This variable is similar to `pop-up-frames' and does override
 `w3m-pop-up-windows'.  If `w3m-use-tab' is non-nil or there is the
 buffers selection window (for the `w3m-select-buffer' feature), this
@@ -2046,34 +2077,6 @@ nil value means it has not been initialized.")
 (defconst w3m-work-buffer-name " *w3m-work*")
 (defconst w3m-select-buffer-name " *w3m buffers*")
 
-(defconst w3m-meta-content-type-charset-regexp
-  "<meta[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]+content\
-=\"?\\([^;]+\\);[ \t\n]*charset=\\([^\">]+\\)\"?[ \t\n]*/?>"
-  "Regexp matching the META tag containing Content-type and charset.
-Those are in the order of:
- <META HTTP-EQUIV=\"Content-Type\" content=\"...;charset=...\">.")
-
-(defconst w3m-meta-charset-content-type-regexp
-  "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*charset\
-=\\([^\"]+\\)\"?[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]*/?>"
-  "Regexp matching the META tag containing charset and Content-type.
-Those are in the order of:
- <META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">.")
-
-(defconst w3m-meta-refresh-content-regexp
-  "<meta[ \t\n]+http-equiv=[\"']?refresh[\"']?[ \t\n]+content\
-=[\"']?\\([^;]+\\);[ \t\n]*url=[\"']?\\([^\"']+\\)[\"']?[\"']?[ \t\n]*/?>"
-  "Regexp matching the META tag containing refresh and content.
-Those are in the order of:
- <META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">.")
-
-(defconst w3m-meta-content-refresh-regexp
-  "<meta[ \t\n]+content=[\"']?\\([^;]+\\);[ \t\n]*url\
-=[\"']?\\([^\"']+\\)[\"']?[ \t\n]+http-equiv=[\"']?refresh[\"']?[\"']?[ \t\n]*/?>"
-  "Regexp matching the META tag containing content and refresh.
-Those are in the order of:
- <META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">.")
-
 (defconst w3m-dump-head-source-command-arguments
   (cond ((eq w3m-type 'w3mmee)
 	 (list "-dump=extra,head,source"))
@@ -2126,12 +2129,14 @@ If it is nil, the command specified to `w3m-command' is used.")
 
 (defconst w3m-arrived-ignored-regexp
   "\\`about:\\(//\\(header\\|source\\|history\\|\
-db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
+db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
+\\|\\`about:/*blank/?\\'"
   "Regexp matching urls which aren't stored in the arrived URLs database.")
 
 (defconst w3m-history-ignored-regexp
   "\\`about:\\(//\\(header\\|source\\|history\\|\
-db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
+db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
+\\|\\`about:/*blank/?\\'"
   "Regexp matching urls which aren't stored in the history.")
 
 (defconst w3m-url-components-regexp
@@ -3287,9 +3292,10 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     ;; Remove other markups.
     (goto-char (point-min))
     (while (re-search-forward "</?[A-Za-z_][^>]*>" nil t)
-      (if (get-text-property (match-beginning 0) 'w3m-form-field-id)
-	  (goto-char (match-end 0))
-	(delete-region (match-beginning 0) (match-end 0))))
+      (let ((fid (get-text-property (match-beginning 0) 'w3m-form-field-id)))
+	(if (and fid (string-match "/type=textarea/" fid))
+	    (goto-char (match-end 0))
+	  (delete-region (match-beginning 0) (match-end 0)))))
     ;; Decode escaped characters (entities).
     (w3m-decode-entities 'reserve-prop)
     (when w3m-use-form
@@ -3428,16 +3434,11 @@ Like `ffap-url-at-point', except that text props will be stripped."
   "Return an active region or a url around the cursor.
 In Transient Mark mode, deactivate the mark."
   (if (w3m-region-active-p)
-      (let ((pos (point))
-	    (end))
-	(goto-char (region-end))
-	(skip-chars-backward "\t\r\f\n 　")
-	(setq end (point))
-	(goto-char (region-beginning))
-	(skip-chars-forward "\t\r\f\n 　" end)
-	(prog1 (buffer-substring-no-properties (point) end)
-	  (goto-char pos)
-	  (w3m-deactivate-region)))
+      (prog1
+	  (w3m-replace-in-string (buffer-substring-no-properties
+				  (region-beginning) (region-end))
+				 "[\t\r\f\n 　]+" "")
+	(w3m-deactivate-region))
     (w3m-url-at-point)))
 
 (defun w3m-input-url (&optional prompt initial default quick-start)
@@ -3705,11 +3706,13 @@ It supports the encoding types of gzip, bzip2, deflate, etc."
 (defun w3m-detect-meta-charset ()
   (let ((case-fold-search t))
     (goto-char (point-min))
-    (when (or (re-search-forward
-	       w3m-meta-content-type-charset-regexp nil t)
-	      (re-search-forward
-	       w3m-meta-charset-content-type-regexp nil t))
-      (match-string-no-properties 2))))
+    (catch 'found
+      (while (re-search-forward "<meta[ \t\r\f\n]+" nil t)
+	(w3m-parse-attributes ((http-equiv :case-ignore) 
+			       (content :case-ignore))
+	  (when (and (string= http-equiv "content-type")
+		     (string-match ";[ \t\n]*charset=\\([^\"]+\\)" content))
+	    (throw 'found (match-string 1 content))))))))
 
 (defun w3m-decode-buffer (url &optional content-charset content-type)
   (let (cs)
@@ -4103,16 +4106,32 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
       (when success
 	(goto-char (point-min))
 	(let ((case-fold-search t))
-	  (when (re-search-forward "^w3m-current-url:" nil t)
-	    (delete-region (point-min) (match-beginning 0))
-	    (when (search-forward "\n\n" nil t)
-	      (let ((header (buffer-substring (point-min) (point))))
-		(when w3m-use-cookies
-		  (w3m-cookie-set url (point-min) (point)))
-		(delete-region (point-min) (point))
-		(w3m-cache-header url header)
-		(w3m-cache-contents url (current-buffer))
-		(w3m-w3m-parse-header url header)))))))))
+	  (when (and (re-search-forward "^w3m-current-url:" nil t)
+		     (progn
+		       (delete-region (point-min) (match-beginning 0))
+		       (search-forward "\n\n" nil t)))
+	    ;; Asahi-shimbun sometimes says gif as jpeg mistakenly, for
+	    ;; example.  So, we cannot help trusting the data itself.
+	    (when (prog2
+		      (setq case-fold-search nil)
+		      (looking-at "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n")
+		    (setq case-fold-search t))
+	      (let ((type (cond ((match-beginning 1) "gif")
+				((match-beginning 2) "jpeg")
+				(t "png"))))
+		(save-excursion
+		  (when (re-search-backward "^content-type: image/\\(.+\\)$"
+					    nil t)
+		    (delete-region (goto-char (match-beginning 1))
+				   (match-end 1))
+		    (insert type)))))
+	    (let ((header (buffer-substring (point-min) (point))))
+	      (when w3m-use-cookies
+		(w3m-cookie-set url (point-min) (point)))
+	      (delete-region (point-min) (point))
+	      (w3m-cache-header url header)
+	      (w3m-cache-contents url (current-buffer))
+	      (w3m-w3m-parse-header url header))))))))
 
 (defun w3m-additional-command-arguments (url)
   "Return a list of additional arguments passed to the w3m command.
@@ -4363,6 +4382,8 @@ It will put the retrieved contents into the current buffer.  See
 	(type (w3m-retrieve (substring url (match-end 0))
 			    no-decode no-cache post-data referer handler))
       (when type "text/plain")))
+   ((string-match "\\`about:/*blank/?\\'" url)
+    "text/plain")
    (t
     (lexical-let ((output-buffer (current-buffer)))
       (w3m-process-do-with-temp-buffer
@@ -4599,29 +4620,39 @@ POST-DATA and REFERER will be sent to the web server with a request."
   "Get REFRESH attribute in META tags."
   (setq w3m-current-refresh nil)
   (when w3m-use-refresh
-    (goto-char (point-min))
     (let ((case-fold-search t)
 	  sec refurl)
       (goto-char (point-min))
-      (when (or (re-search-forward w3m-meta-refresh-content-regexp nil t)
-		(re-search-forward w3m-meta-content-refresh-regexp nil t))
-	(setq sec (match-string-no-properties 1))
-	(setq refurl (w3m-decode-entities-string
-		      (match-string-no-properties 2)))
-	(when (string-match "\\`[\"']\\(.*\\)[\"']\\'" refurl)
-	  (setq refurl (match-string 1 refurl)))
-	(unless (string-match "[^0-9]" sec)
-	  (setq w3m-current-refresh (cons (string-to-number sec)
-					  (w3m-expand-url refurl))))))))
+      (catch 'found
+	(while (re-search-forward "<meta[ \t\r\f\n]+" nil t)
+	  (w3m-parse-attributes ((http-equiv :case-ignore) content)
+	    (when (and (string= http-equiv "refresh")
+		       (string-match
+			"\\([^;]+\\);[ \t\n]*url=[\"']?\\([^\"']+\\)"
+			content))
+	      (setq sec (match-string-no-properties 1 content))
+	      (setq refurl (w3m-decode-entities-string
+			    (match-string-no-properties 2 content)))
+	      (when (string-match "\\`[\"']\\(.*\\)[\"']\\'" refurl)
+		(setq refurl (match-string 1 refurl))
+		(unless (string-match "[^0-9]" sec)
+		  (throw 'found
+			 (setq w3m-current-refresh
+			       (cons (string-to-number sec)
+				     (w3m-expand-url refurl)))))))))))))
 
 (defun w3m-remove-meta-charset-tags ()
   (let ((case-fold-search t))
     (goto-char (point-min))
-    (when (or (re-search-forward
-	       w3m-meta-content-type-charset-regexp nil t)
-	      (re-search-forward
-	       w3m-meta-charset-content-type-regexp nil t))
-      (delete-region (match-beginning 0) (match-end 0)))))
+    (catch 'found
+      (when (re-search-forward "<meta[ \t\r\f\n]+" nil t)
+	(let ((start (match-beginning 0)))
+	  (w3m-parse-attributes ((http-equiv :case-ignore)
+				 (content :case-ignore))
+	    (when (and (string= http-equiv "content-type")
+		       (string-match ";[ \t\n]*charset=" content))
+	      (delete-region start (point))
+	      (throw 'found nil))))))))
 
 (defun w3m-rendering-extract-title ()
   "Extract the title from the halfdump and put it into the current buffer."
@@ -4692,7 +4723,8 @@ POST-DATA and REFERER will be sent to the web server with a request."
   (w3m-remove-comments)
   (w3m-check-header-tags)
   (w3m-check-refresh-attribute)
-  (w3m-remove-meta-charset-tags)
+  (unless (eq w3m-type 'w3m-m17n)
+    (w3m-remove-meta-charset-tags))
   (w3m-rendering-half-dump charset)
   (w3m-message "Rendering...done")
   (w3m-rendering-extract-title))
@@ -5112,7 +5144,11 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	    (concat (substring base 0 (or (match-end 3) (match-end 1)))
 		    url))
 	;; The hierarchical part of URL has a relative spec.
-	(let ((path-end (match-end 5)))
+	(let ((path-end (match-end 5))
+	      ;; See the following thread about a problem related to
+	      ;; the use of file-name-* functions for url string:
+	      ;; http://news.gmane.org/group/gmane.emacs.w3m/thread=4210
+	      file-name-handler-alist)
 	  (string-match w3m-url-components-regexp base)
 	  (concat
 	   (substring base 0 (match-beginning 5))
@@ -5793,14 +5829,15 @@ a page in a new buffer with the correct width."
       (when empty
 	(w3m-clear-local-variables)))
     (if (and (not just-copy) empty)
-	;; Pop up a window or a frame because `w3m-goto-url' is not called.
+	;; Pop to a window or a frame up because `w3m-goto-url' is not called.
 	(w3m-popup-buffer new)
       ;; Need to change to the `new' buffer in which `w3m-goto-url' runs.
       (set-buffer new))
     (unless empty
       ;; Render a page.
       (let ((positions (copy-sequence (car w3m-history)))
-	    (w3m-history-reuse-history-elements t))
+	    (w3m-history-reuse-history-elements t)
+	    (w3m-prefer-cache t))
 	(w3m-process-with-wait-handler
 	  (w3m-goto-url url nil nil nil nil handler
 			;; Pass the properties of the history elements,
@@ -5880,10 +5917,7 @@ passed to the `w3m-quit' function (which see)."
 	      ((memq (selected-frame) w3m-initial-frames)
 	       ;; Assume that this frame was created to show this buffer.
 	       (if (one-window-p t)
-		   (progn
-		     (setq w3m-initial-frames
-			   (delq (selected-frame) w3m-initial-frames))
-		     (delete-frame))
+		   (delete-frame)
 		 (delete-window)))
 	      (t
 	       (if (>= num 2)
@@ -6375,7 +6409,7 @@ closed.  See also `w3m-quit'."
 \\[w3m-copy-buffer]	Create a copy of the current page as a new session.
 \\[w3m-next-buffer]	Turn the page of emacs-w3m buffers ahead.
 \\[w3m-previous-buffer]	Turn the page of emacs-w3m buffers behind.
-\\[w3m-select-buffer]	Pop up the emacs-w3m buffers selection window.
+\\[w3m-select-buffer]	Pop to the emacs-w3m buffers selection window up.
 \\[w3m-switch-buffer]	Select one of emacs-w3m buffers at the current window.
 \\[w3m-delete-buffer]	Delete the current emacs-w3m buffer.
 \\[w3m-delete-other-buffers]	Delete emacs-w3m buffers except for the\
@@ -6777,9 +6811,11 @@ This function is designed as the hook function which is registered to
 When the current buffer has already been prepared, it won't bother to
 generate a new buffer."
   (unless (eq major-mode 'w3m-mode)
-    (set-buffer (get-buffer-create "*w3m*"))
-    (unless (eq major-mode 'w3m-mode)
-      (w3m-mode)))
+    (let ((buffer (w3m-alive-p t)))
+      (if buffer
+	  (set-buffer buffer)
+	(set-buffer (generate-new-buffer "*w3m*"))
+	(w3m-mode))))
   ;; It may have been set to nil for viewing a page source or a header.
   (setq truncate-lines t)
   (w3m-add-local-hook 'pre-command-hook 'w3m-store-current-position)
@@ -7252,12 +7288,13 @@ variable, but you will be prompted for a URL if `w3m-quick-start' is
 nil (default t) or `w3m-home-page' is nil.
 
 The variables `w3m-pop-up-windows' and `w3m-pop-up-frames' control
-whether this command should pop up a window or a frame for the session.
+whether this command should pop to a window or a frame up for the
+session.
 
 When emacs-w3m sessions have already been opened, this command will
-pop up the existing window or frame, but if `w3m-quick-start' is nil,
-\(default t), you will be prompted for a URL (which defaults to
-`popup' meaning pop up an existing emacs-w3m buffer).
+pop to the existing window or frame up, but if `w3m-quick-start' is
+nil, \(default t), you will be prompted for a URL (which defaults to
+`popup' meaning to pop to an existing emacs-w3m buffer up).
 
 In addition, if the prefix argument is given or you enter the empty
 string for the prompt, it will visit the home page specified by the
@@ -7273,9 +7310,12 @@ variables `w3m-pop-up-windows' and `w3m-pop-up-frames' will be ignored
 initial) window.
 
 If the optional NEW-SESSION is non-nil, this function makes a new
-emacs-w3m buffer.  The optional INTERACTIVE-P is for the internal use;
-it is mainly used to check whether Emacs 21.4 calls this function as
-an interactive command in the batch mode."
+emacs-w3m buffer.  Besides that, it also makes a new emacs-w3m buffer
+if `w3m-make-new-session' is non-nil and a user specifies a url string.
+
+The optional INTERACTIVE-P is for the internal use; it is mainly used
+to check whether Emacs 21.4 calls this function as an interactive
+command in the batch mode."
   (interactive
    (let ((url
 	  ;; Emacs 21.4 calls a Lisp command interactively even if it
@@ -7283,16 +7323,21 @@ an interactive command in the batch mode."
 	  ;; non-nil value, it means this function is called in the
 	  ;; batch mode, and we don't treat it as what it is called to
 	  ;; interactively.
-	  (w3m-examine-command-line-args)))
+	  (w3m-examine-command-line-args))
+	 new)
      (list
       ;; url
       (or url
 	  (let ((default (if (w3m-alive-p) 'popup w3m-home-page)))
-	    (if current-prefix-arg
-		default
-	      (w3m-input-url nil nil default w3m-quick-start))))
-      nil ;; new-session
-      (not url)))) ;; interactive-p
+	    (setq new (if current-prefix-arg
+			  default
+			(w3m-input-url nil nil default w3m-quick-start)))))
+      ;; new-session
+      (and w3m-make-new-session
+	   (w3m-alive-p)
+	   (not (eq new 'popup)))
+      ;; interactive-p
+      (not url))))
   (let ((nofetch (eq url 'popup))
 	(buffer (unless new-session (w3m-alive-p t)))
 	(popup-frame-p (and (not interactive-p) (w3m-popup-frame-p)))
@@ -7313,8 +7358,8 @@ an interactive command in the batch mode."
       ;; At any rate, we create a new emacs-w3m buffer in this case.
       (with-current-buffer (setq buffer (generate-new-buffer "*w3m*"))
 	(w3m-mode)))
-    (if nofetch
-	(w3m-popup-buffer buffer)
+    (w3m-popup-buffer buffer)
+    (unless nofetch
       ;; `unwind-protect' is needed since a process may be terminated by C-g.
       (unwind-protect
 	  (w3m-goto-url url)
@@ -7329,7 +7374,7 @@ an interactive command in the batch mode."
   "Ask emacs-w3m to browse URL.
 NEW-SESSION specifies whether to create a new emacs-w3m session.  URL
 defaults to the string looking like a url around the cursor position.
-Pop up a window a frame according to `w3m-pop-up-windows' and
+Pop to a window or a frame up according to `w3m-pop-up-windows' and
 `w3m-pop-up-frames'."
   (interactive (progn
 		 (require 'browse-url)
@@ -7794,7 +7839,7 @@ splitting windows vertically."
        (or w3m-fill-column -1))))
 
 (defun w3m-select-buffer (&optional toggle nomsg)
-  "Pop up the emacs-w3m buffers selection window.
+  "Pop to the emacs-w3m buffers selection window up.
 It provides the feature for switching emacs-w3m buffers using the
 buffer list.  The following command keys are available:
 
@@ -8190,14 +8235,21 @@ vicious forms is viewed, this command should be used instead of
 
 Note that this command depends on the value of `w3m-safe-url-regexp'
 \(which see) to consider whether the URL is safe.  You need to keep in
-mind that there may be pages which cause security problems."
+mind that there may be pages which cause security problems.
+
+This command makes a new emacs-w3m buffer if `w3m-make-new-session' is
+non-nil and a user invokes this command in a buffer not being running
+the `w3m-mode', otherwise use an existing emacs-w3m buffer."
   (interactive)
   (let ((w3m-pop-up-windows nil)
 	(url (w3m-url-valid (w3m-anchor))))
     (cond
      (url (or (when (fboundp w3m-goto-article-function)
 		(funcall w3m-goto-article-function url))
-	      (w3m-goto-url url)))
+	      (if (and w3m-make-new-session
+		       (not (eq major-mode 'w3m-mode)))
+		  (w3m-goto-url-new-session url)
+		(w3m-goto-url url))))
      ((w3m-url-valid (w3m-image))
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)

@@ -48,9 +48,6 @@
 	     "/"
 	     (, url))))
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-javaconf))
-  (shimbun-url-internal shimbun))
-
 (luna-define-method shimbun-get-headers ((shimbun shimbun-javaconf)
 					 &optional range)
   (let* ((group (shimbun-current-group-internal shimbun))

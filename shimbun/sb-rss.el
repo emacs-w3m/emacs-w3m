@@ -74,32 +74,28 @@
   ;;      MM   = two-digit month (01=January, etc.)
   ;;      DD   = two-digit day of month (01 through 31)
   ;;      hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
-  (let (year month day minutes timezone)
-    (if (or (null date) (not (string-match
-	      "\\([0-9][0-9][0-9][0-9]\\)\\(-[0-9][0-9]\\)?\\(-[0-9][0-9]\\)?T?\\([0-9][0-9]:[0-9][0-9]\\(:[.0-9]+\\)?\\)?\\(\\+[0-9][0-9]:[0-9][0-9]\\|Z\\)?"
-	      date)))
-	""
-      (setq year (match-string-no-properties 1 date)
-	    month (match-string-no-properties 2 date)
-	    day (match-string-no-properties 3 date)
-	    minutes (match-string-no-properties 4 date)
-	    timezone (match-string-no-properties 6 date))
-      (unless month (setq month "01"))
-      (unless day (setq day "01"))
-      (when (and month (string-match "^-" month))
-	(setq month (substring month 1)))
-      (when (and day (string-match "^-" day))
-	(setq day (substring day 1)))
-      (when timezone
-	(if (string-equal timezone "Z")
-	    (setq timezone "+0000")
-	  (if (string-match ":" timezone)
-	      (setq timezone (concat (substring timezone 0 (match-beginning 0))
-				     (substring timezone (match-end 0)))))))
-      (setq year (string-to-number year)
-	    month (string-to-number month)
-	    day (string-to-number day))
-      (shimbun-make-date-string year month day minutes timezone))))
+  (if (or (null date)
+	  (not (string-match
+		"\\([0-9][0-9][0-9][0-9]\\)\\(-[0-9][0-9]\\)?\\(-[0-9][0-9]\\)?T?\\([0-9][0-9]:[0-9][0-9]\\(:[.0-9]+\\)?\\)?\\(\\+[0-9][0-9]:?[0-9][0-9]\\|Z\\)?"
+		date)))
+      ""
+    (let ((year  (match-string-no-properties 1 date))
+	  (month (match-string-no-properties 2 date))
+	  (day   (match-string-no-properties 3 date))
+	  (time  (match-string-no-properties 4 date))
+	  (zone  (match-string-no-properties 6 date)))
+      (shimbun-make-date-string
+       (string-to-number year)
+       (if month (string-to-number (substring month 1)) 1)
+       (if day (string-to-number (substring day 1)) 1)
+       (or time "00:00")
+       (when zone
+	 (if (string-equal zone "Z")
+	     "+0000"
+	   (if (string-match ":" zone)
+	       (concat (substring zone 0 (match-beginning 0))
+		       (substring zone (match-end 0)))
+	     zone)))))))
 
 (luna-define-generic shimbun-rss-get-date (shimbun-rss url)
   "Process URL and return a Date string for an article of the URL.
@@ -141,8 +137,10 @@ but you can identify it from the URL, define this method in a backend.")
 		     (shimbun-rss-find-el (intern (concat rss-ns "channel"))
 					  xml))
 	      (throw 'found-author
-		     (or (shimbun-rss-node-text rss-ns 'author channel)
-			 (shimbun-rss-node-text dc-ns 'creator channel))))))
+		     (or
+		      (shimbun-rss-node-text rss-ns 'author channel)
+		      (shimbun-rss-node-text dc-ns 'creator channel)
+		      (shimbun-rss-node-text dc-ns 'contributor channel))))))
     (dolist (item (shimbun-rss-find-el (intern (concat rss-ns "item")) xml))
       (let ((url (and (listp item)
 		      (eq (intern (concat rss-ns "item")) (car item))
@@ -158,6 +156,7 @@ but you can identify it from the URL, define this method in a backend.")
 		     (shimbun-rss-node-text rss-ns 'title item)
 		     (or (shimbun-rss-node-text rss-ns 'author item)
 			 (shimbun-rss-node-text dc-ns 'creator item)
+			 (shimbun-rss-node-text dc-ns 'contributor item)
 			 author
 			 (shimbun-from-address shimbun))
 		     (shimbun-rss-process-date shimbun date)

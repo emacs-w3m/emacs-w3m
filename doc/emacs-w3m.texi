@@ -912,17 +912,6 @@ Move the point to the previous image.  More strictly speaking, move the
 point backward to the nearest image (@code{w3m-previous-image}).
 @end table
 
-@c TODO?
-@c C-a  Go to the entire beginning of line.
-@c C-e  Go to the entire end of line.
-@c j    Next line.
-@c k    Previous line.
-
-@c l    Forward char.
-@c h    Backward char.
-
-@c M-g  Jump to line.
-
 @node Moving over pages
 @subsection Moving from page to page
 
@@ -984,15 +973,68 @@ keystroke, by typing @kbd{^}!
 
 @table @key
 @item SPC
-@findex w3m-view-next-page
-Scroll up or go to next url.
-(TODO)
+@findex w3m-scroll-up-or-next-url
+When the current point is located at the end of the buffer and you
+cannot scroll down further, hit the @key{SPC} key to go on to the'' next
+page'' (@code{w3m-scroll-up-or-next-url}).  Here, the ``next page''
+means the page containing the coming-up urls that are designated in the
+``next'' field in the header of the current page.  This function has
+nothing to do with the history.
+
+Some websites display their huge volume of contents dividedly in a
+number of pages partly because it takes less time to complete
+transferring. For instance, the search result at a search site appears
+in that way.  In order to access the whole contents which are displayed
+dividedly, users need to follow the links listed in each page
+explicitly.  
+
+However, hopefully, emacs-w3m attempts to enable you to browse a series
+of contents over pages as if you were viewing them in a single page, by
+combining two operations: explicitly following links and scrolling.
+
+Actually, these kinds of websites often have fields such as ``next'',
+``prev'' or ``previous''in the header of their web pages.  These fields
+contain information about links between divided pages. Emacs-w3m
+utilizes these fields.
+
+Let's take an example of Google case again to explain how two operations
+(following links and scrolling) are combined.  Open
+@uref{http://www.google.com} and search for a word.  Usually, when you
+type a very common word for searching (e.g. ``hamburger''), you will get tons
+of search results.  Google returns the first page of search results,
+after having sorted them by Google's own algorithm and divided them into
+some pages.  When the window is filled with the contents of the web
+page, users can read further by hitting @key{SPC} to scroll.  Keep
+scrolling until you come to see the end of the web page in the window.
+Here, a goody is waiting for you.  If you use web browser other than emacs-w3m
+and want to see the rest of the search results, one way to get it done is to
+click one of the numbers listed under
+
+@example
+Gooooooogle
+@end example
+
+
+@example
+1 2 3 4 5 6 7 8...
+@end example
+
+
+to follow the link.  But when you are using emacs-w3m, you can follow
+the link by just typing @key{SPC} as you do the same when scrolling.
+ 
 
 @item DEL
-@findex w3m-view-previous-page
-Scroll down or go to previous url.
-(TODO)
+@findex w3m-scroll-down-or-previous-url
+When the current point is located at the beginning of the buffer and you
+cannot scroll upward, hit the @key{DEL} to go to the ``previous'' page
+(@code{w3m-scroll-down-or-previous-url}).  Here, the ``previous'' page
+means the page which is assigned to the ``prev'' or ``previous'' fields
+in the header of the current page.  This function has nothing to do with
+the history, and works oppositely as the
+@key{SPC}(w3m-scroll-up-or-next-url) does.
 @end table
+
 
 @node Browsing with Mouse Operations
 @subsection Surfing with mouse
@@ -1158,6 +1200,44 @@ still access the pages you visited so far.  This is different from the
 way Mozilla and others work; in these browsers the history always starts
 from scratch in new buffers.
 
+
+In addition to the information just about ``the page you visited,'' the
+more detailed one, that is, ``the specific location within that page''
+can be recorded as a part of history.  Press @kbd{C-c C-@@}, and the
+location of the cursor point will be stored as information specific to that
+page.  In order to go back to that particular location within the page,
+press @kbd{C-c C-v} in the emacs-w3m buffer holding that web
+page.
+
+@table @kbd
+@item G
+@kindex G
+@findex w3m-goto-url-new-session
+Type a URL in the minibuffer, and you can have the page displayed under
+a new session.  This function works as the same as @kbd{g}(@key{M-x
+w3m-goto-url}) does, except that it openes a new session.  When you use
+emacs-w3m on Emacs21 / XEmacs, opening a new session means displaying a
+page in a new tab.  For using tabs, please refer to @ref{Using Tabs}
+(@code{w3m-goto-url-new-session}).
+
+@item s
+@kindex s
+@findex w3m-history
+Display the list of visited URLs in this session.
+
+@item C-c C-@@
+@kindex C-c C-@@
+@findex w3m-history-store-position
+Record the position of the cursor in the page as the information
+specific to the currently displayed page.
+
+@item C-c C-v
+@kindex C-c C-v
+@findex w3m-history-restore-position
+Move to the position which has been marked with @kbd{C-c
+C-@@}(@code{w3m-goto-url-new-session}) in the currently displayed page.
+@end table
+
 The other way to have information about past pages is the ``arrived
 URLs'' list: it is a list of the last 500 URLs you have visited in
 emacs-w3m.  The list is ordered by date, the most recent coming first,
@@ -1192,6 +1272,8 @@ were visiting a regular page, by following the link.
 @table @kbd
 @item s
 @kindex s
+@item C-u s
+@kindex C-u s
 @findex w3m-history
 Display the list of URLs visited in this session.  If called with a
 prefix argument, show the list of arrived URLs instead
@@ -1613,8 +1695,11 @@ Edit the local file pointed by URL under point(@code{w3m-edit-this-url}).
 @item M
 @kindex M
 @findex w3m-view-url-with-external-browser
-Launch an external browser (other than emacs-w3m) and display the same web
-page as currently displayed in emacs-w3m(@code{w3m-view-url-with-external-browser}).
+Launch an external browser (other than emacs-w3m) and display the same
+web page as currently displayed in
+emacs-w3m(@code{w3m-view-url-with-external-browser}).The external
+browser to be used is defined by the variable
+@code{w3m-content-type-alist}, depending on the kind of URLs.
 
 @end table
 
@@ -1988,6 +2073,17 @@ files in the directories as well (@code{w3m-dtree}).
 
 @node Octet
 @section Viewing data in various octal form
+@findex octet-find-file
+
+(under construction)
+
+These following lines in your @file{~/.emacs} may help you to browse
+octet data files which are opened with @code{octet-find-file}.
+
+@lisp
+(add-hook 'octet-find-file-hook 'view-mode)
+(add-hook 'octet-find-file-hook 'w3m-minor-mode)
+@end lisp
 
 
 @node Customizable Variables
@@ -2376,14 +2472,23 @@ messages.
 
 @item w3m-mailto-url-popup-function-alist
 @vindex w3m-mailto-url-popup-function-alist
-Alist of @code{(MAJOR-MODE . FUNCTION)} pairs used to popup a mail
-buffer.  If a user clicks on a @code{mailto} url and a mail buffer is
+Alist of @code{(MAJOR-MODE . FUNCTION)} pairs used to pop a mail buffer
+up.  If a user clicks on a @code{mailto} url and a mail buffer is
 composed by @code{mail-user-agent} with the @code{MAJOR-MODE},
 @code{FUNCTION} will be called with a mail buffer as an argument.  Note
 that the variables @code{special-display-buffer-names},
 @code{special-display-regexps}, @code{same-window-buffer-names} and
-@code{same-window-regexps} will be bound to @code{nil} while popping up
-a buffer.
+@code{same-window-regexps} will be bound to @code{nil} while popping to
+a buffer up.
+
+@item w3m-make-new-session
+@vindex w3m-make-new-session
+Non-@code{nil} means making new emacs-w3m buffers when visiting new
+pages.  If it is non-@code{nil} and there are already emacs-w3m buffers,
+the @code{w3m} command makes a new emacs-w3m buffer if a user specifies
+a url string in the minibuffer, and the @code{w3m-safe-view-this-url}
+command also makes a new buffer if a user invokes it in a buffer not
+being running the @code{w3m-mode}.  The default value is @code{nil}.
 
 @item w3m-mbconv-command
 @vindex w3m-mbconv-command
@@ -2403,8 +2508,8 @@ Coding system used when reading from @samp{w3m} processes.
 
 @item w3m-pop-up-frames
 @vindex w3m-pop-up-frames
-Non-@code{nil} means popup a new frame for an emacs-w3m session.  This
-variable is similar to @code{pop-up-frames} and does override
+Non-@code{nil} means pop to a new frame up for an emacs-w3m session.
+This variable is similar to @code{pop-up-frames} and does override
 @code{w3m-pop-up-windows}.  If @code{w3m-use-tab} is non-@code{nil} or
 there is the buffers selection window (for the @code{w3m-select-buffer}
 feature), this variable is ignored when creating the second or more
@@ -4187,10 +4292,10 @@ These are newspapers that are supported by @samp{shimbun} library.
 
 @table @asis
 @item @uref{http://www.asahi.com/, Asahi Shimbun}
-asahi.business asahi.culture asahi.english asahi.international
-asahi.kansai asahi.kansai-special asahi.national asahi.politics
-asahi.science asahi.sports asahi.nankyoku asahi.whitemail
-asahi.borderless
+asahi.borderless asahi.business asahi.culture asahi.editorial
+asahi.english asahi.international asahi.kansai asahi.kansai-special
+asahi.nankyoku asahi.national asahi.politics asahi.science asahi.sports
+asahi.tenjin asahi.whitemail
 
 These backends generates articles including only texts; in other hands,
 @samp{asahi-html} generates MIME articles that include texts and
@@ -4239,6 +4344,9 @@ sankei.bungei sankei.book sankei.person sankei.dead
 
 @item @uref{http://www.bbc.co.uk/, BBC}
 bbc.news
+
+@item @uref{http://www.spiegel.de/, Spiegel Online}
+spiegel.news
 @end table
 
 @node News Sites Supported by Shimbun
@@ -4256,6 +4364,9 @@ cnet.perspectives
 cnet-jp.news cnet-jp.blog.inoue cnet-jp.blog.kenn cnet-jp.blog.lessig
 cnet-jp.blog.mori cnet-jp.blog.umeda cnet-jp.blog.watanabe
 
+@item @uref{http://www.heise.de/, Heise Online}
+heise.news heise.telepolis
+
 @item @uref{http://www.hotwired.co.jp/, HotWired Japan}
 wired.business wired.culture wired.technology
 
@@ -4264,8 +4375,9 @@ impress.internet impress.pc impress.akiba impress.game impress.av
 impress.jijinews impress.sports
 
 @item @uref{http://www.itmedia.co.jp/, ITmedia}
-itmedia.news itmedia.enterprise itmedia.mobile itmedia.pcupdate
-itmedia.lifestyle itmedia.games
+itmedia.anchordesk itmedia.bursts itmedia.enterprise itmedia.games
+itmedia.lifestyle itmedia.mobile itmedia.news itmedia.pcupdate
+itmedia.technology
 
 @item @uref{http://japan.linux.com/, japan.linux.com}
 linux-ja.news linux-ja.desktop linux-ja.enterprise linux-ja.kernel
@@ -4291,6 +4403,20 @@ yahoo.market yahoo.stock yahoo.industry yahoo.international
 yahoo.entertainment yahoo.sports yahoo.computer yahoo.hokkaido
 yahoo.tohoku yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
 yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
+
+@item @uref{http://www.cnn.co.jp/, CNN Japan}
+cnn-jp.business cnn-jp.fringe cnn-jp.science cnn-jp.showbiz
+cnn-jp.sports cnn-jp.top cnn-jp.usa cnn-jp.world
+
+@item @uref{http://www.n24.de/, N24}
+n24-de.boerse n24-de.boulevard n24-de.nachrichten n24-de.netnews
+n24-de.politik n24-de.sport n24-de.wirtschaft
+
+@item @uref{http://www.welt.de/, Die Welt}
+welt-de.news
+
+@item @uref{http://www.zeit.de/, Die Zeit}
+zeit-de.news
 @end table
 
 @node Mailing Lists Supported by Shimbun
@@ -4391,7 +4517,26 @@ xemacs.xemacs-design xemacs.xemacs-mule xemacs.xemacs-nt
 xemacs.xemacs-patches xemacs.xemacs-users-ja xemacs.xemacs
 
 @item @uref{http://memo.st.ryukoku.ac.jp/archive/, Security MEMO Mailing List}
-security-memo.memo
+security-memo.memo security-memo.free-memo security-memo.social-memo
+
+Please note that userid and passowrd are required for
+@samp{security-memo.*} so you have to write;
+
+@example
+machine memo.st.ryukoku.ac.jp
+realm input username/password = archives/archives 
+login archives
+passwd archives
+
+machine memo.st.ryukoku.ac.jp
+realm input user: archives / password: archives
+login archives
+passwd archives
+@end example
+
+@noindent
+in @file{~/.w3m/passwd} and remove group and others access permissions
+from the file.
 
 @item @uref{http://lists.debian.or.jp/, Debian JP Mailing List}
 debian-jp.debian-announce debian-jp.debian-devel
@@ -4538,17 +4683,12 @@ pilot-mailsync.main
 @item @uref{http://www.mozilla.gr.jp/ml/logs/moz-users/, Mozilla Users Mailing List in Japan}
 mozilla-jp.users
 
-@item @uref{http://www.tdiary.org/, tDiary Developers Mailing List in Japan}
-tdiary-ml.devel tdiary-ml.theme
-
-@end table
-
 Please note that userid and passowrd are required for
 @samp{mozilla-jp.users} so you have to write;
 
 @example
 machine www.mozilla.gr.jp
-path /ml/logs/moz-users/
+realm Please Enter mozilla mozilla
 login mozilla
 passwd mozilla
 @end example
@@ -4556,6 +4696,11 @@ passwd mozilla
 @noindent
 in @file{~/.w3m/passwd} and remove group and others access permissions
 from the file.
+
+@item @uref{http://www.tdiary.org/, tDiary Developers Mailing List in Japan}
+tdiary-ml.devel tdiary-ml.theme
+
+@end table
 
 @node Sport Sites Supported by Shimbun
 @subsection Sport Sites Supported by Shimbun
@@ -4568,6 +4713,10 @@ makanai.f1news
 
 @item @uref{http://www.ksky.ne.jp/~tahara/f1/, F1 FAN}
 f1fan.news
+
+@item @uref{http://motorsports.nifty.com/, @@nifty:motorsports}
+msports-nifty.F1 msports-nifty.IRL msports-nifty.WRC
+msports-nifty.Europe msports-nifty.USA
 
 @item @uref{http://f1express.cnc.ne.jp/, TOCHUU F1 EXPRESS}
 f1express.F1 f1express.Pari-Dakar f1express.CART f1express.All-Japan
@@ -4669,6 +4818,9 @@ This is an example to use @samp{sb-rakuten}.
       '(("rakuten-id" . "email-address")))
 @end lisp
 
+@item @uref{http://www.emacswiki.org/, EmacsWiKi}
+emacswiki.diff
+
 @item Wiki contents
 This is an example to use @samp{sb-wiki}.  @samp{sb-wiki} support
 PukiWiki and Hiki.  If you don't know which regexps to set to 4th and
@@ -4717,9 +4869,6 @@ ibm-dev.xml
 @item @uref{http://muchy.com/, Muchy's Palmware Review!}
 muchy.review
 
-@item @uref{http://palmoslove.com/, palmoslove}
-palmoslove.webnews palmoslove.pdanews palmoslove.sitenews
-
 @item @uref{http://www.pocketgames.jp/, Pocketgames}
 pocketgames.news
 
@@ -4751,6 +4900,12 @@ atmarkit.fsecurity atmarkit.fbiz atmarkit.jibun
 
 @item @uref{http://www.matsusaka-u.ac.jp/~okumura/texfaq/qa/, TeX Q&A Bulletin Board}
 texfaq.qanda
+
+@item @uref{http://x51.org/, X51}
+x51.art x51.auction x51.blow x51.cabal x51.crime x51.disaster x51.edge
+x51.homme x51.info x51.life x51.love x51.media x51.medical x51.military
+x51.northkorea x51.oparts x51.phallic x51.psychics x51.religion
+x51.science x51.top x51.ufo x51.uma x51.xfiles
 @end table
 
 @node Shimbun Basics

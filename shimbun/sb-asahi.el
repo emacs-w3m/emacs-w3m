@@ -92,8 +92,22 @@
 		       "\\([0-3][0-9]\\)"
 		       "[)）]")
 		      1 nil 2 3 4 5)))
-    `(("business" "経済" "%s/" ,@default)
+    `(("borderless" "国境のない大陸から" "nankyoku/%s/" ,@antarctica)
+      ("business" "経済" "%s/" ,@default)
       ("culture" "文化・芸能" "%s/" ,@default)
+      ("editorial" "社説" "paper/editorial.html"
+       ,(concat
+	 "<a" s1 "href=\"/"
+	 ;; 1. url
+	 "\\(paper/editorial"
+	 ;; 2. serial number
+	 "\\(20[0-9][0-9]"
+	 ;; 3. month
+	 "\\([01][0-9]\\)"
+	 ;; 4. day
+	 "\\([0-3][0-9]\\)"
+	 "\\)\\.html\\)")
+       1 nil 2 nil 3 4)
       ("english" "ENGLISH" "%s/"
        ,(concat
 	 "<a" s1 "href=\"/"
@@ -134,6 +148,24 @@
 	 ;; 5. day
 	 "\\([0-3][0-9]\\))")
        1 nil 2 3 4 5)
+      ("nankyoku" "南極" "%s/news/index.html"
+       ,(concat
+	 "<a" s1 "href=\""
+	 ;; 1. url
+	 "\\(/%s/news/"
+	 ;; 2. serial number
+	 "\\([A-Z0-9]+\\)"
+	 "\\.html\\)\">" s0
+	 ;; 3. subject
+	 "\\(" no-nl "\\)" s0 "</a>" s0
+	 "[（(][0-9]+/"
+	 ;; 4. month
+	 "\\([01][0-9]\\)"
+	 "/"
+	 ;; 5. day
+	 "\\([0-3][0-9]\\)"
+	 "[)）]")
+       1 nil 2 3 4 5)
       ("national" "社会" "%s/" ,@default)
       ("politics" "政治" "%s/" ,@default)
       ("science" "科学" "%s/" ,@default)
@@ -162,26 +194,20 @@
 	 "\\([012][0-9]:[0-5][0-9]\\)"
 	 "\\)?)")
        1 nil 6 7 8 9 11 3 5)
-      ("nankyoku" "南極" "%s/news/index.html"
+      ("tenjin" "天声人語" "paper/column.html"
        ,(concat
-	 "<a" s1 "href=\""
+	 "<a" s1 "href=\"/"
 	 ;; 1. url
-	 "\\(/%s/news/"
+	 "\\(paper/column"
 	 ;; 2. serial number
-	 "\\([A-Z0-9]+\\)"
-	 "\\.html\\)\">" s0
-	 ;; 3. subject
-	 "\\(" no-nl "\\)" s0 "</a>" s0
-	 "[（(][0-9]+/"
-	 ;; 4. month
+	 "\\(20[0-9][0-9]"
+	 ;; 3. month
 	 "\\([01][0-9]\\)"
-	 "/"
-	 ;; 5. day
+	 ;; 4. day
 	 "\\([0-3][0-9]\\)"
-	 "[)）]")
-       1 nil 2 3 4 5)
-      ("whitemail" "WhiteMail＠南極" "nankyoku/%s/" ,@antarctica)
-      ("borderless" "国境のない大陸から" "nankyoku/%s/" ,@antarctica)))
+	 "\\)\\.html\\)")
+       1 nil 2 nil 3 4)
+      ("whitemail" "WhiteMail＠南極" "nankyoku/%s/" ,@antarctica)))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the
@@ -231,9 +257,10 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
   (let ((group (shimbun-current-group-internal shimbun))
 	(from (shimbun-from-address shimbun))
 	(case-fold-search t)
-	regexp numbers cyear cmonth month year day serial num extra headers
-	kansai-special)
+	regexp jname numbers cyear cmonth month year day serial num extra
+	headers kansai-special)
     (setq regexp (assoc group shimbun-asahi-group-table)
+	  jname (nth 1 regexp)
 	  numbers (nthcdr 4 regexp)
 	  regexp (format (nth 3 regexp) (regexp-quote group))
 	  cyear (decode-time)
@@ -292,15 +319,19 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 			  (match-beginning num))
 		     (concat "[" (match-string num) "] "
 			     (match-string (nth 3 numbers))))
+		    ((member group '("editorial" "tenjin"))
+		     (concat jname (format " (%d/%d)" month day)))
 		    (t
 		     (match-string (nth 3 numbers)))))
 	     ;; from
 	     from
 	     ;; date
 	     (shimbun-make-date-string
-	      year month day (when (and (setq num (nth 6 numbers))
-					(match-beginning num))
-			       (match-string num)))
+	      year month day (cond ((and (setq num (nth 6 numbers))
+					 (match-beginning num))
+				    (match-string num))
+				   ((member group '("editorial" "tenjin"))
+				    "07:00")))
 	     ;; id
 	     (if extra
 		 (concat "<" serial "%" extra "." group "."
@@ -313,40 +344,127 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	     (shimbun-expand-url (match-string (nth 0 numbers))
 				 shimbun-asahi-url))
 	    headers))
-    (shimbun-sort-headers headers)))
+    (append (shimbun-sort-headers headers)
+	    (shimbun-asahi-get-headers-for-today group jname from))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-asahi)
 					 &optional range)
   (shimbun-asahi-get-headers shimbun))
 
-(defun shimbun-asahi-adjust-date-header (shimbun header)
-  "Adjust a date header if there is a correct information available."
+(defun shimbun-asahi-get-headers-for-today (group jname from)
+  "Return a list of the header for today's article.
+It works for only the groups `editorial' and `tenjin'."
+  (goto-char (point-min))
+  (let ((basename (cdr (assoc group '(("editorial" . "editorial")
+				      ("tenjin" . "column")))))
+	year month day hour-min url case-fold-search)
+    (when (and basename
+	       (re-search-forward
+		(eval-when-compile
+		  (concat "<meta[\t\n ]+NAME=\"FJZONE_DATEDISP\"[\t\n ]+"
+			  "CONTENT=\""
+			  ;; 1. year
+			  "\\(20[0-9][0-9]\\)" "/"
+			  ;; 2. month
+			  "\\([01][0-9]\\)" "/"
+			  ;; 3. day
+			  "\\([0-3][0-9]\\)" "[\t\n ]+"
+			  ;; 4. hour:minute
+			  "\\([012][0-9]:[0-5][0-9]\\)" "\""))
+		nil t))
+      (setq year (string-to-number (match-string 1))
+	    month (string-to-number (match-string 2))
+	    day (string-to-number (match-string 3))
+	    hour-min (match-string 4)
+	    url (format "paper/%s%d%02d%02d.html" basename year month day)
+	    case-fold-search t)
+      (unless (re-search-forward (concat "<a[\t\n ]+href=\"/"
+					 (regexp-quote url))
+				 nil t)
+	(list
+	 (shimbun-make-header
+	  ;; number
+	  0
+	  ;; subject
+	  (shimbun-mime-encode-string (concat jname
+					      (format " (%d/%d)" month day)))
+	  ;; from
+	  from
+	  ;; date
+	  (shimbun-make-date-string year month day hour-min)
+	  ;; id
+	  (format "<%d%02d%02d%%%s.%s>"
+		  year month day group shimbun-asahi-top-level-domain)
+	  ;; references, chars, lines
+	  "" 0 0
+	  ;; xref
+	  (shimbun-expand-url url shimbun-asahi-url)))))))
+
+(defun shimbun-asahi-prepare-article (shimbun header)
+  "Prepare an article.
+Extract the article core on some groups or adjust a date header if
+there is a correct information available."
   (let ((case-fold-search t)
+	(group (shimbun-current-group-internal shimbun))
 	date start end)
-    (when (and (member (shimbun-current-group-internal shimbun)
-		       '("science"))
-	       (string-match " \\(00:00\\) "
-			     (setq date (shimbun-header-date header)))
-	       (setq start (match-beginning 1))
-	       (re-search-forward (shimbun-content-start-internal shimbun)
-				  nil t)
-	       (re-search-forward (shimbun-content-end-internal shimbun)
-				  nil t)
-	       (progn
-		 (goto-char (setq end (match-beginning 0)))
-		 (forward-line -1)
-		 (re-search-forward
-		  "([01][0-9]/[0-3][0-9] \\([012][0-9]:[0-5][0-9]\\))"
-		  end t)))
-      (shimbun-header-set-date header
-			       (concat (substring date 0 start)
-				       (match-string 1)
-				       (substring date (+ start 5))))))
+    (cond
+     ((string-equal group "editorial")
+      (if (re-search-forward "<hr[^>]+>[\t\n ]*\\(<h[1-9]>[\t\n ]*■\\)"
+			     nil t)
+	  (progn
+	    (delete-region (point-min) (match-beginning 1))
+	    (goto-char (point-min))
+	    (insert "<!--FJZONE START NAME=\"HONBUN\"-->\n")
+	    (setq start (point))
+	    (while (re-search-forward "[\t ]*<hr[^>]+>[\t\n ]*" nil t)
+	      (delete-region (match-beginning 0) (match-end 0)))
+	    (when (> (point) start)
+	      (delete-region (point) (point-max)))
+	    (goto-char (point-max))
+	    (unless (bolp)
+	      (insert "\n"))
+	    (insert "<!--FJZONE END NAME=\"HONBUN\"-->\n"))
+	(erase-buffer)
+	(insert "Couldn't retrieve the page.\n")))
+     ((string-equal group "science")
+      (when (and (string-match " \\(00:00\\) "
+			       (setq date (shimbun-header-date header)))
+		 (setq start (match-beginning 1))
+		 (re-search-forward (shimbun-content-start-internal shimbun)
+				    nil t)
+		 (re-search-forward (shimbun-content-end-internal shimbun)
+				    nil t)
+		 (progn
+		   (goto-char (setq end (match-beginning 0)))
+		   (forward-line -1)
+		   (re-search-forward
+		    "([01][0-9]/[0-3][0-9] \\([012][0-9]:[0-5][0-9]\\))"
+		    end t)))
+	(shimbun-header-set-date header
+				 (concat (substring date 0 start)
+					 (match-string 1)
+					 (substring date (+ start 5))))))
+     ((string-equal group "tenjin")
+      (if (search-forward "■《天声人語》" nil t)
+	  (progn
+	    (delete-region (point-min) (point))
+	    (shimbun-remove-tags "<SCRIPT" "</SCRIPT>")
+	    (goto-char (point-min))
+	    (insert "<!--FJZONE START NAME=\"HONBUN\"-->\n")
+	    (setq start (point))
+	    (when (re-search-forward "\\([\t\n ]*<[^<>]+>\\)+[\t\n ]*" nil t)
+	      (delete-region start (point)))
+	    (when (re-search-forward "[\t\n ]*<\\([^/p]\\|/[^p]\\)" nil t)
+	      (delete-region (match-beginning 0) (point-max))
+	      (insert "\n"))
+	    (insert "<!--FJZONE END NAME=\"HONBUN\"-->\n"))
+	(erase-buffer)
+	(insert "Couldn't retrieve the page.\n")))))
   (goto-char (point-min)))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-asahi)
 						   header)
-  (shimbun-asahi-adjust-date-header shimbun header))
+  (shimbun-asahi-prepare-article shimbun header))
 
 (provide 'sb-asahi)
 

@@ -60,22 +60,27 @@
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-rakuten) url date)
-  (unless (string-match "http://\\([^\/]+\\)/[^\/]+/[^\/]+/\\([0-9]+\\)" url)
+  (unless (string-match
+	   "http://\\([^\/]+\\)/[^\/]+/[^\/]+/\\([0-9]+\\)-\\([0-9]+\\)-\\([0-9]+\\)"
+	   url)
     (error "Cannot find a message-id base"))
-    (format "%s%%%s@%s"
+    (format "%s%s%s%%%s@%s"
 	    (match-string-no-properties 2 url)
+	    (match-string-no-properties 3 url)
+	    (match-string-no-properties 4 url)
 	    (shimbun-current-group-internal shimbun)
 	    (match-string-no-properties 1 url)))
 
 (luna-define-method shimbun-rss-get-date
   ((shimbun shimbun-rakuten) url)
-  (unless (string-match "http://[^\/]+/[^\/]+/[^\/]+/\\([0-9]+\\)" url)
+  (unless (string-match
+	   "http://[^\/]+/[^\/]+/[^\/]+/\\([0-9]+\\)-\\([0-9]+\\)-\\([0-9]+\\)"
+	   url)
     (error "Cannot find a date base"))
-  (let ((date (match-string-no-properties 1 url)))
-    (shimbun-make-date-string
-     (string-to-number (substring date 0 4))
-     (string-to-number (substring date 4 6))
-     (string-to-number (substring date 6 8)))))
+  (shimbun-make-date-string
+   (string-to-number (match-string-no-properties 1 url))
+   (string-to-number (match-string-no-properties 2 url))
+   (string-to-number (match-string-no-properties 3 url))))
 
 (luna-define-method shimbun-rss-process-date
   ((shimbun shimbun-rakuten) date)

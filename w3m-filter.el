@@ -36,12 +36,12 @@
 (require 'w3m)
 
 (defcustom w3m-filter-rules
-  `(("\\`http://www\\.geocities\\.co\\.jp/Technopolis/"
+  `(("\\`http://www\\.geocities\\.co\\.jp/"
      w3m-filter-delete-regions
      "<DIV ALIGN=CENTER>\n<!--*/GeoGuide/*-->" "<!--*/GeoGuide/*-->\n</DIV>")
     ("\\`http://[a-z]+\\.hp\\.infoseek\\.co\\.jp/"
      w3m-filter-delete-regions
-     "<!-- START_AD_Banner -->" "<!-- END_AD_Banner -->")
+     "<!-- start AD -->" "<!-- end AD -->")
     ("\\`http://linux\\.ascii24\\.com/linux/"
      w3m-filter-delete-regions
      "<!-- DAC CHANNEL AD START -->" "<!-- DAC CHANNEL AD END -->")
@@ -57,10 +57,6 @@
 		       (function-item :format "" w3m-filter-delete-region)
 		       (regexp :tag "Start")
 		       (regexp :tag "End"))
-		 (list :tag "Find relationships with these patterns"
-		       (function-item :format "" w3m-filter-find-relationships)
-		       (regexp :tag "Next")
-		       (regexp :tag "Previous"))
 		 (list :tag "Filter with a user defined function"
 		       function
 		       (repeat :tag "Arguments" sexp))))))

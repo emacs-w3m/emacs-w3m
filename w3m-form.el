@@ -143,6 +143,7 @@
       (setq pair (plist-get (cadr plist) :value))
       (when (and pair
 		 (string= (car pair) name))
+	(setcar plist id)
 	(setcdr pair value)
 	(setq found t
 	      plist nil))

@@ -35,6 +35,7 @@
 (luna-define-class shimbun-f1fan (shimbun shimbun-text) ())
 
 (defvar shimbun-f1fan-url "http://www.ksky.ne.jp/~tahara/f1/")
+(defvar shimbun-f1fan-server-name "F1ファン")
 (defvar shimbun-f1fan-groups '("news"))
 (defvar shimbun-f1fan-from-address "tahara@ps.ksky.ne.jp")
 (defvar shimbun-f1fan-content-start "<blockquote>")
@@ -59,9 +60,9 @@
 	    (subject (match-string 4)))
 	(setq id (format "<%s.%s.tahara@ps.ksky.ne.jp>"
 			id (shimbun-current-group-internal shimbun)))
-	(push (shimbun-make-header
+	(push (shimbun-create-header
 	       0
-	       (shimbun-mime-encode-string subject)
+	       subject
 	       (shimbun-from-address shimbun)
 	       nil
 	       id "" 0 0 (concat

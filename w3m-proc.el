@@ -215,7 +215,11 @@ generated asynchronous process is ignored.  Otherwise,
 			      (current-buffer) command
 			      (w3m-process-arguments object)))
 		 (authinfo (when w3m-current-url
-			     (w3m-url-authinfo w3m-current-url))))
+			     (w3m-url-authinfo w3m-current-url)))
+		 (set-process-query-on-exit-flag
+		  (if (fboundp 'set-process-query-on-exit-flag)
+		      'set-process-query-on-exit-flag
+		    'process-kill-without-query)))
 	    (setq w3m-process-user (car authinfo)
 		  w3m-process-passwd (cdr authinfo)
 		  w3m-process-realm nil)
@@ -224,7 +228,7 @@ generated asynchronous process is ignored.  Otherwise,
 	    (set-process-sentinel proc (if no-sentinel
 					   'ignore
 					 'w3m-process-sentinel))
-	    (process-kill-without-query proc))))))
+	    (funcall set-process-query-on-exit-flag proc nil))))))
   nil)	;; The return value of `w3m-process-start-process'.
 
 (defun w3m-process-kill-stray-processes ()
@@ -347,29 +351,24 @@ handler."
 (defvar w3m-process-waited nil
   "Non-nil means that `w3m-process-with-wait-handler' is being evaluated.")
 
-(defvar w3m-process-wait-discard-input nil
-  "Discard the inputs of user until process will exit.")
-
 (defun w3m-process-wait-process (process seconds)
   "Wait for SECONDS seconds or until PROCESS will exit.
 Returns the exit status of the PROCESS when it exit normally,
 otherwise returns nil."
   (catch 'timeout
     (let ((start (current-time)))
-      (while (or (and w3m-process-wait-discard-input (discard-input))
-		 (w3m-static-if (and (not (featurep 'xemacs))
-				     (>= emacs-major-version 21))
-		     (accept-process-output process 1)
-		   (not (sit-for 1)))
-		 (memq (process-status process) '(run stop)))
+      (while (or (and (prog2
+			  (discard-input)
+			  (not (sit-for 1))
+			(discard-input))
+		      ;; Some input is detected but it may be a key
+		      ;; press event which should be ignored when the
+		      ;; process is not running.
+		      (memq (process-status process) '(open run)))
+		 (memq (process-status process) '(open run stop)))
 	(and seconds
 	     (< seconds (w3m-time-lapse-seconds start (current-time)))
 	     (throw 'timeout nil)))
-      (and w3m-process-wait-discard-input (discard-input))
-      (w3m-static-if (and (not (featurep 'xemacs))
-			  (>= emacs-major-version 21))
-	  (accept-process-output process 0 0)
-	(sit-for 0))
       (process-exit-status process))))
 
 (defmacro w3m-process-with-wait-handler (&rest body)

@@ -56,6 +56,8 @@
       w3m-command-arguments
       w3m-command-arguments-alist
       w3m-command-environment
+      w3m-input-coding-system
+      w3m-output-coding-system
       w3m-use-mule-ucs))
   "List of the system informations.  Users should NEVER modify the value."
   ;; For the developers:

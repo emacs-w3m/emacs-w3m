@@ -525,7 +525,7 @@ entities."
 	      (with-temp-buffer
 		(set-buffer-multibyte nil)
 		(let ((type (shimbun-retrieve-url url nil t base-url)))
-		  (when type
+		  (when (and type (string-match "\\`image/" type))
 		    (push (setq img
 				(cons url
 				      (shimbun-make-image-entity
@@ -869,6 +869,9 @@ Return nil, unless a content is cleared successfully.")
 
 (luna-define-generic shimbun-index-url (shimbun)
   "Return a index URL of SHIMBUN.")
+
+(luna-define-method shimbun-index-url ((shimbun shimbun))
+  (shimbun-url-internal shimbun))
 
 (luna-define-generic shimbun-get-headers (shimbun &optional range)
   "Return a shimbun header list of SHIMBUN.

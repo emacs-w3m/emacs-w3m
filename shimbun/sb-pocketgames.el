@@ -43,9 +43,6 @@
 (defvar shimbun-pocketgames-content-end
   "</body>")
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-pocketgames))
-  shimbun-pocketgames-url)
-
 (luna-define-method shimbun-reply-to ((shimbun shimbun-pocketgames))
   "Return the mailing list address."
   "info@pocketgames.jp")

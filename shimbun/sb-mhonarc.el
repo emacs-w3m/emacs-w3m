@@ -81,22 +81,23 @@
 	       (, headers))))))
 
 (defmacro shimbun-mhonarc-get-headers (shimbun url headers &optional aux)
-  (` (let ((case-fold-search t)
-	 (regexp (or (shimbun-mhonarc-litemplate-regexp-internal (, shimbun))
-		     shimbun-mhonarc-litemplate-regexp)))
-     (if (shimbun-mhonarc-reverse-flag-internal (, shimbun))
-	 (progn
-	   (goto-char (point-min))
-	   (while (re-search-forward regexp nil t)
-	     (shimbun-mhonarc-extract-header-values (, shimbun) (, url)
-						    (, headers) (, aux))
-	     (forward-line 1)))
-       (goto-char (point-max))
-       (while (re-search-backward regexp nil t)
-	 (shimbun-mhonarc-extract-header-values (, shimbun) (, url)
-						(, headers) (, aux))
-	 (forward-line 0)))
-     (, headers))))
+  `(save-excursion
+     (let ((case-fold-search t)
+	   (regexp (or (shimbun-mhonarc-litemplate-regexp-internal ,shimbun)
+		       shimbun-mhonarc-litemplate-regexp)))
+       (if (shimbun-mhonarc-reverse-flag-internal ,shimbun)
+	   (progn
+	     (goto-char (point-min))
+	     (while (re-search-forward regexp nil t)
+	       (shimbun-mhonarc-extract-header-values ,shimbun ,url
+						      ,headers ,aux)
+	       (forward-line 1)))
+	 (goto-char (point-max))
+	 (while (re-search-backward regexp nil t)
+	   (shimbun-mhonarc-extract-header-values ,shimbun ,url
+						  ,headers ,aux)
+	   (forward-line 0)))
+       ,headers)))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-mhonarc)
 					 &optional range)

@@ -479,7 +479,8 @@ according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
 	      (select-frame-set-input-focus frame)
 	    (raise-frame frame)
 	    (select-frame frame)
-	    (focus-frame frame)))
+	    (w3m-static-when (featurep 'xemacs)
+	      (focus-frame frame))))
       ;; Simply switch to BUFFER in the current frame.
       (if (w3m-popup-window-p)
 	  (let ((pop-up-windows t))
@@ -492,14 +493,16 @@ according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
     (fmakunbound 'select-frame-set-input-focus)))
 
 (defun w3m-add-w3m-initial-frames (&optional frame)
-  "Add a frame to `w3m-initial-frames' when it is newly created for the
-emacs-w3m session.  This function is added to the hook which is
-different with the version of Emacs as follows:
+  "Add FRAME into `w3m-initial-frames', the buffer-local variable.
+It is done when FRAME is newly created for the emacs-w3m session.
+This function is added to the hook which is different with the Emacs
+version as follows:
 
-XEmacs          create-frame-hook
-Emacs 20,21     after-make-frame-functions
-Emacs 19        after-make-frame-hook\
-"
+XEmacs          `create-frame-hook'
+Emacs 20,21     `after-make-frame-functions'
+Emacs 19        `after-make-frame-hook'
+
+Note that `after-make-frame-hook' doesn't take an argument."
   (unless frame
     (setq frame (if (and (= emacs-major-version 19)
 			 ;; See frame.el in Emacs 19.
@@ -507,9 +510,18 @@ Emacs 19        after-make-frame-hook\
 			 (framep (symbol-value 'nframe)))
 		    (symbol-value 'nframe)
 		  (selected-frame))))
+  ;; Share the opened frame in `w3m-initial-frames' over all emacs-w3m
+  ;; buffers if `w3m-use-tab' is non-nil.  Otherwise, the frame is
+  ;; appended into `w3m-initial-frames' only in the current buffer.
   (with-current-buffer (window-buffer (frame-first-window frame))
     (when (eq major-mode 'w3m-mode)
-      (push frame w3m-initial-frames))))
+      (unless (memq frame w3m-initial-frames)
+	(push frame w3m-initial-frames))
+      (when w3m-use-tab
+	(dolist (buffer (delq (current-buffer) (w3m-list-buffers t)))
+	  (set-buffer buffer)
+	  (unless (memq frame w3m-initial-frames)
+	    (push frame w3m-initial-frames)))))))
 
 (add-hook (cond ((featurep 'xemacs)
 		 'create-frame-hook)
@@ -518,6 +530,27 @@ Emacs 19        after-make-frame-hook\
 		((= emacs-major-version 19)
 		 'after-make-frame-hook))
 	  'w3m-add-w3m-initial-frames)
+
+(defun w3m-delete-w3m-initial-frames (frame)
+  "Delete FRAME from `w3m-initial-frames', the buffer-local variable.
+It is done when the FRAME in which emacs-w3m is running is deleted.
+This function is added to `delete-frame-hook' (`delete-frame-functions'
+is used instead in Emacs 21.4) or merged into the `delete-frame'
+function using `defadvice'."
+  (save-current-buffer
+    (dolist (buffer (w3m-list-buffers t))
+      (set-buffer buffer)
+      (setq w3m-initial-frames (delq frame w3m-initial-frames)))))
+
+(cond ((boundp 'delete-frame-functions)
+       (add-hook 'delete-frame-functions 'w3m-delete-w3m-initial-frames))
+      ((>= emacs-major-version 21)
+       (add-hook 'delete-frame-hook 'w3m-delete-w3m-initial-frames))
+      (t
+       (defadvice delete-frame (before delete-w3m-initial-frames activate)
+	 "Remove the frame to be deleted from `w3m-initial-frames'."
+	 (w3m-delete-w3m-initial-frames (or (ad-get-arg 0)
+					    (selected-frame))))))
 
 (defun w3m-delete-frames-and-windows (&optional exception)
   "Delete all frames and windows related to emacs-w3m buffers.
@@ -546,15 +579,17 @@ objects will not be deleted:
 		  (w3m-static-if (featurep 'xemacs)
 		      (one-window-p t frame)
 		    ;; Emulate XEmacs version's `one-window-p'.
-		    (setq flag nil)
-		    (catch 'exceeded
-		      (walk-windows (lambda (w)
-				      (when (eq (window-frame w) frame)
-					(if flag
-					    (throw 'exceeded nil)
-					  (setq flag t))))
-				    'no-minibuf t)
-		      flag)))
+		    (prog2
+			(setq flag nil)
+			(catch 'exceeded
+			  (walk-windows (lambda (w)
+					  (when (eq (window-frame w) frame)
+					    (if flag
+						(throw 'exceeded nil)
+					      (setq flag t))))
+					'no-minibuf t)
+			  flag)
+		      (set-buffer buffer))))
 	    (if (and (memq frame w3m-initial-frames)
 		     (not (eq (next-frame frame) frame)))
 		(if (or
@@ -576,10 +611,7 @@ objects will not be deleted:
 			'no-minibuf)
 		       (set-buffer buffer)
 		       flag))
-		    (progn
-		      (setq w3m-initial-frames (delq frame
-						     w3m-initial-frames))
-		      (delete-frame frame))
+		    (delete-frame frame)
 		  (delete-window window))
 	      (unless one-window-p
 		(delete-window window)))))))))
@@ -832,6 +864,29 @@ deactivated after evaluating the current command."
   (if (fboundp 'region-active-p)
       (list 'region-active-p)
     (list 'and 'transient-mark-mode 'mark-active)))
+
+(eval-and-compile
+  (cond
+   ((fboundp 'replace-in-string)
+    (defalias 'w3m-replace-in-string 'replace-in-string))
+   ((fboundp 'replace-regexp-in-string)
+    (defun w3m-replace-in-string  (string regexp newtext &optional literal)
+      ;;(replace-regexp-in-string regexp newtext string nil literal)))
+      ;;
+      ;; Don't call the symbol function `replace-regexp-in-string' directly
+      ;; in order to silence the byte-compiler when an Emacs which doesn't
+      ;; provide it is used.  The following form generates exactly the same
+      ;; byte-code.
+      (funcall (symbol-function 'replace-regexp-in-string)
+	       regexp newtext string nil literal)))
+   (t
+    (defun w3m-replace-in-string (string regexp newtext &optional literal)
+      (let ((start 0) tail)
+	(while (string-match regexp string start)
+	  (setq tail (- (length string) (match-end 0)))
+	  (setq string (replace-match newtext nil literal string))
+	  (setq start (- (length string) tail))))
+      string))))
 
 (provide 'w3m-util)
 

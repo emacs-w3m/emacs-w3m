@@ -1,6 +1,6 @@
-;;; sb-namazu.el --- shimbun backend for namazu.org
+;;; sb-namazu.el --- shimbun backend for namazu.org -*- coding: iso-2022-jp; -*-
 
-;; Copyright (C) 2001, 2002, 2003 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001, 2002, 2003, 2004 Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 ;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 ;; Keywords: news
@@ -24,62 +24,74 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
 (require 'shimbun)
-(require 'sb-mhonarc)
+(require 'sb-mailman)
 
-(luna-define-class shimbun-namazu (shimbun-mhonarc) ())
+(luna-define-class shimbun-namazu (shimbun-mailman) ())
 
-(defvar shimbun-namazu-url "http://www.namazu.org/")
+(defvar shimbun-namazu-url "http://www.namazu.org/pipermail/")
 
-(defvar shimbun-namazu-group-url-alist
-  '(("migemo" . "http://migemo.namazu.org/ml")
-    ("namazu-users-ja" . "ml/namazu-users-ja")
-    ("namazu-win32-users-ja" . "ml/namazu-win32-users-ja")
-    ("namazu-users-en" . "ml/namazu-users-en")
-    ("namazu-devel-ja" . "ml/namazu-devel-ja")
-    ("namazu-devel-en" . "ml/namazu-devel-en")
-    ("emacs-w3m" . "http://emacs-w3m.namazu.org/ml")))
-
-(defvar shimbun-namazu-groups (mapcar 'car shimbun-namazu-group-url-alist))
-(defvar shimbun-namazu-use-entire-index nil)
-(defvar shimbun-namazu-reverse-flag t)
-(defvar shimbun-namazu-litemplate-regexp
-  "<Strong><A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\"> \\([^<]+\\)</a></Strong> <EM>\\([^<]+\\)</EM>")
+(defvar shimbun-namazu-groups
+  '("emacs-w3m" "migemo" "namazu-devel-en" "namazu-devel-ja" "namazu-users-en"
+    "namazu-users-ja" "namazu-win32-users-ja"))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-namazu))
-  (concat
-   (shimbun-expand-url
-    (cdr (assoc (shimbun-current-group-internal shimbun)
-		shimbun-namazu-group-url-alist))
-    (shimbun-url-internal shimbun))
-   "/"))
+  (shimbun-expand-url
+   (concat (shimbun-current-group-internal shimbun) "/")
+   (shimbun-url-internal shimbun)))
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-namazu))
   (concat (shimbun-current-group-internal shimbun)
 	  "@namazu.org"))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-namazu)
-					 &optional range)
-  (let ((url (shimbun-index-url shimbun))
-	(pages (shimbun-header-index-pages range))
-	(count 0)
-	headers aux)
-    (catch 'stop
-      (shimbun-mhonarc-get-headers shimbun url headers)
-      (while (and (if pages (< (incf count) pages) t)
-		  (re-search-forward
-		   "<A href=\"\\(mail[0-9]+.html\\)\">Next Index</A>"
-		   nil t)
-		  (not (string-equal (match-string 1) aux)))
-	(setq aux (match-string 1)
-	      url (shimbun-expand-url aux url))
-	(erase-buffer)
-	(shimbun-retrieve-url url)
-	(shimbun-mhonarc-get-headers shimbun url headers))
-      headers)))
+(luna-define-method shimbun-make-contents
+  ((shimbun shimbun-namazu) header)
+  (shimbun-namazu-make-contents shimbun header))
+
+(defun shimbun-namazu-make-contents (shimbun header)
+  ;; copy from shimbun-squeak-ja-make-contents
+  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
+  (shimbun-decode-entities)
+  (goto-char (point-min))
+  (let ((end (search-forward "<!--beginarticle-->"))
+	name address date)
+    (goto-char (point-min))
+    (search-forward "</HEAD>")
+    (when (re-search-forward "<H1>\\([^\n]+\\)\\(\n +\\)?</H1>" end t nil)
+      (shimbun-header-set-subject
+       header
+       (shimbun-mime-encode-string (match-string 1))))
+    (when (re-search-forward "<B>\\([^\n]+\\)\\(\n +\\)?</B> *\n +\
+<A HREF=\"[^\n]+\n +TITLE=\"[^\n]+\">\\([^\n]+\\)"
+			     end t nil)
+      (setq name (match-string 1)
+	    address (match-string 3))
+      ;; Yoshiki.Ohshima ＠ acm.org
+      (when (string-match " ＠ " name)
+	(setq name (concat (substring name 0 (match-beginning 0))
+			   "@"
+			   (substring name (match-end 0)))))
+      (when (string-match " ＠ " address)
+	(setq address (concat (substring address 0 (match-beginning 0))
+			      "@"
+			      (substring address (match-end 0)))))
+      (shimbun-header-set-from
+       header
+       (shimbun-mime-encode-string (concat name " <" address ">")))
+
+      (when (re-search-forward "<I>\\([0-9][0-9][0-9][0-9]\\)年 *\\([0-9][0-9]*\\)月 *\\([0-9][0-9]*\\)日 (\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\)) \\([:0-9]+\\) \\([A-Z]+\\)</I>" end t nil)
+	;; <I>Sat, 12 Apr 2003 17:29:51 +0900 (JST)</I> ;; mailman original
+	;; <I>2003年 4月 11日 (金) 02:43:25 CEST</I> ;; squeak-ja
+        (setq date (shimbun-make-date-string
+		    (string-to-number (match-string-no-properties 1))
+		    (string-to-number (match-string-no-properties 2))
+		    (string-to-number (match-string-no-properties 3))
+		    (match-string-no-properties 5)
+		    (match-string-no-properties 6)))
+	(shimbun-header-set-date header date))
+      (delete-region (point-min) end)
+      (delete-region (search-forward "<!--endarticle-->") (point-max))
+      (shimbun-header-insert-and-buffer-string shimbun header nil t))))
 
 (provide 'sb-namazu)
 
