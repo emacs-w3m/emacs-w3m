@@ -65,8 +65,7 @@
    以下の行を .gnus ファイルに追加するだけで text/html のコンテンツの表
    示に Emacs/w3 の代わりに emacs-w3m を使うようにすることができます．
 
-(setq gnus-article-wash-function 'gnus-article-wash-html-with-w3m
-      mm-inline-text-html-renderer 'mm-inline-text-html-render-with-w3m)
+(setq mm-text-html-renderer 'w3m)
 
    それ以外の場合は以下を試してみて下さい．これらは Oort Gnus v0.06 以上
    のものほど良くありませんが．

@@ -60,12 +60,11 @@
    some news articles using nnshimbun.  To do that, copy nnshimbun.el
    from the newest T-gnus 6.15 to Gnus' lisp/ directory and then simply
    invoke "make install".  In addition, fortunately, if you are using
-   Oort Gnus v0.06 or later, you only have to add the following lines in
+   Oort Gnus v0.06 or later, you only have to add the following line in
    your .gnus file to make Gnus show text/html contents using emacs-w3m
    instead of Emacs/w3.
 
-(setq gnus-article-wash-function 'gnus-article-wash-html-with-w3m
-      mm-inline-text-html-renderer 'mm-inline-text-html-render-with-w3m)
+(setq mm-text-html-renderer 'w3m)
 
    Otherwise, try the following.  They aren't as good as Oort Gnus v0.06
    or later will do, though.
