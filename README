@@ -110,11 +110,12 @@ This package contains a interface program of w3m.
                (nconc w3m-command-arguments
                       '("-o" "http_proxy=http://proxy.hogege.com:8000/"))))
 
-   Here is one example not to use a proxy gateway to connect to the
-   particular hosts:
+   To specify no-proxy hosts that not to use a proxy gateways to connect
+   to, you can set the environment variable no_proxy with the comma
+   separated host names, or set the option `w3m-no-proxy-domains' with a
+   list of domain names (not host names) as follows:
 
-      (setq w3m-no-proxy-hosts
-            '("www.local.com" "www.neighbor.com"))
+      (setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
 
    See also the documentation for the option
    `w3m-command-arguments-alist' to use regexps to specify the no-proxy
