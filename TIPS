@@ -79,6 +79,9 @@
 ;; based on the diary of SHIMADA Mitsunobu, 09 Jan 2002.
 
 (defvar gnus-w3m-minor-mode nil)
+(defvar mm-inline-text-html-with-images nil
+  "*If non-nil, Gnus will allow retrieving images in the HTML contents
+with <img> tags.")
 
 (make-variable-buffer-local 'gnus-w3m-minor-mode)
 (add-to-list 'minor-mode-alist '(gnus-w3m-minor-mode " w3m"))
@@ -115,7 +118,9 @@
 		(progn
 		  (delete-region (point-min) (point-max))
 		  (insert (mm-decode-string text charset))))
-	    (w3m-region (point-min) (point-max))
+	    (let ((w3m-safe-url-regexp "\\`cid:")
+		  (w3m-display-inline-images mm-inline-text-html-with-images))
+	      (w3m-region (point-min) (point-max)))
 	    (setq gnus-w3m-minor-mode t))
 	  (mm-handle-set-undisplayer
 	   handle
