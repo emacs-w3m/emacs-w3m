@@ -45,6 +45,38 @@
   (unless (null paths)
     (setq load-path (nconc (nreverse paths) load-path))))
 
+;; Check for the required modules.
+(when (or (featurep 'xemacs)
+	  (not (boundp 'emacs-major-version))
+	  (<= emacs-major-version 19))
+  (let ((apel (locate-library "path-util"))
+	(emu (locate-library "pccl")))
+    (if (and apel emu)
+	(when (and (featurep 'xemacs)
+		   (not (featurep 'mule)))
+	  (setq apel (file-name-directory apel)
+		emu (file-name-directory emu))
+	  (if (not (string-equal apel emu))
+	      (setq apel (concat apel "\n  " emu)))
+	  (condition-case nil
+	      (require 'pccl)
+	    (error (error "%s%s%s"
+			  "
+Error: Maybe the APEL package has been compiled for XEmacs with MULE,
+ you use non-MULE XEmacs to build emacs-w3m though.  The APEL modules
+ are installed in:\n\n  "
+			  apel
+			  "\n
+ If you use the official APEL XEmacs package, look for the new one and
+ install it in your system, or send a bug report to the maintainers
+ using `M-x report-xemacs-bug'.  Otherwise, you may rebuild APEL from
+ the source distribution, see manuals where you could get it from."))))
+      (error "
+Error: You have to install APEL before building emacs-w3m, see manuals.
+ If you have already installed APEL in the non-standard Lisp directory,
+ use the `--with-addpath=' configure option with that path name (or
+ colon separated those path names) and run configure again."))))
+
 (defconst shimbun-module-directory "shimbun")
 
 (defconst w3mhack-colon-keywords-file "w3m-kwds.el")
