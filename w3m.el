@@ -2667,50 +2667,51 @@ works on Emacs.
   "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\)/.*\\)?$"
   "Regexp for not show history.")
 
-;;(defun w3m-about-history (&rest args)
-;;  (let* ((history (mapcar 'car w3m-history-flat))
-;;	 (tmp history)
-;;	 title)
-;;    (while tmp
-;;      (setq tmp (setcdr tmp (delete (car tmp) (cdr tmp)))))
-;;    (w3m-with-work-buffer
-;;      (delete-region (point-min) (point-max))
-;;      (insert "<head><title>URL history</title></head><body>\n")
-;;      (insert "<h1>arrived URL history</h1>\n")
-;;      (dolist (url history)
-;;	(unless (string-match w3m-about-history-except-regex url)
-;;	  (setq title (or (w3m-arrived-title url) url))
-;;	  (when (string= "<no-title>" title)
-;;	    (setq title url))
-;;	  (insert (format "<a href=\"%s\">%s</a><br>\n" url title))))
-;;      (insert "</body>")))
-;;  "text/html")
+(defun w3m-about-history-1 (history source depth)
+  "Internal function used to `w3m-about-history' for recursive funcall."
+  (let (rest)
+    (dolist (element history)
+      (unless (string-match w3m-about-history-except-regex (car element))
+	(push element rest)))
+    (setq history (nreverse rest)))
+  (let (element url title children)
+    (while history
+      (setq element (car history)
+	    history (cdr history)
+	    url (car element)
+	    title (plist-get (cadr element) ':title)
+	    source (concat source
+			   (if (zerop depth)
+			       ""
+			     (make-string depth ?ив))
+			   (if history
+			       "из"
+			     "иж")
+			   "<a href=\"" url "\">"
+			   (if (or (not title)
+				   (string-equal "<no-title>" title))
+			       url
+			     title)
+			   "</a>\n"))
+      (when (setq children (caddr element))
+	(setq source (w3m-about-history-1 children source (1+ depth))))))
+  source)
 
 (defun w3m-about-history (&rest args)
-  (let ((html "\
+  "Show a tree-structured history."
+  (let ((source (w3m-about-history-1 (cdr w3m-history)
+				     "\
 <head><title>URL history</title></head><body>
-<h1>List of all the links you have visited in this session</h1>\n"))
-    (let (url title depth)
-      (dolist (element w3m-history-flat)
-	(unless (string-match w3m-about-history-except-regex
-			      (setq url (car element)))
-	  (setq title (w3m-history-plist-get ':title url)
-		depth (/ (length (caddr element)) 2))
-	  (setq html (concat html "<a href=\"" url "\">"
-			     (cond ((zerop depth)
-				    "")
-				   ((= 1 depth)
-				    "иж")
-				   (t
-				    (concat (make-string (1- depth) ?бб)
-					    "иж")))
-			     (if (string-equal "<no-title>" title)
-				 url
-			       title)
-			     "</a><br>\n")))))
+<h1>List of all the links you have visited in this session</h1><pre>\n"
+				     0)))
     (w3m-with-work-buffer
       (erase-buffer)
-      (insert html "</body>")))
+      (insert source "</pre></body>")
+      (goto-char (point-min))
+      (when (re-search-forward "\\(иж\\)\\|\\(из\\)" nil t)
+	(replace-match (if (match-beginning 1)
+			   "иб"
+			 "ии")))))
   "text/html")
 
 (defun w3m-about-db-history (&rest args)
