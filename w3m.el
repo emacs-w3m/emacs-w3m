@@ -1813,7 +1813,162 @@ When URL does not point any local files, it returns nil."
 		      (substring file (match-end 0)))
 	    file)))
 
-;; Generic macros and inline functions:
+
+;;; Database of Arrived URLs:
+(defun w3m-arrived-add (url &optional title modified-time
+			    arrived-time content-charset content-type)
+  "Add URL to hash database of arrived URLs."
+  (unless (string-match w3m-arrived-ignored-regexp url)
+    (let ((ident (intern url w3m-arrived-db)))
+      (if (string-match "\\`\\([^#]+\\)#" url)
+	  (w3m-arrived-add (substring url 0 (match-end 1))
+			   title modified-time arrived-time
+			   content-charset content-type)
+	(when title
+	  (put ident 'title title))
+	(when modified-time
+	  (put ident 'last-modified modified-time))
+	(when content-charset
+	  (put ident 'content-charset content-charset))
+	(when content-type
+	  (put ident 'content-type content-type)))
+      (set ident arrived-time))))
+
+(defsubst w3m-arrived-p (url)
+  "If URL has been arrived, return non-nil value.  Otherwise return nil."
+  (or (string-match w3m-arrived-ignored-regexp url)
+      (intern-soft url w3m-arrived-db)))
+
+(defun w3m-arrived-time (url)
+  "If URL has been arrived, return its arrived time.  Otherwise return nil."
+  (let ((v (intern-soft url w3m-arrived-db)))
+    (and v (boundp v) (symbol-value v))))
+(defsetf w3m-arrived-time (url) (value)
+  (list 'w3m-arrived-add url nil nil value))
+
+(defsubst w3m-arrived-put (url property value)
+  "Store URL's PROPERTY with VALUE on the arrived databse.
+If URL has not been arrived, discard given information and return nil."
+  (let ((symbol (intern-soft url w3m-arrived-db)))
+    (and symbol (put symbol property value))))
+
+(defsubst w3m-arrived-get (url property)
+  "Return the value of URL's PROPERTY that is stored in the arrived database.
+If URL has not been arrived, return nil."
+  (let ((symbol (intern-soft url w3m-arrived-db)))
+    (and symbol (get symbol property))))
+
+(defsetf w3m-arrived-get w3m-arrived-put)
+
+(defmacro w3m-arrived-title (url)
+  "Return the stored title of the page, which is pointed by URL."
+  `(w3m-arrived-get ,url 'title))
+
+(defmacro w3m-arrived-last-modified (url)
+  "If URL has been arrived, return its last modified time.
+Otherwise return nil."
+  `(w3m-arrived-get ,url 'last-modified))
+
+(defmacro w3m-arrived-content-charset (url)
+  "If URL has been specified content-charset, return its content-charset.
+Otherwise return nil."
+  `(w3m-arrived-get ,url 'content-charset))
+
+(defmacro w3m-arrived-content-type (url)
+  "If URL has been specified content-type, return its content-type.
+Otherwise return nil."
+  `(w3m-arrived-get ,url 'content-type))
+
+(defun w3m-arrived-load-list ()
+  (let ((list (w3m-load-list w3m-arrived-file)))
+    ;; When arrived URL database is too old, its data is ignored.
+    (when (or
+	   ;; Before the revision 1.120, every element of the list was
+	   ;; a string that represented an arrived URL.
+	   (stringp (car list))
+	   ;; Before the revision 1.135, every element was a cons
+	   ;; cell: its car kept a URL, and its cdr kept a time when
+	   ;; the URL was arrived.
+	   ;; Before the revision 1.178, every element was a 4-tuple
+	   ;; that consisted of a URL, a title, a modified time, and
+	   ;; an arrived time.
+	   ;; An element of the modern database is a 6-tuple that
+	   ;; consisted of a URL, a title, a modified time, an arrived
+	   ;; time, a charset, and a content type.
+	   ;; Thus, the following condition eliminates the revision
+	   ;; 1.177 and olders.
+	   (<= (length (car list)) 4))
+      (setq list nil)
+      (when (file-exists-p w3m-arrived-file)
+	(delete-file w3m-arrived-file)))
+    list))
+
+(defun w3m-arrived-setup ()
+  "Load arrived url list from `w3m-arrived-file' and setup hash database."
+  (unless w3m-arrived-db
+    (setq w3m-arrived-db (make-vector w3m-arrived-db-size 0))
+    (let ((list (w3m-arrived-load-list)))
+      (dolist (elem list)
+	;; Ignore an element that lacks an arrived time information.
+	(when (nth 3 elem)
+	  (w3m-arrived-add (if (string-match "\\`/" (car elem))
+			       (w3m-expand-file-name-as-url (car elem))
+			     (car elem))
+			   (nth 1 elem)
+			   (nth 2 elem)
+			   (nth 3 elem)
+			   (when (stringp (nth 4 elem)) (nth 4 elem))
+			   (nth 5 elem))))
+      (unless w3m-input-url-history
+	(setq w3m-input-url-history (mapcar (function car) list))))
+    (run-hooks 'w3m-arrived-setup-functions)))
+
+(defun w3m-arrived-shutdown ()
+  "Save hash database of arrived URLs to `w3m-arrived-file'."
+  (when w3m-arrived-db
+    ;; Re-read arrived DB file, and check sites which are arrived on
+    ;; the other emacs process.
+    (dolist (elem (w3m-arrived-load-list))
+      (when (w3m-time-newer-p (nth 3 elem) (w3m-arrived-time (car elem)))
+	(w3m-arrived-add (if (string-match "\\`/" (car elem))
+			     (w3m-expand-file-name-as-url (car elem))
+			   (car elem))
+			 (nth 1 elem)
+			 (nth 2 elem)
+			 (nth 3 elem)
+			 (when (stringp (nth 4 elem)) (nth 4 elem))
+			 (nth 5 elem))))
+    ;; Convert current arrived DB to a list.
+    (let (list)
+      (mapatoms
+       (lambda (sym)
+	 (and sym
+	      (boundp sym)
+	      (symbol-value sym) ; Ignore an entry lacks an arrived time.
+	      (push (list (symbol-name sym)
+			  (get sym 'title)
+			  (get sym 'last-modified)
+			  (symbol-value sym)
+			  (get sym 'content-charset)
+			  (get sym 'content-type))
+		    list)))
+       w3m-arrived-db)
+      (w3m-save-list w3m-arrived-file
+		     (w3m-sub-list
+		      (sort list
+			    (lambda (a b)
+			      (if (equal (nth 3 a) (nth 3 b))
+				  (string< (car a) (car b))
+				(w3m-time-newer-p (nth 3 a) (nth 3 b)))))
+		      w3m-keep-arrived-urls)
+		     nil t))
+    (setq w3m-arrived-db nil)
+    (run-hooks 'w3m-arrived-shutdown-functions)))
+
+(add-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
+
+
+;;; Generic macros and inline functions:
 (defun w3m-attributes (url &optional no-cache handler)
   "Return a list of attributes of URL.
 Value is nil if retrieval of header is failed.  Otherwise, list
@@ -2093,159 +2248,6 @@ with ^ as `cat -v' does."
 			 (file-modes file))))
 	  (write-region (point-min) (point-max) file nil 'nomsg)
 	  (when mode (set-file-modes file mode)))))))
-
-(defun w3m-arrived-add (url &optional title modified-time
-			    arrived-time content-charset content-type)
-  "Add URL to hash database of arrived URLs."
-  (unless (string-match w3m-arrived-ignored-regexp url)
-    (let ((ident (intern url w3m-arrived-db)))
-      (if (string-match "\\`\\([^#]+\\)#" url)
-	  (w3m-arrived-add (substring url 0 (match-end 1))
-			   title modified-time arrived-time
-			   content-charset content-type)
-	(when title
-	  (put ident 'title title))
-	(when modified-time
-	  (put ident 'last-modified modified-time))
-	(when content-charset
-	  (put ident 'content-charset content-charset))
-	(when content-type
-	  (put ident 'content-type content-type)))
-      (set ident arrived-time))))
-
-(defsubst w3m-arrived-p (url)
-  "If URL has been arrived, return non-nil value.  Otherwise return nil."
-  (or (string-match w3m-arrived-ignored-regexp url)
-      (intern-soft url w3m-arrived-db)))
-
-(defun w3m-arrived-time (url)
-  "If URL has been arrived, return its arrived time.  Otherwise return nil."
-  (let ((v (intern-soft url w3m-arrived-db)))
-    (and v (boundp v) (symbol-value v))))
-(defsetf w3m-arrived-time (url) (value)
-  (list 'w3m-arrived-add url nil nil value))
-
-(defsubst w3m-arrived-put (url property value)
-  "Store URL's PROPERTY with VALUE on the arrived databse.
-If URL has not been arrived, discard given information and return nil."
-  (let ((symbol (intern-soft url w3m-arrived-db)))
-    (and symbol (put symbol property value))))
-
-(defsubst w3m-arrived-get (url property)
-  "Return the value of URL's PROPERTY that is stored in the arrived database.
-If URL has not been arrived, return nil."
-  (let ((symbol (intern-soft url w3m-arrived-db)))
-    (and symbol (get symbol property))))
-(defsetf w3m-arrived-get (url property) (value)
-  (list 'w3m-arrived-put url property value))
-
-(defmacro w3m-arrived-title (url)
-  "Return the stored title of the page, which is pointed by URL."
-  `(w3m-arrived-get ,url 'title))
-
-(defmacro w3m-arrived-last-modified (url)
-  "If URL has been arrived, return its last modified time.
-Otherwise return nil."
-  `(w3m-arrived-get ,url 'last-modified))
-
-(defmacro w3m-arrived-content-charset (url)
-  "If URL has been specified content-charset, return its content-charset.
-Otherwise return nil."
-  `(w3m-arrived-get ,url 'content-charset))
-
-(defmacro w3m-arrived-content-type (url)
-  "If URL has been specified content-type, return its content-type.
-Otherwise return nil."
-  `(w3m-arrived-get ,url 'content-type))
-
-(defun w3m-arrived-load-list ()
-  (let ((list (w3m-load-list w3m-arrived-file)))
-    ;; When arrived URL database is too old, its data is ignored.
-    (when (or
-	   ;; Before the revision 1.120, every element of the list was
-	   ;; a string that represented an arrived URL.
-	   (stringp (car list))
-	   ;; Before the revision 1.135, every element was a cons
-	   ;; cell: its car kept a URL, and its cdr kept a time when
-	   ;; the URL was arrived.
-	   ;; Before the revision 1.178, every element was a 4-tuple
-	   ;; that consisted of a URL, a title, a modified time, and
-	   ;; an arrived time.
-	   ;; An element of the modern database is a 6-tuple that
-	   ;; consisted of a URL, a title, a modified time, an arrived
-	   ;; time, a charset, and a content type.
-	   ;; Thus, the following condition eliminates the revision
-	   ;; 1.177 and olders.
-	   (<= (length (car list)) 4))
-      (setq list nil)
-      (when (file-exists-p w3m-arrived-file)
-	(delete-file w3m-arrived-file)))
-    list))
-
-(defun w3m-arrived-setup ()
-  "Load arrived url list from `w3m-arrived-file' and setup hash database."
-  (unless w3m-arrived-db
-    (setq w3m-arrived-db (make-vector w3m-arrived-db-size 0))
-    (let ((list (w3m-arrived-load-list)))
-      (dolist (elem list)
-	;; Ignore an element that lacks an arrived time information.
-	(when (nth 3 elem)
-	  (w3m-arrived-add (if (string-match "\\`/" (car elem))
-			       (w3m-expand-file-name-as-url (car elem))
-			     (car elem))
-			   (nth 1 elem)
-			   (nth 2 elem)
-			   (nth 3 elem)
-			   (when (stringp (nth 4 elem)) (nth 4 elem))
-			   (nth 5 elem))))
-      (unless w3m-input-url-history
-	(setq w3m-input-url-history (mapcar (function car) list))))
-    (run-hooks 'w3m-arrived-setup-functions)))
-
-(defun w3m-arrived-shutdown ()
-  "Save hash database of arrived URLs to `w3m-arrived-file'."
-  (when w3m-arrived-db
-    ;; Re-read arrived DB file, and check sites which are arrived on
-    ;; the other emacs process.
-    (dolist (elem (w3m-arrived-load-list))
-      (when (w3m-time-newer-p (nth 3 elem) (w3m-arrived-time (car elem)))
-	(w3m-arrived-add (if (string-match "\\`/" (car elem))
-			     (w3m-expand-file-name-as-url (car elem))
-			   (car elem))
-			 (nth 1 elem)
-			 (nth 2 elem)
-			 (nth 3 elem)
-			 (when (stringp (nth 4 elem)) (nth 4 elem))
-			 (nth 5 elem))))
-    ;; Convert current arrived DB to a list.
-    (let (list)
-      (mapatoms
-       (lambda (sym)
-	 (and sym
-	      (boundp sym)
-	      (symbol-value sym) ; Ignore an entry lacks an arrived time.
-	      (push (list (symbol-name sym)
-			  (get sym 'title)
-			  (get sym 'last-modified)
-			  (symbol-value sym)
-			  (get sym 'content-charset)
-			  (get sym 'content-type))
-		    list)))
-       w3m-arrived-db)
-      (w3m-save-list w3m-arrived-file
-		     (w3m-sub-list
-		      (sort list
-			    (lambda (a b)
-			      (if (equal (nth 3 a) (nth 3 b))
-				  (string< (car a) (car b))
-				(w3m-time-newer-p (nth 3 a) (nth 3 b)))))
-		      w3m-keep-arrived-urls)
-		     nil t))
-    (setq w3m-arrived-db nil)
-    (run-hooks 'w3m-arrived-shutdown-functions)))
-
-(add-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
-
 
 (defun w3m-url-encode-string (str &optional coding)
   (apply (function concat)
@@ -6729,11 +6731,11 @@ showing a tree-structured history by the command `w3m-about-history'.")
     (when w3m-arrived-db
       (mapatoms
        (lambda (sym)
-	 (when (and sym
-		    (setq url (symbol-name sym))
-		    (not (string-match w3m-history-ignored-regexp url)))
-	   (setq time (w3m-arrived-time url))
-	   (push (cons url time) alist)))
+	 (and sym
+	      (setq url (symbol-name sym))
+	      (not (string-match "#" url))
+	      (not (string-match w3m-history-ignored-regexp url))
+	      (push (cons url (w3m-arrived-time sym)) alist)))
        w3m-arrived-db)
       (setq alist (sort alist
 			(lambda (a b)

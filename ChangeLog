@@ -1,5 +1,9 @@
 2003-07-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el: Move functions handling the arrived database forward in
+	order to avoid byte compile errors.
+	(w3m-about-db-history): Ignroe URLs that include fragments.
+
 	* w3m.el (w3m-about-history): Encode special charactes included in
 	a title.
 
