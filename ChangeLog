@@ -1,3 +1,10 @@
+2004-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-active-region-or-url-at-point): Find a url-like
+	string in the region instead of extracting the whole substring
+	when the region is active.
+	(w3m-quit): Delete frames seemingly fast.
+
 2004-02-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-sankei.el (shimbun-sankei-content-start): Improve.

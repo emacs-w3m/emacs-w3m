@@ -3400,8 +3400,18 @@ Like `ffap-url-at-point', except that text props will be stripped."
   "Return an active region or a url around the cursor.
 In Transient Mark mode, deactivate the mark."
   (if (w3m-region-active-p)
-      (prog1 (buffer-substring-no-properties (region-beginning) (region-end))
-	(w3m-deactivate-region))
+      ;; Find a url-like string in the region.
+      (let ((pt (point))
+	    limit)
+	(goto-char (region-end))
+	(skip-chars-forward "^\t\n 　")
+	(setq limit (point))
+	(goto-char (region-beginning))
+	(skip-chars-forward "\t\n 　" limit)
+	(prog1
+	    (w3m-url-at-point)
+	  (goto-char pt)
+	  (w3m-deactivate-region)))
     (w3m-url-at-point)))
 
 (defun w3m-input-url (&optional prompt initial default quick-start)
@@ -6130,6 +6140,7 @@ is specified, otherwise prompt you for the confirmation.  See also
 	    (prog1 (y-or-n-p "Do you want to exit w3m? ")
 	      (w3m-message "")))
     (w3m-delete-frames-and-windows)
+    (sit-for 0) ;; Delete frames seemingly fast.
     (dolist (buffer (w3m-list-buffers t))
       (w3m-cancel-refresh-timer buffer)
       (kill-buffer buffer))
