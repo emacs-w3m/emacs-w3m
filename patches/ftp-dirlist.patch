@@ -1,0 +1,151 @@
+diff -ur w3m-0.2.4.orig/file.c w3m-0.2.4/file.c
+--- w3m-0.2.4.orig/file.c	Fri Dec 28 03:01:52 2001
++++ w3m-0.2.4/file.c	Sat Jan 12 22:05:57 2002
+@@ -1018,22 +1018,34 @@
+ 	/* openURL failure: it means either (1) the requested URL is a directory name
+ 	 * on an FTP server, or (2) is a local directory name. 
+ 	 */
+-	extern Str FTPDIRtmp;
+ 	if (fmInitialized && prevtrap) {
+ 	    term_raw();
+ 	    signal(SIGINT, prevtrap);
+ 	}
+ 	switch (f.scheme) {
+ 	case SCM_FTPDIR:
+-	    if (FTPDIRtmp->length > 0) {
+-		b = loadHTMLString(FTPDIRtmp);
+-		if (b) {
+-		    if (b->currentURL.host == NULL
+-			&& b->currentURL.file == NULL)
+-			copyParsedURL(&b->currentURL, &pu);
+-		    b->real_scheme = pu.scheme;
++	    {
++		Str ftpdir = readFTPDir(&pu);
++		if (ftpdir && ftpdir->length > 0) {
++		    FILE *src;
++		    tmp = tmpfname(TMPF_SRC, ".html");
++		    pushText(fileToDelete, tmp->ptr);
++		    src = fopen(tmp->ptr, "w");
++		    if (src) {
++			Strfputs(ftpdir, src);
++			fclose(src);
++		    }
++		    b = loadHTMLString(ftpdir);
++		    if (b) {
++			if (b->currentURL.host == NULL
++			    && b->currentURL.file == NULL)
++			    copyParsedURL(&b->currentURL, &pu);
++			b->real_scheme = pu.scheme;
++			if (src)
++			    b->sourcefile = tmp->ptr;
++		    }
++		    return b;
+ 		}
+-		return b;
+ 	    }
+ 	    break;
+ 	case SCM_LOCAL:
+diff -ur w3m-0.2.4.orig/ftp.c w3m-0.2.4/ftp.c
+--- w3m-0.2.4.orig/ftp.c	Wed Dec 26 03:15:00 2001
++++ w3m-0.2.4/ftp.c	Sat Jan 12 19:45:39 2002
+@@ -374,8 +374,6 @@
+ }
+ 
+ 
+-Str FTPDIRtmp;
+-
+ static int ex_ftpdir_name_size_date(char *, char **, char **, char **);
+ static int ftp_system(FTP);
+ 
+@@ -392,15 +390,9 @@
+ {
+     Str tmp2 = Strnew();
+     Str tmp3 = Strnew();
+-    Str host;
+     STATUS s;
+-    Str curdir;
+     char *user;
+     char *pass;
+-    char *fn;
+-    char *qdir;
+-    char **flist;
+-    int i, nfile, nfile_max = 100;
+     Str pwd = NULL;
+     int add_auth_cookie_flag;
+     char *realpathname = NULL;
+@@ -408,7 +400,6 @@
+     char code = '\0', ic;
+     Str pathStr;
+ #endif
+-    int sv_type;
+ 
+     add_auth_cookie_flag = 0;
+     if (pu->user)
+@@ -487,7 +478,26 @@
+     }
+   ftp_dir1:
+     pu->scheme = SCM_FTPDIR;
+-    FTPDIRtmp = Strnew();
++    return NULL;
++}
++
++Str
++readFTPDir(ParsedURL *pu)
++{
++    Str FTPDIRtmp = Strnew();
++    Str host;
++    Str curdir;
++    char *fn;
++    char *qdir;
++    char **flist;
++    int i, nfile, nfile_max = 100;
++    int sv_type;
++    STATUS s;
++    char *realpathname = NULL;
++    Str tmp2 = Strnew();
++
++    if (current_ftp->data == NULL)
++	return FTPDIRtmp;
+     sv_type = ftp_system(current_ftp);
+     if (pu->file == NULL || *pu->file == '\0') {
+ 	if (sv_type == UNIXLIKE_SERVER) {
+@@ -499,6 +509,7 @@
+ 	curdir = Strnew_charp("/");
+     }
+     else {
++	realpathname = file_unquote(pu->file);
+ 	if (sv_type == UNIXLIKE_SERVER) {
+ 	    s = FtpCwd(current_ftp, realpathname);
+ 	    if (!FtpError(s)) {
+@@ -656,7 +667,7 @@
+ 
+     FtpClose(current_ftp);
+     FtpBye(current_ftp);
+-    return NULL;
++    return FTPDIRtmp;
+ }
+ 
+ static int
+diff -ur w3m-0.2.4.orig/proto.h w3m-0.2.4/proto.h
+--- w3m-0.2.4.orig/proto.h	Thu Dec 27 03:29:33 2001
++++ w3m-0.2.4/proto.h	Sat Jan 12 19:45:39 2002
+@@ -424,6 +424,7 @@
+ extern TextList *make_domain_list(char *domain_list);
+ extern int check_no_proxy(char *domain);
+ extern FILE *openFTP(ParsedURL *pu);
++extern Str readFTPDir(ParsedURL *pu);
+ extern void closeFTP(FILE * f);
+ extern int Ftpfclose(FILE * f);
+ extern AnchorList *putAnchor(AnchorList *al, char *url, char *target,
+diff -ur w3m-0.2.4.orig/url.c w3m-0.2.4/url.c
+--- w3m-0.2.4.orig/url.c	Fri Dec 28 03:22:59 2001
++++ w3m-0.2.4/url.c	Sat Jan 12 21:31:19 2002
+@@ -1243,6 +1243,8 @@
+ 	    )))
+ 	Strcat_char(tmp, '/');
+     Strcat_charp(tmp, pu->file);
++    if (pu->scheme == SCM_FTPDIR && Strlastchar(tmp) != '/')
++	Strcat_char(tmp, '/');
+     if (pu->query) {
+ 	Strcat_char(tmp, '?');
+ 	Strcat_charp(tmp, pu->query);
