@@ -1,3 +1,10 @@
+2001-05-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-find-file): Improved.
+	(w3m-default-content-type): New user option.
+	(w3m-url-completion): New function.
+	(w3m-input-url): Call `w3m-url-completion' to complete URLs.
+
 2001-05-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-find-file): New optional argument, `type' is added.

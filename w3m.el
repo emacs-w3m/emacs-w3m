@@ -327,6 +327,11 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-default-content-type "text/html"
+  "*Default content type of local files."
+  :group 'w3m
+  :type 'string)
+
 ;; FIXME: 本当は mailcap を適切に読み込んで設定する必要がある
 (defcustom w3m-content-type-alist
   (if (eq system-type 'windows-nt)
@@ -1438,25 +1443,59 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 	  (w3m-add-text-properties start end '(face w3m-arrived-anchor-face)))
 	(set-buffer-modified-p nil)))))
 
+(defun w3m-url-completion (url predicate flag)
+  "Completion function for URL."
+  (if (string-match "^\\(file:\\|/\\|~\\)" url)
+      (if (eq flag 'lambda)
+	  (file-exists-p (w3m-url-to-file-name url))
+	(let* ((partial
+		(expand-file-name
+		 (cond
+		  ((string-match "^file:[^/]" url)
+		   (substring url 5))
+		  ((string-match "/\\(~\\)" url)
+		   (substring url (match-beginning 1)))
+		  (t (w3m-url-to-file-name url)))))
+	       (collection
+		(let ((dir (file-name-directory partial)))
+		  (mapcar
+		   (lambda (f)
+		     (list (w3m-expand-file-name-as-url f dir)))
+		   (file-name-all-completions (file-name-nondirectory partial)
+					      dir)))))
+	  (setq partial (w3m-expand-file-name-as-url partial))
+	  (cond
+	   ((not flag)
+	    (try-completion partial collection predicate))
+	   ((eq flag t)
+	    (all-completions partial collection predicate)))))
+    (cond
+     ((not flag)
+      (try-completion url w3m-arrived-db))
+     ((eq flag t)
+      (all-completions url w3m-arrived-db))
+     ((eq flag 'lambda)
+      (if (w3m-arrived-p url) t nil)))))
+
 (defun w3m-input-url (&optional prompt default)
   "Read a URL from the minibuffer, prompting with string PROMPT."
   (let (url candidates)
     (w3m-arrived-setup)
-    (mapatoms (lambda (x)
-		(when x (push (cons (symbol-name x) x) candidates)))
-	      w3m-arrived-db)
-    (setq default (or default (thing-at-point 'url)))
-    (setq url (let ((minibuffer-setup-hook (append minibuffer-setup-hook
-						   '(beginning-of-line))))
-		(completing-read (or prompt
-				     (if default
-					 "URL: "
-				       (format "URL (default %s): " w3m-home-page)))
-				 candidates nil nil default
-				 'w3m-input-url-history)))
+    (unless default
+      (setq default (thing-at-point 'url)))
+    (setq url (let ((minibuffer-setup-hook
+		     (append minibuffer-setup-hook '(beginning-of-line))))
+		(completing-read
+		 (or prompt
+		     (if default
+			 "URL: "
+		       (format "URL (default %s): " w3m-home-page)))
+		 'w3m-url-completion nil nil default
+		 'w3m-input-url-history)))
     (if (string= "" url) (setq url w3m-home-page))
     ;; remove duplication
-    (setq w3m-input-url-history (cons url (delete url w3m-input-url-history)))
+    (setq w3m-input-url-history
+	  (cons url (delete url w3m-input-url-history)))
     ;; return value
     url))
 
@@ -2893,20 +2932,23 @@ If input is nil, use default coding-system on w3m."
 (defun w3m-find-file (file &optional type)
   "w3m Interface function for local file."
   (interactive
-   (list
-    (read-file-name "Filename: ")
-    (if current-prefix-arg
-	(completing-read "Content-Type: "
-			 (mapcar (lambda (x) (cons (car x) (car x)))
-				 w3m-content-type-alist)
-			 nil
-			 'require-match))))
+   (let* ((f (read-file-name "Filename: "))
+	  (ct (if (or current-prefix-arg
+		      (string= "unknown" (w3m-local-content-type f)))
+		  (completing-read (format "Input %s's content type (default %s): "
+					   (file-name-nondirectory f)
+					   w3m-default-content-type)
+				   w3m-content-type-alist nil t))))
+     (list f (and ct (if (string= "" ct) w3m-default-content-type ct)))))
   (let ((w3m-content-type-alist w3m-content-type-alist))
+    (setq file (w3m-expand-file-name-as-url file))
     (when type
       (setq w3m-content-type-alist
-	    (list (copy-sequence (assoc type w3m-content-type-alist))))
-      (setcar (nthcdr 1 (car w3m-content-type-alist)) ""))
-    (w3m-goto-url (w3m-expand-file-name-as-url file))))
+	    (cons (copy-sequence (assoc type w3m-content-type-alist))
+		  w3m-content-type-alist))
+      (setcar (nthcdr 1 (car w3m-content-type-alist))
+	      (concat "^" (regexp-quote file) "$")))
+    (w3m-goto-url file)))
 
 
 (defun w3m-cygwin-path (path)
