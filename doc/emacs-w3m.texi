@@ -323,17 +323,17 @@ following patch:
 
 @example
 ----8<------8<------8<------8<------8<------8<------8<------8<----
---- custom-1.9962/cus-face.el~  Wed Mar  4 19:52:39 1998
-+++ custom-1.9962/cus-face.el   Mon Mar  9 08:05:33 1998
+--- custom-1.9962/cus-face.el~	Wed Mar  4 19:52:39 1998
++++ custom-1.9962/cus-face.el	Mon Mar  9 08:05:33 1998
 @@@@ -96,7 +96,7 @@@@
        "Define a new FACE on all frames, ignoring X resources."
        (interactive "SMake face: ")
        (or (internal-find-face name)
--         (let ((face (make-vector 8 nil)))
-+         (let ((face (make-vector face-vector-length nil)))
-            (aset face 0 'face)
-            (aset face 1 name)
-            (let* ((frames (frame-list))
+-	  (let ((face (make-vector 8 nil)))
++	  (let ((face (make-vector face-vector-length nil)))
+ 	    (aset face 0 'face)
+ 	    (aset face 1 name)
+ 	    (let* ((frames (frame-list))
 ----8<------8<------8<------8<------8<------8<------8<------8<----
 @end example
 
@@ -3446,9 +3446,10 @@ lotusex.bbs
 @section How to make a new shimbun module
 @cindex @file{shimbun.el}
 
-Shimbun module is a library set of emacs-w3m that enables you to read
+@samp{Shimbun} is a library set of emacs-w3m that enables you to read
 certain web contents using Gnus, Wanderlust, or Mew as if they were
-email messages.  Here I will explain how to make a new shimbun module.
+email messages.  Here we will explain how to make a new @samp{shimbun}
+module.
 
 @menu
 * Overview::
@@ -3460,9 +3461,10 @@ email messages.  Here I will explain how to make a new shimbun module.
 @node Overview
 @subsection Overview
 
-When you make a new shimbun module @samp{foobar} for reading contents of
-@url{http://www.foobar.net}, what you have to do first is to put the
-following S expressions in the first part of @file{sb-foobar.el};
+When you make a new @samp{shimbun} module @samp{foobar} for reading
+contents of @uref{http://www.foobar.net}, what you have to do first is
+to put the following S expressions in the first part of the
+@file{sb-foobar.el} file:
 
 @lisp
 (require 'shimbun)
@@ -3470,31 +3472,35 @@ following S expressions in the first part of @file{sb-foobar.el};
 @end lisp
 
 @noindent
-I will explain what they are below, so you can understand they are just
-incantations now.  You have to use a same symbol name @samp{foobar} in
-@file{sb-foobar.el} as its module file name and @samp{foobar} in
-@samp{shimbun-foobar} as a second argument of @code{luna-define-class}.
+We will explain what they are below, so you can understand they are just
+incantations now.  You have to use the same suffix @samp{foobar} in the
+file name (@file{sb-foobar.el}) and the class name
+(@samp{shimbun-foobar}) as the second argument for the
+@code{luna-define-class} macro.
 
-Major jobs of shimbun module @samp{foobar} is following four;
+Major jobs of the @samp{shimbun-foobar} module can be classified broadly
+into the following four categories (note that you may rephrase
+``folder'' with ``group'' if you are a Gnus user):
 
 @enumerate
 @item
-getting web page source of @url{http://www.foobar.net} to list up
-subjects of articles, etc when MUA opens @samp{foobar} folder,
+Getting a page source from @uref{http://www.foobar.net} in order to
+gather articles' subjects etc. when a MUA opens the @samp{foobar}
+folder.
 
 @item
-gathering subjects and other necessary information from the web page
-source in order to display the contents as if it were a email message,
-and returning them as a structered list, @samp{headers}.
+Gathering subjects and other necessary informations from the page source
+in order to make headlines of articles and returning them as the
+structured list called @code{headers}.
 
 @item
-getting web page source from the web site, for examples,
-@url{http://www.foobar.net/053003.html} when MUA requires to display an
-article of @samp{foobar} folder, and
+Getting a page source for an article from the web site, for example,
+@uref{http://www.foobar.net/053003.html}, when MUA requires to display
+an article in the @samp{foobar} folder, and
 
 @item
-removing unnecessary parts (e.x. advertisement, etc.) from the web page
-source, if necessary.
+Removing cruft, e.g. advertisements, from the page source and formatting
+a raw article.
 @end enumerate
 
 @noindent
@@ -3502,46 +3508,60 @@ source, if necessary.
 @code{shimbun-get-headers} does the second, @code{shimbun-article} does
 the third and @code{shimbun-make-contents} does the last.
 
-See source codes of @file{shimbun.el}.  You will see unfamiliar
-function like declarations that use @code{luna-define-generic} and
-@code{luna-define-method}.  It seems they are similar to functions
-declared with @code{defun}.  And a body is the former is just a
-doc-string, and a body of the latter is an actual function.  And more,
-as to some symbols, they are declared with @code{luna-define-generic}
-only, but not with @code{luna-define-method}.
+The @code{shimbun-headers} method does the first job, the
+@code{shimbun-get-headers} method does the second, the
+@code{shimbun-article} method does the third and the
+@code{shimbun-make-contents} method does the last thing.  The default
+methods for those categories are defined in the @file{shimbun.el}
+module.
 
-Actually @file{shimbun.el} and other shimbun modules use @file{luna.el}
-of FLIM that enable you to write object oriented programming in Emacs
-Lisp.
+Open the @file{shimbun.el} file.  You may see unfamiliar definitions
+like @code{luna-define-generic} or @code{luna-define-method} there.  Hm,
+they look like @code{defun}, don't you?  You may also see there's just a
+doc-string in the former definition and the same symbol is declared
+again in the later form.  And further, there are some symbols only
+declared by the @code{luna-define-generic} form, not by the
+@code{luna-define-method} form.  What on earth are we seeing?  Isn't the
+program not written in the Emacs-Lisp language?
 
-@file{shimbun.el} fixes a frame, in which @code{shimbun-headers}
-gets a web page of a certain URL, @code{shimbun-get-headers} gathers
-subject and other information@dots{} (which I mentioned above).  But
-in such a fixed frame, how can we change their in accordance with a
-number of format of web pages in the world?
+The truth is that the @samp{shimbun} modules use the @file{luna.el}
+module provided by @acronym{FLIM} which enables you to write object
+oriented programs in the Emacs-Lisp language.
 
-@file{shimbun.el} fixes only orders of methods called.  It leaves most
-of actual functions' bodies to each shimbun module.  @file{shimbun.el}
-defines some actual functions' bodies as methods, however, you can
-override them in your new shimbun module, if you want.
+There are method programs defined rigidly for the specific purposes in
+the @file{shimbun.el} module.  The @code{shimbun-headers} method gets a
+page source from a certain URL, the @code{shimbun-get-headers} method
+gathers subjects and other informations, etc@dots{} (see above).  They
+do routine works, so they cannot take proper method to meet various web
+contents in the world.  Eh?  Oh, you shouldn't believe in a heresy!
 
-Now you can understand that @code{luna-define-generic} provides you with
-only husks, @code{luna-define-method} defines a actual function body
-itself in different meanings by each shimbun module, and
-@code{luna-define-class} declaration in the first part of
-@file{sb-foobar.el} is a class declaration of luna.
+The @file{shimbun.el} module only provides the default method functions.
+Remember the @code{defadvice} feature.  There are three ways to modify
+the behavior of a function: @code{:before}, @code{:around} and
+@code{:after}.  Similarly, each default @samp{shimbun} method function
+can be modified for a certain purpose (note that the @code{:around}
+method-qualifier can be omitted).  And it should be written specially
+that the modification will be effective only when the specified
+@samp{shimbun} module is selected.
+
+Now as you may have understood that the @code{luna-define-generic} form
+provides only a husk in a sense, the @code{luna-define-method} form
+defines an actual function which can be different for each
+@samp{shimbun} module, and the @code{luna-define-class} form declares
+the @samp{shimbun} class in the first part of the @file{sb-foobar.el}
+module.
 
 @node Getting web page and header information
 @subsection Getting web page and header information
 
 Let's identify a target web page URL to gather subjects and other
 informations first.  If a web site uses a frame, a target is only one
-of the web pages.  Second, lets create a body of
-@code{shimbun-index-url} using @code{luna-define-method} in your new
-shimbun module @file{sb-foobar.el}.  And make a user variable
-@code{shimbun-foobar-groups}, which I will explain later @footnote{At
-least a group is necessary for each shimbun module even if you don't
-want it.}.
+of the web pages.  Second, lets create a body of the
+@code{shimbun-index-url} method function using the
+@code{luna-define-method} form in your @file{sb-foobar.el} file.  And
+make the user customizable variable @code{shimbun-foobar-groups}, which
+we will explain later@footnote{At least one group is necessary for each
+@samp{shimbun} module even if you don't want it.}.
 
 @lisp
 (defvar shimbun-foobar-url "http://www.foobar.net")
@@ -3552,49 +3572,53 @@ want it.}.
 (defvar shimbun-foobar-groups '("news"))
 @end lisp
 
-After you create a body of @code{shimbun-index-url} method,
-@code{shimbun-headers} can get a web page source since @file{shimbun.el}
-already has a @code{shimbun-headers} method.  After
-@code{shimbun-headers} gets web page source, it calls
-@code{shimbun-get-headers} to gather headers information.
-As @file{shimbun.el} does not have a @code{shimbun-get-headers} method,
-you have to create it in your @file{sb-foobar.el}.
+After you create a body of the @code{shimbun-index-url} method, the
+@code{shimbun-headers} method can get a web page source since the
+@file{shimbun.el} module already has the default @code{shimbun-headers}
+method.  After the @code{shimbun-headers} method gets a web page source,
+it calls the @code{shimbun-get-headers} method to gather headers
+information.  As the @file{shimbun.el} module does not have the
+@code{shimbun-get-headers} method, you have to create it in your
+@file{sb-foobar.el} file.
 
-Now look carefully in the page source to create a
-@code{shimbun-get-headers} method in your @file{sb-foobar.el}.
+Now look carefully in the page source and create the
+@code{shimbun-get-headers} method in your @file{sb-foobar.el} file.
 
 Create a regular expression that can gather headers information.
-Minimally necessary information are subject, date, author, url and
-message-id of an article.  They are used in MUA as Subject, Date, From,
-Xref and Message-ID.
+Minimally necessary information are subject, date, author, URL and
+@code{message-id} of an article.  They are used in MUA as Subject, Date,
+From, Xref and Message-ID.
 
-If you want to make an article from a line in a web page source, like;
+If you want to make an article from a line in a web page source, like:
 
 @example
 <a href="053003.html">some talks on May 30(posted by Mikio &lt;foo@@bar.net&gt;)</a>
 @end example
 @noindent
 
-use the following regexp;
+use the following regexp:
 
 @example
 "<a href=\"\\(\\([0-9][0-9][0-9][0-9]\\)\\.html\\)\">\\([^<(]+\\)(posted by \\([^<]+\\))<\/a>"
 @end example
 
 @noindent
-You can get a value for Xref by @w{@code{(match-string 1)}}.  You can
-get a value for Date by modifying a value of @w{@code{(match-string 2)}}.
-Subject by @w{@code{(match-string 3)}} and From from
+You can get a value for Xref by
+@w{@code{(match-string 1)}}.  You can get a value for Date by modifying
+a value of
+@w{@code{(match-string 2)}}.  Subject by
+@w{@code{(match-string 3)}} and From from
 @w{@code{(match-string 4)}}.  You can modify them further for showing
-additional information in MUA.  See @file{sb-muchy.el} which makes its
-original subject form from a web page source.
+additional information in MUA.  See the @file{sb-muchy.el} file which
+makes its original subject form from a web page source.
 
 If URL of an article is a relative path like above, use
-@code{w3m-expand-url} to expand it before putting information to header.
-If each article doesn't have a each unique URLs (i.e. URL of headers and
-URL of articles are just same), you have to ask Emacs to remember body
-of an article when gathering headers information, For more detail see
-@file{sb-palmfan.el}, @file{sb-dennou.el} and @file{sb-tcup.el}.
+@code{w3m-expand-url} to expand it before putting information to
+header.  If each article doesn't have a each unique URLs (i.e. URL of
+headers and URL of articles are just same), you have to ask Emacs to
+remember body of an article when gathering headers information, For more
+detail see the files @file{sb-palmfan.el}, @file{sb-dennou.el} and
+@file{sb-tcup.el}.
 
 Sometimes you cannot identify Date information when gathering headers
 information only from a web page source.  If so, leave it, just set a
@@ -3604,19 +3628,19 @@ you see contents of an article, you can set it at that time by using
 web site (e.x. "webmaster@@foobar.net").
 
 Be careful when you build a message-id.  Make sure it has uniqueness
-otherwise you may not be able to read some articles in the shimbun
-@footnote{And more, you may not be able to read actual email messages
-from someone when message-ids conflict!}.  Assure uniqueness by
-building message-id using date information, a domain of the page
-and/or a part of URL of the page.  And use @samp{@@} but @samp{:} as a
-part of message-id in order to display inline images.  See RFC2387 and
-RFC822 for more detail.
+otherwise you may not be able to read some articles in the
+@samp{shimbun}@footnote{And more, you may not be able to read actual
+email messages from someone when message-ids conflict!}.  Assure
+uniqueness by building message-id using date information, a domain of
+the page and/or a part of URL of the page.  And use @samp{@@} but
+@samp{:} as a part of message-id in order to display inline images.  See
+RFC2387 and RFC822 for more detail.
 
 Put these information to header using function
-@code{shimbun-make-header} of @file{shimbun.el}.
+@code{shimbun-make-header} of the @file{shimbun.el} module.
 
-A bare bone of @code{shimbun-get-headers} in your @file{sb-foobar.el} is
-as follows;
+A bare bone of @code{shimbun-get-headers} in your @file{sb-foobar.el}
+file is as follows:
 
 @lisp
 (luna-define-method shimbun-get-headers ((shimbun shimbun-foobar)
@@ -3638,21 +3662,22 @@ as follows;
 @end lisp
 
 @noindent
-Note that you can access shimbun-foobar instance via temporary variable
-@code{shimbun} in the method.
+Note that you can access @samp{shimbun-foobar} instance via temporary
+variable @code{shimbun} in the method.
 
-Now I will explain a user variable @code{shimbun-foobar-groups}.
+Now we will explain a user variable @code{shimbun-foobar-groups}.
 
 Assume that you have two groups of articles in
-@w{@url{http://www.foobar.net}} and there are two different web pages
-for such groups in where shimbun module gathers header information.
-For examples, there are what's new information of the web site in
-@w{@url{http://www.foobar.net/whatsnew/index.hmtl}}, and there are
+@w{@uref{http://www.foobar.net}} and there are two different web pages
+for such groups in where @samp{shimbun} module gathers header
+information.  For examples, there are what's new information of the web
+site in
+@w{@uref{http://www.foobar.net/whatsnew/index.hmtl}}, and there are
 archive lists of email messages posted to ML in
-@w{@url{http://www.foobar.net/ml/index.html}}.  In such case you may
-want to access the group by shimbun folders @samp{foobar.whatsnew} and
-@samp{foobar.ml}.  If so put the following S expressions to
-@file{sb-foobar.el}.
+@w{@uref{http://www.foobar.net/ml/index.html}}.  In such case you may
+want to access the group by @samp{shimbun} folders
+@samp{foobar.whatsnew} and @samp{foobar.ml}.  If so, put the following S
+expressions to the @file{sb-foobar.el} file.
 
 @lisp
 (defvar shimbun-foobar-url "http://www.foobar.net")
@@ -3666,8 +3691,8 @@ want to access the group by shimbun folders @samp{foobar.whatsnew} and
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-foobar))
   (concat shimbun-foobar-url
-	  (cdr (assoc (shimbun-current-group-internal shimbun) 
-		      shimbun-foobar-groups))))
+          (cdr (assoc (shimbun-current-group-internal shimbun)
+                      shimbun-foobar-groups))))
 @end lisp
 
 @noindent
@@ -3676,27 +3701,26 @@ You can get the current group by using
 @code{shimbun-get-headers} method (or others) in order to change its
 behavior in accordance with the current group.
 
-Each shimbun module needs at least one group.  There is not a special
-rule for naming a group, but if you don't find out a good name, use
-@samp{news} or @samp{main}.
+Each @samp{shimbun} module needs at least one group.  There is not a
+special rule for naming a group, but if you don't find out a good name,
+use @samp{news} or @samp{main}.
 
 @node Displaying an article
 @subsection Displaying an article
 
-@code{shimbun-article} method defined in @file{shimbun.el} gets URL from
-Xref information of header, get a web page source from the URL, and call
-@code{shimbun-make-contents} in working buffer of the source.   Major
-job of @code{shimbun-make-contents} is to process such HTML.
-
-Imagine that a working buffer has a web page source of an article.
-@code{shimbun-make-contents} defined in @file{shimbun.el} insert (i)
-header information to top of the buffer, (ii) @samp{<html>},
-@samp{<body>} and etc right after the information, and (iii)
-@samp{</body>} and @samp{</html>} to end of the buffer.  MUA displays
-an article as a HTML mail.
+@code{shimbun-article} method defined in the @file{shimbun.el} module
+gets URL from Xref information of header, get a web page source from the
+URL, and call @code{shimbun-make-contents} in working buffer of the
+source.   Major job of @code{shimbun-make-contents} is to process such
+HTML.  Imagine that a working buffer has a web page source of an
+article.  @code{shimbun-make-contents} defined in the @file{shimbun.el}
+module insert (i) header information to top of the buffer, (ii)
+@samp{<html>}, @samp{<body>} and etc. right after the information, and
+(iii) @samp{</body>} and @samp{</html>} to end of the buffer.  MUA
+displays an article as a HTML mail.
 
 If you don't want to process an article, you don't have to define
-@code{shimbun-make-contents} in @file{sb-foobar.el}.
+@code{shimbun-make-contents} in the @file{sb-foobar.el} module.
 
 If you want to remove some part of a web page source of an article at
 its top and its end, set regexp to @code{shimbun-foobar-content-start}
@@ -3709,29 +3733,29 @@ matches content end.
 @end lisp
 
 @noindent
-@code{shimbun-make-contents} defined in @file{shimbun.el} will remove 
-HTML source from @code{point-min} to
+@code{shimbun-make-contents} defined in the @file{shimbun.el} module
+will remove HTML source from @code{point-min} to
 @code{shimbun-foobar-content-start} and from
-@code{shimbun-foobar-content-end} to @code{point-max} using the
-regexps.  Note that it will not remove any HTML source when either of the
-regexp searches fails.
+@code{shimbun-foobar-content-end} to @code{point-max} using the regexps.
+Note that it will not remove any HTML source when either of the regexp
+searches fails.
 
 If you want to remove unnecessary parts (e.x. advertisements) diligently
 by some regexps, define @code{shimbun-make-contents} in your new
-@file{sb-foobar.el} with @code{luna-define-method} specifying
+@file{sb-foobar.el} file with @code{luna-define-method} specifying
 method-qualifier @samp{:before} and clean up an article before
-@code{shimbun-make-contents} of @file{shimbun.el} is called @footnote{As
-you may know, a method that is declared with @samp{:before} is called
-first and succeedingly a method of the same name that is declared
-without @samp{:before} is called.  If you declare a method without any
-method-qualifier, it will overwrite a method of the same name in parent
-class.}.  Don't forget to use @code{save-excursion} in
-@code{shimbun-make-contents} with @samp{:before} to save point so that a
-parent method can work properly.
+@code{shimbun-make-contents} of the @file{shimbun.el} module is
+called@footnote{As you may know, a method that is declared with
+@samp{:before} is called first and succeedingly a method of the same
+name that is declared without @samp{:before} is called.  If you declare
+a method without any method-qualifier, it will overwrite a method of the
+same name in parent class.}.  Don't forget to use @code{save-excursion}
+in @code{shimbun-make-contents} with @samp{:before} to save point so
+that a parent method can work properly.
 
 @lisp
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-foobar)
-						   header)
+                                                   header)
   (save-excursion
     ;; cleaning up
     (while (re-search-forward "..." nil t nil)
@@ -3741,8 +3765,17 @@ parent method can work properly.
 @end lisp
 
 @noindent
-For more details see @code{shimbun-make-contents} of
-@file{sb-ibm-dev.el}.
+For more details see @code{shimbun-make-contents} in the
+@file{sb-ibm-dev.el} file.
+
+I said in the subsection of @xref{Getting web page and header
+information} that if each article doesn't have a each unique URLs you
+have to ask Emacs to remember body of an article when gathering headers
+information,  In such case you don't have to get a web page from URL of
+Xref in @file{shimbun-article} method.  Just get texts from Emacs
+memories and put them with pretty printing.  For more detail see
+definitions of @file{shimbun-article} method of @file{sb-palmfan.el},
+@file{sb-dennou.el} or @file{sb-tcup.el}.
 
 @node Inheriting shimbun module
 @subsection Inheriting shimbun module
@@ -3752,34 +3785,34 @@ There are some famous mailing list manager (or archiver).
 @itemize @bullet
 @item Mailman
 @noindent
-The GNU Mailing List Manager, formerly called as @samp{pipermail}.
-See  @url{http://www.gnu.org/software/mailman/index.html} for detail.
+The GNU Mailing List Manager, formerly called as @samp{pipermail}.  See
+@uref{http://www.gnu.org/software/mailman/index.html} for detail.
 
-@item Mhonarc
+@item MHonArc
 @noindent
-See @url{http://www.oac.uci.edu/indiv/ehood/mhonarc.html} for detail.
+See @uref{http://www.oac.uci.edu/indiv/ehood/mhonarc.html} for detail.
 
 @item fml
 @noindent
 fml mailing list server/manager.  See
-@url{http://www.fml.org/software/fml/} for detail.
+@uref{http://www.fml.org/software/fml/} for detail.
 
 @item mailarc
 @noindent
-See @url{http://cvs.namazu.org/mailarc/} for detail.
+See @uref{http://cvs.namazu.org/mailarc/} for detail.
 @end itemize
 
 If you find out one of such mailing list managers' names in a web page
-source when you analize it in the step of @xref{Getting web page and
-header information}, you are very lucky @footnote{Such mailing list
-managers often show their own name in an archive list page}.
-@file{sb-mailman.el}, @file{sb-mhonarc.el}, @file{sb-fml.el} and 
-@file{sb-mailarc.el} have @code{shimbun-get-headers}, etc, already,
-When you write small code that is not defined in such shimbun modules,
-your new @file{sb-foobar.el} works!
+source when you analyze it in the step of @xref{Getting web page and
+header information}, you are very lucky@footnote{Such mailing list
+managers often show their own name in an archive list page}.  The
+modules @file{sb-mailman.el}, @file{sb-mhonarc.el}, @file{sb-fml.el} and
+@file{sb-mailarc.el} have the @code{shimbun-get-headers} method, etc,
+already, when you write small code that is not defined in such
+@samp{shimbun} modules, your new @file{sb-foobar.el} module works!
 
-If you use @file{sb-mailman.el}, write the following S expressions to
-top of @file{sb-foobar.el};
+If you use @the file{sb-mailman.el} module, write the following S
+expressions to the top of the @file{sb-foobar.el} file:
 
 @lisp
 (require 'shimbun)
@@ -3788,25 +3821,25 @@ top of @file{sb-foobar.el};
 @end lisp
 
 @noindent
-Those above mean that shimbun module shimbun-foobar inherits
-shimbun-mailman class @footnote{i.e. shimbun-mailman class is a parent
-class.} and methods defined in @file{sb-mailman.el} will be used in
-shimbun-foobar by default.  You can overwrite some of parent methods, if
-necessary.
+Those above mean that @samp{shimbun} module @samp{shimbun-foobar}
+inherits shimbun-mailman class@footnote{i.e. shimbun-mailman class is a
+parent class.} and methods defined in the @file{sb-mailman.el} module
+will be used in @samp{shimbun-foobar} by default.  You can overwrite
+some of parent methods, if necessary.
 
-See @file{sb-anthy.el} as a sample that uses @file{sb-mailman.el}.  You
-can feel how easy to create a new shimbun module by using such parent
-modules.
+See the @file{sb-anthy.el} file as a sample that uses the
+@file{sb-mailman.el} module.  You can feel how easy to create a new
+@samp{shimbun} module by using such parent modules.
 
-Note that there are some localized version of such mailing list
-manager, for examples, some of them show Date information in Japanese.
-@file{sb-mailman.el}, @file{sb-mhonarc.el}, @file{sb-fml.el} and 
+Note that there are some localized version of such mailing list manager,
+for examples, some of them show Date information in Japanese.  The
+modules @file{sb-mailman.el}, @file{sb-mhonarc.el}, @file{sb-fml.el} and
 @file{sb-mailarc.el} assumes that mailing list managers are not
-localied.
+localized.
 
-If you want to read via shimbun a web site that uses localized mailing
-list manager, you may have to overwrite some methods in the parent
-module.
+If you want to read via @samp{shimbun} a web site that uses localized
+mailing list manager, you may have to overwrite some methods in the
+parent module.
 
 @node Tips
 @chapter Some knick-knacks using emacs-w3m
