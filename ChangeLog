@@ -1,3 +1,8 @@
+2003-03-11  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+
+	* shimbun/sb-f1fan.el (shimbun-index-url): Remove a redundant
+	slash.
+
 2003-03-10  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-pocketgames.el (shimbun-headers): Bug fixed.
