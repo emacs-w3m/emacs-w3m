@@ -1,5 +1,8 @@
 2001-03-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-time-parse-string the 2nd): Don't funcall
+	`parse-time-string' directly for avoiding compile warning.
+
 	* w3m-hist.el (w3m-history-current): New function.
 
 2001-03-23  Katsumi Yamaoka  <yamaoka@jpl.org>
