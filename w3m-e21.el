@@ -76,7 +76,7 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 
 (unless (fboundp 'w3m-ucs-to-char)
   (defun w3m-ucs-to-char (codepoint)
-    (decode-char 'ucs codepoint)))
+    (or (decode-char 'ucs codepoint) ?~)))
 
 (defun w3m-add-local-hook (hook function &optional append)
   "Add to the buffer-local value of HOOK the function FUNCTION."
