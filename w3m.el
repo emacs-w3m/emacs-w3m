@@ -126,7 +126,7 @@
   :group 'w3m
   :type 'directory)
 
-(defun w3m-local-file-name (url)
+(defun w3m-url-to-file-name (url)
   (if (string-match "^file:" url)
       (setq url (substring url (match-end 0))))
   (if (string-match "^\\(//\\|/cygdrive/\\)\\(.\\)/\\(.*\\)" url)
@@ -137,7 +137,7 @@
   ;; if filename is cygwin format,
   ;; then remove cygdrive prefix before expand-file-name
   (if directory
-      (setq file (w3m-local-file-name file)))
+      (setq file (w3m-url-to-file-name file)))
   ;; expand to file scheme url considering Win32 environment
   (setq file (expand-file-name file directory))
   (if (string-match "^\\(.\\):\\(.*\\)" file)
@@ -854,7 +854,7 @@ This function is imported from mcharset.el."
 	file)
     (when (or (not accept-type-regexp)
 	      (string-match accept-type-regexp type))
-      (setq file (w3m-local-file-name url))
+      (setq file (w3m-url-to-file-name url))
       (with-current-buffer (get-buffer-create w3m-work-buffer-name)
 	(delete-region (point-min) (point-max))
 	(if (and (string-match "^text/" type)
