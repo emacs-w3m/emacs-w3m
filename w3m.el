@@ -1282,10 +1282,10 @@ This variable can take one of the following five kinds of forms:
 3. List of coding systems:
   Decode URIs using the encoding assumed based on this list.
 
-4. Alist of predicates and one of forms described above:
+4. Alist of predicates and forms described below:
   Each element looks like the `(PREDICATE . ENCODING)' form.  PREDICATE
   should be a regexp, a function or a Lisp form, and ENCODING should be
-  one of the items described here excluding this item.  If PREDICATE is
+  one of the forms described here excluding this form.  If PREDICATE is
   a regexp, it will be tested whether it matches to the current url.
   If it is a function, it will be called with no argument.  If it is a
   Lisp form, it will be simply evaluated.  Elements are tested in turn
