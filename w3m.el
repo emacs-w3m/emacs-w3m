@@ -2692,31 +2692,32 @@ works on Emacs.
 
 (defun w3m-about-history-1 (history source depth)
   "Internal function used to `w3m-about-history' for recursive funcall."
-  (let (element url title children)
+  (let (element url title about children)
     (while history
       (setq element (car history)
 	    history (cdr history)
 	    url (car element)
 	    title (plist-get (cadr element) ':title)
-	    children (cddr element)
-	    source (concat
-		    source
-		    (if (zerop depth)
-			""
-		      (make-string depth ?│))
-		    (if history
-			"├"
-		      "└")
-		    (if (string-match w3m-about-history-except-regex url)
-			"◇"
-		      (concat "<a href=\"" url "\">"
-			      (if (or (not title)
-				      (string-equal "<no-title>" title)
-				      (string-match "^[\t 　]*$" title))
-				  url
-				title)
-			      "</a>"))
-		    "\n"))
+	    about (string-match w3m-about-history-except-regex url)
+	    source (concat source
+			   (if (zerop depth)
+			       ""
+			     (make-string depth ?│))
+			   (if history
+			       "├"
+			     "└")
+			   "<a href=\"" url "\">"
+			   (when about
+			     "&lt;")
+			   (if (or (not title)
+				   (string-equal "<no-title>" title)
+				   (string-match "^[\t 　]*$" title))
+			       url
+			     title)
+			   (when about
+			     "&gt;")
+			   "</a>\n")
+	    children (cddr element))
       (when children
 	(setq source (w3m-about-history-1 (apply 'append children)
 					  source (1+ depth))))))
@@ -2738,11 +2739,7 @@ works on Emacs.
 	(replace-match (if (match-beginning 1)
 			   "─"
 			 "┬")))
-      (goto-char (point-min))
-      (when (prog1
-		(search-forward "◇\n" nil t)
-	      (goto-char (point-max)))
-	(insert "\n;; All \"about://*\" links (◇) are deactivated.\n"))
+      (goto-char (point-max))
       (insert "</pre></body>")))
   "text/html")
 
