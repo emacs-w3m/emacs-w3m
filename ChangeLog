@@ -1,3 +1,7 @@
+2001-06-07  NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+
+	* w3m.el (w3m-exec-process): Replace `delete' with `delq'.
+
 2001-06-07  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-airs.el (shimbun-get-headers): Added optional argument
