@@ -1,3 +1,8 @@
+2001-12-06  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-decode-buffer): When content-charset is unknown,
+	detect coding-system automatically.
+
 2001-12-04  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-e21.el (w3m-buffer-favicon): Reset `w3m-current-favicon-data'

@@ -2273,33 +2273,36 @@ If the user enters null input, return second argument DEFAULT."
 			  t '(t nil) nil (cadr x))))))))
 
 (defun w3m-decode-buffer (url &optional content-charset content-type)
-  (unless content-charset
-    (setq content-charset
-	  (or (w3m-content-charset url)
-	      (when (string= "text/html"
-			     (or content-type (w3m-content-type url)))
-		(let ((case-fold-search t))
-		  (goto-char (point-min))
-		  (when (or (re-search-forward
-			     w3m-meta-content-type-charset-regexp nil t)
-			    (re-search-forward
-			     w3m-meta-charset-content-type-regexp nil t))
-		    (match-string-no-properties 2)))))))
-  (when (and (eq w3m-type 'w3mmee)
-	     (or (and (stringp content-charset)
-		      (string= "x-moe-internal" (downcase content-charset)))
-		 (eq content-charset 'x-moe-internal)))
-    (setq content-charset (w3m-x-moe-decode-buffer)))
-  (decode-coding-region
-   (point-min) (point-max)
-   (setq w3m-current-coding-system
-	 (if content-charset
-	     (w3m-charset-to-coding-system content-charset)
-	   (w3m-detect-coding-region (point-min) (point-max)
-				     (if (w3m-url-local-p url)
-					 nil
-				       w3m-coding-system-priority-list)))))
-  (set-buffer-multibyte t))
+  (let (cs)
+    (unless content-charset
+      (setq content-charset
+	    (or (w3m-content-charset url)
+		(when (string= "text/html"
+			       (or content-type (w3m-content-type url)))
+		  (let ((case-fold-search t))
+		    (goto-char (point-min))
+		    (when (or (re-search-forward
+			       w3m-meta-content-type-charset-regexp nil t)
+			      (re-search-forward
+			       w3m-meta-charset-content-type-regexp nil t))
+		      (match-string-no-properties 2)))))))
+    (when content-charset
+      (setq cs (w3m-charset-to-coding-system content-charset)))
+    (when (and (eq w3m-type 'w3mmee)
+	       (or (and (stringp content-charset)
+			(string= "x-moe-internal" (downcase content-charset)))
+		   (eq content-charset 'x-moe-internal)))
+      (setq cs (w3m-x-moe-decode-buffer)))
+    (decode-coding-region
+     (point-min) (point-max)
+     (setq w3m-current-coding-system
+	   (or cs
+	       (w3m-detect-coding-region
+		(point-min) (point-max)
+		(if (w3m-url-local-p url)
+		    nil
+		  w3m-coding-system-priority-list)))))
+    (set-buffer-multibyte t)))
 
 (defun w3m-x-moe-decode-buffer ()
   (let ((args '("-i" "-cs" "x-moe-internal"))
