@@ -48,10 +48,12 @@
 Return the first possible coding system.
 
 PRIORITY-LIST is a list of coding systems ordered by priority."
-  (car (detect-coding-with-priority
-	start end
-	(mapcar (function (lambda (x) (cons (coding-system-category x) x)))
-		priority-list))))
+  (let (category categories)
+    (dolist (codesys priority-list)
+      (setq category (coding-system-category codesys))
+      (unless (assq category categories)
+	(push (cons category codesys) categories)))
+    (car (detect-coding-with-priority start end (nreverse categories)))))
 
 (defun w3m-make-ccl-coding-system
   (coding-system mnemonic docstring decoder encoder)

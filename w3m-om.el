@@ -63,11 +63,13 @@
 ;; No need to contain the eol-type variants in the following alist
 ;; because they will also be generated for each coding-system.
 (defvar w3m-om-coding-system-alist
-  '((big5		. *big5*)
-    (binary		. *noconv*)
+  '((alternativnyj	. *alternativnyj*)
+    (big5		. *big5*)
+    (binary		. *noconv*);; `binary' will be provided by APEL.
     (cn-gb-2312		. *euc-china*)
     (ctext		. *ctext*)
     (emacs-mule		. *internal*)
+    (euc-china		. *euc-china*)
     (euc-japan		. *euc-japan*)
     (euc-korea		. *euc-korea*)
     (euc-kr		. *euc-kr*)
@@ -82,40 +84,54 @@
     (iso-8859-7		. *iso-8859-7*)
     (iso-8859-8		. *iso-8859-8*)
     (iso-8859-9		. *iso-8859-9*)
+    (junet		. *junet*)
+    (koi8		. *koi8*)
     (shift_jis		. *sjis*)
     (tis-620		. *tis620*)
-    (undecided		. *autoconv*))
+    (undecided		. *autoconv*)
+    (viscii		. *viscii*)
+    (vscii		. *vscii*))
   "*Alist of a modern coding-system and a traditional coding-system.")
 
-(defconst w3m-om-coding-categories
-  (sort (list '*coding-category-internal*
-	      '*coding-category-sjis*
-	      '*coding-category-iso-7*
-	      '*coding-category-iso-8-1*
-	      '*coding-category-iso-8-2*
-	      '*coding-category-iso-else*
-	      '*coding-category-big5*
-	      '*coding-category-bin*)
-	'coding-priority<)
-  "List of coding categories.")
-
 (defvar w3m-om-coding-category-alist
-  (let ((defs (cons '(iso-2022-7bit . *junet*) w3m-om-coding-system-alist))
-	pair rest)
-    (dolist (category w3m-om-coding-categories)
-      (when (setq pair (rassq (symbol-value category) defs))
-	(push (cons (car pair) category) rest)))
-    (nreverse rest))
+  '((alternativnyj	. *coding-category-iso-8-1*)
+    (big5		. *coding-category-big5*)
+    (binary		. *coding-category-bin*)
+    (cn-gb-2312		. *coding-category-iso-8-2*)
+    (ctext		. *coding-category-iso-8-1*)
+    (emacs-mule		. *coding-category-internal*)
+    (euc-china		. *coding-category-iso-8-2*)
+    (euc-japan		. *coding-category-iso-8-2*)
+    (euc-korea		. *coding-category-iso-8-2*)
+    (euc-kr		. *coding-category-iso-8-2*)
+    (iso-2022-7bit	. *coding-category-iso-7*)
+    (iso-2022-7bit-ss2	. *coding-category-iso-else*)
+    (iso-2022-jp	. *coding-category-iso-7*)
+    (iso-8859-1		. *coding-category-iso-8-1*)
+    (iso-8859-2		. *coding-category-iso-8-1*)
+    (iso-8859-3		. *coding-category-iso-8-1*)
+    (iso-8859-4		. *coding-category-iso-8-1*)
+    (iso-8859-5		. *coding-category-iso-8-1*)
+    (iso-8859-7		. *coding-category-iso-8-1*)
+    (iso-8859-8		. *coding-category-iso-8-1*)
+    (iso-8859-9		. *coding-category-iso-8-1*)
+    (junet		. *coding-category-iso-7*)
+    (koi8		. *coding-category-iso-8-1*)
+    (shift_jis		. *coding-category-sjis*)
+    (tis-620		. *coding-category-iso-8-1*)
+    (undecided		. *coding-category-bin*)
+    (viscii		. *coding-category-bin*)
+    (vscii		. *coding-category-bin*))
   "*Alist of a modern coding-system and a traditional coding-category.")
 
-(dolist (elem w3m-om-coding-system-alist)
-  (unless (coding-system-p (car elem))
-    (let* ((from (cdr elem))
-	   (to (car elem))
-	   (info-vector (copy-sequence (get-code from)))
-	   (document (aref info-vector 2))
-	   (id "(generated automatically by Emacs-W3M)")
-	   i)
+(let ((id "(generated automatically by Emacs-W3M)")
+      to from info-vector document i)
+  (dolist (elem w3m-om-coding-system-alist)
+    (setq to (car elem)
+	  from (cdr elem))
+    (when (and (not (coding-system-p to))
+	       (setq info-vector (copy-sequence (get-code from))))
+      (setq document (aref info-vector 2))
       (aset info-vector 2 (if (and (stringp document)
 				   (> (length document) 0))
 			      (concat document "\n  " id)
@@ -185,13 +201,23 @@
 Return the first possible coding system.
 
 PRIORITY-LIST is a list of coding systems ordered by priority."
-  (let (categories opriority x)
+  (let (category categories opriority x)
     (dolist (codesys priority-list)
-      (push (cdr (assq codesys w3m-om-coding-category-alist)) categories))
-    (when (setq categories (delq nil (nreverse categories)))
-      (setq opriority (sort (copy-sequence w3m-om-coding-categories)
+      (setq category (cdr (assq codesys w3m-om-coding-category-alist)))
+      (when (and category
+		 (not (memq category categories)))
+	(push category categories)))
+    (when categories
+      (setq opriority (sort (list '*coding-category-internal*
+				  '*coding-category-sjis*
+				  '*coding-category-iso-7*
+				  '*coding-category-iso-8-1*
+				  '*coding-category-iso-8-2*
+				  '*coding-category-iso-else*
+				  '*coding-category-big5*
+				  '*coding-category-bin*)
 			    'coding-priority<))
-      (set-coding-priority categories))
+      (set-coding-priority (nreverse categories)))
     (prog2
 	(setq x (code-detect-region start end))
 	(w3m-om-modernize-coding-system (if (consp x)

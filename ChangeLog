@@ -1,3 +1,19 @@
+2001-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-om.el (w3m-detect-coding-region): Use the fixed value for
+	the list of coding-categories; suppress the duplication of coding-
+	categories.
+	(TopLevel): Protect against non-existent coding-systems when
+	creating the modern coding-systems.
+	(w3m-om-coding-category-alist): Reinforce the default value.
+	(w3m-om-coding-categories): Abolish.
+	(w3m-om-coding-system-alist): Add some new coding-systems.
+
+	* w3m-fsf.el (w3m-detect-coding-region): Suppress the duplication
+	of coding-categories.
+	* w3m-xmas.el (w3m-detect-coding-region): Ditto;
+	use `coding-system-category' instead of `coding-system-type'.
+
 2001-10-03  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-show-inline-images-before-hook,
