@@ -55,7 +55,7 @@
 (define-widget 'w3m-antenna-string 'string
   "String widget with default value.
 When creating a new widget, its value is given by an expression specified
-with :default-value-from."
+with :value-from."
   :tag "URL"
   :value-from nil
   :create 'w3m-antenna-string-create)
@@ -149,6 +149,9 @@ that consists of:
 	    (const :tag "Check its last modified time only" time)
 	    (const :tag "Check its current date provided by Hyper Nikki System"
 		   hns)
+	    (list :tag "Check the another changelog page"
+		  (function-item :format "" w3m-antenna-check-another-page)
+		  (string :format "URL: %v\n" :value ""))
 	    (list :tag "Check the page linked by the anchor that matches"
 		  (function-item :format "" w3m-antenna-check-anchor)
 		  (regexp :value "")
@@ -157,7 +160,9 @@ that consists of:
 		  (w3m-antenna-function
 		   :match (lambda (widget value)
 			    (and (functionp value)
-				 (not (eq value 'w3m-antenna-check-anchor)))))
+				 (not (memq value
+					    '(w3m-antenna-check-another-page
+					      w3m-antenna-check-anchor))))))
 		  (repeat :tag "Arguments" sexp))))))
 
 (defcustom w3m-antenna-html-skeleton
@@ -248,6 +253,19 @@ that consists of:
     (w3m-process-do
 	(time
 	 (w3m-antenna-hns-last-modified (w3m-antenna-site-key site) handler))
+      (if time
+	  (w3m-antenna-site-update site (w3m-antenna-site-key site) time nil)
+	(w3m-antenna-check-page site handler)))))
+
+(defun w3m-antenna-check-another-page (site handler url)
+  "Check the another page to detect change of SITE asynchronously.
+This function checks the another page specified by the URL before
+checking the SITE itself.  This function is useful when the SITE's
+owner either maintains the page which describes the change of the
+SITE, or provides RDF Site Summary \(RSS\)."
+  (lexical-let ((site site))
+    (w3m-process-do-with-temp-buffer
+	(time (w3m-last-modified url t handler))
       (if time
 	  (w3m-antenna-site-update site (w3m-antenna-site-key site) time nil)
 	(w3m-antenna-check-page site handler)))))
@@ -458,15 +476,12 @@ asynchronous process that has not finished yet."
 	       (or w3m-antenna-alist (w3m-antenna-alist))))
     (let (changed unchanged)
       (dolist (site alist)
-	(if (if (w3m-antenna-site-last-modified site)
-		(w3m-time-newer-p (w3m-antenna-site-last-modified site)
-				  (or (w3m-arrived-last-modified
-				       (w3m-antenna-site-url site))
-				      (w3m-arrived-time
-				       (w3m-antenna-site-url site))))
-	      (w3m-time-newer-p (w3m-antenna-site-size-detected site)
-				(w3m-arrived-time
-				 (w3m-antenna-site-url site))))
+	(if (w3m-time-newer-p (or (w3m-antenna-site-last-modified site)
+				  (w3m-antenna-site-size-detected site))
+			      (or (w3m-arrived-last-modified
+				   (w3m-antenna-site-url site))
+				  (w3m-arrived-time
+				   (w3m-antenna-site-url site))))
 	    (progn
 	      (w3m-cache-remove (w3m-antenna-site-url site))
 	      (push site changed))
@@ -499,8 +514,8 @@ Optional argument TITLE is title of link."
   (setq w3m-antenna-tmp-title title)
   (customize-variable 'w3m-antenna-sites)
   ;; dirty...
-  (re-search-forward "INS")
-  (backward-char 1)
+  (goto-char (point-max))
+  (re-search-backward "INS")
   (widget-button-press (point))
   (re-search-forward "State:\\|\\(\\[State\\]:\\)")
   (backward-char (if (match-beginning 1) 3 2)))

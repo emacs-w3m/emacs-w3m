@@ -1,3 +1,32 @@
+2004-02-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-antenna.el (w3m-antenna-sites): Add
+	`w3m-antenna-check-another-page' to its customize spec.
+	(w3m-antenna-check-another-page): New function.
+	(w3m-about-antenna): Relaxed the condition to check changed sites.
+	(w3m-antenna-add): Add a new site at the end of
+	`w3m-antenna-sites' instead of adding it at the top.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Relaxed the
+	regular expression that matches spaces.
+
+	* shimbun/sb-rss.el (shimbun-get-headers): Check channel's author.
+
+	* shimbun/sb-slashdot-jp.el: Chenges to support sectioned RSS
+	feeds and diaries.
+	(shimbun-slashdot-jp-group-alist): New option.
+	(shimbun-slashdot-jp-url): Abolished.
+	(shimbun-slashdot-jp-from-address): Modified.
+	(shimbun-slashdot-jp-content-start): Modified to support diaries.
+	(shimbun-slashdot-jp-content-end): Ditto.
+	(shimbun-groups): New method.
+	(shimbun-index-url): Refer `shimbun-slashdot-jp-group-alist'.
+	(shimbun-rss-build-message-id): Support diaries.
+	(shimbun-slashdot-jp-comment-url): Return nil when diary pages are
+	specified.
+	(shimbun-clear-contents): Check the return value of the above
+	function before insertion of the anchor to comments page.
+
 2004-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-antenna.el (w3m-antenna-function): New widget.
@@ -30,8 +59,8 @@
 
 2004-02-13  Yuuichi Teranishi  <teranisi@gohome.org>
 
-	* shimbun/sb-itmedia.el (shimbun-get-headers): Remove newlines in the
-	subject.
+	* shimbun/sb-itmedia.el (shimbun-get-headers): Remove newlines in
+	the subject.
 
 2004-02-11  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 

@@ -70,26 +70,57 @@
 			(const :tag "Oldest first (Ignore threads)" 4)
 			(const :tag "Newest first (Ignore threads)" 5)))))
 
+(defcustom shimbun-slashdot-jp-group-alist
+  '(("story"	   . "http://slashdot.jp/slashdot.rdf")
+    ("askslashdot" . "http://slashdot.jp/askslashdot.rdf")
+    ("bookreview"  . "http://slashdot.jp/books.rdf")
+    ("bsd"	   . "http://slashdot.jp/bsd.rdf")
+    ("developers"  . "http://slashdot.jp/developers.rdf")
+    ("interview"   . "http://slashdot.jp/interview.rdf")
+    ("linuxkernel" . "http://slashdot.jp/linuxkernel.rdf")
+    ("mac"	   . "http://slashdot.jp/mac.rdf")
+    ("mobile"	   . "http://slashdot.jp/mobile.rdf")
+    ("science"	   . "http://slashdot.jp/science.rdf")
+    ("security"	   . "http://slashdot.jp/security.rdf")
+    ("slash"	   . "http://slashdot.jp/slash.rdf")
+    ("diary.oliver" .
+     "http://slashdot.jp/journal.pl?op=display&uid=4&content_type=rss"))
+  "*Alist of slashdot groups and their RSS feeds."
+  :group 'shimbun
+  :type '(repeat
+	  (cons :format "%v" :indent 4
+		(string :format "Group name: %v\n" :size 0)
+		(string :format "        RSS URL: %v\n" :size 0))))
+
 (luna-define-class shimbun-slashdot-jp (shimbun-rss) ())
 
-(defvar shimbun-slashdot-jp-url "http://slashdot.jp/slashdot.rdf")
-(defvar shimbun-slashdot-jp-groups '("story"))
-(defvar shimbun-slashdot-jp-from-address  "webmaster@slashdot.jp")
+(defvar shimbun-slashdot-jp-from-address "slashmaster@slashdot.jp")
 (defvar shimbun-slashdot-jp-coding-system 'euc-japan)
 (defvar shimbun-slashdot-jp-content-start
-  "\n<!-- start template: ID [0-9]+,.*dispStory.* -->\n")
+  "\n<!-- start template: ID [0-9]+, \\(dispStory;.*\\|.*page;journal;default\\) -->\n")
 (defvar shimbun-slashdot-jp-content-end
-  "\n<!-- end template: ID [0-9]+,.*dispStory.*-->\n")
+  "\n<!-- end template: ID [0-9]+, \\(dispStory;.*\\|.*page;journal;default\\) -->\n")
+
+(luna-define-method shimbun-groups ((shimbun shimbun-slashdot-jp))
+  (mapcar 'car shimbun-slashdot-jp-group-alist))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-slashdot-jp))
-  shimbun-slashdot-jp-url)
+  (cdr (assoc (shimbun-current-group-internal shimbun)
+	      shimbun-slashdot-jp-group-alist)))
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-slashdot-jp) url date)
-  (unless (string-match
-	   "\\`http://slashdot.jp/article.pl\\?sid=\\([/0-9]+\\)&" url)
-    (error "Cannot find message-id base"))
-  (concat "<" (match-string-no-properties 1 url) "@slashdot.jp>"))
+  (cond
+   ((string-match
+     "\\`http://slashdot\\.jp/article\\.pl\\?sid=\\([/0-9]+\\)&"
+     url)
+    (concat "<" (match-string-no-properties 1 url) "@slashdot.jp>"))
+   ((string-match
+     "\\`http://slashdot\\.jp/journal\\.pl\\?op=display&uid=\\([0-9]+\\)&id=\\([0-9]+\\)"
+     url)
+    (concat "<" (match-string-no-properties 2 url)
+	    "%" (match-string-no-properties 1 url) "@slashdot.jp>"))
+   (t (error "Cannot find message-id base"))))
 
 (luna-define-method shimbun-get-headers :around
   ((shimbun shimbun-slashdot-jp) &optional range)
@@ -101,23 +132,24 @@
     headers))
 
 (defun shimbun-slashdot-jp-comment-url (url)
-  (mapconcat 'identity
-	     (cons (if (string-match "&mode=nocomment\\'" url)
-		       (substring url 0 (match-beginning 0))
-		     url)
-		   (mapcar (lambda (x)
-			     (format "%s=%s" (car x) (cdr x)))
-			   shimbun-slashdot-jp-comment-arguments))
-	     "&"))
+  (when (string-match "\\`http://slashdot\\.jp/article\\.pl\\?" url)
+    (mapconcat 'identity
+	       (cons (if (string-match "&mode=nocomment\\'" url)
+			 (substring url 0 (match-beginning 0))
+		       url)
+		     (mapcar (lambda (x)
+			       (format "%s=%s" (car x) (cdr x)))
+			     shimbun-slashdot-jp-comment-arguments))
+	       "&")))
 
 (luna-define-method shimbun-clear-contents :around
   ((shimbun shimbun-slashdot-jp) header)
   (when (luna-call-next-method)
     (shimbun-remove-tags "<!-- begin ad code -->" "<!-- end ad code -->")
-    (goto-char (point-max))
-    (insert "\n<p align=left>[<a href=\""
-	    (shimbun-slashdot-jp-comment-url (shimbun-header-xref header))
-	    "\">もっと読む…</a>]</p>")
+    (let ((url (shimbun-slashdot-jp-comment-url (shimbun-header-xref header))))
+      (when url
+	(goto-char (point-max))
+	(insert "\n<p align=left>[<a href=\"" url "\">もっと読む…</a>]</p>")))
     t))
 
 (provide 'sb-slashdot-jp)

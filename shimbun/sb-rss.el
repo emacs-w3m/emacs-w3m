@@ -133,7 +133,16 @@ but you can identify it from the URL, define this method in a backend.")
 		 xml "http://purl.org/dc/elements/1.1/"))
 	 (rss-ns (shimbun-rss-get-namespace-prefix
 		  xml "http://purl.org/rss/1.0/"))
+	 (author)
 	 (headers))
+    (setq author
+	  (catch 'found-author
+	    (dolist (channel
+		     (shimbun-rss-find-el (intern (concat rss-ns "channel"))
+					  xml))
+	      (throw 'found-author
+		     (or (shimbun-rss-node-text rss-ns 'author channel)
+			 (shimbun-rss-node-text dc-ns 'creator channel))))))
     (dolist (item (shimbun-rss-find-el (intern (concat rss-ns "item")) xml))
       (let ((url (and (listp item)
 		      (eq (intern (concat rss-ns "item")) (car item))
@@ -149,6 +158,7 @@ but you can identify it from the URL, define this method in a backend.")
 		     (shimbun-rss-node-text rss-ns 'title item)
 		     (or (shimbun-rss-node-text rss-ns 'author item)
 			 (shimbun-rss-node-text dc-ns 'creator item)
+			 author
 			 (shimbun-from-address shimbun))
 		     (shimbun-rss-process-date shimbun date)
 		     id "" 0 0 url)

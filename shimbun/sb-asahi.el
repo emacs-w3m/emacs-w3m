@@ -45,7 +45,7 @@
   "Name of the parent url.")
 
 (defvar shimbun-asahi-group-table
-  (let* ((s0 "[\t\n ]*")
+  (let* ((s0 "[\t\n 　]*")
 	 (s1 "[\t\n ]+")
 	 (no-nl "[^\n<>]+")
 	 (default (list
