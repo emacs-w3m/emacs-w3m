@@ -3,6 +3,7 @@
 	* w3m.el (w3m-lynx-like-map): Don't define key bindings for
 	`w3m-zoom-out-image' and `w3m-zoom-in-image' when emacs-w3m in
 	running in non-graphical display.
+	(w3m-info-like-map): Ditto.
 
 2002-10-15  KAMO Tomoyuki  <kamo@ITmanage.co.jp>
 
