@@ -1,3 +1,10 @@
+2003-12-11  KAMO Tomoyuki <kamo@ITmanage.co.jp>
+
+	* octet.el (octet-suffix-type-alist): Add suffix of bzip-ed files.
+	(octet-type-filter-alist): Add an entry of bzip2.
+	(octet-guess-type-from-name): Relax the regular expression to
+	detect suffix, in order to handle bzip-ed files.
+
 2003-12-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Experimentally implement the estimation layer of

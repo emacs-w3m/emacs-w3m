@@ -38,6 +38,7 @@
 ;; pptHtml for MS PowerPoint document.
 ;; (http://chicago.sourceforge.net/xlhtml/)
 ;; gunzip for decoding gzipped file.
+;; bunzip2 for decoding bzip2ed file.
 
 ;; Put follwing line in your setting file:
 ;;
@@ -79,6 +80,7 @@
     ("ppt"  . msppt)
     ("doc"  . msword)
     ("gz"   . gzip)
+    ("bz2"  . bzip2)
     ("html" . html)
     ("jpg"  . jpeg)
     ("jpeg" . jpeg)
@@ -135,6 +137,7 @@ SUBTYPE is symbol to indicate subtype of content-type.")
     (html-u8 octet-decode-u8-text     nil	nil	html)
     (html-un octet-decode-text	      nil	nil	html)
     (gzip    octet-filter-call1	      "gunzip"	("-c")	guess)
+    (bzip2   octet-filter-call1	      "bunzip2"	("-c")	guess)
     (text    octet-decode-text	      nil	nil	nil)
     (ignore  ignore		      nil	nil	nil)
     (jpeg    octet-decode-image	      nil	jpeg	nil)
@@ -328,7 +331,7 @@ Returns 0 if succeed."
   0)
 
 (defun octet-guess-type-from-name (name)
-  (when (string-match "\\.\\([a-z]+\\)$" name)
+  (when (string-match "\\.\\([a-z0-9]+\\)\\'" name)
     (cdr (assoc (downcase (match-string 1 name))
 		octet-suffix-type-alist))))
 
