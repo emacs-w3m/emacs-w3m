@@ -57,7 +57,6 @@
 (require 'w3m-hist)
 (require 'thingatpt)
 (require 'timezone)
-(require 'pccl)
 
 ;; this package using a few CL macros
 (eval-when-compile
@@ -2138,6 +2137,50 @@ to nil."
 
 
 ;;; Retrieve data:
+(eval-and-compile
+  (condition-case err
+      (require 'pccl)
+    (error
+     (unless (fboundp 'make-ccl-coding-system)
+       (require 'ccl)
+       ;; from APEL
+       (w3m-static-cond
+	((featurep 'xemacs)
+	 (defun make-ccl-coding-system (name mnemonic docstring decoder encoder)
+	   "\
+Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
+
+CODING-SYSTEM, DECODER and ENCODER must be symbol."
+	   (make-coding-system
+	    name 'ccl docstring
+	    (list 'mnemonic (char-to-string mnemonic)
+		  'decode (symbol-value decoder)
+		  'encode (symbol-value encoder))))
+	 )
+	((>= emacs-major-version 20)
+	 (defun make-ccl-coding-system
+	   (coding-system mnemonic docstring decoder encoder)
+	   "\
+Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
+
+CODING-SYSTEM, DECODER and ENCODER must be symbol."
+	   (make-coding-system coding-system 4 mnemonic docstring
+			       (cons decoder encoder)))
+	 )
+	(t
+	 (defun make-ccl-coding-system
+	   (coding-system mnemonic doc-string decoder encoder)
+	   "\
+Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
+
+CODING-SYSTEM, DECODER and ENCODER must be symbol."
+	   (setq decoder (symbol-value decoder)
+		 encoder (symbol-value encoder))
+	   (make-coding-system coding-system 4 mnemonic doc-string
+			       nil		; Mule takes one more optional argument: EOL-TYPE.
+			       (cons decoder encoder)))
+	 ))))))
+  
 (define-ccl-program w3m-euc-japan-decoder
   `(2
     (loop
