@@ -1,0 +1,4400 @@
+\input texinfo @c -*-texinfo -*- coding: iso-2022-jp -*-
+@c %**start of header
+@setfilename emacs-w3m-ja.info
+@settitle Emacs-w3m -- an Emacs interface to w3m --
+@c %**end of header
+@documentlanguage ja
+@include version.texi
+@synindex pg cp
+@finalout
+
+@dircategory GNU Emacs Lisp
+@direntry
+* Emacs-w3m-ja: (emacs-w3m-ja).  An Emacs interface to w3m (Japanese)
+@end direntry
+
+@c permissions text appears in an Info file before the first node.
+@ifinfo
+This file documents emacs-w3m, an Emacs interface to w3m.
+
+このファイルは Emacs で動く w3m のインタフェースである emacs-w3m に関す
+る説明書です。
+
+Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}
+
+This edition is for emacs-w3m version @value{VERSION}.
+
+この版は emacs-w3m バージョン @value{VERSION} に対応します。
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU General Public License, Version 2 or any
+later version published by the Free Software Foundation.
+
+この文書を、フリーソフトウェア財団発行の GNU 一般公用使用許諾書第 2 版ま
+たはそれ以降の版が定める条件の下で複製、配布、あるいは変更することを許可
+します。
+
+This document is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+この文書は有用とは思いますが, 頒布にあたっては, 市場性及び特定目的適合性
+についての暗黙の保証を含めて, いかなる保証も行ないません. 詳細について
+は GNU 一般公有使用許諾書をお読みください.
+
+You should have received a copy of the GNU General Public License along
+with this document; if not, you can either send email to this document's
+maintainer or write to: The Free Software Foundation, Inc.; 59 Temple
+Place, Suite 330; Boston, MA 02111-1307, USA.
+
+あなたは, この文書と一緒に GNU 一般公有使用許諾の写しを受け取っているは
+ずです. そうでない場合は, 文書の管理者にメールを送るか、または、フリーソ
+フトウェア財団 (675 Mass Ave, Cambridge, MA 02139, USA) に手紙を書いてく
+ださい。
+@end ifinfo
+
+@titlepage
+@sp 10
+@title Emacs-w3m ユーザマニュアル
+@subtitle An Emacs interface to w3m for emacs-w3m version @value{VERSION}
+@author Emacs-w3m 開発チーム
+@page
+
+@vskip 0pt plus 1filll
+Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}
+
+This manual corresponds to emacs-w3m version @value{VERSION}.
+
+このマニュアルは emacs-w3m バージョン @value{VERSION} に対応します。
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU General Public License, Version 2 or any
+later version published by the Free Software Foundation.
+
+この文書を、フリーソフトウェア財団発行の GNU 一般公用使用許諾書第 2 版ま
+たはそれ以降の版が定める条件の下で複製、配布、あるいは変更することを許可
+します。
+
+This document is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+この文書は有用とは思いますが, 頒布にあたっては, 市場性及び特定目的適合性
+についての暗黙の保証を含めて, いかなる保証も行ないません. 詳細について
+は GNU 一般公有使用許諾書をお読みください.
+
+You should have received a copy of the GNU General Public License along
+with this document; if not, you can either send email to this document's
+maintainer or write to: The Free Software Foundation, Inc.; 59 Temple
+Place, Suite 330; Boston, MA 02111-1307, USA.
+
+あなたは, この文書と一緒に GNU 一般公有使用許諾の写しを受け取っているは
+ずです. そうでない場合は, 文書の管理者にメールを送るか、または、フリーソ
+フトウェア財団 (675 Mass Ave, Cambridge, MA 02139, USA) に手紙を書いてく
+ださい。
+@end titlepage
+
+@ifnottex
+@node Top
+@top Emacs-w3m ユーザマニュアル
+
+@flushright
+Emacs-w3m 開発チーム
+@end flushright
+
+この文書は emacs-w3m バージョン @value{VERSION} に対応します。
+@end ifnottex
+
+@menu
+* Introduction::                はじめに
+* Getting Started::             Emacs-w3m を使い始めるのはとっても簡単
+* Basic Usage::                 基本的な使い方
+* Pretty Good Features::        たくさんのすぐれもの
+* Customizable Variables::      デフォルトのままでも結構良いと思うけれど
+* Hooking into MUAs::           メール/ニュースリーダーで使う
+* Frequently Asked Questions::  必ず答があるとは限らない
+* Known Problems::              あなたならきっと解決できる
+* Shimbun Library::             ウェブ上の新聞を読むための道具
+* Tips::                        Emacs-w3m を使う洒落た小物たち
+* Mailing List::                メーリングリスト、バグリポート
+* Emacs-w3m Functions::         Emacs-w3m の関数の詳しい説明
+* Authors::                     このマニュアルを書いた人たち
+* Index::                       索引
+
+@detailmenu
+ --- 項目の詳細なリスト ---
+
+Getting Started
+
+* Required Emacs Version::      どんなバージョンの Emacs で使えるの?
+* You Need w3m::                w3m を使います: emacs-w3m が速いわけ
+* Other Requirements::          Emacs-w3m を動作させるのに必要なもの
+* Installing Emacs-w3m::        Emacs-w3m をインストールする
+* Non-UNIX-like systems::       非 UNIX 系環境でのインストール
+* Minimal Settings::            設定しなければならない最低限のもの
+
+Basic Usage
+
+* Browsing Web Pages::          ネットサーフィンしよう!
+* Inline Images::               画像表示を ON/OFF する
+* Tracing History::             時空を遡る
+* Managing Bookmarks::          ぼくの/わたしのお気に入り
+* Using Tabs::                  みんなタブが好きだよね
+* Working with buffers::        バッファを作る/消す/移動する
+* Downloading::                 ファイルをダウンロードする
+* Submitting Forms::            HTML フォームに記入する
+
+Pretty Good Features
+
+* Using Search Engines::        使いやすいウェブ検索
+* Grouping URLs::               一つの URL で複数のウェブページを見る
+* Weather Information::         明日の天気は晴れでしょう
+* Using Antenna::               アンテナを張り巡らそう
+* Showing Directory Tree::      ディレクトリの木構造を表示する
+* Viewing Perl Documents::      Perl のドキュメントを見る
+* Using Namazu::                Namazu でファイルを検索する
+* Octet::                       application/octet-stream データを見る
+
+Customizable Variables
+
+* General Variables::           一般的な変数
+* Image Variables::             画像に関連した変数
+* Bookmark Variables::          ブックマークに関連した変数
+* Search Variables::            ウェブ検索に関連した変数
+* Weather Variables::           天気予報に関連した変数
+* Dtree Variables::             dtree に関連した変数
+* Antenna Variables::           アンテナに関連した変数
+* Perldoc Variables::           Perldoc に関連した変数
+* Namazu Variables::            Namazu に関連した変数
+* Octet Variables::             Octet に関連した変数
+* Other Variables::             その他の変数
+
+Hooking into MUAs
+
+* Gnus::                        Gnus で HTML メールを読む
+* Mew::                         Mew で HTML メールを読む
+* SEMI MUAs::                   @acronym{SEMI} MUA で HTML メールを読む
+
+Frequently Asked Questions
+
+* General FAQ::                 一般的な質問
+* Trouble FAQ::                 トラブル
+* Shimbun FAQ::                 Shimbun に関する質問
+
+Known Problems
+
+Shimbun Library
+
+* Nnshimbun::                   Gnus をウェブブラウザにする!
+* Mew Shimbun::                 Mew で新聞を読む
+* Shimbun with Wanderlust::     Wanderlust で新聞を読む
+* Shimbun Sites::               新聞が読めるサイト
+* Shimbun Basics::              新聞モジュールの作り方
+
+Tips
+
+Mailing List
+
+Emacs-w3m Functions
+
+@end detailmenu
+@end menu
+
+@node Introduction
+@chapter はじめに
+@cindex Introduction
+
+Emacs 上で動作するブラウザと言えば、
+普通は @uref{http://www.cs.indiana.edu/elisp/w3/docs.html, W3} のことで
+すが、動作が非常に遅いので、なかなか常用しようという気になれません。それ
+に対して、@uref{http://w3m.sourceforge.net/, w3m} というテキストベースで
+動作するブラウザがあり、非常に軽快に動作するので重宝しているのですが、端
+末に移動しなければいけないのが面倒です。
+
+そこで、w3m を HTML の rendering engine として使用し、表示とインタフェー
+スのみを Emacs で動かすようにすればいいんじゃないだろうか、ということを
+考えました。つまり、emacs-w3m は、w3m を emacs 上で動かすインターフェー
+スプログラムですが、emacs 上で動くウェブブラウザとして使うこともできます。
+
+すばらしい w3m プログラムを開発してくれた伊藤彰則さんと w3m チームのみな
+さんに、格段の感謝を捧げます。さらにコメント、提案およびバグの修正をして
+くれたすべての人々に感謝します。たとえ問題があっても、責任はすべて私た
+ち (emacs-w3m 開発チーム) にあります。もっとも、保証はまったくありません
+が。Emacs-w3m は 2000年6月に土屋雅稔によって創始されました。
+
+@uref{http://emacs-w3m.namazu.org/, Emacs-w3m の公式ページ} も併せてご覧
+下さい。
+
+@node Getting Started
+@chapter Emacs-w3m を使い始めるのはとっても簡単
+@cindex Getting started
+@cindex Starting up
+
+ひょっとすると、あなたのシステムには emacs-w3m がすでにインストールされ
+ているかもしれません。その場合、あなたはこの項を読み飛ばして、直ちに使い
+始めることができます。そんな幸運に恵まれなかったならば、emacs-w3m のイン
+ストールの仕方を会得するために、読み続けて下さい。
+
+@menu
+* Required Emacs Version::      どんなバージョンの Emacs で使えるの?
+* You Need w3m::                w3m を使います: emacs-w3m が速いわけ
+* Other Requirements::          Emacs-w3m を動作させるのに必要なもの
+* Installing Emacs-w3m::        Emacs-w3m をインストールする
+* Non-UNIX-like systems::       非 UNIX 系環境でのインストール
+* Minimal Settings::            設定しなければならない最低限のもの
+@end menu
+
+@node Required Emacs Version
+@section どんなバージョンの Emacs で使えるの?
+@cindex Possible Emacs versions
+
+以下に挙げたいろいろなバージョンの Emacsen で emacs-w3m を動作させること
+ができます。
+
+@table @samp
+@item Emacs 21.x
+追加のパッケージは不要です。
+
+@item XEmacs 21.x
+@acronym{APEL} パッケージと @samp{gifsicle} プログラムが必要で
+す (@pxref{Other Requirements})。最も安定している最新の XEmacs 21.4 を使
+うことを推奨します。
+
+@item Emacs 20.x
+追加のパッケージは不要です。さらに @sc{bitmap-mule} パッケージを使うこと
+によって、白黒のビットマップ画像をインライン表示することができま
+す (@pxref{Other Requirements})。
+
+@item Emacs 19.34 (含 Mule 2.3)
+@acronym{APEL} パッケージ、@samp{新しい custom} パッケージおよ
+び @file{regexp-opt.el} モジュールが必要です。Emacs 19.34 を元にし
+た Mule 2.3 では、@sc{bitmap-mule} パッケージを使うことによって、白黒の
+ビットマップ画像をインライン表示することができます (@pxref{Other
+Requirements})。
+@end table
+
+@node You Need w3m
+@section w3m を使います: emacs-w3m が速いわけ
+@cindex w3m
+
+Emacs-w3m は外部コマンド w3m を、ウェブコンテンツを取得するためのバック
+エンドとして、または HTML の描画エンジンとして使用します。非同期動作によっ
+て高速な Emacs ウェブブラウザを実現することができたのは w3m のおかげです。
+
+あなたは最新の w3m をインストールしなければなりません。それは以下の場所
+で取得できます:
+
+@uref{http://prdownloads.sourceforge.net/w3m/}
+
+@node Other Requirements
+@section Emacs-w3m を動作させるのに必要なもの
+@cindex @acronym{APEL} package
+@cindex Gifsicle program
+@cindex ImageMagick package
+@cindex @sc{bitmap-mule} package
+@cindex New custom
+@cindex regexp-opt.el
+@cindex @acronym{FLIM} package
+
+Emacs のバージョンによっては、サードパーティのパッケージが必要になること
+があります。この項では、それらを見つけてインストールするための資料を提供
+します。
+
+@table @samp
+@item @acronym{APEL}
+XEmacs、Emacs 19.34 または Mule 2.3 に不可欠です。Emacs-w3m を構築する前
+に @acronym{APEL} をインストールしなければなりません。@acronym{APEL} は
+以下の場所にあります:
+
+@uref{ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz}
+
+@acronym{APEL} XEmacs パッケージ (SUMO に含まれています) は使えないこと
+に注意して下さい。もしすでに @acronym{APEL} XEmacs パッケージがインストー
+ルされているならば、それを上記のリンクで示した @acronym{APEL} で置き換え
+るために、以下の命令を使って下さい (新規に @acronym{APEL} をインストール
+する場合も同じ命令を使うことができます):
+
+@example
+% rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
+% cd apel-10.6
+% make install-package XEMACS=xemacs-21.4.x\
+  PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
+@end example
+
+@item gifsicle
+XEmacs に不可欠です。すべての XEmacs 21.x には、オプティマイズされたアニ
+メーション gif が正常に表示されなかったり、ある種のインターレース gif を
+表示しようとするとクラッシュしてしまう既知のバグがあります。
+Emacs-w3m は gif データを XEmacs 21.x で扱える形式に変換するため
+に、@samp{gifsicle} プログラムを使います。これは次の場所から入手すること
+ができます:
+
+@uref{http://www.lcdf.org/gifsicle/}
+
+@item ImageMagick
+ImageMagick パッケージに含まれている @samp{convert} プログラムがあれば、
+emacs-w3m は画像サイズの変更や @samp{favicon} 画像を Emacs が扱えるフォー
+マットに変換するためにそれを使います。Emacs-w3m は ImageMagick が無くて
+も動作しますが、あればウェブページの見栄えが良くなるでしょう。
+ImageMagick パッケージは、以下の場所から手に入れることができます:
+
+@uref{ftp://ftp.imagemagick.org/pub/ImageMagick/}
+
+ImageMagick バージョン 5.4.0-5 以上のものが @samp{favicon} 画像の操作に
+使えることを、ざっと確認しています。
+
+@item @sc{bitmap-mule}
+Emacs 20.x か Emacs 19.34 を元にした Mule 2.3 で白黒のビットマップ画像を
+表示するために使います。画像に興味が無ければ、必ずしも必要ではありません。
+以下の場所で取得できます:
+
+@uref{ftp://ftp.jpl.org/pub/elisp/bitmap/}
+
+@item new custom
+Emacs 19.34 (含 Mule 2.3) に不可欠です。Emacs 19.34 に含まれてい
+る @samp{custom} ライブラリは @emph{古い} もので、これ
+の @acronym{API} は最近の Emacs  に含まれている @samp{新しい custom} と
+は違っています。Emacs 19.34 用の @samp{新しい custom} は、以下の場所から
+手に入れることができます:
+
+@uref{ftp://ftp.dina.kvl.dk/pub/Staff/Per.Abrahamsen/custom/custom-1.9962.tar.gz}
+
+Mule 2.3 のユーザは、以下のパッチを当てて少し変更しなければならないこと
+に注意して下さい:
+
+@example
+----8<------8<------8<------8<------8<------8<------8<------8<----
+--- custom-1.9962/cus-face.el~	Wed Mar  4 19:52:39 1998
++++ custom-1.9962/cus-face.el	Mon Mar  9 08:05:33 1998
+@@@@ -96,7 +96,7 @@@@
+       "Define a new FACE on all frames, ignoring X resources."
+       (interactive "SMake face: ")
+       (or (internal-find-face name)
+-	  (let ((face (make-vector 8 nil)))
++	  (let ((face (make-vector face-vector-length nil)))
+ 	    (aset face 0 'face)
+ 	    (aset face 1 name)
+ 	    (let* ((frames (frame-list))
+----8<------8<------8<------8<------8<------8<------8<------8<----
+@end example
+
+@item regexp-opt.el
+Emacs 19.34 (含 Mule 2.3) に不可欠です。@file{regexp-opt.el} ファイル
+は emacs-w3m の配布の @file{attic/} ディレクトリに含まれています。以下の
+ように、単にどこか (例えば @file{site-lisp/} ディレクトリ) にコピーして、
+byte-compile すれば良いです:
+
+@example
+# cp -p attic/regexp-opt.el /usr/local/share/emacs/19.34/site-lisp
+# cd /usr/local/share/emacs/19.34/site-lisp
+# emacs -batch -q -no-site-file -f batch-byte-compile regexp-opt.el
+@end example
+
+@item @acronym{FLIM}
+@samp{Shimbun} ライブラリを使うためには @acronym{FLIM} パッケージが必要
+です。@samp{Shimbun} ライブラリはウェブ上の新聞を読むための道具類のコレ
+クションで、Gnus、Mew、Nana-gnus、T-gnus、Wanderlust などとともに使うこ
+とができます。@xref{Shimbun Library}.
+
+たとえ Emacs 20.x か Emacs 21.x を使っている場合でも、@acronym{FLIM} パッ
+ケージには @acronym{APEL} パッケージが必要であることに注意して下さい。し
+たがって @samp{shimbun} ライブラリを使うには、
+@acronym{APEL} と @acronym{FLIM} の両方をインストールしなければなりませ
+ん。@acronym{FLIM} パッケージは以下の場所にあります:
+
+@uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
+
+@item Mule-UCS
+Mule-UCS Emacs Lisp パッケージを使うことによって、あなた
+の Emacs が Unicode システムを扱うことができるようになります。
+Emacs-w3m が UTF-8 などで書かれたページを表示できるようにするために、こ
+れをインストールすることを勧めます。以下の場所から取得して下さい:
+
+@uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
+
+XEmacs ユーザ向けには、ここにコンパイル済みのパッケージがあります:
+
+@uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.04-pkg.tar.gz}
+@end table
+
+@node Installing Emacs-w3m
+@section Emacs-w3m をインストールする
+@cindex Installing emacs-w3m
+
+Emacs-w3m の取得に関しては公式ペー
+ジ @uref{http://emacs-w3m.namazu.org/} を参照して下さい。すべて準備でき
+ましたか?  では始めましょう。
+
+非 UNIX 系のシステム (@samp{configure} を実行できないか @samp{make} コマ
+ンドが無い、何らかのシステム) に emacs-w3m をインストールするには、この
+項を飛ばして次の項 @ref{Non-UNIX-like systems} に行って下さい。
+
+@enumerate
+@item
+最初に、配布された emacs-w3m の tarball を以下のように適当な場所で展開し
+て、先頭のディレクトリに入って下さい:
+
+@example
+% tar zxf emacs-w3m-@value{VERSION}.tar.gz
+% cd emacs-w3m-@value{VERSION}
+@end example
+
+Emacs-w3m を CVS で取得したのならば、@samp{configure} スクリプトを生成す
+るために (引数無しで) @samp{autoconf} を実行しなければなりません。
+
+@item
+@samp{configure} スクリプトを実行します。
+
+@example
+% ./configure
+@end example
+
+@emph{Gnus ユーザへの重要なお知らせ}:
+
+複数のバージョンの Gnus がインストールされている場合 (リリース版と開発版
+の Gnus があるかもしれません) は、@code{load-path} にあなたが使うバージョ
+ンがインストールされているディレクトリ (@file{gnus.elc} ファイルを調べま
+しょう) を含むようにして下さい。以下のように @samp{--with-addpath} オプ
+ションを使うことによって、これを確実に行なうことができます:
+
+@example
+% ./configure --with-addpath=/usr/local/share/emacs/site-lisp/gnus
+@end example
+
+@acronym{APEL}、@acronym{FLIM} または他の何かを、デフォルト
+の @code{load-path} 以外の標準ではないディレクトリにインストールしてある
+場合は、以下のように @samp{--with-addpath} オプションを使ってそれらを指
+定しなければなりません (さらに、それに @samp{:} で分けられた Gnus のディ
+レクトリを含めても構いません):
+
+@example
+% ./configure --with-addpath=/opt/share/apel:/opt/share/flim
+@end example
+
+@item
+単に @samp{make} と @samp{make install} を実行します。XEmacs を使ってい
+る場合は、さらに次の段落も見て下さい。
+
+@example
+% make
+% make install
+@end example
+
+すべての Lisp ファイルと info ファイルが適切なディレクトリにインストール
+されるでしょう。
+
+さて、あなたはどんなファイルがどこに行くか分かりますか?  それを前もって
+知るためには、これを使って下さい:
+
+@example
+% make what-where
+@end example
+
+Emacs 21 または XEmacs を使っているならば、アイコン画像のファイルをイン
+ストールした方が良いでしょう。それを行なうには:
+
+@example
+% make install-icons
+@end example
+
+@item
+以下のように @samp{make install} の代わり
+に @samp{make install-package} を使うことによって、
+emacs-w3m を XEmacs パッケージとしてインストールすることもできます:
+
+@example
+% make
+% make install-package
+@end example
+
+この場合 @samp{make install-icons} を実行する必要はありません。
+
+パッケージ・ディレクトリを指定するには二つの方法があります:
+
+@itemize @bullet
+@item
+@samp{configure} オプションの @samp{--with-packagedir=} を使います。例で
+す:
+
+@example
+% ./configure --with-packagedir=/opt/xemacs/xemacs-packages
+% make what-where
+% make
+% make install-package
+@end example
+
+@item
+変数 @samp{PACKAGEDIR} を使います。例です:
+
+@example
+% ./configure
+% make what-where PACKAGEDIR=/opt/xemacs/xemacs-packages
+% make
+% make install-package PACKAGEDIR=/opt/xemacs/xemacs-packages
+@end example
+@end itemize
+@end enumerate
+
+@node Non-UNIX-like systems
+@section 非 UNIX 系環境でのインストール
+@cindex Installing on non-UNIX-like systems
+
+あなたのシステムで @samp{configure} スクリプトを実行することができないか、
+@samp{make} コマンドが利用できない場合は、以下の文句を唱えて下さい。
+
+@example
+% emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
+@end example
+
+@acronym{APEL}、@acronym{FLIM} (または他の何か) が普通の場所にインストー
+ルされていないと、インストーラはそれらを無視してしまうでしょう。そんな場
+合は、以下に示すように、それらの場所をインストーラに告げる必要があります:
+
+@example
+% emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
+@end example
+
+@node Minimal Settings
+@section 設定しなければならない最低限のもの
+
+この項には基本的な設定しかありません。ユーザの好みによってカスタマイズで
+きるたくさんの変数は @ref{Customizable Variables} に書かれています。
+
+@table @samp
+@item Autoloads
+@cindex Adding autoload settings
+Emacs-w3m を XEmacs パッケージとしてインストール (@pxref{Installing
+Emacs-w3m}) してあれば @file{w3m/auto-autoloads.el} ファイルがあるので、
+autoload の設定を行なう必要はありません。そうでなければ、以下の行
+を @file{~/.emacs} ファイルに入れて下さい:
+
+@lisp
+(autoload 'w3m "w3m"
+  "Visit the WWW page using w3m" t)
+@end lisp
+
+これ以外に、必要に応じて以下のような設定を追加して下さい。
+
+@lisp
+(autoload 'w3m-find-file "w3m"
+  "Find a local file using emacs-w3m." t)
+(autoload 'w3m-browse-url "w3m"
+  "Ask emacs-w3m to show a URL." t)
+(autoload 'w3m-antenna "w3m-antenna"
+  "Report changes of web sites." t)
+(autoload 'w3m-bookmark-view "w3m-bookmark"
+  "Show bookmarks." t)
+(autoload 'w3m-dtree "w3m-dtree"
+  "Display a directory tree." t)
+(autoload 'w3m-namazu "w3m-namazu"
+  "Search files with Namazu." t)
+(autoload 'w3m-perldoc "w3m-perldoc"
+  "View Perl documents" t)
+(autoload 'w3m-search "w3m-search"
+  "Search words using emacs-w3m." t)
+(autoload 'w3m-weather "w3m-weather"
+  "Display a weather report." t)
+@end lisp
+
+@item Startup File
+@cindex Startup file
+@vindex w3m-init-file
+Emacs-w3m のいろんな変数をいじるときは、@file{~/.emacs-w3m} ファイ
+ル (これは @code{w3m-init-file} という変数のデフォルト値です) の利用を推
+奨します。このファイルは @file{~/.emacs} と似ていますが、こちら
+は emacs-w3m が起動するときに読み込まれます。しかし、例えば前述
+の autoload の定義のように、そこに書くべきではないコマンドがあることに注
+意して下さい。
+
+@item Proxy Gateway
+@cindex Firewall
+@cindex Proxy gateways
+@cindex Proxy servers
+@vindex w3m-command-arguments
+@vindex w3m-no-proxy-domains
+あなたが防火壁 (firewall) の中にいて、proxy ゲートウェイを通してしか外部
+のウェブサイトに接続できない場合は、proxy ゲートウエイを使うよう
+に w3m に指示する必要があります。
+
+これにはいくつかの方法があります。一つは環境変
+数 @code{http_proxy} を shell 上で、こんなふうにグローバルに設定すること
+です:
+
+@example
+setenv http_proxy http://proxy.hogege.com:8000/
+@end example
+
+他に、変数 @code{w3m-command-arguments} をカスタマイズして、@samp{-o} お
+よび @samp{http_proxy=http://PROXY_SERVER_NAME:PORT/} を追加する方法があ
+ります。これは @file{~/.emacs-w3m} ファイルで以下のように行なうこともで
+きます。
+
+@lisp
+(setq w3m-command-arguments
+      (nconc w3m-command-arguments
+             '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
+@end lisp
+
+Proxy ゲートウェイを通さずに接続しなければならない @code{no_proxy} ホス
+トを指定するには、環境変数 @code{no_proxy} (@code{no-proxy} ではないこと
+にご注意) にコンマで区分けされたホスト名を設定するか、または以下のように
+ドメイン名 (ホスト名ではない) のリストを、変
+数 @code{w3m-no-proxy-domains} に設定して下さい。
+
+@lisp
+(setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
+@end lisp
+
+@code{no_proxy} ホストの設定に正規表現を使うには、変
+数 @code{w3m-command-arguments-alist} のドキュメントを見て下さい。
+@end table
+
+@node Basic Usage
+@chapter 基本的な使い方
+
+@menu
+* Browsing Web Pages::          ネットサーフィンしよう!
+* Inline Images::               画像表示を ON/OFF する
+* Tracing History::             時空を遡る
+* Managing Bookmarks::          ぼくの/わたしのお気に入り
+* Using Tabs::                  みんなタブが好きだよね
+* Working with Buffers::        バッファを作る/消す/移動する
+* Downloading::                 ファイルをダウンロードする
+* Submitting Forms::            HTML フォームに記入する
+* HTML file information::       ウェブページ作りとハックのお手伝い
+@end menu
+
+@node Browsing Web Pages
+@section ネットサーフィンしよう!
+@vindex w3m-lynx-like-map
+@vindex w3m-info-like-map
+
+Emacs-w3m でのウェブブラウジングは、御期待通り、キー操作で全て行なうこと
+ができます。Emacs-w3m には、既存のウェブブラウザ／ドキュメントブラウザに
+基づいた二種類のキー割当て体系 (キーマップ) が用意されています。一つはテ
+キストベースのウェブブラウザ lynx に基づくものです。このキーマップ
+は emacs-w3m のコード中では、@code{w3m-lynx-like-map} という変数で定義さ
+れています。もう一つは、GNU プロジェクトの標準ドキュメントブラウ
+ザ info に基づくものです。このキーマップは @code{w3m-info-like-map} とい
+う変数で定義されています。ユーザは自分の好みや lynx、info の利用経験に基
+づいて、どちらかのキーマップを選ぶことができます。キーマップを選択する方
+法については @ref{Customizable Variables} を見て下さい。特に選択をしなかっ
+た場合、@code{w3m-lynx-like-map} がデフォルトのキーマップとして使われま
+す。以降では、@code{w3m-lynx-like-map} に基づいて emacs-w3m の使い方を記
+述します。
+
+@c マウス
+ターミナル以外で Emacs が動作している場合、例えば X Window System のクラ
+イアントとして Emacs が動作している場合、他の GUI ベースのウェブブラウザ
+と同様にマウスを使ってもブラウジングの基本操作を行なうことができます。キー
+操作の方が迅速なブラウジングが可能ですが、マウス操作の方が覚えることは少
+ないです。
+
+@menu
+* Launching and Jumping::       とにかく動かしてみよう
+* Moving in a page::            ページ内を飛びまわる
+* Moving over pages::           ページ間を渡り歩く
+* Browsing With Mouse Operations:: マウスでサーフィン
+* Leaving for daily hacking and/or daily writing:: 普段の生活に戻るには
+@end menu
+
+@node Launching and Jumping
+@subsection とにかく動かしてみよう
+
+以下に挙げる三つの違うコマンドを使って emacs-w3m を起動することができま
+す。それらのコマンドの一つを試して下さい。ウェブページが ``*w3m*'' とい
+う名前の Emacs のバッファ (emacs-w3m のバッファのこと) に表示されます。
+おそらく気付くでしょうけれども、emacs-w3m のバッファのメジャーモード
+は @code{w3m-mode} です。他にマイナーモード (@pxref{Managing
+Bookmarks}) もあります。
+
+ここでは、それらのコマンドの最も基本的な使い方だけを説明します。個々のコ
+マンドについてもっと詳しく知りたい場合は、@ref{Emacs-w3m Functions} を参
+照して下さい。また、ユーザの好みによって emacs-w3m の動作を変えることが
+できる変数に関する詳細は @ref{Customizable Variables} をご覧下さい。
+
+@table @code
+@item w3m
+@findex w3m
+@vindex w3m-home-page
+@vindex w3m-quick-start
+@cindex Using emacs-w3m as a batch command
+Emacs-w3m を起動して、@code{w3m-home-page} という変数で指定されたホーム
+ページを表示します。@code{w3m-home-page} のデフォルトの値
+は ``about:'' です。毎回 URL を指定できるようにしたい場合は、変
+数 @code{w3m-quick-start} の値を @code{nil} にして下さ
+い (@pxref{Customizable Variables})。
+
+これは Emacs のバッチコマンドとして使うこともできます。以下は例です:
+
+@example
+% emacs -f w3m
+@end example
+
+URL を指定して、このように使うこともできます:
+
+@example
+% emacs -f w3m http://emacs-w3m.namazu.org/
+@end example
+
+@item w3m-find-file
+@findex w3m-find-file
+ローカルファイル名をミニバッファで入力して、それを emacs-w3m で表示しま
+す。
+
+@item w3m-browse-url
+@findex w3m-browse-url
+URL をミニバッファで入力して、それを emacs-w3m で表示します。このコマン
+ドは、どちらかと言えば他のアプリケーションプログラムから emacs-w3m を起
+動するために用意されています。
+@end table
+
+あなたがすでに Emacs のユーザならば、emacs-w3m のバッファの中で移動する
+のに苦労は無いでしょう。多くの標準のキーがそのまま使えるのですから。例え
+ば @kbd{C-n}、@kbd{C-v} それに @kbd{C-s} は emacs-w3m バッファで有効なキー
+です (これらは一行下降、一ページ送り、または後方単語検索として共通に使わ
+れます)。
+
+リンクを辿るには @key{RET} キーを使って下さい。それにはポイントをリンク
+の場所に移動しなければなりません。リンクは普通のテキストとは違って表示さ
+れているので、簡単に見分けることができます。それらは下線付き、または違う
+色になっているはずです。それらの見栄えは @code{w3m-anchor-face} というフェー
+スによって決まります (@pxref{Customizable Variables})。
+
+@table @kbd
+@item RET
+@kindex RET
+@findex w3m-view-this-url
+現在位置のリンクが指し示すページを表示します (@code{w3m-view-this-url})。
+
+このコマンドの振る舞いは、厳密には現在位置のリンクの性質によって、または
+接頭引数を与えるかどうかに依存します。詳細
+は @ref{Emacs-w3m Functions} を参照して下さい。
+@end table
+
+前述のように、変数 @code{w3m-quick-start} の値を @code{nil} に設定するこ
+とによって、@kbd{M-x w3m} コマンドを使ったときに URL を指定することが可
+能です。Emacs-w3m のバッファでは、入力した新しい URL のページに行くため
+の一般的な方法がさらに二つあります。
+
+@table @kbd
+@item RET
+@kindex RET
+@findex w3m-view-this-url
+Emacs-w3m のバッファにおいて、ヘッダラインに表示されている URL の位置に
+ポイントを移動させてから @key{RET} を叩くことによって、ミニバッファか
+ら URL を入力して、そのページを表示させることができます。Mozilla など
+の GUI ベースのウェブブラウザに慣れている人にとって、この機能はおなじみ
+ですよね。これに関する詳しい説明が @ref{Emacs-w3m Functions} で見つかる
+はずです (@code{w3m-view-this-url})。
+
+@item g
+@kindex g
+@findex w3m-goto-url
+emacs-w3m のバッファで @kbd{g} キーを押すと、ミニバッファから URL を入力
+して、そのページを表示させることができます (ポイントの位置とは無関係で
+す)。このキーの割り当ては、すでに Gnus や Mew を利用している人にはおなじ
+みでしょう。(@code{w3m-goto-url})。
+
+@item c
+@kindex c
+@findex w3m-print-current-url
+表示しているページの URL をエコーエリアに表示するとともに、
+@code{kill-ring} に URL を挿入します (@code{w3m-print-current-url})。
+
+@item u
+@kindex u
+@findex w3m-print-this-url
+現在位置のリンクが指し示す URL をエコーエリアに表示するとともに、
+@code{kill-ring} に URL を挿入します (@code{w3m-print-this-url})。
+@end table
+
+さて、あなたが読んでいるページが今日の時事ニュースかだれかの日記だったら、
+それを取り込んだ後で新しい内容で置き換えられているかもしれません。次のコ
+マンドを使うと、同じページの最新の内容を取り寄せることができます。(この
+コマンドは、ページが壊れているように見える場合に、全画面の再描画を強制さ
+せるためにも役立てることができます。)
+
+@table @kbd
+@item R
+@kindex R
+@findex w3m-reload-this-page
+現在表示しているページを読み込み直します (@code{w3m-reload-this-page})。
+@end table
+
+@node Moving in a page
+@subsection ページ内を飛びまわる
+@cindex Moving in a page
+
+Emacs で移動用に割り当てられている馴染み深いキーがウェブページの閲覧中に
+使えることは、おそらくすでにあなたを魅了しているでしょう。信じてもらえな
+いかもしれませんが、もっとあるのです!  私たちはあなたの時間を大切にした
+いので、ポイントの移動、ページのスクロール、あるいはとても速いやり方でリ
+ンクを見つけるためのキーを追加しました。それらをマスターすれば、それらが
+どんなに便利かを分かってもらえるでしょう。
+
+Emacs の標準のキーバインドに比べて @code{w3m-mode} では、より短いキース
+トロークでスクロールコマンド群を呼び出せるようにキーが割り当てられていま
+す。ウェブページ内でテキストを入力できる個所はかなり特別なの
+で (@pxref{Submitting Forms})、たいていのキーは特別な意味を持っていて、
+そこでは @code{self-insert-command} に割り当てられていません。
+
+@c スクロール
+@table @kbd
+@item SPC
+@kindex SPC
+@findex w3m-scroll-up-or-next-url
+下に向かってスクロールします。@samp{more} コマンドや @samp{less} コマン
+ド、あるいは Emacs の @code{view-mode} を使ったことがあれば、覚えるまで
+もないキーですよね (@code{w3m-scroll-up-or-next-url})。
+
+@item DEL
+@kindex DEL
+@findex w3m-scroll-down-or-previous-url
+上に向かってスクロールします。@samp{less} コマンド
+や Emacs の @code{view-mode} に馴れ親しんでいるあなたの手は、自然にこの
+キーを叩くでしょう (@code{w3m-scroll-down-or-previous-url})。
+
+@item >
+@kindex >
+@findex w3m-scroll-left
+@vindex w3m-horizontal-scroll-columns
+左にスクロールします。スクロールの量
+は @code{w3m-horizontal-scroll-columns} で与え、デフォルト値は 10 で
+す (@code{w3m-scroll-left})。
+
+@item <
+@kindex <
+@findex w3m-scroll-right
+@vindex w3m-horizontal-scroll-columns
+右にスクロールします。スクロールの量
+は @code{w3m-horizontal-scroll-columns} で与え、デフォルト値は 10 で
+す (@code{w3m-scroll-right})。
+
+@item .
+@kindex .
+@findex w3m-shift-left
+@vindex w3m-horizontal-shift-columns
+左にシフトします (小刻みな水平スクロール)。シフトの量
+は @code{w3m-horizontal-shift-columns} で与え、デフォルト値は 2 で
+す (@code{w3m-shift-left})。
+
+@item ,
+@kindex ,
+@findex w3m-shift-right
+@vindex w3m-horizontal-shift-columns
+右にシフトします (小刻みに水平スクロールです)。シフトの量
+は @code{w3m-horizontal-shift-columns} で与え、デフォルト値は 2 で
+す (@code{w3m-shift-right})。
+
+@item M-l
+@kindex M-l
+@findex w3m-horizontal-recenter
+現在ポイントがある位置のテキストが、水平方向に関して中心になるように
+スクロールします (@code{w3m-horizontal-recenter})。
+@end table
+
+@c 移動
+@code{w3m-mode} メジャーモードでは、いろいろな種類の移動コマンドが定義さ
+れています。すなわち、リンク、フォーム、それに画像 (それが表示されていて
+もいなくても) です。
+
+簡単な例を挙げてみます。広く知られている Google 検索エンジンで単語を調べ
+たいのだとしましょう。ステップ１:
+emacs-w3m で @uref{http://www.google.com} を開きます。ステップ２: ページ
+が表示されたら hit @kbd{]} を叩いて下さい。ぐわしっ! @footnote{普通そん
+な音はしないけれどね。英語版の Tadaa! は漫画などで使われる擬音で、その状
+況に応じていろいろに訳されます。} ポイントがページの最初の入力フォームに
+移動しましたね。今や @kbd{RET} を叩いてそこに何かを入力して、@kbd{C-c
+C-c} で送ることができます。このコマンド無しでは、そのページ
+に @kbd{C-n} や @kbd{C-f} などを打ち込んで移動しなければならなくて、まっ
+たく骨折りなことだったでしょう。
+
+@table @key
+@item TAB
+@kindex TAB
+@findex w3m-next-anchor
+次のアンカーへポイントを移動します。より厳密には、順方向で最も近いアンカー
+へ移動します。
+@end table
+
+@table @kbd
+@item M-@key{TAB}
+@itemx S-@key{TAB}
+@kindex M-@key{TAB}
+@kindex S-@key{TAB}
+@findex w3m-previous-anchor
+前のアンカーへポイントを移動します。より厳密には、逆方向で最も近いアンカー
+へ移動します (@code{w3m-previous-anchor})。
+
+@item ]
+@kindex ]
+@findex w3m-next-form
+次のフォームへポイントを移動します。より厳密には、順方向で最も近いフォー
+ムへ移動します (@code{w3m-next-form})。
+
+@item [
+@kindex [
+@findex w3m-previous-form
+前のフォームへポイントを移動します。より厳密には、逆方向で最も近いフォー
+ムへ移動します (@code{w3m-previous-form})。
+
+@item @}
+@kindex @}
+@findex w3m-next-image
+次の画像へポイントを移動します。より厳密には、順方向で最も近い画像へ移動
+します (@code{w3m-next-image})。
+
+@item @{
+@kindex @{
+@findex w3m-previous-image
+前の画像へポイントを移動します。より厳密には、逆方向で最も近い画像へ移動
+します (@code{w3m-previous-image})。
+@end table
+
+@c TODO?
+@c C-a	Go to the entire beginning of line.
+@c C-e	Go to the entire end of line.
+@c j	Next line.
+@c k	Previous line.
+
+@c l	Forward char.
+@c h	Backward char.
+
+@c M-g	Jump to line.
+
+@c どうしよう
+@c C-c C-@@	Mark the current position.
+@c C-c C-v	Goto the last position.
+
+@node Moving over pages
+@subsection ページ間を渡り歩く
+
+この項ではページからページに移動するやり方を説明します。リンクを辿った
+り URL を入力する方法はここにはありません (それら二つの方法
+は @ref{Launching and Jumping} で説明されています)。
+
+ここには、以前に訪問したページの履歴を後ろに、および前に移動する (他のブ
+ラウザでは「戻る」「進む」としておなじみの) コマンドと、仮にもブラウザた
+るものが義務として提供すべき「ホームページへ移動する」機能があります。あ
+らかじめ @ref{Tracing History} の項を読んでおいた方が、たぶん理解しやす
+いでしょう。
+
+@table @kbd
+@item B
+@kindex B
+@findex w3m-view-previous-page
+以前に訪問したページの履歴を１ページ戻りま
+す (@code{w3m-view-previous-page})。数の引数 N が与えられると N ページ戻
+ります。これは過去に戻るためのお勧めの方法です。
+
+@item N
+@kindex N
+@findex w3m-view-next-page
+以前に訪問したページの履歴を１ページ進みます (@code{w3m-view-next-page})。
+もちろん @kbd{B} で履歴を戻った後でなければ働きません。数の引数 N が与え
+られると N ページ進みます。このコマンドは、まさに back to the future を
+実現します!
+
+@item H
+@kindex H
+@findex w3m-gohome
+@vindex w3m-quick-start
+ホームページへ移動します (@code{w3m-gohome})。ホームページ
+の URL は @code{w3m-home-page} という変数で指定しま
+す (@pxref{Customizable  Variables})。@code{w3m-home-page} のデフォルト
+の値は ``about:'' です。
+@end table
+
+以下のコマンドは、他には無い emacs-w3m の特長です。私たちはそれらの特許
+を得ることができました。従って、他のいかなる場所でも見つからないでしょう。
+そのため、今日それらを使うことを学ばなければなりません! (真に受けないで
+下さいね。ただの冗談ですから。)
+
+@table @kbd
+@item ^
+@kindex ^
+@findex w3m-view-parent-page
+現在表示されているページの親ディレクトリへの移動を試みます。例えば、
+``http://foo/bar/'' が表示されている場合は ``http://foo/'' に移動しよう
+とします。この機能は次の観察に基づいて実装されました: ウェブブラウザのユー
+ザは、しばしば一段階上のディレクトリに移動しなければなりません。彼らが捜
+している情報が、現在のページに表示されないから (それが削除されたので、あ
+るいは検索エンジンが間違っているページに連れて行ったため) です。
+
+他のウェブブラウザを使う場合、一般には、URL から @key{DEL} キー等を複数
+回使って、手作業で末尾のコンポーネントを削除する手間が必要です。
+Emacs-w3m では、この操作を @kbd{^} のたった一押し! で行なうことができま
+す。
+@end table
+
+@table @key
+@item SPC
+@findex w3m-view-next-page
+Scroll up or go to next url.
+(TODO)
+
+@item DEL
+@findex w3m-view-previous-page
+Scroll down or go to previous url.
+(TODO)
+@end table
+
+@node Browsing With Mouse Operations
+@subsection マウスでサーフィン
+
+Emacs-w3m の開発者達は、Emacs ギークでないまともな人にも emacs-w3m を使っ
+てもらえるように努力しました。URL を含むテキストの入力を除くほとんどのウェ
+ブブラウズ操作をマウスだけで行なうことができます。修飾キーとしてシフトキー
+が必要になる場合がありますが、emacs-w3m の開発者達がそもそも Emacs ギー
+クなので@dots{}
+
+ウェブ閲覧の基本となる「リンクを辿る操作」には @kbd{mouse-2} を使います。
+
+@table @kbd
+@item mouse-2
+@kindex mouse-2
+@findex w3m-mouse-view-this-url
+マウスカーソルの下にあるリンクを辿ります
+(@code{w3m-mouse-view-this-url})。
+
+@item S-mouse-2
+@kindex S-mouse-2
+@findex w3m-mouse-view-this-url-new-session
+新しいセッション (@pxref{Tracing History}) のもとでマウスカーソルの下に
+あるリンクを辿ります (@code{w3m-mouse-view-this-url-new-session})。
+@end table
+
+スクロールバー、メニュー及びツールバーは、マウスで emacs-w3m を使うのに
+役立ちます。ただし、お使いの Emacsen がサポートしていてかつ、カスタマイ
+ズしてそれらを「オフ」にしていないことが条件となります。言うまでもないで
+すが、スクロールバーを動かして表示をスクロールさせることができます。
+「File」を押しのけてメニューバーの一番左に位置する「W3M」メニューから、
+この info ドキュメントで紹介している emacs-w3m の様々な機能を呼び出すこ
+とができます。主要な機能についてはメニューアイテムを選ぶまでもなく、ツー
+ルバー上のボタンアイテムを押せば呼び出せます。
+
+タブ (@pxref{Using Tabs}) を切り替えるには、ウィンドウのてっぺんの行
+を @kbd{mouse-2}で直接クリックします。あるいは「W3M」メニューのとなりに
+ある「TAB」メニューからアイテムを指定します。
+
+@node Leaving for daily hacking and/or daily writing
+@subsection 普段の生活に戻るには
+
+思い出して下さい。そもそもあなたが今 Emacs を使っているのは、ウェブを見
+るためではなかったはずです。元々は@dots{} エディタの内蔵インタープリタ
+を scheme に置き換えたり、ソフトウェアの info ドキュメントを作成したり、
+ソフトウェアのライセンスに関する自分の考えを記したメールを政府に送るため
+だったはずです。作業の過程でたまたまウェブを見る必要があり、しかもたまた
+ま Emacs のバッファでウェブを見れてしまったせいで、あなたは Emacs でウェ
+ブを見ていたのです。
+
+さぁ、本来の作業に戻る時が来ました。あなたががんばらないと世界は変りませ
+ん。すぐに又ウェブを閲覧する必要があるなら @kbd{q}を、しばら
+く emacs-w3m に戻ってくるつもりがないなら @kbd{Q} を使って下さい。
+
+@table @kbd
+@item q
+@kindex q
+@findex w3m-close-window
+Emacs-w3m のウィンドウと閉じて、他のバッファを選択しま
+す (@code{w3m-close-window})。
+
+@item Q
+@kindex Q
+@findex w3m-quit
+Arrived URLs (閲覧履歴, @pxref{Tracing History}参照) を保存し
+て emacs-w3m を終了します(@code{w3m-quit})。
+@end table
+
+@c TODO
+@c セッションについて説明している個所で
+@c G	Goto URL in the new session.
+
+@node Inline Images
+@section 画像表示を ON/OFF する
+@cindex Displaying images
+
+あなたが使っているバージョンの Emacs がバッファに画像を表示することがで
+きるならば、あたかも Netscape のような「グラフィカル」ブラウザのように、
+emacs-w3m はウェブページにそれらを表示することができます。下記のコマンド
+のどれかを使おうとする前に、あなたの Emacs が正しく画像表示に使えること
+を確かめて下さい (@pxref{Required Emacs Version})。
+
+現在のバッファにおける画像の表示を切り替えるには @kbd{T} を使って下さい。
+それによって emacs-w3m はサーバから画像を取ってきて、しかる後にそれらを
+「グラフィカル」ブラウザとしてそうなるであろうバッファの位置に表示します。
+もう一度キーを叩くと、画像はバッファから消え去ります。
+
+デフォルトでは emacs-w3m は画像を表示しませんが、その振る舞いを変更して
+常に画像表示することを選ぶのは可能で、それには変
+数 @code{w3m-default-display-inline-images} をカスタマイズして、その値
+を @code{nil} から @code{t} に変更する必要があります。
+@xref{Customizable Variables}.
+
+さらに emacs-w3m には、画像の拡大縮小、ファイルへのセーブ、または外部ビュー
+ワで見る、といった気の利いた機能が付属しています。
+
+@table @kbd
+@item T
+@kindex T
+@findex w3m-toggle-inline-images
+現在のバッファ (および後でそれを元に生成されるバッファ) におけるインライ
+ン画像の表示をトグルで切り替えます (@code{w3m-toggle-inline-images})。
+
+@item I
+@kindex I
+@findex w3m-view-image
+@cindex Viewing images
+ポイントの下にある画像を外部ビューワで見ます (@code{w3m-view-image})。
+
+@item M-i
+@kindex M-i
+@findex w3m-save-image
+@cindex Saving images
+ポイントの下にある画像を外部ファイルにセーブします。デフォルトの名前はそ
+の画像の元の名前です。それ故に、ほとんどの場合に @kbd{M-i RET} は正しい
+名前で画像をセーブするでしょう (@code{w3m-save-image})。
+
+@cindex Zooming images
+@item M-[
+@kindex M-[
+@findex w3m-zoom-out-image
+ポイントの下にある画像を縮小 (zoom out) しま
+す (@code{w3m-zoom-out-image})。
+
+@item M-]
+@kindex M-]
+@findex w3m-zoom-in-image
+ポイントの下にある画像を拡大 (zoom in) します (@code{w3m-zoom-in-image})。
+@end table
+
+@node Tracing History
+@section 時空を遡る
+@cindex Browsing history
+@cindex Arrived URLs
+
+Emacs-w3m には、以前に訪問したすべてのページのリストを提示するための、複
+数の方法があります。第一の方法は「emacs-w3m の履
+歴」(emacs-w3m history) と単純に呼ばれるもので、そのセッション (注: その
+バッファ内で行なう操作とそれに対する反応) において訪問したページのリスト
+を階層的に提示します。すなわち、あるリンクを辿ると、それまでのページは行
+き先の「親」になります。それは、訪れたページの跡を辿ったり、履歴が長くなっ
+てしまった場合にどこから着たかを思い出すためには、たいへん都合の良いもの
+です。
+
+これは、GNU プロジェクトのホームページをちょっと訪ねた後における、この機
+能の動作の例です:
+
+@example
+GNU's Not Unix! - the GNU Project and the Free Software Foundation (FSF)
+  Philosophy of the GNU Project - Free Software Foundation (FSF)
+    GNU Emacs - GNU Project - Free Software Foundation (FSF)
+     Order from the Free Software Foundation (FSF)
+  Links to Other Free Software Sites - GNU Project - Free Software Fo...
+    EFF: Homepage
+@end example
+
+(実際には、この例は 72 桁に収まるように、少しばかり編集されています。現
+実の emacs-w3m バッファでは URLs は切り詰められません。)
+
+どの emacs-w3m バッファからでも @kbd{s} キーを使うことによって、このよう
+な履歴を提示させることが可能です。
+
+この履歴はバッファ・ローカル、すなわち、ある emacs-w3m のバッファに固有
+のものであることに注意して下さい。でも emacs-w3m にはユニークな機能があ
+ります: あなたが新しいページを訪問する場合、履歴は新しいバッファにコピー
+されます。その結果、それまでに訪れたページに今まで通りアクセスすることが
+できます。これは、Mozilla などの、新しいバッファでは履歴が常にゼロからス
+タートするブラウザとは異なります。
+
+もう一つの過去に訪れたページに関する情報を手に入れる方法は、「arrived
+URLs」です。これはあなたが emacs-w3m で訪問した、最後の 500個! の URL の
+リストです。リストは日付順で、最も最近のものを先頭に、それぞれのページの
+訪問時刻が表示されます。これは例です (info の表示が拡がり過ぎないように
+編集されています):
+
+@example
+Order from the Free Software Foundation (FSF)             22:53:25
+GNU Emacs - GNU Project - Free Software Foundation (FS    22:53:05
+Philosophy of the GNU Project - Free Software Foundati... 22:52:46
+Philosophy of the GNU Project - Free Software Foundati... 22:52:39
+EFF: Homepage                                             22:52:18
+Links to Other Free Software Sites - GNU Project - Fre... 22:52:07
+Links to Other Free Software Sites - GNU Project - Fre... 22:52:07
+GNU's Not Unix! - the GNU Project and the Free Softwar... 22:51:32
+Bookmarks                                                 22:51:02
+The DICT Development Group- upwards                       2003-01-08
+the monkey puzzle: new debian packages as an rss feed     2003-01-08
+new-debian-packages.rss                                   2003-01-07
+it's a miracle                                            2003-01-06
+@end example
+
+前のコマンドに接頭引数を渡す、すなわち @kbd{C-u s} を使うことによって、
+この履歴を得ることができます。このページに表示される URLs の数はカスタマ
+イズできます。変数 @code{w3m-keep-arrived-urls} を参照して下さい。それ
+はデフォルトでは 500 を越えることはできません。@xref{Customizable
+Variables}.
+
+もちろん、すべての場合に、例に示されているすべての行はリンクです。そのリ
+ンクを辿ることによって、通常のページを訪問していたらちょうどそうなるよう
+に、以前に訪ねたどのページにも行くことができます。
+
+@table @kbd
+@item s
+@kindex s
+@findex w3m-history
+このセッションにおいて訪問した URLs のリストを表示します。接頭引数付きで
+呼ばれると、代わりに arrived URLs を表示します (@code{w3m-history})。
+@end table
+
+@ref{Moving over pages} の項も見て下さい。そこでは「戻る」「進む」などの
+機能に割り当てられた単純なキーで、履歴の中を移動するやり方を説明していま
+す。
+
+@node Managing Bookmarks
+@section ぼくの/わたしのお気に入り
+@cindex Bookmarks
+
+現代的なあまたのブラウザの例に漏れず、emacs-w3m には先進のブックマークの
+機能があります。それによってカテゴリー毎に分類し、それらを編集し、ああ、
+もちろん簡単に閲覧することができます。
+
+日本語版注釈: ブックマークの語源は、本に挟む栞 (しおり) のことです。
+
+@menu
+* Adding Bookmarks::            お気に入りに URL を加える
+* Consulting Bookmarks::        ブックマークを閲覧する
+* Editing Bookmarks::           ブックマークを変更するには?
+@end menu
+
+@node Adding Bookmarks
+@subsection お気に入りに URL を加える
+@cindex Adding a bookmark
+@kindex a
+@kindex C-u a
+@findex w3m-bookmark-add-current-url
+@kindex M-a
+@findex w3m-bookmark-add-this-url
+
+ブックマークに URL を加えるには、いくつかのやり方があります。最初の一つ
+は、@kbd{a} キーを使って (または @code{w3m-bookmark-add-current-url} コ
+マンドを呼んで) 今現在閲覧しているページを加えることです。すると、そのブッ
+クマークをどの項目に入れるかを尋ねられ (@key{TAB} キーによる補完が効きま
+す)、タイトルの書き換えが促されます (デフォルトは、そのページのタイトル
+になっています)。これらの二つをこなしたら、それらを有効にするため
+に @kbd{RET} を叩いて下さい。すると ``Added'' というメッセージがミニバッ
+ファに現れて、(驚くなかれ!) そのページがブックマークに記録されます。
+
+ブックマークを加えるもう一つの方法は、@kbd{M-a} を使う (また
+は @code{w3m-bookmark-add-this-url} コマンドを呼ぶ) ことです。これは、現
+在位置の URL (もしそのリンクを辿ると、閲覧することができる URL) をブック
+マークに加えます。その場合でも最初に説明した方法と同様に、項目の名前とタ
+イトルを入力しなければなりません。そのとき、それらのデフォルトはリンク自
+体の名前になっています。
+
+最後に、三番目の方法は @kbd{C-u a} を叩くことです。このときは、ブックマー
+クに加える URL、その項目、およびタイトルの入力が促されます。
+
+@table @kbd
+@item a
+現在のページをブックマークに加えます。接頭引数付きで呼ばれた場合は、加え
+る URL の入力が求められます (@code{w3m-bookmark-add-current-url})。
+
+@item M-a
+現在位置の URL をブックマークに加えま
+す (@code{w3m-bookmark-add-this-url})。
+@end table
+
+@node Consulting Bookmarks
+@subsection ブックマークを閲覧する
+@cindex Consulting bookmarks
+@kindex v
+@findex w3m-bookmark-view
+
+ブックマークされたページを閲覧する最も簡単な方法は、emacs-w3m のバッファ
+で @kbd{v} キーを叩くことです。ですがもう一つ、特別な URL であ
+る @uref{about://bookmark/} に行くことによっても可能です。すると一行あた
+り一つずつのブックマークが、項目ごとにまとめられて表示されるでしょう。そ
+こでは、他のページを閲覧するのと同じように、それらを確実に閲覧することが
+できます。
+
+ブックマークのページでは bookmark マイナーモードが働いています。それは、
+ブックマークを編集するためのキーバインドを追加します。@xref{Editing
+Bookmarks}.
+
+@table @kbd
+@item v
+ブックマークのページを呼び出します (@code{w3m-bookmark-view})。
+@end table
+
+@node Editing Bookmarks
+@subsection ブックマークを変更するには?
+@cindex Editing bookmarks
+
+Bookmark マイナーモード (@pxref{Consulting Bookmarks}) は、ブックマーク
+を編集するためにいくつかのキーバインドを設けています。中でもブックマーク
+を kill (すなわち消去) するための @kbd{C-k} とブックマーク・ファイルを編
+集するための @kbd{E} は、最も注目に値します。
+
+ブックマークは HTML ファイルに収められています。したがってそのファイルは
+手で編集することができますが、十分に注意して下さい。emacs-w3m が項目名を
+認識するために必要なコメントを消してしまうことによって、ものごとは簡単に
+台無しになります。あなたが HTML の基本を知っていれば、むしろそのファイル
+の中身は極めて分かり易いものでしょう。
+
+@table @kbd
+@item C-k
+@findex w3m-bookmark-kill-entry
+現在位置のブックマークを kill します (@code{w3m-bookmark-kill-entry})。
+
+@item E
+@findex w3m-bookmark-edit
+ブックマーク・ファイルを読み込んで、編集可能な状態にしま
+す (@code{w3m-bookmark-edit})。
+
+@item C-_
+@findex w3m-bookmark-undo
+やり直しをします (@code{w3m-bookmark-undo})。
+@end table
+
+@node Using Tabs
+@section みんなタブが好きだよね
+
+ほとんどの他のテキストベースのブラウザーと異なり、emacs-w3m はタブによる
+閲覧をサポートしています@footnote{誰のせいでもないけれど、
+Emacs 19 か 20 のユーザはタブを使えません。}。タブによる閲覧って何? と尋
+ねられそうですね。それはとても単純で、ウィンドウのてっぺんの行にすべての
+バッファを単純かつ分かりやすいやり方で表示することによって、単一のウィン
+ドゥですべての emacs-w3m のバッファを表現する方法です。それぞれのバッファ
+は「タブ」として表示されます。この行は、他のバッファに移動したり、ページ
+の状態を知ることができるようにするために常に見えたままになっていて、バッ
+ファにつられてスクロールしません。
+
+その感触をつかむ最も簡単な方法は、単に試してみることです。ですから、引き
+続いて emacs-w3m のセッションを始めて下さい。何も設定変更をしていなけれ
+ば、デフォルトでタブの行が現れます。てっぺんで、小さな四角に現在のページ
+のタイトルを表示している明るい行がそれです。では、(例えば @kbd{G} で) 別
+の w3m バッファを作ってみましょう。すると四角が二つになったでしょう。そ
+れらがタブです。
+
+もっとも分かりやすいタブの使い道は切り替えです: タブの上
+で @kbd{mouse-1} ボタンをクリックすることによって、そのバッファを表示さ
+せることができます。@kbd{mouse-2} ボタンでも動作します。これは、複数
+の emacs-w3m バッファを使うための、非常に速くて簡単な方法です。単に指し
+示してクリックすれば良いのですから。
+
+もう一つの気が利いた機能は、ページの状態を知らせることです。カラー端末か
+ウィンドゥシステムを使っていれば、ページの状態を知らせるため
+に emacs-w3m は違う色でテキストをタブに表示します@footnote{XEmacs はすべ
+てのタブをいつも同じ色で表示しますが、選択されたタブと他のものを区別した
+り、モードラインで現在のページの状態を知ることは簡単です。}。例えばベー
+ジを取り込んでいる最中はテキストは赤くなっていて、取り込みが完了するとデ
+フォルトの色 (通常は黒) に戻ります。これにより、見ようと思って待っている
+ページが到着したかどうかが、タブ行を一目見ただけで分かります。
+
+最後に、もしウェブページが favicon を持っていれば、それもタブに表示され
+ます@footnote{XEmacs では今のところタブ行に favicon は表示されません。}。
+Emacs-w3m ユーザにもっと視覚効果を!
+
+ユーザオプション:
+
+@table @code
+@item w3m-use-tab
+@vindex w3m-use-tab
+タブによる閲覧を活かすかどうか。
+@end table
+
+@node Working with Buffers
+@section バッファを作る/消す/移動する
+
+遅かれ早かれあなたは emacs-w3m 中毒になって、すべてのウェブの閲覧をそれ
+で賄わなければならなくなるでしょう。あなたがめげてしまいそうなこの任務を
+手伝うために、emacs-w3m のバッファで動作するたくさんの違う手段を考えまし
+た。
+
+@menu
+* Creating and killing buffers:: バッファを作ったり消したり
+* Moving across buffers::        バッファ間の移動
+* Selecting buffers::            リストからバッファを選ぶ
+@end menu
+
+@node Creating and killing buffers
+@subsection バッファを作ったり消したり
+@cindex Creating new buffers
+@cindex Killing buffers
+
+時に、新しいウェブページを開かないで新しいバッファーを作ることが役に立つ
+ことがあります。この操作を emacs-w3m の用語では「ふたごのコピーを作る」
+(creating a twin copy) と言います。これは単に、その内容が現在のバッファ
+と同一な新しいバッファを作ります。
+
+この反対はバッファーを閉じることで、今はその内容に興味が無い一つのバッファ
+を、単に閉じることができます。あるいは、現在のバッファ以外のすべてを閉じ
+ることを決断しても良いです。以下のコマンドでそれを行なって下さい:
+
+@table @kbd
+@item C-c C-t
+@kindex C-c C-t
+@findex w3m-copy-buffer
+現在のバッファと同一のコピーを新しい名前で作ります。これは新しいバッファ
+にウェブページを取り込まずに、新しいセッションを始めるのに使いま
+す (@code{w3m-copy-buffer})。
+
+@item C-c C-w
+@kindex C-c C-w
+@findex w3m-delete-buffer
+現在の emacs-w3m のバッファを閉じます (@code{w3m-delete-buffer})。
+
+@item C-c M-w
+@kindex C-c M-w
+@findex w3m-delete-other-buffers
+現在のもの以外のすべての emacs-w3m のバッファを閉じま
+す (@code{w3m-delete-other-buffers})。
+@end table
+
+@node Moving across buffers
+@subsection バッファ間の移動
+
+最も頻繁に使うコマンドがたぶん隣のバッファに行くものであろうことは、世間
+の認めるところでしょう。それは、現在の「後」か「前」のバッファです。この
+意味はタブを使ってみればよくわかります。次のバッファは現在の右側の一つ後、
+前のバッファは左側です。しかし、残念ながら XEmacs はタブを順不同に表示す
+るので、どれが隣のバッファかを知るには、各タブに表示されている数字に注目
+する必要があります。これらのコマンドに割り当てられているキー
+は @kbd{C-c C-p} と @kbd{C-c C-n} です。
+
+これらのコマンドは数字接頭引数の習慣を理解します。すなわち、それらを
+数 N を引数として呼ぶと、現在のバッファから N 個離れたバッファに行きます。
+例えば、現在位置から右にバッファを二個分 (すなわちバッファ二個分だけ次
+に) 移動するには、@kbd{2 C-c C-n} を使って下さい@footnote{いつものように、
+@kbd{2 C-c C-n} の代わりに @kbd{C-u 2 C-c C-n} を使っても良いのですが、
+emacs-w3m のバッファではすべての数字キーとマイナス記号が数の接頭引数に割
+り当てられていることを覚えておいて下さい。}。
+
+@table @kbd
+@item C-c C-p
+@kindex C-c C-p
+@findex w3m-previous-buffer
+前の emacs-w3m バッファに移動します。Emacs 21 では、これは通常タブ行にお
+いて左方向に次です。数の引数 N を付けて使うと、バッファを N 個分前に移動
+します (@code{w3m-previous-buffer})。
+
+@item C-c C-n
+@kindex C-c C-n
+@findex w3m-next-buffer
+次の emacs-w3m バッファに移動します。Emacs 21 では、これは通常タブ行にお
+いて右方向に次です。数の引数 N を付けて使うと、バッファを N 個分次に移動
+します (@code{w3m-next-buffer})。
+@end table
+
+私たちが骨を折ったにもかかわらず、これらのコマンドがお気に召さないならば、
+あなたが欲しいものが ibuffer や iswitchb のような万能志向の
+人 (generalist) 向けのバッファ管理パッケージの中にあるかどうかを探してみ
+るのも良いかもしれません。emacs-w3m バッファは Emacs の正規のバッファで
+すから、それらもまた良好に動作するでしょう。
+
+@node Selecting buffers
+@subsection リストからバッファを選ぶ
+
+リストから emacs-w3m のバッファを選ぶための二つのやり方があります。一つ
+目は、@kbd{C-c C-a} で呼び出されるミニバッファ・ベースのインターフェース
+です。表示したいバッファを、@kbd{M-p} と @kbd{M-n} キー (また
+は @kbd{↑} と @kbd{↓} キー) を使って選ぶことができ、それらはリストの中
+で循環します。また、プロンプトを編集して、@kbd{TAB} の補完を使って既存の
+ウェブページのタイトルを書き込むこともできます。例えば、``Google
+Search'' のページを開いてあるならば、``Goo'' に続けて @kbd{TAB} を叩くこ
+とによって、そのページのタイトルが完成します。ページの名前の後ろには、
+(鍵括弧で挟まれた) バッファの名前が付きます。そして @kbd{RET} を使うと、
+あなたが選んだバッファに切り替わります。
+
+二つ目のもっと洗練されたインターフェースは emacs-w3m バッファリストと言
+い、@kbd{C-c C-s} で起動されます。それは分割されたウィンドゥにすべての開
+いているバッファを表示し (@kbd{C-c C-s} で表示形式が切り替わります)、実
+時間でバッファを見ることができるようになります。そのバッファリストの中で
+ポイントを移動すると、ポイントのところにあるバッファが主ウィンドゥに表示
+され、バッファの切り替えが直接目に見える形で返ってくるのです。
+
+バッファリストの中を移動するには @kbd{p} と @kbd{n} キー (または矢印
+キー) を使って下さい。バッファリストでは、@kbd{DEL} と @kbd{SPC} で主ウィ
+ンドゥに表示されているバッファをスクロールさせることが可能で、これは正し
+いバッファを見ているかどうかをチェックしたいときに便利です。ポイントのと
+ころにあるバッファを選びたいときは @kbd{RET} キーを使って下さい。この場
+合はバッファリストが隠されます。あるいは、@kbd{w} キーを使った場合はバッ
+ファリストは表示されたままで、主ウィンドゥにフォーカスします。
+
+また、このメニューで普通のバッファで使われるのと同じキー割り当
+て (@pxref{Creating and killing buffers}) で、バッファを閉じたり作ること
+もできます。
+
+最後に、@kbd{?} はヘルプの表示、@kbd{g} はリストの作り直し、そし
+て @kbd{q} はバッファリストの終了を主ウィンドゥのバッファは変更せずに、
+それぞれ実行します。
+
+@table @kbd
+@item C-c C-a
+@kindex C-c C-a
+@findex w3m-switch-buffer
+@cindex Switching buffers using the minibuffer
+ミニバッファでバッファ名の入力を求めます。@kbd{M-p} と @kbd{M-n} で既存
+のバッファが循環し、@kbd{TAB} で補完できます (@code{w3m-switch-buffer})。
+
+@item C-c C-s
+@kindex C-c C-s
+@findex w3m-select-buffer
+@cindex Switching buffers using the buffer list
+分割されたウィンドゥにバッファリストを表示しま
+す (@code{w3m-select-buffer})。このウィンドゥでは @kbd{C-c C-s} で水平と
+垂直モードが切り替わり、@kbd{RET} でポイントのところにあるバッファを選ん
+でバッファリストは隠蔽、@kbd{w} でポイントのところにあるバッファを選んで
+それにフォーカス、@kbd{n} と @kbd{p} それに矢印キーが上下の移動に使えま
+す。
+@end table
+
+@node Downloading
+@section ファイルをダウンロードする
+
+どんなウェブページやファイルも emacs-w3m でダウンロード (すなわち取得、
+表示ではありません) できます。単にダウンロードしたいリンクにポイントを置
+いて @kbd{d} を叩いて下さい。ローカルにセーブするファイル名が尋ねられま
+す。デフォルトでは遠隔サーバーにおけるファイルの名前になります。それで良
+ければ @kbd{RET} を押して下さい。ダウンロードは非同期に実行され、
+Emacs で行なっている他の仕事の邪魔をしないので、そうしたければ他のバッファ
+で emacs-w3m による閲覧を続けることができます。
+
+このダウンロードの仕組みは w3m を使うのですが、代わりにもっと強力
+な wget を使うことも考慮してみて下さい。私たちのお友だちプロジェクトであ
+る ``emacs-wget'' を覗いてみましょう。そのホームページはこ
+こ @uref{http://pop-club.hp.infoseek.co.jp/emacs/emacs-wget/} です。
+
+@table @kbd
+@item d
+@kindex d
+@findex w3m-download-this-url
+@cindex Downloading files
+ポイントのところにあるリンクが指し示すファイルかページをダウンロードしま
+す (@code{w3m-download-this-url})。
+@end table
+
+@node Submitting Forms
+@section HTML フォームに記入する
+
+これらの emacs-w3m コマンドは、単純なキーバインドと専用の Emacs のウィン
+ドゥかミニバッファを使って、フォームからフォームへの移動とフィールドに入
+力するための機能を提供します。
+
+覚えておいて欲しい大事なキーバインドは @kbd{RET} です。これは現在位置に
+あるものによって異なる意味を持ちます。テキスト領域 (textarea) では、ミニ
+バッファで値を入力することが促されます。選択用のタグでは、選択肢のリスト
+が Emacs のエレクトリック (electric == 自己挿入) ウィンドゥに現れま
+す (そこでは矢印キーで移動して、@kbd{RET} キーで一つを選ぶことができま
+す)。ラジオボタンおよびチェックボックスでは、@kbd{RET} キーでそれらのう
+ちの一つを選びます。
+
+ミニバッファかエレクトリック・ウィンドゥにいるときは、@kbd{C-c C-q} キー
+で取り消すことができます。フォームに記入したものを送り出すに
+は @kbd{C-c C-c} を使って下さい。
+
+@table @kbd
+@item ]
+次のフォームにジャンプします (@code{w3m-next-form})。
+
+@item [
+前のフォームにジャンプします (@code{w3m-previous-form})。
+
+@item C-c C-c
+現在位置のフォームに記入したものを送り出します (@code{w3m-submit-form})。
+
+@item RET
+現在位置にあるのフォーム値を書き換えます。
+
+@item RET @r{(w3m-form-*-keymap)}
+その値を選択します。
+
+@item C-c C-q @r{(w3m-form-*-keymap)}
+フォームの編集を中断して、変更を取り止めます。
+@end table
+
+@node HTML file information
+@section ウェブページ作りとハックのお手伝い
+
+@c TODO TIPSへリンクをはる。
+いつもドキュメントの執筆環境として、あるいはソフトウェアの開発環境とし
+て Emacs を使っている人には、その環境の中でウェブを閲覧できるというのは、
+本当に便利でしょう。HTML ファイルを執筆しているのであれば、他のウェブブ
+ラウザを新たに起動する必要なく、Emasc の中で作成した HTML ファイルをプレ
+ビューできます。プログラミング中にライブラリのドキュメントを開いて、サン
+プルコードを切り貼りするといったことも迅速に行なえます。
+
+逆はどうでしょう。すなわちウェブ閲覧の環境で、そのソースである HTML ファ
+イルを編集したり、参照したりできたら便利だと思いませんか？ ドキュメント
+を執筆中に emacs-w3m で下見 (preview) して誤字を発見したとします。そ
+の HTML ファイルをすぐに修正したくなるはずです。あなたがウェブテクノロジー
+に携わるプログラマなら、閲覧中のウェブページを HTML 形式で閲覧したくなる
+ことがあるでしょう、特に、新聞モジュールの作者の方 (@pxref{Shimbun
+Basics})。
+
+HTML ファイルをロードをしているバッファの名前を明示的に指定してバッファ
+を切り替えてることもできますが、emacs-w3m ではそういった目的のために専用
+のキーが割当てられています。Emacs-w3m は自分が現在表示しているウェブペー
+ジの URL を知ってるんです。その情報を使わない手はありません。
+
+@table @kbd
+@item \
+@kindex \
+@findex w3m-view-source
+表示中のウェブページを HTML 形式でそのまま表示しま
+す (@code{w3m-view-source})。
+
+@item =
+@kindex =
+@findex w3m-view-header
+表示中のウェブページの情報を表示します。情報には、タイトル、URL、
+ドキュメントタイプ、最終変更日時が含まれます (@code{w3m-view-header})。
+
+@item E
+@kindex E
+@findex w3m-edit-current-url
+現在閲覧中のローカルファイルを編集します (@code{w3m-edit-current-url})。
+
+@item e
+@kindex e
+@findex w3m-edit-this-url
+現在ポイントの下にリンクの先のローカルファイルを編集しま
+す (@code{w3m-edit-this-url})。
+
+@item M
+@kindex M
+@findex w3m-view-url-with-external-browser
+(Emacs-w3m 以外の) 外部ブラウザを新たに起動して、現在 emacs-w3m で閲覧し
+ているページを表示します (@code{w3m-view-url-with-external-browser})。
+@c TODO もうちょっと詳しく。
+@end table
+
+@node Pretty Good Features
+@chapter たくさんのすぐれもの
+
+@menu
+* Using Search Engines::        使いやすいウェブ検索
+* Grouping URLs::               一つの URL で複数のウェブページを見る
+* Weather Information::         明日の天気は晴れでしょう
+* Using Antenna::               アンテナを張り巡らそう
+* Showing Directory Tree::      ディレクトリの木構造を表示する
+* Viewing Perl Documents::      Perl のドキュメントを見る
+* Using Namazu::                Namazu でファイルを検索する
+* Octet::                       application/octet-stream データを見る
+@end menu
+
+@node Using Search Engines
+@section 使いやすいウェブ検索
+@cindex Search engines
+
+Emacs-w3m には検索エンジンを利用するための先進の機能があり、二つのインター
+フェースを通して利用することができます:
+
+@itemize
+@item
+標準のインターフェースです。@kbd{S} キーでいずれかの emacs-w3m バッファ
+から起動されます。これは検索エンジンを指定して検索語を入力する、単純な対
+話型のやり方です。@ref{The Search Interface} を参照して下さい。
+
+@item
+クイックサーチ・インターフェースです。これは技巧的に作られた URL に行く
+ことによって検索エンジンを利用するための、より速い (さらに、より複雑
+な) 方法です。この機能に関する詳細は @ref{Quick Searching} を参照して下
+さい。
+@end itemize
+
+@menu
+* The Search Interface::        Emacs-w3m による検索のやり方
+* Quick Searching::             もう一つの (そして速い) ウェブ検索
+* Adding New Search Engines::   お気に入りのエンジンを使うには?
+@end menu
+
+@node The Search Interface
+@subsection Emacs-w3m による検索のやり方
+@cindex Searching
+
+Emacs-w3m のバッファで @kbd{S} キーを使うことにより (デフォルトのキーマッ
+プを使うものとします)、標準の検索インターフェースを立ち上げることができ
+ます。すると、ミニバッファで検索語の入力を求めるプロンプトが現れるので、
+一つまたは複数の語を入れて、@kbd{RET} を叩いて下さい。そのエンジンの検索
+結果のページが現れ、その後、あたかも検索エンジンに通常のウェブの流儀によ
+る入力を行なったときのように、結果を閲覧することができます。
+
+おそらく、あなたはどのエンジンで探索したいかを決める機会が与えられていな
+いことに気付くでしょう。Emacs-w3m はデフォルトで Google 検索エンジンを使
+いますが、変数 @code{w3m-search-default-engine} (@ref{Customizable
+Variables} 参照) をカスタマイズすることによって、この振る舞いを変更する
+ことができます。あるいは、このコマンドを使うたびに検索エンジンを指定する
+ことができます。
+
+どのエンジンを使用するかを明示するためには、コマンドに接頭引数を与えなけ
+ればなりません (これは @kbd{C-u S} のように、コマンドの前に通
+常 @kbd{C-u} を叩くことを意味します)。すると emacs-w3m はエンジンの入力
+を促すので、その名前を一つ選ぶことができます (@key{TAB} キーで補完ができ
+ます)。いったん選択したら @kbd{RET} キーを叩いて下さい。その後で検索語を
+入力することができ、@kbd{RET} をタイプすれば検索結果が現れるでしょう。
+
+@table @kbd
+@item S
+@kindex S
+@findex w3m-search
+@vindex w3m-search-default-engine
+新しい検索を始めます。接頭引数付きで呼ばれた場合は、どのエンジンを使うか
+を尋ねます (@code{w3m-search})。
+@end table
+
+@node Quick Searching
+@subsection もう一つの (そして速い) ウェブ検索
+@cindex Quick Searching
+@cindex Special URLs
+@vindex w3m-uri-replace-alist
+@vindex w3m-search-engine-alist
+@vindex w3m-default-coding-system
+
+ウェブ・パワーユーザ (これを読んでいるあなた) には、迅速で効率的な検索の
+方法が必要です。クイックサーチはその一つです。
+
+それは何をするのかって?  それは @uref{gg:emacs} のような特別の URL に行
+くだけで、ウェブ検索を始めさせるのです。このモードの動作の長所は、次の通
+りです:
+
+@itemize
+@item
+速い。エンジンと検索語を選ぶのに、一つの URL をタイプするだけです。
+
+@item
+便利。この機能によって、容易に emacs-w3m のタブかウィンドゥを開いて、検
+索を始めることができます。例えば、@kbd{G} キーで新しいウィンドウを開いて
+クイックサーチ URL に行くように。そして、特別のクイックサーチ URL そのも
+のにも、ブックマークを付けることができます。
+
+@item
+グルーピング機能も使える。例えば @uref{group:gg:emacs&ya:w3m} のよう
+な URL によって、同時に二つの検索を始めることができます。例えばこの場合
+は、Google で ``emacs'' の、Yahoo! で ``w3m'' の検索をそれぞれ始めます。
+@xref{Grouping URLs}.
+@end itemize
+
+これを使うのはとても簡単です。``gnu'' という単語を Google で探したいとす
+れば、@kbd{g} を叩いてから ``gg:gnu'' という URL をタイプして下さい。こ
+の表現の第一の部分 "gg" は、Google 検索エンジンを使用したいことを示しま
+す。第二の部分は検索語です。エンジンと検索語は、コロンで分けなければなり
+ません。そして @kbd{RET} を叩けば検索結果を見ることができます。スペース
+で分離した複数の語を入力できることを、心に留めておいて下さい (ミニバッファ
+でスペースをタイプするには、@kbd{C-q @key{SPC}} のように、最初に
+@kbd{C-q} を叩いて下さい)。
+
+Emacs-w3m のデフォルトでは、利用可能ないくつかの検索エンジンの短縮形があ
+り、それらは変数 @code{w3m-uri-replace-alist} で定義されています。例え
+ば Google には ``gg''、Google Groups 用には ``ggg''、Yahoo! のため
+の ``ya''、および Altavista に対する ``al'' などの短い名前です。さらに検
+索エンジンの短縮形を追加するには @ref{Adding New Search Engines} を参照
+して下さい。
+
+短縮形の代わりに、``google'' や ``yahoo'' のような完全なエンジンの名前を、
+クイックサーチ URL に使うこともできます。それらの名前は、変
+数 @code{w3m-search-engine-alist} で定義されます。
+
+@node Adding New Search Engines
+@subsection お気に入りのエンジンを使うには?
+@cindex Adding new search engines
+
+Emacs-w3m は利用可能な多くの検索エンジンを持っています。あなたのお気に入
+りの検索エンジンを使いたいのに、万が一にもそれが既知の検索エンジンのリス
+トに載っていなかったらどうしましょう?  それを検索エンジンのリストに加え
+れば良いのです。そしてそれは極めて簡単です:
+
+@enumerate
+@item
+最初に、あなたが加えたい検索エンジンのエントリー・ポイントが何かを知らな
+ければなりません。例えば:
+
+@uref{http://my.searchengine.com/?query=foobar}
+
+ここで foobar はあなたが検索したい語です。
+
+@item
+この情報が手に入ったら、@file{~/.emacs-w3m} ファイルに加えて下さい:
+
+@lisp
+(eval-after-load "w3m-search"
+  '(add-to-list 'w3m-search-engine-alist
+                '("My engine"
+                  "http://my.searchengine.com/?query=%s"
+                  nil)))
+@end lisp
+
+第一フィールドの "My engine" をあなたのエンジンの説明で、第二フィールド
+をエントリー・ポイントで置き換えて下さい (@samp{%s} は重要です。これは検
+索を行なうときに、検索語で置き換えられます)。そして第三フィールドは使用
+するエンコーディングを意味し、@code{nil} またはそれが省略された場合は変
+数 @code{w3m-default-coding-system} の値が標準のエンコーディングとして使
+われます。
+
+英語の検索エンジンでは滅多に気にする必要が無いことなのですが、いくつかの
+日本の検索エンジンでは、それに何か (例えば @code{euc-japan}) を指定する
+必要があるかもしれません。
+
+@item
+今やこの検索エンジンは、emacs-w3m で通常の @kbd{S} キーで使うことができ
+ます。このエンジンを頻繁に使うのならば、短いエンジンの名前をクイックサー
+チエンジン (@ref{Quick Searching} を参照) に加えることもできます。それに
+は、以下のコードを @file{~/.emacs-w3m} ファイルに追加して下さい:
+
+@lisp
+(eval-after-load "w3m-search"
+  '(progn
+     (add-to-list 'w3m-search-engine-alist
+                  '("My engine"
+                    "http://my.searchengine.com/?query=%s"
+                    nil))
+     (add-to-list 'w3m-uri-replace-alist
+                  '("\\`my:" w3m-search-uri-replace "My engine"))))
+@end lisp
+
+これにより、@uref{my:foobar} のような URL を使って、あなたの検索エンジン
+で ``foobar'' という語を検索することができます。
+@end enumerate
+
+@node Grouping URLs
+@section 一つの URL で複数のウェブページを見る
+@cindex Grouping URLs
+
+Emacs-w3m は ``group URLs'' という、複数の実際の URL を一つにまとめた特
+別な URL を扱うことができます。そのようなグループ URL を開くと、
+emacs-w3m は一度に複数のページを開くために、そのグループに含まれるそれぞ
+れの URL に対して一つのバッファを開きます。
+
+グループ URL を作るには、開きたいすべてのページのアドレスを単にアンパサ
+ンド記号 (``&'') で一緒にして (すなわち結合して)、グループ URL を表す接
+頭辞の ``group:'' を付ければ良いのです。例を挙げると、GNU プロジェクトの
+ホームページ @uref{http://www.gnu.org/} と Savannah ホームペー
+ジ @uref{http://savannah.nongnu.org/} を見たいものとすれば、グルー
+プ URL は次のようなものになるでしょう。
+
+@uref{group:http://www.gnu.org/&http://savannah.nongnu.org/}
+
+この構文を日常的に使うのはかなり辛いものがありますが、非常に短い URL (例
+えばクイックサーチ URL、@ref{Quick Searching} を参照) や非対話型で使う状
+況では、この機能はおおいに役立つでしょう。
+
+@node Weather Information
+@section 明日の天気は晴れでしょう
+
+@c W	Display weather report.
+@c	If called with 'C-u', you can choose local area.
+
+@node Using Antenna
+@section アンテナを張り巡らそう
+@cindex Antenna
+@cindex Tracking changes in web pages
+@cindex about://antenna/
+
+アンテナはウェブページの変化を追跡するための道具です。アンテナを使うと、
+特定のページが、以前に見たときから更新されたかされなかったかを、周期的に
+チェックすることができます。
+
+いずれかの emacs-w3m バッファで @kbd{A} を使うことによって、アンテナを始
+めることができます。あるいは、特別の URL @uref{about://antenna/} に行く
+ことによっても同じことができます。
+
+@menu
+* Setting up Antenna::          ウェブサイトをアンテナに加えるには?
+* Daily web tracking::          アンテナで変化を追跡する
+@end menu
+
+@node Setting up Antenna
+@subsection ウェブサイトをアンテナに加えるには?
+@cindex about://antenna-edit/
+
+アンテナは、アンテナ・ページにあるカスタマイズのための ``Edit'' ボタン、
+または特別の URL @uref{about://antenna-edit/} からカスタマイズすることが
+できます。それはかなり分かりやすいものです。ウェブサイトを加えるには以下
+のことを行なって下さい:
+
+@enumerate
+@item
+例えば ``http://my.website.com/index.html'' のような、監視したいウェブペー
+ジの完全な URLを、``Key'' フィールドに追加して下さい。
+
+@item
+``Title'' フィールドに、``My website'' のようなタイトルを記入して下さい。
+
+@item
+``Time'' フィールドで、``Normal''、``Time'' または ``HNS'' のどれかを選
+んで下さい。あなたはたぶん第一候補を望むでしょう。
+@end enumerate
+
+すべてのフィールドを満たしたら、``New'' のボタンを押して下さい。すると、
+あなたのウェブサイトはアンテナ・データベースに加えられます。追跡したい他
+のサイトに対して、同じ操作を繰り返して下さい。
+
+アンテナにウェブサイトを加える他の方法は、そのサイトに行って @kbd{+} キー
+を使うことです。すべてのフィールドがすでに書きこまれた、アンテナをカスタ
+マイズするためのバッファが現れるでしょう。あなたは単に ``Save for future
+sessions'' と ``Finish'' のボタンを押せば良いのです。
+
+@table @kbd
+@item +
+@kindex +
+@findex w3m-antenna-add-current-url
+URL をアンテナ・データベースに加えます。接頭引数付きで呼ばれた場合は、現
+在のページを追加するのではなくて、加える URL を尋ねま
+す (@code{w3m-antenna-add-current-url})。
+@end table
+
+@node Daily web tracking
+@subsection アンテナで変化を追跡する
+@cindex The Antenna interface
+
+アンテナ・ページには二つの項目が現れます。一つは ``Updated'' と呼ばれ、
+もう一つは ``Visited'' と呼ばれます。``Updated'' の項目では最後にアンテ
+ナを更新した後で変化したウェブサイトが、そして ``Visited'' の項目では変
+化しなかったウェブサイトが見つかります。それぞれの項目で、各行はアンテナ・
+データベースの一つのウェブサイトを表し、以下の構造になっています:
+
+@samp{  * 2002/12/15 16:43  (T)  My website}
+
+最初の部分は、アンテナが最後にそのページの変化を報告した、そのウェブサイ
+トが更新された最終時刻です。またはその情報が得られないこともあります。
+
+@samp{(T)} は ``Time'' を表し、最後にアンテナを更新した後で、そのページ
+の変更時刻が変化したので、変化が検出されたことを意味します。もう一つの可
+能性がある値は @samp{S} (``Size'' のこと) で、そのページのサイズが変化し
+たので、変化が検出されたことを意味します。
+
+行の最後の部分は、データベースに追加したときに与えた、このウェブサイトの
+タイトルです。
+
+どうか、アンテナ・データベースは自動的に更新されないことに注意して下さい。
+アンテナ・ページで @kbd{R} を叩くか、または接頭引数をコマンドに渡す (例
+えば @kbd{C-u A} でアンテナを始める) ことによって、サイトが変化したかど
+うかをチェックしたい毎に、それを更新しなければなりません。
+
+@table @kbd
+@item A
+@kindex A
+@findex w3m-antenna
+アンテナのページに行きます。接頭引数付きで呼ばれた場合は、表示する前にア
+ンテナ・データベースを更新します (@code{w3m-antenna})。
+@end table
+
+@node Showing Directory Tree
+@section ディレクトリの木構造を表示する
+@cindex Showing the tree structure of local directory
+
+@code{w3m-dtree} コマンドを使うと、ローカルディレクトリのすべてのサブディ
+レクトリの木構造を表示して、普通のウェブページのように閲覧することができ
+ます。この機能を使ったときに現れる emacs-w3m のバッファは、その名前ゆえ
+に外部の ``tree'' プログラムの出力に非常に類似したものになります。さら
+にemacs-w3m からのボーナス: このコマンドを接頭引数付きで呼ぶとファイルも
+表示し、emacs-w3m は完全装備のファイル閲覧器に変身します。
+
+Emacs-w3m dtree がどんなふうに動作するかの例です:
+
+@example
+/home/romain/.elisp/emacs-w3m/
+ |-CVS/
+ |-attic/
+ |  +-CVS/
+ |-autom4te.cache/
+ |-doc/
+ |  |-CVS/
+ |  +-emacs-w3m/
+ |-icons/
+ |  +-CVS/
+ |-patches/
+ |  +-CVS/
+ +-shimbun/
+    +-CVS/
+@end example
+
+接頭引数を付けると、代わりにこんなふうになります:
+
+@example
+/home/romain/.elisp/emacs-w3m/ (allfiles)
+ |-(f).cvsignore
+ |-(f)BUGS.ja
+ |-(f)COPYING
+ |-[d]CVS/
+ |  |-(f)Entries
+ |  |-(f)Repository
+ |  +-(f)Root
+ |-(f)ChangeLog
+ |-(f)ChangeLog.1
+ |-(f)Makefile
+ |-(f)Makefile.in
+ |-(f)README
+ |-(f)README.ja
+@end example
+
+@table @kbd
+@item D
+@kindex D
+@findex w3m-dtree
+ミニバッファでローカルディレクトリの入力を求め、その木構造を表示します。
+接頭引数付きで呼ばれると (例: @kbd{C-u D})、そのディレクトリにあるファイ
+ルも表示します (@code{w3m-dtree})。
+@end table
+
+@node Viewing Perl Documents
+@section Perl のドキュメントを見る
+
+
+@node Using Namazu
+@section Namazu でファイルを検索する
+
+emacs-w3m は、全文検索ソフト Namazu を使ってファイルを検索することもでき
+ます (@code{w3m-namazu})。この機能を使うためには、Namazu を以下の場所か
+ら取得して、インストールしておく必要があります:
+
+@uref{http://namazu.org/}
+
+Namazu を使うためには、実際に検索を行う前に、検索対象となるファイルに含
+まれている単語の索引 (インデックス) を作成しておく必要があります。もっと
+も典型的なコマンドは以下の通りです。
+
+@example
+% mknmz -O <インデックスを置くディレクトリ> <ドキュメントのあるディレクトリ>
+@end example
+
+@code{w3m-namazu} を動かす前に、いくつかの変数を設定しておく必要がありま
+す。以下の変数を、使っている環境にあわせて設定して下さい。
+
+@table @code
+@item w3m-namazu-index-alist
+@vindex w3m-namazu-index-alist
+インデックスの保存されているディレクトリの連想配列を設定します。
+@code{w3m-namazu} では、インデックスの保存されているディレクトリに対して、
+ディレクトリ名よりも分かりやすい別名を定義することができます。また、幾つ
+かの別々のインデックスを、あたかも単一のインデックスであるかのように扱う
+こともできます。
+そのためには、次のように別名をキーとし、インデックスの保存されているディ
+レクトリ (のリスト) を値とする連想配列
+を @code{w3m-namazu-index-alist} に設定します。
+
+@example
+(setq w3m-namazu-index-alist
+      '(("alias1" "Path/to/the/index/directory1")
+        ("alias2" "Path/to/the/index/dir2"
+                  "Path/to/the/index/dir3")))
+@end example
+
+@item w3m-namazu-default-index
+@vindex w3m-namazu-default-index
+検索対象とするインデックスを指定します。実際にインデックスが保存されてい
+るディレクトリや、@code{w3m-namazu-index-alist} を設定するときに使った別
+名が使えます。値が @code{nil} の場合は、@kbd{M-x w3m-namazu RET} と実行
+するたびに、検索対象とするインデックスを問い合わせます。
+@end table
+
+これで準備が整いましたから、@kbd{M-x w3m-namazu RET query RET} とすると、
+文字列 query を検索することができます。デフォルト以外のインデックスを対
+象として検索を行う場合は、@kbd{C-u M-x w3m-namazu} というように前置引数
+を指定して実行します。
+
+@node Octet
+@section application/octet-stream データを見る
+
+
+@node Customizable Variables
+@chapter デフォルトのままでも結構良いと思うけれど
+@cindex Customizing user options
+@vindex w3m-init-file
+
+たくさんの emacs-w3m の変数が、Custom の仕掛けによってカスタマイズするこ
+とができます。Custom は変数を定義するための、Emacs のグラフィック・イン
+ターフェースです。Custom にはいくつかのカスタマイズのための手段があり、
+例えば単一のオプション (すなわち、Emacs Lisp 変数) のための @kbd{M-x
+customize-option}、またはある ``group'' (この場合のグループ
+は @code{w3m}) に属するすべてのオプション (変数とフェース) を見て、かつ
+変更するための @kbd{M-x customize-group} が使えます。
+
+あるいは (もし Custom を使いたくないのであれば)、任意の Emacs Lisp 式
+を emacs-w3m 初期設定ファイルに書き込むことができます。デフォルトのファ
+イルは @file{~/.emacs-w3m} です。例えば、
+
+@lisp
+(setq w3m-home-page "http://emacs-w3m.namazu.org/")
+@end lisp
+
+これはデフォルトのホームページを @uref{http://emacs-w3m.namazu.org/} に
+設定します。シンタックスは @file{.emacs} ファイルと同じで
+す (@pxref{(emacs)Init File})。
+
+気を付けなければいけないのは、外部モジュールで定義されているいくつかの変
+数が @file{~/.emacs-w3m} ファイルが読み込まれるときには未定義で、それら
+を変更できないかもしれないことです (もちろん、デフォルトの値を気にしない
+のであれば、@file{~/.emacs-w3m} ファイルで完璧に上書きしてしまうことは可
+能なのですけれどね)。変数 @code{w3m-uri-replace-alist} は典型的な例で
+す (@pxref{Search Variables})。
+
+@table @code
+@item w3m-init-file
+Emacs-w3m が起動すると、@code{w3m-init-file} ファイルを読み込みます。デ
+フォルト値は @file{~/.emacs-w3m} です。たぶん、あなたはこれを変更する必
+要は無いでしょう。これは普通の Emacs Lisp ファイルで、
+@file{~/.emacs} や @file{site-init} ファイルを emacs-w3m 関係のもので乱
+雑にしないようにするために使うことができます。Emacs-w3m はこれと同じ名前
+に、拡張子 @file{.elc} と @file{.el} が付いているものも (言い換えれば、
+@file{~/.emacs-w3m.elc}、@file{~/.emacs-w3m.el} およ
+び @file{~/.emacs-w3m} の順に) 調べます。
+@end table
+
+@menu
+* General Variables::           一般的な変数
+* Image Variables::             画像に関連した変数
+* Bookmark Variables::          ブックマークに関連した変数
+* Search Variables::            ウェブ検索に関連した変数
+* Weather Variables::           天気予報に関連した変数
+* Dtree Variables::             dtree に関連した変数
+* Antenna Variables::           アンテナに関連した変数
+* Perldoc Variables::           Perldoc に関連した変数
+* Namazu Variables::            Namazu に関連した変数
+* Octet Variables::             Octet に関連した変数
+* Other Variables::             その他の変数
+@end menu
+
+@node General Variables
+@section 一般的な変数
+
+
+@node Image Variables
+@section 画像に関連した変数
+
+
+@node Bookmark Variables
+@section ブックマークに関連した変数
+
+
+@node Search Variables
+@section ウェブ検索に関連した変数
+
+
+@node Weather Variables
+@section 天気予報に関連した変数
+
+
+@node Dtree Variables
+@section dtree に関連した変数
+
+
+@node Antenna Variables
+@section アンテナに関連した変数
+
+
+@node Perldoc Variables
+@section Perldoc に関連した変数
+
+
+@node Namazu Variables
+@section Namazu に関連した変数
+
+
+@node Octet Variables
+@section Octet に関連した変数
+
+
+@node Other Variables
+@section その他の変数
+
+
+@node Hooking into MUAs
+@chapter メール/ニュースリーダーで使う
+
+ここでは三種類の MUA (Message User Agent) を紹介します。それらの MUA は
+すべて emacs-w3m を使うことによって HTML メールを適切に表示することがで
+きます。それぞれの MUA と emacs-w3m を設定して使うための HowTo といくつ
+かの注意を、ここで見つけることができるでしょう。
+
+異なる習慣に関する即席の注釈: @samp{message} って何? − Gnus ユーザ
+が @samp{message} と言うとき、それはしばしばメールまたはニュースとして送
+信するメッセージの草稿を意味します。しかし、それは Mew や Wanderlust の
+ユーザが、受信したメッセージに対して使う用語です。彼らは送信するメッセー
+ジに @samp{draft} を使っています。一方 Gnus ユーザは、受信したメッセージ
+を @samp{article} と呼びます。
+
+@menu
+* Gnus::                        Gnus で HTML メールを読む
+* Mew::                         Mew で HTML メールを読む
+* SEMI MUAs::                   @acronym{SEMI} MUA で HTML メールを読む
+@end menu
+
+@node Gnus
+@section Gnus で HTML メールを読む
+@cindex Reading HTML mails in Gnus
+@vindex mm-inline-text-html-with-images
+@vindex mm-inline-text-html-with-w3m-keymap
+@vindex mm-text-html-renderer
+@vindex w3m-minor-mode
+@vindex w3m-minor-mode-command-alist
+
+Gnus (Emacs のニューズリーダー) が emacs-w3m をサポートしているって、知っ
+ていましたか?
+
+実際には Emacs に同梱されている Gnus は、(今はまだ) emacs-w3m をサポート
+していません。@samp{Gnus v5.10} として知られている最新版の Gnus を使うの
+が良いでしょう。それは以下の場所で手に入ります:
+
+@uref{ftp://ftp.gnus.org/pub/gnus/gnus.tar.gz}
+
+ご注意: あなたの Emacs に付属している Gnus のバージョンで emacs-w3m がサ
+ポートされているとしたら、この説明書が古い、または非常に古いバージョン
+の emacs-w3m を使っている、のどちらかを意味します。前者であれ
+ば @ref{Mailing List} を参照して、このバグを知らせて下さい。後者の場合に
+は、もっと新しいバージョンに更新するべきです。
+
+@itemize @bullet
+@item
+Emacs-w3m で何ができるの?
+
+HTML の spam メールを、emacs-w3m を使って人間が読めるように変換すること
+ができます。もちろん HTML の ham メール (spam ではないメール) に対しても
+働き、どちらの場合でも emacs-w3m はデフォルトの変換器よりもたぶん速いで
+しょう。追加の操作は必要ありません。それは単に表示されます。
+
+記事バッファの HTML の部分では @code{w3m-minor-mode} が on になって、
+emacs-w3m のと同じ主要なキーを使うことができます。例えば @key{RET} は、
+現在位置のリンクが指し示すページに行きます。それらのキーは変
+数 @code{w3m-minor-mode-command-alist} で定義されています。保安上の理由
+から、いくつかのコマンドはそれに似た別のコマンドで置き換えられていること
+を心に留めておいて下さい (下記参照)。
+
+@item
+何をしなければいけないの?
+
+Gnus のマニュアルを読んで下さい (@pxref{(emacs-mime)Display
+Customization})。最も簡単な方法は、以下の行を @file{~/.gnus.el} ファイル
+に入れることです:
+
+@lisp
+(setq mm-text-html-renderer 'w3m)
+@end lisp
+
+記事バッファで emacs-w3m のキーを使う必要が無いならば、以下の行も追加し
+て下さい:
+
+@lisp
+(setq mm-inline-text-html-with-w3m-keymap nil)
+@end lisp
+
+@item
+ご注意
+
+前に spam と ham のことを書いたのはふざけているわけではなくて、あなたの
+注意を喚起するためにまさにここにあるのです。HTML メールに
+は @samp{<img>} タグを使った spammers (spam をばらまくやから) の卑劣な悪
+巧みが含まれているかもしれません。それは @samp{Click Here!} ボタンよりは
+るかに有害です。最もありそうなのは、そんなたちの悪い spam があなたの目に
+止まったかどうかを検査する、すなわちこの場合、あなたのメールアドレスが有
+効であることを確認するための spammer の意図があることです。それは、画像
+を表示するときに自動的に取得しに行くであろう URL に、識別文字列を埋め込
+むことによって行なわれます。デフォルトでは変
+数 @code{mm-inline-text-html-with-images} が @code{nil} であって、
+Gnus が勝手に spammer のサイトに接続することはありません。
+
+@code{mm-inline-text-html-with-images} を @code{t} にすれば、記事バッファ
+にインライン画像を表示することができますよね?  いいえ、断じて違います。
+あなたはまだ守られているのです。あなたのメールアドレスが到達可能だという
+事実が漏れることを気にしないのであれば、変
+数 @code{mm-w3m-safe-url-regexp} を @code{nil} にして下さい。
+@code{mm-w3m-safe-url-regexp} のデフォルト値は @samp{"\\`cid:"} で、これ
+は私たちが @samp{cid:} URL によってメールに含まれている画像が安全だと考
+えていることを意味します (すなわち、@code{mm-w3m-safe-url-regexp} を変更
+しなくても、そのような画像は表示することができます)。
+@end itemize
+
+@ref{Nnshimbun} も参照して下さい。
+
+@node Mew
+@section Mew で HTML メールを読む
+
+Emacs-w3m を使うことによって、Text/Html を Message モードに表示できるよ
+うになります。以下の設定を @file{~/.mew.el} ファイルに加えて下さい:
+
+@lisp
+(require 'mew-w3m)
+@end lisp
+
+これで、あたかも Text/Plain であるかのように、Text/Html を Message モー
+ドに表示できるようになります。この際も、@kbd{C-c C-e} の操作は有効です。
+
+このごろ、同じ情報を二つ含んでいるメールを非常によく見かけます。それら
+は @samp{text/plain} パートと @samp{text/html} パートの両方から成る (何
+ちゅうバンド幅の無駄使いだ) @samp{multipart/alternative} フォーマットを
+使っています。Mew はデフォルトでは @samp{text/plain} パートだけを表示し
+ます。あなたは emacs-w3m を使っているのですから、@samp{text/html} パー
+トの方を優先したくなるかもしれません。それならば、以下の設定
+を @file{~/.mew.el} ファイルに加えて下さい:
+
+@lisp
+(setq mew-mime-multipart-alternative-list
+      '("Text/Html" "Text/Plain" ".*"))
+@end lisp
+
+Mew に関連するいくつかのカスタマイズ可能な変数があります:
+
+@table @code
+@item mew-use-w3m-minor-mode
+非-@code{nil} にすると、text/html パートが表示されているメッセージバッファ
+において @code{w3m-minor-mode} が on になり、emacs-w3m のと同じ主要なキー
+を使うことができます。例えば @key{RET} は、現在位置のリンクが指し示すペー
+ジに行きます。それらのキーは変数 @code{w3m-minor-mode-command-alist} で
+定義されています。保安上の理由から、いくつかのコマンドはそれに似た別のコ
+マンドで置き換えられていることを心に留めておいて下さい。デフォルト値
+は @code{nil} です。
+
+@item mew-w3m-auto-insert-image
+非-@code{nil} にすると、multipart/related なメッセージを読んでいるときに、
+メッセージバッファで画像をインライン表示させることができます。mew-w3m は、
+表示するために @samp{cid:} URL によってメールの本文に含まれている画像だ
+け (私たちはそれらを安全だと考えています) を許可することに注意して下さい。
+デフォルト値は @code{nil} です。
+
+@item mew-w3m-cid-retrieve-hook
+@samp{cid:} URL を取り出した後で実行されるフックです。デフォルト値
+は @code{nil} です。
+@end table
+
+@ref{Mew Shimbun} も参照して下さい。
+
+@node SEMI MUAs
+@section @acronym{SEMI} MUA で HTML メールを読む
+
+Emacs-w3m と @acronym{SEMI} MUA、例えば Wanderlust や T-gnus などを使う
+ことによって、HTML メールを人間が読めるように表示することができます。そ
+れらの MUA は MIME の機能を @acronym{SEMI} (そしてさら
+に @acronym{FLIM}) に頼っているので、それらを @acronym{SEMI} MUA と総称
+しています。@acronym{SEMI} は HTML メールの描画にデフォルト
+で Emacs/W3 を使いますが、容易に emacs-w3m で置き換えることが可能で、そ
+れによってあなたの電脳生活はより快適になるでしょう。
+
+単に以下の行を @file{~/.emacs} ファイルに入れれば良いのです:
+
+@lisp
+(require 'mime-w3m)
+@end lisp
+
+@code{mime-w3m} モジュールと @code{mime-w3} モジュールは、ご想像の通り機
+能的にほぼ同じものです (名前も似ているでしょう?)。後者
+は @acronym{SEMI} パッケージに含まれています。
+
+記事バッファの HTML の部分では @code{w3m-minor-mode} が on になって、
+emacs-w3m のと同じ主要なキーを使うことができます。例えば @key{RET} は、
+現在位置のリンクが指し示すページに行きます。それらのキーは変
+数 @code{w3m-minor-mode-command-alist} で定義されています。保安上の理由
+から、いくつかのコマンドはそれに似た別のコマンドで置き換えられていること
+を心に留めておいて下さい。
+
+@code{mime-w3m} モジュールに関連するいくつかのカスタマイズ可能な変数があ
+ります:
+
+@table @code
+@item mime-w3m-display-inline-images
+非-@code{nil} だったら、画像が HTML メールにインライン表示されます。最初
+に @code{default} というシンボルだったら (それがデフォルトです)、この変
+数の値は、変数 @code{w3m-default-display-inline-images} の値で置き換えら
+れます。たぶん、あなたはこれを変更する必要は無いでしょう。
+
+@item mime-w3m-safe-url-regexp
+安全であると考えられる URL にマッチする正規表現です。デフォルト値
+は @samp{"\\`cid:"} で、私たちは @samp{cid:} URL によってメールに含まれ
+た画像が安全だと考えていることを意味します。悪漢による攻撃について
+は @ref{Gnus} を参照して下さい。
+
+@item mime-w3m-setup-hook
+@code{mime-w3m} モジュールと @acronym{SEMI} の協調動作を設定した直後に実
+行されるフックです。デフォルト値は @code{nil} です。
+@end table
+
+T-gnus か Nana-gnus をお使いならば @ref{Nnshimbun} も参照して下さい。
+
+@node Frequently Asked Questions
+@chapter 必ず答があるとは限らない
+
+@menu
+* General FAQ::                 一般的な質問
+* Trouble FAQ::                 トラブル
+* Shimbun FAQ::                 Shimbun に関する質問
+@end menu
+
+@node General FAQ
+@section 一般的な質問
+
+@itemize @bullet
+@item
+Q. emacs-w3m って何ですか?
+
+w3m を Emacs 上で動かすインターフェースプログラムです。Emacs 上で動くウェ
+ブブラウザとして使うこともできます。さらなる情報は @ref{Introduction} も
+参照してください。
+
+@item
+Q. 動作する Emacs は?
+
+以下の Emacsen で動作することが確認されています。
+
+@itemize @bullet
+@item Mule 2.3 (Emacs 19.34 を元にしたもの)
+@item Emacs 19.34
+@item Emacs 20
+@item Emacs 21
+@item XEmacs 21.1 with Mule
+@item XEmacs 21.2 with Mule (beta37以降)
+@item XEmacs 21.4 with/without Mule
+@item XEmacs 21.5 with/without Mule
+@item Meadow
+@end itemize
+
+なお、Mule 2.3, Emacs 19.34 または XEmacs では @acronym{APEL} が必要とな
+ります。詳しくは @ref{Other Requirements} を確認して下さい。
+
+Emacs-w3m は Emacs 19.34 や Mule 機能が無い XEmacs でも動作します。ただ
+し、日本の天気予報を見るなどのいくつかのコマンドは、Mule の機能に強く依
+存しているので、使えません。
+
+@item
+Q. 動作する w3m は?
+
+以下の w3m で動作することが確認されています。
+
+@itemize @bullet
+@item w3m-0.3
+@item w3mmee-p23-2
+@end itemize
+
+@item
+Q. XEmacs の SUMO パッケージに含まれている @acronym{APEL} をインストール
+してあるのですが?
+
+XEmacs の @acronym{APEL} パッケージ (すべてのモジュールが Mule 付き
+の XEmacs 用にコンパイルされている) にはいろいろ問題があります。例え
+ば @samp{std11} モジュールが @acronym{FLIM} のものとかち合う、など。それ
+でも @file{apel-1.23-pkg.tar.gz} 以上のものだったら、そし
+て @samp{shimbun} の機能のために @acronym{FLIM} を使わないならば、
+Mule 付きと無し両方の XEmacs で使えるのですが、オリジナル
+の @acronym{APEL} で置き換えるか新規にインストールすることを勧めます。取
+得場所は @ref{Other Requirements} を見て下さい。
+
+@item
+Q. CVS で最新版を取得したのですが、@file{configure} スクリプトが見つかり
+ません。
+
+@samp{autoconf} を実行してください。
+@end itemize
+
+@node Trouble FAQ
+@section トラブル
+
+@itemize @bullet
+@item
+Q. 認証の必要なページのパスワードが入力できません。
+
+変数 @code{w3m-async-exec} に @code{nil} 以外の値が設定されていることを
+確認して下さい。
+
+@item
+Q. 認証の必要な proxy サーバーのパスワードが入力できません。
+
+変数 @code{w3m-async-exec} に @code{nil} 以外の値が設定されていることを
+確認して下さい。
+
+@item
+Q. リンクが辿れません。
+
+@samp{-header} オプションを受け付ける w3m コマンドが必要です。w3m のバー
+ジョンを確認して下さい。
+
+@item
+Q. 文字化けします。
+
+いくつかの原因があります。
+
+@enumerate
+@item
+HTML ファイルの問題
+
+HTML ファイル中で @samp{<meta>} タグによって指定されている文字コードと、
+実際の文字コードが異なると、正常に表示されません。@kbd{M-x
+w3m-redisplay-with-charset RET} または @kbd{C c} コマンドを使って、正し
+い文字コードを指定して再描画して下さい。
+
+@item
+文字コード
+
+ISO-2022-JP(jis), EUC-JP または SHIFT_JIS 以外の文字コードで記述されたペー
+ジについては、表示できない場合があります。次のいずれかの方法で対処して下
+さい。
+
+@enumerate a
+@item
+Mule-UCS (@pxref{Other Requirements}) をインストールすると、Unicode で定
+義されている範囲の文字は表示できるようになります。インストール後、変
+数 @code{w3m-use-mule-ucs} が @code{nil} 以外の値に設定されていることを
+確認して下さい。なお、Emacs (それに emacs-w3m も) が EUC-JISX0213 およ
+び ISO-2022-JP-3 の文字コードを扱えるようにするには、Mule-UCS に附属して
+いる @samp{jisx0213} モジュールをインストールする必要があります (残念な
+がら XEmacs では使えませんが)。
+
+@item
+w3mmee や w3m-m17n をインストールして、変数 @code{w3m-command} に適切な
+値を設定して下さい。このように設定すると、emacs-w3m はこれらのプログラム
+が提供する多言語機能を利用するようになります。
+@end enumerate
+
+@item
+Emacsen の問題
+
+XEmacs 21.1 では SHIFT_JIS のページが化けることがあります。また、XEmacs
+21.2 でも beta36 以前では問題があります。そういうものを使っている場合
+は XEmacs をアップグレードして下さい。
+
+XEmacs 21.1 と 21.2 は、すでに公式にお役御免になったことを認識して下さい。
+@end enumerate
+
+@item
+Q. 画像表示できません。
+
+いくつかの原因があります。
+
+古いバージョンの @samp{libungif} ライブラリにはバグがあります。
+@samp{libungif-4.1.0b1} 以降のものをインストールしなければなりません。
+
+XEmacs では必ず @samp{gifsicle} プログラムをインストールして下さい。現在
+利用できる全ての XEmacs 21.x にはバグがあり、emacs-w3m ではこれを使って
+対策しています (@pxref{Other Requirements})。
+
+古い w3m コマンドでは正常に表示できません。w3m のバージョンを確認して下
+さい。
+
+@item
+Q. Cookie が必要なページを閲覧できません。
+
+(まだ実験的な機能です。)
+
+変数 @code{w3m-use-cookies} に @code{nil} 以外の値が設定されていることを
+確認して下さい。
+
+@item
+Q. フォームに入力できません。
+
+(まだ実験的な機能です。)
+
+変数 @code{w3m-use-form} に @code{nil} 以外の値が設定されていることを確
+認して下さい。
+
+@item
+Q. フォームを送信できません。
+
+(まだ実験的な機能です。)
+
+変数 @code{w3m-use-form} に @code{nil} 以外の値が設定されていることを確
+認して下さい。この機能を使うには、@samp{-post} オプションを認識す
+る w3m コマンドが必要です。w3m のバージョンを確認して下さい。
+
+@item
+Q. フレームがレンダリングされません。
+
+w3mmee をインストールして、以下の設定を @file{~/.emacs} ファイルに入れて
+下さい:
+
+@lisp
+(setq w3m-command "w3mmee")
+@end lisp
+
+@item
+Q. Emacs21 の tab bar に favicon が表示されないのですが。
+
+Image Magick に含まれている @samp{convert} プログラムをインストールして
+下さい。@uref{http://www.imagemagick.org/} から入手できます。
+
+@item
+Q. Emacs21 で favicon を表示しようとしたのですが、Emacs がロックしまし
+た。
+@item
+Emacs-w3m を立ち上げようとしたら、激しくディスクアクセスした後、
+@samp{process convert exited abnormally with code 10} などと表示されまし
+た。どうなっているんでしょう?
+
+古いバージョンの Image Magick を使っていませんか?  ImageMagick-5.2.1 に
+付属している @samp{convert} を使っていると、そうなることが知られています。
+ImageMagick-5.4.0-5 (以上) に付属している @samp{convert} では、正常動作
+が確認されています。
+
+もし ImageMagick が使えない、または使いたくない場合
+は @file{~/.emacs-w3m} ファイルに
+
+@lisp
+(setq w3m-use-favicon nil)
+@end lisp
+
+の設定を追加して下さい。
+@end itemize
+
+@node Shimbun FAQ
+@section Shimbun に関する質問
+
+@itemize @bullet
+@item
+Q. なぜ @samp{shimbun} モジュールがインストールされないのですか?
+
+@acronym{FLIM} パッケージがインストールされていないと、@samp{shimbun} モ
+ジュール (@file{shimbun/} ディレクトリにあるファイル群) はインストールさ
+れないことに注意して下さい。
+
+@samp{configure} スクリプトは自動的に @acronym{FLIM} の有無を判定するよ
+う設計されていますが、標準的ではないディレクトリに @acronym{FLIM} がイン
+ストールされていると、判定に失敗します。その場合
+は @samp{--with-addpath} オプションを使って、@acronym{FLIM} がインストー
+ルされているディレクトリを明示的に指定して下さい。例です:
+
+@example
+% ./configure --with-addpath=$HOME/share/emacs/site-lisp/flim
+@end example
+@end itemize
+
+@node Known Problems
+@chapter あなたならきっと解決できる
+
+
+@node Shimbun Library
+@chapter ウェブ上の新聞を読むための道具
+@cindex Shimbun library
+
+新聞は ``she-n-boon'' と発音します (実際には母音を伸ばしてはいけません)。
+それは英語で ``newspaper'' のことです (日本語版にこんなことを書いても意
+味無いですね)。@samp{Shimbun} ライブラリはたくさんのモジュールのコレクション
+で、それらの各々は単独では何の役にも立ちません。ここでは代表的な三つ
+の @samp{shimbun} のアプリケーションプログラム (それらのうちの二つ
+は @samp{shimbun} ライブラリに含まれています) と、あなたが自分
+で @samp{shimbun} モジュールを作る方法について説明します (Emacs Lisp プ
+ログラムを書くことができる必要があります)。三つのアプリケーションプログ
+ラムはすべて、世界中のウェブサイトから時々刻々と更新されている情報を取っ
+て来て、あたかもメールメッセージを読んでいるかのようにそれらを読むことを
+可能にします。
+
+ますます多くの新聞、メーリングリスト、掲示板、あるいは個人の日記 (hyper
+nikki system、weblogs または blogs) がウェブで公開されています。
+@samp{Shimbun} ライブラリは現在、朝日新聞、読売オンライン、Emacs Devel、
+XEmacs Beta、Gnus/Mew/Wanderlust などのメーリングリスト、小泉日本国首相
+のメールマガジン、Slashdot Japan、および他のたくさんのものに対応していま
+す。
+
+Emacs-w3m を構築してインストールする前に @acronym{FLIM} パッケージ (加え
+て @samp{nnshimbun} を使いたければ Gnus) をインストールする必要があるこ
+とに注意して下さい。@acronym{FLIM} パッケージには @acronym{APEL} パッケー
+ジが必要です。あなたは @ref{Other Requirements} も見るべきかもしれません。
+
+@menu
+* Nnshimbun::                   Gnus をウェブブラウザにする!
+* Mew Shimbun::                 Mew で新聞を読む
+* Shimbun with Wanderlust::     Wanderlust で新聞を読む
+* Shimbun Sites::               新聞が読めるサイト
+* Shimbun Basics::              新聞モジュールの作り方
+@end menu
+
+@node Nnshimbun
+@section Gnus をウェブブラウザにする!
+@cindex nnshimbun
+@cindex Web Newspaper
+
+@samp{Nnshimbun} は Gnus のバックエンドです。しかしながら、例外的
+に Gnus ではなくて emacs-w3m とともに配布されています。
+@samp{Nnshimbun} は Gnus を並外れて便利なウェブブラウザにすることができ
+ます。すべての広告に煩わされずに新聞社のウェブサーバで記事を拾い読みする
+ことができます。メーリングリストの記事アーカイブを、そのリストに講読登録
+しているように読むことができます。掲示板の書き込みも読むことができます。
+等々... でも Gnus は @samp{nnshimbun} でウェブを介した投稿ができないので、
+フォローしたいときは emacs-w3m を使わなければいけないことに注意して下さ
+い。
+
+以下の行を @file{~/.gnus.el} ファイルに入れて下さい:
+
+@lisp
+(autoload 'gnus-group-make-shimbun-group "nnshimbun" nil t)
+@end lisp
+
+ご注意: T-gnus を使っている場合、これは不要です。
+
+さらに emacs-w3m で HTML メッセージを整形するには @ref{Gnus} も参照して
+下さい。T-gnus か Nana-gnus 用には、代わりに @ref{SEMI MUAs} を見て下さ
+い。
+
+@findex gnus-group-make-shimbun-group
+@c @kindex G n (グループ)
+@samp{Nnshimbun} を始めるための一番簡単な方法は、グループバッファで以下
+のようなことをすることです:
+
+@kbd{M-x gnus-group-make-shimbun-group RET asahi RET national RET}
+@c @kbd{G n asahi RET national RET}
+
+@samp{asahi} と @samp{national} は、接続したいサーバーに対応したキーワー
+ドと興味のあるグループに、それぞれ置き換えて下さい。
+@key{TAB} か @key{SPC} をタイプすることによって、それらの名前を両方とも
+補完することができます。
+
+もし @code{gnus-group-mode-map} に十分な空きがあるならば、以下のようなも
+のを @file{~/.gnus.el} ファイルに加えて下さい (T-gnus にはこれと同様のも
+のがすでにあるので、わざわざ追加する必要はありません):
+
+@lisp
+(eval-after-load "gnus-group"
+  '(define-key gnus-group-mode-map "Gn"
+     'gnus-group-make-shimbun-group))
+@end lisp
+
+すると、@kbd{M-x gnus-group-make-shimbun-group} の代わりに @kbd{G n} を
+使うことができます。
+
+@emph{誰かこのキーを Gnus タワーに予約してくれませんか?}
+
+@c または @kbd{B nnshimbun RET asahi RET} でバックエンドをブラウズすること
+@c によっても記事を読むことができます。
+
+@samp{Nnshimbun} は単にウェブサーバから HTML コンテンツを取り寄せて、そ
+れを記事として表示しますが、永続記
+事 (@pxref{(gnus)Persistent Articles}) を作る場合を除いて、ローカルファ
+イルに記事をセーブすることはありません。
+@samp{Nnshimbun} は @acronym{NOV} ファイルを、それぞれ
+の @samp{nnshimbun} グループで使います。そのバックエンド
+は @samp{nnml} とほぼ同じです。
+
+以下の @samp{nnshimbun} に関する変数をカスタマイズすることが可能です:
+
+@table @code
+@item nnshimbun-keep-backlog
+@vindex nnshimbun-keep-backlog
+@vindex gnus-keep-backlog
+この変数は @samp{nnshimbun} グループで @code{gnus-keep-backlog} 変
+数 (@pxref{(gnus)Article Backlog}) を上書きします。も
+し @code{nnshimbun-keep-backlog} を数字 @var{n} に設定すると、
+@samp{nnshimbun} は最大で @var{n} の古い記事を後の再取得のためにバッファ
+に溜めておきます。この変数が @code{nil} ではなく、数字でもない場合、
+@samp{nnshimbun} は @emph{全て} の既読記事を蓄えます (これは良い考えでは
+ありません)。デフォルト値は 300 です。
+
+@samp{Nnshimbun} はあらかじめ取得した (prefetched) 記事の保存
+に backlog を使うので、小さすぎる値は @code{prefetch-articles} 機能 (下
+記参照) を損なうかもしれないことに注意して下さい。
+
+@item nnshimbun-directory
+@vindex nnshimbun-directory
+@samp{Nnshimbun} が @acronym{NOV} ファイルを保存するディレクトリです。デ
+フォルト値は @samp{~/News/shimbun/} です。
+@end table
+
+@cindex group parameters
+@samp{Nnshimbun} は Gnus が提供する標準のグループパラメー
+タ@footnote{グループパラメータを設定するための最も手軽な方法は、グルー
+プバッファで、設定したいグループの場所に移動してから @kbd{G c} をタイプ
+することです (@pxref{(gnus)Group Parameters})。} に加えて、
+@samp{nnshimbun} 専用に設けられたグループパラメータを利用することができ
+ます。複数の @samp{nnshimbun} 用のパラメータ
+が @code{nnshimbun-group-parameters} という単一のグループパラメータ (す
+べてのグループで違う値を持つことができる) にまとめられています。それはプ
+ロパティリストで、例えば次のような値です:
+
+@lisp
+'(index-range all prefetch-articles off encapsulate-images on
+              expiry-wait 6)
+@end lisp
+
+以降はこれらのグループパラメータと、関連する変数の説明です。
+
+@table @code
+@item prefetch-articles
+@vindex nnshimbun-pre-fetch-article
+このグループパラメータが @code{off} または @code{nil} 以外の何かに設定さ
+れているグループでは、@samp{nnshimbun} は新しい記事を探すだけではなく、
+それらの記事のダウンロードも行います。これは新しい記事の検索を遅くします
+が、記事を閲覧するときに待たされません。このグループパラメータが設定され
+ていないか、その値が @code{nil} になっているグループでは、代わりに変
+数 @code{nnshimbun-pre-fetch-article} の値 (デフォルトは @code{off}) が
+使われます。
+
+@item encapsulate-images
+@vindex nnshimbun-encapsulate-images
+このグループパラメータが @code{off} または @code{nil} 以外の何かに設定さ
+れているグループでは、@samp{nnshimbun} は元の記事に埋め込まれている画像
+データを MIME の @samp{multipart/related} パートとして記事にはめ込みます。
+このグループパラメータが設定されていないか、その値が @code{nil} になって
+いるグループでは、代わりに変数 @code{nnshimbun-encapsulate-images} の値
+が使われます。この変数 @code{nnshimbun-encapsulate-images} のデフォルト
+値は、@samp{shimbun} ライブラリによって提供される変
+数 @code{shimbun-encapsulate-images} の値です (たぶんデフォルト値
+は @code{t} です)。
+
+@item index-range
+@vindex nnshimbun-index-range
+グループパラメータ @code{index-range} で、ウェブサーバーから取得される記
+事の範囲を指定することができます。範囲の指定には以下の値を使って下さい:
+
+@table @code
+@item nil
+@item all
+すべてのページ
+
+@item last
+最新のページだけ
+@end table
+
+@table @samp
+@item integer N
+最新の N ページ
+@end table
+
+@samp{Nnshimbun} はサーバー上に存在する目次ページを解析して新しい記事の
+有無を調べます。サーバーによってはそのような目次ページが複数存在する場合
+があります。例えば、メーリングリストの記事を提供しているサーバーの場合は、
+その記事が投稿された日付によって分類された目次になっていることが一般的で
+す。特に遅い回線を利用している時に、それらすべての巨大な目次を調べるには、
+相当な時間がかかるでしょう。
+
+@samp{Nnshimbun} は前回の接続時に調べた目次については、なるべく調べずに
+済ませるようになっています。更に時間を節約したい場合は @code{last} を使っ
+て下さい。これは @samp{nnshimbun} に、最新の目次だけを参照して新しい記事
+の検査を行なわせます。
+
+グループパラメータ @code{index-range} が設定されていないか、値
+が @code{nil} になっているグループでは、変
+数 @code{nnshimbun-index-range} の値 (デフォルトは @code{nil}) が使われ
+ます。
+
+@item nnshimbun-group-parameters-alist
+@vindex nnshimbun-group-parameters-alist
+これは Emacs Lisp 変数で、グループ名の正規表現と @samp{nnshimbun} 用グルー
+プパラメータの連想リストです。デフォルト値は @code{nil} です。各々の要素
+は @samp{(REGEXP KEYWORD VALUE KEYWORD VALUE...)} の形式を持ちます。例え
+ば:
+
+@lisp
+'("^nnshimbun\\+asahi:" index-range all prefetch-articles off
+  encapsulate-images on expiry-wait 6)
+@end lisp
+
+似た名前を持つ (すなわち、互いに似た性格を持っていそうな) 複数のグループ
+に対して同じ @samp{nnshimbun} グループパラメータを指定することができるの
+で、個々のグループに対してそれぞれグループパラメータを設定する代わりに使
+うことができて便利です。もしグループですでにグループパラメータの設定が行
+なわれていた場合は、この変数よりもそちらが優先されます。
+@end table
+
+@cindex article expiry
+@cindex auto-expire
+@cindex expiry-wait
+@vindex nnmail-expiry-wait-function
+@vindex nnmail-expiry-wait
+@samp{Nnshimbun} には記事の期限切れ消去を行なわせることができま
+す@footnote{@samp{Nnshimbun} グループで自動期限切れ消去を行なう方法は主
+に二つあります。一つはグループ名の正規表現 (``^nnshimbun\\+'' で始まらな
+ければなりません) を変数 @code{gnus-auto-expirable-newsgroups} に追加し
+て、消去するまでの日数を各グループ毎
+に @code{nnmail-expiry-wait-function} で指定することです。もう一つは、自
+動期限切れ消去を行なわせたいたいすべての @samp{nnshimbun} グループで、グ
+ループパラメータ @code{auto-expire} を @code{t} に設定して、グループパラ
+メータ @code{expiry-wait} で消去するまでの期限を指定するやり方です。詳し
+いことは @ref{(gnus)Expiring Mail} を参照して下さい。
+@code{expiry-wait} グループパラメータが設定されていないグループでは、デ
+フォルトの値が適用されます。}。記事が期限切れ消去されると言っても、それ
+が遠隔サーバーから削除されるわけではなく、それはずっとそこから取得可能で
+あることを覚えておいて下さい。消えるのはあなた自身の @samp{nnshimbun} 用
+の @acronym{NOV} ファイル@footnote{@samp{Nnshimbun} 用
+の @acronym{NOV} ファイル
+は ``~/News/shimbun/asahi/national/.overview'' のような名前です。} の、
+消去される記事に該当する行です。それによってその記事は二度と概略バッファ
+に現れなくなります。
+
+@samp{Nnshimbun} グループで記事の期限切れ消去を行なわない
+と @acronym{NOV} ファイルが際限無く太り続け、非常に古い記事があたかも存
+在しているように見えるかもしれません (実際には、それらは新聞社のサーバー
+で三年前に期限切れ消去されてしまっているかもしれない!)。それを読もうとし
+ても記事バッファには何も現れないでしょう。一方、メーリングリストの記事を
+提供しているたいていのサーバーは、一般的に過去の全記事を提供しています。
+憂愁の彼方に去りし古き良き時代に、あなたが興じた記事を懐かしくうるうるし
+て読み返すことができるように、そういうグループでは期限切れ消去はさせたく
+ないと思うかもしれません。
+
+他のメールバックエンドと同様に、@samp{nnshimbun} のグループ毎に記事に自
+動期限切れ消去の印を付けて、残しておく期間を設定することができます。ただ
+し @samp{nnshimbun} バックエンドと他のメールバックエンドには、少し違いが
+あります:
+
+@itemize @bullet
+@item
+第一に、残しておく期間のデフォルト値は以下の優先度で決定されます。グルー
+プによってデフォルト値が異なるかもしれないことに注意して下さい。
+
+@enumerate
+@item
+グループにおける @code{expiry-wait} グループパラメータの値。
+
+@item
+そのグループを対象として、変数 @code{nnmail-expiry-wait-function} を評価
+することによって得られた値。
+
+@item
+グループに対応する @samp{shimbun} モジュールが提供するデフォルト値。
+
+@item
+変数 @code{nnmail-expiry-wait} の値。
+@end enumerate
+
+第二に、変数 @code{nnmail-expiry-wait-function} によって設定される関数に
+与えられる引数に、``nnshimbun+asahi:national'' のようにバックエンドとサー
+バーの名前が含まれることです。他のメールバックエンドの場合にはグループ名
+だけが与えられるのに、です。例を挙げましょう:
+
+@lisp
+(setq nnmail-expiry-wait-function
+      (lambda (group)
+        (cond ((string-equal group "ding") 7)
+              ((string-equal group "nnshimbun+ding:ding") 'never))))
+@end lisp
+
+これは、同じ ding メーリングリスト用に二つのグループがあることを意味しま
+す: 一つはリストのメンバーとして講読登録しています。もう一つは Gnus タワー
+のメーリングリストアーカイブから読むためのものです。どうです、なかなか賢
+いでしょ?  ``ding'' グループのローカルなメールファイルは七日で期限切れ消
+去され、ローカルディスクの容量が節約されます。しかし二つ目のグループでは、
+前世紀の記事でさえ読むことができます (それが本当に必要ならば、ですが)。
+
+第三に、これはあなたに疑念が沸いたときに思い出すことができるように書き留
+められています: @samp{nnshimbun} グループのすべての記事が期限切れ消去さ
+れるべきときでも、最新の一通だけは消さずに残しておきます。これはあなたの
+未練心を満足させるためではなく、次回にこのグループの新しい記事を取得しよ
+うとしたときに、@samp{nnshimbun} がどこから始めるかを知って、すべての記
+事を取得し直さないようにするためです。
+@end itemize
+
+@samp{Nnshimbun} の期限切れ消去に関係するグループパラメータと変数は以下
+の通りです:
+
+@table @code
+@item expiry-wait
+@cindex expiry-wait
+どうか混乱なさらないように。@code{expiry-wait} グループパラメータ
+が @samp{nnshimbun} 専用に作られたグループパラメー
+タ @code{nnshimbun-group-parameters} の要素の一つとして提供されます。そ
+れは標準のグループパラメータと同じ名前を持ち、意味も同じです。あなたはど
+ちらを使っても構いません。もし @samp{nnshimbun} 専用のもの
+が @code{nil} 以外の値に設定されると、標準のものよりも優先されます。これ
+は @samp{nnshimbun} に関係するものを ``Gnus Customize'' バッファ (グルー
+プバッファで @kbd{G c} をタイプすると現れる) の一箇所に集めるためと、変
+数 @code{nnshimbun-group-parameters-alist} で一括して管理できるようにす
+ることを目的に用意したものです@footnote{なぜ @code{auto-expire} など
+が @samp{nnshimbun} 専用のグループパラメータに含まれないの? という問いに
+対する答えをすでに用意しています。その答えとは、
+@code{expiry-wait} が @samp{nnshimbun} バックエンドによって取り扱われる
+のに対して、@code{auto-expire} は Gnus の中枢が取り扱います。したがって、
+Gnus が一つの特定のバックエンドのために働く (すなわち、
+@samp{nnshimbun} 専用のグループパラメータから値を読む) ように Gnus の中
+枢機能を拡張することは、Gnus の設計ポリシーに反するのです。}。設定できる
+値は標準のグループパラメータと同様に、時限消去の日数、@code{never} また
+は @code{immediate} です。
+
+@item nnshimbun-keep-unparsable-dated-articles
+@vindex nnshimbun-keep-unparsable-dated-articles
+この変数の値が @code{nil} でない場合は、作成された (または到着した) 時刻
+がわからない記事は期限切れ消去されません。なにしろどのくらい古いのかわか
+らないんですから。デフォルト値は @code{t} です。@code{nil} に設定すると、
+期限切れ消去の処理が行なわれるときに、期限がわからない記事でも無条件で消
+されてしまいます。まあ、年の暮れの大掃除の役には立つことが判明するかもし
+れません。
+@end table
+
+@node Mew Shimbun
+@section Mew で新聞を読む
+
+Mew Shimbun は @samp{shimbun} と Mew (version 2.1 以降) とともに使うこと
+を意図した Emacs Lisp プログラムです。Mew, @acronym{APEL} およ
+び @acronym{FLIM} もインストールされていれば、emacs-w3m をインストールす
+るときに一緒にインストールされます。
+
+@ref{Mew} も参照することをお勧めします。
+
+@enumerate
+@item
+諸設定
+
+以下の各行を @file{~/.mew.el} ファイルの最後に書いて下さい:
+
+@format
+;;; mew-shimbun のロード、キー定義
+@end format
+
+;; (setq mew-shimbun-use-unseen t) ;; @footnote{未読管理をするときはコメ
+ントを外して下さい。この変数は必ず @code{(require 'mew-shimbun)} の前で
+設定しないといけません。}
+@format
+(require 'mew-shimbun)
+(define-key mew-summary-mode-map "G"  (make-sparse-keymap))
+(define-key mew-summary-mode-map "Gg" 'mew-shimbun-goto-folder)
+(define-key mew-summary-mode-map "GG" 'mew-shimbun-goto-unseen-folder)
+(define-key mew-summary-mode-map "Gi" 'mew-shimbun-retrieve)
+(define-key mew-summary-mode-map "GI" 'mew-shimbun-retrieve-all)
+(define-key mew-summary-mode-map "Gr" 'mew-shimbun-re-retrieve)
+(define-key mew-summary-mode-map "GR" 'mew-shimbun-re-retrieve-all)
+(define-key mew-summary-mode-map "Ge" 'mew-shimbun-expire)
+(define-key mew-summary-mode-map "GE" 'mew-shimbun-expire-all)
+
+;; @code{mew-shimbun-folder-groups} に Mew で購読する @samp{shimbun} servers 及び
+;; group を設定します。それぞれの要素は
+;; @code{("folder" ("server.group" . range) ...)} の形式です。@code{range} には
+;; @code{all}, @code{last}, および数字が指定できます。
+
+(setq mew-shimbun-folder-groups
+      '(;; @samp{+shimbun/yomiuri} という folder に @samp{yomiuri.shakai},
+        ;; @samp{yomiuri.sports} などを一括して取得します。
+        ("yomiuri"
+         ("yomiuri.shakai" . 2)
+         ("yomiuri.sports". 2)
+         ("yomiuri.kokusai". 2))
+        ;; @samp{+shimbun/security-memo} に @samp{security-memo.memo} を取得します。
+        ("security-memo"
+         ("security-memo.memo" . 2))
+        ("slashdot-jp"
+         ("slashdot-jp.story" . last))
+        ;; このように、異なる server の group も一つの folder
+        ;; (@samp{+shimbun/comp}) で読むことができます。
+        ("comp"
+         ("cnet.comp" . last)
+         ("zdnet.comp" . last))
+        ;; @samp{+shimbun/hns/arisawa}, @samp{+shimbun/hns/miyoshi} にそれぞれの
+        ;; 日記を取得します。
+        ("hns/arisawa"
+         ("hns.arisawa" . last))
+        ("hns/miyoshi"
+         ("hns.miyoshi" . last))))
+@end format
+
+以上で基本的な設定は終了です。他のユーザ定義変数は @code{mew-shimbun} グ
+ループを @kbd{M-x customize-group} するか、ソースを見て下さい。
+
+@item
+記事の購読
+
+@enumerate a
+@item
+最初の購読
+
+上記の設定をしたあと、まず @kbd{G I} しましょ
+う (@code{mew-shimbun-retrieve-all})。
+@code{mew-shimbun-folder-groups} で種々の設定を行なった @samp{shimbun}
+folder が @samp{+shimbun} 以下に出来ます。また、新たに group を追加した
+ときも @kbd{G I} すると便利です。なお、
+@samp{+shimbun} は @code{mew-shimbun-folder} という変数で好みのものに変
+更できます。
+
+@item
+@samp{shimbun} folder への移動
+
+通常の @kbd{g} (@code{mew-summary-goto-folder}) でも @samp{shimbun}
+folder への移動はできますが、
+@kbd{G g} (@code{mew-shimbun-goto-folder}) を使うと @samp{shimbun}
+folder 限定で移動できます。また @kbd{C-u G g} と prefix をつけたときは、
+新規記事のある folder (まだ scan をしていない folder) のみ表示します。
+@kbd{G G} でも同様です。
+
+@item
+folder 単位での記事の取得
+
+@samp{shimbun} folder で @kbd{G i} (@code{mew-shimbun-retrieve}) すると、
+現在の @samp{shimbun} folder で新規記事を取得します。
+
+@item
+更新された記事の取得
+
+特定の記事を表示した状態で @kbd{G r} (@code{mew-shimbun-re-retrieve}) す
+ると、その記事が更新されていたら更新し、同時に新規記事も取得します。
+@kbd{C-u G r} とすると、@code{mew-shimbun-mark-re-retrieve} に指定したマー
+ク (デフォルト値は @samp{@@}) の記事の更新を試みます。CNET などで使うと
+便利でしょう。
+
+@kbd{G R} (@code{mew-shimbun-re-retrieve-all}) では、すべての記事の新規
+性を調べ取得しなおします。@kbd{C-u G R} ではリージョンで指定した範囲の記
+事を対象とします。おそらくハイパー日記システムが稼働している日記サイトで
+は有意義なコマンドでしょう。
+@end enumerate
+
+@item
+未読管理
+
+@file{~/.mew.el} ファイルで以下の設定を行なっていると、
+
+@lisp
+(setq mew-shimbun-use-unseen t)
+@end lisp
+
+新規に取得した記事に @code{mew-shimbun-mark-unseen} で設定したマーク (デ
+フォルトは @samp{*}) がつくようになり、読むと自動的に消えます。
+
+通常、Mew の summary モードでマークをつける、あるいは消した後、scan をし
+ないと @file{.mew-cache} ファイルに反映されませんが、@file{~/.mew.el} ファ
+イルで以下の設定を行なうことにより、
+
+@lisp
+(setq mew-shimbun-use-unseen-cache-save t)
+@end lisp
+
+Mew の終了時や folder の kill 時 (@kbd{C-c C-q} を使ったと
+き) に @samp{shimbun} folder は自動的に @file{.mew-cache} ファイルを保存
+するようになります。ただし、確実
+@footnote{@code{mew-touch-folder-p} が @code{t} の人はほぼ 100% 保存でき
+ますが、@code{nil} の人が保存できる可能性はほとんど 0% だと思われます。}
+に保存するわけではありません。既読になった情報を確実に cache に保存する
+には、その folder を読み終わったときに @samp{scan update} をする習慣をつ
+けると良いでしょう。
+
+未読に使うマークが @samp{*} じゃダメ、という方は、変
+数 @code{mew-shimbun-mark-unseen} をカスタマイズして下さい (上述)。
+@kbd{C-u N} でそのマークを指定すると楽しい未読ライフをおくることができる
+と思います。
+
+@item
+期限切れ記事の消去
+
+事前に @code{mew-shimbun-expires} を設定しておくと、期限切れ記事の消去を
+行なうことができます。例えば:
+
+@lisp
+(setq mew-shimbun-expires
+      '(("yomiuri" . 7)
+        ("asahi" . 1)
+        ("slashdot-jp" . 7)
+        ("comp" . 7)))
+@end lisp
+
+上記のように設定しておくと、@samp{+shimbun/yomiuri} は 7日、
+@samp{+shimbun/asahi} は 1日と期限を設定することができます。指定されてい
+ない @samp{shimbun} folder は消去しません。@kbd{G e}
+(@code{mew-shimbun-expire}) でその folder の期限切れ記事を消去します。
+@kbd{G e} (@code{mew-shimbun-expire}) で設定した全ての folder で記事の消
+去を実行します。なお、一度消去した記事は復旧出来ませんので注意して下さい。
+
+@item
+未読マークとして @samp{$} を追加する方法
+
+@samp{$} マークを新たに作成し、@samp{$} マークを未読マークとして使うには、
+次の記述を @file{~/.mew.el} ファイルに記述して下さい。なお、@samp{$} 以
+外の記号にしたければ、
+@uref{http://www.mew.org/ml/mew-dist-2.0/msg01251.html} を参照して記述を
+生成して下さい。
+
+@format
+;;----------------------------------------------------------------------
+;;; @samp{$} を未読マークとして使うための記述
+(setq mew-mark-unseen ?$)
+(setq mew-shimbun-mark-unseen mew-mark-unseen)
+(setq mew-mark-show-list (cons mew-mark-unseen mew-mark-show-list))
+(setq mew-mark-afterstep-spec
+      (cons (cons mew-mark-unseen '(1 0 1 0 0 0 0))
+            mew-mark-afterstep-spec))
+(setq mew-mark-spec
+      (cons (list mew-mark-unseen "unseen" 0 nil nil nil nil nil)
+            mew-mark-spec))
+(setq mew-highlight-mark-keywords
+      (cons
+       (cons mew-mark-unseen 'mew-face-mark-unseen)
+       mew-highlight-mark-keywords))
+(defface mew-face-mark-unseen
+  '((((class color) (type tty))
+     (:foreground "green"))
+    (((class color) (background light))
+     (:foreground "deep pink" :bold t :italic t))
+    (((class color) (background dark))
+     (:foreground "thistle"))
+    (t (:bold t)))
+  "*Face to highlight the unseen mark"
+  :group 'mew-highlight)
+(defun mew-summary-unseen (&optional count)
+  "Put the unseen mark(default is '$') in COUNT times."
+  (interactive "P")
+  (mew-mark-put-mark-loop (function mew-summary-unseen-one) count nil))
+(defun mew-summary-unseen-one (&optional no-msg)
+  "Put the unseen mark(default is '$') on this message."
+  (mew-mark-put-mark mew-mark-unseen no-msg))
+(defun mew-summary-mark-unseen ()
+  "Change the '*' mark into the '$' mark."
+  (interactive)
+  (mew-summary-exchange-mark mew-mark-review mew-mark-unseen))
+(defun mew-thread-mark-unseen ()
+  "Put the '$' mark on all messages of the current sub-thread."
+  (interactive)
+  (mew-thread-mark mew-mark-unseen))
+
+(define-key mew-summary-mode-map "$"  'mew-summary-unseen)
+(define-key mew-summary-mode-map "m$" 'mew-summary-mark-unseen)
+(define-key mew-summary-mode-map "t$" 'mew-thread-mark-unseen)
+;;----------------------------------------------------------------------
+@end format
+@end enumerate
+
+@node Shimbun with Wanderlust
+@section Wanderlust で新聞を読む
+
+Wanderlust には ELMO モジュールの一つとして @samp{elmo-shimbun} が含まれ
+ているので、名前が @samp{@@} で始まるフォルダにアクセスするだけ
+で @samp{shimbun} を読むことができます (@pxref{(wl-ja)Shimbun Folder})。
+
+@node Shimbun Sites
+@section 新聞が読めるサイト
+
+@samp{Shimbun} ライブラリが対応しているサイトの一覧表です。
+
+@menu
+* Newspapers Supported by Shimbun::     新聞社
+* News Sites Supported by Shimbun::     ニュースサイト
+* Mailing Lists Supported by Shimbun::  メーリングリスト
+* Sport Sites Supported by Shimbun::    スポーツ
+* Misc Sites Supported by Shimbun::     その他
+@end menu
+
+@node Newspapers Supported by Shimbun
+@subsection 新聞社
+
+@samp{Shimbun} ライブラリが対応している新聞社です。
+
+@table @asis
+@item @uref{http://www.asahi.com/, 朝日新聞}
+asahi.business asahi.culture asahi.english asahi.international
+asahi.national asahi.politics asahi.science asahi.sports
+
+これらは、テキストのみの記事を作成しますが、記事中に含まれる写真などをイ
+ンライン表示するように拡張された @samp{asahi-html} というバックエンドも
+あります。こちらを利用する場合は、asahi-html.business というようなグルー
+プ名になります。
+
+@item @uref{http://www.mainichi.co.jp/, 毎日新聞}
+mainichi.shakai mainichi.sports mainichi.seiji mainichi.keizai
+mainichi.kokusai mainichi.fuho
+
+@item @uref{http://www.nikkansports.com/, 日刊スポーツ}
+nikkansports.baseball nikkansports.mlb nikkansports.soccer
+nikkansports.world-soccer nikkansports.sports nikkansports.battle
+nikkansports.horseracing nikkansports.entertainment
+nikkansports.society nikkansports.leisure
+
+@item @uref{http://www.nikkei.co.jp/, 日本経済新聞}
+nikkei.kaigai nikkei.keizai nikkei.main nikkei.market nikkei.okuyami
+nikkei.retto nikkei.sangyo nikkei.seiji nikkei.shakai nikkei.shasetsu
+nikkei.tento nikkei.zinzi
+
+@item @uref{http://www.sponichi.co.jp/, スポニチ}
+sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
+sponichi.society sponichi.entertainment sponichi.horseracing
+
+@item @uref{http://www.yomiuri.co.jp/, 讀売新聞}
+yomiuri.business yomiuri.editorial yomiuri.national yomiuri.obit
+yomiuri.politics yomiuri.sports yomiuri.world
+
+朝日新聞の場合と同様に、画像を含む記事を生成する @samp{yomiuri-html} も
+利用できます。
+@end table
+
+@node News Sites Supported by Shimbun
+@subsection ニュースサイト
+
+@samp{Shimbun} ライブラリが対応しているニュースサイトです。
+
+@table @asis
+@item @uref{http://cnet.sphere.ne.jp/, Japan CNET}
+cnet.comp
+
+@item @uref{http://www.watch.impress.co.jp/, インプレス}
+impress.internet impress.pc impress.akiba impress.game impress.av
+impress.jijinews impress.sports
+
+@item @uref{http://japan.linux.com/, japan.linux.com}
+linux-ja.news linux-ja.desktop linux-ja.enterprise linux-ja.kernel
+linux-ja.opensource linux-ja.security
+
+@item @uref{http://slashdot.jp/, Slashdot Japan}
+slashdot-jp.story
+
+@item @uref{http://www.hotwired.co.jp/, HotWired Japan}
+wired.business wired.culture wired.technology
+
+@item @uref{http://headlines.yahoo.co.jp/, Yahoo! Japan}
+yahoo.politics yahoo.society yahoo.people yahoo.business-all
+yahoo.market yahoo.stock yahoo.industry yahoo.international
+yahoo.entertainment yahoo.sports yahoo.computer yahoo.hokkaido
+yahoo.tohoku yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
+yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
+
+@item @uref{http://www.zdnet.co.jp/, ZDNet Japan}
+zdnet.comp zdnet.gamespot
+@end table
+
+@node Mailing Lists Supported by Shimbun
+@subsection メーリングリスト
+
+最近では、メーリングリストに投稿された過去記事のアーカイブが WEB 上に幾
+つも公開されています。@samp{Shimbun} ライブラリは、以下のアーカイブを扱
+うことができます。
+
+@table @asis
+@item @uref{http://lists.airs.net/semi-gnus/archive/, Semi-gnus Mailing List in Japan}
+airs.semi-gnus-ja
+
+@item @uref{http://lists.airs.net/, Wanderlust Mailing List}
+airs.wl airs.wl-en
+
+@item @uref{http://www.rc.tutrp.tut.ac.jp/bbdb-ml/, Big Brother DataBase Mailing List}
+bbdb-ml.bbdb-ml
+
+@item @uref{http://mail.gnome.org/archives/, GNOME Mailing List}
+gnome.balsa-list gnome.calendar-list gnome.cvs-commits-list
+gnome.foundation-announce gnome.foundation-list gnome.fplan-list
+gnome.gconf-list gnome.gdome gnome.gnome-1.4-list
+gnome.gnome-announce-list gnome.gnome-components-list
+gnome.gnome-db-list gnome.gnome-de gnome.gnome-debugger-list
+gnome.gnome-devel-list gnome.gnome-doc-list gnome.gnome-gui-list
+gnome.gnome-hackers gnome.gnome-hackers-readonly
+gnome.gnome-hackers-test gnome.gnome-i18n gnome.gnome-i18n-tools
+gnome.gnome-kde-list gnome.gnome-list gnome.gnome-office-list
+gnome.gnome-pilot-list gnome.gnome-sound-list gnome.gnome-themes-list
+gnome.gnome-ui-hackers gnome.gnome-web-list gnome.gnome-webmaster-list
+gnome.gnome-workshop-list gnome.gnomecc-list gnome.gnumeric-list
+gnome.gtk-app-devel-list gnome.gtk-devel-list gnome.gtk-doc-list
+gnome.gtk-i18n-list gnome.gtk-list gnome.gtk-perl-list
+gnome.guppi-list gnome.libart gnome.libart-hackers gnome.orbit-list
+gnome.vote gnome.wm-spec-list gnome.xml gnome.xslt
+
+@item @uref{http://www.java-conf.gr.jp/archives/, Java カンファレンス Mailing List}
+javaconf.servlet-ml javaconf.business-ml
+javaconf.duke-in-the-box-ml javaconf.jfriends-ml javaconf.JGT-ml
+javaconf.jini-ml javaconf.ejb-ml javaconf.cm-ml javaconf.horb-ml
+javaconf.talk-ml
+
+@item @uref{http://www.peanuts.gr.jp/~kei/ml-archive/, LinuxCE JP Mailing List}
+linuxce-jp.users
+
+@item @uref{http://www.m17n.org/, Mule Mailing List}
+m17n.mule-ja m17n.mule
+
+@item @uref{http://www.ysnb.net/meadow/, Meadow Mailing List}
+meadow.meadow-develop meadow.meadow-users-jp
+
+@item @uref{http://www.mew.org/ml/, Mew Mailing List}
+mew.mew-dist mew.mew-win32 mew.mew-int
+
+@item @uref{http://www.mew.org/ml/, MagicPoint Mailing List}
+mew.mgp-users mew.mgp-users-jp
+
+@item @uref{http://www.namazu.org/ml/, Namazu Mailing List}
+namazu.namazu-users-ja namazu.namazu-win32-users-ja
+namazu.namazu-users-en namazu.namazu-devel-ja namazu.namazu-devel-en
+
+@item @uref{http://emacs-w3m.namazu.org/ml/, emacs-w3m Mailing List}
+namazu.emacs-w3m
+
+@item @uref{http://migemo.namazu.org/ml/, migemo Mailing List}
+namazu.migemo
+
+@item @uref{http://www.jp.netbsd.org/ja/JP/ml/, NetBSD JP Mailing List}
+netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
+netbsd.tech-pkg-ja netbsd.port-arm32-ja netbsd.port-hpcmips-ja
+netbsd.port-mac68k-ja netbsd.port-mips-ja netbsd.port-powerpc-ja
+netbsd.hpcmips-changes-ja netbsd.members-ja netbsd.admin-ja
+netbsd.www-changes-ja
+
+@item @uref{http://namazu.org/~satoru/archives/, QuickML}
+quickml.quickml-users quickml.quickml-server
+quickml.chatty quickml.dotnet quickml.linux-zaurus quickml.ming
+quickml.pdumpfs quickml.stationery quickml.tty-mania
+
+@item @uref{http://blade.nagaokaut.ac.jp/, Ruby Mailing List}
+ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
+ruby.ruby-dev ruby.ruby-ext ruby.ruby-list ruby.ruby-math
+ruby.ruby-talk
+
+@item @uref{http://linux.toshiba-dme.co.jp/ML/tlinux-users-j/, Toshiba Linux Users JP Mailing List}
+toshiba.linux-users-j
+
+@item @uref{http://mi.med.tohoku.ac.jp/~satodai/w3m-dev/, w3m-dev Mailing List}
+w3m-dev.w3m-dev
+
+@item @uref{http://yar-3.net/digiko/, digiko Mailing List}
+digiko.digiko
+
+@item @uref{http://list-archive.xemacs.org/, XEmacs Mailing List}
+xemacs.xemacs-announce xemacs.xemacs-beta-ja
+xemacs.xemacs-beta xemacs.xemacs-build-reports xemacs.xemacs-cvs
+xemacs.xemacs-design xemacs.xemacs-mule xemacs.xemacs-nt
+xemacs.xemacs-patches xemacs.xemacs-users-ja xemacs.xemacs
+
+@item @uref{http://memo.st.ryukoku.ac.jp/archive/, セキュリティーMEMO Mailing List}
+security-memo.memo
+
+@item @uref{http://lists.debian.or.jp/, Debian JP Mailing List}
+debian-jp.debian-announce debian-jp.debian-devel
+debian-jp.debian-www debian-jp.debian-users debian-jp.debian-policy
+debian-jp.jp-qa
+
+@item @uref{http://lists.debian.org/, Debian Mailing List}
+debian.debian-announce debian.debian-commercial debian.debian-firewall
+debian.debian-french debian.debian-isp debian.debian-italian
+debian.debian-kde debian.debian-laptop debian.debian-news
+debian.debian-news-german debian.debian-news-portuguese
+debian.debian-security-announce debian.debian-testing
+debian.debian-user debian.debian-user-catalan
+debian.debian-user-french debian.debian-user-polish
+debian.debian-user-portuguese debian.debian-user-spanish
+debian.debian-user-swedish debian.debian-admintool
+debian.debian-apache debian.debian-autobuild debian.debian-beowulf
+debian.debian-boot debian.debian-cd debian.debian-ctte
+debian.debian-debbugs debian.debian-devel debian.debian-devel-announce
+debian.debian-devel-french debian.debian-devel-games
+debian.debian-devel-spanish debian.debian-doc debian.debian-dpkg
+debian.debian-emacsen debian.debian-events-eu debian.debian-events-na
+debian.debian-faq debian.debian-gcc debian.debian-glibc
+debian.debian-gtk-gnome debian.debian-hams debian.debian-ipv6
+debian.debian-java debian.debian-jr debian.debian-med
+debian.debian-mentors debian.debian-newmaint
+debian.debian-newmaint-admin debian.debian-ocaml-maint
+debian.debian-openoffice debian.debian-perl debian.debian-pilot
+debian.debian-policy debian.debian-pool debian.debian-python
+debian.debian-qa debian.debian-qa-private debian.debian-release
+debian.debian-security debian.debian-snapshots
+debian.debian-tetex-maint debian.debian-toolchain debian.debian-vote
+debian.debian-wnpp debian.debian-www debian.debian-x debian.deity
+debian.debian-chinese debian.debian-chinese-big5
+debian.debian-chinese-gb debian.debian-esperanto debian.debian-i18n
+debian.debian-japanese debian.debian-l10n-catalan
+debian.debian-l10n-dutch debian.debian-l10n-english
+debian.debian-l10n-french debian.debian-l10n-italian
+debian.debian-l10n-portuguese debian.debian-l10n-spanish
+debian.debian-laespiral debian.debian-russian
+debian.debian-simplified-chinese debian.debian-68k debian.debian-alpha
+debian.debian-arm debian.debian-bsd debian.debian-hppa
+debian.debian-hurd debian.debian-ia64 debian.debian-mips
+debian.debian-parisc debian.debian-powerpc debian.debian-s390
+debian.debian-sparc debian.debian-superh debian.debian-ultralinux
+debian.debian-win32 debian.debian-all-changes
+debian.debian-alpha-changes debian.debian-arm-changes
+debian.debian-books debian.debian-cd-vendors debian.debian-changes
+debian.debian-consultants debian.debian-curiosa
+debian.debian-devel-all-changes debian.debian-devel-alpha-changes
+debian.debian-devel-arm-changes debian.debian-devel-changes
+debian.debian-devel-hurd-i386-changes debian.debian-devel-i386-changes
+debian.debian-devel-m68k-changes debian.debian-devel-powerpc-changes
+debian.debian-devel-sparc-changes debian.debian-hurd-i386-changes
+debian.debian-i386-changes debian.debian-legal
+debian.debian-m68k-changes debian.debian-mirrors
+debian.debian-powerpc-changes debian.debian-project
+debian.debian-publicity debian.debian-sgml debian.debian-sparc-changes
+debian.lcs-eng debian.lsb-confcall debian.lsb-discuss debian.lsb-impl
+debian.lsb-spec debian.lsb-test debian.spi-announce debian.spi-general
+debian.vgui-discuss
+
+@item @uref{http://www.kde.gr.jp/ml/, KDE Mailing List in Japan}
+kde.Kuser kde.Kdeveloper
+
+@item @uref{http://www.geocrawler.com/, Geocrawler}
+Geocrawler に保存されている全てのメーリングリストを閲覧できます。
+@kbd{M-x shimbun-geocrawler-add-group RET} というコマンドを使って、閲覧
+したいグループを変数 @code{shimbun-geocrawler-group-alist} に登録してく
+ださい。
+
+@item @uref{http://marc.theaimsgroup.com/, Mailing list ARChives}
+Mailing list ARChives (@acronym{MARC}) に保存されている全てのメーリング
+リストを閲覧できます。閲覧したいグループのグループ名と URL を、
+変数 @code{shimbun-marc-aims-group-alist} に登録してください。
+
+@item @uref{http://sources.redhat.com/ml/, RedHat Mailing List}
+redhat.automake redhat.bug-automake redhat.automake-prs
+redhat.automake-cvs redhat.binutils redhat.binutils-cvs
+redhat.c++-embedded redhat.crossgcc redhat.cgen redhat.cgen-prs
+redhat.cgen-cvs redhat.cygwin redhat.cygwin-xfree redhat.cygwin-announce
+redhat.cygwin-xfree-announce redhat.cygwin-apps redhat.cygwin-patches
+redhat.cygwin-developers redhat.cygwin-cvs redhat.cygwin-apps-cvs
+redhat.docbook-tools-discuss redhat.docbook-tools-announce
+redhat.docbook-tools-cvs redhat.docbook redhat.dssslist
+redhat.sgml-tools redhat.docbook-apps redhat.ecos-announce
+redhat.ecos-devel redhat.ecos-discuss redhat.ecos-maintainers
+redhat.ecos-patches redhat.elix redhat.elix-announce redhat.gdb
+redhat.gdb-announce redhat.gdb-testers redhat.gdb-testresults
+redhat.gdb-patches redhat.gdb-cvs redhat.bug-gdb redhat.gdb-prs
+redhat.libc-alpha redhat.libc-hacker redhat.bug-glibc redhat.glibc-cvs
+redhat.glibc-linux redhat.bug-gnats redhat.gnats-devel
+redhat.gnats-announce redhat.gnats-cvs redhat.gsl-discuss
+redhat.gsl-announce redhat.gsl-cvs redhat.guile redhat.guile-emacs
+redhat.guile-prs redhat.guile-gtk redhat.bug-guile redhat.guile-cvs
+redhat.guile-emacs-cvs redhat.insight redhat.insight-announce
+redhat.insight-prs redhat.installshell redhat.inti redhat.kawa
+redhat.libffi-discuss redhat.libffi-announce redhat.libstdc++
+redhat.libstdc++-cvs redhat.libstdc++-prs redhat.mauve-discuss
+redhat.mauve-announce redhat.newlib redhat.pthreads-win32 redhat.rhdb
+redhat.rhdb-announce redhat.rhug-rhats redhat.rpm2html-cvs
+redhat.rpm2html-prs redhat.rpm2html redhat.sid redhat.sid-announce
+redhat.sid-cvs redhat.sourcenav redhat.sourcenav-announce
+redhat.sourcenav-prs redhat.win32-x11 redhat.xconq7
+redhat.xconq-announce redhat.xconq-cvs
+
+@item @uref{http://www.tech-arts.co.jp/macosx/, MacOSX JP Mailing List}
+macosx-jp.macosx-jp macosx-jp.macosx-dev-jp
+macosx-jp.macosx-ws-jp macosx-jp.webobjects-jp
+
+@item @uref{http://sourceforge.jp, SourceForge JP}
+SourceForge JP に保存されているメーリングリストの全ての公開書庫を閲覧で
+きます。閲覧したいグループを
+変数 @code{shimbun-sourceforge-jp-mailing-lists} に登録してください。
+
+@item @uref{http://heimat.jp/~nakaji/elips/, Elips Mailing List}
+elips.elips
+
+@item @uref{http://lists.squeakfoundation.org/pipermail/squeak-ja/, Squeak-ja Mailing List}
+squeak-ja.main
+
+@item @uref{http://www.sra.co.jp/smalltalk/SML/archives/, Smalltalkers' Salon Mailing List}
+sml.main
+
+@item @uref{http://lists.squeakfoundation.org/pipermail/squeak-dev/, Squeak-dev Mailing List}
+squeak-dev.main
+
+@item @uref{http://www.mail-archive.com/plucker-*@@rubberchicken.org/maillist.html, Plucker Mailing List}
+plucker.announce plucker.list plucker.dev
+
+@item @uref{http://www.pilot-link.org/pipermail/, pilot-link Mailing List}
+pilot-link.announce pilot-link.devel pilot-link.general
+pilot-link.unix-ng
+
+@item @uref{http://www.thedotin.net/maillists/coldsync-hackers/maillist.html, Coldsync Mailing List}
+coldsync.main
+
+@item @uref{http://www.jpilot.org/pipermail/jpilot/, J-Pilot Mailing List}
+jpilot.main
+
+@item @uref{http://lists.gnu-designs.com/pipermail/pilot-mailsync/, pilot-mailsync Mailing List}
+pilot-mailsync.main
+
+@item @uref{http://www.mozilla.gr.jp/ml/logs/moz-users/, Mozilla Users Mailing List in Japan}
+mozilla-jp.users
+
+@item @uref{http://www.tdiary.org/, tDiary Developers Mailing List in Japan}
+tdiary-ml.devel tdiary-ml.theme
+
+@end table
+
+なお、@samp{mozilla-jp.users} はアドレス回収ロボット対策で userid と 
+passowrd を求められるので @file{~/.w3m/passwd} に
+
+@example
+machine www.mozilla.gr.jp
+path /ml/logs/moz-users/
+login mozilla
+passwd mozilla
+@end example
+
+@noindent
+と書き、上記ファイルから group, others のアクセス権を取り除いておく必要
+があります。
+
+@node Sport Sites Supported by Shimbun
+@subsection スポーツ
+
+@samp{Shimbun} ライブラリが対応しているスポーツ関係のサイトです。
+
+@table @asis
+@item @uref{http://www.makanai.com/, makanai}
+makanai.f1news
+
+@item @uref{http://www.ksky.ne.jp/~tahara/f1/, F1 ファン}
+f1fan.news
+
+@item @uref{http://f1express.cnc.ne.jp/, トーチュウ F1 EXPRESS}
+f1express.F1 f1express.Pari-Dakar f1express.CART f1express.All-Japan
+f1express.WRC f1express.bike f1express.Tuka-CLUB f1express.etc
+f1express.F-Nippon f1express.JGTC f1express.LeMans24 f1express.Indi500
+f1express.F3-Japan f1express.Super-Taikyu f1express.AJRC
+f1express.F-Toyota f1express.F-Dream f1express.etc-4-Japan
+f1express.F3-France f1express.F3-England f1express.F3-Germany
+f1express.LeMans-USA f1express.IRL f1express.FSC f1express.Int-F3000
+f1express.etc-4-int f1express.WGP f1express.WSB f1express.R2-1
+f1express.Suzuka8 f1express.Motegi7 f1express.AJ-Motocross
+f1express.AJ-Trial f1express.World-Motocross f1express.WCT
+f1express.etc-2 f1express.Inter-GP-Cafe f1express.Takagi
+f1express.NASCAR f1express.Kato f1express.Endo f1express.Sato
+f1express.Imamiya f1express.Toyota-news f1express.F1-release
+f1express.info
+@end table
+
+ただし、トーチュウ F1 EXPRESS を閲覧する場合は、
+@uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/, Mule-UCS} をインストールし
+ておく必要があります。Emacs-21.2 で利用する場合は、Mule-UCS に
+@uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html, patch}
+を適用したほうがいいでしょう。
+
+@node Misc Sites Supported by Shimbun
+@subsection その他
+
+@samp{Shimbun} ライブラリの対応しているその他のサイトです。掲示板や、連
+載記事を主体とするようなサイトが含まれています。
+
+@table @asis
+@item @uref{http://www61.tcup.com/6116/yutopia.html, ゆうτοπια掲示板}
+tcup.yutopia
+
+@item @uref{http://www66.tcup.com/6629/yutopia.html, Meadow 掲示板}
+tcup.meadow
+
+@item @uref{http://www67.tcup.com/6718/yutopia.html, SKK 掲示板}
+tcup.skk
+
+変数 @code{shimbun-tcup-group-alist} に適切な設定を加えると、
+@uref{http://www.tcup.com/} 上で運営されている他の掲示板も閲覧できます。
+
+@item @uref{http://www.vinelinux.org, VineLinux Errata}
+vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
+vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
+vinelinux.errata.1x
+
+@item 2ch
+グループ名と URL を調べて、以下のように設定して使います。
+
+@lisp
+(setq shimbun-2ch-group-alist
+      '(("Meadow" .
+         "http://pc.2ch.net/test/read.cgi/software/1005469775")
+        ("emacs-w3m" .
+         "http://pc.2ch.net/test/read.cgi/unix/1013710106")))
+@end lisp
+
+@item HNS による日記
+閲覧したい日記の URL を調べて、以下のように設定して使います。
+
+@lisp
+(setq shimbun-hns-group-alist
+      '(("arisawa"                           ;; グループ名
+         "http://www.nijino.com/ari/diary/"  ;; URL
+         "ari@@mbf.sphere.ne.jp")             ;; メールアドレス
+        ("miyoshi"
+         "http://www.be.wakwak.com/cgi-bin/sbox/~miyoshi/hns/"
+         "miyoshi@@meadowy.org")))
+@end lisp
+
+@item tDiary による日記
+閲覧したい日記の URL を調べて、以下のように設定して使います。
+
+@lisp
+(setq shimbun-tdiary-group-alist
+      '(("henahena"                          ;; グループ名
+         "http://www.fan.gr.jp/~ring/d/")    ;; URL
+        ("yoichi"
+         "http://yoichi.geiin.org/d/")))
+@end lisp
+
+@item chalow による日記
+閲覧したい日記の URL を調べて、以下のように設定して使います。
+
+@lisp
+(setq shimbun-chalow-group-alist
+      '(("yto"                               ;; グループ名
+         "http://nais.to/~yto/clog/"         ;; URL
+         "yto@@nais.to")                      ;; メールアドレス
+        ))
+@end lisp
+
+@item Wiki コンテンツ
+閲覧したい Wiki の URL を調べて、以下のように設定して使います。
+PukiWiki と Hiki に対応しています。もし、各内側のリストの 4 番目、5 番目
+の要素の正規表現に何を指定して良いか分からないときは、@code{nil} を指定
+すれば良いでしょう。記事の取得時に整形が行われず、ただページ全体が見える
+だけです。
+
+@lisp
+(setq shimbun-wiki-group-alist
+      '(("pukiwiki" ;; グループ名
+	 "http://pukiwiki.org/index.php?cmd=rss10" ;; URL
+	 "webmaster@@pukiwiki.org" ;; メールアドレス
+	 nil ;; X-Face
+	 "\n<h3 id=\"" ;; contents の start を示す regexp
+	 "</address>") ;; contents の end を示す regexp
+	("hiki"
+	 "http://www.namaraii.com/hiki/?c=rss"
+	 "webmaster@@fdiary.net"
+	 nil
+	 "<div class=\"section\">"
+	 "<div class=\"sidebar\">")
+	("apollo"
+	 "http://wiki.fdiary.net/apollo/?c=rss"
+	 "moriq@@moriq.com"
+	 nil
+	 "<div class=\"section\">"
+	 "<div class=\"sidebar\">")
+	))
+@end lisp
+
+@item @uref{http://www.kantei.go.jp/jp/, 小泉内閣メールマガジン}
+kantei.m-magazine
+
+@item @uref{http://www.jpo.go.jp/, 特許庁}
+jpo.news jpo.revision jpo.lawguide jpo.details
+
+@item @uref{http://www-6.ibm.com/jp/developerworks/, IBM developerWorks}
+ibm-dev.java ibm-dev.linux ibm-dev.opensource ibm-dev.webservices
+ibm-dev.xml
+
+@item @uref{http://muchy.com/, Muchy's Palmware Review!}
+muchy.review
+
+@item @uref{http://palmoslove.com/, palmoslove}
+palmoslove.webnews palmoslove.pdanews palmoslove.sitenews
+
+@item @uref{http://www.pocketgames.jp/, Pocketgames}
+pocketgames.news
+
+@item @uref{http://www.wince.ne.jp/, Wincefan}
+wincefan.news
+
+@item @uref{http://www.palmfan.com/, PalmFan}
+palmfan.news palmfan.palmwarefan
+
+@item @uref{http://homepage1.nifty.com/akiba/plat.html, 電脳街の現場レポート}
+dennou.report
+
+@item @uref{http://pcweb.mycom.co.jp/column/, PCWEB COLUMN Square}
+pcweb-column.gyokai pcweb-column.benri pcweb-column.hitech
+pcweb-column.business pcweb-column.winxp pcweb-column.bytes
+pcweb-column.newyork pcweb-column.asia pcweb-column.akiba
+pcweb-column.rikei pcweb-column.osx pcweb-column.game
+pcweb-column.smart98 pcweb-column.win2k pcweb-column.msdos
+pcweb-column.muteki pcweb-column.mobile pcweb-column.win98
+pcweb-column.ayashii pcweb-column.melon pcweb-column.linux
+pcweb-column.scrap pcweb-column.siterev pcweb-column.anime
+pcweb-column.soho pcweb-column.trouble pcweb-column.renai
+pcweb-column.dream pcweb-column.tworld pcweb-column.camera
+pcweb-column.denshi pcweb-column.tsushin pcweb-column.shitumon
+pcweb-column.nandemo pcweb-column.hourou pcweb-column.oshigoto
+pcweb-column.tech pcweb-column.speed
+
+@item @uref{http://tsuruo.dominohosting.biz/members/tsuruo/, ノーツ陳列館}
+lotusex.news lotusex.library lotusex.operation lotusex.primer
+lotusex.tips lotusex.practical lotusex.qanda lotusex.lounge
+lotusex.bbs
+
+@item @uref{http://www.atmarkit.co.jp, ＠ITフォーラム}
+atmarkit.fwin2k atmarkit.fdotnet atmarkit.fsys atmarkit.fxml
+atmarkit.flinux atmarkit.fnetwork atmarkit.fjava 
+atmarkit.fsecurity atmarkit.fbiz atmarkit.jibun
+@end table
+
+@node Shimbun Basics
+@section 新聞モジュールの作り方
+@cindex @file{shimbun.el}
+
+@samp{Shimbun} は emacs-w3m の付属ライブラリで、Gnus や Wanderlust、
+Mew などの MUA を利用し、ウェブコンテンツをメールと同じユーザインターフェー
+スで読むことを可能にするものです。ここでは @samp{shimbun} モジュールを作
+成する典型的な方法を説明します。
+
+@menu
+* Overview::                    概略
+* Getting web page and header information::  ウェブページのソース及びヘッダ情報を取得する
+* Displaying an article::       記事の表示
+* Inheriting shimbun module::   shimbun モジュールの継承
+@end menu
+
+@node Overview
+@subsection 概略
+
+@uref{http://www.foobar.net} のコンテンツを閲覧する新た
+な @samp{shimbun} モジュール @samp{foobar} を作成するとして、まず最初に
+貴方がしなればならないことは、@file{sb-foobar.el} の冒頭に
+
+@lisp
+(require 'shimbun)
+(luna-define-class shimbun-foobar (shimbun) ())
+@end lisp
+
+@noindent
+のような宣言を入れておくことです。徐々に分かると思いますので、今はおまじ
+ないと思っておいて下さい。注意すべきことは、@samp{shimbun} モジュールを
+入れるファイル名の @file{sb-foobar.el} の @samp{foobar} の名前と、
+@code{luna-define-class}  の第一引数
+の @code{shimbun-foobar} の @samp{foobar} の名前は合わせておく必要がある
+ことです。
+
+@samp{Shimbun} モジュール @samp{shimbun-foobar} がこなすべき仕事は大き
+く四つあります (あなたが Gnus のユーザならば、「フォルダ」を「グループ」
+に読み換えて下さい):
+
+@enumerate
+@item
+MUA が @samp{foobar} フォルダを開いたら、記事の標題などをリストアップす
+るために @uref{http://www.foobar.net} からウェブページのソースを取得する
+こと。
+
+@item
+取得したウェブページのソースに対し、記事の見出しに必要ないくつかの情報と
+ともに取得して、@code{headers} というリストに代入して返すこと。
+
+@item
+MUA が @samp{foobar} フォルダの記事の閲覧を要求したら、実際の記事内容を
+記載したウェブページのソースを (例え
+ば @uref{http://www.foobar.net/030530.html} から) 取得すること。
+
+@item
+@uref{http://www.foobar.net/030530.html} から取得したウェブページのソー
+スを、必要に応じ閲覧しやすいように整形すること。
+@end enumerate
+
+@noindent
+最初の作業は @file{shimbun.el} の @code{shimbun-headers} が、二番目の作
+業は @code{shimbun-get-headers} が担当します。そして三番目の作業
+は @code{shimbun-article} が、最後の作業
+は @code{shimbun-make-contents} が担当します。
+
+@file{shimbun.el} の中をご覧下さい。@code{defun} による関数定義の他に、
+見慣れない @code{luna-define-generic}, @code{luna-define-method} などの
+宣言がありますよね。どうも使用方法は @code{defun} のそれと似ているようで
+す。そして、前者は何だか doc-string だけを書いてあるようで、同名のシンボ
+ルについて後者によって再度宣言しているように見えます。更に、あるシンボル
+について、@code{luna-define-generic} の宣言だけがあって、
+@code{luna-define-method} の宣言がないものもあります。
+
+実は、@file{shimbun.el} 及び各 @samp{shimbun} モジュールは、
+Emacs Lisp にてオブジェクト志向プログラミングを可能とする @file{luna.el}
+@footnote{@acronym{FLIM} に含まれています。} を利用して書かれています。
+
+@file{shimbun.el} の中では、@code{shimbun-headers} があ
+る URL のウェブページのソースを取得し、@code{shimbun-get-headers} がその
+ウェブページのソースから標題などを抜き出し@dots{} という前述の手順がハー
+ドコーディングされています。しかし、決め打ちするだけでは、千差万別のウェ
+ブページのソースを、その構造に合わせて変化させることができません。
+
+そこで @code{luna} により、メソッドがコールされる手順だけ決めておいて、
+@samp{shimbun} により変化させるべきメソッドの実体定義を
+各 @samp{shimbun} モジュールに任せているのです。各 @samp{shimbun} モジュー
+ルで共通で使えそうなメソッドは @file{shimbun.el} の中にメソッドの実体も
+定義してありますが、それすら各 @samp{shimbun} モジュールにおいて再定義を
+することが可能です。
+
+もうお分かりのように、@code{luna-define-generic} は、言わば殼だけの宣言、
+@code{luna-define-method} は @samp{shimbun} モジュール毎に作成できる実体
+の宣言。そして @file{sb-foobar.el} の冒頭に入れ
+た @code{luna-define-class} での宣言は、@code{luna} 上での新たなクラスの
+宣言だったわけです。
+
+@node Getting web page and header information
+@subsection ウェブページのソース及びヘッダ情報を取得する
+
+まず記事見出しを取得する対象となるウェブページを決めることから始めます。
+フレーム表示されている場合は、フレームの中で必要なページだけを単独で指し
+示す URL を特定するべきです。特定できたら、新たに作成す
+る @samp{shimbun} モジュールの中で @code{luna-define-method} を使い、
+@code{shimbun-index-url} の定義を作成しましょう。単純に URL を返すように
+すれば良いですよ。後で説明しますので、変
+数 @code{shimbun-foobar-groups} も用意しておきましょ
+う@footnote{@samp{Shimbun} モジュール一つにつき、最低でも一つのグルー
+プが必要です。}。
+
+@lisp
+(defvar shimbun-foobar-url "http://www.foobar.net")
+
+(luna-define-method shimbun-index-url ((shimbun shimbun-foobar))
+  shimbun-foobar-url)
+
+(defvar shimbun-foobar-groups '("news"))
+@end lisp
+
+@code{shimbun-headers} メソッドは @file{shimbun.el} の中に既に定義されて
+いますから、@file{sb-foobar.el} で @code{shimbun-index-url} メソッドの定
+義を作成すればウェブページのソースの取得ができるようになります。
+@code{shimbun-headers} はウェブページのソースを取得した後、
+@code{shimbun-get-headers} メソッドを呼び、ヘッダ情報の収集に入ります。
+@file{shimbun.el} の中には @code{shimbun-get-headers} のメソッド宣言があ
+りせんから、@file{sb-foobar.el} の中で独自にメソッドを作成しなければなり
+ません。
+
+@file{sb-foobar.el} に @code{shimbun-get-headers} のメソッドを作成するた
+めに、取得したページのソースを分析しましょう。どのような正規表現で記事の
+ヘッダ情報を収集するかを検討します。記事の見出しとして特に必要な情報は、
+標題、日付、作成者、その記事の URL、そして @code{message-id} です。これ
+らの情報は、それぞれの MUA において、Subject, Date, From, Xref,
+Message-ID として表示されます。例えば、下記の
+
+@example
+<a href="030530.html">5月30日の話題(投稿者-みきお &lt;foo@@bar.net&gt;)</a>
+@end example
+
+@noindent
+のような行を集めて記事にしたいのでしたら、
+
+@example
+"<a href=\"\\(\\([0-9][0-9][0-9][0-9]\\)\\.html\\)\">\\([^<(]+\\)(投稿者-\\([^<]+\\))<\/a>"
+@end example
+
+@noindent
+のような正規表現になるでしょう。そして記事の Xref の値は
+@w{@code{(match-string 1)}} で取得できます、Date は
+@w{@code{(match-string 2)}} の値を加工すれば良いでしょう。Subject は
+@w{@code{(match-string 3)}} で取得できますね。From は
+@w{@code{(match-string 4)}} を加工すれば良いでしょう。これらの値
+は MUA で見易いように更に加工しても構いません。@file{sb-muchy.el} では結
+構凝った Subject を作っていますので一度見て下さい。
+
+上記のように記事の URL が相対パス表示されている場合は、
+@code{w3m-expand-url} を使用し、絶対パス表示に変更してからヘッダに収めま
+しょう。記事の URL がヘッダの URL と同じ、つまり記事毎に個別に URL を持
+たない構造のウェブページもあります。この場合は少しやっかいで、ヘッダ情報
+取得の段階で、記事の内容も取得しておき、Emacs のメモリに収めておく必要が
+あります。具体的には @file{sb-palmfan.el}, @file{sb-dennou.el},
+@file{sb-tcup.el} の @file{shimbun-headers} メソッドの定義を参照して下さ
+い。
+
+ウェブページによっては Date が特定できないものがあります。そういう場合は
+無理に特定せずとも @code{""} を入れておけば OK です。記事の内容を見て初
+めて Date が特定できるなら、@code{shimbun-make-contents} メソッドの中で
+改めてヘッダに Date の情報を入れても OK です。それから、From を決め打ち
+しても良い場合もあります。
+
+@code{message-id} の作成には注意を要します。一部の記事が読めなかったりし
+ますので@footnote{shimbun の一部の記事が読めないだけならまだしも、下手
+に @code{message-id} を作成すると、貴方が受領する大事なメールのそれとか
+ち合ってしまい、そのメールが読めなくなる可能性すらあります。}、必
+ず単一性 (uniqueness) を保証しなければなりません。日付やドメイン、そのペー
+ジの URL の一部を使って文字列を生成することで単一性を確保しましょう。そ
+の他、@code{message-id} の一部に必ず @samp{@@} を含めるようにし、逆
+に @samp{:} は含まないようにしましょう。このルールを守らないとインライン
+画像がきちんと出力されませんよ。詳しくは RFC2387, RFC822 を参照して下さ
+い。
+
+苦労して取得したこれらの情報は @code{shimbun-make-header} という関数を利
+用してヘッダに収めます。
+
+結局 @file{sb-foobar.el} の中での @code{shimbun-get-headers} の定義の骨
+組みはこんな風になりますね。
+
+@lisp
+(luna-define-method shimbun-get-headers ((shimbun shimbun-foobar)
+                                         &optional range)
+  (let ((regexp "....")
+        subject from date id url headers)
+    ...
+    (catch 'stop
+      (while (re-search-forward regexp nil t nil)
+        ...
+        (when (shimbun-search-id shimbun id)
+          (throw 'stop nil))
+        (push (shimbun-make-header
+               0 (shimbun-mime-encode-string subject)
+               (shimbun-mime-encode-string from)
+              date id "" 0 0 url)
+              headers)))
+    headers))
+@end lisp
+
+@noindent
+なお、このメソッドの中では @code{shimbun} という一時変数で、
+@samp{shimbun} モジュール @samp{shimbun-foobar} のインスタンスにアクセス
+できます。
+
+ところで、先程保留にした変数 @code{shimbun-foobar-groups} について説明し
+ましょう。
+
+仮に @w{@uref{http://www.foobar.net}} の中に読みたい記事グループが二つあっ
+て、それぞれの記事のヘッダ情報を得るウェブページが別々の場所にあったとし
+ましょう。@w{@uref{http://www.foobar.net/whatsnew/index.hmtl}} にサイト
+の更新情報が、@w{@uref{http://www.foobar.net/ml/index.html}} に ML の記
+事アーカイブの一覧があるときなどです。こういう場合は、@samp{shimbun} モ
+ジュール @code{foobar} のグループとして、@code{foobar.whatsnew},
+@samp{foobar.ml} としてアクセスできると便利ですよね。そういう場合は下記
+のようにしてみましょう。
+
+@lisp
+(defvar shimbun-foobar-url "http://www.foobar.net")
+
+(defvar shimbun-foobar-group-path-alist
+  '(("whatsnew" . "/whatsnew/index.html")
+    ("ml" . "/ml/index.html")))
+
+(defvar shimbun-foobar-groups
+  (mapcar 'car shimbun-foobar-group-path-alist))
+
+(luna-define-method shimbun-index-url ((shimbun shimbun-foobar))
+  (concat shimbun-foobar-url
+          (cdr (assoc (shimbun-current-group-internal shimbun)
+                      shimbun-foobar-groups))))
+@end lisp
+
+@noindent
+現在ユーザがアクセスしているグループに
+は @code{shimbun-current-group-internal} を使えば分かります。
+@code{shimbun-get-headers} などでもグループが違えば作業内容が違ってくる
+可能性もありますね。
+
+なお、@samp{shimbun} モジュール一つにつき、最低でも一つのグループが必要
+です。グループの名前の決め方に特に決まりはありませんが、グループ名に悩ん
+だら、@samp{news} とか @samp{main} などと付けておきましょう。
+
+@node Displaying an article
+@subsection 記事の表示
+
+@file{shimbun.el} に定義された @code{shimbun-article} メソッドは、ヘッダ
+情報から Xref を取り出し、その URL のウェブページのソースを取得した後に、
+そのソースを入れたワーキングバッファの中
+で @code{shimbun-make-contents} を呼びます。具体的な記事の加工
+は @code{shimbun-make-contents} の仕事です。
+
+記事となるウェブページのソースが、どばっとワーキングバッファにぶちまけら
+れていると想像して下さい。@file{shimbun.el} の標準
+の @code{shimbun-make-contents} は、そのバッファの先頭にまずヘッダ情報を
+挿入し、その直後に @samp{<html>} や @samp{<body>} などを、また、バッファ
+の末尾に @samp{</body>}, @samp{</html>} を挿入してくれます。そうやっ
+て HTML メールとして表示させるのです。
+
+記事を何も加工する必要がなければ @file{sb-foobar.el} の中で
+は @code{shimbun-make-contents} について新たに定義する必要はありません。
+
+単純に記事の前半と後半に捨てたい部分があるだけならば、
+@code{shimbun-foobar-content-start},
+@code{shimbun-foobar-content-end} に捨てたい部分を検索可能な正規表現を指
+定しておきましょう。
+
+@lisp
+(defvar shimbun-foobar-content-start "^<body>$")
+(defvar shimbun-foobar-content-end "^<\/body>$")
+@end lisp
+
+@noindent
+標準の @code{shimbun-make-contents} がこれらの正規表現を利用して、
+@code{point-min} から @code{shimbun-foobar-content-start} まで、
+@code{shimbun-foobar-content-end} から @code{point-max} までを切り捨てて
+くれますよ。但し、これら二つのマッチはいずれかが成功しないと切り捨ては行
+われませんので注意が必要です。
+
+広告などの不要な情報があって、それを細かく検索して捨てたい場合は、
+@file{sb-foobar.el} の中
+で @code{luna-define-method} の @code{method-qualifier} に対し
+て @samp{:before} を指定して @code{shimbun-make-contents} を宣言し、
+@file{shimbun.el} の @code{shimbun-make-contents} が呼ばれる前
+に@footnote{ご想像の通り、@samp{:before} を指定すると、ま
+ず @samp{:before} 付きのメソッドがコールされて、その後
+で @samp{:before} が付いていない親クラスのメソッドがコールされます。なお、
+@code{method-qualifier} を付けないで @file{sb-foobar.el} の中でメソッド
+を作った場合は親クラスのメソッドを上書きします。} 掃除をしましょう。親メ
+ソッドに渡す際に正常に動くよう、@code{save-excursion} で囲ってポイントを
+保存することを忘れずに。
+
+@lisp
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-foobar)
+                                                   header)
+  (save-excursion
+    ;; cleaning up
+    (while (re-search-forward "..." nil t nil)
+      (delete-region (match-beginning 0) (match-end 0)))
+    ...
+    ))
+@end lisp
+
+@noindent
+より具体的な方法は、@file{sb-ibm-dev.el} が参考になるかもしれません。
+
+先程、@ref{Getting web page and header information} の節で、記事毎に個
+別に URL を持たない構造のウェブページの場合、ヘッダ情報取得の段階で、記
+事の内容も取得しておき、Emacs のメモリに収めておく必要があると申し上げま
+した。この場合、@file{shimbun-article} では上記のような Xref 情報から
+の web page の取得は必要になりませんので、ただ Emacs のメモリから取り出
+して、バッファに整形して挿入すれば足ります。具体的に
+は @file{sb-palmfan.el}, @file{sb-dennou.el},
+@file{sb-tcup.el} の @file{shimbun-article} メソッドの定義を参照して下さ
+い。
+
+@node Inheriting shimbun module
+@subsection Shimbun モジュールの継承
+
+メーリングリストマネージャ (アーカイバ) として有名なものがいくつかありま
+す。
+
+@itemize @bullet
+@item Mailman
+@noindent
+The GNU Mailing List Manager. 以前は @samp{pipermail} と呼ばれていました。
+詳細は @uref{http://www.gnu.org/software/mailman/index.html} をご覧下さ
+い。
+
+@item MHonArc
+詳細は @uref{http://www.oac.uci.edu/indiv/ehood/mhonarc.html} をご覧下さ
+い。
+
+@item fml
+fml mailing list server/manager.  詳細
+は @uref{http://www.fml.org/software/fml/} をご覧下さい。
+
+@item mailarc
+詳細は @uref{http://cvs.namazu.org/mailarc/} をご覧下さい。
+@end itemize
+
+貴方が @ref{Getting web page and header information} のステップで取得し
+たウェブページのソースを分析しているときに、そのソースの中にこれらメーリ
+ングリストマネージャの名前を見つけたら@footnote{ウェブページのソースの中
+にこれらメーリングリストマネージャの名前が表示されていることが多いです。}、
+それはすごくラッキーなことです。@file{sb-mailman.el},
+@file{sb-mhonarc.el}, @file{sb-fml.el}, @file{sb-mailarc.el} に既
+に @code{shimbun-get-headers} などの必要なメソッドが定義されています。こ
+れらを利用してなお足りない部分だけの差分プログラミングをすれば、貴方
+の @file{sb-foobar.el} は早速動きます。
+
+例えば @file{sb-mailman.el} を利用するなら @file{sb-foobar.el} の冒頭は、
+
+@lisp
+(require 'shimbun)
+(require 'sb-mailman)
+(luna-define-class shimbun-foobar (shimbun-mailman) ())
+@end lisp
+
+@noindent
+こんな風になります。これで @samp{shimbun} モジュー
+ル @samp{shimbun-foobar} は @code{shimbun-mailman} クラスを継承
+し@footnote{つまり @code{shimbun-mailman} クラスが親クラスになります。}、
+@samp{shimbun-foobar} の中では、@file{sb-mailman.el} の中で定義されてい
+るメソッドが標準で使用されることとなります (更にメソッドの一部を上書きす
+ることも可能です)。
+
+@file{sb-mailman.el} を実際に利用したサンプルとして、
+@file{sb-pilot-mailsync.el} などをご覧下さい。如何に楽ができるかがお分か
+りになるでしょう。
+
+気を付けることが一つあるとすれば、これらのメーリングリストマネージャの中
+には地域化 (localize) されて、例えば日付表示を日本語で行うように改造され
+ているものがあることです。@file{sb-mailman.el}, @file{sb-mhonarc.el},
+@file{sb-fml.el}, @file{sb-mailarc.el} はいずれも標準の、英語版のものに
+対応しています。これら地域化されたメーリングリストマネージャを利用してい
+るウェブサイトを @samp{shimbun} で読みたいときは、いくつかのメソッドを上
+書きしなければならないかもしれません。
+
+@node Tips
+@chapter Emacs-w3m を使う洒落た小物たち
+@cindex Tips
+
+他の Emacs の応用機能とともに emacs-w3m を便利に使うためのヒント集です。
+
+@itemize @bullet
+@item browse-url
+
+@code{browse-url} の機能とともに emacs-w3m を使うことができます。例えば、
+以下の行を @file{~/.emacs} ファイルに入れて下さい:
+
+@lisp
+(setq browse-url-browser-function 'w3m-browse-url)
+(autoload 'w3m-browse-url "w3m" "Ask emacs-w3m to show a URL." t)
+(global-set-key "\C-xm" 'browse-url-at-point)
+@end lisp
+
+こうすることによって、Emacs のどのバッファでも、URL のような文字列の上
+で @kbd{C-x m} キーをタイプすると、emacs-w3m が起動されます。加えて、
+@kbd{C-c C-v} キーをタイプすることによって、まさに編集中の HTML ファイル
+を emacs-w3m で下見 (preview) することができます (HTML ファイルの編集に、
+Emacs と @code{html-mode} メジャーモードを使う必要があります)。
+
+Emacs-w3m のバッファにいるときに、@kbd{C-x m} キーをタイプすることによっ
+て、emacs-w3m の代わりに他のウェブブラウザを使いたい場合は (そんなことを
+したい人がいるのかな?)、以下のアドバイスを @file{~/.emacs} ファイルに加
+えて下さい:
+
+@lisp
+(defadvice browse-url-at-point
+  (around change-browse-url-browser-function activate)
+  "Use Netscape only when it is invoked in an emacs-w3m buffer."
+  (let ((browse-url-browser-function
+         (if (eq major-mode 'w3m-mode)
+             'browse-url-netscape
+           'w3m-browse-url)))
+    ad-do-it))
+@end lisp
+
+@item dired
+
+@code{dired} のバッファで @kbd{C-x m} キーをタイプすることによって、
+emacs-w3m を使って HTML ファイルを閲覧することができます。
+@file{~/.emacs} ファイルで、以下の設定を使って下さい:
+
+@lisp
+(eval-after-load "dired"
+  '(define-key dired-mode-map "\C-xm" 'dired-w3m-find-file))
+
+(defun dired-w3m-find-file ()
+  (interactive)
+  (require 'w3m)
+  (let ((file (dired-get-filename)))
+    (if (y-or-n-p (format "Use emacs-w3m to browse %s? "
+                          (file-name-nondirectory file)))
+        (w3m-find-file file))))
+@end lisp
+
+@item hnf-mode
+
+ハイパー日記システムと emacs-w3m を使って、最新の日記を見ることができま
+す。以下の行を @file{~/.emacs} ファイルに入れて、@code{hnf-mode} のバッ
+ファで @kbd{C-c C-b} キーをタイプして下さい:
+
+@lisp
+(autoload 'w3m-browse-url "w3m" nil t)
+(defun w3m-hnf-browse-url-w3m (url &optional new-window)
+  (interactive (browse-url-interactive-arg "URL: "))
+  (save-selected-window
+    (pop-to-buffer (get-buffer-create "*w3m*"))
+    (w3m-browse-url url new-window)))
+(setq hnf-browse-url-browser-function #'w3m-hnf-browse-url-w3m)
+@end lisp
+
+@item Gnus
+
+あなたが Gnus のユーザで、この項がこの Info で初めて読むベージであるのな
+らば、あなたは入り口を間違えましたね。最初に @ref{Hooking into MUAs} を
+見て下さい。
+
+デフォルトでは、Gnus は例えば @code{gnus-treat-strip-banner} のよう
+な treatment 変数を @samp{text/html} パートに適用しません。自動的に行な
+わせるには二つの方法があります:
+
+@lisp
+;; すべての treatment を text/html パートに適用する。
+(eval-after-load "gnus-art"
+  '(add-to-list 'gnus-article-treat-types "text/html"))
+@end lisp
+
+@lisp
+;; 特定の treatment を text/html パートに適用する。
+(setq gnus-treat-strip-banner '(or t (typep "text/html")))
+@end lisp
+
+詳しいことは @ref{Customizing Articles, ,Customizing Articles, gnus,
+The Gnus Manual} を見て下さい。
+
+加えて、以下の実験的なコードは @samp{multipart/related} な絵を見るための
+ものです。表示される場所に難があります。
+
+@lisp
+(eval-after-load "gnus-art"
+  '(or (assoc "multipart/related" gnus-mime-multipart-functions)
+       (setq gnus-mime-multipart-functions
+             (cons
+              (cons
+               "multipart/related"
+               (byte-compile
+                (lambda (handle)
+                  (gnus-mime-display-mixed (cdr handle)))))
+              gnus-mime-multipart-functions))))
+@end lisp
+
+@item yahtml-mode
+
+Emacs-w3m を使って、@code{yahtml-mode} でまさに編集中の HTML ファイル
+を下見 (preview) することができます。例です:
+
+@lisp
+(autoload 'w3m-goto-url "w3m")
+(defadvice yahtml-browse-html
+  (around w3m-yahtml-browse-html activate compile)
+  (w3m-goto-url (ad-get-arg 0) t))
+@end lisp
+@end itemize
+
+@node Mailing List
+@chapter メーリングリスト、バグリポート
+@cindex Subscribing to the emacs-w3m mailing list
+@cindex Reporting bugs
+
+Emacs-w3m に関するすべてのことがらを話し合うためのメーリングリストが用意
+されています。講読していない人も投稿できます。バグを見つけたり、こんな機
+能が欲しいなと思ったり、あるいはコードを書きましたという人はどうぞ投稿し
+て下さい。単なるユーザだけれどもプログラムに興味があるという人も、ぜひ参
+加して下さい。アドレスは以下の通りです:
+
+@display
+Emacs-w3m メーリングリスト @t{<emacs-w3m@@namazu.org>}
+@end display
+
+もし @code{mail-user-agent} を正しく動作するように設定してあれば、
+@code{report-emacs-w3m-bug} コマンド (または @kbd{C-c C-b} キー) を使っ
+てバグリポートを送ることもできます。
+
+このリストに投稿するときは、日本語か英語を使って下さい。多くのメンバーは
+日本人です。投稿された記事は公開されていて、ウェ
+ブ (@uref{http://emacs-w3m.namazu.org/ml/}) や NetNews (サー
+バ @samp{news.gmane.org} 上の @samp{gmane.emacs.w3m} というグループ) で
+も読むことができます。
+
+このリストのメッセージをメールで受け取りたい人は、本文に
+
+@example
+subscribe ANATANO Namae
+@end example
+
+のように書いて (メールアドレスではなくてあなたの名前を書きます)、
+@samp{emacs-w3m-ctl@@namazu.org} 宛にメールを送るとメーリングリストに登
+録されます。また、メールを受け取るのをやめるには、本文に
+
+@example
+# bye
+@end example
+
+と書いたメールを @samp{emacs-w3m-ctl@@namazu.org} 宛に送って下さい。
+
+@node Emacs-w3m Functions
+@chapter Emacs-w3m の関数の詳しい説明
+@cindex Functions details
+
+
+@node Authors
+@chapter このマニュアルを書いた人たち
+
+@itemize @bullet
+@c 50音順
+@item
+白井 秀行
+@item
+土屋 雅稔
+@item
+中島 幹夫
+@item
+中山 洋一
+@item
+Romain FRANCOISE
+@item
+山岡 克美
+@item
+大和 正武
+@end itemize
+
+@node Index
+@unnumbered 索引
+
+@menu
+* Concept Index::               概念索引
+* Key Index::                   キーバインド索引
+* Variable Index::              変数索引
+* Function Index::              関数索引
+@end menu
+
+@node Concept Index
+@unnumberedsec 概念索引
+@printindex cp
+
+@node Key Index
+@unnumberedsec キーバインド索引
+@printindex ky
+
+@node Variable Index
+@unnumberedsec 変数索引
+@printindex vr
+
+@node Function Index
+@unnumberedsec 関数索引
+@printindex fn
+
+@summarycontents
+@contents
+@bye
+
+@c Local Variables:
+@c fill-column: 72
+@c use-kuten-for-period: t
+@c use-touten-for-comma: t
+@c End:
