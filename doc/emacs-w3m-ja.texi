@@ -415,7 +415,7 @@ Emacs-w3m $B$,(B UTF-8 $B$J$I$G=q$+$l$?%Z!<%8$rI=<($G$-$k$h$&$K$9$k$?$a$K!"$3
 
 XEmacs $B%f!<%68~$1$K$O!"$3$3$K%3%s%Q%$%k:Q$_$N%Q%C%1!<%8$,$"$j$^$9(B:
 
-@uref{ftp.xemacs.org:/packages/mule-ucs-1.04-pkg.tar.gz}
+@uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.04-pkg.tar.gz}
 @end table
 
 @node Installing Emacs-w3m
