@@ -7,7 +7,9 @@
 	(w3m-dirlist-cgi-program): Changed the expression to get default
 	path.
 	(w3m-work-binary-buffer-name): New constant.
-	(w3m-attributes): Handle URLs which start `about://source/'.
+	(w3m-attributes): Handle URLs which start `about://source/'; It
+	isn't defined as an inline function but a normal function to avoid
+	byte-compile error.
 	(w3m-arrived-add): Fixed codes to remove fragments in the
 	specified URL.
 	(w3m-local-retrieve): Clean up.

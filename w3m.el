@@ -1028,7 +1028,7 @@ for a charset indication")
     (concat "file://" file)))
 
 ;; Generic macros and inline functions:
-(defsubst w3m-attributes (url &optional no-cache)
+(defun w3m-attributes (url &optional no-cache)
   "Return a list of attributes of URL.
 Value is nil if retrieval of header is failed.  Otherwise, list
 elements are:
