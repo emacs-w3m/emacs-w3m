@@ -1,3 +1,12 @@
+2001-12-11  Mito  <mito@mxa.nes.nec.co.jp>
+
+	* w3m.el (w3m-scroll-left): Modify doc-string.
+	(w3m-scroll-right): Ditto.
+
+2001-12-09  HARAGUCHI Shuugou <haraguti@nd.net.fujitsu.co.jp>
+
+	* shimbun/sb-mainichi.el (shimbun-get-headers): Exclude "./" from url.
+
 2001-12-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-imagick-convert-usable-p): New function.
