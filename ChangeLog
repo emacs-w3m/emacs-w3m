@@ -1,3 +1,12 @@
+2003-09-17  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-form.el (w3m-form-new): Use
+	`application/x-www-form-urlencoded' instead of `urlencoded'.
+	(w3m-form-parse-and-fontify): Ditto.
+	(w3m-form-make-form-data): Use `multipart/form-data' instead of
+	`multipart'.
+	(w3m-form-mee-new): Likewise.
+
 2003-09-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-e21-toolbar-configurations): Don't modify the
