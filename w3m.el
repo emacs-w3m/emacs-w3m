@@ -1931,10 +1931,23 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
   (setq w3m-cache-hashtb nil
 	w3m-cache-articles nil))
 
+(defsubst w3m-cache-header-delete-variable-part (header)
+  (let (buf)
+    (dolist (line (split-string header "\n+"))
+      (unless (string-match "\\`\\(Date\\|Server\\|W3m-[^:]+\\):" line)
+	(push line buf)))
+    (mapconcat (function identity) (nreverse buf) "\n")))
+
 (defun w3m-cache-header (url header)
   "Store up URL's HEADER in cache."
   (w3m-cache-setup)
-  (set (intern url w3m-cache-hashtb) header))
+  (let ((ident (intern url w3m-cache-hashtb)))
+    (and (boundp ident)
+	 (not (string=
+	       (w3m-cache-header-delete-variable-part header)
+	       (w3m-cache-header-delete-variable-part (symbol-value ident))))
+	 (w3m-cache-remove url))
+    (set ident header)))
 
 (defun w3m-cache-request-header (url)
   "Return the URL's header string, when it is stored in cache."

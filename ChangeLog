@@ -1,5 +1,9 @@
 2001-10-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-cache-header-delete-variable-part): New function.
+	(w3m-cache-header): Remove cached contents when inconsistency
+	between new header and cached header is found.
+
 	* w3m.el (w3m-expand-url): Fix the last change.
 	(w3m-url-hierarchical-schemes): Add `file'.
 	(w3m-goto-url): Use `\`' instead of `^' as a meta character.
