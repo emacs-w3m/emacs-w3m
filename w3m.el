@@ -2400,25 +2400,39 @@ elements are:
  5. Real URL.
  6. Base URL.
 "
-  (let* ((file (w3m-url-to-file-name url))
-	 (attr (when (file-exists-p file)
-		 (file-attributes file))))
+  (let ((file (w3m-url-to-file-name url))
+	(attr))
+    (setq attr
+	  (if (file-exists-p file)
+	      (file-attributes file)
+	    (when (file-exists-p
+		   (setq attr (w3m-url-decode-string
+			       file w3m-file-name-coding-system)))
+	      (setq file attr)
+	      (file-attributes file))))
     (list (w3m-local-content-type url)
 	  nil
 	  (nth 7 attr)
 	  nil
 	  (nth 5 attr)
-	  (w3m-expand-file-name-as-url (file-truename file))
+	  (w3m-url-encode-string
+	   (w3m-expand-file-name-as-url (file-truename file))
+	   w3m-file-name-coding-system)
 	  ;; FIXME: ファイルに含まれている <base> タグの指定を解釈する
 	  ;; 必要がある。
-	  (w3m-expand-file-name-as-url (file-truename file)))))
+	  (w3m-url-encode-string
+	   (w3m-expand-file-name-as-url (file-truename file))
+	   w3m-file-name-coding-system))))
 
 (defun w3m-local-retrieve (url &optional no-decode &rest args)
   "Retrieve content of local URL and insert it to this buffer.
 This function will return content-type of URL as string when retrieval
 succeed."
   (let ((file (w3m-url-to-file-name url)))
-    (when (file-readable-p file)
+    (when (or (file-readable-p file)
+	      (file-readable-p
+	       (setq file (w3m-url-decode-string
+			   file w3m-file-name-coding-system))))
       (if (file-directory-p file)
 	  (w3m-local-dirlist-cgi url)
 	(let ((coding-system-for-read 'binary)
@@ -4703,7 +4717,7 @@ works on Emacs.
   (when (string-match "\\`about://header/" url)
     (setq url (substring url (match-end 0)))
     (insert "Page Information\n"
-	    "\nTitle:          " (w3m-arrived-title url)
+	    "\nTitle:          " (or (w3m-arrived-title url) "")
 	    "\nURL:            " url
 	    "\nDocument Type:  " (w3m-content-type url)
 	    "\nLast Modified:  "

@@ -1,3 +1,9 @@
+2002-01-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-local-attributes): Encode paths of local files.
+	(w3m-local-retrieve): Decode paths of local files.
+	(w3m-about-header): Protect against null title.
+
 2002-01-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-url-encode-string): Add a period to the set of
@@ -29,13 +35,13 @@
 	* w3m.el (w3m-url-to-file-name): Fix its regexp.
 
 2001-12-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
-	
+
 	* w3m.el (w3m-print-this-url): Display a message when it is called
 	interactively.
 
 2001-12-29  OHASHI Akira  <bg66@koka-in.org>
 
-	* w3m.el (w3m-print-this-url): Don't print any messages	when
+	* w3m.el (w3m-print-this-url): Don't print any messages when
 	there is no url or form under point.
 
 2001-12-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
