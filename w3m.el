@@ -4103,7 +4103,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 	  url (w3m-url-strip-authinfo url))
     (w3m-message "Reading %s...%s"
 		 url
-		 (if w3m-async-exec
+		 (if (and w3m-async-exec (not w3m-process-waited))
 		     (substitute-command-keys "\
  (Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")
 		   ""))

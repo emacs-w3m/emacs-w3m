@@ -1,3 +1,10 @@
+2004-05-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-proc.el (w3m-process-waited): Revival.
+	(w3m-process-with-wait-handler): Set t to the above.
+
+	* w3m.el (w3m-w3m-dump-extra): Check the above.
+
 2004-04-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Reset.
