@@ -682,7 +682,7 @@ Proxy ゲートウェイを通すべきではないホスト (イントラネットのサイトな
 * Tracing History::             時空を遡る
 * Managing Bookmarks::          ぼくの/わたしのお気に入り
 * Using Tabs::                  みんなタブが好きだよね
-* Working with Buffers::        バッファを作る/消す/移動する
+* Working with buffers::        バッファを作る/消す/移動する
 * Downloading::                 ファイルをダウンロードする
 * Submitting Forms::            HTML フォームに記入する
 * HTML File Information::       ウェブページ作りとハックのお手伝い
@@ -1501,7 +1501,7 @@ Emacs-w3m ユーザにもっと視覚効果を!
 タブによる閲覧を活かすかどうか。
 @end table
 
-@node Working with Buffers
+@node Working with buffers
 @section バッファを作る/消す/移動する
 
 遅かれ早かれあなたは emacs-w3m 中毒になって、すべてのウェブの閲覧をそれ
