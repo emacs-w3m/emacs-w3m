@@ -1,5 +1,18 @@
 2001-10-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-weather.el (w3m-weather-url-alist): Refer
+	`http://weather.yahoo.co.jp'.
+	(w3m-weather-default-area): Change default region.
+	(w3m-weather-filter-functions): Change default value.
+	(w3m-about-weather): Accept `no-cache' argument.
+	(w3m-weather-remove-headers): Modified for Yahoo.
+	(w3m-weather-remove-footers): Ditto.
+	(w3m-weather-insert-title): Ditto.
+	(w3m-weather-remove-weather-images): Removed.
+	(w3m-weather-remove-washing-images): Removed.
+	(w3m-weather-remove-futon-images): Removed.
+	(w3m-weather-remove-week-weather-images): Removed.
+
 	* w3m-e21.el (w3m-widget-keymap): New keymap.
 	(w3m-form-make-button): Set `w3m-widget-keymap' as keymap on
 	buttons; Fix condition to make buttons.
