@@ -11,9 +11,9 @@
    Emacs-w3m is a simple Emacs interface to w3m.
 
 
-2. Requirement
+2. Requirements
 
-   Check whether your system meets the following requirement before
+   Check whether your system meets the following requirements before
    installing emacs-w3m.
 
    Emacs-w3m requires the latest version of w3m (version 0.3.1 and
@@ -26,7 +26,7 @@
 
    If you want to use the shimbun library which is included in the
    emacs-w3m distribution, you have to install FLIM package.  For more
-   detail abut the shimbun library, see the README.shimbun.ja file
+   detail about the shimbun library, see the README.shimbun.ja file
    (written in Japanese, sorry).
 
    a) Emacs 21.x
@@ -39,6 +39,7 @@
       bitmap images inline on an Emacs frame.  It is available at:
 
           ftp://ftp.jpl.org/pub/elisp/bitmap/
+          or http://www.jpl.org/ftp/pub/elisp/bitmap/
 
    c) XEmacs
       APEL package is required.  It is available at:
@@ -51,12 +52,13 @@
        T-gnus) because of the std11 modules.  So, we recommend you
        install APEL which is pointed above.
 
-      If you are using XEmacs 21.x, you should install the program
-      "gifsicle".  There is a known bug in all XEmacs 21.x series that
+      If you are using XEmacs 21.x, you should install the "gifsicle"
+      program.  There is a known bug in all XEmacs 21.x series that
       it won't let it display optimized animated gifs correctly or may
       make it crash when some kind of an interlaced gif image is
-      displayed.  Emacs-w3m uses the gifsicle program to convert gif
+      displayed.  Emacs-w3m uses the "gifsicle" program to convert gif
       data in order to make it possible to be handled by XEmacs 21.x.
+      It is available at:
 
           http://www.lcdf.org/gifsicle/
 
@@ -85,10 +87,10 @@
       Especially for Mule 2.3, see also the README.en file which is
       included in the APEL distribution.
 
-      Emacs-w3m also requires the module regexp-opt.el(c) which might
+      Emacs-w3m also requires the regexp-opt.el(c) module which might
       not be provided in the old Emacsen (e.g. Emacs 19.34 and Mule
       2.3).  If you are using such versions of Emacs, you have to
-      install the module regexp-opt.el(c) before installing emacs-w3m as
+      install the regexp-opt.el(c) module before installing emacs-w3m as
       follows:
 
           % cp attic/regexp-opt.el /usr/local/share/emacs/site-lisp
@@ -108,8 +110,8 @@
          % ./configure
 
      If you've installed APEL, FLIM or something in non-standard
-     directories other than the default load-path, you must specify them
-     using the --with-addpath option as follows:
+     directories other than the default `load-path', you must specify
+     them using the --with-addpath option as follows:
 
          % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 
@@ -149,7 +151,7 @@
 
 4. Configuration
 
-   We recommend using the file ~/.emacs-w3m (which is the default
+   We recommend using the ~/.emacs-w3m file (which is the default
    value of `w3m-init-file') when you twiddle some variables of
    emacs-w3m.  This file is similar to ~/.emacs, but is read when
    emacs-w3m starts.  However, note that there are commands which
@@ -157,36 +159,37 @@
 
 4.1. Essential Configuration
 
-     Put this line into your ~/.emacs.
+     Put this line into your ~/.emacs file:
 
          (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
 
      If you want to use contributed programs, some additional settings
-     are required.  Please see the head of those programs for more
-     details.  If unsure, put these lines into your ~/.emacs.
+     are required.  See the header of those program files for more
+     details.  If you are unsure of them, put the following lines in
+     your ~/.emacs file:
 
-         (autoload 'w3m-find-file "w3m" "w3m interface function for local file." t)
-         (autoload 'w3m-search "w3m-search" "Search QUERY using SEARCH-ENGINE." t)
-         (autoload 'w3m-weather "w3m-weather" "Display weather report." t)
-         (autoload 'w3m-antenna "w3m-antenna" "Report change of WEB sites." t)
+         (autoload 'w3m-find-file "w3m" "Find a local file using emacs-w3m." t)
+         (autoload 'w3m-search "w3m-search" "Search words using emacs-w3m." t)
+         (autoload 'w3m-weather "w3m-weather" "Display a weather report." t)
+         (autoload 'w3m-antenna "w3m-antenna" "Report changes of web sites." t)
          (autoload 'w3m-namazu "w3m-namazu" "Search files with Namazu." t)
 
 4.2. mime-w3m.el
 
      In order to handle text/html part with emacs-w3m under SEMI MUAs
      such as T-gnus and Wanderlust, you have to put the following line
-     in your ~/.emacs.
+     in your ~/.emacs file:
 
          (require 'mime-w3m)
 
 4.3. Proxy Gateway
 
-     There are some ways to do this, one is to set the environment
-     variable http_proxy globally in the shell something like:
+     There are some ways to do this, one is to set the "http_proxy"
+     environment variable globally in the shell something like:
 
          setenv http_proxy http://proxy.hogege.com:8000/
 
-     Another way is to customize the option `w3m-command-arguments' to
+     Another way is to customize the `w3m-command-arguments' variable to
      add the options "-o" and "http_proxy=http://PROXY_SERVER_NAME:PORT/".
      This can also be done in your ~/.emacs-w3m file as shown below:
 
@@ -194,25 +197,26 @@
               (nconc w3m-command-arguments
                      '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
 
-     To specify no-proxy hosts that not to use proxy gateways to connect
-     to, you can set the environment variable no_proxy with the comma
-     separated host names, or set the option `w3m-no-proxy-domains' with
-     a list of domain names (not host names) as follows:
+     To specify `no-proxy' hosts, which shouldn't be connected to with
+     proxy gateways, you can set the "no_proxy" environment variable
+     with the comma separated host names, or set the
+     `w3m-no-proxy-domains' variable with a list of domain names (not
+     host names) as follows:
 
          (setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
 
-     See also the documentation for the option
-     `w3m-command-arguments-alist' to use regexps to specify the
-     no-proxy hosts.
+     See also the documentation for the `w3m-command-arguments-alist'
+     variable to use regexps to specify the `no-proxy' hosts.
 
 
-5. Contact
+5. Contact the emacs-w3m community
 
    To contact the emacs-w3m community for reporting bugs, contributing
    improvements, making a suggestion or asking us for help, send a mail
    to the open list <emacs-w3m@namazu.org>.  You can also send a bug
-   report using the command `report-emacs-w3m-bug' or the key `C-c C-b'
-   if you have set the option `mail-user-agent' that will work properly.
+   report using the `report-emacs-w3m-bug' command or the `C-c C-b' key
+   if you have set the `mail-user-agent' variable that will work
+   properly.
 
 
 6. Acknowledgments
@@ -232,8 +236,8 @@
        Before installing it, it is necessary to install APEL.
 
    [3] BITMAP-MULE
-       It can be downloaded from
-       ftp://ftp.jpl.org/pub/elisp/bitmap/.
+       It can be downloaded from ftp://ftp.jpl.org/pub/elisp/bitmap/
+       of http://www.jpl.org/ftp/pub/elisp/bitmap/.
 
    [4] gifsicle
        It can be downloaded from http://www.lcdf.org/gifsicle/.
