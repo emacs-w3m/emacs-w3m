@@ -8074,8 +8074,8 @@ passed to the `w3m-quit' function (which see)."
 
 
 ;;; w3m-minor-mode
-(defvar w3m-safe-goto-url-function nil
-  "Function to visit a web page in `w3m-minor-mode'.")
+(defvar w3m-goto-article-function nil
+  "Function to visit an article pointed by a given URL.")
 
 (defun w3m-safe-view-this-url ()
   "View the URL of the link under point.
@@ -8093,8 +8093,8 @@ mind that there may be pages which cause security problems."
   (let ((w3m-pop-up-windows nil)
 	(url (w3m-url-valid (w3m-anchor))))
     (cond
-     (url (if (fboundp w3m-safe-goto-url-function)
-	      (funcall w3m-safe-goto-url-function url)
+     (url (if (fboundp w3m-goto-article-function)
+	      (funcall w3m-goto-article-function url)
 	    (w3m-goto-url url)))
      ((w3m-url-valid (w3m-image))
       (if (w3m-display-graphic-p)

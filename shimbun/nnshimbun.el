@@ -842,7 +842,7 @@ and return its header."
       (w3m-goto-url url))))
 
 (defun nnshimbun-setup-article-mode ()
-  (set (make-local-variable 'w3m-safe-goto-url-function)
+  (set (make-local-variable 'w3m-goto-article-function)
        'nnshimbun-goto-url))
 
 
