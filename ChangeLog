@@ -1,3 +1,9 @@
+2004-07-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+	Suggested by Tatsuya Kinoshita <tats@vega.ocn.ne.jp>
+
+	* w3m.el (w3m-correct-charset-alist): Reverse "windows-125x" and
+	"cp125x".
+
 2004-07-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Release emacs-w3m-1.4.1 from emacs-w3m-1_4 branch.
