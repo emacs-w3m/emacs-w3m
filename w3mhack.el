@@ -428,7 +428,7 @@ emacs-w3m.")
 						  (match-end num))))
 			   (map-extents (lambda (extent maparg)
 					  (delete-extent extent))
-					string 0 (lenght string))
+					string 0 (length string))
 			   string)))))
 	       (string
 		(` (let ((num (, num)))

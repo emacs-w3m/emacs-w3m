@@ -1,3 +1,8 @@
+2003-05-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (byte-optimizer for match-string-no-properties):
+	`lenght' -> `length'.
+
 2003-05-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Simplify functions that rewrite URIs.
@@ -11,7 +16,7 @@
 	* w3m-search.el (w3m-search-quick-search-engine-alist): Abolished.
 	(w3m-search-quick-search-engines): Removed.
 	(w3m-search-quick-search-handler): Removed.
-	(w3m-search-uri-replace): New function.	
+	(w3m-search-uri-replace): New function.
 
 2003-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
