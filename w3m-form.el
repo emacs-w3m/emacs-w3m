@@ -922,7 +922,8 @@ If no field in forward, return nil without moving."
 	    (concat url "?" (w3m-form-make-form-urlencoded form))))
 	  ((eq 'post (w3m-form-method form))
 	   (w3m-goto-url url 'reload nil
-			 (w3m-form-make-form-urlencoded form)))
+			 (w3m-form-make-form-urlencoded form)
+			 w3m-current-url))
 	  (t
 	   (w3m-message "This form's method has not been supported: %s"
 			(let (print-level print-length)
