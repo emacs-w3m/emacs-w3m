@@ -1,3 +1,9 @@
+2001-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Use the copy of info-vector for newly generated coding-
+	systems; use `eval-when-compile' separately from "cl" for loading
+	"cl-macs".
+
 2001-03-13  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el: Split files.

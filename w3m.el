@@ -9,6 +9,7 @@
 ;;          Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
+;;          Katsumi Yamaoka    <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; w3m.el is free software; you can redistribute it and/or modify it
@@ -60,9 +61,11 @@
 
 ;; this package using a few CL macros
 (eval-when-compile
-  (require 'cl)
+  (require 'cl))
+
+;; Override the macro `dolist' which may have been defined in egg.el.
+(eval-when-compile
   (unless (dolist (var nil t))
-    ;; Override the macro `dolist' which might be defined in egg.el.
     (load "cl-macs" nil t)))
 
 (put 'w3m-static-if 'lisp-indent-function 2)
@@ -87,20 +90,22 @@
 		    (*sjis*		. shift_jis)
 		    (*tis620*		. tis-620)))
       (unless (coding-system-p (cdr elem))
-	(condition-case nil
-	    (let* ((info (get-code (car elem)))
-		   (doc (aref info 2))
-		   (id "(generated automatically by `w3m')"))
-	      (copy-coding-system (car elem) (cdr elem))
-	      (aset info 2
-		    (if (and (stringp doc)
-			     (> (length doc) 0))
-			(if (string-match "\\.[\t\n ]*$" doc)
-			    (concat (substring doc 0 (match-beginning 0))
-				    " " id ".")
-			  (concat doc " " id "."))
-		      id)))
-	  (error)))))
+	      (condition-case nil
+		  (let* ((info-vector (copy-sequence (get-code (car elem))))
+			 (document (aref info-vector 2))
+			 (id "(generated automatically by `w3m')"))
+		    (copy-coding-system (car elem) (cdr elem))
+		    (aset info-vector 2
+			  (if (and (stringp document)
+				   (> (length document) 0))
+			      (if (string-match "\\.[\t\n ]*$" document)
+				  (concat (substring document
+						     0 (match-beginning 0))
+					  " " id ".")
+				(concat document " " id "."))
+			    id))
+		    (put (cdr elem) 'coding-system info-vector))
+		(error)))))
 
 (defconst emacs-w3m-version
   (eval-when-compile
