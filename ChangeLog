@@ -1,3 +1,8 @@
+2002-07-08  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-namazu.el (shimbun-namazu-group-url-alist): Add
+	migemo entry.
+
 2002-07-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-mode): Make `list-buffers-directory' to buffer
