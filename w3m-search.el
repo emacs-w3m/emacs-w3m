@@ -117,10 +117,29 @@ encoding=shift-jis"
 	 euc-japan)
 	("eiei"
 	 "http://www.dictionary.com/cgi-bin/dict.pl?term=%s&r=67")
-	("amazon-ja"
-	 "http://www.amazon.co.jp/exec/obidos/search-handle-form/250-7496892-7797857"
-	 shift_jis
-	 "url=index=blended&search-type=quick-search&field-keywords=%s")))
+	,@(if ja
+		'(("amazon"
+		   "http://www.amazon.co.jp/exec/obidos/search-handle-form/\
+250-7496892-7797857"
+		   shift_jis
+		   "url=index=blended&search-type=quick-search&\
+field-keywords=%s")
+		  ("amazon-en"
+		   "http://www.amazon.com/exec/obidos/search-handle-form/\
+250-7496892-7797857"
+		   nil
+		   "url=index=blended&field-keywords=%s"))
+	      '(("amazon"
+		 "http://www.amazon.com/exec/obidos/search-handle-form/\
+250-7496892-7797857"
+		 nil
+		 "url=index=blended&field-keywords=%s")
+		("amazon-ja"
+		 "http://www.amazon.co.jp/exec/obidos/search-handle-form/\
+250-7496892-7797857"
+		 shift_jis
+		 "url=index=blended&search-type=quick-search&\
+field-keywords=%s")))))
   "*An alist of search engines.
 Each element looks like (ENGINE ACTION CODING POST-DATA)
 ENGINE is a string, the name of the search engine.

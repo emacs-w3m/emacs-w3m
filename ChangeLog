@@ -1,3 +1,7 @@
+2004-04-04  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-search.el (w3m-search-engine-alist): Add "amazon" entry.
+
 2004-03-31  Yuya Nishida  <yuya@j96.org>
 
 	* w3m-search.el (w3m-search-engine-alist): Add "amazon-ja" entry;
