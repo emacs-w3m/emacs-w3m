@@ -7010,7 +7010,7 @@ The optional NEW-SESSION and INTERACTIVE-P are for the internal use."
       (not url)))) ;; interactive-p
   (let ((nofetch (eq url 'popup))
 	(buffer (unless new-session
-		  (if (and (bufferp w3m-last-visited-buffer)
+		  (if (and (buffer-live-p w3m-last-visited-buffer)
 			   (with-current-buffer w3m-last-visited-buffer
 			     (eq major-mode 'w3m-mode)))
 		      w3m-last-visited-buffer
