@@ -1,3 +1,15 @@
+2003-05-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* mime-w3m.el (mime-w3m-preview-text/html): Apply the patch posted
+	by Yoichi NAKAYAMA <yoichi@geiin.org> in [emacs-w3m:04836], that
+	correct the wrong usage of `message'.
+
+2003-03-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-antenna.el (w3m-antenna-check-all-sites): Call `make-symbol'
+	instead of `gensym', in order to make this function free from
+	runtime CL functions.
+
 2003-05-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (DOCS): FAQ, FAQ.ja, README.namazu.ja,

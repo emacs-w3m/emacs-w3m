@@ -289,8 +289,8 @@ whose elements are:
   (if (not handler)
       (w3m-process-with-wait-handler
 	(w3m-antenna-check-all-sites handler))
-    (let ((count (gensym "--antenna-count--"))
-	  (buffer (gensym "--antenna-buffer--")))
+    (let ((count (make-symbol "antenna-count"))
+	  (buffer (make-symbol "antenna-buffer")))
       (set count 0)
       (set buffer (current-buffer))
       (let ((tmp)

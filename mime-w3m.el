@@ -175,7 +175,7 @@ map."))
 	     (add-text-properties p (point-max)
 				  (nconc (mime-w3m-local-map-property)
 					 '(text-rendered-by-mime-w3m t))))
-	 (error (message (format "%s" err))))))))
+	 (error (message "%s" err)))))))
 
 ;; To avoid byte-compile warning in `mime-w3m-cid-retrieve'.
 (autoload 'mime-uri-parse-cid "mime-parse")
