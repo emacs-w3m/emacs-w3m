@@ -28,6 +28,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'cl))
+
 (require 'shimbun)
 
 (luna-define-class shimbun-mailman (shimbun) ())
@@ -117,10 +120,11 @@
 		  (push (shimbun-make-header
 			 0
 			 (shimbun-mime-encode-string subject)
-			 from 0 id "" 0 0 url)
+			 from "" id "" 0 0 url)
 			headers))
 		(setq auxs (cdr auxs)))))))
-      headers)))
+      (nreverse headers))))
 
 (provide 'sb-mailman)
+
 ;;; sb-mailman.el ends here
