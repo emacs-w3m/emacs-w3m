@@ -2,20 +2,17 @@
 
 	* w3m-e21.el (w3m-tab-unselected-face,
 	w3m-tab-unselected-retrieving-face, w3m-tab-selected-face,
-	w3m-tab-selected-face): Change the box line-width from -1 to 1;
-	exchange the default TTY colors between selected faces and
-	unselected faces.
+	w3m-tab-selected-face): Exchange the default TTY colors between
+	selected faces and unselected faces.
 	(w3m-tab-drag-mouse-function): Compare buffer objects instead of
 	buffer names.
 	(w3m-tab-make-keymap): Use buffer objects instead of buffer names.
 	(w3m-tab-line): Make all tab widths the same even if there are
 	wide characters; never use graphic icons in TTY; close the left
-	margin unless there's an icon; add a keymap to favicon; make icons
-	3D; don't put mouse-face on icons.
+	margin unless there's an icon; add a keymap to favicon; don't put
+	mouse-face on icons.
 	(w3m-initialize-graphic-icons): Don't make graphic icons for TTY;
 	don't put mouse-face on icons.
-	(w3m-make-spinner-image): Enabale it to put a relief around an
-	image.
 
 	* w3m-favicon.el: Bind `w3m-modeline-favicon' when compiling.
 	(w3m-favicon-set-image): Add a half space after favicon.
