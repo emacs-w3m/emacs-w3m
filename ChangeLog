@@ -1,3 +1,17 @@
+2001-04-03  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-force-redisplay): New variable, default is 't'.
+	(w3m-toggle-inline-images): If w3m-force-redisplay is nil, don't
+	redraw.
+	(w3m-goto-url): Ditto.
+	(w3m-region): Ditto.
+
+	* mew-w3m.el (mew-mime-text/html-w3m): Bind w3m-force-redisplay to
+	'nil'.
+	(w3m-mew-support-cid): New variable.
+	(mew-w3m-cid-retrieve): Use mew-syntax-get-entry-by-cid(),
+	Tnx, Kazu Yamamoto <kazu@mew.org>.
+
 2001-04-03  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-process-message): Removed.
@@ -7,14 +21,6 @@
 	(w3m-w3m-dump-source): Ditto.
 	(w3m-parse-attributes): Remove leading and trailing white space in
 	CDATA attribute values.
-
-2001-04-03  Hideyuki SHIRAI  <shirai@meadowy.org>
-
-	* mew-w3m.el (mew-mime-text/html-w3m): Store/restore window start
-	point.
-	(w3m-mew-support-cid): New variable.
-	(mew-w3m-cid-retrieve): Use mew-syntax-get-entry-by-cid(),
-	Tnx, Kazu Yamamoto <kazu@mew.org>.
 
 2001-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 

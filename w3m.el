@@ -571,6 +571,7 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   "Toolbar definition for w3m.")
 
 (defvar w3m-cid-retrieve-function-alist nil)
+(defvar w3m-force-redisplay t)
 
 (eval-and-compile
   (condition-case nil
@@ -1089,7 +1090,7 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 			     (setq image (w3m-create-image url no-cache)))
 		    (w3m-insert-image point end image)
 		    ;; Redisplay
-		    (sit-for 0)))))
+		    (and w3m-force-redisplay (sit-for 0))))))
 	    (setq w3m-display-inline-image-status 'on))
 	(save-excursion
 	  (goto-char (point-min))
@@ -2362,7 +2363,7 @@ or prefix ARG columns."
 	    (goto-char (point-min)))
 	(setq w3m-display-inline-image-status 'off)
 	(when w3m-display-inline-image
-	  (sit-for 0)
+	  (and w3m-force-redisplay (sit-for 0))
 	  (w3m-toggle-inline-images 'force reload))
 	(setq buffer-read-only t)
 	(set-buffer-modified-p nil))
@@ -2431,7 +2432,7 @@ ex.) c:/dir/file => //c/dir/file"
     (w3m-fontify)
     (setq w3m-display-inline-image-status 'off)
     (when w3m-display-inline-image
-      (sit-for 0)
+      (and w3m-force-redisplay (sit-for 0))
       (w3m-toggle-inline-images 'force))))
 
 
