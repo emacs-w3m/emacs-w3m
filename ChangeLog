@@ -1,5 +1,8 @@
 2001-03-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el (w3mhack-make-package): Fixed entries of autoloads and
+	cus-load in MANIFEST.w3m.
+
 	* aclocal.m4 (AC_CHECK_EMACS): Add the option `--with-xemacs'.
 
 2001-03-19  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
