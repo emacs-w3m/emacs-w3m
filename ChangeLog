@@ -1,3 +1,7 @@
+2001-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-about-history): Replace ">" with "&gt;".
+
 2001-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-about-history): New implementation without recursive

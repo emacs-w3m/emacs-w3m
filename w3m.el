@@ -2767,7 +2767,7 @@ works on Emacs.
 				    nil t))
 	(beginning-of-line)
 	(delete-char 1)
-	(insert ">"))))
+	(insert "&gt;"))))
   "text/html")
 
 (defun w3m-about-db-history (&rest args)
