@@ -238,7 +238,7 @@
 	be able to get the images.
 	(shimbun-make-contents): Remove ads.
 
-2005-01-24  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+2005-01-24  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-article): Disable
 	mew-biff while retrieving.
@@ -418,7 +418,7 @@
 	(shimbun-nikkei-get-headers-retto): New function.
 	(shimbun-nikkei-prepare-article-retto): New function.
 
-2004-12-27  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+2004-12-27  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-view-this-url-1): Revert 2004-12-17 change.
 
@@ -432,7 +432,7 @@
 	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Add the
 	shakai.edu group.
 
-2004-12-24  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+2004-12-24  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-hist.el (w3m-history-restore-position): Handling the window
 	of w3m for sure absolutely.
@@ -474,7 +474,7 @@
 
 	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist): Improve regexp.
 
-2004-12-17  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+2004-12-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-fontify-anchors): Local file is given special
 	treatment for `href'. Fix match data of `href'.
@@ -486,7 +486,7 @@
 	* w3m-e21.el (w3m-update-tab-line): Wobble the window size instead
 	of setting the cursor color.
 
-2004-12-15  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+2004-12-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-namazu.el (w3m-namazu): Added optional argument `reload'.
 
@@ -522,7 +522,7 @@
 	* shimbun/sb-heise.el (shimbun-heise-get-telepolis-headers): Fixed
 	bug that gave same message id to different articles.
 
-2004-12-10  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+2004-12-10  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-fontify-anchors): Use 'w3m-name-anchor2 property to
 	avoid overriding 'w3m-name-anchor property.
