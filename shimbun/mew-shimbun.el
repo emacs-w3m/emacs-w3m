@@ -73,7 +73,9 @@
   (unless (fboundp 'MEW-TO)
     (defun MEW-TO () ())
   (unless (fboundp 'MEW-SHIMBUN-STS)
-    (defun MEW-SHIMBUN-STS () ()))))
+    (defun MEW-SHIMBUN-STS () ())))
+  (defvar mew-folder-list)
+  (defvar mew-local-folder-list))
 
 ;; Variables
 (defgroup mew-shimbun nil
@@ -245,7 +247,8 @@ show below example,
   "Goto folder for SHIMBUN.
 If called with '\\[universal-argument]', goto folder to have a few new messages."
   (interactive "P")
-  (let ((flds mew-folder-list)
+  (let ((flds (or (and (boundp 'mew-folder-list) mew-folder-list)
+		  (and (boundp 'mew-local-folder-list) mew-local-folder-list)))
 	sbflds alst fld cfile)
     (save-excursion
       (dolist (fld flds)
