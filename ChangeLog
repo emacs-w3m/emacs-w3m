@@ -1,3 +1,10 @@
+2005-03-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-make-help-echo): Fix the backquote form.
+	(w3m-make-balloon-help): Ditto.
+
+	* w3m-util.el (w3m-set-match-data): Use existing markers.
+
 2005-03-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-url-readable-string): Save matching data.  Check

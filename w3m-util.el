@@ -636,7 +636,10 @@ objects will not be deleted:
       `(let ((list ,list))
 	 (store-match-data (dolist (pt (prog1 list (setq list nil))
 				       (nreverse list))
-			     (push (set-marker (make-marker) pt) list))))
+			     (push (if (markerp pt)
+				       pt
+				     (set-marker (make-marker) pt))
+				   list))))
     `(set-match-data ,list)))
 
 (defun w3m-search-tag-1 (regexp)

@@ -2657,7 +2657,7 @@ need to know what function will be made, use `macroexpand'."
 	     (lambda (extent)
 	       (if (and w3m-track-mouse
 			(eq (extent-object extent) (current-buffer)))
-		   (w3m-url-readable-string str)))))
+		   (w3m-url-readable-string ,str)))))
     `(if (>= emacs-major-version 21)
 	 (lambda (window object pos)
 	   (if w3m-track-mouse
@@ -2686,7 +2686,7 @@ message."
 	       (lambda (extent)
 		 (if (and w3m-track-mouse
 			  (eq (extent-object extent) (current-buffer)))
-		     (w3m-url-readable-string str)))))
+		     (w3m-url-readable-string ,str)))))
 	   (when (and (featurep 'bytecomp)
 		      (not (compiled-function-p (symbol-function fn))))
 	     (byte-compile fn)))))))
