@@ -1,5 +1,8 @@
 2001-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-copy-local-variables): Simplified.
+	(w3m-region): Set `w3m-current-base-url'.
+
 	* w3m.el: Fix the bug reported in [emacs-w3m:01564].
 	(w3m-current-base-url): New buffer-local variable.
 	(w3m-clear-local-variables): Handle `w3m-current-base-url'.
