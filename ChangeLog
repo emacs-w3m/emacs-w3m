@@ -1,3 +1,14 @@
+2002-03-26  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-util.el (w3m-time-less-p): Abolish.
+	(w3m-assoc-ignore-case): Moved from w3m-cookie.el and rewrote not to
+	use assoc* (because it's cl function).
+
+	* w3m-cookie.el (w3m-cookie-retrieve): Use w3m-time-newer-p instead of
+	w3m-time-less-p.
+	(w3m-cookie-1-set): Ditto.
+	(w3m-assoc-ignore-case): Moved to w3m-util.el.
+
 2002-03-25  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-cookie.el (w3m-cookie-1-set): Use w3m-time-less-p instead of
@@ -52,7 +63,7 @@
 
 2002-03-24  Yuuichi Teranishi  <teranisi@gohome.org>
 
-	* w3m-cookie: New file.
+	* w3m-cookie.el: New file.
 
 	* w3m-form.el (w3m-form-resume): Use cdr of forms if car is t
 	(Just in case).

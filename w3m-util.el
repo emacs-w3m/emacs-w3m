@@ -321,12 +321,6 @@ START and END are lists which represent time in Emacs-style."
      (cadr end)
      (- (cadr start))))
 
-(defsubst w3m-time-less-p (t1 t2)
-  "Say whether time T1 is less than time T2."
-  (or (< (car t1) (car t2))
-      (and (= (car t1) (car t2))
-	   (< (nth 1 t1) (nth 1 t2)))))
-
 (defsubst w3m-url-dtree-p (url)
   "If URL points a 'w3m-dtree', return non-nil value.  Otherwise return
 nil."
@@ -407,6 +401,18 @@ Otherwise return nil."
 	    (setq idx (1- idx)))
 	  (substring str 0 idx)))
     'truncate-string))
+
+(defsubst w3m-assoc-ignore-case (name alist)
+  "Return the element of ALIST whose car equals NAME ignoring its case."
+  (let ((dname (downcase name))
+	match)
+    (while alist
+      (when (and (consp (car alist))
+		 (string= dname (downcase (car (car alist)))))
+	(setq match (car alist)
+	      alist nil))
+      (setq alist (cdr alist)))
+    match))
 
 (defun w3m-prin1 (object &optional stream)
   "Like `prin1', except that control chars will be represented with ^ as
