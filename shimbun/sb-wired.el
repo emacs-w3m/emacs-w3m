@@ -61,9 +61,9 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAQBAMAAACigOGCAAAABGdBTUEAALGPC/xhBQAAADB
 (luna-define-method shimbun-get-group-header-alist ((shimbun shimbun-wired)
 						    &optional range)
 ;;;<DEBUG>
-  (shimbun-wired-get-group-header-alist shimbun))
-
-(defun shimbun-wired-get-group-header-alist (shimbun)
+;;  (shimbun-wired-get-group-header-alist shimbun))
+;;
+;;(defun shimbun-wired-get-group-header-alist (shimbun)
 ;;;</DEBUG>
   (let ((group-header-alist (mapcar (lambda (g) (cons g nil))
 				    (shimbun-groups-internal shimbun)))
