@@ -1,3 +1,8 @@
+2003-04-30  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-jpo.el (shimbun-make-contents): Bug fixed.
+	(shimbun-headers): Ditto.
+
 2003-04-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-retrieve-and-render): Hide a exit status from an

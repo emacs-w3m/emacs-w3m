@@ -46,7 +46,11 @@
 ;;(luna-define-method shimbun-reply-to ((shimbun shimbun-jpo))
 ;;  (shimbun-from-address-internal shimbun))
 
-(luna-define-method shimbun-headers ((shimbun shimbun) &optional range)
+(defun shimbun-jpo-retrieve-url (url &optional no-cache no-decode)
+  (let (w3m-async-exec)
+    (shimbun-retrieve-url url no-cache no-decode)))
+
+(luna-define-method shimbun-headers ((shimbun shimbun-jpo) &optional range)
   (shimbun-jpo-headers shimbun))
 
 (defun shimbun-jpo-headers (shimbun)
@@ -172,7 +176,7 @@
       (setq urllist (cdr urllist)))
     headers))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun) header)
+(luna-define-method shimbun-make-contents ((shimbun shimbun-jpo) header)
   (shimbun-jpo-contents shimbun header))
 
 (defun shimbun-jpo-contents (shimbun header)
