@@ -701,8 +701,8 @@ downloading something from a url."
 	   (string :tag "Encoding Type"))))
 
 (defcustom w3m-decoder-alist
-  (` ((gzip "gunzip" nil)
-      (bzip "bunzip2" nil)
+  (` ((gzip "gzip" ("-d"))	;; Don't use "gunzip" and "bunzip2"
+      (bzip "bzip2" ("-d"))	;; for broken OS & environment
       (deflate
 	(, (let ((file
 		  (expand-file-name

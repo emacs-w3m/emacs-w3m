@@ -1,3 +1,9 @@
+2002-03-07  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-decoder-alist): Change default commands to `gzip' and
+	`bzip2' instead of `gunzip' and `bunzip2' because some broken OS
+	and its environment does not work them.
+
 2002-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (datadir): New variable.
