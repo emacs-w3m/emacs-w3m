@@ -1,3 +1,8 @@
+2001-04-10  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* mime-w3m.el (mime-w3m-mode-map): Refer `w3m-key-binding' to
+	avoid the problem reported in [emacs-w3m:00498].
+
 2001-04-10  Keisuke Nishida  <kxn30@po.cwru.edu>
 
 	* w3m-search.el (w3m-search): Find default using thing-at-point.

@@ -108,7 +108,11 @@
       w3m-cid-retrieve-function-alist)
 
 (unless mime-w3m-mode-map
-  (let ((map (copy-keymap w3m-mode-map)))
+  (let ((map (copy-keymap (cond
+			   ((eq w3m-key-binding 'info)
+			    (setq w3m-mode-map w3m-info-like-map))
+			   (t
+			    (setq w3m-mode-map w3m-lynx-like-map))))))
     (substitute-key-definition 'w3m-view-this-url 'mime-w3m-view-this-url map)
     (substitute-key-definition 'w3m-mouse-view-this-url 'mime-w3m-view-this-url map)
     (substitute-key-definition 'w3m-quit 'mime-preview-quit map)
