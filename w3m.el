@@ -5415,12 +5415,12 @@ ex.) c:/dir/file => //c/dir/file"
       (replace-match "//\\1" nil nil path)
     path))
 
-
 ;;;###autoload
 (defun w3m-region (start end &optional url)
   "Render region in current buffer and replace with result."
   (interactive "r")
   (save-restriction
+    (w3m-process-stop (current-buffer))
     (narrow-to-region start end)
     (w3m-clear-local-variables)
     (setq w3m-current-buffer (current-buffer)

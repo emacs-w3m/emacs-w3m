@@ -1,5 +1,7 @@
 2002-04-22  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m.el (w3m-region): Call `w3m-process-stop' first.
+
 	* shimbun/mew-shimbun.el (mew-shimbun-scan-replace):
 	`mew-pop-scan-header' require multi-byte buffer.
 
