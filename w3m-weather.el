@@ -319,7 +319,7 @@
 
 (defcustom w3m-weather-default-area
   "京都府・南部"
-  "Default region to check weateher."
+  "Default region to check weather."
   :group 'w3m
   :type (cons 'radio
 	      (delq nil
