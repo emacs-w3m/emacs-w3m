@@ -488,7 +488,7 @@ reason.  The value will be referred by the function `w3m-load-list'.")
 	 (prog1
 	     (if (fboundp 'custom-set-default)
 		 (custom-set-default symbol value)
-	       ;; XEmacs or Emacs 19 does not have `custom-set-default'.
+	       ;; XEmacs 21.4.8 or Emacs 19 don't have `custom-set-default'.
 	       (set-default symbol value))
 	   (if (or noninteractive
 		   ;; Loading w3m.elc is just in progress...
