@@ -99,11 +99,28 @@ dJrT4Cd<Ls?U!G4}0S%FA~KegR;YZWieoc%`|$4M\\\"i*2avWm?"
   :group 'shimbun
   :type '(string :format "%{%t%}:\n%v" :size 0))
 
-(defcustom shimbun-server-additional-path
-  nil
+(defcustom shimbun-server-additional-path nil
   "*List of additional directories to search for shimbun servers."
   :group 'shimbun
   :type '(repeat (directory :format "%t: %v\n" :size 0)))
+
+(defcustom shimbun-checking-new-news-format "Checking new news on #S for #g"
+  "*Format string used to show a progress message while chacking new news.
+See `shimbun-message' for the special format specifiers."
+  :group 'shimbun
+  :type '(string :format "%{%t%}:\n%v" :size 0))
+
+(defcustom shimbun-verbose t
+  "*Flag controls whether shimbun should be verbose.
+If it is non-nil, the `w3m-verbose' variable will be bound to nil
+while shimbun is waiting for a server's response."
+  :group 'shimbun
+  :type 'boolean)
+
+(defcustom shimbun-message-enable-logging nil
+  "*Non-nil means preserve echo messages in the *Message* buffer."
+  :group 'shimbun
+  :type 'boolean)
 
 (defun shimbun-servers-list ()
   "Return a list of shimbun servers."
@@ -749,9 +766,14 @@ Return nil if all pages should be retrieved."
 	 (, range)))))
 
 (luna-define-method shimbun-headers ((shimbun shimbun) &optional range)
-  (with-temp-buffer
-    (shimbun-fetch-url shimbun (shimbun-index-url shimbun) 'reload)
-    (shimbun-get-headers shimbun range)))
+  (shimbun-message shimbun (concat shimbun-checking-new-news-format "..."))
+  (prog1
+      (with-temp-buffer
+	(let ((w3m-verbose (if shimbun-verbose nil w3m-verbose)))
+	  (shimbun-fetch-url shimbun (shimbun-index-url shimbun) 'reload)
+	  (shimbun-get-headers shimbun range)))
+    (shimbun-message shimbun (concat shimbun-checking-new-news-format
+				     "...done"))))
 
 (luna-define-generic shimbun-reply-to (shimbun)
   "Return a reply-to field body for SHIMBUN.")
@@ -802,10 +824,10 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
       (w3m-insert-string
        (or (with-temp-buffer
 	     (shimbun-fetch-url shimbun (shimbun-article-url shimbun header))
-	     (message "shimbun: Make contents...")
+	     (shimbun-message shimbun "shimbun: Make contents...")
 	     (goto-char (point-min))
 	     (prog1 (shimbun-make-contents shimbun header)
-	       (message "shimbun: Make contents...done")))
+	       (shimbun-message shimbun "shimbun: Make contents...done")))
 	   "")))))
 
 (luna-define-generic shimbun-make-contents (shimbun header)
@@ -955,6 +977,66 @@ is enclosed by at least one regexp grouping construct."
     (while (re-search-forward "<[^>]+>" nil t)
       (replace-match "" t t))))
 
+(eval-and-compile
+  (cond
+   ((fboundp 'replace-in-string)
+    (defalias 'shimbun-replace-in-string 'replace-in-string))
+   ((fboundp 'replace-regexp-in-string)
+    (defun shimbun-replace-in-string  (string regexp newtext &optional literal)
+      ;;(replace-regexp-in-string regexp newtext string nil literal)))
+      ;;
+      ;; Don't call the symbol function `replace-regexp-in-string' directly
+      ;; in order to silence the byte-compiler when an Emacs which doesn't
+      ;; provide it is used.  The following form generates exactly the same
+      ;; byte-code.
+      (funcall (symbol-function 'replace-regexp-in-string)
+	       regexp newtext string nil literal)))
+   (t
+    (defun shimbun-replace-in-string (string regexp newtext &optional literal)
+      (let ((start 0) tail)
+	(while (string-match regexp string start)
+	  (setq tail (- (length string) (match-end 0)))
+	  (setq string (replace-match newtext nil literal string))
+	  (setq start (- (length string) tail))))
+      string))))
+
+(defun shimbun-message (shimbun fmt &rest args)
+  "Function equivalent to `message' enabling to handle special formats.
+SHIMBUN is a shimbun entity object.  FMT and ARGS are the same as the
+arguments of `message'.  This function allows the following special
+format specifiers:
+
+#g means print a group name.
+#s means print a server name.
+#S means print a human-readable server name.
+
+Use ## to put a single # into the output.  If `shimbun-verbose' is nil,
+it will run silently.  The `shimbun-message-enable-logging' variable
+controls whether this function should preserve a message in the
+*Messages* buffer."
+  (let (rest server string case-fold-search)
+    (when (string-match "#[#gsS]" fmt)
+      (setq rest (shimbun-replace-in-string fmt "##" "#")
+	    rest (shimbun-replace-in-string
+		  rest "#g" (shimbun-current-group-internal shimbun))
+	    rest (shimbun-replace-in-string
+		  rest "#s" (setq server (shimbun-server-internal shimbun)))
+	    fmt (shimbun-replace-in-string
+		 rest "#S" (or (shimbun-server-name-internal shimbun)
+			       server))))
+    (if shimbun-verbose
+	(static-if (featurep 'xemacs)
+	    (prog1
+		(setq string (apply 'format fmt args))
+	      (if shimbun-message-enable-logging
+		  (display-message 'message string)
+		(display-message 'no-log string)))
+	  (if shimbun-message-enable-logging
+	      (apply 'message fmt args)
+	    (let (message-log-max)
+	      (apply 'message fmt args))))
+      (apply 'format fmt args))))
+
 (provide 'shimbun)
 
-;;; shimbun.el ends here.
+;;; shimbun.el ends here

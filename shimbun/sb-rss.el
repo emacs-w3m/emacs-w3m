@@ -39,29 +39,6 @@
 
 (luna-define-class shimbun-rss (shimbun) ())
 
-(eval-and-compile
-  (cond
-   ((fboundp 'replace-in-string)
-    (defalias 'shimbun-replace-in-string 'replace-in-string))
-   ((fboundp 'replace-regexp-in-string)
-    (defun shimbun-replace-in-string  (string regexp newtext &optional literal)
-      ;;(replace-regexp-in-string regexp newtext string nil literal)))
-      ;;
-      ;; Don't call the symbol function `replace-regexp-in-string' directly
-      ;; in order to silence the byte-compiler when an Emacs which doesn't
-      ;; provide it is used.  The following form generates exactly the same
-      ;; byte-code.
-      (funcall (symbol-function 'replace-regexp-in-string)
-	       regexp newtext string nil literal)))
-   (t
-    (defun shimbun-replace-in-string (string regexp newtext &optional literal)
-      (let ((start 0) tail)
-	(while (string-match regexp string start)
-	  (setq tail (- (length string) (match-end 0)))
-	  (setq string (replace-match newtext nil literal string))
-	  (setq start (- (length string) tail))))
-      string))))
-
 (luna-define-generic shimbun-rss-process-date (shimbun-rss date)
   "Process DATE string and return proper Date string for showing it in MUA.")
 
