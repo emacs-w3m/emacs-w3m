@@ -526,42 +526,66 @@ to remove some obsolete variables in the first argument VARLIST."
 
   (defun w3mhack-make-package ()
     "Make some files in the XEmacs package directory."
-    (let* ((package-dir (pop command-line-args-left))
+    (let* ((temp-dir (expand-file-name
+		      ;; A dir name must be ended with "/w3m".
+		      "w3m"
+		      (make-temp-name (expand-file-name "pkgtmp"))))
+	   (make-hardlink 'add-name-to-file)
+	   (package-dir (pop command-line-args-left))
 	   (lisp-dir (expand-file-name "lisp/w3m/" package-dir))
 	   (custom-load (expand-file-name "custom-load.el" lisp-dir))
 	   (generated-autoload-file (expand-file-name "auto-autoloads.el"
-						      lisp-dir))
-	   (els (nconc (directory-files default-directory nil "^[^#]+\\.el$")
+						      temp-dir))
+	   (els (nconc (directory-files default-directory nil "^[^#]+\\.el\\'")
 		       (directory-files (expand-file-name
 					 shimbun-module-directory)
-					nil "^[^#]+\\.el$")))
+					nil "^[^#]+\\.el\\'")))
 	   (elcs (with-temp-buffer
 		   (let ((standard-output (current-buffer)))
 		     (w3mhack-examine-modules)
 		     (split-string (buffer-string) " \\(shimbun/\\)?"))))
 	   (icons (directory-files (expand-file-name "icons/") nil
-				   "^[^#]+\\.xpm$"))
+				   "^[^#]+\\.xpm\\'"))
 	   (si:message (symbol-function 'message))
-	   manifest make-backup-files noninteractive)
-      (when (file-exists-p custom-load)
-	(delete-file custom-load))
-      (when (file-exists-p (concat custom-load "c"))
-	(delete-file (concat custom-load "c")))
+	   hardlink manifest make-backup-files noninteractive)
+      ;; Non-Mule XEmacs cannot handle .el files containing non-ascii chars.
+      ;; So, we should make custom-load.el and auto-autoloads.el for only
+      ;; .el files which have been byte-compiled.  The following processings
+      ;; are performed in the `temp-dir' only to those files.
+      (make-directory temp-dir t)
+      (unless (condition-case nil
+		  (progn
+		    (setq hardlink (expand-file-name "w3m.el" temp-dir))
+		    (funcall make-hardlink "w3m.el" hardlink)
+		    (prog1
+			(file-exists-p hardlink)
+		      (delete-file hardlink)))
+		(error nil))
+	;; This system doesn't allow hard links.
+	(setq make-hardlink 'copy-file))
+      (dolist (el (nconc (directory-files default-directory t "\\.elc\\'")
+			 (directory-files "shimbun" t "\\.elc\\'")))
+	(setq el (substring el 0 -1))
+	(funcall make-hardlink
+		 el (expand-file-name (file-name-nondirectory el) temp-dir)))
       (with-temp-buffer
 	(let ((standard-output (current-buffer)))
-	  (Custom-make-dependencies lisp-dir))
+	  (Custom-make-dependencies temp-dir))
 	;; Print messages into stderr.
 	(message "%s" (buffer-string)))
-      (when (file-exists-p custom-load)
-	(require 'cus-load)
-	(byte-compile-file custom-load)
-	(push "custom-load.el" els)
-	(push "custom-load.elc" elcs))
+      (if (file-exists-p (expand-file-name "custom-load.el" temp-dir))
+	  (progn
+	    (copy-file (expand-file-name "custom-load.el" temp-dir)
+		       custom-load t)
+	    (require 'cus-load)
+	    (byte-compile-file custom-load)
+	    (push "custom-load.el" els)
+	    (push "custom-load.elc" elcs))
+	(when (file-exists-p custom-load)
+	  (delete-file custom-load))
+	(when (file-exists-p (concat custom-load "c"))
+	  (delete-file (concat custom-load "c"))))
       (message "Updating autoloads for the directory %s..." lisp-dir)
-      (when (file-exists-p generated-autoload-file)
-	(delete-file generated-autoload-file))
-      (when (file-exists-p (concat generated-autoload-file "c"))
-	(delete-file (concat generated-autoload-file "c")))
       (defun message (fmt &rest args)
 	"Ignore useless messages while generating autoloads."
 	(cond ((and (string-equal "Generating autoloads for %s..." fmt)
@@ -572,19 +596,33 @@ to remove some obsolete variables in the first argument VARLIST."
 	      ((string-equal "Generating autoloads for %s...done" fmt))
 	      (t (apply si:message fmt args))))
       (unwind-protect
-	  (update-autoloads-from-directory lisp-dir)
+	  (update-autoloads-from-directory temp-dir)
 	(fset 'message si:message))
-      (when (file-exists-p generated-autoload-file)
-	(byte-compile-file generated-autoload-file)
-	(push "auto-autoloads.el" els)
-	(push "auto-autoloads.elc" elcs))
+      (if (file-exists-p generated-autoload-file)
+	  (progn
+	    (copy-file generated-autoload-file
+		       (expand-file-name "auto-autoloads.el" lisp-dir) t)
+	    (byte-compile-file (expand-file-name "auto-autoloads.el" lisp-dir))
+	    (push "auto-autoloads.el" els)
+	    (push "auto-autoloads.elc" elcs))
+	(setq generated-autoload-file (expand-file-name "auto-autoloads.el"
+							lisp-dir))
+	(when (file-exists-p generated-autoload-file)
+	  (delete-file generated-autoload-file))
+	(when (file-exists-p (concat generated-autoload-file "c"))
+	  (delete-file (concat generated-autoload-file "c"))))
+      ;; Clear the `temp-dir'.
+      (dolist (el (directory-files temp-dir t "\\.el\\'"))
+	(delete-file el))
+      (delete-directory temp-dir)
+      (delete-directory (expand-file-name ".." temp-dir))
       (when (file-directory-p (expand-file-name "pkginfo/" package-dir))
 	(setq manifest (expand-file-name "pkginfo/MANIFEST.w3m" package-dir))
 	(message "Generating %s..." manifest)
 	(with-temp-file manifest
 	  (insert "pkginfo/MANIFEST.w3m\n")
 	  (dolist (log (directory-files lisp-dir nil
-					"^ChangeLog\\(\\.[0-9]+\\)?$"))
+					"^ChangeLog\\(\\.[0-9]+\\)?\\'"))
 	    (insert "lisp/w3m/" log "\n"))
 	  (dolist (el els)
 	    (insert "lisp/w3m/" el "\n")

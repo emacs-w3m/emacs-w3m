@@ -1,3 +1,8 @@
+2003-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-make-package): Make it work under non-Mule
+	XEmacs.
+
 2003-05-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-w3m-use-safe-url-regexp): New variable.
