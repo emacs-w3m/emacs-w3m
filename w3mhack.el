@@ -116,6 +116,16 @@
       (unless (member module ignores)
 	(princ (format "%sc " module))))))
 
+;; Against the error on Emacs20, "Already defined charset: 242".
+(when (and (boundp 'emacs-major-version)
+	   (= emacs-major-version 20)
+	   (locate-library "un-define")
+	   (locate-library "bitmap"))
+  (setq bitmap-alterable-charset 'tibetan-1-column)
+  (setq bitmap-use-alterable-charset-anyway t)
+  (require 'bitmap)
+  (require 'un-define))
+
 (require 'bytecomp)
 
 (defun w3mhack-compile ()
@@ -547,6 +557,10 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 			   (>= emacs-beta-version 37))))
 	   (>= emacs-major-version 20))
 	 (setq x (locate-library "un-define"))
+	 (push (file-name-directory x) paths))
+    (and (boundp 'emacs-major-version)
+	 (= emacs-major-version 20)
+	 (setq x (locate-library "bitmap"))
 	 (push (file-name-directory x) paths))
     (let (print-level print-length)
       (princ (mapconcat

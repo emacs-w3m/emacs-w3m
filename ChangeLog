@@ -1,3 +1,9 @@
+2002-04-04  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3mhack.el (top): Avoid byte-compile error for `w3m-ucs.el' with
+	Emacs20 when it has `un-define' and `bitmap'.
+	(w3mhack-load-path): Add the path of `bitmap.el' on Emacs20.
+
 2002-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-request-arguments): Use -header option if no cookie
