@@ -3500,24 +3500,99 @@ succeed."
 	(substring str 0 (match-beginning 0))
       str)))
 
-(defun w3m-w3m-get-header (url no-cache handler)
-  "Return the header string of the URL.
-If optional argument NO-CACHE is non-nil, cache is not used."
-  (or (unless no-cache
-	(w3m-cache-request-header (w3m-url-strip-authinfo url)))
-      (lexical-let ((url url))
-	(w3m-message "Request sent, waiting for response...")
-	(w3m-process-do-with-temp-buffer
-	    (success (progn
-		       (setq w3m-current-url url
-			     url (w3m-url-strip-authinfo url))
-		       (w3m-process-start handler
-					  w3m-command
-					  (append w3m-command-arguments
-						  (list "-dump_head" url)))))
-	  (w3m-message "Request sent, waiting for response...done")
-	  (when success
-	    (w3m-cache-header url (buffer-string)))))))
+(defun w3m-w3m-parse-header (url header)
+  "Parse a given string HEADER as a MIME header of URL.
+Return alist, whose elements are:
+ 0. Status code.
+ 1. Type of contents.
+ 2. Charset of contents.
+ 3. Size in bytes.
+ 4. Encoding of contents.
+ 5. Last modification time.
+ 6. Real URL.
+ 7. Base URL.
+"
+  (let ((case-fold-search t)
+	(headers)
+	(status))
+    (dolist (line (split-string header "[ \f\t\r]*\n"))
+      (cond
+       ((string-match "\\`HTTP/1\\.[0-9] \\([0-9][0-9][0-9]\\)\\b" line)
+	(setq status (string-to-number (match-string 1 line))))
+       ((string-match (eval-when-compile
+			(concat "\\`\\("
+				(regexp-opt
+				 '(;; MEMO: ファイルをダウンロードする
+				   ;; ときの 適切なデフォルト名を決定
+				   ;; するためには content-disposition
+				   ;; の解釈が必要．
+				   "content-disposition"
+				   "content-encoding"
+				   "content-length"
+				   ;; MEMO: See [emacs-w3m:02341].
+				   "content-transfer-encoding"
+				   "content-type"
+				   "last-modified"
+				   "location"
+				   "w3m-base-url"
+				   "w3m-current-url"
+				   "w3m-ssl-certificate"
+				   "x-w3m-content-encoding"))
+				"\\):[ \t]*"))
+		      line)
+	(push (cons (downcase (match-string 1 line))
+		    (substring line (match-end 0)))
+	      headers))))
+    (let (type charset)
+      (when (setq type (cdr (assoc "content-type" headers)))
+	(if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" type)
+	    (setq charset (w3m-remove-redundant-spaces
+			   (match-string 1 type))
+		  type (w3m-remove-redundant-spaces
+			(substring type 0 (match-beginning 0))))
+	  (setq type (w3m-remove-redundant-spaces type))
+	  (when (string-match ";" type)
+	    (setq type (substring type 0 (match-beginning 0)))))
+	(setq type (downcase type)))
+      (setq w3m-current-ssl (cdr (assoc "w3m-ssl-certificate" headers)))
+      (list status
+	    (or type (w3m-local-content-type url))
+	    (or charset
+		(and (eq w3m-type 'w3mmee)
+		     (setq charset
+			   (cdr (assoc "w3m-document-charset" headers)))
+		     (car (split-string charset))))
+	    (let ((v (cdr (assoc "content-length" headers))))
+	      (and v (setq v (string-to-number v)) (> v 0) v))
+	    (cdr (or (assoc "content-encoding" headers)
+		     (when (eq w3m-type 'w3mmee)
+		       (assoc "x-w3m-content-encoding" headers))))
+	    (let ((v (cdr (assoc "last-modified" headers))))
+	      (and v (w3m-time-parse-string v)))
+	    (or (when (string-match "\\`ftps?:" url)
+		  (cdr (assoc "w3m-current-url" headers)))
+		(cdr (assoc "location" headers))
+		url)
+	    (or (cdr (assoc "w3m-base-url" headers))
+		(cdr (assoc "location" headers))
+		url)))))
+
+(defun w3m-w3m-dump-head (url handler)
+  "Return the header string of the URL."
+  (lexical-let ((url url))
+    (w3m-message "Request sent, waiting for response...")
+    (w3m-process-do-with-temp-buffer
+	(success (progn
+		   (setq w3m-current-url url
+			 url (w3m-url-strip-authinfo url))
+		   (w3m-process-start handler
+				      w3m-command
+				      (append w3m-command-arguments
+					      (list "-o" "follow_redirection=0"
+						    "-dump_head" url)))))
+      (w3m-message "Request sent, waiting for response...done")
+      (when success
+	(buffer-string)))))
 
 (defun w3m-w3m-attributes (url no-cache handler)
   "Return a list of attributes of URL.
@@ -3533,61 +3608,22 @@ elements are:
 If optional argument NO-CACHE is non-nil, cache is not used."
   (lexical-let ((url url))
     (w3m-process-do
-	(header (w3m-w3m-get-header url no-cache handler))
+	(header (or (unless no-cache
+		      (w3m-cache-request-header url))
+		    (w3m-w3m-dump-head url handler)))
       (when header
-	(let ((case-fold-search t)
-	      alist type charset moved)
-	  (setq w3m-current-redirect nil)
-	  (dolist (line (split-string header "[\t ]*\n"))
-	    (when (string-match "^\\([^ \t:]+\\):[ \t]*" line)
-	      (push (cons (downcase (match-string 1 line))
-			  (substring line (match-end 0)))
-		    alist)))
-	  (cond
-	   ((string-match "\\`ftp://" url)
-	    (setq url (or (cdr (assoc "w3m-current-url" alist)) url))
-	    (if (string-match "/\\'" url)
-		(list "text/html" "w3m-euc-japan" nil nil nil url url)
-	      (list (w3m-local-content-type url) nil nil nil nil url url)))
-	   ((or (string-match "HTTP/1\\.[0-9] 200[ \n]" header)
-		(setq moved (and (string-match "HTTP/1\\.[0-9] \\(30[1237]\\)[ \n]"
-					       header)
-				 (match-string 1 header))))
-	    (when (setq type (cdr (assoc "content-type" alist)))
-	      (if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" type)
-		  (setq charset (w3m-remove-redundant-spaces
-				 (match-string 1 type))
-			type (w3m-remove-redundant-spaces
-			      (substring type 0 (match-beginning 0))))
-		(setq type (w3m-remove-redundant-spaces type))
-		(when (string-match ";" type)
-		  (setq type (substring type 0 (match-beginning 0)))))
-	      (setq type (downcase type)))
-	    (when moved
-	      (if (assoc "location" alist)
-		  (setq w3m-current-redirect
-			(cons (string-to-number moved)
-			      (w3m-expand-url (cdr (assoc "location" alist)))))
-		(w3m-message "Warning: Got redirection with no Location header.")))
-	    (setq w3m-current-ssl (cdr (assoc "w3m-ssl-certificate" alist)))
-	    (list (or type (w3m-local-content-type url))
-		  (or charset
-		      (and (eq w3m-type 'w3mmee)
-			   (setq charset
-				 (cdr (assoc "w3m-document-charset" alist)))
-			   (car (split-string charset))))
-		  (let ((v (cdr (assoc "content-length" alist))))
-		    (and v (setq v (string-to-number v)) (> v 0) v))
-		  (cdr (or (assoc "content-encoding" alist)
-			   (when (eq w3m-type 'w3mmee)
-			     (assoc "x-w3m-content-encoding" alist))))
-		  (let ((v (cdr (assoc "last-modified" alist))))
-		    (and v (w3m-time-parse-string v)))
-		  (or (cdr (assoc "w3m-current-url" alist))
-		      url)
-		  (or (cdr (assoc "w3m-base-url" alist))
-		      (cdr (assoc "w3m-current-url" alist))
-		      url)))))))))
+	(let ((attr (w3m-w3m-parse-header url header)))
+	  (if (string-match "\\`ftps?:" url)
+	      (progn
+		(setq url (nth 6 attr))
+		(if (string-match "/\\'" url)
+		    (list "text/html"
+			  (if w3m-accept-japanese-characters
+			      "w3m-euc-japan" "w3m-iso-latin-1")
+			  nil nil nil url url)
+		  (list (w3m-local-content-type url) nil nil nil nil url url)))
+	    (w3m-cache-header url header)
+	    (cdr attr)))))))
 
 (defmacro w3m-w3m-expand-arguments (arguments)
   (` (delq nil
@@ -3602,47 +3638,39 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		    (prin1-to-string x))))))
 	    (, arguments)))))
 
-(defun w3m-w3m-dump-head-source (url orig-url handler)
-  "Retrive headers and content pointed by URL, and call the HANDLER
-function with attributes of the retrieved content when retrieval is
-complete."
-  (lexical-let ((url url)
-		(orig-url orig-url))
+(defun w3m-w3m-dump-extra (url handler)
+  "Retrive headers and content pointed by URL"
+  (lexical-let ((url url))
     (setq w3m-current-url url
 	  url (w3m-url-strip-authinfo url))
     (w3m-message "Reading %s...%s"
 		 url
-		 (if (and w3m-async-exec (not w3m-process-waited))
+		 (if w3m-async-exec
 		     (substitute-command-keys "\
  (Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")
 		   ""))
     (w3m-process-do
-	(result
+	(success
 	 (w3m-process-start handler
 			    w3m-command
-			    (append
-			     w3m-command-arguments
-			     (w3m-w3m-expand-arguments
-			      w3m-dump-head-source-command-arguments)
-			     (list url))))
+			    (append w3m-command-arguments
+				    (w3m-w3m-expand-arguments
+				     w3m-dump-head-source-command-arguments)
+				    (list url))))
       (w3m-message "Reading %s...done" url)
-      (when result
+      (when success
 	(goto-char (point-min))
 	(when (let ((case-fold-search t))
 		(re-search-forward "^w3m-current-url:" nil t))
 	  (delete-region (point-min) (match-beginning 0))
 	  (when (search-forward "\n\n" nil t)
-	    (w3m-cache-header (or orig-url url)
-			      (buffer-substring (point-min) (point)) t)
-	    (when w3m-use-cookies
-	      (w3m-cookie-set url (point-min) (point)))
-	    (delete-region (point-min) (point))
-	    (prog1 (w3m-w3m-attributes (or orig-url url) nil handler)
-	      (unless (and w3m-current-redirect
-			   (or (eq (car w3m-current-redirect) 302)
-			       (eq (car w3m-current-redirect) 303)
-			       (eq (car w3m-current-redirect) 307)))
-		(w3m-cache-contents (or orig-url url) (current-buffer))))))))))
+	    (let ((header (buffer-substring (point-min) (point))))
+	      (w3m-cache-header url header)
+	      (when w3m-use-cookies
+		(w3m-cookie-set url (point-min) (point)))
+	      (delete-region (point-min) (point))
+	      (w3m-cache-contents url (current-buffer))
+	      (w3m-w3m-parse-header url header))))))))
 
 (defun w3m-additional-command-arguments (url)
   "Return a list of additional arguments passed to the w3m command.
@@ -3769,121 +3797,90 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
   "Retrieve content pointed by URL with w3m, insert it to this buffer,
 and call the HANDLER function with its content type as a string
 argument, when retrieve is complete."
-  (lexical-let ((i w3m-follow-redirection)
-		(orig-url url)
-		(url url)
+  (lexical-let ((url url)
 		(no-decode no-decode)
-		(no-cache no-cache)
-		(post-data post-data)
-		(referer referer)
-		(orig-handler handler)
-		redirect-handler
-		sync return quit)
-    (setq redirect-handler
-	  (lambda (type)
-	    (if (or (null w3m-follow-redirection)
-		    (null w3m-current-redirect))
-		;; No redirection exists.
-		(funcall orig-handler type)
-	      ;; Follow the redirection.
-	      (if (zerop i)
-		  ;; Redirection number exceeds `w3m-follow-redirection'.
-		  (funcall orig-handler nil)
-		(setq i (1- i))
-		(setq url (cdr w3m-current-redirect))
-		(erase-buffer)
-		(when post-data
-		  (cond
-		   ((eq (car w3m-current-redirect) 303)
-		    ;; Use GET.
-		    (setq post-data nil))
-		   ((eq (car w3m-current-redirect) 307)
-		    ;; Use POST.
-		    (setq quit (not
-				(y-or-n-p
-				 (format "Send POST data to '%s'?" url)))))
-		   ((or (eq (car w3m-current-redirect) 302)
-			(eq (car w3m-current-redirect) 301))
-		    (if w3m-redirect-with-get
-			(setq post-data nil)
-		      (setq quit
-			    (not
-			     (y-or-n-p
-			      (format "Send POST data to '%s'?" url))))))))
-		(if quit
-		    (funcall orig-handler nil)
-		  (if sync
-		      (condition-case nil
-			  (w3m-process-with-wait-handler
-			    (w3m-w3m-retrieve-1 url orig-url no-decode
-						'no-cache
-						post-data nil
-						redirect-handler))
-			(w3m-process-timeout nil))
-		    (w3m-w3m-retrieve-1 url orig-url no-decode 'no-cache
-					post-data
-					nil redirect-handler)))))))
-    ;; The first retrieval.
-    (prog1 (setq return (w3m-w3m-retrieve-1
-			 url nil no-decode no-cache post-data referer
-			 redirect-handler))
-      (setq sync (w3m-process-p return)))))
+		(current-buffer (current-buffer)))
+    (w3m-process-do-with-temp-buffer
+	(attr (w3m-w3m-retrieve-1 url post-data referer no-cache
+				  w3m-follow-redirection handler))
+      (when attr
+	(let ((temp-buffer (current-buffer)))
+	  (with-current-buffer current-buffer
+	    (insert-buffer-substring temp-buffer)))
+	(if (or no-decode
+		(w3m-decode-encoded-contents (nth 4 attr)))
+	    (cadr attr)
+	  (ding)
+	  (w3m-message "Can't decode encoded contents: %s" url)
+	  nil)))))
 
-(defun w3m-w3m-retrieve-1 (url orig-url no-decode no-cache post-data referer handler)
-  "Internal function for w3m-w3m-retrieve.
-If this function is called by redirection, ORIG-URL must be set."
+(defun w3m-w3m-retrieve-1 (url post-data referer no-cache counter handler)
+  "Internal function for `w3m-w3m-retrieve'."
   (let ((w3m-command-arguments
 	 (append w3m-command-arguments
 		 (when (member "cookie" w3m-compile-options)
 		   (list "-no-cookie"))
-		 ;; Don't follow redirection within w3m command.
-		 (when w3m-follow-redirection
-		   (list "-o" "follow_redirection=0"))
+		 (list "-o" "follow_redirection=0")
 		 (w3m-additional-command-arguments url)))
 	(temp-file))
     (and no-cache
 	 w3m-broken-proxy-cache
 	 (setq w3m-command-arguments
-	       (append w3m-command-arguments '("-o" "no_cache=1"))))
+	       (nconc w3m-command-arguments '("-o" "no_cache=1"))))
     (setq temp-file
-	  (when (or (eq w3m-type 'w3mmee)
-		    post-data)
+	  (when (or (eq w3m-type 'w3mmee) post-data)
 	    (make-temp-name
 	     (expand-file-name "w3mel" w3m-profile-directory))))
     (setq w3m-command-arguments
-	  (append w3m-command-arguments
-		  (apply (if (eq w3m-type 'w3mmee)
-			     'w3m-request-arguments
-			   'w3m-header-arguments)
-			 (list
-			  (if post-data "post" "get")
-			  url
-			  temp-file
-			  (if (consp post-data)
-			      (cdr post-data)
-			    post-data)
-			  referer
-			  (if (consp post-data) (car post-data))))))
+	  (nconc w3m-command-arguments
+		 (apply (if (eq w3m-type 'w3mmee)
+			    'w3m-request-arguments
+			  'w3m-header-arguments)
+			(list (if post-data "post" "get")
+			      url
+			      temp-file
+			      (if (consp post-data)
+				  (cdr post-data)
+				post-data)
+			      referer
+			      (if (consp post-data) (car post-data))))))
     (lexical-let ((url url)
-		  (orig-url orig-url)
-		  (no-decode no-decode)
+		  (post-data post-data)
+		  (referer referer)
+		  (no-cache no-cache)
+		  (counter counter)
 		  (temp-file temp-file))
       (w3m-process-do
-	  (attributes
-	   (or (unless no-cache
-		 (and (w3m-cache-request-contents url)
-		      (w3m-w3m-attributes url nil handler)))
-	       (w3m-w3m-dump-head-source url orig-url handler)))
-	(when (and temp-file (file-exists-p temp-file))
-	  (delete-file temp-file))
-	(when attributes
-	  (if (or no-decode
-		  w3m-current-redirect
-		  (w3m-decode-encoded-contents (nth 3 attributes)))
-	      (car attributes)
-	    (ding)
-	    (w3m-message "Can't decode encoded contents: %s" url)
-	    nil))))))
+	  (attr (or (unless no-cache
+		      (and (w3m-cache-request-contents url)
+			   (w3m-w3m-parse-header
+			    url (w3m-cache-request-header url))))
+		    (w3m-w3m-dump-extra url handler)))
+	(and temp-file
+	     (file-exists-p temp-file)
+	     (delete-file temp-file))
+	(if (memq (car attr) '(300 301 302 303 304 305 306 307))
+	    (if (zerop counter)
+		;; Redirect counter exceeds `w3m-follow-redirection'.
+		nil
+	      ;; Follow redirection.
+	      (erase-buffer)
+	      (unless (and post-data
+			   (cond
+			    ((memq (car attr) '(301 302))
+			     (if w3m-redirect-with-get
+				 (setq post-data nil)
+			       (not (y-or-n-p
+				     (format "Send POST data to `%s'?" url)))))
+			    ((eq (car attr) 303) ; => See Other
+			     (setq post-data nil))
+			    ((eq (car attr) 307) ; => Temporally Redirect
+			     (not (y-or-n-p
+				   (format "Send POST data to `%s'?" url))))))
+		(w3m-w3m-retrieve-1 (nth 6 attr)
+				    post-data referer no-cache
+				    (1- counter) handler)))
+	  attr)))))
 
 (defsubst w3m-about-retrieve (url &optional no-decode no-cache
 				  post-data referer handler)
@@ -6616,8 +6613,10 @@ works on Emacs.
 	(insert "\nDocument Charset:       " (or charset "")))
       (when (and (not (w3m-url-local-p url))
 		 (setq header (condition-case nil
-				  (w3m-process-with-wait-handler
-				    (w3m-w3m-get-header url no-cache handler))
+				  (or (unless no-cache
+					(w3m-cache-request-header url))
+				      (w3m-process-with-wait-handler
+					(w3m-w3m-dump-head url handler)))
 				(w3m-process-timeout nil))))
 	(insert "\n\n" separator "\n\nHeader Information\n\n" header)
 	(goto-char (point-min))

@@ -1,3 +1,29 @@
+2003-08-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-get-header): Removed.
+	(w3m-w3m-parse-header, w3m-w3m-dump-head): New function.
+	(w3m-w3m-attributes): Call the above functions.
+	(w3m-w3m-dump-head-source): Removed.
+	(w3m-w3m-dump-extra): New function.
+	(w3m-w3m-retrieve, w3m-w3m-retrieve-1): Reimplemented.
+	(w3m-about-header): Call `w3m-w3m-dump-head' instead of
+	`w3m-w3m-get-header'.
+
+	* w3m-proc.el: Changes to support recursive call of functions
+	creating asynchronous processes.
+	(w3m-process-waited): Abolished.
+	(w3m-process-handler-new): Add result slot.
+	(w3m-process-handler-functions): Renamed from
+	`w3m-process-handler-function'.
+	(w3m-process-handler-result): New macro.
+	(w3m-process-with-null-handler): Reimplemented.
+	(w3m-process-start-and-wait): New function.
+	(w3m-process-with-wait-handler): Reimplemented.
+	(w3m-process-do): Reimplemented.
+	(w3m-process-do-with-temp-buffer): Reimplemented.
+	(w3m-process-sentinel): Accept the 3rd argument.  Follow the above
+	changes.
+
 2003-08-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Fix last change.
