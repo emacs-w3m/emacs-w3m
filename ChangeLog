@@ -1,3 +1,7 @@
+2001-03-16  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-view-source): Render as html if already display source.
+
 2001-03-15  Yuuichi Teranishi  <teranisi@isl.ntt.co.jp>
 
 	* w3m.el (w3m-icon-directory): New variable.

@@ -2194,7 +2194,10 @@ ex.) c:/dir/file => //c/dir/file"
 (defun w3m-view-source ()
   "*Display source of this current buffer."
   (interactive)
-  (w3m-goto-url (concat "about://source/" w3m-current-url)))
+  (w3m-goto-url
+   (if (string-match "^about://source/" w3m-current-url)
+       (substring w3m-current-url (match-end 0))
+     (concat "about://source/" w3m-current-url))))
 
 (defun w3m-about-header (url &optional no-decode accept-type-regexp no-cache)
   (when (string-match "^about://header/" url)
