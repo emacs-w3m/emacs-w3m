@@ -1,3 +1,8 @@
+2002-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-w3m-attributes): Ignore trailing whitespaces in
+	header lines.
+
 2002-03-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-w3m-attributes): Ignore `w3m-document-charset' when
@@ -677,7 +682,7 @@
 
 2001-10-25  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
-	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile 
+	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
 	w3m-weather.el if the feature `mule' is not provided.
 
 2001-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>

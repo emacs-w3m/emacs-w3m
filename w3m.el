@@ -2832,7 +2832,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
     (cond
      ((and header (string-match "HTTP/1\\.[0-9] 200 " header))
       (let (alist type charset)
-	(dolist (line (split-string header "\n"))
+	(dolist (line (split-string header "[\t ]*\n"))
 	  (when (string-match "^\\([^:]+\\):[ \t]*" line)
 	    (push (cons (downcase (match-string 1 line))
 			(substring line (match-end 0)))
@@ -3875,7 +3875,7 @@ session."
 	(when pos
 	  (goto-char pos)
 	  t))))
- 
+
 (defun w3m-next-form (&optional arg)
   "Move cursor to the next form."
   (interactive "p")
