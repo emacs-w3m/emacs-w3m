@@ -143,8 +143,7 @@ SUBTYPE is symbol to indicate subtype of content-type.")
     (guess   octet-filter-guess	      nil	nil	nil)
     (lzh     octet-filter-call1	      "lha"	("-v")	text)
     (tar     octet-tar-mode	      nil	nil	nil)
-    (pdf     octet-filter-call2	     "pdftotext" ("-q" "-eucjp" "-raw") text)
-    )
+    (pdf     octet-filter-call2	     "pdftotext" ("-q" "-eucjp" "-raw") text))
   "Alist of type-to-filter-program.
 Each element should have the form like:
 \(TYPE FUNCTION FILTER_PROGRAM ARGUMENT NEW-TYPE\)
@@ -241,8 +240,9 @@ Returns 0 if succeed."
     (write-region-as-binary (point-min) (point-max) infile nil 'no-msg)
     (unwind-protect
 	(progn
-	  (setq result (apply 'call-process filter nil nil nil
-			      (append args (list infile outfile))))
+	  (as-binary-process
+	   (setq result (apply 'call-process filter nil nil nil
+			       (append args (list infile outfile)))))
 	  (when (and (numberp result)
 		     (zerop result))
 	    (erase-buffer)
@@ -265,8 +265,9 @@ Returns 0 if succeed."
     (write-region-as-binary (point-min) (point-max) infile nil 'no-msg)
     (unwind-protect
 	(progn
-	  (setq result (apply 'call-process filter nil nil nil
-			      (append args (list infile outfile))))
+	  (as-binary-process
+	   (setq result (apply 'call-process filter nil nil nil
+			       (append args (list infile outfile)))))
 	  (when (and (numberp result)
 		     (zerop result))
 	    (erase-buffer)
@@ -300,8 +301,9 @@ Returns 0 if succeed."
     (unwind-protect
 	(progn
 	  (erase-buffer)
-	  (setq result (apply 'call-process filter nil t nil
-			      (append args (list infile))))
+	  (as-binary-process
+	   (setq result (apply 'call-process filter nil t nil
+			       (append args (list infile)))))
 	  (if (numberp result) result 1))
       (if (file-exists-p infile) (delete-file infile))
       (cd last-dir))))
@@ -397,15 +399,15 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
   "Find FILE with octet-stream decoding."
   (interactive "fFilename: ")
   (as-binary-input-file	(find-file file))
-  (let (buffer-read-only)
-    (unwind-protect
-	(octet-buffer)
-      (goto-char (point-min))
-      (set-buffer-modified-p nil)
-      (auto-save-mode -1)
-      (setq buffer-read-only t
-	    truncate-lines t)
-      (run-hooks 'octet-find-file-hook))))
+  (unwind-protect
+      (let (buffer-read-only)
+	(octet-buffer))
+    (goto-char (point-min))
+    (set-buffer-modified-p nil)
+    (auto-save-mode -1)
+    (setq buffer-read-only t
+	  truncate-lines t)
+    (run-hooks 'octet-find-file-hook)))
 
 ;;;
 ;; Functions for SEMI.

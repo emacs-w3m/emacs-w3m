@@ -1,3 +1,14 @@
+2002-06-20  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* octet.el (octet-type-filter-alist): Fixed parenthesis.
+	(octet-filter-call1, octet-filter-call2, octet-filter-call2-extra):
+	Enclose call-process with as-binary-process.
+
+002-05-31  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
+
+	* octet.el (octet-find-file): Bind `buffer-read-only', only while
+	calling `octet-buffer'.	
+
 2002-06-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Release emacs-w3m-1.2.8 from emacs-w3m-1_2 branch.
