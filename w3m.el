@@ -179,10 +179,13 @@ all the emacs-w3m programs safely after loading the w3m.elc module."
   :type '(radio (const :format "Not specified " nil)
 		(string :format "Command: %v\n" :size 0)))
 
-(defvar w3m-type nil "Type of the w3m command.
+(defvar w3m-type nil
+  "Type of the w3m command.
 The valid values include `w3m', `w3mmee', and `w3m-m17n'.")
-(defvar w3m-compile-options nil "Compile options that w3m was built with.")
-(defvar w3m-version nil "Version string of the w3m command.")
+(defvar w3m-compile-options nil
+  "Compile options that the w3m command was built with.")
+(defvar w3m-version nil
+  "Version string of the w3m command.")
 
 ;; Set w3m-command, w3m-type, w3m-version and w3m-compile-options
 (if noninteractive ;; Don't call the external command when compiling.
@@ -254,16 +257,16 @@ The value of `w3m-user-agent' is used for the field body."
 
 (defcustom w3m-command-arguments
   (if (eq w3m-type 'w3mmee) '("-o" "concurrent=0" "-F") nil)
-  "*List of the default arguments passed to the w3m command.  See also
-`w3m-command-arguments-alist'."
+  "*List of the default arguments passed to the w3m command.
+See also `w3m-command-arguments-alist'."
   :group 'w3m
   :type '(repeat (string :format "Argument: %v\n" :size 0)))
 
 (defcustom w3m-command-arguments-alist nil
-  "*Alist of regexps matching urls and additional arguments passed to the
-w3m command.  A typical usage of this variable is to specify whether
-to use the proxy server for the particular hosts.  The first match
-made will be used.  Here is an example of how to set this variable:
+  "*Alist of regexps matching urls and additional arguments passed to w3m.
+A typical usage of this variable is to specify whether to use the proxy
+server for the particular hosts.  The first match made will be used.
+Here is an example of how to set this variable:
 
 \(setq w3m-command-arguments-alist
       '(;; Don't use any additional options to visit local web pages.
@@ -285,9 +288,9 @@ If you are a novice on the regexps, you can use the
 			       (string :format "Arg: %v\n" :size 0)))))
 
 (defcustom w3m-no-proxy-domains nil
-  "*List of domain names that emacs-w3m will not use a proxy server to
-connect to.  Each element should be exactly a domain name which means
-the latter common part of the host names, not a regexp."
+  "*List of domain names with which emacs-w3m will not use a proxy server.
+Each element should be exactly a domain name which means the latter
+common part of the host names, not a regexp."
   :group 'w3m
   :type '(repeat (string :format "Domain name: %v\n" :size 0)))
 
@@ -367,9 +370,8 @@ It can also be any Lisp form that should return a boolean value."
   :type '(sexp :size 0))
 
 (defcustom w3m-treat-image-size (and (member "image" w3m-compile-options) t)
-  "*Non-nil means make the w3m command work paying attention to the ratio
-of the size of images and text.  See also `w3m-pixels-per-character'
-and `w3m-pixels-per-line'."
+  "*Non-nil means let w3m mind the ratio of the size of images and text.
+See also `w3m-pixels-per-character' and `w3m-pixels-per-line'."
   :group 'w3m
   :type 'boolean)
 
@@ -488,8 +490,7 @@ is no particular reason.  The value will be referred to by the
 (defcustom w3m-file-name-coding-system
   (if (memq system-type '(windows-nt OS/2 emx))
       'shift_jis 'euc-japan)
-  "*Coding system used to convert pathnames when accessing files related
-to emacs-w3m."
+  "*Coding system used to convert pathnames when emacs-w3m accesses files."
   :group 'w3m
   :type '(coding-system :size 0))
 
@@ -593,8 +594,7 @@ configuration file (normally \"~/.w3m/config\")."
   :type '(repeat (string :format "Lang: %v\n" :size 0)))
 
 (defcustom w3m-delete-duplicated-empty-lines t
-  "*Non-nil means make two or more continuous empty lines into single
-in emacs-w3m buffers."
+  "*Non-nil means display two or more continuous empty lines into single."
   :group 'w3m
   :type 'boolean)
 
@@ -609,20 +609,22 @@ See also `w3m-toggle-inline-images-permanently'.")
 (make-variable-buffer-local 'w3m-display-inline-images)
 
 (defcustom w3m-default-display-inline-images nil
-  "Default initial value used for the `w3m-display-inline-images'
-variable in each emacs-w3m buffer.
+  "*Non-nil means display images inline in emacs-w3m buffers.
+You can toggle the visibility of images by the\
+ `\\<w3m-mode-map>\\[w3m-toggle-inline-images]' command.
 See also `w3m-toggle-inline-images-permanently'."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-toggle-inline-images-permanently t
-  "If non-nil, once the value of `w3m-display-inline-images' has been set
-to the value of `w3m-default-display-inline-images', or changed by the
-`\\<w3m-mode-map>\\[w3m-toggle-inline-images]'\
- command in the buffer, it will not be changed even if you visit a
-new page.  Otherwise, the value of `w3m-display-inline-images' will be
-set to the value of `w3m-default-display-inline-images' in the buffer
-each time you visit a new page."
+  "*Non-nil means let the visibility of images continue permanently.
+The visibility of images is initialized according to
+`w3m-default-display-inline-images' at the first time, and except that
+it may be toggled by the `\\<w3m-mode-map>\\[w3m-toggle-inline-images]'\
+ command, it does not change hereafter, if
+it is non-nil.  Otherwise, whether images are visible is initialized
+according to `w3m-default-display-inline-images' whenever you visit a
+new page or reload the current page in an emacs-w3m buffer."
   :group 'w3m
   :type 'boolean)
 
@@ -691,8 +693,9 @@ to non-nil) since cookies may be shared among many redirected pages."
 		(integer :size 0)))
 
 (defcustom w3m-redirect-with-get t
-  "*If non-nil, use the GET method after redirection when a server
-responds the code 301 or 302.  Here is an extract from RFC2616:
+  "*If non-nil, use the GET method after redirection
+when a server responds the code 301 or 302.  Here is an extract from
+RFC2616:
 
 Note: RFC 1945 and RFC 2068 specify that the client is not allowed
 to change the method on the redirected request.  However, most
@@ -847,8 +850,7 @@ way of `post-command-hook'."
 		       (< (string-to-number (match-string 1 ver)) 7))))
 	   (and (featurep 'xemacs)
 		(string-match "solaris" system-configuration))))
-  "*Value for `process-connection-type' used when communicating with the
-w3m command."
+  "*Value for `process-connection-type' used when communicating with w3m."
   :group 'w3m
   :type 'boolean)
 
@@ -1267,9 +1269,9 @@ This feature works with the specially made program in emacs-w3m; usual
   :type 'boolean)
 
 (defcustom w3m-horizontal-scroll-division 4
-  "*Integer used by the program making the point visible when it has been
-driven out of the window while wandering around anchors and forms in
-an emacs-w3m buffer.
+  "*Integer used by the program making the point visible
+when it has been driven out of the window while wandering around
+anchors and forms in an emacs-w3m buffer.
 
 Suppose that the value of this variable is N.  When the point is
 outside the left of the window, emacs-w3m scrolls the window so that
@@ -1332,8 +1334,8 @@ is set properly."
   '(if (w3m-popup-frame-p)
        'find-file-other-frame
      'find-file-other-window)
-  "*Function used to open local files whose names agree with the rule of
-the `w3m-local-find-file-regexps' variable (which see).  Function
+  "*Function used to open local files whose names agree with the rule
+of the `w3m-local-find-file-regexps' variable (which see).  Function
 should take one argument, the string naming the local file.  It can
 also be any Lisp form returning a function.  Set this to nil if you
 want to always use emacs-w3m to see local files."
@@ -2702,8 +2704,7 @@ NAME, but those characters appear in the return value.  For example:
       (and val (concat (symbol-value val) post)))))
 
 (defun w3m-fontify-bold ()
-  "Fontify bold characters in the current buffer
-assuming that halfdump'ed data are contained."
+  "Fontify bold text in the buffer containing halfdump'ed data."
   (goto-char (point-min))
   (while (search-forward "<b>" nil t)
     (let ((start (match-beginning 0)))
@@ -2714,8 +2715,7 @@ assuming that halfdump'ed data are contained."
 				 '(face w3m-bold-face))))))
 
 (defun w3m-fontify-underline ()
-  "Fontify underline characters in the current buffer
-assuming that halfdump'ed data are contained."
+  "Fontify underline text in the buffer containing halfdump'ed data."
   (goto-char (point-min))
   (while (search-forward "<u>" nil t)
     (let ((start (match-beginning 0)))
@@ -2726,8 +2726,7 @@ assuming that halfdump'ed data are contained."
 				 '(face w3m-underline-face))))))
 
 (defun w3m-fontify-strike-through ()
-  "Fontify strike-through characters in the current buffer
-assuming that halfdump'ed data are contained."
+  "Fontify strike-through text in the buffer containing halfdump'ed data."
   (when (and w3m-fontify-strike-through
 	     (w3m-static-if (featurep 'xemacs)
 		 (device-on-window-system-p)
