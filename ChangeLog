@@ -1,3 +1,8 @@
+2001-04-02  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-html-string-regexp): Make no exception of back-quote.
+	(w3m-parse-attributes): Follow up above change.
+
 2001-03-30  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-home-page): Default value is changed.

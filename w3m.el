@@ -601,7 +601,7 @@ for a charset indication")
 
 (eval-and-compile
   (defconst w3m-html-string-regexp
-    "\\(\"\\(\\([^\"\\\\]+\\|\\\\.\\)+\\)\"\\|'\\(\\([^\'\\\\]+\\|\\\\.\\)+\\)'\\|[^\"\'<> \t\r\f\n]*\\)"
+    "\\(\"\\([^\"]+\\)\"\\|'\\([^\']+\\)'\\|[^\"\'<> \t\r\f\n]*\\)"
     "Regexp used in parsing to detect string."))
 
 (defconst w3m-halfdump-command-arguments
@@ -904,7 +904,7 @@ If N is negative, last N items of LIST is returned."
 		       (error "Internal error, type mismatch."))
 		   (let ((sexp (quote
 				(or (match-string 2)
-				    (match-string 4)
+				    (match-string 3)
 				    (match-string 1)))))
 		     (when (listp attr)
 		       (cond
