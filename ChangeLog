@@ -1,3 +1,8 @@
+2001-10-11  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-slashdot-jp.el: Merged patch from
+	`http://homepage2.nifty.com/strlcat/sb-slashdot-jp.patch'.
+
 2001-10-11  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-decoder-alist): Fix for Windows or OS/2

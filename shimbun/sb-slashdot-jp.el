@@ -1,4 +1,4 @@
-;;; sb-slashdot-jp.el --- shimbun backend for slashdot.ne.jp
+;;; sb-slashdot-jp.el --- shimbun backend for slashdot.jp
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 
@@ -56,7 +56,71 @@ One page contains 30 comments.")
 			 shimbun-slashdot-jp-story-max-pages)
 		     shimbun-slashdot-jp-story-max-pages))
 	 year month mday uniq subject from pos hour min refs count
-	 id cid headers)
+	 id cid pid headers)
+    (catch 'stop
+      (setq count 0)
+      ;; comments
+      (while (< count (* pages shimbun-slashdot-jp-comments-per-story))
+	(with-current-buffer (shimbun-retrieve-url-buffer
+			      (concat shimbun-slashdot-jp-url
+				      (format 
+				       "search.pl?op=comments&start=%d"
+				       (* 30 count)))
+			      'reload)
+	  (goto-char (point-min))
+	  (while (re-search-forward "<A HREF=\".*/comments.pl\\?sid=\\(\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)/[^\"]+\\)" nil t)
+	    (setq year (string-to-number (match-string 2))
+		  uniq (match-string 1) refs nil)
+	    (when (string-match "\\([0-9]+\\)#\\([0-9]+\\)$" uniq)
+	      (setq pid (substring uniq (match-beginning 1) (match-end 1))
+				cid (substring uniq (match-beginning 2) (match-end 2)))
+	      (when (string-match "^[^&]+" uniq)
+			(setq refs (concat (substring uniq 0 (match-end 0))
+						(unless (string= "0" pid) (concat "&cid=" pid))))
+			(setq uniq (concat (substring uniq 0 (match-end 0))
+						"&cid=" cid))))
+	    (setq id (format "<%s@slashdot.jp>" uniq))
+	    (if (shimbun-search-id shimbun id)
+		(throw 'stop nil))
+	    (when (search-forward ">" nil t)
+	      (setq pos (match-end 0))
+	      (search-forward "<")
+	      (setq subject (buffer-substring pos (match-beginning 0))))
+	    (when (re-search-forward
+		   "<a href=\"mailto:\\([^>]*\\)\">\\([^<]*\\)</a>" nil t)
+	      (setq from 
+		    (if (zerop (length (match-string 1)))
+			(concat (match-string 2))
+		      (concat (match-string 2) " <" (match-string 1) ">"))))
+	    (when (re-search-forward
+		   "[A-z][a-z]+day \\([A-Z][a-z]+\\) \\([0-9]+\\)" nil t)
+	      (setq month (length
+			   (member (match-string 1) shimbun-slashdot-jp-months)))
+	      (setq mday (string-to-number (match-string 2))))	
+	    (when (re-search-forward "@\\([0-9]+\\):\\([0-9]+\\)\\(AM\\|PM\\)"
+				     nil t)
+	      (setq hour (string-to-number (match-string 1)))
+	      (if (string= (match-string 3) "PM")
+		  (setq hour (+ 12 hour)))
+	      (setq min (string-to-number (match-string 2))))
+		(unless refs 
+		  (when (re-search-forward
+			 "<A HREF=\".*/article.pl\\?sid=\\([0-9]+/[0-9]+/[0-9]+/[0-9]+\\)"
+			   nil t)
+			(setq refs (match-string 1))))
+	    (push (shimbun-make-header
+		   0
+		   (shimbun-mime-encode-string subject)
+		   (shimbun-mime-encode-string from)
+		   (shimbun-make-date-string year month mday
+					     (format "%02d:%02d" hour min))
+		   id
+		   (format "<%s@slashdot.jp>" refs)
+		   0 0 (concat 
+			(shimbun-url-internal shimbun)
+			"comments.pl?sid=" uniq))
+		  headers)))
+	(setq count (1+ count))))
     (catch 'stop
       ;; main strories
       (setq count 0)
@@ -70,7 +134,7 @@ One page contains 30 comments.")
 	  (while (re-search-forward "<A HREF=\".*/article.pl\\?sid=\\(\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)/[0-9]+\\)" nil t)
 	    (setq year (string-to-number (match-string 2))
 		  uniq (match-string 1))
-	    (setq id (format "<%s@slashdot.ne.jp>" uniq))
+	    (setq id (format "<%s@slashdot.jp>" uniq))
 	    (if (shimbun-search-id shimbun id)
 		(throw 'stop nil))
 	    (when (search-forward ">" nil t)
@@ -101,68 +165,6 @@ One page contains 30 comments.")
 			   "article.pl?sid=" uniq))
 		  headers)))
 	(setq count (1+ count))))
-    (catch 'stop
-      (setq count 0)
-      ;; comments
-      (while (< count (* pages shimbun-slashdot-jp-comments-per-story))
-	(with-current-buffer (shimbun-retrieve-url-buffer
-			      (concat shimbun-slashdot-jp-url
-				      (format 
-				       "search.pl?op=comments&start=%d"
-				       (* 30 count)))
-			      'reload)
-	  (goto-char (point-min))
-	  (while (re-search-forward "<A HREF=\".*/comments.pl\\?sid=\\(\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)/[^\"]+\\)" nil t)
-	    (setq year (string-to-number (match-string 2))
-		  uniq (match-string 1))
-	    (setq id (format "<%s@slashdot.ne.jp>" uniq))
-	    (when (string-match "#\\([0-9]+\\)$" uniq)
-	      (setq cid (substring uniq (match-beginning 1)(match-end 1)))
-	      (if (string-match "^[^&]+" uniq)
-		  (setq uniq (concat (substring uniq 0 
-						(match-end 0))
-				     "&cid=" cid))))
-	    (if (shimbun-search-id shimbun id)
-		(throw 'stop nil))
-	    (when (search-forward ">" nil t)
-	      (setq pos (match-end 0))
-	      (search-forward "<")
-	      (setq subject (buffer-substring pos (match-beginning 0))))
-	    (when (re-search-forward
-		   "<a href=\"mailto:\\([^>]*\\)\">\\([^<]*\\)</a>" nil t)
-	      (setq from 
-		    (if (zerop (length (match-string 1)))
-			(concat (match-string 2))
-		      (concat (match-string 2) " <" (match-string 1) ">"))))
-	    (when (re-search-forward
-		   "[A-z][a-z]+day \\([A-Z][a-z]+\\) \\([0-9]+\\)" nil t)
-	      (setq month (length
-			   (member (match-string 1) shimbun-slashdot-jp-months)))
-	      (setq mday (string-to-number (match-string 2))))	
-	    (when (re-search-forward "@\\([0-9]+\\):\\([0-9]+\\)\\(AM\\|PM\\)"
-				     nil t)
-	      (setq hour (string-to-number (match-string 1)))
-	      (if (string= (match-string 3) "PM")
-		  (setq hour (+ 12 hour)))
-	      (setq min (string-to-number (match-string 2))))
-	    (when
-		(re-search-forward
-		 "<A HREF=\".*/article.pl\\?sid=\\([0-9]+/[0-9]+/[0-9]+/[0-9]+\\)"
-		 nil t)
-	      (setq refs (match-string 1)))
-	    (push (shimbun-make-header
-		   0
-		   (shimbun-mime-encode-string subject)
-		   (shimbun-mime-encode-string from)
-		   (shimbun-make-date-string year month mday
-					     (format "%02d:%02d" hour min))
-		   id
-		   (format "<%s@slashdot.ne.jp>" refs)
-		   0 0 (concat 
-			(shimbun-url-internal shimbun)
-			"comments.pl?sid=" uniq))
-		  headers)))
-	(setq count (1+ count))))
     headers))
 
 (defsubst shimbun-slashdot-jp-make-contents (shimbun header)
@@ -170,12 +172,12 @@ One page contains 30 comments.")
 	start num charset)
     (when (progn
 	    ;; for comments.
-	    (and (string-match "\\(#[0-9]+\\)$"
+	    (and (string-match "cid=\\([0-9]+\\)$"
 			       (shimbun-header-xref header))
 		 (setq num (substring 
 			    (shimbun-header-xref header)
 			    (match-beginning 0)))
-		 (re-search-forward (concat ">" num "</A>")
+		 (re-search-forward (concat ">#" num "</A>")
 				    nil t))
 	    ;; content beginning.
 	    (and (re-search-forward (shimbun-content-start-internal shimbun)
@@ -185,7 +187,14 @@ One page contains 30 comments.")
 		 (re-search-forward (shimbun-content-end-internal shimbun)
 				    nil t)))
       (delete-region (match-beginning 0) (point-max))
-      (delete-region (point-min) start))
+      (delete-region (point-min) start)
+      ;; eol conversion.
+      (goto-char (point-min))
+      (while (re-search-forward "\r<BR>" nil t) (replace-match "<BR>"))
+      (goto-char (point-min))
+      (while (re-search-forward "<BR>\r" nil t) (replace-match "<BR>"))
+      (goto-char (point-min))
+      (while (re-search-forward "\r" nil t) (replace-match "<BR>")))
     (shimbun-make-mime-article shimbun header)
     (buffer-string)))
 
