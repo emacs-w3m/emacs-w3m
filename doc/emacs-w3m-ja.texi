@@ -3631,25 +3631,26 @@ Mew $B$J$I$N(B MUA $B$rMxMQ$7!"(Bweb contents $B$r%a!<%k$HF1$8(B user inte
 @code{luna-define-class}  $B$NBh0l0z?t$N(B @samp{shimbun-foobar} $B$N(B
 @samp{foobar} $B$NL>A0$O9g$o$;$F$*$/I,MW$,$"$j$^$9!#(B
 
-shimbun $B%b%8%e!<%k(B @samp{foobar} $B$,$3$J$9$Y$-;E;v$OBg$-$/(B 4 $B$D$"$j$^$9!#(B
+shimbun $B%b%8%e!<%k(B @samp{shimbun-foobar} $B$,$3$J$9$Y$-;E;v$OBg$-$/(B 4 $B$D$"(B
+$B$j$^$9!#(B
 
 @enumerate
 @item
-MUA $B$,(B @samp{foobar} $B%U%)%k%@$r3+$$$?$i!"(B@url{http://www.foobar.net} $B$+(B
-$B$i(B web page $B$r<hF@$9$k$3$H!#(B
+MUA $B$,(B @samp{foobar} $B%U%)%k%@$r3+$$$?$i!"5-;v$NI8Bj$J$I$r%j%9%H%"%C%W$9(B
+$B$k$?$a$K(B @url{http://www.foobar.net} $B$+$i(B web page $B$N%=!<%9$r<hF@$9$k$3$H!#(B
 
 @item
-$B<hF@$7$?(B web page $B$KBP$7!"5-;v8+=P$7$rI,MW$J$$$/$D$+$N>pJs$H$H$b$K<hF@$7(B
-$B$F!"(Bheaders $B$H$$$&%j%9%H$KBeF~$7$FJV$9$3$H!#(B
+$B<hF@$7$?(B web page $B$N%=!<%9$KBP$7!"5-;v8+=P$7$rI,MW$J$$$/$D$+$N>pJs$H$H$b(B
+$B$K<hF@$7$F!"(Bheaders $B$H$$$&%j%9%H$KBeF~$7$FJV$9$3$H!#(B
 
 @item
-MUA $B$,(B @samp{foobar} $B$N$"$k5-;v$N1\Mw$rMW5a$7$?$i!"<B:]$N5-;vFbMF$r5-:\(B
-$B$7$?(B web page $B$r(B ($BNc$($P(B @url{http://www.foobar.net/030530.html} $B$+$i(B)
-$B<hF@$9$k$3$H!#(B
+MUA $B$,(B @samp{foobar} $B%U%)%k%@$N5-;v$N1\Mw$rMW5a$7$?$i!"<B:]$N5-;vFbMF$r(B
+$B5-:\$7$?(B web page $B$N%=!<%9$r(B ($BNc$($P(B
+@url{http://www.foobar.net/030530.html} $B$+$i(B) $B<hF@$9$k$3$H!#(B
 
 @item
-@url{http://www.foobar.net/030530.html} $B$+$i<hF@$7$?(B web page $B$rI,MW$K1~(B
-$B$8!"1\Mw$7$d$9$$$h$&$K@07A$9$k$3$H!#(B
+@url{http://www.foobar.net/030530.html} $B$+$i<hF@$7$?(B web page $B$N%=!<%9$r(B
+$BI,MW$K1~$8!"1\Mw$7$d$9$$$h$&$K@07A$9$k$3$H!#(B
 @end enumerate
 
 @noindent
@@ -3671,10 +3672,10 @@ MUA $B$,(B @samp{foobar} $B$N$"$k5-;v$N1\Mw$rMW5a$7$?$i!"<B:]$N5-;vFbMF$r5-:\
 $B$l$F$$$^$9!#(B
 
 @file{shimbun.el} $B$NCf$G$O!"(B@code{shimbun-headers} $B$,$"$k(B
-URL $B$N(B web page $B$r<hF@$7!"(B@code{shimbun-get-headers} $B$,$=$N(B web page $B$+(B
-$BI8Bj$J$I$rH4$-=P$7(B...$B$H$$$&A0=R$N<j=g$,%O!<%I%3!<%G%#%s%0$5$l$F$$$^$9!#(B
-$B$7$+$7!"7h$aBG$A$9$k$@$1$G$O!"@i:9K|JL$N(B web page $B$r!"$=$N(B web page $B$N9=(B
-$BB$$K9g$o$;$FJQ2=$5$;$k$3$H$,$G$-$^$;$s!#(B
+URL $B$N(B web page $B$N%=!<%9$r<hF@$7!"(B@code{shimbun-get-headers} $B$,$=$N(B web
+page $B$N%=!<%9$+$iI8Bj$J$I$rH4$-=P$7(B@dots{} $B$H$$$&A0=R$N<j=g$,%O!<%I%3!<(B
+$B%G%#%s%0$5$l$F$$$^$9!#$7$+$7!"7h$aBG$A$9$k$@$1$G$O!"@i:9K|JL$N(B web page
+$B$N%=!<%9$r!"$=$N9=B$$K9g$o$;$FJQ2=$5$;$k$3$H$,$G$-$^$;$s!#(B
 
 $B$=$3$G(B luna $B$K$h$j!"%a%=%C%I$,%3!<%k$5$l$k<j=g$@$17h$a$F$*$$$F!"6&DL$G;H(B
 $B$($=$&$J$b$N$O(B @file{shimbun.el} $B$NCf$K%a%=%C%I$N<BBN$bDj5A$7$F$*$-(B ($B$=(B
@@ -3709,8 +3710,8 @@ URL $B$N(B web page $B$r<hF@$7!"(B@code{shimbun-get-headers} $B$,$=$N(B we
 
 @code{shimbun-headers} $B%a%=%C%I$O(B @file{shimbun.el} $B$NCf$K4{$KDj5A$5$l$F(B
 $B$$$^$9$+$i!"(B@file{sb-foobar.el} $B$G(B @code{shimbun-index-url} $B%a%=%C%I$NDj(B
-$B5A$r:n@.$9$l$P(B web page $B$N<hF@$,$G$-$k$h$&$K$J$j$^$9!#(B
-@code{shimbun-headers} $B$O(B web page $B$r<hF@$7$?8e!"(B
+$B5A$r:n@.$9$l$P(B web page $B$N%=!<%9$N<hF@$,$G$-$k$h$&$K$J$j$^$9!#(B
+@code{shimbun-headers} $B$O(B web page $B$N%=!<%9$r<hF@$7$?8e!"(B
 @code{shimbun-get-headers} $B%a%=%C%I$r8F$S!"%X%C%@>pJs$N<}=8$KF~$j$^$9!#(B
 @file{shimbun.el} $B$NCf$K$O(B @code{shimbun-get-headers} $B$N%a%=%C%I@k8@$,$"(B
 $B$j$;$s$+$i!"(B@file{sb-foobar.el} $B$NCf$GFH<+$K%a%=%C%I$r:n@.$7$J$1$l$P$J$j(B
@@ -3795,7 +3796,7 @@ message-id $B$r:n@.$9$k$H!"5.J}$,<uNN$9$kBg;v$J%a!<%k$N$=$l$H(B conflict $B$7
 
 @noindent
 $B$J$*!"$3$N%a%=%C%I$NCf$G$O(B @code{shimbun} $B$H$$$&0l;~JQ?t$G!"(Bshimbun $B%b(B
-$B%8%e!<%k(B foobar $B$N%$%s%9%?%s%9$K%"%/%;%9$G$-$^$9!#(B
+$B%8%e!<%k(B shimbun-foobar $B$N%$%s%9%?%s%9$K%"%/%;%9$G$-$^$9!#(B
 
 $B$H$3$m$G!"@hDx@bL@$rJ]N1$K$7$?JQ?t(B @code{shimbun-foobar-groups} $B$K$D$$$F(B
 $B$4@bL@$7$^$7$g$&!#(B
@@ -3838,16 +3839,16 @@ foobar $B$N%0%k!<%W$H$7$F!"(Bfoobar.whatsnew, foobar.ml $B$H$7$F%"%/%;%9$G$-$
 @subsection $B5-;v$NI=<((B
 
 @file{shimbun.el} $B$KDj5A$5$l$?(B @code{shimbun-article} $B%a%=%C%I$O!"%X%C%@(B
-$B>pJs$+$i(B Xref $B$r<h$j=P$7!"$=$N(B URL $B$N(B web page $B$r<hF@$7$?8e$K(B
-@code{shimbun-make-contents} $B$r8F$S$^$9!#6qBNE*$J5-;v$N2C9)$O(B
-@code{shimbun-make-contents} $B$N;E;v$G$9!#(B
+$B>pJs$+$i(B Xref $B$r<h$j=P$7!"$=$N(B URL $B$N(B web page $B%=!<%9$r<hF@$7$?8e$K!"$=(B
+$B$N%=!<%9$rF~$l$?%o!<%-%s%0%P%C%U%!$NCf$G(B @code{shimbun-make-contents} $B$r(B
+$B8F$S$^$9!#6qBNE*$J5-;v$N2C9)$O(B @code{shimbun-make-contents} $B$N;E;v$G$9!#(B
 
-$B<hF@$5$l$?(B web page $B$N%=!<%9$,!"$I$P$C$H%o!<%-%s%0%P%C%U%!$K$V$A$^$1$i$l(B
+$B5-;v$H$J$k(B web page $B$N%=!<%9$,!"$I$P$C$H%o!<%-%s%0%P%C%U%!$K$V$A$^$1$i$l(B
 $B$F$$$k$HA[A|$7$F2<$5$$!#(B@file{shimbun.el} $B$NI8=`$N(B
 @code{shimbun-make-contents} $B$O!"$=$N%P%C%U%!$N@hF,$K$^$:%X%C%@>pJs$rA^(B
 $BF~$7!"$=$ND>8e$K(B @samp{<html>} $B$d(B @samp{<body>} $B$J$I$r!"$^$?!"%P%C%U%!$N(B
-$BKvHx$K(B@samp{</body>}, @samp{</html>} $B$r<+F0E*$KA^F~$7$F$/$l$^$9!#$=$&$d$C(B
-$B$F(B HTML $B%a!<%k$H$7$FI=<($5$;$k$N$G$9!#(B
+$BKvHx$K(B@samp{</body>}, @samp{</html>} $B$rA^F~$7$F$/$l$^$9!#$=$&$d$C$F(B HTML
+$B%a!<%k$H$7$FI=<($5$;$k$N$G$9!#(B
 
 $B5-;v$r2?$b2C9)$9$kI,MW$,$J$1$l$P(B @file{sb-foobar.el} $B$NCf$G$O(B
 @code{shimbun-make-contents} $B$K$D$$$F?7$?$KDj5A$9$kI,MW$O$"$j$^$;$s!#(B
@@ -3874,9 +3875,9 @@ foobar $B$N%0%k!<%W$H$7$F!"(Bfoobar.whatsnew, foobar.ml $B$H$7$F%"%/%;%9$G$-$
 @file{shimbun.el} $B$N(B @code{shimbun-make-contents} $B$,8F$P$l$kA0$K(B 
 @footnote{$B$4A[A|$NDL$j!"(B@samp{:before} $B$r;XDj$9$k$H!"$^$:(B @samp{:before}
 $BIU$-$N%a%=%C%I$,%3!<%k$5$l$F!"$=$N8e$G(B @samp{:before} $B$,IU$$$F$$$J$$?F%/(B
-$B%i%9$N%a%=%C%I$,%3!<%k$5$l$^$9!#$J$*!"(B@file{sb-foobar.el} $B$NCf$G(B
-@samp{:before} $B$rIU$1$J$$$G%a%=%C%I$r:n$C$?>l9g$O?F%/%i%9$N%a%=%C%I$r>e(B
-$B=q$-$7$^$9!#(B} $BA]=|$r$7$^$7$g$&!#?F%a%=%C%I$KEO$9:]$K@5>o$KF0$/$h$&!"(B
+$B%i%9$N%a%=%C%I$,%3!<%k$5$l$^$9!#$J$*!"(Bmethod-qualifier $B$rIU$1$J$$$G(B
+@file{sb-foobar.el} $B$NCf$G%a%=%C%I$r:n$C$?>l9g$O?F%/%i%9$N%a%=%C%I$r>e=q(B
+$B$-$7$^$9!#(B} $BA]=|$r$7$^$7$g$&!#?F%a%=%C%I$KEO$9:]$K@5>o$KF0$/$h$&!"(B
 @code{save-excursion} $B$G0O$C$F%]%$%s%H$rJ]B8$9$k$3$H$rK:$l$:$K!#(B
 
 @lisp
@@ -3896,13 +3897,13 @@ foobar $B$N%0%k!<%W$H$7$F!"(Bfoobar.whatsnew, foobar.ml $B$H$7$F%"%/%;%9$G$-$
 @node Inheriting shimbun module
 @subsection shimbun $B%b%8%e!<%k$N7Q>5(B
 
-$B%a!<%j%s%0%j%9%H%^%M!<%8%c!"%"!<%+%$%P$H$7$FM-L>$J$b$N$,$$$/$D$+$"$j$^$9!#(B
+$B%a!<%j%s%0%j%9%H%^%M!<%8%c(B ($B%"!<%+%$%P(B) $B$H$7$FM-L>$J$b$N$,$$$/$D$+$"$j$^$9!#(B
 
 @itemize
 @item Mailman
 @noindent
-the GNU Mailing List Manager. $B0JA0$O(B pipermail $B$H8F$P$l$F$$$^$7$?!#>\:Y(B
-$B$O(B @url{http://www.gnu.org/software/mailman/index.html} $B$r$4Mw2<$5$$!#(B
+The GNU Mailing List Manager. $B0JA0$O(B @samp{pipermail} $B$H8F$P$l$F$$$^$7$?!#(B
+$B>\:Y$O(B @url{http://www.gnu.org/software/mailman/index.html} $B$r$4Mw2<$5$$!#(B
 
 @item Mhonarc
 $B>\:Y$O(B @url{http://www.oac.uci.edu/indiv/ehood/mhonarc.html} $B$r$4Mw2<$5$$!#(B
@@ -3915,7 +3916,6 @@ fml mailing list server/manager.  $B>\:Y$O(B
 
 @end itemize
 
-@noindent
 $B5.J}$,(B @xref{Getting web page and header information} $B$N%9%F%C%W$G!"<hF@$7$?(B
 web page $B$N%=!<%9$rJ,@O$7$F$$$k$H$-$K!"$=$N%=!<%9$NCf$K$3$l$i%a!<%j%s%0(B
 $B%j%9%H%^%M!<%8%c$NL>A0$r8+$D$1$?$i(B @footnote{web page $B$N%=!<%9$NCf$K(B
@@ -3935,22 +3935,22 @@ web page $B$N%=!<%9$rJ,@O$7$F$$$k$H$-$K!"$=$N%=!<%9$NCf$K$3$l$i%a!<%j%s%0(B
 @end lisp
 
 @noindent
-$B$3$s$JIw$K$J$j$^$9!#$3$l$G(B shimbun $B%b%8%e!<%k(B foobar $B$O(B shimbun-mailman
-$B%/%i%9$r7Q>5$7(B @footnote{$B$D$^$j(B shimbun-mailman $B%/%i%9$,?F%/%i%9$K$J(B
-$B$j$^$9!#(B} $B!"(Bfoobar $B$NCf$G$O!"(B@file{sb-mailman.el} $B$NCf$GDj5A$5$l$F$$$k%a%=%C(B
-$B%I$,I8=`$G;HMQ$5$l$k$3$H$H$J$j$^$9(B ($B99$K%a%=%C%I$N0lIt$r>e=q$-$9$k$3$H$b(B
-$B2DG=$G$9(B)$B!#(B
+$B$3$s$JIw$K$J$j$^$9!#$3$l$G(B shimbun $B%b%8%e!<%k(B shimbun-foobar $B$O(B
+shimbun-mailman $B%/%i%9$r7Q>5$7(B @footnote{$B$D$^$j(B shimbun-mailman $B%/%i%9$,(B
+$B?F%/%i%9$K$J$j$^$9!#(B} $B!"(Bshimbun-foobar $B$NCf$G$O!"(B@file{sb-mailman.el} $B$N(B
+$BCf$GDj5A$5$l$F$$$k%a%=%C%I$,I8=`$G;HMQ$5$l$k$3$H$H$J$j$^$9(B ($B99$K%a%=%C%I(B
+$B$N0lIt$r>e=q$-$9$k$3$H$b2DG=$G$9(B)$B!#(B
 
 @file{sb-mailman.el} $B$r<B:]$KMxMQ$7$?%5%s%W%k$H$7$F!"(B@file{sb-anthy.el}
 $B$J$I$r$4Mw2<$5$$!#G!2?$K3Z$,$G$-$k$+$,$*J,$+$j$K$J$k$G$7$g$&!#(B
 
-$B5$$rIU$1$k$3$H$,0l$D$"$k$H$9$l$P!"$3$l$i$N%a!<%j%s%0%j%9%H%^%M!<%8%c!"%"!<(B
-$B%+%$%P$NCf$K$O(B localize $B$5$l$F!"Nc$($PF|IUI=<($rF|K\8l$G9T$&$h$&$K2~B$$5(B
-$B$l$F$$$k$b$N$,$"$k$3$H$G$9!#(B@file{sb-mailman.el}, @file{sb-mhonarc.el},
+$B5$$rIU$1$k$3$H$,0l$D$"$k$H$9$l$P!"$3$l$i$N%a!<%j%s%0%j%9%H%^%M!<%8%c$NCf(B
+$B$K$O(B localize $B$5$l$F!"Nc$($PF|IUI=<($rF|K\8l$G9T$&$h$&$K2~B$$5$l$F$$$k$b(B
+$B$N$,$"$k$3$H$G$9!#(B@file{sb-mailman.el}, @file{sb-mhonarc.el},
 @file{sb-fml.el}, @file{sb-mailarc.el} $B$O$$$:$l$bI8=`$N!"1Q8lHG$N$b$N$K(B
-$BBP1~$7$F$$$^$9!#$3$l$i(B localize $B$5$l$?%a!<%j%s%0%j%9%H%^%M!<%8%c!"%"!<%+(B
-$B%$%P$rMxMQ$7$F$$$k(B web site $B$r(B shimbun $B$GFI$_$?$$$H$-$O!"$$$/$D$+$N%a%=%C(B
-$B%I$r>e=q$-$7$J$1$l$P$J$i$J$$$+$b$7$l$^$;$s!#(B
+$BBP1~$7$F$$$^$9!#$3$l$i(B localize $B$5$l$?%a!<%j%s%0%j%9%H%^%M!<%8%c$rMxMQ$7(B
+$B$F$$$k(B web site $B$r(B shimbun $B$GFI$_$?$$$H$-$O!"$$$/$D$+$N%a%=%C%I$r>e=q$-(B
+$B$7$J$1$l$P$J$i$J$$$+$b$7$l$^$;$s!#(B
 
 @node Tips
 @chapter Emacs-w3m $B$r;H$&^/Mn$?>.J*$?$A(B
