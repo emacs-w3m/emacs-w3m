@@ -28,16 +28,24 @@
 
           http://www.lcdf.org/gifsicle/
 
-   c) もしあなたが，XEmacs, Mule-2.3 をお使いならば，APEL を先にインストー
-      ルしなければなりません．APEL は ftp://ftp.m17n.org/pub/mule/apel/
-      から入手できます．
+   c) もしあなたが Emacs 19.34 を元にした Mule 2.3 をお使いで，BITMAP-
+      MULE パッケージを使って web ページに白黒のインライン画像を表示した
+      いならば，パッチを当てて Mule を作り直すことを強くお勧めします．
+      mule-2.3@19.34.patch という名前のパッチが patches/ ディレクトリに
+      含まれています．この申し出を受け入れていただけないと Mule が固まっ
+      てしまうかもしれません．そして kill する以外に窮地を抜けられなくなっ
+      てしまうでしょう．
+
+   d) もしあなたが XEmacs か Mule-2.3 をお使いならば，APEL を先にインス
+      トールしなければなりません．
+      APEL は ftp://ftp.m17n.org/pub/mule/apel/ から入手できます．
 
       また，Emacs-w3m は「新しい custom」が必要です．もしあなたが
       Mule-2.3 をお使いならば，emacs-w3m をインストールする前にそれを
       インストールしなければなりません．詳細は APEL に附属の README.ja
       をご覧下さい．
 
-   d) Emacs-w3m は regexp-opt.el(c) モジュールを必要としますが，古い
+   e) Emacs-w3m は regexp-opt.el(c) モジュールを必要としますが，古い
       Emacsen (例えば Mule 2) にはありません．もしあなたがそんなバージョ
       ンの Emacs を使っているのならば，emacs-w3m をインストールする前
       に以下のように regexp-opt.el(c) モジュールをインストールしなけれ
@@ -47,10 +55,10 @@
           % cd /usr/local/share/mule/site-lisp
           % mule -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
 
-   e) もしあなたが，Emacs-w3m の shimbun ライブラリを使いたいとお思いな
+   f) もしあなたが，Emacs-w3m の shimbun ライブラリを使いたいとお思いな
       らば，FLIM パッケージが必要です．
 
-      FLIM は c) にて前述の APEL に依存していますので，XEmacs/Mule-2.3
+      FLIM は d) にて前述の APEL に依存していますので，XEmacs/Mule-2.3
       以外のユーザの方であっても APEL も必要となります (APEL -> FLIM の
       順でインストールする必要があります)．FLIM は
       ftp://ftp.m17n.org/pub/mule/flim/ から取得することができます．
@@ -58,7 +66,7 @@
       shimbun ライブラリについて更に詳しくは，README.shimbun.ja をご覧下
       さい．
 
-   f) configure スクリプトを実行してください．
+   g) configure スクリプトを実行してください．
 
           % ./configure
 
@@ -68,7 +76,7 @@
 
           % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 
-   g) 同梱されている emacs-lisp のソースファイルを適当なディレクトリにイ
+   h) 同梱されている emacs-lisp のソースファイルを適当なディレクトリにイ
       ンストールするため，次のコマンドを実行してください．
 
           % make
@@ -87,11 +95,11 @@
 
       この場合 install-icons を実行する必要はありません．
 
-   h) 次の設定を ~/.emacs に追加してください．
+   i) 次の設定を ~/.emacs に追加してください．
 
           (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
 
-   i) その他の付属プログラムを使用するには，追加の設定が必要です．詳細に
+   j) その他の付属プログラムを使用するには，追加の設定が必要です．詳細に
       ついては，個々の付属プログラムのソースファイルの先頭に記載されてい
       るコメントを参照してください．例えば mime-w3m.el は text/html パー
       トを emacs-w3m を使って SEMI MUA (T-gnus や Wanderlust など) 上で

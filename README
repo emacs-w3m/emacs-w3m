@@ -1,4 +1,4 @@
-This package contains a interface program of w3m.
+	   This package contains a interface program of w3m.
 
 1. Introduction
 
@@ -25,7 +25,15 @@ This package contains a interface program of w3m.
 
          http://www.lcdf.org/gifsicle/
 
-   c) If you use XEmacs or Mule-2.3, you have to install APEL before
+   c) If you are using Mule 2.3 based on Emacs 19.34, and if you wish to
+      use BITMAP-MULE package to show black and white images inline on
+      the web pages, we strongly recommend you apply the patch and
+      rebuild Mule.  The patch named mule-2.3@19.34.patch is included in
+      patches/ directory.  If you don't accept our recommendation, Mule
+      might be stuck.  And you wouldn't get out of the difficulty except
+      kill Mule.
+
+   d) If you use XEmacs or Mule-2.3, you have to install APEL before
       installing Emacs-w3m.  APEL is available at:
 
          ftp://ftp.m17n.org/pub/mule/apel/
@@ -34,7 +42,7 @@ This package contains a interface program of w3m.
       have to install it before installing emacs-w3m. For more detail,
       see README.en distributed with APEL.
 
-   d) Emacs-w3m requires the module regexp-opt.el(c) which might not
+   e) Emacs-w3m requires the module regexp-opt.el(c) which might not
       be provided in the old Emacsen (e.g. Mule 2).  If you are using
       such versions of Emacs, you have to install the module regexp-
       opt.el(c) before installing emacs-w3m as follows:
@@ -43,10 +51,10 @@ This package contains a interface program of w3m.
          % cd /usr/local/share/mule/site-lisp
          % mule -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
 
-   e) If you want to use shimbun library of Emacs-w3m, you have to
+   f) If you want to use shimbun library of Emacs-w3m, you have to
       install FLIM package.
 
-      Since FLIM depends on APEL described in c) above, you have to
+      Since FLIM depends on APEL described in d) above, you have to
       install APEL even if you use one of Emacsen other than
       XEmacs/Mule-2.3 (you have to install APEL, and succeedingly
       FLIM).  You can get FLIM at:
@@ -56,7 +64,7 @@ This package contains a interface program of w3m.
       For more detail abut shimbun library, see README.shimbun.ja
       (sorry, Japanese only).
 
-   f) Run `configure' script.
+   g) Run `configure' script.
 
           % ./configure
 
@@ -66,7 +74,7 @@ This package contains a interface program of w3m.
 
           % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 
-   g) Execute these commands to put emacs-lisp programs of this package
+   h) Execute these commands to put emacs-lisp programs of this package
       to an appropriate directory.
 
           % make
@@ -85,11 +93,11 @@ This package contains a interface program of w3m.
 
       In this case, you have no need to execute `install-icons' command.
 
-   h) Put these lines into your ~/.emacs.
+   i) Put these lines into your ~/.emacs.
 
           (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
 
-   i) If you want to use contributed programs, some additional settings
+   j) If you want to use contributed programs, some additional settings
       are required.  Please see the head of those programs for more
       details.  For instance, mime-w3m.el is used to show text/html part
       using emacs-w3m under SEMI MUAs (e.g. T-gnus, Wanderlust, etc.),
