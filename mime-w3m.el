@@ -47,6 +47,17 @@
   :group 'mime-view
   :type 'boolean)
 
+(defcustom mime-w3m-safe-url-regexp "\\`cid:"
+  "Regexp that matches safe url names.  Some HTML mails might have the
+trick of spammers using <img> tags.  It is likely to be intended to
+verify whether you have read the mail.  You can prevent your personal
+informations from leaking by setting this to the regexp which matches
+the safe url names.  The value of the variable `w3m-safe-url-regexp'
+will be bound with this value.  You may set this value to nil if you
+consider all the urls to be safe."
+  :group 'mime-w3m
+  :type 'regexp)
+
 (defvar mime-w3m-mode-map nil)
 (defvar mime-w3m-message-structure nil)
 (make-variable-buffer-local 'mime-w3m-message-structure)
@@ -162,7 +173,7 @@ will not be substituted.")
        (mime-insert-text-content entity)
        (run-hooks 'mime-text-decode-hook)
        (condition-case err
-	   (let ((w3m-safe-url-regexp "\\`cid:")
+	   (let ((w3m-safe-url-regexp mime-w3m-safe-url-regexp)
 		 (w3m-display-inline-images mime-w3m-display-inline-images)
 		 w3m-force-redisplay)
 	     (w3m-region p

@@ -1,5 +1,8 @@
 2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mime-w3m.el (mime-w3m-safe-url-regexp): New user option.
+	(mime-w3m-preview-text/html): Use it.
+
 	* w3m.el (w3m-key-binding): Don't eval a part of the `set:' form
 	when compiling nnshimbun.el in the Gnus source tree.
 
