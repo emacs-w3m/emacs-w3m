@@ -187,12 +187,13 @@ NAME is the filename."
   "Find FILE with octet-stream decoding."
   (interactive "fFilename: ")
   (as-binary-input-file	(find-file file))
-  (octet-buffer)
-  (goto-char (point-min))
-  (set-buffer-modified-p nil)
-  (auto-save-mode -1)
-  (setq buffer-read-only t
-	truncate-lines t))
+  (unwind-protect
+      (octet-buffer)
+    (goto-char (point-min))
+    (set-buffer-modified-p nil)
+    (auto-save-mode -1)
+    (setq buffer-read-only t
+	  truncate-lines t)))
 
 ;;;
 ;; Functions for SEMI.

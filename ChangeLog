@@ -5,6 +5,7 @@
 	(octet-filter-call2): Fixed problem when return value of call-process
 	is not numeric.
 	(octet-filter-call1): Ditto.
+	(octet-find-file): Use unwind-protect.
 
 2002-01-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
