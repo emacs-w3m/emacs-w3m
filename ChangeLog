@@ -1,3 +1,19 @@
+2001-05-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-expand-file-name-as-url): Remove handling
+	'about://dtree'.
+	(w3m-local-content-type): Ditto.
+	(w3m-url-local-p): Ditto.
+	(w3m-local-directory-view-method): New variable.
+	(w3m-local-retrieve): If url is directory, call w3m by way of kick
+	'dirlist.cgi'
+	(w3m-url-dtree-p): New defsubst.
+	(w3m-edit-current-url, w3m-edit-this-url): Use w3m-url-dtree-p().
+	(w3m-goto-url-localcgi-movepoint): New function.
+	(w3m-goto-url): If URL is a local directory, check and change URL
+	by the use of 'w3m-local-directory-view-method'.
+	If URL type is a local cgi, move to its directory point.
+
 2001-05-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-euc-japan-decoder): Check if

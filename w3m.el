@@ -295,17 +295,12 @@ encoded in the optimized animated gif format and base64.")
       (setq file (w3m-url-to-file-name file)))
   ;; expand to file scheme url considering Win32 environment
   (setq file (expand-file-name file directory))
-  (let (prefix)
-    (if (file-directory-p file)
-	(setq prefix "about://dtree"
-	      file (file-name-as-directory file))
-      (setq prefix "file://"))
-    (if (string-match "^\\(.\\):\\(.*\\)" file)
-	(if w3m-use-cygdrive
-	    (concat prefix "/cygdrive/"
-		    (match-string 1 file) (match-string 2 file))
-	  (concat prefix "/" (match-string 1 file) "|" (match-string 2 file)))
-      (concat prefix file))))
+  (if (string-match "^\\(.\\):\\(.*\\)" file)
+      (if w3m-use-cygdrive
+	  (concat "file:///cygdrive/"
+		  (match-string 1 file) (match-string 2 file))
+	(concat "file:///" (match-string 1 file) "|" (match-string 2 file)))
+    (concat "file://" file)))
 
 (defcustom w3m-home-page
   (or (getenv "HTTP_HOME")
@@ -569,6 +564,15 @@ allows a kludge that it can also be a plist of frame properties."
 			       (symbol :tag "Parameter")
 			       (sexp :tag "Value")))
 		 plist))
+
+(defcustom w3m-local-directory-view-method
+  (if (eq system-type 'windows-nt) 'w3m-dtree 'w3m-cgi)
+  "*View method in local directory.
+If 'w3m-cgi,display directory tree by the use of w3m's cgi.
+If 'w3m-dtree, display directory tree by the use of w3m-dtree."
+  :group 'w3m
+  :type '(choice (const :tag "Dirlist CGI" w3m-cgi)
+		 (const :tag "Directory tree" w3m-dtree)))
 
 (eval-and-compile
   (defconst w3m-entity-alist		; html character entities and values
@@ -1889,8 +1893,7 @@ If the user enters null input, return second argument DEFAULT."
 
 ;;; Retrieve local data:
 (defun w3m-local-content-type (url)
-  (if (or (string-match "^about://dtree/" url)
-	  (file-directory-p (w3m-url-to-file-name url)))
+  (if (file-directory-p (w3m-url-to-file-name url))
       "text/html"
     (catch 'type-detected
       (dolist (elem w3m-content-type-alist "unknown")
@@ -1927,17 +1930,19 @@ to nil."
     (w3m-with-work-buffer
       (delete-region (point-min) (point-max))
       (set-buffer-multibyte nil)
-      (when (and (file-readable-p file)
-		 (not (file-directory-p file)))
-	(let ((coding-system-for-read 'binary)
-	      (file-coding-system-for-read 'binary))
-	  (if no-decode
-	      (let (jka-compr-compression-info-list
-		    jam-zcat-filename-list
-		    format-alist)
-		(insert-file-contents file)))
-	  (insert-file-contents file)
-	  (w3m-local-content-type url))))))
+      (when (file-readable-p file)
+	(if (not (file-directory-p file))
+	    (let ((coding-system-for-read 'binary)
+		  (file-coding-system-for-read 'binary))
+	      (if no-decode
+		  (let (jka-compr-compression-info-list
+			jam-zcat-filename-list
+			format-alist)
+		    (insert-file-contents file)))
+	      (insert-file-contents file))
+	  ;; kick 'dirlist.cgi'
+	  (w3m-exec-process "-dump_source" url))
+	(w3m-local-content-type url)))))
 
 ;;; Retrieve data via HTTP:
 (defun w3m-remove-redundant-spaces (str)
@@ -2069,8 +2074,11 @@ to nil."
 
 (defsubst w3m-url-local-p (url)
   "If URL points a file on the local system, return non-nil value.  Otherwise return nil."
-  (or (string-match "^\\(file:\\|/\\)" url)
-      (string-match "^about://dtree/" url)))
+  (string-match "^\\(file:\\|/\\)" url))
+
+(defsubst w3m-url-dtree-p (url)
+  "If URL points a 'w3m-dtree', return non-nil value.  Otherwise return nil."
+  (string-match "^about://dtree/" url))
 
 (defsubst w3m-about-retrieve (url &optional no-decode no-cache)
   (if (string= "about://emacs-w3m.gif" url)
@@ -2512,7 +2520,8 @@ this function returns t.  Otherwise, returns nil."
 (defun w3m-edit-current-url ()
   "Edit the local file pointed by the URL of current page"
   (interactive)
-  (if (w3m-url-local-p w3m-current-url)
+  (if (or (w3m-url-local-p w3m-current-url)
+	  (w3m-url-dtree-p w3m-current-url))
       (funcall w3m-edit-function (w3m-url-to-file-name w3m-current-url))
     (error "The URL of current page is not local.")))
 
@@ -2522,7 +2531,8 @@ this function returns t.  Otherwise, returns nil."
   (setq url (or url (w3m-anchor)))
   (if (null url)
       (message "No URL at point")
-    (if (w3m-url-local-p url)
+    (if (or (w3m-url-local-p url)
+	    (w3m-url-dtree-p url))
 	(funcall w3m-edit-function (w3m-url-to-file-name url))
       (error "URL:%s is not a local file" url))))
 
@@ -2960,9 +2970,6 @@ or prefix ARG columns."
 		       w3m-current-url)))
     current-prefix-arg))
   (set-text-properties 0 (length url) nil url)
-  ;; directory check at local URL
-  (when (and (w3m-url-local-p url) (file-directory-p (w3m-url-to-file-name url)))
-    (setq url (w3m-expand-file-name-as-url (w3m-url-to-file-name url))))
   (cond
    ;; process mailto: protocol
    ((string-match "^mailto:\\(.*\\)" url)
@@ -2985,7 +2992,15 @@ or prefix ARG columns."
     ;; Store the current position point in the history structure.
     (w3m-history-store-position)
     ;; Retrieve.
-    (let ((orig url) (name))
+    (let ((orig url) name localpath localcgi)
+      ;; local directory URL check
+      (if (and (w3m-url-local-p url)
+	       (file-directory-p (w3m-url-to-file-name url))
+	       (setq url (file-name-as-directory url)))
+	  (if (and (eq w3m-local-directory-view-method 'w3m-dtree)
+		   (string-match "^file:///" url))
+	      (setq url (replace-match "about://dtree/" nil nil url))
+	    (setq localcgi t)))
       (when (string-match "#\\([^#]+\\)$" url)
 	(setq name (match-string 1 url)
 	      url (substring url 0 (match-beginning 0))))
@@ -3021,15 +3036,29 @@ or prefix ARG columns."
 	  (setq buffer-read-only t)
 	  (set-buffer-modified-p nil))
 	(w3m-arrived-add orig w3m-current-title nil nil cs ct))
+      (setq localpath (and (or (w3m-url-local-p url)
+			       (w3m-url-dtree-p url))
+			   (w3m-url-to-file-name url)))
       (setq default-directory
-	    (file-name-as-directory
-	     (if (and (w3m-url-local-p url)
-		      (file-directory-p (file-name-directory
-					 (w3m-url-to-file-name url))))
-		 (file-name-directory (w3m-url-to-file-name url))
-	       w3m-profile-directory)))
+	    (if (and localpath (file-exists-p localpath))
+		(file-name-as-directory
+		 (if (file-directory-p localpath)
+		     localpath
+		   (file-name-directory localpath)))
+	      w3m-profile-directory))
       (w3m-update-toolbar)
-      (switch-to-buffer (current-buffer))))))
+      (switch-to-buffer (current-buffer))
+      (when localcgi (w3m-goto-url-localcgi-movepoint))))))
+
+(defun w3m-goto-url-localcgi-movepoint ()
+  (let (dir)
+    (when (and (= (point-min) (point))
+	       (re-search-forward "^Directory list of \\(.+\\) *$" nil t))
+      (setq dir (buffer-substring (match-beginning 1) (match-end 1)))
+      (when (search-forward dir nil t)
+	(goto-char (match-beginning 0))
+	(beginning-of-line)
+	(w3m-next-anchor)))))
 
 (defun w3m-gohome ()
   "Go to the Home page."
