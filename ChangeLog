@@ -1,3 +1,12 @@
+2001-12-17  OHASHI Akira  <bg66@koka-in.org>
+
+        * README.shimbun.ja: Add information for sb-debian-jp.el
+        and sb-debian.el.
+
+        * shimbun/sb-debian-jp.el: New file.
+
+        * shimbun/sb-debian.el: Ditto.
+
 2001-12-17  Taiki SUGAWARA  <t-suga@atomsystem.co.jp>
 	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

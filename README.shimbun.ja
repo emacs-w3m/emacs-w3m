@@ -118,6 +118,81 @@ xemacs 関連	xemacs.xemacs-announce xemacs.xemacs-beta-ja
 		xemacs.xemacs-patches xemacs.xemacs-users-ja
 		xemacs.xemacs
 セキュリティーMEMO security-memo.memo
+Debian JP 関連	debian-jp.debian-announce debian-jp.debian-devel
+		debian-jp.debian-www debian-jp.debian-users
+		debian-jp.debian-policy debian-jp.jp-qa
+Debian 関連	debian.debian-announce debian.debian-commercial
+		debian.debian-firewall debian.debian-french
+		debian.debian-isp debian.debian-italian
+		debian.debian-kde debian.debian-laptop
+		debian.debian-news debian.debian-news-german
+		debian.debian-news-portuguese
+		debian.debian-security-announce debian.debian-testing
+		debian.debian-user debian.debian-user-catalan
+		debian.debian-user-french debian.debian-user-polish
+		debian.debian-user-portuguese
+		debian.debian-user-spanish debian.debian-user-swedish
+		debian.debian-admintool debian.debian-apache
+		debian.debian-autobuild debian.debian-beowulf
+		debian.debian-boot debian.debian-cd debian.debian-ctte
+		debian.debian-debbugs debian.debian-devel
+		debian.debian-devel-announce
+		debian.debian-devel-french debian.debian-devel-games
+		debian.debian-devel-spanish debian.debian-doc
+		debian.debian-dpkg debian.debian-emacsen
+		debian.debian-events-eu debian.debian-events-na
+		debian.debian-faq debian.debian-gcc
+		debian.debian-glibc debian.debian-gtk-gnome
+		debian.debian-hams debian.debian-ipv6
+		debian.debian-java debian.debian-jr
+		debian.debian-mentors debian.debian-newmaint
+		debian.debian-newmaint-admin debian.debian-ocaml-maint
+		debian.debian-openoffice debian.debian-perl
+		debian.debian-pilot debian.debian-policy
+		debian.debian-pool debian.debian-python
+		debian.debian-qa debian.debian-qa-private
+		debian.debian-release debian.debian-security
+		debian.debian-snapshots debian.debian-tetex-maint
+		debian.debian-toolchain debian.debian-vote
+		debian.debian-wnpp debian.debian-www debian.debian-x
+		debian.deity debian.debian-chinese
+		debian.debian-chinese-big5 debian.debian-chinese-gb
+		debian.debian-esperanto debian.debian-i18n
+		debian.debian-japanese debian.debian-l10n-catalan
+		debian.debian-l10n-dutch debian.debian-l10n-english
+		debian.debian-l10n-french debian.debian-l10n-italian
+		debian.debian-l10n-portuguese
+		debian.debian-l10n-spanish debian.debian-laespiral
+		debian.debian-russian debian.debian-simplified-chinese
+		debian.debian-68k debian.debian-alpha
+		debian.debian-arm debian.debian-bsd
+		debian.debian-hppa debian.debian-hurd
+		debian.debian-ia64 debian.debian-mips
+		debian.debian-parisc debian.debian-powerpc
+		debian.debian-s390 debian.debian-sparc
+		debian.debian-superh debian.debian-ultralinux
+		debian.debian-win32 debian.debian-all-changes
+		debian.debian-alpha-changes debian.debian-arm-changes
+		debian.debian-books debian.debian-cd-vendors
+		debian.debian-changes debian.debian-consultants
+		debian.debian-curiosa debian.debian-devel-all-changes
+		debian.debian-devel-alpha-changes
+		debian.debian-devel-arm-changes
+		debian.debian-devel-changes
+		debian.debian-devel-hurd-i386-changes
+		debian.debian-devel-i386-changes
+		debian.debian-devel-m68k-changes
+		debian.debian-devel-powerpc-changes
+		debian.debian-devel-sparc-changes
+		debian.debian-hurd-i386-changes
+		debian.debian-i386-changes debian.debian-legal
+		debian.debian-m68k-changes debian.debian-mirrors
+		debian.debian-powerpc-changes debian.debian-project
+		debian.debian-publicity debian.debian-sgml
+		debian.debian-sparc-changes debian.lcs-eng
+		debian.lsb-confcall debian.lsb-discuss debian.lsb-impl
+		debian.lsb-spec debian.lsb-test debian.spi-announce
+		debian.spi-general debian.vgui-discuss
 
 2-4. スポーツ
 
