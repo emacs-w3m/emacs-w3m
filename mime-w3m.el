@@ -72,7 +72,9 @@
 (defun mime-w3m-preview-text/html (entity situation)
   (setq mime-w3m-message-structure (mime-find-root-entity entity))
   (let ((p (point))
-	(xref (mime-entity-fetch-field entity "xref")))
+	(xref
+	 (or (mime-entity-fetch-field entity "xref")
+	     (mime-entity-fetch-field mime-w3m-message-structure "xref"))))
     ;; For nnshimbun.el.
     (and (stringp xref)
 	 (string-match "^http://" xref)
