@@ -86,10 +86,10 @@
 	 (setcar test (lambda (handle) (locate-library "w3m"))))))
 
 (defadvice mm-inline-text (around use-w3m-instead (handle) activate)
-  (require 'w3m)
   (let ((type (mm-handle-media-subtype handle)))
     (if (not (equal type "html"))
 	ad-do-it
+      (require 'w3m)
       (let ((text (mm-get-part handle))
 	    (b (point)))
 	(save-excursion
