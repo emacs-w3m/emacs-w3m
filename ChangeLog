@@ -1,3 +1,7 @@
+2002-12-20  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-about-db-history): Display the information of page.
+
 2002-12-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-local-dirlist-cgi): Treat a local cookie.
