@@ -792,21 +792,26 @@ Otherwise return nil."
 	(setq w3m-refresh-timer nil)))))
 
 (defalias 'w3m-truncate-string
-  (if (featurep 'xemacs)
-      (lambda (str end-column)
-	"Truncate string STR to end at column END-COLUMN."
-	(let ((len (length str))
-	      (column 0)
-	      (idx 0))
-	  (condition-case nil
-	      (while (< column end-column)
-		(setq column (+ column (char-width (aref str idx)))
-		      idx (1+ idx)))
-	  (args-out-of-range (setq idx len)))
-	  (when (> column end-column)
-	    (setq idx (1- idx)))
-	  (substring str 0 idx)))
-    'truncate-string))
+  (cond ((featurep 'xemacs)
+	 ;; The function of the XEmacs version doesn't work correctly
+	 ;; for wide characters.
+	 (lambda (str end-column)
+	   "Truncate string STR to end at column END-COLUMN."
+	   (let ((len (length str))
+		 (column 0)
+		 (idx 0))
+	     (condition-case nil
+		 (while (< column end-column)
+		   (setq column (+ column (char-width (aref str idx)))
+			 idx (1+ idx)))
+	       (args-out-of-range (setq idx len)))
+	     (when (> column end-column)
+	       (setq idx (1- idx)))
+	     (substring str 0 idx))))
+	((fboundp 'truncate-string-to-width)
+	 'truncate-string-to-width)
+	(t
+	 'truncate-string)))
 
 (defsubst w3m-assoc-ignore-case (name alist)
   "Return the element of ALIST whose car equals NAME ignoring its case."

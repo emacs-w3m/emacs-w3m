@@ -1,7 +1,10 @@
 2005-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-modeline-title): Use w3m-truncate-string instead of
-	truncate-string-to-width.
+	* w3m.el (w3m-modeline-title): Replace truncate-string-to-width
+	with w3m-truncate-string.
+
+	* w3m-util.el (w3m-truncate-string): Use truncate-string-to-width
+	if it is available.
 
 2005-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
