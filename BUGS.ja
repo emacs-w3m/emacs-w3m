@@ -12,6 +12,14 @@ $Date$
 
 ■ TODOs
 
+   --> rendering 速度の改善
+
+   --> w3mnav.el 相当の処理ができるように 
+       w3m-relationship-estimate-rules を見直す．[emacs-w3m:06211]
+
+   --> w3m-correct-charset-alist と w3m-charset-coding-system-alist の整
+       理．[emacs-w3m:06109]
+
    --> w3m-safe-* コマンドの整理．「安全」を定義する必要あり．
        [emacs-w3m:06240]
 
@@ -59,16 +67,19 @@ $Date$
     (args-out-of-range 3115 3115) のようなエラーが発生する．
     [emacs-w3m:06279]
 
+(4) w3m-antenna-sites の customize がうまく動かない．[emacs-w3m:06213]
+
 
 
 ■ Wishlist and Idea Notes
 
+   --> keybind の整理 [emacs-w3m:06253]
+
+   --> メニューの整理 [emacs-w3m:06254]
+
    --> Fontify pages display text/plain sources.
        source code の text/plain なページを閲覧しているときは font-lock
        してくれると嬉しいかもしれない．
-
-   --> w3mnav.el 相当の処理ができるように w3m-filter /
-       w3m-prepare-content / w3m-display-hook などを見直す．
 
    --> Info / man 閲覧機能の追加
 
@@ -94,6 +105,16 @@ $Date$
    --> shimbun
        --> ML archive の検索エンジンとの連動
        --> 掲示板などの場合は post も出来るようにならないか?
+
+
+
+■ How to access our mailing list archive
+
+   [emacs-w3m:#####] のようにメーリングリストの記事が指定されている場合
+   は，以下のような記事番号を含む URI のページにアクセスすると，その記事
+   を見つけることが出来ます．
+
+       http://emacs-w3m.namazu.org/ml/#####
 
 
 Local Variables:
