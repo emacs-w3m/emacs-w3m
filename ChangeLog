@@ -1,5 +1,8 @@
 2005-02-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/nnshimbun.el (gnus-group-make-shimbun-group): Display
+	help messages.
+
 	* shimbun/shimbun.el (shimbun-clear-contents): Validate regexps
 	before using them.
 

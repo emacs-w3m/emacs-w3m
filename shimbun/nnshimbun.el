@@ -889,16 +889,16 @@ The user will be prompted for a SERVER name and a GROUP name."
 	 server groups group)
      (unless (eq major-mode 'gnus-group-mode)
        (error "Command invoked outside of a Gnus group buffer"))
-     (setq server (completing-read "Shimbun address: "
-				   alist nil t
-				   (or (car (delete ""
-						    nnshimbun-server-history))
-				       (caar alist))
-				   'nnshimbun-server-history))
+     (setq server (completing-read
+		   "Shimbun server address [Hit TAB to see candidates]: "
+		   alist nil t
+		   (car (delete "" nnshimbun-server-history))
+		   'nnshimbun-server-history))
      (if (assoc server alist)
 	 (when (setq groups (shimbun-groups (shimbun-open server)))
-	   (setq group (completing-read "Group name: "
-					(mapcar 'list groups) nil t))
+	   (setq group (completing-read
+			"Group name [Hit TAB to see candidates]: "
+			(mapcar 'list groups) nil t))
 	   (unless (member group groups)
 	     (setq group nil)))
        (setq server nil))
