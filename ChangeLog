@@ -1,3 +1,14 @@
+2001-10-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-mode): Update the doc-string about making a new
+	session.
+	(w3m-info-like-map, w3m-lynx-like-map): Bind keys for the new
+	commands to make a new session.
+	(w3m-mouse-view-this-url-new-session): New command.
+	(w3m-view-this-url-new-session): New command.
+	(w3m-mouse-view-this-url): Make it can create a new session.
+	(w3m-view-this-url): Ditto.
+
 2001-10-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (top): Add autoload for `w3m-form-parse-buffer'.

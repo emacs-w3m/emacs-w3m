@@ -3193,13 +3193,24 @@ described in Section 5.2 of RFC 2396.")
       (concat (substring base 0 (match-beginning 8))
 	      url)))))
 
-(defun w3m-view-this-url (&optional arg)
-  "View the URL of the link under point."
+(defun w3m-view-this-url (&optional arg new-session)
+  "View the URL of the link under point.  If ARG is the number 2 or the
+list of the number 16 (you may produce this by typing `C-u' twice) or
+NEW-SESSION is non-nil, and the link is an anchor, make a copy of the
+current session in advance.  Otherwise, if ARG is non-nil, force
+reload the url at point.  If the option `w3m-pop-up-frames' is non-nil,
+also make a new frame for the copied session."
   (interactive "P")
   (let ((url (w3m-anchor))
 	(act (w3m-action)))
     (cond
-     (url (w3m-goto-url url arg nil nil w3m-current-url))
+     (url
+      (when (or new-session
+		(when (member arg '(2 (16)))
+		  (setq arg nil)
+		  t))
+	(switch-to-buffer (w3m-copy-buffer (current-buffer) nil t)))
+      (w3m-goto-url url arg nil nil w3m-current-url))
      (act (eval act))
      ((w3m-image)
       (if (w3m-display-graphic-p)
@@ -3207,10 +3218,23 @@ described in Section 5.2 of RFC 2396.")
 	(w3m-view-image)))
      (t (message "No URL at point")))))
 
-(defun w3m-mouse-view-this-url (event)
-  (interactive "e")
+(defun w3m-mouse-view-this-url (event &optional arg)
+  "Perform the command `w3m-view-this-url' by the mouse event."
+  (interactive "e\nP")
   (mouse-set-point event)
-  (w3m-view-this-url))
+  (w3m-view-this-url arg))
+
+(defun w3m-view-this-url-new-session (&optional arg)
+  "Perform the command `w3m-view-this-url' in the new session."
+  (interactive "P")
+  (w3m-view-this-url arg t))
+
+(defun w3m-mouse-view-this-url-new-session (event &optional arg)
+  "Perform the command `w3m-view-this-url' by the mouse event in the new
+session."
+  (interactive "e\nP")
+  (mouse-set-point event)
+  (w3m-view-this-url arg t))
 
 (defun w3m-submit-form ()
   "Submit form at point."
@@ -3508,10 +3532,16 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "\M-\t" 'w3m-previous-anchor)
     (define-key map [up] 'w3m-previous-anchor)
     (define-key map "\C-m" 'w3m-view-this-url)
+    (define-key map [(shift return)] 'w3m-view-this-url-new-session)
+    (define-key map [(shift kp-enter)] 'w3m-view-this-url-new-session)
     (define-key map [right] 'w3m-view-this-url)
     (if (featurep 'xemacs)
-	(define-key map [(button2)] 'w3m-mouse-view-this-url)
-      (define-key map [mouse-2] 'w3m-mouse-view-this-url))
+	(progn
+	  (define-key map [(button2)] 'w3m-mouse-view-this-url)
+	  (define-key map [(shift button2)]
+	    'w3m-mouse-view-this-url-new-session))
+      (define-key map [mouse-2] 'w3m-mouse-view-this-url)
+      (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
     (define-key map "\C-c\C-@" 'w3m-history-store-position)
     (define-key map [?\C-c?\C- ] 'w3m-history-store-position)
     (define-key map "\C-c\C-b" 'w3m-history-restore-position)
@@ -3568,9 +3598,15 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map [(shift iso-lefttab)] 'w3m-previous-anchor)
     (define-key map "\M-\t" 'w3m-previous-anchor)
     (define-key map "\C-m" 'w3m-view-this-url)
+    (define-key map [(shift return)] 'w3m-view-this-url-new-session)
+    (define-key map [(shift kp-enter)] 'w3m-view-this-url-new-session)
     (if (featurep 'xemacs)
-	(define-key map [(button2)] 'w3m-mouse-view-this-url)
-      (define-key map [mouse-2] 'w3m-mouse-view-this-url))
+	(progn
+	  (define-key map [(button2)] 'w3m-mouse-view-this-url)
+	  (define-key map [(shift button2)]
+	    'w3m-mouse-view-this-url-new-session))
+      (define-key map [mouse-2] 'w3m-mouse-view-this-url)
+      (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
     (define-key map " " 'w3m-scroll-up-or-next-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
@@ -3690,8 +3726,12 @@ Return t if deleting current frame or window is succeeded."
    Major mode to browsing w3m buffer.
 
 \\[w3m-view-this-url]	View this url.
+	You may use the prefix arg `2' or `\\[universal-argument] \\<universal-argument-map>\\[universal-argument-more]\\<w3m-mode-map>' to make a new session.
 \\[w3m-mouse-view-this-url]	View this url use mouse.
 	If w3m-use-form is t, \\[w3m-view-this-url] and \\[w3m-mouse-view-this-url] action a form input.
+	You may use the prefix arg `2' or `\\[universal-argument] \\<universal-argument-map>\\[universal-argument-more]\\<w3m-mode-map>' to make a new session.
+\\[w3m-view-this-url-new-session]	View this url in a new session.
+\\[w3m-mouse-view-this-url-new-session]	View this url in a new session use mouse.
 \\[w3m-submit-form]	Submit the form at point.
 
 \\[w3m-reload-this-page]	Reload this page.
