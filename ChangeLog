@@ -1,3 +1,7 @@
+2004-04-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el: Rewrite.
+
 2004-04-12  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 
 	* doc/ptexinfmt.el: Support @indicateurl, @LaTeX, @ordf, @ordm.

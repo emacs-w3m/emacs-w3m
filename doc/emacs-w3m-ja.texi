@@ -4247,8 +4247,9 @@ asahi-mytown.(hokkaido@dots{}okinawa) asahi-mytown.usa
 米国と日本の全都道府県を網羅する朝日新聞の地方版です。
 
 @item @uref{http://www.mainichi.co.jp/, 毎日新聞}
-mainichi.shakai mainichi.sports mainichi.seiji mainichi.keizai
-mainichi.kokusai mainichi.fuho
+mainichi.shakai mainichi.sports mainichi.geinou mainichi.kurashi
+mainichi.it mainichi.kagaku mainichi.seiji mainichi.keizai
+mainichi.kokusai
 
 @item @uref{http://www.nikkansports.com/, 日刊スポーツ}
 nikkansports.baseball nikkansports.mlb nikkansports.soccer

@@ -4174,9 +4174,10 @@ asahi-mytown.(hokkaido@dots{}okinawa) asahi-mytown.usa
 The Asahi Shimbun local-news sections including US and all the
 prefectures of Japan.
 
-@item @uref{http://www.mainichi.co.jp/, Mainichi Shimbun}
-mainichi.shakai mainichi.sports mainichi.seiji mainichi.keizai
-mainichi.kokusai mainichi.fuho
+@item @uref{http://www.mainichi.co.jp/, MSN-Mainichi INTERACTIVE}
+mainichi.shakai mainichi.sports mainichi.geinou mainichi.kurashi
+mainichi.it mainichi.kagaku mainichi.seiji mainichi.keizai
+mainichi.kokusai
 
 @item @uref{http://www.nikkansports.com/, Nikkan Sports}
 nikkansports.baseball nikkansports.mlb nikkansports.soccer
