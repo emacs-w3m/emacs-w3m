@@ -1,3 +1,7 @@
+2004-11-21  Tsuyoshi CHO  <mfalcon21@hotmail.com>
+
+	* shimbun/sb-wikimedia.el: New file.
+
 2004-11-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-redisplay-this-page): Don't make a new history.
