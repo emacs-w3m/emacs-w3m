@@ -80,7 +80,12 @@ x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
 	       (re-search-forward (shimbun-content-end-internal shimbun)
 				  nil t))
       (delete-region (match-end 1) (point-max))
-      (delete-region (point-min) start))
+      (delete-region (point-min) start)
+      (goto-char (point-min))
+      (insert "<html>\n<head>\n<base href=\""
+	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
+      (goto-char (point-max))
+      (insert "\n</body>\n</html>\n"))
     (shimbun-make-mime-article shimbun header)
     (buffer-string)))
 

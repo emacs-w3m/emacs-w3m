@@ -149,9 +149,11 @@
 	(insert
 	 "Content-Type: text/html; charset=ISO-2022-JP\nMIME-Version: 1.0\n"))
       (goto-char (point-max))))
-  (insert "<PRE>\n")
+  (insert "<html><head><base href=\""
+	  (shimbun-header-xref header)
+	  "\"></head><body><pre>")
   (goto-char (point-max))
-  (insert "</PRE>")
+  (insert "</pre></body></html>\n")
   (encode-coding-string (buffer-string)
 			(mime-charset-to-coding-system "ISO-2022-JP")))
 

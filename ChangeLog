@@ -1,5 +1,18 @@
 2002-07-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-fml.el (shimbun-make-contents): Insert <base> tag.
+
+	* shimbun/sb-kantei.el (shimbun-make-contents): Insert <base> tag.
+
+	* shimbun/sb-mailman.el (shimbun-mailman-make-contents): Use
+	`shimbun-header-insert-and-buffer-string'.
+
+	* shimbun/sb-text.el (shimbun-make-contents): Use
+	`shimbun-header-insert-and-buffer-string'.
+	
+	* shimbun/shimbun.el (shimbun-header-insert-and-buffer-string):
+	New function.
+
 	* w3m-perldoc.el (w3m-about-perldoc): Install workaround to
 	specify the place in which pod2html generates its cache files.
 	Adjust links pointing other perldocs.

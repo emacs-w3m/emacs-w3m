@@ -61,12 +61,7 @@
 	(shimbun-header-set-date header (match-string 1)))
       (delete-region (point-min) end)
       (delete-region (search-forward "<!--endarticle-->") (point-max))
-      (goto-char (point-min))
-      (shimbun-header-insert shimbun header)
-      (insert
-       "Content-Type: text/html; charset=ISO-2022-JP\nMIME-Version: 1.0\n"))
-    (encode-coding-string (buffer-string)
-			  (mime-charset-to-coding-system "ISO-2022-JP"))))
+      (shimbun-header-insert-and-buffer-string shimbun header nil t))))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-mailman) header)
   (shimbun-mailman-make-contents shimbun header))

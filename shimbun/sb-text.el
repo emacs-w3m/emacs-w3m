@@ -103,12 +103,7 @@
       (delete-region (point-min) start)
       (shimbun-shallow-rendering)
       (setq html nil))
-    (goto-char (point-min))
-    (shimbun-header-insert shimbun header)
-    (insert "Content-Type: " (if html "text/html" "text/plain")
-	    "; charset=ISO-2022-JP\nMIME-Version: 1.0\n\n")
-    (encode-coding-string (buffer-string)
-			  (mime-charset-to-coding-system "ISO-2022-JP"))))
+    (shimbun-header-insert-and-buffer-string shimbun header nil html)))
 
 (provide 'sb-text)
 
