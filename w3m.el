@@ -76,6 +76,11 @@
 
 (require 'w3m-macro)
 
+;; The following variables will be referred by the version specific
+;; modules which bind such variables only when compiling themselves.
+(defvar w3m-current-title nil "Title of this buffer.")
+(defvar w3m-current-url nil "URL of this buffer.")
+
 (eval-and-compile
   (cond
    ((featurep 'xemacs)
@@ -843,9 +848,7 @@ will disclose your private informations, for example:
 (defvar w3m-current-image-status w3m-display-inline-image)
 (make-variable-buffer-local 'w3m-current-image-status)
 
-(defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-base-url nil "Base URL of this buffer.")
-(defvar w3m-current-title nil "Title of this buffer.")
 (defvar w3m-current-forms nil "Forms of this buffer.")
 (defvar w3m-current-coding-system nil "Current coding-system of this buffer.")
 (defvar w3m-next-url nil "Next URL of this buffer.")
