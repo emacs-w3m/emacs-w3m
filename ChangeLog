@@ -1,3 +1,9 @@
+2002-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* doc/ptexinfmt.el: Modify it not to use APEL functions.
+
+	* w3mhack.el (w3mhack-makeinfo): Remove last temporal mod.
+
 2002-12-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-makeinfo): Temporally fix to help users who
