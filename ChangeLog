@@ -1,3 +1,9 @@
+2005-01-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-e21.el (w3m-force-window-update, w3m-update-tab-line): Call
+	`enlarge-window' before calling `shrink-window', in order to avoid
+	deleting sole window.
+
 2005-01-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Don't use

@@ -1,6 +1,6 @@
 ;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs-21
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -520,8 +520,8 @@ Force redisplay of WINDOW which defaults to the selected window."
       (lambda (&optional ignore) "\
 Wobble the selected window size to force redisplay of the header-line."
 	(let ((window-min-height 0))
-	  (shrink-window 1)
-	  (enlarge-window 1))))))
+	  (enlarge-window 1)
+	  (shrink-window 1))))))
 
 (defun w3m-tab-drag-mouse-function (event buffer)
   (let ((window (posn-window (event-end event)))
