@@ -2173,20 +2173,44 @@ List of acceptable languages in descending order of priority.  The
 default value is set according to the @samp{accept_language} entry of
 the @samp{w3m} configuration file (normally @file{~/.w3m/config}).
 
-@item w3m-add-referer-regexps
-@vindex w3m-add-referer-regexps
-Regexps matching url strings being allowed to send as referers.  It
-consists of a @code{cons} of two regexps, one matches and the other does
-not match.  If a url matches the first element and does not match the
-latter one, it denotes that url can be sent to foreign web servers as a
-referer.  @code{Nil} for the regexp matches any url.  You may set the
-cdr of this value to inhibit sending referers which will disclose your
-private informations, for example:
+@item w3m-add-referer
+@vindex w3m-add-referer
+
+Rule of sending referers.  There are five choices as the valid values of
+this option.
+
+@enumerate
+@item
+@code{nil}: this means that emacs-w3m never send referers.
+
+@item
+@code{t}: this means that emacs-w3m always send referers.
+
+@item
+@code{lambda}: this means that emacs-w3m send referers only when both
+the current page and the target page are provided by the same server.
+
+@item
+a cons cell keeping two regular expressions: this means that emacs-w3m
+send referers when the url of the current page matches the first regular
+expression and does not match the second regular expression.  @code{Nil}
+for the regexp matches any url.
+
+@item
+a function: emacs-w3m send referers when this function which has two
+arguments, URL and REFERER, returns non-nil.
+@end enumerate
+
+If you become nervous about leak of your private WEB browsing history,
+set `nil' or `lambda' to this option.  When your computer belongs to a
+secret network, you may set a pair of regular expressions to inhibit
+sending referers which will disclose your private informations, as
+follows:
 
 @lisp
-(setq w3m-add-referer-regexps
-      '("^http:"
-        . "^http://\\([^./]+\\.\\)*your-company\\.com/"))
+(setq w3m-add-referer
+      '("\\`http:\"
+        . "\\`http://\\([^./]+\\.\\)*example\\.net/"))
 @end lisp
 
 @item w3m-add-user-agent
