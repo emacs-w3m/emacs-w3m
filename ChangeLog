@@ -1,3 +1,8 @@
+2004-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-generate-xemacs-load-file): Replace
+	`replace-string' with basic functions.
+
 2004-04-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3mhack.el (w3mhack-generate-xemacs-load-file): New function.
