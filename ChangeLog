@@ -1,3 +1,7 @@
+2001-03-22  Keisuke Nishida  <kxn30@po.cwru.edu>
+
+	* w3m.el (w3m-goto-url): Insert the current url for input by default.
+
 2001-03-22  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-xmas.el (w3m-update-toolbar): New function.

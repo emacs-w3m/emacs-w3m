@@ -2192,7 +2192,7 @@ or prefix ARG columns."
 (defun w3m-goto-url (url &optional reload)
   "*Retrieve contents of URL."
   (interactive
-   (list (w3m-input-url) current-prefix-arg))
+   (list (w3m-input-url nil w3m-current-url) current-prefix-arg))
   (cond
    ;; process mailto: protocol
    ((string-match "^mailto:\\(.*\\)" url)
