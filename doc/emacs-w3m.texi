@@ -1994,11 +1994,11 @@ message is called an @samp{article} by Gnus users.
 
 Did you know that Gnus, the Emacs newsreader, supports emacs-w3m?
 
-Actually, the version of Gnus bundled with Emacs (or an XEmacs package)
-does not support emacs-w3m (yet).  You'd better use the development
-version of Gnus known as @samp{Oort Gnus}.  It is available at:
+Actually, the version of Gnus bundled with Emacs does not support
+emacs-w3m (yet).  You'd better use the latest version of Gnus known as
+@samp{Gnus v5.10}.  It is available at:
 
-@uref{ftp://ftp.gnus.org/pub/gnus/ognus.tar.gz}
+@uref{ftp://ftp.gnus.org/pub/gnus/gnus.tar.gz}
 
 Note: if emacs-w3m @strong{is} supported in the Gnus version that comes
 with your Emacs distribution, it means either that this documentation is
