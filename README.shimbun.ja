@@ -1,56 +1,57 @@
-1. $B$O$8$a$K(B
+1. ¤Ï¤¸¤á¤Ë
 
-shimbun $B%i%$%V%i%j$G$O!"?7J9$d%K%e!<%9%5%$%H!"%a!<%j%s%0%j%9%H%"!<%+%$%V(B
-$B$J$I$rE,@Z$K<h$j07$&$?$a$N%$%s%?!<%U%'%$%9$rDs6!$7$^$9!#(B
+shimbun ¥é¥¤¥Ö¥é¥ê¤Ç¤Ï¡¢¿·Ê¹¤ä¥Ë¥å¡¼¥¹¥µ¥¤¥È¡¢¥á¡¼¥ê¥ó¥°¥ê¥¹¥È¥¢¡¼¥«¥¤¥Ö
+¤Ê¤É¤òÅ¬ÀÚ¤Ë¼è¤ê°·¤¦¤¿¤á¤Î¥¤¥ó¥¿¡¼¥Õ¥§¥¤¥¹¤òÄó¶¡¤·¤Þ¤¹¡£
 
-shimbun $B%i%$%V%i%j$rMxMQ$G$-$k%f!<%6%(!<%8%'%s%H$O!"0J2<$NDL$j$G$9!#(B
+shimbun ¥é¥¤¥Ö¥é¥ê¤òÍøÍÑ¤Ç¤­¤ë¥æ¡¼¥¶¥¨¡¼¥¸¥§¥ó¥È¤Ï¡¢°Ê²¼¤ÎÄÌ¤ê¤Ç¤¹¡£
 
-	Wanderlust (elmo-lunafy $B;^(B)
+	Wanderlust (elmo-lunafy »Þ)
 	T-gnus-6_15
 
-APEL $B$*$h$S(B FLIM $B%Q%C%1!<%8$,I,MW$G$9!#%$%s%9%H!<%k$9$kA0$K$=$l$i$r%$%s(B
-$B%9%H!<%k$7$F$/$@$5$$!#$=$l$i$N%Q%C%1!<%8$O(B
+APEL ¤ª¤è¤Ó FLIM ¥Ñ¥Ã¥±¡¼¥¸¤¬É¬Í×¤Ç¤¹¡£¥¤¥ó¥¹¥È¡¼¥ë¤¹¤ëÁ°¤Ë¤½¤ì¤é¤ò¥¤¥ó
+¥¹¥È¡¼¥ë¤·¤Æ¤¯¤À¤µ¤¤¡£¤½¤ì¤é¤Î¥Ñ¥Ã¥±¡¼¥¸¤Ï
 
 ftp://ftp.m17n.org/pub/mule/apel/
 ftp://ftp.m17n.org/pub/mule/flim/
 
-$B$+$i<hF@$9$k$3$H$,$G$-$^$9!#(B
+¤«¤é¼èÆÀ¤¹¤ë¤³¤È¤¬¤Ç¤­¤Þ¤¹¡£
 
-2. $BMxMQ2DG=$J%3%s%F%s%D(B
+2. ÍøÍÑ²ÄÇ½¤Ê¥³¥ó¥Æ¥ó¥Ä
 
-2-1. $B?7J9(B
+2-1. ¿·Ê¹
 
-$BD+F|(B		asahi.national asahi.business asahi.politics
+Ä«Æü		asahi.national asahi.business asahi.politics
 		asahi.international asahi.sports
-		(asahi-html $B$bMQ0U$5$l$F$$$^$9!#(B)
-$BKhF|(B		mainichi.shakai mainichi.sports mainichi.seiji
+		(asahi-html ¤âÍÑ°Õ¤µ¤ì¤Æ¤¤¤Þ¤¹¡£)
+ËèÆü		mainichi.shakai mainichi.sports mainichi.seiji
 		mainichi.keizai mainichi.kokusai mainichi.fuho
-$BF|7P(B		nikkei.seikei nikkei.kaigai nikkei.market
+Æü·Ð		nikkei.seikei nikkei.kaigai nikkei.market
 		nikkei.sangyo nikkei.tento nikkei.shakai nikkei.retto
 		nikkei.shasetsu nikkei.zinzi nikkei.okuyami
-$B%9%]%K%A(B	sponichi.baseball sponichi.soccer sponichi.usa
+¥¹¥Ý¥Ë¥Á	sponichi.baseball sponichi.soccer sponichi.usa
 		sponichi.others sponichi.society
 		sponichi.entertainment sponichi.horseracing
-$Bl&Gd(B		yomiuri.shakai yomiuri.sports yomiuri.seiji
+ì¦Çä		yomiuri.shakai yomiuri.sports yomiuri.seiji
 		yomiuri.keizai yomiuri.kokusai yomiuri.fuho
 
-2-2. $B%K%e!<%9%5%$%H(B
+2-2. ¥Ë¥å¡¼¥¹¥µ¥¤¥È
 
 Japan CNET	cnet.comp
-$B%$%s%W%l%9(B	impress.internet impress.pc impress.akiba impress.game
+¥¤¥ó¥×¥ì¥¹	impress.internet impress.pc impress.akiba impress.game
 		impress.av impress.jijinews impress.sports
 HotWired	wired.business wired.culture wired.technology
 YAHOO!JAPAN	yahoo.cpt yahoo.dom yahoo.int yahoo.bus yahoo.brf
 		yahoo.biz yahoo.ent yahoo.spo yahoo.nkn yahoo.clm
 ZDNet		zdnet.comp zdnet.gamespot
+slashdot-jp	slashdot-jp.story
 
 2-3. Mailing List
 
 semi-gnus-ja	airs.semi-gnus
 wanderlust	airs.wl	
 bbdb-ml		bbdb-ml.bbdb-ml
-ding-gnus $B4XO"(B	ding.ding ding.ding-announce ding.ding-cvslog
-gnome $B4XO"(B	gnome.balsa-list gnome.calendar-list
+ding-gnus ´ØÏ¢	ding.ding ding.ding-announce ding.ding-cvslog
+gnome ´ØÏ¢	gnome.balsa-list gnome.calendar-list
 		gnome.cvs-commits-list gnome.foundation-announce
 		gnome.foundation-list gnome.fplan-list
 		gnome.gconf-list gnome.gdome gnome.gnome-1.4-list
@@ -72,35 +73,35 @@ gnome $B4XO"(B	gnome.balsa-list gnome.calendar-list
 		gnome.guppi-list gnome.libart gnome.libart-hackers
 		gnome.orbit-list gnome.vote gnome.wm-spec-list
 		gnome.xml gnome.xslt
-h14m $B4XO"(B	h14m.hns-dev h14m.hns-users
+h14m ´ØÏ¢	h14m.hns-dev h14m.hns-users
 linux-ce	linux-ce.users
-meadow $B4XO"(B	meadow.meadow-develop meadow.meadow-users-jp
-namazu $B4XO"(B	namazu.namazu-users-ja namazu.namazu-win32-users-ja
+meadow ´ØÏ¢	meadow.meadow-develop meadow.meadow-users-jp
+namazu ´ØÏ¢	namazu.namazu-users-ja namazu.namazu-win32-users-ja
 		namazu.namazu-users-en namazu.namazu-devel-ja
 		namazu.namazu-devel.en
 emacs-w3m	namazu.emacs-w3m
-netbsd $B4XO"(B	netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
+netbsd ´ØÏ¢	netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
 		netbsd.tech-pkg-ja netbsd.port-arm32-ja
 		netbsd.port-hpcmips-ja netbsd.port-mac68k-ja
 		netbsd.port-mips-ja netbsd.port-powerpc-ja
 		netbsd.hpcmips-changes-ja netbsd.members-ja
 		netbsd.admin-ja netbsd.www-changes-ja
-ruby $B4XO"(B	ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
+ruby ´ØÏ¢	ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
 		ruby.ruby-dev ruby.ruby-ext ruby.ruby-list
 		ruby.ruby-math ruby.ruby-talk
 tlinux-users-j	toshiba.linux-users-j
 w3m-dev		w3m-dev.w3m-dev
-xemacs $B4XO"(B	xemacs.xemacs-announce xemacs.xemacs-beta-ja
+xemacs ´ØÏ¢	xemacs.xemacs-announce xemacs.xemacs-beta-ja
 		xemacs.xemacs-beta xemacs.xemacs-build-reports
 		xemacs.xemacs-cvs xemacs.xemacs-mule xemacs.xemacs-nt
 		xemacs.xemacs-patches xemacs.xemacs-users-ja
 		xemacs.xemacs
 
-2-4. $B$=$NB>(B
+2-4. ¤½¤ÎÂ¾
 
-$B$f$&&S&O&P&I&A7G<(HD(B	tcup.yutopia
-Meadow $B7G<(HD(B	tcup.meadow
-HNS $B$K$h$kF|5-(B
+¤æ¤¦¦Ó¦Ï¦Ð¦É¦Á·Ç¼¨ÈÄ	tcup.yutopia
+Meadow ·Ç¼¨ÈÄ	tcup.meadow
+HNS ¤Ë¤è¤ëÆüµ­
 
 Local Variables:
 mode: text
