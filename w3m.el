@@ -458,7 +458,7 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 (defcustom w3m-track-mouse t
   "Whether to track the mouse and message the url under the mouse.
 This feature does not work under Emacs or XEmacs versions prior to 21.
-See also the documentations for the variable `show-help-function' if
+See also the documentation for the variable `show-help-function' if
 you are using Emacs 21.  You can also use the `balloon-help' feature
 under XEmacs by the command M-x balloon-help-mode with arg 1.  If the
 window manager decorates the balloon-help frame, and that is not to
