@@ -3932,7 +3932,7 @@ Message-ID として表示されます。例えば、下記の
 @noindent
 より具体的な方法は、@file{sb-ibm-dev.el} が参考になるかもしれません。
 
-先程、@xref{Getting web page and header information} の節で、記事毎に個
+先程、@ref{Getting web page and header information} の節で、記事毎に個
 別に URL を持たない構造のウェブページの場合、ヘッダ情報取得の段階で、記
 事の内容も取得しておき、Emacs のメモリに収めておく必要があると申し上げま
 した。この場合、@file{shimbun-article} では上記のような Xref 情報からの
