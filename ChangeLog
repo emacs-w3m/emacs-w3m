@@ -1,3 +1,13 @@
+2002-10-08  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+
+	* shimbun/sb-f1express.el: Follow the change of the Web site.
+
+	* shimbun/sb-f1fan.el: Ditto.
+
+	* README.shimbun.ja: Ditto.
+
+	* shimbun/sb-isize-sports.el: Removed.
+	
 2002-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-toggle-inline-images-internal): Simplify the code.

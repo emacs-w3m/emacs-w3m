@@ -207,14 +207,27 @@ MacOSX-jp 関連	macosx-jp.macosx-jp macosx-jp.macosx-dev-jp
 
 makanai			makanai.f1news
 F1 ファン		f1fan.news
-トーチュウ F1 EXPRESS	f1express.f1 f1express.cart f1express.japan
-			f1express.wrc f1express.bike f1express.paris
-			f1express.other f1express.club
-イサイズ スポーツ		isize-sports.football isize-sports.f1
-			isize-sports.mlb isize-sports.nba
-			isize-sports.nfl isize-sports.x-league
-			isize-sports.keiba isize-sports.golf
-			isize-sports.table-tennis
+トーチュウ F1 EXPRESS   f1express.F1 f1express.Pari-Dakar f1express.CART
+                        f1express.All-Japan f1express.WRC f1express.bike
+                        f1express.Tuka-CLUB f1express.etc
+                        f1express.F-Nippon f1express.JGTC
+                        f1express.LeMans24 f1express.Indi500
+                        f1express.F3-Japan f1express.Super-Taikyu
+                        f1express.AJRC f1express.F-Toyota
+                        f1express.F-Dream f1express.etc-4-Japan
+                        f1express.F3-France f1express.F3-England
+                        f1express.F3-Germany f1express.LeMans-USA
+                        f1express.IRL f1express.FSC f1express.Int-F3000
+                        f1express.etc-4-int f1express.WGP f1express.WSB
+                        f1express.R2-1 f1express.Suzuka8
+                        f1express.Motegi7 f1express.AJ-Motocross
+                        f1express.AJ-Trial f1express.World-Motocross
+                        f1express.WCT f1express.etc-2
+                        f1express.Inter-GP-Cafe f1express.Takagi
+                        f1express.NASCAR f1express.Kato f1express.Endo
+                        f1express.Sato f1express.Imamiya
+                        f1express.Toyota-news f1express.F1-release
+                        f1express.info
 
 2-5. その他
 
