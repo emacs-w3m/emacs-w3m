@@ -1675,7 +1675,7 @@ Variables} $B;2>H(B) $B$r%+%9%?%^%$%:$9$k$3$H$K$h$C$F!"$3$N?6$kIq$$$rJQ99$9$k
 @subsection $B$b$&0l$D$N(B ($B$=$7$FB.$$(B) $B%&%'%V8!:w(B
 @cindex Quick Searching
 @cindex Special URLs
-@vindex w3m-search-quick-search-engine-alist
+@vindex w3m-uri-replace-alist
 @vindex w3m-search-engine-alist
 @vindex w3m-default-coding-system
 
@@ -1713,11 +1713,11 @@ Variables} $B;2>H(B) $B$r%+%9%?%^%$%:$9$k$3$H$K$h$C$F!"$3$N?6$kIq$$$rJQ99$9$k
 @kbd{C-q} $B$rC!$$$F2<$5$$(B)$B!#(B
 
 Emacs-w3m $B$N%G%U%)%k%H$G$O!"MxMQ2DG=$J$$$/$D$+$N8!:w%(%s%8%s$NC;=L7A$,$"(B
-$B$j!"$=$l$i$OJQ?t(B @code{w3m-search-quick-search-engine-alist} $B$GDj5A$5$l(B
-$B$F$$$^$9!#Nc$($P(B Google $B$K$O(B ``gg''$B!"(BGoogle Groups $BMQ$K$O(B ``ggg''$B!"(B
-Yahoo! $B$N$?$a$N(B ``ya''$B!"$*$h$S(B Altavista $B$KBP$9$k(B ``al'' $B$J$I$NC;$$L>A0(B
-$B$G$9!#$5$i$K8!:w%(%s%8%s$NC;=L7A$rDI2C$9$k$K$O!"(B@xref{Adding New Search
-Engines} $B$r;2>H$7$F2<$5$$!#(B
+$B$j!"$=$l$i$OJQ?t(B @code{w3m-uri-replace-alist} $B$GDj5A$5$l$F$$$^$9!#Nc$((B
+$B$P(B Google $B$K$O(B ``gg''$B!"(BGoogle Groups $BMQ$K$O(B ``ggg''$B!"(BYahoo! $B$N$?$a(B
+$B$N(B ``ya''$B!"$*$h$S(B Altavista $B$KBP$9$k(B ``al'' $B$J$I$NC;$$L>A0$G$9!#$5$i$K8!(B
+$B:w%(%s%8%s$NC;=L7A$rDI2C$9$k$K$O!"(B@xref{Adding New Search Engines} $B$r;2(B
+$B>H$7$F2<$5$$!#(B
 
 $BC;=L7A$NBe$o$j$K!"(B``google'' $B$d(B ``yahoo'' $B$N$h$&$J40A4$J%(%s%8%s$NL>A0$r!"(B
 $B%/%$%C%/%5!<%A(B URL $B$K;H$&$3$H$b$G$-$^$9!#$=$l$i$NL>A0$O!"JQ(B
@@ -1776,8 +1776,8 @@ Emacs-w3m $B$OMxMQ2DG=$JB?$/$N8!:w%(%s%8%s$r;}$C$F$$$^$9!#$"$J$?$N$*5$$KF~(B
                   '("My engine"
                     "http://my.searchengine.com/?query=%s"
                     nil))
-     (add-to-list 'w3m-search-quick-search-engine-alist
-                  '("my" . "My engine"))))
+     (add-to-list 'w3m-uri-replace-alist
+                  '("my" w3m-search-uri-replace "My engine"))))
 @end lisp
 
 $B$3$l$K$h$j!"(B@uref{my:foobar} $B$N$h$&$J(B URL $B$r;H$C$F!"$"$J$?$N8!:w%(%s%8%s(B
@@ -2054,8 +2054,8 @@ customize-option}$B!"$^$?$O$"$k(B ``group'' ($B$3$N>l9g$N%0%k!<%W(B
 $B?t$,(B @file{~/.emacs-w3m} $B%U%!%$%k$,FI$_9~$^$l$k$H$-$K$OL$Dj5A$G!"$=$l$i(B
 $B$rJQ99$G$-$J$$$+$b$7$l$J$$$3$H$G$9(B ($B$b$A$m$s!"%G%U%)%k%H$NCM$r5$$K$7$J$$(B
 $B$N$G$"$l$P!"(B@file{~/.emacs-w3m} $B%U%!%$%k$G40`z$K>e=q$-$7$F$7$^$&$3$H$O2D(B
-$BG=$J$N$G$9$1$l$I$M(B)$B!#JQ?t(B @code{w3m-search-quick-search-engine-alist} $B$O(B
-$BE57?E*$JNc$G$9(B (@pxref{Search Variables})$B!#(B
+$BG=$J$N$G$9$1$l$I$M(B)$B!#JQ?t(B @code{w3m-uri-replace-alist} $B$OE57?E*$JNc$G(B
+$B$9(B (@pxref{Search Variables})$B!#(B
 
 @table @code
 @item w3m-init-file
