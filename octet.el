@@ -43,7 +43,7 @@
 ;;
 ;; (require 'octet)
 ;;
-;; To display octet date file, execute following command.
+;; To display octet data file, execute following command.
 ;; 
 ;; M-x octet-find-file
 ;;
