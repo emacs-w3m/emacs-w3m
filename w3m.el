@@ -1216,10 +1216,7 @@ Here is an example of how to set this option:
 		 greek-entity))))))
 
 (defconst w3m-entity-regexp
-  (eval-when-compile
-    (format "&\\(%s\\|#[0-9]+\\|#x[0-9a-f]+\\);?"
-	    (let ((max-specpdl-size (max max-specpdl-size 3000)))
-	      (regexp-opt (mapcar (function car) w3m-entity-alist))))))
+  "&\\([a-z][a-z0-9]*\\|#[0-9]+\\|#x[0-9a-f]+\\)\\(;\\)?")
 
 (defvar w3m-entity-db nil)		; nil means un-initialized
 (defconst w3m-entity-db-size 13)	; size of obarray
@@ -2141,19 +2138,28 @@ with ^ as `cat -v' does."
 	  ?~				; un-supported character
 	codepoint))))
 
-(defsubst w3m-entity-value (name)
+(defun w3m-entity-value (name strict)
   ;; initialize if need
   (unless w3m-entity-db
     (w3m-entity-db-setup))
-  ;; return value of specified entity, or empty string for unknown entity.
-  (or (symbol-value (intern-soft name w3m-entity-db))
-      (if (not (char-equal (string-to-char name) ?#))
-	  (concat "&" name)		; unknown entity
+  ;; return value of specified entity, or nil if unknown.
+  (if (char-equal (string-to-char name) ?#)
+      (progn
 	(setq name (substring name 1))
 	(let ((codepoint (if (char-equal (string-to-char name) ?x)
 			     (string-to-number (substring name 1) 16)
 			   (string-to-number name))))
-	  (char-to-string (w3m-ucs-to-char codepoint))))))
+	  (char-to-string (w3m-ucs-to-char codepoint))))
+    (let ((val (intern-soft name w3m-entity-db))
+	  (pre name)
+	  (post ""))
+      (if (not strict)
+	  (while (and (null val) 
+		      (< 0 (length pre))
+		      (null (setq val (intern-soft pre w3m-entity-db))))
+	    (setq post (concat (substring pre -1) post)
+		  pre (substring pre 0 -1))))
+      (and val (concat (symbol-value val) post)))))
 
 (defun w3m-fontify-bold ()
   "Fontify bold characters in this buffer which contains half-dumped data."
@@ -2562,8 +2568,9 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
       (while (re-search-forward w3m-entity-regexp nil t)
 	(if reserve-prop
 	    (setq prop (text-properties-at (match-beginning 0))))
-	(replace-match (save-match-data
-			 (w3m-entity-value (match-string 1)))
+	(replace-match (or (w3m-entity-value (match-string 1)
+					     (match-beginning 2))
+			   (match-string 0))
 		       nil t)
 	(if (and reserve-prop prop)
 	    (w3m-add-text-properties (match-beginning 0) (point) prop))))))
