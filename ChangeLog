@@ -1,3 +1,8 @@
+2003-12-05  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/sb-tdiary.el (shimbun-get-headers): Erase buffer before
+	retrieving.
+
 2003-11-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi-mytown.el (shimbun-asahi-mytown-group-table):
