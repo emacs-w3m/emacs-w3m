@@ -482,7 +482,7 @@ It will be used for the w3m system internal for Emacs 21.")
       (or (w3m-find-coding-system (car (car rest)))
 	  (setq dest (cons (car rest) dest)))
       (setq rest (cdr rest)))
-    (nreverse dest))
+    dest)
   "Alist MIME CHARSET vs CODING-SYSTEM.
 MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
@@ -1923,7 +1923,7 @@ to nil."
   ;; bind charset to w3m-file-name-coding-system
   (let ((charset (or (car (rassq w3m-file-name-coding-system
 				 w3m-charset-coding-system-alist))
-		     'unknown)))
+		     w3m-file-name-coding-system)))
     (goto-char (point-min))
     (when (re-search-forward "<head>" nil t)
       (insert "\n<meta http-equiv=\"CONTENT-TYPE\" "
