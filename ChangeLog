@@ -1,3 +1,8 @@
+2001-03-13  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-content-type-alist): [UNIX] Change method for
+	text/html type.
+
 2001-03-13  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>,
 	    TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
