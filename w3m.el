@@ -2025,7 +2025,8 @@ with ^ as `cat -v' does."
 					   (cons name prenames))))))))
     (when w3m-icon-data
       (setq w3m-icon-data (cons (w3m-expand-url (car w3m-icon-data))
-				(w3m-image-type (cdr w3m-icon-data)))))
+				(or (w3m-image-type (cdr w3m-icon-data))
+				    'ico))))
     (when w3m-next-url
       (setq w3m-next-url (w3m-expand-url w3m-next-url)))
     (when w3m-previous-url

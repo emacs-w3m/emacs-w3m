@@ -491,19 +491,24 @@ Each information is a list whose elements are:
   (with-current-buffer buffer
     (when (and w3m-current-favicon-data (car w3m-current-favicon-data))
       (or w3m-current-favicon-image
-	  (let* ((height (number-to-string (frame-char-height)))
-		 (xpm (w3m-imagick-convert-data
-		       (car w3m-current-favicon-data)
-		       (symbol-name (cdr w3m-current-favicon-data))
-		       "xpm" "-geometry" (or w3m-favicon-size
-					     (concat height "x" height)))))
-	    (if xpm
-		(setq w3m-current-favicon-image
-		      (create-image xpm
-				    'xpm
-				    t
-				    :ascent 'center))
-	      (setq w3m-current-favicon-data nil)))))))
+	  (lexical-let ((height (number-to-string (frame-char-height)))
+			(buffer buffer)
+			handler)
+	    (w3m-process-do
+		(xpm (w3m-imagick-start-convert-data
+		      handler
+		      (car w3m-current-favicon-data)
+		      (symbol-name (cdr w3m-current-favicon-data))
+		      "xpm" "-geometry" (or w3m-favicon-size
+					    (concat height "x" height))))
+	      (with-current-buffer buffer
+		(if xpm
+		    (setq w3m-current-favicon-image
+			  (create-image xpm
+					'xpm
+					t
+					:ascent 'center))
+		  (setq w3m-current-favicon-data nil)))))))))
 
 (defun w3m-retrieve-favicon (pair target &optional handler)
   (if (and (w3m-favicon-cache-p (car pair))

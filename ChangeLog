@@ -1,3 +1,9 @@
+2002-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-fontify-anchors): Set default icon type as ico.
+
+	* w3m-e21.el (w3m-buffer-favicon): Asynchronous implementation.
+
 2002-04-04  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3mhack.el (top): Avoid byte-compile error for `w3m-ucs.el' with
