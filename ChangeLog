@@ -1,3 +1,46 @@
+2001-05-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-read-coding-system): Removed.
+	(w3m-process-environment): New variable.
+	(w3m-input-coding-system): Changed default value.
+	(w3m-output-coding-system) [w3mmee]: Changed default value.
+	(w3m-arrived-add-1): Changed argument spec.
+	(w3m-arrived-add): Ditto.
+	(w3m-arrived-coding-system): Removed.
+	(w3m-arrived-content-charset): New function.
+	(w3m-arrived-setup): Changed arrived file format to keep
+	content-charset instead of coding-system.
+	(w3m-arrived-shutdown): Ditto.
+	(w3m-exec-process): Refer `w3m-process-environment' to set
+	environments for sub-processes.
+	(w3m-decode-encoded-contents): Ditto.
+	(w3m-coding-system-to-charset): Removed.
+	(w3m-read-content-charset): New function.
+	(w3m-decode-buffer): Changed argument spec.  Process this buffer
+	if and only if it's represented in unibyte.
+	(w3m-rendering-region): Reconstruced.
+	(w3m-exec): Changed argument spec and followed the change of
+	`w3m-decode-buffer'.
+	(w3m-goto-url): Changed argument spec and followed the change of
+	`w3m-exec'.
+	(w3m-redisplay-with-coding-system): Removed.
+	(w3m-redisplay-with-charset): New command to replace
+	`w3m-redisplay-with-coding-system'.
+	(w3m-region): No call `encode-coding-region'.
+	(w3m-about-history): Ditto.
+	(w3m-about-db-history): Ditto.
+
+	* w3m-antenna.el (w3m-about-antenna): No call
+	`encode-coding-region'.
+
+	* w3m-dtree.el (w3m-about-dtree): Ditto.
+
+	* w3m-om.el (w3m-read-coding-system): Removed.
+	(coding-system-list): New function.
+
+	* shimbun/shimbun.el (shimbun-retrieve-url): Decode contents which
+	is retrieved by `w3m-retrieve'.
+
 2001-05-23  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-expand-file-name-as-url): If file is directory,

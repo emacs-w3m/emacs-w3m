@@ -106,10 +106,7 @@
   (when (w3m-retrieve url no-decode no-cache)
     (w3m-with-work-buffer
       (unless no-decode
-	(set-buffer-multibyte t)
-	(decode-coding-region (point-min)
-			      (point-max)
-			      w3m-output-coding-system)))
+	(w3m-decode-buffer url)))
     (unless (eq (current-buffer)
 		(get-buffer w3m-work-buffer-name))
       (insert-buffer w3m-work-buffer-name))))
@@ -119,10 +116,7 @@
   (if (w3m-retrieve url no-decode no-cache)
       (w3m-with-work-buffer
 	(unless no-decode
-	  (set-buffer-multibyte t)
-	  (decode-coding-region (point-min)
-				(point-max)
-				w3m-output-coding-system))
+	  (w3m-decode-buffer url))
 	(current-buffer))
     (with-current-buffer (get-buffer w3m-work-buffer-name)
       (erase-buffer)

@@ -313,8 +313,7 @@ whose elements are:
 	  (set-buffer-multibyte t)
 	  (w3m-antenna-make-contents
 	   (funcall w3m-antenna-sort-changed-sites-function (nreverse changed))
-	   (funcall w3m-antenna-sort-unchanged-sites-function (nreverse unchanged)))
-	  (encode-coding-region (point-min) (point-max) w3m-input-coding-system))
+	   (funcall w3m-antenna-sort-unchanged-sites-function (nreverse unchanged))))
 	(w3m-antenna-shutdown)
 	"text/html")
     (setq w3m-antenna-alist nil)))

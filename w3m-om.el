@@ -123,22 +123,22 @@ Optional DEFAULT is a default password to use instead of empty input."
 
 (defalias 'coding-system-category 'get-code-mnemonic)
 
-(defun w3m-read-coding-system (prompt &optional default-coding-system)
-  "Read a coding system from the minibuffer for w3m under Mule 2.3
-, prompting with string PROMPT. If the user enters null input
-, return second argument DEFAULT-CODING-SYSTEM."
-  (let (comp ret)
-    (mapatoms
-     (function
-      (lambda (x)
-	(if (and (or (vectorp (get x 'coding-system))
-		     (vectorp (get x 'eol-type)))
-		 (string-match "^[^*]" (symbol-name x)))
-	    (setq comp (cons (cons (symbol-name x) (symbol-name x)) comp))))))
-    (setq ret (completing-read prompt comp))
-    (if (string= ret "")
-	default-coding-system
-      (intern ret))))
+(unless (fboundp 'coding-system-list)
+  (defun coding-system-list ()
+    "Return a list of all existing non-subsidiary coding systems."
+    (let ((codings nil))
+      (mapatoms
+       (function
+	(lambda (arg)
+	  (if (eq arg '*noconv*)
+	      nil
+	    (if (and (or (vectorp (get arg 'coding-system))
+			 (vectorp (get arg 'eol-type)))
+		     (null (get arg 'pre-write-conversion))
+		     (null (get arg 'post-read-conversion)))
+		(setq codings (cons arg codings)))))))
+      codings)))
+
 
 ;;; Widget:
 (defun w3m-om-define-missing-widgets ()
