@@ -1,3 +1,10 @@
+2002-03-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+	Suggested by Yuuichi Teranishi <teranisi@gohome.org> with mod.
+
+	* w3m.el (w3m-no-proxy-domains): New user option renamed and
+	changed the meaning of `w3m-no-proxy-hosts'.
+	(w3m-additional-command-arguments): Refer to it.
+
 2002-03-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (tarball): Fix permissions.

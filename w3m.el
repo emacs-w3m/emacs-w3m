@@ -216,19 +216,19 @@ Here is an example of how to set this option:
 Where the first element matches the url that the scheme is \"http\" and
 the hostname is either \"your-company.com\" or a name ended with
 \".your-company.com\".  If you are a novice on the regexps, you can use
-the option `w3m-no-proxy-hosts' instead."
+the option `w3m-no-proxy-domains' instead."
   :group 'w3m
   :type '(repeat (cons :format "%v"
 		       regexp
 		       (repeat :tag "Arguments passed to w3m command"
 			       (string :tag "Arg")))))
 
-(defcustom w3m-no-proxy-hosts nil
-  "*List of hostnames that emacs-w3m will not use a proxy server to
-connect to.  Each element should be exactly a name of a host machine,
-not a regexp."
+(defcustom w3m-no-proxy-domains nil
+  "*List of domain names that emacs-w3m will not use a proxy server to
+connect to.  Each element should be exactly a domain name which means
+the latter common part of the host names, not a regexp."
   :group 'w3m
-  :type '(repeat (string :tag "Hostname")))
+  :type '(repeat (string :tag "Domain name")))
 
 (defcustom w3m-process-environment
   (delq nil
@@ -2926,20 +2926,25 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 (defun w3m-additional-command-arguments (url)
   "Return a list of additional arguments passed to the w3m command.
 You may specify additional arguments for the particular urls using the
-option `w3m-command-arguments-alist', or using `w3m-no-proxy-hosts' to
-add the option \"-no-proxy\"."
+option `w3m-command-arguments-alist', or using `w3m-no-proxy-domains'
+to add the option \"-no-proxy\"."
   (let ((defs w3m-command-arguments-alist)
-	def args)
+	def args host)
     (while (and defs
 		(null args))
       (setq def (car defs)
 	    defs (cdr defs))
       (when (string-match (car def) url)
 	(setq args (cdr def))))
-    (when (and w3m-no-proxy-hosts
+    (when (and w3m-no-proxy-domains
 	       (not (member "-no-proxy" args))
 	       (string-match "^[a-z]+://\\([^/]+\\)" url)
-	       (member (match-string 1 url) w3m-no-proxy-hosts))
+	       (catch 'domain-match
+		 (setq host (match-string 1 url))
+		 (dolist (domain w3m-no-proxy-domains)
+		   (when (string-match (concat (regexp-quote domain) "$")
+				       host)
+		     (throw 'domain-match t)))))
       (push "-no-proxy" args))
     args))
 
