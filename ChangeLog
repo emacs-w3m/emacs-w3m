@@ -1,3 +1,8 @@
+2001-09-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-filter.el (w3m-filter-lwn.net): Add link information to next
+	page.
+
 2001-08-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-load-list): Retry to read a file when failed.

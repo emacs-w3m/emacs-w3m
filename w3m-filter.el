@@ -117,8 +117,16 @@
     (while (and (re-search-forward "<!-- Start of Ad ([-A-z0-9]+) -->" nil t)
 		(setq p (match-beginning 0))
 		(search-forward "<!-- End of Ad -->" nil t))
-      (delete-region p (match-end 0)))
-    t))
+      (delete-region p (match-end 0))))
+  (goto-char (point-min))
+  (when (re-search-forward
+	 "<a href=\"\\(/[0-9][0-9][0-9][0-9]/[0-9][0-9][0-9][0-9]/[A-z]+\\.php3\\)\"><img[^>]*>Next:"
+	 nil t)
+    (let ((next (match-string 1)))
+      (goto-char (point-min))
+      (when (search-forward "<head>" nil t)
+	(insert "\n<link rel=\"next\" href=\"" next "\">"))))
+  t)
 
 (defun w3m-filter-google.com (url)
   "Add <LINK> tag to search results of www.google.com."
