@@ -1,5 +1,8 @@
 2002-07-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-image-viewer): New option.
+	(w3m-content-type-alist): Refer it.
+
 	* shimbun/sb-f1fan.el (shimbun-make-contents): Call
 	`shimbun-header-insert-and-buffer-string' to insert <base> tag.
 
