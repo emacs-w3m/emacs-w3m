@@ -194,9 +194,41 @@
 
 (defcustom w3m-command-arguments
   (if (eq w3m-type 'w3mmee) '("-o" "concurrent=0" "-F") nil)
-  "*Arguments for execution of w3m."
+  "*List of the default arguments passed to the w3m command.  See also
+the documentation for the option `w3m-command-arguments-alist'."
   :group 'w3m
   :type '(repeat string))
+
+(defcustom w3m-command-arguments-alist nil
+  "*Alist of a regexp matching urls and additional arguments passed to
+the w3m command.  This lets you, for instance, use or not use proxy
+server for the particular hosts.  The first match made will be used.
+Here is an example of how to set this option:
+
+\(setq w3m-command-arguments-alist
+      '(;; Don't use any additional options to visit local web pages.
+	(\"^http://\\\\([^/]*\\\\.\\\\)*your-company\\\\.com\\\\(/\\\\|$\\\\)\"
+	 \"-no-proxy\")
+	;; Use the proxy server to visit any foreign urls.
+	(\"\"
+	 \"-o\" \"http://proxy.your-company.com:8080/\")))
+
+Where the first element matches the url that the scheme is \"http\" and
+the hostname is either \"your-company.com\" or a name ended with
+\".your-company.com\".  If you are a novice on the regexps, you can use
+the option `w3m-no-proxy-hosts' instead."
+  :group 'w3m
+  :type '(repeat (cons :format "%v"
+		       regexp
+		       (repeat :tag "Arguments passed to w3m command"
+			       (string :tag "Arg")))))
+
+(defcustom w3m-no-proxy-hosts nil
+  "*List of hostnames that emacs-w3m will not use a proxy server to
+connect to.  Each element should be exactly a name of a host machine,
+not a regexp."
+  :group 'w3m
+  :type '(repeat (string :tag "Hostname")))
 
 (defcustom w3m-process-environment
   (delq nil
@@ -464,7 +496,7 @@ to input URL when URL-like string is not detected under the cursor."
 	(fn (if (featurep 'xemacs)
 		'face-custom-attributes-get
 	      'custom-face-attributes-get));; What a perverseness it is.
-	base-attributes attributes attribute value)
+	base-attributes attributes attribute)
     (require 'wid-edit);; Needed for only Emacs 20.
     (setq base-attributes (funcall fn base nil)
 	  attributes (funcall fn 'w3m-arrived-anchor-face nil))
@@ -2891,6 +2923,26 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	  (w3m-cache-contents url (current-buffer))
 	  headers)))))
 
+(defun w3m-additional-command-arguments (url)
+  "Return a list of additional arguments passed to the w3m command.
+You may specify additional arguments for the particular urls using the
+option `w3m-command-arguments-alist', or using `w3m-no-proxy-hosts' to
+add the option \"-no-proxy\"."
+  (let ((defs w3m-command-arguments-alist)
+	def args)
+    (while (and defs
+		(null args))
+      (setq def (car defs)
+	    defs (cdr defs))
+      (when (string-match (car def) url)
+	(setq args (cdr def))))
+    (when (and w3m-no-proxy-hosts
+	       (not (member "-no-proxy" args))
+	       (string-match "^[a-z]+://\\([^/]+\\)" url)
+	       (member (match-string 1 url) w3m-no-proxy-hosts))
+      (push "-no-proxy" args))
+    args))
+
 (defun w3m-w3m-retrieve (url &optional no-decode no-cache post-data referer)
   "Retrieve content of URL with w3m and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
@@ -2899,7 +2951,9 @@ to nil."
   (w3m-with-work-buffer
     (delete-region (point-min) (point-max))
     (set-buffer-multibyte nil)
-    (let ((w3m-command-arguments w3m-command-arguments)
+    (let ((w3m-command-arguments (append
+				  w3m-command-arguments
+				  (w3m-additional-command-arguments url)))
 	  (coding-system-for-write 'binary)
 	  type file modes)
       (and no-cache
@@ -3966,9 +4020,7 @@ If EMPTY is non-nil, the created buffer has empty content."
   (when (string-match "<[0-9]+>\\'" newname)
     (setq newname (substring newname 0 (match-beginning 0))))
   (with-current-buffer buf
-    (let ((ptmin (point-min))
-	  (ptmax (point-max))
-	  (url w3m-current-url)
+    (let ((url w3m-current-url)
 	  (mode major-mode)
 	  (lvars (buffer-local-variables))
 	  (new (generate-new-buffer newname)))

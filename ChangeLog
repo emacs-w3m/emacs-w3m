@@ -7,6 +7,15 @@
 	* w3m.el (w3m-accept-post-header-option): Use "-help" option
 	instead of "-version" option.
 
+2002-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-command-arguments-alist): New user option.
+	(w3m-no-proxy-hosts): New user option.
+	(w3m-additional-command-arguments): New function.
+	(w3m-w3m-retrieve): Use it.
+	(w3m-history-current-url-face, w3m-copy-buffer): Remove unused
+	non-global variables.
+
 2002-03-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-w3m-cid-retrieve): Return lowercase string
