@@ -56,6 +56,7 @@
   (defvar w3m-show-graphic-icons-in-mode-line)
   (defvar w3m-toolbar)
   (defvar w3m-toolbar-buttons)
+  (defvar w3m-use-tab)
   (defvar w3m-use-tab-menubar)
   (defvar w3m-work-buffer-name)
   (autoload 'update-tab-in-gutter "gutter-items")
@@ -547,7 +548,7 @@ as the value."
 ;;; Gutter:
 (defcustom w3m-xmas-show-current-title-in-buffer-tab
   (and (boundp 'gutter-buffers-tab-enabled)
-       (symbol-value 'gutter-buffers-tab-enabled))
+       gutter-buffers-tab-enabled)
   "If non-nil, show the title string in the buffer tab.  It has no effect
 if your XEmacs does not support the gutter items.  If you turn on this
 option, it is recommended a bit that setting both the option
@@ -623,12 +624,19 @@ title contains non-ascii characters, show a url name by default."
     (ad-disable-advice 'format-buffers-tab-line 'around
 		       'w3m-xmas-show-current-title-in-buffer-tab))
 
+  (defun w3m-xmas-setup-tab-in-gutter ()
+    "Set up buffers tab in the gutter."
+    (set-specifier default-gutter-visible-p
+		   (and w3m-use-tab gutter-buffers-tab-enabled t)
+		   (current-buffer)))
+  (add-hook 'w3m-mode-setup-functions 'w3m-xmas-setup-tab-in-gutter)
+  (add-hook 'w3m-select-buffer-mode-hook 'w3m-xmas-setup-tab-in-gutter)
+
   (defun w3m-xmas-update-tab-in-gutter (&rest args)
     "Update the tab control in the gutter area."
-    (update-tab-in-gutter (selected-frame)))
-
-  (when (symbol-value 'gutter-buffers-tab-enabled)
-    (add-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter)))
+    (when (and w3m-use-tab gutter-buffers-tab-enabled)
+      (update-tab-in-gutter (selected-frame))))
+  (add-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter))
 
 ;;; Graphic icons:
 (defcustom w3m-space-before-modeline-icon ""

@@ -63,14 +63,12 @@
 (eval-and-compile
   (cond
    ((or (featurep 'xemacs)
-	(not (boundp 'emacs-major-version))
 	(< emacs-major-version 20))
     (require 'poe)
     (require 'poem))))
 
 (eval-and-compile
-  (cond ((and (boundp 'emacs-major-version)
-	      (= emacs-major-version 19))
+  (cond ((= emacs-major-version 19)
 	 (autoload 'cancel-timer "timer")
 	 (require 'custom))))
 
