@@ -3077,16 +3077,16 @@ zdnet.comp zdnet.gamespot
 These are mailing list archives supported by @samp{shimbun} library.
 
 @table @asis
-@item @uref{http://lists.airs.net/semi-gnus/archive/, semi-gnus-ja}
+@item @uref{http://lists.airs.net/semi-gnus/archive/, Semi-gnus Mailing List in Japan}
 airs.semi-gnus-ja
 
-@item @uref{http://lists.airs.net/, Wanderlust}
+@item @uref{http://lists.airs.net/, Wanderlust Mailing List}
 airs.wl airs.wl-en
 
-@item @uref{http://www.rc.tutrp.tut.ac.jp/bbdb-ml/, bbdb-ml}
+@item @uref{http://www.rc.tutrp.tut.ac.jp/bbdb-ml/, Big Brother DataBase Mailing List}
 bbdb-ml.bbdb-ml
 
-@item @uref{http://mail.gnome.org/archives/, GNOME}
+@item @uref{http://mail.gnome.org/archives/, GNOME Mailing List}
 gnome.balsa-list gnome.calendar-list gnome.cvs-commits-list
 gnome.foundation-announce gnome.foundation-list gnome.fplan-list
 gnome.gconf-list gnome.gdome gnome.gnome-1.4-list
@@ -3104,41 +3104,41 @@ gnome.gtk-i18n-list gnome.gtk-list gnome.gtk-perl-list
 gnome.guppi-list gnome.libart gnome.libart-hackers gnome.orbit-list
 gnome.vote gnome.wm-spec-list gnome.xml gnome.xslt
 
-@item @uref{http://www.h14m.org/ml/, h14m}
+@item @uref{http://www.h14m.org/ml/, h14m Mailing List}
 h14m.hns-dev h14m.hns-users
 
-@item @uref{http://www.java-conf.gr.jp/archives/, Java Conference}
+@item @uref{http://www.java-conf.gr.jp/archives/, Java Conference Mailing List}
 javaconf.servlet-ml javaconf.business-ml
 javaconf.duke-in-the-box-ml javaconf.jfriends-ml javaconf.JGT-ml
 javaconf.jini-ml javaconf.ejb-ml javaconf.cm-ml javaconf.horb-ml
 javaconf.talk-ml
 
-@item @uref{http://www.peanuts.gr.jp/~kei/ml-archive/, LinuxCE JP}
+@item @uref{http://www.peanuts.gr.jp/~kei/ml-archive/, LinuxCE JP Mailing List}
 linuxce-jp.users
 
-@item @uref{http://www.m17n.org/, Mule}
+@item @uref{http://www.m17n.org/, Mule Mailing List}
 m17n.mule-ja m17n.mule
 
-@item @uref{http://www.ysnb.net/meadow/, Meadow}
+@item @uref{http://www.ysnb.net/meadow/, Meadow Mailing List}
 meadow.meadow-develop meadow.meadow-users-jp
 
-@item @uref{http://www.mew.org/ml/, Mew}
+@item @uref{http://www.mew.org/ml/, Mew Mailing List}
 mew.mew-dist mew.mew-win32 mew.mew-int
 
-@item @uref{http://www.mew.org/ml/, MagicPoint}
+@item @uref{http://www.mew.org/ml/, MagicPoint Mailing List}
 mew.mgp-users mew.mgp-users-jp
 
-@item @uref{http://www.namazu.org/ml/, Namazu}
+@item @uref{http://www.namazu.org/ml/, Namazu Mailing List}
 namazu.namazu-users-ja namazu.namazu-win32-users-ja
 namazu.namazu-users-en namazu.namazu-devel-ja namazu.namazu-devel-en
 
-@item @uref{http://emacs-w3m.namazu.org/ml/, emacs-w3m}
+@item @uref{http://emacs-w3m.namazu.org/ml/, emacs-w3m Mailing List}
 namazu.emacs-w3m
 
-@item @uref{http://migemo.namazu.org/ml/, migemo}
+@item @uref{http://migemo.namazu.org/ml/, migemo Mailing List}
 namazu.migemo
 
-@item @uref{http://www.jp.netbsd.org/ja/JP/ml/, NetBSD JP}
+@item @uref{http://www.jp.netbsd.org/ja/JP/ml/, NetBSD JP Mailing List}
 netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
 netbsd.tech-pkg-ja netbsd.port-arm32-ja netbsd.port-hpcmips-ja
 netbsd.port-mac68k-ja netbsd.port-mips-ja netbsd.port-powerpc-ja
@@ -3150,35 +3150,35 @@ quickml.quickml-users quickml.quickml-server
 quickml.chatty quickml.dotnet quickml.linux-zaurus quickml.ming
 quickml.pdumpfs quickml.stationery quickml.tty-mania
 
-@item @uref{http://blade.nagaokaut.ac.jp/, Ruby}
+@item @uref{http://blade.nagaokaut.ac.jp/, Ruby Mailing List}
 ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
 ruby.ruby-dev ruby.ruby-ext ruby.ruby-list ruby.ruby-math
 ruby.ruby-talk
 
-@item @uref{http://linux.toshiba-dme.co.jp/ML/tlinux-users-j/, Toshiba Linux Users JP}
+@item @uref{http://linux.toshiba-dme.co.jp/ML/tlinux-users-j/, Toshiba Linux Users JP Mailing List}
 toshiba.linux-users-j
 
-@item @uref{http://mi.med.tohoku.ac.jp/~satodai/w3m-dev/, w3m-dev}
+@item @uref{http://mi.med.tohoku.ac.jp/~satodai/w3m-dev/, w3m-dev Mailing List}
 w3m-dev.w3m-dev
 
-@item @uref{http://yar-3.net/digiko/, digiko-ml}
+@item @uref{http://yar-3.net/digiko/, digiko Mailing List}
 digiko.digiko
 
-@item @uref{http://list-archive.xemacs.org/, XEmacs}
+@item @uref{http://list-archive.xemacs.org/, XEmacs Mailing List}
 xemacs.xemacs-announce xemacs.xemacs-beta-ja
 xemacs.xemacs-beta xemacs.xemacs-build-reports xemacs.xemacs-cvs
 xemacs.xemacs-design xemacs.xemacs-mule xemacs.xemacs-nt
 xemacs.xemacs-patches xemacs.xemacs-users-ja xemacs.xemacs
 
-@item @uref{http://memo.st.ryukoku.ac.jp/archive/, Security MEMO}
+@item @uref{http://memo.st.ryukoku.ac.jp/archive/, Security MEMO Mailing List}
 security-memo.memo
 
-@item @uref{http://lists.debian.or.jp/, Debian JP}
+@item @uref{http://lists.debian.or.jp/, Debian JP Mailing List}
 debian-jp.debian-announce debian-jp.debian-devel
 debian-jp.debian-www debian-jp.debian-users debian-jp.debian-policy
 debian-jp.jp-qa
 
-@item @uref{http://lists.debian.org, Debian}
+@item @uref{http://lists.debian.org, Debian Mailing List}
 debian.debian-announce debian.debian-commercial debian.debian-firewall
 debian.debian-french debian.debian-isp debian.debian-italian
 debian.debian-kde debian.debian-laptop debian.debian-news
@@ -3234,7 +3234,7 @@ debian.lcs-eng debian.lsb-confcall debian.lsb-discuss debian.lsb-impl
 debian.lsb-spec debian.lsb-test debian.spi-announce debian.spi-general
 debian.vgui-discuss
 
-@item @uref{http://www.kde.gr.jp/ml/, KDE}
+@item @uref{http://www.kde.gr.jp/ml/, KDE Mailing List in Japan}
 kde.Kuser kde.Kdeveloper
 
 @item @uref{http://www.geocrawler.com/, Geocrawler}
@@ -3244,11 +3244,11 @@ your favorite archive to the variable
 @code{shimbun-geocrawler-group-alist}.
 
 @item @uref{http://marc.theaimsgroup.com/, Mailing list ARChives}
-Mailing list ARChives (@acronym{MARC}) is supported by @samp{shimbun}
+Mailing list ARChives (@acronym{MARC}) are supported by @samp{shimbun}
 library.  Add a group name of your favorite archive and its URL to the
 variable @code{shimbun-marc-aims-group-alist}, and you can browse it.
 
-@item @uref{http://sources.redhat.com/ml/, RedHat}
+@item @uref{http://sources.redhat.com/ml/, RedHat Mailing List}
 redhat.automake redhat.bug-automake redhat.automake-prs
 redhat.automake-cvs redhat.binutils redhat.binutils-cvs
 redhat.c++-embedded redhat.crossgcc redhat.cgen redhat.cgen-prs
@@ -3278,44 +3278,64 @@ redhat.sid-cvs redhat.sourcenav redhat.sourcenav-announce
 redhat.sourcenav-prs redhat.win32-x11 redhat.xconq7
 redhat.xconq-announce redhat.xconq-cvs
 
-@item @uref{http://www.tech-arts.co.jp/macosx/, MacOSX JP}
+@item @uref{http://www.tech-arts.co.jp/macosx/, MacOSX JP Mailing List}
 macosx-jp.macosx-jp macosx-jp.macosx-dev-jp
 macosx-jp.macosx-ws-jp macosx-jp.webobjects-jp
 
-@item @uref{http://lists.sourceforge.jp/pipermail/anthy-dev/, Anthy}
-anthy.main
+@item @uref{http://sourceforge.jp, SourceForge JP}
+All archives served by SourceForge JP are supported by @samp{shimbun}
+library.  Add a group name of your favorite archive to the variable
+@code{shimbun-sourceforge-jp-mailing-lists}, and you can browse it.
 
-@item @uref{http://lists.sourceforge.jp/pipermail/canna-dev/, Canna}
-canna-dev.main
-
-@item @uref{http://heimat.jp/~nakaji/elips/, Elips}
+@item @uref{http://heimat.jp/~nakaji/elips/, Elips Mailing List}
 elips.elips
 
-@item @uref{http://lists.squeakfoundation.org/pipermail/squeak-ja/, Squeak-ja}
+@item @uref{http://lists.squeakfoundation.org/pipermail/squeak-ja/, Squeak-ja Mailing List}
 squeak-ja.main
 
-@item @uref{http://www.sra.co.jp/smalltalk/SML/archives/, sml}
+@item @uref{http://www.sra.co.jp/smalltalk/SML/archives/, Smalltalkers' Salon Mailing List}
 sml.main
 
-@item @uref{http://lists.squeakfoundation.org/pipermail/squeak-dev/, Squeak-dev}
+@item @uref{http://lists.squeakfoundation.org/pipermail/squeak-dev/, Squeak-dev Mailing List}
 squeak-dev.main
 
-@item Plucker
+@item @uref{http://www.mail-archive.com/plucker-*@@rubberchicken.org/maillist.html, Plucker Mailing List}
 plucker.announce plucker.list plucker.dev
 
-@item @uref{http://www.pilot-link.org/pipermail/, pilot-link}
+@item @uref{http://www.pilot-link.org/pipermail/, pilot-link Mailing List}
 pilot-link.announce pilot-link.devel pilot-link.general
 pilot-link.unix-ng
 
-@item @uref{http://www.thedotin.net/maillists/coldsync-hackers/maillist.html, Coldsync}
+@item @uref{http://www.thedotin.net/maillists/coldsync-hackers/maillist.html, Coldsync Mailing List}
 coldsync.main
 
-@item @uref{http://www.jpilot.org/pipermail/jpilot/, J-Pilot}
+@item @uref{http://www.jpilot.org/pipermail/jpilot/, J-Pilot Mailing List}
 jpilot.main
 
-@item @uref{http://lists.gnu-designs.com/pipermail/pilot-mailsync/, pilot-mailsync}
+@item @uref{http://lists.gnu-designs.com/pipermail/pilot-mailsync/, pilot-mailsync Mailing List}
 pilot-mailsync.main
+
+@item @uref{http://www.mozilla.gr.jp/ml/logs/moz-users/, Mozilla Users Mailing List in Japan}
+mozilla-jp.users
+
+@item @uref{http://www.tdiary.org/, tDiary Developers Mailing List in Japan}
+tdiary-ml.devel tdiary-ml.theme
+
 @end table
+
+Please note that userid and passowrd are required for
+@samp{mozilla-jp.users} so you have to write;
+
+@example
+machine www.mozilla.gr.jp
+path /ml/logs/moz-users/
+login mozilla
+passwd mozilla
+@end example
+
+@noindent
+in @file{~/.w3m/passwd} and remove group and others access permissions
+from the file.
 
 @node Sport Sites Supported by Shimbun
 @subsection Sport Sites Supported by Shimbun
@@ -3372,7 +3392,7 @@ Add appropriate configurations to the variable
 @code{shimbun-tcup-group-alist}, you can browse other bulletin board
 systems that are provided at @uref{http://www.tcup.com/}.
 
-@item @uref{http://www.vinelinux.org, VineLinux}
+@item @uref{http://www.vinelinux.org, VineLinux Errata}
 vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
 vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
@@ -3399,6 +3419,26 @@ This is an example to use @samp{sb-hns}.
          "miyoshi@@meadowy.org")))
 @end lisp
 
+@item tDiary
+This is an example to use @samp{sb-tdiary}.
+@lisp
+(setq shimbun-tdiary-group-alist
+      '(("henahena"                          ;; Group Name
+         "http://www.fan.gr.jp/~ring/d/")    ;; URL
+        ("yoichi"
+         "http://yoichi.geiin.org/d/")))
+@end lisp
+
+@item chalow
+This is an example to use @samp{sb-chalow}.
+@lisp
+(setq shimbun-chalow-group-alist
+      '(("yto"                               ;; Group Name
+         "http://nais.to/~yto/clog/"         ;; URL
+         "yto@@nais.to")                      ;; E-mail Address
+        ))
+@end lisp
+
 @item @uref{http://www.kantei.go.jp/jp/, Koizumu Cabinet Mail Magazine}
 kantei.m-magazine
 
@@ -3415,7 +3455,10 @@ muchy.review
 @item @uref{http://palmoslove.com/, palmoslove}
 palmoslove.webnews palmoslove.pdanews palmoslove.sitenews
 
-@item @uref{http://www.wince.ne.jp/, wincefan}
+@item @uref{http://www.pocketgames.jp/, Pocketgames}
+pocketgames.news
+
+@item @uref{http://www.wince.ne.jp/, Wincefan}
 wincefan.news
 
 @item @uref{http://www.palmfan.com/, PalmFan}
@@ -3597,6 +3640,7 @@ If you want to make an article from a line in a web page source, like:
 @example
 <a href="053003.html">some talks on May 30(posted by Mikio &lt;foo@@bar.net&gt;)</a>
 @end example
+
 @noindent
 
 use the following regexp:
@@ -3830,7 +3874,7 @@ parent class.} and methods defined in the @file{sb-mailman.el} module
 will be used in @samp{shimbun-foobar} by default.  You can overwrite
 some of parent methods, if necessary.
 
-See the @file{sb-anthy.el} file as a sample that uses the
+See the @file{sb-pilot-mailsync.el} file as a sample that uses the
 @file{sb-mailman.el} module.  You can feel how easy to create a new
 @samp{shimbun} module by using such parent modules.
 

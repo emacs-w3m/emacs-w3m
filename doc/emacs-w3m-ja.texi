@@ -3622,7 +3622,10 @@ muchy.review
 @item @uref{http://palmoslove.com/, palmoslove}
 palmoslove.webnews palmoslove.pdanews palmoslove.sitenews
 
-@item @uref{http://www.wince.ne.jp/, wincefan}
+@item @uref{http://www.pocketgames.jp/, Pocketgames}
+pocketgames.news
+
+@item @uref{http://www.wince.ne.jp/, Wincefan}
 wincefan.news
 
 @item @uref{http://www.palmfan.com/, PalmFan}
@@ -3677,7 +3680,7 @@ Mew $B$J$I$N(B MUA $B$rMxMQ$7!"%&%'%V%3%s%F%s%D$r%a!<%k$HF1$8%f!<%6%$%s%?!<%U
 
 @lisp
 (require 'shimbun)
-(luna-define-class shimbun-foobar-dev (shimbun) ())
+(luna-define-class shimbun-foobar (shimbun) ())
 @end lisp
 
 @noindent
@@ -4026,8 +4029,8 @@ fml mailing list server/manager.  $B>\:Y(B
 $B$k$3$H$b2DG=$G$9(B)$B!#(B
 
 @file{sb-mailman.el} $B$r<B:]$KMxMQ$7$?%5%s%W%k$H$7$F!"(B
-@file{sb-anthy.el} $B$J$I$r$4Mw2<$5$$!#G!2?$K3Z$,$G$-$k$+$,$*J,$+$j$K$J$k(B
-$B$G$7$g$&!#(B
+@file{sb-pilot-mailsync.el} $B$J$I$r$4Mw2<$5$$!#G!2?$K3Z$,$G$-$k$+$,$*J,$+(B
+$B$j$K$J$k$G$7$g$&!#(B
 
 $B5$$rIU$1$k$3$H$,0l$D$"$k$H$9$l$P!"$3$l$i$N%a!<%j%s%0%j%9%H%^%M!<%8%c$NCf(B
 $B$K$OCO0h2=(B (localize) $B$5$l$F!"Nc$($PF|IUI=<($rF|K\8l$G9T$&$h$&$K2~B$$5$l(B
