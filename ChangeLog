@@ -2,8 +2,9 @@
 
 	* w3m-om.el (w3m-detect-coding-region): Make it work.
 
-	* w3m-xmas.el (w3m-detect-coding-region): Return the car of the
-	return value of `detect-coding-with-priority' if it is a list.
+	* w3m-xmas.el (w3m-detect-coding-region): Return just the return
+	value of `detect-coding-with-priority' if it is not a list,
+	otherwise the car of the value.
 
 2001-10-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
