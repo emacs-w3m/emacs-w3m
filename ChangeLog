@@ -1,3 +1,37 @@
+2003-06-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html): Make it inherit
+	the `shimbun-asahi' class instead of the `shimbun' class.
+	(shimbun-groups, shimbun-from-address, shimbun-index-url,
+	shimbun-get-headers): Remove methods.
+	(shimbun-make-contents): Define it for the `shimbun-asahi-html'
+	class independently.
+
+	* shimbun/sb-yomiuri.el: Require `sb-text'.
+	(shimbun-yomiuri): Make it inherit the `shimbun-text' class.
+	(shimbun-yomiuri-groups, shimbun-yomiuri-from-address): Remove.
+	(shimbun-yomiuri-group-table): Rename from
+	`shimbun-yomiuri-group-regexp-alist'; include Japanese
+	translations and index names.
+	(shimbun-groups, shimbun-from-address): New methods.
+	(shimbun-yomiuri-index-url): Remove.
+	(shimbun-index-url): Use `shimbun-yomiuri-group-table'.
+	(shimbun-yomiuri-get-headers): Fit it to
+	`shimbun-yomiuri-group-table'; use `shimbun-yomiuri-url' instead
+	of to call the `shimbun-url-internal' function.
+	(shimbun-yomiuri-make-contents): Remove.
+	(shimbun-yomiuri-adjust-date-header): New function.
+	(shimbun-make-contents): Use `shimbun-yomiuri-adjust-date-header'
+	as a preprocessor.
+
+	* shimbun/sb-yomiuri-html.el (shimbun-yomiuri-html): Make it
+	inherit only the `shimbun-yomiuri' class.
+	(shimbun-yomiuri-html-url, shimbun-yomiuri-html-groups,
+	shimbun-yomiuri-html-from-address): Remove.
+	(shimbun-yomiuri-html-make-contents): Remove.
+	(shimbun-make-contents): Define it for the `shimbun-yomiuri-html'
+	class independently.
+
 2003-06-03  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* shimbun/sb-nikkansports.el: Follow the change of the Web site.
