@@ -74,7 +74,7 @@
   ;;      hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
   (let (year month day minutes timezone)
     (if (not (string-match
-	      "\\([0-9][0-9][0-9][0-9]\\)\\(-[0-9][0-9]\\)?\\(-[0-9][0-9]\\)?T?\\([0-9][0-9]:[0-9][0-9]\\(:[.0-9]+\\)?\\)?\\(\\+[0-9][0-9]:[0-9][0-9]\\)?"
+	      "\\([0-9][0-9][0-9][0-9]\\)\\(-[0-9][0-9]\\)?\\(-[0-9][0-9]\\)?T?\\([0-9][0-9]:[0-9][0-9]\\(:[.0-9]+\\)?\\)?\\(\\+[0-9][0-9]:[0-9][0-9]\\|Z\\)?"
 	      date))
 	""
       (setq year (match-string-no-properties 1 date)
@@ -88,9 +88,12 @@
 	(setq month (substring month 1)))
       (when (and day (string-match "^-" day))
 	(setq day (substring day 1)))
-      (when (and timezone (string-match ":" timezone))
-	(setq timezone (concat (substring timezone 0 (match-beginning 0))
-			       (substring timezone (match-end 0)))))
+      (when timezone 
+	(if (string-equal timezone "Z")
+	    (setq timezone "+0000")
+	  (if (string-match ":" timezone)
+	      (setq timezone (concat (substring timezone 0 (match-beginning 0))
+				     (substring timezone (match-end 0)))))))
       (setq year (string-to-number year)
 	    month (string-to-number month)
 	    day (string-to-number day))
