@@ -1,3 +1,7 @@
+2002-03-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* Release emacs-w3m-1.2.6 from emacs-w3m-1_2 branch.
+
 2002-03-11  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-ucs.el (w3m-euc-japan-encoder): Treat japanese-jisx0208-1978
