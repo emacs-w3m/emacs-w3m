@@ -1,6 +1,6 @@
 2004-10-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* w3m.el (w3m-check-refresh-attribute): Fix to Analyze META tags.
+	* w3m.el (w3m-check-refresh-attribute): Fix to Analyze the URL.
 
 2004-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
