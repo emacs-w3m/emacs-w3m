@@ -1,3 +1,28 @@
+2001-12-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-use-refresh): New user option.
+	(w3m-refresh-timer, w3m-current-refresh): New buffer-local
+	variables.
+	(w3m-clear-local-variables, w3m-copy-local-variables): Handle
+	`w3m-current-refresh'.
+	(w3m-meta-refresh-content-regexp) 
+	(w3m-meta-content-refresh-regexp): New constant.
+	(w3m-decode-buffer): Call `w3m-decode-get-refresh' first.
+	(w3m-decode-get-refresh): New function.
+	(w3m-view-previous-page): Bind `w3m-use-refresh' to nil.
+	(w3m-quit, w3m-close-window): Call `w3m-cancel-refresh-timer' at
+	any buffers.
+	(w3m-goto-url): Call `w3m-cancel-refresh-timer' first.
+	If exist Refresh attribute of the Meta tag, set timer for
+	`w3m-goto-url-with-timer'.
+	(w3m-goto-url-with-timer): New function.
+
+	* w3m-util.el (w3m-cancel-refresh-timer): New function.
+	(w3m-current-refresh, w3m-refresh-timer): Avoid byte-compiled
+	warnings.
+
+	* w3m-proc.el (w3m-process-stop): Call `w3m-cancel-refresh-timer'.
+
 2001-12-24  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-dump-head-source-command-arguments) [w3mmee]: Support

@@ -44,7 +44,9 @@
   (defvar w3m-current-url)
   (defvar w3m-current-title)
   (defvar w3m-html-string-regexp)
-  (defvar w3m-work-buffer-list))
+  (defvar w3m-work-buffer-list)
+  (defvar w3m-current-refresh)
+  (defvar w3m-refresh-timer))
 
 (eval-and-compile
   (eval
@@ -338,6 +340,13 @@ Otherwise return nil."
 		     (setq bin (expand-file-name (concat command ".exe") dir))))
 	    (throw 'found-command bin)))))))
 
+(defun w3m-cancel-refresh-timer (&optional buffer)
+  "Cancel the timer for REFRESH attribute in META tag."
+  (with-current-buffer (or buffer (current-buffer))
+    (setq w3m-current-refresh nil)
+    (when w3m-refresh-timer
+      (cancel-timer w3m-refresh-timer)
+      (setq w3m-refresh-timer nil))))
 
 (provide 'w3m-util)
 ;;; w3m-util.el ends here

@@ -739,6 +739,11 @@ allows a kludge that it can also be a plist of frame properties."
 			       (sexp :tag "Value")))
 		 plist))
 
+(defcustom w3m-use-refresh t
+  "*If non-nil, support REFRESH attribute in META tags."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-mbconv-command "mbconv"
   "*Command name for \"mbconv\" be supplied with \"libmoe\"."
   :group 'w3m
@@ -892,6 +897,9 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (defvar w3m-current-process nil "Current retrieving process of this buffer.")
 (make-variable-buffer-local 'w3m-current-process)
 
+(defvar w3m-refresh-timer nil "Timer of refresh process,")
+(make-variable-buffer-local 'w3m-refresh-timer)
+
 (defvar w3m-current-base-url nil "Base URL of this buffer.")
 (defvar w3m-current-forms nil "Forms of this buffer.")
 (defvar w3m-current-coding-system nil "Current coding-system of this buffer.")
@@ -900,6 +908,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (defvar w3m-start-url nil "Start URL of this buffer.")
 (defvar w3m-contents-url nil "Table of Contents URL of this buffer.")
 (defvar w3m-max-anchor-sequence nil "Maximum number of anchor sequence on this buffer.")
+(defvar w3m-current-refresh nil "Cons pair of refresh attribute, '(sec . url).")
 
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-base-url)
@@ -911,6 +920,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (make-variable-buffer-local 'w3m-start-url)
 (make-variable-buffer-local 'w3m-contents-url)
 (make-variable-buffer-local 'w3m-max-anchor-sequence)
+(make-variable-buffer-local 'w3m-current-refresh)
 
 (defsubst w3m-clear-local-variables ()
   (setq w3m-current-url nil
@@ -922,10 +932,11 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	w3m-previous-url nil
 	w3m-start-url nil
 	w3m-contents-url nil
-	w3m-max-anchor-sequence nil))
+	w3m-max-anchor-sequence nil
+	w3m-current-refresh nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url base title forms cs next prev start toc hseq)
+  (let (url base title forms cs next prev start toc hseq refresh)
     (with-current-buffer from-buffer
       (setq url w3m-current-url
 	    base w3m-current-base-url
@@ -936,7 +947,8 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	    prev w3m-previous-url
 	    start w3m-start-url
 	    toc w3m-contents-url
-	    hseq w3m-max-anchor-sequence))
+	    hseq w3m-max-anchor-sequence
+	    refresh w3m-current-refresh))
     (setq w3m-current-url url
 	  w3m-current-base-url base
 	  w3m-current-title title
@@ -946,7 +958,8 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	  w3m-previous-url prev
 	  w3m-start-url start
 	  w3m-contents-url toc
-	  w3m-max-anchor-sequence hseq)))
+	  w3m-max-anchor-sequence hseq
+	  w3m-current-refresh refresh)))
 
 (defvar w3m-verbose t "Flag variable to control messages.")
 
@@ -1069,6 +1082,23 @@ for a charset indication")
 	    "[ \t]+http-equiv=\"?Content-type\"?[ \t]*/?>"))
   "Regexp used in parsing `<META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">
 for a charset indication")
+
+(defconst w3m-meta-refresh-content-regexp
+  (eval-when-compile
+    (concat "<meta[ \t]+http-equiv=\"?refresh\"?[ \t]+"
+	    "content=\"\\([^;]+\\)"
+	    ";[ \t]*url=\"?\\([^\"]+\\)\"?"
+	    "[ \t]*/?>"))
+  "Regexp used in parsing `<META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">
+for a refresh indication")
+
+(defconst w3m-meta-content-refresh-regexp
+  (eval-when-compile
+    (concat "<meta[ \t]+content=\"\\([^;]+\\)"
+	    ";[ \t]*url=\"?\\([^\"]+\\)\"?"
+	    "[ \t]+http-equiv=\"?refresh\"?[ \t]*/?>"))
+  "Regexp used in parsing `<META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">
+for a refresh indication")
 
 (eval-and-compile
   (defconst w3m-html-string-regexp
@@ -2272,6 +2302,7 @@ If the user enters null input, return second argument DEFAULT."
 			  t '(t nil) nil (cadr x))))))))
 
 (defun w3m-decode-buffer (url &optional content-charset content-type)
+  (w3m-decode-get-refresh url)
   (let (cs)
     (unless content-charset
       (setq content-charset
@@ -2302,6 +2333,21 @@ If the user enters null input, return second argument DEFAULT."
 		    nil
 		  w3m-coding-system-priority-list)))))
     (set-buffer-multibyte t)))
+
+(defun w3m-decode-get-refresh (url)
+  "Get REFRESH attribute in META tags."
+  (goto-char (point-min))
+  (setq w3m-current-refresh nil)
+  (let ((case-fold-search t)
+	sec refurl)
+    (goto-char (point-min))
+    (when (or (re-search-forward w3m-meta-refresh-content-regexp nil t)
+	      (re-search-forward w3m-meta-content-refresh-regexp nil t))
+      (setq sec (match-string-no-properties 1))
+      (setq refurl (match-string-no-properties 2))
+      (when (string-match "[0-9]+" sec)
+	(setq w3m-current-refresh (cons (string-to-number sec)
+					(w3m-expand-url refurl url)))))))
 
 (defun w3m-x-moe-decode-buffer ()
   (let ((args '("-i" "-cs" "x-moe-internal"))
@@ -3060,7 +3106,8 @@ forward is performed.  Otherwise, COUNT is treated as 1 by default."
   (let ((url (if (and (integerp count)
 		      (not (zerop count)))
 		 (car (w3m-history-backward count))
-	       (w3m-history-backward))))
+	       (w3m-history-backward)))
+	(w3m-use-refresh nil))
     (when url
       (w3m-goto-url url nil nil
 		    (w3m-history-plist-get :post-data nil nil t)
@@ -3951,6 +3998,7 @@ Return t if deleting current frame or window is succeeded."
 	      (message "")))
     (w3m-delete-frame-maybe)
     (dolist (buffer (w3m-list-buffers t))
+      (w3m-cancel-refresh-timer buffer)
       (kill-buffer buffer))
     (w3m-select-buffer-close-window)
     (w3m-cache-shutdown)
@@ -3966,9 +4014,11 @@ Return t if deleting current frame or window is succeeded."
 	      (w3m-delete-frame-maybe)
 	    (let ((cur) (buffers (list (current-buffer))))
 	      (bury-buffer (current-buffer))
+	      (w3m-cancel-refresh-timer (current-buffer))
 	      (while (with-current-buffer (setq cur (other-buffer))
 		       (and (not (memq (current-buffer) buffers))
 			    (eq major-mode 'w3m-mode)))
+		(w3m-cancel-refresh-timer cur)
 		(bury-buffer cur)
 		(push cur buffers))))
     (set-window-buffer (selected-window) (other-buffer))
@@ -4236,6 +4286,7 @@ field for this request."
     (w3m-static-if (fboundp 'universal-coding-system-argument)
 	coding-system-for-read)))
   (set-text-properties 0 (length url) nil url)
+  (w3m-cancel-refresh-timer (current-buffer))
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:\\(.*\\)" url)
@@ -4353,7 +4404,26 @@ field for this request."
 			 (file-name-directory localpath))
 		     w3m-profile-directory)))
 	    (w3m-update-toolbar)
-	    (run-hook-with-args 'w3m-display-hook url))))))))
+	    (run-hook-with-args 'w3m-display-hook url)
+	    (when (and w3m-use-refresh w3m-current-refresh)
+	      (setq w3m-refresh-timer
+		    (run-at-time (format "%d sec" (car w3m-current-refresh))
+				 nil
+				 'w3m-goto-url-with-timer
+				 (cdr w3m-current-refresh)
+				 (current-buffer)))))))))))
+
+(defun w3m-goto-url-with-timer (url buffer)
+  "Run the command `w3m-goto-url' for the refresh timer."
+  (when (and url buffer (get-buffer buffer))
+    (if (get-buffer-window buffer)
+	(save-selected-window
+	  (pop-to-buffer buffer)
+	  (with-current-buffer buffer
+	    (w3m-cancel-refresh-timer buffer)
+	    (w3m-goto-url url)))
+      (with-current-buffer buffer
+	(w3m-cancel-refresh-timer buffer)))))
 
 ;;;###autoload
 (defun w3m-goto-url-new-session (url

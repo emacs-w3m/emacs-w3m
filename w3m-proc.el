@@ -218,6 +218,7 @@ number of current working processes is less than `w3m-process-max'."
   "Remove handlers related to the buffer BUFFER, and stop processes
 which have no handler."
   (interactive (list (current-buffer)))
+  (w3m-cancel-refresh-timer buffer)
   (setq w3m-process-queue
 	(delq nil
 	      (mapcar
