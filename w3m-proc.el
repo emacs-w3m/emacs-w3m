@@ -189,10 +189,10 @@ return it."
   (when (processp process)
     (set-process-filter process 'ignore)
     (set-process-sentinel process 'ignore)
-    (when (eq (process-status process) 'run)
+    (when (memq (process-status process) '(run stop))
       (kill-process process)
       (when w3m-process-kill-surely
-	(while (eq (process-status process) 'run)
+	(while (memq (process-status process) '(run stop))
 	  (sit-for 0.1))))))
 
 (defun w3m-process-start-process (object &optional no-sentinel)
@@ -350,19 +350,18 @@ nil."
     (let ((start (current-time)))
       (while (or (w3m-static-cond
 		  ((featurep 'xemacs)
-		   (sit-for 0.2 t))
+		   (not (sit-for 0.2 t)))
 		  ((<= emacs-major-version 20)
-		   (sit-for 0 200 t))
+		   (not (sit-for 0 200 t)))
 		  (t
-		   (accept-process-output (w3m-process-process process)
-					  0 200)))
-		 (eq 'run (process-status (w3m-process-process process))))
+		   (accept-process-output (w3m-process-process process) 0 200)))
+		 (memq (process-status (w3m-process-process process))
+		       '(run stop)))
 	(and seconds
 	     (< seconds (w3m-time-lapse-seconds start (current-time)))
 	     (throw 'timeout nil)))
-      ;; The following line is necessary to avoid a process handling
-      ;; bug of Meadow1.  For more detail, see [emacs-w3m:06048].
-      (w3m-static-unless (featurep 'xemacs)
+      (w3m-static-if (featurep 'xemacs)
+	  (sit-for 0.05 t)
 	(sit-for 0 50 t))
       t)))
 

@@ -1,3 +1,10 @@
+2003-11-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-proc.el (w3m-process-wait-process): Invert the return value
+	of sit-for() that waits an asynchronous process has been finished.
+	(w3m-process-kill-process): Relax the condition that checks
+	whether a given process has already finished or not.
+
 2003-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-search.el (w3m-search): Use `w3m-goto-url' instead of `w3m'.
@@ -39,7 +46,7 @@
 
 2003-11-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m-antenna.el (w3m-antenna-sittes): Change its default value.
+	* w3m-antenna.el (w3m-antenna-sites): Change its default value.
 	Allow a list that consists of a function and its options, as the
 	third element of each site.
 	(w3m-antenna-html-skeleton): Remove the link to the antenna editor.
