@@ -1,6 +1,6 @@
 2002-03-13  Yuuichi Teranishi  <teranisi@gohome.org>
 
-	* w3m.el (w3m-additional-command-arguments): Fixed problem whem
+	* w3m.el (w3m-additional-command-arguments): Fixed problem when
 	no-proxy host has port number other than 80.
 
 2002-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
