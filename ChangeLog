@@ -1,7 +1,8 @@
 2003-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-generate-colon-keywords-file): Preset
-	`:strike-through' which is not supported by the old cus-face.el.
+	`:strike-through' and `:strikethru' which aren't supported by the
+	old cus-face.el.
 
 2003-11-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
