@@ -1,3 +1,15 @@
+2005-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-rss.el (shimbun-rss-process-date): Support the date
+	format in the RFC822 style which RSS 2.0 allows.  Suggested by
+	David Hansen <david.hansen@physik.fu-berlin.de>.
+
+2005-01-25  David Hansen  <david.hansen@physik.fu-berlin.de>
+
+	* shimbun/sb-the-register.el (shimbun-get-headers): Rewrite URL to
+	be able to get the images.
+	(shimbun-make-contents): Remove ads.
+
 2005-01-24  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-article): Disable
@@ -365,6 +377,11 @@
 2004-11-21  Tsuyoshi CHO  <mfalcon21@hotmail.com>
 
 	* shimbun/sb-wikimedia.el: New file.
+
+2004-11-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-rss.el (shimbun-rss-process-date): Accept minus sign
+	character for time zone.
 
 2004-11-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
