@@ -7,7 +7,7 @@
 2003-11-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-proc.el (w3m-process-wait-process): Invert the return value
-	of sit-for() that waits an asynchronous process has been finished.
+	of sit-for() that waits an asynchronous process.
 	(w3m-process-kill-process): Relax the condition that checks
 	whether a given process has already finished or not.
 
