@@ -600,11 +600,16 @@ return the contents of this buffer as an encoded string."
 (defun shimbun-mime-encode-string (string)
   (condition-case nil
       (save-match-data
-	(mapconcat
-	 #'identity
-	 (split-string (or (eword-encode-string
-			    (shimbun-decode-entities-string string)) ""))
-	 " "))
+	;; Make sure the temp buffer's multibyteness is true.  It is
+	;; needed to make `encode-mime-charset-string' (which is
+	;; employed by `eword-encode-string') encode non-ascii text.
+	(let ((default-enable-multibyte-characters t))
+	  (with-temp-buffer
+	    (mapconcat
+	     #'identity
+	     (split-string (or (eword-encode-string
+				(shimbun-decode-entities-string string)) ""))
+	     " "))))
     (error string)))
 
 (defun shimbun-make-date-string (year month day &optional time timezone)
