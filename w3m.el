@@ -6221,7 +6221,7 @@ Optional NEW-SESSION is intended to be used by the command
       (w3m-mode))
     (unwind-protect
 	(unless nofetch
-	  (w3m-goto-url url))
+	  (w3m-goto-url url nil nil nil nil nil (interactive-p)))
       (unless w3m-current-url
 	(erase-buffer)
 	(set-buffer-modified-p nil))

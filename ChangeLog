@@ -1,3 +1,18 @@
+2002-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-search.el (w3m-search-engine-alist): Add some dictionaries.
+	(w3m-search-default-engine): Default to google.
+	(w3m-search-quick-search-engine-alist): Add iij-archie; add
+	customization type.
+	(w3m-search-prefer-japanese-site): New user option.
+	(w3m-search-inhibited-japanese-engines): New user option.
+	(w3m-search-quick-search-engines): New function.
+	(w3m-search-quick-search-handler): Maybe use a Japanese site; use
+	`w3m-search-quick-search-engines' to merge
+	`w-s-engine-alist' and `w-s-quick-search-engine-alist'.
+
+	* w3m.el (w3m): Allow quicksearch urls if interactive.
+
 2002-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3.el (w3m-view-this-url-1): Copy `w3m-current-url' into a
