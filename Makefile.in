@@ -39,16 +39,7 @@ default:
 .el.elc:
 	$(ECC) $<
 
-install: default
-	@$(SHELL) ./mkinstalldirs $(lispdir);\
-	for p in ChangeLog *.el; do\
-	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
-	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
-	done;\
-	for p in *.elc; do\
-	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
-	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
-	done
+install: default install-anyway
 
 install-icons:
 	@if test $(ICONDIR) = NONE; then\
@@ -69,8 +60,36 @@ install-package:
 	else\
 	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install;\
 	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons;\
+	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
 	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
 	fi
+
+fast:
+	$(EMACS) $(FLAGS) -f w3mhack-compile
+
+fast-install: fast install-anyway
+
+fast-install-package:
+	@if test $(PACKAGEDIR) = NONE; then\
+	  echo "What a pity!  Your \"$(EMACS)\" does not support"\
+		"a package system.";\
+	else\
+	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" fast-install;\
+	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons;\
+	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
+	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
+	fi
+
+install-anyway:
+	@$(SHELL) ./mkinstalldirs $(lispdir);\
+	for p in ChangeLog *.el; do\
+	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
+	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	done;\
+	for p in *.elc; do\
+	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
+	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	done
 
 dist:
 	autoconf
