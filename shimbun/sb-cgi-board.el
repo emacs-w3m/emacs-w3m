@@ -28,6 +28,8 @@
 ;;; Code:
 
 (require 'shimbun)
+(eval-when-compile
+  (require 'cl))
 
 (defcustom shimbun-cgi-board-group-alist
   '(("support" .
@@ -56,103 +58,127 @@
 (luna-define-method shimbun-groups ((shimbun shimbun-cgi-board))
   (mapcar 'car shimbun-cgi-board-group-alist))
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-cgi-board))
+(defsubst shimbun-cgi-board-base-url (shimbun)
   (cdr (assoc (shimbun-current-group-internal shimbun)
 	      shimbun-cgi-board-group-alist)))
+
+(luna-define-method shimbun-index-url ((shimbun shimbun-cgi-board))
+  (concat (shimbun-cgi-board-base-url shimbun) "&old"))
 
 (luna-define-method shimbun-x-face ((shimbun shimbun-cgi-board))
   nil)
 
-(luna-define-method shimbun-headers ((shimbun shimbun-cgi-board)
-				     &optional range)
+(luna-define-method shimbun-get-headers ((shimbun shimbun-cgi-board)
+					 &optional range)
   (catch 'found
-    (let ((headers)
-	  (base (shimbun-index-url shimbun)))
-      (dolist (page (shimbun-cgi-board-get-pages shimbun range))
-	(with-temp-buffer
-	  (when (shimbun-fetch-url shimbun (concat base "&index&_f=" page))
-	    (let (references)
-	      (goto-char (point-min))
-	      (while (re-search-forward "^<li>\\[\\([^]]+\\)\\] *\
-<a name=\"[^\"]+\" href=\"\\([^\"]+\\)\" target=\"article\">\\([^<]*\\)</a> *\
-<small>(\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) \\([0-9:]+\\))</small>" nil t)
-		(let* ((author (match-string 1))
-		       (url (shimbun-expand-url (match-string 2) base))
-		       (subject (match-string 3))
-		       (date (shimbun-make-date-string
-			      (string-to-number (match-string 4))
-			      (string-to-number (match-string 5))
-			      (string-to-number (match-string 6))
-			      (match-string 7)))
-		       (id (shimbun-cgi-board-make-message-id url)))
-		  (when (shimbun-search-id shimbun id)
-		    (throw 'found headers))
-		  ;; Make alist of articles and their parent articles after
-		  ;; new articles are found, in order to avoid waste access.
-		  (unless references
-		    (setq references
-			  (shimbun-cgi-board-get-references shimbun page)))
-		  ;; When the current subject is equal to the fragment,
-		  ;; this fact represents that the original subject is empty.
-		  (when (string-match
-			 (concat "\\`[^#]*#" (regexp-quote subject) "\\'")
-			 url)
-		    (setq subject ""))
-		  (push (shimbun-create-header
-			 0 subject author date id
-			 (when (setq id (cdr (assoc url references)))
-			   (shimbun-cgi-board-make-message-id id))
-			 nil nil
-			 (if (string-match "\\`\\([^#]+\\)#" url)
-			     (match-string 1 url)
-			   url))
-			headers)))))))
+    (let ((base (shimbun-cgi-board-base-url shimbun))
+	  (no-cache t)
+	  (headers))
+      (dolist (page (shimbun-cgi-board-get-pages range))
+	(let (buffer)
+	  (unwind-protect
+	      (with-temp-buffer
+		(when (shimbun-fetch-url shimbun
+					 (shimbun-expand-url page base)
+					 no-cache)
+		  (goto-char (point-min))
+		  (while (re-search-forward
+			  "\n<!--\\([^: \t\r\f\n]+\\):--><hr noshade>\n" nil t)
+		    (let* ((fragment (match-string 1))
+			   (id (shimbun-cgi-board-make-message-id base
+								  fragment)))
+		      (when (shimbun-search-id shimbun id)
+			(throw 'found headers))
+		      (unless buffer
+			(setq buffer (generate-new-buffer " *temp*"))
+			(with-current-buffer buffer
+			  (shimbun-fetch-url shimbun
+					     (concat base "&thread&_f=" page))))
+		      (push (with-current-buffer buffer
+			      (shimbun-cgi-board-extract-header base fragment))
+			    headers)))))
+	    (when buffer
+	      (kill-buffer buffer))))
+	(setq no-cache nil))
       headers)))
 
-(defun shimbun-cgi-board-get-pages (shimbun &optional range)
-  "Return a list of splited index pages."
-  (with-temp-buffer
-    (when (shimbun-fetch-url shimbun
-			     (concat (shimbun-index-url shimbun) "&old"))
-      (let ((pages)
-	    (count 0)
-	    (limit (shimbun-header-index-pages range)))
-	(goto-char (point-min))
-	(while (and (or (not limit) (<= (incf count) limit))
-		    (re-search-forward
-		     "<a href=\"\\./\\([^.]+\\.html\\)\" target=\"article\">"
-		     nil t))
-	  (push (match-string 1) pages))
-	(nreverse pages)))))
+(defconst shimbun-cgi-board-thread-regexp "\\( *\\)\\[\\([^]]+\\)\\] *\
+<a name=\"\\([^\"]+\\)\" href=\"\\([^\"]+\\)\" target=\"article\">\\([^<]*\\)\
+</a> *<small>(\\(.+\\))</small>")
 
-(defun shimbun-cgi-board-get-references (shimbun page)
-  "Return alist of articles and their parents."
-  (let ((alist)
-	(base (shimbun-index-url shimbun)))
-    (with-temp-buffer
-      (when (shimbun-fetch-url shimbun (concat base "&thread&_f=" page))
-	(goto-char (point-max))
-	(let (pair stack)
-	  (while (re-search-backward "<a name=\"[^\"]+\" \
-href=\"\\([^\"]+\\)\" target=\"article\">" nil t)
-	    (setq pair (cons (shimbun-expand-url (match-string 1) base)
-			     (progn
-			       (forward-line 0)
-			       (skip-chars-forward " "))))
-	    (while (and stack (>= (cdar stack) (cdr pair)))
-	      (pop stack))
-	    (push (cons (car pair) (caar stack)) alist)
-	    (push pair stack)))))
-    alist))
+(defun shimbun-cgi-board-extract-header (base fragment)
+  (let (header)
+    (goto-char (point-min))
+    (while (and (not header) (search-forward fragment nil t))
+      (forward-line 0)
+      (if (and (looking-at shimbun-cgi-board-thread-regexp)
+	       (equal fragment (match-string 3)))
+	  (let ((level (length (match-string 1)))
+		(url (shimbun-expand-url (match-string 4) base)))
+	    (setq header
+		  (shimbun-create-header
+		   0
+		   (let ((subject (match-string 5)))
+		     (if (equal subject fragment) "" subject))
+		   (match-string 2)
+		   (shimbun-cgi-board-make-date-string (match-string 6))
+		   (shimbun-cgi-board-make-message-id base (match-string 3))
+		   nil nil nil url))
+	    (when (> level 0)
+	      ;; Search a parent article.
+	      (while (and (not (shimbun-header-references header))
+			  (zerop (forward-line 1))
+			  (not (looking-at "^$")))
+		(when (and (looking-at shimbun-cgi-board-thread-regexp)
+			   (< (length (match-string 1)) level))
+		  (shimbun-header-set-references
+		   header
+		   (shimbun-cgi-board-make-message-id base
+						      (match-string 3)))))))
+	(forward-line 1)))
+    header))
 
-(defun shimbun-cgi-board-make-message-id (url)
+(defun shimbun-cgi-board-make-date-string (string)
   (save-match-data
-    (when (string-match "\\`http://\\([^/#]+\\)/[^#]*#\\(.*\\)\\'" url)
-      (concat "<"
-	      (match-string 2 url)
-	      "@"
-	      (match-string 1 url)
-	      ">"))))
+    (if (string-match
+	 "\\`\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) \\([0-9:]+\\)\\'" string)
+	(shimbun-make-date-string (string-to-number (match-string 1 string))
+				  (string-to-number (match-string 2 string))
+				  (string-to-number (match-string 3 string))
+				  (match-string 4 string))
+      (multiple-value-bind (sec min hour day month year dow dst zone)
+	  (decode-time (shimbun-time-parse-string string))
+	(setq zone (/ zone 60))
+	(shimbun-make-date-string year month day
+				  (format "%02d:%02d" hour min)
+				  (format "%s%02d%02d"
+					  (if (>= zone 0) "+" "-")
+					  (/ zone 60)
+					  (% zone 60)))))))
+
+(defun shimbun-cgi-board-get-pages (&optional range)
+  "Return a list of splited index pages."
+  (let ((pages)
+	(count 0)
+	(limit (shimbun-header-index-pages range)))
+    (goto-char (point-min))
+    (while (and (or (not limit) (<= (incf count) limit))
+		(re-search-forward
+		 "<a href=\"\\./\\([^.]+\\.html\\)\" target=\"article\">"
+		 nil t))
+      (push (match-string 1) pages))
+    (nreverse pages)))
+
+(defun shimbun-cgi-board-make-message-id (url &optional fragment)
+  (save-match-data
+    (format "<%s@%s>"
+	    (or fragment
+		(progn
+		  (string-match "\\`[^#]*#" url)
+		  (substring url (match-end 0))))
+	    (progn
+	      (string-match "\\`[^:/#?]+://\\([^/#?]+\\)/" url)
+	      (match-string 1 url)))))
 
 (luna-define-method shimbun-clear-contents ((shimbun shimbun-cgi-board) header)
   (let ((id (shimbun-header-id header)))
