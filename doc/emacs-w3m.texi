@@ -162,10 +162,10 @@ Known Problems
 
 Shimbun Library
 
-* Shimbun Sites::               Sites supported by Shimbun
 * Nnshimbun::                   Making Gnus into a web browser!
 * Mew Shimbun::                 Reading web newspapers with Mew
 * Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
+* Shimbun Sites::               Sites supported by Shimbun
 * Shimbun Basics::              How to make your own shimbun modules
 
 Tips
@@ -180,6 +180,13 @@ Emacs-w3m Functions
 @node Introduction
 @chapter Preliminary remarks
 @cindex Introduction
+
+@uref{http://www.cs.indiana.edu/elisp/w3/docs.html, W3} is known as the
+most popular WEB browser on Emacs, but it works so slowly that we want a
+simple and speedy alternative.  @uref{http://w3m.sourceforge.net/, w3m}
+is a pager with WWW capability, developed by Akinori ITO.  Although it
+is a pager, it can be used as a text-mode WWW browser.  Then we
+developed a simple Emacs interface to w3m.
 
 Our special thanks go to Akinori ITO and the w3m team for the excellent
 w3m program.  We would also like to thank everybody who has submitted
@@ -2152,8 +2159,8 @@ See also @ref{Nnshimbun} if you are using T-gnus or Nana-gnus.
 @item
 Q. What's emacs-w3m?
 
-It is an interface program for Emacs which controls w3m.  For details,
-see the @file{README} file.
+It is an interface program on Emacs which controls w3m.  For more
+details, see @ref{Introduction}.
 
 @item
 Q. Which emacs versions are supported?
@@ -2409,17 +2416,12 @@ installing emacs-w3m.  The @acronym{FLIM} package requires the
 Requirements}.
 
 @menu
-* Shimbun Sites::               Sites supported by Shimbun
 * Nnshimbun::                   Turning Gnus into a web browser!
 * Mew Shimbun::                 Reading web newspapers with Mew
 * Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
+* Shimbun Sites::               Sites supported by Shimbun
 * Shimbun Basics::              How to make your own shimbun modules
 @end menu
-
-@node Shimbun Sites
-@section Sites supported by Shimbun
-
-(under translation)
 
 @node Nnshimbun
 @section Turning Gnus into a web browser!
@@ -2981,6 +2983,11 @@ like to replace the @samp{$} mark with another.
 Wanderlust includes @samp{elmo-shimbun} as an ELMO module, so you can
 read @samp{shimbun} by just accessing a folder beginning with @samp{@@}
 (@pxref{(wl)Shimbun Folder}).
+
+@node Shimbun Sites
+@section Sites supported by Shimbun
+
+(under translation)
 
 @node Shimbun Basics
 @section How to make your own shimbun modules
