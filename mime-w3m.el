@@ -208,6 +208,9 @@ will not be substituted.")
 		 (with-current-buffer w3m-current-buffer
 		   mime-w3m-message-structure))))
     (when entity
+      ;; `mime-decode-string' should be performed in a unibyte buffer.
+      (insert (mime-decode-string (mime-entity-body entity)
+				  (mime-entity-encoding entity)))
       (mime-insert-entity-content entity)
       (mime-entity-type/subtype entity))))
 
