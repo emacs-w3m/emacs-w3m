@@ -274,7 +274,7 @@ If no field in forward, return nil without moving."
 	  (dolist (textarea textareas)
 	    (when (cdr textarea)
 	      (w3m-form-textarea-replace (car textarea) (cdr textarea)))))))))
-  
+
 ;;;###autoload
 (defun w3m-fontify-forms ()
   "Process half-dumped data and fontify forms in this buffer."

@@ -50,7 +50,7 @@
     "libstdc++" "libstdc++-cvs" "libstdc++-prs" "mauve-discuss"
     "mauve-announce" "newlib" "pthreads-win32" "rhdb" "rhdb-announce"
     "rhug-rhats" "rpm2html-cvs" "rpm2html-prs" "rpm2html" "sid" "sid-announce"
-    "sid-cvs" "sourcenav" "sourcenav-announce" "sourcenav-prs" "win32-x11" 
+    "sid-cvs" "sourcenav" "sourcenav-announce" "sourcenav-prs" "win32-x11"
     "xconq7" "xconq-announce" "xconq-cvs"))
 (defvar shimbun-redhat-coding-system 'iso-8859-1)
 (defvar shimbun-redhat-reverse-flag t)

@@ -43,7 +43,7 @@
   (mapcar 'car shimbun-pilot-link-group-path-alist))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-mailman))
-  (concat (shimbun-url-internal shimbun) "/" 
+  (concat (shimbun-url-internal shimbun) "/"
 	  (cdr (assoc (shimbun-current-group-internal shimbun)
 		      shimbun-pilot-link-group-path-alist))))
 

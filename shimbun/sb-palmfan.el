@@ -253,7 +253,7 @@
 		  (setq body (buffer-substring-no-properties
 			      (point) (search-forward "</BLOCKQUOTE>" end))
 			count (1+ count)
-			id (format "<%02d%04d%02d%02d@%s>" count year 
+			id (format "<%02d%04d%02d%02d@%s>" count year
 				   (cdr (assoc month shimbun-palmfan-month-alist))
 				   day idbase))
 		  (if (shimbun-search-id shimbun id)

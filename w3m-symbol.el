@@ -22,7 +22,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -152,6 +152,7 @@
 	  (goto-char start)
 	  (delete-region start end)
 	  (insert (apply 'concat (make-list symbol-cnt symbol))))))))
-	   
+
 (provide 'w3m-symbol)
+
 ;;; w3m-symbol.el ends here

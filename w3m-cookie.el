@@ -29,10 +29,10 @@
 ;;
 ;;    http://emacs-w3m.namazu.org/
 
-;; Reference for version 0 cookie:                                  
-;; 	http://www.netscape.com/newsref/std/cookie_spec.html
+;; Reference for version 0 cookie:
+;;	http://www.netscape.com/newsref/std/cookie_spec.html
 ;; Reference for version 1 cookie:
-;; 	http://www.ietf.org/rfc/rfc2965.txt
+;;	http://www.ietf.org/rfc/rfc2965.txt
 ;;
 
 ;;; Code:
@@ -151,7 +151,7 @@ If ask, ask user whether accept bad cookies or not."
 				  (w3m-cookie-expires c))))
 	  (push c expires)
 	(when (and (not (w3m-cookie-ignore c))
-		   (string-match (concat 
+		   (string-match (concat
 				  (regexp-quote (w3m-cookie-domain c)) "$")
 				 host)
 		   (string-match (concat
@@ -265,7 +265,7 @@ If ask, ask user whether accept bad cookies or not."
 	(trusted t)
 	regexp tlen rlen)
     (while accept
-      (cond 
+      (cond
        ((string= (car accept) ".")
 	(setq regexp ".*"))
        ((string= (car accept) ".local")
@@ -278,7 +278,7 @@ If ask, ask user whether accept bad cookies or not."
 	      accept nil))
       (pop accept))
     (while reject
-      (cond 
+      (cond
        ((string= (car reject) ".")
 	(setq regexp ".*"))
        ((string= (car reject) ".local")

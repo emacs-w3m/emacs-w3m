@@ -50,7 +50,7 @@
 	      (cons x (format "%d" index)))
 	    shimbun-f1express-groups)))
 (defvar shimbun-f1express-from-address "f1exp@tokyo-np.co.jp")
-(defvar shimbun-f1express-content-start 
+(defvar shimbun-f1express-content-start
   "<hr color=\"red\" width=\"100%\" size=\"1\"/><br/>")
 (defvar shimbun-f1express-content-end
   "<hr size=\"1\" width=\"100%\" color=\"red\"/><br />")

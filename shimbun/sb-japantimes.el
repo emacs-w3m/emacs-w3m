@@ -49,7 +49,7 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-japantimes))
   (concat (shimbun-url-internal shimbun)
 	  (cdr (assoc (shimbun-current-group-internal shimbun)
-                      shimbun-japantimes-group-path-alist))))
+		      shimbun-japantimes-group-path-alist))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-japantimes)
 					 &optional range)

@@ -45,7 +45,7 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-texfaq))
   (concat (shimbun-url-internal shimbun)
 	  (cdr (assoc (shimbun-current-group-internal shimbun)
-                      shimbun-texfaq-group-path-alist))))
+		      shimbun-texfaq-group-path-alist))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-texfaq)
 					 &optional range)

@@ -973,7 +973,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
   (when mew-shimbun-use-unseen
     (defadvice mew-summary-cursor-postscript (before shimbun-unseen activate)
       (mew-shimbun-unseen-remove-advice))
-    
+
     (when mew-shimbun-use-unseen-cache-save
       ;; "C-cC-q"
       (defadvice mew-kill-buffer (before shimbun-cache-save activate)
@@ -984,7 +984,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	      (set-buffer buf)
 	      (unless (mew-summary-folder-dir-newp)
 		(mew-summary-folder-cache-save))))))
-      
+
       ;; "Q" or exit Emacs
       (defadvice mew-mark-clean-up (before shimbun-cache-save activate)
 	(save-excursion
