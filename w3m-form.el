@@ -241,6 +241,41 @@ If no field in forward, return nil without moving."
 					 `(w3m-form-reset ,form)
 					 'w3m-cursor-anchor
 					 `(w3m-form-submit ,form))))
+	     ((string= type "textarea")
+	      (add-text-properties start (point)
+				   (list 'face 'w3m-form-face
+					 'w3m-action
+					 `(w3m-form-input-textarea ,form ,name)
+					 'w3m-cursor-anchor
+					 `(w3m-form-input-textarea ,form ,name))))
+	     ((string= type "select")
+	      (add-text-properties start (point)
+				   (list 'face 'w3m-form-face
+					 'w3m-action
+					 `(w3m-form-input-select ,form ,name)
+					 'w3m-cursor-anchor
+					 `(w3m-form-input-select ,form ,name))))
+	     ((string= type "password")
+	      (add-text-properties start (point)
+				   (list 'face 'w3m-form-face
+					 'w3m-action
+					 `(w3m-form-input-password ,form ,name)
+					 'w3m-cursor-anchor
+					 `(w3m-form-input-password ,form ,name))))
+	     ((string= type "checkbox")
+	      (add-text-properties start (point)
+				   (list 'face 'w3m-form-face
+					 'w3m-action
+					 `(w3m-form-input-checkbox ,form ,name ,value)
+					 'w3m-cursor-anchor
+					 `(w3m-form-input-checkbox ,form ,name ,value))))
+	     ((string= type "radio")
+	      (add-text-properties start (point)
+				   (list 'face 'w3m-form-face
+					 'w3m-action
+					 `(w3m-form-input-radio ,form ,name ,value)
+					 'w3m-cursor-anchor
+					 `(w3m-form-input-radio ,form ,name ,value))))
 	     (t ;; input button.
 	      (add-text-properties start (point)
 				   (list 'face 'w3m-form-face
@@ -291,45 +326,43 @@ If no field in forward, return nil without moving."
 
 (defun w3m-form-input (form name type width maxlength value)
   (save-excursion
-    (let (input fvalue)
-      (setq fvalue (w3m-form-get form name)
-	    type (upcase type))
-      (cond
-       ((string= type "TEXTAREA")
-	(w3m-form-input-textarea form name fvalue))
-       ((string= type "SELECT")
-	(w3m-form-input-select form name fvalue))
-       ((string= type "PASSWORD")
-	(setq input (read-passwd (concat (upcase type)
-					 (if fvalue
-					     " (default is no change)")
-					 ": ") nil
-					 fvalue))
-	(w3m-form-put form name input)
-	(w3m-form-replace input 'invisible))
-       ((string= type "CHECKBOX")
-	(cond
-	 ((member value fvalue)		; already checked
+    (let* ((fvalue (w3m-form-get form name))
+	   (input (read-from-minibuffer (concat (upcase type) ": ") fvalue)))
+      (w3m-form-put form name input)
+      (w3m-form-replace input))))
+
+(defun w3m-form-input-password (form name)
+  (let* ((fvalue (w3m-form-get form name))
+	 (input (read-passwd (concat "PASSWORD"
+				     (if fvalue
+					 " (default is no change)")
+				     ": ")
+			     nil
+			     fvalue)))
+    (w3m-form-put form name input)
+    (w3m-form-replace input 'invisible)))
+
+(defun w3m-form-input-checkbox (form name value)
+  (let ((fvalue (w3m-form-get form name)))
+    (if (member value fvalue)		; already checked
+	(progn
 	  (w3m-form-put form name (delete value fvalue))
 	  (w3m-form-replace " "))
-	 (t
-	  (w3m-form-put form name (cons value fvalue))
-	  (w3m-form-replace "*"))))
-       ((string= type "RADIO")
-	;; Uncheck all RADIO input having same NAME
-	(save-excursion
-	  (let ((id (get-text-property (point) 'w3m-form-field-id)))
-	    (goto-char 1)
-	    (while (w3m-form-goto-next-field)
-	      (if (string= id (get-text-property (point) 'w3m-form-field-id))
-		  (w3m-form-replace " "))))) ; erase check
-	;; Then set this field as checked.
-	(w3m-form-put form name value)
-	(w3m-form-replace "*"))
-       (t
-	(setq input (read-from-minibuffer (concat (upcase type) ": ") fvalue))
-	(w3m-form-put form name input)
-	(w3m-form-replace input))))))
+      (w3m-form-put form name (cons value fvalue))
+      (w3m-form-replace "*"))))
+
+(defun w3m-form-input-radio (form name value)
+  ;; Uncheck all RADIO input having same NAME
+  (save-excursion
+    (let ((id (get-text-property (point) 'w3m-form-field-id)))
+      (goto-char 1)
+      (while (w3m-form-goto-next-field)
+	(if (string= id (get-text-property (point) 'w3m-form-field-id))
+	    (w3m-form-replace " "))))) ; erase check
+  ;; Then set this field as checked.
+  (w3m-form-put form name value)
+  (w3m-form-replace "*"))
+
 
 ;;; TEXTAREA
 
@@ -388,8 +421,9 @@ If no field in forward, return nil without moving."
   (use-local-map w3m-form-input-textarea-keymap)
   (run-hooks 'w3m-form-input-textarea-mode-hook))
 
-(defun w3m-form-input-textarea (form name value)
-  (let* ((cur-win (selected-window))
+(defun w3m-form-input-textarea (form name)
+  (let* ((value (w3m-form-get form name))
+	 (cur-win (selected-window))
 	 (w3mbuffer (current-buffer))
 	 (point (point))
 	 (size (min
@@ -480,8 +514,9 @@ If no field in forward, return nil without moving."
   (use-local-map w3m-form-input-select-keymap)
   (run-hooks 'w3m-form-input-select-mode-hook))
 
-(defun w3m-form-input-select (form name value)
-  (let* ((cur-win (selected-window))
+(defun w3m-form-input-select (form name)
+  (let* ((value (w3m-form-get form name))
+	 (cur-win (selected-window))
 	 (w3mbuffer (current-buffer))
 	 (point (point))
 	 (size (min

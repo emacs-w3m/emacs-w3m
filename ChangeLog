@@ -1,3 +1,14 @@
+2001-07-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-form.el (w3m-fontify-forms): Put text properties
+	corresponding to form types.
+	(w3m-form-input): Simplify.
+	(w3m-form-input-password): New function.
+	(w3m-form-input-checkbox): Ditto.
+	(w3m-form-input-radio): Ditto.
+	(w3m-form-input-textarea): Follow changes in `w3m-form-input'.
+	(w3m-form-input-select): Ditto.
+
 2001-07-11  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* w3m-form.el (w3m-form-goto-next-field): New function.
