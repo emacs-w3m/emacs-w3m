@@ -73,9 +73,9 @@
   ;;      DD   = two-digit day of month (01 through 31)
   ;;      hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
   (let (year month day minutes timezone)
-    (if (not (string-match
+    (if (or (null date) (not (string-match
 	      "\\([0-9][0-9][0-9][0-9]\\)\\(-[0-9][0-9]\\)?\\(-[0-9][0-9]\\)?T?\\([0-9][0-9]:[0-9][0-9]\\(:[.0-9]+\\)?\\)?\\(\\+[0-9][0-9]:[0-9][0-9]\\|Z\\)?"
-	      date))
+	      date)))
 	""
       (setq year (match-string-no-properties 1 date)
 	    month (match-string-no-properties 2 date)

@@ -1,5 +1,11 @@
 2003-06-18  Koichiro Ohba  <koichiro@meadowy.org>
 
+	* shimbun/sb-bbc-rss.el: New backend.
+
+	* shimbun/sb-rss.el (shimbun-rss-process-date): Added nil check.
+
+2003-06-18  Koichiro Ohba  <koichiro@meadowy.org>
+
 	* shimbun/sb-rss.el (shimbun-rss-get-encoding): New function.
 	(shimbun-headers): Use (shimbun-rss-get-encoding).
 
