@@ -1981,28 +1981,28 @@ nil value means it has not been initialized.")
   "<meta[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]+content\
 =\"?\\([^;]+\\);[ \t\n]*charset=\\([^\"]+\\)\"?[ \t\n]*/?>"
   "Regexp matching the META tag containing Content-type and charset.
-It is in the order of:
+Those are in the order of:
  <META HTTP-EQUIV=\"Content-Type\" content=\"...;charset=...\">.")
 
 (defconst w3m-meta-charset-content-type-regexp
   "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*charset\
 =\\([^\"]+\\)\"?[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]*/?>"
   "Regexp matching the META tag containing charset and Content-type.
-It is in the order of:
+Those are in the order of:
  <META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">.")
 
 (defconst w3m-meta-refresh-content-regexp
   "<meta[ \t\n]+http-equiv=\"?refresh\"?[ \t\n]+content\
 =\"?\\([^;]+\\);[ \t\n]*url=\\([^\"]+\\)\"?[ \t\n]*/?>"
   "Regexp matching the META tag containing refresh and content.
-It is in the order of:
+Those are in the order of:
  <META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">.")
 
 (defconst w3m-meta-content-refresh-regexp
   "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*url\
 =\\([^\"]+\\)\"?[ \t\n]+http-equiv=\"?refresh\"?[ \t\n]*/?>"
   "Regexp matching the META tag containing content and refresh.
-It is in the order of:
+Those are in the order of:
  <META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">.")
 
 (eval-and-compile
@@ -2245,9 +2245,9 @@ format, they will simply be ignored."
     list))
 
 (defun w3m-arrived-setup ()
-  "Load the arrived URLs database file and set up the hashed database
-as `w3m-arrived-db' if it has not been initialize yet.  The file is
-specified by `w3m-arrived-file'."
+  "Load the arrived URLs database file and set up the hashed database.
+It is performed only when `w3m-arrived-db' has not been initialize yet.
+The file is specified by `w3m-arrived-file'."
   (unless w3m-arrived-db
     (setq w3m-arrived-db (make-vector w3m-arrived-db-size 0))
     (let ((list (w3m-arrived-load-list)))
@@ -2421,10 +2421,11 @@ need to know what function will be made, use `macroexpand'."
 				     (window-buffer window)))))))))
 
 (defmacro w3m-make-balloon-help (property)
-  "Make a function returning a string used for the `balloon-help' message
-in XEmacs.  It returns an interned symbol of a function.  PROPERTY is
-a symbol (which doesn't need to be quoted) of an extent with the value
-of a string which should be in the place where having to show a help
+  "Make a function returning a string used for the `balloon-help' message.
+Functions made are used only when emacs-w3m is running under XEmacs.
+It returns an interned symbol of a function.  PROPERTY is a symbol
+\(which doesn't need to be quoted) of an extent with the value of a
+string which should be in the place where having to show a help
 message."
   (when (featurep 'xemacs)
     `(let ((fn (intern (format "w3m-balloon-help-for-%s"
@@ -2448,7 +2449,7 @@ It behaves identically as `message' with ARGS at the condition (which
 is rather complicated) listed below:
 
 \(1) `w3m-verbose' is non-nil,
-\(2) the cursor is not in minibuffer, and
+\(2) the cursor is not in the minibuffer, and
 \(3) an asynchronous process related to a visible buffer is in
     progress, or
 \(4) a buffer related to emacs-w3m is visible in the current frame.
@@ -2635,9 +2636,9 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 	 'iso-2022-7bit))))
 
 (defsubst w3m-url-transfer-encode-string (url &optional coding)
-  "Encode non-ascii characters in URL into the sequence of escaped octets
-in the coding system CODING which defaults to the value of the
-`w3m-current-coding-system' buffer-local variable (which see).
+  "Encode non-ascii characters in URL into the sequence of escaped octets.
+CODING which defaults to `w3m-current-coding-system' (which see) is a
+coding system used when encoding non-ascii characters.
 
 This function is designed for conversion for safe transmission of URL,
 i.e., it handles only non-ASCII characters that can not be transmitted
@@ -2680,10 +2681,11 @@ otherwise returns the tilde character."
 	codepoint))))
 
 (defun w3m-entity-value (name strict)
-  "Extract a char corresponding to NAME from the html character entities
-database (see `w3m-entity-db').  If STRICT is non-nil, the exact match
-with NAME is made.  Otherwise, it allows trailing extra characters in
-NAME, but those characters appear in the return value.  For example:
+  "Get a char corresponding to NAME from the html char entities database.
+The database is kept in `w3m-entity-db'.  If STRICT is non-nil, the
+exact match with NAME is made.  Otherwise, it allows trailing extra
+characters in NAME, but those characters appear in the return value.
+For example:
 
 \(w3m-entity-value \"ampersand\" t) => nil
 \(w3m-entity-value \"ampersand\" nil) => \"&ersand\""
