@@ -1,3 +1,9 @@
+2002-10-15  KAMO Tomoyuki  <kamo@ITmanage.co.jp>
+
+	* shimbun/sb-tcup.el (shimbun-tcup-get-group-key): Return
+	(hostname . board-id) to support Tripod "personal BBS".
+	(shimbun-tcup-make-id): Follow the above change.
+
 2002-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-toggle-inline-images-internal): Simplify the code.
