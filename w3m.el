@@ -2477,7 +2477,8 @@ to nil."
 			  (list "-header" (concat "Content-Type: "
 						  (car post-data))))
 		      (list "-post" file))))
-      (when (and referer
+      (when (and w3m-add-referer
+		 (stringp referer)
 		 (not (and (cdr w3m-add-referer-regexps)
 			   (string-match (cdr w3m-add-referer-regexps)
 					 referer)))
@@ -3661,8 +3662,7 @@ the request."
 				 w3m-default-content-type)
 			 w3m-content-type-alist nil t)))
 		 (setq ct (if (string= "" s) w3m-default-content-type s)))))
-	(if (not (w3m-exec url nil reload cs ct post-data
-			   (if w3m-add-referer referer nil)))
+	(if (not (w3m-exec url nil reload cs ct post-data referer))
 	    (progn
 	      (w3m-history-push (w3m-real-url url)
 				(list :title (file-name-nondirectory url)))
