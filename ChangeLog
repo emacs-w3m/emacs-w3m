@@ -1,3 +1,17 @@
+2003-02-16  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-type): Support "release candidate" of w3m.
+
+2002-12-12  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-use-favicon): Moved from w3m-e21.el.
+
+	* w3m-image.el (w3m-favicon-usable-p): Moved from w3m-e21.el.
+
+	* w3m-e21.el : Bind `w3m-use-favicon' when compiling.
+	(w3m-favicon-usable-p): Moved to w3m-image.el.
+	(w3m-use-favicon): Moved to w3m.el.
+
 2003-06-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-w3m-attributes): Improve the regexp to extract

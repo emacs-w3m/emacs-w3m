@@ -63,6 +63,7 @@
   (defvar w3m-history-flat)
   (defvar w3m-form-use-fancy-faces)
   (defvar w3m-async-exec)
+  (defvar w3m-use-favicon)
   (autoload 'w3m-expand-url "w3m")
   (autoload 'w3m-retrieve "w3m")
   (autoload 'w3m-image-type "w3m")
@@ -359,37 +360,6 @@ Buffer string between BEG and END are replaced with IMAGE."
 (make-variable-buffer-local 'w3m-current-favicon-image)
 (make-variable-buffer-local 'w3m-favicon-converted)
 (add-hook 'w3m-display-functions 'w3m-setup-favicon)
-
-(defun w3m-favicon-usable-p ()
-  "Check whether ImageMagick's `convert' supports a Windoze ico format in
-a large number of bits per pixel."
-  (let ((xpm (condition-case nil
-		 (w3m-imagick-convert-data
-		  (string 0 0 1 0 1 0 2 1 0 0 1 0 24 0 52 0
-			  0 0 22 0 0 0 40 0 0 0 2 0 0 0 2 0
-			  0 0 1 0 24 0 0 0 0 0 0 0 0 0 0 0
-			  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-			  0 255 255 255 0 0 0 0 0 0)
-		  "ico" "xpm")
-	       (error nil))))
-    (and xpm (string-match "\"2 1 2 1\"" xpm) t)))
-
-(defcustom w3m-use-favicon t
-  "*If non-nil, use favicon.
-It will be set to nil automatically if ImageMagick's
-`convert' does not support a ico format.  You can inhibit the
-use of ImageMagick absolutely by setting this option to nil."
-  :get (lambda (symbol)
-	 (and (not noninteractive)
-	      (default-value symbol)
-	      (w3m-favicon-usable-p)))
-  :set (lambda (symbol value)
-	 (custom-set-default symbol
-			     (and (not noninteractive)
-				  value
-				  (w3m-favicon-usable-p))))
-  :group 'w3m
-  :type 'boolean)
 
 (defcustom w3m-favicon-use-cache-file nil
   "*If non-nil, use favicon cache file."
