@@ -54,21 +54,17 @@
 	(subst-char-in-region (point-min) (point-max) ?\t ?\  t)
 	(goto-char (point-min))
 	(while (re-search-forward
-		;; getting URL and SUBJECT
-		"<td><a href=\"\\(.*\\.html\\)\">\\(.*\\)</a>"
+		;; getting URL, SUBJECT and DATE
+		"<td><a href=\"\\(.*\\.html\\)\"\\([^>]+\\)?>\\(.*\\)</a> (\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)) *<br */?>"
 		nil t)
 	  (setq url (match-string 1)
-		subject (match-string 2))
+		subject (match-string 3)
+		datelist (list (string-to-number (match-string 4))
+			       (string-to-number (match-string 5))
+			       (string-to-number (match-string 6)))
+		date (apply 'shimbun-make-date-string datelist))
 	  ;; adjusting URL
 	  (setq url (shimbun-expand-url url baseurl))
-	  ;; getting DATE
-	  (if (re-search-forward
-	       "(\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)) *<br */?>"
-	       nil t)
-	      (setq datelist (list (string-to-number (match-string 1))
-				   (string-to-number (match-string 2))
-				   (string-to-number (match-string 3)))
-		    date (apply 'shimbun-make-date-string datelist)))
 	  ;; building ID
 	  (setq aux (if (string-match "\\([^/]+\\)\\.html" url)
 			(match-string 1 url)

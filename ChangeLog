@@ -1,3 +1,7 @@
+2004-09-18  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-ibm-dev.el (shimbun-headers): Update regexp.
+
 2004-09-16  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-antenna.el (w3m-about-antenna): Change the method to compare
