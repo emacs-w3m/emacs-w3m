@@ -6403,7 +6403,7 @@ w3m-mode buffers."
 
 (defun w3m-header-line-insert ()
   "Insert the header line to this buffer."
-  (when (and (or (fboundp 'xemacs)
+  (when (and (or (featurep 'xemacs)
 		 (< emacs-major-version 21)
 		 w3m-use-tab)
 	     w3m-use-header-line
@@ -6421,9 +6421,22 @@ w3m-mode buffers."
     (let ((start (point)))
       (insert w3m-current-url)
       (w3m-add-text-properties start (point)
-			       `(face w3m-header-line-location-content-face
-				 mouse-face highlight
-				 local-map ,w3m-header-line-map))
+			       `(face
+				 w3m-header-line-location-content-face
+				 mouse-face
+				 highlight
+				 ,(if (or (featurep 'xemacs)
+					  (>= emacs-major-version 21))
+				      'keymap
+				    'local-map)
+				 ,w3m-header-line-map
+				 ,@(if (featurep 'xemacs)
+				       '(help-echo
+					 "button2 prompts to input URL"
+					 balloon-help
+					 "button2 prompts to input URL")
+				     '(help-echo
+				       "mouse-2 prompts to input URL"))))
       (setq start (point))
       (insert-char ?\  (max 0 (- (window-width) (current-column) 1)))
       (w3m-add-text-properties start (point)

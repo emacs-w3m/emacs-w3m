@@ -502,34 +502,9 @@ as the value."
 
 (eval-after-load "wid-edit" '(w3m-xmas-define-missing-widgets))
 
-;;; Header line (emulating Emacs 21):
+;;; Header line:
 (defvar w3m-header-line-map (make-sparse-keymap))
 (define-key w3m-header-line-map 'button2 'w3m-goto-url)
-
-(defun w3m-setup-header-line ()
-  "Setup header line (emulating Emacs 21)."
-  (when (and w3m-use-header-line w3m-current-url
-	     (eq 'w3m-mode major-mode))
-    (goto-char (point-min))
-    (insert "Location: ")
-    (put-text-property (point-min) (point)
-		       'face 'w3m-header-line-location-title-face)
-    (let ((start (point))
-	  (help "button2 prompts to input URL"))
-      (insert w3m-current-url)
-      (add-text-properties start (point)
-			   (list 'face
-				 'w3m-header-line-location-content-face
-				 'mouse-face 'highlight
-				 'keymap w3m-header-line-map
-				 'help-echo help
-				 'balloon-help help))
-      (setq start (point))
-      (insert-char ?\  (max 0 (- (window-width) (current-column) 1)))
-      (put-text-property start (point)
-			 'face 'w3m-header-line-location-content-face)
-      (unless (eolp)
-	(insert "\n")))))
 
 ;;; Gutter:
 (defcustom w3m-xmas-show-current-title-in-buffer-tab
