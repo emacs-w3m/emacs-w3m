@@ -2659,9 +2659,11 @@ works on Emacs.
 (defun w3m-view-source ()
   "*Display source of this current buffer."
   (interactive)
-  (w3m-goto-url (if (string-match "^about://source/" w3m-current-url)
-		    (substring w3m-current-url (match-end 0))
-		  (concat "about://source/" w3m-current-url))))
+  (if (string-match "^about://header/" w3m-current-url)
+      (message "Can't load source %s." w3m-current-url)
+    (w3m-goto-url (if (string-match "^about://source/" w3m-current-url)
+		      (substring w3m-current-url (match-end 0))
+		    (concat "about://source/" w3m-current-url)))))
 
 (defun w3m-about-header (url &optional no-decode no-cache)
   (when (string-match "^about://header/" url)
@@ -2675,7 +2677,13 @@ works on Emacs.
 (defun w3m-view-header ()
   "*Display header of this current buffer."
   (interactive)
-  (w3m-goto-url (concat "about://header/" w3m-current-url)))
+  (if (or (and (string-match "^about:" w3m-current-url)
+	       (not (string-match "^about://header/" w3m-current-url)))
+	  (string-match "^file://" w3m-current-url))
+      (message "Can't load header %s." w3m-current-url)
+    (w3m-goto-url (if (string-match "^about://header/" w3m-current-url)
+		      (substring w3m-current-url (match-end 0))
+		    (concat "about://header/" w3m-current-url)))))
 
 (defconst w3m-about-history-except-regex
   "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\)/.*\\)?$"
