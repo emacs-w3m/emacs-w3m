@@ -804,7 +804,7 @@ in advance.  It's only a joke, you should NEVER use it."
 	(w3m-history-push (car (nth (random (length w3m-history-flat))
 				    w3m-history-flat)))
 	(apply 'w3m-history-push (pop url-title))))
-    (w3m-goto-url "about://history/")))
+    (w3m-goto-url "about://history/" t)))
 
 (provide 'w3m-hist)
 
