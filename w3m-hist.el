@@ -52,16 +52,19 @@
 Otherwise, a new history element will be created even if there are
 elements for the same url in the history.
 
-Emacs-w3m used to do as if it is non-nil, however it sometimes brought
-about users' dissatisfaction.  For example, if a user visits the pages
-A -> B -> C -> B in order, the operation BACK on the second B brings a
-user to A.  ``That's weird!''  The reason why it occurred is that the
-`w3m-history' variable only had the list `(A B C)' as a history and B
-is the current position for that time.
+Emacs-w3m used to operate as the case in which it is non-nil, however
+it sometimes brought about users' dissatisfaction.  For example, if a
+user visited the pages A -> B -> C -> B in order, performing BACK on
+the second B would let a user visit A.  The reason why a user was
+taken to A rather than C is that the `w3m-history' variable only had
+the list `(A B C)' as a history and B was the current position at that
+time.
 
-The default value for this variable is `nil', and the `w3m-history'
-variable can have the list `(A B C B)'.  Where contents of two B's are
-the identical Lisp objects, so the Lisp resources won't be much wasted.
+The default value for this variable is nil which allows the
+`w3m-history' variable to have the list `(A B C B)'.  Where contents
+of two B's are the identical Lisp objects.  Where contents of two B's
+are the identical Lisp objects.  So, too much wasting the Lisp
+resources will be avoided.
 
 See the documentation for the variables `w3m-history' and
 `w3m-history-flat' for more information."
@@ -70,14 +73,14 @@ See the documentation for the variables `w3m-history' and
 
 (defcustom w3m-history-minimize-in-new-session nil
   "Non-nil means minimize copied history so that there's only current page.
-This variable only affects creating of the new session by copying."
+This variable is effective when creating of the new session by copying
+\(i.e., `w3m-copy-buffer')."
   :group 'w3m
   :type '(boolean :format "%{%t%}: %[%v%]" :on "On" :off "Off"))
 
 (defvar w3m-history nil
-  "A buffer-local variable which contains a tree-structured complex list
-of all the links you have visited.  For instance, it looks like the
-following:
+  "A tree-structured complex list of all the links which you have visited.
+This is a buffer-local variable.  For example, it will grow as follows:
 
 \[Branch-1.0.0.0]:                 +--> U1.0.0.0.0 --> U1.0.0.0.1
                                   |
@@ -95,55 +98,60 @@ In this case, the U1.0.0.0.0 history element represents the first link
 of the first branch which is sprouted from the U1.0.0 history element.
 
 The trunk or each branch is a simple list which will contain some
-history elements.  History elements in the trunk or each branch should
-be arranged in order of increasing precedence (the newest history
-element should be the last element of the list).  Each history element
-represents a link which consists of the following records:
+history elements.  History elements in the trunk or each branch will
+be arranged in increasing order (the newest history element will be
+the last element of the list).  Each history element represents a link
+which consists of the following records:
 
 	(URL PROPERTIES BRANCH BRANCH ...)
 
-Where URL should be a string of an address of a link.  PROPERTIES is a
-plist which contains any kind of data to propertize the URL as follows:
+Where URL is a string of an address of a link.  PROPERTIES is a plist
+which is able to contain any kind of data to supplement the URL as
+follows:
 
 	(KEYWORD VALUE KEYWORD VALUE ...)
 
-PROPERTIES should always be a non-nil value in order to make it easy
-to share the value in all history elements in every emacs-w3m buffers.
+A note for programmers: PROPERTIES should always be a non-nil value in
+order to make it easy to share the value in every history element in
+every emacs-w3m buffer.
 
-The rest BRANCHes are branches of the history element.  Branches
-should also be arranged in order of increasing precedence (the newest
-one should be located in the rightmost).  Each BRANCH will also be a
-tree-structured complex list.  Therefore, the history structure will
-grow up infinitely.  Do you have enough memories for it? :-p
+The remaining BRANCHes are branches of the history element.  Branches
+will also be arranged in increasing order (the newest one will be the
+rightmost element).  Each BRANCH will also be a tree-structured
+complex list.  Therefore, the history structure will grow up
+infinitely.
 
 In order to save the Lisp resources, URL strings and PROPERTIES in the
-`w3m-history' variables are shared in all emacs-w3m buffers.  It means
-that each element in two `w3m-history' variables can be compared by
-`eq' rather than `equal'.  If there is a need to make some properties
-buffer-local, use the `w3m-history-flat' variable instead.
+`w3m-history' variables are shared in every emacs-w3m buffer (it means
+each element in two `w3m-history' variables can be compared by `eq'
+rather than `equal').  If there is necessity to make buffer-local
+properties, in other words, to make properties of which values differ
+in every emacs-w3m buffer, use the `w3m-history-flat' variable instead.
 
 There are special rules on the emacs-w3m history management system.
-As you may expect, the operation BACK on U2.0.0 brings you to U2, and
-one more BACK brings you to U1.  Well, where should we go next when
-the operation FORWARD is performed on U1?  The rule is to select the
-newest link you have visited.  So, that operation should go to U1.0.0.
+As you perhaps foresaw, the operation BACK on U2.0.0 brings you to U2,
+and one more BACK brings you to U1.  Well, where do you think we
+should go next when the operation FORWARD is performed on U1?  The
+rule is to go to the newest link you have ever visited.  So, that
+operation should take you to U1.0.0.
 
-Another rule is that if you visit the U4 link from U1.0.1 directly,
-the new U4 link will be sprouted from U1.0.1 if the value of the
-`w3m-history-reuse-history-elements' variable is `nil'.  Otherwise if
-it is non-nil, jumping to the existing U4 link is performed rather
-than to sprout the new branch from U1.0.1.
+Another rule is that the new U4 link should sprout from U1.0.1 if
+`w3m-history-reuse-history-elements' is nil when you visit the U4 link
+directly from U1.0.1.  In contrast, you should be taken to the
+existing U4 link instead of sprouting the new branch from U1.0.1 if
+`w3m-history-reuse-history-elements' is non-nil.
 
-In addition, the `w3m-history' variable contains a list of pointers in
-its `car' cell which looks like the following:
+In addition, the first element of `w3m-history' is special.  It is a
+list containing pointers which point to three history elements as
+shown below:
 
 	(PREV CURRENT NEXT)
 
-Where the list PREV points the previous history element, the list
-CURRENT points the current one, the list NEXT points the next one.
-Each list contains an odd number of integers, e.g., (0) points U0,
-\(2 0 1) points U2.0.1, etc.  Finally, the value of the `w3m-history'
-variable will be constructed as follows:
+PREV points to the previous history element, CURRENT points to the
+current one and NEXT points to the next one.  Each of them is a list
+which contains an odd number of integers.  For example, `(0)' does
+point to U0 and `(2 1 0)' does point to U2.1.0.  Finally, the value of
+the `w3m-history' variable will be constructed as follows:
 
 \(((1) (2) (2 1 0))
  (\"http://www.U0.org/\" (:title \"U0\" :foo \"bar\"))
@@ -166,20 +174,24 @@ variable will be constructed as follows:
  (\"http://www.U6.org/\" (:title \"U6\" :foo \"bar\")))")
 
 (defvar w3m-history-flat nil
-  "A buffer-local variable having a flattened alist of `w3m-history'.
-Each element will contain the following records:
+  "A flattened alist of all the links which you have visited.
+All history elements except for buffer-local properties are the same
+as ones of `w3m-history'.  Each element will contain the following
+records:
 
     (URL PROPERTIES POSITION [KEYWORD VALUE [KEYWORD VALUE ...]])
 
 Where URL is a string of an address of a link, PROPERTIES is a plist
-to propertize the URL.  The sequence PROPERTIES is the identical
-object of the corresponding contents of `w3m-history'.  POSITION is a
-list of integers to designate the current position in the history.
-The rest [KEYWORD VALUE [KEYWORD VALUE ...]] is a property list
-similar to PROPERTIES, but it is buffer-local.  You can use the
-functions `w3m-history-plist-get', `w3m-history-plist-put',
-`w3m-history-add-properties' and `w3m-history-remove-properties' to
-manipulate the buffer-local properties.  See the documentation for the
+which is able to contain any kind of data to supplement the URL.  Each
+PROPERTIES is the Lisp object identical with that corresponding
+element of `w3m-history'.  POSITION is a list of integers to designate
+the current position in the history.
+
+The remaining [KEYWORD VALUE [KEYWORD VALUE ...]] is a plist similar
+to PROPERTIES, but it is buffer-local.  You can manipulate
+buffer-local properties using the functions `w3m-history-plist-get',
+`w3m-history-plist-put', `w3m-history-add-properties' and
+`w3m-history-remove-properties'.  See the documentation for the
 `w3m-history' variable for more information.")
 
 (make-variable-buffer-local 'w3m-history)
