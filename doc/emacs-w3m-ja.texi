@@ -3408,7 +3408,12 @@ Q. $BF0:n$9$k(B w3m $B$O(B?
 
 @itemize @bullet
 @item w3m-0.3
-@item w3mmee-p23-2
+@item w3mmee-p24-18 + moe-1.5.4
+
+$BNc$K>e$2$?(B w3mmee $B$O(B @samp{lang=many} $B$G(B configure $B$5$l$F$$$k(B ($B$=$l(B
+$B$O(B @samp{configure} $B%9%/%j%W%H$,(B @samp{Which language do you prefer?} $B$H(B
+$B?R$M$?$H$-$K(B 3 $B$rF~NO$9$k$3$H$K$h$C$F$G$-$^$9(B) $B$3$H$KCm0U$7$F2<$5$$!#$5(B
+$B$i$K$=$l$O(B @samp{libmoe} $B%Q%C%1!<%8$rI,MW$H$7$^$9!#(B
 @end itemize
 
 @item
@@ -3562,7 +3567,7 @@ Image Magick $B$K4^$^$l$F$$$k(B @samp{convert} $B%W%m%0%i%`$r%$%s%9%H!<%k$7$F
 Q. Emacs21 $B$G(B favicon $B$rI=<($7$h$&$H$7$?$N$G$9$,!"(BEmacs $B$,%m%C%/$7$^$7(B
 $B$?!#(B
 @item
-Emacs-w3m $B$rN)$A>e$2$h$&$H$7$?$i!"7c$7$/%G%#%9%/%"%/%;%9$7$?8e!"(B
+Q. Emacs-w3m $B$rN)$A>e$2$h$&$H$7$?$i!"7c$7$/%G%#%9%/%"%/%;%9$7$?8e!"(B
 @samp{process convert exited abnormally with code 10} $B$J$I$HI=<($5$l$^$7(B
 $B$?!#$I$&$J$C$F$$$k$s$G$7$g$&(B?
 
@@ -3579,6 +3584,15 @@ ImageMagick-5.4.0-5 ($B0J>e(B) $B$KIUB0$7$F$$$k(B @samp{convert} $B$G$O!"@5
 @end lisp
 
 $B$N@_Dj$rDI2C$7$F2<$5$$!#(B
+
+@item
+Q. $B$J$<(B emacs-w3m $B$,(B w3mmee $B$GF0:n$7$J$$$N$G$9$+(B?
+
+$B$b$7(B @samp{lang=en} $B$^$?$O(B @samp{lang=ja} $B$G(B configure $B$5$l$?(B w3mmee $B$r(B
+$B;H$C$F$$$k$N$J$i$P!"(B@samp{lang=many} $B$G(B configure $B$7D>$7(B
+$B$F(B ($B$=$l$O(B @samp{configure} $B%9%/%j%W%H$,(B @samp{Which language do you
+prefer?} $B$H?R$M$?$H$-$K(B 3 $B$rF~NO$9$k$3$H$K$h$C$F$G$-$^$9(B)$B!"(Bw3mmee $B$r:F9=(B
+$BC[$7$F2<$5$$!#(B
 @end itemize
 
 @node Shimbun FAQ

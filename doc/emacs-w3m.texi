@@ -3306,7 +3306,12 @@ The following w3m versions have been checked for emacs-w3m support:
 
 @itemize @bullet
 @item w3m-0.3 and later
-@item w3mmee-p23-2
+@item w3mmee-p24-18 + moe-1.5.4
+
+Note that w3mmee mentioned as the example is configured with the
+@samp{lang=many} option (it can be done by entering 3, when the
+@samp{configure} script prompts you, "Which language do you prefer?").
+It also requires the @samp{libmoe} package.
 @end itemize
 
 @item
@@ -3479,6 +3484,14 @@ recent version, add the following line in your @file{~/.emacs-w3m} file:
 @lisp
 (setq w3m-use-favicon nil)
 @end lisp
+
+@item
+Q. Why does not emacs-w3m work with w3mmee?
+
+If you are using w3mmee configured with the option @samp{lang=en} or
+@samp{lang=ja}, reconfigure w3mmee with the option @samp{lang=many} (it
+can be done by entering 3, when the @samp{configure} script prompts you,
+"Which language do you prefer?"), and rebuild w3mmee.
 @end itemize
 
 @node Shimbun FAQ
