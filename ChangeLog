@@ -20,7 +20,7 @@
 	w3m-proc.el.
 
 	* w3m.el: Require `w3m-util' instead of `w3m-macro'; Export
-	`w3m-kill-all-buffer' to w3m-macro.el.
+	`w3m-kill-all-buffer' to w3m-util.el.
 	(w3m-work-binary-buffer-name): Removed.
 	(w3m-rendering-half-dump): Accept an optional argument for w3mmee
 	and w3m-m17n.
