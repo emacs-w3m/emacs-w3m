@@ -1,6 +1,6 @@
 ;;; w3m-namazu.el --- The add-on program to search files with Namazu.
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia, namazu
@@ -55,7 +55,7 @@
 (defcustom w3m-namazu-command "namazu"
   "*Name of the executable file of Namazu."
   :group 'w3m-namazu
-  :type 'string)
+  :type '(string :size 0))
 
 (defcustom w3m-namazu-arguments
   '("-h"			; print in HTML format.
@@ -65,9 +65,10 @@
   "*Arguments of Namazu."
   :group 'w3m-namazu
   :type '(repeat
-	  (restricted-sexp :tag "Argument"
+	  (restricted-sexp :format "Argument: %v\n"
 			   :match-alternatives
-			   (stringp 'w3m-namazu-page-max 'whence))))
+			   (stringp 'w3m-namazu-page-max 'whence)
+			   :size 0)))
 
 (defcustom w3m-namazu-page-max
   (if (boundp 'namazu-search-num)
@@ -75,14 +76,14 @@
     30)
   "*A maximum number of documents which are retrieved by one-time search."
   :group 'w3m-namazu
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defconst w3m-namazu-default-index-customize-spec
   '(` (choice
        (const :tag "No default index" nil)
        (,@ (mapcar (lambda (x) (list 'const (car x)))
 		   w3m-namazu-index-alist))
-       (directory :tag "Index directory"))))
+       (directory :format "Index directory: %v\n" :size 0))))
 
 (defcustom w3m-namazu-index-alist
   (when (boundp 'namazu-dir-alist)
@@ -93,9 +94,13 @@
   "*Alist of alias and index directories."
   :group 'w3m-namazu
   :type '(repeat
-	  (cons :format "%v"
-		(string :tag "Alias")
-		(repeat (directory :tag "Index directory"))))
+	  (group
+	   :indent 0 :inline t
+	   (cons :format "%v"
+		 (string :format "Alias: %v\n" :size 0)
+		 (repeat
+		  :format "%v%i\n" :indent 8
+		  (directory :format "Index directory: %v\n" :size 0)))))
   :set (lambda (symbol value)
 	 (set-default symbol value)
 	 (put 'w3m-namazu-default-index 'custom-type
@@ -121,7 +126,7 @@ argument."
       'euc-japan-unix))
   "*Coding system for namazu process."
   :group 'w3m-namazu
-  :type 'coding-system)
+  :type '(coding-system :size 0))
 
 (defcustom w3m-namazu-input-coding-system
   (if (boundp 'namazu-cs-read)
@@ -129,7 +134,7 @@ argument."
     'undecided)
   "*Coding system for namazu process."
   :group 'w3m-namazu
-  :type 'coding-system)
+  :type '(coding-system :size 0))
 
 
 (defsubst w3m-namazu-call-process (index query whence)
@@ -166,7 +171,8 @@ argument."
 					    whence))
 	(let ((case-fold-search t))
 	  (goto-char (point-min))
-	  (let ((max (if (re-search-forward "<!-- HIT -->\\([0-9]+\\)<!-- HIT -->" nil t)
+	  (let ((max (if (re-search-forward
+			  "<!-- HIT -->\\([0-9]+\\)<!-- HIT -->" nil t)
 			 (string-to-number (match-string 1))
 		       0))
 		(cur (string-to-number whence)))
@@ -174,13 +180,15 @@ argument."
 	    (when (search-forward "<head>" nil t)
 	      (when (> cur 0)
 		(insert
-		 (format "\n<link rel=\"prev\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
+		 (format "
+<link rel=\"prev\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
 			 index
 			 query
 			 (max (- cur w3m-namazu-page-max) 0))))
 	      (when (> max (+ cur w3m-namazu-page-max))
 		(insert
-		 (format "\n<link rel=\"next\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
+		 (format "
+<link rel=\"next\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
 			 index
 			 query
 			 (+ cur w3m-namazu-page-max))))))
@@ -198,22 +206,25 @@ argument."
 (defun w3m-namazu-complete-index (index predicate flag)
   "Function to complete index name"
   (if (eq flag 'lambda)
-      (or (and (assoc index w3m-namazu-index-alist) t)
-	  (file-directory-p index))
+      (and (or (and (assoc index w3m-namazu-index-alist) t)
+	       (file-directory-p index))
+	   (or (not predicate)
+	       (funcall predicate index)))
     (let ((alist
-	   (if (string-match "^[~/\\.]" index)
+	   (mapcar
+	    'list
+	    (nconc
+	     (all-completions index w3m-namazu-index-alist)
+	     (let ((partial (file-name-nondirectory index))
+		   (dir (file-name-as-directory
+			 (or (file-name-directory index)
+			     default-directory))))
 	       (delq nil
 		     (mapcar
-		      (lambda (f)
-			(and (not (string-match "/\\.\\.?$" f))
-			     (file-directory-p f)
-			     (cons (file-name-as-directory f) nil)))
-		      (directory-files (file-name-directory
-					(setq index (expand-file-name index)))
-				       t)))
-	     (mapcar
-	      (lambda (x) (cons x nil))
-	      (all-completions index w3m-namazu-index-alist)))))
+		      (lambda (file)
+			(when (file-directory-p (expand-file-name file dir))
+			  (concat dir file)))
+		      (file-name-all-completions partial dir))))))))
       (cond
        ((not flag) (try-completion index alist predicate))
        ((eq flag t) (all-completions index alist predicate))))))
@@ -234,18 +245,18 @@ argument."
 			    w3m-namazu-default-index))
 	       (s (completing-read
 		   (if default
-		       (format "Index (default %s): " default)
-		     "Index: ")
+		       (format "Namazu Index (default %s): " default)
+		     "Namazu Index: ")
 		   'w3m-namazu-complete-index nil t nil
 		   'w3m-namazu-index-history)))
 	  (if (string= s "") default s))
       (or w3m-namazu-default-index
 	  (car w3m-namazu-index-history)))
-    (read-string "Query: " nil 'w3m-namazu-query-history)))
+    (read-string "Namazu Query: " nil 'w3m-namazu-query-history)))
   (unless (stringp index)
-    (error "Index is required"))
+    (error "%s" "Index is required"))
   (unless (stringp query)
-    (error "Query is required"))
+    (error "%s" "Query is required"))
   (w3m-goto-url (format "about://namazu/?index=%s&query=%s&whence=0"
 			(w3m-url-encode-string index)
 			(w3m-url-encode-string query))))

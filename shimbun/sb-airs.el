@@ -1,10 +1,11 @@
 ;;; sb-airs.el --- shimbun backend for lists.airs.net
 
-;; Author: Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001 Yuuichi Teranishi  <teranisi@gohome.org>
 
+;; Author: Yuuichi Teranishi  <teranisi@gohome.org>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -34,7 +35,8 @@
 
 (defconst shimbun-airs-group-path-alist
   '(("semi-gnus-ja" "semi-gnus/archive" "semi-gnus-ja@meadowy.org")
-    ("wl" "wl/archive" "wl@lists.airs.net")))
+    ("wl" "wl/archive" "wl@lists.airs.net")
+    ("wl-en" "wl-en/archive" "wl-en@lists.airs.net")))
 
 (defvar shimbun-airs-url "http://lists.airs.net/")
 (defvar shimbun-airs-groups (mapcar 'car shimbun-airs-group-path-alist))

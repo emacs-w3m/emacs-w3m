@@ -1,6 +1,6 @@
 ;;; w3m-antenna.el --- Utility to detect changes of WEB
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -43,7 +43,7 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl))
-(require 'w3m-macro)
+(require 'w3m-util)
 (require 'w3m)
 
 (defgroup w3m-antenna nil
@@ -76,10 +76,11 @@ with :default-value-from."
   "List of WEB sites, watched by `w3m-antenna'."
   :group 'w3m-antenna
   :type '(repeat
-	  (list
-	   (string-with-default :tag "URL" 
+	  (group
+	   :indent 7
+	   (string-with-default :format "URL: %v\n" :size 0
 				:value-from w3m-antenna-tmp-url)
-	   (string-with-default :tag "Title" 
+	   (string-with-default :format "Title: %v\n" :size 0
 				:value-from w3m-antenna-tmp-title)
 	   (choice :tag "Class"
 		   (const :tag "Normal" nil)
@@ -92,7 +93,8 @@ with :default-value-from."
 	    "<html>\n<head>\n<title>Antenna</title>\n</head>\n<body>\n"
 	    "<h1>Antenna</h1>\n<h2>Updated</h2>\n<ul>\n%C</ul>\n"
 	    "<h2>Visited</h2>\n<ul>\n%U</ul>\n"
-	    "</body>\n</html>\n"))
+	    "<p align=\"left\">[<a href=\"about://antenna-edit/\">Edit</a>]"
+	    "</p>\n</body>\n</html>\n"))
   "HTML skeleton of antenna."
   :group 'w3m-antenna
   :type 'string)
@@ -102,35 +104,41 @@ with :default-value-from."
   "Function to make summary of site information."
   :group 'w3m-antenna
   :type '(choice
-	  (const :tag "Simple style." w3m-antenna-make-summary)
-	  (const :tag "Natsumican style." w3m-antenna-make-summary-like-natsumican)
-	  (function :tag "User function.")))
+	  :format "%{%t%}:\n %[Value Menu%] %v"
+	  (function-item :tag "Simple style." w3m-antenna-make-summary)
+	  (function-item :tag "Natsumican style."
+			 w3m-antenna-make-summary-like-natsumican)
+	  (function :format "User function: %v\n" :size 0)))
 
 (defcustom w3m-antenna-sort-changed-sites-function
   'w3m-antenna-sort-sites-by-time
   "Function to sort list of changed sites."
   :group 'w3m-antenna
   :type '(choice
-	  (const :tag "Sort by last modification time." w3m-antenna-sort-sites-by-time)
-	  (const :tag "Sort by title." w3m-antenna-sort-sites-by-title)
-	  (const :tag "Do nothing." identity)
-	  (function :tag "User function.")))
+	  :format "%{%t%}:\n %[Value Menu%] %v"
+	  (function-item :tag "Sort by last modification time."
+			 w3m-antenna-sort-sites-by-time)
+	  (function-item :tag "Sort by title." w3m-antenna-sort-sites-by-title)
+	  (function-item :tag "Do nothing." identity)
+	  (function :format "User function: %v\n" :size 0)))
 
 (defcustom w3m-antenna-sort-unchanged-sites-function
   'w3m-antenna-sort-sites-by-time
   "Function to sort list of unchanged sites."
   :group 'w3m-antenna
   :type '(choice
-	  (const :tag "Sort by last modification time." w3m-antenna-sort-sites-by-time)
-	  (const :tag "Sort by title." w3m-antenna-sort-sites-by-title)
-	  (const :tag "Do nothing." identity)
-	  (function :tag "User function.")))
+	  :format "%{%t%}:\n %[Value Menu%] %v"
+	  (function-item :tag "Sort by last modification time."
+			 w3m-antenna-sort-sites-by-time)
+	  (function-item :tag "Sort by title." w3m-antenna-sort-sites-by-title)
+	  (function-item :tag "Do nothing." identity)
+	  (function :format "User function: %v\n" :size 0)))
 
 (defcustom w3m-antenna-file
   (expand-file-name ".antenna" w3m-profile-directory)
   "File which has list of antenna URLs."
   :group 'w3m-antenna
-  :type 'file)
+  :type '(file :size 0))
 
 (defvar w3m-antenna-alist nil
   "A list of site information (internal variable).  nil means that
@@ -178,87 +186,143 @@ whose elements are:
 				 (current-time)))
 			  (nthcdr 3 site)))
 		w3m-antenna-alist)))
-    (unless w3m-antenna-sites
-      (dolist (site w3m-antenna-alist)
-	(push (list (w3m-antenna-site-key site)
-		    (w3m-antenna-site-title site)
-		    (w3m-antenna-site-class site))
-	      w3m-antenna-sites)))))
+    (if w3m-antenna-sites
+	(dolist (site w3m-antenna-sites)
+	  (unless (assoc (w3m-antenna-site-key site) w3m-antenna-alist)
+	    ;; Add sites registerd in `w3m-antenna-sites'.
+	    (push (append site
+			  (list (format-time-string
+				 (w3m-antenna-site-key site)
+				 (current-time))
+				nil nil nil))
+		  w3m-antenna-alist)))
+      (setq w3m-antenna-sites
+	    (mapcar (lambda (site)
+		      (list (w3m-antenna-site-key site)
+			    (w3m-antenna-site-title site)
+			    (w3m-antenna-site-class site)))
+		    w3m-antenna-alist)))))
 
 (defun w3m-antenna-shutdown ()
-  (when w3m-antenna-alist
-    (w3m-save-list w3m-antenna-file w3m-antenna-alist)
-    (setq w3m-antenna-alist nil)))
+  (prog1 w3m-antenna-alist
+    (when w3m-antenna-alist
+      (w3m-save-list w3m-antenna-file w3m-antenna-alist nil t)
+      (setq w3m-antenna-alist nil))))
 
-(defun w3m-antenna-hns-last-modified (url &optional no-cache)
-  (with-temp-buffer
-    (when (w3m-retrieve (w3m-expand-url "di.cgi" url) nil no-cache)
-      (let (start str)
-	(or
+(defun w3m-antenna-hns-last-modified (url no-cache handler)
+  (w3m-process-do-with-temp-buffer
+      (type (w3m-retrieve (w3m-expand-url "di.cgi" url)
+			  nil no-cache nil nil handler))
+    (when type
+      (or
+       (let (start str)
 	 ;; Process a line such as "Tue, 27 Mar 2001 12:43:16 GMT<br>".
-	 (and (progn
-		(goto-char (point-min))
-		(search-forward "\nLast-Modified: " nil t))
-	      (setq start (match-end 0))
-	      (search-forward "<br>" nil t)
-	      (setq str (buffer-substring start (match-beginning 0)))
-	      ;; ignore format such as "2001, 27 03   GMT", old hns
-	      (not (string-match " *[0-9][0-9][0-9][0-9], +[0-9][0-9] +[0-9][0-9] +" str))
-	      (w3m-time-parse-string str))
+	 (goto-char (point-min))
+	 (and
+	  (search-forward "\nLast-Modified: " nil t)
+	  (setq start (match-end 0))
+	  (search-forward "<br>" nil t)
+	  (setq str (buffer-substring start (match-beginning 0)))
+	  ;; Ignore format such as "2001, 27 03 GMT", which is used
+	  ;; by old HNS.
+	  (not (string-match
+		" *[0-9][0-9][0-9][0-9], +[0-9][0-9] +[0-9][0-9] +" str))
+	  (w3m-time-parse-string str)))
+       (progn
 	 ;; Process a line such as "newest day is 2001/03/15".
-	 (and (progn
-		(goto-char (point-min))
-		(re-search-forward
-		 "^newest day is \\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)$"
-		 nil t))
-	      (encode-time 0 0 0
-			   (string-to-number (match-string 3))
-			   (string-to-number (match-string 2))
-			   (string-to-number (match-string 1))
-			   "JST")))))))
+	 (goto-char (point-min))
+	 (and
+	  (re-search-forward "\
+^newest day is \\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)$"
+			     nil t)
+	  (encode-time 0 0 0
+		       (string-to-number (match-string 3))
+		       (string-to-number (match-string 2))
+		       (string-to-number (match-string 1))
+		       "JST")))))))
 
-(defun w3m-antenna-last-modified (url class &optional no-cache)
-  (if (eq class 'hns)
-      (w3m-antenna-hns-last-modified url no-cache)
-    (if (w3m-content-type url no-cache)
-	(w3m-last-modified url)
-      t))) ; t means that specified URL is not found.
+;; To avoid byte-compile warning.
+(eval-and-compile
+  (autoload 'w3m-filter "w3m-filter"))
 
-(defun w3m-antenna-size (url class &optional no-cache)
-  (unless (memq class '(hns time))
-    (or (w3m-content-length url no-cache)
-	(with-temp-buffer
-	  (let ((type (w3m-retrieve url nil no-cache)))
-	    (w3m-decode-buffer url nil type)
-	    (w3m-remove-comments)
-	    (when w3m-use-filter
-	      (w3m-filter url))
-	    (buffer-size))))))
+(defun w3m-antenna-check-site (site no-cache handler)
+  (lexical-let ((site site)
+		(no-cache no-cache)
+		(url (format-time-string (w3m-antenna-site-key site)
+					 (current-time))))
+    (if (eq 'hns (w3m-antenna-site-class site))
+	(w3m-process-do
+	    (time (w3m-antenna-hns-last-modified url no-cache handler))
+	  (when time
+	    (w3m-antenna-check-site-after site url time nil)))
+      (w3m-process-do
+	  (attr (w3m-attributes url no-cache handler))
+	(when attr
+	  (if (nth 4 attr) ; Use the value of Last-modified header.
+	      (w3m-antenna-check-site-after site url (nth 4 attr) (nth 2 attr))
+	    (unless (eq 'time (w3m-antenna-site-class site))
+	      (cond
+	       ((nth 2 attr) ; Use the value of Content-Length header.
+		(w3m-antenna-check-site-after site url nil (nth 2 attr)))
+	       (t ; Get the real content of the SITE, and calculate its size.
+		(w3m-process-do-with-temp-buffer
+		    (type (w3m-retrieve url nil no-cache nil nil handler))
+		  (when type
+		    (w3m-decode-buffer url nil type)
+		    (w3m-remove-comments)
+		    (when w3m-use-filter
+		      (w3m-filter url))
+		    (w3m-antenna-check-site-after site url nil
+						  (buffer-size)))))))))))))
 
-(defun w3m-antenna-check-sites ()
-  "Check all sites specified in `w3m-antenna-sites' and return the antenna database alist."
-  (let (alist)
-    (dolist (site w3m-antenna-sites)
-      (let* ((url  (format-time-string (car site) (current-time)))
-	     (time (w3m-antenna-last-modified
-		    url (w3m-antenna-site-class site) t))
-	     (size (unless (eq t time)
-		     (w3m-antenna-size url (w3m-antenna-site-class site))))
-	     (pre (assoc (w3m-antenna-site-key site) w3m-antenna-alist)))
-	(push (append site
-		      (if (eq t time)
-			  (nthcdr 3 pre)
-			(list url
-			      time
-			      size
-			      (and size
-				   (w3m-antenna-site-size pre)
-				   (if (/= size (w3m-antenna-site-size pre))
-				       (current-time)
-				     (or (w3m-antenna-site-size-detected pre)
-					 (current-time)))))))
-	      alist)))
-    alist))
+(defun w3m-antenna-check-site-after (site url time size)
+  (let ((pre (assoc (w3m-antenna-site-key site) w3m-antenna-alist)))
+    (if pre
+	(progn
+	  (setcdr pre
+		  (append (cdr site)
+			  (list url
+				time
+				size
+				(and size
+				     (w3m-antenna-site-size pre)
+				     (if (/= size (w3m-antenna-site-size pre))
+					 (current-time)
+				       (or (w3m-antenna-site-size-detected pre)
+					   (current-time)))))))
+	  pre)
+      (append site (list url time size nil)))))
+
+(defun w3m-antenna-check-all-sites (&optional handler)
+  "Check all sites specified in `w3m-antenna-sites'."
+  (w3m-antenna-setup)
+  (if (not handler)
+      (w3m-process-with-wait-handler
+	(w3m-antenna-check-all-sites handler))
+    (let ((count (make-symbol "antenna-count"))
+	  (buffer (make-symbol "antenna-buffer")))
+      (set count 0)
+      (set buffer (current-buffer))
+      (let ((tmp)
+	    (processes)
+	    (handler `(lambda (x)
+			(and (= 0 (setq ,count (1- ,count)))
+			     (buffer-name ,buffer)
+			     (with-current-buffer ,buffer
+			       (funcall ,handler (w3m-antenna-shutdown)))))))
+	(dolist (site (mapcar (lambda (elem)
+				(list (w3m-antenna-site-key elem)
+				      (w3m-antenna-site-title elem)
+				      (w3m-antenna-site-class elem)))
+			      w3m-antenna-alist))
+	  (when (w3m-process-p
+		 (setq tmp (w3m-antenna-check-site site t handler)))
+	    (push tmp processes)
+	    (set count (1+ (symbol-value count)))))
+	(if (not processes)
+	    (w3m-antenna-shutdown)
+	  (w3m-process-start-queued-processes)
+	  (car processes))))))
 
 (defun w3m-antenna-make-summary (site)
   (format "<li><a href=\"%s\">%s</a> %s"
@@ -318,26 +382,30 @@ whose elements are:
 	(delete-region (match-beginning 1) (match-end 1))))))
 
 ;;;###autoload
-(defun w3m-about-antenna (url &optional no-decode no-cache &rest args)
-  (unwind-protect
-      (let (changed unchanged)
-	(w3m-antenna-setup)
-	;; Check sites.
-	(if no-cache
-	    (setq w3m-antenna-alist (w3m-antenna-check-sites)))
-	(dolist (site w3m-antenna-alist)
-	  (if (w3m-time-newer-p (or (w3m-antenna-site-last-modified site)
-				    (w3m-antenna-site-size-detected site))
-				(w3m-arrived-last-modified
-				 (w3m-antenna-site-url site)))
-	      (push site changed)
-	    (push site unchanged)))
-	(w3m-antenna-make-contents
-	 (funcall w3m-antenna-sort-changed-sites-function (nreverse changed))
-	 (funcall w3m-antenna-sort-unchanged-sites-function (nreverse unchanged)))
-	(w3m-antenna-shutdown)
-	"text/html")
-    (setq w3m-antenna-alist nil)))
+(defun w3m-about-antenna (url &optional no-decode no-cache
+			      post-data referer handler)
+  (w3m-process-do
+      (alist (if no-cache
+		 (w3m-antenna-check-all-sites handler)
+	       (or w3m-antenna-alist
+		   (w3m-load-list w3m-antenna-file))))
+    (let (changed unchanged)
+      (dolist (site alist)
+	(if (if (w3m-antenna-site-last-modified site)
+		(w3m-time-newer-p (w3m-antenna-site-last-modified site)
+				  (w3m-arrived-last-modified
+				   (w3m-antenna-site-url site)))
+	      (w3m-time-newer-p (w3m-antenna-site-size-detected site)
+				(w3m-arrived-time
+				 (w3m-antenna-site-url site))))
+	    (progn
+	      (w3m-cache-remove (w3m-antenna-site-url site))
+	      (push site changed))
+	  (push site unchanged)))
+      (w3m-antenna-make-contents
+       (funcall w3m-antenna-sort-changed-sites-function (nreverse changed))
+       (funcall w3m-antenna-sort-unchanged-sites-function (nreverse unchanged)))
+      "text/html")))
 
 ;;;###autoload
 (defun w3m-antenna (&optional no-cache)
@@ -347,12 +415,14 @@ whose elements are:
 
 (defvar w3m-antenna-tmp-url nil)
 (defvar w3m-antenna-tmp-title nil)
+
 (defun w3m-antenna-add-current-url (&optional arg)
   "Add link of current page to antenna.
 With prefix, ask new url to add instead of current page."
   (interactive "P")
   (w3m-antenna-add (if arg (w3m-input-url) w3m-current-url)
-		   w3m-current-title))
+		   (w3m-encode-specials-string w3m-current-title)))
+
 (defun w3m-antenna-add (url &optional title)
   "Add URL to antenna.
 Optional argument TITLE is title of link."
@@ -365,6 +435,146 @@ Optional argument TITLE is title of link."
   (widget-button-press (point))
   (re-search-forward "State:")
   (backward-char 2))
+
+(defun w3m-about-antenna-edit (url &optional no-decode no-cache post-data
+				   &rest args)
+  (let ((alist (w3m-load-list w3m-antenna-file))
+	(width (- (if (< 0 w3m-fill-column)
+		      w3m-fill-column
+		    (+ (window-width) (or w3m-fill-column -1)))
+		  28)))
+    (when (and post-data
+	       (string= "about://antenna-edit/"
+			(with-current-buffer w3m-current-buffer
+			  w3m-current-url)))
+      (let (add delete id key title class unknown site)
+	(dolist (pair (split-string post-data "&"))
+	  (cond
+	   ((string-match "\\`op=\\(OK\\|\\(NEW\\|\\(DEL\\)\\)\\)\\'" pair)
+	    (or (setq delete (match-beginning 3))
+		(setq add (match-beginning 2))))
+	   ((string-match "\\`id=\\([0-9]+\\)\\'" pair)
+	    (setq id (string-to-number (match-string 1 pair))))
+	   ((string-match "\\`key=\\(.*\\)\\'" pair)
+	    (setq key (w3m-url-decode-string (match-string 1 pair)
+					     w3m-coding-system)))
+	   ((string-match "\\`title=\\(.*\\)\\'" pair)
+	    (setq title (w3m-url-decode-string (match-string 1 pair)
+					       w3m-coding-system)))
+	   ((string-match "\\`class=\\(nil\\|time\\|hns\\)\\'" pair)
+	    (setq class (intern (match-string 1 pair))))
+	   (t (setq unknown t))))
+	(cond
+	 (unknown)
+	 (add
+	  (and key
+	       title
+	       (push (list key
+			   title
+			   class
+			   (format-time-string key (current-time))
+			   nil		; last-modified
+			   nil		; size
+			   nil)		; size-detected
+		     alist)
+	       (w3m-save-list w3m-antenna-file alist nil t)))
+	 (delete
+	  (when (and (setq site (nth id alist))
+		     (yes-or-no-p (format "Delete %s from Antenna ? "
+					  (w3m-antenna-site-title site))))
+	    (setq alist (delq site alist))
+	    (w3m-save-list w3m-antenna-file alist nil t)))
+	 ((setq site (nth id alist))	; Modify
+	  (setf (w3m-antenna-site-key site) key)
+	  (setf (w3m-antenna-site-title site) title)
+	  (setf (w3m-antenna-site-class site) class)
+	  (w3m-save-list w3m-antenna-file alist nil t)))))
+    (insert "\
+<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">
+<html><head><title>w3m-antenna-sites editor</title></head><body><ul>
+")
+    (let ((id -1))
+      (dolist (site alist)
+	(insert
+	 (format "\
+<li><form method=\"post\" action=\"about://antenna-edit/\">
+    <input type=\"hidden\" name=\"id\" value=\"%d\">
+    <a href=\"%s\">%s</a>
+    <table>
+      <tr>
+        <th align=\"left\">Key:</th>
+        <td><input type=\"text\" name=\"key\" size=\"%d\" value=\"%s\"></td>
+      </tr>
+      <tr>
+        <th>Title:</th>
+        <td><input type=\"text\" name=\"title\" size=\"%d\" value=\"%s\"></td>
+      </tr>
+      <tr>
+        <th>Class:</th>
+        <td>
+          <input type=\"radio\" name=\"class\" value=\"nil\"%s>Normal</input>
+          <input type=\"radio\" name=\"class\" value=\"time\"%s>Time</input>
+          <input type=\"radio\" name=\"class\" value=\"hns\"%s>HNS</input>
+        </td>
+      </tr>
+      <tr>
+        <th></th>
+        <td>
+          <input type=\"submit\" name=\"op\" value=\"OK\">
+          <input type=\"submit\" name=\"op\" value=\"DEL\">
+        </td>
+      </tr>
+    </table>
+    </form>
+    </li>
+"
+		 (incf id)
+		 (or (w3m-antenna-site-url site)
+		     (w3m-antenna-site-key site))
+		 (w3m-antenna-site-title site)
+		 width (w3m-antenna-site-key site)
+		 width (w3m-antenna-site-title site)
+		 (if (not (w3m-antenna-site-class site)) " checked" "")
+		 (if (eq (w3m-antenna-site-class site) 'time) " checked" "")
+		 (if (eq (w3m-antenna-site-class site) 'hns) " checked" "")))))
+    (insert
+     (format "\
+<li><form method=\"post\" action=\"about://antenna-edit/\">
+    New site
+    <table>
+      <tr>
+        <th align=\"left\">Key:</th>
+        <td><input type=\"text\" name=\"key\" size=\"%d\"></td>
+      </tr>
+      <tr>
+        <th>Title:</th>
+        <td><input type=\"text\" name=\"title\" size=\"%d\"></td>
+      </tr>
+      <tr>
+        <th>Class:</th>
+        <td>
+          <input type=\"radio\" name=\"class\" value=\"nil\" checked>Normal</input>
+          <input type=\"radio\" name=\"class\" value=\"time\">Time</input>
+          <input type=\"radio\" name=\"class\" value=\"hns\">HNS</input>
+        </td>
+      </tr>
+      <tr>
+        <th></th>
+        <td>
+          <input type=\"submit\" name=\"op\" value=\"NEW\">
+        </td>
+      </tr>
+    </table>
+    </form>
+    </li>
+</ul></body></html>\n" width width))
+    (add-hook 'w3m-display-functions 'w3m-antenna-edit-reset-post-data)
+    "text/html"))
+
+(defun w3m-antenna-edit-reset-post-data (url)
+  (remove-hook 'w3m-display-functions 'w3m-antenna-edit-reset-post-data)
+  (when (string= "about://antenna-edit/" url)
+    (w3m-history-plist-put :post-data nil)))
 
 (provide 'w3m-antenna)
 

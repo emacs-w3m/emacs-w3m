@@ -1,10 +1,11 @@
 ;;; sb-asahi-html.el --- shimbun backend for asahi.com (HTML version)
 
-;; Author: Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi  <teranisi@gohome.org>
 
+;; Author: Yuuichi Teranishi  <teranisi@gohome.org>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -28,21 +29,20 @@
 (require 'shimbun)
 (require 'sb-asahi)
 
-(luna-define-class shimbun-asahi-html (shimbun shimbun-asahi) ())
+(luna-define-class shimbun-asahi-html (shimbun-asahi) ())
 
-(defvar shimbun-asahi-html-url "http://spin.asahi.com/")
-(defvar shimbun-asahi-html-groups '("national" "business" "politics"
-				    "international" "sports" "culture"))
-(defvar shimbun-asahi-html-from-address "webmaster@www.asahi.com")
+(defvar shimbun-asahi-html-content-start
+  "<!--[\t\n ]*Start of photo[\t\n ]*-->\
+\\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
 
-(defvar shimbun-asahi-html-content-start "\n<!-- Start of photo1 -->\n")
-(defvar shimbun-asahi-html-content-end "\n<!-- End of kiji -->\n")
-(defvar shimbun-asahi-html-x-face-alist
-  '(("default" . "X-Face: +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|\
-bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
-7GRf9uL:ue5_=;h{V%@()={uTd@l?eXBppF%`6W%;h`#]2q+f*81n$B\n h|t")))
+(defvar shimbun-asahi-html-content-end
+  "<!--[\t\n ]*End of related link[\t\n ]*-->\
+\\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
 
-(defvar shimbun-asahi-html-expiration-days 6)
+(luna-define-method shimbun-make-contents ((shimbun shimbun-asahi-html)
+					   header)
+  (shimbun-asahi-adjust-date-header shimbun header)
+  (shimbun-make-html-contents shimbun header))
 
 (provide 'sb-asahi-html)
 

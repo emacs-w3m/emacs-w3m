@@ -1,11 +1,13 @@
 ;;; sb-xemacs.el --- shimbun backend for xemacs.org
 
+;; Copyright (C) 2001 Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001 Yuuichi Teranishi  <teranisi@gohome.org>
+
 ;; Author: Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
-
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -38,8 +40,8 @@
 (defvar shimbun-xemacs-groups '("xemacs-announce"
 				"xemacs-beta-ja" "xemacs-beta"
 				"xemacs-build-reports" "xemacs-cvs"
-				"xemacs-mule" "xemacs-nt" "xemacs-patches"
-				"xemacs-users-ja" "xemacs"))
+				"xemacs-design" "xemacs-mule" "xemacs-nt"
+				"xemacs-patches" "xemacs-users-ja" "xemacs"))
 (defvar shimbun-xemacs-coding-system 'euc-jp)
 (defvar shimbun-xemacs-reverse-flag nil)
 (defvar shimbun-xemacs-litemplate-regexp

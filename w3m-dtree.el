@@ -1,6 +1,6 @@
 ;;; w3m-dtree.el --- The add-on program to display local directory tree.
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI    <shirai@meadowy.org>,
 ;;         TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -43,7 +43,7 @@
   :group 'w3m
   :type '(choice
 	  (const :tag "No limit" nil)
-	  (integer :tag "depth" 10)))
+	  (integer :format "%t: %v\n" :size 0 :tag "depth" 10)))
 
 (defcustom w3m-dtree-indent-strings ["|-" "+-" "|  " "   "]
   "*Vector of strings to be used for indentation with w3m-dtree.
@@ -59,18 +59,63 @@ If use default value or choice 'ASCII', display like this,
 If you care for another style, set manually and try it :-).
 "
   :group 'w3m
-  :type '(choice
-	  (const :tag "ASCII" ["|-" "+-" "|  " "   "])
-	  (vector :tag "Others" string string string string)))
+  :type '(radio
+	  (const :format "ASCII: " ["|-" "+-" "|  " "   "])
+	  (list
+	   :convert-widget
+	   (lambda (widget)
+	     (require 'w3m)
+	     (let ((defaults (if (equal w3m-language "Japanese")
+				 (vconcat
+				  (mapcar
+				   (lambda (s)
+				     (decode-coding-string s 'iso-2022-7bit))
+				   '("\e$B('\e(B" "\e$B(&\e(B"
+				     "\e$B(\"\e(B" "\e$B!!\e(B")))
+			       ["|-" "+-" "|  " "   "])))
+	       `(vector
+		 :format "Others:\n%v" :indent 4
+		 :args
+		 ((string :format "%{|-%}          %v\n"
+			  :sample-face widget-field-face :size 0
+			  :value ,(aref defaults 0))
+		  (string :format "%{+-%}          %v\n"
+			  :sample-face widget-field-face :size 0
+			  :value ,(aref defaults 1))
+		  (string :format "%{|  %}         %v\n"
+			  :sample-face widget-field-face :size 0
+			  :value ,(aref defaults 2))
+		  (string :format "%{   %}         %v"
+			  :sample-face widget-field-face :size 0
+			  :value ,(aref defaults 3)))))))))
 
 (defcustom w3m-dtree-stop-strings ["|=" "+="]
   "*Vector of strings to be used for indentation when a depth of directory
 over the 'w3m-dtree-directory-depth'."
   :group 'w3m
-  :type '(choice
-	  (const :tag "ASCII" ["|=" "+="])
-	  (const :tag "ASCII Bold" ["<b>|-</b>" "<b>+-</b>"])
-	  (vector :tag "Others" string string)))
+  :type '(radio
+	  (const :format "ASCII: " ["|=" "+="])
+	  (const :format "ASCII Bold: " ["<b>|-</b>" "<b>+-</b>"])
+	  (list
+	   :convert-widget
+	   (lambda (widget)
+	     (require 'w3m)
+	     (let ((defaults (if (equal w3m-language "Japanese")
+				 (vconcat
+				  (mapcar
+				   (lambda (s)
+				     (decode-coding-string s 'iso-2022-7bit))
+				   '("\e$B(<\e(B" "\e$B(1\e(B")))
+			       ["|=" "+="])))
+	       `(vector
+		 :format "Others:\n%v" :indent 4
+		 :args
+		 ((string :format "|=          %{|=%}              %v\n"
+			  :sample-face bold :size 0
+			  :value ,(aref defaults 0))
+		  (string :format "+=          %{+=%}              %v\n"
+			  :sample-face bold :size 0
+			  :value ,(aref defaults 1)))))))))
 
 (defsubst w3m-dtree-expand-file-name (path)
   (if (string-match "^\\(.\\):\\(.*\\)" path)
@@ -81,7 +126,8 @@ over the 'w3m-dtree-directory-depth'."
     path))
 
 (defsubst w3m-dtree-directory-name (path)
-  (when (string-match "^/\\(\\([A-Za-z]\\)[|:]?\\|cygdrive/\\([A-Za-z]\\)\\)/" path)
+  (when (and w3m-treat-drive-letter
+	     (string-match "^/\\(\\([A-Za-z]\\)[|:]?\\|cygdrive/\\([A-Za-z]\\)\\)/" path))
     (setq path (concat
 		(or (match-string 2 path)
 		    (match-string 3 path))
@@ -161,7 +207,7 @@ over the 'w3m-dtree-directory-depth'."
     (insert "</pre>\n</body>\n</html>\n")))
 
 ;;;###autoload
-(defun w3m-about-dtree (url &optional nodecode allfiles)
+(defun w3m-about-dtree (url &optional nodecode allfiles &rest args)
   (let ((prelen (length "about://dtree"))
 	(dirprefix "about://dtree")
 	(fileprefix "file://")

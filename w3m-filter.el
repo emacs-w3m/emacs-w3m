@@ -1,6 +1,6 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites.
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -42,29 +42,40 @@
      "<!-- DAC CHANNEL AD START -->" "<!-- DAC CHANNEL AD END -->")
     ("http://lwn.net/" . w3m-filter-lwn.net)
     ("http://www.google.com/search" . w3m-filter-google.com)
-    ("http://www.zdnet.co.jp/news/" . w3m-filter-www.zdnet.co.jp))
+    ("http://www.zdnet.co.jp/news/" . w3m-filter-www.zdnet.co.jp)
+    ("http://www.asahi.com/" . w3m-filter-asahi-shimbun))
   "Rules to filter advertisements on WEB sites."
   :group 'w3m
   :type '(repeat
-	  (cons
-	   (string :tag "URL")
-	   (choice
-	    (list (string :tag "Start pattern")
-		  (string :tag "End pattern"))
-	    (function :tag "Filtering function")))))
+	  (group
+	   :indent 4 :inline t
+	   (cons
+	    :format "%v" :offset 2
+	    (string :format "URL: %v\n" :size 0)
+	    (choice
+	     :format "%[Value Menu%] %v"
+	     (list :tag "Start and End patterns"
+		   (string :size 0 :format "Start: %v\n")
+		   (string :size 0 :format "  End: %v\n"))
+	     (function :format "Filtering function:\n      Function: %v\n"
+		       :size 0
+		       :value-to-internal
+		       (lambda (widget value)
+			 (widget-sexp-value-to-internal
+			  widget (if (functionp value) value 'ignore)))))))))
 
 
 (defvar w3m-filter-db nil) ; nil means non-initialized.
 (defconst w3m-filter-db-size 1023)
 
-;; FIXME: 本当は URL をきちんと解析する関数が必要
-(defconst w3m-filter-server-regexp "^\\([-+\\.A-z0-9]+://[^/]+/\\)")
+;; FIXME: In fact, the function which analyzes URL exactly is required.
+(defconst w3m-filter-server-regexp "^\\([-+.A-z0-9]+://[^/]+/\\)")
 
 
 (defun w3m-filter-setup ()
   "Initialize hash database of filtering rules."
   (unless w3m-filter-db
-    (let ((db (make-vector w3m-filter-db-size nil)))
+    (let ((db (make-vector w3m-filter-db-size 0)))
       (dolist (site w3m-filter-rules)
 	(let* ((url (car site))
 	       (func (cdr site))
@@ -166,5 +177,18 @@
       (when next (insert "\n<link rel=\"next\" href=" next ">")))
     t))
 
+(defun w3m-filter-asahi-shimbun (url)
+  "Convert entity reference of UCS."
+  (when w3m-use-mule-ucs
+    (goto-char (point-min))
+    (let ((case-fold-search t)
+	  end ucs)
+      (while (re-search-forward "alt=\"\\([^\"]+\\)" nil t)
+	(goto-char (match-beginning 1))
+	(setq end (match-end 1))
+	(while (re-search-forward "&#\\([0-9]+\\);" end t)
+	  (setq ucs (string-to-number (match-string 1)))
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (insert-char (w3m-ucs-to-char ucs) 1))))))
 
 ;;; w3m-filter.el ends here.

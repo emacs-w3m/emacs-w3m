@@ -1,10 +1,11 @@
 ;;; sb-ruby.el --- shimbun backend class for ruby ML archiver.
 
-;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2001, 2002 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
+;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Keywords: news
 
-;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -91,32 +92,31 @@
 	  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
 	  (let ((case-fold-search t)
 		id url date subject from)
-	    (goto-char (point-min))
-	    (while (re-search-forward
-		    "^<DT><A NAME=\"[0-9]+\"><A HREF=\"\\([^>]+\\)\">\\([0-9]+\\)</A> \\([ /:0-9]+\\) \\[\\([^[]+\\)\\] \\(.+\\)$"
+	    (goto-char (point-max))
+	    (while (re-search-backward
+		    "^<DT><A NAME=\"[0-9]+\">\\(</A>\\)?<A HREF=\"\\([^>]+\\)\">\\([0-9]+\\)</A> \\([ /:0-9]+\\) \\[\\([^[]+\\)\\][ !]\\(.+\\)$"
 		    nil t)
-	      (setq url (concat shimbun-ruby-url (match-string 1))
+	      (setq url (concat shimbun-ruby-url (match-string 2))
 		    id (format "<%s%05d%%%s>"
 			       aux
-			       (string-to-number (match-string 2))
+			       (string-to-number (match-string 3))
 			       (shimbun-current-group-internal shimbun))
-		    date (shimbun-ruby-parse-time (match-string 3))
-		    from (match-string 4)
-		    subject (match-string 5))
+		    date (shimbun-ruby-parse-time (match-string 4))
+		    from (match-string 5)
+		    subject (match-string 6))
 	      (if (shimbun-search-id shimbun id)
 		  (throw 'stop nil))
-	      (forward-line 1)
 	      (push (shimbun-make-header
 		     0
 		     (shimbun-mime-encode-string subject)
 		     from date id "" 0 0 url)
 		    headers)))
 	  (setq auxs (cdr auxs)))))
-    (nreverse headers)))
+    headers))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-ruby) header)
   (let ((headers '(("^Subject: \\(.+\\)$" . shimbun-header-set-subject)
-		   ("^From :\\(.+\\)$" . shimbun-header-set-from)
+		   ("^From:\\(.+\\)$" . shimbun-header-set-from)
 		   ("^Date: \\(.+\\)$" . shimbun-header-set-date)))
 	;; any other headers to be included?
 	;;<A NAME=head></A><pre><A HREF="/cgi-bin/scat.rb/ruby/ruby-list/29726">...<a href="/ruby/ruby-list/29727">o</a> <a href="/cgi-bin/scat.rb/ruby/ruby-list/29727?help">HELP</a>
@@ -149,9 +149,11 @@
     (shimbun-header-insert shimbun header)
     (insert
      "Content-Type: text/html; charset=ISO-2022-JP\nMIME-Version: 1.0\n")
-    (insert "\n<PRE>\n")
+    (insert "\n<html><head><base href=\""
+	    (shimbun-header-xref header)
+	    "\"</head><body><pre>")
     (goto-char (point-max))
-    (insert "</PRE>")
+    (insert "</pre></body></html>")
     (encode-coding-string (buffer-string)
 			  (mime-charset-to-coding-system "ISO-2022-JP"))))
 

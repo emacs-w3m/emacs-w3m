@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
-;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
+;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; This file is a part of emacs-w3m.
@@ -42,6 +42,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
 (require 'w3m)
 
 (defconst w3m-weather-completion-table
@@ -51,7 +52,7 @@
 	    '(;; URLの一部, 漢字表記, ローマ字表記, 別名
 	      ;; (ローマ字表記では長音を省略しないこと)
 	      ("1a/1100" "道北・宗谷" "douhokusouya" "souya")
-	      ("1a/1200" "道北・上川" "douhokukamikawa""kamikawa")
+	      ("1a/1200" "道北・上川" "douhokukamikawa" "kamikawa")
 	      ("1a/1300" "道北・留萌" "douhokurumoi" "rumoi")
 	      ("1c/1710" "道東・網走" "doutouabashiri" "abashiri")
 	      ("1c/1720" "道東・北見" "doutoukitami" "kitami")
@@ -79,7 +80,7 @@
 	      ("4/3420" "宮城県・山沿い" "miyagikenyamazoi")
 	      ("6/3510" "山形県・村山" "yamagatakenmurayama" "murayama")
 	      ("6/3520" "山形県・置賜" "yamagatakenokitama" "okitama")
-	      ("6/3530" "山形県・庄内" "yamagatakenshonai" "shonai")
+	      ("6/3530" "山形県・庄内" "yamagatakenshonai" "shounai")
 	      ("6/3540" "山形県・最上" "yamagatakenmogami" "mogami")
 	      ("7/3610" "福島県・中通り" "hukushimakennakadoori" "nakadoori")
 	      ("7/3620" "福島県・浜通り" "hukushimakenhamadoori" "hamadoori")
@@ -104,7 +105,7 @@
 	       "toukyoutoizushotounanbu" "izushotounanbu")
 	      ("14/4610" "神奈川県・東部" "kanagawakentoubu")
 	      ("14/4620" "神奈川県・西部" "kanagawakenseibu")
-	      ("15/5410" "新潟県・下越" "niigatakenshimoetsu" "shimoetsu")
+	      ("15/5410" "新潟県・下越" "niigatakenkaetsu" "kaetsu")
 	      ("15/5420" "新潟県・中越" "niigatakenchuuetsu" "chuuetsu")
 	      ("15/5430" "新潟県・上越" "niigatakenjouetsu" "jouetsu")
 	      ("15/5440" "新潟県・佐渡" "niigatakensado" "sado")
@@ -127,12 +128,12 @@
 	      ("22/5040" "静岡県・西部" "shizuokakenseibu")
 	      ("23/5110" "愛知県・西部" "aichikenseibu")
 	      ("23/5120" "愛知県・東部" "aichikentoubu")
-	      ("24/5310" "三重県・北中部" "miekenhokuchubu")
+	      ("24/5310" "三重県・北中部" "miekenhokuchuubu")
 	      ("24/5320" "三重県・南部" "miekennanbu")
 	      ("25/6010" "滋賀県・南部" "shigakennanbu")
 	      ("25/6020" "滋賀県・北部" "shigakenhokubu")
-	      ("26/400" "京都府・北部" "kyotohuhokubu")
-	      ("26/6100" "京都府・南部" "kyotohunanbu")
+	      ("26/400" "京都府・北部" "kyoutohuhokubu")
+	      ("26/6100" "京都府・南部" "kyoutohunanbu")
 	      ("27/6200" "大阪府" "oosakahu" "oosaka")
 	      ("28/500" "兵庫県・北部" "hyougokenhokubu")
 	      ("28/6300" "兵庫県・南部" "hyougokennanbu")
@@ -142,7 +143,7 @@
 	      ("30/6520" "和歌山県・南部" "wakayamakennanbu")
 	      ("31/6910" "鳥取県・東部" "tottorikentoubu")
 	      ("31/6920" "鳥取県・西部" "tottorikenseibu")
-	      ("32/600" "島根県・隠岐" "tottorikenoki")
+	      ("32/600" "島根県・隠岐" "shimanekenoki" "oki")
 	      ("32/6810" "島根県・東部" "shimanekentoubu")
 	      ("32/6820" "島根県・西部" "shimanekenseibu")
 	      ("33/6610" "岡山県・南部" "okayamakennanbu")
@@ -163,20 +164,20 @@
 	      ("39/7420" "高知県・東部" "kouchikentoubu")
 	      ("39/7430" "高知県・西部" "kouchikenseibu")
 	      ("40/8210" "福岡県・福岡" "hukuokakenhukuoka" "hukuoka")
-	      ("40/8220" "福岡県・北九州" "hukuokakenkitakyushu" "kitakyushu")
+	      ("40/8220" "福岡県・北九州" "hukuokakenkitakyushu" "kitakyuushu")
 	      ("40/8230" "福岡県・筑豊" "hukuokakenchikuhou" "chikuhou")
 	      ("40/8240" "福岡県・筑後" "hukuokakenchikugo" "chikugo")
 	      ("41/8510" "佐賀県・南部" "sagakennanbu")
 	      ("41/8520" "佐賀県・北部" "sagakenhokubu")
 	      ("42/700" "長崎県・壱岐対馬"
-	       "nagasakikeniktsushima" "iki" "tsushima")
+	       "nagasakikenikitsushima" "iki" "tsushima" "ikitsushima")
 	      ("42/800" "長崎県・五島" "nagasakikengotou" "gotou")
 	      ("42/8410" "長崎県・南部" "nagasakikennanbu")
 	      ("42/8420" "長崎県・北部" "nagasakikenhokubu")
 	      ("43/8610" "熊本県・熊本" "kumamotokenkumamoto" "kumamoto")
 	      ("43/8620" "熊本県・阿蘇" "kumamotokenaso" "aso")
 	      ("43/8630" "熊本県・天草芦北"
-	       "kumamotokenamakusaashikita" "amakusa" "ashikita")
+	       "kumamotokenamakusaashikita" "amakusa" "ashikita" "amakusaashikita")
 	      ("43/8640" "熊本県・球磨" "kumamotokenkuma" "kuma")
 	      ("44/8310" "大分県・中部" "ooitakenchuubu")
 	      ("44/8320" "大分県・北部" "ooitakenhokubu")
@@ -184,12 +185,12 @@
 	      ("44/8340" "大分県・南部" "ooitakennanbu")
 	      ("45/8710" "宮崎県・南部平野部" "miyazakikennanbuheiyabu")
 	      ("45/8720" "宮崎県・北部平野部" "miyazakikenhokubuheiyabu")
-	      ("45/8730" "宮崎県・南部山沿い" "miyazakikennabuyamazoi")
-	      ("45/8740" "宮崎県・北部山沿い" "miyazakikennanbuyamazoi")
+	      ("45/8730" "宮崎県・南部山沿い" "miyazakikennanbuyamazoi")
+	      ("45/8740" "宮崎県・北部山沿い" "miyazakikenhokubuyamazoi")
 	      ("46/8810" "鹿児島県・薩摩" "kagoshimakensatsuma" "satsuma")
 	      ("46/8820" "鹿児島県・大隅" "kagoshimakenoosumi" "oosumi")
 	      ("46/900" "鹿児島県・種子島・屋久島"
-	       "kagoshimakentanegashimayakushima" "tanegashima" "yakushima")
+	       "kagoshimakentanegashimayakushima" "tanegashima" "yakushima" "tanegashimayakushima")
 	      ("46/1000" "鹿児島県・奄美" "kagoshimakenamami" "amami")
 	      ("47/9110" "沖縄県・本島中南部"
 	       "okinawakenhontouchuunanbu" "hontouchuunanbu")
@@ -225,7 +226,6 @@
 	   (hepburn-regexp
 	    (format "\\(\\`\\|[aiueo]\\)\\(n\\([^aiueoy]\\)\\|%s\\)"
 		    (regexp-opt (mapcar (function car) hepburn-table))))
-	   (hepburn-candidates)
 	   ;; 長音の有無による派生形の表
 	   (prolonged-table
 	    (let (table)
@@ -258,70 +258,68 @@
 	   ;; 派生形の表に乗っている文字列を探す正規表現
 	   (prolonged-regexp (format "\\(\\`\\|[aiueo]\\)\\(%s\\)"
 				     (regexp-opt (mapcar (function car)
-							 prolonged-table))))
-	   (prolonged-candidates)
-	   (romaji-candidates))
-      (setq hepburn-candidates
-	    (lambda (str)
-	      "ヘボン式と訓令式の差によって生じる派生形を得る"
-	      (if (string-match hepburn-regexp str)
-		  (let ((prefix (substring str 0 (match-beginning 2)))
-			(candidates (if (match-beginning 3)
-					'("n" "nn")
-				      (assoc (match-string 2 str)
-					     hepburn-table)))
-			(suffixes
-			 (funcall hepburn-candidates
-				  (substring str (or (match-beginning 3)
-						     (match-end 0)))))
-			(buf))
-		    (dolist (x candidates)
-		      (dolist (y suffixes)
-			(push (concat prefix x y) buf)))
-		    buf)
-		(list str)))
-	    prolonged-candidates
-	    (lambda (str)
-	      "長音の有無によって生じる派生形を得る"
-	      (let (buf)
-		(if (string-match prolonged-regexp str)
+							 prolonged-table)))))
+      (labels ((hepburn-candidates
+		(str)
+		"ヘボン式と訓令式の差によって生じる派生形を得る"
+		(if (string-match hepburn-regexp str)
 		    (let ((prefix (substring str 0 (match-beginning 2)))
-			  (candidates (assoc (match-string 2 str)
-					     prolonged-table))
-			  (suffixes (funcall prolonged-candidates
-					     (substring str (match-end 0)))))
+			  (candidates (if (match-beginning 3)
+					  '("n" "nn")
+					(assoc (match-string 2 str)
+					       hepburn-table)))
+			  (suffixes
+			   (hepburn-candidates
+			    (substring str (or (match-beginning 3)
+					       (match-end 0)))))
+			  (buf))
 		      (dolist (x candidates)
 			(dolist (y suffixes)
-			  (push (concat prefix x y) buf))))
-		  (setq buf (list str)))
-		(dolist (x buf)
-		  (when (string-match "\\(\\`\\|[aiue]\\)oo" x)
-		    (let ((prefix (substring x 0 (match-end 1)))
-			  (suffix (substring x (match-end 0))))
-		      (dolist (y '("o" "oh" "o-"))
-			(push (concat prefix y suffix) buf)))))
-		buf))
-	    romaji-candidates
-	    (lambda (str)
-	      "全ての派生形を得る"
-	      (let (buf)
-		(dolist (x (funcall hepburn-candidates str))
-		  (dolist (y (funcall prolonged-candidates x))
-		    (push y buf)))
-		buf)))
-      (dolist (area alist)
-	(let ((url (format format (car area)))
-	      (kanji (cadr area)))
-	  (push (list kanji (nth 2 area) url) table)
-	  (dolist (romaji (cddr area))
-	    (dolist (x (funcall romaji-candidates romaji))
-	      (push (list x kanji) table)))))
-      (nreverse table)))
+			  (push (concat prefix x y) buf)))
+		      buf)
+		  (list str)))
+	       (prolonged-candidates
+		(str)
+		"長音の有無によって生じる派生形を得る"
+		(let (buf)
+		  (if (string-match prolonged-regexp str)
+		      (let ((prefix (substring str 0 (match-beginning 2)))
+			    (candidates (assoc (match-string 2 str)
+					       prolonged-table))
+			    (suffixes (prolonged-candidates
+				       (substring str (match-end 0)))))
+			(dolist (x candidates)
+			  (dolist (y suffixes)
+			    (push (concat prefix x y) buf))))
+		    (setq buf (list str)))
+		  (dolist (x buf)
+		    (when (string-match "\\(\\`\\|[aiue]\\)oo" x)
+		      (let ((prefix (substring x 0 (match-end 1)))
+			    (suffix (substring x (match-end 0))))
+			(dolist (y '("o" "oh" "o-"))
+			  (push (concat prefix y suffix) buf)))))
+		  buf))
+	       (romaji-candidates
+		(str)
+		"全ての派生形を得る"
+		(let (buf)
+		  (dolist (x (hepburn-candidates str))
+		    (dolist (y (prolonged-candidates x))
+		      (push y buf)))
+		  buf)))
+	(dolist (area alist)
+	  (let ((url (format format (car area)))
+		(kanji (cadr area)))
+	    (push (list kanji (nth 2 area) url) table)
+	    (dolist (romaji (cddr area))
+	      (dolist (x (romaji-candidates romaji))
+		(push (list x kanji) table)))))
+	(nreverse table))))
   "Completion table of areas and urls.")
 
 (defcustom w3m-weather-default-area
   "京都府・南部"
-  "Default region to check weateher."
+  "Default region to check weather."
   :group 'w3m
   :type (cons 'radio
 	      (delq nil
@@ -333,7 +331,9 @@
 (defcustom w3m-weather-filter-functions
   '(w3m-weather-remove-headers
     w3m-weather-remove-footers
-    w3m-weather-insert-title)
+    w3m-weather-expand-anchors
+    w3m-weather-insert-title
+    w3m-weather-insert-seikatu-sisu)
   "Filter functions to remove useless tags."
   :group 'w3m
   :type 'hook)
@@ -409,38 +409,31 @@
   (w3m (format "about://weather/%s" area)))
 
 ;;;###autoload
-(defun w3m-about-weather (url no-decode no-cache &rest args)
-  (let (area furl)
-    (if (and (string-match "^about://weather/" url)
-	     (setq area (substring url (match-end 0))
-		   furl (nth 2 (assoc area w3m-weather-completion-table)))
-	     (w3m-retrieve furl nil no-cache))
-	(inline
-	  (w3m-decode-buffer furl)
-	  (run-hook-with-args 'w3m-weather-filter-functions area furl)
-	  "text/html")
-      (w3m-message "Unknown URL: %s" url)
-      nil)))
+(defun w3m-about-weather (url no-decode no-cache post-data referer handler)
+  (if (string-match "\\`about://weather/" url)
+      (lexical-let* ((url url)
+		     (area (substring url (match-end 0)))
+		     (furl (nth 2 (assoc area w3m-weather-completion-table))))
+	(w3m-process-do
+	    (type (w3m-retrieve furl nil no-cache nil nil handler))
+	  (when type
+	    (w3m-decode-buffer furl)
+	    (run-hook-with-args 'w3m-weather-filter-functions area furl)
+	    "text/html")))
+    (w3m-message "Unknown URL: %s" url)
+    nil))
 
 (defun w3m-weather-remove-headers (&rest args)
   "Remove header of the weather forecast page."
   (goto-char (point-min))
-  (when (search-forward "\
-<TABLE border=\"0\" CELLSPACING=\"1\" CELLPADDING=\"0\" width=\"100%\">
-<tr><td>
-
-<table border=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\" width=\"100%\">
-<tr><td bgcolor=\"#dcdcdc\"><b>今日・明日の天気</b></td>" nil t)
+  (when (search-forward "<!--- TITLE_TABLE_1 --->" nil t)
     (delete-region (point-min) (match-beginning 0))))
 
 (defun w3m-weather-remove-footers (&rest args)
   "Remove footer of the weather forecast page."
   (goto-char (point-max))
-  (when (search-backward "\
-<table border=0 cellpadding=2 cellspacing=5 width=\"100%\">
-<tr bgcolor=\"#dcdcdc\">
-<td colspan=3><b>レジャー天気</b></td></tr>" nil t)
-    (delete-region (point) (point-max))))
+  (when (search-backward "<!--- LEISURE_LINK --->" nil t)
+    (delete-region (match-beginning 0) (point-max))))
 
 (defun w3m-weather-insert-title (area url &rest args)
   "Insert title."
@@ -454,6 +447,63 @@
   (goto-char (point-max))
   (insert "</body>"))
 
+(defun w3m-weather-expand-anchors (area url &rest args)
+  ;; FIXME: 天気予報ページに含まれている相対リンクを絶対リンクに書き換
+  ;; えるための関数．これらの相対リンクを安全に取り扱うためには，base
+  ;; URL を返せるように，about:// の構造を書き直す必要があると考えられ
+  ;; るが，とりあえず後回し．
+  (goto-char (point-min))
+  (while (re-search-forward
+	  (eval-when-compile
+	    (concat "<a[ \t\r\f\n]+href=" w3m-html-string-regexp))
+	  nil t)
+    (replace-match (format
+		    "<a href=\"%s\""
+		    (w3m-expand-url (w3m-remove-redundant-spaces
+				     (or (match-string-no-properties 2)
+					 (match-string-no-properties 3)
+					 (match-string-no-properties 1)))
+				    url)))))
+
+(defun w3m-weather-get-seikatu-sisu (url &rest args)
+  (with-temp-buffer
+    (w3m-retrieve url)
+    (w3m-decode-buffer url)
+    (goto-char (point-min))
+    (let (sisu-list)
+      (when (search-forward "<td>指　数</td>" nil t)
+	(while (re-search-forward "<td nowrap bgcolor=\"#CCCCFF\">　*\\([^　\n]+\\)　*</td>" nil t)
+	  (let ((name-sisu (match-string 1))
+		sisu)
+	    (dotimes (i 2)
+	      (forward-line 1)
+	      (when (looking-at "<td bgcolor=\"#EEEEEE\">\\([^\n]+\\)</td>")
+		(push (list name-sisu (match-string 1)) sisu)))
+	    (push sisu sisu-list)))
+	(nreverse sisu-list)))))
+
+(defun w3m-weather-insert-seikatu-sisu (&rest args)
+  (goto-char (point-min))
+  (when (re-search-forward "<a href=\"\\([^\"]+\\)\">生活指数</a>" nil t)
+    (let ((sisu-list (w3m-weather-get-seikatu-sisu (match-string 1)))
+	  (case-fold-search t)
+	  sisu-name)
+      (goto-char (point-min))
+      (when (search-forward "</table>\n<!--- /WEATHER_TABLE_1 --->\n" nil t)
+	(goto-char (match-beginning 0))
+	(dolist (seikatu-sisu sisu-list)
+	  (insert "<tr>\n")
+	  (dolist (sisu (reverse seikatu-sisu))
+	    (insert "<td width=\"50%\"><table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td nowrap bgcolor=\"#CCCCFF\" width=\"100\" valign=\"top\">")
+	    (insert (format "%s</td>\n" (car sisu)))
+	    (insert (format "<td bgcolor=\"#eeeeee\" align=\"center\">%s</td>\n</tr>\n</table>\n</td>\n" (cadr sisu))))
+	  (insert "</tr>\n"))
+	(goto-char (point-min))
+	(when (search-forward "<!--- EXPONENT_LINK --->" nil t)
+	  (let ((bg (match-beginning 0)))
+	    (when (search-forward "<!--- /EXPONENT_LINK --->" nil t)
+	      (delete-region bg (match-end 0)))))))))
 
 (provide 'w3m-weather)
+
 ;;; w3m-weather.el ends here.

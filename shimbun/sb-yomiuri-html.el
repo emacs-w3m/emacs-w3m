@@ -1,10 +1,12 @@
-;;; sb-yomiuri-html.el --- shimbun backend for yomiuri online (HTML version)
+;;; sb-yomiuri-html.el --- shimbun backend for yomiuri online (HTML version) -*- coding: iso-2022-7bit; -*-
+
+;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
-
+;;         Katsumi Yamaoka   <yamaoka@jpl.org>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -28,16 +30,17 @@
 (require 'shimbun)
 (require 'sb-yomiuri)
 
-(luna-define-class shimbun-yomiuri-html (shimbun shimbun-yomiuri) ())
+(luna-define-class shimbun-yomiuri-html (shimbun-yomiuri) ())
 
-(defvar shimbun-yomiuri-html-url "http://www.yomiuri.co.jp/")
-(defvar shimbun-yomiuri-html-groups '("shakai" "sports" "seiji" "keizai"
-				 "kokusai" "fuho"))
-(defvar shimbun-yomiuri-html-from-address  "webmaster@www.yomiuri.co.jp")
-(defvar shimbun-yomiuri-html-content-start "\n<!--  photo start  -->\n")
+(defvar shimbun-yomiuri-html-content-start
+  "\n<!-- ▼写真テーブル▼ -->\n\\|\n<!--  honbun start  -->\n")
+
 (defvar shimbun-yomiuri-html-content-end  "\n<!--  honbun end  -->\n")
 
-(defvar shimbun-yomiuri-html-expiration-days 7)
+(luna-define-method shimbun-make-contents ((shimbun shimbun-yomiuri-html)
+					   header)
+  (shimbun-yomiuri-adjust-date-header shimbun header)
+  (shimbun-make-html-contents shimbun header))
 
 (provide 'sb-yomiuri-html)
 

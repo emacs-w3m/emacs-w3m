@@ -1,10 +1,11 @@
 ;;; sb-makanai.el --- shimbun backend for www.makanai.com -*- coding: iso-2022-7bit -*-
 
-;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
+;; Copyright (C) 2001 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 
+;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -52,7 +53,13 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-makanai))
   (concat (cdr (assoc (shimbun-current-group-internal shimbun)
 		      shimbun-makanai-group-alist))
-	  "menu.cgi"))
+	  "news/001.html"))
+
+(eval-and-compile
+  (unless (and (fboundp 'md5)
+	       (subrp (symbol-function 'md5)))
+    ;; The lisp function might be provided by FLIM.
+    (autoload 'md5 "md5")))
 
 (defun shimbun-makanai-scan-articles (shimbun &optional force-rescan
 					      skip-this-page skip-next-page)
@@ -61,21 +68,22 @@
 	(case-fold-search t)
 	(search-next-page t))
     (catch 'stop
-      (while (re-search-forward "<TITLE>F1news</TITLE>" nil t)
+      (while (re-search-forward "<title>F1gpnews</title>" nil t)
 	(while (and (not skip-this-page)
-		    (re-search-forward "<a name=\\([0-9]+\\)><font color=\"#[0-9a-f]+\">\\([0-9]+\\)年\\([0-9]+\\)月\\([0-9]+\\)日(\\(\\w+\\)) \\([^>]+\\) </font></a>" nil t))
-	  (let* ((article-number (match-string 1))
-		 (year (match-string 2))
-		 (month (match-string 3))
-		 (day (match-string 4))
-		 (day-of-week (match-string 5))
-		 (subject (match-string 6))
+		    (re-search-forward "<font color=#[0-9a-f]+>\\([0-9]+\\)年\\([0-9]+\\)月\\([0-9]+\\)日(\\(\\w+\\)) \\([^>]+\\) ?</font>" nil t))
+	  (let* ((year (match-string 1))
+		 (month (match-string 2))
+		 (day (match-string 3))
+		 (day-of-week (match-string 4))
+		 (subject (match-string 5))
+		 (article-number (md5 subject))
 		 (article (buffer-substring
 			   (match-end 0)
 			   (progn
 			     (search-forward "</blockquote>" nil t)
 			     (point))))
-		 (id (format "<%s.%s@www.makanai.com>"
+		 (id (format "<%s.%s.%s.%s.%s@www.makanai.com>"
+			     year month day
 			     article-number
 			     (shimbun-current-group-internal shimbun)))
 		 (date (shimbun-make-date-string (string-to-number year)
@@ -93,12 +101,12 @@
 	    (push (shimbun-make-header
 		   0
 		   (shimbun-mime-encode-string subject)
-		   (shimbun-from-address-internal shimbun)
+		   (shimbun-from-address shimbun)
 		   date id "" 0 0 xref)
 		  headers)))
 	(when (and search-next-page  (not skip-next-page)
 		   (re-search-forward
-		    "<a href=[^?]+\\(\\?[^>]+\\)>これ以前のニュースへ</a>" nil t))
+		    "<a href=\"\\([^\"]+\\)\">これ以前のニュース</a>" nil t))
 	  (let ((url (concat (shimbun-index-url shimbun)
 			     (match-string 1))))
 	    (erase-buffer)

@@ -1,6 +1,6 @@
 ;;; w3m-xmas.el --- The stuffs to use emacs-w3m on XEmacs
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -35,8 +35,12 @@
 
 ;;; Code:
 
-(require 'w3m-macro)
+(require 'w3m-util)
 (require 'w3m-proc)
+(require 'w3m-image)
+(eval-and-compile
+  (when (featurep 'mule)
+    (require 'w3m-ccl)))
 
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
@@ -59,14 +63,70 @@
   (autoload 'w3m-image-type "w3m")
   (autoload 'w3m-retrieve "w3m"))
 
+;; Dummies to shut some XEmacs variants up.
+(eval-when-compile
+  (autoload 'unicode-to-char "XEmacs-21.5-b6_and_later")
+  (unless (featurep 'mule)
+    (defalias 'find-charset 'ignore)))
+
 (require 'path-util)
 (require 'poe)
 (require 'poem)
 (require 'pccl)
 
 ;;; Handle coding system:
-(defalias 'w3m-find-coding-system 'find-coding-system)
-(defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
+(defalias 'w3m-find-coding-system (if (fboundp 'find-coding-system)
+				      'find-coding-system
+				    'ignore))
+
+;; Under XEmacs 21.5-b6 and later, `make-ccl-coding-system' will
+;; signal an error if the coding-system has already been defined.
+;; To make w3m.elc reloadable, we'll define the function as follows:
+;;
+;;(defun w3m-make-ccl-coding-system (coding-system args...)
+;;  (or (find-coding-system coding-system)
+;;      (make-ccl-coding-system coding-system args...)))
+(eval-when-compile
+  (defmacro w3m-xmas-define-w3m-make-ccl-coding-system ()
+    "Make the source form for the function `w3m-make-ccl-coding-system'."
+    (if (and (fboundp 'make-ccl-coding-system)
+	     (fboundp 'find-coding-system))
+	`(defun w3m-make-ccl-coding-system (coding-system mnemonic docstring
+							  decoder encoder)
+	   ,(concat (documentation 'make-ccl-coding-system)
+		    "\n\n\
+NOTE: This function is slightly modified from `make-ccl-coding-system'
+      to be recallable for the existing coding-systems without errors.")
+	   (or (find-coding-system coding-system)
+	       (,(symbol-function 'make-ccl-coding-system)
+		coding-system mnemonic docstring decoder encoder)))
+      '(defalias 'w3m-make-ccl-coding-system 'ignore))))
+
+(w3m-xmas-define-w3m-make-ccl-coding-system)
+
+(unless (fboundp 'coding-system-category)
+  (defalias 'coding-system-category 'ignore))
+
+(unless (fboundp 'coding-system-list)
+  (defalias 'coding-system-list 'ignore))
+
+;; If pccl.elc has been mis-compiled for XEmacs with MULE, the macro
+;; `define-ccl-program' wouldn't be an empty macro because of advice.
+(when (and (not (featurep 'mule))
+	   (featurep 'advice))
+  (ad-unadvise 'define-ccl-program))
+
+(unless (fboundp 'define-ccl-program)
+  (defmacro define-ccl-program (&rest args)))
+
+(defmacro w3m-detect-coding-with-priority (from to priority-list)
+  (cond
+   ((featurep 'mule)
+    `(detect-coding-with-priority ,from ,to ,priority-list))
+   ((featurep 'file-coding)
+    `(detect-coding-region ,from ,to))
+   (t
+    'w3m-default-coding-system)))
 
 (defun w3m-detect-coding-region (start end &optional priority-list)
   "Detect coding system of the text in the region between START and END.
@@ -78,10 +138,16 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       (setq category (coding-system-category codesys))
       (unless (assq category categories)
 	(push (cons category codesys) categories)))
-    (if (consp (setq codesys (detect-coding-with-priority
+    (if (consp (setq codesys (w3m-detect-coding-with-priority
 			      start end (nreverse categories))))
 	(car codesys)
       codesys)))
+
+(when (and (not (fboundp 'w3m-ucs-to-char))
+	   (fboundp 'unicode-to-char)
+	   (subrp (symbol-function 'unicode-to-char)))
+  (defun w3m-ucs-to-char (codepoint)
+    (unicode-to-char codepoint)))
 
 ;;; Handle images:
 
@@ -235,51 +301,140 @@ new glyph image.  See also the documentation for the variable
       ;; Use a cached glyph.
       (cdr cache))))
 
-(defun w3m-create-image (url &optional no-cache referer handler)
+(defsubst w3m-make-glyph (data type)
+  (or (and (eq type 'xbm)
+	   (let (width height content)
+	     (with-temp-buffer
+	       (insert data)
+	       (goto-char (point-min))
+	       (if (re-search-forward "width[ \t]+\\([0-9]+\\)")
+		   (setq width (string-to-int (match-string 1))))
+	       (if (re-search-forward "height[ \t]+\\([0-9]+\\)")
+		   (setq height (string-to-int (match-string 1))))
+	       (while (re-search-forward "0x\\(..\\)" nil t)
+		 (setq content (cons
+				(string-to-int
+				 (match-string 1) 16) content)))
+	       (setq content (concat (nreverse content))))
+	     (make-glyph (vector 'xbm :data (list width height content)))))
+      (make-glyph (vector type :data data))))
+
+(defun w3m-create-image (url &optional no-cache referer size handler)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used.
-If second optional argument REFERER is non-nil, it is used as Referer: field."
+If second optional argument REFERER is non-nil, it is used as Referer: field.
+Third optional argument SIZE is currently ignored."
   (if (not handler)
       (w3m-process-with-wait-handler
 	(w3m-create-image url no-cache referer handler))
-    (w3m-process-do-with-temp-buffer
-	(type (condition-case err
-		  (w3m-retrieve url 'raw no-cache nil referer)
-		(error (message "While retrieving %s: %s" url err) nil)))
-      (when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-	(let ((data (buffer-string)))
-	  (or (and (eq type 'gif)
-		   (or w3m-should-unoptimize-animated-gifs
-		       w3m-should-convert-interlaced-gifs)
-		   w3m-gifsicle-program
-		   (w3m-fix-gif url data no-cache))
-	      (make-glyph (vector type :data data))))))))
+    (lexical-let ((url url)
+		  (set-size size)
+		  (no-cache no-cache)
+		  size)
+      (w3m-process-do-with-temp-buffer
+	  (type (condition-case err
+		    (w3m-retrieve url 'raw no-cache nil referer handler)
+		  (error (message "While retrieving %s: %s" url err) nil)))
+	(when type
+	  (let ((data (buffer-string))
+		glyph)
+	    (setq glyph
+		  (when (w3m-image-type-available-p
+			 (setq type (w3m-image-type type)))
+		    (or (and (eq type 'gif)
+			     (or w3m-should-unoptimize-animated-gifs
+				 w3m-should-convert-interlaced-gifs)
+			     w3m-gifsicle-program
+			     (w3m-fix-gif url data no-cache))
+			(w3m-make-glyph data type))))
+	    (if (and w3m-resize-images set-size)
+		(progn
+		  (setq size (cons (glyph-width glyph)
+				   (glyph-height glyph)))
+		  (if (and (null (car set-size)) (cdr set-size))
+		      (setcar set-size
+			      (/ (* (car size) (cdr set-size))
+				 (cdr size))))
+		  (if (and (null (cdr set-size)) (car set-size))
+		      (setcdr set-size
+			      (/ (* (cdr size) (car set-size))
+				 (car size))))
+		  (if (or (not (eq (car size)
+				   (car set-size))) ;; width is different
+			  (not (eq (cdr size)
+				   (cdr set-size)))) ;; height is different
+		      (lexical-let ((type type))
+			(w3m-process-do
+			    (resized (w3m-resize-image
+				      data
+				      (car set-size)(cdr set-size)
+				      handler))
+			  (w3m-make-glyph resized type)))
+		    glyph))
+	      glyph)))))))
 
-(defun w3m-insert-image (beg end image)
-  "Display image on the current buffer.
-Buffer string between BEG and END are replaced with IMAGE."
-  (let (extent glyphs)
-    (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
-      (push (extent-end-glyph extent) glyphs))
-    (set-extent-properties (make-extent beg end)
-			   (list 'invisible t 'w3m-xmas-icon t
-				 'end-glyph image))
+(defun w3m-create-resized-image (url rate &optional referer size handler)
+  "Resize an cached image object.
+URL is the image file's url.
+RATE is resize percentage.
+If REFERER is non-nil, it is used as Referer: field.
+If SIZE is non-nil, its car element is used as width
+and its cdr element is used as height."
+  (if (not handler)
+      (w3m-process-with-wait-handler
+	(w3m-create-image url nil referer size handler))
+    (lexical-let ((url url)
+		  (rate rate)
+		  fmt data)
+      (w3m-process-do-with-temp-buffer
+	  (type (w3m-retrieve url 'raw nil nil referer handler))
+	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
+	  (setq data (buffer-string)
+		fmt type)
+	  (w3m-process-do
+	      (resized (w3m-resize-image-by-rate data rate handler))
+	    (when resized
+	      (or (and (eq fmt 'gif)
+		       (or w3m-should-unoptimize-animated-gifs
+			   w3m-should-convert-interlaced-gifs)
+		       w3m-gifsicle-program
+		       (let (w3m-cache-fixed-gif-images)
+			 (w3m-fix-gif url resized t)))
+		  (w3m-make-glyph resized fmt)))))))))
+
+(defun w3m-insert-image (beg end image &rest args)
+  "Display IMAGE in the current buffer.
+A buffer string between BEG and END are replaced with IMAGE."
+  (let (glyphs)
+    (map-extents
+     (lambda (extent maparg)
+       (push (extent-end-glyph extent) glyphs)
+       (set-extent-end-glyph extent nil)
+       nil)
+     nil beg beg nil nil 'w3m-xmas-icon)
+    ;; Display an image on the right hand.
+    (push image glyphs)
+    (when (extent-at end nil 'invisible nil 'at)
+      (setq end (next-single-property-change end 'invisible))
+      (map-extents
+       (lambda (extent maparg)
+	 (push (extent-end-glyph extent) glyphs)
+	 (set-extent-end-glyph extent nil)
+	 nil)
+       nil end end nil nil 'w3m-xmas-icon))
+    (set-extent-properties (make-extent beg end) (list 'w3m-xmas-icon t
+						       'invisible t))
     (while glyphs
       (set-extent-properties (make-extent end end)
 			     (list 'w3m-xmas-icon t
 				   'end-glyph (pop glyphs))))))
 
 (defun w3m-remove-image (beg end)
-  "Remove an image which is inserted between BEG and END."
-  (let (extent)
-    (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
-      (if (extent-end-glyph extent)
-	  (set-extent-end-glyph extent nil))
-      (set-extent-property extent 'invisible nil))
-    (while (setq extent (extent-at end nil 'w3m-xmas-icon extent 'at))
-      (if (extent-end-glyph extent)
-	  (set-extent-end-glyph extent nil))
-      (set-extent-property extent 'invisible nil))))
+  "Remove images between BEG and END."
+  (map-extents (lambda (extent maparg)
+		 (delete-extent extent)
+		 nil)
+	       nil beg end nil 'end-closed 'w3m-xmas-icon))
 
 (defun w3m-image-type-available-p (image-type)
   "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
@@ -385,34 +540,9 @@ as the value."
 
 (eval-after-load "wid-edit" '(w3m-xmas-define-missing-widgets))
 
-;;; Header line (emulating Emacs 21):
+;;; Header line:
 (defvar w3m-header-line-map (make-sparse-keymap))
 (define-key w3m-header-line-map 'button2 'w3m-goto-url)
-
-(defun w3m-setup-header-line ()
-  "Setup header line (emulating Emacs 21)."
-  (when (and w3m-use-header-line w3m-current-url
-	     (eq 'w3m-mode major-mode))
-    (goto-char (point-min))
-    (insert "Location: ")
-    (put-text-property (point-min) (point)
-		       'face 'w3m-header-line-location-title-face)
-    (let ((start (point))
-	  (help "button2 prompts to input URL"))
-      (insert w3m-current-url)
-      (add-text-properties start (point)
-			   (list 'face
-				 'w3m-header-line-location-content-face
-				 'mouse-face 'highlight
-				 'keymap w3m-header-line-map
-				 'help-echo help
-				 'balloon-help help))
-      (setq start (point))
-      (insert-char ?\  (max 0 (- (window-width) (current-column) 1)))
-      (put-text-property start (point)
-			 'face 'w3m-header-line-location-content-face)
-      (unless (eolp)
-	(insert "\n")))))
 
 ;;; Gutter:
 (defcustom w3m-xmas-show-current-title-in-buffer-tab
@@ -433,8 +563,8 @@ option, it is recommended a bit that setting both the option
 		 (setq value nil))
 	     (set-default symbol value)
 	   (if value
-	       (add-hook 'w3m-display-hook 'w3m-xmas-update-tab-in-gutter)
-	     (remove-hook 'w3m-display-hook 'w3m-xmas-update-tab-in-gutter))
+	       (add-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter)
+	     (remove-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter))
 	   (condition-case nil
 	       (progn
 		 (if value
@@ -451,7 +581,7 @@ option, it is recommended a bit that setting both the option
 (when (boundp 'gutter-buffers-tab-enabled)
   (defadvice format-buffers-tab-line
     (around w3m-xmas-show-current-title-in-buffer-tab (buffer) activate)
-    "Advised by Emacs-W3M.
+    "Advised by emacs-w3m.
 Show the current title string in the buffer tab.  Unfortunately,
 existing XEmacs does not support showing non-ascii characters.  When a
 title contains non-ascii characters, show a url name by default."
@@ -498,7 +628,20 @@ title contains non-ascii characters, show a url name by default."
     (update-tab-in-gutter (selected-frame)))
 
   (when (symbol-value 'gutter-buffers-tab-enabled)
-    (add-hook 'w3m-display-hook 'w3m-xmas-update-tab-in-gutter)))
+    (add-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter)))
+
+;;; Miscellaneous:
+(if (featurep 'mule)
+    (defalias 'multibyte-string-p 'stringp)
+  (defalias 'multibyte-string-p 'ignore))
+
+(if (featurep 'mule)
+    (defun w3m-mule-unicode-p ()
+      "Check the existence as charsets of mule-unicode."
+      (and (find-charset 'mule-unicode-0100-24ff)
+	   (find-charset 'mule-unicode-2500-33ff)
+	   (find-charset 'mule-unicode-e000-ffff)))
+  (defalias 'w3m-mule-unicode-p 'ignore))
 
 (provide 'w3m-xmas)
 

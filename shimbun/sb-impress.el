@@ -1,10 +1,11 @@
-;;; sb-impress.el --- shimbun backend for www.watch.impress.co.jp
+;;; sb-impress.el --- shimbun backend for www.watch.impress.co.jp -*- coding: iso-2022-7bit; -*-
+
+;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
-
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -30,14 +31,11 @@
 (defvar shimbun-impress-url "http://www.watch.impress.co.jp/")
 
 (defvar shimbun-impress-groups-alist
-  '(("internet" "<a href=\"\\(www/article/\\([0-9]+\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- 本文開始 -->" "<!-- 本文終了 -->")
-    ("pc" "<a href=\"\\(docs/article/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "\\(<hr>\\|<!-- 本文開始 -->\\)" "<!-- 本文終了 -->")
+  '(("internet" "<a href=\"\\(cda/news/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- 本文開始 -->" "<!-- 本文終了 -->" "http://internet.watch.impress.co.jp/")
+    ("pc" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "\\(<hr>\\|<!-- 本文開始 -->\\)" "<!-- 本文終了 -->" "http://pc.watch.impress.co.jp/")
     ("akiba" "<a href=\"\\(hotline/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "\\(<hr>\\|<!-- 本文開始 -->\\)" "<!-- 本文終了 -->")
     ("game" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- 本文開始 -->" "<!-- 本文終了 -->")
     ("av" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "\\(<!-- 本文開始 -->\\|<!-- title -->\\)" "<!-- 本文終了 -->")
-    ;; Service stopped on 30 June 2001.
-    ;;    ("jijinews" "<a href=\"\\.\\./\\(news/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)[0-9]+/\\([^>]*\\)\\)\">" "<!--■■本文■■-->" "<br>" "/main/main.htm")
-    ;;    ("sports" "<a href=\"\\.\\./\\(news/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)[0-9]+/\\([^>]*\\)\\)\">" "<!--■■本文■■-->" "<br>" "/main/main.htm")
     ))
 
 (defvar shimbun-impress-groups (mapcar 'car shimbun-impress-groups-alist))
@@ -50,11 +48,10 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 ;;(defvar shimbun-impress-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-impress))
-  (let ((index (or (nth 4 (assoc (shimbun-current-group-internal shimbun)
-				 shimbun-impress-groups-alist))
-		   "/index.htm")))
-    (concat (shimbun-url-internal shimbun) "/"
-	    (shimbun-current-group-internal shimbun) index)))
+  (or (nth 4 (assoc (shimbun-current-group-internal shimbun)
+		    shimbun-impress-groups-alist))
+      (concat (shimbun-url-internal shimbun) "/"
+	      (shimbun-current-group-internal shimbun) "/")))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-impress)
 					 &optional range)
@@ -90,13 +87,11 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 	  (push (shimbun-make-header
 		 0
 		 (shimbun-mime-encode-string (or subject ""))
-		 (shimbun-from-address-internal shimbun)
+		 (shimbun-from-address shimbun)
 		 (shimbun-make-date-string year month mday)
 		 id
-		 "" 0 0 (concat
-			 (shimbun-url-internal shimbun)
-			 (shimbun-current-group-internal shimbun)
-			 "/" apath))
+		 "" 0 0
+		 (shimbun-expand-url apath (shimbun-index-url shimbun)))
 		headers))))
     headers))
 

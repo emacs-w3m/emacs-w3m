@@ -5,8 +5,8 @@ if test -z "$3"; then
 fi
 AC_CACHE_VAL(EMACS_cv_SYS_$1,[
 	OUTPUT=./conftest-$$
-	echo ${EMACS}' -batch -eval '\''(let ((x '"${elisp}"')) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
-	eval ${EMACS}' -batch -eval '\''(let ((x '"${elisp}"')) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
+	echo ${EMACS}' -q -no-site-file -batch -eval '\''(let ((x '"${elisp}"')) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
+	eval ${EMACS}' -q -no-site-file -batch -eval '\''(let ((x '"${elisp}"')) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
 	retval="`cat ${OUTPUT}`"
 	echo "=> ${retval}" >& AC_FD_CC 2>&1
 	rm -f ${OUTPUT}
@@ -18,7 +18,7 @@ if test -z "$3"; then
 fi
 ])
 
-AC_DEFUN(AC_CHECK_EMACS,
+AC_DEFUN(AC_PATH_EMACS,
  [dnl Check for Emacsen.
 
   dnl Apparently, if you run a shell window in Emacs, it sets the EMACS
@@ -31,20 +31,20 @@ AC_DEFUN(AC_CHECK_EMACS,
   AC_ARG_WITH(emacs,
    [  --with-emacs=EMACS      compile with EMACS [EMACS=emacs, xemacs, mule...]],
    [if test "${withval}" = yes -o -z "${withval}"; then
-      AC_CHECK_PROGS(EMACS, emacs xemacs mule, emacs)
+      AC_PATH_PROGS(EMACS, emacs xemacs mule, emacs)
     else
-      AC_CHECK_PROG(EMACS, ${withval}, ${withval}, emacs)
+      AC_PATH_PROG(EMACS, ${withval}, ${withval}, emacs)
     fi])
   AC_ARG_WITH(xemacs,
    [  --with-xemacs=XEMACS    compile with XEMACS [XEMACS=xemacs]],
    [if test x$withval = xyes -o x$withval = x; then
-      AC_CHECK_PROG(EMACS, xemacs, xemacs, xemacs)
+      AC_PATH_PROG(EMACS, xemacs, xemacs, xemacs)
     else
-      AC_CHECK_PROG(EMACS, $withval, $withval, xemacs)
+      AC_PATH_PROG(EMACS, $withval, $withval, xemacs)
     fi])
-  test -z "${EMACS}" && AC_CHECK_PROGS(EMACS, emacs xemacs mule, emacs)
+  test -z "${EMACS}" && AC_PATH_PROGS(EMACS, emacs xemacs mule, emacs)
   AC_SUBST(EMACS)
-  
+
   AC_MSG_CHECKING([what a flavor does ${EMACS} have])
   AC_EMACS_LISP(flavor,
     (cond ((featurep (quote xemacs)) \"XEmacs\")\
@@ -87,8 +87,8 @@ AC_DEFUN(AC_EXAMINE_PACKAGEDIR,
 	    (if (and prefix\
 		     (progn\
 		       (setq prefix (file-name-as-directory prefix))\
-		       (zerop (string-match (regexp-quote prefix)\
-					    package-dir))))\
+		       (eq 0 (string-match (regexp-quote prefix)\
+					   package-dir))))\
 		(replace-match \"\$(prefix)/\" nil nil package-dir)\
 	      package-dir))\
 	\"NONE\")),
@@ -175,7 +175,7 @@ AC_DEFUN(AC_PATH_ICONDIR,
 	  (if (and prefix\
 		   (progn\
 		     (setq prefix (file-name-as-directory prefix))\
-		     (zerop (string-match (regexp-quote prefix) default))))\
+		     (eq 0 (string-match (regexp-quote prefix) default))))\
 	      (replace-match \"\$(prefix)/\" nil nil default)\
 	    default)),
 	${prefix},noecho)
@@ -202,11 +202,34 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
 	ADDITIONAL_LOAD_PATH="${withval}"
       else
 	if test x"$USER" != xroot -a x"$HOME" != x -a -f "$HOME"/.emacs; then
-          ADDITIONAL_LOAD_PATH=`"$EMACS" -batch -l "$HOME"/.emacs -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null | grep -v '^$'`
+          ADDITIONAL_LOAD_PATH=`"$EMACS" -batch -l "$HOME"/.emacs -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null | $EGREP -v '^$'`
         else
-          ADDITIONAL_LOAD_PATH=`"$EMACS" -batch -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null | grep -v '^$'`
+          ADDITIONAL_LOAD_PATH=`"$EMACS" -batch -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null | $EGREP -v '^$'`
         fi
       fi
       AC_MSG_RESULT(${ADDITIONAL_LOAD_PATH})],
     ADDITIONAL_LOAD_PATH=NONE)
+  AC_ARG_WITH(attic,
+   [  --with-attic            install attic libraries (default: No)],
+   [if test "x${withval}" = xyes; then
+      if test x"$ADDITIONAL_LOAD_PATH" = xNONE; then
+        ADDITIONAL_LOAD_PATH=`pwd`/attic
+      else
+        ADDITIONAL_LOAD_PATH=${ADDITIONAL_LOAD_PATH}:`pwd`/attic
+      fi
+    fi])
+  retval=`"$EMACS" -q -no-site-file -batch -l w3mhack.el "$ADDITIONAL_LOAD_PATH" -f w3mhack-print-status`
+  if test x"$retval" != xOK; then
+    AC_MSG_ERROR(APEL is missing)
+  fi
   AC_SUBST(ADDITIONAL_LOAD_PATH)])
+
+AC_DEFUN(AC_CHECK_ELISP,
+ [dnl Check for requried elisp library.
+  AC_MSG_CHECKING(for $1)
+  retval=`"$EMACS" -q -no-site-file -batch -l w3mhack.el "$ADDITIONAL_LOAD_PATH" -f w3mhack-locate-library "$1" 2>/dev/null | $EGREP -v '^$'`
+  if test x"$retval" != x; then
+    AC_MSG_RESULT(${retval})
+  else
+    AC_MSG_ERROR($1 is missing)
+  fi])

@@ -1,5 +1,5 @@
-このパッケージには w3m を Emacs 上で動かすためのプログラムが含まれていま
-す．
+このパッケージには w3m を Emacs 上で動かすためのプログラム emacs-w3m が
+含まれています．
 
 1. はじめに
 
@@ -7,123 +7,268 @@
    ジャです．あくまでページャですが，テキストベース WWW ブラウザとしても
    使うことができます．詳細については，
 
-       http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/
+       http://w3m.sourceforge.net/
 
    を参照してください．
 
    emacs-w3m は，Emacs 上で動作する単なるインターフェースプログラムに過
-   ぎません．
+   ぎません．公式 Web ページの URL は，
+
+        http://emacs-w3m.namazu.org/
+
+   です．以下の説明のもっと詳しいものを，HTML 化された Info の形で読むこ
+   とができます．
+
+        http://emacs-w3m.namazu.org/info/
 
 
-2. インストール
+2. 動作環境
 
-   a) 最新の w3m をインストールしてください(詳細については第3節を参照)．
+   emacs-w3m をインストールする前に，必要な環境が整っているか調べてくだ
+   さい．
 
-   b) もしあなたが XEmacs 21.x お使いならば，必ず "gifsicle" プログラム
-      をインストールして下さい．現在すべての XEmacs 21.x にオプティマイ
-      ズされたアニメーション gif が正常に表示されなかったりある種のイン
-      ターレース gif を表示しようとするとクラッシュしてしまうバグがあり
-      ます．emacs-w3m ではこれを使って gif データを XEmacs 21.x で扱える
-      形式に変換します．これは次の場所から入手することができます:
+   emacs-w3m を動かすには最新の w3m (バージョン 0.3.1 以上) が必要です．
+   このプログラムは w3m のバージョンに強く依存しているので，既に w3m を
+   インストールしてある場合は，それを確認して下さい．また，w3m のより新
+   しいバージョンがリリースされているかどうかをチェックするために，公式
+   の w3m ウェブページを訪問することをお勧めします:
+
+       http://prdownloads.sourceforge.net/w3m/
+
+   emacs-w3m に同梱して配布されている shimbun ライブラリを利用するために
+   は，FLIM を前もってインストールしておく必要があります．詳細については，
+   Info の「Shimbun Library」節を確認してください．
+
+   a) Emacs 21.x
+      emacs-w3m を動かすために，余分にインストールが必要なモジュールはあ
+      りません．
+
+   b) Emacs 20.x
+      emacs-w3m を動かすために，余分にインストールが必要なモジュールはあ
+      りません．
+
+      BITMAP-MULE パッケージをインストールしておくと，WEB ページのインラ
+      イン画像を白黒表示させることができます．以下の場所から入手できます:
+
+          ftp://ftp.jpl.org/pub/elisp/bitmap/
+
+   c) XEmacs
+      APEL を前もってインストールしておく必要があります．
+
+          ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz
+
+      注意: APEL XEmacs パッケージ (SUMO に含まれています) は使えません．
+       もしすでに APEL XEmacs パッケージがインストールされているならば，
+       それを上記のリンクで示した APEL で置き換えるために，以下の命令を
+       使って下さい (新規に APEL をインストールする場合も同じ命令を使う
+       ことができます):
+
+          % rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
+          % cd apel-10.6
+          % make install-package XEMACS=xemacs-21.4.x\
+            PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
+
+      XEmacs 21.x に emacs-w3m をインストールする場合は，必ず gifsicle
+      プログラムもインストールして下さい．現在すべての XEmacs 21.x には
+      オプティマイズされたアニメーション gif が正常に表示されなかったり
+      ある種のインターレース gif を表示しようとするとクラッシュしてしま
+      うバグがあります．emacs-w3m は gifsicle を利用して，gif データを
+      XEmacs 21.x で扱える形式に変換します．これは次の場所から入手するこ
+      とができます．
 
           http://www.lcdf.org/gifsicle/
 
-   c) もしあなたが，XEmacs, Mule-2.3 をお使いならば，APEL を先にインストー
-      ルしなければなりません．APEL は ftp://ftp.m17n.org/pub/mule/apel/
-      から入手できます．
+   d) Mule 2.3 (based on Emacs 19.34)
+      APEL を前もってインストールしておく必要があります．更に，「新しい
+      custom」と regexp-opt.el(c) モジュールも必要です．詳しくは，次の
+      Emacs 19.34 についての説明を参照してください．
 
-      また，Emacs-w3m は「新しい custom」が必要です．もしあなたが
-      Mule-2.3 をお使いならば，emacs-w3m をインストールする前にそれを
-      インストールしなければなりません．詳細は APEL に附属の README.ja
-      をご覧下さい．
+      BITMAP-MULE パッケージを用いて WEB ページのインライン画像を白黒表
+      示させる場合には，付属のパッチを適用して Mule を作り直すことを強く
+      お勧めします．そうしないと，高い確率で Mule が固まってしまい，そし
+      て kill する以外に窮地を抜けられなくなってしまうでしょう．パッチは，
+      patches/mule-2.3@19.34.patch という名前で，本パッケージに同梱され
+      ています．
 
-   d) Emacs-w3m は regexp-opt.el(c) モジュールを必要としますが，古い
-      Emacsen (例えば Mule 2) にはありません．もしあなたがそんなバージョ
-      ンの Emacs を使っているのならば，emacs-w3m をインストールする前
-      に以下のように regexp-opt.el(c) モジュールをインストールしなけれ
-      ばなりません．
+   e) Emacs 19.34 (without MULE)
+      APEL を前もってインストールしておく必要があります．
 
-          % cp attic/regexp-opt.el /usr/local/share/mule/site-lisp
-          % cd /usr/local/share/mule/site-lisp
-          % mule -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
+      emacs-w3m は「新しい custom」パッケージを必要とします．Emacs 19.34
+      または Mule 2.3 を使っている場合は，emacs-w3m をインストールする前
+      にそれをインストールしなければなりません．「新しい custom」パッケー
+      ジについて，詳細は以下のページを参照してください．
 
-   e) もしあなたが，Emacs-w3m の shimbun ライブラリを使いたいとお思いな
-      らば，FLIM パッケージが必要です．
+          http://www.dina.kvl.dk/~abraham/custom/
 
-      FLIM は c) にて前述の APEL に依存していますので，XEmacs/Mule-2.3
-      以外のユーザの方であっても APEL も必要となります (APEL -> FLIM の
-      順でインストールする必要があります)．FLIM は
-      ftp://ftp.m17n.org/pub/mule/flim/ から取得することができます．
+      特に Mule 2.3 を使う場合は APEL に附属している README.ja も必ず調
+      べて下さい．
 
-      shimbun ライブラリについて更に詳しくは，README.shimbun.ja をご覧下
-      さい．
+      また，emacs-w3m は regexp-opt.el(c) モジュールを必要としますが，
+      Emacs 19.34 や Mule 2.3 などの古い Emacsen には含まれていません．
+      あなたが使っている Emacsen が該当する場合には，前もって，以下のよ
+      うに regexp-opt.el(c) モジュールをインストールする必要があります．
 
-   f) configure スクリプトを実行してください．
+          % cp attic/regexp-opt.el /usr/local/share/emacs/site-lisp
+          % cd /usr/local/share/emacs/site-lisp
+          % emacs -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
 
-          % ./configure
-
-      APEL や FLIM などの必要なモジュールが，標準的ではないディレクトリ
-      にインストールされている場合には，`--with-addpath' オプションを使っ
-      て，そのディレクトリを指定する必要があります．
-
-          % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
-
-   g) 同梱されている emacs-lisp のソースファイルを適当なディレクトリにイ
-      ンストールするため，次のコマンドを実行してください．
-
-          % make
-          % make install
-
-      加えて，XEmacs や Emacs 21 用のアイコンを，以下のようにインストー
-      ルすることができます．
-
-          % make install-icons
-
-      install の代わりに install-package を使うと，XEmacs の package と
-      してインストールすることもできます．
-
-          % make
-          % make install-package
-
-      この場合 install-icons を実行する必要はありません．
-
-   h) 次の設定を ~/.emacs に追加してください．
-
-          (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
-
-   i) その他の付属プログラムを使用するには，追加の設定が必要です．詳細に
-      ついては，個々の付属プログラムのソースファイルの先頭に記載されてい
-      るコメントを参照してください．
+      (もし Mule をお使いならば，おそらくパス名やコマンド名として
+      `emacs' の代わりに `mule' と言う必要があるでしょう．)
 
 
-3. w3m のバージョンについて
+3. インストール
 
-   このプログラムは，w3m のバージョンに強く依存していますので，なるべく
-   最新の w3m を使うようにしてください．最新は2001年3月23日に公開された
-   w3m-0.2.1 で，そのソースは以下の場所から入手できます．
+3.1. UNIX 系の環境でインストールする場合
 
-      ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/w3m-0.2.1.tar.gz
+     最初に，configure スクリプトを実行してください．
 
-   なお，最新開発版を利用するためには，佐藤大さんによって公開されている
-   最新の w3m-0.2.1-inu-patch を適用しておく必要があります．以下のページ
-   で探してください．
+         % ./configure
 
-      http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/index.html
+     Gnus ユーザへの重要なお知らせ:
+     ==============================
+     いろいろなバージョンの Gnus がインストールされている場合 (リリース
+     版と開発版の Gnus があるかもしれません) は，あなたが使う gnus.elc
+     ファイルがインストールされているディレクトリが load-path の中で優先
+     されるようにして下さい．それには以下のように `--with-addpath' オプ
+     ションを使って下さい．
 
-   w3m-m17n / w3mmee などの w3m から派生したプログラムを利用する場合には，
-   patches/ 以下の必要なパッチを適用して，再コンパイルしてください．
+         % ./configure --with-addpath=/usr/local/share/emacs/site-lisp/gnus
+
+     APEL や FLIM などの必要なモジュールが，標準的ではないディレクトリに
+     インストールされている場合には，`--with-addpath' オプションを使って，
+     そのディレクトリを指定する必要があります (さらに，それに `:' で分け
+     られた Gnus のディレクトリを含めても構いません)．
+
+         % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
+
+     次に，emacs-w3m を適当なディレクトリにインストールするため，次のコ
+     マンドを実行してください．
+
+         % make
+         % make install
+
+     Emacs 21 または XEmacs を使っているならば，アイコン画像のファイルを
+     インストールした方が良いでしょう．それを行なうには:
+
+         % make install-icons
+
+     install の代わりに install-package を使うと，XEmacs の package とし
+     てインストールすることもできます．
+
+         % make
+         % make install-package
+
+     この場合 install-icons を実行する必要はありません．
+
+     `make install' または `make install-package' によって info ファイル
+     もインストールされます．
+
+3.2. 非 UNIX 系の環境でインストールする場合
+
+     configure スクリプトを実行できない，または make コマンドが存在しな
+     い環境の場合は，以下のコマンドを実行してください．
+
+         % emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
+
+     APEL や FLIM などの必要なモジュールが，標準的ではないディレクトリに
+     インストールされている場合には，以下のようにそのディレクトリを指定
+     する必要があります．
+
+         % emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
 
 
-4. 連絡先
+4. 設定
 
-   メーリングリスト <emacs-w3m@namazu.org> に連絡してください．
+   Emacs-w3m のいろんな変数をいじるときは，~/.emacs-w3m ファイル (これ
+   は `w3m-init-file'} という変数のデフォルト値です) の利用を推奨しま
+   す．このファイルは ~/.emacs と似ていますが，こちらは emacs-w3m が起
+   動するときに読み込まれます．しかし，例えば autoload の定義のように，
+   そこに書くべきではないコマンドがあることに注意して下さい．
+
+4.1. 基本
+
+     次の設定を ~/.emacs ファイルに追加してください．
+
+         (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
+
+     付属プログラムを使用するには，追加の設定が必要な場合があります．詳
+     細については，個々の付属プログラムのソースファイルの先頭に記載され
+     ているコメントを参照してください．良く分からない場合は，とりあえず，
+     以下の設定を ~/.emacs ファイルに追加しておいてください．
+
+         (autoload 'w3m-find-file "w3m" "Find a local file using emacs-w3m." t)
+         (autoload 'w3m-search "w3m-search" "Search words using emacs-w3m." t)
+         (autoload 'w3m-weather "w3m-weather" "Display a weather report." t)
+         (autoload 'w3m-antenna "w3m-antenna" "Report changes of web sites." t)
+         (autoload 'w3m-namazu "w3m-namazu" "Search files with Namazu." t)
+
+4.2. mime-w3m
+
+     T-gnus や Wanderlust などの SEMI MUA 上で，メッセージ中の text/html
+     パートを emacs-w3m を使って表示させるには，以下の設定を ~/.emacs ファ
+     イルに追加する必要があります．
+
+         (require 'mime-w3m)
+
+4.3. Proxy Gateway
+
+     これにはいくつかの方法があります．一つは環境変数 http_proxy を
+     shell 上で，こんなふうにグローバルに設定することです:
+
+        setenv http_proxy http://proxy.hogege.com:8000/
+
+     他に，オプション `w3m-command-arguments' をカスタマイズして，"-o"
+     および "http_proxy=http://PROXY_SERVER_NAME:PORT/" を追加する方法が
+     あります．これは ~/.emacs-w3m ファイルで以下のように行なうことも
+     できます．
+
+        (setq w3m-command-arguments
+              (nconc w3m-command-arguments
+                     '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
+
+     環境変数 no-proxy にコンマで区分けされたホスト名を設定するか，また
+     は以下のようにドメイン名 (ホスト名ではない) のリストをオプション
+     `w3m-no-proxy-domains' に設定することによって，proxy ゲートウェイを
+     使わずに接続するホストを指定することができます．
+
+        (setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
+
+     no-proxy ホストの設定に正規表現を使うには，オプション
+     `w3m-command-arguments-alist' のドキュメントを見て下さい．
 
 
-5. 謝辞
+5. 連絡先
+
+   バグリポート，改善への貢献，提案，または助けを求めるには，メールを
+   <emacs-w3m@namazu.org> 宛に送ってください．もし `mail-user-agent' を
+   正しく動作するように設定してあれば，`report-emacs-w3m-bug' コマンドか
+   `C-c C-b' キーを使ってバグリポートを送ることもできます．
+
+
+6. 謝辞
 
    伊藤彰則さんによって開発された w3m がなければ，このプログラムは存在し
    ませんでした．最大の謝意を，伊藤さんに捧げたいと思います．
 
+
+7. 関連情報
+
+   [1] APEL
+       ftp://ftp.m17n.org/pub/mule/apel/ から入手できます．
+
+   [2] FLIM
+       ftp://ftp.m17n.org/pub/mule/flim/ から入手できます．APEL に依存し
+       ています．
+
+   [3] BITMAP-MULE
+       ftp://ftp.jpl.org/pub/elisp/bitmap/ から入手できます．
+
+   [4] gifsicle
+       http://www.lcdf.org/gifsicle/ から入手できます．
+
+   [5] 新しい custom
+       詳細については，http://www.dina.kvl.dk/~abraham/custom/ を参照し
+       てください．
 
 
 Local Variables:

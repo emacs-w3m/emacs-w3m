@@ -1,10 +1,12 @@
 ;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp -*- coding: iso-2022-7bit -*-
 
-;; Author: Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
+;; Copyright (C) 2001, 2002, 2003
+;; Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
 
+;; Author: Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -37,7 +39,8 @@
 (defvar shimbun-yahoo-url "http://headlines.yahoo.co.jp/")
 
 (defvar shimbun-yahoo-groups-alist
-  '(("politics" . "pol")
+  '(("topnews" . "topnews")
+    ("politics" . "pol")
     ("society" . "soci")
     ("people" . "peo")
     ("business-all" . "bus_all")
@@ -63,13 +66,14 @@
   (mapcar 'car shimbun-yahoo-groups-alist))
 
 (defvar shimbun-yahoo-from-address "news-admin@mail.yahoo.co.jp")
-(defvar shimbun-yahoo-content-start "\n<!--br-->\n")
+(defvar shimbun-yahoo-content-start "</font><br><br>\n")
 (defvar shimbun-yahoo-content-end   "\n<center>\n")
 
 (defvar shimbun-yahoo-x-face-alist
-  '(("default" . "X-Face: Ygq$6P.,%Xt$U)DS)cRY@k$VkW\
-!7(X'X'?U{{osjjFG\"E]hND;SPJ-J?O?R|a?Lg2$0rVng\n =O3\
-Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%")))
+  '(("default" . "X-Face: \"Qj}=TahP*`:b#4o_o63:I=\"~wbql=kpF1a>Sp62\
+fpAsVY`saZV[b*GqI!u|i|xKPjNh&P=\n R?n}rh38mkp_:')h=Bh:Rk>0pYF\\I?f\\\
+PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
+(}CMi|3b9JDQ(^D\\:@DE}d2+0S2G{VS@E*1Og7Vj#35[77\"z9XBq9$1uF$+W\n u")))
 (defvar shimbun-yahoo-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-yahoo))
@@ -89,26 +93,26 @@ Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%")))
 	(when (re-search-forward "<!--- OUTLINE_TABLE -->" nil t)
 	  (delete-region (point) (point-max))
 	  (goto-char (point-min))
-	  (while (re-search-forward "<a href=\"\\(http://headlines.yahoo.co.jp/hl\\?a=\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)-\\([0-9]+\\)-[^\"]+\\)\">\\([^<]+\\)</a>\\([^0-9]\\|[\n\r]\\)*\\([0-9]+日[^0-9]*\\)?\\([0-9]+\\)時\\([0-9]+\\)分" nil t)
+	  (while (re-search-forward "<a href=\"\\(http://headlines.yahoo.co.jp/hl\\?a=\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)-\\([0-9]+-[^\"]+\\)\\)\">\\([^<]+\\)</a>\\([^0-9]\\|[\n\r]\\)*\\([0-9]+日[^0-9]*\\)?\\([0-9]+\\)時\\([0-9]+\\)分" nil t)
 	    (let ((url (match-string 1))
 		  (year (match-string 2))
 		  (month (match-string 3))
 		  (day (match-string 4))
 		  (no (match-string 5))
 		  (subject (match-string 6))
-		  (hour (match-string 9))
-		  (min (match-string 10))
+		  (hour (string-to-number (match-string 9)))
+		  (min (string-to-number (match-string 10)))
 		  id time)
 	      (setq id (format "<%s%s%s%s.%s@headlines.yahoo.co.jp>"
 			       year month day no
 			       (shimbun-current-group-internal shimbun)))
 	      (if (shimbun-search-id shimbun id)
 		  (throw 'stop nil))
-	      (setq time  (format "%s:%s" hour min))
+	      (setq time (format "%02d:%02d" hour min))
 	      (push (shimbun-make-header
 		     0
 		     (shimbun-mime-encode-string subject)
-		     (shimbun-from-address-internal shimbun)
+		     (shimbun-from-address shimbun)
 		     (shimbun-make-date-string (string-to-number year)
 					       (string-to-number month)
 					       (string-to-number day) time)
@@ -117,7 +121,7 @@ Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%")))
 	  (when (re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>" nil t)
 	    (let ((url (match-string 1)))
 	      (erase-buffer)
-	      (shimbun-retrieve-url-buffer url t)
+	      (shimbun-retrieve-url url t)
 	      (goto-char (point-min)))))))
     headers))
 

@@ -2,19 +2,16 @@ $Date$
 
 ■ TODO
 
-   --> 動作全体の非同期化
-       --> タブ(またはへッダ)への状態表示
-       --> 既にリンクを辿るための w3m が起動されている状態で、他のリンク
-           を辿ろうとした場合をブロックする
-       --> 実行中のプロセスを停止するコマンドの作成
-       --> retrieve に失敗した場合、カーソルが先頭に移動してしまう
-       --> 画像の表示/非表示を切り替えたときに、非同期に画像を取り込み中
-           だと変な表示になる。
-       --> w3m-browse-url() を呼び出しても、画面が切り替わらない。
+   --> https なページの閲覧に関わる諸問題の解明と対策。
+       [emacs-w3m:04901, 04857]
 
-   --> 文書を reload した場合に、カーソル位置が変化しないで欲しい。
+   --> file-name- 系の関数を url 文字列の処理に使うのは問題あり。
+       [emacs-w3m:04799]
 
-   --> <meta http-equiv="Refresh" content="0; URL=http://.../"> の対応
+   --> 変数/関数の docstring と comment の英語の整備。-- ky
+
+   --> configure 時に --with-icondir=... で指定した値を自動的に
+       w3m-icon-directory の初期値として反映してほしい．[emacs-w3m:03912]
 
    --> frame 対応
 
@@ -22,7 +19,7 @@ $Date$
        --> w3m-*-contents / w3m-*-attributes に分割
        --> about://icons/ の新設
 
-   --> source code の text/plain なページを閲覧しているときは font-lock 
+   --> source code の text/plain なページを閲覧しているときは font-lock
        してくれると嬉しいかもしれない。
 
    --> Info / man 閲覧機能の追加
@@ -39,7 +36,7 @@ $Date$
 
    --> 説明文書の整備
 
-   --> [emacs-w3m:00011] などのメーリングリストのヘッダ文字列を自動的に 
+   --> [emacs-w3m:00011] などのメーリングリストのヘッダ文字列を自動的に
        URL に変換してジャンプする機能がほしい。
 
    --> shimbun
@@ -51,98 +48,15 @@ $Date$
 
 ■ 既知の問題
 
-(1) TAB で次の anchor に移動した時、その anchor が表示領域外ならば、きち
-    んと表示されるように画面全体を移動して欲しい。<table> を利用して極端
-    に横長のページを作ると、横方向に移動するとカーソルが見えなくなる。し
-    かも、その後で前のページに戻ると横幅がおかしくなっている。
-    Ex) http://namazu.org/~tsuchiya/emacs-w3m/yokonaga.html
+(1) XEmacs で ">" "," すると、カーソルが隠れる時がある。
+    XEmacs で w3m-horizontal-shift-columns の値を char-width より小さく
+    すると、"," が動かないときがある。
 
 
-(2) XEmacs / Emacs21 で "<", ">" が機能していないのでは?
-
-
-(3) 表示中のバッファを narrowing しておいて、URL の移動を行うと表示がお
+(2) 表示中のバッファを narrowing しておいて、URL の移動を行うと表示がお
     かしくなる。
 
 
-(4) [emacs-w3m:01712] 入力フィールドのダブルクォート
-
-
-(5) [emacs-w3m:01716] form vs history
-
-
-(6) [emacs-w3m:01903] 改行を含まない TEXTAREA
-
-
-■ 解決済みの問題
-
-(1) w3m-fontify で _id というタグが処理されていない。
-    Ex) http://www.debian.or.jp/License.html
-
-    --> revision 1.81 で対処 (Tnx. 後藤さん)
-
-
-(2) C-u M-x w3m-search RET google-ja RET query RET で検索を行ったとき、
-    検索結果が複数ページにわたる場合、ページ間の移動がうまく出来ない。
-
-    --> revision 1.89 で対処 [emacs-w3m:00150] (Tnx. 森山さん)
-
-
-(3) w3m-fontify で &ouml; が処理されていない。
-    Ex) http://tanaka-www.cs.titech.ac.jp/~euske/doc/openssh/history.html
-
-    --> revision 1.90 で対処 (Tnx. 有沢さん)
-
-
-(4) http://www.lib.i.kyoto-u.ac.jp/ のレンダリングが崩れる。どうも 
-    \200 という文字が悪さをしているようだが、どう処理すべきなのか、良
-    く分からない。
-
-    --> revision 1.100 で対処 [emacs-w3m:00165] (Tnx. 森山さん)
-
-
-(5) http://clotho.ku3g.org/negi.html が文字化けした。
-
-    --> このページは UTF-8 である [emacs-w3m:00220] (Tnx. 白井さん)
-
-
-(6) Mule-2.3 上で w3m-view-image による画像の閲覧ができない。何処かで余
-    分な変換をしてしまっているらしい。
-
-    --> w3m-download で変換してしまっていた [emacs-w3m:00281] (Tnx. 有沢さん)
-
-
-(7) Redirection をうまく処理できない
-    Ex) http://pine.kuee.kyoto-u.ac.jp/member/tsuchiya/emacs-w3m/
-	http://pine.kuee.kyoto-u.ac.jp/member/tsuchiya
-
-    --> w3m 本体にパッチをあてることにより解決 [emacs-w3m:00422]
-
-
-(8) Content-Encoding: を処理していない
-    Ex) http://cvs.m17n.org/~akr/diary/
-
-    --> 復号するためのコードを追加 [emacs-w3m:00386]
-
-
-(9) 文字コードを指定した移動・再描画コマンドが欲しい
-
-    --> 再描画のコマンドは作った [emacs-w3m:00448]
-    --> arrived-db に coding-system を登録するようにした [emacs-w3m:00469]
-
-
-(10) 同じ anchor が複数行に分割されて表示されている場合、TAB で移動する
-     と余分にカーソルが止まってしまう。
-
-    --> 余分に止まらないようにした。連続して TAB しているときは、一度止
-        まった anchor 部分には止まらない [emacs-w3m:00744] 
-
-
-(11) 文書内の別の部分を指定する終点側 anchor (ex. <a name=foo>)に移動す
-     ると、カーソルの場所の保存がおかしくなる。これを解決するために、ヒ
-     ストリ管理をより完全なものにしたい。
-
-     --> w3m-hist.el
 
 Local Variables:
 mode: indented-text

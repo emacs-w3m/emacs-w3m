@@ -1,11 +1,12 @@
 ;;; sb-wired.el --- shimbun backend for Wired Japan
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Yuuichi Teranishi  <teranisi@gohome.org>
+;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
+;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
+;;         Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -38,8 +39,8 @@
 (defvar shimbun-wired-groups '("business" "culture" "technology"))
 (defvar shimbun-wired-from-address "webmaster@www.hotwired.co.jp")
 (defvar shimbun-wired-content-start
-  "<FONT color=\"#ff0000\" size=\"-1\">.*</FONT>\n")
-(defvar shimbun-wired-content-end "<DIV ALIGN=\"RIGHT\">\\[")
+  "\\(\n<!-- articles -->\\|<FONT color=\"#ff0000\" size=\"-1\">.*</FONT>\\)\n")
+(defvar shimbun-wired-content-end "\\(\n<!-- /articles -->\n\\|<DIV ALIGN=\"RIGHT\">\\[\\)")
 (defvar shimbun-wired-x-face-alist
   '(("default" . "X-Face: \"yhMDxMBowCFKt;5Q$s_Wx)/'L][0@c\"#n\
 2BwH{7mg]5^w1D]\"K^R]&fZ5xtt1Ynu6V;Cv(\n @BcZUf9IV$($6TZ`L)$,c\
@@ -47,7 +48,8 @@ egh`b:Uwy`8}#Db-kyCsr_UMRz=,U|>-:&`05lXB4(;h{[&~={Imb-az7\n &U\
 5?|&X_8c;#'L|f.P,]|\\50pgSVw_}byL+%m{TrS[\"Ew;dbskaBL[ipk2m4V")))
 (defvar shimbun-wired-expiration-days 7)
 
-(luna-define-method shimbun-get-group-header-alist ((shimbun shimbun-wired))
+(luna-define-method shimbun-get-group-header-alist ((shimbun shimbun-wired)
+						    &optional range)
   (let ((group-header-alist (mapcar (lambda (g) (cons g nil))
 				    (shimbun-groups-internal shimbun)))
 	(case-fold-search t)
@@ -60,7 +62,8 @@ egh`b:Uwy`8}#Db-kyCsr_UMRz=,U|>-:&`05lXB4(;h{[&~={Imb-az7\n &U\
 				 "news/news/index.html")
 			 (concat (shimbun-url-internal shimbun)
 				 "news/news/last_seven.html")))
-      (with-current-buffer (shimbun-retrieve-url-buffer xover t)
+      (with-temp-buffer
+	(shimbun-retrieve-url xover t)
 	(goto-char (point-min))
 	(search-forward "<!-- articles -->" nil t) ; Jump to article list.
 	(while (re-search-forward regexp nil t)
@@ -82,7 +85,7 @@ egh`b:Uwy`8}#Db-kyCsr_UMRz=,U|>-:&`05lXB4(;h{[&~={Imb-az7\n &U\
 					(progn (search-forward "</b>" nil t) (point)))
 				       "<[^>]+>")
 				      ""))
-			  (shimbun-from-address-internal shimbun)
+			  (shimbun-from-address shimbun)
 			  date id "" 0 0 url))
 		 (x (assoc group group-header-alist)))
 	    (unless (member id ids)

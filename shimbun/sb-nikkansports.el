@@ -1,10 +1,11 @@
-;;; sb-nikkansports.el --- shimbun backend for www.nikkansports.com
+;;; sb-nikkansports.el --- shimbun backend for www.nikkansports.com -*- coding: iso-2022-7bit; -*-
+
+;; Copyright (C) 2001 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 
 ;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
-
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -29,29 +30,28 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-nikkansports (shimbun shimbun-text) ())
+(luna-define-class shimbun-nikkansports
+		   (shimbun-japanese-newspaper shimbun) ())
 
 (defvar shimbun-nikkansports-url "http://www.nikkansports.com/")
-(defvar shimbun-nikkansports-groups-alist
-  '(("baseball" . "baseball/menu-bb.html")
-    ("mlb" . "baseball/topics2/menu-bb.html")
-    ("soccer" . "soccer/menu-sc.html")
-    ("world-soccer" . "soccer/world/menu-wf.html")
-    ("sports" . "sports/menu-sp.html")
-    ("battle" . "battle/menu-bt.html")
-    ("horseracing" . "horserace/menu-hr.html")
-    ("entertainment" . "entert/menu-et.html")
-    ("society" . "society/menu-so.html")
-    ("leisure" . "ls/menu-ls.html")))
-(defvar shimbun-nikkansports-groups
-  (mapcar 'car shimbun-nikkansports-groups-alist))
+(defvar shimbun-nikkansports-server-name "日刊スポーツ")
+(defvar shimbun-nikkansports-group-table
+  '(("baseball" "野球" "ns/baseball/top-bb.html")
+    ("mlb" "大リーグ" "ns/baseball/mlb/top-tp2-bb.html")
+    ("soccer" "サッカー" "ns/soccer/top-sc.html")
+    ("world-soccer" "海外サッカー" "ns/soccer/world/top-tp2-sc.html")
+    ("sports" "スポーツ" "ns/sports/top-sp.html")
+    ("battle" "バトル" "ns/battle/top-bt.html")
+    ("horseracing" "競馬" "ns/horseracing/top-hr.html")
+    ("entertainment" "芸能" "ns/entertainment/top-et.html")
+    ("society" "社会" "ns/general/top-so.html")
+    ("leisure" "釣り" "ns/leisure/top-ls.html")))
 (defvar shimbun-nikkansports-from-address "webmast@nikkansports.co.jp")
 (defvar shimbun-nikkansports-content-start
   "<H2>[^<]+</H2>\n\\(<img[^>]*>\n\\)?")
 (defvar shimbun-nikkansports-content-end
-  "\\(<br><b>[^<]+</b></font>\n\\)?<ul>")
+      "［[0-9]+/[0-9]+/[0-9]+/[0-9]+:[0-9]+")
 (defvar shimbun-nikkansports-expiration-days 17)
 
 (defvar shimbun-nikkansports-end-of-header-regexp
@@ -62,11 +62,17 @@
 	  "\\)-->\n")
   "*Regexp used to look for the end of the header in a html contents.")
 
+(luna-define-method shimbun-groups ((shimbun shimbun-nikkansports))
+  (mapcar 'car shimbun-nikkansports-group-table))
+
+(luna-define-method shimbun-current-group-name ((shimbun shimbun-nikkansports))
+  (nth 1 (assoc (shimbun-current-group-internal shimbun)
+		shimbun-nikkansports-group-table)))
+
 (luna-define-method shimbun-index-url ((shimbun shimbun-nikkansports))
   (concat (shimbun-url-internal shimbun)
-	  "news/"
-	  (cdr (assoc (shimbun-current-group-internal shimbun)
-		      shimbun-nikkansports-groups-alist))))
+	  (nth 2 (assoc (shimbun-current-group-internal shimbun)
+			shimbun-nikkansports-group-table))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-nikkansports)
 					 &optional range)
@@ -79,7 +85,7 @@
       (goto-char (point-min))
       (let ((case-fold-search t) headers)
 	(while (re-search-forward
-		"<li><a href=\"\\(.+\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)-\\([0-9]+\\)\\.html\\)\">\\([^<]+\\)</a>" nil t)
+		"<li><a href=\"/\\(.+\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)-\\([0-9]+\\)\\.html\\)\">\\([^<]+\\)</a>" nil t)
 	  (let ((url (match-string 1))
 		(year (match-string 2))
 		(month (match-string 3))
@@ -97,14 +103,10 @@
 	    (push (shimbun-make-header
 		   0
 		   (shimbun-mime-encode-string subject)
-		   (shimbun-from-address-internal shimbun)
+		   (shimbun-from-address shimbun)
 		   date id "" 0 0
 		   (concat
 		    (shimbun-url-internal shimbun)
-		    "news/"
-		    (file-name-directory
-		     (cdr (assoc (shimbun-current-group-internal shimbun)
-				 shimbun-nikkansports-groups-alist)))
 		    url))
 		  headers)))
 	headers))))

@@ -1,10 +1,11 @@
 ;;; sb-f1fan.el --- shimbun backend for www.ksky.ne.jp/~tahara/f1/  -*- coding: iso-2022-7bit -*-
 
-;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
+;; Copyright (C) 2001 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 
+;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -41,33 +42,33 @@
 (defvar shimbun-f1fan-coding-system 'shift_jis)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-f1fan))
-  (shimbun-url-internal shimbun))
+  (concat
+   (shimbun-url-internal shimbun)
+   "News"
+   (format-time-string "%Y")
+   "/news-new.html"))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-f1fan)
 					 &optional range)
   (let ((case-fold-search t) headers)
     (goto-char (point-min))
-    (while (re-search-forward "Ｆ１　*：<a href=\"\\(News\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\.html\\)\">\\([^<]+\\)</a><br>" nil t)
+    (while (re-search-forward "<a href=\\.\\(/\\([0-9]+\\)/\\([0-9]+\\)\\.html\\)>\\([^<]+\\)</a><br>" nil t)
       (let ((url (match-string 1))
-	    (year (match-string 2))
-	    (month (match-string 3))
-	    (day (match-string 4))
-	    (num (match-string 5))
-	    (subject (match-string 6))
-	    id date)
-	(setq id (format "<%s%s%s%s.%s.tahara@ps.ksky.ne.jp>"
-			 year month day num
-			 (shimbun-current-group-internal shimbun)))
-	(setq date (shimbun-make-date-string
-		    (string-to-number year)
-		    (string-to-number month)
-		    (string-to-number day)))
+	    (month (match-string 2))
+	    (id (match-string 3))
+	    (subject (match-string 4))
+	    id )
+	(setq id (format "<%s.%s.tahara@ps.ksky.ne.jp>"
+			id (shimbun-current-group-internal shimbun)))
 	(push (shimbun-make-header
 	       0
 	       (shimbun-mime-encode-string subject)
-	       (shimbun-from-address-internal shimbun)
-	       date id "" 0 0 (concat
+	       (shimbun-from-address shimbun)
+	       nil
+	       id "" 0 0 (concat
 			       (shimbun-url-internal shimbun)
+			       "News"
+			       (format-time-string "%Y")
 			       url))
 	      headers)))
     headers))
@@ -83,12 +84,7 @@
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start)
       (setq html nil))
-    (goto-char (point-min))
-    (shimbun-header-insert shimbun header)
-    (insert "Content-Type: " (if html "text/html" "text/plain")
-	    "; charset=ISO-2022-JP\nMIME-Version: 1.0\n\n")
-    (encode-coding-string (buffer-string)
-			  (mime-charset-to-coding-system "ISO-2022-JP"))))
+    (shimbun-header-insert-and-buffer-string shimbun header nil html)))
 
 (provide 'sb-f1fan)
 

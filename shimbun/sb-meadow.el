@@ -1,12 +1,13 @@
 ;;; sb-meadow.el --- shimbun backend for meadow-ml
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
-;;         Yuuichi Teranishi  <teranisi@gohome.org>
+;; Copyright (C) 2001 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
+;; Author: Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
+;;         Yuuichi Teranishi  <teranisi@gohome.org>,
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -63,21 +64,23 @@
 	  (delete-region (point-min) (point-max))
 	  (shimbun-retrieve-url (cdr elem) t)
 	  (goto-char (point-min))
-	  (when (re-search-forward
-		 "<A[^>]*HREF=\"mail\\([0-9]+\\)\\.html\">\\[?Last Page\\]?</A>"
-		 nil t)
-	    (let ((aux (string-to-number (match-string 1)))
-		  url)
-	      (while (> aux 0)
-		(setq url (if (= aux 1)
-			      (cdr elem)
-			    (shimbun-expand-url (format "mail%d.html" aux) (cdr elem))))
-		(delete-region (point-min) (point-max))
-		(shimbun-retrieve-url url)
-		(unless (if pages (<= (incf count) pages) t)
-		  (throw 'stop headers))
-		(shimbun-mhonarc-get-headers shimbun url headers (car elem))
-		(setq aux (1- aux))))))
+	  (if (re-search-forward
+	       "<A[^>]*HREF=\"mail\\([0-9]+\\)\\.html\">\\[?Last Page\\]?</A>"
+	       nil t)
+	      (let ((aux (string-to-number (match-string 1)))
+		    url)
+		(while (> aux 0)
+		  (setq url (if (= aux 1)
+				(cdr elem)
+			      (shimbun-expand-url (format "mail%d.html" aux) (cdr elem))))
+		  (delete-region (point-min) (point-max))
+		  (shimbun-retrieve-url url)
+		  (unless (if pages (<= (incf count) pages) t)
+		    (throw 'stop headers))
+		  (shimbun-mhonarc-get-headers shimbun url headers (car elem))
+		  (setq aux (1- aux))))
+	    (shimbun-mhonarc-get-headers shimbun (cdr elem)
+					 headers (car elem))))
 	headers))))
 
 (provide 'sb-meadow)

@@ -1,12 +1,13 @@
-;;; shimbun.el --- interfacing with web newspapers
+;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
+
+;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
-
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is the main part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -31,7 +32,9 @@
 ;; Shimbun API:
 ;;
 ;; shimbun-open
+;; shimbun-server
 ;; shimbun-groups
+;; shimbun-current-group
 ;; shimbun-open-group
 ;; shimbun-close-group
 ;; shimbun-headers
@@ -64,6 +67,8 @@
 ;; shimbun-header-extra
 ;; shimbun-header-set-extra
 
+;;; Code:
+
 (eval-when-compile (require 'cl))
 (eval-when-compile (require 'static))
 
@@ -78,7 +83,7 @@
 			  x-face x-face-alist
 			  url coding-system from-address
 			  content-start content-end
-			  expiration-days))
+			  expiration-days server-name))
   (luna-define-internal-accessors 'shimbun))
 
 (defgroup shimbun nil
@@ -87,11 +92,37 @@
   :group 'hypermedia)
 
 (defcustom shimbun-x-face
-  "X-Face: Ygq$6P.,%Xt$U)DS)cRY@k$VkW!7(X'X'?U{{osjjFG\"E]hND;SPJ-J?O?R\
-|a?Lg2$0rVng\n =O3Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%"
+  "X-Face: @Q+y!*#)K`rvKfSQnCK.Q\\{T0qs@?plqxVu<=@H-y\
+22NlKSprlFiND7{\"{]&Ddg1=P6{Ze|\n xbW2L1p5ofS\\&u~28A\
+dJrT4Cd<Ls?U!G4}0S%FA~KegR;YZWieoc%`|$4M\\\"i*2avWm?"
   "*Default X-Face field for shimbun."
   :group 'shimbun
-  :type 'string)
+  :type '(string :format "%{%t%}:\n%v" :size 0))
+
+(defcustom shimbun-server-additional-path
+  nil
+  "*List of additional directories to search for shimbun servers."
+  :group 'shimbun
+  :type '(repeat (directory :format "%t: %v\n" :size 0)))
+
+(defun shimbun-servers-list ()
+  "Return a list of shimbun servers."
+  (let (servers)
+    (dolist (dir (cons (file-name-directory (locate-library "shimbun"))
+		       shimbun-server-additional-path))
+      (when (file-directory-p dir)
+	(dolist (file (directory-files dir nil nil t))
+	  (and (string-match "\\`sb-\\(.*\\)\\.elc?\\'" file)
+	       (not (member (setq file (match-string 1 file))
+			    '("fml" "glimpse" "lump" "mailarc"
+			      "mailman" "mhonarc" "rss" "text")))
+	       (not (member file servers))
+	       (push file servers)))))
+    (sort servers 'string-lessp)))
+
+(defun shimbun-servers-alist ()
+  "Return an associative list of shimbun servers."
+  (mapcar 'list (shimbun-servers-list)))
 
 ;;; Shimbun MUA
 (eval-and-compile
@@ -100,6 +131,10 @@
 
 (luna-define-generic shimbun-mua-search-id (mua id)
   "Return non-nil when MUA found a message structure which corresponds to ID.")
+
+(defun shimbun-mua-shimbun (mua)
+  "Return the shimbun object created by MUA."
+  (shimbun-mua-shimbun-internal mua))
 
 ;;; BASE 64
 (require 'mel)
@@ -113,22 +148,25 @@
   "Rertrieve URL contents and insert to current buffer.
 Return content-type of URL as string when retrieval succeeded."
   (let (type)
-    (when (and url (setq type (w3m-retrieve url no-decode no-cache)))
+    (when (and url (setq type (w3m-retrieve url nil no-cache)))
       (unless no-decode
-	(w3m-decode-buffer url))
+	(w3m-decode-buffer url)
+	(goto-char (point-min)))
       type)))
 
-(defun shimbun-retrieve-url-buffer (url &optional no-cache no-decode)
-  "Return a buffer which contains the URL contents."
-  (with-current-buffer (get-buffer-create " *shimbun-work*")
-    (erase-buffer)
-    (if (and url (w3m-retrieve url no-decode no-cache))
+(defun shimbun-fetch-url (shimbun url &optional no-cache no-decode)
+  "Retrieve contents specified by URL for SHIMBUN.
+This function is exacly similar to `shimbun-retrieve-url', but
+considers the `coding-system' slot of SHIMBUN when estimating a coding
+system of retrieved contents."
+  (if (shimbun-coding-system-internal shimbun)
+      (let ((w3m-coding-system-priority-list
+	     (cons (shimbun-coding-system-internal shimbun)
+		   w3m-coding-system-priority-list)))
 	(inline
-	  (unless no-decode
-	    (w3m-decode-buffer url))
-	  (current-buffer))
-      (delete-region (point-min) (point-max))
-      (current-buffer))))
+	  (shimbun-retrieve-url url no-cache no-decode)))
+    (inline
+      (shimbun-retrieve-url url no-cache no-decode))))
 
 (defalias 'shimbun-content-type 'w3m-content-type)
 (defsubst shimbun-url-exists-p (url &optional no-cache)
@@ -139,73 +177,141 @@ Return content-type of URL as string when retrieval succeeded."
 (defalias 'shimbun-expand-url 'w3m-expand-url)
 
 ;;; Implementation of Header API.
+(eval-and-compile
+  (luna-define-class shimbun-header ()
+		     (number subject from date id references
+			     chars lines xref extra))
+  (luna-define-internal-accessors 'shimbun-header))
+
+;; (defun shimbun-header-number (header)
+;;   (shimbun-header-number-internal header))
+
+(defun shimbun-header-subject (header &optional no-encode)
+  (if no-encode
+      (shimbun-header-subject-internal header)
+    (shimbun-mime-encode-string
+     (shimbun-header-subject-internal header))))
+
+(defsubst shimbun-header-normalize (string &optional keep-angle-brackets)
+  (when string
+    (save-match-data
+      ;; This is a trick to keep backward compatibility for
+      ;; `shimbun-header-set-subject' and `shimbun-header-set-from'.
+      (if (string-match eword-encoded-word-regexp string)
+	  (eword-decode-string string)
+	(with-temp-buffer
+	  (insert string)
+	  (unless keep-angle-brackets
+	    (shimbun-remove-markup))
+	  (shimbun-decode-entities)
+	  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
+	  (subst-char-in-region (point-min) (point-max) ?\r ?\  t)
+	  (subst-char-in-region (point-min) (point-max) ?\f ?\  t)
+	  (subst-char-in-region (point-min) (point-max) ?\n ?\  t)
+	  (goto-char (point-min))
+	  (skip-chars-forward " ")
+	  (buffer-substring (point)
+			    (progn
+			      (goto-char (point-max))
+			      (skip-chars-backward " ")
+			      (point))))))))
+
+(defun shimbun-header-set-subject (header subject &optional asis)
+  (shimbun-header-set-subject-internal header
+				       (if asis
+					   subject
+					 (shimbun-header-normalize subject))))
+
+(defun shimbun-header-from (header &optional no-encode)
+  (if no-encode
+      (shimbun-header-from-internal header)
+    (shimbun-mime-encode-string
+     (shimbun-header-from-internal header))))
+
+(defun shimbun-header-set-from (header from &optional asis)
+  (shimbun-header-set-from-internal header
+				    (if asis
+					from
+				      (shimbun-header-normalize from t))))
+
+(defun shimbun-header-date (header)
+  (shimbun-header-date-internal header))
+
+(defun shimbun-header-set-date (header date &optional asis)
+  (shimbun-header-set-date-internal header (if asis
+					       date
+					     (shimbun-header-normalize date))))
+
+(defun shimbun-header-id (header)
+  (shimbun-header-id-internal header))
+
+(defun shimbun-header-set-id (header id &optional asis)
+  (shimbun-header-set-id-internal header
+				  (if asis
+				      id
+				    (shimbun-header-normalize id t))))
+
+(defun shimbun-header-references (header)
+  (shimbun-header-references-internal header))
+
+(defun shimbun-header-set-references (header references &optional asis)
+  (shimbun-header-set-references-internal
+   header
+   (if asis
+       references
+     (shimbun-header-normalize references t))))
+
+(defun shimbun-header-chars (header)
+  (shimbun-header-chars-internal header))
+
+(defun shimbun-header-set-chars (header chars)
+  (shimbun-header-set-chars-internal header chars))
+
+(defun shimbun-header-lines (header)
+  (shimbun-header-lines-internal header))
+
+(defun shimbun-header-set-lines (header lines)
+  (shimbun-header-set-lines-internal header lines))
+
+(defun shimbun-header-xref (header)
+  (shimbun-header-xref-internal header))
+
+(defun shimbun-header-set-xref (header xref)
+  (shimbun-header-set-xref-internal header xref))
+
+(defun shimbun-header-extra (header)
+  (shimbun-header-extra-internal header))
+
+(defun shimbun-header-set-extra (header extra)
+  (shimbun-header-set-extra-internal header extra))
+
+(defun shimbun-create-header (&optional number subject from date id
+					references chars lines xref
+					extra asis)
+  "Return a new header for a shimbun article."
+  (let ((new (luna-make-entity 'shimbun-header :number number)))
+    (inline
+      (shimbun-header-set-subject new subject asis)
+      (shimbun-header-set-from new from asis)
+      (shimbun-header-set-date new date asis)
+      (shimbun-header-set-id new id asis)
+      (shimbun-header-set-references new references asis)
+      (shimbun-header-set-chars new chars)
+      (shimbun-header-set-lines new lines)
+      (shimbun-header-set-xref new xref)
+      (shimbun-header-set-extra new extra))
+    new))
+
 (defun shimbun-make-header (&optional number subject from date id
 				      references chars lines xref
 				      extra)
-  (vector number subject from date id references chars lines xref extra))
-
-;;(defsubst shimbun-header-number (header)
-;;  (aref header 0))
-
-(defsubst shimbun-header-field-value ()
-  (let ((pt (point)))
-    (prog1
-	(buffer-substring (match-end 0) (std11-field-end))
-      (goto-char pt))))
-
-(defsubst shimbun-header-subject (header)
-  (aref header 1))
-
-(defsubst shimbun-header-set-subject (header subject)
-  (aset header 1 subject))
-
-(defsubst shimbun-header-from (header)
-  (aref header 2))
-
-(defsubst shimbun-header-set-from (header from)
-  (aset header 2 from))
-
-(defsubst shimbun-header-date (header)
-  (aref header 3))
-
-(defsubst shimbun-header-set-date (header date)
-  (aset header 3 date))
-
-(defsubst shimbun-header-id (header)
-  (aref header 4))
-
-(defsubst shimbun-header-set-id (header id)
-  (aset header 4 id))
-
-(defsubst shimbun-header-references (header)
-  (aref header 5))
-
-(defsubst shimbun-header-set-references (header references)
-  (aset header 5 references))
-
-(defsubst shimbun-header-chars (header)
-  (aref header 6))
-
-(defsubst shimbun-header-set-chars (header chars)
-  (aset header 6 chars))
-
-(defsubst shimbun-header-lines (header)
-  (aref header 7))
-
-(defsubst shimbun-header-set-lines (header lines)
-  (aset header 7 lines))
-
-(defsubst shimbun-header-xref (header)
-  (aref header 8))
-
-(defsubst shimbun-header-set-xref (header xref)
-  (aset header 8 xref))
-
-(defsubst shimbun-header-extra (header)
-  (aref header 9))
-
-(defsubst shimbun-header-set-extra (header extra)
-  (aset header 9 extra))
+  "Return a new header for a shimbun article.
+This function is obsolete.  You should use `shimbun-create-header'
+instead of this function."
+  (shimbun-create-header number
+			 (and subject (eword-decode-string subject))
+			 (and from (eword-decode-string from))
+			 date id references chars lines xref extra t))
 
 ;; Inline functions for the internal use.
 (defsubst shimbun-article-url (shimbun header)
@@ -228,9 +334,11 @@ If article have inline images, generated article have a multipart/related
 content-type if `shimbun-encapsulate-images' is non-nil."
   (let ((case-fold-search t)
 	(count 0)
+	(msg-id (shimbun-header-id header))
 	beg end
 	url type img imgs boundary charset)
-    (current-buffer)
+    (when (string-match "^<\\([^>]+\\)>$" msg-id)
+      (setq msg-id (match-string 1 msg-id)))
     (setq charset
 	  (upcase (symbol-name
 		   (detect-mime-charset-region (point-min)(point-max)))))
@@ -249,13 +357,15 @@ content-type if `shimbun-encapsulate-images' is non-nil."
 		(setq imgs (cons
 			    (setq img (list
 				       url
-				       (concat (format "shimbun.%d"
-						       (incf count)))
+				       (format "shimbun.%d.%s"
+					       (incf count)
+					       msg-id)
 				       (with-temp-buffer
 					 (set-buffer-multibyte nil)
 					 (setq
 					  type
-					  (shimbun-retrieve-url
+					  (shimbun-fetch-url
+					   shimbun
 					   (shimbun-expand-url
 					    url
 					    (shimbun-header-xref header))
@@ -272,11 +382,11 @@ content-type if `shimbun-encapsulate-images' is non-nil."
 	  (setq boundary (apply 'format "===shimbun_%d_%d_%d==="
 				(current-time)))
 	  (insert "Content-Type: multipart/related; type=\"text/html\"; "
-		  "boundary=\"" boundary "\"; start=\"<shimbun.0>\""
+		  "boundary=\"" boundary "\"; start=\"<shimbun.0." msg-id ">\""
 		  "\nMIME-Version: 1.0\n\n"
 		  "--" boundary
 		  "\nContent-Type: text/html; charset=" charset
-		  "\nContent-ID: <shimbun.0>\n\n"))
+		  "\nContent-ID: <shimbun.0." msg-id ">\n\n"))
       (insert "Content-Type: text/html; charset=" charset "\n"
 	      "MIME-Version: 1.0\n\n"))
     (encode-coding-region (point-min) (point-max)
@@ -304,9 +414,72 @@ content-type if `shimbun-encapsulate-images' is non-nil."
 	       (re-search-forward (shimbun-content-end-internal shimbun)
 				  nil t))
       (delete-region (match-beginning 0) (point-max))
-      (delete-region (point-min) start))
+      (delete-region (point-min) start)
+      (goto-char (point-min))
+      (insert "<html>\n<head>\n<base href=\""
+	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
+      (goto-char (point-max))
+      (insert (shimbun-footer shimbun header t)
+	      "\n</body>\n</html>\n"))
     (shimbun-make-mime-article shimbun header)
     (buffer-string)))
+
+(defcustom shimbun-x-face-database-function
+  (if (boundp 'shimbun-use-bbdb-for-x-face)
+      (cdr (assq (symbol-value 'shimbun-use-bbdb-for-x-face)
+		 '((t . shimbun-bbdb-get-x-face)
+		   (never . never)))))
+  "*Function to get faces from a favorite database.
+When its initial value is nil and BBDB or LSDB is loaded, it will be
+set to an appropriate default value.  You can set this to `never' if
+you want to use no database."
+  :group 'shimbun
+  :type '(radio
+	  (const :tag "Default" nil)
+	  (const :tag "Use no database" never)
+	  (const :tag "Use BBDB" shimbun-bbdb-get-x-face)
+	  (const :tag "Use LSDB" shimbun-lsdb-get-x-face)
+	  (function :format "User defined function: %v\n" :size 0)))
+
+(defun shimbun-header-insert (shimbun header)
+  (let ((from (shimbun-header-from header))
+	(refs (shimbun-header-references header))
+	(reply-to (shimbun-reply-to shimbun))
+	x-face)
+    (insert "Subject: " (or (eword-encode-string
+			     (shimbun-header-subject header t))
+			    "(none)")
+	    "\nFrom: " (or (eword-encode-string
+			    (shimbun-header-from header t))
+			   "(nobody)")
+	    "\nDate: " (or (shimbun-header-date header) "")
+	    "\nMessage-ID: " (shimbun-header-id header) "\n")
+    (when reply-to
+      (insert "Reply-To: " reply-to "\n"))
+    (when (and refs
+	       (string< "" refs))
+      (insert "References: " refs "\n"))
+    (insert "Lines: " (number-to-string (or (shimbun-header-lines header) 0))
+	    "\n"
+	    "Xref: " (or (shimbun-article-url shimbun header) "") "\n")
+    (unless shimbun-x-face-database-function
+      (when (and (fboundp 'bbdb-get-field)
+		 (not (eq 'autoload
+			  (car-safe (symbol-function 'bbdb-get-field)))))
+	(setq shimbun-x-face-database-function 'shimbun-bbdb-get-x-face)))
+    (unless shimbun-x-face-database-function
+      (when (and (fboundp 'lsdb-lookup-records)
+		 (not (eq 'autoload
+			  (car-safe (symbol-function 'lsdb-lookup-records)))))
+	(setq shimbun-x-face-database-function 'shimbun-lsdb-get-x-face)))
+    (when (setq x-face
+		(or (and from
+			 (fboundp shimbun-x-face-database-function)
+			 (funcall shimbun-x-face-database-function from))
+		    (shimbun-x-face shimbun)))
+      (insert x-face)
+      (unless (bolp)
+	(insert "\n")))))
 
 (eval-when-compile
   ;; Attempt to pick up the inline function `bbdb-search-simple'.
@@ -316,64 +489,54 @@ content-type if `shimbun-encapsulate-images' is non-nil."
      (autoload 'bbdb-search-simple "bbdb")
      (autoload 'bbdb-get-field "bbdb"))))
 
-(defcustom shimbun-use-bbdb-for-x-face nil
-  "*Say whether to use BBDB for choosing the author's X-Face.  It will be
-set to t when the initial value is nil and BBDB is loaded.  You can
-set this to `never' if you never want to use BBDB."
-  :group 'shimbun
-  :type '(choice (const :tag "Default" nil)
-		 (const :tag "Use BBDB" t)
-		 (const :tag "No use BBDB" never)))
+(defun shimbun-bbdb-get-x-face (person)
+  "Search a face of a PERSON from BBDB.  When missing it, return nil."
+  (let (x)
+    (and (setq x (cadr (mail-extract-address-components person)))
+	 (setq x (bbdb-search-simple nil x))
+	 (setq x (bbdb-get-field x 'face))
+	 (not (zerop (length x)))
+	 (concat "X-Face: "
+		 (mapconcat 'identity
+			    (split-string x)
+			    "\nX-Face: ")))))
 
-(defun shimbun-header-insert (shimbun header)
-  (let ((from (shimbun-header-from header))
-	(refs (shimbun-header-references header))
-	x-face)
-    (insert "Subject: " (or (shimbun-header-subject header) "(none)") "\n"
-	    "From: " (or from "(nobody)") "\n"
-	    "Date: " (or (shimbun-header-date header) "") "\n"
-	    "Message-ID: " (shimbun-header-id header) "\n")
-    (when (and refs
-	       (string< "" refs))
-      (insert "References: " refs "\n"))
-    (insert "Lines: " (number-to-string (or (shimbun-header-lines header) 0))
-	    "\n"
-	    "Xref: " (or (shimbun-article-url shimbun header) "") "\n")
-    (unless shimbun-use-bbdb-for-x-face
-      (when (and (fboundp 'bbdb-get-field)
-		 (not (eq 'autoload
-			  (car-safe (symbol-function 'bbdb-get-field)))))
-	(setq shimbun-use-bbdb-for-x-face t)))
-    (when (setq x-face
-		(or (and (eq t shimbun-use-bbdb-for-x-face)
-			 from
-			 ;; The library "mail-extr" will be autoload'ed.
-			 (setq from
-			       (cadr (mail-extract-address-components from)))
-			 (setq x-face (bbdb-search-simple nil from))
-			 (setq x-face (bbdb-get-field x-face 'face))
-			 (not (zerop (length x-face)))
-			 (concat "X-Face: "
-				 (mapconcat 'identity
-					    (split-string x-face)
-					    "\nX-Face: ")))
-		    (shimbun-x-face shimbun)))
-      (insert x-face)
-      (unless (bolp)
-	(insert "\n")))))
+(eval-when-compile
+  (condition-case nil
+      (require 'lsdb)
+    (error
+     (autoload 'lsdb-maybe-load-hash-tables "lsdb")
+     (autoload 'lsdb-lookup-records "lsdb"))))
+
+(defun shimbun-lsdb-get-x-face (person)
+  "Return a face of a PERSON from LSDB.  When missing it, return nil."
+  (lsdb-maybe-load-hash-tables)
+  (let (x)
+    (and (setq x (car (mail-extract-address-components person)))
+	 (setq x (car (lsdb-lookup-records x)))
+	 (setq x (cdr (assq 'x-face x)))
+	 (not (zerop (length x)))
+	 (mapconcat (lambda (x-face)
+		      (concat "X-Face: "
+			      (mapconcat 'identity
+					 (split-string x-face)
+					 "\n ")))
+		    x
+		    "\n"))))
 
 ;;; Implementation of Shimbun API.
 
 (defconst shimbun-attributes
-  '(url groups coding-system from-address content-start content-end
-	x-face-alist expiration-days))
+  '(url groups coding-system server-name from-address
+	content-start content-end x-face-alist expiration-days))
 
 (defun shimbun-open (server &optional mua)
   "Open a shimbun for SERVER.
 Optional MUA is a `shimbun-mua' instance."
-  (require (intern (concat "sb-" server)))
-  (let (url groups coding-system from-address content-start content-end
-	    x-face-alist shimbun expiration-days)
+  (let ((load-path (append shimbun-server-additional-path load-path)))
+    (require (intern (concat "sb-" server))))
+  (let (url groups coding-system server-name from-address
+	    content-start content-end x-face-alist shimbun expiration-days)
     (dolist (attr shimbun-attributes)
       (set attr
 	   (symbol-value (intern-soft
@@ -381,6 +544,7 @@ Optional MUA is a `shimbun-mua' instance."
     (setq shimbun (luna-make-entity (intern (concat "shimbun-" server))
 				    :mua mua
 				    :server server
+				    :server-name server-name
 				    :url url
 				    :groups groups
 				    :coding-system coding-system
@@ -393,11 +557,32 @@ Optional MUA is a `shimbun-mua' instance."
       (shimbun-mua-set-shimbun-internal mua shimbun))
     shimbun))
 
+(defun shimbun-server (shimbun)
+  "Return the server name of SHIMBUN."
+  (shimbun-server-internal shimbun))
+
+(luna-define-generic shimbun-server-name (shimbun)
+  "Return the server name of SHIMBUN in human-readable style.")
+
+(luna-define-method shimbun-server-name ((shimbun shimbun))
+  (or (shimbun-server-name-internal shimbun)
+      (shimbun-server-internal shimbun)))
+
 (luna-define-generic shimbun-groups (shimbun)
   "Return a list of groups which are available in the SHIMBUN.")
 
 (luna-define-method shimbun-groups ((shimbun shimbun))
   (shimbun-groups-internal shimbun))
+
+(defun shimbun-current-group (shimbun)
+  "Return the current group of SHIMBUN."
+  (shimbun-current-group-internal shimbun))
+
+(luna-define-generic shimbun-current-group-name (shimbun)
+  "Return the current group name of SHIMBUN in human-readable style.")
+
+(luna-define-method shimbun-current-group-name ((shimbun shimbun))
+  (shimbun-current-group-internal shimbun))
 
 (defun shimbun-open-group (shimbun group)
   "Open a SHIMBUN GROUP."
@@ -425,8 +610,8 @@ Return nil if all pages should be retrieved."
 	 (, range)))))
 
 (luna-define-method shimbun-headers ((shimbun shimbun) &optional range)
-  (with-current-buffer (shimbun-retrieve-url-buffer
-			(shimbun-index-url shimbun) 'reload)
+  (with-temp-buffer
+    (shimbun-fetch-url shimbun (shimbun-index-url shimbun) 'reload)
     (shimbun-get-headers shimbun range)))
 
 (luna-define-generic shimbun-reply-to (shimbun)
@@ -457,6 +642,16 @@ Return nil if all pages should be retrieved."
 Return nil when articles are not expired."
   (shimbun-expiration-days-internal shimbun))
 
+(luna-define-generic shimbun-from-address (shimbun)
+  "Make a From address like \"SERVER (GROUP) <ADDRESS>\".")
+
+(luna-define-method shimbun-from-address ((shimbun shimbun))
+  (format "%s (%s) <%s>"
+	  (shimbun-server-name shimbun)
+	  (shimbun-current-group-name shimbun)
+	  (or (shimbun-from-address-internal shimbun)
+	      (shimbun-reply-to shimbun))))
+
 (luna-define-generic shimbun-article (shimbun header &optional outbuf)
   "Retrieve a SHIMBUN article which corresponds to HEADER to the OUTBUF.
 HEADER is a shimbun-header which is obtained by `shimbun-headers'.
@@ -465,9 +660,9 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
 (luna-define-method shimbun-article ((shimbun shimbun) header &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
     (with-current-buffer (or outbuf (current-buffer))
-      (insert
+      (w3m-insert-string
        (or (with-temp-buffer
-	     (shimbun-retrieve-url (shimbun-article-url shimbun header))
+	     (shimbun-fetch-url shimbun (shimbun-article-url shimbun header))
 	     (message "shimbun: Make contents...")
 	     (goto-char (point-min))
 	     (prog1 (shimbun-make-contents shimbun header)
@@ -480,6 +675,13 @@ HEADER is a header structure obtained via `shimbun-headers'.")
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun) header)
   (shimbun-make-html-contents shimbun header))
+
+(luna-define-generic shimbun-footer (shimbun header &optional html)
+  "Make a footer string for SHIMBUN and HEADER.")
+
+(luna-define-method shimbun-footer ((shimbun shimbun) header &optional html)
+  "Return a null string for servers that have no footer."
+  "")
 
 (luna-define-generic shimbun-index-url (shimbun)
   "Return a index URL of SHIMBUN.")
@@ -497,16 +699,58 @@ integer n:    Retrieve n pages of header indices.")
 (luna-define-method shimbun-close ((shimbun shimbun))
   (shimbun-close-group shimbun))
 
-;;; Misc Functions
-(defun shimbun-mime-encode-string (string)
-  (mapconcat
-   #'identity
-   (split-string (or (eword-encode-string
-		      (shimbun-decode-entities-string string)) ""))
-   " "))
+;;; Virtual class for Japanese Newspapers:
+(luna-define-class shimbun-japanese-newspaper () ())
+(luna-define-method shimbun-footer ((shimbun shimbun-japanese-newspaper) header
+				    &optional html)
+  (if html
+      (concat "\n<p align=\"left\">\n-- <br>\nこの記事の著作権は、"
+	      (shimbun-server-name shimbun)
+	      "社に帰属します。\n原物は <a href=\""
+	      (shimbun-header-xref header) "\">"
+	      (shimbun-header-xref header)
+	      "</a> で公開されています。\n</p>\n")
+    (concat "\n-- \nこの記事の著作権は、"
+	    (shimbun-server-name shimbun)
+	    "社に帰属します。\n原物は "
+	    (shimbun-header-xref header)
+	    " で公開されています。\n")))
 
-(defun shimbun-make-date-string (year month day &optional time)
-  (format "%02d %s %04d %s +0900"
+;;; Misc Functions
+(defun shimbun-header-insert-and-buffer-string (shimbun header
+							&optional charset html)
+  "Insert headers which are generated from SHIMBUN and HEADER, and
+return the contents of this buffer as an encoded string."
+  (unless charset
+    (setq charset "ISO-2022-JP"))
+  (goto-char (point-min))
+  (shimbun-header-insert shimbun header)
+  (insert "Content-Type: text/" (if html "html" "plain") "; charset=" charset
+	  "\nMIME-Version: 1.0\n\n")
+  (if html
+      (progn
+	(insert "<html><head><base href=\"" (shimbun-header-xref header)
+		"\"></head><body>")
+	(goto-char (point-max))
+	(insert (shimbun-footer shimbun header html)
+		"\n</body></html>"))
+    (goto-char (point-max))
+    (insert (shimbun-footer shimbun header html)))
+  (encode-coding-string (buffer-string)
+			(mime-charset-to-coding-system charset)))
+
+(defun shimbun-mime-encode-string (string)
+  (condition-case nil
+      (save-match-data
+	(mapconcat
+	 #'identity
+	 (split-string (or (eword-encode-string
+			    (shimbun-decode-entities-string string)) ""))
+	 " "))
+    (error string)))
+
+(defun shimbun-make-date-string (year month day &optional time timezone)
+  (format "%02d %s %04d %s %s"
 	  day
 	  (aref [nil "Jan" "Feb" "Mar" "Apr" "May" "Jun"
 		     "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]
@@ -518,7 +762,8 @@ integer n:    Retrieve n pages of header indices.")
 		((< year 1000)	; possible 3-digit years.
 		 (+ year 1900))
 		(t year))
-	  (or time "00:00")))
+	  (or time "00:00")
+	  (or timezone "+0900")))
 
 (if (fboundp 'regexp-opt)
     (defalias 'shimbun-regexp-opt 'regexp-opt)
@@ -529,6 +774,7 @@ quoted or not.  If optional PAREN is non-nil, ensure that the returned regexp
 is enclosed by at least one regexp grouping construct."
     (let ((open-paren (if paren "\\(" "")) (close-paren (if paren "\\)" "")))
       (concat open-paren (mapconcat 'regexp-quote strings "\\|") close-paren))))
+
 (defun shimbun-decode-entities-string (string)
   "Decode entities in the STRING."
   (with-temp-buffer
@@ -549,4 +795,5 @@ is enclosed by at least one regexp grouping construct."
       (replace-match "" t t))))
 
 (provide 'shimbun)
+
 ;;; shimbun.el ends here.

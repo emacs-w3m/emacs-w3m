@@ -1,10 +1,11 @@
-;;; sb-kantei.el --- shimbun backend for kantei mail magazine backnumber.
+;;; sb-kantei.el --- shimbun backend for kantei mail magazine backnumber -*- coding: iso-2022-7bit; -*-
+
+;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
-
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -30,7 +31,7 @@
 (luna-define-class shimbun-kantei (shimbun) ())
 
 (defvar shimbun-kantei-url "http://www.kantei.go.jp/jp/")
-(defvar shimbun-kantei-from-address "首相官邸 <koizumi@mmz.kantei.go.jp>")
+(defvar shimbun-kantei-from-address "koizumi@mmz.kantei.go.jp")
 (defvar shimbun-kantei-groups '("m-magazine"))
 (defvar shimbun-kantei-content-start "<PRE>")
 (defvar shimbun-kantei-content-end "\\(</PRE>\\)\n</FONT>\n</TD></TR></TABLE>")
@@ -44,6 +45,11 @@ x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
   (concat (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun)
 	  "/backnumber/"))
+
+(luna-define-method shimbun-from-address ((shimbun shimbun-kantei))
+  (format "%s <%s>"
+	  (shimbun-mime-encode-string "首相官邸")
+	  (shimbun-from-address-internal shimbun)))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-kantei)
 					 &optional range)
@@ -63,8 +69,7 @@ x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
       (push (shimbun-make-header
 	     0
 	     (shimbun-mime-encode-string (or subject ""))
-	     (shimbun-mime-encode-string
-	      (shimbun-from-address-internal shimbun))
+	     (shimbun-from-address shimbun)
 	     (shimbun-make-date-string year month mday)
 	     id "" 0 0 (concat (shimbun-index-url shimbun) url))
 	    headers))
@@ -79,7 +84,12 @@ x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
 	       (re-search-forward (shimbun-content-end-internal shimbun)
 				  nil t))
       (delete-region (match-end 1) (point-max))
-      (delete-region (point-min) start))
+      (delete-region (point-min) start)
+      (goto-char (point-min))
+      (insert "<html>\n<head>\n<base href=\""
+	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
+      (goto-char (point-max))
+      (insert "\n</body>\n</html>\n"))
     (shimbun-make-mime-article shimbun header)
     (buffer-string)))
 

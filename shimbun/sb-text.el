@@ -1,11 +1,11 @@
-;;; sb-text.el -- shimbun backend class for text content -*- coding: junet; -*-
+;;; sb-text.el -- shimbun backend class for text content -*- coding: iso-2022-7bit; -*-
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Yuuichi Teranishi  <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
+;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -103,12 +103,7 @@
       (delete-region (point-min) start)
       (shimbun-shallow-rendering)
       (setq html nil))
-    (goto-char (point-min))
-    (shimbun-header-insert shimbun header)
-    (insert "Content-Type: " (if html "text/html" "text/plain")
-	    "; charset=ISO-2022-JP\nMIME-Version: 1.0\n\n")
-    (encode-coding-string (buffer-string)
-			  (mime-charset-to-coding-system "ISO-2022-JP"))))
+    (shimbun-header-insert-and-buffer-string shimbun header nil html)))
 
 (provide 'sb-text)
 

@@ -4,7 +4,6 @@
 
 ;; Authors: Hideyuki SHIRAI    <shirai@meadowy.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
-
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; This file is a part of emacs-w3m.
@@ -24,7 +23,6 @@
 ;; program's maintainer or write to: The Free Software Foundation,
 ;; Inc.; 59 Temple Place, Suite 330; Boston, MA 02111-1307, USA.
 
-
 ;;; Commentary:
 
 ;; This file contains the functions for TAB browsing.  For more detail
@@ -34,7 +32,7 @@
 
 ;;; Code:
 
-(require 'w3m-macro)
+(require 'w3m-util)
 (require 'w3m)
 (require 'easymenu)
 
@@ -61,9 +59,10 @@
 	 (append minibuffer-setup-hook '(beginning-of-line)))
 	(count 1)
 	(form "%s [%s]")
+	(completion-ignore-case t)
 	comp hist histlen default buf)
     (dolist (item items)
-      (when (string-match "^\\* " (nth 1 item))	;; current-buffer
+      (when (nth 2 item)	;; current-buffer
 	(setq default count))
       (setq comp (cons
 		  (cons
@@ -73,7 +72,7 @@
       (setq count (1+ count)))
     (setq comp (nreverse comp))
     (setq histlen (length hist))
-    (setq hist (append hist hist hist hist hist)) ;; STARTPOS 3rd hist
+    (setq hist (append hist hist hist hist hist)) ;; STARTPOS at 3rd hist
     (setq buf
 	  (completing-read
 	   "Switch to w3m buffer: "
@@ -92,7 +91,10 @@
 
 (defun w3m-tab-menubar-update ()
   "Update w3m tab menubar."
-  (when (eq major-mode 'w3m-mode)
+  (when (and (eq major-mode 'w3m-mode)
+	     (w3m-static-if (featurep 'xemacs)
+		 (frame-property (selected-frame) 'menubar-visible-p)
+	       menu-bar-mode))
     (easy-menu-change nil
 		      (car w3m-tab-menubar-dummy)
 		      (w3m-tab-menubar-make-items))))
@@ -104,7 +106,8 @@
      (lambda (buffer)
        (if nomenu
 	   (list (buffer-name buffer)
-		 (w3m-buffer-title buffer))
+		 (w3m-buffer-title buffer)
+		 (eq buffer current))
 	 (vector (format "%d: %s%s"
 			 (incf i)
 			 (if (eq buffer current) "* " "  ")

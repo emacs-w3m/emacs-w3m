@@ -1,12 +1,14 @@
 ;;; sb-mew.el --- shimbun backend for mew.org
 
+;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
+
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
-
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -37,11 +39,20 @@
 (defvar shimbun-mew-url "http://www.mew.org/ml/")
 
 (defconst shimbun-mew-group-url-alist
-  '(("mew-dist" . "mew-dist-2.0")
+  '(("mew-dist" . "mew-dist-3.1")
+    ("mew-dist-3.1" . "mew-dist-3.1")
+    ("mew-dist-2.0" . "mew-dist-2.0")
+    ("mew-dist-1.94" . "mew-dist-1.94")
     ("mew-dist-old" . "mew-dist-1.94")
-    ("mew-win32" . "mew-win32-2.0")
+    ("mew-win32" . "mew-win32-3.1")
+    ("mew-win32-3.1" . "mew-win32-3.1")
+    ("mew-win32-2.0" . "mew-win32-2.0")
+    ("mew-win32-0" . "mew-win32-0")
     ("mew-win32-old" . "mew-win32-0")
-    ("mew-int" . "mew-int-2.0")
+    ("mew-int" . "mew-int-3.1")
+    ("mew-int-3.1" . "mew-int-3.1")
+    ("mew-int-2.0" . "mew-int-2.0")
+    ("mew-int-0" . "mew-int-0")
     ("mew-int-old" . "mew-int-0")
     ("mgp-users" . "mgp-users")
     ("mgp-users-jp" . "mgp-users-jp")))
@@ -71,7 +82,7 @@
       (shimbun-mhonarc-get-headers shimbun url headers)
       (while (and (if pages (< (incf count) pages) t)
 		  (re-search-forward
-		   "<A href=\"\\(mail[0-9]+.html\\)\">Prev Page</A>"
+		   "<A HREF=\"\\(mail[0-9]+.html\\)\">Prev Page</A>"
 		   nil t)
 		  (not (string-equal (match-string 1) aux)))
 	(setq aux (match-string 1)

@@ -1,10 +1,11 @@
 ;;; sb-hns.el --- shimbun backend for Hyper Nikki System.
 
-;; Author: Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
+;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -48,6 +49,8 @@ It can be defined in the `shimbun-hns-x-face-alist', too.
 3BsyZ_Bp@;$m~@,]+*=`@Y$4754xsoPo~/\n eJSA]x(_m@-BmURu#F8nZm'M4!v\
 X$a3`)e}~`]8^'3^3s/gg+]|xf}gg2[BZZAR)-5pOF6BgPu(%yx\n At\\)Z\"e,\
 V#i5>7]N{lif*16&rrh3=:)\"dB[w:{_Mu@7+)~qLo6.z&Bb|Gq0A1}xpj:>9o9$")))
+
+(defvar shimbun-hns-expiration-days 62)
 
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-hns)
@@ -119,7 +122,8 @@ V#i5>7]N{lif*16&rrh3=:)\"dB[w:{_Mu@7+)~qLo6.z&Bb|Gq0A1}xpj:>9o9$")))
 				    (shimbun-hns-content-hash-internal
 				     shimbun))))
 	  (symbol-value sym)
-	(with-current-buffer (shimbun-retrieve-url-buffer xref 'reload)
+	(with-temp-buffer
+	  (shimbun-retrieve-url xref 'reload)
 	  ;; Add articles to the content hash.
 	  (goto-char (point-min))
 	  (while (re-search-forward
@@ -151,7 +155,7 @@ V#i5>7]N{lif*16&rrh3=:)\"dB[w:{_Mu@7+)~qLo6.z&Bb|Gq0A1}xpj:>9o9$")))
 				     &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
     (with-current-buffer (or outbuf (current-buffer))
-      (insert
+      (w3m-insert-string
        (with-temp-buffer
 	 (insert (or (shimbun-hns-article shimbun (shimbun-header-xref header))
 		     ""))

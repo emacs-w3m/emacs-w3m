@@ -1,10 +1,11 @@
 ;;; sb-m17n.el --- shimbun backend for m17n.org
 
-;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
+;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -29,7 +30,8 @@
 (luna-define-class shimbun-m17n (shimbun-mhonarc) ())
 
 (defconst shimbun-m17n-group-path-alist
-  '(("mule-ja" "mule-ja-archive/" "mule-ja@m17n.org")))
+  '(("mule-ja" "mule-ja-archive/" "mule-ja@m17n.org")
+    ("mule" "mule-archive/" "mule@m17n.org")))
 
 (defvar shimbun-m17n-url "http://www.m17n.org/")
 (defvar shimbun-m17n-groups (mapcar 'car shimbun-m17n-group-path-alist))
@@ -85,4 +87,3 @@
 (provide 'sb-m17n)
 
 ;;; sb-m17n.el ends here
-

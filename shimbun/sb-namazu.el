@@ -1,10 +1,11 @@
 ;;; sb-namazu.el --- shimbun backend for namazu.org
 
-;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
 
+;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -31,7 +32,8 @@
 (defvar shimbun-namazu-url "http://www.namazu.org/")
 
 (defvar shimbun-namazu-group-url-alist
-  '(("namazu-users-ja" . "ml/namazu-users-ja")
+  '(("migemo" . "http://migemo.namazu.org/ml")
+    ("namazu-users-ja" . "ml/namazu-users-ja")
     ("namazu-win32-users-ja" . "ml/namazu-win32-users-ja")
     ("namazu-users-en" . "ml/namazu-users-en")
     ("namazu-devel-ja" . "ml/namazu-devel-ja")
@@ -77,4 +79,5 @@
       headers)))
 
 (provide 'sb-namazu)
+
 ;;; sb-namazu.el ends here

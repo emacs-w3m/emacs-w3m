@@ -1,12 +1,14 @@
 ;;; sb-fml.el --- shimbun backend class for fml archiver.
 
+;; Copyright (C) 2001, 2002 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001, 2002 Yuuichi Teranishi <teranisi@gohome.org>
+
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
-
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -54,6 +56,7 @@
 	(pages (shimbun-header-index-pages range))
 	(count 0)
 	headers auxs aux)
+    (goto-char (point-min))
     (while (and (if pages (<= (incf count) pages) t)
 		(re-search-forward "<a href=\"\\([0-9]+\\(\\.week\\|\\.month\\)?\\)/index.html\">" nil t))
       (setq auxs (append auxs (list (match-string 1)))))
@@ -61,16 +64,15 @@
       (while auxs
 	(with-temp-buffer
 	  (shimbun-retrieve-url
-	   (concat (shimbun-url-internal shimbun) (setq aux (car auxs)) "/")
+	   (concat (shimbun-index-url shimbun) (setq aux (car auxs)) "/")
 	   'reload)
-	  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
 	  (let ((case-fold-search t)
 		id url date subject from)
 	    (goto-char (point-min))
 	    (while (re-search-forward
 		    "<LI><A HREF=\"\\([0-9]+\\.html\\)\">Article .*</A> <DIV><SPAN CLASS=article>Article <SPAN CLASS=article-value>\\([0-9]+\\)</SPAN></SPAN> at <SPAN CLASS=Date-value>\\([^<]*\\)</SPAN> <SPAN CLASS=Subject>Subject: <SPAN CLASS=Subject-value>\\([^<]*\\)</SPAN></SPAN></DIV><DIV><SPAN CLASS=From>From: <SPAN CLASS=From-value>\\([^<]*\\)</SPAN></SPAN></DIV>"
 		    nil t)
-	      (setq url (concat (shimbun-url-internal shimbun)
+	      (setq url (concat (shimbun-index-url shimbun)
 				aux "/" (match-string 1))
 		    id (format "<%s%05d%%%s>"
 			       aux
@@ -82,10 +84,7 @@
 	      (if (shimbun-search-id shimbun id)
 		  (throw 'stop nil))
 	      (forward-line 1)
-	      (push (shimbun-make-header
-		     0
-		     (shimbun-mime-encode-string subject)
-		     from date id "" 0 0 url)
+	      (push (shimbun-create-header 0 subject from date id "" 0 0 url)
 		    headers)))
 	  (setq auxs (cdr auxs)))))
     headers))
@@ -107,8 +106,6 @@
       (throw 'stop nil))
     (save-restriction
       (narrow-to-region (point-min) (point))
-      (subst-char-in-region (point-min) (point-max) ?\t ?  t)
-      (shimbun-decode-entities)
       (goto-char (point-min))
       (let (field value start value-beg end)
 	(while (and (setq start (point))
@@ -120,10 +117,9 @@
 		    (setq value-beg (point))
 		    (search-forward "</SPAN>" nil t)
 		    (setq end (point)))
-	  (setq value (shimbun-mime-encode-string
-		       (buffer-substring value-beg
-					 (progn (search-backward "</SPAN>")
-						(point)))))
+	  (setq value (buffer-substring value-beg
+					(progn (search-backward "</SPAN>")
+					       (point))))
 	  (delete-region start end)
 	  (cond ((string= field "Date")
 		 (shimbun-header-set-date header value))
@@ -142,9 +138,11 @@
 	(insert
 	 "Content-Type: text/html; charset=ISO-2022-JP\nMIME-Version: 1.0\n"))
       (goto-char (point-max))))
-  (insert "<PRE>\n")
+  (insert "<html><head><base href=\""
+	  (shimbun-header-xref header)
+	  "\"></head><body><pre>")
   (goto-char (point-max))
-  (insert "</PRE>")
+  (insert "</pre></body></html>\n")
   (encode-coding-string (buffer-string)
 			(mime-charset-to-coding-system "ISO-2022-JP")))
 

@@ -1,6 +1,6 @@
 ;;; w3m-om.el --- Mule 2 specific functions for w3m
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Katsumi Yamaoka    <yamaoka@jpl.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -50,15 +50,22 @@
   (defvar w3m-menubar)
   (defvar w3m-default-coding-system))
 
+(eval-and-compile
+  (if (locate-library "bitmap")
+      (require 'w3m-bitmap)
+    ;; Dummy functions.
+    (defalias 'w3m-create-image 'ignore)
+    (defalias 'w3m-create-resized-image 'ignore)
+    (defalias 'w3m-insert-image 'ignore)
+    (defalias 'w3m-remove-image 'ignore)
+    (defalias 'w3m-image-type-available-p 'ignore)
+    (defalias 'w3m-display-graphic-p 'ignore)
+    (defalias 'w3m-display-inline-images-p 'ignore)))
+
 ;; Dummy functions.
-(defalias 'w3m-create-image 'ignore)
-(defalias 'w3m-insert-image 'ignore)
-(defalias 'w3m-remove-image 'ignore)
-(defalias 'w3m-image-type-available-p 'ignore)
 (defalias 'w3m-setup-toolbar 'ignore)
 (defalias 'w3m-update-toolbar 'ignore)
-(defalias 'w3m-display-graphic-p 'ignore)
-(defalias 'w3m-display-inline-images-p 'ignore)
+(defalias 'w3m-mule-unicode-p 'ignore)
 
 ;; Required for old Emacsen.  See the file README for details.
 (eval-and-compile
@@ -98,6 +105,33 @@ The car of each element will be provided as a new coding-system by
 copying of the cdr of an element.  No need to contain the eol-type
 variants in this alist.")
 
+(eval-and-compile
+  (defvar w3m-om-character-set-alist
+    '((ascii			. lc-ascii)
+      (latin-iso8859-1		. lc-ltn1)
+      (latin-iso8859-2		. lc-ltn2)
+      (latin-iso8859-3		. lc-ltn3)
+      (latin-iso8859-4		. lc-ltn4)
+      (thai-tis620		. lc-thai)
+      (greek-iso8859-7		. lc-grk)
+      (arabic-iso8859-6		. lc-arb)
+      (hebrew-iso8859-8		. lc-hbw)
+      (katakana-jisx0201	. lc-kana)
+      (latin-jisx0201		. lc-roman)
+      (cyrillic-iso8859-5	. lc-crl)
+      (latin-iso8859-9		. lc-ltn5)
+      (japanese-jisx0208-1978	. lc-jpold)
+      (chinese-gb2312		. lc-cn)
+      (japanese-jisx0208	. lc-jp)
+      (korean-ksc5601		. lc-kr)
+      (japanese-jisx0212	. lc-jp2)
+      (chinese-cns11643-1	. lc-cns1)
+      (chinese-cns11643-2	. lc-cns2)
+      (chinese-big5-1		. lc-big5-1)
+      (chinese-big5-2		. lc-big5-2))
+    "*Alist of a modern character set and a symbol holding its
+identification number."))
+
 (defvar w3m-om-coding-category-alist
   '((alternativnyj	. *coding-category-iso-8-1*)
     (big5		. *coding-category-big5*)
@@ -129,7 +163,7 @@ variants in this alist.")
     (vscii		. *coding-category-bin*))
   "*Alist of a modern coding-system and a traditional coding-category.")
 
-(let ((id "(generated automatically by Emacs-W3M)")
+(let ((id "(generated automatically by emacs-w3m)")
       to from info-vector document i)
   (dolist (elem w3m-om-coding-system-alist)
     (setq to (car elem)
@@ -160,20 +194,19 @@ variants in this alist.")
 
 ;; Functions to handle coding-system.
 (unless (fboundp 'coding-system-list)
-  (defun coding-system-list ()
-    "Return a list of all existing non-subsidiary coding systems."
-    (let ((codings nil))
-      (mapatoms
-       (function
-	(lambda (arg)
-	  (if (eq arg '*noconv*)
-	      nil
-	    (if (and (or (vectorp (get arg 'coding-system))
-			 (vectorp (get arg 'eol-type)))
-		     (null (get arg 'pre-write-conversion))
-		     (null (get arg 'post-read-conversion)))
-		(setq codings (cons arg codings)))))))
-      codings)))
+  (defalias 'coding-system-list
+    (lambda (&optional base-only)
+      "Return a list of all existing non-subsidiary coding systems.
+The optional argument is ignored."
+      (let ((codings nil))
+	(mapatoms
+	 (lambda (arg)
+	   (if (and (or (vectorp (get arg 'coding-system))
+			(vectorp (get arg 'eol-type)))
+		    (null (get arg 'pre-write-conversion))
+		    (null (get arg 'post-read-conversion)))
+	       (setq codings (cons arg codings)))))
+	codings))))
 
 (defsubst w3m-find-coding-system (obj)
   "Return OBJ if it is a coding-system."
@@ -231,6 +264,17 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       (when opriority
 	(set-coding-priority opriority)))))
 
+(eval-and-compile
+  (unless (fboundp 'charset-id)
+    (defalias 'charset-id
+      (lambda (charset)
+	"Return charset identification number of CHARSET."
+	(symbol-value (cdr (assq charset w3m-om-character-set-alist)))))))
+
+;; charset-id() is required in w3m-ccl.el.
+(require 'w3m-ccl)
+
+
 ;;; Generic functions.
 (defun w3m-expand-path-name (name &optional base)
   "Convert path string NAME to the canonicalized one."
@@ -267,41 +311,43 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 (eval-and-compile
   (unless (fboundp 'read-passwd)
     ;; This code is imported from subr.el of Emacs-20.7 and slightly modified.
-    (defun read-passwd (prompt &optional confirm default)
-      "Read a password, prompting with PROMPT.  Echo `.' for each character
+    (defalias 'read-passwd
+      (function
+       (lambda (prompt &optional confirm default)
+	 "Read a password, prompting with PROMPT.  Echo `.' for each character
 typed.  End with RET, LFD, or ESC.  DEL or C-h rubs out.  C-u kills
 line.  Optional argument CONFIRM, if non-nil, then read it twice to
 make sure. Optional DEFAULT is a default password to use instead of
 empty input."
-      (if confirm
-	  (let (success)
-	    (while (not success)
-	      (let ((first (read-passwd prompt nil default))
-		    (second (read-passwd "Confirm password: " nil default)))
-		(if (equal first second)
-		    (setq success first)
-		  (message
-		   "Password not repeated accurately; please start over")
-		  (sit-for 1))))
-	    success)
-	(let ((pass nil)
-	      (c 0)
-	      (echo-keystrokes 0)
-	      (cursor-in-echo-area t)
-	      (inhibit-input-event-recording t))
-	  (while (progn (message "%s%s"
-				 prompt
-				 (make-string (length pass) ?.))
-			(setq c (read-char-exclusive))
-			(and (/= c ?\r) (/= c ?\n) (/= c ?\e)))
-	    (if (= c ?\C-u)
-		(setq pass "")
-	      (if (and (/= c ?\b) (/= c ?\177))
-		  (setq pass (concat pass (char-to-string c)))
-		(if (> (length pass) 0)
-		    (setq pass (substring pass 0 -1))))))
-	  (message nil)
-	  (or pass default ""))))))
+	 (if confirm
+	     (let (success)
+	       (while (not success)
+		 (let ((first (read-passwd prompt nil default))
+		       (second (read-passwd "Confirm password: " nil default)))
+		   (if (equal first second)
+		       (setq success first)
+		     (message
+		      "Password not repeated accurately; please start over")
+		     (sit-for 1))))
+	       success)
+	   (let ((pass nil)
+		 (c 0)
+		 (echo-keystrokes 0)
+		 (cursor-in-echo-area t)
+		 (inhibit-input-event-recording t))
+	     (while (progn (message "%s%s"
+				    prompt
+				    (make-string (length pass) ?.))
+			   (setq c (read-char-exclusive))
+			   (and (/= c ?\r) (/= c ?\n) (/= c ?\e)))
+	       (if (= c ?\C-u)
+		   (setq pass "")
+		 (if (and (/= c ?\b) (/= c ?\177))
+		     (setq pass (concat pass (char-to-string c)))
+		   (if (> (length pass) 0)
+		       (setq pass (substring pass 0 -1))))))
+	     (message nil)
+	     (or pass default ""))))))))
 
 (let (current-load-list)
   (eval
@@ -310,7 +356,7 @@ empty input."
 							  history
 							  default-value)
 				    activate)
-	"Advised by Emacs-W3M.
+	"Advised by emacs-w3m.
 Allow the optional fourth argument DEFAULT-VALUE which will be used as
 the value to return if the user enters the empty string."
 	(, (if (and (= emacs-major-version 19) (>= emacs-minor-version 29))
@@ -338,6 +384,51 @@ the value to return if the user enters the empty string."
 		       (stringp default-value))
 		  (setq ad-return-value default-value))))))))
 
+(unless (fboundp 'multibyte-string-p)
+  (defalias 'multibyte-string-p 'stringp))
+
+(eval-when-compile
+  ;; Pickup `move-to-column-strictly'.
+  (require 'rect))
+
+(defun move-to-column-force (column)
+  "Move point to column COLUMN rigidly in the current line.
+If COLUMN is within a multi-column character, replace it by
+spaces and tab."
+  (inline (move-to-column-strictly column t)))
+
+(unless (fboundp 'compose-mail)
+  (defalias 'compose-mail
+    (lambda (&optional to subject other-headers continue
+		       switch-function yank-action send-actions)
+      "Start composing a mail message to send."
+      (interactive (list nil nil nil current-prefix-arg))
+      (let ((function (get mail-user-agent 'composefunc)))
+	(funcall function to subject other-headers continue
+		 switch-function yank-action send-actions)))))
+
+;;; Faces:
+(defvar w3m-om-use-overstrike-to-make-face-bold 'w3m
+  "*If non-nil, use `set-face-bold-p' to make faces bold by overstriking.
+If it is the symbol `w3m', only 'w3m-' prefixed faces will be affected.")
+
+(defadvice custom-declare-face (around set-face-bold-with-overstrike activate)
+  "Advised by emacs-w3m.
+Use `set-face-bold-p' to make faces bold by overstriking.  See also the
+documentation for `w3m-om-use-overstrike-to-make-face-bold'."
+  (if (if (eq w3m-om-use-overstrike-to-make-face-bold 'w3m)
+	  (string-match "\\`w3m-" (symbol-name (ad-get-arg 0)))
+	w3m-om-use-overstrike-to-make-face-bold)
+      (let ((si:custom-set-face-bold (symbol-function 'custom-set-face-bold))
+	    (si:custom-face-bold (symbol-function 'custom-face-bold)))
+	(defalias 'custom-set-face-bold 'set-face-bold-p)
+	(defalias 'custom-face-bold (lambda (face &rest args)
+				      (face-bold-p face)))
+	(unwind-protect
+	    ad-do-it
+	  (fset 'custom-set-face-bold si:custom-set-face-bold)
+	  (fset 'custom-face-bold si:custom-face-bold)))
+    ad-do-it))
 
 ;;; Widget:
 (defun w3m-om-define-missing-widgets ()
