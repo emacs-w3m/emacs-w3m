@@ -4686,14 +4686,7 @@ lines are picked up.  If ARG is non-nil, force reload all links."
       (setq url (car urls)
 	    urls (cdr urls))
       (set-buffer buffer)
-      (w3m-view-this-url-1 url arg t))
-    (w3m-select-buffer)
-    (select-window window)
-    (message "Type `%s' to switch to the selection buffer"
-	     (condition-case nil
-		 (key-description
-		  (car (where-is-internal 'w3m-select-buffer)))
-	       (error "M-x w3m-select-buffer")))))
+      (w3m-view-this-url-1 url arg t))))
 
 (defun w3m-view-this-url-new-session (&optional arg)
   "Perform the `w3m-view-this-url' command in the new session.
