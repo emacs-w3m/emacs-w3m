@@ -1,5 +1,8 @@
 2002-04-22  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* shimbun/mew-shimbun.el (mew-shimbun-scan-replace):
+	`mew-pop-scan-header' require multi-byte buffer.
+
 	* mew-w3m.el (mew-w3m-view-inline-image): Toggle
 	`mew-w3m-auto-insert-image'.
 	(mew-w3m-cid-retrieve-hook): New customize hook.

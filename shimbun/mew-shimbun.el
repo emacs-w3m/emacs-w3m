@@ -643,8 +643,10 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 
 ;;; Mew interface funcitions:
 (defun mew-shimbun-scan-replace (fld msg)
+  (set-buffer-multibyte t)
   (let ((width (1- (mew-scan-width)))
 	(vec (mew-pop-scan-header)))
+    (set-buffer-multibyte nil)
     (mew-scan-set-folder vec fld)
     (mew-scan-set-message vec msg)
     (mew-scan-insert-line fld vec width msg nil)
