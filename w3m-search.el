@@ -24,8 +24,8 @@
 
 ;;; Commentary:
 
-;; w3m-search.el is the add-on program to access WEB search engines of
-;; w3m.el.  For more detail about w3m.el, see:
+;; w3m-search.el is the add-on program of w3m.el to access WEB search
+;; engines.  For more detail about w3m.el, see:
 ;;
 ;;    http://namazu.org/~tsuchiya/emacs-w3m/
 
@@ -47,7 +47,7 @@
 This value is default and used only when spec defined by
 `w3m-search-engine-alist' does not have encoding information."
   :group 'w3m
-  :type '(restricted-sexp :match-alternatives (coding-system-p)))
+  :type 'coding-system)
 
 (defcustom w3m-search-engine-alist
   '(("yahoo" "http://search.yahoo.com/bin/search?p=%s" nil)
@@ -55,7 +55,7 @@ This value is default and used only when spec defined by
     ("google" "http://www.google.com/search?q=%s" nil)
     ("google-ja" "http://www.google.com/search?q=%s&hl=ja&lr=" shift_jis)
     ("goo-ja" "http://www.goo.ne.jp/default.asp?MT=%s" euc-japan)
-    ("rpmfind" "http://rpmfind.net/linux/rpm2html/search.php?query=%s"))
+    ("rpmfind" "http://rpmfind.net/linux/rpm2html/search.php?query=%s" nil))
   "*An alist of search engines.
 Each elemnt looks like (ENGINE ACTION CODING)
 ENGINE is a string, the name of the search engine.
@@ -69,8 +69,7 @@ If omitted, `w3m-search-default-coding-system' is used.
 	  (list
 	   (string :tag "Engine")
 	   (string :tag "Action")
-	   (restricted-sexp :match-alternatives (coding-system-p nil)
-			    :tag "Coding"))))
+	   (coding-system))))
 
 (defcustom w3m-search-default-engine "yahoo"
   "*Default search engine name.

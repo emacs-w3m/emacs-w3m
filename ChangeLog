@@ -1,3 +1,24 @@
+2001-03-14  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Split files.
+	(w3m-coding-system): Changed customize type.
+	(w3m-input-coding-system): Ditto.
+	(w3m-output-coding-system): Ditto.
+	(w3m-bookmark-file-coding-system): Ditto.
+	(w3m-url-encode-string): Removed redundant code for Mule-2.
+
+	* w3m-e21.el: New file.
+
+	* w3m-xmas.el: New file.
+
+	* w3m-om.el: New file.
+
+	* w3m-search.el (w3m-search-default-coding-system): Changed
+	customize type.
+	(w3m-search-engine-alist): Ditto.
+	
+	* w3m-weather.el: Fix comments.
+	
 2001-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Use the copy of info-vector for newly generated coding-

@@ -22,8 +22,8 @@
 
 ;;; Commentary:
 
-;; w3m-weather.el is the add-on program to look weather foracast of
-;; w3m.el.  For more detail about w3m.el, see:
+;; w3m-weather.el is the add-on program of w3m.el to look weather
+;; foracast.  For more detail about w3m.el, see:
 ;;
 ;;    http://namazu.org/~tsuchiya/emacs-w3m/
 

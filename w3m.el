@@ -8,7 +8,7 @@
 ;;          Hideyuki SHIRAI    <shirai@meadowy.org>,
 ;;          Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>,
-;;          Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
+;;          Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;          Katsumi Yamaoka    <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
 
@@ -47,15 +47,14 @@
 ;;; Code:
 
 (eval-and-compile
-  (or (and (boundp 'emacs-major-version)
-	   (>= emacs-major-version 20))
-      (progn
-	(require 'poe)
-	(require 'poem)
-	(require 'pcustom))))
-
-(if (featurep 'xemacs)
-    (require 'poem))
+  (cond
+   ((featurep 'xemacs)
+    (require 'w3m-xmas))
+   ((and (boundp 'emacs-major-version)
+	 (>= emacs-major-version 21))
+    (require 'w3m-e21))
+   ((boundp 'MULE)
+    (require 'w3m-om))))
 
 (require 'thingatpt)
 
@@ -79,33 +78,6 @@
 	  "Return OBJ if it is a coding-system."
 	  (if (coding-system-p obj) obj))
       (require 'pces)))
-
-(w3m-static-if (boundp 'MULE)
-    (dolist (elem '((*autoconv*		. undecided)
-		    (*ctext*		. ctext)
-		    (*euc-china*	. cn-gb-2312)
-		    (*euc-japan*	. euc-japan)
-		    (*iso-2022-jp*	. iso-2022-jp)
-		    (*iso-2022-ss2-7*	. iso-2022-7bit-ss2)
-		    (*sjis*		. shift_jis)
-		    (*tis620*		. tis-620)))
-      (unless (coding-system-p (cdr elem))
-	      (condition-case nil
-		  (let* ((info-vector (copy-sequence (get-code (car elem))))
-			 (document (aref info-vector 2))
-			 (id "(generated automatically by `w3m')"))
-		    (copy-coding-system (car elem) (cdr elem))
-		    (aset info-vector 2
-			  (if (and (stringp document)
-				   (> (length document) 0))
-			      (if (string-match "\\.[\t\n ]*$" document)
-				  (concat (substring document
-						     0 (match-beginning 0))
-					  " " id ".")
-				(concat document " " id "."))
-			    id))
-		    (put (cdr elem) 'coding-system info-vector))
-		(error)))))
 
 (defconst emacs-w3m-version
   (eval-when-compile
@@ -146,17 +118,17 @@ width using expression (+ (frame-width) VALUE)."
 (defcustom w3m-coding-system 'euc-japan
   "*Coding system for w3m."
   :group 'w3m
-  :type 'symbol)
+  :type 'coding-system)
 
 (defcustom w3m-input-coding-system 'iso-2022-jp
   "*Coding system for w3m."
   :group 'w3m
-  :type 'symbol)
+  :type 'coding-system)
 
 (defcustom w3m-output-coding-system 'euc-japan
   "*Coding system for w3m."
   :group 'w3m
-  :type 'symbol)
+  :type 'coding-system)
 
 (defcustom w3m-use-cygdrive t
   "*If non-nil, use /cygdrive/ rule when expand-file-name."
@@ -212,7 +184,7 @@ width using expression (+ (frame-width) VALUE)."
 (defcustom w3m-bookmark-file-coding-system 'euc-japan
   "*Coding system for bookmark file."
   :group 'w3m
-  :type 'symbol)
+  :type 'coding-system)
 
 (defcustom w3m-home-page
   (or (getenv "HTTP_HOME")
@@ -233,7 +205,7 @@ width using expression (+ (frame-width) VALUE)."
 (defcustom w3m-arrived-file-coding-system 'euc-japan
   "*Coding system for arrived file."
   :group 'w3m
-  :type 'symbol)
+  :type 'coding-system)
 
 (defcustom w3m-keep-arrived-urls 500
   "*Arrived keep count of w3m."
@@ -728,10 +700,7 @@ If N is negative, last N items of LIST is returned."
 	  (string-to-list
 	   (encode-coding-string
 	    str
-	    (or coding
-		(w3m-static-if (boundp 'MULE)
-		    '*iso-2022-jp*
-		  'iso-2022-7bit)))))))
+	    (or coding 'iso-2022-jp))))))
 
 (defun w3m-form-make-get-string (form)
   (when (eq 'get (w3m-form-method form))
@@ -1031,94 +1000,14 @@ If N is negative, last N items of LIST is returned."
   "Return image type which corresponds to CONTENT-TYPE."
   (cdr (assoc content-type w3m-image-type-alist)))
 
-(w3m-static-if (and (not (featurep 'xemacs))
-		    (>= emacs-major-version 21)) (progn    
-(defun w3m-create-image (url &optional no-cache)
-  "Retrieve data from URL and create an image object.
-If optional argument NO-CACHE is non-nil, cache is not used."
-  (condition-case err
-      (let ((type (w3m-retrieve url 'raw nil no-cache)))
-	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-	  (w3m-with-work-buffer
-	    (create-image (buffer-string) 
-			  type
-			  t
-			  :ascent 'center))))
-    (error nil)))
-
-(defun w3m-insert-image (beg end image)
-  "Display image on the current buffer.
-Buffer string between BEG and END are replaced with IMAGE."
-  (add-text-properties beg end
-		       (list 'display image
-			     'intangible image
-			     'invisible nil)))
-
-(defun w3m-remove-image (beg end)
-  "Remove an image which is inserted between BEG and END."
-  (remove-text-properties beg end '(display intangible)))
-
-(defun w3m-image-type-available-p (image-type)
-  "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
-  (and (display-graphic-p)
-       (image-type-available-p image-type)))
-;; end of Emacs 21 definition.
-)
-(w3m-static-if (featurep 'xemacs) (progn
-(defun w3m-create-image (url &optional no-cache)
-  "Retrieve data from URL and create an image object.
-If optional argument NO-CACHE is non-nil, cache is not used."
-  (condition-case err
-      (let ((type (w3m-retrieve url 'raw nil no-cache)))
-	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-	  (let ((data (w3m-with-work-buffer (buffer-string))))
-	    (make-glyph
-	     (make-image-instance
-	      (vector type :data data)
-	      nil nil 'no-error)))))
-    (error nil)))
-
-(defun w3m-insert-image (beg end image)
-  "Display image on the current buffer.
-Buffer string between BEG and END are replaced with IMAGE."
-  (let (extent glyphs)
-    (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
-      (setq glyphs (cons (extent-end-glyph extent) glyphs)))
-    (setq extent (make-extent beg end))
-    (set-extent-property extent 'invisible t)
-    (set-extent-property extent 'w3m-xmas-icon t)
-    (set-extent-end-glyph extent image)
-    (while glyphs
-      (setq extent (make-extent (point)(point)))
-      (set-extent-property extent 'w3m-xmas-icon t)
-      (set-extent-end-glyph extent (car glyphs))
-      (setq glyphs (cdr glyphs)))))
-
-(defun w3m-remove-image (beg end)
-  "Remove an image which is inserted between BEG and END."
-  (let (extent)
-    (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
-      (if (extent-end-glyph extent)
-	  (set-extent-end-glyph extent nil))
-      (set-extent-property extent 'invisible nil))
-    (while (setq extent (extent-at end nil 'w3m-xmas-icon extent 'at))
-      (if (extent-end-glyph extent)
-	  (set-extent-end-glyph extent nil))
-      (set-extent-property extent 'invisible nil))))
-
-(defun w3m-image-type-available-p (image-type)
-  "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
-  (and (device-on-window-system-p)
-       (featurep image-type)))
-;; end of XEmacs definition.
-)
-(defun w3m-create-image (url &optional no-cache))
-(defun w3m-insert-image (beg end image))
-(defun w3m-image-type-available-p (image-type)
-  "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
-  nil)
-;; end of w3m-static-if
-))
+(unless (fboundp 'w3m-create-image)
+  (defun w3m-create-image (url &optional no-cache)))
+(unless (fboundp 'w3m-insert-image)
+  (defun w3m-insert-image (beg end image)))
+(unless (fboundp 'w3m-image-type-available-p)
+  (defun w3m-image-type-available-p (image-type)
+    "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
+    nil))
 
 (defun w3m-fontify-images ()
   "Fontify image alternate strings in this buffer which contains half-dumped data."
@@ -2699,9 +2588,11 @@ ex.) c:/dir/file => //c/dir/file"
 
 
 ;; Add-on programs:
-(autoload 'w3m-search "w3m-search" "*Search QUERY using SEARCH-ENGINE." t)
-(autoload 'w3m-weather "w3m-weather" "*Display weather report." t)
-(autoload 'w3m-about-weather "w3m-weather")
+(when (locate-library "w3m-search.el")
+  (autoload 'w3m-search "w3m-search" "*Search QUERY using SEARCH-ENGINE." t))
+(when (locate-library "w3m-weather.el")
+  (autoload 'w3m-weather "w3m-weather" "*Display weather report." t)
+  (autoload 'w3m-about-weather "w3m-weather"))
 
 (provide 'w3m)
 ;;; w3m.el ends here.
