@@ -27,7 +27,7 @@
 ;; w3m-dtree.el is The add-on program to display local directory tree.
 ;; For more detail about w3m.el, see:
 ;;
-;;    http://namazu.org/~tsuchiya/emacs-w3m/
+;;    http://emacs-w3m.namazu.org/
 
 ;;; Code:
 (require 'w3m)

@@ -30,8 +30,8 @@
 ;;; Commentary:
 
 ;; This module is a part of emacs-w3m which provides Emacs 20 specific
-;; functions.  Visit <URL:http://namazu.org/~tsuchiya/emacs-w3m/> for
-;; more details of emacs-w3m.
+;; functions.  Visit <URL:http://emacs-w3m.namazu.org/> for more details
+;; of emacs-w3m.
 
 ;;; Code:
 

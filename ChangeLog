@@ -1,3 +1,30 @@
+2001-07-06  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (comment): Modify URI of emacs-w3m.
+	(w3m-form-input-textarea-mode-hook): New user option.
+	(w3m-form-input-textarea-point): New buffer local variable.
+	(w3m-form-input-textarea-set):
+	Run 'w3m-form-input-textarea-set-hook' hook first.
+	Get 'w3m-buffer' from input buffer.
+	Go to the point of the orignal form when switch to 'w3m-buffer'.
+	(w3m-form-input-textarea): Save original point to
+	'w3m-form-input-textarea-point'.
+	Set 'w3m-form-input-textarea-buffer' within the buffer of the
+	input area.
+
+	* w3m.el (w3m-about): Modify URI of emacs-w3m.
+	* w3m-xmas.el (comment): Ditto.
+	* w3m-weather.el (comment): Ditto.
+	* w3m-search.el (comment): Ditto.
+	* w3m-om.el (comment): Ditto.
+	* w3m-macro.el (comment): Ditto.
+	* w3m-e21.el (comment): Ditto.
+	* w3m-e20.el (comment): Ditto.
+	* w3m-dtree.el (comment): Ditto.
+	* w3m-bookmark.el (comment): Ditto.
+	* w3m-antenna.el (comment): Ditto.
+
+
 2001-07-05  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-0.2.1-mnc.patch: Added [-post body] option.

@@ -25,7 +25,7 @@
 ;; w3m-antenna.el is the add-on utility to detect changes of WEB.  For
 ;; more detail about w3m.el, see:
 ;;
-;;    http://namazu.org/~tsuchiya/emacs-w3m/
+;;    http://emacs-w3m.namazu.org/
 
 
 ;;; How to install:

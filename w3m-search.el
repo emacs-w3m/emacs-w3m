@@ -27,7 +27,7 @@
 ;; w3m-search.el is the add-on program of w3m.el to access WEB search
 ;; engines.  For more detail about w3m.el, see:
 ;;
-;;    http://namazu.org/~tsuchiya/emacs-w3m/
+;;    http://emacs-w3m.namazu.org/
 
 
 ;;; How to install:

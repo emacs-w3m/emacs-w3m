@@ -26,7 +26,7 @@
 ;; w3m-bookmark.el is the add-on program to operate bookmark file.
 ;; For more detail about w3m.el, see:
 ;;
-;;    http://namazu.org/~tsuchiya/emacs-w3m/
+;;    http://emacs-w3m.namazu.org/
 
 
 ;;; Code:

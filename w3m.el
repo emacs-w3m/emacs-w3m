@@ -3267,7 +3267,7 @@ ex.) c:/dir/file => //c/dir/file"
 <head><title>About emacs-w3m</title></head>
 <body>
 <center>
-Welcome to <a href=\"http://namazu.org/~tsuchiya/emacs-w3m/\">")
+Welcome to <a href=\"http://emacs-w3m.namazu.org/\">")
     (insert "<img src=\"about://emacs-w3m.gif\" alt=\"emacs-w3m\">")
     (insert "</a>!
 <br><br>

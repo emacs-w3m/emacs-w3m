@@ -25,7 +25,7 @@
 ;; This file contains the stuffs to use w3m.el on Mule-2.  For more
 ;; detail about w3m.el, see:
 ;;
-;;    http://namazu.org/~tsuchiya/emacs-w3m/
+;;    http://emacs-w3m.namazu.org/
 
 ;;; Code:
 
