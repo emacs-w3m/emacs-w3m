@@ -225,6 +225,7 @@ If article have inline images, generated article have a multipart/related
 content-type if `shimbun-encapsulate-article' is non-nil."
   (let ((case-fold-search t)
 	(count 0)
+	beg end
 	url type img imgs boundary charset)
     (current-buffer)
     (setq charset
@@ -232,26 +233,34 @@ content-type if `shimbun-encapsulate-article' is non-nil."
 		   (detect-mime-charset-region (point-min)(point-max)))))
     (goto-char (point-min))
     (when shimbun-encapsulate-article
-      (while (re-search-forward "<img +src=\"\\([^\"]*\\)\"" nil t)
-	(save-match-data
-	  (setq url (match-string 1))
-	  (unless (setq img (assoc url imgs))
-	    (setq imgs (cons (setq img (list
-					url
-					(concat (format "shimbun.%d"
-							(incf count)))
-					(with-temp-buffer
-					  (set-buffer-multibyte nil)
-					  (setq type
-						(shimbun-retrieve-url
-						 (shimbun-expand-url
-						  url
-						  (shimbun-header-xref header))
-						 'no-cache 'no-decode))
-					  (buffer-string))
-					type))
-			     imgs))))
-	(replace-match (concat "<img src=\"cid:" (nth 1 img) "\"")))
+      (while (re-search-forward "<img" nil t)
+	(setq beg (point))
+	(when (search-forward ">" nil t)
+	  (setq end (point))
+	  (goto-char beg)
+	  (when (re-search-forward 
+		 "src[ \t\r\f\n]*=[ \t\r\f\n]*\"\\([^\"]*\\)\"" end t)
+	    (save-match-data
+	      (setq url (match-string 1))
+	      (unless (setq img (assoc url imgs))
+		(setq imgs (cons
+			    (setq img (list
+				       url
+				       (concat (format "shimbun.%d"
+						       (incf count)))
+				       (with-temp-buffer
+					 (set-buffer-multibyte nil)
+					 (setq
+					  type
+					  (shimbun-retrieve-url
+					   (shimbun-expand-url
+					    url
+					    (shimbun-header-xref header))
+					   'no-cache 'no-decode))
+					 (buffer-string))
+				       type))
+			    imgs))))
+	    (replace-match (concat "src=\"cid:" (nth 1 img) "\"")))))
       (setq imgs (nreverse imgs)))
     (goto-char (point-min))
     (shimbun-header-insert shimbun header)
