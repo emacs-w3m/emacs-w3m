@@ -182,17 +182,28 @@ whose elements are:
 				 (current-time)))
 			  (nthcdr 3 site)))
 		w3m-antenna-alist)))
-    (unless w3m-antenna-sites
-      (dolist (site w3m-antenna-alist)
-	(push (list (w3m-antenna-site-key site)
-		    (w3m-antenna-site-title site)
-		    (w3m-antenna-site-class site))
-	      w3m-antenna-sites)))))
+    (if w3m-antenna-sites
+	(dolist (site w3m-antenna-sites)
+	  (unless (assoc (w3m-antenna-site-key site) w3m-antenna-alist)
+	    ;; Add sites registerd in `w3m-antenna-sites'.
+	    (push (append site
+			  (list (format-time-string
+				 (w3m-antenna-site-key site)
+				 (current-time))
+				nil nil nil))
+		  w3m-antenna-alist)))
+      (setq w3m-antenna-sites
+	    (mapcar (lambda (site)
+		      (list (w3m-antenna-site-key site)
+			    (w3m-antenna-site-title site)
+			    (w3m-antenna-site-class site)))
+		    w3m-antenna-alist)))))
 
 (defun w3m-antenna-shutdown ()
-  (when w3m-antenna-alist
-    (w3m-save-list w3m-antenna-file w3m-antenna-alist nil t)
-    (setq w3m-antenna-alist nil)))
+  (prog1 w3m-antenna-alist
+    (when w3m-antenna-alist
+      (w3m-save-list w3m-antenna-file w3m-antenna-alist nil t)
+      (setq w3m-antenna-alist nil))))
 
 (defun w3m-antenna-hns-last-modified (url no-cache handler)
   (w3m-process-do-with-temp-buffer
@@ -294,18 +305,14 @@ whose elements are:
 			(and (= 0 (setq ,count (1- ,count)))
 			     (buffer-name ,buffer)
 			     (with-current-buffer ,buffer
-			       (let ((alist w3m-antenna-alist))
-				 (w3m-antenna-shutdown)
-				 (funcall ,handler alist)))))))
+			       (funcall ,handler (w3m-antenna-shutdown)))))))
 	(dolist (site w3m-antenna-sites)
 	  (when (w3m-process-p
 		 (setq tmp (w3m-antenna-check-site site t handler)))
 	    (push tmp processes)
 	    (set count (1+ (symbol-value count)))))
 	(if (not processes)
-	    (let ((alist w3m-antenna-alist))
-	      (w3m-antenna-shutdown)
-	      alist)
+	    (w3m-antenna-shutdown)
 	  (w3m-process-start-queued-processes)
 	  (car processes))))))
 
@@ -369,7 +376,6 @@ whose elements are:
 ;;;###autoload
 (defun w3m-about-antenna (url &optional no-decode no-cache
 			      post-data referer handler)
-  (w3m-antenna-setup)
   (w3m-process-do
       (alist (if no-cache
 		 (w3m-antenna-check-all-sites handler)
