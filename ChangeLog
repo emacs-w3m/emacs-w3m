@@ -1,3 +1,11 @@
+2002-10-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-dump-head-source): Display the message which
+	describes how to stop asynchronous process.
+	(w3m-lynx-like-map): Changed the key binded to `w3m-process-stop'
+	from `C-c C-g' to `C-c C-k'.
+	(w3m-info-like-map): Ditto.
+
 2002-10-08  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* README.shimbun.ja: Add notice that f1express requires Mule-UCS.
@@ -9,7 +17,7 @@
 	* README.shimbun.ja: Ditto.
 
 	* shimbun/sb-isize-sports.el: Removed.
-	
+
 2002-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-toggle-inline-images-internal): Simplify the code.

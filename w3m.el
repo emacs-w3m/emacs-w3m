@@ -3225,7 +3225,12 @@ complete."
 		(orig-url orig-url))
     (setq w3m-current-url url
 	  url (w3m-url-strip-authinfo url))
-    (w3m-message "Reading %s..." url)
+    (w3m-message "Reading %s...%s"
+		 url
+		 (if w3m-async-exec
+		     (substitute-command-keys "\
+ (Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")
+		   ""))
     (w3m-process-do
 	(result
 	 (apply 'w3m-process-start
@@ -4938,13 +4943,13 @@ The optional argument BUFFER will be used exclusively by the command
     (define-key map "s" 'w3m-history)
     (define-key map "E" 'w3m-edit-current-url)
     (define-key map "e" 'w3m-edit-this-url)
-    (define-key map "\C-c\C-c" 'w3m-submit-form)
-    (define-key map "\C-c\C-g" 'w3m-process-stop)
     (define-key map "C" (make-sparse-keymap))
     (define-key map "Ct" 'w3m-redisplay-with-content-type)
     (define-key map "Cc" 'w3m-redisplay-with-charset)
     (define-key map "CC" 'w3m-redisplay-and-reset)
     (define-key map "\C-c\C-b" 'report-emacs-w3m-bug)
+    (define-key map "\C-c\C-c" 'w3m-submit-form)
+    (define-key map "\C-c\C-k" 'w3m-process-stop)
     (setq w3m-lynx-like-map map)))
 
 (defvar w3m-info-like-map nil
@@ -5050,13 +5055,13 @@ The optional argument BUFFER will be used exclusively by the command
     (define-key map "[" 'w3m-previous-form)
     (define-key map "}" 'w3m-next-image)
     (define-key map "{" 'w3m-previous-image)
-    (define-key map "\C-c\C-c" 'w3m-submit-form)
-    (define-key map "\C-c\C-g" 'w3m-process-stop)
     (define-key map "C" (make-sparse-keymap))
     (define-key map "Ct" 'w3m-redisplay-with-content-type)
     (define-key map "Cc" 'w3m-redisplay-with-charset)
     (define-key map "CC" 'w3m-redisplay-and-reset)
     (define-key map "\C-c\C-b" 'report-emacs-w3m-bug)
+    (define-key map "\C-c\C-c" 'w3m-submit-form)
+    (define-key map "\C-c\C-k" 'w3m-process-stop)
     (setq w3m-info-like-map map)))
 
 (defun w3m-alive-p ()
