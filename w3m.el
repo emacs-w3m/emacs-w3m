@@ -3653,10 +3653,9 @@ the request."
 				(list :title (file-name-nondirectory url)))
 	      (w3m-history-push w3m-current-url)
 	      (w3m-refontify-anchor))
-	  (w3m-history-push w3m-current-url
-			    (w3m-cleanup-plist (list :title w3m-current-title
-						     :referer referer
-						     :post-data post-data)))
+	  (w3m-history-push w3m-current-url (list :title w3m-current-title
+						  :referer referer
+						  :post-data post-data))
 	  (or (and name (w3m-search-name-anchor name))
 	      (goto-char (point-min)))
 	  (setq w3m-display-inline-image-status 'off)

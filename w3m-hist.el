@@ -241,8 +241,8 @@ will not contain keyword-value pairs whose value is nil."
 	   (while properties
 	     (when (cadr properties)
 	       (setq rest (cons (cadr properties)
-				(cons (car properties) rest))
-		     properties (cddr properties))))
+				(cons (car properties) rest))))
+	     (setq properties (cddr properties)))
 	   (nreverse rest)))))
 
   (defmacro w3m-history-with-element (url set-current
@@ -508,23 +508,23 @@ properties.  See the documentation for the variables `w3m-history' and
     (cond ((null w3m-history)
 	   ;; The dawn of the history.
 	   (let ((shared-plist (w3m-history-seek-properties url)))
+	     (setq properties (w3m-history-modify-properties
+			       shared-plist properties replace-props))
 	     (when shared-plist
-	       (setq properties (w3m-history-modify-properties
-				 shared-plist properties replace-props))
 	       (w3m-history-share-properties url properties)))
 	   (setq element (list url properties)
 		 position '(nil (0) nil)
 		 w3m-history (list position element)
 		 w3m-history-flat (list (append element '((0)))))
 	   position)
-	  ((w3m-history-assoc url t properties)
+	  ((w3m-history-assoc url t properties replace-props)
 	   ;; URL has been registered in the history.
 	   (car w3m-history))
 	  (t
 	   (let ((shared-plist (w3m-history-seek-properties url)))
+	     (setq properties (w3m-history-modify-properties
+			       shared-plist properties replace-props))
 	     (when shared-plist
-	       (setq properties (w3m-history-modify-properties
-				 shared-plist properties replace-props))
 	       (w3m-history-share-properties url properties)))
 	   (let* ((position (copy-sequence (cadar w3m-history)))
 		  (class (1- (length position)))
@@ -734,17 +734,17 @@ renaming will be done for all the w3m buffers."
       (set-buffer current))))
 
 (defun w3m-history-store-position ()
-  "Store the current position point in the history structure."
+  "Store the current cursor position in the history structure."
   (interactive)
   (when (cadar w3m-history)
     (w3m-history-add-properties (list :window-start (window-start)
 				      :position (point))
 				nil nil t)
     (when (interactive-p)
-      (message "The position point has registered"))))
+      (message "The current cursor position has registered"))))
 
 (defun w3m-history-restore-position ()
-  "Restore the last position point for the current url."
+  "Restore the saved cursor position for the page."
   (interactive)
   (when (cadar w3m-history)
     (let ((start (w3m-history-plist-get :window-start nil nil t))
@@ -755,7 +755,7 @@ renaming will be done for all the w3m buffers."
 	     (set-window-start nil start)
 	     (goto-char position))
 	    ((interactive-p)
-	     (message "No last position registered"))))))
+	     (message "No cursor position registered"))))))
 
 (eval-when-compile
   (defvar w3m-arrived-db)

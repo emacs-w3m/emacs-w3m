@@ -1,5 +1,13 @@
 2001-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-goto-url): Don't use `w3m-cleanup-plist'.
+
+	* w3m-macro.el (w3m-cleanup-plist): Abolished.
+
+	* w3m-hist.el (w3m-history-push): Don't add property whose value
+	is nil.
+	(w3m-history-modify-properties): Don't infloop.
+
 	* Makefile.in (keywords): New rule.
 	(distclean): Remove the directory autom4te.cache which will be
 	created by autoconf v2.5x.
