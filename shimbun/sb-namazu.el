@@ -32,7 +32,7 @@
 (defvar shimbun-namazu-url "http://www.namazu.org/pipermail/")
 
 (defvar shimbun-namazu-groups
-  '("emacs-w3m" "migemo" "namazu-devel-en" "namazu-devel-ja" "namazu-users-en"
+  '("migemo" "namazu-devel-en" "namazu-devel-ja" "namazu-users-en"
     "namazu-users-ja" "namazu-win32-users-ja"))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-namazu))
