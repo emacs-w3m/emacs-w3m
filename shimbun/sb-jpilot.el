@@ -36,9 +36,6 @@
 
 (defvar shimbun-jpilot-groups '("main"))
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-jpilot))
-  shimbun-jpilot-url)
-
 (luna-define-method shimbun-make-contents :after
   ((shimbun shimbun-jpilot) header)
   (save-excursion

@@ -34,9 +34,6 @@
 (defvar shimbun-texfaq-content-start "</h2>\n")
 (defvar shimbun-texfaq-content-end  "\n<hr>\n<p>")
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-texfaq))
-  (shimbun-url-internal shimbun))
-
 (defun shimbun-texfaq-make-id (shimbun string)
   (concat "<"
 	  string

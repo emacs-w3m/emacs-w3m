@@ -30,9 +30,6 @@
 
 (luna-define-class shimbun-wincefan (shimbun) ())
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-wincefan))
-  (shimbun-url-internal shimbun))
-
 (defconst shimbun-wincefan-url "http://www.wince.ne.jp/")
 (defvar shimbun-wincefan-groups '("news"))
 (defconst shimbun-wincefan-from-address "webmaster@wince.ne.jp")

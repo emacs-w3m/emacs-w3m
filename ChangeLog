@@ -1,3 +1,27 @@
+2004-05-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-atmarkit.el (shimbun-atmarkit-content-end): Updated
+	to follow the change of the site design.
+
+	* shimbun/shimbun.el (shimbun-index-url): Define its default
+	method.
+
+	* shimbun/sb-bbc.el (shimbun-index-url)
+	* shimbun/sb-coldsync.el (shimbun-index-url)
+	* shimbun/sb-dennou.el (shimbun-index-url)
+	* shimbun/sb-digiko.el (shimbun-index-url)
+	* shimbun/sb-fml.el (shimbun-index-url)
+	* shimbun/sb-javaconf.el (shimbun-index-url)
+	* shimbun/sb-jpilot.el (shimbun-index-url)
+	* shimbun/sb-muchy.el (shimbun-index-url)
+	* shimbun/sb-pilot-mailsync.el (shimbun-index-url)
+	* shimbun/sb-pocketgames.el (shimbun-index-url)
+	* shimbun/sb-sml.el (shimbun-index-url)
+	* shimbun/sb-squeak-dev.el (shimbun-index-url)
+	* shimbun/sb-squeak-ja.el (shimbun-index-url)
+	* shimbun/sb-texfaq.el (shimbun-index-url)
+	* shimbun/sb-wincefan.el (shimbun-index-url): Abolished.
+
 2004-05-05  David Hansen  <david.hansen@gmx.net>
 
 	* shimbun/sb-rss.el (shimbun-get-headers): Use the <dc:contributor>

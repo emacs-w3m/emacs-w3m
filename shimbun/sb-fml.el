@@ -39,9 +39,6 @@
 
 (luna-define-class shimbun-fml (shimbun) ())
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-fml))
-  (shimbun-url-internal shimbun))
-
 (defsubst shimbun-fml-parse-time (str)
   (save-match-data
     (if (string-match

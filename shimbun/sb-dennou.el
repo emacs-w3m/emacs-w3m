@@ -43,9 +43,6 @@
    (make-vector shimbun-dennou-content-hash-length 0))
   shimbun)
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-dennou))
-  shimbun-dennou-url)
-
 (defun shimbun-dennou-make-date-string (month day)
   (shimbun-make-date-string
    (string-to-number (substring (current-time-string) 20))

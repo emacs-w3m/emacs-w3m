@@ -38,9 +38,6 @@
 
 (defvar shimbun-squeak-ja-groups '("main"))
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-squeak-ja))
-  shimbun-squeak-ja-url)
-
 ;;(luna-define-method shimbun-reply-to ((shimbun shimbun-squeak-ja))
 ;;  "squeak-ja@lists.squeakfoundation.org")
 

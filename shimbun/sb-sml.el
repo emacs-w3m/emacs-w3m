@@ -35,9 +35,6 @@
 
 (defvar shimbun-sml-groups '("main"))
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-sml))
-  shimbun-sml-url)
-
 ;;(luna-define-method shimbun-reply-to ((shimbun shimbun-sml))
 ;;  "sml@sra.co.jp")
 

@@ -37,7 +37,7 @@
 (defvar shimbun-atmarkit-content-start
   "<!-- #BeginEditable \"%[%A-Z0-9]+\" -->")
 (defvar shimbun-atmarkit-content-end
-  "\n<!-- #EndEditable -->")
+  "<!-- #EndEditable --><br>")
 
 (defvar shimbun-atmarkit-group-path-alist
   '(

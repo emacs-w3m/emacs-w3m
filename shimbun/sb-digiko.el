@@ -38,9 +38,6 @@
 (defvar shimbun-digiko-litemplate-regexp
   "<STRONG><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a></STRONG>\n<UL><LI><EM>From</EM>: \\(.+\\) \\(\\(Sun\\|Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\), [ 0-9]+ [A-Z][a-z][a-z] [0-9]+ [0-2][0-9]:[0-5][0-9]:[0-5][0-9] .*\\)</LI>")
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-digiko))
-  (shimbun-url-internal shimbun))
-
 (defmacro shimbun-digiko-get-headers (shimbun url headers)
   (` (let ((case-fold-search t))
        (goto-char (point-min))

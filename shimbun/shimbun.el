@@ -480,6 +480,7 @@ Generated article have a multipart/related content-type."
 			   (shimbun-text-entity-charset entity
 							(point-min)
 							(point-max))))
+    (w3m-remove-meta-charset-tags)
     (goto-char (point-min))
     (luna-call-next-method)
     (goto-char (point-max))))
@@ -869,6 +870,9 @@ Return nil, unless a content is cleared successfully.")
 
 (luna-define-generic shimbun-index-url (shimbun)
   "Return a index URL of SHIMBUN.")
+
+(luna-define-method shimbun-index-url ((shimbun shimbun))
+  (shimbun-url-internal shimbun))
 
 (luna-define-generic shimbun-get-headers (shimbun &optional range)
   "Return a shimbun header list of SHIMBUN.

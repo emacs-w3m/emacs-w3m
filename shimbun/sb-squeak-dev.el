@@ -40,9 +40,6 @@
 
 (defvar shimbun-squeak-dev-groups '("main"))
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-squeak-dev))
-  shimbun-squeak-dev-url)
-
 (luna-define-method shimbun-make-contents :after
   ((shimbun shimbun-squeak-dev) header)
   (save-excursion

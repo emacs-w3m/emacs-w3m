@@ -30,9 +30,6 @@
 
 (luna-define-class shimbun-muchy (shimbun) ())
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-muchy))
-  (shimbun-url-internal shimbun))
-
 (defvar shimbun-muchy-url "http://muchy.com")
 (defvar shimbun-muchy-groups '("review"))
 (defvar shimbun-muchy-from-address "webmaster@muchy.com")

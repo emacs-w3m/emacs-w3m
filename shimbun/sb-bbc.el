@@ -39,9 +39,6 @@
 (defvar shimbun-bbc-content-start "<!-- [ES] IIMA -->")
 (defvar shimbun-bbc-content-end "<!-- E BO -->")
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-bbc))
-  shimbun-bbc-url)
-
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-bbc) url date)
   (unless (string-match "http://news.bbc.co.uk/go/click/rss/0.91/\
