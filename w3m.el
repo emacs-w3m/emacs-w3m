@@ -372,9 +372,17 @@ It can also be any Lisp form that should return a boolean value."
   :group 'w3m
   :type '(sexp :size 0))
 
-(defcustom w3m-treat-image-size (and (member "image" w3m-compile-options) t)
+(defcustom w3m-treat-image-size nil
   "*Non-nil means let w3m mind the ratio of the size of images and text.
-See also `w3m-pixels-per-character' and `w3m-pixels-per-line'."
+
+If it is non-nil, the w3m command will make a halfdump which reserves
+rectangle spaces in which images will be put, and also `alt' texts
+will be truncated or padded with spaces so that their display width
+will be the same as the width of images.
+
+See also `w3m-pixels-per-character' and `w3m-pixels-per-line'.  Those
+values will be passed to the w3m command in order to compute columns
+and lines which images occupy."
   :group 'w3m
   :type 'boolean)
 
@@ -4652,7 +4660,7 @@ POST-DATA and REFERER will be sent to the web server with a request."
 	   (cons coding-system-for-read coding-system-for-write)))
     (w3m-process-with-environment w3m-command-environment
       ;; `call-process-region' provided by XEmacs of versions 21.5.7
-      ;; through 21.5.?? is evil.  It requires the point to have to be
+      ;; through 21.5.17 is evil.  It requires the point to have to be
       ;; in the beginning or the end of the region when the 4th arg is t.
       ;; The problem has been reported with an example as:
       ;; <URL:http://list-archive.xemacs.org/xemacs-beta/200311/msg00253.html>
@@ -4667,29 +4675,27 @@ POST-DATA and REFERER will be sent to the web server with a request."
 	      (append w3m-halfdump-command-arguments
 		      w3m-halfdump-command-common-arguments
 		      ;; Image size conscious rendering
-		      (if (member "image" w3m-compile-options)
-			  (if (and w3m-treat-image-size
-				   (w3m-display-inline-images-p))
-			      (append
-			       (list "-o" "display_image=on")
-			       (when (w3m-display-graphic-p)
-				 (list "-ppl"
-				       (number-to-string
-					(or w3m-pixels-per-line
-					    (w3m-static-if
-						(featurep 'xemacs)
-						(font-height
-						 (face-font 'default))
-					      (frame-char-height))))
-				       "-ppc"
-				       (number-to-string
-					(or w3m-pixels-per-character
-					    (w3m-static-if
-						(featurep 'xemacs)
-						(font-width
-						 (face-font 'default))
-					      (frame-char-width)))))))
-			    (list "-o" "display_image=off")))))))))
+		      (when (member "image" w3m-compile-options)
+			(if (and w3m-treat-image-size
+				 (or (w3m-display-graphic-p)
+				     (and w3m-pixels-per-line
+					  w3m-pixels-per-character)))
+			    (list "-o" "display_image=on"
+				  "-ppl" (number-to-string
+					  (or w3m-pixels-per-line
+					      (w3m-static-if
+						  (featurep 'xemacs)
+						  (font-height
+						   (face-font 'default))
+						(frame-char-height))))
+				  "-ppc" (number-to-string
+					  (or w3m-pixels-per-character
+					      (w3m-static-if
+						  (featurep 'xemacs)
+						  (font-width
+						   (face-font 'default))
+						(frame-char-width)))))
+			  (list "-o" "display_image=off")))))))))
 
 (defun w3m-rendering-buffer (&optional charset)
   "Do rendering of contents in the currenr buffer as HTML and return title."
