@@ -1,3 +1,9 @@
+2002-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-lynx-like-map): Don't define key bindings for
+	`w3m-zoom-out-image' and `w3m-zoom-in-image' when emacs-w3m in
+	running in non-graphical display.
+
 2002-10-15  KAMO Tomoyuki  <kamo@ITmanage.co.jp>
 
 	* shimbun/sb-tcup.el (shimbun-tcup-get-group-key): Return
