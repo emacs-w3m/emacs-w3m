@@ -71,7 +71,7 @@ license to the document, as described in section 6 of the license.
 
 @end titlepage
 
-@ifinfo
+@ifnottex
 @node Top
 @top Emacs-w3m User's Manual
 
@@ -81,7 +81,7 @@ The emacs-w3m development team
 
 This manual corresponds to emacs-w3m version @value{VERSION}.
 
-@end ifinfo
+@end ifnottex
 
 @menu
 * Introduction::                Preliminary remarks
@@ -121,10 +121,9 @@ Basic Usage
 
 Pretty Good Features
 
-* Searching Words::             A convenient command for words reference
-* Quick Searching::             Isn't that cool?
+* Using Search Engines::        A convenient way to search the web
 * Weather Information::         It will be fine tomorrow
-* Using Antenna::               Having your antenna up
+* Using Antenna::               Raise your antenna
 * Showing Directory Tree::      Showing the tree structure of local directory
 * Viewing Perl Documents::      Viewing Perl Documents
 * Using Namazu::                Searching files with Namazu
@@ -600,31 +599,267 @@ See also the documentation for the option
 
 
 @menu
-* Searching Words::             A convenient command for words reference
-* Quick Searching::             Isn't that cool?
+* Using Search Engines::        Convenient ways to search the web
 * Weather Information::         It will be fine tomorrow
-* Using Antenna::               Having your antenna up
+* Using Antenna::               Raise your antenna
 * Showing Directory Tree::      Showing the tree structure of local directory
 * Viewing Perl Documents::      Viewing Perl Documents
 * Using Namazu::                Searching files with Namazu
 * Octet::                       Viewing data in various octal form
 @end menu
 
-@node Searching Words
-@section A convenient command for words reference
+@node Using Search Engines
+@section Convenient ways to search the web
+@cindex Search engines
+@findex w3m-search 
 
+Emacs-w3m comes with advanced features related to search engines, they
+are accessible through two interfaces:
+
+@itemize
+@item 
+The regular interface, invoked by the @kbd{S} key in any emacs-w3m
+buffer.  It is a simple interactive way to choose which search engine to
+use and input a search term; see @ref{The Search Interface}.
+
+@item
+The Quicksearch interface: it is a faster (yet more complicated) way to
+use search engines, by going to specially crafted URLs.  For more
+information about this feature, see @ref{Quick Searching}.
+@end itemize
+
+@menu
+* The Search Interface::        How to search with emacs-w3m 
+* Quick Searching::             An alternative (and fast) way to search the web
+* Adding New Search Engines::   Using your favorite engines
+@end menu
+
+@node The Search Interface
+@subsection How to search with emacs-w3m
+@cindex Searching
+@kindex S
+@vindex w3m-search-default-engine
+
+You can fire up the regular search interface by using the @kbd{S} key in
+an emacs-w3m buffer (provided you use the default keymap).  You will see
+a prompt in the minibuffer, asking for a search term.  Type one or
+several words at the prompt, then hit @kbd{RET}.  The result page of
+your search in the engine appears, you can then browse the results, just
+as if you had used the normal web based entry point to the engine.
+
+You probably noticed that you have not been given a chance to choose
+which engine you want to search with.  By default, emacs-w3m will use
+the Google search engine, you can change this behavior by customizing
+the @code{w3m-search-default-engine} variable (see @ref{Customizable
+Options}), or you can specify the search engine each time you use the
+command.
+
+To specify which engine to use, you have to give the command a prefix
+argument (usually, this means hitting @kbd{C-u} before the command,
+e.g. @kbd{C-u S}).  Emacs-w3m will prompt you for an engine, you can
+choose one by typing its name (completion is also available with the
+@key{TAB} key).  Once you have made your choice, hit the @kbd{RET} key.
+You can then type your search term, hit @kbd{RET}, and you will see the
+search results.
 
 @node Quick Searching
-@section Isn't that cool?
+@subsection An alternative (and fast) way to search the web
+@cindex Quick Searching
+@cindex Special URLs
+@vindex w3m-search-quick-search-engine-alist
+@vindex w3m-search-engine-alist
 
+If you're a ``Web Power User'' (and since you're reading this, you
+probably are), you need a quick and efficient way to perform searches.
+The Quick Searching feature is one.
+
+What does it do?  It lets you launch web searches by simply going to a
+special URL such as @uref{gg:emacs}.  The advantages of this mode of
+operation are:
+
+@itemize
+@item
+It's fast.  You just have to type a URL to choose the engine and the
+search word(s), in one go.
+
+@item
+It's convenient.  With this feature, you can easily open a new emacs-w3m
+tab or window, and launch a search in it, using for example, the @kbd{G}
+key to open a URL in a new window, and going to a Quicksearch URL.  You
+can also bookmark searches just by bookmarking the special Quicksearch
+URL.
+
+@item
+It works with the grouping feature.  You can launch two searches at the
+same time, with a URL like @uref{group:gg:emacs&ya:w3m}.  This would
+for instance launch a search for ``emacs'' on Google and for ``w3m'' on
+Yahoo!. @c @xref{Grouping URLs} FIXME FIXME FIXME
+@end itemize
+
+Using it is very simple: suppose you want to search for the word ``gnu''
+on Google.  Hit @kbd{g} to go to a new url, and type ``gg:gnu''.  The
+first part of this expression, ``gg'' indicates that we want to use the
+Google search engine.  The second term is the word we will be searching
+for.  The prefix and the search term must be separated by a colon.  Hit
+@kbd{RET}, and you will see the results of your search.  Please note
+that you can input several words by separating them with spaces (to
+type a space in the minibuffer, hit @kbd{C-q} first, e.g. @kbd{C-q
+@key{SPC}}).
+
+The default configuration of emacs-w3m includes several prefixes you can
+use, they are defined in the @code{w3m-search-quick-search-engine-alist}
+variable.  There's for example ``gg'' for Google, ``ggg'' for Google
+Groups, ``ya'' for Yahoo!, ``al'' for Altavista, to name a few.  You can
+also add prefixes for the search engines you define, @xref{Adding New
+Search Engines}.
+
+Instead of prefixes, you can also use full engine names in Quicksearch
+URLs, such as ``google'' or ``yahoo''.  These names are defined in
+the @code{w3m-search-engine-alist} variable.
+
+@node Adding New Search Engines
+@subsection Using your favorite engines
+@cindex Adding new search engines
+
+Emacs-w3m has a number of built-in search engines you can use.  What if
+you want to use your favorite search engine and it's not listed in the
+known search engines?  You have to add it to the list of search
+engines, and it's quite easy:
+
+@enumerate
+@item
+First, you have to find what's the entry point of the search engine you
+want to add, for example:
+
+@uref{http://my.searchengine.com/?query=foobar}
+
+where foobar is the term you want to search for.  
+
+@item
+Once you have this information, add this to your .emacs:
+
+@lisp        
+(eval-after-load "w3m-search"
+  '(add-to-list 'w3m-search-engine-alist 
+                '("My engine"
+                  "http://my.searchengine.com/?query=%s"
+                  nil)))
+@end lisp
+
+Replace the first field ``My engine'' with the description of your
+engine, the second field with the entry point (the @samp{%s} is
+important, it will be replaced by the search term when you issue the
+search), and the third field is the encoding to use, @code{nil} means to
+use a regular encoding (e.g. not Japanese).
+
+@item
+You can now use this engine to search, using the normal @kbd{S} key in
+emacs-w3m.  If you use this engine often, you can also add it to the
+Quicksearch (see @ref{Quick Searching}) engines and give it a small
+prefix, by adding this to your @file{.emacs} instead:
+
+@lisp
+(eval-after-load "w3m-search"
+  '(progn
+     (add-to-list 'w3m-search-engine-alist
+                  '("My engine"
+                    "http://my.searchengine.com/?query=%s"
+                    nil))
+     (add-to-list 'w3m-search-quick-search-engine-alist
+                  '("my" . "My engine"))))
+@end lisp
+	
+This way you can also use a URL like @uref{my:foobar} to search for the
+term ``foobar'' with your engine.
+@end enumerate
 
 @node Weather Information
 @section It will be fine tomorrow
 
 
 @node Using Antenna
-@section Having your antenna up
+@section Raise your antenna
+@cindex Antenna
+@cindex Tracking changes in web pages
+@cindex about://antenna/
 
+Antenna is a tool to keep track of changes in web pages.  Using Antenna,
+you can periodically check if particular pages have been updated, and if
+they haven't, know the last time you saw them.
+
+You can start Antenna using the @kbd{A} key in any emacs-w3m buffer.
+Alternatively, you can go to the special URL @uref{about://antenna/}; it
+does the same thing.
+
+@menu 
+* Setting up Antenna::          How to add your web sites to Antenna
+* Daily web tracking::          Tracking changes with Antenna
+@end menu
+
+@node Setting up Antenna
+@subsection How to add your web sites to Antenna
+@cindex about://antenna-edit/
+@kindex +
+
+Antenna has a specific customization interface accessible via the
+``Edit'' button in the Antenna page, or via the special
+@uref{about://antenna-edit/} URL.  It is pretty self-explanatory, to add
+a website, do the following:
+
+@enumerate
+@item
+In the ``Key'' field, put the complete URL of the web page you want to
+watch, for example ``http://my.website.com/index.html''.
+
+@item
+In the ``Title'' field, type a title for your webpage, such as ``My
+website''.
+
+@item
+In the ``Time'' field, choose either ``Normal'', ``Time'' or ``HNS''.
+You probably want the first choice.
+@end enumerate
+
+Once all the fields are filled, hit the ``New'' button.  Your website
+is now added to the Antenna database; repeat the same steps for the
+other sites you want to track.
+
+An alternative way to add a website to Antenna is to go to this site,
+and to use the @kbd{+} key.  You will be taken to the Antenna
+customization buffer, with all fields already set up for you.  You just
+have to hit the buttons ``Save for future sessions'' and ``Finish''.
+
+@node Daily web tracking
+@subsection Tracking changes with Antenna
+@cindex The Antenna interface
+
+On the Antenna page, you will see two sections: one called ``Updated''
+and another called ``Visited''.  In the ``Updated'' section, you will
+find websites which have changed since the last Antenna update, and in
+the ``Visited'' section, the websites which haven't.  In each section,
+each line stands for one website of the Antenna database, and has the
+following structure:
+
+@samp{  * 2002/12/15 16:43  (T)  My website}
+
+The first part is the last time the website was updated, or if this
+information is not available, the last time Antenna noticed a change in
+this page.
+
+The @samp{(T)} stands for ``Time'', it means that the change was
+detected because the last modification time of that page has changed
+since the last Antenna update.  Another possible value here is @samp{S}
+(for ``Size''), which means that the change has been detected because
+the size of the page has changed.
+
+The last part of this line is the title you gave to this website when
+you added it to the database.
+
+Please note that the Antenna database doesn't get automatically updated,
+you have to update it each time you want to check if the sites have
+changed, either by hitting @kbd{R} in the Antenna page, or by passing a
+prefix argument to the command (start Antenna with @kbd{C-u A}, for
+example).
 
 @node Showing Directory Tree
 @section Showing the tree structure of local directory
