@@ -109,12 +109,6 @@ This package contains a interface program of w3m.
 
       http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/index.html.
 
-   After installing it, you may put the following expression:
-
-      (setq w3m-type 'w3m)
-
-   into your ~/.emacs.  It will enable all features of this package.
-
 
 4. Contact
 

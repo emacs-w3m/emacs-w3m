@@ -110,13 +110,6 @@
 
       http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/index.html
 
-   このパッチを適用した w3m をインストールしてから，以下の指定を 
-   ~/.emacs に追加してください．
-
-      (setq w3m-type 'w3m)
-
-   この指定によって，本パッケージの全機能が利用できるように設定されます．
-
 
 4. 連絡先
 
