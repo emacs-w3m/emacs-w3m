@@ -93,19 +93,19 @@
 (eval-and-compile
   (autoload 'w3m-bookmark-view "w3m-bookmark" nil t)
   (autoload 'w3m-bookmark-add-this-url "w3m-bookmark"
-    "*Add link under cursor to bookmark." t)
+    "Add link under cursor to bookmark." t)
   (autoload 'w3m-bookmark-add-current-url "w3m-bookmark"
-    "*Add link of current page to bookmark." t)
+    "Add link of current page to bookmark." t)
   (autoload 'w3m-search "w3m-search"
-    "*Search QUERY using SEARCH-ENGINE." t)
+    "Search QUERY using SEARCH-ENGINE." t)
   (autoload 'w3m-weather "w3m-weather"
-    "*Display weather report." t)
+    "Display weather report." t)
   (autoload 'w3m-about-weather "w3m-weather")
   (autoload 'w3m-antenna "w3m-antenna"
-    "*Display antenna report." t)
+    "Display antenna report." t)
   (autoload 'w3m-about-antenna "w3m-antenna")
   (autoload 'w3m-dtree "w3m-dtree"
-    "*Display directory tree." t)
+    "Display directory tree." t)
   (autoload 'w3m-about-dtree "w3m-dtree")
   (autoload 'w3m-fontify-forms "w3m-form")
   (autoload 'w3m-form-parse-region "w3m-form")
@@ -363,7 +363,7 @@ width using expression (+ (frame-width) VALUE)."
        ("video/quicktime" "\\.mov$" ("mpeg_play" file))
        ("application/postscript" "\\.\\(ps\\|eps\\)$" ("gv" file))
        ("application/pdf" "\\.pdf$" ("acroread" file)))))
-  "Alist of file suffixes vs. content type."
+  "*Alist of file suffixes vs. content type."
   :group 'w3m
   :type '(repeat
 	  (list
@@ -463,16 +463,16 @@ Value is 'crlf or nil.
 ;; below defvar for 'w3mmee' support.
 ;; xxxxx
 (defvar w3m-dump-head-source-option "-dump_extra"
-  "*W3m dump_extra option.")
+  "w3m dump_extra option.")
 
 (defvar w3m-decode-all-to-this-charset nil
-  "*If non-nil, always decode this charset.")
+  "If non-nil, always decode this charset.")
 
 (defvar w3m-halfdump-option "-halfdump"
-  "*W3m rendering option.")
+  "w3m rendering option.")
 
 (defvar w3m-halfdump-expand-options '()
-  "*W3m rendering expand options.")
+  "w3m rendering expand options.")
 
 (defcustom w3m-edit-function 'find-file
   "*Function of editting local file."
@@ -485,7 +485,7 @@ Value is 'crlf or nil.
 	  (function :tag "Other" view-file)))
 
 (defcustom w3m-track-mouse t
-  "Whether to track the mouse and message the url under the mouse.
+  "*Whether to track the mouse and message the url under the mouse.
 This feature does not work under Emacs or XEmacs versions prior to 21.
 See also the documentation for the variable `show-help-function' if
 you are using Emacs 21.  You can also use the `balloon-help' feature
@@ -2198,7 +2198,7 @@ this function returns t.  Otherwise, returns nil."
 	(concat server path))))))
 
 (defun w3m-view-this-url (&optional arg)
-  "*View the URL of the link under point."
+  "View the URL of the link under point."
   (interactive "P")
   (let ((url (w3m-anchor)) (act (w3m-action)))
     (cond
@@ -2262,7 +2262,7 @@ this function returns t.  Otherwise, returns nil."
 	  (w3m-download url)))))))
 
 (defun w3m-view-image ()
-  "*View the image under point."
+  "View the image under point."
   (interactive)
   (let ((url (w3m-image)))
     (if url
@@ -2270,7 +2270,7 @@ this function returns t.  Otherwise, returns nil."
       (message "No file at point."))))
 
 (defun w3m-save-image ()
-  "*Save the image under point to a file."
+  "Save the image under point to a file."
   (interactive)
   (let ((url (w3m-image)))
     (if url
@@ -2278,7 +2278,7 @@ this function returns t.  Otherwise, returns nil."
       (message "No file at point."))))
 
 (defun w3m-view-current-url-with-external-browser ()
-  "*View this URL."
+  "View this URL."
   (interactive)
   (let ((url (w3m-anchor)))
     (or url
@@ -2289,7 +2289,7 @@ this function returns t.  Otherwise, returns nil."
       (w3m-external-view url))))
 
 (defun w3m-download-this-url ()
-  "*Download the URL of the link under point to a file."
+  "Download the URL of the link under point to a file."
   (interactive)
   (let ((url (w3m-anchor)))
     (if url
@@ -2299,13 +2299,13 @@ this function returns t.  Otherwise, returns nil."
       (message "No URL at point."))))
 
 (defun w3m-print-current-url ()
-  "*Print the URL of current page and push it into kill-ring."
+  "Print the URL of current page and push it into kill-ring."
   (interactive)
   (kill-new w3m-current-url)
   (message "%s" w3m-current-url))
 
 (defun w3m-print-this-url (&optional add-kill-ring)
-  "*Print the URL of the link under point."
+  "Print the URL of the link under point."
   (interactive (list t))
   (let ((url (w3m-anchor)))
     (and add-kill-ring url (kill-new url))
@@ -2314,14 +2314,14 @@ this function returns t.  Otherwise, returns nil."
 		      "Not found."))))
 
 (defun w3m-edit-current-url ()
-  "*Edit the local file pointed by the URL of current page"
+  "Edit the local file pointed by the URL of current page"
   (interactive)
   (if (w3m-url-local-p w3m-current-url)
       (funcall w3m-edit-function (w3m-url-to-file-name w3m-current-url))
     (error "The URL of current page is not local.")))
 
 (defun w3m-edit-this-url (&optional url)
-  "*Edit the local file by the under point."
+  "Edit the local file by the under point."
   (interactive)
   (setq url (or url (w3m-anchor)))
   (if (null url)
@@ -2345,7 +2345,7 @@ this function returns t.  Otherwise, returns nil."
 	  t))))
 
 (defun w3m-next-anchor (&optional arg)
-  "*Move cursor to the next anchor."
+  "Move cursor to the next anchor."
   (interactive "p")
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-anchor w3m-previous-anchor)))
@@ -2749,7 +2749,7 @@ or prefix ARG columns."
       (copy-file ftp (w3m-read-file-name nil nil file)))))
 
 (defun w3m-goto-url (url &optional reload cs)
-  "*Retrieve contents of URL."
+  "Retrieve contents of URL."
   (interactive
    (list
     (w3m-input-url nil
@@ -2912,7 +2912,7 @@ works on Emacs.
       (and type "text/plain"))))
 
 (defun w3m-view-source ()
-  "*Display source of this current buffer."
+  "Display source of this current buffer."
   (interactive)
   (if (string-match "^about://header/" w3m-current-url)
       (message "Can't load source %s." w3m-current-url)
@@ -3079,7 +3079,7 @@ If called with 'prefix argument', display arrived-DB history."
 
 ;;; Header line (emulating Emacs 21).
 (defcustom w3m-use-header-line t
-  "Non-nil activates header-line of w3m."
+  "*Non-nil activates header-line of w3m."
   :group 'w3m
   :type 'boolean)
 

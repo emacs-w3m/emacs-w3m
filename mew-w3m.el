@@ -47,18 +47,25 @@
 (require 'w3m)
 
 ;;; initializer for mew
+(defgroup mew-w3m
+  "mew-w3m - Inline HTML rendering extension of Mew"
+  :group 'w3m)
 
-(defvar mew-use-w3m-minor-mode nil
+(defcustom mew-use-w3m-minor-mode nil
   "*Use w3m minor mode in message buffer.
 When viewing Text/Html contents rendering with w3m, use `w3m-minor-mode'
-and its keymap in message buffer.")
+and its keymap in message buffer."
+  :group 'mew-w3m
+  :type 'boolean)
 
-(defvar mew-w3m-auto-insert-image t
+(defcustom mew-w3m-auto-insert-image t
   "*If t, an image inserts automatic in Multipart/Related message.
-This variable effected only XEmacs or Emacs 21.")
+This variable effected only XEmacs or Emacs 21."
+  :group 'mew-w3m
+  :type 'boolean)
 
 ;; these are defined here.
-;; It's not reasonable to merge into w3m.el, i think
+;; It's not reasonable to merge into w3m.el, I think
 (defvar mew-w3m-minor-mode nil)
 
 (make-variable-buffer-local 'mew-w3m-minor-mode)

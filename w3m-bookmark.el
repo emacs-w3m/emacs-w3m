@@ -62,6 +62,17 @@
 	    w3m-bookmark-section-format
 	    "</body>\n</html>\n")))
 
+(defcustom w3m-bookmark-default-section
+  (caar (w3m-bookmark-sections))
+  "Default section to add new entry."
+  :group 'w3m
+  :type 'string)
+
+
+;; internal variables
+(defvar w3m-bookmark-section-history nil)
+(defvar w3m-bookmark-title-history nil)
+
 
 (defsubst w3m-bookmark-read-file ()
   "Insert contents of bookmark file to this buffer."
@@ -116,16 +127,6 @@
       (write-region (point-min) (point-max) w3m-bookmark-file)
       (when mode (set-file-modes w3m-bookmark-file mode)))))
 
-(defcustom w3m-bookmark-default-section
-  (caar (w3m-bookmark-sections))
-  "Default section to add new entry."
-  :group 'w3m
-  :type 'string)
-
-;; internal variables
-(defvar w3m-bookmark-section-history nil)
-(defvar w3m-bookmark-title-history nil)
-
 (defun w3m-bookmark-add (url &optional title)
   "Add URL to bookmark.
 Optional argument TITLE is title of link."
@@ -145,7 +146,7 @@ Optional argument TITLE is title of link."
     (w3m-bookmark-write-file url title section)))
 
 (defun w3m-bookmark-add-this-url ()
-  "*Add link under cursor to bookmark."
+  "Add link under cursor to bookmark."
   (interactive)
   (if (null (w3m-anchor))
       (message "No anchor.")		; nothing to do
@@ -157,7 +158,7 @@ Optional argument TITLE is title of link."
     (message "Added.")))
 
 (defun w3m-bookmark-add-current-url (&optional arg)
-  "*Add link of current page to bookmark.
+  "Add link of current page to bookmark.
 With prefix, ask new url to add instead of current page."
   (interactive "P")
   (w3m-bookmark-add (if arg (w3m-input-url) w3m-current-url)

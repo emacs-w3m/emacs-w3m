@@ -118,7 +118,7 @@
       "text/html")))
 
 (defun w3m-dtree (allfiles path)
-  "*Display directory tree.
+  "Display directory tree on local file system.
 If called with 'prefix argument', display all directorys and files."
   (interactive "P\nDDtree directory: ")
   (if w3m-dtree-default-allfiles

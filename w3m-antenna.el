@@ -34,7 +34,7 @@
 ;; byte-compile it.  And add following lisp expressions to your
 ;; ~/.emacs.
 ;;
-;;     (autoload 'w3m-antenna "w3m-antenna" "*Report change of WEB sites." t)
+;;     (autoload 'w3m-antenna "w3m-antenna" "Report change of WEB sites." t)
 
 
 ;;; Code:
@@ -319,7 +319,7 @@ whose elements are:
     (setq w3m-antenna-alist nil)))
 
 (defun w3m-antenna (&optional no-cache)
-  "*Report change of WEB sites, which is specified in `w3m-antenna-sites'."
+  "Report change of WEB sites, which is specified in `w3m-antenna-sites'."
   (interactive "P")
   (w3m-goto-url "about://antenna/" no-cache))
 

@@ -121,7 +121,7 @@
     (setq mime-w3m-mode-map map)))
 
 (defun mime-w3m-view-this-url ()
-  "*View the URL of the link under point."
+  "View the URL of the link under point."
   (interactive)
   (let ((url (w3m-anchor)))
     (when url (w3m url))))

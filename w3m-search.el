@@ -36,7 +36,7 @@
 ;; byte-compile it.  And add following lisp expressions to your
 ;; ~/.emacs.
 ;;
-;;     (autoload 'w3m-search "w3m-search" "*Search QUERY using SEARCH-ENGINE." t)
+;;     (autoload 'w3m-search "w3m-search" "Search QUERY using SEARCH-ENGINE." t)
 
 
 ;;; Code:
@@ -85,7 +85,7 @@ See also `w3m-search-engine-alist'."
    "+"))
 
 (defun w3m-search (search-engine query)
-  "*Search QUERY using SEARCH-ENGINE.
+  "Search QUERY using SEARCH-ENGINE.
 When called interactively with prefix argument, you can choose search
 engine deinfed in `w3m-search-engine-alist'.  Otherwise use
 `w3m-search-default-engine'."

@@ -34,7 +34,7 @@
 ;; byte-compile it.  And add following lisp expressions to your
 ;; ~/.emacs.
 ;;
-;;     (autoload 'w3m-weather "w3m-weather" "*Display weather report." t)
+;;     (autoload 'w3m-weather "w3m-weather" "Display weather report." t)
 
 
 ;;; Code:
@@ -215,7 +215,7 @@
 
 ;;; Weather:
 (defun w3m-weather (area)
-  "*Display weather report."
+  "Display weather report."
   (interactive
    (list (if current-prefix-arg
 	     (completing-read "Input area: " w3m-weather-url-alist nil t)
