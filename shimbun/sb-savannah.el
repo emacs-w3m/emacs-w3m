@@ -25,6 +25,10 @@
 
 ;;; Commentary:
 
+;; First of all, if you have NNTP access to news.gmane.org, you can
+;; read (and post) all those savannah groups.  It is far useful rather
+;; than using this module. :-p
+
 ;;; Code:
 
 (require 'shimbun)
