@@ -6908,11 +6908,10 @@ variables `w3m-pop-up-windows' and `w3m-pop-up-frames' will be ignored
 \(treated as nil) and it will run emacs-w3m at the current (or the
 initial) window.
 
-The optional NEW-SESSION is for the internal use; if it is non-nil,
-this function makes a new emacs-w3m buffer.  The optional
-INTERACTIVE-P is also for the internal use; it is mainly used to check
-whether Emacs 21.4 calls this function as an interactive command in
-the batch mode."
+If the optional NEW-SESSION is non-nil, this function makes a new
+emacs-w3m buffer.  The optional INTERACTIVE-P is for the internal use;
+it is mainly used to check whether Emacs 21.4 calls this function as
+an interactive command in the batch mode."
   (interactive
    (let ((url
 	  ;; Emacs 21.4 calls a Lisp command interactively even if it
