@@ -66,5 +66,9 @@ URL is the URL for category or search result."
     (error "Cannot find message-id base"))
   (format "<%s@auctions.yahoo.co.jp>" (match-string 1 url)))
 
+(luna-define-method shimbun-get-headers :around
+  ((shimbun shimbun-yahoo-auctions) &optional range)
+  (nreverse (luna-call-next-method)))
+
 (provide 'sb-yahoo-auctions)
 ;;; sb-yahoo-auctions.el ends here

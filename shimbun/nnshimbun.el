@@ -636,7 +636,8 @@ also be nil."
     (when id
       (insert "X-Nnshimbun-Id: " id "\t"))
     (while extra
-      (insert (format "%s: %s\t" (symbol-name (caar extra)) (cdar extra)))
+      (insert (format "%s: %s\t" (symbol-name (caar extra))
+		      (shimbun-mime-encode-string (cdar extra))))
       (setq extra (cdr extra)))
     ;; Replace newlines with spaces in the current NOV line.
     (while (progn
@@ -717,6 +718,8 @@ also be nil."
 		       (goto-char (match-end 0)))
 		     (nnheader-nov-field)))
 	  (extra   (nnheader-nov-parse-extra)))
+      (mapc #'(lambda (elem) (setcdr elem (eword-decode-string (cdr elem))))
+	    extra)
       (shimbun-make-header number subject from date
 			   (or (cdr (assq 'X-Nnshimbun-Id extra)) id)
 			   refs chars lines xref extra))))
