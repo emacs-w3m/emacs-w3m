@@ -1,14 +1,13 @@
 2001-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-db-history): New command.
-	(w3m-toolbar, w3m-toolbar-buttons): Added db-history.
-	* icons/db-history-up.xpm: New file.
-
-2001-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
-
-	* w3m.el (w3m-about-history, w3m-about-history-1): Don't deactivate
+	(w3m-about-history, w3m-about-history-1): Don't deactivate
 	"about://*" links.
-	(w3m-toolbar, w3m-toolbar-buttons): Added history.
+	(w3m-exec): Share an url string among the arrived-DB,
+	`w3m-current-url', and the history structure.
+	(w3m-toolbar, w3m-toolbar-buttons): Added history and db-history.
+
+	* icons/db-history-up.xpm: New file.
 	* icons/history-up.xpm: New file.
 
 2001-04-20  Hideyuki SHIRAI  <shirai@meadowy.org>
