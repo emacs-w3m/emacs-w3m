@@ -493,7 +493,8 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   "An alist of CONTENT-TYPE and IMAGE-TYPE.")
 
 (defconst w3m-toolbar-buttons
-  '("back" "forward" "reload" "open" "home" "search" "image" "weather")
+  '("back" "forward" "reload" "open" "home" "search" "image"
+    "weather" "antenna")
   "Toolbar button list for w3m.")
 
 (defconst w3m-toolbar
@@ -504,11 +505,12 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
     [w3m-toolbar-reload-icon w3m-reload-this-page t "サーバからページをもう一度読み込む"]
     [w3m-toolbar-open-icon w3m-goto-url t "URL を入力してページを開く"]
     [w3m-toolbar-home-icon
-     (lambda () (interactive (w3m-goto-url w3m-home-page)))
+     (lambda () (interactive) (w3m-goto-url w3m-home-page))
      w3m-home-page "ホームページへジャンプ"]
     [w3m-toolbar-search-icon w3m-search t "インターネット上を検索"]
     [w3m-toolbar-image-icon w3m-toggle-inline-images t "画像の表示をトグルする"]
     [w3m-toolbar-weather-icon w3m-weather t "天気予報を見る"]
+    [w3m-toolbar-antenna-icon w3m-antenna t "アンテナで受信する"]
     )
   "Toolbar definition for w3m.")
 
