@@ -2829,7 +2829,9 @@ works on Emacs.
 
   (defun w3m-setup-header-line ()
     "Setup header line (emulating Emacs 21)."
-    (when (and w3m-use-header-line w3m-current-url)
+    (when (and w3m-use-header-line
+	       w3m-current-url
+	       (eq 'w3m-mode major-mode))
       (goto-char (point-min))
       (insert "Location: ")
       (put-text-property (point-min) (point)

@@ -50,11 +50,6 @@
 (require 'mime)
 (eval-when-compile (require 'cl))
 
-(defcustom mime-w3m-use-header-line nil
-  "Non-nil activates header-line of w3m."
-  :group 'w3m
-  :type 'boolean)
-
 (defvar mime-w3m-mode-map nil)
 (defvar mime-w3m-message-structure nil)
 (make-variable-buffer-local 'mime-w3m-message-structure)
@@ -90,8 +85,7 @@
        (mime-insert-text-content entity)
        (run-hooks 'mime-text-decode-hook)
        (condition-case err
-	   (let ((w3m-use-header-line mime-w3m-use-header-line))
-	     (w3m-region p (point-max)))
+	   (w3m-region p (point-max))
 	 (error (message (format "%s" err))))
        (put-text-property p (point-max)
 			  (w3m-static-if (featurep 'xemacs)
