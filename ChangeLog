@@ -1,5 +1,8 @@
 2001-06-15  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* shimbun/sb-impress.el (shimbun-impress-expiration-days):
+	Commented out.
+
 	* shimbun/sb-kantei.el: New file.
 
 2001-06-15  ABE Yasushi  <yasushi@stbbs.net>
