@@ -187,7 +187,7 @@
 					       (save-excursion (end-of-line)
 							       (point)))
 					      ",")
-				(list null))))))))
+				(list nil))))))))
 
 (defcustom w3m-language
   (if (or (and (boundp 'current-language-environment)
