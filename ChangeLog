@@ -1,5 +1,7 @@
 2004-07-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* Release emacs-w3m-1.4.2 from emacs-w3m-1_4 branch.
+
 	* w3m.el (w3m-w3m-canonicalize-url): Revival.
 	(w3m-w3m-attributes, w3m-w3m-retrieve): Call the above.
 	(w3m-canonicalize-url): Do not check a slash.
