@@ -1,3 +1,7 @@
+2003-03-21  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-muchy.el (shimbun-muchy-get-headers): Bug fixed,
+
 2003-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-make-contents): New function

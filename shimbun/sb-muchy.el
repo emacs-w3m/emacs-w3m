@@ -111,7 +111,7 @@
 				(nth 1 date-list)) nil t nil)
 			      (progn (beginning-of-line) (point)))
 			 (point-max))))
-	      innerend hoshi id url subject)
+	      innerend star id url subject)
 	  ;; getting URL and SUBJECT
 	  (while (re-search-forward
 		  "<img src=\"/\\(new\\|revise\\|update\\)\\.png\""
@@ -133,20 +133,21 @@
 		(throw 'next nil))
 	      (setq url (match-string 1)
 		    subject (concat (match-string 2) "/" subject))
-	      (when (re-search-forward
-		     "<img src=\"/hoshi\\([0-9]\\)\\.png\""
-		     innerend t nil)
-		(setq hoshi (string-to-number (match-string 1))))
+	      (if (re-search-forward
+		   "<img src=\"/hoshi\\([0-9]\\)\\.png\""
+		   innerend t nil)
+		  (setq star (string-to-number (match-string 1)))
+		(setq star nil))
 	      ;; adding license fee to subject
 	      (if (re-search-forward
 		   "価格; \\(<a href=\"[^<>]+\">\\)*<font color=\"#[0-9A-Z]+\">\\(標準添付\\|標準搭載\\|プレゼント\\|.*ウェア.*\\|[$\\\\][,.0-9]+\\)</font>"
 		   innerend t nil)
 		  (setq subject (concat subject "/" (match-string 2))))
-	      (when (and hoshi (> hoshi 0))
+	      (when (and star (> star 0))
 		(setq subject (concat
 			       subject
 			       "/"
-			       (make-string hoshi (string-to-char "★")))))
+			       (make-string star (string-to-char "★")))))
 	      ;; building ID
 	      (setq id (format "<%08d@%s.%s%%muchy.com>" 
 			       (string-to-number
