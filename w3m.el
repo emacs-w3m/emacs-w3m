@@ -1227,6 +1227,14 @@ text.  See also `w3m-use-tab'."
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-make-new-session nil
+  "*Non-nil means the `w3m' command mostly makes a new emacs-w3m buffer.
+It does so if a user specifies a url string when invoking the command.
+Otherwise, the `w3m' command uses an existing emacs-w3m buffer to show
+the specified page or simply pops it up."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-use-favicon (featurep 'w3m-image)
   "*Non-nil means show favicon images if they are available.
 It will be set to nil automatically if ImageMagick's `convert' program
@@ -7326,9 +7334,12 @@ variables `w3m-pop-up-windows' and `w3m-pop-up-frames' will be ignored
 initial) window.
 
 If the optional NEW-SESSION is non-nil, this function makes a new
-emacs-w3m buffer.  The optional INTERACTIVE-P is for the internal use;
-it is mainly used to check whether Emacs 21.4 calls this function as
-an interactive command in the batch mode."
+emacs-w3m buffer.  Besides that, it also makes a new emacs-w3m buffer
+if `w3m-make-new-session' is non-nil and a user specifies a url string.
+
+The optional INTERACTIVE-P is for the internal use; it is mainly used
+to check whether Emacs 21.4 calls this function as an interactive
+command in the batch mode."
   (interactive
    (let ((url
 	  ;; Emacs 21.4 calls a Lisp command interactively even if it
@@ -7336,16 +7347,21 @@ an interactive command in the batch mode."
 	  ;; non-nil value, it means this function is called in the
 	  ;; batch mode, and we don't treat it as what it is called to
 	  ;; interactively.
-	  (w3m-examine-command-line-args)))
+	  (w3m-examine-command-line-args))
+	 new)
      (list
       ;; url
       (or url
 	  (let ((default (if (w3m-alive-p) 'popup w3m-home-page)))
-	    (if current-prefix-arg
-		default
-	      (w3m-input-url nil nil default w3m-quick-start))))
-      nil ;; new-session
-      (not url)))) ;; interactive-p
+	    (setq new (if current-prefix-arg
+			  default
+			(w3m-input-url nil nil default w3m-quick-start)))))
+      ;; new-session
+      (and w3m-make-new-session
+	   (w3m-alive-p)
+	   (not (eq new 'popup)))
+      ;; interactive-p
+      (not url))))
   (let ((nofetch (eq url 'popup))
 	(buffer (unless new-session (w3m-alive-p t)))
 	(popup-frame-p (and (not interactive-p) (w3m-popup-frame-p)))
@@ -7361,13 +7377,15 @@ an interactive command in the batch mode."
 		      ;; Unlikely but this function was called with no url.
 		      "about:")
 	      nofetch nil)))
-    (unless buffer
+    (unless (prog1
+		buffer
+	      (w3m-popup-buffer (or buffer
+				    (setq buffer
+					  (generate-new-buffer "*w3m*")))))
       ;; It means `new-session' is non-nil or there's no emacs-w3m buffer.
       ;; At any rate, we create a new emacs-w3m buffer in this case.
-      (with-current-buffer (setq buffer (generate-new-buffer "*w3m*"))
-	(w3m-mode)))
-    (if nofetch
-	(w3m-popup-buffer buffer)
+      (w3m-mode))
+    (unless nofetch
       ;; `unwind-protect' is needed since a process may be terminated by C-g.
       (unwind-protect
 	  (w3m-goto-url url)
