@@ -75,13 +75,11 @@
 (defvar w3m-process-user-counter 0)
 (defvar w3m-process-realm nil)
 (defvar w3m-process-object nil)
-(defvar w3m-process-temp-file nil)
 (make-variable-buffer-local 'w3m-process-user)
 (make-variable-buffer-local 'w3m-process-passwd)
 (make-variable-buffer-local 'w3m-process-user-counter)
 (make-variable-buffer-local 'w3m-process-realm)
 (make-variable-buffer-local 'w3m-process-object)
-(make-variable-buffer-local 'w3m-process-temp-file)
 
 (defvar w3m-process-proxy-user nil "User name of the proxy server.")
 (defvar w3m-process-proxy-passwd nil "Password of the proxy server.")

@@ -1,5 +1,20 @@
 2001-11-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-proc.el (w3m-process-temp-file): Abolishded.
+
+	* w3m.el (w3m-content-charset, w3m-content-encoding,
+	w3m-content-length, w3m-content-type, w3m-last-modified,
+	w3m-real-url): Fixed asynchrounization.
+	(w3m-download): Changed the argument spec and the body to accept
+	an asynchrounous context.
+	(w3m-external-view): Follow change of `w3m-download'.
+	(w3m-external-view-file): Changed the argument spec and the body;
+	`w3m-process-temp-file' is not refered.
+	(w3m-download-this-url): Follow change of `w3m-download'.
+	(w3m-scroll-left, w3m-scroll-right): Use `call-interactively' to
+	avoid a strange behavior of Emacs21.  This change is suggested by
+	Hironori FUJII <fujii@chi.its.hiroshima-cu.ac.jp>.
+
 	* w3m-proc.el (w3m-process-failure): New error symbol.
 	(w3m-process-timeout): Change its error condition.
 	(w3m-process-with-wait-handler): Install adhoc workaround.

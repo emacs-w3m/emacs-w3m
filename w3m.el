@@ -1179,19 +1179,54 @@ If optional argument NO-CACHE is non-nil, cache is not used."
       (w3m-w3m-attributes url no-cache handler)))))
 
 (defmacro w3m-content-type (url &optional no-cache handler)
-  (` (car (w3m-attributes (, url) (, no-cache) (, handler)))))
+  (if handler
+      `(let ((handler ,handler))
+	 (w3m-process-do
+	     (attrs (w3m-attributes ,url ,no-cache handler))
+	   (car attrs)))
+    `(car (w3m-attributes ,url ,no-cache))))
 (defmacro w3m-content-charset (url &optional no-cache handler)
-  (` (nth 1 (w3m-attributes (, url) (, no-cache) (, handler)))))
+  (if handler
+      `(let ((handler ,handler))
+	 (w3m-process-do
+	     (attrs (w3m-attributes ,url ,no-cache handler))
+	   (nth 1 attrs)))
+    `(nth 1 (w3m-attributes ,url ,no-cache))))
 (defmacro w3m-content-length (url &optional no-cache handler)
-  (` (nth 2 (w3m-attributes (, url) (, no-cache) (, handler)))))
+  (if handler
+      `(let ((handler ,handler))
+	 (w3m-process-do
+	     (attrs (w3m-attributes ,url ,no-cache handler))
+	   (nth 2 attrs)))
+    `(nth 2 (w3m-attributes ,url ,no-cache))))
 (defmacro w3m-content-encoding (url &optional no-cache handler)
-  (` (nth 3 (w3m-attributes (, url) (, no-cache) (, handler)))))
+  (if handler
+      `(let ((handler ,handler))
+	 (w3m-process-do
+	     (attrs (w3m-attributes ,url ,no-cache handler))
+	   (nth 3 attrs)))
+    `(nth 3 (w3m-attributes ,url ,no-cache))))
 (defmacro w3m-last-modified (url &optional no-cache handler)
-  (` (nth 4 (w3m-attributes (, url) (, no-cache) (, handler)))))
+  (if handler
+      `(let ((handler ,handler))
+	 (w3m-process-do
+	     (attrs (w3m-attributes ,url ,no-cache handler))
+	   (nth 4 attrs)))
+    `(nth 4 (w3m-attributes ,url ,no-cache))))
 (defmacro w3m-real-url (url &optional no-cache handler)
-  (` (nth 5 (w3m-attributes (, url) (, no-cache) (, handler)))))
+  (if handler
+      `(let ((handler ,handler))
+	 (w3m-process-do
+	     (attrs (w3m-attributes ,url ,no-cache handler))
+	   (nth 5 attrs)))
+    `(nth 5 (w3m-attributes ,url ,no-cache))))
 (defmacro w3m-base-url (url &optional no-cache handler)
-  (` (nth 6 (w3m-attributes (, url) (, no-cache) (, handler)))))
+  (if handler
+      `(let ((handler ,handler))
+	 (w3m-process-do
+	     (attrs (w3m-attributes ,url ,no-cache handler))
+	   (nth 6 attrs)))
+    `(nth 6 (w3m-attributes ,url ,no-cache))))
 
 (defmacro w3m-make-help-echo (property)
   "Make a function for showing a `help-echo' string."
@@ -2617,7 +2652,7 @@ type as a string argument, when retrieve is complete."
 
 
 ;;;###autoload
-(defun w3m-download (url &optional filename no-cache extview)
+(defun w3m-download (url &optional filename no-cache handler)
   (interactive
    (let* ((url (w3m-input-url
 		nil
@@ -2635,33 +2670,31 @@ type as a string argument, when retrieve is complete."
 	     current-prefix-arg))))
   (if (string-match "\\`ftp://" url)
       (w3m-goto-ftp-url url filename)
-    (lexical-let ((filename (or filename (w3m-read-file-name nil nil url)))
-		  (extview extview))
-      (w3m-process-with-null-handler
-	(w3m-process-do-with-temp-buffer
-	    (type (progn
-		    (w3m-clear-local-variables)
-		    (setq w3m-current-url url)
-		    (w3m-retrieve url t no-cache nil nil handler)))
-	  (if type
-	      (let ((buffer-file-coding-system 'binary)
-		    (file-coding-system 'binary)
-		    (coding-system-for-write 'binary)
-		    jka-compr-compression-info-list
-		    jam-zcat-filename-list
-		    format-alist)
-		(if (or (not (file-exists-p filename))
+    (lexical-let ((filename (or filename (w3m-read-file-name nil nil url))))
+      (w3m-process-do-with-temp-buffer
+	  (type (progn
+		  (w3m-clear-local-variables)
+		  (setq w3m-current-url url)
+		  (w3m-retrieve url t no-cache nil nil handler)))
+	(if type
+	    (let ((buffer-file-coding-system 'binary)
+		  (file-coding-system 'binary)
+		  (coding-system-for-write 'binary)
+		  jka-compr-compression-info-list
+		  jam-zcat-filename-list
+		  format-alist)
+	      (when (or (not (file-exists-p filename))
 			(y-or-n-p (format "File(%s) already exists. Overwrite? "
 					  filename)))
-		    (write-region (point-min) (point-max) filename))
-		(when extview
-		  (apply (car extview) (cdr extview))))
-	    (ding)
-	    (w3m-message "Cannot retrieve URL: %s%s"
-			 url
-			 (if w3m-process-exit-status
-			     (format " (exit status: %s)" w3m-process-exit-status)
-			   ""))))))))
+		(write-region (point-min) (point-max) filename)
+		t))
+	  (ding)
+	  (w3m-message "Cannot retrieve URL: %s%s"
+		       url
+		       (if w3m-process-exit-status
+			   (format " (exit status: %s)" w3m-process-exit-status)
+			 ""))
+	  nil)))))
 
 ;;; Retrieve data:
 (eval-and-compile
@@ -3190,63 +3223,75 @@ session."
 	(eval submit)
       (message "Can't Submit at this point"))))
 
-(defun w3m-external-view (url &optional no-cache)
-  (let* ((type (w3m-content-type url))
-	 (method (nth 2 (assoc type w3m-content-type-alist))))
-    (cond
-     ((not method)
-      (if (w3m-url-local-p url)
-	  (error "No method to view `%s' is registered. Use `w3m-edit-this-url'"
-		 (file-name-nondirectory (w3m-url-to-file-name url)))
-	(w3m-download url)))
-     ((functionp method)
-      (funcall method url))
-     ((consp method)
-      (let ((command (w3m-which-command (car method)))
-	    (arguments (cdr method))
-	    (file (make-temp-name
-		   (expand-file-name "w3mel" w3m-profile-directory)))
-	    suffix)
-	(setq suffix (file-name-nondirectory url))
-	(when (string-match "\\.[a-zA-Z0-9]+$" suffix)
-	  (setq suffix (match-string 0 suffix))
-	  (when (< (length suffix) 5)
-	    (setq file (concat file suffix))))
-	(cond
-	 ((and command (memq 'file arguments))
-	  (w3m-download url file nil
-			(list 'w3m-external-view-file command file arguments)))
-	 (command
-	  (w3m-external-view-file command file arguments))
-	 (t
-	  (w3m-download url))))))))
+(defun w3m-external-view (url &optional no-cache handler)
+  (lexical-let ((url url)
+		(no-cache no-cache))
+    (w3m-process-do
+	(type (w3m-content-type url no-cache handler))
+      (when type
+	(lexical-let ((method (nth 2 (assoc type w3m-content-type-alist))))
+	  (cond
+	   ((not method)
+	    (if (w3m-url-local-p url)
+		(error "No method to view `%s' is registered. Use `w3m-edit-this-url'"
+		       (file-name-nondirectory (w3m-url-to-file-name url)))
+	      (w3m-download url nil no-cache handler)))
+	   ((functionp method)
+	    (funcall method url))
+	   ((consp method)
+	    (lexical-let
+		((command (w3m-which-command (car method)))
+		 (arguments (cdr method))
+		 (file (make-temp-name
+			(expand-file-name "w3mel" w3m-profile-directory)))
+		 suffix)
+	      (setq suffix (file-name-nondirectory url))
+	      (when (string-match "\\.[a-zA-Z0-9]+$" suffix)
+		(setq suffix (match-string 0 suffix))
+		(when (< (length suffix) 5)
+		  (setq file (concat file suffix))))
+	      (cond
+	       ((and command (memq 'file arguments))
+		(w3m-process-do
+		    (success (w3m-download url file no-cache handler))
+		  (when success
+		    (w3m-external-view-file command file url arguments))))
+	       (command
+		(w3m-external-view-file command nil url arguments))
+	       (t
+		(w3m-download url nil no-cache handler)))))))))))
 
-(defun w3m-external-view-file (command file arguments)
-  (let (extproc)
-    (unwind-protect
-	(with-current-buffer
-	    (generate-new-buffer " *w3m-external-view*")
-	  (setq extproc
-		(apply 'start-process
-		       "w3m-external-view"
-		       (current-buffer)
-		       command
-		       (mapcar (function eval) arguments)))
-	  (setq w3m-process-temp-file file)
-	  (set-process-sentinel
-	   extproc
-	   (lambda (extproc event)
-	     (and (string-match "^\\(finished\\|exited\\)" event)
-		  (buffer-name (process-buffer extproc))
-		  (save-excursion
-		    (set-buffer (process-buffer extproc))
-		    (if (file-exists-p w3m-process-temp-file)
-			(delete-file w3m-process-temp-file)))
-		  (kill-buffer (process-buffer extproc))))))
-      (if (file-exists-p file)
-	  (unless (and (processp extproc)
-		       (memq (process-status extproc) '(run stop)))
-	    (delete-file file))))))
+(defun w3m-external-view-file (command file url arguments)
+  ;; The 3rd argument `url' is necessary to handle the constant `url'
+  ;; included in the 4th argument `arguments' which is provided by
+  ;; `w3m-content-type-alist'.
+  (lexical-let ((file file))
+    (let (proc)
+      (unwind-protect
+	  (with-current-buffer
+	      (generate-new-buffer " *w3m-external-view*")
+	    (setq proc
+		  (apply 'start-process
+			 "w3m-external-view"
+			 (current-buffer)
+			 command
+			 (mapcar (function eval) arguments)))
+	    (w3m-message "Start %s..." (file-name-nondirectory command))
+	    (set-process-sentinel
+	     proc
+	     (lambda (proc event)
+	       (and (string-match "^\\(finished\\|exited\\)" event)
+		    (buffer-name (process-buffer proc))
+		    (with-current-buffer (process-buffer proc)
+		      (and (stringp file)
+			   (file-exists-p file)
+			   (delete-file file)))
+		    (kill-buffer (process-buffer proc))))))
+	(and (stringp file)
+	     (file-exists-p file)
+	     (unless (and (processp proc)
+			  (memq (process-status proc) '(run stop)))
+	       (delete-file file)))))))
 
 (defun w3m-view-image ()
   "View the image under point."
@@ -3281,9 +3326,17 @@ session."
   (interactive)
   (let ((url (or (w3m-anchor) (w3m-image))))
     (if url
-	(progn
-	  (w3m-download url)
-	  (w3m-refontify-anchor (current-buffer)))
+	(lexical-let ((pos (point-marker))
+		      (url w3m-current-url))
+	  (w3m-process-do
+	      (success (w3m-download url nil nil handler))
+	    (and success
+		 (buffer-name (marker-buffer pos))
+		 (save-excursion
+		   (set-buffer (marker-buffer pos))
+		   (when (equal url w3m-current-url)
+		     (goto-char pos)
+		     (w3m-refontify-anchor))))))
       (message "No URL at point"))))
 
 (defun w3m-print-current-url ()
@@ -4016,18 +4069,26 @@ Return t if deleting current frame or window is succeeded."
 Scroll size is `w3m-horizontal-scroll-size' columns
 or prefix ARG columns."
   (interactive "P")
-  (scroll-left (if arg
-		   (prefix-numeric-value arg)
-		 w3m-horizontal-scroll-columns)))
+  ;; When `scroll-left' is called non-interactively in Emacs21, it
+  ;; doesn't work correctly.
+  (let ((current-prefix-arg
+	 (if arg
+	     (prefix-numeric-value arg)
+	   w3m-horizontal-scroll-columns)))
+    (call-interactively 'scroll-left)))
 
 (defun w3m-scroll-right (arg)
   "Scroll to right.
 Scroll size is `w3m-horizontal-scroll-size' columns
 or prefix ARG columns."
   (interactive "P")
-  (scroll-right (if arg
-		    (prefix-numeric-value arg)
-		  w3m-horizontal-scroll-columns)))
+  ;; When `scroll-right' is called non-interactively in Emacs21, it
+  ;; doesn't work correctly.
+  (let ((current-prefix-arg
+	 (if arg
+	     (prefix-numeric-value arg)
+	   w3m-horizontal-scroll-columns)))
+    (call-interactively 'scroll-right)))
 
 (defun w3m-goto-mailto-url (url)
   (if (and (symbolp w3m-mailto-url-function)
