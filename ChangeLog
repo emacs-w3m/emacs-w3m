@@ -1,3 +1,18 @@
+2004-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Add the
+	market group; remove stockjp, exchange, stockwo-us and stockwo-eu.
+	(shimbun-nikkei-get-headers-markets): Remove.
+	(shimbun-nikkei-get-headers-market): New function.
+	(shimbun-make-contents): Pass the header argument to sub-functions.
+	(shimbun-nikkei-prepare-article-default): Ignore argument.
+	(shimbun-nikkei-prepare-article-sports): Ditto.
+	(shimbun-nikkei-prepare-article-newpro): Ditto.
+	(shimbun-nikkei-prepare-article-release): Ditto.
+	(shimbun-nikkei-prepare-article-markets): Remove.
+	(shimbun-nikkei-prepare-article-market): New function.
+	(shimbun-nikkei-prepare-article-okuyami): Ignore argument.
+
 2004-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-form.el (w3m-form-parse-and-fontify): Ignore a select form
