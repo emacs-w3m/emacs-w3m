@@ -1269,8 +1269,9 @@ This feature works with the specially made program in emacs-w3m; usual
   :type 'boolean)
 
 (defcustom w3m-horizontal-scroll-division 4
-  "*Integer used by the program making the point visible when it is out
-of the window.
+  "*Integer used by the program making the point visible when it has been
+driven out of the window while wandering around anchors and forms in
+an emacs-w3m buffer.
 
 Suppose that the value of this variable is N.  When the point is
 outside the left of the window, emacs-w3m scrolls the window so that
