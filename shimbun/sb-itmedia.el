@@ -57,7 +57,7 @@
        ,(format template "enterprise/articles")
        "［[^ ]* \\([0-9]+:[0-9]+\\)］")
       ("games" "games/news"
-       ,(format template "games/gsnews")
+       ,(format template "games/articles")
        nil)
       ("lifestyle" "lifestyle"
        ,(format template "lifestyle/articles")
