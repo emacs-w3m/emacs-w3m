@@ -284,6 +284,7 @@ Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r!"%&%'%V%3%s%F%s%D$r<hF@$9$k$?$a$N%P%C%/
 @section Emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
 @cindex APEL package
 @cindex Gifsicle program
+@cindex ImageMagick package
 @cindex BITMAP-MULE package
 @cindex New custom
 @cindex regexp-opt.el
@@ -322,6 +323,19 @@ Emacs-w3m $B$O(B gif $B%G!<%?$r(B XEmacs 21.x $B$G07$($k7A<0$KJQ49$9$k$?$a
 
 @uref{http://www.lcdf.org/gifsicle/}
 
+
+@item ImageMagick
+ImageMagick $B%Q%C%1!<%8$K4^$^$l$F$$$k(B @samp{convert} $B%W%m%0%i%`$,$"$l$P!"(B
+emacs-w3m $B$O2hA|%5%$%:$NJQ99$d(B @samp{favicon} $B2hA|$r(B Emacs $B$,07$($k%U%)!<(B
+$B%^%C%H$KJQ49$9$k$?$a$K$=$l$r;H$$$^$9!#(BEmacs-w3m $B$O(B ImageMagick $B$,L5$/$F(B
+$B$bF0:n$7$^$9$,!"$"$l$P%&%'%V%Z!<%8$N8+1I$($,NI$/$J$k$G$7$g$&!#(B
+ImageMagick $B%Q%C%1!<%8$O!"0J2<$N>l=j$+$i<j$KF~$l$k$3$H$,$G$-$^$9(B:
+
+@uref{ftp://ftp.imagemagick.org/pub/ImageMagick/}
+
+
+ImageMagick $B%P!<%8%g%s(B 5.4.0-5 $B0J>e$N$b$N$,(B @samp{favicon} $B2hA|$NA`:n$K(B
+$B;H$($k$3$H$r!"$6$C$H3NG'$7$F$$$^$9!#(B
 
 @item BITMAP-MULE
 Emacs 20.x $B$+(B Emacs 19.34 $B$r85$K$7$?(B Mule 2.3 $B$GGr9u$N%S%C%H%^%C%W2hA|$r(B

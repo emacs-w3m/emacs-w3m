@@ -237,6 +237,7 @@ You must install the latest w3m, it is available at:
 @section Things required to run emacs-w3m
 @cindex APEL package
 @cindex Gifsicle program
+@cindex ImageMagick package
 @cindex BITMAP-MULE package
 @cindex New custom
 @cindex regexp-opt.el
@@ -272,6 +273,18 @@ Emacs-w3m uses the @samp{gifsicle} program to convert gif data in order
 to make it possible to be handled by XEmacs 21.x.  It is available at:
 
 @uref{http://www.lcdf.org/gifsicle/}
+
+@item ImageMagick
+If the @samp{convert} program bundled with the ImageMagick package is
+available in your system, emacs-w3m will use it for resizing images or
+converting a @samp{favicon} image into a certain format which Emacs can
+handle.  Emacs-w3m works without ImageMagick, but it will improve the
+appearance of web pages.  You can get the ImageMagick package from:
+
+@uref{ftp://ftp.imagemagick.org/pub/ImageMagick/}
+
+We have roughly checked that the ImageMagick version 5.4.0-5 and later
+can be used for manipulating @samp{favicon} images.
 
 @item BITMAP-MULE
 Used to display monochrome bitmap images inline in Emacs 20.x or Mule
