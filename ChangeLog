@@ -1,3 +1,8 @@
+2003-07-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-copy-buffer): Fix the logical error installed by the
+	last change at 2003-07-15.
+
 2003-07-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-content-start): Improve

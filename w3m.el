@@ -5091,12 +5091,12 @@ If EMPTY is non-nil, the created buffer has empty content."
 	    (setq w3m-display-inline-images images)
 	  (setq w3m-display-inline-images w3m-default-display-inline-images))
 	(unless empty
-	  (w3m-goto-url url))
+	  (w3m-process-with-wait-handler
+	    (w3m-goto-url url nil nil nil handler)))
 	;; Make copies of `w3m-history' and `w3m-history-flat'.
 	(w3m-history-copy buf)
 	(when empty
-	  (w3m-process-with-wait-handler
-	    (w3m-goto-url url nil nil nil handler)))
+	  (w3m-clear-local-variables))
 	(when and-pop
 	  (let* ((pop-up-windows w3m-pop-up-windows)
 		 (pop-up-frames w3m-pop-up-frames)
