@@ -66,22 +66,27 @@
 (luna-define-method shimbun-get-headers ((shimbun shimbun-mainichi)
 					 &optional range)
   (let ((case-fold-search t)
-	start headers)
+	start prefix headers)
     (goto-char (point-min))
-    (when (and (search-forward
-		(format "\n<table bgcolor=\"#FFFFFF\" width=\"564\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n"
-			(shimbun-current-group-internal shimbun)) nil t)
+    (when (and (search-forward "\n<table bgcolor=\"#FFFFFF\" width=\"564\"\
+ cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n"
+			       nil t)
 	       (setq start (point))
-	       (search-forward
-		(format "\n</tr>\n</table>\n<br>\n<br>\n"
-			(shimbun-current-group-internal shimbun)) nil t))
+	       (search-forward "\n</tr>\n</table>\n<br>\n<br>\n" nil t))
       (forward-line -1)
       (save-restriction
 	(narrow-to-region start (point))
 	(goto-char start)
-	(while (re-search-forward
-		"<a href=\"\\./\\(\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([a-z]\\)\\([0-9][0-9][0-9][0-9]\\)\\([a-z]\\)\\([0-9][0-9][0-9][0-9][0-9]\\)\\([0-9][0-9][0-9][0-9]\\)\\([a-z]\\)\\)\\.html\\)\"[^>]*>"
-		nil t)
+	(while (and (re-search-forward "\
+\n<B><FONT class=\"news-text\">■\\(.+\\)</FONT></B>\n"
+				       nil t)
+		    (setq prefix (match-string 1))
+		    (re-search-forward "\
+<a href=\"\\./\\(\\(\\(20[0-9][0-9]\\)\\([01][0-9]\\)\\([0-3][0-9]\\)\
+\\([a-z]\\)\\([0-9][0-9][0-9][0-9]\\)\
+\\([a-z]\\)\\([0-9][0-9][0-9][0-9][0-9]\\)\\([0-9][0-9][0-9][0-9]\\)\
+\\([a-z]\\)\\)\\.html\\)\"[^>]*>"
+				       nil t))
 	  (let ((url   (concat
 			(nth 2 (assoc (shimbun-current-group-internal shimbun)
 				      shimbun-mainichi-group-table))
@@ -93,14 +98,18 @@
 		(year  (string-to-number (match-string 3)))
 		(month (string-to-number (match-string 4)))
 		(day   (string-to-number (match-string 5)))
-		(subject (mapconcat
-			  'identity
-			  (split-string
-			   (buffer-substring
-			    (match-end 0)
-			    (progn (search-forward "</FONT></td>" nil t) (point)))
-			   "<[^>]+>")
-			  ""))
+		(subject (concat
+			  "[" prefix "] "
+			  (mapconcat
+			   'identity
+			   (split-string
+			    (buffer-substring
+			     (match-end 0)
+			     (progn
+			       (search-forward "</FONT></td>" nil t)
+			       (point)))
+			    "<[^>]+>")
+			   "")))
 		date)
 	    (when (string-match "<FONT class=\"news-text\">" subject)
 	      (setq subject (substring subject (match-end 0))))
