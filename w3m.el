@@ -2367,6 +2367,21 @@ situation allows it."
 	       (or (< emacs-major-version 21)
 		   (not (w3m-use-tab-p)))))))
 
+(defun w3m-popup-buffer (buffer)
+  "Pop up BUFFER as a new window or a new frame
+according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
+  (let ((pop-up-frames (unless (w3m-use-tab-p)
+			 (w3m-popup-frame-p))))
+    (if pop-up-frames
+	(let* ((pop-up-frame-alist (w3m-popup-frame-parameters))
+	       (pop-up-frame-plist pop-up-frame-alist))
+	  (pop-to-buffer buffer)
+	  (setq w3m-initial-frame (selected-frame)))
+      (if (w3m-popup-window-p)
+	  (let ((pop-up-windows t))
+	    (pop-to-buffer buffer))
+	(switch-to-buffer buffer)))))
+
 (defun w3m-message (&rest args)
   "Alternative function of `message' for emacs-w3m."
   (if (and w3m-verbose
@@ -4742,7 +4757,7 @@ described in Section 5.2 of RFC 2396.")
 	(progn
 	  (setq pos (point-marker)
 		buffer (w3m-copy-buffer
-			nil nil nil
+			nil nil w3m-view-this-url-new-session-in-background
 			;; If a new url has the #name portion, we simply copy
 			;; the buffer's contents to the new settion, otherwise
 			;; creating an empty buffer.
@@ -4753,14 +4768,8 @@ described in Section 5.2 of RFC 2396.")
 			  (string-equal w3m-current-url
 					(substring url
 						   0 (match-beginning 8)))))))
-	  (if w3m-view-this-url-new-session-in-background
-	      (set-buffer buffer)
-	    (let ((pop-up-windows (w3m-popup-window-p))
-		  (pop-up-frames (unless (w3m-use-tab-p)
-				   (w3m-popup-frame-p))))
-	      (if (or pop-up-windows pop-up-frames)
-		  (pop-to-buffer buffer)
-		(switch-to-buffer buffer)))))
+	  (when w3m-view-this-url-new-session-in-background
+	    (set-buffer buffer)))
       (setq buffer (current-buffer)))
     (let (handler)
       (w3m-process-do
@@ -5352,67 +5361,64 @@ Return t if current line has a same anchor sequence."
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
-(defun w3m-copy-buffer (&optional buffer newname and-pop empty)
+(defun w3m-copy-buffer (&optional buffer newname just-copy empty)
   "Create a copy of the BUFFER in which emacs-w3m is working.
+Return a new buffer.
+
 If BUFFER is nil, the current buffer is assumed.  If NEWNAME is nil,
-it defaults to the current buffer's name.  If AND-POP is non-nil, the
-new buffer is shows itself with `pop-to-buffer' which is affected by
-`w3m-pop-up-frames'.  If EMPTY is non-nil, an empty buffer is created."
+it defaults to the name of the current buffer.  If JUST-COPY is nil,
+this function lets a new buffer be the current buffer and pop up as a
+new window or a new frame according to `w3m-pop-up-windows' and
+`w3m-pop-up-frames' (which see), otherwise just creates BUFFER's copy.
+If EMPTY is nil, a page of the same url will be re-rendered in a new
+buffer, otherwise an empty buffer is created.
+
+Note that this function should be called on the window displaying the
+original buffer BUFFER even if JUST-COPY is non-nil in order to render
+a page in a new buffer with the correct width."
   (interactive (list (current-buffer)
-		     (if current-prefix-arg (read-string "Name: "))
-		     t))
+		     (if current-prefix-arg (read-string "Name: "))))
   (unless buffer
     (setq buffer (current-buffer)))
   (unless newname
     (setq newname (buffer-name buffer)))
   (when (string-match "<[0-9]+>\\'" newname)
     (setq newname (substring newname 0 (match-beginning 0))))
-  (let ((pop-up-windows (w3m-popup-window-p))
-	(oframe (selected-frame))
-	url images init-frame new)
-    (when (and pop-up-windows
-	       (not (string= (buffer-name) w3m-select-buffer-name))
-	       (get-buffer-window w3m-select-buffer-name))
-      ;; Delete the selection window.
-      (delete-windows-on w3m-select-buffer-name))
-    (with-current-buffer buffer
+  (let (url images init-frame new)
+    (save-current-buffer
+      (set-buffer buffer)
       (setq url (or w3m-current-url
 		    (car (w3m-history-element (cadar w3m-history))))
 	    images w3m-display-inline-images
-	    init-frame w3m-initial-frame))
-    (with-current-buffer (setq new (generate-new-buffer newname))
+	    init-frame (when (w3m-popup-frame-p)
+			 w3m-initial-frame))
+      ;;
+      (set-buffer (setq new (generate-new-buffer newname)))
       (w3m-mode)
       (if w3m-toggle-inline-images-permanently
 	  (setq w3m-display-inline-images images)
 	(setq w3m-display-inline-images w3m-default-display-inline-images))
       ;; Make copies of `w3m-history' and `w3m-history-flat'.
       (w3m-history-copy buffer)
-      (if empty
-	  (w3m-clear-local-variables)
-	(w3m-process-with-wait-handler
-	  (let ((positions (copy-sequence (car w3m-history)))
-		(w3m-history-reuse-history-elements t))
-	    ;; We actually don't need to pass the history element to
-	    ;; `w3m-goto-url' since `w3m-history-copy' currently doesn't
-	    ;; copy properties of the history elements.  It is just a
-	    ;; preparation for the future.
-	    (w3m-goto-url url nil nil nil nil handler
-			  (w3m-history-element (cadr positions) t))
-	    (setcar w3m-history positions))))
-      (when and-pop
-	(let* ((pop-up-frames (unless (w3m-use-tab-p)
-				(w3m-popup-frame-p)))
-	       (pop-up-frame-alist (w3m-popup-frame-parameters))
-	       (pop-up-frame-plist pop-up-frame-alist))
-	  (if (or pop-up-windows pop-up-frames)
-	      (pop-to-buffer new)
-	    (switch-to-buffer new))))
-      (setq w3m-initial-frame
-	    (when (w3m-popup-frame-p)
-	      (if (eq oframe (selected-frame))
-		  init-frame
-		(selected-frame))))
-      new)))
+      (setq w3m-initial-frame init-frame)
+      (when empty
+	(w3m-clear-local-variables)))
+    (unless just-copy
+      ;; Maybe pop up a window or a frame, and switch to a new buffer anyway.
+      (if (get-buffer-window w3m-select-buffer-name)
+	  (switch-to-buffer new)
+	(w3m-popup-buffer new)))
+    (unless empty
+      ;; Render a page.
+      (w3m-process-with-wait-handler
+	(let ((positions (copy-sequence (car w3m-history)))
+	      (w3m-history-reuse-history-elements t))
+	  (w3m-goto-url url nil nil nil nil handler
+			;; Pass the properties of the history elements,
+			;; although it is currently always nil.
+			(w3m-history-element (cadr positions)))
+	  (setcar w3m-history positions))))
+    new))
 
 (defun w3m-next-buffer (arg)
   "Select the ARG'th different w3m buffer."
@@ -5436,7 +5442,8 @@ new buffer is shows itself with `pop-to-buffer' which is affected by
 (defun w3m-delete-buffer (&optional force)
   "Delete the current emacs-w3m buffer and switch to the previous one.
 If there is the sole emacs-w3m buffer, it is assumed to be called for
-terminating the emacs-w3m session."
+terminating the emacs-w3m session; the prefix argument FORCE will be
+passed to the `w3m-quit' function (which see)."
   (interactive "P")
   (let* ((buffers (w3m-list-buffers t))
 	 (num (length buffers))
@@ -5787,7 +5794,9 @@ other windows are not deleted."
 
 (defun w3m-quit (&optional force)
   "Return to a peaceful life.  This command lets you quit browsing web
-after updating the arrived URLs database.  See also `w3m-close-window'."
+after updating the arrived URLs database.  Quit browsing immediately
+if the prefix argument FORCE is specified, otherwise prompt you for
+the confirmation.  See also `w3m-close-window'."
   (interactive "P")
   (when (or force
 	    (prog1 (y-or-n-p "Do you want to exit w3m? ")
@@ -6388,8 +6397,8 @@ appropriate buffer and select it."
 		mode-line-process))))
 
 ;;;###autoload
-(defun w3m-goto-url
-  (url &optional reload charset post-data referer handler element qsearch)
+(defun w3m-goto-url (url &optional reload charset post-data referer handler
+			 element interactive-p)
   "Retrieve contents of URL.
 If the second argument RELOAD is non-nil, reload a content of URL.
 Except that if it is 'redisplay, re-display the page without reloading.
@@ -6402,8 +6411,8 @@ car of a cell is used as the content-type and the cdr of a cell is
 used as the body.
 If the fifth argument REFERER is specified, it is used for a Referer:
 field for this request.
-The remaining HANDLER, ELEMENT[1] and QSEARCH arguments are for the
-internal operations of emacs-w3m.
+The remaining HANDLER, ELEMENT[1] and INTERACTIVE-P arguments are for
+the internal operations of emacs-w3m.
 You can also use \"quicksearch\" url schemes such as \"gg:emacs\" which
 would search for the term \"emacs\" with the Google search engine.  See
 the `w3m-search' function and the variable `w3m-uri-replace-alist'.
@@ -6428,7 +6437,7 @@ the current page."
     nil ;; referer
     nil ;; handler
     nil ;; element
-    t)) ;; qsearch
+    t)) ;; interactive-p
   (set-text-properties 0 (length url) nil url)
   (setq url (w3m-uri-replace url))
   (unless (or (w3m-url-local-p url)
@@ -6466,12 +6475,8 @@ the current page."
    ((w3m-url-valid url)
     (w3m-buffer-setup)			; Setup buffer.
     (w3m-arrived-setup)			; Setup arrived database.
-    (let ((pop-up-windows (w3m-popup-window-p))
-	  (pop-up-frames (unless (w3m-use-tab-p)
-			   (w3m-popup-frame-p))))
-      (if (or pop-up-windows pop-up-frames)
-	  (pop-to-buffer (current-buffer))
-	(switch-to-buffer (current-buffer))))
+    (when interactive-p
+      (w3m-popup-buffer (current-buffer)))
     (w3m-cancel-refresh-timer (current-buffer))
     (when w3m-current-process
       (error "%s"
@@ -6488,13 +6493,13 @@ Cannot run two w3m processes simultaneously \
 	  (w3m-process-do
 	      (type (prog1
 			(w3m-goto-url (car urls)
-				      nil nil nil nil nil nil qsearch)
+				      nil nil nil nil nil nil interactive-p)
 		      (dolist (url (cdr urls))
 			(save-excursion
 			  (set-buffer (w3m-copy-buffer nil nil nil 'empty))
 			  (save-window-excursion
-			    (w3m-goto-url url
-					  nil nil nil nil nil nil qsearch))))))
+			    (w3m-goto-url
+			     url nil nil nil nil nil nil interactive-p))))))
 	    type))
       ;; Retrieve the page.
       (lexical-let ((orig url)
@@ -6666,7 +6671,7 @@ the current session.  Otherwise, the new session will start afresh."
     nil ;; referer
     t)) ;; interactive-p
   (if (eq 'w3m-mode major-mode)
-      (let ((buffer (w3m-copy-buffer nil nil interactive-p 'empty)))
+      (let ((buffer (w3m-copy-buffer nil nil nil 'empty)))
 	(switch-to-buffer buffer)
 	(w3m-display-progress-message url)
 	;; When new URL has `name' portion, we have to goto the base url
@@ -7348,7 +7353,6 @@ If called with 'prefix argument', display arrived URLs."
 	       (integer :format "  Vertically Ratio: %v[%%]\n" :size 0)))
 
 (defvar w3m-select-buffer-window nil)
-(defvar w3m-select-buffer-saved-window-config nil)
 (defconst w3m-select-buffer-message
   "n: next buffer, p: previous buffer, q: quit.")
 
@@ -7358,13 +7362,21 @@ buffers.  User can type following keys:
 
 \\{w3m-select-buffer-mode-map}"
   (interactive "P")
-  (setq w3m-select-buffer-saved-window-config (current-window-configuration))
-  (delete-other-windows)
   (when toggle
     (setq w3m-select-buffer-horizontal-window
 	  (not w3m-select-buffer-horizontal-window))
     (when (get-buffer-window w3m-select-buffer-name)
       (delete-windows-on w3m-select-buffer-name)))
+  (cond ((eq major-mode 'w3m-mode)
+	 (unless (get-buffer-window w3m-select-buffer-name)
+	   (delete-other-windows)))
+	((eq major-mode 'w3m-select-buffer-mode))
+	(t
+	 (w3m (if (w3m-alive-p)
+		  'popup
+		(or w3m-home-page "about:"))
+	      nil t)
+	 (delete-other-windows)))
   (let ((selected-window (selected-window))
 	(current-buffer (current-buffer)))
     (set-buffer (w3m-get-buffer-create w3m-select-buffer-name))
@@ -7498,7 +7510,7 @@ select them."
   (w3m-select-buffer-show-this-line))
 
 (defmacro w3m-select-buffer-current-buffer ()
-  `(get-text-property (point) 'w3m-select-buffer))
+  `(get-text-property (line-beginning-position) 'w3m-select-buffer))
 
 (defun w3m-select-buffer-show-this-line (&optional interactive-p)
   "Show the current buffer on this menu line or scroll up its."
@@ -7562,54 +7574,56 @@ menu line."
   "Create a copy of the buffer on the current menu line, and show it."
   (interactive)
   (w3m-select-buffer-show-this-line)
-  (let ((selected-window (selected-window))
-	w3m-pop-up-frames w3m-pop-up-windows
-	pop-up-frames pop-up-windows)
-    (pop-to-buffer (w3m-select-buffer-current-buffer))
+  (let ((window (selected-window)))
+    (select-window (get-buffer-window (w3m-select-buffer-current-buffer)))
+    ;; The selection buffer will be updated automatically because
+    ;; `w3m-copy-buffer' calls `w3m-select-buffer-update' by way of
+    ;; `w3m-goto-url'.
     (w3m-copy-buffer (current-buffer))
-    (select-window selected-window)
-    ;; w3m-select-buffer was updated automatically.
-    (w3m-select-buffer-show-this-line)))
+    (select-window window)))
 
-(defun w3m-select-buffer-delete-buffer ()
-  "Delete the buffer on the current menu line."
-  (interactive)
-  (let ((buffer (w3m-select-buffer-current-buffer)))
-    (forward-line -1)
-    (unless (and (eq buffer (w3m-select-buffer-current-buffer))
-		 (progn (forward-line 1) (eobp)))
+(defun w3m-select-buffer-delete-buffer (&optional force)
+  "Delete the buffer on the current menu line.
+If there is the sole emacs-w3m buffer, it is assumed to be called for
+terminating the emacs-w3m session; the prefix argument FORCE will be
+passed to the `w3m-quit' function (which see)."
+  (interactive "P")
+  (w3m-select-buffer-show-this-line)
+  (if (= 1 (count-lines (point-min) (point-max)))
+      (let ((config (current-window-configuration)))
+	(select-window (get-buffer-window (w3m-select-buffer-current-buffer)))
+	(delete-other-windows)
+	(unwind-protect
+	    (w3m-quit force)
+	  (when (w3m-alive-p)
+	    (set-window-configuration config))))
+    (let ((buffer (w3m-select-buffer-current-buffer)))
+      (forward-line -1)
       (w3m-process-stop buffer)
       (kill-buffer buffer)
       (run-hooks 'w3m-delete-buffer-hook)
-      (w3m-select-buffer-generate-contents
-       (w3m-select-buffer-current-buffer))
+      (w3m-select-buffer-generate-contents (w3m-select-buffer-current-buffer))
       (w3m-select-buffer-show-this-line))))
 
 (defun w3m-select-buffer-delete-other-buffers ()
   "Delete w3m buffers except for the current menu line."
   (interactive)
   (w3m-select-buffer-show-this-line)
-  (save-window-excursion
-    (w3m-delete-other-buffers (w3m-select-buffer-current-buffer))))
+  (w3m-delete-other-buffers (w3m-select-buffer-current-buffer)))
 
 (defun w3m-select-buffer-quit ()
   "Quit the menu to select a buffer from w3m-mode buffers."
   (interactive)
-  (let ((buffer (or (w3m-select-buffer-current-buffer)
-		    (w3m-alive-p))))
-    (condition-case nil
-	(set-window-configuration w3m-select-buffer-saved-window-config)
-      (error))
-    (if (one-window-p t)
-	(if (buffer-live-p buffer)
-	    (set-window-buffer (selected-window) buffer)
-	  (let (pop-up-windows pop-up-frames)
-	    (pop-to-buffer nil)))
-      (when (buffer-live-p buffer)
-	(let (pop-up-frames)
-	  (pop-to-buffer buffer)))
-      (when (get-buffer-window w3m-select-buffer-name)
-	(delete-windows-on w3m-select-buffer-name)))))
+  (if (one-window-p t)
+      (set-window-buffer (selected-window)
+			 (or (w3m-select-buffer-current-buffer)
+			     (w3m-alive-p)))
+    (let ((buf (or (w3m-select-buffer-current-buffer)
+		   (w3m-alive-p)))
+	  pop-up-frames)
+      (pop-to-buffer buf)
+      (and (get-buffer-window w3m-select-buffer-name)
+	   (delete-windows-on w3m-select-buffer-name)))))
 
 (defun w3m-select-buffer-show-this-line-and-switch ()
   "Show the current buffer, and quit select a buffer from w3m-mode buffers."

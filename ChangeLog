@@ -1,3 +1,32 @@
+2003-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-popup-buffer): New function (it still needs to
+	improved in order for the `w3m' function to use).
+	(w3m-view-this-url-1): Specify the value of
+	`w3m-view-this-url-new-session-in-background' to the 3rd arg of
+	`w3m-copy-buffer'; don't pop up a window or a frame there.
+	(w3m-copy-buffer): Change the meaning of the 3rd arg (see docs);
+	don't pop up a window or a frame if it is non-nil, otherwise call
+	`w3m-popup-buffer'.
+	(w3m-goto-url): Change the name of the 8th arg to `interactive-p';
+	don't pop up a window or a frame unless this function is called
+	interactively, otherwise call `w3m-popup-buffer'.
+	(w3m-goto-url-new-session): Specify nil to the 3rd arg of
+	`w3m-copy-buffer'.
+	(w3m-select-buffer-saved-window-config): Abolish.
+	(w3m-select-buffer): Revert the 2003-11-05 change; delete other
+	windows except for the current emacs-w3m window or create a new
+	emacs-w3m buffer when it is called initially.
+	(w3m-select-buffer-current-buffer): Use `line-beginning-position'.
+	(w3m-select-buffer-copy-buffer): Revert the 2003-11-05 change;
+	simplify.
+	(w3m-select-buffer-delete-buffer): Call `w3m-alive-p' if there is
+	the sole emacs-w3m buffer.
+	(w3m-select-buffer-delete-other-buffers): Revert the 2003-11-07
+	change.
+	(w3m-select-buffer-quit): Revert the 2003-11-05 change; bind
+	`pop-up-frames'.
+
 2003-11-07  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-atmarkit.el (shimbun-rss-build-message-id): Bug fixed.
