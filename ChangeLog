@@ -1,3 +1,24 @@
+2001-10-24  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-use-unseen): New customize variable.
+	(mew-shimbun-mark-unseen): Ditto.
+	(mew-shimbun-unseen-summary-cache-save): Ditto.
+	(mew-shimbun-before-retrieve-all-hook): Ditto.
+	(mew-shimbun-retrieve-all-hook, mew-shimbun-before-retrieve-hook): Ditto.
+	(mew-shimbun-retrieve-hook): Ditto.
+	(mew-shimbun-unseen-regex): New variable.
+	(mew-shimbun-folder-regex): Ditto.
+	(mew-shimbun-folder-p): New defsubst.
+	(mew-shimbun-goto-folder): Support 'unseen' mark.
+	(mew-shimbun-retrieve-article): Ditto.
+	(mew-shimbun-remove-unseen-all): New function.
+	(mew-shimbun-remove-unseen): Ditto.
+	(mew-shimbun-remove-unseen-one): Ditto.
+	(mew-shimbun-all-unseen): Ditto.
+	(mew-shimbun-unseen-setup): Ditto.
+	(toplevel): If mew-shimbun-use-unseen is non-nil, execute
+	mew-shimbun-unseen-setup().
+
 2001-10-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-view-this-url): Fixed the interactive spec.
