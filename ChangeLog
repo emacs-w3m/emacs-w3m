@@ -1,3 +1,12 @@
+2003-06-03  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+
+	* shimbun/sb-nikkansports.el: Follow the change of the Web site.
+	(shimbun-nikkansports-group-table): New variable.
+	(shimbun-nikkansports-groups): Their infomation is moved to
+	`shimbun-nikkansports-group-table'.
+	(shimbun-groups): New method.
+	(shimbun-current-group-name): Ditto.
+
 2003-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el: Require `sb-text'.
