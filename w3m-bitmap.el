@@ -128,6 +128,8 @@ a non-list text.  PROPS specifies properties for bitmap images.  OVR
 is an overlay which covers the area for bitmap images.  If OVR is nil,
 a new overlay will be created and returned."
   (save-excursion
+    (when (markerp pos)
+      (setq pos (marker-position pos)))
     (goto-char pos)
     (let ((ovrbeg (line-beginning-position))
 	  (col (w3m-bitmap-current-column))
@@ -138,11 +140,11 @@ a new overlay will be created and returned."
 	(overlay-put ovr 'w3m-bitmap-image-count 0))
       (if (consp image)
 	  (progn
-	    (insert (car image))
+	    (insert-before-markers (car image))
 	    (setq image (cdr image))
 	    (overlay-put ovr 'w3m-bitmap-image-count
 			 (1+ (overlay-get ovr 'w3m-bitmap-image-count))))
-	(insert image)
+	(insert-before-markers image)
 	(setq image nil))
       (when props
 	(w3m-add-text-properties pos (point) props)
@@ -152,13 +154,13 @@ a new overlay will be created and returned."
       (while (or image (< (point) (overlay-end ovr)))
 	(when (>= (point) (overlay-end ovr))
 	  (beginning-of-line)
-	  (insert "\n")
+	  (insert-before-markers "\n")
 	  (forward-line -1))
 	(w3m-bitmap-move-to-column-force col)
 	(if image
 	    (progn
 	      (setq pos (point))
-	      (insert (car image))
+	      (insert-before-markers (car image))
 	      (when props
 		(w3m-add-text-properties pos (point) props)
 		(push (make-overlay pos (point)) face-ovrs)))
@@ -279,17 +281,16 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
-  (when image
-    (let ((properties (text-properties-at beg))
-	  (name (buffer-substring beg end))
-	  (ovr (w3m-bitmap-image-get-overlay beg)))
-      (w3m-bitmap-image-delete-internal beg ovr (- end beg))
-      (w3m-bitmap-image-insert beg image
-			       (w3m-modify-plist properties
-						 'w3m-image-status 'on
-						 'w3m-bitmap-image t
-						 'w3m-image-name name)
-			       ovr))))
+  (let ((properties (text-properties-at beg))
+	(name (buffer-substring beg end))
+	(ovr (w3m-bitmap-image-get-overlay beg)))
+    (w3m-bitmap-image-delete-internal beg ovr (- end beg))
+    (w3m-bitmap-image-insert beg image
+			     (w3m-modify-plist properties
+					       'w3m-image-status 'on
+					       'w3m-bitmap-image t
+					       'w3m-image-name name)
+			     ovr)))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END.
