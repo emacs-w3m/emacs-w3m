@@ -1,8 +1,8 @@
 ;;; w3m-macro.el --- Generic macros and inline functions for emacs-w3m
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
-;; Authors: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>,
+;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
 ;;          Satoru Takabayashi <satoru-t@is.aist-nara.ac.jp>,
 ;;          Hideyuki SHIRAI    <shirai@meadowy.org>,
@@ -11,6 +11,8 @@
 ;;          Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;          Katsumi Yamaoka    <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
+
+;; This file is a part of emacs-w3m.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,9 +25,9 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
+;; along with this program; if not, you can either send email to this
+;; program's maintainer or write to: The Free Software Foundation,
+;; Inc.; 59 Temple Place, Suite 330; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
 

@@ -1,10 +1,9 @@
-;;; -*- mode: Emacs-Lisp; coding: iso-2022-7bit -*-
-;;; w3m-dtree.el --- The add-on program to display local directory tree.
+;;; w3m-dtree.el --- The add-on program to display local directory tree. -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2001  Free Software Foundation, Inc.
+;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI    <shirai@meadowy.org>,
-;;         TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+;;         TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords:  w3m, WWW, hypermedia, directory, tree
 
 ;; This file is free software; you can redistribute it and/or modify
@@ -22,12 +21,14 @@
 ;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
+
 ;;; Commentary:
 
 ;; w3m-dtree.el is The add-on program to display local directory tree.
-;; For more detail about w3m.el, see:
+;; For more detail about emacs-w3m, see:
 ;;
 ;;    http://emacs-w3m.namazu.org/
+
 
 ;;; Code:
 (require 'w3m)

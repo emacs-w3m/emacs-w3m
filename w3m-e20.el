@@ -1,8 +1,8 @@
-;;; w3m-e20.el --- Emacs 20 specific functions for w3m
+;;; w3m-e20.el --- Emacs 20 specific functions for w3m.
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
-;; Authors: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>,
+;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
 ;;          Satoru Takabayashi <satoru-t@is.aist-nara.ac.jp>,
 ;;          Hideyuki SHIRAI    <shirai@meadowy.org>,
@@ -11,6 +11,8 @@
 ;;          Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;          Katsumi Yamaoka    <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
+
+;; This file is a part of emacs-w3m.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -29,9 +31,8 @@
 
 ;;; Commentary:
 
-;; This module is a part of emacs-w3m which provides Emacs 20 specific
-;; functions.  Visit <URL:http://emacs-w3m.namazu.org/> for more details
-;; of emacs-w3m.
+;; This module provides Emacs 20 specific functions.  Visit
+;; <URL:http://emacs-w3m.namazu.org/> for more details of emacs-w3m.
 
 ;;; Code:
 

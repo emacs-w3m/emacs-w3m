@@ -1,9 +1,9 @@
 ;;; mime-w3m.el --- mime-view content filter for text
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>,
-;;         Akihiro Arisawa <ari@mbf.sphere.ne.jp>
+;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
+;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
 ;; Keywords: HTML, MIME, multimedia, mail, news
 
 ;; This file is *NOT* yet part of SEMI (Suite of Emacs MIME Interfaces).

@@ -1,8 +1,8 @@
 ;;; w3m.el --- Interface program of w3m on Emacs
 
-;; Copyright (C) 2000,2001 TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+;; Copyright (C) 2000,2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
-;; Authors: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>,
+;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
 ;;          Satoru Takabayashi <satoru-t@is.aist-nara.ac.jp>,
 ;;          Hideyuki SHIRAI    <shirai@meadowy.org>,
@@ -12,25 +12,28 @@
 ;;          Katsumi Yamaoka    <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
 
-;; w3m.el is free software; you can redistribute it and/or modify it
-;; under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2 of the License, or
-;; (at your option) any later version.
+;; This file is the main part of emacs-w3m.
 
-;; w3m.el is distributed in the hope that it will be useful, but
-;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2, or (at your option)
+;; any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with w3m.el; if not, write to the Free Software Foundation,
-;; Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+;; along with this program; if not, you can either send email to this
+;; program's maintainer or write to: The Free Software Foundation,
+;; Inc.; 59 Temple Place, Suite 330; Boston, MA 02111-1307, USA.
 
 
 ;;; Commentary:
 
-;; w3m.el is the interface program of w3m on Emacs.  For more detail
-;; about w3m, see:
+;; emacs-w3m is the interface program of w3m on Emacs.  For more
+;; detail about w3m, see:
 ;;
 ;;    http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/
 
@@ -313,7 +316,7 @@ apply the patch posted in [emacs-w3m:01119]."
   (or (getenv "HTTP_HOME")
       (getenv "WWW_HOME")
       "about:")
-  "*Home page of w3m.el."
+  "*Home page of emacs-w3m."
   :group 'w3m
   :type 'string)
 
@@ -944,7 +947,7 @@ cursor position and around there."
 	     (byte-compile fn)))))))
 
 (defun w3m-message (&rest args)
-  "Alternative function of `message' for w3m.el."
+  "Alternative function of `message' for emacs-w3m."
   (if w3m-verbose
       (apply (function message) args)
     (apply (function format) args)))
