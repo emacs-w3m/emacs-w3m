@@ -1,4 +1,4 @@
-;;; w3m-e20.el --- Emacs 20 specific functions for w3m.
+;;; w3m-e20.el --- Emacs 20 specific functions for w3m
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -47,5 +47,17 @@
 (defalias 'w3m-display-graphic-p 'ignore)
 (defalias 'w3m-display-inline-image-p 'ignore)
 
+;;; Coding system.
+
+(defun w3m-make-ccl-coding-system
+  (coding-system mnemonic docstring decoder encoder)
+  "Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
+CODING-SYSTEM, DECODER and ENCODER must be symbol."
+  (if (memq coding-system coding-system-list)
+      coding-system
+    (make-coding-system coding-system 4 mnemonic docstring
+			(cons decoder encoder))))
+
 (provide 'w3m-e20)
-;;; w3m-e20.el ends here.
+
+;;; w3m-e20.el ends here

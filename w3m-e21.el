@@ -1,4 +1,4 @@
-;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs-21.
+;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs-21
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -54,7 +54,16 @@
   (autoload 'w3m-retrieve "w3m")
   (autoload 'w3m-image-type "w3m"))
 
-;; Image handling functions.
+;;; Coding system.
+
+(defun w3m-make-ccl-coding-system
+  (coding-system mnemonic docstring decoder encoder)
+  "Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
+CODING-SYSTEM, DECODER and ENCODER must be symbol."
+  (make-coding-system coding-system 4 mnemonic docstring
+		      (cons decoder encoder)))
+
+;;; Image handling functions.
 
 ;; `display-images-p' has not been available prior to Emacs 21.0.105.
 (unless (fboundp 'display-images-p)
@@ -296,4 +305,5 @@ Buffer string between BEG and END are replaced with IMAGE."
 (add-hook 'w3m-mode-hook 'w3m-setup-widget-faces)
 
 (provide 'w3m-e21)
-;;; w3m-e21.el ends here.
+
+;;; w3m-e21.el ends here
