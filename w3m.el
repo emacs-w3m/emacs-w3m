@@ -253,7 +253,13 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   "*Directory where the downloaded files should be saved in.  It defaults
 to the value of the option `w3m-default-save-directory'."
   :group 'w3m
-  :type 'directory)
+  :type '(choice (sexp
+		  :convert-widget
+		  (lambda (widget)
+		    (list 'const :tag
+			  (format "Default (%s)" w3m-default-save-directory)
+			  :value nil)))
+		 directory))
 
 (defcustom w3m-delete-duplicated-empty-lines t
   "*Compactize page by deleting duplicated empty lines."
