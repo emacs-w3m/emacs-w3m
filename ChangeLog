@@ -1,5 +1,7 @@
 2003-03-09  NAKAJIMA Mikio  <minakaji@namazu.org>
 
+	* shimbun/sb-palmfan.el (shimbun-palmfan-pickup-date): Bug fixed.
+
 	* shimbun/sb-dennou.el (shimbun-dennou-expiration-days): New user
 	variable.
 	(shimbun-article): Sync up with `shimbun-article' of

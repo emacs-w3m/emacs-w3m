@@ -314,10 +314,9 @@
 	  (setq year (string-to-number (match-string 0)))
 	(throw 'stop nil))
       (goto-char start)
-      (if (re-search-forward
-	   "\\(\\([0-9][0-9]*\\) *日\\)\\|\\( \\([0-9][0-9]*\\)[,.]*\\)"
-	   date-end t)
-	  (setq day (string-to-number (or (match-string 4) (match-string 1))))
+      (if (or (re-search-forward "\\([0-9][0-9]*\\) *日" date-end t)
+	      (re-search-forward " \\([0-9][0-9]?\\)[,.]*" date-end t))
+	  (setq day (string-to-number (match-string 1)))
 	(throw 'stop nil))
       (goto-char start)
       (if (re-search-forward "\\(Jan\\|Feb\\|Mar\\|Apr\\|May\\|Jun\\|Jul\\|Aug\\|Sep\\|Oct\\|Nov\\|Dec\\|[0-9]+ *月\\)" date-end t)
