@@ -1,3 +1,23 @@
+2003-11-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-canonicalize-url): New function.
+	(w3m-w3m-attributes-1): New function.
+	(w3m-w3m-attributes): Call the above functions to follow
+	redirection.
+	(w3m-w3m-retrieve): Call `w3m-w3m-canonicalize-url' before
+	retrieving.
+
+	* w3m-proc.el (w3m-process-start-process): Check the value of
+	`w3m-current-url' before calling `w3m-url-authinfo'.
+	(w3m-process-start-and-wait): Make sure synchronization with
+	sub-process.
+	(w3m-process-do-with-temp-buffer): Call `w3m-kill-buffer' instead
+	of calling `kill-buffer' directly.
+
+	* w3m-antenna.el (w3m-antenna-mapcar): Simplified and follow the
+	change of `w3m-process-do-with-temp-buffer'.
+	(w3m-antenna-mapcar-after): Ditto.
+
 2003-11-07  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-atmarkit.el (shimbun-rss-build-message-id): Bug fixed.

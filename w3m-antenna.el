@@ -294,35 +294,27 @@ whose elements are:
 
 (defun w3m-antenna-mapcar (function sequence handler)
   (let ((index -1)
-	(result (make-symbol "result"))
-	(buffer (make-symbol "buffer")))
-    (set result (make-vector (length sequence) nil))
-    (set buffer (current-buffer))
+	(table (make-symbol "table")))
+    (set table (make-vector (length sequence) nil))
     (dolist (element sequence)
-      (aset (symbol-value result)
+      (aset (symbol-value table)
 	    (incf index)
 	    (funcall function
 		     element
 		     (let ((var (make-symbol "tmpvar")))
 		       (cons `(lambda (x)
-				(aset ,result ,index x)
-				(w3m-antenna-mapcar-after ,result
-							  ,buffer
-							  ,w3m-current-buffer))
+				(aset ,table ,index x)
+				(w3m-antenna-mapcar-after ,table))
 			     handler)))))
-    (w3m-antenna-mapcar-after (symbol-value result)
-			      (symbol-value buffer)
-			      w3m-current-buffer)))
+    (w3m-antenna-mapcar-after (symbol-value table))))
 
-(defun w3m-antenna-mapcar-after (result buffer w3m-current-buffer)
+(defun w3m-antenna-mapcar-after (result)
   (or (catch 'found-proces
 	(let ((index -1))
 	  (while (< (incf index) (length result))
 	    (when (w3m-process-p (aref result index))
 	      (throw 'found-proces (aref result index))))))
-      (when (buffer-name buffer)
-	(set-buffer buffer)
-	(append result nil))))
+      (append result nil)))
 
 (defun w3m-antenna-check-all-sites (&optional handler)
   "Check all sites specified in `w3m-antenna-sites'."

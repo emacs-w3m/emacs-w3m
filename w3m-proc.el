@@ -200,7 +200,8 @@ generated asynchronous process is ignored.  Otherwise,
 		 (proc (apply 'start-process command
 			      (current-buffer) command
 			      (w3m-process-arguments object)))
-		 (authinfo (w3m-url-authinfo w3m-current-url)))
+		 (authinfo (when w3m-current-url
+			     (w3m-url-authinfo w3m-current-url))))
 	    (setq w3m-process-user (car authinfo)
 		  w3m-process-passwd (cdr authinfo)
 		  w3m-process-realm nil)
@@ -340,10 +341,11 @@ handler."
 	  ;; called in the environment that `w3m-process-sentinel' is
 	  ;; evaluated.
 	  (w3m-process-start-process w3m-current-process t)
-	  (while (eq 'run
-		     (process-status
-		      (w3m-process-process w3m-current-process)))
-	    (accept-process-output nil 0 200)
+	  (while (or (accept-process-output
+		      (w3m-process-process w3m-current-process) 0 0)
+		     (eq 'run
+			 (process-status
+			  (w3m-process-process w3m-current-process))))
 	    (when (and w3m-process-timeout
 		       (< w3m-process-timeout
 			  (w3m-time-lapse-seconds start (current-time))))
@@ -455,8 +457,7 @@ evaluated in a temporary buffer."
 			      (set-buffer ,temp-buffer))
 			    ,@body)
 		(,post-handler (,var)
-			       (when (buffer-name ,temp-buffer)
-				 (kill-buffer ,temp-buffer))
+			       (w3m-kill-buffer ,temp-buffer)
 			       (when (buffer-name ,current-buffer)
 				 (set-buffer ,current-buffer))
 			       ,var))

@@ -3772,6 +3772,11 @@ Return alist, whose elements are:
       (when success
 	(buffer-string)))))
 
+(defsubst w3m-w3m-canonicalize-url (url)
+  (if (string-match "\\`\\(ht\\|f\\)tps?://[^/]+\\'" url)
+      (concat url "/")
+    url))
+
 (defun w3m-w3m-attributes (url no-cache handler)
   "Return a list of attributes of URL.
 Value is nil if retrieval of header is failed.  Otherwise, list
@@ -3783,7 +3788,16 @@ elements are:
  4. Last modification time.
  5. Real URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
-  (lexical-let ((url url))
+  (w3m-w3m-attributes-1 (w3m-w3m-canonicalize-url url)
+			no-cache
+			(or w3m-follow-redirection 0)
+			handler))
+
+(defun w3m-w3m-attributes-1 (url no-cache counter handler)
+  "Internal function for `w3m-w3m-attributes'."
+  (lexical-let ((url url)
+		(no-cache no-cache)
+		(counter counter))
     (w3m-process-do
 	(header (or (unless no-cache
 		      (w3m-cache-request-header url))
@@ -3797,10 +3811,17 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		    (list "text/html"
 			  (if w3m-accept-japanese-characters
 			      "w3m-euc-japan" "w3m-iso-latin-1")
-			  nil nil nil url url)
-		  (list (w3m-local-content-type url) nil nil nil nil url url)))
+			  nil nil nil url)
+		  (list (w3m-local-content-type url) nil nil nil nil url)))
 	    (w3m-cache-header url header)
-	    (cdr attr)))))))
+	    (if (memq (car attr) '(300 301 302 303 304 305 306 307))
+		(if (zerop counter)
+		    ;; Redirect counter exceeds `w3m-follow-redirection'.
+		    nil
+		  ;; Follow redirection.
+		  (w3m-w3m-attributes-1 (nth 6 attr) no-cache
+					(1- counter) handler))
+	      (cdr attr))))))))
 
 (defun w3m-w3m-expand-arguments (arguments)
   (apply 'append
@@ -3977,7 +3998,7 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
   "Retrieve content pointed by URL with w3m, insert it to this buffer,
 and call the HANDLER function with its content type as a string
 argument, when retrieve is complete."
-  (lexical-let ((url url)
+  (lexical-let ((url (w3m-w3m-canonicalize-url url))
 		(no-decode no-decode)
 		(current-buffer (current-buffer)))
     (w3m-process-do-with-temp-buffer
