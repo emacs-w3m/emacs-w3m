@@ -1994,7 +1994,7 @@ with ^ as `cat -v' does."
 					   'w3m-href-anchor href
 					   'mouse-face 'highlight
 					   'w3m-name-anchor
-					   (cons name prenames)
+					   (delq nil (cons name prenames))
 					   'w3m-anchor-sequence hseq
 					   'help-echo help
 					   'balloon-help balloon))))
