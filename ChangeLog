@@ -1,3 +1,14 @@
+2004-01-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/nnshimbun.el: Changes to make nnshimbun.el more robust.
+	(nnshimbun-goto-url): Abolished.
+	(gnus-summary-refer-shimbun-article): New command.
+	(nnshimbun-setup-article-mode): Use the above command instead of
+	the abolished one.
+
+	* w3m.el (w3m-safe-view-this-url): Call `w3m-goto-url' when a
+	function set to `w3m-goto-article-function' returns nil.
+
 2004-01-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Changes to follow anchors that point Shimbun articles.

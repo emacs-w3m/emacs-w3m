@@ -829,21 +829,22 @@ and return its header."
 	  (when found
 	    (nnshimbun-parse-nov)))))))
 
-(defun nnshimbun-goto-url (url)
-  "Show a Nnshimbun article or visit the specified page."
-  (interactive (list (w3m-input-url)))
-  (let ((header
-	 (when (string-match "\\`nnshimbun\\+" gnus-newsgroup-name)
-	   (nnshimbun-search-xref
-	    (gnus-group-short-name gnus-newsgroup-name) url))))
-    (if (and header (gnus-buffer-live-p gnus-summary-buffer))
-	(with-current-buffer gnus-summary-buffer
-	  (gnus-summary-refer-article (shimbun-header-id header)))
-      (w3m-goto-url url))))
+;;;###autoload
+(defun gnus-summary-refer-shimbun-article (url)
+  "Show a shimbun article pointed by the given URL."
+  (interactive "sURL: ")
+  (let ((method (gnus-find-method-for-group gnus-newsgroup-name))
+	(header))
+    (and (eq 'nnshimbun (car method))
+	 (nnshimbun-possibly-change-group nil (nth 1 method))
+	 (setq header (nnshimbun-search-xref
+		       (gnus-group-short-name gnus-newsgroup-name) url))
+	 (with-current-buffer gnus-summary-buffer
+	   (gnus-summary-refer-article (shimbun-header-id header))))))
 
 (defun nnshimbun-setup-article-mode ()
   (set (make-local-variable 'w3m-goto-article-function)
-       'nnshimbun-goto-url))
+       'gnus-summary-refer-shimbun-article))
 
 
 ;; Command to create an nnshimbun group:
