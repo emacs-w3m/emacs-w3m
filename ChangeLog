@@ -1,3 +1,7 @@
+2003-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* attic/vm-w3m.el: New file.
+
 2003-11-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Fbind `select-frame-set-input-focus' when compiling.
