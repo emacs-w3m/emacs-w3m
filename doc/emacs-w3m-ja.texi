@@ -4586,7 +4586,7 @@ ruby.ruby-talk
 toshiba.linux-users-j
 
 @item @uref{http://mi.med.tohoku.ac.jp/~satodai/w3m-dev/, w3m-dev Mailing List}
-w3m-dev.w3m-dev
+w3m-dev.w3m-dev w3m-dev.w3m-dev-en
 
 @item @uref{http://yar-3.net/digiko/, digiko Mailing List}
 digiko.digiko

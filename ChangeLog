@@ -1,3 +1,14 @@
+2005-01-14  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
+
+	* shimbun/sb-w3m-dev.el (shimbun-w3m-dev-url): Change it into the
+	new website URL.
+	(shimbun-w3m-dev-group-alist): New variable.
+	(shimbun-w3m-dev-groups): Generate the value using
+	shimbun-w3m-dev-group-alist.
+	(shimbun-index-url): New method
+	(shimbun-reply-to): Generate the value using
+	shimbun-w3m-dev-group-alist.
+
 2005-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add the rss group.
