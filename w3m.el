@@ -124,12 +124,7 @@
 				  "w3m-xmas"
 				"w3m-e21")))
 
-(defconst emacs-w3m-version
-  (eval-when-compile
-    (let ((rev "$Revision$"))
-      (and (string-match "\\.\\([0-9]+\\) \$$" rev)
-	   (format "1.1.%d"
-		   (- (string-to-number (match-string 1 rev)) 233)))))
+(defconst emacs-w3m-version "1.2rc1"
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -141,12 +136,19 @@
   :group 'w3m
   :prefix "w3m-")
 
-(defcustom w3m-type 'w3m
+(defvar w3m-mnc nil
+  "*This is an obsolete option.  It is strongly recomended to use
+`w3m-type' instead of this option.")
+
+(defcustom w3m-type
+  (if w3m-mnc 'w3m-mnc 'w3m-0.2.1)
   "*Type of w3m."
   :group 'w3m
-  :type '(choice (const :tag "w3m" 'w3m)
+  :type '(choice (const :tag "w3m-0.2.1" 'w3m-0.2.1)
+		 (const :tag "w3m-inu" 'w3m)
 		 (const :tag "w3mmee" 'w3mmee)
 		 (const :tag "w3m-m17n" 'w3m-m17n)
+		 (const :tag "w3m-mnc [obsolete]" 'w3m-mnc)
 		 (symbol :tag "other" nil)))
 
 (defcustom w3m-language
@@ -202,7 +204,8 @@ width using expression (+ (frame-width) VALUE)."
   :type 'function)
 
 (defcustom w3m-use-mule-ucs
-  (and (boundp 'emacs-major-version)
+  (and (memq w3m-type '(w3m w3m-0.2.1 w3m-mnc))
+       (boundp 'emacs-major-version)
        (if (featurep 'xemacs)
 	   ;; Mule-UCS does not support XEmacs versions prior to 21.2.37.
 	   (and (>= emacs-major-version 21)
@@ -210,8 +213,7 @@ width using expression (+ (frame-width) VALUE)."
 		    (and (= emacs-major-version 2)
 			 (>= emacs-beta-version 37))))
 	 (>= emacs-major-version 20))
-       (locate-library "un-define")
-       (eq w3m-type 'w3m))
+       (featurep 'un-define))
   "*Non nil means using multi-script support with Mule-UCS."
   :group 'w3m
   :type 'boolean
@@ -674,10 +676,11 @@ If nil, use an internal CGI of w3m."
 			      (w3m-which-command "w3m"))))))))
 
 (defcustom w3m-add-referer-regexps
-  (when (or (not (boundp 'w3m-add-referer))
-	    (symbol-value 'w3m-add-referer))
-    (cons "\\`http:"
-	  "\\`http://\\(localhost\\|127\\.0\\.0\\.1\\)/"))
+  (and (eq w3m-type 'w3m)
+       (when (or (not (boundp 'w3m-add-referer))
+		 (symbol-value 'w3m-add-referer))
+	 (cons "\\`http:"
+	       "\\`http://\\(localhost\\|127\\.0\\.0\\.1\\)/")))
   "*Cons of two regexps to allow and not to allow sending a reference
 information to HTTP servers.  If a reference matches the car of this
 value and it does not match the cdr of this value, it will be sent.
@@ -2142,7 +2145,9 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		(w3m-process-user-counter 2)
 		(proc (apply 'start-process w3m-command (current-buffer)
 			     w3m-command args)))
-	    (set-process-filter proc 'w3m-exec-filter)
+	    (set-process-filter proc (if (eq w3m-type 'w3m)
+					 'w3m-exec-filter
+				       'w3m-exec-compatible-filter))
 	    (set-process-sentinel proc 'ignore)
 	    (process-kill-without-query proc)
 	    (unwind-protect
@@ -2320,6 +2325,40 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		    (or (w3m-exec-get-user w3m-current-url w3m-process-realm)
 			(read-from-minibuffer (format "Username for %s: "
 						      w3m-process-realm))))
+	      (condition-case nil
+		  (process-send-string process
+				       (concat w3m-process-user "\n"))
+		(error nil)))))))))
+
+(defun w3m-exec-compatible-filter (process string)
+  (if (buffer-name (process-buffer process))
+      (with-current-buffer (process-buffer process)
+	(let ((buffer-read-only nil)
+	      (case-fold-search nil))
+	  (goto-char (process-mark process))
+	  (insert string)
+	  (set-marker (process-mark process) (point))
+	  (unless (string= "" string)
+	    (goto-char (point-min))
+	    (cond
+	     ((and (looking-at
+		    "\\(\nWrong username or password\n\\)?Username: Password: ")
+		   (= (match-end 0) (point-max)))
+	      (setq w3m-process-passwd
+		    (or (w3m-exec-get-user w3m-current-url nil)
+			(read-passwd "Password: ")))
+	      (condition-case nil
+		  (progn
+		    (process-send-string process
+					 (concat w3m-process-passwd "\n"))
+		    (delete-region (point-min) (point-max)))
+		(error nil)))
+	     ((and (looking-at
+		    "\\(\nWrong username or password\n\\)?Username: ")
+		   (= (match-end 0) (point-max)))
+	      (setq w3m-process-user
+		    (or (nth 0 (w3m-exec-get-user w3m-current-url nil))
+			(read-from-minibuffer "Username: ")))
 	      (condition-case nil
 		  (process-send-string process
 				       (concat w3m-process-user "\n"))
@@ -2615,6 +2654,32 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	 (w3m-cache-contents url (current-buffer))
 	 (w3m-w3m-attributes url))))
 
+(defun w3m-w3m-dump-source (url)
+  (let ((headers (w3m-w3m-attributes url t)))
+    (when headers
+      (let ((type   (car headers))
+	    (length (nth 2 headers)))
+	(when (let ((w3m-current-url url))
+		(w3m-message "Reading %s..." url)
+		(prog1
+		    (w3m-exec-process "-dump_source" url)
+		  (w3m-message "Reading %s...done" url)))
+	  (cond
+	   ((and length (> (buffer-size) length))
+	    (delete-region (point-min) (- (point-max) length)))
+	   ((string= "text/html" type)
+	    ;; Remove cookies.
+	    (goto-char (point-min))
+	    (while (and (not (eobp))
+			(looking-at "Received cookie: "))
+	      (forward-line 1))
+	    (skip-chars-forward " \t\r\f\n")
+	    (if (or (looking-at "<!DOCTYPE")
+		    (looking-at "<HTML>")) ; for eGroups.
+		(delete-region (point-min) (point)))))
+	  (w3m-cache-contents url (current-buffer))
+	  headers)))))
+
 (defun w3m-w3m-retrieve (url &optional no-decode no-cache post-data referer)
   "Retrieve content of URL with w3m and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
@@ -2641,27 +2706,33 @@ to nil."
 		(set-default-file-modes (* 64 6))
 		(write-region (point-min) (point-max) file nil 'silent))
 	    (set-default-file-modes modes)))
-	(setq w3m-command-arguments
-	      (append w3m-command-arguments
-		      (if (consp post-data)
-			  (list "-header" (concat "Content-Type: "
-						  (car post-data))))
-		      (list "-post" file))))
+	(if (eq w3m-type 'w3m)
+	    (setq w3m-command-arguments
+		  (append w3m-command-arguments
+			  (if (consp post-data)
+			      (list "-header" (concat "Content-Type: "
+						      (car post-data))))
+			  (list "-post" file)))
+	  (error "%s" "Unsupported option.  Check the version of your using w3m and the value of `w3m-type'")))
       (when (and (stringp referer)
 		 (not (and (cdr w3m-add-referer-regexps)
 			   (string-match (cdr w3m-add-referer-regexps)
 					 referer)))
 		 (car w3m-add-referer-regexps)
 		 (string-match (car w3m-add-referer-regexps) referer))
-	(setq w3m-command-arguments
-	      (append w3m-command-arguments
-		      (list "-header" (concat "Referer: " referer)))))
+	(if (eq w3m-type 'w3m)
+	    (setq w3m-command-arguments
+		  (append w3m-command-arguments
+			  (list "-header" (concat "Referer: " referer))))
+	  (error "%s" "Unsupported option.  Check the version of your using w3m and the value of `w3m-type'")))
       (unwind-protect
 	  (setq type
 		(or (unless no-cache
 		      (and (w3m-cache-request-contents url)
 			   (w3m-content-type url)))
-		    (car (w3m-w3m-dump-head-source url))))
+		    (car (if (memq w3m-type '(w3m w3mmee w3m-mnc))
+			     (w3m-w3m-dump-head-source url)
+			   (w3m-w3m-dump-source url)))))
 	(if file (delete-file file)))
       (when type
 	(or no-decode

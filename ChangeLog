@@ -1,3 +1,17 @@
+2001-10-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Changes to support normal w3m-0.2.1.
+	(emacs-w3m-version): Set 1.2rc1.
+	(w3m-type): Relaxed range of legal values.
+	(w3m-use-mule-ucs): Follow the change of `w3m-type'.
+	(w3m-add-referer-regexps): Ditto.
+	(w3m-exec-process): Use `w3m-exec-compatible-filter' as a process
+	filter when `w3m-type' equals `w3m-0.2.1'.
+	(w3m-exec-compatible-filter): New function.
+	(w3m-w3m-dump-source): Revival function.
+	(w3m-w3m-retrieve): Follow the change of `w3m-type'; Protect
+	against unsupported options.
+
 2001-10-25  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-vinelinux.el (shimbun-vinelinux-url) Bug fixed.
