@@ -1,3 +1,8 @@
+2002-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-get-headers-in-the-list-page):
+	Follow the change of the Web site.
+
 2002-07-30  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-asahi-html.el (shimbun-asahi-html-content-start):
