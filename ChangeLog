@@ -1,3 +1,9 @@
+2005-02-26  Tsuyoshi CHO  <tsuyoshi_cho@yahoo.co.jp>
+
+	* shimbun/sb-heise.el (shimbun-heise-get-newsticker-headers): Replace
+	'w3m-expand-url' to 'shimbun-expand-url'.
+	(shimbun-heise-get-newsticker-headers): Ditto.
+
 2005-02-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (all): Use `w3m-form-set-number' and

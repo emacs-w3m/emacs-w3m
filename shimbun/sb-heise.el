@@ -65,8 +65,8 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
     (catch 'stop
       (while (re-search-forward regexp nil t nil)
 	(setq id (match-string 1))
-	(setq url (w3m-expand-url (concat "meldung/" id)
-				  (shimbun-index-url shimbun)))
+	(setq url (shimbun-expand-url (concat "meldung/" id)
+				      (shimbun-index-url shimbun)))
 	(setq subject (match-string 2))
 	(setq id (concat "<newsticker" id "@heise.de>"))
 	(when (shimbun-search-id shimbun id)
@@ -100,7 +100,7 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 	  (when (re-search-forward sb-heise-tp-auth-date-re nil t nil)
 	    (let ((author (concat (match-string 1) " <invalid@heise.de>"))
 		  (date (match-string 2)) (id))
-	      (setq url (w3m-expand-url url shimbun-heise-url))
+	      (setq url (shimbun-expand-url url shimbun-heise-url))
 	      (string-match "\\(/\\w+/[0-9]+/\\)[^/]+\\.html" url)
 	      (setq id (concat "<telepolis" (match-string 1 url) "@heise.de>"))
 	      (when (shimbun-search-id shimbun id)
@@ -112,7 +112,7 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 		      (string-to-number (match-string 3 date)) ; year
 		      (string-to-number (match-string 2 date)) ; month
 		      (string-to-number (match-string 1 date)) ; day
-		      "00:00"                                  ; time
+		      "00:00"		; time
 		      ;; FIXME: timezone is always wrong, slightly better than
 		      ;; the default "+0900"
 		      "+0000")
@@ -146,7 +146,7 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 	      (string-to-number (match-string 3)) ; year
 	      (string-to-number (match-string 2)) ; month
 	      (string-to-number (match-string 1)) ; day
-	      (match-string 4)			  ; time
+	      (match-string 4)		; time
 	      ;; FIXME: timezone is always wrong, slightly better than the
 	      ;; default "+0900"
 	      "+0000"))))))
