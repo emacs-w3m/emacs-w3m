@@ -36,11 +36,16 @@
 (luna-define-class shimbun-cnet-jp (shimbun-japanese-newspaper shimbun-rss) ())
 
 (defvar shimbun-cnet-jp-group-alist
-  '(("news"          . "http://japan.cnet.com/rss/index.rdf")
+  '(("news"	     . "http://japan.cnet.com/rss/index.rdf")
     ("blog.kenn"     . "http://blog.japan.cnet.com/kenn/index.rdf")
     ("blog.lessig"   . "http://blog.japan.cnet.com/lessig/index.rdf")
     ("blog.watanabe" . "http://blog.japan.cnet.com/watanabe/index.rdf")
     ("blog.editors"  . "http://blog.japan.cnet.com/editors/index.rdf")))
+
+(defvar shimbun-cnet-jp-orphaned-group-list
+  '("blog.inoue"
+    "blog.mori"
+    "blog.umeda"))
 
 (defvar shimbun-cnet-jp-server-name "CNET Japan")
 (defvar shimbun-cnet-jp-from-address  "webmaster@japan.cnet.com")
@@ -52,7 +57,14 @@
 _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 
 (luna-define-method shimbun-groups ((shimbun shimbun-cnet-jp))
-  (mapcar 'car shimbun-cnet-jp-group-alist))
+  (nconc (mapcar 'car shimbun-cnet-jp-group-alist)
+	 shimbun-cnet-jp-orphaned-group-list))
+
+(luna-define-method shimbun-headers :around ((shimbun shimbun-cnet-jp)
+					     &optional range)
+  (unless (member (shimbun-current-group shimbun)
+		  shimbun-cnet-jp-orphaned-group-list)
+    (luna-call-next-method)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-cnet-jp))
   (cdr (assoc (shimbun-current-group shimbun) shimbun-cnet-jp-group-alist)))

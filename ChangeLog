@@ -1,7 +1,30 @@
+2005-02-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Load w3m-e23.el for Emacs 23.
+
+	* w3mhack.el (w3mhack-module-list): Use w3m-e23.el for Emacs 23.
+
+	* w3m-e23.el: Rename from w3m-e22.el.
+
+2005-02-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-rss.el (shimbun-get-headers): Display an error
+	message rather than signaling an error when xml-parse-region fails
+	so that MUA may not be discontinued.
+
+	* shimbun/sb-emacswiki.el (shimbun-get-headers): Ditto.
+
+2005-02-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-cnet-jp.el: Changes to support orphaned groups.
+	(shimbun-cnet-jp-orphaned-group-list): New variable.
+	(shimbun-groups): Add the groups listed in the above variable.
+	(shimbun-headers): New method.
+
 2005-02-13  Tsuyoshi CHO  <cho@namazu.org>
 
-	* shimbun/sb-mailman.el (shimbun-mailman-headers): Change url enclosing
-	'shimbun-expand-url'.
+	* shimbun/sb-mailman.el (shimbun-mailman-headers): Change url
+	enclosing 'shimbun-expand-url'.
 	(shimbun-mailman-headers): Ditto.
 
 2005-02-11  Tsuyoshi CHO  <cho@namazu.org>
@@ -9,8 +32,8 @@
 	* shimbun/sb-x51.el (shimbun-get-headers): Remove temp-buffer
 	ignored when previous committing.
 
-	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-content-start): Fix value for new
-	page design.
+	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-content-start): Fix value
+	for new page design.
 	(shimbun-cnn-jp-content-end): Ditto.
 	(shimbun-get-headers): Ditto.
 	(shimbun-cnn-jp-prepare-article): Ditto.
