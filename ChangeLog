@@ -1,3 +1,8 @@
+2005-03-15  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-article): Treat
+	folder surely over again.
+
 2005-03-14  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-goto-folder): Treat folder
