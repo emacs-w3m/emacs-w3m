@@ -1,3 +1,10 @@
+2003-05-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fontify-anchors): Invalidate the widget keymap in
+	XEmacs; add a help-echo to the widget button.
+	(w3m-make-minor-mode-keymap): Bind [down-mouse-2] to `undefined'
+	to invalidate the `widget-button-click' command in FSF Emacs.
+
 2003-05-05  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-pocketgames.el
@@ -28,7 +35,7 @@
 	* shimbun/sb-squeak-dev.el: New file.
 
 	* shimbun/sb-jpo.el (shimbun-jpo-cleanup-article): Modify regexps.
-	
+
 	* shimbun/sb-jpilot.el: Require sendmail.
 	(shimbun-make-contents): New method.
 
