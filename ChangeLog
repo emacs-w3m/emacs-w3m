@@ -1,6 +1,7 @@
 2003-02-09  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-coldsync.el: New file.
+	* shimbun/sb-jpilot.el: Ditto.
 
 	* shimbun/sb-vinelinux.el (shimbun-make-contents): Change for web
 	page rearranging.
