@@ -1,3 +1,10 @@
+2001-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fontify-images, w3m-fontify-anchors): Put an url
+	string to each anchor as a `help-echo' property when the value of
+	`w3m-track-mouse' is non-nil.
+	(w3m-track-mouse): New user option.
+
 2001-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-copy-buffer): Use `w3m-history-copy' to make copies
