@@ -7,7 +7,7 @@
 
 	* shimbun/sb-slashdot-jp.el
 	(shimbun-slashdot-jp-make-story-article): Go to the beginning of
-	the buffer before searching for a significant pattern.
+	a buffer before searching for a significant pattern.
 	(shimbun-slashdot-jp-make-comment-article): Ditto.
 	(shimbun-slashdot-jp-make-story-headers): Ditto.
 	(shimbun-slashdot-jp-make-comment-headers): Ditto.
