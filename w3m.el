@@ -1076,7 +1076,7 @@ The term `shifting' means a fine level scrolling."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-use-filter nil
+(defcustom w3m-use-filter t
   "*Non-nil means use filter programs to convert web contents.
 See also `w3m-filter-rules'."
   :group 'w3m

@@ -1,5 +1,7 @@
 2003-12-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-use-filter): Change its default value to t.
+
 	* w3m-filter.el: Reconstructed completely.
 	(w3m-filter-rules): Change its spec and its default value.
 	(w3m-filter): Reimplemented.
