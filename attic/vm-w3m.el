@@ -23,7 +23,7 @@
 ;; work.  Visit <URL:http://emacs-w3m.namazu.org/> for details.
 ;; You don't have to change VM at all.  Simply load this module and
 ;; you will see HTML mails inlined by emacs-w3m in the VM presentation
-;; buffer.  It was tested only with VM 7.17 and 7.18.
+;; buffer.  It was tested with VM 7.17, 7.18 and 7.19.
 
 ;; Please don't complain to the author or the emacs-w3m team, even if
 ;; it becomes impossible to use this module in the future.  There is
