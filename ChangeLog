@@ -1,3 +1,8 @@
+2003-10-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-backward): Return the current history
+	if the number zero is given as an argument.
+
 2003-10-29  OHASHI Akira  <bg66@koka-in.org>
 
 	* w3m.el (w3m-process-connection-type): Set t when system is
