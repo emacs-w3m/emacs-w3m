@@ -187,7 +187,7 @@ system of retrieved contents."
   (shimbun-header-number-internal header))
 
 (defun shimbun-header-set-number (header number)
-  (shimbun-header-set-number-internal header nuber))
+  (shimbun-header-set-number-internal header number))
 
 (defun shimbun-header-subject (header &optional no-encode)
   (if no-encode
