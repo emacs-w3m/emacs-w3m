@@ -1,6 +1,7 @@
 ;; mew-w3m.el --- View Text/Html content with w3m in Mew
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Shun-ichi GOTO  <gotoh@taiyo.co.jp>,
 ;;         Hideyuki SHIRAI <shirai@meadowy.org>
@@ -42,7 +43,7 @@
 ;; (setq mew-use-w3m-minor-mode t)
 ;; (add-hook 'mew-message-hook 'mew-w3m-minor-mode-setter)
 ;;
-;; (3) If you use mew-1.95b118 or later on which Emacs-21 or XEmacs,
+;; (3) If you use mew-1.95b118 or later on which Emacs 21, 22 or XEmacs,
 ;; can display the images in the Text/Html message.
 ;; To activate this feaeture, add following in your ~/.mew file.
 ;;
@@ -96,8 +97,8 @@ Text/Html contents."
   :type 'boolean)
 
 (defcustom mew-w3m-auto-insert-image nil
-  "*If non-nil, the images inserts automatic in Multipart/Related message.
-This variable effected only XEmacs or Emacs 21."
+  "*If non-nil, images are inserted automatically in Multipart/Related message.
+This variable is effective only in XEmacs, Emacs 21 and Emacs 22."
   :group 'mew-w3m
   :type 'boolean)
 

@@ -1262,7 +1262,7 @@ car and the cdr in each element if it is available."
 (defcustom w3m-track-mouse t
   "*Whether to track the mouse and message the url under the mouse.
 This feature does not work under Emacs or XEmacs versions prior to 21.
-See also `show-help-function' if you are using Emacs 21.
+See also `show-help-function' if you are using Emacs 21 or later.
 
 A tip for XEmacs users:
 
@@ -1738,7 +1738,7 @@ Here are some predefined functions which can be used for those ways:
 		       (regexp :format "%t: %v\n" :size 0)
 		       (function
 			:format "%t: %v\n" :size 0
-			;; Fixing a bug in Emacs versions prior to 21.4.
+			;; Fixing a bug in Emacs versions prior to 22.
 			:value-to-internal
 			(lambda (widget value)
 			  (if (stringp value)
@@ -2003,11 +2003,13 @@ The value will be modified for displaying the graphic icon.")
 
 (defvar w3m-modeline-favicon nil
   "Modeline control for displaying a favicon.
-This variable will be made buffer-local under Emacs 21 or XEmacs.")
+This variable will be made buffer-local under Emacs 21 and later or
+XEmacs.")
 
 (defvar w3m-favicon-image nil
   "Favicon image of the page.
-This variable will be made buffer-local under Emacs 21 or XEmacs.")
+This variable will be made buffer-local under Emacs 21 and later or
+XEmacs.")
 
 (defvar w3m-current-process nil
   "Flag used to say whether the external process is running in the buffer.
@@ -7169,7 +7171,8 @@ this function will prompt user for it."
 	(put 'make-local-hook 'byte-obsolete-info nil)))
     (defun w3m-add-local-hook (hook function &optional append)
       "Add to the buffer-local value of HOOK the function FUNCTION.
-Note: this function is designed for Emacsen other than Emacs 21."
+Note: this function is designed for Emacsen other than Emacs 21 and
+later."
       (make-local-hook hook)
       (add-hook hook function append t))))
 
@@ -7771,15 +7774,15 @@ emacs-w3m buffer.  Besides that, it also makes a new emacs-w3m buffer
 if `w3m-make-new-session' is non-nil and a user specifies a url string.
 
 The optional INTERACTIVE-P is for the internal use; it is mainly used
-to check whether Emacs 21.4 calls this function as an interactive
-command in the batch mode."
+to check whether Emacs 22 or later calls this function as an
+interactive command in the batch mode."
   (interactive
    (let ((url
-	  ;; Emacs 21.4 calls a Lisp command interactively even if it
-	  ;; is in the batch mode.  If the following function returns
-	  ;; non-nil value, it means this function is called in the
-	  ;; batch mode, and we don't treat it as what it is called to
-	  ;; interactively.
+	  ;; Emacs 22 or later calls a Lisp command interactively even
+	  ;; if it is in the batch mode.  If the following function
+	  ;; returns non-nil value, it means this function is called in
+	  ;; the batch mode, and we don't treat it as what it is called
+	  ;; to interactively.
 	  (w3m-examine-command-line-args))
 	 new)
      (list
@@ -8622,7 +8625,7 @@ passed to the `w3m-quit' function (which see)."
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map w3m-mode-map)
     (define-key map [mouse-2] 'w3m-goto-url)
-    ;; Prevent tool-bar from being doubled under Emacs 21.
+    ;; Prevent tool-bar from being doubled under Emacs 21 and later.
     (define-key map [tool-bar] 'undefined)
     (setq w3m-header-line-map map)))
 

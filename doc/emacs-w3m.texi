@@ -372,18 +372,20 @@ reading web newspapers, you can use it with Gnus, Mew, Nana-gnus,
 T-gnus, Wanderlust, etc. @xref{Shimbun Library}.
 
 Note that the @acronym{FLIM} package requires the @acronym{APEL} package
-even if you are using Emacs 20.x or Emacs 21.x.  Therefore, you must
-install both @acronym{APEL} and @acronym{FLIM} if you would like to use
-the @samp{shimbun} library.  The @acronym{FLIM} package is available at:
+even if you are using Emacs 20.x, Emacs 21.x or Emacs 22.x.  Therefore,
+you must install both @acronym{APEL} and @acronym{FLIM} if you would
+like to use the @samp{shimbun} library.  The @acronym{FLIM} package is
+available at:
 
 @uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
 
 @item xml.el
 This file is required to use @samp{shimbun} modules designed for sites
 which provide update information with RSS format.  Because it is
-distributed with Emacs 21.x, you do not need to install it if you use
-Emacs 21.x.  Otherwise, you may simply copy it somewhere (e.g. the Emacs
-@file{site-lisp/} directory) and perform byte-compilation as follows:
+distributed with Emacs 21 and later, you do not need to install it if
+you use Emacs 21 or later.  Otherwise, you may simply copy it somewhere
+(e.g. the Emacs @file{site-lisp/} directory) and perform
+byte-compilation as follows:
 
 @example
 # cp -p attic/xml.el /usr/local/share/emacs/20.7/site-lisp
@@ -487,8 +489,8 @@ beforehand, use this:
 % make what-where
 @end example
 
-If you are using Emacs 21 or XEmacs, you had better install icon image
-files.  To do this:
+If you are using Emacs 21, 22 or XEmacs, you had better install icon
+image files.  To do this:
 
 @example
 % make install-icons
@@ -772,7 +774,7 @@ use Gnus or Mew (@code{w3m-goto-url}).
 @findex w3m-goto-url-new-session
 Prompt for a URL in the minibuffer, and display it in a new session.
 This function works just like @kbd{g}(@key{M-x w3m-goto-url}), except
-that it opens a new session.  When you use emacs-w3m on Emacs21 /
+that it opens a new session.  When you use emacs-w3m on Emacs 21, 22 or
 XEmacs, opening a new session means displaying the page in a new tab.
 For more information about tabs, please refer to @ref{Using Tabs}
 (@code{w3m-goto-url-new-session}).
@@ -1518,15 +1520,16 @@ in emacs-w3m buffers.}.
 @kindex C-c C-p
 @findex w3m-previous-buffer
 Move to the previous emacs-w3m buffer.  This is usually the next buffer
-to the left in the tabs line under Emacs 21.  If called with a numeric
-argument N, move N buffers to the previous (@code{w3m-previous-buffer}).
+to the left in the tabs line under Emacs 21 and later.  If called with a
+numeric argument N, move N buffers to the previous
+(@code{w3m-previous-buffer}).
 
 @item C-c C-n
 @kindex C-c C-n
 @findex w3m-next-buffer
 Move to the next emacs-w3m buffer.  This is usually the next buffer to
-the right in the tabs line under Emacs 21.  If called with a numeric
-argument N, move N buffers to the next (@code{w3m-next-buffer}).
+the right in the tabs line under Emacs 21 and later.  If called with a
+numeric argument N, move N buffers to the next (@code{w3m-next-buffer}).
 @end table
 
 Also note that if these commands don't fit you well despite our efforts,
@@ -2675,7 +2678,7 @@ option.
 @vindex w3m-track-mouse
 Whether to track the mouse and message the url under the mouse.  This
 feature does not work under Emacs or XEmacs versions prior to 21.  See
-also @code{show-help-function} if you are using Emacs 21.
+also @code{show-help-function} if you are using Emacs 21 or later.
 
 @noindent
 A tip for XEmacs users:
@@ -3505,6 +3508,7 @@ The following Emacsen have been checked for emacs-w3m support:
 @item Emacs 19.34
 @item Emacs 20
 @item Emacs 21
+@item Emacs 22
 @item XEmacs 21.1 with Mule
 @item XEmacs 21.2 with Mule (beta37 or greater)
 @item XEmacs 21.4 with/without Mule
@@ -5644,12 +5648,12 @@ with the @code{yahtml-mode}.  Here is an example:
 
 You can use JIS X 0213 character set in Emacs using the @code{jis0213}
 module which is bundled in the Mule-UCS package.  Although the
-@code{decode-char} function in Emacs 21 is overridden by @code{mucs}
-(@code{jis0213} loads @code{mucs}) and it stops working properly for the
-@code{ucs} coded character set, it has been reported that also to load
-the @code{unicode} module seems to solve the problem.  The reason has
-not been made clear yet.  Here is an example for the @file{~/.emacs}
-file:
+@code{decode-char} function in Emacs 21 and later is overridden by
+@code{mucs} (@code{jis0213} loads @code{mucs}) and it stops working
+properly for the @code{ucs} coded character set, it has been reported
+that also to load the @code{unicode} module seems to solve the problem.
+The reason has not been made clear yet.  Here is an example for the
+@file{~/.emacs} file:
 
 @lisp
 (require 'unicode)

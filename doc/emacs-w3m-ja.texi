@@ -408,9 +408,9 @@ byte-compile $B$9$l$PNI$$$G$9(B:
 $B%/%7%g%s$G!"(BGnus$B!"(BMew$B!"(BNana-gnus$B!"(BT-gnus$B!"(BWanderlust $B$J$I$H$H$b$K;H$&$3(B
 $B$H$,$G$-$^$9!#(B@xref{Shimbun Library}.
 
-$B$?$H$((B Emacs 20.x $B$+(B Emacs 21.x $B$r;H$C$F$$$k>l9g$G$b!"(B@acronym{FLIM} $B%Q%C(B
-$B%1!<%8$K$O(B @acronym{APEL} $B%Q%C%1!<%8$,I,MW$G$"$k$3$H$KCm0U$7$F2<$5$$!#$7(B
-$B$?$,$C$F(B @samp{shimbun} $B%i%$%V%i%j$r;H$&$K$O!"(B
+$B$?$H$((B Emacs 20.x$B!"(BEmacs 21.x $B$^$?$O(B Emacs 22.x $B$r;H$C$F$$$k>l9g$G$b!"(B
+@acronym{FLIM} $B%Q%C%1!<%8$K$O(B @acronym{APEL} $B%Q%C%1!<%8$,I,MW$G$"$k$3$H(B
+$B$KCm0U$7$F2<$5$$!#$7$?$,$C$F(B @samp{shimbun} $B%i%$%V%i%j$r;H$&$K$O!"(B
 @acronym{APEL} $B$H(B @acronym{FLIM} $B$NN>J}$r%$%s%9%H!<%k$7$J$1$l$P$J$j$^$;(B
 $B$s!#(B@acronym{FLIM} $B%Q%C%1!<%8$O0J2<$N>l=j$K$"$j$^$9(B:
 
@@ -418,7 +418,7 @@ byte-compile $B$9$l$PNI$$$G$9(B:
 
 @item xml.el
 $B99?7>pJs$,(B RSS $B7A<0$GG[I[$5$l$F$$$k%5%$%H$rBP>]$H$7$F(B @samp{shimbun} $B%i(B
-$B%$%V%i%j$rMxMQ$9$k>l9g$KI,MW$G$9!#(BEmacs 21.x $B$K$OF1:-$5$l$F$$$^$9$+$i!"(B
+$B%$%V%i%j$rMxMQ$9$k>l9g$KI,MW$G$9!#(BEmacs 21 $B0J>e$G$OF1:-$5$l$F$$$^$9$+$i!"(B
 $B%$%s%9%H!<%k$NI,MW$O$"$j$^$;$s!#$=$l0J30$N(B Emacsen $B$rMxMQ$7$F$$$k>l9g$O!"(B
 $B0J2<$N$h$&$K!"C1$K$I$3$+(B ($BNc$($P(B Emacs $B$N(B @file{site-lisp/} $B%G%#%l%/%H%j(B)
 $B$K%3%T!<$7$F(B byte-compile $B$9$l$PNI$$$G$9(B:
@@ -526,8 +526,8 @@ Emacs-w3m $B$r(B CVS $B$G<hF@$7$?$N$J$i$P!"(B@samp{configure} $B%9%/%j%W%H$
 % make what-where
 @end example
 
-Emacs 21 $B$^$?$O(B XEmacs $B$r;H$C$F$$$k$J$i$P!"%"%$%3%s2hA|$N%U%!%$%k$r%$%s(B
-$B%9%H!<%k$7$?J}$,NI$$$G$7$g$&!#$=$l$r9T$J$&$K$O(B:
+Emacs 21$B!"(B22 $B$^$?$O(B XEmacs $B$r;H$C$F$$$k$J$i$P!"%"%$%3%s2hA|$N%U%!%$%k$r(B
+$B%$%s%9%H!<%k$7$?J}$,NI$$$G$7$g$&!#$=$l$r9T$J$&$K$O(B:
 
 @example
 % make install-icons
@@ -826,9 +826,9 @@ Emacs-w3m $B$N%P%C%U%!$K$*$$$F!"%X%C%@%i%$%s$KI=<($5$l$F$$$k(B URL $B$N0LCV$K
 $B%_%K%P%C%U%!$G(B URL $B$NF~NO$r$&$J$,$7$F!"$=$l$r?7$7$$%;%C%7%g%s$GI=<($7$^(B
 $B$9!#$3$l$O$A$g$&$I(B @kbd{g} (@key{M-x w3m-goto-url}) $B$N$h$&$KF0:n$7$^$9$,!"(B
 $B?7$7$$%;%C%7%g%s$r3+$/$H$3$m$,0c$$$^$9!#(B
-Emacs21 $B$+(B XEmacs $B$G(B emacs-w3m $B$r;H$C$F$$$k$J$i$P!"?7$7$$%;%C%7%g%s$r3+(B
-$B$/$H$$$&$3$H$O!"$=$N%Z!<%8$r?7$7$$%?%V$GI=<($9$k$3$H$r0UL#$7$^$9!#%?%V$K(B
-$B$D$$$F$N$b$C$H>\$7$$$3$H$O!"(B@ref{Using Tabs} $B$r;2>H$7$F2<$5(B
+Emacs 21$B!"(B22 $B$^$?$O(B XEmacs $B$G(B emacs-w3m $B$r;H$C$F$$$k$J$i$P!"?7$7$$%;%C%7%g(B
+$B%s$r3+$/$H$$$&$3$H$O!"$=$N%Z!<%8$r?7$7$$%?%V$GI=<($9$k$3$H$r0UL#$7$^$9!#(B
+$B%?%V$K$D$$$F$N$b$C$H>\$7$$$3$H$O!"(B@ref{Using Tabs} $B$r;2>H$7$F2<$5(B
 $B$$(B (@code{w3m-goto-url-new-session})$B!#(B
 
 @item c
@@ -1572,16 +1572,16 @@ emacs-w3m $B$N%P%C%U%!$G$O$9$Y$F$N?t;z%-!<$H%^%$%J%95-9f$,?t$N@\F,0z?t$K3d(B
 @item C-c C-p
 @kindex C-c C-p
 @findex w3m-previous-buffer
-$BA0$N(B emacs-w3m $B%P%C%U%!$K0\F0$7$^$9!#(BEmacs 21 $B$G$O!"$3$l$ODL>o%?%V9T$K$*(B
-$B$$$F:8J}8~$K<!$G$9!#?t$N0z?t(B N $B$rIU$1$F;H$&$H!"%P%C%U%!$r(B N $B8DJ,A0$K0\F0(B
-$B$7$^$9(B (@code{w3m-previous-buffer})$B!#(B
+$BA0$N(B emacs-w3m $B%P%C%U%!$K0\F0$7$^$9!#(BEmacs 21 $B0J>e$G$O!"$3$l$ODL>o%?%V9T(B
+$B$K$*$$$F:8J}8~$K<!$G$9!#?t$N0z?t(B N $B$rIU$1$F;H$&$H!"%P%C%U%!$r(B N $B8DJ,A0$K(B
+$B0\F0$7$^$9(B (@code{w3m-previous-buffer})$B!#(B
 
 @item C-c C-n
 @kindex C-c C-n
 @findex w3m-next-buffer
-$B<!$N(B emacs-w3m $B%P%C%U%!$K0\F0$7$^$9!#(BEmacs 21 $B$G$O!"$3$l$ODL>o%?%V9T$K$*(B
-$B$$$F1&J}8~$K<!$G$9!#?t$N0z?t(B N $B$rIU$1$F;H$&$H!"%P%C%U%!$r(B N $B8DJ,<!$K0\F0(B
-$B$7$^$9(B (@code{w3m-next-buffer})$B!#(B
+$B<!$N(B emacs-w3m $B%P%C%U%!$K0\F0$7$^$9!#(BEmacs 21 $B0J>e$G$O!"$3$l$ODL>o%?%V9T(B
+$B$K$*$$$F1&J}8~$K<!$G$9!#?t$N0z?t(B N $B$rIU$1$F;H$&$H!"%P%C%U%!$r(B N $B8DJ,<!$K(B
+$B0\F0$7$^$9(B (@code{w3m-next-buffer})$B!#(B
 @end table
 
 $B;d$?$A$,9|$r@^$C$?$K$b$+$+$o$i$:!"$3$l$i$N%3%^%s%I$,$*5$$K>$$5$J$$$J$i$P!"(B
@@ -2769,7 +2769,7 @@ option.
 @vindex w3m-track-mouse
 Whether to track the mouse and message the url under the mouse.  This
 feature does not work under Emacs or XEmacs versions prior to 21.  See
-also @code{show-help-function} if you are using Emacs 21.
+also @code{show-help-function} if you are using Emacs 21 or later.
 
 @noindent
 A tip for XEmacs users:
@@ -3597,6 +3597,7 @@ Q. $BF0:n$9$k(B Emacs $B$O(B?
 @item Emacs 19.34
 @item Emacs 20
 @item Emacs 21
+@item Emacs 22
 @item XEmacs 21.1 with Mule
 @item XEmacs 21.2 with Mule (beta37$B0J9_(B)
 @item XEmacs 21.4 with/without Mule
@@ -5694,8 +5695,8 @@ Emacs-w3m $B$r;H$C$F!"(B@code{yahtml-mode} $B$G$^$5$KJT=8Cf$N(B HTML $B%U%!
 @item jisx0213
 
 Emacs $B$G$O(B Mule-UCS $B%Q%C%1!<%8$K4^$^$l$F$$$k(B @code{jis0213} $B%b%8%e!<%k$r(B
-$B;H$&$3$H$K$h$C$F!"(BJIS X 0213 $BJ8;z%;%C%H$r;H$&$3$H$,$G$-$^$9!#(BEmacs 21 $B$G(B
-$B$O(B @code{decode-char} $B4X?t$,(B @code{mucs} $B$K$h$C$F>e=q$-$5$l$F$7$^(B
+$B;H$&$3$H$K$h$C$F!"(BJIS X 0213 $BJ8;z%;%C%H$r;H$&$3$H$,$G$-$^$9!#(BEmacs 21 $B0J(B
+$B>e$G$O(B @code{decode-char} $B4X?t$,(B @code{mucs} $B$K$h$C$F>e=q$-$5$l$F$7$^(B
 $B$&(B (@code{jis0213} $B$,(B @code{mucs} $B$rFI$_9~$`(B) $B$?$a$K!"(B@code{ucs} CCS $B$K(B
 $BBP$7$F@5$7$/F0:n$7$J$/$J$C$F$7$^$$$^$9$,!"$5$i$K(B @code{unicode} $B%b%8%e!<(B
 $B%k$rFI$_9~$`$3$H$K$h$C$F!"$=$NLdBj$,2r7h$5$l$k$h$&$K8+$($k$H$$$&Js9p$,$"(B

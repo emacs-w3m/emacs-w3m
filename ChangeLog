@@ -1,5 +1,7 @@
 2005-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-e21.el (display-images-p): Remove alias.
+
 	* shimbun/sb-fau.el (shimbun-article): New overriding method to
 	decode article contents according to shimbun-fau-coding-system.
 

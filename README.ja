@@ -41,10 +41,14 @@
 
    a) Emacs 21.x
       emacs-w3m を動かすために，余分にインストールが必要なモジュールはあ
+      りません．
+
+   b) Emacs 22.x
+      emacs-w3m を動かすために，余分にインストールが必要なモジュールはあ
       りません．CVS head の Emacs を使う場合，それは 2004年3月以降のバー
       ジョンである必要があります．
 
-   b) Emacs 20.x
+   c) Emacs 20.x
       emacs-w3m を動かすために，余分にインストールが必要なモジュールはあ
       りません．
 
@@ -53,7 +57,7 @@
 
           ftp://ftp.jpl.org/pub/elisp/bitmap/
 
-   c) XEmacs
+   d) XEmacs 21.x
       APEL を前もってインストールしておく必要があります．
 
           ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz
@@ -79,7 +83,7 @@
 
           http://www.lcdf.org/gifsicle/
 
-   d) Mule 2.3 (based on Emacs 19.34)
+   e) Mule 2.3 (based on Emacs 19.34)
       APEL を前もってインストールしておく必要があります．更に，「新しい
       custom」と regexp-opt.el(c) モジュールも必要です．詳しくは，次の
       Emacs 19.34 についての説明を参照してください．
@@ -91,7 +95,7 @@
       patches/mule-2.3@19.34.patch という名前で，本パッケージに同梱され
       ています．
 
-   e) Emacs 19.34 (without MULE)
+   f) Emacs 19.34 (without MULE)
       APEL を前もってインストールしておく必要があります．
 
       emacs-w3m は「新しい custom」パッケージを必要とします．Emacs 19.34

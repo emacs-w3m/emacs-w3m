@@ -79,7 +79,7 @@ with :value-from."
 
 (apply 'define-widget 'w3m-antenna-function 'function
        "Bug-fixed version of the `function' widget.
-In Emacs 20.7 through 21.3 and XEmacs, it doesn't represent a value as
+In Emacs 20.7 through 21.4 and XEmacs, it doesn't represent a value as
 a string internally, converts it into a string in the customization
 buffer, and provides the default value as `ignore'."
        (if (and (fboundp 'widget-default-get)

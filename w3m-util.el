@@ -505,7 +505,7 @@ This function is added to the hook which is different with the Emacs
 version as follows:
 
 XEmacs          `create-frame-hook'
-Emacs 20,21     `after-make-frame-functions'
+Emacs 20-22     `after-make-frame-functions'
 Emacs 19        `after-make-frame-hook'
 
 Note that `after-make-frame-hook' doesn't take an argument."
@@ -541,8 +541,8 @@ Note that `after-make-frame-hook' doesn't take an argument."
   "Delete FRAME from `w3m-initial-frames', the buffer-local variable.
 It is done when the FRAME in which emacs-w3m is running is deleted.
 This function is added to `delete-frame-hook' (`delete-frame-functions'
-is used instead in Emacs 21.4) or merged into the `delete-frame'
-function using `defadvice'."
+is used instead in Emacs 22) or merged into the `delete-frame' function
+using `defadvice'."
   (save-current-buffer
     (dolist (buffer (w3m-list-buffers t))
       (set-buffer buffer)
