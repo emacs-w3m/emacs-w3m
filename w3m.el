@@ -3485,6 +3485,7 @@ Return t if deleting current frame or window is succeeded."
 \\[w3m-print-this-url]	Print this url.
 \\[w3m-view-image]	View image.
 \\[w3m-save-image]	Save image.
+\\[w3m-toggle-inline-images]	Toggle displaying of inline images on current buffer.
 
 \\[w3m-print-current-url]	Print current url.
 \\[w3m-view-current-url-with-external-browser]	View current url with external browser.

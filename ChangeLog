@@ -1,4 +1,9 @@
-2001-10-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+2001-10-01  Masatake YAMATO  <jet@gyve.org>
+
+	* w3m.el (w3m-mode): Added `w3m-toggle-inline-images' to the
+	mode description.
+
+2001-10-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-edit-url-directory-alist): New option.
 	(w3m-edit-url): New function.
