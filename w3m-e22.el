@@ -628,13 +628,15 @@ cleared by a timer.")
 	    (propertize
 	     (concat
 	      (when graphic w3m-tab-half-space)
-	      (if (and (> (string-width title) breadth)
-		       (> breadth 6))
-		  (truncate-string-to-width
-		   (concat (truncate-string-to-width title (- breadth 3))
-			   "...")
-		   breadth nil ?.)
-		(truncate-string-to-width title breadth nil ?\ )))
+	      (replace-regexp-in-string
+	       "%" "%%"
+	       (if (and (> (string-width title) breadth)
+			(> breadth 6))
+		   (truncate-string-to-width
+		    (concat (truncate-string-to-width title (- breadth 3))
+			    "...")
+		    breadth nil ?.)
+		 (truncate-string-to-width title breadth nil ?\ ))))
 	     'face face
 	     'local-map keymap
 	     'help-echo title)
