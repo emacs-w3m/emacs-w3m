@@ -1,8 +1,18 @@
 2001-03-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-hist.el (w3m-history-with-elements): New macro.
+	(w3m-history-rename-url): Use it.
+	(w3m-history-remove-properties): Use it.
+	(w3m-history-add-properties): Use it.
+	(w3m-history-plist-put): Use it.
+
+2001-03-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-hist.el (w3m-history-rename-url): New function.
-	(w3m-history-remove-properties, w3m-history-add-properties):
-	(w3m-history-plist-put, w3m-history-plist-get): New functions.
+	(w3m-history-remove-properties): New function.
+	(w3m-history-add-properties): New function.
+	(w3m-history-plist-put): New function.
+	(w3m-history-plist-get): New function.
 	(w3m-history-assoc): Return a history element of `w3m-history-flat'
 	instead of `w3m-history'.
 
