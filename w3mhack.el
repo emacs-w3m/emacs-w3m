@@ -1,6 +1,6 @@
 ;;; w3mhack.el --- a hack to setup the environment for building w3m
 
-;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -905,6 +905,14 @@ NOTE: This function must be called from the top directory."
 			    (delete-region (point) (save-excursion
 						     (forward-line 1)
 						     (point))))))))))
+	    ;; Insert one excessive newline after a @foo{bar} thing to
+	    ;; prevent clinging of a line and a line (old texinfmt bug?)
+	    ;; if it should be considered only one thing in a line.
+	    (goto-char (point-min))
+	    (while (re-search-forward "^[\t ]*@[a-z]+{.+}[\t ]*\n[\t ]*\n"
+				      nil t)
+	      (if (not (looking-at "[\t ]*$\\|[\t ]*@[a-z]+[\t\n ]"))
+		  (insert "\n")))
 	    (texinfo-mode)
 	    (texinfo-every-node-update)
 	    (set-buffer-modified-p nil)
