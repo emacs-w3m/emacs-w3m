@@ -1,3 +1,7 @@
+2003-07-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* attic/xml.el: Import contrib/xml.el of Oort Gnus.
+
 2003-07-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-bookmark.el (w3m-bookmark-add): Encode special characters
