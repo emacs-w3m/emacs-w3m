@@ -1,3 +1,19 @@
+2001-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-setup-header-line): New function except for Emacs 21
+	nor XEmacs.
+	(w3m-header-line-map): New variable except for Emacs 21 nor XEmacs.
+	(w3m-fontify-after-hook): Use it for emulating a header-line.
+	(w3m-header-line-location-content-face): New face except for Emacs
+	21.
+	(w3m-header-line-location-title-face): Ditto.
+	(w3m-use-header-line): Moved from w3m-e21.el.
+
+	* w3m-xmas.el (w3m-setup-header-line): New function.
+	(w3m-header-line-map): New variable.
+
+	* w3m-e21.el (w3m-use-header-line): Moved to w3m.el.
+
 2001-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* icons/parent-up.xpm: Reduced color depth.
