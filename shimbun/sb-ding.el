@@ -24,13 +24,16 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-xemacs)
+(require 'sb-glimpse)
 
-(luna-define-class shimbun-ding (shimbun-xemacs) ())
+(luna-define-class shimbun-ding (shimbun-glimpse) ())
 
 (defvar shimbun-ding-url "http://www.gnus.org/list-archives/")
 (defvar shimbun-ding-groups '("ding"))
 (defvar shimbun-ding-coding-system 'iso-8859-1)
+(defvar shimbun-ding-reverse-flag nil)
+(defvar shimbun-ding-litemplate-regexp
+  "<td><strong><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a></strong>\n<td><em>\\([^<]+\\)</em>")
 
 (provide 'sb-ding)
 

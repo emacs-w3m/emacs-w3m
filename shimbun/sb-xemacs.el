@@ -31,9 +31,9 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-mhonarc)
+(require 'sb-glimpse)
 
-(luna-define-class shimbun-xemacs (shimbun-mhonarc) ())
+(luna-define-class shimbun-xemacs (shimbun-glimpse) ())
 
 (defvar shimbun-xemacs-url "http://list-archives.xemacs.org/")
 (defvar shimbun-xemacs-groups '("xemacs-announce"
@@ -42,70 +42,9 @@
 				"xemacs-mule" "xemacs-nt" "xemacs-patches"
 				"xemacs-users-ja" "xemacs"))
 (defvar shimbun-xemacs-coding-system 'euc-jp)
-
-(defmacro shimbun-xemacs-concat-url (shimbun url)
-  (` (concat (shimbun-url-internal shimbun)
-	     (shimbun-current-group-internal shimbun) "/" (, url))))
-
-(luna-define-method shimbun-index-url ((shimbun shimbun-xemacs))
-  (shimbun-xemacs-concat-url shimbun nil))
-
-(luna-define-method shimbun-get-headers ((shimbun shimbun-xemacs))
-  (let ((case-fold-search t)
-	(path (if (string-match "http://[^/]+\\(/.*\\)"
-				(shimbun-index-url shimbun))
-		  (match-string 1 (shimbun-index-url shimbun))
-		"/"))
-	headers auxs aux)
-    (catch 'stop
-      (if (shimbun-use-entire-index-internal shimbun)
-	  (while (re-search-forward
-		  (concat "<A HREF=\"" path
-			  "\\([12][0-9][0-9][0-9][0-1][0-9]\\)/\">\\[Index\\]")
-		  nil t)
-	    (setq auxs (append auxs (list (match-string 1)))))
-	(if (re-search-forward
-	     (concat "<A HREF=\"" path
-		     "\\([12][0-9][0-9][0-9][0-1][0-9]\\)/\">\\[Index\\]")
-	     nil t)
-	    (setq auxs (append auxs (list (match-string 1))))))
-      (while auxs
-	(shimbun-retrieve-url
-	 (shimbun-xemacs-concat-url shimbun
-				    (concat (setq aux (car auxs)) "/"))
-	 'reload 'binary)
-	(set-buffer-multibyte t)
-	(decode-coding-region (point-min) (point-max)
-			      (shimbun-coding-system-internal shimbun))
-	(let ((case-fold-search t)
-	      id url subject)
-	  (goto-char (point-max))
-	  (while (re-search-backward
-		  "<A[^>]*HREF=\"\\(msg\\([0-9]+\\).html\\)\">\\([^<]+\\)<"
-		  nil t)
-	    (setq url (shimbun-xemacs-concat-url
-		       shimbun
-		       (concat aux "/" (match-string 1)))
-		  id (format "<%s%05d%%%s>"
-			     aux
-			     (string-to-number (match-string 2))
-			     (shimbun-current-group-internal shimbun))
-		  subject (match-string 3))
-	    (forward-line 1)
-	    (if (shimbun-search-id shimbun id)
-		(throw 'stop headers)
-	      (push (shimbun-make-header
-		     0
-		     (save-match-data (shimbun-mime-encode-string subject))
-		     (shimbun-mime-encode-string
-		      (if (looking-at "<td><em>\\([^<]+\\)<")
-			  (match-string 1)
-			""))
-		     "" id "" 0 0 url)
-		    headers)
-	      (forward-line -2))))
-	(setq auxs (cdr auxs))))
-    headers))
+(defvar shimbun-xemacs-reverse-flag nil)
+(defvar shimbun-xemacs-litemplate-regexp
+  "<td><strong><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a></strong>\n<td><em>\\([^<]+\\)</em>")
 
 (provide 'sb-xemacs)
 

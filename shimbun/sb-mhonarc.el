@@ -59,21 +59,29 @@
     (shimbun-mhonarc-get-headers shimbun
 				 (shimbun-index-url shimbun))))
 
+(defun shimbun-mhonarc-replace-newline-to-space (string)
+  (let ((i (length string)))
+    (while (> i 0)
+      (setq i (1- i))
+      (when (eq (aref string i) ?\n)
+	(aset string i ? )))
+    string))
+
 (defmacro shimbun-mhonarc-extract-header-values (shimbun url headers aux)
-  `(let ((id (format "<%s%s%%%s>"
-		     (or ,aux "")
-		     (match-string 1)
-		     (shimbun-current-group-internal ,shimbun)))
-	 (url (shimbun-expand-url (match-string 2) ,url))
-	 (subject (subst-char-in-string ?\n ?  (match-string 3)))
-	 (from (subst-char-in-string ?\n ?  (match-string 4))))
-     (if (shimbun-search-id ,shimbun id)
-	 (throw 'stop ,headers)
-       (push (shimbun-make-header 0
-				  (shimbun-mime-encode-string subject)
-				  (shimbun-mime-encode-string from)
-				  "" id "" 0 0 url)
-	     ,headers))))
+  (` (let ((id (format "<%s%s%%%s>"
+		       (or (, aux) "")
+		       (match-string 1)
+		       (shimbun-current-group-internal (, shimbun))))
+	   (url (shimbun-expand-url (match-string 2) (, url)))
+	   (subject (shimbun-mhonarc-replace-newline-to-space (match-string 3)))
+	   (from (shimbun-mhonarc-replace-newline-to-space (match-string 4))))
+       (if (shimbun-search-id (, shimbun) id)
+	   (throw 'stop (, headers))
+	 (push (shimbun-make-header 0
+				    (shimbun-mime-encode-string subject)
+				    (shimbun-mime-encode-string from)
+				    "" id "" 0 0 url)
+	       (, headers))))))
   
 (defun shimbun-mhonarc-get-headers (shimbun url &optional headers aux)
   (let ((case-fold-search t)

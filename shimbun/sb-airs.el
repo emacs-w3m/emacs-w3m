@@ -39,6 +39,9 @@
 (defvar shimbun-airs-url "http://lists.airs.net/")
 (defvar shimbun-airs-groups (mapcar 'car shimbun-airs-group-path-alist))
 (defvar shimbun-airs-coding-system 'euc-jp)
+(defvar shimbun-airs-reverse-flag nil)
+(defvar shimbun-airs-litemplate-regexp
+  "<STRONG><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a></STRONG> <EM>\\([^<]+\\)</EM>")
 
 (defmacro shimbun-airs-concat-url (shimbun url)
   (` (concat (shimbun-url-internal (, shimbun))
@@ -67,34 +70,10 @@
 	    (push (match-string 1) months)))
       (setq months (nreverse months))
       (dolist (month months)
-	(shimbun-retrieve-url
-	 (shimbun-airs-concat-url shimbun (concat month "/index.html"))
-	 t)
-	(let (id url subject)
-	  (goto-char (point-max))
-	  (while (re-search-backward
-		  "<A[^>]*HREF=\"\\(msg\\([0-9]+\\)\\.html\\)\">\\([^<]+\\)</A>"
-		  nil t)
-	    (setq url (shimbun-airs-concat-url
-		       shimbun
-		       (concat month "/" (match-string 1)))
-		  id (format "<%s%05d%%%s>"
-			     month
-			     (string-to-number (match-string 2))
-			     (shimbun-current-group-internal shimbun))
-		  subject (match-string 3))
-	    (if (shimbun-search-id shimbun id)
-		(throw 'stop headers)
-	      (save-excursion
-		(goto-char (match-end 0))
-		(push (shimbun-make-header
-		       0
-		       (shimbun-mime-encode-string subject)
-		       (if (looking-at "</STRONG> *<EM>\\([^<]+\\)<")
-			   (shimbun-mime-encode-string (match-string 1))
-			 "")
-		       "" id "" 0 0 url)
-		      headers)))))))
+	(let ((url (shimbun-airs-concat-url shimbun (concat month "/"))))
+	  (shimbun-retrieve-url url t)
+	  (setq headers
+		(shimbun-mhonarc-get-headers shimbun url headers month)))))
     headers))
 
 (provide 'sb-airs)

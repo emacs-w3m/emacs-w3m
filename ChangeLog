@@ -1,3 +1,32 @@
+2001-05-24  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-h14m.el: New file.
+
+	* shimbun/sb-xemacs.el: Require `sb-glimpse' instead of `sb-mhonarc'.
+	(shimbun-xemacs): Inherit `shimbun-glimpse' instead of
+	`shimbun-mhonarc'.
+	(shimbun-xemacs-concat-url,shimbun-index-url,shimbun-get-headers):
+	Removed.
+	(shimbun-xemacs-reverse-flag): New variable.
+	(shimbun-xemacs-litemplate-regexp): New variable.
+
+	* shimbun/sb-ding.el: Require `sb-glimpse' instead of `sb-xemacs'.
+	(shimbun-ding): Inherit `shimbun-glimpse' instead of `shimbun-xemacs'.
+	(shimbun-ding-reverse-flag): New variable.
+	(shimbun-ding-litemplate-regexp): New variable.
+
+	* shimbun/sb-glimpse.el: New file.
+
+	* shimbun/sb-airs.el (shimbun-airs-reverse-flag): New variable.
+	(shimbun-airs-litemplate-regexp): New variable.
+	(shimbun-get-headers): Use `shimbun-mhonarc-get-headers'.
+
+	* shimbun/sb-mhonarc.el (shimbun-mhonarc-replace-newline-to-space):
+	New function.
+	(shimbun-mhonarc-extract-header-values): Convert to old style of
+	macro defintion; Use `shimbun-mhonarc-replace-newline-to-space'
+	instead of `subst-char-in-string'.
+
 2001-05-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-euc-japan-decoder): Not define when it has been
