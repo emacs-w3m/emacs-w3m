@@ -1,3 +1,31 @@
+2002-08-28  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-delete-buffer-hook): New hook.
+	(w3m-other-delete-buffers-hook): Ditto.
+	(w3m-previous-buffer-hook): Ditto.
+	(w3m-next-buffer-hook): Ditto.
+	(w3m-view-this-url-new-session-in-background): Fixed docstring.
+	(w3m-next-buffer): Run `w3m-next-buffer-hook'.
+	(w3m-previous-buffer): Run `w3m-previous-buffer-hook'.
+	(w3m-delete-buffer): Run `w3m-delete-buffer-hook'.
+	(w3m-delete-other-buffers): Run `w3m-delete-other-buffers-hook'.
+	(w3m-pack-buffer-numbers): New function.
+	(w3m-delete-buffer-hook): Add `w3m-pack-buffer-numbers'.
+	(w3m-delete-other-buffer-hook): Add `w3m-pack-buffer-numbers'.
+
+	* w3m-util.el (w3m-buffer-number): New inline function.
+	(w3m-buffer-set-number): Ditto.
+
+	* w3m-e21.el (w3m-update-tab-line): New function.
+	(w3m-mode-hook): Add `w3m-update-tab-line'.
+	(w3m-fontify-after-hook): Ditto.
+	(w3m-previous-buffer-hook): Ditto.
+	(w3m-next-buffer-hook): Ditto.
+	(w3m-delete-buffer-hook): Ditto.
+	(w3m-delete-other-buffers-hook): Ditto.
+	(w3m-tab-width): Changed default value to 16.
+	(w3m-tab-line): Calculate tab width dinamically.
+
 2002-08-27  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-output-coding-system,

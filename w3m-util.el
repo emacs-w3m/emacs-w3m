@@ -262,6 +262,23 @@ An argument of nil means kill the current buffer."
 	 w3m-current-url)))
      (t "<no-title>"))))
 
+(defsubst w3m-buffer-number (buffer)
+  (when (and (bufferp buffer)
+	     (string-match "\\`\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'"
+			   (buffer-name buffer)))
+    (if (match-beginning 1)
+	(string-to-number (match-string 2 (buffer-name buffer)))
+      0)))
+
+(defsubst w3m-buffer-set-number (buffer number)
+  (unless (eq (w3m-buffer-number buffer) number)
+    (with-current-buffer buffer
+      (let ((newname (if (zerop number)
+			 "*w3m*"
+		       (format "*w3m*<%d>" number))))
+	(unless (get-buffer newname)
+	  (rename-buffer newname))))))
+
 (defun w3m-buffer-name-lessp (x y)
   "Return t if first arg buffer's name is less than second."
   (when (bufferp x)

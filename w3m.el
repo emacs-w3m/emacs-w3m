@@ -705,6 +705,26 @@ of the original request method. -- RFC2616"
   :group 'w3m
   :type 'hook)
 
+(defcustom w3m-delete-buffer-hook nil
+  "*Hook run at the end of `w3m-delete-buffer'"
+  :group 'w3m
+  :type 'hook)
+
+(defcustom w3m-delete-other-buffers-hook nil
+  "*Hook run at the end of `w3m-delete-other-buffers'"
+  :group 'w3m
+  :type 'hook)
+
+(defcustom w3m-previous-buffer-hook nil
+  "*Hook run at the end of `w3m-previous-buffer'"
+  :group 'w3m
+  :type 'hook)
+
+(defcustom w3m-next-buffer-hook nil
+  "*Hook run at the end of `w3m-next-buffer'"
+  :group 'w3m
+  :type 'hook)
+
 (defcustom w3m-async-exec (not (memq system-type '(macos)))
   "*If non-nil, w3m is executed as an asynchronous process.  Note that
 setting this option to t is harmful on some platforms.  As far as we
@@ -980,7 +1000,7 @@ recommended a bit that setting both this option and the option
   :type 'boolean)
 
 (defcustom w3m-view-this-url-new-session-in-background nil
-  "Link URL with a new session without switching to the newly created buffer."
+  "Execute `w3m-view-this-url' without switching to the newly created buffer."
   :group 'w3m
   :type 'boolean)
 
@@ -4609,7 +4629,8 @@ If EMPTY is non-nil, the created buffer has empty content."
   (let ((buffers (w3m-list-buffers)))
     (switch-to-buffer
      (or (cadr (memq (current-buffer) buffers))
-	 (car buffers)))))
+	 (car buffers))))
+  (run-hooks 'w3m-next-buffer-hook))
 
 (defun w3m-previous-buffer ()
   "Switch to previous w3m buffer."
@@ -4617,7 +4638,8 @@ If EMPTY is non-nil, the created buffer has empty content."
   (let ((buffers (nreverse (w3m-list-buffers))))
     (switch-to-buffer
      (or (cadr (memq (current-buffer) buffers))
-	 (car buffers)))))
+	 (car buffers))))
+  (run-hooks 'w3m-previous-buffer-hook))
 
 (defun w3m-delete-buffer (&optional force)
   "Delete w3m buffer and switch to previous w3m buffer if exists."
@@ -4627,7 +4649,20 @@ If EMPTY is non-nil, the created buffer has empty content."
     (let ((buffer (current-buffer)))
       (w3m-previous-buffer)
       (kill-buffer buffer))
-    (w3m-select-buffer-update)))
+    (w3m-select-buffer-update))
+  (run-hooks 'w3m-delete-buffer-hook))
+
+(defun w3m-pack-buffer-numbers ()
+  "Pack w3m buffer numbers."
+  (interactive)
+  (let ((count 0) number)
+    (dolist (buffer (w3m-list-buffers))
+      (setq number (w3m-buffer-number buffer))
+      (when number
+	(unless (eq number count)
+	  (w3m-buffer-set-number buffer count))
+	(incf count)))))
+(add-hook 'w3m-delete-buffer-hook 'w3m-pack-buffer-numbers)
 
 (defun w3m-delete-other-buffers (&optional buffer)
   "Delete w3m buffers except for the current buffer.
@@ -4646,7 +4681,9 @@ The optional argument BUFFER will be used exclusively by the command
 	  (delete-window window)))
       ;; Kill a buffer.
       (kill-buffer buffer)))
-  (w3m-select-buffer-update))
+  (w3m-select-buffer-update)
+  (run-hooks 'w3m-delete-other-buffers-hook))
+(add-hook 'w3m-delete-other-buffers-hook 'w3m-pack-buffer-numbers)
 
 (defvar w3m-lynx-like-map nil
   "Lynx-like keymap used in w3m-mode buffers.")

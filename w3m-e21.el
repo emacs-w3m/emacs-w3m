@@ -488,7 +488,7 @@ Each information is a list whose elements are:
 (add-hook 'w3m-arrived-shutdown-hook 'w3m-favicon-save-cache-file)
 
 ;;; Header line & Tabs
-(defcustom w3m-tab-width 11
+(defcustom w3m-tab-width 16
   "w3m tab width."
   :group 'w3m
   :type 'integer)
@@ -596,7 +596,12 @@ Each information is a list whose elements are:
     map))
 
 (defun w3m-tab-line ()
-  (let ((current (current-buffer)))
+  (let* ((current (current-buffer))
+	 (buffers (w3m-list-buffers))
+	 (width (if (> (* (length buffers) (+ 5 w3m-tab-width))
+		       (window-width))
+		    (max (- (/ (window-width) (length buffers)) 5) 1)
+		  w3m-tab-width)))
     (concat
      (save-current-buffer
        (mapconcat
@@ -605,16 +610,23 @@ Each information is a list whose elements are:
 		(favicon (if w3m-use-favicon (w3m-buffer-favicon buffer))))
 	    (propertize
 	     (concat (if favicon
-			 (propertize " " 'display favicon)
-		       " ")
-		     (if (and (> w3m-tab-width 0)
-			      (> (string-width title) w3m-tab-width))
-			 (concat (truncate-string-to-width
-				  title
-				  (max 0 (- w3m-tab-width 3)))
-				 "...")
-		       title)
-		     " ")
+			 (propertize "  " 'display favicon)
+		       "  ")
+		     (if (and (> width 0)
+			      (> (string-width title) width))
+			 (if (> width 6)
+			     (concat
+			      (truncate-string-to-width
+			       title
+			       (max 0 (- width 3)))
+			      "...")
+			   (truncate-string-to-width title width))
+		       (concat title (make-string (max 0
+						       (- 
+							width
+							(string-width title)))
+						  ?\ )))
+		     "  ")
 	     'mouse-face 'highlight
 	     'face (if (progn (set-buffer buffer) w3m-current-process)
 		       (if (eq buffer current)
@@ -625,13 +637,25 @@ Each information is a list whose elements are:
 		       'w3m-tab-unselected-face))
 	     'local-map (w3m-tab-make-keymap buffer)
 	     'help-echo title)))
-	(w3m-list-buffers)
+	buffers
 	(propertize " " 'face 'w3m-tab-background-face)))
      (propertize (make-string (window-width) ?\ )
 		 'face 'w3m-tab-background-face))))
 
+(defun w3m-update-tab-line ()
+  "Update tab line."
+  (when w3m-use-tab
+    (set-cursor-color (frame-parameter (selected-frame) 'cursor-color))))
+
 (add-hook 'w3m-mode-hook 'w3m-setup-header-line)
 (add-hook 'w3m-mode-hook 'w3m-setup-widget-faces)
+;; Redraw tab lines.
+(add-hook 'w3m-mode-hook 'w3m-update-tab-line)
+(add-hook 'w3m-fontify-after-hook 'w3m-update-tab-line)
+(add-hook 'w3m-next-buffer-hook 'w3m-update-tab-line)
+(add-hook 'w3m-previous-buffer-hook 'w3m-update-tab-line)
+(add-hook 'w3m-delete-buffer-hook 'w3m-update-tab-line)
+(add-hook 'w3m-delete-other-buffers-hook 'w3m-update-tab-line)
 
 (provide 'w3m-e21)
 
