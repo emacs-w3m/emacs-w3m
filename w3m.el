@@ -44,21 +44,12 @@
 
 ;;; Code:
 
-(eval-and-compile
-  (cond
-   ((featurep 'xemacs)
-    (require 'w3m-xmas))
-   ((and (boundp 'emacs-major-version)
-	 (>= emacs-major-version 21))
-    (require 'w3m-e21))
-   ((boundp 'MULE)
-    (require 'w3m-om))))
-
-(require 'w3m-hist)
-(require 'thingatpt)
-(require 'timezone)
-
-;; this package using a few CL macros
+;; Developers, you must not use the cl functions (e.g. `butlast',
+;; `coerce', `merge', etc.) in any emacs-w3m or shimbun modules.  To
+;; exclude a run-time cl is the policy of emacs-w3m.  However, XEmacs
+;; employs a cl package for all the time, or that functions were
+;; possibly provided in the other modules as such as APEL, so you may
+;; use them only in w3m-xmas.el or w3m-om.el.
 (eval-when-compile
   (require 'cl))
 
@@ -67,27 +58,23 @@
   (unless (dolist (var nil t))
     (load "cl-macs" nil t)))
 
-(put 'w3m-static-if 'lisp-indent-function 2)
-(eval-and-compile
-  (defmacro w3m-static-if (cond then &rest else)
-    (if (eval cond) then (` (progn  (,@ else)))))
-  (defmacro w3m-static-cond (&rest clauses)
-    (while (and clauses
-		(not (eval (car (car clauses)))))
-      (setq clauses (cdr clauses)))
-    (if clauses
-	(cons 'progn (cdr (car clauses))))))
+(require 'w3m-macro)
 
-(w3m-static-cond
- ((fboundp 'find-coding-system)
-  (defalias 'w3m-find-coding-system 'find-coding-system))
- ((fboundp 'coding-system-p)
-  (defsubst w3m-find-coding-system (obj)
-    "Return OBJ if it is a coding-system."
-    (if (coding-system-p obj) obj)))
- (t
-  (require 'pces)
-  (defalias 'w3m-find-coding-system 'find-coding-system)))
+(eval-and-compile
+  (cond
+   ((featurep 'xemacs)
+    (require 'w3m-xmas))
+   ((and (boundp 'emacs-major-version)
+	 (>= emacs-major-version 21))
+    (require 'w3m-e21))
+   ((boundp 'MULE)
+    (require 'w3m-om))
+   (t
+    (require 'w3m-e20))))
+
+(require 'w3m-hist)
+(require 'thingatpt)
+(require 'timezone)
 
 ;; Add-on programs:
 (eval-and-compile
@@ -483,13 +470,9 @@ It will be used for the w3m system internal for Emacs 21.")
 	   (x-shift-jis   . shift_jis)
 	   (x-shift_jis   . shift_jis)
 	   (x-sjis        . shift_jis)))
-	(fn (if (fboundp 'find-coding-system)
-		;; It might be unbound at run-time.
-		'find-coding-system
-	      'coding-system-p))
 	dest)
     (while rest
-      (or (funcall fn (car (car rest)))
+      (or (w3m-find-coding-system (car (car rest)))
 	  (setq dest (cons (car rest) dest)))
       (setq rest (cdr rest)))
     dest)
@@ -650,6 +633,8 @@ If 'w3m-dtree, display directory tree by the use of w3m-dtree."
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-title)
 
+(defvar w3m-current-buffer nil "The current w3m buffer.")
+
 (defvar w3m-verbose t "Flag variable to control messages.")
 
 (defvar w3m-cache-buffer nil)
@@ -799,14 +784,6 @@ for a charset indication")
   "Regexp of urls to be ignored in a history.")
 
 ;; Generic macros and inline functions:
-(put 'w3m-with-work-buffer 'lisp-indent-function 0)
-(put 'w3m-with-work-buffer 'edebug-form-spec '(body))
-(defmacro w3m-with-work-buffer (&rest body)
-  "Execute the forms in BODY with working buffer as the current buffer."
-  (` (with-current-buffer
-	 (w3m-get-buffer-create w3m-work-buffer-name)
-       (,@ body))))
-
 (defsubst w3m-attributes (url &optional no-cache)
   "Return a list of attributes of URL.
 Value is nil if retirieval of header is failed.  Otherwise, list
@@ -865,26 +842,6 @@ cursor position and around there."
   (if position
       (` (get-text-property (, position) 'w3m-cursor-anchor))
     (` (get-text-property (point) 'w3m-cursor-anchor))))
-
-(defmacro w3m-add-text-properties (start end props &optional object)
-  "Like `add-text-properties' but always add the non-sticky properties."
-  (let ((non-stickies
-	 (if (featurep 'xemacs)
-	     ;; Default to start-closed and end-open in XEmacsen.
-	     '(list 'start-open t)
-	   ;; Default to front-nonsticky and rear-sticky in FSF Emacsen.
-	   '(list 'rear-nonsticky t))))
-    (` (add-text-properties (, start) (, end)
-			    (append (, non-stickies) (, props))
-			    (, object)))))
-
-(defsubst w3m-get-buffer-create (name)
-  "Return the buffer named NAME, or create such a buffer and return it."
-  (or (get-buffer name)
-      (let ((buf (get-buffer-create name)))
-	(setq w3m-work-buffer-list (cons buf w3m-work-buffer-list))
-	(buffer-disable-undo buf)
-	buf)))
 
 (defmacro w3m-make-help-echo (property)
   "Make a function for showing a `help-echo' string."
@@ -1313,19 +1270,9 @@ If N is negative, last N items of LIST is returned."
   (cdr (assoc content-type w3m-image-type-alist)))
 
 (eval-and-compile
-  (unless (fboundp 'w3m-create-image)
-    (defun w3m-create-image (url &optional no-cache)))
-  (unless (fboundp 'w3m-insert-image)
-    (defun w3m-insert-image (beg end image)))
-  (unless (fboundp 'w3m-image-type-available-p)
-    (defun w3m-image-type-available-p (image-type)
-      "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
-      nil))
-  ;; Menu
-  (unless (fboundp 'w3m-setup-toolbar)
-    (defun w3m-setup-toolbar ()))
-  (unless (fboundp 'w3m-setup-menu)
+  (unless (featurep 'xemacs)
     (defun w3m-setup-menu ()
+      "Define menubar buttons for FSF Emacsen."
       (let ((items (mapcar 'car (cdr (lookup-key global-map [menu-bar])))))
 	(when items
 	  ;; Locate W3M menu in the forefront of the menubar.
@@ -1340,18 +1287,7 @@ If N is negative, last N items of LIST is returned."
 							(aref def 1)))
 	    (put (aref def 1) 'menu-enable (aref def 2)))
 	  ;; (define-key map [separator-eval] '("--"))
-	  ))))
-  (unless (fboundp 'w3m-update-toolbar)
-    (defun w3m-update-toolbar ()))
-  ;; Images
-  (unless (fboundp 'w3m-display-graphic-p)
-    ;; Function which returns non-nil when the current display device
-    ;; can show images inline.
-    (defalias 'w3m-display-graphic-p 'ignore))
-  (unless (fboundp 'w3m-display-inline-image-p)
-    ;; Function which returns non-nil when images can be displayed
-    ;; under the present circumstances.
-    (defalias 'w3m-display-inline-image-p 'ignore)))
+	  )))))
 
 (defun w3m-fontify-images ()
   "Fontify image alternate strings in this buffer which contains
@@ -2987,6 +2923,7 @@ or prefix ARG columns."
 	(w3m-mode)
 	(setq mode-line-buffer-identification
 	      (list "%b" " / " 'w3m-current-title))))
+    (setq w3m-current-buffer (current-buffer))
     ;; Setup arrived database.
     (w3m-arrived-setup)
     ;; Store the current position point in the history structure.
@@ -3259,9 +3196,10 @@ showing a tree-structured history by the command `w3m-about-history'.")
 
 (defun w3m-about-history (&rest args)
   "Show a tree-structured history."
-  (let ((history w3m-history-flat)
-	(current w3m-current-url)
-	start)
+  (let (history current start)
+    (with-current-buffer w3m-current-buffer
+      (setq history w3m-history-flat
+	    current w3m-current-url))
     (insert "\
 <head><title>URL history</title></head><body>
 <h1>List of all the links you have visited in this session.</h1><pre>\n")

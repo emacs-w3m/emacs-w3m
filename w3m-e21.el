@@ -31,8 +31,27 @@
 
 ;;; Code:
 
-(provide 'w3m-e21);; It is needed to avoid circular dependencies.
-(require 'w3m)
+(require 'w3m-macro)
+
+;; Functions and variables which will be defined in the other module.
+;; They should be defined in the other module at run-time.
+(eval-when-compile
+  (defvar w3m-display-inline-image)
+  (defvar w3m-icon-directory)
+  (defvar w3m-mode-map)
+  (defvar w3m-toolbar)
+  (defvar w3m-toolbar-buttons)
+  (defvar w3m-use-header-line)
+  (defvar w3m-work-buffer-name)
+  (defalias 'w3m-retrieve 'ignore)
+  (defalias 'w3m-image-type 'ignore))
+
+;; Generic funstions.
+(defsubst w3m-find-coding-system (obj)
+  "Return OBJ if it is a coding-system."
+  (if (coding-system-p obj) obj))
+
+;; Image handling functions.
 
 ;; Function which returns non-nil when the current display device can
 ;; show images inline.
@@ -153,6 +172,8 @@ Buffer string between BEG and END are replaced with IMAGE."
     (w3m-e21-make-toolbar-buttons w3m-toolbar-buttons)
     (w3m-e21-setup-toolbar w3m-mode-map w3m-toolbar)))
 
+(defalias 'w3m-update-toolbar 'ignore)
+
 ;;; Header line
 (defface w3m-header-line-location-title-face
   '((((class color) (background light)) (:foreground "Blue"))
@@ -224,5 +245,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 	    (dolist (elem (cdr w3m-cache-underline-faces))
 	      (w3m-add-text-properties (car elem) (cadr elem)
 				       (cons 'face (cddr elem))))))
+
+(provide 'w3m-e21)
 
 ;;; w3m-e21.el ends here.

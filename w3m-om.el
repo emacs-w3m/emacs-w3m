@@ -35,15 +35,29 @@
 (require 'poem)
 (require 'pcustom)
 
-(provide 'w3m-om);; It is needed to avoid circular dependencies.
-
 (eval-when-compile
   (unless (fboundp 'custom-declare-variable)
     (defconst w3m-icon-directory nil
       "This definition is used to avoid byte-compile warnings.")))
 
-(require 'w3m)
+;; Variables which will be defined in the other module.
+(eval-when-compile
+  (defvar w3m-mode-map)
+  (defvar w3m-menubar))
 
+;; Dummy functions.
+(defalias 'w3m-create-image 'ignore)
+(defalias 'w3m-insert-image 'ignore)
+(defalias 'w3m-image-type-available-p 'ignore)
+(defalias 'w3m-setup-toolbar 'ignore)
+(defalias 'w3m-update-toolbar 'ignore)
+(defalias 'w3m-display-graphic-p 'ignore)
+(defalias 'w3m-display-inline-image-p 'ignore)
+
+;; Generic functions.
+(defsubst w3m-find-coding-system (obj)
+  "Return OBJ if it is a coding-system."
+  (if (coding-system-p obj) obj))
 
 ;; Generate some coding-systems which have a modern name.
 ;; No need to contain the eol-type variants in the following alist
@@ -84,41 +98,44 @@
 	  (put variant 'eol-type (setq i (1+ i))))))))
 
 
-(unless (fboundp 'read-passwd)
-  ;; This code is imported from subr.el of Emacs-20.7 and slightly modified.
-  (defun read-passwd (prompt &optional confirm default)
-    "Read a password, prompting with PROMPT.  Echo `.' for each character typed.
-End with RET, LFD, or ESC.  DEL or C-h rubs out.  C-u kills line.
-Optional argument CONFIRM, if non-nil, then read it twice to make sure.
-Optional DEFAULT is a default password to use instead of empty input."
-    (if confirm
-	(let (success)
-	  (while (not success)
-	    (let ((first (read-passwd prompt nil default))
-		  (second (read-passwd "Confirm password: " nil default)))
-	      (if (equal first second)
-		  (setq success first)
-		(message "Password not repeated accurately; please start over")
-		(sit-for 1))))
-	  success)
-      (let ((pass nil)
-	    (c 0)
-	    (echo-keystrokes 0)
-	    (cursor-in-echo-area t)
-	    (inhibit-input-event-recording t))
-	(while (progn (message "%s%s"
-			       prompt
-			       (make-string (length pass) ?.))
-		      (setq c (read-char-exclusive))
-		      (and (/= c ?\r) (/= c ?\n) (/= c ?\e)))
-	  (if (= c ?\C-u)
-	      (setq pass "")
-	    (if (and (/= c ?\b) (/= c ?\177))
-		(setq pass (concat pass (char-to-string c)))
-	      (if (> (length pass) 0)
-		  (setq pass (substring pass 0 -1))))))
-	(message nil)
-	(or pass default "")))))
+(eval-and-compile
+  (unless (fboundp 'read-passwd)
+    ;; This code is imported from subr.el of Emacs-20.7 and slightly modified.
+    (defun read-passwd (prompt &optional confirm default)
+      "Read a password, prompting with PROMPT.  Echo `.' for each character
+typed.  End with RET, LFD, or ESC.  DEL or C-h rubs out.  C-u kills
+line.  Optional argument CONFIRM, if non-nil, then read it twice to
+make sure. Optional DEFAULT is a default password to use instead of
+empty input."
+      (if confirm
+	  (let (success)
+	    (while (not success)
+	      (let ((first (read-passwd prompt nil default))
+		    (second (read-passwd "Confirm password: " nil default)))
+		(if (equal first second)
+		    (setq success first)
+		  (message
+		   "Password not repeated accurately; please start over")
+		  (sit-for 1))))
+	    success)
+	(let ((pass nil)
+	      (c 0)
+	      (echo-keystrokes 0)
+	      (cursor-in-echo-area t)
+	      (inhibit-input-event-recording t))
+	  (while (progn (message "%s%s"
+				 prompt
+				 (make-string (length pass) ?.))
+			(setq c (read-char-exclusive))
+			(and (/= c ?\r) (/= c ?\n) (/= c ?\e)))
+	    (if (= c ?\C-u)
+		(setq pass "")
+	      (if (and (/= c ?\b) (/= c ?\177))
+		  (setq pass (concat pass (char-to-string c)))
+		(if (> (length pass) 0)
+		    (setq pass (substring pass 0 -1))))))
+	  (message nil)
+	  (or pass default ""))))))
 
 
 (defalias 'coding-system-category 'get-code-mnemonic)
@@ -157,5 +174,7 @@ as the value."
       :value 'other)))
 
 (eval-after-load "wid-edit" '(w3m-om-define-missing-widgets))
+
+(provide 'w3m-om)
 
 ;;; w3m-om.el ends here

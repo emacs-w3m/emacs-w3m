@@ -1,3 +1,76 @@
+2001-05-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-about-history): Get the values of `w3m-current-url'
+	and `w3m-history-flat' from the buffer `w3m-current-buffer'.
+	(w3m-goto-url): Set the value of `w3m-current-buffer' as the
+	current buffer.
+	(w3m-current-buffer): New internal variable.
+
+2001-05-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-examine-modules): Made it to return
+	w3m-macro.elc and the version specific module first.
+
+	* w3m.el (w3m-setup-menu): Define it if the feature `xemacs' is not
+	provided.
+	(TopLevel): Don't bind the functions `w3m-display-inline-image-p',
+	`w3m-display-graphic-p', `w3m-update-toolbar', `w3m-setup-toolbar',
+	`w3m-image-type-available-p', `w3m-insert-image' and
+	`w3m-create-image'.
+	(w3m-get-buffer-create, w3m-add-text-properties,
+	w3m-with-work-buffer): Moved to w3m-macro.el.
+	(w3m-charset-coding-system-alist): Use `w3m-find-coding-system'
+	directly.
+	(w3m-find-coding-system): Moved to the version specific modules.
+	(w3m-static-cond, w3m-static-if): Moved to w3m-macro.el.
+	(TopLevel): Require `w3m-e20' when the version of the running Emacs
+	is neither XEmacs, Emacs 21 nor Mule2.
+	(TopLevel): Require `w3m-macro'.
+
+	* w3m-xmas.el (w3m-euc-japan-decoder): Define it when the function
+	`ccl-compile-write-multibyte-character' is bound.
+	(widget-coding-system-action): Use `eval' instead of the
+	funcall'ing for the function `widget-coding-system-prompt-value'.
+	It is only for avoiding a byte-compile warning.
+	(w3m-should-unoptimize-animated-gifs): Check for both
+	`emacs-patch-level' and `emacs-beta-version' when XEmacs 21.2 is
+	running.
+	(TopLevel): Bind the functions `w3m-image-type' and `w3m-retrieve'
+	when compiling.
+	(TopLevel): Bind the variables `w3m-current-url',
+	`w3m-display-inline-image', `w3m-icon-directory', `w3m-menubar',
+	`w3m-toolbar', `w3m-toolbar-buttons', `w3m-use-header-line' and
+	`w3m-work-buffer-name' when compiling.
+	(TopLevel): Don't require `w3m'.
+	(TopLevel): Provide the feature `w3m-xmas' in the end of the file.
+
+	* w3m-om.el (read-passwd): Enclose it with `eval-and-compile'.
+	(w3m-find-coding-system): New inline function moved from w3m.el.
+	(w3m-display-inline-image-p, w3m-display-graphic-p,
+	w3m-update-toolbar, w3m-setup-toolbar, w3m-image-type-available-p,
+	w3m-insert-image, w3m-create-image): Alias to `ignore'.
+	(TopLevel): Bind the variables `w3m-menubar' and `w3m-mode-map'
+	when compiling.
+	(TopLevel): Don't require `w3m'.
+	(TopLevel): Provide the feature `w3m-om' in the end of the file.
+
+	* w3m-macro.el: New file which currently contains
+	`w3m-get-buffer-create', `w3m-add-text-properties',
+	`w3m-with-work-buffer', `w3m-static-cond' and `w3m-static-if'.
+
+	* w3m-e21.el (w3m-update-toolbar): Alias to `ignore'.
+	(w3m-find-coding-system): New inline function moved from w3m.el.
+	(TopLevel): Bind the functions `w3m-image-type' and `w3m-retrieve'
+	when compiling.
+	(TopLevel): Bind the variables `w3m-work-buffer-name',
+	`w3m-use-header-line', `w3m-toolbar-buttons', `w3m-toolbar',
+	`w3m-mode-map', `w3m-icon-directory' and `w3m-display-inline-image'
+	when compiling.
+	(TopLevel): Don't require `w3m'; require `w3m-macro'.
+	(TopLevel): Provide the feature `w3m-e21' in the end of the file.
+
+	* w3m-e20.el: New file.
+
 2001-05-25  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-mhonarc.el (shimbun-mhonarc-get-headers): Redefine

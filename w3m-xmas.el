@@ -31,11 +31,27 @@
 
 
 ;;; Code:
+
+(require 'w3m-macro)
+
+;; Functions and variables which will be defined in the other module.
+;; They should be defined in the other module at run-time.
+(eval-when-compile
+  (defvar w3m-current-url)
+  (defvar w3m-display-inline-image)
+  (defvar w3m-icon-directory)
+  (defvar w3m-menubar)
+  (defvar w3m-toolbar)
+  (defvar w3m-toolbar-buttons)
+  (defvar w3m-use-header-line)
+  (defvar w3m-work-buffer-name)
+  (defalias 'w3m-retrieve 'ignore)
+  (defalias 'w3m-image-type 'ignore))
+
 (require 'poe)
 (require 'poem)
 
-(provide 'w3m-xmas);; It is needed to avoid circular dependencies.
-(require 'w3m)
+(defalias 'w3m-find-coding-system 'find-coding-system)
 
 ;;; Handle images:
 
@@ -49,11 +65,10 @@ circumstances."
   (and w3m-display-inline-image (device-on-window-system-p)))
 
 (defvar w3m-should-unoptimize-animated-gifs
-  (or (and (= emacs-major-version 21)
-	   (>= emacs-minor-version 4))
-      (and (= emacs-major-version 21)
-	   (= emacs-minor-version 2)
-	   (>= emacs-beta-version 20)))
+  (and (= emacs-major-version 21)
+       (or (>= emacs-minor-version 4)
+	   (and (= emacs-minor-version 2)
+		(>= (or emacs-patch-level emacs-beta-version) 20))))
   "Specify whether w3m should unoptimize animated gif images for showing.
 It is applicable to XEmacs 21.2.20 or later, since which only support
 to show unoptimized animated gif images.")
@@ -233,6 +248,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 
 ;;; Menu
 (defun w3m-setup-menu ()
+  "Define menubar buttons for XEmacs."
   (when (and (featurep 'menubar)
 	     current-menubar
 	     (not (assoc (car w3m-menubar) current-menubar)))
@@ -260,11 +276,11 @@ Buffer string between BEG and END are replaced with IMAGE."
     (defun widget-coding-system-action (widget &optional event)
       ;; Read a file name from the minibuffer.
       (let ((answer
-	     (widget-coding-system-prompt-value
-	      widget
-	      (widget-apply widget :menu-tag-get)
-	      (widget-value widget)
-	      t)))
+	     (eval (list 'widget-coding-system-prompt-value
+			 widget
+			 (widget-apply widget :menu-tag-get)
+			 (widget-value widget)
+			 t))))
 	(widget-value-set widget answer)
 	(widget-apply widget :notify widget event)
 	(widget-setup))))
@@ -296,11 +312,12 @@ as the value."
 (unless (fboundp 'coding-system-category)
   (defalias 'coding-system-category 'coding-system-type))
 
-(w3m-static-if (or (and (= emacs-major-version 21)
-			(>= emacs-minor-version 4))
-		   (and (= emacs-major-version 21)
-			(= emacs-minor-version 2)
-			(>= emacs-beta-version 19)))
+(w3m-static-if (fboundp 'ccl-compile-write-multibyte-character)
+    ;; Note that the above function has implemented in XEmacs 21.2.19,
+    ;; however, the early version is buggy.  Because of this, the
+    ;; following program won't work under the versions of XEmacs
+    ;; between 21.2.19 and 21.2.36.  It is recommended to upgrade your
+    ;; XEmacs if you are using that one.
     (define-ccl-program w3m-euc-japan-decoder
       `(2
 	(loop
@@ -367,5 +384,7 @@ as the value."
 			   'face 'w3m-header-line-location-content-face)
       (unless (eolp)
 	(insert "\n")))))
+
+(provide 'w3m-xmas)
 
 ;;; w3m-xmas.el ends here.
