@@ -1,3 +1,12 @@
+2003-05-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* doc/Makefile.in (dvi): New target to create dvi files; related
+	targets and macros are installed.
+
+	* doc/.cvsignore: Ignore dvi files.
+
+	* configure.in: Check whether texi2dvi, ptex and jbibtex exists.
+
 2003-05-29  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-ibm-dev.el (shimbun-index-url): Removed.
