@@ -1539,7 +1539,7 @@ engine to use (@code{w3m-search}).
 @subsection An alternative (and fast) way to search the web
 @cindex Quick Searching
 @cindex Special URLs
-@vindex w3m-search-quick-search-engine-alist
+@vindex w3m-uri-replace-alist
 @vindex w3m-search-engine-alist
 @vindex w3m-default-coding-system
 
@@ -1581,11 +1581,11 @@ type a space in the minibuffer, hit @kbd{C-q} first, e.g. @kbd{C-q
 @key{SPC}}).
 
 The default configuration of emacs-w3m includes several prefixes you can
-use, they are defined in the @code{w3m-search-quick-search-engine-alist}
-variable.  There's for example ``gg'' for Google, ``ggg'' for Google
-Groups, ``ya'' for Yahoo!, ``al'' for Altavista, to name a few.  You can
-also add prefixes for the search engines you define, @xref{Adding New
-Search Engines}.
+use, they are defined in the @code{w3m-uri-replace-alist} variable.
+There's for example ``gg'' for Google, ``ggg'' for Google Groups, ``ya''
+for Yahoo!, ``al'' for Altavista, to name a few.  You can also add
+prefixes for the search engines you define, @xref{Adding New Search
+Engines}.
 
 Instead of prefixes, you can also use full engine names in Quicksearch
 URLs, such as ``google'' or ``yahoo''.  These names are defined in
@@ -1645,8 +1645,8 @@ prefix, by adding this to your @file{~/.emacs-w3m} file instead:
                   '("My engine"
                     "http://my.searchengine.com/?query=%s"
                     nil))
-     (add-to-list 'w3m-search-quick-search-engine-alist
-                  '("my" . "My engine"))))
+     (add-to-list 'w3m-uri-replace-alist
+                  '("my" w3m-search-uri-replace "My engine"))))
 @end lisp
 
 This way you can also use a URL like @uref{my:foobar} to search for the
@@ -1849,9 +1849,8 @@ Please note that some variables from external modules could be undefined
 at the time the @file{~/.emacs-w3m} file is loaded, thus making them
 impossible to modify (of course if you don't care about the default
 value, you can override them completely in your
-@file{~/.emacs-w3m}) file.  The
-@code{w3m-search-quick-search-engine-alist} variable is a typical
-example (@pxref{Search Variables}).
+@file{~/.emacs-w3m}) file.  The @code{w3m-uri-replace-alist} variable is
+a typical example (@pxref{Search Variables}).
 
 @table @code
 
