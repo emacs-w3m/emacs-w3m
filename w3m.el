@@ -3065,7 +3065,7 @@ described in Section 5.2 of RFC 2396.")
 	       (w3m-expand-path-name
 		(concat (file-name-directory (match-string 5 base))
 			(substring url 0 path-end)))
-	     (concat (file-name-directory (match-string 5 base))
+	     (concat (match-string 5 base)
 		     (substring url 0 path-end)))
 	   (substring url path-end)))))
      ((match-beginning 6)
