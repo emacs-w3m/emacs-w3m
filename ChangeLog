@@ -1,3 +1,8 @@
+2004-02-13  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-itmedia.el (shimbun-get-headers): Remove newlines in the
+	subject.
+
 2004-02-11  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 
 	* doc/ptexinfmt.el: Support @docbook, @ifdocbook, @ifnotdocbook,

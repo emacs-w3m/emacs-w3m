@@ -104,7 +104,7 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 				    "<[^>]+>")
 				   ""))
 	       time)
-	  (while (string-match "<[^>]+>" subject)
+	  (while (string-match "\n" subject)
 	    (setq subject (concat (substring subject 0 (match-beginning 0))
 				  (substring subject (match-end 0)))))
 	  (when time-regexp
