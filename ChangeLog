@@ -1,3 +1,8 @@
+2002-05-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-delete-frame-maybe): Don't delete the current frame
+	if it is the sole frame in the screen.
+
 2002-05-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-zdnet.el (shimbun-make-contents): Small clean up.

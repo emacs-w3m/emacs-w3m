@@ -4779,15 +4779,27 @@ If EMPTY is non-nil, the created buffer has empty content."
 
 (defun w3m-delete-frame-maybe ()
   "Delete this frame if it has popped up as w3m frame in the beginning.
-Even so, if there are other windows, it won't delete the frame.
-Return t if deleting current frame or window is succeeded."
+Even so, if there are other windows in the frame or there are no other
+visible frames, it won't delete the frame.  Return t if deleting the
+frame or a window in the frame is succeeded."
   (let ((frame (selected-frame))
 	(window (selected-window)))
     (cond ((eq w3m-initial-frame frame)
 	   (if (eq (next-window) window)
-	       (delete-frame frame)
-	     (delete-window window))
-	   t)
+	       (if (w3m-static-if (featurep 'xemacs)
+		       (filtered-frame-list
+			(lambda (f)
+			  (not (or (eq f frame)
+				   (frame-iconified-p f)))))
+		     (filtered-frame-list
+		      (lambda (f)
+			(unless (eq f frame)
+			  (member '(visibility . t) (frame-parameters f))))))
+		   (progn
+		     (delete-frame frame)
+		     t))
+	     (delete-window window)
+	     t))
 	  ((and (frame-live-p w3m-initial-frame)
 		(eq (window-buffer
 		     (setq window (frame-first-window w3m-initial-frame)))
