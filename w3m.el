@@ -2439,13 +2439,15 @@ message."
 It behaves identically as `message' with ARGS at the condition (which
 is rather complicated) listed below:
 
-\(1) `w3m-verbose' is non-nil, and
-\(2) the external asynchronous w3m process is not in progress, or
-\(3) that process is running in a visible window of the current frame.
+\(1) `w3m-verbose' is non-nil,
+\(2) the cursor is not in minibuffer, and
+\(3) the external asynchronous w3m process is not in progress, or
+\(4) that process is running in a visible window of the current frame.
 
 Otherwise, this is the same function as `format' simply returning a
 string."
   (if (and w3m-verbose
+	   (not (eq (selected-window) (minibuffer-window)))
 	   (or (not (bufferp w3m-current-buffer))
 	       (get-buffer-window w3m-current-buffer)))
       (apply (function message) args)

@@ -752,18 +752,19 @@ Otherwise return nil."
   "Like `message', except that message logging is controlled by the
 variable `w3m-display-message-enable-logging'."
   (if (featurep 'xemacs)
-      (if args
-	  `(display-message (if w3m-display-message-enable-logging
+      `(let ((string (format ,string ,@args)))
+	 (unless (eq (selected-window) (minibuffer-window))
+	   (display-message (if w3m-display-message-enable-logging
 				'message
 			      'no-log)
-	     (format ,string ,@args))
-	`(display-message (if w3m-display-message-enable-logging
-			      'message
-			    'no-log)
-	   ,string))
+			    string))
+	 string)
     `(let ((message-log-max (if w3m-display-message-enable-logging
 				message-log-max)))
-       (message ,string ,@args))))
+       (funcall (if (eq (selected-window) (minibuffer-window))
+		    'format
+		  'message)
+		,string ,@args))))
 
 (defun w3m-display-progress-message (url)
   "Show \"Reading URL...\" message in the middle of a buffer."

@@ -1,3 +1,9 @@
+2003-11-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-message): Silent when the cursor is in minibuffer.
+
+	* w3m-util.el (w3m-display-message): Ditto.
+
 2003-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-html-string-regexp): Fix my fault; enclose it with
