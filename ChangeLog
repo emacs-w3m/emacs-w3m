@@ -1,3 +1,12 @@
+2002-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e19.el: Require `easy-mmode'; make the alias
+	`define-minor-mode' to `easy-mmode-define-minor-mode'.
+	* w3m-fsf.el: Ditto.
+	* w3m-om.el: Ditto.
+
+	* attic/easy-mmode.el: New file imported from Emacs 20.7.
+
 2002-10-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-lynx-like-map, w3m-info-like-map): Add [tab] for

@@ -65,8 +65,9 @@
 
    d) Mule 2.3 (based on Emacs 19.34)
       APEL を前もってインストールしておく必要があります．更に，「新しい
-      custom」と regexp-opt.el(c) モジュールも必要です．詳しくは，次の
-      Emacs 19.34 についての説明を参照してください．
+      custom」と regexp-opt.el(c) および easy-mmode.el(c) モジュールも必
+      要です．詳しくは，次の Emacs 19.34 についての説明を参照してくださ
+      い．
 
       BITMAP-MULE パッケージを用いて WEB ページのインライン画像を白黒表
       示させる場合には，付属のパッチを適用して Mule を作り直すことを強く
@@ -85,14 +86,19 @@
       してください．特に Mule 2.3 を使う場合は APEL に附属している
       README.ja も必ず調べて下さい．
 
-      また，emacs-w3m は regexp-opt.el(c) モジュールを必要としますが，
-      Emacs 19.34 や Mule 2.3 などの古い Emacsen には含まれていません．
-      あなたが使っている Emacsen が該当する場合には，前もって，以下のよ
-      うに regexp-opt.el(c) モジュールをインストールする必要があります．
+      また，emacs-w3m は regexp-opt.el(c) と easy-mmode.el(c) モジュール
+      を必要としますが，Emacs 19.34 や Mule 2.3 などの古い Emacsen には
+      含まれていません．あなたが使っている Emacsen が該当する場合には，
+      前もって，以下のように regexp-opt.el(c) と easy-mmode.el(c) モジュー
+      ルをインストールする必要があります．
 
           % cp attic/regexp-opt.el /usr/local/share/emacs/site-lisp
           % cd /usr/local/share/emacs/site-lisp
           % emacs -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
+
+          % cp attic/easy-mmode.el /usr/local/share/emacs/site-lisp
+          % cd /usr/local/share/emacs/site-lisp
+          % emacs -q -no-site-file -batch -f batch-byte-compile easy-mmode.el
 
       (もし Mule をお使いならば，おそらくパス名やコマンド名として
       `emacs' の代わりに `mule' と言う必要があるでしょう．)
