@@ -721,18 +721,16 @@ will disclose your private informations, for example:
 			    (w3m-static-if (boundp 'MULE) lc-ltn1 'latin-iso8859-1)
 			    (cdr entity))))))
 		 latin1-entity))))))
+
+;; Required for old Emacsen.  See the file README for details.
+(eval-and-compile
+  (autoload 'regexp-opt "regexp-opt"))
+
 (defconst w3m-entity-regexp
   (eval-when-compile
     (format "&\\(%s\\|#[0-9]+\\|#x[0-9a-f]+\\);?"
-	    (if (fboundp 'regexp-opt)
-		(let ((fn (function regexp-opt)))
-		  ;; Don't funcall directly for avoiding compile warning.
-		  (funcall fn (mapcar (function car)
-				      w3m-entity-alist)))
-	      (mapconcat (lambda (s)
-			   (regexp-quote (car s)))
-			 w3m-entity-alist
-			 "\\|")))))
+	    (regexp-opt (mapcar (function car) w3m-entity-alist)))))
+
 (defvar w3m-entity-db nil)		; nil means un-initialized
 (defconst w3m-entity-db-size 13)	; size of obarray
 

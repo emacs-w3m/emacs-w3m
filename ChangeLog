@@ -1,5 +1,8 @@
 2001-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-entity-regexp): Unified to the use of `regexp-opt';
+	autoload regexp-opt for old Emacsen.
+
 	* attic/regexp-opt.el: New file.
 
 	* README.ja, README: Emacs-w3m requires the module regexp-opt.
