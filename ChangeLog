@@ -1,5 +1,16 @@
 2001-10-11  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-e21.el (toplevel): Require 'wid-edit.
+	(w3m-form-button-face): Set background and foreground color;
+	Set box line-width as 2.
+	(w3m-form-button-pressed-face): Ditto.
+	(w3m-form-button-mouse-face): New face.
+	(w3m-form-button): New widget button.
+	(w3m-form-make-button): Use `widget-convert-button' to put
+	w3m-form-button.
+	(w3m-setup-widget-faces): New function.
+	(w3m-mode-hook): Add `w3m-setup-widget-faces'.
+
 	* shimbun/sb-slashdot-jp.el: Merged patch from
 	`http://homepage2.nifty.com/strlcat/sb-slashdot-jp.patch'.
 

@@ -36,6 +36,7 @@
 
 (require 'w3m-macro)
 (require 'w3m-fsf)
+(require 'wid-edit)
 
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
@@ -117,51 +118,57 @@ Buffer string between BEG and END are replaced with IMAGE."
 ;;; Form buttons
 (defface w3m-form-button-face
   '((((type x w32 mac) (class color))
-     (:box (:line-width 1 :style released-button)
-	   :background "lightgrey" :foreground "black"))
+     :background "lightgrey" :foreground "black"
+     :box (:line-width 2 :style released-button))
     (((class color) (background light)) (:foreground "cyan" :underline t))
     (((class color) (background dark)) (:foreground "red" :underline t))
     (t (:underline t)))
   "*Face to fontify buttons in forms."
   :group 'w3m-face)
 
+(defface w3m-form-button-mouse-face
+  '((((type x w32 mac) (class color))
+     :background "DarkSeaGreen1" :foreground "black"
+     :box (:line-width 2 :style released-button))
+    (((class color) (background light)) (:foreground "cyan" :underline t))
+    (((class color) (background dark)) (:foreground "red" :underline t))
+    (t (:underline t)))
+  "*Face to fontify focused buttons in forms."
+  :group 'w3m-face)
+
 (defface w3m-form-button-pressed-face
   '((((type x w32 mac) (class color))
-     (:box (:line-width 1 :style pressed-button)
-	   :background "lightgrey" :foreground "black"))
+     :background "lightgrey" :foreground "black"
+     :box (:line-width 2 :style pressed-button))
     (((class color) (background light)) (:foreground "cyan" :underline t))
     (((class color) (background dark)) (:foreground "red" :underline t))
     (t (:underline t)))
   "*Face to fontify pressed buttons in forms."
   :group 'w3m-face)
 
+(define-widget 'w3m-form-button 'push-button
+  "Widget for w3m form button."
+  :keymap widget-keymap
+  :action (function (lambda (widget &optional e)
+		      (eval (widget-get widget :w3m-form-action)))))
+
 (defun w3m-form-make-button (start end properties)
   "Make button on the region from START to END."
   (if w3m-form-use-fancy-faces
-      (or (and (face-attribute 'w3m-form-button-face :box)
-	       (eq ?\[ (char-after start))
-	       (eq ?\] (char-before end))
-	       (save-excursion
-		 (goto-char start)
-		 (delete-char 1)
-		 (insert " ")
-		 (goto-char end)
-		 (delete-char -1)
-		 (insert " ")
-		 (add-text-properties
-		  (1+ start) (1- end)
-		  (append '(face
-			    w3m-form-button-face
-			    mouse-face
-			    w3m-form-button-pressed-face)
-			  properties))))
-	  (add-text-properties
-	   start end
-	   (append '(face
-		     w3m-form-button-face
-		     mouse-face
-		     w3m-form-button-pressed-face)
-		   properties)))
+      (progn (and (face-attribute 'w3m-form-button-face :box)
+		  (eq ?\[ (char-after start))
+		  (eq ?\] (char-before end))
+		  (save-excursion
+		    (goto-char start)
+		    (delete-char 1)
+		    (insert " ")
+		    (goto-char end)
+		    (delete-char -1)
+		    (insert " ")
+		    (widget-convert-button
+		     'w3m-form-button (1+ start) (1- end)
+		     :w3m-form-action (plist-get properties 'w3m-action))))
+	     (add-text-properties start end properties))
     (add-text-properties start end
 			 (append '(face w3m-form-face)
 				 properties))))
@@ -266,7 +273,16 @@ Buffer string between BEG and END are replaced with IMAGE."
 				   'help-echo
 				   "mouse-2 prompts to input URL"))))))
 
+(defun w3m-setup-widget-faces ()
+  (make-local-variable 'widget-button-face)
+  (make-local-variable 'widget-mouse-face)
+  (make-local-variable 'widget-button-pressed-face)
+  (setq widget-button-face 'w3m-form-button-face)
+  (setq widget-mouse-face 'w3m-form-button-mouse-face)
+  (setq widget-button-pressed-face 'w3m-form-button-pressed-face))
+
 (add-hook 'w3m-mode-hook 'w3m-setup-header-line)
+(add-hook 'w3m-mode-hook 'w3m-setup-widget-faces)
 
 (provide 'w3m-e21)
 ;;; w3m-e21.el ends here.
