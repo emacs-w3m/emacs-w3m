@@ -22,22 +22,34 @@
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
+
 ;;; Commentary:
 
-;; When you use a non-UNIX system, such as MS-DOS, you can type the
-;; following command to install emacs-w3m programs and datas.
+;; This file provides the stuffs to setup the environment for building
+;; emacs-w3m and the installer for non-UNIX systems.
+
+
+;;; How to install:
+
+;; ( These document is a simple summary of README.  For more detail,
+;;   see the original. )
+
+;; In order to install emacs-w3m to non-UNIX systems which lack an
+;; ability to execute `configure' script or have no `make' utility,
+;; execute this command.
 ;;
 ;;     emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
 ;;
-;; In order to install programs and datas to unusual directories, edit
-;; this file and set your request to `w3mhack-nonunix-lispdir' and
-;; `w3mhack-nonunix-icondir'.
+;; When required packages, such as APEL, are installed into unusual
+;; places, the installer may miss them.  In this case, it is necessary
+;; to tell their places to the installer, as follows:
 ;;
-;; When optional modules, such as FLIM, are installed into unusual
-;; directories, it is necessary to tell them to this installer, as
-;; follows:
+;;     emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
 ;;
-;;     emacs -batch -q -no-site-file -l w3mhack.el //c/home/elisp/flim -f w3mhack-nonunix-install
+;; If you want to install programs and icons to unusual directories,
+;; edit this file and set your request to `w3mhack-nonunix-lispdir'
+;; and `w3mhack-nonunix-icondir'.
+
 
 ;;; Code:
 
