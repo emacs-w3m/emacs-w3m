@@ -1,3 +1,26 @@
+2002-10-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-lynx-like-map, w3m-info-like-map): Add [tab] for
+	`w3m-next-anchor'.
+	(w3m-safe-view-this-url, w3m-mouse-safe-view-this-url): New
+	command.
+	(w3m-minor-mode-command-alist): New constant.
+	(w3m-make-minor-mode-keymap): New function.
+	(w3m-minor-mode-map): New keymap.
+	(w3m-minor-mode): New function.
+
+	* mime-w3m.el (mime-w3m-mode-map): Abolished.
+	(mime-w3m-mode-command-alist): Abolished.
+	(mime-w3m-mode-dont-bind-keys): Abolished.
+	(mime-w3m-mode-ignored-keys): Abolished.
+	(mime-w3m-setup): Do not initialize `mime-w3m-mode-map'.
+	(mime-w3m-preview-text/html): Use `w3m-minor-mode-map' instead of
+	`mime-w3m-mode-map'.
+	(mime-w3m-view-this-url, mime-w3m-mouse-view-this-url): Removed.
+
+	* mew-w3m.el (mew-w3m-minor-mode): Abolished.
+	(mew-w3m-minor-mode-setter): Call `w3m-minor-mode'.
+
 2002-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e19.el: Cancel last change for providing the base64 codec.

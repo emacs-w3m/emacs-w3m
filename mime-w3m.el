@@ -64,7 +64,6 @@ consider all the urls to be safe."
   :type '(choice (regexp :tag "Regexp")
 		 (const :tag "All URLs are safe" nil)))
 
-(defvar mime-w3m-mode-map nil)
 (defvar mime-w3m-message-structure nil)
 (make-variable-buffer-local 'mime-w3m-message-structure)
 
@@ -94,65 +93,8 @@ consider all the urls to be safe."
 	      (subtype . html)
 	      (body . visible)
 	      (body-presentation-method . mime-w3m-preview-text/html)))
-	   (set-alist 'mime-view-type-subtype-score-alist '(text . html) 3))))))
-
-(defvar mime-w3m-mode-command-alist
-  '((backward-char)
-    (describe-mode)
-    (forward-char)
-    (goto-line)
-    (next-line)
-    (previous-line)
-    (w3m-antenna)
-    (w3m-antenna-add-current-url)
-    (w3m-bookmark-add-current-url)
-    (w3m-bookmark-add-this-url)
-    (w3m-bookmark-view)
-    (w3m-close-window)
-    (w3m-copy-buffer)
-    (w3m-delete-buffer)
-    (w3m-dtree)
-    (w3m-edit-current-url)
-    (w3m-edit-this-url)
-    (w3m-gohome)
-    (w3m-goto-url)
-    (w3m-goto-url-new-session)
-    (w3m-history)
-    (w3m-history-restore-position)
-    (w3m-history-store-position)
-    (w3m-mouse-view-this-url . mime-w3m-mouse-view-this-url)
-    (w3m-namazu)
-    (w3m-next-buffer)
-    (w3m-previous-buffer)
-    (w3m-quit)
-    (w3m-redisplay-with-charset)
-    (w3m-reload-this-page)
-    (w3m-scroll-down-or-previous-url)
-    (w3m-scroll-up-or-next-url)
-    (w3m-search)
-    (w3m-select-buffer)
-    (w3m-switch-buffer)
-    (w3m-view-header)
-    (w3m-view-parent-page)
-    (w3m-view-previous-page)
-    (w3m-view-source)
-    (w3m-view-this-url . mime-w3m-view-this-url)
-    (w3m-weather))
-  "Alist of commands to use for emacs-w3m in the MIME-View buffer.  Each
-element looks like (FROM-COMMAND . TO-COMMAND); FROM-COMMAND should be
-registered in `w3m-mode-map' which will be substituted by TO-COMMAND
-in `mime-w3m-mode-map'.  If TO-COMMAND is nil, a MIME-View command key
-will not be substituted.")
-
-(defvar mime-w3m-mode-dont-bind-keys nil
-  ;; In Gnus, the default value for `mm-w3m-mode-dont-bind-keys' is
-  ;; `(list [up] [right] [left] [down])'.
-  "List of keys which should not be bound for the emacs-w3m commands.")
-
-(defvar mime-w3m-mode-ignored-keys nil
-  ;; In Gnus, the default value for `mm-w3m-mode-ignored-keys' is
-  ;; `(list [down-mouse-2])
-  "List of keys which should ignore.")
+	   (set-alist 'mime-view-type-subtype-score-alist
+		      '(text . html) 3))))))
 
 (defsubst mime-w3m-setup ()
   "Setup `mime-w3m' module."
@@ -161,25 +103,7 @@ will not be substituted.")
     (setq mime-w3m-display-inline-images w3m-default-display-inline-images))
   (unless (assq 'mime-view-mode w3m-cid-retrieve-function-alist)
     (push (cons 'mime-view-mode 'mime-w3m-cid-retrieve)
-	  w3m-cid-retrieve-function-alist))
-  (unless mime-w3m-mode-map
-    (setq mime-w3m-mode-map (copy-keymap w3m-mode-map))
-    (dolist (def mime-w3m-mode-command-alist)
-      (condition-case nil
-	  (substitute-key-definition (car def) (cdr def) mime-w3m-mode-map)
-	(error)))
-    (dolist (key mime-w3m-mode-dont-bind-keys)
-      (condition-case nil
-	  (define-key mime-w3m-mode-map key nil)
-	(error)))
-    (dolist (key mime-w3m-mode-ignored-keys)
-      (condition-case nil
-	  (define-key mime-w3m-mode-map key 'ignore)
-	(error)))
-    ;; override widget.
-    (if (featurep 'xemacs)
-	(define-key mime-w3m-mode-map [(button2-down)] 'ignore)
-      (define-key mime-w3m-mode-map [down-mouse-2] 'ignore))))
+	  w3m-cid-retrieve-function-alist)))
 
 (def-edebug-spec mime-w3m-save-background-color t)
 (defmacro mime-w3m-save-background-color (&rest body)
@@ -220,7 +144,7 @@ will not be substituted.")
 						(>= emacs-major-version 21))
 					    'keymap
 					  'local-map)
-					mime-w3m-mode-map
+					w3m-minor-mode-map
 					'text-rendered-by-mime-w3m t)))
 	 (error (message (format "%s" err))))))))
 
@@ -236,22 +160,6 @@ will not be substituted.")
       ;; `mime-decode-string' should be performed in a unibyte buffer.
       (w3m-insert-string (mime-entity-content entity))
       (mime-entity-type/subtype entity))))
-
-(defun mime-w3m-view-this-url ()
-  "View the URL of the link under point."
-  (interactive)
-  (let ((url (w3m-anchor)))
-    (cond
-     (url (w3m url))
-     ((w3m-image)
-      (if (w3m-display-graphic-p)
-	  (w3m-toggle-inline-image)
-	(w3m-view-image))))))
-
-(defun mime-w3m-mouse-view-this-url (event)
-  (interactive "e")
-  (mouse-set-point event)
-  (mime-w3m-view-this-url))
 
 (let (current-load-list)
   (defadvice kill-new (before strip-keymap-properties-from-kill

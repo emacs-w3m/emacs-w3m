@@ -476,7 +476,9 @@ reason.  The value will be referred by the function `w3m-load-list'.")
 		 (setq w3m-mode-map
 		       (if (eq value 'info)
 			   w3m-info-like-map
-			 w3m-lynx-like-map)))
+			 w3m-lynx-like-map)
+		       w3m-minor-mode-map
+		       (w3m-make-minor-mode-keymap)))
 	     (let ((buffers (buffer-list)))
 	       (save-excursion
 		 (while buffers
@@ -488,19 +490,7 @@ reason.  The value will be referred by the function `w3m-load-list'.")
 			     (w3m-setup-toolbar)
 			     (w3m-setup-menu))
 			 (error)))
-		   (setq buffers (cdr buffers)))))
-	     (if (fboundp 'mime-w3m-setup)
-		 (condition-case nil
-		     (progn
-		       (setq mime-w3m-mode-map nil)
-		       (mime-w3m-setup))
-		   (error)))
-	     (if (fboundp 'mm-setup-w3m)
-		 (condition-case nil
-		     (let (mm-w3m-setup)
-		       (setq mm-w3m-mode-map nil)
-		       (mm-setup-w3m))
-		   (error)))))))
+		   (setq buffers (cdr buffers)))))))))
 
 (defcustom w3m-use-cygdrive (eq system-type 'windows-nt)
   "*If non-nil, use /cygdrive/ rule when expand-file-name."
@@ -4911,6 +4901,7 @@ The optional argument BUFFER will be used exclusively by the command
     (define-key map "\M-g" 'goto-line)
     (define-key map "\C-?" 'w3m-scroll-down-or-previous-url)
     (define-key map "\t" 'w3m-next-anchor)
+    (define-key map [tab] 'w3m-next-anchor)
     (define-key map [(shift tab)] 'w3m-previous-anchor)
     (define-key map [(shift iso-lefttab)] 'w3m-previous-anchor)
     (define-key map [down] 'w3m-next-anchor)
@@ -5013,6 +5004,7 @@ The optional argument BUFFER will be used exclusively by the command
       ;; Note: It does not have an effect on Emacs 19.
       (define-key map [?\S-\ ] 'w3m-scroll-down-or-previous-url))
     (define-key map "\t" 'w3m-next-anchor)
+    (define-key map [tab] 'w3m-next-anchor)
     (define-key map [(shift tab)] 'w3m-previous-anchor)
     (define-key map [(shift iso-lefttab)] 'w3m-previous-anchor)
     (define-key map "\M-\t" 'w3m-previous-anchor)
@@ -6898,6 +6890,61 @@ w3m-mode buffers."
 			       `(face w3m-header-line-location-content-face))
       (unless (eolp)
 	(insert "\n")))))
+
+
+;;; w3m-minor-mode
+(defun w3m-safe-view-this-url ()
+  "View the URL of the link under point.
+This command is quite similar to `w3m-view-this-url' without three
+differences: (1) this command accepts no arguments, (2) this command
+does not handle forms, and (3) this command does not consider URL-like
+strings under the cursor.  When a unsecure page which may contain
+vicious forms is viewed, this command should be used instead of
+`w3m-view-this-url'."
+  (interactive)
+  (let ((url (w3m-anchor)))
+    (cond
+     (url (w3m url))
+     ((w3m-image)
+      (if (w3m-display-graphic-p)
+	  (w3m-toggle-inline-image)
+	(w3m-view-image))))))
+
+(defun w3m-mouse-safe-view-this-url (event)
+  "Perform the command `w3m-safe-view-this-url' by the mouse event."
+  (interactive "e")
+  (mouse-set-point event)
+  (w3m-safe-view-this-url))
+
+(defconst w3m-minor-mode-command-alist
+  '((w3m-next-anchor)
+    (w3m-previous-anchor)
+    (w3m-next-image)
+    (w3m-previous-image)
+    (w3m-toggle-inline-image)
+    (w3m-toggle-inline-images)
+    (w3m-view-this-url . w3m-safe-view-this-url)
+    (w3m-mouse-view-this-url . w3m-mouse-safe-view-this-url))
+  "Alist of commands use emacs-w3m in article buffers.
+Each element looks like (FROM-COMMAND . TO-COMMAND); Those keys which
+are defined as FROM-COMMAND in `w3m-mode-map' are redefined as
+TO-COMMAND in `w3m-minor-mode-map'.  When TO-COMMAND is nil,
+FROM-COMMAND is defined to `w3m-minor-mode-map' for same keys in
+`w3m-mode-map'.")
+
+(defun w3m-make-minor-mode-keymap ()
+  "Make keymap for w3m-minor-mode"
+  (let ((keymap (make-keymap)))
+    (dolist (pair w3m-minor-mode-command-alist)
+      (substitute-key-definition (car pair)
+				 (or (cdr pair) (car pair))
+				 keymap w3m-mode-map))
+    keymap))
+
+(defvar w3m-minor-mode-map (w3m-make-minor-mode-keymap))
+
+(define-minor-mode w3m-minor-mode
+  "Minor mode to view HTML part in articles." nil " w3m")
 
 
 (provide 'w3m)
