@@ -95,50 +95,55 @@
     (format "<%s.%s.%s@www%s.tcup.com>" 
 	    stime (nth 2 keys) (nth 1 keys) (nth 0 keys))))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-tcup))
-  (let ((case-fold-search t)
-	headers from subject date id url stime st body)
-    (goto-char (point-min))
-    (while (re-search-forward "<b>\\([^<]+\\)</b></font>　投稿者：" nil t)
-      (setq subject (match-string 1))
-      (setq from
-	    (cond 
-	     ((looking-at "<b><a href=\"mailto:\\([^\"]+\\)\">\\([^<]+\\)<")
-	      (concat (match-string 2) " <" (match-string 1) ">"))
-	     ((looking-at "<[^>]+><b>\\([^<]+\\)<")
-	      (match-string 1))
-	     (t "(none)")))
-      (re-search-forward "投稿日：" nil t)
-      (setq stime
-	    (cond 
-	     ((looking-at "[^,]+, Time: \\([^ ]+\\) ")
-	      (shimbun-tcup-stime-to-time (match-string 1)))
-	     ((looking-at "\\([^ ]+\\) <")
-	      (shimbun-tcup-make-time))
-	     (t (current-time))))
-      (setq date (format-time-string "%d %b %Y %T %z" stime))
-      (setq stime (format "%05d%05d" (car stime) (cadr stime)))
-      (setq id (shimbun-tcup-make-id
-		stime
-		(shimbun-current-group-internal shimbun)))
-      (search-forward "<tt><font size=\"3\">")
-      (setq st (match-end 0))
-      (re-search-forward "\\(<!-- form[^>]+>\\)?</font></tt><p>")
-      (setq body (buffer-substring st (match-beginning 0)))
-      (forward-line 1)
-      (setq url 
-	    (if (looking-at "<a[^>]+>[^<]+</a>") 
-		(concat (match-string 0) "\n<p>\n")
-	      ""))
-      (set (intern stime (shimbun-tcup-content-hash-internal shimbun))
-	   (concat body "<p>\n" url))
-      (push (shimbun-make-header
-	     0
-	     (shimbun-mime-encode-string subject)
-	     (shimbun-mime-encode-string from)
-	     date id "" 0 0 stime)
-	    headers))
-    headers))
+(luna-define-method shimbun-headers ((shimbun shimbun-tcup))
+  (with-current-buffer (shimbun-retrieve-url-buffer
+			(shimbun-index-url shimbun) 'reload 'binary)
+    (set-buffer-multibyte t)
+    (decode-coding-region (point-min) (point-max)
+			  (shimbun-coding-system-internal shimbun))
+    (let ((case-fold-search t)
+	  headers from subject date id url stime st body)
+      (goto-char (point-min))
+      (while (re-search-forward "<b>\\([^<]+\\)</b></font>　投稿者：" nil t)
+	(setq subject (match-string 1))
+	(setq from
+	      (cond 
+	       ((looking-at "<b><a href=\"mailto:\\([^\"]+\\)\">\\([^<]+\\)<")
+		(concat (match-string 2) " <" (match-string 1) ">"))
+	       ((looking-at "<[^>]+><b>\\([^<]+\\)<")
+		(match-string 1))
+	       (t "(none)")))
+	(re-search-forward "投稿日：" nil t)
+	(setq stime
+	      (cond 
+	       ((looking-at "[^,]+, Time: \\([^ ]+\\) ")
+		(shimbun-tcup-stime-to-time (match-string 1)))
+	       ((looking-at "\\([^ ]+\\) <")
+		(shimbun-tcup-make-time))
+	       (t (current-time))))
+	(setq date (format-time-string "%d %b %Y %T %z" stime))
+	(setq stime (format "%05d%05d" (car stime) (cadr stime)))
+	(setq id (shimbun-tcup-make-id
+		  stime
+		  (shimbun-current-group-internal shimbun)))
+	(search-forward "<tt><font size=\"3\">")
+	(setq st (match-end 0))
+	(re-search-forward "\\(<!-- form[^>]+>\\)?</font></tt><p>")
+	(setq body (buffer-substring st (match-beginning 0)))
+	(forward-line 1)
+	(setq url 
+	      (if (looking-at "<a[^>]+>[^<]+</a>") 
+		  (concat (match-string 0) "\n<p>\n")
+		""))
+	(set (intern stime (shimbun-tcup-content-hash-internal shimbun))
+	     (concat body "<p>\n" url))
+	(push (shimbun-make-header
+	       0
+	       (shimbun-mime-encode-string subject)
+	       (shimbun-mime-encode-string from)
+	       date id "" 0 0 stime)
+	      headers))
+      headers)))
 
 (luna-define-method shimbun-article ((shimbun shimbun-tcup) header
 				     &optional outbuf)

@@ -1,3 +1,16 @@
+2001-04-23  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-xmas.el (w3m-setup-header-line): Check `major-mode' to decide
+	whether header line should be set up.
+
+	* shimbun/shimbun.el (shimbun-retrieve-url): Added optional argument
+	no-decode.
+	(shimbun-retrieve-url-buffer): Ditto.
+
+	* shimbun/sb-tcup.el (shimbun-headers): Define;
+	Retrieve headers as binary and decode with shimbun-tcup-coding-system.
+	(shimbun-get-headers): Eliminated.
+
 2001-04-23  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-linefeed-type): Change default value.

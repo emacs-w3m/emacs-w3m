@@ -100,16 +100,16 @@
 
 ;;; emacs-w3m implementation of url retrieval and entity decoding.
 (require 'w3m)
-(defun shimbun-retrieve-url (url &optional no-cache)
+(defun shimbun-retrieve-url (url &optional no-cache no-decode)
   "Rertrieve URL contents and insert to current buffer."
-  (when (w3m-retrieve url nil no-cache)
+  (when (w3m-retrieve url no-decode no-cache)
     (unless (eq (current-buffer)
 		(get-buffer w3m-work-buffer-name))
       (insert-buffer w3m-work-buffer-name))))
 
-(defun shimbun-retrieve-url-buffer (url &optional no-cache)
+(defun shimbun-retrieve-url-buffer (url &optional no-cache no-decode)
   "Return a buffer which contains the URL contents."
-  (if (w3m-retrieve url nil no-cache)
+  (if (w3m-retrieve url no-decode no-cache)
       (get-buffer w3m-work-buffer-name)
     (with-current-buffer (get-buffer w3m-work-buffer-name)
       (erase-buffer)
