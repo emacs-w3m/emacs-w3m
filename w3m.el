@@ -2941,7 +2941,7 @@ to add the option \"-no-proxy\"."
 	(setq args (cdr def))))
     (when (and w3m-no-proxy-domains
 	       (not (member "-no-proxy" args))
-	       (string-match "^[a-z]+://\\([^/]+\\)" url)
+	       (string-match "^[a-z]+://\\([^/:]+\\)" url)
 	       (catch 'domain-match
 		 (setq host (match-string 1 url))
 		 (dolist (domain w3m-no-proxy-domains)
