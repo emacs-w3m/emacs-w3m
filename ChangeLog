@@ -1,7 +1,12 @@
+2005-03-21 David Hansen <david.hansen@physik.fu-berlin.de>
+
+	* shimbun/sb-heise.el (shimbun-heise-get-telepolis-headers):
+	Fixed broken message id.
+
 2005-03-20 David Hansen  <david.hansen@physik.fu-berlin.de>
 
-	* sb-heise.el (shimbun-heise-get-newsticker-headers): Removed
-	forgotten debug code.
+	* shimbun/sb-heise.el (shimbun-heise-get-newsticker-headers):
+	Removed forgotten debug code.
 	(shimbun-heise-get-telepolis-headers): Follow the change of site
 	design.
 

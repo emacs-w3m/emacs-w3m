@@ -101,7 +101,8 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
           (save-match-data
             (while (re-search-forward shimbun-heise-url-re limit t)
               (let ((url (match-string 1))
-                    (mid (concat (match-string 2) "x" (match-string 3)))
+                    (mid (concat "<" (match-string 2) "x"
+                                 (match-string 3) "@heise.de>"))
                     (subj (match-string 4)))
                 (when (shimbun-search-id shimbun mid)
                   (throw 'stop nil))
