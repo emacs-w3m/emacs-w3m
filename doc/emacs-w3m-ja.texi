@@ -1069,8 +1069,8 @@ Emacs-w3m の開発者達は、Emacs ギークでないまともな人にも emacs-w3m 
 @item mouse-2
 @kindex mouse-2
 @findex w3m-mouse-view-this-url
-マウスカーソルの下にあるリンクを辿ります
-(@code{w3m-mouse-view-this-url})。
+マウスカーソルの下にあるリンクを辿りま
+す (@code{w3m-mouse-view-this-url})。
 
 @item S-mouse-2
 @kindex S-mouse-2
@@ -1084,10 +1084,10 @@ Emacs-w3m の開発者達は、Emacs ギークでないまともな人にも emacs-w3m 
 $B%k%P!<$r%5%]!<%H$7$F$$$F$+$D!"%+%9%?%^%$%:$7$F$=$l$i$r!V%*%U!W$K$7$F$$$J
 いことが条件となります。言うまでもないですが、スクロールバーを動かして表
 示をスクロールさせることができます。「File」を押しのけてメニューバーの一
-番左に位置する「W3M」メニューから、この info ドキュメントで紹介している 
-emacs-w3m の様々な機能を呼び出すことができます。主要な機能についてはメ
-ニューアイテムを選ぶまでもなく、ツールバー上のボタンアイテムを押せば呼び
-出せます。
+番左に位置する「W3M」メニューから、この info ドキュメントで紹介してい
+る emacs-w3m の様々な機能を呼び出すことができます。主要な機能については
+メニューアイテムを選ぶまでもなく、ツールバー上のボタンアイテムを押せば呼
+び出せます。
 
 タブ (@pxref{Using Tabs}) を切り替えるには、ウィンドウのてっぺんの行
 を @kbd{mouse-2}で直接クリックします。あるいは「W3M」メニューのとなりに
@@ -1649,10 +1649,10 @@ Emacs で行なっている他の仕事の邪魔をしないので、そうしたければ他のバッファ
 ことがあるでしょう、特に、新聞モジュールの作者の方 (@pxref{Shimbun
 Basics})。
 
-HTML ファイルをロードをしている Emacs のバッファの名前を明示的に指定してバッファ
-を切り替えてることもできますが、emacs-w3m ではそういった目的のために専用
-のキーが割当てられています。Emacs-w3m は自分が現在表示しているウェブペー
-ジの URL を知ってるんです。その情報を使わない手はありません。
+HTML ファイルをロードをしている Emacs のバッファの名前を明示的に指定して
+バッファを切り替えてることもできますが、emacs-w3m ではそういった目的のた
+めに専用のキーが割当てられています。Emacs-w3m は自分が現在表示しているウェ
+ブページの URL を知ってるんです。その情報を使わない手はありません。
 
 @table @kbd
 @item \
@@ -3615,8 +3615,8 @@ tdiary-ml.devel tdiary-ml.theme
 
 @end table
 
-なお、@samp{mozilla-jp.users} はアドレス回収ロボット対策で userid と 
-passowrd を求められるので @file{~/.w3m/passwd} に
+なお、@samp{mozilla-jp.users} はアドレス回収ロボット対策
+で userid と passowrd を求められるので @file{~/.w3m/passwd} に
 
 @example
 machine www.mozilla.gr.jp
@@ -3814,7 +3814,7 @@ lotusex.bbs
 
 @item @uref{http://www.atmarkit.co.jp, ＠ITフォーラム}
 atmarkit.fwin2k atmarkit.fdotnet atmarkit.fsys atmarkit.fxml
-atmarkit.flinux atmarkit.fnetwork atmarkit.fjava 
+atmarkit.flinux atmarkit.fnetwork atmarkit.fjava
 atmarkit.fsecurity atmarkit.fbiz atmarkit.jibun
 @end table
 
