@@ -1,3 +1,14 @@
+2005-01-02  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
+
+	* shimbun/sb-x51.el (shimbun-x51-group-alist): Fix "psychic" entry
+	name/address.
+	(shimbun-x51-content-start): Change value for the Web page of a
+	new design.
+	(shimbun-x51-content-end): Ditto.
+	(shimbun-get-headers): Change process for the Web page of a new
+	design; Support "range" argument.
+	(shimbun-clear-contents): New function.
+
 2004-12-29  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-quit): Call `w3m-form-textarea-file-cleanup'.
