@@ -1,3 +1,15 @@
+2002-05-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-auto-show): Check multiple command like a
+	`previous|next-line' or `beginning|end-of-buffer' at the buffer's
+	edge.
+	(w3m-window-hscroll): New function to rescue for XEmacs with Mule.
+	(w3m-current-column, w3m-set-window-hscroll): Chenge method of the
+	calculation point.
+	the difference points.
+	(w3m-horizontal-scroll, w3m-horizontal-on-screen) 
+	(w3m-horizontal-recenter): Use `w3m-window-hscroll'.
+
 2002-05-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-after-cursor-move-hook): Add `w3m-auto-show'.

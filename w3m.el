@@ -5019,6 +5019,9 @@ or prefix ARG columns."
   "Automatic horizontal scroll."
   (when (and w3m-auto-show
 	     (not w3m-horizontal-scroll-done)
+	     (not (and (eq last-command this-command)
+		       (or (eq (point) (point-min))
+			   (eq (point) (point-max)))))
 	     (markerp (nth 1 w3m-current-position))
 	     (markerp (nth 2 w3m-current-position))
 	     (>= (point) (marker-position (nth 1 w3m-current-position)))
@@ -5029,18 +5032,37 @@ or prefix ARG columns."
 ;; XEmacs bugs ?
 (w3m-static-if (and (featurep 'xemacs) (featurep 'mule))
     (progn
-      (defun w3m-current-column ()
-	(length (buffer-substring (point-at-bol) (point))))
-
+      (defun w3m-window-hscroll (&optional window)
+	"Simular function of window-hscroll() for XEmacs."
+	(let ((hs (window-hscroll window))
+	      (spos (point-at-bol))
+	      (epos (point-at-eol))
+	      (buf (window-buffer window)))
+	  (save-selected-window
+	    (save-excursion
+	      (set-buffer buf)
+	      (beginning-of-line)
+	      (condition-case nil
+		  (forward-char hs)
+		(error (goto-char (point-max))))
+	      (if (< epos (point))
+		  (+ hs (- (string-width (buffer-substring spos epos)) (- epos spos)))
+		(string-width (buffer-substring spos (point))))))))
+      
+      (defmacro w3m-current-column ()
+	"Simular function of current-column() for XEmacs."
+	`(- (point) (point-at-bol)))
+      
       (defun w3m-set-window-hscroll (window columns)
-	(if (> columns 0)
-	    (let (str)
-	      (save-excursion
-		(move-to-column columns)
-		(setq str (buffer-substring (point-at-bol) (point))))
-	      (set-window-hscroll window (length str)))
-	  (set-window-hscroll window 0)))
+	"Simular function of set-window-hscroll() for XEmacs."
+	(save-excursion
+	  (move-to-column (max columns 0))
+	  (if (> columns (current-column))
+	      (set-window-hscroll window (+ (- (point-at-eol) (point-at-bol))
+					    (- columns (current-column))))
+	    (set-window-hscroll window (- (point) (point-at-bol))))))
       )
+  (defalias 'w3m-window-hscroll 'window-hscroll)
   (defalias 'w3m-current-column 'current-column)
   (defalias 'w3m-set-window-hscroll 'set-window-hscroll))
 
@@ -5049,41 +5071,48 @@ or prefix ARG columns."
 TYPE is either 'left or 'right and COLS is columns."
   (setq w3m-horizontal-scroll-done t)
   (let ((inhibit-point-motion-hooks t))
-    (set-window-hscroll (selected-window)
-			(max 0
-			     (+ (window-hscroll)
-				(if (eq type 'left) cols (- cols)))))
-    (unless (and (>= (- (w3m-current-column) (window-hscroll)) 0)
-		 (< (- (w3m-current-column) (window-hscroll)) (window-width)))
-      (move-to-column (if (eq type 'left) (window-hscroll)
-			(+ (window-hscroll) (window-width) -2))))))
+    (w3m-set-window-hscroll (selected-window)
+			    (max 0
+				 (+ (w3m-window-hscroll)
+				    (if (eq type 'left) cols (- cols)))))
+    (let ((hs (w3m-window-hscroll))
+	  (pos (point)))
+      (unless (and (>= (- (current-column) hs) 0)
+		   (< (- (current-column) hs) (window-width)))
+	(move-to-column (if (eq type 'left) hs
+			  (+ hs (window-width)
+			     (w3m-static-if (featurep 'xemacs) -3 -2))))))))
 
 (defun w3m-horizontal-on-screen ()
   "Horizontal scroll and show current position in the window."
   (when w3m-auto-show
     (setq w3m-horizontal-scroll-done t)
-    (unless (and (>= (- (w3m-current-column) (window-hscroll)) 0)
-		 (< (+ (- (w3m-current-column) (window-hscroll))
-		       (if (eolp) 0 2))	;; '$$'
-		    (window-width)))
-      (let ((inhibit-point-motion-hooks t))
+    (let ((hs (w3m-window-hscroll))
+	  (inhibit-point-motion-hooks t))
+      (unless (and (>= (- (current-column) hs) 0)
+		   (< (+ (- (current-column) hs)
+			 (if (eolp) 0
+			   (w3m-static-if (featurep 'xemacs)
+			       3 2)))	;; '$$'
+		      (window-width)))
 	(w3m-set-window-hscroll (selected-window)
-				(- (current-column)
-				   (if (> (window-hscroll) (w3m-current-column))
-				       (/ (window-width)
-					  w3m-horizontal-scroll-division)
-				     (* (/ (window-width)
-					   w3m-horizontal-scroll-division)
-					(1- w3m-horizontal-scroll-division)))))))))
+				(max 0
+				     (- (current-column)
+					(if (> (window-hscroll) (w3m-current-column))
+					    (/ (window-width)
+					       w3m-horizontal-scroll-division)
+					  (* (/ (window-width)
+						w3m-horizontal-scroll-division)
+					     (1- w3m-horizontal-scroll-division))))))))))
 
 (defun w3m-horizontal-recenter (&optional arg)
   "Recenter horizontally.  With ARG, put point on column ARG."
   (interactive "P")
   (cond ((< (w3m-current-column) (window-hscroll))
-	 (move-to-column (window-hscroll))
+	 (move-to-column (w3m-window-hscroll))
 	 (setq arg 0))
 	((>= (w3m-current-column) (+ (window-hscroll) (window-width)))
-	 (move-to-column (+ (window-hscroll) (window-width) -2))
+	 (move-to-column (+ (w3m-window-hscroll) (window-width) -2))
 	 (setq arg -1))
 	((listp arg)
 	 (setq arg (car arg))))
