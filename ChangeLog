@@ -1,3 +1,10 @@
+2002-09-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-init-file): Changed its default value.
+	(toplevel): When Emacs is running without interactive terminal, do
+	not load the startup file and do not evaluate `w3m-load-hook'.
+	Load a byte compiled startup file safely.
+
 2002-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-mailto-url-popup-function-alist): New user option.
