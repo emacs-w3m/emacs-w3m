@@ -58,7 +58,7 @@ Buffer string between BEG and END are replaced with IMAGE."
     (set-extent-property extent 'w3m-xmas-icon t)
     (set-extent-end-glyph extent image)
     (while glyphs
-      (setq extent (make-extent (point)(point)))
+      (setq extent (make-extent end end))
       (set-extent-property extent 'w3m-xmas-icon t)
       (set-extent-end-glyph extent (car glyphs))
       (setq glyphs (cdr glyphs)))))
@@ -80,6 +80,10 @@ Buffer string between BEG and END are replaced with IMAGE."
   (and (device-on-window-system-p)
        (featurep image-type)))
 
+(defun w3m-wait-for (seconds)
+  "Wait SECONDS seconds or until user input is available.
+SECONDS may be a float, meaning a fractional part of a second."
+  (sit-for seconds 'nodisplay))
 
 ;;; Widget:
 (unless (get 'coding-system 'widget-type)

@@ -1008,6 +1008,11 @@ If N is negative, last N items of LIST is returned."
   (defun w3m-image-type-available-p (image-type)
     "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
     nil))
+(unless (fboundp 'w3m-wait-for)
+  (defun w3m-wait-for (seconds)
+    "Wait SECONDS seconds or until user input is available.
+SECONDS may be a float, meaning a fractional part of a second."
+    (sit-for seconds nil 'nodisplay)))
 
 (defun w3m-fontify-images ()
   "Fontify image alternate strings in this buffer which contains half-dumped data."
@@ -1059,12 +1064,12 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 		    (insert image)
 		    (put-text-property point (point) 'w3m-image-dummy t)
 		    (put-text-property point (point) 'w3m-image "dummy"))
-		(when (and url
-			   (setq image (w3m-create-image url no-cache)))
-		  (w3m-insert-image point end image)
-		  ;; Redisplay
-		  (save-excursion
-		    (goto-char cur-point)
+		(save-excursion
+		  (goto-char cur-point)
+		  (when (and url
+			     (setq image (w3m-create-image url no-cache)))
+		    (w3m-insert-image point end image)
+		    ;; Redisplay
 		    (sit-for 0)))))
 	    (setq w3m-display-inline-image-status 'on))
 	(save-excursion
@@ -1305,7 +1310,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	    (while (eq (process-status proc) 'run)
 	      (if (functionp w3m-process-message)
 		  (funcall w3m-process-message))
-	      (sit-for 0.2)
+	      (w3m-wait-for 0.2)
 	      (discard-input))
 	    (prog1 (process-exit-status proc)
 	      (and w3m-current-url
@@ -2261,13 +2266,14 @@ or prefix ARG columns."
       (if (not (w3m-exec url nil reload))
 	  (w3m-refontify-anchor)
 	(w3m-fontify)
-	(setq w3m-display-inline-image-status 'off)
-	(if w3m-display-inline-image
-	    (w3m-toggle-inline-images 'force reload))
-	(setq buffer-read-only t)
-	(set-buffer-modified-p nil)
 	(or (and name (w3m-search-name-anchor name))
-	    (goto-char (point-min))))))))
+	    (goto-char (point-min)))
+	(setq w3m-display-inline-image-status 'off)
+	(when w3m-display-inline-image
+	  (sit-for 0)
+	  (w3m-toggle-inline-images 'force reload))
+	(setq buffer-read-only t)
+	(set-buffer-modified-p nil))))))
 
 
 (defun w3m-reload-this-page (&optional arg)
@@ -2488,8 +2494,9 @@ ex.) c:/dir/file => //c/dir/file"
     (w3m-rendering-region start end)
     (w3m-fontify)
     (setq w3m-display-inline-image-status 'off)
-    (if w3m-display-inline-image
-	(w3m-toggle-inline-images 'force))))
+    (when w3m-display-inline-image
+      (sit-for 0)
+      (w3m-toggle-inline-images 'force))))
 
 
 ;;; About:
