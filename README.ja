@@ -36,15 +36,15 @@
       てしまうかもしれません．そして kill する以外に窮地を抜けられなくなっ
       てしまうでしょう．
 
-   d) もしあなたが XEmacs か Mule 2.3 をお使いならば，APEL を先にインス
-      トールしなければなりません．
+   d) もしあなたが XEmacs か Mule 2.3 または (Mule ではない) Emacs 19.34
+      をお使いならば，APEL を先にインストールしなければなりません．
       APEL は ftp://ftp.m17n.org/pub/mule/apel/ から入手できます．
 
       また，Emacs-w3m は「新しい custom」が必要です．もしあなたが Emacs
       19.34 か Mule 2.3 をお使いならば，emacs-w3m をインストールする前に
       それをインストールしなければなりません．
-      詳細は http://www.dina.kvl.dk/~abraham/custom/ (Emacs 19.34 の場合)
-      または APEL に附属の README.ja (Mule 2.3 の場合) をご覧下さい．
+      詳細は http://www.dina.kvl.dk/~abraham/custom/ そして特に Mule 2.3
+      を使う場合は APEL に附属の README.ja も必ずご覧下さい．
 
       注意: バージョン 1.23 以降の XEmacs 用 APEL パッケージが，MULE あ
        り/なし両方の XEmacs で emacs-w3m を動作させるために使うことがで

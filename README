@@ -33,15 +33,15 @@
       might be stuck.  And you wouldn't get out of the difficulty except
       kill Mule.
 
-   d) If you use XEmacs or Mule 2.3, you have to install APEL before
-      installing Emacs-w3m.  APEL is available at:
+   d) If you use XEmacs, Mule 2.3 or Emacs 19.34(non-MULE), you have to
+      install APEL before installing Emacs-w3m.  APEL is available at:
 
          ftp://ftp.m17n.org/pub/mule/apel/
 
       Also, Emacs-w3m requires "new custom". If you use Emacs 19.34 or
       Mule 2.3, you have to install it before installing emacs-w3m. For
-      more detail, see http://www.dina.kvl.dk/~abraham/custom/ (for
-      Emacs 19.34) or README.en distributed with APEL (for Mule 2.3).
+      more detail, see http://www.dina.kvl.dk/~abraham/custom/, and
+      especially for Mule 2.3, see also README.en distributed with APEL.
 
       NOTE: XEmacs APEL package versions 1.23 and later can also be used
        for both XEmacs with MULE and non-MULE XEmacs to run emacs-w3m.
