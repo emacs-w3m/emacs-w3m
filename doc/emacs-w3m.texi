@@ -234,7 +234,7 @@ using the @sc{bitmap-mule} package (@pxref{Other Requirements}).
 @cindex w3m
 
 Emacs-w3m uses the external w3m program as a back-end to retrieve web
-contents and as a HTML rendering engine; that's how we could create an
+contents and as an HTML rendering engine; that's how we could create an
 accelerated Emacs web browser with asynchronous operation.
 
 You must install the latest w3m, it is available at:
@@ -1167,10 +1167,10 @@ The bookmark minor mode (@pxref{Consulting Bookmarks}) offers several
 key bindings related to bookmark edition, most noticeably @kbd{C-k} to
 kill (i.e. delete) a bookmark, and @kbd{E} to edit the bookmark file.
 
-Bookmarks are kept in a HTML file, so you can edit the file by hand, but
-be very careful: if you erase the comments emacs-w3m needs to recognize
-section names, things can break easily.  If you know the basics of HTML,
-the file should otherwise be quite self-explanatory.
+Bookmarks are kept in an HTML file, so you can edit the file by hand,
+but be very careful: if you erase the comments emacs-w3m needs to
+recognize section names, things can break easily.  If you know the
+basics of HTML, the file should otherwise be quite self-explanatory.
 
 @table @kbd
 @item C-k
@@ -1650,6 +1650,7 @@ Emacs Lisp expressions in your emacs-w3m initialization file, which is
 (setq w3m-home-page "http://emacs-w3m.namazu.org/")
 @end lisp
 
+@noindent
 would set the default homepage to @uref{http://emacs-w3m.namazu.org/}.
 The syntax to use is the same as in your @file{.emacs}
 file.  @xref{(emacs)Init File}.
@@ -1736,6 +1737,17 @@ words, @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el} and
 @node Hooking into MUAs
 @chapter Hooking emacs-w3m into mail/newsreaders
 
+This section introduces to you three kind of Message User Agents (MUAs).
+All those MUAs can display HTML mails properly by using emacs-w3m.
+There are HowTo's and some notes for setting up and using emacs-w3m and
+each MUA.
+
+A note on a different convention; what does @samp{message} mean?@*
+When a Gnus user says @samp{message}, it often means a draft of a
+message to be sent as a mail or a news.  However, it is the term to call
+a received message for users of Mew or Wanderlust.  They use
+@samp{drfat} for a draft of a message to be sent.  On the other hand, a
+received message is called an @samp{article} by Gnus users.
 
 @menu
 * Gnus::                        Reading HTML mails in Gnus
@@ -1837,6 +1849,7 @@ file:
 (require 'mew-w3m)
 @end lisp
 
+@noindent
 With just this, an HTML mail will be displayed in the message window as
 if it were a plain text.  You can still use the @kbd{C-c C-e} command
 (@code{mew-summary-execute-external}) there.
@@ -2006,6 +2019,7 @@ something like the following in the group buffer:
 @kbd{M-x gnus-group-make-shimbun-group RET asahi RET national RET}
 @c @kbd{G n asahi RET national RET}
 
+@noindent
 Substitute @samp{asahi} and @samp{national} with the symbol of the
 server you'd like to connect to and the group you're interested in
 respectively.  You can complete both of those names by typing @key{TAB}
@@ -2022,6 +2036,7 @@ thing in T-gnus):
      'gnus-group-make-shimbun-group))
 @end lisp
 
+@noindent
 Then, you can use @kbd{G n} instead of @kbd{M-x
 gnus-group-make-shimbun-group}.
 
@@ -2061,6 +2076,7 @@ can be different for every group).  Here's an example:
               expiry-wait 6)
 @end lisp
 
+@noindent
 Actually, a Lisp object with which the @code{nnshimbun-group-parameters}
 symbol is added to the forefront of such a list will be used (and it
 will also be saved in the @file{~/.newsrc.eld} file).  Below is the

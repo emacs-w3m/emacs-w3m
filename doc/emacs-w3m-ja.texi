@@ -1847,6 +1847,17 @@ Emacs-w3m $B$,5/F0$9$k$H!"(B@code{w3m-init-file} $B%U%!%$%k$rFI$_9~$_$^$9!#%G
 @node Hooking into MUAs
 @chapter $B%a!<%k(B/$B%K%e!<%9%j!<%@!<$G;H$&(B
 
+$B$3$3$G$O;0<oN`$N(B MUA (Message User Agent) $B$r>R2p$7$^$9!#$=$l$i$N(B MUA $B$O(B
+$B$9$Y$F(B emacs-w3m $B$r;H$&$3$H$K$h$C$F(B HTML $B%a!<%k$rE,@Z$KI=<($9$k$3$H$,$G(B
+$B$-$^$9!#$=$l$>$l$N(B MUA $B$H(B emacs-w3m $B$r;H$&$?$a$N(B HowTo $B$H$$$/$D$+$NCm0U(B
+$B;v9`$,$"$j$^$9!#(B
+
+$B0[$J$k=,47$K4X$9$kCm<a(B; @samp{message} $B$C$F2?(B? $B!](B Gnus $B%f!<%6(B
+$B$,(B @samp{message} $B$H8@$&$H$-!"$=$l$O$7$P$7$P%a!<%k$^$?$O%K%e!<%9$H$7$FAw(B
+$B?.$9$k%a%C%;!<%8$NAp9F$r0UL#$7$^$9!#$7$+$7(B Mew $B$d(B Wanderlust $B$N%f!<%6$N(B
+$B>l9g!"$=$l$O<u?.$7$?%a%C%;!<%8$r;X$9MQ8l$G$9!#H`$i$OAw?.$9$k%a%C%;!<%8(B
+$B$K(B @samp{drfat} $B$r;H$C$F$$$^$9!#0lJ}(B Gnus $B%f!<%6$O!"<u?.$7$?%a%C%;!<%8(B
+$B$r(B @samp{article} $B$H8F$S$^$9!#(B
 
 @menu
 * Gnus::                        Gnus $B$G(B HTML $B%a!<%k$rFI$`(B
