@@ -1,3 +1,7 @@
+2002-12-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yomiuri.el (shimbun-get-headers): Remove garbages.
+
 2002-12-07  YAMASHITA Junji  <ysjj@unixuser.org>
 
 	* shimbun/sb-ibm-dev.el (shimbun-get-headers): Follow the change
