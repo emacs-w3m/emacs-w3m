@@ -1,3 +1,13 @@
+2003-09-29  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-symbol.el: Bind `w3m-output-coding-system' when compiling.
+	(w3m-mule-unicode-symbol): New variable.
+	(w3m-symbol): Add it for candidate.
+	(w3m-symbol): Use it.
+
+	* w3m.el (w3m-use-symbol): Check capability for
+	`w3m-mule-unicode-symbol'.
+
 2003-09-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-tab-line-format, w3m-tab-line-timer,

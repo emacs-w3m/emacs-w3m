@@ -27,6 +27,7 @@
 ;;; Code:
 
 (eval-when-compile
+  (defvar w3m-output-coding-system)
   (defvar w3m-language))
 
 (defgroup w3m-symbol nil
@@ -131,6 +132,30 @@
   :group 'w3m-symbol
   :type w3m-symbol-custom-type)
 
+(defcustom w3m-mule-unicode-symbol
+  (when (and (charsetp 'mule-unicode-0100-24ff)
+	     (charsetp 'mule-unicode-2500-33ff))
+    (append
+     (mapcar (lambda (p)
+	       (if p
+		   (char-to-string
+		    (make-char 'mule-unicode-2500-33ff (car p) (cadr p)))
+		 ""))
+	     '((32 92) (32 60) (32 76) (32 44) (32 68) (32 34) (32 48) nil
+	       (32 84) (32 52) (32 32) nil     (32 56) nil     nil     nil
+	       (32 92) (32 64) (32 79) (32 47) (32 72) (32 35) (32 51) nil
+	       (32 87) (32 55) (32 33) nil     (32 59) nil     nil     nil
+	       (115 34) (33 97) (34 102) (34 43) (33 96) (34 101)
+	       (34 46) (34 47) (33 115) (34 47) (34 43) (33 97)
+	       (34 47)))
+     (list (format "%c %c %c " 
+		   (make-char 'mule-unicode-0100-24ff 121 42)
+		   (make-char 'mule-unicode-0100-24ff 118 113)
+		   (make-char 'mule-unicode-0100-24ff 118 115)))))
+  "List of symbol string, using mule-unicode characters."
+  :group 'w3m-symbol
+  :type w3m-symbol-custom-type)
+
 (defcustom w3m-symbol nil
   "List of symbol string."
   :group 'w3m-symbol
@@ -140,7 +165,9 @@
 		(const :format "Chinese CNS " w3m-Chinese-CNS-symbol)
 		(const :tag "Chinese GB" w3m-Chinese-GB-symbol)
 		(const :format "Japanese     " w3m-Japanese-symbol)
-		(const :tag "Korean" w3m-Korean-symbol)
+		(const :format "Korean      " w3m-Korean-symbol)
+		,@(when w3m-mule-unicode-symbol
+		   '((const :tag "Mule-Unicode" w3m-mule-unicode-symbol)))
 		(variable :format "%t symbol: %v\n" :size 0
 			  :value w3m-default-symbol)
 		,w3m-symbol-custom-type))
@@ -150,6 +177,8 @@
 	 (if (symbolp w3m-symbol)
 	     (symbol-value w3m-symbol)
 	   w3m-symbol))
+	((and (eq w3m-output-coding-system 'utf-8)
+	      w3m-mule-unicode-symbol))
 	((let ((lang (or w3m-language
 			 (and (boundp 'current-language-environment)
 			      (symbol-value 'current-language-environment)))))
