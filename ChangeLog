@@ -1,3 +1,7 @@
+2004-11-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-redisplay-this-page): Don't make a new history.
+
 2004-11-17  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
 
 	* w3m.el (w3m-output-coding-system): Use `utf-8' if Emacs has
