@@ -1,3 +1,7 @@
+2003-02-12  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-pilot-mailsync.el (shimbun-reply-to): Bug fixed.
+
 2003-02-11  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-pilot-mailsync.el: New file.

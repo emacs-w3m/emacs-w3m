@@ -38,7 +38,7 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-mailman))
   shimbun-pilot-mailsync-url)
 
-(luna-define-method shimbun-reply-to ((shimbun shimbun-jpilot))
+(luna-define-method shimbun-reply-to ((shimbun shimbun-pilot-mailsync))
   "pilot-mailsync@pilot-mailsync.sourcefubar.net")
 
 (provide 'sb-pilot-mailsync)
