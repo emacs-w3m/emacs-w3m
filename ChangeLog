@@ -1,10 +1,30 @@
+2002-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3.el (w3m-view-this-url-1): Copy `w3m-current-url' into a
+	copied buffer.
+	(w3m-goto-url): Allow the 7th argument `qsearch'; use it to
+	recursive call the function itself if the quicksearch feature is
+	permitted.
+	(w3m-goto-url-new-session): Specify the 7th arg of `w3m-goto-url'
+	if it is called interactively.
+
+2002-11-08  Romain FRANCOISE  <romain@orebokech.com>
+
+	* w3m-search.el (w3m-search-engine-alist): Add "google groups".
+	(w3m-search-quick-search-engine-alist): New user option.
+	(w3m-search-quick-search-handler): New function.
+
+	* w3m.el: Autoload `w3m-search-quick-search-handler'.
+	(w3m-goto-url): Use `w3m-search-quick-search-handler' to parse
+	quicksearch url schemes.
+
 2002-11-06  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-palmfan.el (shimbun-palmfan-date-regexp): Updated.
 	(shimbun-palmfan-month-alist): Change month string (full spell,
-	not abbreviation) and number pairs.	
+	not abbreviation) and number pairs.
 	(shimbun-palmfan-news-headers): Bug fixed.
-	
+
 2002-11-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-bookmark.el (w3m-bookmark-safe-string): Abolish its 2nd

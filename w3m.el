@@ -103,6 +103,7 @@
     "Add link of current page to bookmark." t)
   (autoload 'w3m-search "w3m-search"
     "Search QUERY using SEARCH-ENGINE." t)
+  (autoload 'w3m-search-quick-search-handler "w3m-search")
   (autoload 'w3m-weather "w3m-weather"
     "Display weather report." t)
   (autoload 'w3m-about-weather "w3m-weather")
@@ -1229,7 +1230,7 @@ Here is an example of how to set this option:
 		    ("ldquo" . 124) ("rdquo" . 125) ("bdquo" . 126)))
 	      (115 .
 		   (("dagger" . 32) ("Dagger" . 33) ("permil" . 48)
-		    ("lsaquo" . 57) ("rsaquo" . 58) 
+		    ("lsaquo" . 57) ("rsaquo" . 58)
 		    ("bull" . 34) ("hellip" . 38) ("prime" . 50) ("Prime" . 51)
 		    ("oline" . 62) ("frasl" . 68)))
 	      (116 .
@@ -4325,9 +4326,11 @@ described in Section 5.2 of RFC 2396.")
   (lexical-let (pos)
     (when new-session
       (setq pos (point-marker))
-      (if w3m-view-this-url-new-session-in-background
-	  (set-buffer (w3m-copy-buffer nil nil nil 'empty))
-	(switch-to-buffer (w3m-copy-buffer nil nil t 'empty)))
+      (let ((referer w3m-current-url))
+	(if w3m-view-this-url-new-session-in-background
+	    (set-buffer (w3m-copy-buffer nil nil nil 'empty))
+	  (switch-to-buffer (w3m-copy-buffer nil nil t 'empty)))
+	(setq w3m-current-url referer))
       ;; When new URL has `name' portion, we have to goto the base url
       ;; because generated buffer has no content at this moment.
       (when (and (string-match w3m-url-components-regexp url)
@@ -5799,7 +5802,8 @@ appropriate buffer and select it."
 	      'w3m-current-title)))
 
 ;;;###autoload
-(defun w3m-goto-url (url &optional reload charset post-data referer handler)
+(defun w3m-goto-url
+  (url &optional reload charset post-data referer handler qsearch)
   "Retrieve contents of URL.
 If the second argument RELOAD is non-nil, reload a content of URL.
 Except that if it is 'redisplay, re-display the page without reloading.
@@ -5811,7 +5815,11 @@ content-type is \"x-www-form-urlencoded\".  If it is a cons cell, the
 car of a cell is used as the content-type and the cdr of a cell is
 used as the body.
 If the fifth argument REFERER is specified, it is used for a Referer:
-field for this request."
+field for this request.
+You can also use \"quicksearch\" url schemes such as \"gg:emacs\" which
+would search for the term \"emacs\" with the Google search engine.  See
+the `w3m-search' function and the variable
+`w3m-search-quick-search-engine-alist'."
   (interactive
    (list
     (w3m-input-url nil
@@ -5826,6 +5834,12 @@ field for this request."
 	coding-system-for-read)))
   (set-text-properties 0 (length url) nil url)
   (setq url (w3m-uri-replace url))
+  (when (or qsearch
+	    (interactive-p)
+	    (equal referer "about://bookmark/"))
+    ;; quicksearch
+    (setq qsearch t
+	  url (w3m-search-quick-search-handler url)))
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:\\(.*\\)" url)
@@ -5854,11 +5868,12 @@ Cannot run two w3m processes simultaneously \
 			    (split-string (substring url (match-end 0)) "&"))))
 	  (w3m-process-do
 	      (type (prog1
-			(w3m-goto-url (car urls))
+			(w3m-goto-url (car urls) nil nil nil nil nil qsearch)
 		      (dolist (url (cdr urls))
 			(save-excursion
 			  (set-buffer (w3m-copy-buffer nil nil nil 'empty))
-			  (save-window-excursion (w3m-goto-url url))))))
+			  (save-window-excursion
+			    (w3m-goto-url url nil nil nil nil nil qsearch))))))
 	    type))
       ;; Retrieve the page.
       (lexical-let ((orig url)
@@ -6033,8 +6048,10 @@ the current session.  Otherwise, the new session will start afresh."
 	(when (and (string-match w3m-url-components-regexp url)
 		   (match-beginning 8))
 	  (w3m-goto-url (substring url 0 (match-beginning 8))
-			reload charset post-data referer))
-	(w3m-goto-url url reload charset post-data referer))
+			reload charset post-data referer
+			nil (interactive-p)))
+	(w3m-goto-url url reload charset post-data referer
+		      nil (interactive-p)))
     (w3m url t)))
 
 (defun w3m-move-point-for-localcgi (url)
