@@ -4411,6 +4411,9 @@ cnn-jp.sports cnn-jp.top cnn-jp.usa cnn-jp.world
 n24-de.boerse n24-de.boulevard n24-de.nachrichten n24-de.netnews
 n24-de.politik n24-de.sport n24-de.wirtschaft
 
+@item @uref{http://www.welt.de/, Die Welt}
+welt-de.news
+
 @item @uref{http://www.zeit.de/, Die Zeit}
 zeit-de.news
 @end table
