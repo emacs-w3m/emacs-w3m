@@ -1,3 +1,8 @@
+2004-06-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Don't work
+	for the tenjin group when newspaper holidays.
+
 2004-06-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m): Run w3m-mode before popping to the newly created
