@@ -1,5 +1,9 @@
 2001-06-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-netbsd.el (shimbun-get-headers): Fixed order of
+	retrieved headers and condition to check whether the target header
+	is already retrieved or not.
+
 	* w3m.el (w3m-w3m-retrieve): Remove URL's fragment before checking
 	cache.
 

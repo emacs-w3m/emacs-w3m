@@ -58,39 +58,42 @@
 	    "<A HREF=\"\\([0-9]+\\)/\\(threads.html\\)?\">" nil t)
       (push (match-string 1) months))
     (setq months (nreverse months))
-    (catch 'stop
-      (dolist (month months)
-	(unless (if pages (<= (incf count) pages) t)
-	  (throw 'stop headers))
-	(erase-buffer)
-	(shimbun-retrieve-url
-	 (format "%s%s/%s/maillist.html"
-		 (shimbun-url-internal shimbun)
-		 (shimbun-current-group-internal shimbun) month)
-	 t)
-	(let (id url subject)
-	  (while (re-search-forward
-		  "<A[^>]*HREF=\"\\(msg\\([0-9]+\\)\\.html\\)\">\\([^<]+\\)</A>"
-		  nil t)
-	    (setq url (format "%s%s/%s/%s"
-			      (shimbun-url-internal shimbun)
-			      (shimbun-current-group-internal shimbun)
+    (nreverse
+     (catch 'stop
+       (dolist (month months)
+	 (unless (if pages (<= (incf count) pages) t)
+	   (throw 'stop headers))
+	 (erase-buffer)
+	 (shimbun-retrieve-url
+	  (format "%s%s/%s/maillist.html"
+		  (shimbun-url-internal shimbun)
+		  (shimbun-current-group-internal shimbun) month)
+	  t)
+	 (let (id url subject)
+	   (while (re-search-forward
+		   "<A[^>]*HREF=\"\\(msg\\([0-9]+\\)\\.html\\)\">\\([^<]+\\)</A>"
+		   nil t)
+	     (setq url (format "%s%s/%s/%s"
+			       (shimbun-url-internal shimbun)
+			       (shimbun-current-group-internal shimbun)
+			       month
+			       (match-string 1))
+		   id (format "<%s%05d%%%s>"
 			      month
-			      (match-string 1))
-		  id (format "<%s%05d%%%s>"
-			     month
-			     (string-to-number (match-string 2))
-			     (shimbun-current-group-internal shimbun))
-		  subject (match-string 3))
-	    (push (shimbun-make-header
-		   0
-		   (shimbun-mime-encode-string subject)
-		   (if (looking-at "</STRONG> *<EM>\\([^<]+\\)<")
-		       (shimbun-mime-encode-string (match-string 1))
-		     "")
-		   "" id "" 0 0 url)
-		  headers))))
-      headers)))
+			      (string-to-number (match-string 2))
+			      (shimbun-current-group-internal shimbun))
+		   subject (match-string 3))
+	     (when (shimbun-search-id shimbun id)
+	       (throw 'stop headers))
+	     (push (shimbun-make-header
+		    0
+		    (shimbun-mime-encode-string subject)
+		    (if (looking-at "</STRONG> *<EM>\\([^<]+\\)<")
+			(shimbun-mime-encode-string (match-string 1))
+		      "")
+		    "" id "" 0 0 url)
+		   headers))))
+       headers))))
 
 (provide 'sb-netbsd)
 
