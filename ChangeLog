@@ -4,6 +4,7 @@
 	(w3m-fontify): Delete <?XML ... ?> tag for XHTML page.
 	(w3m-input-url): Do not use 7th arg of completing-read
 	for XEmacs support.
+	(w3m-bookmark-save): Check bookmark file is writable.
 
 2001-02-28  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
