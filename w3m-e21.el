@@ -141,11 +141,6 @@ Buffer string between BEG and END are replaced with IMAGE."
   "*Face for header-line location content."
   :group 'w3m-face)
 
-(defcustom w3m-use-header-line t
-  "Non-nil activates header-line of w3m."
-  :group 'w3m
-  :type 'boolean)
-
 (defun w3m-setup-header-line ()
   "Setup header line."
   (if w3m-use-header-line
