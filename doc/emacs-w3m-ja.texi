@@ -4955,7 +4955,7 @@ atmarkit.fsecurity atmarkit.fbiz atmarkit.jibun
 @item @uref{http://www.matsusaka-u.ac.jp/~okumura/texfaq/qa/, TeX Q&A 掲示板}
 texfaq.qanda
 
-@item @uref{http://x51.org/, X51}
+@item @uref{http://x51.org/, X51.org}
 x51.art x51.auction x51.blow x51.cabal x51.crime x51.disaster x51.edge
 x51.homme x51.info x51.life x51.love x51.media x51.medical x51.military
 x51.northkorea x51.oparts x51.phallic x51.psychics x51.religion
