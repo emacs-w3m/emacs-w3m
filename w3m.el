@@ -3335,7 +3335,7 @@ session."
   (let ((url (or (w3m-anchor) (w3m-image))))
     (if url
 	(lexical-let ((pos (point-marker))
-		      (url w3m-current-url))
+		      (curl w3m-current-url))
 	  (w3m-process-with-null-handler
 	    (w3m-process-do
 		(success (w3m-download url nil nil handler))
@@ -3343,7 +3343,7 @@ session."
 		   (buffer-name (marker-buffer pos))
 		   (save-excursion
 		     (set-buffer (marker-buffer pos))
-		     (when (equal url w3m-current-url)
+		     (when (equal curl w3m-current-url)
 		       (goto-char pos)
 		       (w3m-refontify-anchor)))))))
       (message "No URL at point"))))

@@ -1,3 +1,7 @@
+2001-11-27  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-download-this-url): Fix a problem of broken URL.
+
 2001-11-24  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-fml.el (shimbun-get-headers): Call
