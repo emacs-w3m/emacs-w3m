@@ -1,3 +1,7 @@
+2002-04-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-make-glyph): Remove unused var.
+
 2002-04-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-char-to-int): New alias.

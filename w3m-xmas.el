@@ -274,10 +274,7 @@ new glyph image.  See also the documentation for the variable
 				(string-to-int
 				 (match-string 1) 16) content)))
 	       (setq content (concat (nreverse content))))
-	     (setq glyph
-		   (make-glyph (vector 'xbm :data
-				       (list width height
-					     content))))))
+	     (make-glyph (vector 'xbm :data (list width height content)))))
       (make-glyph (vector type :data data))))
 
 (defun w3m-create-image (url &optional no-cache referer size handler)
