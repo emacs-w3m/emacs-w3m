@@ -50,14 +50,36 @@
   :group 'w3m
   :prefix "w3m-antenna-")
 
+(define-widget 'string-with-default 'string
+  "String widget with default value.
+When creating a new widget, its value is given by an expression specified
+with :default-value-from."
+  :tag "URL"
+  :value-from nil
+  :create 'string-with-default-value-create)
+
+(defun string-with-default-value-create (widget)
+  (if (string= "" (widget-get widget :value))
+      ;; No value is given.
+      (widget-put widget :value
+		  (let* ((symbol (widget-get widget :value-from))
+			 (value  (eval symbol)))
+		    (if value
+			(set symbol nil)
+		      (setq value ""))
+		    value)))
+  (widget-default-create widget))
+
 (defcustom w3m-antenna-sites
   nil
   "List of WEB sites, watched by `w3m-antenna'."
   :group 'w3m-antenna
   :type '(repeat
 	  (list
-	   (string :tag "URL")
-	   (string :tag "Title")
+	   (string-with-default :tag "URL" 
+				:value-from w3m-antenna-tmp-url)
+	   (string-with-default :tag "Title" 
+				:value-from w3m-antenna-tmp-title)
 	   (choice :tag "Class"
 		   (const :tag "Normal" nil)
 		   (const :tag "Modified Time" time)
@@ -325,6 +347,26 @@ whose elements are:
   (interactive "P")
   (w3m-goto-url "about://antenna/" no-cache))
 
+(defvar w3m-antenna-tmp-url nil)
+(defvar w3m-antenna-tmp-title nil)
+(defun w3m-antenna-add-current-url (&optional arg)
+  "Add link of current page to antenna.
+With prefix, ask new url to add instead of current page."
+  (interactive "P")
+  (w3m-antenna-add (if arg (w3m-input-url) w3m-current-url)
+		   w3m-current-title))
+(defun w3m-antenna-add (url &optional title)
+  "Add URL to antenna.
+Optional argument TITLE is title of link."
+  (setq w3m-antenna-tmp-url url)
+  (setq w3m-antenna-tmp-title title)
+  (customize-variable 'w3m-antenna-sites)
+  ;; dirty...
+  (re-search-forward "INS")
+  (backward-char 1)
+  (widget-button-press (point))
+  (re-search-forward "State:")
+  (backward-char 2))
 
 (provide 'w3m-antenna)
 ;;; w3m-antenna.el ends here.

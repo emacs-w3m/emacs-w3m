@@ -113,6 +113,8 @@
   (autoload 'w3m-about-weather "w3m-weather")
   (autoload 'w3m-antenna "w3m-antenna"
     "Display antenna report." t)
+  (autoload 'w3m-antenna-add-current-url "w3m-antenna"
+    "Add link of current page to antenna." t)
   (autoload 'w3m-about-antenna "w3m-antenna")
   (autoload 'w3m-dtree "w3m-dtree"
     "Display directory tree." t)
@@ -859,6 +861,8 @@ will disclose your private informations, for example:
 (defvar w3m-current-coding-system nil "Current coding-system of this buffer.")
 (defvar w3m-next-url nil "Next URL of this buffer.")
 (defvar w3m-previous-url nil "Previous URL of this buffer.")
+(defvar w3m-start-url nil "Start URL of this buffer.")
+(defvar w3m-contents-url nil "Table of Contents URL of this buffer.")
 
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-base-url)
@@ -867,6 +871,8 @@ will disclose your private informations, for example:
 (make-variable-buffer-local 'w3m-current-coding-system)
 (make-variable-buffer-local 'w3m-next-url)
 (make-variable-buffer-local 'w3m-previous-url)
+(make-variable-buffer-local 'w3m-start-url)
+(make-variable-buffer-local 'w3m-contents-url)
 
 (defsubst w3m-clear-local-variables ()
   (setq w3m-current-url nil
@@ -875,10 +881,12 @@ will disclose your private informations, for example:
 	w3m-current-forms nil
 	w3m-current-coding-system nil
 	w3m-next-url nil
-	w3m-previous-url nil))
+	w3m-previous-url nil
+	w3m-start-url nil
+	w3m-contents-url nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url base title forms cs next prev)
+  (let (url base title forms cs next prev start toc)
     (with-current-buffer from-buffer
       (setq url w3m-current-url
 	    base w3m-current-base-url
@@ -886,14 +894,18 @@ will disclose your private informations, for example:
 	    forms w3m-current-forms
 	    cs w3m-current-coding-system
 	    next w3m-next-url
-	    prev w3m-previous-url))
+	    prev w3m-previous-url
+	    start w3m-start-url
+	    toc w3m-contents-url))
     (setq w3m-current-url url
 	  w3m-current-base-url base
 	  w3m-current-title title
 	  w3m-current-forms forms
 	  w3m-current-coding-system cs
 	  w3m-next-url next
-	  w3m-previous-url prev)))
+	  w3m-previous-url prev
+	  w3m-start-url start
+	  w3m-contents-url toc)))
 
 (defvar w3m-verbose t "Flag variable to control messages.")
 
@@ -1725,7 +1737,10 @@ If N is negative, last N items of LIST is returned."
 	  (setq rel (split-string rel))
 	  (cond
 	   ((member "next" rel) (setq w3m-next-url href))
-	   ((member "prev" rel) (setq w3m-previous-url href))))
+	   ((or (member "prev" rel) (member "previous" rel))
+	    (setq w3m-previous-url href))
+	   ((member "start" rel) (setq w3m-start-url href))
+	   ((member "contents" rel) (setq w3m-contents-url href))))
 	(delete-region start (point))
 	(cond
 	 (href
@@ -1756,7 +1771,11 @@ If N is negative, last N items of LIST is returned."
     (when w3m-next-url
       (setq w3m-next-url (w3m-expand-url w3m-next-url)))
     (when w3m-previous-url
-      (setq w3m-previous-url (w3m-expand-url w3m-previous-url)))))
+      (setq w3m-previous-url (w3m-expand-url w3m-previous-url)))
+    (when w3m-start-url
+      (setq w3m-start-url (w3m-expand-url w3m-start-url)))
+    (when w3m-contents-url
+      (setq w3m-contents-url (w3m-expand-url w3m-contents-url)))))
 
 (defun w3m-image-type (content-type)
   "Return image type which corresponds to CONTENT-TYPE."
@@ -2997,7 +3016,10 @@ to nil.
 	      (setq rel (split-string rel))
 	      (cond
 	       ((member "next" rel) (setq w3m-next-url href))
-	       ((member "prev" rel) (setq w3m-previous-url href))))))))))
+	       ((or (member "prev" rel) (member "previous" rel))
+		(setq w3m-previous-url href))
+	       ((member "start" rel) (setq w3m-start-url href))
+	       ((member "contents" rel) (setq w3m-contents-url href))))))))))
 
 (defun w3m-remove-meta-charset-tags ()
   (let ((case-fold-search t))
@@ -3749,6 +3771,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "?" 'describe-mode)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
+    (define-key map "+" 'w3m-antenna-add-current-url)
     (define-key map "H" 'w3m-gohome)
     (define-key map "A" 'w3m-antenna)
     (define-key map "W" 'w3m-weather)
@@ -3794,6 +3817,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map " " 'w3m-scroll-up-or-next-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
+    (define-key map "+" 'w3m-antenna-add-current-url)
     (define-key map "A" 'w3m-antenna)
     (define-key map "b" 'w3m-scroll-down-or-previous-url)
     (define-key map "c" 'w3m-print-this-url)
@@ -3970,6 +3994,7 @@ Return t if deleting current frame or window is succeeded."
 	If called with '\\[universal-argument]', this command displays arrived-DB history.
 \\[w3m-antenna]	Display the report change of WEB sites.
 	If called with '\\[universal-argument]', this command reloads report.
+\\[w3m-antenna-add-this-url]	Add link under cursor to antenna.
 \\[w3m-search]	Search query.
 	If called with '\\[universal-argument]', you can choose search engine.
 \\[w3m-weather]	Display weather report.

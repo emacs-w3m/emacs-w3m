@@ -1,3 +1,29 @@
+2001-11-08  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
+
+	* w3m.el (w3m-start-url, w3m-contents-url): New buffer-local vars.
+	(w3m-clear-local-variables): Also clear `w3m-start-url' and
+	`w3m-contents-url'.
+	(w3m-copy-local-variables): Also copy `w3m-start-url' and
+	`w3m-contents-url'.
+	(w3m-fontify-anchors, w3m-check-link-tags): Add support the tags
+	"previous", "start" and "contents".
+
+2001-11-02  Masatake YAMATO  <jet@gyve.org>
+
+	* w3m.el (autoload): Added w3m-antenna-add-current-url.
+	(w3m-lynx-like-map): Likewise.
+	(w3m-info-like-map): Likewise.
+	(w3m-mode): Added w3m-antenna-add-current-url to doc string.
+
+	* w3m-antenna.el (string-with-default): New widget.
+	(string-with-default-value-create): New function.
+	(w3m-antenna-sites): Use string-with-default widgets
+	instead of string widgets.
+	(w3m-antenna-tmp-url): New variable.
+	(w3m-antenna-tmp-title): New variable.
+	(w3m-antenna-add-current-url): New function.
+	(w3m-antenna-add): New function.
+
 2001-11-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-form.el (w3m-form-replace): Don't use `save-excursion' because
