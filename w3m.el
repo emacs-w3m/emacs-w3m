@@ -221,6 +221,7 @@
 (defvar w3m-process-url nil)
 (defvar w3m-process-user nil)
 (defvar w3m-process-passwd nil)
+
 (make-variable-buffer-local 'w3m-process)
 (make-variable-buffer-local 'w3m-process-string)
 (make-variable-buffer-local 'w3m-process-url)
@@ -839,9 +840,13 @@ CT denotes content-type."
       (setq w3m-url-history
 	    (nthcdr arg w3m-url-history)))))
 
+(defun w3m-view-previous-point ()
+  (interactive)
+  (w3m-restore-position w3m-current-url))
 
 (defun w3m-expand-url (url base)
   "Convert URL to absolute, and canonicalize it."
+  (if (not base) (setq base ""))
   (if (string-match "^[^:]+://[^/]*$" base)
       (setq base (concat base "/")))
   (cond
@@ -931,7 +936,9 @@ CT denotes content-type."
       (require 'w3)
       (let ((mm-download-directory
 	     (file-name-as-directory w3m-default-save-dir)))
-	(w3-download-url (w3m-expand-url url w3m-current-url))))))
+	(w3-download-url (w3m-expand-url url w3m-current-url)))
+      (w3m-refontify-anchor (current-buffer)))))
+
 
 (defun w3m-print-current-url ()
   "*Print the URL of current page and push it into kill-ring."
@@ -1052,6 +1059,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (if (featurep 'xemacs)
       (define-key w3m-mode-map [(button2)] 'w3m-mouse-view-this-url)
     (define-key w3m-mode-map [mouse-2] 'w3m-mouse-view-this-url))
+  (define-key w3m-mode-map "\C-c\C-b" 'w3m-view-previous-point)
   (define-key w3m-mode-map [left] 'w3m-view-previous-page)
   (define-key w3m-mode-map "B" 'w3m-view-previous-page)
   (define-key w3m-mode-map "d" 'w3m-download-this-url)
@@ -1117,6 +1125,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 \\[backward-char]	Backward char.
 
 \\[goto-line]	Jump to line.
+\\[w3m-view-previous-point]	w3m-view-previous-point.
 
 \\[w3m]	w3m.
 \\[w3m-view-bookmark]	w3m-view-bookmark.

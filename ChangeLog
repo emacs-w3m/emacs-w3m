@@ -1,3 +1,10 @@
+2000-10-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-view-previous-point): New function.
+	(w3m-expand-url): If BASE is nil, it set "".
+	(w3m-download-this-url): w3m-refontify-anchor() exec when finished
+	download.
+
 2000-10-16  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-arrived-ct-file, w3m-arrived-file-cs,
