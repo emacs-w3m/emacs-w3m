@@ -404,7 +404,7 @@ It will be used for the w3m system internal for Emacs 21.")
 It will be used for the w3m system internal for Emacs 21.")
 
 (defcustom w3m-async-exec nil
-  "*If non-nil, w3m is executed an asynchronously process."
+  "*If non-nil, w3m is executed by an asynchronous process."
   :group 'w3m
   :type 'boolean)
 
@@ -1868,34 +1868,85 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		   (string-as-multibyte (format "%s" status)))
 	     nil)))))
 
-(defun w3m-exec-get-user (url realm)
-  "Get user and passwd from DataBase."
+;; w3m-arrived-user-alist has an association list as below format.
+;; (("root1" ("realm11" ("user11" "pass11")
+;;                      ("user12" "pass12"))
+;;           ("realm12" ("user13" "pass13")))
+;;  ("root2" ("realm21" ("user21" "pass21"))))
+(defun w3m-exec-get-user (url realm &optional multi)
+  "Get user from arrived-user-alist."
   (if (= w3m-process-user-counter 0)
       nil
-    (let ((ret (cdr (assoc (cons (w3m-get-server-root url) realm)
-			   w3m-arrived-user-alist))))
-      (when ret (setq w3m-process-user-counter (1- w3m-process-user-counter)))
-      ret)))
+    (let ((root (w3m-get-server-root url))
+	  userlst)
+      (setq userlst
+	    (cdr (assoc realm
+			(cdr (assoc (w3m-get-server-root url)
+				    w3m-arrived-user-alist)))))
+      (when userlst
+	(setq w3m-process-user-counter (1- w3m-process-user-counter))
+	(cond
+	 (multi userlst)
+	 ((= (length userlst) 1)
+	  ;; single user
+	  (car (car userlst)))
+	 (t
+	  ;; have multi user
+	  (completing-read (format "Select Username for %s: " realm)
+			   (mapcar (lambda (x) (cons (car x) (car x)))
+				   userlst)
+			   nil t)))))))
+
+(defun w3m-exec-get-passwd (url realm user)
+  "Get passwd from arrived-user-alist."
+  (if (= w3m-process-user-counter 0)
+      nil
+    (let (pass)
+      (setq pass
+	    (cdr
+	     (assoc user
+		    (cdr
+		     (assoc realm
+			    (cdr (assoc (w3m-get-server-root url)
+					w3m-arrived-user-alist)))))))
+      (when pass
+	(setq w3m-process-user-counter (1- w3m-process-user-counter)))
+      pass)))
 
 (defun w3m-exec-set-user (url realm user pass)
-  (when (and url realm user)
-    (let ((root (w3m-get-server-root url))
-	  (w3m-process-user-counter 2)
-	  tmp)
-      (if (setq tmp (w3m-exec-get-user url realm))
-	  (unless (equal (cons user pass) tmp)
-	    (setq w3m-arrived-user-alist
-		  (append (list (cons (cons root realm) (cons user pass)))
-			  (delete (cons (cons root realm) tmp)
-				  w3m-arrived-user-alist))))
+  (when (and url realm user pass)
+    (let* ((root (w3m-get-server-root url))
+	   (tmproot (cdr (assoc root w3m-arrived-user-alist)))
+	   (tmprealm (cdr (assoc realm tmproot)))
+	   (tmpuser (assoc user tmprealm))
+	   (tmppass (cdr tmpuser))
+	   (w3m-process-user-counter 2)
+	   tmp)
+      (cond
+       ((and tmproot tmprealm tmpuser tmppass (string= pass tmppass))
+	;; nothing to do
+	)
+       ((and tmproot tmprealm tmpuser)
+	;; passwd change
+	(setcdr tmpuser pass))
+       ((and tmproot tmprealm)
+	;; add user and passwd
+	(nconc tmprealm (list (cons user pass))))
+       (tmproot
+	;; add realm, user, and passwd
+	(nconc tmproot (list (cons realm (list (cons user pass))))))
+       (t
+	;; add root, realm, user, and passwd
 	(setq w3m-arrived-user-alist
-	      (append (list (cons (cons root realm) (cons user pass)))
-		      w3m-arrived-user-alist))))))
+	      (append 
+	       (list (cons root (list (cons realm (list (cons user pass))))))
+	       w3m-arrived-user-alist)))
+       ))))
 
 (defun w3m-get-server-root (url)
   "Get server root for realm."
   (if (string-match "^[^/]*/+\\([^/]+\\)" url)
-      (match-string 1 url)
+      (downcase (match-string 1 url))
     url))
 
 (defun w3m-read-file-name (&optional prompt dir default existing initial)
@@ -1957,8 +2008,8 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		   (= (match-end 0) (point-max)))
 	      (setq w3m-process-realm (match-string 2))
 	      (setq w3m-process-passwd
-		    (or (cdr (w3m-exec-get-user
-			      w3m-current-url w3m-process-realm))
+		    (or (w3m-exec-get-passwd
+			 w3m-current-url w3m-process-realm w3m-process-user)
 			(read-passwd
 			 (format "Password for %s: " w3m-process-realm))))
 	      (condition-case nil
@@ -1972,8 +2023,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		   (= (match-end 0) (point-max)))
 	      (setq w3m-process-realm (match-string 2))
 	      (setq w3m-process-user
-		    (or (car (w3m-exec-get-user
-			      w3m-current-url w3m-process-realm))
+		    (or (w3m-exec-get-user w3m-current-url w3m-process-realm)
 			(read-from-minibuffer (format "Username for %s: "
 						      w3m-process-realm))))
 	      (condition-case nil

@@ -1,3 +1,13 @@
+2001-08-06  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-async-exec): Fix doc-string.
+	(w3m-exec-get-user): Rewrite.
+	(w3m-exec-get-passwd): New funciton.
+	(w3m-exec-set-user): Rewrite.
+	(w3m-get-server-root): Set 'server root' to downcase.
+	(w3m-exec-filter): Modify the method of 'user' and 'passwd'
+	handling.
+
 2001-08-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-next-url): New buffer local variable.
