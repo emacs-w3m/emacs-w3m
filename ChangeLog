@@ -4,8 +4,8 @@
 
 2001-03-12  Masatake YAMATO  <masata-y@is.aist-nara.ac.jp>
 
-	* w3m.el (w3m-view-previous-page): New command.
-	(w3m-mode-map): Add `w3m-view-previous-page'.
+	* w3m.el (w3m-view-parent-page): New command.
+	(w3m-mode-map): Add `w3m-view-parent-page'.
 
 2001-03-10  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
