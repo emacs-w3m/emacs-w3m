@@ -21,7 +21,7 @@
 
 ;;; Commentary:
 
-;; w3m keeps `history' in the buffer-local variable `w3m-url-history'.
+;; w3m keeps history in the buffer-local variable `w3m-url-history'.
 ;; This is a tree-structured complex list of all the links you have
 ;; visited.  For instance, it looks like the following:
 ;;
@@ -39,11 +39,17 @@
 ;; [Branch-2.1.1.0]:                                   +--> U2.1.1.0.0
 ;;
 ;;
-;; In this case, the element U1.0.0.0.0 means that it is the first
-;; link of the first branch which is sprouted from the element U1.0.0.
+;; In this case, the history element U1.0.0.0.0 represents the first
+;; link of the first branch which is sprouted from the history element
+;; U1.0.0.
 ;;
-;; Each element represents a link which consists of the following
-;; records:
+;; The trunk or each branch is a simple list which will have some
+;; history elements.  History elements in the trunk or each branch
+;; should be arranged in order of increasing precedence (the newest
+;; history element should be the first element of the list).
+;;
+;; Each history element represents a link which consists of the
+;; following records:
 ;;
 ;;      (URL ATTRIBUTES BRANCH BRANCH ...)
 ;;
@@ -55,7 +61,9 @@
 ;;             last-modified "Wednesday, 31-Jan-01 09:36:30 GMT"
 ;;             content-type "text/html")
 ;;
-;; The rest BRANCHes are branches of the element.  Each BRANCH will
+;; The rest BRANCHes are branches of the history element.  Branches
+;; should also be arranged in order of increasing precedence (the
+;; oldest one should be located in the rightmost).  Each BRANCH will
 ;; also be a tree-structured complex list.  Thus the history structure
 ;; will grow up infinitely.  Do you have enough memories for it? :-p
 ;;
@@ -102,12 +110,52 @@
 
 (defun w3m-history-current ()
   "Return a history element of the current position."
-  (let* ((position (car w3m-url-history))
-	 (element (nth (pop position) (cdr w3m-url-history))))
-    (while (> (length position) 0)
-      (setq element (nth (pop position) (cddr element))
-	    element (nth (pop position) element)))
-    element))
+  (let ((position (car w3m-url-history))
+	element)
+    (when position
+      (setq element (nth (pop position) (cdr w3m-url-history)))
+      (while (> (length position) 0)
+	(setq element (nth (pop position) (cddr element))
+	      element (nth (pop position) element)))
+      element)))
+
+(defun w3m-history-forward ()
+  "Move forward in the history and return a history element of the
+position.  The position pointer of `w3m-url-history' will go forward.
+If the next element does not exist in the history, it returns a
+history element of the current position."
+  (let ((position (car w3m-url-history))
+	number element branch branches)
+    (when position
+      (setq branch (cdr w3m-url-history)
+	    number (pop position)
+	    element (nth number branch))
+      (while (> (length position) 0)
+	(setq branch (nth (pop position) (cddr element))
+	      number (pop position)
+	      element (nth number branch)))
+      (setq position (car w3m-url-history)
+	    branches (cddr element))
+      (cond (branches
+	     ;; This element has branch(es).
+	     (setq number (1- (length branches)))
+	     (setcdr (nthcdr (1- (length position)) position)
+		     (list number 0))
+	     (car (nth number branches)))
+	    ((> (length branch) (setq number (1+ number)))
+	     ;; Next element exists in the branch.
+	     (setcar (nthcdr (1- (length position)) position) number)
+	     (nth number branch))
+	    (t
+	     ;; No next element.
+	     element)))))
+
+(defun w3m-history-backward ()
+  "Move backward in the history and return a history element of the
+position.  The position pointer of `w3m-url-history' will go backward.
+If the previous element does not exist in the history, it returns a
+history element of the current position."
+  )
 
 ;;(not-provided-yet 'w3m-hist)
 
