@@ -2908,11 +2908,12 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		    (prin1-to-string x))))))
 	    (, arguments)))))
 
-(defun w3m-w3m-dump-head-source (url handler)
+(defun w3m-w3m-dump-head-source (url orig-url handler)
   "Retrive headers and content pointed by URL, and call the HANDLER
 function with attributes of the retrieved content when retrieval is
 complete."
-  (lexical-let ((url url))
+  (lexical-let ((url url)
+		(orig-url orig-url))
     (setq w3m-current-url url
 	  url (w3m-url-strip-authinfo url))
     (w3m-message "Reading %s..." url)
@@ -2929,16 +2930,17 @@ complete."
 		(re-search-forward "^w3m-current-url:" nil t))
 	  (delete-region (point-min) (match-beginning 0))
 	  (when (search-forward "\n\n" nil t)
-	    (w3m-cache-header url (buffer-substring (point-min) (point)) t)
+	    (w3m-cache-header (or orig-url url)
+			      (buffer-substring (point-min) (point)) t)
 	    (when w3m-use-cookies
 	      (w3m-cookie-set url (point-min) (point)))
 	    (delete-region (point-min) (point))
-	    (prog1 (w3m-w3m-attributes url nil handler)
+	    (prog1 (w3m-w3m-attributes (or orig-url url) nil handler)
 	      (unless (and w3m-current-redirect
 			   (or (eq (car w3m-current-redirect) 302)
 			       (eq (car w3m-current-redirect) 303)
 			       (eq (car w3m-current-redirect) 307)))
-		(w3m-cache-contents url (current-buffer))))))))))
+		(w3m-cache-contents (or orig-url url) (current-buffer))))))))))
 
 (defun w3m-additional-command-arguments (url)
   "Return a list of additional arguments passed to the w3m command.
@@ -3080,14 +3082,11 @@ argument, when retrieve is complete."
 	    (if (or (null w3m-follow-redirection)
 		    (null w3m-current-redirect))
 		;; No redirection exists.
-		(progn
-		  (when type
-		    (w3m-cache-header orig-url (w3m-cache-request-header url)))
-		  (funcall orig-handler type))
+		(funcall orig-handler type)
 	      ;; Follow the redirection.
 	      (if (zerop i)
 		  ;; Redirection number exceeds `w3m-follow-redirection'.
-		  (funcall orig-handler type)
+		  (funcall orig-handler nil)
 		(setq i (1- i))
 		(setq url (cdr w3m-current-redirect))
 		(erase-buffer)
@@ -3114,21 +3113,23 @@ argument, when retrieve is complete."
 		  (if sync
 		      (condition-case nil
 			  (w3m-process-with-wait-handler
-			    (w3m-w3m-retrieve-1 url no-decode 'no-cache
+			    (w3m-w3m-retrieve-1 url orig-url no-decode
+						'no-cache
 						post-data nil
 						redirect-handler))
 			(w3m-process-timeout nil))
-		    (w3m-w3m-retrieve-1 url no-decode 'no-cache post-data
+		    (w3m-w3m-retrieve-1 url orig-url no-decode 'no-cache
+					post-data
 					nil redirect-handler)))))))
     ;; The first retrieval.
     (prog1 (setq return (w3m-w3m-retrieve-1 
-			 url no-decode no-cache post-data referer 
+			 url nil no-decode no-cache post-data referer 
 			 redirect-handler))
       (setq sync (w3m-process-p return)))))
 
-(defun w3m-w3m-retrieve-1 (url no-decode no-cache post-data referer handler)
+(defun w3m-w3m-retrieve-1 (url orig-url no-decode no-cache post-data referer handler)
   "Internal function for w3m-w3m-retrieve.
-The value of `w3m-current-url' is set in this function."
+If this function is called by redirection, ORIG-URL must be set."
   (let ((w3m-command-arguments
 	 (append w3m-command-arguments
 		 (list "-no-cookie")
@@ -3161,6 +3162,7 @@ The value of `w3m-current-url' is set in this function."
 			  referer
 			  (if (consp post-data) (car post-data))))))
     (lexical-let ((url url)
+		  (orig-url orig-url)
 		  (no-decode no-decode)
 		  (temp-file temp-file))
       (w3m-process-do
@@ -3168,7 +3170,7 @@ The value of `w3m-current-url' is set in this function."
 	   (or (unless no-cache
 		 (and (w3m-cache-request-contents url)
 		      (w3m-w3m-attributes url nil handler)))
-	       (w3m-w3m-dump-head-source url handler)))
+	       (w3m-w3m-dump-head-source url orig-url handler)))
 	(when (and temp-file (file-exists-p temp-file))
 	  (delete-file temp-file))
 	(when attributes

@@ -1,6 +1,14 @@
 2002-04-05  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-w3m-retrieve): Revert previous change.
+	(w3m-w3m-dump-head-source): Add argument orig-url;
+	Cache header and body using orig-url.
+	(w3m-w3m-retrieve): Don't cache header here;
+	Return error response when follow redirection number exceeds
+	w3m-follow-redirection;
+	Pass orig-url to w3m-w3m-retrieve-1.
+	(w3m-w3m-retrieve-1): Add argument orig-url;
+	Call w3m-dump-head-source with orig-url argument.
 
 2002-04-05  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
 
