@@ -1,3 +1,8 @@
+2001-05-23  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
+
+	* shimbun/sb-fml.el (shimbun-fml-parse-time): New function.
+	(shimbun-get-headers): Use `shimbun-fml-parse-time'.
+
 2001-05-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-decode-buffer): Removed reference of
