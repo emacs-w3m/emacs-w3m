@@ -506,12 +506,9 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :type 'directory)
 
 (defcustom w3m-init-file
-  (if (or (file-exists-p (expand-file-name "init.elc" w3m-profile-directory))
-	  (file-exists-p (expand-file-name "init.el" w3m-profile-directory)))
-      (concat w3m-profile-directory "/init")
-    (expand-file-name "~/.w3m"))
+  (concat w3m-profile-directory "/init.el")
   "*Your emacs-w3m startup file name.
-If a file with the `.el' or `.elc' suffixes exists, it will be read instead.
+When a byte compiled file exists, it will be read instead.
 
 Note: The file pointed by this variable is used as the startup file
 for emacs-w3m, but is *NOT* used as a startup file for w3m which works
@@ -1109,7 +1106,7 @@ will disclose your private informations, for example:
 
 Each element of the alist is (REGEXP . REPLACEMENT) or (REGEXP . FUNCTION).
 
-REGEXP is a regular expression for uri. 
+REGEXP is a regular expression for uri.
 
 Matched string is replaced with REPLACEMENT.
 You can refer matched substring of REGEXP. See `replace-match' for more detail.
@@ -1122,9 +1119,9 @@ Here is an example of how to set this option:
 
 \(setq w3m-uri-replace-alist
       '((\"^urn:ietf:rfc:\\\\([0-9]+\\\\)\" . \"http://www.ietf.org/rfc/rfc\\\\1.txt\")
-	(\"^urn:isbn:\" . 
+	(\"^urn:isbn:\" .
 	 (lambda (uri)
-	   (concat \"http://www.amazon.co.jp/exec/obidos/ASIN/\" 
+	   (concat \"http://www.amazon.co.jp/exec/obidos/ASIN/\"
 		   (apply 'concat (split-string (substring uri 9) \"-\"))
 		   \"/\")))))
 "
@@ -1296,7 +1293,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	    base w3m-current-base-url
 	    title w3m-current-title
 	    cs w3m-current-coding-system
-	    char w3m-current-content-charset	    
+	    char w3m-current-content-charset
 	    icon w3m-icon-data
 	    next w3m-next-url
 	    prev w3m-previous-url
@@ -2817,7 +2814,7 @@ If the user enters null input, return second argument DEFAULT."
 			(string= "x-moe-internal" (downcase content-charset)))
 		   (eq content-charset 'x-moe-internal)))
       (setq cs (w3m-x-moe-decode-buffer)))
-    (setq w3m-current-content-charset content-charset)    
+    (setq w3m-current-content-charset content-charset)
     (decode-coding-region
      (point-min) (point-max)
      (setq w3m-current-coding-system
@@ -6680,7 +6677,11 @@ w3m-mode buffers."
 
 (provide 'w3m)
 
-(load w3m-init-file t t)
-(run-hooks 'w3m-load-hook)
+(unless noninteractive
+  (if (string-match "\\.el\\'" w3m-init-file)
+      (or (load (concat w3m-init-file "c") t t t)
+	  (load w3m-init-file t t t))
+    (load w3m-init-file t t))
+  (run-hooks 'w3m-load-hook))
 
 ;;; w3m.el ends here
