@@ -1,3 +1,12 @@
+2001-10-15  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-w3m-auto-insert-image): Change from 'defcont' to
+	'defcustom', again.
+	(mew-w3m-safe-url-regexp): New constant.
+	(mew-w3m-view-inline-image): Rewrite.
+	(mew-mime-text/html-w3m): Bind 'w3m-safe-url-regexp' to
+	'mew-w3m-safe-url-regexp'.
+
 2001-10-15  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* README.ja: Divided original section 2. a) into two parts, 2. a)

@@ -32,7 +32,7 @@
 
 ;;; Instalation:
 
-;; Simply load this file and add followings in your ~/.mew file.
+;; (1) Simply load this file and add followings in your ~/.mew file.
 ;;
 ;; (require 'mew-w3m)
 ;; (setq mew-prog-html '(mew-mime-text/html-w3m nil nil))
@@ -41,18 +41,20 @@
 ;; (setq mew-prog-text/html 'mew-mime-text/html-w3m)
 ;;;; (setq mew-prog-text/html-ext 'mew-mime-text/html-w3m)
 ;;
-;; And you can use keymap of w3m-mode as mew-w3m-minor-mode.
+;; (2) And you can use keymap of w3m-mode as mew-w3m-minor-mode.
 ;; To activate this feaeture, add followings also:
 ;;
 ;; (setq mew-use-w3m-minor-mode t)
 ;; (add-hook 'mew-message-hook 'mew-w3m-minor-mode-setter)
 ;;
-;; If you use mew-1.95b118 or later on which Emacs-21 or XEmacs,
+;; (3) If you use mew-1.95b118 or later on which Emacs-21 or XEmacs,
 ;; can display the images in the Text/Html message.
-;; To activate this feaeture, add following in your ~/.mew file
-;; and press "T".
+;; To activate this feaeture, add following in your ~/.mew file.
 ;;
 ;; (define-key mew-summary-mode-map "T" 'mew-w3m-view-inline-image)
+;;
+;; Press "T": Display the images included its message only.
+;; Press "C-uT": Display the all images included its Text/Html part."
 
 ;;; Usage:
 
@@ -85,11 +87,16 @@ and its keymap in message buffer."
   :group 'mew-w3m
   :type 'boolean)
 
+(defcustom mew-w3m-auto-insert-image nil
+  "*If non-nil, the images inserts automatic in Multipart/Related message.
+This variable effected only XEmacs or Emacs 21."
+  :group 'mew-w3m
+  :type 'boolean)
 
 ;; these are defined here.
 ;; It's not reasonable to merge into w3m.el, I think
 (defvar mew-w3m-minor-mode nil)
-(defconst mew-w3m-auto-insert-image nil)
+(defconst mew-w3m-safe-url-regexp "\\`cid:")
 
 (make-variable-buffer-local 'mew-w3m-minor-mode)
 (add-to-list 'minor-mode-alist '(mew-w3m-minor-mode " w3m"))
@@ -100,16 +107,27 @@ and its keymap in message buffer."
   (setq mew-w3m-minor-mode (and (get-text-property (point-min) 'w3m)
 				mew-use-w3m-minor-mode)))
 
-(defun mew-w3m-view-inline-image ()
-  "View the image of Text/Html part."
-  (interactive)
-  (let ((mew-w3m-auto-insert-image t))
-    (mew-summary-display 'force)))
+
+(defun mew-w3m-view-inline-image (&optional allimage)
+  "Display the images of Text/Html part.
+\\<mew-summary-mode-map>
+'\\[mew-w3m-view-inline-image]'	Display the images included its message only.
+'\\[universal-argument]\\[mew-w3m-view-inline-image]'	Display the all images included its Text/Html part."
+  (interactive "P")
+  (mew-summary-msg-or-part
+   (if allimage
+       (let ((mew-w3m-auto-insert-image t)
+	     (mew-w3m-safe-url-regexp nil))
+	 (mew-summary-display 'force))
+     (let ((mew-w3m-auto-insert-image t))
+       (mew-summary-display 'force)))))
+
 
 ;; processing Text/Html contents with w3m.
 (defun mew-mime-text/html-w3m (&rest args)
   "View Text/Html contents with w3m rendering output."
   (let ((w3m-current-image-status mew-w3m-auto-insert-image)
+	(w3m-safe-url-regexp mew-w3m-safe-url-regexp)
 	w3m-force-redisplay	;; don't redraw
 	charset wcs
 	cache begin end params execute)
@@ -145,8 +163,7 @@ and its keymap in message buffer."
 			 "-o" "ext_halfdump=1"
 			 "-o" "pre_conv=1"
 			 "-o" "strict_iso2022=0")))
-	   (let ((w3m-safe-url-regexp "\\`cid:"))
-	     (w3m-region begin end))))
+	   (w3m-region begin end)))
 	((null cache)	;; Mew-2 + w3m, w3mmee
 	 (w3m-region begin end))
 	(t		;; Old Mew
