@@ -1,3 +1,7 @@
+2002-03-01  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* octet.el (octet-find-file): Decode even in the read-only buffer.
+
 2002-03-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-lump.el (shimbun-get-group-header-alist): Add the 2nd

@@ -396,7 +396,7 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
   "Find FILE with octet-stream decoding."
   (interactive "fFilename: ")
   (as-binary-input-file	(find-file file))
-  (unless buffer-read-only
+  (let (buffer-read-only)
     (unwind-protect
 	(octet-buffer)
       (goto-char (point-min))
