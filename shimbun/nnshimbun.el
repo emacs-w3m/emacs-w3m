@@ -658,12 +658,16 @@ also be nil."
 		 (shimbun-headers nnshimbun-shimbun
 				  (nnshimbun-find-parameter name
 							    'index-range t)))
-	  (unless (nnshimbun-search-id group (shimbun-header-id header))
-	    (goto-char (point-max))
-	    (nnshimbun-insert-nov (setq i (1+ i)) header)
-	    (when pre-fetch
-	      (with-temp-buffer
-		(nnshimbun-request-article-1 i group nil (current-buffer)))))))
+	  (let ((article
+		 (nnshimbun-search-id group (shimbun-header-id header))))
+	    (if article
+		(nnshimbun-replace-nov-entry group article header)
+	      (goto-char (point-max))
+	      (nnshimbun-insert-nov (setq i (1+ i)) header)
+	      (when pre-fetch
+		(with-temp-buffer
+		  (nnshimbun-request-article-1 i group nil
+					       (current-buffer))))))))
       (nnshimbun-write-nov group))))
 
 (defun nnshimbun-replace-nov-entry (group article header &optional id)

@@ -1,5 +1,13 @@
 2005-02-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
+	* shimbun/sb-rss.el (shimbun-get-headers): Headers are returned
+	whether they have been acquired.
+
+	* shimbun/nnshimbun.el (nnshimbun-generate-nov-database):
+	If returned header has already been acquired, replace NOV by it.
+
+2005-02-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
 	* shimbun/sb-rss.el (shimbun-get-headers): Store description element
 	into extra slot.
 

@@ -182,20 +182,19 @@ but you can identify it from the URL, define this method in a backend.")
 		   (id (shimbun-rss-build-message-id shimbun url date))
 		   (description
 		    (shimbun-rss-node-text rss-ns 'description item)))
-	      (unless (shimbun-search-id shimbun id)
-		(push (shimbun-create-header
-		       0
-		       (shimbun-rss-node-text rss-ns 'title item)
-		       (or (shimbun-rss-node-text rss-ns 'author item)
-			   (shimbun-rss-node-text dc-ns 'creator item)
-			   (shimbun-rss-node-text dc-ns 'contributor item)
-			   author
-			   (shimbun-from-address shimbun))
-		       (shimbun-rss-process-date shimbun date)
-		       id "" 0 0 url
-		       (when description
-			 (list (cons 'description description))))
-		      headers))))))
+	      (push (shimbun-create-header
+		     0
+		     (shimbun-rss-node-text rss-ns 'title item)
+		     (or (shimbun-rss-node-text rss-ns 'author item)
+			 (shimbun-rss-node-text dc-ns 'creator item)
+			 (shimbun-rss-node-text dc-ns 'contributor item)
+			 author
+			 (shimbun-from-address shimbun))
+		     (shimbun-rss-process-date shimbun date)
+		     id "" 0 0 url
+		     (when description
+		       (list (cons 'description description))))
+		    headers)))))
       headers)))
 
 ;;; Internal functions
