@@ -180,11 +180,11 @@ These values are acceptable: w3m, w3mmee, w3m-m17n.")
 	  (goto-char (point-min))
 	  (when (re-search-forward "version \\(w3m/0\\.3\
 \\(\\.[0-9\\]\\)*\\(\\+cvs\\(-[0-9]+\\.[0-9]+\\)?\\)?\
-\\(-inu\\|\\(-m17n\\|\\(\\+mee\\)\\)\\)?[^,]*\\)" nil t)
+\\(\\(-inu\\|-stable\\)\\|\\(-m17n\\|\\(\\+mee\\)\\)\\)?[^,]*\\)" nil t)
 	    (setq w3m-version (match-string 1))
 	    (setq w3m-type
 		  (cond
-		   ((match-beginning 7) 'w3mmee)
+		   ((match-beginning 8) 'w3mmee)
 		   ((match-beginning 6) 'w3m-m17n)
 		   ((match-beginning 1) 'w3m)
 		   (t 'other))))
