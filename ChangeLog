@@ -1,5 +1,18 @@
 2001-03-02  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
+	* w3m.el: Renamed w3m-http-* to w3m-w3m-* in order to prepare name
+	space of symbols processing HTTP protocol directly, and fix for
+	cookie.
+	(w3m-w3m-check-header): Renamed from `w3m-http-check-header'.
+	(w3m-w3m-retrieve): Renamed from `w3m-http-retrieve' and added
+	code to remove cookies.
+	(w3m-retrieve): Follow changes of fuction name.
+	(w3m-download): Likewise and changed argument spec.
+	(w3m-exec): Changed argument spec.
+	(w3m-goto-url): Changed reload scheme, 
+
+2001-03-02  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
 	* w3m.el (TOP): Changed code to detect XEmacs and add to define
 	`find-coding-system'.
 	(w3m-backlog-setup): Changed caching data format.

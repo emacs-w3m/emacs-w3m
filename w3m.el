@@ -896,7 +896,7 @@ are retrieved."
 	(setq str (substring str 0 (match-beginning 0)))))
   str)
 
-(defun w3m-http-check-header (url)
+(defun w3m-w3m-check-header (url)
   "Ask the header of the URL to HTTP server."
   (with-current-buffer (get-buffer-create w3m-work-buffer-name)
     (delete-region (point-min) (point-max))
@@ -933,7 +933,7 @@ are retrieved."
    (t
     (format "%2.2fM" (/ n (* 1024 1024.0))))))
 
-(defun w3m-http-retrieve (url &optional no-decode accept-type-regexp no-cache)
+(defun w3m-w3m-retrieve (url &optional no-decode accept-type-regexp no-cache)
   "Retrieve content of URL with w3m and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
@@ -954,7 +954,7 @@ are retrieved."
 		      (not no-decode)
 		      (w3m-decode-buffer type charset)))
 	       type))))
-     (let ((headers (w3m-http-check-header url)))
+     (let ((headers (w3m-w3m-check-header url)))
        (if headers
 	   (let ((type    (car headers))
 		 (charset (nth 1 headers))
@@ -962,18 +962,19 @@ are retrieved."
 	     (when (or (not accept-type-regexp)
 		       (string-match accept-type-regexp type))
 	       (let ((w3m-current-url url)
-		     (w3m-http-retrieve-length length)
+		     (w3m-w3m-retrieve-length length)
 		     (w3m-process-message
 		      (lambda ()
-			(if w3m-http-retrieve-length
+			(if w3m-w3m-retrieve-length
 			    (w3m-message
 			     "Reading... %s of %s (%d%%)"
 			     (w3m-pretty-length (buffer-size))
-			     (w3m-pretty-length w3m-http-retrieve-length)
-			     (/ (* (buffer-size) 100) w3m-http-retrieve-length))
+			     (w3m-pretty-length w3m-w3m-retrieve-length)
+			     (/ (* (buffer-size) 100) w3m-w3m-retrieve-length))
 			  (w3m-message "Reading... %s"
 				       (w3m-pretty-length (buffer-size)))))))
 		 (w3m-message "Reading...")
+		 (delete-region (point-min) (point-max))
 		 (w3m-exec-process "-dump_source" url)
 		 (w3m-message "Reading... done"))
 	       (if length
@@ -998,7 +999,17 @@ are retrieved."
 				   (delete-region (point-min) (point))
 				   (while (search-forward "\r\n" nil t)
 				     (delete-region (- (point) 2) (1- (point))))))))))
-		     (delete-region (point-min) (- (point-max) length))))
+		     (delete-region (point-min) (- (point-max) length)))
+		 (when (string= "text/html" type)
+		   ;; Remove cookies.
+		   (goto-char (point-min))
+		   (while (and (not (eobp))
+			       (looking-at "Received cookie: "))
+		     (forward-line 1))
+		   (skip-chars-forward " \t\r\f\n")
+		   (if (or (looking-at "<!DOCTYPE")
+			   (looking-at "<HTML>")) ; for eGroups.
+		       (delete-region (point-min) (point)))))
 	       (w3m-backlog-enter url type charset (current-buffer))
 	       (and (string-match "^text/" type)
 		    (not no-decode)
@@ -1013,12 +1024,12 @@ to nil.  Only contents whose content-type matches ACCEPT-TYPE-REGEXP
 are retrieved."
   (if (string-match "^\\(file:\\|/\\)" url)
       (w3m-local-retrieve url no-decode accept-type-regexp)
-    (w3m-http-retrieve url no-decode accept-type-regexp no-cache)))
+    (w3m-w3m-retrieve url no-decode accept-type-regexp no-cache)))
 
-(defun w3m-download (url &optional filename)
+(defun w3m-download (url &optional filename no-cache)
   (unless filename
     (setq filename (w3m-read-file-name nil nil url)))
-  (w3m-retrieve url t)
+  (w3m-retrieve url t nil no-cache)
   (with-current-buffer (get-buffer w3m-work-buffer-name)
     (let ((buffer-file-coding-system
 	   (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
@@ -1031,7 +1042,7 @@ are retrieved."
 (defun w3m-content-type (url)
   (if (string-match "^\\(file:\\|/\\)" url)
       (w3m-local-content-type url)
-    (car (w3m-http-check-header url))))
+    (car (w3m-w3m-check-header url))))
 
 
 ;;; Retrieve data via FTP:
@@ -1083,7 +1094,7 @@ are retrieved."
 	  (setq title (file-name-nondirectory w3m-current-url)))
       (set (make-local-variable 'w3m-current-title) (or title "<no-title>")))))
 
-(defun w3m-exec (url &optional buffer)
+(defun w3m-exec (url &optional buffer no-cache)
   "Download URL with w3m to the BUFFER.
 If BUFFER is nil, all data is placed to the current buffer.  When new
 content is retrieved and hald-dumped data is placed in the BUFFER,
@@ -1093,7 +1104,7 @@ this function returns t.  Otherwise, returns nil."
     (if (and (string-match "^ftp://" url)
 	     (not (string= "text/html" (w3m-local-content-type url))))
 	(progn (w3m-exec-ftp url) nil)
-      (let ((type (w3m-retrieve url nil "^text/")))
+      (let ((type (w3m-retrieve url nil "^text/" no-cache)))
 	(if (string-match "^text/" type)
 	    (let (buffer-read-only)
 	      (set (make-local-variable 'w3m-current-url) url)
@@ -1503,8 +1514,6 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 (defun w3m-goto-url (url &optional reload)
   "Retrieve URL and display it in this buffer."
   (let (name)
-    (if reload
-	(w3m-backlog-remove url))
     (cond
      ;; process mailto: protocol
      ((string-match "^mailto:\\(.*\\)" url)
@@ -1516,7 +1525,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
       (w3m-save-position w3m-current-url)
       (or w3m-arrived-anchor-list (w3m-arrived-list-load))
       (w3m-arrived-list-add url)
-      (if (not (w3m-exec url))
+      (if (not (w3m-exec url nil reload))
 	  (w3m-refontify-anchor)
 	(w3m-fontify)
 	(setq buffer-read-only t)
