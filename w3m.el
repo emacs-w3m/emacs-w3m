@@ -202,8 +202,7 @@ width using expression (+ (frame-width) VALUE)."
   :type 'function)
 
 (defcustom w3m-use-mule-ucs
-  (and (eq w3m-type 'w3m)
-       (boundp 'emacs-major-version)
+  (and (boundp 'emacs-major-version)
        (if (featurep 'xemacs)
 	   ;; Mule-UCS does not support XEmacs versions prior to 21.2.37.
 	   (and (>= emacs-major-version 21)
@@ -211,7 +210,8 @@ width using expression (+ (frame-width) VALUE)."
 		    (and (= emacs-major-version 2)
 			 (>= emacs-beta-version 37))))
 	 (>= emacs-major-version 20))
-       (locate-library "un-define.el"))
+       (locate-library "un-define")
+       (eq w3m-type 'w3m))
   "*Non nil means using multi-script support with Mule-UCS."
   :group 'w3m
   :type 'boolean
@@ -1458,7 +1458,7 @@ If N is negative, last N items of LIST is returned."
 	 (mapcar
 	  (lambda (ch)
 	    (cond
-	     ((eq ch ?\n) ; newline
+	     ((eq ch ?\n)		; newline
 	      "%0D%0A")
 	     ((string-match "[-a-zA-Z0-9_:/]" (char-to-string ch)) ; xxx?
 	      (char-to-string ch))	; printable
@@ -1467,7 +1467,11 @@ If N is negative, last N items of LIST is returned."
 	     (t
 	      (format "%%%02X" ch))))	; escape
 	  ;; Coerce a string to a list of chars.
-	  (append (encode-coding-string (or str "") (or coding 'iso-2022-jp))
+	  (append (encode-coding-string (or str "")
+					(or coding
+					    w3m-default-coding-system
+					    w3m-coding-system
+					    'iso-2022-7bit))
 		  nil))))
 
 (defun w3m-url-decode-string (str &optional coding)
@@ -1484,7 +1488,10 @@ If N is negative, last N items of LIST is returned."
       (setq start (match-end 0)))
     (decode-coding-string
      (apply 'concat (nreverse (cons (substring str start) buf)))
-     (or coding 'iso-2022-jp))))
+     (or coding
+	 w3m-default-coding-system
+	 w3m-coding-system
+	 'iso-2022-7bit))))
 
 (put 'w3m-parse-attributes 'lisp-indent-function '1)
 (def-edebug-spec w3m-parse-attributes
@@ -2926,8 +2933,7 @@ to nil.
 		  (append w3m-halfdump-command-arguments
 			  w3m-halfdump-command-common-arguments))))))
 
-(defsubst w3m-rendering-buffer-1 (&optional content-charset)
-  "Do rendering of contents in this buffer as HTML and return title."
+(defun w3m-rendering-buffer-1 (&optional content-charset)
   (w3m-message "Rendering...")
   (when w3m-use-filter (w3m-filter w3m-current-url))
   (w3m-remove-comments)
@@ -3552,7 +3558,7 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "d" 'w3m-download-this-url)
     (define-key map "u" 'w3m-print-this-url)
     (define-key map "I" 'w3m-view-image)
-    (define-key map "\M-I" 'w3m-save-image)
+    (define-key map "\M-i" 'w3m-save-image)
     (define-key map "c" 'w3m-print-current-url)
     (define-key map "M" 'w3m-view-url-with-external-browser)
     (define-key map "g" 'w3m-goto-url)
@@ -3626,7 +3632,7 @@ that is affected by `w3m-pop-up-frames'."
 			    'w3m-toggle-inline-image
 			  'w3m-view-image))
     (define-key map "I" 'w3m-toggle-inline-images)
-    (define-key map "\M-I" 'w3m-save-image)
+    (define-key map "\M-i" 'w3m-save-image)
     (define-key map "l" 'w3m-view-previous-page)
     (define-key map "\C-l" 'recenter)
     (define-key map [(control L)] 'w3m-reload-this-page)
@@ -3635,6 +3641,7 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "N" 'w3m-namazu)
     (define-key map "\M-n" 'w3m-copy-buffer)
     (define-key map "o" 'w3m-history)
+    (define-key map "O" 'w3m-db-history)
     (define-key map "p" 'w3m-view-previous-page)
     (define-key map "P" 'undecided) ;; reserved for print-this-buffer.
     (define-key map "q" 'w3m-close-window)

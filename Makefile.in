@@ -15,7 +15,7 @@ FLAGS   = -q -no-site-file -batch -l w3mhack.el $(ADDITIONAL_LOAD_PATH)
 PACKAGE = w3m_el
 TARBALL = $(PACKAGE)-$(VERSION).tar.gz
 DISTDIR = $(PACKAGE)-$(VERSION)
-DOCS    = COPYING ChangeLog README README.ja TIPS.ja
+DOCS    = COPYING ChangeLog FAQ.ja README README.ja README.namazu.ja README.shimbun.ja TIPS.ja
 DISTS   = Makefile.in aclocal.m4 configure configure.in install-sh mkinstalldirs
 
 
@@ -81,12 +81,16 @@ config.status: configure
 configure: configure.in aclocal.m4
 	autoconf
 
-tarball:
+tarball: $(DOCS) $(DISTS)
 	-rm -f $(TARBALL) `basename $(TARBALL) .gz`
 	mkdir $(DISTDIR)
 	cp -p $(DOCS) $(DISTS) *.el $(DISTDIR)
+	mkdir $(DISTDIR)/attic
+	cp -p `echo attic/*|sed s,attic/CVS,,` $(DISTDIR)/attic
 	mkdir $(DISTDIR)/icons
 	cp -p icons/*.xpm $(DISTDIR)/icons
+	mkdir $(DISTDIR)/patches
+	cp -p `echo patches/*|sed s,patches/CVS,,` $(DISTDIR)/patches
 	mkdir $(DISTDIR)/shimbun
 	cp -p shimbun/*.el $(DISTDIR)/shimbun
 	tar -cf `basename $(TARBALL) .gz` $(DISTDIR)

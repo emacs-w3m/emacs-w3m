@@ -1,3 +1,22 @@
+2001-10-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-use-mule-ucs): Changed.
+	(w3m-url-encode-string): Refer `w3m-default-coding-system' and
+	`w3m-coding-system' when `coding' argument is lacked.
+	(w3m-url-decode-string): Ditto.
+	(w3m-rendering-buffer-1): Define as a normal function.
+	(w3m-lynx-like-map): Changed the key which calls `w3m-save-image'
+	from `M-I' to `M-i'.
+	(w3m-info-like-map): Ditto; Registerd `O' as the key which calls
+	`w3m-db-history'.
+
+	* aclocal.m4 (AC_ADD_LOAD_PATH): Remove empty lines from auto
+	detection result.
+
+	* Makefile.in (DOCS): Add FAQ.ja, README.namazu.ja and
+	README.shimbun.ja.
+	(tarball): Handle attic/ and patches/.
+
 2001-10-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-mode): Update the doc-string about making a new
