@@ -23,7 +23,7 @@
 
 ;;; Commentary:
 
-;; This file contains the stuffs to use w3m.el on Emacs-21.  For more
+;; This file contains the stuff to use w3m.el on Emacs-21.  For more
 ;; detail about w3m.el, see:
 ;;
 ;;    http://namazu.org/~tsuchiya/emacs-w3m/
