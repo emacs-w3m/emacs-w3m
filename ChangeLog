@@ -1,3 +1,8 @@
+2001-11-02  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-copy-buffer): Call `w3m-goto-url' instead of copying
+	buffer content.
+
 2001-11-02  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-reload-this-page): Change the semantic of the prefix
