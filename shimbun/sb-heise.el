@@ -24,9 +24,6 @@
 
 ;;; Commentary:
 
-;; This program had been originally developed by David Hansen, and was
-;; donated at May 7th, 2004.
-
 ;;; Code:
 
 (require 'shimbun)
