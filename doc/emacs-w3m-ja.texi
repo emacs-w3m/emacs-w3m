@@ -760,38 +760,40 @@ Bookmark $B%^%$%J!<%b!<%I(B (@pxref{Consulting Bookmarks}) $B$O!"%V%C%/%^!<%/
 @node Submitting Forms
 @section HTML $B%U%)!<%`$K5-F~$9$k(B
 
-These emacs-w3m commands let you move between forms and fill in fields,
-using simple key bindings and optionally prompting you for values in
-Emacs windows or in the minibuffer.
+$B$3$l$i$N(B emacs-w3m $B%3%^%s%I$O!"C1=c$J%-!<%P%$%s%I$H@lMQ$N(B Emacs $B$N%&%#%s(B
+$B%I%%$+%_%K%P%C%U%!$r;H$C$F!"%U%)!<%`$+$i%U%)!<%`$X$N0\F0$H%U%#!<%k%I$KF~(B
+$BNO$9$k$?$a$N5!G=$rDs6!$7$^$9!#(B
 
-The main key binding to remember is @kbd{RET}.  It has different
-meanings, depending on the thing under point: for textareas, you will be
-prompted for a value in the minibuffer.  For select tags, you will be
-given a list of choices in an electric Emacs window (you can move using
-the arrow keys, and pick one with the @kbd{RET} key).  For radio and
-checkbox buttons, the @kbd{RET} key selects one of the elements.
+$B3P$($F$*$$$FM_$7$$Bg;v$J%-!<%P%$%s%I$O(B @kbd{RET} $B$G$9!#$3$l$O8=:_0LCV$K(B
+$B$"$k$b$N$K$h$C$F0[$J$k0UL#$r;}$A$^$9(B: $BJ8;zNN0h(B (textarea) $B$G$O!"%_%K%P%C(B
+$B%U%!$GCM$rF~NO$9$k$3$H$,B%$5$l$^$9!#A*BrMQ$N%?%0$G$O!"A*Br;h$N%j%9%H(B
+$B$,(B Emacs $B$N%(%l%/%H%j%C%/(B (electric == $B<+8JA^F~(B) $B%&%#%s%I%%$K8=$l$^(B
+$B$9(B ($B$=$3$G$OLp0u%-!<$G0\F0$7$F!"(B@kbd{RET} $B%-!<$G0l$D$rA*$V$3$H$,$G$-$^(B
+$B$9(B)$B!#%i%8%*%\%?%s$*$h$S%A%'%C%/%\%C%/%9$G$O!"(B@kbd{RET} $B%-!<$G$=$l$i$N$&(B
+$B$A$N0l$D$rA*$S$^$9!#(B
 
-When in the minibuffer or in the electric window, you can cancel with
-the @kbd{C-c C-q} sequence.  To submit the form, use @kbd{C-c C-c}.
+$B%_%K%P%C%U%!$+%(%l%/%H%j%C%/!&%&%#%s%I%%$K$K$$$k$H$-$O!"(B@kbd{C-c C-q} $B%-!<(B
+$B$G<h$j>C$9$3$H$,$G$-$^$9!#%U%)!<%`$K5-F~$7$?$b$N$rAw$j=P$9$K(B
+$B$O(B @kbd{C-c C-c} $B$r;H$C$F2<$5$$!#(B
 
 @table @kbd
 @item ]
-Jump to the next form (@code{w3m-next-form}).
+$B<!$N%U%)!<%`$K%8%c%s%W$7$^$9(B (@code{w3m-next-form})$B!#(B
 
 @item [
-Jump to the previous form (@code{w3m-previous-form}).
+$BA0$N%U%)!<%`$K%8%c%s%W$7$^$9(B (@code{w3m-previous-form})$B!#(B
 
 @item C-c C-c
-Submit form at point (@code{w3m-submit-form}).
+$B8=:_0LCV$N%U%)!<%`$K5-F~$7$?$b$N$rAw$j=P$7$^$9(B (@code{w3m-submit-form})$B!#(B
 
 @item RET
-Edit the value of the form item under point.
+$B8=:_0LCV$K$"$k$N%U%)!<%`CM$r=q$-49$($^$9!#(B
 
 @item RET @r{(w3m-form-*-keymap)}
-Accept the value.
+$B$=$NCM$rA*Br$7$^$9!#(B
 
 @item C-c C-q @r{(w3m-form-*-keymap)}
-Quit editing the form item, leaving changes.
+$B%U%)!<%`$NJT=8$rCfCG$7$F!"JQ99$r<h$j;_$a$^$9!#(B
 @end table
 
 @node Pretty Good Features
