@@ -1,8 +1,9 @@
-;;; sb-mainichi.el --- shimbun backend for www.mainichi.co.jp
+;;; sb-mainichi.el --- shimbun backend for www.mainichi.co.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001 Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2001, 2002, 2003 Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
+;;         Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
@@ -112,6 +113,37 @@
 				   url))
 		  headers)))))
     headers))
+
+(luna-define-method shimbun-make-contents ((shimbun shimbun-mainichi)
+					   header)
+  (let ((case-fold-search t)
+	start)
+    (when (and (re-search-forward shimbun-mainichi-content-start
+				  nil t)
+	       (setq start (point))
+	       (re-search-forward shimbun-mainichi-content-end
+				  nil t))
+      (delete-region (match-beginning 0) (point-max))
+      (delete-region (point-min) start)
+      (goto-char (point-min))
+      (when (re-search-forward "<p>［毎日新聞１?[０-９]月[１-３]?[０-９]日］\
+  ( \\(20[0-9][0-9]\\)-\\([01][0-9]\\)-\\([0-3][0-9]\\)-\
+\\([0-2][0-9]:[0-5][0-9]\\) )</p>"
+			       nil t)
+	(shimbun-header-set-date
+	 header
+	 (shimbun-make-date-string
+	  (string-to-number (match-string 1))
+	  (string-to-number (match-string 2))
+	  (string-to-number (match-string 3))
+	  (match-string 4)))
+	(goto-char (point-min)))
+      (insert "<html>\n<head>\n<base href=\""
+	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
+      (goto-char (point-max))
+      (insert "\n</body>\n</html>\n"))
+    (shimbun-make-mime-article shimbun header)
+    (buffer-string)))
 
 (provide 'sb-mainichi)
 
