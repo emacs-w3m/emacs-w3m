@@ -1,3 +1,8 @@
+2001-03-19  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-download): Bind `file-coding-system' to binary.
+	(w3m-content-type-alist): Fix.
+
 2001-03-18  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m-antenna.el (w3m-antenna): Optional argument, `no-cache' is

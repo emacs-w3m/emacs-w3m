@@ -316,7 +316,7 @@ In other environment, use 'native."
 	   (if (and (condition-case nil (require 'browse-url) (error nil))
 		    (fboundp 'browse-url-netscape))
 	       'browse-url-netscape
-	     ("netscape" url)))
+	     '("netscape" url)))
      '(("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
        ("image/jpeg" "\\.jpe?g$" ("xv" file))
        ("image/png" "\\.png$" ("xv" file))
@@ -1511,6 +1511,7 @@ to nil."
   (if (w3m-retrieve url t no-cache)
       (with-current-buffer (get-buffer w3m-work-buffer-name)
 	(let ((buffer-file-coding-system 'binary)
+	      (file-coding-system 'binary)
 	      (coding-system-for-write 'binary)
 	      jka-compr-compression-info-list
 	      jam-zcat-filename-list
