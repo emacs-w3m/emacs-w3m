@@ -33,18 +33,24 @@
 (luna-define-class shimbun-slashdot-jp (shimbun) ())
 
 (defconst shimbun-slashdot-jp-groups '("story"))
+
 (eval-and-compile
   (defconst shimbun-slashdot-jp-domain "slashdot.jp"))
+
 (defconst shimbun-slashdot-jp-url
   (eval-when-compile (format "http://%s/" shimbun-slashdot-jp-domain)))
+
+(defvar shimbun-slashdot-jp-threshold -1
+  "*Lower threshold of accept comments.")
 
 (defmacro shimbun-slashdot-jp-article-url (shimbun)
   `(shimbun-expand-url "article.pl" (shimbun-url-internal ,shimbun)))
 
 (defmacro shimbun-slashdot-jp-sid-url (shimbun sid)
-  `(format "%s?sid=%s&threshold=-1&mode=flat&commentsort=0"
+  `(format "%s?sid=%s&threshold=%d&mode=flat&commentsort=0"
 	   (shimbun-slashdot-jp-article-url shimbun)
-	   ,sid))
+	   ,sid
+	   shimbun-slashdot-jp-threshold))
 
 (defsubst shimbun-slashdot-jp-extract-sid-and-cid (id)
   (when (string-match "\\`<\\([/0-9]+\\)\\(#\\([0-9]+\\)\\)?@[^>]+>\\'" id)
@@ -217,13 +223,12 @@
     (with-temp-buffer
       (when (shimbun-retrieve-url
 	     (shimbun-slashdot-jp-sid-url shimbun sid) t)
-	(catch 'known-id
-	  (while (setq head (shimbun-slashdot-jp-search-comment-head
-			     shimbun sid nil parent))
-	    (when (shimbun-search-id shimbun (shimbun-header-id head))
-	      (throw 'known-id headers))
-	    (push head headers))
-	  headers)))))
+	(while (setq head
+		     (shimbun-slashdot-jp-search-comment-head shimbun sid
+							      nil parent))
+	  (unless (shimbun-search-id shimbun (shimbun-header-id head))
+	    (push head headers)))))
+    headers))
 
 (defun shimbun-slashdot-jp-search-comment-head (shimbun sid &optional
 							cid parent)
@@ -271,7 +276,9 @@
 	   head
 	   (if (equal "0" (setq cid (match-string 1)))
 	       (shimbun-slashdot-jp-make-message-id sid)
-	     (shimbun-slashdot-jp-make-message-id sid cid))))
+	     (concat (shimbun-slashdot-jp-make-message-id sid)
+		     " "
+		     (shimbun-slashdot-jp-make-message-id sid cid)))))
 	(goto-char pos))
       head)))
 
