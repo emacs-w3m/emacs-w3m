@@ -43,7 +43,7 @@
   (concat "webmaster@" shimbun-sankei-top-level-domain))
 
 (defvar shimbun-sankei-content-start
-  "<!--[\t\n ]*honbun[\t\n ]*-->[\t\n ]*")
+  "<!--[\t\n ]*\\(photo\\.sta\\|honbun\\)[\t\n ]*-->[\t\n ]*")
 
 (defvar shimbun-sankei-content-end
   "[\t\n ]*<!----[\t\n ]*hbn\\.end[\t\n ]*-->")
