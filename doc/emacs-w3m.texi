@@ -4387,19 +4387,39 @@ These are newspapers that are supported by @samp{shimbun} library.
 
 @table @asis
 @item @uref{http://www.asahi.com/, Asahi Shimbun}
-asahi.borderless asahi.business asahi.culture asahi.editorial asahi.edu
-asahi.edu.it asahi.edu.nyushi asahi.english asahi.international
-asahi.international.jinmin asahi.job asahi.job.special asahi.kansai
-asahi.kansai-special asahi.nankyoku asahi.nankyoku-people asahi.national
-asahi.politics asahi.rss asahi.science asahi.sports asahi.tenjin
-asahi.whitemail
+asahi.book asahi.business asahi.business.column asahi.car
+asahi.car.italycolumn asahi.car.motorsports asahi.car.newcar
+asahi.car.newcarbywebcg asahi.culture asahi.culture.column asahi.digital
+asahi.digital.apc asahi.digital.bcnnews asahi.digital.column01
+asahi.digital.hotwired asahi.digital.internet asahi.digital.mobile
+asahi.digital.nikkanko asahi.digital.pc asahi.editorial asahi.edu
+asahi.edu.column asahi.edu.it asahi.edu.kosodate asahi.edu.nyushi
+asahi.edu.tamate asahi.english asahi.health asahi.health.aged
+asahi.health.alz asahi.health.medical asahi.housing asahi.housing.amano
+asahi.housing.column asahi.housing.diary asahi.housing.world asahi.igo
+asahi.international asahi.international.jinmin asahi.job
+asahi.job.special asahi.kansai asahi.kansai.horiekenichi
+asahi.kansai.umaimon asahi.kansai.fuukei asahi.kansai.yotsuba
+asahi.kansai.smile asahi.kansai.keiki asahi.kansai.okiniiri
+asahi.kansai.syun asahi.kansai.takara asahi.kansai.kansaiisan
+asahi.kansai.depa asahi.kansai.kaban asahi.kansai.kyosho
+asahi.kansai.okan asahi.kansai.densetsu asahi.kansai.onayami
+asahi.kansai.sanshi asahi.life asahi.life.column asahi.life.food
+asahi.nankyoku asahi.nankyoku.borderless asahi.nankyoku.people
+asahi.nankyoku.whitemail asahi.national asahi.national.calamity
+asahi.national.etc asahi.national.trial asahi.obituaries asahi.politics
+asahi.rss asahi.science asahi.shopping asahi.shopping.kishi
+asahi.shopping.ryouhin asahi.shougi asahi.sports asahi.sports.baseball
+asahi.sports.column asahi.sports.football asahi.sports.spo asahi.tenjin
+asahi.travel asahi.travel.kaido asahi.travel.matsuri
+asahi.travel.zeitaku asahi.wakamiya
 
 These backends generates articles including only texts; in other hands,
 @samp{asahi-html} generates MIME articles that include texts and
 photographs.  In order to use the latter backend, specify
 asahi-html.business instead of asahi.business as the group name.
-Especially, it is recommended you use @samp{asahi-html} in order to see
-the @samp{borderless} group in which there are wonderful pictures.
+Especially, it is recommended to use @samp{asahi-html} in order to see
+the groups in which there are pictures.
 
 @item @uref{http://mytown.asahi.com/, Asahi Shimbun}
 asahi-mytown.(hokkaido@dots{}okinawa) asahi-mytown.usa

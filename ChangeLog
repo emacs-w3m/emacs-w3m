@@ -1,5 +1,33 @@
 2005-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-asahi.el: Rewrite to follow the change of the site.
+	(shimbun-asahi-make-regexp): New function.
+	(shimbun-asahi-group-table): Use it; remove the groups borderless,
+	kansai-special, nankyoku-people and whitemail; add the groups
+	book, business.column, car, car.italycolumn, car.motorsports,
+	car.newcar, car.newcarbywebcg, culture.column, digital,
+	digital.apc, digital.bcnnews, digital.column01, digital.hotwired,
+	digital.internet, digital.mobile, digital.nikkanko, digital.pc,
+	edu.column, edu.kosodate, edu.tamate, health, health.aged,
+	health.alz, health.medical, housing, housing.amano,
+	housing.column, housing.diary, housing.world, igo,
+	kansai.horiekenichi, kansai.umaimon, kansai.fuukei,
+	kansai.yotsuba, kansai.smile, kansai.keiki, kansai.okiniiri,
+	kansai.syun, kansai.takara, kansai.kansaiisan, kansai.depa,
+	kansai.kaban, kansai.kyosho, kansai.okan, kansai.densetsu,
+	kansai.onayami, kansai.sanshi, life, life.column, life.food,
+	national.calamity, national.etc, national.trial, obituaries,
+	shopping, shopping.kishi, shopping.ryouhin, shougi,
+	sports.baseball, sports.column, sports.football, sports.spo,
+	travel, travel.kaido, travel.matsuri, travel.zeitaku and wakamiya;
+	improve regexps.
+	(initialize-instance): Make the from address unreachable.
+	(shimbun-asahi-get-headers): Rewrite.
+	(shimbun-asahi-get-headers-for-today): Rewrite.
+	(shimbun-asahi-prepare-article): Rewrite.
+
+	* w3m-xmas.el: Fbind coding-system-type to ignore if it is void.
+
 	* shimbun/sb-bbc.el (shimbun-rss-build-message-id): Ease a
 	strictness of regexp.
 
