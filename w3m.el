@@ -2044,7 +2044,7 @@ Those are in the order of:
 	  '(if w3m-accept-languages
 	       '("-o"
 		 (concat "accept_language="
-			 (mapconcat 'identity w3m-accept-languages " "))))
+			 (mapconcat 'identity w3m-accept-languages ","))))
 	  "-dump_extra")))
   "Arguments passed to the w3m command to run \"dump_extra\".")
 
