@@ -148,6 +148,10 @@
      image files.  To do this:
 
          % make install-icons
+     or
+         % make install-icons30
+
+     The later is for using the slightly larger icon images.
 
      You can also install emacs-w3m as an XEmacs package using
      `make install-package' instead of `make install'.
@@ -155,7 +159,8 @@
          % make
          % make install-package
 
-     In this case, you don't have to execute `make install-icons'.
+     In this case, you don't have to execute `make install-icons' nor
+     `make install-icons30'.
 
      The info files will also be installed by `make install' or
      `make install-package'.

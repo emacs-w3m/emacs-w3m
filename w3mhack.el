@@ -374,8 +374,10 @@ emacs-w3m.")
 	(install shimbun-directory w3mhack-nonunix-lispdir "\\.elc?\\'")))
     (when w3mhack-nonunix-icondir
       (mkdir w3mhack-nonunix-icondir)
-      (install (expand-file-name "icons") w3mhack-nonunix-icondir
-	       "\\.xpm\\'"))))
+      (install (expand-file-name (if (featurep 'xemacs)
+				     "icons30"
+				   "icons"))
+	       w3mhack-nonunix-icondir "\\.xpm\\'"))))
 
 ;; Byte optimizers and version specific functions.
 (condition-case nil
@@ -552,7 +554,7 @@ to remove some obsolete variables in the first argument VARLIST."
 		   (let ((standard-output (current-buffer)))
 		     (w3mhack-examine-modules)
 		     (split-string (buffer-string) " \\(shimbun/\\)?"))))
-	   (icons (directory-files (expand-file-name "icons/") nil
+	   (icons (directory-files (expand-file-name "icons30/") nil
 				   "^[^#]+\\.xpm\\'"))
 	   (infos (directory-files (expand-file-name "doc/") nil
 				   "^[^#]+\\.info\\(-[0-9]+\\)?\\'"))
