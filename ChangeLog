@@ -1,3 +1,10 @@
+2002-04-08  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-form.el (w3m-string-to-char-list)[XEmacs]: Use string-to-list
+	instead of string-to-char-list.
+	(w3m-int-to-char): New alias.
+	(w3m-form-mee-select-value): Use it.
+
 2002-04-08  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
 
 	* w3m-e20.el (w3m-bitmap-image-insert-internal): Begin the overlay

@@ -294,10 +294,14 @@ If no field in forward, return nil without moving."
 	 (setq x (cdr x))))
      attr))
 
-(if (fboundp 'string-to-char-list)
-    (defalias 'w3m-string-to-char-list 'string-to-char-list)
+(if (fboundp 'string-to-list)
+    (defalias 'w3m-string-to-char-list 'string-to-list)
   (defun w3m-string-to-char-list (str)
     (mapcar 'identity str)))
+
+(if (fboundp 'int-to-char)
+    (defalias 'w3m-int-to-char 'int-to-char)
+  (defalias 'w3m-int-to-char 'identity))
 
 (defun w3m-form-mee-new (x)
   "Decode form information of w3mmee."
@@ -331,17 +335,17 @@ If no field in forward, return nil without moving."
   (let ((clist (w3m-string-to-char-list (w3m-url-decode-string value)))
 	label val s selected candidates)
     (while clist
-      (setq s (eq (car clist) 1)
+      (setq s (eq (car clist) (w3m-int-to-char 1))
 	    label nil
 	    val nil)
       (setq clist (cdr clist))
-      (while (not (eq (car clist) 0))
+      (while (not (eq (car clist) (w3m-int-to-char 0)))
 	(setq label (concat label (char-to-string (car clist))))
 	(setq clist (cdr clist)))
       (if label
 	  (setq label (decode-coding-string label w3m-output-coding-system)))
       (setq clist (cdr clist))
-      (while (not (eq (car clist) 0))
+      (while (not (eq (car clist) (w3m-int-to-char 0)))
 	(setq val (concat val (char-to-string (car clist))))
 	(setq clist (cdr clist)))
       (if val
