@@ -3416,13 +3416,11 @@ In Transient Mark mode, deactivate the mark."
 	(setq w3m-input-url-history
 	      (cons url (delete url w3m-input-url-history))))
       ;; The return value of this function must contain a scheme part.
-      (cond ((eq url 'popup)
-	     url)
-	    ((and (string-match w3m-url-components-regexp url)
-		  (match-beginning 1))
-	     url)
-	    (t
-	     (concat "http://" url))))))
+      (if (or (not (stringp url))
+	      (and (string-match w3m-url-components-regexp url)
+		   (match-beginning 1)))
+	  url
+	(concat "http://" url)))))
 
 
 ;;; Cache:

@@ -367,34 +367,6 @@ otherwise returns nil."
 	(sit-for 0))
       (process-exit-status process))))
 
-(defun w3m-process-start-and-wait (w3m-current-process wait-function)
-  (while (w3m-process-p w3m-current-process)
-    (condition-case error
-	(let (w3m-process-inhibit-quit inhibit-quit)
-	  ;; No sentinel function is registered and the process
-	  ;; sentinel function is called from this macro, in order to
-	  ;; avoid the dead-locking which occurs when this macro is
-	  ;; called in the environment that `w3m-process-sentinel' is
-	  ;; evaluated.
-	  (w3m-process-start-process w3m-current-process t)
-	  (unless (w3m-process-wait-process
-		   (w3m-process-process w3m-current-process)
-		   w3m-process-timeout)
-	    (w3m-process-error-handler (cons 'w3m-process-timeout nil)
-				       w3m-current-process)))
-      (quit (w3m-process-error-handler error w3m-current-process)))
-    (w3m-process-sentinel (w3m-process-process w3m-current-process)
-			  "finished\n" t)
-    (setq w3m-current-process
-	  (catch 'result
-	    (dolist (handler (w3m-process-handlers w3m-current-process))
-	      (when (memq wait-function
-			  (w3m-process-handler-functions handler))
-		(throw 'result (w3m-process-handler-result handler))))
-	    (w3m-process-error-handler (cons 'error "Can't find wait handler")
-				       w3m-current-process))))
-  w3m-current-process)
-
 (defmacro w3m-process-with-wait-handler (&rest body)
   "Generate the waiting handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the handler
@@ -404,9 +376,32 @@ which will wait for the end of the evaluation."
     `(let ((,result)
 	   (,wait-function (make-symbol "wait-function")))
        (fset ,wait-function 'identity)
-       (w3m-process-start-and-wait (let ((handler (list ,wait-function)))
-				     ,@body)
-				   ,wait-function))))
+       (setq ,result (let ((handler (list ,wait-function))) ,@body))
+       (while (w3m-process-p ,result)
+	 (condition-case error
+	     (let (w3m-process-inhibit-quit inhibit-quit)
+	       ;; No sentinel function is registered and the process
+	       ;; sentinel function is called from this macro, in
+	       ;; order to avoid the dead-locking which occurs when
+	       ;; this macro is called in the environment that
+	       ;; `w3m-process-sentinel' is evaluated.
+	       (w3m-process-start-process ,result t)
+	       (unless (w3m-process-wait-process (w3m-process-process ,result)
+						 w3m-process-timeout)
+		 (w3m-process-error-handler (cons 'w3m-process-timeout nil)
+					    ,result)))
+	   (quit (w3m-process-error-handler error ,result)))
+	 (w3m-process-sentinel (w3m-process-process ,result) "finished\n" t)
+	 (setq ,result
+	       (catch 'result
+		 (dolist (handler (w3m-process-handlers ,result))
+		   (when (memq ,wait-function
+			       (w3m-process-handler-functions handler))
+		     (throw 'result (w3m-process-handler-result handler))))
+		 (w3m-process-error-handler (cons 'error
+						  "Can't find wait handler")
+					    ,result))))
+       ,result)))
 (put 'w3m-process-with-wait-handler 'lisp-indent-function 0)
 (put 'w3m-process-with-wait-handler 'edebug-form-spec '(body))
 
