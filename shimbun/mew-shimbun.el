@@ -288,10 +288,10 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
       (setcar mew-shimbun-input-hist fld))
     (setq mew-input-folder-hist (cons fld mew-input-folder-hist))
     (let ((newfld (mew-summary-switch-to-folder fld)))
-      (condition-case nil
-	  (mew-summary-ls newfld newfld)
-	(wrong-number-of-arguments
-	 (mew-summary-ls newfld))))))
+      (if (eq 1 (w3m-function-max-args 'mew-summary-ls))
+	  (mew-summary-ls newfld)
+	(dont-compile;; To avoid a byte-compile warnning.
+	  (mew-summary-ls newfld newfld))))))
 
 ;;;###autoload
 (defun mew-shimbun-retrieve ()
