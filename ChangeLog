@@ -1,3 +1,26 @@
+2002-11-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-bookmark.el: Use non-visiting working buffer; Auto-detection
+	of bookmark file coding system.
+	(w3m-bookmark-file-coding-system): Fix its docstring.
+	(w3m-bookmark-buffer-file-name): New internal variable.
+	(w3m-bookmark-mode): Add documents for commands.
+	(w3m-bookmark-mode-setter): Set `default-directory'.
+	(w3m-bookmark-buffer): Use non-visiting working buffer.
+	(w3m-bookmark-sections): Follow the above change.
+	(w3m-bookmark-kill-entries): Likewise.
+	(w3m-bookmark-file-modtime, w3m-bookmark-verify-modtime)
+	(w3m-bookmark-save-buffer): New functions.
+	(w3m-bookmark-write-file): Use it; Stricten check.
+	(w3m-bookmark-add-current-url-group): Call `w3m-bookmark-add'
+	without 2nd argument.
+	(w3m-about-bookmark): Give unique id to sections.
+	(w3m-bookmark-current-number): Follow the above change.
+	(w3m-bookmark-kill-entry): If the bookmark file is reverted,
+	reload it.
+	(w3m-bookmark-undo): Ditto.
+	(w3m-bookmark-edit): New function.
+
 2002-11-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-bookmark.el (w3m-about-bookmark): Fix.
