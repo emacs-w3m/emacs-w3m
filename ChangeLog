@@ -1,3 +1,8 @@
+2003-12-24  OHASHI Akira  <bg66@koka-in.org>
+
+	* shimbun/sb-chalow.el (shimbun-get-headers): Erase buffer before
+	retrieving.
+
 2003-12-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-proc.el (w3m-process-wait-process): Return exit status; Use
