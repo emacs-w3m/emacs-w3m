@@ -1947,7 +1947,7 @@ emacs-w3m (yet).  You'd better use the latest version of Gnus known as
 @samp{Gnus v5.10}.  It is available at:
 
 @uref{ftp://ftp.gnus.org/pub/gnus/gnus.tar.gz}
- 
+
 Note: if emacs-w3m @strong{is} supported in the Gnus version that comes
 with your Emacs distribution, it means either that this documentation is
 out-of-date (please report this bug as described in @ref{Mailing List}),
