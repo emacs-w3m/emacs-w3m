@@ -1,3 +1,12 @@
+2004-12-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-tag-regexp-of): Remove.
+	(w3m-search-tag-1): New function.
+	(w3m-search-tag): New macro.
+
+	* w3m-form.el (w3m-form-parse-and-fontify): Use w3m-search-tag
+	instead of w3m-tag-regexp-of.
+
 2004-12-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-bbc.el (shimbun-bbc-url): Update.
