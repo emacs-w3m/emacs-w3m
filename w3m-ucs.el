@@ -53,6 +53,21 @@
       (or (ucs-to-char codepoint) ?~)
     (error ?~)))
 
+(eval-and-compile
+  (defconst w3m-ccl-get-ucs-codepoint-with-mule-ucs
+    '(;; (1) Convert a set of r1 (charset-id) and r0 (codepoint) to a
+      ;; character in Emacs internal representation.
+      (if (r0 > 255)
+	  ((r4 = (r0 & 127))
+	   (r0 = (((r0 >> 7) * 96) + r4))
+	   (r0 |= (r1 << 16)))
+	((r0 |= (r1 << 16))))
+      ;; (2) Convert a character in Emacs to a UCS codepoint.
+      (call emacs-char-to-ucs-codepoint-conversion)
+      (if (r0 <= 0)
+	  (r0 = ?\xfffd)))
+    "CCL program to convert multibyte char to ucs with Mule-UCS."))
+
 (define-ccl-program w3m-euc-japan-mule-ucs-encoder
   `(4
     (loop

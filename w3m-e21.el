@@ -80,6 +80,32 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
   (make-coding-system coding-system 4 mnemonic docstring
 		      (cons decoder encoder)))
 
+(eval-and-compile
+  (defconst w3m-ccl-get-ucs-codepoint-with-emacs-unicode
+    `(,@(if (get 'utf-translation-table-for-encode 'translation-table-id)
+	    '((translate-character utf-translation-table-for-encode r1 r0)))
+	(if (r1 == ,(charset-id 'latin-iso8859-1))
+	    ((r1 = (r0 + 128)))
+	  (if (r1 == ,(charset-id 'mule-unicode-0100-24ff))
+	      ((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
+	       (r0 &= #x7f)
+	       (r1 += (r0 + 224)))	; 224 == -32 + #x0100
+	    (if (r1 == ,(charset-id 'mule-unicode-2500-33ff))
+		((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
+		 (r0 &= #x7f)
+		 (r1 += (r0 + 9440)))	; 9440 == -32 + #x2500
+	      (if (r1 == ,(charset-id 'mule-unicode-e000-ffff))
+		  ((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
+		   (r0 &= #x7f)
+		   (r1 += (r0 + 57312)))	; 57312 == -32 + #xe000
+		,(if (fboundp 'ccl-compile-lookup-character)
+		     '((lookup-character utf-subst-table-for-encode r1 r0)
+		       (if (r7 == 0)	; lookup failed
+			   (r1 = #xfffd)))
+		   '((r1 = #xfffd)))))))
+	(r0 = r1))
+    "CCL program to convert multibyte char to ucs with emacs-unicode."))
+
 (define-ccl-program w3m-euc-japan-encoder
   `(4
     (loop

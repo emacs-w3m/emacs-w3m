@@ -1,5 +1,13 @@
 2003-07-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-e21.el (w3m-ccl-get-ucs-codepoint-with-emacs-unicode):
+	Import from w3m-ccl.el.
+
+	* w3m-ucs.el (w3m-ccl-get-ucs-codepoint-with-mule-ucs): Import
+	from w3m-ccl.el.
+
+	* w3m-ccl.el: Export the above constants.
+
 	* w3m.el (w3m-retrieve-and-render): Check current content charset
 	before `w3m-create-page' is called.
 

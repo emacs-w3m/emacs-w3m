@@ -112,47 +112,8 @@
 	   (write-repeat r0))))
     "CCL program to write characters represented in `iso-latin-1'.")
 
-  (defconst w3m-ccl-get-ucs-codepoint-with-mule-ucs
-    '(;; (1) Convert a set of r1 (charset-id) and r0 (codepoint) to a
-      ;; character in Emacs internal representation.
-      (if (r0 > 255)
-	  ((r4 = (r0 & 127))
-	   (r0 = (((r0 >> 7) * 96) + r4))
-	   (r0 |= (r1 << 16)))
-	((r0 |= (r1 << 16))))
-      ;; (2) Convert a character in Emacs to a UCS codepoint.
-      (call emacs-char-to-ucs-codepoint-conversion)
-      (if (r0 <= 0)
-	  (r0 = #xfffd)))
-    "CCL program to convert multibyte char to ucs with Mule-UCS.")
-
-  (defconst w3m-ccl-get-ucs-codepoint-with-emacs-unicode
-    `(,@(if (get 'utf-translation-table-for-encode 'translation-table-id)
-	    '((translate-character utf-translation-table-for-encode r1 r0)))
-	(if (r1 == ,(charset-id 'latin-iso8859-1))
-	    ((r1 = (r0 + 128)))
-	  (if (r1 == ,(charset-id 'mule-unicode-0100-24ff))
-	      ((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
-	       (r0 &= #x7f)
-	       (r1 += (r0 + 224)))	; 224 == -32 + #x0100
-	    (if (r1 == ,(charset-id 'mule-unicode-2500-33ff))
-		((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
-		 (r0 &= #x7f)
-		 (r1 += (r0 + 9440)))	; 9440 == -32 + #x2500
-	      (if (r1 == ,(charset-id 'mule-unicode-e000-ffff))
-		  ((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
-		   (r0 &= #x7f)
-		   (r1 += (r0 + 57312)))	; 57312 == -32 + #xe000
-		,(if (fboundp 'ccl-compile-lookup-character)
-		     '((lookup-character utf-subst-table-for-encode r1 r0)
-		       (if (r7 == 0)	; lookup failed
-			   (r1 = #xfffd)))
-		   '((r1 = #xfffd)))))))
-	(r0 = r1))
-    "CCL program to convert multibyte char to ucs with emacs-unicode.")
-
   (defconst w3m-ccl-generate-ncr
-    `((if (r0 == #xfffd)
+    `((if (r0 <= ?\xfffd)
 	  (write ?~)			; unknown character.
 	((r1 = 0)
 	 (r2 = 0)
