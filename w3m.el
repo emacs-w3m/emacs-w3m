@@ -2929,8 +2929,6 @@ type as a string argument, when retrieve is complete."
 			    "-t" (format-time-string "%Y%m%d%H%M.%S" time)
 			    file))))
 
-;; Check `touch' command.
-
 ;;; Retrieve data:
 (eval-and-compile
   (defconst w3m-internal-characters-alist
