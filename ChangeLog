@@ -1,5 +1,8 @@
 2004-01-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-safe-view-this-url): Bind `w3m-pop-up-windows' to
+	nil locally, in order to keep MUA's window configuration.
+
 	* shimbun/sb-cnet-rss.el: Add blog groups.
 	(shimbun-cnet-rss-group-alist): New variable.
 	(shimbun-cnet-rss-url, shimbun-cnet-rss-groups): Abolished.
