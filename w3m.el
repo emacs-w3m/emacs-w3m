@@ -3194,12 +3194,17 @@ succeed."
 	  (let ((coding-system-for-read 'binary)
 		(default-process-coding-system
 		  (cons 'binary 'binary))
+		(lcookie (make-temp-name
+			  (format "%s.%d." (user-login-name) (emacs-pid))))
 		file beg end)
 	    (w3m-process-with-environment
 		(list
+		 (cons "LOCAL_COOKIE" lcookie)
 		 (cons "QUERY_STRING"
-		       (encode-coding-string (w3m-url-to-file-name url)
-					     w3m-file-name-coding-system)))
+		       (format "dir=%s&cookie=%s"
+			       (encode-coding-string (w3m-url-to-file-name url)
+						     w3m-file-name-coding-system)
+			       lcookie)))
 	      (call-process w3m-dirlist-cgi-program nil t nil))
 	    (goto-char (point-min))
 	    (when (re-search-forward "^<html>" nil t)
