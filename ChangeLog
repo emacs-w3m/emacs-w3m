@@ -1,3 +1,15 @@
+2005-01-08  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-japantimes.el (shimbun-japantimes-content-start):
+	Improve the value.
+	(shimbun-japantimes-content-end): Ditto.
+	(shimbun-get-headers): Improve regexp; simplify Message-ID form.
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Add the
+	gyosuuchi group.
+	(shimbun-nikkei-get-headers-bunkatsu2): New function.
+	(shimbun-nikkei-prepare-article-bunkatsu2): New function.
+
 2005-01-07  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
 
 	* w3m.el (w3m-goto-url): Call `w3m-form-textarea-files-remove' if
