@@ -1,3 +1,8 @@
+2001-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-emacs-w3m-icon): Made it interlaced and endlessly
+	animated.
+
 2001-12-06  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-decode-buffer): When content-charset is unknown,
