@@ -1066,13 +1066,13 @@ The term `shifting' means a fine level scrolling."
   :type '(integer :size 0))
 
 (defcustom w3m-use-form t
-  "*Non-nil means activate the form extensions. (EXPERIMENTAL)"
+  "*Non-nil means make it possible to use form extensions. (EXPERIMENTAL)"
   :group 'w3m
   :type 'boolean
   :require 'w3m-form)
 
 (defcustom w3m-use-cookies nil
-  "Non-nil means use cookies. (EXPERIMENTAL)"
+  "*Non-nil means enable emacs-w3m to use cookies.  (EXPERIMENTAL)"
   :group 'w3m
   :type 'boolean)
 

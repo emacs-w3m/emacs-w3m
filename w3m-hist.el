@@ -47,9 +47,9 @@
 	   (setq w3m-colon-keywords (cdr w3m-colon-keywords))))))))
 
 (defcustom w3m-history-reuse-history-elements nil
-  "If non-nil, reuse a history element when a user visits a page and it
-has already been registered in the `w3m-history' variable, otherwise a
-new history element will be created.
+  "Non-nil means reuse the history element when re-visiting the page.
+Otherwise, a new history element will be created even if there are
+elements for the same url in the history.
 
 Emacs-w3m used to do as if it is non-nil, however it sometimes brought
 about users' dissatisfaction.  For example, if a user visits the pages
@@ -68,9 +68,8 @@ See the documentation for the variables `w3m-history' and
   :type '(boolean :format "%{%t%}: %[%v%]" :on "On" :off "Off"))
 
 (defcustom w3m-history-minimize-in-new-session nil
-  "If non-nil, minimize the history so that there is only the current
-page when a new session is created.  Otherwise, whole history is
-copied."
+  "Non-nil means minimize copied history so that there's only current page.
+This variable only affects creating of the new session by copying."
   :group 'w3m
   :type '(boolean :format "%{%t%}: %[%v%]" :on "On" :off "Off"))
 

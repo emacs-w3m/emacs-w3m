@@ -550,10 +550,8 @@ as the value."
 (defcustom w3m-xmas-show-current-title-in-buffer-tab
   (and (boundp 'gutter-buffers-tab-enabled)
        gutter-buffers-tab-enabled)
-  "If non-nil, show the title string in the buffer tab.  It has no effect
-if your XEmacs does not support the gutter items.  If you turn on this
-option, it is recommended a bit that setting both the option
-`w3m-pop-up-windows' and the option `w3m-pop-up-frames' to nil."
+  "If non-nil, show the title strings in the buffers tab.
+It has no effect if your XEmacs does not support the gutter items."
   :group 'w3m
   :type 'boolean
   :get (lambda (symbol)

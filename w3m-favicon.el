@@ -121,9 +121,9 @@ If this variable is nil, never expired."
 		       `((const ,(car (last types))))))))
 
 (defcustom w3m-space-before-favicon " "
-  "String of space character(s) to be put in front of favicon in the
-mode-line.  It may be better to use two or more spaces if you are
-using oblique or italic font in the modeline."
+  "String of space char(s) to be put in front of favicon in the mode-line.
+It may be better to use two or more spaces if you are using oblique or
+italic font in the modeline."
   :group 'w3m
   :type 'string)
 

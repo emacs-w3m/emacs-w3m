@@ -798,8 +798,8 @@ we will use this value for the default `defface' color spec.")
     (custom-initialize-set symbol value)))
 
 (defmacro w3m-activate-zmacs-regions ()
-  "Set t to the `zmacs-region-stays' variable when a user invoke a command
-interactively under XEmacs."
+  "Set t to `zmacs-region-stays' when a user invoke a command.
+This is the XEmacs specific macro."
   (if (featurep 'xemacs)
       '(if (interactive-p)
 	   (setq zmacs-region-stays t))))

@@ -488,14 +488,14 @@ BEG and END should be an HTTP response header region on current buffer."
 
 ;;;###autoload
 (defun w3m-cookie (&optional no-cache)
-  "Cookie setup."
+  "Display cookies and enable you to manage them."
   (interactive "P")
   (w3m-goto-url "about://cookie/" no-cache))
 
 ;;;###autoload
 (defun w3m-about-cookie (url &optional no-decode no-cache post-data &rest args)
-  "Cookie setup."
-  (unless w3m-use-cookies (error "You must enable cookies."))
+  "Make the html contents to display and to enable you to manage cookies."
+  (unless w3m-use-cookies (error "You must enable emacs-w3m to use cookies."))
   (w3m-cookie-setup)
   (let ((pos 0))
     (when post-data
