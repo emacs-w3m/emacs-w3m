@@ -1,5 +1,12 @@
 2001-02-07  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
+	* w3m.el: Fixed small and thoughtless bugs...
+	(w3m-bookmark-file-modified-p): Bug fix.
+	(w3m-bookmark-save): Bug fix. Don't forget time stamp updating.
+	(w3m-bookmark-add): Bug fix. Function name miss-typing.
+
+2001-02-07  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
 	* w3m.el: Add bookmark operations. This feature is very ad-hoc.
 	Support loading w3m's bookmark file into internal bookmark data,
 	adding new entry interactively, and saving data as w3m's bookmark

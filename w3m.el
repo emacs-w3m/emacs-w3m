@@ -1266,7 +1266,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   "Predicate for FILE is something modified."
   (and (file-exists-p w3m-bookmark-file)
        w3m-bookmark-file-time-stamp 
-       (not (equal (elt (file-attributes file) 5) 
+       (not (equal (elt (file-attributes w3m-bookmark-file) 5) 
 		   w3m-bookmark-file-time-stamp))))
 
 ;; bookmark data format
@@ -1356,8 +1356,10 @@ Parsed bookmark data is hold in `w3m-bookmark-data'."
       ;; print end of html
       (insert "</body>\n"
 	      "</html>\n")
+      ;; write to file!
       (let ((coding-system-for-write w3m-bookmark-file-coding-system))
 	(write-region (point-min) (point-max) file))
+      (setq w3m-bookmark-file-time-stamp (elt (file-attributes file) 5))
       (message "Saved to '%s'" file))))
 
 (defun w3m-bookmark-data-prepare ()
@@ -1378,7 +1380,7 @@ SECTION is category name in bookmark."
     (w3m-bookmark-data-prepare)
     ;; check time stamp of bookmark file (localy modified?)
     (if (and (w3m-bookmark-file-modified-p)
-	     (y-or-n "Bookmark file is modified. Reload it? (y/n): "))
+	     (y-or-n-p "Bookmark file is modified. Reload it? (y/n): "))
 	(w3m-bookmark-load))
     ;; go on ...
     ;; ask section (with completion).
