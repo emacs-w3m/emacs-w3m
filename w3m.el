@@ -125,7 +125,8 @@
   (autoload 'w3m-cookie-get "w3m-cookie")
   (autoload 'w3m-cookie "w3m-cookie")
   (autoload 'w3m-about-cookie "w3m-cookie")
-  (autoload 'w3m-cookie-shutdown "w3m-cookie" t))
+  (autoload 'w3m-cookie-shutdown "w3m-cookie" nil t)
+  (autoload 'report-emacs-w3m-bug "w3m-bug" nil t))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
@@ -4593,6 +4594,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "Ct" 'w3m-redisplay-with-content-type)
     (define-key map "Cc" 'w3m-redisplay-with-charset)
     (define-key map "CC" 'w3m-redisplay-and-reset)
+    (define-key map "\C-cb" 'report-emacs-w3m-bug)
     (setq w3m-lynx-like-map map)))
 
 (defvar w3m-info-like-map nil
@@ -4699,6 +4701,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "Ct" 'w3m-redisplay-with-content-type)
     (define-key map "Cc" 'w3m-redisplay-with-charset)
     (define-key map "CC" 'w3m-redisplay-and-reset)
+    (define-key map "\C-cb" 'report-emacs-w3m-bug)
     (setq w3m-info-like-map map)))
 
 (defun w3m-alive-p ()

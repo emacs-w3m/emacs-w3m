@@ -1,5 +1,13 @@
 2002-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-bug.el: New file.
+
+	* w3m.el: Autoload "w3m-bug" for `report-emacs-w3m-bug'.
+	(w3m-lynx-like-map): Bind `report-emacs-w3m-bug' to C-cb.
+	(w3m-info-like-map): Ditto.
+
+	* w3m-om.el (compose-mail): New function.
+
 	* w3mhack.el: Check for the validity on APEL.
 
 2002-04-26  Hideyuki SHIRAI  <shirai@meadowy.org>
@@ -7,7 +15,7 @@
 	* w3m.el (w3m-arrived-modify): New function.
 	(w3m-local-attributes): If set Content-type in arrived DB, return
 	it.
-	(w3m-redisplay-this-page, w3m-redisplay-and-reset) 
+	(w3m-redisplay-this-page, w3m-redisplay-and-reset)
 	(w3m-redisplay-with-content-type): New commands.
 	(w3m-redisplay-with-charset): Use `w3m-arrived-modify'.
 	(w3m-lynx-like-map): Bind all new commands and modify bind for

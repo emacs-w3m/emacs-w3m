@@ -356,6 +356,16 @@ If COLUMN is within a multi-column character, replace it by
 spaces and tab."
   (inline (move-to-column-strictly column t)))
 
+(unless (fboundp 'compose-mail)
+  (defun compose-mail (&optional to subject other-headers continue
+				 switch-function yank-action send-actions)
+    "Start composing a mail message to send."
+    (interactive
+     (list nil nil nil current-prefix-arg))
+    (let ((function (get mail-user-agent 'composefunc)))
+      (funcall function to subject other-headers continue
+	       switch-function yank-action send-actions))))
+
 ;;; Faces:
 (defvar w3m-om-use-overstrike-to-make-face-bold 'w3m
   "*If non-nil, use `set-face-bold-p' to make faces bold by overstriking.
