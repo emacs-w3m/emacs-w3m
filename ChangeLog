@@ -1,5 +1,10 @@
 2004-01-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-search.el (w3m-search): Use the region as an initial string
+	if Transient Mark mode.
+	(w3m-search-word-at-point): Follow the above change in its
+	docstring.
+
 	* w3m-e21.el (w3m-tab-line): Check the length of the current
 	title, before checking the breadth of its first character.
 

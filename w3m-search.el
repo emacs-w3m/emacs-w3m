@@ -138,7 +138,9 @@ See also `w3m-search-engine-alist'."
   :type '(string :size 0))
 
 (defcustom w3m-search-word-at-point t
-  "*Non-nil means that the word at point is used as initial string."
+  "*Non-nil means that the word at point is used as an initial string.
+If Transient Mark mode, this option is ignored and the region is used
+as an initial string."
   :group 'w3m
   :type 'boolean)
 
@@ -154,7 +156,9 @@ See also `w3m-search-engine-alist'."
   "Search QUERY using SEARCH-ENGINE.
 When called interactively with a prefix argument, you can choose one of
 the search engines defined in `w3m-search-engine-alist'.  Otherwise use
-`w3m-search-default-engine'."
+`w3m-search-default-engine'.
+If Transient Mark mode, use the region as an initial string of query
+and deactivate the mark."
   (interactive
    (let ((engine
 	  (if current-prefix-arg
@@ -163,19 +167,25 @@ the search engines defined in `w3m-search-engine-alist'.  Otherwise use
 		 (format "Which Engine? (%s): " w3m-search-default-engine)
 		 w3m-search-engine-alist nil t))
 	    w3m-search-default-engine))
-	 (default (unless (eq (get-text-property (line-beginning-position)
-						 'face)
-			      'w3m-header-line-location-title-face)
-		    (thing-at-point 'word)))
-	 prompt query)
+	 (default
+	   (if (and transient-mark-mode mark-active)
+	       (prog1 (buffer-substring (mark) (point))
+		 (deactivate-mark))
+	     (unless (eq (get-text-property (line-beginning-position) 'face)
+			 'w3m-header-line-location-title-face)
+	       (thing-at-point 'word))))
+	 initial)
      (when default
        (set-text-properties 0 (length default) nil default))
-     (setq prompt (if (and default (not w3m-search-word-at-point))
-		      (format "%s search (default %s): " engine default)
-		    (format "%s search: " engine)))
-     (setq query (if w3m-search-word-at-point
-		     (read-string prompt default)
-		   (read-string prompt nil nil default)))
+     (when (or w3m-search-word-at-point
+	       (and transient-mark-mode mark-active))
+       (setq initial default
+	     default nil))
+     (setq query
+	   (read-string (if default
+			    (format "%s search (default %s): " engine default)
+			  (format "%s search: " engine))
+			initial nil default))
      (list (if (string= engine "")
 	       w3m-search-default-engine
 	     engine)
