@@ -640,12 +640,16 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 (defun shimbun-nikkei-prepare-article-markets ()
   "Function used to prepare contents of an article for the markets groups."
   (when (re-search-forward
-	 "<DIV[\t\n ]+ID=\"topic\"[^>]+>[\t\n ]*\\(<[^>]+>[\t\n ]*\\)*"
+	 "<DIV[\t\n ]+ID=\"topic\"[^>]+>[\t\n ]*\
+\\(<\\([^/]\\|/[^D]\\|/D[^I]\\|/DI[^V]\\|/DIV[^>]\\)[^>]*>[\t\n ]*\\)*"
 	 nil t)
     (insert shimbun-nikkei-content-start)
-    (when (re-search-forward "[\t\n ]*\\(<[^>]+>[\t\n ]*\\)*</DIV>" nil t)
-      (goto-char (match-beginning 0))
-      (insert shimbun-nikkei-content-end))))
+    (if (looking-at "[\t\n ]*\\(<[^>]+>[\t\n ]*\\)*</DIV>")
+	(insert "This article seems to have been expired in the server."
+		shimbun-nikkei-content-end)
+      (when (re-search-forward "[\t\n ]*\\(<[^>]+>[\t\n ]*\\)*</DIV>" nil t)
+	(goto-char (match-beginning 0))
+	(insert shimbun-nikkei-content-end)))))
 
 (defun shimbun-nikkei-prepare-article-okuyami ()
   "Function used to prepare contents of an article for the okuyami group."
