@@ -1,3 +1,10 @@
+2002-05-23  ARISAWA Akihiro  <ari@atesoft.advantest.co.jp>
+
+	* shimbun/sb-zdnet.el (shimbun-zdnet-group-url-alist): Changed URL of
+	"comp".
+	(shimbun-zdnet-expiration-days): New variable.
+	(shimbun-zdnet-comp-get-headers): Follow the change of page.
+
 2002-05-20  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-groups): Add `main'.

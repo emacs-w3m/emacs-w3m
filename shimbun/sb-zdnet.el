@@ -36,7 +36,7 @@
 (defvar shimbun-zdnet-url "http://www.zdnet.co.jp/")
 
 (defvar shimbun-zdnet-group-url-alist
-  '(("comp" . "news")
+  '(("comp" . "news/past")
     ("gamespot" . "gamespot")))
 
 (defvar shimbun-zdnet-groups (mapcar 'car shimbun-zdnet-group-url-alist))
@@ -46,6 +46,8 @@
 (defvar shimbun-zdnet-x-face-alist
   '(("default" . "X-Face: 88Zbg!1nj{i#[*WdSZNrn1$Cdfat,zsG`P)OLo=U05q:\
 RM#72\\p;3XZ~j|7T)QC7\"(A;~Hr\n fP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
+
+(defvar shimbun-zdnet-expiration-days 31)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-zdnet))
   (concat
@@ -64,18 +66,18 @@ RM#72\\p;3XZ~j|7T)QC7\"(A;~Hr\n fP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
 	(delete-region start (point))))
     (goto-char (point-min))
     (while (re-search-forward
-	    "<a href=\"\\(/news/\\)?\\(\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.]+\\).html\\)\"><font size=\"4\"><strong>"
+	    "<a href=\"\\(/news/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.]+\\).html\\)\">"
 	    nil t)
-      (let ((year  (+ 2000 (string-to-number (match-string 3))))
-	    (month (string-to-number (match-string 4)))
-	    (day   (string-to-number (match-string 5)))
+      (let ((year  (+ 2000 (string-to-number (match-string 2))))
+	    (month (string-to-number (match-string 3)))
+	    (day   (string-to-number (match-string 4)))
 	    (id    (format "<%s%s%s%s%%%s>"
+			   (match-string 2)
 			   (match-string 3)
 			   (match-string 4)
 			   (match-string 5)
-			   (match-string 6)
 			   (shimbun-current-group-internal shimbun)))
-	    (url (match-string 2)))
+	    (url (match-string 1)))
 	(push (shimbun-make-header
 	       0
 	       (shimbun-mime-encode-string
@@ -84,13 +86,13 @@ RM#72\\p;3XZ~j|7T)QC7\"(A;~Hr\n fP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
 			    (buffer-substring
 			     (match-end 0)
 			     (progn (search-forward "</a>" nil t) (point)))
-			    "<[^>]+>")
+			    "\\(<[^>]+>\\|\r\\)")
 			   ""))
 	       (shimbun-from-address-internal shimbun)
 	       (shimbun-make-date-string year month day)
-	       id  "" 0 0 (concat (shimbun-index-url shimbun) url))
+	       id  "" 0 0 (shimbun-expand-url url (shimbun-index-url shimbun)))
 	      headers)))
-    (nreverse headers)))
+    headers))
 
 (defun shimbun-zdnet-gamespot-get-headers (shimbun)
   (let ((case-fold-search t) headers
