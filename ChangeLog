@@ -1,3 +1,11 @@
+2005-03-02  ARISAWA Akihiro  <ari@mbf.ocn.ne.jp>
+
+	* w3m.el (w3m-show-decoded-url): New user option.
+	(w3m-make-url-decode-function): New inline function.
+	(w3m-make-help-echo): Use it.
+	(w3m-fontify-anchors): The function of help-echo property has
+	an ability to decode url.
+
 2005-03-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-decode-coding-string-with-priority): New function.

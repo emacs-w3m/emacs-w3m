@@ -1265,6 +1265,11 @@ See the balloon-help.el file for more information."
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-show-decoded-url t
+  "If non-nil, show decoded url in mode-line and tooltip."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-use-tab t
   "Non-nil means make emacs-w3m a tab browser.
 It makes it possible to show all emacs-w3m buffers in a single window
@@ -2564,7 +2569,17 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 	   (nth 5 attrs)))
     `(nth 5 (w3m-attributes ,url ,no-cache))))
 
-(defmacro w3m-make-help-echo (property)
+(defsubst w3m-make-url-decode-function (str url-decode)
+  (if url-decode
+      `(let ((str ,str))
+	 (if w3m-show-decoded-url
+	     (w3m-url-decode-string str
+				    (cons w3m-current-coding-system
+					  w3m-coding-system-priority-list))
+	   str))
+    str))
+
+(defmacro w3m-make-help-echo (property &optional url-decode)
   "Make a function returning a string used for the `help-echo' message.
 PROPERTY is a symbol (which doesn't need to be quoted) of a text
 property (in XEmacs, it is an extent) with the value of a string which
@@ -2576,16 +2591,20 @@ need to know what function will be made, use `macroexpand'."
 	    (lambda (extent)
 	      (if (and w3m-track-mouse
 		       (eq (extent-object extent) (current-buffer)))
-		  (get-text-property (extent-start-position extent)
-				     ',property)))))
+		  ,(w3m-make-url-decode-function
+		    (get-text-property (extent-start-position extent)
+				       ',property)
+		    url-decode)))))
     `(if (>= emacs-major-version 21)
 	 (function
 	  (lambda (window object pos)
 	    (if w3m-track-mouse
 		(progn
 		  (w3m-message "")	; Clear the echo area.
-		  (get-text-property pos ',property
-				     (window-buffer window)))))))))
+		  ,(w3m-make-url-decode-function
+		    `(get-text-property pos ',property
+					(window-buffer window))
+		    url-decode))))))))
 
 (defmacro w3m-make-balloon-help (property)
   "Make a function returning a string used for the `balloon-help' message.
@@ -2938,7 +2957,7 @@ For example:
 
 (defun w3m-fontify-anchors ()
   "Fontify anchor tags in the buffer which contains halfdump."
-  (let ((help (w3m-make-help-echo w3m-href-anchor))
+  (let ((help (w3m-make-help-echo w3m-href-anchor t))
 	(balloon (w3m-make-balloon-help w3m-href-anchor))
 	prenames start end)
     (goto-char (point-min))
