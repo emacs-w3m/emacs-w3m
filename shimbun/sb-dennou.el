@@ -47,7 +47,7 @@
   shimbun-dennou-url)
 
 (defun shimbun-dennou-make-date-string (month day)
-  (shimbun-make-date-string 
+  (shimbun-make-date-string
    (string-to-number (substring (current-time-string) 20))
    (string-to-number month)
    (string-to-number day)))

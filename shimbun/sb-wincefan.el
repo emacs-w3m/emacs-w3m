@@ -67,13 +67,13 @@
 	  (throw 'stop nil)
 	(delete-region (point-max) (point)))
       (goto-char (point-min))
-      (while (re-search-forward 
+      (while (re-search-forward
 	      "<TR><TD VALIGN=TOP NOWRAP><FONT COLOR=\"[#A-Z0-9]+\" SIZE=-1>\\([0-9]+\\)月\\([0-9]+\\)日(\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))</FONT></TD>"
 	      nil t nil)
 	(let* ((month (match-string 1))
 	       (day (match-string 2))
 	       (year (substring (current-time-string) 20))
-	       (date (shimbun-make-date-string 
+	       (date (shimbun-make-date-string
 		      (string-to-number year)
 		      (string-to-number month)
 		      (string-to-number day)))
@@ -83,7 +83,7 @@
 				 (string-to-number month)
 				 (string-to-number day))))
 	       (end (save-excursion
-		      (or (re-search-forward 
+		      (or (re-search-forward
 			   "<TR><TD VALIGN=TOP NOWRAP><FONT COLOR=\"[#A-Z0-9]+\" SIZE=-1>\\([0-9]+\\)月\\([0-9]+\\)日(\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))</FONT></TD>"
 			   nil t nil)
 			  (point-max))))

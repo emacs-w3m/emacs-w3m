@@ -54,7 +54,7 @@
 ;; (4) You can use emacs-w3m to fetch and/or browse
 ;; `external-body with URL access'. To activate this feaeture,
 ;; add followings also:
-;; 
+;;
 ;; (setq mew-ext-url-alist
 ;;      '(("^application/" "Fetch by emacs-w3m" mew-w3m-ext-url-fetch nil)
 ;;        (t "Browse by emacs-w3m" mew-w3m-ext-url-show nil)))

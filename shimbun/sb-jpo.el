@@ -32,8 +32,8 @@
 ;;
 ;; ■制度の紹介                          ...lawguide
 ;; ■出願から審査、審判、登録まで        ...details
-;; ■特許庁の紹介                
-;; ■特許庁の取り組み                    
+;; ■特許庁の紹介
+;; ■特許庁の取り組み
 ;;    ■プレス発表                       ...news
 ;;    ■法令改正のお知らせ               ...revision
 ;;    ■広報の広場                       ...news
@@ -140,7 +140,7 @@
 	    (throw 'next nil) ; unknown date format
 	  (setq tempdate (list (string-to-number (match-string 1 date))
 			       (string-to-number (match-string 2 date))))
-	  (setq date (nconc tempdate 
+	  (setq date (nconc tempdate
 			    (list
 			     (if (not (match-string 3 date))
 				1
@@ -185,7 +185,7 @@
 			   (shimbun-jpo-headers-1
 			    shimbun url nil
 			    (when exceptions
-			      (concat "\\(" 
+			      (concat "\\("
 				      (mapconcat 'regexp-quote exceptions "\\|")
 				      "\\)")))))
       (goto-char (point-min))
@@ -264,7 +264,7 @@
 	      nil t nil)
 	(delete-region (match-beginning 0) (progn (end-of-line) (point))))
       (goto-char (point-min))
-      (while (re-search-forward 
+      (while (re-search-forward
 	      "<tr>\n+<td align=\"left\"><img src=\"\\(\\.\\./\\)?images/title\\.gif\" *[^<>]+\">\\(<\/a>\\)?<\/td>\n+<\/tr>"
 	      nil t nil)
 	(delete-region (match-beginning 0) (match-end 0)))
@@ -275,12 +275,12 @@
 	(delete-region (match-beginning 0) (progn (end-of-line) (point))))
       (goto-char (point-min))
       (while (re-search-forward
-	      ;; PDFファイルを初めてお使いになる方は、Adobe Acrobat Readerダウンロードページへ   
+	      ;; PDFファイルを初めてお使いになる方は、Adobe Acrobat Readerダウンロードページへ
 	      "Adobe Acrobat Reader *ダウンロードページ"
 	      nil t nil)
 	(delete-region (progn (beginning-of-line) (point)) (progn (end-of-line) (point))))
       (goto-char (point-min))
-      (while (re-search-forward 
+      (while (re-search-forward
 	      "<tr>\n+<td align=\"center\"><a href=\"#top\">\
 <img src=\"\\(\\.\\.\/\\)?images/gotop\\.gif\" [^<>]+\">\\(<\/a>\\)?<\/td>\n+<\/tr>"
 	      nil t nil)

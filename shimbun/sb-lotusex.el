@@ -54,7 +54,7 @@
     ("bbs")
     ))
 
-(defvar shimbun-lotusex-groups 
+(defvar shimbun-lotusex-groups
   (mapcar 'car shimbun-lotusex-groups-alist))
 (defvar shimbun-lotusex-from-address "webmaster@tsuruo.dominohosting.biz")
 (defvar shimbun-lotusex-coding-system 'iso-2022-jp)
@@ -80,7 +80,7 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-lotusex))
   (let ((group (shimbun-current-group-internal shimbun)))
     (if (not (string= group "bbs"))
-	(concat shimbun-lotusex-url 
+	(concat shimbun-lotusex-url
 		(cdr (assoc group shimbun-lotusex-groups-alist)))
       "http://d.dominodeveloper.net/members/tsuruo/bbs/NotesBBS.nsf/wMainViewPage!OpenPage")))
 
