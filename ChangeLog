@@ -1,5 +1,12 @@
 2001-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-goto-url): Register post-data and a referer in the
+	history.
+	(w3m-info-like-map, w3m-lynx-like-map): Use `suppress-keymap'.
+	(w3m-view-previous-page): Give post-data and a referer to
+	`w3m-goto-url'.
+	(w3m-view-next-page): Use `w3m-view-previous-page'.
+
 	* w3m-macro.el (w3m-cleanup-plist): New macro.
 	(w3m-tag-regexp-of): Use backquote.
 

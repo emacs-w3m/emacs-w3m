@@ -2854,21 +2854,30 @@ this function returns t.  Otherwise, returns nil."
 	(w3m-goto-url parent-url)
       (error "No parent page for: %s" w3m-current-url))))
 
-(defun w3m-view-previous-page (&optional arg)
+(defun w3m-view-previous-page (&optional count)
+  "View previous page.  If COUNT is a positive integer, move backward
+COUNT times in the history.  If COUNT is a negative integer, moving
+forward is performed.  Otherwise, COUNT is treated as 1 by default."
   (interactive "p")
-  (let ((url (car (w3m-history-backward arg))))
+  (let ((url (if (and (integerp count)
+		      (not (zerop count)))
+		 (car (w3m-history-backward count))
+	       (w3m-history-backward))))
     (when url
-      (w3m-goto-url url)
-      ;; restore last position.
-      (w3m-history-restore-position))))
-
-(defun w3m-view-next-page (&optional arg)
-  (interactive "p")
-  (let ((url (car (w3m-history-forward arg))))
-    (when url
-      (w3m-goto-url url)
+      (w3m-goto-url url nil nil
+		    (w3m-history-plist-get ':post-data)
+		    (w3m-history-plist-get ':referer))
       ;; restore last position
       (w3m-history-restore-position))))
+
+(defun w3m-view-next-page (&optional count)
+  "View next page.  If COUNT is a positive integer, move forward COUNT
+times in the history.  If COUNT is a negative integer, moving backward
+is performed.  Otherwise, COUNT is treated as 1 by default."
+  (interactive "p")
+  (w3m-view-previous-page (if (integerp count)
+			      (- count)
+			    -1)))
 
 (defun w3m-expand-url (url base)
   "Convert URL to absolute, and canonicalize it."
@@ -3188,6 +3197,7 @@ that is affected by `w3m-pop-up-frames'."
   "Lynx-like keymap used in w3m-mode buffers.")
 (unless w3m-lynx-like-map
   (let ((map (make-keymap)))
+    (suppress-keymap map)
     (define-key map " " 'w3m-scroll-up-or-next-url)
     (define-key map "b" 'w3m-scroll-down-or-previous-url)
     (define-key map [backspace] 'w3m-scroll-down-or-previous-url)
@@ -3257,6 +3267,7 @@ that is affected by `w3m-pop-up-frames'."
   "Info-like keymap used in w3m-mode buffers.")
 (unless w3m-info-like-map
   (let ((map (make-keymap)))
+    (suppress-keymap map)
     (define-key map [backspace] 'w3m-scroll-down-or-previous-url)
     (define-key map [delete] 'w3m-scroll-down-or-previous-url)
     (define-key map "\C-?" 'w3m-scroll-down-or-previous-url)
@@ -3623,7 +3634,10 @@ the request."
 	  (setq w3m-current-post-data post-data
 		w3m-current-referer referer)
 	  (w3m-history-push w3m-current-url
-			    (list ':title w3m-current-title))
+			    (w3m-cleanup-plist
+			     (list ':title w3m-current-title
+				   ':referer w3m-current-referer
+				   ':post-data w3m-current-post-data)))
 	  (or (and name (w3m-search-name-anchor name))
 	      (goto-char (point-min)))
 	  (setq w3m-display-inline-image-status 'off)
