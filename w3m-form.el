@@ -453,26 +453,42 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			    (if charset
 				(w3m-charset-to-coding-system charset)
 			      w3m-current-coding-system))))
-	    (setq forms
-		  (cons
-		   (cons
-		    fid
-		    (w3m-form-new
-		     (or method "get")
-		     (or action (and w3m-current-url
-				     (string-match w3m-url-components-regexp
-						   w3m-current-url)
-				     (substring w3m-current-url 0
-						(or (match-beginning 6)
-						    (match-beginning 8)))))
-		     nil
-		     (if accept-charset
-			 (setq accept-charset
-			       (split-string accept-charset ",")))
-		     (if enctype
-			 (intern enctype)
-		       'urlencoded)))
-		   forms)))))
+	    (if (setq form (cdr (assq fid forms)))
+		(progn
+		  (setf (w3m-form-method form) (or method "get"))
+		  (setf (w3m-form-action form)
+			(and w3m-current-url
+					(string-match w3m-url-components-regexp
+						      w3m-current-url)
+					(substring w3m-current-url 0
+						   (or (match-beginning 6)
+						       (match-beginning 8)))))
+		  (setf (w3m-form-charlst form)
+			(if accept-charset
+			    (setq accept-charset
+				  (split-string accept-charset ","))))
+		  (setf (w3m-form-enctype form)
+			(if enctype
+			    (intern enctype)
+			  'urlencoded)))
+	      (setq form (w3m-form-new
+			  (or method "get")
+			  (or action (and w3m-current-url
+					  (string-match 
+					   w3m-url-components-regexp
+					   w3m-current-url)
+					  (substring
+					   w3m-current-url 0
+					   (or (match-beginning 6)
+					       (match-beginning 8)))))
+			  nil
+			  (if accept-charset
+			      (setq accept-charset
+				    (split-string accept-charset ",")))
+			  (if enctype
+			      (intern enctype)
+			    'urlencoded)))
+	      (setq forms (cons (cons fid form) forms))))))
        ((string= tag "map")
 	(let (candidates)
 	  (w3m-parse-attributes (name)
@@ -529,127 +545,130 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	    (if (eq w3m-type 'w3mmee)
 		(setq form (nth fid forms))
 	      (setq form (cdr (assq fid forms))))
-	    (when form
-	      (cond
-	       ((and (string= type "hidden")
-		     (string= name "link"))
-		(setq mapval value))
-	       ((or (string= type "submit")
-		    (string= type "image"))
-		(unless (string= no_effect "true")
-		  (w3m-form-make-button
-		   start end
-		   `(w3m-form-field-id
-		     ,(format "fid=%d/type=%s/name=%s" fid type name)
-		     w3m-action (w3m-form-submit ,form ,name ,value)
-		     w3m-submit (w3m-form-submit ,form ,name
-						 (w3m-form-get ,form ,name))
-		     w3m-anchor-sequence ,abs-hseq))))
-	       ((string= type "reset")
+	    (unless form
+	      (setq forms (cons (cons fid (setq form
+						(w3m-form-new nil nil)))
+				forms)))
+	    (cond
+	     ((and (string= type "hidden")
+		   (string= name "link"))
+	      (setq mapval value))
+	     ((or (string= type "submit")
+		  (string= type "image"))
+	      (unless (string= no_effect "true")
 		(w3m-form-make-button
 		 start end
 		 `(w3m-form-field-id
 		   ,(format "fid=%d/type=%s/name=%s" fid type name)
-		   w3m-action (w3m-form-reset ,form)
-		   w3m-anchor-sequence ,abs-hseq)))
-	       ((string= type "textarea")
-		(if (eq w3m-type 'w3mmee)
-		    (w3m-form-put form name
-				  (decode-coding-string
-				   (w3m-url-decode-string value)
-				   w3m-output-coding-system))
-		  (setq textareas (cons (list textareanumber form name)
-					textareas)))
-		(add-text-properties
-		 start end
-		 `(w3m-form-field-id
-		   ,(format "fid=%d/type=%s/name=%s" fid type name)
-		   face w3m-form-face
-		   w3m-action (w3m-form-input-textarea ,form ,hseq)
+		   w3m-action (w3m-form-submit ,form ,name ,value)
 		   w3m-submit (w3m-form-submit ,form ,name
 					       (w3m-form-get ,form ,name))
-		   w3m-textarea-rows ,rows
-		   w3m-form-hseq ,hseq
-		   w3m-anchor-sequence ,abs-hseq
-		   w3m-form-name ,name)))
-	       ((string= type "select")
-		(if (eq w3m-type 'w3mmee)
-		    (w3m-form-put form name
-				  (w3m-form-mee-select-value value))
-		  (setq selects (cons (list selectnumber form name)
-				      selects)))
-		(add-text-properties
-		 start end
-		 `(w3m-form-field-id
-		   ,(format "fid=%d/type=%s/name=%s" fid type name)
-		   face w3m-form-face
-		   w3m-action (w3m-form-input-select ,form ,name)
-		   w3m-submit (w3m-form-submit ,form ,name
-					       (w3m-form-get ,form ,name))
-		   w3m-anchor-sequence ,abs-hseq)))
-	       ((string= type "password")
-		(add-text-properties
-		 start end
-		 `(w3m-form-field-id
-		   ,(format "fid=%d/type=%s/name=%s" fid type name)
-		   face w3m-form-face
-		   w3m-action (w3m-form-input-password ,form ,name)
-		   w3m-submit (w3m-form-submit ,form ,name
-					       (w3m-form-get ,form ,name))
-		   w3m-anchor-sequence ,abs-hseq)))
-	       ((string= type "checkbox")
-		(let ((cvalue (w3m-form-get form name)))
+		   w3m-anchor-sequence ,abs-hseq))))
+	     ((string= type "reset")
+	      (w3m-form-make-button
+	       start end
+	       `(w3m-form-field-id
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 w3m-action (w3m-form-reset ,form)
+		 w3m-anchor-sequence ,abs-hseq)))
+	     ((string= type "textarea")
+	      (if (eq w3m-type 'w3mmee)
 		  (w3m-form-put form name
-				(if checked
-				    (cons value cvalue)
-				  cvalue)))
-		(add-text-properties
-		 start end
-		 `(w3m-form-field-id
-		   ,(format "fid=%d/type=%s/name=%s" fid type name)
-		   face w3m-form-face
-		   w3m-action (w3m-form-input-checkbox ,form ,name ,value)
-		   w3m-submit (w3m-form-submit ,form ,name
-					       (w3m-form-get ,form ,name))
-		   w3m-anchor-sequence ,abs-hseq)))
-	       ((string= type "radio")
-		;; Radio button input, one name has one value
+				(decode-coding-string
+				 (w3m-url-decode-string value)
+				 w3m-output-coding-system))
+		(setq textareas (cons (list textareanumber form name)
+				      textareas)))
+	      (add-text-properties
+	       start end
+	       `(w3m-form-field-id
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 face w3m-form-face
+		 w3m-action (w3m-form-input-textarea ,form ,hseq)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-textarea-rows ,rows
+		 w3m-form-hseq ,hseq
+		 w3m-anchor-sequence ,abs-hseq
+		 w3m-form-name ,name)))
+	     ((string= type "select")
+	      (if (eq w3m-type 'w3mmee)
+		  (w3m-form-put form name
+				(w3m-form-mee-select-value value))
+		(setq selects (cons (list selectnumber form name)
+				    selects)))
+	      (add-text-properties
+	       start end
+	       `(w3m-form-field-id
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 face w3m-form-face
+		 w3m-action (w3m-form-input-select ,form ,name)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-anchor-sequence ,abs-hseq)))
+	     ((string= type "password")
+	      (add-text-properties
+	       start end
+	       `(w3m-form-field-id
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 face w3m-form-face
+		 w3m-action (w3m-form-input-password ,form ,name)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-anchor-sequence ,abs-hseq)))
+	     ((string= type "checkbox")
+	      (let ((cvalue (w3m-form-get form name)))
 		(w3m-form-put form name
-			      (if checked value
-				(w3m-form-get form name)))
-		(add-text-properties
-		 start end
-		 `(w3m-form-field-id
-		   ,(format "fid=%d/type=%s/name=%s" fid type name)
-		   face w3m-form-face
-		   w3m-action (w3m-form-input-radio ,form ,name ,value)
-		   w3m-submit (w3m-form-submit ,form ,name
-					       (w3m-form-get ,form ,name))
-		   w3m-anchor-sequence ,abs-hseq)))
-	       ((string= type "file")
-		(add-text-properties
-		 start end
-		 `(w3m-form-field-id
-		   ,(format "fid=%d/type=%s/name=%s" fid type name)
-		   face w3m-form-face
-		   w3m-action (w3m-form-input-file ,form ,name ,value)
-		   w3m-submit (w3m-form-submit ,form ,name
-					       (w3m-form-get ,form ,name))
-		   w3m-anchor-sequence ,abs-hseq)))
-	       (t
-		(w3m-form-put form
-			      name
-			      (or value (w3m-form-get form name)))
-		(add-text-properties
-		 start end
-		 `(w3m-form-field-id
-		   ,(format "fid=%d/type=%s/name=%s" fid type name)
-		   face w3m-form-face
-		   w3m-action (w3m-form-input ,form ,name ,type
-					      ,width ,maxlength ,value)
-		   w3m-submit (w3m-form-submit ,form ,name
-					       (w3m-form-get ,form ,name))
-		   w3m-anchor-sequence ,abs-hseq))))))))))
+			      (if checked
+				  (cons value cvalue)
+				cvalue)))
+	      (add-text-properties
+	       start end
+	       `(w3m-form-field-id
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 face w3m-form-face
+		 w3m-action (w3m-form-input-checkbox ,form ,name ,value)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-anchor-sequence ,abs-hseq)))
+	     ((string= type "radio")
+	      ;; Radio button input, one name has one value
+	      (w3m-form-put form name
+			    (if checked value
+			      (w3m-form-get form name)))
+	      (add-text-properties
+	       start end
+	       `(w3m-form-field-id
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 face w3m-form-face
+		 w3m-action (w3m-form-input-radio ,form ,name ,value)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-anchor-sequence ,abs-hseq)))
+	     ((string= type "file")
+	      (add-text-properties
+	       start end
+	       `(w3m-form-field-id
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 face w3m-form-face
+		 w3m-action (w3m-form-input-file ,form ,name ,value)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-anchor-sequence ,abs-hseq)))
+	     (t
+	      (w3m-form-put form
+			    name
+			    (or value (w3m-form-get form name)))
+	      (add-text-properties
+	       start end
+	       `(w3m-form-field-id
+		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 face w3m-form-face
+		 w3m-action (w3m-form-input ,form ,name ,type
+					    ,width ,maxlength ,value)
+		 w3m-submit (w3m-form-submit ,form ,name
+					     (w3m-form-get ,form ,name))
+		 w3m-anchor-sequence ,abs-hseq)))))))))
     ;; Process <internal> tag.
     (when (search-forward "<internal>" nil t)
       (setq internal-start (match-beginning 0))
