@@ -4,8 +4,10 @@
 
 	* w3mhack.el (w3mhack-module-list): New function.
 	(w3mhack-examine-modules): Use the above.
-	(w3mhack-compile, w3mhack-generate-load-file): Use
-	`w3mhack-module-list' instead of `w3mhack-examine-modules'.
+	(w3mhack-compile): Use `w3mhack-module-list' instead of
+	`w3mhack-examine-modules'.
+	(w3mhack-generate-load-file): Likewise; Insert ^L to avoid an
+	error of `update-file-autoloads' of old emacsen.
 
 2004-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
