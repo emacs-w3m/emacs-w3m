@@ -1,3 +1,12 @@
+2005-01-26  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Add it.zensen,
+	it.manage, it.seisaku, and it.digicore groups.
+	(shimbun-nikkei-get-headers-it-zensen): New function.
+	(shimbun-nikkei-get-headers-it-manage): New function.
+	(shimbun-nikkei-get-headers-it-seisaku): New function.
+	(shimbun-nikkei-get-headers-it-digicore): New function.
+
 2005-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-rss.el (w3m-rss-parse-date-string): Support the date format
