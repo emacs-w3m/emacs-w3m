@@ -52,14 +52,13 @@
 (defun shimbun-lump-checked (shimbun)
   (shimbun-lump-set-last-check-internal shimbun (current-time)))
 
-(luna-define-generic shimbun-get-group-header-alist (shimbun)
+(luna-define-generic shimbun-get-group-header-alist (shimbun &optional range)
   "Return an alist of group and header list.")
 
-(luna-define-method shimbun-headers ((shimbun shimbun-lump)
-				     &optional range)
+(luna-define-method shimbun-headers ((shimbun shimbun-lump) &optional range)
   (when (shimbun-lump-check-p shimbun)
     (shimbun-lump-set-group-header-alist-internal
-     shimbun (shimbun-get-group-header-alist shimbun))
+     shimbun (shimbun-get-group-header-alist shimbun range))
     (shimbun-lump-checked shimbun))
   (cdr (assoc (shimbun-current-group-internal shimbun)
 	      (shimbun-lump-group-header-alist-internal shimbun))))

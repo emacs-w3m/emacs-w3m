@@ -1,5 +1,17 @@
 2002-03-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-lump.el (shimbun-get-group-header-alist): Add the 2nd
+	optional argument.
+	(shimbun-headers): Call the above function with the 2nd argument.
+
+	* shimbun/sb-wired.el (shimbun-get-group-header-alist): Ignore the
+	2nd optional argument.
+
+	* shimbun/sb-slashdot-jp.el: Inherit sb-lump.el.
+	(shimbun-headers): Abolished.
+	(shimbun-get-group-header-alist): New method.
+	(shimbun-slashdot-jp-make-headers): New function.
+
 	* shimbun/sb-slashdot-jp.el (shimbun-make-contents): Bind
 	`case-fold-search' to t locally.
 	(shimbun-headers): Ditto.

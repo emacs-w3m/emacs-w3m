@@ -28,9 +28,10 @@
 ;;; Code:
 
 (require 'shimbun)
+(require 'sb-lump)
 (eval-when-compile (require 'cl))
 
-(luna-define-class shimbun-slashdot-jp (shimbun) ())
+(luna-define-class shimbun-slashdot-jp (shimbun-lump) ())
 
 (defconst shimbun-slashdot-jp-groups '("story"))
 
@@ -116,8 +117,12 @@
 	  (delete-region (point) (point-max))
 	  (shimbun-slashdot-jp-make-article-after shimbun head))))))
 
-(luna-define-method shimbun-headers ((shimbun shimbun-slashdot-jp)
-				     &optional range)
+(luna-define-method shimbun-get-group-header-alist ((shimbun shimbun-slashdot-jp)
+						    &optional range)
+  (list (cons (car (shimbun-groups-internal shimbun))
+	      (shimbun-slashdot-jp-make-headers shimbun range))))
+
+(defun shimbun-slashdot-jp-make-headers (shimbun range)
   (cond
    ((eq range 'all) (setq range nil))
    ((eq range 'last) (setq range 1)))
