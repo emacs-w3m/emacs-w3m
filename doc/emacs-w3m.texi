@@ -17,7 +17,7 @@
 @ifinfo
 This file documents emacs-w3m, an Emacs interface to w3m.
 
-Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}.
+Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}
 
 This edition is for emacs-w3m version @value{VERSION}.
 
@@ -48,7 +48,7 @@ license to the document, as described in section 6 of the license.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}.
+Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}
 
 This manual corresponds to emacs-w3m version @value{VERSION}.
 
@@ -150,7 +150,7 @@ Hooking into MUAs
 
 * Gnus::                        Reading HTML mails in Gnus
 * Mew::                         Reading HTML mails in Mew
-* SEMI MUAs::                   Reading HTML mails in SEMI MUAs
+* SEMI MUAs::                   Reading HTML mails in @acronym{SEMI} MUAs
 
 Frequently Asked Questions
 
@@ -220,7 +220,7 @@ You can run emacs-w3m in various versions of Emacsen listed below:
 No additional package is required.
 
 @item XEmacs 21.x
-The @sc{apel} package and the @samp{gifsicle} program are required
+The @acronym{APEL} package and the @samp{gifsicle} program are required
 (@pxref{Other Requirements}).  We recommend using the most recent XEmacs
 21.4 since that version of XEmacs seems to be most stable.
 
@@ -230,7 +230,7 @@ bitmap images inline by using the @sc{bitmap-mule} package (@pxref{Other
 Requirements}).
 
 @item Emacs 19.34 (including Mule 2.3)
-The @sc{apel} package, the @samp{new custom} package and the
+The @acronym{APEL} package, the @samp{new custom} package and the
 @file{regexp-opt.el} module are required.  If you are using Mule 2.3
 based on Emacs 19.34, you can see monochrome bitmap images inline by
 using the @sc{bitmap-mule} package (@pxref{Other Requirements}).
@@ -251,28 +251,30 @@ You must install the latest w3m, it is available at:
 
 @node Other Requirements
 @section Things required to run emacs-w3m
-@cindex APEL package
+@cindex @acronym{APEL} package
 @cindex Gifsicle program
 @cindex ImageMagick package
 @cindex BITMAP-MULE package
 @cindex New custom
 @cindex regexp-opt.el
-@cindex FLIM package
+@cindex @acronym{FLIM} package
 
 Depending on the version of Emacs, third party packages may be required.
 This section provides resources to help you find and install them.
 
 @table @samp
 
-@item APEL
+@item @acronym{APEL}
 Indispensable to XEmacs, Emacs 19.34 or Mule 2.3.  You should install
-@sc{apel} before building emacs-w3m.  @sc{apel} is available at:
+@acronym{APEL} before building emacs-w3m.  @acronym{APEL} is available
+at:
 
 @uref{ftp://ftp.m17n.org/pub/mule/apel/apel-10.4.tar.gz}
 
-If you are using XEmacs and already have the @sc{apel} XEmacs package
-installed, we strongly recommend replacing it with @sc{apel} which is
-linked above.  To replace it, use the directives like shown below:
+If you are using XEmacs and already have the @acronym{APEL} XEmacs
+package installed, we strongly recommend replacing it with
+@acronym{APEL} which is linked above.  To replace it, use the directives
+like shown below:
 
 @example
 # rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
@@ -337,9 +339,9 @@ following patch:
 @end example
 
 @item regexp-opt.el
-Indispensable to Emacs 19.34 (including Mule 2.3).  The file
-@file{regexp-opt.el} is included in the @file{attic/} directory of the
-emacs-w3m distribution.  You may simply copy it somewhere (e.g.
+Indispensable to Emacs 19.34 (including Mule 2.3).  The
+@file{regexp-opt.el} file is included in the @file{attic/} directory of
+the emacs-w3m distribution.  You may simply copy it somewhere (e.g.
 @file{site-lisp/} directory) and perform byte-compilation as follows:
 
 @example
@@ -348,19 +350,29 @@ emacs-w3m distribution.  You may simply copy it somewhere (e.g.
 # emacs -batch -q -no-site-file -f batch-byte-compile regexp-opt.el
 @end example
 
-@item FLIM
-The @sc{flim} package is required to use the @samp{shimbun} library.
-The @samp{shimbun} library is a collection of tools for reading a web
-newspaper, you can use it with Gnus, Mew, Nana-gnus, T-gnus, Wanderlust,
-etc. @xref{Shimbun Library}.
+@item @acronym{FLIM}
+The @acronym{FLIM} package is required to use the @samp{shimbun}
+library.  The @samp{shimbun} library is a collection of tools for
+reading a web newspaper, you can use it with Gnus, Mew, Nana-gnus,
+T-gnus, Wanderlust, etc. @xref{Shimbun Library}.
 
-Note that the @sc{flim} package requires the @sc{apel} package even if
-you are using Emacs 20.x or Emacs 21.x.  Therefore, you must install
-both @sc{apel} and @sc{flim} if you would like to use the @samp{shimbun}
-library.  The @sc{flim} package is available at:
+Note that the @acronym{FLIM} package requires the @acronym{APEL} package
+even if you are using Emacs 20.x or Emacs 21.x.  Therefore, you must
+install both @acronym{APEL} and @acronym{FLIM} if you would like to use
+the @samp{shimbun} library.  The @acronym{FLIM} package is available at:
 
 @uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
 
+@item Mule-UCS
+The Mule-UCS Emacs Lisp package makes your Emacs handle the Unicode
+system.  We recommend you install this package so that emacs-w3m can
+display pages written by UTF-8, etc.  It is available at:
+
+@uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
+
+If you are an XEmacs user, the ready-compiled package is here:
+
+@uref{ftp.xemacs.org:/packages/mule-ucs-1.04-pkg.tar.gz}
 @end table
 
 @node Installing Emacs-w3m
@@ -409,10 +421,10 @@ To do that, use the @samp{--with-addpath} option as follows:
 % ./configure --with-addpath=/usr/local/share/emacs/site-lisp/gnus
 @end example
 
-If you've installed @sc{apel}, @sc{flim} or something in non-standard
-directories other than the default @code{load-path}, you must specify
-them using the @samp{--with-addpath} option as follows (you may also
-include the Gnus directory in it separated with @samp{:}):
+If you've installed @acronym{APEL}, @acronym{FLIM} or something in
+non-standard directories other than the default @code{load-path}, you
+must specify them using the @samp{--with-addpath} option as follows (you
+may also include the Gnus directory in it separated with @samp{:}):
 
 @example
 % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
@@ -493,9 +505,10 @@ no @samp{make} command is available, cast the following spell:
 % emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
 @end example
 
-If @sc{apel}, @sc{flim} (or any other library) aren't installed in the
-ordinary places, the installer will leave them out.  In such a case, it
-is necessary to tell those places to the installer as shown below:
+If @acronym{APEL}, @acronym{FLIM} (or any other library) aren't
+installed in the ordinary places, the installer will leave them out.  In
+such a case, it is necessary to tell those places to the installer as
+shown below:
 
 @example
 % emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
@@ -550,7 +563,7 @@ In addition to this, put the following setups if needed:
 @cindex Startup file
 @vindex w3m-init-file
 
-We recommend using the file @file{~/.emacs-w3m} (which is the default
+We recommend using the @file{~/.emacs-w3m} file (which is the default
 value of @code{w3m-init-file}) when you twiddle some variables of
 emacs-w3m.  This file is similar to @file{~/.emacs}, but is read when
 emacs-w3m starts.  However, note that there are commands which shouldn't
@@ -1638,7 +1651,7 @@ something (e.g. @code{euc-japan}) there.
 You can now use this engine to search, using the normal @kbd{S} key in
 emacs-w3m.  If you use this engine often, you can also add it to the
 Quicksearch (see @ref{Quick Searching}) engines and give it a small
-prefix, by adding this to your @file{~/.emacs-w3m} instead:
+prefix, by adding this to your @file{~/.emacs-w3m} file instead:
 
 @lisp
 (eval-after-load "w3m-search"
@@ -1825,14 +1838,10 @@ And with a prefix argument, you get something like this instead:
  |  +-(f)Root
  |-(f)ChangeLog
  |-(f)ChangeLog.1
- |-(f)FAQ
- |-(f)FAQ.ja
  |-(f)Makefile
  |-(f)Makefile.in
  |-(f)README
  |-(f)README.ja
- |-(f)README.namazu.ja
- |-(f)README.shimbun.ja
 @end example
 
 @table @kbd
@@ -1888,8 +1897,9 @@ Please note that some variables from external modules could be undefined
 at the time the @file{~/.emacs-w3m} file is loaded, thus making them
 impossible to modify (of course if you don't care about the default
 value, you can override them completely in your
-@file{~/.emacs-w3m}).  The @code{w3m-search-quick-search-engine-alist}
-variable is a typical example (@pxref{Search Variables}).
+@file{~/.emacs-w3m}) file.  The
+@code{w3m-search-quick-search-engine-alist} variable is a typical
+example (@pxref{Search Variables}).
 
 @table @code
 
@@ -1981,7 +1991,7 @@ message is called an @samp{article} by Gnus users.
 @menu
 * Gnus::                        Reading HTML mails in Gnus
 * Mew::                         Reading HTML mails in Mew
-* SEMI MUAs::                   Reading HTML mails in SEMI MUAs
+* SEMI MUAs::                   Reading HTML mails in @acronym{SEMI} MUAs
 @end menu
 
 @node Gnus
@@ -2123,14 +2133,15 @@ is @code{nil}.
 See also @ref{Mew Shimbun}.
 
 @node SEMI MUAs
-@section Reading HTML mails in SEMI MUAs
+@section Reading HTML mails in @acronym{SEMI} MUAs
 
 You can display HTML mails as human-readable, using emacs-w3m and
-@sc{semi} MUAs, for example, Wanderlust, T-gnus, etc.  Since those MUAs
-depend on @sc{semi} (and also @sc{flim}) for MIME functions, we
-generically call them @sc{semi} MUAs.  Although @sc{semi} uses Emacs/W3
-for rendering HTML mails by default, it can easily be altered to
-emacs-w3m and it will make your cyber life still more comfortable.
+@acronym{SEMI} MUAs, for example, Wanderlust, T-gnus, etc.  Since those
+MUAs depend on @acronym{SEMI} (and also @acronym{FLIM}) for MIME
+functions, we generically call them @acronym{SEMI} MUAs.  Although
+@acronym{SEMI} uses Emacs/W3 for rendering HTML mails by default, it can
+easily be altered to emacs-w3m and it will make your cyber life still
+more comfortable.
 
 You simply need to put the following line in @file{~/.emacs} file:
 
@@ -2140,7 +2151,7 @@ You simply need to put the following line in @file{~/.emacs} file:
 
 The @code{mime-w3m} and @code{mime-w3} modules are functionally alike,
 as you might have guessed (see how the names sound alike?).  The latter
-is included in the @sc{semi} package.
+is included in the @acronym{SEMI} package.
 
 On HTML parts of an article buffer, the @code{w3m-minor-mode} is turned
 on and you can use the same main keys as the keys of emacs-w3m, for
@@ -2168,7 +2179,7 @@ rogue attacks.
 
 @item mime-w3m-setup-hook
 A hook run just after setting up the cooperation of the @code{mime-w3m}
-module and @sc{semi}.  The default value is @code{nil}.
+module and @acronym{SEMI}.  The default value is @code{nil}.
 @end table
 
 See also @ref{Nnshimbun} if you are using T-gnus or Nana-gnus.
@@ -2182,21 +2193,20 @@ See also @ref{Nnshimbun} if you are using T-gnus or Nana-gnus.
 * Shimbun FAQ::                 Questions of Shimbun Library
 @end menu
 
-
 @node General FAQ
 @section General Questions
 
 @itemize @bullet
 @item
-Q. What is emacs-w3m?
+Q. What's emacs-w3m?
 
-It is an interface program for Emacs which controls w3m. For details,
-see the README file.
+It is an interface program for Emacs which controls w3m.  For details,
+see the @file{README} file.
 
 @item
 Q. Which emacs versions are supported?
 
-The following "Emacsen" have been checked for emacs-w3m support.
+The following Emacsen have been checked for the emacs-w3m support:
 
 @itemize @bullet
 @item Mule 2.3 (based on Emacs 19.34)
@@ -2210,201 +2220,209 @@ The following "Emacsen" have been checked for emacs-w3m support.
 @item Meadow
 @end itemize
 
-For Mule 2.3, Emacs 19.34 or XEmacs, it is necessary to use APEL.  For
-more detail, see @ref{Other Requirements}.
+Note that you're required to use @acronym{APEL} if you'd like to run
+emacs-w3m under Mule 2.3, Emacs 19.34 or XEmacs.  For more detail, see
+@ref{Other Requirements}.
 
-emacs-w3m works on Emacs 19.34 or XEmacs without Mule except for several
-commands, such as the command to look weather forecasts in Japan.  They
-strongly depends on Mule feature, so that they must not work on Emacs
-19.34 or XEmacs without Mule.
+Emacs-w3m works on Emacs 19.34 or XEmacs without the Mule feature except
+for several commands, such as the command to look weather forecasts in
+Japan.  They strongly depends on the Mule feature, so that they must not
+work on Emacs 19.34 or XEmacs without Mule.
 
 @item
 Q. Which w3m versions are supported?
 
-The following w3m versions have been checked for emacs-w3m support:
+The following w3m versions have been checked for the emacs-w3m support:
 
 @itemize @bullet
-@item w3m-0.3
+@item w3m-0.3 and later
 @item w3mmee-p23-2
 @end itemize
 
 @item
-Q. I've already installed APEL in XEmacs SUMO package, is it ok?
+Q. I've already installed @acronym{APEL} in the XEmacs SUMO package, is
+it ok?
 
-There are some problems in the XEmacs APEL package; all modules have
-been compiled for XEmacs with Mule, the std11 modules conflicts with the
-FLIM's one, etc.  Even though you can use apel-1.23-pkg.tar.gz or later
-for both XEmacs with Mule and non-Mule XEmacs if you don't use FLIM for
-the shimbun features, we recommend you replace it or newly install the
-original APEL package.  See above where to get it from.
+There are some problems in the XEmacs @acronym{APEL} package (all
+modules have been compiled for XEmacs with Mule); for instance, the
+@samp{std11} modules conflict with the @acronym{FLIM}'s one, etc.  Even
+though you can use @file{apel-1.23-pkg.tar.gz} or later for both XEmacs
+with Mule and non-Mule XEmacs if you don't use @acronym{FLIM} for the
+@samp{shimbun} features, we recommend you replace it or newly install
+the original @acronym{APEL} package.  See @ref{Other Requirements} where
+to get it from.
 @end itemize
-
 
 @node Trouble FAQ
 @section Troubleshooting
 
 @itemize @bullet
 @item
-Q. Why can't I enter a password on pages which require authentication?
 
-Check if the optional variable @code{w3m-async-exec} is set to a value
-other than @code{nil}.
-
-@item
-Q. Why can't I enter a password for a proxy server which requires
+Q. Why can't I enter a password on pages which require the
 authentication?
 
-Check if the option variable @code{w3m-async-exec} is set to a value
-other than @code{nil}.
+Make sure the @code{w3m-async-exec} variable is set to a value other
+than @code{nil}.
 
 @item
-Q. Why doesn't it traverse links?
+Q. Why can't I enter a password for a proxy server which requires the
+authentication?
 
-The development version of emacs-w3m requires a w3m that understands the
-argument @samp{-header}.  Check the version of your using w3m.
+Make sure the @code{w3m-async-exec} variable is set to a value other
+than @code{nil}.
+
+@item
+Q. Why can't I follow links?
+
+Emacs-w3m requires a version of w3m which recognizes the @samp{-header}
+option.  Check what version of w3m you use.
 
 @item
 Q. Why do garbage characters appear?
 
-It could be caused by the following:
+It could be caused by the following reasons:
 
 @enumerate
 @item
 Bad HTML file
 
-If in the middle of a HTML file, a <meta> tag is used with a character
-code which differs from the actual character code used in the HTML, then
-the HTML file will not be rendered correctly.  Using the command
-@kbd{w3m-redisplay-with-charset}, set the correct display code and force
-the redisplay of the page.
+If the character set specified by the @samp{<meta>} tag differs from
+the actual contents in an HTML file, it will not be displayed correctly.
+Use the command @kbd{M-x w3m-redisplay-with-charset} or @kbd{C c} to set
+the correct character set and to force redisplay of the page.
 
 @item
-Limitation of character code.
+Limitation of the character sets
 
-Pages with character codes other than ISO-2022-JP(jis), EUC-JP,
-SHIFT_JIS, may or may not display correctly.  This maybe alleviated by
-using one of the following methods.
+A page written by a character set other than ISO-2022-JP(jis), EUC-JP,
+or SHIFT_JIS may not be displayed correctly.  Try one of the following
+ways:
 
 @enumerate a
 @item
-If you install Mule-UCS, any characters defined in Unicode will show up
-correctly.  After installation, confirm that the value of the option
-variable @code{w3m-use-mule-ucs} is a value other than @code{nil}.
-Also, for EUC-JISX0213, ISO-2022-JP-3, or other similar character sets,
-it may be necessary to install @file{jisx0213.el}, available in the same
-package.
+Any characters defined in Unicode will be displayed correctly if you
+install the Mule-UCS package (@pxref{Other Requirements}).  You need to
+make sure that the value of the @code{w3m-use-mule-ucs} variable is set
+to a value other than @code{nil} after installing the Mule-UCS package.
+In addition, if you want to make Emacs (and also emacs-w3m) handle the
+character sets EUC-JISX0213 and ISO-2022-JP-3, you have to install the
+@samp{jisx0213} module which is contained in the Mule-UCS package
+(though it doesn't work under XEmacs unfortunately).
 
 @item
-Install either w3mmee or w3m-m17n, and set the option variable
-@code{w3m-command} to the appropriate value.  If this is set, emacs-w3m
-will use the programs' multilanguage features.
+Install w3mmee or w3m-m17n, and set the @code{w3m-command} variable to
+the appropriate value.  And emacs-w3m will use the multi-lingual
+features provided by one of those programs.
 @end enumerate
 
 @item
-Emacsen incompatibility.
+Emacsen incompatibility
 
-Regarding XEmacs 21.1, pages with SHIFT_JIS may not be displaied
-correctly.
+Under XEmacs 21.1, pages written by the SHIFT_JIS character set may not
+be displaied correctly.  There is also a problem in XEmacs 21.2 prior to
+the beta 36 version.  You should upgrade your XEmacs if you use such
+one.
 
-Regarding XEmacs 21.2, there is a problem with previous versions
-up to beta36.  If you use those versions, it is recommended that
-you upgrade.
+You should notice that XEmacs versions 21.1 and 21.2 have already been
+retired officially.
 @end enumerate
 
 @item
-Q. Why does graphics not show up?
+Q. Why images can't be shown?
 
-It could be caused by the following:
+It could be caused by the following reasons:
 
-Depending on the version of libungif in Emacs 21, GIF graphics may or
-may not render correctly.  If you are using libungif-4.1.0b1 or earlier,
-it is recommend you upgrade that library.
+There is a bug in the earlier versions of the @samp{libungif} library.
+You have to install @samp{libungif-4.1.0b1} and later.
 
-For XEmacs, install the @samp{gifsicle} program.  Within
-emacs-w3m-supported XEmacs 21.x, there is a bug which can be countered
-by using this program (@pxref{Other Requirements}).
+You must install the @samp{gifsicle} program if you want to run
+emacs-w3m under XEmacs.  @xref{Other Requirements}.
 
-If you use versions prior to w3m-0.2.1, graphics are not rendered
-correctly.  If you use those versions, it is recommended that you
-upgrade.
+Emacs-w3m doesn't support the old versions of w3m.  Check what version
+of w3m you use.
 
 @item
-Q. Why does browsing pages required cookie not work?
+Q. Why can't I browse pages which require cookies?
 
-(This is still experimental functionality.)
+(This is still an experimental functionality.)
 
-Check if the option variable @code{w3m-use-cookies} is set to a value
-other than @code{nil}.
-
-@item
-Q. Why does inputting into a form not work?
-
-(This is still experimental functionality.)
-
-Check if the option variable @code{w3m-use-form} is set to a value other
+Make sure the @code{w3m-use-cookies} variable is set to a value other
 than @code{nil}.
 
 @item
-Q. Why does sending form information not work?
+Q. Why can't I fill in the form?
 
-(This is still experimental functionality.)
+(This is still an experimental functionality.)
 
-Check if the option variable @code{w3m-use-form} is set to a value other
-than @code{nil}.
-
-If you use this functionality, you will need to use a w3m that
-understands the @samp{-post} option.  Check the version of your using
-w3m.
+Make sure the @code{w3m-use-form} variable is set to a value other than
+@code{nil}.
 
 @item
-Q. Why do frames not render?
+Q. Why can't I submit a form?
+
+(This is still an experimental functionality.)
+
+Make sure the @code{w3m-use-form} variable is set to a value other than
+@code{nil}.  You also need to use a version of w3m which recognizes the
+@samp{-post} option in order to use this function.  Ckeck what version
+of w3m you use.
+
+@item
+Q. Why are frames not rendered?
 
 Use w3mmee.
 
 @item
-Q. Why does `favicon' not show up at tab bar with Emacs21?
+Q. Why is a favicon image not displayed in the Emacs 21 tab bar?
 
-Install @samp{convert} included the ImageMagick.  It is available from
-@uref{http://www.imagemagick.org/}.
+Install the @samp{convert} program which is included in ImageMagick.
+It is available from: @uref{http://www.imagemagick.org/}
 
 @item
-Q. Why do lock Emacs21 when show up `favicon' , or it's very annoying
-that my computer accesses the disk drive violently and says "process
-`convert' exited abnormally with code `10'" in the end.
+Q. Why does Emacs 21 get locked when a favicon image is going to be
+displayed?
+@item
+Q. It is very annoying that my computer accesses the disk drive
+violently and says @samp{process convert exited abnormally with code 10}
+in the end.
 
-Do you use the old ImageMagick? Please use the newest it, version 5.4.0
-or later.
+Don't you use the old version of ImageMagick?  As far as we know, it
+will occur when the @samp{convert} program bundled with the ImageMagick
+5.2.1 is used.  It has been confirmed that the @samp{convert} program
+bundled with the ImageMagick 5.4.0-5 and later works fine.
 
 If you don't want to use ImageMagick, or if you couldn't use the most
 recent version of ImageMagick, add the following line in your
-@file{~/.emacs-w3m}:
+@file{~/.emacs-w3m} file:
 
-@example
+@lisp
 (setq w3m-use-favicon nil)
-@end example
+@end lisp
 @end itemize
-
 
 @node Shimbun FAQ
 @section Questions of Shimbun Library
 
 @itemize @bullet
 @item
-Q. Why are contents under shimbun/ not installed?
+Q. Why are the @samp{shimbun} modules not installed?
 
-If FLIM is not installed, the contents under @file{shimbun/} are not
-installed.
+Note that the @samp{shimbun} modules (files under the @file{shimbun/}
+directory) won't be installed if the @acronym{FLIM} package has not been
+installed in your system.
 
-The configure script determines automatically if FLIM is installed or
-not.  If FLIM is installed in a non-standard directory, the
-determination fails.  In this case, use the @samp{--with-addpath}
-configure option to explicitly set the FLIM installed directory path.
+The @samp{configure} script determines automatically whether the
+@acronym{FLIM} package is installed or not.  If the @acronym{FLIM}
+package is installed in a non-standard directory, the determination
+fails.  In this case, you can use the @samp{--with-addpath} configure
+option to explicitly set the directory name where the @acronym{FLIM}
+package has been installed.  Here's an example:
 
 @example
 % ./configure --with-addpath=$HOME/share/emacs/site-lisp/flim
 @end example
 @end itemize
-
 
 @node Known Problems
 @chapter You can surely solve it
@@ -2432,10 +2450,11 @@ supports Asahi Shimbun, Yomiuri On-line, Emacs Devel, XEmacs Beta,
 mailing lists for Gnus, Mew, Wanderlust, etc., the Japanese Prime
 Minister Koizumi's mail magazine, Slashdot Japan, and a lot of others.
 
-Note that you need to have installed the @sc{flim} package (and Gnus if
-you'd like to use @samp{nnshimbun}) before building and installing
-emacs-w3m.  The @sc{flim} package requires the @sc{apel} package.  You
-might also want to see @xref{Other Requirements}.
+Note that you need to have installed the @acronym{FLIM} package (and
+Gnus if you'd like to use @samp{nnshimbun}) before building and
+installing emacs-w3m.  The @acronym{FLIM} package requires the
+@acronym{APEL} package.  You might also want to see @xref{Other
+Requirements}.
 
 @menu
 * Shimbun Sites::               Sites supported by Shimbun
@@ -2512,9 +2531,9 @@ gnus-group-make-shimbun-group}.
 @samp{Nnshimbun} simply fetches HTML contents from the web server and
 displays them as an article, but it will never save articles in the
 local file system, except if you use persistent articles
-(@pxref{(gnus)Persistent Articles}).  @samp{Nnshimbun} uses @sc{nov}
-files for each @samp{nnshimbun} group, and its back end is almost the
-same as @samp{nnml}.
+(@pxref{(gnus)Persistent Articles}).  @samp{Nnshimbun} uses
+@acronym{NOV} files for each @samp{nnshimbun} group, and its back end is
+almost the same as @samp{nnml}.
 
 The following @samp{nnshimbun} variables can be customized:
 
@@ -2536,7 +2555,7 @@ prefetched articles.
 
 @item nnshimbun-directory
 @vindex nnshimbun-directory
-Directory where @samp{nnshimbun} saves @sc{nov} files.  The default
+Directory where @samp{nnshimbun} saves @acronym{NOV} files.  The default
 value is @samp{~/News/shimbun/}.
 @end table
 
@@ -2656,23 +2675,24 @@ period with the @code{expiry-wait} group parameter in every
 @samp{nnshimbun} group which you want to expire automatically.  See
 @ref{(gnus)Expiring Mail} for more information.  In the group to which
 the @code{expiry-wait} group parameter is not specified, a default
-expiry period will be applied.}. Keep in mind that when an article is
+expiry period will be applied.}.  Keep in mind that when an article is
 expired, it is not deleted from the remote server, it's still available
-there.  What is deleted is the line in your own @sc{nov} file for
-@samp{nnshimbun}@footnote{The @sc{nov} file for @samp{nnshimbun} is
+there.  What is deleted is the line in your own @acronym{NOV} file for
+@samp{nnshimbun}@footnote{The @acronym{NOV} file for @samp{nnshimbun} is
 named something like ``~/News/shimbun/asahi/national/.overview''.}
 corresponding to the article to be expired.  Then the article won't
 appear in the Summary buffer, forever and ever.
 
-If you don't expire articles in @samp{nnshimbun} groups, the @sc{nov}
-files will continue to grow fat indefinitely and you may see very old
-articles in the Summary buffer as if they were existing (in fact, they
-might have expired three years ago on the remote server!).  Even if you
-try to read such an article, nothing will appear in the article buffer.
-On the other hand, most mailing list servers generally offer all the
-past articles.  You may not feel like expiring articles in such groups
-in order to look back with nostalgia to the good old days and to be able
-to read, eyes filled with tears, articles which you thought long gone.
+If you don't expire articles in @samp{nnshimbun} groups, the
+@acronym{NOV} files will continue to grow fat indefinitely and you may
+see very old articles in the Summary buffer as if they were existing (in
+fact, they might have expired three years ago on the remote server!).
+Even if you try to read such an article, nothing will appear in the
+article buffer.  On the other hand, most mailing list servers generally
+offer all the past articles.  You may not feel like expiring articles in
+such groups in order to look back with nostalgia to the good old days
+and to be able to read, eyes filled with tears, articles which you
+thought long gone.
 
 You can mark @samp{nnshimbun} articles as expirable and specify the
 expiry period in each @samp{nnshimbun} group as well as the other mail
@@ -2773,8 +2793,8 @@ it might prove useful for a general cleaning at the end of a year.
 
 Mew Shimbun is an Emacs Lisp program meant to be used with
 @samp{shimbun} and Mew (version 2.1 and later).  The @file{mew-shimbun}
-module will be installed together with emacs-w3m if Mew, @sc{apel}, and
-@sc{flim} are also installed.
+module will be installed together with emacs-w3m if Mew, @acronym{APEL},
+and @acronym{FLIM} are also installed.
 
 We recommend you also see @ref{Mew}.
 
