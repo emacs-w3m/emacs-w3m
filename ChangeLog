@@ -1,6 +1,6 @@
 2001-11-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m.el (emacs-w3m-version): Relase 1.2.
+	* w3m.el (emacs-w3m-version): Release 1.2.
 	(top): Protect against the error occurs when `w3m-ucs.el' isn't
 	found.
 
