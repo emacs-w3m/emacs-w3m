@@ -3,7 +3,7 @@
 	* w3m.el (w3m-fontify): Call `w3m-replace-symbol' before
 	`w3m-fontify-anchors' in order not to lose text properties.
 
-2004-05-27  Andreas Seltenreich  <seltenreich@gmx.de>
+2004-06-14  Andreas Seltenreich  <seltenreich@gmx.de>
 
 	* shimbun/sb-welt-de.el: New file.
 
