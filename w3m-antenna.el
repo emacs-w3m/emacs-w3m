@@ -59,14 +59,14 @@
 		   (const :tag "Normal" nil)
 		   (const :tag "HNS" hns)))))
 
-(defcustom w3m-antenna-html-skelton
+(defcustom w3m-antenna-html-skeleton
   (eval-when-compile
     (concat "<!doctype html public \"-//W3C//DTD HTML 3.2//EN\">\n"
 	    "<html>\n<head>\n<title>Antenna</title>\n</head>\n<body>\n"
 	    "<h1>Antenna</h1>\n<h2>Updated</h2>\n<ul>\n%C</ul>\n"
 	    "<h2>Visited</h2>\n<ul>\n%U</ul>\n"
 	    "</body>\n</html>\n"))
-  "HTML skelton of antenna."
+  "HTML skeleton of antenna."
   :group 'w3m-antenna
   :type 'string)
 
@@ -109,7 +109,7 @@
 
 (defvar w3m-antenna-alist nil
   "A list of site information.  nil means that antenna database is not
-initialized.  Each site information is a list whose elements are:
+initialised.  Each site information is a list whose elements are:
  0. URL.
  1. Title.
  2. Class (Normal or HNS).
@@ -192,7 +192,7 @@ initialized.  Each site information is a list whose elements are:
 		(string< (nth 1 a) (nth 1 b)))))
 
 (defun w3m-antenna-make-contents (changed-sites unchanged-sites)
-  (insert w3m-antenna-html-skelton)
+  (insert w3m-antenna-html-skeleton)
   (goto-char (point-min))
   (while (re-search-forward "%\\(.\\)" nil t)
     (let ((c (char-after (match-beginning 1))))
