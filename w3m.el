@@ -7137,8 +7137,10 @@ It currently works only with Emacs 22 and newer."
 	      (when (and (> excess 0)
 			 (> tlen 3))
 		(setq w3m-modeline-title-string
-		      (concat (truncate-string-to-width
-			       w3m-current-title (max (- tlen excess) 2))
+		      (concat (w3m-replace-in-string
+			       (truncate-string-to-width
+				w3m-current-title (max (- tlen excess 3) 2))
+			       "[\t ]+\\'" "")
 			      "...")))
 	      w3m-modeline-title-string)
 	  (run-at-time 0.5 nil
