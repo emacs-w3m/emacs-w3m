@@ -1,3 +1,9 @@
+2001-10-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-w3m-auto-insert-image): Change from 'defcustom'
+	to 'defconst' and default value to 'nil'.
+	(mew-w3m-view-inline-image): New function.
+
 2001-10-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-input-url): Accept the 3rd optional argument.

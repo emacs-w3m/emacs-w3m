@@ -46,6 +46,13 @@
 ;;
 ;; (setq mew-use-w3m-minor-mode t)
 ;; (add-hook 'mew-message-hook 'mew-w3m-minor-mode-setter)
+;;
+;; If you use mew-1.95b118 or later on which Emacs-21 or XEmacs,
+;; can display the images in the Text/Html message.
+;; To activate this feaeture, add following in your ~/.mew file
+;; and press "T".
+;;
+;; (define-key mew-summary-mode-map "T" 'mew-w3m-view-inline-image)
 
 ;;; Usage:
 
@@ -59,8 +66,6 @@
 ;; NOTE: This feature is not complete. You may confuse.
 ;;
 ;;
-;; If use mew-1.95b118 or later on which Emacs-21 or XEmacs,
-;; can display the images in the Multipart/Related message.
 
 ;;; Code:
 
@@ -80,15 +85,11 @@ and its keymap in message buffer."
   :group 'mew-w3m
   :type 'boolean)
 
-(defcustom mew-w3m-auto-insert-image t
-  "*If t, an image inserts automatic in Multipart/Related message.
-This variable effected only XEmacs or Emacs 21."
-  :group 'mew-w3m
-  :type 'boolean)
 
 ;; these are defined here.
 ;; It's not reasonable to merge into w3m.el, I think
 (defvar mew-w3m-minor-mode nil)
+(defconst mew-w3m-auto-insert-image nil)
 
 (make-variable-buffer-local 'mew-w3m-minor-mode)
 (add-to-list 'minor-mode-alist '(mew-w3m-minor-mode " w3m"))
@@ -98,6 +99,12 @@ This variable effected only XEmacs or Emacs 21."
   "Check message buffer and activate mew-w3m-minor-mode."
   (setq mew-w3m-minor-mode (and (get-text-property (point-min) 'w3m)
 				mew-use-w3m-minor-mode)))
+
+(defun mew-w3m-view-inline-image ()
+  "View the image of Text/Html part."
+  (interactive)
+  (let ((mew-w3m-auto-insert-image t))
+    (mew-summary-display 'force)))
 
 ;; processing Text/Html contents with w3m.
 (defun mew-mime-text/html-w3m (&rest args)
