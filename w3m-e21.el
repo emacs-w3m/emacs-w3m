@@ -58,6 +58,7 @@
   (defvar w3m-history)
   (defvar w3m-history-flat)
   (defvar w3m-form-use-fancy-faces)
+  (defvar w3m-async-exec)
   (autoload 'w3m-expand-url "w3m")
   (autoload 'w3m-retrieve "w3m")
   (autoload 'w3m-image-type "w3m")
@@ -101,15 +102,75 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 circumstances."
   (and w3m-display-inline-images (display-images-p)))
 
-(defun w3m-resize-image (data width height)
-  "Resize image DATA to the size of WIDTH and HEIGHT."
-  (w3m-imagick-convert-data data
-			    nil nil
-			    "-geometry"
-			    (concat (number-to-string width)
-				    "x"
-				    (number-to-string height)
-				    "!")))
+;;; Asynchronous image conversion.
+(defun w3m-resize-image (handler data width height)
+  (w3m-process-do
+      (result (w3m-imagick-start-convert-data
+	       handler
+	       data nil nil "-geometry"
+	       (concat (number-to-string width)
+		       "x"
+		       (number-to-string height)
+		       "!")))
+    result))
+
+(defun w3m-imagick-start-convert-data (handler
+				       data from-type to-type &rest args)
+  (w3m-process-do-with-temp-buffer
+      (success (progn
+		 (set-buffer-multibyte nil)
+		 (insert data)
+		 (apply 'w3m-imagick-start-convert-buffer
+			handler from-type to-type args)))
+    (if success (string-as-unibyte (buffer-string)))))
+
+(defun w3m-imagick-start-convert-buffer (handler from-type to-type &rest args)
+  (lexical-let ((in-file (make-temp-name
+			  (expand-file-name "w3mel" w3m-profile-directory)))
+		(out-file (make-temp-name
+			   (expand-file-name "w3mel" w3m-profile-directory)))
+		(out-buffer (current-buffer)))
+    (setq w3m-current-url "non-existent")
+    (let ((file-coding-system 'binary)
+	  (coding-system-for-write 'binary)
+	  (buffer-file-coding-system 'binary)
+	  jka-compr-compression-info-list
+	  jam-zcat-filename-list
+	  format-alist)
+      (write-region (point-min) (point-max) in-file nil 'nomsg))
+    (w3m-process-do
+	(success (progn
+		   (apply
+		    'w3m-imagick-start handler
+		    (append args
+			    (list 
+			     (concat
+			      (if from-type
+				  (concat from-type ":"))
+			      in-file)
+			     (concat
+			      (if to-type
+				  (concat to-type ":"))
+			      out-file))))))
+      (with-current-buffer out-buffer
+	(erase-buffer)
+	(ignore-errors
+	  (insert-file-contents-literally out-file)))
+      (when (file-exists-p in-file)
+	(delete-file in-file))
+      (when (file-exists-p out-file)
+	(delete-file out-file))
+      success)))
+
+(defun w3m-imagick-start (handler &rest arguments)
+  "Run ImageMagick's convert as an asynchronous process."
+  (let ((w3m-command w3m-imagick-convert-program))
+    (if w3m-async-exec
+	(w3m-process-do
+	    (exit-status (w3m-process-push handler arguments))
+	  (w3m-process-start-after exit-status))
+      (w3m-process-start-after
+       (apply 'call-process w3m-command nil t nil arguments)))))
 
 (defun w3m-create-image (url &optional no-cache referer size handler)
   "Retrieve data from URL and create an image object.
@@ -120,33 +181,44 @@ and its cdr element is used as height."
   (if (not handler)
       (w3m-process-with-wait-handler
 	(w3m-create-image url no-cache referer size handler))
-    (lexical-let ((size size)
-		  (url url))
+    (lexical-let ((set-size size)
+		  (url url)
+		  image size)
       (w3m-process-do-with-temp-buffer
-	  (type (w3m-retrieve url 'raw no-cache nil referer handler))
+	  (type (progn
+		  (set-buffer-multibyte nil)
+		  (w3m-retrieve url 'raw no-cache nil referer handler)))
 	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-	  (cons (create-image (buffer-string) type t :ascent 'center)
-		size))))))
+	  (setq image (create-image (buffer-string) type t :ascent 'center))
+	  (if (and w3m-resize-images set-size)
+	      (progn
+		(set-buffer-multibyte t)
+		(setq size (image-size image 'pixels))
+		(if (and (null (car set-size)) (cdr set-size))
+		    (setcar set-size
+			    (/ (* (car size) (cdr set-size)) (cdr size))))
+		(if (and (null (cdr set-size)) (car set-size))
+		    (setcdr set-size
+			    (/ (* (cdr size) (car set-size)) (car size))))
+		(if (or (not (eq (car size)
+				 (car set-size)))  ; width is different
+			(not (eq (cdr size)
+				 (cdr set-size)))) ; height is different
+		    (lexical-let ((image image))
+		      (w3m-process-do
+			  (resized (w3m-resize-image
+				    handler
+				    (plist-get (cdr image) :data)
+				    (car set-size)(cdr set-size)))
+			(if resized (plist-put (cdr image) :data resized))
+			image))
+		  image))
+	    image))))))
 
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
-  (let ((face (get-text-property beg 'face))
-	(image (car image))
-	(set-size (cdr image))
-	size)
-    (when (and w3m-resize-images set-size)
-      (setq size (image-size image 'pixels))
-      (if (and (null (car set-size)) (cdr set-size))
-	  (setcar set-size (/ (* (car size) (cdr set-size)) (cdr size))))
-      (if (and (null (cdr set-size)) (car set-size))
-	  (setcdr set-size (/ (* (cdr size) (car set-size)) (car size))))
-      (if (or (not (eq (car size) (car set-size)))  ; width is different
-	      (not (eq (cdr size) (cdr set-size)))) ; height is different
-	  (plist-put (cdr image)
-		     :data
-		     (w3m-resize-image (plist-get (cdr image) :data)
-				       (car set-size)(cdr set-size)))))
+  (let ((face (get-text-property beg 'face)))
     (add-text-properties beg end (list 'display image
 				       'intangible image
 				       'invisible nil))

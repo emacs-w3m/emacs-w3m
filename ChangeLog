@@ -1,3 +1,12 @@
+2002-04-03  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-e21.el (w3m-resize-image): Asynchronous implementation.
+	(w3m-imagick-start-convert-data): New function.
+	(w3m-imagick-start-convert-buffer): Ditto.
+	(w3m-imagick-start): Ditto.
+	(w3m-create-image): Rewrite to resize images asynchronously.
+	(w3m-insert-image): Don't resize.
+
 2002-04-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-check-link-tags): Relax the pattern to detect
