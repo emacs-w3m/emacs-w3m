@@ -3926,11 +3926,11 @@ before the @code{(require 'mew-shimbun)} line.}
          ("security-memo.memo" . 2))
         ("slashdot-jp"
          ("slashdot-jp.story" . last))
-        ;; You can read several groups in one folder (@samp{+shimbun/comp})
+        ;; You can read several groups in one folder (@samp{+shimbun/emacs})
         ;; as follows even if each group comes from a different server.
-        ("comp"
-         ("cnet.comp" . last)
-         ("zdnet.comp" . last))
+        ("emacs"
+         ("airw.wl" . last)
+         ("namazu.emacs-w3m" . last))
         ;; Fetching diaries into @samp{+shimbun/hns/arisawa} and
         ;; @samp{+shimbun/hns/miyoshi} respectively.
         ("hns/arisawa"
@@ -4041,7 +4041,7 @@ variable beforehand.  For example:
       '(("yomiuri" . 7)
         ("asahi" . 1)
         ("slashdot-jp" . 7)
-        ("comp" . 7)))
+        ("emacs" . 7)))
 @end lisp
 
 If you set this variable as shown above, you can specify the expiry
@@ -4197,12 +4197,14 @@ bbc.news
 These are news sites that are supported by @samp{shimbun} library.
 
 @table @asis
-@item @uref{http://cnet.sphere.ne.jp/, Japan CNET}
-cnet.comp
+@item @uref{http://news.com.com/, CNET}
+cnet.news cnet.enterprise.software cnet.enterprise.hardware
+cnet.security cnet.networking cnet.personal.technology cnet.newsmakers
+cnet.perspectives
 
-@item @uref{http://cnet.sphere.ne.jp/, Japan CNET based on RSS}
-cnet-rss.news cnet-rss.blog.umeda cnet-rss.blog.lessig
-cnet-rss.blog.mori cnet-rss.blog.kenn
+@item @uref{http://japan.cnet.com/, CNET Japan}
+cnet-jp.news cnet-jp.blog.umeda cnet-jp.blog.lessig cnet-jp.blog.mori
+cnet-jp.blog.kenn
 
 @item @uref{http://www.watch.impress.co.jp/, Impress}
 impress.internet impress.pc impress.akiba impress.game impress.av
@@ -4539,14 +4541,20 @@ These are misc sites supported by @samp{shimbun} library.  WEB BBS and
 serial publications are included.
 
 @table @asis
-@item @uref{http://www61.tcup.com/6116/yutopia.html, Yutopia BBS}
-tcup.yutopia
+@item @uref{http://www.tcup.com/, Tea Cup Bulletin Boards}
+These three boards are supported by the default version of
+@samp{sb-tcup}.
 
-@item @uref{http://www66.tcup.com/6629/yutopia.html, Meadow BBS}
-tcup.meadow
+@table @asis
+@item tcup.yutopia
+@uref{http://www61.tcup.com/6116/yutopia.html, Yutopia BBS}
 
-@item @uref{http://www67.tcup.com/6718/yutopia.html, SKK BBS}
-tcup.skk
+@item tcup.meadow
+@uref{http://www66.tcup.com/6629/yutopia.html, Meadow BBS}
+
+@item tcup.skk
+@uref{http://www67.tcup.com/6718/yutopia.html, SKK BBS}
+@end table
 
 Add appropriate configurations to the variable
 @code{shimbun-tcup-group-alist}, you can browse other bulletin board

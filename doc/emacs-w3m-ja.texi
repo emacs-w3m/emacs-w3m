@@ -4012,10 +4012,10 @@ Mew Shimbun $B$O(B @samp{shimbun} $B$H(B Mew (version 2.1 $B0J9_(B) $B$H$
         ("slashdot-jp"
          ("slashdot-jp.story" . last))
         ;; $B$3$N$h$&$K!"0[$J$k(B server $B$N(B group $B$b0l$D$N(B folder
-        ;; (@samp{+shimbun/comp}) $B$GFI$`$3$H$,$G$-$^$9!#(B
-        ("comp"
-         ("cnet.comp" . last)
-         ("zdnet.comp" . last))
+        ;; (@samp{+shimbun/emacs}) $B$GFI$`$3$H$,$G$-$^$9!#(B
+        ("emacs"
+         ("airs.wl" . last)
+         ("namazu.emacs-w3m" . last))
         ;; @samp{+shimbun/hns/arisawa}, @samp{+shimbun/hns/miyoshi} $B$K$=$l$>$l$N(B
         ;; $BF|5-$r<hF@$7$^$9!#(B
         ("hns/arisawa"
@@ -4118,7 +4118,7 @@ Mew $B$N=*N;;~$d(B folder $B$N(B kill $B;~(B (@kbd{C-c C-q} $B$r;H$C$?$H
       '(("yomiuri" . 7)
         ("asahi" . 1)
         ("slashdot-jp" . 7)
-        ("comp" . 7)))
+        ("emacs" . 7)))
 @end lisp
 
 $B>e5-$N$h$&$K@_Dj$7$F$*$/$H!"(B@samp{+shimbun/yomiuri} $B$O(B 7$BF|!"(B
@@ -4270,12 +4270,14 @@ bbc.news
 @samp{Shimbun} $B%i%$%V%i%j$,BP1~$7$F$$$k%K%e!<%9%5%$%H$G$9!#(B
 
 @table @asis
-@item @uref{http://cnet.sphere.ne.jp/, Japan CNET}
-cnet.comp
+@item @uref{http://news.com.com/, CNET}
+cnet.news cnet.enterprise.software cnet.enterprise.hardware
+cnet.security cnet.networking cnet.personal.technology cnet.newsmakers
+cnet.perspectives
 
-@item @uref{http://cnet.sphere.ne.jp/, RSS$BHG(B Japan CNET}
-cnet-rss.news cnet-rss.blog.umeda cnet-rss.blog.lessig
-cnet-rss.blog.mori cnet-rss.blog.kenn
+@item @uref{http://japan.cnet.com/, CNET Japan}
+cnet-jp.news cnet-jp.blog.umeda cnet-jp.blog.lessig cnet-jp.blog.mori
+cnet-jp.blog.kenn
 
 @item @uref{http://www.watch.impress.co.jp/, $B%$%s%W%l%9(B}
 impress.internet impress.pc impress.akiba impress.game impress.av
@@ -4614,19 +4616,24 @@ f1express.info
 $B:\5-;v$r<gBN$H$9$k$h$&$J%5%$%H$,4^$^$l$F$$$^$9!#(B
 
 @table @asis
-@item @uref{http://www61.tcup.com/6116/yutopia.html, $B$f$&&S&O&P&I&A7G<(HD(B}
-tcup.yutopia
+@item @uref{http://www.tcup.com/, Tea Cup $B7G<(HD(B}
+$B=i4|@_Dj$N>uBV$G!"0J2<$N(B3$B$D$N7G<(HD$,1\Mw$G$-$^$9!#(B
 
-@item @uref{http://www66.tcup.com/6629/yutopia.html, Meadow $B7G<(HD(B}
-tcup.meadow
+@table @asis
+@item tcup.meadow
+@uref{http://www66.tcup.com/6629/yutopia.html, Meadow $B7G<(HD(B}
 
-@item @uref{http://www67.tcup.com/6718/yutopia.html, SKK $B7G<(HD(B}
-tcup.skk
+@item tcup.skk
+@uref{http://www67.tcup.com/6718/yutopia.html, SKK $B7G<(HD(B}
+
+@item tcup.yutopia
+@uref{http://www61.tcup.com/6116/yutopia.html, $B$f$&&S&O&P&I&A7G<(HD(B}
+@end table
 
 $BJQ?t(B @code{shimbun-tcup-group-alist} $B$KE,@Z$J@_Dj$r2C$($k$H!"(B
 @uref{http://www.tcup.com/} $B>e$G1?1D$5$l$F$$$kB>$N7G<(HD$b1\Mw$G$-$^$9!#(B
 
-@item @uref{http://www.vinelinux.org, VineLinux Errata}
+@item @uref{http://www.vinelinux.org/, VineLinux Errata}
 vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
 vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
