@@ -243,14 +243,16 @@ AC_DEFUN(AC_CHECK_ELISP,
   if test x"$retval" != x; then
     AC_MSG_RESULT(${retval})
   else
-    AC_MSG_ERROR($1 is missing)
+    AC_MSG_ERROR($1.el is missing)
   fi])
 
 AC_DEFUN(AC_CHECK_XML,
- [RSS=yes
+ [RSS=no
   AC_ARG_WITH(xml,
-   [  --with-xml              compile shimbun modules using xml.el [default: yes]],
-   [if test "x${withval}" = xno; then
+   [  --with-xml              compile shimbun modules using xml.el [default: no]],
+   [if test "x${withval}" = xyes; then
+      RSS=yes
+    else
       RSS=no
     fi]
    [])
