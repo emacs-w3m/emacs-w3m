@@ -1946,31 +1946,21 @@ with ^ as `cat -v' does."
 	  (write-region (point-min) (point-max) file nil 'nomsg)
 	  (when mode (set-file-modes file mode)))))))
 
-(eval-when-compile
-  (defmacro w3m-arrived-add-1 (ident title modified-time arrived-time
-				     content-charset content-type)
-    (` (progn
-	 (put (, ident) 'title (, title))
-	 (put (, ident) 'last-modified (, modified-time))
-	 (put (, ident) 'content-charset (, content-charset))
-	 (put (, ident) 'content-type (, content-type))
-	 (set (, ident) (, arrived-time))))))
-
 (defun w3m-arrived-add (url &optional title modified-time
 			    arrived-time content-charset content-type)
   "Add URL to hash database of arrived URLs."
-  (unless (or (<= (length url) 5);; ignore trifles or about:*.
-	      (string-match w3m-arrived-ignored-regexp url))
-    (let ((parent (when (string-match "\\`\\([^#]*\\)#" url)
-		    (substring url 0 (match-end 1))))
-	  ident)
-      (prog1 (setq ident (intern url w3m-arrived-db))
-	(w3m-arrived-add-1 ident title modified-time arrived-time
+  (unless (string-match w3m-arrived-ignored-regexp url)
+    (let ((ident (intern url w3m-arrived-db)))
+      (if (string-match "\\`\\([^#]+\\)#" url)
+	  (w3m-arrived-add (substring url 0 (match-end 1))
+			   title modified-time arrived-time
 			   content-charset content-type)
-	(when parent
-	  (setq ident (intern parent w3m-arrived-db))
-	  (w3m-arrived-add-1 ident title modified-time arrived-time
-			     content-charset content-type))))))
+	(put ident 'content-charset content-charset)
+	(put ident 'content-type content-type))
+      (put ident 'title title)
+      (put ident 'last-modified modified-time)
+      (set ident arrived-time)
+      ident)))
 
 (defsubst w3m-arrived-p (url)
   "If URL has been arrived, return non-nil value.  Otherwise return nil."
@@ -2104,7 +2094,9 @@ with ^ as `cat -v' does."
 		     (w3m-sub-list
 		      (sort list
 			    (lambda (a b)
-			      (w3m-time-newer-p (nth 3 a) (nth 3 b))))
+			      (if (equal (nth 3 a) (nth 3 b))
+				  (string< (car a) (car b))
+				(w3m-time-newer-p (nth 3 a) (nth 3 b)))))
 		      w3m-keep-arrived-urls)
 		     nil t))
     (setq w3m-arrived-db nil)
@@ -5976,8 +5968,6 @@ Cannot run two w3m processes simultaneously \
 			(string= url w3m-current-url))
 		   (progn
 		     (w3m-refontify-anchor)
-		     (or (when name (w3m-search-name-anchor name))
-			 (goto-char (point-min)))
 		     'cursor-moved)
 		 (setq w3m-image-only-page nil
 		       w3m-current-buffer (current-buffer)
@@ -6000,8 +5990,6 @@ Cannot run two w3m processes simultaneously \
 		(w3m-history-add-properties (list :referer referer
 						  :post-data post-data)
 					    nil nil t)
-		(or (and name (w3m-search-name-anchor name))
-		    (goto-char (point-min)))
 		(unless w3m-toggle-inline-images-permanently
 		  (setq w3m-display-inline-images
 			w3m-default-display-inline-images))
@@ -6014,11 +6002,20 @@ Cannot run two w3m processes simultaneously \
 		       (w3m-toggle-inline-image 'force reload)))
 		(setq buffer-read-only t)
 		(set-buffer-modified-p nil)))
-	      (w3m-arrived-add orig
-			       w3m-current-title
-			       (w3m-last-modified url)
-			       (current-time)
-			       charset ct)
+	      (when action
+		(w3m-arrived-add (setq orig
+				       (if (when name
+					     (w3m-search-name-anchor name))
+					   (w3m-url-strip-authinfo orig)
+					 (goto-char (point-min))
+					 url))
+				 w3m-current-title
+				 (w3m-last-modified url)
+				 (current-time)
+				 (or charset
+				     (w3m-arrived-content-charset orig))
+				 (or ct
+				     (w3m-arrived-content-type orig))))
 	      (setq list-buffers-directory w3m-current-title)
 	      ;; must be `w3m-current-url'
 	      (setq default-directory (w3m-current-directory w3m-current-url))
