@@ -4383,11 +4383,15 @@ cnet.perspectives
 cnet-jp.news cnet-jp.blog.inoue cnet-jp.blog.kenn cnet-jp.blog.lessig
 cnet-jp.blog.mori cnet-jp.blog.umeda cnet-jp.blog.watanabe
 
+@item @uref{http://www.cnn.co.jp/, CNN Japan}
+cnn-jp.business cnn-jp.fringe cnn-jp.science cnn-jp.showbiz
+cnn-jp.sports cnn-jp.top cnn-jp.usa cnn-jp.world
+
+@item @uref{http://www.excite.co.jp/, Excite News}
+excite.bit-koneta excite.world-odd
+
 @item @uref{http://www.heise.de/, Heise Online}
 heise.news heise.telepolis
-
-@item @uref{http://www.hotwired.co.jp/, HotWired Japan}
-wired.business wired.culture wired.technology
 
 @item @uref{http://www.watch.impress.co.jp/, Impress}
 impress.internet impress.pc impress.akiba impress.game impress.av
@@ -4398,12 +4402,25 @@ itmedia.anchordesk itmedia.bursts itmedia.enterprise itmedia.games
 itmedia.lifestyle itmedia.mobile itmedia.news itmedia.pcupdate
 itmedia.technology
 
+@item @uref{http://www.japantimes.co.jp/, Japan Times}
+japantimes.general japantimes.business
+
+@item @uref{http://www.laut.de/, LAUT AG}
+laut-de.news laut-de.platten laut-de.platten_alternative
+laut-de.platten_dance laut-de.platten_hiphop platten_jazz
+laut-de.platten_metal laut-de.platten_pop laut-de.platten_rnb
+laut-de.platten_rock
+
 @item @uref{http://japan.linux.com/, japan.linux.com}
 linux-ja.news linux-ja.desktop linux-ja.enterprise linux-ja.kernel
 linux-ja.opensource linux-ja.security
 
-@item @uref{http://www.japantimes.co.jp/, Japan Times}
-japantimes.general japantimes.business
+@item @uref{http://www.n24.de/, N24}
+n24-de.boerse n24-de.boulevard n24-de.nachrichten n24-de.netnews
+n24-de.politik n24-de.sport n24-de.wirtschaft
+
+@item @uref{http://www.rediff.com/, Rediff.com}
+rediff.news
 
 @item @uref{http://slashdot.jp/, Slashdot Japan}
 slashdot-jp.story slashdot-jp.askslashdot slashdot-jp.bookreview
@@ -4416,6 +4433,15 @@ Add appropriate configurations to the variable
 @code{shimbun-slashdot-jp-group-alist}, you can browse other diaries
 provided at @uref{http://slashdot.jp/}.
 
+@item @uref{http://www.weeklyworldnews.com/news/, Weekly World News}
+weeklyworldnews.news
+
+@item @uref{http://www.welt.de/, Die Welt}
+welt-de.news
+
+@item @uref{http://www.hotwired.co.jp/, HotWired Japan}
+wired.business wired.culture wired.technology
+
 @item @uref{http://headlines.yahoo.co.jp/, Yahoo! Japan}
 yahoo.politics yahoo.society yahoo.people yahoo.business-all
 yahoo.market yahoo.stock yahoo.industry yahoo.international
@@ -4423,34 +4449,8 @@ yahoo.entertainment yahoo.sports yahoo.computer yahoo.hokkaido
 yahoo.tohoku yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
 yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
 
-@item @uref{http://www.cnn.co.jp/, CNN Japan}
-cnn-jp.business cnn-jp.fringe cnn-jp.science cnn-jp.showbiz
-cnn-jp.sports cnn-jp.top cnn-jp.usa cnn-jp.world
-
-@item @uref{http://www.n24.de/, N24}
-n24-de.boerse n24-de.boulevard n24-de.nachrichten n24-de.netnews
-n24-de.politik n24-de.sport n24-de.wirtschaft
-
-@item @uref{http://www.welt.de/, Die Welt}
-welt-de.news
-
 @item @uref{http://www.zeit.de/, Die Zeit}
 zeit-de.news
-
-@item @uref{http://www.weeklyworldnews.com/news/, Weekly World News}
-weeklyworldnews.news
-
-@item @uref{http://www.laut.de/, LAUT AG}
-laut-de.news laut-de.platten laut-de.platten_alternative
-laut-de.platten_dance laut-de.platten_hiphop platten_jazz
-laut-de.platten_metal laut-de.platten_pop laut-de.platten_rnb
-laut-de.platten_rock
-
-@item @uref{http://www.rediff.com/, Rediff.com}
-rediff.news
-
-@item @uref{http://www.excite.co.jp/, Excite News}
-excite.bit-koneta excite.world-odd
 @end table
 
 @node Mailing Lists Supported by Shimbun

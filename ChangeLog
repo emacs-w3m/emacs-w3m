@@ -1,3 +1,17 @@
+2005-02-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/nnshimbun.el (gnus-group-make-shimbun-group): Display
+	help messages.
+
+	* shimbun/shimbun.el (shimbun-clear-contents): Validate regexps
+	before using them.
+
+2005-02-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-antenna.el (w3m-antenna-html-skelton): Fix typo.
+	(w3m-antenna-make-contents): Replace %D to the modified time of
+	`w3m-antenna-file'.
+
 2005-02-04  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
 
 	* shimbun/sb-arch-bluegate.el: New file.
