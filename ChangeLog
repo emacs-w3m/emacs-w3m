@@ -1,3 +1,8 @@
+2003-10-14  Jose A. Ortega Ruiz  <jao@abra.uab.es>
+
+	* w3m.el (w3m-decode-entities-string): Move `save-match-data' to
+	the exterior of `with-temp-buffer'.
+
 2003-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-tab-half-space, w3m-tab-separator): Use `:width'
