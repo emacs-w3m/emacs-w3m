@@ -200,10 +200,10 @@ Known Problems
 
 Shimbun Library
 
-* Shimbun Sites::               $B?7J9$,FI$a$k%5%$%H(B
 * Nnshimbun::                   Gnus $B$r%&%'%V%V%i%&%6$K$9$k(B!
 * Mew Shimbun::                 Mew $B$G?7J9$rFI$`(B
 * Shimbun with Wanderlust::     Wanderlust $B$G?7J9$rFI$`(B
+* Shimbun Sites::               $B?7J9$,FI$a$k%5%$%H(B
 * Shimbun Basics::              $B?7J9%b%8%e!<%k$N:n$jJ}(B
 
 Tips
@@ -218,6 +218,18 @@ Emacs-w3m Functions
 @node Introduction
 @chapter $B$O$8$a$K(B
 @cindex Introduction
+
+Emacs $B>e$GF0:n$9$k%V%i%&%6$H8@$($P!"(B
+$BIaDL$O(B @uref{http://www.cs.indiana.edu/elisp/w3/docs.html, W3} $B$N$3$H$G(B
+$B$9$,!"F0:n$,Hs>o$KCY$$$N$G!"$J$+$J$+>oMQ$7$h$&$H$$$&5$$K$J$l$^$;$s!#$=$l(B
+$B$KBP$7$F!"(B@uref{http://w3m.sourceforge.net/, w3m} $B$H$$$&%F%-%9%H%Y!<%9$G(B
+$BF0:n$9$k%V%i%&%6$,$"$j!"Hs>o$K7Z2w$KF0:n$9$k$N$G=EJu$7$F$$$k$N$G$9$,!"C<(B
+$BKv$K0\F0$7$J$1$l$P$$$1$J$$$N$,LLE]$G$9!#(B
+
+$B$=$3$G!$(Bw3m $B$r(B HTML $B$N(B rendering engine $B$H$7$F;HMQ$7!$I=<($H%$%s%?%U%'!<(B
+$B%9$N$_$r(B Emacs $B$GF0$+$9$h$&$K$9$l$P$$$$$s$8$c$J$$$@$m$&$+!$$H$$$&$3$H$r(B
+$B9M$($^$7$?!%$D$^$j!"(Bemacs-w3m $B$O!"(Bw3m $B$r(B emacs $B>e$GF0$+$9%$%s%?!<%U%'!<(B
+$B%9%W%m%0%i%`$G$9$,!"(Bemacs $B>e$GF0$/%&%'%V%V%i%&%6$H$7$F;H$&$3$H$b$G$-$^$9!#(B
 
 $B$9$P$i$7$$(B w3m $B%W%m%0%i%`$r3+H/$7$F$/$l$?0KF#>4B'$5$s$H(B w3m $B%A!<%`$N$_$J(B
 $B$5$s$K!"3JCJ$N46<U$rJ{$2$^$9!#$5$i$K%3%a%s%H!"Ds0F$*$h$S%P%0$N=$@5$r$7$F(B
@@ -2001,7 +2013,8 @@ Namazu $B$r;H$&$?$a$K$O!"<B:]$K8!:w$r9T$&A0$K!"8!:wBP>]$H$J$k%U%!%$%k$K4^(B
 @example
 (setq w3m-namazu-index-alist
       '(("alias1" "Path/to/the/index/directory1")
-        ("alias2" "Path/to/the/index/dir2" "Path/to/the/index/dir3")))
+        ("alias2" "Path/to/the/index/dir2"
+                  "Path/to/the/index/dir3")))
 @end example
 
 @item w3m-namazu-default-index
@@ -2349,8 +2362,9 @@ T-gnus $B$+(B Nana-gnus $B$r$*;H$$$J$i$P(B @ref{Nnshimbun} $B$b;2>H$7$F2<$5
 @item
 Q. emacs-w3m $B$C$F2?$G$9$+(B?
 
-w3m $B$r(B Emacs $B>e$GF0$+$9%$%s%?!<%U%'!<%9%W%m%0%i%`$G$9!#>\:Y$O!"IUB0$7$F(B
-$B$$$k(B @file{README.ja} $B%U%!%$%k$r;2>H$7$F2<$5$$!#(B
+w3m $B$r(B Emacs $B>e$GF0$+$9%$%s%?!<%U%'!<%9%W%m%0%i%`$G$9!#(BEmacs $B>e$GF0$/%&%'(B
+$B%V%V%i%&%6$H$7$F;H$&$3$H$b$G$-$^$9!#(B@ref{Introduction} $B$b;2>H$7$F$/$@$5(B
+$B$$!#(B
 
 @item
 Q. $BF0:n$9$k(B Emacs $B$O(B?
@@ -2372,10 +2386,9 @@ Q. $BF0:n$9$k(B Emacs $B$O(B?
 $B$J$*!"(BMule 2.3, Emacs 19.34 $B$^$?$O(B XEmacs $B$G$O(B @acronym{APEL} $B$,I,MW$H$J(B
 $B$j$^$9!#>\$7$/$O(B @xref{Other Requirements} $B$r3NG'$7$F2<$5$$!#(B
 
-Emacs-w3m $B$O(B Emacs 19.34 $B$d(B Mule $B5!G=$,L5$$(B XEmacs $B$GF0:n$7$^$9!#$?$@$7(B
-$BF|K\$NE75$M=Js$r8+$k$J$I!"$$$/$D$+$N%3%^%s%I$,;H$($^$;$s!#$=$l$i(B
-$B$O(B Mule $B$N5!G=$K6/$/0MB8$7$F$$$k$N$G!"(BEmacs 19.34 $B$d(B Mule $B$,L5(B
-$B$$(B XEmacs $B$G$OF0:n$7$^$;$s!#(B
+Emacs-w3m $B$O(B Emacs 19.34 $B$d(B Mule $B5!G=$,L5$$(B XEmacs $B$G$bF0:n$7$^$9!#$?$@(B
+$B$7!"F|K\$NE75$M=Js$r8+$k$J$I$N$$$/$D$+$N%3%^%s%I$O!"(BMule $B$N5!G=$K6/$/0M(B
+$BB8$7$F$$$k$N$G!";H$($^$;$s!#(B
 
 @item
 Q. $BF0:n$9$k(B w3m $B$O(B?
@@ -2388,8 +2401,8 @@ Q. $BF0:n$9$k(B w3m $B$O(B?
 @end itemize
 
 @item
-XEmacs $B$N(B SUMO $B%Q%C%1!<%8$K4^$^$l$F$$$k(B @acronym{APEL} $B$r%$%s%9%H!<%k$7(B
-$B$F$"$k$N$G$9$,(B?
+Q. XEmacs $B$N(B SUMO $B%Q%C%1!<%8$K4^$^$l$F$$$k(B @acronym{APEL} $B$r%$%s%9%H!<%k(B
+$B$7$F$"$k$N$G$9$,(B?
 
 XEmacs $B$N(B @acronym{APEL} $B%Q%C%1!<%8(B ($B$9$Y$F$N%b%8%e!<%k$,(B Mule $BIU$-(B
 $B$N(B XEmacs $BMQ$K%3%s%Q%$%k$5$l$F$$$k(B) $B$K$O$$$m$$$mLdBj$,$"$j$^$9!#Nc$((B
@@ -2597,307 +2610,12 @@ Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @acronym{FLIM} $B%Q%C%1!<%8(B (
 $B$s!#(B
 
 @menu
-* Shimbun Sites::               $B?7J9$,FI$a$k%5%$%H(B
 * Nnshimbun::                   Gnus $B$r%&%'%V%V%i%&%6$K$9$k(B!
 * Mew Shimbun::                 Mew $B$G?7J9$rFI$`(B
 * Shimbun with Wanderlust::     Wanderlust $B$G?7J9$rFI$`(B
+* Shimbun Sites::               $B?7J9$,FI$a$k%5%$%H(B
 * Shimbun Basics::              $B?7J9%b%8%e!<%k$N:n$jJ}(B
 @end menu
-
-@node Shimbun Sites
-@section $B?7J9$,FI$a$k%5%$%H(B
-
-@example
-2-1. $B?7J9(B
-
-$BD+F|(B		asahi.business asahi.culture asahi.english
-		asahi.international asahi.national asahi.politics
-		asahi.science asahi.sports (asahi-html $B$b$*4+$a$G$9(B)
-$BKhF|(B		mainichi.shakai mainichi.sports mainichi.seiji
-		mainichi.keizai mainichi.kokusai mainichi.fuho
-$BF|7P(B		nikkei.kaigai nikkei.keizai nikkei.main nikkei.market
-		nikkei.okuyami nikkei.retto nikkei.sangyo nikkei.seiji
-		nikkei.shakai nikkei.shasetsu nikkei.tento nikkei.zinzi
-$B%9%]%K%A(B	sponichi.baseball sponichi.soccer sponichi.usa
-		sponichi.others sponichi.society
-		sponichi.entertainment sponichi.horseracing
-$Bl&Gd(B		yomiuri.business yomiuri.editorial yomiuri.national
-		yomiuri.obit yomiuri.politics yomiuri.sports
-		yomiuri.world (yomiuri-html $B$b$*4+$a$G$9(B)
-$BF|4)%9%]!<%D(B	nikkansports.baseball nikkansports.mlb
-		nikkansports.soccer nikkansports.world-soccer
-		nikkansports.sports nikkansports.battle
-		nikkansports.horseracing nikkansports.entertainment
-		nikkansports.society nikkansports.leisure
-
-2-2. $B%K%e!<%9%5%$%H(B
-
-Japan CNET	cnet.comp
-$B%$%s%W%l%9(B	impress.internet impress.pc impress.akiba impress.game
-		impress.av impress.jijinews impress.sports
-slashdot-jp	slashdot-jp.story
-HotWired	wired.business wired.culture wired.technology
-YAHOO!JAPAN	yahoo.politics yahoo.society yahoo.people
-		yahoo.business-all yahoo.market yahoo.stock
-		yahoo.industry yahoo.international yahoo.entertainment
-		yahoo.sports yahoo.computer yahoo.hokkaido yahoo.tohoku
-		yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
-		yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu
-		yahoo.okinawa
-ZDNet		zdnet.comp zdnet.gamespot
-
-2-3. Mailing List
-
-semi-gnus-ja	airs.semi-gnus-ja
-wanderlust	airs.wl
-bbdb-ml		bbdb-ml.bbdb-ml
-gnome $B4XO"(B	gnome.balsa-list gnome.calendar-list
-		gnome.cvs-commits-list gnome.foundation-announce
-		gnome.foundation-list gnome.fplan-list
-		gnome.gconf-list gnome.gdome gnome.gnome-1.4-list
-		gnome.gnome-announce-list gnome.gnome-components-list
-		gnome.gnome-db-list gnome.gnome-de
-		gnome.gnome-debugger-list gnome.gnome-devel-list
-		gnome.gnome-doc-list gnome.gnome-gui-list
-		gnome.gnome-hackers gnome.gnome-hackers-readonly
-		gnome.gnome-hackers-test gnome.gnome-i18n
-		gnome.gnome-i18n-tools gnome.gnome-kde-list
-		gnome.gnome-list gnome.gnome-office-list
-		gnome.gnome-pilot-list gnome.gnome-sound-list
-		gnome.gnome-themes-list gnome.gnome-ui-hackers
-		gnome.gnome-web-list gnome.gnome-webmaster-list
-		gnome.gnome-workshop-list gnome.gnomecc-list
-		gnome.gnumeric-list gnome.gtk-app-devel-list
-		gnome.gtk-devel-list gnome.gtk-doc-list
-		gnome.gtk-i18n-list gnome.gtk-list gnome.gtk-perl-list
-		gnome.guppi-list gnome.libart gnome.libart-hackers
-		gnome.orbit-list gnome.vote gnome.wm-spec-list
-		gnome.xml gnome.xslt
-gs-cjk		gyve.gs-cjk
-h14m $B4XO"(B	h14m.hns-dev h14m.hns-users
-Java $B%+%s%U%!%l%s%94XO"(B	javaconf.servlet-ml javaconf.business-ml
-		javaconf.duke-in-the-box-ml javaconf.jfriends-ml
-		javaconf.JGT-ml javaconf.jini-ml javaconf.ejb-ml
-		javaconf.cm-ml javaconf.horb-ml javaconf.talk-ml
-linux-ce	linux-ce.users
-mule		m17n.mule-ja m17n.mule
-meadow $B4XO"(B	meadow.meadow-develop meadow.meadow-users-jp
-mew $B4XO"(B	mew.mew-dist mew.mew-win32 mew.mew-int
-mgp $B4XO"(B	mew.mgp-users mew.mgp-users-jp
-namazu $B4XO"(B	namazu.namazu-users-ja namazu.namazu-win32-users-ja
-		namazu.namazu-users-en namazu.namazu-devel-ja
-		namazu.namazu-devel-en
-emacs-w3m	namazu.emacs-w3m
-migemo		namazu.migemo
-netbsd $B4XO"(B	netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
-		netbsd.tech-pkg-ja netbsd.port-arm32-ja
-		netbsd.port-hpcmips-ja netbsd.port-mac68k-ja
-		netbsd.port-mips-ja netbsd.port-powerpc-ja
-		netbsd.hpcmips-changes-ja netbsd.members-ja
-		netbsd.admin-ja netbsd.www-changes-ja
-QuickML $B4XO"(B	quickml.quickml-users quickml.quickml-server
-		quickml.chatty quickml.dotnet quickml.linux-zaurus
-		quickml.ming quickml.pdumpfs quickml.stationery
-		quickml.tty-mania
-ruby $B4XO"(B	ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
-		ruby.ruby-dev ruby.ruby-ext ruby.ruby-list
-		ruby.ruby-math ruby.ruby-talk
-tlinux-users-j	toshiba.linux-users-j
-w3m-dev		w3m-dev.w3m-dev
-digiko-ml	digiko.digiko
-xemacs $B4XO"(B	xemacs.xemacs-announce xemacs.xemacs-beta-ja
-		xemacs.xemacs-beta xemacs.xemacs-build-reports
-		xemacs.xemacs-cvs xemacs.xemacs-design xemacs.xemacs-mule
-		xemacs.xemacs-nt xemacs.xemacs-patches xemacs.xemacs-users-ja
-		xemacs.xemacs
-$B%;%-%e%j%F%#!<(BMEMO security-memo.memo
-Debian JP $B4XO"(B	debian-jp.debian-announce debian-jp.debian-devel
-		debian-jp.debian-www debian-jp.debian-users
-		debian-jp.debian-policy debian-jp.jp-qa
-Debian $B4XO"(B	debian.debian-announce debian.debian-commercial
-		debian.debian-firewall debian.debian-french
-		debian.debian-isp debian.debian-italian
-		debian.debian-kde debian.debian-laptop
-		debian.debian-news debian.debian-news-german
-		debian.debian-news-portuguese
-		debian.debian-security-announce debian.debian-testing
-		debian.debian-user debian.debian-user-catalan
-		debian.debian-user-french debian.debian-user-polish
-		debian.debian-user-portuguese
-		debian.debian-user-spanish debian.debian-user-swedish
-		debian.debian-admintool debian.debian-apache
-		debian.debian-autobuild debian.debian-beowulf
-		debian.debian-boot debian.debian-cd debian.debian-ctte
-		debian.debian-debbugs debian.debian-devel
-		debian.debian-devel-announce
-		debian.debian-devel-french debian.debian-devel-games
-		debian.debian-devel-spanish debian.debian-doc
-		debian.debian-dpkg debian.debian-emacsen
-		debian.debian-events-eu debian.debian-events-na
-		debian.debian-faq debian.debian-gcc
-		debian.debian-glibc debian.debian-gtk-gnome
-		debian.debian-hams debian.debian-ipv6
-		debian.debian-java debian.debian-jr debian.debian-med
-		debian.debian-mentors debian.debian-newmaint
-		debian.debian-newmaint-admin debian.debian-ocaml-maint
-		debian.debian-openoffice debian.debian-perl
-		debian.debian-pilot debian.debian-policy
-		debian.debian-pool debian.debian-python
-		debian.debian-qa debian.debian-qa-private
-		debian.debian-release debian.debian-security
-		debian.debian-snapshots debian.debian-tetex-maint
-		debian.debian-toolchain debian.debian-vote
-		debian.debian-wnpp debian.debian-www debian.debian-x
-		debian.deity debian.debian-chinese
-		debian.debian-chinese-big5 debian.debian-chinese-gb
-		debian.debian-esperanto debian.debian-i18n
-		debian.debian-japanese debian.debian-l10n-catalan
-		debian.debian-l10n-dutch debian.debian-l10n-english
-		debian.debian-l10n-french debian.debian-l10n-italian
-		debian.debian-l10n-portuguese
-		debian.debian-l10n-spanish debian.debian-laespiral
-		debian.debian-russian debian.debian-simplified-chinese
-		debian.debian-68k debian.debian-alpha
-		debian.debian-arm debian.debian-bsd
-		debian.debian-hppa debian.debian-hurd
-		debian.debian-ia64 debian.debian-mips
-		debian.debian-parisc debian.debian-powerpc
-		debian.debian-s390 debian.debian-sparc
-		debian.debian-superh debian.debian-ultralinux
-		debian.debian-win32 debian.debian-all-changes
-		debian.debian-alpha-changes debian.debian-arm-changes
-		debian.debian-books debian.debian-cd-vendors
-		debian.debian-changes debian.debian-consultants
-		debian.debian-curiosa debian.debian-devel-all-changes
-		debian.debian-devel-alpha-changes
-		debian.debian-devel-arm-changes
-		debian.debian-devel-changes
-		debian.debian-devel-hurd-i386-changes
-		debian.debian-devel-i386-changes
-		debian.debian-devel-m68k-changes
-		debian.debian-devel-powerpc-changes
-		debian.debian-devel-sparc-changes
-		debian.debian-hurd-i386-changes
-		debian.debian-i386-changes debian.debian-legal
-		debian.debian-m68k-changes debian.debian-mirrors
-		debian.debian-powerpc-changes debian.debian-project
-		debian.debian-publicity debian.debian-sgml
-		debian.debian-sparc-changes debian.lcs-eng
-		debian.lsb-confcall debian.lsb-discuss debian.lsb-impl
-		debian.lsb-spec debian.lsb-test debian.spi-announce
-		debian.spi-general debian.vgui-discuss
-KDE $B4XO"(B	kde.Kuser kde.Kdeveloper
-Geocrawler	www.geocrawler.com $B$KJ]B8$5$l$F$$$kA4$F$N(B mailing lists
-MARC		marc.theaimsgroup.com $B$KJ]B8$5$l$F$$$kA4$F$N(B mailing lists
-RedHat $B4XO"(B	http://sources.redhat.com/lists.html
-MacOSX-jp $B4XO"(B	macosx-jp.macosx-jp macosx-jp.macosx-dev-jp
-		macosx-jp.macosx-ws-jp macosx-jp.webobjects-jp
-Input Method 	anthy.main
-      		canna-dev.main
-Emacsen $BA4HL(B	elips.elips
-Squeak-ja	squeak-ja.main
-sml		sml.main
-Squeak-dev	squeak-dev.main
-Plucker		plucker.announce plucker.list plucker.dev
-pilot-link      pilot-link.announce pilot-link.devel pilot-link.general
-		pilot-link.unix-ng
-Coldsync	coldsync.main
-J-Pilot		jpilot.main
-pilot-mailsync	pilot-mailsync.main
-
-2-4. $B%9%]!<%D(B
-
-makanai			makanai.f1news
-F1 $B%U%!%s(B		f1fan.news
-$B%H!<%A%e%&(B F1 EXPRESS(*)f1express.F1 f1express.Pari-Dakar f1express.CART
-                        f1express.All-Japan f1express.WRC f1express.bike
-                        f1express.Tuka-CLUB f1express.etc
-                        f1express.F-Nippon f1express.JGTC
-                        f1express.LeMans24 f1express.Indi500
-                        f1express.F3-Japan f1express.Super-Taikyu
-                        f1express.AJRC f1express.F-Toyota
-                        f1express.F-Dream f1express.etc-4-Japan
-                        f1express.F3-France f1express.F3-England
-                        f1express.F3-Germany f1express.LeMans-USA
-                        f1express.IRL f1express.FSC f1express.Int-F3000
-                        f1express.etc-4-int f1express.WGP f1express.WSB
-                        f1express.R2-1 f1express.Suzuka8
-                        f1express.Motegi7 f1express.AJ-Motocross
-                        f1express.AJ-Trial f1express.World-Motocross
-                        f1express.WCT f1express.etc-2
-                        f1express.Inter-GP-Cafe f1express.Takagi
-                        f1express.NASCAR f1express.Kato f1express.Endo
-                        f1express.Sato f1express.Imamiya
-                        f1express.Toyota-news f1express.F1-release
-                        f1express.info
-
-* $BMxMQ$9$k$K$O!"(BMule-UCS (ftp://ftp.m17n.org/pub/mule/Mule-UCS/) $B$r%$%s(B
-  $B%9%H!<%k$7$F$*$/I,MW$,$"$j$^$9!#(Bemacs-21.2 $B$GMxMQ$9$k>l9g$O!"(BMule-UCS
-  $B$K(B patch (http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html)$B$r(B
-  $BE,MQ$7$?$[$&$,$$$$$G$7$g$&!#(B
-
-2-5. $B$=$NB>(B
-
-$B$f$&&S&O&P&I&A7G<(HD(B	tcup.yutopia
-Meadow $B7G<(HD(B		tcup.meadow
-SKK $B7G<(HD(B		tcup.skk
-vinelinux web $B%5%$%H(B	vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
-			vinelinux.errata.2x.sparc
-			vinelinux.errata.2x.alpha vinelinux.errata.1x
-2ch
-$B@_DjNc(B:
-(setq shimbun-2ch-group-alist
-      '(("Meadow" . "http://pc.2ch.net/test/read.cgi/software/1005469775")
-	("emacs-w3m" . "http://pc.2ch.net/test/read.cgi/unix/1013710106")))
-      ;; ($B%0%k!<%WL>(B . URL)
-
-HNS $B$K$h$kF|5-(B
-$B@_DjNc(B:
-(setq shimbun-hns-group-alist
-      '(("arisawa"			     ;; $B%0%k!<%WL>(B
-	 "http://www.nijino.com/ari/diary/"  ;; URL
-	 "ari@@mbf.sphere.ne.jp")	     ;; From: $B$KA^F~$9$k%a!<%k%"%I%l%9(B
-	("miyoshi"
-	 "http://www.be.wakwak.com/cgi-bin/sbox/~miyoshi/hns/"
-	 "miyoshi@@meadowy.org")))
-
-$B>.@tFb3U%a!<%k%^%,%8%s(B  kantei.m-magazine
-$BFC5vD#(B                  jpo.news jpo.revision jpo.lawguide jpo.details
-IBM developerWorks	ibm-dev.components ibm-dev.java ibm-dev.linux
-			ibm-dev.opensource ibm-dev.security
-			ibm-dev.unicode
-			ibm-dev.usability ibm-dev.web
-			ibm-dev.webservices
-			ibm-dev.xml
-Muchy's Palmware Review! muchy.review
-palmoslove	 	palmoslove.webnews palmoslove.pdanews palmoslove.sitenews
-pocketgames             pocketgames.news
-wincefan		wincefan.news
-PalmFan			palmfan.news palmfan.palmwarefan
-$BEEG>39$N8=>l%l%]!<%H(B	dennou.report
-PCWEB COLUMN Square	pcweb-column.gyokai pcweb-column.benri
-			pcweb-column.hitech pcweb-column.business
-			pcweb-column.winxp pcweb-column.bytes
-			pcweb-column.newyork pcweb-column.asia
-			pcweb-column.akiba pcweb-column.rikei
-			pcweb-column.osx pcweb-column.game
-			pcweb-column.smart98 pcweb-column.win2k
-			pcweb-column.msdos pcweb-column.muteki
-			pcweb-column.mobile pcweb-column.win98
-			pcweb-column.ayashii pcweb-column.melon
-			pcweb-column.linux pcweb-column.scrap
-			pcweb-column.siterev pcweb-column.anime
-			pcweb-column.soho pcweb-column.trouble
-			pcweb-column.renai pcweb-column.dream
-			pcweb-column.tworld pcweb-column.camera
-			pcweb-column.denshi pcweb-column.tsushin
-			pcweb-column.shitumon pcweb-column.nandemo
-			pcweb-column.hourou pcweb-column.oshigoto
-			pcweb-column.tech pcweb-column.speed
-$B%N!<%DDDNs4[(B		lotusex.news lotusex.library lotusex.operation
-(Notes Exhibition)      lotusex.primer lotusex.tips lotusex.practical
-       			lotusex.qanda lotusex.lounge lotusex.bbs
-@end example
 
 @node Nnshimbun
 @section Gnus $B$r%&%'%V%V%i%&%6$K$9$k(B!
@@ -3442,6 +3160,443 @@ Wanderlust $B$K$O(B ELMO $B%b%8%e!<%k$N0l$D$H$7$F(B @samp{elmo-shimbun} $B$
 $B$F$$$k$N$G!"L>A0$,(B @samp{@@} $B$G;O$^$k%U%)%k%@$K%"%/%;%9$9$k$@$1(B
 $B$G(B @samp{shimbun} $B$rFI$`$3$H$,$G$-$^$9(B (@pxref{(wl-ja)Shimbun Folder})$B!#(B
 
+@node Shimbun Sites
+@section $B?7J9$,FI$a$k%5%$%H(B
+
+@samp{Shimbun} $B%i%$%V%i%j$,BP1~$7$F$$$k%5%$%H$N0lMwI=$G$9!#(B
+
+@menu
+* Newspapers Supported by Shimbun::     $B?7J9<R(B
+* News Sites Supported by Shimbun::     $B%K%e!<%9%5%$%H(B
+* Mailing Lists Supported by Shimbun::  $B%a!<%j%s%0%j%9%H(B
+* Sport Sites Supported by Shimbun::    $B%9%]!<%D(B
+* Misc Sites Supported by Shimbun::     $B$=$NB>(B
+@end menu
+
+@node Newspapers Supported by Shimbun
+@subsection $B?7J9<R(B
+
+@samp{Shimbun} $B%i%$%V%i%j$,BP1~$7$F$$$k?7J9<R$G$9!#(B
+
+@table @asis
+@item $BD+F|?7J9(B
+asahi.business asahi.culture asahi.english asahi.international
+asahi.national asahi.politics asahi.science asahi.sports
+
+$B$3$l$i$O!"%F%-%9%H$N$_$N5-;v$r:n@.$7$^$9$,!"5-;vCf$K4^$^$l$k<L??$J$I$r%$(B
+$B%s%i%$%sI=<($9$k$h$&$K3HD%$5$l$?(B @samp{asahi-html} $B$H$$$&%P%C%/%(%s%I$b(B
+$B$"$j$^$9!#$3$A$i$rMxMQ$9$k>l9g$O!"(Basahi-html.business $B$H$$$&$h$&$J%0%k!<(B
+$B%WL>$K$J$j$^$9!#(B
+
+@item $BKhF|?7J9(B
+mainichi.shakai mainichi.sports mainichi.seiji mainichi.keizai
+mainichi.kokusai mainichi.fuho
+
+@item $BF|4)%9%]!<%D(B
+nikkansports.baseball nikkansports.mlb nikkansports.soccer
+nikkansports.world-soccer nikkansports.sports nikkansports.battle
+nikkansports.horseracing nikkansports.entertainment
+nikkansports.society nikkansports.leisure
+
+@item $BF|K\7P:Q?7J9(B
+nikkei.kaigai nikkei.keizai nikkei.main nikkei.market nikkei.okuyami
+nikkei.retto nikkei.sangyo nikkei.seiji nikkei.shakai nikkei.shasetsu
+nikkei.tento nikkei.zinzi
+
+@item $B%9%]%K%A(B
+sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
+sponichi.society sponichi.entertainment sponichi.horseracing
+
+@item $Bl&Gd?7J9(B
+yomiuri.business yomiuri.editorial yomiuri.national yomiuri.obit
+yomiuri.politics yomiuri.sports yomiuri.world
+
+$BD+F|?7J9$N>l9g$HF1MM$K!"2hA|$r4^$`5-;v$r@8@.$9$k(B @samp{yomiuri-html} $B$b(B
+$BMxMQ$G$-$^$9!#(B
+@end table
+
+@node News Sites Supported by Shimbun
+@subsection $B%K%e!<%9%5%$%H(B
+
+@samp{Shimbun} $B%i%$%V%i%j$,BP1~$7$F$$$k%K%e!<%9%5%$%H$G$9!#(B
+
+@table @asis
+@item Japan CNET
+cnet.comp
+
+@item $B%$%s%W%l%9(B
+impress.internet impress.pc impress.akiba impress.game impress.av
+impress.jijinews impress.sports
+
+@item slashdot-jp
+slashdot-jp.story
+
+@item HotWired
+wired.business wired.culture wired.technology
+
+@item YAHOO!JAPAN
+yahoo.politics yahoo.society yahoo.people yahoo.business-all
+yahoo.market yahoo.stock yahoo.industry yahoo.international
+yahoo.entertainment yahoo.sports yahoo.computer yahoo.hokkaido
+yahoo.tohoku yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
+yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
+
+@item ZDNet
+zdnet.comp zdnet.gamespot
+@end table
+
+@node Mailing Lists Supported by Shimbun
+@subsection $B%a!<%j%s%0%j%9%H(B
+
+$B:G6a$G$O!"%a!<%j%s%0%j%9%H$KEj9F$5$l$?2a5n5-;v$N%"!<%+%$%V$,(B WEB $B>e$K4v(B
+$B$D$b8x3+$5$l$F$$$^$9!#(B@samp{Shimbun} $B%i%$%V%i%j$O!"0J2<$N%"!<%+%$%V$r07(B
+$B$&$3$H$,$G$-$^$9!#(B
+
+@table @asis
+@item semi-gnus-ja
+airs.semi-gnus-ja
+
+@item wanderlust
+airs.wl
+
+@item bbdb-ml
+bbdb-ml.bbdb-ml
+
+@item gnome $B4XO"(B
+gnome.balsa-list gnome.calendar-list gnome.cvs-commits-list
+gnome.foundation-announce gnome.foundation-list gnome.fplan-list
+gnome.gconf-list gnome.gdome gnome.gnome-1.4-list
+gnome.gnome-announce-list gnome.gnome-components-list
+gnome.gnome-db-list gnome.gnome-de gnome.gnome-debugger-list
+gnome.gnome-devel-list gnome.gnome-doc-list gnome.gnome-gui-list
+gnome.gnome-hackers gnome.gnome-hackers-readonly
+gnome.gnome-hackers-test gnome.gnome-i18n gnome.gnome-i18n-tools
+gnome.gnome-kde-list gnome.gnome-list gnome.gnome-office-list
+gnome.gnome-pilot-list gnome.gnome-sound-list gnome.gnome-themes-list
+gnome.gnome-ui-hackers gnome.gnome-web-list gnome.gnome-webmaster-list
+gnome.gnome-workshop-list gnome.gnomecc-list gnome.gnumeric-list
+gnome.gtk-app-devel-list gnome.gtk-devel-list gnome.gtk-doc-list
+gnome.gtk-i18n-list gnome.gtk-list gnome.gtk-perl-list
+gnome.guppi-list gnome.libart gnome.libart-hackers gnome.orbit-list
+gnome.vote gnome.wm-spec-list gnome.xml gnome.xslt
+
+@item gs-cjk
+gyve.gs-cjk
+
+@item h14m $B4XO"(B
+h14m.hns-dev h14m.hns-users
+
+@item Java $B%+%s%U%!%l%s%94XO"(B
+javaconf.servlet-ml javaconf.business-ml
+javaconf.duke-in-the-box-ml javaconf.jfriends-ml javaconf.JGT-ml
+javaconf.jini-ml javaconf.ejb-ml javaconf.cm-ml javaconf.horb-ml
+javaconf.talk-ml
+
+@item linux-ce
+linux-ce.users
+
+@item mule
+m17n.mule-ja m17n.mule
+
+@item meadow $B4XO"(B
+meadow.meadow-develop meadow.meadow-users-jp
+
+@item mew $B4XO"(B
+mew.mew-dist mew.mew-win32 mew.mew-int
+
+@item mgp $B4XO"(B
+mew.mgp-users mew.mgp-users-jp
+
+@item namazu $B4XO"(B
+namazu.namazu-users-ja namazu.namazu-win32-users-ja
+namazu.namazu-users-en namazu.namazu-devel-ja namazu.namazu-devel-en
+
+@item emacs-w3m
+namazu.emacs-w3m
+
+@item migemo
+namazu.migemo
+
+@item netbsd $B4XO"(B
+netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
+netbsd.tech-pkg-ja netbsd.port-arm32-ja netbsd.port-hpcmips-ja
+netbsd.port-mac68k-ja netbsd.port-mips-ja netbsd.port-powerpc-ja
+netbsd.hpcmips-changes-ja netbsd.members-ja netbsd.admin-ja
+netbsd.www-changes-ja
+
+@item QuickML $B4XO"(B
+quickml.quickml-users quickml.quickml-server
+quickml.chatty quickml.dotnet quickml.linux-zaurus quickml.ming
+quickml.pdumpfs quickml.stationery quickml.tty-mania
+
+@item ruby $B4XO"(B
+ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
+ruby.ruby-dev ruby.ruby-ext ruby.ruby-list ruby.ruby-math
+ruby.ruby-talk
+
+@item tlinux-users-j
+toshiba.linux-users-j
+
+@item w3m-dev
+w3m-dev.w3m-dev
+
+@item digiko-ml
+digiko.digiko
+
+@item XEmacs $B4XO"(B
+xemacs.xemacs-announce xemacs.xemacs-beta-ja
+xemacs.xemacs-beta xemacs.xemacs-build-reports xemacs.xemacs-cvs
+xemacs.xemacs-design xemacs.xemacs-mule xemacs.xemacs-nt
+xemacs.xemacs-patches xemacs.xemacs-users-ja xemacs.xemacs
+
+@item $B%;%-%e%j%F%#!<(BMEMO
+security-memo.memo
+
+@item Debian JP $B4XO"(B
+debian-jp.debian-announce debian-jp.debian-devel
+debian-jp.debian-www debian-jp.debian-users debian-jp.debian-policy
+debian-jp.jp-qa
+
+@item Debian $B4XO"(B
+debian.debian-announce debian.debian-commercial debian.debian-firewall
+debian.debian-french debian.debian-isp debian.debian-italian
+debian.debian-kde debian.debian-laptop debian.debian-news
+debian.debian-news-german debian.debian-news-portuguese
+debian.debian-security-announce debian.debian-testing
+debian.debian-user debian.debian-user-catalan
+debian.debian-user-french debian.debian-user-polish
+debian.debian-user-portuguese debian.debian-user-spanish
+debian.debian-user-swedish debian.debian-admintool
+debian.debian-apache debian.debian-autobuild debian.debian-beowulf
+debian.debian-boot debian.debian-cd debian.debian-ctte
+debian.debian-debbugs debian.debian-devel debian.debian-devel-announce
+debian.debian-devel-french debian.debian-devel-games
+debian.debian-devel-spanish debian.debian-doc debian.debian-dpkg
+debian.debian-emacsen debian.debian-events-eu debian.debian-events-na
+debian.debian-faq debian.debian-gcc debian.debian-glibc
+debian.debian-gtk-gnome debian.debian-hams debian.debian-ipv6
+debian.debian-java debian.debian-jr debian.debian-med
+debian.debian-mentors debian.debian-newmaint
+debian.debian-newmaint-admin debian.debian-ocaml-maint
+debian.debian-openoffice debian.debian-perl debian.debian-pilot
+debian.debian-policy debian.debian-pool debian.debian-python
+debian.debian-qa debian.debian-qa-private debian.debian-release
+debian.debian-security debian.debian-snapshots
+debian.debian-tetex-maint debian.debian-toolchain debian.debian-vote
+debian.debian-wnpp debian.debian-www debian.debian-x debian.deity
+debian.debian-chinese debian.debian-chinese-big5
+debian.debian-chinese-gb debian.debian-esperanto debian.debian-i18n
+debian.debian-japanese debian.debian-l10n-catalan
+debian.debian-l10n-dutch debian.debian-l10n-english
+debian.debian-l10n-french debian.debian-l10n-italian
+debian.debian-l10n-portuguese debian.debian-l10n-spanish
+debian.debian-laespiral debian.debian-russian
+debian.debian-simplified-chinese debian.debian-68k debian.debian-alpha
+debian.debian-arm debian.debian-bsd debian.debian-hppa
+debian.debian-hurd debian.debian-ia64 debian.debian-mips
+debian.debian-parisc debian.debian-powerpc debian.debian-s390
+debian.debian-sparc debian.debian-superh debian.debian-ultralinux
+debian.debian-win32 debian.debian-all-changes
+debian.debian-alpha-changes debian.debian-arm-changes
+debian.debian-books debian.debian-cd-vendors debian.debian-changes
+debian.debian-consultants debian.debian-curiosa
+debian.debian-devel-all-changes debian.debian-devel-alpha-changes
+debian.debian-devel-arm-changes debian.debian-devel-changes
+debian.debian-devel-hurd-i386-changes debian.debian-devel-i386-changes
+debian.debian-devel-m68k-changes debian.debian-devel-powerpc-changes
+debian.debian-devel-sparc-changes debian.debian-hurd-i386-changes
+debian.debian-i386-changes debian.debian-legal
+debian.debian-m68k-changes debian.debian-mirrors
+debian.debian-powerpc-changes debian.debian-project
+debian.debian-publicity debian.debian-sgml debian.debian-sparc-changes
+debian.lcs-eng debian.lsb-confcall debian.lsb-discuss debian.lsb-impl
+debian.lsb-spec debian.lsb-test debian.spi-announce debian.spi-general
+debian.vgui-discuss
+
+@item KDE $B4XO"(B
+kde.Kuser kde.Kdeveloper
+
+@item Geocrawler
+@uref{http://www.geocrawler.com/} $B$KJ]B8$5$l$F$$$kA4$F$N%a!<%j%s%0%j%9%H(B
+$B$r1\Mw$9$k$3$H$,$G$-$^$9!#(B@kbd{M-x shimbun-geocrawler-add-group RET} $B$H(B
+$B$$$&%3%^%s%I$r;H$C$F!"1\Mw$7$?$$%0%k!<%W$r(B
+$BJQ?t(B @code{shimbun-geocrawler-group-alist} $B$KEPO?$7$F$/$@$5$$!#(B
+
+@item MARC
+@uref{http://marc.theaimsgroup.com} $B$KJ]B8$5$l$F$$$kA4$F$N%a!<%j%s%0%j%9(B
+$B%H$r1\Mw$9$k$3$H$,$G$-$^$9!#1\Mw$7$?$$%0%k!<%W$N%0%k!<%WL>$H(B URL $B$r!"(B
+$BJQ?t(B @code{shimbun-marc-aims-group-alist} $B$KEPO?$7$F$/$@$5$$!#(B
+
+@item RedHat $B4XO"(B
+@uref{http://sources.redhat.com/lists.html}
+
+@item MacOSX-jp $B4XO"(B
+macosx-jp.macosx-jp macosx-jp.macosx-dev-jp
+macosx-jp.macosx-ws-jp macosx-jp.webobjects-jp
+
+@item Input Method
+anthy.main canna-dev.main
+
+@item Emacsen $BA4HL(B
+elips.elips
+
+@item Squeak-ja
+squeak-ja.main
+
+@item sml
+sml.main
+
+@item Squeak-dev
+squeak-dev.main
+
+@item Plucker
+plucker.announce plucker.list plucker.dev
+
+@item pilot-link
+pilot-link.announce pilot-link.devel pilot-link.general
+pilot-link.unix-ng
+
+@item Coldsync
+coldsync.main
+
+@item J-Pilot
+jpilot.main
+
+@item pilot-mailsync
+pilot-mailsync.main
+@end table
+
+@node Sport Sites Supported by Shimbun
+@subsection $B%9%]!<%D(B
+
+@samp{Shimbun} $B%i%$%V%i%j$,BP1~$7$F$$$k%9%]!<%D4X78$N%5%$%H$G$9!#(B
+
+@table @asis
+@item makanai
+makanai.f1news
+
+@item F1 $B%U%!%s(B
+f1fan.news
+
+@item $B%H!<%A%e%&(B F1 EXPRESS
+f1express.F1 f1express.Pari-Dakar f1express.CART f1express.All-Japan
+f1express.WRC f1express.bike f1express.Tuka-CLUB f1express.etc
+f1express.F-Nippon f1express.JGTC f1express.LeMans24 f1express.Indi500
+f1express.F3-Japan f1express.Super-Taikyu f1express.AJRC
+f1express.F-Toyota f1express.F-Dream f1express.etc-4-Japan
+f1express.F3-France f1express.F3-England f1express.F3-Germany
+f1express.LeMans-USA f1express.IRL f1express.FSC f1express.Int-F3000
+f1express.etc-4-int f1express.WGP f1express.WSB f1express.R2-1
+f1express.Suzuka8 f1express.Motegi7 f1express.AJ-Motocross
+f1express.AJ-Trial f1express.World-Motocross f1express.WCT
+f1express.etc-2 f1express.Inter-GP-Cafe f1express.Takagi
+f1express.NASCAR f1express.Kato f1express.Endo f1express.Sato
+f1express.Imamiya f1express.Toyota-news f1express.F1-release
+f1express.info
+@end table
+
+$B$?$@$7!"%H!<%A%e%&(B F1 EXPRESS $B$r1\Mw$9$k>l9g$O!"(BMule-UCS
+(@uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/}) $B$r%$%s%9%H!<%k$7$F$*$/(B
+$BI,MW$,$"$j$^$9!#(BEmacs-21.2 $B$GMxMQ$9$k>l9g$O!"(BMule-UCS $B$K(B patch
+@uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html}) $B$rE,(B
+$BMQ$7$?$[$&$,$$$$$G$7$g$&!#(B
+
+@node Misc Sites Supported by Shimbun
+@subsection $B$=$NB>(B
+
+@samp{Shimbun} $B%i%$%V%i%j$NBP1~$7$F$$$k$=$NB>$N%5%$%H$G$9!#7G<(HD$d!"O"(B
+$B:\5-;v$r<gBN$H$9$k$h$&$J%5%$%H$,4^$^$l$F$$$^$9!#(B
+
+@table @asis
+@item $B$f$&&S&O&P&I&A7G<(HD(B
+tcup.yutopia
+
+@item Meadow $B7G<(HD(B
+tcup.meadow
+
+@item SKK $B7G<(HD(B
+tcup.skk
+
+$BJQ?t(B @code{shimbun-tcup-group-alist} $B$KE,@Z$J@_Dj$r2C$($k$H!"(B
+@uref{http://www.tcup.com/} $B>e$G1?1D$5$l$F$$$kB>$N7G<(HD$b1\Mw$G$-$^$9!#(B
+
+@item VineLinux web $B%5%$%H(B
+vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
+vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
+vinelinux.errata.1x
+
+@item 2ch
+$B%0%k!<%WL>$H(B URL $B$rD4$Y$F!"0J2<$N$h$&$K@_Dj$7$F;H$$$^$9!#(B
+@lisp
+(setq shimbun-2ch-group-alist
+      '(("Meadow" .
+         "http://pc.2ch.net/test/read.cgi/software/1005469775")
+        ("emacs-w3m" .
+         "http://pc.2ch.net/test/read.cgi/unix/1013710106")))
+@end lisp
+
+@item HNS $B$K$h$kF|5-(B
+$B1\Mw$7$?$$F|5-$N(B URL $B$rD4$Y$F!"0J2<$N$h$&$K@_Dj$7$F;H$$$^$9!#(B
+@lisp
+(setq shimbun-hns-group-alist
+      '(("arisawa"                           ;; $B%0%k!<%WL>(B
+         "http://www.nijino.com/ari/diary/"  ;; URL
+         "ari@@mbf.sphere.ne.jp")             ;; $B%a!<%k%"%I%l%9(B
+        ("miyoshi"
+         "http://www.be.wakwak.com/cgi-bin/sbox/~miyoshi/hns/"
+         "miyoshi@@meadowy.org")))
+@end lisp
+
+@item $B>.@tFb3U%a!<%k%^%,%8%s(B
+kantei.m-magazine
+
+@item $BFC5vD#(B
+jpo.news jpo.revision jpo.lawguide jpo.details
+
+@item IBM developerWorks
+ibm-dev.components ibm-dev.java ibm-dev.linux ibm-dev.opensource
+ibm-dev.security ibm-dev.unicode ibm-dev.usability ibm-dev.web
+ibm-dev.webservices ibm-dev.xml
+
+@item Muchy's Palmware Review!
+muchy.review
+
+@item palmoslove
+palmoslove.webnews palmoslove.pdanews palmoslove.sitenews
+
+@item pocketgames
+pocketgames.news
+
+@item wincefan
+wincefan.news
+
+@item PalmFan
+palmfan.news palmfan.palmwarefan
+
+@item $BEEG>39$N8=>l%l%]!<%H(B
+dennou.report
+
+@item PCWEB COLUMN Square
+pcweb-column.gyokai pcweb-column.benri pcweb-column.hitech
+pcweb-column.business pcweb-column.winxp pcweb-column.bytes
+pcweb-column.newyork pcweb-column.asia pcweb-column.akiba
+pcweb-column.rikei pcweb-column.osx pcweb-column.game
+pcweb-column.smart98 pcweb-column.win2k pcweb-column.msdos
+pcweb-column.muteki pcweb-column.mobile pcweb-column.win98
+pcweb-column.ayashii pcweb-column.melon pcweb-column.linux
+pcweb-column.scrap pcweb-column.siterev pcweb-column.anime
+pcweb-column.soho pcweb-column.trouble pcweb-column.renai
+pcweb-column.dream pcweb-column.tworld pcweb-column.camera
+pcweb-column.denshi pcweb-column.tsushin pcweb-column.shitumon
+pcweb-column.nandemo pcweb-column.hourou pcweb-column.oshigoto
+pcweb-column.tech pcweb-column.speed
+
+@item $B%N!<%DDDNs4[(B(Notes Exhibition)
+lotusex.news lotusex.library lotusex.operation lotusex.primer
+lotusex.tips lotusex.practical lotusex.qanda lotusex.lounge
+lotusex.bbs
+@end table
+
 @node Shimbun Basics
 @section $B?7J9%b%8%e!<%k$N:n$jJ}(B
 @cindex @file{shimbun.el}
@@ -3452,11 +3607,11 @@ Mew $B$J$I$N(B MUA $B$rMxMQ$7!"(Bweb contents $B$r%a!<%k$HF1$8(B user inte
 $B$JJ}K!$r$4@bL@$7$^$9!#(B
 
 @menu
-* $B35N,(B::                        
-* web page $B$N%=!<%95Z$S%X%C%@>pJs$r<hF@$9$k(B::  
-* $B5-;v$NI=<((B::                  
-* shimbun $B%b%8%e!<%k$N7Q>5(B::    
-* Tips & $B%G%P%C%.%s%0(B::         
+* $B35N,(B::
+* web page $B$N%=!<%95Z$S%X%C%@>pJs$r<hF@$9$k(B::
+* $B5-;v$NI=<((B::
+* shimbun $B%b%8%e!<%k$N7Q>5(B::
+* Tips & $B%G%P%C%.%s%0(B::
 @end menu
 
 @node $B35N,(B
