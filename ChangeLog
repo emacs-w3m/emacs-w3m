@@ -1,6 +1,8 @@
 2003-04-26  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-squeak-ja.el: New file.
+	(shimbun-squeak-ja-make-contents): New function.
+	(shimbun-make-contents): New method.
 
 2003-04-16  Chihiro Kuroda  <chee@iijmio-mail.jp>
 
