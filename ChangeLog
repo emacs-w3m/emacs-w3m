@@ -1,3 +1,10 @@
+2004-12-10  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+
+	* w3m.el (w3m-fontify-anchors): Use 'w3m-name-anchor2 property to
+	avoid overriding 'w3m-name-anchor property.
+	(w3m-search-name-anchor): Search 'w3m-name-anchor2 property if
+	not detect 'w3m-name-anchor property 
+	
 2004-12-08  Andreas Seltenreich  <seltenreich@gmx.de>
 
 	* shimbun/sb-heise.el (shimbun-heise-get-telepolis-headers):
