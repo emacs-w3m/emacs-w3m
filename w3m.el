@@ -121,7 +121,6 @@
     "View Perl documents" t)
   (autoload 'w3m-about-perldoc "w3m-perldoc")
   (autoload 'w3m-fontify-forms "w3m-form")
-  (autoload 'w3m-filter "w3m-filter")
   (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
   (autoload 'w3m-switch-buffer "w3m-tabmenu")
   (autoload 'w3m-cookie-set "w3m-cookie")
@@ -927,12 +926,6 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   "Non-nil means using cookies. (EXPERIMENTAL)"
   :group 'w3m
   :type 'boolean)
-
-(defcustom w3m-use-filter nil
-  "*Non nil means filtering of WEB is used."
-  :group 'w3m
-  :type 'boolean
-  :require 'w3m-filter)
 
 (defcustom w3m-edit-function 'find-file
   "*Function of editing local file."
@@ -3872,7 +3865,6 @@ type as a string argument, when retrieve is complete."
 
 (defun w3m-rendering-buffer-1 (&optional content-charset binary-buffer)
   (w3m-message "Rendering...")
-  (when w3m-use-filter (w3m-filter w3m-current-url))
   (w3m-remove-comments)
   (w3m-check-header-tags)
   (w3m-remove-meta-charset-tags)
