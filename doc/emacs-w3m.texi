@@ -195,7 +195,7 @@ any problems, all responsibility for this program is ours (the emacs-w3m
 development team), but there is absolutely no warranty.  The emacs-w3m
 program was first created by TSUCHIYA Masatoshi in June 2000.
 
-See also the emacs-w3m official page: @uref{http://emacs-w3m.namazu.org/}
+See also @uref{http://emacs-w3m.namazu.org/, the emacs-w3m official page}.
 
 @node Getting Started
 @chapter It's so easy to begin to use emacs-w3m
@@ -2258,6 +2258,13 @@ with Mule and non-Mule XEmacs if you don't use @acronym{FLIM} for the
 @samp{shimbun} features, we recommend you replace it or newly install
 the original @acronym{APEL} package.  See @ref{Other Requirements} where
 to get it from.
+
+@item
+Q. I've gotten the developing version of emacs-w3m with CVS, however I'm
+missing @file{configure} script.
+
+It is necessary to run @samp{autoconf} first, to generate
+@file{configure} script.
 @end itemize
 
 @node Trouble FAQ
@@ -3031,7 +3038,468 @@ read @samp{shimbun} by just accessing a folder beginning with @samp{@@}
 @node Shimbun Sites
 @section Sites supported by Shimbun
 
-(under translation)
+This section provides the list of sites supported by @samp{shimbun}
+library.  Unfortunately for people who cannot understand Japanese,
+almost of supported sites are written in Japanese.
+
+@menu
+* Newspapers Supported by Shimbun::
+* News Sites Supported by Shimbun::
+* Mailing Lists Supported by Shimbun::
+* Sport Sites Supported by Shimbun::
+* Misc Sites Supported by Shimbun::
+@end menu
+
+@node Newspapers Supported by Shimbun
+@subsection Newspapers Supported by Shimbun
+
+These are newspapers that are supported by @samp{shimbun} library.
+
+@table @asis
+@item @uref{http://www.asahi.com/, Asahi Shimbun}
+asahi.business asahi.culture asahi.english asahi.international
+asahi.national asahi.politics asahi.science asahi.sports
+
+These backends generates articles including only texts; in other hands,
+@samp{asahi-html} generates MIME articles that include texts and
+photographs.  In order to use the latter backend, specify
+asahi-html.business instead of asahi.business as the group name.
+
+@item @uref{http://www.mainichi.co.jp/, Mainichi Shimbun}
+mainichi.shakai mainichi.sports mainichi.seiji mainichi.keizai
+mainichi.kokusai mainichi.fuho
+
+@item @uref{http://www.nikkansports.com/, Nikkan Sports}
+nikkansports.baseball nikkansports.mlb nikkansports.soccer
+nikkansports.world-soccer nikkansports.sports nikkansports.battle
+nikkansports.horseracing nikkansports.entertainment
+nikkansports.society nikkansports.leisure
+
+@item @uref{http://www.nikkei.co.jp/, Nihon Keizai Shimbun}
+nikkei.kaigai nikkei.keizai nikkei.main nikkei.market nikkei.okuyami
+nikkei.retto nikkei.sangyo nikkei.seiji nikkei.shakai nikkei.shasetsu
+nikkei.tento nikkei.zinzi
+
+@item @uref{http://www.sponichi.co.jp/, Sponichi}
+sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
+sponichi.society sponichi.entertainment sponichi.horseracing
+
+@item @uref{http://www.yomiuri.co.jp/, Yomiuri Shimbun}
+yomiuri.business yomiuri.editorial yomiuri.national yomiuri.obit
+yomiuri.politics yomiuri.sports yomiuri.world
+
+The backend, @samp{yomiuri-html}, is also supported.
+@end table
+
+@node News Sites Supported by Shimbun
+@subsection News Sites Supported by Shimbun
+
+These are news sites that are supported by @samp{shimbun} library.
+
+@table @asis
+@item @uref{http://cnet.sphere.ne.jp/, Japan CNET}
+cnet.comp
+
+@item @uref{http://www.watch.impress.co.jp/, Impress}
+impress.internet impress.pc impress.akiba impress.game impress.av
+impress.jijinews impress.sports
+
+@item @uref{http://slashdot.jp/, Slashdot Japan}
+slashdot-jp.story
+
+@item @uref{http://www.hotwired.co.jp/, HotWired Japan}
+wired.business wired.culture wired.technology
+
+@item @uref{http://headlines.yahoo.co.jp/, Yahoo! Japan}
+yahoo.politics yahoo.society yahoo.people yahoo.business-all
+yahoo.market yahoo.stock yahoo.industry yahoo.international
+yahoo.entertainment yahoo.sports yahoo.computer yahoo.hokkaido
+yahoo.tohoku yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
+yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
+
+@item @uref{http://www.zdnet.co.jp/, ZDNet Japan}
+zdnet.comp zdnet.gamespot
+@end table
+
+@node Mailing Lists Supported by Shimbun
+@subsection Mailing Lists Supported by Shimbun
+
+These are mailing list archives supported by @samp{shimbun} library.
+
+@table @asis
+@item @uref{http://lists.airs.net/semi-gnus/archive/, semi-gnus-ja}
+airs.semi-gnus-ja
+
+@item @uref{http://lists.airs.net/, Wanderlust}
+airs.wl airs.wl-en
+
+@item @uref{http://www.rc.tutrp.tut.ac.jp/bbdb-ml/, bbdb-ml}
+bbdb-ml.bbdb-ml
+
+@item @uref{http://mail.gnome.org/archives/, GNOME}
+gnome.balsa-list gnome.calendar-list gnome.cvs-commits-list
+gnome.foundation-announce gnome.foundation-list gnome.fplan-list
+gnome.gconf-list gnome.gdome gnome.gnome-1.4-list
+gnome.gnome-announce-list gnome.gnome-components-list
+gnome.gnome-db-list gnome.gnome-de gnome.gnome-debugger-list
+gnome.gnome-devel-list gnome.gnome-doc-list gnome.gnome-gui-list
+gnome.gnome-hackers gnome.gnome-hackers-readonly
+gnome.gnome-hackers-test gnome.gnome-i18n gnome.gnome-i18n-tools
+gnome.gnome-kde-list gnome.gnome-list gnome.gnome-office-list
+gnome.gnome-pilot-list gnome.gnome-sound-list gnome.gnome-themes-list
+gnome.gnome-ui-hackers gnome.gnome-web-list gnome.gnome-webmaster-list
+gnome.gnome-workshop-list gnome.gnomecc-list gnome.gnumeric-list
+gnome.gtk-app-devel-list gnome.gtk-devel-list gnome.gtk-doc-list
+gnome.gtk-i18n-list gnome.gtk-list gnome.gtk-perl-list
+gnome.guppi-list gnome.libart gnome.libart-hackers gnome.orbit-list
+gnome.vote gnome.wm-spec-list gnome.xml gnome.xslt
+
+@item @uref{http://www.gyve.org/gs-cjk/archive/, gs-cjk}
+gyve.gs-cjk
+
+@item @uref{http://www.h14m.org/ml/, h14m}
+h14m.hns-dev h14m.hns-users
+
+@item @uref{http://www.java-conf.gr.jp/archives/, Java Conference}
+javaconf.servlet-ml javaconf.business-ml
+javaconf.duke-in-the-box-ml javaconf.jfriends-ml javaconf.JGT-ml
+javaconf.jini-ml javaconf.ejb-ml javaconf.cm-ml javaconf.horb-ml
+javaconf.talk-ml
+
+@item @uref{http://www.peanuts.gr.jp/~kei/ml-archive/, LinuxCE JP}
+linuxce-jp.users
+
+@item @uref{http://www.m17n.org/, Mule}
+m17n.mule-ja m17n.mule
+
+@item @uref{http://www.ysnb.net/meadow/, Meadow}
+meadow.meadow-develop meadow.meadow-users-jp
+
+@item @uref{http://www.mew.org/ml/, Mew}
+mew.mew-dist mew.mew-win32 mew.mew-int
+
+@item @uref{http://www.mew.org/ml/, MagicPoint}
+mew.mgp-users mew.mgp-users-jp
+
+@item @uref{http://www.namazu.org/ml/, Namazu}
+namazu.namazu-users-ja namazu.namazu-win32-users-ja
+namazu.namazu-users-en namazu.namazu-devel-ja namazu.namazu-devel-en
+
+@item @uref{http://emacs-w3m.namazu.org/ml/, emacs-w3m}
+namazu.emacs-w3m
+
+@item @uref{http://migemo.namazu.org/ml/, migemo}
+namazu.migemo
+
+@item @uref{http://www.jp.netbsd.org/ja/JP/ml/, NetBSD JP}
+netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
+netbsd.tech-pkg-ja netbsd.port-arm32-ja netbsd.port-hpcmips-ja
+netbsd.port-mac68k-ja netbsd.port-mips-ja netbsd.port-powerpc-ja
+netbsd.hpcmips-changes-ja netbsd.members-ja netbsd.admin-ja
+netbsd.www-changes-ja
+
+@item @uref{http://namazu.org/~satoru/archives/, QuickML}
+quickml.quickml-users quickml.quickml-server
+quickml.chatty quickml.dotnet quickml.linux-zaurus quickml.ming
+quickml.pdumpfs quickml.stationery quickml.tty-mania
+
+@item @uref{http://blade.nagaokaut.ac.jp/, Ruby}
+ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
+ruby.ruby-dev ruby.ruby-ext ruby.ruby-list ruby.ruby-math
+ruby.ruby-talk
+
+@item @uref{http://linux.toshiba-dme.co.jp/ML/tlinux-users-j/, Toshiba Linux Users JP}
+toshiba.linux-users-j
+
+@item @uref{http://mi.med.tohoku.ac.jp/~satodai/w3m-dev/, w3m-dev}
+w3m-dev.w3m-dev
+
+@item @uref{http://yar-3.net/digiko/, digiko-ml}
+digiko.digiko
+
+@item @uref{http://list-archive.xemacs.org/, XEmacs}
+xemacs.xemacs-announce xemacs.xemacs-beta-ja
+xemacs.xemacs-beta xemacs.xemacs-build-reports xemacs.xemacs-cvs
+xemacs.xemacs-design xemacs.xemacs-mule xemacs.xemacs-nt
+xemacs.xemacs-patches xemacs.xemacs-users-ja xemacs.xemacs
+
+@item @uref{http://memo.st.ryukoku.ac.jp/archive/, Security MEMO}
+security-memo.memo
+
+@item @uref{http://lists.debian.or.jp/, Debian JP}
+debian-jp.debian-announce debian-jp.debian-devel
+debian-jp.debian-www debian-jp.debian-users debian-jp.debian-policy
+debian-jp.jp-qa
+
+@item @uref{http://lists.debian.org, Debian}
+debian.debian-announce debian.debian-commercial debian.debian-firewall
+debian.debian-french debian.debian-isp debian.debian-italian
+debian.debian-kde debian.debian-laptop debian.debian-news
+debian.debian-news-german debian.debian-news-portuguese
+debian.debian-security-announce debian.debian-testing
+debian.debian-user debian.debian-user-catalan
+debian.debian-user-french debian.debian-user-polish
+debian.debian-user-portuguese debian.debian-user-spanish
+debian.debian-user-swedish debian.debian-admintool
+debian.debian-apache debian.debian-autobuild debian.debian-beowulf
+debian.debian-boot debian.debian-cd debian.debian-ctte
+debian.debian-debbugs debian.debian-devel debian.debian-devel-announce
+debian.debian-devel-french debian.debian-devel-games
+debian.debian-devel-spanish debian.debian-doc debian.debian-dpkg
+debian.debian-emacsen debian.debian-events-eu debian.debian-events-na
+debian.debian-faq debian.debian-gcc debian.debian-glibc
+debian.debian-gtk-gnome debian.debian-hams debian.debian-ipv6
+debian.debian-java debian.debian-jr debian.debian-med
+debian.debian-mentors debian.debian-newmaint
+debian.debian-newmaint-admin debian.debian-ocaml-maint
+debian.debian-openoffice debian.debian-perl debian.debian-pilot
+debian.debian-policy debian.debian-pool debian.debian-python
+debian.debian-qa debian.debian-qa-private debian.debian-release
+debian.debian-security debian.debian-snapshots
+debian.debian-tetex-maint debian.debian-toolchain debian.debian-vote
+debian.debian-wnpp debian.debian-www debian.debian-x debian.deity
+debian.debian-chinese debian.debian-chinese-big5
+debian.debian-chinese-gb debian.debian-esperanto debian.debian-i18n
+debian.debian-japanese debian.debian-l10n-catalan
+debian.debian-l10n-dutch debian.debian-l10n-english
+debian.debian-l10n-french debian.debian-l10n-italian
+debian.debian-l10n-portuguese debian.debian-l10n-spanish
+debian.debian-laespiral debian.debian-russian
+debian.debian-simplified-chinese debian.debian-68k debian.debian-alpha
+debian.debian-arm debian.debian-bsd debian.debian-hppa
+debian.debian-hurd debian.debian-ia64 debian.debian-mips
+debian.debian-parisc debian.debian-powerpc debian.debian-s390
+debian.debian-sparc debian.debian-superh debian.debian-ultralinux
+debian.debian-win32 debian.debian-all-changes
+debian.debian-alpha-changes debian.debian-arm-changes
+debian.debian-books debian.debian-cd-vendors debian.debian-changes
+debian.debian-consultants debian.debian-curiosa
+debian.debian-devel-all-changes debian.debian-devel-alpha-changes
+debian.debian-devel-arm-changes debian.debian-devel-changes
+debian.debian-devel-hurd-i386-changes debian.debian-devel-i386-changes
+debian.debian-devel-m68k-changes debian.debian-devel-powerpc-changes
+debian.debian-devel-sparc-changes debian.debian-hurd-i386-changes
+debian.debian-i386-changes debian.debian-legal
+debian.debian-m68k-changes debian.debian-mirrors
+debian.debian-powerpc-changes debian.debian-project
+debian.debian-publicity debian.debian-sgml debian.debian-sparc-changes
+debian.lcs-eng debian.lsb-confcall debian.lsb-discuss debian.lsb-impl
+debian.lsb-spec debian.lsb-test debian.spi-announce debian.spi-general
+debian.vgui-discuss
+
+@item @uref{http://www.kde.gr.jp/ml/, KDE}
+kde.Kuser kde.Kdeveloper
+
+@item @uref{http://www.geocrawler.com/, Geocrawler}
+All archives of Geocrawler are supported by @samp{shimbun} library.  You
+can use the command @kbd{M-x shimbun-geocrawler-add-group RET}, to add
+your favorite archive to the variable
+@code{shimbun-geocrawler-group-alist}.
+
+@item @uref{http://marc.theaimsgroup.com/, Mailing list ARChives}
+Mailing list ARChives (@acronym(MARC) is supported by @samp{shimbun}
+library.  Add a group name of your favorite archive and its URL to the
+variable @code{shimbun-marc-aims-group-alist}, and you can browse it.
+
+@item @uref{http://sources.redhat.com/ml/, RedHat}
+redhat.automake redhat.bug-automake redhat.automake-prs
+redhat.automake-cvs redhat.binutils redhat.binutils-cvs
+redhat.c++-embedded redhat.crossgcc redhat.cgen redhat.cgen-prs
+redhat.cgen-cvs redhat.cygwin redhat.cygwin-xfree redhat.cygwin-announce
+redhat.cygwin-xfree-announce redhat.cygwin-apps redhat.cygwin-patches
+redhat.cygwin-developers redhat.cygwin-cvs redhat.cygwin-apps-cvs
+redhat.docbook-tools-discuss redhat.docbook-tools-announce
+redhat.docbook-tools-cvs redhat.docbook redhat.dssslist
+redhat.sgml-tools redhat.docbook-apps redhat.ecos-announce
+redhat.ecos-devel redhat.ecos-discuss redhat.ecos-maintainers
+redhat.ecos-patches redhat.elix redhat.elix-announce redhat.gdb
+redhat.gdb-announce redhat.gdb-testers redhat.gdb-testresults
+redhat.gdb-patches redhat.gdb-cvs redhat.bug-gdb redhat.gdb-prs
+redhat.libc-alpha redhat.libc-hacker redhat.bug-glibc redhat.glibc-cvs
+redhat.glibc-linux redhat.bug-gnats redhat.gnats-devel
+redhat.gnats-announce redhat.gnats-cvs redhat.gsl-discuss
+redhat.gsl-announce redhat.gsl-cvs redhat.guile redhat.guile-emacs
+redhat.guile-prs redhat.guile-gtk redhat.bug-guile redhat.guile-cvs
+redhat.guile-emacs-cvs redhat.insight redhat.insight-announce
+redhat.insight-prs redhat.installshell redhat.inti redhat.kawa
+redhat.libffi-discuss redhat.libffi-announce redhat.libstdc++
+redhat.libstdc++-cvs redhat.libstdc++-prs redhat.mauve-discuss
+redhat.mauve-announce redhat.newlib redhat.pthreads-win32 redhat.rhdb
+redhat.rhdb-announce redhat.rhug-rhats redhat.rpm2html-cvs
+redhat.rpm2html-prs redhat.rpm2html redhat.sid redhat.sid-announce
+redhat.sid-cvs redhat.sourcenav redhat.sourcenav-announce
+redhat.sourcenav-prs redhat.win32-x11 redhat.xconq7
+redhat.xconq-announce redhat.xconq-cvs
+
+@item @uref{http://www.tech-arts.co.jp/macosx/, MacOSX JP}
+macosx-jp.macosx-jp macosx-jp.macosx-dev-jp
+macosx-jp.macosx-ws-jp macosx-jp.webobjects-jp
+
+@item @uref{http://lists.sourceforge.jp/pipermail/anthy-dev/, Anthy}
+anthy.main
+
+@item @uref{http://lists.sourceforge.jp/pipermail/canna-dev/, Canna}
+canna-dev.main
+
+@item @uref{http://heimat.jp/~nakaji/elips/, Elips}
+elips.elips
+
+@item @uref{http://lists.squeakfoundation.org/pipermail/squeak-ja/, Squeak-ja}
+squeak-ja.main
+
+@item @uref{http://www.sra.co.jp/smalltalk/SML/archives/, sml}
+sml.main
+
+@item @uref{http://lists.squeakfoundation.org/pipermail/squeak-dev/, Squeak-dev}
+squeak-dev.main
+
+@item Plucker
+plucker.announce plucker.list plucker.dev
+
+@item @uref{http://www.pilot-link.org/pipermail/, pilot-link}
+pilot-link.announce pilot-link.devel pilot-link.general
+pilot-link.unix-ng
+
+@item @uref{http://www.thedotin.net/maillists/coldsync-hackers/maillist.html, Coldsync}
+coldsync.main
+
+@item @uref{http://www.jpilot.org/pipermail/jpilot/, J-Pilot}
+jpilot.main
+
+@item @uref{http://lists.gnu-designs.com/pipermail/pilot-mailsync/, pilot-mailsync}
+pilot-mailsync.main
+@end table
+
+@node Sport Sites Supported by Shimbun
+@subsection Sport Sites Supported by Shimbun
+
+These are sport sites supported by @samp{shimbun} library.
+
+@table @asis
+@item @uref{http://www.makanai.com/, makanai}
+makanai.f1news
+
+@item @uref{http://www.ksky.ne.jp/~tahara/f1/, F1 FAN}
+f1fan.news
+
+@item @uref{http://f1express.cnc.ne.jp/, TOCHUU F1 EXPRESS}
+f1express.F1 f1express.Pari-Dakar f1express.CART f1express.All-Japan
+f1express.WRC f1express.bike f1express.Tuka-CLUB f1express.etc
+f1express.F-Nippon f1express.JGTC f1express.LeMans24 f1express.Indi500
+f1express.F3-Japan f1express.Super-Taikyu f1express.AJRC
+f1express.F-Toyota f1express.F-Dream f1express.etc-4-Japan
+f1express.F3-France f1express.F3-England f1express.F3-Germany
+f1express.LeMans-USA f1express.IRL f1express.FSC f1express.Int-F3000
+f1express.etc-4-int f1express.WGP f1express.WSB f1express.R2-1
+f1express.Suzuka8 f1express.Motegi7 f1express.AJ-Motocross
+f1express.AJ-Trial f1express.World-Motocross f1express.WCT
+f1express.etc-2 f1express.Inter-GP-Cafe f1express.Takagi
+f1express.NASCAR f1express.Kato f1express.Endo f1express.Sato
+f1express.Imamiya f1express.Toyota-news f1express.F1-release
+f1express.info
+@end table
+
+TOCHUU F1 EXPRESS requires @uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/,
+Mule-UCS}.  When Mule-UCS is installed for Emacs-21.2, it is necessary
+to apply
+@uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html, the
+patch} before installation.
+
+@node Misc Sites Supported by Shimbun
+@subsection Misc Sites Supported by Shimbun
+
+These are misc sites supported by @samp{shimbun} library.  WEB BBS and
+serial publications are included.
+
+@table @asis
+@item @uref{http://www61.tcup.com/6116/yutopia.html, Yutopia BBS}
+tcup.yutopia
+
+@item @uref{http://www66.tcup.com/6629/yutopia.html, Meadow BBS}
+tcup.meadow
+
+@item @uref{http://www67.tcup.com/6718/yutopia.html, SKK BBS}
+tcup.skk
+
+Add appropriate configurations to the variable
+@code{shimbun-tcup-group-alist}, you can browse other bulletin board
+systems that are provided at @uref{http://www.tcup.com/}.
+
+@item @uref{http://www.vinelinux.org, VineLinux}
+vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
+vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
+vinelinux.errata.1x
+
+@item 2ch
+This is an example to browse Meadow BBS and emacs-w3m BBS on 2ch.
+@lisp
+(setq shimbun-2ch-group-alist
+      '(("Meadow" .
+         "http://pc.2ch.net/test/read.cgi/software/1005469775")
+        ("emacs-w3m" .
+         "http://pc.2ch.net/test/read.cgi/unix/1013710106")))
+@end lisp
+
+@item HNS
+This is an example to use @samp{sb-hns}.
+@lisp
+(setq shimbun-hns-group-alist
+      '(("arisawa"                           ;; Group Name
+         "http://www.nijino.com/ari/diary/"  ;; URL
+         "ari@@mbf.sphere.ne.jp")             ;; E-Mail Address
+        ("miyoshi"
+         "http://www.be.wakwak.com/cgi-bin/sbox/~miyoshi/hns/"
+         "miyoshi@@meadowy.org")))
+@end lisp
+
+@item @uref{http://www.kantei.go.jp/jp/, Koizumu Cabinet Mail Magazine}
+kantei.m-magazine
+
+@item @uref{http://www.jpo.go.jp/, Patent Office in Japan}
+jpo.news jpo.revision jpo.lawguide jpo.details
+
+@item @uref{http://www-6.ibm.com/jp/developerworks/, IBM developerWorks} (in Japanese)
+ibm-dev.java ibm-dev.linux ibm-dev.opensource ibm-dev.webservices
+ibm-dev.xml
+
+@item @uref{http://muchy.com/, Muchy's Palmware Review!}
+muchy.review
+
+@item @uref{http://palmoslove.com/, palmoslove}
+palmoslove.webnews palmoslove.pdanews palmoslove.sitenews
+
+@item @uref{http://www.pocketgames.jp/, pocketgames}
+pocketgames.news
+
+@item @uref{http://www.wince.ne.jp/, wincefan}
+wincefan.news
+
+@item @uref{http://www.palmfan.com/, PalmFan}
+palmfan.news palmfan.palmwarefan
+
+@item @uref{http://homepage1.nifty.com/akiba/plat.html, Report of Electrical Stores Street} (in Japanese)
+dennou.report
+
+@item @uref{http://pcweb.mycom.co.jp/column/, PCWEB COLUMN Square}
+pcweb-column.gyokai pcweb-column.benri pcweb-column.hitech
+pcweb-column.business pcweb-column.winxp pcweb-column.bytes
+pcweb-column.newyork pcweb-column.asia pcweb-column.akiba
+pcweb-column.rikei pcweb-column.osx pcweb-column.game
+pcweb-column.smart98 pcweb-column.win2k pcweb-column.msdos
+pcweb-column.muteki pcweb-column.mobile pcweb-column.win98
+pcweb-column.ayashii pcweb-column.melon pcweb-column.linux
+pcweb-column.scrap pcweb-column.siterev pcweb-column.anime
+pcweb-column.soho pcweb-column.trouble pcweb-column.renai
+pcweb-column.dream pcweb-column.tworld pcweb-column.camera
+pcweb-column.denshi pcweb-column.tsushin pcweb-column.shitumon
+pcweb-column.nandemo pcweb-column.hourou pcweb-column.oshigoto
+pcweb-column.tech pcweb-column.speed
+
+@item @uref{http://tsuruo.dominohosting.biz/members/tsuruo/, Notes Exhibition}
+lotusex.news lotusex.library lotusex.operation lotusex.primer
+lotusex.tips lotusex.practical lotusex.qanda lotusex.lounge
+lotusex.bbs
+@end table
 
 @node Shimbun Basics
 @section How to make a new shimbun module
@@ -3341,20 +3809,23 @@ For more details see @code{shimbun-make-contents} of
 
 There are some famous mailing list manager (or archiver).
 
-@itemize
+@itemize @bullet
 @item Mailman
 @noindent
 The GNU Mailing List Manager, formerly called as @samp{pipermail}.
 See  @url{http://www.gnu.org/software/mailman/index.html} for detail.
 
 @item Mhonarc
+@noindent
 See @url{http://www.oac.uci.edu/indiv/ehood/mhonarc.html} for detail.
 
 @item fml
+@noindent
 fml mailing list server/manager.  See
 @url{http://www.fml.org/software/fml/} for detail.
 
 @item mailarc
+@noindent
 See @url{http://cvs.namazu.org/mailarc/} for detail.
 @end itemize
 
