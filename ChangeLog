@@ -1,3 +1,16 @@
+2001-04-16  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-gnome.el: New file.
+
+	* shimbun/shimbun.el (shimbun-reply-to): New generic function.
+
+	* shimbun/sb-mhonarc.el (shimbun-make-contents): Add "Reply-To" field.
+
+	* shimbun/sb-airs.el (shimbun-airs-group-path-alist): Add reply-to
+	information.
+	(shimbun-airs-concat-url): Follow the change above.
+	(shimbun-reply-to): Define.
+
 2001-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-about-history-1): New internal function.
