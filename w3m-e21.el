@@ -317,8 +317,10 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defvar w3m-current-favicon-data nil
   "A cons cell of (IMAGE-DATA . IMAGE-TYPE).")
 (defvar w3m-current-favicon-image nil)
+(defvar w3m-favicon-converted nil)
 (make-variable-buffer-local 'w3m-current-favicon-data)
 (make-variable-buffer-local 'w3m-current-favicon-image)
+(make-variable-buffer-local 'w3m-favicon-converted)
 (add-hook 'w3m-display-hook 'w3m-setup-favicon)
 
 (defun w3m-favicon-usable-p ()
@@ -387,7 +389,8 @@ Each information is a list whose elements are:
 
 (defun w3m-setup-favicon (url)
   (setq w3m-current-favicon-data nil
-	w3m-current-favicon-image nil)
+	w3m-current-favicon-image nil
+	w3m-favicon-converted nil)
   (when (and w3m-use-favicon
 	     w3m-current-url
 	     (w3m-image-type-available-p 'xpm))
@@ -415,9 +418,11 @@ Each information is a list whose elements are:
   (with-current-buffer buffer
     (when (and w3m-current-favicon-data (car w3m-current-favicon-data))
       (or w3m-current-favicon-image
+	  w3m-favicon-converted
 	  (lexical-let ((height (number-to-string (frame-char-height)))
 			(buffer buffer)
 			handler)
+	    (setq w3m-favicon-converted t)
 	    (w3m-process-do
 		(xpm (w3m-imagick-start-convert-data
 		      handler

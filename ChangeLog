@@ -1,3 +1,11 @@
+2002-04-10  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-e21.el (w3m-favicon-converted): New buffer-local variable.
+	(w3m-setup-favicon): Set w3m-favicon-converted as nil.
+	(w3m-buffer-favicon): If w3m-favicon-converted is non-nil, don't
+	start conversion.
+	Set w3m-favicon-converted as t before conversion.
+
 2002-04-10  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-about-retrieve): Change behavior according to
