@@ -43,11 +43,18 @@
 
 ** Gnus
 
-   Even if you use Oort Gnus, Gnus v5.8.8 or v5.9, you can read articles
-   via nnshimbun. Copy "nnshimbun.el" distributed with newest T-gnus
-   6.15 to lisp/ directory and then "make install". In addition, if you
-   want to use Emacs-W3M instead of Emacs-W3 for text/html contents, add
-   following setting to your ".gnus".
+   Even if you are using Oort Gnus, Gnus v5.8.8 or v5.9, you may read
+   some news articles using nnshimbun.  To do that, copy nnshimbun.el
+   from the newest T-gnus 6.15 to Gnus' lisp/ directory and then simply
+   invoke "make install".  In addition, fortunately, if you are using
+   Oort Gnus v0.06 or later, you only have to add the following line in
+   your .gnus file to make Gnus show text/html contents using emacs-w3m
+   instead of Emacs/w3.
+
+(setq mm-text-html-renderer 'w3m)
+
+   Otherwise, try the following.  They aren't as good as Oort Gnus v0.06
+   or later will do, though.
 
 ;; From: greg@visiontech-dml.com
 ;; Newsgroups: gnu.emacs.help
@@ -55,24 +62,52 @@
 ;; Date: 19 Jul 2001 10:59:19 +0300
 ;; Message-ID: <2fasnftcpt4.fsf@broadcom.com>
 
+;; Modified to make it work even if w3 has not installed in the system
+;; based on the diary of SHIMADA Mitsunobu, 09 Jan 2002.
+
 (defvar gnus-w3m-minor-mode nil)
+(defvar mm-inline-text-html-with-images nil
+  "*If non-nil, Gnus will allow retrieving images in the HTML contents
+with <img> tags.")
 
 (make-variable-buffer-local 'gnus-w3m-minor-mode)
 (add-to-list 'minor-mode-alist '(gnus-w3m-minor-mode " w3m"))
-(add-to-list 'minor-mode-map-alist (cons 'gnus-w3m-minor-mode w3m-mode-map))
+
+(eval-after-load "w3m"
+  '(add-to-list 'minor-mode-map-alist
+		(cons 'gnus-w3m-minor-mode w3m-mode-map)))
+
+(eval-after-load "mm-decode"
+  '(let ((test (nthcdr 2 (assoc "text/html" mm-inline-media-tests))))
+     (if test
+	 (setcar test (lambda (handle) (locate-library "w3m"))))))
 
 (defadvice mm-inline-text (around use-w3m-instead (handle) activate)
   (let ((type (mm-handle-media-subtype handle)))
     (if (not (equal type "html"))
 	ad-do-it
+      (require 'w3m)
       (let ((text (mm-get-part handle))
-	    (b (point)))
+	    (b (point))
+	    (charset (mail-content-type-get (mm-handle-type handle)
+					    'charset)))
 	(save-excursion
 	  (insert text)
 	  (save-restriction
 	    (narrow-to-region b (point))
 	    (goto-char (point-min))
-	    (w3m-region (point-min) (point-max))
+	    (if (re-search-forward w3m-meta-content-type-charset-regexp
+				   nil t)
+		(setq charset
+		      (or (w3m-charset-to-coding-system (match-string 2))
+			  charset)))
+	    (if charset
+		(progn
+		  (delete-region (point-min) (point-max))
+		  (insert (mm-decode-string text charset))))
+	    (let ((w3m-safe-url-regexp "\\`cid:")
+		  (w3m-display-inline-images mm-inline-text-html-with-images))
+	      (w3m-region (point-min) (point-max)))
 	    (setq gnus-w3m-minor-mode t))
 	  (mm-handle-set-undisplayer
 	   handle
@@ -88,14 +123,14 @@
 		(delete-region ,(point-min-marker)
 			       ,(point-max-marker))))))))))
 
+   In additon, the experimental code below is used to display
+   multipart/related pictures. The place might be something wrong :-<
+
 ;; Date: Fri, 27 Jul 2001 12:51:12 +0900
 ;; Message-ID: <yosuwv4v3u8f.fsf@jpl.org>
 ;; From: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; To: semi-gnus-ja@meadowy.org
 ;; Subject: [nnshimbun] toggle inline images
-
-;; Display multipart/related pictures.
-;; The place might be something wrong :-)
 
 (eval-after-load "gnus-art"
   '(or (assoc "multipart/related" gnus-mime-multipart-functions)
