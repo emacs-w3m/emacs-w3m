@@ -1,0 +1,79 @@
+This package contains a interface program of w3m.
+
+1. Introduction
+
+   w3m is a a pager with WWW capability, developped by Akinori ITO.  It
+   is a pager, but it can be used as a text-mode WWW browser.  For more
+   detail about it, see:
+
+       http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/
+
+   w3m.el is a simple interface program of w3m.
+
+
+2. Installation
+
+   a) This package requires the latest version of w3m (see section 3).
+      Please install it.
+
+   b) Put emacs-lisp programs of this package to an appropriate
+      directory.
+
+   c) Put these lines into your ~/.emacs.
+
+          (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
+
+   d) If you want to use contributed programes, some additional settings
+      are requied.  Please see the head of those programs for more
+      detail.
+
+
+3. Version of w3m
+
+   Because this program is sensitive to version of w3m, the latest
+   version of w3m should be used.  Candidates are:
+
+   (1) w3m-0.1.10
+
+       The latest official version on Jun 6th, 2000.  This version of
+       w3m has a problem of processing data when `-dump_source' option
+       is specified. Therefore, you can't use some features of w3m.el,
+       such as downloading data, viewing images, and so on.
+
+   (2) w3m-0.1.11-pre
+
+       The latest official beta version on Jun 14th, 2000.  This version
+       of w3m has the same problem of w3m-0.1.10.
+
+   (3) w3m-0.1.11-pre + w3m-0.1.11-pre-kokb23.patch.gz
+
+       Okabe Katsuya maintains his private patch of w3m, which fixes
+       many bugs and addes many features.  This version of w3m has no
+       problem to corpolate with w3m.el.
+
+   Therefore, you should use the 3rd candidate of w3m, whose sources can
+   be downloaded from:
+
+      ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/dev/w3m-0.1.11-pre.tar.gz
+      http://www4.ocn.ne.jp/~okabek/w3m-0.1.11-pre-kokb23.patch.gz
+
+
+4. Contact
+
+   In order to contact us, please join the mailing list
+   <emacs-w3m@namazu.org>.
+
+
+5. Acknowledgments
+
+   w3m, which is an essential part of this package, was written by
+   Akinori ITO.  We'd like to address our thanks to him for his nice
+   work.
+
+
+
+Local Variables:
+mode: indented-text
+coding: ascii
+fill-column: 72
+End:

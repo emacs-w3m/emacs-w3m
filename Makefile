@@ -1,7 +1,7 @@
 PACKAGE   = w3m_el
 TARBALL   = $(PACKAGE)-$(VERSION).tar.gz
 DISTDIR   = $(PACKAGE)-$(VERSION)
-DISTFILES = COPYING ChangeLog $(wildcard *.el)
+DISTFILES = COPYING ChangeLog README README.ja $(wildcard *.el)
 BASEVER   = 0.2
 REVISION  =
 ifeq "$(REVISION)" ""
