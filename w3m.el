@@ -129,7 +129,8 @@
   (autoload 'w3m-cookie "w3m-cookie")
   (autoload 'w3m-about-cookie "w3m-cookie")
   (autoload 'w3m-cookie-shutdown "w3m-cookie" nil t)
-  (autoload 'report-emacs-w3m-bug "w3m-bug" nil t))
+  (autoload 'report-emacs-w3m-bug "w3m-bug" nil t)
+  (autoload 'w3m-replace-symbol "w3m-symbol" nil t))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
@@ -938,6 +939,12 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
   :type 'boolean
   :require 'w3m-filter)
+
+(defcustom w3m-use-symbol (and (featurep 'mule) (eq w3m-type 'w3m-m17n))
+  "*Non-nil means replacing symbol."
+  :group 'w3m
+  :type 'boolean
+  :require 'w3m-symbol)
 
 (defcustom w3m-edit-function 'find-file
   "*Function of editing local file."
@@ -2575,6 +2582,8 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (when w3m-use-form
       (w3m-fontify-forms))
     (w3m-fontify-images)
+    (when w3m-use-symbol
+      (w3m-replace-symbol))
     ;; Remove other markups.
     (goto-char (point-min))
     (while (re-search-forward "</?[A-Za-z_][^>]*>" nil t)

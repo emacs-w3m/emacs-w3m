@@ -1,3 +1,18 @@
+2002-10-17  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* icons/db-history-up.xpm: Add missing comma.
+
+2002-07-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-symbol.el: New file.
+
+	* w3m.el: Autoload "w3m-symbol" for `w3m-replace-symbol'.
+	(w3m-use-symbol): New variable.
+	(w3m-fontify): Call `w3m-replace-symbol'.
+
+	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
+	w3m-symbol.el if no-MULE.
+
 2002-10-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-e21.el (w3m-buffer-favicon): Bind local null handler with
