@@ -6125,7 +6125,12 @@ appropriate buffer and select it."
 		  (w3m-display-inline-images
 		   w3m-modeline-image-status-on
 		   w3m-modeline-status-off))))
-	      " / "
+	      (w3m-static-if (featurep 'xemacs)
+		  '(w3m-use-favicon
+		    (w3m-favicon-converted
+		     ("  " w3m-current-favicon-image) " / ")
+		    " / ")
+		" / ")
 	      'w3m-current-title)))
 
 ;;;###autoload
