@@ -1,3 +1,8 @@
+2001-05-21  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun-article-url): Fixed problem when
+	shimbun-header-xref returns nil.
+
 2001-05-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-cache-underline-faces): Modified docs that it is for
