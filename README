@@ -49,30 +49,11 @@ This package contains a interface program of w3m.
 3. Version of w3m
 
    Because this program is sensitive to version of w3m, the latest
-   version of w3m should be used.  Candidates are:
+   version of w3m should be used.  Its latest official version is 0.2.1,
+   which is released at Mar 23th, 2001.  Its source can be downloaded
+   from:
 
-   (1) w3m-0.1.10
-
-       The latest official version on Jun 6th, 2000.  This version of
-       w3m convert newline code when `-dump_source' option is
-       specified. Therefore, you can't use some features of w3m.el, such
-       as downloading data, viewing images, and so on.
-
-   (2) w3m-0.1.11-pre
-
-       The latest official beta version on Jun 14th, 2000.  This version
-       of w3m works in the same way of w3m-0.1.10.
-
-   (3) w3m-0.1.11-pre + w3m-0.1.11-pre-kokb23.patch.gz
-
-       Okabe Katsuya maintains his private patch of w3m, which fixes
-       many bugs and added many features.
-
-   Therefore, you should use the 3rd candidate of w3m, whose sources can
-   be downloaded from:
-
-      ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/dev/w3m-0.1.11-pre.tar.gz
-      http://www4.ocn.ne.jp/~okabek/w3m-0.1.11-pre-kokb23.patch.gz
+      ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/w3m-0.2.1.tar.gz
 
 
 4. Contact
