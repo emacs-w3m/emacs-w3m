@@ -59,17 +59,17 @@
 ■■ Gnus
 
    Oort Gnus や Gnus v5.8.8, v5.9 でも，最新の T-gnus 6.15 に含まれてい
-   る nnshimbun.el を lisp/ ディレクトリにコピーしてから make install を
-   行なうと，nnshimbun で記事を読むことができるようになります．加えて，
-   text/html のコンテンツの表示に Emacs/w3 ではなくて emacs-w3m を使うに
-   は，以下の設定を .gnus ファイルに追加して下さい．
+   る nnshimbun.el を lisp/ ディレクトリにコピーしてから make install と
+   唱えるだけで，nnshimbun で記事を読むことができるようになります．また，
+   幸運にもあなたが Oort Gnus v0.06 かそれ以上のものを使っているならば，
+   以下の行を .gnus ファイルに追加するだけで text/html のコンテンツの表
+   示に Emacs/w3 の代わりに emacs-w3m を使うようにすることができます．
 
-   幸運にも，もしあなたが Oort Gnus v0.06 かそれ以上のものを使っているな
-   らば，以下の行を .gnus ファイルに追加するだけで済みます．
+(setq gnus-article-wash-function 'gnus-article-wash-html-with-w3m
+      mm-inline-text-html-renderer 'mm-inline-text-html-render-with-w3m)
 
-(setq mm-inline-text-html-renderer 'mm-inline-text-html-render-with-w3m)
-
-   それ以外の場合は以下を試してみて下さい．
+   それ以外の場合は以下を試してみて下さい．これらは Oort Gnus v0.06 以上
+   のものほど良くありませんが．
 
 ;; From: greg@visiontech-dml.com
 ;; Newsgroups: gnu.emacs.help

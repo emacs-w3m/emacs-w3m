@@ -56,18 +56,19 @@
 
 ** Gnus
 
-   Even if you use Oort Gnus, Gnus v5.8.8 or v5.9, you can read articles
-   via nnshimbun. Copy "nnshimbun.el" distributed with newest T-gnus
-   6.15 to lisp/ directory and then "make install". In addition, if you
-   want to use emacs-w3m instead of Emacs/w3 for text/html contents, add
-   following setting to your ".gnus".
+   Even if you are using Oort Gnus, Gnus v5.8.8 or v5.9, you may read
+   some news articles using nnshimbun.  To do that, copy nnshimbun.el
+   from the newest T-gnus 6.15 to Gnus' lisp/ directory and then simply
+   invoke "make install".  In addition, fortunately, if you are using
+   Oort Gnus v0.06 or later, you only have to add the following lines in
+   your .gnus file to make Gnus show text/html contents using emacs-w3m
+   instead of Emacs/w3.
 
-   Fortunately, if you are using Oort Gnus v0.06 or later, you only have
-   to add the following line in your ".gnus" file:
+(setq gnus-article-wash-function 'gnus-article-wash-html-with-w3m
+      mm-inline-text-html-renderer 'mm-inline-text-html-render-with-w3m)
 
-(setq mm-inline-text-html-renderer 'mm-inline-text-html-render-with-w3m)
-
-   Otherwise, try the following:
+   Otherwise, try the following.  They aren't as good as Oort Gnus v0.06
+   or later will do, though.
 
 ;; From: greg@visiontech-dml.com
 ;; Newsgroups: gnu.emacs.help
