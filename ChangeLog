@@ -1,3 +1,15 @@
+2005-01-08  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-japantimes.el (shimbun-japantimes-content-start):
+	Improve the value.
+	(shimbun-japantimes-content-end): Ditto.
+	(shimbun-get-headers): Improve regexp; simplify Message-ID form.
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Add the
+	gyosuuchi group.
+	(shimbun-nikkei-get-headers-bunkatsu2): New function.
+	(shimbun-nikkei-prepare-article-bunkatsu2): New function.
+
 2005-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-prepare-article-release):

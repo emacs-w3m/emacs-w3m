@@ -4340,9 +4340,9 @@ nikkansports.society nikkansports.leisure
 nikkei.top nikkei.main nikkei.keizai nikkei.sangyo nikkei.tento
 nikkei.zinzi nikkei.report nikkei.kansai nikkei.it nikkei.kokunai
 nikkei.markets nikkei.kawase nikkei.kinri nikkei.ft nikkei.dj
-nikkei.ngyoseki nikkei.gyoseki nikkei.market nikkei.kaigai nikkei.seiji
-nikkei.shakai nikkei.sports nikkei.newpro nikkei.release nikkei.shasetsu
-nikkei.okuyami
+nikkei.ngyoseki nikkei.gyosuuchi nikkei.gyoseki nikkei.market
+nikkei.kaigai nikkei.seiji nikkei.shakai nikkei.sports nikkei.newpro
+nikkei.release nikkei.shasetsu nikkei.okuyami
 
 @item @uref{http://www.sponichi.co.jp/, Sponichi}
 sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
