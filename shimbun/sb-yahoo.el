@@ -39,7 +39,8 @@
 (defvar shimbun-yahoo-url "http://headlines.yahoo.co.jp/")
 
 (defvar shimbun-yahoo-groups-alist
-  '(("politics" . "pol")
+  '(("topnews" . "topnews")
+    ("politics" . "pol")
     ("society" . "soci")
     ("people" . "peo")
     ("business-all" . "bus_all")

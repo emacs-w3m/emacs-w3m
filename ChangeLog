@@ -1,3 +1,8 @@
+2003-05-18  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-yahoo.el (shimbun-yahoo-groups-alist): Add topnews
+	group entry.
+
 2003-05-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (Top): Use w3m-treat-drive-letter for
