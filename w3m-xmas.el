@@ -121,8 +121,27 @@ Buffer string between BEG and END are replaced with IMAGE."
 
 ;;; Menu
 (defun w3m-setup-menu ()
-  ;; TODO
-  )
+  (let ((w3m-menu '("W3M"
+		    ["Go to..." w3m-goto-url t]
+		    ["Reload This Page" w3m-reload-this-page t]
+		    ["Back to previous page" w3m-view-previous-page 
+		     (w3m-history-previous-link-available-p)]
+		    ["Forward to Next Page" w3m-view-next-page 
+		     (w3m-history-next-link-available-p)]
+		    ["Upward to Parent Page" w3m-view-parent-page 
+		     (w3m-parent-page-available-p)]
+		    ["Download This URL" w3m-download-this-url t]
+		    ["Print Current URL" w3m-print-current-url t]
+		    ["View Bookmark" w3m-bookmark-view t]
+		    ["Copy Buffer" w3m-copy-buffer t]
+		    )))
+    ;; Menu codes are from f90.el.
+    (if (and (featurep 'menubar)
+	     current-menubar
+	     (not (assoc "W3M" current-menubar)))
+	(progn
+	  (set-buffer-menubar (copy-sequence current-menubar))
+	  (add-submenu nil w3m-menu)))))
 
 ;;; Widget:
 (eval-when-compile (require 'wid-edit))
