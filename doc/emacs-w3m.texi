@@ -456,6 +456,16 @@ files.  To do this:
 % make install-icons
 @end example
 
+@noindent
+or
+
+@example
+% make install-icons30
+@end example
+
+@noindent
+The later is for using the slightly larger icon images.
+
 @item
 You can also install emacs-w3m as an XEmacs package using @samp{make
 install-package} instead of @samp{make install} as follows:
@@ -465,7 +475,8 @@ install-package} instead of @samp{make install} as follows:
 % make install-package
 @end example
 
-In this case, you don't have to execute @samp{make install-icons}.
+In this case, you don't have to execute @samp{make install-icons} nor
+@samp{make install-icons30}.
 
 If you need to specify the package directory, there are two ways to do
 that:
