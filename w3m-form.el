@@ -356,16 +356,16 @@ If no field in forward, return nil without moving."
   "Replace text between START and END with STRING and goto the end of
 text.  STRING will be truncated to end at the column WIDTH, width of
 text will not be changed.  It does nothing if the length of STRING is
-zero.
-
-Note that this is a kludge to replace a text between `start' and `end'
-with just a `string', because there are not only a `string' but also
-some markups.  However, markups have become worthless at the time, so
-there is no real problem."
-  (unless (zerop (length string))
+zero."
+  ;; Note that this is a kludge to replace a text between `start' and
+  ;; `end' with just a `string', because there are not only a `string'
+  ;; but also some markups.  However, markups have become worthless at
+  ;;the time, so there is no real problem."
+  (when (and (stringp string)
+	     (> (length string) 0))
     (delete-region (goto-char start) end)
     (when (prog1
-	      (and width
+	      (and (numberp width)
 		   (setq string (truncate-string string width)))
 	    (insert string))
       (insert-char ?\  (- width (string-width string))))))
