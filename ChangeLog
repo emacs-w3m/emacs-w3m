@@ -1,3 +1,11 @@
+2002-09-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-treat-drive-letter): New constant.
+	(w3m-url-to-file-name): Check `w3m-treat-drive-letter'.
+
+	* w3m-dtree.el (w3m-dtree-directory-name): Check
+	`w3m-treat-drive-letter'.
+
 2002-09-10  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-unseen-remove-one): Use

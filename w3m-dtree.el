@@ -81,7 +81,8 @@ over the 'w3m-dtree-directory-depth'."
     path))
 
 (defsubst w3m-dtree-directory-name (path)
-  (when (string-match "^/\\(\\([A-Za-z]\\)[|:]?\\|cygdrive/\\([A-Za-z]\\)\\)/" path)
+  (when (and w3m-treat-drive-letter
+	     (string-match "^/\\(\\([A-Za-z]\\)[|:]?\\|cygdrive/\\([A-Za-z]\\)\\)/" path))
     (setq path (concat
 		(or (match-string 2 path)
 		    (match-string 3 path))
