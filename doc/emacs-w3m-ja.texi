@@ -3788,8 +3788,8 @@ XEmacs Beta$B!"(BGnus/Mew/Wanderlust $B$J$I$N%a!<%j%s%0%j%9%H!">.@tF|K\9q<sAj
 $B$N3F!9$OC1FH$G$O2?$NLr$K$bN)$A$^$;$s!#(B
 $B$3$3$G$OBeI=E*$J;0$D$N(B @samp{Shimbun} $B$N%"%W%j%1!<%7%g%s%W%m%0%i%`(B ($B$=$l(B
 $B$i$N$&$A$NFs$D$O(B @samp{Shimbun} $B%i%$%V%i%j$K4^$^$l$F$$$^$9(B) $B$H!"$"$J$?$,(B
-$B<+J,$G(B @samp{Shimbun} $B%b%8%e!<%k$r:n$kJ}K!$K$D$$$F@bL@$7$^$9(B (Emacs Lisp 
-$B%W%m%0%i%`$r=q$/$3$H$,$G$-$kI,MW$,$"$j$^$9(B)$B!#(B
+$B<+J,$G(B @samp{Shimbun} $B%b%8%e!<%k$r:n$kJ}K!$K$D$$$F@bL@$7$^$9(B (Emacs
+Lisp $B%W%m%0%i%`$r=q$/$3$H$,$G$-$kI,MW$,$"$j$^$9(B)$B!#(B
 
 @menu
 * Nnshimbun::                   Gnus $B$r%&%'%V%V%i%&%6$K$9$k(B!
@@ -4607,7 +4607,7 @@ security-memo.memo security-memo.free-memo security-memo.social-memo
 
 @example
 machine memo.st.ryukoku.ac.jp
-realm input username/password = archives/archives 
+realm input username/password = archives/archives
 login archives
 passwd archives
 
