@@ -1,6 +1,6 @@
 ;;; w3m-form.el --- Stuffs to handle <form> tag
 
-;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -226,7 +226,7 @@ If no field in forward, return nil without moving."
 	    (let ((value (w3m-form-get form name)))
 	      (when value
 		(w3m-form-replace
-		 (if (string= value (nth 3 (w3m-action)))
+		 (if (string= value (nth 3 (w3m-action (point))))
 		     "*" " ")))
 	      (unless (eq form cform)
 		(w3m-form-put cform name value))))
@@ -234,7 +234,7 @@ If no field in forward, return nil without moving."
 	    (let ((value (w3m-form-get form name)))
 	      (when value
 		(w3m-form-replace
-		 (if (member (nth 3 (w3m-action)) value)
+		 (if (member (nth 3 (w3m-action (point))) value)
 		     "*" " ")))
 	      (unless (eq form cform)
 		(w3m-form-put cform name value))))
@@ -245,7 +245,7 @@ If no field in forward, return nil without moving."
 	      (unless (eq form cform)
 		(w3m-form-put cform name selects))))
 	   ((string= type "textarea")
-	    (let ((hseq (nth 2 (w3m-action)))
+	    (let ((hseq (nth 2 (w3m-action (point))))
 		  (value (w3m-form-get form name)))
 	      (when (> hseq 0)
 		(setq textareas (cons (cons hseq value) textareas)))
@@ -637,11 +637,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
     (w3m-form-resume (or reuse-forms w3m-current-forms))))
 
 (defun w3m-form-replace (string &optional invisible)
-  (let* ((start (text-property-any
-		 (point-min)
-		 (point-max)
-		 'w3m-action
-		 (w3m-get-text-property-around 'w3m-action)))
+  (let* ((start (text-property-any (point-min) (point-max)
+				   'w3m-action (w3m-action (point))))
 	 (width (string-width
 		 (buffer-substring
 		  start
@@ -762,7 +759,7 @@ character."
 
 (defun w3m-form-textarea-info ()
   "Return a cons cell of (NAME . LINE) for current text area."
-  (let ((s (w3m-get-text-property-around 'w3m-form-hseq))
+  (let ((s (get-text-property (point) 'w3m-form-hseq))
 	(lines 0)
 	next)
     (save-excursion
@@ -778,7 +775,7 @@ character."
 				 'w3m-form-hseq))
 		     (goto-char next)))
 	  (incf lines)))
-      (cons (w3m-get-text-property-around 'w3m-form-name) lines))))
+      (cons (get-text-property (point) 'w3m-form-name) lines))))
 
 (defvar w3m-form-input-textarea-keymap nil)
 (unless w3m-form-input-textarea-keymap
@@ -1236,16 +1233,12 @@ character."
 (defun w3m-form-reset (form)
   (save-excursion
     (let (pos prop)
-      (when (setq prop (get-text-property
-			(goto-char (point-min))
-			'w3m-action))
+      (when (setq prop (w3m-action (goto-char (point-min))))
 	(goto-char (or (w3m-form-real-reset form prop)
 		       (next-single-property-change pos 'w3m-action))))
       (while (setq pos (next-single-property-change (point) 'w3m-action))
 	(goto-char pos)
-	(goto-char (or (w3m-form-real-reset form
-					    (get-text-property pos
-							       'w3m-action))
+	(goto-char (or (w3m-form-real-reset form (w3m-action pos))
 		       (next-single-property-change pos 'w3m-action)))))))
 
 

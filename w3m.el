@@ -1,6 +1,7 @@
 ;;; w3m.el --- Interface program of w3m on Emacs
 
-;; Copyright (C) 2000, 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000, 2001, 2002, 2003
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -2147,6 +2148,10 @@ with ^ as `cat -v' does."
     (apply (function concat)
 	   (nreverse (cons (substring str start) buf)))))
 
+(defun w3m-image-type (content-type)
+  "Return image type which corresponds to CONTENT-TYPE."
+  (cdr (assoc content-type w3m-image-type-alist)))
+
 (defun w3m-fontify-anchors ()
   "Fontify anchor tags in this buffer which contains half-dumped data."
   (let ((help (w3m-make-help-echo w3m-href-anchor))
@@ -2214,10 +2219,6 @@ with ^ as `cat -v' does."
     (when w3m-contents-url
       (setq w3m-contents-url (w3m-expand-url w3m-contents-url)))))
 
-(defun w3m-image-type (content-type)
-  "Return image type which corresponds to CONTENT-TYPE."
-  (cdr (assoc content-type w3m-image-type-alist)))
-
 (eval-and-compile
   (unless (featurep 'xemacs)
     (defun w3m-setup-menu ()
@@ -2267,8 +2268,8 @@ half-dumped data."
 					 'w3m-image-usemap usemap
 					 'w3m-image-status 'off
 					 'w3m-image-redundant upper))
-	  (unless (or (get-text-property start 'w3m-href-anchor)
-		      (get-text-property start 'w3m-action))
+	  (unless (or (w3m-anchor start)
+		      (w3m-action start))
 	    ;; No need to use `w3m-add-text-properties' here.
 	    (add-text-properties start end (list 'face 'w3m-image-face
 						 'mouse-face 'highlight
@@ -2288,7 +2289,7 @@ If URL is specified, only the image with URL is toggled."
     (save-excursion
       (if (equal status 'off)
 	  (while (setq start
-		       (if (get-text-property end 'w3m-image)
+		       (if (w3m-image end)
 			   end
 			 (next-single-property-change end 'w3m-image)))
 	    (setq end (or (next-single-property-change start 'w3m-image)
@@ -2342,7 +2343,7 @@ If URL is specified, only the image with URL is toggled."
 			  (set-marker start nil)
 			  (set-marker end nil)))))))))
 	;; Remove.
-	(while (setq start (if (get-text-property end 'w3m-image)
+	(while (setq start (if (w3m-image end)
 			       end
 			     (next-single-property-change end 'w3m-image)))
 	  (setq end (or (next-single-property-change start 'w3m-image)
@@ -2379,7 +2380,7 @@ If NO-CACHE is non-nil, cache is not used."
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
-  (let ((url (w3m-image (point)))
+  (let ((url (w3m-image))
 	(status (get-text-property (point) 'w3m-image-status))
 	(scale (get-text-property (point) 'w3m-image-scale)))
     (if (and scale (equal status 'off))
@@ -2430,7 +2431,7 @@ RATE is resize percentage."
 	    iurl "")
       (while (and (not (string-equal url iurl))
 		  (setq start
-			(if (get-text-property end 'w3m-image)
+			(if (w3m-image end)
 			    end
 			  (next-single-property-change end 'w3m-image))))
 	(setq end (or (next-single-property-change start 'w3m-image)
@@ -2493,7 +2494,7 @@ RATE is resize percentage."
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
-  (let ((url (w3m-image (point))))
+  (let ((url (w3m-image)))
     (unless rate
       (setq rate w3m-resize-image-scale))
     (if url
@@ -2505,7 +2506,7 @@ RATE is resize percentage."
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
-  (let ((url (w3m-image (point))))
+  (let ((url (w3m-image)))
     (unless rate
       (setq rate w3m-resize-image-scale))
     (if url
@@ -4248,11 +4249,12 @@ also make a new frame for the copied session."
   (interactive (if (member current-prefix-arg '(2 (16)))
 		   (list nil t)
 		 (list current-prefix-arg nil)))
-  (let ((url (w3m-url-valid (w3m-anchor)))
-	(act (w3m-action)))
+  (let (act url)
     (cond
-     (act (eval act))
-     (url (w3m-view-this-url-1 url arg new-session))
+     ((setq act (w3m-action))
+      (eval act))
+     ((setq url (w3m-url-valid (w3m-anchor)))
+      (w3m-view-this-url-1 url arg new-session))
      ((w3m-url-valid (w3m-image))
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
@@ -4416,12 +4418,14 @@ session."
   (kill-new w3m-current-url)
   (w3m-display-message "%s" w3m-current-url))
 
-(defun w3m-print-this-url (&optional arg)
+(defun w3m-print-this-url (&optional interactive-p)
   "Print the URL of the link under point and push it into the kill-ring."
   (interactive (list t))
-  (let ((url (or (w3m-anchor) (w3m-image))))
-    (when (or url arg)
-      (and url arg (kill-new url))
+  (let ((url (if interactive-p
+		 (or (w3m-anchor) (w3m-image))
+	       (or (w3m-anchor (point)) (w3m-image (point))))))
+    (when (or url interactive-p)
+      (and url interactive-p (kill-new url))
       (w3m-display-message "%s"
 			   (or url
 			       (and (w3m-action) "There is a form")
@@ -4444,9 +4448,7 @@ Return t if current line has a same anchor sequence."
       (setq pos (point))
       (while (and pos
 		  (< pos limit)
-		  (not (eq seq (setq pseq (get-text-property
-					   pos
-					   'w3m-anchor-sequence)))))
+		  (not (eq seq (setq pseq (w3m-anchor-sequence pos)))))
 	(setq pos (next-single-property-change pos 'w3m-anchor-sequence)))
       (when (and pos (< pos limit) (eq seq pseq))
 	(setq beg pos)
@@ -4525,9 +4527,10 @@ Return t if current line has a same anchor sequence."
   (interactive "p")
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-anchor w3m-previous-anchor)))
-      (setq w3m-goto-anchor-hist (list (w3m-anchor-sequence)))
-    (if (and (eq last-command 'w3m-previous-anchor) w3m-goto-anchor-hist)
-	(setcdr w3m-goto-anchor-hist nil)))
+      (when (setq w3m-goto-anchor-hist (w3m-anchor-sequence))
+	(setq w3m-goto-anchor-hist (list w3m-goto-anchor-hist)))
+    (when (and (eq last-command 'w3m-previous-anchor) w3m-goto-anchor-hist)
+      (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-previous-anchor (- arg))
     (while (> arg 0)
@@ -4539,8 +4542,7 @@ Return t if current line has a same anchor sequence."
       (setq arg (1- arg))
       (if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
-	(setq w3m-goto-anchor-hist
-	      (cons (w3m-anchor-sequence) w3m-goto-anchor-hist))))
+	(push (w3m-anchor-sequence) w3m-goto-anchor-hist)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
@@ -4571,9 +4573,10 @@ Return t if current line has a same anchor sequence."
   (interactive "p")
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-anchor w3m-previous-anchor)))
-      (setq w3m-goto-anchor-hist (list (w3m-anchor-sequence)))
-    (if (and (eq last-command 'w3m-next-anchor) w3m-goto-anchor-hist)
-	(setcdr w3m-goto-anchor-hist nil)))
+      (when (setq w3m-goto-anchor-hist (w3m-anchor-sequence))
+	(setq w3m-goto-anchor-hist (list w3m-goto-anchor-hist)))
+    (when (and (eq last-command 'w3m-next-anchor) w3m-goto-anchor-hist)
+      (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-next-anchor (- arg))
     (while (> arg 0)
@@ -4585,8 +4588,7 @@ Return t if current line has a same anchor sequence."
       (setq arg (1- arg))
       (if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
-	(setq w3m-goto-anchor-hist
-	      (cons (w3m-anchor-sequence) w3m-goto-anchor-hist))))
+	(push (w3m-anchor-sequence) w3m-goto-anchor-hist)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
@@ -4606,10 +4608,10 @@ Return t if current line has a same anchor sequence."
   (interactive "p")
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-form w3m-previous-form)))
-      (setq w3m-goto-anchor-hist
-	    (list (get-text-property (point) 'w3m-action)))
-    (if (and (eq last-command 'w3m-previous-form) w3m-goto-anchor-hist)
-	(setcdr w3m-goto-anchor-hist nil)))
+      (when (setq w3m-goto-anchor-hist (w3m-action (point)))
+	(setq w3m-goto-anchor-hist (list w3m-goto-anchor-hist)))
+    (when (and (eq last-command 'w3m-previous-form) w3m-goto-anchor-hist)
+      (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-previous-form (- arg))
     (while (> arg 0)
@@ -4619,11 +4621,9 @@ Return t if current line has a same anchor sequence."
 	(goto-char (point-min))
 	(w3m-goto-next-form))
       (setq arg (1- arg))
-      (if (member (w3m-action) w3m-goto-anchor-hist)
+      (if (member (w3m-action (point)) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
-	(setq w3m-goto-anchor-hist
-	      (cons (get-text-property (point) 'w3m-action)
-		    w3m-goto-anchor-hist))))
+	(push (w3m-action (point)) w3m-goto-anchor-hist)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
@@ -4636,7 +4636,8 @@ Return t if current line has a same anchor sequence."
   (let ((pos (previous-single-property-change (point) 'w3m-action)))
     (if pos
 	(goto-char
-	 (if (w3m-action pos) pos
+	 (if (w3m-action pos)
+	     pos
 	   (previous-single-property-change pos 'w3m-action))))))
 
 (defun w3m-previous-form (&optional arg)
@@ -4644,10 +4645,10 @@ Return t if current line has a same anchor sequence."
   (interactive "p")
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-form w3m-previous-form)))
-      (setq w3m-goto-anchor-hist
-	    (list (get-text-property (point) 'w3m-action)))
-    (if (and (eq last-command 'w3m-next-form) w3m-goto-anchor-hist)
-	(setcdr w3m-goto-anchor-hist nil)))
+      (when (setq w3m-goto-anchor-hist (w3m-action (point)))
+	(setq w3m-goto-anchor-hist (list w3m-goto-anchor-hist)))
+    (when (and (eq last-command 'w3m-next-form) w3m-goto-anchor-hist)
+      (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-next-form (- arg))
     (while (> arg 0)
@@ -4657,11 +4658,9 @@ Return t if current line has a same anchor sequence."
 	(goto-char (point-max))
 	(w3m-goto-previous-form))
       (setq arg (1- arg))
-      (if (member (w3m-action) w3m-goto-anchor-hist)
+      (if (member (w3m-action (point)) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
-	(setq w3m-goto-anchor-hist
-	      (cons (get-text-property (point) 'w3m-action)
-		    w3m-goto-anchor-hist))))
+	(push (w3m-action (point)) w3m-goto-anchor-hist)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
@@ -4682,10 +4681,11 @@ Return t if current line has a same anchor sequence."
   (unless arg (setq arg 1))
   (if (null (memq last-command
 		  '(w3m-next-image w3m-previous-image)))
-      (setq w3m-goto-anchor-hist
-	    (list (get-text-property (point) 'w3m-image)))
-    (if (and (eq last-command 'w3m-previous-image) w3m-goto-anchor-hist)
-	(setcdr w3m-goto-anchor-hist nil)))
+      (when (setq w3m-goto-anchor-hist (w3m-image (point)))
+	(setq w3m-goto-anchor-hist (list w3m-goto-anchor-hist)))
+    (when (and (eq last-command 'w3m-previous-image)
+	       w3m-goto-anchor-hist)
+      (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-previous-image (- arg))
     (while (> arg 0)
@@ -4695,11 +4695,9 @@ Return t if current line has a same anchor sequence."
 	(goto-char (point-min))
 	(w3m-goto-next-image))
       (setq arg (1- arg))
-      (if (member (w3m-image) w3m-goto-anchor-hist)
+      (if (member (w3m-image (point)) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
-	(setq w3m-goto-anchor-hist
-	      (cons (get-text-property (point) 'w3m-image)
-		    w3m-goto-anchor-hist))))
+	(push (w3m-image (point)) w3m-goto-anchor-hist)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
@@ -4719,12 +4717,12 @@ Return t if current line has a same anchor sequence."
   "Move cursor to the previous image."
   (interactive "p")
   (unless arg (setq arg 1))
-  (if (null (memq last-command
-		  '(w3m-next-image w3m-previous-image)))
-      (setq w3m-goto-anchor-hist
-	    (list (get-text-property (point) 'w3m-image)))
-    (if (and (eq last-command 'w3m-next-image) w3m-goto-anchor-hist)
-	(setcdr w3m-goto-anchor-hist nil)))
+  (if (null (memq last-command '(w3m-next-image w3m-previous-image)))
+      (when (setq w3m-goto-anchor-hist (w3m-image (point)))
+	(setq w3m-goto-anchor-hist (list w3m-goto-anchor-hist)))
+    (when (and (eq last-command 'w3m-next-image)
+	       w3m-goto-anchor-hist)
+      (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-next-image (- arg))
     (while (> arg 0)
@@ -4734,11 +4732,9 @@ Return t if current line has a same anchor sequence."
 	(goto-char (point-max))
 	(w3m-goto-previous-image))
       (setq arg (1- arg))
-      (if (member (w3m-image) w3m-goto-anchor-hist)
+      (if (member (w3m-image (point)) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
-	(setq w3m-goto-anchor-hist
-	      (cons (get-text-property (point) 'w3m-image)
-		    w3m-goto-anchor-hist))))
+	(push (w3m-image (point)) w3m-goto-anchor-hist)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
