@@ -5,6 +5,7 @@
 	(shimbun-get-headers): Ditto.
 	(shimbun-muchy-get-headers): Ditto.
 	(shimbun-make-contents): Removed.
+	(shimbun-muchy-get-headers): Bug fixed.
 
 2003-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
