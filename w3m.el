@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m
 
-;; Copyright (C) 2000, 2001, 2002, 2003, 2004
+;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -10,7 +10,8 @@
 ;;          Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
-;;          Katsumi Yamaoka    <yamaoka@jpl.org>
+;;          Katsumi Yamaoka    <yamaoka@jpl.org>,
+;;          Tsuyoshi CHO       <mfalcon_sky@emailuser.net>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; This file is the main part of emacs-w3m.
@@ -2028,46 +2029,65 @@ nil value means it has not been initialized.")
       [w3m-toolbar-db-history-icon w3m-db-history t "View Arrived URLs"]))
   "Toolbar definition for emacs-w3m.")
 
+;; "View" is page viewing
+;; "Show" is link list showing
 (defconst w3m-menubar
-  '("W3M"
-    ["Go to Home Page" w3m-gohome w3m-home-page]
+  '("w3m"
+    ("Session"
+     ["Create New Session..." w3m-goto-url-new-session t]
+     ["Copy This Session" w3m-copy-buffer t]
+     "----" ;; separator
+     ["Move Previous Session" w3m-previous-buffer
+      (> (safe-length (w3m-list-buffers)) 1)]
+     ["Move Next Session" w3m-next-buffer
+      (> (safe-length (w3m-list-buffers)) 1)]
+     "----" ;; separator
+     ["Close This Session" w3m-delete-buffer
+      (> (safe-length (w3m-list-buffers)) 1)]
+     ) ;; end session
+    ["Download This URL" w3m-download-this-url t]
+    ["Download to..." w3m-download t]
+    "----" ;; separator
     ["Back to Previous Page" w3m-view-previous-page
      (w3m-history-previous-link-available-p)]
     ["Forward to Next Page" w3m-view-next-page
      (w3m-history-next-link-available-p)]
-    ["View the parent page" w3m-view-parent-page
+    ["Up to Parent Page" w3m-view-parent-page
      (w3m-parent-page-available-p)]
-    ;;
+    ["Cancel Process" w3m-process-stop w3m-current-process]
     ["Reload This Page" w3m-reload-this-page w3m-current-url]
-    ["Cancel Process" w3m-process-stop t]
-    ["Toggle Images" w3m-toggle-inline-images (w3m-display-graphic-p)]
-    ;;
-    ["Redisplay This Page" w3m-redisplay-this-page w3m-current-url]
-    ["Redisplay This Page with Charset"
-     w3m-redisplay-with-charset w3m-current-url]
-    ["Redisplay This Page with Content-type"
-     w3m-redisplay-with-content-type w3m-current-url]
-    ["Reset Charset and Content-type" w3m-redisplay-and-reset w3m-current-url]
-    ;;
+    ("Redisplay"
+     ["Toggle Images" w3m-toggle-inline-images (w3m-display-graphic-p)]
+     "----" ;; separator
+     ["Redisplay This Page" w3m-redisplay-this-page w3m-current-url]
+     ["Redisplay This Page with Charset"
+      w3m-redisplay-with-charset w3m-current-url]
+     ["Redisplay This Page with Content-type"
+      w3m-redisplay-with-content-type w3m-current-url]
+     ["Reset Charset and Content-type" w3m-redisplay-and-reset w3m-current-url]
+     ) ;; end redisplay
+    ["Search the Internet..." w3m-search t]
+    ["Go to Home Page" w3m-gohome w3m-home-page]
     ["Go to..." w3m-goto-url t]
-    ["Go to... in the New Session" w3m-goto-url-new-session t]
-    ["Make a Copy of This Session" w3m-copy-buffer t]
-    ;;
+    "----" ;; separator
     ["View Bookmark" w3m-bookmark-view t]
-    ["Search the Internet" w3m-search t]
+    ("History"
+     ["Show a Visited URLs Tree" w3m-history t]
+     ["Show an Arrived URLs List" w3m-db-history t]
+     )
     ["Weather Forecast" w3m-weather t]
     ["Investigate with Antenna" w3m-antenna t]
-    ;;
-    ["View Source" w3m-view-source t]
-    ["View Header" w3m-view-header t]
-    ["Show a History" w3m-history t]
-    ["View Arrived URLs" w3m-db-history t]
-    ;;
-    ["Download This URL" w3m-download-this-url t]
-    ["Print the Current URL" w3m-print-current-url t]
-    ;;
+    ("Resource"
+     ["View Source" w3m-view-source t]
+     ["View Header" w3m-view-header t]
+     ) ;; end resource
+    "----" ;; separator
     ["Send a Bug Report" report-emacs-w3m-bug t]
-    )
+    "----" ;; separator
+    ["Print the Current URL" w3m-print-current-url t]
+    ["Close w3m" w3m-close-window t]
+    ["Quit w3m" w3m-quit t]
+    );; end w3m
   "Menubar definition for emacs-w3m.")
 
 (defvar w3m-cid-retrieve-function-alist nil)
@@ -2956,12 +2976,11 @@ For example:
 	  (define-key w3m-mode-map [menu-bar] (make-sparse-keymap))
 	  (when w3m-use-tab-menubar (w3m-setup-tab-menu))
 	  (define-key w3m-mode-map [menu-bar w3m] (cons (car w3m-menubar) map))
-	  (dolist (def (reverse (cdr w3m-menubar)))
-	    (define-key map (vector (aref def 1)) (cons (aref def 0)
-							(aref def 1)))
-	    (put (aref def 1) 'menu-enable (aref def 2)))
-	  ;;(define-key map [separator-eval] '("--"))
-	  )))))
+	  (require 'easymenu)
+	  (easy-menu-define
+	    w3m-mode-menu w3m-mode-map
+	    "w3m menu item" w3m-menubar)
+	  (easy-menu-add w3m-mode-menu))))))
 
 (defun w3m-fontify-images ()
   "Fontify img_alt strings of images in the buffer containing halfdump."

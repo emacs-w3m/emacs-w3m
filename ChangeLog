@@ -1,3 +1,8 @@
+2004-07-24  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
+
+	* w3m.el (w3m-menubar): Rearrange it hierarchical.
+	(w3m-setup-menu): Use easymenu.
+
 2005-01-03  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
 
 	* shimbun/sb-mailman.el (shimbun-mailman-headers): Modify regex
