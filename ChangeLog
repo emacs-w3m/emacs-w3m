@@ -1,3 +1,13 @@
+2001-10-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-form.el (w3m-form-use-fancy-faces): New option.
+	(w3m-form-make-button): New function.
+	(w3m-form-fontify): Call `w3m-form-make-button'.
+
+	* w3m-e21.el (w3m-form-button-face): New face.
+	(w3m-form-button-pressed-face): Ditto.
+	(w3m-form-make-button): New function.
+
 2001-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-om.el (read-string): Unify the advice form.

@@ -42,6 +42,11 @@
 (eval-when-compile
   (defvar w3m-current-forms))
 
+(defcustom w3m-form-use-fancy-faces t
+  "*Use fancy faces to fontify <form> tags."
+  :group 'w3m
+  :type 'boolean)
+
 (defface w3m-form-face
   '((((class color) (background light)) (:foreground "cyan" :underline t))
     (((class color) (background dark)) (:foreground "red" :underline t))
@@ -405,6 +410,12 @@ return them with the flag."
 	(w3m-form-resume w3m-current-forms))
     (w3m-form-fontify w3m-current-forms)))
 
+(eval-and-compile
+  (unless (fboundp 'w3m-form-make-button)
+    (defun w3m-form-make-button (start end properties)
+      "Make button on the region from START to END."
+      (add-text-properties start end (append '(face w3m-form-face) properties)))))
+
 (defun w3m-form-fontify (forms)
   "Process half-dumped data in this buffer and fontify <input_alt> tags using FORMS."
   (goto-char (point-min))
@@ -434,20 +445,16 @@ return them with the flag."
 		 w3m-action (w3m-form-input-map ,form ,name)
 		 w3m-cursor-anchor (w3m-form-input-map ,form ,name))))
 	     ((string= type "submit")
-	      (add-text-properties
+	      (w3m-form-make-button
 	       start (point)
-	       `(face
-		 w3m-form-face
-		 w3m-action (w3m-form-submit ,form ,name ,value)
+	       `(w3m-action (w3m-form-submit ,form ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,name
 					     (w3m-form-get ,form ,name))
 		 w3m-cursor-anchor (w3m-form-submit ,form))))
 	     ((string= type "reset")
-	      (add-text-properties
+	      (w3m-form-make-button
 	       start (point)
-	       `(face
-		 w3m-form-face
-		 w3m-action (w3m-form-reset ,form)
+	       `(w3m-action (w3m-form-reset ,form)
 		 w3m-cursor-anchor (w3m-form-reset ,form))))
 	     ((string= type "textarea")
 	      (add-text-properties

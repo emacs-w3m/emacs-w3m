@@ -49,6 +49,7 @@
   (defvar w3m-work-buffer-name)
   (defvar w3m-history)
   (defvar w3m-history-flat)
+  (defvar w3m-form-use-fancy-faces)
   (autoload 'w3m-retrieve "w3m")
   (autoload 'w3m-image-type "w3m"))
 
@@ -112,6 +113,58 @@ Buffer string between BEG and END are replaced with IMAGE."
   "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
   (and (display-images-p)
        (image-type-available-p image-type)))
+
+;;; Form buttons
+(defface w3m-form-button-face
+  '((((type x w32 mac) (class color))
+     (:box (:line-width 1 :style released-button)
+	   :background "lightgrey" :foreground "black"))
+    (((class color) (background light)) (:foreground "cyan" :underline t))
+    (((class color) (background dark)) (:foreground "red" :underline t))
+    (t (:underline t)))
+  "*Face to fontify buttons in forms."
+  :group 'w3m-face)
+
+(defface w3m-form-button-pressed-face
+  '((((type x w32 mac) (class color))
+     (:box (:line-width 1 :style pressed-button)
+	   :background "lightgrey" :foreground "black"))
+    (((class color) (background light)) (:foreground "cyan" :underline t))
+    (((class color) (background dark)) (:foreground "red" :underline t))
+    (t (:underline t)))
+  "*Face to fontify pressed buttons in forms."
+  :group 'w3m-face)
+
+(defun w3m-form-make-button (start end properties)
+  "Make button on the region from START to END."
+  (if w3m-form-use-fancy-faces
+      (or (and (face-attribute 'w3m-form-button-face :box)
+	       (eq ?\[ (char-after start))
+	       (eq ?\] (char-before end))
+	       (save-excursion
+		 (goto-char start)
+		 (delete-char 1)
+		 (insert " ")
+		 (goto-char end)
+		 (delete-char -1)
+		 (insert " ")
+		 (add-text-properties
+		  (1+ start) (1- end)
+		  (append '(face
+			    w3m-form-button-face
+			    mouse-face
+			    w3m-form-button-pressed-face)
+			  properties))))
+	  (add-text-properties
+	   start end
+	   (append '(face
+		     w3m-form-button-face
+		     mouse-face
+		     w3m-form-button-pressed-face)
+		   properties)))
+    (add-text-properties start end
+			 (append '(face w3m-form-face)
+				 properties))))
 
 ;;; Toolbar
 (defcustom w3m-use-toolbar (w3m-image-type-available-p 'xpm)
