@@ -152,6 +152,10 @@ This value is default and used only when spec defined by
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-display-inline-image nil
+  "*Display inline images."
+  :group 'w3m
+  :type 'boolean)
 
 (defun w3m-url-to-file-name (url)
   (if (string-match "^file:" url)
@@ -1021,20 +1025,79 @@ If N is negative, last N items of LIST is returned."
 	       (setq end (match-beginning 0))
 	       (put-text-property start end 'w3m-name-anchor tag)))))))
 
+(defvar w3m-image-type-alist
+  '(("image/jpeg" . jpeg)
+    ("image/gif" . gif)
+    ("image/png" . png)
+    ("image/x-xbm" . xbm)
+    ("image/x-xpm" . xpm))
+  "An alist of CONTENT-TYPE and IMAGE-TYPE.")
+
+(w3m-static-if (and (not (featurep 'xemacs))
+		    (>= emacs-major-version 21)) (progn    
+(defun w3m-create-image (url)
+  "Retrieve data from URL and create an image object."
+  (w3m-retrieve url t)
+  (with-current-buffer  (get-buffer-create w3m-work-buffer-name)
+    (create-image (buffer-string) 
+		  (cdr (assoc (w3m-local-content-type url)
+			      w3m-image-type-alist))
+		  t
+		  :ascent 'center)))
+
+(defun w3m-insert-image (beg end image)
+  "Display image on the current buffer.
+Buffer string between BEG and END are replaced with IMAGE."
+  (add-text-properties beg end
+		       (list 'display image
+			     'intangible image
+			     'invisible nil)))
+;; end of Emacs 21 definition.
+)
+(w3m-static-if (featurep 'xemacs) (progn
+(defun w3m-create-image (url)
+  "Retrieve data from URL and create an image object."
+  (w3m-retrieve url t)
+  (with-current-buffer  (get-buffer-create w3m-work-buffer-name)
+    (make-glyph
+     (make-image-instance
+      (vector (or (cdr (assoc (w3m-local-content-type url)
+			      w3m-image-type-alist))
+		  'autodetect)
+	      :data (buffer-string))
+      nil nil 'no-error))))
+
+(defun w3m-insert-image (beg end image)
+  "Display image on the current buffer.
+Buffer string between BEG and END are replaced with IMAGE."
+  (let ((extent (make-extent beg end)))
+    (set-extent-property extent 'invisible t)
+    (set-extent-end-glyph extent image)))
+;; end of XEmacs definition.
+)
+(defun w3m-create-image (url))
+(defun w3m-insert-image (beg end image))
+;; end of w3m-static-if
+))
+
 (defun w3m-fontify-images ()
   "Fontify image alternate strings in this buffer which contains half-dumped data."
   (goto-char (point-min))
   (while (re-search-forward "<img_alt src=\"\\([^\"]*\\)\">" nil t)
     (let ((src (match-string 1))
 	  (start (match-beginning 0))
-	  (end))
+	  (end)
+	  (image))
       (delete-region start (match-end 0))
+      (setq src (w3m-expand-url src w3m-current-url))
+      (if w3m-display-inline-image
+	  (setq image (w3m-create-image src)))
       (when (search-forward "</img_alt>" nil t)
 	(delete-region (setq end (match-beginning 0)) (match-end 0))
-	(setq src (w3m-expand-url src w3m-current-url))
 	(put-text-property start end 'face 'w3m-image-face)
 	(put-text-property start end 'w3m-image src)
-	(put-text-property start end 'mouse-face 'highlight)))))
+	(put-text-property start end 'mouse-face 'highlight)
+	(if image (w3m-insert-image start end image))))))
 
 (defun w3m-fontify ()
   "Fontify this buffer."
@@ -1480,7 +1543,7 @@ are retrieved."
 			    (substring type 0 (match-beginning 0))))
 	      (setq type (w3m-remove-redundant-spaces type)))))
       (goto-char (point-min))
-      (when (and (looking-at "HTTP/1\\.[0-9] 200")
+      (when (and (re-search-forward "HTTP/1\\.[0-9] 200" nil t)
 		 (re-search-forward "^content-length:\\([^\r\n]+\\)\r*$" nil t))
 	(setq length (string-to-number (match-string 1))))
       (list (or type (w3m-local-content-type url) "unknown")
@@ -1599,7 +1662,10 @@ are retrieved."
     (let ((buffer-file-coding-system
 	   (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
 	  (coding-system-for-write
-	   (w3m-static-if (boundp 'MULE) '*noconv* 'binary)))
+	   (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
+	  jka-compr-compression-info-list
+	  jam-zcat-filename-list
+	  format-alist)
       (if (or (not (file-exists-p filename))
 	      (y-or-n-p (format "File(%s) is aleready exists. Overwrite? " filename)))
 	  (write-region (point-min) (point-max) filename)))))
@@ -2148,11 +2214,12 @@ or prefix ARG columns."
 	    (goto-char (point-min))))))))
 
 
-(defun w3m-reload-this-page ()
+(defun w3m-reload-this-page (&optional arg)
   "Reload current page without cache."
-  (interactive)
-  (setq w3m-url-history (cdr w3m-url-history))
-  (w3m-goto-url w3m-current-url 'reload))
+  (interactive "P")
+  (let ((w3m-display-inline-image (if arg t w3m-display-inline-image)))
+    (setq w3m-url-history (cdr w3m-url-history))
+    (w3m-goto-url w3m-current-url 'reload)))
 
 
 (defun w3m (url &optional args)
