@@ -1,3 +1,7 @@
+2001-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-about-history): Add small indentation to sub trees.
+
 2001-05-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-about-db-history): Modify display format for no folding.

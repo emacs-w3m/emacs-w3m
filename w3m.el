@@ -2993,11 +2993,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
 <h1>List of all the links you have visited in this session.</h1><pre>\n")
       (setq start (point))
       (when history
-	(let ((maxdepth (condition-case nil
-			    ;; Force the value to be a number or nil.
-			    (+ 0 (eval w3m-about-history-max-indentation))
-			  (error nil)))
-	      (form
+	(let ((form
 	       (format
 		"%%0%dd"
 		(length
@@ -3015,7 +3011,13 @@ showing a tree-structured history by the command `w3m-about-history'.")
 	      (margin (if (> w3m-about-history-indent-level 1)
 			  1
 			0))
-	      element url about title position bol)
+	      (max-indent (condition-case nil
+			      ;; Force the value to be a number or nil.
+			      (+ 0 (eval w3m-about-history-max-indentation))
+			    (error nil)))
+	      (last-indent -1)
+	      (sub-indent 0)
+	      element url about title position bol indent)
 	  (while history
 	    (setq element (pop history)
 		  url (car element)
@@ -3026,8 +3028,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
 			    (mapconcat (function (lambda (d) (format form d)))
 				       position
 				       "-")
-			    (* w3m-about-history-indent-level
-			       (/ (1- (length position)) 2))
+			    (/ (1- (length position)) 2)
 			    url
 			    (if about "&lt;" "")
 			    (if (or (not title)
@@ -3040,12 +3041,18 @@ showing a tree-structured history by the command `w3m-about-history'.")
 	  (goto-char start)
 	  (while (not (eobp))
 	    (setq bol (point))
-	    (read cur)
-	    (insert-char ?\  (+ margin (prog1
-					   (if maxdepth
-					       (min maxdepth (read cur))
-					     (read cur))
-					 (delete-region bol (point)))))
+	    (skip-chars-forward "^ ")
+	    (setq indent (read cur)
+		  sub-indent (if (= indent last-indent)
+				 (1+ sub-indent)
+			       0)
+		  last-indent indent
+		  indent (+ (* w3m-about-history-indent-level indent)
+			    sub-indent))
+	    (delete-region bol (point))
+	    (insert-char ?\  (+ margin (if max-indent
+					   (min max-indent indent)
+					 indent)))
 	    (forward-line 1))))
       (insert "</pre></body>")
       (goto-char start)
