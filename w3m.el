@@ -2900,8 +2900,8 @@ type as a string argument, when retrieve is complete."
        (w3m-which-command w3m-touch-command)
        (file-exists-p file)
        (call-process w3m-touch-command nil nil nil
-		     "-d"
-		     (format-time-string "%Y-%m-%d %H:%M:%S" time)
+		     "-t"
+		     (format-time-string "%Y%m%d%H%M.%S" time)
 		     file)))
 
 ;;; Retrieve data:

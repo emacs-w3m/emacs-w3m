@@ -1,3 +1,8 @@
+2002-02-05  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-touch-file): Call touch command with "-t time"
+	instead of "-d time".
+
 2002-02-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-touch-command): New option.
