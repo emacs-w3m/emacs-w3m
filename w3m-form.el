@@ -1,6 +1,7 @@
 ;;; w3m-form.el --- Stuffs to handle <form> tag
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -344,9 +345,17 @@ If no field in forward, return nil without moving."
 
 ;;; w3mmee
 ;;
-(if (fboundp 'char-to-int)
-    (defalias 'w3m-char-to-int 'char-to-int)
-  (defalias 'w3m-char-to-int 'identity))
+(eval-and-compile
+  (defalias 'w3m-char-to-int (if (fboundp 'char-to-int)
+				 'char-to-int
+			       'identity))
+  (defalias 'w3m-string-to-char-list (if (fboundp 'string-to-list)
+					 'string-to-list
+				       (lambda (str)
+					 (mapcar 'identity str))))
+  (defalias 'w3m-int-to-char (if (fboundp 'int-to-char)
+				 'int-to-char
+			       'identity)))
 
 (defmacro w3m-form-mee-attr-unquote (x)
   "Unquote form attribute of w3mmee."
@@ -357,15 +366,6 @@ If no field in forward, return nil without moving."
 	 (setq attr (concat attr (char-to-string (car x))))
 	 (setq x (cdr x))))
      attr))
-
-(if (fboundp 'string-to-list)
-    (defalias 'w3m-string-to-char-list 'string-to-list)
-  (defun w3m-string-to-char-list (str)
-    (mapcar 'identity str)))
-
-(if (fboundp 'int-to-char)
-    (defalias 'w3m-int-to-char 'int-to-char)
-  (defalias 'w3m-int-to-char 'identity))
 
 (defun w3m-form-mee-new (x)
   "Decode form information of w3mmee."

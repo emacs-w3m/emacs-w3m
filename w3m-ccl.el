@@ -1,6 +1,6 @@
 ;;; w3m-ccl.el --- CCL programs to process Unicode and internal characters.
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2003, 2004 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
@@ -48,6 +48,11 @@
     (require 'ccl))))
 
 ;;; CCL programs:
+
+(eval-when-compile
+  (when (and (not (fboundp 'charset-id))
+	     (fboundp 'charset-id-internal))
+    (defalias 'charset-id 'charset-id-internal)))
 
 (eval-and-compile
   (defconst w3m-internal-characters-alist
