@@ -55,7 +55,7 @@
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-command-arguments '("-e" "-m" "-halfdump" "-cols" col url)
+(defcustom w3m-command-arguments '("-e" "-halfdump" "-cols" col url)
   "*Arguments of w3m."
   :group 'w3m
   :type '(repeat (restricted-sexp :match-alternatives (stringp 'col 'url))))
