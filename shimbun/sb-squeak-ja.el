@@ -26,6 +26,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'cl))
+
 (require 'shimbun)
 (require 'sb-mailman)
 
@@ -49,7 +52,8 @@
   (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
   (shimbun-decode-entities)
   (goto-char (point-min))
-  (let ((end (search-forward "<!--beginarticle-->")))
+  (let ((end (search-forward "<!--beginarticle-->"))
+	name address date)
     (goto-char (point-min))
     (search-forward "</HEAD>")
     (when (re-search-forward "<H1>\\([^\n]+\\)\\(\n +\\)?</H1>" end t nil)
@@ -59,10 +63,20 @@
     (when (re-search-forward "<B>\\([^\n]+\\)\\(\n +\\)?</B> *\n +\
 <A HREF=\"[^\n]+\n +TITLE=\"[^\n]+\">\\([^\n]+\\)"
 			     end t nil)
+      (setq name (match-string 1)
+	    address (match-string 3))
+      ;; Yoshiki.Ohshima ＠ acm.org
+      (when (string-match " ＠ " name)
+	(setq name (concat (substring name 0 (match-beginning 0))
+			   "@"
+			   (substring name (match-end 0)))))
+      (when (string-match " ＠ " address)
+	(setq address (concat (substring address 0 (match-beginning 0))
+			      "@"
+			      (substring address (match-end 0)))))
       (shimbun-header-set-from
        header
-       (shimbun-mime-encode-string (concat (match-string 1)
-					   " <" (match-string 3) ">")))
+       (shimbun-mime-encode-string (concat name " <" address ">")))
 
       (when (re-search-forward "<I>\\([0-9][0-9][0-9][0-9]\\)年 *\\([0-9][0-9]*\\)月 *\\([0-9][0-9]*\\)日 (\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\)) \\([:0-9]+\\) \\([A-Z]+\\)</I>" end t nil)
 	;; <I>Sat, 12 Apr 2003 17:29:51 +0900 (JST)</I> ;; mailman original
@@ -77,6 +91,64 @@
       (delete-region (point-min) end)
       (delete-region (search-forward "<!--endarticle-->") (point-max))
       (shimbun-header-insert-and-buffer-string shimbun header nil t))))
+
+(luna-define-method shimbun-headers
+  ((shimbun shimbun-squeak-ja) &optional range)
+  (shimbun-squeak-ja-headers shimbun range))
+
+(defun shimbun-squeak-ja-headers (shimbun range)
+  (with-temp-buffer
+    (let* ((index-url (shimbun-index-url shimbun))
+	   (group (shimbun-current-group-internal shimbun))
+	   (suffix (if (string-match "^http://\\([^/]+\\)/" index-url)
+		       (match-string 1 index-url)
+		     index-url))
+	   auxs aux id url subject from headers)
+      (shimbun-retrieve-url (concat index-url "/index.html") 'reload)
+      (setq case-fold-search t)
+      (let ((pages (shimbun-header-index-pages range))
+	    (count 0))
+	(while (and (if pages (<= (incf count) pages) t)
+		    (re-search-forward "<a href=\"\\(20[0-9][0-9]-\
+\\(January\\|February\\|March\\|April\\|May\\|June\
+\\|July\\|August\\|September\\|October\\|November\\|December\\)\
+\\)/date.html\">"
+				       nil t))
+	  (push (match-string 1) auxs)))
+      (setq auxs (nreverse auxs))
+      (catch 'stop
+	(while auxs
+	  (erase-buffer)
+	  (shimbun-retrieve-url (concat index-url "/"
+					(setq aux (car auxs))
+					"/date.html")
+				'reload)
+	  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
+	  (goto-char (point-max))
+	  (while (re-search-backward "<LI><A HREF=\"\\(\\([0-9]+\\)\\.html\\)\
+\">\\([^\n]+\\)\n</A><A NAME=\"[0-9]+\">&nbsp;</A>\n<I>\\([^\n]+\\)\n</I>"
+				     nil t)
+	    (setq id (format "<%06d.%s@%s>"
+			     (string-to-number (match-string 2))
+			     group
+			     suffix))
+	    (when (shimbun-search-id shimbun id)
+	      (throw 'stop nil))
+	    (setq url (concat index-url "/" aux "/" (match-string 1))
+		  subject (match-string 3)
+		  from (shimbun-mime-encode-string (match-string 4)))
+	    (setq subject (with-temp-buffer
+			    (insert subject)
+			    (shimbun-decode-entities)
+			    (shimbun-remove-markup)
+			    (buffer-string)))
+	    (push (shimbun-make-header
+		   0
+		   (shimbun-mime-encode-string subject)
+		   from "" id "" 0 0 url)
+		  headers))
+	  (setq auxs (cdr auxs))))
+      headers)))
 
 (provide 'sb-squeak-ja)
 ;;; sb-squeak-ja.el ends here

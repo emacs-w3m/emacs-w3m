@@ -1,8 +1,9 @@
 ;;; sb-mailman.el --- shimbun backend class for mailman archiver.
 
-;; Copyright (C) 2002 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2002       Katsumi Yamaoka <yamaoka@jpl.org>
 
-;; Authors: NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>,
+;; Authors: NAKAJIMA Mikio  <minakaji@namazu.org>,
 ;;          Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
 
@@ -104,7 +105,7 @@
 	      (throw 'stop nil))
 	    (setq url (concat index-url "/" aux "/" (match-string 1))
 		  subject (match-string 3)
-		  from (match-string 4))
+		  from (shimbun-mime-encode-string (match-string 4)))
 	    (setq subject (with-temp-buffer
 			    (insert subject)
 			    (shimbun-decode-entities)
