@@ -3459,8 +3459,7 @@ this function returns t.  Otherwise, returns nil."
       (while (setq pos (next-single-property-change pos 'w3m-name-anchor))
 	(when (member name (get-text-property pos 'w3m-name-anchor))
 	  (goto-char pos)
-	  (throw 'found t))
-	(setq pos (next-single-property-change pos 'w3m-name-anchor)))
+	  (throw 'found t)))
       (unless quiet
 	(message "No such anchor: %s" name))
       nil)))
