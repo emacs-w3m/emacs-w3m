@@ -119,36 +119,33 @@
 		  headers)))))
     headers))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-mainichi)
-					   header)
-  (let ((case-fold-search t)
-	start)
-    (when (and (re-search-forward shimbun-mainichi-content-start
-				  nil t)
-	       (setq start (point))
-	       (re-search-forward shimbun-mainichi-content-end
-				  nil t))
-      (delete-region (match-beginning 0) (point-max))
-      (delete-region (point-min) start)
-      (goto-char (point-min))
-      (when (re-search-forward "<p>［毎日新聞１?[０-９]月[１-３]?[０-９]日］\
-  ( \\(20[0-9][0-9]\\)-\\([01][0-9]\\)-\\([0-3][0-9]\\)-\
+(defsubst shimbun-mainichi-remove-tags (begin-tag end-tag)
+  (let ((case-fold-search t) (pos))
+    (goto-char (point-min))
+    (while (and
+	    (search-forward begin-tag nil t)
+	    (setq pos (match-beginning 0))
+	    (search-forward end-tag nil t))
+      (delete-region pos (point)))))
+
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-mainichi)
+						   header)
+  (let ((case-fold-search t))
+    (shimbun-mainichi-remove-tags "<SCRIPT" "</SCRIPT>")
+    (shimbun-mainichi-remove-tags "<NOSCRIPT" "</NOSCRIPT>")
+    (shimbun-mainichi-remove-tags "<NOEMBED" "</NOEMBED>")
+    (goto-char (point-min))
+    (when (re-search-forward "<p>［毎日新聞１?[０-９]月[１-３]?[０-９]日］\
+ +( \\(20[0-9][0-9]\\)-\\([01][0-9]\\)-\\([0-3][0-9]\\)-\
 \\([0-2][0-9]:[0-5][0-9]\\) )</p>"
-			       nil t)
-	(shimbun-header-set-date
-	 header
-	 (shimbun-make-date-string
-	  (string-to-number (match-string 1))
-	  (string-to-number (match-string 2))
-	  (string-to-number (match-string 3))
-	  (match-string 4)))
-	(goto-char (point-min)))
-      (insert "<html>\n<head>\n<base href=\""
-	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
-      (goto-char (point-max))
-      (insert "\n</body>\n</html>\n")
-      (shimbun-make-mime-article shimbun header)
-      (buffer-string))))
+			     nil t)
+      (shimbun-header-set-date header
+			       (shimbun-make-date-string
+				(string-to-number (match-string 1))
+				(string-to-number (match-string 2))
+				(string-to-number (match-string 3))
+				(match-string 4)))
+      (goto-char (point-min)))))
 
 (provide 'sb-mainichi)
 

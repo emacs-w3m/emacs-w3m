@@ -56,6 +56,8 @@
 	from `sb-text.el'
 	(shimbun-mainichi): Likewise; Make it inherit
 	`shimbun-japanese-newspaper'.
+	(shimbun-mainichi-remove-tags): New function.
+	(shimbun-make-contents): Reimplemented.
 
 	* shimbun/sb-asahi.el (shimbun-asahi): Make it inherit
 	`shimbun-japanese-newspaper'.
