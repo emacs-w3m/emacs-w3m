@@ -494,6 +494,43 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
    (byte-compile 'w3mhack-generate-colon-keywords-file)
    (w3mhack-generate-colon-keywords-file)))
 
+(defun w3mhack-load-path ()
+  "Print default value of additional load paths for w3m.el."
+  (let (paths x)
+    (and (or (featurep 'xemacs)
+	     (boundp 'MULE)
+	     (locate-library "mime-def"))
+	 (setq x (locate-library "poe"))
+	 (progn
+	   (setq x (file-name-directory x))
+	   (if (string-match "/emu/\\'" x)
+	       (push (substring x 0 (1+ (match-beginning 0))) paths))
+	   (push x paths)))
+    (if (setq x (locate-library "mime-def"))
+	(push (file-name-directory x) paths))
+    (and (boundp 'MULE)
+	 (setq x (locate-library "custom"))
+	 (push (file-name-directory x) paths))
+    (and (boundp 'MULE)
+	 (setq x (locate-library "regexp-opt"))
+	 (push (file-name-directory x) paths))
+    (if (setq x (locate-library "mew"))
+	(push (file-name-directory x) paths))
+    (and (boundp 'emacs-major-version)
+	 (if (featurep 'xemacs)
+	     ;; Mule-UCS does not support XEmacs versions prior to 21.2.37.
+	     (and (>= emacs-major-version 21)
+		  (or (> emacs-minor-version 2)
+		      (and (= emacs-major-version 2)
+			   (>= emacs-beta-version 37))))
+	   (>= emacs-major-version 20))
+	 (setq x (locate-library "un-define.el"))
+	 (push (file-name-directory x) paths))
+    (let (print-level print-length)
+      (princ (mapconcat
+	      (function directory-file-name)
+	      (nreverse paths) ":")))))
+
 (defun w3mhack-version ()
   "Print version of w3m.el."
   (require 'w3m)

@@ -1,3 +1,11 @@
+2001-10-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* aclocal.m4 (AC_ADD_LOAD_PATH): When `yes' or null string is
+	passed as an argument, call `w3mhack-load-path' to search places
+	of required modules automatically.
+
+	* w3mhack.el (w3mhack-load-path): New function.
+
 2001-10-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-create-image): Call `w3m-fix-gif' if

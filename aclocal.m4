@@ -201,7 +201,11 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
       if test "x${withval}" != xyes -a "x${withval}" != x; then
 	ADDITIONAL_LOAD_PATH="${withval}"
       else
-	ADDITIONAL_LOAD_PATH=NONE
+	if test x"$USER" != xroot -a x"$HOME" != x -a -f "$HOME"/.emacs; then
+          ADDITIONAL_LOAD_PATH=`"$EMACS" -batch -l "$HOME"/.emacs -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null`
+        else
+          ADDITIONAL_LOAD_PATH=`"$EMACS" -batch -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null`
+        fi
       fi
       AC_MSG_RESULT(${ADDITIONAL_LOAD_PATH})],
     ADDITIONAL_LOAD_PATH=NONE)
