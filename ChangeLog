@@ -1,3 +1,11 @@
+2001-10-12  Yuuichi Teranishi  <teranisi@gohome.org>,
+	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-e21.el (w3m-form-button-keymap): Renamed from
+	`w3m-widget-keymap'.
+	(w3m-form-make-button): Fixed.
+	(w3m-setup-widget-faces): Revived.
+
 2001-10-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m): Always prompts user for a URL string.

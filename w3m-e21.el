@@ -146,27 +146,22 @@ Buffer string between BEG and END are replaced with IMAGE."
   "*Face to fontify pressed buttons in forms."
   :group 'w3m-face)
 
-(defvar w3m-widget-keymap nil)
+(defvar w3m-form-button-keymap
+  (let ((map (copy-keymap widget-keymap)))
+    (substitute-key-definition 'widget-forward nil map)
+    (substitute-key-definition 'widget-backward nil map)
+    map))
 
 (define-widget 'w3m-form-button 'push-button
   "Widget for w3m form button."
-  :keymap w3m-widget-keymap
+  :keymap w3m-form-button-keymap
   :action (function (lambda (widget &optional e)
 		      (eval (widget-get widget :w3m-form-action)))))
 
 (defun w3m-form-make-button (start end properties)
   "Make button on the region from START to END."
-  (unless w3m-widget-keymap
-    (let ((map (copy-keymap w3m-mode-map)))
-      (substitute-key-definition 'w3m-view-this-url
-				 'widget-button-press map)
-      (substitute-key-definition 'w3m-mouse-view-this-url
-				 'widget-button-click map)
-      (setq w3m-widget-keymap map)))
   (if w3m-form-use-fancy-faces
-      (let ((widget-button-face 'w3m-form-button-face)
-	    (widget-mouse-face 'w3m-form-button-mouse-face)
-	    (widget-button-pressed-face 'w3m-form-button-pressed-face))
+      (progn
 	(unless (memq (face-attribute 'w3m-form-button-face :box)
 		      '(nil unspecified))
 	  (and (eq ?\[ (char-after start))
@@ -287,7 +282,16 @@ Buffer string between BEG and END are replaced with IMAGE."
 				   'help-echo
 				   "mouse-2 prompts to input URL"))))))
 
+(defun w3m-setup-widget-faces ()
+  (make-local-variable 'widget-button-face)
+  (make-local-variable 'widget-mouse-face)
+  (make-local-variable 'widget-button-pressed-face)
+  (setq widget-button-face 'w3m-form-button-face)
+  (setq widget-mouse-face 'w3m-form-button-mouse-face)
+  (setq widget-button-pressed-face 'w3m-form-button-pressed-face))
+
 (add-hook 'w3m-mode-hook 'w3m-setup-header-line)
+(add-hook 'w3m-mode-hook 'w3m-setup-widget-faces)
 
 (provide 'w3m-e21)
 ;;; w3m-e21.el ends here.
