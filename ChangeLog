@@ -1,5 +1,16 @@
 2005-03-10  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
+	* shimbun/sb-pocketgames.el (shimbun-pocketgames-content-start): Fix
+	regexp for new design web page.
+	(shimbun-headers): Remove.
+	(shimbun-pocketgames-headers): Ditto.
+	(shimbun-pocketgames-headers-1): Rename for 'shimbun-get-headers'
+	(shimbun-get-headers): New method overriden.
+	(shimbun-make-contents): Remove.
+	(shimbun-pocketgames-make-mime-article): Ditto.
+
+2005-03-10  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
 	* shimbun/sb-arch-bluegate.el : Removed for site closing.
 
 	* shimbun/sb-pocketgames.el (shimbun-make-contents): Fix mistaken method overriding.
