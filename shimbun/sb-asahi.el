@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -73,7 +73,25 @@
 		    ;; 9. hour:minute
 		    "\\([012][0-9]:[0-5][0-9]\\)"
 		    "\\)?)")
-		   1 3 4 5 6 7 9)))
+		   1 3 4 5 6 7 9))
+	 (antarctica (list
+		      (concat
+		       "<a" s1 "href=\""
+		       ;; 1. url
+		       "\\(/nankyoku/%s/"
+		       ;; 2. serial number
+		       "\\([A-Z0-9]+\\)"
+		       "\\.html\\)\">" s0
+		       ;; 3. subject
+		       "\\(" no-nl "\\)" s0 "</a>" s0
+		       "[（(][0-9]+/"
+		       ;; 4. month
+		       "\\([01][0-9]\\)"
+		       "/"
+		       ;; 5. day
+		       "\\([0-3][0-9]\\)"
+		       "[)）]")
+		      1 nil 2 3 4 5)))
     `(("business" "経済" "%s/" ,@default)
       ("culture" "文化・芸能" "%s/" ,@default)
       ("english" "ENGLISH" "%s/"
@@ -162,24 +180,8 @@
 	 "\\([0-3][0-9]\\)"
 	 "[)）]")
        1 nil 2 3 4 5)
-      ("whitemail" "WhiteMail＠南極" "nankyoku/%s/"
-       ,(concat
-	 "<a" s1 "href=\""
-	 ;; 1. url
-	 "\\(/nankyoku/%s/"
-	 ;; 2. serial number
-	 "\\([A-Z0-9]+\\)"
-	 "\\.html\\)\">" s0
-	 ;; 3. subject
-	 "\\(" no-nl "\\)" s0 "</a>" s0
-	 "[（(][0-9]+/"
-	 ;; 4. month
-	 "\\([01][0-9]\\)"
-	 "/"
-	 ;; 5. day
-	 "\\([0-3][0-9]\\)"
-	 "[)）]")
-       1 nil 2 3 4 5)))
+      ("whitemail" "WhiteMail＠南極" "nankyoku/%s/" ,@antarctica)
+      ("borderless" "国境のない大陸から" "nankyoku/%s/" ,@antarctica)))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the
