@@ -17,12 +17,17 @@ $Date$
    --> w3mnav.el 相当の処理ができるように 
        w3m-relationship-estimate-rules を見直す．[emacs-w3m:06211]
 
+       --> WiKi 用の拡張を入れる [emacs-w3m:06841]
+
    --> w3m-correct-charset-alist と w3m-charset-coding-system-alist の整
        理．[emacs-w3m:06109]
 
    --> 意図しない字形の変換を避けるため，できるだけ元のページの文字コー
        ドのままで処理を行うようにする．
        [emacs-w3m:06674], [emacs-w3m:06701]
+
+       --> ucs_conv=0 オプションが利用できない環境がある
+	   http://emacs-w3m.namazu.org/ml/msg06787.html
 
    --> w3m-safe-* コマンドの整理．「安全」を定義する必要あり．
        [emacs-w3m:06240]
@@ -65,6 +70,9 @@ $Date$
     [emacs-w3m:05816]
 
 (3) w3m-antenna-sites の customize がうまく動かない．[emacs-w3m:06213]
+
+(4) プロセスが同時に大量に呼び出されてエラーになることがある．
+    [emacs-w3m:06896], [emacs-w3m:06901]
 
 
 
