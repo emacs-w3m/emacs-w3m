@@ -1,3 +1,21 @@
+2001-03-15  Yuuichi Teranishi  <teranisi@isl.ntt.co.jp>
+
+	* w3m.el (w3m-icon-directory): New variable.
+	(w3m-toolbar-buttons): New constant.
+	(w3m-toolbar): Ditto.
+	(w3m-setup-toolbar): Define as null function.
+	(w3m-mode): Call `w3m-setup-toolbar'.
+
+	* w3m-xmas.el (w3m-use-toolbar): New variable.
+	(w3m-xmas-make-toolbar-buttons): New function.
+	(w3m-setup-toolbar): Ditto.
+
+	* w3m-e21.el (w3m-use-toolbar): New variable.
+	(w3m-e21-toolbar-configurations): Ditto.
+	(w3m-e21-setup-toolbar): New function.
+	(w3m-e21-make-toolbar-buttons): Ditto.
+	(w3m-setup-toolbar): Ditto.
+
 2001-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (XEmacs): Implemented the source level optimizer for

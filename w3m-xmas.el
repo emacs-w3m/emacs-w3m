@@ -80,6 +80,35 @@ Buffer string between BEG and END are replaced with IMAGE."
   (and (device-on-window-system-p)
        (featurep image-type)))
 
+;;; Toolbar
+(defcustom w3m-use-toolbar (and (featurep 'toolbar) t)
+  "Non-nil activates toolbar of w3m."
+  :group 'w3m
+  :type 'boolean)
+
+(defun w3m-xmas-make-toolbar-buttons (buttons)
+  (dolist (button buttons)
+    (let ((up (expand-file-name (concat button "-up.xpm")
+				w3m-icon-directory))
+	  (down (expand-file-name (concat button "-down.xpm")
+				  w3m-icon-directory))
+	  (disabled (expand-file-name (concat button "-disabled.xpm")
+				      w3m-icon-directory))
+	  (icon (intern (concat "w3m-toolbar-" button "-icon"))))
+      (if (file-exists-p up)
+	  (set icon
+	       (toolbar-make-button-list
+		up
+		(and (file-exists-p down) down)
+		(and (file-exists-p disabled) disabled)))
+	(error "Icon file %s not found" up)))))
+
+(defun w3m-setup-toolbar ()
+  (when w3m-use-toolbar
+    (w3m-xmas-make-toolbar-buttons w3m-toolbar-buttons)
+    (set-specifier default-toolbar
+		   (cons (current-buffer) w3m-toolbar))))
+
 ;;; Widget:
 (unless (get 'coding-system 'widget-type)
 ;; To avoid of lack of definition at old wid-edit.el.

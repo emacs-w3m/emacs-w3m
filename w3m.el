@@ -171,6 +171,11 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-icon-directory nil
+  "*Icon directory for w3m (XEmacs or Emacs 21)."
+  :group 'w3m
+  :type 'directory)
+
 (defun w3m-url-to-file-name (url)
   (if (string-match "^file:" url)
       (setq url (substring url (match-end 0))))
@@ -479,6 +484,26 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
     ("image/x-xbm" . xbm)
     ("image/x-xpm" . xpm))
   "An alist of CONTENT-TYPE and IMAGE-TYPE.")
+
+(defconst w3m-toolbar-buttons
+  '("back" "forward" "reload" "open" "home" "search" "image" "weather")
+  "Toolbar button list for w3m.")
+
+(defconst w3m-toolbar
+  '([w3m-toolbar-back-icon w3m-view-previous-page
+			   (nth 1 w3m-url-history) "前のページに戻る"]
+    [w3m-toolbar-forward-icon w3m-view-next-page w3m-url-yrotsih
+			      "次のページに進む"]
+    [w3m-toolbar-reload-icon w3m-reload-this-page t "サーバからページをもう一度読み込む"]
+    [w3m-toolbar-open-icon w3m-goto-url t "URL を入力してページを開く"]
+    [w3m-toolbar-home-icon
+     (lambda () (interactive (w3m-goto-url w3m-home-page)))
+     w3m-home-page "ホームページへジャンプ"]
+    [w3m-toolbar-search-icon w3m-search t "インターネット上を検索"]
+    [w3m-toolbar-image-icon w3m-toggle-inline-images t "画像の表示をトグルする"]
+    [w3m-toolbar-weather-icon w3m-weather t "天気予報を見る"]
+    )
+  "Toolbar definition for w3m.")
 
 (defvar w3m-cid-retrieve-function-alist nil)
 
@@ -824,6 +849,8 @@ If N is negative, last N items of LIST is returned."
   (defun w3m-image-type-available-p (image-type)
     "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
     nil))
+(unless (fboundp 'w3m-setup-toolbar)
+  (defun w3m-setup-toolbar ()))
 
 (defun w3m-fontify-images ()
   "Fontify image alternate strings in this buffer which contains half-dumped data."
@@ -1987,6 +2014,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (setq mode-name "w3m")
   (use-local-map w3m-mode-map)
   (setq truncate-lines t)
+  (w3m-setup-toolbar)
   (run-hooks 'w3m-mode-hook))
 
 (defun w3m-scroll-left (arg)

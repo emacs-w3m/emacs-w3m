@@ -61,6 +61,69 @@ Buffer string between BEG and END are replaced with IMAGE."
   (and (display-graphic-p)
        (image-type-available-p image-type)))
 
+;;; Toolbar
+(defcustom w3m-use-toolbar (and (display-graphic-p)
+				(image-type-available-p 'xpm))
+  "Non-nil activates toolbar of w3m."
+  :group 'w3m
+  :type 'boolean)
+
+(defvar w3m-e21-toolbar-configurations
+  '((auto-resize-tool-bar        . t)
+    (auto-raise-tool-bar-buttons . t)
+    (tool-bar-button-margin      . 0)
+    (tool-bar-button-relief      . 2)))
+
+(defun w3m-e21-setup-toolbar (keymap defs)
+  (let ((configs w3m-e21-toolbar-configurations)
+	config)
+    (while (setq config (pop configs))
+      (set (make-local-variable (car config)) (cdr config))))
+  ;; Invalidate the default bindings.
+  (let ((keys (cdr (key-binding [tool-bar] t)))
+	item)
+    (while (setq item (pop keys))
+      (when (setq item (car-safe item))
+	(define-key keymap (vector 'tool-bar item) 'undefined))))
+  (let ((n (length defs))
+	def)
+    (while (>= n 0)
+      (setq n (1- n)
+	    def (nth n defs))
+      (define-key keymap (vector 'tool-bar (aref def 1))
+	(list 'menu-item (aref def 3) (aref def 1)
+	      :enable (aref def 2)
+	      :image (symbol-value (aref def 0)))))))
+
+(defun w3m-e21-make-toolbar-buttons (buttons)
+  (dolist (button buttons)
+    (let ((up (expand-file-name (concat button "-up.xpm")
+				w3m-icon-directory))
+	  (down (expand-file-name (concat button "-down.xpm")
+				  w3m-icon-directory))
+	  (disabled (expand-file-name (concat button "-disabled.xpm")
+				      w3m-icon-directory))
+	  (icon (intern (concat "w3m-toolbar-" button "-icon")))
+	  (props '(:ascent 
+		   center
+		   :color-symbols (("backgroundToolBarColor" . "None")))))
+      (unless (boundp icon)
+	(if (file-exists-p up)
+	    (progn
+	      (setq up (apply 'create-image up 'xpm nil props))
+	      (if (file-exists-p down)
+		  (setq down (apply 'create-image down 'xpm nil props))
+		(setq down nil))
+	      (if (file-exists-p disabled)
+		  (setq disabled (apply 'create-image disabled 'xpm nil props))
+		(setq disabled nil))
+	      (set icon (vector down up disabled disabled)))
+	  (error "Icon file %s not found" up))))))
+
+(defun w3m-setup-toolbar ()
+  (when w3m-use-toolbar
+    (w3m-e21-make-toolbar-buttons w3m-toolbar-buttons)
+    (w3m-e21-setup-toolbar w3m-mode-map w3m-toolbar)))
 
 (provide 'w3m-e21)
 ;;; w3m-e21.el ends here.
