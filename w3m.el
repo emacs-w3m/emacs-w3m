@@ -2195,26 +2195,38 @@ to nil."
   (w3m-with-work-buffer
     (delete-region (point-min) (point-max))
     (set-buffer-multibyte nil)
-    (let ((type)
-	  (w3m-command-arguments w3m-command-arguments))
+    (let ((w3m-command-arguments w3m-command-arguments)
+	  type file modes)
       (and no-cache
 	   w3m-broken-proxy-cache
 	   (setq w3m-command-arguments
 		 (append w3m-command-arguments '("-o" "no_cache=1"))))
-      (if post-data
-	  (setq w3m-command-arguments
-		(append w3m-command-arguments
-			(if (consp post-data)
-			    (list "-post_ct" (car post-data)
-				  "-post" (cdr post-data))
-			  (list "-post" post-data)))))
-      (setq type
-	    (or (unless no-cache
-		  (and (w3m-cache-request-contents url)
-		       (w3m-content-type url)))
-		(car (if (memq w3m-type '(w3m-mnc w3mmee))
-			 (w3m-w3m-dump-head-source url)
-		       (w3m-w3m-dump-source url)))))
+      (when post-data
+	(setq file (make-temp-name
+		    (expand-file-name "w3mel" w3m-profile-directory)))
+	(setq modes (default-file-modes))
+	(with-temp-buffer
+	  (insert (if (consp post-data) (cdr post-data) post-data))
+	  (unwind-protect
+	      (progn
+		(set-default-file-modes (* 64 6))
+		(write-region (point-min) (point-max) file nil 'silent))
+	    (set-default-file-modes modes)))
+	(setq w3m-command-arguments
+	      (append w3m-command-arguments
+		      (if (consp post-data)
+			  (list "-header" (concat "Content-Type: "
+						  (car post-data))))
+		      (list "-post" file))))
+      (unwind-protect
+	  (setq type
+		(or (unless no-cache
+		      (and (w3m-cache-request-contents url)
+			   (w3m-content-type url)))
+		    (car (if (memq w3m-type '(w3m-mnc w3mmee))
+			     (w3m-w3m-dump-head-source url)
+			   (w3m-w3m-dump-source url)))))
+	(if file (delete-file file)))
       (when type
 	(or no-decode
 	    (w3m-decode-encoded-contents (w3m-content-encoding url))
