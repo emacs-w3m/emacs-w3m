@@ -1,4 +1,4 @@
-\input texinfo @c -*-texinfo -*-
+\input texinfo @c -*- mode: texinfo; coding: iso-8859-1 -*-
 @c %**start of header
 @setfilename emacs-w3m.info
 @settitle Emacs-w3m -- an Emacs interface to w3m --
@@ -3552,6 +3552,22 @@ one.
 
 You should notice that XEmacs versions 21.1 and 21.2 have already been
 retired officially.
+
+@item
+Don't use @code{standard-display-european}
+
+It is generally harmful since it often makes Latin characters get
+displayed incorrectly, for instance, the character @samp{´} (it is a
+representation of @samp{&#8217} in reality) is represented as @samp{ù}
+(@samp{&#249}).  If the line something like the following is in your
+@file{~/.emacs} file or site files which Emacs loads when starting up,
+we strongly recommend you to remove it.
+
+@lisp
+(standard-display-european 1)
+@end lisp
+
+There the argument might be @code{t}, not @code{1}.
 @end enumerate
 
 @item
