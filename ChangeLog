@@ -1,3 +1,22 @@
+2002-07-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-f1fan.el (shimbun-make-contents): Call
+	`shimbun-header-insert-and-buffer-string' to insert <base> tag.
+
+	* shimbun/sb-vinelinux.el (shimbun-make-contents): Insert <html>,
+	<head>, <base> and <body> tag.
+
+	* shimbun/sb-ruby.el (shimbun-make-contents): Insert <base> tag.
+
+	* shimbun/sb-pcweb-column.el (shimbun-make-contents): Call
+	`shimbun-header-insert-and-buffer-string' to insert <base> tag.
+
+	* shimbun/sb-ibm-dev.el (shimbun-make-contents): Call
+	`shimbun-header-insert-and-buffer-string' to insert <base> tag.
+
+	* shimbun/sb-wired.el (shimbun-wired-content-start): Update.
+	(shimbun-wired-content-end): Update.
+
 2002-07-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-decoder-alist): Don't examine the existence of w3m

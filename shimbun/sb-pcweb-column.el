@@ -91,12 +91,7 @@
 				  nil t))
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start))
-    (goto-char (point-min))
-    (shimbun-header-insert shimbun header)
-    (insert "Content-Type: text/html; charset=ISO-2022-JP\n"
-	    "MIME-Version: 1.0\n\n")
-    (encode-coding-string (buffer-string)
-			  (mime-charset-to-coding-system "ISO-2022-JP"))))
+    (shimbun-header-insert-and-buffer-string shimbun header nil t)))
 
 (provide 'sb-pcweb-column)
 

@@ -205,12 +205,7 @@
   (goto-char (point-min))
   (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
   (shimbun-decode-entities)
-  (goto-char (point-min))
-  (shimbun-header-insert shimbun header)
-  (insert "Content-Type: text/html; charset=ISO-2022-JP\n\
-MIME-Version: 1.0\n\n")
-  (encode-coding-string (buffer-string)
-			(mime-charset-to-coding-system "ISO-2022-JP")))
+  (shimbun-header-insert-and-buffer-string shimbun header nil t))
 
 (provide 'sb-ibm-dev)
 
