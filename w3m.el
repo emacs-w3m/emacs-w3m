@@ -54,12 +54,13 @@
 
 (require 'thingatpt)
 
-(unless (fboundp 'find-coding-system)
-  (if (fboundp 'coding-system-p)
-      (defsubst find-coding-system (obj)
-	"Return OBJ if it is a coding-system."
-	(if (coding-system-p obj) obj))
-    (require 'pces)))
+(eval-and-compile
+  (unless (fboundp 'find-coding-system)
+    (if (fboundp 'coding-system-p)
+	(defsubst find-coding-system (obj)
+	  "Return OBJ if it is a coding-system."
+	  (if (coding-system-p obj) obj))
+      (require 'pces))))
 
 ;; this package using a few CL macros
 (eval-when-compile (require 'cl))
@@ -67,6 +68,14 @@
 (put 'w3m-static-if 'lisp-indent-function 2)
 (defmacro w3m-static-if (cond then &rest else)
   (if (eval cond) then (` (progn  (,@ else)))))
+
+(defconst emacs-w3m-version
+  (eval-when-compile
+    (let ((rev "$Revision$"))
+      (and (string-match "\\.\\([0-9]+\\) \$$" rev)
+	   (format "0.2.%d"
+		   (- (string-to-number (match-string 1 rev)) 28)))))
+  "Version number of this package.")
 
 (defgroup w3m nil
   "w3m - the web browser of choice."
@@ -307,13 +316,6 @@ In other environment, use 'native."
 			  (restricted-sexp :match-alternatives
 					   (stringp 'file 'url))))
 	    (function :tag "Function")))))
-
-(eval-and-compile
-  (and (not (fboundp 'find-coding-system))
-       (fboundp 'coding-system-p)
-       (defun find-coding-system (obj)
-	 "Return t if OBJ if it is a coding-system."
-	 (if (coding-system-p obj) obj))))
 
 (defcustom w3m-charset-coding-system-alist
   (let ((rest
@@ -1175,8 +1177,7 @@ Return symbol to identify its backlog data."
   (save-excursion
     (set-buffer w3m-backlog-buffer)
     (goto-char (point-min))
-    (if (zerop (buffer-size))
-	()				; The buffer is empty.
+    (unless (zerop (buffer-size))
       (let ((ident (get-text-property (point) 'w3m-backlog))
 	    buffer-read-only)
 	;; Remove the ident from the list of articles.
@@ -2369,7 +2370,7 @@ ex.) c:/dir/file => //c/dir/file"
 
 (defun w3m-search (search-engine query)
   "Search QUERY using SEARCH-ENGINE.
-When called interactively wich prefix argument, you can choose search
+When called interactively with prefix argument, you can choose search
 engine deinfed in `w3m-search-engine-alist'.  Otherwise use
 `w3m-default-search-engine'."
   (interactive
