@@ -5764,19 +5764,30 @@ the `w3m-search' function and the variable
 	 (string-match "\\`ftp://" url)
 	 (not (string= "text/html" (w3m-local-content-type url))))
     (w3m-goto-ftp-url url))
+   ;; find-file directly
    ((condition-case nil
-	(and (string-match "\\`file://" url)
+	(and (w3m-url-local-p url)
 	     w3m-local-find-file-function
-	     (string-match (or (car w3m-local-find-file-regexps) "")
-			   url)
-	     (not (string-match (or (cdr w3m-local-find-file-regexps) "")
-				url))
-	     (prog1
-		 t
-	       (funcall (if (functionp w3m-local-find-file-function)
-			    w3m-local-find-file-function
-			  (eval w3m-local-find-file-function))
-			(substring url 7))))
+	     (let ((base-url (w3m-base-url url))
+		   (match (car w3m-local-find-file-regexps))
+		   nomatch file)
+	       (and (or (not match)
+			(string-match match base-url))
+		    (not (and (setq nomatch (cdr w3m-local-find-file-regexps))
+			      (string-match nomatch base-url)))
+		    (setq file (w3m-url-to-file-name base-url))
+		    (file-exists-p file)
+		    (prog1
+			t
+		      (unless w3m-current-url
+			(erase-buffer)
+			(set-buffer-modified-p nil)
+			(setq w3m-current-url base-url))
+		      (save-excursion
+			(funcall (if (functionp w3m-local-find-file-function)
+				     w3m-local-find-file-function
+				   (eval w3m-local-find-file-function))
+				 file))))))
       (error nil)))
    ((w3m-url-valid url)
     (w3m-buffer-setup)			; Setup buffer.
