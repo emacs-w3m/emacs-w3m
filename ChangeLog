@@ -4,8 +4,8 @@
 	case where the shell command doesn't seem to be usable.
 
 	* attic/addpath.el: Make it work with old Emacsen even if cl is
-	not loaded; load custom and bind defcustom'ed variables for Emacs
-	19.
+	not loaded; load custom, bind defcustom'ed variables and make the
+	locate-library function run quietly for Emacs 19.
 
 	* w3m-ccl.el: Load w3m-om instead of autoloading it for charset-id.
 

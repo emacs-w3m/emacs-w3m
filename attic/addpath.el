@@ -112,4 +112,30 @@ for the proper shell command in your system.")))
 						     (car (cdr args))))))
 	      (setq args (cdr (cdr args))))
 	    newform)
-	form))))
+	form)))
+
+  ;; Make it run quietly.
+  (defun locate-library (library &optional nosuffix)
+    "Show the full path name of Emacs library LIBRARY.
+This command searches the directories in `load-path' like `M-x load-library'
+to find the file that `M-x load-library RET LIBRARY RET' would load.
+Optional second arg NOSUFFIX non-nil means don't add suffixes `.elc' or `.el'
+to the specified name LIBRARY (a la calling `load' instead of `load-library')."
+    (interactive "sLocate library: ")
+    (catch 'answer
+      (mapcar
+       '(lambda (dir)
+	  (mapcar
+	   '(lambda (suf)
+	      (let ((try (expand-file-name (concat library suf) dir)))
+		(and (file-readable-p try)
+		     (null (file-directory-p try))
+		     (progn
+		       (or noninteractive
+			   (message "Library is file %s" try))
+		       (throw 'answer try)))))
+	   (if nosuffix '("") '(".elc" ".el" ""))))
+       load-path)
+      (or noninteractive
+	  (message "No library %s in search path" library))
+      nil)))
