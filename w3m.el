@@ -232,6 +232,19 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'directory)
 
+(defconst w3m-emacs-w3m-icon "\
+R0lGODlhQgAOAPAAAAAAAP///yH5BAQyAP8ALAAAAABCAA4AAAJojI+py+0Po5y02ggyuLyH
+fYDeiCFio4GpmIaam6HGds5fa+a0fe7hl1uogLMYcPj7+Xqxms20Ivp0UmhrWeQxjNtoYod8
+Uo/jrQPZIxPF5CFrqmZ/n2ms1U1vFrk48xpnRyI4SFhoUAAAIfkEBTIAAAAsCQACADcACgAA
+AhWMj6nL7Q+jnLTai7PevPsPhuJIagUAIfkEBTIAAQAsCQAFAAYABwAAAgyEHZCRqr3gQ9Mx
+UAAAIfkEBTIAAQAsEAAFAAYABwAAAgwMDhari5Ygky49UAAAIfkEBTIAAQAsFwAFAAYABwAA
+AgsMDhZryfockwqlAgAh+QQFMgABACweAAUABgAHAAACDAwOFqvJex5ULKFUAAAh+QQFMgAB
+ACwlAAcABgABAAACAoRfACH5BAUyAAEALCwABQAGAAcAAAILRGJgiJsK03GzsgIAIfkEBTIA
+AQAsMwACAAYACgAAAg4MDhZryf4WYpEeCxVKBQAh+QQFMgABACw6AAUABgAHAAACDIQdkJGq
+veBD0zFQAAA7"
+  "A small icon image for the url about://emacs-w3m.gif.  It is currently
+encoded in the optimized animated gif format and base64.")
+
 
 ;; Generic functions:
 (defun w3m-url-to-file-name (url)
@@ -758,6 +771,8 @@ elements are:
  5. Real URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
   (cond
+   ((string-equal "about://emacs-w3m.gif" url)
+    (list "image/gif" nil nil nil nil url))
    ((string-match "^about:" url)
     (list "text/html" nil nil nil nil url))
    ((string-match "^\\(file:\\|/\\)" url)
@@ -1998,6 +2013,14 @@ This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
 to nil."
   (let ((v (cond
+	    ((string-equal "about://emacs-w3m.gif" url)
+	     (when (fboundp 'base64-decode-string)
+	       (w3m-with-work-buffer
+		 (erase-buffer)
+		 (set-buffer-multibyte nil)
+		 (insert (eval (list 'base64-decode-string
+				     w3m-emacs-w3m-icon))))
+	       "image/gif"))
 	    ((string-match "^about:" url)
 	     (let (func)
 	       (if (and (string-match "^about://\\([^/]+\\)/" url)
@@ -2108,7 +2131,7 @@ to nil."
       (apply 'call-process-region
 	     start end w3m-command t t nil
 	     (delq nil
-		   (mapcar 
+		   (mapcar
 		    (lambda (x)
 		      (cond
 		       ((stringp x) x)
@@ -3003,7 +3026,9 @@ ex.) c:/dir/file => //c/dir/file"
 <head><title>About emacs-w3m</title></head>
 <body>
 <center>
-Welcome to <a href=\"http://namazu.org/~tsuchiya/emacs-w3m/\">emacs-w3m</a>!
+Welcome to <a href=\"http://namazu.org/~tsuchiya/emacs-w3m/\">")
+    (insert "<img src=\"about://emacs-w3m.gif\" alt=\"emacs-w3m\">")
+    (insert "</a>!
 <br><br>
 emacs-w3m is an interface program of
 <a href=\"http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/\">w3m</a>,

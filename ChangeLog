@@ -1,3 +1,10 @@
+2001-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-about): Put an icon image as about://emacs-w3m.gif.
+	(w3m-retrieve): Make an exception of about://emacs-w3m.gif.
+	(w3m-attributes): Ditto.
+	(w3m-emacs-w3m-icon): New constant for about://emacs-w3m.gif.
+
 2001-05-22  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/shimbun.el (shimbun-retrieve-url): Decode buffer with
