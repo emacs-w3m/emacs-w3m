@@ -4461,6 +4461,7 @@ NO-CACHE specifies whether functions should not use cached contents."
 			 w3m-cid-retrieve-function-alist))))
     (when func (funcall func url no-decode no-cache))))
 
+;;;###autoload
 (defun w3m-retrieve (url &optional no-decode no-cache
 			 post-data referer handler)
   "Retrieve web contents pointed to by URL.
