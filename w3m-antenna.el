@@ -453,8 +453,10 @@ asynchronous process that has not finished yet."
       (dolist (site alist)
 	(if (if (w3m-antenna-site-last-modified site)
 		(w3m-time-newer-p (w3m-antenna-site-last-modified site)
-				  (w3m-arrived-last-modified
-				   (w3m-antenna-site-url site)))
+				  (or (w3m-arrived-last-modified
+				       (w3m-antenna-site-url site))
+				      (w3m-arrived-time
+				       (w3m-antenna-site-url site))))
 	      (w3m-time-newer-p (w3m-antenna-site-size-detected site)
 				(w3m-arrived-time
 				 (w3m-antenna-site-url site))))

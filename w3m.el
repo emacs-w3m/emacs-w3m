@@ -4987,10 +4987,16 @@ COUNT is treated as 1 by default if it is omitted."
       ;; Avoid incompatibility of drive letters.
       (defun w3m-expand-path-name (name &optional base)
 	"Convert path string NAME to the canonicalized one."
-	(let ((x (expand-file-name name base)))
-	  (if (string-match "\\`.:" x)
-	      (substring x (match-end 0))
-	    x)))
+	;; cygwin-mount.el destroys `expand-file-name';
+	;; (expand-file-name "../index.html" "/foo/bar/") => "c:/cygwin/foo/index.html"
+	(let ((inhibit-file-name-handlers '(cygwin-mount-name-hook-function
+					    cygwin-mount-map-drive-hook-function))
+	      (inhibit-file-name-operation 'expand-file-name)
+	      path)
+	  (setq path (expand-file-name name base))
+	  (if (string-match "\\`.:" path)
+	      (substring path (match-end 0))
+	    path)))
     (defalias 'w3m-expand-path-name 'expand-file-name)))
 
 (defconst w3m-url-hierarchical-schemes
