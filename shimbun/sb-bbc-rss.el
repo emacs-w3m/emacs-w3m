@@ -45,7 +45,7 @@
   ((shimbun shimbun-bbc-rss) url date)
   (unless (string-match "http://news.bbc.co.uk/go/click/rss/0.91/public/-/\\(.+\\)/hi/\\(.+\\)/\\([0-9]+\\).stm" url)
     (error "Cannot find message-id base"))
-  (concat (match-string-no-properties 3 url) "%%rss@bbc.co.uk"))
+  (concat "<" (match-string-no-properties 3 url) "%%rss@bbc.co.uk>"))
 
 (provide 'sb-bbc-rss)
 
