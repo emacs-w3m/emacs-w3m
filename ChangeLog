@@ -1,3 +1,7 @@
+2003-08-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Fix last change.
+
 2003-08-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-rss.el (shimbun-replace-in-string): Silence the
