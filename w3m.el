@@ -5299,6 +5299,7 @@ w3m-mode buffers."
 (defvar w3m-header-line-map nil)
 (unless w3m-header-line-map
   (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map w3m-mode-map)
     (define-key map [mouse-2] 'w3m-goto-url)
     (setq w3m-header-line-map map)))
 

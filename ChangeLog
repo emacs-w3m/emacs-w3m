@@ -1,3 +1,7 @@
+2002-01-18  OHASHI Akira  <bg66@koka-in.org>
+
+	* w3m.el (w3m-header-line-map): Inherit `w3m-mode-map'.
+
 2002-01-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-e21.el (w3m-setup-favicon): Reversed the condition that
