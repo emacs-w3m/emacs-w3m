@@ -294,20 +294,35 @@ In other environment, use 'native."
 
 ;; FIXME: 本当は mailcap を適切に読み込んで設定する必要がある
 (defcustom w3m-content-type-alist
-  '(("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
-    ("text/html" "\\.s?html?$" ("netscape" url))
-    ("image/jpeg" "\\.jpe?g$" ("xv" file))
-    ("image/png" "\\.png$" ("xv" file))
-    ("image/gif" "\\gif$" ("xv" file))
-    ("image/tiff" "\\tif?f$" ("xv" file))
-    ("image/x-xwd" "\\.xwd$" ("xv" file))
-    ("image/x-xbm" "\\.xbm$" ("xv" file))
-    ("image/x-xpm" "\\.xpm$" ("xv" file))
-    ("image/x-bmp" "\\.bmp$" ("xv" file))
-    ("video/mpeg" "\\.mpe?g$" ("mpeg_play" file))
-    ("video/quicktime" "\\.mov$" ("mpeg_play" file))
-    ("application/postscript" "\\.\\(ps\\|eps\\)$" ("gv" file))
-    ("application/pdf" "\\.pdf$" ("acroread" file)))
+  (if (memq window-system '(w32 win32))
+      '(("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
+	("text/html" "\\.s?html?$" w3m-w32-browser-with-fiber)
+	("image/jpeg" "\\.jpe?g$" ("fiber.exe" file))
+	("image/png" "\\.png$" ("fiber.exe" file))
+	("image/gif" "\\gif$" ("fiber.exe" file))
+	("image/tiff" "\\tif?f$" ("fiber.exe" file))
+	("image/x-xwd" "\\.xwd$" ("fiber.exe" file))
+	("image/x-xbm" "\\.xbm$" ("fiber.exe" file))
+	("image/x-xpm" "\\.xpm$" ("fiber.exe" file))
+	("image/x-bmp" "\\.bmp$" ("fiber.exe" file))
+	("video/mpeg" "\\.mpe?g$" ("fiber.exe" file))
+	("video/quicktime" "\\.mov$" ("fiber" file))
+	("application/postscript" "\\.\\(ps\\|eps\\)$" ("fiber.exe" file))
+	("application/pdf" "\\.pdf$" ("fiber.exe" file)))
+    '(("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
+      ("text/html" "\\.s?html?$" ("netscape" url))
+      ("image/jpeg" "\\.jpe?g$" ("xv" file))
+      ("image/png" "\\.png$" ("xv" file))
+      ("image/gif" "\\gif$" ("xv" file))
+      ("image/tiff" "\\tif?f$" ("xv" file))
+      ("image/x-xwd" "\\.xwd$" ("xv" file))
+      ("image/x-xbm" "\\.xbm$" ("xv" file))
+      ("image/x-xpm" "\\.xpm$" ("xv" file))
+      ("image/x-bmp" "\\.bmp$" ("xv" file))
+      ("video/mpeg" "\\.mpe?g$" ("mpeg_play" file))
+      ("video/quicktime" "\\.mov$" ("mpeg_play" file))
+      ("application/postscript" "\\.\\(ps\\|eps\\)$" ("gv" file))
+      ("application/pdf" "\\.pdf$" ("acroread" file))))
   "Alist of file suffixes vs. content type."
   :group 'w3m
   :type '(repeat
@@ -2826,6 +2841,13 @@ engine deinfed in `w3m-search-engine-alist'.  Otherwise use
   (interactive)
   (w3m "about://history/"))
 
+(defun w3m-w32-browser-with-fiber (url)
+  (cond
+   ((string-match "^file://\\([a-z]\\)\\(.*\\)" url)
+    (setq url (concat (match-string 1 url) ":" (match-string 2 url))))
+   ((string-match "^/cygdrive/\\([a-z]\\)\\(.*\\)" url)
+    (setq url (concat (match-string 1 url) ":" (match-string 2 url)))))
+  (start-process "w3m-w32-browser-with-fiber" (current-buffer) "fiber.exe" url))
 
 ;;; Weather:
 (defun w3m-weather (area)
