@@ -1833,8 +1833,6 @@ And with a prefix argument, you get something like this instead:
  |-(f)README.ja
  |-(f)README.namazu.ja
  |-(f)README.shimbun.ja
- |-(f)TIPS
- |-(f)TIPS.ja
 @end example
 
 @table @kbd
