@@ -1,3 +1,8 @@
+2002-01-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-goto-url): Use a URL-like string under the cursor as
+	the initial value of the target URL when interactively called.
+
 2002-01-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-display-hook): Change default variable to `nil'.

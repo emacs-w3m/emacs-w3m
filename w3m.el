@@ -505,10 +505,6 @@ to input URL when URL-like string is not detected under the cursor."
   :group 'w3m
   :type 'hook)
 
-(add-hook 'w3m-display-hook 'w3m-history-highlight-current-url)
-(add-hook 'w3m-display-hook 'w3m-move-point-for-localcgi)
-(add-hook 'w3m-display-hook 'w3m-select-buffer-update)
-
 (defcustom w3m-async-exec t
   "*If non-nil, w3m is executed as an asynchronous process."
   :group 'w3m
@@ -4327,11 +4323,12 @@ field for this request."
   (interactive
    (list
     (w3m-input-url nil
-		   (when (stringp w3m-current-url)
-		     (if (string-match "\\`about://\\(header\\|source\\)/"
-				       w3m-current-url)
-			 (substring w3m-current-url (match-end 0))
-		       w3m-current-url)))
+		   (or (w3m-url-at-point)
+		       (when (stringp w3m-current-url)
+			 (if (string-match "\\`about://\\(header\\|source\\)/"
+					   w3m-current-url)
+			     (substring w3m-current-url (match-end 0))
+			   w3m-current-url))))
     current-prefix-arg
     (w3m-static-if (fboundp 'universal-coding-system-argument)
 	coding-system-for-read)))
@@ -4523,6 +4520,7 @@ the current session.  Otherwise, the new session will start afresh."
 	       (throw 'detect pos)))
 	   (point-min)))
 	(recenter height)))))
+(add-hook 'w3m-display-hook 'w3m-move-point-for-localcgi)
 
 ;;;###autoload
 (defun w3m-gohome ()
@@ -4932,6 +4930,7 @@ If called with 'prefix argument', display arrived-DB history."
 	(put-text-property start (point) 'face 'w3m-history-current-url-face)
 	(goto-char start)
 	(set-buffer-modified-p nil)))))
+(add-hook 'w3m-display-hook 'w3m-history-highlight-current-url)
 
 (defun w3m-db-history ()
   (interactive)
@@ -4993,6 +4992,7 @@ buffers.  User can type following keys:
   (when (get-buffer-window w3m-select-buffer-name)
     (save-selected-window
       (w3m-select-buffer nil 'update))))
+(add-hook 'w3m-display-hook 'w3m-select-buffer-update)
 
 (defun w3m-select-buffer-generate-contents (current-buffer)
   (let (buffer-read-only)
