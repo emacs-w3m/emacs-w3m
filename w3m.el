@@ -85,7 +85,7 @@
   :type 'string)
 
 (defcustom w3m-command-arguments
-  '("-T" "text/html" "-t" tab-width "-halfdump"
+  '("-T" "text/html" "-t" tab-width "-halfdump" "-S"
     "-cols" (1- (frame-width)))
   "*Arguments of w3m."
   :group 'w3m
@@ -323,7 +323,8 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 
 (defcustom w3m-search-engine-alist
   '(("yahoo" . "http://search.yahoo.com/bin/search?p=%s")
-    ("google" . "http://www.google.com/search?q=%s"))
+    ("google" . "http://www.google.com/search?q=%s")
+    ("google-ja" . "http://www.google.com/search?q=%s&hl=ja&lr="))
   "*An alist of search engines.
 Each elemnt looks like (ENGINE . ACTION)
 ENGINE is a string, the name of the search engine.
@@ -359,6 +360,9 @@ See also `w3m-search-engine-alist'."
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
 (defvar w3m-url-history nil "History of URL.")
+(make-variable-buffer-local 'w3m-current-url)
+(make-variable-buffer-local 'w3m-current-title)
+(make-variable-buffer-local 'w3m-url-history)
 
 (defvar w3m-verbose t "Flag variable to control messages.")
 
@@ -375,6 +379,7 @@ See also `w3m-search-engine-alist'."
 (defvar w3m-process-passwd nil)
 (defvar w3m-process-user-counter 0)
 (defvar w3m-process-temp-file nil)
+(make-variable-buffer-local 'w3m-process-temp-file)
 
 (defvar w3m-bookmark-data nil)
 (defvar w3m-bookmark-file-time-stamp nil)
@@ -479,7 +484,7 @@ If N is negative, last N items of LIST is returned."
 		 (if (or (< char 32) (< 127 char))
 		     "~"		; un-supported character
 		   (char-to-string char)))))))
-  
+
 
 (defun w3m-fontify ()
   "Fontify this buffer."
@@ -1140,7 +1145,7 @@ are retrieved."
 	       (stringp w3m-current-url)
 	       (< 0 (length (file-name-nondirectory w3m-current-url))))
 	  (setq title (file-name-nondirectory w3m-current-url)))
-      (set (make-local-variable 'w3m-current-title) (or title "<no-title>")))))
+      (setq w3m-current-title (or title "<no-title>")))))
 
 (defun w3m-exec (url &optional buffer no-cache)
   "Download URL with w3m to the BUFFER.
@@ -1155,17 +1160,15 @@ this function returns t.  Otherwise, returns nil."
       (let ((type (w3m-retrieve url nil "^text/" no-cache)))
 	(if (string-match "^text/" type)
 	    (let (buffer-read-only)
-	      (set (make-local-variable 'w3m-current-url) url)
-	      (set (make-local-variable 'w3m-url-history)
-		   (cons url w3m-url-history))
+	      (setq w3m-current-url url)
+	      (setq w3m-url-history (cons url w3m-url-history))
 	      (setq-default w3m-url-history
 			    (cons url (default-value 'w3m-url-history)))
 	      (delete-region (point-min) (point-max))
 	      (insert-buffer w3m-work-buffer-name)
 	      (if (string= "text/html" type)
 		  (progn (w3m-rendering-region (point-min) (point-max)) t)
-		(set (make-local-variable 'w3m-current-title)
-		     (file-name-nondirectory url))
+		(setq w3m-current-title (file-name-nondirectory url))
 		nil))
 	  (w3m-message "Requested URL has an unsuitable content type: %s" type)
 	  nil)))))
@@ -1281,7 +1284,7 @@ this function returns t.  Otherwise, returns nil."
 			       (current-buffer)
 			       command
 			       (mapcar (function eval) arguments)))
-		  (set (make-local-variable 'w3m-process-temp-file) file)
+		  (setq w3m-process-temp-file file)
 		  (set-process-sentinel
 		   proc
 		   (lambda (proc event)
@@ -1362,8 +1365,9 @@ this function returns t.  Otherwise, returns nil."
   (when (get-text-property (point) 'w3m-href-anchor)
     (goto-char (next-single-property-change (point) 'w3m-href-anchor)))
   ;; find the next anchor
-  (let ((pos (next-single-property-change (point) 'w3m-href-anchor)))
-    (if pos (progn (goto-char pos) t) nil)))
+  (if (get-text-property (point) 'w3m-href-anchor) t
+    (let ((pos (next-single-property-change (point) 'w3m-href-anchor)))
+      (if pos (progn (goto-char pos) t) nil))))
 
 (defun w3m-next-anchor (&optional arg)
   "*Move cursor to the next anchor."
@@ -1381,12 +1385,14 @@ this function returns t.  Otherwise, returns nil."
 
 (defun w3m-goto-previous-anchor ()
   ;; move to the beginning of the current anchor
-  (when (and (not (bobp)) (get-text-property (1- (point)) 'w3m-href-anchor))
-    (goto-char (previous-single-property-change (point) 'w3m-href-anchor)))
+  (when (get-text-property (point) 'w3m-href-anchor)
+    (goto-char (previous-single-property-change (1+ (point))
+						'w3m-href-anchor)))
   ;; find the previous anchor
   (let ((pos (previous-single-property-change (point) 'w3m-href-anchor)))
-    (if pos (progn (goto-char (previous-single-property-change
-			       pos 'w3m-href-anchor)) t) nil)))
+    (if pos (goto-char
+	     (if (get-text-property pos 'w3m-href-anchor) pos
+	       (previous-single-property-change pos 'w3m-href-anchor))))))
 
 (defun w3m-previous-anchor (&optional arg)
   "Move cursor to the previous anchor."
@@ -1836,9 +1842,12 @@ ex.) c:/dir/file => //c/dir/file"
 
 (defun w3m-escape-query-string (str)
   (mapconcat (lambda (ch)
-	       (if (string-match "[-a-zA-Z0-9_]" (char-to-string ch)) ; xxx?
-		   (char-to-string ch)	; printable
-		 (format "%%%02X" ch)))	; escape
+	       (cond
+		((string-match "[-a-zA-Z0-9_]" (char-to-string ch)) ; xxx?
+		 (char-to-string ch))	; printable
+		((char-equal ch ? ) "+") ; space character
+		(t
+		 (FORMAT "%%%02X" ch)))) ; escape
 	     (string-to-list str)
 	     ""))
 
