@@ -164,7 +164,7 @@ AC_DEFUN(AC_PATH_ICONDIR,
 
   if test ${EMACS_FLAVOR} = xemacs -o ${EMACS_FLAVOR} = emacs21; then
     AC_ARG_WITH(icondir,
-     [  --with-icondir=ICONDIR  directory for icons [$(data-directory)/w3m/icons]],
+     [  --with-icondir=ICONDIR  directory for icons [\$(data-directory)/w3m/icons]],
       ICONDIR="${withval}")
     AC_MSG_CHECKING([where icon files should go])
     if test -z "${ICONDIR}"; then

@@ -1,3 +1,8 @@
+2001-04-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_PATH_ICONDIR): Quote "$(data-directory)" in help-
+	string.
+
 2001-04-02  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-html-string-regexp): Make no exception of back-quote.
