@@ -1,4 +1,4 @@
-	   This package contains a interface program of w3m.
+           This package contains a interface program of w3m.
 
 1. Introduction
 
@@ -154,7 +154,11 @@
 
 5. Contact
 
-   In order to contact us, please send a mail to <emacs-w3m@namazu.org>.
+   To contact the emacs-w3m community for reporting bugs, contributing
+   improvements, making a suggestion or asking us for help, send a mail
+   to the open list <emacs-w3m@namazu.org>.  You can also send a bug
+   report using the command `report-emacs-w3m-bug' or the key `C-c C-b'
+   if you have set the option `mail-user-agent' that will work properly.
 
 
 6. Acknowledgments
