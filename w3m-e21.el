@@ -78,6 +78,15 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
   (add-hook hook function append t))
 
 ;;; Image handling functions.
+(defcustom w3m-imagick-convert-program (w3m-which-command "convert")
+  "*Program name of ImageMagick's `convert'."
+  :group 'w3m
+  :type 'string)
+
+(defcustom w3m-resize-images (and w3m-imagick-convert-program t)
+  "*If non-nil, resize images to the specified width and height."
+  :group 'w3m
+  :type 'boolean)
 
 ;; `display-images-p' has not been available prior to Emacs 21.0.105.
 (unless (fboundp 'display-images-p)
@@ -92,37 +101,62 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 circumstances."
   (and w3m-display-inline-images (display-images-p)))
 
-(defun w3m-create-image (url &optional no-cache referer handler)
+(defun w3m-resize-image (data width height)
+  "Resize image DATA to the size of WIDTH and HEIGHT."
+  (w3m-imagick-convert-data data
+			    nil nil
+			    "-geometry"
+			    (concat (number-to-string width)
+				    "x"
+				    (number-to-string height)
+				    "!")))
+
+(defun w3m-create-image (url &optional no-cache referer size handler)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used.
-If second optional argument REFERER is non-nil, it is used as Referer: field."
+If second optional argument REFERER is non-nil, it is used as Referer: field.
+If third optional argument SIZE is non-nil, its car element is used as width
+and its cdr element is used as height."
   (if (not handler)
       (w3m-process-with-wait-handler
-	(w3m-create-image url no-cache referer handler))
-    (w3m-process-do-with-temp-buffer
-	(type (w3m-retrieve url 'raw no-cache nil referer handler))
-      (ignore-errors
+	(w3m-create-image url no-cache referer size handler))
+    (lexical-let ((size size)
+		  (url url))
+      (w3m-process-do-with-temp-buffer
+	  (type (w3m-retrieve url 'raw no-cache nil referer handler))
 	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-	  (create-image (buffer-string)
-			type
-			t
-			:ascent 'center))))))
+	  (cons (create-image (buffer-string) type t :ascent 'center)
+		size))))))
 
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
-  (add-text-properties beg end (list 'display image
-				     'intangible image
-				     'invisible nil))
-  ;; Hide underlines behind inline images.
-
-  ;; Gerd Moellmann <gerd@gnu.org>, the maintainer of Emacs 21, wrote in
-  ;; the article <86heyi7vks.fsf@gerd.segv.de> in the list emacs-pretest-
-  ;; bug@gnu.org on 18 May 2001 that to show an underline of a text even
-  ;; if it has an image as a text property is the feature of Emacs 21.
-  ;; However, that behavior is not welcome to the w3m buffers, so we do
-  ;; to fix it with the following stuffs.
-  (let ((face (get-text-property beg 'face)))
+  (let ((face (get-text-property beg 'face))
+	(image (car image))
+	(set-size (cdr image))
+	size)
+    (when (and w3m-resize-images set-size)
+      (setq size (image-size image 'pixels))
+      (if (and (null (car set-size)) (cdr set-size))
+	  (setcar set-size (/ (* (car size) (cdr set-size)) (cdr size))))
+      (if (and (null (cdr set-size)) (car set-size))
+	  (setcdr set-size (/ (* (cdr size) (car set-size)) (car size))))
+      (if (or (not (eq (car size) (car set-size)))  ; width is different
+	      (not (eq (cdr size) (cdr set-size)))) ; height is different
+	  (plist-put (cdr image)
+		     :data
+		     (w3m-resize-image (plist-get (cdr image) :data)
+				       (car set-size)(cdr set-size)))))
+    (add-text-properties beg end (list 'display image
+				       'intangible image
+				       'invisible nil))
+    ;; Hide underlines behind inline images.
+    ;; Gerd Moellmann <gerd@gnu.org>, the maintainer of Emacs 21, wrote in
+    ;; the article <86heyi7vks.fsf@gerd.segv.de> in the list emacs-pretest-
+    ;; bug@gnu.org on 18 May 2001 that to show an underline of a text even
+    ;; if it has an image as a text property is the feature of Emacs 21.
+    ;; However, that behavior is not welcome to the w3m buffers, so we do
+    ;; to fix it with the following stuffs.
     (when (and face
 	       (face-underline-p face))
       (put-text-property beg end 'face nil)
@@ -281,11 +315,6 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defalias 'w3m-update-toolbar 'ignore)
 
 ;;; favicon
-(defcustom w3m-imagick-convert-program "convert"
-  "*Program name of ImageMagick's `convert'."
-  :group 'w3m
-  :type 'string)
-
 (defcustom w3m-favicon-size nil
   "*Size of favicon. This value is used as geometry argument for `convert'."
   :group 'w3m
@@ -302,23 +331,30 @@ Buffer string between BEG and END are replaced with IMAGE."
 (add-hook 'w3m-display-hook 'w3m-setup-favicon)
 
 (defun w3m-imagick-convert-buffer (from-type to-type &rest args)
-  (let* ((coding-system-for-read 'binary)
-	 (coding-system-for-write 'binary)
-	 (default-process-coding-system (cons 'binary 'binary))
-	 (return (apply 'call-process-region
-			(point-min) (point-max)
-			w3m-imagick-convert-program
-			t t nil (append args (list (concat from-type ":-")
-						   (concat to-type ":-"))))))
-    (if (and (numberp return)
-	     (zerop return))
-	t
-      (message "process `%s' exited abnormally with code `%s'"
-	       w3m-imagick-convert-program
-	       (if (stringp return)
-		   (string-as-multibyte return)
-		 return))
-      nil)))
+  (when w3m-imagick-convert-program
+    (let* ((coding-system-for-read 'binary)
+	   (coding-system-for-write 'binary)
+	   (default-process-coding-system (cons 'binary 'binary))
+	   (return (apply 'call-process-region
+			  (point-min) (point-max)
+			  w3m-imagick-convert-program
+			  t t nil (append args (list 
+						(concat
+						 (if from-type
+						     (concat from-type ":"))
+						 "-")
+						(concat
+						 (if to-type
+						     (concat to-type ":"))
+						 "-"))))))
+      (if (and (numberp return)
+	       (zerop return))
+	  t
+	(message "Image conversion failed (code `%s')"
+		 (if (stringp return)
+		     (string-as-multibyte return)
+		   return))
+	nil))))
 
 (defun w3m-imagick-convert-data (data from-type to-type &rest args)
   (with-temp-buffer

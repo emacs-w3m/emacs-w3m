@@ -240,10 +240,11 @@ new glyph image.  See also the documentation for the variable
       ;; Use a cached glyph.
       (cdr cache))))
 
-(defun w3m-create-image (url &optional no-cache referer handler)
+(defun w3m-create-image (url &optional no-cache referer size handler)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used.
-If second optional argument REFERER is non-nil, it is used as Referer: field."
+If second optional argument REFERER is non-nil, it is used as Referer: field.
+Third optional argument SIZE is currently ignored."
   (if (not handler)
       (w3m-process-with-wait-handler
 	(w3m-create-image url no-cache referer handler))

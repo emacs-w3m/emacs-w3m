@@ -2017,26 +2017,35 @@ half-dumped data."
   (goto-char (point-min))
   (let ((help (w3m-make-help-echo w3m-image))
 	(balloon (w3m-make-balloon-help w3m-image))
-	src upper start end)
-    (while (re-search-forward
-	    "<\\(img_alt\\)[^>]*src=\"\\([^\"]*\\)\"[^>]*>" nil t)
-      (setq src (match-string-no-properties 2)
-	    upper (string= (match-string 1) "IMG_ALT")
-	    start (match-beginning 0))
-      (delete-region start (match-end 0))
-      (setq src (w3m-expand-url (w3m-decode-anchor-string src)))
-      (when (search-forward "</img_alt>" nil t)
-	(delete-region (setq end (match-beginning 0)) (match-end 0))
-	(w3m-add-text-properties start end (list 'w3m-image src
-						 'w3m-image-status 'off
-						 'w3m-image-redundant upper))
-	(unless (or (get-text-property start 'w3m-href-anchor)
-		    (get-text-property start 'w3m-action))
-	  ;; No need to use `w3m-add-text-properties' here.
-	  (add-text-properties start end (list 'face 'w3m-image-face
-					       'mouse-face 'highlight
-					       'help-echo help
-					       'balloon-help balloon)))))))
+	upper start end)
+    (while (re-search-forward "<\\(img_alt\\)[^>]+>" nil t)
+      (setq upper (string= (match-string 1) "IMG_ALT")
+	    start (match-beginning 0)
+	    end (match-end 0))
+      (goto-char (match-end 1))
+      (w3m-parse-attributes (src
+			     (width :integer)
+			     (height :integer) 
+			     usemap)
+	(delete-region start end)
+	(setq src (w3m-expand-url (w3m-decode-anchor-string src)))
+	(when (search-forward "</img_alt>" nil t)
+	  (delete-region (setq end (match-beginning 0)) (match-end 0))
+	  (w3m-add-text-properties start end
+				   (list 'w3m-image src
+					 'w3m-image-size
+					 (when (or width height)
+					   (cons width height))
+					 'w3m-image-usemap usemap
+					 'w3m-image-status 'off
+					 'w3m-image-redundant upper))
+	  (unless (or (get-text-property start 'w3m-href-anchor)
+		      (get-text-property start 'w3m-action))
+	    ;; No need to use `w3m-add-text-properties' here.
+	    (add-text-properties start end (list 'face 'w3m-image-face
+						 'mouse-face 'highlight
+						 'help-echo help
+						 'balloon-help balloon))))))))
 
 (defsubst w3m-toggle-inline-images-internal (status no-cache url)
   "Toggle displaying of inline images on current buffer.
@@ -2046,7 +2055,7 @@ If URL is specified, only the image with URL is toggled."
   (interactive "P")
   (let ((cur-point (point))
 	(buffer-read-only)
-	start end iurl image)
+	start end iurl image size)
     (if (equal status 'off)
 	(save-excursion
 	  (goto-char (point-min))
@@ -2056,7 +2065,8 @@ If URL is specified, only the image with URL is toggled."
 			 (next-single-property-change (point) 'w3m-image)))
 	    (setq end (or (next-single-property-change start 'w3m-image)
 			  (point-max))
-		  iurl (w3m-image start))
+		  iurl (w3m-image start)
+		  size (get-text-property start 'w3m-image-size))
 	    (goto-char end)
 	    (when (and (or (not url)
 			   ;; URL is specified and is same as the image URL.
@@ -2086,7 +2096,8 @@ If URL is specified, only the image with URL is toggled."
 			    (image (let ((w3m-current-buffer (current-buffer)))
 				     (w3m-create-image
 				      iurl no-cache
-				      w3m-current-url handler)))
+				      w3m-current-url
+				      size handler)))
 			  (when (buffer-live-p (marker-buffer start))
 			    (with-current-buffer (marker-buffer start)
 			      (if image
@@ -3824,12 +3835,12 @@ Return t if current line has a same anchor sequence."
   (when (let ((ovs (overlays-at (point))) ov)
 	  ;; If already exists, do nothing.
 	  (or (null ovs)
-	      (while ovs
-		(if (overlay-get (car ovs) 'w3m-momentary-overlay)
-		    (setq ov (car ovs)
-			  ovs nil))
-		(setq ovs (cdr ovs)))
-	      ov))
+	      (null (progn (while ovs
+			     (if (overlay-get (car ovs) 'w3m-momentary-overlay)
+				 (setq ov (car ovs)
+				       ovs nil))
+			     (setq ovs (cdr ovs)))
+			   ov))))
     (w3m-delete-all-overlays)
     (save-excursion
       (let ((seq (w3m-anchor-sequence))

@@ -1,3 +1,23 @@
+2002-03-19  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-fontify-images): Parse width and height attributes of
+	img_alt.
+	(w3m-toggle-inline-images-internal): Set `size' argument of
+	w3m-create-image.
+	(w3m-highlight-current-anchor): Fixed logic.
+
+	* w3m-xmas.el (w3m-create-image): Added optional argument `size'
+	(ignored currently).
+
+	* w3m-e21.el (w3m-imagick-convert-program): Use w3m-which to set
+	initial value.
+	(w3m-resize-images): New user option.
+	(w3m-resize-image): New function.
+	(w3m-create-image): Added optional argument `size'; Changed return
+	value.
+	(w3m-insert-image): Call w3m-resize-image if size is specified.
+	(w3m-imagick-convert-buffer): Accept nil for from-type and to-type.
+
 2002-03-18  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-mee-select-value): Fix.
