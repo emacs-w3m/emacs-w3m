@@ -1,3 +1,8 @@
+2002-05-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers): Don't include
+	year, month and day numbers in Message-ID.
+
 2002-05-20  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-ruby.el (shimbun-get-headers): Do not use nreverse
