@@ -3,6 +3,8 @@
 	* w3m.el (w3m-minor-mode): Define without `define-minor-mode'.
 	(w3m-minor-mode): Ditto.
 	(w3m-minor-mode-hook): Ditto.
+	(w3m-entity-regexp): Set 3000 to `max-specpdl-size' locally to
+	avoid max-specpdl-size error.
 
 	* w3m-e19.el: Cancel the last change to define
 	`define-minor-mode'.

@@ -1218,7 +1218,8 @@ Here is an example of how to set this option:
 (defconst w3m-entity-regexp
   (eval-when-compile
     (format "&\\(%s\\|#[0-9]+\\|#x[0-9a-f]+\\);?"
-	    (regexp-opt (mapcar (function car) w3m-entity-alist)))))
+	    (let ((max-specpdl-size (max max-specpdl-size 3000)))
+	      (regexp-opt (mapcar (function car) w3m-entity-alist))))))
 
 (defvar w3m-entity-db nil)		; nil means un-initialized
 (defconst w3m-entity-db-size 13)	; size of obarray
