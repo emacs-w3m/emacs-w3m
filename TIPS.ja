@@ -1,7 +1,9 @@
 ■■ browse-url
 
    以下のように設定しておくと、URI に類似した文字列がある場所で C-x m と
-   入力すれば、w3m で表示されるようになる。
+   入力すれば、w3m で表示されるようになる。また Emacs21 などに附属する
+   html-mode で C-c C-v とすれば編集の HTML ファイルを w3m でプレビュー
+   できる。
 
 (setq browse-url-browser-function 'w3m-browse-url)
 (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
