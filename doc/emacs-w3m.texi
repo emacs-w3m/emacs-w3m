@@ -4082,7 +4082,7 @@ before the @code{(require 'mew-shimbun)} line.}
         ;; as follows even if each group comes from a different server.
         ("emacs"
          ("airw.wl" . last)
-         ("namazu.emacs-w3m" . last))
+         ("emacs-w3m.emacs-w3m" . last))
         ;; Fetching diaries into @samp{+shimbun/hns/arisawa} and
         ;; @samp{+shimbun/hns/miyoshi} respectively.
         ("hns/arisawa"
