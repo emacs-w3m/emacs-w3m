@@ -71,9 +71,33 @@
       (unless (member module deletes)
 	(princ (format "%sc " module))))))
 
-;; Byte optimizers and version specific functions.
 (require 'bytecomp)
 
+(defun w3mhack-compile ()
+  "Byte-compile the w3m modules."
+  (let (modules module)
+    (let* ((buffer (generate-new-buffer " *modules*"))
+	   (standard-output buffer))
+      (w3mhack-examine-modules)
+      (save-excursion
+	(set-buffer buffer)
+	(goto-char (point-min))
+	(while (re-search-forward "\\([^ ]+\\.el\\)c" nil t)
+	  (setq modules (cons (buffer-substring (match-beginning 1)
+						(match-end 1))
+			      modules))))
+      (kill-buffer buffer)
+      (setq modules (nreverse modules)))
+    (while modules
+      (setq module (car modules)
+	    modules (cdr modules))
+      (if (or (not (file-exists-p (concat module "c")))
+	      (file-newer-than-file-p module (concat module "c")))
+	  (condition-case nil
+	      (byte-compile-file module)
+	    (error))))))
+
+;; Byte optimizers and version specific functions.
 (put 'truncate-string 'byte-optimizer
      (lambda (form)
        (if (fboundp 'truncate-string-to-width)
