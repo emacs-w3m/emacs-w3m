@@ -4426,6 +4426,9 @@ welt-de.news
 
 @item @uref{http://www.zeit.de/, Die Zeit}
 zeit-de.news
+
+@item @uref{http://www.weeklyworldnews.com/news/, Weekly World News}
+weeklyworldnews.news
 @end table
 
 @node Mailing Lists Supported by Shimbun
@@ -4821,7 +4824,7 @@ This is an example to use @samp{sb-rakuten}.
 @end lisp
 
 @item @uref{http://www.emacswiki.org/, EmacsWiKi}
-emacswiki.diff
+emacswiki.changes emacswiki.diff
 
 @item Wiki contents
 This is an example to use @samp{sb-wiki}.  @samp{sb-wiki} support

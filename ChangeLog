@@ -1,5 +1,7 @@
 2004-09-06  David Hansen  <david.hansen@gmx.net>
 
+	* shimbun/sb-weeklyworldnews.el: New file.
+
 	* shimbun/sb-emacswiki.el (shimbun-get-headers): Follow the change
 	of the URL layout.
 	(shimbun-rss-build-message-id): Ditto.
