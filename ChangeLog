@@ -1,3 +1,7 @@
+2001-10-23  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-muchy.el (shimbun-muchy-get-headers): Bug fixed.
+
 2001-10-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-use-mule-ucs): Changed.
