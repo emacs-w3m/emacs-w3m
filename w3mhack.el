@@ -1161,11 +1161,15 @@ NOTE: This function must be called from the top directory."
 
 ")
 	(if (featurep 'xemacs)
-	    (insert "\
+	    (progn
+	      (unless (string-equal autoload-file w3mhack-load-file)
+		(insert "\
 \(if (featurep 'w3m-autoloads) (error \"Already loaded\"))
 \(provide 'w3m-autoloads)
+"))
+	      (insert "\
 \(provide '" (file-name-sans-extension w3mhack-load-file) ")
-")
+"))
 	  (insert "\
 \(provide '" (file-name-sans-extension autoload-file) ")
 "))
