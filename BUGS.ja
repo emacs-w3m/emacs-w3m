@@ -9,8 +9,7 @@ $Date$
 
    --> 文書を reload した場合に、カーソル位置が変化しないで欲しい。
 
-   --> XEmacs / Emacs21 で (eq w3m-display-inline-image nil) の場合に画
-       像の上で return したら、その画像だけ表示するようにして欲しい。
+   --> <meta http-equiv="Refresh" content="0; URL=http://.../"> の対応
 
    --> frame 対応
 
