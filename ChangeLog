@@ -1,5 +1,9 @@
 2001-08-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* README, README.ja: Update documents for required version of w3m.
+
+	* w3m-0.2.1-mnc.patch: Removed.
+
 	* w3m.el (TOP): Add autoload for w3m-namazu.
 
 	* w3m-namazu.el: New file.

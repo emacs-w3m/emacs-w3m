@@ -62,6 +62,12 @@
 
       ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/w3m-0.2.1.tar.gz
 
+   なお，最新開発版を利用するためには，佐藤大さんによって公開されている
+   最新の w3m-0.2.1-inu-patch を適用しておく必要があります．以下のページ
+   で探してください．
+
+      http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/200107/
+
 
 4. 連絡先
 
