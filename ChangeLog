@@ -1,3 +1,11 @@
+2005-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Load w3m-e21.el even if the version of Emacs is 22.x
+	when the Emacs CVS HEAD is used.
+
+	* w3mhack.el (w3mhack-module-list): Prefer w3m-e21.el rather than
+	w3m-e22.el if the Emacs CVS HEAD is used.
+
 2005-02-09  Tsuyoshi CHO  <cho@namazu.org>
 
 	* shimbun/sb-tigris.el: New File.
