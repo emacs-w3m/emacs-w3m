@@ -1,3 +1,8 @@
+2002-01-25  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-highlight-current-anchor): Don't search for the anchor
+	points which are out of sight.
+
 2002-01-25  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-vinelinux.el (shimbun-make-contents): Modify regexp

@@ -3505,9 +3505,15 @@ session."
   "Highlight an anchor under point."
   (w3m-delete-all-overlays)
   (let ((seq (w3m-anchor-sequence))
+	(limit (save-excursion
+		 (goto-char (window-start (selected-window)))
+		 (forward-line (frame-height))
+		 (point)))
 	ov pos beg)
     (setq pos (point-min))
-    (while (setq pos (next-single-property-change pos 'w3m-anchor-sequence))
+    (while (and (setq pos (next-single-property-change pos
+						       'w3m-anchor-sequence))
+		(< pos limit))
       (when (and seq
 		 (eq seq (get-text-property pos 'w3m-anchor-sequence)))
 	(setq beg pos)
