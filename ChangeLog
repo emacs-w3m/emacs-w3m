@@ -1,5 +1,9 @@
 2004-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-xmas.el (call-process-region): Add an advice in order to fix
+	an XEmacs 21.5.18 bug.
+	* w3mhack.el (call-process-region): Ditto.
+
 	* shimbun/sb-bbc.el (shimbun-rss-build-message-id): Prevent
 	fetching of headers stopping with extra articles.
 
