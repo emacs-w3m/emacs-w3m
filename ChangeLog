@@ -1,5 +1,13 @@
 2003-04-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-imitate-widget-button): New variable.
+	(w3m-imitate-widget-button): New function.
+	(w3m-fontify-anchors): Imitate the widget button.
+	(w3m-next-anchor): Look for the widget button.
+	(w3m-previous-anchor): Ditto.
+
+2003-04-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-goto-url): Improve and bug fix the find-file code.
 
 2003-04-16  Chihiro Kuroda  <chee@iijmio-mail.jp>
