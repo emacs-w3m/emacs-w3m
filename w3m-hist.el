@@ -22,97 +22,101 @@
 ;;; Commentary:
 
 ;; w3m keeps history in the buffer-local variable `w3m-url-history'.
-;; This is a tree-structured complex list of all the links you have
-;; visited.  For instance, it looks like the following:
-;;
-;;
-;; [Branch-1.0.0.0]:                 +--> U1.0.0.0.0 --> U1.0.0.0.1
-;;                                   |
-;;     [Branch-1.0]:         +--> U1.0.0 --> U1.0.1 --> U1.0.2
-;;                           |
-;;          [Trunk]: U0 --> U1 --> U2 --> U3 --> U4 --> U5 --> U6
-;;                                  |
-;;     [Branch-2.0]:                +--> U2.0.0 --> U2.0.1 --> U2.0.2
-;;                                  |
-;;     [Branch-2.1]:                +--> U2.1.0 --> U2.1.1
-;;                                                     |
-;; [Branch-2.1.1.0]:                                   +--> U2.1.1.0.0
-;;
-;;
-;; In this case, the history element U1.0.0.0.0 represents the first
-;; link of the first branch which is sprouted from the history element
-;; U1.0.0.
-;;
-;; The trunk or each branch is a simple list which will have some
-;; history elements.  History elements in the trunk or each branch
-;; should be arranged in order of increasing precedence (the newest
-;; history element should be the last element of the list).
-;;
-;; Each history element represents a link which consists of the
-;; following records:
-;;
-;;      (URL ATTRIBUTES BRANCH BRANCH ...)
-;;
-;; URL should be a string of an address of a link.  ATTRIBUTES is a
-;; plist of any kind of data to supplement the URL as such as follows:
-;;
-;;      (title "The title string of the page"
-;;             date "Thursday, 22-Mar-01 11:54:48 GMT"
-;;             last-modified "Wednesday, 31-Jan-01 09:36:30 GMT"
-;;             content-type "text/html")
-;;
-;; The rest BRANCHes are branches of the history element.  Branches
-;; should also be arranged in order of increasing precedence (the
-;; newest one should be located in the rightmost).  Each BRANCH will
-;; also be a tree-structured complex list.  Thus the history structure
-;; will grow up infinitely.  Do you have enough memories for it? :-p
-;;
-;; There are special rules on the w3m history management system.  As
-;; you might expect, the operation BACK on U2.0.0 goes to U2, one more
-;; BACK goes to U1.  Well, where should we go next when the operation
-;; FORWARD is performed on U1?  The rule is, to select the newest link
-;; you have visited.  So, that operation should go to U1.0.0.
-;;
-;; One more rule.  If you visit to the link U4 from U2.0.2 directly,
-;; jump is occurred instead of to sprout the new branch from U2.0.2.
-;;
-;; In addition, the variable `w3m-url-history' has a pointer in its
-;; car cell to designate the current position in the history.  It is a
-;; list of integers.  (0) points U0, (2 0 1) points U2.0.1, etc.
-;; Finally the value of `w3m-url-history' will be as such as follows:
-;;
-;;((2 0 1)
-;; ("http://www.U0.org/" (title "U0" content-type "text/html"))
-;; ("http://www.U1.org/" (title "U1" content-type "text/html")
-;;  (("http://www.U100.org/" (title "U100" content-type "text/html")
-;;    (("http://www.U10000.org/" (title "U10000" content-type "text/html"))
-;;     ("http://www.U10001.org/" (title "U10001" content-type "text/html"))))
-;;   ("http://www.U101.org/" (title "U101" content-type "text/html"))
-;;   ("http://www.U102.org/" (title "U102" content-type "text/html"))))
-;; ("http://www.U2.org/" (title "U2" content-type "text/html")
-;;  (("http://www.U200.org/" (title "U200" content-type "text/html"))
-;;   ("http://www.U201.org/" (title "U201" content-type "text/html"))
-;;   ("http://www.U202.org/" (title "U202" content-type "text/html")))
-;;  (("http://www.U210.org/" (title "U210" content-type "text/html"))
-;;   ("http://www.U211.org/" (title "U211" content-type "text/html")
-;;    (("http://www.U21100.org/" (title "U21100" content-type "text/html"))))))
-;; ("http://www.U3.org/" (title "U3" content-type "text/html"))
-;; ("http://www.U4.org/" (title "U4" content-type "text/html"))
-;; ("http://www.U5.org/" (title "U5" content-type "text/html"))
-;; ("http://www.U6.org/" (title "U6" content-type "text/html")))
+;; See the documentation of that variable for details.
 
 ;;; Code:
 
 (eval-when-compile (require 'cl))
 
-(eval-when-compile
-  (defvar w3m-url-history))
+(defvar w3m-url-history nil
+  "This variable contains a tree-structured complex list of all the links
+you have visited, which is buffer-local.  For instance, it looks like
+the following:
+
+\[Branch-1.0.0.0]:                 +--> U1.0.0.0.0 --> U1.0.0.0.1
+                                  |
+    [Branch-1.0]:         +--> U1.0.0 --> U1.0.1 --> U1.0.2
+                          |
+         [Trunk]: U0 --> U1 --> U2 --> U3 --> U4 --> U5 --> U6
+                                 |
+    [Branch-2.0]:                +--> U2.0.0 --> U2.0.1 --> U2.0.2
+                                 |
+    [Branch-2.1]:                +--> U2.1.0 --> U2.1.1
+                                                    |
+\[Branch-2.1.1.0]:                                   +--> U2.1.1.0.0
+
+In this case, the history element U1.0.0.0.0 represents the first link
+of the first branch which is sprouted from the history element U1.0.0.
+
+The trunk or each branch is a simple list which will have some history
+elements.  History elements in the trunk or each branch should be
+arranged in order of increasing precedence (the newest history element
+should be the last element of the list).
+
+Each history element represents a link which consists of the following
+records:
+
+     (URL ATTRIBUTES BRANCH BRANCH ...)
+
+URL should be a string of an address of a link.  ATTRIBUTES is a plist
+of any kind of data to supplement the URL as such as follows:
+
+     (title \"The title string of the page\"
+            date \"Thursday, 22-Mar-01 11:54:48 GMT\"
+            last-modified \"Wednesday, 31-Jan-01 09:36:30 GMT\"
+            content-type \"text/html\")
+
+The rest BRANCHes are branches of the history element.  Branches
+should also be arranged in order of increasing precedence (the newest
+one should be located in the rightmost).  Each BRANCH will also be a
+tree-structured complex list.  Thus the history structure will grow up
+infinitely.  Do you have enough memories for it? :-p
+
+There are special rules on the w3m history management system.  As you
+might expect, the operation BACK on U2.0.0 goes to U2, one more BACK
+goes to U1.  Well, where should we go next when the operation FORWARD
+is performed on U1?  The rule is, to select the newest link you have
+visited.  So, that operation should go to U1.0.0.
+
+One more rule.  If you visit to the link U4 from U2.0.2 directly, jump
+is occurred instead of to sprout the new branch from U2.0.2.
+
+In addition, the variable `w3m-url-history' has a pointer in its car
+cell to designate the current position in the history.  It is a list
+of integers.  (0) points U0, (2 0 1) points U2.0.1, etc.  Finally the
+value of `w3m-url-history' will be as such as follows:
+
+\((2 0 1)
+ (\"http://www.U0.org/\" (title \"U0\" content-type \"text/html\"))
+ (\"http://www.U1.org/\" (title \"U1\" content-type \"text/html\")
+  ((\"http://www.U100.org/\" (title \"U100\" content-type \"text/html\")
+    ((\"http://www.U10000.org/\"
+      (title \"U10000\" content-type \"text/html\"))
+     (\"http://www.U10001.org/\"
+      (title \"U10001\" content-type \"text/html\"))))
+   (\"http://www.U101.org/\" (title \"U101\" content-type \"text/html\"))
+   (\"http://www.U102.org/\" (title \"U102\" content-type \"text/html\"))))
+ (\"http://www.U2.org/\" (title \"U2\" content-type \"text/html\")
+  ((\"http://www.U200.org/\" (title \"U200\" content-type \"text/html\"))
+   (\"http://www.U201.org/\" (title \"U201\" content-type \"text/html\"))
+   (\"http://www.U202.org/\" (title \"U202\" content-type \"text/html\")))
+  ((\"http://www.U210.org/\" (title \"U210\" content-type \"text/html\"))
+   (\"http://www.U211.org/\" (title \"U211\" content-type \"text/html\")
+    ((\"http://www.U21100.org/\"
+      (title \"U21100\" content-type \"text/html\"))))))
+ (\"http://www.U3.org/\" (title \"U3\" content-type \"text/html\"))
+ (\"http://www.U4.org/\" (title \"U4\" content-type \"text/html\"))
+ (\"http://www.U5.org/\" (title \"U5\" content-type \"text/html\"))
+ (\"http://www.U6.org/\" (title \"U6\" content-type \"text/html\")))
+")
+
+(make-variable-buffer-local 'w3m-url-history)
 
 (defun w3m-history-current ()
   "Return a history element of the current position."
-  (let ((position (car w3m-url-history))
-	element)
-    (when position
+  (when w3m-url-history
+    (let ((position (car w3m-url-history))
+	  element)
       (setq element (nth (pop position) (cdr w3m-url-history)))
       (while (> (length position) 0)
 	(setq element (nth (pop position) (cddr element))
@@ -124,9 +128,9 @@
 position.  The position pointer of `w3m-url-history' will go forward.
 If the next element does not exist in the history, it returns a
 history element of the current position."
-  (let ((position (car w3m-url-history))
-	number element branch branches)
-    (when position
+  (when w3m-url-history
+    (let ((position (car w3m-url-history))
+	  number element branch branches)
       (setq branch (cdr w3m-url-history)
 	    number (pop position)
 	    element (nth number branch))
@@ -155,19 +159,60 @@ history element of the current position."
 position.  The position pointer of `w3m-url-history' will go backward.
 If the previous element does not exist in the history, it returns a
 history element of the current position."
-  (let* ((position (car w3m-url-history))
-	 (class (1- (length position)))
-	 (number (nth class position)))
-    (if (zerop number)
-	;; This element is the first element of the branch.
-	(if (zerop class)
-	    ;; No previous element.
-	    nil
-	  ;; This element has a parent.
-	  (setcdr (nthcdr (- class 2) position) nil))
-      ;; Previous element exists in the branch.
-      (setcar (nthcdr class position) (1- number)))
-    (w3m-history-current)))
+  (when w3m-url-history
+    (let* ((position (car w3m-url-history))
+	   (class (1- (length position)))
+	   (number (nth class position))
+	   element)
+      (if (zerop number)
+	  ;; This element is the first element of the branch.
+	  (if (zerop class)
+	      ;; No previous element.
+	      nil
+	    ;; This element has a parent.
+	    (setcdr (nthcdr (- class 2) position) nil))
+	;; Previous element exists in the branch.
+	(setcar (nthcdr class position) (1- number)))
+      (setq element (nth (pop position) (cdr w3m-url-history)))
+      (while (> (length position) 0)
+	(setq element (nth (pop position) (cddr element))
+	      element (nth (pop position) element)))
+      element)))
+
+(defun w3m-history-flat (&optional history position alist)
+  "Return a flattened alist of `w3m-url-history'.  Each element will have
+the following records:
+
+\(URL ATTRIBUTES POSITION)
+
+Where URL is a string of an address of a link, ATTRIBUTES is a plist
+to supplement the URL, POSITION is a list of integers to designate the
+current position in the history.  See the doc-string for the variable
+`w3m-url-history' for more information.
+
+Don't specify the optional arguments in normal use, they will be used
+to recursive funcall itself internally."
+  (when (or history
+	    (setq history (cdr w3m-url-history)))
+    (unless position
+      (setq position '(t)))
+    (let ((i 0)
+	  element branches j)
+      (while (setq element (pop history))
+	(setcar (nthcdr (1- (length position)) position) i)
+	(setq i (1+ i))
+	(setq alist (nconc alist
+			   (list (list (car element) (cadr element)
+				       (copy-sequence position)))))
+	(when (setq branches (nthcdr 2 element))
+	  (setq j 0)
+	  (while branches
+	    (setq alist (nconc alist
+			       (w3m-history-flat (pop branches)
+						 (append position
+							 (list j t))))
+		  j (1+ j))))))
+    alist))
 
 ;;(not-provided-yet 'w3m-hist)
 
