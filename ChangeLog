@@ -1,3 +1,22 @@
+2001-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-about-history): Use `w3m-history-flat' instead of
+	`w3m-url-history'.
+	(w3m-view-source): Don't bind `w3m-url-yrotsih' nor
+	`w3m-url-history'.
+	(w3m-redisplay-with-coding-system): Don't treat `w3m-url-history'.
+	(w3m-reload-this-page): Ditto.
+	(w3m-view-next-page): Use `w3m-history-forward' instead of
+	`w3m-url-yrotsih'.
+	(w3m-view-previous-page): Use `w3m-history-backward' instead of
+	`w3m-url-history'.
+	(w3m-exec): Use `w3m-history-push' instead of `w3m-url-yrotsih' or
+	`w3m-url-history'.
+	(w3m-toolbar): Use `w3m-history-next-link-available-p' and
+	`w3m-history-previous-link-available-p'.
+	(w3m-url-yrotsih, w3m-url-history): Removed.
+	(TopLevel): Require `w3m-hist'.
+
 2001-04-09  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-mhonarc.el (shimbun-make-contents): Fixed.

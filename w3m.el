@@ -54,6 +54,7 @@
    ((boundp 'MULE)
     (require 'w3m-om))))
 
+(require 'w3m-hist)
 (require 'thingatpt)
 (require 'timezone)
 
@@ -531,12 +532,8 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
-(defvar w3m-url-history nil "History of URL.")
-(defvar w3m-url-yrotsih nil "FIXME: Sample of wrong symbol name.")
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-title)
-(make-variable-buffer-local 'w3m-url-history)
-(make-variable-buffer-local 'w3m-url-yrotsih)
 
 (defvar w3m-verbose t "Flag variable to control messages.")
 
@@ -573,8 +570,10 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 
 (defconst w3m-toolbar
   '([w3m-toolbar-back-icon w3m-view-previous-page
-			   (nth 1 w3m-url-history) "前のページに戻る"]
-    [w3m-toolbar-forward-icon w3m-view-next-page w3m-url-yrotsih
+			   (w3m-history-previous-link-available-p)
+			   "前のページに戻る"]
+    [w3m-toolbar-forward-icon w3m-view-next-page
+			      (w3m-history-next-link-available-p)
 			      "次のページに進む"]
     [w3m-toolbar-reload-icon w3m-reload-this-page t "サーバからページをもう一度読み込む"]
     [w3m-toolbar-open-icon w3m-goto-url t "URL を入力してページを開く"]
@@ -1842,11 +1841,7 @@ this function returns t.  Otherwise, returns nil."
 	   ((string-match "^text/" type)
 	    (let (buffer-read-only)
 	      (setq w3m-current-url (w3m-real-url url))
-	      (setq w3m-url-history (cons url w3m-url-history))
-	      (setq-default w3m-url-history
-			    (cons url (default-value 'w3m-url-history)))
-	      (setq w3m-url-yrotsih nil)
-	      (setq-default w3m-url-yrotsih nil)
+	      (w3m-history-push url)
 	      (delete-region (point-min) (point-max))
 	      (insert-buffer w3m-work-buffer-name)
 	      (if (string= "text/html" type)
@@ -1857,11 +1852,7 @@ this function returns t.  Otherwise, returns nil."
 		 (string-match "^image/" type))
 	    (let (buffer-read-only)
 	      (setq w3m-current-url (w3m-real-url url))
-	      (setq w3m-url-history (cons url w3m-url-history))
-	      (setq-default w3m-url-history
-			    (cons url (default-value 'w3m-url-history)))
-	      (setq w3m-url-yrotsih nil)
-	      (setq-default w3m-url-yrotsih nil)
+	      (w3m-history-push url)
 	      (delete-region (point-min) (point-max))
 	      (insert (file-name-nondirectory url))
 	      (set-text-properties (point-min)(point-max)
@@ -1911,34 +1902,19 @@ this function returns t.  Otherwise, returns nil."
 
 (defun w3m-view-previous-page (&optional arg)
   (interactive "p")
-  (unless arg (setq arg 1))
-  (let ((url (nth arg w3m-url-history)))
+  (let ((url (car (w3m-history-backward arg))))
     (when url
-      (let (w3m-url-history w3m-url-yrotsih)
-	(w3m-goto-url url))
+      (w3m-goto-url url)
       ;; restore last position
-      (w3m-arrived-restore-position url)
-      (while (< 0 arg)
-	(setq w3m-url-yrotsih
-	      (cons (car w3m-url-history) w3m-url-yrotsih)
-	      w3m-url-history (cdr w3m-url-history)
-	      arg (1- arg))))))
+      (w3m-arrived-restore-position url))))
 
 (defun w3m-view-next-page (&optional arg)
   (interactive "p")
-  (unless arg (setq arg 1))
-  (setq arg (1- arg))
-  (let ((url (nth arg w3m-url-yrotsih)))
+  (let ((url (car (w3m-history-forward arg))))
     (when url
-      (let (w3m-url-history w3m-url-yrotsih)
-	(w3m-goto-url url))
+      (w3m-goto-url url)
       ;; restore last position
-      (w3m-arrived-restore-position url)
-      (while (< -1 arg)
-	(setq w3m-url-history
-	      (cons (car w3m-url-yrotsih) w3m-url-history)
-	      w3m-url-yrotsih (cdr w3m-url-yrotsih)
-	      arg (1- arg))))))
+      (w3m-arrived-restore-position url))))
 
 (defun w3m-view-previous-point ()
   (interactive)
@@ -2500,9 +2476,7 @@ or prefix ARG columns."
 (defun w3m-reload-this-page (&optional arg)
   "Reload current page without cache."
   (interactive "P")
-  (let ((w3m-display-inline-image (if arg t w3m-display-inline-image))
-	w3m-url-yrotsih)
-    (setq w3m-url-history (cdr w3m-url-history))
+  (let ((w3m-display-inline-image (if arg t w3m-display-inline-image)))
     (w3m-goto-url w3m-current-url 'reload)))
 
 (defun w3m-redisplay-with-coding-system (&optional arg)
@@ -2510,12 +2484,10 @@ or prefix ARG columns."
 If input is nil, use default coding-system on w3m."
   (interactive "P")
   (let ((w3m-display-inline-image (if arg t w3m-display-inline-image))
-	(cs (w3m-read-coding-system "Decode coding-system: "))
-	w3m-url-yrotsih)
+	(cs (w3m-read-coding-system "Decode coding-system: ")))
     (unless (and cs (find-coding-system cs)) (setq cs 'reset))
-    (setq w3m-url-history (cdr w3m-url-history))
     (w3m-goto-url w3m-current-url nil cs)))
-		  
+
 
 ;;;###autoload
 (defun w3m (url &optional args)
@@ -2595,11 +2567,9 @@ works on Emacs.
 (defun w3m-view-source ()
   "*Display source of this current buffer."
   (interactive)
-  (let (w3m-url-history w3m-url-yrotsih)
-    (w3m-goto-url
-     (if (string-match "^about://source/" w3m-current-url)
-	 (substring w3m-current-url (match-end 0))
-       (concat "about://source/" w3m-current-url)))))
+  (w3m-goto-url (if (string-match "^about://source/" w3m-current-url)
+		    (substring w3m-current-url (match-end 0))
+		  (concat "about://source/" w3m-current-url))))
 
 (defun w3m-about-header (url &optional no-decode no-cache)
   (when (string-match "^about://header/" url)
@@ -2620,7 +2590,7 @@ works on Emacs.
   "Regexp for not show history.")
 
 (defun w3m-about-history (&rest args)
-  (let* ((history (copy-sequence w3m-url-history))
+  (let* ((history (mapcar 'car w3m-history-flat))
 	 (tmp history)
 	 title)
     (while tmp
