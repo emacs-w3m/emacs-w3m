@@ -650,7 +650,7 @@ install-icons:
       (message "
 install-package:
   *.el, *.elc, ChangeLog* -> %slisp/w3m/
-  *.xpm                   -> %setc/w3m
+  *.xpm                   -> %setc/w3m/
   MANIFEST.w3m            -> %spkginfo/"
 	       package-dir package-dir package-dir)))
   (message (if (featurep 'xemacs) "\n" "")))
