@@ -6147,58 +6147,57 @@ Cannot run two w3m processes simultaneously \
 	     (match-beginning 8)
 	     (setq name (match-string 9 url)
 		   url (substring url 0 (match-beginning 8))))
-	(setq w3m-current-buffer (current-buffer))
-	(w3m-process-do
-	    (action
-	     (if (and (not reload)
-		      (not redisplay)
-		      (stringp w3m-current-url)
-		      (string= url w3m-current-url))
-		 (progn
-		   (w3m-refontify-anchor)
-		   'cursor-moved)
-	       (setq w3m-current-process
-		     (w3m-retrieve-and-render orig reload charset
-					      post-data referer handler))))
-	  (with-current-buffer w3m-current-buffer
-	    (setq w3m-current-buffer nil
-		  w3m-current-process nil)
-	    (if (not action)
-		(goto-char (point-min))
-	      (if (and name (w3m-search-name-anchor name))
-		  (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
-			(w3m-arrived-time url))
-		(goto-char (point-min)))
-	      (unless (eq action 'cursor-moved)
-		(w3m-history-push w3m-current-url
-				  (list :title w3m-current-title))
-		(w3m-history-add-properties (list :referer referer
-						  :post-data post-data)
-					    nil nil t)
-		(unless w3m-toggle-inline-images-permanently
-		  (setq w3m-display-inline-images
-			w3m-default-display-inline-images))
-		(cond ((w3m-display-inline-images-p)
-		       (and w3m-force-redisplay (sit-for 0))
-		       (w3m-toggle-inline-images 'force reload))
-		      ((and (w3m-display-graphic-p)
-			    (eq action 'image-page))
-		       (and w3m-force-redisplay (sit-for 0))
-		       (w3m-toggle-inline-image 'force reload)))))
-	    (setq buffer-read-only t)
-	    (set-buffer-modified-p nil)
-	    (setq list-buffers-directory w3m-current-title)
-	    ;; must be `w3m-current-url'
-	    (setq default-directory (w3m-current-directory w3m-current-url))
-	    (w3m-update-toolbar)
-	    (w3m-select-buffer-update)
-	    (let ((real-url (or (w3m-real-url url) url)))
-	      (run-hook-with-args 'w3m-display-functions real-url)
-	      (run-hook-with-args 'w3m-display-hook real-url))
-	    ;; restore position must call after hooks for localcgi.
-	    (when (or reload redisplay)
-	      (w3m-history-restore-position))
-	    (w3m-refresh-at-time))))))
+	(let ((w3m-current-buffer (current-buffer)))
+	  (w3m-process-do
+	      (action
+	       (if (and (not reload)
+			(not redisplay)
+			(stringp w3m-current-url)
+			(string= url w3m-current-url))
+		   (progn
+		     (w3m-refontify-anchor)
+		     'cursor-moved)
+		 (setq w3m-current-process
+		       (w3m-retrieve-and-render orig reload charset
+						post-data referer handler))))
+	    (with-current-buffer w3m-current-buffer
+	      (setq w3m-current-process nil)
+	      (if (not action)
+		  (goto-char (point-min))
+		(if (and name (w3m-search-name-anchor name))
+		    (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
+			  (w3m-arrived-time url))
+		  (goto-char (point-min)))
+		(unless (eq action 'cursor-moved)
+		  (w3m-history-push w3m-current-url
+				    (list :title w3m-current-title))
+		  (w3m-history-add-properties (list :referer referer
+						    :post-data post-data)
+					      nil nil t)
+		  (unless w3m-toggle-inline-images-permanently
+		    (setq w3m-display-inline-images
+			  w3m-default-display-inline-images))
+		  (cond ((w3m-display-inline-images-p)
+			 (and w3m-force-redisplay (sit-for 0))
+			 (w3m-toggle-inline-images 'force reload))
+			((and (w3m-display-graphic-p)
+			      (eq action 'image-page))
+			 (and w3m-force-redisplay (sit-for 0))
+			 (w3m-toggle-inline-image 'force reload)))))
+	      (setq buffer-read-only t)
+	      (set-buffer-modified-p nil)
+	      (setq list-buffers-directory w3m-current-title)
+	      ;; must be `w3m-current-url'
+	      (setq default-directory (w3m-current-directory w3m-current-url))
+	      (w3m-update-toolbar)
+	      (w3m-select-buffer-update)
+	      (let ((real-url (or (w3m-real-url url) url)))
+		(run-hook-with-args 'w3m-display-functions real-url)
+		(run-hook-with-args 'w3m-display-hook real-url))
+	      ;; restore position must call after hooks for localcgi.
+	      (when (or reload redisplay)
+		(w3m-history-restore-position))
+	      (w3m-refresh-at-time)))))))
    (t (w3m-message "Invalid URL: %s" url))))
 
 (defun w3m-current-directory (url)
@@ -6501,14 +6500,14 @@ ex.) c:/dir/file => //c/dir/file"
     (w3m-process-stop (current-buffer))
     (narrow-to-region start end)
     (w3m-clear-local-variables)
-    (setq w3m-current-buffer (current-buffer)
-	  w3m-current-url url
-	  w3m-current-base-url url
-	  w3m-current-coding-system (if charset
-					(w3m-charset-to-coding-system charset)
-				      w3m-coding-system)
-	  w3m-current-title (let (w3m-use-refresh)
-			      (w3m-rendering-buffer charset)))
+    (let ((w3m-current-buffer (current-buffer)))
+      (setq w3m-current-url url
+	    w3m-current-base-url url
+	    w3m-current-coding-system (if charset
+					  (w3m-charset-to-coding-system charset)
+					w3m-coding-system)
+	    w3m-current-title (let (w3m-use-refresh)
+				(w3m-rendering-buffer charset))))
     (w3m-fontify)
     (when (w3m-display-inline-images-p)
       (and w3m-force-redisplay (sit-for 0))

@@ -7,12 +7,12 @@
 	(w3m-create-page): Return 'external-view when `w3m-external-view'
 	is called.
 	(w3m-goto-url): Do not encode a given URL when it points a local
-	page.  Always set `w3m-current-buffer', before either calling an
-	asynchronous process or moviing a cursor.  Follow the change of
+	page.  Bind `w3m-current-buffer' locally.  Follow the change of
 	`w3m-create-page'.
 	(w3m-copy-buffer): Wrap `w3m-goto-url' with
 	`w3m-process-with-wait-handler', to avoid unexpected asynchronous
 	processes.
+	(w3m-region): Bind `w3m-current-buffer' locally.
 
 	* w3m-util.el (w3m-url-local-p): Stricten its regexp.
 	(w3m-url-dtree-p): Removed.
