@@ -1,3 +1,9 @@
+2003-07-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/sb-tdiary.el (shimbun-tdiary-get-headers): Change
+	regexp of headers.
+	(shimbun-get-headers): Remove `\r' from buffer.
+
 2003-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-language, w3m-command-environment,
