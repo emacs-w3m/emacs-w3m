@@ -235,6 +235,16 @@ managing column numbers on bitmap characters."
   "Face used to highlight bitmap images."
   :group 'w3m-face)
 
+(defcustom w3m-bitmap-convert-arguments nil
+  "*List of the arguments of `convert' from any image to xbm."
+  :group 'w3m
+  :type '(repeat string))
+
+(defcustom w3m-bitmap-image-face-inherit nil
+  "*If non-nil, inherit image face from the original face."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-bitmap-cache-image-hook nil
   "*Hook run with use cached image."
   :group 'w3m
@@ -416,13 +426,15 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 			     (insert data)
 			     (apply 'w3m-imagick-start-convert-buffer
 				    handler type "xbm"
-				    (if set-size
-					(list "-geometry"
-					      (concat (number-to-string
-						       (car size))
-						      "x"
-						      (number-to-string
-						       (cdr size)) "!"))))))
+				    (append
+				     (if set-size
+					 (list "-geometry"
+					       (concat (number-to-string
+							(car size))
+						       "x"
+						       (number-to-string
+							(cdr size)) "!")))
+				     w3m-bitmap-convert-arguments))))
 		(when success
 		  (let ((image (w3m-bitmap-image-buffer (current-buffer))))
 		    (push (cons (if set-size (list url size) url)
@@ -432,9 +444,11 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 (defun w3m-insert-image (beg end image url)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
-  (let ((properties (text-properties-at beg))
-	(name (buffer-substring beg end))
-	(ovr (w3m-bitmap-image-get-overlay beg)))
+  (let* ((properties (text-properties-at beg))
+	 (name (buffer-substring beg end))
+	 (ovr (w3m-bitmap-image-get-overlay beg))
+	 (face (and w3m-bitmap-image-face-inherit
+		    (nth 1 (memq 'face properties)))))
     (when (equal (nth 1 (memq 'w3m-image properties)) url)
       (w3m-bitmap-image-delete-internal beg ovr (- end beg))
       (w3m-bitmap-image-insert beg image
@@ -442,7 +456,8 @@ Buffer string between BEG and END are replaced with IMAGE."
 						 'w3m-image-status 'on
 						 'w3m-bitmap-image t
 						 'w3m-image-name name
-						 'face 'w3m-bitmap-image-face)
+						 'face
+						 (or face 'w3m-bitmap-image-face))
 			       ovr))))
 
 (defun w3m-remove-image (beg end)

@@ -1,3 +1,12 @@
+2002-04-23  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-bitmap.el (w3m-bitmap-convert-arguments) 
+	(w3m-bitmap-image-face-inherit): New customize values.
+	(w3m-create-image): Append argument `w3m-bitmap-convert-arguments'
+	when call `w3m-imagick-start-convert-buffer'.
+	(w3m-insert-image): If `w3m-bitmap-image-face-inherit' is non-nil,
+	inherit the face of bitmap image from the face of text at point.
+
 2002-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (distclean): Remove autom4te*.cache rather than
