@@ -40,37 +40,37 @@
 (defvar shimbun-itmedia-url "http://www.itmedia.co.jp/")
 
 (defvar shimbun-itmedia-group-alist
-  (let ((template "<a href=\"/\\(\\(%s\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\
+  (let ((template "<a href=\"/\\(%s/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\
 /\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>"))
     `(("anchordesk" "anchordesk"
-       ,(format template "anchordesk/articles")
+       ,(format template "\\(anchordesk/articles\\)")
        "［[^ ]* \\([0-9]+:[0-9]+\\)］")
       ("bursts" "news/bursts"
-       ,(format template "news/articles")
+       ,(format template "\\(enterprise/articles\\|news/articles\\)")
        "［[^ ]* \\([0-9]+:[0-9]+\\)］")
       ("business" "news/business"
-       ,(format template "news/articles")
+       ,(format template "\\(news/articles\\)")
        nil)
       ("enterprise" "enterprise"
-       ,(format template "enterprise/articles")
+       ,(format template "\\(enterprise/articles\\)")
        "［[^ ]* \\([0-9]+:[0-9]+\\)］")
       ("games" "games/news"
-       ,(format template "games/gsnews")
+       ,(format template "\\(games/gsnews\\)")
        nil)
       ("lifestyle" "lifestyle"
-       ,(format template "lifestyle/articles")
+       ,(format template "\\(lifestyle/articles\\)")
        nil)
       ("mobile" "mobile/news"
-       ,(format template "mobile/articles")
+       ,(format template "\\(mobile/articles\\)")
        nil)
       ("news" "news/past"
-       ,(format template "news/articles")
+       ,(format template "\\(news/articles\\)")
        "(\\([0-9]+:[0-9]+\\))")
       ("pcupdate" "pcupdate/news"
-       ,(format template "pcupdate/articles")
+       ,(format template "\\(pcupdate/articles\\)")
        nil)
       ("technology" "news/technology"
-       ,(format template "news/articles")
+       ,(format template "\\(news/articles\\)")
        nil))))
 
 (defvar shimbun-itmedia-server-name "ITmedia")
@@ -132,23 +132,24 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 				    "<[^>]+>")
 				   ""))
 	       time)
-	  (while (string-match "\n" subject)
-	    (setq subject (concat (substring subject 0 (match-beginning 0))
-				  (substring subject (match-end 0)))))
-	  (when time-regexp
-	    (setq next (point)
-		  next (when (re-search-forward url-regexp nil t)
-			 (goto-char next)
-			 (match-data))
-		  time (when (re-search-forward time-regexp (car next) t)
-			 (match-string 1))))
-	  (push (shimbun-create-header
-		 0 subject
-		 (shimbun-from-address shimbun)
-		 (shimbun-make-date-string year month day time)
-		 id  "" 0 0
-		 (concat shimbun-itmedia-url url))
-		headers))))
+	  (unless (string-match "\\`[\t\n ]*\\'" subject)
+	    (while (string-match "\n" subject)
+	      (setq subject (concat (substring subject 0 (match-beginning 0))
+				    (substring subject (match-end 0)))))
+	    (when time-regexp
+	      (setq next (point)
+		    next (when (re-search-forward url-regexp nil t)
+			   (goto-char next)
+			   (match-data))
+		    time (when (re-search-forward time-regexp (car next) t)
+			   (match-string 1))))
+	    (push (shimbun-create-header
+		   0 subject
+		   (shimbun-from-address shimbun)
+		   (shimbun-make-date-string year month day time)
+		   id  "" 0 0
+		   (concat shimbun-itmedia-url url))
+		  headers)))))
     (shimbun-sort-headers headers)))
 
 (defun shimbun-itmedia-clean-text-page ()
