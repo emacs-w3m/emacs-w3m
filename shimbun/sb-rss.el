@@ -44,6 +44,8 @@
 (luna-define-generic shimbun-rss-process-date (shimbun-rss date)
   "Process DATE string and return proper Date string to show it in MUA.")
 
+(autoload 'timezone-parse-date "timezone")
+
 (luna-define-method shimbun-rss-process-date ((shimbun shimbun-rss) date)
   ;; make Date string from ISO 8601 date format.  See
   ;; http://www.w3.org/TR/NOTE-datetime.
@@ -74,28 +76,50 @@
   ;;      MM   = two-digit month (01=January, etc.)
   ;;      DD   = two-digit day of month (01 through 31)
   ;;      hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
-  (if (or (null date)
-	  (not (string-match
-		"\\([0-9][0-9][0-9][0-9]\\)\\(-[0-9][0-9]\\)?\\(-[0-9][0-9]\\)?T?\\([0-9][0-9]:[0-9][0-9]\\(:[.0-9]+\\)?\\)?\\([-+][0-9][0-9]:?[0-9][0-9]\\|Z\\)?"
-		date)))
-      ""
-    (let ((year  (match-string-no-properties 1 date))
-	  (month (match-string-no-properties 2 date))
-	  (day   (match-string-no-properties 3 date))
-	  (time  (match-string-no-properties 4 date))
-	  (zone  (match-string-no-properties 6 date)))
-      (shimbun-make-date-string
-       (string-to-number year)
-       (if month (string-to-number (substring month 1)) 1)
-       (if day (string-to-number (substring day 1)) 1)
-       (or time "00:00")
-       (when zone
-	 (if (string-equal zone "Z")
-	     "+0000"
-	   (if (string-match ":" zone)
-	       (concat (substring zone 0 (match-beginning 0))
-		       (substring zone (match-end 0)))
-	     zone)))))))
+
+  ;; In addition to the above, it also supports the date format in the
+  ;; RFC822 style which RSS 2.0 allows.
+;;;<DEBUG>
+;;  (shimbun-rss-process-date-1 date))
+;;
+;;(defun shimbun-rss-process-date-1 (date)
+;;;</DEBUG>
+  (let (vector year month day time zone)
+    (cond ((null date))
+	  ((string-match " [0-9]+ " date)
+	   (setq vector (timezone-parse-date date)
+		 year (string-to-number (aref vector 0)))
+	   (when (>= year 1970)
+	     (setq month (string-to-number (aref vector 1))
+		   day   (string-to-number (aref vector 2))
+		   time  (aref vector 3))
+	     (when (setq zone (aref vector 4))
+	       (unless (string-match "\\`[A-Z+-]" zone)
+		 (setq zone nil)))))
+	  ((string-match
+	    "\\([0-9][0-9][0-9][0-9]\\)\\(-[0-9][0-9]\\)?\\(-[0-9][0-9]\\)?T?\\([0-9][0-9]:[0-9][0-9]\\(:[.0-9]+\\)?\\)?\\([-+][0-9][0-9]:?[0-9][0-9]\\|Z\\)?"
+	    date)
+	   (setq year  (string-to-number (match-string 1 date))
+		 month (if (match-beginning 2)
+			   (string-to-number (substring (match-string 2 date)
+							1))
+			 1)
+		 day   (if (match-beginning 3)
+			   (string-to-number (substring (match-string 3 date)
+							1))
+			 1)
+		 time  (or (match-string-no-properties 4 date) "00:00")
+		 zone  (match-string-no-properties 6 date))
+	   (when zone
+	     (cond ((null zone))
+		   ((string-equal zone "Z")
+		    (setq zone "+0000"))
+		   ((string-match ":" zone)
+		    (setq zone (concat (substring zone 0 (match-beginning 0))
+				       (substring zone (match-end 0)))))))))
+    (if month
+	(shimbun-make-date-string year month day time zone)
+      "")))
 
 (luna-define-generic shimbun-rss-get-date (shimbun-rss url)
   "Process URL and return a Date string for an article of the URL.
