@@ -2617,7 +2617,7 @@ type as a string argument, when retrieve is complete."
 
 
 ;;;###autoload
-(defun w3m-download (url &optional filename no-cache)
+(defun w3m-download (url &optional filename no-cache extview)
   (interactive
    (let* ((url (w3m-input-url
 		nil
@@ -2635,7 +2635,8 @@ type as a string argument, when retrieve is complete."
 	     current-prefix-arg))))
   (if (string-match "\\`ftp://" url)
       (w3m-goto-ftp-url url filename)
-    (lexical-let ((filename (or filename (w3m-read-file-name nil nil url))))
+    (lexical-let ((filename (or filename (w3m-read-file-name nil nil url)))
+		  (extview extview))
       (w3m-process-with-null-handler
 	(w3m-process-do-with-temp-buffer
 	    (type (progn
@@ -2652,14 +2653,15 @@ type as a string argument, when retrieve is complete."
 		(if (or (not (file-exists-p filename))
 			(y-or-n-p (format "File(%s) already exists. Overwrite? "
 					  filename)))
-		    (write-region (point-min) (point-max) filename)))
+		    (write-region (point-min) (point-max) filename))
+		(when extview
+		  (apply (car extview) (cdr extview))))
 	    (ding)
 	    (w3m-message "Cannot retrieve URL: %s%s"
 			 url
 			 (if w3m-process-exit-status
 			     (format " (exit status: %s)" w3m-process-exit-status)
 			   ""))))))))
-
 
 ;;; Retrieve data:
 (eval-and-compile
@@ -3204,40 +3206,47 @@ session."
 	    (arguments (cdr method))
 	    (file (make-temp-name
 		   (expand-file-name "w3mel" w3m-profile-directory)))
-	    suffix proc)
+	    suffix)
 	(setq suffix (file-name-nondirectory url))
 	(when (string-match "\\.[a-zA-Z0-9]+$" suffix)
 	  (setq suffix (match-string 0 suffix))
 	  (when (< (length suffix) 5)
 	    (setq file (concat file suffix))))
-	(if command
-	    (unwind-protect
-		(with-current-buffer
-		    (generate-new-buffer " *w3m-external-view*")
-		  (when (memq 'file arguments)
-		    (w3m-download url file))
-		  (setq proc
-			(apply 'start-process
-			       "w3m-external-view"
-			       (current-buffer)
-			       command
-			       (mapcar (function eval) arguments)))
-		  (setq w3m-process-temp-file file)
-		  (set-process-sentinel
-		   proc
-		   (lambda (proc event)
-		     (and (string-match "^\\(finished\\|exited\\)" event)
-			  (buffer-name (process-buffer proc))
-			  (save-excursion
-			    (set-buffer (process-buffer proc))
-			    (if (file-exists-p w3m-process-temp-file)
-				(delete-file w3m-process-temp-file)))
-			  (kill-buffer (process-buffer proc))))))
-	      (if (file-exists-p file)
-		  (unless (and (processp proc)
-			       (memq (process-status proc) '(run stop)))
-		    (delete-file file))))
-	  (w3m-download url)))))))
+	(cond
+	 ((and command (memq 'file arguments))
+	  (w3m-download url file nil
+			(list 'w3m-external-view-file command file arguments)))
+	 (command
+	  (w3m-external-view-file command file arguments))
+	 (t
+	  (w3m-download url))))))))
+
+(defun w3m-external-view-file (command file arguments)
+  (let (extproc)
+    (unwind-protect
+	(with-current-buffer
+	    (generate-new-buffer " *w3m-external-view*")
+	  (setq extproc
+		(apply 'start-process
+		       "w3m-external-view"
+		       (current-buffer)
+		       command
+		       (mapcar (function eval) arguments)))
+	  (setq w3m-process-temp-file file)
+	  (set-process-sentinel
+	   extproc
+	   (lambda (extproc event)
+	     (and (string-match "^\\(finished\\|exited\\)" event)
+		  (buffer-name (process-buffer extproc))
+		  (save-excursion
+		    (set-buffer (process-buffer extproc))
+		    (if (file-exists-p w3m-process-temp-file)
+			(delete-file w3m-process-temp-file)))
+		  (kill-buffer (process-buffer extproc))))))
+      (if (file-exists-p file)
+	  (unless (and (processp extproc)
+		       (memq (process-status extproc) '(run stop)))
+	    (delete-file file))))))
 
 (defun w3m-view-image ()
   "View the image under point."
@@ -3412,7 +3421,7 @@ session."
 	(when pos
 	  (goto-char pos)
 	  t))))
- 
+
 (defun w3m-next-form (&optional arg)
   "Move cursor to the next form."
   (interactive "p")

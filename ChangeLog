@@ -5,6 +5,12 @@
 	`w3m-modeline-image-status-off'.
 	(w3m-buffer-setup): Show the string of
 	`w3m-modeline-process-status-on' when process running.
+	(w3m-download): Add 4th argument `extview' for
+	w3m-external-view(). If `extview' is gived, apply `extview' on
+	process-sentinel like (apply (car extview) (cdr extview)).
+	(w3m-external-view): When execute `w3m-download', call with
+	`extview' argument.
+	(w3m-external-view-file): New function.
 
 2001-11-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
