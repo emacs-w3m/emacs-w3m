@@ -9,6 +9,8 @@
 	* nnshimbun.el (shimbun-mua-search-id):
 	Call `shimbun-current-group' instead of `shimbun-current-group-internal';
 	Call `shimbun-mua-shimbun' instead of `shimbun-mua-shimbun-internal'.
+	(nnshimbun-current-group):
+	Call `shimbun-current-group' instead of `shimbun-current-group-internal'.
 
 	* mew-shimbun.el (mew-shimbun-retrieve-article):
 	Call `shimbun-server' instead of `shimbun-server-internal';

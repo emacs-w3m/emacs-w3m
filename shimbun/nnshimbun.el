@@ -290,7 +290,7 @@ default value for all the nnshimbun groups.  You can use the
 		      nnshimbun-directory)))
 
 (defmacro nnshimbun-current-group ()
-  '(shimbun-current-group-internal nnshimbun-shimbun))
+  '(shimbun-current-group nnshimbun-shimbun))
 
 (defmacro nnshimbun-current-directory (&optional group)
   `(nnmail-group-pathname ,(or group '(nnshimbun-current-group))
