@@ -1,3 +1,14 @@
+2002-03-13  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-mode-display): Remove
+	no meaning `force-mode-line-update'.
+	(mew-shimbun-scan): Change to inline function and an
+	argument. Add to support Mew's new `mew-local-retrieve' function.
+	(mew-shimbun-retrieve, mew-shimbun-retrieve-all) 
+	(mew-shimbun-re-retrieve, mew-shimbun-re-retrieve-all) 
+	(mew-shimbun-unseen-check): Call `mew-shimbun-scan' with folder
+	name.
+
 2002-03-12  SAITO Takuya <reed@lily.freemail.ne.jp>	
 	
 	* shimbun/sb-ruby.el (shimbun-index-url): Search articles

@@ -238,8 +238,18 @@ show below example,
 
 (defsubst mew-shimbun-mode-display (group server get count sum)
   (mew-summary-lock 'shimbun
-		    (format mew-shimbun-lock-format2 group server get count sum))
-  (force-mode-line-update))
+		    (format mew-shimbun-lock-format2 group server get count sum)))
+
+(defsubst mew-shimbun-scan (fld)
+  (w3m-static-cond
+   ((fboundp 'mew-local-retrieve)
+    ;; 'scan folder range
+    (let ((range (mew-input-range fld nil)))
+      (mew-local-retrieve 'scan fld range)))
+   ((fboundp 'mew-scan-local)
+    (mew-scan-local (mew-scan-mewls-src fld (mew-input-range fld nil))))
+   (t
+    (mew-scan (mew-scan-mewls-src fld (mew-input-range fld nil))))))
 
 ;;; Main:
 ;;;###autoload
@@ -328,7 +338,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		    (if (> count 1) "messages" "message")
 		    fld)
 	   (when (> count 0)
-	     (mew-shimbun-scan (mew-scan-mewls-src fld (mew-input-range fld nil))))))))))
+	     (mew-shimbun-scan fld))))))))
 
 ;;;###autoload
 (defun mew-shimbun-retrieve-all ()
@@ -364,7 +374,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	      (if (= count 0) "no" (number-to-string count))
 	      (if (> count 1) "articles" "article"))
      (when (> cfldcount 0)
-       (mew-shimbun-scan (mew-scan-mewls-src cfld (mew-input-range cfld nil)))))))
+       (mew-shimbun-scan cfld)))))
 
 (defun mew-shimbun-retrieve-article (mua server group range fld)
   "Retrieve articles via SHIMBUN."
@@ -468,7 +478,7 @@ If called with '\\[universal-argument]', re-retrieve messages marked with '@'."
 		   (message "Replace %s, new %s, same %s messages in '%s' done"
 			    rplcount newcount same fld)
 		   (when (> (+ newcount rplcount) 0)
-		     (mew-shimbun-scan (mew-scan-mewls-src fld (mew-input-range fld nil)))))
+		     (mew-shimbun-scan fld)))
 	       (message "No detect 'X-Shimbun-Id:'"))
 	     (run-hooks 'mew-shimbun-retrieve-hook))))))))
 
@@ -521,7 +531,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 		 (message "Replace %s, new %s, same %s messages in '%s' done"
 			  rplcount newcount same fld)
 		 (when (> (+ newcount rplcount) 0)
-		   (mew-shimbun-scan (mew-scan-mewls-src fld (mew-input-range fld nil)))))
+		   (mew-shimbun-scan fld)))
 	     (message "No detect 'X-Shimbun-Id:'"))
 	   (run-hooks 'mew-shimbun-retrieve-hook)))))))
 
@@ -625,11 +635,6 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
      (t nil))))
 
 ;;; Mew interface funcitions:
-(defun mew-shimbun-scan (args)
-  (w3m-static-if (fboundp 'mew-scan-local)
-      (mew-scan-local args)
-    (mew-scan args)))
-
 (defun mew-shimbun-scan-replace (fld msg)
   (let ((width (1- (mew-scan-width)))
 	(vec (mew-pop-scan-header)))
@@ -888,7 +893,7 @@ If called with '\\[universal-argument]', check messages in the region."
 		   (mew-summary-undo-one 'nomsg))))
 	     (forward-line)))
 	 (message "Unseen checking (%s-%s in %s)...done" begmsg endmsg fld)
-	 (mew-shimbun-scan (mew-scan-mewls-src fld (mew-input-range fld nil))))))))
+	 (mew-shimbun-scan fld))))))
 
 (defun mew-shimbun-unseen-remove ()
   "Remove 'unseen' mark and 'X-Shimbun-Status:'."
