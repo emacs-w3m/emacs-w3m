@@ -1,3 +1,7 @@
+2001-10-20  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-ibm-dev.el: New file.
+
 2001-10-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* aclocal.m4 (AC_ADD_LOAD_PATH): When `yes' or null string is
