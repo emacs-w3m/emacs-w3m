@@ -1,3 +1,8 @@
+2002-06-21  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-w3m-retrieve-1): Specify -no-cookie option only when 
+	the w3m command is configured to accept it.
+
 2002-06-03  Hidetaka Iwai <tyuyu@mb6.seikyou.ne.jp>
 
 	* sb-texfaq.el (shimbun-texfaq-group-path-alist): Fix path

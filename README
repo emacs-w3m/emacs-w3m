@@ -151,10 +151,6 @@
 
       http://prdownloads.sourceforge.net/w3m/w3m-0.3.tar.gz
 
-   NOTE: You need to choose [4 - Cookie model] or [5 - Monster model]
-    when configuring w3m.  Since emacs-w3m specifies the `-no-cookie'
-    option, the w3m command should be built possible to accept it.
-
 
 5. Contact
 
