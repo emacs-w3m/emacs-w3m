@@ -1,3 +1,10 @@
+2002-01-09  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-local-content-type): Fix handling of the remote url.
+	(w3m-file-directory-p): New function.
+	(w3m-goto-ftp-url): Use `w3m-file-directory-p' instead of
+	`file-directory-p'.
+
 2002-01-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-arrived-setup-hook): New hook.

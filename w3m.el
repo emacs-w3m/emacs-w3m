@@ -2410,7 +2410,10 @@ If the user enters null input, return second argument DEFAULT."
 
 ;;; Retrieve local data:
 (defun w3m-local-content-type (url)
-  (if (file-directory-p (w3m-url-to-file-name url))
+  (if (file-directory-p
+       (if (w3m-url-local-p url)
+	   (w3m-url-to-file-name url)
+	 url))
       "text/html"
     (catch 'type-detected
       (dolist (elem w3m-content-type-alist "unknown")
@@ -4251,6 +4254,20 @@ or prefix ARG columns."
 		   (substring url (match-end 2))))
       (error "URL is strange")))
 
+(defun w3m-file-directory-p (file)
+  "Emulate `file-directory-p' function for remote file."
+  (when (file-exists-p file)
+    (let (dirp (i 10))
+      (catch 'loop
+	(while (> i 0)
+	  (setq dirp (car (file-attributes file)))
+	  (if (stringp dirp)
+	      (setq file (expand-file-name
+			  dirp
+			  (file-name-directory (directory-file-name file)))
+		    i (1- i))
+	    (throw 'loop dirp)))))))
+
 (defun w3m-goto-ftp-url (url &optional filename)
   "Copy a remote file to a local file if URL looks like a file, otherwise
 run `dired-other-window' for URL using `ange-ftp' or `efs'.  Optional
@@ -4260,7 +4277,8 @@ it will prompt user where to save a file."
 	file)
     (if (or (string-equal "/" (substring ftp -1))
 	    ;; `file-directory-p' takes a long time for remote files.
-	    (file-directory-p ftp))
+	    ;; `file-directory-p' returns 't' in FSF Emacsen, anytime.
+	    (w3m-file-directory-p ftp))
 	(dired-other-window ftp)
       (setq file (file-name-nondirectory ftp))
       (unless filename
