@@ -1,5 +1,8 @@
 2004-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-fontify-anchors): No need to enable evaporation of
+	overlays in XEmacs.
+
 	* shimbun/sb-nikkei.el (shimbun-nikkei-prepare-article-markets):
 	Don't show garbages if the article seems to have been expired.
 
