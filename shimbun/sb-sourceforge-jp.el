@@ -1,6 +1,6 @@
 ;;; sb-sourceforge-jp.el --- shimbun backend for lists.sourceforge.jp
 
-;; Copyright (C) 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2003, 2004 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news
@@ -29,7 +29,7 @@
 (require 'shimbun)
 (require 'sb-mailman)
 
-(luna-define-class shimbun-sourceforge-jp (shimbun-mailman) ())
+(luna-define-class shimbun-sourceforge-jp (shimbun-mailman-ja) ())
 
 (defcustom shimbun-sourceforge-jp-mailing-lists
   '(("aime-devel")
