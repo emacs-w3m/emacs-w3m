@@ -1,3 +1,9 @@
+2003-11-06  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-fontify-strike-through): Support <strike> element.
+	(w3m-fontify): Change the turn `w3m-fontify-strike-through' and
+	`w3m-fontify-underline'.
+
 2003-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* attic/vm-w3m.el: New file.
