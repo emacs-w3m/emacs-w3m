@@ -1,3 +1,8 @@
+2002-02-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-mhonarc.el (shimbun-make-contents): Protect against a
+	date string which has both of numerical timezone and country.
+
 2002-02-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (DOCS): Add ChangeLog.1.
