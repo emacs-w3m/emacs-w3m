@@ -13,7 +13,8 @@
 	(shimbun-asahi-index-url): Removed.
 	(shimbun-asahi-get-headers): Use `shimbun-from-address' instead of
 	`shimbun-from-address-internal'; Refer `shimbun-asahi-group-table'
-	instead of `shimbun-asahi-group-regexp-alist'.
+	instead of `shimbun-asahi-group-regexp-alist'; Refer
+	`shimbun-asahi-url' instead of using `shimbun-url-internal'.
 
 	* shimbun/sb-asahi-html.el (toplevel): Inherit only from
 	`shimbun-asahi'.

@@ -154,7 +154,6 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 (defun shimbun-asahi-get-headers (entity)
   "Return a list of headers."
   (let ((group (shimbun-current-group-internal entity))
-	(parent (shimbun-url-internal entity))
 	(from (shimbun-from-address entity))
 	(case-fold-search t)
 	regexp numbers cyear cmonth month day year headers)
@@ -203,7 +202,8 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	     ;; references, chars, lines
 	     "" 0 0
 	     ;; xref
-	     (concat parent (match-string (nth 0 numbers))))
+	     (shimbun-expand-url (match-string (nth 0 numbers))
+				 shimbun-asahi-url))
 	    headers))
     headers))
 
