@@ -87,7 +87,7 @@ compile-time."
 
 (defmacro w3m-tag-regexp-of (&rest names)
   "Return a regexp string, not a funtion form.  A regexp should match tags
-which are started with "<" and one of NAMES.  NAMES should be string
+which are started with \"<\" and one of NAMES.  NAMES should be string
 constants, any other expressions are not allowed."
   (concat "<\\("
 	  (mapconcat 'identity names "\\|")
