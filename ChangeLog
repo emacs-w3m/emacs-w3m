@@ -5,8 +5,7 @@
 	(w3m-safe-view-this-url): Refer the above.
 
 	* shimbun/nnshimbun.el: Add autoloads of `gnus-group-short-name'
-	and `gnus-summary-refer-article' to avoid byte-compile warnings;
-	Add `nnshimbun-setup-article-mode' to `gnus-article-mode-hook'.
+	and `gnus-summary-refer-article' to avoid byte-compile warnings.
 	(nnshimbun-search-xref, nnshimbun-goto-url,
 	nnshimbun-setup-article-mode): New functions.
 

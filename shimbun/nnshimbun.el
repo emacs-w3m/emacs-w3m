@@ -845,8 +845,6 @@ and return its header."
   (set (make-local-variable 'w3m-safe-goto-url-function)
        'nnshimbun-goto-url))
 
-(add-hook 'gnus-article-mode-hook 'nnshimbun-setup-article-mode)
-
 
 ;; Command to create an nnshimbun group:
 
