@@ -41,7 +41,9 @@
   (require 'cl)
   ;; Variable(s) which are used in the following inline functions.
   ;; They should be defined in the other module at run-time.
-  (defvar w3m-work-buffer-list))
+  (defvar w3m-work-buffer-list)
+  (defvar w3m-current-title)
+  (defvar w3m-current-url))
 
 (defmacro w3m-static-if (cond then &rest else)
   "Like `if', except that it evaluates COND at compile-time."
@@ -80,6 +82,80 @@ or `debug-on-quit' is non-nil."
 	 ,bodyform
        ,@handlers)))
 
+;;; Working buffers:
+
+(defsubst w3m-get-buffer-create (name)
+  "Return the buffer named NAME, or create such a buffer and return it."
+  (or (get-buffer name)
+      (let ((buf (get-buffer-create name)))
+	(setq w3m-work-buffer-list (cons buf w3m-work-buffer-list))
+	(buffer-disable-undo buf)
+	buf)))
+
+(defsubst w3m-kill-buffer (buffer)
+  "Kill the buffer BUFFER and remove it from `w3m-work-buffer-list'.
+The argument may be a buffer or may be the name of a buffer.
+An argument of nil means kill the current buffer."
+  (when (stringp buffer)
+    (setq buffer (get-buffer buffer)))
+  (when (buffer-live-p buffer)
+    (kill-buffer buffer))
+  (setq w3m-work-buffer-list (delq buffer w3m-work-buffer-list))
+  nil)
+
+(defun w3m-kill-all-buffer ()
+  "Kill all working buffer."
+  (dolist (buf w3m-work-buffer-list)
+    (when (buffer-live-p buf)
+      (kill-buffer buf)))
+  (setq w3m-work-buffer-list nil))
+
+(defsubst w3m-buffer-title (buffer)
+  "Return the title of the buffer BUFFER."
+  (with-current-buffer buffer
+    (cond
+     ((and (stringp w3m-current-title)
+	   (not (string= w3m-current-title "<no-title>")))
+      w3m-current-title)
+     ((stringp w3m-current-url)
+      (directory-file-name
+       (if (string-match "^[^/:]+:/+" w3m-current-url)
+	   (substring w3m-current-url (match-end 0))
+	 w3m-current-url)))
+     (t "<no-title>"))))
+
+(defun w3m-buffer-name-lessp (x y)
+  "Return t if first arg buffer's name is less than second."
+  (when (bufferp x)
+    (setq x (buffer-name x)))
+  (when (bufferp y)
+    (setq y (buffer-name y)))
+  (if (and (string-match "\\`\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'" x)
+	   (setq x (cons x
+			 (if (match-beginning 1)
+			     (string-to-number (match-string 2 x))
+			   0))))
+      (if (string-match "\\`\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'" y)
+	  (< (cdr x)
+	     (if (match-beginning 1)
+		 (string-to-number (match-string 2 y))
+	       0))
+	(string< (car x) y))
+    (string< x y)))
+
+(defsubst w3m-list-buffers (&optional nosort)
+  "Return list of w3m-mode buffers."
+  (if nosort
+      (save-current-buffer
+	(delq nil
+	      (mapcar
+	       (lambda (buffer)
+		 (set-buffer buffer)
+		 (when (eq major-mode 'w3m-mode) buffer))
+	       (buffer-list))))
+    (sort (w3m-list-buffers t)
+	  (function w3m-buffer-name-lessp))))
+
 (defmacro w3m-with-work-buffer (&rest body)
   "Execute the forms in BODY with working buffer as the current buffer."
   (let ((temp-hist (make-symbol "hist"))
@@ -106,14 +182,6 @@ or `debug-on-quit' is non-nil."
 			    (append (, non-stickies) (, props))
 			    (, object)))))
 
-(defsubst w3m-get-buffer-create (name)
-  "Return the buffer named NAME, or create such a buffer and return it."
-  (or (get-buffer name)
-      (let ((buf (get-buffer-create name)))
-	(setq w3m-work-buffer-list (cons buf w3m-work-buffer-list))
-	(buffer-disable-undo buf)
-	buf)))
-
 (defmacro w3m-tag-regexp-of (&rest names)
   "Return a regexp string, not a funtion form.  A regexp should match tags
 which are started with \"<\" and one of NAMES.  NAMES should be string
@@ -135,15 +203,6 @@ constants, any other expressions are not allowed."
 		    (file-executable-p
 		     (setq bin (expand-file-name (concat command ".exe") dir))))
 	    (throw 'found-command bin)))))))
-
-(defsubst w3m-pullout-buffer-number (buf)
-  "Return a suffix number of w3m buffer."
-  (when (bufferp buf) (setq buf (buffer-name buf)))
-  (cond
-   ((string= "*w3m*" buf) 1)
-   ((string-match "\\*w3m\\*<\\([0-9]+\\)>" buf)
-    (string-to-number (match-string 1 buf)))
-   (t 999)))
 
 (provide 'w3m-macro)
 

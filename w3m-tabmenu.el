@@ -4,7 +4,6 @@
 
 ;; Authors: Hideyuki SHIRAI    <shirai@meadowy.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
-
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; This file is a part of emacs-w3m.
@@ -23,7 +22,6 @@
 ;; along with this program; if not, you can either send email to this
 ;; program's maintainer or write to: The Free Software Foundation,
 ;; Inc.; 59 Temple Place, Suite 330; Boston, MA 02111-1307, USA.
-
 
 ;;; Commentary:
 
@@ -62,7 +60,7 @@
 	(form "%s [%s]")
 	comp hist histlen default buf)
     (dolist (item items)
-      (when (string-match "^\\* " (nth 1 item))	;; current-buffer
+      (when (nth 2 item)	;; current-buffer
 	(setq default count))
       (setq comp (cons
 		  (cons
@@ -72,7 +70,7 @@
       (setq count (1+ count)))
     (setq comp (nreverse comp))
     (setq histlen (length hist))
-    (setq hist (append hist hist hist hist hist)) ;; STARTPOS 3rd hist
+    (setq hist (append hist hist hist hist hist)) ;; STARTPOS at 3rd hist
     (setq buf
 	  (completing-read
 	   "Switch to w3m buffer: "
@@ -98,42 +96,21 @@
 
 (defun w3m-tab-menubar-make-items (&optional nomenu)
   "Create w3m tab menu items."
-  (let ((cbuf (current-buffer))
-	bufs title menus)
-    (dolist (buf (buffer-list))
-      (with-current-buffer buf
-	(when (eq major-mode 'w3m-mode)
-	  (setq title (cond
-		       ((and (stringp w3m-current-title)
-			     (not (string= w3m-current-title "<no-title>")))
-			w3m-current-title)
-		       ((stringp w3m-current-url)
-			(directory-file-name
-			 (if (string-match "^[^/:]+:/+" w3m-current-url)
-			     (substring w3m-current-url (match-end 0))
-			   w3m-current-url)))
-		       (t "No title")))
-	  (setq bufs (cons (list (buffer-name) title (eq cbuf buf)) bufs)))))
-    (setq bufs
-	  (sort bufs (lambda (x y)
-		       (< (w3m-pullout-buffer-number (car x))
-			  (w3m-pullout-buffer-number (car y))))))
-    (dolist (elem  bufs)
-      (setq menus
-	    (cons
-	     (if nomenu
-		 (list (nth 0 elem)
-		       (format "%s%s"
-			       (if (nth 2 elem) "* " "")
-			       (nth 1 elem)))
-	       (vector (format "%d: %s%s"
-			       (w3m-pullout-buffer-number (nth 0 elem))
-			       (if (nth 2 elem) "* " "  ")
-			       (nth 1 elem))
-		       (list 'w3m-tab-menubar-open-item (nth 0 elem))
-		       (get-buffer (nth 0 elem))))
-	     menus)))
-    (nreverse menus)))
+  (let ((i 0) (current (current-buffer)) (title))
+    (mapcar
+     (lambda (buffer)
+       (if nomenu
+	   (list (buffer-name buffer)
+		 (w3m-buffer-title buffer)
+		 (eq buffer current))
+	 (vector (format "%d: %s%s"
+			 (incf i)
+			 (if (eq buffer current) "* " "  ")
+			 (w3m-buffer-title buffer))
+		 `(w3m-tab-menubar-open-item ,(buffer-name buffer))
+		 buffer)))
+     (w3m-list-buffers))))
 
 (provide 'w3m-tabmenu)
+
 ;;; w3m-tabmenu.el ends here

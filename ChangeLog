@@ -1,3 +1,51 @@
+2001-11-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-select-buffer-window-ratio): New user option.
+	(w3m-select-buffer-window-size): Remove user option.
+	(w3m-select-buffer-window-size): New function.
+	(w3m-select-buffer-toggle-style): Ditto.
+	(w3m-select-buffer): Use `w3m-select-buffer-window-size' when
+	calculate window size. When call with prefix argument, toggle
+	`w3m-select-buffer-horizontal-window'.
+	(w3m-select-buffer-show-this-line): Use
+	`w3m-select-buffer-window-size' when calculate window size.
+	If exist w3m-buffer another window under control, use it.
+	(w3m-select-buffer-mode-map): Modify the key binding 'C-cC-s' for
+	toggle `w3m-select-buffer-horizontal-window'.
+	(w3m-select-buffer-update): Call `w3m-select-buffer' with two
+	arguments.
+	(w3m-select-buffer-mode): Modify doc-string.
+
+	* w3m-tabmenu.el (w3m-switch-buffer): Change the rule of detecting
+	default buffer.
+	(w3m-tab-menubar-make-items): Ditto.
+
+	* w3m.el: Marge from main trunk.
+	(w3m-kill-all-buffer): Move to w3m-macro.el.
+	(w3m-next-buffer): Use `w3m-list-buffers'.
+	(w3m-previous-buffer): Ditto.
+	(w3m-delete-buffer): Call `w3m-quit' when the number of w3m-mode
+	buffers is equal to 1.
+	(w3m-quit): Kill all w3m-mode buffers.
+	(w3m-select-buffer-generate-contents): Use `w3m-buffer-title' and
+	`w3m-list-buffers'.
+	(w3m-select-buffer-close-window): New function.
+
+	* w3m-macro.el: Marge from main trunk.
+	(w3m-current-title, w3m-current-url): Avoid byte-compile
+	warnings.
+	(w3m-kill-all-buffer): Move from w3m.el
+	(w3m-kill-buffer, w3m-buffer-title, w3m-buffer-name-lessp)
+	(w3m-list-buffers): New functions to marge from head trunk.
+	(w3m-pullout-buffer-number): Remove.
+
+	* w3m-tabmenu.el: Marge from main trunk.
+	(w3m-tab-menubar-make-items): Use `w3m-buffer-title' and
+	`w3m-list-buffers'.
+
+	* w3m-e21.el: Marge from main trunk.
+	(w3m-tab-line): Use `w3m-buffer-title' and `w3m-list-buffers'.
+
 2001-11-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-select-buffer): Fix window height calculation when
