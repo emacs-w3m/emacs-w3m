@@ -1,3 +1,9 @@
+2004-05-21  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-rakuten.el (shimbun-rss-build-message-id): Modify
+	the regexp.
+	(shimbun-rss-get-date): Ditto.
+
 2004-05-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-expire): Fix last change.
