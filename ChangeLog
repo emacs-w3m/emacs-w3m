@@ -1,5 +1,8 @@
 2003-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/shimbun.el (shimbun-mime-encode-string): Make it work in
+	a multibyte temp buffer.
+
 	* shimbun/sb-nikkei.el: Don't require cl, shimbun.el does it.
 
 2003-09-04  Katsumi Yamaoka  <yamaoka@jpl.org>
