@@ -4,13 +4,26 @@
 	(shimbun-make-html-contents): Call the above.
 	(shimbun-remove-tags): New function.
 
-	* shimbun/sb-text.el (shimbun-make-contents): Simplified.
+	* shimbun/sb-f1fan.el (shimbun-clear-contents): New method.
+	(shimbun-make-contents): Simplified.
 
 	* shimbun/sb-itmedia.el (shimbun-itmedia-clean-text-page):
 	Simplified.
 
-	* shimbun/sb-f1fan.el (shimbun-clear-contents): New method.
-	(shimbun-make-contents): Simplified.
+	* shimbun/sb-slashdot-jp-rss.el
+	(shimbun-slashdot-jp-rss-comment-arguments): New option.
+	(shimbun-get-headers): Add "&mode=nocomment" to each article's
+	URL, in order to reduce downloading time.
+	(shimbun-slashdot-jp-rss-comment-url): New function.
+	(shimbun-clear-contents): New method.
+
+	* shimbun/sb-tdiary.el (shimbun-tdiary-group-alist): Declared as
+	an option.
+
+	* shimbun/sb-text.el (shimbun-make-contents): Simplified.
+
+	* shimbun/sb-wiki.el (shimbun-wiki-group-alist): Declared as an
+	option.
 
 2004-01-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

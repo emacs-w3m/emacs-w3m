@@ -37,11 +37,15 @@
 (defvar shimbun-tdiary-content-start "<h3")
 (defvar shimbun-tdiary-content-end "</div>")
 
-(defvar shimbun-tdiary-group-alist nil
-  "An alist of TDIARY shimbun group definition.
+(defcustom shimbun-tdiary-group-alist nil
+  "*An alist of TDIARY shimbun group definition.
 Each element looks like (NAME URL).
 NAME is a shimbun group name.
-URL is the URL for TDIARY access point of the group.")
+URL is the URL for TDIARY access point of the group."
+  :group 'shimbun
+  :type '(repeat (cons :format "%v"
+		       (string :tag "Group name")
+		       (string :tag "URL"))))
 
 (luna-define-method shimbun-groups ((shimbun shimbun-tdiary))
   (mapcar 'car shimbun-tdiary-group-alist))

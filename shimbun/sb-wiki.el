@@ -35,7 +35,7 @@
 
 (luna-define-class shimbun-wiki (shimbun-rss) ())
 
-(defvar shimbun-wiki-group-alist
+(defcustom shimbun-wiki-group-alist
   '(("pukiwiki"
      "http://pukiwiki.org/index.php?cmd=rss10"
      "webmaster@pukiwiki.org"
@@ -47,9 +47,8 @@
      "webmaster@namaraii.com"
      nil
      "<div class=\"section\">"
-     "<div class=\"sidebar\">")
-    )
-  "An alist of Wiki shimbun group definition.
+     "<div class=\"sidebar\">"))
+  "*An alist of Wiki shimbun group definition.
 Each element is a list such as
    \(NAME URL ADDRESS X-FACE CONTENT-START CONTENT-END\).
 NAME is a shimbun group name.
@@ -61,7 +60,16 @@ Optional X-FACE is a string for X-Face field.
 Optional CONTENT-START is a regexp string that represents content
 start of each article.
 Optional CONTENT-END is a regexp string that represents content
-start of each article.")
+start of each article."
+  :group 'shimbun
+  :type '(repeat
+	  (group (string :tag "Group name")
+		 (string :tag "URL")
+		 (string :tag "Site owner's mail address")
+		 (choice (string :tag "X-Face")
+			 (const :tag "No X-Face" nil))
+		 (regexp :tag "Content beginning pattern")
+		 (regexp :tag "Content end pattern"))))
 
 (luna-define-method shimbun-headers :before ((shimbun shimbun-wiki)
 					     &rest range)
@@ -76,10 +84,10 @@ start of each article.")
       (shimbun-set-x-face-internal
        shimbun
        (or
- 	(nth 3 (assoc (shimbun-current-group-internal shimbun)
- 		      shimbun-wiki-group-alist))
- 	(cdr (assoc "default" (shimbun-x-face-alist-internal shimbun)))
- 	shimbun-x-face))))
+	(nth 3 (assoc (shimbun-current-group-internal shimbun)
+		      shimbun-wiki-group-alist))
+	(cdr (assoc "default" (shimbun-x-face-alist-internal shimbun)))
+	shimbun-x-face))))
 
 (luna-define-method shimbun-groups ((shimbun shimbun-wiki))
   (mapcar 'car shimbun-wiki-group-alist))

@@ -1,4 +1,4 @@
-;;; sb-slashdot-jp-rss.el --- shimbun backend for slashdot-jp-rss
+;;; sb-slashdot-jp-rss.el --- shimbun backend for slashdot-jp-rss -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 
@@ -30,6 +30,31 @@
 (require 'shimbun)
 (require 'sb-rss)
 
+(defcustom shimbun-slashdot-jp-rss-comment-arguments
+  '((threshold . 1)
+    (mode . nested)
+    (commentsort . 0))
+  "*Arguments to view comment pages."
+  :group 'shimbun
+  :type '(repeat
+	  (choice
+	   (cons :tag "Score threshold" :format "%t: %v"
+		 (const :tag "" threshold) integer)
+	   (cons :tag "Threading mode" :format "%t: %v"
+		 (const :tag "" mode)
+		 (choice (const flat)
+			 (const nested)
+			 (const nocomment)
+			 (const thread)))
+	   (cons :tag "Sorting order" :format "%t: %v"
+		 (const :tag "" commentsort)
+		 (choice (const :tag "Oldest first" 0)
+			 (const :tag "Newest first" 1)
+			 (const :tag "Highest scores first" 3)
+			 (const :tag "Oldest first (Ignore threads)" 4)
+			 (const :tag "Newest first (Ignore threads)" 5)))
+	   (string :tag "User defined argument"))))
+
 (luna-define-class shimbun-slashdot-jp-rss (shimbun-rss) ())
 
 (defvar shimbun-slashdot-jp-rss-url "http://slashdot.jp/slashdot.rdf")
@@ -51,6 +76,36 @@
 	   url)
     (error "Cannot find message-id base"))
   (concat "<" (match-string-no-properties 1 url) "%%rss@slashdot.jp>"))
+
+(luna-define-method shimbun-get-headers :around
+  ((shimbun shimbun-slashdot-jp-rss) &optional range)
+  (let ((headers (luna-call-next-method)))
+    (dolist (head headers)
+      (shimbun-header-set-xref head
+			       (concat (shimbun-header-xref head)
+				       "&mode=nocomment")))
+    headers))
+
+(defun shimbun-slashdot-jp-rss-comment-url (url)
+  (mapconcat (lambda (x)
+	       (if (stringp x)
+		   x
+		 (format "%s=%s" (car x) (cdr x))))
+	     (cons (if (string-match "&mode=nocomment\\'" url)
+		       (substring url 0 (match-beginning 0))
+		     url)
+		   shimbun-slashdot-jp-rss-comment-arguments)
+	     "&"))
+
+(luna-define-method shimbun-clear-contents :around
+  ((shimbun shimbun-slashdot-jp-rss) header)
+  (when (luna-call-next-method)
+    (shimbun-remove-tags "<!-- begin ad code -->" "<!-- end ad code -->")
+    (goto-char (point-max))
+    (insert "\n<p align=left>[<a href=\""
+	    (shimbun-slashdot-jp-rss-comment-url (shimbun-header-xref header))
+	    "\">もっと読む…</a>]</p>")
+    t))
 
 (provide 'sb-slashdot-jp-rss)
 
