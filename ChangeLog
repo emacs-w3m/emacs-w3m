@@ -1,3 +1,9 @@
+2001-10-21  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-muchy.el (shimbun-get-headers): Bug fixed.
+	Add update status, license fee and ranking description, to
+	SUBJECT.
+	
 2001-10-20  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-muchy.el: New file.
