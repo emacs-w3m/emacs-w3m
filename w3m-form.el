@@ -632,26 +632,27 @@ character."
     (nreverse (cons (substring text start) parts))))
 
 (defun w3m-form-textarea-replace (hseq string)
-  (save-excursion
-    (let ((s (get-text-property (point) 'w3m-form-hseq))
-	  (hseq (abs hseq))
-	  (chopped (w3m-form-text-chop string))
-	  cs next)
-      (unless (and s (eq s hseq))
-	(goto-char (point-min))
-	(while (and (not (eobp))
-		    (not (eq hseq (get-text-property (point) 'w3m-form-hseq))))
-	  (goto-char (next-single-property-change (point)
-						  'w3m-form-hseq))))
-      (while chopped
-	(w3m-form-replace (car chopped))
-	(goto-char (next-single-property-change (point) 'w3m-form-hseq)) ; end
-	(when (setq next (next-single-property-change (point) 'w3m-form-hseq))
-	  (goto-char next))
-	(setq cs (get-text-property (point) 'w3m-form-hseq))
-	(setq chopped
-	      (if (and cs (eq (abs cs) hseq))
-		  (cdr chopped)))))))
+  (let ((s (get-text-property (point) 'w3m-form-hseq))
+	(hseq (abs hseq))
+	(chopped (w3m-form-text-chop string))
+	(p (point))
+	cs next)
+    (unless (and s (eq s hseq))
+      (goto-char (point-min))
+      (while (and (not (eobp))
+		  (not (eq hseq (get-text-property (point) 'w3m-form-hseq))))
+	(goto-char (next-single-property-change (point)
+						'w3m-form-hseq))))
+    (while chopped
+      (w3m-form-replace (car chopped))
+      (goto-char (next-single-property-change (point) 'w3m-form-hseq)) ; end
+      (when (setq next (next-single-property-change (point) 'w3m-form-hseq))
+	(goto-char next))
+      (setq cs (get-text-property (point) 'w3m-form-hseq))
+      (setq chopped
+	    (if (and cs (eq (abs cs) hseq))
+		(cdr chopped))))
+    (goto-char p)))
 
 (defun w3m-form-textarea-info ()
   "Return a cons cell of (NAME . LINE) for current text area."
