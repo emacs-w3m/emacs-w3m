@@ -1,3 +1,8 @@
+2005-02-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el (shimbun-clear-contents): Validate regexps
+	before using them.
+
 2005-02-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna-html-skelton): Fix typo.
