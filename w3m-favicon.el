@@ -209,18 +209,24 @@ favicon is ready."
 (defun w3m-favicon-convert (data type)
   "Convert the favicon DATA in TYPE to the favicon image and return it."
   (let* (height
-	 (img (w3m-imagick-convert-data
-	       data (symbol-name type)
-	       (symbol-name (or (cdr (assq w3m-favicon-type
-					   w3m-favicon-type-alist))
-				w3m-favicon-type))
-	       "-geometry"
-	       (or w3m-favicon-size
-		   (progn
-		     (setq height (w3m-static-if (featurep 'xemacs)
-				      (face-height 'default)
-				    (frame-char-height)))
-		     (format "%dx%d" height height))))))
+	 (img (when (or
+		     (not (eq type 'ico))
+		     ;; `ico' is the default type and `data' may contain a
+		     ;; string "There's no such file" returned from a server,
+		     ;; so we check whether the magic numbers are 00 00 01 00.
+		     (string-equal "\x00\x00\x01\x00" (substring data 0 4)))
+		(w3m-imagick-convert-data
+		 data (symbol-name type)
+		 (symbol-name (or (cdr (assq w3m-favicon-type
+					     w3m-favicon-type-alist))
+				  w3m-favicon-type))
+		 "-geometry"
+		 (or w3m-favicon-size
+		     (progn
+		       (setq height (w3m-static-if (featurep 'xemacs)
+					(face-height 'default)
+				      (frame-char-height)))
+		       (format "%dx%d" height height)))))))
     (when img
       (w3m-static-if (featurep 'xemacs)
 	  (make-glyph

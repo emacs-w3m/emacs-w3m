@@ -1,3 +1,8 @@
+2003-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-favicon.el (w3m-favicon-convert): Make sure data of the ico
+	type contains the correct magic numbers.
+
 2003-11-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-util.el (w3m-last-visited-buffer): Abolished.
