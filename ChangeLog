@@ -1,3 +1,7 @@
+2001-04-17  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-impress.el: New file.
+
 2001-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-setup-header-line): New function except for Emacs 21
