@@ -1,3 +1,9 @@
+2001-10-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-use-mule-ucs): Simplified.
+	(w3m-ccl-write-repeat): Fixed.
+	(w3m-euc-japan-decoder): Ditto.
+
 2001-10-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-ccl-write-repeat): Avoid a byte-compile warning.

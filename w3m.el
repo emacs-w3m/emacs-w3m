@@ -214,16 +214,7 @@ width using expression (+ (frame-width) VALUE)."
   :type 'function)
 
 (defcustom w3m-use-mule-ucs
-  (and (eq w3m-type 'w3m)
-       (boundp 'emacs-major-version)
-       (if (featurep 'xemacs)
-	   ;; Mule-UCS does not support XEmacs versions prior to 21.2.37.
-	   (and (>= emacs-major-version 21)
-		(or (> emacs-minor-version 2)
-		    (and (= emacs-major-version 2)
-			 (>= emacs-beta-version 37))))
-	 (>= emacs-major-version 20))
-       (featurep 'un-define))
+  (and (eq w3m-type 'w3m) (featurep 'un-define))
   "*Non nil means using multi-script support with Mule-UCS."
   :group 'w3m
   :type 'boolean
@@ -2831,19 +2822,25 @@ to nil.
 
 (eval-and-compile
   (defun w3m-ccl-write-repeat (charset)
-    (let ((id (if (boundp 'MULE)
-		  (let ((alist
-			 '((latin-iso8859-1 . lc-ltn1)
-			   (japanese-jisx0208 . lc-jp)
-			   (japanese-jisx0212 . lc-jp2)
-			   (katakana-jisx0201 . lc-kana))))
-		    (eval (cdr (assq charset alist))))
-		(eval '(charset-id charset)))))
+    (let* ((spec (cdr
+		  (assq charset
+			'((latin-iso8859-1 .   (nil . lc-ltn1))
+			  (japanese-jisx0208 . (t   . lc-jp))
+			  (japanese-jisx0212 . (t   . lc-jp2))
+			  (katakana-jisx0201 . (nil . lc-kana))))))
+	   (id (eval (if (boundp 'MULE)
+			 (cdr spec)
+		       '(charset-id charset)))))
       (if (fboundp 'ccl-compile-write-multibyte-character)
-	  (` ((r0 = (, id))
+	  (` ((,@ (when (car spec)
+		    '((r1 &= ?\x7f)
+		      (r1 |= ((r0 & ?\x7f) << 7)))))
+	      (r0 = (, id))
 	      (write-multibyte-character r0 r1)
 	      (repeat)))
 	(` ((write (, id))
+	    (,@ (when (car spec)
+		  '((write r0))))
 	    (write-repeat r1)))))))
 
 (define-ccl-program w3m-euc-japan-decoder
@@ -2855,16 +2852,13 @@ to nil.
 	   (write-repeat r0))
        (if (r0 > ?\xa0)
 	   ((read r1)
-	    (r1 &= ?\x7f)
-	    (r1 |= ((r0 & ?\x7f) << 7))
 	    (,@ (w3m-ccl-write-repeat 'japanese-jisx0208))))
        (if (r0 == ?\x8e)
 	   ((read r1)
 	    (,@ (w3m-ccl-write-repeat 'katakana-jisx0201))))
        (if (r0 == ?\x8f)
-	   ((read r0 r1)
-	    (r1 &= ?\x7f)
-	    (r1 |= ((r0 & ?\x7f) << 7))
+	   ((read r0)
+	    (read r1)
 	    (,@ (w3m-ccl-write-repeat 'japanese-jisx0212))))
        ;; Process internal characters used in w3m.
        (,@ (mapcar (lambda (pair)
