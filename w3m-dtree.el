@@ -147,15 +147,12 @@ If you care for another style, set manually and try it :-).
 	  (setq allfiles (not allfiles)))
       (setq path (substring url prelen)))
     ;; counter drive letter 
-    (w3m-with-work-buffer
-      (setq path (file-name-as-directory (w3m-dtree-directory-name path)))
-      (setq default-directory path)
-      (erase-buffer)
-      (set-buffer-multibyte t)
-      (w3m-message "Dtree (%s) ..." path)
-      (w3m-dtree-create path allfiles dirprefix fileprefix)
-      (w3m-message "Dtree ... done.")
-      "text/html")))
+    (setq path (file-name-as-directory (w3m-dtree-directory-name path)))
+    (setq default-directory path)
+    (w3m-message "Dtree (%s) ..." path)
+    (w3m-dtree-create path allfiles dirprefix fileprefix)
+    (w3m-message "Dtree ... done.")
+    "text/html"))
 
 (defun w3m-dtree (allfiles path)
   "Display directory tree on local file system.

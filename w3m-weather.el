@@ -229,6 +229,7 @@
 		   furl (cdr (assoc area w3m-weather-url-alist)))
 	     (w3m-retrieve furl))
 	(w3m-with-work-buffer
+	  (w3m-decode-buffer furl)
 	  (run-hook-with-args 'w3m-weather-filter-functions area)
 	  "text/html")
       (w3m-message "Unknown URL: %s" url)

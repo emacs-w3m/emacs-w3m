@@ -1,3 +1,27 @@
+2001-05-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-coding-system): Changed default value to
+	'iso-2022-7bit-ss2.
+	(w3m-terminal-coding-system): New user option.
+	(w3m-attributes): When URL whose scheme equals to `about' is
+	specified, returns `w3m-coding-system' as its content-charset.
+	(w3m-exec-process): Refer `w3m-terminal-coding-system'.
+	(w3m-decode-buffer): Decode buffer everywhen it is called.
+	(w3m-about-retrieve): New function.
+	(w3m-cid-retrieve): Ditto.
+	(w3m-retrieve): Call `w3m-about-retrieve' and `w3m-cid-retrieve'.
+	(w3m-rendering-region) [w3mmee]: No call `encode-coding-region'.
+	Fix coding-system spec error for Mule-2.3.
+	(w3m-rendering-region): Simplified.
+	(w3m-region) [w3mmee]: Encode this buffer as unibyte
+	representation.
+	(w3m-about-history): No call `w3m-with-work-buffer'.
+	(w3m-about-db-history): Ditto.
+
+	* w3m-dtree.el (w3m-about-dtree): Ditto.
+
+	* w3m-weather.el (w3m-about-weather): Call `w3m-decode-buffer'.
+
 2001-05-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m): Popup a new frame if there is neither a window nor
