@@ -4307,16 +4307,21 @@ the current session.  Otherwise, the new session will start afresh."
   (w3m-goto-url w3m-home-page))
 
 (defun w3m-reload-this-page (&optional arg)
-  "Reload current page without cache."
+  "Reload current page without cache.
+If called with '\\[universal-argument]', clear form and post datas"
   (interactive "P")
   (let ((post-data (w3m-history-plist-get :post-data nil nil t))
+	(form-data (w3m-history-plist-get :forms nil nil t))
 	(referer (w3m-history-plist-get :referer nil nil t)))
     (when arg
-      (setq w3m-current-image-status (not w3m-current-image-status)))
-    (if post-data
-	(if (y-or-n-p "Repost form data? ")
-	    (w3m-goto-url w3m-current-url 'reload nil post-data referer)
-	  (message ""))
+      (when form-data
+	(w3m-history-remove-properties '(:forms) nil nil t))
+      (when post-data
+	(setq post-data nil)
+	(w3m-history-remove-properties '(:post-data) nil nil t))
+      (setq w3m-current-forms nil))
+    (if (and post-data (y-or-n-p "Repost form data? "))
+	(w3m-goto-url w3m-current-url 'reload nil post-data referer)
       (w3m-goto-url w3m-current-url 'reload nil nil referer))))
 
 (defun w3m-redisplay-with-charset (&optional arg)
