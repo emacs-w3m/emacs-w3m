@@ -1,3 +1,9 @@
+2002-05-28  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-e21.el (w3m-ucs-to-char): New function.
+
+	* w3m-xmas.el (w3m-ucs-to-char): New function for XEmacs-21.5.
+
 2002-05-28  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* shimbun/sb-makanai.el (shimbun-makanai-scan-articles): Follow

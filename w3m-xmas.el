@@ -107,6 +107,10 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	(car codesys)
       codesys)))
 
+(when (fboundp 'unicode-to-char)
+  (defun w3m-ucs-to-char (codepoint)
+    (unicode-to-char codepoint)))
+
 ;;; Handle images:
 
 ;; Function which returns non-nil when the current display device can
