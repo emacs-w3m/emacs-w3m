@@ -282,19 +282,23 @@ An argument of nil means kill the current buffer."
       (kill-buffer buf)))
   (setq w3m-work-buffer-list nil))
 
+(defsubst w3m-current-title ()
+  "Return the title of the current buffer."
+  (cond
+   ((and (stringp w3m-current-title)
+	 (not (string= w3m-current-title "<no-title>")))
+    w3m-current-title)
+   ((stringp w3m-current-url)
+    (directory-file-name
+     (if (string-match "^[^/:]+:/+" w3m-current-url)
+	 (substring w3m-current-url (match-end 0))
+       w3m-current-url)))
+   (t "<no-title>")))
+
 (defsubst w3m-buffer-title (buffer)
   "Return the title of the buffer BUFFER."
   (with-current-buffer buffer
-    (cond
-     ((and (stringp w3m-current-title)
-	   (not (string= w3m-current-title "<no-title>")))
-      w3m-current-title)
-     ((stringp w3m-current-url)
-      (directory-file-name
-       (if (string-match "^[^/:]+:/+" w3m-current-url)
-	   (substring w3m-current-url (match-end 0))
-	 w3m-current-url)))
-     (t "<no-title>"))))
+    (w3m-current-title)))
 
 (defsubst w3m-buffer-number (buffer)
   (when (and (bufferp buffer)

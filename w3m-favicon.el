@@ -40,6 +40,7 @@
   (defvar w3m-current-url)
   (defvar w3m-favicon-image)
   (defvar w3m-icon-data)
+  (defvar w3m-modeline-favicon)
   (defvar w3m-profile-directory)
   (defvar w3m-use-favicon)
   (defvar w3m-work-buffer-name)
