@@ -149,7 +149,7 @@
 (defconst emacs-w3m-version
   (eval-when-compile
     (let ((rev "$Revision$"))
-      (and (string-match "\\.\\([0-9]+\\) \$$" rev)
+      (and (string-match "\\.\\([0-9]+\\) \\$\\'" rev)
 	   (format "1.3.%d"
 		   (- (string-to-number (match-string 1 rev)) 642)))))
   "Version number of this package.")
@@ -3854,7 +3854,12 @@ Return alist, whose elements are:
 	      (and v (w3m-time-parse-string v)))
 	    (or (when (string-match "\\`ftps?:" url)
 		  (cdr (assoc "w3m-current-url" headers)))
-		(cdr (assoc "location" headers))
+		(let ((v (cdr (assoc "location" headers))))
+		  ;; RFC2616 says that the field value of the Location
+		  ;; response-header consists of a single absolute
+		  ;; URI.  However, some broken servers return
+		  ;; relative URIs.
+		  (and v (w3m-expand-url v url)))
 		url)))))
 
 (defun w3m-w3m-dump-head (url handler)

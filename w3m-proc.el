@@ -332,27 +332,39 @@ handler."
   (w3m-process-kill-process (w3m-process-process process))
   (signal (car error-data) (cdr error-data)))
 
+(defun w3m-process-wait-process (process seconds)
+  "Wait for SECONDS seconds or until PROCESS will exit.
+Returns t when the specified process exit normally, otherwise returns
+nil."
+  (catch 'timeout
+    (let ((start (current-time)))
+      (while (or (w3m-static-if (or (featurep 'xemacs)
+				    (<= emacs-major-version 20))
+		     (sit-for 0 200 t)
+		   (accept-process-output (w3m-process-process process) 0 200))
+		 (eq 'run (process-status (w3m-process-process process))))
+	(and seconds
+	     (< seconds (w3m-time-lapse-seconds start (current-time)))
+	     (throw 'timeout nil)))
+      ;; The following line is necessary to avoid a process handling
+      ;; bug of Meadow1.  For more detail, see [emacs-w3m:06048].
+      (sit-for 0 50 t)
+      t)))
+
 (defun w3m-process-start-and-wait (w3m-current-process wait-function)
   (while (w3m-process-p w3m-current-process)
     (condition-case error
-	(let ((start (current-time))
-	      w3m-process-inhibit-quit inhibit-quit)
+	(let (w3m-process-inhibit-quit inhibit-quit)
 	  ;; No sentinel function is registered and the process
 	  ;; sentinel function is called from this macro, in order to
 	  ;; avoid the dead-locking which occurs when this macro is
 	  ;; called in the environment that `w3m-process-sentinel' is
 	  ;; evaluated.
 	  (w3m-process-start-process w3m-current-process t)
-	  (while (or (accept-process-output
-		      (w3m-process-process w3m-current-process) 0 0)
-		     (eq 'run
-			 (process-status
-			  (w3m-process-process w3m-current-process))))
-	    (when (and w3m-process-timeout
-		       (< w3m-process-timeout
-			  (w3m-time-lapse-seconds start (current-time))))
-	      (w3m-process-error-handler (cons 'w3m-process-timeout nil)
-					 w3m-current-process))))
+	  (unless (w3m-process-wait-process w3m-current-process
+					    w3m-process-timeout)
+	    (w3m-process-error-handler (cons 'w3m-process-timeout nil)
+				       w3m-current-process)))
       (quit (w3m-process-error-handler error w3m-current-process)))
     (w3m-process-sentinel (w3m-process-process w3m-current-process)
 			  "finished\n" t)

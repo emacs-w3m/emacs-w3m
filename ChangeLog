@@ -1,3 +1,17 @@
+2003-11-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-parse-header): Because a broken server returns a
+	relative URL in the location field, convert a URL to absolute.
+
+	* w3m-proc.el (w3m-process-wait-process): New function.
+	(w3m-process-start-and-wait): Call the above function.
+
+	* w3m-weather.el (w3m-weather-run-filter-functions): New function
+	to call filter functions asynchronously.
+	(w3m-about-weather): Call the above.
+	(w3m-weather-get-seikatu-sisu): Asynchronized.
+	(w3m-weather-insert-seikatu-sisu): Ditto.
+
 2003-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-initial-frames): Rename from `w3m-initial-frame';
