@@ -1,3 +1,12 @@
+2002-03-11  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-ucs.el (w3m-euc-japan-encoder): Treat japanese-jisx0208-1978
+	as japanese-jisx0208.
+
+	* shimbun/sb-digiko.el (shimbun-get-headers): Fixed regexp.
+	* shimbun/sb-h14m.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-mew.el (shimbun-get-headers): Ditto.
+
 2002-03-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-view-this-url, w3m-goto-url-new-session,

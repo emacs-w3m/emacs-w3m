@@ -53,7 +53,7 @@
       (goto-char (point-min))
       (while (and (if pages (< (incf count) pages) t)
 		  (re-search-forward
-		   "<A HREF=\"\\(mail[0-9]+\\.html\\)\">Prev Page</A>"
+		   "<a href=\"\\(mail[0-9]+\\.html\\)\">Prev Page</a>"
 		   nil t))
 	(setq url (shimbun-expand-url (match-string 1) url))
 	(erase-buffer)

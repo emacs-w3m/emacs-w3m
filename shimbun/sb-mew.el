@@ -73,7 +73,7 @@
       (shimbun-mhonarc-get-headers shimbun url headers)
       (while (and (if pages (< (incf count) pages) t)
 		  (re-search-forward
-		   "<A href=\"\\(mail[0-9]+.html\\)\">Prev Page</A>"
+		   "<A HREF=\"\\(mail[0-9]+.html\\)\">Prev Page</A>"
 		   nil t)
 		  (not (string-equal (match-string 1) aux)))
 	(setq aux (match-string 1)
