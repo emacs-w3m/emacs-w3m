@@ -1,6 +1,6 @@
 ;;; sb-muchy.el --- shimbun backend for Muchy's Palmware Review!
 
-;; Copyright (C) 2001 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2001, 2002 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Keywords: news
@@ -37,6 +37,9 @@
 (defvar shimbun-muchy-groups '("review"))
 (defvar shimbun-muchy-from-address "webmaster@muchy.com")
 (defvar shimbun-muchy-coding-system 'japanese-shift-jis-unix)
+(defvar shimbun-muchy-content-start "\n</table>\n")
+(defvar shimbun-muchy-content-end
+  "\n *<!-- VC active -->\n +<SCRIPT LANGUAGE=\"JavaScript\">")
 
 (defsubst shimbun-muchy-parse-time (str)
   (save-match-data
@@ -44,9 +47,6 @@
 	(list (string-to-number (match-string 1 str))
 	      (string-to-number (match-string 2 str))
 	      (string-to-number (match-string 3 str))))))
-
-;;(luna-define-method shimbun-reply-to ((shimbun shimbun-muchy))
-;;  "")
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-muchy)
 					 header &optional outbuf)
@@ -168,42 +168,59 @@
 	    (goto-char end))))
     headers))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-muchy) header)
-  ;; cleaning up
-  (let (case-fold-search)
-    (if (re-search-forward "</table>" nil t nil)
-	(progn
-	  (beginning-of-line)
-	  (delete-region (point-min) (point))))
-    (if (search-forward "<a name=\"webclip\">" nil t nil)
-	(delete-region (progn (beginning-of-line) (point))
-		       (and (re-search-forward "^$" nil t nil)
-			    (forward-line 1) (point))))
-    (if (re-search-forward "<!-- *VC layer *-->" nil t nil)
-	(progn
-	  (beginning-of-line)
-	  (delete-region
-	   (point)
-	   (progn (re-search-forward "<!-- *vc layer *-->" nil t nil)
-		  (point)))))
-    (if (re-search-forward "<!-- *VC active *-->" nil t nil)
-	(progn
-	  (beginning-of-line)
-	  (delete-region
-	   (point)
-	   (progn (re-search-forward "<!-- *vc active *-->" nil t nil)
-		  (point)))))
-    (if (search-backward "記事の内容への質問・フォローは" nil t nil)
-	(delete-region (progn (beginning-of-line) (point))
-		       (point-max))))
-  (goto-char (point-min))
-  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
-  (shimbun-decode-entities)
-  (goto-char (point-min))
-  (shimbun-header-insert shimbun header)
-  (insert "Content-Type: text/html; charset=ISO-2022-JP\nMIME-Version: 1.0\n\n")
-  (encode-coding-string
-   (buffer-string) (mime-charset-to-coding-system "ISO-2022-JP")))
+;; (luna-define-method shimbun-make-contents ((shimbun shimbun-muchy) header)
+;;   ;; cleaning up
+;;   (let (case-fold-search)
+;;     (if (re-search-forward "</table>" nil t nil)
+;; 	(progn
+;; 	  (beginning-of-line)
+;; 	  (delete-region (point-min) (point))))
+;;     (if (search-forward "<a name=\"webclip\">" nil t nil)
+;; 	(delete-region (progn (beginning-of-line) (point))
+;; 		       (and (re-search-forward "^$" nil t nil)
+;; 			    (forward-line 1) (point))))
+;;     (if (re-search-forward "<!-- *VC layer *-->" nil t nil)
+;; 	(progn
+;; 	  (beginning-of-line)
+;; 	  (delete-region
+;; 	   (point)
+;; 	   (progn (re-search-forward "<!-- *vc layer *-->" nil t nil)
+;; 		  (point)))))
+;;     (if (re-search-forward "<!-- *VC active *-->" nil t nil)
+;; 	(progn
+;; 	  (beginning-of-line)
+;; 	  (delete-region
+;; 	   (point)
+;; 	   (progn (re-search-forward "<!-- *vc active *-->" nil t nil)
+;; 		  (point)))))
+;;     (if (search-backward "記事の内容への質問・フォローは" nil t nil)
+;; 	(delete-region (progn (beginning-of-line) (point))
+;; 		       (point-max))))
+;;   (goto-char (point-min))
+;;   (subst-char-in-region (point-min) (point-max) ?\t ?  t)
+;;   (shimbun-decode-entities)
+;;   (goto-char (point-min))
+;;   (shimbun-header-insert shimbun header)
+;;   (insert "Content-Type: text/html; charset=ISO-2022-JP\nMIME-Version: 1.0\n\n")
+;;   (encode-coding-string
+;;    (buffer-string) (mime-charset-to-coding-system "ISO-2022-JP")))
+
+(luna-define-method shimbun-make-contents
+  :before ((shimbun shimbun-muchy) header)
+  (let ((case-fold-search t))
+    (when (search-forward "<a name=\"webclip\"></a>" nil t nil)
+      (delete-region (point) (search-forward "</center>")))
+    (when (re-search-forward
+	   "<tr>\n *<td colspan=\".+\\[ソフトをパームに追加するには？\\]</a></font></td>\n *</tr>"
+	   nil t nil)
+      (delete-region (match-beginning 0) (match-end 0)))
+    ;;(when (re-search-forward
+    ;;       "<A HREF=\".+ALT=\"Click here to visit our sponsor\""
+    ;;       nil t nil)
+    ;;  (delete-region (progn (beginning-of-line) (point))
+    ;;                 (search-forward "<!-- vc layer -->\n</body> ")))
+    )
+  (goto-char (point-min)))
 
 (provide 'sb-muchy)
 

@@ -1,3 +1,10 @@
+2002-06-05  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-muchy.el (shimbun-muchy-content-start): New variable.
+	(shimbun-muchy-content-end): Ditto.
+	(shimbun-make-contents): Just remove advertisements or so and
+	call next method.
+
 2002-06-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-e21.el (w3m-ucs-to-char): Don't define it when already defined.
