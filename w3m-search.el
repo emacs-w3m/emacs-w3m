@@ -147,15 +147,20 @@ ACTION is a string, the URL that performs a search.
 ACTION must contain a \"%s\", which is substituted by a query string.
 CODING is optional value which is coding system for query string.
 POST-DATA is optional value which is a string for POST method search engine.
-If omitted, `w3m-default-coding-system' is used.
-"
+If CODING is omitted, it defaults to `w3m-default-coding-system'."
   :group 'w3m
-  :type '(repeat
+  :type `(repeat
 	  (group :indent 2
 		 (string :format "Engine: %v\n" :size 0)
 		 (string :format "       Action: %v\n" :size 0)
 		 (coding-system :format "%t: %v\n" :size 0)
-		 (sexp :format "     PostData: %v\n"))))
+		 (checklist :inline t
+			    :entry-format ,(if (if (featurep 'xemacs)
+						   (device-on-window-system-p)
+						 window-system)
+					       "%b   %v"
+					     "%b  %v")
+			    (string :format "PostData: %v\n" :size 0)))))
 
 (defcustom w3m-search-default-engine "google"
   "*Name of the default search engine.
