@@ -1660,10 +1660,10 @@ This variable will be made buffer-local under Emacs 21 or XEmacs.")
   "Favicon image of the page.
 This variable will be made buffer-local under Emacs 21 or XEmacs.")
 
-(defvar w3m-initial-frame nil
-  "Variable used to keep the frame-id when the emacs-w3m window is popped
-up as a new frame.")
-(make-variable-buffer-local 'w3m-initial-frame)
+(defvar w3m-initial-frames nil
+  "Variable used to keep a list of the frame-IDs when emacs-w3m sessions
+are popped up as new frames.")
+(make-variable-buffer-local 'w3m-initial-frames)
 
 (defvar w3m-current-process nil "Current retrieving process of this buffer.")
 (make-variable-buffer-local 'w3m-current-process)
@@ -1959,10 +1959,7 @@ for a refresh indication")
   "Arguments for 'halfdump' execution of w3m.")
 
 (defconst w3m-halfdump-command-common-arguments
-  '("-T" "text/html" "-t" tab-width
-    "-cols" (if (< 0 w3m-fill-column)
-		w3m-fill-column		; fixed columns
-	      (+ (window-width) (or w3m-fill-column -1)))) ; fit for frame
+  '("-T" "text/html" "-t" tab-width "-cols" (w3m-display-width))
   "Common arguments for 'halfdump' execution of all w3m variants.")
 
 (defconst w3m-arrived-ignored-regexp
@@ -2359,13 +2356,17 @@ the tabs line."
   "Return non-nil if `w3m-pop-up-windows' is non-nil and the present
 situation allows it."
   (cond ((featurep 'xemacs)
-	 '(and w3m-pop-up-windows (not (w3m-use-tab-p))))
+	 '(and w3m-pop-up-windows
+	       (not (w3m-use-tab-p))
+	       (not (get-buffer-window w3m-select-buffer-name))))
 	((<= emacs-major-version 19)
-	 'w3m-pop-up-windows)
+	 '(and w3m-pop-up-windows
+	       (not (get-buffer-window w3m-select-buffer-name))))
 	(t
 	 '(and w3m-pop-up-windows
 	       (or (< emacs-major-version 21)
-		   (not (w3m-use-tab-p)))))))
+		   (not (w3m-use-tab-p)))
+	       (not (get-buffer-window w3m-select-buffer-name))))))
 
 (defun w3m-popup-buffer (buffer)
   "Pop up BUFFER as a new window or a new frame
@@ -2402,24 +2403,20 @@ according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
 	  (cond (other
 		 ;; Pop up another emacs-w3m buffer and switch to BUFFER.
 		 (pop-to-buffer other)
-		 ;; Change the value for BUFFER's `w3m-initial-frame'.
-		 (setq w3m-initial-frame
+		 ;; Change the value for BUFFER's `w3m-initial-frames'.
+		 (setq w3m-initial-frames
 		       (prog1
-			   w3m-initial-frame
+			   (copy-sequence w3m-initial-frames)
 			 (switch-to-buffer buffer))))
 		(frame
 		 ;; Pop up the existing frame which shows BUFFER.
-		 ;; Probably the window/frame for BUFFER was opened in the
-		 ;; past to visit a web site, so it is unnecessary to change
-		 ;; the value for `w3m-initial-frame'.
 		 (pop-to-buffer buffer))
 		(t
 		 ;; Pop up a new frame.
 		 (let* ((pop-up-frame-alist (w3m-popup-frame-parameters))
 			(pop-up-frame-plist pop-up-frame-alist))
 		   (pop-to-buffer buffer))
-		 (setq frame (window-frame (get-buffer-window buffer t))
-		       w3m-initial-frame frame)))
+		 (setq frame (window-frame (get-buffer-window buffer t)))))
 	  ;; Raise, select and focus the frame.
 	  (if (fboundp 'select-frame-set-input-focus)
 	      (select-frame-set-input-focus frame)
@@ -2436,6 +2433,29 @@ according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
   (when (and (fboundp 'select-frame-set-input-focus)
 	     (eq (symbol-function 'select-frame-set-input-focus) 'ignore))
     (fmakunbound 'select-frame-set-input-focus)))
+
+(defun w3m-add-w3m-initial-frames (&optional frame)
+  "Add a frame to `w3m-initial-frames' when it is newly created for the
+emacs-w3m session.  This function is added to the hook which is
+different with the version of Emacs as follows:
+
+XEmacs          create-frame-hook
+Emacs 20,21     after-make-frame-functions
+Emacs 19        after-make-frame-hook\
+"
+  (unless frame
+    (setq frame (selected-frame)))
+  (with-current-buffer (window-buffer (frame-first-window frame))
+    (when (eq major-mode 'w3m-mode)
+      (push frame w3m-initial-frames))))
+
+(add-hook (cond ((featurep 'xemacs)
+		 'create-frame-hook)
+		((>= emacs-major-version 20)
+		 'after-make-frame-functions)
+		((= emacs-major-version 19)
+		 'after-make-frame-hook))
+	  'w3m-add-w3m-initial-frames)
 
 (defun w3m-message (&rest args)
   "Alternative function of `message' for emacs-w3m."
@@ -5440,14 +5460,14 @@ a page in a new buffer with the correct width."
     (setq newname (buffer-name buffer)))
   (when (string-match "<[0-9]+>\\'" newname)
     (setq newname (substring newname 0 (match-beginning 0))))
-  (let (url images init-frame new)
+  (let (url images init-frames new)
     (save-current-buffer
       (set-buffer buffer)
       (setq url (or w3m-current-url
 		    (car (w3m-history-element (cadar w3m-history))))
 	    images w3m-display-inline-images
-	    init-frame (when (w3m-popup-frame-p)
-			 w3m-initial-frame))
+	    init-frames (when (w3m-popup-frame-p)
+			  (copy-sequence w3m-initial-frames)))
       ;;
       (set-buffer (setq new (generate-new-buffer newname)))
       (w3m-mode)
@@ -5456,7 +5476,7 @@ a page in a new buffer with the correct width."
 	(setq w3m-display-inline-images w3m-default-display-inline-images))
       ;; Make copies of `w3m-history' and `w3m-history-flat'.
       (w3m-history-copy buffer)
-      (setq w3m-initial-frame init-frame)
+      (setq w3m-initial-frames init-frames)
       (when empty
 	(w3m-clear-local-variables)))
     (unless just-copy
@@ -5507,7 +5527,7 @@ passed to the `w3m-quit' function (which see)."
       (setq cur (current-buffer))
       (if (w3m-use-tab-p)
 	  (w3m-next-buffer -1)
-	;; List buffers being shown in the other windows of the frame.
+	;; List buffers being shown in the other windows of the current frame.
 	(save-current-buffer
 	  (walk-windows (lambda (window)
 			  (set-buffer (setq buf (window-buffer window)))
@@ -5516,13 +5536,13 @@ passed to the `w3m-quit' function (which see)."
 			    (push buf bufs)))
 			'no-minibuf))
 	(cond ((= (1- num) (length bufs))
-	       ;; All the other buffers are shown in the frame.
+	       ;; All the other buffers are shown in the current frame.
 	       (select-window (get-buffer-window (prog2
 						     (w3m-next-buffer -1)
 						     (current-buffer)
 						   (delete-window)))))
 	      (bufs
-	       ;; Look for the buffer which is not shown in the frame.
+	       ;; Look for the buffer which is not shown in the current frame.
 	       (setq buf nil)
 	       (while (progn
 			(w3m-next-buffer -1)
@@ -5533,10 +5553,22 @@ passed to the `w3m-quit' function (which see)."
 		 ;; Go to the buffer which is most suitable to be called
 		 ;; the *previous* buffer.
 		 (select-window (get-buffer-window buf))))
-	      ((eq (selected-frame) w3m-initial-frame)
-	       ;; This frame was created to show this buffer.
+	      ((progn ;; List buffers being not shown anywhere.
+		 (setq bufs nil)
+		 (while buffers
+		   (unless (get-buffer-window (setq buf (pop buffers)) t)
+		     (push buf bufs)))
+		 bufs)
+	       (while (progn
+			(w3m-next-buffer -1)
+			(not (memq (current-buffer) bufs)))))
+	      ((memq (selected-frame) w3m-initial-frames)
+	       ;; Assume that this frame was created to show this buffer.
 	       (if (one-window-p t)
-		   (delete-frame)
+		   (progn
+		     (setq w3m-initial-frames
+			   (delq (selected-frame) w3m-initial-frames))
+		     (delete-frame))
 		 (delete-window)))
 	      (t
 	       (if (>= num 2)
@@ -5817,40 +5849,68 @@ is non-nil, a visible emacs-w3m buffer is preferred."
       buf)))
 
 (defun w3m-delete-frames-and-windows (&optional exception)
-  "Delete all frames and windows related to emacs-w3m buffers except for
-the buffer EXCEPTION.  There are some special cases; the sole frame in
-the display is not deleted; frames created not for emacs-w3m sessions
-are not deleted; frames showing not only emacs-w3m sessions but also
-other windows are not deleted."
+  "Delete all frames and windows related to emacs-w3m buffers.
+If EXCEPTION is a buffer, a window or a frame, it and related visible
+objects will not be deleted.  There are special cases; the following
+objects will not be deleted:
+
+1. The sole frame in the display device.
+2. Frames created not for emacs-w3m sessions.
+3. Frames showing not only emacs-w3m sessions but also other windows.\
+"
   (let ((buffers (delq exception (w3m-list-buffers t)))
-	buffer windows window frame flag)
+	buffer windows window frame one-window-p flag)
     (save-current-buffer
       (while buffers
 	(setq buffer (pop buffers)
-	      windows (get-buffer-window-list buffer 'no-minibuf t))
+	      windows (delq exception
+			    (get-buffer-window-list buffer 'no-minibuf t)))
 	(set-buffer buffer)
 	(while windows
 	  (setq window (pop windows)
 		frame (window-frame window))
-	  (when frame
-	    (if (and (eq frame w3m-initial-frame)
-		     (not (eq (next-frame) frame)))
-		(if (or (one-window-p t frame)
-			(progn
-			  (setq flag t)
-			  (walk-windows
-			   (lambda (window)
-			     (when flag
-			       (set-buffer (window-buffer window))
-			       (setq flag
-				     (not (memq major-mode
-						'(w3m-mode
-						  w3m-select-buffer-mode))))))
-			   'no-minibuf)
-			  flag))
-		    (delete-frame frame)
+	  (when (and frame
+		     (not (eq frame exception)))
+	    (setq one-window-p
+		  (w3m-static-if (featurep 'xemacs)
+		      (one-window-p t frame)
+		    ;; Emulate XEmacs version's `one-window-p'.
+		    (setq flag nil)
+		    (catch 'exceeded
+		      (walk-windows (lambda (w)
+				      (when (eq (window-frame w) frame)
+					(if flag
+					    (throw 'exceeded nil)
+					  (setq flag t))))
+				    'no-minibuf t)
+		      flag)))
+	    (if (and (memq frame w3m-initial-frames)
+		     (not (eq (next-frame frame) frame)))
+		(if (or
+		     ;; A frame having the sole window can be deleted.
+		     one-window-p
+		     ;; Also a frame having only windows for emacs-w3m
+		     ;; sessions or the buffer selection can be deleted.
+		     (progn
+		       (setq flag t)
+		       (walk-windows
+			(lambda (w)
+			  (when flag
+			    (if (eq w exception)
+				(setq flag nil)
+			      (set-buffer (window-buffer w))
+			      (setq flag (memq major-mode
+					       '(w3m-mode
+						 w3m-select-buffer-mode))))))
+			'no-minibuf)
+		       (set-buffer buffer)
+		       flag))
+		    (progn
+		      (setq w3m-initial-frames (delq frame
+						     w3m-initial-frames))
+		      (delete-frame frame))
 		  (delete-window window))
-	      (unless (one-window-p t frame)
+	      (unless one-window-p
 		(delete-window window)))))))))
 
 (defun w3m-quit (&optional force)
@@ -7033,6 +7093,17 @@ works on Emacs.
 	(t (concat "about://source/" w3m-current-url))))
     (w3m-message "Can't view page source")))
 
+(defun w3m-display-width ()
+  "Return the maximum width which should display lines within the value."
+  (if (< 0 w3m-fill-column)
+      w3m-fill-column
+    (+ (if (and w3m-select-buffer-horizontal-window
+		(get-buffer-window w3m-select-buffer-name))
+	   ;; Show pages as if there is no selection window.
+	   (frame-width)
+	 (window-width))
+       (or w3m-fill-column -1))))
+
 (defun w3m-make-separator ()
   (if (string= w3m-language "Japanese")
       (w3m-static-if (boundp 'MULE)
@@ -7042,20 +7113,11 @@ works on Emacs.
 	    (with-temp-buffer
 	      (insert-char (make-char (symbol-value 'lc-jp)
 				      40 44)
-			   (/ (if (< 0 w3m-fill-column)
-				  w3m-fill-column
-				(+ (window-width) (or w3m-fill-column -1)))
-			      2))
+			   (/ (w3m-display-width) 2))
 	      (buffer-string)))
-	(make-string (/ (if (< 0 w3m-fill-column)
-			    w3m-fill-column
-			  (+ (window-width) (or w3m-fill-column -1)))
-			2)
+	(make-string (/ (w3m-display-width) 2)
 		     (make-char 'japanese-jisx0208 40 44)))
-    (make-string (if (< 0 w3m-fill-column)
-		     w3m-fill-column
-		   (+ (window-width) (or w3m-fill-column -1)))
-		 ?-)))
+    (make-string (w3m-display-width) ?-)))
 
 (defun w3m-about-header (url &optional no-decode no-cache &rest args)
   (when (string-match "\\`about://header/" url)
@@ -7222,10 +7284,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
 (defun w3m-about-db-history (url &rest args)
   (let ((start 0)
 	(size nil)
-	(width (- (if (< 0 w3m-fill-column)
-		      w3m-fill-column
-		    (+ (window-width) (or w3m-fill-column -1)))
-		  18))
+	(width (- (w3m-display-width) 18))
 	(now (current-time))
 	title time alist prev next page total)
     (when (string-match "\\`about://db-history/\\?" url)
@@ -7402,6 +7461,7 @@ buffers.  User can type following keys:
     (when (get-buffer-window w3m-select-buffer-name)
       (delete-windows-on w3m-select-buffer-name)))
   (cond ((eq major-mode 'w3m-mode)
+	 (w3m-delete-frames-and-windows (selected-window))
 	 (unless (get-buffer-window w3m-select-buffer-name)
 	   (delete-other-windows)))
 	((eq major-mode 'w3m-select-buffer-mode))
@@ -7613,8 +7673,7 @@ menu line."
     ;; The selection buffer will be updated automatically because
     ;; `w3m-copy-buffer' calls `w3m-select-buffer-update' by way of
     ;; `w3m-goto-url'.
-    (let (w3m-pop-up-windows)
-      (w3m-copy-buffer))
+    (w3m-copy-buffer)
     (select-window window)))
 
 (defun w3m-select-buffer-delete-buffer (&optional force)
@@ -7625,13 +7684,7 @@ passed to the `w3m-quit' function (which see)."
   (interactive "P")
   (w3m-select-buffer-show-this-line)
   (if (= 1 (count-lines (point-min) (point-max)))
-      (let ((config (current-window-configuration)))
-	(select-window (get-buffer-window (w3m-select-buffer-current-buffer)))
-	(delete-other-windows)
-	(unwind-protect
-	    (w3m-quit force)
-	  (when (w3m-alive-p)
-	    (set-window-configuration config))))
+      (w3m-quit force)
     (let ((buffer (w3m-select-buffer-current-buffer)))
       (forward-line -1)
       (w3m-process-stop buffer)
@@ -7763,7 +7816,13 @@ w3m-mode buffers."
 				     '(help-echo
 				       "mouse-2 prompts to input URL"))))
       (setq start (point))
-      (insert-char ?\  (max 0 (- (window-width) (current-column) 1)))
+      (insert-char ?\  (max
+			0
+			(- (if (and w3m-select-buffer-horizontal-window
+				    (get-buffer-window w3m-select-buffer-name))
+			       (frame-width)
+			     (window-width))
+			   (current-column) 1)))
       (w3m-add-text-properties start (point)
 			       `(face w3m-header-line-location-content-face))
       (unless (eolp)

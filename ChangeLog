@@ -1,5 +1,30 @@
 2003-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-initial-frames): Rename from `w3m-initial-frames';
+	keep a list of the frame-IDs.
+	(w3m-popup-window-p): Return nil if there is the selection window.
+	(w3m-popup-buffer): Copy a copy of `w3m-initial-frames' from
+	a visible emacs-w3m buffer to a popped-up emacs-w3m buffer; don't
+	set `w3m-initial-frames' for newly created frames there.
+	(w3m-add-w3m-initial-frames): New function; add it to
+	`create-frame-hook', `after-make-frame-functions' or
+	`after-make-frame-hook'.
+	(w3m-copy-buffer): Copy a copy of `w3m-initial-frames'.
+	(w3m-delete-buffer): Pop up another emacs-w3m buffer instead of
+	deleting a frame; remove a deleted frame from `w3m-initial-frames'.
+	(w3m-delete-frames-and-windows): Also allow a window or a frame as
+	the optional argument; emulate XEmacs version's `one-window-p'.
+	(w3m-select-buffer): Delete other emacs-w3m frames and windows.
+	(w3m-select-buffer-copy-buffer): Revert the 2003-11-11 change.
+	(w3m-select-buffer-delete-buffer): Simplify.
+
+	(w3m-display-width): New function for showing pages as if there is
+	no selection window.
+	(w3m-halfdump-command-common-arguments): Use it.
+	(w3m-make-separator): Use it.
+	(w3m-about-db-history): Use it.
+	(w3m-header-line-insert): Work as if there is no selection window.
+
 	* w3mhack.el (w3mhack-generate-colon-keywords-file): Preset
 	`:strike-through' and `:strikethru' which aren't supported by the
 	old cus-face.el.
