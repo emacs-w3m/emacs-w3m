@@ -4569,7 +4569,7 @@ makanai.f1news
 @item @uref{http://www.ksky.ne.jp/~tahara/f1/, F1 FAN}
 f1fan.news
 
-@item @uref{http://motorsports.nifty.com/, @nifty:motorsports}
+@item @uref{http://motorsports.nifty.com/, @@nifty:motorsports}
 msports-nifty.F1 msports-nifty.IRL msports-nifty.WRC
 msports-nifty.Europe msports-nifty.USA
 
