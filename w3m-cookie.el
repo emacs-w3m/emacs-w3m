@@ -37,6 +37,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'cl))
+
 (require 'w3m-util)
 (require 'w3m)
 
@@ -301,7 +304,6 @@ If ask, ask user whether accept bad cookies or not."
 ;;; Version 0 cookie.
 (defun w3m-cookie-1-acceptable-p (host domain)
   (let ((numdots 0)
-	(tmp domain)
 	(last nil)
 	(case-fold-search t)
 	(mindots 3))

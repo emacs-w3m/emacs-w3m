@@ -184,9 +184,9 @@ slow: Makefile
 very-slow: clean keywords Makefile
 	@args="-q -no-site-file -batch";\
 	args="$$args -l $(srcdir)/attic/addpath.el $(ADDITIONAL_LOAD_PATH)";\
-	echo "=========================================";\
-	echo "Compiling 1st stage-----without elc files";\
-	echo "=========================================";\
+	echo "=============================================";\
+	echo "Compiling the 1st stage-----without elc files";\
+	echo "=============================================";\
 	for i in `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
 	  do\
 	  j=`echo $$i| sed 's/elc$$/el/g'`;\
@@ -198,9 +198,9 @@ very-slow: clean keywords Makefile
 	  j=`echo $$i| sed 's/elx$$/elc/g'`;\
 	  mv $$i $$j;\
 	done;\
-	echo "==========================================";\
-	echo "Compiling 2nd stage-----with all elc files";\
-	echo "==========================================";\
+	echo "==============================================";\
+	echo "Compiling the 2nd stage-----with all elc files";\
+	echo "==============================================";\
 	for i in `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
 	  do\
 	  j=`echo $$i| sed 's/elc$$/el/g'`;\

@@ -37,6 +37,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'cl))
+
 (require 'w3m-util)
 (require 'w3m)
 
@@ -501,7 +504,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	      (setq form (w3m-form-new
 			  (or method "get")
 			  (or action (and w3m-current-url
-					  (string-match 
+					  (string-match
 					   w3m-url-components-regexp
 					   w3m-current-url)
 					  (substring

@@ -685,7 +685,8 @@ If nil, redirections are followed by the w3m command.  Don't set it to
 nil if you allow to use cookies (i.e., you have set `w3m-use-cookies'
 to non-nil) since cookies may be shared among many redirected pages."
   :group 'w3m
-  :type '(integer :size 0))
+  :type '(radio (const :format "Ignore redirections " nil)
+		(integer :size 0)))
 
 (defcustom w3m-redirect-with-get t
   "*If non-nil, use the GET method after redirection when a server

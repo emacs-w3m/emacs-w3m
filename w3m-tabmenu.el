@@ -1,6 +1,6 @@
 ;;; w3m-tabmenu.el --- Functions for TAB menu browsing
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Hideyuki SHIRAI    <shirai@meadowy.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -31,6 +31,9 @@
 ;;    http://emacs-w3m.namazu.org/
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'w3m-util)
 (require 'w3m)
@@ -101,7 +104,7 @@
 
 (defun w3m-tab-menubar-make-items (&optional nomenu)
   "Create w3m tab menu items."
-  (let ((i 0) (current (current-buffer)) (title))
+  (let ((i 0) (current (current-buffer)))
     (mapcar
      (lambda (buffer)
        (if nomenu
