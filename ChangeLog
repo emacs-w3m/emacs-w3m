@@ -1,3 +1,8 @@
+2002-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-news-headers): Bind
+	unbound var `body'.
+
 2002-04-21  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-mailman.el: New file.
