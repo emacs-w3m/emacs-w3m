@@ -1,5 +1,17 @@
 2003-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-antenna.el (w3m-antenna): Pass the interactive flag to
+	`w3m-goto-url'.
+	* w3m-bookmark.el (w3m-bookmark-view): Ditto.
+	* w3m-cookie.el (w3m-cookie): Ditto.
+	* w3m-dtree.el (w3m-dtree): Ditto.
+	* w3m-namazu.el (w3m-namazu): Ditto.
+	* w3m-perldoc.el (w3m-perldoc): Ditto.
+	* w3m.el (w3m-gohome): Ditto.
+	(w3m-browse-url): Ditto.
+
+2003-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-rendering-half-dump): Move point to the end of the
 	region in order to avoid a bug of `call-process-region' in XEmacs
 	21.5.7+ (see the comment).

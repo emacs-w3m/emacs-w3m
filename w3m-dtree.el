@@ -228,17 +228,20 @@ over the 'w3m-dtree-directory-depth'."
     "text/html"))
 
 ;;;###autoload
-(defun w3m-dtree (allfiles path)
+(defun w3m-dtree (allfiles path &optional interactive-p)
   "Display directory tree on local file system.
 If called with 'prefix argument', display all directorys and files."
-  (interactive "P\nDDtree directory: ")
+  (interactive (list current-prefix-arg
+		     (read-directory-name "Dtree directory: ")
+		     t)) ;; interactive-p
   (if w3m-dtree-default-allfiles
       (setq allfiles (not allfiles)))
   (w3m-goto-url (format "about://dtree%s%s"
 			(w3m-dtree-expand-file-name
 			 (file-name-as-directory
 			  (expand-file-name path)))
-			(if allfiles "?allfiles=true" ""))))
+			(if allfiles "?allfiles=true" ""))
+		nil nil nil nil nil nil interactive-p))
 
 (provide 'w3m-dtree)
 ;;; w3m-dtree.el ends here
