@@ -1,3 +1,8 @@
+2004-06-14  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* w3m.el (TopLevel): Display meaningful message when w3m-command
+	is nil.
+
 2004-06-21  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-fontify): Call `w3m-replace-symbol' before
