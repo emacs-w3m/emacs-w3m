@@ -196,7 +196,7 @@ to remove some obsolete variables in the first argument VARLIST."
 	(with-temp-file manifest
 	  (insert "pkginfo/MANIFEST.w3m\n")
 	  (when (file-exists-p (expand-file-name "ChangeLog" lisp-dir))
-	    (insert "lisp/w3m/ChangeLog"))
+	    (insert "lisp/w3m/ChangeLog\n"))
 	  (dolist (el els)
 	    (insert "lisp/w3m/" el "\n")
 	    (when (member (concat el "c") elcs)
