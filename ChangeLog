@@ -1,3 +1,12 @@
+2000-09-18  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+	
+	* w3m.el (w3m-exec): Get title correctly within -halfdump format
+	of w3m.
+	(w3m-mouse-view-this-url): New function to view page by clicking
+	mouse middle button.
+	(w3m-mode-map): Assign mouse middle button to view page.
+	(w3m): Change mode-line spec to show title of current page.
+
 2000-09-18  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el: Add authors.
