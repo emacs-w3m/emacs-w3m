@@ -1,3 +1,9 @@
+2004-02-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-active-region-or-url-at-point): Move the point
+	backward from the end of the active region instead of moving it
+	forward, in order to avoid enlarging the region.
+
 2004-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-active-region-or-url-at-point): Find a url-like
@@ -16,9 +22,8 @@
 2004-02-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-favicon.el (w3m-favicon-retrieve): Because some broken
-	servers provides empty contents as their favicons, check the
-	length of the retrieved content, before calling
-	`w3m-favicon-convert'.
+	servers provide empty contents as their favicons, check the length
+	of the retrieved content, before calling `w3m-favicon-convert'.
 
 2004-02-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
