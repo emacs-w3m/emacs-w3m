@@ -9,7 +9,7 @@
 2001-11-16  OKAZAKI Tetsurou <okazaki@be.to>
 
 	* w3m.el (w3m-type): Use "w3m-m17n" if exists.
-	
+
 2001-12-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-mailto-url): Use the property `composefunc' to
@@ -1778,7 +1778,7 @@
 	Add new section 2. c), 2. e) about APEL, FLIM, shimbun library.
 	* README: Ditto.
 
-	* FAQ.ja (Q. 動作する Emacs は?): Add description about where to
+	* FAQ.ja (Q. ~~~~ Emacs ~?): Add description about where to
 	get APEL.
 
 2001-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
