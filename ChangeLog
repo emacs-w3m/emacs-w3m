@@ -2,9 +2,11 @@
 
 	* shimbun/sb-sankei.el: New file.
 
-	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Simplify the
-	regexp for the kansai-special group; indicate the jinmin-nippou
-	in subject lines in the international group.
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Simplify the
+	default regexp and the regexp for the sports group.
+	(shimbun-asahi-get-headers): Simplify the regexp for the
+	kansai-special group; indicate the jinmin-nippou in subject lines
+	in the international group.
 
 2003-09-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
