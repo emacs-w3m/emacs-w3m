@@ -4330,7 +4330,7 @@ subscribe ANATANO Namae
 @item
 土屋 雅稔
 @item
-中島 幹夫 <minakaji@@namazu.org>
+中島 幹夫
 @item
 中山 洋一
 @item

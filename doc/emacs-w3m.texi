@@ -4133,7 +4133,7 @@ in its body to @samp{emacs-w3m-ctl@@namazu.org}.
 @item
 Romain FRANCOISE
 @item
-NAKAJIMA Mikio <minakaji@@namazu.org>
+NAKAJIMA Mikio
 @item
 Yoichi NAKAYAMA
 @item
