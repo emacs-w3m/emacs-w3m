@@ -64,6 +64,7 @@ It fixes an XEmacs 21.5 bug.  Advised by emacs-w3m."
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
 (eval-when-compile
+  (defvar w3m-coding-system)
   (defvar w3m-current-title)
   (defvar w3m-current-url)
   (defvar w3m-default-coding-system)
@@ -124,14 +125,15 @@ NOTE: This function is slightly modified from `make-ccl-coding-system'
 
 (w3m-xmas-define-w3m-make-ccl-coding-system)
 
-(unless (fboundp 'coding-system-category)
-  (defalias 'coding-system-category 'ignore))
-
-(unless (fboundp 'coding-system-list)
-  (defalias 'coding-system-list 'ignore))
-
-(unless (fboundp 'coding-system-name)
-  (defalias 'coding-system-name 'ignore))
+(eval-and-compile
+  (dolist (fn '(coding-priority-list
+		coding-system-category
+		coding-system-list
+		coding-system-name
+		set-coding-category-system
+		set-coding-priority-list))
+    (unless (fboundp fn)
+      (defalias fn 'ignore))))
 
 ;; If pccl.elc has been mis-compiled for XEmacs with MULE, the macro
 ;; `define-ccl-program' wouldn't be an empty macro because of advice.
@@ -166,6 +168,48 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 			      start end (nreverse categories))))
 	(car codesys)
       codesys)))
+
+(defun w3m-decode-coding-string-with-priority (str coding)
+  "Decode the string STR which is encoded in CODING.
+If CODING is a list, look for the coding system using it as a priority
+list."
+  (if (listp coding)
+      (with-temp-buffer
+	(insert str)
+	(let* ((orig-category-list (coding-priority-list))
+	       (orig-category-systems (mapcar #'coding-category-system
+					      orig-category-list))
+	       codesys category priority-list)
+	  (unwind-protect
+	      (progn
+		(while coding
+		  (setq codesys (car coding)
+			coding (cdr coding)
+			category (or (coding-system-category codesys)
+				     (coding-system-name codesys)))
+		  (unless (assq category priority-list)
+		    (set-coding-category-system category codesys)
+		    (push category priority-list)))
+		(set-coding-priority-list (nreverse priority-list))
+		;; `detect-coding-region' always returns `undecided'
+		;; ignoring `priority-list' in XEmacs 21.5-b19, but
+		;; that's okay.
+		(when (consp (setq codesys (detect-coding-region
+					    (point-min) (point-max))))
+		  (setq codesys (car codesys)))
+		(decode-coding-region (point-min) (point-max)
+				      (or codesys
+					  w3m-default-coding-system
+					  w3m-coding-system
+					  'iso-2022-7bit))
+		(buffer-string))
+	    (set-coding-priority-list orig-category-list)
+	    (while orig-category-list
+	      (set-coding-category-system (car orig-category-list)
+					  (car orig-category-systems))
+	      (setq orig-category-list (cdr orig-category-list)
+		    orig-category-systems (cdr orig-category-systems))))))
+    (decode-coding-string str coding)))
 
 (when (and (not (fboundp 'w3m-ucs-to-char))
 	   (fboundp 'unicode-to-char)

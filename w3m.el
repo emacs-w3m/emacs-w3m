@@ -2778,12 +2778,21 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 	     (t " "))
 	    buf)
       (setq start (match-end 0)))
-    (decode-coding-string
-     (apply 'concat (nreverse (cons (substring str start) buf)))
-     (or coding
-	 w3m-default-coding-system
-	 w3m-coding-system
-	 'iso-2022-7bit))))
+    (setq str (apply 'concat (nreverse (cons (substring str start) buf))))
+    (w3m-static-if (and (featurep 'xemacs)
+			(featurep 'mule))
+	(w3m-decode-coding-string-with-priority str coding)
+      (when (listp coding)
+	(setq coding
+	      (with-temp-buffer
+		(set-buffer-multibyte nil)
+		(insert str)
+		(w3m-detect-coding-region (point-min) (point-max) coding))))
+      (decode-coding-string str
+			    (or coding
+				w3m-default-coding-system
+				w3m-coding-system
+				'iso-2022-7bit)))))
 
 (defsubst w3m-url-transfer-encode-string (url &optional coding)
   "Encode non-ascii characters in URL into the sequence of escaped octets.
