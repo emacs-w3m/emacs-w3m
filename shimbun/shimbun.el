@@ -36,6 +36,7 @@
 ;; shimbun-close-group
 ;; shimbun-headers
 ;; shimbun-header
+;; shimbun-search-id
 ;; shimbun-article
 ;; shimbun-close
 
@@ -71,10 +72,10 @@
 
 (eval-and-compile
   (luna-define-class shimbun ()
-		     (server current-group groups headers hash
-			     x-face x-face-alist
-			     url coding-system from-address
-			     content-start content-end use-entire-index))
+		     (mua server current-group groups headers hash
+			  x-face x-face-alist
+			  url coding-system from-address
+			  content-start content-end use-entire-index))
   (luna-define-internal-accessors 'shimbun))
 
 (defvar shimbun-x-face
@@ -84,6 +85,12 @@
 
 (defvar shimbun-hash-length 997
   "Length of header hashtable.")
+
+;;; Shimbun MUA
+(luna-define-class shimbun-mua () ())
+
+(luna-define-generic shimbun-mua-search-id (mua id)
+  "Return non-nil when MUA found a message structure which corresponds to ID.")
 
 ;;; emacs-w3m implementation of url retrieval and entity decoding.
 (require 'w3m)
@@ -246,6 +253,11 @@
       (if (boundp sym)
 	  (symbol-value sym)))))
 
+(defun shimbun-search-id (shimbun id)
+  "Return non-nil when MUA found a message structure which corresponds to ID."
+  (when (shimbun-mua-internal shimbun)
+    (shimbun-mua-search-id (shimbun-mua-internal shimbun) id)))
+
 (luna-define-generic shimbun-article (shimbun id &optional outbuf)
   "Retrieve a SHIMBUN article which corresponds to ID to the OUTBUF.
 If OUTBUF is not specified, article is retrieved to the current buffer.")
@@ -312,8 +324,8 @@ HEADER is a header structure obtained via `shimbun-get-headers'.")
 (defun shimbun-mime-encode-string (string)
   (mapconcat
    #'identity
-   (split-string (eword-encode-string
-		  (shimbun-decode-entities-string string)) "\n")
+   (split-string (or (eword-encode-string
+		      (shimbun-decode-entities-string string)) "") "\n")
    ""))
 
 (defun shimbun-make-date-string (year month day &optional time)

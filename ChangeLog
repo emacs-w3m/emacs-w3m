@@ -1,5 +1,11 @@
 2001-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* shimbun/shimbun.el (shimbun): Added `mua' slot.
+	(shimbun-mua): New class.
+	(shimbun-mua-search-id): New method.
+	(shimbun-search-id): New function.
+	(shimbun-mime-encode-string): Fixed problem when string is "" or nil.
+
 	* shimbun/sb-mhonarc.el (shimbun-make-contents):
 	Process content as text/html.
 
