@@ -1,3 +1,8 @@
+2002-01-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-search.el (w3m-search-word-at-point): New option.
+	(w3m-search): Refer `w3m-search-word-at-point'.
+
 2002-01-31  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-hns.el (shimbun-hns-expiration-days): New variable.
