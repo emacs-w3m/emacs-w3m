@@ -83,7 +83,9 @@
   "Default X-Face field for shimbun.")
 
 ;;; Shimbun MUA
-(luna-define-class shimbun-mua () ())
+(eval-and-compile
+  (luna-define-class shimbun-mua () (shimbun))
+  (luna-define-internal-accessors 'shimbun-mua))
 
 (luna-define-generic shimbun-mua-search-id (mua id)
   "Return non-nil when MUA found a message structure which corresponds to ID.")
@@ -197,23 +199,27 @@
 Optional MUA is a `shimbun-mua' instance."
   (require (intern (concat "sb-" server)))
   (let (url groups coding-system from-address content-start content-end
-	    x-face-alist)
+	    x-face-alist shimbun)
     (dolist (attr shimbun-attributes)
       (set attr
 	   (symbol-value (intern-soft
 			  (concat "shimbun-" server "-" (symbol-name attr))))))
-    (luna-make-entity (intern (concat "shimbun-" server))
-		      :mua mua
-		      :server server
-		      :url url
-		      :groups groups
-		      :coding-system coding-system
-		      :from-address from-address
-		      :content-start content-start
-		      :content-end content-end
-		      :use-entire-index
-		      (if mua (shimbun-mua-use-entire-index mua))
-		      :x-face-alist x-face-alist)))
+    (setq shimbun (luna-make-entity (intern (concat "shimbun-" server))
+				    :mua mua
+				    :server server
+				    :url url
+				    :groups groups
+				    :coding-system coding-system
+				    :from-address from-address
+				    :content-start content-start
+				    :content-end content-end
+				    :use-entire-index
+				    (if mua
+					(shimbun-mua-use-entire-index mua))
+				    :x-face-alist x-face-alist))
+    (when mua
+      (shimbun-mua-set-shimbun-internal mua shimbun))
+    shimbun))
 
 (defun shimbun-groups (shimbun)
   "Return a list of groups which are available in the SHIMBUN."

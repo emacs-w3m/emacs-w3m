@@ -1,3 +1,9 @@
+2001-04-06  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun-mua): Added slot `shimbun'.
+	Define internal accessor.
+	(shimbun-open): Setup shimbun slot.
+
 2001-04-06  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-edit-current-url): New command.
