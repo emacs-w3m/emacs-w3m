@@ -11,9 +11,6 @@ SHELL        = /bin/sh
 @SET_MAKE@
 EMACS   = @EMACS@
 FLAGS   = -q -no-site-file -batch -l w3mhack.el $(ADDITIONAL_LOAD_PATH)
-ECC     = $(EMACS) $(FLAGS) -f batch-byte-compile
-
-MODULES = $(EMACS) $(FLAGS) -f w3mhack-examine-modules
 
 PACKAGE = w3m_el
 TARBALL = $(PACKAGE)-$(VERSION).tar.gz
@@ -59,10 +56,14 @@ install-package:
 	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
 	fi
 
-dist:
-	autoconf
-	./configure
+dist: Makefile
 	$(MAKE) VERSION=`$(EMACS) $(FLAGS) -f w3mhack-version 2>/dev/null` tarball
+
+Makefile: Makefile.in configure
+	./configure
+
+configure: configure.in aclocal.m4
+	autoconf
 
 tarball:
 	-rm -f $(TARBALL) `basename $(TARBALL) .gz`
@@ -78,4 +79,4 @@ clean:
 	-rm -rf *~ *.elc $(PACKAGE)*
 
 distclean: clean
-	-rm -f configure config.log config.status config.cache Makefile
+	-rm -f config.log config.status config.cache Makefile

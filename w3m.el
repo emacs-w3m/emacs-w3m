@@ -236,7 +236,7 @@ width using expression (+ (frame-width) VALUE)."
 (defcustom w3m-home-page
   (or (getenv "HTTP_HOME")
       (getenv "WWW_HOME")
-      "http://namazu.org/~tsuchiya/emacs-w3m/")
+      "about:")
   "*Home page of w3m.el."
   :group 'w3m
   :type 'string)
@@ -601,7 +601,7 @@ for a charset indication")
 
 (eval-and-compile
   (defconst w3m-html-string-regexp
-    "\\(\"\\(\\([^\"\\\\]+\\|\\\\.\\)+\\)\"\\|[^\"<> \t\r\f\n]*\\)"
+    "\\(\"\\(\\([^\"\\\\]+\\|\\\\.\\)+\\)\"\\|'\\(\\([^\'\\\\]+\\|\\\\.\\)+\\)'\\|[^\"\'<> \t\r\f\n]*\\)"
     "Regexp used in parsing to detect string."))
 
 (defconst w3m-halfdump-command-arguments
@@ -655,10 +655,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 
 (defsubst w3m-anchor (&optional point)
   (get-text-property (or point (point)) 'w3m-href-anchor))
-
 (defsubst w3m-image (&optional point)
   (get-text-property (or point (point)) 'w3m-image))
-
 (defsubst w3m-action (&optional point)
   (get-text-property (or point (point)) 'w3m-action))
 
@@ -888,9 +886,52 @@ If N is negative, last N items of LIST is returned."
 	  (append (encode-coding-string str (or coding 'iso-2022-jp))
 		  nil))))
 
+(put 'w3m-parse-attributes 'lisp-indent-function '1)
+(put 'w3m-parse-attributes 'edebug-form-spec '(form))
+(defmacro w3m-parse-attributes (attributes &rest form)
+  (` (let ((,@ (mapcar
+		(lambda (attr)
+		  (if (listp attr) (car attr) attr))
+		attributes)))
+       (while
+	   (cond
+	    (,@ (mapcar
+		 (lambda (attr)
+		   (or (symbolp attr)
+		       (and (listp attr)
+			    (<= (length attr) 2)
+			    (symbolp (car attr)))
+		       (error "Internal error, type mismatch."))
+		   (let ((sexp (quote
+				(or (match-string 2)
+				    (match-string 4)
+				    (match-string 1)))))
+		     (when (listp attr)
+		       (cond
+			((eq (nth 1 attr) :case-ignore)
+			 (setq sexp (list 'downcase sexp)))
+			((eq (nth 1 attr) :integer)
+			 (setq sexp (list 'string-to-number sexp)))
+			((nth 1 attr)
+			 (error "Internal error, unknown modifier.")))
+		       (setq attr (car attr)))
+		     (` ((looking-at
+			  (, (format "%s[ \t\r\f\n]*=[ \t\r\f\n]*%s"
+				     (symbol-name attr)
+				     w3m-html-string-regexp)))
+			 (setq (, attr) (, sexp))))))
+		 attributes))
+	    ((looking-at
+	      (, (concat "[A-z]*[ \t\r\f\n]*=[ \t\r\f\n]*" w3m-html-string-regexp))))
+	    ((looking-at "[^<> \t\r\f\n]+")))
+	 (goto-char (match-end 0))
+	 (skip-chars-forward " \t\r\f\n"))
+       (skip-chars-forward "^>")
+       (forward-char)
+       (,@ form))))
+
 
 ;;; HTML character entity handling:
-
 (defun w3m-entity-db-setup ()
   ;; initialise entity database (obarray)
   (setq w3m-entity-db (make-vector w3m-entity-db-size 0))
@@ -948,46 +989,31 @@ If N is negative, last N items of LIST is returned."
 
 (defun w3m-fontify-anchors ()
   "Fontify anchor tags in this buffer which contains half-dumped data."
-  ;; Delete excessive `hseq' elements of anchor tags.
   (goto-char (point-min))
-  (while (re-search-forward "<a\\( hseq=\"[-0-9]+\"\\)" nil t)
-    (delete-region (match-beginning 1) (match-end 1)))
-  ;; Re-ordering anchor elements.
-  (goto-char (point-min))
-  (let (href)
-    (while (re-search-forward "<a\\([ \t\n]\\)[^>]+[ \t\n]href=\\([\"']?[^\"' >]*[\"']?\\)" nil t)
-      (setq href (buffer-substring (match-beginning 2) (match-end 2)))
-      (delete-region (match-beginning 2) (match-end 2))
-      (goto-char (match-beginning 1))
-      (insert " href=" href)))
-  ;; Fontify anchor tags.
-  (goto-char (point-min))
-  (while (re-search-forward
-	  "<a\\([ \t\n]+href=[\"']?\\([^\"' >]*\\)[\"']?\\)?\\([ \t\n]+name=\"?\\([^\" >]*\\)\"?\\)?[^>]*>"
-	  nil t)
-    (let ((url (match-string 2))
-	  (tag (match-string 4))
-	  (start (match-beginning 0))
+  (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
+    (let ((start (match-beginning 0))
 	  (end))
-      (delete-region start (match-end 0))
-      (cond (url
-	     (when (search-forward "</a>" nil t)
-	       (delete-region (setq end (match-beginning 0)) (match-end 0))
-	       (setq url (w3m-expand-url (w3m-decode-anchor-string url) w3m-current-url))
-	       (put-text-property start end 'face
-				  (if (w3m-arrived-p url)
-				      'w3m-arrived-anchor-face
-				    'w3m-anchor-face))
-	       (put-text-property start end 'w3m-href-anchor url)
-	       (put-text-property start end 'mouse-face 'highlight)
-	       (when tag
-		 (put-text-property start end 'w3m-name-anchor tag))))
-	    (tag
-	     (when (re-search-forward "<\\|\n" nil t)
-	       (setq end (match-beginning 0))
-	       (when (= start end)
-		 (setq end (min (1+ end) (point-max))))
-	       (put-text-property start end 'w3m-name-anchor tag)))))))
+      (w3m-parse-attributes (href name)
+	(delete-region start (point))
+	(cond
+	 (href
+	  (when (search-forward "</a>" nil t)
+	    (delete-region (setq end (match-beginning 0)) (match-end 0))
+	    (setq href (w3m-expand-url (w3m-decode-anchor-string href) w3m-current-url))
+	    (put-text-property start end 'face
+			       (if (w3m-arrived-p href)
+				   'w3m-arrived-anchor-face
+				 'w3m-anchor-face))
+	    (put-text-property start end 'w3m-href-anchor href)
+	    (put-text-property start end 'mouse-face 'highlight)
+	    (when name
+	      (put-text-property start end 'w3m-name-anchor name))))
+	 (name
+	  (when (re-search-forward "<\\|\n" nil t)
+	    (setq end (match-beginning 0))
+	    (when (= start end)
+	      (setq end (min (1+ end) (point-max))))
+	    (put-text-property start end 'w3m-name-anchor name))))))))
 
 (defun w3m-image-type (content-type)
   "Return image type which corresponds to CONTENT-TYPE."
@@ -1934,7 +1960,10 @@ this function returns t.  Otherwise, returns nil."
 	 (method (nth 2 (assoc type w3m-content-type-alist))))
     (cond
      ((not method)
-      (w3m-download url))
+      (if (w3m-url-local-p url)
+	  (error "No method to view `%s' is registered."
+		 (w3m-url-to-file-name url))
+	(w3m-download url)))
      ((functionp method)
       (funcall method url))
      ((consp method)
@@ -2306,7 +2335,14 @@ or prefix ARG columns."
 (defun w3m-goto-url (url &optional reload)
   "*Retrieve contents of URL."
   (interactive
-   (list (w3m-input-url nil w3m-current-url) current-prefix-arg))
+   (list
+    (w3m-input-url nil
+		   (when (stringp w3m-current-url)
+		     (if (string-match "about://\\(header\\|source\\)/"
+				       w3m-current-url)
+			 (substring w3m-current-url (match-end 0))
+		       w3m-current-url)))
+    current-prefix-arg))
   (cond
    ;; process mailto: protocol
    ((string-match "^mailto:\\(.*\\)" url)
@@ -2381,11 +2417,10 @@ or prefix ARG columns."
 (defun w3m-browse-url (url &optional new-window)
   "w3m interface function for browse-url.el."
   (interactive
-   (progn
-     (require 'browse-url)
-     (browse-url-interactive-arg "w3m URL: ")))
-  (if new-window (split-window))
-  (w3m-goto-url url))
+   (browse-url-interactive-arg "w3m URL: "))
+  (when (stringp url)
+    (if new-window (split-window))
+    (w3m-goto-url url)))
 
 (defun w3m-find-file (file)
   "w3m Interface function for local file."
@@ -2417,7 +2452,20 @@ ex.) c:/dir/file => //c/dir/file"
 ;;; About:
 (defun w3m-about (url &rest args)
   (w3m-with-work-buffer
-    (delete-region (point-min) (point-max)))
+    (delete-region (point-min) (point-max))
+    (insert "<!doctype html public \"-//W3C//DTD HTML 3.2//EN\">
+<html>
+<head><title>About emacs-w3m</title></head>
+<body>
+<center>
+Welcome to <a href=\"http://namazu.org/~tsuchiya/emacs-w3m/\">emacs-w3m</a>!
+<br><br>
+emacs-w3m is an interface program of
+<a href=\"http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/\">w3m</a>,
+works on Emacs.
+</center>
+</body>
+</html>"))
   "text/html")
 
 (defun w3m-about-source (url &optional no-decode no-cache)
@@ -2450,8 +2498,8 @@ ex.) c:/dir/file => //c/dir/file"
   (w3m-goto-url (concat "about://header/" w3m-current-url)))
 
 (defconst w3m-about-history-except-regex
-  "^about://\\(header\\|source\\|history\\|db-history\\|antenna\\)/"
-  "Regexp for not show histroy .")
+  "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\)/.*\\)?$"
+  "Regexp for not show history.")
 
 (defun w3m-about-history (&rest args)
   (let* ((history (copy-sequence w3m-url-history))

@@ -1,3 +1,25 @@
+2001-03-30  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-home-page): Default value is changed.
+	(w3m-html-string-regexp): Support single quoted string.
+	(w3m-parse-attributes): Import from w3m-form.el.
+	(w3m-fontify-anchors): Fix bug reported in [emacs-w3m:00400].
+	(w3m-external-view): Fix.
+	(w3m-goto-url): Default argument is changed when it is
+	interactively called.
+	(w3m-browse-url): Fix.
+	(w3m-about): Update.
+	(w3m-about-history-except-regex): Add `about:'.
+
+	* w3m-form.el: (w3m-parse-attributes): Exported.
+
+	* mime-w3m.el (mime-w3m-save-background-color): Changed
+	`edebug-form-spec'.
+
+	* Makefile.in (dist): Improved.
+	(Makefile, configure): New rules.
+	(ECC, MODULES): Removed macros.
+
 2001-03-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-with-elements): New macro.
