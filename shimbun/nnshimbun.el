@@ -74,6 +74,8 @@
 (eval-and-compile
   (autoload 'gnus-declare-backend "gnus-start")
   (autoload 'gnus-group-make-group "gnus-group")
+  (autoload 'gnus-group-short-name "gnus")
+  (autoload 'gnus-summary-refer-article "gnus-sum")
   (autoload 'message-make-date "message")
   (autoload 'parse-time-string "parse-time"))
 
@@ -802,6 +804,48 @@ article to be expired.  The optional fourth argument FORCE is ignored."
 (luna-define-method shimbun-mua-search-id ((mua shimbun-gnus-mua) id)
   (nnshimbun-search-id (shimbun-current-group (shimbun-mua-shimbun mua))
 		       id))
+
+
+;; Functions to follow anchors that point previous articles:
+
+(defun nnshimbun-search-xref (group url)
+  "Search an article generated from a given URL in the GROUP,
+and return its header."
+  (let ((buffer (nnshimbun-nov-buffer-name group)))
+    (when (gnus-buffer-live-p buffer)
+      (with-current-buffer buffer
+	(goto-char (point-min))
+	(let (found)
+	  (unless found
+	    (goto-char (point-min))
+	    (setq url (concat "Xref: " url))
+	    (while (and (not found)
+			(search-forward url nil t)
+			(looking-at "[?\t]"))
+	      (if (not (search-backward "\t" (shimbun-point-at-bol) t 7))
+		  (forward-line 1)
+		(forward-line 0)
+		(setq found t))))
+	  (when found
+	    (nnshimbun-parse-nov)))))))
+
+(defun nnshimbun-goto-url (url)
+  "Show a Nnshimbun article or visit the specified page."
+  (interactive (list (w3m-input-url)))
+  (let ((header
+	 (when (string-match "\\`nnshimbun\\+" gnus-newsgroup-name)
+	   (nnshimbun-search-xref
+	    (gnus-group-short-name gnus-newsgroup-name) url))))
+    (if (and header (gnus-buffer-live-p gnus-summary-buffer))
+	(with-current-buffer gnus-summary-buffer
+	  (gnus-summary-refer-article (shimbun-header-id header)))
+      (w3m-goto-url url))))
+
+(defun nnshimbun-setup-article-mode ()
+  (set (make-local-variable 'w3m-safe-goto-url-function)
+       'nnshimbun-goto-url))
+
+(add-hook 'gnus-article-mode-hook 'nnshimbun-setup-article-mode)
 
 
 ;; Command to create an nnshimbun group:

@@ -1,3 +1,15 @@
+2004-01-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Changes to follow anchors that point Shimbun articles.
+	(w3m-safe-goto-url-function): New variable.
+	(w3m-safe-view-this-url): Refer the above.
+
+	* shimbun/nnshimbun.el: Add autoloads of `gnus-group-short-name'
+	and `gnus-summary-refer-article' to avoid byte-compile warnings;
+	Add `nnshimbun-setup-article-mode' to `gnus-article-mode-hook'.
+	(nnshimbun-search-xref, nnshimbun-goto-url,
+	nnshimbun-setup-article-mode): New functions.
+
 2004-01-29  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-follow-cache-control-header): New option.
