@@ -1,3 +1,8 @@
+2002-04-22  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-news-headers): Build
+	message-id without `http://'.
+
 2002-04-22  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-region): Call `w3m-process-stop' first.
