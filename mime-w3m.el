@@ -52,14 +52,14 @@
 
 (defvar mime-w3m-mode-map nil)
 
-(defmacro-maybe mime-put-keymap-region (start end keymap)
+(defmacro mime-put-keymap-region (start end keymap)
   `(put-text-property ,start ,end
 		      ',(if (featurep 'xemacs)
 			    'keymap
 			  'local-map)
 		      ,keymap))
 
-(defmacro-maybe mime-save-background-color (&rest body)
+(defmacro mime-save-background-color (&rest body)
   (if (featurep 'xemacs)
       `(let ((color (color-name (face-background 'default))))
 	 (prog1
