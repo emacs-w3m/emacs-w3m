@@ -40,7 +40,7 @@
       (let* ((w `(sexp :match (lambda (widget value) (stringp value))
 		       :size 4 :value ""
 		       ,@(if (not (widget-get widget :copy))
-			     ;; Emacs versions prior to 21.3.
+			     ;; Emacs versions prior to 21.4.
 			     '(:value-to-internal
 			       (lambda (widget value)
 				 (if (string-match "\\`\".*\"\\'" value)

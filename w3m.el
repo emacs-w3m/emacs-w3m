@@ -1321,7 +1321,7 @@ way:
 		       (regexp :format "%t: %v\n" :size 0)
 		       (function
 			:format "%t: %v\n" :size 0
-			;; Fixing a bug in Emacs versions prior to 21.3.
+			;; Fixing a bug in Emacs versions prior to 21.4.
 			:value-to-internal
 			(lambda (widget value)
 			  (if (stringp value)
