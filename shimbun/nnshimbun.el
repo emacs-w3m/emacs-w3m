@@ -611,6 +611,7 @@ also be nil."
 	;; Force `princ' to work in the current buffer.
 	(standard-output (current-buffer))
 	(xref (nnshimbun-string-or (shimbun-header-xref header)))
+	(extra (shimbun-header-extra header))
 	(start (point)))
     (and (stringp id)
 	 header-id
@@ -629,13 +630,14 @@ also be nil."
     (insert "\t")
     (princ (or (shimbun-header-lines header) 0))
     (insert "\t")
-    (if xref
-	(progn
-	  (insert "Xref: " xref "\t")
-	  (when id
-	    (insert "X-Nnshimbun-Id: " id "\t")))
-      (when id
-	(insert "\tX-Nnshimbun-Id: " id "\t")))
+    (when xref
+      (insert "Xref: " xref))
+    (insert "\t")
+    (when id
+      (insert "X-Nnshimbun-Id: " id "\t"))
+    (while extra
+      (insert (format "%s: %s\t" (symbol-name (caar extra)) (cdar extra)))
+      (setq extra (cdr extra)))
     ;; Replace newlines with spaces in the current NOV line.
     (while (progn
 	     (forward-line 0)
@@ -713,7 +715,7 @@ also be nil."
 	  (extra   (nnheader-nov-parse-extra)))
       (shimbun-make-header number subject from date
 			   (or (cdr (assq 'X-Nnshimbun-Id extra)) id)
-			   refs chars lines xref))))
+			   refs chars lines xref extra))))
 
 (defsubst nnshimbun-nov-buffer-name (&optional group)
   (format " *nnshimbun overview %s %s*"

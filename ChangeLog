@@ -1,3 +1,12 @@
+2005-02-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-rss.el (shimbun-get-headers): Store description element
+	into extra slot.
+
+	* shimbun/nnshimbun.el (nnshimbun-insert-nov): Insert extra slot of
+	shimbun header.
+	(nnshimbun-parse-nov): Store extra data into extra slot.
+
 2005-02-19  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-ibm-dev.el (shimbun-get-headers): Fix index list reverse operation.
