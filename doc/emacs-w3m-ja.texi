@@ -992,7 +992,7 @@ M	View current url with external browser.
 E	Edit the local file pointed by the URL of current page.
 e	Edit the local file by the under the point.
 
-C-c C-@	Mark the current position.
+C-c C-@@	Mark the current position.
 C-c C-v	Goto the last position.
 
 s	Display arrived history.
