@@ -2,8 +2,6 @@
 
 	* w3m.el (w3m-goto-url): Put the url in the history even if
 	`w3m-exec' returns nil.
-	(w3m-exec): Set the values of `w3m-current-title' and
-	`w3m-current-url' even if `w3m-external-view' is performed.
 
 2001-08-09  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 

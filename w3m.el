@@ -2644,10 +2644,7 @@ this function returns t.  Otherwise, returns nil."
 					       'w3m-image url
 					       'mouse-face 'highlight))
 		t))
-	     (t
-	      (setq w3m-current-url (w3m-real-url url)
-		    w3m-current-title (file-name-nondirectory url))
-	      (w3m-external-view url no-cache)
+	     (t (w3m-external-view url no-cache)
 		nil)))
 	(error "Cannot retrieve URL: %s%s"
 	       url
@@ -3448,12 +3445,15 @@ the request."
 				 w3m-default-content-type)
 			 w3m-content-type-alist nil t)))
 		 (setq ct (if (string= "" s) w3m-default-content-type s)))))
-	(if (prog1
-		(not (w3m-exec url nil reload cs ct post-data
-			       (if w3m-add-referer referer nil)))
-	      (w3m-history-push w3m-current-url
-				(list ':title w3m-current-title)))
-	    (w3m-refontify-anchor)
+	(if (not (w3m-exec url nil reload cs ct post-data
+			   (if w3m-add-referer referer nil)))
+	    (progn
+	      (w3m-history-push (w3m-real-url url)
+				(list ':title (file-name-nondirectory url)))
+	      (w3m-history-push w3m-current-url)
+	      (w3m-refontify-anchor))
+	  (w3m-history-push w3m-current-url
+			    (list ':title w3m-current-title))
 	  (or (and name (w3m-search-name-anchor name))
 	      (goto-char (point-min)))
 	  (setq w3m-display-inline-image-status 'off)
