@@ -1,3 +1,32 @@
+2001-11-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-download): Use `progn' instead of `inline', in order
+	to make debugging be easy.
+	(w3m-retrieve-and-render): Ditto.
+
+	* w3m-proc.el: Changed the order of asynchronous form evaluation
+	and starting asynchronous processes.
+	(w3m-process-queue): Renamed from `w3m-processes'.
+	(w3m-process-queue-registrable-p): New internal variable.
+	(w3m-process-with-coding-system): New macro.
+	(w3m-process-with-environment): Redefine with new backquote style.
+	(w3m-process-push): Refer `w3m-process-queue-registrable-p' to add
+	the handler to processes registered in `w3m-process-queue' safely.
+	(w3m-process-start-process): New internal function.
+	(w3m-process-start-queued-processes): Renamed from
+	`w3m-process-start-internal'; Call `w3m-process-start-process';
+	Follow renaming of variables.
+	(w3m-process-stop, w3m-process-shutdown): Follow renaming of
+	variables.
+	(w3m-process-with-null-handler): Start asynchronous processes at
+	the end of this macro.
+	(w3m-process-do, w3m-process-do-with-temp-buffer): Reimplemented.
+	(w3m-process-start): Reimplemented.  Asynchronous processes are
+	not started in this function.
+	(w3m-process-start-after): New internal function.
+	(w3m-process-sentinel): Follow renaming of variables and
+	functions.
+
 2001-11-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-macro.el (w3m-condition-case): New macro.
@@ -57,7 +86,7 @@
 
 	* w3mhack.el (w3mhack-examine-modules): Revival byte-compile
 	`w3m-tabmenu.el' when XEmacs.
-	
+
 	* w3m-tabmenu.el (ALL): Full rewrite to use `easymenu'.
 
 2001-11-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>

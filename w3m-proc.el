@@ -61,7 +61,8 @@
   (defvar w3m-async-exec))
 
 (defconst w3m-process-max 5 "The maximum limit of the working processes.")
-(defvar w3m-processes nil "List of working processes.")
+(defvar w3m-process-queue nil "Queue of processes.")
+(defvar w3m-process-queue-registrable-p nil)
 
 (defvar w3m-process-exit-status nil "The last exit status of a process.")
 (defvar w3m-process-user-alist nil)
@@ -83,22 +84,33 @@
 (defvar w3m-process-proxy-passwd nil "Password of the proxy server.")
 
 
+(defmacro w3m-process-with-coding-system (&rest body)
+  "Set coding systems for `w3m-command', and evaluate BODY."
+  `(let ((coding-system-for-read 'binary)
+	 (coding-system-for-write w3m-terminal-coding-system)
+	 (default-process-coding-system
+	   (cons 'binary w3m-terminal-coding-system))
+	 (process-connection-type w3m-process-connection-type))
+     ,@body))
+(put 'w3m-process-with-coding-system 'lisp-indent-function 0)
+(put 'w3m-process-with-coding-system 'edebug-form-spec '(form body))
+
 (defmacro w3m-process-with-environment (alist &rest body)
-  "Set the environment variables with ALIST, and evaluate BODY."
-  (` (let ((process-environment process-environment)
-	   (temporary-file-directory
-	    (if (file-directory-p w3m-profile-directory)
-		(file-name-as-directory w3m-profile-directory)
-	      temporary-file-directory))
-	   (default-directory
-	    (cond ((file-directory-p w3m-profile-directory)
-		   (file-name-as-directory w3m-profile-directory))
-		  ((file-directory-p (expand-file-name "~/"))
-		   (expand-file-name "~/"))
-		  (t temporary-file-directory))))
-       (dolist (pair (, alist))
-	 (setenv (car pair) (cdr pair)))
-       (,@ body))))
+  "Set the environment variables provided by ALIST, and evaluate BODY."
+  `(let ((process-environment process-environment)
+	 (temporary-file-directory
+	  (if (file-directory-p w3m-profile-directory)
+	      (file-name-as-directory w3m-profile-directory)
+	    temporary-file-directory))
+	 (default-directory
+	   (cond ((file-directory-p w3m-profile-directory)
+		  (file-name-as-directory w3m-profile-directory))
+		 ((file-directory-p (expand-file-name "~/"))
+		  (expand-file-name "~/"))
+		 (t temporary-file-directory))))
+     (dolist (pair ,alist)
+       (setenv (car pair) (cdr pair)))
+     ,@body))
 (put 'w3m-process-with-environment 'lisp-indent-function 1)
 (put 'w3m-process-with-environment 'edebug-form-spec '(form body))
 
@@ -136,12 +148,13 @@
 
 (defun w3m-process-push (handler arguments)
   "Generate a new `w3m-process' object which is provided by HANDLER,
-ARGUMENTS and this buffer, regist it to `w3m-processes', and return
-it."
-  (let ((x (assoc arguments w3m-processes)))
-    (unless x
+ARGUMENTS and this buffer, regist it to `w3m-process-queue', and
+return it."
+  (let ((x (assoc arguments w3m-process-queue)))
+    (unless (and w3m-process-queue-registrable-p
+		 x (not (w3m-process-process x)))
       (setq x (w3m-process-new arguments (current-buffer)))
-      (push x w3m-processes))
+      (push x w3m-process-queue))
     (push (w3m-process-handler-new (current-buffer) w3m-current-buffer handler)
 	  (w3m-process-handlers x))
     (setq w3m-process-object x)))
@@ -152,38 +165,43 @@ it."
   (set-process-sentinel process 'ignore)
   (kill-process process))
 
-(defun w3m-process-start-internal ()
-  "Start a process which is registerd in `w3m-process' if the number
-of current working processes is less than `w3m-process-max'."
+(defun w3m-process-start-process (object)
+  "Start a process spcified by the OBJECT."
+  (unless (w3m-process-process object)
+    (with-current-buffer (w3m-process-buffer object)
+      (w3m-process-with-coding-system
+	(w3m-process-with-environment w3m-command-environment
+	  (let ((proc
+		 (apply 'start-process w3m-command
+			(current-buffer) w3m-command
+			(w3m-process-arguments w3m-process-object))))
+	    (setf (w3m-process-process object) proc)
+	    (setq w3m-process-user nil
+		  w3m-process-passwd nil
+		  w3m-process-user-counter 2
+		  w3m-process-realm nil)
+	    (set-process-filter proc 'w3m-process-filter)
+	    (set-process-sentinel proc 'w3m-process-sentinel)
+	    (process-kill-without-query proc)))))))
+
+(defun w3m-process-start-queued-processes ()
+  "Start a process which is registerd in `w3m-process-queue' if the
+number of current working processes is less than `w3m-process-max'."
   (let ((num 0))
     (catch 'last
-      (dolist (obj (reverse w3m-processes))
+      (dolist (obj (reverse w3m-process-queue))
 	(if (buffer-name (w3m-process-buffer obj))
 	    (if (> (incf num) w3m-process-max)
 		(throw 'last nil)
-	      (unless (w3m-process-process obj)
-		(with-current-buffer (w3m-process-buffer obj)
-		  (w3m-process-with-environment w3m-command-environment
-		    (let ((proc
-			   (apply 'start-process w3m-command
-				  (current-buffer) w3m-command
-				  (w3m-process-arguments w3m-process-object))))
-		      (setf (w3m-process-process obj) proc)
-		      (setq w3m-process-user nil
-			    w3m-process-passwd nil
-			    w3m-process-user-counter 2
-			    w3m-process-realm nil)
-		      (set-process-filter proc 'w3m-process-filter)
-		      (set-process-sentinel proc 'w3m-process-sentinel)
-		      (process-kill-without-query proc))))))
+	      (w3m-process-start-process obj))
 	  ;; Something wrong has occuered ?
-	  (setq w3m-processes (delq obj w3m-processes))
+	  (setq w3m-process-queue (delq obj w3m-process-queue))
 	  (when (w3m-process-process obj)
 	    (w3m-process-kill-process (w3m-process-process obj))))))))
 
 (defun w3m-process-stop (buffer)
   (interactive (list (current-buffer)))
-  (setq w3m-processes
+  (setq w3m-process-queue
 	(delq nil
 	      (mapcar
 	       (lambda (obj)
@@ -213,11 +231,11 @@ of current working processes is less than `w3m-process-max'."
 		     (dolist (handler (w3m-process-handlers obj))
 		       (kill-buffer (w3m-process-handler-buffer handler)))
 		     nil)))
-	       w3m-processes))))
+	       w3m-process-queue))))
 
 (defun w3m-process-shutdown ()
-  (let ((list w3m-processes))
-    (setq w3m-processes nil)
+  (let ((list w3m-process-queue))
+    (setq w3m-process-queue nil)
     (dolist (obj list)
       (when (buffer-name (w3m-process-buffer obj))
 	(when (w3m-process-process obj)
@@ -226,8 +244,12 @@ of current working processes is less than `w3m-process-max'."
 
 (defmacro w3m-process-with-null-handler (&rest body)
   "Generate the null handler, and evaluate BODY.
-When BODY is evaluated, the local variable `handler' is set to nil."
-  `(let (handler) ,@body))
+When BODY is evaluated, the local variable `handler' keeps the null
+handler."
+  `(let ((w3m-process-queue-registrable-p t)
+	 (handler (symbol-function 'identity)))
+     ,@body
+     (w3m-process-start-queued-processes)))
 (put 'w3m-process-with-null-handler 'lisp-indent-function 0)
 (put 'w3m-process-with-null-handler 'edebug-form-spec '(body))
 
@@ -235,28 +257,30 @@ When BODY is evaluated, the local variable `handler' is set to nil."
   "Generate the waiting handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the handler
 which will wait for the end of the evaluation."
-  (let ((tempvar (make-symbol "tempvar")))
-    `(let ((,tempvar ',tempvar))
-       (let ((handler (lambda (x) (setq ,tempvar x))))
-	 (let (w3m-async-exec)
-	   ,@body)
-	 ,tempvar))))
-;; ASYNC: 本当は、以下のように非同期的に実行して、非同期プロセスの終了
-;; を待つように実装する必要があるのだが、どうしても、バグの原因が分か
-;; らなかったので、adhoc に対処している。そのため、パスワードなどの入
-;; 力が必要な場合に不具合が生じることがある。
+  `(let ((handler (symbol-function 'identity))
+	 (w3m-async-exec))
+     ,@body))
+;; ASYNC: 本当は、以下のように非同期に実行(= process-filter を利用)し
+;; て、非同期プロセスの終了を待つように実装する必要があるのだが、どう
+;; しても、バグの原因が分からなかったので、adhoc に対処している。その
+;; ため、パスワードなどの入力が必要な場合に不具合が生じることがある。
 ;;
 ;;    (defmacro w3m-process-with-wait-handler (&rest body)
 ;;      "Generate the waiting handler, and evaluate BODY.
 ;;    When BODY is evaluated, the local variable `handler' keeps the handler
 ;;    which will wait for the end of the evaluation."
-;;      (let ((tempvar (make-symbol "tempvar")))
-;;        `(let ((,tempvar ',tempvar))
-;;           (let ((handler (lambda (x) (setq ,tempvar x))))
-;;             ,@body)
-;;           (while (eq ,tempvar ',tempvar)
-;;             (sit-for 0.2))
-;;           ,tempvar)))
+;;      (let ((process (gensym "--process--"))
+;;            (result (gensym "--result--")))
+;;        `(let ((,process)
+;;               (,result ',result))
+;;           (let ((handler (lambda (x) (setq ,result x))))
+;;             (if (w3m-process-p (setq ,process (progn ,@body)))
+;;                 (progn
+;;                   (w3m-process-start-process ,process)
+;;                   (while (eq ,result ',result)
+;;                     (sit-for 0.2))
+;;                   ,result)
+;;               ,process)))))
 ;;
 ;; 具体的には、[emacs-w3m:02167] で報告した以下の式が正常に評価できる
 ;; ように修正する必要がある。
@@ -273,6 +297,39 @@ which will wait for the end of the evaluation."
 (put 'w3m-process-with-wait-handler 'lisp-indent-function 0)
 (put 'w3m-process-with-wait-handler 'edebug-form-spec '(body))
 
+;;; Explanation of w3m-process-do in Japanese:
+;;
+;; w3m-process-do は、非同期処理を簡単に書くためのマクロである。例えば、
+;;
+;;    (w3m-process-do
+;;        (var (async-form...))
+;;      post-body...)
+;;
+;; というように書くと、以下の順序で処理が行われる。
+;;
+;;   (1) async-form を評価
+;;       --> async-form 内で非同期プロセスが生成された場合は、その非同
+;;           期プロセス終了後に post-body が評価されるように、ハンドラ
+;;           に追加
+;;       --> 非同期プロセスが生成されなかった場合は、単に次のステップ
+;;           に進む(= post-body を評価する)。
+;;   (2) post-body を評価
+;;
+;; なお、async-form / post-body が評価される時、その内部で非同期プロセ
+;; スが生成された場合に、その返り値を処理するためのハンドラが、変数
+;; handler に設定されている。非同期な処理を行う関数を呼び出す場合には、
+;; その関数の引数として必ず handler を渡さなければならない。
+;;
+;; また、w3m-process-do は、現在のハンドラの内容を調べるため、そのマク
+;; ロが呼び出されている環境の変数 handler を参照する。例えば、
+;;
+;;    (let (handler) (w3m-process-do ...))
+;;
+;; と変数 handler を nil に束縛しておくと、「現時点のハンドラは空であ
+;; る = 非同期プロセス実行後に必要な処理は存在しない」という意味になり、
+;; w3m-async-do() は、非同期プロセスが生成された場合には単に nil を返
+;; し、それ以外の場合は post-body の値を返す。
+;;
 (defmacro w3m-process-do (spec &rest body)
   "(w3m-process-do (VAR ASYNC-FORM) POST-BODY...): Evaluate ASYNC-FORM
 and return a `w3m-process' object immediately.  After an asynchronous
@@ -281,22 +338,31 @@ evaluated with the variable VAR which will be set to the result of
 ASYNC-FORM."
   (let ((var (car spec))
 	(form (cdr spec))
-	(evaluated-p (gensym "--evaluated-p--")))
-    `(lexical-let ((,evaluated-p ',evaluated-p))
-       (labels ((post-handler
-		 (,var handler)
-		 (when (eq ,evaluated-p ',evaluated-p)
-		   (setq ,evaluated-p (inline ,@body))
-		   (if (w3m-process-p ,evaluated-p)
-		       ,evaluated-p
-		     (funcall (or handler (function identity))
-			      ,evaluated-p)))))
-	 (let ((handler (list 'lambda (list ',var)
-			      (list 'post-handler ',var handler))))
-	   (let ((,var (inline ,@form)))
-	     (if (w3m-process-p ,var)
-		 ,var
-	       (funcall handler ,var))))))))
+	(this-handler (gensym "--this-handler--")))
+    `(let ((,this-handler handler))
+       (labels ((post-body (,var handler)
+			   (progn ,@body))
+		(post-handler (,var handler)
+			      (if (w3m-process-p
+				   (setq ,var (post-body ,var handler)))
+				  (w3m-process-start-process ,var)
+				(funcall (or handler (function identity))
+					 ,var))))
+	 (let ((,var
+		(let ((handler
+		       (list 'lambda (list ',var)
+			     (list 'post-handler ',var ,this-handler))))
+		  ,@form)))
+	   (if (w3m-process-p ,var)
+	       (if ,this-handler
+		   ,var
+		 (w3m-process-start-process ,var))
+	     (if (w3m-process-p
+		  (setq ,var (post-body ,var ,this-handler)))
+		 (if ,this-handler
+		     ,var
+		   (w3m-process-start-process ,var))
+	       ,var)))))))
 (put 'w3m-process-do 'lisp-indent-function 1)
 (put 'w3m-process-do 'edebug-form-spec '((symbolp form) def-body))
 
@@ -306,39 +372,40 @@ Like `w3m-process-do', but all forms are evaluated in a temporary
 buffer."
   (let ((var (car spec))
 	(form (cdr spec))
-	(evaluated-p (gensym "--evaluated-p--"))
+	(this-handler (gensym "--this-handler--"))
 	(temp-buffer (gensym "--temp-buffer--")))
-    `(lexical-let ((,evaluated-p ',evaluated-p)
-		   (,temp-buffer))
-       (labels ((post-handler
-		 (,var handler)
-		 (and (eq ,evaluated-p ',evaluated-p)
-		      (buffer-name ,temp-buffer)
-		      ;; ASYNC: unwind-protect で保護されているのは、
-		      ;; このマクロで登録されたハンドラ部分のみで、こ
-		      ;; れ以外のマクロで登録された場合は対象になって
-		      ;; いない。これは通常の unwind-protect の入れ子
-		      ;; 構造とは異なり、確実に kill-buffer されないか
-		      ;; もしれない。
-		      (unwind-protect
-			  (with-current-buffer ,temp-buffer
-			    (setq ,evaluated-p (inline ,@body))
-			    (if (w3m-process-p ,evaluated-p)
-				,evaluated-p
-			      (funcall (or handler (function identity))
-				       ,evaluated-p)))
-			(w3m-kill-buffer ,temp-buffer)))))
-	 (let ((handler (list 'lambda (list ',var)
-			      (list 'post-handler ',var handler))))
-	   (let ((,var (with-current-buffer
-			   (setq ,temp-buffer
-				 (w3m-get-buffer-create
-				  (generate-new-buffer-name
-				   w3m-work-buffer-name)))
-			 ,@form)))
-	     (if (w3m-process-p ,var)
-		 ,var
-	       (funcall handler ,var))))))))
+    `(let ((,this-handler handler)
+	   (,temp-buffer
+	    (w3m-get-buffer-create
+	     (generate-new-buffer-name w3m-work-buffer-name))))
+       (labels ((post-body (,var handler ,temp-buffer)
+			   (unwind-protect
+			       (with-current-buffer ,temp-buffer
+				 ,@body)
+			     (w3m-kill-buffer ,temp-buffer)))
+		(post-handler (,var handler ,temp-buffer)
+			      (if (w3m-process-p
+				   (setq ,var (post-body ,var handler
+							 ,temp-buffer)))
+				  (w3m-process-start-process ,var)
+				(funcall (or handler (function identity))
+					 ,var))))
+	 (let ((,var
+		(let ((handler
+		       (list 'lambda (list ',var)
+			     (list 'post-handler ',var
+				   ,this-handler ,temp-buffer))))
+		  (with-current-buffer ,temp-buffer ,@form))))
+	   (if (w3m-process-p ,var)
+	       (if ,this-handler
+		   ,var
+		 (w3m-process-start-process ,var))
+	     (if (w3m-process-p
+		  (setq ,var (post-body ,var ,this-handler ,temp-buffer)))
+		 (if ,this-handler
+		     ,var
+		   (w3m-process-start-process ,var))
+	       ,var)))))))
 (put 'w3m-process-do-with-temp-buffer 'lisp-indent-function 1)
 (put 'w3m-process-do-with-temp-buffer 'edebug-form-spec
      '((symbolp form) def-body))
@@ -346,28 +413,26 @@ buffer."
 
 (defun w3m-process-start (handler &rest arguments)
   "Run `w3m-command' with HANDLER and ARGUMENTS."
-  (let ((output-buffer (current-buffer))
-	(coding-system-for-read 'binary)
-	(coding-system-for-write w3m-terminal-coding-system)
-	(default-process-coding-system
-	  (cons 'binary w3m-terminal-coding-system))
-	(process-connection-type w3m-process-connection-type))
-    (setq arguments (append w3m-command-arguments arguments))
-    (w3m-process-do
-	(exit-status
-	 (if w3m-async-exec
-	     (prog1 (w3m-process-push handler arguments)
-	       (w3m-process-start-internal))
-	   (w3m-process-with-environment w3m-command-environment
-	     (apply 'call-process w3m-command nil t nil arguments))))
-      (cond
-       ((numberp exit-status)
-	(zerop (setq w3m-process-exit-status exit-status)))
-       ((not exit-status) nil)
-       (t
-	(setq w3m-process-exit-status
-	      (string-as-multibyte (format "%s" exit-status)))
-	nil)))))
+  (setq arguments (append w3m-command-arguments arguments))
+  (if w3m-async-exec
+      (w3m-process-do
+	  (exit-status (w3m-process-push handler arguments))
+	(w3m-process-start-after exit-status))
+    (w3m-process-start-after
+     (w3m-process-with-coding-system
+       (w3m-process-with-environment w3m-command-environment
+	 (apply 'call-process w3m-command nil t nil arguments))))))
+
+(defun w3m-process-start-after (exit-status)
+  (cond
+   ((numberp exit-status)
+    (zerop (setq w3m-process-exit-status exit-status)))
+   ((not exit-status)
+    (setq w3m-process-exit-status nil))
+   (t
+    (setq w3m-process-exit-status
+	  (string-as-multibyte (format "%s" exit-status)))
+    nil)))
 
 (defun w3m-process-sentinel (process event)
   ;; Ensure that this function will be never called repeatedly.
@@ -375,7 +440,8 @@ buffer."
   (unwind-protect
       (if (buffer-name (process-buffer process))
 	  (with-current-buffer (process-buffer process)
-	    (setq w3m-processes (delq w3m-process-object w3m-processes))
+	    (setq w3m-process-queue
+		  (delq w3m-process-object w3m-process-queue))
 	    (let ((exit-status (process-exit-status process))
 		  (buffer (current-buffer))
 		  (realm  w3m-process-realm)
@@ -399,11 +465,11 @@ buffer."
 			       exit-status)))))))
 	;; Something wrong has been occured.
 	(catch 'last
-	  (dolist (obj (copy-sequence w3m-processes))
+	  (dolist (obj (copy-sequence w3m-process-queue))
 	    (when (eq process (w3m-process-process obj))
-	      (setq w3m-processes (delq obj w3m-processes))))))
+	      (setq w3m-process-queue (delq obj w3m-process-queue))))))
     (delete-process process)
-    (w3m-process-start-internal)))
+    (w3m-process-start-queued-processes)))
 
 (defun w3m-process-filter (process string)
   (when (buffer-name (process-buffer process))

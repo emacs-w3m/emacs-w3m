@@ -133,7 +133,7 @@
   (autoload 'rfc2368-parse-mailto-url "rfc2368"))
 
 (defconst emacs-w3m-version
-  "async-0.03"
+  "async-0.04"
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -2731,7 +2731,7 @@ type as a string argument, when retrieve is complete."
     (lexical-let ((filename (or filename (w3m-read-file-name nil nil url))))
       (w3m-process-with-null-handler
 	(w3m-process-do-with-temp-buffer
-	    (type (inline
+	    (type (progn
 		    (w3m-clear-local-variables)
 		    (setq w3m-current-url url)
 		    (w3m-retrieve url t no-cache nil nil handler)))
@@ -2988,7 +2988,7 @@ argument.  Otherwise, it will be called with nil."
 		  (content-charset content-charset)
 		  (output-buffer (current-buffer)))
       (w3m-process-do-with-temp-buffer
-	  (type (inline
+	  (type (progn
 		  (w3m-clear-local-variables)
 		  (setq w3m-current-url url)
 		  (w3m-retrieve url nil no-cache post-data referer handler)))
