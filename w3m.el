@@ -5124,11 +5124,19 @@ If EMPTY is non-nil, the created buffer has empty content."
 	(if w3m-toggle-inline-images-permanently
 	    (setq w3m-display-inline-images images)
 	  (setq w3m-display-inline-images w3m-default-display-inline-images))
-	(unless empty
-	  (w3m-process-with-wait-handler
-	    (w3m-goto-url url nil nil nil handler)))
 	;; Make copies of `w3m-history' and `w3m-history-flat'.
 	(w3m-history-copy buf)
+	(unless empty
+	  (w3m-process-with-wait-handler
+	    (let ((positions (copy-sequence (car w3m-history)))
+		  (w3m-history-reuse-history-elements t))
+	      ;; There is actually no need to specify the history element
+	      ;; to the `w3m-goto-url' function since the `w3m-history-copy'
+	      ;; function currently does not copy properties of history
+	      ;; elements.  It is just a preparation for the future.
+	      (w3m-goto-url url nil nil nil nil handler
+			    (w3m-history-element (cadr positions) t))
+	      (setcar w3m-history positions))))
 	(when empty
 	  (w3m-clear-local-variables))
 	(when and-pop
