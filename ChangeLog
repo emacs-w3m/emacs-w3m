@@ -1,3 +1,16 @@
+2001-05-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-exec): Report a process exit status if an error has
+	occurred.
+	(w3m-download): Ditto.
+	(w3m-w3m-dump-source): Don't use `zerop' to check for a process
+	exit status.
+	(w3m-w3m-dump-head-source): Ditto.
+	(w3m-w3m-get-header): Ditto.
+	(w3m-exec-process): Made it to return t if succeeded otherwise nil,
+	to keep a process exit status in `w3m-process-exit-status'.
+	(w3m-process-exit-status): New variable.
+
 2001-05-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (TOP): Add autoload for w3m-dtree.

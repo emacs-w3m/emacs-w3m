@@ -481,7 +481,7 @@ Value is 'crlf or nil.
 	  (const :tag "Edit with other frame" find-file-other-frame)
 	  (const :tag "View with other window" view-file-other-window)
 	  (function :tag "Other" view-file)))
-	  
+
 (defcustom w3m-track-mouse t
   "Whether to track the mouse and message the url under the mouse.
 This feature does not work under Emacs or XEmacs versions prior to 21.
@@ -605,6 +605,7 @@ See the file balloon-help.el for more information."
 (defvar w3m-process-user-counter 0)
 (defvar w3m-process-temp-file nil)
 (make-variable-buffer-local 'w3m-process-temp-file)
+(defvar w3m-process-exit-status nil "The last exit status of a process.")
 
 (defvar w3m-display-inline-image-status nil) ; 'on means image is displayed
 (make-variable-buffer-local 'w3m-display-inline-image-status)
@@ -709,7 +710,7 @@ for a charset indication")
     "Regexp used in parsing to detect string."))
 
 (defconst w3m-halfdump-command-arguments
-  '("-T" "text/html" "-t" tab-width 
+  '("-T" "text/html" "-t" tab-width
     "-cols" (if (< 0 w3m-fill-column)
 		w3m-fill-column		; fixed columns
 	      (+ (frame-width) (or w3m-fill-column -1)))) ; fit for frame
@@ -1523,38 +1524,50 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 
 ;;; Handle process:
 (defun w3m-exec-process (&rest args)
-  "Run w3m-command and return process exit status."
+  "Run w3m-command and return t if succeeded otherwise nil."
   (save-excursion
     (let ((coding-system-for-read 'binary)
 	  (coding-system-for-write w3m-coding-system)
 	  (default-process-coding-system (cons 'binary w3m-coding-system))
-	  (process-connection-type w3m-process-connection-type))
-      (setq args (append w3m-command-arguments args))
+	  (process-connection-type w3m-process-connection-type)
+	  status)
+      (setq args (append w3m-command-arguments args)
+	    w3m-process-exit-status nil)
       (if w3m-async-exec
 	  ;; start-process
 	  (let ((w3m-process-user)
 		(w3m-process-passwd)
 		(w3m-process-user-counter 2)
-		(proc (apply 'start-process w3m-command (current-buffer) w3m-command args)))
+		(proc (apply 'start-process w3m-command (current-buffer)
+			     w3m-command args)))
 	    (set-process-filter proc 'w3m-exec-filter)
 	    (set-process-sentinel proc 'ignore)
 	    (process-kill-without-query proc)
             (unwind-protect
-                (prog2
-		    (while (eq (process-status proc) 'run)
-		      (accept-process-output nil 0 200))
-		    (process-exit-status proc)
+                (progn
+		  (while (eq (process-status proc) 'run)
+		    (accept-process-output nil 0 200))
+		  (setq status (process-exit-status proc))
 		  (and w3m-current-url
 		       w3m-process-user
 		       (setq w3m-arrived-user-list
 			     (cons
 			      (cons w3m-current-url
 				    (list w3m-process-user w3m-process-passwd))
-			      (delete (assoc w3m-current-url w3m-arrived-user-list)
+			      (delete (assoc w3m-current-url
+					     w3m-arrived-user-list)
 				      w3m-arrived-user-list)))))
               (delete-process proc)));; Clean up resources of process.
 	;; call-process
-	(apply 'call-process w3m-command nil t nil args)))))
+	(setq status (apply 'call-process w3m-command nil t nil args)))
+      (cond ((numberp status)
+	     (zerop (setq w3m-process-exit-status status)))
+	    ((not status)
+	     nil)
+	    (t
+	     (setq w3m-process-exit-status
+		   (string-as-multibyte (format "%s" status)))
+	     nil)))))
 
 (defun w3m-exec-get-user (url)
   (if (= w3m-process-user-counter 0)
@@ -1765,8 +1778,9 @@ If optional argument NO-CACHE is non-nil, cache is not used."
       (with-temp-buffer
 	(let ((w3m-current-url url))
 	  (w3m-message "Request sent, waiting for response...")
-	  (when (zerop (prog1 (w3m-exec-process "-dump_head" url)
-			 (w3m-message "Request sent, waiting for response... done")))
+	  (when (prog1
+		    (w3m-exec-process "-dump_head" url)
+		  (w3m-message "Request sent, waiting for response... done"))
 	    (w3m-cache-header url (buffer-string)))))))
 
 (defun w3m-w3m-attributes (url &optional no-cache)
@@ -1833,7 +1847,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 (defun w3m-w3m-dump-head-source (url)
   (and (let ((w3m-current-url url))
 	 (w3m-message "Reading...")
-	 (prog1 (zerop (w3m-exec-process w3m-dump-head-source-option url))	   
+	 (prog1
+	     (w3m-exec-process w3m-dump-head-source-option url)
 	   (w3m-message "Reading... done")
 	   (w3m-crlf-to-lf)))
        (goto-char (point-min))
@@ -1853,7 +1868,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	    (length (nth 2 headers)))
 	(when (let ((w3m-current-url url))
 		(w3m-message "Reading...")
-		(prog1 (zerop (w3m-exec-process "-dump_source" url))
+		(prog1
+		    (w3m-exec-process "-dump_source" url)
 		  (w3m-message "Reading... done")))
 	  (w3m-crlf-to-lf)
 	  (cond
@@ -1942,9 +1958,14 @@ to nil."
 	      jam-zcat-filename-list
 	      format-alist)
 	  (if (or (not (file-exists-p filename))
-		  (y-or-n-p (format "File(%s) is already exists. Overwrite? " filename)))
+		  (y-or-n-p (format "File(%s) is already exists. Overwrite? "
+				    filename)))
 	      (write-region (point-min) (point-max) filename))))
-    (error "Unknown URL: %s" url)))
+    (error "Cannot retrieve URL: %s%s"
+	   url
+	   (if w3m-process-exit-status
+	       (format " (exit status: %s)" w3m-process-exit-status)
+	     ""))))
 
 
 ;;; Retrieve data:
@@ -2047,7 +2068,11 @@ this function returns t.  Otherwise, returns nil."
 	      t))
 	   (t (w3m-external-view url no-cache)
 	      nil))
-	(error "Unknown URL: %s" url)))))
+	(error "Cannot retrieve URL: %s%s"
+	       url
+	       (if w3m-process-exit-status
+		   (format " (exit status: %s)" w3m-process-exit-status)
+		 ""))))))
 
 
 (defun w3m-search-name-anchor (name &optional quiet)
