@@ -11,7 +11,8 @@
 	(w3m-make-spinner-image): New function.
 
 	* w3m-favicon.el (w3m-favicon-retrieve): Always redraw Emacs frame
-	using the timer; increase the delay time for the timer.
+	using the timer; wobble the window size instead of redrawing;
+	increase the delay time for the timer.
 
 2003-09-30  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
