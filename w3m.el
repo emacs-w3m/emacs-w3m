@@ -2088,7 +2088,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 \\[w3m-previous-anchor]	Jump to previous anchor.
 \\[w3m-view-previous-page]	Back to previous page.
 \\[w3m-view-next-page]	Forward to next page.
-\\[w3m-view-parent-page]	Forward to next page.
+\\[w3m-view-parent-page]	Upward to parent page.
 
 \\[w3m-download-this-url]	Download this url.
 \\[w3m-print-this-url]	Print this url.
