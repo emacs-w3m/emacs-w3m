@@ -1,5 +1,11 @@
 2001-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el: Moved generic macros and defsubsts in front of functions.
+	(w3m-content-encoding, w3m-content-charset): Commented out.
+	* w3m-form.el (w3m-parse-attributes): Moved from w3m.el.
+
+2001-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el: Make `w3m-fontify-forms' and `w3m-form-parse-region' to
 	be always autoloaded; encolose the defining procedures for the
 	unbound functions with `eval-and-compile'.

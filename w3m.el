@@ -202,6 +202,8 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'directory)
 
+
+;; Generic functions:
 (defun w3m-url-to-file-name (url)
   "Return the file name which is pointed by URL."
   ;; Remove scheme part and net_loc part.  NOTE: This function accepts
@@ -580,6 +582,45 @@ for a charset indication")
 	      (+ (frame-width) (or w3m-fill-column -1)))) ; fit for frame
   "Arguments for 'halfdump' execution of w3m.")
 
+
+;; Generic macros and inline functions:
+(put 'w3m-with-work-buffer 'lisp-indent-function 0)
+(put 'w3m-with-work-buffer 'edebug-form-spec '(body))
+(defmacro w3m-with-work-buffer (&rest body)
+  "Execute the forms in BODY with working buffer as the current buffer."
+  (` (with-current-buffer
+	 (w3m-get-buffer-create w3m-work-buffer-name)
+       (,@ body))))
+
+(defsubst w3m-attributes (url &optional no-cache)
+  "Return a list of attributes of URL.
+Value is nil if retirieval of header is failed.  Otherwise, list
+elements are:
+ 0. Type of contents.
+ 1. Charset of contents.
+ 2. Size in bytes.
+ 3. Encoding of contents.
+ 4. Last modification time.
+If optional argument NO-CACHE is non-nil, cache is not used."
+  (cond
+   ((string-match "^about:" url)
+    (list "text/html" nil nil nil nil))
+   ((string-match "^\\(file:\\|/\\)" url)
+    (w3m-local-attributes url))
+   (t
+    (w3m-w3m-attributes url no-cache))))
+
+(defmacro w3m-content-type (url &optional no-cache)
+  (` (car (w3m-attributes (, url) (, no-cache)))))
+;;(defmacro w3m-content-charset (url &optional no-cache)
+;;  (` (nth 1 (w3m-attributes (, url) (, no-cache)))))
+(defmacro w3m-content-length (url &optional no-cache)
+  (` (nth 2 (w3m-attributes (, url) (, no-cache)))))
+;;(defmacro w3m-content-encoding (url &optional no-cache)
+;;  (` (nth 3 (w3m-attributes (, url) (, no-cache)))))
+(defmacro w3m-last-modified (url &optional no-cache)
+  (` (nth 4 (w3m-attributes (, url) (, no-cache)))))
+
 (defsubst w3m-anchor (&optional point)
   (get-text-property (or point (point)) 'w3m-href-anchor))
 
@@ -588,6 +629,15 @@ for a charset indication")
 
 (defsubst w3m-action (&optional point)
   (get-text-property (or point (point)) 'w3m-action))
+
+(defsubst w3m-get-buffer-create (name)
+  "Return the buffer named NAME, or create such a buffer and return it."
+  (or (get-buffer name)
+      (let ((buf (get-buffer-create name)))
+	(setq w3m-work-buffer-list (cons buf w3m-work-buffer-list))
+	(buffer-disable-undo buf)
+	buf)))
+
 
 (defun w3m-message (&rest args)
   "Alternative function of `message' for w3m.el."
@@ -750,22 +800,6 @@ If N is negative, last N items of LIST is returned."
 
 
 ;;; Working buffers:
-(defsubst w3m-get-buffer-create (name)
-  "Return the buffer named NAME, or create such a buffer and return it."
-  (or (get-buffer name)
-      (let ((buf (get-buffer-create name)))
-	(setq w3m-work-buffer-list (cons buf w3m-work-buffer-list))
-	(buffer-disable-undo buf)
-	buf)))
-
-(put 'w3m-with-work-buffer 'lisp-indent-function 0)
-(put 'w3m-with-work-buffer 'edebug-form-spec '(body))
-(defmacro w3m-with-work-buffer (&rest body)
-  "Execute the forms in BODY with working buffer as the current buffer."
-  (` (with-current-buffer
-	 (w3m-get-buffer-create w3m-work-buffer-name)
-       (,@ body))))
-
 (defun w3m-kill-all-buffer ()
   "Kill all working buffer."
   (dolist (buf w3m-work-buffer-list)
@@ -785,56 +819,6 @@ If N is negative, last N items of LIST is returned."
 	  ;; Coerce a string to a list of chars.
 	  (append (encode-coding-string str (or coding 'iso-2022-jp))
 		  nil))))
-
-(put 'w3m-parse-attributes 'lisp-indent-function '1)
-(put 'w3m-parse-attributes 'edebug-form-spec '(form))
-(defmacro w3m-parse-attributes (attributes &rest form)
-  (` (let ((,@ (mapcar
-		(lambda (attr)
-		  (if (listp attr) (car attr) attr))
-		attributes)))
-       (while
-	   (cond
-	    (,@ (mapcar
-		 (lambda (attr)
-		   (or (symbolp attr)
-		       (and (listp attr)
-			    (<= (length attr) 2)
-			    (symbolp (car attr)))
-		       (error "Internal error, type mismatch."))
-		   (let ((sexp (quote
-				(or (match-string 2)
-				    (match-string 1)))))
-		     (when (listp attr)
-		       (cond
-			((eq (nth 1 attr) :case-ignore)
-			 (setq sexp
-			       (quote
-				(downcase
-				 (or (match-string 2)
-				     (match-string 1))))))
-			((eq (nth 1 attr) :integer)
-			 (setq sexp
-			       (quote
-				(string-to-number
-				 (or (match-string 2)
-				     (match-string 1))))))
-			((nth 1 attr)
-			 (error "Internal error, unknown modifier.")))
-		       (setq attr (car attr)))
-		     (` ((looking-at
-			  (, (format "%s=%s"
-				     (symbol-name attr)
-				     w3m-html-string-regexp)))
-			 (setq (, attr) (, sexp))))))
-		 attributes))
-	    ((looking-at
-	      (, (concat "[A-z]*=" w3m-html-string-regexp))))
-	    ((looking-at "[^<> \t\r\f\n]+")))
-	 (goto-char (match-end 0))
-	 (skip-chars-forward " \t\r\f\n"))
-       (skip-chars-forward "^>")
-       (,@ form))))
 
 
 ;;; HTML character entity handling:
@@ -1602,35 +1586,6 @@ to nil."
 		  (y-or-n-p (format "File(%s) is already exists. Overwrite? " filename)))
 	      (write-region (point-min) (point-max) filename))))
     (error "Unknown URL: %s" url)))
-
-(defsubst w3m-attributes (url &optional no-cache)
-  "Return a list of attributes of URL.
-Value is nil if retirieval of header is failed.  Otherwise, list
-elements are:
- 0. Type of contents.
- 1. Charset of contents.
- 2. Size in bytes.
- 3. Encoding of contents.
- 4. Last modification time.
-If optional argument NO-CACHE is non-nil, cache is not used."
-  (cond
-   ((string-match "^about:" url)
-    (list "text/html" nil nil nil nil))
-   ((string-match "^\\(file:\\|/\\)" url)
-    (w3m-local-attributes url))
-   (t
-    (w3m-w3m-attributes url no-cache))))
-
-(defmacro w3m-content-type (url &optional no-cache)
-  (` (car (w3m-attributes (, url) (, no-cache)))))
-(defmacro w3m-content-charset (url &optional no-cache)
-  (` (nth 1 (w3m-attributes (, url) (, no-cache)))))
-(defmacro w3m-content-length (url &optional no-cache)
-  (` (nth 2 (w3m-attributes (, url) (, no-cache)))))
-(defmacro w3m-content-encoding (url &optional no-cache)
-  (` (nth 3 (w3m-attributes (, url) (, no-cache)))))
-(defmacro w3m-last-modified (url &optional no-cache)
-  (` (nth 4 (w3m-attributes (, url) (, no-cache)))))
 
 
 ;;; Retrieve data:

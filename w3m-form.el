@@ -77,6 +77,55 @@
 (defmacro w3m-form-get (form name)
   (` (plist-get (w3m-form-plist (, form)) (intern (, name)))))
 
+(put 'w3m-parse-attributes 'lisp-indent-function '1)
+(put 'w3m-parse-attributes 'edebug-form-spec '(form))
+(defmacro w3m-parse-attributes (attributes &rest form)
+  (` (let ((,@ (mapcar
+		(lambda (attr)
+		  (if (listp attr) (car attr) attr))
+		attributes)))
+       (while
+	   (cond
+	    (,@ (mapcar
+		 (lambda (attr)
+		   (or (symbolp attr)
+		       (and (listp attr)
+			    (<= (length attr) 2)
+			    (symbolp (car attr)))
+		       (error "Internal error, type mismatch."))
+		   (let ((sexp (quote
+				(or (match-string 2)
+				    (match-string 1)))))
+		     (when (listp attr)
+		       (cond
+			((eq (nth 1 attr) :case-ignore)
+			 (setq sexp
+			       (quote
+				(downcase
+				 (or (match-string 2)
+				     (match-string 1))))))
+			((eq (nth 1 attr) :integer)
+			 (setq sexp
+			       (quote
+				(string-to-number
+				 (or (match-string 2)
+				     (match-string 1))))))
+			((nth 1 attr)
+			 (error "Internal error, unknown modifier.")))
+		       (setq attr (car attr)))
+		     (` ((looking-at
+			  (, (format "%s=%s"
+				     (symbol-name attr)
+				     w3m-html-string-regexp)))
+			 (setq (, attr) (, sexp))))))
+		 attributes))
+	    ((looking-at
+	      (, (concat "[A-z]*=" w3m-html-string-regexp))))
+	    ((looking-at "[^<> \t\r\f\n]+")))
+	 (goto-char (match-end 0))
+	 (skip-chars-forward " \t\r\f\n"))
+       (skip-chars-forward "^>")
+       (,@ form))))
 
 (defun w3m-form-make-get-string (form)
   (when (eq 'get (w3m-form-method form))
