@@ -1,3 +1,8 @@
+2001-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-quit): Clear the echo area just after prompting.
+	(w3m-save-list): Format a list by itself instead of the use of pp.
+
 2001-04-24  Yuuichi Teranishi  <yuuichi@elmo.templewest.net>
 
 	* shimbun/sb-yomiuri.el (shimbun-get-headers): Fixed regexp for "fuho"
