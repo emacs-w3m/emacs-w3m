@@ -1,3 +1,7 @@
+2000-12-10  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* makepatch.pl, Makefile, .cvsignore: New files.
+
 2000-10-26  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-view-this-url): Chang optinal argument 'arg'.
