@@ -1,5 +1,16 @@
 2001-05-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-toggle-inline-images): Message "Showing...".
+
+	* w3m-xmas.el (w3m-create-image): Unoptimize animated GIFs using
+	gifsicle program.
+	(w3m-cache-unoptimized-gif-images-max-length): New variable.
+	(w3m-cache-unoptimized-gif-images): New variable.
+	(w3m-gifsicle-program): New variable.
+	(w3m-should-unoptimize-animated-gifs): New variable.
+
+2001-05-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-fontify): Don't initialize the value of
 	`w3m-cache-underline-faces' here.
 	(w3m-toggle-inline-images): Run the following new hooks instead of
