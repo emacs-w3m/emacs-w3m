@@ -223,7 +223,9 @@ The valid values include `w3m', `w3mmee', and `w3m-m17n'.")
 				     (save-excursion (end-of-line)
 						     (point)))
 				    ",")
-		      (list nil)))))))))
+		      (list nil)))
+	    (when (member "m17n" w3m-compile-options)
+	      (setq w3m-type 'w3m-m17n))))))))
 
 (defcustom w3m-user-agent (concat "Emacs-w3m/" emacs-w3m-version
 				  " " w3m-version)
