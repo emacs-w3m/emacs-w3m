@@ -1094,6 +1094,7 @@ See also `w3m-filter-rules'."
        (eq w3m-type 'w3m-m17n)
        (or (not (eq w3m-output-coding-system 'utf-8))
 	   (and (w3m-mule-unicode-p)
+		(>= emacs-major-version 21)
 		(or window-system (eq (terminal-coding-system) 'utf-8))))
        t)
   "*Non-nil means replace symbols that the <_SYMBOL> tags lead into.
