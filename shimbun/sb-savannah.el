@@ -1,6 +1,6 @@
 ;;; sb-savannah.el --- shimbun backend for gnu list archives on savannah
 
-;; Copyright (C) 2002, 2003 Yoichi NAKAYAMA <yoichi@FreeBSD.org>
+;; Copyright (C) 2002, 2003, 2005 Yoichi NAKAYAMA <yoichi@FreeBSD.org>
 
 ;; Author: Yoichi NAKAYAMA <yoichi@FreeBSD.org>
 ;;         Katsumi Yamaoka <yamaoka@jpl.org>
@@ -39,7 +39,7 @@
 
 (luna-define-class shimbun-savannah (shimbun-mhonarc) ())
 
-(defvar shimbun-savannah-url "http://mail.gnu.org/archive/html/")
+(defvar shimbun-savannah-url "http://lists.gnu.org/archive/html/")
 
 (defvar shimbun-savannah-group-path-alist
   '(("bug-gnu-emacs" . "bug-gnu-emacs")

@@ -1,6 +1,6 @@
 ;;; sb-sourceforge-jp.el --- shimbun backend for lists.sourceforge.jp
 
-;; Copyright (C) 2003, 2004 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2003, 2004, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news
@@ -39,7 +39,10 @@
     ("iiimf-skk-devel-en" . "iiimf-skk-devel.en")
     ("iiimf-skk-users-ja" . "iiimf-skk-users.ja")
     ("iiimf-skk-users-en" . "iiimf-skk-users.en")
-    ("iiimf-skk-cvs-commit" . "iiimf-skk-cvs-commit"))
+    ("iiimf-skk-cvs-commit" . "iiimf-skk-cvs-commit")
+    ("macemacsjp-users")
+    ("macemacsjp-dev")
+    ("macemacsjp-english"))
   "*List of mailing lists serverd by SourceForge-JP."
   :group 'shimbun
   :type '(repeat
@@ -64,8 +67,11 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-sourceforge-jp))
   (let ((pair (assoc (shimbun-current-group-internal shimbun)
 		     shimbun-sourceforge-jp-mailing-lists)))
-    (shimbun-expand-url (or (cdr pair) (car pair))
-			shimbun-sourceforge-jp-base-url)))
+    (concat
+     (shimbun-expand-url (or (cdr pair) (car pair))
+			 shimbun-sourceforge-jp-base-url)
+     "/")
+    ))
 
 (provide 'sb-sourceforge-jp)
 

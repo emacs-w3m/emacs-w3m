@@ -1,6 +1,6 @@
 ;;; sb-pilot-link.el --- shimbun backend for pilot-link
 
-;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2002, 2003, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -44,9 +44,11 @@
   (mapcar 'car shimbun-pilot-link-group-path-alist))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-pilot-link))
-  (concat (shimbun-url-internal shimbun) "/"
+  (concat (shimbun-url-internal shimbun)
+	  "/"
 	  (cdr (assoc (shimbun-current-group-internal shimbun)
-		      shimbun-pilot-link-group-path-alist))))
+		      shimbun-pilot-link-group-path-alist))
+	  "/"))
 
 ;;(luna-define-method shimbun-reply-to ((shimbun shimbun-pilot-link))
 ;;  "")

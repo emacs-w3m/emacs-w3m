@@ -68,11 +68,48 @@ but do not execute them.")
 
 (require 'cl)
 
-;; This file called from Makefile with "/bin/sh" on environment
-;; variable of "SHELL".
-;; However not necessarily have "/bin/sh" in win32 environment.
-(when (eq system-type 'windows-nt)
-  (setq shell-file-name "cmdproxy.exe"))
+;; Check whether the shell command can be used.
+(let ((test (lambda (shell)
+	      (let ((buffer (generate-new-buffer " *temp*"))
+		    (msg "Hello World"))
+		(save-excursion
+		  (set-buffer buffer)
+		  (condition-case nil
+		      (call-process shell nil t nil "-c"
+				    (concat "MESSAGE=\"" msg "\"&&"
+					    "echo \"${MESSAGE}\""))
+		    (error))
+		  (prog2
+		      (goto-char (point-min))
+		      (search-forward msg nil t)
+		    (kill-buffer buffer)))))))
+  (or (funcall test shell-file-name)
+      (progn
+	(require 'executable)
+	(let ((executable-binary-suffixes
+	       (if (memq system-type '(OS/2 emx))
+		   '(".exe" ".com" ".bat" ".cmd" ".btm" "")
+		 executable-binary-suffixes))
+	      shell)
+	  (or (and (setq shell (executable-find "cmdproxy"))
+		   (funcall test shell)
+		   (setq shell-file-name shell))
+	      (and (setq shell (executable-find "sh"))
+		   (funcall test shell)
+		   (setq shell-file-name shell))
+	      (and (setq shell (executable-find "bash"))
+		   (funcall test shell)
+		   (setq shell-file-name shell))
+	      (not (member (nth 1 (or (member "-f" command-line-args)
+				      (member "-funcall" command-line-args)
+				      (member "--funcall" command-line-args)
+				      (member "-e" command-line-args)))
+			   '("w3mhack-batch-compile" "w3mhack-compile"
+			     "w3mhack-makeinfo" "w3mhack-make-package")))
+	      (error "%s" "\n\
+There seems to be no shell command which is equivalent to /bin/sh.
+ Try ``make SHELL=foo [option...]'', where `foo' is the absolute
+ path name for the proper shell command in your system.\n"))))))
 
 (unless (dolist (var nil t))
   ;; Override the macro `dolist' which may have been defined in egg.el.
@@ -194,6 +231,34 @@ It fixes an XEmacs 21.5 bug."
       (narrow-to-region (ad-get-arg 0) (ad-get-arg 1))
       (goto-char (point-max))
       ad-do-it)))
+
+;; Add `configure-package-path' to `load-path' for XEmacs.  Those paths
+;; won't appear in `load-path' when XEmacs starts with the `-vanilla'
+;; option or the `-no-autoloads' option because of a bug. :<
+(when (and (featurep 'xemacs)
+	   (boundp 'configure-package-path)
+	   (listp configure-package-path))
+  (let ((paths
+	 (apply 'nconc
+		(mapcar
+		 (lambda (path)
+		   (when (and (stringp path)
+			      (not (string-equal path ""))
+			      (file-directory-p
+			       (setq path (expand-file-name "lisp" path))))
+		     (directory-files path t)))
+		 configure-package-path)))
+	path adds)
+    (while paths
+      (setq path (car paths)
+	    paths (cdr paths))
+      (when (and path
+		 (not (or (string-match "/\\.\\.?\\'" path)
+			  (member (file-name-as-directory path) load-path)
+			  (member path load-path)))
+		 (file-directory-p path))
+	(push (file-name-as-directory path) adds)))
+    (setq load-path (nconc (nreverse adds) load-path))))
 
 ;; Add supplementary directories to `load-path'.
 (let ((addpath (or (pop command-line-args-left) "NONE"))
@@ -508,11 +573,6 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	    '(if (bobp)
 		 nil
 	       (preceding-char)))))))
-
-(if (fboundp 'truncate-string-to-width)
-    (put 'truncate-string 'byte-optimizer
-	 (lambda (form)
-	   (cons 'truncate-string-to-width (cdr form)))))
 
 (put 'match-string-no-properties 'byte-optimizer
      (lambda (form)
@@ -970,7 +1030,7 @@ install:
     (unless (string-equal "NONE/" icon-dir)
       (message "
 install-icons:
-  *.xpm                   -> %s"
+  *.gif, *.xpm            -> %s"
 	       icon-dir))
     (setq package-dir (file-name-as-directory package-dir))
     (message "
@@ -981,7 +1041,7 @@ install-info:
       (message "
 install-package:
   *.el, *.elc, ChangeLog* -> %slisp/w3m/
-  *.xpm                   -> %setc/images/w3m/
+  *.gif, *.xpm            -> %setc/images/w3m/
   *.info, *.info-*        -> %sinfo/
   MANIFEST.w3m            -> %spkginfo/"
 	       package-dir package-dir package-dir package-dir)))
@@ -1005,6 +1065,10 @@ NOTE: This function must be called from the top directory."
     ;; we need to force it to load the correct one.
     (when texinfmt
       (push (file-name-directory texinfmt) load-path))
+    ;; ptexinfmt.el uses `with-temp-buffer' which is not available in
+    ;; Emacs 19.
+    (unless (fboundp 'with-temp-buffer)
+      (require 'poe))
     (load "doc/ptexinfmt.el" nil t t)
     (cd "doc")
     (if (and (string-match "-ja\\.texi\\'" file)
@@ -1074,7 +1138,8 @@ NOTE: This function must be called from the top directory."
 	    (texinfo-every-node-update)
 	    (set-buffer-modified-p nil)
 	    (message "texinfo formatting %s..." file)
-	    (let ((si:message (symbol-function 'message)))
+	    (let ((si:message (symbol-function 'message))
+		  (si:push-mark (symbol-function 'push-mark)))
 	      (fset
 	       'message
 	       (cond ((featurep 'mule)
@@ -1109,9 +1174,15 @@ NOTE: This function must be called from the top directory."
 			    (apply ,si:message fmt args)))))
 		     (t
 		      si:message)))
+	      ;; Silence it when formatting @multitable section.
+	      (fset 'push-mark
+		    (byte-compile
+		     `(lambda (&rest args)
+			(apply ,si:push-mark (car args) t (cddr args)))))
 	      (unwind-protect
 		  (texinfo-format-buffer nil)
-		(fset 'message si:message)))
+		(fset 'message si:message)
+		(fset 'push-mark si:push-mark)))
 	    (if (buffer-modified-p)
 		(progn (message "Saving modified %s" (buffer-file-name))
 		       (save-buffer))))

@@ -1,6 +1,6 @@
 ;;; sb-sml.el --- shimbun backend for Smalltalkers' Salon Mailing List archive
 
-;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -31,7 +31,7 @@
 
 (luna-define-class shimbun-sml (shimbun-mailman) ())
 
-(defvar shimbun-sml-url "http://www.sra.co.jp/smalltalk/SML/archives")
+(defvar shimbun-sml-url "http://www.akademia.co.jp/Smalltalk/SML/archives/archive/")
 
 (defvar shimbun-sml-groups '("main"))
 

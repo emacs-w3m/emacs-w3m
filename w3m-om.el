@@ -1,6 +1,7 @@
-;;; w3m-om.el --- Mule 2 specific functions for w3m
+;;; w3m-om.el --- Mule 2 specific functions for emacs-w3m
 
-;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2005
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Katsumi Yamaoka    <yamaoka@jpl.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>

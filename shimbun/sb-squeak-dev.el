@@ -1,6 +1,6 @@
 ;;; sb-squeak-dev.el --- shimbun backend for Squeak-dev ML archive
 
-;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -36,7 +36,7 @@
 (luna-define-class shimbun-squeak-dev (shimbun-mailman) ())
 
 (defvar shimbun-squeak-dev-url
-  "http://lists.squeakfoundation.org/pipermail/squeak-dev")
+  "http://lists.squeakfoundation.org/pipermail/squeak-dev/")
 
 (defvar shimbun-squeak-dev-groups '("main"))
 

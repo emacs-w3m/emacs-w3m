@@ -61,7 +61,7 @@
       (while (re-search-forward "<a +href=\".*\\(library.+\\.html\\)\"" nil t)
 	(push (shimbun-expand-url (match-string-no-properties 1) baseurl)
 	      indexes))
-      (nreverse indexes)
+      (setq indexes (nreverse indexes))
       (catch 'stop
 	(while (or (not pages)
 		   (<= (incf count) pages))
@@ -106,30 +106,14 @@
 	    (forward-line 1))))
       headers)))
 
-(luna-define-method shimbun-article ((shimbun shimbun-ibm-dev)
-				     header &optional outbuf)
-  (when (shimbun-current-group-internal shimbun)
-    (with-current-buffer (or outbuf (current-buffer))
-      (insert
-       (or (with-temp-buffer
-	     (shimbun-retrieve-url (shimbun-article-url shimbun header))
-	     (message "shimbun: Make contents...")
-	     (goto-char (point-min))
-	     (if (re-search-forward
-		  "<meta http-equiv=\"refresh\" +content=\"0;URL=\\(.+\\)\" */?>"
-		  nil t)
-		 (let ((url (match-string 1)))
-		   (message "shimbun: Redirecting...")
-		   ;;(shimbun-set-url-internal shimbun url)
-		   (erase-buffer)
-		   (shimbun-retrieve-url url 'no-cache)
-		   (message "shimbun: Redirecting...done")
-		   (message "shimbun: Make contents...")))
-	     (goto-char (point-min))
-	     (prog1
-		 (shimbun-make-contents shimbun header)
-	       (message "shimbun: Make contents...done")))
-	   "")))))
+(luna-define-method shimbun-article-url ((shimbun shimbun-ibm-dev) header)
+  (with-temp-buffer
+    (let ((url (shimbun-article-base-url shimbun header)))
+      (shimbun-fetch-url shimbun url)
+      (if (re-search-forward "\
+<meta http-equiv=\"refresh\" +content=\"0;URL=\\(.+\\)\" */?>" nil t)
+	  (match-string 1)
+	url))))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-ibm-dev)
 						    header)

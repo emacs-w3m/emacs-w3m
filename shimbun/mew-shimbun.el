@@ -1,7 +1,8 @@
 ;; -*- mode: emacs-lisp -*-
 ;; mew-shimbun.el --- View shimbun contents with Mew
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;;         Hideyuki SHIRAI <shirai@meadowy.org>
@@ -336,13 +337,15 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		  (and (boundp 'mew-local-folder-list) mew-local-folder-list)
 		  (and (boundp 'mew-local-folder-alist)
 		       (mapcar 'car mew-local-folder-alist))))
-	sbflds alst fld cfile)
+	sbflds alst fld cfile removes)
     (save-excursion
       (dolist (fld flds)
 	(when (and (mew-shimbun-folder-p fld)
 		   (file-exists-p
 		    (expand-file-name mew-shimbun-db-file
 				      (mew-expand-folder fld))))
+	  (when (string-match "/$" fld)
+	    (setq removes (cons (substring fld 0 (match-beginning 0)) removes)))
 	  (if (null args)
 	      (setq sbflds (cons fld sbflds))
 	    (if (mew-shimbun-folder-new-p fld)
@@ -364,7 +367,8 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 						  (mew-shimbun-unseen-regex)) nil t)
 		       (setq sbflds (cons fld sbflds))))))))))))
     (mapcar (lambda (x)
-	      (setq alst (cons (list x) alst)))
+	      (unless (member x removes)
+		(setq alst (cons (list x) alst))))
 	    sbflds)
     (let ((completion-ignore-case mew-complete-folder-ignore-case))
       (setq fld (completing-read
@@ -378,6 +382,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
       (setq fld (substring fld 0 (match-beginning 0)))
       (setcar mew-shimbun-input-hist fld))
     (setq mew-input-folder-hist (cons fld mew-input-folder-hist))
+    (setq fld (directory-file-name fld))
     (let ((newfld (mew-summary-switch-to-folder fld)))
       (if (eq 1 (function-max-args 'mew-summary-ls))
 	  (mew-summary-ls newfld)
@@ -463,10 +468,11 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		  mew-use-biff))
 	(count 0)
 	(dispcount 0)
-	msg file)
+	newfld msg file)
     (if biff (mew-biff-clean-up))
     (shimbun-open-group shimbun group)
     (unless (file-exists-p (mew-expand-folder fld))
+      (setq newfld t)
       (mew-make-directory (mew-expand-folder fld)))
     (mew-shimbun-db-setup fld)
     (unwind-protect
@@ -507,9 +513,10 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	      (setq dispcount (1+ dispcount))
 	      (mew-shimbun-mode-display group server count dispcount sum))))
       (mew-summary-unlock)
-      (static-if (fboundp 'mew-local-folder-insert)
-	  (mew-local-folder-insert fld)
-	(mew-folder-insert fld))
+      (when newfld
+	(static-if (fboundp 'mew-local-folder-insert)
+	    (mew-local-folder-insert fld)
+	  (mew-folder-insert fld)))
       (if biff (mew-biff-setup))
       (shimbun-close-group shimbun)
       (shimbun-close shimbun)
@@ -519,7 +526,8 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 ;;;###autoload
 (defun mew-shimbun-re-retrieve (&optional args)
   "Re-retrieve this message.
-If called with '\\[universal-argument]', re-retrieve messages marked with '@'."
+If called with '\\[universal-argument]', re-retrieve messages marked with
+'mew-shimbun-mark-re-retrieve'."
   (interactive "P")
   (when (mew-summary-exclusive-p)
     (mew-summary-only

@@ -1,3 +1,684 @@
+2005-03-23  Andreas Seltenreich  <seltenreich@gmx.de>
+
+	* shimbun/sb-zeit-de.el (shimbun-zeit-de-content-end): Don't match
+	on advertisements.
+	(shimbun-clear-contents): Added to get rid of webbugs and
+	advertisements.
+
+2005-03-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-setup-toolbar): Make sure icon files exist.
+	(w3m-update-toolbar): Make sure toolbar items have been specified.
+	(w3m-initialize-graphic-icons): Make sure icon files exist.
+
+	* w3m-e21.el (w3m-setup-toolbar): Make sure icon files exist.
+	(w3m-initialize-graphic-icons): Ditto.
+
+2005-03-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* Makefile.in (tarball): Remove `w3m-e23.el' instead of
+	`w3m-e22.el'.
+
+	* w3m.el (w3m-url-readable-string): Decide a scheme to guess
+	encodings based on the target URL, instead of the current URL.
+	(w3m-show-decoded-url): Doc fix to follow the above change.
+	(w3m-copy-buffer): Do not set `w3m-current-url' and
+	`w3m-current-coding-system'.
+	(w3m-goto-url-new-session): Simplified.
+
+	* shimbun/nnshimbun.el (nnshimbun-parse-nov): Remove redundant
+	`function'.
+
+2005-03-22  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-yahoo-auctions.el (shimbun-yahoo-auctions-content-start)
+	(shimbun-yahoo-auctions-content-end): Follow the change of the
+	site design.
+	(shimbun-get-headers): Reverse the order of the return value.
+	(shimbun-article-url): New overridden method.
+	(shimbun-make-contents): Ditto.
+
+2005-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-fau.el (shimbun-article): Fix the class name.
+	Suggested by ARISAWA Akihiro <ari@mbf.sphere.ne.jp>.
+
+2005-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el (display-images-p): Remove alias.
+
+	* shimbun/sb-fau.el (shimbun-article): New overriding method to
+	decode article contents according to shimbun-fau-coding-system.
+
+2005-03-22  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-fau.el (shimbun-fau-coding-system): New variable.
+
+	* shimbun/shimbun.el (shimbun-find-coding-system): Alias to
+	w3m-find-coding-system.
+
+2005-03-21  David Hansen  <david.hansen@physik.fu-berlin.de>
+
+	* shimbun/sb-heise.el (shimbun-heise-get-telepolis-headers):
+	Fixed broken message id.
+
+2005-03-20  David Hansen  <david.hansen@physik.fu-berlin.de>
+
+	* shimbun/sb-heise.el (shimbun-heise-get-newsticker-headers):
+	Removed forgotten debug code.
+	(shimbun-heise-get-telepolis-headers): Follow the change of site
+	design.
+
+2005-03-19  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-fau.el (shimbun-fau-x-face-alist): New variable.
+	(shimbun-fau-content-end): Improve regexp.
+
+2005-03-19  David Hansen  <david.hansen@physik.fu-berlin.de>
+
+	* shimbun/sb-fau.el: New file.
+
+2005-03-19  Takashi Hiromatsu  <matsuan@ca2.so-net.ne.jp>
+
+	* shimbun/sb-sourceforge-jp.el (shimbun-sourceforge-jp-mailing-lists):
+	Add groups macemacsjp-users, macemacsjp-dev and macemacsjp-english.
+
+2005-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (very-slow): Don't mv non-existent files.
+
+	* w3m-e19.el (easy-menu-remove-item): Don't autoload it.
+
+	* w3m-om.el (easy-menu-remove-item): Ditto.
+
+	* w3m-rss.el (match-string-no-properties): Avoid warning for Emacs
+	19 and XEmacs.
+	(split-string): Avoid warning for Emacs 19.
+
+	* w3m-symbol.el: Require cl when compiling.
+
+	* w3m-tabmenu.el (easy-menu-remove-item): Aautoload it for Emacs 19.
+
+	* w3m.el: Autoload widget-get to avoid compile warning for Emacs 19.
+	(w3m): Remove unused bound variable.
+
+	* w3mhack.el: Bind executable-binary-suffixes to the proper value
+	for OS/2 and emx while checking for the shell command; cause an
+	error only when compiling or formatting files.
+
+	* attic/addpath.el: Make it work with old Emacsen even if cl is
+	not loaded; load custom, bind defcustom'ed variables and make the
+	locate-library function run quietly for Emacs 19; synch the code
+	testing the shell command with w3mhack.el.
+	(char-after): Add a byte-optimizer for Emacs 19.
+
+	* w3m-ccl.el: Load w3m-om instead of autoloading it for charset-id.
+
+	* w3m-util.el: Load cl independently when compiling.
+
+2005-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el: Check whether the shell command can be used.
+
+	* attic/addpath.el: Ditto; add early-package-load-path to
+	load-path for XEmacs 21.5.
+
+	* shimbun/nnshimbun.el: Load gnus-bcklg safely (see the comment).
+
+2005-03-17  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-favicon.el: Add autoload of `w3m-url-readable-string'.
+
+2005-03-17  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* w3m.el (w3m-check-header-tags): Check abnormal `base' url.
+
+2005-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Try to
+	fetch the article for that day if it failed for the editorial
+	group and the tenjin group; remove the science group section.
+
+	* shimbun/sb-tcup.el (shimbun-tcup-group-alist): Remove the
+	time-lag parameter.
+	(shimbun-get-headers): Adjust date for articles posted up in the
+	level-one boards in which the clock has been advanced for 9 hours.
+
+2005-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el: Add early-package-load-path to load-path for XEmacs
+	21.5.
+
+	* shimbun/sb-asahi.el: Rewrite to follow the change of the site.
+	(shimbun-asahi-make-regexp): New function.
+	(shimbun-asahi-group-table): Use it; remove the groups borderless,
+	kansai-special, nankyoku-people and whitemail; add the groups
+	book, business.column, car, car.italycolumn, car.motorsports,
+	car.newcar, car.newcarbywebcg, culture.column, digital,
+	digital.apc, digital.bcnnews, digital.column01, digital.hotwired,
+	digital.internet, digital.mobile, digital.nikkanko, digital.pc,
+	edu.column, edu.kosodate, edu.tamate, health, health.aged,
+	health.alz, health.medical, housing, housing.amano,
+	housing.column, housing.diary, housing.world, igo,
+	kansai.horiekenichi, kansai.umaimon, kansai.fuukei,
+	kansai.yotsuba, kansai.smile, kansai.keiki, kansai.okiniiri,
+	kansai.syun, kansai.takara, kansai.kansaiisan, kansai.depa,
+	kansai.kaban, kansai.kyosho, kansai.okan, kansai.densetsu,
+	kansai.onayami, kansai.sanshi, life, life.column, life.food,
+	national.calamity, national.etc, national.trial, obituaries,
+	shopping, shopping.kishi, shopping.ryouhin, shougi,
+	sports.baseball, sports.column, sports.football, sports.spo,
+	travel, travel.kaido, travel.matsuri, travel.zeitaku and wakamiya;
+	improve regexps.
+	(initialize-instance): Make the from address unreachable.
+	(shimbun-asahi-get-headers): Rewrite.
+	(shimbun-asahi-get-headers-for-today): Rewrite.
+	(shimbun-asahi-prepare-article): Rewrite.
+
+	* w3m-xmas.el: Fbind coding-system-type to ignore if it is void.
+
+	* shimbun/sb-bbc.el (shimbun-rss-build-message-id): Ease a
+	strictness of regexp.
+
+2005-03-15  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (w3m-form-mee-new): Display clear signs of
+	coding-system for `w3m-url-decode-string'.
+	(w3m-form-mee-select-value): Ditto.
+	(w3m-form-parse-and-fontify): Ditto.
+
+	* w3m.el (w3m-decode-buffer): Decode the buffer within buffer set
+	the `multibyte'.
+
+	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-article): Treat
+	folder surely over again.
+
+2005-03-14  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-goto-folder): Treat folder
+	surely; inlude last `/' of folder name.
+	(mew-shimbun-re-retrieve): Doc fix.
+
+2005-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html-content-start):
+	Improve.
+	(shimbun-asahi-html-content-end): Improve.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-content-start): Improve.
+	(shimbun-asahi-content-end): Improve.
+	(shimbun-asahi-prepare-article): Don't remove adv for the sports
+	group there.
+
+2005-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Modify regexp
+	for the sports group following the change of the site.
+	(shimbun-asahi-prepare-article): Set date and remove adv for the
+	sports group.
+
+2005-03-13  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-wincefan.el (shimbun-wincefan-content-start): Updated.
+	(shimbun-wincefan-content-end): Ditto.
+	(shimbun-get-headers): Ditto.
+	(shimbun-wincefan-parse-time): Removed.
+	(shimbun-make-contents): Not to modify the current buffer and
+	simply expand relative URLs.
+
+2005-03-13  MIYOSHI Masanori  <miyoshi@meadowy.org>
+
+	* shimbun/sb-yahoo-sports.el: New shimbun backend for
+	Yahoo!SPORTS.
+
+	* doc/emacs-w3m-ja.texi (Sport Sites Supported by Shimbun): Update.
+
+	* doc/emacs-w3m.texi (Sport Sites Supported by Shimbun): Ditto.
+
+2005-03-13  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-sourceforge-jp.el (shimbun-index-url): Fix generating
+	url rule.
+
+	* shimbun/sb-savannah.el (shimbun-savannah-url): Improve url.
+
+	* shimbun/sb-ruby.el (shimbun-ruby-url): Improve url.
+	(shimbun-index-url): Fix generating url rule.
+
+2005-03-12  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-toshiba.el (Toplevel): Add 'require cl' when compiling.
+	(shimbun-toshiba-from-address): New variable.
+	(shimbun-get-headers): New method define.
+
+2005-03-12  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-plucker.el (shimbun-plucker-litemplate-regexp):
+	Improve Regexp.
+	(shimbun-plucker-extract-header-values): Fix supporting new regexp.
+
+	* shimbun/sb-orca.el (shimbun-orca-url): Improve url.
+	(shimbun-orca-litemplate-regexp): Improve Regexp.
+
+2005-03-12  MIYOSHI Masanori  <miyoshi@meadowy.org>
+
+	* shimbun/sb-msports-nifty.el: Follow the change of site design.
+
+	* shimbun/sb-f1express.el: Removed.
+
+	* shimbun/sb-f1fan.el: Update the email address of the author.
+
+	* shimbun/sb-makanai.el: Ditto.
+
+	* shimbun/sb-nikkansports.el: Ditto.
+
+	* doc/emacs-w3m-ja.texi (Sport Sites Supported by Shimbun): Update.
+
+	* doc/emacs-w3m.texi (Sport Sites Supported by Shimbun): Ditto.
+
+2005-03-11  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-squeak-ja.el (shimbun-squeak-ja-url): Improve url.
+
+	* shimbun/sb-squeak-dev.el (shimbun-squeak-dev-url): Ditto.
+
+	* shimbun/sb-sml.el (shimbun-sml-url): Ditto.
+
+	* shimbun/sb-pilot-mailsync.el (shimbun-pilot-mailsync-url): Ditto.
+
+	* shimbun/sb-pilot-link.el (shimbun-index-url): Improve url
+	generating rule.
+
+2005-03-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-tcup.el (shimbun-tcup-group-alist): Revert; update
+	urls; add the time-lag parameter.
+	(shimbun-tcup-coding-system): Remove:
+	(shimbun-get-headers): Use it instead of shimbun-headers; fetch
+	old articles; adjust date according to the time-lag parameter.
+	(shimbun-article): Protect against missing contents.
+
+2005-03-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-tcup.el (shimbun-tcup-group-alist): Add the coding
+	system parameter; set it as shift_jis for the yutopia group.
+	(shimbun-tcup-subject-regexp): Improve regexp.
+	(shimbun-tcup-from-start-regexp): Ditto.
+	(shimbun-tcup-date-start-regexp): Ditto.
+	(shimbun-tcup-body-start-regexp): Ditto.
+	(shimbun-tcup-body-end-regexp): Ditto.
+	(shimbun-tcup-coding-system): Default to euc-jp.
+	(shimbun-tcup-stime-to-time): Don't adjust the time by the local
+	timezone.
+	(shimbun-headers): Decode the contents using the coding system
+	which shimbun-tcup-group-alist specifies; improve regexp matching
+	the author's name; fix the time for the groups which use shift_jis.
+
+2005-03-10  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-jpilot.el (shimbun-jpilot-url): Fix url.
+	(shimbun-make-contents :after): Removed.
+
+2005-03-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Load w3m-e23.el(c) that exists in the same directory as
+	w3m.el(c) so as to exclude ones in other places; report the
+	precise error message if it doesn't exist.
+
+2005-03-10 Masaru Nomiya <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Use
+	http://www.asahi.com/national/list.html for the national group
+	instead of http://www.asahi.com/national/ in which some articles
+	might be missed.
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-ft): correct
+	regexp.
+
+2005-03-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-decode-coding-string-with-priority): Ignore
+	`undecided' so as not to use it for the priority list.
+
+2005-03-10  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-fsf.el (w3m-detect-coding-region): Guard error for
+	`undecided'.
+
+2005-03-10  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-pocketgames.el (shimbun-pocketgames-content-start):
+	Fix regexp for new design web page.
+	(shimbun-headers): Remove.
+	(shimbun-pocketgames-headers): Ditto.
+	(shimbun-pocketgames-headers-1): Rename for 'shimbun-get-headers'
+	(shimbun-get-headers): New method overriden.
+	(shimbun-make-contents): Remove.
+	(shimbun-pocketgames-make-mime-article): Ditto.
+
+2005-03-10  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-arch-bluegate.el: Removed for site closing.
+
+	* shimbun/sb-pocketgames.el (shimbun-make-contents): Fix mistaken
+	method overriding.
+
+	* shimbun/sb-atmarkit.el (shimbun-atmarkit-group-path-alist): Add
+	"fwcr" group.
+
+2005-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-wikimedia.el (shimbun-wikimedia-ja-date-decode):
+	Allow the RFC822 style date format which has been used in the
+	early days.
+
+	* w3mhack.el: Remove the byte-optimizer which replaces
+	truncate-string with truncate-string-to-width.
+
+2005-03-09  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-group-path-alist):
+	Comment out `palmwarefan'.
+
+2005-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-zeit-de.el (shimbun-rss-build-message-id): Make it
+	work even if there's no subdirectory in url.
+
+	* w3m.el (w3m-modeline-title): Replace truncate-string-to-width
+	with w3m-truncate-string.
+
+	* w3m-util.el (w3m-truncate-string): Use truncate-string-to-width
+	if it is available.
+
+2005-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-info-like-map): Bind the `y' key to the
+	w3m-print-current-url command; bind the `Y' key to the
+	w3m-print-this-url command; don't bind the `c' key.
+
+	* shimbun/sb-impress.el (shimbun-make-contents): Fix broken image
+	tags.
+
+	* shimbun/sb-bbdb-ml.el (shimbun-bbdb-ml-url): Update.
+
+2005-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yahoo.el (shimbun-get-headers): Leave garbages around
+	headers.
+
+	* shimbun/sb-atmarkit.el (shimbun-atmarkit-use-base-url): New var.
+	(shimbun-article-url): Switch the return value to the base url and
+	the printing url according to shimbun-atmarkit-use-base-url.
+	(shimbun-make-contents): Make shimbun-article-url return the base
+	url rather than the printing url because links in the print page
+	are relative to it.
+
+2005-03-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-make-help-echo): Fix the backquote form.
+	(w3m-make-balloon-help): Ditto.
+
+	* w3m-util.el (w3m-set-match-data): Use existing markers.
+
+2005-03-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-url-readable-string): Save matching data.  Check
+	whether `w3m-current-url' is string before checking it.
+	(w3m-goto-url-new-session, w3m-copy-buffer): Call `w3m-goto-url'
+	with `redisplay' option to enforce redisplaying the certain
+	content.
+
+	* w3m-favicon.el (w3m-favicon-retrieve): Decode an URL when
+	displaying it.
+
+	* w3m-form.el (w3m-form-input-textarea-mode-setup): An expression
+	is evaluated without checking type, and save matching data.
+
+2005-03-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-url-readable-string): Check whether
+	`w3m-current-coding-system' is valid before calling
+	`w3m-url-decode-string'.
+	(w3m-local-dirlist-cgi, w3m-w3m-dump-extra): Use
+	`w3m-url-readable-string'.
+	(w3m-copy-buffer): Copy all buffer-local variables, and do not
+	cancel them even if `empty' option is set.
+	(w3m-display-progress-message): Import from w3m-util.el to
+	suppress byte-compile warnings.
+
+	* w3m-util.el (w3m-parse-attributes): Accept XHTML format of
+	boolean atttibutes.
+	(w3m-display-progress-message): Export to w3m.el.
+
+2005-03-03  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-url-readable-string): An expression is evaluated
+	without checking type.
+
+2005-03-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-show-decoded-url): Update its customize spec to use
+	it as the rule set to decode URIs when displaying them.  Changed
+	its default value.
+	(w3m-url-readable-string): New function to process the above option.
+	(w3m-make-help-echo, w3m-make-balloon-help): Do not accept
+	`url-decode' option, and use the above function to decore URIs.
+	(w3m-fontify-anchors): Follow the above change.
+	(w3m-print-current-url, w3m-print-this-url): Call the above function.
+	(w3m-make-url-decode-function): Removed.
+	(w3m-entity-alist, w3m-about-history): Remove redundant `function'.
+	For more detail, see http://www.mew.org/~kazu/doc/elisp/function.html.
+
+2005-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-modeline-title-string): New variable.
+	(w3m-modeline-title-timer): New variable.
+	(w3m-modeline-title): New function used to truncate the title
+	string not to cut the right end of the mode line.  Works only with
+	Emacs 22 and newer.
+	(w3m-buffer-setup): Use it.
+
+2005-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-make-help-echo): Make it work with XEmacs.
+	(w3m-make-balloon-help): Support decoding URIs.
+	(w3m-fontify-anchors): Make the balloon-help show decoded URIs.
+
+2005-03-02  ARISAWA Akihiro  <ari@mbf.ocn.ne.jp>
+
+	* w3m.el (w3m-show-decoded-url): New user option.
+	(w3m-make-url-decode-function): New inline function.
+	(w3m-make-help-echo): Use it.
+	(w3m-fontify-anchors): The function of help-echo property has
+	an ability to decode url.
+
+2005-03-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-decode-coding-string-with-priority): New function.
+
+	* w3m.el (w3m-url-decode-string): Use it.
+
+2005-03-01  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-w3m-attributes-1): Support `300 Multiple Choices'.
+	(w3m-w3m-retrieve): Ditto.
+	(w3m-w3m-retrieve-1): Ditto.
+
+2005-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-detect-coding-region): Use the name of the
+	coding system instead of the coding category if it is void.
+
+	* w3m-util.el (w3m-set-match-data): New macro which converts
+	points into markers under XEmacs.
+	(w3m-search-tag-1): Use it.
+
+	* w3m-e19.el: Autoload easymenu in order to avoid compile warning.
+	* w3m-om.el: Ditto.
+
+2005-02-26  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-heise.el (shimbun-heise-get-newsticker-headers): Replace
+	'w3m-expand-url' to 'shimbun-expand-url'.
+	(shimbun-heise-get-newsticker-headers): Ditto.
+
+2005-02-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (all): Use `w3m-form-set-number' and
+	`w3m-form-kill-buffer' instead of `w3m-form-textarea-set-number'
+	and `w3m-form-textarea-kill-buffer'
+
+	* w3m-form.el (w3m-form-input-select-urlid): New buffer local
+	variable.
+	(w3m-form-input-map-urlname): Ditto.
+	(w3m-form-set-number): Rename from `w3m-form-textarea-set-number'
+	and treate buffers of `select' and `map'.
+	(w3m-form-kill-buffer): Ditto.
+	(w3m-form-input-select-set): Allways remove own buffer.
+	(w3m-form-input-select-exit): Ditto.
+	(w3m-form-input-map-set): Ditto.
+	(w3m-form-input-map-exit): Ditto.
+	(w3m-form-input-select): When exists same from buffer, use it.
+	(w3m-form-input-map): Ditto.
+
+2005-02-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-what-where): Fix the form.
+	(w3mhack-makeinfo): Silence it when formatting @multitable section.
+
+2005-02-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (top): Add autoloads of `w3m-form-textarea-kill-buffer'
+	and `w3m-form-textarea-set-number' to avoid byte-compile warnings.
+	(w3m-delete-buffer): Call `w3m-form-textarea-kill-buffer' when use
+	form.
+	(w3m-delete-other-buffers): Ditto.
+	(w3m-quit): Ditto.
+	(w3m-select-buffer-delete-buffer): Ditto.
+	(w3m-pack-buffer-numbers): Call `w3m-form-textarea-set-number'
+	when use form.
+
+	* w3m-form.el (top): Move all buffer local variables on the top to
+	avoid byte-compile warnings.
+	(w3m-form-parse-and-fontify): Set `w3m-form-use-textarea-backup-p'
+	to nil.
+	(w3m-form-input-textarea-save): Use
+	`w3m-form-use-textarea-backup-p' instead of
+	`w3m-form-use-textarea-backup'.
+	(w3m-form-input-textarea-set): Allways remove textarea buffer and
+	window.
+	(w3m-form-input-textarea-exit): Ditto.
+	(w3m-form-input-textarea): Check to call for backup. Check
+	identity of existed textarea buffer and w3m buffer. Treat
+	`w3m-form-use-textarea-backup-p'.
+	(w3m-form-use-textarea-backup-p): New function.
+	(w3m-form-textarea-set-number): Ditto.
+	(w3m-form-textarea-kill-buffer): Ditto.
+	(w3m-form-submit-get-textarea-files): If no backup, return nil.
+
+2005-02-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el (shimbun-make-mime-article): Call
+	`shimbun-article-url' instead of `shimbun-header-xref'.
+	(shimbun-header-insert-and-buffer-string): Ditto.
+	(shimbun-footer): Call `shimbun-article-base-url' instead of
+	`shimbun-header-xref'.
+
+	* shimbun/sb-atmarkit.el (shimbun-make-contents): Removed.
+	(shimbun-atmarkit-content-start): New variable.
+	(shimbun-atmarkit-content-end): Ditto.
+	(shimbun-clear-contents): Defined as a before method.
+
+2005-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el: Autoload cancel-timer for XEmacs.
+
+	* w3m-xmas.el (w3m-run-at-time): Use run-at-time which comes from
+	timer-funcs.el if it seems to work correctly.
+	(cancel-timer): Defun if it is void.
+
+2005-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* doc/ptexinfmt.el (texinfo-multitable-widths): Reverse the logic
+	that shows whether it is broken.
+
+	* w3m-util.el: Autoload regexp-opt for Emacs 19.
+
+	* w3mhack.el (w3mhack-makeinfo): Load poe for Emacs 19.
+
+2005-02-24  Romain Francoise  <romain@orebokech.com>
+
+	* w3m.el (w3m-lynx-like-map): Bind [follow-link] so as to make
+	mouse-1 work in Emacs 22 like mouse-2.
+	(w3m-info-like-map): Ditto.
+
+2005-02-24  Felix E. Klee  <felix.klee@inka.de>
+
+	* shimbun/sb-ffii.el (shimbun-ffii-group-alist): Renamed.
+
+2005-02-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el: Changes to retrieve printable pages instead
+	of retrieving pages which are linked from index pages.
+	(shimbun-fetch-url): Accept the 4th argument, `referer'.
+	(shimbun-article-base-url): New inline function.
+	(shimbun-article-url): Redefined as a method.
+	(shimbun-header-insert): Call `shimbun-article-base-url' instead
+	of calling the above.
+	(shimbun-article): Retrieve the pages specified by
+	`shimbun-article-url' method.
+	(shimbun-make-html-contents): Call `shimbun-article-url' instead
+	of calling `shimbun-header-xref'.
+
+	* shimbun/sb-atmarkit.el: Fix its encoding to `iso-2022-7bit'.
+	(shimbun-atmarkit-groups): Removed.
+	(shimbun-groups): New method.
+	(shimbun-article): Removed.
+	(shimbun-article-url): New method.
+
+	* shimbun/sb-ibm-dev.el (shimbun-article): Removed.
+	(shimbun-article-url): New method.
+
+	* shimbun/sb-msdn.el (shimbun-article): Removed.
+	(shimbun-article-url): New method.
+
+	* shimbun/sb-rediff.el (shimbun-article): Removed.
+	(shimbun-article-url): New method.
+
+	* shimbun/sb-wired-jp.el (shimbun-headers): Simplified.
+	(shimbun-article-url): New method.
+	(shimbun-clear-contents): Call the above instead of calling
+	`shimbun-header-xref'.
+
+2005-02-23  Felix E. Klee  <felix.klee@inka.de>
+
+	* shimbun/sb-ffii.el: New module.
+
+2005-02-23  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-antenna.el (w3m-antenna-check-rss): Parse all date fields.
+
+2005-02-21  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-impress.el (shimbun-get-headers): Add comment-outed
+	html source removal.
+
+2005-02-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-form.el (w3m-form-input-textarea): Fix.
+
+2005-02-21  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>,
+	Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (w3m-form-input-textarea-mode-setup): Fix.
+	(w3m-form-input-textarea): Follow the above change.
+
+2005-02-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-form.el (w3m-form-textarea-edit-mode): Changed its default
+	value to `text-mode'.
+
 2005-02-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (install-package): Change the default directory in
@@ -6,9 +687,9 @@
 	(install-package-ja): Ditto.
 
 	* aclocal.m4 (AC_EXAMINE_PACKAGEDIR): Use configure-package-path.
-	(AC_PATH_ICONDIR): Change the default directory in which icon files
-	will be installed from `etc/w3m/icons/' into `etc/images/w3m/'
-	following the most recent Emacs and Gnus.
+	(AC_PATH_ICONDIR): Change the default directory in which icon
+	files will be installed from `etc/w3m/icons/' into
+	`etc/images/w3m/' following the most recent Emacs and Gnus.
 
 	* w3m.el (w3m-icon-directory): Improve the way to determin the
 	default value.
@@ -19,10 +700,106 @@
 	(w3mhack-make-package): Ditto.
 	(w3mhack-what-where): Ditto.
 
+2005-02-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-rss.el (shimbun-rss-get-headers): New function.
+	(shimbun-get-headers): Use the above.
+
+	* shimbun/sb-yahoo-auctions.el (shimbun-get-headers): Use the
+	above.
+
+2005-02-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/nnshimbun.el (nnshimbun-insert-nov): Encode extra field.
+	(nnshimbun-parse-nov): Decode extra field.
+
+	* shimbun/sb-yahoo-auctions.el (shimbun-get-headers): New
+	overridden method.
+
+	* shimbun/sb-rss.el (shimbun-get-headers): Revert last change.
+
+2005-02-19  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-atmarkit.el (shimbun-atmarkit-content-start): Remove.
+	(shimbun-atmarkit-content-end): Ditto.
+	(shimbun-atmarkit-coding-system): Change 'euc-japan' by print page
+	(shimbun-atmarkit-print-page-url): New variable.
+	(shimbun-atmarkit-group-path-alist): Add "news","fdb", and "farc".
+	(shimbun-article): New method.
+	(shimbun-make-contents): Ditto.
+	(shimbun-clear-contents): Ditto.
+
+2005-02-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-rss.el (shimbun-get-headers): Headers are returned
+	whether they have been acquired.
+
+	* shimbun/nnshimbun.el (nnshimbun-generate-nov-database):
+	If returned header has already been acquired, replace NOV by it.
+
+2005-02-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-rss.el (shimbun-get-headers): Store description
+	element into extra slot.
+
+	* shimbun/nnshimbun.el (nnshimbun-insert-nov): Insert extra slot
+	of shimbun header.
+	(nnshimbun-parse-nov): Store extra data into extra slot.
+
+2005-02-19  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-ibm-dev.el (shimbun-get-headers): Fix index list
+	reverse operation.
+
+2005-02-18  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/nnshimbun.el (nnshimbun-decode-group-name): New function.
+	(nnshimbun-request-article, nnshimbun-request-group)
+	(nnshimbun-request-scan, nnshimbun-close-group)
+	(nnshimbun-retrieve-headers, nnshimbun-request-expire-articles)
+	(nnshimbun-request-delete-group): Decode group name.
+	(gnus-group-make-shimbun-group): The server name must be
+	unibyte string; Encode group name to utf-8.
+
+2005-02-17  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-impress.el (shimbun-impress-groups-alist): Add new
+	groups:"enterprise" "dc" "k-tai" "bb" "forest".
+	(shimbun-impress-get-headers-date): Rename from shimbun-get-headers.
+	(shimbun-impress-get-headers-sequence): New function.
+	(shimbun-get-headers): Redefine method; function calling branched
+	by groups.
+	(shimbun-make-contents): Add date fix routine.
+
+2005-02-17  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-yahoo-auctions.el: New file.
+
+	* shimbun/shimbun.el (shimbun-url-encode-string): New function alias.
+	(shimbun-group-p): New method.
+	(shimbun-open-group): Use `shimbun-group-p'.
+
+	* shimbun/nnshimbun.el (gnus-group-make-shimbun-group): Allow
+	the group which is not contained in `shimbun-groups'.
+
 2005-02-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-lnum.el: Rename from w3m-link-numbering.el.
 
 	* mime-w3m.el: Load mime-parse.el before mime.el and w3m.el when
 	compiling rather than always loading mime.el and w3m.el.
+
+2005-02-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-form.el: Changes to define `w3m-form-input-textarea-mode' as
+	a minor mode.
+	(w3m-form-textarea-edit-mode): New option.
+	(w3m-form-input-textarea-map): Renamed from
+	`w3m-form-input-textarea-keymap'.
+	(w3m-form-input-textarea-mode) [variable]: New internal variable.
+	(w3m-form-input-textarea-mode) [function]: Reconstructed.
+	(w3m-form-input-textarea-mode-setup): New function.
+	(w3m-form-input-textarea): Clean up.
 
 2005-02-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -34,6 +811,8 @@
 	* w3m-bitmap.el: Bind w3m-work-buffer-list when compiling.
 
 	* w3m-proc.el: Silence the byte compiler complaining against gensym.
+
+	* w3m-rss.el: Use eval-and-compile in order to autoload timezone.el.
 
 	* w3m.el (w3m-treat-drive-letter): Use eval-and-compile.
 	(w3m-touch-file-available-p): Move forward.
@@ -52,6 +831,7 @@
 	* octet.el: Require cl when compiling.
 	* w3m-filter.el: Ditto.
 	* w3m-fsf.el: Ditto.
+	* w3m-link-numbering.el: Ditto.
 	* w3m-namazu.el: Ditto.
 
 	* shimbun/sb-2ch.el: Require cl when compiling.
@@ -228,9 +1008,11 @@
 
 2005-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/sb-rss.el (shimbun-rss-process-date): Support the date
-	format in the RFC822 style which RSS 2.0 allows.  Suggested by
-	David Hansen <david.hansen@physik.fu-berlin.de>.
+	* w3m-rss.el (w3m-rss-parse-date-string): Support the date format
+	in the RFC822 style which RSS 2.0 allows.
+	Suggested by David Hansen <david.hansen@physik.fu-berlin.de>.
+
+	* shimbun/sb-rss.el (shimbun-rss-process-date): Ditto.
 
 2005-01-25  David Hansen  <david.hansen@physik.fu-berlin.de>
 
@@ -267,10 +1049,19 @@
 	`enlarge-window' before calling `shrink-window', in order to avoid
 	deleting sole window.
 
+2005-01-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-content-type-alist): Check if "fiber.exe" is exist.
+
 2005-01-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Don't use
 	too complex regexp.
+
+2005-01-17  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-form.el (w3m-form-parse-and-fontify): Check if w3m-current-url
+	is available.
 
 2005-01-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -309,11 +1100,6 @@
 	(shimbun-reply-to): Generate the value using
 	shimbun-w3m-dev-group-alist.
 
-2005-01-05  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
-
-	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist): Follow
-	the change of ITmedia Games.
-
 2005-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add the rss group.
@@ -344,6 +1130,11 @@
 
 	* shimbun/sb-excite.el: New file.
 
+2005-01-10  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (w3m-form-input-textarea): Modify string of the
+	inquiry.
+
 2005-01-08  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
 
 	* shimbun/sb-japantimes.el (shimbun-japantimes-content-start):
@@ -355,6 +1146,35 @@
 	gyosuuchi group.
 	(shimbun-nikkei-get-headers-bunkatsu2): New function.
 	(shimbun-nikkei-prepare-article-bunkatsu2): New function.
+
+2005-01-07  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-goto-url): Call `w3m-form-textarea-files-remove' if
+	necessary.
+
+	* w3m-util.el (w3m-compare-strings): New define.
+
+	* w3m-form.el (w3m-form-textarea-file-expire-date): Modify
+	Document.
+	(w3m-fontify-textareas): Put `w3m-form-file-name' property.
+	(w3m-form-textarea-files, w3m-form-textarea-post-files): New
+	buffer local variable.
+	(w3m-form-parse-and-fontify): Set `w3m-form-textarea-files'. Put
+	`w3m-form-file-name' property on the form of textarea.
+	(w3m-form-input-textarea): Use same textarea buffer if exist.
+	Don't ask user if don't modify its area without tailed white
+	space.
+	Visible the editted text when ask user. Guard against 'C-g'.
+	Added `w3m-form-textarea-file-cleanup' to hook as
+	`kill-emacs-hook'
+	(w3m-form-textarea-same-check): New function.
+	(w3m-form-textarea-file-cleanup): Remove myself from
+	`kill-emacs-hook'.
+	(w3m-form-textarea-files-remove): New function.
+	(w3m-form-submit-get-textarea-files): Ditto.
+	(w3m-form-submit): Set `w3m-form-textarea-post-files' for removing
+	files.
+	(w3m-form-resume): Check `selects' is cons.
 
 2005-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -377,6 +1197,11 @@
 	(shimbun-nikkei-prepare-article-kansai): New function.
 	(shimbun-nikkei-prepare-article-default3): New function.
 	(shimbun-nikkei-prepare-article-release): Improve regexps.
+
+2005-01-05  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist): Follow
+	the change of ITmedia Games.
 
 2005-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -406,6 +1231,15 @@
 	design; Support "range" argument.
 	(shimbun-clear-contents): New function.
 
+2004-12-29  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-quit): Call `w3m-form-textarea-file-cleanup'.
+	(w3m-view-this-url-1): Revert final change.
+
+	* w3m-form.el (w3m-form-textarea-file-expire-date): New user
+	option.
+	(w3m-form-textarea-file-cleanup): New function.
+
 2004-12-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-retto): Prepend
@@ -418,9 +1252,30 @@
 	(shimbun-nikkei-get-headers-retto): New function.
 	(shimbun-nikkei-prepare-article-retto): New function.
 
+2004-12-28  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (w3m-form-use-textarea-backup): New user option.
+	(w3m-form-textarea-directory): Ditto.
+	(w3m-form-get-coding-system): New function.
+	(w3m-form-make-form-data): Use `w3m-form-get-coding-system'.
+	(w3m-form-input-textarea-keymap): Define "C-xC-s" to
+	`w3m-form-input-textarea-save'.
+	(w3m-form-input-textarea-file): New variable.
+	(w3m-form-input-textarea-coding-system): Ditto.
+	(w3m-form-input-textarea-filename): New function.
+	(w3m-form-input-textarea-save): Ditto.
+	(w3m-form-input-textarea-set): Call `w3m-form-input-textarea-save'.
+	(w3m-form-input-textarea-exit): Ditto.
+	(w3m-form-input-textarea-mode): Modify doc-string.
+	(w3m-form-input-textarea): Handling filename and coding-system.
+
 2004-12-27  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-view-this-url-1): Revert 2004-12-17 change.
+	The buffer seems empty killed before to restore window
+	configuration.
+	Restore the position and window-start if last window equal
+	current-window.
 
 2004-12-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -453,6 +1308,14 @@
 	edu.nyushi, job.special and international.jinmin groups; fix url
 	for the english group; exclude Jinmin-Nippou from the international
 	group.
+
+2004-12-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-makeinfo): Revert.
+
+2004-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-makeinfo): Bind undo-outer-limit.
 
 2004-12-19  David Hansen  <david.hansen@gmx.net>
 
@@ -562,6 +1425,8 @@
 	in the case where w3mmee is running if its value is not specified.
 	Reported by Clemens Fischer <ino-qc@spotteswoode.de.eu.org>.
 
+	* w3mhack.el (labels): Remove.
+
 	* shimbun/sb-itmedia.el (shimbun-get-headers): Improve appearance
 	of subject string.
 
@@ -569,6 +1434,16 @@
 
 	* shimbun/sb-heise.el: (nearly) complete rewrite of the telepolis
 	part due to massive changes in their html.
+
+2004-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (labels): A temporary substitution against the Emacs
+	CVS bug.
+
+2004-11-26  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m-form.el (w3m-form-resume): Check whether a form exists,
+	before resuming its values from its history.
 
 2004-11-25  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
@@ -608,12 +1483,37 @@
 
 2004-11-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-rss.el: New file.
+
+	* w3m-antenna.el (w3m-antenna-check-rss): New function.
+	(w3m-antenna-sites): Improve its customize spec to support
+	`w3m-antenna-check-rss'.
+
+	* w3m.el (w3m-content-type-alist): Add text/xml, application/xml,
+	application/rdf+xml, and application/rss+xml.
+	(w3m-detect-xml-charset): New function.
+	(w3m-decode-buffer): Use the above function when decoding XML
+	contents.
+
 	* shimbun/sb-rss.el (shimbun-rss-process-date): Accept minus sign
 	character for time zone.
 
 2004-11-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-redisplay-this-page): Don't make a new history.
+
+2004-11-17  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-output-coding-system): Use `utf-8' if Emacs has
+	internal utf-8 only.
+	(w3m-input-coding-system): Revert last change.
+	(w3m-halfdump-command-arguments): Bind `fix_width_conv' and
+	`use_jisx0201' when w3m-m17n.
+
+2004-11-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-input-coding-system): Use `utf-8' if Emacs has
+	internal utf-8, it has no Mule-UCS and w3m-type is `w3m-m17n'.
 
 2004-11-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -626,6 +1526,10 @@
 
 	* w3m-tabmenu.el (w3m-tab-menubar-update): Don't let iswitchb
 	manage the w3m tab menubar.
+
+2004-11-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-hns.el (shimbun-hns-article): Support tdiary-hns-theme.
 
 2004-10-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -670,15 +1574,32 @@
 	(shimbun-wired-content-start): Ditto.
 	(shimbun-get-group-header-alist): Ditto.
 
+2004-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-touch-file): Protect against the absence of
+	file-name-coding-system and default-file-name-coding-system.
+
 2004-10-20  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-buffer-setup): Modify
 	`mode-line-buffer-identification'; display "Loading..." instead of
 	`w3m-current-titile' when process of w3m active.
 
+2004-10-16  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-touch-file): Use `set-file-times' if available;
+	bind `coding-system-for-write' while calling `w3m-touch-command'.
+
 2004-10-10  Andreas Seltenreich  <seltenreich@gmx.de>
 
 	* shimbun/sb-laut-de.el: New file.
+
+2004-10-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-perldoc.el (w3m-perldoc-input-coding-system)
+	(w3m-perldoc-output-coding-system): New options.
+	(w3m-about-perldoc): Use the above options, to display both
+	modules encoded in EUC-JP and ones encoded in UTF-8 correctly.
 
 2004-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -693,6 +1614,18 @@
 
 	* shimbun/sb-kantei.el (shimbun-get-headers): Don't escape
 	Japanese parenthesis (it is not supported by old Emacsen).
+
+2004-10-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-search.el (w3m-search-engine-alist): Add the parameter
+	`ie=Shift_JIS' to Google for Japanese users.
+
+2004-09-26  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* shimbun/sb-msdn.el (shimbun-msdn-from-address): Define.
+
+	* shimbun/sb-exconn.el (shimbun-get-headers): Overwrite from
+	address.
 
 2004-09-25  Yuya Nishida  <yuya@j96.org>
 
@@ -709,10 +1642,18 @@
 	shimbun-heise-wash-newsticker-article,
 	shimbun-heise-wash-newsticker-article): Relax regexps.
 
+2004-09-18  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-ibm-dev.el (shimbun-headers): Update regexp.
+
 2004-09-16  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-antenna.el (w3m-about-antenna): Change the method to compare
 	an arrived time to a last-modified time.
+
+2004-09-15  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* shimbun/sb-msdn.el: New module.
 
 2004-09-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
@@ -804,8 +1745,8 @@
 
 2004-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Simply remove
-	`<...>'s from a subject when parsing the kansai-special group.
+	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Simplify
+	removing of `<...>'s in the kansai-special group.
 
 2004-07-30  Romain Francoise  <romain@orebokech.com>
 
@@ -822,6 +1763,8 @@
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Allow a subject
 	to contain `<...>'s.
+	(shimbun-asahi-get-headers): Use w3m-fontify to remove `<...>'s
+	from a subject when parsing the kansai-special group.
 
 2004-07-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 	NOMIYA Masaru <nomiya@ttmy.ne.jp>,
@@ -840,7 +1783,10 @@
 2004-07-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.4.2.
-	(w3m-w3m-canonicalize-url): Revival.
+
+2004-07-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-canonicalize-url): Revival.
 	(w3m-w3m-attributes, w3m-w3m-retrieve): Call the above.
 	(w3m-canonicalize-url): Do not check a slash.
 
@@ -1351,6 +2297,10 @@
 
 	* w3m.el (w3m-w3m-dump-extra): Check the above.
 
+2004-04-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Reset.
+
 2004-04-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.4.
@@ -1508,11 +2458,13 @@
 2004-04-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.3.90.
-	(w3m-relationship-estimate-rules): Declare as a variable.
 
-	* w3m-e22.el: Removed.
+2004-04-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m-link-numbering.el: Removed.
+	* w3m-link-numbering.el (w3m-view-numbered-link): Removed.
+	(w3m-move-numbered-anchor): New command.
+	(w3m-link-numbering-mode-map): Use `w3m-move-numbered-anchor'
+	instead of `w3m-view-numbered-link'.
 
 2004-04-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

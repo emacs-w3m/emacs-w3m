@@ -1,6 +1,6 @@
 ;;; sb-zeit-de.el --- shimbun backend for <http://www.zeit.de>
 
-;; Copyright (C) 2004 Andreas Seltenreich <seltenreich@gmx.de>
+;; Copyright (C) 2004, 2005 Andreas Seltenreich <seltenreich@gmx.de>
 
 ;; Author: Andreas Seltenreich <seltenreich@gmx.de>
 ;; Keywords: news
@@ -33,7 +33,10 @@
 
 (defvar shimbun-zeit-de-content-start "title\">")
 (defvar shimbun-zeit-de-content-end
-  "navigation[^>]*>[^A]\\|</p></p></td>\\|\<script\\|</body>\\|</html>")
+  (concat
+   "</body>\\|</html>\\|navigation[^><]*>[^A]\\|"
+   "<script language=\"JavaScript1\.2\" type=\"text/javascript\">"))
+
 (defvar shimbun-zeit-de-from-address "DieZeit@zeit.de")
 
 (luna-define-method shimbun-headers :before ((shimbun shimbun-zeit-de)
@@ -45,14 +48,15 @@
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-zeit-de) url date)
-  (let (page host)
-    (unless (string-match "http://\\([^/]+\\)/\\(.+\\)" url)
-      (error "Cannot find message-id base"))
-    (setq host (match-string-no-properties 1 url)
-	  page (shimbun-replace-in-string
-		(match-string-no-properties 2 url)
-		"[^a-zA-Z0-9]" "%"))
-    (format "<%s@%s>" page host)))
+  (if (string-match "http://\\([^/]+\\)\\(/\\(.+\\)\\)?" url)
+      (let ((host (match-string-no-properties 1 url))
+	    (page (if (match-beginning 3)
+		      (shimbun-replace-in-string
+		       (match-string-no-properties 3 url)
+		       "[^a-zA-Z0-9]" "%")
+		    "top")))
+	(format "<%s@%s>" page host))
+    (error "Cannot find message-id base")))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-zeit-de)
 						   header)
@@ -78,6 +82,16 @@
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-zeit-de))
   "http://newsfeed.zeit.de/")
+
+(luna-define-method shimbun-clear-contents :after ((shimbun shimbun-zeit-de)
+						    header)
+
+  ;;  remove advertisements and 1-pixel-images aka webbugs
+  (shimbun-remove-tags "<a[^>]*doubleclick.net" "</a>")
+  (shimbun-remove-tags "<IFRAME[^>]*doubleclick.net[^>]*>")
+  (shimbun-remove-tags "<img[^>]*doubleclick.net[^>]*>")
+  (shimbun-remove-tags "<img[^>]*\\(width\\|height\\)=\"1px\"[^>]*>")
+  (shimbun-remove-tags "<tr><td[^>]*>Anzeige</td></tr>"))
 
 (provide 'sb-zeit-de)
 

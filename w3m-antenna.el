@@ -1,6 +1,6 @@
 ;;; w3m-antenna.el --- Utility to detect changes of WEB
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -45,6 +45,7 @@
 
 (eval-when-compile (require 'cl))
 (require 'w3m-util)
+(require 'w3m-rss)
 (require 'w3m)
 
 (defgroup w3m-antenna nil
@@ -78,7 +79,7 @@ with :value-from."
 
 (apply 'define-widget 'w3m-antenna-function 'function
        "Bug-fixed version of the `function' widget.
-In Emacs 20.7 through 21.3 and XEmacs, it doesn't represent a value as
+In Emacs 20.7 through 21.4 and XEmacs, it doesn't represent a value as
 a string internally, converts it into a string in the customization
 buffer, and provides the default value as `ignore'."
        (if (and (fboundp 'widget-default-get)
@@ -149,6 +150,9 @@ that consists of:
 	    (const :tag "Check its last modified time only" time)
 	    (const :tag "Check its current date provided by Hyper Nikki System"
 		   hns)
+	    (list :tag "Check RSS"
+		  (function-item :format "" w3m-antenna-check-rss)
+		  (string :format "URL: %v\n" :value ""))
 	    (list :tag "Check the another changelog page"
 		  (function-item :format "" w3m-antenna-check-another-page)
 		  (string :format "URL: %v\n" :value ""))
@@ -161,7 +165,8 @@ that consists of:
 		   :match (lambda (widget value)
 			    (and (functionp value)
 				 (not (memq value
-					    '(w3m-antenna-check-another-page
+					    '(w3m-antenna-check-rss
+					      w3m-antenna-check-another-page
 					      w3m-antenna-check-anchor))))))
 		  (repeat :tag "Arguments" sexp))))))
 
@@ -259,12 +264,47 @@ that consists of:
 	  (w3m-antenna-site-update site (w3m-antenna-site-key site) time nil)
 	(w3m-antenna-check-page site handler)))))
 
+(defun w3m-antenna-check-rss (site handler url)
+  "Check RSS to detect change of SITE asynchronously.
+In order to use this function, `xml.el' is required."
+  (lexical-let ((url url)
+		(site site))
+    (w3m-process-do-with-temp-buffer
+	(type (w3m-retrieve url nil t nil nil handler))
+      (let (link date dc-dates)
+	(when type
+	  (w3m-decode-buffer url)
+	  (let* ((xml (ignore-errors
+			(xml-parse-region (point-min) (point-max))))
+		 (dc-ns (w3m-rss-get-namespace-prefix
+			 xml "http://purl.org/dc/elements/1.1/"))
+		 (rss-ns (w3m-rss-get-namespace-prefix
+			  xml "http://purl.org/rss/1.0/"))
+		 (channel (car (w3m-rss-find-el
+				(intern (concat rss-ns "channel"))
+				xml))))
+	    (setq link (nth 2 (car (w3m-rss-find-el
+				    (intern (concat rss-ns "link"))
+				    channel))))
+	    (setq dc-dates (w3m-rss-find-el
+			    (intern (concat dc-ns "date"))
+			    channel))
+	    (when dc-dates
+	      (setq date '(0 0))
+	      (dolist (tmp dc-dates)
+		(setq tmp (w3m-rss-parse-date-string (nth 2 tmp)))
+		(when (w3m-time-newer-p tmp date)
+		  (setq date tmp))))))
+	(if (and link date)
+	    (w3m-antenna-site-update site link date nil)
+	  (w3m-antenna-check-page site handler))))))
+
 (defun w3m-antenna-check-another-page (site handler url)
   "Check the another page to detect change of SITE asynchronously.
 This function checks the another page specified by the URL before
 checking the SITE itself.  This function is useful when the SITE's
 owner either maintains the page which describes the change of the
-SITE, or provides RDF Site Summary \(RSS\)."
+SITE."
   (lexical-let ((site site))
     (w3m-process-do-with-temp-buffer
 	(time (w3m-last-modified url t handler))

@@ -1,6 +1,6 @@
 ;;; sb-coldsync.el --- shimbun backend for www.coldsync.org
 
-;; Copyright (C) 2003 NAKAJIMA Mikio  <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004 NAKAJIMA Mikio  <minakaji@namazu.org>
 
 ;; Author: 2003 NAKAJIMA Mikio  <minakaji@namazu.org>
 ;; Keywords: news

@@ -1,6 +1,6 @@
 ;;; sb-muchy.el --- shimbun backend for Muchy's Palmware Review! -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news

@@ -1,6 +1,6 @@
 ;;; sb-squeak-ja.el --- shimbun backend for Squeak-ja's ML archive
 
-;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -35,7 +35,7 @@
 (luna-define-class shimbun-squeak-ja (shimbun-mailman-ja) ())
 
 (defvar shimbun-squeak-ja-url
-  "http://lists.squeakfoundation.org/pipermail/squeak-ja")
+  "http://www.smalltalk.jp/pipermail/squeak-ja/")
 
 (defvar shimbun-squeak-ja-groups '("main"))
 

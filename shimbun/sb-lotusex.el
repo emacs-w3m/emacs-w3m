@@ -1,6 +1,6 @@
 ;;; sb-lotusex.el --- shimbun backend for http://tsuruo.dominohosting.biz -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news

@@ -1,7 +1,7 @@
 ;;; sb-rss.el --- shimbun backend for RSS (Rich Site Summary).
 
-;; Copyright (C) 2003 Koichiro Ohba <koichiro@meadowy.org>
-;;               2003 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2003, 2004, 2005 Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;;         NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
@@ -144,6 +144,10 @@ but you can identify it from the URL, define this method in a backend.")
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-rss)
 					 &optional range)
+  (shimbun-rss-get-headers shimbun range t))
+
+(defun shimbun-rss-get-headers (shimbun &optional range
+					need-descriptions need-all-items)
   (static-when (featurep 'xemacs)
     ;; It's one of many bugs in XEmacs that the coding systems *-dos
     ;; provided by Mule-UCS don't convert CRLF to LF when decoding.
@@ -180,7 +184,8 @@ but you can identify it from the URL, define this method in a backend.")
 			     (shimbun-rss-node-text dc-ns 'date item)
 			     (shimbun-rss-node-text rss-ns 'pubDate item)))
 		   (id (shimbun-rss-build-message-id shimbun url date)))
-	      (unless (shimbun-search-id shimbun id)
+	      (when (or need-all-items
+			(not (shimbun-search-id shimbun id)))
 		(push (shimbun-create-header
 		       0
 		       (shimbun-rss-node-text rss-ns 'title item)
@@ -190,7 +195,12 @@ but you can identify it from the URL, define this method in a backend.")
 			   author
 			   (shimbun-from-address shimbun))
 		       (shimbun-rss-process-date shimbun date)
-		       id "" 0 0 url)
+		       id "" 0 0 url
+		       (when need-descriptions
+			 (let ((description (shimbun-rss-node-text
+					     rss-ns 'description item)))
+			   (when description
+			     (list (cons 'description description))))))
 		      headers))))))
       headers)))
 

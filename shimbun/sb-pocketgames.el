@@ -1,6 +1,6 @@
 ;;; sb-pocketgames.el --- shimbun backend class for www.pocketgames.jp. -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003, 2004 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -39,7 +39,7 @@
 (defvar shimbun-pocketgames-groups '("news"))
 (defvar shimbun-pocketgames-coding-system 'shift_jis)
 (defvar shimbun-pocketgames-content-start
-  "<a class=\"pn-normal\" href=\"modules.php\\?op=modload\&amp;name=Search\\&amp;file=index\\&amp;action=search\\&amp;overview=1\\&amp;active_stories=[0-9]+\\&amp;stories_topics\[[0-9]+\]=\"><b>Older Articles</b></a>")
+  "<a class=\"pn-normal\" href=\"modules.php\\?op=modload\&amp;name=Search\\&amp;file=index\\&amp;action=search\\&amp;overview=1\\&amp;active_stories=[0-9]+\\&amp;stories_topics\[[0-9]+\]=\"><b>[^<]+</b></a>")
 (defvar shimbun-pocketgames-content-end
   "</body>")
 
@@ -49,21 +49,8 @@
 
 (defvar shimbun-pocketgames-expiration-days 14)
 
-(luna-define-method shimbun-headers ((shimbun shimbun-pocketgames)
-				     &optional range)
-  (shimbun-pocketgames-headers shimbun))
-
-(defun shimbun-pocketgames-headers (shimbun)
-  (let (case-fold-search)
-    (with-temp-buffer
-      (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload 'binary)
-      (set-buffer-multibyte t)
-      (decode-coding-region (point-min) (point-max)
-			    (shimbun-coding-system-internal shimbun))
-      (goto-char (point-min))
-      (shimbun-pocketgames-headers-1 shimbun))))
-
-(defun shimbun-pocketgames-headers-1 (shimbun)
+(luna-define-method shimbun-get-headers ((shimbun shimbun-pocketgames)
+					 &optional range)
   (let ((regexp "<a class=\"pn-title\" href=\"\\(modules.php\\?op=modload\\&amp;name=News\\&amp;file=article\\&amp;sid=[0-9]+\\&amp;mode=thread\\&amp;order=0\\)\">\\([^<]+\\)</a></font><br>")
 	url from year month day time date subject id start end headers)
     (catch 'quit
@@ -98,7 +85,7 @@
 	  (insert subject)
 	  (shimbun-remove-markup)
 	  (setq subject (buffer-string)))
-	(setq url (w3m-expand-url
+	(setq url (shimbun-expand-url
 		   (w3m-decode-anchor-string url)
 		   (concat (shimbun-index-url shimbun) "/")))
 	(push (shimbun-make-header
@@ -106,95 +93,6 @@
 	       from date id "" 0 0 url)
 	      headers)))
     headers))
-
-(luna-define-method shimbun-make-contents ((shimbun shimbun) header)
-  (when (shimbun-clear-contents shimbun header)
-    (goto-char (point-min))
-    (insert "<html>\n<head>\n<base href=\""
-	    (shimbun-header-xref header)
-	    "\">\n</head>\n<body>\n")
-    (goto-char (point-max))
-    (insert (shimbun-footer shimbun header t)
-	    "\n</body>\n</html>\n"))
-  (shimbun-pocketgames-make-mime-article shimbun header)
-  (buffer-string))
-
-(defun shimbun-pocketgames-make-mime-article (shimbun header)
-  "Make a MIME article according to SHIMBUN and HEADER.
-If article have inline images, generated article have a multipart/related
-content-type if `shimbun-encapsulate-images' is non-nil."
-  (let ((case-fold-search t)
-	(count 0)
-	(msg-id (shimbun-header-id header))
-	beg end
-	url type img imgs boundary charset)
-    (when (string-match "^<\\([^>]+\\)>$" msg-id)
-      (setq msg-id (match-string 1 msg-id)))
-    (setq charset
-	  (upcase (symbol-name
-		   (detect-mime-charset-region (point-min)(point-max)))))
-    (goto-char (point-min))
-    (when shimbun-encapsulate-images
-      (while (re-search-forward "<img" nil t)
-	(setq beg (point))
-	(when (search-forward ">" nil t)
-	  (setq end (point))
-	  (goto-char beg)
-	  (when (re-search-forward
-		 ;; <img src=pics/palm/clieplanet.jpg>
-		 "src[ \t\r\f\n]*=[ \t\r\f\n]*\\([^ >]*\\)" end t)
-	    (save-match-data
-	      (setq url (match-string 1))
-	      (unless (setq img (assoc url imgs))
-		(setq imgs (cons
-			    (setq img (list
-				       url
-				       (format "shimbun.%d.%s"
-					       (incf count)
-					       msg-id)
-				       (with-temp-buffer
-					 (set-buffer-multibyte nil)
-					 (setq
-					  type
-					  (shimbun-retrieve-url
-					   (shimbun-expand-url
-					    url
-					    (shimbun-header-xref header))
-					   'no-cache 'no-decode))
-					 (buffer-string))
-				       type))
-			    imgs))))
-	    (replace-match (concat "src=\"cid:" (nth 1 img) "\"")))))
-      (setq imgs (nreverse imgs)))
-    (goto-char (point-min))
-    (shimbun-header-insert shimbun header)
-    (if imgs
-	(progn
-	  (setq boundary (apply 'format "===shimbun_%d_%d_%d==="
-				(current-time)))
-	  (insert "Content-Type: multipart/related; type=\"text/html\"; "
-		  "boundary=\"" boundary "\"; start=\"<shimbun.0." msg-id ">\""
-		  "\nMIME-Version: 1.0\n\n"
-		  "--" boundary
-		  "\nContent-Type: text/html; charset=" charset
-		  "\nContent-ID: <shimbun.0." msg-id ">\n\n"))
-      (insert "Content-Type: text/html; charset=" charset "\n"
-	      "MIME-Version: 1.0\n\n"))
-    (encode-coding-region (point-min) (point-max)
-			  (mime-charset-to-coding-system charset))
-    (goto-char (point-max))
-    (dolist (img imgs)
-      (unless (eq (char-before) ?\n) (insert "\n"))
-      (insert "--" boundary "\n"
-	      "Content-Type: " (or (nth 3 img) "application/octed-stream")
-	      "\nContent-Disposition: inline"
-	      "\nContent-ID: <" (nth 1 img) ">"
-	      "\nContent-Transfer-Encoding: base64"
-	      "\n\n"
-	      (shimbun-base64-encode-string (nth 2 img))))
-    (when imgs
-      (unless (eq (char-before) ?\n) (insert "\n"))
-      (insert "--" boundary "--\n"))))
 
 (provide 'sb-pocketgames)
 

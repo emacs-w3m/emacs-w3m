@@ -1,8 +1,9 @@
 ;;; sb-f1fan.el --- shimbun backend for www.ksky.ne.jp/~tahara/f1/  -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2001, 2002, 2003 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; MIYOSHI Masanori <miyoshi@meadowy.org>
 
-;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
+;; Author: MIYOSHI Masanori <miyoshi@meadowy.org>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.

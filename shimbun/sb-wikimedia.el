@@ -188,16 +188,16 @@
 
 (defun shimbun-wikimedia-ja-date-decode (date-string)
   "Decode date function for Japnese localized"
-  (let ((date ""))
-    (string-match " *\\([0-9][0-9][0-9][0-9]\\)年 *\\([0-9][0-9]*\\)月 *\\([0-9][0-9]*\\)日 *(\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\)) *\\([:0-9]+\\) *\\([A-Z]+\\) *" date-string)
-    ;; <I>2003年 4月 11日 (金) 02:43:25 CEST</I> ;; squeak-ja
-    (setq date (shimbun-make-date-string
-		(string-to-number (match-string 1 date-string))
-		(string-to-number (match-string 2 date-string))
-		(string-to-number (match-string 3 date-string))
-		(match-string 5 date-string)
-		(match-string 6 date-string)))
-    date))
+  (if (string-match " *\\([0-9][0-9][0-9][0-9]\\)年 *\\([0-9][0-9]*\\)月 *\\([0-9][0-9]*\\)日 *(\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\)) *\\([:0-9]+\\) *\\([A-Z]+\\) *" date-string)
+      ;; <I>2003年 4月 11日 (金) 02:43:25 CEST</I> ;; squeak-ja
+      (shimbun-make-date-string
+       (string-to-number (match-string 1 date-string))
+       (string-to-number (match-string 2 date-string))
+       (string-to-number (match-string 3 date-string))
+       (match-string 5 date-string)
+       (match-string 6 date-string))
+    ;; In the early days, the RFC822 style date format has been used.
+    date-string))
 
 (defun shimbun-wikimedia-no-date-decode (date-string)
   "Decode date function for no"

@@ -1,6 +1,6 @@
 ;;; sb-dennou.el --- shimbun backend class for 電脳街の現場レポート web page. -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news

@@ -1,6 +1,6 @@
 ;;; sb-pcweb-column.el --- shimbun backend for PC WEB COLUMN Square
 
-;; Copyright (C) 2002 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2002, 2003, 2004 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news

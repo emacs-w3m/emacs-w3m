@@ -1,6 +1,6 @@
 ;;; sb-bbc.el --- shimbun backend for BBC UK
 
-;; Copyright (C) 2003, 2004 Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2003, 2004, 2005 Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;; Keywords: news
@@ -47,21 +47,11 @@
 ;;
 ;;(defun shimbun-bbc-build-message-id (url)
 ;;;</DEBUG>
-  (string-match "http://news.bbc.co.uk/go/click/rss/0.91/\
-public/-/\\(.+\\)/hi/\\(.+\\)/\\([0-9]+\\)\\(.+\\)?\\.stm" url)
-  (cond ((match-beginning 4)
-	 ;; FIXME: Although it solves the problem at which fetching of
-	 ;; headers stops on the way, the article in question may contain
-	 ;; garbages.
-	 (concat "<"
-		 (shimbun-subst-char-in-string
-		  ?/ ?.
-		  (substring url (match-beginning 3) (match-end 4)))
-		 "@bbc.co.uk>"))
-	((match-beginning 3)
-	 (concat "<" (match-string-no-properties 3 url) "@bbc.co.uk>"))
-	(t
-	 (error "Cannot find message-id base"))))
+  (if (string-match "/hi/\\(.+\\)\\.stm" url)
+      (let ((elems (nreverse (split-string (match-string 1 url) "/"))))
+	(concat "<" (car elems) "@" (mapconcat 'identity (cdr elems) ".")
+		".bbc.co.uk>"))
+    (error "Cannot find message-id base")))
 
 (provide 'sb-bbc)
 

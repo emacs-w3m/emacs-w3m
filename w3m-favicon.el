@@ -1,6 +1,6 @@
 ;;; w3m-favicon.el --- utilities for handling favicon in emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -50,7 +50,8 @@
   (autoload 'w3m-load-list "w3m")
   (autoload 'w3m-message "w3m")
   (autoload 'w3m-retrieve "w3m")
-  (autoload 'w3m-save-list "w3m"))
+  (autoload 'w3m-save-list "w3m")
+  (autoload 'w3m-url-readable-string "w3m"))
 
 (defcustom w3m-favicon-size nil
   "*Size of favicon. This value is used as geometry argument for `convert'."
@@ -258,7 +259,8 @@ stored in the `w3m-favicon-image' buffer-local variable."
 		     (>= (buffer-size) 4))
 		(setq idata (buffer-string)
 		      image (w3m-favicon-convert idata type))
-	      (w3m-message "Reading %s...done (no favicon)" url))
+	      (w3m-message "Reading %s...done (no favicon)"
+			   (w3m-url-readable-string url)))
 	    (with-current-buffer target
 	      (w3m-favicon-set-image image)
 	      (push (list url idata (current-time) w3m-favicon-image)

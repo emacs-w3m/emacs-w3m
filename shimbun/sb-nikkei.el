@@ -936,16 +936,14 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
 			"\"" s0 ">" s0
 			;; 6. subject
-			"\\([^<]+\\)" s0 "("
-			;; 7. month
+			"\\([^<]+\\)"
+			s0 "\\([(|（]\\)"
+			;; 8. month
 			"\\([01]?[0-9]\\)"
 			"/"
-			;; 8. day
+			;; 9. day
 			"\\([0-3]?[0-9]\\)"
-;;			s1
-			;; 9. hour, minute
-;;			"\\([0-2]?[0-9]:[0-5]?[0-9]\\)"
-			")※" s0 "</a>")))
+			"\\([）|)]\\)" s0 "※" s0 "</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
@@ -953,8 +951,8 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
 	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 7))
-	      (string-to-number (match-string 8)))
+	      (string-to-number (match-string 8))
+	      (string-to-number (match-string 9)))
 ;;	      (match-string 9))
 	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
 		     "%" group "." shimbun-nikkei-top-level-domain ">")

@@ -1,6 +1,6 @@
 ;;; w3m-xmas.el --- The stuffs to use emacs-w3m on XEmacs
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -64,6 +64,7 @@ It fixes an XEmacs 21.5 bug.  Advised by emacs-w3m."
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
 (eval-when-compile
+  (defvar w3m-coding-system)
   (defvar w3m-current-title)
   (defvar w3m-current-url)
   (defvar w3m-default-coding-system)
@@ -124,11 +125,16 @@ NOTE: This function is slightly modified from `make-ccl-coding-system'
 
 (w3m-xmas-define-w3m-make-ccl-coding-system)
 
-(unless (fboundp 'coding-system-category)
-  (defalias 'coding-system-category 'ignore))
-
-(unless (fboundp 'coding-system-list)
-  (defalias 'coding-system-list 'ignore))
+(eval-and-compile
+  (dolist (fn '(coding-priority-list
+		coding-system-category
+		coding-system-list
+		coding-system-name
+		coding-system-type
+		set-coding-category-system
+		set-coding-priority-list))
+    (unless (fboundp fn)
+      (defalias fn 'ignore))))
 
 ;; If pccl.elc has been mis-compiled for XEmacs with MULE, the macro
 ;; `define-ccl-program' wouldn't be an empty macro because of advice.
@@ -155,13 +161,57 @@ Return the first possible coding system.
 PRIORITY-LIST is a list of coding systems ordered by priority."
   (let (category categories codesys)
     (dolist (codesys priority-list)
-      (setq category (coding-system-category codesys))
+      (setq category (or (coding-system-category codesys)
+			 (coding-system-name codesys)))
       (unless (assq category categories)
 	(push (cons category codesys) categories)))
     (if (consp (setq codesys (w3m-detect-coding-with-priority
 			      start end (nreverse categories))))
 	(car codesys)
       codesys)))
+
+(defun w3m-decode-coding-string-with-priority (str coding)
+  "Decode the string STR which is encoded in CODING.
+If CODING is a list, look for the coding system using it as a priority
+list."
+  (if (listp coding)
+      (with-temp-buffer
+	(insert str)
+	(let* ((orig-category-list (coding-priority-list))
+	       (orig-category-systems (mapcar #'coding-category-system
+					      orig-category-list))
+	       codesys category priority-list)
+	  (unwind-protect
+	      (progn
+		(while coding
+		  (setq codesys (car coding)
+			coding (cdr coding)
+			category (or (coding-system-category codesys)
+				     (coding-system-name codesys)))
+		  (unless (or (eq (coding-system-type codesys) 'undecided)
+			      (assq category priority-list))
+		    (set-coding-category-system category codesys)
+		    (push category priority-list)))
+		(set-coding-priority-list (nreverse priority-list))
+		;; `detect-coding-region' always returns `undecided'
+		;; ignoring `priority-list' in XEmacs 21.5-b19, but
+		;; that's okay.
+		(when (consp (setq codesys (detect-coding-region
+					    (point-min) (point-max))))
+		  (setq codesys (car codesys)))
+		(decode-coding-region (point-min) (point-max)
+				      (or codesys
+					  w3m-default-coding-system
+					  w3m-coding-system
+					  'iso-2022-7bit))
+		(buffer-string))
+	    (set-coding-priority-list orig-category-list)
+	    (while orig-category-list
+	      (set-coding-category-system (car orig-category-list)
+					  (car orig-category-systems))
+	      (setq orig-category-list (cdr orig-category-list)
+		    orig-category-systems (cdr orig-category-systems))))))
+    (decode-coding-string str coding)))
 
 (when (and (not (fboundp 'w3m-ucs-to-char))
 	   (fboundp 'unicode-to-char)
@@ -486,14 +536,22 @@ A buffer string between BEG and END are replaced with IMAGE."
 
 (defun w3m-setup-toolbar ()
   "Setup toolbar."
-  (when w3m-use-toolbar
+  (when (and w3m-use-toolbar
+	     w3m-icon-directory
+	     (file-directory-p w3m-icon-directory)
+	     (file-exists-p (expand-file-name "antenna-up.xpm"
+					      w3m-icon-directory)))
     (w3m-xmas-make-toolbar-buttons w3m-toolbar-buttons)
     (set-specifier default-toolbar
-		   (cons (current-buffer) w3m-toolbar))))
+		   (cons (current-buffer) w3m-toolbar))
+    t))
 
 (defun w3m-update-toolbar ()
   "Update toolbar."
-  (when w3m-use-toolbar
+  (when (and w3m-use-toolbar
+	     (or (and (boundp 'w3m-toolbar-antenna-icon)
+		      (symbol-value 'w3m-toolbar-antenna-icon))
+		 (w3m-setup-toolbar)))
     (set-specifier default-toolbar
 		   (cons (current-buffer) w3m-toolbar))))
 
@@ -690,12 +748,15 @@ italic font in the modeline."
       (setq def (car defs)
 	    defs (cdr defs)
 	    icon (car def)
-	    file (expand-file-name (nth 1 def) w3m-icon-directory)
+	    file (nth 1 def)
 	    status (nth 2 def))
       (if (and w3m-show-graphic-icons-in-mode-line
 	       (device-on-window-system-p)
 	       (featurep 'xpm)
-	       (file-exists-p file))
+	       w3m-icon-directory
+	       (file-directory-p w3m-icon-directory)
+	       (file-exists-p
+		(setq file (expand-file-name file w3m-icon-directory))))
 	  (progn
 	    (when (or force (not (symbol-value icon)))
 	      (unless extent
@@ -721,6 +782,8 @@ italic font in the modeline."
     (if (and w3m-show-graphic-icons-in-mode-line
 	     (device-on-window-system-p)
 	     (featurep 'gif)
+	     w3m-icon-directory
+	     (file-directory-p w3m-icon-directory)
 	     (file-exists-p
 	      (setq file (expand-file-name "spinner.gif"
 					   w3m-icon-directory))))
@@ -808,14 +871,18 @@ italic font in the modeline."
 		(> (itimer-value itimer) 0)
 	      (delete-itimer itimer))))
       (error nil))
-    (defun w3m-run-at-time (time repeat function &rest args)
-      "Emulating function run as `run-at-time'.
+    (if (condition-case nil
+	    (require 'timer-funcs)
+	  (error nil))
+	(defalias 'w3m-run-at-time 'run-at-time)
+      (defun w3m-run-at-time (time repeat function &rest args)
+	"Emulating function run as `run-at-time'.
 TIME should be nil meaning now, or a number of seconds from now.
 Return an itimer object which can be used in either `delete-itimer'
 or `cancel-timer'."
-      (apply #'start-itimer "w3m-run-at-time"
-	     function (if time (max time 1e-9) 1e-9)
-	     repeat nil t args))
+	(apply #'start-itimer "w3m-run-at-time"
+	       function (if time (max time 1e-9) 1e-9)
+	       repeat nil t args)))
   (defun w3m-run-at-time (time repeat function &rest args)
     "Emulating function run as `run-at-time' in the right way.
 TIME should be nil meaning now, or a number of seconds from now.
@@ -849,6 +916,14 @@ or `cancel-timer'."
 		     (append (list itimer function) args)))))
 	      1e-9 (if time (max time 1e-9) 1e-9)
 	      nil t itimers repeat function args)))))
+
+(unless (fboundp 'cancel-timer)
+  (defun cancel-timer (timer)
+    "Remove TIMER from the list of active timers."
+    (or (itimerp timer)
+	(error "Invalid timer"))
+    (delete-itimer timer)
+    nil))
 
 (when (featurep 'mule)
   (defun w3m-window-hscroll (&optional window)

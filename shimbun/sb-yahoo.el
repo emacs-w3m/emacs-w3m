@@ -1,6 +1,6 @@
 ;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2001, 2002, 2003
+;; Copyright (C) 2001, 2002, 2003, 2005
 ;; Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
 
 ;; Author: Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
@@ -86,45 +86,43 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 					 &optional range)
   (let ((case-fold-search t)
 	headers)
-    (goto-char (point-min))
     (catch 'stop
-      (while (re-search-forward "<!--- /COMMUNITY_CONTENTS -->" nil t)
-	(delete-region (point-min) (point))
-	(when (re-search-forward "<!--- OUTLINE_TABLE -->" nil t)
-	  (delete-region (point) (point-max))
-	  (goto-char (point-min))
-	  (while (re-search-forward "<a href=\"\\(http://headlines.yahoo.co.jp/hl\\?a=\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)-\\([0-9]+-[^\"]+\\)\\)\">\\([^<]+\\)</a>\\([^0-9]\\|[\n\r]\\)*\\([0-9]+日[^0-9]*\\)?\\([0-9]+\\)時\\([0-9]+\\)分" nil t)
-	    (let ((url (match-string 1))
-		  (year (match-string 2))
-		  (month (match-string 3))
-		  (day (match-string 4))
-		  (no (match-string 5))
-		  (subject (match-string 6))
-		  (hour (string-to-number (match-string 9)))
-		  (min (string-to-number (match-string 10)))
-		  id time)
-	      (setq id (format "<%s%s%s%s.%s@headlines.yahoo.co.jp>"
-			       year month day no
-			       (shimbun-current-group-internal shimbun)))
-	      (if (shimbun-search-id shimbun id)
-		  (throw 'stop nil))
-	      (setq time (format "%02d:%02d" hour min))
-	      (push (shimbun-make-header
-		     0
-		     (shimbun-mime-encode-string subject)
-		     (shimbun-from-address shimbun)
-		     (shimbun-make-date-string (string-to-number year)
-					       (string-to-number month)
-					       (string-to-number day) time)
-		     id "" 0 0 url)
-		    headers)))
-	  (when (re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>" nil t)
-	    (let ((url (match-string 1)))
-	      (erase-buffer)
-	      (shimbun-retrieve-url url t)
-	      (goto-char (point-min)))))))
+      (while t
+	(while (re-search-forward "<a href=\"\\(http://headlines.yahoo.co.jp/hl\\?a=\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)-\\([0-9]+-[^\"]+\\)\\)\">\\([^<]+\\)</a>\\([^0-9]\\|[\n\r]\\)*\\([0-9]+日[^0-9]*\\)?\\([0-9]+\\)時\\([0-9]+\\)分" nil t)
+	  (let ((url (match-string 1))
+		(year (match-string 2))
+		(month (match-string 3))
+		(day (match-string 4))
+		(no (match-string 5))
+		(subject (match-string 6))
+		(hour (string-to-number (match-string 9)))
+		(min (string-to-number (match-string 10)))
+		id time)
+	    (setq id (format "<%s%s%s%s.%s@headlines.yahoo.co.jp>"
+			     year month day no
+			     (shimbun-current-group-internal shimbun)))
+	    (if (shimbun-search-id shimbun id)
+		(throw 'stop nil))
+	    (setq time (format "%02d:%02d" hour min))
+	    (push (shimbun-make-header
+		   0
+		   (shimbun-mime-encode-string subject)
+		   (shimbun-from-address shimbun)
+		   (shimbun-make-date-string (string-to-number year)
+					     (string-to-number month)
+					     (string-to-number day) time)
+		   id "" 0 0 url)
+		  headers)))
+	(if (re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>" nil t)
+	    (progn
+	      (shimbun-retrieve-url (prog1
+					(match-string 1)
+				      (erase-buffer))
+				    t)
+	      (goto-char (point-min)))
+	  (throw 'stop nil))))
     headers))
 
 (provide 'sb-yahoo)
 
-;;; sb-yahoo.el ends here.
+;;; sb-yahoo.el ends here

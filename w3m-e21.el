@@ -1,4 +1,4 @@
-;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs-21
+;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs 21 and 22
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -28,8 +28,8 @@
 
 ;;; Commentary:
 
-;; This file contains the stuffs to use emacs-w3m on Emacs-21.  For
-;; more detail about emacs-w3m, see:
+;; This file contains the stuffs to use emacs-w3m on Emacs 21 and 22.
+;; For more detail about emacs-w3m, see:
 ;;
 ;;    http://emacs-w3m.namazu.org/
 
@@ -162,10 +162,6 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 (defun w3m-add-local-hook (hook function &optional append)
   "Add to the buffer-local value of HOOK the function FUNCTION."
   (add-hook hook function append t))
-
-;; `display-images-p' has not been available prior to Emacs 21.0.105.
-(unless (fboundp 'display-images-p)
-  (defalias 'display-images-p 'display-graphic-p))
 
 ;; Function which returns non-nil when the current display device can
 ;; show images inline.
@@ -415,7 +411,11 @@ Buffer string between BEG and END are replaced with IMAGE."
 	  (error "Icon file %s not found" up))))))
 
 (defun w3m-setup-toolbar ()
-  (when w3m-use-toolbar
+  (when (and w3m-use-toolbar
+	     w3m-icon-directory
+	     (file-directory-p w3m-icon-directory)
+	     (file-exists-p (expand-file-name "antenna-up.xpm"
+					      w3m-icon-directory)))
     (w3m-e21-make-toolbar-buttons w3m-toolbar-buttons)
     (w3m-e21-setup-toolbar w3m-mode-map w3m-toolbar)))
 
@@ -728,9 +728,9 @@ cleared by a timer.")
 
     ;; We use wobbling of the window size instead.
     (let ((window-min-height 0))
-      (shrink-window 1)
+      (enlarge-window 1)
       (unless (eq (next-window nil 'ignore-minibuf) (selected-window))
-	(enlarge-window 1)))))
+	(shrink-window 1)))))
 
 (defun w3m-e21-switch-to-buffer (buffer &optional norecord)
   "Run `switch-to-buffer' and redisplay the header-line.
@@ -798,13 +798,16 @@ italic font in the modeline."
       (setq def (car defs)
 	    defs (cdr defs)
 	    icon (car def)
-	    file (expand-file-name (nth 1 def) w3m-icon-directory)
+	    file (nth 1 def)
 	    status (nth 2 def))
       (if (and window-system
 	       w3m-show-graphic-icons-in-mode-line
 	       (display-images-p)
 	       (image-type-available-p 'xpm)
-	       (file-exists-p file))
+	       w3m-icon-directory
+	       (file-directory-p w3m-icon-directory)
+	       (file-exists-p
+		(setq file (expand-file-name file w3m-icon-directory))))
 	  (progn
 	    (when (or force (not (symbol-value icon)))
 	      (unless keymap
@@ -827,6 +830,8 @@ italic font in the modeline."
     ;; Spinner
     (when (and (or force (not w3m-spinner-image-file))
 	       (image-type-available-p 'gif)
+	       w3m-icon-directory
+	       (file-directory-p w3m-icon-directory)
 	       (file-exists-p
 		(setq file (expand-file-name "spinner.gif"
 					     w3m-icon-directory))))

@@ -1,6 +1,6 @@
 ;;; sb-javaconf.el --- shimbun backend class for java-conference archive.
 
-;; Copyright (C) 2001, 2002, 2003 ABE Yasushi <yasushi@stbbs.net>
+;; Copyright (C) 2001, 2002, 2003, 2004 ABE Yasushi <yasushi@stbbs.net>
 
 ;; Author: ABE Yasushi <yasushi@stbbs.net>
 ;; Keywords: news

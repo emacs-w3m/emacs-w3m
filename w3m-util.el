@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -39,9 +39,11 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl)
-  ;; Variables and functions which are used in the following inline
-  ;; functions.  They should be defined in the other module at run-time.
+  (require 'cl))
+
+;; Variables and functions which are used in the following inline
+;; functions.  They should be defined in the other module at run-time.
+(eval-when-compile
   (defvar w3m-current-process)
   (defvar w3m-current-refresh)
   (defvar w3m-current-title)
@@ -78,8 +80,10 @@
 (eval-and-compile
   (cond ((= emacs-major-version 19)
 	 (autoload 'cancel-timer "timer")
-	 (require 'custom))))
-
+	 (autoload 'regexp-opt "regexp-opt")
+	 (require 'custom))
+	((featurep 'xemacs)
+	 (autoload 'cancel-timer "w3m-xmas"))))
 
 ;;; Things should be defined in advance:
 
@@ -250,7 +254,9 @@ If POSITION is omitted, the current position is assumed."
 		       (setq attr (car attr)))
 		     (` ((looking-at
 			  (, (if (eq type :bool)
-				 (symbol-name attr)
+				 (format "%s\\([ \t\r\f\n]*=[ \t\r\f\n]*%s\\)?"
+					 (symbol-name attr)
+					 w3m-html-string-regexp)
 			       (format "%s[ \t\r\f\n]*=[ \t\r\f\n]*%s"
 				       (symbol-name attr)
 				       w3m-html-string-regexp))))
@@ -499,7 +505,7 @@ This function is added to the hook which is different with the Emacs
 version as follows:
 
 XEmacs          `create-frame-hook'
-Emacs 20,21     `after-make-frame-functions'
+Emacs 20-22     `after-make-frame-functions'
 Emacs 19        `after-make-frame-hook'
 
 Note that `after-make-frame-hook' doesn't take an argument."
@@ -535,8 +541,8 @@ Note that `after-make-frame-hook' doesn't take an argument."
   "Delete FRAME from `w3m-initial-frames', the buffer-local variable.
 It is done when the FRAME in which emacs-w3m is running is deleted.
 This function is added to `delete-frame-hook' (`delete-frame-functions'
-is used instead in Emacs 21.4) or merged into the `delete-frame'
-function using `defadvice'."
+is used instead in Emacs 22) or merged into the `delete-frame' function
+using `defadvice'."
   (save-current-buffer
     (dolist (buffer (w3m-list-buffers t))
       (set-buffer buffer)
@@ -626,6 +632,18 @@ objects will not be deleted:
   (and url (not (string-match w3m-url-invalid-regexp url))
        url))
 
+(defmacro w3m-set-match-data (list)
+  "Same as the `set-match-data'; convert points into markers under XEmacs."
+  (if (featurep 'xemacs)
+      `(let ((list ,list))
+	 (store-match-data (dolist (pt (prog1 list (setq list nil))
+				       (nreverse list))
+			     (push (if (markerp pt)
+				       pt
+				     (set-marker (make-marker) pt))
+				   list))))
+    `(set-match-data ,list)))
+
 (defun w3m-search-tag-1 (regexp)
   "Subroutine used by `w3m-search-tag'."
   (let ((start (point))
@@ -638,7 +656,7 @@ objects will not be deleted:
 		      (search-forward ">" nil t))))
 	(prog1
 	    (goto-char (match-end 0))
-	  (set-match-data
+	  (w3m-set-match-data
 	   (cond ((= end (match-beginning 0))
 		  (list begin (match-end 0)
 			(1+ begin) end))
@@ -776,21 +794,26 @@ Otherwise return nil."
 	(setq w3m-refresh-timer nil)))))
 
 (defalias 'w3m-truncate-string
-  (if (featurep 'xemacs)
-      (lambda (str end-column)
-	"Truncate string STR to end at column END-COLUMN."
-	(let ((len (length str))
-	      (column 0)
-	      (idx 0))
-	  (condition-case nil
-	      (while (< column end-column)
-		(setq column (+ column (char-width (aref str idx)))
-		      idx (1+ idx)))
-	  (args-out-of-range (setq idx len)))
-	  (when (> column end-column)
-	    (setq idx (1- idx)))
-	  (substring str 0 idx)))
-    'truncate-string))
+  (cond ((featurep 'xemacs)
+	 ;; The function of the XEmacs version doesn't work correctly
+	 ;; for wide characters.
+	 (lambda (str end-column)
+	   "Truncate string STR to end at column END-COLUMN."
+	   (let ((len (length str))
+		 (column 0)
+		 (idx 0))
+	     (condition-case nil
+		 (while (< column end-column)
+		   (setq column (+ column (char-width (aref str idx)))
+			 idx (1+ idx)))
+	       (args-out-of-range (setq idx len)))
+	     (when (> column end-column)
+	       (setq idx (1- idx)))
+	     (substring str 0 idx))))
+	((fboundp 'truncate-string-to-width)
+	 'truncate-string-to-width)
+	(t
+	 'truncate-string)))
 
 (defsubst w3m-assoc-ignore-case (name alist)
   "Return the element of ALIST whose car equals NAME ignoring its case."
@@ -819,17 +842,6 @@ Otherwise return nil."
 		 (push (concat "^" (char-to-string (+ 64 char))) rest))))
 	(prin1 (apply 'concat (nreverse rest)) stream))
     (prin1 object stream)))
-
-(defun w3m-display-progress-message (url)
-  "Show \"Reading URL...\" message in the middle of a buffer."
-  (insert (make-string (max 0 (/ (1- (window-height)) 2)) ?\n)
-	  "Reading " (w3m-url-strip-authinfo url) "...")
-  (beginning-of-line)
-  (let ((fill-column (window-width)))
-    (center-region (point) (point-max)))
-  (goto-char (point-min))
-  (put-text-property (point) (point-max) 'w3m-progress-message t)
-  (sit-for 0))
 
 (defun w3m-modify-plist (plist &rest properties)
   "Change values in PLIST corresponding to PROPERTIES.  This is similar
@@ -922,6 +934,25 @@ deactivated after evaluating the current command."
 	  (setq string (replace-match newtext nil literal string))
 	  (setq start (- (length string) tail))))
       string))))
+
+(eval-and-compile
+  (if (fboundp 'compare-strings)
+      (defalias 'w3m-compare-strings 'compare-strings)
+    (defun w3m-compare-strings (string1 start1 end1 string2 start2 end2)
+      "Compare the contents of two strings."
+      (let* ((str1 (substring string1 start1 end1))
+	     (str2 (substring string2 start2 end2))
+	     (len (min (length str1) (length str2)))
+	     (i 0))
+	(if (string= str1 str2)
+	    t
+	  (setq i (catch 'ignore
+		    (while (< i len)
+		      (when (not (eq (aref str1 i) (aref str2 i)))
+			(throw 'ignore i))
+		      (setq i (1+ i)))
+		    i))
+	  (1+ i))))))
 
 (provide 'w3m-util)
 

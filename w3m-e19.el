@@ -1,6 +1,6 @@
-;;; w3m-e19.el --- Emacs 19 specific functions for w3m
+;;; w3m-e19.el --- Emacs 19 specific functions for emacs-w3m
 
-;; Copyright (C) 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2002, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Kevin Rodgers <kevin.rodgers@ihs.com>,
 ;;          Katsumi Yamaoka <yamaoka@jpl.org>

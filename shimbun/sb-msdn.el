@@ -86,11 +86,12 @@ List is available at:
 	  (md5 url)
 	  (shimbun-server shimbun)))
 
-(luna-define-method shimbun-article :before ((shimbun shimbun-msdn) header
-					     &optional outbuf)
-  (let ((url (shimbun-article-url shimbun header)))
-    (when (string-match "^http://msdn\\.microsoft\\.com/library/default\\.asp\\?url=\\(.+\\.asp\\)$" url)
-      (shimbun-header-set-xref header (concat "http://msdn.microsoft.com" (match-string 1 url))))))
+(luna-define-method shimbun-article-url ((shimbun shimbun-msdn) header)
+  (let ((url (shimbun-article-base-url shimbun header)))
+    (if (string-match "\\`http://msdn\\.microsoft\\.com/\
+library/default\\.asp\\?url=\\(.+\\.asp\\)\\'" url)
+	(concat "http://msdn.microsoft.com" (match-string 1 url))
+      url)))
 
 (provide 'sb-msdn)
 

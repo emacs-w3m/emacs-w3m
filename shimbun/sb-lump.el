@@ -1,6 +1,6 @@
 ;;; sb-lump.el --- shimbun backend class to check all groups at once
 
-;; Copyright (C) 2001 Yuuichi Teranishi  <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>

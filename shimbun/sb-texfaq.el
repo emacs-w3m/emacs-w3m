@@ -1,6 +1,6 @@
 ;;; sb-texfaq.el --- shimbun backend for TeX Q&A Bullettein Board.
 
-;; Copyright (C) 2002 Hidetaka Iwai <tyuyu@mb6.seikyou.ne.jp>
+;; Copyright (C) 2002, 2004 Hidetaka Iwai <tyuyu@mb6.seikyou.ne.jp>
 
 ;; Author: Hidetaka Iwai <tyuyu@mb6.seikyou.ne.jp>,
 ;;         TSUCHIYA Masatoshi <tsuchiya@namazu.org>

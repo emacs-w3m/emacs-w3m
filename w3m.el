@@ -88,7 +88,29 @@
    ((featurep 'xemacs)
     (require 'w3m-xmas))
    ((>= emacs-major-version 23)
-    (require 'w3m-e23))
+    ;; Emacs-w3m of the released version does not support Emacs 23+.
+    ;; We load w3m-e23.el(c) that exists in the same directory as
+    ;; w3m.el(c) so as to exclude ones in other places.
+    (unless (featurep 'w3m-e23)
+      (let ((files (list (and (boundp 'byte-compile-current-file)
+			      (symbol-value 'byte-compile-current-file))
+			 (and (boundp 'load-file-name)
+			      (symbol-value 'load-file-name))
+			 (locate-library "w3m")))
+	    file)
+	(while files
+	  (when (stringp (setq file (pop files)))
+	    (if (condition-case nil
+		    ;; `load' returns t if the file exists.
+		    (load (expand-file-name "w3m-e23"
+					    (file-name-directory file))
+			  nil t)
+		  (error nil))
+		(setq files nil)
+	      (unless files
+		(error "Emacs-w3m of this version does not support Emacs %d;\
+ try the development version"
+		       emacs-major-version))))))))
    ((>= emacs-major-version 21)
     (require 'w3m-e21))
    ((= emacs-major-version 20)
@@ -130,6 +152,10 @@
   (autoload 'w3m-about-perldoc "w3m-perldoc")
   (autoload 'w3m-fontify-forms "w3m-form")
   (autoload 'w3m-fontify-textareas "w3m-form")
+  (autoload 'w3m-form-textarea-file-cleanup "w3m-form")
+  (autoload 'w3m-form-textarea-files-remove "w3m-form")
+  (autoload 'w3m-form-kill-buffer "w3m-form")
+  (autoload 'w3m-form-set-number "w3m-form")
   (autoload 'w3m-filter "w3m-filter")
   (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
   (autoload 'w3m-switch-buffer "w3m-tabmenu")
@@ -146,6 +172,7 @@
 (eval-when-compile
   (autoload 'rfc2368-parse-mailto-url "rfc2368")
   (autoload 'widget-convert-button "wid-edit")
+  (autoload 'widget-get "wid-edit")
   (unless (fboundp 'char-to-int)
     (defalias 'char-to-int 'identity)))
 
@@ -461,10 +488,18 @@ terminal.)"
    ((not (featurep 'mule)) 'iso-8859-1)
    ((eq w3m-type 'w3mmee) 'ctext)
    ((eq w3m-type 'w3m-m17n)
-    (if (or (equal "Japanese" w3m-language)
-	    (not (w3m-find-coding-system 'utf-8)))
-	'iso-2022-7bit-ss2
-      'utf-8))
+    (cond
+     ((and (equal "Japanese" w3m-language)
+	   (featurep 'w3m-e21)
+	   (not (featurep 'un-define))
+	   (fboundp 'utf-translate-cjk-mode))
+      'utf-8)
+     ((equal "Japanese" w3m-language)
+      'iso-2022-7bit-ss2)
+     ((w3m-find-coding-system 'utf-8)
+      'utf-8)
+     (t
+      'iso-2022-7bit-ss2)))
    (w3m-accept-japanese-characters 'w3m-euc-japan)
    (t 'w3m-iso-latin-1))
   "*Coding system used when reading from w3m processes."
@@ -947,10 +982,11 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
 ;; FIXME: we need to improve so that to set up the value of this
 ;; variable may be performed by parsing the mailcap file.
 (defcustom w3m-content-type-alist
-  (let* ((fiber-viewer (when (eq system-type 'windows-nt)
+  (let* ((fiber-viewer (when (and (eq system-type 'windows-nt)
+				  (w3m-which-command "fiber"))
 			 (list "fiber.exe" "-s" 'file)))
 	 (external-browser
-	  (if (eq system-type 'windows-nt)
+	  (if (and (eq system-type 'windows-nt) (w3m-which-command "fiber"))
 	      'w3m-w32-browser-with-fiber
 	    (or (when (condition-case nil (require 'browse-url) (error nil))
 		  (if (or (not (boundp 'browse-url-browser-function))
@@ -981,6 +1017,7 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
 			   (list "acroread" 'file))))))
     `(("text/plain" "\\.\\(txt\\|tex\\|el\\)\\'" nil nil)
       ("text/html" "\\.s?html?\\'" ,external-browser nil)
+      ("text/xml" "\\.xml\\'" nil "text/plain")
       ("image/jpeg" "\\.jpe?g\\'" ,image-viewer nil)
       ("image/png" "\\.png\\'" ,image-viewer nil)
       ("image/gif" "\\.gif\\'" ,image-viewer nil)
@@ -993,6 +1030,9 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
       ("video/quicktime" "\\.mov\\'" ,video-viewer nil)
       ("application/postscript" "\\.e?ps\\'" ,ps-viewer nil)
       ("application/pdf" "\\.pdf\\'" ,pdf-viewer nil)
+      ("application/xml" "\\.xml\\'" nil "text/plain")
+      ("application/rdf+xml" "\\.rdf\\'" nil "text/plain")
+      ("application/rss+xml" "\\.rss\\'" nil "text/plain")
       ("application/xhtml+xml" nil nil "text/html")))
   "*Alist of file suffixes and content types."
   :group 'w3m
@@ -1217,7 +1257,7 @@ car and the cdr in each element if it is available."
 (defcustom w3m-track-mouse t
   "*Whether to track the mouse and message the url under the mouse.
 This feature does not work under Emacs or XEmacs versions prior to 21.
-See also `show-help-function' if you are using Emacs 21.
+See also `show-help-function' if you are using Emacs 21 or later.
 
 A tip for XEmacs users:
 
@@ -1242,6 +1282,90 @@ For twm use this in your .twmrc:
 See the balloon-help.el file for more information."
   :group 'w3m
   :type 'boolean)
+
+(defcustom w3m-show-decoded-url
+  '(("\\`http://\\([^./?#]+\\.\\)*wikipedia\\.org/" . utf-8)
+    (t . t))
+  "*Non-nil means show decoded URIs in the echo area, the balloon, etc.
+This variable can take one of the following five kinds of forms:
+
+1. t
+  Decode URIs using the encoding guessed from the value of
+  `w3m-coding-system-priority-list'.
+
+2. Coding system
+  Decode URIs using this value.
+
+3. List of coding systems:
+  Decode URIs using the encoding assumed based on this list.
+
+4. Alist of predicates and forms described below:
+  Each element looks like the `(PREDICATE . ENCODING)' form.  PREDICATE
+  should be a regexp, a function or a Lisp form, and ENCODING should be
+  one of the forms described here excluding this form.  If PREDICATE is
+  a regexp, it will be tested whether it matches to the target url.
+  If it is a function, it will be called with the target url.  If it
+  is a Lisp form, it will be simply evaluated.  Elements are tested in
+  turn until the result of the test of the predicate is true and the
+  encoding which is associated to the predicate is used for decoding
+  URIs.
+
+5. nil
+  Don't decode URIs."
+  :group 'w3m
+  :type
+  '(choice
+    :format "%{%t%}: %[Value Menu%]\n  %v"
+    (coding-system :tag "Specify encoding" :format "Use this encoding: %v"
+		   :match (lambda (widget value)
+			    (w3m-find-coding-system value)))
+    (const :tag "Prefer the encoding of the current page"
+	   :format "%t: %{t%}\n" :sample-face widget-field-face
+	   t)
+    (group :tag "List of prefered encodings"
+	   :match (lambda (widget value)
+		    (and (car-safe value)
+			 (symbolp (car-safe value))))
+	   (repeat :format "List of prefered encodings:\n%v%i\n"
+		   :inline t
+		   (coding-system :tag "Encoding")))
+    (group :tag "Rules to select an encoding of URIs on the current page"
+	   :match (lambda (widget value) value)
+	   (repeat
+	    :format
+	    "Rules to select an encoding of URIs on the current page:\n%v%i\n"
+	    :inline t
+	    (cons
+	     :format "%v" :indent 2
+	     (choice
+	      :format "\n  %[Value Menu for the car%]\n    %v"
+	      (regexp :tag "Regexp matches the current page")
+	      (function :tag "Predicate checks for the current page")
+	      (sexp :tag "Expression checks for the current page"))
+	     (choice
+	      :format "%[Value Menu for the cdr%]\n    %v"
+	      (coding-system :tag "Specify encoding"
+			     :format "Use this encoding: %v"
+			     :match (lambda (widget value)
+				      (if (featurep 'xemacs)
+					  nil ;; ??
+					(or (and (< emacs-major-version 21)
+						 (not value))
+					    (w3m-find-coding-system value)))))
+	      (const :tag "Prefer the encoding of the current page"
+		     :format "%t: %{t%}\n" :sample-face widget-field-face
+		     t)
+	      (group :tag "List of prefered encodings"
+		     (repeat :tag "List of prefered encodings"
+			     :inline t
+			     :extra-offset 4
+			     (coding-system :tag "Encoding")))
+	      (const :tag "Don't decode URIs"
+		     :format "%t: %{nil%}\n" :sample-face widget-field-face
+		     nil)))))
+    (const :tag "Don't decode URIs"
+	   :format "%t: %{nil%}\n" :sample-face widget-field-face
+	   nil)))
 
 (defcustom w3m-use-tab t
   "Non-nil means make emacs-w3m a tab browser.
@@ -1609,7 +1733,7 @@ Here are some predefined functions which can be used for those ways:
 		       (regexp :format "%t: %v\n" :size 0)
 		       (function
 			:format "%t: %v\n" :size 0
-			;; Fixing a bug in Emacs versions prior to 21.4.
+			;; Fixing a bug in Emacs versions prior to 22.
 			:value-to-internal
 			(lambda (widget value)
 			  (if (stringp value)
@@ -1620,7 +1744,7 @@ Here are some predefined functions which can be used for those ways:
 		       (repeat :extra-offset 2 :tag "Options"
 			       (sexp :format "%t: %v\n" :size 0))))))))))
 
-(defvar w3m-relationship-estimate-rules
+(defcustom w3m-relationship-estimate-rules
   `((w3m-relationship-simple-estimate
      "\\`http://\\(www\\|groups\\)\\.google\\.[^/]+/\\(search\\|groups\\)"
      ,(concat "<a href=" w3m-html-string-regexp
@@ -1634,9 +1758,20 @@ Here are some predefined functions which can be used for those ways:
      ,(concat "<a href=" w3m-html-string-regexp ">前のページ</a>")
      nil nil)
     (w3m-relationship-magicpoint-estimate))
-  "*Rules to estimate relationships between a retrieved page and others.
-Note that this option is installed experimentally.  Its syntax will be
-changed, when we implement more flexible framework.")
+  "*Rules to estimate relationships between a retrieved page and others."
+  :group 'w3m
+  :type '(repeat
+	  (choice
+	   (group :tag "Estimate relationships from anchors matching"
+		 (function :format "" w3m-relationship-simple-estimate)
+		 (regexp :tag "URL")
+		 (regexp :tag "Next")
+		 (regexp :tag "Previous")
+		 (regexp :tag "Start")
+		 (regexp :tag "Contents"))
+	   (list :tag "Estimate with a user defined function"
+		 function
+		 (repeat :tag "Arguments" sexp)))))
 
 (defconst w3m-entity-alist
   (append
@@ -1696,25 +1831,23 @@ changed, when we implement more flexible framework.")
        (append basic-entity-alist
 	       ;; latin1
 	       (mapcar
-		(function
-		 (lambda (entity)
-		   (cons (car entity)
-			 (char-to-string
-			  (make-char (w3m-static-if (boundp 'MULE)
-					 lc-ltn1
-				       'latin-iso8859-1)
-				     (cdr entity))))))
+		(lambda (entity)
+		  (cons (car entity)
+			(char-to-string
+			 (make-char (w3m-static-if (boundp 'MULE)
+					lc-ltn1
+				      'latin-iso8859-1)
+				    (cdr entity)))))
 		latin1-entity)
 	       ;; greek
 	       (mapcar
-		(function
-		 (lambda (entity)
-		   (cons (car entity)
-			 (char-to-string
-			  (make-char (w3m-static-if (boundp 'MULE)
-					 lc-grk
-				       'greek-iso8859-7)
-				     (cdr entity))))))
+		(lambda (entity)
+		  (cons (car entity)
+			(char-to-string
+			 (make-char (w3m-static-if (boundp 'MULE)
+					lc-grk
+				      'greek-iso8859-7)
+				    (cdr entity)))))
 		greek-entity))))
    (when (w3m-mule-unicode-p)
      (let ((latin-extended-a
@@ -1773,26 +1906,24 @@ changed, when we implement more flexible framework.")
        (append
 	(apply 'append
 	       (mapcar
-		(function
-		 (lambda (entities)
-		   (let ((code1 (car entities)))
-		     (mapcar
-		      (lambda (entity)
-			(cons (car entity)
-			      (char-to-string
-			       (make-char 'mule-unicode-0100-24ff
-					  code1 (cdr entity)))))
-		      (cdr entities)))))
+		(lambda (entities)
+		  (let ((code1 (car entities)))
+		    (mapcar
+		     (lambda (entity)
+		       (cons (car entity)
+			     (char-to-string
+			      (make-char 'mule-unicode-0100-24ff
+					 code1 (cdr entity)))))
+		     (cdr entities))))
 		`(,@latin-extended-a ,@latin-extended-b ,@general-punctuation
 		  ,@greek ,@letterlike-symbols ,@arrows
 		  ,@mathematical-operators ,@miscellaneous-technical)))
 	(mapcar
-	 (function
-	  (lambda (entity)
-	    (cons (car entity)
-		  (char-to-string
-		   (make-char 'mule-unicode-2500-33ff
-			      (car (cdr entity)) (cdr (cdr entity)))))))
+	 (lambda (entity)
+	   (cons (car entity)
+		 (char-to-string
+		  (make-char 'mule-unicode-2500-33ff
+			     (car (cdr entity)) (cdr (cdr entity))))))
 	 suit)))))
   "Alist of html character entities and values.")
 
@@ -1867,11 +1998,13 @@ The value will be modified for displaying the graphic icon.")
 
 (defvar w3m-modeline-favicon nil
   "Modeline control for displaying a favicon.
-This variable will be made buffer-local under Emacs 21 or XEmacs.")
+This variable will be made buffer-local under Emacs 21 and later or
+XEmacs.")
 
 (defvar w3m-favicon-image nil
   "Favicon image of the page.
-This variable will be made buffer-local under Emacs 21 or XEmacs.")
+This variable will be made buffer-local under Emacs 21 and later or
+XEmacs.")
 
 (defvar w3m-current-process nil
   "Flag used to say whether the external process is running in the buffer.
@@ -1971,7 +2104,9 @@ It is used for favicon data.  The type is often `ico'.")
 	  w3m-current-ssl ssl)))
 
 (defvar w3m-verbose nil
-  "*Flag controls whether emacs-w3m should be verbose.")
+  "*Flag controls whether to log messages in the *Messages* buffer.
+If it is nil, a lot of messages issued by emacs-w3m will be displayed
+only in the echo area.")
 
 (defvar w3m-safe-url-regexp nil
   "Regexp matching urls which are considered to be safe.")
@@ -2174,6 +2309,8 @@ If it is nil, the command specified to `w3m-command' is used.")
 	 (list "-halfdump"
 	       "-o" "ext_halfdump=1"
 	       "-o" "strict_iso2022=0"
+	       "-o" "fix_width_conv=1"
+	       "-o" "use_jisx0201=0"
 	       "-o" "ucs_conv=1"
 	       '(if (eq w3m-input-coding-system 'binary)
 		    (if charset (list "-I" 'charset))
@@ -2550,19 +2687,19 @@ property (in XEmacs, it is an extent) with the value of a string which
 should be in the place where having to show a help message.  If you
 need to know what function will be made, use `macroexpand'."
   (if (featurep 'xemacs)
-      `(if (>= emacs-major-version 21)
-	   (function
-	    (lambda (extent)
-	      (if (and w3m-track-mouse
-		       (eq (extent-object extent) (current-buffer)))
-		  (get-text-property (extent-start-position extent)
-				     ',property)))))
+      (let ((str `(get-text-property (extent-start-position extent)
+				     ',property)))
+	`(if (>= emacs-major-version 21)
+	     (lambda (extent)
+	       (if (and w3m-track-mouse
+			(eq (extent-object extent) (current-buffer)))
+		   (w3m-url-readable-string ,str)))))
     `(if (>= emacs-major-version 21)
-	 (function
-	  (lambda (window object pos)
-	    (if w3m-track-mouse
-		(progn
-		  (w3m-message "")	; Clear the echo area.
+	 (lambda (window object pos)
+	   (if w3m-track-mouse
+	       (progn
+		 (w3m-message "")	; Clear the echo area.
+		 (w3m-url-readable-string
 		  (get-text-property pos ',property
 				     (window-buffer window)))))))))
 
@@ -2574,20 +2711,21 @@ It returns an interned symbol of a function.  PROPERTY is a symbol
 string which should be in the place where having to show a help
 message."
   (when (featurep 'xemacs)
-    `(let ((fn (intern (format "w3m-balloon-help-for-%s"
-			       ',property))))
-       (prog1
-	   fn
-	 (unless (fboundp fn)
-	   (defalias fn
-	     (lambda (extent)
-	       (if (and w3m-track-mouse
-			(eq (extent-object extent) (current-buffer)))
-		   (get-text-property (extent-start-position extent)
-				      ',property)))))
-	 (when (and (featurep 'bytecomp)
-		    (not (compiled-function-p (symbol-function fn))))
-	   (byte-compile fn))))))
+    (let ((str `(get-text-property (extent-start-position extent)
+				   ',property)))
+      `(let ((fn (intern (format "w3m-balloon-help-for-%s"
+				 ',property))))
+	 (prog1
+	     fn
+	   (unless (fboundp fn)
+	     (defalias fn
+	       (lambda (extent)
+		 (if (and w3m-track-mouse
+			  (eq (extent-object extent) (current-buffer)))
+		     (w3m-url-readable-string ,str)))))
+	   (when (and (featurep 'bytecomp)
+		      (not (compiled-function-p (symbol-function fn))))
+	     (byte-compile fn)))))))
 
 (defun w3m-message (&rest args)
   "Print a one-line message at the bottom of the screen.
@@ -2757,12 +2895,46 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 	     (t " "))
 	    buf)
       (setq start (match-end 0)))
-    (decode-coding-string
-     (apply 'concat (nreverse (cons (substring str start) buf)))
-     (or coding
-	 w3m-default-coding-system
-	 w3m-coding-system
-	 'iso-2022-7bit))))
+    (setq str (apply 'concat (nreverse (cons (substring str start) buf))))
+    (w3m-static-if (and (featurep 'xemacs)
+			(featurep 'mule))
+	(w3m-decode-coding-string-with-priority str coding)
+      (when (listp coding)
+	(setq coding
+	      (with-temp-buffer
+		(set-buffer-multibyte nil)
+		(insert str)
+		(w3m-detect-coding-region (point-min) (point-max) coding))))
+      (decode-coding-string str
+			    (or coding
+				w3m-default-coding-system
+				w3m-coding-system
+				'iso-2022-7bit)))))
+
+(defun w3m-url-readable-string (url)
+  "Return a readable string for a give encoded URL.
+If `w3m-show-decoded-url' has non-nil value, it is refered to decide
+a decoding scheme."
+  (when (stringp url)
+    (let ((rule
+	   (if (and (listp w3m-show-decoded-url)
+		    (consp (car w3m-show-decoded-url)))
+	       (catch 'found-rule
+		 (save-match-data
+		   (dolist (elem w3m-show-decoded-url)
+		     (when (if (stringp (car elem))
+			       (string-match (car elem) url)
+			     (if (functionp (car elem))
+				 (funcall (car elem) url)
+			       (eval (car elem))))
+		       (throw 'found-rule (cdr elem))))))
+	     w3m-show-decoded-url)))
+      (if rule
+	  (w3m-url-decode-string url
+				 (if (eq t rule)
+				     w3m-coding-system-priority-list
+				   rule))
+	url))))
 
 (defsubst w3m-url-transfer-encode-string (url &optional coding)
   "Encode non-ascii characters in URL into the sequence of escaped octets.
@@ -3838,14 +4010,28 @@ It supports the encoding types of gzip, bzip2, deflate, etc."
 		     (string-match ";[ \t\n]*charset=\\([^\"]+\\)" content))
 	    (throw 'found (match-string 1 content))))))))
 
+(defun w3m-detect-xml-charset ()
+  (let ((case-fold-search t))
+    (goto-char (point-min))
+    (or (when (looking-at "[ \t\r\f\n]*<\\?xml[ \t\r\f\n]+")
+	  (goto-char (match-end 0))
+	  (w3m-parse-attributes ((encoding :case-ignore))
+	    encoding))
+	"utf-8")))
+
 (defun w3m-decode-buffer (url &optional content-charset content-type)
   (let (cs)
+    (unless content-type
+      (setq content-type (w3m-content-type url)))
     (unless content-charset
       (setq content-charset
 	    (or (w3m-content-charset url)
-		(when (string= "text/html"
-			       (or content-type (w3m-content-type url)))
-		  (w3m-detect-meta-charset)))))
+		(when (string= "text/html" content-type)
+		  (w3m-detect-meta-charset))
+		(when (string-match
+		       "\\`\\(application\\|text\\)/\\([a-z]+\\+\\)?xml\\'"
+		       content-type)
+		  (w3m-detect-xml-charset)))))
     (cond
      ((and (eq w3m-type 'w3mmee)
 	   (or (and (stringp content-charset)
@@ -3857,16 +4043,15 @@ It supports the encoding types of gzip, bzip2, deflate, etc."
       (setq content-charset (w3m-correct-charset content-charset))
       (setq cs (w3m-charset-to-coding-system content-charset))))
     (setq w3m-current-content-charset content-charset)
-    (decode-coding-region
-     (point-min) (point-max)
-     (setq w3m-current-coding-system
-	   (or cs
-	       (w3m-detect-coding-region
-		(point-min) (point-max)
-		(if (w3m-url-local-p url)
-		    nil
-		  w3m-coding-system-priority-list)))))
-    (set-buffer-multibyte t)))
+    (setq w3m-current-coding-system
+	  (or cs
+	      (w3m-detect-coding-region
+	       (point-min) (point-max)
+	       (if (w3m-url-local-p url)
+		   nil
+		 w3m-coding-system-priority-list))))
+    (set-buffer-multibyte t)
+    (decode-coding-region (point-min) (point-max) w3m-current-coding-system)))
 
 (defun w3m-x-moe-decode-buffer ()
   (let ((args '("-i" "-cs" "x-moe-internal"))
@@ -3960,7 +4145,7 @@ retrieval is successful."
 	  (w3m-local-content-type file)))))
 
 (defun w3m-local-dirlist-cgi (url)
-  (w3m-message "Reading %s..." url)
+  (w3m-message "Reading %s..." (w3m-url-readable-string url))
   (if w3m-dirlist-cgi-program
       (if (file-executable-p w3m-dirlist-cgi-program)
 	  (let ((coding-system-for-read 'binary)
@@ -4031,7 +4216,7 @@ retrieval is successful."
       (setq beg (match-beginning 0))
       (when (search-forward "</form>" nil t)
 	(delete-region beg (match-end 0)))))
-  (w3m-message "Reading %s...done" url))
+  (w3m-message "Reading %s...done" (w3m-url-readable-string url)))
 
 ;;; Retrieving data via HTTP:
 (defun w3m-remove-redundant-spaces (str)
@@ -4187,7 +4372,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 			  nil nil nil url)
 		  (list (w3m-local-content-type url) nil nil nil nil url)))
 	    (w3m-cache-header url header)
-	    (if (memq (car attr) '(300 301 302 303 304 305 306 307))
+	    (if (memq (car attr) '(301 302 303 304 305 306 307))
 		(if (zerop counter)
 		    ;; Redirect counter exceeds `w3m-follow-redirection'.
 		    nil
@@ -4218,7 +4403,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
     (setq w3m-current-url url
 	  url (w3m-url-strip-authinfo url))
     (w3m-message "Reading %s...%s"
-		 url
+		 (w3m-url-readable-string url)
 		 (if (and w3m-async-exec (not w3m-process-waited))
 		     (substitute-command-keys "\
  (Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")
@@ -4231,7 +4416,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 				    (w3m-w3m-expand-arguments
 				     w3m-dump-head-source-command-arguments)
 				    (list url))))
-      (w3m-message "Reading %s...done" url)
+      (w3m-message "Reading %s...done" (w3m-url-readable-string url))
       (when success
 	(goto-char (point-min))
 	(let ((case-fold-search t))
@@ -4403,7 +4588,7 @@ It will put the retrieved contents into the current buffer.  See
 		(set-buffer-multibyte nil)
 		(w3m-w3m-retrieve-1 url post-data referer no-cache
 				    (or w3m-follow-redirection 0) handler)))
-      (when (eq (car attr) 200)
+      (when (memq (car attr) '(200 300))
 	(if (or no-decode
 		(w3m-decode-encoded-contents (nth 4 attr)))
 	    (let ((temp-buffer (current-buffer)))
@@ -4460,7 +4645,7 @@ It will put the retrieved contents into the current buffer.  See
 	(and temp-file
 	     (file-exists-p temp-file)
 	     (delete-file temp-file))
-	(if (memq (car attr) '(300 301 302 303 304 305 306 307))
+	(if (memq (car attr) '(301 302 303 304 305 306 307))
 	    (if (zerop counter)
 		;; Redirect counter exceeds `w3m-follow-redirection'.
 		nil
@@ -4605,43 +4790,56 @@ POST-DATA and REFERER will be sent to the web server with a request."
 
 (defvar w3m-touch-file-available-p 'undecided)
 
-(defun w3m-touch-file (file time)
-  "Change the access and/or modification TIME of the specified FILE."
-  ;; Check the validity of `touch' command.
-  (when (eq w3m-touch-file-available-p 'undecided)
-    (let ((file (make-temp-name
-		 (expand-file-name "w3mel" w3m-profile-directory)))
-	  time timefile)
-      (while (progn
-	       (setq time (list (abs (% (random) 8192))
-				(abs (% (random) 65536)))
-		     timefile (expand-file-name
-			       (format-time-string "%Y%m%d%H%M.%S" time)
-			       w3m-profile-directory))
-	       (file-exists-p timefile)))
-      (unwind-protect
-	  (setq w3m-touch-file-available-p
-		(when (w3m-which-command w3m-touch-command)
-		  (with-temp-buffer
-		    (insert "touch check")
-		    (write-region (point-min) (point-max) file nil 'nomsg))
-		  (and (let ((default-directory w3m-profile-directory)
-			     (w3m-touch-file-available-p t))
-			 (w3m-touch-file file time))
-		       (zerop (w3m-time-lapse-seconds
-			       time (nth 5 (file-attributes file)))))))
-	(when (file-exists-p file)
-	  (ignore-errors (delete-file file)))
-	(when (file-exists-p timefile)
-	  (ignore-errors (delete-file timefile))))))
-  (and w3m-touch-file-available-p
-       time
-       (w3m-which-command w3m-touch-command)
-       (file-exists-p file)
-       (zerop (let ((default-directory (file-name-directory file)))
-		(call-process w3m-touch-command nil nil nil
-			      "-t" (format-time-string "%Y%m%d%H%M.%S" time)
-			      file)))))
+(eval-and-compile
+  (if (fboundp 'set-file-times)
+      (defalias 'w3m-touch-file 'set-file-times)
+    (defun w3m-touch-file (file time)
+      "Change the access and/or modification TIME of the specified FILE."
+      ;; Check the validity of `touch' command.
+      (when (eq w3m-touch-file-available-p 'undecided)
+	(let ((file (make-temp-name
+		     (expand-file-name "w3mel" w3m-profile-directory)))
+	      time timefile)
+	  (while (progn
+		   (setq time (list (abs (% (random) 8192))
+				    (abs (% (random) 65536)))
+			 timefile (expand-file-name
+				   (format-time-string "%Y%m%d%H%M.%S" time)
+				   w3m-profile-directory))
+		   (file-exists-p timefile)))
+	  (unwind-protect
+	      (setq w3m-touch-file-available-p
+		    (when (w3m-which-command w3m-touch-command)
+		      (with-temp-buffer
+			(insert "touch check")
+			(write-region (point-min) (point-max) file nil 'nomsg))
+		      (and (let ((default-directory w3m-profile-directory)
+				 (w3m-touch-file-available-p t))
+			     (w3m-touch-file file time))
+			   (zerop (w3m-time-lapse-seconds
+				   time (nth 5 (file-attributes file)))))))
+	    (when (file-exists-p file)
+	      (ignore-errors (delete-file file)))
+	    (when (file-exists-p timefile)
+	      (ignore-errors (delete-file timefile))))))
+      (and w3m-touch-file-available-p
+	   time
+	   (w3m-which-command w3m-touch-command)
+	   (file-exists-p file)
+	   (zerop (let ((default-directory (file-name-directory file))
+			(coding-system-for-write
+			 (or
+			  (and (boundp 'file-name-coding-system)
+			       (symbol-value 'file-name-coding-system))
+			  (and (boundp 'default-file-name-coding-system)
+			       (symbol-value 'default-file-name-coding-system))
+			  ;; Some versions of X*macsen seem touched.
+			  (and (boundp 'coding-system-for-write)
+			       (symbol-value 'coding-system-for-write)))))
+		    (call-process w3m-touch-command nil nil nil
+				  "-t"
+				  (format-time-string "%Y%m%d%H%M.%S" time)
+				  file)))))))
 
 ;;;###autoload
 (defun w3m-download (url &optional filename no-cache handler)
@@ -4744,7 +4942,8 @@ POST-DATA and REFERER will be sent to the web server with a request."
 		 ((member "contents" rel) (setq w3m-contents-url href))))))
 	   ((string= tag "base")
 	    (w3m-parse-attributes (href)
-	      (setq w3m-current-base-url href)))))))))
+	      (when (< 0 (length href))
+		(setq w3m-current-base-url href))))))))))
 
 (defun w3m-check-refresh-attribute ()
   "Get REFRESH attribute in META tags."
@@ -5024,6 +5223,7 @@ specified in the `w3m-content-type-alist' variable."
 		     (file-name-nondirectory url))
 	     w3m-content-type-alist nil t))
       (setf (w3m-arrived-content-type url) type)))
+  (setq w3m-current-coding-system nil)	; Reset decoding status of this buffer.
   (setq type (w3m-prepare-content url type charset))
   (w3m-safe-decode-buffer url charset type)
   (setq charset (or charset w3m-current-content-charset))
@@ -5315,6 +5515,18 @@ compatibility which is described in Section 5.2 of RFC 2396.")
       (concat (substring base 0 (match-beginning 8))
 	      url)))))
 
+(defun w3m-display-progress-message (url)
+  "Show \"Reading URL...\" message in the middle of a buffer."
+  (insert (make-string (max 0 (/ (1- (window-height)) 2)) ?\n)
+	  "Reading " (w3m-url-readable-string (w3m-url-strip-authinfo url))
+	  "...")
+  (beginning-of-line)
+  (let ((fill-column (window-width)))
+    (center-region (point) (point-max)))
+  (goto-char (point-min))
+  (put-text-property (point) (point-max) 'w3m-progress-message t)
+  (sit-for 0))
+
 (defsubst w3m-view-this-url-1 (url reload new-session)
   (lexical-let (pos buffer newbuffer wconfig)
     (if new-session
@@ -5351,18 +5563,23 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 		       'w3m-mode)
 		   (not (eq (with-current-buffer newbuffer major-mode)
 			    'w3m-mode)))
+	  ;; Empty buffer must delete before restore window configuration.
+	  (when pos
+	    (w3m-delete-buffer-if-empty buffer))
 	  (set-window-configuration wconfig))
-	(when pos ;; The new session is created.
-	  ;; Delete useless newly created buffer if it is empty.
-	  (w3m-delete-buffer-if-empty buffer))
-	;; FIXME: what we should actually do is to modify the `w3m-goto-url'
-	;; function so that it may return a proper value, and checking it.
-	(when (and pos (buffer-name (marker-buffer pos)))
-	  (save-excursion
-	    (set-buffer (marker-buffer pos))
+	;; The new session is created.
+	(when pos
+	  ;; Already empty buffer killed if the new url is not the w3m-mode.
+	  (when (buffer-name buffer)
+	    (w3m-delete-buffer-if-empty buffer))
+	  ;; FIXME: what we should actually do is to modify the `w3m-goto-url'
+	  ;; function so that it may return a proper value, and checking it.
+	  (when (buffer-name (marker-buffer pos))
 	    (save-excursion
-	      (goto-char pos)
-	      (w3m-refontify-anchor))))))))
+	      (set-buffer (marker-buffer pos))
+	      (save-excursion
+		(goto-char pos)
+		(w3m-refontify-anchor)))))))))
 
 (defun w3m-view-this-url (&optional arg new-session)
   "Display the page pointed to by the link under point.
@@ -5596,7 +5813,7 @@ of the url currently displayed.  The browser is defined in
   (interactive)
   (when w3m-current-url
     (kill-new w3m-current-url)
-    (w3m-message "%s" w3m-current-url)))
+    (w3m-message "%s" (w3m-url-readable-string w3m-current-url))))
 
 (defun w3m-print-this-url (&optional interactive-p)
   "Display the url under point in the echo area and put it into `kill-ring'."
@@ -5607,7 +5824,7 @@ of the url currently displayed.  The browser is defined in
     (when (or url interactive-p)
       (and url interactive-p (kill-new url))
       (w3m-message "%s"
-		   (or url
+		   (or (w3m-url-readable-string url)
 		       (and (w3m-action) "There is a form")
 		       "There is no url")))))
 
@@ -5960,25 +6177,25 @@ a page in a new buffer with the correct width."
     (setq newname (buffer-name buffer)))
   (when (string-match "<[0-9]+>\\'" newname)
     (setq newname (substring newname 0 (match-beginning 0))))
-  (let (url images init-frames new)
+  (let (url coding images init-frames new)
     (save-current-buffer
       (set-buffer buffer)
       (setq url (or w3m-current-url
 		    (car (w3m-history-element (cadar w3m-history))))
+	    coding w3m-current-coding-system
 	    images w3m-display-inline-images
 	    init-frames (when (w3m-popup-frame-p)
 			  (copy-sequence w3m-initial-frames)))
       ;;
       (set-buffer (setq new (generate-new-buffer newname)))
       (w3m-mode)
-      (if w3m-toggle-inline-images-permanently
-	  (setq w3m-display-inline-images images)
-	(setq w3m-display-inline-images w3m-default-display-inline-images))
       ;; Make copies of `w3m-history' and `w3m-history-flat'.
       (w3m-history-copy buffer)
-      (setq w3m-initial-frames init-frames)
-      (when empty
-	(w3m-clear-local-variables)))
+      (setq w3m-initial-frames init-frames
+	    w3m-display-inline-images
+	    (if w3m-toggle-inline-images-permanently
+		images
+	      w3m-default-display-inline-images)))
     (if (and (not just-copy) empty)
 	;; Pop to a window or a frame up because `w3m-goto-url' is not called.
 	(w3m-popup-buffer new)
@@ -5990,7 +6207,7 @@ a page in a new buffer with the correct width."
 	    (w3m-history-reuse-history-elements t)
 	    (w3m-prefer-cache t))
 	(w3m-process-with-wait-handler
-	  (w3m-goto-url url nil nil nil nil handler
+	  (w3m-goto-url url 'redisplay nil nil nil handler
 			;; Pass the properties of the history elements,
 			;; although it is currently always nil.
 			(w3m-history-element (cadr positions))))
@@ -6077,6 +6294,8 @@ passed to the `w3m-quit' function (which see)."
 		   (delete-window))))))
       (w3m-process-stop cur)
       (kill-buffer cur)
+      (when w3m-use-form
+	(w3m-form-kill-buffer cur))
       (run-hooks 'w3m-delete-buffer-hook)))
   (w3m-select-buffer-update))
 
@@ -6107,7 +6326,9 @@ as if the folder command of MH performs with the -pack option."
       (setq number (w3m-buffer-number buffer))
       (when number
 	(unless (eq number count)
-	  (w3m-buffer-set-number buffer count))
+	  (when (and (w3m-buffer-set-number buffer count)
+		     w3m-use-form)
+	    (w3m-form-set-number buffer count)))
 	(incf count)))))
 
 (defun w3m-delete-other-buffers (&optional buffer)
@@ -6120,7 +6341,9 @@ as if the folder command of MH performs with the -pack option."
     (while buffers
       (setq buffer (pop buffers))
       (w3m-process-stop buffer)
-      (kill-buffer buffer)))
+      (kill-buffer buffer)
+      (when w3m-use-form
+	(w3m-form-kill-buffer buffer))))
   (run-hooks 'w3m-delete-buffer-hook)
   (w3m-select-buffer-update))
 
@@ -6162,6 +6385,8 @@ as if the folder command of MH performs with the -pack option."
 	  (define-key map [(shift button2)]
 	    'w3m-mouse-view-this-url-new-session))
       (define-key map [mouse-2] 'w3m-mouse-view-this-url)
+      ;; Support for mouse-1 on Emacs 22.
+      (define-key map [follow-link] 'mouse-face)
       (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
     (define-key map "\C-c\C-@" 'w3m-history-store-position)
     (if (featurep 'xemacs)
@@ -6262,6 +6487,8 @@ as if the folder command of MH performs with the -pack option."
 	  (define-key map [(shift button2)]
 	    'w3m-mouse-view-this-url-new-session))
       (define-key map [mouse-2] 'w3m-mouse-view-this-url)
+      ;; Support for mouse-1 on Emacs 22.
+      (define-key map [follow-link] 'mouse-face)
       (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
     (define-key map "\C-c\C-@" 'w3m-history-store-position)
     (define-key map [?\C-c?\C- ] 'w3m-history-store-position)
@@ -6272,7 +6499,6 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "+" 'w3m-antenna-add-current-url)
     (define-key map "A" 'w3m-antenna)
     (define-key map "b" 'w3m-scroll-down-or-previous-url)
-    (define-key map "c" 'w3m-print-this-url)
     (define-key map "!" 'w3m-redisplay-with-content-type)
     (define-key map "d" 'w3m-download)
     (define-key map "D" 'w3m-download-this-url)
@@ -6324,7 +6550,8 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "u" 'w3m-view-parent-page)
     (define-key map "v" 'w3m-bookmark-view)
     (define-key map "W" 'w3m-weather)
-    (define-key map "y" 'w3m-print-this-url)
+    (define-key map "y" 'w3m-print-current-url)
+    (define-key map "Y" 'w3m-print-this-url)
     (define-key map "=" 'w3m-view-header)
     (define-key map "\\" 'w3m-view-source)
     (define-key map "?" 'describe-mode)
@@ -6383,7 +6610,11 @@ is specified, otherwise prompt you for the confirmation.  See also
     (sit-for 0) ;; Delete frames seemingly fast.
     (dolist (buffer (w3m-list-buffers t))
       (w3m-cancel-refresh-timer buffer)
-      (kill-buffer buffer))
+      (kill-buffer buffer)
+      (when w3m-use-form
+	(w3m-form-kill-buffer buffer)))
+    (when w3m-use-form
+      (w3m-form-textarea-file-cleanup))
     (w3m-select-buffer-close-window)
     (w3m-cache-shutdown)
     (w3m-arrived-shutdown)
@@ -6944,7 +7175,8 @@ this function will prompt user for it."
 	(put 'make-local-hook 'byte-obsolete-info nil)))
     (defun w3m-add-local-hook (hook function &optional append)
       "Add to the buffer-local value of HOOK the function FUNCTION.
-Note: this function is designed for Emacsen other than Emacs 21."
+Note: this function is designed for Emacsen other than Emacs 21 and
+later."
       (make-local-hook hook)
       (add-hook hook function append t))))
 
@@ -6982,7 +7214,7 @@ generate a new buffer."
 		       (> emacs-major-version 20))
     (w3m-initialize-graphic-icons))
   (setq mode-line-buffer-identification
-	'("%b "
+	`("%b "
 	  (w3m-current-process
 	   w3m-modeline-process-status-on
 	   (w3m-current-ssl
@@ -7000,11 +7232,63 @@ generate a new buffer."
 	    w3m-modeline-separator)
 	   w3m-modeline-separator)
 	  (w3m-current-process
-	   "Loading..." w3m-current-title)))
+	   "Loading..." ,(if (fboundp 'format-mode-line)
+			     '(:eval (w3m-modeline-title))
+			   'w3m-current-title))))
   (unless (assq 'w3m-current-process mode-line-process)
     (setq mode-line-process
 	  (cons (list 'w3m-current-process 'w3m-process-modeline-string)
 		mode-line-process))))
+
+(defvar w3m-modeline-title-string nil
+  "Internal variable used to keep contents to be shown in the mode line.
+This is a buffer-local variable.")
+(make-variable-buffer-local 'w3m-modeline-title-string)
+
+(defvar w3m-modeline-title-timer nil
+  "Say time has not gone by after the mode line was updated last time.
+It is used to control the `w3m-modeline-title' function running too
+frequently, set by the function itself and cleared by a timer.")
+(make-variable-buffer-local 'w3m-modeline-title-timer)
+
+(eval-when-compile
+  (unless (fboundp 'format-mode-line)
+    (defalias 'format-mode-line 'ignore))
+  (unless (fboundp 'w3m-force-window-update)
+    (defalias 'w3m-force-window-update 'ignore)))
+
+(defun w3m-modeline-title ()
+  "Return a truncated title not to cut the right end of the mode line.
+It currently works only with Emacs 22 and newer."
+  (when w3m-current-title
+    (or (and w3m-modeline-title-timer w3m-modeline-title-string)
+	(prog2
+	    (setq w3m-modeline-title-string w3m-current-title
+		  w3m-modeline-title-timer t)
+	    (let ((excess (- (string-width
+			      (condition-case nil
+				  (format-mode-line mode-line-format 1)
+				(error "")))
+			     (window-width)))
+		  (tlen (string-width w3m-current-title)))
+	      (when (and (> excess 0)
+			 (> tlen 3))
+		(setq w3m-modeline-title-string
+		      (concat (w3m-replace-in-string
+			       (w3m-truncate-string
+				w3m-current-title (max (- tlen excess 3) 2))
+			       "[\t ]+\\'" "")
+			      "...")))
+	      w3m-modeline-title-string)
+	  (run-at-time 0.5 nil
+		       (lambda (buffer)
+			 (when (buffer-live-p buffer)
+			   (with-current-buffer buffer
+			     (setq w3m-modeline-title-timer nil)
+			     (when (eq (selected-window)
+				       (get-buffer-window buffer))
+			       (w3m-force-window-update)))))
+		       (current-buffer))))))
 
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
@@ -7200,6 +7484,8 @@ Cannot run two w3m processes simultaneously \
 		  (unless w3m-toggle-inline-images-permanently
 		    (setq w3m-display-inline-images
 			  w3m-default-display-inline-images))
+		  (when (and w3m-use-form reload)
+		    (w3m-form-textarea-files-remove))
 		  (cond ((w3m-display-inline-images-p)
 			 (and w3m-force-redisplay (sit-for 0))
 			 (w3m-toggle-inline-images 'force reload))
@@ -7302,13 +7588,15 @@ session will start afresh."
 	  (switch-to-buffer (setq buffer
 				  (w3m-copy-buffer nil nil nil 'empty)))
 	  (w3m-display-progress-message url)
-	  ;; When new URL has `name' portion, we have to goto the base url
-	  ;; because generated buffer has no content at this moment.
-	  (when (and (string-match w3m-url-components-regexp url)
-		     (match-beginning 8))
-	    (w3m-goto-url (substring url 0 (match-beginning 8))
-			  reload charset post-data referer))
-	  (w3m-goto-url url reload charset post-data referer)
+	  (w3m-goto-url url
+			(or reload
+			    ;; When new URL has `name' portion, we have to
+			    ;; goto the base url because generated buffer
+			    ;; has no content at this moment.
+			    (and (string-match w3m-url-components-regexp url)
+				 (match-beginning 8)
+				 'redisplay))
+			charset post-data referer)
 	  ;; Delete useless newly created buffer if it is empty.
 	  (w3m-delete-buffer-if-empty buffer))
       (w3m-goto-url url))))
@@ -7487,15 +7775,15 @@ emacs-w3m buffer.  Besides that, it also makes a new emacs-w3m buffer
 if `w3m-make-new-session' is non-nil and a user specifies a url string.
 
 The optional INTERACTIVE-P is for the internal use; it is mainly used
-to check whether Emacs 21.4 calls this function as an interactive
-command in the batch mode."
+to check whether Emacs 22 or later calls this function as an
+interactive command in the batch mode."
   (interactive
    (let ((url
-	  ;; Emacs 21.4 calls a Lisp command interactively even if it
-	  ;; is in the batch mode.  If the following function returns
-	  ;; non-nil value, it means this function is called in the
-	  ;; batch mode, and we don't treat it as what it is called to
-	  ;; interactively.
+	  ;; Emacs 22 or later calls a Lisp command interactively even
+	  ;; if it is in the batch mode.  If the following function
+	  ;; returns non-nil value, it means this function is called in
+	  ;; the batch mode, and we don't treat it as what it is called
+	  ;; to interactively.
 	  (w3m-examine-command-line-args))
 	 new)
      (list
@@ -7513,7 +7801,6 @@ command in the batch mode."
       (not url))))
   (let ((nofetch (eq url 'popup))
 	(buffer (unless new-session (w3m-alive-p t)))
-	(popup-frame-p (and (not interactive-p) (w3m-popup-frame-p)))
 	(w3m-pop-up-frames (and interactive-p w3m-pop-up-frames))
 	(w3m-pop-up-windows (and interactive-p w3m-pop-up-windows)))
     (unless (and (stringp url)
@@ -7762,11 +8049,10 @@ A history page is invoked by the `w3m-about-history' command.")
 		(apply 'max
 		       (apply 'append
 			      (mapcar
-			       (function
-				;; Don't use `caddr' here, since it won't
-				;; be substituted by the compiler macro.
-				(lambda (e)
-				  (car (cdr (cdr e)))))
+			       ;; Don't use `caddr' here, since it won't
+			       ;; be substituted by the compiler macro.
+			       (lambda (e)
+				 (car (cdr (cdr e))))
 			       history)))))))
 	    (cur (current-buffer))
 	    (margin (if (> w3m-about-history-indent-level 1)
@@ -7789,7 +8075,7 @@ A history page is invoked by the `w3m-about-history' command.")
 		position (caddr element))
 	  (when url
 	    (insert (format "h%s %d %d <a href=\"%s\">%s%s%s %s</a>\n"
-			    (mapconcat (function (lambda (d) (format form d)))
+			    (mapconcat (lambda (d) (format form d))
 				       position
 				       "-")
 			    (/ (1- (length position)) 2)
@@ -8253,6 +8539,8 @@ passed to the `w3m-quit' function (which see)."
       (forward-line -1)
       (w3m-process-stop buffer)
       (kill-buffer buffer)
+      (when w3m-use-form
+	(w3m-form-kill-buffer buffer))
       (run-hooks 'w3m-delete-buffer-hook)
       (w3m-select-buffer-generate-contents (w3m-select-buffer-current-buffer))
       (w3m-select-buffer-show-this-line))))
@@ -8338,7 +8626,7 @@ passed to the `w3m-quit' function (which see)."
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map w3m-mode-map)
     (define-key map [mouse-2] 'w3m-goto-url)
-    ;; Prevent tool-bar from being doubled under Emacs 21.
+    ;; Prevent tool-bar from being doubled under Emacs 21 and later.
     (define-key map [tool-bar] 'undefined)
     (setq w3m-header-line-map map)))
 
@@ -8516,6 +8804,7 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
 		  (> (prefix-numeric-value arg) 0)
 		(not w3m-minor-mode)))
     (run-hooks 'w3m-minor-mode-hook)))
+
 
 (provide 'w3m)
 

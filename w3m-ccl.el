@@ -1,6 +1,7 @@
 ;;; w3m-ccl.el --- CCL programs to process Unicode and internal characters.
 
-;; Copyright (C) 2001, 2003, 2004 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2003, 2004, 2005
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
@@ -42,7 +43,8 @@
    ((featurep 'xemacs)
     (require 'pccl))
    ((boundp 'MULE)
-    (autoload 'charset-id "w3m-om")
+    (let ((features (cons 'w3m-ccl features)))
+      (require 'w3m-om)) ;; for `charset-id'
     (require 'pccl))
    (t
     (require 'ccl))))
