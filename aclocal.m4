@@ -232,7 +232,7 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
     fi])
   retval=`eval $EMACS' '${VANILLA_FLAG}' -batch -l w3mhack.el '${ADDITIONAL_LOAD_PATH}' -f w3mhack-print-status'`
   if test x"$retval" != xOK; then
-    AC_MSG_ERROR(APEL is missing)
+    AC_MSG_ERROR([Process couldn't proceed.  See the above messages.])
   fi
   AC_SUBST(ADDITIONAL_LOAD_PATH)])
 
