@@ -692,8 +692,7 @@ you can add those server names to this variable as follows:
   (append shimbun-servers-list shimbun-additional-servers-list))
 
 \(defun shimbun-servers-alist ()
-  (mapcar (lambda (g) (list g))
-	  (shimbun-servers-list)))
+  (mapcar 'list (shimbun-servers-list)))
 
 \(provide '" (file-name-sans-extension shimbun-servers-file) ")
 
