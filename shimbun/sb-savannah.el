@@ -1,8 +1,9 @@
 ;;; sb-savannah.el --- shimbun backend for gnu list archives on savannah
 
-;; Copyright (C) 2002 Yoichi NAKAYAMA <yoichi@FreeBSD.org>
+;; Copyright (C) 2002, 2003 Yoichi NAKAYAMA <yoichi@FreeBSD.org>
 
 ;; Author: Yoichi NAKAYAMA <yoichi@FreeBSD.org>
+;;         Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
@@ -27,31 +28,72 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-mailman)
+(require 'sb-mhonarc)
 
-(luna-define-class shimbun-savannah (shimbun-mailman) ())
+(luna-define-class shimbun-savannah (shimbun-mhonarc) ())
 
-(defvar shimbun-savannah-url "http://mail.gnu.org/pipermail")
+(defvar shimbun-savannah-url "http://mail.gnu.org/archive/html/")
 
 (defvar shimbun-savannah-group-path-alist
-  '(("emacs-announce" . "emacs-commit")
-    ("emacs-devel" . "emacs-devel")
+  '(("bug-gnu-emacs" . "bug-gnu-emacs")
     ("emacs-bidi" . "emacs-bidi")
-    ("emacs-diffs" . "emacs-diffs")))
+    ("emacs-commit" . "emacs-commit")
+    ("emacs-devel" . "emacs-devel")
+    ("emacs-diffs" . "emacs-diffs")
+    ("emacs-pretest-bug" . "emacs-pretest-bug")
+    ("gnu-emacs-sources" . "gnu-emacs-sources")
+    ("help-emacs-windows" . "help-emacs-windows")
+    ("help-gnu-emacs" . "help-gnu-emacs")
+    ("info-gnu-emacs" . "info-gnu-emacs")
+    ("vms-gnu-emacs" . "vms-gnu-emacs")))
 
 (defvar shimbun-savannah-groups
   (mapcar 'car shimbun-savannah-group-path-alist))
 
-(defvar shimbun-savannah-x-face-alist
-  '(("default" . "X-Face: \"ve{jUI{XipH\"!p<$d]|*@,jKlwo,H{bJL~s@_/L\
-<v\\(w1Fl@;[>_e)S*v59YRxw.-Xo`/z\n SJ3XL'Em*Qn#@<CbHA]{(nLVMcWhP{iRz\
-eg#>v@W)6Ei!X,[sn+a=B0Tzj~QLWT+QLO'leRXxBKh-9\n )!C/L|Al):n[Cb!eSD]b\
-xIUL{1DS0vSlMbcV0&W(;bg\"/)^j&L+VMB7<L*Zf@w:O!r!$n)(t\\qsxX~\n TXKI")))
+(defvar shimbun-savannah-litemplate-regexp
+  "<li><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+\\.html\\)\">\
+\\([^<]+\\)</a>, <i>\\([^<]+\\)</i>")
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-mailman))
-  (concat (shimbun-url-internal shimbun) "/"
-	  (cdr (assoc (shimbun-current-group-internal shimbun)
-		      shimbun-savannah-group-path-alist))))
+(defvar shimbun-savannah-x-face-alist
+  '(("default" . "X-Face: =R@<a%O\"k\\jy?{Bk~[*wi<LU(\\;&[*N1\"5X4/^\
+@oCB)?b0%$gKcCNJ)o'4GZ$?X$=E}Bj[k\n @#KE2J*~^\\[r_IQJ.m6`>L:wwfLNRT(\
+ej<20'LI/le]z)n!%Bb(KI(@c&\"<`Ah~3&6Yn%+>-K>`@13\n T?OXgWz^><'44jgi;\
+3T1{Sb~c|]lJ3WIZXP-tu8S4@.C=,:q#nF5qV$xkaQmSC5LZbF=U(AS_51T|K\n W7G")))
+
+(defun shimbun-savannah-index-url (entity)
+  (concat (shimbun-url-internal entity)
+	  (cdr (assoc (shimbun-current-group-internal entity)
+		      shimbun-savannah-group-path-alist))
+	  "/"))
+
+(luna-define-method shimbun-index-url ((shimbun shimbun-savannah))
+  (shimbun-savannah-index-url shimbun))
+
+(defun shimbun-savannah-get-headers (entity range)
+  (let ((case-fold-search t)
+	(pages (shimbun-header-index-pages range))
+	(parent (shimbun-savannah-index-url entity))
+	headers heads months url)
+    (goto-char (point-min))
+    (catch 'stop
+      (while (and (or (not pages)
+		      (>= (decf pages) 0))
+		  (re-search-forward
+		   "<a href=\"\\(200[0-9]-[01][0-9]/index\\.html\\)\">"
+		   nil t))
+	(push (match-string 1) months))
+      (setq months (nreverse months))
+      (dolist (month months)
+	(setq url (concat parent month))
+	(shimbun-retrieve-url url t)
+	(shimbun-mhonarc-get-headers entity url heads month)
+	(setq headers (nconc (nreverse heads) headers)
+	      heads nil)))
+    (nconc (nreverse heads) headers)))
+
+(luna-define-method shimbun-get-headers ((shimbun shimbun-savannah)
+					 &optional range)
+  (shimbun-savannah-get-headers shimbun range))
 
 (provide 'sb-savannah)
 
