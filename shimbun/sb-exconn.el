@@ -37,9 +37,9 @@
 (defvar shimbun-exconn-groups '("news"))
 (defvar shimbun-exconn-from-address "nobody@exconn.net")
 (defvar shimbun-exconn-content-start
-  "<!-- - - - - - - - - - - KB CONTENT BEGINS BELOW HERE - - - - - - - - - - -->")
+  "<!-- - -KB 3 start- - -->")
 (defvar shimbun-exconn-content-end
-  "<!-- - - - - - - - - - - - PAGE TEXT ENDS ABOVE HERE - - - - - - - - - - - -->")
+  "<!-- - -KB 3 end- - -->")
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-exconn) url date)

@@ -1,3 +1,8 @@
+2004-11-25  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* shimbun/sb-exconn.el (shimbun-exconn-content-start): Synchronize.
+	(shimbun-exconn-content-end): Ditto.
+
 2004-11-23  S V N Vishwanathan  <vishketan@yahoo.com>
 
 	* shimbun/sb-rediff.el (shimbun-rediff-month-alist): New variable.
