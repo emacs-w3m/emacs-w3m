@@ -1,4 +1,4 @@
-;;; w3m-fsf.el --- Common functions through FSF Emacsen.
+;;; w3m-fsf.el --- Common functions through FSF Emacsen
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -55,12 +55,6 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	(push (cons category codesys) categories)))
     (car (detect-coding-with-priority start end (nreverse categories)))))
 
-(defun w3m-make-ccl-coding-system
-  (coding-system mnemonic docstring decoder encoder)
-  "Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
-CODING-SYSTEM, DECODER and ENCODER must be symbol."
-  (make-coding-system coding-system 4 mnemonic docstring
-		      (cons decoder encoder)))
-
 (provide 'w3m-fsf)
-;;; w3m-fsf.el ends here.
+
+;;; w3m-fsf.el ends here
