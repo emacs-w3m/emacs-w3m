@@ -1,5 +1,24 @@
 2003-06-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-mainichi.el (shimbun-mainichi-server-name): New
+	variable.
+	(shimbun-mainichi-group-table): New variable.
+	(shimbun-mainichi-groups, shimbun-mainichi-group-path-alist):
+	Their infomation is moved to `shimbun-mainichi-group-table'.
+	(shimbun-groups, shimbun-current-group-name): New method.
+	(shimbun-index-url, shimbun-get-headers): Refer
+	`shimbun-mainichi-group-table' instead of
+	`shimbun-mainichi-group-path-alist'.
+
+	* shimbun/sb-zdnet.el (shimbun-zdnet-server-name): New variable.
+
+	* shimbun/shimbun.el (toplevel): Add a new slot `server-name' to
+	`shimbun' class.
+	(shimbun-attributes): Add `server-name'.
+	(shimbun-open): Bind `server-name' locally.
+	(shimbun-server-name): New method.
+	(shimbun-current-group-name): New method.
+
 	* shimbun/sb-gyve.el: Removed.
 
 2003-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>

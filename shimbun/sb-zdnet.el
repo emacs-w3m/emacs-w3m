@@ -48,6 +48,7 @@
       ("macwire" "macwire/news" ,(format template1 "macwire"))
       ("mobile" "mobile/news" ,(format template1 "mobile")))))
 
+(defvar shimbun-zdnet-server-name "ZDNet Japan")
 (defvar shimbun-zdnet-from-address "zdnn@softbank.co.jp")
 (defvar shimbun-zdnet-content-start "\\(<!--BODY-->\\|<!--DATE-->\\)")
 (defvar shimbun-zdnet-content-end

@@ -37,25 +37,31 @@
 (luna-define-class shimbun-mainichi (shimbun shimbun-text) ())
 
 (defvar shimbun-mainichi-url "http://www.mainichi.co.jp/")
-(defvar shimbun-mainichi-groups '("shakai" "sports" "seiji" "keizai"
-				  "kokusai" "fuho"))
+(defvar shimbun-mainichi-server-name "毎日新聞")
 (defvar shimbun-mainichi-from-address  "webmaster@mainichi.co.jp")
 (defvar shimbun-mainichi-content-start "\n<font class=\"news-text\">\n")
 (defvar shimbun-mainichi-content-end  "\n</font>\n")
 
-(defvar shimbun-mainichi-group-path-alist
-  '(("shakai" . "news/flash/shakai")
-    ("sports" . "news/flash/sports")
-    ("seiji"  . "news/flash/seiji")
-    ("keizai" . "news/flash/keizai")
-    ("kokusai" . "news/flash/kokusai")
-    ("fuho"    . "news/flash/jinji")))
+(defvar shimbun-mainichi-group-table
+  '(("shakai" "社会面" "news/flash/shakai")
+    ("sports" "スポーツ面" "news/flash/sports")
+    ("seiji" "政治面" "news/flash/seiji")
+    ("keizai" "経済面" "news/flash/keizai")
+    ("kokusai" "国際面" "news/flash/kokusai")
+    ("fuho" "訃報" "news/flash/jinji")))
 (defvar shimbun-mainichi-expiration-days 7)
+
+(luna-define-method shimbun-groups ((shimbun shimbun-mainichi))
+  (mapcar 'car shimbun-mainichi-group-table))
+
+(luna-define-method shimbun-current-group-name ((shimbun shimbun-mainichi))
+  (nth 1 (assoc (shimbun-current-group-internal shimbun)
+		shimbun-mainichi-group-table)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-mainichi))
   (concat (shimbun-url-internal shimbun)
-	  (cdr (assoc (shimbun-current-group-internal shimbun)
-		      shimbun-mainichi-group-path-alist))
+	  (nth 2 (assoc (shimbun-current-group-internal shimbun)
+			shimbun-mainichi-group-table))
 	  "/index.html"))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-mainichi)
@@ -78,8 +84,8 @@
 		"<a href=\"\\./\\(\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([a-z]\\)\\([0-9][0-9][0-9][0-9]\\)\\([a-z]\\)\\([0-9][0-9][0-9][0-9][0-9]\\)\\([0-9][0-9][0-9][0-9]\\)\\([a-z]\\)\\)\\.html\\)\"[^>]*>"
 		nil t)
 	  (let ((url   (concat
-			(cdr (assoc (shimbun-current-group-internal shimbun)
-				    shimbun-mainichi-group-path-alist))
+			(nth 2 (assoc (shimbun-current-group-internal shimbun)
+				      shimbun-mainichi-group-table))
 			"/"
 			(match-string 1)))
 		(id    (format "<%s%%%s>"

@@ -78,7 +78,8 @@
 
 (eval-and-compile
   (luna-define-class shimbun ()
-		     (mua server current-group groups
+		     (mua server server-name
+			  current-group groups
 			  x-face x-face-alist
 			  url coding-system from-address
 			  content-start content-end
@@ -370,15 +371,15 @@ set this to `never' if you never want to use BBDB."
 ;;; Implementation of Shimbun API.
 
 (defconst shimbun-attributes
-  '(url groups coding-system from-address content-start content-end
-	x-face-alist expiration-days))
+  '(url groups coding-system server-name from-address
+	content-start content-end x-face-alist expiration-days))
 
 (defun shimbun-open (server &optional mua)
   "Open a shimbun for SERVER.
 Optional MUA is a `shimbun-mua' instance."
   (require (intern (concat "sb-" server)))
-  (let (url groups coding-system from-address content-start content-end
-	    x-face-alist shimbun expiration-days)
+  (let (url groups coding-system server-name from-address
+	    content-start content-end x-face-alist shimbun expiration-days)
     (dolist (attr shimbun-attributes)
       (set attr
 	   (symbol-value (intern-soft
@@ -386,6 +387,7 @@ Optional MUA is a `shimbun-mua' instance."
     (setq shimbun (luna-make-entity (intern (concat "shimbun-" server))
 				    :mua mua
 				    :server server
+				    :server-name server-name
 				    :url url
 				    :groups groups
 				    :coding-system coding-system
@@ -462,13 +464,26 @@ Return nil if all pages should be retrieved."
 Return nil when articles are not expired."
   (shimbun-expiration-days-internal shimbun))
 
+(luna-define-generic shimbun-server-name (shimbun)
+  "Return the server name.")
+
+(luna-define-method shimbun-server-name ((shimbun shimbun))
+  (or (shimbun-server-name-internal shimbun)
+      (shimbun-server-internal shimbun)))
+
+(luna-define-generic shimbun-current-group-name (shimbun)
+  "Return the current group name.")
+
+(luna-define-method shimbun-current-group-name ((shimbun shimbun))
+  (shimbun-current-group-internal shimbun))
+
 (luna-define-generic shimbun-from-address (shimbun)
   "Make a From address like \"SERVER (GROUP) <ADDRESS>\".")
 
 (luna-define-method shimbun-from-address ((shimbun shimbun))
   (format "%s (%s) <%s>"
-	  (shimbun-server-internal shimbun)
-	  (shimbun-current-group-internal shimbun)
+	  (shimbun-mime-encode-string (shimbun-server-name shimbun))
+	  (shimbun-mime-encode-string (shimbun-current-group-name shimbun))
 	  (or (shimbun-from-address-internal shimbun)
 	      (shimbun-reply-to shimbun))))
 
