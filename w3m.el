@@ -493,6 +493,22 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :group 'w3m
   :type 'directory)
 
+(defcustom w3m-init-file
+  (if (or (file-exists-p (expand-file-name "init.elc" w3m-profile-directory))
+	  (file-exists-p (expand-file-name "init.el" w3m-profile-directory)))
+      (concat w3m-profile-directory "/init")
+    (expand-file-name "~/.w3m"))
+  "*Your emacs-w3m startup file name.
+If a file with the `.el' or `.elc' suffixes exists, it will be read instead.
+
+Note: The file pointed by this variable is used as the startup file
+for emacs-w3m, but is *NOT* used as a startup file for w3m which works
+on terminal.  In order to modify configurations of w3m which works on
+terminal, you must edit the startup file for itself, whose name is
+~/.w3m/config typically."
+  :group 'w3m
+  :type 'file)
+
 (defcustom w3m-default-save-directory
   (concat "~/." (file-name-sans-extension
 		 (file-name-nondirectory w3m-command)))
@@ -1521,6 +1537,11 @@ B of RFC2396 <URL:http://www.ietf.org/rfc/rfc2396.txt>.")
   "Functions run after `w3m-mode' called.")
 (defvar w3m-display-functions nil
   "Functions run at the end of `w3m-goto-url'.")
+
+(defvar w3m-load-hook nil
+  "*Hook run after loading emacs-w3m.
+It is recommended that customize code is put into `w3m-init-file'
+instead of this hook.")
 
 
 ;; Generic functions:
@@ -6619,6 +6640,10 @@ w3m-mode buffers."
 			       `(face w3m-header-line-location-content-face))
       (unless (eolp)
 	(insert "\n")))))
+
+
+(load w3m-init-file t t)
+(run-hooks 'w3m-load-hook)
 
 (provide 'w3m)
 

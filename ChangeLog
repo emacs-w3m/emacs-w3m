@@ -1,3 +1,8 @@
+2002-08-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-init-file, w3m-load-hook): New option.
+	(toplevel): Load `w3m-init-file' and run `w3m-load-hook'.
+
 2002-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el: Require `custom' for Emacs 19 because of the
