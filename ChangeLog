@@ -1,3 +1,7 @@
+2002-10-31  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el: Fix comment.
+
 2002-10-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3mhack.el (w3mhack-generate-colon-keywords-file): Protect
