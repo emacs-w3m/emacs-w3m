@@ -1,3 +1,8 @@
+2002-01-30  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* octet.el (octet-guess-type-from-name): Return nil if guess failed.
+	(octet-buffer): Ask octet type if guess failed.
+
 2002-01-29  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* octet.el (octet-type-filter-alist): Changed default value for

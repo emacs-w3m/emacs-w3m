@@ -153,9 +153,8 @@ Returns 0 if succeed."
 
 (defun octet-guess-type-from-name (name)
   (when (string-match "\\.\\([a-z]+\\)$" name)
-    (or (cdr (assoc (match-string 1 name)
-		    octet-suffix-type-alist))
-	'text)))
+    (cdr (assoc (match-string 1 name)
+		octet-suffix-type-alist))))
 
 (defun octet-filter-buffer (type)
   "Call a filter function in `octet-type-filter-alist'.
@@ -171,15 +170,18 @@ Returns NEW-TYPE."
 NAME is the filename."
   (interactive)
   (let (type result)
-    (setq type (if (or name buffer-file-name)
-		   (octet-guess-type-from-name (or name buffer-file-name))
-		 (cdr (assoc (completing-read "Suffix Type:"
-					      (mapcar
-					       (lambda (pair)
-						 (list (car pair)))
-					       octet-suffix-type-alist)
-					      nil 'require-match)
-			     octet-suffix-type-alist))))
+    (setq type (or (and (or name buffer-file-name)
+			(octet-guess-type-from-name
+			 (or name buffer-file-name)))
+		   (cdr (assoc (completing-read "Octet Type(text): "
+						(mapcar
+						 (lambda (pair)
+						   (list (symbol-name
+							  (cdr pair))))
+						 octet-suffix-type-alist)
+						nil 'require-match)
+			       octet-suffix-type-alist))
+		   'text))
     (while (setq type (octet-filter-buffer type)))))
 
 ;;;###autoload
