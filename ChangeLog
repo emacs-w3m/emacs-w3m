@@ -1,7 +1,6 @@
 2001-08-07  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-type): Remove `w3m-mnc' option.
-	(w3m-fontify-images): Use `w3m-parse-attributes'.
 	(w3m-w3m-dump-source): Removed.
 	(w3m-w3m-retrieve): Don't use `w3m-w3m-dump-source'.
 
