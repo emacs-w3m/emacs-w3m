@@ -1,3 +1,8 @@
+2002-03-13  SAITO Takuya <reed@lily.freemail.ne.jp>
+
+	* shimbun/sb-ruby.el (shimbun-get-headers): Make regexp
+	more flexible.
+	
 2002-03-15  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-mee-select-value): Use w3m-output-coding-system
