@@ -41,6 +41,7 @@
 ;; Dummy functions.
 (defalias 'w3m-create-image 'ignore)
 (defalias 'w3m-insert-image 'ignore)
+(defalias 'w3m-remove-image 'ignore)
 (defalias 'w3m-image-type-available-p 'ignore)
 (defalias 'w3m-setup-toolbar 'ignore)
 (defalias 'w3m-update-toolbar 'ignore)

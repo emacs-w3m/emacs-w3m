@@ -1,5 +1,11 @@
 2001-11-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (top): Removed autoload of `w3m-remove-image'.
+
+	* w3m-om.el (w3m-remove-image): Define as a dummy function.
+
+	* w3m-e20.el (w3m-remove-image): Define as a dummy function.
+
 	* w3m.el (w3m-quick-start): New option.
 	(w3m-input-url): When the default string is equal to nil, it is
 	not displayed in the prompt.

@@ -126,10 +126,7 @@
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
-  (autoload 'rfc2368-parse-mailto-url "rfc2368")
-  (autoload 'w3m-remove-image (if (featurep 'xemacs)
-				  "w3m-xmas"
-				"w3m-e21")))
+  (autoload 'rfc2368-parse-mailto-url "rfc2368"))
 
 (defconst emacs-w3m-version
   (eval-when-compile
