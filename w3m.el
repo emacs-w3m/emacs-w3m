@@ -634,7 +634,7 @@ elements are:
 If optional argument NO-CACHE is non-nil, cache is not used."
   (cond
    ((string-match "^about:" url)
-    (list "text/html" nil nil nil nil))
+    (list "text/html" nil nil nil nil url))
    ((string-match "^\\(file:\\|/\\)" url)
     (w3m-local-attributes url))
    (t
@@ -651,7 +651,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 (defmacro w3m-last-modified (url &optional no-cache)
   (` (nth 4 (w3m-attributes (, url) (, no-cache)))))
 (defmacro w3m-real-url (url &optional no-cache)
-  (` (or (nth 5 (w3m-attributes (, url) (, no-cache))) (, url))))
+  (` (nth 5 (w3m-attributes (, url) (, no-cache)))))
 
 (defsubst w3m-anchor (&optional point)
   (get-text-property (or point (point)) 'w3m-href-anchor))
@@ -1188,14 +1188,6 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
   (setq w3m-cache-hashtb nil
 	w3m-cache-articles nil))
 
-(defun w3m-cache-available-p (url)
-  "Return non-nil value, when the URL's header and contents are stored in cache."
-  (w3m-cache-setup)
-  (let ((ident (intern url w3m-cache-hashtb)))
-    (and (boundp ident)
-	 (memq ident w3m-cache-articles)
-	 ident)))
-
 (defun w3m-cache-header (url header)
   "Store up URL's HEADER in cache."
   (w3m-cache-setup)
@@ -1406,18 +1398,19 @@ This function is imported from mcharset.el."
 (defun w3m-decode-encoded-buffer (encoding)
   (let ((x (and (stringp encoding)
 		(assoc encoding w3m-encoding-alist))))
-    (when (and x (setq x (cdr (assq (cdr x) w3m-decoder-alist))))
-      (let ((coding-system-for-write 'binary)
-	    (coding-system-for-read 'binary)
-	    (default-process-coding-system (cons 'binary 'binary)))
-	(apply 'call-process-region
-	       (point-min) (point-max) (car x) t t nil (nth 1 x))))))
+    (or (not (and x (setq x (cdr (assq (cdr x) w3m-decoder-alist)))))
+	(let ((coding-system-for-write 'binary)
+	      (coding-system-for-read 'binary)
+	      (default-process-coding-system (cons 'binary 'binary)))
+	  (zerop (apply 'call-process-region
+			(point-min) (point-max) (car x) t '(t nil) nil (nth 1 x)))))))
 
 (defun w3m-decode-buffer (url)
   (let ((type (w3m-content-type url))
 	(charset (w3m-content-charset url))
 	(encoding (w3m-content-encoding url)))
-    (w3m-decode-encoded-buffer encoding)
+    (unless (w3m-decode-encoded-buffer encoding)
+      (error "Can't decode encoded contents: %s" url))
     (if (and (not charset) (string= type "text/html"))
 	(setq charset
 	      (let ((case-fold-search t))
@@ -1575,97 +1568,93 @@ If optional argument NO-CACHE is non-nil, cache is not used."
    (t
     (format "%2.2fM" (/ n (* 1024 1024.0))))))
 
-(defun w3m-w3m-dump-head-source (url &optional no-cache)
-  (or (and (not no-cache) (w3m-cache-available-p url))
-      (with-temp-buffer
-	(set-buffer-multibyte nil)
-	(and w3m-mnc
-	     (let ((w3m-current-url url)
-		   (w3m-w3m-retrieve-length)
-		   (w3m-process-message
-		    (lambda ()
-		      (w3m-message "Reading... %s"
-				   (w3m-pretty-length (buffer-size))))))
-	       (prog2 (w3m-message "Reading...")
-		   (zerop (w3m-exec-process "-dump_head_source" url))
-		 (w3m-message "Reading... done")))
-	     (progn
-	       (goto-char (point-min))
-	       ;; FIXME: Adhoc support for deflated contents.
-	       (when (re-search-forward "^Content-Encoding: .*\n" nil t)
-		 (delete-region (match-beginning 0) (match-end 0)))
-	       (re-search-forward "^w3m-current-url: .*\n\n" nil t))
-	     (progn
-	       (w3m-cache-header url (buffer-substring (point-min) (point)))
-	       (delete-region (point-min) (point))
-	       (w3m-cache-contents url (current-buffer)))))))
+(defun w3m-w3m-dump-head-source (url)
+  (and (let ((w3m-current-url url)
+	     (w3m-w3m-retrieve-length)
+	     (w3m-process-message
+	      (lambda ()
+		(w3m-message "Reading... %s"
+			     (w3m-pretty-length (buffer-size))))))
+	 (w3m-message "Reading...")
+	 (prog1 (zerop (w3m-exec-process "-dump_both" url))
+	   (w3m-message "Reading... done")))
+       (goto-char (point-min))
+       (re-search-forward "^w3m-current-url: .*\n\n" nil t)
+       (progn
+	 (w3m-cache-header url (buffer-substring (point-min) (point)))
+	 (delete-region (point-min) (point))
+	 (w3m-cache-contents url (current-buffer))
+	 (w3m-w3m-attributes url))))
+
+(defun w3m-w3m-dump-source (url)
+  (let ((headers (w3m-w3m-attributes url t)))
+    (when headers
+      (let ((type   (car headers))
+	    (length (nth 2 headers)))
+	(when (let ((w3m-current-url url)
+		    (w3m-w3m-retrieve-length length)
+		    (w3m-process-message
+		     (lambda ()
+		       (if w3m-w3m-retrieve-length
+			   (w3m-message
+			    "Reading... %s of %s (%d%%)"
+			    (w3m-pretty-length (buffer-size))
+			    (w3m-pretty-length w3m-w3m-retrieve-length)
+			    (/ (* (buffer-size) 100) w3m-w3m-retrieve-length))
+			 (w3m-message "Reading... %s"
+				      (w3m-pretty-length (buffer-size)))))))
+		(w3m-message "Reading...")
+		(prog1 (zerop (w3m-exec-process "-dump_source" url))
+		  (w3m-message "Reading... done")))
+	  (cond
+	   ((and length (eq w3m-executable-type 'cygwin))
+	    (let ((buflines (count-lines (point-min) (point-max))))
+	      (cond
+	       ;; no bugs in output.
+	       ((= (buffer-size) length))
+	       ;; new-line character is replaced to CRLF.
+	       ((or (= (buffer-size) (+ length buflines))
+		    (= (buffer-size) (+ length buflines -1)))
+		(while (search-forward "\r\n" nil t)
+		  (delete-region (- (point) 2) (1- (point))))))))
+	   ((and length (> (buffer-size) length))
+	    (delete-region (point-min) (- (point-max) length)))
+	   ((string= "text/html" type)
+	    ;; Remove cookies.
+	    (goto-char (point-min))
+	    (while (and (not (eobp))
+			(looking-at "Received cookie: "))
+	      (forward-line 1))
+	    (skip-chars-forward " \t\r\f\n")
+	    (if (or (looking-at "<!DOCTYPE")
+		    (looking-at "<HTML>")) ; for eGroups.
+		(delete-region (point-min) (point)))))
+	  (w3m-cache-contents url (current-buffer))
+	  headers)))))
 
 (defun w3m-w3m-retrieve (url &optional no-decode no-cache)
   "Retrieve content of URL with w3m and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
 to nil."
-  (setq no-cache (not (w3m-w3m-dump-head-source url no-cache)))
-  (let ((headers (w3m-w3m-attributes url no-cache)))
-    (when headers
-      (let ((type    (car headers))
-	    (charset (nth 1 headers))
-	    (length  (nth 2 headers)))
-	(w3m-with-work-buffer
-	  (delete-region (point-min) (point-max))
-	  (set-buffer-multibyte nil)
-	  (or
-	   (unless no-cache
-	     (when (w3m-cache-request-contents url)
-	       (and (string-match "^text/" type)
-		    (unless no-decode
-		      (w3m-decode-buffer url)))
-	       type))
-	   (let* ((buflines)
-		  (w3m-current-url url)
-		  (w3m-w3m-retrieve-length length)
-		  (w3m-process-message
-		   (lambda ()
-		     (if w3m-w3m-retrieve-length
-			 (w3m-message
-			  "Reading... %s of %s (%d%%)"
-			  (w3m-pretty-length (buffer-size))
-			  (w3m-pretty-length w3m-w3m-retrieve-length)
-			  (/ (* (buffer-size) 100) w3m-w3m-retrieve-length))
-		       (w3m-message "Reading... %s"
-				    (w3m-pretty-length (buffer-size)))))))
-	     (w3m-message "Reading...")
-	     (delete-region (point-min) (point-max))
-	     (w3m-exec-process "-dump_source" url)
-	     (w3m-message "Reading... done")
-	     (cond
-	      ((and length (eq w3m-executable-type 'cygwin))
-	       (setq buflines (count-lines (point-min) (point-max)))
-	       (cond
-		;; no bugs in output.
-		((= (buffer-size) length))
-		;; new-line character is replaced to CRLF.
-		((or (= (buffer-size) (+ length buflines))
-		     (= (buffer-size) (+ length buflines -1)))
-		 (while (search-forward "\r\n" nil t)
-		   (delete-region (- (point) 2) (1- (point)))))))
-	      ((and length (> (buffer-size) length))
-	       (delete-region (point-min) (- (point-max) length)))
-	      ((string= "text/html" type)
-	       ;; Remove cookies.
-	       (goto-char (point-min))
-	       (while (and (not (eobp))
-			   (looking-at "Received cookie: "))
-		 (forward-line 1))
-	       (skip-chars-forward " \t\r\f\n")
-	       (if (or (looking-at "<!DOCTYPE")
-		       (looking-at "<HTML>")) ; for eGroups.
-		   (delete-region (point-min) (point)))))
-	     (w3m-cache-contents url (current-buffer))
-	     (and (string-match "^text/" type)
-		  (not no-decode)
-		  (w3m-decode-buffer url))
-	     type)))))))
+  (w3m-with-work-buffer
+    (delete-region (point-min) (point-max))
+    (set-buffer-multibyte nil)
+    (or (unless no-cache
+	  (when (w3m-cache-request-contents url)
+	    (let ((type (w3m-content-type url)))
+	      (and (string-match "^text/" type)
+		   (unless no-decode
+		     (w3m-decode-buffer url)))
+	      type)))
+	(let ((type (car (if w3m-mnc
+			     (w3m-w3m-dump-head-source url)
+			   (w3m-w3m-dump-source url)))))
+	  (when type
+	    (and (string-match "^text/" type)
+		 (not no-decode)
+		 (w3m-decode-buffer url))
+	    type)))))
 
 (defsubst w3m-url-local-p (url)
   "If URL points a file on the local system, return non-nil value.  Otherwise return nil."

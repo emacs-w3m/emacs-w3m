@@ -1,3 +1,16 @@
+2001-03-29  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Fix bugs in caching deflated contents.
+	(w3m-attributes): Fixed spec of return value when `about:' is
+	specified.
+	(w3m-cache-available-p): Removed.
+	(w3m-w3m-dump-head-source): Reconstructed.
+	(w3m-w3m-dump-source): New function.
+	(w3m-w3m-retrieve): Use `w3m-w3m-dump-head-source' or `w3m-w3m-dump-source'.
+	(w3m-real-url): Fix side effect of macro expansion.
+
+	* w3m-0.2.1-mnc.patch: New file.
+
 2001-03-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (default): Replace with `fast'.
