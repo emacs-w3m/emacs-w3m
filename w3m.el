@@ -4035,11 +4035,17 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 	  (delete-region (point-min) (match-beginning 0))
 	  (when (search-forward "\n\n" nil t)
 	    (let ((header (buffer-substring (point-min) (point))))
-	      (w3m-cache-header url header)
 	      (when w3m-use-cookies
 		(w3m-cookie-set url (point-min) (point)))
-	      (delete-region (point-min) (point))
-	      (w3m-cache-contents url (current-buffer))
+	      (unless (prog1 (save-excursion
+			       (or (re-search-backward
+				    "^Pragma:[ \t]+no-cache\n" nil t)
+				   (re-search-backward
+				    "^Cache-control:[ \t]+\\(no-cache\\|max-age=0\\)\n"
+				    nil t)))
+			(delete-region (point-min) (point)))
+		(w3m-cache-header url header)
+		(w3m-cache-contents url (current-buffer)))
 	      (w3m-w3m-parse-header url header))))))))
 
 (defun w3m-additional-command-arguments (url)

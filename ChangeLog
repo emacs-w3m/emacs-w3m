@@ -1,9 +1,12 @@
 2004-01-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m.el (w3m-message): Make it verbose, even if a buffer related
-	to emacs-w3m is not displayed.  w3m-print-this-url() has been
-	broken in buffers displaying text/html messages, because
-	w3m-message() was too silent.
+	* w3m.el (w3m-w3m-dump-extra): Check cache control headers before
+	caching headers and contents.  This change is suggested by
+	Mr. Amagai in [emacs-w3m:06255].
+	(w3m-message): Make it verbose, even if a buffer related to
+	emacs-w3m is not displayed.  w3m-print-this-url() has been broken
+	in buffers displaying text/html messages, because w3m-message()
+	was too silent.
 
 2004-01-15  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
@@ -18,7 +21,8 @@
 
 2004-01-15  OHASHI Akira  <bg66@koka-in.org>
 
-	* shimbun/sb-tdiary.el (shimbun-tdiary-get-headers): Fix the regexp.
+	* shimbun/sb-tdiary.el (shimbun-tdiary-get-headers): Fix the
+	regexp.
 
 2004-01-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
