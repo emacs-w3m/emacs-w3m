@@ -1,3 +1,20 @@
+2002-11-05  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (toplevel): Added autoload setting for
+	`w3m-fontify-textareas'.
+	(w3m-fontify): Don't remove tag strings in the textareas;
+	Call `w3m-fontify-textareas'.
+
+	* w3m-form.el (w3m-form-treat-textarea-size): New option.
+	(w3m-form-resume): Do nothing if forms is nil.
+	(w3m-fontify-textareas): New function.
+	(w3m-form-parse-and-fontify): Decode entities for form value;
+	Record textarea rows as text property.
+	(w3m-form-parse-and-fontify): Treat CRLF as a newline character.
+	(w3m-form-search-textarea): New function.
+	(w3m-form-textarea-replace): Rewrite.
+	(w3m-form-textarea-info): Ditto.
+
 2002-11-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-bookmark.el (w3m-bookmark-file-coding-system): Fix its

@@ -121,6 +121,7 @@
     "View Perl documents" t)
   (autoload 'w3m-about-perldoc "w3m-perldoc")
   (autoload 'w3m-fontify-forms "w3m-form")
+  (autoload 'w3m-fontify-textareas "w3m-form")
   (autoload 'w3m-filter "w3m-filter")
   (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
   (autoload 'w3m-switch-buffer "w3m-tabmenu")
@@ -2685,9 +2686,13 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     ;; Remove other markups.
     (goto-char (point-min))
     (while (re-search-forward "</?[A-Za-z_][^>]*>" nil t)
-      (delete-region (match-beginning 0) (match-end 0)))
+      (if (get-text-property (match-beginning 0) 'w3m-form-field-id)
+	  (goto-char (match-end 0))
+	(delete-region (match-beginning 0) (match-end 0))))
     ;; Decode escaped characters (entities).
     (w3m-decode-entities 'reserve-prop)
+    (when w3m-use-form
+      (w3m-fontify-textareas))
     (goto-char (point-min))
     (when w3m-delete-duplicated-empty-lines
       (while (re-search-forward "^[ \t]*\n\\([ \t]*\n\\)+" nil t)
