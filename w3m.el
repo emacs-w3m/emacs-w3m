@@ -780,7 +780,7 @@ for a charset indication")
 
 (defconst w3m-halfdump-command-arguments
   (if (eq w3m-type 'w3mmee)
-      (list "-dump=half"
+      (list "-dump=half-buffer"
 	    '(if charset "-I")
 	    'charset
 	    "-o" "concurrent=0")
