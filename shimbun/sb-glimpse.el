@@ -55,10 +55,7 @@
       (dolist (aux auxs)
 	(let ((url (shimbun-expand-url (concat aux "/")
 				       (shimbun-index-url shimbun))))
-	  (shimbun-retrieve-url url 'reload 'binary)
-	  (set-buffer-multibyte t)
-	  (decode-coding-region (point-min) (point-max)
-				(shimbun-coding-system-internal shimbun))
+	  (shimbun-retrieve-url url 'reload)
 	  (shimbun-mhonarc-get-headers shimbun url headers aux))))
     headers))
 

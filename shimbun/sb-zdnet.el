@@ -35,95 +35,94 @@
 
 (defvar shimbun-zdnet-url "http://www.zdnet.co.jp/")
 
-(defvar shimbun-zdnet-group-url-alist
-  '(("comp" . "news")
-    ("gamespot" . "gamespot")))
+(defvar shimbun-zdnet-group-alist
+  '(("comp" "news/past"
+     "<A HREF=\"/\\(\\(news\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")
+    ("gamespot" "gamespot"
+     "<A HREF=\"\\(\\(gsnews\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")
+    ("enterprise" "enterprise/archives"
+     "<A HREF=\"/\\(\\(enterprise\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")
+    ("broadband" "broadband/news"
+     "<A HREF=\"/\\(\\(broadband\\|broadband/rbb\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")
+    ("macwire" "macwire/news"
+     "<A HREF=\"/\\(\\(macwire\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")
+    ("mobile" "mobile/news"
+     "<A HREF=\"/\\(\\(mobile\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")))
 
-(defvar shimbun-zdnet-groups (mapcar 'car shimbun-zdnet-group-url-alist))
 (defvar shimbun-zdnet-from-address "zdnn@softbank.co.jp")
 (defvar shimbun-zdnet-content-start "\\(<!--BODY-->\\|<!--DATE-->\\)")
-(defvar shimbun-zdnet-content-end "\\(<!--BODYEND-->\\|<!--BYLINEEND-->\\)")
+(defvar shimbun-zdnet-content-end "\\(<!--BODYEND-->\\|<!--BYLINEEND-->\\|<!--START RBB Logo -->\\)")
 (defvar shimbun-zdnet-x-face-alist
   '(("default" . "X-Face: 88Zbg!1nj{i#[*WdSZNrn1$Cdfat,zsG`P)OLo=U05q:\
 RM#72\\p;3XZ~j|7T)QC7\"(A;~Hr\n fP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
 
+(defvar shimbun-zdnet-expiration-days 31)
+
+(luna-define-method shimbun-groups ((shimbun shimbun-zdnet))
+  (mapcar 'car shimbun-zdnet-group-alist))
+
 (luna-define-method shimbun-index-url ((shimbun shimbun-zdnet))
   (concat
    (shimbun-url-internal shimbun)
-   (cdr (assoc (shimbun-current-group-internal shimbun)
-	       shimbun-zdnet-group-url-alist))
+   (nth 1 (assoc (shimbun-current-group-internal shimbun)
+		 shimbun-zdnet-group-alist))
    "/"))
 
-(defun shimbun-zdnet-comp-get-headers (shimbun)
-  (let ((case-fold-search t) headers)
+(luna-define-method shimbun-get-headers ((shimbun shimbun-zdnet)
+					 &optional range)
+  (let* ((case-fold-search t)
+	 (group (shimbun-current-group-internal shimbun))
+	 (url-regexp (nth 2 (assoc group shimbun-zdnet-group-alist)))
+	 headers)
+    (while (re-search-forward "\r" nil t)
+      (replace-match "\n"))
     (goto-char (point-min))
-    (let (start)
-      (while (and (search-forward "<!--" nil t)
-		  (setq start (- (point) 4))
-		  (search-forward "-->" nil t))
-	(delete-region start (point))))
-    (goto-char (point-min))
-    (while (re-search-forward
-	    "<a href=\"\\(/news/\\)?\\(\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.]+\\).html\\)\"><font size=\"4\"><strong>"
-	    nil t)
-      (let ((year  (+ 2000 (string-to-number (match-string 3))))
-	    (month (string-to-number (match-string 4)))
-	    (day   (string-to-number (match-string 5)))
-	    (id    (format "<%s%s%s%s%%%s>"
+    (while (re-search-forward url-regexp nil t)
+      (unless (string= "index" (match-string 6))
+	(let* ((url (match-string 1))
+	       (year (+ 2000 (string-to-number (match-string 3))))
+	       (month (string-to-number (match-string 4)))
+	       (day (string-to-number (match-string 5)))
+	       (id (format "<%s%s%s%s%%%s>"
 			   (match-string 3)
 			   (match-string 4)
 			   (match-string 5)
 			   (match-string 6)
-			   (shimbun-current-group-internal shimbun)))
-	    (url (match-string 2)))
-	(push (shimbun-make-header
-	       0
-	       (shimbun-mime-encode-string
-		(mapconcat 'identity
-			   (split-string
-			    (buffer-substring
-			     (match-end 0)
-			     (progn (search-forward "</a>" nil t) (point)))
-			    "<[^>]+>")
-			   ""))
-	       (shimbun-from-address-internal shimbun)
-	       (shimbun-make-date-string year month day)
-	       id  "" 0 0 (concat (shimbun-index-url shimbun) url))
-	      headers)))
+			   group))
+	       (subject (mapconcat 'identity
+				   (split-string
+				    (buffer-substring
+				     (match-end 0)
+				     (progn (search-forward "</A>" nil t) (point)))
+				    "<[^>]+>")
+				   "")))
+	  (while (string-match "<[^>]+>" subject)
+	    (setq subject (concat (substring subject 0 (match-beginning 0))
+				  (substring subject (match-end 0)))))
+	  (push (shimbun-make-header
+		 0
+		 (shimbun-mime-encode-string subject)
+		 (shimbun-from-address-internal shimbun)
+		 (shimbun-make-date-string year month day)
+		 id  "" 0 0
+		 (cond ((equal group "gamespot") (concat (shimbun-index-url shimbun) url))
+		       (t (concat shimbun-zdnet-url url))))
+		headers))))
     (nreverse headers)))
 
-(defun shimbun-zdnet-gamespot-get-headers (shimbun)
-  (let ((case-fold-search t) headers
-	p)
-    (and (setq p (search-forward "<!--TOP NEWS START--->" nil t))
-	 (search-forward "<!--TOP NEWS END--->" nil t)
-	 (narrow-to-region p (point)))
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-zdnet) header)
+  (let ((case-fold-search t)
+	(start))
+    (while (and (search-forward "<!-- AD START -->" nil t)
+		(setq start (match-beginning 0))
+		(search-forward "<!-- AD END -->" nil t))
+      (delete-region start (point)))
+    (while (re-search-forward "<IMG [^>]*SRC=\"http://ad\\.zdnet\\.co\\.jp/[^>]+>" nil t)
+      (delete-region (match-beginning 0) (match-end 0)))
     (goto-char (point-min))
-    (while (re-search-forward
-	    "<A HREF=\"\\(gsnews/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\(news[0-9][0-9]\\).html\\)[^>]*>\\(.*\\)</A>"
-	    nil t)
-      (let* ((year  (+ 2000 (string-to-number (match-string 2))))
-	     (month (string-to-number (match-string 3)))
-	     (day   (string-to-number (match-string 4)))
-	     (id    (format "<%s%s%s%s%%%s>" year month day (match-string 5)
-			    (shimbun-current-group-internal shimbun)))
-	     (subject (match-string 6))
-	     (url (match-string 1)))
-	(push (shimbun-make-header
-	       0
-	       (shimbun-mime-encode-string subject)
-	       (shimbun-from-address-internal shimbun)
-	       (shimbun-make-date-string year month day)
-	       id  "" 0 0 (concat (shimbun-index-url shimbun) url))
-	      headers)))
-    headers))
-
-(luna-define-method shimbun-get-headers ((shimbun shimbun-zdnet)
-					 &optional range)
-  (funcall (intern (concat "shimbun-zdnet-"
-			   (shimbun-current-group-internal shimbun)
-			   "-get-headers"))
-	   shimbun))
+    (while (re-search-forward "<A [^>]*HREF=\"http://ad\\.zdnet\\.co\\.jp/[^>]+>[^<]*</A>" nil t)
+      (delete-region (match-beginning 0) (match-end 0)))
+    (goto-char (point-min))))
 
 (provide 'sb-zdnet)
 

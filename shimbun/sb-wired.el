@@ -62,7 +62,8 @@ egh`b:Uwy`8}#Db-kyCsr_UMRz=,U|>-:&`05lXB4(;h{[&~={Imb-az7\n &U\
 				 "news/news/index.html")
 			 (concat (shimbun-url-internal shimbun)
 				 "news/news/last_seven.html")))
-      (with-current-buffer (shimbun-retrieve-url-buffer xover t)
+      (with-temp-buffer
+	(shimbun-retrieve-url xover t)
 	(goto-char (point-min))
 	(search-forward "<!-- articles -->" nil t) ; Jump to article list.
 	(while (re-search-forward regexp nil t)

@@ -36,16 +36,16 @@
 
 (defvar shimbun-nikkansports-url "http://www.nikkansports.com/")
 (defvar shimbun-nikkansports-groups-alist
-  '(("baseball" . "baseball/menu-bb.html")
-    ("mlb" . "baseball/topics2/menu-bb.html")
-    ("soccer" . "soccer/menu-sc.html")
-    ("world-soccer" . "soccer/world/menu-wf.html")
-    ("sports" . "sports/menu-sp.html")
-    ("battle" . "battle/menu-bt.html")
-    ("horseracing" . "horserace/menu-hr.html")
-    ("entertainment" . "entert/menu-et.html")
-    ("society" . "society/menu-so.html")
-    ("leisure" . "ls/menu-ls.html")))
+  '(("baseball" . "news/baseball/menu-bb.html")
+    ("mlb" . "news2/mlb/02/top-mb.html")
+    ("soccer" . "news/soccer/menu-sc.html")
+    ("world-soccer" . "news/soccer/world/menu-wf.html")
+    ("sports" . "news/sports/menu-sp.html")
+    ("battle" . "news/battle/menu-bt.html")
+    ("horseracing" . "news/horserace/menu-hr.html")
+    ("entertainment" . "news/entert/menu-et.html")
+    ("society" . "news/society/menu-so.html")
+    ("leisure" . "news/ls/menu-ls.html")))
 (defvar shimbun-nikkansports-groups
   (mapcar 'car shimbun-nikkansports-groups-alist))
 (defvar shimbun-nikkansports-from-address "webmast@nikkansports.co.jp")
@@ -65,7 +65,6 @@
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-nikkansports))
   (concat (shimbun-url-internal shimbun)
-	  "news/"
 	  (cdr (assoc (shimbun-current-group-internal shimbun)
 		      shimbun-nikkansports-groups-alist))))
 
@@ -102,7 +101,6 @@
 		   date id "" 0 0
 		   (concat
 		    (shimbun-url-internal shimbun)
-		    "news/"
 		    (file-name-directory
 		     (cdr (assoc (shimbun-current-group-internal shimbun)
 				 shimbun-nikkansports-groups-alist)))

@@ -39,7 +39,8 @@
 
 (defvar shimbun-sponichi-url "http://www.sponichi.co.jp/")
 (defvar shimbun-sponichi-groups '("baseball" "soccer" "usa" "others"
-				  "society" "entertainment" "horseracing"))
+				  "society" "entertainment" "horseracing"
+				  "golf" "battle"))
 (defvar shimbun-sponichi-from-address "webmaster@www.sponichi.co.jp")
 (defvar shimbun-sponichi-content-start "<!--ニュース記事ここから -->")
 (defvar shimbun-sponichi-content-end "<!--ニュース記事ここまで -->")
@@ -52,43 +53,43 @@
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-sponichi)
 					 &optional range)
-  (when (search-forward "ニュースインデックス" nil t)
-    (delete-region (point-min) (point))
-    (when (search-forward "アドタグ" nil t)
-      (forward-line 2)
-      (delete-region (point) (point-max))
-      (goto-char (point-min))
-      (let ((case-fold-search t)
-	    headers)
-	(while (re-search-forward
-		"^<a href=\"/\\(\\([A-z]*\\)/kiji/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)\\.html\\)\">"
-		nil t)
-	  (let ((url (match-string 1))
-		(id (format "<%s%s%s%s%%%s>"
-			    (match-string 3)
-			    (match-string 4)
-			    (match-string 5)
-			    (match-string 6)
-			    (shimbun-current-group-internal shimbun)))
-		(date (shimbun-make-date-string
-		       (string-to-number (match-string 3))
-		       (string-to-number (match-string 4))
-		       (string-to-number (match-string 5)))))
-	    (push (shimbun-make-header
-		   0
-		   (shimbun-mime-encode-string
-		    (mapconcat 'identity
-			       (split-string
-				(buffer-substring
-				 (match-end 0)
-				 (progn (search-forward "<br>" nil t) (point)))
-				"<[^>]+>")
-			       ""))
-		   (shimbun-from-address-internal shimbun)
-		   date id "" 0 0 (concat (shimbun-url-internal shimbun)
-					  url))
-		  headers)))
-	headers))))
+  (let* ((case-fold-search t)
+	 (group
+	  (shimbun-current-group-internal shimbun))
+	 (url-regexp
+	  (concat
+	   "^<a href=\"/\\("
+	   group
+	   "/\\(kiji\\|flash\\)/\\([0-9][0-9][0-9][0-9]\\)/?\\([0-9][0-9]\\)/?\\([0-9][0-9]\\)/?\\([^\\.\">]+\\)\\.html\\)[^>]*>"))
+	 headers)
+    (while (re-search-forward url-regexp nil t)
+      (let ((url (match-string 1))
+	    (id (format "<%s%s%s%s%s%%%s>"
+			(match-string 2)
+			(match-string 3)
+			(match-string 4)
+			(match-string 5)
+			(match-string 6)
+			group))
+	    (date (shimbun-make-date-string
+		   (string-to-number (match-string 3))
+		   (string-to-number (match-string 4))
+		   (string-to-number (match-string 5)))))
+	(push (shimbun-make-header
+	       0
+	       (shimbun-mime-encode-string
+		(mapconcat 'identity
+			   (split-string
+			    (buffer-substring
+			     (match-end 0)
+			     (progn (search-forward "<br>" nil t) (point)))
+			    "<[^>]+>")
+			   ""))
+	       (shimbun-from-address-internal shimbun)
+	       date id "" 0 0 (concat (shimbun-url-internal shimbun)
+				      url))
+	      headers)))
+    headers))
 
 (provide 'sb-sponichi)
 

@@ -91,8 +91,8 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 			  shimbun-tcup-group-alist)))
 	(n 3)
 	keys)
-    (or (string-match "www\\([0-9]+\\)[^/]+/\\([0-9]+\\)/\\(.+\\)\\.html" url)
-	(string-match "www\\.tcup\\([0-9]+\\)[^/]+/\\([0-9]+\\)/\\(.+\\)\\.html" url))
+    (or (string-match "\\(^\\|://\\)\\([0-9]+\\)\\..+/\\([^/]+\\)/bbs" url)
+	(string-match "\\(^\\|://\\)www.+/\\([0-9]+\\)/\\([^/]+\\).html" url))
     (while (> n 0)
       (push (substring url (match-beginning n) (match-end n)) keys)
       (setq n (1- n)))
@@ -127,13 +127,13 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 
 (defun shimbun-tcup-make-id (stime group)
   (let ((keys (shimbun-tcup-get-group-key group)))
-    (format "<%s.%s.%s@www%s.tcup.com>"
-	    stime (nth 2 keys) (nth 1 keys) (nth 0 keys))))
+    (format "<%s.%s@%s.teacup.com>"
+	    stime (nth 2 keys) (nth 1 keys))))
 
 (luna-define-method shimbun-headers ((shimbun shimbun-tcup)
 				     &optional range)
-  (with-current-buffer (shimbun-retrieve-url-buffer
-			(shimbun-index-url shimbun) 'reload 'binary)
+  (with-temp-buffer
+    (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload 'binary)
     (set-buffer-multibyte t)
     (decode-coding-region (point-min) (point-max)
 			  (shimbun-coding-system-internal shimbun))

@@ -30,7 +30,8 @@
 (luna-define-class shimbun-m17n (shimbun-mhonarc) ())
 
 (defconst shimbun-m17n-group-path-alist
-  '(("mule-ja" "mule-ja-archive/" "mule-ja@m17n.org")))
+  '(("mule-ja" "mule-ja-archive/" "mule-ja@m17n.org")
+    ("mule" "mule-archive/" "mule@m17n.org")))
 
 (defvar shimbun-m17n-url "http://www.m17n.org/")
 (defvar shimbun-m17n-groups (mapcar 'car shimbun-m17n-group-path-alist))

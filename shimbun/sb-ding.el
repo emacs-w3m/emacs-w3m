@@ -40,6 +40,13 @@ e8iT<(A$LWAZD*xjk^')/wI5nG;1cNB>~dS|}-P0~ge{$c!h\\<y")))
 (defvar shimbun-ding-litemplate-regexp
   "<td><strong><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a></strong>\n<td><em>\\([^<]+\\)</em>")
 
+(luna-define-method shimbun-get-headers
+  :around ((shimbun shimbun-ding) &optional range)
+  (let ((w3m-coding-system-priority-list
+	 (cons (shimbun-coding-system-internal shimbun)
+	       w3m-coding-system-priority-list)))
+    (luna-call-next-method)))
+
 (provide 'sb-ding)
 
 ;;; sb-ding.el ends here
