@@ -1,3 +1,9 @@
+NOTE:
+   w3m-0.2.1-inu-1.4 and w3mmee-0.2.1-p19-6 contain all features which
+   are added by these patches.  Therefore, you have to apply no patch to
+   use either of them.
+
+
 * dump-extra.patch
 
   A patch was posted by Akinori ITO <aito@ei5sun.yz.yamagata-u.ac.jp> in
@@ -31,7 +37,7 @@
   [emacs-w3m:01322].  This patch adds `-post' option and `-header'
   option.
 
-  To use w3m-m17n or w3mmee, you must apply this patch.
+  To use w3m-m17n, you must apply this patch.
 
 
 
