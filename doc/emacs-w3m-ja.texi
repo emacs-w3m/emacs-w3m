@@ -4747,7 +4747,9 @@ vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
 
 @item @uref{http://www.kantei.go.jp/jp/, 小泉内閣メールマガジン}
-kantei.m-magazine
+kantei.m-magazine-en kantei.m-magazine-ja
+
+後方互換性のため、@samp{kantei.m-magazine} も利用可能になっています。
 
 @item @uref{http://www.jpo.go.jp/, 特許庁}
 jpo.news jpo.revision jpo.lawguide jpo.details

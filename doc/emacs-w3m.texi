@@ -4667,7 +4667,9 @@ vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
 
 @item @uref{http://www.kantei.go.jp/jp/, Koizumu Cabinet Mail Magazine}
-kantei.m-magazine
+kantei.m-magazine-en kantei.m-magazine-ja
+
+@samp{kantei.m-magazine} is also available for the backward compatibility.
 
 @item @uref{http://www.jpo.go.jp/, Patent Office in Japan}
 jpo.news jpo.revision jpo.lawguide jpo.details
