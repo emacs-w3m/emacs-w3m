@@ -126,9 +126,13 @@
     (run-hooks 'w3m-fontify-before-hook)
     ;; Decode escaped characters.
     (goto-char (point-min))
-    (while (search-forward "&nbsp;" nil t)
+    (while (re-search-forward "&\\(\\(nbsp\\)\\|\\(gt\\)\\|\\(lt\\)\\|\\(amp\\)\\|\\(quot\\)\\|\\(apos\\)\\);" nil t)
       (delete-region (match-beginning 0) (match-end 0))
-      (insert " "))
+      (insert (if (match-beginning 2) " "
+		(if (match-beginning 3) ">"
+		  (if (match-beginning 4) "<"
+		    (if (match-beginning 5) "&"
+		      (if (match-beginning 6) "\"" "'")))))))
     ;; Fontify anchors.
     (goto-char (point-min))
     (while (re-search-forward
