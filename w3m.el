@@ -2,9 +2,9 @@
 
 ;; Copyright (C) 2000 TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>,
-;;         Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
-;;         Satoru Takabayashi <satoru-t@is.aist-nara.ac.jp>
+;; Authors: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>,
+;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
+;;          Satoru Takabayashi <satoru-t@is.aist-nara.ac.jp>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; w3m.el is free software; you can redistribute it and/or modify it
@@ -134,6 +134,12 @@
   "Fontify this buffer."
   (let ((case-fold-search t))
     (run-hooks 'w3m-fontify-before-hook)
+    ;; Delete extra title tag.
+    (let (start)
+      (and (search-forward "<title>" nil t)
+	   (setq start (match-beginning 0))
+	   (search-forward "</title>" nil t)
+	   (delete-region start (match-end 0))))
     ;; Fontify bold characters.
     (goto-char (point-min))
     (while (search-forward "<b>" nil t)
@@ -142,13 +148,25 @@
 	(when (search-forward "</b>" nil t)
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (put-text-property start (match-beginning 0) 'face 'bold))))
-    ;; Fontify anchors.
+    ;; Delete excessive `hseq' elements of anchor tags.
+    (goto-char (point-min))
+    (while (re-search-forward "<a\\( hseq=\"[-0-9]+\"\\)" nil t)
+      (delete-region (match-beginning 1) (match-end 1)))
+    ;; Re-ordering anchor elements.
+    (goto-char (point-min))
+    (let (href)
+      (while (re-search-forward "<a\\([ \t\n]\\)[^>]+[ \t\n]href=\\(\"[^\"]*\"\\)" nil t)
+	(setq href (buffer-substring (match-beginning 2) (match-end 2)))
+	(delete-region (match-beginning 2) (match-end 2))
+	(goto-char (match-beginning 1))
+	(insert " href=" href)))
+    ;; Fontify anchor tags.
     (goto-char (point-min))
     (while (re-search-forward
-	    "<a\\( hseq=\"[-0-9]+\"\\)?\\([ \t\n]+href=\"\\([^\"]*\\)\"\\)?\\([ \t\n]+name=\"\\([^\"]*\\)\"\\)?[^>]*>"
+	    "<a\\([ \t\n]+href=\"\\([^\"]*\\)\"\\)?\\([ \t\n]+name=\"\\([^\"]*\\)\"\\)?[^>]*>"
 	    nil t)
-      (let ((url (match-string 3))
-	    (tag (match-string 5))
+      (let ((url (match-string 2))
+	    (tag (match-string 4))
 	    (start (match-beginning 0))
 	    (end))
 	(delete-region start (match-end 0))
@@ -163,7 +181,6 @@
 	       (when (re-search-forward "<\\|\n" nil t)
 		 (setq end (match-beginning 0))
 		 (put-text-property start end 'w3m-name-anchor tag))))))
-	       
     ;; Fontify image alternate strings.
     (goto-char (point-min))
     (while (re-search-forward "<img_alt src=\"\\([^\"]*\\)\">" nil t)
@@ -198,7 +215,7 @@
 (defun w3m-input-url (&optional prompt default)
   "Read a URL from the minibuffer, prompting with string PROMPT."
   (let (url candidates)
-    (mapatoms (lambda (x) 
+    (mapatoms (lambda (x)
 		(setq candidates (cons (cons (symbol-name x) x) candidates)))
 	      w3m-backlog-hashtb)
     (setq url (completing-read (or prompt "URL: ")
@@ -618,12 +635,12 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 		  (setq comp (intern-soft (concat (symbol-name mail-user-agent)
 						  "-compose")))
 		  (fboundp comp)))
-	(error "You must specify valid `mail-user-agent'."))    
+	(error "You must specify valid `mail-user-agent'."))
     ;; use rfc2368.el if exist.
     (if (or (featurep 'mailto)
-	    (require 'mailto nil t))	; xxx, depends on emacs version.
+	    (condition-case nil (require 'mailto) (error nil)))
 	(let ((info (rfc2368-parse-mailto-url url)))
-	  (apply comp (mapcar (lambda (x) 
+	  (apply comp (mapcar (lambda (x)
 				(cdr (assoc x info)))
 			      '("To" "Subject"))))
       ;; without rfc2368.el.
@@ -660,13 +677,13 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (w3m-backlog-remove w3m-current-url)
     (setq w3m-url-history (cdr w3m-url-history))
     (w3m-goto-url w3m-current-url)))
-    
+
 
 (defun w3m (url &optional args)
   "Interface for w3m on Emacs."
   (interactive (list (w3m-input-url)))
   (set-buffer (get-buffer-create "*w3m*"))
-  (setq mode-line-buffer-identification 
+  (setq mode-line-buffer-identification
 	(list (buffer-name) " / " 'w3m-current-title))
   (or (eq major-mode 'w3m-mode)
       (w3m-mode))
