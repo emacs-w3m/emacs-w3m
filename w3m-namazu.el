@@ -58,10 +58,10 @@
   :type 'string)
 
 (defcustom w3m-namazu-arguments
-  '("-h"				; print in HTML format.
-    "-H"				; print further result links.
-    "-n" w3m-namazu-page-max		; set number of documents shown to NUM.
-    "-w" whence)			; set first number of documents shown to NUM.
+  '("-h"			; print in HTML format.
+    "-H"			; print further result links.
+    "-n" w3m-namazu-page-max	; set number of documents shown to NUM.
+    "-w" whence)		; set first number of documents shown to NUM.
   "*Arguments of Namazu."
   :group 'w3m-namazu
   :type '(repeat
@@ -88,11 +88,18 @@
 		(string :tag "Index path"))))
 
 (defcustom w3m-namazu-default-index
-  (when (boundp 'namazu-default-dir)
-    (symbol-value 'namazu-default-dir))
-  "*Alias or directory of the default index."
+  (unless (and (boundp 'namazu-always-query-index-directory)
+	       (symbol-value 'namazu-always-query-index-directory))
+    (when (boundp 'namazu-default-dir)
+      (symbol-value 'namazu-default-dir)))
+  "*Alias or directory of the default index.
+If this variable equals nil, it is required to input an index path
+whenever `w3m-namazu' is called interactively without prefix
+argument."
   :group 'w3m-namazu
-  :type 'string)
+  :type '(choice
+	  (const :tag "No default index" nil)
+	  (string :tag "Default index path")))
 
 (defcustom w3m-namazu-output-coding-system
   (if (boundp 'namazu-cs-write)
@@ -187,15 +194,24 @@
 
 ;;;###autoload
 (defun w3m-namazu (index query)
-  "Search files with Namazu."
+  "Search indexed files with Namazu."
   (interactive
    (list
-    (if current-prefix-arg
-	(let ((s (completing-read
-		  (format "Index (default %s): " w3m-namazu-default-index)
-		  'w3m-namazu-complete-index nil t nil 'w3m-namazu-index-history)))
-	  (if (string= s "") w3m-namazu-default-index s))
-      w3m-namazu-default-index)
+    (if (if w3m-namazu-default-index
+	    current-prefix-arg
+	  (not (and current-prefix-arg
+		    w3m-namazu-index-history)))
+	(let* ((default (or (car w3m-namazu-index-history)
+			    w3m-namazu-default-index))
+	       (s (completing-read
+		   (if default
+		       (format "Index (default %s): " default)
+		     "Index: ")
+		   'w3m-namazu-complete-index nil t nil
+		   'w3m-namazu-index-history)))
+	  (if (string= s "") default s))
+      (or w3m-namazu-default-index
+	  (car w3m-namazu-index-history)))
     (read-string "Query: " nil 'w3m-namazu-query-history)))
   (w3m-goto-url (format "about://namazu/?index=%s&query=%s&whence=0"
 			index query)))
