@@ -114,7 +114,7 @@ that consists of:
 	    (w3m-load-list w3m-antenna-file)))
   "List of WEB sites, watched by `w3m-antenna'."
   :group 'w3m-antenna
-  :type '(repeat
+  :type `(repeat
 	  (group
 	   :indent 7
 	   (w3m-antenna-string :format "URL: %v\n" :size 0
@@ -132,10 +132,25 @@ that consists of:
 		  (regexp :value "")
 		  (integer :value 0))
 	    (cons :tag "Check with a user defined function"
-		  (function :match
-			    (lambda (widget x)
-			      (and (functionp x)
-				   (not (eq x 'w3m-antenna-check-anchor)))))
+		  (function
+		   :match (lambda (widget value)
+			    (and (functionp value)
+				 (not (eq value 'w3m-antenna-check-anchor))))
+		   ,@(if (and (fboundp 'widget-default-get)
+			      (widget-default-get
+			       '(function :value-to-external ignore
+					  :value foo)))
+			 ;; Fix mis-implemented customizing widgets
+			 ;; in Emacs 20.7 through 21.3 and XEmacs.
+			 '(:value-create
+			   (lambda (widget)
+			     (widget-put widget :value
+					 (widget-sexp-value-to-internal widget
+									value))
+			     (widget-field-value-create widget))
+			   :value-to-internal
+			   (lambda (widget value) value)
+			   :value ignore)))
 		  (repeat :tag "Arguments" sexp))))))
 
 (defcustom w3m-antenna-html-skeleton
@@ -478,8 +493,8 @@ Optional argument TITLE is title of link."
   (re-search-forward "INS")
   (backward-char 1)
   (widget-button-press (point))
-  (re-search-forward "State:")
-  (backward-char 2))
+  (re-search-forward "State:\\|\\(\\[State\\]:\\)")
+  (backward-char (if (match-beginning 1) 3 2)))
 
 (defvar w3m-antenna-mode-map
   (let ((map (make-sparse-keymap)))
