@@ -87,13 +87,20 @@ retrieved.")
 (defvar w3m-cache-unoptimized-gif-images-max-length 32
   "*Number to limit the length of `w3m-cache-unoptimized-gif-images'.")
 
+(defvar w3m-animated-gif-maximum-size 1048579
+  "*Maximun size (width * height * frames) of animated gif images.  If a
+size of an image is larger than this (it might be a bomb!), only the
+first frame will be shown.  You can make it to be unlimited with the
+value nil if your computer has TerrrrrrraBytes of memories.")
+
 (defun w3m-unoptimize-animated-gif (url data no-cache)
   "Return a glyph of an unoptimized animated gif data DATA corresponding
 to URL, which is suitable for XEmacs.  Otherwise it returns nil when
 there is no need to unoptimize (or, unfortunately, the unoptimization
 is failed).  It manages the cache `w3m-cache-unoptimized-gif-images'.
 If NO-CACHE is non-nil, a cached data will not be used and it will be
-updated by a new data."
+updated by a new data.  See also the documentation for the variable
+`w3m-animated-gif-maximum-size'."
   (let ((cache (assoc url w3m-cache-unoptimized-gif-images)))
     ;; Move the element which is associated with `url' to the
     ;; top of the cache.  No need to use `equal' nor `delete'
@@ -107,31 +114,48 @@ updated by a new data."
 	(with-temp-buffer
 	  (let ((coding-system-for-read 'binary)
 		(coding-system-for-write 'binary)
-		should-unoptimize size1 size2 glyph)
+		should-process size1 size2 glyph)
 	    (insert data)
 	    (goto-char (point-min))
 	    (when (looking-at "GIF89a")
-	      ;; Check whether a `data' is optimized.
+	      ;; Check whether a `data' is optimized or larger than
+	      ;; the value of `w3m-animated-gif-maximum-size'.
 	      (call-process-region (point-min) (point-max)
 				   w3m-gifsicle-program
 				   t t nil "--info")
 	      (goto-char (point-min))
-	      (while (and (not should-unoptimize)
+	      (when (and w3m-animated-gif-maximum-size
+			 (looking-at ".+ \\([0-9]+\\) images\r?$"))
+		(setq size1 (string-to-number (match-string 1)))
+		(forward-line 1)
+		(unless (and (looking-at ".+ \\([0-9]+\\)x\\([0-9]+\\)\r?$")
+			     (natnump (setq size1 (* size1
+						     (string-to-number
+						      (match-string 1)))))
+			     (<= size1 w3m-animated-gif-maximum-size)
+			     (natnump (setq size1 (* size1
+						     (string-to-number
+						      (match-string 2)))))
+			     (<= size1 w3m-animated-gif-maximum-size))
+		  ;; It should be truncated to be only one frame.
+		  (setq should-process "#0"))
+		(setq size1 nil))
+	      (while (and (not should-process)
 			  (re-search-forward
 			   "  \\+ image #[0-9]+ \\([0-9]+x[0-9]+\\)"
 			   nil t))
 		(if size1
 		    (if (string-equal size1 (setq size2 (match-string 1)))
 			(setq size1 size2)
-		      (setq should-unoptimize t))
+		      (setq should-process "--unoptimize"))
 		  (setq size1 (match-string 1))))
-	      (when should-unoptimize
+	      (when should-process
 		(erase-buffer)
 		(insert data)
 		;; Unoptimize anyway.
 		(call-process-region (point-min) (point-max)
 				     w3m-gifsicle-program
-				     t t nil "--unoptimize")
+				     t t nil should-process)
 		(goto-char (point-min))
 		(when (or (looking-at "GIF89a")
 			  ;; Unoptimization is failed. :-<

@@ -1,3 +1,10 @@
+2001-06-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-unoptimize-animated-gif): Truncate an animated
+	gif to have only one frame when the size is larger than the value
+	of `w3m-animated-gif-maximum-size'.
+	(w3m-animated-gif-maximum-size): New variable.
+
 2001-06-06  Kenichi OKADA  <okada@opaopa.org>
 
 	* w3m-xmas.el: Require `path-util'.
