@@ -1,3 +1,8 @@
+2004-01-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-input-url): Add "http://" to its return value, when
+	its return value contains no scheme part.
+
 2004-01-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-sankei.el (shimbun-clear-contents): Improve tags
