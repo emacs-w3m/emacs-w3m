@@ -6,8 +6,7 @@ shimbun ライブラリでは、新聞やニュースサイト、メーリングリストアーカイブ
 shimbun ライブラリを利用できるメールユーザエージェントは、以下の通りです。
 
 	Wanderlust (2.7.0 以降)
-	T-gnus-6_15
-	Gnus (T-gnus の nnshimbun.el が必要)
+	Gnus (5.9 以降，T-gnus-6_15 を含む)
 	Mew (2.1 以降) "3. mew-shimbun.el について" をお読み下さい
 
 APEL および FLIM パッケージが必要です。インストールする前にそれらをイン
