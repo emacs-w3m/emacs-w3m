@@ -1,5 +1,7 @@
 2004-01-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* sb-bbc.el: Renamed from sb-bbc-rss.el.
+
 	* w3m.el (w3m-safe-view-this-url): Bind `w3m-pop-up-windows' to
 	nil locally, in order to keep MUA's window configuration.
 

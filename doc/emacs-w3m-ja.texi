@@ -4259,6 +4259,9 @@ yomiuri.sports yomiuri.world
 @item @uref{http://www.sankei.co.jp/, 産経新聞}
 sankei.shakai sankei.sports sankei.keizai sankei.seiji sankei.kokusai
 sankei.bungei sankei.book sankei.person sankei.dead
+
+@item @uref{http://www.bbc.co.uk/, BBC}
+bbc.news
 @end table
 
 @node News Sites Supported by Shimbun
@@ -4270,6 +4273,10 @@ sankei.bungei sankei.book sankei.person sankei.dead
 @item @uref{http://cnet.sphere.ne.jp/, Japan CNET}
 cnet.comp
 
+@item @uref{http://cnet.sphere.ne.jp/, RSS版 Japan CNET}
+cnet-rss.news cnet-rss.blog.umeda cnet-rss.blog.lessig
+cnet-rss.blog.mori cnet-rss.blog.kenn
+
 @item @uref{http://www.watch.impress.co.jp/, インプレス}
 impress.internet impress.pc impress.akiba impress.game impress.av
 impress.jijinews impress.sports
@@ -4280,6 +4287,9 @@ linux-ja.opensource linux-ja.security
 
 @item @uref{http://slashdot.jp/, Slashdot Japan}
 slashdot-jp.story
+
+@item @uref{http://slashdot.jp/, RSS版 Slashdot Japan}
+slashdot-jp-rss.story
 
 @item @uref{http://www.hotwired.co.jp/, HotWired Japan}
 wired.business wired.culture wired.technology

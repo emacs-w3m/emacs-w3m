@@ -1,4 +1,4 @@
-;;; sb-bbc-rss.el --- shimbun backend for BBC UK
+;;; sb-bbc.el --- shimbun backend for BBC UK
 
 ;; Copyright (C) 2003 Koichiro Ohba <koichiro@meadowy.org>
 
@@ -30,23 +30,25 @@
 (require 'shimbun)
 (require 'sb-rss)
 
-(luna-define-class shimbun-bbc-rss (shimbun-rss) ())
+(luna-define-class shimbun-bbc (shimbun-rss) ())
 
-(defvar shimbun-bbc-rss-url "http://www.bbc.co.uk/syndication/feeds/news/ukfs_news/world/rss091.xml")
-(defvar shimbun-bbc-rss-groups '("news"))
-(defvar shimbun-bbc-rss-from-address  "newsonline@bbc.co.uk")
-(defvar shimbun-bbc-rss-content-start "\n<!-- E IIMA -->\n")
-(defvar shimbun-bbc-rss-content-end "\n<!-- E BO -->\n")
+(defvar shimbun-bbc-url
+  "http://www.bbc.co.uk/syndication/feeds/news/ukfs_news/world/rss091.xml")
+(defvar shimbun-bbc-groups '("news"))
+(defvar shimbun-bbc-from-address  "newsonline@bbc.co.uk")
+(defvar shimbun-bbc-content-start "\n<!-- E IIMA -->\n")
+(defvar shimbun-bbc-content-end "\n<!-- E BO -->\n")
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-bbc-rss))
-  shimbun-bbc-rss-url)
+(luna-define-method shimbun-index-url ((shimbun shimbun-bbc))
+  shimbun-bbc-url)
 
 (luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-bbc-rss) url date)
-  (unless (string-match "http://news.bbc.co.uk/go/click/rss/0.91/public/-/\\(.+\\)/hi/\\(.+\\)/\\([0-9]+\\).stm" url)
+  ((shimbun shimbun-bbc) url date)
+  (unless (string-match "http://news.bbc.co.uk/go/click/rss/0.91/\
+public/-/\\(.+\\)/hi/\\(.+\\)/\\([0-9]+\\).stm" url)
     (error "Cannot find message-id base"))
-  (concat "<" (match-string-no-properties 3 url) "%%rss@bbc.co.uk>"))
+  (concat "<" (match-string-no-properties 3 url) "%%@bbc.co.uk>"))
 
-(provide 'sb-bbc-rss)
+(provide 'sb-bbc)
 
-;;; sb-bbc-rss.el ends here
+;;; sb-bbc.el ends here
