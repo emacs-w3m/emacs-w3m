@@ -196,7 +196,17 @@
 
 (defun w3m-input-url (&optional prompt default)
   "Read a URL from the minibuffer, prompting with string PROMPT."
-  (read-from-minibuffer (or prompt "URL: ") nil nil nil 'w3m-input-url-history default))
+  (let (url candidates)
+    (mapatoms (lambda (x) 
+		(setq candidates (cons (cons (symbol-name x) x) candidates)))
+	      w3m-backlog-hashtb)
+    (setq url (completing-read (or prompt "URL: ")
+			       candidates nil nil
+			       default 'w3m-input-url-history default))
+    ;; remove duplication
+    (setq w3m-input-url-history (cons url (delete url w3m-input-url-history)))
+    ;; return value
+    url))
 
 
 (defcustom w3m-keep-backlog 300
@@ -218,7 +228,7 @@
       (setq buffer-read-only t
 	    w3m-backlog-buffer (current-buffer))))
   (unless w3m-backlog-hashtb
-    (setq w3m-backlog-hashtb (make-vector 1024 nil))))
+    (setq w3m-backlog-hashtb (make-vector 1021 0))))
 
 (defun w3m-backlog-shutdown ()
   "Clear all backlog variables and buffers."
@@ -266,24 +276,23 @@
 		       (next-single-property-change
 			(1+ (point)) 'w3m-backlog nil (point-max)))))))
 
-(defun w3m-backlog-remove (url number)
+(defun w3m-backlog-remove (url)
   "Remove data of URL from the backlog."
-  (when (numberp number)
-    (w3m-backlog-setup)
-    (let ((ident (intern url w3m-backlog-hashtb))
-	  beg end)
-      (when (memq ident w3m-backlog-articles)
-	;; It was in the backlog.
-	(save-excursion
-	  (set-buffer w3m-backlog-buffer)
-	  (let (buffer-read-only)
-	    (when (setq beg (text-property-any
-			     (point-min) (point-max) 'w3m-backlog ident))
-	      ;; Find the end (i. e., the beginning of the next article).
-	      (setq end (next-single-property-change
-			 (1+ beg) 'w3m-backlog (current-buffer) (point-max)))
-	      (delete-region beg end)))
-	  (setq w3m-backlog-articles (delq ident w3m-backlog-articles)))))))
+  (w3m-backlog-setup)
+  (let ((ident (intern url w3m-backlog-hashtb))
+	beg end)
+    (when (memq ident w3m-backlog-articles)
+      ;; It was in the backlog.
+      (save-excursion
+	(set-buffer w3m-backlog-buffer)
+	(let (buffer-read-only)
+	  (when (setq beg (text-property-any
+			   (point-min) (point-max) 'w3m-backlog ident))
+	    ;; Find the end (i. e., the beginning of the next article).
+	    (setq end (next-single-property-change
+		       (1+ beg) 'w3m-backlog (current-buffer) (point-max)))
+	    (delete-region beg end)))
+	(setq w3m-backlog-articles (delq ident w3m-backlog-articles))))))
 
 (defun w3m-backlog-request (url &optional buffer)
   (w3m-backlog-setup)
@@ -322,13 +331,15 @@ If BUFFER is nil, all data is placed to the current buffer."
     (or (w3m-backlog-request url)
 	(let ((coding-system-for-read w3m-coding-system)
 	      (default-process-coding-system (cons w3m-coding-system w3m-coding-system)))
+	  (message "Loading page...")
 	  (apply 'call-process w3m-command nil t nil
 		 (mapcar (lambda (arg)
 			   (if (eq arg 'col)
 			       (format "%d" w3m-fill-column)
 			     (eval arg)))
 			 w3m-command-arguments))
-	  (w3m-backlog-enter url (current-buffer))))
+	  (w3m-backlog-enter url (current-buffer))
+	  (message "Loading page...done")))
     ;; Setting buffer local variables.
     (set (make-local-variable 'w3m-current-url) url)
     (goto-char (point-min))
@@ -357,7 +368,20 @@ If BUFFER is nil, all data is placed to the current buffer."
       (unless quiet
 	(message "Not found such name anchor."))
       nil)))
-	  
+
+
+(defun w3m-save-position (url)
+  (if url
+      (let ((ident (intern-soft url w3m-backlog-hashtb)))
+	(when ident
+	  (set ident (cons (window-start) (point)))))))
+
+(defun w3m-restore-position (url)
+  (let ((ident (intern-soft url w3m-backlog-hashtb)))
+    (when (and ident (boundp ident))
+      (set-window-start nil (car (symbol-value ident)))
+      (goto-char (cdr (symbol-value ident))))))
+
 
 (defun w3m-view-previous-page (&optional arg)
   (interactive "p")
@@ -365,15 +389,19 @@ If BUFFER is nil, all data is placed to the current buffer."
   (let ((url (nth arg w3m-url-history)))
     (when url
       (let (w3m-url-history) (w3m-goto-url url))
+      ;; restore last position
+      (w3m-restore-position url)
       (setq w3m-url-history
 	    (nthcdr arg w3m-url-history)))))
 
 
 (defun w3m-expand-url (url base)
   "Convert URL to absolute, and canonicalize it."
+  (if (string-match "^[^:]+://[^/]*$" base)
+      (setq base (concat base "/")))
   (cond
    ;; URL has absolute spec.
-   ((string-match "^[^:]+://" url)
+   ((string-match "^[^:]+:" url)
     url)
    ((string-match "^/" url)
     (if (string-match "^\\([^:]+://[^/]*\\)/" base)
@@ -383,12 +411,16 @@ If BUFFER is nil, all data is placed to the current buffer."
    ((string-match "^#" url)
     (concat base url))
    (t
-    (let ((server ""))
+    (let ((server "") path)
       (if (string-match "^\\([^:]+://[^/]*\\)/" base)
 	  (setq server (match-string 1 base)
 		base (substring base (match-end 1))))
-      (concat server (expand-file-name url (file-name-directory base)))))))
-    
+      (setq path (expand-file-name url (file-name-directory base)))
+      ;; remove drive (for Win32 platform)
+      (if (string-match "^.:" path)
+	  (setq path (substring path (match-end 0))))
+      (concat server path)))))
+
 
 (defun w3m-view-this-url ()
   "*View the URL of the link under point."
@@ -474,11 +506,16 @@ If BUFFER is nil, all data is placed to the current buffer."
       (goto-char (previous-single-property-change pos 'w3m-href-anchor))
       (setq arg (1- arg)))))
 
+(defun w3m-expand-file-name (file)
+  (setq file (expand-file-name file))
+  (if (string-match "^\\(.\\):\\(.*\\)" file)
+      (concat "/cygdrive/" (match-string 1 file) (match-string 2 file))
+    file))
 
 (defun w3m-view-bookmark ()
   (interactive)
   (if (file-readable-p w3m-bookmark-file)
-      (w3m-goto-url w3m-bookmark-file)))
+      (w3m-goto-url (w3m-expand-file-name w3m-bookmark-file))))
 
 
 (defun w3m-copy-buffer (buf &optional newname and-pop) "\
@@ -535,6 +572,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (define-key w3m-mode-map "\C-m" 'w3m-view-this-url)
   (define-key w3m-mode-map [right] 'w3m-view-this-url)
   (define-key w3m-mode-map [left] 'w3m-view-previous-page)
+  (define-key w3m-mode-map "B" 'w3m-view-previous-page)
   (define-key w3m-mode-map "d" 'w3m-download-this-url)
   (define-key w3m-mode-map "u" 'w3m-print-this-url)
   (define-key w3m-mode-map "I" 'w3m-view-image)
@@ -548,6 +586,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (define-key w3m-mode-map "q" 'w3m-quit)
   (define-key w3m-mode-map "Q" (lambda () (interactive) (w3m-quit t)))
   (define-key w3m-mode-map "\M-n" 'w3m-copy-buffer)
+  (define-key w3m-mode-map "R" 'w3m-reload-this-page)
   )
 
 
@@ -567,21 +606,57 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (use-local-map w3m-mode-map)
   (run-hooks 'w3m-mode-hook))
 
+(defun w3m-mailto-url (url)
+  (let (func)
+    ;; Require `mail-user-agent' setting
+    (if (not (and (boundp 'mail-user-agent)
+		  mail-user-agent
+		  (setq comp (intern-soft (concat (symbol-name mail-user-agent)
+						  "-compose")))
+		  (fboundp comp)))
+	(error "You must specify valid `mail-user-agent'."))    
+    ;; use rfc2368.el if exist.
+    (if (or (featurep 'mailto)
+	    (require 'mailto nil t))	; xxx, depends on emacs version.
+	(let ((info (rfc2368-parse-mailto-url url)))
+	  (apply comp (mapcar (lambda (x) 
+				(cdr (assoc x info)))
+			      '("To" "Subject"))))
+      ;; without rfc2368.el.
+      (funcall comp (match-string 1 url)))))
+
 
 (defun w3m-goto-url (url)
   "Retrieve URL and display it in this buffer."
   (let (name)
-    (when (string-match "#\\([^#]+\\)$" url)
-      (setq name (match-string 1 url)
-	    url (substring url 0 (match-beginning 0))))
-    (setq buffer-read-only nil)
-    (w3m-exec url)
-    (w3m-fontify)
-    (setq buffer-read-only t)
-    (set-buffer-modified-p nil)
-    (or (and name (w3m-search-name-anchor name))
-	(goto-char (point-min)))))
+    (cond
+     ;; process mailto: protocol
+     ((string-match "^mailto:\\(.*\\)" url)
+      (w3m-mailto-url url))
+     (t
+      (when (string-match "#\\([^#]+\\)$" url)
+	(setq name (match-string 1 url)
+	      url (substring url 0 (match-beginning 0))))
+      (setq buffer-read-only nil)
+      (w3m-save-position w3m-current-url)
+      (w3m-exec url)
+      (w3m-fontify)
+      (setq buffer-read-only t)
+      (set-buffer-modified-p nil)
+      (or (and name (w3m-search-name-anchor name))
+	  (goto-char (point-min)))))))
 
+
+(defun w3m-reload-this-page ()
+  "Reload current page without cache."
+  (interactive)
+  (let ((buffer-read-only nil)
+	(p (point))
+	(top (window-start)))
+    (w3m-backlog-remove w3m-current-url)
+    (setq w3m-url-history (cdr w3m-url-history))
+    (w3m-goto-url w3m-current-url)))
+    
 
 (defun w3m (url &optional args)
   "Interface for w3m on Emacs."
