@@ -112,7 +112,6 @@
 		 (concat "<a href=\"\\([^\"]+\\)/threads.html\">") nil t))
       (push (match-string 1) paths))
     (setq paths (nreverse paths))
-    (setq hoge paths)
     (catch 'stop
       (dolist (path paths)
         (let ((url (concat (shimbun-index-url shimbun) path "/")))
