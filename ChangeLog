@@ -1,3 +1,7 @@
+2003-04-05  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-anthy.el (shimbun-anthy-url): Remove slash at the end.
+
 2003-04-04  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-search.el (w3m-search-engine-alist): Change coding-system to

@@ -31,7 +31,7 @@
 
 (luna-define-class shimbun-anthy (shimbun-mailman) ())
 
-(defvar shimbun-anthy-url "http://lists.sourceforge.jp/pipermail/anthy-dev/")
+(defvar shimbun-anthy-url "http://lists.sourceforge.jp/pipermail/anthy-dev")
 
 (defvar shimbun-anthy-groups '("main"))
 
