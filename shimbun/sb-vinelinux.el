@@ -97,7 +97,10 @@
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-vinelinux) header)
   ;;<h4>●2002,1,22(2002,1,24 更新)● ppxp パッケージの修正</h4>
-  (if (not (re-search-forward "^<h4>●[,0-9]+.*●.*</h4>" nil t nil))
+  ;; <h3>[ 2003,01,29 ] telnet にバグ</h4> ;; start with h3 and end with h4...f(^^;;;
+  (if (not (re-search-forward
+	    "^<h4>●[,0-9]+.*●.*</h4>\\|^<h[34]>\\[ [,0-9]+ \\] .+</h[34]>"
+	    nil t nil))
       nil
     (delete-region (progn (forward-line 1) (point)) (point-min))
     (shimbun-header-insert shimbun header)

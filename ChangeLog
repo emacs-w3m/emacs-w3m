@@ -1,3 +1,8 @@
+2003-02-09  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-vinelinux.el (shimbun-make-contents): Change for web
+	page rearranging.
+
 2003-02-05  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-form.el (w3m-form-submit): Remove `!CURRENT_URL!' from
