@@ -1913,7 +1913,8 @@ half-dumped data."
   (let ((help (w3m-make-help-echo w3m-image))
 	(balloon (w3m-make-balloon-help w3m-image))
 	src upper start end)
-    (while (re-search-forward "<\\(img_alt\\) src=\"\\([^\"]*\\)\">" nil t)
+b    (while (re-search-forward
+	    "<\\(img_alt\\)[^>]*src=\"\\([^\"]*\\)\"[^>]*>" nil t)
       (setq src (match-string-no-properties 2)
 	    upper (string= (match-string 1) "IMG_ALT")
 	    start (match-beginning 0))
@@ -1969,30 +1970,33 @@ If URL is specified, only the image with URL is toggled."
 					     (progn (insert image) (point))
 					     '(w3m-image-dummy t
 					       w3m-image "dummy")))
-		(when iurl
-		  (w3m-process-with-null-handler
-		    (lexical-let ((start (set-marker (make-marker) start))
-				  (end (set-marker (make-marker) end))
-				  (url w3m-current-url))
-		      (w3m-process-do
-			  (image (let ((w3m-current-buffer (current-buffer)))
-				   (w3m-create-image iurl no-cache
-						     w3m-current-url handler)))
-			(when (buffer-live-p (marker-buffer start))
-			  (with-current-buffer (marker-buffer start)
-			    (if image
-				(when (equal url w3m-current-url)
-				  (let (buffer-read-only)
-				    (w3m-insert-image start end image))
-				  ;; Redisplay
-				  (when w3m-force-redisplay
-				    (sit-for 0)))
-			      (let (buffer-read-only)
-				(w3m-add-text-properties
-				 start end '(w3m-image-status off))))
-			    (set-buffer-modified-p nil))
-			  (set-marker start nil)
-			  (set-marker end nil))))))))))
+		(save-excursion
+		  (goto-char cur-point)
+		  (when iurl
+		    (w3m-process-with-null-handler
+		      (lexical-let ((start (set-marker (make-marker) start))
+				    (end (set-marker (make-marker) end))
+				    (url w3m-current-url))
+			(w3m-process-do
+			    (image (let ((w3m-current-buffer (current-buffer)))
+				     (w3m-create-image 
+				      iurl no-cache
+				      w3m-current-url handler)))
+			  (when (buffer-live-p (marker-buffer start))
+			    (with-current-buffer (marker-buffer start)
+			      (if image
+				  (when (equal url w3m-current-url)
+				    (let (buffer-read-only)
+				      (w3m-insert-image start end image))
+				    ;; Redisplay
+				    (when w3m-force-redisplay
+				      (sit-for 0)))
+				(let (buffer-read-only)
+				  (w3m-add-text-properties
+				   start end '(w3m-image-status off))))
+			      (set-buffer-modified-p nil))
+			    (set-marker start nil)
+			    (set-marker end nil)))))))))))
       ;; Remove.
       (save-excursion
 	(goto-char (point-min))
