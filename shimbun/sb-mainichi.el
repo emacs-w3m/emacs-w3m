@@ -1,6 +1,6 @@
-;;; sb-mainichi.el --- shimbun backend for www.mainichi.co.jp -*- coding: iso-2022-7bit; -*-
+;;; sb-mainichi.el --- shimbun backend for MSN-Mainichi -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003 Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2001, 2002, 2003, 2004 Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;;         Katsumi Yamaoka <yamaoka@jpl.org>
@@ -35,19 +35,44 @@
 
 (luna-define-class shimbun-mainichi (shimbun-japanese-newspaper shimbun) ())
 
-(defvar shimbun-mainichi-url "http://www.mainichi.co.jp/")
-(defvar shimbun-mainichi-server-name "毎日新聞")
-(defvar shimbun-mainichi-from-address  "webmaster@mainichi.co.jp")
-(defvar shimbun-mainichi-content-start "<font[\t\n ]+class=\"news-text\">")
-(defvar shimbun-mainichi-content-end  "\\(<br>[\t\n ]*\\)?</font>")
+(defvar shimbun-mainichi-top-level-domain "mainichi-msn.co.jp"
+  "Name of the top level domain for the MSN-Mainichi INTERACTIVE.")
+
+(defvar shimbun-mainichi-url
+  (concat "http://www." shimbun-mainichi-top-level-domain "/")
+  "Name of the parent url.")
 
 (defvar shimbun-mainichi-group-table
-  '(("shakai" "社会面" "news/flash/shakai")
-    ("sports" "スポーツ面" "news/flash/sports")
-    ("seiji" "政治面" "news/flash/seiji")
-    ("keizai" "経済面" "news/flash/keizai")
-    ("kokusai" "国際面" "news/flash/kokusai")
-    ("fuho" "訃報" "news/flash/jinji")))
+  '(("shakai" "社会")
+    ("sports" "スポーツ")
+    ("geinou" "芸能")
+    ("kurashi" "暮らし")
+    ("it" "IT")
+    ("kagaku" "科学")
+    ("seiji" "政治")
+    ("keizai" "経済")
+    ("kokusai" "国際"))
+  "List of supported groups and Japanese translations.")
+
+(defvar shimbun-mainichi-server-name "毎日新聞")
+(defvar shimbun-mainichi-from-address
+  (concat "webmaster@" shimbun-mainichi-top-level-domain))
+(defvar shimbun-mainichi-content-start
+  "<!--[\t\n ]+START[\t\n ]+Article[\t\n ]+-->[\t\n ]*")
+(defvar shimbun-mainichi-content-end
+  "\\([\t\n ]*<[^>]+>\\)*[\t\n ]*<!--[\t\n ]+END[\t\n ]+Article[\t\n ]+-->")
+
+(defvar shimbun-mainichi-x-face-alist
+  '(("default" . "\
+Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
+ QTFRFC2zfDGzfEnDgJn3iU5fnj7vvzuH4+vz++nlsOQAAAC90RVh0U29mdHdhcmUAWFYgVmVyc2l
+ vbiAzLjEwYStGTG1hc2sgIFJldjogMTIvMjkvOTQbx6p8AAABA0lEQVR4nGWRPW+DMBiED5vuqK0
+ 60yppVwQ0rFTYZo348poSA3uDzd/vCxNNT14en1/5zgZYEoCF69rk2zhWPR6GADwCl864tsaHFUJ
+ dweTJuMcQZZ0kRQxkqnaHik2DbBwdVuPgtPG7WTcuhPdshdM5f7lp4SpyXUPoazu1i6HZpbY6R3a
+ ZhAW8ztmZsDxPqf0Cb6zsVzQjJQA/2GNE2OWHbqaQvEggI7wFfOmxk1esLUL2GrJg2yBkrTSDqvB
+ eJKmhqtNpttk3sllICskmdbXlGdkPNcd/TIuuvOxcM65IsxvSa2Q79w7V8AfL2u1nY9ZquuiWfK7
+ 1BSVNQzxF9B+40y/ui1KdNxt0ugAAAAd0SU1FB9QEDQAjJMA7GTQAAAAASUVORK5CYII=")))
+
 (defvar shimbun-mainichi-expiration-days 7)
 
 (luna-define-method shimbun-groups ((shimbun shimbun-mainichi))
@@ -59,102 +84,173 @@
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-mainichi))
   (concat (shimbun-url-internal shimbun)
-	  (nth 2 (assoc (shimbun-current-group-internal shimbun)
-			shimbun-mainichi-group-table))
-	  "/index.html"))
+	  (shimbun-current-group-internal shimbun)
+	  "/"))
+
+(defun shimbun-mainichi-make-date-string (&rest args)
+  "Run `shimbun-make-date-string' with ARGS and fix a day if needed.
+
+\(shimbun-mainichi-make-date-string YEAR MONTH DAY &optional TIME TIMEZONE)"
+  (save-match-data
+    (let* ((ctime (current-time))
+	   (date (apply 'shimbun-make-date-string args))
+	   (time (shimbun-time-parse-string date))
+	   (ms (car time))
+	   (ls (cadr time))
+	   (system-time-locale "C"))
+      (if (or (> ms (car ctime))
+	      (and (= ms (car ctime))
+		   (> ls (cadr ctime))))
+	  ;; It should be yesterday's same time.
+	  (progn
+	    (setq ms (1- ms))
+	    (when (< (setq ls (- ls (eval-when-compile (- (* 60 60 24) 65536))))
+		     0)
+	      (setq ms (1- ms)
+		    ls (+ ls 65536)))
+	    (format-time-string "%a, %d %b %Y %R +0900" (list ms ls)))
+	date))))
+
+(defun shimbun-mainichi-get-headers (shimbun)
+  (let ((group (shimbun-current-group-internal shimbun))
+	(from (shimbun-from-address shimbun))
+	(case-fold-search t)
+	url urls subgroup header topnews headers date)
+    (while (search-forward "\r" nil t)
+      (delete-backward-char 1))
+    (goto-char (point-min))
+    (while (re-search-forward "\
+<!--[\t\n ]*MEROS[\t\n ]+START[\t\n ]+Module=[^>]+>"
+			      nil t)
+      (narrow-to-region (point)
+			(or (re-search-forward "\
+<!--[\t\n ]*MEROS[\t\n ]+END[\t\n ]+Module[^>]+>"
+					       nil t)
+			    (point-max)))
+      (goto-char (point-min))
+      (while (re-search-forward
+	      (eval-when-compile
+		(let ((s0 "[\t\n ]*")
+		      (s1 "[\t\n ]+"))
+		  (concat "<a" s1 "href=\"/"
+			  ;; 1. url
+			  "\\([^/]+/"
+			  "\\("
+			  ;; 3. subgroup
+			  "\\([^/]+\\)"
+			  "/\\)?news/"
+			  ;; 4. serial number
+			  "\\("
+			  ;; 5. year
+			  "\\(20[0-9][0-9]\\)"
+			  ;; 6. month
+			  "\\([01][0-9]\\)"
+			  ;; 7. day
+			  "\\([0-3][0-9]\\)"
+			  "[0-9a-z]+\\)"
+			  "\\.html\\)"
+			  "[^>]*>\\(" s0 "<[^>]+>\\)*" s0
+			  ;; 9+11. subject
+			  "\\([^<]+\\)\\(<br[^>]+>\\)?\\([^<]+\\)"
+			  "\\(\\(" s0 "<[^>]+>\\)+" s0
+			  ;; 14. hour
+			  "\\([012]?[0-9]\\)"
+			  ":"
+			  ;; 15. minute
+			  "\\([0-5]?[0-9]\\)"
+			  "\\)?")))
+	      nil t)
+	(unless ;; Exclude duplications.
+	    (member (setq url
+			  (file-name-nondirectory (match-string 1)))
+		    urls)
+	  (push url urls)
+	  (setq subgroup (when (match-beginning 3)
+			   (match-string 3)))
+	  (setq header
+		(shimbun-create-header
+		 0
+		 (concat (match-string 9) (match-string 11))
+		 from
+		 (shimbun-mainichi-make-date-string
+		  (string-to-number (match-string 5))
+		  (string-to-number (match-string 6))
+		  (string-to-number (match-string 7))
+		  (if (match-beginning 15)
+		      (format "%02d:%02d"
+			      (string-to-number (match-string 14))
+			      (string-to-number (match-string 15)))
+		    (unless subgroup
+		      ;; It may be a top news.
+		      "23:59:59")))
+		 (concat "<" (match-string 4) "%" (or subgroup "top")
+			 "." group "." shimbun-mainichi-top-level-domain ">")
+		 "" 0 0
+		 (concat shimbun-mainichi-url (match-string 1))))
+	  (unless subgroup
+	    (push header topnews))
+	  (push header headers)))
+      (goto-char (point-max))
+      (widen))
+    (prog1
+	(shimbun-sort-headers headers)
+      ;; Fix date headers for top news.
+      (while topnews
+	(setq header (pop topnews)
+	      date (shimbun-header-date header))
+	(when (string-match "23:59:59" date)
+	  (shimbun-header-set-date header
+				   (replace-match "00:00" nil nil date)))))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-mainichi)
 					 &optional range)
-  (shimbun-strip-cr)
-  (let ((case-fold-search t)
-	start prefix headers)
-    (goto-char (point-min))
-    (when (and (search-forward "\n<table bgcolor=\"#FFFFFF\" width=\"564\"\
- cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n"
-			       nil t)
-	       (setq start (point))
-	       (search-forward "\n</tr>\n</table>\n<br>\n<br>\n" nil t))
-      (forward-line -1)
-      (save-restriction
-	(narrow-to-region start (point))
-	(goto-char start)
-	(while (and (re-search-forward "\
-\n<B><FONT class=\"news-text\">■\\([^\n<>]+\\)</FONT></B>\n"
-				       nil t)
-		    (setq prefix (match-string 1))
-		    (re-search-forward "\
-<a href=\"\\./\\(\\(\\(20[0-9][0-9]\\)\\([01][0-9]\\)\\([0-3][0-9]\\)\
-\\([a-z]\\)\\([0-9][0-9][0-9][0-9]\\)\
-\\([a-z]\\)\\([0-9][0-9][0-9][0-9][0-9]\\)\\([0-9][0-9][0-9][0-9]\\)\
-\\([a-z]\\)\\)\\.html\\)\"[^>]*>"
-				       nil t))
-	  (let ((url   (concat
-			(nth 2 (assoc (shimbun-current-group-internal shimbun)
-				      shimbun-mainichi-group-table))
-			"/"
-			(match-string 1)))
-		(id    (format "<%s%%%s>"
-			       (match-string 2)
-			       (shimbun-current-group-internal shimbun)))
-		(year  (string-to-number (match-string 3)))
-		(month (string-to-number (match-string 4)))
-		(day   (string-to-number (match-string 5)))
-		(subject (concat
-			  "[" prefix "] "
-			  (mapconcat
-			   'identity
-			   (split-string
-			    (buffer-substring
-			     (match-end 0)
-			     (progn
-			       (search-forward "</FONT></td>" nil t)
-			       (point)))
-			    "<[^>]+>")
-			   "")))
-		date)
-	    (when (string-match "<FONT class=\"news-text\">" subject)
-	      (setq subject (substring subject (match-end 0))))
-	    (if (string-match "[0-9][0-9]:[0-9][0-9]" subject)
-		(setq date (shimbun-make-date-string
-			    year month day (match-string 0 subject))
-		      subject (substring subject 0 (match-beginning 0)))
-	      (setq date (shimbun-make-date-string year month day)))
-	    (push (shimbun-make-header
-		   0
-		   (shimbun-mime-encode-string subject)
-		   (shimbun-from-address shimbun)
-		   date id "" 0 0 (concat
-				   (shimbun-url-internal shimbun)
-				   url))
-		  headers)))))
-    headers))
+  (shimbun-mainichi-get-headers shimbun))
 
-(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-mainichi)
-						    header)
-  (shimbun-strip-cr)
-  (when (luna-call-next-method)
-    (shimbun-remove-tags "<SCRIPT" "</SCRIPT>")
-    (shimbun-remove-tags "<NOSCRIPT" "</NOSCRIPT>")
-    (shimbun-remove-tags "<NOEMBED" "</NOEMBED>")
-    (shimbun-remove-tags "<table" "</table>")
-    (shimbun-remove-tags "[\t\n ]*<br>[\t\n ]*\\(<!--AdSpace-->[\t\n ]*\\)+")
-    t))
+(defun shimbun-mainichi-prepare-article (header)
+  (let ((case-fold-search t))
+    (while (search-forward "\r" nil t)
+      (delete-backward-char 1))
+    (goto-char (point-min))
+    ;; Remove the subject lines.
+    (when (re-search-forward "<\\([0-9a-z]+\\)[\t\n ]+class=\"m-title" nil t)
+      (let ((start (match-beginning 0)))
+	(when (search-forward (concat "</" (match-string 1) ">") nil t)
+	  (delete-region start (point)))))
+    ;; Fix the Date header.
+    (when (re-search-forward
+	   (eval-when-compile
+	     (let ((s0 "[\t\n 　]*")
+		   (s1 "[\t\n 　]+"))
+	       (concat "<span" s1 "class=\"m-txt[^>]+>" s0 "毎日新聞" s1
+		       ;; 1. year
+		       "\\(20[0-9][0-9]\\)"
+		       s0 "年" s0
+		       ;; 2. month
+		       "\\([01]?[0-9]\\)"
+		       s0 "月" s0
+		       ;; 3. day
+		       "\\([0-3]?[0-9]\\)"
+		       s0 "日" s0
+		       ;; 4. hour
+		       "\\([012]?[0-9]\\)"
+		       s0 "時" s0
+		       ;; 5. minute
+		       "\\([0-5]?[0-9]\\)"
+		       s0 "分" s0 "</span>")))
+	   nil t)
+      (shimbun-header-set-date
+       header
+       (shimbun-make-date-string
+	(string-to-number (match-string 1))
+	(string-to-number (match-string 2))
+	(string-to-number (match-string 3))
+	(format "%02d:%02d"
+		(string-to-number (match-string 4))
+		(string-to-number (match-string 5))))))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-mainichi)
 						   header)
-  (let ((case-fold-search t))
-    (goto-char (point-min))
-    (when (re-search-forward "<p>［毎日新聞１?[０-９]月[１-３]?[０-９]日］\
- +( \\(20[0-9][0-9]\\)-\\([01][0-9]\\)-\\([0-3][0-9]\\)-\
-\\([0-2][0-9]:[0-5][0-9]\\) )</p>"
-			     nil t)
-      (shimbun-header-set-date header
-			       (shimbun-make-date-string
-				(string-to-number (match-string 1))
-				(string-to-number (match-string 2))
-				(string-to-number (match-string 3))
-				(match-string 4)))
-      (goto-char (point-min)))))
+  (shimbun-mainichi-prepare-article header))
 
 (provide 'sb-mainichi)
 
