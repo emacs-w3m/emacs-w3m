@@ -58,6 +58,7 @@
 (require 'shimbun)
 (eval-and-compile
   (autoload 'gnus-declare-backend "gnus-start")
+  (autoload 'gnus-group-make-group "gnus-group")
   (autoload 'message-make-date "message")
   (autoload 'parse-time-string "parse-time"))
 
