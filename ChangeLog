@@ -1,3 +1,22 @@
+2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* Merge form branch to main trunk.
+
+2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-form-new): Changed w3m-form structure.
+	(w3m-form-p): Likewise.
+	(w3m-form-put): Likewise.
+	(w3m-form-get): Likewise.
+	(w3m-form-plist): New macro.
+	(w3m-form-symbol): Removed.
+	(w3m-url-encode): Ditto.
+	(w3m-form-make-get-string): Follow change of w3m-form and use
+	w3m-escape-query-string instead of w3m-url-encode.
+	(w3m-parse-attributes): New macro.
+	(w3m-form-parse-region): Use w3m-parse-attributes.
+	(w3m-fontify-forms): Use w3m-parse-attributes.
+
 2001-03-05  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-content-type-alist): Add some content-type.
@@ -18,6 +37,14 @@
 	(w3m-goto-next-anchor): Bug fix.
 	(w3m-goto-previous-anchor): Bug fix.
 	(w3m-escape-query-string): Bug: Escape SPC char as "+" not "%20".
+
+2001-03-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-form-string-regexp): Add `eval-and-compile' to
+	suprress byte-compile error.
+	(w3m-form-p): Fix typo.
+	(w3m-mode-map): Swapped keybindings of w3m-scroll-left and
+	w3m-scroll-right to fit w3m's keybindings.
 
 2001-03-04  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
@@ -51,6 +78,23 @@
 	(w3m-do-search): New function.
 	(w3m-search): New interactive function for searching word with
 	various search engine.
+
+2001-03-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Start implementation of code to process <form> tag.
+	(w3m-form-face): New face.
+	(w3m-current-forms): New internal variable.
+	(w3m-form-string-regexp): New internal constant.
+	(w3m-form-new, w3m-form-p, w3m-form-symbol, w3m-form-method,
+	w3m-form-action, w3m-form-put, w3m-form-get, w3m-url-encode,
+	w3m-form-make-get-string, w3m-form-parse-region,
+	w3m-fontify-forms, w3m-form-replace, w3m-form-input,
+	w3m-form-submit, w3m-form-real-reset, w3m-form-reset,
+	w3m-fontify-bold, w3m-fontify-underline, w3m-fontify-images):
+	New function.
+	(w3m-fontify): Use new functions.
+	(w3m-mode-map): Add scroll-right and scroll-left.
+	(w3m-mode): Set t to `truncate-line'.
 
 2001-03-04  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
