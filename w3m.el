@@ -2586,15 +2586,14 @@ property (in XEmacs, it is an extent) with the value of a string which
 should be in the place where having to show a help message.  If you
 need to know what function will be made, use `macroexpand'."
   (if (featurep 'xemacs)
-      `(if (>= emacs-major-version 21)
-	   (function
-	    (lambda (extent)
-	      (if (and w3m-track-mouse
-		       (eq (extent-object extent) (current-buffer)))
-		  ,(w3m-make-url-decode-function
-		    (get-text-property (extent-start-position extent)
-				       ',property)
-		    url-decode)))))
+      (let ((str `(get-text-property (extent-start-position extent)
+				     ',property)))
+	`(if (>= emacs-major-version 21)
+	     (function
+	      (lambda (extent)
+		(if (and w3m-track-mouse
+			 (eq (extent-object extent) (current-buffer)))
+		    ,(w3m-make-url-decode-function str url-decode))))))
     `(if (>= emacs-major-version 21)
 	 (function
 	  (lambda (window object pos)
@@ -2606,7 +2605,7 @@ need to know what function will be made, use `macroexpand'."
 					(window-buffer window))
 		    url-decode))))))))
 
-(defmacro w3m-make-balloon-help (property)
+(defmacro w3m-make-balloon-help (property &optional url-decode)
   "Make a function returning a string used for the `balloon-help' message.
 Functions made are used only when emacs-w3m is running under XEmacs.
 It returns an interned symbol of a function.  PROPERTY is a symbol
@@ -2614,20 +2613,21 @@ It returns an interned symbol of a function.  PROPERTY is a symbol
 string which should be in the place where having to show a help
 message."
   (when (featurep 'xemacs)
-    `(let ((fn (intern (format "w3m-balloon-help-for-%s"
-			       ',property))))
-       (prog1
-	   fn
-	 (unless (fboundp fn)
-	   (defalias fn
-	     (lambda (extent)
-	       (if (and w3m-track-mouse
-			(eq (extent-object extent) (current-buffer)))
-		   (get-text-property (extent-start-position extent)
-				      ',property)))))
-	 (when (and (featurep 'bytecomp)
-		    (not (compiled-function-p (symbol-function fn))))
-	   (byte-compile fn))))))
+    (let ((str `(get-text-property (extent-start-position extent)
+				   ',property)))
+      `(let ((fn (intern (format "w3m-balloon-help-for-%s"
+				 ',property))))
+	 (prog1
+	     fn
+	   (unless (fboundp fn)
+	     (defalias fn
+	       (lambda (extent)
+		 (if (and w3m-track-mouse
+			  (eq (extent-object extent) (current-buffer)))
+		     ,(w3m-make-url-decode-function str url-decode)))))
+	   (when (and (featurep 'bytecomp)
+		      (not (compiled-function-p (symbol-function fn))))
+	     (byte-compile fn)))))))
 
 (defun w3m-message (&rest args)
   "Print a one-line message at the bottom of the screen.
@@ -2958,7 +2958,7 @@ For example:
 (defun w3m-fontify-anchors ()
   "Fontify anchor tags in the buffer which contains halfdump."
   (let ((help (w3m-make-help-echo w3m-href-anchor t))
-	(balloon (w3m-make-balloon-help w3m-href-anchor))
+	(balloon (w3m-make-balloon-help w3m-href-anchor t))
 	prenames start end)
     (goto-char (point-min))
     (setq w3m-max-anchor-sequence 0)	;; reset max-hseq
