@@ -121,7 +121,8 @@
 
      If you've installed APEL, FLIM or something in non-standard
      directories other than the default `load-path', you must specify
-     them using the --with-addpath option as follows:
+     them using the --with-addpath option as follows (you may also
+     include the Gnus directory in it separated with `:'):
 
          % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 
