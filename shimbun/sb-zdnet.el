@@ -42,7 +42,7 @@
 /\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>"))
     `(("comp" "news/past" ,(format template1 "news"))
       ("biztrends" "news/biztrends" ,(format template1 "news"))
-      ("gamespot" "gamespot" ,(format template2 "gsnews"))
+      ("gamespot" "games" ,(format template2 "gsnews"))
       ("enterprise" "enterprise/archives" ,(format template1 "enterprise"))
       ("broadband" "broadband/news" ,(format template1 "broadband"))
       ("macwire" "macwire/news" ,(format template1 "macwire"))

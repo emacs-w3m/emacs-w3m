@@ -1,3 +1,8 @@
+2003-03-06  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-zdnet.el (shimbun-zdnet-group-alist): Followed the
+	change of gamespot url.
+
 2003-03-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-elips.el: New file.
