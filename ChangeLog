@@ -1,3 +1,7 @@
+2005-02-19  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-ibm-dev.el (shimbun-get-headers): Fix index list reverse operation.
+
 2005-02-18  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/nnshimbun.el (nnshimbun-decode-group-name): New function.

@@ -61,7 +61,7 @@
       (while (re-search-forward "<a +href=\".*\\(library.+\\.html\\)\"" nil t)
 	(push (shimbun-expand-url (match-string-no-properties 1) baseurl)
 	      indexes))
-      (nreverse indexes)
+      (setq indexes (nreverse indexes))
       (catch 'stop
 	(while (or (not pages)
 		   (<= (incf count) pages))
