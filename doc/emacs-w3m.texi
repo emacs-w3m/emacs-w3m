@@ -1831,6 +1831,42 @@ safe (that is, you can display such images without modifying the
 @node SEMI MUAs
 @section Reading HTML mails in SEMI MUAs
 
+You can display HTML mails as human-readable, using emacs-w3m and
+@sc{semi} MUAs, for example, Wanderlust, T-gnus, etc.  Since those MUAs
+depend for MIME functions on @sc{semi} (and also @sc{flim}), we
+generically call them @sc{semi} MUAs.  Although @sc{semi} uses Emacs/W3
+for rendering HTML mails by default, it can easily be altered to
+emacs-w3m and it will make your cyber life still more comfortable.
+
+You simply need to put the following line in @file{~/.emacs} file:
+
+@lisp
+(require 'mime-w3m)
+@end lisp
+
+As the @code{mime-w3m} module rhymes with the @code{mime-w3} module by
+those names (the later is included in the @sc{semi} package), both are
+functionally alike.  There are some customizable variables related to
+the @code{mime-w3m} module:
+
+@table @code
+@item mime-w3m-display-inline-images
+If it is non-@code{nil}, images will be displayed inline in HTML mails.
+If it is the symbol @code{default} (which is the default) at the first
+time, the value of this variable will be replaced with the value of the
+@code{w3m-default-display-inline-images} variable.  You probably don't
+need to change this.
+
+@item mime-w3m-safe-url-regexp
+Regexp matching URLs which are considered to be safe.  The default value
+is @samp{"\\`cid:"} which means we consider that images included in a
+mail with the @samp{cid:} URLs are safe.  See also @ref{Gnus} about
+rogue attacks.
+
+@item mime-w3m-setup-hook
+A hook run just after setting up the cooperation of the @code{mime-w3m}
+module and @sc{semi}.  The default value is @code{nil}.
+@end table
 
 @node Frequently Asked Questions
 @chapter There isn't always an answer

@@ -1943,6 +1943,41 @@ Gnus が勝手に spammer のサイトに接続することはありません。
 @node SEMI MUAs
 @section SEMI MUA で HTML メールを読む
 
+Emacs-w3m と @sc{semi} MUA、例えば Wanderlust や T-gnus などを使うことに
+よって、HTML メールを人間が読めるように表示することができます。それら
+の MUA は MIME の機能を @sc{semi} (そしてさらに @sc{flim}) に頼っている
+ので、それらを @sc{semi} MUA と総称しています。@sc{semi} は HTML メール
+の描画にデフォルトで Emacs/W3 を使いますが、容易に emacs-w3m で置き換え
+ることが可能で、それによってあなたの電脳生活はより快適になるでしょう。
+
+単に以下の行を @file{~/.emacs} ファイルに入れれば良いのです:
+
+@lisp
+(require 'mime-w3m)
+@end lisp
+
+@code{mime-w3m} モジュールが @code{mime-w3} モジュールに韻を踏んでいるよ
+うに (後者は @sc{semi} パッケージに含まれています)、両者は機能的に似てい
+ます。@code{mime-w3m} モジュールに関連するいくつかのカスタマイズ可能な変
+数があります:
+
+@table @code
+@item mime-w3m-display-inline-images
+非-@code{nil} だったら、画像が HTML メールにインライン表示されます。最初
+に @code{default} というシンボルだったら (それがデフォルトです)、この変
+数の値は、変数 @code{w3m-default-display-inline-images} の値で置き換えら
+れます。たぶん、あなたはこれを変更する必要は無いでしょう。
+
+@item mime-w3m-safe-url-regexp
+安全であると考えられる URL にマッチする正規表現です。デフォルト値
+は @samp{"\\`cid:"} で、私たちは @samp{cid:} URL によってメールに含まれ
+た画像が安全だと考えていることを意味します。悪漢による攻撃について
+は @ref{Gnus} を参照して下さい。
+
+@item mime-w3m-setup-hook
+@code{mime-w3m} モジュールと @sc{SEMI} の強調動作を設定した直後に実行さ
+れるフックです。デフォルトは @code{nil} です。
+@end table
 
 @node Frequently Asked Questions
 @chapter 必ず答があるとは限らない
