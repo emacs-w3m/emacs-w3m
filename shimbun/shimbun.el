@@ -373,12 +373,7 @@ you want to use no database."
     (when (setq x-face
 		(or (and from
 			 (fboundp shimbun-x-face-database-function)
-			 (setq x-face
-			       (funcall shimbun-x-face-database-function from))
-			 (concat "X-Face: "
-				 (mapconcat 'identity
-					    (split-string x-face)
-					    "\nX-Face: ")))
+			 (funcall shimbun-x-face-database-function from))
 		    (shimbun-x-face shimbun)))
       (insert x-face)
       (unless (bolp)
@@ -394,12 +389,16 @@ you want to use no database."
 
 (defun shimbun-bbdb-get-x-face (person)
   "Search a face of a PERSON from LSDB.  When missing it, return nil."
-  (setq person (car (mail-extract-address-components person)))
   (let (x)
-    (and (setq x (bbdb-search-simple nil person))
+    (and (setq x (bbdb-search-simple
+		  nil
+		  (cadr (mail-extract-address-components person))))
 	 (setq x (bbdb-get-field x 'face))
 	 (not (zerop (length x)))
-	 x)))
+	 (concat "X-Face: "
+		 (mapconcat 'identity
+			    (split-string x)
+			    "\nX-Face: ")))))
 
 (eval-when-compile
   (condition-case nil
@@ -410,13 +409,16 @@ you want to use no database."
 
 (defun shimbun-lsdb-get-x-face (person)
   "Return a face of a PERSON from BBDB.  When missing it, return nil."
-  (setq person (car (mail-extract-address-components person)))
   (lsdb-maybe-load-hash-tables)
   (let (x)
-    (and (setq x (car (lsdb-lookup-records person)))
-	 (setq x (cadr (assoc 'x-face x)))
+    (and (setq x (car (lsdb-lookup-records
+		       (car (mail-extract-address-components person)))))
+	 (setq x (cadr (assq 'x-face x)))
 	 (not (zerop (length x)))
-	 x)))
+	 (concat "X-Face: "
+		 (mapconcat 'identity
+			    (split-string x)
+			    "\n ")))))
 
 ;;; Implementation of Shimbun API.
 
