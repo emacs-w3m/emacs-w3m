@@ -51,7 +51,7 @@
 					 header &optional outbuf)
   (let* ((count 0)
 	 (baseurl (shimbun-url-internal shimbun))
-	 case-fold-search date-list pos headers)
+	 case-fold-search date-list headers)
     (catch 'stop
       (with-temp-buffer
 	(shimbun-retrieve-url baseurl 'reload)
@@ -63,36 +63,31 @@
 	(or (search-forward "<a href=\"whatsold.htm\">[これ以前の更新履歴]</a>")
 	    (throw 'stop nil))
 	(beginning-of-line)
-	(setq pos (point))
 	(while (re-search-backward
 		"<a href=\"#\\([0-9]+/[0-9]+/[0-9]+\\)\">\\[\\1\\]</a>"
 		nil t nil)
-	  (setq date-list (cons (match-string 1) date-list))
-	  (delete-region pos (point))
-	  (setq pos (point)))
-	(setq headers (shimbun-muchy-get-headers shimbun date-list)
+	  (setq date-list (cons (match-string 1) date-list)))
+	(setq headers (shimbun-muchy-get-headers shimbun headers date-list)
 	      date-list nil)
-	(shimbun-retrieve-url (concat baseurl "whatsold.html") 'reload)	
+	(erase-buffer)
+	(shimbun-retrieve-url (concat baseurl "whatsold.htm") 'reload)	
 	(subst-char-in-region (point-min) (point-max) ?\t ?  t)
 	(goto-char (point-min))
 	(save-excursion
-	  (while (or
-		  (re-search-forward
+	  (while (re-search-forward
 		   "<p><a name=\"\\([0-9][0-9][0-9][0-9]/[0-9][0-9]*/[0-9][0-9]*\\)\"></a></p>"
 		   nil t nil)
-		  (throw 'stop nil))
 	    (setq date-list (cons (match-string 1) date-list))))
 	(setq date-list (nreverse date-list))
-	(setq headers (or (shimbun-muchy-get-headers shimbun date-list)
-			  headers))))
+	(setq headers (shimbun-muchy-get-headers shimbun headers date-list))))
     headers))
 
-(defun shimbun-muchy-get-headers (shimbun date-list)
+(defun shimbun-muchy-get-headers (shimbun headers date-list)
   (let* ((count 0)
 	 (from (shimbun-from-address-internal shimbun))
 	 (group (shimbun-current-group-internal shimbun))
 	 (baseurl (shimbun-url-internal shimbun))
-	 case-fold-search date headers)
+	 case-fold-search date)
     (while (and date-list
 		(search-forward (format "<a name=\"%s\">" (car date-list))
 				nil t nil))
