@@ -1,3 +1,10 @@
+2003-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-popup-frame-p): Make it accept the `interactive-p'
+	argument.
+	(w3m-examine-command-line-args): New function.
+	(w3m): Use it.
+
 2003-09-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-favicon.el: Bind some external variables when compiling.

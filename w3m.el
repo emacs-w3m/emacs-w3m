@@ -2213,12 +2213,14 @@ otherwise return an alist."
 	   (setq params (cddr params)))
 	 (nreverse alist)))))
 
-(defmacro w3m-popup-frame-p (&optional force)
+(defmacro w3m-popup-frame-p (&optional force interactive-p)
   "Return non-nil if the command `w3m' should popup a new frame.  If
 optional FORCE is non-nil, treat as if the last command is called
 interactively."
   (list 'and 'w3m-pop-up-frames
-	(list 'or force '(interactive-p))
+	(list 'or force (if interactive-p
+			    interactive-p
+			  '(interactive-p)))
 	(if (featurep 'xemacs)
 	    '(device-on-window-system-p)
 	  'window-system)))
@@ -6530,6 +6532,33 @@ If input is nil, use default content-type on w3m."
 	    (unless (string= type "") type)))
     (w3m-redisplay-this-page arg)))
 
+(defun w3m-examine-command-line-args ()
+  "Return a url string if it seems that the `w3m' command is invoked from
+the command line like: ``emacs -f w3m'' or ``emacs -f w3m url''."
+  (let ((url (car command-line-args-left))
+	args num)
+    (if url
+	(if (and (setq args (memq url command-line-args))
+		 (>= (setq num (- (length command-line-args) (length args) 1))
+		     2)
+		 (equal (nth num command-line-args) "w3m")
+		 (equal (nth (1- num) command-line-args) "-f"))
+	    (progn
+	      (setq command-line-args-left (cdr command-line-args-left))
+	      (setcdr (nthcdr (- num 2) command-line-args)
+		      (nthcdr (+ num 2) command-line-args)))
+	  (set url nil))
+      (if (and (setq args (member "w3m" command-line-args))
+	       (equal
+		(nth (setq num (- (length command-line-args) (length args) 1))
+		     command-line-args)
+		"-f"))
+	  (progn
+	    (setq url (or w3m-home-page "about:"))
+	    (setcdr (nthcdr (1- num) command-line-args)
+		    (nthcdr (+ num 2) command-line-args)))))
+    url))
+
 ;;;###autoload
 (defun w3m (&optional url new-session interactive-p)
   "Visit the World Wide Web page using the external command w3m, w3mmee
@@ -6566,13 +6595,18 @@ will not popup a frame.
 Optional NEW-SESSION is intended to be used by the command
 `w3m-goto-url-new-session' to create a new session."
   (interactive
-   (let ((default (if (w3m-alive-p) 'popup w3m-home-page)))
+   (let ((url (w3m-examine-command-line-args)))
      (list
-      (if current-prefix-arg
-	  default
-	(w3m-input-url nil nil default w3m-quick-start))
-      nil ;; new-session
-      t))) ;; interactive-p
+      ;; url
+      (or url
+	  (let ((default (if (w3m-alive-p) 'popup w3m-home-page)))
+	    (if current-prefix-arg
+		default
+	      (w3m-input-url nil nil default w3m-quick-start))))
+      ;; new-session
+      nil
+      ;; interactive-p
+      (not url))))
   (let ((nofetch (eq url 'popup))
 	(buffer (unless new-session
 		  (w3m-alive-p)))
@@ -6584,7 +6618,7 @@ Optional NEW-SESSION is intended to be used by the command
 	     (select-frame frame)
 	     (focus-frame frame))))
 	(params (w3m-pop-up-frame-parameters))
-	(popup-frame-p (w3m-popup-frame-p new-session))
+	(popup-frame-p (w3m-popup-frame-p new-session interactive-p))
 	window frame)
     (unless (and (stringp url)
 		 (> (length url) 0))
