@@ -177,151 +177,109 @@ more information.")
 
 (eval-when-compile
   ;; Internal macros.  They are not serviceable in the other modules.
-
-  (defmacro w3m-history-current-1 (position)
-    "Return a history element located in the POSITION of `w3m-history'."
-    `(let* ((position ,position)
-	    (element (nth (pop position) (cdr w3m-history))))
-       (while position
-	 (setq element (nth (pop position) (cddr element))
-	       element (nth (pop position) element)))
-       element))
-
-  (defmacro w3m-history-save-position (not-save &rest forms)
-    "Save the position pointers of `w3m-history' when NOT-SAVE is nil and
-evaluate FORMS like `progn'."
-    `(let ((oposition (unless ,not-save
-			(let ((position (car w3m-history)))
-			  (list (copy-sequence (car position))
-				(copy-sequence (cadr position))
-				(copy-sequence (caddr position)))))))
-       (prog1
-	   (progn
-	     ,@forms)
-	 (when oposition
-	   (setcar w3m-history oposition)))))
-  (put 'w3m-history-save-position 'lisp-indent-function 1)
-
-  (defmacro w3m-history-previous-position (position &rest forms)
-    "Return a position pointer pointing a previous one of a history element
-to whom POSITION points.  POSITION is a list of integers mentioned in
-the `w3m-history' variable documentation.  There is no side effect to
-modify the value of a given argument.  FORMS will be evaluated after
-examining a previous position."
-    `(let ((position ,position)
-	   class number previous)
-       (when position
-	 (setq class (1- (length position))
-	       number (nth class position))
-	 (if (zerop number)
-	     ;; This POSITION is the beginning of the branch.
-	     (unless (zerop class)
-	       ;; There's a parent.
-	       (setq previous (copy-sequence position))
-	       (setcdr (nthcdr (- class 2) previous) nil))
-	   ;; This POSITION is not the beginning of the branch.
-	   (setq previous (copy-sequence position))
-	   (setcar (nthcdr class previous) (1- number))))
-       ,@forms
-       previous))
-
-  (defmacro w3m-history-next-position (position &rest forms)
-    "Return a position pointer pointing a next one of a history element to
-whom POSITION points.  POSITION is a list of integers mentioned in the
-`w3m-history' variable documentation.  There is no side effect to
-modify the value of a given argument.  FORMS will be evaluated after
-examining a next position."
-    `(let ((position ,position)
-	   next branch element number)
-       (when position
-	 (setq next position
-	       branch (cdr w3m-history)
-	       element (nth (pop next) branch))
-	 (while next
-	   (setq branch (nth (pop next) (cddr element))
-		 element (nth (pop next) branch)))
-	 (cond ((nth 2 element)
-		;; There're branches sprouted from the POSITION.
-		(setq next (copy-sequence position))
-		(setcdr (nthcdr (1- (length next)) next)
-			(list (- (length element) 3) 0)))
-	       ((> (length branch)
-		   (setq number (1+ (nth (1- (length position)) position))))
-		;; This POSITION is not the end of the branch.
-		(setq next (copy-sequence position))
-		(setcar (nthcdr (1- (length next)) next) number))))
-       ,@forms
-       next))
-
-  (defmacro w3m-history-forward-1 ()
-    "Move one element forward in the history and return a position of the
-element.  The position pointers of `w3m-history' will be replaced with
-new values."
-    '(w3m-history-next-position
-      (caddar w3m-history)
-      ;; Shift left the position pointers.
-      (setcar w3m-history (nconc (cdar w3m-history) (list next)))))
-
-  (defmacro w3m-history-backward-1 ()
-    "Move one element backward in the history and return a position of the
-element.  The position pointers of `w3m-history' will be replaced with
-new values."
-    '(w3m-history-previous-position
-      (caar w3m-history)
-      ;; Shift right the position pointers.
-      (setcdr (cdar w3m-history) nil)
-      (setcar w3m-history (cons previous (car w3m-history)))))
-
-  (defmacro w3m-history-modify-properties (old new &optional replace)
-    "Merge NEW plist into OLD plist and return a modified plist.  If
-REPLACE is non-nil, OLD will be replaced by NEW.  The return value
-will not contain keyword-value pairs whose value is nil."
-    `(let ((properties ,new)
-	   (rest (unless ,replace
-		   ,old)))
-       (if rest
-	   (progn
-	     (while properties
-	       (setq rest (plist-put rest
-				     (car properties) (cadr properties))
-		     properties (cddr properties)))
-	     (while rest
-	       (when (cadr rest)
-		 (setq properties (cons (cadr rest)
-					(cons (car rest) properties))))
-	       (setq rest (cddr rest)))
-	     (nreverse properties))
-	 (while properties
-	   (when (cadr properties)
-	     (setq rest (cons (cadr properties)
-			      (cons (car properties) rest))))
-	   (setq properties (cddr properties)))
-	 (nreverse rest))))
-
-  (defmacro w3m-history-with-element (url set-current
-					  error-message-if-no-elements
+  (defmacro w3m-history-with-element (url error-message-if-no-elements
 					  &rest forms)
     "Bind the variable `element' and evaluate FORMS like `progn'.  The
 variable `element' will have a history element which comes from
 `w3m-history-flat'.  URL specifies the position in the history
-structure, and defaults to the current position.  If SET-CURRENT is
-non-nil, the history element corresponding to URL will be set as the
-current history element.  If history element is not available, signal
-an error with ERROR-MESSAGE-IF-NO-ELEMENTS."
+structure, and defaults to the current position.  If history element
+is not available, signal an error with ERROR-MESSAGE-IF-NO-ELEMENTS."
     `(let (element)
-       (if (let ((url ,url)
-		 (set-current ,set-current))
+       (if (let ((url ,url))
 	     (if url
-		 (setq element (w3m-history-assoc url set-current))
+		 (setq element (w3m-history-assoc url))
 	       (and (setq element (w3m-history-current))
-		    (setq element (w3m-history-assoc (car element)
-						     set-current)))))
+		    (setq element (w3m-history-assoc (car element))))))
 	   (progn
 	     ,@ forms)
 	 (error "%s" ,error-message-if-no-elements))))
-  (put 'w3m-history-with-element 'lisp-indent-function 'defun))
+  (put 'w3m-history-with-element 'lisp-indent-function 'defun)
+
+  (defmacro w3m-history-set-current (position)
+    "Set POSITION in the `w3m-history' variable so that it is the current
+history position."
+    `(setcar w3m-history (w3m-history-regenerate-pointers ,position))))
 
 ;; Functions for internal use.
+(defun w3m-history-current-1 (position)
+  "Return a history element located in the POSITION of `w3m-history'."
+  (let ((element (nth (pop position) (cdr w3m-history))))
+    (while position
+      (setq element (nth (pop position) (cddr element))
+	    element (nth (pop position) element)))
+    element))
+
+(defun w3m-history-previous-position (position)
+  "Return a position pointer pointing a previous one of a history element
+to whom POSITION points.  POSITION is a list of integers mentioned in
+the `w3m-history' variable documentation.  There is no side effect to
+modify the value of a given argument."
+  (let (class number previous)
+    (when position
+      (setq class (1- (length position))
+	    number (nth class position))
+      (if (zerop number)
+	  ;; This POSITION is the beginning of the branch.
+	  (unless (zerop class)
+	    ;; There's a parent.
+	    (setq previous (copy-sequence position))
+	    (setcdr (nthcdr (- class 2) previous) nil))
+	;; This POSITION is not the beginning of the branch.
+	(setq previous (copy-sequence position))
+	(setcar (nthcdr class previous) (1- number))))
+    previous))
+
+(defun w3m-history-next-position (position)
+  "Return a position pointer pointing a next one of a history element to
+whom POSITION points.  POSITION is a list of integers mentioned in the
+`w3m-history' variable documentation.  There is no side effect to
+modify the value of a given argument."
+  (let (next branch element number)
+    (when position
+      (setq next position
+	    branch (cdr w3m-history)
+	    element (nth (pop next) branch))
+      (while next
+	(setq branch (nth (pop next) (cddr element))
+	      element (nth (pop next) branch)))
+      (cond ((nth 2 element)
+	     ;; There're branches sprouted from the POSITION.
+	     (setq next (copy-sequence position))
+	     (setcdr (nthcdr (1- (length next)) next)
+		     (list (- (length element) 3) 0)))
+	    ((> (length branch)
+		(setq number (1+ (nth (1- (length position)) position))))
+	     ;; This POSITION is not the end of the branch.
+	     (setq next (copy-sequence position))
+	     (setcar (nthcdr (1- (length next)) next) number))))
+    next))
+
+(defun w3m-history-modify-properties (old new &optional replace)
+  "Merge NEW plist into OLD plist and return a modified plist.  If
+REPLACE is non-nil, OLD will be replaced by NEW.  The return value
+will not contain keyword-value pairs whose value is nil."
+  (let ((properties new)
+	(rest (unless replace
+		old)))
+    (if rest
+	(progn
+	  (while properties
+	    (setq rest (plist-put rest
+				  (car properties) (cadr properties))
+		  properties (cddr properties)))
+	  (while rest
+	    (when (cadr rest)
+	      (setq properties (cons (cadr rest)
+				     (cons (car rest) properties))))
+	    (setq rest (cddr rest)))
+	  (nreverse properties))
+      (while properties
+	(when (cadr properties)
+	  (setq rest (cons (cadr properties)
+			   (cons (car properties) rest))))
+	(setq properties (cddr properties)))
+      (nreverse rest))))
+
 (defun w3m-history-seek-properties (url)
   "Seek properties corresponding to URL in all the emacs-w3m buffers
 except for the current-buffer."
@@ -370,45 +328,51 @@ information."
   (when w3m-history
     (w3m-history-current-1 (cadar w3m-history))))
 
-(defun w3m-history-forward (&optional count set-current)
+(defun w3m-history-forward (&optional count)
   "Move forward COUNT times in the history structure and return a cons of
 a new history element and new position pointers of the history.
 If COUNT is omitted, it defaults to number one.  If COUNT is negative,
 moving backward is performed.  If there is no room in the history,
-move as far as possible.  The position pointers of `w3m-history' will
-contain new values when SET-CURRENT is non-nil."
+move as far as possible."
   (when w3m-history
-    (w3m-history-save-position set-current
+    (let (position)
       (cond ((or (unless count
 		   (setq count 1))
 		 (> count 0))
-	     (while (and (w3m-history-forward-1)
-			 (> (setq count (1- count)) 0))))
+	     (while (and (> count 0)
+			 (setq position (caddar w3m-history)))
+	       (w3m-history-set-current position)
+	       (decf count)))
 	    ((< count 0)
-	     (while (and (w3m-history-backward-1)
-			 (< (setq count (1+ count)) 0)))))
-      (cons (w3m-history-current-1 (cadar w3m-history))
-	    (car w3m-history)))))
+	     (while (and (< count 0)
+			 (setq position (caar w3m-history)))
+	       (w3m-history-set-current position)
+	       (incf count)))))
+    (cons (w3m-history-current-1 (cadar w3m-history))
+	  (car w3m-history))))
 
-(defun w3m-history-backward (&optional count set-current)
+(defun w3m-history-backward (&optional count)
   "Move backward COUNT times in the history structure and return a cons
 of a new history element and new position pointers of the history.
 If COUNT is omitted, it defaults to number one.  If COUNT is negative,
 moving forward is performed.  If there is no room in the history, move
-as far as possible.  The position pointers of `w3m-history' will
-contain new values when SET-CURRENT is non-nil."
+as far as possible."
   (when w3m-history
-    (w3m-history-save-position set-current
+    (let (position)
       (cond ((or (unless count
 		   (setq count 1))
 		 (> count 0))
-	     (while (and (w3m-history-backward-1)
-			 (> (setq count (1- count)) 0))))
+	     (while (and (> count 0)
+			 (setq position (caar w3m-history)))
+	       (w3m-history-set-current position)
+	       (decf count)))
 	    ((< count 0)
-	     (while (and (w3m-history-forward-1)
-			 (< (setq count (1+ count)) 0)))))
-      (cons (w3m-history-current-1 (cadar w3m-history))
-	    (car w3m-history)))))
+	     (while (and (< count 0)
+			 (setq position (caddar w3m-history)))
+	       (w3m-history-set-current position)
+	       (incf count)))))
+    (cons (w3m-history-current-1 (cadar w3m-history))
+	  (car w3m-history))))
 
 (defun w3m-history-regenerate-pointers (position)
   "Regenerate the `(PREV CURRENT NEXT)' style position pointers only by
@@ -484,19 +448,17 @@ if it is specified.  It defaults to the beginning of a history."
 	  (setcar (cdr rest) (cadr element)))
 	(if newpos
 	    (setq w3m-history (cons newpos w3m-history))
-	  (setq w3m-history (cons (list nil nil (list 0)) w3m-history))
-	  (w3m-history-forward-1))
+	  (push 'dummy w3m-history)
+	  (w3m-history-set-current (list 0)))
 	w3m-history)
     (setq w3m-history nil)))
 
-(defun w3m-history-assoc (url &optional set-current properties replace-props)
+(defun w3m-history-assoc (url &optional properties replace-props)
   "Return a history element if URL is `equal' to the `car' of an element
 of `w3m-history-flat'.  Elements of the return value is actually the
-contents of the history structure.  If SET-CURRENT is non-nil, the
-history element corresponding to URL will be set as the current
-history element.  If REPLACE-PROPS is non-nil, existing properties
-will be completely replaced with PROPERTIES, otherwise PROPERTIES will
-be merged into existing properties."
+contents of the history structure.  If REPLACE-PROPS is non-nil,
+existing properties will be completely replaced with PROPERTIES,
+otherwise PROPERTIES will be merged into existing properties."
   (let ((element (assoc url w3m-history-flat)))
     (prog1
 	element
@@ -510,10 +472,7 @@ be merged into existing properties."
 		 (setcdr shared-plist (cdr properties)))
 		((or shared-plist properties)
 		 (setcar (cdr element) properties)
-		 (w3m-history-share-properties url properties))))
-	(when set-current
-	  (setcar w3m-history
-		  (w3m-history-regenerate-pointers (nth 2 element))))))))
+		 (w3m-history-share-properties url properties))))))))
 
 (defun w3m-history-push (url &optional properties replace-props)
   "Push URL and PROPERTIES onto both `w3m-history' and `w3m-history-flat'
@@ -545,16 +504,20 @@ for more information."
 
      ((or (equal url (car (w3m-history-current)))
 	  (and w3m-history-reuse-history-elements
-	       (w3m-history-assoc url t properties replace-props)))
+	       (setq element
+		     (w3m-history-assoc url properties replace-props))))
       ;; URL has been registered in the history.
-      (car w3m-history))
+      (prog1
+	  (setq position (caddr (or element
+				    (w3m-history-assoc url))))
+	(w3m-history-set-current position)))
 
      (t
       ;; sprout a new history element.
       (setq shared-plist
 	    (if (and (not w3m-history-reuse-history-elements)
 		     (setq element (w3m-history-assoc
-				    url nil properties replace-props)))
+				    url properties replace-props)))
 		;; URL has been registered in the history structure.
 		(cadr element)
 	      (w3m-history-seek-properties url)))
@@ -611,33 +574,30 @@ buffer."
 	(setq w3m-history-flat (nreverse rest)))
       (w3m-history-tree position))))
 
-(defun w3m-history-plist-get (keyword &optional url set-current local)
+(defun w3m-history-plist-get (keyword &optional url local)
   "Extract a value from the properties of a history element.  KEYWORD is
 usually a symbol.  This function returns the value corresponding to
 the KEYWORD, or nil if KEYWORD is not one of the keyword on the
 properties.  If URL is omitted, it is performed on the current history
-element.  If SET-CURRENT is non-nil, the history element corresponding
-to URL will be set as the current history element.  LOCAL specifies
-whether to access the buffer-local properties."
+element.  LOCAL specifies whether to access the buffer-local
+properties."
   (unless url
     (setq url (car (w3m-history-current))))
   (let (element)
     (if (and url
-	     (setq element (w3m-history-assoc url set-current)))
+	     (setq element (w3m-history-assoc url)))
 	(plist-get (if local
 		       (cadddr element)
 		     (cadr element))
 		   keyword))))
 
-(defun w3m-history-plist-put (keyword value &optional url set-current local)
+(defun w3m-history-plist-put (keyword value &optional url local)
   "Change value in the properties of a history element of KEYWORD to
 VALUE, and return the new properties.  KEYWORD is usually a symbol and
 VALUE is any object.  If URL is omitted, it is performed on the
-current history element.  If SET-CURRENT is non-nil, the history
-element corresponding to URL will be set as the current history
-element.  LOCAL specifies whether to access the buffer-local
-properties."
-  (w3m-history-with-element url set-current
+current history element.  LOCAL specifies whether to access the
+buffer-local properties."
+  (w3m-history-with-element url
     "No history element found to be modified"
     (if local
 	(let ((properties (w3m-history-modify-properties
@@ -658,14 +618,13 @@ properties."
 					properties)
 	  properties)))))
 
-(defun w3m-history-add-properties (properties &optional url set-current local)
+(defun w3m-history-add-properties (properties &optional url local)
   "Add each keyword-value pair of PROPERTIES to the properties of a
 history element.  Returns t if any property was changed, nil
 otherwise.  If URL is omitted, it is performed on the current history
-element.  If SET-CURRENT is non-nil, the history element corresponding
-to URL will be set as the current history element.  LOCAL specifies
-whether to access the buffer-local properties."
-  (w3m-history-with-element url set-current
+element.  LOCAL specifies whether to access the buffer-local
+properties."
+  (w3m-history-with-element url
     "No history element found to add properties"
     (let* ((former (if local
 		       (cadddr element)
@@ -700,16 +659,14 @@ whether to access the buffer-local properties."
 					  rest)))
 	t))))
 
-(defun w3m-history-remove-properties (properties &optional url set-current
-						 local)
+(defun w3m-history-remove-properties (properties &optional url local)
   "Remove each keyword of the keyword-value pair of PROPERTIES from the
 properties of a history element.  The values in PROPERTIES are ignored
 \(treated as nil).  Returns t if any property was changed, nil
 otherwise.  If URL is omitted, it is performed on the current history
-element.  If SET-CURRENT is non-nil, the history element corresponding
-to URL will be set as the current history element.  LOCAL specifies
-whether to access the buffer-local properties."
-  (w3m-history-with-element url set-current
+element.  LOCAL specifies whether to access the buffer-local
+properties."
+  (w3m-history-with-element url
     "No history element found to remove properties"
     (let* ((former (if local
 		       (cadddr element)
@@ -743,14 +700,12 @@ whether to access the buffer-local properties."
 					      nil)))
 	    t))))))
 
-(defun w3m-history-rename-url (new-url
-			       &optional old-url set-current this-buffer)
+(defun w3m-history-rename-url (new-url &optional old-url this-buffer)
   "Rename the name of the url in a history element with NEW-URL.  If OLD-
 URL is omitted, renaming is performed on the current history element.
-If SET-CURRENT is non-nil, the history element corresponding to URL
-will be set as the current history element.  If THIS-BUFFER is nil,
-renaming will be done for all the emacs-w3m buffers."
-  (w3m-history-with-element old-url set-current
+If THIS-BUFFER is nil, renaming will be done for all the emacs-w3m
+buffers."
+  (w3m-history-with-element old-url
     "No history element found to be renamed"
     (setcar element new-url)
     (setcar (w3m-history-current-1 (caddr element)) new-url))
@@ -773,7 +728,7 @@ defaults to the current link."
   (when (cadar w3m-history)
     (w3m-history-add-properties (list :window-start (window-start)
 				      :position (point))
-				url nil t)
+				url t)
     (when (interactive-p)
       (message "The current cursor position has registered"))))
 
@@ -782,11 +737,10 @@ defaults to the current link."
 current link."
   (interactive)
   (when (cadar w3m-history)
-    (let ((start (w3m-history-plist-get :window-start url nil t))
+    (let ((start (w3m-history-plist-get :window-start url t))
 	  position)
       (cond ((and start
-		  (setq position (w3m-history-plist-get :position
-							url nil t)))
+		  (setq position (w3m-history-plist-get :position url t)))
 	     (set-window-start nil start)
 	     (goto-char position))
 	    ((interactive-p)

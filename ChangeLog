@@ -1,3 +1,40 @@
+2003-08-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-current-1): Redefine as a function
+	rather than a macro.
+	(w3m-history-previous-position): Ditto.
+	(w3m-history-next-position): Ditto.
+	(w3m-history-modify-properties): Ditto.
+	(w3m-history-save-position): Abolish the macro.
+	(w3m-history-forward-1): Ditto.
+	(w3m-history-backward-1): Ditto.
+	(w3m-history-with-element): Abolish the `set-current' argument.
+	(w3m-history-assoc): Ditto.
+	(w3m-history-plist-get): Ditto.
+	(w3m-history-plist-put): Ditto.
+	(w3m-history-add-properties): Ditto.
+	(w3m-history-remove-properties): Ditto.
+	(w3m-history-rename-url): Ditto.
+	(w3m-history-set-current): New macro.
+	(w3m-history-forward): Abolish the `set-current' argument; use
+	`w3m-history-set-current'.
+	(w3m-history-backward): Ditto.
+	(w3m-history-tree): Use `w3m-history-set-current' instead of
+	`w3m-history-forward-1'.
+	(w3m-history-push): Use `w3m-history-set-current'.
+	(w3m-history-store-position): Don't specify the `set-current'
+	argument to `w3m-history-add-properties'.
+	(w3m-history-restore-position): Don't specify the `set-current'
+	argument to `w3m-history-plist-get'.
+
+	* w3m.el (w3m-view-previous-page): Don't specify the `set-current'
+	argument to `w3m-history-plist-get'.
+	(w3m-goto-url): Don't specify the `set-current' argument to
+	`w3m-history-plist-put', `w3m-history-plist-get',
+	`w3m-history-remove-properties' and `w3m-history-add-properties'.
+	(w3m-reload-this-page): Don't specify the `set-current' argument
+	to `w3m-history-plist-get' and `w3m-history-remove-properties'.
+
 2003-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-view-this-url-1): Fix a window configuration if a
