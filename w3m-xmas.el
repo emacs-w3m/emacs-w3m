@@ -1,6 +1,6 @@
 ;;; w3m-xmas.el --- The stuffs to use emacs-w3m on XEmacs
 
-;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -397,19 +397,25 @@ and its cdr element is used as height."
 		  (w3m-make-glyph resized fmt)))))))))
 
 (defun w3m-insert-image (beg end image &rest args)
-  "Display image on the current buffer.
-Buffer string between BEG and END are replaced with IMAGE."
-  (let (extent glyphs)
-    (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
-      (push (extent-end-glyph extent) glyphs)
-      (set-extent-end-glyph extent nil))
+  "Display IMAGE in the current buffer.
+A buffer string between BEG and END are replaced with IMAGE."
+  (let (glyphs)
+    (map-extents
+     (lambda (extent maparg)
+       (push (extent-end-glyph extent) glyphs)
+       (set-extent-end-glyph extent nil)
+       nil)
+     nil beg beg nil nil 'w3m-xmas-icon)
+    ;; Display an image on the right hand.
     (push image glyphs)
-    ;; Image on the right is displayed.
     (when (extent-at end nil 'invisible nil 'at)
       (setq end (next-single-property-change end 'invisible))
-      (while (setq extent (extent-at end nil 'w3m-xmas-icon extent 'at))
-	(push (extent-end-glyph extent) glyphs)
-	(set-extent-end-glyph extent nil)))
+      (map-extents
+       (lambda (extent maparg)
+	 (push (extent-end-glyph extent) glyphs)
+	 (set-extent-end-glyph extent nil)
+	 nil)
+       nil end end nil nil 'w3m-xmas-icon))
     (set-extent-properties (make-extent beg end) (list 'w3m-xmas-icon t
 						       'invisible t))
     (while glyphs
@@ -418,14 +424,11 @@ Buffer string between BEG and END are replaced with IMAGE."
 				   'end-glyph (pop glyphs))))))
 
 (defun w3m-remove-image (beg end)
-  "Remove an image which is inserted between BEG and END."
-  (let (extent extents)
-    (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
-      (setq extents (push extent extents)))
-    (while (setq extent (extent-at end nil 'w3m-xmas-icon extent 'at))
-      (setq extents (push extent extents)))
-    (dolist (extent extents)
-      (delete-extent extent))))
+  "Remove images between BEG and END."
+  (map-extents (lambda (extent maparg)
+		 (delete-extent extent)
+		 nil)
+	       nil beg end nil 'end-closed 'w3m-xmas-icon))
 
 (defun w3m-image-type-available-p (image-type)
   "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
