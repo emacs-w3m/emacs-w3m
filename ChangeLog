@@ -1,3 +1,8 @@
+2001-09-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-goto-url): Speed up the action to refer a name
+	anchor in the same document.
+
 2001-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-copy-local-variables): Simplified.
