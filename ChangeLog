@@ -1,3 +1,12 @@
+2004-11-28  David Hansen  <david.hansen@gmx.net>
+
+	* shimbun/sb-heise.el (shimbun-heise-content-end): Improve regexp.
+	(sb-heise-tp-url-re, sb-heise-tp-auth-date-re): New constants.
+	(shimbun-heise-get-telepolis-headers): Use them; set author's name
+	and date; replace shimbun-make-header with shimbun-create-header.
+	(shimbun-heise-wash-telepolis-article): Don't set author's name
+	and date here.
+
 2004-11-25  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
 	* shimbun/sb-exconn.el (shimbun-exconn-content-start): Synchronize.
@@ -125,6 +134,12 @@
 2004-09-21  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-antenna.el (w3m-about-antenna): Revert 2004-09-16 change.
+
+2004-09-19  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* shimbun/sb-heise.el (shimbun-heise-content-start,
+	shimbun-heise-wash-newsticker-article,
+	shimbun-heise-wash-newsticker-article): Relax regexps.
 
 2004-09-16  Hideyuki SHIRAI  <shirai@meadowy.org>
 

@@ -38,9 +38,9 @@
 
 
 (defvar shimbun-heise-content-start
-  "\\(<!-- Meldung -->\\|<!-- INHALT -->\\)")
+  "\\(<!-- Meldung -->\\|<!-- INHALT -->\\|<HEISETEXT>\\)")
 (defvar shimbun-heise-content-end
-  "\\(<!-- untere News-Navigation -->\\|<!-- INHALT -->\\)")
+  "\\(<!-- untere News-Navigation -->\\|<!-- INHALT -->\\|</HEISETEXT>\\)")
 
 (defvar shimbun-heise-x-face-alist
   '(("default" . "X-Face: #RVD(kjrS;RY\"2yH]w.1U,ZC_DbR,9{tQnhyYe|,\\J)\"\
@@ -80,26 +80,44 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
     headers))
 
 
+(defconst sb-heise-tp-url-re
+  (concat "<p[^>]*class=\"inhalt-head\"[^>]*>"
+          "[^<]*<a href=\"\\([^\"]*\\)\"[^>]*>"
+          "\\(.*?\n?.*?\\)</a></p>"))
+
+(defconst sb-heise-tp-auth-date-re
+  (concat "<p[^>]*class=\"inhalt-autor\"[^>]*>"
+          "\\([^<]+\\)<span[^>]*class=\"date\"[^>]*>"
+          "[^<]*\\([0-9]+\\.[0-9]+\\.[0-9]+\\)[^<]*"
+          "</span>"))
+
 (defun shimbun-heise-get-telepolis-headers (shimbun)
-  (let ((regexp-begin "<!-- NEWS-ENTRY -->")
-	(regexp-article "<a href=\"\\([^\"]+\\)\">\\([^<]+\\)</a>")
-	(from "Heise Telepolis <invalid@heise.de>")
-	(date "") (id) (url) (subject) (headers))
+  (let (headers)
     (catch 'stop
-      (while (re-search-forward regexp-begin nil t nil)
-	(when (re-search-forward regexp-article nil t nil)
-	  (setq url (w3m-expand-url (match-string 1) shimbun-heise-url))
-	  (setq subject (match-string 2))
-	  (string-match "/[0-9]+/" url)
-	  (setq id (concat "<telepolis" (match-string 0 url) "@heise.de>"))
-	  (when (shimbun-search-id shimbun id)
-	    (throw 'stop nil))
-	  (push (shimbun-make-header
-		 0 (shimbun-mime-encode-string subject)
-		 (shimbun-mime-encode-string from)
-		 date id "" 0 0 url)
-		headers))))
-    headers))
+      (while (re-search-forward sb-heise-tp-url-re nil t nil)
+        (let ((url (match-string 1))
+              (subject (match-string 2)))
+          (when (re-search-forward sb-heise-tp-auth-date-re nil t nil)
+            (let ((author (concat (match-string 1) " <invalid@heise.de>"))
+                  (date (match-string 2)) (id))
+              (setq url (w3m-expand-url url shimbun-heise-url))
+              (string-match "/[0-9]+/[0-9]+/" url)
+              (setq id (concat "<telepolis" (match-string 0 url) "@heise.de>"))
+              (when (shimbun-search-id shimbun id)
+                (throw 'stop nil))
+              (string-match "\\([0-9]+\\)\\.\\([0-9]+\\)\\.\\([0-9]+\\)" date)
+              (push (shimbun-create-header
+                     0 subject author
+                     (shimbun-make-date-string
+                      (string-to-number (match-string 3 date)) ; year
+                      (string-to-number (match-string 2 date)) ; month
+                      (string-to-number (match-string 1 date)) ; day
+                      "00:00"                                  ; time
+                      ;; FIXME: timezone is always wrong, slightly better than
+                      ;; the default "+0900"
+                      "+0000")
+                     id "" 0 0 url) headers))))))
+      headers))
 
 
 (luna-define-method shimbun-get-headers
@@ -134,7 +152,7 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 	      "+0000"))))))
 
     ;; get the real from
-    (let ((regexp-from-begin "<!-- Meldung -->")
+    (let ((regexp-from-begin "<!-- Meldung -->\\|<HEISETEXT>")
 	  (regexp-from-end "<!-- untere News-Navigation -->")
 	  (regexp-from (concat "(<a href=\"mailto:\\([^@]+@ct.heise.de\\)\""
 			       "[^>]*>\\([^<]+\\)</a>"))
@@ -154,7 +172,7 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 
     ;; strip ads
     (goto-char (point-min))
-    (let ((regexp-ad-begin "<!-- Meldung -->")
+    (let ((regexp-ad-begin "<!-- Meldung -->\\|<HEISETEXT>")
 	  (regexp-ad-end "<!-- untere News-Navigation -->")
 	  (regexp-ad "<!--OAS AD=\"Middle[0-9]*\"-->")
 	  (tmp-point) (bound-min) (bound-max))
@@ -169,50 +187,11 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 
 
 (defun shimbun-heise-wash-telepolis-article (header)
-  (save-excursion
-
-    ;; get real from and date
-    (let ((regexp-from "<meta name=\"Author\" content=\"\\([^\"]+\\)\">")
-	  (regexp-date "<meta name=\"Date\" content=\"\\([0-9]+\\)\">")
-	  (date-string))
-      (when (re-search-forward regexp-from nil t nil)
-	(shimbun-header-set-from
-	 header
-	 (shimbun-mime-encode-string
-	  (concat (match-string 1) " <webmaster@heise.de>"))))
-      (goto-char (point-min))
-      (when (re-search-forward regexp-date nil t nil)
-	(setq date-string (match-string 1))
-	(shimbun-header-set-date
-	 header
-	 (shimbun-make-date-string
-	  (string-to-number (substring date-string 0 4)) ; year
-	  (string-to-number (substring date-string 4 6)) ; month
-	  (string-to-number (substring date-string 6 8)) ; day
-	  "00:00"                                        ; time
-	  ;; FIXME: timezone is always wrong, slightly better than the
-	  ;; default "+0900"
-	  "+0000"))))
-
-    ;; strip nasty "download" images
-    (goto-char (point-min))
-    (while (re-search-forward "<!-- DL\\+CUT -->" nil t nil)
-      (delete-region (point) (re-search-forward "<!-- DL\\-CUT -->"
-						nil t nil)))
-
-    ;; strip ads
-    (goto-char (point-min))
-    (when (search-forward "<blockquote>" nil t)
-      (let ((beg (match-beginning 0))
-	    (bound (search-forward "</blockquote>" nil t))
-	    end)
-	(when bound
-	  (setq end (match-end 0))
-	  (goto-char beg)
-	  (when (re-search-forward
-		 "<td><font size=\"-1\">Anzeige[ \t]*</font><br>" bound t)
-	    (delete-region beg end)))))))
-
+   (save-excursion
+     ;; strip nasty "download" images
+     (goto-char (point-min))
+     (while (re-search-forward "<TP:BUT>" nil t nil)
+       (delete-region (point) (re-search-forward "</TP:BUT>" nil t nil)))))
 
 (luna-define-method shimbun-make-contents
   :before ((shimbun shimbun-heise) header)
