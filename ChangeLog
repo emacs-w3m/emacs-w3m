@@ -2,9 +2,9 @@
 
 	* w3m.el (w3m-fontify-anchors): Put a property of
 	`w3m-name-anchor' as a list.
-	(w3m-search-name-anchor): Use `member' when compare a name with
-	`w3m-name-anchor'.
 	(w3m-move-point-for-localcgi): Use `w3m-search-name-anchor'.
+	(w3m-search-name-anchor): Use `member' when compare a name with
+	`w3m-name-anchor'. Fix continuous name-anchor.
 
 2002-03-30  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
