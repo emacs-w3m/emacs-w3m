@@ -1,3 +1,10 @@
+2001-12-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-refresh-at-time): Run `w3m-goto-url-with-timer'
+	immediately, if the delay of refresh is zero.
+
+	* w3m-xmas.el (w3m-refresh-at-time): Removed.
+
 2001-12-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-use-refresh): New user option.
