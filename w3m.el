@@ -5476,7 +5476,7 @@ a page in a new buffer with the correct width."
 	;; Pop up a window or a frame because `w3m-goto-url' is not called.
 	(w3m-popup-buffer new)
       ;; Need to change to the `new' buffer in which `w3m-goto-url' runs.
-      (set-buffer buffer))
+      (set-buffer new))
     (unless empty
       ;; Render a page.
       (w3m-process-with-wait-handler
