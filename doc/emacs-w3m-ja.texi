@@ -3578,6 +3578,9 @@ pilot-mailsync.main
 @item @uref{http://www.mozilla.gr.jp/ml/logs/moz-users/, Mozilla Users Mailing List in Japan}
 mozilla-jp.users
 
+@item @uref{http://www.tdiary.org/, tDiary Developers Mailing List in Japan}
+tdiary-ml.devel tdiary-ml.theme
+
 @end table
 
 なお、@samp{mozilla-jp.users} はアドレス回収ロボット対策で userid と 
