@@ -1,3 +1,18 @@
+2004-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-wired.el (shimbun-wired-from-address): Make it
+	uneachable.
+	(shimbun-wired-x-face-alist): Replace it with a new face.
+	(shimbun-get-group-header-alist): Improve the uniqueness of
+	Message-IDs; change the From header appearance.
+
+2004-10-21  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-wired.el (shimbun-wired-url): Update it so that it
+	may fit to the new configuration of the Hotwired Japan.
+	(shimbun-wired-content-start): Ditto.
+	(shimbun-get-group-header-alist): Ditto.
+
 2004-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-touch-file): Protect against the absence of
