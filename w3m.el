@@ -1,4 +1,4 @@
-de;;; w3m.el --- Interface program of w3m on Emacs
+;;; w3m.el --- Interface program of w3m on Emacs
 
 ;; Copyright (C) 2000, 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
