@@ -795,9 +795,8 @@ article to be expired.  The optional fourth argument FORCE is ignored."
 (luna-define-class shimbun-gnus-mua (shimbun-mua) ())
 
 (luna-define-method shimbun-mua-search-id ((mua shimbun-gnus-mua) id)
-  (nnshimbun-search-id
-   (shimbun-current-group-internal (shimbun-mua-shimbun-internal mua))
-   id))
+  (nnshimbun-search-id (shimbun-current-group (shimbun-mua-shimbun mua))
+		       id))
 
 
 ;; Command to create an nnshimbun group:

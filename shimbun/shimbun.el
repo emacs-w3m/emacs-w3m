@@ -32,7 +32,9 @@
 ;; Shimbun API:
 ;;
 ;; shimbun-open
+;; shimbun-server
 ;; shimbun-groups
+;; shimbun-current-group
 ;; shimbun-open-group
 ;; shimbun-close-group
 ;; shimbun-headers
@@ -106,6 +108,10 @@
 (luna-define-generic shimbun-mua-search-id (mua id)
   "Return non-nil when MUA found a message structure which corresponds to ID.")
 
+(defun shimbun-mua-shimbun (mua)
+  "Return the shimbun object created by MUA."
+  (shimbun-mua-shimbun-internal mua))
+
 ;;; BASE 64
 (require 'mel)
 (eval-and-compile
@@ -141,12 +147,6 @@ Return content-type of URL as string when retrieval succeeded."
 
 ;;(defsubst shimbun-header-number (header)
 ;;  (aref header 0))
-
-(defsubst shimbun-header-field-value ()
-  (let ((pt (point)))
-    (prog1
-	(buffer-substring (match-end 0) (std11-field-end))
-      (goto-char pt))))
 
 (defsubst shimbun-header-subject (header)
   (aref header 1))
@@ -400,11 +400,19 @@ Optional MUA is a `shimbun-mua' instance."
       (shimbun-mua-set-shimbun-internal mua shimbun))
     shimbun))
 
+(defun shimbun-server (shimbun)
+  "Return the server name of SHIMBUN."
+  (shimbun-server-internal shimbun))
+
 (luna-define-generic shimbun-groups (shimbun)
   "Return a list of groups which are available in the SHIMBUN.")
 
 (luna-define-method shimbun-groups ((shimbun shimbun))
   (shimbun-groups-internal shimbun))
+
+(defun shimbun-current-group (shimbun)
+  "Return the current group of SHIMBUN."
+  (shimbun-current-group-internal shimbun))
 
 (defun shimbun-open-group (shimbun group)
   "Open a SHIMBUN GROUP."

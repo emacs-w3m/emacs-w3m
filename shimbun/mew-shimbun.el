@@ -397,11 +397,11 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 (defun mew-shimbun-retrieve-article (mua server group range fld)
   "Retrieve articles via SHIMBUN."
   (luna-define-method shimbun-mua-search-id ((mua shimbun-mew-mua) id)
-    (let ((shimbun (shimbun-mua-shimbun-internal mua)))
+    (let ((shimbun (shimbun-mua-shimbun mua)))
       (mew-shimbun-db-search-id
        (format mew-shimbun-id-format
-	       (shimbun-server-internal shimbun)
-	       (shimbun-current-group-internal shimbun)
+	       (shimbun-server shimbun)
+	       (shimbun-current-group shimbun)
 	       id))))
   (let ((shimbun (shimbun-open server mua))
 	(count 0)
@@ -560,11 +560,11 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 (defun mew-shimbun-re-retrieve-article (mua server group range fld id-msgs)
   "Re-retrieve articles via SHIMBUN."
   (luna-define-method shimbun-mua-search-id ((mua shimbun-mew-mua) id)
-    (let ((shimbun (shimbun-mua-shimbun-internal mua)))
+    (let ((shimbun (shimbun-mua-shimbun mua)))
       (mew-shimbun-db-search-id2
        (format mew-shimbun-id-format
-	       (shimbun-server-internal shimbun)
-	       (shimbun-current-group-internal shimbun)
+	       (shimbun-server shimbun)
+	       (shimbun-current-group shimbun)
 	       id))))
   (let ((shimbun (shimbun-open server mua))
 	(newcount 0) (rplcount 0) (same 0) (dispcount 0))
