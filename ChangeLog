@@ -1,5 +1,7 @@
 2003-06-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-sourceforge-jp.el: New backend.
+
 	* shimbun/shimbun.el (shimbun-footer): Insert docstring to aboid
 	the bug of XEmacs's byte compiler.
 
