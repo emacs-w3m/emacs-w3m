@@ -1,6 +1,6 @@
 ;;; sb-f1express.el --- shimbun backend for www.f1express.co.jp
 
-;; Copyright (C) 2001 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
+;; Copyright (C) 2001, 2002 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 
 ;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 ;; Keywords: news
@@ -27,7 +27,7 @@
 ;; Original code was nnshimbun.el written by
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
 
-o;;; Code:
+;;; Code:
 
 (require 'shimbun)
 
