@@ -1,5 +1,8 @@
 2003-06-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-nikkei.el (shimbun-nikkei): Make it inherit `shimbun'
+	which was missed.
+
 	* shimbun/shimbun.el: Changes to consider `coding-system' slot of
 	SHIMBUN class.
 	(shimbun-fetch-url): New function.

@@ -33,7 +33,7 @@
 
 (require 'shimbun)
 
-(luna-define-class shimbun-nikkei (shimbun-japanese-newspaper) ())
+(luna-define-class shimbun-nikkei (shimbun-japanese-newspaper shimbun) ())
 
 (defvar shimbun-nikkei-url "http://www.nikkei.co.jp/news/")
 
