@@ -268,7 +268,21 @@ w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 		    "" 0 0 (concat shimbun-nikkei-url index))
 		   headers)))
 	  ((member group '("okuyami" "shasetsu"))
-	   (when (and (boundp 'w3m-current-url)
+	   (when (and (re-search-forward
+		       (eval-when-compile
+			 (let ((s0 "[\t\n ]*")
+			       (s1 "[\t\n ]+"))
+			   (concat
+			    "更新：\\(" s0 "<![^<>]+>\\)*" s0
+			    "\\(20[0-9][0-9]\\)" s0 "/" s0
+			    "\\([01][0-9]\\)" s0 "/" s0 "\\([0-3][0-9]\\)"
+			    s0 "\\(<![^0-9<>]+\\)?"
+			    "\\([012][0-9]:[0-5][0-9]\\)?")))
+		       nil t)
+		      (setq year (string-to-number (match-string 2))
+			    month (string-to-number (match-string 3))
+			    day (string-to-number (match-string 4))
+			    time (or (match-string 6) "00:00"))
 		      (re-search-forward
 		       (eval-when-compile
 			 (let ((s0 "[\t\n ]*")
@@ -279,22 +293,20 @@ w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 				   "\\([^<>]+\\)" s0)))
 		       nil t))
 	     (setq subject (match-string 1))
-	     (let* ((url (symbol-value 'w3m-current-url))
+	     (let* ((real-url (nth 5 (w3m-attributes
+				      (shimbun-index-url shimbun))))
 		    (id (file-name-sans-extension
-			 (file-name-nondirectory url))))
-	       (when (string-match "\\`[^0-9]*\\(20[0-9][0-9]\\)\
-\\([01][0-9]\\)\\([0-3][0-9]\\)" id)
-		 (push (shimbun-make-header
-			0 subject from
-			(shimbun-make-date-string
-			 (string-to-number (match-string 1 id))
-			 (string-to-number (match-string 2 id))
-			 (string-to-number (match-string 3 id)))
-			(concat "<" (substring id (match-beginning 1))
-				"%" group "."
-				shimbun-nikkei-top-level-domain ">")
-			"" 0 0 url)
-		       headers))))))
+			 (file-name-nondirectory real-url))))
+	       (push (shimbun-make-header
+		      0 subject from
+		      (shimbun-make-date-string year month day time)
+		      (concat "<" (if (string-match "\\`[^0-9]+" id)
+				      (substring id (match-end 0))
+				    id)
+			      "%" group "."
+			      shimbun-nikkei-top-level-domain ">")
+		      "" 0 0 real-url)
+		     headers)))))
     (setq index (file-name-directory index))
     (goto-char (point-min))
     ;; Generating headers.
