@@ -2536,6 +2536,9 @@ like to replace the @samp{$} mark with another.
 @node Shimbun with Wanderlus
 @section Reading web newspapers with Wanderlust
 
+Wanderlust includes @samp{elmo-shimbun} as an ELMO module, so you can
+read @samp{shimbun} by just accessing folder beginning with @samp{@@}
+(@pxref{(wl)Shimbun Folder}).
 
 @node Shimbun Basics
 @section How to make your own shimbun modules
@@ -2546,6 +2549,36 @@ like to replace the @samp{$} mark with another.
 @cindex Subscribing to the emacs-w3m mailing list
 @cindex Reporting bugs
 
+We have a mailing list
+
+@display
+Emacs-w3m Mailing List @t{<emacs-w3m@@namazu.org>}
+@end display
+
+to discuss Emacs-w3m. You can post without subscribing. If you find some
+bug, have feature request, or have written some code, post to the list,
+please.
+
+Language used in this list are English and Japanese (since many of its
+members are Japanese). Articles posted to the list are opened to the
+public and you can read them on the web (@uref{http://emacs-w3m.namazu.org/ml/}),
+or in NetNews (group @samp{gmane.emacs.w3m} on the server @samp{news.gmane.org}).
+
+If you want to receive articles by mail, send a mail containing
+
+@example
+subscribe Your Name
+@end example
+
+(please write your name, not your email address) in its body to
+@samp{emacs-w3m-ctl@@namazu.org}, then you can subscribe to the list.
+To unsubscribe it, send a mail containing just
+
+@example
+# bye
+@end example
+
+in its body to @samp{emacs-w3m-ctl@@namazu.org}.
 
 @node Emacs-w3m Functions
 @chapter Details of some emacs-w3m functions
