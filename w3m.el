@@ -614,7 +614,7 @@ of the original request method. -- RFC2616"
   :group 'w3m-face)
 
 (defface w3m-current-anchor-face
-  '((t (:underline t :bold t)))
+  `((t (,@w3m-default-face-colors :underline t :bold t)))
   "Face used to highlight current anchor."
   :group 'w3m-face)
 
@@ -649,11 +649,11 @@ of the original request method. -- RFC2616"
   "Face used to highlight the current url in \"about://history/\"."
   :group 'w3m-face)
 
-(defface w3m-bold-face '((t (:bold t)))
+(defface w3m-bold-face `((t (,@w3m-default-face-colors :bold t)))
   "Face used to fontify bold characters."
   :group 'w3m-face)
 
-(defface w3m-underline-face '((t (:underline t)))
+(defface w3m-underline-face `((t (,@w3m-default-face-colors :underline t)))
   "Face used to fontify underlined part."
   :group 'w3m-face)
 

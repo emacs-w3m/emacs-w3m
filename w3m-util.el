@@ -480,6 +480,17 @@ multibyteness of the buffer."
 		   (string-as-unibyte string))))
     `(insert ,string)))
 
+(defconst w3m-default-face-colors
+  (eval '(if (not (or (featurep 'xemacs)
+		      (>= emacs-major-version 21)))
+	     (let ((bg (face-background 'default))
+		   (fg (face-foreground 'default)))
+	       (append (if bg `(:background ,bg))
+		       (if fg `(:foreground ,fg))))))
+  "The initial `default' face color spec.  Since `defface' under FSF Emacs
+versions prior to 21 won't inherit the `dafault' face colors by default,
+we will use this value for the default `defface' color spec.")
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here
