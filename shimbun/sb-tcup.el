@@ -186,7 +186,7 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 		  (shimbun-tcup-make-time))
 		 (t (current-time))))
 	  ;; The page using `shift_jis' is assumed to be the old format.
-	  (when (string-match "sjis\\|shift.jis\\"
+	  (when (string-match "sjis\\|shift.jis"
 			      (prin1-to-string codesys))
 	    (let ((ms (car stime))
 		  (ls (cadr stime)))
