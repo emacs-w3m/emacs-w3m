@@ -1,6 +1,8 @@
 2003-01-26  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* w3m-e21.el (w3m-favicon-type): Add BMP at the head of the list.
+	(w3m-favicon-type): Undo the last change and make the priority of
+	BMP the lowest.
 
 2003-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
