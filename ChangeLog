@@ -1,3 +1,15 @@
+2002-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-zdnet.el (shimbun-zdnet-group-alist): Share the
+	regexp templates.
+	(shimbun-zdnet-x-face-alist): Blur the default face.
+	(shimbun-get-headers): Arrange the return value in the reverse
+	order.
+
+2002-08-28  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-zdnet.el (shimbun-zdnet-group-alist): Add `biztrends'.
+
 2002-08-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-init-file, w3m-load-hook): New option.
