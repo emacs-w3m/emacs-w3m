@@ -147,47 +147,50 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 	   (body-end-regexp (or (nth 6 group) shimbun-tcup-body-end-regexp))
 	   headers from subject date id url stime st body)
       (goto-char (point-min))
-      (while (re-search-forward subject-regexp nil t)
-	(setq subject (match-string 1))
-	(re-search-forward from-regexp)
-	(setq from
-	      (cond
-	       ((looking-at "<b><a href=\"mailto:\\([^\"]+\\)\">\\([^<]+\\)<")
-		(concat (match-string 2) " <" (match-string 1) ">"))
-	       ((looking-at "<[^>]+><b>\\([^<]+\\)<")
-		(match-string 1))
-	       (t "(none)")))
-	(re-search-forward date-regexp nil t)
-	(setq stime
-	      (cond
-	       ((looking-at "[^,]+, Time: \\([^ ]+\\) ")
-		(shimbun-tcup-stime-to-time (match-string 1)))
-	       ((looking-at "\\([^<]+\\)<")
-		(shimbun-tcup-make-time))
-	       (t (current-time))))
-	(let ((system-time-locale "C"))
-	  (setq date (format-time-string "%d %b %Y %T %z" stime)))
-	(setq stime (format "%05d%05d" (car stime) (cadr stime)))
-	(setq id (shimbun-tcup-make-id
-		  stime
-		  (shimbun-current-group-internal shimbun)))
-	(re-search-forward body-st-regexp)
-	(setq st (match-end 0))
-	(re-search-forward body-end-regexp)
-	(setq body (buffer-substring st (match-beginning 0)))
-	(forward-line 1)
-	(setq url
-	      (if (looking-at "<a[^>]+>[^<]+</a>")
-		  (concat (match-string 0) "\n<p>\n")
-		""))
-	(set (intern stime (shimbun-tcup-content-hash-internal shimbun))
-	     (concat body "<p>\n" url))
-	(push (shimbun-make-header
-	       0
-	       (shimbun-mime-encode-string subject)
-	       (shimbun-mime-encode-string from)
-	       date id "" 0 0 stime)
-	      headers))
+      (catch 'stop
+	(while (re-search-forward subject-regexp nil t)
+	  (setq subject (match-string 1))
+	  (re-search-forward from-regexp)
+	  (setq from
+		(cond
+		 ((looking-at "<b><a href=\"mailto:\\([^\"]+\\)\">\\([^<]+\\)<")
+		  (concat (match-string 2) " <" (match-string 1) ">"))
+		 ((looking-at "<[^>]+><b>\\([^<]+\\)<")
+		  (match-string 1))
+		 (t "(none)")))
+	  (re-search-forward date-regexp nil t)
+	  (setq stime
+		(cond
+		 ((looking-at "[^,]+, Time: \\([^ ]+\\) ")
+		  (shimbun-tcup-stime-to-time (match-string 1)))
+		 ((looking-at "\\([^<]+\\)<")
+		  (shimbun-tcup-make-time))
+		 (t (current-time))))
+	  (let ((system-time-locale "C"))
+	    (setq date (format-time-string "%d %b %Y %T %z" stime)))
+	  (setq stime (format "%05d%05d" (car stime) (cadr stime)))
+	  (setq id (shimbun-tcup-make-id
+		    stime
+		    (shimbun-current-group-internal shimbun)))
+	  (when (shimbun-search-id shimbun id)
+	    (throw 'stop nil))
+	  (re-search-forward body-st-regexp)
+	  (setq st (match-end 0))
+	  (re-search-forward body-end-regexp)
+	  (setq body (buffer-substring st (match-beginning 0)))
+	  (forward-line 1)
+	  (setq url
+		(if (looking-at "<a[^>]+>[^<]+</a>")
+		    (concat (match-string 0) "\n<p>\n")
+		  ""))
+	  (set (intern stime (shimbun-tcup-content-hash-internal shimbun))
+	       (concat body "<p>\n" url))
+	  (push (shimbun-make-header
+		 0
+		 (shimbun-mime-encode-string subject)
+		 (shimbun-mime-encode-string from)
+		 date id "" 0 0 stime)
+		headers)))
       headers)))
 
 (luna-define-method shimbun-article ((shimbun shimbun-tcup) header

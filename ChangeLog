@@ -1,3 +1,10 @@
+2002-01-31  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-hns.el (shimbun-hns-expiration-days): New variable.
+
+	* shimbun/sb-tcup.el (shimbun-headers): Check whether the header
+	is already retrieved.
+
 2002-01-31  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* octet.el (octet-content-type-alist): Added text/html.

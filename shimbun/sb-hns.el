@@ -50,6 +50,8 @@ It can be defined in the `shimbun-hns-x-face-alist', too.
 X$a3`)e}~`]8^'3^3s/gg+]|xf}gg2[BZZAR)-5pOF6BgPu(%yx\n At\\)Z\"e,\
 V#i5>7]N{lif*16&rrh3=:)\"dB[w:{_Mu@7+)~qLo6.z&Bb|Gq0A1}xpj:>9o9$")))
 
+(defvar shimbun-hns-expiration-days 62)
+
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-hns)
 						&rest init-args)
