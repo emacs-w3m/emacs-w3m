@@ -1,5 +1,11 @@
 2002-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el (w3m-display-progress-message): New function.
+	* w3m.el (w3m-goto-url-new-session): Use it.
+	(w3m): Use it.
+
+2002-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-delete-buffer): Run `w3m-delete-buffer-hook' only
 	when a buffer is killed.
 	(w3m-pack-buffer-numbers): Arrange buffers sequentially from 1

@@ -471,6 +471,16 @@ variable `w3m-display-message-enable-logging'."
 				message-log-max)))
        (message ,string ,@args))))
 
+(defun w3m-display-progress-message (url)
+  "Show \"Reading URL...\" message in the middle of a buffer."
+  (insert (make-string (max 0 (/ (1- (window-height)) 2)) ?\n)
+	  "Reading " (w3m-url-strip-authinfo url) "...")
+  (beginning-of-line)
+  (let ((fill-column (window-width)))
+    (center-region (point) (point-max)))
+  (goto-char (point-min))
+  (sit-for 0))
+
 (if (featurep 'xemacs)
     (defalias 'w3m-function-max-args 'function-max-args)
   (eval-and-compile

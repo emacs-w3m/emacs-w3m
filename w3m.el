@@ -5704,7 +5704,7 @@ field for this request."
       (error "%s"
 	     (substitute-command-keys "
 Cannot run two w3m processes simultaneously \
-(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")))
+\(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")))
     (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.
     ;; Store the current position in the history structure.
     (w3m-history-store-position)
@@ -5874,6 +5874,7 @@ the current session.  Otherwise, the new session will start afresh."
   (if (eq 'w3m-mode major-mode)
       (progn
 	(switch-to-buffer (w3m-copy-buffer nil nil (interactive-p) 'empty))
+	(w3m-display-progress-message url)
 	;; When new URL has `name' portion, we have to goto the base url
 	;; because generated buffer has no content at this moment.
 	(when (and (string-match w3m-url-components-regexp url)
@@ -6046,13 +6047,7 @@ Optional NEW-SESSION is intended to be used by the command
 	    (funcall focusing-function (setq frame (make-frame params)))
 	    (switch-to-buffer buffer))
 	(switch-to-buffer buffer))
-      (insert (make-string (max 0 (/ (1- (window-height)) 2)) ?\n)
-	      "Reading " (w3m-url-strip-authinfo url) "...")
-      (beginning-of-line)
-      (let ((fill-column (window-width)))
-	(center-region (point) (point-max)))
-      (goto-char (point-min))
-      (sit-for 0)
+      (w3m-display-progress-message url)
       (w3m-mode))
     (unwind-protect
 	(unless nofetch
