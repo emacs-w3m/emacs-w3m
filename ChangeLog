@@ -1,3 +1,14 @@
+2004-11-23  S V N Vishwanathan  <vishketan@yahoo.com>
+
+	* shimbun/sb-rediff.el (shimbun-rediff-month-alist): New variable.
+	(shimbun-article): Signal an error if the url looks malformed; use
+	match-string-no-properties instead of match-string.
+	(shimbun-clear-contents): Improve regexps matching tags to be
+	removed.
+	(shimbun-make-contents): New function to make true Date headers.
+	(shimbun-rss-build-message-id): Signal an error if the url string
+	is not what is expected; improve the uniqueness of Message-IDs.
+
 2004-11-23  Tsuyoshi CHO  <mfalcon21@hotmail.com>
 
 	* shimbun/sb-wikimedia.el (shimbun-wikimedia-l10n-make-contents):
