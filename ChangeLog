@@ -1,3 +1,9 @@
+2001-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-time.el (w3m-time-rules): Don't use backquote.
+	(w3m-time-zoneinfo): Ditto.
+	(w3m-time-parse-integer): Ditto.
+
 2001-03-16  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (TopLevel): Require `w3m-time'.
