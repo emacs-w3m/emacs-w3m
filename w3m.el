@@ -123,7 +123,7 @@
 				  "w3m-xmas"
 				"w3m-e21")))
 
-(defconst emacs-w3m-version "1.2rc1"
+(defconst emacs-w3m-version "1.2rc2"
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -230,15 +230,26 @@ width using expression (+ (frame-width) VALUE)."
 
 (defvar w3m-accept-japanese-characters
   (or (memq w3m-type '(w3mmee w3m-m17n))
-      (with-temp-buffer
-	(insert "<hr>\n")
-	(let ((coding-system-for-write 'binary)
-	      (coding-system-for-read 'binary)
-	      (default-process-coding-system (cons 'binary 'binary)))
-	  (call-process-region (point-min) (point-max) w3m-command
-			       t t nil "-T" "text/html" "-dump")
-	  (goto-char (point-min))
-	  (not (eq (char-after (point)) '?-)))))
+      ;; Detect that the internal character set of `w3m' is EUC-JP.
+      (let ((str
+	     (eval-when-compile
+	       (format
+		(concat
+		 "<!doctype html public \"-//W3C//DTD HTML 3.2//EN\">"
+		 "<html><head><meta http-equiv=\"Content-Type\" "
+		 "content=\"text/html; charset=ISO-2022-JP\">"
+		 "</head><body>%s</body>\n")
+		(string 27 36 66 52 65 59 122 27 40 66)))))
+	(with-temp-buffer
+	  (set-buffer-multibyte nil)
+	  (insert str)
+	  (let ((coding-system-for-write 'binary)
+		(coding-system-for-read 'binary)
+		(default-process-coding-system (cons 'binary 'binary)))
+	    (call-process-region (point-min) (point-max) w3m-command
+				 t t nil "-T" "text/html" "-dump")
+	    (string= (buffer-string)
+		     (string ?\264 ?\301 ?\273 ?\372 ?\n))))))
   "Non-nil means that `w3m' accepts Japanese characters.")
 
 (defcustom w3m-coding-system
@@ -2952,7 +2963,7 @@ to nil.
 	  (` ((r0 = (, id))
 	      (write-multibyte-character r0 r1)
 	      (repeat)))
-	(` ((write (,id))
+	(` ((write (, id))
 	    (write-repeat r1)))))))
 
 (define-ccl-program w3m-euc-japan-decoder

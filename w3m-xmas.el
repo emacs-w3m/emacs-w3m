@@ -58,32 +58,34 @@
 (require 'path-util)
 (require 'poe)
 (require 'poem)
-(require 'pccl)
 
 ;;; Handle coding system:
-(w3m-static-if (featurep 'file-coding)
-    (progn
-(defalias 'w3m-find-coding-system 'find-coding-system)
-(defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
-
-(defun w3m-detect-coding-region (start end &optional priority-list)
-  "Detect coding system of the text in the region between START and END.
+(w3m-static-cond
+ ((featurep 'mule)
+  (require 'pccl)
+  (defalias 'w3m-find-coding-system 'find-coding-system)
+  (defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
+  (defun w3m-detect-coding-region (start end &optional priority-list)
+    "Detect coding system of the text in the region between START and END.
 Return the first possible coding system.
 
 PRIORITY-LIST is a list of coding systems ordered by priority."
-  (let (category categories codesys)
-    (dolist (codesys priority-list)
-      (setq category (coding-system-category codesys))
-      (unless (assq category categories)
-	(push (cons category codesys) categories)))
-    (if (consp (setq codesys (detect-coding-with-priority
-			      start end (nreverse categories))))
-	(car codesys)
-	  codesys))))
+    (let (category categories codesys)
+      (dolist (codesys priority-list)
+	(setq category (coding-system-category codesys))
+	(unless (assq category categories)
+	  (push (cons category codesys) categories)))
+      (if (consp (setq codesys (detect-coding-with-priority
+				start end (nreverse categories))))
+	  (car codesys)
+	codesys))))
+ (t
+  ;; Dummy functions for XEmacs without MULE.
   (defalias 'w3m-find-coding-system 'ignore)
   (defalias 'w3m-make-ccl-coding-system 'ignore)
   (defalias 'w3m-detect-coding-region 'ignore)
-  (defalias 'coding-system-list 'ignore))
+  (defalias 'coding-system-list 'ignore)
+  (defalias 'set-buffer-multibyte 'ignore)))
 
 ;;; Handle images:
 
