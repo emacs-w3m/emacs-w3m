@@ -10,6 +10,8 @@
 	w3m-form-button.
 	(w3m-setup-widget-faces): New function.
 	(w3m-mode-hook): Add `w3m-setup-widget-faces'.
+	(w3m-form-make-button): Don't check :box attribute when
+	w3m-form-use-fancy-faces is non-nil.
 
 	* shimbun/sb-slashdot-jp.el: Merged patch from
 	`http://homepage2.nifty.com/strlcat/sb-slashdot-jp.patch'.

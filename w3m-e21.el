@@ -155,23 +155,22 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defun w3m-form-make-button (start end properties)
   "Make button on the region from START to END."
   (if w3m-form-use-fancy-faces
-      (progn (and (face-attribute 'w3m-form-button-face :box)
-		  (eq ?\[ (char-after start))
-		  (eq ?\] (char-before end))
-		  (save-excursion
-		    (goto-char start)
-		    (delete-char 1)
-		    (insert " ")
-		    (goto-char end)
-		    (delete-char -1)
-		    (insert " ")
-		    (widget-convert-button
-		     'w3m-form-button (1+ start) (1- end)
-		     :w3m-form-action (plist-get properties 'w3m-action))))
-	     (add-text-properties start end properties))
-    (add-text-properties start end
-			 (append '(face w3m-form-face)
-				 properties))))
+      (progn
+	(eq ?\[ (char-after start))
+	(eq ?\] (char-before end))
+	(save-excursion
+	  (goto-char start)
+	  (delete-char 1)
+	  (insert " ")
+	  (goto-char end)
+	  (delete-char -1)
+	  (insert " ")
+	  (widget-convert-button
+	   'w3m-form-button (1+ start) (1- end)
+	   :w3m-form-action (plist-get properties 'w3m-action)))
+	(add-text-properties start end properties))
+    (add-text-properties start end (append '(face w3m-form-face)
+					   properties))))
 
 ;;; Toolbar
 (defcustom w3m-use-toolbar (w3m-image-type-available-p 'xpm)
