@@ -631,17 +631,33 @@ title contains non-ascii characters, show a url name by default."
   (when (symbol-value 'gutter-buffers-tab-enabled)
     (add-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter)))
 
-;;; Spinner.
+;;; Favicon:
+(defcustom w3m-xmas-space-before-favicon " "
+  "String of space character(s) to be put in front of favicon.
+It may be better to use two or more spaces if you are using oblique or
+italic font in the modeline."
+  :group 'w3m
+  :type 'string)
+
+;;; Spinner:
+(defcustom w3m-xmas-space-before-spinner ""
+  "String of space character(s) to be put in front of spinner.
+It may be better to use one or more spaces if you are using oblique or
+italic font in the modeline."
+  :group 'w3m
+  :type 'string)
+
 (defvar w3m-spinner-image nil
-  "Glyph used to show a spinner in the mode-line.")
+  "Glyph used to show a spinner in the modeline.")
 
 (defun w3m-make-spinner-image ()
-  "Make a glyph used to show a spinner image in the mode-line."
+  "Make a glyph used to show a spinner image in the modeline."
   (let ((spinner (expand-file-name "spinner.gif" w3m-icon-directory))
 	(coding-system-for-read 'binary)
 	(coding-system-for-write 'binary)
 	background)
     (when (and (device-on-window-system-p)
+	       (featurep 'gif)
 	       (not w3m-spinner-image)
 	       (file-exists-p spinner))
       (with-temp-buffer

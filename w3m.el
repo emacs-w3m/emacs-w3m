@@ -6140,8 +6140,9 @@ appropriate buffer and select it."
 	 (list
 	  (list 'w3m-current-process
 		(w3m-static-if (featurep 'xemacs)
-		    '(w3m-spinner-image ("  " w3m-spinner-image)
-					w3m-modeline-process-status-on)
+		    '(w3m-spinner-image
+		      ("" w3m-xmas-space-before-spinner w3m-spinner-image)
+		      w3m-modeline-process-status-on)
 		  'w3m-modeline-process-status-on)
 		'(w3m-current-ssl
 		  (w3m-display-inline-images
@@ -6152,7 +6153,9 @@ appropriate buffer and select it."
 		   w3m-modeline-status-off))))
 	 (w3m-static-if (featurep 'xemacs)
 	     '(w3m-use-favicon
-	       (w3m-favicon-image ("  " w3m-favicon-image) " / ")
+	       (w3m-favicon-image
+		("" w3m-xmas-space-before-favicon w3m-favicon-image)
+		" / ")
 	       " / ")
 	   " / ")
 	 'w3m-current-title)))
