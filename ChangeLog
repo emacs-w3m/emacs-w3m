@@ -1,3 +1,11 @@
+2002-04-01  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-fontify-anchors): Put a property of
+	`w3m-name-anchor' as a list.
+	(w3m-search-name-anchor): Use `member' when compare a name with
+	`w3m-name-anchor'.
+	(w3m-move-point-for-localcgi): Use `w3m-search-name-anchor'.
+
 2002-03-30  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-m17n.el (shimbun-m17n-group-path-alist): Add

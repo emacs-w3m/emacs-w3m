@@ -1949,11 +1949,12 @@ with ^ as `cat -v' does."
   "Fontify anchor tags in this buffer which contains half-dumped data."
   (let ((help (w3m-make-help-echo w3m-href-anchor))
 	(balloon (w3m-make-balloon-help w3m-href-anchor))
-	start end)
+	prenames start end)
     (goto-char (point-min))
     (setq w3m-max-anchor-sequence 0)	;; reset max-hseq
     (while (re-search-forward "<_id[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
+      (setq prenames (get-text-property start 'w3m-name-anchor))
       (w3m-parse-attributes (id)
 	(delete-region start (point))
 	(when (re-search-forward "<\\|\n" nil t)
@@ -1961,10 +1962,12 @@ with ^ as `cat -v' does."
 	  (when (= start end)
 	    (setq end (min (1+ end) (point-max))))
 	  (w3m-add-text-properties start end
-				   (list 'w3m-name-anchor id)))))
+				   (list 'w3m-name-anchor
+					 (append (list id) prenames))))))
     (goto-char (point-min))
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
+      (setq prenames (get-text-property start 'w3m-name-anchor))
       (w3m-parse-attributes (href name (rel :case-ignore) (hseq :integer))
 	(when rel
 	  (setq rel (split-string rel))
@@ -1983,13 +1986,15 @@ with ^ as `cat -v' does."
 	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)))
 	    (setq hseq (or (and (null hseq) 0) (abs hseq)))
 	    (setq w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
+	    
 	    (w3m-add-text-properties start end
 				     (list 'face (if (w3m-arrived-p href)
 						     'w3m-arrived-anchor-face
 						   'w3m-anchor-face)
 					   'w3m-href-anchor href
 					   'mouse-face 'highlight
-					   'w3m-name-anchor name
+					   'w3m-name-anchor
+					   (append (list name) prenames)
 					   'w3m-anchor-sequence hseq
 					   'help-echo help
 					   'balloon-help balloon))))
@@ -1999,7 +2004,8 @@ with ^ as `cat -v' does."
 	    (when (= start end)
 	      (setq end (min (1+ end) (point-max))))
 	    (w3m-add-text-properties start end
-				     (list 'w3m-name-anchor name)))))))
+				     (list 'w3m-name-anchor
+					   (append (list name) prenames))))))))
     (when w3m-icon-data
       (setq w3m-icon-data (cons (w3m-expand-url (car w3m-icon-data))
 				(w3m-image-type (cdr w3m-icon-data)))))
@@ -3556,7 +3562,7 @@ argument.  Otherwise, it will be called with nil."
   (let ((pos (point-min)))
     (catch 'found
       (while (setq pos (next-single-property-change pos 'w3m-name-anchor))
-	(when (equal name (get-text-property pos 'w3m-name-anchor))
+	(when (member name (get-text-property pos 'w3m-name-anchor))
 	  (goto-char pos)
 	  (throw 'found t))
 	(setq pos (next-single-property-change pos 'w3m-name-anchor)))
@@ -5068,19 +5074,10 @@ the current session.  Otherwise, the new session will start afresh."
 (defun w3m-move-point-for-localcgi (url)
   (when (and (w3m-url-local-p url)
 	     (file-directory-p (w3m-url-to-file-name url))
-	     (not (eq w3m-local-directory-view-method 'w3m-dtree)))
-    (let ((height (/ (window-height) 5))
-	  (pos (point-min)))
-      (when (= (point-min) (point))
-	(goto-char
-	 (catch 'detect
-	   (while (and (not (eobp))
-		       (setq pos (next-single-property-change
-				  pos 'w3m-name-anchor)))
-	     (when (equal (get-text-property pos 'w3m-name-anchor) "current")
-	       (throw 'detect pos)))
-	   (point-min)))
-	(recenter height)))))
+	     (not (eq w3m-local-directory-view-method 'w3m-dtree))
+	     (= (point-min) (point))
+	     (w3m-search-name-anchor "current" 'quiet))
+    (recenter (/ (window-height) 5))))
 (add-hook 'w3m-display-hook 'w3m-move-point-for-localcgi)
 
 ;;;###autoload
