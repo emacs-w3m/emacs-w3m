@@ -1,5 +1,24 @@
 2002-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-bitmap.el (w3m-bitmap-image-get-overlay): Don't clear the
+	`evaorate' property here.
+	(w3m-bitmap-image-insert-internal): Rename to
+	`w3m-bitmap-image-insert'; change the meaning of the 2nd arg
+	`image' (see docs); allow the optional arg `ovr'; don't scan for
+	an overlay here; handle `w3m-bitmap-image-count'; use overlays
+	to highlight bitmap images.
+	(w3m-bitmap-image-insert): Remove old one.
+	(w3m-bitmap-image-delete-internal): Allow the 2nd arg `ovr'; don't
+	scan for an overlay here; clear the `evaorate' property here.
+	(w3m-bitmap-image-delete): Allow the 2nd arg `ovr'; don't scan
+	for an overlay here; don't delete an overlay.
+	(w3m-bitmap-image-delete-string): Remove.
+	(w3m-insert-image): Scan for an overlay here; don't use text props
+	to highlight bitmap images.
+	(w3m-remove-image): Scan for an overlay here.
+
+2002-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-bitmap.el (w3m-bitmap-image-cleanup): Remove.
 	(w3m-bitmap-image-get-overlay): Clear the `evaorate' property in
 	an overlay temporally.

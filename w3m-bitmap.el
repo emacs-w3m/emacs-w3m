@@ -108,8 +108,8 @@ bitmap chars as well."
     (nreverse list)))
 
 (defun w3m-bitmap-image-get-overlay (pos)
-  "Return an overlay which has the `bitmap-image' property at POS, and
-clear the `evaorate' property in that overlay temporally."
+  "Return an overlay in and around POS, which has the `bitmap-image'
+property ."
   (let ((home (point))
 	ovrs ovr)
     (goto-char pos)
@@ -120,25 +120,34 @@ clear the `evaorate' property in that overlay temporally."
 	  (setq ovr (car ovrs))
 	(setq ovrs (cdr ovrs))))
     (goto-char home)
-    (when ovr
-      (overlay-put ovr 'evaporate nil)
-      ovr)))
+    ovr))
 
-(defun w3m-bitmap-image-insert-internal (pos image &optional props)
+(defun w3m-bitmap-image-insert (pos image &optional props ovr)
+  "Insert IMAGE to POS.  IMAGE should be a list of bitmap image lines or
+a non-list text.  PROPS specifies properties for bitmap images.  OVR
+is an overlay which covers the area for bitmap images.  If OVR is nil,
+a new overlay will be created and returned."
   (save-excursion
     (goto-char pos)
-    (let* ((ovrbeg (line-beginning-position))
-	   (ovr (w3m-bitmap-image-get-overlay ovrbeg))
-	   (col (w3m-bitmap-current-column))
-	   indent-tabs-mode end-col)
+    (let ((ovrbeg (line-beginning-position))
+	  (col (w3m-bitmap-current-column))
+	  indent-tabs-mode end-col face-ovrs)
       (unless ovr
 	(setq ovr (make-overlay ovrbeg ovrbeg))
-	(overlay-put ovr 'w3m-bitmap-image-line t))
-      (insert (car image))
+	(overlay-put ovr 'w3m-bitmap-image-line t)
+	(overlay-put ovr 'w3m-bitmap-image-count 0))
+      (if (consp image)
+	  (progn
+	    (insert (car image))
+	    (setq image (cdr image))
+	    (overlay-put ovr 'w3m-bitmap-image-count
+			 (1+ (overlay-get ovr 'w3m-bitmap-image-count))))
+	(insert image)
+	(setq image nil))
       (when props
-	(w3m-add-text-properties pos (point) props))
-      (setq end-col (w3m-bitmap-current-column)
-	    image (cdr image))
+	(w3m-add-text-properties pos (point) props)
+	(push (make-overlay pos (point)) face-ovrs))
+      (setq end-col (w3m-bitmap-current-column))
       (forward-line)
       (while (or image (< (point) (overlay-end ovr)))
 	(when (>= (point) (overlay-end ovr))
@@ -151,29 +160,30 @@ clear the `evaorate' property in that overlay temporally."
 	      (setq pos (point))
 	      (insert (car image))
 	      (when props
-		(w3m-add-text-properties pos (point) props)))
+		(w3m-add-text-properties pos (point) props)
+		(push (make-overlay pos (point)) face-ovrs)))
 	  (indent-to-column end-col))
 	(setq image (cdr image))
 	(forward-line))
       (move-overlay ovr (min ovrbeg (overlay-start ovr))
 		    (1- (point)))
       (overlay-put ovr 'evaporate t)
+      ;; Since Emacs 20 has a bug(?) that an overlay hides the face
+      ;; text properties, we should also use overlays to highlight
+      ;; bitmap images.
+      (while face-ovrs
+	(overlay-put (car face-ovrs) 'face 'w3m-bitmap-image-face)
+	(overlay-put (pop face-ovrs) 'evaporate t))
       ovr)))
 
-(defun w3m-bitmap-image-insert (pos image props)
-  "Insert IMAGE to POS."
-  (let ((ovr (w3m-bitmap-image-insert-internal pos image props)))
-    (overlay-put ovr 'w3m-bitmap-image-count
-		 (1+ (or (overlay-get ovr 'w3m-bitmap-image-count) 0)))))
-
-(defun w3m-bitmap-image-delete-internal (pos &optional width)
+(defun w3m-bitmap-image-delete-internal (pos ovr &optional width)
   (save-excursion
     (goto-char pos)
-    (let ((ovr (w3m-bitmap-image-get-overlay pos))
-	  (eol (line-end-position))
+    (let ((eol (line-end-position))
 	  col)
       (if ovr
 	  (progn
+	    (overlay-put ovr 'evaporate nil)
 	    (setq col (w3m-bitmap-current-column))
 	    (while (< (point) (overlay-end ovr))
 	      (w3m-bitmap-move-to-column-force col)
@@ -191,25 +201,18 @@ clear the `evaorate' property in that overlay temporally."
 							'w3m-bitmap-image t)
 				 eol)))))))
 
-(defun w3m-bitmap-image-delete (pos)
+(defun w3m-bitmap-image-delete (pos ovr)
   "Delete bitmap-image on POS."
-  (let ((ovr (w3m-bitmap-image-get-overlay pos))
-	cnt)
-    (when ovr
-      (setq cnt (1- (overlay-get ovr 'w3m-bitmap-image-count)))
+  (when ovr
+    (let ((cnt (1- (overlay-get ovr 'w3m-bitmap-image-count))))
       (overlay-put ovr 'w3m-bitmap-image-count cnt)
-      (w3m-bitmap-image-delete-internal pos)
+      (w3m-bitmap-image-delete-internal pos ovr)
       (when (zerop cnt)
 	(save-excursion
 	  (goto-char (min (point) (overlay-start ovr)))
 	  (forward-line)
 	  (when (< (point) (overlay-end ovr))
-	    (delete-region (point) (1+ (overlay-end ovr))))
-	  (delete-overlay ovr))))))
-
-(defalias 'w3m-bitmap-image-delete-string
-  ;; Delete string with a WIDTH on POS same as bitmap-image.
-  'w3m-bitmap-image-delete-internal)
+	    (delete-region (point) (1+ (overlay-end ovr)))))))))
 
 ;;; Handle images:
 
@@ -278,22 +281,24 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 Buffer string between BEG and END are replaced with IMAGE."
   (when image
     (let ((properties (text-properties-at beg))
-	  (name (buffer-substring beg end)))
-      (w3m-bitmap-image-delete-string beg (- end beg))
+	  (name (buffer-substring beg end))
+	  (ovr (w3m-bitmap-image-get-overlay beg)))
+      (w3m-bitmap-image-delete-internal beg ovr (- end beg))
       (w3m-bitmap-image-insert beg image
 			       (w3m-modify-plist properties
 						 'w3m-image-status 'on
-						 'face 'w3m-bitmap-image-face
 						 'w3m-bitmap-image t
-						 'w3m-image-name name)))))
+						 'w3m-image-name name)
+			       ovr))))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END.
 \(Note: END will be ignored in this version of `w3m-remove-image'.)"
-  (let ((name (get-text-property beg 'w3m-image-name)))
+  (let ((name (get-text-property beg 'w3m-image-name))
+	(ovr (w3m-bitmap-image-get-overlay beg)))
     (when name
-      (w3m-bitmap-image-delete beg)
-      (w3m-bitmap-image-insert-internal beg (list name))
+      (w3m-bitmap-image-delete beg ovr)
+      (w3m-bitmap-image-insert beg name nil ovr)
       (+ beg (length name)))))
 
 (defun w3m-image-type-available-p (image-type)
