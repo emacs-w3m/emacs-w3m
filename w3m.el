@@ -330,7 +330,33 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :group 'w3m
   :type '(choice
 	  (const :tag "Use Info-like key mapping." info)
-	  (other :tag "Use Lynx-like key mapping." nil)))
+	  (other :tag "Use Lynx-like key mapping." nil))
+  ;; Though the following form won't be byte-compiled, you developers
+  ;; should never use CL macros like `caaaar', `when', `unless' ...
+  :set (lambda (symbol value)
+	 (prog1
+	     (if (fboundp 'custom-set-default)
+		 (custom-set-default symbol value)
+	       ;; XEmacs or Emacs 19 does not have `custom-set-default'.
+	       (set-default symbol value))
+	   (if (boundp 'w3m-mode-map)
+	       ;; It won't be bound at the first time.
+	       (setq w3m-mode-map
+		     (if (eq value 'info)
+			 w3m-info-like-map
+		       w3m-lynx-like-map)))
+	   (if (fboundp 'mime-w3m-setup)
+	       (condition-case nil
+		   (progn
+		     (setq mime-w3m-mode-map nil)
+		     (mime-w3m-setup))
+		 (error)))
+	   (if (fboundp 'mm-setup-w3m)
+	       (condition-case nil
+		   (let (mm-w3m-setup)
+		     (setq mm-w3m-mode-map nil)
+		     (mm-setup-w3m))
+		 (error))))))
 
 (defcustom w3m-use-cygdrive (eq system-type 'windows-nt)
   "*If non-nil, use /cygdrive/ rule when expand-file-name."
