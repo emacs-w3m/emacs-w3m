@@ -3424,6 +3424,41 @@ It replaces the faces on the arrived anchors from `w3m-anchor-face' to
      ((eq flag 'lambda)
       (if (w3m-arrived-p url) t nil)))))
 
+(defun w3m-gmane-url-at-point ()
+  "Return a url that indicates the thread page in Gmane.
+This function works only when the cursor stays in the References header
+or the Message-ID header, otherwise returns nil.  That it returns an
+invalid url if Gmane doesn't handle the group is natural."
+  (save-excursion
+    (let ((fmt "http://news.gmane.org/group//thread=%s/force_load=t")
+	  (start (point))
+	  md case-fold-search)
+      (goto-char (point-min))
+      (re-search-forward (concat "^\\("
+				 (regexp-quote mail-header-separator)
+				 "\\)?$")
+			 nil 'move)
+      (when (< start (point))
+	(setq case-fold-search t)
+	(save-restriction
+	  (narrow-to-region (point-min) (point))
+	  (goto-char start)
+	  (beginning-of-line)
+	  (while (and (memq (char-after) '(?\t ? ))
+		      (zerop (forward-line -1))))
+	  (when (or (looking-at "References:[\t\n ]*<\\([^\t\n <>]+\\)>")
+		    (prog1
+			(looking-at "Message-ID:[\t\n ]*<\\([^\t\n <>]+\\)>")
+		      (setq md (match-data))
+		      (goto-char (point-min))
+		      (unless (re-search-forward
+			       "^References:[\t\n ]*<\\([^\t\n <>]+\\)>"
+			       nil t)
+			(set-match-data md))))
+	    (format
+	     fmt
+	     (w3m-url-encode-string (match-string-no-properties 1)))))))))
+
 (eval-and-compile
   (cond
    ((locate-library "ffap")
@@ -3434,33 +3469,38 @@ It replaces the faces on the arrived anchors from `w3m-anchor-face' to
 	      "\
 Like `ffap-url-at-point', except that text props will be stripped and
 iso646 characters are unified into ascii characters."
-	      (let ((left (buffer-substring-no-properties (point-at-bol)
-							  (point)))
-		    (right (buffer-substring-no-properties (point)
-							   (point-at-eol)))
-		    (regexp (format "[%c-%c]"
-				    (make-char 'latin-jisx0201 33)
-				    (make-char 'latin-jisx0201 126)))
-		    (diff (- (char-to-int (make-char 'latin-jisx0201 33)) 33))
-		    index)
-		(while (setq index (string-match regexp left))
-		  (aset left index (- (aref left index) diff)))
-		(while (setq index (string-match regexp right))
-		  (aset right index (- (aref right index) diff)))
-		(with-temp-buffer
-		  (insert right)
-		  (goto-char (point-min))
-		  (insert left)
-		  (ffap-url-at-point))))
+	      (or (w3m-gmane-url-at-point)
+		  (let ((left (buffer-substring-no-properties (point-at-bol)
+							      (point)))
+			(right (buffer-substring-no-properties (point)
+							       (point-at-eol)))
+			(regexp (format "[%c-%c]"
+					(make-char 'latin-jisx0201 33)
+					(make-char 'latin-jisx0201 126)))
+			(diff (- (char-to-int (make-char 'latin-jisx0201 33))
+				 33))
+			index)
+		    (while (setq index (string-match regexp left))
+		      (aset left index (- (aref left index) diff)))
+		    (while (setq index (string-match regexp right))
+		      (aset right index (- (aref right index) diff)))
+		    (with-temp-buffer
+		      (insert right)
+		      (goto-char (point-min))
+		      (insert left)
+		      (ffap-url-at-point)))))
 	  (defun w3m-url-at-point ()
 	    "\
 Like `ffap-url-at-point', except that text props will be stripped."
-	    (unless (fboundp 'ffap-url-at-point)
-	      ;; It is necessary to bind `ffap-xemacs'.
-	      (load "ffap" nil t))
-	    (let (ffap-xemacs)
-	      (ffap-url-at-point))))
-      (defalias 'w3m-url-at-point 'ffap-url-at-point))
+	    (or (w3m-gmane-url-at-point)
+		(unless (fboundp 'ffap-url-at-point)
+		  ;; It is necessary to bind `ffap-xemacs'.
+		  (load "ffap" nil t))
+		(let (ffap-xemacs)
+		  (ffap-url-at-point)))))
+      (defun w3m-url-at-point ()
+	(or (w3m-gmane-url-at-point)
+	    (ffap-url-at-point))))
     (eval-after-load "ffap"
       '(progn
 	 ;; Under Emacs 19, 20 or XEmacs, `ffap-url-regexp' won't match
@@ -3482,12 +3522,13 @@ Like `ffap-url-at-point', except that text props will be stripped."
     (autoload 'thing-at-point "thingatpt")
     (defun w3m-url-at-point ()
       "Return url from around point if it exists, or nil."
-      (let ((url (thing-at-point 'url)))
-	(when url
-	  (set-text-properties 0 (length url) nil url)
-	  url))))
+      (or (w3m-gmane-url-at-point)
+	  (let ((url (thing-at-point 'url)))
+	    (when url
+	      (set-text-properties 0 (length url) nil url)
+	      url)))))
    (t
-    (defalias 'w3m-url-at-point 'ignore))))
+    (defalias 'w3m-url-at-point 'w3m-gmane-url-at-point))))
 
 (defun w3m-active-region-or-url-at-point ()
   "Return an active region or a url around the cursor.
