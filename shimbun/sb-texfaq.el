@@ -32,7 +32,7 @@
 
 (luna-define-class shimbun-texfaq (shimbun) ())
 
-(defvar shimbun-texfaq-url "http://www.matsusaka-u.ac.jp/~okumura/texfaq/qa/")
+(defvar shimbun-texfaq-url "http://oku.edu.mie-u.ac.jp/~okumura/texfaq/qa/")
 (defvar shimbun-texfaq-groups
   '("qanda"))
 (defvar shimbun-texfaq-content-start "</h2>\n")
