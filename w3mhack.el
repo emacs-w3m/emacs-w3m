@@ -45,7 +45,7 @@
 
 (defconst shimbun-module-directory "shimbun")
 
-;; Needed for interdependencies among w3m modules.
+;; Needed for interdependencies among w3m and shimbun modules.
 (push default-directory load-path)
 (push (expand-file-name shimbun-module-directory default-directory) load-path)
 
