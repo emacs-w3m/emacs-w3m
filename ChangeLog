@@ -1,3 +1,18 @@
+2001-12-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-type): Changed condition to decide type.
+	(w3m-decoder-alist): Call `file-name-nondirectory' before
+	`w3m-command' is refered.
+	(w3m-dirlist-cgi-program): Ditto.
+
+2001-12-21  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-type): Use "w3m-m17n" if exists.
+	(w3m-decoder-alist): Use `w3m-command' for inflate command path.
+	(w3m-dirlist-cgi-program): Use `w3m-command'.
+	(w3m-dump-head-source-command-arguments) [w3mmee]: Don't
+	add "-o accept_language=xxx".
+
 2001-12-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-type): Follow the new official release of w3m.
