@@ -1,5 +1,8 @@
 2003-08-10  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
+	* w3m-namazu.el (w3m-about-namazu): Fixed problem when further links
+	contain "&amp;".
+
 	* shimbun/sb-japantimes.el (shimbun-japantimes-coding-system): Removed.
 
 2003-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
