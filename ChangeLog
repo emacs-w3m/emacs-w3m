@@ -1,3 +1,12 @@
+2005-03-13  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-sourceforge-jp.el (shimbun-index-url): Fix generating url rule.
+
+	* shimbun/sb-savannah.el (shimbun-savannah-url): Improve url.
+
+	* shimbun/sb-ruby.el (shimbun-ruby-url): Improve url.
+	(shimbun-index-url): Fix generating url rule.
+
 2005-03-12  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-toshiba.el (Toplevel): Add 'require cl' when compiling.

@@ -33,7 +33,7 @@
 
 (luna-define-class shimbun-ruby (shimbun) ())
 
-(defvar shimbun-ruby-url "http://blade.nagaokaut.ac.jp")
+(defvar shimbun-ruby-url "http://www.ruby-talk.org/")
 (defconst shimbun-ruby-group-path-alist
   '(("comp.lang.ruby" . "ruby/comp.lang.ruby")
     ("fj.comp.lang.ruby" . "ruby/fj.comp.lang.ruby")
@@ -61,42 +61,38 @@
       str)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-ruby))
-  (concat (shimbun-url-internal shimbun)
-	  "/"
-	  (cdr (assoc (shimbun-current-group-internal shimbun)
-		      shimbun-ruby-group-path-alist))
-	  "/index.shtml"))
+  (shimbun-expand-url
+   "index.shtml"
+   (concat (shimbun-url-internal shimbun)
+	   (cdr (assoc (shimbun-current-group-internal shimbun)
+		       shimbun-ruby-group-path-alist))
+	   "/")))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-ruby)
 					 &optional range)
   (let ((case-fold-search t)
-	(start (progn (re-search-forward "^<table" nil t nil)
-		      (forward-line 1) (beginning-of-line 1)
-		      (point)))
-	;;(end (progn (re-search-forward "</table>" nil t nil) (point)))
 	(pages (shimbun-header-index-pages range))
 	(count 0)
 	headers auxs aux)
     ;; Use entire archive.
     (while (and (if pages (<= (incf count) pages) t)
-		(re-search-backward "<a href=\"\\([0-9]+-[0-9]+.shtml\\)\">" start t))
+		(re-search-forward "<a href=\"\\([0-9]+-[0-9]+.shtml\\)\">" nil t))
       (setq auxs (append auxs (list (match-string 1)))))
+    (setq auxs (nreverse auxs))
     (catch 'stop
       (while auxs
 	(with-temp-buffer
 	  (shimbun-retrieve-url
-	   (concat (shimbun-url-internal shimbun)
-		   "/"
-		   (cdr (assoc (shimbun-current-group-internal shimbun)
-			       shimbun-ruby-group-path-alist))
-	   "/"
-		   (setq aux (car auxs))))
+	   (shimbun-expand-url
+	    (setq aux (car auxs))
+	    (shimbun-index-url shimbun)))
 	  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
 	  (let ((case-fold-search t)
 		id url date subject from)
 	    (goto-char (point-max))
 	    (while (re-search-backward
-		    "^<DT><A NAME=\"[0-9]+\">\\(</A>\\)?<A HREF=\"\\([^>]+\\)\">\\([0-9]+\\)</A> \\([ /:0-9]+\\) \\[\\([^[]+\\)\\][ !]\\(.+\\)$"
+		    "^<DT><A NAME=\"[0-9]+\">\\(</A>\\)?\
+<A HREF=\"\\([^>]+\\)\">\\([0-9]+\\)</A> \\([ /:0-9]+\\) \\[\\([^[]+\\)\\][ !]\\(.+\\)$"
 		    nil t)
 	      (setq url (concat shimbun-ruby-url (match-string 2))
 		    id (format "<%s%05d%%%s>"
@@ -108,10 +104,8 @@
 		    subject (match-string 6))
 	      (if (shimbun-search-id shimbun id)
 		  (throw 'stop nil))
-	      (push (shimbun-make-header
-		     0
-		     (shimbun-mime-encode-string subject)
-		     from date id "" 0 0 url)
+	      (push (shimbun-create-header
+		     0 subject from date id "" 0 0 url)
 		    headers)))
 	  (setq auxs (cdr auxs)))))
     headers))

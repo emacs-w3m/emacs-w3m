@@ -64,8 +64,11 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-sourceforge-jp))
   (let ((pair (assoc (shimbun-current-group-internal shimbun)
 		     shimbun-sourceforge-jp-mailing-lists)))
-    (shimbun-expand-url (or (cdr pair) (car pair))
-			shimbun-sourceforge-jp-base-url)))
+    (concat
+     (shimbun-expand-url (or (cdr pair) (car pair))
+			 shimbun-sourceforge-jp-base-url)
+     "/")
+    ))
 
 (provide 'sb-sourceforge-jp)
 

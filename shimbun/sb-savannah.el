@@ -39,7 +39,7 @@
 
 (luna-define-class shimbun-savannah (shimbun-mhonarc) ())
 
-(defvar shimbun-savannah-url "http://mail.gnu.org/archive/html/")
+(defvar shimbun-savannah-url "http://lists.gnu.org/archive/html/")
 
 (defvar shimbun-savannah-group-path-alist
   '(("bug-gnu-emacs" . "bug-gnu-emacs")
