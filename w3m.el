@@ -4622,7 +4622,10 @@ POST-DATA and REFERER will be sent to the web server with a request."
   (goto-char (point-min))
   (or (when (re-search-forward "<title_alt[ \t\n]+title=\"\\([^\"]+\\)\">"
 			       nil t)
-	(prog1 (w3m-decode-entities-string (match-string 1))
+	(prog1 (w3m-decode-entities-string
+		(mapconcat 'identity
+			   (save-match-data (split-string (match-string 1)))
+			   " "))
 	  (delete-region (match-beginning 0) (match-end 0))))
       (when (and (stringp w3m-current-url)
 		 (string-match "/\\([^/]+\\)/?\\'" w3m-current-url))
