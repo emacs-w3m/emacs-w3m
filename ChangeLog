@@ -1,5 +1,26 @@
 2003-10-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun.el: Define LUNA classes that represent MIME entities
+	such as text/html, image/png etc.
+	(shimbun-entitiy, shimbun-multipart-entity, shimbun-text-entity,
+	shimbun-image-entity): New classes.
+	(shimbun-entity-type, shimbun-entity-cid, shimbun-entity-insert):
+	New methods.
+	(shimbun-make-multipart-entity, shimbun-make-text-entity,
+	shimbun-make-image-entity): New constructors.
+	(shimbun-entity-add-child): New function.
+	(shimbun-mime-replace-image-tags): New function.
+	(shimbun-make-mime-article): Rewritten to use the above classes
+	and functions.
+	(shimbun-mime-boundary-counter): Removed.
+	(shimbun-mime-make-multipart-message): Removed.
+	(shimbun-mime-retrieve-images): Removed.
+
+	* shimbun/sb-zdnet.el (shimbun-make-contents): Reimplemented.
+	(shimbun-zdnet-retrieve-next-pages): Ditto.
+
+2003-10-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
 	* shimbun/sb-zdnet.el (shimbun-make-contents): Small fix.
 
 	* shimbun/sb-zdnet.el (shimbun-zdnet-clean-text-page): New

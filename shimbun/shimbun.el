@@ -328,135 +328,209 @@ Generated article have a multipart/related content-type."
   :group 'shimbun
   :type 'boolean)
 
-(defun shimbun-mime-replace-image-tags (message-id &optional base-url images)
+;;; Base class for shimbun message entities:
+(eval-and-compile
+  (luna-define-class shimbun-entity () (type cid data))
+  (luna-define-internal-accessors 'shimbun-entity))
+
+(luna-define-generic shimbun-entity-type (entity) "Return TYPE of ENTITY.")
+(luna-define-method shimbun-entity-type ((entity shimbun-entity))
+  (shimbun-entity-type-internal entity))
+
+(luna-define-generic shimbun-entity-cid (entity) "Return CID of ENTITY.")
+(luna-define-method shimbun-entity-cid ((entity shimbun-entity))
+  (shimbun-entity-cid-internal entity))
+
+(defun shimbun-entity-set-cid (entity cid)
+  (shimbun-entity-set-cid-internal entity cid))
+(defsetf shimbun-entity-cid shimbun-entity-set-cid)
+
+(luna-define-generic shimbun-entity-insert (entity)
+  "Insert ENTITY as a MIME part.")
+(luna-define-method shimbun-entity-insert ((entity shimbun-entity))
+  (insert "Content-Type: " (shimbun-entity-type entity) "\n")
+  (when (shimbun-entity-cid entity)
+    (insert "Content-ID: <" (shimbun-entity-cid entity) ">\n"))
+  (insert "\n"))
+
+;;; Class for multipart entities:
+(eval-and-compile
+  (luna-define-class shimbun-multipart-entity (shimbun-entity) (boundary))
+  (luna-define-internal-accessors 'shimbun-multipart-entity))
+
+(defvar shimbun-multipart-entity-counter 0)
+
+(luna-define-method initialize-instance :before ((entity
+						  shimbun-multipart-entity)
+						 &rest init-args)
+  (shimbun-multipart-entity-set-boundary-internal
+   entity
+   (apply 'format "===shimbun_%d_%d_%d_%d==="
+	  (incf shimbun-multipart-entity-counter)
+	  (current-time))))
+
+(defun shimbun-make-multipart-entity (type &optional cid)
+  (luna-make-entity 'shimbun-multipart-entity :type type :cid cid))
+
+(luna-define-method shimbun-entity-type ((entity shimbun-multipart-entity))
+  (or (shimbun-entity-type-internal entity)
+      (let ((type
+	     (catch 'type
+	       (dolist (child (shimbun-entity-data-internal entity))
+		 (unless (string-match "\\`text/" (shimbun-entity-type child))
+		   (throw 'type "multipart/related"))))))
+	(concat
+	 (or type "multipart/mixed")
+	 "; boundary=\"" (shimbun-multipart-entity-boundary-internal entity)
+	 "\""
+	 (or (when type
+	       (catch 'start
+		 (dolist (child (shimbun-entity-data-internal entity))
+		   (when (string-match "\\`\\(text/\\|multipart/mixed\\)"
+				       (shimbun-entity-type child))
+		     (throw 'start
+			    (concat "; start=<"
+				    (shimbun-entity-cid child)
+				    ">"))))))
+	     "")))))
+
+(luna-define-method shimbun-entity-insert :after ((entity
+						   shimbun-multipart-entity))
+  (let ((boundary (shimbun-multipart-entity-boundary-internal entity)))
+    (dolist (child (shimbun-entity-data-internal entity))
+      (unless (eq (char-before) ?\n)
+	(insert "\n"))
+      (insert "--" boundary "\n")
+      (shimbun-entity-insert child))
+    (unless (eq (char-before) ?\n)
+      (insert "\n"))
+    (insert "--" boundary "--\n")))
+
+(defun shimbun-entity-add-child (entity &rest children)
+  (shimbun-entity-set-data-internal entity
+				    (nconc
+				     (shimbun-entity-data-internal entity)
+				     children)))
+
+;;; Class of text entities:
+(eval-and-compile
+  (luna-define-class shimbun-text-entity (shimbun-entity) (charset))
+  (luna-define-internal-accessors 'shimbun-text-entity))
+
+(luna-define-method initialize-instance :before ((entity shimbun-text-entity)
+						 &rest init-args)
+  (shimbun-entity-set-type-internal entity "text/html"))
+
+(defun shimbun-make-text-entity (type data &optional cid)
+  (luna-make-entity 'shimbun-text-entity :type type :data data :cid cid))
+
+(luna-define-method shimbun-entity-type ((entity shimbun-text-entity))
+  (unless (shimbun-text-entity-charset-internal entity)
+    (shimbun-text-entity-set-charset-internal
+     entity
+     (upcase
+      (symbol-name
+       (with-temp-buffer
+	 (insert (shimbun-entity-data-internal entity))
+	 (detect-mime-charset-region (point-min) (point-max)))))))
+  (concat (shimbun-entity-type-internal entity)
+	  "; charset=" (shimbun-text-entity-charset-internal entity)))
+
+(luna-define-method shimbun-entity-insert :around ((entity
+						    shimbun-text-entity))
+  (let ((begin (point)))
+    (insert (shimbun-entity-data-internal entity))
+    (unless (shimbun-text-entity-charset-internal entity)
+      (shimbun-text-entity-set-charset-internal
+       entity
+       (upcase (symbol-name (detect-mime-charset-region begin (point))))))
+    (encode-coding-region begin (point)
+			  (mime-charset-to-coding-system
+			   (shimbun-text-entity-charset-internal entity)))
+    (save-excursion
+      (goto-char begin)
+      (luna-call-next-method))))
+
+;;; Class for image entities:
+(eval-and-compile
+  (luna-define-class shimbun-image-entity (shimbun-entity) (disposition))
+  (luna-define-internal-accessors 'shimbun-image-entity))
+
+(luna-define-method initialize-instance :before ((entity shimbun-image-entity)
+						 &rest init-args)
+  (shimbun-entity-set-type-internal entity "application/octet-stream")
+  (shimbun-image-entity-set-disposition-internal entity "inline"))
+
+(defun shimbun-make-image-entity (type data &optional cid)
+  (luna-make-entity 'shimbun-image-entity :type type :data data :cid cid))
+
+(luna-define-method shimbun-entity-insert :around ((entity
+						    shimbun-image-entity))
+  (insert "Content-Transfer-Encoding: base64\n"
+	  "Content-Disposition: "
+	  (shimbun-image-entity-disposition-internal entity) "\n")
+  (luna-call-next-method)
+  (insert
+   (shimbun-base64-encode-string (shimbun-entity-data-internal entity))))
+
+(defun shimbun-mime-replace-image-tags (base-cid &optional base-url images)
   "Replace all occurrences of IMG tags with references to inlined
-image parts.  This function takes a Message-ID as a base string for
-CIDs of inlined image parts, and returns an alist of URLs and CIDs."
+image parts.  This function takes a BASE-CID as a base string for CIDs
+of inlined image parts, and returns an alist of URLs and image
+entities."
   (goto-char (point-min))
-  (let (beg end url img)
+  (let (begin end url img)
     (while (re-search-forward "<img" nil t)
-      (setq beg (point))
+      (setq begin (point))
       (when (search-forward ">" nil t)
 	(setq end (point))
-	(goto-char beg)
+	(goto-char begin)
 	(when (re-search-forward
 	       "src[ \t\r\f\n]*=[ \t\r\f\n]*\"\\([^\"]*\\)\"" end t)
 	  (setq url (shimbun-expand-url (match-string 1) base-url))
 	  (unless (setq img (assoc url images))
-	    (push (setq img (cons url
-				  (format "shimbun.inline.%d.%s"
-					  (length images)
-					  message-id)))
-		  images))
-	  (replace-match (concat "src=\"cid:" (cdr img) "\""))))))
+	    (save-match-data
+	      (with-temp-buffer
+		(set-buffer-multibyte nil)
+		(let ((type (shimbun-retrieve-url url nil t)))
+		  (when type
+		    (push (setq img
+				(cons url
+				      (shimbun-make-image-entity
+				       type
+				       (buffer-string)
+				       (format "shimbun.inline.%d.%s"
+					       (length images) base-cid))))
+			  images))))))
+	  (when img
+	    ;; Only when an image is successfully retrieved, its
+	    ;; source URI should be rewritten.
+	    (replace-match
+	     (concat "src=\"cid:" (shimbun-entity-cid (cdr img)) "\"")))))))
   images)
-
-(defvar shimbun-mime-boundary-counter 0)
-
-(defun shimbun-mime-make-multipart-message (message-id contents
-						       &optional subtype)
-  "Create a multipart message from Message-ID and CONTENTS.
-CONTENTS must be a list of 3-tuples: each 3-tuple consists of a
-content type, a content id, and a content body.  When no content id is
-specified, Message-ID is used as a base string to create a content id."
-  (let ((boundary (apply 'format "===shimbun_%d_%d_%d_%d==="
-			 (incf shimbun-mime-boundary-counter)
-			 (current-time)))
-	(count 0)
-	(start))
-    (while contents
-      (multiple-value-bind (type cid data parameter) (pop contents)
-	(unless (eq (char-before) ?\n)
-	  (insert "\n"))
-	(cond
-	 ((string-match "\\`text/" type)
-	  (let* ((begin (point))
-		 (charset (upcase
-			   (symbol-name
-			    (detect-mime-charset-region begin
-							(progn (insert data)
-							       (point)))))))
-	    (encode-coding-region begin
-				  (point-max)
-				  (mime-charset-to-coding-system charset))
-	    (goto-char begin)
-	    (insert "--" boundary
-		    "\nContent-Type: " type "; charset=" charset
-		    "\nContent-ID: <"
-		    (or cid
-			(setq cid (format "shimbun.text.%d.%s"
-					  (incf count) message-id)))
-		    ">\n\n")))
-	 ((string-match "\\`image/" type)
-	  (insert "--" boundary
-		  "\nContent-Type: " type
-		  "\nContent-ID: <"
-		  (if cid
-		      (concat cid ">\nContent-Disposition: inline")
-		    (concat (setq cid (format "shimbun.image.%d.%s"
-					      (incf count) message-id))
-			    ">"))
-		  "\nContent-Transfer-Encoding: base64\n\n"
-		  (shimbun-base64-encode-string data)))
-	 ((string-match "\\`multipart/" type)
-	  (insert "--" boundary
-		  "\nContent-ID: <"
-		  (or cid
-		      (setq cid
-			    (format "shimbun.multipart.%d.%s"
-				    (incf count) message-id)))
-		  ">\n"
-		  data)))
-	(unless start
-	  (setq start cid))
-	(goto-char (point-max))))
-    (unless (eq (char-before) ?\n)
-      (insert "\n"))
-    (insert "--" boundary "--\n")
-    (goto-char (point-min))
-    (insert "Content-Type: multipart/" (or subtype (setq subtype "related"))
-	    "; boundary=\"" boundary
-	    (if (string= subtype "related")
-		(concat "\"; start=\"<" start ">\"")
-	      "\"")
-	    "\n")
-    boundary))
-
-(defun shimbun-mime-retrieve-images (images)
-  "Returns a list of contents for an alist of IMAGES."
-  (mapcar (lambda (pair)
-	    (with-temp-buffer
-	      (set-buffer-multibyte nil)
-	      (list (shimbun-retrieve-url (car pair) nil t)
-		    (cdr pair)
-		    (buffer-string))))
-	  images))
 
 (defun shimbun-make-mime-article (shimbun header)
   "Make a MIME article according to SHIMBUN and HEADER.
 If article have inline images, generated article have a multipart/related
 content-type if `shimbun-encapsulate-images' is non-nil."
-  (let ((message-id (shimbun-header-id header)) images)
-    (when (string-match "\\`<\\([^>]+\\)>\\'" message-id)
-      (setq message-id (match-string 1 message-id)))
+  (let ((base-cid (shimbun-header-id header)) images)
+    (when (string-match "\\`<\\([^>]+\\)>\\'" base-cid)
+      (setq base-cid (match-string 1 base-cid)))
     (when shimbun-encapsulate-images
       (setq images
-	    (shimbun-mime-replace-image-tags message-id
+	    (shimbun-mime-replace-image-tags base-cid
 					     (shimbun-header-xref header))))
-    (if images
-	(shimbun-mime-make-multipart-message
-	 message-id
-	 (cons (list "text/html" nil (prog1 (buffer-string) (erase-buffer)))
-	       (shimbun-mime-retrieve-images images)))
-      (let ((charset (upcase
-		      (symbol-name
-		       (detect-mime-charset-region (point-min) (point-max))))))
-	(encode-coding-region (point-min) (point-max)
-			      (mime-charset-to-coding-system charset))
-	(insert "Content-Type: text/html; charset=" charset "\n\n")))
-    (goto-char (point-min))
-    (shimbun-header-insert shimbun header)
-    (insert "MIME-Version: 1.0\n")))
+    (let ((body (shimbun-make-text-entity "text/html" (buffer-string))))
+      (erase-buffer)
+      (when images
+	(let ((new (shimbun-make-multipart-entity nil)))
+	  (setf (shimbun-entity-cid body) (concat "shimbun.0." base-cid))
+	  (shimbun-entity-add-child new body)
+	  (apply 'shimbun-entity-add-child new (mapcar 'cdr (nreverse images)))
+	  (setq body new)))
+      (shimbun-header-insert shimbun header)
+      (insert "MIME-Version: 1.0\n")
+      (shimbun-entity-insert body))))
 
 (defsubst shimbun-make-html-contents (shimbun header)
   (let ((case-fold-search t)

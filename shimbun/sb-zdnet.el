@@ -138,7 +138,8 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
 	    nil t)
       (delete-region (match-beginning 0) (match-end 0)))))
 
-(defun shimbun-zdnet-retrieve-next-pages (shimbun base-id url &optional images)
+(defun shimbun-zdnet-retrieve-next-pages (shimbun base-cid url
+						  &optional images)
   (let ((case-fold-search t) (next))
     (goto-char (point-min))
     (when (re-search-forward
@@ -150,13 +151,15 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
     (goto-char (point-max))
     (insert "\n</body>\n</html>\n")
     (when shimbun-encapsulate-images
-      (setq images (shimbun-mime-replace-image-tags base-id url images)))
-    (cons (list "text/html" nil (buffer-string))
-	  (if next
-	      (with-temp-buffer
-		(shimbun-fetch-url shimbun next)
-		(shimbun-zdnet-retrieve-next-pages shimbun base-id next images))
-	    (shimbun-mime-retrieve-images (nreverse images))))))
+      (setq images (shimbun-mime-replace-image-tags base-cid url images)))
+    (let ((body (shimbun-make-text-entity "text/html" (buffer-string)))
+	  (result (when next
+		    (with-temp-buffer
+		      (shimbun-fetch-url shimbun next)
+		      (shimbun-zdnet-retrieve-next-pages shimbun base-cid
+							 next images)))))
+      (list (cons body (car result))
+	    (or (nth 1 result) images)))))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-zdnet) header)
   (let ((case-fold-search t))
@@ -175,51 +178,34 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
 		    (+ 12 (string-to-number (match-string 4)))
 		    (match-string 5))
 	  (buffer-substring (match-beginning 4) (match-end 5))))))
-    (let ((base-id (shimbun-header-id header))
-	  (contents))
-      (when (string-match "\\`<\\([^>]+\\)>\\'" base-id)
-	(setq base-id (match-string 1 base-id)))
-      (setq contents
-	    (shimbun-zdnet-retrieve-next-pages shimbun
-					       base-id
-					       (shimbun-header-xref header)))
-      (if (> (length contents) 1)
-	  (let (texts others)
-	    (erase-buffer)
-	    (dolist (content contents)
-	      (if (string-match "\\`text/" (car content))
-		  (push content texts)
-		(push content others)))
-	    (setq texts (nreverse texts)
-		  others (nreverse others))
-	    (shimbun-mime-make-multipart-message
-	     base-id
-	     (if others
-		 (cons (if (> (length texts) 1)
-			   (with-temp-buffer
-			     (let ((boundary
-				    (shimbun-mime-make-multipart-message
-				     base-id texts "mixed")))
-			       (list "multipart/mixed"
-				     nil
-				     (buffer-string)
-				     boundary)))
-			 (car texts))
-		       others)
-	       texts)
-	     (unless others "mixed")))
-	(let ((charset
-	       (upcase
-		(symbol-name
-		 (detect-mime-charset-region (point-min) (point-max))))))
-	  (encode-coding-region (point-min) (point-max)
-				(mime-charset-to-coding-system charset))
-	  (goto-char (point-min))
-	  (insert "Content-Type: text/html; charset=" charset "\n\n")))
-      (goto-char (point-min))
-      (shimbun-header-insert shimbun header)
-      (insert "MIME-Version: 1.0\n")
-      (buffer-string))))
+    (let ((base-cid (shimbun-header-id header)))
+      (when (string-match "\\`<\\([^>]+\\)>\\'" base-cid)
+	(setq base-cid (match-string 1 base-cid)))
+      (let (body)
+	(multiple-value-bind (texts images)
+	    (shimbun-zdnet-retrieve-next-pages shimbun base-cid
+					       (shimbun-header-xref header))
+	  (erase-buffer)
+	  (if (= (length texts) 1)
+	      (setq body (car texts))
+	    (setq body (shimbun-make-multipart-entity nil
+						      (concat "shimbun.0."
+							      base-cid)))
+	    (let ((i 0))
+	      (dolist (text texts)
+		(setf (shimbun-entity-cid text)
+		      (format "shimbun.%d.%s" (incf i) base-cid))))
+	    (apply 'shimbun-entity-add-child body texts))
+	  (when images
+	    (let ((new (shimbun-make-multipart-entity nil)))
+	      (shimbun-entity-add-child new body)
+	      (apply 'shimbun-entity-add-child new
+		     (mapcar 'cdr (nreverse images)))
+	      (setq body new))))
+	(shimbun-header-insert shimbun header)
+	(insert "MIME-Version: 1.0\n")
+	(shimbun-entity-insert body)))
+    (buffer-string)))
 
 (provide 'sb-zdnet)
 
