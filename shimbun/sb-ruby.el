@@ -92,8 +92,8 @@
 	  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
 	  (let ((case-fold-search t)
 		id url date subject from)
-	    (goto-char (point-min))
-	    (while (re-search-forward
+	    (goto-char (point-max))
+	    (while (re-search-backward
 		    "^<DT><A NAME=\"[0-9]+\"></A><A HREF=\"\\([^>]+\\)\">\\([0-9]+\\)</A> \\([ /:0-9]+\\) \\[\\([^[]+\\)\\] \\(.+\\)$"
 		    nil t)
 	      (setq url (concat shimbun-ruby-url (match-string 1))
@@ -106,7 +106,6 @@
 		    subject (match-string 5))
 	      (if (shimbun-search-id shimbun id)
 		  (throw 'stop nil))
-	      (forward-line 1)
 	      (push (shimbun-make-header
 		     0
 		     (shimbun-mime-encode-string subject)

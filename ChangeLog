@@ -1,3 +1,8 @@
+2002-03-12  SAITO Takuya <reed@lily.freemail.ne.jp>	
+	
+	* shimbun/sb-ruby.el (shimbun-index-url): Search articles
+	from `(point-max)' for checking all articles.
+	
 2002-03-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Release emacs-w3m-1.2.6 from emacs-w3m-1_2 branch.
