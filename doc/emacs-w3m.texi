@@ -3047,8 +3047,9 @@ you are using old @samp{w3m} command.
 @item w3m-history-minimize-in-new-session
 @vindex w3m-history-minimize-in-new-session
 Non-@code{nil} means minimize copied history so that there's only
-current page.  This variable only affects creating of the new session by
-copying.
+current page.  This variable is effective when creating of the new
+session by copying (i.e., @code{w3m-copy-buffer}).  The default value is
+@code{nil}.
 
 @item w3m-history-reuse-history-elements
 @vindex w3m-history-reuse-history-elements
@@ -3056,17 +3057,18 @@ Non-@code{nil} means reuse the history element when re-visiting the
 page.  Otherwise, a new history element will be created even if there
 are elements for the same url in the history.
 
-Emacs-w3m used to do as if it is non-@code{nil}, however it sometimes
-brought about users' dissatisfaction.  For example, if a user visits the
-pages A -> B -> C -> B in order, the operation BACK on the second B
-brings a user to A.  @emph{That's weird!}  The reason why it occurred is
-that the @code{w3m-history} variable only had the list @code{(A B C)} as
-a history and B is the current position for that time.
+Emacs-w3m used to operate as the case in which it is non-@code{nil},
+however it sometimes brought about users' dissatisfaction.  For example,
+if a user visited the pages A -> B -> C -> B in order, performing BACK
+on the second B would let a user visit A.  The reason why a user was
+taken to A rather than C is that the @code{w3m-history} variable only
+had the list @code{(A B C)} as a history and B was the current position
+at that time.
 
-The default value for this variable is @code{nil}, and the
-@code{w3m-history} variable can have the list @code{(A B C B)}.  Where
-contents of two B's are the identical Lisp objects, so the Lisp
-resources won't be much wasted.
+The default value for this variable is @code{nil} which allows the
+@code{w3m-history} variable to have the list @code{(A B C B)}.  Where
+contents of two B's are the identical Lisp objects.  So, too much
+wasting the Lisp resources will be avoided.
 
 See the documentation for the variables @code{w3m-history} and
 @code{w3m-history-flat} for more information.
