@@ -73,7 +73,10 @@
 	(shimbun-retrieve-url
 	 (shimbun-xemacs-concat-url shimbun
 				    (concat (setq aux (car auxs)) "/"))
-	 t)
+	 'reload 'binary)
+	(set-buffer-multibyte t)
+	(decode-coding-region (point-min) (point-max)
+			      (shimbun-coding-system-internal shimbun))
 	(let ((case-fold-search t)
 	      id url subject)
 	  (goto-char (point-max))
@@ -93,10 +96,11 @@
 		(throw 'stop headers)
 	      (push (shimbun-make-header
 		     0
-		     (shimbun-mime-encode-string subject)
-		     (if (looking-at "<td><em>\\([^<]+\\)<")
-			 (match-string 1)
-		       "")
+		     (save-match-data (shimbun-mime-encode-string subject))
+		     (shimbun-mime-encode-string
+		      (if (looking-at "<td><em>\\([^<]+\\)<")
+			  (match-string 1)
+			""))
 		     "" id "" 0 0 url)
 		    headers)
 	      (forward-line -2))))

@@ -1,3 +1,11 @@
+2001-04-26  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-gnome.el (shimbun-get-headers):
+	Retrieve index as binary and decode with shimbun-gnome-coding-system.
+
+	* shimbun/sb-xemacs.el (shimbun-get-headers): Likewise;
+	MIME encode 'from' string.
+
 2001-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-ftp-url): Don't give an url string to the

@@ -71,7 +71,10 @@
 	 (concat (shimbun-url-internal shimbun)
 		 "/" (shimbun-current-group-internal shimbun)
 		 "/" month "/date.html")
-	 t)
+	 'reload 'binary)
+	(set-buffer-multibyte t)
+	(decode-coding-region (point-min) (point-max)
+			      (shimbun-coding-system-internal shimbun))
 	(let (date date-next date-parsed beg end subject id)
 	  (goto-char (point-min))
 	  (while (or date-next
