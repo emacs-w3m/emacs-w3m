@@ -2715,9 +2715,17 @@ or reload the current page in an emacs-w3m buffer.
 
 @item w3m-treat-image-size
 @vindex w3m-treat-image-size
-Non-@code{nil} means let @samp{w3m} mind the ratio of the size of images
-and text.  See also @code{w3m-pixels-per-character} and
-@code{w3m-pixels-per-line}.
+Non-@code{nil} means let the @samp{w3m} command mind the ratio of the
+size of images and text.  The default value is @code{nil}.
+
+If it is non-@code{nil}, the @samp{w3m} command will make a
+@samp{halfdump} which reserves rectangle spaces in which images will be
+put, and also @samp{alt} texts will be truncated or padded with spaces
+so that their display width will be the same as the width of images.
+
+See also @code{w3m-pixels-per-character} and @code{w3m-pixels-per-line}.
+Those values will be passed to the @samp{w3m} command in order to
+compute columns and lines which images occupy.
 
 @item w3m-use-favicon
 @vindex w3m-use-favicon
