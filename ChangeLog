@@ -1,3 +1,14 @@
+2001-11-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-get-headers): Look for the new news
+	in the list page of a group if a group is a member of
+	`shimbun-asahi-groups-should-use-list-page'.
+	(shimbun-asahi-get-headers-in-the-top-page): New function.
+	(shimbun-asahi-get-headers-in-the-list-page): New function.
+	(shimbun-index-url): Use the list page of a group if a group is a
+	member of `shimbun-asahi-groups-should-use-list-page'.
+	(shimbun-asahi-groups-should-use-list-page): New variable.
+
 2001-11-09  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-use-tab-menubar): New user variable.
