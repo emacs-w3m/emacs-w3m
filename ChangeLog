@@ -1,3 +1,11 @@
+2003-11-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-util.el (w3m-last-visited-buffer): Abolished.
+	(w3m-popup-buffer): Do not reset the above variable.
+
+	* w3m.el (w3m-close-window): Do not set the above variable.
+	(w3m): Do not refer the above variable.
+
 2003-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-retrieve-and-render): Use `w3m-message' instead of

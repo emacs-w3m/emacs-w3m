@@ -5948,8 +5948,6 @@ sessions will also be closed.  See also `w3m-quit'."
   (let* ((buffers (w3m-list-buffers t))
 	 (bufs buffers)
 	 buf windows window)
-    (setq w3m-last-visited-buffer
-	  (car (memq (window-buffer (selected-window)) buffers)))
     (w3m-delete-frames-and-windows)
     (while bufs
       (setq buf (pop bufs))
@@ -7016,12 +7014,7 @@ an interactive command in the batch mode."
       nil ;; new-session
       (not url)))) ;; interactive-p
   (let ((nofetch (eq url 'popup))
-	(buffer (unless new-session
-		  (if (and (buffer-live-p w3m-last-visited-buffer)
-			   (with-current-buffer w3m-last-visited-buffer
-			     (eq major-mode 'w3m-mode)))
-		      w3m-last-visited-buffer
-		    (w3m-alive-p t))))
+	(buffer (unless new-session (w3m-alive-p t)))
 	(popup-frame-p (and (not interactive-p) (w3m-popup-frame-p)))
 	(w3m-pop-up-frames (and interactive-p w3m-pop-up-frames))
 	(w3m-pop-up-windows (and interactive-p w3m-pop-up-windows)))

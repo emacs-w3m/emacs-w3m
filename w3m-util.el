@@ -418,13 +418,9 @@ are popped-up as new frames.  This variable is used for the control
 for not deleting frames made for aims other than emacs-w3m sessions.")
 (make-variable-buffer-local 'w3m-initial-frames)
 
-(defvar w3m-last-visited-buffer nil
-  "Variable used to keep an emacs-w3m buffer which the user used last.")
-
 (defun w3m-popup-buffer (buffer)
   "Pop up BUFFER as a new window or a new frame
 according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
-  (setq w3m-last-visited-buffer nil)
   (let ((window (get-buffer-window buffer t))
 	(oframe (selected-frame))
 	(popup-frame-p (w3m-popup-frame-p))
