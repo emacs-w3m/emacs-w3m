@@ -650,7 +650,7 @@ will disclose your private informations, for example:
 
 \(setq w3m-add-referer-regexps
       '(\"^http:\"
-	. \"^http://\\\\(server1\\\\|server2\\\\)\\\\.your-company\\\\.com/\"))
+	. \"^http://\\\\([^./]+\\\\.\\\\)*your-company\\\\.com/\"))
 
 See also the documentation for the option `w3m-add-referer'."
   :group 'w3m
