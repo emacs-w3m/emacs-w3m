@@ -1,6 +1,6 @@
 ;;; sb-zdnet.el --- shimbun backend for Zdnet Japan
 
-;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
@@ -36,25 +36,27 @@
 (defvar shimbun-zdnet-url "http://www.zdnet.co.jp/")
 
 (defvar shimbun-zdnet-group-alist
-  '(("comp" "news/past"
-     "<A HREF=\"/\\(\\(news\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")
-    ("gamespot" "gamespot"
-     "<A HREF=\"\\(\\(gsnews\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")
-    ("enterprise" "enterprise/archives"
-     "<A HREF=\"/\\(\\(enterprise\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")
-    ("broadband" "broadband/news"
-     "<A HREF=\"/\\(\\(broadband\\|broadband/rbb\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")
-    ("macwire" "macwire/news"
-     "<A HREF=\"/\\(\\(macwire\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")
-    ("mobile" "mobile/news"
-     "<A HREF=\"/\\(\\(mobile\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")))
+  (let ((template1 "<A HREF=\"/\\(\\(%s\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\
+/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")
+	(template2 "<A HREF=\"\\(\\(%s\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\
+/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>"))
+    `(("comp" "news/past" ,(format template1 "news"))
+      ("biztrends" "news/biztrends" ,(format template1 "news"))
+      ("gamespot" "gamespot" ,(format template2 "gsnews"))
+      ("enterprise" "enterprise/archives" ,(format template1 "enterprise"))
+      ("broadband" "broadband/news" ,(format template1
+					     "broadband\\|broadband/rbb"))
+      ("macwire" "macwire/news" ,(format template1 "macwire"))
+      ("mobile" "mobile/news" ,(format template1 "mobile")))))
 
 (defvar shimbun-zdnet-from-address "zdnn@softbank.co.jp")
 (defvar shimbun-zdnet-content-start "\\(<!--BODY-->\\|<!--DATE-->\\)")
 (defvar shimbun-zdnet-content-end "\\(<!--BODYEND-->\\|<!--BYLINEEND-->\\|<!--START RBB Logo -->\\)")
 (defvar shimbun-zdnet-x-face-alist
-  '(("default" . "X-Face: 88Zbg!1nj{i#[*WdSZNrn1$Cdfat,zsG`P)OLo=U05q:\
-RM#72\\p;3XZ~j|7T)QC7\"(A;~Hr\n fP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
+  '(("default" . "X-Face: &w=7iU!o,u[!-faU#$3},zAI2\"E-a%!PFv%V5\"(XO>a8PqU>\
+e2!`gk'sks9B5W'f-'p3APL\n L--L8Y@%_e*hagUPo#-ewB4.bTxjM}+*(4\\9@E1irAXc/iW\"\
+d8xA's/bf}5B/e$!0:aO5^x\"eHwHi$\n |!EX8'`SIP3q-Y=|<}\\02|s_pK3850`Q$5l1y5ImB\
+x|3Z|D*vbQ%UY!38ikbc/EnUU_tbHVH\"9Sfk{\n w>zvk!?===x`]c5_-+<@ooVVV#D~F`e0")))
 
 (defvar shimbun-zdnet-expiration-days 31)
 
@@ -108,7 +110,7 @@ RM#72\\p;3XZ~j|7T)QC7\"(A;~Hr\n fP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
 		 (cond ((equal group "gamespot") (concat (shimbun-index-url shimbun) url))
 		       (t (concat shimbun-zdnet-url url))))
 		headers))))
-    (nreverse headers)))
+    headers))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-zdnet) header)
   (let ((case-fold-search t)
