@@ -64,11 +64,12 @@
 
 (require 'pces)    ; as-binary-process
 (require 'mime)    ; SEMI
+(require 'static)
 
 (defvar octet-temp-directory "/tmp"
   "A directory to create temporal files.")
 
-(defvar octet-html-render-function 'w3m-region
+(defvar octet-html-render-function 'octet-w3m-region
   "A function for HTML rendering.")
 
 (defvar octet-suffix-type-alist
@@ -116,7 +117,7 @@ SUBTYPE is symbol to indicate subtype of content-type.")
 (defvar octet-type-filter-alist
   `((msexcel octet-filter-call1       "xlhtml" ("-te")  html-u8)
     (msppt   octet-filter-call1       "ppthtml" nil     html-u8)
-    (msword  octet-filter-call2       "wvHtml"  nil     html-u8)
+    (msword  octet-filter-call2-extra "wvHtml"  nil     html-u8)
     (html    octet-render-html        nil       nil     nil)
     (html-u8 octet-decode-u8-text     nil       nil     html)
     (gzip    octet-filter-call1       "gunzip"  ("-c")  text) ; should guess.
@@ -130,6 +131,9 @@ SUBTYPE is symbol to indicate subtype of content-type.")
 Each element should have the form like:
 \(TYPE FUNCTION FILTER_PROGRAM ARGUMENT NEW-TYPE\)")
 
+(defvar octet-attachments nil)
+(make-variable-buffer-local 'octet-attachments)
+
 (defun octet-render-html (&rest args)
   (funcall octet-html-render-function (point-min) (point-max))
   0)
@@ -139,6 +143,31 @@ Each element should have the form like:
     (erase-buffer)
     (set-buffer-multibyte t)
     (insert (decode-coding-string string 'undecided)))
+  0)
+
+;;; HTML rendering by w3m.el
+(defun w3m-about-octet-attachments (url &optional no-decode no-cache
+					&rest args)
+  (let (buffer attachments)
+    (set-buffer-multibyte nil)
+    (when (string-match "\\`about://octet-attachments/\\([^/]+\\)/" url)
+      (setq buffer (get-buffer (base64-decode-string (match-string 1 url)))
+	    url (substring url (match-end 0))
+	    attachments (with-current-buffer buffer
+			  octet-attachments))
+      (when (and buffer attachments)
+	(insert (cdr (assoc url attachments))))))
+  (car (funcall (symbol-function 'w3m-local-file-type) url)))
+
+(defun octet-w3m-region (beg end)
+  (let ((w3m-display-inline-images t)
+	(w3m-url-hierarchical-schemes '("about"))
+	(octet-w3m-region-target-buffer (current-buffer)))
+    (funcall (symbol-function 'w3m-region)
+	     beg end (concat "about://octet-attachments/"
+			     (base64-encode-string
+			      (buffer-name (current-buffer))) "/"))
+    (setq octet-attachments nil))
   0)
 
 ;; Decode image
@@ -180,7 +209,7 @@ Each element should have the form like:
   0)
 
 (defun octet-filter-call2 (filter &optional args)
-  "Call external octed filter with two arguments (infile, outfile).
+  "Call octed filter with two arguments (infile, outfile).
 Current buffer content is replaced.
 Returns 0 if succeed."
   (let ((infile (make-temp-name "octet"))
@@ -197,6 +226,42 @@ Returns 0 if succeed."
 		     (zerop result))
 	    (erase-buffer)
 	    (insert-file-contents-as-binary outfile))
+	  0)
+      (if (file-exists-p infile) (delete-file infile))
+      (if (file-exists-p outfile) (delete-file outfile))
+      (cd last-dir))))
+
+(defun octet-filter-call2-extra (filter &optional args)
+  "Call octed filter with two arguments (infile, outfile).
+Current buffer content is replaced.
+Also, exta attachments are collected to `octet-attachments'.
+Returns 0 if succeed."
+  (let ((infile (make-temp-name "octet"))
+	(outfile (make-temp-name "octet"))
+	(last-dir default-directory)
+	result extras)
+    (cd octet-temp-directory)
+    (write-region-as-binary (point-min) (point-max) infile nil 'no-msg)
+    (unwind-protect
+	(progn
+	  (setq result (apply 'call-process filter nil nil nil
+			      (append args (list infile outfile))))
+	  (when (and (numberp result)
+		     (zerop result))
+	    (erase-buffer)
+	    (insert-file-contents-as-binary outfile)
+	    (dolist (attach (directory-files "." nil (concat 
+						      (regexp-quote outfile)
+						      ".*\\..*")))
+	      (setq octet-attachments
+		    (cons (cons
+			   attach
+			   (with-temp-buffer
+			     (insert-file-contents-as-binary attach)
+			     (buffer-string)))
+			  octet-attachments))
+	      (if (file-exists-p attach) (delete-file attach))
+	      ))
 	  0)
       (if (file-exists-p infile) (delete-file infile))
       (if (file-exists-p outfile) (delete-file outfile))
@@ -303,13 +368,14 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
   "Find FILE with octet-stream decoding."
   (interactive "fFilename: ")
   (as-binary-input-file	(find-file file))
-  (unwind-protect
-      (octet-buffer)
-    (goto-char (point-min))
-    (set-buffer-modified-p nil)
-    (auto-save-mode -1)
-    (setq buffer-read-only t
-	  truncate-lines t)))
+  (unless buffer-read-only
+    (unwind-protect
+	(octet-buffer)
+      (goto-char (point-min))
+      (set-buffer-modified-p nil)
+      (auto-save-mode -1)
+      (setq buffer-read-only t
+	    truncate-lines t))))
 
 ;;;
 ;; Functions for SEMI.

@@ -1,5 +1,19 @@
 2002-01-30  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* octet.el (toplevel): Require 'static.
+	(octet-html-render-function): Changed default value to
+	`octet-w3m-region.'
+	(octet-type-filter-alist): Changed filter function to
+	`octet-filter-call2-extra'.
+	(octet-attachments): New buffer-local variable.
+	(w3m-about-octet-attachments): New function.
+	(octet-w3m-region): Ditto.
+	(octet-filter-call2-extra): New function.
+	(octet-find-file): Do nothing when buffer is read-only.
+
+	* w3m.el (w3m-about-retrieve): Decode buffer only if the content-type
+	is text.
+
 	* octet.el (octet-guess-type-from-name): Return nil if guess failed.
 	(octet-buffer): Ask octet type if guess failed.
 	(octet-content-type-alist): New variable.

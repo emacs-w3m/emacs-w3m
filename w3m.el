@@ -2756,7 +2756,8 @@ to this buffer."
 			       post-data referer handler)
 		    (w3m-about url no-decode no-cache))))
 	(when type
-	  (encode-coding-region (point-min) (point-max) w3m-coding-system)
+	  (when (string-match "\\`text/" type)
+	    (encode-coding-region (point-min) (point-max) w3m-coding-system))
 	  (set-buffer-multibyte nil)
 	  (when (buffer-name output-buffer)
 	    (let ((temp-buffer (current-buffer)))
