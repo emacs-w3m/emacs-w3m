@@ -654,15 +654,8 @@ Emacs-w3m$B$N%3!<%ICf$G$O!"(B@code{w3m-lynx-like-map} $B$H$$$&JQ?t$GDj5A$5$l$
 $B5A$5$l$F$$$^$9!#%f!<%6$O<+J,$N9%$_$d(Blynx$B!"(Binfo$B$NMxMQ7P83$K4p$E$$$F!"$I$A(B
 $B$i$+$N%-!<%^%C%W$rA*$V$3$H$,$G$-$^$9!#%-!<%^%C%W$rA*Br$9$kJ}K!$K$D$$$F$O(B
 @xref{Customizable Options}$B$r8+$F2<$5$$!#FC$KA*Br$r$7$J$+$C$?>l9g!"(B
-w3m-lynx-like-map$B$,%G%U%)%k%H$N%-!<%^%C%W$H$7$F;H$o$l$^$9!#(B
-
-@c $BJ;5-$9$k!)(B
-$B0J9_$G$O!"(Bw3m-lynx-like-map(@code{lynx})$B$H(Bw3m-info-like-map(@code{info})$B$N(B
-$BN>J}$N%-!<3dEv$F(B($B%-!<%P%$%s%I(B)$B$rJ;5-$7$^$9!#(B
-@c $B$K4p$E$-(BEmacs-w3m$B$N;H$$J}$r5-=R$7$^$9!#5-=RCf(B
-@c $B$K$O!"$KBP$9$k%3%^%s%IL>$bJ;5-$7$^$9!#(B
-@c @code{w3m-info-like-map} $B$r;H$C$F$$$k>l9g$O!"(B@kbd{M-x where-is}$B$r;H$C$F!"(B
-@c $BL\E*$N%3%^%s%I$KBP$9$k%-!<%P%$%s%I$rD4$Y$F2<$5$$!#(B
+w3m-lynx-like-map$B$,%G%U%)%k%H$N%-!<%^%C%W$H$7$F;H$o$l$^$9!#0J9_$G$O!"(B
+w3m-lynx-like-map$B$K4p$E$-(BEmacs-w3m$B$N;H$$J}$r5-=R$7$^$9!#(B
 
 @c $B%^%&%9(B
 $B%?!<%_%J%k0J30$G(BEmacs$B$,F0:n$7$F$$$k>l9g!"Nc$($P(BX Window System$B$N%/%i%$%"(B
@@ -748,8 +741,7 @@ Emacs-w3m $B$N%P%C%U%!$KI=<($5$l$F$$$k%&%'%V%Z!<%8$NCf$G!">oF|:"(B Emacs $B$r
 $B$9(B (@pxref{Customizable Options} $B;2>H(B)$B!#(B
 
 @table @key
-@item RET @code{(lynx, info)}
-@itemx M-x w3m-view-this-url
+@item RET
 @kindex RET
 @findex w3m-view-this-url
 $B8=:_0LCV$N%j%s%/@h$K$"$k%Z!<%8$rI=<($7$^$9!#(B
@@ -766,8 +758,7 @@ emacs-w3m $B$N%P%C%U%!$G$O!"$5$i$KFs$D$N0lHLE*$JJ}K!$G(B URL $B$r;XDj$7$F%Z!<
 $B%8$rI=<($5$;$k$3$H$,$G$-$^$9!#(B
 
 @table @key
-@item RET @code{(lynx, info)}
-@itemx M-x w3m-view-this-url
+@item RET
 @kindex RET
 @findex w3m-view-this-url
 Emacs-w3m $B$N%P%C%U%!$K$*$$$F!"%X%C%@%i%$%s$KI=<($5$l$F$$$k(B URL $B$N0LCV$K(B
@@ -777,25 +768,21 @@ Emacs-w3m $B$N%P%C%U%!$K$*$$$F!"%X%C%@%i%$%s$KI=<($5$l$F$$$k(B URL $B$N0LCV$K
 $B$7$g$&!#$3$N%3%^%s%I$K4X$9$k$5$i$K>\$7$$@bL@$,(B @xref{Emacs-w3m
 Functions} $B$K=q$+$l$F$$$^$9!#(B
 
-@item g @code{(lynx, info)}
-@itemx M-x w3m-goto-url
+@item g
+@kindex g
 @findex w3m-goto-url
 $B8=:_$N%]%$%s%H$N0LCV$K4X78$J$/!"(B@kbd{g} $B%-!<$r2!$9$H%_%K%P%C%U%!$+(B
 $B$i(B URL $B$rM?$($F!"$=$N%Z!<%8$rI=<($9$k$3$H$,$G$-$^$9!#$3$N5!G=$O!"(B
 Gnus $B$d(B Mew $B$rMxMQ$7$F$$$k?M$K$O?F$7$_$d$9$$$b$N$+$b$7$l$^$;$s!#(B
 
-@item c @code{lynx}
-@itemx M-x w3m-print-this-url
+@item c
 @kindex c
 @findex w3m-print-this-url
 $BI=<($7$F$$$k%Z!<%8$N(B URL $B$r%(%3!<%(%j%"$KI=<($9$k$H$H$b$K!"%-%k%j%s%0(B
 $B$K(B URL $B$rA^F~$7$^$9(B ($B$9$J$o$A!"8e$GJL$N>l=j$G(B yank $B$9$k$3$H$,$G$-$^$9(B)$B!#(B
 
-@item u @code{lynx}
-@itemx y @code{info}
-@itemx M-x w3m-print-this-url
+@item u
 @kindex u
-@kindex y
 @findex w3m-print-this-url
 $B8=:_0LCV$N%j%s%/$,;X$7<($9(B URL $B$r%(%3!<%(%j%"$KI=<($9$k$H$H$b$K!"%-%k%j(B
 $B%s%0$K(B URL $B$rA^F~$7$^$9(B ($B$9$J$o$A!"8e$GJL$N>l=j$G(B yank $B$9$k$3$H$,$G$-$^(B
@@ -809,8 +796,8 @@ Gnus $B$d(B Mew $B$rMxMQ$7$F$$$k?M$K$O?F$7$_$d$9$$$b$N$+$b$7$l$^$;$s!#(B
 $B$k$+$b$7$l$^$;$s!#(B
 
 @table @key
-@item R @code{(lynx, info)}
-@itemx M-x w3m-reload-this-page
+@item R
+@kindex R
 @findex w3m-reload-this-page
 $B8=:_I=<($7$F$$$k%Z!<%8$rFI$_9~$_D>$7$^$9!#(B
 @end table
@@ -821,7 +808,11 @@ Gnus $B$d(B Mew $B$rMxMQ$7$F$$$k?M$K$O?F$7$_$d$9$$$b$N$+$b$7$l$^$;$s!#(B
 @findex w3m-scroll-up-or-next-url
 @findex w3m-scroll-down-or-previous-url
 @findex w3m-scroll-right
+@findex w3m-scroll-left
 @vindex w3m-horizontal-scroll-columns
+@findex w3m-shift-left
+@findex w3m-shift-right
+@vindex w3m-horizontal-shift-columns
 @findex w3m-horizontal-recenter
 @findex w3m-next-anchor
 @findex w3m-previous-anchor
@@ -841,22 +832,18 @@ Emacs$B$NI8=`$N%-!<%P%$%s%I$KHf$Y$F(B@code{w3m-mode}$B$G$O!"$h$jC;$$%-!<%9%H%
 $B%/$G%9%/%m!<%k%3%^%s%I72$r8F$S=P$;$k$h$&!"%-!<$,3dEv$F$i$l$F$$$^$9!#%&%'(B
 $B%V%Z!<%8$r1\Mw$7$F$$$k>l9g!"%P%C%U%!Fb$G%F%-%9%H$rF~NO$9$k8D=j$O8B$i$l$F(B
 $B$$$^$9!#=>$C$FB?$/$N%-!<(B(@code{self-insert}$B$,3dEv$F$i$l$F$$$k%-!<(B)$B$O!"(B
-$B!V6u$$$F!W$$$^$9!#(B@code{w3m-mode}$B$G$O!"$=$l$i$N!V6u$$$F!W$$$k%-!<$K?'!9(B
-$B$J%3%^%s%I$r3dEv$F$F$$$^$9!#(B
+$B!V6u$$$F!W$$$^$9!#(B@code{w3m-mode}$B$G$O!"$=$l$i$N!V6u$$$F!W$$$k%-!<$K%9%/%m!<%k(B
+$BEy$N%3%^%s%I$r3dEv$F$F$$$^$9!#(B
 
 @c $B%9%/%m!<%k(B
 @table @key
 @item SPC
-@itemx M-x w3m-scroll-up-or-next-url
 @kindex SPC
 @findex w3m-scroll-up-or-next-url
 $B=gJ}8~$K=D%9%/%m!<%k$7$^$9!#(Bmore$B%3%^%s%I$d(Bless$B%3%^%s%I!"(BEmacs$B$N(B
 @code{view-mode}$B$r;H$C$?$3$H$,$"$l$P!"Fk@w$_$,$"$k$O$:$G$9!#(B
-@end table
 
-@table @key
 @item DEL
-@itemx M-x w3m-scroll-down-or-previous-url
 @kindex DEL
 @findex w3m-scroll-down-or-previous-url
 $B5UJ}8~$K=D%9%/%m!<%k$7$^$9!#(Bless$B%3%^%s%I$d(BEmacs$B$N(B@code{view-mode} $B$r;H$C(B
@@ -865,47 +852,34 @@ Emacs$B$NI8=`$N%-!<%P%$%s%I$KHf$Y$F(B@code{w3m-mode}$B$G$O!"$h$jC;$$%-!<%9%H%
 
 @table @kbd
 @item >
-@itemx M-x w3m-scroll-left
 @kindex >
 @findex w3m-scroll-left
 @vindex w3m-horizontal-scroll-columns
 $B:8$K%9%/%m!<%k$7$^$9!#%9%/%m!<%k$NNL$O(B@code{w3m-horizontal-scroll-columns}
 $B$GM?$($^$9!#(B@code{w3m-horizontal-scroll-columns}$B$N%G%U%)%k%H$NCM$O(B10$B$G$9!#(B
-@end table
 
-@table @kbd
 @item <
-@itemx M-x w3m-scroll-right
 @kindex <
 @findex w3m-scroll-right
 @vindex w3m-horizontal-scroll-columns
 $B1&$K%9%/%m!<%k$7$^$9!#%9%/%m!<%k$NNL$O(B@code{w3m-horizontal-scroll-columns}
 $B$GM?$($^$9!#(B@code{w3m-horizontal-scroll-columns}$B$N%G%U%)%k%H$NCM$O(B10$B$G$9!#(B
-@end table
 
-@table @kbd
 @item .
-@itemx M-x w3m-shift-left
 @kindex .
 @findex w3m-shift-left
 @vindex w3m-horizontal-shift-columns
 $B:8$K%7%U%H$7$^$9(B($B>.9o$_$J?eJ?%9%/%m!<%k(B)$B!#%7%U%H$NNL$O(B@code{w3m-horizontal-shift-columns}
 $B$GM?$($^$9!#(B@code{w3m-horizontal-shift-columns}$B$N%G%U%)%k%H$NCM$O(B2$B$G$9!#(B
-@end table
 
-@table @kbd
 @item ,
-@itemx M-x w3m-shift-right
 @kindex ,
 @findex w3m-shift-right
 @vindex w3m-horizontal-shift-columns
 $B1&$K%7%U%H$7$^$9(B($B>.9o$_$K?eJ?%9%/%m!<%k$G$9(B)$B!#%7%U%H$NNL$O(B@code{w3m-horizontal-shift-columns}
 $B$GM?$($^$9!#(B@code{w3m-horizontal-shift-columns}$B$N%G%U%)%k%H$NCM$O(B2$B$G$9!#(B
-@end table
 
-@table @kbd
 @item M-l
-@itemx M-x w3m-horizontal-recenter
 @kindex M-l
 @findex w3m-horizontal-recenter
 $B8=:_%]%$%s%H$,$"$k0LCV$N%F%-%9%H$,!"?eJ?J}8~$K4X$7$FCf?4$K$J$k$h$&$K(B
@@ -930,7 +904,6 @@ http://www.google.com
 
 @table @key
 @item TAB
-@itemx M-x w3m-next-anchor
 @kindex TAB
 @findex w3m-next-anchor
 $B<!$N%"%s%+!<$X%]%$%s%H$r0\F0$7$^$9!#$h$j87L)$K$O!"(B
@@ -940,45 +913,32 @@ http://www.google.com
 @table @kbd
 @item M-@key{TAB}
 @itemx S-@key{TAB}
-@itemx M-x w3m-previous-anchor
 @kindex M-@key{TAB}
 @kindex S-@key{TAB}
 @findex w3m-previous-anchor
 $BA0$N%"%s%+!<$X%]%$%s%H$r0\F0$7$^$9!#$h$j87L)$K$O!"(B
 $B%]%$%s%H$N0LCV$+$i5UJ}8~$G:G$b6a$$%"%s%+!<$X0\F0$7$^$9!#(B
-@end table
 
-@table @kbd
 @item ]
-@itemx M-x w3m-next-form
 @kindex ]
 @findex w3m-next-form
 $B<!$N%U%)!<%`$X%]%$%s%H$r0\F0$7$^$9!#$h$j87L)$K$O!"(B
 $B%]%$%s%H$N0LCV$+$i=gJ}8~$G:G$b6a$$%U%)!<%`$X0\F0$7$^$9!#(B
-@end table
 
-@table @kbd
 @item [
-@itemx M-x w3m-previous-form
 @kindex [
 @findex w3m-previous-form
 $BA0$N%U%)!<%`$X%]%$%s%H$r0\F0$7$^$9!#$h$j87L)$K$O!"(B
 $B%]%$%s%H$N0LCV$+$i5UJ}8~$G:G$b6a$$%U%)!<%`$X0\F0$7$^$9!#(B
-@end table
 
-@table @kbd
 @item @}
-@itemx M-x w3m-next-image
 @kindex @}
 @findex w3m-next-image
 $B<!$N2hA|$X%]%$%s%H$r0\F0$7$^$9!#$h$j87L)$K$O!"%]%$%s%H$N0LCV$+$i=gJ}8~$G(B
 $B:G$b6a$$2hA|$X0\F0$7$^$9!#$3$N%3%^%s%I$N?6Iq$$$K!"2hA|$,<B:]$K%P%C%U%!$X(B
 $BIA2h$5$l$F$$$k$+$I$&$+$O4X78$"$j$^$;$s!#(B
-@end table
 
-@table @kbd
 @item @{
-@itemx M-x w3m-previous-image
 @kindex @{
 @findex w3m-previous-image
 $BA0$N2hA|$X%]%$%s%H$r0\F0$7$^$9!#$h$j87L)$K$O!"%]%$%s%H$N0LCV$+$i5UJ}8~$G(B
