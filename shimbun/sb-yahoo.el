@@ -85,9 +85,9 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 (luna-define-method shimbun-get-headers ((shimbun shimbun-yahoo)
 					 &optional range)
   (let ((case-fold-search t)
-	end headers)
+	headers)
     (catch 'stop
-      (while (not end)
+      (while t
 	(while (re-search-forward "<a href=\"\\(http://headlines.yahoo.co.jp/hl\\?a=\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)-\\([0-9]+-[^\"]+\\)\\)\">\\([^<]+\\)</a>\\([^0-9]\\|[\n\r]\\)*\\([0-9]+日[^0-9]*\\)?\\([0-9]+\\)時\\([0-9]+\\)分" nil t)
 	  (let ((url (match-string 1))
 		(year (match-string 2))
@@ -114,11 +114,13 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 		   id "" 0 0 url)
 		  headers)))
 	(if (re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>" nil t)
-	    (let ((url (match-string 1)))
-	      (erase-buffer)
-	      (shimbun-retrieve-url url t)
+	    (progn
+	      (shimbun-retrieve-url (prog1
+					(match-string 1)
+				      (erase-buffer))
+				    t)
 	      (goto-char (point-min)))
-	  (setq end t))))
+	  (throw 'stop nil))))
     headers))
 
 (provide 'sb-yahoo)
