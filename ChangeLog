@@ -1,3 +1,7 @@
+2001-04-16  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-about-history): Set w3m work buffer as multibyte.
+
 2001-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-about-history-1, w3m-about-history): Deactivate all

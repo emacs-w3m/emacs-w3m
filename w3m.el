@@ -2708,6 +2708,7 @@ works on Emacs.
 				     0)))
     (w3m-with-work-buffer
       (erase-buffer)
+      (set-buffer-multibyte t)
       (insert source)
       (goto-char (point-min))
       (when (re-search-forward "\\(иж\\)\\|\\(из\\)" nil t)
