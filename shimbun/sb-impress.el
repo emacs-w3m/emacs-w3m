@@ -1,6 +1,6 @@
 ;;; sb-impress.el --- shimbun backend for www.watch.impress.co.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
@@ -31,7 +31,7 @@
 (defvar shimbun-impress-url "http://www.watch.impress.co.jp/")
 
 (defvar shimbun-impress-groups-alist
-  '(("internet" "<a href=\"\\(www/article/\\([0-9]+\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- 本文開始 -->" "<!-- 本文終了 -->" "http://internet.watch.impress.co.jp/")
+  '(("internet" "<a href=\"\\(cda/news/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- 本文開始 -->" "<!-- 本文終了 -->" "http://internet.watch.impress.co.jp/")
     ("pc" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "\\(<hr>\\|<!-- 本文開始 -->\\)" "<!-- 本文終了 -->" "http://pc.watch.impress.co.jp/")
     ("akiba" "<a href=\"\\(hotline/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "\\(<hr>\\|<!-- 本文開始 -->\\)" "<!-- 本文終了 -->")
     ("game" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">" "<!-- 本文開始 -->" "<!-- 本文終了 -->")
