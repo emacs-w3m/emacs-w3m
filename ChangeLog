@@ -1,3 +1,10 @@
+2003-06-17  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-rss.el (shimbun-get-headers): Remove unnecessary
+	temporary variables STIME, ST, BODY, AUTHOR, EXTRA, RDF-NS and
+	CONTENT-NS.
+	(shimbun-rss-get-namespace-prefix): Add doc string.
+	
 2003-06-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-asahi.el (shimbun-server-name): Removed.

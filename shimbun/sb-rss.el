@@ -120,23 +120,22 @@
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-rss)
 					 &optional range)
-  (let (headers from subject date id url stime st body
-		author extra
-		xml dc-ns rdf-ns rss-ns content-ns)
-    (setq xml (xml-parse-region (point-min) (point-max)))
-    ;; See
-    ;; http://feeds.archive.org/validator/docs/howto/declare_namespaces.html
-    ;; for more RSS namespaces.
-    (setq dc-ns (shimbun-rss-get-namespace-prefix xml "http://purl.org/dc/elements/1.1/")
-	  rdf-ns (shimbun-rss-get-namespace-prefix xml "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
-	  rss-ns (shimbun-rss-get-namespace-prefix xml "http://purl.org/rss/1.0/")
-	  content-ns (shimbun-rss-get-namespace-prefix xml "http://purl.org/rss/1.0/modules/content/"))
+  (let* ((xml (xml-parse-region (point-min) (point-max)))
+	 (dc-ns (shimbun-rss-get-namespace-prefix
+		 xml "http://purl.org/dc/elements/1.1/"))
+	 (rss-ns (shimbun-rss-get-namespace-prefix
+		  xml "http://purl.org/rss/1.0/"))
+         ;;(rdf-ns (shimbun-rss-get-namespace-prefix
+         ;;         xml "http://www.w3.org/1999/02/22-rdf-syntax-ns#"))
+         ;;(content-ns (shimbun-rss-get-namespace-prefix
+         ;;             xml "http://purl.org/rss/1.0/modules/content/"))
+	 headers from subject date id url ; extra
+	 )
     (dolist (item (nreverse (shimbun-rss-find-el (intern (concat rss-ns "item")) xml)))
       (catch 'next
 	(when (and (listp item)
 		   (eq (intern (concat rss-ns "item")) (car item))
-		   (setq url (shimbun-rss-node-text rss-ns 'link (cddr item)))
-		   )
+		   (setq url (shimbun-rss-node-text rss-ns 'link (cddr item))))
 	  (setq id (shimbun-rss-build-message-id shimbun url))
 	  (when (shimbun-search-id shimbun id)
 	    (throw 'next nil))
@@ -179,12 +178,12 @@
     node))
 
 (defun shimbun-rss-replace-in-string (string regexp newtext &optional literal)
-      (let ((start 0) tail)
-	(while (string-match regexp string start)
-	  (setq tail (- (length string) (match-end 0)))
-	  (setq string (replace-match newtext nil literal string))
-	  (setq start (- (length string) tail))))
-      string)
+  (let ((start 0) tail)
+    (while (string-match regexp string start)
+      (setq tail (- (length string) (match-end 0)))
+      (setq string (replace-match newtext nil literal string))
+      (setq start (- (length string) tail)))
+    string))
 
 (defun shimbun-rss-find-el (tag data &optional found-list)
   "Find the all matching elements in the data.  Careful with this on
@@ -206,13 +205,15 @@ large documents!"
 				   (append found-list
 					   (shimbun-rss-find-el
 					    tag (cddr bit))))))))
-		data))
+	      data))
   found-list)
 
 (defun shimbun-rss-get-namespace-prefix (el uri)
   "Given EL (containing a parsed element) and URI (containing a string
 that gives the URI for which you want to retrieve the namespace
-prefix), return the prefix."
+prefix), return the prefix.
+See http://feeds.archive.org/validator/docs/howto/declare_namespaces.html
+for more RSS namespaces."
   (let* ((prefix (car (rassoc uri (cadar el))))
 	 (nslist (if prefix
 		     (split-string (symbol-name prefix) ":")))
