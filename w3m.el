@@ -4134,7 +4134,7 @@ argument, when retrieve is complete."
 		(set-buffer-multibyte nil)
 		(w3m-w3m-retrieve-1 url post-data referer no-cache
 				    (or w3m-follow-redirection 0) handler)))
-      (when attr
+      (when (eq (car attr) 200)
 	(if (or no-decode
 		(w3m-decode-encoded-contents (nth 4 attr)))
 	    (let ((temp-buffer (current-buffer)))
@@ -4596,34 +4596,35 @@ argument.  Otherwise, it will be called with nil."
 
 (defun w3m-show-error-information (url charset page-buffer)
   "Create and prepare error information."
-  (let ((case-fold-search t)
-	(header (w3m-cache-request-header url))
-	(errmsg (format "\n<br><h1>Cannot retrieve URL: %s%s</h1>"
-			(format "<a href=\"%s\">%s</a>" url url)
-			(when w3m-process-exit-status
-			  (format " (exit status: %s)"
-				  w3m-process-exit-status)))))
-    (if (or (null header)
-	    (string-match "\\`w3m: Can't load " header))
-	(progn
-	  (erase-buffer)
-	  (insert
-	   errmsg
-	   (format "<br><br><b>%s</b> could not be found."
-		   (w3m-get-server-hostname url))
-	   " Please check the name and try again."))
-      (goto-char (point-min))
-      (when (or (re-search-forward "<body>" nil t)
-		(re-search-forward "<html>" nil t))
-	(goto-char (match-end 0)))
-      (insert errmsg "<br><br><hr><br><br>")
-      (when (or (re-search-forward "</body>" nil t)
-		(re-search-forward "</html>" nil 'max))
-	(goto-char (match-end 0)))
-      (insert "\n<br><br><hr><br><br><h2>Header information</h2><br>\n<pre>"
-	      header "</pre>\n"))
-    (w3m-create-page url "text/html" charset page-buffer)
-    nil)) ; Always return nil.
+  (or (w3m-cache-request-contents url)
+      (let ((case-fold-search t)
+	    (header (w3m-cache-request-header url))
+	    (errmsg (format "\n<br><h1>Cannot retrieve URL: %s%s</h1>"
+			    (format "<a href=\"%s\">%s</a>" url url)
+			    (when w3m-process-exit-status
+			      (format " (exit status: %s)"
+				      w3m-process-exit-status)))))
+	(if (or (null header)
+		(string-match "\\`w3m: Can't load " header))
+	    (progn
+	      (erase-buffer)
+	      (insert
+	       errmsg
+	       (format "<br><br><b>%s</b> could not be found."
+		       (w3m-get-server-hostname url))
+	       " Please check the name and try again."))
+	  (goto-char (point-min))
+	  (when (or (re-search-forward "<body>" nil t)
+		    (re-search-forward "<html>" nil t))
+	    (goto-char (match-end 0)))
+	  (insert errmsg "<br><br><hr><br><br>")
+	  (when (or (re-search-forward "</body>" nil t)
+		    (re-search-forward "</html>" nil 'max))
+	    (goto-char (match-end 0)))
+	  (insert "\n<br><br><hr><br><br><h2>Header information</h2><br>\n<pre>"
+		  header "</pre>\n"))))
+  (w3m-create-page url "text/html" charset page-buffer)
+  nil)
 
 (defun w3m-prepare-content (url type charset)
   "Prepare a content in this buffer based on TYPE."
