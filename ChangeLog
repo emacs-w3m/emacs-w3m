@@ -1,3 +1,14 @@
+2001-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el (w3m-use-toolbar): Use `w3m-image-type-available-p'.
+	(w3m-image-type-available-p): Use `display-images-p' instead of
+	`display-graphic-p'.
+	(w3m-display-inline-image-p): Ditto.
+	(w3m-display-graphic-p): Alias to `display-images-p' instead of
+	`display-graphic-p'.
+	(display-images-p): Make an alias to `display-graphic-p' if it is
+	not available.  It is for Emacs version prior to 21.0.105.
+
 2001-09-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-filter.el (w3m-filter-lwn.net): Add link information to next

@@ -56,14 +56,18 @@
 
 ;; Image handling functions.
 
+;; `display-images-p' has not been available prior to Emacs 21.0.105.
+(unless (fboundp 'display-images-p)
+  (defalias 'display-images-p 'display-graphic-p))
+
 ;; Function which returns non-nil when the current display device can
 ;; show images inline.
-(defalias 'w3m-display-graphic-p 'display-graphic-p)
+(defalias 'w3m-display-graphic-p 'display-images-p)
 
 (defun w3m-display-inline-image-p ()
   "Returns non-nil when images can be displayed under the present
 circumstances."
-  (and w3m-display-inline-image (display-graphic-p)))
+  (and w3m-display-inline-image (display-images-p)))
 
 (defun w3m-create-image (url &optional no-cache referer)
   "Retrieve data from URL and create an image object.
@@ -109,12 +113,11 @@ Buffer string between BEG and END are replaced with IMAGE."
 
 (defun w3m-image-type-available-p (image-type)
   "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
-  (and (display-graphic-p)
+  (and (display-images-p)
        (image-type-available-p image-type)))
 
 ;;; Toolbar
-(defcustom w3m-use-toolbar (and (display-graphic-p)
-				(image-type-available-p 'xpm))
+(defcustom w3m-use-toolbar (w3m-image-type-available-p 'xpm)
   "Non-nil activates toolbar of w3m."
   :group 'w3m
   :type 'boolean)
