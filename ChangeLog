@@ -1,3 +1,24 @@
+2001-05-23  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-expand-file-name-as-url): If file is directory,
+	expand to use 'about://dtree'.
+	(w3m-local-content-type): If url is directory or 'about://dtree/",
+	return "text/html" type.
+	(w3m-goto-url): If URL is local and directory, change URL
+	'file://' to 'about://dtree'.
+	(w3m-halfdump-command): New variable.
+	(w3m-halfdump-command-arguments): Change to defvar.
+	(w3m-halfdump-command-common-arguments): New constant, common
+	arguments for 'halfdump' execution of all w3m variants.
+	(w3m-rendering-region): Use 'w3m-halfdump-command' if
+	setted. Change call process arguments.
+	(w3m-lynx-like-map): Add w3m-gohome() keybind.
+	(w3m-info-like-map): Add w3m-dtree() and w3m-edit-this-url()
+	keybind. Use w3m-gohome() instead of lamda expression.
+	(w3m-mode): Modify doc-string.
+
+	* w3m-dtree.el (w3m-about-dtree): Modify message.
+
 2001-05-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-unoptimize-animated-gif): New function which is

@@ -274,12 +274,17 @@ encoded in the optimized animated gif format and base64.")
       (setq file (w3m-url-to-file-name file)))
   ;; expand to file scheme url considering Win32 environment
   (setq file (expand-file-name file directory))
-  (if (string-match "^\\(.\\):\\(.*\\)" file)
-      (if w3m-use-cygdrive
-	  (concat "file:///cygdrive/"
-		  (match-string 1 file) (match-string 2 file))
-	(concat "file:///" (match-string 1 file) "|" (match-string 2 file)))
-    (concat "file://" file)))
+  (let (prefix)
+    (if (file-directory-p file)
+	(setq prefix "about://dtree"
+	      file (file-name-as-directory file))
+      (setq prefix "file://"))
+    (if (string-match "^\\(.\\):\\(.*\\)" file)
+	(if w3m-use-cygdrive
+	    (concat prefix "/cygdrive/"
+		    (match-string 1 file) (match-string 2 file))
+	  (concat prefix "/" (match-string 1 file) "|" (match-string 2 file)))
+      (concat prefix file))))
 
 (defcustom w3m-home-page
   (or (getenv "HTTP_HOME")
@@ -730,19 +735,26 @@ for a charset indication")
   (if (eq w3m-type 'w3mmee) "-dump=extra,head,source" "-dump_extra")
   "Arguments for 'dump_extra' execution of w3m.")
 
-(defconst w3m-halfdump-command-arguments
-  (nconc
-   (if (eq w3m-type 'w3mmee)
-       (list "-dump=half"
-	     '(if charset "-I")
-	     'charset
-	     "-o" "concurrent=0")
-     (list "-halfdump"))
-   '("-T" "text/html" "-t" tab-width
-     "-cols" (if (< 0 w3m-fill-column)
-		 w3m-fill-column		; fixed columns
-	       (+ (frame-width) (or w3m-fill-column -1))))) ; fit for frame
-   "Arguments for 'halfdump' execution of w3m.")
+(defcustom w3m-halfdump-command nil
+  "*Name of the executable file of w3m. If nil use 'w3m-command'."
+  :group 'w3m
+  :type 'string)
+
+(defvar w3m-halfdump-command-arguments
+  (if (eq w3m-type 'w3mmee)
+      (list "-dump=half"
+	    '(if charset "-I")
+	    'charset
+	    "-o" "concurrent=0")
+    (list "-halfdump"))
+  "*Arguments for 'halfdump' execution of w3m.")
+
+(defconst w3m-halfdump-command-common-arguments
+  '("-T" "text/html" "-t" tab-width
+    "-cols" (if (< 0 w3m-fill-column)
+		w3m-fill-column		; fixed columns
+	      (+ (frame-width) (or w3m-fill-column -1)))) ; fit for frame
+  "Common arguments for 'halfdump' execution of all w3m variants.")
 
 (defconst w3m-arrived-ignored-regexp
   "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\)/.*\\)?$"
@@ -1831,10 +1843,13 @@ This function is imported from mcs-e20.el."
 
 ;;; Retrieve local data:
 (defun w3m-local-content-type (url)
-  (catch 'type-detected
-    (dolist (elem w3m-content-type-alist "unknown")
-      (if (string-match (nth 1 elem) url)
-	  (throw 'type-detected (car elem))))))
+  (if (or (string-match "^about://dtree/" url)
+	  (file-directory-p (w3m-url-to-file-name url)))
+      "text/html"
+    (catch 'type-detected
+      (dolist (elem w3m-content-type-alist "unknown")
+	(if (string-match (nth 1 elem) url)
+	    (throw 'type-detected (car elem)))))))
 
 (defun w3m-local-attributes (url &rest args)
   "Return a list of attributes of URL.
@@ -1874,9 +1889,9 @@ to nil."
 	      (let (jka-compr-compression-info-list
 		    jam-zcat-filename-list
 		    format-alist)
-		(insert-file-contents file))
-	    (insert-file-contents file)))
-	(w3m-local-content-type url)))))
+		(insert-file-contents file)))
+	  (insert-file-contents file)
+	  (w3m-local-content-type url))))))
 
 ;;; Retrieve data via HTTP:
 (defun w3m-remove-redundant-spaces (str)
@@ -2136,7 +2151,7 @@ to nil."
 	  (w3m-form-parse-region start end))
       (w3m-message "Rendering...")
       (apply 'call-process-region
-	     start end w3m-command t t nil
+	     start end (or w3m-halfdump-command w3m-command) t t nil
 	     (delq nil
 		   (mapcar
 		    (lambda (x)
@@ -2144,7 +2159,8 @@ to nil."
 		       ((stringp x) x)
 		       ((setq x (eval x))
 			(if (stringp x) x (prin1-to-string x)))))
-		    w3m-halfdump-command-arguments)))
+		    (append w3m-halfdump-command-arguments
+			    w3m-halfdump-command-common-arguments))))
       (w3m-message "Rendering... done")
       (decode-coding-region (point-min)
 			    (point-max)
@@ -2611,6 +2627,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "?" 'describe-mode)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
+    (define-key map "H" 'w3m-gohome)
     (define-key map "A" 'w3m-antenna)
     (define-key map "W" 'w3m-weather)
     (define-key map "S" 'w3m-search)
@@ -2648,6 +2665,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "d" 'w3m-bookmark-view)
     (define-key map "D" 'w3m-download-this-url)
     (define-key map "e" 'w3m-edit-current-url)
+    (define-key map "E" 'w3m-edit-this-url)
     (define-key map "f" 'undefined) ;; reserved.
     (define-key map "g" 'w3m-goto-url)
     (define-key map "h" 'describe-mode)
@@ -2660,12 +2678,13 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "n" 'w3m-view-next-page)
     (define-key map "\M-n" 'w3m-copy-buffer)
     (define-key map "o" 'w3m-history)
+    (define-key map "T" 'w3m-dtree)
     (define-key map "p" 'w3m-view-previous-page)
     (define-key map "q" 'w3m-close-window)
     (define-key map "Q" 'w3m-quit)
     (define-key map "R" 'w3m-reload-this-page)
     (define-key map "s" 'w3m-search)
-    (define-key map "t" (lambda () (interactive) (w3m-goto-url w3m-home-page)))
+    (define-key map "t" 'w3m-gohome)
     (define-key map "u" 'w3m-view-parent-page)
     (define-key map "v" 'w3m-bookmark-view)
     (define-key map "W" 'w3m-weather)
@@ -2676,9 +2695,6 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
     (define-key map "." 'beginning-of-buffer)
-    ;; FIXME xxxxx
-    ;; (define-key map "D" 'w3m-dtree)
-    ;; (define-key map "E" 'w3m-edit-this-url)
     (setq w3m-info-like-map map)))
 
 (defun w3m-alive-p ()
@@ -2735,6 +2751,9 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 \\[w3m-view-previous-page]	Back to previous page.
 \\[w3m-view-next-page]	Forward to next page.
 \\[w3m-view-parent-page]	Upward to parent page.
+
+\\[w3m-goto-url]	Goto URL.
+\\[w3m-gohome]	Goto home page.
 
 \\[w3m-download-this-url]	Download this url.
 \\[w3m-print-this-url]	Print this url.
@@ -2870,6 +2889,9 @@ or prefix ARG columns."
 		       w3m-current-url)))
     current-prefix-arg))
   (set-text-properties 0 (length url) nil url)
+  ;; directory check at local URL
+  (when (and (w3m-url-local-p url) (file-directory-p (w3m-url-to-file-name url)))
+    (setq url (w3m-expand-file-name-as-url (w3m-url-to-file-name url))))
   (cond
    ;; process mailto: protocol
    ((string-match "^mailto:\\(.*\\)" url)
@@ -2959,7 +2981,6 @@ If input is nil, use default coding-system on w3m."
   (let ((w3m-display-inline-image (if arg t w3m-display-inline-image)))
     (w3m-goto-url w3m-current-url nil
 		  (w3m-read-coding-system "Decode coding-system: "))))
-
 
 ;;;###autoload
 (defun w3m (url &optional args)
