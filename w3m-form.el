@@ -359,7 +359,7 @@ return them with the flag."
 	    ;; Remove status to support forms containing multiple
 	    ;; submit buttons.
 	    (w3m-form-put form name nil))
-	   ((or (string= type "clear")
+	   ((or (string= type "reset")
 		(string= type "hidden")
 		;; Do nothing.
 		))

@@ -4102,6 +4102,9 @@ field for this request."
     (when w3m-current-forms
       ;; Store the current forms in the history structure.
       (w3m-history-plist-put :forms w3m-current-forms nil nil t))
+    (when (and post-data (w3m-history-assoc url))
+      ;; Remove processing url's forms from the history structure.
+      (w3m-history-remove-properties '(:forms) url nil t))
     ;; Retrieve.
     (let ((orig url) name localpath localcgi)
       ;; local directory URL check
