@@ -3,7 +3,10 @@
 	* shimbun/sb-muchy.el (shimbun-get-headers): Bug fixed.
 	Add update status, license fee and ranking description, to
 	SUBJECT.
-	
+	(shimbun-muchy-get-headers): New function.
+	(shimbun-get-headers): Use `shimbun-muchy-get-headers'.
+	Also search `http://muchy.com/whatsold.html".
+
 2001-10-20  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-muchy.el: New file.

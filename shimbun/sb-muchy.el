@@ -50,8 +50,6 @@
 (luna-define-method shimbun-get-headers ((shimbun shimbun-muchy)
 					 header &optional outbuf)
   (let* ((count 0)
-	 (from (shimbun-from-address-internal shimbun))
-	 (group (shimbun-current-group-internal shimbun))
 	 (baseurl (shimbun-url-internal shimbun))
 	 case-fold-search date-list pos headers)
     (catch 'stop
@@ -72,83 +70,108 @@
 	  (setq date-list (cons (match-string 1) date-list))
 	  (delete-region pos (point))
 	  (setq pos (point)))
-	;;(setq date-list (nreverse date-list))
-	(while (and date-list
-		    (search-forward (format "<a name=\"%s\">" (car date-list))
-				    nil t nil))
-	  (let (
-		;; defining region to work
-		(beg (point))
-		(end (save-excursion
-		       (or (and (nth 1 date-list)
-				(search-forward
-				 (format "<a name=\"%s\">"
-					 (nth 1 date-list)) nil t nil)
-				(progn (beginning-of-line) (point-marker)))
-			   (goto-char (point-max))
-			   (point-marker))))
-		innerend hoshi id url subject date)
-	    (catch 'next
-	      ;; getting URL and SUBJECT
-	      (while (search-forward "</table>" end t nil)
-		(setq innerend (save-excursion
-				 (or (search-forward "</table>" end t nil) end)))
-		(if (re-search-forward
-		     "<img src=\"\\(new\\|revise\\|update\\)\\.gif\""
-		     innerend t nil)
-		    (setq subject (upcase (match-string 1))))
-		(or (re-search-forward
-		     "<a href=\"\\(.+\\.html.*\\)\"> *<strong>\\(.+\\)</strong></a>"
-		     innerend t nil)
-		    (throw 'next nil))
-		(setq url (match-string 1)
-		      subject (concat (match-string 2) "/" subject))
-		;; adding license fee to subject
-		(if (re-search-forward
-		     "<small>\\(.*ウェア.*\\|\\$[,0-9]+\\|[,0-9]+円\\)</small>"
-		     innerend t nil)
-		    (setq subject (concat subject "/" (match-string 1))))
-		;; getting DATE
-		(setq date (apply
-			    'shimbun-make-date-string
-			    (shimbun-muchy-parse-time 
-			     (if (re-search-forward
-				  "<small>\\([0-9][0-9][0-9][0-9]/[0-9][0-9]*/[0-9][0-9]*\\)</small>"
-				  innerend t nil)
-				 (match-string 1)
-			       (car date-list)))))
-		;; adding HOSHI to subject
-		(if (and (re-search-forward
-			  "<img border=[0-9]+ src=\"images/hoshi\\([0-9]\\)\\.gif\""
-			  innerend t nil)
-			 (setq hoshi (string-to-number (match-string 1)))
-			 (> hoshi 0))
-		    (setq subject (concat
-				   subject
-				   "/"
-				   (make-string hoshi (string-to-char "★")))))
-		;; building ID
-		(setq id (format "<%s%08d%%%s>" url
-				 (string-to-number
-				  (mapconcat
-				   'identity
-				   (mapcar
-				    'number-to-string
-				    (shimbun-muchy-parse-time (car date-list)))
-				   ""))
-				 group))
-		(if (shimbun-search-id shimbun id)
-		    (throw 'stop nil))
-		(setq url (concat baseurl "/" url))
-		(push (shimbun-make-header
-		       0 (shimbun-mime-encode-string subject)
-		       from date id "" 0 0 url)
-		      headers)
-		(goto-char innerend)
-		(beginning-of-line)))
-	    (setq date-list (cdr date-list))
-	    (delete-region beg end)
-	    (goto-char end)))))
+	(setq headers (shimbun-muchy-get-headers shimbun date-list)
+	      date-list nil)
+	(shimbun-retrieve-url (concat baseurl "whatsold.html") 'reload)	
+	(subst-char-in-region (point-min) (point-max) ?\t ?  t)
+	(goto-char (point-min))
+	(save-excursion
+	  (while (or
+		  (re-search-forward
+		   "<p><a name=\"\\([0-9][0-9][0-9][0-9]/[0-9][0-9]*/[0-9][0-9]*\\)\"></a></p>"
+		   nil t nil)
+		  (throw 'stop nil))
+	    (setq date-list (cons (match-string 1) date-list))))
+	(setq date-list (nreverse date-list))
+	(setq headers (or (shimbun-muchy-get-headers shimbun date-list)
+			  headers))))
+    headers))
+
+(defun shimbun-muchy-get-headers (shimbun date-list)
+  (let* ((count 0)
+	 (from (shimbun-from-address-internal shimbun))
+	 (group (shimbun-current-group-internal shimbun))
+	 (baseurl (shimbun-url-internal shimbun))
+	 case-fold-search date headers)
+    (while (and date-list
+		(search-forward (format "<a name=\"%s\">" (car date-list))
+				nil t nil))
+      ;; getting DATE
+      (setq date (apply 'shimbun-make-date-string
+			(shimbun-muchy-parse-time (car date-list))))
+      (let (
+	    ;; defining region to work
+	    (beg (point))
+	    (end (save-excursion
+		   (or (and (nth 1 date-list)
+			    (search-forward
+			     (format "<a name=\"%s\">"
+				     (nth 1 date-list)) nil t nil)
+			    (progn (beginning-of-line) (point-marker)))
+		       (goto-char (point-max))
+		       (point-marker))))
+	    innerend hoshi id url subject)
+	(catch 'next
+	  ;; getting URL and SUBJECT
+	  (while (search-forward "</table>" end t nil)
+	    (setq innerend (save-excursion
+			     (or (search-forward "</table>" end t nil) end)))
+	    (if (re-search-forward
+		 "<img src=\"\\(new\\|revise\\|update\\)\\.gif\""
+		 innerend t nil)
+		(setq subject (upcase (match-string 1))))
+	    (or (re-search-forward
+		 "<a href=\"\\(.+\\.html.*\\)\"> *<strong>\\(.+\\)</strong></a>"
+		 innerend t nil)
+		(throw 'next nil))
+	    (setq url (match-string 1)
+		  subject (concat (match-string 2) "/" subject))
+	    ;; adding license fee to subject
+	    (if (re-search-forward
+		 "<small>\\(.*ウェア.*\\|\\$[,.0-9]+\\|[,0-9]+円\\)</small>"
+		 innerend t nil)
+		(setq subject (concat subject "/" (match-string 1))))
+            ;; getting DATE
+            ;;(setq date (apply
+            ;;            'shimbun-make-date-string
+            ;;            (shimbun-muchy-parse-time 
+            ;;             (if (re-search-forward
+            ;;                  "<small>\\([0-9][0-9][0-9][0-9]/[0-9][0-9]*/[0-9][0-9]*\\)</small>"
+            ;;                  innerend t nil)
+            ;;                 (match-string 1)
+            ;;               (car date-list)))))
+	    ;; adding HOSHI to subject
+	    (if (and (re-search-forward
+		      "<img border=[0-9]+ src=\"images/hoshi\\([0-9]\\)\\.gif\""
+		      innerend t nil)
+		     (setq hoshi (string-to-number (match-string 1)))
+		     (> hoshi 0))
+		(setq subject (concat
+			       subject
+			       "/"
+			       (make-string hoshi (string-to-char "★")))))
+	    ;; building ID
+	    (setq id (format "<%s%08d%%%s>" url
+			     (string-to-number
+			      (mapconcat
+			       'identity
+			       (mapcar
+				'number-to-string
+				(shimbun-muchy-parse-time (car date-list)))
+			       ""))
+			     group))
+	    (if (shimbun-search-id shimbun id)
+		(throw 'stop nil))
+	    (setq url (concat baseurl url))
+	    (push (shimbun-make-header
+		   0 (shimbun-mime-encode-string subject)
+		   from date id "" 0 0 url)
+		  headers)
+	    (goto-char innerend)
+	    (beginning-of-line)))
+	(setq date-list (cdr date-list))
+	(delete-region beg end)
+	(goto-char end)))
     headers))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-muchy) header)
