@@ -59,6 +59,10 @@
 (defalias 'w3m-display-graphic-p 'ignore)
 (defalias 'w3m-display-inline-image-p 'ignore)
 
+;; Required for old Emacsen.  See the file README for details.
+(eval-and-compile
+  (autoload 'regexp-opt "regexp-opt"))
+
 (defvar w3m-om-coding-system-alist
   '((alternativnyj	. *alternativnyj*)
     (big5		. *big5*)

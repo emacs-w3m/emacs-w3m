@@ -1,3 +1,11 @@
+2001-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (top): Removed autoload for `regexp-opt'.
+
+	* w3m-weather.el (top): Likewise.
+
+	* w3m-om.el (top): Add autoload for `regexp-opt'.
+
 2001-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-entity-regexp): Unified to the use of `regexp-opt';

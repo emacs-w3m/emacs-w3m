@@ -44,10 +44,6 @@
 
 (require 'w3m)
 
-;; Required for old Emacsen.  See the file README for details.
-(eval-and-compile
-  (autoload 'regexp-opt "regexp-opt"))
-
 (defconst w3m-weather-completion-table
   (eval-when-compile
     (let* ((format "http://weather.yahoo.co.jp/weather/jp/%s.html")

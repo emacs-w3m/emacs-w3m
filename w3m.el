@@ -722,10 +722,6 @@ will disclose your private informations, for example:
 			    (cdr entity))))))
 		 latin1-entity))))))
 
-;; Required for old Emacsen.  See the file README for details.
-(eval-and-compile
-  (autoload 'regexp-opt "regexp-opt"))
-
 (defconst w3m-entity-regexp
   (eval-when-compile
     (format "&\\(%s\\|#[0-9]+\\|#x[0-9a-f]+\\);?"
