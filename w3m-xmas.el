@@ -462,8 +462,10 @@ title contains non-ascii characters, show a url name by default."
 	       (eq 'w3m-mode major-mode))
 	  (let* ((len (specifier-instance
 		       (symbol-value 'buffers-tab-default-buffer-line-length)))
-		 (name (if (string-match "^[ -~]+$"
-					 (symbol-value 'w3m-current-title))
+		 (name (if (and (symbol-value 'w3m-current-title)
+				(string-match
+				 "^[ -~]+$"
+				 (symbol-value 'w3m-current-title)))
 			   (symbol-value 'w3m-current-title)
 			 (directory-file-name
 			  (if (string-match "^[^/:]+:/+"

@@ -1,3 +1,8 @@
+2001-11-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (format-buffers-tab-line): Don't use the value of
+	`w3m-current-title' if it is nil.
+
 2001-11-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-exec-filter): Modify regexp pattern of "Wrong
@@ -22,7 +27,7 @@
 
 	* w3m.el (w3m-copy-buffer): Added argument `empty'.
 	(w3m-goto-url-new-session): Call `w3m-copy-buffer' with argument
-	`empty'	non-nil; If new url has `name' portion, goto the base url
+	`empty' non-nil; If new url has `name' portion, goto the base url
 	first.
 	(w3m-view-this-url): Likewise.
 
