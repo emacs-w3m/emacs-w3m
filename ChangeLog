@@ -1,3 +1,25 @@
+2001-11-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-select-buffer-window-ratio): New user option.
+	(w3m-select-buffer-window-size): Remove user option.
+	(w3m-select-buffer-window-size): New function.
+	(w3m-select-buffer-toggle-style): Ditto.
+	(w3m-select-buffer): Use `w3m-select-buffer-window-size' when
+	calculate window size. When call with prefix argument, toggle
+	`w3m-select-buffer-horizontal-window'.
+	(w3m-select-buffer-show-this-line): Use
+	`w3m-select-buffer-window-size' when calculate window size.
+	If exist w3m-buffer another window under control, use it.
+	(w3m-select-buffer-mode-map): Modify the key binding 'C-cC-s' for
+	toggle `w3m-select-buffer-horizontal-window'.
+	(w3m-select-buffer-update): Call `w3m-select-buffer' with two
+	arguments.
+	(w3m-select-buffer-mode): Modify doc-string.
+
+	* w3m-tabmenu.el (w3m-switch-buffer): Change the rule of detecting
+	default buffer.
+	(w3m-tab-menubar-make-items): Ditto.
+
 2001-11-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* mime-w3m.el: Changes to make installation of this module be

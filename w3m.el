@@ -4560,32 +4560,34 @@ If called with 'prefix argument', display arrived-DB history."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-select-buffer-window-size 20
-  "*The size of `w3m-select-buffer'."
+(defcustom w3m-select-buffer-window-ratio `(18 . 12)
+  "*A pair of the parcent of `w3m-select-buffer' window size for the frame size."
   :group 'w3m
-  :type 'integer)
+  :type '(cons (integer :tag "horizontally ratio (n/100)")
+	       (integer :tag "vertically ratio (m/100)")))
 
 (defvar w3m-select-buffer-window nil)
 (defconst w3m-select-buffer-message
   "n: next buffer, p: previous buffer, q: quit.")
 
-(defun w3m-select-buffer (&optional nomsg)
+(defun w3m-select-buffer (&optional toggle nomsg)
   "Display a new buffer to select a buffer among the set of w3m-mode
 buffers.  User can type following keys:
 
 \\{w3m-select-buffer-mode-map}"
-  (interactive)
+  (interactive "P")
+  (when toggle
+    (setq w3m-select-buffer-horizontal-window
+	  (not w3m-select-buffer-horizontal-window))
+    (when (get-buffer-window w3m-select-buffer-name)
+      (delete-windows-on (get-buffer w3m-select-buffer-name))))
   (let ((selected-window (selected-window))
 	(current-buffer (current-buffer)))
     (set-buffer (w3m-get-buffer-create w3m-select-buffer-name))
     (setq w3m-select-buffer-window selected-window)
     (let ((w (or (get-buffer-window w3m-select-buffer-name)
 		 (split-window selected-window
-			       (-
-				(if w3m-select-buffer-horizontal-window
-				    (window-width)
-				  (window-height))
-				w3m-select-buffer-window-size)
+			       (w3m-select-buffer-window-size)
 			       w3m-select-buffer-horizontal-window))))
       (set-window-buffer w (current-buffer))
       (select-window w))
@@ -4596,7 +4598,7 @@ buffers.  User can type following keys:
 (defun w3m-select-buffer-update (&rest args)
   (when (get-buffer-window w3m-select-buffer-name)
     (save-selected-window
-      (w3m-select-buffer 'nomsg))))
+      (w3m-select-buffer nil 'nomsg))))
 
 (defun w3m-select-buffer-generate-contents (current-buffer)
   (let (buffer-read-only)
@@ -4631,13 +4633,13 @@ buffers.  User can type following keys:
     (substitute-key-definition
      'w3m-delete-buffer 'w3m-select-buffer-delete-buffer map w3m-mode-map)
     (substitute-key-definition
-     'w3m-select-buffer 'w3m-select-buffer-quit map w3m-mode-map)
-    (substitute-key-definition
      'w3m-scroll-up-or-next-url
      'w3m-select-buffer-show-this-line map w3m-mode-map)
     (substitute-key-definition
      'w3m-scroll-down-or-previous-url
      'w3m-select-buffer-show-this-line-and-down map w3m-mode-map)
+    (substitute-key-definition
+     'w3m-select-buffer 'w3m-select-buffer-toggle-style map w3m-mode-map)
     (define-key map " " 'w3m-select-buffer-show-this-line)
     (define-key map "g" 'w3m-select-buffer-recheck)
     (define-key map "j" 'w3m-select-buffer-next-line)
@@ -4660,12 +4662,15 @@ Major mode to select a buffer from the set of w3m-mode buffers.
 
 \\[w3m-select-buffer-next-line]	Next line.
 \\[w3m-select-buffer-previous-line]	Previous line.
+
 \\[w3m-select-buffer-show-this-line]	Show the current buffer or scroll up.
 \\[w3m-select-buffer-show-this-line-and-down]	Show the current buffer or scroll down.
 \\[w3m-select-buffer-show-this-line-and-switch]	Show the current buffer and set cusor to w3m buffer.
 \\[w3m-select-buffer-show-this-line-and-quit]	Show the current buffer and quit menu.
-\\[w3m-select-buffer-quit]	Quit menu.
+
+\\[w3m-select-buffer-toggle-style]	Toggle the type of split which horizon or vertical.
 \\[w3m-select-buffer-recheck]	Recheck buffers.
+\\[w3m-select-buffer-quit]	Quit menu.
 "
   (setq major-mode 'w3m-select-buffer-mode
 	mode-name "w3m buffers"
@@ -4696,19 +4701,18 @@ select them."
 	(buffer (w3m-select-buffer-current-buffer)))
     (unless buffer
       (error "No buffer at point"))
-    (unless (window-live-p w3m-select-buffer-window)
-      (if (one-window-p)
-	  (progn
-	    (setq w3m-select-buffer-window (selected-window))
-	    (select-window
-	     (split-window nil
-			   (-
-			    (if w3m-select-buffer-horizontal-window
-				(window-width)
-			      (window-height))
-			    w3m-select-buffer-window-size)
-			   w3m-select-buffer-horizontal-window)))
-	(setq w3m-select-buffer-window (get-largest-window))))
+    (cond
+     ((get-buffer-window buffer)
+      (setq w3m-select-buffer-window (get-buffer-window buffer)))
+     ((window-live-p w3m-select-buffer-window)
+      ())
+     ((one-window-p)
+      (setq w3m-select-buffer-window (selected-window))
+      (select-window
+       (split-window nil
+		     (w3m-select-buffer-window-size)
+		     w3m-select-buffer-horizontal-window)))
+     (t (setq w3m-select-buffer-window (get-largest-window))))
     (set-window-buffer w3m-select-buffer-window buffer)
     (when (and (interactive-p) (eq obuffer buffer))
       (save-selected-window
@@ -4799,6 +4803,18 @@ w3m-mode buffers."
       (set-window-buffer (get-buffer-window w3m-select-buffer-name)
 			 (other-buffer))
     (delete-window (get-buffer-window w3m-select-buffer-name))))
+
+(defun w3m-select-buffer-toggle-style()
+  "Toggle the style of select-buffer."
+  (interactive)
+  (w3m-select-buffer t))
+
+(defun w3m-select-buffer-window-size ()
+  (if w3m-select-buffer-horizontal-window
+      (- (window-width)
+	 (/ (* (frame-width) (car w3m-select-buffer-window-ratio)) 100))
+    (- (window-height)
+       (/ (* (frame-height) (cdr w3m-select-buffer-window-ratio)) 100))))
 
 
 ;;; Header line (emulating Emacs 21).
