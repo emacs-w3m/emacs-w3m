@@ -72,19 +72,19 @@ This variable effected only XEmacs or Emacs 21.")
 	  (<= end begin))
       (mew-mime-text/html cache begin end params execute)
     (mew-elet
-      (let ((file (format "%s.html" (mew-make-temp-name)))
-	    (w3m-display-inline-image mew-w3m-auto-insert-image)
-	    charset wcs)
-	(setq charset (mew-syntax-get-param params "charset"))
-	(if charset 
-	    (setq wcs (mew-charset-to-cs charset))
-	  (setq wcs mew-cs-text-for-write))
-	(mew-frwlet
-	    mew-cs-dummy wcs
-	  (w3m-region (point)
-		      (progn (insert-buffer-substring cache begin end) 
-			     (point)))
-	  (put-text-property (point-min) (1+ (point-min)) 'w3m t))))))
+     (let ((file (format "%s.html" (mew-make-temp-name)))
+	   (w3m-display-inline-image mew-w3m-auto-insert-image)
+	   charset wcs)
+       (setq charset (mew-syntax-get-param params "charset"))
+       (if charset 
+	   (setq wcs (mew-charset-to-cs charset))
+	 (setq wcs mew-cs-text-for-write))
+       (mew-frwlet
+	mew-cs-dummy wcs
+	(w3m-region (point)
+		    (progn (insert-buffer-substring cache begin end) 
+			   (point)))
+	(put-text-property (point-min) (1+ (point-min)) 'w3m t))))))
 
 (defun mew-w3m-cid-retrieve (url &optional no-decode accept-type-regexp no-cache)
   (save-excursion
@@ -105,21 +105,21 @@ This variable effected only XEmacs or Emacs 21.")
 		   mew-syntax-magic))
 	  (setq cidpart
 		(catch 'detcid
-	      (while (>= len part2)
-		(setq cid (mew-syntax-get-cid
-			   (mew-syntax-get-entry syntax (append part1 (list part2)))))
-		(when (and cid (string= cid url))
-		  (throw 'detcid (append part1 (list part2))))
-		(setq part2 (1+ part2)))))
-      (when cidpart
-	(setq cidstx (mew-syntax-get-entry syntax cidpart))
-	(setq beg (mew-syntax-get-begin cidstx))
-	(setq end (mew-syntax-get-end cidstx))
-	(w3m-with-work-buffer
-	  (delete-region (point-min) (point-max))
-	  (set-buffer-multibyte nil)
-	  (insert-buffer-substring cache beg end))
-	(car (mew-syntax-get-ct cidstx))))))))
+		  (while (>= len part2)
+		    (setq cid (mew-syntax-get-cid
+			       (mew-syntax-get-entry syntax (append part1 (list part2)))))
+		    (when (and cid (string= cid url))
+		      (throw 'detcid (append part1 (list part2))))
+		    (setq part2 (1+ part2)))))
+	  (when cidpart
+	    (setq cidstx (mew-syntax-get-entry syntax cidpart))
+	    (setq beg (mew-syntax-get-begin cidstx))
+	    (setq end (mew-syntax-get-end cidstx))
+	    (w3m-with-work-buffer
+	      (delete-region (point-min) (point-max))
+	      (set-buffer-multibyte nil)
+	      (insert-buffer-substring cache beg end))
+	    (car (mew-syntax-get-ct cidstx))))))))
 
 (push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
       w3m-cid-retrieve-function-alist)
