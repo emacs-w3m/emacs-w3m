@@ -1800,10 +1800,9 @@ This function is imported from mcharset.el."
   (if (stringp charset)
       (setq charset (intern (downcase charset))))
   (let ((cs (assq charset w3m-charset-coding-system-alist)))
-    (setq cs (if cs (cdr cs) charset))
-    (if (find-coding-system cs)
-	cs)))
+    (find-coding-system (if cs (cdr cs) charset))))
 
+;; FIXME: 現実に有り得る Content-charset: の調査が必要
 (defun w3m-read-content-charset (prompt &optional default)
   "Read a content charset from the minibuffer, prompting with string PROMPT.
 If the user enters null input, return second argument DEFAULT."
@@ -2144,49 +2143,21 @@ to nil."
 
 ;;; Retrieve data:
 (eval-and-compile
-  (condition-case err
-      (require 'pccl)
-    (error
-     (unless (fboundp 'make-ccl-coding-system)
-       (require 'ccl)
-       ;; from APEL
-       (w3m-static-cond
-	((featurep 'xemacs)
-	 (defun make-ccl-coding-system (name mnemonic docstring decoder encoder)
-	   "\
-Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
-
-CODING-SYSTEM, DECODER and ENCODER must be symbol."
-	   (make-coding-system
-	    name 'ccl docstring
-	    (list 'mnemonic (char-to-string mnemonic)
-		  'decode (symbol-value decoder)
-		  'encode (symbol-value encoder))))
-	 )
-	((>= emacs-major-version 20)
+  (if (and (fboundp 'make-ccl-coding-system)
+	   (>= emacs-major-version 20))
+      (condition-case nil
+	  (require 'pccl)
+	(error
+	 (require 'ccl)
+	 ;; from APEL
 	 (defun make-ccl-coding-system
 	   (coding-system mnemonic docstring decoder encoder)
-	   "\
-Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
-
+	   "Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
 CODING-SYSTEM, DECODER and ENCODER must be symbol."
 	   (make-coding-system coding-system 4 mnemonic docstring
-			       (cons decoder encoder)))
-	 )
-	(t
-	 (defun make-ccl-coding-system
-	   (coding-system mnemonic doc-string decoder encoder)
-	   "\
-Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
+			       (cons decoder encoder)))))
+    (require 'pccl)))
 
-CODING-SYSTEM, DECODER and ENCODER must be symbol."
-	   (setq decoder (symbol-value decoder)
-		 encoder (symbol-value encoder))
-	   (make-coding-system coding-system 4 mnemonic doc-string
-			       nil		; Mule takes one more optional argument: EOL-TYPE.
-			       (cons decoder encoder)))
-	 ))))))
-  
 (define-ccl-program w3m-euc-japan-decoder
   `(2
     (loop
