@@ -2,9 +2,11 @@
 
 ;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Copyright (C) 2002       Katsumi Yamaoka <yamaoka@jpl.org>
+;; Copyright (C) 2005       Tsuyoshi CHO <mfalcon21@hotmail.com>
 
 ;; Authors: NAKAJIMA Mikio  <minakaji@namazu.org>,
-;;          Katsumi Yamaoka <yamaoka@jpl.org>
+;;          Katsumi Yamaoka <yamaoka@jpl.org>,
+;;          Tsuyoshi CHO    <mfalcon21@hotmail.com>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
@@ -78,8 +80,8 @@
       (let ((pages (shimbun-header-index-pages range))
 	    (count 0))
 	(while (and (if pages (<= (incf count) pages) t)
-		    (re-search-forward "<a href=\"\\(20[0-9][0-9]-\
-\\(January\\|February\\|March\\|April\\|May\\|June\
+		    (re-search-forward "<a href=\"\\(20[0-9][0-9]q[1-4]\
+\\|20[0-9][0-9]-\\(January\\|February\\|March\\|April\\|May\\|June\
 \\|July\\|August\\|September\\|October\\|November\\|December\\)\
 \\)/date.html\">"
 				       nil t))
@@ -95,7 +97,7 @@
 	  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
 	  (goto-char (point-max))
 	  (while (re-search-backward "<LI><A HREF=\"\\(\\([0-9]+\\)\\.html\\)\
-\">\\([^\n]+\\)\n</A><A NAME=\"[0-9]+\">&nbsp;</A>\n<I>\\([^\n]+\\)\n</I>"
+\">\\([^\n]+\\)\n</A><A NAME=\"[0-9]+\">&nbsp;</A>\n *<I>\\([^\n]+\\)\n</I>"
 				     nil t)
 	    (setq id (format "<%06d.%s@%s>"
 			     (string-to-number (match-string 2))

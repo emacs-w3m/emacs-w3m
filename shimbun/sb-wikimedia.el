@@ -1,6 +1,6 @@
 ;;; sb-wikimedia.el --- shimbun backend for Wikimedia Mailing list -*- coding: utf-8; -*-
 
-;; Copyright (C) 2004 Tsuyoshi CHO <mfalcon21@hotmail.com>
+;; Copyright (C) 2004, 2005 Tsuyoshi CHO <mfalcon21@hotmail.com>
 
 ;; Author: Tsuyoshi CHO <mfalcon21@hotmail.com>
 ;; Keywords: news
@@ -100,8 +100,9 @@
   (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
   (shimbun-decode-entities)
   (goto-char (point-min))
-  (let ((end (search-forward "<!--beginarticle-->"))
-	name address date)
+  (let* ((case-fold-search t)
+	 (end (search-forward "<!--beginarticle-->"))
+	 name address date)
     (goto-char (point-min))
     (search-forward "</HEAD>")
     (when (re-search-forward "<H1>\\([^\n]+\\)\\(\n +\\)?</H1>" end t nil)

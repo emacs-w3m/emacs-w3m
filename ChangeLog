@@ -1,3 +1,12 @@
+2005-01-03  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
+
+	* shimbun/sb-mailman.el (shimbun-mailman-headers): Modify regex
+	for supporting quarter of a year message list (20xxq[1-4]); modify
+	regex for message link to contain space before "I" tag.
+
+	* shimbun/sb-wikimedia.el (shimbun-wikimedia-l10n-make-contents):
+	Append "case-fold-search" local binding.
+
 2005-01-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Allow not
