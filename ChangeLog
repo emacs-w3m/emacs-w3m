@@ -1,3 +1,39 @@
+2001-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Use `w3m-history-store-position' instead
+	of `w3m-arrived-store-position'.
+	(w3m-lynx-like-map): Bind `w3m-history-restore-position' instead of
+	`w3m-view-previous-point' for the key `C-c C-b'; new key
+	`C-c C-SPC' to bind the command `w3m-history-store-position'.
+	(w3m-view-previous-point): Removed.
+	(w3m-view-next-page): Use `w3m-history-restore-position' instead of
+	`w3m-arrived-restore-position'.
+	(w3m-view-previous-page): Ditto.
+	(w3m-arrived-restore-position): Removed.
+	(w3m-arrived-store-position): Removed.
+
+	* w3m-hist.el (w3m-history-add-arrived-db): Don't specify the 2nd
+	arg in `w3m-history-push'; specify the 2nd in
+	`w3m-history-backward'.
+	(w3m-history-restore-position): New command.
+	(w3m-history-store-position): New command.
+	(w3m-history-plist-put): Use `w3m-history-modify-properties'.
+	(w3m-history-plist-get): Don't specify the 3rd arg in
+	`w3m-history-assoc'.
+	(w3m-history-push): Allow the optional arg `replace-props'; use
+	`w3m-history-modify-properties'.
+	(w3m-history-assoc): Allow the optional arg `replace-props'; always
+	modify the properties of a history element; use
+	`w3m-history-modify-properties'.
+	(w3m-history-backward): Allow the optional arg `set-current'; don't
+	modify the position pointer of `w3m-history' normally; use
+	`w3m-history-save-position'.
+	(w3m-history-forward): Ditto.
+	(w3m-history-with-element): Don't specify the 3rd arg in
+	`w3m-history-assoc'.
+	(w3m-history-modify-properties): New macro.
+	(w3m-history-save-position): New macro.
+
 2001-04-23  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-xmas.el (w3m-setup-header-line): Check `major-mode' to decide
