@@ -1,6 +1,11 @@
 2001-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el (w3mhack-make-package): Remove autoloads and cus-load
+	files before generating.
+
 	* w3m.el (w3m): Added autoload cookie.
+
+2001-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* README: Update for `install-package' and `install-icons'.
 	* README.ja: Ditto.
@@ -22,7 +27,7 @@
 
 2001-03-16  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* w3m.el (w3m-goto-url): Force swith to '*w3m*' buffer.
+	* w3m.el (w3m-goto-url): Force switch to '*w3m*' buffer.
 	(w3m-view-source): Don't add current-url to w3m-url-history|yrotsih.
 
 	* mew-w3m.el (mew-w3m-cid-retrieve): Change mime-part handling.

@@ -155,6 +155,10 @@ to remove some obsolete variables in the first argument VARLIST."
 				   "^[^#]+\\.xpm$"))
 	   (si:message (symbol-function 'message))
 	   manifest make-backup-files noninteractive)
+      (when (file-exists-p custom-load)
+	(delete-file custom-load))
+      (when (file-exists-p (concat custom-load "c"))
+	(delete-file (concat custom-load "c")))
       (with-temp-buffer
 	(let ((standard-output (current-buffer)))
 	  (Custom-make-dependencies lisp-dir))
@@ -168,6 +172,8 @@ to remove some obsolete variables in the first argument VARLIST."
       (message "Updating autoloads for the directory %s..." lisp-dir)
       (when (file-exists-p generated-autoload-file)
 	(delete-file generated-autoload-file))
+      (when (file-exists-p (concat generated-autoload-file "c"))
+	(delete-file (concat generated-autoload-file "c")))
       (defun message (fmt &rest args)
 	"Ignore useless messages while generating autoloads."
 	(cond ((and (string-equal "Generating autoloads for %s..." fmt)
