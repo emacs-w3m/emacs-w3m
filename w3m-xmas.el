@@ -58,7 +58,10 @@
   (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
   (autoload 'update-tab-in-gutter "gutter-items")
   (autoload 'w3m-image-type "w3m")
-  (autoload 'w3m-retrieve "w3m")
+  (autoload 'w3m-retrieve "w3m"))
+
+;; Dummies to shut some XEmacs variants up.
+(eval-when-compile
   (autoload 'unicode-to-char "XEmacs-21.5-b6_and_later"))
 
 (require 'path-util)
@@ -71,9 +74,30 @@
 				      'find-coding-system
 				    'ignore))
 
-(defalias 'w3m-make-ccl-coding-system (if (fboundp 'make-ccl-coding-system)
-					  'make-ccl-coding-system
-					'ignore))
+;; Under XEmacs 21.5-b6 and later, `make-ccl-coding-system' will
+;; signal an error if the coding-system has already been defined.
+;; To make w3m.elc reloadable, we'll define the function as follows:
+;;
+;;(defun w3m-make-ccl-coding-system (coding-system args...)
+;;  (or (find-coding-system coding-system)
+;;      (make-ccl-coding-system coding-system args...)))
+(eval-when-compile
+  (defmacro w3m-xmas-define-w3m-make-ccl-coding-system ()
+    "Make the source form for the function `w3m-make-ccl-coding-system'."
+    (if (and (fboundp 'make-ccl-coding-system)
+	     (fboundp 'find-coding-system))
+	`(defun w3m-make-ccl-coding-system (coding-system mnemonic docstring
+							  decoder encoder)
+	   ,(concat (documentation 'make-ccl-coding-system)
+		    "\n\n\
+NOTE: This function is slightly modified from `make-ccl-coding-system'
+      to be recallable for the existing coding-systems without errors.")
+	   (or (find-coding-system coding-system)
+	       (,(symbol-function 'make-ccl-coding-system)
+		coding-system mnemonic docstring decoder encoder)))
+      '(defalias 'w3m-make-ccl-coding-system 'ignore))))
+
+(w3m-xmas-define-w3m-make-ccl-coding-system)
 
 (unless (fboundp 'coding-system-category)
   (defalias 'coding-system-category 'ignore))

@@ -1,3 +1,9 @@
+2002-05-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-make-ccl-coding-system): Make it recallable for
+	the existing coding-systems (we can now reload w3m.elc under
+	XEmacs 21.5-b6 and later).
+
 2002-05-29  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-w3m-retrieve-1): Don't decode the contents when
