@@ -140,16 +140,11 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
 	    headers))
     headers))
 
-(luna-define-method shimbun-make-contents :before ((shimbun shimbun-sankei)
-						   header)
+(luna-define-method shimbun-clear-contents :before ((shimbun shimbun-sankei)
+						    header)
   ;; Remove advertisement.
-  (let ((case-fold-search t)
-	start)
-    (when (and (re-search-forward "<!--[\t\n ]*ad--honbun[\t\n ]*-->" nil t)
-	       (setq start (match-end 0))
-	       (re-search-forward "<!--[\t\n ]*ad\\.end[\t\n ]*-->" nil t))
-      (delete-region start (match-beginning 0))))
-  (goto-char (point-min)))
+  (shimbun-remove-tags "<!--[\t\n ]*ad--honbun[\t\n ]*-->"
+		       "<!--[\t\n ]*ad\\.end[\t\n ]*-->"))
 
 (provide 'sb-sankei)
 

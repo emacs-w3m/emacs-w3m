@@ -34,28 +34,29 @@
 (defvar shimbun-pcweb-column-url "http://pcweb.mycom.co.jp/column/")
 (defvar shimbun-pcweb-column-groups
   '(;; Under a series
-    "gyokai" "benri" "hitech" "business" "winxp" "bytes" "newyork"
-    "asia" "akiba" "rikei" "osx" "game"
+    "itshihonron" "osx" "yetanother" "svalley" "winxp" "sopinion"
+    "toolexp" "rikei"
     ;; Series end
-    "smart98" "win2k" "msdos" "muteki" "mobile" "win98" "ayashii"
-    "melon" "linux" "scrap" "siterev" "anime" "soho" "trouble"
-    "renai" "dream" "tworld" "camera" "denshi" "tsushin" "shitumon"
-    "nandemo" "hourou" "oshigoto" "tech" "speed"))
+    "game" "asia" "scramble" "hitech" "bytes" "benri"))
 (defvar shimbun-pcweb-column-from-address "pcmail@pc.mycom.co.jp")
-(defvar shimbun-pcweb-column-content-start "</i></font></p>")
+(defvar shimbun-pcweb-column-content-start "<!-- #BeginEditable \"contents\" -->")
 (defvar shimbun-pcweb-column-content-end "<!-- #EndEditable -->")
 (defvar shimbun-pcweb-column-coding-system 'shift_jis)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-pcweb-column))
   (concat (shimbun-url-internal shimbun)
-	  (shimbun-current-group-internal shimbun) ".html"))
+	  (shimbun-current-group-internal shimbun) "/"))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-pcweb-column)
 					 &optional range)
   (let ((case-fold-search t)
-	headers)
+	(headers)
+	(pattern
+	 (format
+	  "<a href=\"\\(/column/%s/\\([0-9][0-9][0-9]\\)/\\)\">\\([^<]+\\)</a>"
+	  (regexp-quote (shimbun-current-group shimbun)))))
     (goto-char (point-min))
-    (while (re-search-forward "<a href=\"\\(.+\\([0-9][0-9][0-9]\\).html\\)\"><font size=\"2\">\\([^<]+\\)</font></a>" nil t)
+    (while (re-search-forward pattern nil t)
       (let ((url (match-string 1))
 	    (num (match-string 2))
 	    (subject (match-string 3))
@@ -66,32 +67,36 @@
 	       0
 	       (shimbun-mime-encode-string subject)
 	       (shimbun-from-address shimbun)
-	       "" id "" 0 0 (concat
-			       (shimbun-url-internal shimbun)
-			       url))
+	       "" id "" 0 0
+	       (shimbun-expand-url url (shimbun-url-internal shimbun)))
 	      headers)))
     headers))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-pcweb-column)
-					   header)
-  (let ((case-fold-search t) (start))
-    (save-excursion
-      (when (re-search-forward
-	     "<i>\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)</i>" nil t)
-	(let ((year (string-to-number (match-string 1)))
-	      (month (string-to-number (match-string 2)))
-	      (day (string-to-number (match-string 3)))
-	      date)
-	  (setq date (shimbun-make-date-string year month day))
-	  (shimbun-header-set-date header date))))
-    (when (and (re-search-forward (shimbun-content-start-internal shimbun)
-				  nil t)
-	       (setq start (point))
-	       (re-search-forward (shimbun-content-end-internal shimbun)
-				  nil t))
-      (delete-region (match-beginning 0) (point-max))
-      (delete-region (point-min) start))
-    (shimbun-header-insert-and-buffer-string shimbun header nil t)))
+(luna-define-method shimbun-article :before
+  ((shimbun shimbun-pcweb-column) header &optional outbuf)
+  (shimbun-header-set-xref header
+			   (shimbun-replace-in-string
+			    (shimbun-header-xref header)
+			    (format "/%s\\([0-9]+\\)\\.html\\'"
+				    (regexp-quote
+				     (shimbun-current-group shimbun)))
+			    "/\\1/")))
+
+(luna-define-method shimbun-make-contents :before
+  ((shimbun shimbun-pcweb-column) header)
+  (let (case-fold-search)
+    (goto-char (point-min))
+    (when (re-search-forward "<!-- #BeginEditable \"author\" -->\
+\\([^<]+\\)<!-- #EndEditable -->" nil t)
+      (shimbun-header-set-from header (match-string 1)))
+    (goto-char (point-min))
+    (when (re-search-forward "<!-- #BeginEditable \"ContentsDate\" -->\
+\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)<!-- #EndEditable -->" nil t)
+      (shimbun-header-set-date header
+			       (shimbun-make-date-string
+				(string-to-number (match-string 1))
+				(string-to-number (match-string 2))
+				(string-to-number (match-string 3)))))))
 
 (provide 'sb-pcweb-column)
 

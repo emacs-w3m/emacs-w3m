@@ -1,5 +1,36 @@
 2004-01-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-proc.el (w3m-process-do-with-temp-buffer): Save the current
+	buffer while executing an asynchronous body.
+
+	* w3m-util.el (w3m-insert-string): Define its `edebug-form-spec'.
+
+	* shimbun/sb-jpo.el (shimbun-make-contents): Abolished.
+	(shimbun-jpo-contents): Abolished.
+	(shimbun-clear-contents): New method.
+
+	* shimbun/sb-kantei.el (shimbun-make-contents): Abolished.
+	(shimbun-clear-contents): New method.
+
+	* shimbun/sb-linux-ja.el (shimbun-linux-ja-remove-tags): Abolished.
+	(shimbun-make-contents): Abolished.
+	(shimbun-clear-contents): New method.
+
+	* shimbun/sb-mainichi.el (shimbun-clear-contents): New method.
+	(shimbun-make-contents): Simplified.
+	(shimbun-mainichi-remove-tags): Abolished.
+
+	* shimbun/sb-pcweb-column.el (shimbun-pcweb-column-groups): Follow
+	the change of the site.
+	(shimbun-pcweb-column-content-start): Ditto.
+	(shimbun-index-url): Ditto.
+	(shimbun-get-headers): Ditto.
+	(shimbun-make-contents): Ditto.
+	(shimbun-article): New method that converts old URLs to new ones.
+
+	* shimbun/sb-sankei.el (shimbun-make-contents): Abolished.
+	(shimbun-clear-contents): New method.
+
 	* shimbun/shimbun.el (shimbun-clear-contents): New method.
 	(shimbun-make-html-contents): Call the above.
 	(shimbun-remove-tags): New function.

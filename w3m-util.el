@@ -772,6 +772,7 @@ pairs from PLIST whose value is nil."
     (setq plist (cddr plist)))
   properties)
 
+(def-edebug-spec w3m-insert-string (form))
 (defmacro w3m-insert-string (string)
   "Insert STRING at point without conversions in either case the
 multibyteness of the buffer."

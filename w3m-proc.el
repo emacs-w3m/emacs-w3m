@@ -500,8 +500,9 @@ evaluated in a temporary buffer."
 		   ,var
 		 (w3m-process-start-process ,var))
 	     (if (w3m-process-p
-		  (setq ,var (let ((handler (cons ',post-handler handler)))
-			       (,post-body ,var))))
+		  (setq ,var (save-current-buffer
+			       (let ((handler (cons ',post-handler handler)))
+				 (,post-body ,var)))))
 		 (if handler
 		     ,var
 		   (w3m-process-start-process ,var))

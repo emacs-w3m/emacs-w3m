@@ -58,26 +58,16 @@
     (error "Cannot find message-id base"))
   (concat "<" (match-string 1 url) "@japan.linux.com>"))
 
-(defsubst shimbun-linux-ja-remove-tags (begin-tag end-tag)
-  (let ((case-fold-search t) (pos))
-    (goto-char (point-min))
-    (while (and
-	    (re-search-forward begin-tag nil t)
-	    (setq pos (match-beginning 0))
-	    (re-search-forward end-tag nil t))
-      (delete-region pos (point)))))
-
-(luna-define-method shimbun-make-contents :before ((shimbun shimbun-linux-ja)
-						   header)
-  (let ((case-fold-search t))
-    (shimbun-linux-ja-remove-tags "<SCRIPT" "</SCRIPT>")
-    (shimbun-linux-ja-remove-tags "<NOSCRIPT" "</NOSCRIPT>")
-    (shimbun-linux-ja-remove-tags
-     "<table [^<>]* summary=\"title\">" "</table>")
-    (shimbun-linux-ja-remove-tags
-     "<div[^<>]*><img src=\"/images/separate-dots.png\"" "</div>")
-    (shimbun-linux-ja-remove-tags "<a href=\"/print.pl\\?" "</a>"))
-  (goto-char (point-min)))
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-linux-ja)
+						    header)
+  (when (luna-call-next-method)
+    (shimbun-remove-tags "<SCRIPT" "</SCRIPT>")
+    (shimbun-remove-tags "<NOSCRIPT" "</NOSCRIPT>")
+    (shimbun-remove-tags "<table [^<>]* summary=\"title\">" "</table>")
+    (shimbun-remove-tags "<div[^<>]*><img src=\"/images/separate-dots.png\""
+			 "</div>")
+    (shimbun-remove-tags "<a href=\"/print.pl\\?" "</a>")
+    t))
 
 (provide 'sb-linux-ja)
 
