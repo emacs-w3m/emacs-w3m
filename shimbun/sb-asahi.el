@@ -1,6 +1,7 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -216,6 +217,33 @@
 	   people))
       ("national" "社会" "%s/" ,@default)
       ("politics" "政治" "%s/" ,@default)
+      ("rss" "RSS" "http://www3.asahi.com/rss/index.rdf"
+       ,(concat
+	 "<title>"
+	 ;; 1. subject
+	 "\\([^<]+\\)"
+	 "</title>\n<link>"
+	 ;; 2. url
+	 "\\(http://www\\.asahi\\.com/"
+	 ;; 3. extra keyword (en)
+	 "\\([^/]+\\)"
+	 "/update/"
+	 ;; 4 and 5. serial number
+	 "\\([0-9]+\\)/\\([0-9]+\\)"
+	 "\\.html\\?ref=rss\\)"
+	 "</link>\n<description/>\n<dc:subject>"
+	 ;; 6. extra keyword (ja)
+	 "\\([^<]+\\)"
+	 "</dc:subject>\n<dc:date>20[0-9][0-9]-"
+	 ;; 7. month
+	 "\\([01][0-9]\\)"
+	 "-"
+	 ;; 8. day.
+	 "\\([0-3][0-9]\\)"
+	 "T"
+	 ;; 9. hour:min:sec
+	 "\\([012][0-9]:[0-5][0-9]:[0-5][0-9]\\)")
+       2 4 5 1 7 8 9 3 nil 6)
       ("science" "科学" "%s/" ,@default)
       ("sports" "スポーツ" "%s/"
        ,(concat
@@ -260,7 +288,7 @@
 regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the
 search result in order of [0]a url, [1,2]a serial number, [3]a subject,
-\[4]a month, [5]a day, [6]an hour:minute and [7,8]an extra keyword.")
+\[4]a month, [5]a day, [6]an hour:minute and [7,8,9]an extra keyword.")
 
 (defvar shimbun-asahi-content-start
   "<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
@@ -295,10 +323,11 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 		shimbun-asahi-group-table)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-asahi))
-  (let ((group (shimbun-current-group-internal shimbun)))
-    (concat shimbun-asahi-url
-	    (format (nth 2 (assoc group shimbun-asahi-group-table))
-		    group))))
+  (let* ((group (shimbun-current-group-internal shimbun))
+	 (index (nth 2 (assoc group shimbun-asahi-group-table))))
+    (if (string-match "\\`http:" index)
+	index
+      (concat shimbun-asahi-url (format index group)))))
 
 (defun shimbun-asahi-get-headers (shimbun)
   "Return a list of headers."
@@ -306,7 +335,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	(from (shimbun-from-address shimbun))
 	(case-fold-search t)
 	regexp jname numbers cyear cmonth month year day serial num extra
-	headers kansai-special)
+	headers kansai-special rss-p)
     (setq regexp (assoc group shimbun-asahi-group-table)
 	  jname (nth 1 regexp)
 	  numbers (nthcdr 4 regexp)
@@ -315,7 +344,8 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 					?. ?/ group)))
 	  cyear (decode-time)
 	  cmonth (nth 4 cyear)
-	  cyear (nth 5 cyear))
+	  cyear (nth 5 cyear)
+	  rss-p (string-equal group "rss"))
     (while (re-search-forward regexp nil t)
       (when (string-equal group "kansai-special")
 	(save-excursion
@@ -332,16 +362,23 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 		       (t
 			cyear))
 	    day (string-to-number (match-string (nth 5 numbers)))
-	    serial (if (and (setq num (nth 1 numbers))
-			    (match-beginning num))
-		       (format "%d%02d%02d.%s"
-			       year month day (match-string num))
-		     (mapconcat 'identity
-				(save-match-data
-				  (split-string
-				   (downcase (match-string (nth 2 numbers)))
-				   "/"))
-				"."))
+	    serial (cond (rss-p
+			  (format "%d%s.%s"
+				  year
+				  (match-string (nth 1 numbers))
+				  (match-string (nth 2 numbers))))
+			 ((and (setq num (nth 1 numbers))
+			       (match-beginning num))
+			  (format "%d%02d%02d.%s"
+				  year month day (match-string num)))
+			 (t
+			  (mapconcat
+			   'identity
+			   (save-match-data
+			     (split-string
+			      (downcase (match-string (nth 2 numbers)))
+			      "/"))
+			   ".")))
 	    extra (or (and (setq num (nth 7 numbers))
 			   (match-beginning num)
 			   (match-string num))
@@ -352,7 +389,9 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	     ;; number
 	     0
 	     ;; subject
-	     (cond (kansai-special
+	     (cond (rss-p
+		    (match-string (nth 3 numbers)))
+		   (kansai-special
 		    (concat "[" kansai-special "] "
 			    (match-string (nth 3 numbers))))
 		   ((and (setq num (nth 7 numbers))
@@ -368,7 +407,12 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 		   (t
 		    (match-string (nth 3 numbers))))
 	     ;; from
-	     from
+	     (if (and rss-p
+		      (setq num (nth 9 numbers))
+		      (setq num (match-string num)))
+		 (save-match-data
+		   (shimbun-replace-in-string from "(RSS" (concat "\\&:" num)))
+	       from)
 	     ;; date
 	     (shimbun-make-date-string
 	      year month day (cond ((and (setq num (nth 6 numbers))
