@@ -62,13 +62,9 @@
   (let ((case-fold-search t)
 	start headers)
     (goto-char (point-min))
-    (when (and (search-forward
-		(format "\n<!-- /news/list start -->\n"
-			(shimbun-current-group-internal shimbun)) nil t)
+    (when (and (search-forward "\n<!-- /news/list start -->\n" nil t)
 	       (setq start (point))
-	       (search-forward
-		(format "\n<!-- /news/list end -->\n"
-			(shimbun-current-group-internal shimbun)) nil t))
+	       (search-forward "\n<!-- /news/list end -->\n" nil t))
       (forward-line -1)
       (save-restriction
 	(narrow-to-region start (point))
