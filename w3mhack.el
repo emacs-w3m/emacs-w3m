@@ -257,30 +257,6 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
  use the `--with-addpath=' configure option with that path name (or
  colon separated those path names) and run configure again."))))
 
-(unless (equal (labels ((foo nil 1) (bar nil 2)) (cons (foo) (bar)))
-	       '(1 . 2))
-  ;; The following definition is a temporary substitution against the
-  ;; bug which was made in the `labels' macro in the Emacs CVS trunk
-  ;; on November 16, 2004 (UTC).
-  (defmacro labels (bindings &rest body)
-    "Make temporary func bindings.
-This is like `flet', except the bindings are lexical instead of dynamic.
-Unlike `flet', this macro is fully compliant with the Common Lisp standard.
-
-\(fn ((FUNC ARGLIST BODY...) ...) FORM...)"
-    (let ((vars nil) (sets nil) (cl-macro-environment cl-macro-environment))
-      (while bindings
-	(let ((var (gensym)))
-	  (push var vars)
-	  (push (list 'function* (cons 'lambda (cdar bindings))) sets)
-	  (push var sets)
-	  (push (list (car (pop bindings)) 'lambda '(&rest cl-labels-args)
-		      (list 'list* '(quote funcall) (list 'quote var)
-			    'cl-labels-args))
-		cl-macro-environment)))
-      (cl-macroexpand-all (list* 'lexical-let vars (cons (cons 'setq sets) body))
-			  cl-macro-environment))))
-
 (defconst shimbun-module-directory "shimbun")
 
 (defconst w3mhack-colon-keywords-file "w3m-kwds.el")
