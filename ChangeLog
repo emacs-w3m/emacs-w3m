@@ -135,7 +135,6 @@
 	* mime-w3m.el (mime-w3m-setup): New function.
 	(mime-w3m-preview-text/html): Call `mime-w3m-setup'.
 
-
 2002-01-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.2.4.
