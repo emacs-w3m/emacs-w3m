@@ -56,7 +56,8 @@ the safe url names.  The value of the variable `w3m-safe-url-regexp'
 will be bound with this value.  You may set this value to nil if you
 consider all the urls to be safe."
   :group 'mime-w3m
-  :type 'regexp)
+  :type '(choice (regexp :tag "Regexp")
+		 (const :tag "All URLs are safe" nil)))
 
 (defvar mime-w3m-mode-map nil)
 (defvar mime-w3m-message-structure nil)
