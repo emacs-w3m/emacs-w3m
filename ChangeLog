@@ -1,3 +1,33 @@
+2001-10-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-type): Use the default value which detected
+	automatically.
+	(w3m-accept-japanese-characters): New internal variable.
+	(w3m-terminal-coding-system): Changed the default value for w3m
+	which doesn't accept Japanese characters.
+	(w3m-input-coding-system): Ditto.
+	(w3m-output-coding-system): Ditto.
+	(w3m-default-coding-system): Changed the default value for the
+	environment that `w3m-language' doesn't equal to "Japanese".
+	(w3m-internal-characters-alist): New constant.
+	(w3m-ccl-write-repeat): New internal function to generate a part
+	of CCL decoder.
+	(w3m-euc-japan-decoder): Modified.
+	(w3m-iso-latin-1-decoder): New CCL program.
+	(w3m-iso-latin-1-encoder): New CCL program which is used when
+	`w3m-use-mule-ucs' equals to nil.
+	(w3m-iso-latin-1): New coding system.
+
+	* w3m-ucs.el (w3m-ucs-generate-ncr-program): New constant.
+	(w3m-euc-japan-encoder): Refer `w3m-ucs-generate-ncr-program'.
+	(w3m-iso-latin-1-encoder): New CCL program.
+
+	* w3m-macro.el (w3m-static-when): New macro.
+	(w3m-static-unless): Ditto.
+
+	* w3m-e21.el (w3m-setup-header-line): Protect aginst the error
+	occurs when `w3m-current-url' isn't string.
+
 2001-10-26  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-mime-text/html-w3m): Support `Xref' header in

@@ -48,6 +48,19 @@
   (if (eval cond) then (` (progn  (,@ else)))))
 (put 'w3m-static-if 'lisp-indent-function 2)
 
+(put 'w3m-static-when 'lisp-indent-function 1)
+(defmacro w3m-static-when (cond &rest body)
+  "Like `when', but evaluate COND at compile time."
+  (if (eval cond)
+      (` (progn (,@ body)))))
+
+(put 'w3m-static-unless 'lisp-indent-function 1)
+(defmacro w3m-static-unless (cond &rest body)
+  "Like `unless', but evaluate COND at compile time."
+  (if (eval cond)
+      nil
+    (` (progn (,@ body)))))
+
 (defmacro w3m-static-cond (&rest clauses)
   "Like `cond', except that it evaluates CONDITION part of each clause at
 compile-time."
