@@ -1,3 +1,9 @@
+2002-07-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-decoder-alist): Don't examine the existence of w3m
+	command when compiling.
+	(w3m-dirlist-cgi-program): Ditto.
+
 2002-07-09  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-mailarc.el (shimbun-make-contents): Insert <base> tag.
