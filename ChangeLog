@@ -4,6 +4,8 @@
 	files before generating.
 
 	* w3m.el (w3m): Added autoload cookie.
+	(w3m-icon-directory): Attempt to set the default value using the
+	way of Wanderlust.
 
 2001-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
