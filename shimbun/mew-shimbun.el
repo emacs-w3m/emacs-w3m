@@ -246,9 +246,12 @@ show below example,
 (defsubst mew-shimbun-scan (fld)
   (w3m-static-cond
    ((fboundp 'mew-local-retrieve)
-    ;; 'scan folder range
     (let ((range (mew-input-range fld nil)))
-      (mew-local-retrieve 'scan fld range)))
+      (if (nlistp range)
+	  ;; 'scan folder range
+	  (mew-local-retrieve 'scan fld range)
+	;; 'scan folder range nil
+	(mew-local-retrieve 'scan fld (nth 0 range) (nth 1 range)))))
    ((fboundp 'mew-scan-local)
     (mew-scan-local (mew-scan-mewls-src fld (mew-input-range fld nil))))
    (t
