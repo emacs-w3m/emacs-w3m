@@ -4483,17 +4483,29 @@ field for this request."
 	      (setq buffer-read-only t)
 	      (set-buffer-modified-p nil)))
 	    (w3m-arrived-add orig w3m-current-title nil nil cs ct)
-	    (setq default-directory
-		  (file-name-as-directory
-		   (let ((file (w3m-url-to-file-name url)))
-		     (if (and file (file-exists-p file))
-			 (if (file-directory-p file)
-			     file
-			   (file-name-directory file))
-		       w3m-profile-directory))))
+	    ;; must be `w3m-current-url'
+	    (setq default-directory (w3m-current-directory w3m-current-url))
 	    (w3m-update-toolbar)
 	    (run-hook-with-args 'w3m-display-hook url)
 	    (w3m-refresh-at-time))))))))
+
+(defun w3m-current-directory (url)
+  (let (file)
+    (file-name-as-directory
+     (if (and url (stringp url))
+	 (if (string-match "\\`ftp://" url)
+	     (progn
+	       (setq file (w3m-convert-ftp-url-for-emacsen url))
+	       (if (string-match "/\\`" file)
+		   file
+		 (file-name-directory file)))
+	   (setq file (w3m-url-to-file-name url))
+	   (if (and file (file-exists-p file))
+	       (if (file-directory-p file)
+		   file
+		 (file-name-directory file))
+	     w3m-profile-directory))
+       w3m-profile-directory))))
 
 (defun w3m-refresh-at-time ()
   (when (and w3m-use-refresh w3m-current-refresh)

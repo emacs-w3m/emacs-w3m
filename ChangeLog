@@ -1,3 +1,9 @@
+2002-01-15  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-current-directory): New function.
+	(w3m-goto-url): Use `w3m-current-directory' when set
+	`default-directory'.
+
 2002-01-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-use-ange-ftp): New option.
