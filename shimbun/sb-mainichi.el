@@ -38,10 +38,8 @@
 (defvar shimbun-mainichi-url "http://www.mainichi.co.jp/")
 (defvar shimbun-mainichi-server-name "毎日新聞")
 (defvar shimbun-mainichi-from-address  "webmaster@mainichi.co.jp")
-(defvar shimbun-mainichi-content-start "<font[\t\n\r ]+class=\"news-text\">\
-\[\t\n\r ]*\\(<[^!<>]+>[\t\n\r ]*\\)+<!--AdSpace-->\
-\[\t\n\r ]*\\(<[^!<>]+>[\t\n\r ]*\\)+<!--AdSpace-->[\t\n\r ]*")
-(defvar shimbun-mainichi-content-end  "\\(<br>[\t\n\r ]*\\)?</font>")
+(defvar shimbun-mainichi-content-start "<font[\t\n ]+class=\"news-text\">")
+(defvar shimbun-mainichi-content-end  "\\(<br>[\t\n ]*\\)?</font>")
 
 (defvar shimbun-mainichi-group-table
   '(("shakai" "社会面" "news/flash/shakai")
@@ -142,9 +140,16 @@
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-mainichi)
 						   header)
   (let ((case-fold-search t))
+    (while (search-forward "\r" nil t)
+      (delete-region (match-beginning 0) (match-end 0)))
     (shimbun-mainichi-remove-tags "<SCRIPT" "</SCRIPT>")
     (shimbun-mainichi-remove-tags "<NOSCRIPT" "</NOSCRIPT>")
     (shimbun-mainichi-remove-tags "<NOEMBED" "</NOEMBED>")
+    (shimbun-mainichi-remove-tags "<table" "</table>")
+    (goto-char (point-min))
+    (while (re-search-forward
+	    "[\t\n ]*<br>[\t\n ]*\\(<!--AdSpace-->[\t\n ]*\\)+" nil t)
+      (delete-region (match-beginning 0) (match-end 0)))
     (goto-char (point-min))
     (when (re-search-forward "<p>［毎日新聞１?[０-９]月[１-３]?[０-９]日］\
  +( \\(20[0-9][0-9]\\)-\\([01][0-9]\\)-\\([0-3][0-9]\\)-\
