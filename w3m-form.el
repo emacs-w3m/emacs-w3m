@@ -179,7 +179,7 @@ If no field in forward, return nil without moving."
 		   buf "&")))))
 
 ;;;###autoload
-(defun w3m-form-parse-region (start end &optional charset)
+(defun w3m-form-parse-buffer ()
   "Parse HTML data in this buffer and return form/map objects.
 Check the cached form/map objects are available, and if available
 return them with the flag."
@@ -188,18 +188,7 @@ return them with the flag."
 	  ;; Mark that `w3m-current-forms' is resumed from history.
 	  (and forms (cons t forms))))
       (nreverse
-       (save-restriction
-	 (narrow-to-region start end)
-	 (if (memq w3m-type '(w3mmee w3m-m17n))
-	     ;; *w3m-work* buffer is 'binary.
-	     (let ((url w3m-current-url)
-		   (buf (current-buffer)))
-	       (with-temp-buffer
-		 (insert-buffer buf)
-		 (goto-char (point-min))
-		 (w3m-decode-buffer url nil "text/html")
-		 (w3m-form-parse-forms)))
-	   (w3m-form-parse-forms))))))
+       (w3m-form-parse-forms))))
 
 (defun w3m-form-parse-forms ()
   "Parse Form/usemap objects in this buffer."

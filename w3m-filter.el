@@ -41,7 +41,8 @@
     ("http://linux.ascii24.com/linux/"
      "<!-- DAC CHANNEL AD START -->" "<!-- DAC CHANNEL AD END -->")
     ("http://lwn.net/" . w3m-filter-lwn.net)
-    ("http://www.google.com/search" . w3m-filter-google.com))
+    ("http://www.google.com/search" . w3m-filter-google.com)
+    ("http://www.zdnet.co.jp/news/" . w3m-filter-www.zdnet.co.jp))
   "Rules to filter advertisements on WEB sites."
   :group 'w3m
   :type '(repeat
@@ -86,16 +87,17 @@
 (defun w3m-filter (url)
   "Exec filtering rule of URL to contents in this buffer."
   (w3m-filter-setup)
-  (when (string-match w3m-filter-server-regexp url)
-    (let ((ident (intern-soft (match-string 1 url) w3m-filter-db)))
-      (when ident
-	(let (functions)
-	  (dolist (site (symbol-value ident) nil)
-	    (when (string-match (car site) url)
-	      (push (cdr site) functions)))
-	  (w3m-with-work-buffer
-	    (save-match-data
-	      (run-hook-with-args-until-success 'functions url))))))))
+  (and (stringp url)
+       (string-match w3m-filter-server-regexp url)
+       (let ((ident (intern-soft (match-string 1 url) w3m-filter-db)))
+	 (when ident
+	   (let (functions)
+	     (dolist (site (symbol-value ident) nil)
+	       (when (string-match (car site) url)
+		 (push (cdr site) functions)))
+	     (w3m-with-work-buffer
+	       (save-match-data
+		 (run-hook-with-args-until-success 'functions url))))))))
 
 (defun w3m-filter-delete-region (start end)
   "Delete region from START pattern to END pattern."
@@ -132,15 +134,37 @@
   "Add <LINK> tag to search results of www.google.com."
   (goto-char (point-max))
   (let ((next (when (re-search-backward
-		     "<a href=\\([^>]+\\)><img src=/\\(intl/[^/]+/\\)nav_next.gif" nil t)
+		     "<a href=\\([^>]+\\)><img src=/\\(intl/[^/]+/\\)nav_next.gif"
+		     nil t)
 		(match-string 1)))
 	(prev (when (re-search-backward
-		     "<a href=\\([^>]+\\)><img src=/\\(intl/[^/]+/\\)nav_previous.gif" nil t)
+		     "<a href=\\([^>]+\\)><img src=/\\(intl/[^/]+/\\)nav_previous.gif"
+		     nil t)
 		(match-string 1))))
     (goto-char (point-min))
     (when (search-forward "<head>" nil t)
       (when prev (insert "\n<link rel=\"prev\" href=\"" prev "\">"))
       (when next (insert "\n<link rel=\"next\" href=\"" next "\">")))
+    t))
+
+(defun w3m-filter-www.zdnet.co.jp (url)
+  (goto-char (point-max))
+  (let ((next (when (re-search-backward
+		     (eval-when-compile
+		       (concat
+			"<a href=\\(" w3m-html-string-regexp "\\)>次のページ</a>"))
+		     nil t)
+		(match-string 1)))
+	(prev (when (re-search-backward
+		     (eval-when-compile
+		       (concat
+			"<a href=\\(" w3m-html-string-regexp "\\)>前のページ</a>"))
+		     nil t)
+		(match-string 1))))
+    (goto-char (point-min))
+    (when (search-forward "<head>" nil t)
+      (when prev (insert "\n<link rel=\"prev\" href=" prev ">"))
+      (when next (insert "\n<link rel=\"next\" href=" next ">")))
     t))
 
 

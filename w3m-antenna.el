@@ -204,9 +204,12 @@ whose elements are:
 (defun w3m-antenna-size (url class &optional no-cache)
   (unless (memq class '(hns time))
     (or (w3m-content-length url no-cache)
-	(progn
-	  (w3m-retrieve url nil no-cache)
+	(let ((type (w3m-retrieve url nil no-cache)))
 	  (w3m-with-work-buffer
+	    (w3m-decode-buffer url nil type)
+	    (w3m-remove-comments)
+	    (when w3m-use-filter
+	      (w3m-filter url))
 	    (buffer-size))))))
 
 (defun w3m-antenna-check-sites ()

@@ -528,7 +528,7 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 		      (and (= emacs-major-version 2)
 			   (>= emacs-beta-version 37))))
 	   (>= emacs-major-version 20))
-	 (setq x (locate-library "un-define.el"))
+	 (setq x (locate-library "un-define"))
 	 (push (file-name-directory x) paths))
     (let (print-level print-length)
       (princ (mapconcat

@@ -1,3 +1,54 @@
+2001-10-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (top): Add autoload for `w3m-form-parse-buffer'.
+	(w3m-display-hook): New option.
+	(w3m-decoder-alist): Reindent.
+	(w3m-use-form): Changed default value.
+	(w3m-dirlist-cgi-program): Changed the expression to get default
+	path.
+	(w3m-work-binary-buffer-name): New constant.
+	(w3m-attributes): Handle URLs which start `about://source/'.
+	(w3m-arrived-add): Fixed codes to remove fragments in the
+	specified URL.
+	(w3m-local-retrieve): Clean up.
+	(w3m-about-retrieve): Handle URLs which start `about://source/'.
+	(w3m-retrieve): Doesn't call `w3m-filter'.
+	(w3m-remove-meta-charset-tags): Renamed from
+	`w3m-remove-meta-tags'.
+	(w3m-rendering-region): Removed.
+	(w3m-rendering-extract-title): New function.
+	(w3m-rendering-half-dump): Ditto.
+	(w3m-rendering-buffer-1): Ditto.
+	(w3m-rendering-unibyte-buffer): Ditto.
+	(w3m-rendering-multibyte-buffer): Ditto.
+	(w3m-exec): Call `w3m-rendering-unibyte-buffer' instead of
+	`w3m-rendering-region'.
+	(w3m-edit-url): Improved to handle URLs which start
+	`about://source/' or `about://header/'.
+	(w3m-goto-url): Removed code to highlight current line in the
+	history; Call hook functions in `w3m-display-hook'.
+	(w3m-region): Call `w3m-rendering-multibyte-buffer' instead of
+	`w3m-rendering-region'.
+	(w3m-about): Clean up.
+	(w3m-about-source): Removed.
+	(w3m-view-source): Make URLs which start `about:' available.
+	(w3m-about-header): Simplified.
+	(w3m-history-highlight-current-url): New function.
+
+	* w3m-form.el (w3m-form-parse-buffer): New function.
+	(w3m-form-parse-region): Removed.
+
+	* w3m-filter.el (w3m-filter-rules): Add the rule to call
+	`w3m-filter-www.zdnet.co.jp'.
+	(w3m-filter): Protect against wrong type argument.
+	(w3m-filter-www.zdnet.co.jp): New function.
+
+	* w3m-antenna.el (w3m-antenna-size): Call `w3m-remove-comments'
+	and `w3m-filter' before checking size of contents.
+
+	* w3mhack.el (w3mhack-load-path): Search `un-define' instead of
+	`un-define.el' to check the path where Mule-UCS is installed.
+
 2001-10-22  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el: New file.

@@ -114,7 +114,7 @@
     "Search files with Namazu." t)
   (autoload 'w3m-about-namazu "w3m-namazu")
   (autoload 'w3m-fontify-forms "w3m-form")
-  (autoload 'w3m-form-parse-region "w3m-form")
+  (autoload 'w3m-form-parse-buffer "w3m-form")
   (autoload 'w3m-filter "w3m-filter"))
 
 ;; Avoid byte-compile warnings.
@@ -410,17 +410,23 @@ apply the patch posted in [emacs-w3m:01119]."
   :group 'w3m-face)
 
 (defcustom w3m-mode-hook nil
-  "*Hook run before w3m-mode called."
+  "*Hook run before `w3m-mode' called."
   :group 'w3m
   :type 'hook)
 
 (defcustom w3m-fontify-before-hook nil
-  "*Hook run before w3m-fontify called."
+  "*Hook run before `w3m-fontify' called."
   :group 'w3m
   :type 'hook)
 
 (defcustom w3m-fontify-after-hook nil
-  "*Hook run after w3m-fontify called."
+  "*Hook run after `w3m-fontify' called."
+  :group 'w3m
+  :type 'hook)
+
+(defcustom w3m-display-hook
+  '(w3m-history-highlight-current-url)
+  "*Hook run at the end of `w3m-goto-url'."
   :group 'w3m
   :type 'hook)
 
@@ -498,11 +504,11 @@ apply the patch posted in [emacs-w3m:01119]."
       (deflate
 	(, (let ((file
 		  (expand-file-name
-		     (if (memq system-type '(windows-nt OS/2 emx))
-			 "../lib/w3m/inflate.exe"
-		       "../lib/w3m/inflate")
-		     (file-name-directory
-		      (w3m-which-command "w3m")))))
+		   (if (memq system-type '(windows-nt OS/2 emx))
+		       "../lib/w3m/inflate.exe"
+		     "../lib/w3m/inflate")
+		   (file-name-directory
+		    (w3m-which-command "w3m")))))
 	     (if (file-executable-p file)
 		 file
 	       "inflate")))
@@ -555,7 +561,7 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
   :type 'integer)
 
-(defcustom w3m-use-form nil
+(defcustom w3m-use-form t
   "*Non-nil means form extension is activated. (EXPERIMENTAL)"
   :group 'w3m
   :type 'boolean
@@ -652,9 +658,12 @@ If 'w3m-dtree, display directory tree by the use of w3m-dtree."
   "*Name of the directory list CGI Program.
 If nil, use an internal CGI of w3m."
   :group 'w3m
-  :type '(choice (const :tag "w3m internal CGI" nil)
-		 (file :tag "path of 'dirlist.cgi'"
-		  "/usr/local/lib/w3m/dirlist.cgi")))
+  :type (` (choice (const :tag "w3m internal CGI" nil)
+		   (file :tag "path of 'dirlist.cgi'"
+			 (, (expand-file-name
+			     "../lib/w3m/dirlist.cgi"
+			     (file-name-directory
+			      (w3m-which-command "w3m"))))))))
 
 (defcustom w3m-add-referer-regexps
   (when (or (not (boundp 'w3m-add-referer))
@@ -739,8 +748,8 @@ will disclose your private informations, for example:
   (eval-when-compile
     (apply 'nconc
 	   (mapcar (lambda (elem)
-	       (mapcar (lambda (x) (cons x (car elem)))
-		       (cdr elem)))
+		     (mapcar (lambda (x) (cons x (car elem)))
+			     (cdr elem)))
 		   '((gzip . ("gzip" "x-gzip" "compress" "x-compress"))
 		     (bzip . ("x-bzip" "bzip" "bzip2"))
 		     (deflate . ("x-deflate" "deflate")))))))
@@ -915,6 +924,7 @@ will disclose your private informations, for example:
 
 (defvar w3m-work-buffer-list nil)
 (defconst w3m-work-buffer-name " *w3m-work*")
+(defconst w3m-work-binary-buffer-name " *w3m-work*binary")
 
 (defconst w3m-meta-content-type-charset-regexp
   (eval-when-compile
@@ -1030,16 +1040,24 @@ elements are:
  5. Real URL.
  6. Base URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
-  (when (string-match "#[^#]+$" url)
-    (setq url (substring url 0 (match-beginning 0))))
+  (when (string-match "\\`\\([^#]*\\)#" url)
+    (setq url (substring url 0 (match-end 1))))
   (cond
-   ((string-equal "about://emacs-w3m.gif" url)
+   ((string= "about://emacs-w3m.gif" url)
     (list "image/gif" nil nil nil nil url url))
-   ((string-match "^about://source/" url)
-    (list "text/html" nil nil nil nil url url))
-   ((string-match "^about:" url)
+   ((string-match "\\`about://source/" url)
+    (let* ((src (substring url (match-end 0)))
+	   (attrs (w3m-attributes src no-cache)))
+      (list "text/plain"
+	    (or (w3m-arrived-content-charset src) (cadr attrs))
+	    (nth 2 attrs)
+	    (nth 3 attrs)
+	    (nth 4 attrs)
+	    (concat "about://source/" (nth 5 attrs))
+	    (nth 6 attrs))))
+   ((string-match "\\`about:" url)
     (list "text/html" w3m-coding-system nil nil nil url url))
-   ((string-match "^\\(file:\\|/\\)" url)
+   ((w3m-url-local-p url)
     (w3m-local-attributes url))
    (t
     (w3m-w3m-attributes url no-cache))))
@@ -1311,8 +1329,8 @@ If N is negative, last N items of LIST is returned."
   "Add URL to hash database of arrived URLs."
   (unless (or (<= (length url) 5);; ignore trifles or about:*.
 	      (string-match w3m-arrived-ignored-regexp url))
-    (let ((parent (when (string-match "#[^#]+$" url)
-		    (substring url 0 (match-beginning 0))))
+    (let ((parent (when (string-match "\\`\\([^#]*\\)#" url)
+		    (substring url 0 (match-end 1))))
 	  ident)
       (unless (and modified-time arrived-time)
 	(let ((ct (current-time)))
@@ -2429,17 +2447,17 @@ to nil."
       (delete-region (point-min) (point-max))
       (set-buffer-multibyte nil)
       (when (file-readable-p file)
-	(if (not (file-directory-p file))
-	    (let ((coding-system-for-read 'binary)
-		  (file-coding-system-for-read 'binary))
-	      (if no-decode
-		  (let (jka-compr-compression-info-list
-			jam-zcat-filename-list
-			format-alist)
-		    (insert-file-contents file)))
-	      (insert-file-contents file))
-	  (w3m-local-dirlist-cgi url))
-	(w3m-local-content-type url)))))
+	(if (file-directory-p file)
+	    (w3m-local-dirlist-cgi url)
+	  (let ((coding-system-for-read 'binary)
+		(file-coding-system-for-read 'binary))
+	    (if no-decode
+		(let (jka-compr-compression-info-list
+		      jam-zcat-filename-list
+		      format-alist)
+		  (insert-file-contents file))
+	      (insert-file-contents file))))
+	(w3m-local-content-type file)))))
 
 (defun w3m-local-dirlist-cgi (url)
   (w3m-message "Reading %s..." url)
@@ -2637,32 +2655,36 @@ to nil."
 	type))))
 
 (defsubst w3m-about-retrieve (url &optional no-decode no-cache)
-  (if (string= "about://emacs-w3m.gif" url)
-      (when (fboundp 'base64-decode-string)
-	(w3m-with-work-buffer
-	  (delete-region (point-min) (point-max))
-	  (set-buffer-multibyte nil)
-	  (insert (eval (list 'base64-decode-string
-			      w3m-emacs-w3m-icon))))
-	"image/gif")
+  (cond
+   ((string= "about://emacs-w3m.gif" url)
+    (when (fboundp 'base64-decode-string)
+      (w3m-with-work-buffer
+	(delete-region (point-min) (point-max))
+	(set-buffer-multibyte nil)
+	(insert (eval (list 'base64-decode-string
+			    w3m-emacs-w3m-icon))))
+      "image/gif"))
+   ((string-match "\\`about://source/" url)
+    (and (w3m-retrieve (substring url (match-end 0)) no-decode no-cache)
+	 "text/plain"))
+   (t
     (w3m-with-work-buffer
       (delete-region (point-min) (point-max))
       (set-buffer-multibyte t)
-      (prog1
-	  (save-current-buffer
-	    (let (func)
-	      (if (and (string-match "^about://\\([^/]+\\)/" url)
-		       (setq func
-			     (intern-soft
-			      (concat "w3m-about-" (match-string 1 url))))
-		       (fboundp func))
-		  (funcall func url no-decode no-cache)
-		(w3m-about url no-decode no-cache))))
-	(unless (string-match "^about://source/" url)
-	  (encode-coding-region (point-min)
-				(point-max)
-				w3m-coding-system))
-	(set-buffer-multibyte nil)))))
+      (let ((type
+	     (save-current-buffer
+	       (let (func)
+		 (if (and (string-match "\\`about://\\([^/]+\\)/" url)
+			  (setq func
+				(intern-soft
+				 (concat "w3m-about-" (match-string 1 url))))
+			  (fboundp func))
+		     (funcall func url no-decode no-cache)
+		   (w3m-about url no-decode no-cache))))))
+	(when type
+	  (encode-coding-region (point-min) (point-max) w3m-coding-system)
+	  (set-buffer-multibyte nil)
+	  type))))))
 
 (defsubst w3m-cid-retrieve (url &optional no-decode no-cache)
   (let ((func
@@ -2678,22 +2700,17 @@ to nil.
 "
   (unless (and w3m-safe-url-regexp
 	       (not (string-match w3m-safe-url-regexp url)))
-    (when (string-match "#[^#]+$" url)
-      (setq url (substring url 0 (match-beginning 0))))
-    (let ((v (cond
-	      ((string-match "^about:" url)
-	       (w3m-about-retrieve url no-decode no-cache))
-	      ((string-match "^cid:" url)
-	       (w3m-cid-retrieve url no-decode no-cache))
-	      ((w3m-url-local-p url)
-	       (w3m-local-retrieve url no-decode))
-	      (t
-	       (w3m-w3m-retrieve url no-decode no-cache post-data referer)))))
-      (and v
-	   (not no-decode)
-	   w3m-use-filter
-	   (w3m-filter url))
-      v)))
+    (when (string-match "\\`\\([^#]*\\)#" url)
+      (setq url (substring url 0 (match-end 1))))
+    (cond
+     ((string-match "\\`about:" url)
+      (w3m-about-retrieve url no-decode no-cache))
+     ((string-match "\\`cid:" url)
+      (w3m-cid-retrieve url no-decode no-cache))
+     ((w3m-url-local-p url)
+      (w3m-local-retrieve url no-decode))
+     (t
+      (w3m-w3m-retrieve url no-decode no-cache post-data referer)))))
 
 (defun w3m-download (url &optional filename no-cache)
   (interactive
@@ -2849,7 +2866,7 @@ to nil.
 	       ((member "next" rel) (setq w3m-next-url href))
 	       ((member "prev" rel) (setq w3m-previous-url href))))))))))
 
-(defun w3m-remove-meta-tags ()
+(defun w3m-remove-meta-charset-tags ()
   (let ((case-fold-search t))
     (goto-char (point-min))
     (when (or (re-search-forward
@@ -2858,65 +2875,103 @@ to nil.
 	       w3m-meta-charset-content-type-regexp nil t))
       (delete-region (match-beginning 0) (match-end 0)))))
 
-(defun w3m-rendering-region (start end &optional charset)
+(defsubst w3m-rendering-extract-title ()
+  "Extract the title from the half-dumped data in this buffer."
+  (goto-char (point-min))
+  ;; FIXME: Adhoc support for w3m with patch in [w3m-dev 01876].
+  (and (looking-at "<!DOCTYPE w3mhalfdump public")
+       (search-forward "\n<pre>\n" nil t)
+       (delete-region (point-min) (1+ (match-beginning 0))))
+  (goto-char (point-min))
+  (let (title)
+    (dolist (regexp '("<title_alt[ \t\n]+title=\"\\([^\"]+\\)\">"
+		      "<title>\\([^<]\\)</title>"))
+      (goto-char (point-min))
+      (when (re-search-forward regexp nil t)
+	(setq title (match-string 1))
+	(delete-region (match-beginning 0) (match-end 0))
+	(with-temp-buffer
+	  (insert title)
+	  (w3m-decode-entities)
+	  (setq title (buffer-string)))))
+    (if (and (null title)
+	     (stringp w3m-current-url)
+	     (< 0 (length (file-name-nondirectory w3m-current-url))))
+	(setq title (file-name-nondirectory w3m-current-url)))
+    (or title "<no-title>")))
+
+(defsubst w3m-rendering-half-dump ()
+  (let ((coding-system-for-read w3m-output-coding-system)
+	(coding-system-for-write w3m-input-coding-system)
+	(default-process-coding-system
+	  (cons w3m-output-coding-system w3m-input-coding-system))
+	(process-environment process-environment))
+    (dolist (elem w3m-process-environment)
+      (setenv (car elem) (cdr elem)))
+    (apply 'call-process-region
+	   (point-min)
+	   (point-max)
+	   (or w3m-halfdump-command w3m-command)
+	   t t nil
+	   (delq nil
+		 (mapcar
+		  (lambda (x)
+		    (cond
+		     ((stringp x) x)
+		     ((setq x (eval x))
+		      (if (stringp x)
+			  x
+			(let (print-level print-length)
+			  (prin1-to-string x))))))
+		  (append w3m-halfdump-command-arguments
+			  w3m-halfdump-command-common-arguments))))))
+
+(defsubst w3m-rendering-buffer-1 (&optional content-charset)
   "Do rendering of contents in this buffer as HTML and return title."
-  (save-restriction
-    (narrow-to-region start end)
-    (set-buffer-multibyte t)
-    (w3m-remove-comments)
-    (w3m-check-link-tags)
-    (w3m-remove-meta-tags)
-    (when w3m-use-form
-      (setq w3m-current-forms
-	    (w3m-form-parse-region (point-min) (point-max) charset)))
-    (w3m-message "Rendering...")
-    (let ((coding-system-for-read w3m-output-coding-system)
-	  (coding-system-for-write w3m-input-coding-system)
-	  (default-process-coding-system
-	    (cons w3m-output-coding-system w3m-input-coding-system))
-	  (process-environment process-environment))
-      (dolist (elem w3m-process-environment)
-	(setenv (car elem) (cdr elem)))
-      (apply 'call-process-region
-	     (point-min)
-	     (point-max)
-	     (or w3m-halfdump-command w3m-command)
-	     t t nil
-	     (delq nil
-		   (mapcar
-		    (lambda (x)
-		      (cond
-		       ((stringp x) x)
-		       ((setq x (eval x))
-			(if (stringp x)
-			    x
-			  (let (print-level print-length)
-			    (prin1-to-string x))))))
-		    (append w3m-halfdump-command-arguments
-			    w3m-halfdump-command-common-arguments)))))
-    (w3m-message "Rendering...done")
-    (goto-char (point-min))
-    ;; FIXME: Adhoc support for w3m with patch in [w3m-dev 01876].
-    (and (looking-at "<!DOCTYPE w3mhalfdump public")
-	 (search-forward "\n<pre>\n" nil t)
-	 (delete-region (point-min) (1+ (match-beginning 0))))
-    (goto-char (point-min))
-    (let (title)
-      (dolist (regexp '("<title_alt[ \t\n]+title=\"\\([^\"]+\\)\">"
-			"<title>\\([^<]\\)</title>"))
-	(goto-char (point-min))
-	(when (re-search-forward regexp nil t)
-	  (setq title (match-string 1))
-	  (delete-region (match-beginning 0) (match-end 0))
-	  (with-temp-buffer
-	    (insert title)
-	    (w3m-decode-entities)
-	    (setq title (buffer-string)))))
-      (if (and (null title)
-	       (stringp w3m-current-url)
-	       (< 0 (length (file-name-nondirectory w3m-current-url))))
-	  (setq title (file-name-nondirectory w3m-current-url)))
-      (or title "<no-title>"))))
+  (w3m-message "Rendering...")
+  (when w3m-use-filter (w3m-filter w3m-current-url))
+  (w3m-remove-comments)
+  (w3m-check-link-tags)
+  (when w3m-use-form (setq w3m-current-forms (w3m-form-parse-buffer)))
+  (w3m-remove-meta-charset-tags)
+  (if (memq w3m-type '(w3mmee w3m-m17n))
+      (progn
+	(delete-region (point-min) (point-max))
+	(insert-buffer
+	 (with-current-buffer (get-buffer w3m-work-binary-buffer-name)
+	   (w3m-rendering-half-dump)
+	   (current-buffer))))
+    (w3m-rendering-half-dump))
+  (w3m-message "Rendering...done")
+  (w3m-rendering-extract-title))
+
+(defun w3m-rendering-unibyte-buffer (&optional content-charset)
+  "Do rendering of contents in this buffer as HTML and return title."
+  (when (memq w3m-type '(w3mmee w3m-m17n))
+    (let ((original-buffer (current-buffer)))
+      (with-current-buffer
+	  (w3m-get-buffer-create w3m-work-binary-buffer-name)
+	(delete-region (point-min) (point-max))
+	(set-buffer-multibyte nil)
+	(insert-buffer original-buffer)
+	(set-buffer-multibyte t)
+	(w3m-copy-local-variables original-buffer))))
+  (w3m-decode-buffer w3m-current-url content-charset "text/html")
+  (w3m-rendering-buffer-1))
+
+(defun w3m-rendering-multibyte-buffer ()
+  "Do rendering of contents in this buffer as HTML and return title."
+  (when (memq w3m-type '(w3mmee w3m-m17n))
+    (let ((original-buffer (current-buffer)))
+      (with-current-buffer
+	  (w3m-get-buffer-create w3m-work-binary-buffer-name)
+	(delete-region (point-min) (point-max))
+	(set-buffer-multibyte t)
+	(insert-buffer original-buffer)
+	(encode-coding-region (point-min) (point-max)
+			      w3m-coding-system)
+	(w3m-copy-local-variables original-buffer))))
+  (w3m-rendering-buffer-1))
 
 (defun w3m-exec (url &optional buffer no-cache content-charset
 		     content-type post-data referer)
@@ -2940,11 +2995,7 @@ this function returns t.  Otherwise, returns nil."
 			w3m-current-base-url (w3m-base-url url)
 			w3m-current-title
 			(if (string= "text/html" type)
-			    (progn
-			      (unless (memq w3m-type '(w3mmee w3m-m17n))
-				(w3m-decode-buffer url content-charset type))
-			      (w3m-rendering-region (point-min) (point-max)
-						    content-charset))
+			    (w3m-rendering-unibyte-buffer content-charset)
 			  (w3m-decode-buffer url content-charset type)
 			  (file-name-nondirectory url))))
 		(delete-region (point-min) (point-max))
@@ -3275,6 +3326,8 @@ described in Section 5.2 of RFC 2396.")
 
 (defun w3m-edit-url (url)
   "Edit the local file pointed by URL."
+  (when (string-match "\\`about://\\(header\\|source\\)/" url)
+    (setq url (substring url (match-end 0))))
   (funcall
    w3m-edit-function
    (if (or (w3m-url-local-p url)
@@ -3926,18 +3979,7 @@ of the request."
 		   (file-name-directory localpath))
 	       w3m-profile-directory)))
       (w3m-update-toolbar)
-
-      ;; Highlight the current url if it is a page for the history.
-      (when (and (string-equal "about://history/" url)
-		 (search-forward "\n>" nil t))
-	(w3m-next-anchor)
-	(let ((start (point))
-	      (inhibit-read-only t))
-	  (end-of-line)
-	  (put-text-property start (point) 'face 'w3m-history-current-url-face)
-	  (goto-char start)
-	  (set-buffer-modified-p nil)))
-
+      (run-hook-with-args 'w3m-display-hook url)
       (switch-to-buffer (current-buffer))
       (when localcgi (w3m-goto-url-localcgi-movepoint))))))
 
@@ -4102,13 +4144,10 @@ ex.) c:/dir/file => //c/dir/file"
   (interactive "r")
   (save-restriction
     (narrow-to-region start end)
-    (when (memq w3m-type '(w3mmee w3m-m17n))
-      (encode-coding-region (point-min) (point-max) w3m-coding-system))
     (w3m-clear-local-variables)
     (setq w3m-current-url url
 	  w3m-current-base-url url
-	  w3m-current-title
-	  (w3m-rendering-region (point-min) (point-max)))
+	  w3m-current-title (w3m-rendering-multibyte-buffer))
     (w3m-fontify)
     (when (w3m-display-inline-image-p)
       (and w3m-force-redisplay (sit-for 0))
@@ -4124,9 +4163,8 @@ ex.) c:/dir/file => //c/dir/file"
 <head><title>About emacs-w3m</title></head>
 <body>
 <center>
-Welcome to <a href=\"http://emacs-w3m.namazu.org/\">")
-    (insert "<img src=\"about://emacs-w3m.gif\" alt=\"emacs-w3m\">")
-    (insert "</a>!
+Welcome to <a href=\"http://emacs-w3m.namazu.org/\">\
+<img src=\"about://emacs-w3m.gif\" alt=\"emacs-w3m\"></a>!
 <br><br>
 emacs-w3m is an interface program of
 <a href=\"http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/\">w3m</a>,
@@ -4135,12 +4173,6 @@ works on Emacs.
 </body>
 </html>"))
   "text/html")
-
-(defun w3m-about-source (url &optional no-decode no-cache)
-  (when (string-match "^about://source/" url)
-    (let ((type (w3m-retrieve (setq url (substring url (match-end 0)))
-			      no-decode no-cache)))
-      (and type "text/plain"))))
 
 (defun w3m-view-source ()
   "Display source of this current buffer."
@@ -4151,12 +4183,10 @@ works on Emacs.
      (substring w3m-current-url (match-end 0)))
     ((string-match "\\`about://header/" w3m-current-url)
      (concat "about://source/" (substring w3m-current-url (match-end 0))))
-    ((string-match "\\`about:" w3m-current-url)
-     (error "Can't load a source for %s" w3m-current-url))
     (t (concat "about://source/" w3m-current-url)))))
 
 (defun w3m-about-header (url &optional no-decode no-cache)
-  (when (string-match "^about://header/" url)
+  (when (string-match "\\`about://header/" url)
     (setq url (substring url (match-end 0)))
     (w3m-with-work-buffer
       (delete-region (point-min) (point-max))
@@ -4352,6 +4382,19 @@ If called with 'prefix argument', display arrived-DB history."
   (if (null arg)
       (w3m-goto-url "about://history/")
     (w3m-goto-url "about://db-history/")))
+
+(defun w3m-history-highlight-current-url (url)
+  ;; Highlight the current url if it is a page for the history.
+  (when (string-equal "about://history/" url)
+    (goto-char (point-min))
+    (when (search-forward "\n>" nil t)
+      (w3m-next-anchor)
+      (let ((start (point))
+	    (inhibit-read-only t))
+	(end-of-line)
+	(put-text-property start (point) 'face 'w3m-history-current-url-face)
+	(goto-char start)
+	(set-buffer-modified-p nil)))))
 
 (defun w3m-db-history ()
   (interactive)
