@@ -37,6 +37,7 @@
   (luna-define-internal-accessors 'shimbun-makanai))
 
 (defvar shimbun-makanai-url "http://www.makanai.com/")
+(defvar shimbun-makanai-server-name "makanai")
 (defvar shimbun-makanai-groups '("f1news"))
 (defvar shimbun-makanai-group-alist
   '(("f1news" . "http://www1.wisnet.ne.jp/~matunaga/")))
@@ -97,7 +98,7 @@
 			 (shimbun-makanai-content-hash-internal shimbun))
 		 article)
 
-	    (push (shimbun-make-header
+	    (push (shimbun-create-header
 		   0
 		   (shimbun-mime-encode-string subject)
 		   (shimbun-from-address shimbun)

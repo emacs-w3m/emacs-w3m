@@ -34,6 +34,7 @@
 (luna-define-class shimbun-f1express (shimbun shimbun) ())
 
 (defvar shimbun-f1express-url "http://f1express.cnc.ne.jp/")
+(defvar shimbun-f1express-server-name "F1 EXPRESS")
 (defvar shimbun-f1express-groups
   '("F1" "Pari-Dakar" "CART" "All-Japan" "WRC" "bike" "Tuka-CLUB"
     "etc" "F-Nippon" "JGTC" "LeMans24" "Indi500" "F3-Japan"
@@ -86,7 +87,7 @@
 		    (string-to-number month)
 		    (string-to-number day)
 		    (concat hour ":" min)))
-	(push (shimbun-make-header
+	(push (shimbun-create-header
 	       0
 	       (shimbun-mime-encode-string subject)
 	       (shimbun-from-address shimbun)
