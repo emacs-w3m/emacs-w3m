@@ -3,11 +3,9 @@
 ;; Copyright (C) 2004 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
-;; Version: 0.2
-;; URL: http://www.emacswiki.org/cgi-bin/wiki/WThreeMShimbun
-;; Keywords: emacs-w3m, gnus, hypermedia
+;; Keywords: news
 
-;; This file is not part of GNU Emacs.
+;; This file is a part of shimbun.
 
 ;; This is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,23 +22,10 @@
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
-;;; Change Log:
-;;
-;; 0.2:
-;;  - TSUCHIYA Masatoshi's method of overwriting `shimbun-get-headers' from
-;;    sb-rss.el
-
 ;;; Commentary:
-;;
-;; Read the fine emacs-w3m manual to find out more about the shimbun module.
-;;
-;; Install:
-;;
-;;   Put this file in e.g. ~/.elisp/ and add
-;;
-;;     (setq shimbun-server-additional-path '("~/.elisp"))
-;;
-;;   to your ~/.emacs.
+
+;; This program had been originally developed by David Hansen, and was
+;; donated at May 7th, 2004.
 
 ;;; Code:
 
@@ -76,9 +61,9 @@
   (unless (string-match "[0-9,]+\\.html" url)
     (error "Cannot find message-id base"))
   (concat "<"
-          (replace-regexp-in-string "\\(,\\|druck-\\|\\.html\\)"
-                                    "" (match-string 0 url))
-          "@spiegel.de>"))
+	  (replace-regexp-in-string "\\(,\\|druck-\\|\\.html\\)"
+				    "" (match-string 0 url))
+	  "@spiegel.de>"))
 
 (provide 'sb-spiegel)
 

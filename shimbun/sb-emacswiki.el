@@ -3,11 +3,9 @@
 ;; Copyright (C) 2004 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
-;; Version: 0.3
-;; URL: http://www.emacswiki.org/cgi-bin/wiki/WThreeMShimbun
-;; Keywords: emacs-w3m, gnus, hypermedia
+;; Keywords: news
 
-;; This file is not part of GNU Emacs.
+;; This file is a part of shimbun.
 
 ;; This is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,24 +22,10 @@
 ;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 
-;;; Change Log:
-;;
-;; 0.3:
-;;  - new X-Face:
-;; 0.2:
-;;  - copied Markus Knittig's X-Face:
-
 ;;; Commentary:
-;;
-;; Read the fine emacs-w3m manual to find out more about the shimbun module.
-;;
-;; Install:
-;;
-;;   Put this file in e.g. ~/.elisp/ and add
-;;
-;;     (setq shimbun-server-additional-path '("~/.elisp"))
-;;
-;;   to your ~/.emacs.
+
+;; This program had been originally developed by David Hansen, and was
+;; donated at May 7th, 2004.
 
 ;;; Code:
 
@@ -73,8 +57,8 @@ e2ibWOZWTFz8j~/m")))
      (let ((url (shimbun-header-xref header)))
        (when (string-match "id=.*?;\\(revision=[0-9]+\\)" url)
 	 (shimbun-header-set-xref
-          header
-          (replace-match "diff=1" t nil url 1)))
+	  header
+	  (replace-match "diff=1" t nil url 1)))
        header))
      (luna-call-next-method)))
 
