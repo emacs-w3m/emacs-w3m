@@ -4567,9 +4567,13 @@ described in Section 5.2 of RFC 2396.")
 		 (w3m-goto-url url reload nil nil w3m-current-url handler)
 	       (setq newbuffer (current-buffer)
 		     wconfig (current-window-configuration)))))
-	(unless (eq buffer newbuffer)
-	  ;; The new buffer visiting the url may not be in the w3m-mode,
-	  ;; so we have to make it visible.
+	;; When the buffer's major mode has changed from the w3m-mode
+	;; to another by visiting the new url (possibly a local file,
+	;; a mailto url, etc.), we need to make the new buffer visible.
+	(when (and (eq (with-current-buffer buffer major-mode)
+		       'w3m-mode)
+		   (not (eq (with-current-buffer newbuffer major-mode)
+			    'w3m-mode)))
 	  (set-window-configuration wconfig))
 	(when (and pos ;; The new session is created.
 		   (with-current-buffer buffer
@@ -6126,10 +6130,6 @@ the current page."
 		    (file-exists-p file)
 		    (prog1
 			t
-		      (unless w3m-current-url
-			(erase-buffer)
-			(set-buffer-modified-p nil)
-			(setq w3m-current-url base-url))
 		      (funcall (if (functionp w3m-local-find-file-function)
 				   w3m-local-find-file-function
 				 (eval w3m-local-find-file-function))
