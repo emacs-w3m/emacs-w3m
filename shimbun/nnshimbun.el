@@ -796,6 +796,30 @@ article to be expired.  The optional fourth argument FORCE is ignored."
 	(nnshimbun-write-nov group))
       articles)))
 
+(deffoo nnshimbun-request-delete-group (group &optional force server)
+  "Delete the NOV file used for GROUP and the parent directories.
+Other files in the directory are also deleted."
+  (when (nnshimbun-possibly-change-group group server)
+    (let ((dir (nnmail-group-pathname group (nnshimbun-server-directory)))
+	  files file subdir)
+      (when (file-directory-p dir)
+	(setq files (directory-files
+		     dir  t "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*"))
+	(while files
+	  (setq file (pop files))
+	  (if (eq t (car (file-attributes file)))
+	      ;; `file' is a subdirectory.
+	      (setq subdir t)
+	    ;; `file' is a file or a symlink.
+	    (delete-file file)))
+	(unless subdir
+	  (delete-directory dir)))
+      (setq dir (expand-file-name ".." dir))
+      (unless (directory-files
+	       dir t "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*")
+	(delete-directory dir)))
+    t))
+
 
 ;; Defining the `shimbun-gnus-mua':
 
