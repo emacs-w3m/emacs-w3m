@@ -1,7 +1,7 @@
 \input texinfo @c -*-texinfo -*- coding: iso-2022-jp -*-
 @c %**start of header
 @setfilename emacs-w3m-ja.info
-@settitle Emacs-w3m -- an interface program of w3m --
+@settitle Emacs-w3m -- an Emacs interface to w3m --
 @c %**end of header
 @documentlanguage ja
 @include version.texi
@@ -10,12 +10,12 @@
 
 @dircategory GNU Emacs Lisp
 @direntry
-* Emacs-w3m-ja: (emacs-w3m-ja).  An interface program of w3m
+* Emacs-w3m-ja: (emacs-w3m-ja).  An Emacs interface to w3m
 @end direntry
 
 @c permissions text appears in an Info file before the first node.
 @ifinfo
-This file documents emacs-w3m, an interface program of w3m on Emacsen.
+This file documents emacs-w3m, an Emacs interface to w3m.
 
 $B$3$N%U%!%$%k$O(B Emacs $B$GF0$/(B w3m $B$N%$%s%?%U%'!<%9$G$"$k(B emacs-w3m $B$K4X$9(B
 $B$k@bL@=q$G$9!#(B
@@ -65,8 +65,7 @@ license to the document, as described in section 6 of the license.
 @titlepage
 @sp 10
 @title Emacs-w3m $B%f!<%6%^%K%e%"%k(B
-@subtitle An interface program of w3m on Emacsen
-@subtitle for emacs-w3m version @value{VERSION}
+@subtitle An Emacs interface to w3m for emacs-w3m version @value{VERSION}
 @author Emacs-w3m $B3+H/%A!<%`(B
 @page
 
@@ -131,7 +130,7 @@ Emacs-w3m $B3+H/%A!<%`(B
 * Basic Usage::                 $B4pK\E*$J;H$$J}(B
 * Pretty Good Features::        $B$?$/$5$s$N$9$0$l$b$N(B
 * Customizable Options::        $B%G%U%)%k%H$N$^$^$G$b7k9=NI$$$H;W$&$1$l$I(B
-* Submitting to MUAs::          $B%a!<%k(B/$B%K%e!<%9%j!<%@!<$G;H$&(B
+* Hooking into MUAs::           $B%a!<%k(B/$B%K%e!<%9%j!<%@!<$G;H$&(B
 * Frequently Asked Questions::  $BI,$:Ez$,$"$k$H$O8B$i$J$$(B
 * Known Problems::              $B$"$J$?$J$i$-$C$H2r7h$G$-$k(B
 * Shimbun Library::             $B%&%'%V>e$N?7J9$rFI$`$?$a$NF;6q(B
@@ -170,7 +169,7 @@ Pretty Good Features
 
 Customizable Options
 
-Submitting to MUAs
+Hooking into MUAs
 
 * Gnus::                        
 * Mew::                         
@@ -189,12 +188,11 @@ Shimbun Library
 @chapter $B$O$8$a$K(B
 @cindex Introduction
 
-$B$9$P$i$7$$(B w3m $B%W%m%0%i%`$r3+H/$7$F$/$l$?0KF#>4B'$5$s$H$=$N$*Cg4V$K!"3J(B
-$BCJ$N46<U$rJ{$2$^$9!#(BW3m $B$O(B emacs-w3m $B$N<B8=$KIT2D7g$G$9!#$5$i$K%3%a%s%H!"(B
-$BDs0F$*$h$S%P%0$N=$@5$r$7$F$/$l$?$9$Y$F$N?M!9$K46<U$7$^$9!#$?$H$(LdBj$,$"$C(B
-$B$F$b!"@UG$$O$9$Y$F;d$?$A(B emacs-w3m $B3+H/%A!<%`$K$"$j$^$9!#$b$C$H$b!"$4>5(B
-$BCN$NDL$jJ]>Z$O$"$j$^$;$s!#(BEmacs-w3m $B$O(B 2000$BG/(B6$B7n$KEZ202mL-$K$h$C$F:G=i$K(B
-$B:n$i$l$^$7$?!#(B
+$B$9$P$i$7$$(B w3m $B%W%m%0%i%`$r3+H/$7$F$/$l$?0KF#>4B'$5$s$H(B w3m $B%A!<%`$N$_$J(B
+$B$5$s$K!"3JCJ$N46<U$rJ{$2$^$9!#$5$i$K%3%a%s%H!"Ds0F$*$h$S%P%0$N=$@5$r$7$F(B
+$B$/$l$?$9$Y$F$N?M!9$K46<U$7$^$9!#$?$H$(LdBj$,$"$C$F$b!"@UG$$O$9$Y$F;d$?(B
+$B$A(B (emacs-w3m $B3+H/%A!<%`(B) $B$K$"$j$^$9!#$b$C$H$b!"J]>Z$O$^$C$?$/$"$j$^$;$s(B
+$B$,!#(BEmacs-w3m $B$O(B 2000$BG/(B6$B7n$KEZ202mL-$K$h$C$F:G=i$K:n$i$l$^$7$?!#(B
 
 Emacs-w3m $B$N8x<0%Z!<%8(B @uref{http://emacs-w3m.namazu.org/} $B$bJ;$;$F$4Mw(B
 $B2<$5$$!#(B
@@ -204,10 +202,10 @@ Emacs-w3m $B$N8x<0%Z!<%8(B @uref{http://emacs-w3m.namazu.org/} $B$bJ;$;$F$4Mw
 @cindex getting started
 @cindex starting up
 
-$B$R$g$C$H$9$k$H!"$"$J$?$N%7%9%F%`$K$O(B emacs-w3m $B$,D>$A$K;H$($k>uBV$G!"$9(B
-$B$G$K%$%s%9%H!<%k$5$l$F$$$k$+$b$7$l$^$;$s!#$=$s$J9,1?$J?M$O!"$3$N9`$rFI$_(B
-$BHt$P$7$F$b9=$$$^$;$s(B; $B?7$7$$(B emacs-w3m $B$r%$%s%9%H!<%k$9$k$H$-$K!"$b$&0l(B
-$BEYFI$_JV$7$F2<$5$$!#(B
+$B$R$g$C$H$9$k$H!"$"$J$?$N%7%9%F%`$K$O(B emacs-w3m $B$,$9$G$K%$%s%9%H!<%k$5$l(B
+$B$F$$$k$+$b$7$l$^$;$s!#$=$N>l9g!"$"$J$?$O$3$N9`$rFI$_Ht$P$7$F!"D>$A$K;H$$(B
+$B;O$a$k$3$H$,$G$-$^$9!#$=$s$J9,1?$K7C$^$l$J$+$C$?$J$i$P!"(Bemacs-w3m $B$N%$%s(B
+$B%9%H!<%k$N;EJ}$r2qF@$9$k$?$a$K!"FI$_B3$1$F2<$5$$!#(B
 
 @menu
 * Required Emacs Version::      $B$I$s$J%P!<%8%g%s$N(B Emacs $B$G;H$($k$N(B?
@@ -253,13 +251,16 @@ Requirements})$B!#(B
 @section w3m $B$r;H$$$^$9(B: emacs-w3m $B$,B.$$$o$1(B
 @cindex w3m
 
-Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r(B web $B%3%s%F%s%D$r<hF@$9$k$?$a$N%P%C%/%(%s(B
-$B%I$H$7$F!"$^$?$O(B HTML $B$NK]Lu%(%s%8%s$H$7$F;HMQ$7$^$9!#(BEmacs $B$,$=$N$h$&$J(B
-$B;E;v$+$i2rJ|$5$l$?$N$G!"9bB.$J(B Emacs web $B%V%i%&%6$HHsF14|F0:n$r<B8=$9$k(B
-$B$3$H$,$G$-$^$7$?!#$"$J$?$O:G?7$N(B w3m $B%3%^%s%I$r%$%s%9%H!<%k$7$J$1$l$P$J(B
-$B$j$^$;$s!#$=$l$O0J2<$N>l=j$G<hF@$G$-$^$9(B:
+Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r!"(Bweb $B%3%s%F%s%D$r<hF@$9$k$?$a$N%P%C%/%((B
+$B%s%I$H$7$F!"$^$?$O(B HTML $B$NK]Lu%(%s%8%s$H$7$F;HMQ$7$^$9(B; $B$=$&$7$F!";d$?$A(B
+$B$OHsF14|F0:n$K$h$C$F2CB.$5$l$?(B Emacs web $B%V%i%&%6$r<B8=$9$k$3$H$,$G$-$^(B
+$B$7$?!#(B
+
+$B$"$J$?$O:G?7$N(B w3m $B$r%$%s%9%H!<%k$7$J$1$l$P$J$j$^$;$s!#$=$l$O0J2<$N>l=j(B
+$B$G<hF@$G$-$^$9(B:
 
 @uref{http://prdownloads.sourceforge.net/w3m/}
+
 
 @node Other Requirements
 @section Emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
@@ -271,7 +272,7 @@ Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r(B web $B%3%s%F%s%D$r<hF@$9$k$?$a$N%P%
 @cindex FLIM
 
 Emacs $B$N%P!<%8%g%s$K$h$C$F$O!"%5!<%I%Q!<%F%#$N%Q%C%1!<%8$,I,MW$G$9!#$3$N(B
-$B9`$G$O!"$=$l$i$N:_$j$+$r>R2p$7$^$9!#(B
+$B9`$G$O!"$=$l$i$r8+$D$1$F%$%s%9%H!<%k$9$k$?$a$N;qNA$rDs6!$7$^$9!#(B
 
 @table @samp
 
@@ -283,8 +284,8 @@ XEmacs$B!"(BEmacs 19.34 $B$^$?$O(B Mule 2.3 $B$KIT2D7g$G$9!#(BEmacs-w3m $
 
 
 $B$b$7$9$G$K(B APEL XEmacs $B%Q%C%1!<%8$r%$%s%9%H!<%k$7$F$$$k$J$i$P!"$=$l$r>e(B
-$B5-$N(B APEL $B$GCV$-49$($k$3$H$r6/$/4+$a$^$9!#CV$-49$($k$K$O!"0J2<$K<($9$h$&(B
-$B$JL?Na$r;H$C$F2<$5$$(B:
+$B5-$N%j%s%/$G<($7$?(B APEL $B$GCV$-49$($k$3$H$r6/$/4+$a$^$9!#CV$-49$($k$K$O!"(B
+$B0J2<$K<($9$h$&$JL?Na$r;H$C$F2<$5$$(B:
 
 @example
 % rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
@@ -376,9 +377,9 @@ Emacs-w3m $B$N<hF@$K4X$7$F$O8x<0%Z!<(B
 $B%8(B @uref{http://emacs-w3m.namazu.org/} $B$r;2>H$7$F2<$5$$!#$9$Y$F=`Hw$G$-(B
 $B$^$7$?$+(B?  $B$G$O;O$a$^$7$g$&!#(B
 
-@samp{configure} $B$r<B9T$G$-$J$$$+(B @samp{make} $B%3%^%s%I$,L5$$Hs(B UNIX $B7O$N(B
-$B%7%9%F%`$K(B emacs-w3m $B$r%$%s%9%H!<%k$9$k$K$O!"$3$N9`$rHt$P$7$F<!$N(B
-$B9`(B @xref{Non-UNIX-like systems} $B$K9T$C$F2<$5$$!#(B
+$BHs(B UNIX $B7O$N%7%9%F%`(B (@samp{configure} $B$r<B9T$G$-$J$$$+(B @samp{make} $B%3%^(B
+$B%s%I$,L5$$!"2?$i$+$N%7%9%F%`(B) $B$K(B emacs-w3m $B$r%$%s%9%H!<%k$9$k$K$O!"$3$N(B
+$B9`$rHt$P$7$F<!$N9`(B @xref{Non-UNIX-like systems} $B$K9T$C$F2<$5$$!#(B
 
 @enumerate
 @item
@@ -418,8 +419,8 @@ APEL$B!"(BFLIM $B$^$?$OB>$N2?$+$r!"%G%U%)%k%H$N(B @code{load-path} $B0J30$N
 % make install
 @end example
 
-$B$9$k$H!"$9$Y$F$N(B Lisp $B%U%!%$%k$H(B info $B%U%!%$%k$,E,@Z$J%G%#%l%/%H%j$K%$%s(B
-$B%9%H!<%k$5$l$k$G$7$g$&!#(B
+$B$9$Y$F$N(B Lisp $B%U%!%$%k$H(B info $B%U%!%$%k$,E,@Z$J%G%#%l%/%H%j$K%$%s%9%H!<%k(B
+$B$5$l$k$G$7$g$&!#(B
 
 $B$5$F!"$"$J$?$O$I$s$J%U%!%$%k$,$I$3$K9T$/$+J,$+$j$^$9$+(B?  $B$=$l$rA0$b$C$F(B
 $BCN$k$?$a$K$O!"$3$l$r;H$C$F2<$5$$(B:
@@ -454,16 +455,16 @@ emacs-w3m $B$r(B XEmacs $B%Q%C%1!<%8$H$7$F%$%s%9%H!<%k$9$k$3$H$b$G$-$^$9(B:
 @cindex install
 @cindex non-UNIX
 
-$B$"$J$?$N%7%9%F%`$G$O(B @samp{configure} $B%9%/%j%W%H$r<B9T$9$k$3$H$,$G$-$J$/(B
-$B$F!"(B@samp{make} $B%3%^%s%I$bMxMQ$G$-$J$$>l9g$O!"0J2<$NJ86g$r>'$($F2<$5$$!#(B
+$B$"$J$?$N%7%9%F%`$G(B @samp{configure} $B%9%/%j%W%H$r<B9T$9$k$3$H$,$G$-$J$$$+!"(B
+@samp{make} $B%3%^%s%I$,MxMQ$G$-$J$$>l9g$O!"0J2<$NJ86g$r>'$($F2<$5$$!#(B
 
 @example
 % emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
 @end example
 
-APEL$B!"(BFLIM $B$^$?$OB>$N2?$+$rIaDL$N>l=j$K%$%s%9%H!<%k$7$F$$$J$$$H!"%$%s%9(B
-$B%H!<%i$O$=$l$i$rL5;k$7$F$7$^$&$G$7$g$&!#$=$s$J>l9g$O!"0J2<$K<($9$h$&$K!"(B
-$B$=$l$i$N>l=j$r%$%s%9%H!<%i$K9p$2$kI,MW$,$"$j$^$9(B:
+APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$$$H!"%$(B
+$B%s%9%H!<%i$O$=$l$i$rL5;k$7$F$7$^$&$G$7$g$&!#$=$s$J>l9g$O!"0J2<$K<($9$h$&(B
+$B$K!"$=$l$i$N>l=j$r%$%s%9%H!<%i$K9p$2$kI,MW$,$"$j$^$9(B:
 
 @example
 % emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
@@ -556,7 +557,7 @@ APEL$B!"(BFLIM $B$^$?$OB>$N2?$+$rIaDL$N>l=j$K%$%s%9%H!<%k$7$F$$$J$$$H!"%$%s%9
 @chapter $B%G%U%)%k%H$N$^$^$G$b7k9=NI$$$H;W$&$1$l$I(B
 
 
-@node Submitting to MUAs
+@node Hooking into MUAs
 @chapter $B%a!<%k(B/$B%K%e!<%9%j!<%@!<$G;H$&(B
 
 
