@@ -1,5 +1,11 @@
 2002-09-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* Release emacs-w3m-1.3.2 from emacs-w3m-1_3 branch.
+
+	* w3m.el (w3m-init-file): Changed its default value.
+
+	* Makefile.in (PACKAGE): Use `emacs-w3m' instead of `w3m_el'.
+
 	* w3m-antenna.el (w3m-antenna-make-summary-function): Use
 	`function-item' instead of `const'.
 	(w3m-antenna-sort-changed-sites-function): Ditto.

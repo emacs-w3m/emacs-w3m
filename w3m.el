@@ -510,10 +510,10 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :group 'w3m
   :type 'directory)
 
-(defcustom w3m-init-file
-  (concat w3m-profile-directory "/init.el")
+(defcustom w3m-init-file "~/.emacs-w3m"
   "*Your emacs-w3m startup file name.
-When a byte compiled file exists, it will be read instead.
+If a file with the `.el' or `.elc' suffixes exists, it will be read
+instead.
 
 Note: The file pointed by this variable is used as the startup file
 for emacs-w3m, but is *NOT* used as a startup file for w3m which works
