@@ -64,6 +64,7 @@
 				 "news/news/last_seven.html")))
       (with-current-buffer (shimbun-retrieve-url-buffer xover t)
 	(goto-char (point-min))
+	(search-forward "<!-- articles -->" nil t) ; Jump to article list.
 	(while (re-search-forward regexp nil t)
 	  (let* ((url   (concat (shimbun-url-internal shimbun)
 				(match-string 2)))

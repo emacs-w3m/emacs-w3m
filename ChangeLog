@@ -1,3 +1,8 @@
+2001-04-16  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-wired.el (shimbun-get-group-header-alist): Jump to the
+	article start point before getting headers.
+
 2001-04-15  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-e21.el (w3m-header-line-location-title-face): New face.
