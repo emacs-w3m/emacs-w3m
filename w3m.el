@@ -3458,18 +3458,15 @@ In Transient Mark mode, deactivate the mark."
     (w3m-url-at-point)))
 
 (defsubst w3m-canonicalize-url (url)
-  ;; URL must include the scheme part.
-  (unless (and (string-match w3m-url-components-regexp url)
-	       (match-beginning 1))
-    (setq url (concat (if (and (file-name-absolute-p url)
-			       (file-exists-p url))
-			  "file://"
-			"http://")
-		      url)))
-  ;; The server part must be ended with a slash.
-  (if (string-match "\\`\\(ht\\|f\\)tps?://[^/]+\\'" url)
-      (concat url "/")
-    url))
+  "Add a scheme part to an URL if it has no scheme part."
+  (if (and (string-match w3m-url-components-regexp url)
+	   (match-beginning 1))
+      url
+    (concat (if (and (file-name-absolute-p url)
+		     (file-exists-p url))
+		"file://"
+	      "http://")
+	    url)))
 
 (defun w3m-input-url (&optional prompt initial default quick-start)
   "Read a url from the minibuffer, prompting with string PROMPT."
@@ -4043,6 +4040,16 @@ Return a list which includes:
       (when success
 	(buffer-string)))))
 
+(defsubst w3m-w3m-canonicalize-url (url)
+  "Add a slash to an URL, when its server part is not ended with a slash."
+  ;; Because URLs encountered in WEB documents are no less reliable
+  ;; than URLs given by users, a minimum canonicalization may be
+  ;; required in the backend side.  For more detail, please see
+  ;; [emacs-w3m:07000].
+  (if (string-match "\\`\\(ht\\|f\\)tps?://[^/]+\\'" url)
+      (concat url "/")
+    url))
+
 (defun w3m-w3m-attributes (url no-cache handler)
   "Return a list of attributes corresponding to URL.
 Return nil if it failed in retrieving of the header.
@@ -4056,7 +4063,7 @@ Otherwise, return a list which includes the following elements:
  5. Real URL.
 
 If the optional argument NO-CACHE is non-nil, cache is not used."
-  (w3m-w3m-attributes-1 url
+  (w3m-w3m-attributes-1 (w3m-w3m-canonicalize-url url)
 			no-cache
 			(or w3m-follow-redirection 0)
 			handler))
@@ -4290,7 +4297,7 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
   "Retrieve web contents pointed to by URL using the external w3m command.
 It will put the retrieved contents into the current buffer.  See
 `w3m-retrieve' for how does it work asynchronously with the arguments."
-  (lexical-let ((url url)
+  (lexical-let ((url (w3m-w3m-canonicalize-url url))
 		(no-decode no-decode)
 		(current-buffer (current-buffer)))
     (w3m-process-do-with-temp-buffer
