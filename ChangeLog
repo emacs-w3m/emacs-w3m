@@ -1,3 +1,7 @@
+2001-06-05  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-slashdot-jp.el: New file.
+
 2001-06-01  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-ding.el (shimbun-ding-groups): Add "ding-announce" and
