@@ -3540,9 +3540,6 @@ muchy.review
 @item @uref{http://palmoslove.com/, palmoslove}
 palmoslove.webnews palmoslove.pdanews palmoslove.sitenews
 
-@item @uref{http://www.pocketgames.jp/, pocketgames}
-pocketgames.news
-
 @item @uref{http://www.wince.ne.jp/, wincefan}
 wincefan.news
 
