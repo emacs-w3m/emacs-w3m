@@ -1,3 +1,8 @@
+2002-04-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-coding-system): Change default value to
+	'iso-2022-7bit-ss2 when use w3mmee under mule environment.
+
 2002-04-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-xmas.el (w3m-create-image): Resize gif images, too.
