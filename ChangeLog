@@ -1,6 +1,9 @@
 2004-08-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.4.3.
+	(w3m-meta-content-type-charset-regexp): Revivaled to keep
+	compatibility with old Gnus.
+	(w3m-meta-charset-content-type-regexp): Ditto.
 
 2004-08-15  Kazuhiro UCHIDA  <kayoujin@yahoo.co.jp>
 

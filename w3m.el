@@ -2077,6 +2077,20 @@ nil value means it has not been initialized.")
 (defconst w3m-work-buffer-name " *w3m-work*")
 (defconst w3m-select-buffer-name " *w3m buffers*")
 
+(defconst w3m-meta-content-type-charset-regexp
+  "<meta[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]+content\
+=\"?\\([^;]+\\);[ \t\n]*charset=\\([^\"]+\\)\"?[ \t\n]*/?>"
+  "Obsolete regular expression.
+This constant MUST NOT be used, because it is defined only to keep
+compatibility with old Gnus and will be removed soon.")
+
+(defconst w3m-meta-charset-content-type-regexp
+  "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*charset\
+=\\([^\"]+\\)\"?[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]*/?>"
+  "Obsolete regular expression.
+This constant MUST NOT be used, because it is defined only to keep
+compatibility with old Gnus and will be removed soon.")
+
 (defconst w3m-dump-head-source-command-arguments
   (cond ((eq w3m-type 'w3mmee)
 	 (list "-dump=extra,head,source"))
@@ -8362,7 +8376,6 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
 		  (> (prefix-numeric-value arg) 0)
 		(not w3m-minor-mode)))
     (run-hooks 'w3m-minor-mode-hook)))
-
 
 (provide 'w3m)
 
