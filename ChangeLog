@@ -1,7 +1,6 @@
 2003-07-12  OHASHI Akira  <bg66@koka-in.org>
 
 	* shimbun/sb-chalow.el: New backend.
-	* shimbun/sb-tdiary.el: Ditto.
 
 2003-07-10  Koichiro Ohba  <koichiro@meadowy.org>
 
