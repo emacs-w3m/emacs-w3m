@@ -97,6 +97,8 @@
 	  (unless (locate-library "mew")
 	    (push (concat shimbun-dir "mew-shimbun.el") ignores)))
       (push "mime-w3m.el" ignores))
+    (unless (featurep 'mule)
+      (push "w3m-weather.el" ignores))
     ;; To byte-compile w3m-macro.el and a version specific module first.
     (princ "w3m-macro.elc ")
     (setq modules (delete "w3m-macro.el" modules))
