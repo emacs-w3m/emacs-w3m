@@ -4480,6 +4480,9 @@ welt-de.news
 
 @item @uref{http://www.zeit.de/, Die Zeit}
 zeit-de.news
+
+@item @uref{http://www.weeklyworldnews.com/news/, Weekly World News}
+weeklyworldnews.news
 @end table
 
 @node Mailing Lists Supported by Shimbun
@@ -4881,7 +4884,7 @@ CGI_Board を使っている掲示板の URL を調べて、
 @end lisp
 
 @item @uref{http://www.emacswiki.org/, EmacsWiKi}
-emacswiki.diff
+emacswiki.changes emacswiki.diff
 
 @item Wiki コンテンツ
 閲覧したい Wiki の URL を調べて、以下のように設定して使います。
