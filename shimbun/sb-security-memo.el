@@ -1,10 +1,11 @@
 ;;; sb-security-memo.el --- shimbun backend for security-memo ML.
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
+;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -38,4 +39,5 @@
   "memo@memo.st.ryukoku.ac.jp")
 
 (provide 'sb-security-memo)
+
 ;;; sb-security-memo.el ends here

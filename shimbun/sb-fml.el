@@ -1,12 +1,14 @@
 ;;; sb-fml.el --- shimbun backend class for fml archiver.
 
+;; Copyright (C) 2001 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
+
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
-
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -79,6 +81,11 @@
 		    date (shimbun-fml-parse-time (match-string 3))
 		    subject (match-string 4)
 		    from (match-string 5))
+	      (setq subject (with-temp-buffer
+			      (insert subject)
+			      (shimbun-decode-entities)
+			      (shimbun-remove-markup)
+			      (buffer-string)))
 	      (if (shimbun-search-id shimbun id)
 		  (throw 'stop nil))
 	      (forward-line 1)

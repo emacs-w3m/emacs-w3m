@@ -1,10 +1,11 @@
 ;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp
 
-;; Author: Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
+;; Copyright (C) 2001 Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
 
+;; Author: Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it a>nd/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -66,7 +67,7 @@ Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%")))
 	     (day   (string-to-number (match-string 5)))
 	     (time  (or (match-string 8) "00:00"))
 	     (group (shimbun-current-group-internal shimbun))
-	     (url (format "%s/%s/%s" (shimbun-url-internal shimbun) group file))
+	     (url (format "%s%s/%s" (shimbun-url-internal shimbun) group file))
 	     (title (match-string 9)))
 	(push (shimbun-make-header
 	       0
