@@ -1,3 +1,9 @@
+2002-01-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-url-encode-string): Add a period to the set of
+	characters which are not encoded.
+	From Fabrice Bauzac <noon@noon.dnsalias.net>
+
 2001-12-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Merge fixes of the shimbun module on the main trunk.
