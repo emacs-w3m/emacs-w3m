@@ -1,7 +1,7 @@
 2003-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/nnshimbun.el (nnshimbun-keep-backlog): Improve the
-	customizing widgets.
+	customizing widget.
 	(nnshimbun-group-parameters-custom): Use `integer' instead of
 	`number' for the expiry days.
 
