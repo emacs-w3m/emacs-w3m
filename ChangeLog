@@ -1,3 +1,10 @@
+2002-06-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Release 1.2.50, which means the
+	developing version of next stable series.
+
+	* Release emacs-w3m-1.2.8 from emacs-w3m-1_2 branch.
+
 2002-06-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bug.el: Require `w3m-e19' for Emacs 19 to be able to compile

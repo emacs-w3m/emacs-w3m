@@ -135,12 +135,7 @@
 (eval-when-compile
   (autoload 'rfc2368-parse-mailto-url "rfc2368"))
 
-(defconst emacs-w3m-version
-  (eval-when-compile
-    (let ((rev "$Revision$"))
-      (and (string-match "\\.\\([0-9]+\\) \$$" rev)
-	   (format "1.2.%d"
-		   (- (string-to-number (match-string 1 rev)) 426)))))
+(defconst emacs-w3m-version "1.2.50"
   "Version number of this package.")
 
 (defgroup w3m nil
