@@ -479,7 +479,8 @@ according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
 	      (select-frame-set-input-focus frame)
 	    (raise-frame frame)
 	    (select-frame frame)
-	    (focus-frame frame)))
+	    (w3m-static-when (featurep 'xemacs)
+	      (focus-frame frame))))
       ;; Simply switch to BUFFER in the current frame.
       (if (w3m-popup-window-p)
 	  (let ((pop-up-windows t))
