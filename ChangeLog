@@ -2,6 +2,8 @@
 
 	* shimbun/shimbun.el (shimbun-entity-type)
 	[shimbun-multipart-entity]: start=<ID> -> start="<ID>"
+	(shimbun-entity-insert): Save point while performing
+	`encode-coding-region'.
 
 2003-10-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
