@@ -597,11 +597,11 @@ See also the documentation for the option
 
 
 @menu
-* Elementary operations::       The first steps of operations
+* Launching and Jumping::       Go ahead, just try it
 @end menu
 
-@node Elementary operations
-@subsection The first steps of operations
+@node Launching and Jumping
+@subsection Go ahead, just try it
 @findex w3m
 @findex w3m-browse-url
 @findex w3m-find-file

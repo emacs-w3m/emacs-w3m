@@ -672,15 +672,15 @@ w3m-lynx-like-mapがデフォルトのキーマップとして使われます。
 です。
 
 @menu
-* Elementary operations::       初歩の操作
+* Launching and Jumping::       とにかく動かしてみよう
 * Moving in a page::            ページ内を飛びまわる
 * Moving over pages::           ページ間を渡り歩く
 * Browsing with mouse operations:: マウスでサーフィン
 * Leaving for daily hacking and/or daily writing:: 普段の生活に戻るには
 @end menu
 
-@node Elementary operations
-@subsection 初歩の操作
+@node Launching and Jumping
+@subsection とにかく動かしてみよう
 @findex w3m
 @findex w3m-browse-url
 @findex w3m-find-file
