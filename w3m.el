@@ -841,24 +841,43 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
 	   (string :tag "Encoding Type"))))
 
 (defcustom w3m-decoder-alist
-  (` ((gzip "gzip" ("-d"))	;; Don't use "gunzip" and "bunzip2"
-      (bzip "bzip2" ("-d"))	;; for broken OS & environment
-      (deflate
-	(, (if (not noninteractive)
-	       (let ((file
-		      (expand-file-name
-		       (concat "../lib/"
-			       (file-name-nondirectory w3m-command)
-			       "/"
-			       (if (memq system-type '(windows-nt OS/2 emx))
-				   "inflate.exe"
-				 "inflate"))
-		       (file-name-directory
-			(w3m-which-command w3m-command)))))
-		 (if (file-executable-p file)
-		     file
-		   "inflate"))))
-	nil)))
+  (list
+   '(gzip "gzip" ("-d"))	;; Don't use "gunzip" and "bunzip2"
+   '(bzip "bzip2" ("-d"))	;; for broken OS & environment
+   (list
+    'deflate
+    (if (not noninteractive)
+	(let ((re (concat "\\`" (regexp-quote
+				 (file-name-nondirectory w3m-command))
+			  "\\'"))
+	      (inflate (if (memq system-type '(windows-nt OS/2 emx))
+			   "inflate.exe" "inflate")))
+	  (or
+	   (car
+	    (sort
+	     (delq
+	      nil
+	      (mapcar
+	       (lambda (x)
+		 (if (and (file-directory-p x)
+			  (file-readable-p x)
+			  (file-executable-p
+			   (setq x (expand-file-name inflate x))))
+		     x))
+	       (apply
+		'nconc
+		(mapcar
+		 (lambda (x)
+		   (if (and (file-directory-p x) (file-readable-p x))
+		       (directory-files x t re)))
+		 (directory-files
+		  (expand-file-name
+		   ".."
+		   (file-name-directory (w3m-which-command w3m-command)))
+		  t "[^.]\\'")))))
+	     'file-newer-than-file-p))
+	   "inflate")))
+    nil))
   "Associative list of DECODER."
   :group 'w3m
   :type '(repeat
