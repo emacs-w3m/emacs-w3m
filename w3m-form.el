@@ -99,18 +99,20 @@
 (defsubst w3m-form-put-property (form name property value)
   (aset form 5
 	(plist-put (w3m-form-plist form)
-		   (setq name (intern name))
+		   (setq name (if (stringp name) (intern name) name))
 		   (plist-put (plist-get (w3m-form-plist form) name)
 			      property value)))
   value)
 (defmacro w3m-form-get-property (form name property)
   (` (plist-get (plist-get (w3m-form-plist (, form))
-			   (intern (, name)))
+			   (if (stringp (, name))
+			       (intern (, name))
+			     (, name)))
 		(, property))))
-(defmacro w3m-form-put (form name value)
-  (` (w3m-form-put-property (, form) (, name) :value (, value))))
-(defmacro w3m-form-get (form name)
-  (` (w3m-form-get-property (, form) (, name) :value)))
+(defmacro w3m-form-put (form id name value)
+  (` (w3m-form-put-property (, form) (, id) :value (cons (, name) (, value)))))
+(defmacro w3m-form-get (form id)
+  (` (cdr (w3m-form-get-property (, form) (, id) :value))))
 
 (defun w3m-form-goto-next-field ()
   "Move to next form field and return the point.
@@ -139,8 +141,9 @@ If no field in forward, return nil without moving."
 	       (w3m-content-charset w3m-current-url))
 	      w3m-default-coding-system))
     (while plist
-      (let ((name (symbol-name (car plist)))
-	    (value (plist-get (cadr plist) :value)))
+      (let* ((pair (plist-get (cadr plist) :value))
+	     (name (car pair))
+	     (value (cdr pair)))
 	(cond
 	 ((and (consp value)
 	       (eq (car value) 'file))
@@ -206,76 +209,78 @@ If no field in forward, return nil without moving."
 	(setq forms (cdr forms)))
     (save-excursion
       (goto-char (point-min))
-      (let (fid type name form cform textareas)
+      (let (fid type name form cform textareas id)
 	(while (w3m-form-goto-next-field)
 	  (setq fid (get-text-property (point) 'w3m-form-field-id))
-	  (when (and fid
-		     (string-match
-		      "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\(.*\\)$"
-		      fid))
+	  (when
+	      (and fid
+		   (string-match
+	  "fid=\\([^/]+\\)/type=\\([^/]+\\)/hseq=\\([^/]+\\)/name=\\(.*\\)$"
+		    fid))
 	    (setq form (nth (string-to-number (match-string 1 fid))
 			    forms)
 		  cform (nth (string-to-number (match-string 1 fid))
 			     w3m-current-forms)
 		  type (match-string 2 fid)
-		  name (match-string 3 fid))
+		  id (string-to-number (match-string 3 fid))
+		  name (match-string 4 fid))
 	    (cond
 	     ((or (string= type "submit")
 		  (string= type "image"))
 	      ;; Remove status to support forms containing multiple
 	      ;; submit buttons.
-	      (w3m-form-put cform name nil))
+	      (w3m-form-put cform id name nil))
 	     ((or (string= type "reset")
 		  (string= type "hidden")
 		  ;; Do nothing.
 		  ))
 	     ((string= type "password")
-	      (w3m-form-replace (w3m-form-get form name)
+	      (w3m-form-replace (w3m-form-get form id)
 				'invisible)
 	      (unless (eq form cform)
-		(w3m-form-put cform name (w3m-form-get form name))))
+		(w3m-form-put cform id name (w3m-form-get form id))))
 	     ((string= type "radio")
-	      (let ((value (w3m-form-get form name)))
+	      (let ((value (w3m-form-get form id)))
 		(when value
 		  (w3m-form-replace
 		   (if (string= value (nth 3 (w3m-action (point))))
 		       "*" " ")))
 		(unless (eq form cform)
-		  (w3m-form-put cform name value))))
+		  (w3m-form-put cform id name value))))
 	     ((string= type "checkbox")
-	      (let ((value (w3m-form-get form name)))
+	      (let ((value (w3m-form-get form id)))
 		(when value
 		  (w3m-form-replace
 		   (if (member (nth 3 (w3m-action (point))) value)
 		       "*" " ")))
 		(unless (eq form cform)
-		  (w3m-form-put cform name value))))
+		  (w3m-form-put cform id name value))))
 	     ((string= type "select")
-	      (let ((selects (w3m-form-get form name)))
+	      (let ((selects (w3m-form-get form id)))
 		(when (car selects)
 		  (w3m-form-replace (cdr (assoc (car selects) (cdr selects)))))
 		(unless (eq form cform)
-		  (w3m-form-put cform name selects))))
+		  (w3m-form-put cform id name selects))))
 	     ((string= type "textarea")
 	      (let ((hseq (nth 2 (w3m-action (point))))
-		    (value (w3m-form-get form name)))
+		    (value (w3m-form-get form id)))
 		(when (> hseq 0)
 		  (setq textareas (cons (cons hseq value) textareas)))
 		(unless (eq form cform)
-		  (w3m-form-put cform name value))))
+		  (w3m-form-put cform id name value))))
 	     ((string= type "file")
-	      (let ((value (w3m-form-get form name)))
+	      (let ((value (w3m-form-get form id)))
 		(when (and value
 			   (consp value))
 		  (w3m-form-replace (cdr value)))
 		(unless (eq form cform)
-		  (w3m-form-put cform name value))))
+		  (w3m-form-put cform id name value))))
 	     (t
-	      (let ((value (w3m-form-get form name)))
+	      (let ((value (w3m-form-get form id)))
 		(when (stringp value)
 		  (w3m-form-replace value))
 		(unless (eq form cform)
-		  (w3m-form-put cform name value)))))))
+		  (w3m-form-put cform id name value)))))))
 	(unless w3m-form-treat-textarea-size
 	  (dolist (textarea textareas)
 	    (when (cdr textarea)
@@ -379,17 +384,20 @@ If no field in forward, return nil without moving."
     (save-excursion
       (goto-char (point-min))
       (let (form fid start end type name rows start-column end-column
-		 hseq abs-hseq buffer-read-only text)
+		 hseq abs-hseq buffer-read-only text id)
 	(while (w3m-form-goto-next-field)
 	  (setq fid (get-text-property (point) 'w3m-form-field-id))
-	  (when (and fid
-		     (string-match
-		      "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\(.*\\)$"
-		      fid))
+	  (when
+	      (and
+	       fid
+	       (string-match
+		"fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
+		fid))
 	    (setq form (nth (string-to-number (match-string 1 fid))
 			    w3m-current-forms)
 		  type (match-string 2 fid)
-		  name (match-string 3 fid))
+		  name (match-string 3 fid)
+		  id (string-to-number (match-string 4 fid)))
 	    (when (string= type "textarea")
 	      (setq rows (get-text-property (point) 'w3m-textarea-rows)
 		    hseq (get-text-property (point) 'w3m-form-hseq)
@@ -413,15 +421,15 @@ If no field in forward, return nil without moving."
 		  (add-text-properties
 		   start end
 		   `(w3m-form-field-id
-		     ,(format "fid=%s/type=%s/name=%s" fid type name)
+		     ,(format "fid=%s/type=%s/name=%s/id=%d" fid type name id)
 		     face w3m-form-face
 		     w3m-action (w3m-form-input-textarea ,form ,hseq)
-		     w3m-submit (w3m-form-submit ,form ,name
-						 (w3m-form-get ,form ,name))
+		     w3m-submit (w3m-form-submit ,form ,id ,name
+						 (w3m-form-get ,form ,id))
 		     w3m-form-hseq ,hseq
 		     w3m-anchor-sequence ,abs-hseq
 		     w3m-form-name ,name)))
-		(when (setq text (w3m-form-get form name))
+		(when (setq text (w3m-form-get form id))
 		  (w3m-form-textarea-replace hseq text))))))))))
 
 (defun w3m-form-parse-and-fontify (&optional reuse-forms)
@@ -429,6 +437,7 @@ If no field in forward, return nil without moving."
 Result form structure is saved to the local variable `w3m-current-forms'.
 If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
   (let ((case-fold-search t)
+	(id 0)
 	tag start end internal-start textareas selects forms maps mapval
 	form)
     (goto-char (point-min))
@@ -511,6 +520,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	    (unless maps (setq maps (w3m-form-new "map" ".")))
 	    (when candidates
 	      (w3m-form-put maps
+			    (incf id)
 			    name
 			    (nreverse candidates))))))
        ((string= tag "img_alt")
@@ -540,6 +550,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			       (checked :bool) ; checkbox, radio
 			       no_effect ; map
 			       name value)
+	  (incf id)
 	  (when value
 	    (setq value (w3m-decode-entities-string value)))
 	  (save-excursion
@@ -565,21 +576,22 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		(w3m-form-make-button
 		 start end
 		 `(w3m-form-field-id
-		   ,(format "fid=%d/type=%s/name=%s" fid type name)
-		   w3m-action (w3m-form-submit ,form ,name ,value)
-		   w3m-submit (w3m-form-submit ,form ,name
-					       (w3m-form-get ,form ,name))
+		   ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
+		   w3m-action (w3m-form-submit ,form ,id ,name ,value)
+		   w3m-submit (w3m-form-submit ,form ,id ,name
+					       (w3m-form-get ,form ,id))
 		   w3m-anchor-sequence ,abs-hseq))))
 	     ((string= type "reset")
 	      (w3m-form-make-button
 	       start end
 	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
 		 w3m-action (w3m-form-reset ,form)
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "textarea")
 	      (if (eq w3m-type 'w3mmee)
 		  (w3m-form-put form name
+				id
 				(decode-coding-string
 				 (w3m-url-decode-string value)
 				 w3m-output-coding-system))
@@ -588,98 +600,101 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
 		 face w3m-form-face
 		 w3m-action (w3m-form-input-textarea ,form ,hseq)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
+		 w3m-submit (w3m-form-submit ,form ,id ,name
+					     (w3m-form-get ,form ,id))
 		 w3m-textarea-rows ,rows
 		 w3m-form-hseq ,hseq
 		 w3m-anchor-sequence ,abs-hseq
+		 w3m-form-id ,id
 		 w3m-form-name ,name)))
 	     ((string= type "select")
 	      (if (eq w3m-type 'w3mmee)
-		  (w3m-form-put form name
+		  (w3m-form-put form id name
 				(w3m-form-mee-select-value value))
 		(setq selects (cons (list selectnumber form name)
 				    selects)))
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
 		 face w3m-form-face
-		 w3m-action (w3m-form-input-select ,form ,name)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
+		 w3m-action (w3m-form-input-select ,form ,id ,name)
+		 w3m-submit (w3m-form-submit ,form ,id ,name
+					     (w3m-form-get ,form ,id))
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "password")
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
 		 face w3m-form-face
-		 w3m-action (w3m-form-input-password ,form ,name)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
+		 w3m-action (w3m-form-input-password ,form ,id ,name)
+		 w3m-submit (w3m-form-submit ,form ,id ,name
+					     (w3m-form-get ,form ,id))
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "checkbox")
-	      (let ((cvalue (w3m-form-get form name)))
-		(w3m-form-put form name
+	      (let ((cvalue (w3m-form-get form id)))
+		(w3m-form-put form id name
 			      (if checked
 				  (cons value cvalue)
 				cvalue)))
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
 		 face w3m-form-face
-		 w3m-action (w3m-form-input-checkbox ,form ,name ,value)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
+		 w3m-action (w3m-form-input-checkbox ,form ,id ,name ,value)
+		 w3m-submit (w3m-form-submit ,form ,id ,name
+					     (w3m-form-get ,form ,id))
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "radio")
 	      ;; Radio button input, one name has one value
-	      (w3m-form-put form name
+	      (w3m-form-put form id name
 			    (if checked value
-			      (w3m-form-get form name)))
+			      (w3m-form-get form id)))
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
 		 face w3m-form-face
-		 w3m-action (w3m-form-input-radio ,form ,name ,value)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
+		 w3m-action (w3m-form-input-radio ,form ,id ,name ,value)
+		 w3m-submit (w3m-form-submit ,form ,id ,name
+					     (w3m-form-get ,form ,id))
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "file")
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
 		 face w3m-form-face
-		 w3m-action (w3m-form-input-file ,form ,name ,value)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
+		 w3m-action (w3m-form-input-file ,form ,id ,name ,value)
+		 w3m-submit (w3m-form-submit ,form ,id ,name
+					     (w3m-form-get ,form ,id))
 		 w3m-anchor-sequence ,abs-hseq)))
 	     (t
 	      (w3m-form-put form
+			    id
 			    name
-			    (or value (w3m-form-get form name)))
+			    (or value (w3m-form-get form id)))
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
+		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
 		 face w3m-form-face
-		 w3m-action (w3m-form-input ,form ,name ,type
+		 w3m-action (w3m-form-input ,form ,id ,name ,type
 					    ,width ,maxlength ,value)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
+		 w3m-submit (w3m-form-submit ,form ,id ,name
+					     (w3m-form-get ,form ,id))
 		 w3m-anchor-sequence ,abs-hseq)))))))))
     ;; Process <internal> tag.
     (when (search-forward "<internal>" nil t)
       (setq internal-start (match-beginning 0))
       (while (and (null reuse-forms)
 		  (re-search-forward "<\\([a-z]+\\)_int" nil t))
+	(incf id)
 	(cond
 	 ((string= (match-string 1) "select")
 	  (w3m-parse-attributes ((selectnumber :integer))
@@ -702,6 +717,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		    (skip-chars-forward ">\n")))
 		(setq candidates (nreverse candidates))
 		(w3m-form-put (nth 0 selectinfo)
+			      id
 			      (nth 1 selectinfo)
 			      (cons (or current ; current value
 					(caar candidates))
@@ -722,7 +738,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		  (goto-char (point-min))
 		  (while (search-forward "\r\n" nil t) (replace-match "\n"))
 		  (setq text (buffer-string)))
-		(w3m-form-put (nth 0 textareainfo) (nth 1 textareainfo)
+		(w3m-form-put (nth 0 textareainfo) id (nth 1 textareainfo)
 			      text)))))))
       (when (search-forward "</internal>" nil t)
 	(delete-region internal-start (match-end 0))))
@@ -759,50 +775,67 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
     (prog1 (point)
       (goto-char p))))
 
-(defun w3m-form-input (form name type width maxlength value)
+(defun w3m-form-input (form id name type width maxlength value)
   (save-excursion
-    (let* ((fvalue (w3m-form-get form name))
+    (let* ((fvalue (w3m-form-get form id))
 	   (input (read-from-minibuffer (concat (upcase type) ": ") fvalue)))
-      (w3m-form-put form name input)
+      (w3m-form-put form id name input)
       (w3m-form-replace input))))
 
-(defun w3m-form-input-password (form name)
-  (let* ((fvalue (w3m-form-get form name))
+(defun w3m-form-input-password (form id name)
+  (let* ((fvalue (w3m-form-get form id))
 	 (input (read-passwd (concat "PASSWORD"
 				     (if fvalue
 					 " (default is no change)")
 				     ": ")
 			     nil
 			     fvalue)))
-    (w3m-form-put form name input)
+    (w3m-form-put form id name input)
     (w3m-form-replace input 'invisible)))
 
-(defun w3m-form-input-checkbox (form name value)
-  (let ((fvalue (w3m-form-get form name)))
+(defun w3m-form-input-checkbox (form id name value)
+  (let ((fvalue (w3m-form-get form id)))
     (if (member value fvalue)		; already checked
 	(progn
-	  (w3m-form-put form name (delete value fvalue))
+	  (w3m-form-put form id name (delete value fvalue))
 	  (w3m-form-replace " "))
-      (w3m-form-put form name (cons value fvalue))
+      (w3m-form-put form id name (cons value fvalue))
       (w3m-form-replace "*"))))
 
-(defun w3m-form-input-radio (form name value)
+(defsubst w3m-form-field-parse (fid)
+  (when (string-match
+	 "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
+	 fid)
+    (list (match-string 1 fid)
+	  (match-string 2 fid)
+	  (match-string 3 fid)
+	  (match-string 4 fid))))
+
+(defun w3m-form-input-radio (form id name value)
   ;; Uncheck all RADIO input having same NAME
   (save-excursion
-    (let ((id (get-text-property (point) 'w3m-form-field-id)))
+    (let ((fid (w3m-form-field-parse
+		(get-text-property (point) 'w3m-form-field-id)))
+	  cur-fid)
       (goto-char 1)
       (while (w3m-form-goto-next-field)
-	(if (string= id (get-text-property (point) 'w3m-form-field-id))
-	    (w3m-form-replace " "))))) ; erase check
+	(setq cur-fid (w3m-form-field-parse
+		       (get-text-property (point)
+					  'w3m-form-field-id)))
+	(when (and (string= (nth 0 fid) (nth 0 cur-fid))
+		   (string= (nth 1 fid) (nth 1 cur-fid))
+		   (string= (nth 2 fid) (nth 2 cur-fid)))
+	  (w3m-form-put form (string-to-number (nth 3 fid)) (nth 2 fid) nil)
+	  (w3m-form-replace " "))))) ; erase check
   ;; Then set this field as checked.
-  (w3m-form-put form name value)
+  (w3m-form-put form id name value)
   (w3m-form-replace "*"))
 
-(defun w3m-form-input-file (form name value)
+(defun w3m-form-input-file (form id name value)
   (let ((input (read-file-name "File name: "
-			       (or (cdr (w3m-form-get form name))
+			       (or (cdr (w3m-form-get form id))
 				   "~/"))))
-    (w3m-form-put form name (cons 'file input))
+    (w3m-form-put form id name (cons 'file input))
     (w3m-form-replace input)))
 
 ;;; TEXTAREA
@@ -860,13 +893,14 @@ character."
     (goto-char p)))
 
 (defun w3m-form-textarea-info ()
-  "Return a cons cell of (NAME . LINE) for current text area."
+  "Return a list of (ID NAME LINE) for current text area."
   (let ((s (get-text-property (point) 'w3m-form-hseq))
 	(lines 1))
     (save-excursion
       (while (w3m-form-search-textarea s 'backward)
 	(incf lines))
-      (cons (get-text-property (point) 'w3m-form-name)
+      (list (get-text-property (point) 'w3m-form-id)
+	    (get-text-property (point) 'w3m-form-name)
 	    lines))))
 
 (defvar w3m-form-input-textarea-keymap nil)
@@ -900,7 +934,8 @@ character."
 	(form w3m-form-input-textarea-form)
 	(point w3m-form-input-textarea-point)
 	(w3mbuffer w3m-form-input-textarea-buffer)
-	(wincfg w3m-form-input-textarea-wincfg))
+	(wincfg w3m-form-input-textarea-wincfg)
+	info)
     (when (buffer-live-p w3mbuffer)
       (or (one-window-p) (delete-window))
       (kill-buffer buffer)
@@ -908,7 +943,8 @@ character."
       (set-window-configuration wincfg)
       (when (and form point)
 	(goto-char point)
-	(w3m-form-put form (car (w3m-form-textarea-info)) input)
+	(setq info (w3m-form-textarea-info))
+	(w3m-form-put form (nth 0 info) (nth 1 info) input)
 	(w3m-form-textarea-replace hseq input)))))
 
 (defun w3m-form-input-textarea-exit ()
@@ -1020,12 +1056,14 @@ character."
 (defvar w3m-form-input-select-buffer nil)
 (defvar w3m-form-input-select-form nil)
 (defvar w3m-form-input-select-name nil)
+(defvar w3m-form-input-select-id nil)
 (defvar w3m-form-input-select-point nil)
 (defvar w3m-form-input-select-candidates nil)
 (defvar w3m-form-input-select-wincfg nil)
 (make-variable-buffer-local 'w3m-form-input-select-buffer)
 (make-variable-buffer-local 'w3m-form-input-select-form)
 (make-variable-buffer-local 'w3m-form-input-select-name)
+(make-variable-buffer-local 'w3m-form-input-select-id)
 (make-variable-buffer-local 'w3m-form-input-select-point)
 (make-variable-buffer-local 'w3m-form-input-select-candidates)
 (make-variable-buffer-local 'w3m-form-input-select-wincfg)
@@ -1044,6 +1082,7 @@ character."
 				 'w3m-form-select-value))
 	 (buffer (current-buffer))
 	 (name w3m-form-input-select-name)
+	 (id w3m-form-input-select-id)
 	 (form w3m-form-input-select-form)
 	 (point w3m-form-input-select-point)
 	 (w3mbuffer w3m-form-input-select-buffer)
@@ -1058,7 +1097,7 @@ character."
       (set-window-configuration wincfg)
       (when (and form point)
 	(goto-char point)
-	(w3m-form-put form name input)
+	(w3m-form-put form id name input)
 	(w3m-form-replace (cdr (assoc cur (cdr input))))))))
 
 (defun w3m-form-input-select-exit ()
@@ -1092,8 +1131,8 @@ character."
   (use-local-map w3m-form-input-select-keymap)
   (run-hooks 'w3m-form-input-select-mode-hook))
 
-(defun w3m-form-input-select (form name)
-  (let* ((value (w3m-form-get form name))
+(defun w3m-form-input-select (form id name)
+  (let* ((value (w3m-form-get form id))
 	 (cur-win (selected-window))
 	 (wincfg (current-window-configuration))
 	 (w3mbuffer (current-buffer))
@@ -1118,6 +1157,7 @@ character."
       (set-buffer buffer)
       (setq w3m-form-input-select-form form)
       (setq w3m-form-input-select-name name)
+      (setq w3m-form-input-select-id id)
       (setq w3m-form-input-select-buffer w3mbuffer)
       (setq w3m-form-input-select-point point)
       (setq w3m-form-input-select-candidates value)
@@ -1291,9 +1331,10 @@ character."
 
 ;;;
 
-(defun w3m-form-submit (form &optional name value)
-  (when (and name (not (zerop (length name))))
-    (w3m-form-put form name value))
+(defun w3m-form-submit (form &optional id name value)
+  (when (and id name
+	     (> (length name) 0))
+    (w3m-form-put form id name value))
   (let* ((orig-url w3m-current-url)
 	 (url (or (w3m-form-action form)
 		  (if (string-match "\\?" w3m-current-url)
@@ -1322,8 +1363,8 @@ character."
 (defsubst w3m-form-real-reset (form sexp)
   (and (eq 'w3m-form-input (car sexp))
        (eq form (nth 1 sexp))
-       (w3m-form-put form (nth 2 sexp) (nth 6 sexp))
-       (w3m-form-replace (nth 6 sexp))))
+       (w3m-form-put form (nth 2 sexp) (nth 3 sexp) (nth 7 sexp))
+       (w3m-form-replace (nth 7 sexp))))
 
 (defun w3m-form-reset (form)
   (save-excursion

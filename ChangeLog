@@ -1,3 +1,29 @@
+2003-09-24  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-form.el (w3m-form-put-property): Don't call intern if it is not 
+	a string.
+	(w3m-form-get-property): Ditto.
+	(w3m-form-put): Added argument ID.
+	(w3m-form-get): Changed argument from NAME to ID.
+	(w3m-form-make-form-data): Changed process to get NAME and VALUE.
+	(w3m-form-resume): Follow the API change in w3m-form-put and
+	w3m-form-get.
+	(w3m-fontify-textareas): Ditto.
+	(w3m-form-parse-and-fontify): Ditto.
+	(w3m-form-input): Ditto.
+	(w3m-form-input-password): Ditto.
+	(w3m-form-input-checkbox): Ditto.
+	(w3m-form-input-radio): Ditto.
+	(w3m-form-input-file): Ditto.
+	(w3m-form-input-textarea-set): Ditto.
+	(w3m-form-textarea-info): Ditto.
+	(w3m-form-input-select): Ditto.
+	(w3m-form-submit): Ditto.
+	(w3m-form-real-reset): Follow the structure change.
+	(w3m-form-input-select-id): New buffer local variable.
+	(w3m-form-input-select-set): Use it.
+	(w3m-form-field-parse): New inline function.
+
 2003-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-favicon.el (w3m-favicon-retrieve): Redisplay Emacs frame;
