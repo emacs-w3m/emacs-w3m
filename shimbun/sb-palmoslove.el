@@ -91,7 +91,7 @@
 			    (forward-char -1)
 			    (point))
 			(point-max)))
-		 date link subject hour minutes ampm time id)
+		 date link subject hour minutes ampm time id body)
 	    (goto-char start)
 	    (while (re-search-forward
 		    "<TD VALIGN=\"top\">\\(<A HREF=\"[^<>]+\">\\)"
