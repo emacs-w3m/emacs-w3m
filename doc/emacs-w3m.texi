@@ -4554,7 +4554,7 @@ Please note that userid and passowrd are required for
 
 @example
 machine www.mozilla.gr.jp
-path /ml/logs/moz-users/
+realm Please Enter mozilla mozilla
 login mozilla
 passwd mozilla
 @end example
