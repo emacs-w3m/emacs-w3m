@@ -1,5 +1,8 @@
 2003-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-text.el (shimbun-shallow-rendering): Use defun
+	instead of defsubst.
+
 	* shimbun/sb-asahi.el: Autoload sb-text instead of always to
 	require the feature.
 	(shimbun-asahi-make-contents): Make an article in the text/plain
