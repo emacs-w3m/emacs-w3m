@@ -343,6 +343,18 @@ the value to return if the user enters the empty string."
 		       (stringp default-value))
 		  (setq ad-return-value default-value))))))))
 
+(unless (fboundp 'multibyte-string-p)
+  (defalias 'multibyte-string-p 'stringp))
+
+(eval-when-compile
+  ;; Pickup `move-to-column-strictly'.
+  (require 'rect))
+
+(defun move-to-column-force (column)
+  "Move point to column COLUMN rigidly in the current line.
+If COLUMN is within a multi-column character, replace it by
+spaces and tab."
+  (inline (move-to-column-strictly column t)))
 
 ;;; Widget:
 (defun w3m-om-define-missing-widgets ()
@@ -361,10 +373,6 @@ as the value."
       :value 'other)))
 
 (eval-after-load "wid-edit" '(w3m-om-define-missing-widgets))
-
-;;; Miscellaneous:
-(unless (fboundp 'multibyte-string-p)
-  (defalias 'multibyte-string-p 'stringp))
 
 (provide 'w3m-om)
 

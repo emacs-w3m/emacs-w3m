@@ -2,7 +2,8 @@
 
 ;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
-;; Authors: Taiki SUGAWARA <taiki.s@cityfujisawa.ne.jp>
+;; Authors: Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
+;;          Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; This file is a part of emacs-w3m.
@@ -30,10 +31,183 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'cl))
+
+;; Override the macro `dolist' which may have been defined in egg.el.
+(eval-when-compile
+  (unless (dolist (var nil t))
+    (load "cl-macs" nil t)))
+
 (require 'w3m-util)
 (require 'w3m-proc)
 (require 'w3m-image)
 (require 'bitmap)
+
+;;; Check for the broken facility:
+(w3m-static-when (or (not (boundp 'emacs-major-version))
+		     (= emacs-major-version 19)
+		     (and (= emacs-major-version 20)
+			  (<= emacs-minor-version 2)))
+  (defconst w3m-bitmap-emacs-broken-p
+    ;; We use `eval' in case Emacs brokenness differs from compile-time
+    ;; to load-time.
+    (eval
+     '(let* ((default-enable-multibyte-characters t)
+	     (default-mc-flag t)
+	     (buffer (get-buffer-create " *check-for-broken-facility*")))
+	(prog1
+	    (save-excursion
+	      (set-buffer buffer)
+	      (erase-buffer)
+	      (insert (bitmap-compose "38c038c038084492926c00f808f008f0"))
+	      (put-text-property (point-min) (point-max)
+				 'check-for-broken-facility t)
+	      (/= (current-column) 1))
+	  (kill-buffer buffer))))
+    "T means this Emacs has a bug on managing column numbers on bitmap
+characters if there are any overlays or text properties.  If you are
+using Mule 2.3 based on Emacs 19.34 and the value for this constant
+is t, we strongly recommend you fix the bug and rebuild Mule.  See
+manuals in the emacs-w3m distribution.")
+
+  (when w3m-bitmap-emacs-broken-p
+    (if noninteractive
+	(message "BROKEN FACILITY DETECTED: \
+Emacs won't manage columns on bitmap chars with props.")
+      (let ((buffer (get-buffer-create "*notification@emacs-w3m*")))
+	(unwind-protect
+	    (save-window-excursion
+	      (delete-other-windows)
+	      (switch-to-buffer buffer)
+	      (setq buffer-read-only nil)
+	      (erase-buffer)
+	      (insert "BROKEN FACILITY DETECTED:\n\nThis "
+		      (if (boundp 'MULE)
+			  "Mule"
+			"Emacs")
+		      "\
+ has a bug on managing column numbers on bitmap characters if
+there are any overlays or text properties."
+		      (if (boundp 'MULE)
+			  "  The emacs-w3m development
+team strongly recommend you apply the patch and rebuild Mule.  The
+patch named mule-2.3@19.34.patch is included in patches/ directory in
+the emacs-w3m distribution."
+			"")
+		      "\n\nPress any key to continue: ")
+	      (set-buffer-modified-p nil)
+	      (read-char))
+	  (with-current-buffer buffer
+	    (beginning-of-line 0)
+	    (delete-region (point) (point-max))
+	    (set-buffer-modified-p nil))
+	  (bury-buffer buffer)))))
+
+  (defun w3m-bitmap-current-column ()
+    "Like `current-column', except that works with byte-indexed bitmap
+chars as well."
+    (let ((home (point))
+	  (cols 0))
+      (while (not (bolp))
+	(forward-char -1)
+	(setq cols (+ cols (char-width (following-char)))))
+      (goto-char home)
+      cols))
+
+  (defun w3m-bitmap-move-to-column (column &optional force strictly)
+    "Like `move-to-column', except that works with byte-indexed bitmap
+chars as well."
+    (beginning-of-line)
+    (let ((cols 0)
+	  width)
+      (if (wholenump column)
+	  (progn
+	    (while (and (not (eolp))
+			(< cols column))
+	      (setq width (char-width (following-char))
+		    cols (+ cols width))
+	      (forward-char 1))
+	    (if force
+		(cond ((> cols column)
+		       (if strictly
+			   (progn
+			     (delete-backward-char 1)
+			     (insert-char ?\  width)
+			     (forward-char (- column cols))
+			     column)
+			 cols))
+		      ((< cols column)
+		       (insert-char ?\  (- column cols))
+		       column)
+		      (t
+		       column))
+	      cols))
+	(signal 'wrong-type-argument (list 'wholenump column)))))
+
+  (defun w3m-bitmap-move-to-column-force (column)
+    "Like `move-to-column-force', except that works with byte-indexed
+bitmap chars as well."
+    (inline (w3m-bitmap-move-to-column column t t)))
+
+  (defun w3m-bitmap-next-line (arg)
+    "Simple emulation to `next-line' to work with byte-indexed bitmap
+chars."
+    (interactive "p")
+    (unless (memq last-command '(next-line previous-line))
+      (setq temporary-goal-column (w3m-bitmap-current-column)))
+    (forward-line arg)
+    (w3m-bitmap-move-to-column temporary-goal-column))
+
+  (defun w3m-bitmap-previous-line (arg)
+    "Simple emulation to `previous-line' to work with byte-indexed bitmap
+chars."
+    (interactive "p")
+    (w3m-bitmap-next-line (- arg)))
+
+  (require 'advice)
+
+  (defmacro w3m-bitmap-defadvice-if-broken (function &optional linewise)
+    "Perform `defadvice' to FUNCTION to attempt to make it work correctly
+even if there is a bug in Emacs on managing column numbers on bitmap
+characters.  If FUNCTION will work within a line, set LINEWISE to t."
+    (let ((replacement (intern (format "w3m-bitmap-%s" function)))
+	  arglist)
+      (when (and (fboundp function)
+		 (fboundp replacement))
+	(setq arglist (ad-arglist (symbol-function replacement)))
+	`(let (current-load-list)
+	   (defadvice ,function
+	     ,(if arglist
+		  (list 'around 'make-it-work-with-bitmap-chars arglist
+			'activate)
+		'(around make-it-work-with-bitmap-chars activate))
+	     "Advised by emacs-w3m.
+Attempt to make the function work correctly even if Emacs has a bug on
+managing column numbers on bitmap characters."
+	     (if ,(if linewise
+		      '(let ((bol (line-beginning-position))
+			     (eol (line-end-position)))
+			 (or (overlays-in bol eol)
+			     (text-properties-at (point))
+			     (next-property-change (point) nil eol)
+			     (previous-property-change (point) nil bol)))
+		    '(or (overlays-in (point-min) (point-max))
+			 (next-property-change (point))
+			 (previous-property-change (point))))
+		 (setq ad-return-value
+		       ,(cons replacement
+			      (delq '&optional
+				    (delq '&rest
+					  (copy-sequence arglist)))))
+	       ad-do-it))))))
+
+  (when w3m-bitmap-emacs-broken-p
+    (w3m-bitmap-defadvice-if-broken current-column t)
+    (w3m-bitmap-defadvice-if-broken move-to-column t)
+    (w3m-bitmap-defadvice-if-broken move-to-column-force t)
+    (w3m-bitmap-defadvice-if-broken next-line)
+    (w3m-bitmap-defadvice-if-broken previous-line)))
 
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
@@ -55,86 +229,6 @@
 (defvar w3m-bitmap-image-cache-alist nil)
 (defvar w3m-bitmap-image-use-cache t
   "*If non-nil, bitmap-image is cached to this alist")
-
-(eval-when-compile
-  (defmacro w3m-bitmap-byte-indexed-characters-p ()
-    (or (not (boundp 'emacs-major-version))
-	(<= emacs-major-version 19)
-	(and (= emacs-major-version 20)
-	     (<= emacs-minor-version 2)))))
-
-(eval-and-compile
-  (unless (w3m-bitmap-byte-indexed-characters-p)
-    (defalias 'w3m-bitmap-current-column 'current-column)
-    (defalias 'w3m-bitmap-move-to-column-force 'move-to-column-force))
-
-  (when (w3m-bitmap-byte-indexed-characters-p)
-    (defun w3m-bitmap-current-column ()
-      "Like `current-column', except that works with byte-indexed bitmap
-chars as well."
-      (let ((home (point))
-	    (cols 0))
-	(while (not (bolp))
-	  (forward-char -1)
-	  (setq cols (+ cols (char-width (following-char)))))
-	(goto-char home)
-	cols))
-
-    (defun w3m-bitmap-move-to-column (column &optional force)
-      "Like `move-to-column', except that works with byte-indexed bitmap
-chars as well."
-      (beginning-of-line)
-      (let ((cols 0)
-	    width)
-	(if (wholenump column)
-	    (progn
-	      (while (and (not (eolp))
-			  (< cols column))
-		(setq width (char-width (following-char))
-		      cols (+ cols width))
-		(forward-char 1))
-	      (if force
-		  (progn
-		    (cond ((> cols column)
-			   (delete-backward-char 1)
-			   (insert-char ?\  width)
-			   (forward-char (- column cols)))
-			  ((< cols column)
-			   (insert-char ?\  (- column cols))))
-		    column)
-		cols))
-	  (signal 'wrong-type-argument (list 'wholenump column)))))
-
-    (defun w3m-bitmap-move-to-column-force (column)
-      "Like `move-to-column-force', except that works with byte-indexed
-bitmap chars as well."
-      (inline (w3m-bitmap-move-to-column column t)))
-
-    (defun w3m-bitmap-next-line (arg)
-      "Simple emulation to `next-line' to work with byte-indexed bitmap chars."
-      (interactive "p")
-      (unless (memq last-command '(w3m-bitmap-next-line
-				   w3m-bitmap-previous-line))
-	(setq temporary-goal-column (w3m-bitmap-current-column)))
-      (forward-line arg)
-      (w3m-bitmap-move-to-column temporary-goal-column))
-
-    (defun w3m-bitmap-previous-line (arg)
-      "Simple emulation to `previous-line' to work with byte-indexed bitmap
-chars."
-      (interactive "p")
-      (w3m-bitmap-next-line (- arg)))
-
-    (defun w3m-bitmap-substitute-key-definitions ()
-      "Substitute some key defs to work with byte-indexed bitmap chars.  Note
-that it is intended to be used to `w3m-mode-hook' exclusively."
-      (remove-hook 'w3m-mode-hook 'w3m-bitmap-substitute-key-definitions)
-      (substitute-key-definition 'next-line 'w3m-bitmap-next-line
-				 w3m-mode-map global-map)
-      (substitute-key-definition 'previous-line 'w3m-bitmap-previous-line
-				 w3m-mode-map global-map))
-
-    (add-hook 'w3m-mode-hook 'w3m-bitmap-substitute-key-definitions)))
 
 (defun w3m-bitmap-image-buffer (buffer)
   "Create bitmap-image from BUFFER."
@@ -172,7 +266,7 @@ a new overlay will be created and returned."
       (setq pos (marker-position pos)))
     (goto-char pos)
     (let ((ovrbeg (line-beginning-position))
-	  (col (w3m-bitmap-current-column))
+	  (col (current-column))
 	  indent-tabs-mode end-col face-ovrs)
       (unless ovr
 	(setq ovr (make-overlay ovrbeg ovrbeg))
@@ -189,14 +283,14 @@ a new overlay will be created and returned."
       (when props
 	(w3m-add-text-properties pos (point) props)
 	(push (make-overlay pos (point)) face-ovrs))
-      (setq end-col (w3m-bitmap-current-column))
+      (setq end-col (current-column))
       (forward-line)
       (while (or image (< (point) (overlay-end ovr)))
 	(when (>= (point) (overlay-end ovr))
 	  (beginning-of-line)
 	  (insert-before-markers "\n")
 	  (forward-line -1))
-	(w3m-bitmap-move-to-column-force col)
+	(move-to-column-force col)
 	(if image
 	    (progn
 	      (setq pos (point))
@@ -225,10 +319,10 @@ a new overlay will be created and returned."
       (if ovr
 	  (progn
 	    (overlay-put ovr 'evaporate nil)
-	    (setq col (w3m-bitmap-current-column))
+	    (setq col (current-column))
 	    (while (< (point) (overlay-end ovr))
 	      (setq eol (line-end-position))
-	      (w3m-bitmap-move-to-column-force col)
+	      (move-to-column-force col)
 	      (delete-region (point)
 			     (if width
 				 (min (+ (point) width) eol)
