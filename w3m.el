@@ -6,6 +6,7 @@
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
 ;;          Satoru Takabayashi <satoru-t@is.aist-nara.ac.jp>,
 ;;          Hideyuki SHIRAI    <shirai@meadowy.org>
+;;          Keisuke Nishida    <kxn30@po.cwru.edu>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; w3m.el is free software; you can redistribute it and/or modify it
@@ -51,7 +52,7 @@
 (if (featurep 'xemacs)
     (require 'poem))
 
-(require 'ffap)
+(require 'thingatpt)
 
 (unless (fboundp 'find-coding-system)
   (if (fboundp 'coding-system-p)
@@ -83,16 +84,12 @@
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-fill-column (- (frame-width) 4)
-  "*Fill column of w3m."
-  :group 'w3m
-  :type 'integer)
-
 (defcustom w3m-command-arguments
-  '("-T" "text/html" "-t" tab-width "-halfdump" "-cols" w3m-fill-column)
+  '("-T" "text/html" "-t" tab-width "-halfdump"
+    "-cols" (1- (frame-width)))
   "*Arguments of w3m."
   :group 'w3m
-  :type '(repeat (restricted-sexp :match-alternatives (stringp boundp))))
+  :type '(repeat sexp))
 
 (defcustom w3m-mailto-url-function nil
   "*Mailto handling Function."
@@ -131,6 +128,12 @@
   "*Default directory for save file."
   :group 'w3m
   :type 'directory)
+
+(defcustom w3m-delete-duplicated-empty-lines t
+  "*Compactize page by deleting duplicated empty lines."
+  :group 'w3m
+  :type 'boolean)
+
 
 (defun w3m-url-to-file-name (url)
   (if (string-match "^file:" url)
@@ -197,17 +200,15 @@
   :type 'integer)
 
 (defface w3m-anchor-face
-  '((((class color) (background light)) (:foreground "red" :underline t))
+  '((((class color) (background light)) (:foreground "blue" :underline t))
     (((class color) (background dark)) (:foreground "cyan" :underline t))
     (t (:underline t)))
   "*Face to fontify anchors."
   :group 'w3m-face)
 
 (defface w3m-arrived-anchor-face
-  '((((class color) (background light))
-     (:foreground "navy" :underline t :bold t))
-    (((class color) (background dark))
-     (:foreground "LightSkyBlue" :underline t :bold nil))
+  '((((class color) (background light)) (:foreground "navy" :underline t))
+    (((class color) (background dark)) (:foreground "LightSkyBlue" :underline t))
     (t (:underline t)))
   "*Face to fontify anchors, if arrived."
   :group 'w3m-face)
@@ -326,6 +327,28 @@ In other environment, use 'native."
 MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
   :type '(repeat (cons symbol coding-system)))
+
+(defcustom w3m-search-engine-alist
+  '(("yahoo" . "http://search.yahoo.com/bin/search?p=%s")
+    ("google" . "http://www.google.com/search?q=%s"))
+  "*An alist of search engines.
+Each elemnt looks like (ENGINE . ACTION)
+ENGINE is a string, the name of the search engine.
+ACTION is a string, the URL that performs a search.
+ACTION must contain a \"%s\", which is substituted by a query string."
+  :group 'w3m
+  :type '(repeat (cons (string :tag "Engine") (string :tag "Action"))))
+
+(defcustom w3m-default-search-engine "yahoo"
+  "*Default search engine name.
+See also `w3m-search-engine-alist'."
+  :group 'w3m
+  :type 'string)
+
+(defcustom w3m-horizontal-scroll-columns 10
+  "*Column size to scroll horizontaly."
+  :group 'w3m
+  :type 'integer)
 
 (defconst w3m-extended-charcters-table
   '(("\xa0" . " ")))
@@ -646,9 +669,18 @@ If N is negative, last N items of LIST is returned."
   ;; initialize if need
   (if (null w3m-entity-db)
       (w3m-entity-db-setup))
-  ;; return value of specified entity, or empty string for unknown entity.
-  (or (symbol-value (intern-soft (match-string 1) w3m-entity-db))
-      ""))
+    ;; return value of specified entity, or empty string for unknown entity.
+    (or (symbol-value (intern-soft (match-string 1) w3m-entity-db))
+	(if (not (char-equal (string-to-char name) ?#))
+	    ""				; unknown etity
+	  ;; case of immediate character (accept only 0x20 .. 0x7e)
+	  (let ((char (string-to-int (substring name 1)))
+		sym)
+	    ;; make character's representation with learning
+	    (set (setq sym (intern name w3m-entity-db))
+		 (if (or (< char 32) (< 127 char))
+		     "~"		; un-supported character
+		   (char-to-string char)))))))
   
 
 (defun w3m-fontify-bold ()
@@ -680,7 +712,7 @@ If N is negative, last N items of LIST is returned."
   ;; Re-ordering anchor elements.
   (goto-char (point-min))
   (let (href)
-    (while (re-search-forward "<a\\([ \t\n]\\)[^>]+[ \t\n]href=\\(\"[^\"]*\"\\)" nil t)
+    (while (re-search-forward "<a\\([ \t\n]\\)[^>]+[ \t\n]href=\\(\"?[^\" >]*\"?\\)" nil t)
       (setq href (buffer-substring (match-beginning 2) (match-end 2)))
       (delete-region (match-beginning 2) (match-end 2))
       (goto-char (match-beginning 1))
@@ -688,7 +720,7 @@ If N is negative, last N items of LIST is returned."
   ;; Fontify anchor tags.
   (goto-char (point-min))
   (while (re-search-forward
-	  "<a\\([ \t\n]+href=\"\\([^\"]*\\)\"\\)?\\([ \t\n]+name=\"\\([^\"]*\\)\"\\)?[^>]*>"
+	  "<a\\([ \t\n]+href=\"?\\([^\" >]*\\)\"?\\)?\\([ \t\n]+name=\"?\\([^\" >]*\\)\"?\\)?[^>]*>"
 	  nil t)
     (let ((url (match-string 2))
 	  (tag (match-string 4))
@@ -755,7 +787,7 @@ If N is negative, last N items of LIST is returned."
     ;; Decode escaped characters (entities).
     (goto-char (point-min))
     (let (prop)
-      (while (re-search-forward "&\\([a-z]+\\);?" nil t)
+      (while (re-search-forward "&\\([a-z]+\\|#[0-9]+\\);?" nil t)
 	(setq prop (text-properties-at (match-beginning 0)))
 	(replace-match (w3m-entity-value (match-string 1)) nil t)
 	(if prop (add-text-properties (match-beginning 0) (point) prop))))
@@ -768,6 +800,10 @@ If N is negative, last N items of LIST is returned."
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (insert (cdr elem))))
       (set-buffer-multibyte x))
+    (goto-char (point-min))
+    (if w3m-delete-duplicated-empty-lines
+	(while (re-search-forward "^[ \t]*\n\\([ \t]*\n\\)+" nil t)
+	  (replace-match "\n" nil t)))
     (run-hooks 'w3m-fontify-after-hook)))
 
 ;;
@@ -796,7 +832,7 @@ If N is negative, last N items of LIST is returned."
     (mapatoms (lambda (x)
 		(setq candidates (cons (cons (symbol-name x) x) candidates)))
 	      w3m-backlog-hashtb)
-    (setq default (or default (ffap-url-at-point)))
+    (setq default (or default (thing-at-point 'url)))
     (setq prompt (or prompt
 		     (if default "URL: "
 		       (format "URL (default %s): " w3m-home-page))))
@@ -1646,8 +1682,6 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "l" 'forward-char)
     (define-key map "J" (lambda () (interactive) (scroll-up 1)))
     (define-key map "K" (lambda () (interactive) (scroll-up -1)))
-    (define-key map "<" 'scroll-right)
-    (define-key map ">" 'scroll-left)
     (define-key map "G" 'goto-line)
     (define-key map "\C-?" 'scroll-down)
     (define-key map "\t" 'w3m-next-anchor)
@@ -1679,6 +1713,8 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "?" 'describe-mode)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
+    (define-key map "<" 'w3m-scroll-left)
+    (define-key map ">" 'w3m-scroll-right)
     (setq w3m-mode-map map)))
 
 
@@ -1738,11 +1774,29 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 "
   (kill-all-local-variables)
   (buffer-disable-undo)
-  (setq major-mode 'w3m-mode
-	mode-name "w3m")
+  (setq major-mode 'w3m-mode)
+  (setq mode-name "w3m")
   (use-local-map w3m-mode-map)
   (setq truncate-lines t)
   (run-hooks 'w3m-mode-hook))
+
+(defun w3m-scroll-left (arg)
+  "Scroll to left.
+Scroll size is `w3m-horizontal-scroll-size' columns
+or prefix ARG columns."
+  (interactive "P")
+  (scroll-left (if arg 
+		   (prefix-numeric-value arg)
+		 w3m-horizontal-scroll-columns)))
+
+(defun w3m-scroll-right (arg)
+  "Scroll to right.
+Scroll size is `w3m-horizontal-scroll-size' columns
+or prefix ARG columns."
+  (interactive "P")
+  (scroll-right (if arg
+		    (prefix-numeric-value arg)
+		  w3m-horizontal-scroll-columns)))
 
 (defun w3m-mailto-url (url)
   (if (and (symbolp w3m-mailto-url-function)
@@ -2008,6 +2062,39 @@ ex.) c:/dir/file => //c/dir/file"
     (w3m-rendering-region start end)
     (w3m-fontify)))
 
+(defun w3m-escape-query-string (str)
+  (mapconcat (lambda (ch)
+	       (if (string-match "[-a-zA-Z0-9_]" (char-to-string ch)) ; xxx?
+		   (char-to-string ch)	; printable
+		 (format "%%%02X" ch)))	; escape
+	     (string-to-list str)
+	     ""))
+
+(defun w3m-do-search (engine query)
+  (let ((pair (assoc engine w3m-search-engine-alist)))
+    (if (null pair)
+	(error "Unknown search engine: %s" engine)
+      (w3m (format (cdr pair) (w3m-escape-query-string query))))))
+
+(defun w3m-search (arg)
+  "Search query using search-engine.  
+With prefix ARG, you can choose search engine deinfed in
+`w3m-search-engine-alist'. Otherwise use `w3m-default-search-engine'."
+  (interactive "P")
+  (let (engine query)
+    ;; decide search engine
+    (if (null arg)
+	(setq engine w3m-default-search-engine)
+      ;; with prefix, select
+      (setq engine (completing-read
+		    (format "Which Engine? (%s): " w3m-default-search-engine)
+		    w3m-search-engine-alist nil t))
+      (if (string= engine "")
+	  (setq engine w3m-default-search-engine)))
+    ;; input search query
+    (setq query (read-string (format "%s search: " engine)))
+    (if (not (string= query ""))
+	(w3m-do-search engine query))))
 
 (provide 'w3m)
 ;;; w3m.el ends here.
