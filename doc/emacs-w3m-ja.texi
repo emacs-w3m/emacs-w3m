@@ -658,9 +658,10 @@ Proxy $B%2!<%H%&%'%$$rDL$5$:$K@\B3$7$J$1$l$P$J$i$J$$(B @code{no-proxy} $B%[%9
 * Tracing History::             $B;~6u$rAL$k(B
 * Managing Bookmarks::          $B$\$/$N(B/$B$o$?$7$N$*5$$KF~$j(B
 * Using Tabs::                  $B$_$s$J%?%V$,9%$-$@$h$M(B
-* Working with buffers::        $B%P%C%U%!$r:n$k(B/$B>C$9(B/$B0\F0$9$k(B
+* Working with Buffers::        $B%P%C%U%!$r:n$k(B/$B>C$9(B/$B0\F0$9$k(B
 * Downloading::                 $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
 * Submitting Forms::            HTML $B%U%)!<%`$K5-F~$9$k(B
+* HTML file information::       $B%&%'%V%Z!<%8:n$j$H%O%C%/$N$*<jEA$$(B
 @end menu
 
 @node Browsing Web Pages
@@ -962,6 +963,10 @@ C-c} $B$GAw$k$3$H$,$G$-$^$9!#$3$N%3%^%s%IL5$7$G$O!"$=$N%Z!<%8(B
 
 @c M-g	Jump to line.
 
+@c $B$I$&$7$h$&(B
+@c C-c C-@@	Mark the current position.
+@c C-c C-v	Goto the last position.
+
 @node Moving over pages
 @subsection $B%Z!<%84V$rEO$jJb$/(B
 
@@ -1038,13 +1043,42 @@ Scroll down or go to previous url.
 @node Browsing With Mouse Operations
 @subsection $B%^%&%9$G%5!<%U%#%s(B
 
-$B%D!<%k%P!<$H%a%K%e!<$K$D$$$F(B...
-@table @key
+Emacs-w3m$B$N3+H/<TC#$O!"(BEmacs$B%.!<%/$G$J$$$^$H$b$J?M$K$b(BEmacs-w3m$B$r;H$C$F$b(B
+$B$i$($k$h$&$KEXNO$7$^$7$?!#(BURL$B$r4^$`%F%-%9%H$NF~NO$r=|$/$[$H$s$I$N%&%'%V%V(B
+$B%i%&%:A`:n$r%^%&%9$@$1$G9T$J$&$3$H$,$G$-$^$9!#=$>~%-!<$H$7$F%7%U%H%-!<$,(B
+$BI,MW$K$J$k>l9g$,$"$j$^$9$,!"(BEmacs-w3m$B$N3+H/<TC#$,$=$b$=$b(BEmacs$B%.!<%/$J$N(B
+$B$G(B...
+
+$B%&%'%V1\Mw$N4pK\$H$J$k!V%j%s%/$rC)$kA`:n!W$K$O(B@kbd{mouse-2}$B$r;H$$$^$9!#(B
+@table @kbd
 @item mouse-2
-View this url use mouse.
-If w3m-use-form is t, RET and <mouse-2> action a form input.
-You may use the prefix arg `2' or `C-u C-u' to make a new session.
+@kindex mouse-2
+@findex w3m-mouse-view-this-url
+$B%^%&%9%+!<%=%k$N2<$K$"$k%j%s%/$rC)$j$^$9(B
+(@code{w3m-mouse-view-this-url})$B!#(B
+
+
+@item S-mouse-2
+@kindex S-mouse-2
+@findex w3m-mouse-view-this-url-new-session
+$B?7$7$$%;%C%7%g%s(B(@pxref{Tracing History})$B$N$b$H$G%^%&%9%+!<%=%k$N2<$K(B
+$B$"$k%j%s%/$rC)$j$^$9(B(@code{w3m-mouse-view-this-url-new-session})$B!#(B
+
 @end table
+
+$B%9%/%m!<%k%P!<!"%a%K%e!<5Z$S%D!<%k%P!<$O!"%^%&%9$G(BEmacs-w3m$B$r;H$&$N$KLrN)(B
+$B$A$^$9!#$?$@$7!"$*;H$$$N(BEmacsen$B$,%5%]!<%H$7$F$$$F$+$D!"%+%9%?%^%$%:$7$F$=(B
+$B$l$i$r!V%*%U!W$K$7$F$$$J$$$3$H$,>r7o$H$J$j$^$9!#8@$&$^$G$b$J$$$G$9$,!"%9(B
+$B%/%m!<%k%P!<$rF0$+$7$FI=<($r%9%/%m!<%k$5$;$k$3$H$,$G$-$^$9!#!V(BFile$B!W$r2!(B
+$B$7$N$1$F%a%K%e!<%P!<$N0lHV:8$K0LCV$9$k!V(BW3M$B!W%a%K%e!<$+$i!"$3$N(Binfo$B%I%-%e(B
+$B%a%s%H$G>R2p$7$F$$$k(Bemacs-w3m$B$NMM!9$J5!G=$r8F$S=P$9$3$H$,$G$-$^$9!#<gMW$J(B
+$B5!G=$K$D$$$F$O%a%K%e!<%"%$%F%`$rA*$V$^$G$b$J$/!"%D!<%k%P!<>e$N%\%?%s(B
+$B%"%$%F%`$r2!$;$P8F$S=P$;$^$9!#(B
+
+$B%?%V(B(@pxref{Using Tabs})$B$r@Z$jBX$($k$K$O!"(B
+$B%&%#%s%I%&$N$F$C$Z$s$N9T$r(B@kbd{mouse-2}$B$GD>@\%/%j%C%/$7$^$9!#(B
+$B$"$k$$$O!V(BW3M$B!W%a%K%e!<$N$H$J$j$K$"$k!V(BTAB$B!W%a%K%e!<$+$i%"%$(B
+$B%F%`$r;XDj$7$^$9!#(B
 
 @node Leaving for daily hacking and/or daily writing
 @subsection $BIaCJ$N@83h$KLa$k$K$O(B
@@ -1065,33 +1099,20 @@ You may use the prefix arg `2' or `C-u C-u' to make a new session.
 @item q
 @kindex q
 @findex w3m-close-window
-Emacs-w3m $B$N%&%#%s%I%&$HJD$8$F!"B>$N%P%C%U%!$rA*Br$7$^$9!#(B
+Emacs-w3m $B$N%&%#%s%I%&$HJD$8$F!"B>$N%P%C%U%!$rA*Br$7$^$9(B
+(@code{w3m-close-window})$B!#(B
+
 
 @item Q
 @kindex Q
 @findex w3m-quit
 Arrived URLs ($B1\MwMzNr(B, @pxref{Tracing History}$B;2>H(B) $B$rJ]B8$7(B
-$B$F(B emacs-w3m $B$r=*N;$7$^$9!#(B
+$B$F(B emacs-w3m $B$r=*N;$7$^$9(B(@code{w3m-quit})$B!#(B
 @end table
 
 @c TODO
 @c $B%;%C%7%g%s$K$D$$$F@bL@$7$F$$$k8D=j$G(B
 @c G	Goto URL in the new session.
-
-@c $B$I$&$7$h$&(B
-@c M	View current url with external browser.
-
-@c $B%&%'%V%Z!<%8$N>pJs$rI=<($9$k!#(B
-@c \	Display source of this current buffer.
-@c =	Display header of this current buffer.
-
-@c $B%&%'%V%Z!<%8$rJT=8$9$k!#(B
-@c E	Edit the local file pointed by the URL of current page.
-@c e	Edit the local file by the under the point.
-
-@c $B$I$&$7$h$&(B
-@c C-c C-@@	Mark the current position.
-@c C-c C-v	Goto the last position.
 
 @node Inline Images
 @section $B2hA|I=<($r(B ON/OFF $B$9$k(B
@@ -1387,7 +1408,7 @@ Emacs-w3m $B%f!<%6$K$b$C$H;k3P8z2L$r(B!
 $B%?%V$K$h$k1\Mw$r3h$+$9$+$I$&$+!#(B
 @end table
 
-@node Working with buffers
+@node Working with Buffers
 @section $B%P%C%U%!$r:n$k(B/$B>C$9(B/$B0\F0$9$k(B
 
 $BCY$+$lAa$+$l$"$J$?$O(B emacs-w3m $BCfFG$K$J$C$F!"$9$Y$F$N%&%'%V$N1\Mw$r$=$l(B
@@ -1595,6 +1616,61 @@ Emacs $B$G9T$J$C$F$$$kB>$N;E;v$N<YKb$r$7$J$$$N$G!"$=$&$7$?$1$l$PB>$N%P%C%U%!(B
 
 @item C-c C-q @r{(w3m-form-*-keymap)}
 $B%U%)!<%`$NJT=8$rCfCG$7$F!"JQ99$r<h$j;_$a$^$9!#(B
+@end table
+
+@node HTML file information
+@section $B%&%'%V%Z!<%8:n$j$H%O%C%/$N$*<jEA$$(B
+
+@c TODO TIPS$B$X%j%s%/$r$O$k!#(B
+$B$$$D$b%I%-%e%a%s%H$N<9I.4D6-$H$7$F!"$"$k$$$O%=%U%H%&%'%"$N3+H/4D6-$H$7$F(B
+Emacs $B$r;H$C$F$$$k?M$K$O!"$=$N4D6-$NCf$G%&%'%V$r1\Mw$G$-$k$H$$$&$N$O!"K\(B
+$BEv$KJXMx$G$7$g$&!#(Bhtml $B%U%!%$%k$r<9I.$7$F$$$k$N$G$"$l$P!"B>$N%&%'%V%V%i%&(B
+$B%6$r?7$?$K5/F0$9$kI,MW$J$/!"(BEmasc $B$N$J$+$G:n@.$7$?(B html $B%U%!%$%k$r%W%l%S%e!<(B
+$B$G$-$^$9!#%W%m%0%i%_%s%0Cf$K%i%$%V%i%j$N%I%-%e%a%s%H$r3+$$$F!"%5%s%W%k%3!<(B
+$B%I$r@Z$jE=$j$9$k$H$$$C$?$3$H$b?WB.$K9T$J$($^$9!#(B
+
+$B5U$O$I$&$G$7$g$&!#$9$J$o$A%&%'%V1\Mw$N4D6-$G!"$=$N%=!<%9$G$"$k(B html $B%U%!%$%k$r(B
+$BJT=8$7$?$j!";2>H$7$?$j$G$-$?$iJXMx$@$H;W$$$^$;$s$+!)(B $B%I%-%e%a%s%H$r<9I.Cf$K(B
+Emacs-w3m $B$G2<8+(B (preview)$B$7$F8m;z$rH/8+$7$?$H$7$^$9!#$=$N(B html $B%U%!%$%k$r$9$0$K(B
+$B=$@5$7$?$/$J$k$O$:$G$9!#$"$J$?$,%&%'%V%F%/%N%m%8!<$K7H$o$k%W%m%0%i%^$J$i(B
+$B1\MwCf$N%&%'%V%Z!<%8$r(B html $B7A<0$G1\Mw$7$?$/$J$k$3$H$,$"$k$G$7$g$&!"FC$K(B
+$B?7J9%b%8%e!<%k$N:n<T$NJ}(B(@pxref{Shimbun Basics})$B!#(B
+
+html $B%U%!%$%k$r%m!<%I$r$7$F$$$k%P%C%U%!$NL>A0$rL@<(E*$K;XDj$7$F%P%C%U%!$r(B
+$B@Z$jBX$($F$k$3$H$b$G$-$^$9$,!"(BEmacs-w3m $B$G$O$=$&$$$C$?L\E*$N$?$a$K@lMQ$N%-!<(B
+$B$,3dEv$F$i$l$F$$$^$9!#(BEmacs-w3m $B$O<+J,$,8=:_I=<($7$F$$$k%&%'%V%Z!<%8$N(B URL $B$r(B
+$BCN$C$F$k$s$G$9!#$=$N>pJs$r;H$o$J$$<j$O$"$j$^$;$s!#(B
+
+
+@table @kbd
+
+@item \
+@kindex \
+@findex w3m-view-source
+$BI=<(Cf$N%&%'%V%Z!<%8$r(Bhtml$B7A<0$G$=$N$^$^I=<($7$^$9(B(@code{w3m-view-source})$B!#(B
+
+@item =
+@kindex =
+@findex w3m-view-header
+$BI=<(Cf$N%&%'%V%Z!<%8$N>pJs$rI=<($7$^$9!#>pJs$K$O!"%?%$%H%k!"(BURL$B!"(B
+$B%I%-%e%a%s%H%?%$%W!":G=*JQ99F|;~$,4^$^$l$^$9(B(@code{w3m-view-header})$B!#(B
+
+@item E
+@kindex E
+@findex w3m-edit-current-url
+$B8=:_1\MwCf$N%m!<%+%k%U%!%$%k$rJT=8$9$k(B(@code{w3m-edit-current-url})$B!#(B
+
+@item e
+@kindex e
+@findex w3m-edit-this-url
+$B8=:_%]%$%s%H$N2<$K%j%s%/$N@h$N%m!<%+%k%U%!%$%k$rJT=8$9$k(B(@code{w3m-edit-this-url})$B!#(B
+
+@item M
+@kindex M
+@findex w3m-view-url-with-external-browser
+(Emacs-w3m$B0J30$N(B)$B30It%V%i%&%6$r?7$?$K5/F0$7$F!"(B
+$B8=:_(BEmacs-w3m$B$G1\Mw$7$F$$$k%Z!<%8$rI=<($7$^$9(B(@code{w3m-view-url-with-external-browser})$B!#(B
+@c TODO $B$b$&$A$g$C$H>\$7$/!#(B
 @end table
 
 @node Pretty Good Features
