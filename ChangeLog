@@ -1,3 +1,8 @@
+2001-06-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-dump-head-source-command-argument): Its old name is
+	`w3m-dump-head-source-command-argument'.
+
 2001-06-11  Mito  <mit@nines.nec.co.jp>
 
 	* w3m.el (w3m-broken-proxy-cache): New variable.
