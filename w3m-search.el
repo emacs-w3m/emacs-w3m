@@ -55,14 +55,14 @@
 	     euc-japan)))
 	,@(if ja
 	      '(("google"
-		 "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja"
+		 "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS"
 		 shift_jis)
 		("google-en"
 		 "http://www.google.com/search?q=%s"))
 	    '(("google"
 	       "http://www.google.com/search?q=%s")
 	      ("google-ja"
-	       "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja"
+	       "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS"
 	       shift_jis)))
 	("google groups"
 	 "http://groups.google.com/groups?q=%s")
