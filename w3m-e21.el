@@ -523,8 +523,10 @@ itself and cleared by a timer.")
 (defun w3m-tab-line ()
   (or
    (when w3m-current-process
-     (run-at-time 0.1 nil (lambda nil (setq w3m-tab-line-format nil)))
-     w3m-tab-line-format)
+     (or w3m-tab-line-format
+	 (progn
+	   (run-at-time 0.1 nil (lambda nil (setq w3m-tab-line-format nil)))
+	   nil)))
    (let* ((current (current-buffer))
 	  (buffers (w3m-list-buffers))
 	  (width (if (> (* (length buffers) (+ 5 w3m-tab-width))
