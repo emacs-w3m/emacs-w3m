@@ -57,13 +57,14 @@ ADDRESS is the e-mail address for the diary owner.")
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-hns))
   (let ((case-fold-search t)
-	id year month mday uniq pos subject
+	id year month mday sect uniq pos subject
 	headers)
     (goto-char (point-min))
-    (while (re-search-forward "<a href=\"[^\\?]*\\?\\([^\\#]*#\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)[0-9]+\\)\">[^<]+</a>:" nil t)
+    (while (re-search-forward "<a href=\"[^\\?]*\\?\\([^\\#]*#\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9]+\\)\\)\">[^<]+</a>:" nil t)
       (setq year  (string-to-number (match-string 2))
 	    month (string-to-number (match-string 3))
 	    mday  (string-to-number (match-string 4))
+	    sect  (string-to-number (match-string 5))
 	    uniq  (match-string 1)
 	    pos (point))
       (when (re-search-forward "<br>" nil t)
@@ -85,10 +86,14 @@ ADDRESS is the e-mail address for the diary owner.")
 	     (shimbun-mime-encode-string (or subject ""))
 	     (nth 2 (assoc (shimbun-current-group-internal shimbun)
 			   shimbun-hns-group-alist))
-	     (shimbun-make-date-string year month mday)
+	     (shimbun-make-date-string year month mday
+				       (format "00:%02d" sect))
 	     id "" 0 0 uniq)
 	    headers))
     headers))
+;    ;; sort by xref
+;    (sort headers (lambda (a b) (string< (shimbun-header-xref a)
+;					 (shimbun-header-xref b))))))
 
 (defun shimbun-hns-article (shimbun xref)
   "Return article string which corresponds to SHIMBUN and XREF."
