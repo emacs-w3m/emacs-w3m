@@ -1,3 +1,8 @@
+2002-07-09  Hironori FUJII  <fujii@chi.its.hiroshima-cu.ac.jp>
+
+	* w3m.el (w3m-highlight-current-anchor): Don't infloop at the
+	beginning of a buffer.
+
 2002-07-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-mode): Make `list-buffers-directory' to buffer
