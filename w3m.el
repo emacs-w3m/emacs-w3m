@@ -2142,12 +2142,14 @@ If it is nil, the command specified to `w3m-command' is used.")
 
 (defconst w3m-arrived-ignored-regexp
   "\\`about:\\(//\\(header\\|source\\|history\\|\
-db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
+db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
+\\|\\`about:/*blank/?\\'"
   "Regexp matching urls which aren't stored in the arrived URLs database.")
 
 (defconst w3m-history-ignored-regexp
   "\\`about:\\(//\\(header\\|source\\|history\\|\
-db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
+db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
+\\|\\`about:/*blank/?\\'"
   "Regexp matching urls which aren't stored in the history.")
 
 (defconst w3m-url-components-regexp
@@ -4395,6 +4397,8 @@ It will put the retrieved contents into the current buffer.  See
 	(type (w3m-retrieve (substring url (match-end 0))
 			    no-decode no-cache post-data referer handler))
       (when type "text/plain")))
+   ((string-match "\\`about:/*blank/?\\'" url)
+    "text/plain")
    (t
     (lexical-let ((output-buffer (current-buffer)))
       (w3m-process-do-with-temp-buffer
@@ -6810,9 +6814,11 @@ This function is designed as the hook function which is registered to
 When the current buffer has already been prepared, it won't bother to
 generate a new buffer."
   (unless (eq major-mode 'w3m-mode)
-    (set-buffer (get-buffer-create "*w3m*"))
-    (unless (eq major-mode 'w3m-mode)
-      (w3m-mode)))
+    (let ((buffer (w3m-alive-p t)))
+      (if buffer
+	  (set-buffer buffer)
+	(set-buffer (generate-new-buffer "*w3m*"))
+	(w3m-mode))))
   ;; It may have been set to nil for viewing a page source or a header.
   (setq truncate-lines t)
   (w3m-add-local-hook 'pre-command-hook 'w3m-store-current-position)

@@ -1,3 +1,10 @@
+2004-05-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-arrived-ignored-regexp): Add about:blank.
+	(w3m-history-ignored-regexp): Ditto.
+	(w3m-about-retrieve): Ditto.
+	(w3m-buffer-setup): Prefer the last visited emacs-w3m buffer.
+
 2004-05-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Stricten
