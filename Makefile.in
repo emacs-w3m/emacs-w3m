@@ -89,8 +89,6 @@ tarball: $(DOCS) $(DISTS)
 	cp -p `echo attic/*|sed s,attic/CVS,,` $(DISTDIR)/attic
 	mkdir $(DISTDIR)/icons
 	cp -p icons/*.xpm $(DISTDIR)/icons
-	mkdir $(DISTDIR)/patches
-	cp -p `echo patches/*|sed s,patches/CVS,,` $(DISTDIR)/patches
 	mkdir $(DISTDIR)/shimbun
 	cp -p shimbun/*.el $(DISTDIR)/shimbun
 	tar -cf `basename $(TARBALL) .gz` $(DISTDIR)

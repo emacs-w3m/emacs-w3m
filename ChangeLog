@@ -1,5 +1,8 @@
 2001-10-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* Makefile.in (tarball): Official tarball doesn't contains patch/
+	subdirectory.
+
 	* w3m.el (w3m-exec-compatible-filter): Fix wrong use of
 	`w3m-exec-get-user' and `w3m-exec-get-passwd'.
 
