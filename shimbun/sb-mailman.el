@@ -44,19 +44,17 @@
   (let ((end (search-forward "<!--beginarticle-->")))
     (goto-char (point-min))
     (search-forward "</HEAD>")
-    (when (re-search-forward "<H1>\\([^\n]+\\)\n +</H1>" end t nil)
+    (when (re-search-forward "<H1>\\([^\n]+\\)\\(\n +\\)?</H1>" end t nil)
       (shimbun-header-set-subject
        header
        (shimbun-mime-encode-string (match-string 1))))
-    (when (re-search-forward "<B>\\([^\n]+\\)\n +</B> *\n +\
+    (when (re-search-forward "<B>\\([^\n]+\\)\\(\n +\\)?</B> *\n +\
 <A HREF=\"[^\n]+\n +TITLE=\"[^\n]+\">\\([^\n]+\\)"
 			     end t nil)
-      ;;(list (match-string 1) (match-string 2)))
-      ;; ("Travis Casey" "efindel@earthlink.net")
       (shimbun-header-set-from
        header
        (shimbun-mime-encode-string (concat (match-string 1)
-					   " <" (match-string 2) ">")))
+					   " <" (match-string 3) ">")))
       (when (re-search-forward "<I>\\([^\n]+\\)</I>" end t nil)
 	(shimbun-header-set-date header (match-string 1)))
       (delete-region (point-min) end)
