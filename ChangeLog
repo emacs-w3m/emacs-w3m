@@ -3,7 +3,7 @@
 	* w3mhack.el (w3mhack-compile): New function.
 
 	* Makefile.in (fast-install-package, fast-install, fast): New rules.
-	(install-package): Make it more talkative.
+	(install-package): Make it to be more talkative.
 	(install-anyway): New rule separated from `install'.
 	(install): Use `install-anyway'.
 
