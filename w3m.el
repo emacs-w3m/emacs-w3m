@@ -627,6 +627,11 @@ cookies between redirections."
   :group 'w3m
   :type 'integer)
 
+(defcustom w3m-resize-image-scale 50
+  "*A number of percent used to resize inline images."
+  :group 'w3m
+  :type 'integer)
+
 (defcustom w3m-redirect-with-get t
   "*If non-nil, use GET method after redirection by 301/302.
 RFC 1945 and RFC 2068 specify that the client is not allowed
@@ -2387,12 +2392,15 @@ If NO-CACHE is non-nil, cache is not used."
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
   (let ((url (w3m-image (point)))
-	(status (get-text-property (point) 'w3m-image-status)))
-    (if url
-	(progn
-	  (if force (setq status 'off))
-	  (w3m-toggle-inline-images-internal status no-cache url))
-      (w3m-display-message "No image at point"))))
+	(status (get-text-property (point) 'w3m-image-status))
+	(scale (get-text-property (point) 'w3m-image-scale)))
+    (if (and scale (equal status 'off))
+	(w3m-zoom-in-image 0)
+      (if url
+	  (progn
+	    (if force (setq status 'off))
+	    (w3m-toggle-inline-images-internal status no-cache url))
+	(w3m-display-message "No image at point")))))
 
 (defun w3m-toggle-inline-images (&optional force no-cache)
   "Toggle displaying of inline images on current buffer.
@@ -2411,6 +2419,86 @@ If NO-CACHE is non-nil, cache is not used."
       (unless (setq w3m-display-inline-images (not status))
 	(w3m-process-stop (current-buffer)))
       (force-mode-line-update))))
+
+(defsubst w3m-resize-inline-image-internal (url rate)
+  "Resize an inline image on cursor point.
+URL is the image file's url.
+RATE is resize percentage."
+  (interactive "P")
+  (let ((buffer-read-only)
+	start end iurl image size iscale scale)
+    (setq start (point))
+    (setq end (or (next-single-property-change start 'w3m-image) (point-max))
+	  iurl (w3m-image start)
+	  size (get-text-property start 'w3m-image-size)
+	  iscale (or (get-text-property start 'w3m-image-scale) '100))
+    (w3m-add-text-properties start end '(w3m-image-status on))
+    (setq scale (truncate (* iscale rate 0.01)))
+    (w3m-add-text-properties start end (list 'w3m-image-scale scale))
+    (if (get-text-property start 'w3m-image-redundant)
+	(progn
+	  ;; Insert dummy string instead of redundant image.
+	  (setq image (make-string
+		       (string-width (buffer-substring start end))
+		       ? ))
+	  (w3m-add-text-properties start end '(invisible t))
+	  (w3m-add-text-properties (point)
+				   (progn (insert image) (point))
+				   '(w3m-image-dummy t
+						     w3m-image "dummy")))
+      (when iurl
+	(w3m-process-with-null-handler
+	  (lexical-let ((start (set-marker (make-marker) start))
+			(end (set-marker (make-marker) end))
+			(iurl iurl)
+			(rate scale)
+			(url w3m-current-url))
+	    (w3m-process-do
+		(image (let ((w3m-current-buffer (current-buffer)))
+			 (w3m-create-resized-image
+			  iurl
+			  rate
+			  w3m-current-url
+			  size handler)))
+	      (when (buffer-live-p (marker-buffer start))
+		(with-current-buffer (marker-buffer start)
+		  (if image
+		      (when (equal url w3m-current-url)
+			(let (buffer-read-only)
+			  (w3m-insert-image start end image iurl))
+			;; Redisplay
+			(when w3m-force-redisplay
+			  (sit-for 0)))
+		    (let (buffer-read-only)
+		      (w3m-add-text-properties
+		       start end '(w3m-image-status off))))
+		  (set-buffer-modified-p nil))
+		(set-marker start nil)
+		(set-marker end nil)))))))))
+
+(defun w3m-zoom-in-image (&optional rate)
+  "Zoom in image on cursor point."
+  (interactive "P")
+  (unless (w3m-display-graphic-p)
+    (error "Can't display images in this environment"))
+  (let ((url (w3m-image (point))))
+    (unless rate
+      (setq rate w3m-resize-image-scale))
+    (if url
+	(w3m-resize-inline-image-internal url (+ 100 rate))
+      (w3m-display-message "No image at point"))))
+
+(defun w3m-zoom-out-image (&optional rate)
+  "Zoom out image on cursor point."
+  (interactive "P")
+  (unless (w3m-display-graphic-p)
+    (error "Can't display images in this environment"))
+  (let ((url (w3m-image (point))))
+    (unless rate
+      (setq rate w3m-resize-image-scale))
+    (if url
+	(w3m-resize-inline-image-internal url (- 100 rate))
+      (w3m-display-message "No image at point"))))
 
 (defun w3m-decode-entities (&optional reserve-prop)
   "Decode entities in the current buffer.
@@ -4780,6 +4868,8 @@ The optional argument BUFFER will be used exclusively by the command
     (define-key map "g" 'w3m-goto-url)
     (define-key map "T" 'w3m-toggle-inline-images)
     (define-key map "t" 'w3m-toggle-inline-image)
+    (define-key map "\M-[" 'w3m-zoom-out-image)
+    (define-key map "\M-]" 'w3m-zoom-in-image)
     (define-key map "U" 'w3m-goto-url)
     (define-key map "V" 'w3m-goto-url)
     (define-key map "v" 'w3m-bookmark-view)
@@ -4881,6 +4971,8 @@ The optional argument BUFFER will be used exclusively by the command
 			    'w3m-toggle-inline-image
 			  'w3m-view-image))
     (define-key map "I" 'w3m-toggle-inline-images)
+    (define-key map "\M-[" 'w3m-zoom-out-image)
+    (define-key map "\M-]" 'w3m-zoom-in-image)
     (define-key map "\M-i" 'w3m-save-image)
     (define-key map "l" 'w3m-view-previous-page)
     (define-key map "\C-l" 'recenter)
@@ -5079,6 +5171,8 @@ frame or a window in the frame is succeeded."
 \\[w3m-view-image]	View image.
 \\[w3m-save-image]	Save image.
 \\[w3m-toggle-inline-images]	Toggle displaying of inline images on current buffer.
+\\[w3m-zoom-out-image]	Zoom out image on cursor point.
+\\[w3m-zoom-in-image]	Zoom in image on cursor point.
 
 \\[w3m-print-current-url]	Print current url.
 \\[w3m-view-url-with-external-browser]	View current url with external browser.
@@ -5254,11 +5348,11 @@ or prefix ARG columns."
 	      (if (< epos (point))
 		  (+ hs (- (string-width (buffer-substring spos epos)) (- epos spos)))
 		(string-width (buffer-substring spos (point))))))))
-      
+
       (defmacro w3m-current-column ()
 	"Simular function of current-column() for XEmacs."
 	`(- (point) (point-at-bol)))
-      
+
       (defun w3m-set-window-hscroll (window columns)
 	"Simular function of set-window-hscroll() for XEmacs."
 	(save-excursion

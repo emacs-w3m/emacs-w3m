@@ -178,6 +178,19 @@ HANDLER is called after conversion with resized data as an argument."
 		       "!")))
     result))
 
+(defun w3m-resize-image-by-rate (data rate handler)
+  "Resize image DATA at RATE asynchronously.
+HANDLER is called after conversion with resized data as an argument.
+Note that this function requires that the `convert' program allows the
+`-resize' option."
+  (w3m-process-do
+      (result (w3m-imagick-start-convert-data
+	       handler
+	       data nil nil "-resize"
+	       (concat (number-to-string rate)
+		       "%")))
+    result))
+
 (provide 'w3m-image)
 
 ;;; w3m-image.el ends here
