@@ -50,6 +50,13 @@
 (require 'mime)
 (eval-when-compile (require 'cl))
 
+(defcustom mime-w3m-display-inline-image
+  w3m-display-inline-image
+  "Non-nil means that inline images are displayed."
+  :group 'w3m
+  :group 'mime-view
+  :type 'boolean)
+
 (defvar mime-w3m-mode-map nil)
 (defvar mime-w3m-message-structure nil)
 (make-variable-buffer-local 'mime-w3m-message-structure)
@@ -84,11 +91,13 @@
        (mime-insert-text-content entity)
        (run-hooks 'mime-text-decode-hook)
        (condition-case err
-	   (w3m-region p
-		       (point-max)
-		       (and (stringp xref)
-			    (string-match "\\`http://" xref)
-			    xref))
+	   (let ((w3m-safe-url-regexp "\\`cid:")
+		 (w3m-current-image-status mime-w3m-display-inline-image))
+	     (w3m-region p
+			 (point-max)
+			 (and (stringp xref)
+			      (string-match "\\`http://" xref)
+			      xref)))
 	 (error (message (format "%s" err))))
        (put-text-property p (point-max)
 			  (w3m-static-if (featurep 'xemacs)

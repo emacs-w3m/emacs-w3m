@@ -806,6 +806,8 @@ will disclose your private informations, for example:
 
 (defvar w3m-verbose t "Flag variable to control messages.")
 
+(defvar w3m-safe-url-regexp nil "Regexp of URLs which point safe contents.")
+
 (defvar w3m-cache-buffer nil)
 (defvar w3m-cache-articles nil)
 (defvar w3m-cache-hashtb nil)
@@ -2656,22 +2658,24 @@ This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
 to nil.
 "
-  (when (string-match "#[^#]+$" url)
-    (setq url (substring url 0 (match-beginning 0))))
-  (let ((v (cond
-	    ((string-match "^about:" url)
-	     (w3m-about-retrieve url no-decode no-cache))
-	    ((string-match "^cid:" url)
-	     (w3m-cid-retrieve url no-decode no-cache))
-	    ((w3m-url-local-p url)
-	     (w3m-local-retrieve url no-decode))
-	    (t
-	     (w3m-w3m-retrieve url no-decode no-cache post-data referer)))))
-    (and v
-	 (not no-decode)
-	 w3m-use-filter
-	 (w3m-filter url))
-    v))
+  (unless (and w3m-safe-url-regexp
+	       (not (string-match w3m-safe-url-regexp url)))
+    (when (string-match "#[^#]+$" url)
+      (setq url (substring url 0 (match-beginning 0))))
+    (let ((v (cond
+	      ((string-match "^about:" url)
+	       (w3m-about-retrieve url no-decode no-cache))
+	      ((string-match "^cid:" url)
+	       (w3m-cid-retrieve url no-decode no-cache))
+	      ((w3m-url-local-p url)
+	       (w3m-local-retrieve url no-decode))
+	      (t
+	       (w3m-w3m-retrieve url no-decode no-cache post-data referer)))))
+      (and v
+	   (not no-decode)
+	   w3m-use-filter
+	   (w3m-filter url))
+      v)))
 
 (defun w3m-download (url &optional filename no-cache)
   (interactive

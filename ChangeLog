@@ -1,6 +1,14 @@
 2001-10-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m-weather.el (w3m-weather-area-completion): Fixed.
+	* w3m.el (w3m-safe-url-regexp): New variable.
+	(w3m-retrieve): When `w3m-safe-url-regexp' has non-nil value and
+	it matches the requested URL, doesn't fetch its contents.
+
+	* mime-w3m.el (mime-w3m-display-inline-image): New option.
+	(mime-w3m-preview-text/html): In order to avoid web bug which is
+	described in [mew-dist 19267], restrict accesible URLs.
+
+	* mew-w3m.el (mew-mime-text/html-w3m): Likewise.
 
 	* w3m-weather.el (w3m-weather-url-alist): Abolished.
 	(w3m-weather-completion-table): New constant.
