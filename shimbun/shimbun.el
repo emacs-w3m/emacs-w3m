@@ -116,32 +116,8 @@
 		;;
  (\"default\" . ((\"default\" . \"X-face: ***\")))")
 
-(defconst shimbun-meta-content-type-charset-regexp
-  (eval-when-compile
-    (concat "<meta[ \t]+http-equiv=\"?Content-type\"?[ \t]+content=\"\\([^;]+\\)"
-	    ";[ \t]*charset=\"?\\([^\"]+\\)\"?"
-	    ">"))
-  "Regexp used in parsing `<META HTTP-EQUIV=\"Content-Type\" content=\"...;charset=...\">
-for a charset indication")
-
-(defconst shimbun-meta-charset-content-type-regexp
-  (eval-when-compile
-    (concat "<meta[ \t]+content=\"\\([^;]+\\)"
-	    ";[ \t]*charset=\"?\\([^\"]+\\)\"?"
-	    "[ \t]+http-equiv=\"?Content-type\"?>"))
-  "Regexp used in parsing `<META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">
-for a charset indication")
-
 (defvar shimbun-hash-length 997
   "Length of header hashtable.")
-
-(static-when (boundp 'MULE)
-  (unless (coding-system-p 'euc-japan)
-    (copy-coding-system '*euc-japan* 'euc-japan))
-  (unless (coding-system-p 'shift_jis)
-    (copy-coding-system '*sjis* 'shift_jis))
-  (eval-and-compile
-    (defalias-maybe 'coding-system-category 'get-code-mnemonic)))
 
 ;;; emacs-w3m implementation of url retrieval and entity decoding.
 (require 'w3m)

@@ -1,3 +1,9 @@
+2001-04-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* shimbun/shimbun.el (TopLevel): Some redundant codes are removed.
+
+	* w3mhack.el (load-path): Add `shimbun' sub-directory.
+
 2001-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* Makefile.in (clean): Remove shimbun modules.

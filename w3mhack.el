@@ -43,10 +43,11 @@
   (unless (null paths)
     (setq load-path (nconc (nreverse paths) load-path))))
 
+(defconst shimbun-module-directory "shimbun")
+
 ;; Needed for interdependencies between w3m modules.
 (push default-directory load-path)
-
-(defconst shimbun-module-directory "shimbun")
+(push (expand-file-name shimbun-module-directory default-directory) load-path)
 
 (defun w3mhack-examine-modules ()
   "Examine w3m modules should be byte-compile'd."
