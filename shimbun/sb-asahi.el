@@ -43,16 +43,18 @@
 				  "/")
   "Name of the parent url.")
 
-(defvar shimbun-asahi-groups '("national" "business" "politics"
-			       "international" "sports" "culture")
+(defvar shimbun-asahi-groups '("business" "culture" "english" "international"
+			       "national" "politics" "science" "sports")
   "List of available group names.  Each name should be a directory name
 which is in existence under the parent url `shimbun-asahi-url'.")
 
 (defvar shimbun-asahi-from-address (concat "webmaster@www."
 					   shimbun-asahi-top-level-domain))
 
-(defvar shimbun-asahi-content-start "\n<!-- FJZONE START NAME=\"HONBUN\"-->")
-(defvar shimbun-asahi-content-end "\n<!-- FJZONE END NAME=\"HONBUN\"-->")
+(defvar shimbun-asahi-content-start
+  "<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
+(defvar shimbun-asahi-content-end
+  "<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
 (defvar shimbun-asahi-x-face-alist
   '(("default" . "X-Face: +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|\
 bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
@@ -60,81 +62,159 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 
 (defvar shimbun-asahi-expiration-days 6)
 
+(defvar shimbun-asahi-group-index-alist
+  '(("business" . "list.html")
+    ("culture" . "")
+    ("english" . "")
+    ("international" . "list.html")
+    ("national" . "")
+    ("politics" . "")
+    ("science" . "list.html")
+    ("sports" . ""))
+  "Alist of group names and index pages.  Index page is a file name which
+should be found under the \"http://SERVER/GROUP/\" directory.")
+
+(defvar shimbun-asahi-group-regexp-alist
+  (let ((default (list
+		  (concat
+		   "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
+		   ;; 1. url
+		   "\\(%s/update/[01][0-9][0-3][0-9]/"
+		   ;; 2. serial number
+		   "\\([0-9]+\\)" "\\.html\\)"
+		   "\"[\t\n ]*>[\t\n ]*"
+		   ;; 3. subject
+		   "\\(.+\\)" "[\t\n ]*<[\t\n ]*/a[\t\n ]*>[\t\n ]*([\t\n ]*"
+		   ;; 4. month
+		   "\\([01][0-9]\\)" "/"
+		   ;; 5. day
+		   "\\([0-3][0-9]\\)" "[\t\n ]+"
+		   ;; 6. hour:minute
+		   "\\([012][0-9]:[0-5][0-9]\\)" "[\t\n ]*)")
+		  1 2 3 4 5 6)))
+    `(("business" ,@default)
+      ("culture" ,@default)
+      ("english" ,(concat
+		   "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
+		   ;; 1. url
+		   "\\(%s/"
+		   ;; 2. extra keyword
+		   "\\([a-z]+\\)" "/[a-z]+200[0-9]"
+		   ;; 3. month
+		   "\\([01][0-9]\\)"
+		   ;; 4. day
+		   "\\([0-3][0-9]\\)"
+		   ;; 5. serial number
+		   "\\([0-9]+\\)" "\\.html\\)"
+		   "\"[\t\n ]*>[\t\n ]*"
+		   "<!--[\t\n ]*leadstart[\t\n ]*-->[\t\n ]*"
+		   ;; 6. subject
+		   "\\(.+\\)" "[\t\n ]*"
+		   "<!--[\t\n ]*leadend[\t\n ]*-->")
+       1 5 6 3 4 nil 2)
+      ("international" ,@default)
+      ("national" ,@default)
+      ("politics" ,@default)
+      ("science" ,(concat
+		   "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
+		   ;; 1. url
+		   "\\(%s/update/[01][0-9][0-3][0-9]/"
+		   ;; 2. serial number
+		   "\\([0-9]+\\)" "\\.html\\)"
+		   "\"[\t\n ]*>[\t\n ]*"
+		   ;; 3. subject
+		   "\\(.+\\)" "[\t\n ]*<[\t\n ]*/a[\t\n ]*>[\t\n ]*([\t\n ]*"
+		   ;; 4. month
+		   "\\([01][0-9]\\)" "/"
+		   ;; 5. day
+		   "\\([0-3][0-9]\\)" "[\t\n ]*)")
+       1 2 3 4 5)
+      ("sports" ,(concat
+		   "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
+		   ;; 1. url
+		   "\\(%s/"
+		   ;; 2. extra keyword
+		   "\\([a-z]+\\)" "/[a-z]+200[0-9][01][0-9][0-3][0-9]"
+		   ;; 3. serial number
+		   "\\([0-9]+\\)" "\\.html\\)"
+		   "\"[\t\n ]*>[\t\n ]*"
+		   ;; 4. subject
+		   "\\(.+\\)" "[\t\n ]*<[\t\n ]*/a[\t\n ]*>[\t\n ]*([\t\n ]*"
+		   ;; 5. month
+		   "\\([01][0-9]\\)" "/"
+		   ;; 6. day
+		   "\\([0-3][0-9]\\)" "[\t\n ]*"
+		   ;; 7. hour:minute
+		   "\\([012][0-9]:[0-5][0-9]\\)?" "[\t\n ]*)")
+       1 3 4 5 6 7 2)))
+  "Alist of group names, regexps and numbers.  Regexp may have the \"%s\"
+token which is replaced with a regexp-quoted group name.  Numbers
+point to the search result in order of a url, a serial number, a
+subject, a month, a day, an hour:minute and an extra keyword.")
+
 (defun shimbun-asahi-index-url (entity)
-  "Return a url for the list page corresponding to ENTITY."
-  (concat (shimbun-url-internal entity)
-	  (shimbun-current-group-internal entity)
-	  "/list.html"))
+  "Return a url for the list page corresponding to the group of ENTITY."
+  (let ((group (shimbun-current-group-internal entity)))
+    (concat (shimbun-url-internal entity) group "/"
+	    (cdr (assoc group shimbun-asahi-group-index-alist)))))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-asahi))
   (shimbun-asahi-index-url shimbun))
 
 (defun shimbun-asahi-get-headers (entity)
-  "Return a list of header objects from the top page."
-  (let* ((group (shimbun-current-group-internal entity))
-	 (regexp (concat "<a[\t\n ]+href=[\t\n ]*\"/\\("
-			 (regexp-quote group)
-			 "/update/\\([0-9][0-9]\\)\\([0-9][0-9]\\)"
-			 "/\\([0-9]+\\).html\\)\"[\t\n ]*>[\t\n ]*"))
-	 (case-fold-search t)
-	 (next t)
-	 year cmonth subject url id month headers)
-    (setq year (decode-time)
-	  cmonth (nth 4 year)
-	  year (nth 5 year))
-    (re-search-forward "images/gif/digest.gif" nil t) ; Skip top article.
-    (while (and next
-		(if (numberp next)
-		    (goto-char (match-end 0))
-		  (re-search-forward regexp nil t)))
-      (setq subject (match-end 0)
-	    url (match-string 1)
-	    month (string-to-number (match-string 2))
-	    id (format "<%d%02d%s.%s%%%s.%s>"
-		       (cond ((and (= 12 month) (= 1 cmonth))
-			      (1- year))
-			     ((and (= 1 month) (= 12 cmonth))
-			      (1+ year))
-			     (t
-			      year))
-		       month
-		       (match-string 3)
-		       (match-string 4)
-		       group
-		       shimbun-asahi-top-level-domain)
-	    next (when (re-search-forward regexp nil t)
-		   (match-beginning 0)))
-      (goto-char subject)
-      (save-match-data
-	(setq subject (if (re-search-forward "[\t\n ]*</a>" next t)
-			  (shimbun-mime-encode-string
-			   (buffer-substring subject (match-beginning 0)))
-			"(none)")
-	      month (when (re-search-forward "\
-<span[\t\n ]+class=[\t\n ]*\"Time\"[\t\n ]*>[\t\n ]*([\t\n ]*\
-\\([0-9][0-9]\\)/\\([0-9][0-9]\\)[^()0-9:;]+;[\t\n ]*\
-\\([0-9][0-9]:[0-9][0-9]\\)[\t\n ]*)[\t\n ]*</span>" next t)
-		      (string-to-number (match-string 1))))
-	(push
-	 (shimbun-make-header
-	  0
-	  subject
-	  (shimbun-from-address-internal entity)
-	  (if month
-	      (shimbun-make-date-string
-	       (cond ((and (= 12 month) (= 1 cmonth))
-		      (1- year))
-		     ((and (= 1 month) (= 12 cmonth))
-		      (1+ year))
-		     (t
-		      year))
-	       month
-	       (string-to-number (match-string 2))
-	       (match-string 3))
-	    "")
-	  id "" 0 0
-	  (concat (shimbun-url-internal entity) url))
-	 headers)))
+  "Return a list of headers."
+  (let ((group (shimbun-current-group-internal entity))
+	(parent (shimbun-url-internal entity))
+	(from (shimbun-from-address-internal entity))
+	(case-fold-search t)
+	regexp numbers cyear cmonth month day year headers)
+    (setq regexp (assoc group shimbun-asahi-group-regexp-alist)
+	  numbers (cddr regexp)
+	  regexp (cadr regexp)
+	  cyear (decode-time)
+	  cmonth (nth 4 cyear)
+	  cyear (nth 5 cyear))
+    (while (re-search-forward (format regexp (regexp-quote group)) nil t)
+      (setq month (string-to-number (match-string (nth 3 numbers)))
+	    year (cond ((and (= 12 month) (= 1 cmonth))
+			(1- cyear))
+		       ((and (= 1 month) (= 12 cmonth))
+			(1+ cyear))
+		       (t
+			cyear))
+	    day (string-to-number (match-string (nth 4 numbers))))
+      (push (shimbun-make-header
+	     ;; number
+	     0
+	     ;; subject
+	     (save-match-data
+	       (shimbun-mime-encode-string
+		(if (nth 6 numbers)
+		    (concat (match-string (nth 6 numbers)) ": "
+			    (match-string (nth 2 numbers)))
+		  (match-string (nth 2 numbers)))))
+	     ;; from
+	     from
+	     ;; date
+	     (shimbun-make-date-string year month day
+				       (when (nth 5 numbers)
+					 (match-string (nth 5 numbers))))
+	     ;; id
+	     (if (nth 6 numbers)
+		 (format "<%d%02d%02d.%s%%%s.%s.%s>"
+			 year month day
+			 (match-string (nth 1 numbers))
+			 (match-string (nth 6 numbers))
+			 group shimbun-asahi-top-level-domain)
+	       (format "<%d%02d%02d.%s%%%s.%s>"
+		       year month day
+		       (match-string (nth 1 numbers))
+		       group shimbun-asahi-top-level-domain))
+	     ;; references, chars, lines
+	     "" 0 0
+	     ;; xref
+	     (concat parent (match-string (nth 0 numbers))))
+	    headers))
     headers))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-asahi)
