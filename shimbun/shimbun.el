@@ -35,7 +35,6 @@
 ;; shimbun-open-group
 ;; shimbun-close-group
 ;; shimbun-headers
-;; shimbun-header
 ;; shimbun-search-id
 ;; shimbun-article
 ;; shimbun-close
@@ -72,7 +71,7 @@
 
 (eval-and-compile
   (luna-define-class shimbun ()
-		     (mua server current-group groups headers hash
+		     (mua server current-group groups headers
 			  x-face x-face-alist
 			  url coding-system from-address
 			  content-start content-end use-entire-index))
@@ -82,9 +81,6 @@
   "X-Face: Ygq$6P.,%Xt$U)DS)cRY@k$VkW!7(X'X'?U{{osjjFG\"E]hND;SPJ-J?O?R|a?L
         g2$0rVng=O3Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%"
   "Default X-Face field for shimbun.")
-
-(defvar shimbun-hash-length 997
-  "Length of header hashtable.")
 
 ;;; Shimbun MUA
 (luna-define-class shimbun-mua () ())
@@ -236,55 +232,47 @@ Optional MUA is a `shimbun-mua' instance."
 	(with-temp-buffer
 	  (shimbun-retrieve-url (shimbun-index-url shimbun))
 	  (shimbun-set-headers-internal shimbun
-					(shimbun-get-headers shimbun)))
-	(shimbun-set-hash-internal shimbun
-				   (make-vector shimbun-hash-length 0))
-	(dolist (header (shimbun-headers-internal shimbun))
-	  (set (intern (shimbun-header-id header)
-		       (shimbun-hash-internal shimbun))
-	       header)))
+					(shimbun-get-headers shimbun))))
     (error "No such group %s" group)))
 
 (defun shimbun-close-group (shimbun)
   "Close opened group of SHIMBUN."
   (when (shimbun-current-group-internal shimbun)
     (shimbun-set-current-group-internal shimbun nil)
-    (shimbun-set-headers-internal shimbun nil)
-    (shimbun-set-hash-internal shimbun nil)))
+    (shimbun-set-headers-internal shimbun nil)))
 
 (defun shimbun-headers (shimbun)
   "Return a SHIMBUN header list."
   (shimbun-headers-internal shimbun))
-
-(defun shimbun-header (shimbun id)
-  "Return a SHIMBUN header which corresponds to ID."
-  (when (shimbun-current-group-internal shimbun)
-    (let ((sym (intern-soft id (shimbun-hash-internal shimbun))))
-      (if (boundp sym)
-	  (symbol-value sym)))))
 
 (defun shimbun-search-id (shimbun id)
   "Return non-nil when MUA found a message structure which corresponds to ID."
   (when (shimbun-mua-internal shimbun)
     (shimbun-mua-search-id (shimbun-mua-internal shimbun) id)))
 
-(luna-define-generic shimbun-article (shimbun id &optional outbuf)
-  "Retrieve a SHIMBUN article which corresponds to ID to the OUTBUF.
+(defsubst shimbun-article-url (shimbun header)
+  "Return URL string from SHIMBUN and HEADER."
+  (if (eq (aref (shimbun-header-xref header) 0) ?/)
+      (concat (shimbun-url-internal shimbun)
+	      (shimbun-header-xref header))
+    (shimbun-header-xref header)))
+
+(luna-define-generic shimbun-article (shimbun header &optional outbuf)
+  "Retrieve a SHIMBUN article which corresponds to HEADER to the OUTBUF.
+HEADER is a shimbun-header which is obtained by `shimbun-headers'.
 If OUTBUF is not specified, article is retrieved to the current buffer.")
 
-(luna-define-method shimbun-article ((shimbun shimbun) id &optional outbuf)
+(luna-define-method shimbun-article ((shimbun shimbun) header &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
-    (let* ((header (shimbun-header shimbun id))
-	   (xref (shimbun-header-xref header)))
-      (with-current-buffer (or outbuf (current-buffer))
-	(insert
-	 (or (with-temp-buffer
-	       (shimbun-retrieve-url xref)
-	       (message "shimbun: Make contents...")
-	       (goto-char (point-min))
-	       (prog1 (shimbun-make-contents shimbun header)
-		 (message "shimbun: Make contents...done"))) 
-	     ""))))))
+    (with-current-buffer (or outbuf (current-buffer))
+      (insert
+       (or (with-temp-buffer
+	     (shimbun-retrieve-url (shimbun-article-url shimbun header))
+	     (message "shimbun: Make contents...")
+	     (goto-char (point-min))
+	     (prog1 (shimbun-make-contents shimbun header)
+	       (message "shimbun: Make contents...done")))
+	   "")))))
 
 (defsubst shimbun-make-html-contents (shimbun header)
   (let (start)

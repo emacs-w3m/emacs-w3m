@@ -143,28 +143,26 @@
 	    headers))
     headers))
 
-(luna-define-method shimbun-article ((shimbun shimbun-tcup) id
+(luna-define-method shimbun-article ((shimbun shimbun-tcup) header
 				     &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
-    (let* ((header (shimbun-header shimbun id))
-	   (xref (shimbun-header-xref header)))
-      (with-current-buffer (or outbuf (current-buffer))
-	(insert
-	 (with-temp-buffer
-	   (let ((sym (intern-soft (shimbun-header-xref header)
-				   (shimbun-tcup-content-hash-internal
-				    shimbun))))
-	     (if (boundp sym)
-		 (insert (symbol-value sym)))
-	     (goto-char (point-min))
-	     (shimbun-header-insert header)
-	     (insert "Content-Type: " "text/html"
-		     "; charset=ISO-2022-JP\n"
-		     "MIME-Version: 1.0\n")
-	     (insert "\n")
-	     (encode-coding-string
-	      (buffer-string)
-	      (mime-charset-to-coding-system "ISO-2022-JP")))))))))
+    (with-current-buffer (or outbuf (current-buffer))
+      (insert
+       (with-temp-buffer
+	 (let ((sym (intern-soft (shimbun-header-xref header)
+				 (shimbun-tcup-content-hash-internal
+				  shimbun))))
+	   (if (boundp sym)
+	       (insert (symbol-value sym)))
+	   (goto-char (point-min))
+	   (shimbun-header-insert header)
+	   (insert "Content-Type: " "text/html"
+		   "; charset=ISO-2022-JP\n"
+		   "MIME-Version: 1.0\n")
+	   (insert "\n")
+	   (encode-coding-string
+	    (buffer-string)
+	    (mime-charset-to-coding-system "ISO-2022-JP"))))))))
 
 (provide 'sb-tcup)
 

@@ -1,3 +1,17 @@
+2001-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-tcup.el (shimbun-article): Changed argument `id' to
+	`header'.
+
+	* shimbun/shimbun.el (shimbun-article): Abolish argument `id'
+	and added `header' instead.
+	(shimbun): Removed `hash' slot.
+	(shimbun-hash-length): Abolish.
+	(shimbun-open-group): Don't set up hash slot.
+	(shimbun-close-group): Don't clean up hash slot.
+	(shimbun-header): Abolish.
+	(shimbun-article-url): New inline function.
+
 2001-04-04  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-namazu.el, shimbun/sb-emacs-w3m.el: New files.
