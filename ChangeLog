@@ -1,3 +1,24 @@
+2001-11-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-db-length): Rename from
+	`mew-shimbun-groups-db-length'.
+	(mew-shimbun-unseen-check): New function.
+	(mew-shimbun-unseen-remove-all): Rename from
+	`mew-shimbun-remove-unseen-all'.
+	(mew-shimbun-unseen-remove): Rename from
+	`mew-shimbun-remove-unseen'.
+	(mew-shimbun-unseen-remove-advice): Rename from
+	`mew-shimbun-remove-unseen-advice'.
+	(mew-shimbun-unseen-remove-one): Rename from
+	`mew-shimbun-unseen-remove-one'.
+	(mew-shimbun-retrieve-article, mew-shimbun-re-retrieve-article):
+	Handling modeline.
+	(mew-shimbun-retrieve, mew-shimbun-retrieve-all) 
+	(mew-shimbun-re-retrieve, mew-shimbun-re-retrieve-all): Execute
+	Scan of summary when finish to retrieve articles.
+
+	* w3m-e21.el (top): Abolished a ignore() of `w3m-use-tab'.
+
 2001-11-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-use-tab-menubar): Abolished.

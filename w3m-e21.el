@@ -370,8 +370,6 @@ Buffer string between BEG and END are replaced with IMAGE."
   (setq widget-mouse-face 'w3m-form-button-mouse-face)
   (setq widget-button-pressed-face 'w3m-form-button-pressed-face))
 
-(defalias 'w3m-setup-tab 'ignore)
-
 (defun w3m-tab-make-keymap (buffer)
   (let ((map (make-sparse-keymap))
 	(action `(lambda (e) (interactive "e")
