@@ -46,7 +46,8 @@
   (defvar w3m-html-string-regexp)
   (defvar w3m-work-buffer-list)
   (defvar w3m-current-refresh)
-  (defvar w3m-refresh-timer))
+  (defvar w3m-refresh-timer)
+  (defvar w3m-use-refresh))
 
 (eval-and-compile
   (eval
@@ -342,11 +343,12 @@ Otherwise return nil."
 
 (defun w3m-cancel-refresh-timer (&optional buffer)
   "Cancel the timer for REFRESH attribute in META tag."
-  (with-current-buffer (or buffer (current-buffer))
-    (setq w3m-current-refresh nil)
-    (when w3m-refresh-timer
-      (cancel-timer w3m-refresh-timer)
-      (setq w3m-refresh-timer nil))))
+  (when w3m-use-refresh
+    (with-current-buffer (or buffer (current-buffer))
+      (setq w3m-current-refresh nil)
+      (when w3m-refresh-timer
+	(cancel-timer w3m-refresh-timer)
+	(setq w3m-refresh-timer nil)))))
 
 (provide 'w3m-util)
 ;;; w3m-util.el ends here

@@ -520,6 +520,20 @@ title contains non-ascii characters, show a url name by default."
   (when (symbol-value 'gutter-buffers-tab-enabled)
     (add-hook 'w3m-display-hook 'w3m-xmas-update-tab-in-gutter)))
 
+;; referer timer
+(defun w3m-refresh-at-time ()
+  (when (and w3m-use-refresh w3m-current-refresh)
+    (setq w3m-refresh-timer
+	  (let ((timer (timer-create)))
+	    (timer-set-function timer
+				'w3m-goto-url-with-timer
+				(list (cdr w3m-current-refresh) (current-buffer)))
+	    (timer-set-idle-time timer
+				 (max 1 (car w3m-current-refresh))
+				 nil)
+	    (timer-activate-when-idle timer)
+	    timer))))
+
 (provide 'w3m-xmas)
 
 ;;; w3m-xmas.el ends here

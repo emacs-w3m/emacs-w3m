@@ -4405,13 +4405,19 @@ field for this request."
 		     w3m-profile-directory)))
 	    (w3m-update-toolbar)
 	    (run-hook-with-args 'w3m-display-hook url)
-	    (when (and w3m-use-refresh w3m-current-refresh)
-	      (setq w3m-refresh-timer
-		    (run-at-time (format "%d sec" (car w3m-current-refresh))
-				 nil
-				 'w3m-goto-url-with-timer
-				 (cdr w3m-current-refresh)
-				 (current-buffer)))))))))))
+	    (w3m-refresh-at-time))))))))
+
+(eval-and-compile
+  (unless (fboundp 'w3m-refresh-at-time)
+    ;; for FSF Emacsen
+    (defun w3m-refresh-at-time ()
+      (when (and w3m-use-refresh w3m-current-refresh)
+	(setq w3m-refresh-timer
+	      (run-at-time (car w3m-current-refresh)
+			   nil
+			   'w3m-goto-url-with-timer
+			   (cdr w3m-current-refresh)
+			   (current-buffer)))))))
 
 (defun w3m-goto-url-with-timer (url buffer)
   "Run the command `w3m-goto-url' for the refresh timer."

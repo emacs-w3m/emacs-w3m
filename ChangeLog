@@ -13,13 +13,15 @@
 	(w3m-quit, w3m-close-window): Call `w3m-cancel-refresh-timer' at
 	any buffers.
 	(w3m-goto-url): Call `w3m-cancel-refresh-timer' first.
-	If exist Refresh attribute of the Meta tag, set timer for
-	`w3m-goto-url-with-timer'.
+	Call `w3m-refresh-at-time' at last; start REFRESH timer.
 	(w3m-goto-url-with-timer): New function.
+	(w3m-refresh-at-time): New function for FSF Emacs.
+	
+	* w3m-xmas.el (w3m-refresh-at-time): New function for XEmacs.
 
 	* w3m-util.el (w3m-cancel-refresh-timer): New function.
-	(w3m-current-refresh, w3m-refresh-timer): Avoid byte-compiled
-	warnings.
+	(w3m-current-refresh, w3m-refresh-timer, w3m-use-refresh): Avoid
+	byte-compiled warnings.
 
 	* w3m-proc.el (w3m-process-stop): Call `w3m-cancel-refresh-timer'.
 
