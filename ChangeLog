@@ -1,3 +1,21 @@
+2000-09-19  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el (w3m-command-arguments): Add -m option explicitly.
+	(w3m-exec): Ad-hoc change to view .txt object. It's temporary
+	fix. Should we consider type? w3m option -dump_head may help us.
+	(w3m-exec): Get title and remove both format <title_alt> and
+	<title>.
+	(w3m-view-this-url): Force reloading by prefix.
+	(w3m-view-current-url-with-external-browser): Works correctly.
+	(w3m-print-current-url): Push url to kill king to paste later.
+	(w3m-print-this-url): ditto.
+	(w3m-mailto-url): Use rfc2368.el instead of mailto.el.
+	(w3m-goto-url): Add 2nd argument RELOAD to withdraw data cached on
+	emacs.
+	(w3m-reload-this-page): Simplified by using new w3m-goto-url.
+	(w3m): Set mode-line-buffer-identification after changing major
+	mode because it overwrite that variable.
+
 2000-09-19  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-fontify): Add code to handle irregular ordered
