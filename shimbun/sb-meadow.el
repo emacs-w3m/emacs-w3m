@@ -1,10 +1,10 @@
 ;;; sb-meadow.el --- shimbun backend for meadow-ml
-;;
+
 ;; Copyright (C) 2001 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
-;;         Yuuichi Teranishi  <teranisi@gohome.org>
+;;         Yuuichi Teranishi  <teranisi@gohome.org>,
 ;; Keywords: news
 
 ;; This file is a part of shimbun.

@@ -1,5 +1,5 @@
 ;;; sb-yomiuri-html.el --- shimbun backend for yomiuri online (HTML version)
-;;
+
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>

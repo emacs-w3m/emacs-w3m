@@ -1,6 +1,6 @@
 ;;; sb-cnet.el --- shimbun backend for cnet
-;;
-;; Copyright (C) 2001 Yuuichi Teranishi  <teranisi@gohome.org>
+
+;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>

@@ -1,4 +1,5 @@
 ;;; sb-muchy.el --- shimbun backend for Muchy's Palmware Review!
+
 ;; Copyright (C) 2001 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>

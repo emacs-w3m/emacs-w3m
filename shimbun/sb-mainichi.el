@@ -1,5 +1,5 @@
 ;;; sb-mainichi.el --- shimbun backend for www.mainichi.co.jp
-;;
+
 ;; Copyright (C) 2001 Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>

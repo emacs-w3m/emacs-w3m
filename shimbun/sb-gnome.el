@@ -1,5 +1,5 @@
 ;;; sb-gnome.el --- shimbun backend for mail.gnome.org
-;;
+
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>

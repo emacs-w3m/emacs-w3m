@@ -1,5 +1,5 @@
 ;;; sb-tcup.el --- shimbun backend for www.tcup.com.
-;;
+
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>

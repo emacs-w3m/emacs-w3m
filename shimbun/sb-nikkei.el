@@ -1,5 +1,5 @@
 ;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp
-;;
+
 ;; Copyright (C) 2001 Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
 
 ;; Author: Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>

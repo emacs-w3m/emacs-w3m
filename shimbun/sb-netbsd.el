@@ -1,5 +1,5 @@
 ;;; sb-netbsd.el --- shimbun backend for netbsd.org
-;;
+
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,

@@ -1,5 +1,5 @@
 ;;; sb-airs.el --- shimbun backend for lists.airs.net
-;;
+
 ;; Copyright (C) 2001 Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi  <teranisi@gohome.org>

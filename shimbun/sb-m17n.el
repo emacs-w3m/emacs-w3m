@@ -1,5 +1,5 @@
 ;;; sb-m17n.el --- shimbun backend for m17n.org
-;;
+
 ;; Copyright (C) 2001 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
 ;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
@@ -86,4 +86,3 @@
 (provide 'sb-m17n)
 
 ;;; sb-m17n.el ends here
-

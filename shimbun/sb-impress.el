@@ -1,5 +1,5 @@
 ;;; sb-impress.el --- shimbun backend for www.watch.impress.co.jp
-;;
+
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>

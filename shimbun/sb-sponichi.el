@@ -1,5 +1,5 @@
 ;;; sb-sponichi.el --- shimbun backend for www.sponichi.co.jp -*- coding: iso-2022-7bit -*-
-;;
+
 ;; Copyright (C) 2001 Tatsuya Ichikawa   <ichikawa@erc.epson.com>
 ;; Copyright (C) 2001 Yuuichi Teranishi  <teranisi@gohome.org>
 

@@ -1,5 +1,5 @@
 ;;; sb-glimpse.el --- shimbun backend class for Glimpse archive
-;;
+
 ;; Copyright (C) 2001 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
 
 ;; Author: Akihiro Arisawa    <ari@mbf.sphere.ne.jp>

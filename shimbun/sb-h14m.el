@@ -1,6 +1,5 @@
 ;;; sb-h14m.el --- shimbun backend for h14m.org
 
-;;
 ;; Copyright (C) 2001 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
 ;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>

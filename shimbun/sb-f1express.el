@@ -1,5 +1,5 @@
 ;;; sb-f1express.el --- shimbun backend for www.f1express.co.jp
-;;
+
 ;; Copyright (C) 2001 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 
 ;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>

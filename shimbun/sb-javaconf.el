@@ -1,5 +1,5 @@
 ;;; sb-javaconf.el --- shimbun backend class for java-conference archive.
-;;
+
 ;; Copyright (C) 2001 ABE Yasushi <yasushi@stbbs.net>
 
 ;; Author: ABE Yasushi <yasushi@stbbs.net>
@@ -71,3 +71,4 @@
 
 (provide 'sb-javaconf)
 
+;;; sb-javaconf.el ends here

@@ -1,5 +1,5 @@
 ;;; sb-ding.el --- shimbun backend for gnus.org
-;;
+
 ;; Copyright (C) 2001 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
 ;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>

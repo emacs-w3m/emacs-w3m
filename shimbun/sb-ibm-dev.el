@@ -1,4 +1,5 @@
 ;;; sb-ibm-dev.el --- shimbun backend for www-6.ibm.com/ja/developerworks
+
 ;; Copyright (C) 2001 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>

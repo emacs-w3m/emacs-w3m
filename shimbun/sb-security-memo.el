@@ -1,5 +1,7 @@
 ;;; sb-security-memo.el --- shimbun backend for security-memo ML.
 
+;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Keywords: news
@@ -38,4 +40,5 @@
   "memo@memo.st.ryukoku.ac.jp")
 
 (provide 'sb-security-memo)
+
 ;;; sb-security-memo.el ends here

@@ -1,5 +1,5 @@
 ;;; sb-digiko.el --- shimbun backend for digiko-ML.
-;;
+
 ;; Copyright (C) 2001 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
 ;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
@@ -83,5 +83,5 @@
     headers))
 
 (provide 'sb-digiko)
-;;; sb-digiko.el ends here
 
+;;; sb-digiko.el ends here

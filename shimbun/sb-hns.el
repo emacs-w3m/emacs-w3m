@@ -1,5 +1,5 @@
 ;;; sb-hns.el --- shimbun backend for Hyper Nikki System.
-;;
+
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>

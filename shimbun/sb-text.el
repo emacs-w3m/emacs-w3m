@@ -1,5 +1,5 @@
 ;;; sb-text.el -- shimbun backend class for text content -*- coding: junet; -*-
-;;
+
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>

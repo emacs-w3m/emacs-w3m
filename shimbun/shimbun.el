@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers
-;;
-;; Copyright (C) 2001 Yuuichi Teranishi  <teranisi@gohome.org>
+
+;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,

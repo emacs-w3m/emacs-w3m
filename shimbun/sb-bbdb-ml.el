@@ -1,5 +1,5 @@
 ;;; sb-bbdb-ml.el --- shimbun backend for bbdb-ml
-;;
+
 ;; Copyright (C) 2001 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 

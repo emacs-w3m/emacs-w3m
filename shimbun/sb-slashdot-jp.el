@@ -1,5 +1,5 @@
 ;;; sb-slashdot-jp.el --- shimbun backend for slashdot.jp
-;;
+
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>

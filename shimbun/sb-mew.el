@@ -1,5 +1,5 @@
 ;;; sb-mew.el --- shimbun backend for mew.org
-;;
+
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 ;; Copyright (C) 2001 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
 

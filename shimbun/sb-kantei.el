@@ -1,5 +1,5 @@
 ;;; sb-kantei.el --- shimbun backend for kantei mail magazine backnumber.
-;;
+
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>

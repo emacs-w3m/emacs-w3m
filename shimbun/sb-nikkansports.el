@@ -1,5 +1,5 @@
 ;;; sb-nikkansports.el --- shimbun backend for www.nikkansports.com
-;;
+
 ;; Copyright (C) 2001 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 
 ;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>

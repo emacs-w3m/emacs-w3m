@@ -1,5 +1,5 @@
 ;;; sb-gyve.el --- shimbun backend for www.gyve.org
-;;
+
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -65,4 +65,3 @@
 (provide 'sb-gyve)
 
 ;;; sb-gyve.el ends here
-

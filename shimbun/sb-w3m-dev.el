@@ -1,4 +1,5 @@
 ;;; sb-w3m-dev.el --- shimbun backend for w3m-dev
+
 ;; Copyright (C) 2001 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>

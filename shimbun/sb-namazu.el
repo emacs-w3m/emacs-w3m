@@ -1,5 +1,5 @@
 ;;; sb-namazu.el --- shimbun backend for namazu.org
-;;
+
 ;; Copyright (C) 2001 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
 
 ;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
@@ -78,4 +78,5 @@
       headers)))
 
 (provide 'sb-namazu)
+
 ;;; sb-namazu.el ends here
