@@ -1,3 +1,7 @@
+2003-06-14  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-moz-users.el: New file.
+
 2003-06-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-w3m-attributes): Improve the regexp to extract

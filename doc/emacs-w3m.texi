@@ -3357,6 +3357,9 @@ jpilot.main
 
 @item @uref{http://lists.gnu-designs.com/pipermail/pilot-mailsync/, pilot-mailsync}
 pilot-mailsync.main
+
+@item @uref{http://www.mozilla.gr.jp/ml/logs/moz-users/, moz-users}
+moz-users.users
 @end table
 
 @node Sport Sites Supported by Shimbun
