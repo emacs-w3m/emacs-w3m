@@ -1,3 +1,8 @@
+2001-02-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-async-exec): New customizable variable.
+	(w3m-exec-process): Use 'w3m-async-exec' instead of 'w3m-process-type'.
+
 2001-02-07  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* w3m.el: Fixed small and thoughtless bugs...

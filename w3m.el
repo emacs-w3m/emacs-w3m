@@ -197,11 +197,10 @@
   :group 'w3m
   :type 'hook)
 
-(defcustom w3m-process-type 'start-process
-  "*Function type for w3m execution."
+(defcustom w3m-async-exec nil
+  "*If non-nil, w3m is executed an asynchronously process."
   :group 'w3m
-  :type '(choice (symbol :tag "call-process" call-process)
-		 (symbol :tag "start-process" start-process)))
+  :type 'boolean)
 
 (defcustom w3m-process-connection-type t
   "*Process connection type for w3m execution."
@@ -638,7 +637,7 @@ CT denotes content-type."
 	  (default-process-coding-system
 	    (cons w3m-coding-system w3m-coding-system))
 	  (process-connection-type w3m-process-connection-type))
-      (if (eq w3m-process-type 'start-process)
+      (if w3m-async-exec
 	  ;; start-process
 	  (unwind-protect nil
 	    (let ()
