@@ -631,7 +631,12 @@ each time you visit a new page."
 
 (defcustom w3m-broken-proxy-cache nil
   "*Set this variable to t if the proxy server seems not to work properly
-in caching.  It may not be effective if you are using old w3m command."
+in caching.  However, this may be the double-edged sword; setting it
+to t will likely be harmful if the proxy server sends bad requests
+\(e.g. not including the Host header, see RFC2616 section 14.23) to
+foreign servers when the w3m command specifies the \"no-cache\"
+directive.  Also note that it may not be effective if you are using
+old w3m command."
   :group 'w3m
   :type 'boolean)
 
@@ -826,7 +831,10 @@ way of `post-command-hook'."
 ;; from a web site; [2]XEmacs hangs up.
 
 (defcustom w3m-process-connection-type
-  (not (or (memq system-type '(darwin macos))
+  (not (or (and (memq system-type '(darwin macos))
+		(let ((ver (shell-command-to-string "uname -r")))
+		  (and (string-match "^\\([0-9]+\\)\\." ver)
+		       (< (string-to-number (match-string 1 ver)) 7))))
 	   (and (featurep 'xemacs)
 		(string-match "solaris" system-configuration))))
   "*Value for `process-connection-type' used when communicating with the
