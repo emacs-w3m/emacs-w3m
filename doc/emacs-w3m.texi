@@ -2255,7 +2255,7 @@ Reading @samp{shimbun} messages
 Getting started
 
 Type @kbd{G I} (@code{mew-shimbun-retrieve-all}) first, after setting up
-as menthoned above.  The @samp{shimbun} folders specified by the
+as mentioned above.  The @samp{shimbun} folders specified by the
 @code{mew-shimbun-folder-groups} variable will be created under the
 @samp{+shimbun} parent folder.  Typing @kbd{G I} is also useful when you
 have added new groups.  You can change the name of the parent folder
