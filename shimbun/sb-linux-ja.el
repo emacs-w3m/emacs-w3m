@@ -24,6 +24,12 @@
 
 ;;; Commentary:
 
+;;; Acknowledgment:
+
+;; I would like to thank Hidetaka Iwai <tyuyu@bozu.sytes.net>, who
+;; wrote sb-jlc.el.  I refered it to decide values of regular
+;; expressions in this backend.
+
 ;;; Code:
 
 (require 'shimbun)
