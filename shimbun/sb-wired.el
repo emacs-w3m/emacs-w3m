@@ -109,6 +109,11 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAQBAMAAACigOGCAAAABGdBTUEAALGPC/xhBQAAADB
 	      (setcdr x (cons header (cdr x))))))))
     group-header-alist))
 
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-wired)
+						   header)
+  ;; Break long lines.
+  (shimbun-break-long-japanese-lines shimbun))
+
 (provide 'sb-wired)
 
 ;;; sb-wired.el ends here
