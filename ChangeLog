@@ -1,5 +1,12 @@
 2002-02-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-threshold): New
+	variable.
+	(shimbun-slashdot-jp-sid-url): Refer it.
+	(shimbun-slashdot-jp-make-comment-headers): Check all articles.
+	(shimbun-slashdot-jp-search-comment-head): The message ID of the
+	parent article is also added to References:.
+
 	* shimbun/sb-slashdot-jp.el: All stuffs are rewritten.
 
 	* shimbun/sb-mhonarc.el (shimbun-make-contents): Modified regexp.
