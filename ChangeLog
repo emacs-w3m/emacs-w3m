@@ -1,4 +1,5 @@
-2001-08-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+2001-08-03  Masayuki Ataka  <ataka@milk.freemail.ne.jp>,
+	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-namazu.el (w3m-namazu-default-index): Changed customize
 	spec.
