@@ -62,7 +62,8 @@
 	  (if (stringp method)
 	      (intern method)
 	    method)
-	  (w3m-expand-url action baseurl)
+	  (and action
+	       (w3m-expand-url action baseurl))
 	  charlst
 	  nil))
 
@@ -251,10 +252,12 @@ return them with the flag."
 		(cons (w3m-form-new
 		       (or method "get")
 		       (or action
-			   (progn
-			     (string-match w3m-url-components-regexp w3m-current-url)
-			     (substring w3m-current-url 0
-					(or (match-beginning 6) (match-beginning 8)))))
+			   (and w3m-current-url
+				(string-match w3m-url-components-regexp
+					      w3m-current-url)
+				(substring w3m-current-url 0
+					   (or (match-beginning 6)
+					       (match-beginning 8)))))
 		       nil
 		       accept-charset)
 		      forms)))

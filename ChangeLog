@@ -1,3 +1,11 @@
+2002-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+	Suggested by HAYASHI Chifumi <chifumi@mscom.or.jp>.
+
+	* w3m-form.el (w3m-form-new): Ignore the 2nd arg `action' if it is
+	nil.
+	(w3m-form-parse-forms): Don't parse the value of `w3m-current-url'
+	if it is nil.
+
 2002-03-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.2.6.
