@@ -1,5 +1,8 @@
 2003-07-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3mhack.el (w3mhack-examine-modules): Ignore w3m-ccl.el when
+	ccl.el is missing.
+
 	* w3m-e21.el (w3m-ccl-get-ucs-codepoint-with-emacs-unicode):
 	Import from w3m-ccl.el.
 

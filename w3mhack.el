@@ -253,6 +253,8 @@ emacs-w3m.")
 	 print-level print-length)
     (unless (locate-library "mew")
       (push "mew-w3m.el" ignores))
+    (unless (locate-library "ccl")
+      (push "w3m-ccl.el" ignores))
     (unless (and (featurep 'mule)
 		 (if (featurep 'xemacs)
 		     ;; Mule-UCS does not support XEmacs versions prior
