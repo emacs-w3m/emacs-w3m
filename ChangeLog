@@ -1,3 +1,8 @@
+2001-08-24  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+
+	* shimbun/sb-f1express.el, shimbun/sb-f1fan.el,
+	shimbun/sb-isize-sports.el, shimbun/sb-makanai.el: New files.
+
 2001-08-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-xemacs.el (shimbun-xemacs-x-face-alist): Added.
