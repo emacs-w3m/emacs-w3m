@@ -1,5 +1,14 @@
 2003-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-e21.el (w3m-tab-half-space, w3m-tab-separator): Use `:width'
+	instead of `:relative-width' to specify the space width.
+	(w3m-tab-line): Tidy it up.
+
+	* w3m-favicon.el (w3m-favicon-set-image): Use `:width' instead of
+	`:relative-width' to specify the space width.
+
+2003-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-e21.el (w3m-tab-unselected-face,
 	w3m-tab-unselected-retrieving-face, w3m-tab-selected-face,
 	w3m-tab-selected-face): Exchange the default TTY colors between

@@ -552,13 +552,13 @@ function running too frequently, set by the function itself and
 cleared by a timer.")
 
 (defvar w3m-tab-half-space
-  (propertize " " 'display '(space :relative-width 0.5))
+  (propertize " " 'display '(space :width 0.5))
   "The space of half width.")
 
 (defvar w3m-tab-separator
   (propertize " "
 	      'face 'w3m-tab-background-face
-	      'display '(space :relative-width 0.5))
+	      'display '(space :width 0.5))
   "String used to separate tabs.")
 
 (defun w3m-tab-line ()
@@ -584,7 +584,7 @@ cleared by a timer.")
 		       1))
 	     (spinner (when w3m-process-queue
 			(w3m-make-spinner-image)))
-	     buffer title data datum process face keymap icon line)
+	     buffer title data datum process favicon keymap face icon line)
 	(setq w3m-tab-timer
 	      (run-at-time 0.1 nil
 			   (lambda (window)
@@ -619,6 +619,8 @@ cleared by a timer.")
 		current (car datum)
 		process (nth 1 datum)
 		title (nth 2 datum)
+		favicon (nth 3 datum)
+		keymap (nth 4 datum)
 		face (if process
 			 (if current
 			     'w3m-tab-selected-retrieving-face
@@ -626,7 +628,6 @@ cleared by a timer.")
 		       (if current
 			   'w3m-tab-selected-face
 			 'w3m-tab-unselected-face))
-		keymap (nth 4 datum)
 		icon (when graphic
 		       (cond
 			(process
@@ -634,12 +635,14 @@ cleared by a timer.")
 			   (propertize
 			    " "
 			    'display spinner
+			    'face face
 			    'local-map w3m-tab-spinner-map
 			    'help-echo w3m-spinner-map-help-echo)))
-			((nth 3 datum)
+			(favicon
 			 (propertize
 			  " "
-			  'display (nth 3 datum)
+			  'display favicon
+			  'face face
 			  'local-map keymap
 			  'help-echo title))))
 		breadth (cond (icon width)
