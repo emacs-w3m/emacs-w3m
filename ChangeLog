@@ -1,3 +1,12 @@
+2003-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-generate-shimbun-servers-file): Exclude fml,
+	glimpse, lump, mailarc, mailman, mhonarc and text; indent.
+	(w3mhack-generate-colon-keywords-file): indent.
+
+	* shimbun/nnshimbun.el (gnus-group-make-shimbun-group): Accept
+	arguments.
+
 2003-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/nnshimbun.el (nnshimbun-is-compiled-for-modern-gnus):
