@@ -45,14 +45,7 @@ license to the document, as described in section 6 of the license.
 @title Emacs-w3m User's Manual
 @subtitle An interface program of w3m on Emacsen
 @subtitle for emacs-w3m version @value{VERSION}
-@author Akihiro Arisawa
-@author Shun-ichi Goto
-@author Keisuke Nishida
-@author Hideyuki Shirai
-@author Satoru Takabayashi
-@author Yuuichi Teranishi
-@author Masatoshi Tsuchiya
-@author Katsumi Yamaoka
+@author The emacs-w3m development team
 @page
 
 @vskip 0pt plus 1filll
@@ -79,7 +72,6 @@ license to the document, as described in section 6 of the license.
 
 @end titlepage
 
-
 @ifinfo
 @node Top
 @top Emacs-w3m User's Manual
@@ -93,10 +85,21 @@ This manual corresponds to emacs-w3m version @value{VERSION}.
 @end ifinfo
 
 @menu
-* Introduction::             Read this first
-* Index::                    Key index
-@end menu
+* Introduction::                Preliminary remarks to emacs-w3m
+* Getting Started::             It's so easy to begin to use emacs-w3m
+* Index::                       Index
 
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Getting Started
+
+* Required Emacs Version::      What version of Emacs can be used?
+* You Need w3m::                Using w3m: the reason why emacs-w3m is fast
+* Other Requirements::          Things required to run emacs-w3m
+
+@end detailmenu
+@end menu
 
 @node Introduction
 @chapter Preliminary remarks to emacs-w3m
@@ -108,6 +111,38 @@ thanks to all for comments, suggestions, and bug fixes.  Even though
 there are any problems, all responsibility is in us the emacs-w3m
 development team, but there is no warranty as you know.  The emacs-w3m
 program was first created by TSUCHIYA Masatoshi in June 2000.
+
+@node Getting Started
+@chapter It's so easy to begin to use emacs-w3m
+@cindex getting started
+@cindex starting up
+
+Emacs-w3m may possibly have already been installed in your system to be
+able to use at once.  You may skip this section if you are such a lucky
+person; read it over again when you install a new version of emacs-w3m.
+
+@menu
+* Required Emacs Version::      What version of Emacs can be used?
+* You Need w3m::                Using w3m: the reason why emacs-w3m is fast
+* Other Requirements::          Things required to run emacs-w3m
+@end menu
+
+@node Required Emacs Version
+@section Required Emacs Version
+@chapter What version of Emacs can be used?
+
+You can run emacs-w3m in various versions of Emacsen.
+
+
+@node You Need w3m
+@section You Need w3m
+@chapter Using w3m: the reason why emacs-w3m is fast
+
+
+@node Other Requirements
+@section Other Requirements
+@chapter Things required to run emacs-w3m
+
 
 @node Index
 @unnumbered Index

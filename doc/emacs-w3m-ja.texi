@@ -67,14 +67,7 @@ license to the document, as described in section 6 of the license.
 @title Emacs-w3m ユーザマニュアル
 @subtitle An interface program of w3m on Emacsen
 @subtitle for emacs-w3m version @value{VERSION}
-@author 有沢明宏
-@author 後藤俊一
-@author 白井秀行
-@author 高林哲
-@author 土屋雅稔
-@author 寺西裕一
-@author 西田圭介
-@author 山岡克美
+@author Emacs-w3m 開発チーム
 @page
 
 @vskip 0pt plus 1filll
@@ -120,7 +113,6 @@ license to the document, as described in section 6 of the license.
 
 @end titlepage
 
-
 @ifinfo
 @node Top
 @top Emacs-w3m ユーザマニュアル
@@ -134,8 +126,20 @@ Emacs-w3m 開発チーム
 @end ifinfo
 
 @menu
-* Introduction::             はじめに
-* Index::                    索引
+* Introduction::                はじめに
+* Getting Started::             Emacs-w3m を使い始めるのはとっても簡単
+* Index::                       索引
+
+@detailmenu
+ --- 項目の詳細なリスト ---
+
+Getting Started
+
+* Required Emacs Version::      どんなバージョンの Emacs で使えるの?
+* You Need w3m::                w3m を使います: emacs-w3m が速いわけ
+* Other Requirements::          emacs-w3m を動作させるのに必要なもの
+
+@end detailmenu
 @end menu
 
 @node Introduction
@@ -148,6 +152,39 @@ Emacs-w3m 開発チーム
 ても、責任はすべて私たち emacs-w3m 開発チームにあります。もっとも、ご承
 知の通り保証はありません。Emacs-w3m は 2000年6月に土屋雅稔によって初めて
 作られました。
+
+@node Getting Started
+@chapter Emacs-w3m を使い始めるのはとっても簡単
+@cindex getting started
+@cindex starting up
+
+ひょっとすると、あなたのシステムには emacs-w3m が直ちに使える状態で、す
+でにインストールされているかもしれません。そんな幸運な人は、この項を読み
+飛ばしても構いません; 新しい emacs-w3m をインストールするときに、もう一
+度読み返して下さい。
+
+@menu
+* Required Emacs Version::      どんなバージョンの Emacs で使えるの?
+* You Need w3m::                w3m を使います: emacs-w3m が速いわけ
+* Other Requirements::          emacs-w3m を動作させるのに必要なもの
+@end menu
+
+@node Required Emacs Version
+@section Required Emacs Version
+@chapter どんなバージョンの Emacs で使えるの?
+
+いろいろなバージョンの Emacsen で emacs-w3m を動作させることができます。
+
+
+@node You Need w3m
+@section You Need w3m
+@chapter w3m を使います: emacs-w3m が速いわけ
+
+
+@node Other Requirements
+@section Other Requirements
+@chapter emacs-w3m を動作させるのに必要なもの
+
 
 @node Index
 @unnumbered 索引
@@ -179,6 +216,6 @@ Emacs-w3m 開発チーム
 @contents
 @bye
 
-@c Local Variables: 
+@c Local Variables:
 @c fill-column: 72
 @c End:
