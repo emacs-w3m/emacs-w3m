@@ -48,6 +48,9 @@
       (require 'poe)
       (require 'pcustom)))
 
+(if (string-match "XEmacs" emacs-version)
+    (require 'poem))
+
 (put 'w3m-static-if 'lisp-indent-function 2)
 (defmacro w3m-static-if (cond then &rest else)
   (if (eval cond) then (` (progn  (,@ else)))))
@@ -376,13 +379,19 @@ If N is negative, last N items of LIST is returned."
     (set-text-properties 0 (length url) nil url)
     (setq w3m-arrived-anchor-list
 	  (cons url (delete url w3m-arrived-anchor-list)))))
-	  
+
 (defun w3m-fontify ()
   "Fontify this buffer."
   (let ((case-fold-search t)
 	(buffer-read-only))
     (run-hooks 'w3m-fontify-before-hook)
+    ;; Delete <?xml ... ?> tag
+    (if (search-forward "<?xml" nil t)
+	(let ((start (match-beginning 0)))
+	  (search-forward "?>" nil t)
+	  (delete-region start (match-end 0))))
     ;; Delete extra title tag.
+    (goto-char (point-min))
     (let (start)
       (and (search-forward "<title>" nil t)
 	   (setq start (match-beginning 0))
@@ -502,7 +511,7 @@ If N is negative, last N items of LIST is returned."
 	      w3m-backlog-hashtb)
     (setq url (completing-read (or prompt "URL: ")
 			       candidates nil nil
-			       default 'w3m-input-url-history default))
+			       default 'w3m-input-url-history))
     ;; remove duplication
     (setq w3m-input-url-history (cons url (delete url w3m-input-url-history)))
     ;; return value
@@ -1488,31 +1497,35 @@ Parsed bookmark data is hold in `w3m-bookmark-data'."
 	entries)
     (or file
 	(setq file w3m-bookmark-file)) ; default name
-    (with-temp-buffer
-      ;; print beginning of html
-      (insert "<html><head><title>Bookmarks</title></head>\n"
-	      "<body>\n"
-	      "<h1>Bookmarks</h1>\n")
-      (while bookmark
-	(setq entries (car bookmark)
-	      bookmark (cdr bookmark))
-	(insert "<h2>" (car entries) "</h2>\n")
-	(setq entries (cdr entries))
-	(insert "<ul>\n")
-	(while entries
-	  (insert "<li><a href=\"" (cdr (car entries)) "\">"
-		  (car (car entries)) "</a>\n")
-	  (setq entries (cdr entries)))
-	(insert "<!--End of section (do not delete this comment)-->\n"
-		"</ul>\n"))
-      ;; print end of html
-      (insert "</body>\n"
-	      "</html>\n")
-      ;; write to file!
-      (let ((coding-system-for-write w3m-bookmark-file-coding-system))
-	(write-region (point-min) (point-max) file))
-      (setq w3m-bookmark-file-time-stamp (elt (file-attributes file) 5))
-      (message "Saved to '%s'" file))))
+    ;; check output directory
+    (if (not (file-writable-p file))
+	(message "Can't write! Bookmark file is not saved.")
+      ;;
+      (with-temp-buffer
+	;; print beginning of html
+	(insert "<html><head><title>Bookmarks</title></head>\n"
+		"<body>\n"
+		"<h1>Bookmarks</h1>\n")
+	(while bookmark
+	  (setq entries (car bookmark)
+		bookmark (cdr bookmark))
+	  (insert "<h2>" (car entries) "</h2>\n")
+	  (setq entries (cdr entries))
+	  (insert "<ul>\n")
+	  (while entries
+	    (insert "<li><a href=\"" (cdr (car entries)) "\">"
+		    (car (car entries)) "</a>\n")
+	    (setq entries (cdr entries)))
+	  (insert "<!--End of section (do not delete this comment)-->\n"
+		  "</ul>\n"))
+	;; print end of html
+	(insert "</body>\n"
+		"</html>\n")
+	;; write to file!
+	(let ((coding-system-for-write w3m-bookmark-file-coding-system))
+	  (write-region (point-min) (point-max) file))
+	(setq w3m-bookmark-file-time-stamp (elt (file-attributes file) 5))
+	(message "Saved to '%s'" file)))))
 
 (defun w3m-bookmark-data-prepare ()
   "Prepare for bookmark operation.
@@ -1551,8 +1564,9 @@ SECTION is category name in bookmark."
 	;; add to existing section
 	(nconc ent (list (cons title url))) ; add to tail
       ;; add as new section 
-      (nconc w3m-bookmark-data
-	     (list (list sec (cons title url)))))
+      (setq w3m-bookmark-data
+	    (nconc w3m-bookmark-data
+		   (list (list sec (cons title url))))))
     ;; then save to file. (xxx, force saving, should we ask?)
     (w3m-bookmark-save)))
 
