@@ -1,3 +1,8 @@
+2001-10-25  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-vinelinux.el (shimbun-vinelinux-url) Bug fixed.
+	(shimbun-get-headers): Ditto.
+
 2001-10-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-copy-buffer): Bind `pop-up-windows' to the value of
