@@ -250,7 +250,9 @@ stored in the `w3m-favicon-image' buffer-local variable."
 	(w3m-process-do-with-temp-buffer
 	    (ok (w3m-retrieve url 'raw nil nil nil handler))
 	  (let (idata image)
-	    (if ok
+	    (if (and ok
+		     ;; Some broken servers provides empty contents.
+		     (>= (buffer-size) 4))
 		(setq idata (buffer-string)
 		      image (w3m-favicon-convert idata type))
 	      (w3m-message "Reading %s...done (no favicon)" url))
