@@ -1,3 +1,8 @@
+2003-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-highlight-current-anchor): Don't infloop even if a
+	w3m buffer is narrowed.
+
 2003-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-make-package): Make it work under non-Mule
