@@ -200,9 +200,9 @@ This value is default and used only when spec defined by
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-arrived-urls-file
+(defcustom w3m-arrived-file
   (expand-file-name ".arrived" w3m-profile-directory)
-  "*Arrived URL file of w3m."
+  "*File which has list of arrived URLs."
   :group 'w3m
   :type 'file)
 
@@ -592,7 +592,9 @@ See also `w3m-search-engine-alist'."
 (defvar w3m-backlog-hashtb nil)
 (defvar w3m-input-url-history nil)
 
-(defvar w3m-arrived-anchor-list nil)
+(defconst w3m-arrived-db-size 1023)
+(defvar w3m-arrived-db nil)		; nil means un-initialized.
+(defvar w3m-arrived-seq nil)
 (defvar w3m-arrived-user-list nil)
 
 (defvar w3m-process-message nil "Function to message status.")
@@ -677,23 +679,57 @@ If N is negative, last N items of LIST is returned."
 	(write-region (point-min) (point-max)
 		      file nil 'nomsg)))))
 
-(defun w3m-arrived-list-load ()
-  "Load arrived url list from 'w3m-arrived-urls-file'."
-  (setq w3m-arrived-anchor-list
-	(w3m-load-list w3m-arrived-urls-file w3m-arrived-file-coding-system)))
+(defsubst w3m-arrived-p (url)
+  "If URL has been arrived, return non-nil value.  Otherwise return nil."
+  (intern-soft url w3m-arrived-db))
 
-(defun w3m-arrived-list-save ()
-  "Save arrived url list to 'w3m-arrived-urls-file'."
-  (w3m-save-list w3m-arrived-urls-file w3m-arrived-file-coding-system
-		 (w3m-sub-list w3m-arrived-anchor-list w3m-keep-arrived-urls)))
-
-(defun w3m-arrived-list-add (&optional url)
-  "Cons url to 'w3m-arrived-anchor-list'. CAR is newest."
-  (setq url (or url w3m-current-url))
+(defsubst w3m-arrived-add (url)
+  "Add URL to hash database of arrived URLs."
   (when (> (length url) 5) ;; ignore short
     (set-text-properties 0 (length url) nil url)
-    (setq w3m-arrived-anchor-list
-	  (cons url (delete url w3m-arrived-anchor-list)))))
+    (put (intern url w3m-arrived-db)
+	 'w3m-arrived-seq
+	 (setq w3m-arrived-seq (1+ w3m-arrived-seq)))))
+
+(defun w3m-arrived-setup ()
+  "Load arrived url list from 'w3m-arrived-file' and setup hash database."
+  (unless w3m-arrived-db
+    (setq w3m-arrived-db (make-vector w3m-arrived-db-size nil)
+	  w3m-arrived-seq 0)
+    (dolist (url (w3m-load-list w3m-arrived-file
+				w3m-arrived-file-coding-system))
+      (w3m-arrived-add url))))
+
+(defun w3m-arrived-shutdown ()
+  "Save hash database of arrived URLs to 'w3m-arrived-file'."
+  (let (list)
+    (mapatoms (lambda (sym)
+		(when sym
+		  (setq list
+			(cons (cons (symbol-name sym)
+				    (get sym 'w3m-arrived-seq))
+			      list))))
+	      w3m-arrived-db)
+    (w3m-save-list w3m-arrived-file
+		   w3m-arrived-file-coding-system
+		   (mapcar
+		    (function car)
+		    (sort list
+			  (lambda (a b) (> (cdr a) (cdr b)))))))
+  (setq w3m-arrived-db nil))
+
+(defun w3m-arrived-store-position (url &optional point window-start)
+  (when (stringp url)
+    (let ((ident (intern-soft url w3m-arrived-db)))
+      (when ident
+	(set ident (cons (or window-start (window-start))
+			 (or point (point))))))))
+
+(defun w3m-arrived-restore-position (url)
+  (let ((ident (intern-soft url w3m-arrived-db)))
+    (when (and ident (boundp ident))
+      (set-window-start nil (car (symbol-value ident)))
+      (goto-char (cdr (symbol-value ident))))))
 
 
 ;;; Form:
@@ -1014,9 +1050,10 @@ If N is negative, last N items of LIST is returned."
 	     (when (search-forward "</a>" nil t)
 	       (setq url (w3m-expand-url url w3m-current-url))
 	       (delete-region (setq end (match-beginning 0)) (match-end 0))
-	       (if (member url w3m-arrived-anchor-list)
-		   (put-text-property start end 'face 'w3m-arrived-anchor-face)
-		 (put-text-property start end 'face 'w3m-anchor-face))
+	       (put-text-property start end 'face
+				  (if (w3m-arrived-p url)
+				      'w3m-arrived-anchor-face
+				    'w3m-anchor-face))
 	       (put-text-property start end 'w3m-href-anchor url)
 	       (put-text-property start end 'mouse-face 'highlight))
 	     (when tag
@@ -1173,13 +1210,10 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defun w3m-input-url (&optional prompt default)
   "Read a URL from the minibuffer, prompting with string PROMPT."
   (let (url candidates)
-    (w3m-backlog-setup)
-    (or w3m-input-url-history
-	(setq w3m-input-url-history (or w3m-arrived-anchor-list
-					(w3m-arrived-list-load))))
+    (w3m-arrived-setup)
     (mapatoms (lambda (x)
 		(setq candidates (cons (cons (symbol-name x) x) candidates)))
-	      w3m-backlog-hashtb)
+	      w3m-arrived-db)
     (setq default (or default (thing-at-point 'url)))
     (setq url (completing-read (or prompt
 				   (if default
@@ -1775,19 +1809,6 @@ this function returns t.  Otherwise, returns nil."
       nil)))
 
 
-(defun w3m-save-position (url)
-  (if url
-      (let ((ident (intern-soft url w3m-backlog-hashtb)))
-	(when ident
-	  (set ident (cons (window-start) (point)))))))
-
-(defun w3m-restore-position (url)
-  (let ((ident (intern-soft url w3m-backlog-hashtb)))
-    (when (and ident (boundp ident))
-      (set-window-start nil (car (symbol-value ident)))
-      (goto-char (cdr (symbol-value ident))))))
-
-
 (defun w3m-view-previous-page (&optional arg)
   (interactive "p")
   (unless arg (setq arg 1))
@@ -1795,13 +1816,13 @@ this function returns t.  Otherwise, returns nil."
     (when url
       (let (w3m-url-history) (w3m-goto-url url))
       ;; restore last position
-      (w3m-restore-position url)
+      (w3m-arrived-restore-position url)
       (setq w3m-url-history
 	    (nthcdr arg w3m-url-history)))))
 
 (defun w3m-view-previous-point ()
   (interactive)
-  (w3m-restore-position w3m-current-url))
+  (w3m-arrived-restore-position w3m-current-url))
 
 (defun w3m-expand-url (url base)
   "Convert URL to absolute, and canonicalize it."
@@ -2093,7 +2114,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (when (or force
 	    (y-or-n-p "Do you want to exit w3m? "))
     (kill-buffer (current-buffer))
-    (w3m-arrived-list-save)
+    (w3m-arrived-shutdown)
     (or (save-excursion
 	  ;; Check existing w3m buffers.
 	  (delq nil (mapcar (lambda (b)
@@ -2204,12 +2225,13 @@ or prefix ARG columns."
      ((string-match "^mailto:\\(.*\\)" url)
       (w3m-mailto-url url))
      (t
+      (w3m-arrived-setup)
+      (w3m-arrived-store-position w3m-current-url)
+      (w3m-arrived-add url)
       (when (string-match "#\\([^#]+\\)$" url)
 	(setq name (match-string 1 url)
-	      url (substring url 0 (match-beginning 0))))
-      (w3m-save-position w3m-current-url)
-      (or w3m-arrived-anchor-list (w3m-arrived-list-load))
-      (w3m-arrived-list-add url)
+	      url (substring url 0 (match-beginning 0)))
+	(w3m-arrived-add url))
       (if (not (w3m-exec url nil reload))
 	  (w3m-refontify-anchor)
 	(w3m-fontify)

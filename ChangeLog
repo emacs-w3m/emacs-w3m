@@ -1,3 +1,23 @@
+2001-03-08  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Backlog module is separated from front-end functions and
+	code to access the list of arrived URLs is put in order.
+	(w3m-arrived-file): Renamed from `w3m-arrived-urls-file'.
+	(w3m-arrived-anchor-list): Removed variable.
+	(w3m-arrived-list-load, w3m-arrived-list-save,
+	w3m-arrived-list-add, w3m-save-position, w3m-restore-position):
+	Removed functions.
+	(w3m-arrived-db-size): New constant.
+	(w3m-arrived-db, w3m-arrived-seq): New variables.
+	(w3m-arrived-p, w3m-arrived-add, w3m-arrived-setup,
+	w3m-arrived-shutdown, w3m-arrived-store-position,
+	w3m-arrived-restore-position): New functions.
+	(w3m-input-url): Follow changes.
+	(w3m-view-previous-page): Ditto.
+	(w3m-view-previous-point): Ditto.
+	(w3m-quit): Ditto.
+	(w3m-goto-url): Ditto.
+
 2001-03-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-view-current-url-with-external-browser): Fix typo when
