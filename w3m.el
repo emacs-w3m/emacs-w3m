@@ -2623,6 +2623,26 @@ to nil."
   (w3m-message "Reading %s...done" url))
 
 ;;; Retrieve data via HTTP:
+(defvar w3m-accept-post-header-option
+  (or (eq w3m-type 'w3m)
+      (with-temp-buffer
+	(call-process w3m-command nil t nil "-version")
+	(and (progn
+	       (goto-char (point-min))
+	       (search-forward " -post " nil t))
+	     (progn
+	       (goto-char (point-min))
+	       (search-forward " -header " nil t)))))
+  "Non-nil means that `w3m-command' accepts `-post' option and `-header' option.")
+
+(defvar w3m-accept-dump-extra-option
+  (or (memq w3m-type '(w3m w3mmee))
+      (with-temp-buffer
+	(call-process w3m-command nil t nil "-dump_extra" "http://localhost/")
+	(goto-char (point-min))
+	(not (looking-at "version"))))
+  "Non-nil means that `w3m-command' accepts `-dump_extra' option.")
+
 (defun w3m-remove-redundant-spaces (str)
   "Remove spaces/tabs at the front of a string and at the end of a string"
   (save-match-data
@@ -2752,26 +2772,6 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(delete-region (point-min) (point)))))
 	  (w3m-cache-contents url (current-buffer))
 	  headers)))))
-
-(defvar w3m-accept-post-header-option
-  (or (eq w3m-type 'w3m)
-      (with-temp-buffer
-	(call-process w3m-command nil t nil "-version")
-	(and (progn
-	       (goto-char (point-min))
-	       (search-forward " -post " nil t))
-	     (progn
-	       (goto-char (point-min))
-	       (search-forward " -header " nil t)))))
-  "Non-nil means that `w3m-command' accepts `-post' option and `-header' option.")
-
-(defvar w3m-accept-dump-extra-option
-  (or (memq w3m-type '(w3m w3mmee))
-      (with-temp-buffer
-	(call-process w3m-command nil t nil "-dump_extra" "http://localhost/")
-	(goto-char (point-min))
-	(not (looking-at "version"))))
-  "Non-nil means that `w3m-command' accepts `-dump_extra' option.")
 
 (defun w3m-w3m-retrieve (url &optional no-decode no-cache post-data referer)
   "Retrieve content of URL with w3m and insert it to the working buffer.
