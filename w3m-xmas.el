@@ -60,6 +60,8 @@
 (require 'pccl)
 
 ;;; Handle coding system:
+(w3m-static-if (featurep 'file-coding)
+    (progn
 (defalias 'w3m-find-coding-system 'find-coding-system)
 (defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
 
@@ -76,7 +78,11 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
     (if (consp (setq codesys (detect-coding-with-priority
 			      start end (nreverse categories))))
 	(car codesys)
-      codesys)))
+	  codesys))))
+  (defalias 'w3m-find-coding-system 'ignore)
+  (defalias 'w3m-make-ccl-coding-system 'ignore)
+  (defalias 'w3m-detect-coding-region 'ignore)
+  (defalias 'coding-system-list 'ignore))
 
 ;;; Handle images:
 

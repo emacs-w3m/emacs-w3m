@@ -1,3 +1,18 @@
+2001-10-26  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el: Changes to support XEmacs without MULE.
+	(top): Accept failure of loading `ccl'.
+	(w3m-toolbar): Small modified to avoid byte-compile error.
+	(w3m-euc-japan-encoder): Not defined when `ccl' isn't loaded.
+	(w3m-rendering-buffer-1): Replace internal characters of w3m to
+	space.
+
+	* w3m-xmas.el (w3m-find-coding-system): Define as a dummy function
+	to support XEmacs without MULE.
+	(w3m-make-ccl-coding-system): Ditto.
+	(w3m-detect-coding-region): Ditto.
+	(coding-system-list): Ditto.
+
 2001-10-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Changes to support normal w3m-0.2.1.
