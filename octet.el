@@ -84,12 +84,16 @@
     ("png"  . png)
     ("tif"  . tiff)
     ("tiff" . tiff)
-    ("txt"  . text))
+    ("txt"  . text)
+    ("lzh"  . lzh)
+    ("tar"  . tar)
+    ("pdf"  . pdf))
   "Alist of suffix-to-octet-type.")
 
 (defvar octet-content-type-alist
   '(("application/vnd\\.ms-excel"       . msexcel)
     ("application/vnd\\.ms-powerpoint"  . msppt)
+    ("application/x-msexcel"            . msexcel)
     ("application/msword"               . msword)
     ("image/jpeg"                       . jpeg)
     ("image/gif"                        . gif)
@@ -97,7 +101,9 @@
     ("image/tiff"                       . tiff)
     ("audio/midi"                       . ignore)
     ("video/mpeg"                       . ignore)
-    ("text/html"                        . html-un))
+    ("text/html"                        . html-un)
+    ("application/x-tar"                . tar)
+    ("application/pdf"                  . pdf))
   "Alist of content-type-regexp-to-octet-type.")
 
 (defvar octet-magic-type-alist
@@ -108,10 +114,10 @@
     ("^MM\000\\*"			image tiff)
     ("^MThd"				audio midi)
     ("^\000\000\001\263"		video mpeg)
-    ("<!doctype html"		        text  html)
-    ("<head"		                text  html)
-    ("<title"		                text  html)
-    ("<html"		                text  html))
+    ("^<!doctype html"		        text  html)
+    ("^<head"		                text  html)
+    ("^<title"		                text  html)
+    ("^<html"		                text  html))
   "*Alist of regexp about magic-number vs. corresponding content-types.
 Each element looks like (REGEXP TYPE SUBTYPE).
 REGEXP is a regular expression to match against the beginning of the
@@ -134,6 +140,9 @@ SUBTYPE is symbol to indicate subtype of content-type.")
     (png     octet-decode-image       nil       png     nil)
     (tiff    octet-decode-image       nil       tiff    nil)
     (guess   octet-filter-guess       nil       nil     nil)
+    (lzh     octet-filter-call1       "lha"     ("-v")  text)
+    (tar     octet-tar-mode           nil       nil     nil)
+    (pdf     octet-filter-call2      "pdftotext" ("-q" "-eucjp" "-raw") text)
     )
   "Alist of type-to-filter-program.
 Each element should have the form like:
@@ -301,9 +310,13 @@ Returns 0 if succeed."
     (octet-buffer)
     0))
 
+(defun octet-tar-mode (&rest args)
+  (funcall (symbol-function 'tar-mode))
+  0)
+
 (defun octet-guess-type-from-name (name)
   (when (string-match "\\.\\([a-z]+\\)$" name)
-    (cdr (assoc (match-string 1 name)
+    (cdr (assoc (downcase (match-string 1 name))
 		octet-suffix-type-alist))))
 
 (defun octet-guess-type-from-content-type (content-type)
@@ -491,6 +504,12 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 	'mime-acting-condition
 	'((mode . "play")
 	  (type . application)(subtype . vnd.ms-excel)
+	  (method . mime-view-octet)))
+
+       (ctree-set-calist-strictly
+	'mime-acting-condition
+	'((mode . "play")
+	  (type . application)(subtype . vnd.ms-powerpoint)
 	  (method . mime-view-octet)))
 
        (ctree-set-calist-strictly

@@ -1,3 +1,14 @@
+2002-02-01  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* octet.el (octet-suffix-type-alist): Added lzh, tar, pdf.
+	(octet-type-filter-alist): Ditto.
+	(octet-content-type-alist): Added application/x-msexcel,
+	text/html, application/x-tar, application/pdf.
+	(octet-magic-type-alist): Fixed magic for html.
+	(octet-tar-mode): New function.
+	(octet-guess-type-from-name): Downcase suffix.
+	(octet-mime-setup): Add action for application/vnd.ms-powerpoint.
+
 2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mime-w3m.el (mime-w3m-safe-url-regexp): New user option.
