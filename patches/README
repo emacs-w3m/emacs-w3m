@@ -28,6 +28,16 @@
 
   (2) The patch to use `STDIN' instead of `getpass' if w3m is associated
       with a terminal device. It take effect for XEmacs with Solaris 2.x.
+
+
+* mule-2.3@19.34.patch
+
+  Changes to make Mule 2.3 based on Emacs 19.34 work correctly on
+  managing column numbers for bitmap characters, and distinguishing
+  S-SPC key from SPC.  The former is contributed by TSUCHIYA Masatoshi
+  <tsuchiya@namazu.org>, the latter has been done in Emacs 20 by RMS.
+  Note that you have need of rebuilding Mule after applying this patch.
+
 
 Local Variables:
 mode: indented-text
