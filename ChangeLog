@@ -1,3 +1,69 @@
+2002-10-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-e21.el (w3m-buffer-favicon): Bind local null handler with
+	`w3m-process-with-null-handler' instead of `lexical-let'.
+
+2002-10-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* .cvsignore: Sync up to main trunk.
+
+2002-10-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-rendering-half-dump): To decide whether
+	`w3m-treat-image-size' is ignored, use
+	`w3m-display-inline-images-p' instead of `w3m-display-graphic-p'.
+	Thanks to Mito for his report.
+	(w3m-about): Add `witdh' and `height' property to <img> tag.
+
+2002-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-lynx-like-map): Don't define key bindings for
+	`w3m-zoom-out-image' and `w3m-zoom-in-image' when emacs-w3m in
+	running in non-graphical display.
+	(w3m-info-like-map): Ditto.
+
+2002-10-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-dump-head-source): Do not display the help
+	message when `w3m-process-with-wait-handler' is evaluated.
+	(w3m-make-separator): New function.
+	(w3m-about-header): Use the above function.
+
+	* w3m-proc.el (w3m-process-waited): New variable.
+	(w3m-process-error-handler): New function.
+	(w3m-process-with-wait-handler): Wrap the critical part with
+	`condition-case' to clean running processes up when `quit' signal
+	is occured.
+
+2002-10-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-dump-head-source): Display the message which
+	describes how to stop asynchronous process.
+	(w3m-lynx-like-map): Changed the key binded to `w3m-process-stop'
+	from `C-c C-g' to `C-c C-k'.
+	(w3m-info-like-map): Ditto.
+
+2002-10-08  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+
+	* shimbun/sb-f1express.el: Follow the change of the Web site.
+
+	* shimbun/sb-f1fan.el: Ditto.
+
+	* shimbun/sb-isize-sports.el: Removed.
+
+2002-10-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-ibm-dev.el (shimbun-make-contents): Strip SPAN tag
+	from subject.
+
+2002-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-zdnet.el (shimbun-make-contents): Set date string.
+	Remove the part which is not considered as the body.
+
+	* shimbun/shimbun.el (shimbun-make-date-string): Accept the 5th
+	optional argument, `timezone'.
+
 2002-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-emacs-w3m-icon): Use helvetica-bold to widen image.

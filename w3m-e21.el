@@ -468,25 +468,25 @@ Each information is a list whose elements are:
       (or w3m-current-favicon-image
 	  w3m-favicon-converted
 	  (lexical-let ((height (number-to-string (frame-char-height)))
-			(buffer buffer)
-			handler)
-	    (setq w3m-favicon-converted t)
-	    (w3m-process-do
-		(img (w3m-imagick-start-convert-data
-		      handler
-		      (car w3m-current-favicon-data)
-		      (symbol-name (cdr w3m-current-favicon-data))
-		      (symbol-name w3m-favicon-type)
-		      "-geometry" (or w3m-favicon-size
-				      (concat height "x" height))))
-	      (with-current-buffer buffer
-		(if img
-		    (setq w3m-current-favicon-image
-			  (create-image img
-					w3m-favicon-type
-					t
-					:ascent 'center))
-		  (setq w3m-current-favicon-data nil)))))))))
+			(buffer buffer))
+	    (w3m-process-with-null-handler
+	      (setq w3m-favicon-converted t)
+	      (w3m-process-do
+		  (img (w3m-imagick-start-convert-data
+			handler
+			(car w3m-current-favicon-data)
+			(symbol-name (cdr w3m-current-favicon-data))
+			(symbol-name w3m-favicon-type)
+			"-geometry" (or w3m-favicon-size
+					(concat height "x" height))))
+		(with-current-buffer buffer
+		  (if img
+		      (setq w3m-current-favicon-image
+			    (create-image img
+					  w3m-favicon-type
+					  t
+					  :ascent 'center))
+		    (setq w3m-current-favicon-data nil))))))))))
 
 (defun w3m-retrieve-favicon (pair target &optional handler)
   (if (and (w3m-favicon-cache-p (car pair))

@@ -42,33 +42,33 @@
 (defvar shimbun-f1fan-coding-system 'shift_jis)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-f1fan))
-  (shimbun-url-internal shimbun))
+  (concat
+   (shimbun-url-internal shimbun)
+   "/News"
+   (format-time-string "%Y")
+   "/news-new.html"))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-f1fan)
 					 &optional range)
   (let ((case-fold-search t) headers)
     (goto-char (point-min))
-    (while (re-search-forward "Ｆ１　*：<a href=\"\\(News\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\.html\\)\">\\([^<]+\\)</a><br>" nil t)
+    (while (re-search-forward "<a href=\\.\\(/\\([0-9]+\\)/\\([0-9]+\\)\\.html\\)>\\([^<]+\\)</a><br>" nil t)
       (let ((url (match-string 1))
-	    (year (match-string 2))
-	    (month (match-string 3))
-	    (day (match-string 4))
-	    (num (match-string 5))
-	    (subject (match-string 6))
-	    id date)
-	(setq id (format "<%s%s%s%s.%s.tahara@ps.ksky.ne.jp>"
-			 year month day num
-			 (shimbun-current-group-internal shimbun)))
-	(setq date (shimbun-make-date-string
-		    (string-to-number year)
-		    (string-to-number month)
-		    (string-to-number day)))
+	    (month (match-string 2))
+	    (id (match-string 3))
+	    (subject (match-string 4))
+	    id )
+	(setq id (format "<%s.%s.tahara@ps.ksky.ne.jp>"
+			id (shimbun-current-group-internal shimbun)))
 	(push (shimbun-make-header
 	       0
 	       (shimbun-mime-encode-string subject)
 	       (shimbun-from-address-internal shimbun)
-	       date id "" 0 0 (concat
+	       nil
+	       id "" 0 0 (concat
 			       (shimbun-url-internal shimbun)
+			       "News"
+			       (format-time-string "%Y")
 			       url))
 	      headers)))
     headers))

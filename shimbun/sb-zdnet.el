@@ -1,4 +1,4 @@
-;;; sb-zdnet.el --- shimbun backend for Zdnet Japan
+;;; sb-zdnet.el --- shimbun backend for Zdnet Japan -*- coding: iso-2022-7bit -*-
 
 ;; Copyright (C) 2001, 2002 Yuuichi Teranishi <teranisi@gohome.org>
 
@@ -115,17 +115,42 @@ x|3Z|D*vbQ%UY!38ikbc/EnUU_tbHVH\"9Sfk{\n w>zvk!?===x`]c5_-+<@ooVVV#D~F`e0")))
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-zdnet) header)
   (let ((case-fold-search t)
 	(start))
+    (and
+     (search-forward "<!--DATE-->" nil t)
+     (looking-at "[ ’¡¡]+\\([0-9]+\\)’Ç¯\\(1[012]\\|[2-9]\\)’·î\
+\\([12][0-9]?\\|3[01]?\\|[4-9]\\)’Æü[ ’¡¡]+\
+\\(0[0-9]\\|1[0-2]\\):\\([0-5][0-9]\\)[ ’¡¡]+\\([AP]M\\)")
+     (shimbun-header-set-date
+      header
+      (shimbun-make-date-string
+       (string-to-number (match-string 1))
+       (string-to-number (match-string 2))
+       (string-to-number (match-string 3))
+       (if (string= "PM" (match-string 6))
+	   (format "%02d:%s"
+		   (+ 12 (string-to-number (match-string 4)))
+		   (match-string 5))
+	 (buffer-substring (match-beginning 4) (match-end 5))))))
+    (goto-char (point-min))
+    (when (and (search-forward "<!--BODY-->" nil t)
+	       (setq start (match-beginning 0))
+	       (search-forward "<!--BODYEND-->" nil t))
+      (delete-region (point) (point-max))
+      (delete-region (point-min) start))
+    (goto-char (point-min))
     (while (and (search-forward "<!-- AD START -->" nil t)
 		(setq start (match-beginning 0))
 		(search-forward "<!-- AD END -->" nil t))
       (delete-region start (point)))
     (while (re-search-forward
-	    "<IMG [^>]*SRC=\"http:/[^\"]*/\\(ad\\.zdnet\\.co\\.jp\\|a1100\\.g\\.akamai\\.net\\)/[^>]+>"
+	    "<IMG [^>]*SRC=\"http:/[^\"]*/\\(ad\\.zdnet\\.co\\.jp\\|\
+a1100\\.g\\.akamai\\.net\\)/[^>]+>"
 	    nil t)
       (delete-region (match-beginning 0) (match-end 0)))
     (goto-char (point-min))
     (while (re-search-forward
-	    "<A [^>]*HREF=\"http:/[^\"]*/\\(ad\\.zdnet\\.co\\.jp\\|a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
+	    "<A [^>]*HREF=\"http:/[^\"]*/\\(ad\\.zdnet\\.co\\.jp\\|\
+a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
 	    nil t)
       (delete-region (match-beginning 0) (match-end 0)))
     (goto-char (point-min))))

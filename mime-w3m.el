@@ -145,8 +145,8 @@ in `mime-w3m-mode-map'.  If TO-COMMAND is nil, a MIME-View command key
 will not be substituted.")
 
 (defvar mime-w3m-mode-dont-bind-keys nil
-  ;; In Gnus, the default value for the `mm-w3m-mode-dont-bind-keys'
-  ;; is `(list [up] [right] [left] [down])'.
+  ;; In Gnus, the default value for `mm-w3m-mode-dont-bind-keys' is
+  ;; `(list [up] [right] [left] [down])'.
   "List of keys which should not be bound for the emacs-w3m commands.")
 
 (defvar mime-w3m-mode-ignored-keys nil

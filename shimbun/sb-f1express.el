@@ -1,6 +1,6 @@
 ;;; sb-f1express.el --- shimbun backend for www.f1express.co.jp
 
-;; Copyright (C) 2001 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
+;; Copyright (C) 2001, 2002 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 
 ;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 ;; Keywords: news
@@ -30,41 +30,57 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-f1express (shimbun shimbun-text) ())
+(luna-define-class shimbun-f1express (shimbun shimbun) ())
 
-(defvar shimbun-f1express-url "http://www.chunichi.ne.jp/")
+(defvar shimbun-f1express-url "http://f1express.cnc.ne.jp/")
 (defvar shimbun-f1express-groups
-  '("f1" "cart" "japan" "wrc" "bike" "paris" "other" "club"))
+  '("F1" "Pari-Dakar" "CART" "All-Japan" "WRC" "bike" "Tuka-CLUB"
+    "etc" "F-Nippon" "JGTC" "LeMans24" "Indi500" "F3-Japan"
+    "Super-Taikyu" "AJRC" "F-Toyota" "F-Dream" "etc-4-Japan"
+    "F3-France" "F3-England" "F3-Germany" "LeMans-USA" "IRL" "FSC"
+    "Int-F3000" "etc-4-int" "WGP" "WSB" "R2-1" "Suzuka8" "Motegi7"
+    "AJ-Motocross" "AJ-Trial" "World-Motocross" "WCT" "etc-2"
+    "Inter-GP-Cafe" "Takagi" "NASCAR" "Kato" "Endo" "Sato" "Imamiya"
+    "Toyota-news" "F1-release" "info"))
+(defvar shimbun-f1express-groups-alist
+  (let ((index 0))
+    (mapcar (lambda (x)
+	      (setq index (+ 1 index))
+	      (cons x (format "%d" index)))
+	    shimbun-f1express-groups)))
 (defvar shimbun-f1express-from-address "f1exp@tokyo-np.co.jp")
-(defvar shimbun-f1express-content-start "</td><td>")
-(defvar shimbun-f1express-content-end  "</td></tr>")
-
+(defvar shimbun-f1express-content-start 
+  "<hr color=\"red\" width=\"100%\" size=\"1\"/><br/>")
+(defvar shimbun-f1express-content-end
+  "<hr size=\"1\" width=\"100%\" color=\"red\"/><br />")
 (defvar shimbun-f1express-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-f1express))
   (concat (shimbun-url-internal shimbun)
-	  "f1express/"
-	  (shimbun-current-group-internal shimbun)
-	  "/headline.html"))
+	  "TL001.php?cat_id="
+	  (cdr (assoc (shimbun-current-group-internal shimbun)
+		      shimbun-f1express-groups-alist))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-f1express)
 					 &optional range)
   (let ((case-fold-search t) headers)
     (goto-char (point-min))
-    (while (re-search-forward "<TR><TD width=\"[0-9]+\"></TD><TD bgcolor=\"#[0-9A-E]+\" CLASS=\"\\w+\" colspan=\"[0-9]+\" height=\"[0-9]+\"><A HREF=\"\\([^\"]+.html\\)\">\\([^[]+\\)\\[\\([0-9]+\\)\\.\\([0-9]+\\)/\\([0-9]+\\)\\.\\([0-9]+\\):\\([0-9]+\\)\\]</A></TD></TR>" nil t)
-      (let* ((url (match-string 1))
-	     (subject (match-string 2))
-	     (year (match-string 3))
-	     (month (match-string 4))
-	     (day (match-string 5))
-	     (hour (match-string 6))
-	     (min (match-string 7))
-	     id date)
-	(setq id (format "<%s.%s.%s.%s.%s%%%s@www.chunichi.ne.jp>"
-			 min hour day month year
-			 (shimbun-current-group-internal shimbun)))
+    (while (re-search-forward
+	    "<a href=\"/\\(config/VI001.php\\?teiko_id=\\([0-9]+\\)&amp;cat_id=[0-9]+&amp;top_flg=0\\)\"[^>]+>\\([^<]+\\)</a>\n.*\n.*\\[\\([0-9]*\\)/\\([0-9]+\\)/\\([0-9]+\\) \\([0-9]+\\):\\([0-9]+\\)\\]" nil t)
+      (let ((url (match-string 1))
+	    (id (match-string 2))
+	    (subject (match-string 3))
+	    (year  (match-string 4))
+	    (month  (match-string 5))
+	    (day  (match-string 6))
+	    (hour  (match-string 7))
+	    (min  (match-string 8))
+	    date)
+	(while (string-match "&amp;" url)
+	  (setq url (replace-match "&" t t url)))
+	(setq id (format "<%s%%%s@www.chunichi.ne.jp>"
+			 id (shimbun-current-group-internal shimbun)))
 	(setq date (shimbun-make-date-string
 		    (string-to-number year)
 		    (string-to-number month)
