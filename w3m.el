@@ -1827,7 +1827,7 @@ with ^ as `cat -v' does."
 					   'w3m-cursor-anchor href
 					   'mouse-face 'highlight
 					   'w3m-name-anchor
-					   (cons name prenames)
+					   (delq nil (cons name prenames))
 					   'help-echo help
 					   'balloon-help balloon))))
 	 (name
