@@ -37,17 +37,12 @@
 (defvar shimbun-asahi-html-from-address "webmaster@www.asahi.com")
 
 (defvar shimbun-asahi-html-content-start "\n<!-- Start of photo1 -->\n")
-(defvar shimbun-asahi-html-content-end "\n<!-- Begin TopRightMenu -->\n")
+(defvar shimbun-asahi-html-content-end "\n<!-- End of kiji -->\n")
 (defvar shimbun-asahi-html-x-face-alist
   '(("default" .
      "X-Face:  +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|bIy3rr^<Q#lf&~ADU:X!t5t>
         gW5)Q]N{MmnL]suPpL|gFjV{S|]a-:)\\FR7GRf9uL:ue5_=;h{V%@()={u
         Td@l?eXBppF%`6W%;h`#]2q+f*81n$Bh|t")))
-
-(luna-define-method shimbun-index-url ((shimbun shimbun-asahi-html))
-  (format "%s%s/update/list.html"
-	  (shimbun-url-internal shimbun)
-	  (shimbun-current-group-internal shimbun)))
 
 (provide 'sb-asahi-html)
 

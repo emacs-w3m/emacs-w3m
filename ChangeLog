@@ -1,3 +1,13 @@
+2001-04-12  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun-index-url): Removed method definition.
+
+	* shimbun/sb-fml.el (shimbun-index-url): Define.
+
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html-content-end):
+	Changed value.
+	(shimbun-index-url): Removed.
+
 2001-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-xmas-define-missing-widgets): New function.

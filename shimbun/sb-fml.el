@@ -34,6 +34,9 @@
 
 (luna-define-class shimbun-fml (shimbun) ())
 
+(luna-define-method shimbun-index-url ((shimbun shimbun-fml))
+  (shimbun-url-internal shimbun))
+
 (luna-define-method shimbun-get-headers ((shimbun shimbun-fml))
   (let ((case-fold-search t)
 	headers auxs aux)

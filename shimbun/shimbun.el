@@ -315,10 +315,6 @@ HEADER is a header structure obtained via `shimbun-headers'.")
 (luna-define-generic shimbun-index-url (shimbun)
   "Return a index URL of SHIMBUN.")
 
-;; Default is same as base url.
-(luna-define-method shimbun-index-url ((shimbun shimbun))
-  (shimbun-url-internal shimbun))
-
 (luna-define-generic shimbun-get-headers (shimbun)
   "Return a shimbun header list of SHIMBUN.")
 
