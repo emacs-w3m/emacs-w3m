@@ -1,3 +1,8 @@
+2004-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-bbc.el (shimbun-rss-build-message-id): Prevent
+	fetching of headers stopping with extra articles.
+
 2004-10-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-check-refresh-attribute): Fix to analyze the URL.
