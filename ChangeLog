@@ -11,8 +11,11 @@
 	(w3m-tab-line): Make all tab widths the same even if there are
 	wide characters; never use graphic icons in TTY; close the left
 	margin unless there's an icon; add a keymap to favicon; make icons
-	3D.
-	(w3m-initialize-graphic-icons): Don't make graphic icons for TTY.
+	3D; don't put mouse-face on icons.
+	(w3m-initialize-graphic-icons): Don't make graphic icons for TTY;
+	don't put mouse-face on icons.
+	(w3m-make-spinner-image): Enabale it to put a relief around an
+	image.
 
 	* w3m-favicon.el: Bind `w3m-modeline-favicon' when compiling.
 	(w3m-favicon-set-image): Add a half space after favicon.

@@ -583,7 +583,7 @@ cleared by a timer.")
 			    (/ (if graphic 4.0 2.0) (frame-char-width)))
 		       1))
 	     (spinner (when w3m-process-queue
-			(w3m-make-spinner-image)))
+			(w3m-make-spinner-image -1)))
 	     buffer title data datum process face keymap icon line)
 	(setq w3m-tab-timer
 	      (run-at-time 0.1 nil
@@ -633,11 +633,7 @@ cleared by a timer.")
 			 (when spinner
 			   (propertize
 			    "  "
-			    'display (cons 'image
-					   (plist-put
-					    (copy-sequence (cdr spinner))
-					    :relief -1))
-			    'mouse-face 'highlight
+			    'display spinner
 			    'local-map w3m-tab-spinner-map
 			    'help-echo w3m-spinner-map-help-echo)))
 			((nth 3 datum)
@@ -647,7 +643,6 @@ cleared by a timer.")
 					 (plist-put
 					  (copy-sequence (cdr (nth 3 datum)))
 					  :relief 1))
-			  'mouse-face 'highlight
 			  'local-map keymap
 			  'help-echo title))))
 		breadth (cond (icon width)
@@ -666,7 +661,6 @@ cleared by a timer.")
 			   "...")
 		   breadth nil ?.)
 		(truncate-string-to-width title breadth nil ?\ )))
-	     'mouse-face 'highlight
 	     'face face
 	     'local-map keymap
 	     'help-echo title)
@@ -745,7 +739,6 @@ italic font in the modeline."
 	      (set icon (propertize
 			 "  "
 			 'display (create-image file 'xpm nil :ascent 'center)
-			 'mouse-face 'highlight
 			 'local-map keymap
 			 'help-echo "mouse-2 reloads this page"))
 	      (put icon 'risky-local-variable t)
@@ -785,9 +778,10 @@ italic font in the modeline."
 	(setq w3m-modeline-process-status-on
 	      (get 'w3m-modeline-process-status-on 'string))))))
 
-(defun w3m-make-spinner-image ()
+(defun w3m-make-spinner-image (&optional relief)
   "Make an image used to show a spinner.
-It should be called periodically in order to spin the spinner."
+If RELIEF is non-nil, put a relief around an image.  This function
+should be called periodically in order to spin the spinner."
   (when w3m-spinner-image-file
     (unless (< (incf w3m-spinner-image-index) w3m-spinner-image-frames)
       (setq w3m-spinner-image-index 0))
@@ -797,10 +791,14 @@ It should be called periodically in order to spin the spinner."
       (setq w3m-modeline-process-status-on-icon
 	    (propertize "  "
 			'display image
-			'mouse-face 'highlight
 			'local-map w3m-modeline-spinner-map
 			'help-echo w3m-spinner-map-help-echo))
-      image)))
+      (if relief
+	  (create-image w3m-spinner-image-file 'gif nil
+			:ascent 'center :mask 'heuristic
+			:index w3m-spinner-image-index
+			:relief relief)
+	image))))
 
 (provide 'w3m-e21)
 
