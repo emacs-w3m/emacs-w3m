@@ -1,6 +1,11 @@
+2003-07-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-tdiary.el (shimbun-replace-in-string): New function.
+	(shimbun-tdiary-get-headers): Use it.
+
 2003-07-14  OHASHI Akira  <bg66@koka-in.org>
 
-	* shimbun/sb-tdiary.el:  New backend.
+	* shimbun/sb-tdiary.el: New backend.
 
 	* shimbun/sb-chalow.el (shimbun-chalow-get-headers): Fix regexp.
 
