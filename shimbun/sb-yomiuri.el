@@ -31,9 +31,11 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-yomiuri (shimbun shimbun-text) ())
+(eval-and-compile
+  (autoload 'shimbun-shallow-rendering "sb-text"))
+
+(luna-define-class shimbun-yomiuri (shimbun) ())
 
 (defvar shimbun-yomiuri-top-level-domain "yomiuri.co.jp"
   "Name of the top level domain for the Yomiuri On-line.")
@@ -281,13 +283,8 @@ It does also shorten too much spaces."
 	  (string-to-number (match-string 2))
 	  (string-to-number (match-string 3))
 	  (match-string 4))))
-      (goto-char (point-min))
-      (insert "<html>\n<head>\n<base href=\""
-	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
-      (goto-char (point-max))
-      (insert "\n</body>\n</html>\n"))
-    (shimbun-make-mime-article entity header)
-    (buffer-string)))
+      (shimbun-shallow-rendering))
+    (shimbun-header-insert-and-buffer-string entity header)))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-yomiuri)
 					   header)

@@ -44,9 +44,40 @@
 
 (defvar shimbun-yomiuri-html-expiration-days shimbun-yomiuri-expiration-days)
 
+(defun shimbun-yomiuri-html-make-contents (entity header)
+  "Return article contents with a correct date header."
+  (let ((case-fold-search t)
+	start)
+    (when (and (re-search-forward (shimbun-content-start-internal entity)
+				  nil t)
+	       (setq start (point))
+	       (re-search-forward (shimbun-content-end-internal entity)
+				  nil t))
+      (delete-region (match-beginning 0) (point-max))
+      (delete-region (point-min) start)
+      (goto-char (point-max))
+      (forward-line -1)
+      (when (re-search-forward "\\(20[0-9][0-9]\\)/\\(1?[0-9]\\)/\
+\\([123]?[0-9]\\)/\\([012][0-9]:[0-5][0-9]\\)"
+			       nil t)
+	(shimbun-header-set-date
+	 header
+	 (shimbun-make-date-string
+	  (string-to-number (match-string 1))
+	  (string-to-number (match-string 2))
+	  (string-to-number (match-string 3))
+	  (match-string 4))))
+      (goto-char (point-min))
+      (insert "<html>\n<head>\n<base href=\""
+	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
+      (goto-char (point-max))
+      (insert "\n</body>\n</html>\n"))
+    (shimbun-make-mime-article entity header)
+    (buffer-string)))
+
 (luna-define-method shimbun-make-contents ((shimbun shimbun-yomiuri-html)
 					   header)
-  (shimbun-yomiuri-make-contents shimbun header))
+  (shimbun-yomiuri-html-make-contents shimbun header))
 
 (provide 'sb-yomiuri-html)
 
