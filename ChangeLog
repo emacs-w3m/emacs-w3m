@@ -1,3 +1,14 @@
+2002-10-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Remove autoload of `w3m-filter'.
+	(w3m-use-filter): Abolished.
+	(w3m-rendering-buffer-1): Do not call `w3m-filter'.
+
+	* w3m-filter.el: Removed.
+
+	* w3m-antenna.el: Merge changes on main trunk to check site
+	changes asynchronously.
+
 2002-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-form.el (w3m-form-input-textarea-keymap): Don't bind C-g.
