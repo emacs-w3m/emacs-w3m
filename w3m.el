@@ -4561,41 +4561,46 @@ POST-DATA and REFERER will be sent to the web server with a request."
 
 (defun w3m-touch-file (file time)
   "Change the access and/or modification TIME of the specified FILE."
-  ;; Check the validity of `touch' command.
-  (when (eq w3m-touch-file-available-p 'undecided)
-    (let ((file (make-temp-name
-		 (expand-file-name "w3mel" w3m-profile-directory)))
-	  time timefile)
-      (while (progn
-	       (setq time (list (abs (% (random) 8192))
-				(abs (% (random) 65536)))
-		     timefile (expand-file-name
-			       (format-time-string "%Y%m%d%H%M.%S" time)
-			       w3m-profile-directory))
-	       (file-exists-p timefile)))
-      (unwind-protect
-	  (setq w3m-touch-file-available-p
-		(when (w3m-which-command w3m-touch-command)
-		  (with-temp-buffer
-		    (insert "touch check")
-		    (write-region (point-min) (point-max) file nil 'nomsg))
-		  (and (let ((default-directory w3m-profile-directory)
-			     (w3m-touch-file-available-p t))
-			 (w3m-touch-file file time))
-		       (zerop (w3m-time-lapse-seconds
-			       time (nth 5 (file-attributes file)))))))
-	(when (file-exists-p file)
-	  (ignore-errors (delete-file file)))
-	(when (file-exists-p timefile)
-	  (ignore-errors (delete-file timefile))))))
-  (and w3m-touch-file-available-p
-       time
-       (w3m-which-command w3m-touch-command)
-       (file-exists-p file)
-       (zerop (let ((default-directory (file-name-directory file)))
-		(call-process w3m-touch-command nil nil nil
-			      "-t" (format-time-string "%Y%m%d%H%M.%S" time)
-			      file)))))
+  (if (fboundp 'set-file-times)
+      (set-file-times file time)
+    ;; Check the validity of `touch' command.
+    (when (eq w3m-touch-file-available-p 'undecided)
+      (let ((file (make-temp-name
+		   (expand-file-name "w3mel" w3m-profile-directory)))
+	    time timefile)
+	(while (progn
+		 (setq time (list (abs (% (random) 8192))
+				  (abs (% (random) 65536)))
+		       timefile (expand-file-name
+				 (format-time-string "%Y%m%d%H%M.%S" time)
+				 w3m-profile-directory))
+		 (file-exists-p timefile)))
+	(unwind-protect
+	    (setq w3m-touch-file-available-p
+		  (when (w3m-which-command w3m-touch-command)
+		    (with-temp-buffer
+		      (insert "touch check")
+		      (write-region (point-min) (point-max) file nil 'nomsg))
+		    (and (let ((default-directory w3m-profile-directory)
+			       (w3m-touch-file-available-p t))
+			   (w3m-touch-file file time))
+			 (zerop (w3m-time-lapse-seconds
+				 time (nth 5 (file-attributes file)))))))
+	  (when (file-exists-p file)
+	    (ignore-errors (delete-file file)))
+	  (when (file-exists-p timefile)
+	    (ignore-errors (delete-file timefile))))))
+    (and w3m-touch-file-available-p
+	 time
+	 (w3m-which-command w3m-touch-command)
+	 (file-exists-p file)
+	 (zerop (let ((default-directory (file-name-directory file))
+		      (coding-system-for-write
+		       (or file-name-coding-system
+			   default-file-name-coding-system)))
+		  (call-process w3m-touch-command nil nil nil
+				"-t" (format-time-string "%Y%m%d%H%M.%S" time)
+				file))))))
 
 ;;; Retrieve data:
 (w3m-make-ccl-coding-system
