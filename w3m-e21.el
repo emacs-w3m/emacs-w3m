@@ -514,17 +514,17 @@ Buffer string between BEG and END are replaced with IMAGE."
     (define-key map [header-line mouse-2] up-action)
     map))
 
-(defvar w3m-tab-line-format nil
-  "Internal variable used to keep contents to be shown in the header-line.")
+;;(defvar w3m-tab-line-format nil
+;;  "Internal variable used to keep contents to be shown in the header-line.")
 
-(defvar w3m-tab-line-timer nil
-  "Internal variable used to say time has not gone by after the tab-line
-was updated last time.  It is used to control the `w3m-tab-line'
-function running too frequently, set by the function itself and
-cleared by a timer.")
+;;(defvar w3m-tab-line-timer nil
+;;  "Internal variable used to say time has not gone by after the tab-line
+;;was updated last time.  It is used to control the `w3m-tab-line'
+;;function running too frequently, set by the function itself and
+;;cleared by a timer.")
 
 (defun w3m-tab-line ()
-  (or (and w3m-tab-line-timer w3m-tab-line-format)
+;;  (or (and w3m-tab-line-timer w3m-tab-line-format)
       (let* ((current (current-buffer))
 	     (buffers (w3m-list-buffers))
 	     (width (if (> (* (length buffers) (+ 5 w3m-tab-width))
@@ -532,11 +532,11 @@ cleared by a timer.")
 			(max (- (/ (window-width) (length buffers)) 5) 1)
 		      w3m-tab-width))
 	     process icon title)
-	(setq w3m-tab-line-timer
-	      (run-at-time 0.1 nil (lambda nil
-				     (setq w3m-tab-line-timer nil))))
-	(setq
-	 w3m-tab-line-format
+;;	(setq w3m-tab-line-timer
+;;	      (run-at-time 0.1 nil (lambda nil
+;;				     (setq w3m-tab-line-timer nil))))
+;;	(setq
+;;	 w3m-tab-line-format
 	 (concat
 	  (mapconcat
 	   (lambda (buffer)
@@ -578,7 +578,8 @@ cleared by a timer.")
 	   buffers
 	   (propertize " " 'face 'w3m-tab-background-face))
 	  (propertize (make-string (window-width) ?\ )
-		      'face 'w3m-tab-background-face))))))
+		      'face 'w3m-tab-background-face))))
+;;      ))
 
 (defun w3m-update-tab-line ()
   "Update tab line."
