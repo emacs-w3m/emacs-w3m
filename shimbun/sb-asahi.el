@@ -143,7 +143,43 @@
 	 ;; 11. hour:minute
 	 "\\([012][0-9]:[0-5][0-9]\\)"
 	 "\\)?)")
-       1 nil 6 7 8 9 11 3 5)))
+       1 nil 6 7 8 9 11 3 5)
+      ("nankyoku" "南極" "%s/news/index.html"
+       ,(concat
+	 "<a" s1 "href=\""
+	 ;; 1. url
+	 "\\(/%s/news/"
+	 ;; 2. serial number
+	 "\\([A-Z0-9]+\\)"
+	 "\\.html\\)\">" s0
+	 ;; 3. subject
+	 "\\(" no-nl "\\)" s0 "</a>" s0
+	 "[（(][0-9]+/"
+	 ;; 4. month
+	 "\\([01][0-9]\\)"
+	 "/"
+	 ;; 5. day
+	 "\\([0-3][0-9]\\)"
+	 "[)）]")
+       1 nil 2 3 4 5)
+      ("whitemail" "WhiteMail＠南極" "nankyoku/%s/"
+       ,(concat
+	 "<a" s1 "href=\""
+	 ;; 1. url
+	 "\\(/nankyoku/%s/"
+	 ;; 2. serial number
+	 "\\([A-Z0-9]+\\)"
+	 "\\.html\\)\">" s0
+	 ;; 3. subject
+	 "\\(" no-nl "\\)" s0 "</a>" s0
+	 "[（(][0-9]+/"
+	 ;; 4. month
+	 "\\([01][0-9]\\)"
+	 "/"
+	 ;; 5. day
+	 "\\([0-3][0-9]\\)"
+	 "[)）]")
+       1 nil 2 3 4 5)))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the

@@ -1,4 +1,9 @@
-2003-12-30  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2004-01-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add `nankyoku'
+	group and `whitemail' group.
+
+2003-12-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-accept-languages): Split the option of w3m with a
 	comma surrounded by some spaces.
