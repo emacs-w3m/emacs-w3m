@@ -1,5 +1,16 @@
 2003-07-02  NAKAJIMA Mikio  <minakaji@namazu.org>
 
+	* shimbun/sb-wiki.el: Rename from sb-pukiwiki-rss.el.
+	(shimbun-wiki-group-alist): Add optional 4th and 5th elements to
+	each inner list.
+	Add doc string.
+	(shimbun-headers): New method.
+	(shimbun-make-contents): Ditto.
+	(shimbun-rss-build-message-id): Modify regexp to support Hiki.
+	Build message-id without string `rss'.
+	(shimbun-index-url): Pick up URL from shimbun-wiki-group-alist and
+	simply return it.	
+
 	* shimbun/sb-rss.el (shimbun-rss-get-encoding): Bug fixed.
 	Return interned encoding with suffix `-dos'.
 	(shimbun-headers): Simplified.
