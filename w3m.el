@@ -379,21 +379,41 @@ apply the patch posted in [emacs-w3m:01119]."
   '((((class color) (background light)) (:foreground "blue" :underline t))
     (((class color) (background dark)) (:foreground "cyan" :underline t))
     (t (:underline t)))
-  "*Face to fontify anchors."
+  "Face used to fontify anchors."
   :group 'w3m-face)
 
 (defface w3m-arrived-anchor-face
   '((((class color) (background light)) (:foreground "navy" :underline t))
     (((class color) (background dark)) (:foreground "LightSkyBlue" :underline t))
     (t (:underline t)))
-  "*Face to fontify anchors, if arrived."
+  "Face used to fontify anchors, if arrived."
   :group 'w3m-face)
 
 (defface w3m-image-face
   '((((class color) (background light)) (:foreground "ForestGreen"))
     (((class color) (background dark)) (:foreground "PaleGreen"))
     (t (:underline t)))
-  "*Face to fontify image alternate strings."
+  "Face used to fontify image alternate strings."
+  :group 'w3m-face)
+
+(defface w3m-history-current-url-face
+  ;; Merge the face attributes of `base' into `w3m-arrived-anchor-face'.
+  (let ((base 'secondary-selection)
+	(fn (if (featurep 'xemacs)
+		'face-custom-attributes-get
+	      'custom-face-attributes-get));; What a perverseness it is.
+	base-attributes attributes attribute value)
+    (require 'wid-edit);; Needed for only Emacs 20.
+    (setq base-attributes (funcall fn base nil)
+	  attributes (funcall fn 'w3m-arrived-anchor-face nil))
+    (while base-attributes
+      (setq attribute (car base-attributes))
+      (unless (memq attribute '(:foreground :underline))
+	(setq attributes (plist-put attributes attribute
+				    (cadr base-attributes))))
+      (setq base-attributes (cddr base-attributes)))
+    (list (list t attributes)))
+  "Face used to highlight the current url in \"about://history/\"."
   :group 'w3m-face)
 
 (defcustom w3m-mode-hook nil
@@ -3675,6 +3695,18 @@ the request."
 		   (file-name-directory localpath))
 	       w3m-profile-directory)))
       (w3m-update-toolbar)
+
+      ;; Highlight the current url if it is a page for the history.
+      (when (and (string-equal "about://history/" url)
+		 (search-forward "\n>" nil t))
+	(w3m-next-anchor)
+	(let ((start (point))
+	      (inhibit-read-only t))
+	  (end-of-line)
+	  (put-text-property start (point) 'face 'w3m-history-current-url-face)
+	  (goto-char start)
+	  (set-buffer-modified-p nil)))
+
       (switch-to-buffer (current-buffer))
       (when localcgi (w3m-goto-url-localcgi-movepoint))))))
 

@@ -1,3 +1,12 @@
+2001-09-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Position point to the current url and
+	highlight the line when the page is for listing the history
+	(suggested by SHIRAI-san).
+	(w3m-history-current-url-face): New face.
+	(w3m-image-face, w3m-arrived-anchor-face, w3m-anchor-face): Fix
+	doc-string.
+
 2001-09-26  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-about-db-history-today): New defsubst.
