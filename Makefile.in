@@ -149,6 +149,7 @@ tarball: $(DOCS) $(DISTS) $(SUBDIRS)
 	-rm -f $(TARBALL) `basename $(TARBALL) .gz`
 	mkdir $(DISTDIR)
 	cp -p $(DOCS) $(DISTS) *.el $(DISTDIR)
+	rm -f $(DISTDIR)/w3m-e22.el
 	for d in $(SUBDIRS); do \
 	  mkdir $(DISTDIR)/$${d} || exit 1 ;\
 	  for f in `egrep '^/' $${d}/CVS/Entries|cut -f2 -d/|grep -v .cvsignore`; do \

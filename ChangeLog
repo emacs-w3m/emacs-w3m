@@ -1,3 +1,8 @@
+2004-01-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* Makefile.in (tarball): Because Emacs-22 has not been released,
+	remove w3m-e22.el from the creating tarball.
+
 2004-01-27  Taichi KAWABATA  <batta@beige.ocn.ne.jp>
 
 	* w3m-e22.el: New file.  This file is simply the copy of
