@@ -1048,7 +1048,8 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
   (let (url candidates)
     (w3m-arrived-setup)
     (mapatoms (lambda (x)
-		(setq candidates (cons (cons (symbol-name x) x) candidates)))
+		(when x
+		  (setq candidates (cons (cons (symbol-name x) x) candidates))))
 	      w3m-arrived-db)
     (setq default (or default (thing-at-point 'url)))
     (setq url (completing-read (or prompt
