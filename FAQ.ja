@@ -27,9 +27,9 @@ ftp://ftp.m17n.org/pub/mule/apel/ から入手できます。
 
 以下の w3m で動作することが確認されています．
 
-	w3m-0.2.1-inu-1.3 以降
-	w3mmee-p19-3 + post-header.patch (w3m-type を 'w3mmee にしてください．)
-	w3m-m17n-0.19 + some patches (w3m-type を 'w3m-m17n にしてください．)
+	w3m-0.2.1 以降
+	w3mmee-p19-3 (w3m-type を 'w3mmee にしてください．)
+	w3m-m17n-0.19 + m17n-dump-coding.patch (w3m-type を 'w3m-m17n にしてください．)
 
 * トラブル
 
@@ -43,8 +43,9 @@ ftp://ftp.m17n.org/pub/mule/apel/ から入手できます。
 
 ** Q. リンクが辿れません．
 
-w3m コマンドが -header オプションを使える必要があります。
-w3m-0.2.1-inu-1.3 以降に upgrade してください。
+w3m-type が w3m の場合は，w3m コマンドが -header オプションを使える必要
+があります．w3m-type を w3m-0.2.1 とするか，w3m-0.2.1-inu-1.3 以降を使用
+してください．
 
 ** Q. 文字化けします．
 
@@ -61,14 +62,14 @@ html 中で指定されている文字コードと，実際の文字コードが異なる場合には文
 ISO-2022-JP(jis), EUC-JP, SHIFT_JIS 以外の文字コードの場合は，w3mmee や
 w3m-m17n を使用してください．
 
-また、Mule-UCS がインストールされた Emacsen では、(setq w3m-use-mule-ucs
-t) として、対応することもできます．
-なお、EUC-JISX0213 や ISO-2022-JP-3 などの文字コードの場合は、Mule-UCS に
-附属の jisx0213.el をインストールしてください。
+また，Mule-UCS がインストールされた Emacsen では，(setq w3m-use-mule-ucs
+t) として，対応することもできます．
+なお，EUC-JISX0213 や ISO-2022-JP-3 などの文字コードの場合は，Mule-UCS に
+附属の jisx0213.el をインストールしてください．
 
 (3) w3m の variant
 
-w3mmee を使用している場合は，(setq w3m-type 'w3mmee) と，w3m-m17n を使用
+w3mmee を使用している場合は (setq w3m-type 'w3mmee) と，w3m-m17n を使用
 している場合は (setq w3m-type 'w3m-m17n) としてください．
 
 (4) Emacsen の問題
@@ -97,7 +98,8 @@ XEmacs では必ず "gifsicle" プログラムをインストールしてください．現在す
 
 (まだ実験的な機能です．)
 w3m-use-form を t にしてください．
-なお，w3m-0.2.1-inu-1.3 以降が必要です。
+なお，POST による送信を行うには，w3m-0.2.1-inu-1.3 以降を使用し，
+w3m-type を w3m としてください．
 
 ** Q. フレームがレンダリングされません．
 
