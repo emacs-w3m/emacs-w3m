@@ -1,3 +1,9 @@
+2003-12-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-rss.el (shimbun-get-headers): Convert CRLF to LF when
+	running XEmacs since the coding systems *-dos provided by Mule-UCS
+	don't work for decoding them.
+
 2003-12-24  OHASHI Akira  <bg66@koka-in.org>
 
 	* shimbun/sb-chalow.el (shimbun-get-headers): Erase buffer before
