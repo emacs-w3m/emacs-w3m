@@ -47,6 +47,30 @@ URL is the URL for TDIARY access point of the group.")
   (cadr (assoc (shimbun-current-group-internal shimbun)
 	       shimbun-tdiary-group-alist)))
 
+;; FIXME: since this is a convenient function, it should be rearranged
+;; to be shared by all the shimbun modules.  The definition is imported
+;; from Gnus.
+(eval-when-compile
+  (if (not (fboundp 'replace-regexp-in-string))
+      ;; Silence the byte-compiler.
+      (defalias 'replace-regexp-in-string 'ignore)))
+
+(eval-and-compile
+  (cond
+   ((fboundp 'replace-in-string)
+    (defalias 'shimbun-replace-in-string 'replace-in-string))
+   ((fboundp 'replace-regexp-in-string)
+    (defun shimbun-replace-in-string  (string regexp newtext &optional literal)
+      (replace-regexp-in-string regexp newtext string nil literal)))
+   (t
+    (defun shimbun-replace-in-string (string regexp newtext &optional literal)
+      (let ((start 0) tail)
+	(while (string-match regexp string start)
+	  (setq tail (- (length string) (match-end 0)))
+	  (setq string (replace-match newtext nil literal string))
+	  (setq start (- (length string) tail))))
+      string))))
+
 (defmacro shimbun-tdiary-get-headers (shimbun url headers &optional aux)
   (` (let ((case-fold-search t))
        (goto-char (point-max))
@@ -58,7 +82,7 @@ URL is the URL for TDIARY access point of the group.")
 	       (topic (match-string 5))
 	       (subject (match-string 7))
 	       date id)
-	   (setq subject (replace-regexp-in-string "<[^>]+>" "" subject))
+	   (setq subject (shimbun-replace-in-string subject "<[^>]+>" ""))
 	   (setq date (shimbun-make-date-string (string-to-number year)
 						(string-to-number month)
 						(string-to-number day)))
