@@ -40,17 +40,24 @@
 (defconst shimbun-slashdot-jp-url
   (eval-when-compile (format "http://%s/" shimbun-slashdot-jp-domain)))
 
-(defvar shimbun-slashdot-jp-threshold -1
-  "*Lower threshold of accept comments.")
+(defcustom shimbun-slashdot-jp-threshold -1
+  "*Lower threshold of accept comments."
+  :group 'shimbun
+  :type '(choice
+	  (const :tag "Stories only" nil)
+	  (const :tag "All comments" -1)
+	  (integer :tag "Score")))
 
 (defmacro shimbun-slashdot-jp-article-url (shimbun)
   `(shimbun-expand-url "article.pl" (shimbun-url-internal ,shimbun)))
 
 (defmacro shimbun-slashdot-jp-sid-url (shimbun sid)
-  `(format "%s?sid=%s&threshold=%d&mode=flat&commentsort=0"
-	   (shimbun-slashdot-jp-article-url shimbun)
-	   ,sid
-	   shimbun-slashdot-jp-threshold))
+  `(if shimbun-slashdot-jp-threshold
+       (format "%s?sid=%s&threshold=%d&mode=flat&commentsort=0"
+	       (shimbun-slashdot-jp-article-url shimbun)
+	       ,sid shimbun-slashdot-jp-threshold)
+     (format "%s?sid=%s&mode=nocomment"
+	     (shimbun-slashdot-jp-article-url shimbun) ,sid)))
 
 (defsubst shimbun-slashdot-jp-extract-sid-and-cid (id)
   (when (string-match "\\`<\\([/0-9]+\\)\\(#\\([0-9]+\\)\\)?@[^>]+>\\'" id)
@@ -118,14 +125,15 @@
       (dolist (head (shimbun-slashdot-jp-make-story-headers shimbun))
 	(unless (shimbun-search-id shimbun (shimbun-header-id head))
 	  (push head headers))
-	(setq headers
-	      (nconc
-	       (shimbun-slashdot-jp-make-comment-headers
-		shimbun
-		(car (shimbun-slashdot-jp-extract-sid-and-cid
-		      (shimbun-header-id head)))
-		head)
-	       headers))
+	(when shimbun-slashdot-jp-threshold
+	  (setq headers
+		(nconc
+		 (shimbun-slashdot-jp-make-comment-headers
+		  shimbun
+		  (car (shimbun-slashdot-jp-extract-sid-and-cid
+			(shimbun-header-id head)))
+		  head)
+		 headers)))
 	(and range
 	     (= 0 (decf range))
 	     (throw 'range-check headers)))
@@ -200,8 +208,9 @@
 				   (shimbun-slashdot-jp-make-message-id x))
 	    (when (looking-at "\\([^<]+\\)</a>")
 	      (shimbun-header-set-subject head
-					  (shimbun-mime-encode-string
-					   (match-string 1))))
+					  (concat "[story] "
+						  (shimbun-mime-encode-string
+						   (match-string 1)))))
 	    (forward-line 1)
 	    (when (looking-at
 		   "[ \t]+by \\([^ \t\r\f\n]+\\) with [0-9]+ comments <[^>]+>on ")
