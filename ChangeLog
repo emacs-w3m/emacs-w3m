@@ -1,3 +1,18 @@
+2001-04-05  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (top): Define w3m-read-coding-system().
+	(w3m-content-type-alist): Change "fiber" to "fiber.exe".
+	(w3m-quit): Remove hook if no w3m exist.
+	(w3m-arrived-add): Add 'coding-system entry.
+	(w3m-arrived-coding-system): New function.
+	(w3m-arrived-setup): Handle 'coding-system entry.
+	(w3m-arrived-shutdown): Ditto.
+	(w3m-goto-url): Handle specified coding-system.
+	(w3m-redisplay-with-coding-system): Use w3m-read-coding-system.
+	If no coding-system specify, set 'reset.
+
+	* w3m-om.el (w3m-read-coding-system): New function.
+
 2001-04-05  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/shimbun.el (shimbun-open-group): Reload header index.

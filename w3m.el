@@ -85,6 +85,9 @@
 		 (t
 		  (require 'pces)))
 
+(unless (fboundp 'w3m-read-coding-system)
+  (defalias 'w3m-read-coding-system 'read-coding-system))
+
 ;; Add-on programs:
 (eval-and-compile
   (autoload 'w3m-bookmark-view "w3m-bookmark" nil t)
@@ -334,7 +337,7 @@ In other environment, use 'native."
 	("image/x-xpm" "\\.xpm$" ("fiber.exe" file))
 	("image/x-bmp" "\\.bmp$" ("fiber.exe" file))
 	("video/mpeg" "\\.mpe?g$" ("fiber.exe" file))
-	("video/quicktime" "\\.mov$" ("fiber" file))
+	("video/quicktime" "\\.mov$" ("fiber.exe" file))
 	("application/postscript" "\\.\\(ps\\|eps\\)$" ("fiber.exe" file))
 	("application/pdf" "\\.pdf$" ("fiber.exe" file)))
     (cons
@@ -755,7 +758,8 @@ If N is negative, last N items of LIST is returned."
 	  (write-region (point-min) (point-max) file nil 'nomsg)
 	  (when mode (set-file-modes file mode)))))))
 
-(defun w3m-arrived-add (url &optional title modified-time arrived-time)
+(defun w3m-arrived-add (url &optional title modified-time
+			    arrived-time coding-system)
   "Add URL to hash database of arrived URLs."
   (when (> (length url) 5);; ignore short
     (set-text-properties 0 (length url) nil url)
@@ -769,12 +773,13 @@ If N is negative, last N items of LIST is returned."
 		 (or modified-time
 		     (w3m-last-modified x)
 		     (current-time))))
+      (put ident 'coding-system coding-system)
       (set ident
 	   (setq arrived-time
 		 (or arrived-time
 		     (current-time))))
       (unless (eq x url)
-	(w3m-arrived-add x title modified-time arrived-time))
+	(w3m-arrived-add x title modified-time arrived-time coding-system))
       ident)))
 
 (defsubst w3m-arrived-p (url)
@@ -796,6 +801,12 @@ If N is negative, last N items of LIST is returned."
   (let ((v (intern-soft url w3m-arrived-db)))
     (and v (get v 'last-modified))))
 
+(defun w3m-arrived-coding-system (url)
+  "If URL has been specified coding-system, return its coding-system.
+  Otherwise return nil."
+  (let ((v (intern-soft url w3m-arrived-db)))
+    (and v (get v 'coding-system))))
+
 (defun w3m-arrived-setup ()
   "Load arrived url list from `w3m-arrived-file' and setup hash database."
   (unless w3m-arrived-db
@@ -810,10 +821,11 @@ If N is negative, last N items of LIST is returned."
 			       (car elem))
 			     (nth 1 elem)
 			     (nth 2 elem)
-			     (or (nth 3 elem) (nth 2 elem)))
+			     (or (nth 3 elem) (nth 2 elem))
+			     (nth 4 elem))
 	  ;; Process old format of arrived URL database, is used
 	  ;; before revision 1.135.
-	  (w3m-arrived-add (car elem) nil (cdr elem) (cdr elem))))
+	  (w3m-arrived-add (car elem) nil (cdr elem) (cdr elem) nil)))
       (unless w3m-input-url-history
 	(setq w3m-input-url-history (mapcar (function car) list))))))
 
@@ -833,7 +845,8 @@ If N is negative, last N items of LIST is returned."
 			  (car elem))
 			(nth 1 elem)
 			(nth 2 elem)
-			(nth 3 elem))))
+			(nth 3 elem)
+			(nth 4 elem))))
     ;; Convert current arrived DB to a list.
     (let (list)
       (mapatoms
@@ -843,7 +856,8 @@ If N is negative, last N items of LIST is returned."
 	      (push (list (symbol-name sym)
 			  (get sym 'title)
 			  (get sym 'last-modified)
-			  (symbol-value sym))
+			  (symbol-value sym)
+			  (get sym 'coding-system))
 		    list)))
        w3m-arrived-db)
       (w3m-save-list w3m-arrived-file
@@ -854,6 +868,7 @@ If N is negative, last N items of LIST is returned."
 			      (w3m-time-newer-p (nth 3 a) (nth 3 b))))
 		      w3m-keep-arrived-urls)))
     (setq w3m-arrived-db nil)))
+
 (add-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
 
 (defun w3m-arrived-store-position (url &optional point window-start)
@@ -2225,6 +2240,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
       ;; If no w3m is running, then destruct all data.
       (w3m-cache-shutdown)
       (w3m-arrived-shutdown)
+      (remove-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
       (w3m-kill-all-buffer))))
 
 (defun w3m-close-window ()
@@ -2384,6 +2400,10 @@ or prefix ARG columns."
       (when (string-match "#\\([^#]+\\)$" url)
 	(setq name (match-string 1 url)
 	      url (substring url 0 (match-beginning 0))))
+      (setq cs (and (not (eq cs 'reset))
+		    (or cs
+			(and (find-coding-system (w3m-arrived-coding-system url))
+			     (w3m-arrived-coding-system url)))))
       (if (not (w3m-exec url nil reload cs))
 	  (w3m-refontify-anchor)
 	(w3m-fontify)
@@ -2400,10 +2420,9 @@ or prefix ARG columns."
 	     (if (w3m-url-local-p url)
 		 (file-name-directory (w3m-url-to-file-name url))
 	       w3m-profile-directory)))
-      (w3m-arrived-add orig w3m-current-title)
+      (w3m-arrived-add orig w3m-current-title nil nil cs)
       (w3m-update-toolbar)
       (switch-to-buffer (current-buffer))))))
-
 
 (defun w3m-reload-this-page (&optional arg)
   "Reload current page without cache."
@@ -2414,13 +2433,16 @@ or prefix ARG columns."
     (w3m-goto-url w3m-current-url 'reload)))
 
 (defun w3m-redisplay-with-coding-system (&optional arg)
-  "Redisplay current page with specified coding-system."
+  "Redisplay current page with specified coding-system.
+If input is nil, use default coding-system on w3m."
   (interactive "P")
   (let ((w3m-display-inline-image (if arg t w3m-display-inline-image))
+	(cs (w3m-read-coding-system "Decode coding-system: "))
 	w3m-url-yrotsih)
+    (unless (and cs (find-coding-system cs)) (setq cs 'reset))
     (setq w3m-url-history (cdr w3m-url-history))
-    (w3m-goto-url w3m-current-url arg
-		  (read-coding-system "Coding-system: "))))
+    (w3m-goto-url w3m-current-url nil cs)))
+		  
 
 ;;;###autoload
 (defun w3m (url &optional args)
