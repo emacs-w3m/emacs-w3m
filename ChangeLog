@@ -30,6 +30,7 @@
 	* octet.el: Don't make sure the `emacs-major-version' variable is
 	bound.
 	* w3m-bitmap: Ditto.
+	* w3m-bug.el: Ditto.
 	* w3m-proc.el: Ditto.
 	* w3m-ucs.el: Ditto.
 	* w3m-util.el: Ditto.
