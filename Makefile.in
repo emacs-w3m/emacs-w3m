@@ -19,7 +19,7 @@ ADDITIONAL_LOAD_PATH = @ADDITIONAL_LOAD_PATH@
 @SET_MAKE@
 EMACS   = @EMACS@
 FLAGS   = -q -no-site-file -batch -l w3mhack.el $(ADDITIONAL_LOAD_PATH)
-ECC     = $(EMACS) $(FLAGS) -f batch-byte-compile
+ECC     = $(EMACS) $(FLAGS) -l w3m.el -f batch-byte-compile
 
 MODULES = `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`
 
@@ -57,11 +57,8 @@ $(TARBALL): $(DISTFILES)
 	gzip -9 $(basename $(TARBALL))
 	rm -rf $(DISTDIR)
 
-patch: $(wildcard ../*.[ch]) w3m.el makepatch.pl
-	cd .. && cvs diff -kk -N -r original | perl lisp/makepatch.pl >lisp/patch
-
 clean:
-	-rm -rf *~ *.elc patch w3m_el*
+	-rm -rf *~ *.elc w3m_el*
 
 distclean: clean
 	rm -f configure config.log config.status config.cache Makefile
