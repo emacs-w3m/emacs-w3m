@@ -1,6 +1,13 @@
+2002-02-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-meta-content-type-charset-regexp)
+	(w3m-meta-charset-content-type-regexp)
+	(w3m-meta-refresh-content-regexp)
+	(w3m-meta-content-refresh-regexp): Remove redundant double quote.
+
 2002-02-05  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* w3m.el (w3m-meta-charset-content-type-regexp) 
+	* w3m.el (w3m-meta-charset-content-type-regexp)
 	(w3m-meta-content-refresh-regexp): Allow broken quotation mark.
 
 2002-02-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>

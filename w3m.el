@@ -1157,16 +1157,15 @@ in the optimized interlaced endlessly animated gif format and base64.")
 
 (defconst w3m-meta-content-type-charset-regexp
   (eval-when-compile
-    (concat "<meta[ \t]+http-equiv=\"?Content-type\"?[ \t]+content=\"\\([^;]+\\)"
-	    ";[ \t]*charset=\"?\\([^\"]+\\)\"?"
+    (concat "<meta[ \t]+http-equiv=\"?Content-type\"?[ \t]+"
+	    "content=\"?\\([^;]+\\);[ \t]*charset=\\([^\"]+\\)\"?"
 	    "[ \t]*/?>"))
   "Regexp used in parsing `<META HTTP-EQUIV=\"Content-Type\" content=\"...;charset=...\">
 for a charset indication")
 
 (defconst w3m-meta-charset-content-type-regexp
   (eval-when-compile
-    (concat "<meta[ \t]+content=\"?\\([^;]+\\)"
-	    ";[ \t]*charset=\"?\\([^\"]+\\)\"?"
+    (concat "<meta[ \t]+content=\"?\\([^;]+\\);[ \t]*charset=\\([^\"]+\\)\"?"
 	    "[ \t]+http-equiv=\"?Content-type\"?[ \t]*/?>"))
   "Regexp used in parsing `<META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">
 for a charset indication")
@@ -1174,16 +1173,14 @@ for a charset indication")
 (defconst w3m-meta-refresh-content-regexp
   (eval-when-compile
     (concat "<meta[ \t]+http-equiv=\"?refresh\"?[ \t]+"
-	    "content=\"\\([^;]+\\)"
-	    ";[ \t]*url=\"?\\([^\"]+\\)\"?"
+	    "content=\"?\\([^;]+\\);[ \t]*url=\\([^\"]+\\)\"?"
 	    "[ \t]*/?>"))
   "Regexp used in parsing `<META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">
 for a refresh indication")
 
 (defconst w3m-meta-content-refresh-regexp
   (eval-when-compile
-    (concat "<meta[ \t]+content=\"?\\([^;]+\\)"
-	    ";[ \t]*url=\"?\\([^\"]+\\)\"?"
+    (concat "<meta[ \t]+content=\"?\\([^;]+\\);[ \t]*url=\\([^\"]+\\)\"?"
 	    "[ \t]+http-equiv=\"?refresh\"?[ \t]*/?>"))
   "Regexp used in parsing `<META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">
 for a refresh indication")
