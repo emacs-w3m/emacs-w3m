@@ -1,3 +1,9 @@
+2003-03-26  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m-antenna.el (w3m-antenna-check-all-sites): Call `make-symbol'
+	instead of `gensym', in order to make this function free from
+	runtime CL functions.
+
 2003-03-21  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-muchy.el (shimbun-muchy-get-headers): Bug fixed,
