@@ -1,3 +1,8 @@
+2004-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Register a url to the history even if it
+	is failed to retrieve.  Suggested by Fujishima-san.
+
 2004-01-23  Hiroshi Fujishima  <pooh@nature.tsukuba.ac.jp>
 
 	* w3m.el (w3m-input-url): Fix a bug which causes an error when
