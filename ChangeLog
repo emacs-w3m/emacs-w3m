@@ -1,3 +1,8 @@
+2001-11-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-dump-head-source): Fix the problem which occurs
+	when no content is retrieved.
+
 2001-11-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el (shimbun-retrieve-url,

@@ -2552,16 +2552,15 @@ return value is nonsense."
 		 (append w3m-dump-head-source-command-arguments (list url)))))
       (w3m-message "Reading %s...done" url)
       (when result
-	(and (goto-char (point-min))
-	     (let ((case-fold-search t))
-	       (prog1 (re-search-forward "^w3m-current-url:" nil t)
-		 (delete-region (point-min) (match-beginning 0))))
-	     (search-forward "\n\n" nil t)
-	     (progn
-	       (w3m-cache-header url (buffer-substring (point-min) (point)) t)
-	       (delete-region (point-min) (point))
-	       (w3m-cache-contents url (current-buffer))
-	       (w3m-w3m-attributes url)))))))
+	(goto-char (point-min))
+	(when (let ((case-fold-search t))
+		(re-search-forward "^w3m-current-url:" nil t))
+	  (delete-region (point-min) (match-beginning 0))
+	  (when (search-forward "\n\n" nil t)
+	    (w3m-cache-header url (buffer-substring (point-min) (point)) t)
+	    (delete-region (point-min) (point))
+	    (w3m-cache-contents url (current-buffer))
+	    (w3m-w3m-attributes url)))))))
 
 (defun w3m-w3m-retrieve
   (url &optional no-decode no-cache post-data referer handler)
