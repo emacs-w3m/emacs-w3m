@@ -1,3 +1,25 @@
+2002-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bitmap.el (w3m-bitmap-image-get-overlay): Speed up a bit.
+	(w3m-bitmap-image-insert-internal): Replace `current-column' with
+	`w3m-bitmap-current-column'; call `w3m-add-text-properties' only
+	when props are specified; use `overlay-end' dynamically (fix a bug
+	I've made); replace `move-to-column-force' with
+	`w3m-bitmap-move-to-column-force'.
+	(w3m-bitmap-image-delete-internal): Make the 2nd arg optional;
+	replace `current-column' with `w3m-bitmap-current-column'; replace
+	`move-to-column-force' with `w3m-bitmap-move-to-column-force';
+	guess the end position of an overlay by itself when the 2nd arg is
+	omitted.
+	(w3m-bitmap-image-delete): Remove the 2nd arg.
+	(w3m-bitmap-image-delete-string): Alias to
+	`w3m-bitmap-image-delete-internal' instead of defining as a
+	function.
+	(w3m-insert-image): Don't use the length of a bitmap image.
+	(w3m-remove-image): Ditto.
+
+	* w3m-om.el (move-to-column-force): Remove.
+
 2002-04-10  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-image.el (w3m-imagick-convert-async-exec): Change default

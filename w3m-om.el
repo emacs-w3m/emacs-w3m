@@ -366,24 +366,6 @@ as the value."
 (unless (fboundp 'multibyte-string-p)
   (defalias 'multibyte-string-p 'stringp))
 
-(unless (fboundp 'move-to-column-force)
-  (defun move-to-column-force (column &optional flag)
-    "Move point to column COLUMN rigidly in the current line.
-If COLUMN is within a multi-column character, replace it by
-spaces and tab.
-
-As for `move-to-column', passing anything but nil or t in FLAG will move to
-the desired column only if the line is long enough."
-    (let ((col (move-to-column column (or flag t))))
-      (if (> col column)
-	  (let (pos)
-	    (delete-char -1)
-	    (insert-char ?  (- column (current-column)))
-	    (setq pos (point))
-	    (indent-to col)
-	    (goto-char pos)))
-      column)))
-
 (provide 'w3m-om)
 
 ;;; w3m-om.el ends here

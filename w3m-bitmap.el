@@ -112,43 +112,46 @@ bitmap chars as well."
       (setq i (1+ i)))
     (nreverse list)))
 
-(defun w3m-bitmap-image-get-overlay (point)
-  "Get bitmap-image overlay at POINT."
-  (save-excursion
-    (goto-char (point))
-    (catch  'loop
-      (dolist (o (overlays-in (line-beginning-position)
-			      (line-end-position)))
-	(when (overlay-get o 'w3m-bitmap-image-line)
-	  (throw 'loop o))))))
+(defun w3m-bitmap-image-get-overlay (pos)
+  "Get bitmap-image overlay at POS."
+  (let ((home (point)))
+    (goto-char pos)
+    (prog1
+	(catch  'loop
+	  (dolist (o (overlays-in (line-beginning-position)
+				  (line-end-position)))
+	    (when (overlay-get o 'w3m-bitmap-image-line)
+	      (throw 'loop o))))
+      (goto-char home))))
 
 (defun w3m-bitmap-image-insert-internal (pos image &optional props)
   (save-excursion
     (goto-char pos)
     (let* ((ovrbeg (line-beginning-position))
 	   (ovr (w3m-bitmap-image-get-overlay ovrbeg))
-	   (col (current-column))
-	   indent-tabs-mode end-col ovrend)
+	   (col (w3m-bitmap-current-column))
+	   indent-tabs-mode end-col)
       (unless ovr
 	(setq ovr (make-overlay ovrbeg ovrbeg))
 	(overlay-put ovr 'w3m-bitmap-image-line t))
       (insert (car image))
-      (w3m-add-text-properties pos (point) props)
-      (setq end-col (current-column)
-	    ovrend (overlay-end ovr)
+      (when props
+	(w3m-add-text-properties pos (point) props))
+      (setq end-col (w3m-bitmap-current-column)
 	    image (cdr image))
       (forward-line)
-      (while (or image (< (point) ovrend))
-	(when (>= (point) ovrend)
+      (while (or image (< (point) (overlay-end ovr)))
+	(when (>= (point) (overlay-end ovr))
 	  (beginning-of-line)
 	  (insert "\n")
 	  (forward-line -1))
-	(move-to-column-force col)
+	(w3m-bitmap-move-to-column-force col)
 	(if image
 	    (progn
 	      (setq pos (point))
 	      (insert (car image))
-	      (w3m-add-text-properties pos (point) props))
+	      (when props
+		(w3m-add-text-properties pos (point) props)))
 	  (indent-to-column end-col))
 	(setq image (cdr image))
 	(forward-line))
@@ -166,29 +169,39 @@ bitmap chars as well."
   "Insert STR to POS same as bitmap-image."
   (w3m-bitmap-image-insert-internal pos (list str)))
 
-(defun w3m-bitmap-image-delete-internal (pos width)
+(defun w3m-bitmap-image-delete-internal (pos &optional width)
   (save-excursion
     (goto-char pos)
-    (let ((ovr (w3m-bitmap-image-get-overlay (point))))
+    (let ((ovr (w3m-bitmap-image-get-overlay pos))
+	  (eol (line-end-position))
+	  col)
       (if ovr
-	  (let ((col (current-column)))
+	  (progn
+	    (setq col (w3m-bitmap-current-column))
 	    (while (< (point) (overlay-end ovr))
-	      (move-to-column-force col)
+	      (w3m-bitmap-move-to-column-force col)
 	      (delete-region (point)
-			     (min (+ (point) width) (line-end-position)))
-	      (forward-line)))
-	(delete-region (point)
-		       (min (+ (point) width)
-			    (line-end-position)))))))
+			     (if width
+				 (min (+ (point) width) eol)
+			       (or (text-property-not-all (point) eol
+							  'w3m-bitmap-image t)
+				   eol)))
+	      (forward-line)
+	      (setq eol (line-end-position))))
+	(delete-region pos (if width
+			       (min (+ pos width) eol)
+			     (or (text-property-not-all pos eol
+							'w3m-bitmap-image t)
+				 eol)))))))
 
-(defun w3m-bitmap-image-delete (pos width)
-  "Delete bitmap-image with a WIDTH on POS."
+(defun w3m-bitmap-image-delete (pos)
+  "Delete bitmap-image on POS."
   (let ((ovr (w3m-bitmap-image-get-overlay pos))
 	cnt)
     (when ovr
       (setq cnt (1- (overlay-get ovr 'w3m-bitmap-image-count)))
       (overlay-put ovr 'w3m-bitmap-image-count cnt)
-      (w3m-bitmap-image-delete-internal pos width)
+      (w3m-bitmap-image-delete-internal pos)
       (when (zerop cnt)
 	(save-excursion
 	  (goto-char (min (point) (overlay-start ovr)))
@@ -197,9 +210,9 @@ bitmap chars as well."
 	    (delete-region (point) (1+ (overlay-end ovr))))
 	  (delete-overlay ovr))))))
 
-(defun w3m-bitmap-image-delete-string (pos width)
-  "Delete string with a WIDTH on POS same as bitmap-image."
-  (w3m-bitmap-image-delete-internal pos width))
+(defalias 'w3m-bitmap-image-delete-string
+  ;; Delete string with a WIDTH on POS same as bitmap-image.
+  'w3m-bitmap-image-delete-internal)
 
 ;;; Handle images:
 
@@ -269,24 +282,22 @@ Buffer string between BEG and END are replaced with IMAGE."
   (when image
     (save-excursion
       (let ((properties (text-properties-at beg))
-	    (name (buffer-substring beg end))
-	    (len (length (car image))))
+	    (name (buffer-substring beg end)))
 	(w3m-bitmap-image-delete-string beg (- end beg))
 	(goto-char beg)
 	(w3m-bitmap-image-insert (point) image
 				 (append (list 'w3m-image-status 'on
 					       'face 'w3m-bitmap-image-face
 					       'w3m-bitmap-image t
-					       'w3m-bitmap-image-width len
 					       'w3m-image-name name)
 					 properties))))))
 
 (defun w3m-remove-image (beg end)
-  "Remove an image which is inserted between BEG and END."
-  (let ((width (get-text-property beg 'w3m-bitmap-image-width))
-	(name (get-text-property beg 'w3m-image-name)))
-    (when width
-      (w3m-bitmap-image-delete beg width)
+  "Remove an image which is inserted between BEG and END.
+\(Note: END will be ignored in this version of `w3m-remove-image'.)"
+  (let ((name (get-text-property beg 'w3m-image-name)))
+    (when name
+      (w3m-bitmap-image-delete beg)
       (w3m-bitmap-image-insert-string beg name)
       (+ beg (length name)))))
 
@@ -294,3 +305,5 @@ Buffer string between BEG and END are replaced with IMAGE."
   w3m-imagick-convert-program)
 
 (provide 'w3m-bitmap)
+
+;; w3m-bitmap.el ends here
