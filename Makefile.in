@@ -163,14 +163,14 @@ distclean: clean
 .SUFFIXES: .elc .el
 
 .el.elc:
-	echo "$(EMACS) $(FLAGS) -f batch-byte-compile $*.el";\
-	$(EMACS) $(FLAGS) -f batch-byte-compile $*.el
+	echo "$(EMACS) $(FLAGS) -f w3mhack-batch-compile $*.el";\
+	$(EMACS) $(FLAGS) -f w3mhack-batch-compile $*.el
 
 slow: Makefile
 	@for i in `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
 	do $(MAKE) -s $$i; done
 
-very-slow: clean Makefile
+very-slow: clean keywords Makefile
 	@args="-q -no-site-file -batch";\
 	args="$$args -l $(srcdir)/attic/addpath.el $(ADDITIONAL_LOAD_PATH)";\
 	echo "=========================================";\
@@ -200,7 +200,7 @@ very-slow: clean Makefile
 ## Create the file w3m-kwds.el if it is needed for $(EMACS).
 keywords:
 	@ echo "$(EMACS) $(FLAGS)";\
-	$(EMACS) $(FLAGS);\
+	$(EMACS) $(FLAGS) -f w3mhack-check-colon-keywords-file ;\
 	if test ! -f w3m-kwds.el; then\
 	  echo "There is no need to bind colon keywords for \"$(EMACS)\".";\
 	  echo "The file w3m-kwds.el is not created.";\

@@ -345,6 +345,8 @@ emacs-w3m.")
 
 (defun w3mhack-compile ()
   "Byte-compile the w3m modules."
+  (w3mhack-check-colon-keywords-file)
+  (w3mhack-check-shimbun-servers-file)
   (let (modules)
     (let* ((buffer (generate-new-buffer " *modules*"))
 	   (standard-output buffer)
@@ -369,6 +371,12 @@ emacs-w3m.")
 	  (byte-compile-file (car modules))
 	(error))
       (setq modules (cdr modules)))))
+
+(defun w3mhack-batch-compile ()
+  "Wrapper function of `batch-byte-compile'."
+  (w3mhack-check-colon-keywords-file)
+  (w3mhack-check-shimbun-servers-file)
+  (batch-byte-compile))
 
 (defun w3mhack-nonunix-install ()
   "Byte-compile the w3m modules and install them."
@@ -787,11 +795,12 @@ you can add those server names to this variable as follows:
 	(write-region (point-min) (point-max) srvr-file)))
     (kill-buffer buffer)))
 
-(let ((dir (expand-file-name "../" shimbun-module-directory)))
-  (when (and (file-writable-p dir)
-	     (file-exists-p (expand-file-name "Makefile.in" dir)))
-    (byte-compile 'w3mhack-generate-shimbun-servers-file)
-    (w3mhack-generate-shimbun-servers-file)))
+(defun w3mhack-check-shimbun-servers-file ()
+  (let ((dir (expand-file-name "../" shimbun-module-directory)))
+    (when (and (file-writable-p dir)
+	       (file-exists-p (expand-file-name "Makefile.in" dir)))
+      (byte-compile 'w3mhack-generate-shimbun-servers-file)
+      (w3mhack-generate-shimbun-servers-file))))
 
 (defun w3mhack-generate-colon-keywords-file ()
   "Generate a file which contains a list of colon keywords to be bound at
@@ -926,17 +935,18 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 	  (write-region (point-min) (point) kwds-file))))
     (kill-buffer buffer)))
 
-(let* ((kwds-file (expand-file-name w3mhack-colon-keywords-file))
-       (dir (file-name-directory kwds-file)))
-  (when (and (file-writable-p dir)
-	     (file-exists-p (expand-file-name "Makefile.in" dir)))
-    (condition-case nil
-	:symbol-for-testing-whether-colon-keyword-is-available-or-not
-      (when (file-exists-p kwds-file)
-	(delete-file (expand-file-name w3mhack-colon-keywords-file)))
-      (void-variable
-       (byte-compile 'w3mhack-generate-colon-keywords-file)
-       (w3mhack-generate-colon-keywords-file)))))
+(defun w3mhack-check-colon-keywords-file ()
+  (let* ((kwds-file (expand-file-name w3mhack-colon-keywords-file))
+	 (dir (file-name-directory kwds-file)))
+    (when (and (file-writable-p dir)
+	       (file-exists-p (expand-file-name "Makefile.in" dir)))
+      (condition-case nil
+	  :symbol-for-testing-whether-colon-keyword-is-available-or-not
+	(when (file-exists-p kwds-file)
+	  (delete-file (expand-file-name w3mhack-colon-keywords-file)))
+	(void-variable
+	 (byte-compile 'w3mhack-generate-colon-keywords-file)
+	 (w3mhack-generate-colon-keywords-file))))))
 
 (defun w3mhack-load-path ()
   "Print default value of additional load paths for w3m.el."
@@ -1134,8 +1144,15 @@ NOTE: This function must be called from the top directory."
 	 (setq error 1))))
     (kill-emacs error)))
 
+(defun w3mhack-locate-library ()
+  "Print the precise file name of Emacs library remaining on the commane line."
+  (princ (or (locate-library (pop command-line-args-left)) "")))
+
+(defun w3mhack-print-status ()
+  (princ "OK"))
+
 (defun w3mhack-version ()
-  "Print version of w3m.el."
+  "Print the value of `emacs-w3m-version'."
   (require 'w3m)
   (let (print-level print-length)
     (princ emacs-w3m-version)))

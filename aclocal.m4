@@ -5,8 +5,8 @@ if test -z "$3"; then
 fi
 AC_CACHE_VAL(EMACS_cv_SYS_$1,[
 	OUTPUT=./conftest-$$
-	echo ${EMACS}' -batch -eval '\''(let ((x '"${elisp}"')) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
-	eval ${EMACS}' -batch -eval '\''(let ((x '"${elisp}"')) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
+	echo ${EMACS}' -q -no-site-file -batch -eval '\''(let ((x '"${elisp}"')) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
+	eval ${EMACS}' -q -no-site-file -batch -eval '\''(let ((x '"${elisp}"')) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
 	retval="`cat ${OUTPUT}`"
 	echo "=> ${retval}" >& AC_FD_CC 2>&1
 	rm -f ${OUTPUT}
@@ -201,7 +201,6 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
       if test "x${withval}" != xyes -a "x${withval}" != x; then
 	ADDITIONAL_LOAD_PATH="${withval}"
       else
-	AC_CHECK_PROGS(EGREP, egrep grep, )
 	if test x"$USER" != xroot -a x"$HOME" != x -a -f "$HOME"/.emacs; then
           ADDITIONAL_LOAD_PATH=`"$EMACS" -batch -l "$HOME"/.emacs -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null | $EGREP -v '^$'`
         else
@@ -210,4 +209,27 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
       fi
       AC_MSG_RESULT(${ADDITIONAL_LOAD_PATH})],
     ADDITIONAL_LOAD_PATH=NONE)
+  AC_ARG_WITH(attic,
+   [  --with-attic            install attic libraries (default: No)],
+   [if test "x${withval}" = xyes; then
+      if test x"$ADDITIONAL_LOAD_PATH" = xNONE; then
+        ADDITIONAL_LOAD_PATH=`pwd`/attic
+      else
+        ADDITIONAL_LOAD_PATH=${ADDITIONAL_LOAD_PATH}:`pwd`/attic
+      fi
+    fi])
+  retval=`"$EMACS" -q -no-site-file -batch -l w3mhack.el "$ADDITIONAL_LOAD_PATH" -f w3mhack-print-status`
+  if test x"$retval" != xOK; then
+    AC_MSG_ERROR(APEL is missing)
+  fi
   AC_SUBST(ADDITIONAL_LOAD_PATH)])
+
+AC_DEFUN(AC_CHECK_ELISP,
+ [dnl Check for requried elisp library.
+  AC_MSG_CHECKING(for $1)
+  retval=`"$EMACS" -q -no-site-file -batch -l w3mhack.el "$ADDITIONAL_LOAD_PATH" -f w3mhack-locate-library "$1" 2>/dev/null | $EGREP -v '^$'`
+  if test x"$retval" != x; then
+    AC_MSG_RESULT(${retval})
+  else
+    AC_MSG_ERROR($1 is missing)
+  fi])

@@ -1,3 +1,33 @@
+2003-07-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-local-file-type): Check whether a regular expression
+	is specified, before matching it on a URL.
+
+	* Following changes are to check whether required libraries are
+	available.
+
+	* w3mhack.el (toplevel): Do not create
+	`shimbun/shimbun-servers.el' and `w3m-kwds.el' only when this file
+	is loaded, to suppress excessive messages.
+	(w3mhack-check-shimbun-servers-file): New function.
+	(w3mhack-check-colon-keywords-file): New function.
+	(w3mhack-compile): Call these functions explicitly.
+	(w3mhack-batch-compile, w3mhack-locate-library,
+	w3mhack-print-status): New functions.
+
+	* configure.in: Check that egrep is available and that
+	regexp-opt.el and xml.el are available.
+
+	* aclocal.m4 (AC_EMACS_LISP): Add `-q' option and `-no-site-file'
+	option.
+	(AC_ADD_LOAD_PATH): Define `--with-attic' option.
+	(AC_CHECK_ELISP): New function.
+
+	* Makefile.in (.el.elc): Call `w3mhack-batch-compile' instead of
+	`batch-byte-compile'.
+	(very-slow): Always call `keywords' target.
+	(keywords): Call `w3mhack-check-colon-keywords-file'.
+
 2003-07-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-cnet.el: Major change for the new CNET Japan site.
