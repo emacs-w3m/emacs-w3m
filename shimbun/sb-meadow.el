@@ -86,6 +86,13 @@
 					 headers (car elem))))
 	headers))))
 
+(luna-define-method shimbun-mhonarc-get-subject-value ((shimbun shimbun-meadow))
+  (shimbun-decode-entities-string (shimbun-mhonarc-header-value)))
+
+(luna-define-method shimbun-mhonarc-get-from-r13-value ((shimbun shimbun-meadow))
+  (shimbun-mhonarc-rot13-decode
+   (shimbun-decode-entities-string (shimbun-mhonarc-header-value))))
+
 (provide 'sb-meadow)
 
 ;;; sb-meadow.el ends here

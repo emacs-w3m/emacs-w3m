@@ -1,3 +1,12 @@
+2004-02-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-mhonarc.el (shimbun-mhonarc-get-subject-value) 
+	(shimbun-mhonarc-get-from-r13-value): New methods.
+	(shimbun-make-contents): Use the avove methods.
+
+	* shimbun/sb-meadow.el (shimbun-mhonarc-get-subject-value)
+	(shimbun-mhonarc-get-from-r13-value): New methods.
+
 2004-02-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Changes to validate cached contents.

@@ -137,6 +137,17 @@
 	(buffer-substring (match-end 0) (std11-field-end))
       (goto-char pt))))
 
+(luna-define-generic shimbun-mhonarc-get-subject-value (shimbun-mhonarc)
+  "Get encoded Subject field value.")
+(luna-define-method shimbun-mhonarc-get-subject-value ((shimbun shimbun-mhonarc))
+  (shimbun-mime-encode-string (shimbun-mhonarc-header-value)))
+
+(luna-define-generic shimbun-mhonarc-get-from-r13-value (shimbun-mhonarc)
+  "Get encoded From field value.")
+(luna-define-method shimbun-mhonarc-get-from-r13-value ((shimbun shimbun-mhonarc))
+  (shimbun-mime-encode-string (shimbun-mhonarc-rot13-decode
+			       (shimbun-mhonarc-header-value))))
+
 (luna-define-method shimbun-make-contents ((shimbun shimbun-mhonarc)
 					   header)
   (if (search-forward "<!--X-Head-End-->" nil t)
@@ -162,9 +173,8 @@
 	       ((looking-at "<!--")
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Subject: +")
-		(shimbun-header-set-subject header
-					    (shimbun-mime-encode-string
-					     (shimbun-mhonarc-header-value)))
+		(shimbun-header-set-subject
+		 header (shimbun-mhonarc-get-subject-value shimbun))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "From: +")
 		(shimbun-header-set-from header
@@ -172,10 +182,8 @@
 					  (shimbun-mhonarc-header-value)))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "From-R13: +")
-		(shimbun-header-set-from header
-					 (shimbun-mime-encode-string
-					  (shimbun-mhonarc-rot13-decode
-					   (shimbun-mhonarc-header-value))))
+		(shimbun-header-set-from
+		 header (shimbun-mhonarc-get-from-r13-value shimbun))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Date: +")
 		(let ((date (shimbun-mhonarc-header-value)))
