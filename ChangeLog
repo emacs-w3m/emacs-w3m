@@ -1,11 +1,7 @@
 2004-11-28  David Hansen  <david.hansen@gmx.net>
 
-	* shimbun/sb-heise.el (shimbun-heise-content-end): Improve regexp.
-	(sb-heise-tp-url-re, sb-heise-tp-auth-date-re): New constants.
-	(shimbun-heise-get-telepolis-headers): Use them; set author's name
-	and date; replace shimbun-make-header with shimbun-create-header.
-	(shimbun-heise-wash-telepolis-article): Don't set author's name
-	and date here.
+	* shimbun/sb-heise.el: (nearly) complete rewrite of the telepolis
+	part due to massive changes in their html.
 
 2004-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
