@@ -53,7 +53,11 @@ Buffer string between BEG and END are replaced with IMAGE."
   (add-text-properties beg end
 		       (list 'display image
 			     'intangible image
-			     'invisible nil)))
+			     'invisible nil))
+  (when (get-text-property beg 'face)
+    (put-text-property (previous-single-property-change (1+ beg) 'face)
+		       (next-single-property-change beg 'face)
+		       'face nil)))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."
