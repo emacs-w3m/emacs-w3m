@@ -543,7 +543,7 @@ evaluated in a temporary buffer."
 	      (process-send-string process
 				   (concat w3m-process-proxy-user "\n"))))
 	   ((and (looking-at
-		  "\\(\n?Wrong username or password\n\\)?Username for .*\n?: Password: ")
+		  "\\(\n?Wrong username or password\n\\)?Username for [^\n]*\n?: Password: ")
 		 (= (match-end 0) (point-max)))
 	    (when (or (match-beginning 1)
 		      (not (stringp w3m-process-passwd)))
