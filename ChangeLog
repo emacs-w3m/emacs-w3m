@@ -1,3 +1,10 @@
+2001-05-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (top-level): Fixed argument of autoload for `w3m-dtree',
+	and added autoload for `w3m-about-dtree'.
+
+	* w3m-dtree.el (w3m-dtree): Fixed doc-string.
+
 2001-05-15  "Takayuki Nakagawa"  <tknakaga@kanagawa.hitachi.co.jp>
 
 	* w3m.el (w3m-goto-ftp-url): Use `file-directory-p' instead of

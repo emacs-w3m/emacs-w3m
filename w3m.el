@@ -104,9 +104,11 @@
   (autoload 'w3m-antenna "w3m-antenna"
     "*Display antenna report." t)
   (autoload 'w3m-about-antenna "w3m-antenna")
+  (autoload 'w3m-dtree "w3m-dtree"
+    "*Display directory tree." t)
+  (autoload 'w3m-about-dtree "w3m-dtree")
   (autoload 'w3m-fontify-forms "w3m-form")
   (autoload 'w3m-form-parse-region "w3m-form")
-  (autoload 'w3m-dtree "w3m-dtree")
   (autoload 'w3m-filter "w3m-filter"))
 
 ;; Avoid byte-compile warnings.
