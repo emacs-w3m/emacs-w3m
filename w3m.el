@@ -697,11 +697,12 @@ If nil, use an internal CGI of w3m."
 
 (defconst w3m-arrived-db-size 1023)
 (defvar w3m-arrived-db nil)		; nil means un-initialized.
-(defvar w3m-arrived-user-list nil)
+(defvar w3m-arrived-user-alist nil)
 
 (defvar w3m-process-user nil)
 (defvar w3m-process-passwd nil)
 (defvar w3m-process-user-counter 0)
+(defvar w3m-process-realm nil)
 (defvar w3m-process-temp-file nil)
 (make-variable-buffer-local 'w3m-process-temp-file)
 (defvar w3m-process-exit-status nil "The last exit status of a process.")
@@ -1796,6 +1797,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	  ;; start-process
 	  (let ((w3m-process-user)
 		(w3m-process-passwd)
+		(w3m-process-realm)
 		(w3m-process-user-counter 2)
 		(proc (apply 'start-process w3m-command (current-buffer)
 			     w3m-command args)))
@@ -1807,15 +1809,8 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		  (while (eq (process-status proc) 'run)
 		    (accept-process-output nil 0 200))
 		  (setq status (process-exit-status proc))
-		  (and w3m-current-url
-		       w3m-process-user
-		       (setq w3m-arrived-user-list
-			     (cons
-			      (cons w3m-current-url
-				    (list w3m-process-user w3m-process-passwd))
-			      (delq (assoc w3m-current-url
-					   w3m-arrived-user-list)
-				    w3m-arrived-user-list)))))
+		  (w3m-exec-set-user w3m-current-url w3m-process-realm
+				     w3m-process-user w3m-process-passwd))
               (delete-process proc)));; Clean up resources of process.
 	;; call-process
 	(setq status (apply 'call-process w3m-command nil t nil args)))
@@ -1828,14 +1823,32 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		   (string-as-multibyte (format "%s" status)))
 	     nil)))))
 
-(defun w3m-exec-get-user (url)
+(defun w3m-exec-get-user (url realm)
+  "Get user and passwd from DataBase."
   (if (= w3m-process-user-counter 0)
       nil
-    (catch 'get
-      (dolist (elem w3m-arrived-user-list nil)
-	(when (string-match (concat "^" (regexp-quote (car elem))) url)
-	  (setq w3m-process-user-counter (1- w3m-process-user-counter))
-	  (throw 'get (cdr elem)))))))
+    (cdr (assoc (cons (w3m-get-server-root url) realm)
+		w3m-arrived-user-alist))))
+
+(defun w3m-exec-set-user (url realm user pass)
+  (when (and url realm user)
+    (let ((root (w3m-get-server-root url))
+	  tmp)
+      (if (setq tmp (w3m-exec-get-user url realm))
+	  (unless (equal (cons user pass) tmp)
+	    (setq w3m-arrived-user-alist
+		  (append (list (cons (cons root realm) (cons user pass)))
+			  (delete (cons (cons root realm) tmp)
+				  w3m-arrived-user-alist))))
+	(setq w3m-arrived-user-alist
+	      (append (list (cons (cons root realm) (cons user pass)))
+		      w3m-arrived-user-alist))))))
+
+(defun w3m-get-server-root (url)
+  "Get server root for realm."
+  (if (string-match "^[^/]*/+\\([^/]+\\)" url)
+      (match-string 1 url)
+    url))
 
 (defun w3m-read-file-name (&optional prompt dir default existing initial)
   (let* ((default (and default (file-name-nondirectory default)))
@@ -1892,11 +1905,14 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 				       (concat w3m-proxy-user "\n"))
 		(error nil)))
 	     ((and (looking-at
-		    "\\(\nWrong username or password\n\\)?Username for \\(.*\\): Password: ")
+		    "\\(\nWrong username or password\n\\)?Username for \\(.*\\)\n?: Password: ")
 		   (= (match-end 0) (point-max)))
-	      (setq w3m-process-passwd
-		    (or (nth 1 (w3m-exec-get-user w3m-current-url))
-			(read-passwd "Password: ")))
+	      (setq w3m-process-realm (match-string 2))
+	      (setq w3m-process-passwd 
+		    (or (cdr (w3m-exec-get-user
+			      w3m-current-url w3m-process-realm))
+			(read-passwd
+			 (format "Password for %s: " w3m-process-realm))))
 	      (condition-case nil
 		  (progn
 		    (process-send-string process
@@ -1904,13 +1920,14 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		    (delete-region (point-min) (point-max)))
 		(error nil)))
 	     ((and (looking-at
-		    "\\(\nWrong username or password\n\\)?Username for \\(.*\\): ")
+		    "\\(\nWrong username or password\n\\)?Username for \\(.*\\)\n?: ")
 		   (= (match-end 0) (point-max)))
+	      (setq w3m-process-realm (match-string 2))
 	      (setq w3m-process-user
-		    (or (nth 0 (w3m-exec-get-user w3m-current-url))
-			(read-from-minibuffer (concat
-					       "Username for " (match-string 2)
-					       ": "))))
+		    (or (car (w3m-exec-get-user
+			      w3m-current-url w3m-process-realm))
+			(read-from-minibuffer (format "Username for %s: "
+						      w3m-process-realm))))	      
 	      (condition-case nil
 		  (process-send-string process
 				       (concat w3m-process-user "\n"))

@@ -1,3 +1,15 @@
+2001-08-02  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-arrived-user-alist): Rename from
+	w3m-arrived-user-list.
+	(w3m-process-realm): New variable.
+	(w3m-exec-process): Bind w3m-process-realm to nil.
+	Call w3m-exec-set-user() for the certification.
+	(w3m-exec-get-user): Rewrite.
+	(w3m-exec-set-user): New function.
+	(w3m-get-server-root): Ditto.
+	(w3m-exec-filter): Support a pair of 'rootserver' and 'realm'.
+
 2001-08-02  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-make-form-data): Fixed typo.
