@@ -44,7 +44,6 @@
   '(("general" . "news.htm")
     ("business" . "business.htm")))
 (defvar shimbun-japantimes-expiration-days 7)
-(defvar shimbun-japantimes-coding-system 'us-ascii)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-japantimes))
   (concat (shimbun-url-internal shimbun)

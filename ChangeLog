@@ -1259,6 +1259,14 @@
 	(w3m-goto-url-new-session): Remove a newly created buffer if it is
 	useless.
 
+2003-08-12  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* Makefile.in (what-where): Add space to avoid error on Solaris.
+
+	* w3m-namazu.el (w3m-about-namazu): Fix last change.
+
+2003-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/sb-asahi-mytown.el: New file.
 
 2003-08-11  Katsumi Yamaoka  <yamaoka@jpl.org>
@@ -1273,6 +1281,13 @@
 	(w3m-history-save-position): Ditto.
 	(w3m-history-modify-properties): Ditto.
 	(w3m-history-with-element): Ditto.
+
+2003-08-10  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-namazu.el (w3m-about-namazu): Fixed problem when further links
+	contain "&amp;".
+
+	* shimbun/sb-japantimes.el (shimbun-japantimes-coding-system): Removed.
 
 2003-08-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
