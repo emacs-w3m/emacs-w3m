@@ -1,3 +1,15 @@
+2000-09-18  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el (w3m): Add 2nd arguemnt to use with browse url.  This is
+	patch from Satoru Takabayashi <satoru-t@is.aist-nara.ac.jp> in
+	ELF-ML, Seq# 875.
+	(w3m-fontify): Change regexp for <a ...> tag to allow newline in
+	between attributes.  This is patch from Satoru Takabayashi
+	<satoru-t@is.aist-nara.ac.jp> in ELF-ML, Seq# 876.
+	(w3m-fontify): Allow un-ended tag for name attribute, is it w3m
+	bug?).  This is Patch from Satoru Takabayashi
+	<satoru-t@is.aist-nara.ac.jp> in ELF-ML, Seq# 876.
+
 2000-07-13  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el: Added handling of name anchors. Add comments.
