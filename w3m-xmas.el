@@ -4,6 +4,7 @@
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+;;          Katsumi Yamaoka    <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; w3m-xmas.el is free software; you can redistribute it and/or modify
@@ -37,18 +38,97 @@
 (require 'w3m)
 
 ;;; Handle images:
+(defvar w3m-should-unoptimize-animated-gifs
+  (or (and (= emacs-major-version 21)
+	   (>= emacs-minor-version 4))
+      (and (= emacs-major-version 20)
+	   (= emacs-minor-version 2)
+	   (>= emacs-patch-level 20)))
+  "Specify whether w3m should unoptimize animated gif images for showing.
+It is applicable to XEmacs 21.2.20 or later, since which only support
+to show unoptimized animated gif images.")
+
+(defvar w3m-gifsicle-program (when (exec-installed-p "gifsicle")
+			       "gifsicle")
+  "*Name of the gifsicle program used to unoptimize animated gif images.")
+
+(defvar w3m-cache-unoptimized-gif-images nil
+  "Cache used to keep unoptimized animated gif images.  It is an alist of
+an URL and a glyph.  Glyph will be nil if there is no need to
+unoptimize.  Each element should be updated when an URL is newly
+retrieved.")
+
+(defvar w3m-cache-unoptimized-gif-images-max-length 32
+  "*Number to limit the length of `w3m-cache-unoptimized-gif-images'.")
+
 (defun w3m-create-image (url &optional no-cache)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used."
-  (condition-case err
-      (let ((type (w3m-retrieve url 'raw no-cache)))
-	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-	  (let ((data (w3m-with-work-buffer (buffer-string))))
-	    (make-glyph
-	     (make-image-instance
-	      (vector type :data data)
-	      nil nil 'no-error)))))
-    (error nil)))
+  (let ((type (condition-case err
+		  (w3m-retrieve url 'raw no-cache)
+		(error
+		 (message "While retrieving %s: %s" url err)
+		 nil))))
+    (when (w3m-image-type-available-p (setq type (w3m-image-type type)))
+      (let ((data (w3m-with-work-buffer (buffer-string)))
+	    glyph)
+	(when (and (eq type 'gif)
+		   w3m-should-unoptimize-animated-gifs
+		   w3m-gifsicle-program)
+	  (let ((cache (assoc url w3m-cache-unoptimized-gif-images)))
+	    ;; Move the element which is associated with `url' to the
+	    ;; top of the cache.  No need to use `equal' nor `delete'
+	    ;; in the following procedures.
+	    (when (and cache
+		       (not (eq cache (car w3m-cache-unoptimized-gif-images))))
+	      (setq w3m-cache-unoptimized-gif-images
+		    (cons cache (delq cache
+				      w3m-cache-unoptimized-gif-images))))
+	    (cond
+	     ((or no-cache
+		  (not cache))
+	      (with-temp-buffer
+		(let ((coding-system-for-read 'binary)
+		      (coding-system-for-write 'binary))
+		  (insert data)
+		  (goto-char (point-min))
+		  (when (looking-at "GIF89a")
+		    ;; Check whether a `data' is animated.
+		    (call-process-region (point-min) (point-max)
+					 w3m-gifsicle-program
+					 t t nil "--info")
+		    (goto-char (point-min))
+		    (when (looking-at "\\*[\t ]+.+[\t ]+[0-9]+[\t ]+images")
+		      ;; gifsicle said that it is an animated gif.
+		      (erase-buffer)
+		      (insert data)
+		      ;; Unoptimize anyway.
+		      (call-process-region (point-min) (point-max)
+					   w3m-gifsicle-program
+					   t t nil "--unoptimize")
+		      (goto-char (point-min))
+		      (when (looking-at "GIF89a")
+			;; Perhaps the unoptimization is succeeded.
+			(setq glyph (make-glyph (vector 'gif
+							:data
+							(buffer-string))))))))
+		;; Update a cache.
+		(if cache
+		    (setcdr cache glyph)
+		  (push (cons url glyph) w3m-cache-unoptimized-gif-images)
+		  (let ((maxlen w3m-cache-unoptimized-gif-images-max-length))
+		    (when (and (integerp maxlen)
+			       (>= maxlen 1)
+			       (> (length w3m-cache-unoptimized-gif-images)
+				  maxlen))
+		      (setcdr (nthcdr (1- maxlen)
+				      w3m-cache-unoptimized-gif-images)
+			      nil))))))
+	     ((cdr cache)
+	      ;; Use a cached image.
+	      (setq glyph (cdr cache))))))
+	(or glyph
+	    (make-glyph (vector type :data data)))))))
 
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
