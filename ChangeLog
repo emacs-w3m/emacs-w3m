@@ -1,5 +1,13 @@
 2001-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el (w3m-use-favicon): Don't bind it.
+
+	* w3m-e21.el (w3m-use-favicon): Set it to nil anyway when Emacs is
+	running in the batch mode.
+	(w3m-imagick-convert-buffer): Reverted.
+
+2001-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-e21.el (w3m-imagick-convert-buffer): Don't growl errors when
 	Emacs is running in the batch mode.
 
