@@ -1,3 +1,15 @@
+2003-05-29  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-ibm-dev.el (shimbun-index-url): Removed.
+	(shimbun-ibm-dev-content-start, shimbun-ibm-dev-content-end): New
+	user variables.
+	(shimbun-get-headers): Rename to shimbun-headers.
+	(shimbun-headers): Use `w3m-expand-url' to expand relative url to
+	absolute one.
+	Build message-id using domain www-6.ibm.com.
+	(shimbun-make-contents): Change its method-qualifier to :before.
+	Use `when' instead of `if' if there aren't `else S expressions'.
+
 2003-05-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* .cvsignore: Ignore tarballs.
