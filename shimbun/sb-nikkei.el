@@ -270,8 +270,7 @@ w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 	  ((member group '("okuyami" "shasetsu"))
 	   (when (and (re-search-forward
 		       (eval-when-compile
-			 (let ((s0 "[\t\n ]*")
-			       (s1 "[\t\n ]+"))
+			 (let ((s0 "[\t\n ]*"))
 			   (concat
 			    "更新：\\(" s0 "<![^<>]+>\\)*" s0
 			    "\\(20[0-9][0-9]\\)" s0 "/" s0
