@@ -634,14 +634,11 @@ If nil, use an internal CGI of w3m."
 		 (file :tag "path of 'dirlist.cgi'"
 		  "/usr/local/lib/w3m/dirlist.cgi")))
 
-(defcustom w3m-add-referer t
-  "*If non-nil, add reference information when sending request to the
-foreign HTTP servers.  See also the documentation for the option
-`w3m-add-referer-regexps'."
-  :group 'w3m
-  :type 'boolean)
-
-(defcustom w3m-add-referer-regexps '("^http:" . nil)
+(defcustom w3m-add-referer-regexps
+  (when (or (not (boundp 'w3m-add-referer))
+	    (symbol-value 'w3m-add-referer))
+    (cons "\\`http:"
+	  "\\`http://\\(localhost\\|127\\.0\\.0\\.1\\)/"))
   "*Cons of two regexps to allow and not to allow sending a reference
 information to HTTP servers.  If a reference matches the car of this
 value and it does not match the cdr of this value, it will be sent.
@@ -651,8 +648,7 @@ will disclose your private informations, for example:
 \(setq w3m-add-referer-regexps
       '(\"^http:\"
 	. \"^http://\\\\([^./]+\\\\.\\\\)*your-company\\\\.com/\"))
-
-See also the documentation for the option `w3m-add-referer'."
+"
   :group 'w3m
   :type '(cons (list :inline t :format "%v"
 		     (radio :tag "Allow"
@@ -2477,8 +2473,7 @@ to nil."
 			  (list "-header" (concat "Content-Type: "
 						  (car post-data))))
 		      (list "-post" file))))
-      (when (and w3m-add-referer
-		 (stringp referer)
+      (when (and (stringp referer)
 		 (not (and (cdr w3m-add-referer-regexps)
 			   (string-match (cdr w3m-add-referer-regexps)
 					 referer)))
