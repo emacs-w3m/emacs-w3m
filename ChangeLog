@@ -1,3 +1,15 @@
+2004-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-module-list): Enable it to run without
+	shimbun directory (assuming the case `make install-package').
+	(w3mhack-make-package): Use `w3mhack-generate-load-file'.
+	(w3mhack-update-files-autoloads): New function.
+	(w3mhack-generate-load-file): Allow the optional arg which
+	overrides `w3mhack-load-file'; use `autoload-ensure-default-file'
+	if it is available; provide the feature at the beginning of the
+	file; also provide `w3m-autoloads' in XEmacs; use
+	`w3mhack-update-files-autoloads'.
+
 2004-04-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-cgi-board.el (shimbun-clear-contents): Removed.
