@@ -1,3 +1,8 @@
+2005-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el: Remove the byte-optimizer which replaces
+	truncate-string with truncate-string-to-width.
+
 2005-03-09  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/sb-palmfan.el (shimbun-palmfan-group-path-alist):

@@ -509,11 +509,6 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 		 nil
 	       (preceding-char)))))))
 
-(if (fboundp 'truncate-string-to-width)
-    (put 'truncate-string 'byte-optimizer
-	 (lambda (form)
-	   (cons 'truncate-string-to-width (cdr form)))))
-
 (put 'match-string-no-properties 'byte-optimizer
      (lambda (form)
        (let ((num (nth 1 form))
