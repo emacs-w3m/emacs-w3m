@@ -1,3 +1,8 @@
+2002-07-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-lynx-like-map): Use the key `(control space)'
+	instead of `C- ' for the command `w3m-history-store-position'.
+
 2002-06-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.2.53.
