@@ -70,6 +70,16 @@ compile-time."
   (if clauses
       (cons 'progn (cdr (car clauses)))))
 
+(put 'w3m-condition-case lisp-indent-function 2)
+(defmacro w3m-condition-case (var bodyform &rest handlers)
+  "Like `condition-case', except that signal an error if `debug-on-error'
+or `debug-on-quit' is non-nil."
+  `(if (or debug-on-error debug-on-quit)
+       ,bodyform
+     (condition-case ,var
+	 ,bodyform
+       ,@handlers)))
+
 (defmacro w3m-with-work-buffer (&rest body)
   "Execute the forms in BODY with working buffer as the current buffer."
   (let ((temp-hist (make-symbol "hist"))
