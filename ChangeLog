@@ -1,3 +1,20 @@
+2003-11-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-verbose): Change its default value to nil.
+	(w3m-message): When `w3m-verbose' is nil, display messages without
+	logging.
+	(w3m-make-help-echo, w3m-toggle-inline-image, w3m-zoom-in-image,
+	w3m-zoom-out-image, w3m-view-this-url, w3m-submit-form,
+	w3m-view-image, w3m-save-image, w3m-view-url-with-external-browser,
+	w3m-download-this-url, w3m-print-this-url, w3m-edit-current-url,
+	w3m-edit-this-url, w3m-quit, w3m-goto-ftp-url, w3m-select-buffer,
+	w3m-select-buffer-show-this-line,
+	w3m-select-buffer-show-this-line-and-switch): Call `w3m-image'
+	instead of `w3m-display-message'.
+
+	* w3m-util.el (w3m-display-message): Removed.
+	(w3m-display-message-enable-logging): Abolished.
+
 2003-11-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-message): Silent when the cursor is in minibuffer.
