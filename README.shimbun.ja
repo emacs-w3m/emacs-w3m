@@ -106,6 +106,7 @@ netbsd 関連	netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
 		netbsd.port-mips-ja netbsd.port-powerpc-ja
 		netbsd.hpcmips-changes-ja netbsd.members-ja
 		netbsd.admin-ja netbsd.www-changes-ja
+QuickML 関連	quickml.quickml-users quickml.quickml-server
 ruby 関連	ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
 		ruby.ruby-dev ruby.ruby-ext ruby.ruby-list
 		ruby.ruby-math ruby.ruby-talk
@@ -195,6 +196,7 @@ Debian 関連	debian.debian-announce debian.debian-commercial
 		debian.spi-general debian.vgui-discuss
 KDE 関連	kde.Kuser kde.Kdeveloper
 Geocrawler	www.geocrawler.com に保存されている全ての mailing lists.
+MARC		marc.theaimsgroup.com に保存されている全ての mailing lists.
 
 2-4. スポーツ
 
