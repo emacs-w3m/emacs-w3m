@@ -25,7 +25,7 @@
 	favicon; never use ImageMagick if it has been set to nil.
 
 	* w3mhack.el (w3m-use-favicon): Bind it to nil to inhibit the use
-	of ImageMagic.
+	of ImageMagick.
 
 2001-12-13  Hideyuki SHIRAI  <shirai@meadowy.org>
 
