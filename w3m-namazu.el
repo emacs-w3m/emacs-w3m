@@ -77,15 +77,29 @@
   :group 'w3m-namazu
   :type 'integer)
 
+(defconst w3m-namazu-default-index-customize-spec
+  '(` (choice
+       (const :tag "No default index" nil)
+       (,@ (mapcar (lambda (x) (list 'const (car x)))
+		   w3m-namazu-index-alist))
+       (directory :tag "Index directory"))))
+
 (defcustom w3m-namazu-index-alist
   (when (boundp 'namazu-dir-alist)
-    (symbol-value 'namazu-dir-alist))
+    (mapcar (lambda (pair)
+	      (cons (car pair)
+		    (split-string (cdr pair))))
+	    (symbol-value 'namazu-dir-alist)))
   "*Alist of alias and index directories."
   :group 'w3m-namazu
   :type '(repeat
 	  (cons :format "%v"
 		(string :tag "Alias")
-		(string :tag "Index path"))))
+		(repeat (directory :tag "Index directory"))))
+  :set (lambda (symbol value)
+	 (set-default symbol value)
+	 (put 'w3m-namazu-default-index 'custom-type
+	      (eval w3m-namazu-default-index-customize-spec))))
 
 (defcustom w3m-namazu-default-index
   (unless (and (boundp 'namazu-always-query-index-directory)
@@ -97,9 +111,7 @@ If this variable equals nil, it is required to input an index path
 whenever `w3m-namazu' is called interactively without prefix
 argument."
   :group 'w3m-namazu
-  :type '(choice
-	  (const :tag "No default index" nil)
-	  (string :tag "Default index path")))
+  :type (eval w3m-namazu-default-index-customize-spec))
 
 (defcustom w3m-namazu-output-coding-system
   (if (boundp 'namazu-cs-write)
@@ -120,12 +132,11 @@ argument."
   :type 'coding-system)
 
 
-(defsubst w3m-namazu-call-process (index query &optional whence)
-  (when (assoc index w3m-namazu-index-alist)
-    (setq index (cdr (assoc index w3m-namazu-index-alist))))
-  (setq index (mapcar 'expand-file-name (split-string index)))
-  (unless whence
-    (setq whence "0"))
+(defsubst w3m-namazu-call-process (index query whence)
+  (setq index (if (assoc index w3m-namazu-index-alist)
+		  (mapcar 'expand-file-name
+			  (cdr (assoc index w3m-namazu-index-alist)))
+		(list (expand-file-name index))))
   (let ((file-name-coding-system w3m-file-name-coding-system)
 	(coding-system-for-read w3m-namazu-input-coding-system)
 	(coding-system-for-write w3m-namazu-output-coding-system)
@@ -141,7 +152,7 @@ argument."
 
 ;;;###autoload
 (defun w3m-about-namazu (url &optional no-decode no-cache &rest args)
-  (let (index query whence)
+  (let (index query (whence "0"))
     (when (string-match "^about://namazu/\\?" url)
       (dolist (s (split-string (substring url (match-end 0)) "&"))
 	(when (string-match "^\\(index\\|\\(query\\)\\|\\(whence\\)\\)=" s)
@@ -153,8 +164,29 @@ argument."
       (w3m-with-work-buffer
 	(delete-region (point-min) (point-max))
 	(set-buffer-multibyte t)
-	(when (zerop (w3m-namazu-call-process index query whence))
+	(when (zerop (w3m-namazu-call-process (w3m-url-decode-string index)
+					      (w3m-url-decode-string query)
+					      whence))
 	  (let ((case-fold-search t))
+	    (goto-char (point-min))
+	    (let ((max (if (re-search-forward "<!-- HIT -->\\([0-9]+\\)<!-- HIT -->" nil t)
+			   (string-to-number (match-string 1))
+			 0))
+		  (cur (string-to-number whence)))
+	      (goto-char (point-min))
+	      (when (search-forward "<head>")
+		(when (> cur 0)
+		  (insert
+		   (format "\n<link rel=\"prev\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
+			   index
+			   query
+			   (max (- cur w3m-namazu-page-max) 0))))
+		(when (> max (+ cur w3m-namazu-page-max))
+		  (insert
+		   (format "\n<link rel=\"next\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
+			   index
+			   query
+			   (+ cur w3m-namazu-page-max))))))
 	    (goto-char (point-min))
 	    (while (search-forward "<a href=\"/" nil t)
 	      (forward-char -1)
@@ -209,14 +241,17 @@ argument."
 		     "Index: ")
 		   'w3m-namazu-complete-index nil t nil
 		   'w3m-namazu-index-history)))
-	  (if (string= s "")
-	      (or default (error "Index is required"))
-	    s))
+	  (if (string= s "") default s))
       (or w3m-namazu-default-index
 	  (car w3m-namazu-index-history)))
     (read-string "Query: " nil 'w3m-namazu-query-history)))
+  (unless (stringp index)
+    (error "Index is required"))
+  (unless (stringp query)
+    (error "Query is required"))
   (w3m-goto-url (format "about://namazu/?index=%s&query=%s&whence=0"
-			index query)))
+			(w3m-url-encode-string index)
+			(w3m-url-encode-string query))))
 
 (provide 'w3m-namazu)
 ;;; w3m-namazu.el ends here

@@ -1,3 +1,35 @@
+2001-08-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-next-url): New buffer local variable.
+	(w3m-previous-url): Ditto.
+	(w3m-arrived-ignored-regexp): Add 'about://namazu/'.
+	(w3m-history-ignored-regexp): Ditto.
+	(w3m-url-decode-string): New funtcion.
+	(w3m-fontify-anchors): Process `rel' element of anchor tag.
+	(w3m-check-link-tags): New funtcion.
+	(w3m-rendering-region): Call `w3m-check-link-tags'.
+	(w3m-exec): Set `w3m-next-url' and `w3m-previous-url'.
+	(w3m-lynx-like-map): Replace `scroll-up' with `w3m-scroll-up-or-next-url'.
+	Replace `scroll-down' with `w3m-scroll-down-or-previous-url'.
+	(w3m-info-like-map): Ditto.
+	(w3m-mode): Ditto.
+	(w3m-scroll-up-or-next-url): New command.
+	(w3m-scroll-down-or-previous-url): Ditto.
+
+	* w3m-namazu.el (w3m-namazu-default-index-customize-spec): New
+	constant.
+	(w3m-namazu-index-alist): Change customize spec.
+	(w3m-namazu-default-index): Ditto.
+	(w3m-namazu-call-process): Change argument spec and followed
+	change of `w3m-namazu-index-alist'.
+	(w3m-about-namazu): Add link information to next or previous
+	results.
+	(w3m-namazu): Stricter checking of arguments.  Encoded index and
+	query.
+
+	* w3m-filter.el (w3m-filter-rules): Add `w3m-filter-google.com'.
+	(w3m-filter-google.com): New function.
+
 2001-08-03  Masayuki Ataka  <ataka@milk.freemail.ne.jp>,
 	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

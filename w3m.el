@@ -690,12 +690,16 @@ If nil, use an internal CGI of w3m."
 (defvar w3m-initial-frame nil "Initial frame of this session.")
 (defvar w3m-current-post-data nil "POST data of this buffer.")
 (defvar w3m-current-referer nil "Referer of this buffer.")
+(defvar w3m-next-url nil "Next URL of this buffer.")
+(defvar w3m-previous-url nil "Previous URL of this buffer.")
 
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-title)
 (make-variable-buffer-local 'w3m-initial-frame)
 (make-variable-buffer-local 'w3m-current-post-data)
 (make-variable-buffer-local 'w3m-current-referer)
+(make-variable-buffer-local 'w3m-next-url)
+(make-variable-buffer-local 'w3m-previous-url)
 
 (defvar w3m-current-buffer nil "The current w3m buffer.")
 
@@ -878,11 +882,11 @@ for a charset indication")
   "Common arguments for 'halfdump' execution of all w3m variants.")
 
 (defconst w3m-arrived-ignored-regexp
-  "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\)/.*\\)?$"
+  "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
   "Regexp of urls to be ignored in an arrived-db.")
 
 (defconst w3m-history-ignored-regexp
-  "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\|dtree\\)/.*\\)?$"
+  "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
   "Regexp of urls to be ignored in a history.")
 
 (defvar w3m-mode-map nil "Keymap used in w3m-mode buffers.")
@@ -1279,6 +1283,22 @@ If N is negative, last N items of LIST is returned."
 	  (append (encode-coding-string (or str "") (or coding 'iso-2022-jp))
 		  nil))))
 
+(defun w3m-url-decode-string (str &optional coding)
+  (let ((start 0)
+	(buf))
+    (while (string-match "+\\|%\\(0D%0A\\|\\([0-9a-fA-F][0-9a-fA-F]\\)\\)" str start)
+      (push (substring str start (match-beginning 0)) buf)
+      (push (cond
+	     ((match-beginning 2)
+	      (string (string-to-number (match-string 2 str) 16)))
+	     ((match-beginning 1) "\n")
+	     (t " "))
+	    buf)
+      (setq start (match-end 0)))
+    (decode-coding-string
+     (apply 'concat (nreverse (cons (substring str start) buf)))
+     (or coding 'iso-2022-jp))))
+
 (put 'w3m-parse-attributes 'lisp-indent-function '1)
 (def-edebug-spec w3m-parse-attributes
   ((&rest &or (symbolp &optional symbolp) symbolp) body))
@@ -1408,7 +1428,12 @@ If N is negative, last N items of LIST is returned."
     (goto-char (point-min))
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
-      (w3m-parse-attributes (href name)
+      (w3m-parse-attributes (href name (rel :case-ignore))
+	(when rel
+	  (setq rel (split-string rel))
+	  (cond
+	   ((member "next" rel) (setq w3m-next-url href))
+	   ((member "prev" rel) (setq w3m-previous-url href))))
 	(delete-region start (point))
 	(cond
 	 (href
@@ -2474,12 +2499,31 @@ to nil.
 	(if (search-forward "-->" nil t)
 	    (delete-region beg (point)))))))
 
+(defun w3m-check-link-tags ()
+  "Process <LINK> tags in the current buffer."
+  (setq w3m-next-url nil
+	w3m-previous-url nil)
+  (let ((case-fold-search t))
+    (goto-char (point-min))
+    (when (search-forward "</head>" nil t)
+      (save-restriction
+	(narrow-to-region (point-min) (point))
+	(goto-char (point-min))
+	(while (re-search-forward "<link[ \t\r\f\n]+" nil t)
+	  (w3m-parse-attributes ((rel :case-ignore) href)
+	    (when rel
+	      (setq rel (split-string rel))
+	      (cond
+	       ((member "next" rel) (setq w3m-next-url href))
+	       ((member "prev" rel) (setq w3m-previous-url href))))))))))
+
 (defun w3m-rendering-region (start end &optional charset)
   "Do rendering of contents in this buffer as HTML and return title."
   (save-restriction
     (narrow-to-region start end)
     (set-buffer-multibyte t)
     (w3m-remove-comments)
+    (w3m-check-link-tags)
     (when w3m-use-form
       (w3m-form-parse-region (point-min) (point-max) charset))
     (w3m-message "Rendering...")
@@ -2543,6 +2587,8 @@ this function returns t.  Otherwise, returns nil."
       (if type
 	  (progn
 	    (when content-type (setq type content-type))
+	    (setq w3m-next-url nil
+		  w3m-previous-url nil)
 	    (cond
 	     ((string-match "^text/" type)
 	      (let (buffer-read-only)
@@ -2559,6 +2605,12 @@ this function returns t.  Otherwise, returns nil."
 			  (file-name-nondirectory url))))
 		(delete-region (point-min) (point-max))
 		(insert-buffer w3m-work-buffer-name)
+		(let (next prev)
+		  (w3m-with-work-buffer
+		    (setq next w3m-next-url
+			  prev w3m-previous-url))
+		  (setq w3m-next-url (and next (w3m-expand-url next w3m-current-url))
+			w3m-previous-url (and prev (w3m-expand-url prev w3m-current-url))))
 		(when (string= "text/html" type) (w3m-fontify))
 		t))
 	     ((and (w3m-image-type-available-p (w3m-image-type type))
@@ -2944,18 +2996,18 @@ that is affected by `w3m-pop-up-frames'."
   "Lynx-like keymap used in w3m-mode buffers.")
 (unless w3m-lynx-like-map
   (let ((map (make-keymap)))
-    (define-key map " " 'scroll-up)
-    (define-key map "b" 'scroll-down)
-    (define-key map [backspace] 'scroll-down)
-    (define-key map [delete] 'scroll-down)
+    (define-key map " " 'w3m-scroll-up-or-next-url)
+    (define-key map "b" 'w3m-scroll-down-or-previous-url)
+    (define-key map [backspace] 'w3m-scroll-down-or-previous-url)
+    (define-key map [delete] 'w3m-scroll-down-or-previous-url)
     (define-key map "h" 'backward-char)
     (define-key map "j" 'next-line)
     (define-key map "k" 'previous-line)
     (define-key map "l" 'forward-char)
-    (define-key map "J" (lambda () (interactive) (scroll-up 1)))
-    (define-key map "K" (lambda () (interactive) (scroll-up -1)))
+    (define-key map "J" (lambda () (interactive) (scroll-down 1)))
+    (define-key map "K" (lambda () (interactive) (scroll-up 1)))
     (define-key map "G" 'goto-line)
-    (define-key map "\C-?" 'scroll-down)
+    (define-key map "\C-?" 'w3m-scroll-down-or-previous-url)
     (define-key map "\t" 'w3m-next-anchor)
     (define-key map [(shift tab)] 'w3m-previous-anchor)
     (define-key map [(shift iso-lefttab)] 'w3m-previous-anchor)
@@ -3013,9 +3065,9 @@ that is affected by `w3m-pop-up-frames'."
   "Info-like keymap used in w3m-mode buffers.")
 (unless w3m-info-like-map
   (let ((map (make-keymap)))
-    (define-key map [backspace] 'scroll-down)
-    (define-key map [delete] 'scroll-down)
-    (define-key map "\C-?" 'scroll-down)
+    (define-key map [backspace] 'w3m-scroll-down-or-previous-url)
+    (define-key map [delete] 'w3m-scroll-down-or-previous-url)
+    (define-key map "\C-?" 'w3m-scroll-down-or-previous-url)
     (define-key map "\t" 'w3m-next-anchor)
     (define-key map [(shift tab)] 'w3m-previous-anchor)
     (define-key map [(shift iso-lefttab)] 'w3m-previous-anchor)
@@ -3024,11 +3076,11 @@ that is affected by `w3m-pop-up-frames'."
     (if (featurep 'xemacs)
 	(define-key map [(button2)] 'w3m-mouse-view-this-url)
       (define-key map [mouse-2] 'w3m-mouse-view-this-url))
-    (define-key map " " 'scroll-up)
+    (define-key map " " 'w3m-scroll-up-or-next-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "A" 'w3m-antenna)
-    (define-key map "b" 'scroll-down)
+    (define-key map "b" 'w3m-scroll-down-or-previous-url)
     (define-key map "C" 'w3m-redisplay-with-charset)
     (define-key map "d" 'w3m-bookmark-view)
     (define-key map "D" 'w3m-download-this-url)
@@ -3162,8 +3214,8 @@ Return t if deleting current frame or window is succeeded."
 \\[w3m-edit-current-url]	Edit the local file pointed by the URL of current page.
 \\[w3m-edit-this-url]	Edit the local file by the under the point.
 
-\\[scroll-up]	Scroll up.
-\\[scroll-down]	Scroll down.
+\\[w3m-scroll-up-or-next-url]	Scroll up or go to next url.
+\\[w3m-scroll-down-or-previous-url]	Scroll down or go to previous url.
 \\[w3m-scroll-left]	Scroll to left.
 \\[w3m-scroll-right]	Scroll to right.
 
@@ -3212,6 +3264,23 @@ Return t if deleting current frame or window is succeeded."
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-hook))
+
+(defun w3m-scroll-up-or-next-url (arg)
+  "Scroll text of current window upward ARG lines; or go to next url."
+  (interactive "P")
+  (if (pos-visible-in-window-p (point-max))
+      (if w3m-next-url
+	  (w3m-goto-url w3m-next-url)
+	(signal 'end-of-buffer nil))
+    (scroll-up arg)))
+
+(defun w3m-scroll-down-or-previous-url (arg)
+  (interactive "P")
+  (if (pos-visible-in-window-p (point-min))
+      (if w3m-previous-url
+	  (w3m-goto-url w3m-previous-url)
+	(signal 'beginning-of-buffer nil))
+    (scroll-down arg)))
 
 (defun w3m-scroll-left (arg)
   "Scroll to left.

@@ -40,7 +40,8 @@
      "<DIV ALIGN=CENTER>\n<!--*/GeoGuide/*-->" "<!--*/GeoGuide/*-->\n</DIV>")
     ("http://linux.ascii24.com/linux/"
      "<!-- DAC CHANNEL AD START -->" "<!-- DAC CHANNEL AD END -->")
-    ("http://lwn.net/" . w3m-filter-lwn.net))
+    ("http://lwn.net/" . w3m-filter-lwn.net)
+    ("http://www.google.com/search" . w3m-filter-google.com))
   "Rules to filter advertisements on WEB sites."
   :group 'w3m
   :type '(repeat
@@ -117,6 +118,21 @@
 		(setq p (match-beginning 0))
 		(search-forward "<!-- End of Ad -->" nil t))
       (delete-region p (match-end 0)))
+    t))
+
+(defun w3m-filter-google.com (url)
+  "Add <LINK> tag to search results of www.google.com."
+  (goto-char (point-max))
+  (let ((next (when (re-search-backward
+		     "<a href=\\([^>]+\\)><img src=/\\(intl/[^/]+/\\)nav_next.gif" nil t)
+		(match-string 1)))
+	(prev (when (re-search-backward
+		     "<a href=\\([^>]+\\)><img src=/\\(intl/[^/]+/\\)nav_previous.gif" nil t)
+		(match-string 1))))
+    (goto-char (point-min))
+    (when (search-forward "<head>" nil t)
+      (when prev (insert "\n<link rel=\"prev\" href=\"" prev "\">"))
+      (when next (insert "\n<link rel=\"next\" href=\"" next "\">")))
     t))
 
 
