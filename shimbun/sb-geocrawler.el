@@ -1,4 +1,4 @@
-;;; sb-security-memo.el --- shimbun backend for geocrawler.com.
+;;; sb-geocrawler.el --- shimbun backend for geocrawler.com.
 
 ;; Copyright (C) 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
