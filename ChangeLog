@@ -1,3 +1,8 @@
+2002-03-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-cookie.el (w3m-cookie-save): Use `w3m-time-newer-p' instead of
+	`w3m-time-lapse-seconds'.
+
 2002-03-26  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-cookie.el (w3m-cookie): New command.

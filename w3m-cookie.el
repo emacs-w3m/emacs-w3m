@@ -444,9 +444,9 @@ If ask, ask user whether accept bad cookies or not."
   (let (cookies)
     (dolist (cookie w3m-cookies)
       (when (and (w3m-cookie-expires cookie)
-		 (< (w3m-time-lapse-seconds (w3m-time-parse-string
-					     (w3m-cookie-expires cookie))
-					    (current-time)) 0))
+		 (w3m-time-newer-p (w3m-time-parse-string
+				    (w3m-cookie-expires cookie))
+				   (current-time)))
 	(push cookie cookies)))
     (w3m-save-list w3m-cookie-file cookies)))
 
