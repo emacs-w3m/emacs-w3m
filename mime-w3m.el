@@ -32,13 +32,13 @@
 ;;    (setq mime-setup-enable-inline-html nil)
 ;;    (eval-after-load "mime-view"
 ;;      '(progn
-;;         (autoload 'w3m-mime-preview-text/html "mime-w3m")
+;;         (autoload 'mime-w3m-preview-text/html "mime-w3m")
 ;;         (ctree-set-calist-strictly
 ;;          'mime-preview-condition
 ;;          '((type . text)
 ;;            (subtype . html)
 ;;            (body . visible)
-;;            (body-presentation-method . w3m-mime-preview-text/html)))
+;;            (body-presentation-method . mime-w3m-preview-text/html)))
 ;;         (set-alist 'mime-view-type-subtype-score-alist
 ;;                    '(text . html) 3)))
 
@@ -49,6 +49,8 @@
     (require 'w3m)
   (error nil))
 (require 'mime)
+
+(defvar mime-w3m-mode-map nil)
 
 (defmacro-maybe mime-put-keymap-region (start end keymap)
   `(put-text-property ,start ,end
@@ -66,9 +68,28 @@
 	   ))
     (cons 'progn body)))
 
-(defun w3m-mime-preview-text/html (entity situation)
-  (goto-char (point-max))
+(defun mime-w3m-get-xref ()
+  ;; Check Xref: header in this buffer.
   (let ((p (point)))
+    (unwind-protect
+	(save-restriction
+	  (nnheader-narrow-to-headers)
+	  (goto-char (point-min))
+	  (let ((case-fold-search t))
+	    (when (search-forward "\nxref: " nil t)
+	      (buffer-substring-no-properties
+	       (match-end 0) (std11-field-end)))))
+      (goto-char p))))
+
+(defun mime-w3m-preview-text/html (entity situation)
+  (goto-char (point-max))
+  (let ((p (point))
+	(xref (mime-w3m-get-xref)))
+    ;; For nnshimbun.el.
+    (and (stringp xref)
+	 (string-match "^http://" xref)
+	 (setq w3m-current-url xref))
+    (goto-char p)
     (insert "\n")
     (goto-char p)
     (mime-save-background-color
@@ -79,8 +100,32 @@
        (condition-case err
 	   (w3m-region p (point-max))
 	 (error (message (format "%s" err))))
-       (mime-put-keymap-region p (point-max) w3m-mode-map)
+       (mime-put-keymap-region p (point-max) mime-w3m-mode-map)
        ))))
+
+(unless mime-w3m-mode-map
+  (let ((map (copy-keymap w3m-mode-map)))
+    (substitute-key-definition 'w3m-view-this-url 'mime-w3m-view-this-url map)
+    (substitute-key-definition 'w3m-mouse-view-this-url 'mime-w3m-view-this-url map)
+    (substitute-key-definition 'w3m-quit 'mime-preview-quit map)
+    (substitute-key-definition 'w3m-view-previous-page nil map)
+    (substitute-key-definition 'w3m-reload-this-page nil map)
+    (setq mime-w3m-mode-map map)))
+
+(defun mime-w3m-view-this-url ()
+  "*View the URL of the link under point."
+  (interactive)
+  (let ((url (w3m-anchor)))
+    (when url (w3m url))))
+
+(defun mime-w3m-mouse-view-this-url (event)
+  (interactive "e")
+  (mouse-set-point event)
+  (let ((url (w3m-anchor)) (img (w3m-image)))
+    (cond
+     (url (w3m url))
+     (img (w3m-view-image))
+     (t (message "No URL at point.")))))
 
 (provide 'mime-w3m)
 ;;; mime-w3m.el ends here

@@ -1,5 +1,14 @@
 2001-03-07  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
+	* mime-w3m.el: Renamed mime-w3m-preview-text/html from
+	w3m-mime-preview-text/html.  Check of user setting is required.
+	(mime-w3m-mode-map): New variable.
+	(mime-w3m-get-xref): New function.
+	(mime-w3m-view-this-url): Ditto.
+	(mime-w3m-mouse-view-this-url): Ditto.
+	(mime-w3m-preview-text/html): Use `mime-w3m-mode-map' insted of
+	`w3m-mode-map'.  Refer Xref: header to set `w3m-current-url'.
+
 	* w3m.el (w3m-exec-filter): Improved code to process prompt string.
 
 2001-03-06  Hideyuki SHIRAI  <shirai@meadowy.org>
