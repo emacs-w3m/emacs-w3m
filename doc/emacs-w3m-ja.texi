@@ -3067,7 +3067,7 @@ Use fancy faces to fontify @samp{<form>} tags.
 @vindex w3m-form-use-textarea-backup
 @vindex w3m-form-textarea-directory
 Non-@code{nil} means save and restore text that you wrote last in the
-texarea.  Files to save text are stored in the directory specified by
+textarea.  Files to save text are stored in the directory specified by
 the @code{w3m-form-textarea-directory} variable.
 @end table
 

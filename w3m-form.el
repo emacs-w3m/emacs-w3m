@@ -58,7 +58,7 @@
   :type 'boolean)
 
 (defcustom w3m-form-use-textarea-backup t
-  "*Non-nil means save and restore text that you wrote last in the texarea.
+  "*Non-nil means save and restore text that you wrote last in the textarea.
 Files to save text are stored in the directory specified by the
 `w3m-form-textarea-directory' variable."
   :group 'w3m
