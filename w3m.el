@@ -3003,10 +3003,12 @@ is performed.  Otherwise, COUNT is treated as 1 by default."
 							 (match-beginning 3))))
 	    (setq path "/"
 		  base (concat base path))))
-	(cond ((eq ?# (aref url 0))
+	(cond ((and (>= (length url) 1)
+		    (eq ?# (aref url 0)))
 	       ;; Maybe a relative URL on the BASE.
 	       (concat base url))
-	      ((eq ?/ (aref url 0))
+	      ((and (>= (length url) 1)
+		    (eq ?/ (aref url 0)))
 	       (if scheme
 		   (if (and (>= (length url) 2)
 			    (eq ?/ (aref url 1)))

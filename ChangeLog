@@ -1,5 +1,9 @@
 2001-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-expand-url): Emergency fixed.
+
+2001-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-expand-url): Make it work correctly when a url
 	begins with "//".
 
