@@ -90,7 +90,9 @@
 
 (require 'w3m-hist)
 (require 'timezone)
-(require 'ccl nil t)
+(condition-case nil
+    (require 'ccl)
+  (error))
 
 ;; Add-on programs:
 (eval-and-compile

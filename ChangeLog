@@ -1,3 +1,10 @@
+2001-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Don't specify the 3rd arg NOERROR to `require'.  It is
+	needed that if EFS is loaded in XEmacs, the function `require'
+	will be replaced by `efs-require' which doesn't allow the 3rd arg.
+	So, use `condition-case' instead.
+
 2001-10-25  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile 
