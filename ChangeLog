@@ -50,7 +50,7 @@
 	(w3m-redisplay-with-charset): Ditto.
 	(w3m-redisplay-with-content-type): Ditto.
 	(w3m-about-header): Strip authentication part from URL before
-	extracting titles.  Encode special characters in the title.
+	extracting titles.
 	(w3m-about-db-history): Encode special characters in the title.
 
 2003-07-02  NAKAJIMA Mikio  <minakaji@namazu.org>
