@@ -1,3 +1,8 @@
+2001-11-24  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-fml.el (shimbun-get-headers): Call
+	`shimbun-decode-entities' and `shimbun-remove-markup' for SUBJECT.
+
 2001-11-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (top, w3m-about): Change the URL of w3m's official page.

@@ -81,6 +81,11 @@
 		    date (shimbun-fml-parse-time (match-string 3))
 		    subject (match-string 4)
 		    from (match-string 5))
+	      (setq subject (with-temp-buffer
+			      (insert subject)
+			      (shimbun-decode-entities)
+			      (shimbun-remove-markup)
+			      (buffer-string)))
 	      (if (shimbun-search-id shimbun id)
 		  (throw 'stop nil))
 	      (forward-line 1)
