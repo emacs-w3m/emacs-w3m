@@ -1,3 +1,13 @@
+2004-01-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-cnet.el (shimbun-cnet): Define class with
+	`shimbun-japanese-newspaper'.
+	(shimbun-cnet-content-start): Invalidate it with "".
+	(shimbun-cnet-content-end): Exclude newlines.
+	(shimbun-index-url): Change the return value.
+	(shimbun-get-headers): Rewrite.
+	(shimbun-make-contents): Find content-start.
+
 2004-01-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-itmedia.el (shimbun-itmedia-clean-text-page): Follow
