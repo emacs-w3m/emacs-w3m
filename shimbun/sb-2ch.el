@@ -63,7 +63,7 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
   (let ((case-fold-search t)
 	(url (shimbun-index-url shimbun))
 	num uname uaddr uid subject date id
-	references body st point)
+	references body st point from)
     (goto-char (point-max))
     (while (re-search-backward "<dt>\\([0-9]+\\) ：" nil t)
       (goto-char (match-end 0))
