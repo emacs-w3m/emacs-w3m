@@ -84,12 +84,14 @@
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-command-arguments
-  '("-T" "text/html" "-t" tab-width "-halfdump" "-S"
-    "-cols" (1- (frame-width)))
-  "*Arguments of w3m."
+(defcustom w3m-fill-column -1
+  "*Fill column of w3m.
+Value is integer.
+Positive value is for fixed column rendering.
+Zero or negative value is for fitting w3m output with current frame
+width using expression (+ (frame-width) VALUE)."
   :group 'w3m
-  :type '(repeat sexp))
+  :type 'integer)
 
 (defcustom w3m-mailto-url-function nil
   "*Mailto handling Function."
@@ -113,6 +115,15 @@
   "*Coding system for w3m."
   :group 'w3m
   :type 'symbol)
+
+(defcustom w3m-default-url-coding-system
+  (w3m-static-if (boundp 'MULE) '*euc-japan* 'euc-japan)
+  "*Coding system to encode search query string.
+This value is default and used only when spec defined by
+`w3m-search-engine-alist' does not have encoding information."
+  :group 'w3m
+;  :type 'string)
+  :type '(restricted-sexp :match-alternatives (coding-system-p)))
 
 (defcustom w3m-use-cygdrive t
   "*If non-nil, use /cygdrive/ rule when expand-file-name."
@@ -338,17 +349,26 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :type '(repeat (cons symbol coding-system)))
 
 (defcustom w3m-search-engine-alist
-  '(("yahoo" . "http://search.yahoo.com/bin/search?p=%s")
-    ("google" . "http://www.google.com/search?q=%s")
-    ("google-ja" . "http://www.google.com/search?q=%s&hl=ja&lr="))
+  '(("yahoo" "http://search.yahoo.com/bin/search?p=%s" nil)
+    ("yahoo-ja" "http://search.yahoo.co.jp/bin/search?p=%s" euc-japan)
+    ("google" "http://www.google.com/search?q=%s" nil)
+    ("google-ja" "http://www.google.com/search?q=%s&hl=ja&lr=" shift_jis)
+    ("goo-ja" "http://www.goo.ne.jp/default.asp?MT=%s" euc-japan))
   "*An alist of search engines.
-Each elemnt looks like (ENGINE . ACTION)
+Each elemnt looks like (ENGINE ACTION CODING)
 ENGINE is a string, the name of the search engine.
 ACTION is a string, the URL that performs a search.
-ACTION must contain a \"%s\", which is substituted by a query string."
+ACTION must contain a \"%s\", which is substituted by a query string.
+CODING is optional value which is coding system for query string.
+If omitted, `w3m-default-url-coding-system' is used.
+"
   :group 'w3m
-  :type '(repeat (cons (string :tag "Engine") (string :tag "Action"))))
-
+  :type '(repeat (list (string :tag "Engine") 
+		       (string :tag "Action")
+		       (restricted-sexp :match-alternatives (coding-system-p
+							     nil)
+					:tag "Coding"))))
+					
 (defcustom w3m-default-search-engine "yahoo"
   "*Default search engine name.
 See also `w3m-search-engine-alist'."
@@ -431,6 +451,12 @@ for a charset indication")
     "\\(\"\\(\\([^\"\\\\]+\\|\\\\.\\)+\\)\"\\|[^\"<> \t\r\f\n]*\\)"
     "Regexp used in parsing to detect string."))
 
+(defconst w3m-command-arguments
+  '("-T" "text/html" "-t" tab-width "-halfdump"
+    "-cols" (if (< 0 w3m-fill-column)
+		w3m-fill-column		; fixed columns
+	      (+ (frame-width) (or w3m-fill-column -1)))) ; fit for frame
+  "Arguments for execution of w3m.")
 
 (defun w3m-message (&rest args)
   "Alternative function of `message' for w3m.el."
@@ -1818,6 +1844,8 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 
 \\[scroll-up]	Scroll up.
 \\[scroll-down]	Scroll down.
+\\[w3m-scroll-left]	Scroll to left.
+\\[w3m-scroll-right]	Scroll to right.
 
 \\[next-line]	Next line.
 \\[previous-line]	Previous line.
@@ -2125,7 +2153,7 @@ ex.) c:/dir/file => //c/dir/file"
     (w3m-rendering-region start end)
     (w3m-fontify)))
 
-(defun w3m-escape-query-string (str)
+(defun w3m-escape-query-string (str &optional coding)
   (mapconcat (lambda (ch)
 	       (cond
 		((string-match "[-a-zA-Z0-9_]" (char-to-string ch)) ; xxx?
@@ -2133,7 +2161,8 @@ ex.) c:/dir/file => //c/dir/file"
 		((char-equal ch ? ) "+") ; space character
 		(t
 		 (format "%%%02X" ch)))) ; escape
-	     (string-to-list str)
+	     (string-to-list (encode-coding-string 
+			      str (or coding 'iso-2022-7bit)))
 	     ""))
 
 (defun w3m-search (search-engine query)
@@ -2151,9 +2180,10 @@ engine deinfed in `w3m-search-engine-alist'.  Otherwise use
      (list engine
 	   (read-string (format "%s search: " engine)))))
   (unless (string= query "")
-    (let ((pair (assoc search-engine w3m-search-engine-alist)))
-      (if pair
-	  (w3m (format (cdr pair) (w3m-escape-query-string query)))
+    (let ((info (assoc search-engine w3m-search-engine-alist)))
+      (if info
+	  (w3m (format (cadr info)
+		       (w3m-escape-query-string query (caddr info))))
 	(error "Unknown search engine: %s" engine)))))
 
 (provide 'w3m)
