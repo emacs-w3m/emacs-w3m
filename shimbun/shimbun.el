@@ -525,7 +525,7 @@ entities."
 	      (with-temp-buffer
 		(set-buffer-multibyte nil)
 		(let ((type (shimbun-retrieve-url url nil t base-url)))
-		  (when type
+		  (when (string-match "\\`image/" type)
 		    (push (setq img
 				(cons url
 				      (shimbun-make-image-entity
