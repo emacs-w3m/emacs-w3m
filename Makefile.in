@@ -13,7 +13,7 @@ SHELL        = /bin/sh
 EMACS   = @EMACS@
 FLAGS   = -q -no-site-file -batch -l w3mhack.el $(ADDITIONAL_LOAD_PATH)
 
-PACKAGE = w3m_el
+PACKAGE = emacs-w3m
 TARBALL = $(PACKAGE)-$(VERSION).tar.gz
 DISTDIR = $(PACKAGE)-$(VERSION)
 DOCS    = COPYING ChangeLog ChangeLog.1 FAQ FAQ.ja README README.ja \
