@@ -241,6 +241,15 @@ show below example,
 (defvar mew-shimbun-input-hist nil)
 
 ;;; Macro:
+(eval-when-compile
+  (if (fboundp 'static-if)
+      nil
+    (defmacro static-if (cond then &rest else)
+      ;; Like `if', but evaluate COND at compile time.
+      (if (eval cond)
+	  then
+	`(progn ,@else)))))
+
 (defmacro mew-shimbun-db-search-id (id)
   `(assoc ,id mew-shimbun-db))
 
@@ -270,11 +279,36 @@ show below example,
 		    (format mew-shimbun-lock-format2 group server get count sum))
   (force-mode-line-update))
 
-(w3m-static-if (fboundp 'mew-summary-visit-folder)
+(static-if (fboundp 'mew-summary-visit-folder)
     (defalias 'mew-shimbun-visit-folder 'mew-summary-visit-folder)
   (defun mew-shimbun-visit-folder (folder)
     (mew-summary-ls
      (mew-summary-switch-to-folder folder))))
+
+(if (featurep 'xemacs)
+    nil
+  (eval-and-compile
+    (autoload 'ad-arglist "advice"))
+  (eval-when-compile
+    (defmacro function-max-args (function)
+      ;; Return the maximum number of arguments a function may be called with.
+      ;; The function may be any form that can be passed to `funcall',
+      ;; any special form, or any macro.
+      ;; If the function takes an arbitrary number of arguments or is
+      ;; a built-in special form, nil is returned."
+      (let ((fn (make-symbol "emulating-function-max-args-function"))
+	    (arglist (make-symbol "emulating-function-max-args-arglist")))
+	`(let* ((,fn ,function)
+		(,arglist (ad-arglist (progn
+					(while (symbolp ,fn)
+					  (setq ,fn (symbol-function ,fn)))
+					,fn))))
+	   (cond ((memq '&rest ,arglist)
+		  nil)
+		 ((memq '&optional ,arglist)
+		  (1- (length ,arglist)))
+		 (t
+		  (length ,arglist))))))))
 
 ;;; Main:
 ;;;###autoload
@@ -333,7 +367,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
       (setcar mew-shimbun-input-hist fld))
     (setq mew-input-folder-hist (cons fld mew-input-folder-hist))
     (let ((newfld (mew-summary-switch-to-folder fld)))
-      (if (eq 1 (w3m-function-max-args 'mew-summary-ls))
+      (if (eq 1 (function-max-args 'mew-summary-ls))
 	  (mew-summary-ls newfld)
 	(dont-compile;; To avoid a byte-compile warnning.
 	  (mew-summary-ls newfld newfld))))))
@@ -457,7 +491,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	      (setq dispcount (1+ dispcount))
 	      (mew-shimbun-mode-display group server count dispcount sum))))
       (mew-summary-unlock)
-      (w3m-static-if (fboundp 'mew-folder-insert)
+      (static-if (fboundp 'mew-folder-insert)
 	  (mew-folder-insert fld)
 	(mew-local-folder-insert fld))
       (shimbun-close-group shimbun)
@@ -774,7 +808,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 (defun mew-shimbun-scan-message (fld msg)
   (set-buffer-multibyte t)
   (let ((width (1- (mew-scan-width)))
-	(vec (w3m-static-if (fboundp 'mew-pop-scan-header)
+	(vec (static-if (fboundp 'mew-pop-scan-header)
 		 (mew-pop-scan-header)
 	       (mew-scan-header))))
     (mew-scan-set-folder vec fld)
