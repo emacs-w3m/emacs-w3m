@@ -442,19 +442,17 @@ Generated article have a multipart/related content-type."
 
 (luna-define-method shimbun-entity-insert :around ((entity
 						    shimbun-text-entity))
-  (let ((begin (point)))
-    (save-restriction
-      ;; XEmacs doesn't save the point while performing `encode-coding-region'.
-      (narrow-to-region begin begin)
-      (insert (shimbun-entity-data-internal entity))
-      (encode-coding-region begin (point)
-			    (mime-charset-to-coding-system
-			     (shimbun-text-entity-charset entity
-							  begin (point))))
-      (goto-char (point-max)))
-    (save-excursion
-      (goto-char begin)
-      (luna-call-next-method))))
+  (save-restriction
+    (narrow-to-region (point) (point))
+    (insert (shimbun-entity-data-internal entity))
+    (encode-coding-region (point-min) (point-max)
+			  (mime-charset-to-coding-system
+			   (shimbun-text-entity-charset entity
+							(point-min)
+							(point-max))))
+    (goto-char (point-min))
+    (luna-call-next-method)
+    (goto-char (point-max))))
 
 ;;; Class for image entities:
 (eval-and-compile
