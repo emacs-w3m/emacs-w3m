@@ -1,3 +1,20 @@
+2004-07-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-weather.el: Reconstructed to follow the change of site
+	design.
+	(w3m-weather-completion-table, w3m-weather-filter-functions):
+	Update.
+	(w3m-weather-extract-contents, w3m-weather-adjust-contents): New
+	functions.
+	(w3m-weather-remove-headers, w3m-weather-remove-footers,
+	w3m-weather-get-seikatu-sisu, w3m-weather-insert-seikatu-sisu):
+	Removed.
+
+2004-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add the
+	nankyoku-people group.
+
 2004-06-27  Yoshitaka Taki  <taki@tawagoto.org>
 
 	* shimbun/sb-impress.el (shimbun-impress-groups-alist): Improve

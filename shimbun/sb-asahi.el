@@ -166,6 +166,10 @@
 	 "\\([0-3][0-9]\\)"
 	 "[)）]")
        1 nil 2 3 4 5)
+      ("nankyoku-people" "越冬隊の人びと" "nankyoku/people/index.html"
+       ,@(let ((people (copy-sequence antarctica)))
+	   (setcar people (format (car people) "people"))
+	   people))
       ("national" "社会" "%s/" ,@default)
       ("politics" "政治" "%s/" ,@default)
       ("science" "科学" "%s/" ,@default)

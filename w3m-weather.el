@@ -67,6 +67,7 @@
 	      ("1d/2100" "道南・胆振" "dounaniburi" "iburi")
 	      ("1d/2200" "道南・日高" "dounanhidaka" "hidaka")
 	      ("1d/2300" "道南・渡島" "dounanoshima" "oshima")
+	      ("1d/2400" "道南・檜山" "dounanhiyama" "hiyama")
 	      ("2/3110" "青森県・津軽" "aomorikentsugaru" "tsugaru")
 	      ("2/3120" "青森県・下北" "aomorikenshimokita" "shimokita")
 	      ("2/3130" "青森県・三八上北"
@@ -76,8 +77,8 @@
 	      ("3/3330" "岩手県・沿岸南部" "iwatekenengannanbu")
 	      ("5/3210" "秋田県・沿岸部" "akitakenenganbu")
 	      ("5/3220" "秋田県・内陸部" "akitakennairikubu")
-	      ("4/3410" "宮城県・平野部" "miyagikenheiyabu")
-	      ("4/3420" "宮城県・山沿い" "miyagikenyamazoi")
+	      ("4/3410" "宮城県・東部" "miyagikentoubu")
+	      ("4/3420" "宮城県・西部" "miyagikenseibu")
 	      ("6/3510" "山形県・村山" "yamagatakenmurayama" "murayama")
 	      ("6/3520" "山形県・置賜" "yamagatakenokitama" "okitama")
 	      ("6/3530" "山形県・庄内" "yamagatakenshonai" "shounai")
@@ -97,12 +98,13 @@
 	      ("12/4510" "千葉県・北西部" "chibakenhokuseibu")
 	      ("12/4520" "千葉県・北東部" "chibakenhokutoubu")
 	      ("12/4530" "千葉県・南部" "chibakennanbu")
-	      ("13/9900" "東京都・父島" "toukyoutochichijima" "chichijima")
-	      ("13/4400" "東京都・東京" "toukyoutotoukyou" "toukyou")
-	      ("13/0" "東京都・伊豆諸島北部"
+	      ("13/4410" "東京都・東京" "toukyoutotoukyou" "toukyou")
+	      ("13/4420" "東京都・伊豆諸島北部"
 	       "toukyoutoizushotouhokubu" "izushotouhokubu")
 	      ("13/100" "東京都・伊豆諸島南部"
 	       "toukyoutoizushotounanbu" "izushotounanbu")
+	      ("13/9600" "東京都・小笠原諸島"
+	       "toukyoutoogasawarashotou" "ogasawarashotou")
 	      ("14/4610" "神奈川県・東部" "kanagawakentoubu")
 	      ("14/4620" "神奈川県・西部" "kanagawakenseibu")
 	      ("15/5410" "新潟県・下越" "niigatakenkaetsu" "kaetsu")
@@ -329,11 +331,10 @@
 			    w3m-weather-completion-table))))
 
 (defcustom w3m-weather-filter-functions
-  '(w3m-weather-remove-headers
-    w3m-weather-remove-footers
+  '(w3m-weather-extract-contents
+    w3m-weather-adjust-contents
     w3m-weather-expand-anchors
-    w3m-weather-insert-title
-    w3m-weather-insert-seikatu-sisu)
+    w3m-weather-insert-title)
   "Filter functions to remove useless tags."
   :group 'w3m
   :type 'hook)
@@ -436,17 +437,42 @@
 					    no-cache handler)))
     "text/html"))
 
-(defun w3m-weather-remove-headers (&rest args)
-  "Remove header of the weather forecast page."
+(defun w3m-weather-extract-contents (&rest args)
+  "Remove both header and footer in the weather forecast pages."
   (goto-char (point-min))
-  (when (search-forward "<!--- TITLE_TABLE_1 --->" nil t)
-    (delete-region (point-min) (match-beginning 0))))
-
-(defun w3m-weather-remove-footers (&rest args)
-  "Remove footer of the weather forecast page."
+  (when (search-forward "<!---MAIN_CONTENTS_table--->" nil t)
+    (delete-region (point-min) (match-beginning 0)))
   (goto-char (point-max))
-  (when (search-backward "<!--- LEISURE_LINK --->" nil t)
+  (when (search-backward "<!---Local_Link--->" nil t)
     (delete-region (match-beginning 0) (point-max))))
+
+(defun w3m-weather-adjust-contents (&rest args)
+  ;; Remove spacers.
+  (goto-char (point-min))
+  (while (search-forward "<tr><td>\
+<img src=\"http://img.yahoo.co.jp/images/clear.gif\" width=1>\
+</td></tr>" nil t)
+    (delete-region (match-beginning 0) (match-end 0)))
+  ;; Remove execessive tables.
+  (goto-char (point-min))
+  (while (re-search-forward "<table[^>]*>[ \t\r\f\n]*</table>" nil t)
+    (delete-region (match-beginning 0) (match-end 0)))
+  (goto-char (point-min))
+  ;; Remove too narrow width parameters.
+  (while (re-search-forward "<td[^>]*\\(width=1%\\)" nil t)
+    (delete-region (match-beginning 1) (match-end 1)))
+  ;; Display border lines.
+  (goto-char (point-min))
+  (while (re-search-forward "\
+<table border=\\(0\\) cellpadding=[1-9][0-9]* cellspacing=[1-9][0-9]*" nil t)
+    (goto-char (match-beginning 1))
+    (delete-char 1)
+    (insert "1"))
+  (goto-char (point-min))
+  (while (re-search-forward
+	  "<td align=center width=25%>[ \t\r\f\n]*<table border=1" nil t)
+    (delete-char -1)
+    (insert "0")))
 
 (defun w3m-weather-insert-title (area url &rest args)
   "Insert title."
@@ -477,47 +503,6 @@
 					 (match-string-no-properties 3)
 					 (match-string-no-properties 1)))
 				    url)))))
-
-(defun w3m-weather-get-seikatu-sisu (url no-cache handler)
-  (lexical-let ((url url))
-    (w3m-process-do-with-temp-buffer
-	(type (w3m-retrieve url nil no-cache nil nil handler))
-      (w3m-decode-buffer url)
-      (goto-char (point-min))
-      (let (sisu-list)
-	(when (re-search-forward "<td\\([ \t\r\f\n][^>]*\\)>指　数</td>" nil t)
-	  (while (re-search-forward "<td nowrap [^>]+>　*\\([^　\n]+\\)　*</td>" nil t)
-	    (let ((name-sisu (match-string 1))
-		  sisu)
-	      (dotimes (i 2)
-		(forward-line 1)
-		(when (looking-at "<td bgcolor=\"#eeeeee\" [^>]+>\\([^\n]+\\)</td>")
-		  (push (list name-sisu (match-string 1)) sisu)))
-	      (push sisu sisu-list)))
-	  (nreverse sisu-list))))))
-
-(defun w3m-weather-insert-seikatu-sisu (area url no-cache handler)
-  (goto-char (point-min))
-  (when (re-search-forward "<a href=\"\\([^\"]+\\)\">生活指数</a>" nil t)
-    (w3m-process-do
-	(sisu-list
-	 (w3m-weather-get-seikatu-sisu (match-string 1) no-cache handler))
-      (let ((case-fold-search t))
-	(goto-char (point-min))
-	(when (search-forward "</table>\n<!--- /WEATHER_TABLE_1 --->\n" nil t)
-	  (goto-char (match-beginning 0))
-	  (dolist (seikatu-sisu sisu-list)
-	    (insert "<tr>\n")
-	    (dolist (sisu (reverse seikatu-sisu))
-	      (insert "<td width=\"50%\"><table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td nowrap bgcolor=\"#CCCCFF\" width=\"100\" valign=\"top\">")
-	      (insert (format "%s</td>\n" (car sisu)))
-	      (insert (format "<td bgcolor=\"#eeeeee\" align=\"center\">%s</td>\n</tr>\n</table>\n</td>\n" (cadr sisu))))
-	    (insert "</tr>\n"))
-	  (goto-char (point-min))
-	  (when (search-forward "<!--- EXPONENT_LINK --->" nil t)
-	    (let ((bg (match-beginning 0)))
-	      (when (search-forward "<!--- /EXPONENT_LINK --->" nil t)
-		(delete-region bg (match-end 0))))))))))
 
 (provide 'w3m-weather)
 
