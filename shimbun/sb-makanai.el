@@ -1,4 +1,4 @@
-;;; sb-makanai.el --- shimbun backend for makanai
+;;; sb-makanai.el --- shimbun backend for www.makanai.com -*- coding: iso-2022-7bit -*-
 
 ;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 
@@ -36,11 +36,9 @@
   (luna-define-internal-accessors 'shimbun-makanai))
 
 (defvar shimbun-makanai-url "http://www.makanai.com/")
-(defvar shimbun-makanai-groups '("F1news"))
+(defvar shimbun-makanai-groups '("f1news"))
 (defvar shimbun-makanai-group-alist
-  '(("F1news" . "http://www1.wisnet.ne.jp/~matunaga/")))
-
-(defvar shimbun-makanai-coding-system 'shift_jis)
+  '(("f1news" . "http://www1.wisnet.ne.jp/~matunaga/")))
 (defvar shimbun-makanai-from-address  "matunaga@mail1.wisnet.ne.jp")
 (defvar shimbun-makanai-content-hash-length 31)
 

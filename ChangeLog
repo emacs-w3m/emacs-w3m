@@ -1,5 +1,19 @@
 2001-08-24  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
+	* README.shimbun.ja: Add information on makanai, f1fan,
+	f1express and isize-sports.
+
+	* shimbun/sb-makanai.el: Specify iso-2022-7bit loading for the
+	flie.
+	(shimbun-makanai-groups): Convert a group name to lower case.
+	(shimbun-makanai-group-alist): Ditto.
+	(shimbun-makanai-coding-system): Abolished.
+
+	* shimbun/sb-isize-sports.el (shimbun-isize-sports-group-alist):
+	Convert group names to lower case.
+
+	* shimbun/sb-f1fan.el: Specify iso-2022-7bit loading for the flie.
+
 	* shimbun/sb-f1express.el, shimbun/sb-f1fan.el,
 	shimbun/sb-isize-sports.el, shimbun/sb-makanai.el: New files.
 

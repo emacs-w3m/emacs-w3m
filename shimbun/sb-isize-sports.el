@@ -1,4 +1,4 @@
-;;; sb-isize-sports.el --- shimbun backend for www.isize.com/sports
+;;; sb-isize-sports.el --- shimbun backend for www.isize.com/sports  -*- coding: iso-2022-7bit -*-
 
 ;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 
@@ -42,18 +42,18 @@
     ("f1" "f1"
      "<TD[^>]*>&nbsp;&nbsp;<A href=\"\\(news_detail_N\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9][0-9]\\)\\.html\\)\"[^>]*><FONT[^>]*>\\([^<]*\\)</FONT></A></TD>"
      "<P class=\"news\">" "</P>")
-    ("MLB" "mlb"
+    ("mlb" "mlb"
      "<TD[^>]*><A href=\"\\(news_\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)_\\([0-9][0-9][0-9]\\)\\.html\\)\"><FONT[^>]*>\n[\\s ]+\n[\\s ]+\\([^<]+\\)\n[\\s ]+\n[\\s ]+</FONT></A></TD>"
      "<!--本文start-->"
      "<!--本文end-->")
-    ("NBA" "nba"
+    ("nba" "nba"
      "<TD[^>]*>&nbsp;&nbsp;<A href=\"\\(news_detail_N\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9][0-9]\\)\\.html\\)\"[^>]*><FONT[^>]*>\\([^<]+\\)</FONT></A></TD>"
      "<P class=\"news\">" "</P>")
-    ("NFL" "american/nfl"
+    ("nfl" "american/nfl"
      "<TD[^>]*><A href=\"\\(N\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9][0-9]\\)\\.html\\)\"[^>]*><FONT[^>]*>\\([^<]+\\)</FONT></A></TD>"
      "<!--# NEWS_DETAIL_MESSAGE START #-->"
      "<!--# NEWS_DETAIL_MESSAGE END #-->")
-    ("X-LEAGUE" "american/x"
+    ("x-league" "american/x"
      "<TD[^>]*><A href=\"\\(N\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9][0-9]\\)\\.html\\)\"[^>]*><FONT[^>]*>\\([^<]+\\)</FONT></A></TD>"
      "<!--# NEWS_DETAIL_MESSAGE START #-->"
      "<!--# NEWS_DETAIL_MESSAGE END #-->")

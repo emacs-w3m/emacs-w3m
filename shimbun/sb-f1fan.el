@@ -1,4 +1,4 @@
-;;; sb-f1fan.el --- shimbun backend for www.ksky.ne.jp/~tahara/f1/
+;;; sb-f1fan.el --- shimbun backend for www.ksky.ne.jp/~tahara/f1/  -*- coding: iso-2022-7bit -*-
 
 ;; Author: MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 
