@@ -1,16 +1,11 @@
 2001-11-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-print-this-url): View current image info.
-	(w3m-goto-next-form-or-image): Rename from `w3m-goto-next-form'
-	and handle w3m-image property.
-	(w3m-next-form-or-image): Rename from `w3m-next-form' and handle
-	w3m-image property.
-	(w3m-goto-previous-form-or-image): Rename from
-	`w3m-goto-previous-form' and handle w3m-image property.
-	(w3m-previous-form-or-image): Rename from `w3m-previous-form' and
-	handle w3m-image property.
-	(w3m-lynx-like-map, w3m-info-like-map): Modify binding "]" and "["
-	as `w3m-next-form-or-image' and `w3m-previous-form-or-image'.
+	(w3m-goto-next-image, w3m-next-image, w3m-goto-previous-image)
+	(w3m-previous-image): New functions.
+	(w3m-lynx-like-map, w3m-info-like-map): Bind "}" as the key to
+	call `w3m-next-image'. Bind "{" as the key to call
+	`w3m-previous-image'.
 	(w3m-mode): Modify dos-string.
 
 2001-11-19  Masatake YAMATO  <jet@gyve.org>

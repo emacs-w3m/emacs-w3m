@@ -3399,92 +3399,151 @@ session."
 		    w3m-goto-anchor-hist))))
     (w3m-print-this-url)))
 
-(defun w3m-goto-next-form-or-image ()
-  ;; move to the end of the current form or image
+(defun w3m-goto-next-form ()
+  ;; move to the end of the current form
   (when (w3m-action (point))
     (goto-char (next-single-property-change (point) 'w3m-action)))
+  ;; find the next form
+  (or (w3m-action (point))
+      (let ((pos (next-single-property-change (point) 'w3m-action)))
+	(when pos
+	  (goto-char pos)
+	  t))))
+ 
+(defun w3m-next-form (&optional arg)
+  "Move cursor to the next form."
+  (interactive "p")
+  (unless arg (setq arg 1))
+  (if (null (memq last-command '(w3m-next-form w3m-previous-form)))
+      (setq w3m-goto-anchor-hist
+	    (list (get-text-property (point) 'w3m-action)))
+    (if (eq last-command 'w3m-previous-form)
+	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
+  (if (< arg 0)
+      (w3m-previous-form (- arg))
+    (while (> arg 0)
+      (unless (w3m-goto-next-form)
+	;; search from the beginning of the buffer
+	(setq w3m-goto-anchor-hist nil)
+	(goto-char (point-min))
+	(w3m-goto-next-form))
+      (setq arg (1- arg))
+      (if (member (w3m-action) w3m-goto-anchor-hist)
+	  (setq arg (1+ arg))
+	(setq w3m-goto-anchor-hist
+	      (cons (get-text-property (point) 'w3m-action)
+		    w3m-goto-anchor-hist))))
+    (w3m-print-this-url)))
+
+(defun w3m-goto-previous-form ()
+  ;; move to the beginning of the current form
+  (when (w3m-action (point))
+    (goto-char (previous-single-property-change (1+ (point))
+						'w3m-action)))
+  ;; find the previous form
+  (let ((pos (previous-single-property-change (point) 'w3m-action)))
+    (if pos
+	(goto-char
+	 (if (w3m-action pos) pos
+	   (previous-single-property-change pos 'w3m-action))))))
+
+(defun w3m-previous-form (&optional arg)
+  "Move cursor to the previous form."
+  (interactive "p")
+  (unless arg (setq arg 1))
+  (if (null (memq last-command '(w3m-next-form w3m-previous-form)))
+      (setq w3m-goto-anchor-hist
+	    (list (get-text-property (point) 'w3m-action)))
+    (if (eq last-command 'w3m-next-form)
+	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
+  (if (< arg 0)
+      (w3m-next-form (- arg))
+    (while (> arg 0)
+      (unless (w3m-goto-previous-form)
+	;; search from the end of the buffer
+	(setq w3m-goto-anchor-hist nil)
+	(goto-char (point-max))
+	(w3m-goto-previous-form))
+      (setq arg (1- arg))
+      (if (member (w3m-action) w3m-goto-anchor-hist)
+	  (setq arg (1+ arg))
+	(setq w3m-goto-anchor-hist
+	      (cons (get-text-property (point) 'w3m-action)
+		    w3m-goto-anchor-hist))))
+    (w3m-print-this-url)))
+
+(defun w3m-goto-next-image ()
+  ;; move to the end of the current image
   (when (w3m-image (point))
     (goto-char (next-single-property-change (point) 'w3m-image)))
   ;; find the next form or image
-  (or (w3m-action (point)) (w3m-image (point))
-      (let* ((pos1 (next-single-property-change (point) 'w3m-action))
-	     (pos2 (next-single-property-change (point) 'w3m-image))
-	     (pos (or (and pos1 pos2 (min pos1 pos2)) pos1 pos2)))
+  (or (w3m-image (point))
+      (let ((pos (next-single-property-change (point) 'w3m-image)))
 	(when pos
 	  (goto-char pos)
 	  t))))
 
-(defun w3m-next-form-or-image (&optional arg)
-  "Move cursor to the next form or image."
+(defun w3m-next-image (&optional arg)
+  "Move cursor to the next image."
   (interactive "p")
   (unless arg (setq arg 1))
   (if (null (memq last-command
-		  '(w3m-next-form-or-image w3m-previous-form-or-image)))
+		  '(w3m-next-image w3m-previous-image)))
       (setq w3m-goto-anchor-hist
 	    (list (get-text-property (point) 'w3m-action)))
-    (if (eq last-command 'w3m-previous-form-or-image)
+    (if (eq last-command 'w3m-previous-image)
 	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
   (if (< arg 0)
-      (w3m-previous-form-or-image (- arg))
+      (w3m-previous-image (- arg))
     (while (> arg 0)
-      (unless (w3m-goto-next-form-or-image)
+      (unless (w3m-goto-next-image)
 	;; search from or image the beginning of the buffer
 	(setq w3m-goto-anchor-hist nil)
 	(goto-char (point-min))
-	(w3m-goto-next-form-or-image))
+	(w3m-goto-next-image))
       (setq arg (1- arg))
-      (if (member (or (w3m-action) (w3m-image)) w3m-goto-anchor-hist)
+      (if (member (w3m-image) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
 	(setq w3m-goto-anchor-hist
-	      (cons (or (get-text-property (point) 'w3m-action)
-			(get-text-property (point) 'w3m-image))
+	      (cons (get-text-property (point) 'w3m-image)
 		    w3m-goto-anchor-hist))))
     (w3m-print-this-url)))
 
-(defun w3m-goto-previous-form-or-image ()
-  ;; move to the beginning of the current form or image
-  (when (w3m-action (point))
-    (goto-char (previous-single-property-change (1+ (point))
-						'w3m-action)))
+(defun w3m-goto-previous-image ()
+  ;; move to the beginning of the current image
   (when (w3m-image (point))
     (goto-char (previous-single-property-change (1+ (point))
 						'w3m-image)))
   ;; find the previous form or image
-  (let* ((pos1 (previous-single-property-change (point) 'w3m-action))
-	 (pos2 (previous-single-property-change (point) 'w3m-image))
-	 (pos (or (and pos1 pos2 (max pos1 pos2)) pos1 pos2)))
+  (let ((pos (previous-single-property-change (point) 'w3m-image)))
     (if pos
 	(goto-char
-	 (if (or (w3m-action pos) (w3m-image pos)) pos
-	   (progn
-	     (setq pos1 (previous-single-property-change pos 'w3m-action))
-	     (setq pos2 (previous-single-property-change pos 'w3m-image))
-	     (or (and pos1 pos2 (max pos1 pos2)) pos1 pos2)))))))
+	 (if (w3m-image pos) pos
+	   (previous-single-property-change pos 'w3m-image))))))
 
-(defun w3m-previous-form-or-image (&optional arg)
-  "Move cursor to the previous form or image."
+(defun w3m-previous-image (&optional arg)
+  "Move cursor to the previous image."
   (interactive "p")
   (unless arg (setq arg 1))
   (if (null (memq last-command
-		  '(w3m-next-form-or-image w3m-previous-form-or-image)))
+		  '(w3m-next-image w3m-previous-image)))
       (setq w3m-goto-anchor-hist
 	    (list (get-text-property (point) 'w3m-action)))
-    (if (eq last-command 'w3m-next-form-or-image)
+    (if (eq last-command 'w3m-next-image)
 	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
   (if (< arg 0)
-      (w3m-next-form-or-image (- arg))
+      (w3m-next-image (- arg))
     (while (> arg 0)
-      (unless (w3m-goto-previous-form-or-image)
+      (unless (w3m-goto-previous-image)
 	;; search from the end of the buffer
 	(setq w3m-goto-anchor-hist nil)
 	(goto-char (point-max))
-	(w3m-goto-previous-form-or-image))
+	(w3m-goto-previous-image))
       (setq arg (1- arg))
-      (if (member (or (w3m-action) (w3m-image)) w3m-goto-anchor-hist)
+      (if (member (w3m-image) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
 	(setq w3m-goto-anchor-hist
-	      (cons (or (get-text-property (point) 'w3m-action)
-			(get-text-property (point) 'w3m-image))
+	      (cons (get-text-property (point) 'w3m-image)
 		    w3m-goto-anchor-hist))))
     (w3m-print-this-url)))
 
@@ -3636,8 +3695,10 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
     (define-key map "+" 'w3m-antenna-add-current-url)
-    (define-key map "]" 'w3m-next-form-or-image)
-    (define-key map "[" 'w3m-previous-form-or-image)
+    (define-key map "]" 'w3m-next-form)
+    (define-key map "[" 'w3m-previous-form)
+    (define-key map "}" 'w3m-next-image)
+    (define-key map "{" 'w3m-previous-image)
     (define-key map "H" 'w3m-gohome)
     (define-key map "A" 'w3m-antenna)
     (define-key map "W" 'w3m-weather)
@@ -3744,8 +3805,10 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "<" 'w3m-scroll-right)
     (define-key map "." 'beginning-of-buffer)
     (define-key map "^" 'w3m-view-parent-page)
-    (define-key map "]" 'w3m-next-form-or-image)
-    (define-key map "[" 'w3m-previous-form-or-image)
+    (define-key map "]" 'w3m-next-form)
+    (define-key map "[" 'w3m-previous-form)
+    (define-key map "}" 'w3m-next-image)
+    (define-key map "{" 'w3m-previous-image)
     (define-key map "\C-c\C-c" 'w3m-submit-form)
     (define-key map "\C-c\C-g" 'w3m-process-stop)
     (setq w3m-info-like-map map)))
@@ -3835,8 +3898,10 @@ Return t if deleting current frame or window is succeeded."
 
 \\[w3m-next-anchor]	Jump to next anchor.
 \\[w3m-previous-anchor]	Jump to previous anchor.
-\\[w3m-next-form-or-image]	Jump to next form or image.
-\\[w3m-previous-form-or-image]	Jump to previous form or image.
+\\[w3m-next-form]	Jump to next form.
+\\[w3m-previous-form]	Jump to previous form.
+\\[w3m-next-image]	Jump to next image.
+\\[w3m-previous-image]	Jump to previous image.
 
 \\[w3m-view-previous-page]	Back to previous page.
 \\[w3m-view-next-page]	Forward to next page.
