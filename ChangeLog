@@ -1,3 +1,15 @@
+2005-02-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-form.el: Changes to define `w3m-form-input-textarea-mode' as
+	a minor mode.
+	(w3m-form-textarea-edit-mode): New option.
+	(w3m-form-input-textarea-map): Renamed from
+	`w3m-form-input-textarea-keymap'.
+	(w3m-form-input-textarea-mode) [variable]: New internal variable.
+	(w3m-form-input-textarea-mode) [function]: Reconstructed.
+	(w3m-form-input-textarea-mode-setup): New function.
+	(w3m-form-input-textarea): Clean up.
+
 2005-02-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_PATH_EMACS): Show the correct Emacs version.

@@ -75,6 +75,17 @@
   :group 'w3m
   :type '(directory :size 0))
 
+(defcustom w3m-form-textarea-edit-mode 'fundamental-mode
+  "*Major mode to edit textarea."
+  :group 'w3m
+  :type '(choice
+	  (function :tag "Major mode")
+	  (repeat :tag "Rules to select major modes for the current page"
+	   (cons (choice (regexp :tag "Regexp matches the current page")
+			 (function :tag "Predicate checks the current page")
+			 (sexp :tag "Expression checks the current page"))
+		 (function :tag "Major mode")))))
+
 (defface w3m-form-face
   '((((class color) (background light)) (:foreground "cyan" :underline t))
     (((class color) (background dark)) (:foreground "red" :underline t))
@@ -975,16 +986,16 @@ character."
 	    (get-text-property (point) 'w3m-form-name)
 	    lines))))
 
-(defvar w3m-form-input-textarea-keymap nil)
-(unless w3m-form-input-textarea-keymap
-  (setq w3m-form-input-textarea-keymap (make-sparse-keymap))
-  (define-key w3m-form-input-textarea-keymap "\C-c\C-c"
+(defvar w3m-form-input-textarea-map nil)
+(unless w3m-form-input-textarea-map
+  (setq w3m-form-input-textarea-map (make-sparse-keymap))
+  (define-key w3m-form-input-textarea-map "\C-c\C-c"
     'w3m-form-input-textarea-set)
-  (define-key w3m-form-input-textarea-keymap "\C-c\C-q"
+  (define-key w3m-form-input-textarea-map "\C-c\C-q"
     'w3m-form-input-textarea-exit)
-  (define-key w3m-form-input-textarea-keymap "\C-c\C-k"
+  (define-key w3m-form-input-textarea-map "\C-c\C-k"
     'w3m-form-input-textarea-exit)
-  (define-key w3m-form-input-textarea-keymap "\C-x\C-s"
+  (define-key w3m-form-input-textarea-map "\C-x\C-s"
     'w3m-form-input-textarea-save))
 
 (defvar w3m-form-input-textarea-buffer nil)
@@ -1076,18 +1087,56 @@ character."
       (set-window-configuration wincfg)
       (when point (goto-char point)))))
 
-(defun w3m-form-input-textarea-mode ()
-  "\\<w3m-form-input-textarea-keymap>
-   Major mode for w3m form textarea.
+(defvar w3m-form-input-textarea-mode nil
+  "Non-nil if w3m textarea minor mode is enabled.")
+(make-variable-buffer-local 'w3m-form-input-textarea-mode)
+(unless (assq 'w3m-form-input-textarea-mode minor-mode-alist)
+  (push (list 'w3m-form-input-textarea-mode " w3m form textarea")
+	minor-mode-alist))
+(unless (assq 'w3m-form-input-textarea-mode minor-mode-map-alist)
+  (push (cons 'w3m-form-input-textarea-mode w3m-form-input-textarea-map)
+	minor-mode-map-alist))
 
-\\[w3m-form-input-textarea-set]	Save and exit from w3m form textarea mode.
-\\[w3m-form-input-textarea-exit]	Exit from w3m form textarea mode.
-\\[w3m-form-input-textarea-save]	Save textarea.
+(defun w3m-form-input-textarea-mode (&optional arg)
+  "\\<w3m-form-input-textarea-map>
+Minor mode to edit form textareas of w3m.
+
+\\[w3m-form-input-textarea-set]\
+	Set the value and exit from this textarea.
+\\[w3m-form-input-textarea-exit]\
+	Exit from this textarea without setting the value.
+\\[w3m-form-input-textarea-save]\
+	Save editing data in this textarea.
 "
-  (setq mode-name "w3m form textarea"
-	major-mode 'w3m-form-input-textarea-mode)
-  (use-local-map w3m-form-input-textarea-keymap)
-  (run-hooks 'w3m-form-input-textarea-mode-hook))
+  (interactive "P")
+  (when (setq w3m-form-input-textarea-mode
+	      (if arg
+		  (> (prefix-numeric-value arg) 0)
+		(not w3m-form-input-textarea-mode)))
+    (run-hooks 'w3m-form-input-textarea-mode-hook)))
+
+(defun w3m-form-input-textarea-mode-setup ()
+  (funcall (if (functionp w3m-form-textarea-edit-mode)
+	       w3m-form-textarea-edit-mode
+	     (or (when (buffer-live-p w3m-form-input-textarea-buffer)
+		   (with-current-buffer w3m-form-input-textarea-buffer
+		     (catch 'found-mode
+		       (dolist (elem)
+			 (when (or (when (stringp (car elem))
+				     (string-match (car elem) w3m-current-url))
+				   (when (functionp (car elem))
+				     (funcall (car elem)))
+				   (when (listp (car elem))
+				     (eval (car elem))))
+			   (throw 'found-mode (cdr elem)))))))
+		 'fundamental-mode)))
+  (w3m-form-input-textarea-mode 1)
+  (message "%s"
+	   (substitute-command-keys "Type \
+`\\<w3m-form-input-textarea-map>\\[w3m-form-input-textarea-set]' to exit \
+textarea, or type \
+`\\<w3m-form-input-textarea-map>\\[w3m-form-input-textarea-exit]' to quit \
+textarea")))
 
 (defun w3m-form-input-textarea (form hseq)
   (let* ((info  (w3m-form-textarea-info))
@@ -1103,26 +1152,50 @@ character."
 		   (max window-min-height
 			(1+ w3m-form-input-textarea-buffer-lines)))))
 	 (file (get-text-property (point) 'w3m-form-file-name))
-	 (dir (file-chase-links (expand-file-name w3m-form-textarea-directory)))
-	 (coding (w3m-form-charlst form))
-	 (bufs (buffer-list))
+	 (coding (w3m-form-get-coding-system (w3m-form-charlst form)))
 	 buffer)
     (add-hook 'kill-emacs-hook 'w3m-form-textarea-file-cleanup)
-    (setq coding (w3m-form-get-coding-system coding))
-    (unless (and (file-exists-p dir)
-		 (file-directory-p dir))
-      (when (file-regular-p dir) (delete-file dir))
-      (make-directory dir))
-    (save-excursion
-      (unless (setq buffer
-		    (catch 'detect
-		      (while bufs
-			(set-buffer (car bufs))
-			(when (and (eq major-mode 'w3m-form-input-textarea-mode)
-				   (string= w3m-form-input-textarea-file file))
-			  (throw 'detect (cons t (car bufs))))
-			(setq bufs (cdr bufs)))))
-	(setq buffer (generate-new-buffer "*w3m form textarea*"))))
+    (let ((dir (file-chase-links
+		(expand-file-name w3m-form-textarea-directory))))
+      (unless (and (file-exists-p dir) (file-directory-p dir))
+	(make-directory dir)))
+    (setq buffer
+	  (or (save-current-buffer
+		(dolist (buffer (buffer-list))
+		  (set-buffer buffer)
+		  (when (and w3m-form-input-textarea-mode
+			     (string= w3m-form-input-textarea-file file))
+		    (throw 'detect (cons t buffer)))))
+	      (generate-new-buffer "*w3m form textarea*")))
+    (unless (consp buffer)
+      (when (and (file-exists-p file) (file-readable-p file))
+	(with-temp-buffer
+	  (let ((buffer-file-coding-system coding)
+		(file-coding-system coding)
+		(coding-system-for-read coding))
+	    (insert-file-contents file))
+	  (let ((before (buffer-string)))
+	    (when (unless (w3m-form-textarea-same-check value before)
+		    (save-window-excursion
+		      (set-window-buffer (selected-window) (current-buffer))
+		      (goto-char (abs (w3m-compare-strings
+				       before 0 (length before)
+				       value 0 (length value))))
+		      (y-or-n-p
+		       "The saved text for this form exists. Use it? ")))
+	      (setq value before)))))
+      (with-current-buffer buffer
+	(insert value)
+	(goto-char (point-min))
+	(forward-line (1- (nth 2 info)))
+	(w3m-form-input-textarea-mode-setup)
+	(setq w3m-form-input-textarea-form form
+	      w3m-form-input-textarea-hseq hseq
+	      w3m-form-input-textarea-buffer w3mbuffer
+	      w3m-form-input-textarea-point point
+	      w3m-form-input-textarea-wincfg wincfg
+	      w3m-form-input-textarea-file file
+	      w3m-form-input-textarea-coding-system coding)))
     (if (and (consp buffer)
 	     (get-buffer-window (cdr buffer)))
 	;; same frame only
@@ -1134,46 +1207,8 @@ character."
 	 (split-window cur-win (- (window-height cur-win)
 				  w3m-form-input-textarea-buffer-lines))))
       (select-window (next-window))
-      (if (consp buffer)
-	  ;; popup only
-	  (let ((pop-up-windows nil))
-	    (switch-to-buffer (cdr buffer))
-	    (set-buffer (cdr buffer)))
-	(let ((pop-up-windows nil) same before)
-	  (switch-to-buffer buffer)
-	  (set-buffer buffer)
-	  (setq w3m-form-input-textarea-form form)
-	  (setq w3m-form-input-textarea-hseq hseq)
-	  (setq w3m-form-input-textarea-buffer w3mbuffer)
-	  (setq w3m-form-input-textarea-point point)
-	  (setq w3m-form-input-textarea-wincfg wincfg)
-	  (setq w3m-form-input-textarea-file file)
-	  (setq w3m-form-input-textarea-coding-system coding)
-	  (unwind-protect
-	      (when (and (file-exists-p file) (file-readable-p file))
-		(with-temp-buffer
-		  (let ((buffer-file-coding-system w3m-form-input-textarea-coding-system)
-			(file-coding-system w3m-form-input-textarea-coding-system)
-			(coding-system-for-read w3m-form-input-textarea-coding-system))
-		    (insert-file-contents file)
-		    (setq before (buffer-substring-no-properties
-				  (point-min) (point-max)))
-		    (setq same (w3m-form-textarea-same-check value before))))
-		(when (and (not same)
-			   (progn
-			     (insert before)
-			     (goto-char (abs (w3m-compare-strings
-					      before 0 (length before)
-					      value 0 (length value))))
-			     (y-or-n-p "The saved text for this form exists. Use it? ")))
-		  (setq value nil)))
-	    (when (or (and quit-flag before)
-		      value)
-	      (delete-region (point-min) (point-max))
-	      (if value (insert value)))
-	    (goto-char (point-min))
-	    (forward-line (1- (nth 2 info)))
-	    (w3m-form-input-textarea-mode)))))))
+      (let ((pop-up-windows nil))
+	(switch-to-buffer (if (consp buffer) (cdr buffer) buffer))))))
 
 (defun w3m-form-textarea-same-check (str1 str2)
   "Compare STR1 and STR2 without tailed whitespace."
