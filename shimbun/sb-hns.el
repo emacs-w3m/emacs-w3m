@@ -155,7 +155,7 @@ V#i5>7]N{lif*16&rrh3=:)\"dB[w:{_Mu@7+)~qLo6.z&Bb|Gq0A1}xpj:>9o9$")))
 				     &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
     (with-current-buffer (or outbuf (current-buffer))
-      (insert
+      (w3m-insert-string
        (with-temp-buffer
 	 (insert (or (shimbun-hns-article shimbun (shimbun-header-xref header))
 		     ""))

@@ -427,12 +427,7 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
       (setq to-buf (current-buffer))
       (with-temp-buffer
 	(setq from-buf (current-buffer))
-	(if (featurep 'xemacs)
-	    (insert (mime-entity-content entity))
-	  (setq content (mime-entity-content entity))
-	  (set-buffer-multibyte (multibyte-string-p content))
-	  (insert content)
-	  (set-buffer-multibyte nil))
+	(w3m-insert-string (mime-entity-content entity))
 	(octet-buffer name (mime-entity-type/subtype entity))
 	(with-current-buffer to-buf
 	  (octet-insert-buffer from-buf)
@@ -468,12 +463,7 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 	  (set-buffer-multibyte nil)
 	  (setq buffer-read-only nil)
 	  (erase-buffer)
-	  (if (featurep 'xemacs)
-	      (insert (mime-entity-content entity))
-	    (setq content (mime-entity-content entity))
-	    (set-buffer-multibyte (multibyte-string-p content))
-	    (insert content)
-	    (set-buffer-multibyte nil))
+	  (w3m-insert-string (mime-entity-content entity))
 	  (octet-buffer name (mime-entity-type/subtype entity))
 	  (setq buffer-read-only t
 		truncate-lines t)

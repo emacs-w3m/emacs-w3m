@@ -209,9 +209,7 @@ will not be substituted.")
 		   mime-w3m-message-structure))))
     (when entity
       ;; `mime-decode-string' should be performed in a unibyte buffer.
-      (insert (mime-decode-string (mime-entity-body entity)
-				  (mime-entity-encoding entity)))
-      (mime-insert-entity-content entity)
+      (w3m-insert-string (mime-entity-content entity))
       (mime-entity-type/subtype entity))))
 
 (defun mime-w3m-view-this-url ()

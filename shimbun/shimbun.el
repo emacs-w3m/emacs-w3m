@@ -217,8 +217,11 @@ If article have inline images, generated article have a multipart/related
 content-type if `shimbun-encapsulate-images' is non-nil."
   (let ((case-fold-search t)
 	(count 0)
+	(msg-id (shimbun-header-id header))
 	beg end
 	url type img imgs boundary charset)
+    (when (string-match "^<\\([^>]+\\)>$" msg-id)
+      (setq msg-id (match-string 1 msg-id)))
     (setq charset
 	  (upcase (symbol-name
 		   (detect-mime-charset-region (point-min)(point-max)))))
@@ -237,8 +240,9 @@ content-type if `shimbun-encapsulate-images' is non-nil."
 		(setq imgs (cons
 			    (setq img (list
 				       url
-				       (concat (format "shimbun.%d"
-						       (incf count)))
+				       (format "shimbun.%d.%s"
+					       (incf count)
+					       msg-id)
 				       (with-temp-buffer
 					 (set-buffer-multibyte nil)
 					 (setq
@@ -260,11 +264,11 @@ content-type if `shimbun-encapsulate-images' is non-nil."
 	  (setq boundary (apply 'format "===shimbun_%d_%d_%d==="
 				(current-time)))
 	  (insert "Content-Type: multipart/related; type=\"text/html\"; "
-		  "boundary=\"" boundary "\"; start=\"<shimbun.0>\""
+		  "boundary=\"" boundary "\"; start=\"<shimbun.0." msg-id ">\""
 		  "\nMIME-Version: 1.0\n\n"
 		  "--" boundary
 		  "\nContent-Type: text/html; charset=" charset
-		  "\nContent-ID: <shimbun.0>\n\n"))
+		  "\nContent-ID: <shimbun.0." msg-id ">\n\n"))
       (insert "Content-Type: text/html; charset=" charset "\n"
 	      "MIME-Version: 1.0\n\n"))
     (encode-coding-region (point-min) (point-max)
@@ -450,22 +454,10 @@ Return nil when articles are not expired."
 HEADER is a shimbun-header which is obtained by `shimbun-headers'.
 If OUTBUF is not specified, article is retrieved to the current buffer.")
 
-(defmacro shimbun-insert-string (string)
-  "Insert STRING at point, AS-IS.
-Point and before-insertion markers move forward to end up
-after the inserted text.
-Any other markers at the point of insertion remain before the text."
-  (if (and (fboundp 'string-as-multibyte)
-	   (subrp (symbol-function 'string-as-multibyte)))
-      `(insert (if enable-multibyte-characters
-		   (string-as-multibyte ,string)
-		 (string-as-unibyte ,string)))
-    `(insert ,string)))
-
 (luna-define-method shimbun-article ((shimbun shimbun) header &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
     (with-current-buffer (or outbuf (current-buffer))
-      (shimbun-insert-string
+      (w3m-insert-string
        (or (with-temp-buffer
 	     (shimbun-retrieve-url (shimbun-article-url shimbun header))
 	     (message "shimbun: Make contents...")

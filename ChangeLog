@@ -1,7 +1,26 @@
 2002-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el (w3m-insert-string): Prevent doubling expansion on
+	the arg.
+
 	* shimbun/sb-palmfan.el (shimbun-palmfan-news-headers): Bind
 	unbound var `body'.
+
+2002-04-20  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
+
+	* mime-w3m.el (mime-w3m-cid-retrieve): Use `w3m-insert-string'
+	instead of `insert' to prevent multibyte/unibyte problems.
+	* octet.el (mime-preview-octet, mime-view-octet): Ditto.
+	* shimbun/sb-hns.el (shimbun-article): Ditto.
+
+	* w3m-util.el (w3m-insert-string): Moved from shimbun/shimbun.el.
+
+	* shimbun/shimbun.el (shimbun-make-mime-article): Keep the
+	uniqueness on cid's.
+	(shimbun-insert-string): Moved to w3m-util.el and renamed to
+	`w3m-insert-string'.
+	(shimbun-article): Replace `shimbun-insert-string' with
+	`w3m-insert-string'.
 
 2002-04-21  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 

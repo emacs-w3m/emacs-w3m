@@ -469,6 +469,19 @@ pairs from PLIST whose value is nil."
     (setq plist (cddr plist)))
   properties)
 
+(defmacro w3m-insert-string (string)
+  "Insert STRING at point, AS-IS.
+Point and before-insertion markers move forward to end up
+after the inserted text.
+Any other markers at the point of insertion remain before the text."
+  (if (and (fboundp 'string-as-multibyte)
+	   (subrp (symbol-function 'string-as-multibyte)))
+      `(let ((string ,string))
+	 (insert (if enable-multibyte-characters
+		     (string-as-multibyte string)
+		   (string-as-unibyte string))))
+    `(insert ,string)))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here
