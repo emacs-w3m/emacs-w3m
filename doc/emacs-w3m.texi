@@ -1746,7 +1746,7 @@ A note on a different convention; what does @samp{message} mean?@*
 When a Gnus user says @samp{message}, it often means a draft of a
 message to be sent as a mail or a news.  However, it is the term to call
 a received message for users of Mew or Wanderlust.  They use
-@samp{drfat} for a draft of a message to be sent.  On the other hand, a
+@samp{draft} for a draft of a message to be sent.  On the other hand, a
 received message is called an @samp{article} by Gnus users.
 
 @menu
