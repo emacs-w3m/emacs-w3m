@@ -19,6 +19,10 @@
 	(w3m-form-input-map-set): New function.
 	(w3m-form-input-map-mode): Ditto.
 	(w3m-form-input-map): Ditto.
+	(w3m-form-input-select-keymap): Added mouse operation.
+	(w3m-form-input-map-keymap): Ditto.
+	(w3m-form-input-select-set-mouse): New function.
+	(w3m-form-input-map-set-mouse): Ditto.
 
 2001-07-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 

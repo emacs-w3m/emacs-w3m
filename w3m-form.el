@@ -612,7 +612,12 @@ If no field in forward, return nil without moving."
   (define-key w3m-form-input-select-keymap "\r"
     'w3m-form-input-select-set)
   (define-key w3m-form-input-select-keymap "\C-m"
-    'w3m-form-input-select-set))
+    'w3m-form-input-select-set)
+  (if (featurep 'xemacs)
+      (define-key w3m-form-input-select-keymap [(button2)]
+	'w3m-form-input-select-set-mouse)
+    (define-key w3m-form-input-select-keymap [mouse-2]
+      'w3m-form-input-select-set-mouse)))
 (defvar w3m-form-input-select-buffer nil)
 (defvar w3m-form-input-select-form nil)
 (defvar w3m-form-input-select-name nil)
@@ -625,6 +630,11 @@ If no field in forward, return nil without moving."
 (make-variable-buffer-local 'w3m-form-input-select-point)
 (make-variable-buffer-local 'w3m-form-input-select-candidates)
 (make-variable-buffer-local 'w3m-form-input-select-wincfg)
+
+(defun w3m-form-input-select-set-mouse (event)
+  (interactive "e")
+  (mouse-set-point event)
+  (w3m-form-input-select-set))
 
 (defun w3m-form-input-select-set ()
   "Save and exit from w3m form select mode."
@@ -733,11 +743,21 @@ If no field in forward, return nil without moving."
   (define-key w3m-form-input-map-keymap "\r"
     'w3m-form-input-map-set)
   (define-key w3m-form-input-map-keymap "\C-m"
-    'w3m-form-input-map-set))
+    'w3m-form-input-map-set)
+  (if (featurep 'xemacs)
+      (define-key w3m-form-input-map-keymap [(button2)]
+	'w3m-form-input-map-set-mouse)
+    (define-key w3m-form-input-map-keymap [mouse-2]
+      'w3m-form-input-map-set-mouse)))
 (defvar w3m-form-input-map-buffer nil)
 (defvar w3m-form-input-map-wincfg nil)
 (make-variable-buffer-local 'w3m-form-input-map-buffer)
 (make-variable-buffer-local 'w3m-form-input-map-wincfg)
+
+(defun w3m-form-input-map-set-mouse (event)
+  (interactive "e")
+  (mouse-set-point event)
+  (w3m-form-input-map-set))
 
 (defun w3m-form-input-map-set ()
   "Save and exit from w3m form select mode."
