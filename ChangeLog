@@ -1,3 +1,7 @@
+2001-10-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-rendering-buffer-1): Redundant argument is removed.
+
 2001-10-24  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-use-unseen): New customize variable.

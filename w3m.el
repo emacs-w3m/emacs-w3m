@@ -2933,7 +2933,7 @@ to nil.
 		  (append w3m-halfdump-command-arguments
 			  w3m-halfdump-command-common-arguments))))))
 
-(defun w3m-rendering-buffer-1 (&optional content-charset)
+(defun w3m-rendering-buffer-1 ()
   (w3m-message "Rendering...")
   (when w3m-use-filter (w3m-filter w3m-current-url))
   (w3m-remove-comments)
