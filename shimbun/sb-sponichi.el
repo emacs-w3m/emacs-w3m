@@ -1,12 +1,14 @@
 ;;; sb-sponichi.el --- shimbun backend for www.sponichi.co.jp -*- coding: iso-2022-7bit -*-
+;;
+;; Copyright (C) 2001 Tatsuya Ichikawa   <ichikawa@erc.epson.com>
+;; Copyright (C) 2001 Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Author: Tatsuya Ichikawa   <ichikawa@erc.epson.com>,
 ;;         TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
-
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

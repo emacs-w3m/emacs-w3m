@@ -1,11 +1,12 @@
 ;;; sb-wired.el --- shimbun backend for Wired Japan
+;;
+;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Yuuichi Teranishi  <teranisi@gohome.org>
-
+;;         Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

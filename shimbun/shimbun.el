@@ -1,12 +1,13 @@
 ;;; shimbun.el --- interfacing with web newspapers
+;;
+;; Copyright (C) 2001 Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
-
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is the main part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -549,4 +550,5 @@ is enclosed by at least one regexp grouping construct."
       (replace-match "" t t))))
 
 (provide 'shimbun)
+
 ;;; shimbun.el ends here.
