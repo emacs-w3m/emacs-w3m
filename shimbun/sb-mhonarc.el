@@ -217,7 +217,12 @@
 	     (point)))
 	  (when (search-forward "\n<!--X-Body-of-Message-End-->\n" nil t)
 	    (forward-line -1)
-	    (delete-region (point) (point-max)))))
+	    (delete-region (point) (point-max)))
+	  (goto-char (point-min))
+	  (insert "<html>\n<head>\n<base href=\""
+		  (shimbun-header-xref header) "\">\n</head>\n</body>\n")
+	  (goto-char (point-max))
+	  (insert "\n</body>\n</html>")))
     (goto-char (point-min))
     (shimbun-header-insert shimbun header)
     (insert
