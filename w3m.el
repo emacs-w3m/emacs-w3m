@@ -1128,10 +1128,18 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
-  (let ((extent (make-extent beg end)))
+  (let (extent glyph glyphs)
+    (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
+      (setq glyphs (cons (extent-end-glyph extent) glyphs)))
+    (setq extent (make-extent beg end))
     (set-extent-property extent 'invisible t)
     (set-extent-property extent 'w3m-xmas-icon t)
-    (set-extent-end-glyph extent image)))
+    (set-extent-end-glyph extent image)
+    (while glyphs
+      (setq extent (make-extent (point)(point)))
+      (set-extent-property extent 'w3m-xmas-icon t)
+      (set-extent-end-glyph extent (car glyphs))
+      (setq glyphs (cdr glyphs)))))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."
@@ -1173,12 +1181,16 @@ If optional argument NO-CACHE is non-nil, cache is not used."
       (if (or force (eq w3m-display-inline-image-status 'off))
 	  (save-excursion
 	    (goto-char (point-min))
-	    (while (setq point (next-single-property-change (point)
-							    'w3m-image))
-	      (setq end (next-single-property-change point 'w3m-image))
+	    (while (if (get-text-property (point) 'w3m-image)
+		       (setq point (point))
+		     (setq point (next-single-property-change (point)
+							      'w3m-image)))
+	      (setq end (or (next-single-property-change point 'w3m-image)
+			    (point-max)))
 	      (goto-char end)
-	      (setq url (w3m-expand-url (w3m-image (1- end)) w3m-current-url))
-	      (when (setq image (w3m-create-image url no-cache))
+	      (if (setq url (w3m-image point))
+		  (setq url (w3m-expand-url url w3m-current-url)))
+	      (when (and url (setq image (w3m-create-image url no-cache)))
 		(w3m-insert-image point end image)
 		;; Redisplay
 		(save-excursion
@@ -1187,9 +1199,12 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	    (setq w3m-display-inline-image-status 'on))
 	(save-excursion
 	  (goto-char (point-min))
-	  (while (setq point (next-single-property-change (point)
-							  'w3m-image))
-	    (setq end (next-single-property-change point 'w3m-image))
+	  (while (if (get-text-property (point) 'w3m-image)
+		       (setq point (point))
+		     (setq point (next-single-property-change (point)
+							      'w3m-image)))
+	    (setq end (or (next-single-property-change point 'w3m-image)
+			  (point-max)))
 	    (goto-char end)
 	    (w3m-remove-image point end))
 	  (setq w3m-display-inline-image-status 'off))))))
