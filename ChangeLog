@@ -1,3 +1,8 @@
+2003-02-23  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-dennou.el (shimbun-headers): Bug fixed.
+	(shimbun-reply-to): Ditto.
+
 2003-02-22  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-dennou.el: New file.

@@ -50,7 +50,7 @@
    (string-to-number month)
    (string-to-number day)))
 
-(luna-define-method shimbun-reply-to ((shimbun shimbun-palmfan))
+(luna-define-method shimbun-reply-to ((shimbun shimbun-dennou))
   "pc3s-nnb@asahi-net.or.jp")
 
 (luna-define-method shimbun-headers ((shimbun shimbun-dennou)
@@ -94,7 +94,7 @@
 	    (setq body (concat (substring body 0 (match-beginning 1))
 			       url "images"
 			       (substring body (match-end 1)))))
-	  (set (intern id (shimbun-palmfan-content-hash-internal shimbun))
+	  (set (intern id (shimbun-dennou-content-hash-internal shimbun))
 	       body)
 	  (push (shimbun-make-header
 		 0 (shimbun-mime-encode-string subject)
