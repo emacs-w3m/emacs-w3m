@@ -1268,7 +1268,32 @@ See the balloon-help.el file for more information."
 (defcustom w3m-show-decoded-url
   '(("\\`http://\\([^./?#]+\\.\\)*wikipedia\\.org/" . utf-8)
     (t . t))
-  "*Non-nil means that URIs are decoded when displaying them."
+  "*Non-nil means show decoded URIs in the echo area, the balloon, etc.
+This variable can take one of the following five kinds of forms:
+
+1. t
+  Decode URIs using the encoding assumed by the default presumption rule
+  based on the priority list including the encoding used to decode the
+  current page and the value of `w3m-coding-system-priority-list'.
+
+2. Coding system
+  Decode URIs using this value.
+
+3. List of coding systems:
+  Decode URIs using the encoding assumed based on this list.
+
+4. Alist of predicates and one of forms described above:
+  Each element looks like the `(PREDICATE . ENCODING)' form.  PREDICATE
+  should be a regexp, a function or a Lisp form, and ENCODING should be
+  one of the items described here excluding this item.  If PREDICATE is
+  a regexp, it will be tested whether it matches to the current url.
+  If it is a function, it will be called with no argument.  If it is a
+  Lisp form, it will be simply evaluated.  Elements are tested in turn
+  until the result of the test of the predicate is true and the encoding
+  which is associated to the predicate is used for decoding URIs.
+
+5. nil
+  Don't decode URIs."
   :group 'w3m
   :type
   '(choice
