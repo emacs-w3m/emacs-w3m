@@ -123,7 +123,7 @@
 				  "w3m-xmas"
 				"w3m-e21")))
 
-(defconst emacs-w3m-version "1.2rc4"
+(defconst emacs-w3m-version "1.2rc5"
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -4179,6 +4179,9 @@ field for this request."
     (when w3m-current-forms
       ;; Store the current forms in the history structure.
       (w3m-history-plist-put :forms w3m-current-forms nil nil t))
+    (when (and post-data (w3m-history-assoc url))
+      ;; Remove processing url's forms from the history structure.
+      (w3m-history-remove-properties '(:forms) url nil t))
     ;; Retrieve.
     (let ((orig url) name localpath localcgi)
       ;; local directory URL check

@@ -355,8 +355,11 @@ return them with the flag."
 		type (match-string 2 fid)
 		name (match-string 3 fid))
 	  (cond
-	   ((or (string= type "submit")
-		(string= type "reset")
+	   ((string= type "submit")
+	    ;; Remove status to support forms containing multiple
+	    ;; submit buttons.
+	    (w3m-form-put form name nil))
+	   ((or (string= type "reset")
 		(string= type "hidden")
 		;; Do nothing.
 		))

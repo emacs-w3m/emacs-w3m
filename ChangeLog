@@ -1,3 +1,15 @@
+2001-11-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Imcremented to `1.2rc5'.
+
+2001-11-01  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-goto-url): Remove processing url's forms from the
+	history when post data.
+
+	* w3m-form.el (w3m-form-resume): Remove submit button status
+	to support forms containing multiple submit buttons.
+
 2001-11-01  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m): Use `select-frame-set-input-focus' instead of
