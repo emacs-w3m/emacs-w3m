@@ -1,3 +1,11 @@
+2001-11-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Incremted to 1.2.1rc1.
+
+	* w3m-xmas.el (top): Define `w3m-current-title' to avoid
+	byte-compile warnings.
+	(format-buffers-tab-line): Cleanup.
+
 2001-11-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (format-buffers-tab-line): Don't use the value of
