@@ -2109,7 +2109,9 @@ It is used for favicon data.  The type is often `ico'.")
 	  w3m-current-ssl ssl)))
 
 (defvar w3m-verbose nil
-  "*Flag controls whether emacs-w3m should be verbose.")
+  "*Flag controls whether to log messages in the *Messages* buffer.
+If it is nil, a lot of messages issued by emacs-w3m will be displayed
+only in the echo area.")
 
 (defvar w3m-safe-url-regexp nil
   "Regexp matching urls which are considered to be safe.")
