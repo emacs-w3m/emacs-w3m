@@ -1,3 +1,8 @@
+2002-01-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3mhack.el (w3mhack-examine-modules): Fix to avoid that octet.el
+	is byte-compiled repeatedly.
+
 2002-01-29  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3mhack.el (w3mhack-examine-modules): Add octet.el to the module list

@@ -93,12 +93,11 @@
 	  (dolist (file (directory-files (expand-file-name shimbun-dir)
 					 nil "^[^#]+\\.el$"))
 	    (setq modules (nconc modules (list (concat shimbun-dir file)))))
-	  ;; Add octet.el
-	  (setq modules (nconc modules (list "octet.el")))
 	  ;; mew-shimbun check
 	  (unless (locate-library "mew")
 	    (push (concat shimbun-dir "mew-shimbun.el") ignores)))
-      (push "mime-w3m.el" ignores))
+      (push "mime-w3m.el" ignores)
+      (push "octet.el" ignores))
     ;; To byte-compile w3m-util.el and a version specific module first.
     (princ "w3m-util.elc ")
     (setq modules (delete "w3m-util.el" modules))
