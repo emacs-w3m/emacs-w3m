@@ -4522,15 +4522,14 @@ mew.mew-dist mew.mew-win32 mew.mew-int
 @item @uref{http://www.mew.org/ml/, MagicPoint Mailing List}
 mew.mgp-users mew.mgp-users-jp
 
-@item @uref{http://www.namazu.org/ml/, Namazu Mailing List}
-namazu.namazu-users-ja namazu.namazu-win32-users-ja
-namazu.namazu-users-en namazu.namazu-devel-ja namazu.namazu-devel-en
+@item @uref{http://www.namazu.org/cgi-bin/mailman/listinfo, www.namazu.org Mailing Lists}
+namazu.kakasi-commits namazu.kakasi-dev namazu.migemo
+namazu.namazu-users-en namazu.namazu-users-ja
+namazu.namazu-devel-ja namazu.namazu-devel-en namazu.namazu-win32-users-ja
+namazu.sary
 
 @item @uref{http://emacs-w3m.namazu.org/ml/, emacs-w3m Mailing List}
-namazu.emacs-w3m
-
-@item @uref{http://migemo.namazu.org/ml/, migemo Mailing List}
-namazu.migemo
+emacs-w3m.emacs-w3m
 
 @item @uref{http://www.jp.netbsd.org/ja/JP/ml/, NetBSD JP Mailing List}
 netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
