@@ -161,7 +161,9 @@ return it."
       (push x w3m-process-queue))
     (push (w3m-process-handler-new (current-buffer) w3m-current-buffer handler)
 	  (w3m-process-handlers x))
-    (setq w3m-process-object x)))
+    (with-current-buffer
+	(w3m-process-handler-buffer (car (last (w3m-process-handlers x))))
+      (setq w3m-process-object x))))
 
 (defsubst w3m-process-kill-process (process)
   "Kill process PROCESS safely."
@@ -467,7 +469,8 @@ evaluated in a temporary buffer."
   (let ((inhibit-quit w3m-process-inhibit-quit))
     (unwind-protect
 	(if (buffer-name (process-buffer process))
-	    (with-current-buffer (process-buffer process)
+	    (save-current-buffer
+	      (set-buffer (process-buffer process))
 	      (setq w3m-process-queue
 		    (delq w3m-process-object w3m-process-queue))
 	      (let ((exit-status (process-exit-status process))
@@ -479,18 +482,18 @@ evaluated in a temporary buffer."
 		(setq w3m-process-object nil)
 		(dolist (x (w3m-process-handlers obj))
 		  (when (buffer-name (w3m-process-handler-buffer x))
-		    (with-current-buffer (w3m-process-handler-buffer x)
-		      (unless (eq buffer (current-buffer))
-			(insert-buffer buffer)))))
+		    (set-buffer (w3m-process-handler-buffer x))
+		    (unless (eq buffer (current-buffer))
+		      (insert-buffer buffer))))
 		(dolist (x (w3m-process-handlers obj))
 		  (when (buffer-name (w3m-process-handler-buffer x))
-		    (with-current-buffer (w3m-process-handler-buffer x)
-		      (let ((w3m-process-exit-status)
-			    (w3m-current-buffer
-			     (w3m-process-handler-parent-buffer x)))
-			(w3m-process-set-user w3m-current-url realm user passwd)
-			(funcall (w3m-process-handler-function x)
-				 exit-status)))))))
+		    (set-buffer (w3m-process-handler-buffer x))
+		    (let ((w3m-process-exit-status)
+			  (w3m-current-buffer
+			   (w3m-process-handler-parent-buffer x)))
+		      (w3m-process-set-user w3m-current-url realm user passwd)
+		      (funcall (w3m-process-handler-function x)
+			       exit-status))))))
 	  ;; Something wrong has been occured.
 	  (catch 'last
 	    (dolist (obj w3m-process-queue)

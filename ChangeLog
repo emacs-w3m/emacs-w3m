@@ -1,5 +1,10 @@
 2001-11-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-proc.el (w3m-process-push): Set the buffer-local variable
+	`w3m-process-object' in the appropriate buffer.
+	(w3m-process-sentinel): Removed redundant call of
+	`with-current-buffer'.
+
 	* Makefile.in (default): Reintroduce of checking time stamps of
 	w3m-util.elc and w3m-proc.elc.
 
