@@ -86,7 +86,7 @@
 					       (mapconcat 'identity refs " ")))
 	    (insert "\n")
 	    (goto-char (point-min))
-	    (shimbun-header-insert header))
+	    (shimbun-header-insert shimbun header))
 	  (goto-char (point-max)))
 	;; Processing body.
 	(save-restriction
@@ -100,7 +100,7 @@
 	    (forward-line -1)
 	    (delete-region (point) (point-max)))))
     (goto-char (point-min))
-    (shimbun-header-insert header)
+    (shimbun-header-insert shimbun header)
     (insert
      "Content-Type: text/html; charset=ISO-2022-JP\nMIME-Version: 1.0\n\n"))
   (encode-coding-string (buffer-string)

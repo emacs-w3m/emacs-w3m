@@ -36,6 +36,7 @@
 ;; shimbun-close-group
 ;; shimbun-headers
 ;; shimbun-reply-to
+;; shimbun-header-insert
 ;; shimbun-search-id
 ;; shimbun-article
 ;; shimbun-close
@@ -60,7 +61,6 @@
 ;; shimbun-header-set-xref
 ;; shimbun-header-extra
 ;; shimbun-header-set-extra
-;; shimbun-header-insert
 
 (eval-when-compile (require 'cl))
 (eval-when-compile (require 'static))
@@ -186,7 +186,7 @@
 (defsubst shimbun-header-set-extra (header extra)
   (aset header 9 extra))
 
-(defun shimbun-header-insert (header)
+(defun shimbun-header-insert (shimbun header)
   (insert "Subject: " (or (shimbun-header-subject header) "(none)") "\n"
 	  "From: " (or (shimbun-header-from header) "(nobody)") "\n"
 	  "Date: " (or (shimbun-header-date header) "") "\n"
@@ -197,7 +197,11 @@
 	 (insert "References: " refs "\n")))
   (insert "Lines: " (number-to-string (or (shimbun-header-lines header) 0)) 
 	  "\n"
-	  "Xref: " (or (shimbun-header-xref header) "") "\n"))
+	  "Xref: " (or (shimbun-article-url shimbun header) "") "\n")
+  (when (shimbun-x-face-internal shimbun)
+    (insert (shimbun-x-face-internal shimbun))
+    (unless (bolp)
+      (insert "\n"))))
 
 ;;; Implementation of Shimbun API.
 
@@ -306,14 +310,9 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start))
     (goto-char (point-min))
-    (shimbun-header-insert header)
+    (shimbun-header-insert shimbun header)
     (insert "Content-Type: text/html; charset=ISO-2022-JP\n"
-	    "MIME-Version: 1.0\n")
-    (when (shimbun-x-face-internal shimbun)
-      (insert (shimbun-x-face-internal shimbun))
-      (unless (bolp)
-	(insert "\n")))
-    (insert "\n")
+	    "MIME-Version: 1.0\n\n")
     (encode-coding-string (buffer-string)
 			  (mime-charset-to-coding-system "ISO-2022-JP"))))
 

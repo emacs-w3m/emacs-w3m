@@ -1,6 +1,26 @@
+2001-04-18  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun-header-insert): Added argument `shimbun'.
+	Use `shimbun-article-url' instead of `shimbun-header-xref' for the Xref
+	field.
+	* shimbun/sb-fml.el (shimbun-make-contents): Follow the change above.
+	* shimbun/sb-text.el (shimbun-make-contents): Ditto.
+	* shimbun/sb-tcup.el (shimbun-article): Ditto.
+	* shimbun/sb-mhonarc.el (shimbun-make-contents): Ditto.
+
+	* shimbun/shimbun.el (shimbun-header-insert): Insert x-face field.
+	(shimbun-make-html-contents): Don't insert x-face field.
+
+	* shimbun/sb-text.el (shimbun-make-contents): Don't insert x-face
+	field.
+
+	* shimbun/sb-namazu.el (shimbun-namazu-url): Deleted last '/'.
+	(shimbun-index-url): Follow the change above.
+	(shimbun-reply-to): Define.
+
 2001-04-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* w3m.el (w3m-setup-header-line): Don't execute the setup-header-line, 
+	* w3m.el (w3m-setup-header-line): Don't execute the setup-header-line,
 	if w3m-current-url is 'nil'.
 
 	* w3m-xmas.el (w3m-setup-header-line): Ditto.

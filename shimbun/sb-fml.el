@@ -127,7 +127,7 @@
 		(t
 		 (insert (concat field ": " value "\n")))))
 	(goto-char (point-min))
-	(shimbun-header-insert header))
+	(shimbun-header-insert shimbun header))
       (goto-char (point-max)))
     ;; Processing body.
     (save-restriction

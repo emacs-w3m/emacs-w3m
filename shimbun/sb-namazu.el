@@ -28,7 +28,7 @@
 
 (luna-define-class shimbun-namazu (shimbun-mhonarc) ())
 
-(defvar shimbun-namazu-url "http://www.namazu.org/")
+(defvar shimbun-namazu-url "http://www.namazu.org")
 
 (defvar shimbun-namazu-group-url-alist
   '(("namazu-users-ja" . "ml/namazu-users-ja")
@@ -44,9 +44,13 @@
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-namazu))
   (concat 
-   (shimbun-url-internal shimbun)
+   (shimbun-url-internal shimbun) "/"
    (cdr (assoc (shimbun-current-group-internal shimbun)
 	       shimbun-namazu-group-url-alist)) "/"))
+
+(luna-define-method shimbun-reply-to ((shimbun shimbun-namazu))
+  (concat (shimbun-current-group-internal shimbun)
+	  "@namazu.org"))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-namazu))
   (let ((path (concat "/" (cdr (assoc (shimbun-current-group-internal shimbun)

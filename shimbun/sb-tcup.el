@@ -152,7 +152,7 @@
 	   (if (boundp sym)
 	       (insert (symbol-value sym)))
 	   (goto-char (point-min))
-	   (shimbun-header-insert header)
+	   (shimbun-header-insert shimbun header)
 	   (insert "Content-Type: " "text/html"
 		   "; charset=ISO-2022-JP\n"
 		   "MIME-Version: 1.0\n")
