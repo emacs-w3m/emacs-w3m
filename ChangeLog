@@ -1,3 +1,8 @@
+2005-03-19  Takashi Hiromatsu  <matsuan@ca2.so-net.ne.jp>
+
+	* shimbun/sb-sourceforge-jp.el (shimbun-sourceforge-jp-mailing-lists):
+	Add groups macemacsjp-users, macemacsjp-dev and macemacsjp-english.
+
 2005-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (very-slow): Don't mv non-existent files.
