@@ -44,14 +44,14 @@
       ("biztrends" "news/biztrends" ,(format template1 "news"))
       ("gamespot" "gamespot" ,(format template2 "gsnews"))
       ("enterprise" "enterprise/archives" ,(format template1 "enterprise"))
-      ("broadband" "broadband/news" ,(format template1
-					     "broadband\\|broadband/rbb"))
+      ("broadband" "broadband/news" ,(format template1 "broadband"))
       ("macwire" "macwire/news" ,(format template1 "macwire"))
       ("mobile" "mobile/news" ,(format template1 "mobile")))))
 
 (defvar shimbun-zdnet-from-address "zdnn@softbank.co.jp")
 (defvar shimbun-zdnet-content-start "\\(<!--BODY-->\\|<!--DATE-->\\)")
-(defvar shimbun-zdnet-content-end "\\(<!--BODYEND-->\\|<!--BYLINEEND-->\\|<!--START RBB Logo -->\\)")
+(defvar shimbun-zdnet-content-end
+  "\\(<!--BODY ?END-->\\|<!--BYLINE ?END-->\\)")
 (defvar shimbun-zdnet-x-face-alist
   '(("default" . "X-Face: &w=7iU!o,u[!-faU#$3},zAI2\"E-a%!PFv%V5\"(XO>a8PqU>\
 e2!`gk'sks9B5W'f-'p3APL\n L--L8Y@%_e*hagUPo#-ewB4.bTxjM}+*(4\\9@E1irAXc/iW\"\
