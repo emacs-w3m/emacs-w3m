@@ -1,3 +1,8 @@
+2001-05-22  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-cache-contents): Don't insert additional '\n' for
+	binary data.
+
 2001-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Don't make the coding-system `w3m-euc-japan' if it

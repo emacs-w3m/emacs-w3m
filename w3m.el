@@ -1596,7 +1596,6 @@ Return symbol to identify its cache data."
       (set-buffer w3m-cache-buffer)
       (let (buffer-read-only)
 	(goto-char (point-max))
-	(unless (bolp) (insert "\n"))
 	(let ((b (point)))
 	  (insert-buffer-substring buffer)
 	  ;; Tag the beginning of the article with the ident.
