@@ -41,13 +41,21 @@
   (require 'cl)
   ;; Variables and functions which are used in the following inline
   ;; functions.  They should be defined in the other module at run-time.
-  (defvar w3m-current-url)
-  (defvar w3m-current-title)
-  (defvar w3m-html-string-regexp)
-  (defvar w3m-work-buffer-list)
+  (defvar w3m-current-process)
   (defvar w3m-current-refresh)
+  (defvar w3m-current-title)
+  (defvar w3m-current-url)
+  (defvar w3m-html-string-regexp)
+  (defvar w3m-pop-up-frames)
+  (defvar w3m-pop-up-windows)
+  (defvar w3m-popup-frame-parameters)
   (defvar w3m-refresh-timer)
-  (defvar w3m-use-refresh))
+  (defvar w3m-select-buffer-name)
+  (defvar w3m-use-refresh)
+  (defvar w3m-use-tab)
+  (defvar w3m-work-buffer-list)
+  (unless (fboundp 'select-frame-set-input-focus)
+    (defalias 'select-frame-set-input-focus 'ignore)))
 
 (eval-and-compile
   (dont-compile
@@ -71,6 +79,7 @@
   (cond ((= emacs-major-version 19)
 	 (autoload 'cancel-timer "timer")
 	 (require 'custom))))
+
 
 ;;; Things should be defined in advance:
 
@@ -190,6 +199,7 @@ If POSITION is omitted, the current position is assumed."
   (if position
       (` (get-text-property (, position) 'w3m-anchor-sequence))
     '(get-text-property (point) 'w3m-anchor-sequence)))
+
 
 ;;; Attributes:
 
@@ -350,7 +360,225 @@ buffer names."
       (sort rest #'w3m-buffer-name-lessp))))
 
 
+;;; Pop up and delete buffers, windows or frames:
+
+(defmacro w3m-popup-frame-parameters ()
+  "Return a pop-up frame plist if this file is compiled for XEmacs,
+otherwise return an alist."
+  (if (featurep 'xemacs)
+      '(let ((params (or w3m-popup-frame-parameters pop-up-frame-plist)))
+	 (if (consp (car-safe params))
+	     (alist-to-plist params)
+	   params))
+    '(let ((params (or w3m-popup-frame-parameters pop-up-frame-alist))
+	   alist)
+       (if (consp (car-safe params))
+	   params
+	 (while params
+	   (push (cons (car params) (cdr params)) alist)
+	   (setq params (cddr params)))
+	 (nreverse alist)))))
+
+(defmacro w3m-popup-frame-p ()
+  "Return non-nil if `w3m-pop-up-frames' is non-nil and Emacs really
+supports separate frames."
+  (if (featurep 'xemacs)
+      '(and w3m-pop-up-frames (device-on-window-system-p))
+    '(and w3m-pop-up-frames window-system)))
+
+(defmacro w3m-use-tab-p ()
+  "Return non-nil if `w3m-use-tab' is non-nil and Emacs really supports
+the tabs line."
+  (cond ((featurep 'xemacs)
+	 '(and w3m-use-tab (device-on-window-system-p)))
+	((<= emacs-major-version 19)
+	 nil)
+	(t
+	 '(and w3m-use-tab (>= emacs-major-version 21)))))
+
+(defmacro w3m-popup-window-p ()
+  "Return non-nil if `w3m-pop-up-windows' is non-nil and the present
+situation allows it."
+  (cond ((featurep 'xemacs)
+	 '(and w3m-pop-up-windows
+	       (not (w3m-use-tab-p))
+	       (not (get-buffer-window w3m-select-buffer-name))))
+	((<= emacs-major-version 19)
+	 '(and w3m-pop-up-windows
+	       (not (get-buffer-window w3m-select-buffer-name))))
+	(t
+	 '(and w3m-pop-up-windows
+	       (or (< emacs-major-version 21)
+		   (not (w3m-use-tab-p)))
+	       (not (get-buffer-window w3m-select-buffer-name))))))
+
+(defvar w3m-initial-frames nil
+  "Variable used to keep a list of the frame-IDs when emacs-w3m sessions
+are popped-up as new frames.  This variable is used for the control
+for not deleting frames made for aims other than emacs-w3m sessions.")
+(make-variable-buffer-local 'w3m-initial-frames)
+
+(defvar w3m-last-visited-buffer nil
+  "Variable used to keep an emacs-w3m buffer which the user used last.")
+
+(defun w3m-popup-buffer (buffer)
+  "Pop up BUFFER as a new window or a new frame
+according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
+  (setq w3m-last-visited-buffer nil)
+  (let ((window (get-buffer-window buffer t))
+	(oframe (selected-frame))
+	(popup-frame-p (w3m-popup-frame-p))
+	frame pop-up-frames buffers other)
+    (if (setq
+	 pop-up-frames
+	 (if window ;; The window showing BUFFER already exists.
+	     ;; Don't pop up a new frame if it is just the current frame.
+	     (not (eq (setq frame (window-frame window)) oframe))
+	   ;; There is no window for BUFFER, so look for the existing
+	   ;; emacs-w3m window if the tabs line is enabled or the
+	   ;; selection window exists (i.e., we can reuse it).
+	   (if (or (w3m-use-tab-p)
+		   (get-buffer-window w3m-select-buffer-name t))
+	       (progn
+		 (setq buffers (delq buffer (w3m-list-buffers t)))
+		 (while (and (not window)
+			     buffers)
+		   (setq window
+			 (get-buffer-window (setq other (pop buffers)) t)))
+		 (if window ;; The window showing another buffer exists.
+		     (not (eq (setq frame (window-frame window)) oframe))
+		   (setq other nil)
+		   ;; There is no window after all, so leave to the value
+		   ;; of `w3m-pop-up-frames' whether to pop up a new frame.
+		   popup-frame-p))
+	     ;; Ditto.
+	     popup-frame-p)))
+	(progn
+	  (cond (other
+		 ;; Pop up another emacs-w3m buffer and switch to BUFFER.
+		 (pop-to-buffer other)
+		 ;; Change the value for BUFFER's `w3m-initial-frames'.
+		 (setq w3m-initial-frames
+		       (prog1
+			   (copy-sequence w3m-initial-frames)
+			 (switch-to-buffer buffer))))
+		(frame
+		 ;; Pop up the existing frame which shows BUFFER.
+		 (pop-to-buffer buffer))
+		(t
+		 ;; Pop up a new frame.
+		 (let* ((pop-up-frame-alist (w3m-popup-frame-parameters))
+			(pop-up-frame-plist pop-up-frame-alist))
+		   (pop-to-buffer buffer))
+		 (setq frame (window-frame (get-buffer-window buffer t)))))
+	  ;; Raise, select and focus the frame.
+	  (if (fboundp 'select-frame-set-input-focus)
+	      (select-frame-set-input-focus frame)
+	    (raise-frame frame)
+	    (select-frame frame)
+	    (focus-frame frame)))
+      ;; Simply switch to BUFFER in the current frame.
+      (if (w3m-popup-window-p)
+	  (let ((pop-up-windows t))
+	    (pop-to-buffer buffer))
+	(switch-to-buffer buffer)))))
+
+(eval-when-compile
+  (when (and (fboundp 'select-frame-set-input-focus)
+	     (eq (symbol-function 'select-frame-set-input-focus) 'ignore))
+    (fmakunbound 'select-frame-set-input-focus)))
+
+(defun w3m-add-w3m-initial-frames (&optional frame)
+  "Add a frame to `w3m-initial-frames' when it is newly created for the
+emacs-w3m session.  This function is added to the hook which is
+different with the version of Emacs as follows:
+
+XEmacs          create-frame-hook
+Emacs 20,21     after-make-frame-functions
+Emacs 19        after-make-frame-hook\
+"
+  (unless frame
+    (setq frame (selected-frame)))
+  (with-current-buffer (window-buffer (frame-first-window frame))
+    (when (eq major-mode 'w3m-mode)
+      (push frame w3m-initial-frames))))
+
+(add-hook (cond ((featurep 'xemacs)
+		 'create-frame-hook)
+		((>= emacs-major-version 20)
+		 'after-make-frame-functions)
+		((= emacs-major-version 19)
+		 'after-make-frame-hook))
+	  'w3m-add-w3m-initial-frames)
+
+(defun w3m-delete-frames-and-windows (&optional exception)
+  "Delete all frames and windows related to emacs-w3m buffers.
+If EXCEPTION is a buffer, a window or a frame, it and related visible
+objects will not be deleted.  There are special cases; the following
+objects will not be deleted:
+
+1. The sole frame in the display device.
+2. Frames created not for emacs-w3m sessions.
+3. Frames showing not only emacs-w3m sessions but also other windows.\
+"
+  (let ((buffers (delq exception (w3m-list-buffers t)))
+	buffer windows window frame one-window-p flag)
+    (save-current-buffer
+      (while buffers
+	(setq buffer (pop buffers)
+	      windows (delq exception
+			    (get-buffer-window-list buffer 'no-minibuf t)))
+	(set-buffer buffer)
+	(while windows
+	  (setq window (pop windows)
+		frame (window-frame window))
+	  (when (and frame
+		     (not (eq frame exception)))
+	    (setq one-window-p
+		  (w3m-static-if (featurep 'xemacs)
+		      (one-window-p t frame)
+		    ;; Emulate XEmacs version's `one-window-p'.
+		    (setq flag nil)
+		    (catch 'exceeded
+		      (walk-windows (lambda (w)
+				      (when (eq (window-frame w) frame)
+					(if flag
+					    (throw 'exceeded nil)
+					  (setq flag t))))
+				    'no-minibuf t)
+		      flag)))
+	    (if (and (memq frame w3m-initial-frames)
+		     (not (eq (next-frame frame) frame)))
+		(if (or
+		     ;; A frame having the sole window can be deleted.
+		     one-window-p
+		     ;; Also a frame having only windows for emacs-w3m
+		     ;; sessions or the buffer selection can be deleted.
+		     (progn
+		       (setq flag t)
+		       (walk-windows
+			(lambda (w)
+			  (when flag
+			    (if (eq w exception)
+				(setq flag nil)
+			      (set-buffer (window-buffer w))
+			      (setq flag (memq major-mode
+					       '(w3m-mode
+						 w3m-select-buffer-mode))))))
+			'no-minibuf)
+		       (set-buffer buffer)
+		       flag))
+		    (progn
+		      (setq w3m-initial-frames (delq frame
+						     w3m-initial-frames))
+		      (delete-frame frame))
+		  (delete-window window))
+	      (unless one-window-p
+		(delete-window window)))))))))
+
+
 ;;; Miscellaneous:
+
 (defconst w3m-url-fallback-base "http:///")
 (defconst w3m-url-invalid-regexp "\\`http:///")
 
@@ -545,6 +773,7 @@ variable `w3m-display-message-enable-logging'."
   (let ((fill-column (window-width)))
     (center-region (point) (point-max)))
   (goto-char (point-min))
+  (put-text-property (point) (point-max) 'w3m-progress-message t)
   (sit-for 0))
 
 (defun w3m-modify-plist (plist &rest properties)
