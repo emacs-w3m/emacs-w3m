@@ -1,3 +1,7 @@
+2003-06-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-makeinfo): Include other files first.
+
 2003-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* doc/Makefile.in (install): Don't run install-info for non-

@@ -1016,22 +1016,6 @@ NOTE: This function must be called from the top directory."
 		  ((boundp 'buffer-file-coding-system)
 		   (setq coding-system-for-write
 			 (symbol-value 'buffer-file-coding-system))))
-	    ;; Remove ignored areas first.
-	    (while (re-search-forward "^@ignore[\t\r ]*$" nil t)
-	      (delete-region (match-beginning 0)
-			     (if (re-search-forward
-				  "^@end[\t ]+ignore[\t\r ]*$" nil t)
-				 (1+ (match-end 0))
-			       (point-max))))
-	    ;; Remove unsupported commands.
-	    (goto-char (point-min))
-	    (while (re-search-forward "@\\(end \\)?ifnottex" nil t)
-	      (replace-match ""))
-	    (goto-char (point-min))
-	    (while (search-forward "\n@iflatex\n" nil t)
-	      (delete-region (1+ (match-beginning 0))
-			     (search-forward "\n@end iflatex\n")))
-	    (goto-char (point-min))
 	    ;; process @include before updating node
 	    ;; This might produce some problem if we use @lowersection or
 	    ;; such.
@@ -1064,6 +1048,22 @@ NOTE: This function must be called from the top directory."
 			    (delete-region (point) (save-excursion
 						     (forward-line 1)
 						     (point))))))))))
+	    ;; Remove ignored areas.
+	    (goto-char (point-min))
+	    (while (re-search-forward "^@ignore[\t\r ]*$" nil t)
+	      (delete-region (match-beginning 0)
+			     (if (re-search-forward
+				  "^@end[\t ]+ignore[\t\r ]*$" nil t)
+				 (1+ (match-end 0))
+			       (point-max))))
+	    ;; Remove unsupported commands.
+	    (goto-char (point-min))
+	    (while (re-search-forward "@\\(end \\)?ifnottex" nil t)
+	      (replace-match ""))
+	    (goto-char (point-min))
+	    (while (search-forward "\n@iflatex\n" nil t)
+	      (delete-region (1+ (match-beginning 0))
+			     (search-forward "\n@end iflatex\n")))
 	    (texinfo-mode)
 	    (texinfo-every-node-update)
 	    (set-buffer-modified-p nil)
