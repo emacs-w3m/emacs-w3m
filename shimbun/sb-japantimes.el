@@ -37,8 +37,8 @@
 (defvar shimbun-japantimes-groups
   '("general" "business"))
 (defvar shimbun-japantimes-from-address "webmaster@japantimes.co.jp")
-(defvar shimbun-japantimes-content-start "\n<! ---- MAIN CONTENT AREA ---->\n")
-(defvar shimbun-japantimes-content-end  "\n<! bottombarstart>\n")
+(defvar shimbun-japantimes-content-start "</B></FONT><BR><BR>\n")
+(defvar shimbun-japantimes-content-end  "\n<! ---- PAGE FOOTER ---->\n")
 
 (defvar shimbun-japantimes-group-path-alist
   '(("general" . "news.htm")
@@ -54,16 +54,48 @@
 					 &optional range)
   (let ((case-fold-search t) headers)
     (goto-char (point-min))
-    (while (re-search-forward "<A HREF=\"\\(cgi-bin/getarticle.pl5\\?\\w\\w\\([0-9][0-9][0-9][0-9]\\)\\([0-1][0-9]\\)\\([0-3][0-9]\\)\\(\\w[0-9]\\).htm\\)\"><IMG BORDER=[0-9]+ HEIGHT=\"[0-9]+\" WIDTH=\"[0-9]+\" SRC=\"images/blue.gif\"> <FONT SIZE=\"[0-9]+\"><B>\\([^[<>]+\\)</B></FONT></A><BR>" nil t)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<A HREF=\""
+			;; 1. url
+			"\\(cgi-bin/getarticle\\.pl5\\?"
+			;; 2.
+			"\\(n[bn]\\)"
+			;; 3. year
+			"\\(20[0-9][0-9]\\)"
+			s0
+			;;4. month
+			"\\([0-1][0-9]\\)"
+			s0
+			;; 5. day
+			"\\([0-3][0-9]\\)"
+			s0
+			;; 6. tag
+			"\\(a[0-9]\\)"
+			s0 "\\.htm\\)\">" s0
+			;; 7
+			s0 "<IMG BORDER=\\([\"]?0[\"]?\\)" s1
+			"HEIGHT=\"[0-9]+\"" s1
+			"WIDTH=\"[0-9]+\"" s1
+			"SRC=\"img/gray.gif\">" s1
+			"<FONT CLASS=\"otherhead" s0
+			"\\([3]?\\)\">" s0
+			;; 9. subject
+			"\\([^[<>]+\\)"
+			"</FONT></A><BR>")))
+	    nil t)
       (let* ((url (match-string 1))
-	     (year (match-string 2))
-	     (month (match-string 3))
-	     (day (match-string 4))
-	     (tag (match-string 5))
-	     (subject (match-string 6))
+	     (serial (match-string 2))
+	     (year (match-string 3))
+	     (month (match-string 4))
+	     (day (match-string 5))
+	     (tag (match-string 6))
+	     (subject (match-string 9))
 	     id date)
-	(setq id (format "<%s.%s.%s.%s%%%s@www.japantimes.co.jp>"
-			 tag day month year
+	(setq id (format "<%s%s%s%s%s%%%s.japantimes.co.jp>"
+			 serial year month day tag
 			 (shimbun-current-group-internal shimbun)))
 	(setq date (shimbun-make-date-string
 		    (string-to-number year)
@@ -77,7 +109,7 @@
 			       (shimbun-url-internal shimbun)
 			       url))
 	      headers)))
-      headers))
+    headers))
 
 (provide 'sb-japantimes)
 
