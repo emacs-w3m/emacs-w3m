@@ -1,3 +1,18 @@
+2002-03-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-slashdot-jp.el (shimbun-make-contents): Follow the
+	argument spec change of `shimbun-slashdot-jp-make-story-article'.
+	(shimbun-slashdot-jp-make-story-article): Not accept the 2nd
+	argument.  Use `shimbun-header-xref' instead of
+	`shimbun-slashdot-jp-sid-url' when the URL of the article is
+	calulated, in order to protect the change of
+	`shimbun-slashdot-jp-threshold'.
+	(shimbun-slashdot-jp-make-comment-article): Use
+	`shimbun-header-xref' instead of `shimbun-slashdot-jp-sid-url' as
+	stated above.
+	(shimbun-slashdot-jp-search-comment-head): Only when the 4th
+	argument is set, references are checked.
+
 2002-02-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-threshold): New

@@ -67,7 +67,7 @@
       (shimbun-slashdot-jp-extract-sid-and-cid (shimbun-header-id head))
     (if cid
 	(shimbun-slashdot-jp-make-comment-article shimbun head sid cid)
-      (shimbun-slashdot-jp-make-story-article shimbun head sid))))
+      (shimbun-slashdot-jp-make-story-article shimbun head))))
 
 (defsubst shimbun-slashdot-jp-make-article-after (shimbun head)
   (goto-char (point-min))
@@ -84,11 +84,10 @@
 (defconst shimbun-slashdot-jp-story-article-end-pattern
   "<!-- end template: ID 88, dispStory;misc;default -->")
 
-(defun shimbun-slashdot-jp-make-story-article (shimbun head sid)
+(defun shimbun-slashdot-jp-make-story-article (shimbun head)
   (with-temp-buffer
     (let (begin)
-      (when (and (shimbun-retrieve-url
-		  (shimbun-slashdot-jp-sid-url shimbun sid))
+      (when (and (shimbun-retrieve-url (shimbun-header-xref head))
 		 (search-forward
 		  shimbun-slashdot-jp-story-article-start-pattern nil t)
 		 (setq begin (point))
@@ -101,8 +100,7 @@
 (defun shimbun-slashdot-jp-make-comment-article (shimbun head sid cid)
   (with-temp-buffer
     (let (begin end)
-      (when (and (shimbun-retrieve-url
-		  (shimbun-slashdot-jp-sid-url shimbun sid))
+      (when (and (shimbun-retrieve-url (shimbun-header-xref head))
 		 (shimbun-slashdot-jp-search-comment-head shimbun sid cid)
 		 (re-search-forward "<table[^>]*><tr><td[^>]*>" nil t))
 	(delete-region (point-min) (match-beginning 0))
@@ -264,22 +262,23 @@
 				  (w3m-time-parse-string
 				   (shimbun-header-date parent)))))
       (forward-line 1)
-      (let ((pos (point)))
-	(when (re-search-forward
-	       (format (eval-when-compile
-			 (concat
-			  "<a href=\"%scomments\\.pl\\?sid=[0-9]+&[^>]+"
-			  "&cid=\\([0-9]+\\)\">親コメント</A>"))
-		       (regexp-quote (shimbun-url-internal shimbun)))
-	       nil t)
-	  (shimbun-header-set-references
-	   head
-	   (if (equal "0" (setq cid (match-string 1)))
-	       (shimbun-slashdot-jp-make-message-id sid)
-	     (concat (shimbun-slashdot-jp-make-message-id sid)
-		     " "
-		     (shimbun-slashdot-jp-make-message-id sid cid)))))
-	(goto-char pos))
+      (when parent
+	(let ((pos (point)))
+	  (when (re-search-forward
+		 (format (eval-when-compile
+			   (concat
+			    "<a href=\"%scomments\\.pl\\?sid=[0-9]+&[^>]+"
+			    "&cid=\\([0-9]+\\)\">親コメント</A>"))
+			 (regexp-quote (shimbun-url-internal shimbun)))
+		 nil t)
+	    (shimbun-header-set-references
+	     head
+	     (if (equal "0" (setq cid (match-string 1)))
+		 (shimbun-slashdot-jp-make-message-id sid)
+	       (concat (shimbun-slashdot-jp-make-message-id sid)
+		       " "
+		       (shimbun-slashdot-jp-make-message-id sid cid)))))
+	  (goto-char pos)))
       head)))
 
 (provide 'sb-slashdot-jp)
