@@ -384,6 +384,10 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
     (unwind-protect
 	(let* ((headers (shimbun-headers shimbun range))
 	       (sum (length headers)))
+	  (setq headers (sort headers
+			      (lambda (x y)
+				(string< (mew-time-rfc-to-sortkey (or (elt x 3) ""))
+					 (mew-time-rfc-to-sortkey (or (elt y 3) ""))))))
 	  (dolist (head headers)
 	    (let ((id (format mew-shimbun-id-format
 			      server group
@@ -535,6 +539,10 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
     (unwind-protect
 	(let* ((headers (shimbun-headers shimbun range))
 	       (sum (length headers)))
+	  (setq headers (sort headers
+			      (lambda (x y)
+				(string< (mew-time-rfc-to-sortkey (or (elt x 3) ""))
+					 (mew-time-rfc-to-sortkey (or (elt y 3) ""))))))
 	  (dolist (head headers)
 	    (let ((newid (format mew-shimbun-id-format
 				 server group
