@@ -515,70 +515,70 @@ Buffer string between BEG and END are replaced with IMAGE."
     map))
 
 (defvar w3m-tab-line-format nil
-  "Internal variable used to keep contents to be shown in the header-line
-while the external w3m process is running.  It is also used to control
-the `w3m-tab-line' function running too frequently, set by the function
-itself and cleared by a timer.")
+  "Internal variable used to keep contents to be shown in the header-line.")
+
+(defvar w3m-tab-line-timer nil
+  "Internal variable used to say time has not gone by after the tab-line
+was updated last time.  It is used to control the `w3m-tab-line'
+function running too frequently, set by the function itself and
+cleared by a timer.")
 
 (defun w3m-tab-line ()
-  (or
-   (when w3m-current-process
-     (or w3m-tab-line-format
-	 (progn
-	   (run-at-time 0.1 nil (lambda nil (setq w3m-tab-line-format nil)))
-	   nil)))
-   (let* ((current (current-buffer))
-	  (buffers (w3m-list-buffers))
-	  (width (if (> (* (length buffers) (+ 5 w3m-tab-width))
-			(window-width))
-		     (max (- (/ (window-width) (length buffers)) 5) 1)
-		   w3m-tab-width))
-	  value)
-     (setq
-      value
-      (concat
-       (save-current-buffer
-	 (mapconcat
-	  (lambda (buffer)
-	    (let ((title (w3m-buffer-title buffer))
-		  (favicon (if w3m-use-favicon
-			       (w3m-favicon-image-of buffer))))
-	      (propertize
-	       (concat (if favicon
-			   (propertize "  " 'display favicon)
-			 "  ")
-		       (if (and (> width 0)
-				(> (string-width title) width))
-			   (if (> width 6)
-			       (concat
-				(truncate-string-to-width
-				 title
-				 (max 0 (- width 3)))
-				"...")
-			     (truncate-string-to-width title width))
-			 (concat title
-				 (make-string (max 0
-						   (-
-						    width
-						    (string-width title)))
-					      ?\ )))
-		       "  ")
-	       'mouse-face 'highlight
-	       'face (if (progn (set-buffer buffer) w3m-current-process)
-			 (if (eq buffer current)
-			     'w3m-tab-selected-retrieving-face
-			   'w3m-tab-unselected-retrieving-face)
-		       (if (eq buffer current)
-			   'w3m-tab-selected-face
-			 'w3m-tab-unselected-face))
-	       'local-map (w3m-tab-make-keymap buffer)
-	       'help-echo title)))
-	  buffers
-	  (propertize " " 'face 'w3m-tab-background-face)))
-       (propertize (make-string (window-width) ?\ )
-		   'face 'w3m-tab-background-face)))
-     (setq w3m-tab-line-format (when w3m-current-process value))
-     value)))
+  (or (and w3m-tab-line-timer w3m-tab-line-format)
+      (let* ((current (current-buffer))
+	     (buffers (w3m-list-buffers))
+	     (width (if (> (* (length buffers) (+ 5 w3m-tab-width))
+			   (window-width))
+			(max (- (/ (window-width) (length buffers)) 5) 1)
+		      w3m-tab-width))
+	     process icon title)
+	(setq w3m-tab-line-timer
+	      (run-at-time 0.1 nil (lambda nil
+				     (setq w3m-tab-line-timer nil))))
+	(setq
+	 w3m-tab-line-format
+	 (concat
+	  (mapconcat
+	   (lambda (buffer)
+	     (set-buffer buffer)
+	     (setq process w3m-current-process
+		   icon (when w3m-use-favicon w3m-favicon-image))
+	     (set-buffer current)
+	     (setq title (w3m-buffer-title buffer))
+	     (propertize
+	      (concat (if icon
+			  (propertize "  " 'display icon)
+			"  ")
+		      (if (and (> width 0)
+			       (> (string-width title) width))
+			  (if (> width 6)
+			      (concat
+			       (truncate-string-to-width
+				title
+				(max 0 (- width 3)))
+			       "...")
+			    (truncate-string-to-width title width))
+			(concat title
+				(make-string (max 0
+						  (-
+						   width
+						   (string-width title)))
+					     ?\ )))
+		      "  ")
+	      'mouse-face 'highlight
+	      'face (if process
+			(if (eq buffer current)
+			    'w3m-tab-selected-retrieving-face
+			  'w3m-tab-unselected-retrieving-face)
+		      (if (eq buffer current)
+			  'w3m-tab-selected-face
+			'w3m-tab-unselected-face))
+	      'local-map (w3m-tab-make-keymap buffer)
+	      'help-echo title))
+	   buffers
+	   (propertize " " 'face 'w3m-tab-background-face))
+	  (propertize (make-string (window-width) ?\ )
+		      'face 'w3m-tab-background-face))))))
 
 (defun w3m-update-tab-line ()
   "Update tab line."

@@ -177,11 +177,6 @@ favicon is ready."
 					      url)
 			      'ico w3m-current-buffer))))))
 
-(defun w3m-favicon-image-of (buffer)
-  "Return the favicon image from BUFFER."
-  (with-current-buffer buffer
-    w3m-favicon-image))
-
 (defun w3m-favicon-convert (data type)
   "Convert the favicon DATA in TYPE to the favicon image and return it."
   (let* (height
@@ -231,7 +226,8 @@ stored in the `w3m-favicon-image' buffer-local variable."
 	    ;; Emacs frame needs to be redisplayed to make favicon come out.
 	    (let ((window (get-buffer-window target t)))
 	      (when window
-		(redraw-frame (window-frame window))))))))))
+		(run-at-time 0.2 nil
+			     'redraw-frame (window-frame window))))))))))
 
 (defun w3m-favicon-save-cache-file ()
   "Save the cached favicon data into the local file."

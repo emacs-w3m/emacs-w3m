@@ -1,9 +1,25 @@
+2003-09-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el (w3m-tab-line-timer): New variable.
+	(w3m-tab-line): Use it to control this function running too
+	frequently; simplify the source code.
+
+	* w3m-favicon.el (w3m-favicon-image-of): Abolish.
+	(w3m-favicon-retrieve): Use a timer to redraw Emacs frame.
+
+	* w3m-xmas.el (w3m-xmas-space-before-favicon): New user option.
+	(w3m-xmas-space-before-spinner): New user option.
+	(w3m-make-spinner-image): Make sure the `gif' feature is available.
+
+	* w3m.el (w3m-buffer-setup): Use `w3m-xmas-space-before-spinner'
+	and `w3m-xmas-space-before-favicon'.
+
 2003-09-26  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-mailarc.el (shimbun-get-headers): Allow double quoted
 	string for href attribute.
 
-	* shimbun/sb-quickml.el (shimbun-quickml-groups): 
+	* shimbun/sb-quickml.el (shimbun-quickml-groups):
 	Added "software-patent".
 
 2003-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
