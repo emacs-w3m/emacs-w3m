@@ -3,7 +3,8 @@
 ;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
-;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
+;;          Katsumi Yamaoka    <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; This file is a part of emacs-w3m.
@@ -48,29 +49,21 @@
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
 (eval-when-compile
-  (defvar w3m-current-url)
-  (defvar w3m-current-title)
   (defvar w3m-current-process)
-  (defvar w3m-current-buffer)
+  (defvar w3m-current-url)
   (defvar w3m-display-inline-images)
+  (defvar w3m-form-use-fancy-faces)
   (defvar w3m-icon-directory)
   (defvar w3m-mode-map)
-  (defvar w3m-profile-directory)
+  (defvar w3m-process-queue)
   (defvar w3m-toolbar)
   (defvar w3m-toolbar-buttons)
-  (defvar w3m-use-tab)
-  (defvar w3m-use-header-line)
-  (defvar w3m-work-buffer-name)
-  (defvar w3m-history)
-  (defvar w3m-history-flat)
-  (defvar w3m-form-use-fancy-faces)
-  (defvar w3m-async-exec)
   (defvar w3m-use-favicon)
-  (autoload 'w3m-expand-url "w3m")
-  (autoload 'w3m-retrieve "w3m")
+  (defvar w3m-use-header-line)
+  (defvar w3m-use-tab)
+  (defvar w3m-work-buffer-name)
   (autoload 'w3m-image-type "w3m")
-  (autoload 'w3m-load-list "w3m")
-  (autoload 'w3m-save-list "w3m"))
+  (autoload 'w3m-retrieve "w3m"))
 
 ;;; Coding system.
 
@@ -514,35 +507,48 @@ Buffer string between BEG and END are replaced with IMAGE."
     (define-key map [header-line mouse-2] up-action)
     map))
 
-;;(defvar w3m-tab-line-format nil
-;;  "Internal variable used to keep contents to be shown in the header-line.")
+(defvar w3m-tab-line-format nil
+  "Internal variable used to keep contents to be shown in the header-line.")
 
-;;(defvar w3m-tab-line-timer nil
-;;  "Internal variable used to say time has not gone by after the tab-line
-;;was updated last time.  It is used to control the `w3m-tab-line'
-;;function running too frequently, set by the function itself and
-;;cleared by a timer.")
+(defvar w3m-tab-line-timer nil
+  "Internal variable used to say time has not gone by after the tab-line
+was updated last time.  It is used to control the `w3m-tab-line'
+function running too frequently, set by the function itself and
+cleared by a timer.")
 
 (defun w3m-tab-line ()
-;;  (or (and w3m-tab-line-timer w3m-tab-line-format)
+  (or (and w3m-tab-line-timer w3m-tab-line-format)
       (let* ((current (current-buffer))
 	     (buffers (w3m-list-buffers))
 	     (width (if (> (* (length buffers) (+ 5 w3m-tab-width))
 			   (window-width))
 			(max (- (/ (window-width) (length buffers)) 5) 1)
 		      w3m-tab-width))
+	     (window (get-buffer-window current t))
 	     process icon title)
-;;	(setq w3m-tab-line-timer
-;;	      (run-at-time 0.1 nil (lambda nil
-;;				     (setq w3m-tab-line-timer nil))))
-;;	(setq
-;;	 w3m-tab-line-format
+	(setq w3m-tab-line-timer
+	      (run-at-time 0.1 nil
+			   (lambda (window)
+			     (setq w3m-tab-line-timer nil)
+			     (if (and (eq (selected-window) window)
+				      w3m-process-queue)
+				 ;; Wobble the window size to force
+				 ;; redisplay of the header-line.
+				 (let ((window-min-height 0))
+				   (shrink-window 1)
+				   (enlarge-window 1))))
+			   window))
+	(setq
+	 w3m-tab-line-format
 	 (concat
 	  (mapconcat
 	   (lambda (buffer)
 	     (set-buffer buffer)
 	     (setq process w3m-current-process
-		   icon (when w3m-use-favicon w3m-favicon-image))
+		   icon (cond (process
+			       (w3m-make-spinner-image))
+			      (w3m-use-favicon
+			       w3m-favicon-image)))
 	     (set-buffer current)
 	     (setq title (w3m-buffer-title buffer))
 	     (propertize
@@ -578,8 +584,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 	   buffers
 	   (propertize " " 'face 'w3m-tab-background-face))
 	  (propertize (make-string (window-width) ?\ )
-		      'face 'w3m-tab-background-face))))
-;;      ))
+		      'face 'w3m-tab-background-face))))))
 
 (defun w3m-update-tab-line ()
   "Update tab line."
@@ -588,6 +593,33 @@ Buffer string between BEG and END are replaced with IMAGE."
 
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-header-line)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-widget-faces)
+
+;; Spinner.
+(defvar w3m-spinner-image-file nil
+  "Image file used to show a spinner in the header-line.")
+
+(defvar w3m-spinner-image-frames 3
+  "Number of frames which the spinner image contains.")
+
+(defvar w3m-spinner-image-index 0
+  "Counter used to rotate spinner images.")
+
+(defun w3m-make-spinner-image ()
+  "Make an image used to show a spinner."
+  (unless w3m-spinner-image-file
+    (let ((spinner (expand-file-name "spinner.gif" w3m-icon-directory)))
+      (setq w3m-spinner-image-file
+	    (if (and (display-images-p)
+		     (image-type-available-p 'gif)
+		     (file-exists-p spinner))
+		spinner
+	      'none))))
+  (when (stringp w3m-spinner-image-file)
+    (unless (< (incf w3m-spinner-image-index) w3m-spinner-image-frames)
+      (setq w3m-spinner-image-index 0))
+    (create-image w3m-spinner-image-file 'gif nil
+		  :ascent 'center :mask 'heuristic
+		  :index w3m-spinner-image-index)))
 
 (provide 'w3m-e21)
 
