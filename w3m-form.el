@@ -657,7 +657,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 				(w3m-truncate-string (or string "")
 						     width) "\n")
 			       "")))
-	    (make-string (- width (string-width string)) ?\ ))
+	    (make-string (max (- width (string-width string)) 0) ?\ ))
     (delete-region (point)
 		   (next-single-property-change (point) 'w3m-action))
     (add-text-properties start (point) prop)

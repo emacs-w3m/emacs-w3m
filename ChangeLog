@@ -1,10 +1,15 @@
-2002-05-14  SAITO Takuya <reed@lily.freemail.ne.jp>	
-	
+2002-05-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-form.el (w3m-form-replace): Don't pad the form slot with
+	spaces if a string is longer than that width.
+
+2002-05-14  SAITO Takuya <reed@lily.freemail.ne.jp>
+
 	* shimbun/sb-vinelinux.el (shimbun-vinelinux-group-path-alist): Add
 	entry for Vine Linux 2.5 errata.
 	(shimbun-vinelinux-group-path-alist1): Remove.
 	(shimbun-get-headers): Don't retrieve index twice.
-	
+
 2002-05-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-arrived-p): Move its definition in order to avoid
