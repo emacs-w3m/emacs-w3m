@@ -2042,12 +2042,13 @@ Emacs-w3m $B$,5/F0$9$k$H!"(B@code{w3m-init-file} $B%U%!%$%k$rFI$_9~$_$^$9!#%G
 @vindex w3m-minor-mode-command-alist
 
 Gnus (Emacs $B$N%K%e!<%:%j!<%@!<(B) $B$,(B emacs-w3m $B$r%5%]!<%H$7$F$$$k$C$F!"CN$C(B
-$B$F$$$^$7$?$+(B?  $B<B:]$K$O(B Emacs $B$KF1:-$5$l$F$$$k(B ($B$^$?$O(B XEmacs $B%Q%C%1!<%8(B
-$B$N(B) Gnus $B$O!"(B($B:#$O$^$@(B) emacs-w3m $B$r%5%]!<%H$7$F$$$^$;$s!#(B@samp{Oort
-Gnus} $B$H$7$FCN$i$l$F$$$k3+H/HG$N(B Gnus $B$r;H$&$N$,NI$$$G$7$g$&!#$=$l$O0J2<(B
-$B$N>l=j$G<j$KF~$j$^$9(B:
+$B$F$$$^$7$?$+(B?
 
-@uref{ftp://ftp.gnus.org/pub/gnus/ognus.tar.gz}
+$B<B:]$K$O(B Emacs $B$KF1:-$5$l$F$$$k(B Gnus $B$O!"(B($B:#$O$^$@(B) emacs-w3m $B$r%5%]!<%H(B
+$B$7$F$$$^$;$s!#(B@samp{Gnus v5.10} $B$H$7$FCN$i$l$F$$$k:G?7HG$N(B Gnus $B$r;H$&$N(B
+$B$,NI$$$G$7$g$&!#$=$l$O0J2<$N>l=j$G<j$KF~$j$^$9(B:
+
+@uref{ftp://ftp.gnus.org/pub/gnus/gnus.tar.gz}
 
 $B$4Cm0U(B: $B$"$J$?$N(B Emacs $B$KIUB0$7$F$$$k(B Gnus $B$N%P!<%8%g%s$G(B emacs-w3m $B$,%5(B
 $B%]!<%H$5$l$F$$$k$H$7$?$i!"$3$N@bL@=q$,8E$$!"$^$?$OHs>o$K8E$$%P!<%8%g%s(B
