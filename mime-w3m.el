@@ -163,7 +163,8 @@ will not be substituted.")
        (run-hooks 'mime-text-decode-hook)
        (condition-case err
 	   (let ((w3m-safe-url-regexp "\\`cid:")
-		 (w3m-display-inline-images mime-w3m-display-inline-images))
+		 (w3m-display-inline-images mime-w3m-display-inline-images)
+		 w3m-force-redisplay)
 	     (w3m-region p
 			 (point-max)
 			 (and (stringp xref)

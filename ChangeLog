@@ -1,3 +1,8 @@
+2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mime-w3m.el (mime-w3m-preview-text/html): Bind
+	`w3m-force-redisplay' with nil.
+
 2002-02-01  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* octet.el (octet-buffer): Set default of `completing-read'.
