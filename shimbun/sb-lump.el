@@ -34,8 +34,13 @@
 (defvar shimbun-lump-check-interval 300)
 
 (eval-and-compile
-  (luna-define-class shimbun-lump (shimbun) (group-header-alist last-check))
+  (luna-define-class shimbun-lump (shimbun)
+		     (group-header-alist last-check check-interval))
   (luna-define-internal-accessors 'shimbun-lump))
+
+(defsubst shimbun-lump-check-interval (shimbun)
+  (or (shimbun-lump-check-interval-internal shimbun)
+      shimbun-lump-check-interval))
 
 (defun shimbun-lump-lapse-seconds (time)
   (let ((now (current-time)))
@@ -47,7 +52,7 @@
       (and (shimbun-lump-last-check-internal shimbun)
 	   (> (shimbun-lump-lapse-seconds
 	       (shimbun-lump-last-check-internal shimbun))
-	      shimbun-lump-check-interval))))
+	      (shimbun-lump-check-interval shimbun)))))
 
 (defun shimbun-lump-checked (shimbun)
   (shimbun-lump-set-last-check-internal shimbun (current-time)))

@@ -1,3 +1,9 @@
+2002-03-01  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-lump.el (shimbun-lump): Add `check-interval'.
+	(shimbun-lump-check-interval): New inline function.
+	(shimbun-lump-check-p): Use it.
+
 2002-03-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-story-count): New
