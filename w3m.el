@@ -1459,8 +1459,10 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(and v (string-to-number v)))
 	      (cdr (assoc "content-encoding" alist))
 	      (let ((v (cdr (assoc "last-modified" alist))))
-		(and v (apply (function encode-time)
-			      (w3m-time-parse-string v)))))))
+		(and v (condition-case nil
+			   (apply (function encode-time)
+				  (w3m-time-parse-string v))
+			 (error)))))))
      ;; FIXME: adhoc implementation
      ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
      ;; HTTP/1.0 501 Method Not Implemented
