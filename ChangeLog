@@ -1,5 +1,9 @@
 2002-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m.el (w3m-request-arguments): Use -header option if no cookie
+	nor no body.
+	(w3m-w3m-retrieve-1): Delete temp-file only when it exists.
+
 	* w3m-e21.el (w3m-imagick-start-convert-data): Don't use
 	string-as-unibyte (no use).
 

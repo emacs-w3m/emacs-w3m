@@ -2969,7 +2969,7 @@ to add the option \"-no-proxy\"."
 ;; Currently, -request argument is supported only by w3mmee.
 (defun w3m-request-arguments (method url temp-file
 				     &optional body referer content-type)
-  "Make an `-request' argument.
+  "Make `-request' or `-header' arguments.
 METHOD is an HTTP method name.
 TEMP-FILE is a name of temporal file to write request content to.
 Optional BODY is the body content string. 
@@ -2978,35 +2978,52 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
   (with-temp-buffer
     (let ((modes (default-file-modes))
 	  (cookie (and w3m-use-cookies (w3m-cookie-get url))))
-      (when w3m-add-user-agent (insert "User-Agent: " w3m-user-agent "\n"))
-      (when (and (stringp referer)
-		 (not (and (cdr w3m-add-referer-regexps)
-			   (string-match (cdr w3m-add-referer-regexps)
-					 referer)))
-		 (car w3m-add-referer-regexps)
-		 (string-match (car w3m-add-referer-regexps) referer))
-	(insert "Referer: " referer "\n"))
-      (when w3m-accept-languages
-	(insert "Accept-Language: "
-		(mapconcat 'identity w3m-accept-languages " ") "\n"))
-      (when cookie
-	(insert "Cookie: " cookie "\n"))
-      (when content-type
-	(insert "Content-Type: " content-type "\n"))
-      (insert "\n")
-      (when body
-	(insert body))
-      (unwind-protect
-	  (let ((coding-system-for-write 'binary))
-	    (set-default-file-modes (* 64 6))
-	    (write-region (point-min) (point-max) temp-file nil 'silent))
-	(set-default-file-modes modes))))
-  (list "-request" (concat method ":" temp-file)))
+      (if (and (null cookie)(null body)
+	       (null content-type))
+	  (append
+	   (when w3m-add-user-agent
+	     (list "-header" (concat "User-Agent:" w3m-user-agent)))
+	   (when (and (stringp referer)
+		      (not (and (cdr w3m-add-referer-regexps)
+				(string-match (cdr w3m-add-referer-regexps)
+					      referer)))
+		      (car w3m-add-referer-regexps)
+		      (string-match (car w3m-add-referer-regexps) referer))
+	     (list "-header" (concat "Referer: " referer)))
+	   (when w3m-accept-languages
+	     (list "-header" (concat
+			      "Accept-Language: "
+			      (mapconcat 'identity w3m-accept-languages
+					 " ")))))
+	(when w3m-add-user-agent (insert "User-Agent: " w3m-user-agent "\n"))
+	(when (and (stringp referer)
+		   (not (and (cdr w3m-add-referer-regexps)
+			     (string-match (cdr w3m-add-referer-regexps)
+					   referer)))
+		   (car w3m-add-referer-regexps)
+		   (string-match (car w3m-add-referer-regexps) referer))
+	  (insert "Referer: " referer "\n"))
+	(when w3m-accept-languages
+	  (insert "Accept-Language: "
+		  (mapconcat 'identity w3m-accept-languages " ") "\n"))
+	(when cookie
+	  (insert "Cookie: " cookie "\n"))
+	(when content-type
+	  (insert "Content-Type: " content-type "\n"))
+	(insert "\n")
+	(when body
+	  (insert body))
+	(unwind-protect
+	    (let ((coding-system-for-write 'binary))
+	      (set-default-file-modes (* 64 6))
+	      (write-region (point-min) (point-max) temp-file nil 'silent))
+	  (set-default-file-modes modes))
+	(list "-request" (concat method ":" temp-file))))))
 
 ;; Currently, w3m uses this function.
 (defun w3m-header-arguments (method url temp-file
 				    &optional body referer content-type)
-  "Make an `-header' arguments.
+  "Make `-header' arguments.
 METHOD is an HTTP method name.
 TEMP-FILE is a name of temporal file to write post body to.
 Optional BODY is the post body content string. 
@@ -3151,7 +3168,7 @@ The value of `w3m-current-url' is set in this function."
 		 (and (w3m-cache-request-contents url)
 		      (w3m-w3m-attributes url nil handler)))
 	       (w3m-w3m-dump-head-source url handler)))
-	(when temp-file
+	(when (and temp-file (file-exists-p temp-file))
 	  (delete-file temp-file))
 	(when attributes
 	  (or no-decode
