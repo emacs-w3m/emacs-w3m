@@ -90,9 +90,12 @@
       あなたが使っている Emacsen が該当する場合には，前もって，以下のよ
       うに regexp-opt.el(c) モジュールをインストールする必要があります．
 
-          % cp attic/regexp-opt.el /usr/local/share/mule/site-lisp
-          % cd /usr/local/share/mule/site-lisp
-          % mule -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
+          % cp attic/regexp-opt.el /usr/local/share/emacs/site-lisp
+          % cd /usr/local/share/emacs/site-lisp
+          % emacs -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
+
+      (もし Mule をお使いならば，おそらくパス名やコマンド名として
+      `emacs' の代わりに `mule' と言う必要があるでしょう．)
 
 
 3. インストール
@@ -220,7 +223,7 @@
        ています．
 
    [3] BITMAP-MULE
-       ftp://ftp.m17n.org/pub/mule/bitmap-mule/ から入手できます．
+       ftp://ftp.jpl.org/pub/elisp/bitmap/ から入手できます．
 
    [4] gifsicle
        http://www.lcdf.org/gifsicle/ から入手できます．

@@ -82,9 +82,12 @@
       install the module regexp-opt.el(c) before installing emacs-w3m as
       follows:
 
-          % cp attic/regexp-opt.el /usr/local/share/mule/site-lisp
-          % cd /usr/local/share/mule/site-lisp
-          % mule -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
+          % cp attic/regexp-opt.el /usr/local/share/emacs/site-lisp
+          % cd /usr/local/share/emacs/site-lisp
+          % emacs -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
+
+      (You will likely need to say `mule' instead of `emacs' for the
+      path name and the executable name if you are using Mule.)
 
 
 3. Installation
@@ -216,7 +219,7 @@
 
    [3] BITMAP-MULE
        It can be downloaded from
-       ftp://ftp.m17n.org/pub/mule/bitmap-mule/.
+       ftp://ftp.jpl.org/pub/elisp/bitmap/.
 
    [4] gifsicle
        It can be downloaded from http://www.lcdf.org/gifsicle/.
