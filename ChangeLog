@@ -1,3 +1,9 @@
+2002-01-07  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-w32-browser-with-fiber): Fix handling of the local url.
+
+	* w3m-util.el (w3m-url-local-p): Fix its regexp for Windows.
+
 2002-01-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-local-attributes): Encode paths of local files.

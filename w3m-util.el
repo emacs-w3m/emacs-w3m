@@ -329,7 +329,7 @@ nil."
 (defsubst w3m-url-local-p (url)
   "If URL points a file on the local system, return non-nil value.
 Otherwise return nil."
-  (string-match "^\\(file:\\|/\\)" url))
+  (string-match "^\\(file:\\|/\\|[a-zA-Z]:/\\)" url))
 
 (defsubst w3m-which-command (command)
   (if (and (file-name-absolute-p command)
