@@ -382,6 +382,7 @@ and 'w3m-arrived-ct-file'."
 			(if (match-beginning 6) "\"" "'"))))))
 	(if prop (add-text-properties (1- (point)) (point) prop))))
     ;; Decode w3m-specific extended charcters.
+    (goto-char (point-min))
     (let ((x enable-multibyte-characters)
 	  (table w3m-extended-charcters-table))
       (set-buffer-multibyte nil)
