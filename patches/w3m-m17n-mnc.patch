@@ -1,0 +1,313 @@
+diff -ur w3m-0.2.1-m17n-0.19.orig/file.c w3m-0.2.1-m17n-0.19/file.c
+--- w3m-0.2.1-m17n-0.19.orig/file.c	Thu Nov  1 01:32:06 2001
++++ w3m-0.2.1-m17n-0.19/file.c	Wed Aug  8 01:21:15 2001
+@@ -840,6 +840,16 @@
+ 	    term_cbreak();
+ 	}
+ 	else {
++	    /*
++	     * If post file is specified as '-', stdin is closed at this point.
++	     * In this case, w3m cannot read username from stdin.
++	     * So exit with error message.
++	     * (This is same behavior as lwp-request.)
++	     */
++	    if (feof(stdin) || ferror (stdin)) {
++		fprintf(stderr, "w3m: Authorization required for %s\n", realm);
++		exit(1);
++	    }
+ 	    printf("Username: ");
+ 	    fflush(stdout);
+ 	    uname = Strfgets(stdin);
+@@ -1307,6 +1317,7 @@
+ 	    }
+ 	}
+     }
++    if (header_string) header_string = NULL;
+     if (fmInitialized) {
+ 	term_raw();
+ 	signal(SIGINT, prevtrap);
+@@ -1843,12 +1854,12 @@
+ 	if (buf) {
+ 	    pushTextLine(buf, lbuf);
+ 	    if (w3m_backend) {
+-		Strcat(backend_halfdump_str, lbuf->line);
++		Strcat(backend_halfdump_str, Str_conv_to_halfdump(lbuf->line));
+ 		Strcat_char(backend_halfdump_str, '\n');
+ 	    }
+ 	}
+ 	else {
+-	    Strfputs(lbuf->line, f);
++	    Strfputs(Str_conv_to_halfdump(lbuf->line), f);
+ 	    fputc('\n', f);
+ 	}
+ 	if (obuf->flag & RB_SPECIAL || obuf->flag & RB_NFLUSHED)
+@@ -1864,9 +1875,9 @@
+ 	if (buf) { \
+ 	    appendTextLine(buf,(str),0); \
+ 	    if (w3m_backend) \
+-		Strcat(backend_halfdump_str, (str)); \
++		Strcat(backend_halfdump_str, Str_conv_to_halfdump(str)); \
+ 	} else \
+-	    Strfputs((str),f)
++	    Strfputs(Str_conv_to_halfdump(str),f)
+ 
+ 	while (*p) {
+ 	    q = p;
+diff -ur w3m-0.2.1-m17n-0.19.orig/fm.h w3m-0.2.1-m17n-0.19/fm.h
+--- w3m-0.2.1-m17n-0.19.orig/fm.h	Thu Nov  1 01:32:06 2001
++++ w3m-0.2.1-m17n-0.19/fm.h	Wed Aug  8 01:21:14 2001
+@@ -647,6 +647,9 @@
+ global int w3m_debug;
+ global int w3m_halfdump init(FALSE);
+ global int w3m_halfload init(FALSE);
++global char *post_file;
++global Str header_string init(NULL);
++global int override_content_type init(FALSE);
+ 
+ #ifdef COLOR
+ global int useColor init(TRUE);
+@@ -724,6 +727,7 @@
+ global wc_ces DisplayCharset init(DISPLAY_CHARSET);
+ global wc_ces DocumentCharset init(DOCUMENT_CHARSET);
+ global wc_ces SystemCharset init(SYSTEM_CHARSET);
++global char ExtHalfdump init(FALSE);
+ global char FollowLocale init(TRUE);
+ global char UseContentCharset init(TRUE);
+ global char SearchConv init(TRUE);
+@@ -732,12 +736,14 @@
+ #define conv_from_system(x) wc_conv((x), SystemCharset, InnerCharset)->ptr
+ #define conv_to_system(x) wc_conv_strict((x), InnerCharset, SystemCharset)->ptr
+ #define url_quote_conv(x,c) url_quote(wc_conv_strict((x), InnerCharset, (c))->ptr)
++#define Str_conv_to_halfdump(x) (ExtHalfdump ? wc_Str_conv((x), InnerCharset, DisplayCharset) : (x))
+ #else
+ #define Str_conv_from_system(x) (x)
+ #define Str_conv_to_system(x) (x)
+ #define conv_from_system(x) (x)
+ #define conv_to_system(x) (x)
+ #define url_quote_conv(x,c) url_quote(x)
++#define Str_conv_to_halfdump(x) (x)
+ #endif
+ global char UseAltEntity init(TRUE);
+ global char UseGraphicChar init(FALSE);
+diff -ur w3m-0.2.1-m17n-0.19.orig/libwc/wtf.c w3m-0.2.1-m17n-0.19/libwc/wtf.c
+--- w3m-0.2.1-m17n-0.19.orig/libwc/wtf.c	Thu Nov  1 01:32:08 2001
++++ w3m-0.2.1-m17n-0.19/libwc/wtf.c	Wed Aug  8 01:21:14 2001
+@@ -436,7 +436,6 @@
+ 	/* case 0: */
+ 	    cc.ccs = WC_CCS_US_ASCII;
+ 	    cc.code = (wc_uint32)' ';
+-	    q++;
+ 	    break;
+ 	}
+     }
+diff -ur w3m-0.2.1-m17n-0.19.orig/main.c w3m-0.2.1-m17n-0.19/main.c
+--- w3m-0.2.1-m17n-0.19.orig/main.c	Thu Nov  1 01:32:08 2001
++++ w3m-0.2.1-m17n-0.19/main.c	Wed Aug  8 01:20:57 2001
+@@ -57,8 +57,10 @@
+ int w3m_dump = 0;
+ int w3m_dump_source = 0;
+ int w3m_dump_head = 0;
++int w3m_dump_extra = 0;
+ static void dump_source(Buffer *);
+ static void dump_head(Buffer *);
++static void dump_extra(Buffer *);
+ int prec_num = 0;
+ int prev_key = -1;
+ int on_target = 1;
+@@ -109,6 +111,8 @@
+     fprintf(f, "    +<num>           goto <num> line\n");
+     fprintf(f, "    -num             show line number\n");
+     fprintf(f, "    -no-proxy        don't use proxy\n");
++    fprintf(f, "    -post file       use POST method with file content\n");
++    fprintf(f, "    -header string   insert string as a header\n");
+ #ifdef MOUSE
+     fprintf(f, "    -no-mouse        don't use mouse\n");
+ #endif				/* MOUSE */
+@@ -187,6 +191,33 @@
+     fprintf(stderr, msg, (unsigned long)arg);
+ }
+ 
++Str
++make_optional_header_string (char *s)
++{
++    char *p;
++    Str hs;
++
++    for (p = s; *p && *p != ':'; p++);
++    if (*p != ':' || p == s)
++	return NULL;
++    if (strchr(s, '\n')) {
++	return NULL;
++    }
++    hs = Strnew_size(p - s);
++    strncpy(hs->ptr, s, p - s);
++    hs->length = p - s;
++    if (!Strcasecmp_charp(hs, "content-type")) {
++	override_content_type = TRUE;
++    }
++    Strcat_charp(hs, ": ");
++    if (*(p + 1)) { /* not null header */
++	for (p = p + 1; isspace(*p); p++); /* skip white spaces */
++	Strcat_charp(hs, p);
++    }
++    Strcat_charp(hs, "\r\n");
++    return hs;
++}    
++
+ int
+ MAIN(int argc, char **argv, char **envp)
+ {
+@@ -423,6 +454,16 @@
+ 		if (COLS == 0)
+ 		    COLS = 80;
+ 	    }
++	    else if (!strcmp("-dump_extra", argv[i])) {
++		argv[i] = "-dummy";
++		w3m_dump = TRUE;
++		w3m_dump_head = TRUE;
++		w3m_dump_source = TRUE;
++		w3m_dump_extra = TRUE;
++		w3m_halfdump = FALSE;
++		if (COLS == 0)
++		    COLS = 80;
++	    }
+ 	    else if (!strcmp("-halfdump", argv[i])) {
+ 		w3m_halfdump = TRUE;
+ 		w3m_dump = FALSE;
+@@ -463,6 +504,21 @@
+ 		showLineNum = TRUE;
+ 	    else if (!strcmp("-no-proxy", argv[i]))
+ 		Do_not_use_proxy = TRUE;
++	    else if (!strcmp("-post", argv[i])) {
++		if (++i >= argc)
++		    usage();
++		post_file = argv[i];
++	    }
++ 	    else if (!strcmp("-header", argv[i])) {
++		Str hs;
++ 		if (++i >= argc)
++ 		    usage();
++		if ((hs = make_optional_header_string(argv[i])) != NULL)
++		    if (header_string == NULL)
++			header_string = hs;
++		    else
++			Strcat (header_string, hs);
++ 	    }	    
+ #ifdef MOUSE
+ 	    else if (!strcmp("-no-mouse", argv[i])) {
+ 		mouse_end();
+@@ -656,7 +712,29 @@
+ 		newbuf = loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0, request);
+ 	    }
+ 	    else {
+-		newbuf = loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0, NULL);
++ 	        if (post_file) {
++		    FILE *fp;
++		    Str body;
++		    if (!strcmp (post_file, "-"))
++		        fp = stdin;
++		    else
++		        fp = fopen (post_file, "r");
++		    if (fp == NULL) {
++		        fprintf(stderr, "w3m: Can't open %s\n", post_file);
++			continue;
++		    }
++		    body = Strfgetall (fp);
++		    if (fp != stdin) fclose (fp);
++ 		    request = newFormList (NULL, "post", NULL, NULL, NULL, NULL);
++ 		    request->body = body->ptr;
++ 		    request->boundary = NULL;
++ 		    request->length = strlen (body->ptr);
++ 		}
++ 		else {
++ 		  request = NULL;
++ 		}
++ 	        
++ 		newbuf = loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0, request);
+ 	    }
+ 	    if (newbuf == NULL) {
+ 		fprintf(stderr, "w3m: Can't load %s\n", load_argv[i]);
+@@ -701,6 +779,9 @@
+ 	}
+ 	if (w3m_dump) {
+ 	    Currentbuf = Firstbuf = newbuf;
++	    if (w3m_dump_extra) {
++		dump_extra(Currentbuf);
++	    }
+ 	    if (w3m_dump_source) {
+ 		if (w3m_dump_head)
+ 		    dump_head(Currentbuf);
+@@ -848,6 +929,17 @@
+     puts("");
+ }
+ 
++static void
++dump_extra(Buffer * buf)
++{
++    printf("W3m-current-url: %s\n",parsedURL2Str(&buf->currentURL)->ptr);
++    if (buf->baseURL)
++	printf("W3m-base-url: %s\n",parsedURL2Str(buf->baseURL)->ptr);
++#ifdef JP_CHARSET
++    printf("W3m-document-charset: %s\n", code_to_str(buf->document_code));
++#endif
++}
++
+ void
+ nulcmd(void)
+ {				/* do nothing */
+diff -ur w3m-0.2.1-m17n-0.19.orig/rc.c w3m-0.2.1-m17n-0.19/rc.c
+--- w3m-0.2.1-m17n-0.19.orig/rc.c	Thu Nov  1 01:32:08 2001
++++ w3m-0.2.1-m17n-0.19/rc.c	Wed Aug  8 01:21:14 2001
+@@ -142,6 +142,7 @@
+ #define CMT_DOCUMENT_CHARSET "文書の標準の文字コード"
+ #define CMT_AUTO_DETECT      "文書の読み込み時に文字コードの自動判定を行う"
+ #define CMT_SYSTEM_CHARSET   "システムの文字コード"
++#define CMT_EXT_HALFDUMP     "表示用文字コードで halfdump の出力を行う"
+ #define CMT_FOLLOW_LOCALE    "Locale($LANG) に従ってシステムの文字コードを設定"
+ #define CMT_SEARCH_CONV      "検索文字列を文書の文字コードに変換する"
+ #define CMT_USE_COMBINING    "結合文字を使う"
+@@ -250,6 +251,7 @@
+ #define CMT_DOCUMENT_CHARSET "Default document charset"
+ #define CMT_AUTO_DETECT      "Automatic charset detect when loading"
+ #define CMT_SYSTEM_CHARSET   "System charset"
++#define CMT_EXT_HALFDUMP     "Output halfdump with display charset"
+ #define CMT_FOLLOW_LOCALE    "System charset follows locale($LANG)"
+ #define CMT_SEARCH_CONV      "Adjust search string for document charset"
+ #define CMT_USE_COMBINING    "Use combining characters"
+@@ -483,6 +485,7 @@
+     {"document_charset", P_CODE, PI_SEL_C, (void *) &DocumentCharset, CMT_DOCUMENT_CHARSET, &document_charset_str},
+     {"auto_detect", P_CHARINT, PI_SEL_C, (void *) &WcOption.auto_detect, CMT_AUTO_DETECT, &auto_detect_str},
+     {"system_charset", P_CODE, PI_SEL_C, (void *) &SystemCharset, CMT_SYSTEM_CHARSET, &system_charset_str},
++    {"ext_halfdump", P_CHARINT, PI_ONOFF, (void *) &ExtHalfdump, CMT_EXT_HALFDUMP, NULL},
+     {"follow_locale", P_CHARINT, PI_ONOFF, (void *) &FollowLocale, CMT_FOLLOW_LOCALE, NULL},
+     {"use_combining", P_CHARINT, PI_ONOFF, (void *) &WcOption.use_combining, CMT_USE_COMBINING, NULL},
+ #ifdef USE_UNICODE
+w3m-0.2.1-m17n-0.19.orig/scripts のみに存在します: dirlist.cgi
+diff -ur w3m-0.2.1-m17n-0.19.orig/url.c w3m-0.2.1-m17n-0.19/url.c
+--- w3m-0.2.1-m17n-0.19.orig/url.c	Thu Nov  1 01:32:09 2001
++++ w3m-0.2.1-m17n-0.19/url.c	Wed Aug  8 01:19:36 2001
+@@ -1174,15 +1174,22 @@
+ 	    Strcat_charp(tmp, "\r\n");
+ 	}
+ 	else {
+-	    Strcat_charp(tmp, "Content-type: application/x-www-form-urlencoded\r\n");
++	    if (!override_content_type) {
++		Strcat_charp(tmp, "Content-type: application/x-www-form-urlencoded\r\n");
++	    }
+ 	    Strcat(tmp, Sprintf("Content-length: %ld\r\n", hr->request->length));
++	    if (header_string)
++		Strcat (tmp, header_string);
+ 	    Strcat_charp(tmp, "\r\n");
+ 	    Strcat_charp(tmp, hr->request->body);
+ 	    Strcat_charp(tmp, "\r\n");
+ 	}
+     }
+-    else
++    else {
++	if (header_string)
++	    Strcat (tmp, header_string);
+ 	Strcat_charp(tmp, "\r\n");
++    }
+ #ifdef DEBUG
+     fprintf(stderr, "HTTPrequest: [ %s ]\n\n", tmp->ptr);
+ #endif				/* DEBUG */
