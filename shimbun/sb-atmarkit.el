@@ -61,6 +61,8 @@
     ("fjava" . "http://www.atmarkit.co.jp/rss/fjava/rss2dc.xml")
     ;; Security&Trustフォーラム
     ("fsecurity". "http://www.atmarkit.co.jp/rss/fsecurity/rss2dc.xml")
+    ;; Web Client & Reportフォーラム
+    ("fwcr" . "http://www.atmarkit.co.jp/rss/fwcr/rss2dc.xml")
     ;; IT Architectフォーラム
     ("farc" . "http://www.atmarkit.co.jp/rss/farc/rss2dc.xml")
 

@@ -4815,10 +4815,6 @@ passwd mozilla
 @item @uref{http://www.tdiary.org/, tDiary Developers Mailing List in Japan}
 tdiary-ml.devel tdiary-ml.theme
 
-@item @uref{http://arch.bluegate.org/mailman/listinfo, arch.bluegate.org Mailing Lists}
-arch-bluegate.subversion-jp arch-bluegate.arch-jp arch-bluegate.mailman
-arch-bluegate.viewarch
-
 @item @uref{http://www.tigris.org/, Tigris.org:Open Source Software Engineering}
 Tigris.org に保存されている全てのメーリングリストを閲覧できます。
 閲覧したいグループを変数 @code{shimbun-tigris-group-alist} に登録してください。
@@ -5037,7 +5033,7 @@ lotusex.bbs
 @item @uref{http://www.atmarkit.co.jp, ＠ITフォーラム}
 atmarkit.news atmarkit.fwin2k atmarkit.fdotnet atmarkit.fsys atmarkit.fxml
 atmarkit.fdb atmarkit.flinux atmarkit.fnetwork atmarkit.fjava
-atmarkit.fsecurity atmarkit.farc atmarkit.fbiz atmarkit.jibun
+atmarkit.fsecurity atmarkit.farc atmarkit.fbiz atmarkit.fwcr atmarkit.jibun
 
 @item @uref{http://www.matsusaka-u.ac.jp/~okumura/texfaq/qa/, TeX Q&A 掲示板}
 texfaq.qanda

@@ -1,3 +1,11 @@
+2005-03-10  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-arch-bluegate.el : Removed for site closing.
+
+	* shimbun/sb-pocketgames.el (shimbun-make-contents): Fix mistaken method overriding.
+
+	* shimbun/sb-atmarkit.el (shimbun-atmarkit-group-path-alist): Add "fwcr" group.
+
 2005-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-wikimedia.el (shimbun-wikimedia-ja-date-decode):

@@ -98,7 +98,7 @@
 	  (insert subject)
 	  (shimbun-remove-markup)
 	  (setq subject (buffer-string)))
-	(setq url (w3m-expand-url
+	(setq url (shimbun-expand-url
 		   (w3m-decode-anchor-string url)
 		   (concat (shimbun-index-url shimbun) "/")))
 	(push (shimbun-make-header
@@ -107,7 +107,8 @@
 	      headers)))
     headers))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun) header)
+(luna-define-method shimbun-make-contents ((shimbun shimbun-pocketgames)
+					   header)
   (when (shimbun-clear-contents shimbun header)
     (goto-char (point-min))
     (insert "<html>\n<head>\n<base href=\""

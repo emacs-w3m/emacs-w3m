@@ -4755,10 +4755,6 @@ from the file.
 @item @uref{http://www.tdiary.org/, tDiary Developers Mailing List in Japan}
 tdiary-ml.devel tdiary-ml.theme
 
-@item @uref{http://arch.bluegate.org/mailman/listinfo, arch.bluegate.org Mailing Lists}
-arch-bluegate.subversion-jp arch-bluegate.arch-jp arch-bluegate.mailman
-arch-bluegate.viewarch
-
 @item @uref{http://www.tigris.org/, Tigris.org:Open Source Software Engineering}
 All archives served by Tigris.org are supported by @samp{shimbun}
 library.  Add a group name of your favorite archive to the variable
@@ -4971,7 +4967,7 @@ lotusex.bbs
 @item @uref{http://www.atmarkit.co.jp, @@IT forum}
 atmarkit.news atmarkit.fwin2k atmarkit.fdotnet atmarkit.fsys atmarkit.fxml
 atmarkit.fdb atmarkit.flinux atmarkit.fnetwork atmarkit.fjava
-atmarkit.fsecurity atmarkit.farc atmarkit.fbiz atmarkit.jibun
+atmarkit.fsecurity atmarkit.farc atmarkit.fbiz atmarkit.fwcr atmarkit.jibun
 
 @item @uref{http://www.matsusaka-u.ac.jp/~okumura/texfaq/qa/, TeX Q&A Bulletin Board}
 texfaq.qanda
