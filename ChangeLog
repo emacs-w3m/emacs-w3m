@@ -1,3 +1,8 @@
+2002-10-02  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-all) 
+	(mew-shimbun-expire-all): Don't kill-buffer when original.
+
 2002-10-01  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
 
 	* shimbun/sb-airs.el (shimbun-airs-group-path-alist): Add entry

@@ -388,7 +388,8 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	 (sit-for 0.5)
 	 (mew-rendezvous mew-summary-buffer-process)
 	 (mew-shimbun-retrieve)
-	 (mew-kill-buffer (current-buffer))))
+	 (unless (eq (get-buffer cfld) (current-buffer))
+	   (mew-kill-buffer (current-buffer)))))
      (mew-summary-visit-folder cfld)
      (message "Getting done"))))
 
@@ -639,7 +640,8 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	(sit-for 0.5)
 	(mew-rendezvous mew-summary-buffer-process)
 	(mew-shimbun-expire)
-	(mew-kill-buffer (current-buffer))))
+	(unless (eq (get-buffer cfld) (current-buffer))
+	  (mew-kill-buffer (current-buffer)))))
     (mew-summary-visit-folder cfld)))
 
 ;;;###autoload
