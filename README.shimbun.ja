@@ -209,6 +209,12 @@ Emacsen 全般	elips.elips
 Squeak-ja	squeak-ja.main
 sml		sml.main
 Squeak-dev	squeak-dev.main
+Plucker		plucker.announce plucker.list plucker.dev
+pilot-link      pilot-link.announce pilot-link.devel pilot-link.general
+		pilot-link.unix-ng
+Coldsync	coldsync.main
+J-Pilot		jpilot.main
+pilot-mailsync	pilot-mailsync.main
 
 2-4. スポーツ
 
@@ -280,11 +286,6 @@ pocketgames             pocketgames.news
 wincefan		wincefan.news
 PalmFan			palmfan.news palmfan.palmwarefan
 電脳街の現場レポート	dennou.report
-pilot-link              pilot-link.announce pilot-link.devel pilot-link.general
-			pilot-link.unix-ng
-Coldsync		coldsync.main
-J-Pilot			jpilot.main
-pilot-mailsync		pilot-mailsync.main
 PCWEB COLUMN Square	pcweb-column.gyokai pcweb-column.benri
 			pcweb-column.hitech pcweb-column.business
 			pcweb-column.winxp pcweb-column.bytes

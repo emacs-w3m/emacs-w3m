@@ -1,3 +1,7 @@
+2003-05-04  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-plucker.el: New file.
+
 2003-05-04  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* shimbun/sb-makanai.el (shimbun-index-url): Follow the change of
