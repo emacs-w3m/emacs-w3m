@@ -1,7 +1,8 @@
 2005-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3mhack.el: Issue a warning rather than to cause an error in the
-	case where the shell command doesn't seem to be usable.
+	* w3mhack.el: Bind executable-binary-suffixes to the proper value
+	for OS/2 and emx while checking for the shell command; cause an
+	error only when compiling or formatting files.
 
 	* attic/addpath.el: Make it work with old Emacsen even if cl is
 	not loaded; load custom, bind defcustom'ed variables and make the

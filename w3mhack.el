@@ -69,14 +69,13 @@ but do not execute them.")
 (require 'cl)
 
 ;; Check whether the shell command can be used.
-(let ((test (lambda nil
+(let ((test (lambda (shell)
 	      (let ((buffer (generate-new-buffer " *temp*"))
 		    (msg "Hello World"))
 		(save-excursion
 		  (set-buffer buffer)
 		  (condition-case nil
-		      (call-process shell-file-name
-				    nil t nil "-c"
+		      (call-process shell nil t nil "-c"
 				    (concat "MESSAGE=\"" msg "\"&&"
 					    "echo \"${MESSAGE}\""))
 		    (error))
@@ -84,21 +83,33 @@ but do not execute them.")
 		      (goto-char (point-min))
 		      (search-forward msg nil t)
 		    (kill-buffer buffer)))))))
-  (or (funcall test)
+  (or (funcall test shell-file-name)
       (progn
 	(require 'executable)
-	(setq shell-file-name (executable-find "cmdproxy"))
-	(funcall test))
-      (progn
-	(setq shell-file-name (executable-find "sh"))
-	(funcall test))
-      (progn
-	(setq shell-file-name (executable-find "bash"))
-	(funcall test))
-      (message "\n\
-Warning: there seems to be no shell command equivalent to /bin/sh.
+	(let ((executable-binary-suffixes
+	       (if (memq system-type '(OS/2 emx))
+		   '(".exe" ".com" ".bat" ".cmd" ".btm" "")
+		 executable-binary-suffixes))
+	      shell)
+	  (or (and (setq shell (executable-find "cmdproxy"))
+		   (funcall test shell)
+		   (setq shell-file-name shell))
+	      (and (setq shell (executable-find "sh"))
+		   (funcall test shell)
+		   (setq shell-file-name shell))
+	      (and (setq shell (executable-find "bash"))
+		   (funcall test shell)
+		   (setq shell-file-name shell))
+	      (not (member (nth 1 (or (member "-f" command-line-args)
+				      (member "-funcall" command-line-args)
+				      (member "--funcall" command-line-args)
+				      (member "-e" command-line-args)))
+			   '("w3mhack-batch-compile" "w3mhack-compile"
+			     "w3mhack-makeinfo" "w3mhack-make-package")))
+	      (error "%s" "\n\
+There seems to be no shell command which is equivalent to /bin/sh.
  Try ``make SHELL=foo [option...]'', where `foo' is the absolute
- path name for the proper shell command in your system.\n")))
+ path name for the proper shell command in your system.\n"))))))
 
 (unless (dolist (var nil t))
   ;; Override the macro `dolist' which may have been defined in egg.el.
