@@ -3520,7 +3520,9 @@ the request."
 				       w3m-current-url)
 			 (substring w3m-current-url (match-end 0))
 		       w3m-current-url)))
-    current-prefix-arg))
+    current-prefix-arg
+    (w3m-static-if (fboundp 'universal-coding-system-argument)
+	coding-system-for-read)))
   (set-text-properties 0 (length url) nil url)
   (cond
    ;; process mailto: protocol

@@ -1,3 +1,11 @@
+2001-09-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-goto-url): Refer `coding-system-for-read' which is
+	specified by `universal-coding-system-argument'.
+
+	* w3m-ucs.el (w3m-euc-japan-encoder): Protect against invalid
+	value which `emacs-char-to-ucs-codepoint-conversion' returns.
+
 2001-09-09  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-ucs.el (w3m-euc-japan-encoder): Fixed for katakana-jisx0201.

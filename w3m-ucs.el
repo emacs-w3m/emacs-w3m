@@ -49,7 +49,8 @@
 (require 'w3m-macro)
 
 
-(defalias 'w3m-ucs-to-char 'ucs-to-char)
+(defun w3m-ucs-to-char (codepoint)
+  (or (ucs-to-char codepoint) ?~))
 
 
 (define-ccl-program w3m-euc-japan-encoder
@@ -87,29 +88,31 @@
 	    (call emacs-char-to-ucs-codepoint-conversion)
 	    ;; (4.3) Generate a string which represents a UCS
 	    ;; codepoint in NCR.
-	    (r1 = 0)
-	    (r2 = 0)
-	    (loop
-	     (r1 = (r1 << 4))
-	     (r1 |= (r0 & 15))
-	     (r0 = (r0 >> 4))
-	     (if (r0 == 0)
-		 (break)
-	       ((r2 += 1)
-		(repeat))))
-	    (write "&#x")
-	    (loop
-	     (branch (r1 & 15)
-		     ,@(mapcar
-			(lambda (i)
-			  (list 'write (string-to-char (format "%x" i))))
-			'(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15)))
-	     (r1 = (r1 >> 4))
-	     (if (r2 == 0)
-		 ((write ?\;)
-		  (break))
-	       ((r2 -= 1)
-		(repeat))))
+	    (if (r0 <= 0)
+		(write ?~)		; unknown character.
+	      ((r1 = 0)
+	       (r2 = 0)
+	       (loop
+		(r1 = (r1 << 4))
+		(r1 |= (r0 & 15))
+		(r0 = (r0 >> 4))
+		(if (r0 == 0)
+		    (break)
+		  ((r2 += 1)
+		   (repeat))))
+	       (write "&#x")
+	       (loop
+		(branch (r1 & 15)
+			,@(mapcar
+			   (lambda (i)
+			     (list 'write (string-to-char (format "%x" i))))
+			   '(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15)))
+		(r1 = (r1 >> 4))
+		(if (r2 == 0)
+		    ((write ?\;)
+		     (break))
+		  ((r2 -= 1)
+		   (repeat))))))
 	    (repeat))))))))
 
 
