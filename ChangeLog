@@ -1,5 +1,41 @@
 2003-11-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el: Fbind `select-frame-set-input-focus' when compiling.
+	(w3m-popup-window-p): Rename from `w3m-pop-up-window-p'; use
+	'emacs-major-version' instead of `MULE' to examine the version.
+	(w3m-view-this-url-1): Use `pop-to-buffer' instead of
+	`switch-to-buffer' in order to be able to popup a window or a
+	frame.
+	(w3m-copy-buffer): Ditto; set the `w3m-initial-frame' variable
+	only when `w3m-pop-up-frames' is non-nil.
+	(w3m-delete-buffer): Select the most suitable buffer.
+	(w3m-goto-url): Use `pop-to-buffer' instead of `switch-to-buffer'
+	in order to be able to popup a window or a frame.
+	(w3m): Ditto; rearrange the source code.
+	(w3m-select-buffer-saved-window-config): New variable.
+	(w3m-select-buffer): Save the window configuration.
+	(w3m-select-buffer-copy-buffer): Bind `pop-up-frames'.
+	(w3m-select-buffer-quit): Restore the window configuration;
+	protect agains the absence of an emacs-w3m buffer.
+
+	* w3m-xmas.el: Bind `w3m-use-tab' when compiling.
+	(w3m-xmas-show-current-title-in-buffer-tab): Examine the value for
+	the `gutter-buffers-tab-enabled' variable directly.
+	(w3m-xmas-setup-tab-in-gutter): New function; add it to
+	`w3m-mode-setup-functions' and `w3m-select-buffer-mode-hook'.
+	(w3m-xmas-update-tab-in-gutter): Do update only when `w3m-use-tab'
+	and `gutter-buffers-tab-enabled' are non-nil; always add it to
+	`w3m-display-functions'.
+
+	* octet.el: Don't make sure the `emacs-major-version' variable is
+	bound.
+	* w3m-bitmap: Ditto.
+	* w3m-proc.el: Ditto.
+	* w3m-ucs.el: Ditto.
+	* w3m-util.el: Ditto.
+	* w3m.el: Ditto.
+	* w3mhack.el: Ditto.
+
 	* shimbun/sb-asahi-mytown.el (shimbun-asahi-mytown-group-table):
 	Combine "kitakyu" and "fukuoka" into "fukuoka".
 	(shimbun-asahi-mytown-get-headers): Improve regexp.
