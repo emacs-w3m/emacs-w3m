@@ -4291,8 +4291,9 @@ yahoo.entertainment yahoo.sports yahoo.computer yahoo.hokkaido
 yahoo.tohoku yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
 yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
 
-@item @uref{http://www.zdnet.co.jp/, ZDNet Japan}
-zdnet.comp zdnet.gamespot
+@item @uref{http://www.itmedia.co.jp/, ITmedia}
+itmedia.news itmedia.enterprise itmedia.mobile itmedia.pcupdate
+itmedia.lifestyle itmedia.games
 @end table
 
 @node Mailing Lists Supported by Shimbun
