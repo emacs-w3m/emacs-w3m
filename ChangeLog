@@ -1,3 +1,7 @@
+2002-12-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-x-face-alist): New.
+
 2002-12-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-e21.el (w3m-favicon-type): Change default value and type of
@@ -11,7 +15,7 @@
 
 	* shimbun/sb-impress.el (shimbun-impress-groups-alist): Add url
 	for "internet" and "pc".
-	(shimbun-index-url): Treat 4th element of 
+	(shimbun-index-url): Treat 4th element of
 	`shimbun-impress-groups-alist' as index url.
 	(shimbun-get-headers): Use `shimbun-expand-url'.
 
