@@ -67,7 +67,7 @@
   (let ((case-fold-search t) headers)
     (goto-char (point-min))
     (while (re-search-forward
-	    "<a href=\"/\\(config/VI001.php\\?teiko_id=\\([0-9]+\\)&amp;cat_id=[0-9]+&amp;top_flg=0\\)\"[^>]+>\\([^<]+\\)</a>\n.*\n.*\\[\\([0-9]*\\)/\\([0-9]+\\)/\\([0-9]+\\) \\([0-9]+\\):\\([0-9]+\\)\\]" nil t)
+	    "<a href=\"/\\(config/VI001.php\\?teiko_id=\\([0-9]+\\)&amp;cat_id=[0-9]+[^\"]*\\)\"[^>]+>\\([^<]+\\)</a>\n.*\n.*\\[\\([0-9]*\\)/\\([0-9]+\\)/\\([0-9]+\\) \\([0-9]+\\):\\([0-9]+\\)\\]" nil t)
       (let ((url (match-string 1))
 	    (id (match-string 2))
 	    (subject (match-string 3))
