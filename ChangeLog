@@ -1,3 +1,8 @@
+2003-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-header-insert): Never use BBDB if
+	there is not the ~/.bbdb file.
+
 2003-12-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-use-filter): Change its default value to t.
