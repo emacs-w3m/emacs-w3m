@@ -2370,6 +2370,17 @@ Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @sc{flim} $B%Q%C%1!<%8(B ($B2C
 $B0J2<$N(B @samp{nnshimbun} $B$K4X$9$kJQ?t$r%+%9%?%^%$%:$9$k$3$H$,2DG=$G$9(B:
 
 @table @code
+@item nnshimbun-keep-backlog
+@vindex nnshimbun-keep-backlog
+@vindex gnus-keep-backlog
+$B$3$NJQ?t$O(B @samp{nnshimbun} $B%0%k!<%W$G(B @code{gnus-keep-backlog} $BJQ(B
+$B?t(B (@pxref{(gnus)Article Backlog}) $B$r>e=q$-$7$^$9!#$b(B
+$B$7(B @code{nnshimbun-keep-backlog} $B$r?t;z(B @var{n} $B$K@_Dj$9$k$H!"(B
+@samp{nnshimbun} $B$O:GBg$G(B @var{n} $B$N8E$$5-;v$r8e$N:F<hF@$N$?$a$K%P%C%U%!(B
+$B$KN/$a$F$*$-$^$9!#$3$NJQ?t$,(B @code{nil} $B$G$O$J$/!"?t;z$G$b$J$$>l9g!"(B
+@samp{nnshimbun} $B$O(B @emph{$BA4$F(B} $B$N4{FI5-;v$rC_$($^$9(B ($B$3$l$ONI$$9M$($G$O(B
+$B$"$j$^$;$s(B)$B!#%G%U%)%k%HCM$O(B 300 $B$G$9!#(B
+
 @item nnshimbun-directory
 @vindex nnshimbun-directory
 @samp{Nnshimbun} $B$,(B @sc{nov} $B%U%!%$%k$rJ]B8$9$k%G%#%l%/%H%j$G$9!#%G%U%)(B

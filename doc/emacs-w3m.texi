@@ -532,7 +532,7 @@ In addition to this, put the following setups if needed:
 We recommend using the file @file{~/.emacs-w3m} (which is the default
 value of @code{w3m-init-file}) when you twiddle some variables of
 emacs-w3m.  This file is similar to @file{~/.emacs}, but is read when
-emacs-w3m starts.  However, note that there are commands which shouldn't 
+emacs-w3m starts.  However, note that there are commands which shouldn't
 be put there, for example, the autoload definitions as
 mentioned above.
 
@@ -2267,6 +2267,17 @@ same as @samp{nnml}.
 The following @samp{nnshimbun} variables can be customized:
 
 @table @code
+@item nnshimbun-keep-backlog
+@vindex nnshimbun-keep-backlog
+@vindex gnus-keep-backlog
+This variable overrides the @code{gnus-keep-backlog} variable
+(@pxref{(gnus)Article Backlog}) in @samp{nnshimbun} groups.  If you set
+@code{nnshimbun-keep-backlog} to a number @var{n}, @samp{nnshimbun} will
+store at most @var{n} old articles in a buffer for later re-fetching.
+If this variable is non-@code{nil} and is not a number, @samp{nnshimbun}
+will store @emph{all} read articles (this is not a good idea).  The
+default value is 300.
+
 @item nnshimbun-directory
 @vindex nnshimbun-directory
 Directory where @samp{nnshimbun} saves @sc{nov} files.  The default
