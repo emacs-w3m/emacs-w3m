@@ -197,6 +197,7 @@
 		     (match-string 1 url)
 		   url))
 	 (from "hirose@palmfan.com")
+	 (first-article t)
 	 headers)
     (with-temp-buffer
       (shimbun-retrieve-url url 'no-cache 'no-decode)
@@ -215,24 +216,19 @@
       (goto-char (point-min))
       (catch 'stop
 	(let (date-end)
-	  (while (re-search-forward "<!-- *日付 *-->" nil t nil)
+	  (while (or first-article
+		     (re-search-forward "<!-- *日付 *-->" nil t nil))
 	    (let ((start (point))
 		  (count -1)
 		  month day year date)
-	      (setq date-end (re-search-forward "^</B>" nil t nil))
 	      (goto-char start)
-	      (if (re-search-forward "[0-9][0-9][0-9][0-9]" date-end t)
-		  (setq year (string-to-number (match-string 0)))
-		(throw 'stop nil))
-	      (goto-char start)
-	      (if (re-search-forward " \\([0-9][0-9]*\\)[,.]*" date-end t)
-		  (setq day (string-to-number (match-string 1)))
-		(throw 'stop nil))
-	      (goto-char start)
-	      (if (re-search-forward "\\(Jan\\|Feb\\|Mar\\|Apr\\|May\\|Jun\\|Jul\\|Aug\\|Sep\\|Oct\\|Nov\\|Dec\\)" date-end t)
-		  (setq month (match-string 1))
-		(throw 'stop nil))
-	      (setq start (point))
+	      (if first-article
+		  (setq date (shimbun-palmfan-get-first-article-date)
+			first-article nil)
+		(setq date (shimbun-palmfan-pickup-date)))
+	      (setq year (car date)
+		    month (car (cdr date))
+		    day (car (cdr (cdr date))))
 	      (setq end (if (re-search-forward "<!-- *日付 *-->" nil t nil)
 			    (progn
 			      (goto-char (match-beginning 0))
@@ -284,6 +280,43 @@
 			   from date id "" 0 0 id)
 			  headers))))))))
       headers)))
+
+(defun shimbun-palmfan-get-first-article-date ()
+  (let (first-date first-artile date)
+    (save-excursion
+      (setq first-date (re-search-forward "<!-- *日付 *-->" nil t nil))
+      (goto-char (point-min))
+      (setq first-article 
+	    (re-search-forward "^<!--\\(本文\\|コメント\\|ひとりごと本文\\)-->$"
+			       nil t nil))
+      (if (and first-date first-article
+	       (> first-date first-article))
+	  (progn
+	    (re-search-forward "<!-- *日付 *-->" nil t nil)
+	    (setq date (shimbun-palmfan-pickup-date))
+	    ;; XXX it cannot understand non-exsistent day...
+	    (setcar (cdr (cdr date)) (1+ (car (cdr (cdr date))))))
+	(setq date (shimbun-palmfan-pickup-date)))
+      date)))
+
+(defun shimbun-palmfan-pickup-date ()
+  (let ((start (point))
+	date-end year month day)
+    (setq date-end (re-search-forward "^</B>" nil t nil))
+    (goto-char start)
+    (catch 'stop
+      (if (re-search-forward "[0-9][0-9][0-9][0-9]" date-end t)
+	  (setq year (string-to-number (match-string 0)))
+	(throw 'stop nil))
+      (goto-char start)
+      (if (re-search-forward " \\([0-9][0-9]*\\)[,.]*" date-end t)
+	  (setq day (string-to-number (match-string 1)))
+	(throw 'stop nil))
+      (goto-char start)
+      (if (re-search-forward "\\(Jan\\|Feb\\|Mar\\|Apr\\|May\\|Jun\\|Jul\\|Aug\\|Sep\\|Oct\\|Nov\\|Dec\\)" date-end t)
+	  (setq month (match-string 1))
+	(throw 'stop nil))
+      (list year month day))))
 
 (luna-define-method shimbun-article ((shimbun shimbun-palmfan) header
 				     &optional outbuf)

@@ -1,3 +1,10 @@
+2003-02-22  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-pickup-date): New
+	function.
+	(shimbun-palmfan-get-first-article-date): Ditto.
+	(shimbun-palmfan-news-headers): Use the functions above.
+
 2003-02-21  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-local-dirlist-cgi):  Treat a `local cookie file', again.
@@ -5,7 +12,8 @@
 2003-02-18  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-palmfan.el (shimbun-palmfan-date-regexp): Removed.
-	(shimbun-palmfan-news-headers): Do not use `shimbun-palmfan-date-regexp'.
+	(shimbun-palmfan-news-headers): Do not use
+	`shimbun-palmfan-date-regexp'.
 
 2003-02-16  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
