@@ -46,6 +46,31 @@
   (concat "http://www." shimbun-asahi-top-level-domain "/")
   "Name of the parent url.")
 
+(defun shimbun-asahi-make-regexp (name)
+  "Return a list of a regexp and numbers for the kansai.NAME group.
+Every `.' in NAME will be replaced with `/'."
+  (list (let ((s0 "[\t\n 　]*")
+	      (s1 "[\t\n ]+")
+	      (no-nl "[^\n]+"))
+	  (concat "<a" s1 "href=\"/"
+		  ;; 1. url
+		  "\\(" (shimbun-subst-char-in-string ?. ?/ name) "/"
+		  ;; 2. serial number
+		  "\\([a-z]*"
+		  ;; 3. year
+		  "\\(20[0-9][0-9]\\)"
+		  ;; 4. month
+		  "\\([01][0-9]\\)"
+		  ;; 5. day
+		  "\\([0-3][0-9]\\)"
+		  "[0-9]+\\)"
+		  "\\.html\\)"
+		  "\">" s0
+		  ;; 6. subject
+		  "\\(" no-nl "\\)"
+		  s0 "</a>"))
+	1 nil 2 6 3 4 5))
+
 (defvar shimbun-asahi-group-table
   (let* ((s0 "[\t\n 　]*")
 	 (s1 "[\t\n ]+")
@@ -54,169 +79,196 @@
 		   (concat
 		    "<a" s1 "href=\"/"
 		    ;; 1. url
-		    "\\(%s/"
-		    ;; 3 or 4. serial number
-		    "\\("
-		    "update/[01][0-9][0-3][0-9]/\\([a-z]*[0-9]+\\)"
-		    "\\|"
-		    "\\(" no-nl "\\)"
-		    "\\)"
+		    "\\(%s/update/"
+		    ;; 2. month
+		    "\\([01][0-9]\\)"
+		    ;; 3. day
+		    "\\([0-3][0-9]\\)"
+		    "/"
+		    ;; 4. serial number
+		    "\\([a-z]*[0-9]+\\)"
 		    "\\.html\\)"
 		    "\">" s0
 		    ;; 5. subject
 		    "\\(" no-nl "\\)"
-		    s0 "</a>" s0 "("
-		    ;; 6. month
-		    "\\([01][0-9]\\)"
-		    "/"
-		    ;; 7. day
-		    "\\([0-3][0-9]\\)"
-		    "\\(" s1
-		    ;; 9. hour:minute
-		    "\\([012][0-9]:[0-5][0-9]\\)"
-		    "\\)?)")
-		   1 3 4 5 6 7 9))
-	 (antarctica (list
-		      (concat
-		       "<a" s1 "href=\""
-		       ;; 1. url
-		       "\\(/nankyoku/%s/"
-		       ;; 2. serial number
-		       "\\([A-Z0-9]+\\)"
-		       "\\.html\\)\">" s0
-		       ;; 3. subject
-		       "\\(" no-nl "\\)" s0 "</a>" s0
-		       "[（(][0-9]+/"
-		       ;; 4. month
-		       "\\([01][0-9]\\)"
-		       "/"
-		       ;; 5. day
-		       "\\([0-3][0-9]\\)"
-		       "[)）]")
-		      1 nil 2 3 4 5)))
-    `(("borderless" "国境のない大陸から" "nankyoku/%s/" ,@antarctica)
-      ("business" "経済" "%s/" ,@default)
-      ("culture" "文化・芸能" "%s/" ,@default)
+		    s0 "</a>")
+		   1 4 nil 5 nil 2 3))
+	 (default2 (shimbun-asahi-make-regexp "%s"))
+	 (default3 (list
+		    (concat
+		     "<a" s1 "href=\"/+"
+		     ;; 1. url
+		     "\\(.+/"
+		     ;; 2. serial number
+		     "\\([a-z]*"
+		     ;; 3. year
+		     "\\(20[0-9][0-9]\\)"
+		     ;; 4. month
+		     "\\([01][0-9]\\)"
+		     ;; 5. day
+		     "\\([0-3][0-9]\\)"
+		     "[0-9]+\\)"
+		     "\\.html\\)"
+		     "\">" s0
+		     ;; 6. subject
+		     "\\(" no-nl "\\)"
+		     s0 "</a>")
+		    1 nil 2 6 3 4 5))
+	 (edu (shimbun-asahi-make-regexp "edu.news"))
+	 (health (shimbun-asahi-make-regexp "health.news")))
+    `(("book" "出版ニュース" "book/news/"
+       ,@(shimbun-asahi-make-regexp "book.news"))
+      ("business" "ビジネス" "%s/list.html" ,@default)
+      ;; The url should be ended with "index.html".
+      ("business.column" "経済気象台" "business/column/index.html" ,@default2)
+      ("car" "愛車" "%s/news/" ,@(shimbun-asahi-make-regexp "car.news"))
+      ("car.italycolumn" "イタリア発アモーレ！モトーレ！" "car/italycolumn/"
+       ,@default2)
+      ("car.motorsports" "モータースポーツ" "car/motorsports/" ,@default2)
+      ("car.newcar" "新車情報" "car/newcar/" ,@default2)
+      ("car.newcarbywebcg" "新車発表会" "car/newcarbywebcg/" ,@default2)
+      ("culture" "文化・芸能" "%s/list.html" ,@default)
+      ("culture.column" "もやしのひげ" "culture/list_moyashi.html"
+       ,@(shimbun-asahi-make-regexp "culture.column.moyashi"))
+      ("digital" "デジタル機器" "digital/av/"
+       ,@(shimbun-asahi-make-regexp "digital.av"))
+      ("digital.apc" "雑誌「ASAHIパソコン」ニュース" "digital/apc/" ,@default2)
+      ("digital.bcnnews" "eビジネス情報 (提供：ＢＣＮ)" "digital/bcnnews/"
+       ,@default2)
+      ("digital.column01" "デジタルコラム" "digital/column01/"
+       ,@default2)
+      ("digital.hotwired" "HotWired Japan" "digital/hotwired/" ,@default2)
+      ("digital.internet" "ネット・ウイルス" "digital/internet/" ,@default2)
+      ("digital.mobile" "携帯電話" "digital/mobile/" ,@default2)
+      ("digital.nikkanko" "日刊工業新聞ニュース" "digital/nikkanko/"
+       ,@default2)
+      ("digital.pc" "パソコン" "digital/pc/" ,@default2)
       ("editorial" "社説" "paper/editorial.html"
        ,(concat
-	 "<a" s1 "href=\"/"
+	 "<a" s1 "href=\"\\./"
 	 ;; 1. url
-	 "\\(paper/editorial"
-	 ;; 2. serial number
-	 "\\(20[0-9][0-9]"
+	 "\\(editorial"
+	 ;; 2. year
+	 "\\(20[0-9][0-9]\\)"
 	 ;; 3. month
 	 "\\([01][0-9]\\)"
 	 ;; 4. day
 	 "\\([0-3][0-9]\\)"
-	 "\\)\\.html\\)")
-       1 nil 2 nil 3 4)
-      ("edu" "教育" "%s/news/index.html" ,@default)
-      ("edu.it" "IT教育" "edu/it/index.html" ,@default)
-      ("edu.nyushi" "大学・入試情報" "edu/nyushi/index.html" ,@default)
+	 "\\.html\\)"
+	 "\"")
+       1 nil nil nil 2 3 4)
+      ("edu" "教育" "%s/news/index.html" ,@edu)
+      ("edu.column" "教育コラム" "edu/column/ikuji/"
+       ,@(shimbun-asahi-make-regexp "edu.column.ikuji"))
+      ("edu.it" "IT教育" "edu/news/it.html" ,@edu)
+      ("edu.kosodate" "子育て" "edu/news/kosodate.html" ,@edu)
+      ("edu.nyushi" "大学・入試" "edu/news/nyushi.html" ,@edu)
+      ("edu.tamate" "ののちゃんのふしぎ玉手箱" "edu/nie/tamate/"
+       ,@(shimbun-asahi-make-regexp "edu.nie.tamate.kiji"))
       ("english" "ENGLISH" "%s/index.html"
+       ,@(let ((rest (shimbun-asahi-make-regexp "english.Herald-asahi")))
+	   (cons (concat (car rest)
+			 "\\(" s0 "<[^>]+>\\)*" s0 "([01]?[0-9]/[0-3]?[0-9])")
+		 (cdr rest))))
+      ("health" "健康・生活" "%s/news/" ,@health)
+      ("health.aged" "福祉・高齢" "health/news/aged.html" ,@health)
+      ("health.alz" "認知症特集" "health/news/alz.html" ,@health)
+      ("health.medical" "医療・病気" "health/news/medical.html" ,@health)
+      ("housing" "住まい" "%s/news/"
+       ,@(shimbun-asahi-make-regexp "housing.news"))
+      ("housing.amano" "天野彰のいい家いい家族" "housing/amano/" ,@default2)
+      ("housing.column" "住まいのお役立ちコラム" "housing/column/" ,@default2)
+      ("housing.diary" "小さな家の生活日記" "housing/diary/" ,@default2)
+      ("housing.world" "世界のウチ" "housing/world/" ,@default2)
+      ("igo" "囲碁" "%s/news/" ,@(shimbun-asahi-make-regexp "igo.news"))
+      ("international" "国際" "%s/list.html" ,@default)
+      ("international.jinmin" "人民日報" "international/jinmin/index.html"
+       ,@default2)
+      ("job" "就職・転職" "%s/news/"
+       ,@(shimbun-asahi-make-regexp "job.news"))
+      ("job.special" "週刊朝日・ＡＥＲＡから" "job/special/"
+       ,(concat
+	 (car default2)
+	 "\\(" s0 "<[^>]+>\\)*" s0 "（" s0
+	 ;; 8. extra
+	 "\\(" no-nl "\\)"
+	 "：")
+       ,@(cdr default2) nil 8)
+      ("kansai" "関西" "%s/news/" ,@(shimbun-asahi-make-regexp "kansai.news"))
+      ("kansai.horiekenichi" "堀江謙一の世界一周ひとりぼっち"
+       "kansai/horiekenichi/" ,@default2)
+      ("kansai.umaimon" "うまいもん" "kansai/umaimon/" ,@default2)
+      ("kansai.fuukei" "風景を歩く" "kansai/fuukei/" ,@default2)
+      ("kansai.yotsuba" "よつ葉びより" "kansai/yotsuba/" ,@default2)
+      ("kansai.smile" "スマイルスタイル" "kansai/smile/" ,@default2)
+      ("kansai.keiki" "け〜きの“ええ話”" "kansai/keiki/" ,@default2)
+      ("kansai.okiniiri" "DJのお気に入り" "kansai/okiniiri/" ,@default2)
+      ("kansai.syun" "旬の顔" "kansai/syun/" ,@default2)
+      ("kansai.takara" "たから図鑑" "kansai/takara/" ,@default2)
+      ("kansai.kansaiisan" "勝手に関西世界遺産" "kansai/kansaiisan/"
+       ,@default2)
+      ("kansai.depa" "デパ地下ＮＥＷＳ" "kansai/depa/" ,@default2)
+      ("kansai.kaban" "かばんの中身" "kansai/kaban/" ,@default2)
+      ("kansai.kyosho" "巨匠に学べ" "kansai/kyosho/" ,@default2)
+      ("kansai.okan" "母さんの知恵袋" "kansai/okan/" ,@default2)
+      ("kansai.densetsu" "ほんま？関西伝説" "kansai/densetsu/" ,@default2)
+      ("kansai.onayami" "みうらじゅんのお悩み祭り" "kansai/onayami/"
+       ,@default2)
+      ("kansai.sanshi" "三枝の笑ウインドウ" "kansai/sanshi/" ,@default2)
+      ("life" "暮らし" "%s/list.html" ,@default)
+      ("life.column" "暮らしコラム" "life/column/"
        ,(concat
 	 "<a" s1 "href=\"/"
 	 ;; 1. url
-	 "\\(%s/"
-	 ;; 2. extra keyword
-	 "\\([a-z]+\\)"
-	 "/[a-z]+20[0-9][0-9]"
-	 ;; 3. month
+	 "\\(life/column/"
+	 ;; 2. serial number
+	 "\\(.+/[a-z]*"
+	 ;; 3. year
+	 "\\(20[0-9][0-9]\\)"
+	 ;; 4. month
 	 "\\([01][0-9]\\)"
-	 ;; 4. day
+	 ;; 5. day
 	 "\\([0-3][0-9]\\)"
-	 ;; 5. serial number
-	 "\\([0-9]+\\)"
+	 "[0-9]*\\)"
 	 "\\.html\\)"
 	 "\">" s0
 	 ;; 6. subject
 	 "\\(" no-nl "\\)"
 	 s0 "</a>")
-       1 5 nil 6 3 4 nil 2)
-      ("international" "国際" "%s/list.html" ,@default)
-      ("international.jinmin" "人民日報" "international/jinmin/index.html"
-       ,@default)
-      ("job" "就職・転職" "%s/news/"
+       1 nil 2 6 3 4 5)
+      ("life.food" "食と料理" "life/food/"
        ,(concat
 	 "<a" s1 "href=\"/"
 	 ;; 1. url
-	 "\\(%s/news/"
+	 "\\(life/food/"
 	 ;; 2. serial number
-	 "\\([a-z]+[0-9]+\\)"
-	 "\\.html\\)"
-	 "\">" s0
-	 ;; 3. subject
-	 "\\(" no-nl "\\)"
-	 s0 "</a>" s0 "([0-9][0-9]/"
+	 "\\(.+/[a-z]*"
+	 ;; 3. year
+	 "\\(20[0-9][0-9]\\)"
 	 ;; 4. month
 	 "\\([01][0-9]\\)"
-	 "/"
 	 ;; 5. day
-	 "\\([0-3][0-9]\\)")
-       1 nil 2 3 4 5)
-      ("job.special" "週刊朝日・ＡＥＲＡから" "job/special/"
-       ,(concat
-	 "<a" s1 "href=\"/"
-	 ;; 1. url
-	 "\\(%s/"
-	 ;; 2. serial number
-	 "\\([a-z]+20[0-9][0-9]"
-	 ;; 3. month
-	 "\\([01][0-9]\\)"
-	 ;; 4. day
 	 "\\([0-3][0-9]\\)"
 	 "[0-9]+\\)"
 	 "\\.html\\)"
 	 "\">" s0
-	 ;; 5. subject
+	 ;; 6. subject
 	 "\\(" no-nl "\\)"
-	 s0 "</a>[^<>]（"
-	 ;; 6. extra
-	 "\\([^：]+\\)")
-       1 nil 2 5 3 4 nil 6)
-      ("kansai" "関西" "%s/" ,@default)
-      ("kansai-special" "関西特集" "kansai/special/"
-       ,(concat
-	 "<a" s1 "href=\"/"
-	 ;; 1. url
-	 "\\(kansai/special/"
-	 ;; 2. serial number
-	 "\\([a-z]+[0-9]+\\)"
-	 "\\.html\\)"
-	 "\">" s0
-	 ;; 3. subject
-	 "\\(" no-nl "\\)"
-	 s0 "</a>" s0 "([0-9]+/"
-	 ;; 4. month
-	 "\\([01][0-9]\\)"
-	 "/"
-	 ;; 5. day
-	 "\\([0-3][0-9]\\))")
-       1 nil 2 3 4 5)
-      ("nankyoku" "南極" "%s/news/index.html"
-       ,(concat
-	 "<a" s1 "href=\""
-	 ;; 1. url
-	 "\\(/%s/news/"
-	 ;; 2. serial number
-	 "\\([A-Z0-9]+\\)"
-	 "\\.html\\)\">" s0
-	 ;; 3. subject
-	 "\\(" no-nl "\\)" s0 "</a>" s0
-	 "[（(][0-9]+/"
-	 ;; 4. month
-	 "\\([01][0-9]\\)"
-	 "/"
-	 ;; 5. day
-	 "\\([0-3][0-9]\\)"
-	 "[)）]")
-       1 nil 2 3 4 5)
-      ("nankyoku-people" "越冬隊の人びと" "nankyoku/people/index.html"
-       ,@(let ((people (copy-sequence antarctica)))
-	   (setcar people (format (car people) "people"))
-	   people))
+	 s0 "</a>")
+       1 nil 2 6 3 4 5)
+      ("nankyoku" "南極プロジェクト" "%s/news/"
+       ,@(shimbun-asahi-make-regexp "nankyoku.news"))
+      ("nankyoku.borderless" "国境のない大陸から" "nankyoku/borderless/"
+       ,@default2)
+      ("nankyoku.people" "越冬隊の人びと" "nankyoku/people/" ,@default2)
+      ("nankyoku.whitemail" "WhiteMail＠南極" "nankyoku/whitemail/" ,@default2)
       ("national" "社会" "%s/list.html" ,@default)
-      ("politics" "政治" "%s/" ,@default)
+      ("national.calamity" "災害・交通情報" "national/calamity.html"
+       ,@default3)
+      ("national.etc" "その他・話題" "national/etc.html" ,@default3)
+      ("national.trial" "裁判" "national/trial.html" ,@default3)
+      ("obituaries" "おくやみ" "obituaries" ,@default)
+      ("politics" "政治" "%s/list.html" ,@default)
       ("rss" "RSS" "http://www3.asahi.com/rss/index.rdf"
        ,(concat
 	 "<title>"
@@ -243,44 +295,52 @@
 	 "T"
 	 ;; 9. hour:min:sec
 	 "\\([012][0-9]:[0-5][0-9]:[0-5][0-9]\\)")
-       2 4 5 1 7 8 9 3 nil 6)
-      ("science" "科学" "%s/" ,@default)
-      ("sports" "スポーツ" "%s/"
-       ,(concat
-	 "<a" s1 "href=\"/"
-	 ;; 1. url
-	 "\\(%s/" no-nl "/"
-	 ;; 2. month
-	 "\\([01][0-9]\\)"
-	 ;; 3. day
-	 "\\([0-3][0-9]\\)"
-	 "/"
-	 ;; 4. serial number
-	 "\\(" no-nl "\\)"
-	 "\\.html\\)\"" s0 ">" s0
-	 ;; 5. subject
-	 "\\(" no-nl "\\)"
-	 s0 "</a>")
-       1 4 nil 5 2 3)
+       2 4 5 1 nil 7 8 9 3 nil 6)
+      ("science" "サイエンス" "%s/list.html"
+       ,@(shimbun-asahi-make-regexp "science.news"))
+      ("shopping" "ショッピング" "%s/news/"
+       ,@(shimbun-asahi-make-regexp "shopping.news"))
+      ("shopping.kishi" "岸朝子の気になるお取り寄せ12カ月" "shopping/kishi/"
+       ,@default2)
+      ("shopping.ryouhin" "くらしの良品探訪" "shopping/ryouhin/"
+       ,@default2)
+      ("shougi" "将棋" "%s/news/" ,@(shimbun-asahi-make-regexp "shougi.news"))
+      ("sports" "スポーツ" "%s/list.html" ,@default)
+      ("sports.baseball" "野球" "sports/bb/"
+       ,@(shimbun-asahi-make-regexp "sports.bb"))
+      ("sports.column" "スポーツコラム" "sports/column/" ,@default2)
+      ("sports.football" "サッカー" "sports/fb/"
+       ,@(shimbun-asahi-make-regexp "sports.fb"))
+      ("sports.spo" "一般スポーツ" "sports/spo/" ,@default2)
       ("tenjin" "天声人語" "paper/column.html"
        ,(concat
-	 "<a" s1 "href=\"/"
+	 "<a" s1 "href=\"\\./"
 	 ;; 1. url
-	 "\\(paper/column"
-	 ;; 2. serial number
-	 "\\(20[0-9][0-9]"
+	 "\\(column"
+	 ;; 2. year
+	 "\\(20[0-9][0-9]\\)"
 	 ;; 3. month
 	 "\\([01][0-9]\\)"
 	 ;; 4. day
 	 "\\([0-3][0-9]\\)"
-	 "\\)\\.html\\)")
-       1 nil 2 nil 3 4)
-      ("whitemail" "WhiteMail＠南極" "nankyoku/%s/" ,@antarctica)))
+	 "\\.html\\)"
+	 "\"")
+       1 nil nil nil 2 3 4)
+      ("travel" "トラベル" "%s/news/"
+       ,@(shimbun-asahi-make-regexp "travel.news"))
+      ("travel.kaido" "司馬遼太郎・街道をゆく" "travel/kaido/" ,@default2)
+      ("travel.matsuri" "日本の祭り" "travel/matsuri/"
+       ,@default2)
+      ("travel.zeitaku" "地球の贅たく" "travel/zeitaku/"
+       ,@default2)
+      ("wakamiya" "風考計 (論説主幹・若宮啓文)" "column/wakamiya/"
+       ,@(shimbun-asahi-make-regexp "column.wakayama"))))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the
 search result in order of [0]a url, [1,2]a serial number, [3]a subject,
-\[4]a month, [5]a day, [6]an hour:minute and [7,8,9]an extra keyword.")
+\[4]a year, [5]a month, [6]a day, [7]an hour:minute and [8,9,10]an
+extra keyword.")
 
 (defvar shimbun-asahi-content-start
   "<!--[\t\n ]*Start of Kiji[\t\n ]*-->\
@@ -300,9 +360,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 (luna-define-method initialize-instance :after ((shimbun shimbun-asahi)
 						 &rest init-args)
   (shimbun-set-server-name-internal shimbun "朝日新聞")
-  (shimbun-set-from-address-internal shimbun
-				     (concat "webmaster@www."
-					     shimbun-asahi-top-level-domain))
+  (shimbun-set-from-address-internal shimbun "nobody@example.com")
   ;; To share class variables between `shimbun-asahi' and its
   ;; successor `shimbun-asahi-html'.
   (shimbun-set-x-face-alist-internal shimbun shimbun-asahi-x-face-alist)
@@ -326,10 +384,12 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 (defun shimbun-asahi-get-headers (shimbun)
   "Return a list of headers."
   (let ((group (shimbun-current-group-internal shimbun))
-	(from (shimbun-from-address shimbun))
+	(from (concat (shimbun-server-name shimbun)
+		      " (" (shimbun-current-group-name shimbun) ")"))
 	(case-fold-search t)
-	regexp jname numbers cyear cmonth month year day serial num extra
-	headers kansai-special rss-p)
+	regexp jname numbers cyear cmonth rss-p paper-p en-category
+	hour-min month year day serial num extra rgroup id headers
+	backnumbers)
     (setq regexp (assoc group shimbun-asahi-group-table)
 	  jname (nth 1 regexp)
 	  numbers (nthcdr 4 regexp)
@@ -339,94 +399,146 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	  cyear (decode-time)
 	  cmonth (nth 4 cyear)
 	  cyear (nth 5 cyear)
-	  rss-p (string-equal group "rss"))
-    (while (re-search-forward regexp nil t)
-      (when (string-equal group "kansai-special")
-	(save-excursion
-	  (save-match-data
-	    (setq kansai-special
-		  (if (re-search-backward ">[\t\n ]*\\([^<>]+\\)[\t\n ]*</th>"
-					  nil t)
-		      (match-string 1))))))
-      (setq month (string-to-number (match-string (nth 4 numbers)))
-	    year (cond ((>= (- month cmonth) 2)
-			(1- cyear))
-		       ((and (= 1 month) (= 12 cmonth))
-			(1+ cyear))
-		       (t
-			cyear))
-	    day (string-to-number (match-string (nth 5 numbers)))
-	    serial (cond (rss-p
-			  (format "%d%s.%s"
-				  year
-				  (match-string (nth 1 numbers))
-				  (match-string (nth 2 numbers))))
-			 ((and (setq num (nth 1 numbers))
+	  rss-p (string-equal group "rss")
+	  paper-p (member group '("editorial" "tenjin")))
+    (catch 'stop
+      ;; The loop for fetching all the articles in the whitemail group.
+      (while t
+	(while (re-search-forward regexp nil t)
+	  (cond ((string-equal group "english")
+		 (setq en-category
+		       (save-excursion
+			 (save-match-data
+			   (if (re-search-backward "\
+<h[0-9]\\([\n\t ]+[^>]+\\)?>[\t\n ]*\\([^&]+\\)[\t\n ]*&#[0-9]+"
+						   nil t)
+			       (downcase (match-string 2)))))))
+		(t
+		 (setq hour-min
+		       (save-excursion
+			 (save-match-data
+			   (if (re-search-forward "\
+<span[\t\n ]+[^>]+>[\t\n ]*(\\([01]?[0-9]/[0-3]?[0-9][\t\n ]+\\)?
+\\([012]?[0-9]:[0-5][0-9]\\))[\t\n ]*</span>"
+						  nil t)
+			       (match-string 2)))))))
+	  (setq month (string-to-number (match-string (nth 5 numbers)))
+		year (if (setq num (nth 4 numbers))
+			 (string-to-number (match-string num))
+		       (cond ((>= (- month cmonth) 2)
+			      (1- cyear))
+			     ((and (= 1 month) (= 12 cmonth))
+			      (1+ cyear))
+			     (t
+			      cyear)))
+		day (string-to-number (match-string (nth 6 numbers)))
+		serial (cond (rss-p
+			      (format "%d%s.%s"
+				      year
+				      (match-string (nth 1 numbers))
+				      (match-string (nth 2 numbers))))
+			     (paper-p
+			      (format "%d%02d%02d" year month day))
+			     ((and (setq num (nth 1 numbers))
+				   (match-beginning num))
+			      (format "%d%02d%02d.%s"
+				      year month day (match-string num)))
+			     (t
+			      (shimbun-subst-char-in-string
+			       ?/ ?.
+			       (downcase (match-string (nth 2 numbers))))))
+		extra (or (and (setq num (nth 8 numbers))
+			       (match-beginning num)
+			       (match-string num))
+			  (and (setq num (nth 9 numbers))
+			       (match-beginning num)
+			       (match-string num)))
+		rgroup (mapconcat 'identity
+				  (nreverse (save-match-data
+					      (split-string group "\\.")))
+				  ".")
+		id (if (and extra
+			    (not (member group '("job.special"))))
+		       (concat "<" serial "%" extra "." rgroup "."
+			       shimbun-asahi-top-level-domain ">")
+		     (concat "<" serial "%" rgroup "."
+			     shimbun-asahi-top-level-domain ">")))
+	  (unless (and (shimbun-search-id shimbun id)
+		       (if backnumbers
+			   (throw 'stop nil)
+			 ;; Don't stop it since there might be more new
+			 ;; articles even if the same links are repeated.
+			 t))
+	    (push (shimbun-create-header
+		   ;; number
+		   0
+		   ;; subject
+		   (cond (rss-p
+			  (match-string (nth 3 numbers)))
+			 (en-category
+			  (concat "[" en-category "] "
+				  (match-string (nth 3 numbers))))
+			 ((and (setq num (nth 8 numbers))
 			       (match-beginning num))
-			  (format "%d%02d%02d.%s"
-				  year month day (match-string num)))
+			  (concat "[" (match-string num) "] "
+				  (match-string (nth 3 numbers))))
+			 ((and (setq num (nth 9 numbers))
+			       (match-beginning num))
+			  (concat "[" (match-string num) "] "
+				  (match-string (nth 3 numbers))))
+			 (paper-p
+			  (concat jname (format " (%d/%d)" month day)))
 			 (t
-			  (mapconcat
-			   'identity
-			   (save-match-data
-			     (split-string
-			      (downcase (match-string (nth 2 numbers)))
-			      "/"))
-			   ".")))
-	    extra (or (and (setq num (nth 7 numbers))
-			   (match-beginning num)
-			   (match-string num))
-		      (and (setq num (nth 8 numbers))
-			   (match-beginning num)
-			   (match-string num))))
-      (push (shimbun-create-header
-	     ;; number
-	     0
-	     ;; subject
-	     (cond (rss-p
-		    (match-string (nth 3 numbers)))
-		   (kansai-special
-		    (concat "[" kansai-special "] "
-			    (match-string (nth 3 numbers))))
-		   ((and (setq num (nth 7 numbers))
-			 (match-beginning num))
-		    (concat "[" (match-string num) "] "
-			    (match-string (nth 3 numbers))))
-		   ((and (setq num (nth 8 numbers))
-			 (match-beginning num))
-		    (concat "[" (match-string num) "] "
-			    (match-string (nth 3 numbers))))
-		   ((member group '("editorial" "tenjin"))
-		    (concat jname (format " (%d/%d)" month day)))
-		   (t
-		    (match-string (nth 3 numbers))))
-	     ;; from
-	     (if (and rss-p
-		      (setq num (nth 9 numbers))
-		      (setq num (match-string num)))
-		 (save-match-data
-		   (shimbun-replace-in-string from "(RSS" (concat "\\&:" num)))
-	       from)
-	     ;; date
-	     (shimbun-make-date-string
-	      year month day (cond ((and (setq num (nth 6 numbers))
-					 (match-beginning num))
-				    (match-string num))
-				   ((member group '("editorial" "tenjin"))
-				    "07:00")))
-	     ;; id
-	     (if (and extra
-		      (not (member group '("job.special"))))
-		 (concat "<" serial "%" extra "." group "."
-			 shimbun-asahi-top-level-domain ">")
-	       (concat "<" serial "%" group "."
-		       shimbun-asahi-top-level-domain ">"))
-	     ;; references, chars, lines
-	     "" 0 0
-	     ;; xref
-	     (shimbun-expand-url (match-string (nth 0 numbers))
-				 shimbun-asahi-url))
-	    headers))
+			  (match-string (nth 3 numbers))))
+		   ;; from
+		   (if (and rss-p
+			    (setq num (nth 10 numbers))
+			    (setq num (match-string num)))
+		       (save-match-data
+			 (shimbun-replace-in-string
+			  from "(RSS" (concat "\\&:" num)))
+		     from)
+		   ;; date
+		   (shimbun-make-date-string
+		    year month day (cond ((and (setq num (nth 7 numbers))
+					       (match-beginning num))
+					  (match-string num))
+					 (paper-p
+					  "07:00")
+					 (t
+					  hour-min)))
+		   ;; id
+		   id
+		   ;; references, chars, lines
+		   "" 0 0
+		   ;; xref
+		   (shimbun-expand-url
+		    (match-string (nth 0 numbers))
+		    (if paper-p
+			(concat shimbun-asahi-url "paper/")
+		      shimbun-asahi-url)))
+		  headers)))
+	(if (string-equal group "nankyoku.whitemail")
+	    (progn
+	      (cond ((eq backnumbers 'stop)
+		     (throw 'stop nil))
+		    ((null backnumbers)
+		     (while (re-search-forward "<a[\t\n ]+href=\"\
+\\(http://www\\.asahi\\.com/nankyoku/whitemail/\
+backnum0[345][01][0-9]\\.html\\)\">"
+					       nil t)
+		       (unless (member (setq id (match-string 1)) backnumbers)
+			 (push id backnumbers)))))
+	      (if backnumbers
+		  (progn
+		    (shimbun-retrieve-url
+		     (prog1
+			 (car backnumbers)
+		       (erase-buffer)
+		       (unless (setq backnumbers (cdr backnumbers))
+			 (setq backnumbers 'stop)))))
+		(throw 'stop nil)))
+	  (throw 'stop nil))))
     (append (shimbun-sort-headers headers)
 	    (shimbun-asahi-get-headers-for-today group jname from))))
 
@@ -440,48 +552,40 @@ It works for only the groups `editorial' and `tenjin'."
   (goto-char (point-min))
   (let ((basename (cdr (assoc group '(("editorial" . "editorial")
 				      ("tenjin" . "column")))))
-	year month day hour-min url case-fold-search)
+	year month day url)
     (when (and basename
 	       (re-search-forward
-		(eval-when-compile
-		  (concat "<meta[\t\n ]+NAME=\"FJZONE_DATEDISP\"[\t\n ]+"
-			  "CONTENT=\""
-			  ;; 1. year
-			  "\\(20[0-9][0-9]\\)" "/"
-			  ;; 2. month
-			  "\\([01][0-9]\\)" "/"
-			  ;; 3. day
-			  "\\([0-3][0-9]\\)" "[\t\n ]+"
-			  ;; 4. hour:minute
-			  "\\([012][0-9]:[0-5][0-9]\\)" "\""))
+		(concat
+		 ;; 1. year
+		 "\\(20[0-9][0-9]\\)" "年"
+		 ;; 2. month
+		 "\\([01]?[0-9]\\)" "月"
+		 ;; 3. day
+		 "\\([0-3]?[0-9]\\)" "日"
+		 "（.曜日）付")
 		nil t))
       (setq year (string-to-number (match-string 1))
 	    month (string-to-number (match-string 2))
 	    day (string-to-number (match-string 3))
-	    hour-min (match-string 4)
-	    url (format "paper/%s%d%02d%02d.html" basename year month day)
-	    case-fold-search t)
-      (unless (re-search-forward (concat "<a[\t\n ]+href=\"/"
-					 (regexp-quote url))
-				 nil t)
-	(list
-	 (shimbun-make-header
-	  ;; number
-	  0
-	  ;; subject
-	  (shimbun-mime-encode-string (concat jname
-					      (format " (%d/%d)" month day)))
-	  ;; from
-	  from
-	  ;; date
-	  (shimbun-make-date-string year month day hour-min)
-	  ;; id
-	  (format "<%d%02d%02d%%%s.%s>"
-		  year month day group shimbun-asahi-top-level-domain)
-	  ;; references, chars, lines
-	  "" 0 0
-	  ;; xref
-	  (shimbun-expand-url url shimbun-asahi-url)))))))
+	    url (format "paper/%s%d%02d%02d.html" basename year month day))
+      (list
+       (shimbun-make-header
+	;; number
+	0
+	;; subject
+	(shimbun-mime-encode-string (concat jname
+					    (format " (%d/%d)" month day)))
+	;; from
+	from
+	;; date
+	(shimbun-make-date-string year month day "07:00")
+	;; id
+	(format "<%d%02d%02d%%%s.%s>"
+		year month day group shimbun-asahi-top-level-domain)
+	;; references, chars, lines
+	"" 0 0
+	;; xref
+	(shimbun-expand-url url shimbun-asahi-url))))))
 
 (defun shimbun-asahi-prepare-article (shimbun header)
   "Prepare an article.
@@ -492,23 +596,18 @@ there is a correct information available."
 	date start end)
     (cond
      ((string-equal group "editorial")
-      (if (re-search-forward "<hr[^>]+>[\t\n ]*\\(<h[1-9]>[\t\n ]*■\\)"
-			     nil t)
-	  (progn
-	    (delete-region (point-min) (match-beginning 1))
-	    (goto-char (point-min))
-	    (insert "<!--FJZONE START NAME=\"HONBUN\"-->\n")
-	    (setq start (point))
-	    (while (re-search-forward "[\t ]*<hr[^>]+>[\t\n ]*" nil t)
-	      (delete-region (match-beginning 0) (match-end 0)))
-	    (when (> (point) start)
-	      (delete-region (point) (point-max)))
-	    (goto-char (point-max))
-	    (unless (bolp)
-	      (insert "\n"))
-	    (insert "<!--FJZONE END NAME=\"HONBUN\"-->\n"))
-	(erase-buffer)
-	(insert "Couldn't retrieve the page.\n")))
+      (let ((regexp "\
+<h[0-9]\\([\t\n ]+[^>]+\\)?>[\t\n ]*<a[\t\n ]+name=\"syasetu[0-9]+\">"))
+	(if (re-search-forward regexp nil t)
+	    (progn
+	      (goto-char (match-beginning 0))
+	      (insert "<!-- Start of Kiji -->")
+	      (search-forward "</a>" nil t)
+	      (while (re-search-forward regexp nil t))
+	      (when (re-search-forward "[\n\t ]*</p>" nil t)
+		(insert "\n<!-- End of Kiji -->")))
+	  (erase-buffer)
+	  (insert "Couldn't retrieve the page.\n"))))
      ((string-equal group "science")
       (when (and (string-match " \\(00:00\\) "
 			       (setq date (shimbun-header-date header)))
@@ -528,21 +627,19 @@ there is a correct information available."
 					 (match-string 1)
 					 (substring date (+ start 5))))))
      ((string-equal group "tenjin")
-      (if (and (search-forward "■《天声人語》" nil t)
+      (if (and (search-forward "【天声人語】" nil t)
 	       (re-search-forward "<SPAN STYLE=[^>]+>[\t\n ]*" nil t))
 	  (progn
-	    (delete-region (point-min) (match-end 0))
-	    (insert "<!--FJZONE START NAME=\"HONBUN\"-->\n")
-	    (when (re-search-forward "[\t\n ]*</SPAN>" nil t)
-	      (delete-region (match-beginning 0) (point-max)))
-	    (insert "\n<!--FJZONE END NAME=\"HONBUN\"-->\n")
-	    (goto-char (point-min))
+	    (insert "<!-- Start of Kiji -->")
 	    (while (re-search-forward "[\t\n ]*<SPAN STYLE=[^>]+>[\t\n ]*"
 				      nil t)
-	      (delete-region (match-beginning 0) (match-end 0))))
+	      (delete-region (match-beginning 0) (match-end 0)))
+	    (when (re-search-forward "[\t\n ]*</SPAN>" nil t)
+	      (goto-char (match-beginning 0))
+	      (insert "\n<!-- End of Kiji -->")))
 	(erase-buffer)
 	(insert "Couldn't retrieve the page.\n")))
-     ((string-equal group "sports")
+     (t
       (when (re-search-forward
 	     (eval-when-compile
 	       (let ((s0 "[\t\n ]*")
