@@ -138,4 +138,13 @@ to the specified name LIBRARY (a la calling `load' instead of `load-library')."
        load-path)
       (or noninteractive
 	  (message "No library %s in search path" library))
-      nil)))
+      nil))
+
+  (condition-case nil
+      (char-after)
+    (wrong-number-of-arguments
+     (put 'char-after 'byte-optimizer
+	  (lambda (form)
+	    (if (cdr form)
+		form
+	      '(char-after (point))))))))

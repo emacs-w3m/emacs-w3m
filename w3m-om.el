@@ -449,12 +449,6 @@ as the value."
 
 (eval-after-load "wid-edit" '(w3m-om-define-missing-widgets))
 
-;; Silence the byte compiler.  `w3m-tab-menubar-update' uses it to
-;; disable the iswitchb keymap, but it will never be used in Emacs 19
-;; since the Emacs version in which iswitchb.el appeared is 20.1.
-(eval-when-compile
-  (autoload 'easy-menu-remove-item "easymenu"))
-
 (provide 'w3m-om)
 
 ;;; w3m-om.el ends here

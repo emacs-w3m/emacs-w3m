@@ -1,6 +1,6 @@
 ;;; w3m-tabmenu.el --- Functions for TAB menu browsing
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Hideyuki SHIRAI    <shirai@meadowy.org>,
@@ -92,6 +92,13 @@
   (interactive)
   (when (get-buffer buf)
     (switch-to-buffer buf)))
+
+;;; w3m-tabmenu.el ends here
+;; Silence the byte compiler.  `w3m-tab-menubar-update' uses it to
+;; disable the iswitchb keymap, but it will never be used in Emacs 19
+;; since the Emacs version in which iswitchb.el appeared is 20.1.
+(eval-when-compile
+  (autoload 'easy-menu-remove-item "easymenu"))
 
 (defun w3m-tab-menubar-update ()
   "Update w3m tab menubar."

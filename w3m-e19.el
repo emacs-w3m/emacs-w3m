@@ -91,12 +91,6 @@ the empty string."
 	   default-value)
       (setq ad-return-value default-value)))
 
-;; Silence the byte compiler.  `w3m-tab-menubar-update' uses it to
-;; disable the iswitchb keymap, but it will never be used in Emacs 19
-;; since the Emacs version in which iswitchb.el appeared is 20.1.
-(eval-when-compile
-  (autoload 'easy-menu-remove-item "easymenu"))
-
 (provide 'w3m-e19)
 
 ;;; w3m-e19.el ends here

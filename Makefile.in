@@ -202,7 +202,7 @@ very-slow: clean keywords Makefile
 	done;\
 	for i in `echo *.elx shimbun/*.elx`; do\
 	  j=`echo $$i| sed 's/elx$$/elc/g'`;\
-	  mv $$i $$j;\
+	  if test -f $$i; then mv $$i $$j; fi\
 	done;\
 	echo "==============================================";\
 	echo "Compiling the 2nd stage-----with all elc files";\

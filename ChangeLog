@@ -1,5 +1,22 @@
 2005-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* Makefile.in (very-slow): Don't mv non-existent files.
+
+	* w3m-e19.el (easy-menu-remove-item): Don't autoload it.
+
+	* w3m-om.el (easy-menu-remove-item): Ditto.
+
+	* w3m-rss.el (match-string-no-properties): Avoid warning for Emacs
+	19 and XEmacs.
+	(split-string): Avoid warning for Emacs 19.
+
+	* w3m-symbol.el: Require cl when compiling.
+
+	* w3m-tabmenu.el (easy-menu-remove-item): Aautoload it for Emacs 19.
+
+	* w3m.el: Autoload widget-get to avoid compile warning for Emacs 19.
+	(w3m): Remove unused bound variable.
+
 	* w3mhack.el: Bind executable-binary-suffixes to the proper value
 	for OS/2 and emx while checking for the shell command; cause an
 	error only when compiling or formatting files.
@@ -7,6 +24,7 @@
 	* attic/addpath.el: Make it work with old Emacsen even if cl is
 	not loaded; load custom, bind defcustom'ed variables and make the
 	locate-library function run quietly for Emacs 19.
+	(char-after): Add a byte-optimizer for Emacs 19.
 
 	* w3m-ccl.el: Load w3m-om instead of autoloading it for charset-id.
 

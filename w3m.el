@@ -172,6 +172,7 @@
 (eval-when-compile
   (autoload 'rfc2368-parse-mailto-url "rfc2368")
   (autoload 'widget-convert-button "wid-edit")
+  (autoload 'widget-get "wid-edit")
   (unless (fboundp 'char-to-int)
     (defalias 'char-to-int 'identity)))
 
@@ -7796,7 +7797,6 @@ command in the batch mode."
       (not url))))
   (let ((nofetch (eq url 'popup))
 	(buffer (unless new-session (w3m-alive-p t)))
-	(popup-frame-p (and (not interactive-p) (w3m-popup-frame-p)))
 	(w3m-pop-up-frames (and interactive-p w3m-pop-up-frames))
 	(w3m-pop-up-windows (and interactive-p w3m-pop-up-windows)))
     (unless (and (stringp url)

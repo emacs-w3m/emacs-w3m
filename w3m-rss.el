@@ -46,6 +46,14 @@
   (autoload 'timezone-parse-date "timezone")
   (autoload 'timezone-parse-time "timezone"))
 
+(eval-when-compile
+  ;; Avoid warning for Emacs 19 and XEmacs.
+  (unless (fboundp 'match-string-no-properties)
+    (autoload 'match-string-no-properties "poe"))
+  ;; Avoid warning for Emacs 19.
+  (unless (fboundp 'split-string)
+    (autoload 'split-string "poe")))
+
 (defun w3m-rss-parse-date-string (date)
   "Decode DATE string written in the ISO 8601 format or the RFC822 style.
 Return a list of numbers which conforms to the Emacs internal format.
