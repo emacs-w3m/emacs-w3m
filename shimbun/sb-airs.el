@@ -70,7 +70,7 @@
     (goto-char (point-min))
     (catch 'stop
       (while (and (if pages (<= (incf count) pages) t)
-		  (re-search-forward "<A HREF=\"\\([0-9]+\\)/\">" nil t)
+		  (re-search-forward "<A HREF=\"\\([1-2][0-9]+\\)/\">" nil t)
 		  (push (match-string 1) months)))
       (setq months (nreverse months))
       (dolist (month months)
