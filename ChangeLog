@@ -1,6 +1,11 @@
+2005-01-30  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* w3m.el (w3m-attributes): Support cid urls.
+	(w3m-external-view): Ditto.
+
 2005-01-30  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
 
-	* sb-x51.el: Fix indentation.
+	* shimbun/sb-x51.el: Fix indentation.
 	(shimbun-get-headers): Add support Message-ID check; Fix regex.
 
 2005-01-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
