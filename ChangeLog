@@ -1,3 +1,8 @@
+2002-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-2ch.el (shimbun-request-article): Remove unbound vars.
+	(shimbun-headers): Bind `ita' and `sure'.
+
 2002-04-15  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-2ch.el: New file.
