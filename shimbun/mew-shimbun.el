@@ -48,9 +48,6 @@
 ;; (define-key mew-summary-mode-map "GR" 'mew-shimbun-re-retrieve-all)
 ;; (define-key mew-summary-mode-map "Ge" 'mew-shimbun-expire)
 ;; (define-key mew-summary-mode-map "GE" 'mew-shimbun-expire-all)
-;; (when mew-shimbun-use-unseen
-;;   (define-key mew-summary-mode-map "Gu" 'mew-shimbun-unseen-check)
-;;   (define-key mew-summary-mode-map "GU" 'mew-shimbun-unseen-remove-all))
 ;;
 
 ;;; Code:
