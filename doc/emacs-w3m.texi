@@ -1,4 +1,4 @@
-\input texinfo @c -*- mode: texinfo; coding: iso-8859-1 -*-
+\input texinfo @c -*- mode: texinfo -*-
 @c %**start of header
 @setfilename emacs-w3m.info
 @settitle Emacs-w3m -- an Emacs interface to w3m --
@@ -3559,9 +3559,10 @@ retired officially.
 Don't use @code{standard-display-european}
 
 It is generally harmful since it often makes Latin characters get
-displayed incorrectly, for instance, the character @samp{´} (it is a
-representation of @samp{&#8217} in reality) is represented as @samp{ù}
-(@samp{&#249}).  If the line something like the following is in your
+displayed incorrectly.  For instance, the apostrophe character
+(@samp{'}) which was encoded as @samp{&#8217} will be displayed as the
+character @samp{u} with a grave accent as if it had been encoded as
+@samp{&#249}.  If the line something like the following is in your
 @file{~/.emacs} file or site files which Emacs loads when starting up,
 we strongly recommend you to remove it.
 
