@@ -5408,6 +5408,12 @@ url."
 		       (and (w3m-action) "There is a form")
 		       "There is no url")))))
 
+(defmacro w3m-delete-all-overlays ()
+  "Delete all momentary overlays."
+  '(dolist (overlay (overlays-in (point-min) (point-max)))
+     (if (overlay-get overlay 'w3m-momentary-overlay)
+	 (delete-overlay overlay))))
+
 (defun w3m-highlight-current-anchor-1 (seq)
   "Highlight an anchor in the line if the anchor sequence is the same as SEQ.
 Return t if highlighting is successful."
@@ -5441,6 +5447,7 @@ Return t if highlighting is successful."
 				       ovs nil))
 			     (setq ovs (cdr ovs)))
 			   ov))))
+    (w3m-delete-all-overlays)
     (save-excursion
       (let ((seq (w3m-anchor-sequence))
 	    (pos (point)))
