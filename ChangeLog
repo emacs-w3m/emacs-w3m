@@ -1,5 +1,10 @@
 2001-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-download-save-directory): New user option.
+	(w3m-goto-ftp-url, w3m-download): Refer it.
+
+2001-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-antenna.el (w3m-antenna-shutdown): Don't specify a
 	coding-system to `w3m-save-list'.
 	(w3m-antenna-setup): Don't specify a coding-system to

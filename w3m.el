@@ -249,6 +249,12 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :group 'w3m
   :type 'directory)
 
+(defcustom w3m-download-save-directory nil
+  "*Directory where the downloaded files should be saved in.  It defaults
+to the value of the option `w3m-default-save-directory'."
+  :group 'w3m
+  :type 'directory)
+
 (defcustom w3m-delete-duplicated-empty-lines t
   "*Compactize page by deleting duplicated empty lines."
   :group 'w3m
@@ -2377,7 +2383,7 @@ to nil.
 
 (defun w3m-download (url &optional filename no-cache)
   (unless filename
-    (setq filename (w3m-read-file-name nil nil url)))
+    (setq filename (w3m-read-file-name nil w3m-download-save-directory url)))
   (if (w3m-retrieve url t no-cache)
       (with-current-buffer (get-buffer w3m-work-buffer-name)
 	(let ((buffer-file-coding-system 'binary)
@@ -3267,7 +3273,8 @@ or prefix ARG columns."
 	 (file (file-name-nondirectory ftp)))
     (if (file-directory-p ftp)
 	(dired-other-window ftp)
-      (copy-file ftp (w3m-read-file-name nil nil file)))))
+      (copy-file ftp (w3m-read-file-name nil w3m-download-save-directory
+					 file)))))
 
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer)
