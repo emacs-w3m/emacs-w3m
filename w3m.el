@@ -2086,34 +2086,6 @@ nil value means it has not been initialized.")
 (defconst w3m-work-buffer-name " *w3m-work*")
 (defconst w3m-select-buffer-name " *w3m buffers*")
 
-(defconst w3m-meta-content-type-charset-regexp
-  "<meta[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]+content\
-=\"?\\([^;]+\\);[ \t\n]*charset=\\([^\"]+\\)\"?[ \t\n]*/?>"
-  "Regexp matching the META tag containing Content-type and charset.
-Those are in the order of:
- <META HTTP-EQUIV=\"Content-Type\" content=\"...;charset=...\">.")
-
-(defconst w3m-meta-charset-content-type-regexp
-  "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*charset\
-=\\([^\"]+\\)\"?[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]*/?>"
-  "Regexp matching the META tag containing charset and Content-type.
-Those are in the order of:
- <META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">.")
-
-(defconst w3m-meta-refresh-content-regexp
-  "<meta[ \t\n]+http-equiv=[\"']?refresh[\"']?[ \t\n]+content\
-=[\"']?\\([^;]+\\);[ \t\n]*url=[\"']?\\([^\"']+\\)[\"']?[\"']?[ \t\n]*/?>"
-  "Regexp matching the META tag containing refresh and content.
-Those are in the order of:
- <META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">.")
-
-(defconst w3m-meta-content-refresh-regexp
-  "<meta[ \t\n]+content=[\"']?\\([^;]+\\);[ \t\n]*url\
-=[\"']?\\([^\"']+\\)[\"']?[ \t\n]+http-equiv=[\"']?refresh[\"']?[\"']?[ \t\n]*/?>"
-  "Regexp matching the META tag containing content and refresh.
-Those are in the order of:
- <META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">.")
-
 (defconst w3m-dump-head-source-command-arguments
   (cond ((eq w3m-type 'w3mmee)
 	 (list "-dump=extra,head,source"))
@@ -3743,11 +3715,13 @@ It supports the encoding types of gzip, bzip2, deflate, etc."
 (defun w3m-detect-meta-charset ()
   (let ((case-fold-search t))
     (goto-char (point-min))
-    (when (or (re-search-forward
-	       w3m-meta-content-type-charset-regexp nil t)
-	      (re-search-forward
-	       w3m-meta-charset-content-type-regexp nil t))
-      (match-string-no-properties 2))))
+    (catch 'found
+      (while (re-search-forward "<meta[ \t\r\f\n]+" nil t)
+	(w3m-parse-attributes ((http-equiv :case-ignore) 
+			       (content :case-ignore))
+	  (when (and (string= http-equiv "content-type")
+		     (string-match ";[ \t\n]*charset=\\([^\"]+\\)" content))
+	    (throw 'found (match-string 1 content))))))))
 
 (defun w3m-decode-buffer (url &optional content-charset content-type)
   (let (cs)
@@ -4655,29 +4629,39 @@ POST-DATA and REFERER will be sent to the web server with a request."
   "Get REFRESH attribute in META tags."
   (setq w3m-current-refresh nil)
   (when w3m-use-refresh
-    (goto-char (point-min))
     (let ((case-fold-search t)
 	  sec refurl)
       (goto-char (point-min))
-      (when (or (re-search-forward w3m-meta-refresh-content-regexp nil t)
-		(re-search-forward w3m-meta-content-refresh-regexp nil t))
-	(setq sec (match-string-no-properties 1))
-	(setq refurl (w3m-decode-entities-string
-		      (match-string-no-properties 2)))
-	(when (string-match "\\`[\"']\\(.*\\)[\"']\\'" refurl)
-	  (setq refurl (match-string 1 refurl)))
-	(unless (string-match "[^0-9]" sec)
-	  (setq w3m-current-refresh (cons (string-to-number sec)
-					  (w3m-expand-url refurl))))))))
+      (catch 'found
+	(while (re-search-forward "<meta[ \t\r\f\n]+" nil t)
+	  (w3m-parse-attributes ((http-equiv :case-ignore) content)
+	    (when (and (string= http-equiv "refresh")
+		       (string-match
+			"\\([^;]+\\);[ \t\n]*url=[\"']?\\([^\"']+\\)"
+			content))
+	      (setq sec (match-string-no-properties 1 content))
+	      (setq refurl (w3m-decode-entities-string
+			    (match-string-no-properties 2 content)))
+	      (when (string-match "\\`[\"']\\(.*\\)[\"']\\'" refurl)
+		(setq refurl (match-string 1 refurl))
+		(unless (string-match "[^0-9]" sec)
+		  (throw 'found
+			 (setq w3m-current-refresh
+			       (cons (string-to-number sec)
+				     (w3m-expand-url refurl)))))))))))))
 
 (defun w3m-remove-meta-charset-tags ()
   (let ((case-fold-search t))
     (goto-char (point-min))
-    (when (or (re-search-forward
-	       w3m-meta-content-type-charset-regexp nil t)
-	      (re-search-forward
-	       w3m-meta-charset-content-type-regexp nil t))
-      (delete-region (match-beginning 0) (match-end 0)))))
+    (catch 'found
+      (when (re-search-forward "<meta[ \t\r\f\n]+" nil t)
+	(let ((start (match-beginning 0)))
+	  (w3m-parse-attributes ((http-equiv :case-ignore)
+				 (content :case-ignore))
+	    (when (and (string= http-equiv "content-type")
+		       (string-match ";[ \t\n]*charset=" content))
+	      (delete-region start (point))
+	      (throw 'found nil))))))))
 
 (defun w3m-rendering-extract-title ()
   "Extract the title from the halfdump and put it into the current buffer."
@@ -4748,7 +4732,8 @@ POST-DATA and REFERER will be sent to the web server with a request."
   (w3m-remove-comments)
   (w3m-check-header-tags)
   (w3m-check-refresh-attribute)
-  (w3m-remove-meta-charset-tags)
+  (unless (eq w3m-type 'w3m-m17n)
+    (w3m-remove-meta-charset-tags))
   (w3m-rendering-half-dump charset)
   (w3m-message "Rendering...done")
   (w3m-rendering-extract-title))

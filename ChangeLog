@@ -1,3 +1,15 @@
+2004-06-11  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-meta-content-type-charset-regexp)
+	(w3m-meta-charset-content-type-regexp)
+	(w3m-meta-refresh-content-regexp)
+	(w3m-meta-content-refresh-regexp): Removed.
+	(w3m-detect-meta-charset, w3m-remove-meta-charset-tags)
+	(w3m-check-refresh-attribute): Use `w3m-parse-attributes' instead
+	of above regexp.
+	(w3m-rendering-buffer): Don't call `w3m-remove-meta-charset-tags'
+	for w3m-m17n.
+
 2004-06-10  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-namazu.el: Rewrite.
