@@ -40,8 +40,10 @@
 (defvar shimbun-itmedia-url "http://www.itmedia.co.jp/")
 
 (defvar shimbun-itmedia-group-alist
-  (let ((template "<a href=\"/\\(\\(%s\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\
-/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>"))
+  (let ((template (concat "<a href=\""
+			  "\\(" (regexp-quote shimbun-itmedia-url) "\\|/\\)"
+			  "\\(\\(%s\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\
+/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")))
     `(("anchordesk" "anchordesk"
        ,(format template "anchordesk/articles")
        "［[^ ]* \\([0-9]+:[0-9]+\\)］")
@@ -112,16 +114,16 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 		 (setq next nil)
 		 (goto-char (match-end 0)))
 	     (re-search-forward url-regexp nil t))
-      (unless (string= "index" (match-string 6))
-	(let ((url (match-string 1))
-	      (year (+ 2000 (string-to-number (match-string 3))))
-	      (month (string-to-number (match-string 4)))
-	      (day (string-to-number (match-string 5)))
+      (unless (string= "index" (match-string 7))
+	(let ((url (match-string 2))
+	      (year (+ 2000 (string-to-number (match-string 4))))
+	      (month (string-to-number (match-string 5)))
+	      (day (string-to-number (match-string 6)))
 	      (id (format "<%s%s%s%s%%%s>"
-			  (match-string 3)
 			  (match-string 4)
 			  (match-string 5)
 			  (match-string 6)
+			  (match-string 7)
 			  group))
 	      (subject (mapconcat
 			(lambda (s)
