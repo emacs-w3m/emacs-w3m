@@ -8231,7 +8231,8 @@ Are you sure you really want to show all images (maybe unsecure)? "))
     (w3m-toggle-inline-image . w3m-safe-toggle-inline-image)
     (w3m-toggle-inline-images . w3m-safe-toggle-inline-images)
     (w3m-view-this-url . w3m-safe-view-this-url)
-    (w3m-mouse-view-this-url . w3m-mouse-safe-view-this-url))
+    (w3m-mouse-view-this-url . w3m-mouse-safe-view-this-url)
+    (w3m-print-this-url))
   "Alist of commands and commands to be defined in `w3m-minor-mode-map'.
 Each element looks like (FROM-COMMAND . TO-COMMAND); those keys which
 are defined as FROM-COMMAND in `w3m-mode-map' are redefined as
