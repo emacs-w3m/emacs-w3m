@@ -1,5 +1,17 @@
 2001-09-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-macro.el (w3m-with-work-buffer): Keep `w3m-history' and
+	`w3m-history-flat' through buffers.
+
+	* w3m.el (w3m-current-buffer): Abolished.
+	(w3m-goto-url): Don't set `w3m-current-buffer'.
+	(w3m-region): Ditto.
+	(w3m-about-history): Don't refer `w3m-current-buffer'.
+
+	* w3m-form.el (w3m-form-parse-region): Simplified.
+	(w3m-form-parse-forms): Accept <OPTION> tag lacks `value'
+	attribute.
+
 	* w3m.el (w3m-resume-forms): Abolished.
 	(w3m-clear-local-variables): Don't handle `w3m-resume-forms'.
 	(w3m-copy-local-variables): Ditto.

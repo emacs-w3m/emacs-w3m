@@ -771,8 +771,6 @@ will disclose your private informations, for example:
 	  w3m-next-url next
 	  w3m-previous-url prev)))
 
-(defvar w3m-current-buffer nil "The current w3m buffer.")
-
 (defvar w3m-verbose t "Flag variable to control messages.")
 
 (defvar w3m-cache-buffer nil)
@@ -3609,7 +3607,6 @@ the request."
 	(w3m-mode)
 	(setq mode-line-buffer-identification
 	      (list "%b" " / " 'w3m-current-title))))
-    (setq w3m-current-buffer (current-buffer))
     ;; Setup arrived database.
     (w3m-arrived-setup)
     ;; Store the current position in the history structure.
@@ -3823,8 +3820,7 @@ ex.) c:/dir/file => //c/dir/file"
     (when (memq w3m-type '(w3mmee w3m-m17n))
       (encode-coding-region (point-min) (point-max) w3m-coding-system))
     (w3m-clear-local-variables)
-    (setq w3m-current-buffer (current-buffer)
-	  w3m-current-url url
+    (setq w3m-current-url url
 	  w3m-current-title
 	  (w3m-rendering-region (point-min) (point-max)))
     (w3m-fontify)
@@ -3902,10 +3898,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
 
 (defun w3m-about-history (&rest args)
   "Show a tree-structured history."
-  (let (history current start)
-    (with-current-buffer w3m-current-buffer
-      (setq history w3m-history-flat
-	    current w3m-current-url))
+  (let ((history w3m-history-flat) start)
     (insert "\
 <head><title>URL history</title></head><body>
 <h1>List of all the links you have visited in this session.</h1><pre>\n")
@@ -3974,15 +3967,14 @@ showing a tree-structured history by the command `w3m-about-history'.")
 	  (forward-line 1))))
     (insert "</pre></body>")
     (goto-char start)
-    (when (and current
-	       (re-search-forward (concat "\\(<a href=\""
-					  (regexp-quote current)
-					  "\">.+</a>\\)")
-				  nil t))
-      (beginning-of-line)
-      (delete-char 1)
-      (insert "&gt;")))
-  "text/html")
+    (let ((current (car (w3m-history-current))))
+      (and current
+	   (search-forward (concat "<a href=\"" current "\">") nil t)
+	   (progn
+	     (forward-line 0)
+	     (delete-char 1)
+	     (insert "&gt;"))))
+    "text/html"))
 
 (defun w3m-about-db-history (&rest args)
   (let ((width (- (if (< 0 w3m-fill-column)

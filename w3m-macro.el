@@ -57,11 +57,21 @@ compile-time."
   (if clauses
       (cons 'progn (cdr (car clauses)))))
 
+(eval-when-compile ;; To avoid byte-compile warnings.
+  (defvar w3m-history)
+  (defvar w3m-history-flat))
+
 (defmacro w3m-with-work-buffer (&rest body)
   "Execute the forms in BODY with working buffer as the current buffer."
-  (` (with-current-buffer
-	 (w3m-get-buffer-create w3m-work-buffer-name)
-       (,@ body))))
+  (let ((temp-hist (make-symbol "hist"))
+	(temp-flat (make-symbol "flat")))
+    (` (let (((, temp-hist) w3m-history)
+	     ((, temp-flat) w3m-history-flat))
+	 (with-current-buffer
+	     (w3m-get-buffer-create w3m-work-buffer-name)
+	   (setq w3m-history (, temp-hist)
+		 w3m-history-flat (, temp-flat))
+	   (,@ body))))))
 (put 'w3m-with-work-buffer 'lisp-indent-function 0)
 (put 'w3m-with-work-buffer 'edebug-form-spec '(body))
 

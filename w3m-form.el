@@ -186,33 +186,22 @@ If no field in forward, return nil without moving."
 Check the cached form/map objects are available, and if available
 return them with the flag."
   (or (when (w3m-cache-available-p w3m-current-url)
-	(let* ((url w3m-current-url)
-	       (forms (with-current-buffer w3m-current-buffer
-			(w3m-history-plist-get :forms url nil t))))
-	  (and forms
-	       (cons t forms)))) ;; Mark that `w3m-current-forms' is resumed from history.
-      (save-restriction
-	(narrow-to-region start end)
-	(if (memq w3m-type '(w3mmee w3m-m17n))
-	    ;; *w3m-work* buffer is 'binary.
-	    (let ((str (buffer-string)))
-	      (with-temp-buffer
-		(insert str)
-		(goto-char (point-min))
-		(when (and (eq w3m-type 'w3mmee)
-			   (or (re-search-forward
-				w3m-meta-content-type-charset-regexp nil t)
-			       (re-search-forward
-				w3m-meta-charset-content-type-regexp nil t))
-			   (string= "x-moe-internal"
-				    (downcase
-				     (match-string-no-properties 2))))
-		  (setq charset (w3m-x-moe-decode-buffer)))
-		(decode-coding-region (point-min) (point-max)
-				      (or (w3m-charset-to-coding-system charset)
-					  'undecided))
-		(nreverse (w3m-form-parse-forms))))
-	  (nreverse (w3m-form-parse-forms))))))
+	(let ((forms (w3m-history-plist-get :forms w3m-current-url nil t)))
+	  ;; Mark that `w3m-current-forms' is resumed from history.
+	  (and forms (cons t forms))))
+      (nreverse
+       (save-restriction
+	 (narrow-to-region start end)
+	 (if (memq w3m-type '(w3mmee w3m-m17n))
+	     ;; *w3m-work* buffer is 'binary.
+	     (let ((url w3m-current-url)
+		   (buf (current-buffer)))
+	       (with-temp-buffer
+		 (insert-buffer buf)
+		 (goto-char (point-min))
+		 (w3m-decode-buffer url nil "text/html")
+		 (w3m-form-parse-forms)))
+	   (w3m-form-parse-forms))))))
 
 (defun w3m-form-parse-forms ()
   "Parse Form/usemap objects in this buffer."
@@ -341,7 +330,6 @@ return them with the flag."
 					     ?/)))
 		  ;; <OPTION> is found
 		  (goto-char (match-end 1)) ; goto very after "<xxxx"
-
 		  (w3m-parse-attributes (value (selected :bool))
 		    (setq vbeg (point))
 		    (skip-chars-forward "^<")
@@ -350,9 +338,11 @@ return them with the flag."
 				     (split-string
 				      (buffer-substring vbeg (point)) "\n")
 				     ""))
-		    (if selected (setq cvalue value))
-		    (setq candidates (cons (cons value svalue)
-					   candidates))))
+		    (unless value
+		      (setq value svalue))
+		    (when selected
+		      (setq cvalue value))
+		    (push (cons value svalue) candidates)))
 		(when name
 		  (w3m-form-put (car forms) name (cons
 						  cvalue ; current value
