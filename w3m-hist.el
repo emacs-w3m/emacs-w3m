@@ -242,7 +242,7 @@ in the history, move as far as possible."
   (when w3m-history
     (let (goal)
       (cond ((or (unless count
-		   (setq (setq count 1)))
+		   (setq count 1))
 		 (> count 0))
 	     (while (and (setq goal (w3m-history-forward-1))
 			 (> (setq count (1- count)) 0))))
