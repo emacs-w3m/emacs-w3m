@@ -156,7 +156,8 @@
 	    (insert "Content-Type: text/html; charset=ISO-2022-JP\n")
 	    (if refs
 		(shimbun-header-set-references header
-					       (mapconcat 'identity refs " ")))
+					       (mapconcat 'identity
+							  (reverse refs) " ")))
 	    (insert "\n")
 	    (goto-char (point-min))
 	    (shimbun-header-insert shimbun header))

@@ -1,3 +1,11 @@
+2001-06-14  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-mhonarc.el (shimbun-make-contents): Fixed reference order.
+
+2001-06-14  ABE Yasushi <yasushi@stbbs.net>
+
+	* shimbun/sb-javaconf.el: New file.
+
 2001-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-base64-encode-string): Enclose the
