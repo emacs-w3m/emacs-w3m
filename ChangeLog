@@ -1,6 +1,7 @@
 2003-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/nnshimbun.el: Don't require `gnus-sum'.
+	* shimbun/nnshimbun.el: Autoload `gnus-group-make-group'; don't
+	require `gnus-sum'.
 	(nnshimbun-replace-date-header): New function.
 	(nnshimbun-request-article-1): Use it.
 
