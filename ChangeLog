@@ -1,6 +1,8 @@
 2003-04-29  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-jpo.el: New file.
+	(shimbun-jpo-contents): Modified regexp to pick up more email
+	address of JPO's section.
 
 2003-04-28  NAKAJIMA Mikio  <minakaji@namazu.org>
 

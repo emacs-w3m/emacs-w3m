@@ -190,9 +190,9 @@
 	   ;;Ｅ−mail：<a href="mailto:PA0A00@jpo.go.jp">PA0A00@jpo.go.jp<br>
 	   ;;E-mail：<a href="mailto:PA0420@jpo.go.jp">PA0420@jpo.go.jp</a></font>
 	   ;;　E-mail:<a href="mailto:PA0A00@jpo.go.jp"> PA0A00@jpo.go.jp</a></font>
-	   "[ＥｅEe][−-]*[ＭｍMm][ＡａAa][ＩｉIi][ＬｌLl][：:　] *<a href=\"mailto:\\(.*@jpo.go.jp\\)\"> *\\1"
+	   "\\(電子メール\\|[ＥｅEe][−-]*[ＭｍMm][ＡａAa][ＩｉIi][ＬｌLl]\\)[：:　] *<a href=\"mailto:\\(.*@jpo.go.jp\\)\"> *\\2"
 	   nil t nil)
-      (shimbun-header-set-from header (match-string 1)))
+      (shimbun-header-set-from header (match-string 2)))
     (shimbun-jpo-cleanup-article)
     (goto-char (point-min))
     (insert "<html>\n<head>\n<base href=\""
