@@ -613,7 +613,7 @@ If N is negative, last N items of LIST is returned."
       (let ((file-coding-system coding)
 	    (coding-system-for-write coding))
 	(print list (current-buffer))
-	(write-region (point-min) (point-max)	
+	(write-region (point-min) (point-max)
 	      file nil 'nomsg)))))
 
 (defsubst w3m-arrived-p (url)
@@ -646,6 +646,16 @@ If N is negative, last N items of LIST is returned."
   (let ((v (intern-soft url w3m-arrived-db)))
     (and v (put v 'title title))))
 
+(defun w3m-arrived-arrived-time (url)
+  "If URL has been arrived, return its arrived time.  Otherwise return nil."
+  (let ((v (intern-soft url w3m-arrived-db)))
+    (and v (get v 'arrived-time))))
+
+(defun w3m-arrived-put-arrived-time (url &optional time)
+  "Store TIME of the page, which is pointed by URL."
+  (let ((v (intern-soft url w3m-arrived-db)))
+    (and v (put v 'arrived-time (or time (current-time))))))
+
 (defun w3m-arrived-setup ()
   "Load arrived url list from `w3m-arrived-file' and setup hash database."
   (unless w3m-arrived-db
@@ -658,7 +668,10 @@ If N is negative, last N items of LIST is returned."
 	    ;; Process new format of arrived URL database.
 	    (progn
 	      (w3m-arrived-add (car elem) (nth 2 elem))
-	      (w3m-arrived-put-title (car elem) (nth 1 elem)))
+	      (w3m-arrived-put-title (car elem) (nth 1 elem))
+	      (if (nth 3 elem)
+		  (w3m-arrived-put-arrived-time (car elem) (nth 3 elem))
+		(w3m-arrived-put-arrived-time (car elem) (nth 2 elem))))
 	  ;; Process old format of arrived URL database, is used
 	  ;; before revision 1.135.
 	  (w3m-arrived-add (car elem) (cdr elem))))
@@ -677,7 +690,10 @@ If N is negative, last N items of LIST is returned."
        (or (not (nth 1 elem)) (stringp (nth 1 elem)))
        (w3m-time-newer-p (nth 2 elem)
 			 (w3m-arrived-last-modified (car elem)))
-       (w3m-arrived-add (car elem) (nth 2 elem))))
+       (w3m-arrived-add (car elem) (nth 2 elem))
+       (if (nth 3 elem)
+	   (w3m-arrived-put-arrived-time (car elem) (nth 3 elem))
+	 (w3m-arrived-put-arrived-time (car elem) (nth 2 elem)))))
     ;; Convert current arrived DB to a list.
     (let (list)
       (mapatoms
@@ -686,7 +702,8 @@ If N is negative, last N items of LIST is returned."
 	   (push (cons (symbol-value sym)
 		       (list (symbol-name sym)
 			     (get sym 'title)
-			     (get sym 'last-modified)))
+			     (get sym 'last-modified)
+			     (get sym 'arrived-time)))
 		 list)))
        w3m-arrived-db)
       (w3m-save-list w3m-arrived-file
@@ -2244,6 +2261,7 @@ or prefix ARG columns."
 		(file-name-directory (w3m-url-to-file-name url))
 	      w3m-profile-directory))
       (w3m-arrived-put-title url w3m-current-title)
+      (w3m-arrived-put-arrived-time url)
       (switch-to-buffer (current-buffer))))))
 
 
@@ -2375,7 +2393,7 @@ ex.) c:/dir/file => //c/dir/file"
 	 (when (and sym
 		    (setq url (symbol-name sym))
 		    (not (string-match w3m-about-history-except-regex url)))
-	   (setq time (w3m-arrived-last-modified url))
+	   (setq time (w3m-arrived-arrived-time url))
 	   (push (cons url time) alist)))
        w3m-arrived-db)
       (setq alist (sort alist (lambda (a b) (w3m-time-newer-p (cdr a) (cdr b))))))
@@ -2386,7 +2404,7 @@ ex.) c:/dir/file => //c/dir/file"
       (if (null alist)
 	  (insert "<h2>Nothing in DataBase.</h2>\n")
 	(insert "<table cellpadding=0>\n")
-	(insert "<tr><td><h2> Titile/URL </h2></td><td><h2>time</h2></td></tr>\n")
+	(insert "<tr><td><h2> Titile/URL </h2></td><td><h2>Arrived time</h2></td></tr>\n")
 	(while alist
 	  (setq url (car (car alist)))
 	  (setq title (w3m-arrived-title url))
