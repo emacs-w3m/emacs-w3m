@@ -1,10 +1,16 @@
 2003-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-goto-url-new-session): Find an existing emacs-w3m
-	buffer and then make a copy of it; use `w3m-goto-url' instead of
-	`w3m' if there is no emacs-w3m buffer.
+	* w3m-search.el (w3m-search): Use `w3m-goto-url' instead of `w3m'.
+	* w3m-weather.el (w3m-weather): Ditto.
+
+	* w3m.el (w3m-obey-w3m-pop-up-frames): Abolish.
+	(w3m-goto-url-new-session): Find an existing emacs-w3m buffer and
+	then make a copy of it; use `w3m-goto-url' instead of `w3m' if
+	there is no emacs-w3m buffer.
 	(w3m-browse-url): Revert last change; rename the optional arg to
 	`new-session'; call `w3m-goto-url-new-session' or `w3m-goto-url'.
+	(w3m-select-buffer): Use `w3m-goto-url' instead of `w3m'.
+	(w3m-safe-view-this-url): Ditto.
 
 2003-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
