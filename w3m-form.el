@@ -277,7 +277,8 @@ If no field in forward, return nil without moving."
 Result form structure is saved to the local variable `w3m-current-forms'.
 If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
   (let ((case-fold-search t)
-	tag start end internal-start textareas selects forms maps)
+	tag start end internal-start textareas selects forms maps
+	form)
     (goto-char (point-min))
     (while (re-search-forward (w3m-tag-regexp-of
 			       "form_int" "map" "img_alt"
@@ -290,34 +291,31 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	(w3m-parse-attributes (action (method :case-ignore)
 				      (accept-charset :case-ignore)
 				      (charset :case-ignore))
+	  (if accept-charset
+	      (setq accept-charset (split-string accept-charset ","))
+	    (when (and charset (eq w3m-type 'w3mmee))
+	      (cond
+	       ((string= charset "e")	;; w3mee without libmoe
+		(setq accept-charset (list "euc-jp")))
+	       ((string= charset "s")	;; w3mee without libmoe
+		(setq accept-charset (list "shift-jis")))
+	       ((string= charset "n")	;; w3mee without libmoe
+		(setq accept-charset (list "iso-2022-7bit")))
+	       (t				;; w3mee with libmoe
+		(setq accept-charset (list charset))))))
+	  (push (w3m-form-new
+		 (or method "get")
+		 (or action (and w3m-current-url
+				 (string-match w3m-url-components-regexp 
+					       w3m-current-url)
+				 (substring w3m-current-url 0
+					    (or (match-beginning 6)
+						(match-beginning 8)))))
+		 nil
+		 accept-charset)
+		forms)
 	  (unless (string= method "internal")
-	    (if accept-charset
-		(setq accept-charset (split-string accept-charset ","))
-	      (when (and charset (eq w3m-type 'w3mmee))
-		(cond
-		 ((string= charset "e")	;; w3mee without libmoe
-		  (setq accept-charset (list "euc-jp")))
-		 ((string= charset "s")	;; w3mee without libmoe
-		  (setq accept-charset (list "shift-jis")))
-		 ((string= charset "n")	;; w3mee without libmoe
-		  (setq accept-charset (list "iso-2022-7bit")))
-		 (t				;; w3mee with libmoe
-		  (setq accept-charset (list charset))))))
-	    (setq forms
-		  (cons
-		   (w3m-form-new
-		    (or method "get")
-		    (or 
-		     action
-		     (and w3m-current-url
-			  (string-match w3m-url-components-regexp 
-					w3m-current-url)
-			  (substring w3m-current-url 0
-				     (or (match-beginning 6)
-					 (match-beginning 8)))))
-		    nil
-		    accept-charset)
-		   forms)))))
+	    (setq form (car forms)))))
        ((string= tag "map")
 	(let (candidates)
 	  (w3m-parse-attributes (name)
@@ -339,8 +337,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
        ((string= tag "img_alt")
  	(w3m-parse-attributes (usemap)
  	  (re-search-forward (w3m-tag-regexp-of "/img_alt") nil t)
-	  (unless maps (setq maps (w3m-form-new "map" ".")))
  	  (when usemap
+	    (unless maps (setq maps (w3m-form-new "map" ".")))
  	    (add-text-properties
  	     start (match-beginning 0)
  	     `(face w3m-form-face
@@ -364,8 +362,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	  (save-excursion
 	    (search-forward "</input_alt>")
 	    (setq end (match-beginning 0)))
-	  (let ((form (car forms))
-		(abs-hseq (or (and (null hseq) 0) (abs hseq))))
+	  (let ((abs-hseq (or (and (null hseq) 0) (abs hseq))))
 	    (setq w3m-max-anchor-sequence 
 		  (max abs-hseq w3m-max-anchor-sequence))
 	    (when form
@@ -374,7 +371,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		     (string= name "link"))
 		;; Do nothing.
 		)
-	       ((string= type "submit")
+	       ((or (string= type "submit")
+		    (string= type "image"))
 		(unless (string= no_effect "true")
 		  (w3m-form-make-button
 		   start end

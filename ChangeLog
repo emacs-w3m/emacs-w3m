@@ -1,3 +1,10 @@
+2002-03-15  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-form.el (w3m-form-parse-and-fontify): Set the value of form 
+	only if the method is not internal;
+	Add internal form to the w3m-current-forms;
+	Treat input type `image' as same as `submit'.
+
 2002-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-form.el (w3m-form-resume): Typo.
