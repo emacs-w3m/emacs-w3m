@@ -143,7 +143,9 @@ This variable effected only XEmacs or Emacs 21."
 	 (w3m-region begin end))
 	(t		;; Old Mew
 	 (setq charset (or (mew-syntax-get-param params "charset")
-			   (mew-charset-guess-region begin end)))
+			   (save-excursion
+			     (set-buffer cache)
+			     (mew-charset-guess-region begin end))))
 	 (if charset
 	     (setq wcs (mew-charset-to-cs charset))
 	   (setq wcs mew-cs-text-for-write))

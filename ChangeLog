@@ -1,3 +1,8 @@
+2001-08-09  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* mew-w3m.el (mew-mime-text/html-w3m): Bug fix. Guess charset in
+	cache buffer.
+
 2001-08-07  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-type): Remove `w3m-mnc' option.
