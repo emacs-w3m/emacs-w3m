@@ -68,11 +68,37 @@ but do not execute them.")
 
 (require 'cl)
 
-;; This file called from Makefile with "/bin/sh" on environment
-;; variable of "SHELL".
-;; However not necessarily have "/bin/sh" in win32 environment.
-(when (eq system-type 'windows-nt)
-  (setq shell-file-name "cmdproxy.exe"))
+;; Check whether the shell command can be used.
+(let ((test (lambda nil
+	      (let ((buffer (generate-new-buffer " *temp*"))
+		    (msg "Hello World"))
+		(save-excursion
+		  (set-buffer buffer)
+		  (condition-case nil
+		      (call-process shell-file-name
+				    nil t nil "-c"
+				    (concat "MESSAGE=\"" msg "\"&&"
+					    "echo \"${MESSAGE}\""))
+		    (error))
+		  (prog2
+		      (goto-char (point-min))
+		      (search-forward msg nil t)
+		    (kill-buffer buffer)))))))
+  (or (funcall test)
+      (progn
+	(require 'executable)
+	(setq shell-file-name (executable-find "cmdproxy"))
+	(funcall test))
+      (progn
+	(setq shell-file-name (executable-find "sh"))
+	(funcall test))
+      (progn
+	(setq shell-file-name (executable-find "bash"))
+	(funcall test))
+      (error "\
+There is no shell command which is equivalent to /bin/sh.  Try
+``make SHELL=foo [option...]'', where `foo' is the absolute path name
+for the proper shell command in your system.")))
 
 (unless (dolist (var nil t))
   ;; Override the macro `dolist' which may have been defined in egg.el.

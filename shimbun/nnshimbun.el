@@ -45,7 +45,25 @@
 (require 'nnoo)
 (require 'nnheader)
 (require 'nnmail)
-(require 'gnus-bcklg)
+
+;; In some platforms, to load gnus-bcklg.el might fail because of the
+;; reason `shell-file-name' has been set mistakenly or the reason the
+;; uncompface program is not available.  That is due to the code which
+;; determines the default value of `gnus-article-compface-xbm'.  See
+;; gnus-ems.el which has been distributed with Emacs 21.1-21.4.  So,
+;; we take the following countermeasure to load gnus-bcklg.el safely.
+(eval-and-compile
+  (condition-case err
+      (require 'gnus-bcklg)
+    (error
+     (if (fboundp 'shell-command-to-string)
+	 (let ((fn (symbol-function 'shell-command-to-string)))
+	   (fset 'shell-command-to-string (lambda (command) ""))
+	   (unwind-protect
+	       (require 'gnus-bcklg)
+	     (fset 'shell-command-to-string fn)))
+       (signal (car err) (cdr err))))))
+
 (require 'shimbun)
 (eval-and-compile
   (autoload 'gnus-declare-backend "gnus-start")
