@@ -4892,8 +4892,8 @@ kantei.m-magazine-en kantei.m-magazine-ja
 jpo.news jpo.revision jpo.lawguide jpo.details
 
 @item @uref{http://www-6.ibm.com/jp/developerworks/, IBM developerWorks} (in Japanese)
-ibm-dev.java ibm-dev.linux ibm-dev.opensource ibm-dev.webservices
-ibm-dev.xml
+ibm-dev.autonomic ibm-dev.java ibm-dev.linux ibm-dev.opensource
+ibm-dev.webservices ibm-dev.xml
 
 @item @uref{http://muchy.com/, Muchy's Palmware Review!}
 muchy.review
