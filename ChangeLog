@@ -2,7 +2,7 @@
 
 	* w3m.el (w3m-info-like-map): Bind the `y' key to the
 	w3m-print-current-url command; bind the `Y' key to the
-	w3m-print-this-url key; don't bind the `c' key.
+	w3m-print-this-url command; don't bind the `c' key.
 
 	* shimbun/sb-impress.el (shimbun-make-contents): Fix broken image
 	tags.
