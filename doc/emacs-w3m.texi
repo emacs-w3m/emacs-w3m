@@ -1824,6 +1824,8 @@ safe (that is, you can display such images without modifying the
 @code{mm-w3m-safe-url-regexp} variable).
 @end itemize
 
+See also @ref{Nnshimbun}.
+
 @node Mew
 @section Reading HTML mails in Mew
 
@@ -1846,8 +1848,17 @@ You simply need to put the following line in @file{~/.emacs} file:
 
 As the @code{mime-w3m} module rhymes with the @code{mime-w3} module by
 those names (the later is included in the @sc{semi} package), both are
-functionally alike.  There are some customizable variables related to
-the @code{mime-w3m} module:
+functionally alike.
+
+On HTML parts of an article buffer, the @code{w3m-minor-mode} is turned
+on and you can use the same main keys as the keys of emacs-w3m, for
+instance, @key{RET} is for visiting a page which a link in the current
+position points to.  Those keys are defined in the
+@code{w3m-minor-mode-command-alist} variable.  Keep in mind that some
+commands are replaced by others similar to them, for security reasons.
+
+There are some customizable variables related to the @code{mime-w3m}
+module:
 
 @table @code
 @item mime-w3m-display-inline-images
@@ -1867,6 +1878,8 @@ rogue attacks.
 A hook run just after setting up the cooperation of the @code{mime-w3m}
 module and @sc{semi}.  The default value is @code{nil}.
 @end table
+
+See also @ref{Nnshimbun} if you are using T-gnus or Nana-gnus.
 
 @node Frequently Asked Questions
 @chapter There isn't always an answer

@@ -1936,6 +1936,8 @@ Gnus $B$,>!<j$K(B spammer $B$N%5%$%H$K@\B3$9$k$3$H$O$"$j$^$;$s!#(B
 $B$7$J$/$F$b!"$=$N$h$&$J2hA|$OI=<($9$k$3$H$,$G$-$^$9(B)$B!#(B
 @end itemize
 
+@ref{Nnshimbun} $B$b;2>H$7$F2<$5$$!#(B
+
 @node Mew
 @section Mew $B$G(B HTML $B%a!<%k$rFI$`(B
 
@@ -1958,8 +1960,17 @@ Emacs-w3m $B$H(B @sc{semi} MUA$B!"Nc$($P(B Wanderlust $B$d(B T-gnus $B$J$
 
 @code{mime-w3m} $B%b%8%e!<%k$,(B @code{mime-w3} $B%b%8%e!<%k$K1$$rF'$s$G$$$k$h(B
 $B$&$K(B ($B8e<T$O(B @sc{semi} $B%Q%C%1!<%8$K4^$^$l$F$$$^$9(B)$B!"N><T$O5!G=E*$K;w$F$$(B
-$B$^$9!#(B@code{mime-w3m} $B%b%8%e!<%k$K4XO"$9$k$$$/$D$+$N%+%9%?%^%$%:2DG=$JJQ(B
-$B?t$,$"$j$^$9(B:
+$B$^$9!#(B
+
+$B5-;v%P%C%U%!$N(B HTML $B$NItJ,$G$O(B @code{w3m-minor-mode} $B$,(B on $B$K$J$C$F!"(B
+emacs-w3m $B$N$HF1$8<gMW$J%-!<$r;H$&$3$H$,$G$-$^$9!#Nc$($P(B @key{RET} $B$O!"(B
+$B8=:_0LCV$N%j%s%/$,;X$7<($9%Z!<%8$K9T$-$^$9!#$=$l$i$N%-!<$OJQ(B
+$B?t(B @code{w3m-minor-mode-command-alist} $B$GDj5A$5$l$F$$$^$9!#J]0B>e$NM}M3(B
+$B$+$i!"$$$/$D$+$N%3%^%s%I$O$=$l$K;w$?JL$N%3%^%s%I$GCV$-49$($i$l$F$$$k$3$H(B
+$B$r?4$KN1$a$F$*$$$F2<$5$$!#(B
+
+@code{mime-w3m} $B%b%8%e!<%k$K4XO"$9$k$$$/$D$+$N%+%9%?%^%$%:2DG=$JJQ?t$,$"(B
+$B$j$^$9(B:
 
 @table @code
 @item mime-w3m-display-inline-images
@@ -1978,6 +1989,8 @@ Emacs-w3m $B$H(B @sc{semi} MUA$B!"Nc$($P(B Wanderlust $B$d(B T-gnus $B$J$
 @code{mime-w3m} $B%b%8%e!<%k$H(B @sc{SEMI} $B$N6/D4F0:n$r@_Dj$7$?D>8e$K<B9T$5(B
 $B$l$k%U%C%/$G$9!#%G%U%)%k%H$O(B @code{nil} $B$G$9!#(B
 @end table
+
+T-gnus $B$+(B Nana-gnus $B$r$*;H$$$J$i$P(B @ref{Nnshimbun} $B$b;2>H$7$F2<$5$$!#(B
 
 @node Frequently Asked Questions
 @chapter $BI,$:Ez$,$"$k$H$O8B$i$J$$(B
