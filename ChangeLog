@@ -1,3 +1,9 @@
+2001-04-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* Makefile.in (default): Depends `Makefile'.
+	(Makefile): Removed `--recheck' option in order to re-create
+	itself when `Makefile.in' or `config.status' is updated.
+
 2001-04-05  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (top): Define w3m-read-coding-system().
