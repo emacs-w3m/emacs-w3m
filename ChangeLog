@@ -1,3 +1,16 @@
+2002-05-28  Kenichi SATO <ksato@iijmio-mail.jp>
+
+	* sb-zdnet.el (shimbun-zdnet-group-url-alist): Abolishded.
+	(shimbun-zdnet-group-alist): New variable.
+	(shimbun-zdnet-groups): Refer `shimbun-zdnet-group-alist'.
+	(shimbun-index-url): Ditto.
+	(shimbun-zdnet-content-end): Relaxed.
+	(shimbun-zdnet-comp-get-headers): Removed.
+	(shimbun-zdnet-gamespot-get-headers): Ditto.
+	(shimbun-get-headers): Reimplemented.
+	(shimbun-make-contents): Remove links and images at
+	`ad.zdnet.co.jp'.
+
 2002-05-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-geocrawler.el (shimbun-geocrawler-add-group): Clean up.
