@@ -7,6 +7,14 @@
 	`mode-line-buffer-identification' not to show favicon if
 	`w3m-show-graphic-icons-in-mode-line' is nil.
 
+	* w3m-e21.el: Bind `w3m-show-graphic-icons-in-header-line' and
+	`w3m-show-graphic-icons-in-mode-line' when compiling.
+	(w3m-tab-line): Don't show spinners nor favicons if
+	`w3m-show-graphic-icons-in-header-line' is nil; call
+	`w3m-make-spinner-image' only once.
+	(w3m-initialize-graphic-icons): Don't make graphic icons if
+	`w3m-show-graphic-icons-in-mode-line' is nil.
+
 	* w3m-xmas.el: Bind `w3m-show-graphic-icons-in-mode-line' when
 	compiling.
 	(w3m-initialize-graphic-icons): Don't make graphic icons if
