@@ -79,11 +79,6 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
   (add-hook hook function append t))
 
 ;;; Image handling functions.
-(defcustom w3m-imagick-convert-program (w3m-which-command "convert")
-  "*Program name of ImageMagick's `convert'."
-  :group 'w3m
-  :type 'string)
-
 (defcustom w3m-resize-images (and w3m-imagick-convert-program t)
   "*If non-nil, resize images to the specified width and height."
   :group 'w3m
@@ -103,17 +98,6 @@ circumstances."
   (and w3m-display-inline-images (display-images-p)))
 
 ;;; Asynchronous image conversion.
-(defun w3m-resize-image (handler data width height)
-  (w3m-process-do
-      (result (w3m-imagick-start-convert-data
-	       handler
-	       data nil nil "-geometry"
-	       (concat (number-to-string width)
-		       "x"
-		       (number-to-string height)
-		       "!")))
-    result))
-
 (defun w3m-imagick-start-convert-data (handler
 				       data from-type to-type &rest args)
   (w3m-process-do-with-temp-buffer
@@ -171,6 +155,17 @@ circumstances."
 	  (w3m-process-start-after exit-status))
       (w3m-process-start-after
        (apply 'call-process w3m-command nil t nil arguments)))))
+
+(defun w3m-resize-image (handler data width height)
+  (w3m-process-do
+      (result (w3m-imagick-start-convert-data
+	       handler
+	       data nil nil "-geometry"
+	       (concat (number-to-string width)
+		       "x"
+		       (number-to-string height)
+		       "!")))
+    result))
 
 (defun w3m-create-image (url &optional no-cache referer size handler)
   "Retrieve data from URL and create an image object.
@@ -401,39 +396,6 @@ Buffer string between BEG and END are replaced with IMAGE."
 (make-variable-buffer-local 'w3m-current-favicon-data)
 (make-variable-buffer-local 'w3m-current-favicon-image)
 (add-hook 'w3m-display-hook 'w3m-setup-favicon)
-
-(defun w3m-imagick-convert-buffer (from-type to-type &rest args)
-  (when w3m-imagick-convert-program
-    (let* ((coding-system-for-read 'binary)
-	   (coding-system-for-write 'binary)
-	   (default-process-coding-system (cons 'binary 'binary))
-	   (return (apply 'call-process-region
-			  (point-min) (point-max)
-			  w3m-imagick-convert-program
-			  t t nil (append args (list 
-						(concat
-						 (if from-type
-						     (concat from-type ":"))
-						 "-")
-						(concat
-						 (if to-type
-						     (concat to-type ":"))
-						 "-"))))))
-      (if (and (numberp return)
-	       (zerop return))
-	  t
-	(message "Image conversion failed (code `%s')"
-		 (if (stringp return)
-		     (string-as-multibyte return)
-		   return))
-	nil))))
-
-(defun w3m-imagick-convert-data (data from-type to-type &rest args)
-  (with-temp-buffer
-    (set-buffer-multibyte nil)
-    (insert data)
-    (and (apply 'w3m-imagick-convert-buffer from-type to-type args)
-	 (buffer-string))))
 
 (defun w3m-imagick-convert-usable-p ()
   "Check whether ImageMagick's `convert' supports a Windoze ico format in

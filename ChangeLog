@@ -1,3 +1,32 @@
+2002-04-04  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
+
+	* w3m-e21.el (w3m-imagick-convert-program): Move to w3m-util.el.
+	(w3m-imagick-convert-buffer): Ditto.
+	(w3m-imagick-convert-data): Ditto.
+
+	* w3m-util.el (w3m-imagick-convert-program): Move from w3m-e21.el.
+	(w3m-imagick-convert-buffer): Ditto.
+	(w3m-imagick-convert-data): Ditto.
+
+	* w3m-e20.el (w3m-bitmap-image-cache-alist): New variable.
+	(w3m-bitmap-image-use-cache): Ditto.
+	(w3m-bitmap-image-cleanup): New function.
+	(w3m-bitmap-image-buffer): Ditto.
+	(w3m-bitmap-image-get-overlay): Ditto.
+	(w3m-bitmap-image-insert-internal): Ditto.
+	(w3m-bitmap-image-insert): Ditto.
+	(w3m-bitmap-image-insert-string): Ditto.
+	(w3m-bitmap-image-delete-internal): Ditto.
+	(w3m-bitmap-image-delete): Ditto.
+	(w3m-bitmap-image-delete-string): Ditto.
+	(w3m-bitmap-image-add-text-properties): Ditto.
+	(w3m-display-graphic-p): New implementation. 
+	(w3m-display-inline-images-p): Ditto.
+	(w3m-image-type-available-p): Ditto.
+	(w3m-create-image): New implementation. It use w3m-bitmap-image-*.
+	(w3m-insert-image): Ditto.
+	(w3m-remove-image): Ditto.
+
 2002-04-03  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-fontify): Put invisible and intangible properties at
