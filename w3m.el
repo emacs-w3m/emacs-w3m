@@ -1740,7 +1740,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	(list (or type (w3m-local-content-type url))
 	      charset
 	      (let ((v (cdr (assoc "content-length" alist))))
-		(and v (string-to-number v)))
+		(and v (setq v (string-to-number v)) (> v 0) v))
 	      (cdr (assoc "content-encoding" alist))
 	      (let ((v (cdr (assoc "last-modified" alist))))
 		(and v (w3m-time-parse-string v)))
