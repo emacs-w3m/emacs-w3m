@@ -141,7 +141,7 @@ If no field in forward, return nil without moving."
 		file type)
 	    (setq buf (nreverse buf))
 	    (cons
-	     (concat "multipart-form-data; boundary=" boundary)
+	     (concat "multipart/form-data; boundary=" boundary)
 	     (with-temp-buffer
 	       (while buf
 		 (if (and (consp (cdr (car buf)))
@@ -545,11 +545,10 @@ If no field in forward, return nil without moving."
   (w3m-form-replace "*"))
 
 (defun w3m-form-input-file (form name value)
-  (let ((input (call-interactively 
-		(lambda (f) (interactive "fFile name: ") f))))
-    (w3m-form-put form name (or
-			     (w3m-form-get form name)
-			     (cons 'file input)))
+  (let ((input (read-file-name "File name: "
+			       (or (cdr (w3m-form-get form name))
+				   "~/"))))
+    (w3m-form-put form name (cons 'file input))
     (w3m-form-replace input)))
 
 ;;; TEXTAREA
