@@ -1,3 +1,18 @@
+2002-08-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-delete-buffer-hook): Change its default value.
+	(w3m-change-buffer-hook): New option.
+	(w3m-delete-other-buffers-hook, w3m-previous-buffer-hook,
+	w3m-next-buffer-hook): Abolished.
+	(w3m-next-buffer): Run `w3m-change-buffer-hook' instead of
+	`w3m-next-buffer-hook'.
+	(w3m-previous-buffer): Run `w3m-change-buffer-hook' instead of
+	`w3m-previous-buffer-hook'.
+	(w3m-delete-buffer): Not call `w3m-select-buffer-update', which is
+	added to `w3m-delete-buffer-hook'.
+	(w3m-delete-other-buffers): Likewise.  Run
+	`w3m-delete-buffer-hook' instead of `w3m-delete-other-buffers-hook'.
+
 2002-08-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (toplevel): Remove expressions to register hook functions
@@ -51,7 +66,7 @@
 	(w3m-delete-buffer-hook): Ditto.
 	(w3m-delete-other-buffers-hook): Ditto.
 	(w3m-tab-width): Changed default value to 16.
-	(w3m-tab-line): Calculate tab width dinamically.
+	(w3m-tab-line): Calculate tab width dynamically.
 
 2002-08-27  Hideyuki SHIRAI  <shirai@meadowy.org>
 

@@ -720,28 +720,17 @@ of the original request method. -- RFC2616"
   :type 'hook)
 
 (defcustom w3m-delete-buffer-hook
-  (cons 'w3m-pack-buffer-numbers
-	(when (featurep 'w3m-e21) '(w3m-update-tab-line)))
-  "*Hook run at the end of `w3m-delete-buffer'"
+  (nconc
+   '(w3m-pack-buffer-numbers
+     w3m-select-buffer-update)
+   (when (featurep 'w3m-e21) '(w3m-update-tab-line)))
+  "*Hook run when w3m buffer is deleted."
   :group 'w3m
   :type 'hook)
 
-(defcustom w3m-delete-other-buffers-hook
-  (cons 'w3m-pack-buffer-numbers
-	(when (featurep 'w3m-e21) '(w3m-update-tab-line)))
-  "*Hook run at the end of `w3m-delete-other-buffers'"
-  :group 'w3m
-  :type 'hook)
-
-(defcustom w3m-previous-buffer-hook
-  (when (featurep 'w3m-e21) '(w3m-update-tab-line))
-  "*Hook run at the end of `w3m-previous-buffer'"
-  :group 'w3m
-  :type 'hook)
-
-(defcustom w3m-next-buffer-hook
-  (when (featurep 'w3m-e21) '(w3m-update-tab-line))
-  "*Hook run at the end of `w3m-next-buffer'"
+(defcustom w3m-change-buffer-hook
+  (when (featurep 'w3m-e21) '(w3m-update-tab-line)))
+  "*Hook run when w3m buffer is changed."
   :group 'w3m
   :type 'hook)
 
@@ -4651,7 +4640,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (switch-to-buffer
      (or (cadr (memq (current-buffer) buffers))
 	 (car buffers))))
-  (run-hooks 'w3m-next-buffer-hook))
+  (run-hooks 'w3m-change-buffer-hook))
 
 (defun w3m-previous-buffer ()
   "Switch to previous w3m buffer."
@@ -4660,7 +4649,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (switch-to-buffer
      (or (cadr (memq (current-buffer) buffers))
 	 (car buffers))))
-  (run-hooks 'w3m-previous-buffer-hook))
+  (run-hooks 'w3m-change-buffer-hook))
 
 (defun w3m-delete-buffer (&optional force)
   "Delete w3m buffer and switch to previous w3m buffer if exists."
@@ -4669,8 +4658,7 @@ If EMPTY is non-nil, the created buffer has empty content."
       (w3m-quit force)
     (let ((buffer (current-buffer)))
       (w3m-previous-buffer)
-      (kill-buffer buffer))
-    (w3m-select-buffer-update))
+      (kill-buffer buffer)))
   (run-hooks 'w3m-delete-buffer-hook))
 
 (defun w3m-pack-buffer-numbers ()
@@ -4701,8 +4689,7 @@ The optional argument BUFFER will be used exclusively by the command
 	  (delete-window window)))
       ;; Kill a buffer.
       (kill-buffer buffer)))
-  (w3m-select-buffer-update)
-  (run-hooks 'w3m-delete-other-buffers-hook))
+  (run-hooks 'w3m-delete-buffer-hook))
 
 (defvar w3m-lynx-like-map nil
   "Lynx-like keymap used in w3m-mode buffers.")
