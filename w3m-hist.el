@@ -747,10 +747,11 @@ renaming will be done for all the w3m buffers."
   (defvar w3m-arrived-db)
   (autoload 'w3m-goto-url "w3m"))
 
-(defun w3m-history-add-arrived-db ()
+(defun w3m-history-add-arrived-db (&optional clear-history)
   "Add the arrived database to the history structure unreasonably.
-It's only a joke, you should NEVER use it."
-  (interactive)
+If arg CLEAR-HISTORY is given, the current history will be cleared
+in advance.  It's only a joke, you should NEVER use it."
+  (interactive "P")
   (unless (eq 'w3m-mode major-mode)
     (error "`%s' must be invoked from a w3m buffer." this-command))
   (when (and w3m-arrived-db
@@ -758,8 +759,9 @@ It's only a joke, you should NEVER use it."
 		 (yes-or-no-p
 		  "Are you sure you really want to destroy the history? ")
 	       (message "")))
-    (when w3m-history
-      (w3m-history-push (car (w3m-history-current-1 '(0)))))
+    (when clear-history
+      (setq w3m-history nil
+	    w3m-history-flat nil))
     (let (url title)
       (mapatoms
        (function
@@ -769,7 +771,10 @@ It's only a joke, you should NEVER use it."
 		  title (get symbol 'title))
 	    (w3m-history-push url (when title
 				    (list ':title title)))
-	    (w3m-history-backward (random 2) t))))
+	    (w3m-history-push
+	     (car (w3m-history-current-1
+		   (caddr (nth (random (length w3m-history-flat))
+			       w3m-history-flat))))))))
        w3m-arrived-db))
     (w3m-goto-url "about://history/")))
 

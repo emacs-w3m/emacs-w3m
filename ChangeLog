@@ -1,5 +1,7 @@
 2001-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-hist.el (w3m-history-add-arrived-db): Improve the madness.
+
 	* w3m.el (w3m-about-history): Add small indentation to sub trees.
 
 2001-05-17  Hideyuki SHIRAI  <shirai@meadowy.org>
