@@ -128,10 +128,13 @@
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Subject: +")
 		(shimbun-header-set-subject header
-					    (shimbun-header-field-value))
+					    (shimbun-mime-encode-string
+					     (shimbun-header-field-value)))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "From: +")
-		(shimbun-header-set-from header (shimbun-header-field-value))
+		(shimbun-header-set-from header
+					 (shimbun-mime-encode-string
+					  (shimbun-header-field-value)))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Date: +")
 		(shimbun-header-set-date header (shimbun-header-field-value))

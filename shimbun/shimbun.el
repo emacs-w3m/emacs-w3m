@@ -359,8 +359,8 @@ HEADER is a header structure obtained via `shimbun-headers'.")
   (mapconcat
    #'identity
    (split-string (or (eword-encode-string
-		      (shimbun-decode-entities-string string)) "") "\n")
-   ""))
+		      (shimbun-decode-entities-string string)) ""))
+   " "))
 
 (defun shimbun-make-date-string (year month day &optional time)
   (format "%02d %s %04d %s +0900"

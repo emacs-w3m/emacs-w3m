@@ -1,3 +1,13 @@
+2001-05-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el (shimbun-mime-encode-string): Replace all
+	spacing characters to a single white character.
+
+	* shimbun/sb-mhonarc.el (shimbun-make-contents): Subject field and
+	from field are MIME-encoded before they are stored.
+
+	* shimbun/sb-fml.el (shimbun-make-contents): Ditto.
+
 2001-05-30  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-file-name-coding-system): New customizable value.

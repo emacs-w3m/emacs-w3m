@@ -120,9 +120,10 @@
 		    (setq value-beg (point))
 		    (search-forward "</SPAN>" nil t)
 		    (setq end (point)))
-	  (setq value (buffer-substring value-beg
-					(progn (search-backward "</SPAN>")
-					       (point))))
+	  (setq value (shimbun-mime-encode-string
+		       (buffer-substring value-beg
+					 (progn (search-backward "</SPAN>")
+						(point)))))
 	  (delete-region start end)
 	  (cond ((string= field "Date")
 		 (shimbun-header-set-date header value))
