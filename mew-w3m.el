@@ -48,7 +48,7 @@
 ;;
 ;; (define-key mew-summary-mode-map "T" 'mew-w3m-view-inline-image)
 ;;
-;; Press "T": Display the images included its message only.
+;; Press "T":    Toggle the visibility of the images included its message only.
 ;; Press "C-uT": Display the all images included its Text/Html part."
 ;;
 ;; (4) You can use emacs-w3m to fetch and/or browse
@@ -136,8 +136,15 @@ This variable effected only XEmacs or Emacs 21."
        (let ((mew-w3m-auto-insert-image t)
 	     (mew-w3m-use-safe-url-regexp nil))
 	 (mew-summary-display 'force))
-     (let ((mew-w3m-auto-insert-image (not mew-w3m-auto-insert-image)))
-       (mew-summary-display 'force)))))
+     (save-excursion
+       (set-buffer (mew-buffer-message))
+       (let* ((image (get-text-property (point-min) 'w3m-images))
+	      (w3m-display-inline-images image))
+	 (w3m-toggle-inline-images)
+	 (mew-elet
+	  (put-text-property (point-min) (1+ (point-min))
+			     'w3m-images (not image))
+	  (set-buffer-modified-p nil)))))))
 
 ;; processing Text/Html contents with w3m.
 (defun mew-mime-text/html-w3m (&rest args)
@@ -213,7 +220,10 @@ This variable effected only XEmacs or Emacs 21."
 		      (progn (insert-buffer-substring cache begin end)
 			     (point))
 		      xref))))
-       (put-text-property (point-min) (1+ (point-min)) 'w3m t)))))
+       (put-text-property (point-min) (1+ (point-min)) 'w3m t)
+       (put-text-property (point-min) (1+ (point-min))
+			  'w3m-images mew-w3m-auto-insert-image)))))
+
 
 (defvar w3m-mew-support-cid (and (boundp 'mew-version-number)
 				 (fboundp 'mew-syntax-get-entry-by-cid)))

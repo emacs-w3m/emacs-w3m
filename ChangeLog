@@ -1,3 +1,11 @@
+2003-12-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-w3m-view-inline-image): Use `w3m-toggle-inline-images'.
+	(mew-mime-text/html-w3m): Put the `w3m-images' text property in
+	the message buffer.
+
+	* w3m-util.el (w3m-find-w3m-buffer): Fix for Mew.
+
 2003-12-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-toggle-inline-images): Wrap it with

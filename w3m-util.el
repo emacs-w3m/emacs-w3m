@@ -827,8 +827,7 @@ buffer is selected), return the current buffer."
 		      (end (point-max)))
 		  (or (text-property-any start end ;; Gnus
 					 'mm-inline-text-html-with-w3m t)
-		      (and (eq major-mode 'mew-message-mode) ;; Mew
-			   (text-property-any start end 'w3m t))
+		      (eq major-mode 'mew-message-mode) ;; Mew
 		      (text-property-any start end ;; SEMI MUAs
 					 'text-rendered-by-mime-w3m t)
 		      (text-property-any start end ;; VM
@@ -839,7 +838,8 @@ buffer is selected), return the current buffer."
 	(setq buffer
 	      (cond ((eq major-mode 'gnus-summary-mode)
 		     (symbol-value 'gnus-article-buffer))
-		    ((memq major-mode '(mew-summary-mode mew-virtual-mode))
+		    ((memq major-mode '(mew-summary-mode mew-virtual-mode
+							 mew-message-mode))
 		     (eval '(mew-buffer-message)))
 		    ((eq major-mode 'wl-summary-mode)
 		     (symbol-value 'wl-message-buffer))
