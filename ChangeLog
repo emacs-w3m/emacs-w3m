@@ -1,5 +1,7 @@
 2002-02-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-slashdot-jp.el: All stuffs are rewritten.
+
 	* shimbun/sb-mhonarc.el (shimbun-make-contents): Modified regexp.
 
 2002-02-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
