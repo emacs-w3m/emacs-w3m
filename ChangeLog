@@ -1,16 +1,21 @@
+2003-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* doc/Makefile.in (install): Don't run install-info for non-
+	existent info files.
+
 2003-06-20  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-rss.el (shimbun-rss-build-message-id): Add new arg
 	DATE.
 	(shimbun-get-headers): Call `shimbun-rss-build-message-id' with
 	new arg DATE.
-	
+
 	* shimbun/sb-bbc-rss.el (shimbun-rss-build-message-id): Add new
 	arg DATE.
 	* shimbun/sb-slashdot-jp-rss.el (shimbun-rss-build-message-id): Ditto.
 	* shimbun/sb-cnet-rss.el (shimbun-rss-build-message-id): Ditto.
 	* shimbun/sb-atmarkit-rss.el (shimbun-rss-build-message-id): Ditto.
-	
+
 	* shimbun/sb-pukiwiki-rss.el: New file.
 
 2003-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
