@@ -1,5 +1,8 @@
 2001-04-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
+	* w3m.el (w3m-w3m-attributes): When content type has trailing
+	semicolon, make it removed.
+
 	* shimbun/shimbun.el (TopLevel): Some redundant codes are removed.
 
 	* w3mhack.el (load-path): Add `shimbun' sub-directory.
