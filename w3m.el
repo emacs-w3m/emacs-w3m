@@ -574,6 +574,11 @@ allows a kludge that it can also be a plist of frame properties."
 			       (sexp :tag "Value")))
 		 plist))
 
+(defcustom w3m-mbconv-command "mbconv"
+  "*Command name for \"mbconv\" be supplied with \"libmoe\"."
+  :group 'w3m
+  :type 'string)
+
 (defcustom w3m-local-directory-view-method 'w3m-cgi
   "*View method in local directory.
 If 'w3m-cgi, display directory tree by the use of w3m's dirlist.cgi.
@@ -1933,6 +1938,11 @@ If the user enters null input, return second argument DEFAULT."
 			    (re-search-forward
 			     w3m-meta-charset-content-type-regexp nil t))
 		    (match-string-no-properties 2)))))))
+  (when (and (eq w3m-type 'w3mmee)
+	     (or (and (stringp content-charset)
+		      (string= "x-moe-internal" (downcase content-charset)))
+		 (eq content-charset 'x-moe-internal)))
+    (setq content-charset (w3m-x-moe-decode-buffer)))
   (decode-coding-region
    (point-min) (point-max)
    (if content-charset
@@ -1943,6 +1953,23 @@ If the user enters null input, return second argument DEFAULT."
 	 codesys))))
   (set-buffer-multibyte t))
 
+(defun w3m-x-moe-decode-buffer ()
+  (let ((args '("-i" "-cs" "x-moe-internal"))
+	(coding-system-for-read 'binary)
+	(coding-system-for-write 'binary)
+	(default-process-coding-system (cons 'binary 'binary))
+	(process-environment process-environment)
+	charset)
+    (dolist (elem w3m-process-environment)
+      (setenv (car elem) (cdr elem)))
+    (if (w3m-find-coding-system 'utf-8)
+	(setq args (append args '("-o" "-cs" "utf-8"))
+	      charset 'utf-8)
+      (setq args (append args '("-o" "-cs" "euc-jp")))
+      (setq charset 'euc-jp))
+    (apply 'call-process-region (point-min) (point-max)
+	   w3m-mbconv-command t t nil args)
+    charset))
 
 ;;; Retrieve local data:
 (defun w3m-local-content-type (url)

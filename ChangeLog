@@ -1,3 +1,17 @@
+2001-07-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-mbconv-command): New customize variable.
+	(w3m-decode-buffer): If charset equal 'x-moe-internal', call
+	w3m-x-moe-decode-buffer().
+	(w3m-x-moe-decode-buffer): New funcion. A coding-system of
+	buffer converts 'x-moe-internal' to usual coding-system for
+	emacsen.
+
+	* w3m-form.el (w3m-form-parse-region): If charset equal
+	'x-moe-internal', call w3m-x-moe-decode-buffer().
+	(w3m-form-parse-forms): Handles value of 'charset', if w3m-type eq
+	'w3mmee.
+
 2001-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-byte-optimize-letX): Remove

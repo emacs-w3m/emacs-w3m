@@ -149,6 +149,16 @@ If no field in forward, return nil without moving."
 	  (let ((str (buffer-string)))
 	    (with-temp-buffer
 	      (insert str)
+	      (goto-char (point-min))
+	      (when (and (eq w3m-type 'w3mmee)
+			 (or (re-search-forward
+			      w3m-meta-content-type-charset-regexp nil t)
+			     (re-search-forward
+			      w3m-meta-charset-content-type-regexp nil t))
+			 (string= "x-moe-internal"
+				  (downcase
+				   (match-string-no-properties 2))))
+		(setq charset (w3m-x-moe-decode-buffer)))
 	      (decode-coding-region (point-min) (point-max)
 				    (or (w3m-charset-to-coding-system charset)
 					'undecided))
@@ -168,11 +178,23 @@ If no field in forward, return nil without moving."
     (while (re-search-forward (w3m-tag-regexp-of "form") nil t)
       (goto-char (match-end 1))
       ;; Parse attribute of FORM tag
-      ;; accept-charset = charset list
+      ;; accept-charset <= charset,charset,...
+      ;; charset <= valid only w3mmee with frame
       (w3m-parse-attributes (action (method :case-ignore)
-				    (accept-charset :case-ignore))
-	(when accept-charset
-	  (setq accept-charset (split-string accept-charset ",")))
+				    (accept-charset :case-ignore)
+				    (charset :case-ignore))
+	(if accept-charset
+	    (setq accept-charset (split-string accept-charset ","))
+	  (when (and charset (eq w3m-type 'w3mmee))
+	    (cond
+	     ((string= charset "e")	;; w3mee without libmoe
+	      (setq accept-charset (list "euc-jp")))
+	     ((string= charset "s")	;; w3mee without libmoe
+	      (setq accept-charset (list "shift-jis")))
+	     ((string= charset "n")	;; w3mee without libmoe
+	      (setq accept-charset (list "iso-2022-7bit")))
+	     (t				;; w3mee with libmoe
+	      (setq accept-charset (list charset))))))
 	(setq forms
 	      (cons (w3m-form-new (or method "get")
 				  (or action w3m-current-url)
