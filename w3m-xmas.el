@@ -38,6 +38,7 @@
 (require 'w3m-util)
 (require 'w3m-proc)
 (require 'w3m-image)
+(require 'w3m-favicon)
 (eval-and-compile
   (when (featurep 'mule)
     (require 'w3m-ccl)))

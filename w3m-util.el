@@ -379,6 +379,27 @@ START and END are lists which represent time in Emacs-style."
      (cadr end)
      (- (cadr start))))
 
+(defalias 'w3m-float-time
+  (if (fboundp 'float-time)
+      'float-time
+    (lambda (&optional specified-time)
+      "Return the current time, as a float number of seconds since the epoch.
+If an argument is given, it specifies a time to convert to float
+instead of the current time.  The argument should have the forms:
+ (HIGH . LOW) or (HIGH LOW USEC) or (HIGH LOW . USEC).
+
+WARNING: Since the result is floating point, it may not be exact.
+Do not use this function if precise time stamps are required."
+      (let ((time (or specified-time (current-time))))
+	(+ (* (car time) 65536.0)
+	   (cadr time)
+	   (cond ((consp (setq time (cddr time)))
+		  (/ (car time) 1000000.0))
+		 (time
+		  (/ time 1000000.0))
+		 (t
+		  0)))))))
+
 (defsubst w3m-url-local-p (url)
   "If URL points a file on the local system, return non-nil value.
 Otherwise return nil."

@@ -295,6 +295,8 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	  (setq bitmap-alterable-charset 'tibetan-1-column)
 	  (require 'bitmap))
       (push "w3m-bitmap.el" ignores))
+    (unless (>= w3mhack-emacs-major-version 21)
+      (push "w3m-favicon.el" ignores))
     ;; List shimbun modules which cannot be byte-compiled with this system.
     (unless (locate-library "xml")
       (setq ignores (nconc ignores (w3mhack-shimbun-modules-using-rss))))
