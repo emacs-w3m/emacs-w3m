@@ -1,3 +1,22 @@
+2002-01-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-arrived-setup-hook): New hook.
+	(w3m-arrived-shutdown-hook): Ditto.
+	(w3m-arrived-setup): Run `w3m-arrived-setup-hook'.
+	(w3m-arrived-shutdown): Run `w3m-arrived-shutdown-hook'.
+	(w3m-quit): Don't remove `w3m-arrived-shutdown' from `kill-emacs-hook'.
+
+	* w3m-e21.el (w3m-favicon-cache-expire-wait): New user option.
+	(w3m-favicon-cache-p): New macro.
+	(w3m-favicon-cache-favicon): Ditto.
+	(w3m-favicon-cache-retrived): Ditto.
+	(w3m-retrieve-favicon): Don't use old cache data.
+	(w3m-favicon-cache-data): Renamed from `w3m-favicon-data-cache'.
+	(w3m-favicon-save-cache-file): Follow above change.
+	(w3m-favicon-load-cache-file): Ditto.
+	(w3m-arrived-setup-hook): Regist `w3m-favicon-load-cachee-faile'.
+	(w3m-arrived-shutdown-hook): Regist `w3m-favicon-save-cache-file'.
+
 2002-01-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-goto-url): Use a URL-like string under the cursor as

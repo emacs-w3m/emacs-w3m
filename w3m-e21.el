@@ -362,7 +362,27 @@ use of ImageMagick absolutely by setting this option to nil."
   :group 'w3m
   :type 'file)
 
-(defvar w3m-favicon-data-cache nil)
+(defcustom w3m-favicon-cache-expire-wait (* 30 24 60 60)
+  "*Number of seconds passed since favicon retrived, the cache will be expired.
+If this variable is nil, never expired."
+  :group 'w3m
+  :type 'integer)
+
+(defvar w3m-favicon-cache-data nil
+  "A list of favicon cache (internal variable).
+Each information is a list whose elements are:
+ 0. URL
+ 1. Favicon
+ 2. Retrived date")
+
+(defmacro w3m-favicon-cache-p (url)
+  `(assoc ,url w3m-favicon-cache-data))
+
+(defmacro w3m-favicon-cache-favicon (url)
+  `(nth 1 (assoc ,url w3m-favicon-cache-data)))
+
+(defmacro w3m-favicon-cache-retrived (url)
+  `(nth 2 (assoc ,url w3m-favicon-cache-data)))
 
 (defun w3m-setup-favicon (url)
   (setq w3m-current-favicon-data nil
@@ -398,9 +418,13 @@ use of ImageMagick absolutely by setting this option to nil."
 	      (setq w3m-current-favicon-data nil)))))))
 
 (defun w3m-retrieve-favicon (url target &optional handler)
-  (if (assoc url w3m-favicon-data-cache)
+  (if (and (w3m-favicon-cache-p url)
+	   (or (null w3m-favicon-cache-expire-wait)
+	       (< (- (float-time)
+		     (float-time (w3m-favicon-cache-retrived url)))
+		  w3m-favicon-cache-expire-wait)))
       (setq w3m-current-favicon-data
-	    (nth 1 (assoc url w3m-favicon-data-cache)))
+	    (w3m-favicon-cache-favicon url))
     (lexical-let ((url url)
 		  (target target))
       (w3m-process-do-with-temp-buffer
@@ -410,25 +434,25 @@ use of ImageMagick absolutely by setting this option to nil."
 	    (setq data (buffer-string))
 	    (with-current-buffer target
 	      (setq w3m-current-favicon-data data)))
-	  (push (list url data) w3m-favicon-data-cache))))))
+	  (push (list url data (current-time)) w3m-favicon-cache-data))))))
 
 (defun w3m-favicon-save-cache-file ()
   (when w3m-favicon-use-cache-file
     (w3m-save-list (or w3m-favicon-cache-file
 		       (expand-file-name ".favicon" w3m-profile-directory))
-		   w3m-favicon-data-cache 'binary)))
+		   w3m-favicon-cache-data 'binary)))
 
 (defun w3m-favicon-load-cache-file ()
   (when (and w3m-favicon-use-cache-file
-	     (null w3m-favicon-data-cache))
-    (setq w3m-favicon-data-cache
+	     (null w3m-favicon-cache-data))
+    (setq w3m-favicon-cache-data
 	  (w3m-load-list
 	   (or w3m-favicon-cache-file
 	       (expand-file-name ".favicon" w3m-profile-directory))
 	   'binary))))
 
-(add-hook 'kill-emacs-hook 'w3m-favicon-save-cache-file)
-(add-hook 'w3m-mode-hook 'w3m-favicon-load-cache-file)
+(add-hook 'w3m-arrived-setup-hook 'w3m-favicon-load-cache-file)
+(add-hook 'w3m-arrived-shutdown-hook 'w3m-favicon-save-cache-file)
 
 ;;; Header line & Tabs
 (defcustom w3m-tab-width 11

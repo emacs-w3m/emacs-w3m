@@ -505,6 +505,16 @@ to input URL when URL-like string is not detected under the cursor."
   :group 'w3m
   :type 'hook)
 
+(defcustom w3m-arrived-setup-hook nil
+  "*Hook run at the end of `w3m-arrived-setup'."
+  :group 'w3m
+  :type 'hook)
+
+(defcustom w3m-arrived-shutdown-hook nil
+  "*Hook run at the end of `w3m-arrived-shutdown'."
+  :group 'w3m
+  :type 'hook)
+
 (defcustom w3m-async-exec t
   "*If non-nil, w3m is executed as an asynchronous process."
   :group 'w3m
@@ -1574,7 +1584,8 @@ which defaults to the value of `w3m-file-coding-system-for-read'."
 	  ;; before revision 1.135.
 	  (w3m-arrived-add (car elem) nil (cdr elem) (cdr elem))))
       (unless w3m-input-url-history
-	(setq w3m-input-url-history (mapcar (function car) list))))))
+	(setq w3m-input-url-history (mapcar (function car) list))))
+    (run-hooks 'w3m-arrived-setup-hook)))
 
 (defun w3m-arrived-shutdown ()
   "Save hash database of arrived URLs to `w3m-arrived-file'."
@@ -1614,7 +1625,8 @@ which defaults to the value of `w3m-file-coding-system-for-read'."
 			    (lambda (a b)
 			      (w3m-time-newer-p (nth 3 a) (nth 3 b))))
 		      w3m-keep-arrived-urls)))
-    (setq w3m-arrived-db nil)))
+    (setq w3m-arrived-db nil)
+    (run-hooks 'w3m-arrived-shutdown-hook)))
 
 (add-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
 
@@ -4030,7 +4042,6 @@ Return t if deleting current frame or window is succeeded."
     (w3m-select-buffer-close-window)
     (w3m-cache-shutdown)
     (w3m-arrived-shutdown)
-    (remove-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
     (w3m-process-shutdown)
     (w3m-kill-all-buffer)))
 

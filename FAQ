@@ -86,6 +86,9 @@
 
    (3) Emacsen incompatibility.
 
+       Regarding XEmacs-21.1, pages with SHIFT_JIS may not be displaied
+       correctly.
+
        Regarding XEmacs-21.2, there is a problem with previous versions
        up to beta36.  If you use those versions, it is recommended that
        you upgrade.
