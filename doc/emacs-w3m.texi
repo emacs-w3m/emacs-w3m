@@ -176,8 +176,8 @@ See also the emacs-w3m official page: @uref{http://emacs-w3m.namazu.org/}
 
 @node Getting Started
 @chapter It's so easy to begin to use emacs-w3m
-@cindex getting started
-@cindex starting up
+@cindex Getting started
+@cindex Starting up
 
 Emacs-w3m may have already been installed on your system, in which case
 you can skip this section and begin to use the program at once.  If
@@ -194,7 +194,7 @@ you're not that lucky, read on to learn how to install emacs-w3m.
 
 @node Required Emacs Version
 @section What version of Emacs can be used?
-@cindex emacs version
+@cindex Possible Emacs versions
 
 You can run emacs-w3m in various versions of Emacsen listed below:
 
@@ -235,12 +235,12 @@ You must install the latest w3m, it is available at:
 
 @node Other Requirements
 @section Things required to run emacs-w3m
-@cindex APEL
-@cindex gifsicle
-@cindex BITMAP-MULE
-@cindex new custom
+@cindex APEL package
+@cindex Gifsicle program
+@cindex BITMAP-MULE package
+@cindex New custom
 @cindex regexp-opt.el
-@cindex FLIM
+@cindex FLIM package
 
 Depending on the version of Emacs, third party packages are required.
 This section provides resources to help you find and install them.
@@ -336,7 +336,7 @@ is available at:
 
 @node Installing Emacs-w3m
 @section Installing emacs-w3m
-@cindex install
+@cindex Installing emacs-w3m
 
 See the official page @uref{http://emacs-w3m.namazu.org/} for
 instructions on how to get the latest emacs-w3m.  Is everything ready?
@@ -442,8 +442,7 @@ Use the variable @samp{PACKAGEDIR}.  For example:
 
 @node Non-UNIX-like systems
 @section Installing on non-UNIX-like systems
-@cindex install
-@cindex non-UNIX
+@cindex Installing on non-UNIX-like systems
 
 If you cannot execute the @samp{configure} script on your system, or if
 no @samp{make} command is available, cast the following spell:
@@ -470,7 +469,7 @@ can be customized by user's preferences are described in
 @table @samp
 
 @item Autoloads
-@cindex autoload
+@cindex Adding autoload settings
 
 You never need to set the autoload definitions if you've emacs-w3m
 installed as an XEmacs package (@pxref{Installing Emacs-w3m}) because of
@@ -506,7 +505,7 @@ In addition to this, put the following setups if needed:
 @end lisp
 
 @item Startup File
-@cindex startup file
+@cindex Startup file
 @vindex w3m-init-file
 
 We recommend using the file @file{~/.emacs-w3m} (which is the default
@@ -517,8 +516,9 @@ which cannot write there, for example, the autoload definitions as
 mentioned above.
 
 @item Proxy Gateway
-@cindex firewall
-@cindex proxy gateway
+@cindex Firewall
+@cindex Proxy gateways
+@cindex Proxy servers
 @vindex w3m-command-arguments
 @vindex w3m-no-proxy-domains
 
@@ -1077,7 +1077,7 @@ Antenna database before displaying it (@code{w3m-antenna}).
 
 @node Customizable Options
 @chapter Customizable options
-@cindex User options
+@cindex Customizing user options
 @vindex w3m-init-file
 
 All emacs-w3m options are customizable via the Custom mechanism, a
@@ -1210,13 +1210,13 @@ words, @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el} and
 
 @node Shimbun Library
 @chapter A tool for reading a newspaper
-@cindex shimbun
+@cindex Shimbun library
 
 
 @node Mailing List
 @chapter Mailing list and submitting bug reports
-@cindex mailing list
-@cindex bug reports
+@cindex Subscribing to the emacs-w3m mailing list
+@cindex Reporting bugs
 
 
 @node Index

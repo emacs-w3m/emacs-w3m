@@ -217,8 +217,8 @@ Emacs-w3m $B$N8x<0%Z!<%8(B @uref{http://emacs-w3m.namazu.org/} $B$bJ;$;$F$4Mw
 
 @node Getting Started
 @chapter Emacs-w3m $B$r;H$$;O$a$k$N$O$H$C$F$b4JC1(B
-@cindex getting started
-@cindex starting up
+@cindex Getting started
+@cindex Starting up
 
 $B$R$g$C$H$9$k$H!"$"$J$?$N%7%9%F%`$K$O(B emacs-w3m $B$,$9$G$K%$%s%9%H!<%k$5$l(B
 $B$F$$$k$+$b$7$l$^$;$s!#$=$N>l9g!"$"$J$?$O$3$N9`$rFI$_Ht$P$7$F!"D>$A$K;H$$(B
@@ -236,7 +236,7 @@ Emacs-w3m $B$N8x<0%Z!<%8(B @uref{http://emacs-w3m.namazu.org/} $B$bJ;$;$F$4Mw
 
 @node Required Emacs Version
 @section $B$I$s$J%P!<%8%g%s$N(B Emacs $B$G;H$($k$N(B?
-@cindex emacs version
+@cindex Possible Emacs versions
 
 $B0J2<$K5s$2$?$$$m$$$m$J%P!<%8%g%s$N(B Emacsen $B$G(B emacs-w3m $B$rF0:n$5$;$k$3$H(B
 $B$,$G$-$^$9!#(B
@@ -282,12 +282,12 @@ Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r!"%&%'%V%3%s%F%s%D$r<hF@$9$k$?$a$N%P%C%/
 
 @node Other Requirements
 @section Emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
-@cindex APEL
-@cindex gifsicle
-@cindex BITMAP-MULE
-@cindex new custom
+@cindex APEL package
+@cindex Gifsicle program
+@cindex BITMAP-MULE package
+@cindex New custom
 @cindex regexp-opt.el
-@cindex FLIM
+@cindex FLIM package
 
 Emacs $B$N%P!<%8%g%s$K$h$C$F$O!"%5!<%I%Q!<%F%#$N%Q%C%1!<%8$,I,MW$G$9!#$3$N(B
 $B9`$G$O!"$=$l$i$r8+$D$1$F%$%s%9%H!<%k$9$k$?$a$N;qNA$rDs6!$7$^$9!#(B
@@ -389,7 +389,7 @@ Shimbun $B%i%$%V%i%j(B (@pxref{Shimbun Library}) $B$r;H$&$?$a$K$O(B FLIM $B
 
 @node Installing Emacs-w3m
 @section Emacs-w3m $B$r%$%s%9%H!<%k$9$k(B
-@cindex install
+@cindex Installing emacs-w3m
 
 Emacs-w3m $B$N<hF@$K4X$7$F$O8x<0%Z!<(B
 $B%8(B @uref{http://emacs-w3m.namazu.org/} $B$r;2>H$7$F2<$5$$!#$9$Y$F=`Hw$G$-(B
@@ -497,8 +497,7 @@ emacs-w3m $B$r(B XEmacs $B%Q%C%1!<%8$H$7$F%$%s%9%H!<%k$9$k$3$H$b$G$-$^$9(B:
 
 @node Non-UNIX-like systems
 @section $BHs(B UNIX $B7O4D6-$G$N%$%s%9%H!<%k(B
-@cindex install
-@cindex non-UNIX
+@cindex Installing on non-UNIX-like systems
 
 $B$"$J$?$N%7%9%F%`$G(B @samp{configure} $B%9%/%j%W%H$r<B9T$9$k$3$H$,$G$-$J$$$+!"(B
 @samp{make} $B%3%^%s%I$,MxMQ$G$-$J$$>l9g$O!"0J2<$NJ86g$r>'$($F2<$5$$!#(B
@@ -524,7 +523,7 @@ APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$
 @table @samp
 
 @item Autoloads
-@cindex autoload
+@cindex Adding autoload settings
 
 Emacs-w3m $B$r(B XEmacs $B%Q%C%1!<%8$H$7$F%$%s%9%H!<%k(B (@pxref{Installing
 Emacs-w3m}) $B$7$F$"$l$P(B @file{w3m/auto-autoloads.el} $B%U%!%$%k$,$"$k$N$G!"(B
@@ -560,7 +559,7 @@ autoload $B$N@_Dj$r9T$J$&I,MW$O$"$j$^$;$s!#$=$&$G$J$1$l$P!"0J2<$N9T(B
 @end lisp
 
 @item Startup File
-@cindex startup file
+@cindex Startup file
 @vindex w3m-init-file
 
 Emacs-w3m $B$N$$$m$s$J%*%W%7%g%s$r$$$8$k$H$-$O!"(B
@@ -570,8 +569,9 @@ Emacs-w3m $B$N$$$m$s$J%*%W%7%g%s$r$$$8$k$H$-$O!"(B
 $B$N(B autoload $B$N$h$&$K!"$=$3$K=q$1$J$$Nc30$N@_Dj$,$"$k$3$H$KCm0U$7$F2<$5$$!#(B
 
 @item Proxy Gateway
-@cindex firewall
-@cindex proxy gateway
+@cindex Firewall
+@cindex Proxy gateways
+@cindex Proxy servers
 @vindex w3m-command-arguments
 @vindex w3m-no-proxy-domains
 
@@ -1126,7 +1126,7 @@ URL $B$r%"%s%F%J!&%G!<%?%Y!<%9$K2C$($^$9!#@\F,0z?tIU$-$G8F$P$l$?>l9g$O!"8=(B
 
 @node Customizable Options
 @chapter $B%G%U%)%k%H$N$^$^$G$b7k9=NI$$$H;W$&$1$l$I(B
-@cindex User option
+@cindex Customizing user options
 @vindex w3m-init-file
 
 $B$9$Y$F$N(B emacs-w3m $B$N%f!<%6%*%W%7%g%s$O!"(BCustom $B$N;E3]$1$K$h$C$F%+%9%?%^(B
@@ -1260,13 +1260,13 @@ Emacs-w3m $B$,5/F0$9$k$H!"(B@code{w3m-init-file} $B%U%!%$%k$rFI$_9~$_$^$9!#%G
 
 @node Shimbun Library
 @chapter $B%&%'%V>e$N?7J9$rFI$`$?$a$NF;6q(B
-@cindex shimbun
+@cindex Shimbun library
 
 
 @node Mailing List
 @chapter $B%a!<%j%s%0%j%9%H!"%P%0%j%]!<%H(B
-@cindex mailing list
-@cindex bug reports
+@cindex Subscribing to the emacs-w3m mailing list
+@cindex Reporting bugs
 
 
 @node Index
