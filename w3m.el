@@ -221,9 +221,16 @@ The value of `w3m-user-agent' is used for the field body."
       "Japanese")
   "*Language of w3m."
   :group 'w3m
-  :type '(choice
-	  (const "Japanese")
-	  (const nil tag: "Other")))
+  :type '(radio (const :format "%v " "Japanese")
+		(const :tag "Other" nil))
+  :get (lambda (symbol)
+	 (let ((value (format "%s" (default-value symbol)))
+	       (case-fold-search t))
+	   (prog1
+	       (setq value (if (string-match "\\`japan" value) "Japanese"))
+	     (set-default symbol value))))
+  :set (lambda (symbol value)
+	 (set-default symbol (if (equal value "Japanese") "Japanese"))))
 
 (defcustom w3m-command-arguments
   (if (eq w3m-type 'w3mmee) '("-o" "concurrent=0" "-F") nil)
@@ -273,7 +280,7 @@ the latter common part of the host names, not a regexp."
   "*Alist of environment variables for subprocesses to inherit."
   :group 'w3m
   :type '(repeat
-	  (cons
+	  (cons :format "%v"
 	   (string :tag "Name")
 	   (string :tag "Value"))))
 
@@ -816,7 +823,7 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
   "*Alist of file suffixes vs. content type."
   :group 'w3m
   :type '(repeat
-	  (list
+	  (group
 	   (string :tag "Type")
 	   (string :tag "Regexp")
 	   (choice
@@ -836,9 +843,9 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
   "*Alist of file suffixes vs. content encoding types."
   :group 'w3m
   :type '(repeat
-	  (cons
-	   (string :tag "Regexp of Suffixes")
-	   (string :tag "Encoding Type"))))
+	  (cons :format "%v"
+		(string :tag "Regexp of Suffixes")
+		(string :tag "Encoding Type"))))
 
 (defcustom w3m-decoder-alist
   `((gzip "gzip" ("-d"))	;; Don't use "gunzip" and "bunzip2"
@@ -857,12 +864,12 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
   "Associative list of DECODER."
   :group 'w3m
   :type '(repeat
-	  (list (choice :tag "Encoding"
-			(const gzip)
-			(const bzip)
-			(const deflate))
-		(string :tag "Command")
-		(repeat :tag "Arguments" string))))
+	  (group (choice :tag "Encoding"
+			 (const gzip)
+			 (const bzip)
+			 (const deflate))
+		 (string :tag "Command")
+		 (repeat :tag "Arguments" string))))
 
 (defcustom w3m-charset-coding-system-alist
   (let ((rest
@@ -904,7 +911,7 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
   "Alist MIME CHARSET vs CODING-SYSTEM.
 MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
-  :type '(repeat (cons symbol coding-system)))
+  :type '(repeat (cons :format "%v" symbol coding-system)))
 
 (defcustom w3m-horizontal-scroll-columns 10
   "*Column size to scroll horizontally."
@@ -945,9 +952,9 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
      (symbol-value 'yahtml-path-url-alist)))
   "*Alist of URLs and local directories."
   :type '(repeat
-	  (cons
-	   (string :tag "URL")
-	   (directory :tag "Directory")))
+	  (cons :format "%v"
+		(string :tag "URL")
+		(directory :tag "Directory")))
   :group 'w3m)
 
 (defcustom w3m-track-mouse t
@@ -1042,10 +1049,16 @@ recommended a bit that setting both this option and the option
   "Alist of frame parameters used when creating a new w3m frame.  It
 allows a kludge that it can also be a plist of frame properties."
   :group 'w3m
-  :type '(choice (repeat (cons :format "%v"
-			       (symbol :tag "Parameter")
-			       (sexp :tag "Value")))
-		 plist))
+  :type '(choice (group :inline t :tag "Frame Parameters (Emacs)"
+			(repeat :inline t :tag "Frame Parameters (Emacs)"
+				(cons :format "%v"
+				      (symbol :tag "Parameter")
+				      sexp)))
+		 (group :inline t :tag "Frame Plist (XEmacs)"
+			(repeat :inline t :tag "Frame Plist (XEmacs)"
+				(group :inline t
+				       (symbol :tag "Property")
+				       sexp)))))
 
 (defcustom w3m-auto-show t
   "*Use internal auto-show method."
