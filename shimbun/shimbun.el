@@ -93,8 +93,9 @@
   :group 'hypermedia)
 
 (defcustom shimbun-x-face
-  "X-Face: Ygq$6P.,%Xt$U)DS)cRY@k$VkW!7(X'X'?U{{osjjFG\"E]hND;SPJ-J?O?R\
-|a?Lg2$0rVng\n =O3Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%"
+  "X-Face: @Q+y!*#)K`rvKfSQnCK.Q\\{T0qs@?plqxVu<=@H-y\
+22NlKSprlFiND7{\"{]&Ddg1=P6{Ze|\n xbW2L1p5ofS\\&u~28A\
+dJrT4Cd<Ls?U!G4}0S%FA~KegR;YZWieoc%`|$4M\\\"i*2avWm?"
   "*Default X-Face field for shimbun."
   :group 'shimbun
   :type 'string)
