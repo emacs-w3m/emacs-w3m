@@ -1998,6 +1998,8 @@ in the order of <META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">.")
 in the order of <META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">.")
 
 (eval-and-compile
+  ;; `eval-and-compile' is necessary since the value of the constant
+  ;; is referred to at the compile time.
   (defconst w3m-html-string-regexp
     "\\(\"\\([^\"]+\\)\"\\|'\\([^\']+\\)'\\|[^\"\'<> \t\r\f\n]*\\)"
     "Regexp matching a string of the field-value like <a href=\"VALUE\">."))
@@ -2684,7 +2686,8 @@ NAME, but those characters appear in the return value.  For example:
       (and val (concat (symbol-value val) post)))))
 
 (defun w3m-fontify-bold ()
-  "Fontify bold characters in this buffer which contains half-dumped data."
+  "Fontify bold characters in the current buffer
+assuming that halfdump'ed data are contained."
   (goto-char (point-min))
   (while (search-forward "<b>" nil t)
     (let ((start (match-beginning 0)))
@@ -2695,7 +2698,8 @@ NAME, but those characters appear in the return value.  For example:
 				 '(face w3m-bold-face))))))
 
 (defun w3m-fontify-underline ()
-  "Fontify underline characters in this buffer which contains half-dumped data."
+  "Fontify underline characters in the current buffer
+assuming that halfdump'ed data are contained."
   (goto-char (point-min))
   (while (search-forward "<u>" nil t)
     (let ((start (match-beginning 0)))
@@ -2706,7 +2710,8 @@ NAME, but those characters appear in the return value.  For example:
 				 '(face w3m-underline-face))))))
 
 (defun w3m-fontify-strike-through ()
-  "Fontify strike-through characters in this buffer which contains half-dumped data."
+  "Fontify strike-through characters in the current buffer
+assuming that halfdump'ed data are contained."
   (when (and w3m-fontify-strike-through
 	     (w3m-static-if (featurep 'xemacs)
 		 (device-on-window-system-p)
@@ -2718,7 +2723,7 @@ NAME, but those characters appear in the return value.  For example:
 	(when (re-search-forward ":\\(DEL\\|S\\)]" nil t)
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (w3m-add-text-properties start (match-beginning 0)
-			       '(face w3m-strike-through-face)))))))
+				   '(face w3m-strike-through-face)))))))
 
 (defsubst w3m-decode-anchor-string (str)
   ;; FIXME: This is a quite ad-hoc function to process encoded URL
