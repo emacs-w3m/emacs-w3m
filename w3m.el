@@ -2027,7 +2027,7 @@ half-dumped data."
       (goto-char (match-end 1))
       (w3m-parse-attributes (src
 			     (width :integer)
-			     (height :integer) 
+			     (height :integer)
 			     usemap)
 	(delete-region start end)
 	(setq src (w3m-expand-url (w3m-decode-anchor-string src)))
@@ -2774,7 +2774,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	(header (w3m-w3m-get-header url no-cache handler))
       (when header
 	(let (alist type charset)
-	  (dolist (line (split-string header "\n"))
+	  (dolist (line (split-string header "[\t ]*\n"))
 	    (when (string-match "^\\([^ \t:]+\\):[ \t]*" line)
 	      (push (cons (downcase (match-string 1 line))
 			  (substring line (match-end 0)))
@@ -3820,7 +3820,7 @@ Return t if current line has a same anchor sequence."
       (setq pos (point))
       (while (and pos
 		  (< pos limit)
-		  (not (eq seq (setq pseq (get-text-property 
+		  (not (eq seq (setq pseq (get-text-property
 					   pos
 					   'w3m-anchor-sequence)))))
 	(setq pos (next-single-property-change pos 'w3m-anchor-sequence)))

@@ -1,3 +1,8 @@
+2002-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-w3m-attributes): Ignore trailing whitespaces in
+	header lines.
+
 2002-03-20  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-view-this-url): Eval action even when anchor is set.
@@ -6,7 +11,6 @@
 
 	* w3m.el (w3m-halfdump-command-arguments)[w3mmee]: Add `image'
 	to the -dump argument only if `w3m-treat-image-size' is non-nil.
-	
 
 2002-03-20  Hideyuki SHIRAI  <shirai@meadowy.org>
 
@@ -47,11 +51,11 @@
 	form object as current form.
 
 2002-03-18  KAMO Tomoyuki  <kamo@ITmanage.co.jp>
-	
+
 	* shimbun/sb-tcup.el (shimbun-tcup-get-group-key): Follow the
 	structual change of the master site.
 	(shimbun-tcup-make-id): Ditto.
-	
+
 2002-03-18  Masamichi Goudge M.D. <Matanuki@Goudge.org>
 
 	* shimbun/sb-orca.el: New file.
@@ -71,7 +75,7 @@
 
 	* shimbun/sb-ruby.el (shimbun-get-headers): Make regexp
 	more flexible.
-	
+
 2002-03-15  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-mee-select-value): Use w3m-output-coding-system
@@ -88,7 +92,7 @@
 
 	* w3m.el (w3m-halfdump-command-arguments)[w3mmee]: Added image.
 
-	* w3m-form.el (w3m-form-parse-and-fontify): Set the value of form 
+	* w3m-form.el (w3m-form-parse-and-fontify): Set the value of form
 	only if the method is not internal;
 	Add internal form to the w3m-current-forms;
 	Treat input type `image' as same as `submit'.
