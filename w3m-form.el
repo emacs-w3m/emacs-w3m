@@ -373,7 +373,7 @@ If no field in forward, return nil without moving."
     (save-excursion
       (goto-char (point-min))
       (let (form fid start end type name rows start-column end-column
-		 hseq abs-hseq buffer-read-only)
+		 hseq abs-hseq buffer-read-only text)
 	(while (w3m-form-goto-next-field)
 	  (setq fid (get-text-property (point) 'w3m-form-field-id))
 	  (when (and fid
@@ -415,8 +415,8 @@ If no field in forward, return nil without moving."
 		     w3m-form-hseq ,hseq
 		     w3m-anchor-sequence ,abs-hseq
 		     w3m-form-name ,name)))
-		(w3m-form-textarea-replace hseq
-					   (w3m-form-get form name))))))))))
+		(when (setq text (w3m-form-get form name))
+		  (w3m-form-textarea-replace hseq text))))))))))
 
 (defun w3m-form-parse-and-fontify (&optional reuse-forms)
   "Parse forms of the half-dumped data in this buffer and fontify them.
