@@ -132,8 +132,8 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 
 (luna-define-method shimbun-headers ((shimbun shimbun-tcup)
 				     &optional range)
-  (with-current-buffer (shimbun-retrieve-url-buffer
-			(shimbun-index-url shimbun) 'reload 'binary)
+  (with-temp-buffer
+    (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload 'binary)
     (set-buffer-multibyte t)
     (decode-coding-region (point-min) (point-max)
 			  (shimbun-coding-system-internal shimbun))

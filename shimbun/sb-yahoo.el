@@ -97,15 +97,15 @@ Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%")))
 		  (day (match-string 4))
 		  (no (match-string 5))
 		  (subject (match-string 6))
-		  (hour (match-string 9))
-		  (min (match-string 10))
+		  (hour (string-to-number (match-string 9)))
+		  (min (string-to-number (match-string 10)))
 		  id time)
 	      (setq id (format "<%s%s%s%s.%s@headlines.yahoo.co.jp>"
 			       year month day no
 			       (shimbun-current-group-internal shimbun)))
 	      (if (shimbun-search-id shimbun id)
 		  (throw 'stop nil))
-	      (setq time  (format "%s:%s" hour min))
+	      (setq time (format "%02d:%02d" hour min))
 	      (push (shimbun-make-header
 		     0
 		     (shimbun-mime-encode-string subject)
@@ -118,7 +118,7 @@ Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%")))
 	  (when (re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>" nil t)
 	    (let ((url (match-string 1)))
 	      (erase-buffer)
-	      (shimbun-retrieve-url-buffer url t)
+	      (shimbun-retrieve-url url t)
 	      (goto-char (point-min)))))))
     headers))
 

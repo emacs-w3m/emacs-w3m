@@ -122,7 +122,8 @@ V#i5>7]N{lif*16&rrh3=:)\"dB[w:{_Mu@7+)~qLo6.z&Bb|Gq0A1}xpj:>9o9$")))
 				    (shimbun-hns-content-hash-internal
 				     shimbun))))
 	  (symbol-value sym)
-	(with-current-buffer (shimbun-retrieve-url-buffer xref 'reload)
+	(with-temp-buffer
+	  (shimbun-retrieve-url xref 'reload)
 	  ;; Add articles to the content hash.
 	  (goto-char (point-min))
 	  (while (re-search-forward

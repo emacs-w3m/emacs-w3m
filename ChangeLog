@@ -1,3 +1,43 @@
+2002-03-24  SAITO Takuya <reed@lily.freemail.ne.jp>
+
+	* shimbun/sb-yahoo.el (shimbun-get-headers): Changed date format.
+	
+2002-03-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-remove-redundant-spaces): New implementation.
+	(w3m-about-retrieve): Call `insert-buffer-substring' instead of
+	`insert-buffer'.
+	(w3m-rendering-unibyte-buffer): Ditto.
+	(w3m-rendering-multibyte-buffer): Ditto.
+	(w3m-prepare-text-content): Ditto.
+
+	* shimbun/shimbun.el (shimbun-retrieve-url-buffer): Removed.
+	(shimbun-headers): Call `shimbun-retrieve-url' instead of
+	`shimbun-retrieve-url-buffer'.
+
+	* shimbun/sb-ding.el (shimbun-get-headers): New method.
+
+	* shimbun/sb-glimpse.el (shimbun-get-headers): Retrieve a decoded
+	content.
+
+	* shimbun/sb-gnome.el (shimbun-ding-coding-system): Abolished.
+	(shimbun-get-headers): Retrieve a decoded content.
+
+	* shimbun/sb-hns.el (shimbun-hns-article): Call
+	`shimbun-retrieve-url' instead of `shimbun-retrieve-url-buffer'.
+
+	* shimbun/sb-tcup.el (shimbun-headers): Call
+	`shimbun-retrieve-url' instead of `shimbun-retrieve-url-buffer'.
+
+	* shimbun/sb-wired.el (shimbun-get-group-header-alist): Call
+	`shimbun-retrieve-url' instead of `shimbun-retrieve-url-buffer'.
+
+	* shimbun/sb-yahoo.el (shimbun-get-headers): Call
+	`shimbun-retrieve-url' instead of `shimbun-retrieve-url-buffer'.
+
+	* shimbun/sb-zdnet.el (shimbun-make-contents): New method to
+	remove all advertisements.
+
 2002-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-w3m-attributes): Ignore trailing whitespaces in

@@ -125,6 +125,15 @@ RM#72\\p;3XZ~j|7T)QC7\"(A;~Hr\n fP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
 			   "-get-headers"))
 	   shimbun))
 
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-zdnet) header)
+  (let ((case-fold-search t)
+	(start))
+    (while (and (search-forward "<!-- AD START -->" nil t)
+		(setq start (match-beginning 0))
+		(search-forward "<!-- AD END -->" nil t))
+      (delete-region start (point)))
+    (goto-char (point-min))))
+
 (provide 'sb-zdnet)
 
 ;;; sb-zdnet.el ends here

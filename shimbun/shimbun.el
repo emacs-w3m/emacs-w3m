@@ -119,18 +119,6 @@ Return content-type of URL as string when retrieval succeeded."
 	(w3m-decode-buffer url))
       type)))
 
-(defun shimbun-retrieve-url-buffer (url &optional no-cache no-decode)
-  "Return a buffer which contains the URL contents."
-  (with-current-buffer (get-buffer-create " *shimbun-work*")
-    (erase-buffer)
-    (if (and url (w3m-retrieve url no-decode no-cache))
-	(inline
-	  (unless no-decode
-	    (w3m-decode-buffer url))
-	  (current-buffer))
-      (delete-region (point-min) (point-max))
-      (current-buffer))))
-
 (defalias 'shimbun-content-type 'w3m-content-type)
 (defsubst shimbun-url-exists-p (url &optional no-cache)
   (string= "text/html"
@@ -426,8 +414,8 @@ Return nil if all pages should be retrieved."
 	 (, range)))))
 
 (luna-define-method shimbun-headers ((shimbun shimbun) &optional range)
-  (with-current-buffer (shimbun-retrieve-url-buffer
-			(shimbun-index-url shimbun) 'reload)
+  (with-temp-buffer
+    (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload)
     (shimbun-get-headers shimbun range)))
 
 (luna-define-generic shimbun-reply-to (shimbun)

@@ -2735,11 +2735,11 @@ succeed."
 (defun w3m-remove-redundant-spaces (str)
   "Remove spaces/tabs at the front of a string and at the end of a string"
   (save-match-data
-    (setq str
-	  (substring str
-		     (if (string-match "^[ \t\r\f\n]+" str) (match-end 0) 0)))
-    (substring str 0
-	       (and (string-match "[ \t\r\f\n]+$" str) (match-beginning 0)))))
+    (when (string-match "\\`[ \t\r\f\n]+" str)
+      (setq str (substring str (match-end 0))))
+    (if (string-match "[ \t\r\f\n]+\\'" str)
+	(substring str 0 (match-beginning 0))
+      str)))
 
 (defun w3m-w3m-get-header (url no-cache handler)
   "Return the header string of the URL.
@@ -2976,7 +2976,7 @@ to this buffer."
 	  (when (buffer-name output-buffer)
 	    (let ((temp-buffer (current-buffer)))
 	      (with-current-buffer output-buffer
-		(insert-buffer temp-buffer))))
+		(insert-buffer-substring temp-buffer))))
 	  type))))))
 
 (defsubst w3m-cid-retrieve (url &optional no-decode no-cache)
@@ -3328,7 +3328,7 @@ type as a string argument, when retrieve is complete."
 		  (w3m-get-buffer-create
 		   (generate-new-buffer-name w3m-work-buffer-name)))
 	  (set-buffer-multibyte nil)
-	  (insert-buffer original-buffer)
+	  (insert-buffer-substring original-buffer)
 	  (set-buffer-multibyte t)
 	  (w3m-copy-local-variables original-buffer))))
     (w3m-decode-buffer url content-charset "text/html")
@@ -3344,7 +3344,7 @@ type as a string argument, when retrieve is complete."
 		  (w3m-get-buffer-create
 		   (generate-new-buffer-name w3m-work-buffer-name)))
 	  (set-buffer-multibyte t)
-	  (insert-buffer original-buffer)
+	  (insert-buffer-substring original-buffer)
 	  (encode-coding-region (point-min) (point-max) w3m-coding-system)
 	  (w3m-copy-local-variables original-buffer))))
     (w3m-rendering-buffer-1 w3m-coding-system binary-buffer)))
@@ -3412,7 +3412,7 @@ argument.  Otherwise, it will be called with nil."
       (let (buffer-read-only)
 	(widen)
 	(delete-region (point-min) (point-max))
-	(insert-buffer result-buffer)
+	(insert-buffer-substring result-buffer)
 	(w3m-copy-local-variables result-buffer)
 	(set-buffer-file-coding-system w3m-current-coding-system)
 	(when (string= "text/html" type) (w3m-fontify))
