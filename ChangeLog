@@ -1,5 +1,7 @@
 2002-06-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* Release emacs-w3m-1.2.7 from emacs-w3m-1_2 branch.
+
 	* w3m-weather.el: Require CL when this module is byte-compiled.
 	(w3m-weather-completion-table): Fix typos, which are noticed by
 	Ando Tsutomu <ando-tom@ff.iij4u.or.jp> in [emacs-w3m:03487].
