@@ -381,7 +381,7 @@ w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 	    headers))
     (if (string-equal group "shasetsu")
 	(nreverse headers)
-      headers)))
+      (shimbun-sort-headers headers))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-nikkei)
 					 &optional range)
