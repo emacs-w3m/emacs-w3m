@@ -1,3 +1,13 @@
+2001-05-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-dtree.el (w3m-dtree-default-allfiles): Modify default value.
+	(w3m-dtree-fancy-display): New variable.
+	(w3m-dtree-create-fancy): New function.
+	(w3m-dtree-create-sub): Insert the indicator which directory or file,
+	if allfiles.
+	(w3m-about-dtree): Use fancy style function, if
+	'w3m-dtree-fancy-display' is non-nil.
+
 2001-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m): Use existing frame or window.

@@ -36,10 +36,15 @@
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-dtree-indent "+---"
+(defcustom w3m-dtree-indent "+-"
   "*String of indent for w3m-dtree."
   :group 'w3m
   :type 'string)
+
+(defcustom w3m-dtree-fancy-display nil
+  "*If non-nil, use fancy style."
+  :group 'w3m
+  :type 'boolean)
 
 (defsubst w3m-dtree-expand-file-name (path)
   (if (string-match "^\\(.\\):\\(.*\\)" path)
@@ -63,6 +68,39 @@
        (and (nth 1 (file-attributes (, path)))
 	    (/= (nth 1 (file-attributes (, path))) 2)))))
 
+(defun w3m-dtree-create-fancy (path allfiles dirprefix fileprefix indent)
+  (let ((files (directory-files path nil "[^.]"))
+	(indent-sub1 "├") (indent-sub2 "│ ")
+	file fullpath tmp)
+    (unless allfiles
+      (while (setq file (car files))
+	(when (file-directory-p (expand-file-name file path))
+	  (setq tmp (cons file tmp)))
+	(setq files (cdr files)))
+      (setq files (nreverse tmp)))
+    (while (setq file (car files))
+      (when (= (length files) 1)
+	(setq indent-sub1 "└")
+	(setq indent-sub2 "   "))
+      (cond
+       ((file-directory-p (setq fullpath (expand-file-name file path)))
+	(insert (format "%s%s%s<A HREF=\"%s%s\">%s</A>\n"
+			indent indent-sub1
+			(if allfiles "<B>[d]</B>" "")
+			dirprefix
+			(w3m-dtree-expand-file-name (file-name-as-directory fullpath))
+			(concat file "/")))
+	(when (or allfiles (w3m-dtree-has-child fullpath))
+	  (w3m-dtree-create-fancy fullpath allfiles dirprefix fileprefix
+				  (concat indent indent-sub2))))
+       ((and allfiles (file-exists-p fullpath))
+	(insert (format "%s%s%s<A HREF=\"%s%s\">%s</A>\n"
+			indent indent-sub1
+			(if allfiles "(f)" "")
+			fileprefix (w3m-dtree-expand-file-name fullpath)
+			file))))
+      (setq files (cdr files)))))
+
 (defun w3m-dtree-create-sub (path allfiles dirprefix fileprefix indent)
   (let ((files (directory-files path nil "[^.]"))
 	(indent-len (length w3m-dtree-indent))
@@ -70,8 +108,9 @@
     (while (setq file (car files))
       (cond
        ((file-directory-p (setq fullpath (expand-file-name file path)))
-	(insert (format "%s%s<A HREF=\"%s%s\">%s</A>\n"
+	(insert (format "%s%s%s<A HREF=\"%s%s\">%s</A>\n"
 			indent w3m-dtree-indent
+			(if allfiles "<B>[d]</B>" "")
 			dirprefix
 			(w3m-dtree-expand-file-name (file-name-as-directory fullpath))
 			(concat file "/")))
@@ -79,8 +118,9 @@
 	  (w3m-dtree-create-sub fullpath allfiles dirprefix fileprefix
 				(concat indent (make-string indent-len ? )))))
        ((and allfiles (file-exists-p fullpath))
-	(insert (format "%s%s<A HREF=\"%s%s\">%s</A>\n"
+	(insert (format "%s%s%s<A HREF=\"%s%s\">%s</A>\n"
 			indent w3m-dtree-indent
+			(if allfiles "(f)" "")
 			fileprefix (w3m-dtree-expand-file-name fullpath)
 			file))))
       (setq files (cdr files)))))
@@ -94,9 +134,11 @@
 		  dirprefix (w3m-dtree-expand-file-name path) path
 		  (if allfiles " (allfiles)" "")))
   (if (file-directory-p path)
-      (w3m-dtree-create-sub path allfiles dirprefix fileprefix "")
+      (if w3m-dtree-fancy-display
+	  (w3m-dtree-create-fancy path allfiles dirprefix fileprefix " ")
+	(w3m-dtree-create-sub path allfiles dirprefix fileprefix ""))
     (insert (format "\n<h3>Warning: Directory not found.</h3>\n")))
- (insert "</pre>\n</body>\n</html>\n"))
+  (insert "</pre>\n</body>\n</html>\n"))
 
 (defun w3m-about-dtree (url &optional nodecode allfiles)
   (let ((prelen (length "about://dtree"))
