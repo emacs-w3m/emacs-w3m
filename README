@@ -43,7 +43,7 @@
    c) XEmacs
       APEL package is required.  It is available at:
 
-          ftp://ftp.m17n.org/pub/mule/apel/apel-10.4.tar.gz
+          ftp://ftp.m17n.org/pub/mule/apel/apel-10.5.tar.gz
 
       Note: The XEmacs APEL package version 1.23 and later can be used
        for both XEmacs with Mule and non-Mule XEmacs.  However, those

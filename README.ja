@@ -48,7 +48,7 @@
    c) XEmacs
       APEL を前もってインストールしておく必要があります．
 
-          ftp://ftp.m17n.org/pub/mule/apel/apel-10.4.tar.gz
+          ftp://ftp.m17n.org/pub/mule/apel/apel-10.5.tar.gz
 
       注意: バージョン 1.23 以降の XEmacs 用 APEL パッケージが，MULE あ
        り/なし両方の XEmacs で emacs-w3m を動作させるために使うことがで

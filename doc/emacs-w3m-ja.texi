@@ -307,7 +307,7 @@ XEmacs$B!"(BEmacs 19.34 $B$^$?$O(B Mule 2.3 $B$KIT2D7g$G$9!#(BEmacs-w3m $
 $B$K(B @acronym{APEL} $B$r%$%s%9%H!<%k$7$J$1$l$P$J$j$^$;$s!#(B@acronym{APEL} $B$O(B
 $B0J2<$N>l=j$K$"$j$^$9(B:
 
-@uref{ftp://ftp.m17n.org/pub/mule/apel/apel-10.4.tar.gz}
+@uref{ftp://ftp.m17n.org/pub/mule/apel/apel-10.5.tar.gz}
 
 $B$b$7$9$G$K(B @acronym{APEL} XEmacs $B%Q%C%1!<%8$r%$%s%9%H!<%k$7$F$$$k$J$i$P!"(B
 $B$=$l$r>e5-$N%j%s%/$G<($7$?(B @acronym{APEL} $B$GCV$-49$($k$3$H$r6/$/4+$a$^$9!#(B
@@ -315,7 +315,7 @@ XEmacs$B!"(BEmacs 19.34 $B$^$?$O(B Mule 2.3 $B$KIT2D7g$G$9!#(BEmacs-w3m $
 
 @example
 % rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
-% cd apel-10.4
+% cd apel-10.5
 % make install-package XEMACS=xemacs-21.4.x\
   PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
 @end example
