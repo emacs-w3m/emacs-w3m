@@ -1,3 +1,8 @@
+2001-05-21  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun-article-url): Fixed problem when
+	shimbun-header-xref returns nil.
+
 2001-05-18  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
 
 	* shimbun/sb-hns.el (shimbun-get-headers): Fixed problem when

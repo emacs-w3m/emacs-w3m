@@ -288,7 +288,8 @@ Optional MUA is a `shimbun-mua' instance."
 
 (defsubst shimbun-article-url (shimbun header)
   "Return URL string from SHIMBUN and HEADER."
-  (if (eq (aref (shimbun-header-xref header) 0) ?/)
+  (if (and (shimbun-header-xref header)
+	   (eq (aref (shimbun-header-xref header) 0) ?/))
       (concat (shimbun-url-internal shimbun)
 	      (shimbun-header-xref header))
     (shimbun-header-xref header)))
