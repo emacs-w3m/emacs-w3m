@@ -525,7 +525,7 @@ image parts, and returns an alist of URLs and image entities."
 			"\\([^\"]+\\)"
 			"\"\\|"
 			;; 5. unquoted url, though that's illegal
-			"\\([^\t\n\f\r \">]+\\)"
+			"\\([^" spc "\">]+\\)"
 			"\\)\\)")))
 	    nil t)
       (setq start (match-beginning 2)
