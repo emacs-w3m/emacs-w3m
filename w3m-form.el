@@ -1179,7 +1179,9 @@ character."
       (when value
 	(dolist (candidate value)
 	  (setq pos (point))
-	  (insert (cdr candidate))
+	  (insert (if (zerop (length (cdr candidate)))
+		      (car candidate)
+		    (cdr candidate)))
 	  (add-text-properties pos (point)
 			       (list 'w3m-form-map-value (car candidate)
 				     'mouse-face w3m-form-mouse-face))

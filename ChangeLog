@@ -1,5 +1,8 @@
 2002-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-form.el (w3m-form-input-map): If menu string is empty,
+	use href string instead.
+
 	* w3m.el (w3m-w3m-dump-head-source): Fixed caching logic.
 	(w3m-w3m-retrieve): Use cache if available after redirection.
 
