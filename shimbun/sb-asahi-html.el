@@ -29,41 +29,24 @@
 (require 'shimbun)
 (require 'sb-asahi)
 
-(luna-define-class shimbun-asahi-html (shimbun) ())
+(luna-define-class shimbun-asahi-html (shimbun-asahi) ())
 
 (defvar shimbun-asahi-html-content-start
   "<!--[\t\n ]*Start of photo[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
+
 (defvar shimbun-asahi-html-content-end
   "<!--[\t\n ]*End of related link[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
+
 (defvar shimbun-asahi-html-x-face-alist shimbun-asahi-x-face-alist)
 
 (defvar shimbun-asahi-html-expiration-days shimbun-asahi-expiration-days)
 
-(luna-define-method shimbun-groups ((shimbun shimbun-asahi-html))
-  (mapcar 'car shimbun-asahi-group-table))
-
-(luna-define-method shimbun-from-address ((shimbun shimbun-asahi-html))
-  (concat (shimbun-mime-encode-string
-	   (concat "朝日新聞 ("
-		   (nth 1 (assoc (shimbun-current-group-internal shimbun)
-				 shimbun-asahi-group-table))
-		   ")"))
-	  " <webmaster@www." shimbun-asahi-top-level-domain ">"))
-
-(luna-define-method shimbun-index-url ((shimbun shimbun-asahi-html))
-  (let ((group (shimbun-current-group-internal shimbun)))
-    (concat shimbun-asahi-url group "/"
-	    (nth 2 (assoc group shimbun-asahi-group-table)))))
-
-(luna-define-method shimbun-get-headers ((shimbun shimbun-asahi-html)
-					 &optional range)
-  (shimbun-asahi-get-headers shimbun))
-
-(luna-define-method shimbun-make-contents
-  :before ((shimbun shimbun-asahi-html) header)
-  (shimbun-asahi-adjust-date-header shimbun header))
+(luna-define-method shimbun-make-contents ((shimbun shimbun-asahi-html)
+					   header)
+  (shimbun-asahi-adjust-date-header shimbun header)
+  (shimbun-make-html-contents shimbun header))
 
 (provide 'sb-asahi-html)
 

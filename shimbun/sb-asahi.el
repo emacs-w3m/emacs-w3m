@@ -128,8 +128,10 @@ and an extra keyword.")
 
 (defvar shimbun-asahi-content-start
   "<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
+
 (defvar shimbun-asahi-content-end
   "<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
+
 (defvar shimbun-asahi-x-face-alist
   '(("default" . "X-Face: +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|\
 bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
