@@ -57,7 +57,9 @@
   `(4
     (loop
      (read-multibyte-character r1 r0)
-     (if (r1 == 0)
+     (if (r1 == ,(w3m-static-if (boundp 'MULE)
+		     lc-ascii
+		   (charset-id 'ascii)))
 	 ;; (1) ASCII characters
 	 (write-repeat r0)
        (if (r1 == ,(w3m-static-if (boundp 'MULE)

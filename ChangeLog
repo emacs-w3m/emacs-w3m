@@ -1,3 +1,7 @@
+2001-09-10  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* w3m-ucs.el (w3m-euc-japan-encoder): Fixed for ASCII under XEmacs.
+
 2001-09-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-goto-url): Refer `coding-system-for-read' which is
