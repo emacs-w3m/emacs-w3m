@@ -112,7 +112,7 @@ license to the document, as described in section 6 of the license.
 
 @end titlepage
 
-@ifinfo
+@ifnottex
 @node Top
 @top Emacs-w3m ユーザマニュアル
 
@@ -122,7 +122,7 @@ Emacs-w3m 開発チーム
 
 この文書は emacs-w3m バージョン @value{VERSION} に対応します。
 
-@end ifinfo
+@end ifnottex
 
 @menu
 * Introduction::                はじめに
@@ -162,10 +162,10 @@ Basic Usage
 
 Pretty Good Features
 
-* Searching Words::             語の検索に便利なコマンド
-* Quick Searching::             迅速サーチ
-* Weather Information::         明日は晴れるでしょう
-* Using Antenna::               アンテナを張り巡らす
+* Using Search Engines::        使いやすいウェブ検索
+* Grouping URLs::               一つの URL で複数のウェブページを見る
+* Weather Information::         明日の天気は晴れでしょう
+* Using Antenna::               アンテナを張り巡らそう
 * Showing Directory Tree::      ディレクトリの木構造を表示する
 * Viewing Perl Documents::      Perl のドキュメントを見る
 * Using Namazu::                Namazu でファイルを検索する
@@ -257,10 +257,10 @@ Requirements})。
 @section w3m を使います: emacs-w3m が速いわけ
 @cindex w3m
 
-Emacs-w3m は外部コマンド w3m を、web コンテンツを取得するためのバックエ
-ンドとして、または HTML の翻訳エンジンとして使用します; そうして、私たち
-は非同期動作によって加速された Emacs web ブラウザを実現することができま
-した。
+Emacs-w3m は外部コマンド w3m を、ウェブコンテンツを取得するためのバック
+エンドとして、または HTML の翻訳エンジンとして使用します; そうして、私た
+ちは非同期動作によって加速された Emacs ウェブ・ブラウザを実現することが
+できました。
 
 あなたは最新の w3m をインストールしなければなりません。それは以下の場所
 で取得できます:
@@ -563,8 +563,8 @@ Emacs-w3m のいろんなオプションをいじるときは、
 @vindex w3m-no-proxy-domains
 
 あなたが防火壁 (firewall) の中にいて、proxy ゲートウェイを通してしか外部
-の web サイトに接続できない場合は、proxy ゲートウエイを使うように w3m に
-指示する必要があります。
+のウェブ・サイトに接続できない場合は、proxy ゲートウエイを使うよう
+に w3m に指示する必要があります。
 
 これにはいくつかの方法があります。一つは環境変
 数 @code{http_proxy} を shell 上で、こんなふうにグローバルに設定すること
@@ -651,31 +651,278 @@ setenv http_proxy http://proxy.hogege.com:8000/
 
 
 @menu
-* Searching Words::             語の検索に便利なコマンド
-* Quick Searching::             迅速サーチ
-* Weather Information::         明日は晴れるでしょう
-* Using Antenna::               アンテナを張り巡らす
+* Using Search Engines::        使いやすいウェブ検索
+* Grouping URLs::               一つの URL で複数のウェブページを見る
+* Weather Information::         明日の天気は晴れでしょう
+* Using Antenna::               アンテナを張り巡らそう
 * Showing Directory Tree::      ディレクトリの木構造を表示する
 * Viewing Perl Documents::      Perl のドキュメントを見る
 * Using Namazu::                Namazu でファイルを検索する
 * Octet::                       application/octet-stream データを見る
 @end menu
 
-@node Searching Words
-@section 語の検索に便利なコマンド
+@node Using Search Engines
+@section 使いやすいウェブ検索
 
+@cindex Search engines
+@findex w3m-search
+
+Emacs-w3m には検索エンジンを利用するための先進の機能があり、二つのインター
+フェースを通して利用することができます:
+
+@itemize
+@item
+標準のインターフェースです。@kbd{S} キーでいずれかの emacs-w3m バッファ
+から起動されます。これは検索エンジンを指定して検索語を入力する、単純な対
+話型のやり方です; @ref{The Search Interface} を参照して下さい。
+
+@item
+クイックサーチ・インターフェースです: これは技巧的に作られた URL に行く
+ことによって検索エンジンを利用するための、より速い (さらに、より複雑
+な) 方法です。この機能に関する詳細は @ref{Quick Searching} を参照して下
+さい。
+@end itemize
+
+@menu
+* The Search Interface::        Emacs-w3m による検索のやり方
+* Quick Searching::             もう一つの (そして速い) ウェブ検索
+* Adding New Search Engines::   お気に入りのエンジンを使うには
+@end menu
+
+@node The Search Interface
+@subsection Emacs-w3m による検索のやり方
+@cindex Searching
+@kindex S
+@vindex w3m-search-default-engine
+
+Emacs-w3m のバッファーで @kbd{S} キーを使うことにより (デフォルトのキー
+マップを使うものとします)、標準の検索インターフェースを立ち上げることが
+できます。すると、ミニバッファで検索語の入力を求めるプロンプトが現れるで
+しょう。そうしたら、一つまたは複数の語を入れて、@kbd{RET} を叩いて下さい。
+そのエンジンの検索結果のページが現れ、その後、あたかも検索エンジンに通常
+のウェブの流儀による入力を行なったときのように、結果を閲覧することができ
+ます。
+
+たぶん、あなたはどのエンジンで探索したいかを決める機会が与えられていない
+ことに気付くでしょう。Emacs-w3m はデフォルトで Google 検索エンジンを使い
+ますが、変数 @code{w3m-search-default-engine} (@ref{Customizable
+Options} 参照) をカスタマイズすることによって、この振る舞いを変更するこ
+とができます。あるいは、このコマンドを使うたびに検索エンジンを指定するこ
+とができます。
+
+どのエンジンを使用するかを明示するためには、コマンドに接頭引数を与えなけ
+ればなりません (これは @kbd{C-u S} のようなコマンドの前に、通
+常 @kbd{C-u} を叩くことを意味します)。すると emacs-w3m はエンジンの入力
+を促すので、その名前を一つ選ぶことができます (@key{TAB} キーで補完ができ
+ます)。いったん選択したら @kbd{RET} キーを叩いて下さい。その後で検索語を
+入力することができ、@kbd{RET} をタイプすれば検索結果が現れるでしょう。
 
 @node Quick Searching
-@section 迅速サーチ
+@subsection もう一つの (そして速い) ウェブ検索
+@cindex Quick Searching
+@cindex Special URLs
+@vindex w3m-search-quick-search-engine-alist
+@vindex w3m-search-engine-alist
+
+ウェブ・パワーユーザ (これを読んでいるあなた) には、迅速で効率的な検索の
+方法が必要です。クイックサーチはその一つです。
+
+それは何をするのかって?  それは @uref{gg:emacs} のような特別の URL に行
+くだけで、ウェブ検索を始めさせるのです。このモードの動作の長所は、次の通
+りです:
+
+@itemize
+@item
+速い。エンジンと検索語を選ぶのに、一つの URL をタイプするだけです。
+
+@item
+便利。この機能によって、容易に emacs-w3m のタブかウィンドゥを開いて、検
+索を始めることができます。例えば、@kbd{G} キーで新しいウィンドウを開いて
+クイックサーチ URL に行くように。そして、特別のクイックサーチ URL そのも
+のにも、ブックマークを付けることができます。
+
+@item
+グルーピング機能も使える。例えば @uref{group:gg:emacs&ya:w3m} のよう
+な URL によって、同時に二つの検索を始めることができます。例えばこの場合
+は、Google で ``emacs'' の、Yahoo! で ``w3m'' の検索をそれぞれ始めます。
+@xref{Grouping URLs}。
+@end itemize
+
+これを使うのはとても簡単です: ``gnu'' という単語を Google で探したいとす
+れば、@kbd{g} を叩いてから ``gg:gnu'' という url をタイプして下さい。こ
+の表現の第一の部分 "gg" は、Google 検索エンジンを使用したいことを示しま
+す。第二の部分は検索語です。エンジンと検索語は、コロンで分けなければなり
+ません。そして @kbd{RET} を叩けば検索結果を見ることができます。スペース
+で分離した複数の語を入力できることを、心に留めておいて下さい (ミニバッファ
+でスペースをタイプするには、@kbd{C-q @key{SPC}} のように、最初に
+@kbd{C-q} を叩いて下さい)。
+
+Emacs-w3m のデフォルトでは、利用可能ないくつかの検索エンジンの短縮形があ
+り、それらは変数 @code{w3m-search-quick-search-engine-alist} で定義され
+ています。例えば Google には ``gg''、Google Groups 用には ``ggg''、
+Yahoo! のための ``ya''、および Altavista に対する ``al'' などの短い名前
+です。さらに検索エンジンの短縮形を追加するには、@xref{Adding New Search
+Engines} を参照して下さい。
+
+短縮形の代わりに、``google'' や ``yahoo'' のような完全なエンジンの名前を、
+クイックサーチ URL に使うこともできます。それらの名前は、変
+数 @code{w3m-search-engine-alist} で定義されます。
+
+@node Adding New Search Engines
+@subsection お気に入りのエンジンを使うには
+@cindex Adding new search engines
+
+Emacs-w3m は、利用可能な多くの検索エンジンを持っています。あなたのお気に
+入りの検索エンジンを使いたいのに、万が一にもそれが既知の検索エンジンのリ
+ストに載っていなかったら、どうしましょう?  それを検索エンジンのリストに
+加えれば良いのです。そしてそれは、極めて簡単です:
+
+@enumerate
+@item
+最初に、あなたが加えたい検索エンジンのエントリー・ポイントが何かを知らな
+ければなりません。例えば:
+
+@uref{http://my.searchengine.com/?query=foobar}
+
+ここで foobar はあなたが検索したい語です。
+
+@item
+この情報が手に入ったら、@file{~/.emacs} ファイルに加えてください:
+@c FIXME: this should be able to put into .emacs-w3m file.
+
+@lisp
+(eval-after-load "w3m-search"
+  '(add-to-list 'w3m-search-engine-alist
+                '("My engine"
+                  "http://my.searchengine.com/?query=%s"
+                  nil)))
+@end lisp
+
+第一フィールドの "My engine" をあなたのエンジンの説明で、第二フィールド
+をエントリー・ポイントで置き換えて下さい (@samp{%s} は重要です。これは検
+索を行なうときに、検索語で置き換えられます)。そして第三フィールドは使用
+するエンコーディングを意味し、@code{nil} またはそれが省略された場合は、
+変数 @code{w3m-default-coding-system} の値が標準のエンコーディングとして
+使われます。
+
+エンコーディングに関してご参考までに、英語の検索エンジンのためには、ほと
+んど考慮する必要がありません。しかしながら、ある日本の検索エンジンについ
+ては、それに何か (例えば @code{euc-japan}) を指定する必要があるかもしれ
+ません。
+
+@item
+今やこの検索エンジンは、emacs-w3m で通常の @kbd{S} キーで使うことができ
+ます。このエンジンを頻繁に使うのならば、短いエンジンの名前をクイックサー
+チエンジン (@ref{Quick Searching} を参照) に加えることもできます。それに
+は、以下のコードを @file{~/.emacs} ファイルに追加して下さい:
+@c FIXME: this should be able to put into .emacs-w3m file.
+
+@lisp
+(eval-after-load "w3m-search"
+  '(progn
+     (add-to-list 'w3m-search-engine-alist
+                  '("My engine"
+                    "http://my.searchengine.com/?query=%s"
+                    nil))
+     (add-to-list 'w3m-search-quick-search-engine-alist
+                  '("my" . "My engine"))))
+@end lisp
+
+これにより、@uref{my:foobar} のような URL を使って、あなたの検索エンジン
+で ``foobar'' という語を検索することができます。
+@end enumerate
+
+@node Grouping URLs
+@section 一つの URL で複数のウェブページを見る
 
 
 @node Weather Information
-@section 明日は晴れるでしょう
+@section 明日の天気は晴れでしょう
 
 
 @node Using Antenna
-@section アンテナを張り巡らす
+@section アンテナを張り巡らそう
+@cindex Antenna
+@cindex Tracking changes in web pages
+@cindex about://antenna/
 
+Antenna is a tool to keep track of changes in web pages.  Using Antenna,
+you can periodically check if particular pages have been updated, and if
+they haven't, know the last time you saw them.
+
+You can start Antenna using the @kbd{A} key in any emacs-w3m buffer.
+Alternatively, you can go to the special URL @uref{about://antenna/}; it
+does the same thing.
+
+@menu
+* Setting up Antenna::          How to add your web sites to Antenna
+* Daily web tracking::          Tracking changes with Antenna
+@end menu
+
+@node Setting up Antenna
+@subsection How to add your web sites to Antenna
+@cindex about://antenna-edit/
+@kindex +
+
+Antenna has a specific customization interface accessible via the
+``Edit'' button in the Antenna page, or via the special
+@uref{about://antenna-edit/} URL.  It is pretty self-explanatory, to add
+a website, do the following:
+
+@enumerate
+@item
+In the ``Key'' field, put the complete URL of the web page you want to
+watch, for example ``http://my.website.com/index.html''.
+
+@item
+In the ``Title'' field, type a title for your webpage, such as ``My
+website''.
+
+@item
+In the ``Time'' field, choose either ``Normal'', ``Time'' or ``HNS''.
+You probably want the first choice.
+@end enumerate
+
+Once all the fields are filled, hit the ``New'' button.  Your website
+is now added to the Antenna database; repeat the same steps for the
+other sites you want to track.
+
+An alternative way to add a website to Antenna is to go to this site,
+and to use the @kbd{+} key.  You will be taken to the Antenna
+customization buffer, with all fields already set up for you.  You just
+have to hit the buttons ``Save for future sessions'' and ``Finish''.
+
+@node Daily web tracking
+@subsection Tracking changes with Antenna
+@cindex The Antenna interface
+
+On the Antenna page, you will see two sections: one called ``Updated''
+and another called ``Visited''.  In the ``Updated'' section, you will
+find websites which have changed since the last Antenna update, and in
+the ``Visited'' section, the websites which haven't.  In each section,
+each line stands for one website of the Antenna database, and has the
+following structure:
+
+@samp{  * 2002/12/15 16:43  (T)  My website}
+
+The first part is the last time the website was updated, or if this
+information is not available, the last time Antenna noticed a change in
+this page.
+
+The @samp{(T)} stands for ``Time'', it means that the change was
+detected because the last modification time of that page has changed
+since the last Antenna update.  Another possible value here is @samp{S}
+(for ``Size''), which means that the change has been detected because
+the size of the page has changed.
+
+The last part of this line is the title you gave to this website when
+you added it to the database.
+
+Please note that the Antenna database doesn't get automatically updated,
+you have to update it each time you want to check if the sites have
+changed, either by hitting @kbd{R} in the Antenna page, or by passing a
+prefix argument to the command (start Antenna with @kbd{C-u A}, for
+example).
 
 @node Showing Directory Tree
 @section ディレクトリの木構造を表示する
