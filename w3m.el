@@ -1827,12 +1827,15 @@ When BUFFER is nil, all data will be inserted in the current buffer."
   "Get user and passwd from DataBase."
   (if (= w3m-process-user-counter 0)
       nil
-    (cdr (assoc (cons (w3m-get-server-root url) realm)
-		w3m-arrived-user-alist))))
+    (let ((ret (cdr (assoc (cons (w3m-get-server-root url) realm)
+			   w3m-arrived-user-alist))))
+      (when ret (setq w3m-process-user-counter (1- w3m-process-user-counter)))
+      ret)))
 
 (defun w3m-exec-set-user (url realm user pass)
   (when (and url realm user)
     (let ((root (w3m-get-server-root url))
+	  (w3m-process-user-counter 2)
 	  tmp)
       (if (setq tmp (w3m-exec-get-user url realm))
 	  (unless (equal (cons user pass) tmp)
