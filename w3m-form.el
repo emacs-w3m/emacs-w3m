@@ -65,14 +65,23 @@
 
 ;;; w3m-form structure:
 
+(defsubst w3m-form-normalize-action (action url)
+  "Normalize the ACTION using URL as a current URL."
+  ;; "!CURRENT_URL!" is magic string of w3m.
+  (if (and action (not (string= action "!CURRENT_URL!")))
+      (w3m-expand-url action url)
+    (and url
+	 (string-match w3m-url-components-regexp url)
+	 (substring url 0 (or (match-beginning 6)
+			      (match-beginning 8))))))
+
 (defun w3m-form-new (method action &optional baseurl charlst enctype)
   "Return new form object."
   (vector 'w3m-form-object
 	  (if (stringp method)
 	      (intern method)
 	    method)
-	  (and action
-	       (w3m-expand-url action baseurl))
+	  action
 	  charlst
 	  (or enctype 'application/x-www-form-urlencoded)
 	  nil))
@@ -500,12 +509,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		(progn
 		  (setf (w3m-form-method form) (or method "get"))
 		  (setf (w3m-form-action form)
-			(or action (and w3m-current-url
-					(string-match w3m-url-components-regexp
-						      w3m-current-url)
-					(substring w3m-current-url 0
-						   (or (match-beginning 6)
-						       (match-beginning 8))))))
+			(w3m-form-normalize-action action w3m-current-url))
 		  (setf (w3m-form-charlst form)
 			(if accept-charset
 			    (setq accept-charset
@@ -516,14 +520,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			  'application/x-www-form-urlencoded)))
 	      (setq form (w3m-form-new
 			  (or method "get")
-			  (or action (and w3m-current-url
-					  (string-match
-					   w3m-url-components-regexp
-					   w3m-current-url)
-					  (substring
-					   w3m-current-url 0
-					   (or (match-beginning 6)
-					       (match-beginning 8)))))
+			  (w3m-form-normalize-action action w3m-current-url)
 			  nil
 			  (if accept-charset
 			      (setq accept-charset
@@ -1374,9 +1371,6 @@ character."
 		  (if (string-match "\\?" w3m-current-url)
 		      (substring w3m-current-url 0 (match-beginning 0))
 		    w3m-current-url))))
-    ;; "!CURRENT_URL!" is magic string of w3m.
-    (when (string-match "!CURRENT_URL!$" url)
-      (setq url (substring url 0 (match-beginning 0))))
     (cond ((and (not (string= url orig-url))
 		(string-match "^https://" orig-url)
 		(string-match "^http://" url)

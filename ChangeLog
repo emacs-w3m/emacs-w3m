@@ -1,3 +1,10 @@
+2003-11-20  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-form.el (w3m-form-normalize-action): New inline function.
+	(w3m-form-parse-and-fontify): Use it.
+	(w3m-form-new): Simply set action.
+	(w3m-form-submit): Don't treat !CURRENT_URL! here.
+
 2003-11-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_ADD_LOAD_PATH): Refine the help message for the
@@ -15,7 +22,7 @@
 
 	* w3m-form.el (w3m-form-put-by-name): New function.
 	(w3m-form-resume): Use w3m-form-get-by-name and w3m-form-put-by-name
-	instead of w3m-form-get and w3m-form-put.
+	instead of w3m-form-get and w3m-form-put for radio buttons.
 	(w3m-form-parse-and-fontify): Ditto.
 	(w3m-form-input-radio): Ditto.
 
