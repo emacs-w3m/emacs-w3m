@@ -4957,13 +4957,13 @@ Message-ID として表示されます。例えば、下記の
 構凝った Subject を作っていますので一度見て下さい。
 
 上記のように記事の URL が相対パス表示されている場合は、
-@code{w3m-expand-url} を使用し、絶対パス表示に変更してからヘッダに収めま
-しょう。記事の URL がヘッダの URL と同じ、つまり記事毎に個別に URL を持
-たない構造のウェブページもあります。この場合は少しやっかいで、ヘッダ情報
-取得の段階で、記事の内容も取得しておき、Emacs のメモリに収めておく必要が
-あります。具体的には @file{sb-palmfan.el}, @file{sb-dennou.el},
-@file{sb-tcup.el} の @file{shimbun-headers} メソッドの定義を参照して下さ
-い。
+@code{shimbun-expand-url} を使用し、絶対パス表示に変更してからヘッダに収
+めましょう。記事の URL がヘッダの URL と同じ、つまり記事毎に
+個別に URL を持たない構造のウェブページもあります。この場合は少しやっか
+いで、ヘッダ情報取得の段階で、記事の内容も取得しておき、Emacs のメモリに
+収めておく必要があります。具体的には @file{sb-palmfan.el},
+@file{sb-dennou.el}, @file{sb-tcup.el} の @file{shimbun-headers} メソッ
+ドの定義を参照して下さい。
 
 ウェブページによっては Date が特定できないものがあります。そういう場合は
 無理に特定せずとも @code{""} を入れておけば OK です。記事の内容を見て初
@@ -4982,8 +4982,8 @@ Message-ID として表示されます。例えば、下記の
 画像がきちんと出力されませんよ。詳しくは RFC2387, RFC822 を参照して下さ
 い。
 
-苦労して取得したこれらの情報は @code{shimbun-make-header} という関数を利
-用してヘッダに収めます。
+苦労して取得したこれらの情報は @code{shimbun-create-header} という関数を
+利用してヘッダに収めます。
 
 結局 @file{sb-foobar.el} の中での @code{shimbun-get-headers} の定義の骨
 組みはこんな風になりますね。
@@ -4999,10 +4999,8 @@ Message-ID として表示されます。例えば、下記の
         ...
         (when (shimbun-search-id shimbun id)
           (throw 'stop nil))
-        (push (shimbun-make-header
-               0 (shimbun-mime-encode-string subject)
-               (shimbun-mime-encode-string from)
-              date id "" 0 0 url)
+        (push (shimbun-create-header
+               0 subject from date id "" 0 0 url)
               headers)))
     headers))
 @end lisp
@@ -5069,7 +5067,7 @@ Message-ID として表示されます。例えば、下記の
 記事を何も加工する必要がなければ @file{sb-foobar.el} の中で
 は @code{shimbun-make-contents} について新たに定義する必要はありません。
 
-単純に記事の前半と後半に捨てたい部分があるだけならば、
+単純に記事の前後に捨てたい部分があるだけならば、
 @code{shimbun-foobar-content-start},
 @code{shimbun-foobar-content-end} に捨てたい部分を検索可能な正規表現を指
 定しておきましょう。
@@ -5080,34 +5078,24 @@ Message-ID として表示されます。例えば、下記の
 @end lisp
 
 @noindent
-標準の @code{shimbun-make-contents} がこれらの正規表現を利用して、
-@code{point-min} から @code{shimbun-foobar-content-start} まで、
+標準の @code{shimbun-make-contents} から
+呼び出された @code{shimbun-clear-contents} は、これらの正規表現を利用し
+て、@code{point-min} から @code{shimbun-foobar-content-start} まで、
 @code{shimbun-foobar-content-end} から @code{point-max} までを切り捨てて
 くれますよ。但し、これら二つのマッチはいずれかが成功しないと切り捨ては行
 われませんので注意が必要です。
 
 広告などの不要な情報があって、それを細かく検索して捨てたい場合は、
-@file{sb-foobar.el} の中
-で @code{luna-define-method} の @code{method-qualifier} に対し
-て @samp{:before} を指定して @code{shimbun-make-contents} を宣言し、
-@file{shimbun.el} の @code{shimbun-make-contents} が呼ばれる前
-に@footnote{ご想像の通り、@samp{:before} を指定すると、ま
-ず @samp{:before} 付きのメソッドがコールされて、その後
-で @samp{:before} が付いていない親クラスのメソッドがコールされます。なお、
-@code{method-qualifier} を付けないで @file{sb-foobar.el} の中でメソッド
-を作った場合は親クラスのメソッドを上書きします。} 掃除をしましょう。親メ
-ソッドに渡す際に正常に動くよう、@code{save-excursion} で囲ってポイントを
-保存することを忘れずに。
+@file{sb-foobar.el} の中で独自の @code{shimbun-clear-contents} を定義し
+ておきます。
 
 @lisp
-(luna-define-method shimbun-make-contents :before ((shimbun shimbun-foobar)
-                                                   header)
-  (save-excursion
-    ;; cleaning up
-    (while (re-search-forward "..." nil t nil)
-      (delete-region (match-beginning 0) (match-end 0)))
-    ...
-    ))
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-foobar)
+                                                    header)
+  ;; cleaning up
+  (while (re-search-forward "..." nil t nil)
+    (delete-region (match-beginning 0) (match-end 0)))
+  (luna-call-next-method))
 @end lisp
 
 @noindent

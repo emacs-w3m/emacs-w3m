@@ -4893,7 +4893,7 @@ additional information in MUA.  See the @file{sb-muchy.el} file which
 makes its original subject form from a web page source.
 
 If URL of an article is a relative path like above, use
-@code{w3m-expand-url} to expand it before putting information to
+@code{shimbun-expand-url} to expand it before putting information to
 header.  If each article doesn't have a each unique URLs (i.e. URL of
 headers and URL of articles are just same), you have to ask Emacs to
 remember body of an article when gathering headers information, For more
@@ -4917,7 +4917,7 @@ the page and/or a part of URL of the page.  And use @samp{@@} but
 RFC2387 and RFC822 for more detail.
 
 Put these information to header using function
-@code{shimbun-make-header} of the @file{shimbun.el} module.
+@code{shimbun-create-header} of the @file{shimbun.el} module.
 
 A bare bone of @code{shimbun-get-headers} in your @file{sb-foobar.el}
 file is as follows:
@@ -4933,10 +4933,8 @@ file is as follows:
         ...
         (when (shimbun-search-id shimbun id)
           (throw 'stop nil))
-        (push (shimbun-make-header
-               0 (shimbun-mime-encode-string subject)
-               (shimbun-mime-encode-string from)
-              date id "" 0 0 url)
+        (push (shimbun-create-header
+               0 subject from date id "" 0 0 url)
               headers)))
     headers))
 @end lisp
@@ -5013,35 +5011,25 @@ matches content end.
 @end lisp
 
 @noindent
-@code{shimbun-make-contents} defined in the @file{shimbun.el} module
+@code{shimbun-clear-contents}, which is called by
+@code{shimbun-make-contents} defined in the @file{shimbun.el} module,
 will remove HTML source from @code{point-min} to
 @code{shimbun-foobar-content-start} and from
 @code{shimbun-foobar-content-end} to @code{point-max} using the regexps.
 Note that it will not remove any HTML source when either of the regexp
 searches fails.
 
-If you want to remove unnecessary parts (e.x. advertisements) diligently
-by some regexps, define @code{shimbun-make-contents} in your new
-@file{sb-foobar.el} file with @code{luna-define-method} specifying
-method-qualifier @samp{:before} and clean up an article before
-@code{shimbun-make-contents} of the @file{shimbun.el} module is
-called@footnote{As you may know, a method that is declared with
-@samp{:before} is called first and succeedingly a method of the same
-name that is declared without @samp{:before} is called.  If you declare
-a method without any method-qualifier, it will overwrite a method of the
-same name in parent class.}.  Don't forget to use @code{save-excursion}
-in @code{shimbun-make-contents} with @samp{:before} to save point so
-that a parent method can work properly.
+If you want to remove more unnecessary parts (e.x. advertisements)
+diligently, define @code{shimbun-clear-contents} in your new
+@file{sb-foobar.el} file as follows:
 
 @lisp
-(luna-define-method shimbun-make-contents :before ((shimbun shimbun-foobar)
-                                                   header)
-  (save-excursion
-    ;; cleaning up
-    (while (re-search-forward "..." nil t nil)
-      (delete-region (match-beginning 0) (match-end 0)))
-    ...
-    ))
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-foobar)
+                                                    header)
+  ;; cleaning up
+  (while (re-search-forward "..." nil t nil)
+    (delete-region (match-beginning 0) (match-end 0)))
+  (luna-call-next-method))
 @end lisp
 
 @noindent
