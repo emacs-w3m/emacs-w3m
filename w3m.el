@@ -477,6 +477,14 @@ to input URL when URL-like string is not detected under the cursor."
   "Face used to highlight the current url in \"about://history/\"."
   :group 'w3m-face)
 
+(defface w3m-bold-face '((t (:bold t)))
+  "Face used to fontify bold characters."
+  :group 'w3m-face)
+
+(defface w3m-underline-face '((t (:underline t)))
+  "Face used to fontify underlined part."
+  :group 'w3m-face)
+
 (defcustom w3m-mode-hook nil
   "*Hook run before `w3m-mode' called."
   :group 'w3m
@@ -1691,7 +1699,7 @@ which defaults to the value of `w3m-file-coding-system-for-read'."
       (delete-region start (match-end 0))
       (when (search-forward "</b>" nil t)
 	(delete-region (match-beginning 0) (match-end 0))
-	(w3m-add-text-properties start (match-beginning 0) '(face bold))))))
+	(w3m-add-text-properties start (match-beginning 0) '(face w3m-bold-face))))))
 
 (defun w3m-fontify-underline ()
   "Fontify underline characters in this buffer which contains half-dumped data."
@@ -1702,7 +1710,7 @@ which defaults to the value of `w3m-file-coding-system-for-read'."
       (when (search-forward "</u>" nil t)
 	(delete-region (match-beginning 0) (match-end 0))
 	(w3m-add-text-properties start (match-beginning 0)
-				 '(face underline))))))
+				 '(face w3m-underline-face))))))
 
 (defsubst w3m-decode-anchor-string (str)
   ;; FIXME: This is a quite ad-hoc function to process encoded URL

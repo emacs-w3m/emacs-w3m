@@ -1,3 +1,10 @@
+2002-01-07  Shiro Takeda  <zbc08106@park.zero.ad.jp>
+
+	* w3m.el (w3m-bold-face, w3m-underline-face): New faces.
+	(w3m-fontify-bold): Use `w3m-bold-face' instead of `bold'.
+	(w3m-fontify-underline): Use `w3m-underline-face' instead of
+	`underline'.
+
 2002-01-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-url-to-file-name): Decode paths of local files.
