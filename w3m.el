@@ -1573,6 +1573,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 
 ;;; Handle process:
 (defun w3m-exec-process (&rest args)
+  "Run w3m-command and return process exit status."
   (save-excursion
     (let ((coding-system-for-read
 	   (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
@@ -1595,23 +1596,17 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		  (funcall w3m-process-message))
 	      (sit-for 0.2)
 	      (discard-input))
-	    (unless (zerop (process-exit-status proc))
-	      (error "Error: %s" (buffer-substring (point-min)
-						   (max (- (point-max) 1)
-							(point-min)))))
-	    (and w3m-current-url
-		 w3m-process-user
-		 (setq w3m-arrived-user-list
-		       (cons
-			(cons w3m-current-url
-			      (list w3m-process-user w3m-process-passwd))
-			(delete (assoc w3m-current-url w3m-arrived-user-list)
-				w3m-arrived-user-list)))))
+	    (prog1 (process-exit-status proc)
+	      (and w3m-current-url
+		   w3m-process-user
+		   (setq w3m-arrived-user-list
+			 (cons
+			  (cons w3m-current-url
+				(list w3m-process-user w3m-process-passwd))
+			  (delete (assoc w3m-current-url w3m-arrived-user-list)
+				  w3m-arrived-user-list))))))
 	;; call-process
-	(unless (zerop (apply 'call-process w3m-command nil t nil args))
-	  (error "Error: %s" (buffer-substring (point-min)
-					       (max (- (point-max) 1)
-						    (point-min)))))))))
+	(apply 'call-process w3m-command nil t nil args)))))
 
 (defun w3m-exec-get-user (url)
   (if (= w3m-process-user-counter 0)
@@ -1812,35 +1807,38 @@ If optional argument NO-CACHE is non-nil, cache is not used."
       (with-temp-buffer
 	(let ((w3m-current-url url))
 	  (w3m-message "Request sent, waiting for response...")
-	  (w3m-exec-process "-dump_head" url)
-	  (w3m-message "Request sent, waiting for response... done")
-	  (w3m-cache-header url (buffer-string))))))
+	  (when (zerop (prog1 (w3m-exec-process "-dump_head" url)
+			 (w3m-message "Request sent, waiting for response... done")))
+	    (w3m-cache-header url (buffer-string)))))))
 
 (defun w3m-w3m-check-header (url &optional no-cache)
-  "Ask the header of the URL to HTTP server.
-If optional argument NO-CACHE is non-nil, cache is not used."
-  (w3m-with-work-buffer
-    (delete-region (point-min) (point-max))
-    (insert (w3m-w3m-get-header url no-cache))
-    (goto-char (point-min))
-    (let ((case-fold-search t)
-	  length type charset)
-      (if (re-search-forward "^content-type:\\([^\r\n]+\\)\r*$" nil t)
-	  (progn
-	    (setq type (match-string 1))
-	    (if (string-match ";[ \t]*charset=" type)
-		(setq charset (w3m-remove-redundant-spaces
-			       (substring type (match-end 0)))
-		      type (w3m-remove-redundant-spaces
-			    (substring type 0 (match-beginning 0))))
-	      (setq type (w3m-remove-redundant-spaces type)))))
-      (goto-char (point-min))
-      (when (and (re-search-forward "HTTP/1\\.[0-9] 200" nil t)
-		 (re-search-forward "^content-length:\\([^\r\n]+\\)\r*$" nil t))
-	(setq length (string-to-number (match-string 1))))
-      (list (or type (w3m-local-content-type url) "unknown")
-	    charset
-	    length))))
+  "Return the header of the URL.
+Return nil when retirieval of header is failed.  If optional argument
+NO-CACHE is non-nil, cache is not used."
+  (let ((header (w3m-w3m-get-header url no-cache)))
+    (when header
+      (w3m-with-work-buffer
+	(delete-region (point-min) (point-max))
+	(insert header)
+	(goto-char (point-min))
+	(let ((case-fold-search t)
+	      length type charset)
+	  (if (re-search-forward "^content-type:\\([^\r\n]+\\)\r*$" nil t)
+	      (progn
+		(setq type (match-string 1))
+		(if (string-match ";[ \t]*charset=" type)
+		    (setq charset (w3m-remove-redundant-spaces
+				   (substring type (match-end 0)))
+			  type (w3m-remove-redundant-spaces
+				(substring type 0 (match-beginning 0))))
+		  (setq type (w3m-remove-redundant-spaces type)))))
+	  (goto-char (point-min))
+	  (when (and (re-search-forward "HTTP/1\\.[0-9] 200" nil t)
+		     (re-search-forward "^content-length:\\([^\r\n]+\\)\r*$" nil t))
+	    (setq length (string-to-number (match-string 1))))
+	  (list (or type (w3m-local-content-type url) "unknown")
+		charset
+		length))))))
 
 (defun w3m-pretty-length (n)
   ;; This function imported from url.el.

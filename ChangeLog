@@ -1,3 +1,9 @@
+2001-03-13  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-exec-process): Return process exit status.
+	(w3m-w3m-get-header): Check the return value of w3m-exec-process.
+	(w3m-w3m-check-header): Check the return value of w3m-w3m-get-header.
+
 2001-03-13  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-exec-process): Check exit status and cause an error
