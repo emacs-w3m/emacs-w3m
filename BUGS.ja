@@ -6,7 +6,13 @@ $Date$
 
    --> URL の encode 問題の解決 [emacs-w3m:05387], [emacs-w3m:05576]
 
-   --> shimbun ライブラリの分割 [emacs-w3m:05607]
+   --> 各種 form 用の face の変更 [emacs-w3m:05490]
+
+   --> shimbun
+       --> 配布パッケージの分割 [emacs-w3m:05607]
+       --> 利用方法に関する留意点の文書を整備
+
+   --> xml.el のインストーラの完成 [emacs-w3m:05353]
 
    --> w3m-copy-buffer() で，history に格納されている buffer-local
        properties (form data などを含む) を捨てずにコピーする．--ky
@@ -21,9 +27,6 @@ $Date$
        [emacs-w3m:04799]
 
    --> 変数/関数の docstring と comment の英語の整備．-- ky
-
-   --> configure 時に --with-icondir=... で指定した値を自動的に
-       w3m-icon-directory の初期値として反映してほしい．[emacs-w3m:03912]
 
    --> frame 対応
 
@@ -69,8 +72,14 @@ $Date$
    --> [emacs-w3m:05901] 406 Not Accetable & Alternates なページを閲覧す
        る方法が欲しい．
 
+   --> [emacs-w3m:06103] widget-based antenna editor
+
+   --> configure 時に --with-icondir=... で指定した値を自動的に
+       w3m-icon-directory の初期値として反映してほしい．[emacs-w3m:03912]
+
    --> shimbun
        --> ML archive の検索エンジンとの連動
+       --> 掲示板などの場合は post も出来るようにならないか?
 
 
 Local Variables:
