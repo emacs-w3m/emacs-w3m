@@ -1,7 +1,7 @@
 2004-06-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Don't work
-	for the editorial the tenjin groups when newspaper holidays.
+	for the editorial and the tenjin groups when newspaper holidays.
 
 2004-06-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
