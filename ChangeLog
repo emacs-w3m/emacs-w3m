@@ -1,5 +1,12 @@
 2002-05-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-mailman.el (shimbun-mailman-make-contents): New
+	function separated from `shimbun-make-contents'.
+	(shimbun-make-contents): Use it.
+	(shimbun-mailman-headers): New function separated from
+	`shimbun-headers'; rewrite it to search new articles in the
+	reverse order.
+
 	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers): Don't include
 	year, month and day numbers in Message-ID.
 
