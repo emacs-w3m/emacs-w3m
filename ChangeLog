@@ -1,3 +1,8 @@
+2005-04-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Don't miss
+	items for sale in the shopping.kishi group.
+
 2005-03-27  YOSIDA Kozi  <kozi.yosida@nifty.ne.jp>
 
 	* shimbun/sb-nifty-forum.el: New file.

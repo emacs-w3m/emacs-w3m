@@ -649,6 +649,14 @@ and tenjin, it tries to fetch the article for that day if it failed."
 		  (goto-char (point-min)))
 	      (insert "Couldn't retrieve the page.\n")))
 	  (setq retry (1+ retry)))))
+     ((string-equal group "shopping.kishi")
+      (when (re-search-forward "\
+<!--[\t\n ]*記事見出し[\t\n ]*-->\\|
+<!--[\t\n ]*Start of Headline[\t\n ]*-->\\|
+<!--[\t\n ]*FJZONE START NAME[\t\n ]*=[\t\n ]*\"MIDASHI\"[\t\n ]*-->"
+			       nil t)
+	(re-search-forward "\\([\t\n ]*<[^>]+>\\)*[\t\n ]*" nil t)
+	(insert "<!-- Start of Kiji -->")))
      (t
       (when (re-search-forward
 	     (eval-when-compile
