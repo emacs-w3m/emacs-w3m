@@ -1,3 +1,8 @@
+2001-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-expand-url): Make it work correctly when a url is
+	beginning with "//".
+
 2001-10-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-language): New option.

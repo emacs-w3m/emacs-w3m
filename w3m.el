@@ -2990,40 +2990,47 @@ is performed.  Otherwise, COUNT is treated as 1 by default."
 (defun w3m-expand-url (url &optional base)
   "Convert URL to absolute, and canonicalize it."
   (save-match-data
-    (unless base
-      (setq base (or w3m-current-base-url
-		     w3m-current-url
-		     "")))
-    (when (string-match "^[^:/]+://[^/]*$" base)
-      (setq base (concat base "/")))
-    (cond
-     ;; URL is relative on BASE.
-     ((string-match "^#" url)
-      (concat base url))
-     ;; URL has absolute spec.
-     ((string-match "^[^:/?]+:" url)
-      url)
-     ((string-match "^/" url)
-      (if (string-match "^\\([^:/]+://[^/]*\\)/" base)
-	  (concat (match-string 1 base) url)
-	url))
-     (t
-      (let ((server "") path)
-	(if (string-match "^\\([^:]+://[^/]*\\)/" base)
-	    (setq server (match-string 1 base)
-		  base (substring base (match-end 1))))
-	(setq path (concat (file-name-directory base) url))
-	(if (string-match "?" path)
-	    ;; scheme://server/path?query (expand only path)
-	    (setq path
-		  (concat (w3m-expand-path-name
-			   (substring path 0 (match-beginning 0)))
-			  (substring path (match-beginning 0))))
-	  (setq path (w3m-expand-path-name path)))
-	;; remove drive (for Win32 platform)
-	(if (string-match "^.:" path)
-	    (setq path (substring path (match-end 0))))
-	(concat server path))))))
+    (if (string-match "^[^/?]+:" url)
+	;; URL may have an absolute spec.
+	url
+      (setq base (or base w3m-current-base-url w3m-current-url ""))
+      (let (scheme server path)
+	(when (string-match "^\\([^/:]+\\)://\\([^/]*\\)\\(/\\)?" base)
+	  (setq scheme (match-string 1 base)
+		server (match-string 2 base))
+	  (if (match-beginning 3)
+	      (setq path (file-name-directory (substring base
+							 (match-beginning 3))))
+	    (setq path "/"
+		  base (concat base path))))
+	(cond ((eq ?# (aref url 0))
+	       ;; Maybe a relative URL on the BASE.
+	       (concat base url))
+	      ((eq ?/ (aref url 0))
+	       (if scheme
+		   (if (and (>= (length url) 2)
+			    (eq ?/ (aref url 1)))
+		       ;; There may not be a scheme (omitted from a full-URL).
+		       (concat scheme ":" url)
+		     ;; Maybe a top page of the server.
+		     (concat scheme "://" server url))
+		 ;; Maybe a local file.
+		 url))
+	      (t
+	       (when path
+		 (setq url (concat path url)))
+	       (setq url (if (string-match "\\?" url)
+			     ;; scheme://server/path?query (expand only path)
+			     (concat (w3m-expand-path-name
+				      (substring url 0 (match-beginning 0)))
+				     (substring url (match-beginning 0)))
+			   (w3m-expand-path-name url)))
+	       (when (string-match "^.:" url)
+		 ;; remove a drive letter (for Win32 platform).
+		 (setq url (substring url (match-end 0))))
+	       (if scheme
+		   (concat scheme "://" server url)
+		 url)))))))
 
 (defun w3m-view-this-url (&optional arg)
   "View the URL of the link under point."
