@@ -1879,7 +1879,7 @@ here it is (@pxref{Other Requirements}).
 @cindex nnshimbun
 @cindex Web Newspaper
 
-@samp{Nnshimbin} is one of the Gnus back ends, but it is distributed
+@samp{Nnshimbun} is one of the Gnus back ends, but it is distributed
 with emacs-w3m, not Gnus, exceptionally.  @samp{Nnshimbun} is able to
 make Gnus into an exceptionally useful web browser.  You can skim
 through the articles in the web server of the newspaper publishing
