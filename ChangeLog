@@ -1,3 +1,7 @@
+2005-03-27  YOSIDA Kozi  <kozi.yosida@nifty.ne.jp>
+
+	* shimbun/sb-nifty-forum.el: New file.
+
 2005-03-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Release emacs-w3m-1.4.4 from emacs-w3m-1_4 branch.

@@ -5160,6 +5160,18 @@ ffii.de.software-patente ffii.de.software-patente.ffii
 ffii.de.informations-infrastruktur ffii.fr.brevets-logiciels
 ffii.fr.brevets-logiciels.ffii ffii.nl.softwarepatenten
 ffii.nl.softwarepatenten.ffii
+
+@item @uref{http://bbs.com.nifty.com/mes/, フォーラム@nifty}
+nifty-forum.fphys12 nifty-forum.fphys13 nifty-forum.fphys14
+nifty-forum.fphys15 nifty-forum.fphys16 nifty-forum.fphys17
+nifty-forum.fphys18 nifty-forum.fphys24 nifty-forum.fphys25
+nifty-forum.fsci01 nifty-forum.fsci04 nifty-forum.fsci09
+nifty-forum.fsci10 nifty-forum.fsci11 nifty-forum.fsci17
+nifty-forum.fsci18 nifty-forum.fsci20 nifty-forum.fsci21
+nifty-forum.fsci23 nifty-forum.fsci26 nifty-forum.fsci27
+nifty-forum.fsci28 nifty-forum.fsci29 nifty-forum.fsci30
+nifty-forum.fsci31 nifty-forum.fsci32 nifty-forum.fsci34
+nifty-forum.fsci35 nifty-forum.fsci36 nifty-forum.fsci37
 @end table
 
 @node Shimbun Basics
