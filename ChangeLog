@@ -1,3 +1,8 @@
+2003-01-28  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3mhack.el (top): Set `cmdproxy.exe' to `shell-file-name' when
+	Win32 environment.
+
 2003-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/nnshimbun.el: Autoload `gnus-group-make-group'; don't
