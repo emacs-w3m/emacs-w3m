@@ -1,3 +1,7 @@
+2003-04-07  ARISAWA Akihiro  <ari@namazu.org>
+
+	* shimbun/sb-ding.el: Removed.
+
 2003-04-04  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-search.el (w3m-search-engine-alist): Change coding-system to

@@ -62,7 +62,6 @@ ZDNet		zdnet.comp zdnet.gamespot
 semi-gnus-ja	airs.semi-gnus-ja
 wanderlust	airs.wl
 bbdb-ml		bbdb-ml.bbdb-ml
-ding-gnus 関連	ding.ding ding.ding-announce ding.ding-cvslog
 gnome 関連	gnome.balsa-list gnome.calendar-list
 		gnome.cvs-commits-list gnome.foundation-announce
 		gnome.foundation-list gnome.fplan-list
