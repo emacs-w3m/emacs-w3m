@@ -153,8 +153,8 @@ Basic Usage
 * Inline Images::               $B2hA|I=<($r(B ON/OFF $B$9$k(B
 * Tracing History::             $B;~6u$rAL$k(B
 * Managing Bookmarks::          $B$\$/$N(B/$B$o$?$7$N$*5$$KF~$j(B
-* Using Tabs::                  $B$3$l$,N.9T$N%?%V!&%V%i%&%6$@(B
-* Selecting Buffers::           $B$?$/$5$s$N%;%C%7%g%s$+$i0l$D$rA*$V(B
+* Using Tabs::                  $B$_$s$J%?%V$,9%$-$@$h$M(B
+* Working with buffers::        $B%P%C%U%!$r:n$k(B/$B>C$9(B/$B0\F0$9$k(B
 * Downloading::                 $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
 * Submitting Forms::            HTML $B%U%)!<%`$K5-F~$9$k(B
 
@@ -625,8 +625,8 @@ setenv http_proxy http://proxy.hogege.com:8000/
 * Inline Images::               $B2hA|I=<($r(B ON/OFF $B$9$k(B
 * Tracing History::             $B;~6u$rAL$k(B
 * Managing Bookmarks::          $B$\$/$N(B/$B$o$?$7$N$*5$$KF~$j(B
-* Using Tabs::                  $B$3$l$,N.9T$N%?%V!&%V%i%&%6$@(B
-* Selecting Buffers::           $B$?$/$5$s$N%;%C%7%g%s$+$i0l$D$rA*$V(B
+* Using Tabs::                  $B$_$s$J%?%V$,9%$-$@$h$M(B
+* Working with buffers::        $B%P%C%U%!$r:n$k(B/$B>C$9(B/$B0\F0$9$k(B
 * Downloading::                 $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
 * Submitting Forms::            HTML $B%U%)!<%`$K5-F~$9$k(B
 @end menu
@@ -826,7 +826,7 @@ Emacs $B$NI8=`$N%-!<%P%$%s%I$KHf$Y$F(B @code{w3m-mode} $B$G$O!"$h$jC;$$%-!<%9
 @findex w3m-scroll-left
 @vindex w3m-horizontal-scroll-columns
 $B:8$K%9%/%m!<%k$7$^$9!#%9%/%m!<%k$NNL(B
-$B$O(B @code{w3m-horizontal-scroll-columns} $B$GM?$(!"%G%U%)%k%H$O(B 10 $B$G(B
+$B$O(B @code{w3m-horizontal-scroll-columns} $B$GM?$(!"%G%U%)%k%HCM$O(B 10 $B$G(B
 $B$9(B (@code{w3m-scroll-left})$B!#(B
 
 @item <
@@ -834,7 +834,7 @@ Emacs $B$NI8=`$N%-!<%P%$%s%I$KHf$Y$F(B @code{w3m-mode} $B$G$O!"$h$jC;$$%-!<%9
 @findex w3m-scroll-right
 @vindex w3m-horizontal-scroll-columns
 $B1&$K%9%/%m!<%k$7$^$9!#%9%/%m!<%k$NNL(B
-$B$O(B @code{w3m-horizontal-scroll-columns} $B$GM?$(!"%G%U%)%k%H$O(B 10 $B$G(B
+$B$O(B @code{w3m-horizontal-scroll-columns} $B$GM?$(!"%G%U%)%k%HCM$O(B 10 $B$G(B
 $B$9(B (@code{w3m-scroll-right})$B!#(B
 
 @item .
@@ -842,7 +842,7 @@ Emacs $B$NI8=`$N%-!<%P%$%s%I$KHf$Y$F(B @code{w3m-mode} $B$G$O!"$h$jC;$$%-!<%9
 @findex w3m-shift-left
 @vindex w3m-horizontal-shift-columns
 $B:8$K%7%U%H$7$^$9(B ($B>.9o$_$J?eJ?%9%/%m!<%k(B)$B!#%7%U%H$NNL(B
-$B$O(B @code{w3m-horizontal-shift-columns} $B$GM?$(!"%G%U%)%k%H$O(B 2 $B$G(B
+$B$O(B @code{w3m-horizontal-shift-columns} $B$GM?$(!"%G%U%)%k%HCM$O(B 2 $B$G(B
 $B$9(B (@code{w3m-shift-left})$B!#(B
 
 @item ,
@@ -850,7 +850,7 @@ Emacs $B$NI8=`$N%-!<%P%$%s%I$KHf$Y$F(B @code{w3m-mode} $B$G$O!"$h$jC;$$%-!<%9
 @findex w3m-shift-right
 @vindex w3m-horizontal-shift-columns
 $B1&$K%7%U%H$7$^$9(B ($B>.9o$_$K?eJ?%9%/%m!<%k$G$9(B)$B!#%7%U%H$NNL(B
-$B$O(B @code{w3m-horizontal-shift-columns} $B$GM?$(!"%G%U%)%k%H$O(B 2 $B$G(B
+$B$O(B @code{w3m-horizontal-shift-columns} $B$GM?$(!"%G%U%)%k%HCM$O(B 2 $B$G(B
 $B$9(B (@code{w3m-shift-right})$B!#(B
 
 @item M-l
@@ -1280,9 +1280,6 @@ Bookmarks}$B!#(B
 @node Editing Bookmarks
 @subsection $B%V%C%/%^!<%/$rJQ99$9$k$K$O(B?
 @cindex Editing bookmarks
-@findex w3m-bookmark-kill-entry
-@findex w3m-bookmark-edit
-@findex w3m-bookmark-undo
 
 Bookmark $B%^%$%J!<%b!<%I(B (@pxref{Consulting Bookmarks}) $B$O!"%V%C%/%^!<%/(B
 $B$rJT=8$9$k$?$a$K$$$/$D$+$N%-!<%P%$%s%I$r@_$1$F$$$^$9!#Cf$G$b%V%C%/%^!<%/(B
@@ -1297,27 +1294,236 @@ Bookmark $B%^%$%J!<%b!<%I(B (@pxref{Consulting Bookmarks}) $B$O!"%V%C%/%^!<%/
 
 @table @kbd
 @item C-k
+@findex w3m-bookmark-kill-entry
 $B8=:_0LCV$N%V%C%/%^!<%/$r(B kill $B$7$^$9(B (@code{w3m-bookmark-kill-entry})$B!#(B
 
 @item E
+@findex w3m-bookmark-edit
 $B%V%C%/%^!<%/!&%U%!%$%k$rFI$_9~$s$G!"JT=82DG=$J>uBV$K$7$^(B
 $B$9(B (@code{w3m-bookmark-edit})$B!#(B
 
 @item C-_
+@findex w3m-bookmark-undo
 $B$d$jD>$7$r$7$^$9(B (@code{w3m-bookmark-undo})$B!#(B
 @end table
 
 @node Using Tabs
-@section $B$3$l$,N.9T$N%?%V!&%V%i%&%6$@(B
+@section $B$_$s$J%?%V$,9%$-$@$h$M(B
 
+$B$[$H$s$I$NB>$N%F%-%9%H%Y!<%9$N%V%i%&%6!<$H0[$J$j!"(Bemacs-w3m $B$O%?%V$K$h$k(B
+$B1\Mw$r%5%]!<%H$7$F$$$^$9(B@footnote{$BC/$N$;$$$G$b$J$$$1$l$I!"(B
+Emacs 19 $B$+(B 20 $B$N%f!<%6$O%?%V$r;H$($^$;$s!#(B}$B!#%?%V$K$h$k1\Mw$C$F2?(B? $B$H?R(B
+$B$M$i$l$=$&$G$9$M!#$=$l$O$H$F$bC1=c$G!"%&%#%s%I%&$N$F$C$Z$s$N9T$K$9$Y$F$N(B
+$B%P%C%U%!$rC1=c$+$DJ,$+$j$d$9$$$d$jJ}$GI=<($9$k$3$H$K$h$C$F!"C10l$N%&%#%s(B
+$B%I%%$G$9$Y$F$N(B emacs-w3m $B$N%P%C%U%!$rI=8=$9$kJ}K!$G$9!#$=$l$>$l$N%P%C%U%!(B
+$B$O!V%?%V!W$H$7$FI=<($5$l$^$9!#$3$N9T$O!"B>$N%P%C%U%!$K0\F0$7$?$j!"%Z!<%8(B
+$B$N>uBV$rCN$k$3$H$,$G$-$k$h$&$K$9$k$?$a$K>o$K8+$($?$^$^$K$J$C$F$$$F!"%P%C(B
+$B%U%!$K$D$i$l$F%9%/%m!<%k$7$^$;$s!#(B
 
-@node Selecting Buffers
-@section $B$?$/$5$s$N%;%C%7%g%s$+$i0l$D$rA*$V(B
+$B$=$N46?($r$D$+$`:G$b4JC1$JJ}K!$O!"C1$K;n$7$F$_$k$3$H$G$9!#$G$9$+$i!"0z$-(B
+$BB3$$$F(B emacs-w3m $B$N%;%C%7%g%s$r;O$a$F2<$5$$!#2?$b@_DjJQ99$r$7$F$$$J$1$l(B
+$B$P!"%G%U%)%k%H$G%?%V$N9T$,8=$l$^$9!#$F$C$Z$s$G!">.$5$J;M3Q$K8=:_$N%Z!<%8(B
+$B$N%?%$%H%k$rI=<($7$F$$$kL@$k$$9T$,$=$l$G$9!#$G$O!"(B($BNc$($P(B @kbd{G} $B$G(B) $BJL(B
+$B$N(B w3m $B%P%C%U%!$r:n$C$F$_$^$7$g$&!#$9$k$H;M3Q$,Fs$D$K$J$C$?$G$7$g$&!#$=(B
+$B$l$i$,%?%V$G$9!#(B
 
+$B$b$C$H$bJ,$+$j$d$9$$%?%V$N;H$$F;$O@Z$jBX$($G$9(B: $B%?%V$N>e(B
+$B$G(B @kbd{mouse-1} $B%\%?%s$r%/%j%C%/$9$k$3$H$K$h$C$F!"$=$N%P%C%U%!$rI=<($5(B
+$B$;$k$3$H$,$G$-$^$9!#(B@kbd{mouse-2} $B%\%?%s$G$bF0:n$7$^$9!#$3$l$O!"J#?t(B
+$B$N(B emacs-w3m $B%P%C%U%!$r;H$&$?$a$N!"Hs>o$KB.$/$F4JC1$JJ}K!$G$9!#C1$K;X$7(B
+$B<($7$F%/%j%C%/$9$l$PNI$$$N$G$9$+$i!#(B
+
+$B$b$&0l$D$N5$$,Mx$$$?5!G=$O!"%Z!<%8$N>uBV$rCN$i$;$k$3$H$G$9!#%+%i!<C<Kv$+(B
+$B%&%#%s%I%%%7%9%F%`$r;H$C$F$$$l$P!"%Z!<%8$N>uBV$rCN$i$;$k$?$a(B
+$B$K(B emacs-w3m $B$O0c$&?'$G%F%-%9%H$r%?%V$KI=<($7$^$9(B@footnote{XEmacs $B$O$9$Y(B
+$B$F$N%?%V$r$$$D$bF1$8?'$GI=<($7$^$9$,!"A*Br$5$l$?%?%V$HB>$N$b$N$r6hJL$7$?(B
+$B$j!"%b!<%I%i%$%s$G8=:_$N%Z!<%8$N>uBV$rCN$k$3$H$O4JC1$G$9!#(B}$B!#Nc$($P%Y!<(B
+$B%8$r<h$j9~$s$G$$$k:GCf$O%F%-%9%H$O@V$/$J$C$F$$$F!"<h$j9~$_$,40N;$9$k$H%G(B
+$B%U%)%k%H$N?'(B ($BDL>o$O9u(B) $B$KLa$j$^$9!#$3$l$K$h$j!"8+$h$&$H;W$C$FBT$C$F$$$k(B
+$B%Z!<%8$,E~Ce$7$?$+$I$&$+$,!"%?%V9T$r0lL\8+$?$@$1$GJ,$+$j$^$9!#(B
+
+$B:G8e$K!"$b$7%&%'%V%Z!<%8$,(B favicon $B$r;}$C$F$$$l$P!"$=$l$b%?%V$KI=<($5$l(B
+$B$^$9(B@footnote{XEmacs $B$G$O:#$N$H$3$m%?%V9T$K(B favicon $B$OI=<($5$l$^$;$s!#(B}$B!#(B
+Emacs-w3m $B%f!<%6$K$b$C$H;k3P8z2L$r(B!
+
+$B%f!<%6%*%W%7%g%s(B:
+
+@table @code
+@item w3m-use-tab
+@vindex w3m-use-tab
+$B%?%V$K$h$k1\Mw$r3h$+$9$+$I$&$+!#(B
+@end table
+
+@c TRANSLATEME
+@node Working with buffers
+@section $B%P%C%U%!$r:n$k(B/$B>C$9(B/$B0\F0$9$k(B
+
+Sooner or later, you will be addicted to emacs-w3m, and you'll have to
+manage all your browsing needs with it.  To help you with this daunting
+task, we have imagined many different ways to work with emacs-w3m
+buffers.
+
+@menu
+* Creating and killing buffers:: Creating and killing buffers
+* Moving across buffers::        Moving across buffers
+* Selecting buffers::            Selecting buffers from a list
+@end menu
+
+@node Creating and killing buffers
+@subsection Creating and killing buffers
+@cindex Creating new buffers
+@cindex Killing buffers
+
+It is sometimes useful to create a new buffer without opening a new web
+page in it.  This operation is called ``creating a twin copy'' of a
+buffer, in emacs-w3m lingo.  It will simply create a new buffer whose
+contents are identical to the currently active buffer.
+
+The opposite of this is closing buffers: you can just close one buffer
+(because you're not interested in its contents anymore) or you can
+decide to close all buffers but the current one.  Emacs-w3m lets you do
+this with the following commands:
+
+@table @kbd
+@item C-c C-t
+@kindex C-c C-t
+@findex w3m-copy-buffer
+Create an identical copy of the currently active buffer, under a new
+name.  This is used to start a new session without loading a web page in
+the new buffer (@code{w3m-copy-buffer}).
+
+@item C-c C-w
+@kindex C-c C-w
+@findex w3m-delete-buffer
+Close the current emacs-w3m buffer (@code{w3m-delete-buffer}).
+
+@item C-c M-w
+@kindex C-c M-w
+@findex w3m-delete-other-buffers
+Close all emacs-w3m buffers, but the active one
+(@code{w3m-delete-other-buffers}).
+@end table
+
+@node Moving across buffers
+@subsection Moving across buffers
+
+The commands you will problably use most often are those who allow you
+to go to an adjacent buffer; that is a buffer just ``after'' or
+``before'' the current one.  The meaning of this will be obvious if you
+use tabs: the next buffer is the one just after the active one, on the
+right, and the previous buffer is the one on the left.  The key bindings
+for these commands are @kbd{C-c C-p} and @kbd{C-c C-n}.
+
+These commands understand the numeric argument convention, i.e. if you
+call them with a number N as argument, you will be taken N buffers away
+from the current one.  For example, to go two buffers on the right from
+the current position, use @kbd{C-u 2 C-c C-n}.
+
+@table @kbd
+@item C-c C-p
+@kindex C-c C-p
+@findex w3m-previous-buffer
+Move to the previous emacs-w3m buffer.  This is usually the next buffer
+to the left in the tabs line.  If called with a numeric argument N, move
+N buffers to the left (@code{w3m-previous-buffer}).
+
+@item C-c C-n
+@kindex C-c C-n
+@findex w3m-next-buffer
+Move to the next emacs-w3m buffer.  This is usually the next buffer to
+the right in the tabs line.  If called with a numeric argument N, move N
+buffers to the right (@code{w3m-next-buffer}).
+@end table
+
+Also note that if these commands don't fit you well despite our efforts,
+you might find what you need in ``generalist'' buffer management
+packages such as ibuffer or iswitchb---since emacs-w3m buffers are
+regular Emacs buffers, they will work fine too.
+
+@node Selecting buffers
+@subsection Selecting buffers from a list
+
+There are two ways to select emacs-w3m buffers from a list.  The first
+one is a minibuffer-based interface, called with @kbd{C-c C-a}.  You can
+choose the buffer you want to display using the @kbd{M-p} and @kbd{M-n}
+keys (or the ``up'' and `''down'' arrow keys), they will make you cycle
+through the list.  You can also edit the prompt and type the title of an
+existing web page, using @kbd{TAB} for completion.  For example, if you
+have a ``Google Search'' page opened, you can type ``Goo'' then hit
+@kbd{TAB} and the page title will be completed.  After the page name,
+the buffer name is given (between brackets).  Then use @kbd{RET} to
+switch to the buffer you have chosen.
+
+The second and more sophisticated interface is called the emacs-w3m
+buffer list, it is invoked with @kbd{C-C C-s}.  It shows you the list of
+all opened buffers in a separate window (either a vertical or a
+horizontal window---@kbd{C-c C-s} toggles between the two modes) and
+allows you to view the buffers in real-time: when you move the point in
+the buffer list, the buffer under point is displayed in the main window,
+which allows you to have direct visual feedback of the buffer you're
+switching to.
+
+To move in the buffer list, you can use the @kbd{p} and @kbd{n} keys
+(or the arrow keys).  In the buffer list, @kbd{DEL} and @kbd{SPC} allow
+you to scroll the buffer displayed in the main window, which is handy
+if you want to check that you're seeing the right buffer.  To select
+the buffer under point, you can use the @kbd{RET} key, in which case
+the buffer list will be buried, or the @kbd{w} key, in which case the
+buffer list will remain visible and the focus given to the main window.
+
+You can also close and create buffers from this menu, using the same
+bindings as the one used in regular buffers (@pxref{Creating and killing
+buffers}).
+
+Finally, the @kbd{?} key shows a short help, @kbd{g} refreshes the list
+and the @kbd{q} key exits the buffer list, not changing the active
+buffer.
+
+@table @kbd
+@item C-c C-a
+@kindex C-c C-a
+@findex w3m-switch-buffer
+@cindex Switching buffers using the minibuffer
+Prompt for a buffer name in the minibuffer.  @kbd{M-p} and @kbd{M-n}
+cycle through the list of existing buffers and @kbd{TAB} completes
+(@code{w3m-switch-buffer}).
+
+@item C-c C-s
+@kindex C-c C-s
+@findex w3m-select-buffer
+@cindex Switching buffers using the buffer list
+Show the buffer list in a separate window (@code{w3m-select-buffer}).
+In this window, @kbd{C-c C-s} toggles between horizontal and vertical
+modes, @kbd{RET} selects the buffer under point and buries the buffer
+list, @kbd{w} selects the buffer under point and gives it the focus,
+@kbd{n}, @kbd{p} and the arrow keys can be used to move down or up.
+@end table
 
 @node Downloading
 @section $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
 @c d	Download this url.
+
+It is possible to download (i.e. fetch, but not display) any web page or
+file with emacs-w3m: just put the point on the link you want to
+download and hit @kbd{d}.  You will be prompted for a filename under
+which to save the file locally, by default it will be the name of the
+file on the remote server.  Confirm with @kbd{RET}.  The download will
+be asynchronous and not block your Emacs session, you can continue your
+emacs-w3m browsing in another buffer if you want.
+
+Please note that this download mechanism uses w3m to download things,
+you might want to use the more powerful wget downloader instead.  Have a
+look at our friend project ``emacs-wget'', its homepage is at
+@uref{http://pop-club.hp.infoseek.co.jp/emacs/emacs-wget/}.
+
+@table @kbd
+@item d
+@kindex d
+@findex w3m-download-this-url
+@cindex Downloading files
+Download the file or page pointed by the link under point
+(@code{w3m-download-this-url}).
+@end table
 
 @node Submitting Forms
 @section HTML $B%U%)!<%`$K5-F~$9$k(B
@@ -1402,9 +1608,6 @@ Emacs-w3m $B$K$O8!:w%(%s%8%s$rMxMQ$9$k$?$a$N@h?J$N5!G=$,$"$j!"Fs$D$N%$%s%?!<(B
 @node The Search Interface
 @subsection Emacs-w3m $B$K$h$k8!:w$N$d$jJ}(B
 @cindex Searching
-@kindex S
-@findex w3m-search
-@vindex w3m-search-default-engine
 
 Emacs-w3m $B$N%P%C%U%!$G(B @kbd{S} $B%-!<$r;H$&$3$H$K$h$j(B ($B%G%U%)%k%H$N%-!<%^%C(B
 $B%W$r;H$&$b$N$H$7$^$9(B)$B!"I8=`$N8!:w%$%s%?!<%U%'!<%9$rN)$A>e$2$k$3$H$,$G$-(B
@@ -1429,6 +1632,9 @@ Variables} $B;2>H(B) $B$r%+%9%?%^%$%:$9$k$3$H$K$h$C$F!"$3$N?6$kIq$$$rJQ99$9$k
 
 @table @kbd
 @item S
+@kindex S
+@findex w3m-search
+@vindex w3m-search-default-engine
 $B?7$7$$8!:w$r;O$a$^$9!#@\F,0z?tIU$-$G8F$P$l$?>l9g$O!"$I$N%(%s%8%s$r;H$&$+(B
 $B$r?R$M$^$9(B (@code{w3m-search})$B!#(B
 @end table
@@ -1595,8 +1801,6 @@ emacs-w3m $B$O0lEY$KJ#?t$N%Z!<%8$r3+$/$?$a$K!"$=$N%0%k!<%W$K4^$^$l$k$=$l$>(B
 @node Setting up Antenna
 @subsection $B%&%'%V%5%$%H$r%"%s%F%J$K2C$($k$K$O(B?
 @cindex about://antenna-edit/
-@kindex +
-@findex w3m-antenna-add-current-url
 
 $B%"%s%F%J$O!"%"%s%F%J!&%Z!<%8$K$"$k%+%9%?%^%$%:$N$?$a$N(B ``Edit'' $B%\%?%s!"(B
 $B$^$?$OFCJL$N(B URL @uref{about://antenna-edit/} $B$+$i%+%9%?%^%$%:$9$k$3$H$,(B
@@ -1627,6 +1831,8 @@ sessions'' $B$H(B ``Finish'' $B$N%\%?%s$r2!$;$PNI$$$N$G$9!#(B
 
 @table @kbd
 @item +
+@kindex +
+@findex w3m-antenna-add-current-url
 URL $B$r%"%s%F%J!&%G!<%?%Y!<%9$K2C$($^$9!#@\F,0z?tIU$-$G8F$P$l$?>l9g$O!"8=(B
 $B:_$N%Z!<%8$rDI2C$9$k$N$G$O$J$/$F!"2C$($k(B URL $B$r?R$M$^(B
 $B$9(B (@code{w3m-antenna-add-current-url})$B!#(B
@@ -1635,8 +1841,6 @@ URL $B$r%"%s%F%J!&%G!<%?%Y!<%9$K2C$($^$9!#@\F,0z?tIU$-$G8F$P$l$?>l9g$O!"8=(B
 @node Daily web tracking
 @subsection $B%"%s%F%J$GJQ2=$rDI@W$9$k(B
 @cindex The Antenna interface
-@kindex A
-@findex w3m-antenna
 
 $B%"%s%F%J!&%Z!<%8$K$OFs$D$N9`L\$,8=$l$^$9!#0l$D$O(B ``Updated'' $B$H8F$P$l!"(B
 $B$b$&0l$D$O(B ``Visited'' $B$H8F$P$l$^$9!#(B``Updated'' $B$N9`L\$G$O:G8e$K%"%s%F(B
@@ -1664,6 +1868,8 @@ URL $B$r%"%s%F%J!&%G!<%?%Y!<%9$K2C$($^$9!#@\F,0z?tIU$-$G8F$P$l$?>l9g$O!"8=(B
 
 @table @kbd
 @item A
+@kindex A
+@findex w3m-antenna
 $B%"%s%F%J$N%Z!<%8$K9T$-$^$9!#@\F,0z?tIU$-$G8F$P$l$?>l9g$O!"I=<($9$kA0$K%"(B
 $B%s%F%J!&%G!<%?%Y!<%9$r99?7$7$^$9(B (@code{w3m-antenna})$B!#(B
 @end table
@@ -1851,14 +2057,14 @@ Emacs-w3m $B$,5/F0$9$k$H!"(B@code{w3m-init-file} $B%U%!%$%k$rFI$_9~$_$^$9!#%G
 
 $B$3$3$G$O;0<oN`$N(B MUA (Message User Agent) $B$r>R2p$7$^$9!#$=$l$i$N(B MUA $B$O(B
 $B$9$Y$F(B emacs-w3m $B$r;H$&$3$H$K$h$C$F(B HTML $B%a!<%k$rE,@Z$KI=<($9$k$3$H$,$G(B
-$B$-$^$9!#$=$l$>$l$N(B MUA $B$H(B emacs-w3m $B$r;H$&$?$a$N(B HowTo $B$H$$$/$D$+$NCm0U(B
-$B;v9`$,$"$j$^$9!#(B
+$B$-$^$9!#$=$l$>$l$N(B MUA $B$H(B emacs-w3m $B$r@_Dj$7$F;H$&$?$a$N(B HowTo $B$H$$$/$D(B
+$B$+$NCm0U$r!"$3$3$G8+$D$1$k$3$H$,$G$-$k$G$7$g$&!#(B
 
-$B0[$J$k=,47$K4X$9$kCm<a(B; @samp{message} $B$C$F2?(B? $B!](B Gnus $B%f!<%6(B
+$B0[$J$k=,47$K4X$9$kB(@J$NCm<a(B: @samp{message} $B$C$F2?(B? $B!](B Gnus $B%f!<%6(B
 $B$,(B @samp{message} $B$H8@$&$H$-!"$=$l$O$7$P$7$P%a!<%k$^$?$O%K%e!<%9$H$7$FAw(B
-$B?.$9$k%a%C%;!<%8$NAp9F$r0UL#$7$^$9!#$7$+$7(B Mew $B$d(B Wanderlust $B$N%f!<%6$N(B
-$B>l9g!"$=$l$O<u?.$7$?%a%C%;!<%8$r;X$9MQ8l$G$9!#H`$i$OAw?.$9$k%a%C%;!<%8(B
-$B$K(B @samp{draft} $B$r;H$C$F$$$^$9!#0lJ}(B Gnus $B%f!<%6$O!"<u?.$7$?%a%C%;!<%8(B
+$B?.$9$k%a%C%;!<%8$NAp9F$r0UL#$7$^$9!#$7$+$7!"$=$l$O(B Mew $B$d(B Wanderlust $B$N(B
+$B%f!<%6$,!"<u?.$7$?%a%C%;!<%8$KBP$7$F;H$&MQ8l$G$9!#H`$i$OAw?.$9$k%a%C%;!<(B
+$B%8$K(B @samp{draft} $B$r;H$C$F$$$^$9!#0lJ}(B Gnus $B%f!<%6$O!"<u?.$7$?%a%C%;!<%8(B
 $B$r(B @samp{article} $B$H8F$S$^$9!#(B
 
 @menu
@@ -1929,14 +2135,15 @@ Customization})$B!#:G$b4JC1$JJ}K!$O!"0J2<$N9T$r(B @file{~/.gnus.el} $B%U%!%$%
 
 $BA0$K(B spam $B$H(B ham $B$N$3$H$r=q$$$?$N$O$U$6$1$F$$$k$o$1$G$O$J$/$F!"$"$J$?$N(B
 $BCm0U$r4-5/$9$k$?$a$K$^$5$K$3$3$K$"$k$N$G$9!#(BHTML $B%a!<%k$K(B
-$B$O(B @samp{<img>} $B%?%0$r;H$C$?(B spammers (spam $B$r$P$i$^$/$d$+$i(B) $B$N0-9*$_$,(B
-$B4^$^$l$F$$$k$+$b$7$l$^$;$s!#$=$l$O(B @samp{Click Here!} $B%\%?%s$h$j$O$k$+$K(B
-$BM-32$G$9!#:G$b$"$j$=$&$J$N$O!"$=$s$J$?$A$N0-$$(B spam $B$,$"$J$?$NL\$K;_$^$C(B
-$B$?$+$I$&$+$N3NG'$,0U?^$5$l$F$$$k$3$H$G$9!#$=$l$O!"2hA|$rI=<($9$k$H$-$K<+(B
-$BF0E*$K<hF@$7$K9T$/$G$"$m$&(B URL $B$K!"<1JLJ8;zNs$rKd$a9~$`$3$H$K$h$C$F9T$J(B
-$B$o$l$^$9!#%G%U%)%k%H$G$OJQ(B
-$B?t(B @code{mm-inline-text-html-with-images} $B$,(B @code{nil} $B$G$"$C$F!"(B
-Gnus $B$,>!<j$K(B spammer $B$N%5%$%H$K@\B3$9$k$3$H$O$"$j$^$;$s!#(B
+$B$O(B @samp{<img>} $B%?%0$r;H$C$?(B spammers (spam $B$r$P$i$^$/$d$+$i(B) $B$NH\Nt$J0-(B
+$B9*$_$,4^$^$l$F$$$k$+$b$7$l$^$;$s!#$=$l$O(B @samp{Click Here!} $B%\%?%s$h$j$O(B
+$B$k$+$KM-32$G$9!#:G$b$"$j$=$&$J$N$O!"$=$s$J$?$A$N0-$$(B spam $B$,$"$J$?$NL\$K(B
+$B;_$^$C$?$+$I$&$+$r8!::$9$k!"$9$J$o$A$3$N>l9g!"$"$J$?$N%a!<%k%"%I%l%9$,M-(B
+$B8z$G$"$k$3$H$r3NG'$9$k$?$a$N(B spammer $B$N0U?^$,$"$k$3$H$G$9!#$=$l$O!"2hA|(B
+$B$rI=<($9$k$H$-$K<+F0E*$K<hF@$7$K9T$/$G$"$m$&(B URL $B$K!"<1JLJ8;zNs$rKd$a9~(B
+$B$`$3$H$K$h$C$F9T$J$o$l$^$9!#%G%U%)%k%H$G$OJQ(B
+$B?t(B @code{mm-inline-text-html-with-images} $B$,(B @code{nil} $B$G$"$C$F!"(BGnus
+$B$,>!<j$K(B spammer $B$N%5%$%H$K@\B3$9$k$3$H$O$"$j$^$;$s!#(B
 
 @code{mm-inline-text-html-with-images} $B$r(B @code{t} $B$K$9$l$P!"5-;v%P%C%U%!(B
 $B$K%$%s%i%$%s2hA|$rI=<($9$k$3$H$,$G$-$^$9$h$M(B?  $B$$$$$(!"CG$8$F0c$$$^$9!#(B
@@ -1964,11 +2171,13 @@ Emacs-w3m $B$r;H$&$3$H$K$h$C$F!"(BText/Html $B$r(B Message $B%b!<%I$KI=<($G
 $B$3$l$G!"$"$?$+$b(B Text/Plain $B$G$"$k$+$N$h$&$K!"(BText/Html $B$r(B Message $B%b!<(B
 $B%I$KI=<($G$-$k$h$&$K$J$j$^$9!#$3$N:]$b!"(B@kbd{C-c C-e} $B$NA`:n$OM-8z$G$9!#(B
 
-$B:G6a!"(BMultipart/Alternative $B$NCf$K(B Text/Plain $B$H(B Text/Html $B$NN>J}$,F~$C(B
-$B$F$*$j!"$I$A$i$+$rA*$V$h$&$K$J$C$F$$$k%a%C%;!<%8$rB?$/8+3]$1$^$9!#(BMew $B$O!"(B
-$BI8=`$G$O(B Text/Plain $B$NJ}$rM%@h$7$FI=<($7$^$9!#$"$J$?$O(B emacs-w3m $B$r;H$C(B
-$B$F$$$k$N$G$9$+$i!"(BText/Html $B$NJ}$rM%@h$7$?$/$J$k$+$b$7$l$^$;$s!#$=$N>l9g!"(B
-$B0J2<$N@_Dj$r(B @file{~/.mew.el} $B$K2C$($F2<$5$$(B:
+$B$3$N$4$m!"F1$8>pJs$rFs$D4^$s$G$$$k%a!<%k$rHs>o$K$h$/8+$+$1$^$9!#$=$l$i(B
+$B$O(B @samp{text/plain} $B%Q!<%H$H(B @samp{text/html} $B%Q!<%H$NN>J}$+$i@.$k(B ($B2?(B
+$B$A$e$&%P%s%II}$NL5BL;H$$$@(B) @samp{multipart/alternative} $B%U%)!<%^%C%H$r(B
+$B;H$C$F$$$^$9!#(BMew $B$O%G%U%)%k%H$G$O(B @samp{text/plain} $B%Q!<%H$@$1$rI=<($7(B
+$B$^$9!#$"$J$?$O(B emacs-w3m $B$r;H$C$F$$$k$N$G$9$+$i!"(B@samp{text/plain} $B%Q!<(B
+$B%H$NJ}$rM%@h$7$?$/$J$k$+$b$7$l$^$;$s!#$=$l$J$i$P!"0J2<$N@_Dj(B
+$B$r(B @file{~/.mew.el} $B%U%!%$%k$K2C$($F2<$5$$(B:
 
 @lisp
 (setq mew-mime-multipart-alternative-list
@@ -1979,23 +2188,23 @@ Mew $B$K4XO"$9$k$$$/$D$+$N%+%9%?%^%$%:2DG=$JJQ?t$,$"$j$^$9(B:
 
 @table @code
 @item mew-use-w3m-minor-mode
-$BHs(B-@code{nil} $B$K$9$k$H!"(BText/Html $B%Q!<%H$,I=<($5$l$F$$$k%a%C%;!<%8%P%C%U%!(B
+$BHs(B-@code{nil} $B$K$9$k$H!"(Btext/html $B%Q!<%H$,I=<($5$l$F$$$k%a%C%;!<%8%P%C%U%!(B
 $B$K$*$$$F(B @code{w3m-minor-mode} $B$,(B on $B$K$J$j!"(Bemacs-w3m $B$N$HF1$8<gMW$J%-!<(B
 $B$r;H$&$3$H$,$G$-$^$9!#Nc$($P(B @key{RET} $B$O!"8=:_0LCV$N%j%s%/$,;X$7<($9%Z!<(B
 $B%8$K9T$-$^$9!#$=$l$i$N%-!<$OJQ?t(B @code{w3m-minor-mode-command-alist} $B$G(B
 $BDj5A$5$l$F$$$^$9!#J]0B>e$NM}M3$+$i!"$$$/$D$+$N%3%^%s%I$O$=$l$K;w$?JL$N%3(B
-$B%^%s%I$GCV$-49$($i$l$F$$$k$3$H$r?4$KN1$a$F$*$$$F2<$5$$!#%G%U%)%k%H(B
+$B%^%s%I$GCV$-49$($i$l$F$$$k$3$H$r?4$KN1$a$F$*$$$F2<$5$$!#%G%U%)%k%HCM(B
 $B$O(B @code{nil} $B$G$9!#(B
 
 @item mew-w3m-auto-insert-image
-$BHs(B-@code{nil} $B$K$9$k$H!"(BMultipart/Related $B$J%a%C%;!<%8$rFI$s$G$$$k$H$-$K!"(B
+$BHs(B-@code{nil} $B$K$9$k$H!"(Bmultipart/related $B$J%a%C%;!<%8$rFI$s$G$$$k$H$-$K!"(B
 $B%a%C%;!<%8%P%C%U%!$G2hA|$r%$%s%i%$%sI=<($5$;$k$3$H$,$G$-$^$9!#(Bmew-w3m $B$O!"(B
-$B%a!<%k%a%C%;!<%8<+?H$K4^$^$l$?(B @samp{cid:} URL $B$r;}$D2hA|$@$1$r5v2D$9$k(B
-$B$3$H$KCm0U$7$F2<$5$$!#$9$J$o$A!";d$?$A$O$=$N$h$&$J2hA|$@$1$,0BA4$@$H9M$((B
-$B$F$$$^$9!#%G%U%)%k%H$O(B @code{nil} $B$G$9!#(B
+$BI=<($9$k$?$a$K(B @samp{cid:} URL $B$K$h$C$F%a!<%k$NK\J8$K4^$^$l$F$$$k2hA|$@(B
+$B$1(B ($B;d$?$A$O$=$l$i$r0BA4$@$H9M$($F$$$^$9(B) $B$r5v2D$9$k$3$H$KCm0U$7$F2<$5$$!#(B
+$B%G%U%)%k%HCM$O(B @code{nil} $B$G$9!#(B
 
 @item mew-w3m-cid-retrieve-hook
-@samp{cid:} URL $B$r<h$j=P$7$?8e$G<B9T$5$l$k%U%C%/$G$9!#%G%U%)%k%H(B
+@samp{cid:} URL $B$r<h$j=P$7$?8e$G<B9T$5$l$k%U%C%/$G$9!#%G%U%)%k%HCM(B
 $B$O(B @code{nil} $B$G$9!#(B
 @end table
 
@@ -2017,9 +2226,9 @@ Emacs-w3m $B$H(B @sc{semi} MUA$B!"Nc$($P(B Wanderlust $B$d(B T-gnus $B$J$
 (require 'mime-w3m)
 @end lisp
 
-@code{mime-w3m} $B%b%8%e!<%k$,(B @code{mime-w3} $B%b%8%e!<%k$K1$$rF'$s$G$$$k$h(B
-$B$&$K(B ($B8e<T$O(B @sc{semi} $B%Q%C%1!<%8$K4^$^$l$F$$$^$9(B)$B!"N><T$O5!G=E*$K;w$F$$(B
-$B$^$9!#(B
+@code{mime-w3m} $B%b%8%e!<%k$H(B @code{mime-w3} $B%b%8%e!<%k$O!"$4A[A|$NDL$j5!(B
+$BG=E*$K$[$\F1$8$b$N$G$9(B ($BL>A0$b1$$rF'$s$G$$$k$G$7$g$&(B?)$B!#8e<T(B
+$B$O(B @sc{semi} $B%Q%C%1!<%8$K4^$^$l$F$$$^$9!#(B
 
 $B5-;v%P%C%U%!$N(B HTML $B$NItJ,$G$O(B @code{w3m-minor-mode} $B$,(B on $B$K$J$C$F!"(B
 emacs-w3m $B$N$HF1$8<gMW$J%-!<$r;H$&$3$H$,$G$-$^$9!#Nc$($P(B @key{RET} $B$O!"(B
@@ -2046,7 +2255,7 @@ emacs-w3m $B$N$HF1$8<gMW$J%-!<$r;H$&$3$H$,$G$-$^$9!#Nc$($P(B @key{RET} $B$O!"
 
 @item mime-w3m-setup-hook
 @code{mime-w3m} $B%b%8%e!<%k$H(B @sc{SEMI} $B$N6/D4F0:n$r@_Dj$7$?D>8e$K<B9T$5(B
-$B$l$k%U%C%/$G$9!#%G%U%)%k%H$O(B @code{nil} $B$G$9!#(B
+$B$l$k%U%C%/$G$9!#%G%U%)%k%HCM$O(B @code{nil} $B$G$9!#(B
 @end table
 
 T-gnus $B$+(B Nana-gnus $B$r$*;H$$$J$i$P(B @ref{Nnshimbun} $B$b;2>H$7$F2<$5$$!#(B
@@ -2063,28 +2272,29 @@ T-gnus $B$+(B Nana-gnus $B$r$*;H$$$J$i$P(B @ref{Nnshimbun} $B$b;2>H$7$F2<$5
 @chapter $B%&%'%V>e$N?7J9$rFI$`$?$a$NF;6q(B
 @cindex Shimbun library
 
-$B?7J9$O(B ``she-n-boon'' $B$N$h$&$KJ9$3$($^$9!#<B:]$K$O$I$NJl2;$b?-$P$7$F$O$$(B
-$B$1$^$;$s!#$=$l$O87L)$K(B newspaper $B$N$3$H$G$9(B ($BF|K\8lHG$K$3$s$J$3$H$r=q$$(B
-$B$F$b0UL#L5$$$G$9$M(B)$B!#(B@samp{Shimbun} $B%i%$%V%i%j$OMM!9$J%b%8%e!<%k$N%3%l%/(B
-$B%7%g%s$G!"3F!9$OC1FH$G$O2?$b$9$k$3$H$,$G$-$^$;$s!#$3$3$G$OBeI=E*$J;0$D(B
+$B?7J9$O(B ``she-n-boon'' $B$HH/2;$7$^$9(B ($B<B:]$K$OJl2;$r?-$P$7$F$O$$$1$^$;$s(B)$B!#(B
+$B$=$l$O1Q8l$G(B ``newspaper'' $B$N$3$H$G$9(B ($BF|K\8lHG$K$3$s$J$3$H$r=q$$$F$b0U(B
+$BL#L5$$$G$9$M(B)$B!#(B@samp{Shimbun} $B%i%$%V%i%j$O$?$/$5$s$N%b%8%e!<%k$N%3%l%/%7%g%s(B
+$B$G!"$=$l$i$N3F!9$OC1FH$G$O2?$NLr$K$bN)$A$^$;$s!#$3$3$G$OBeI=E*$J;0$D(B
 $B$N(B @samp{shimbun} $B$N%"%W%j%1!<%7%g%s%W%m%0%i%`(B ($B$=$l$i$N$&$A$NFs$D(B
 $B$O(B @samp{shimbun} $B%i%$%V%i%j$K4^$^$l$F$$$^$9(B) $B$H!"$"$J$?$,<+J,(B
 $B$G(B @samp{shimbun} $B%b%8%e!<%k$r:n$kJ}K!$K$D$$$F@bL@$7$^$9(B (Emacs Lisp $B%W(B
-$B%m%0%i%`$r=q$/$3$H$,$G$-$kI,MW$,$"$j$^$9(B)$B!#$=$l$i;0$D$N%"%W%j%1!<%7%g%s(B
-$B%W%m%0%i%`$O$9$Y$F!"@$3&Cf$N%&%'%V%5%$%H$+$i?7$7$$>pJs(B ($B$=$l$i$O;~!99o!9(B
-$B$H99?7$5$l$F$$$k(B) $B$r<h$C$FMh$F!"$"$?$+$b%a!<%k%a%C%;!<%8$rF|:"FI$s$G$$$k(B
-$B$+$N$h$&$K$=$l$i$rFI$`$3$H$r2DG=$K$7$^$9!#(B
+$B%m%0%i%`$r=q$/$3$H$,$G$-$kI,MW$,$"$j$^$9(B)$B!#;0$D$N%"%W%j%1!<%7%g%s%W%m%0(B
+$B%i%`$O$9$Y$F!"@$3&Cf$N%&%'%V%5%$%H$+$i;~!99o!9$H99?7$5$l$F$$$k>pJs$r<h$C(B
+$B$FMh$F!"$"$?$+$b%a!<%k%a%C%;!<%8$rFI$s$G$$$k$+$N$h$&$K$=$l$i$rFI$`$3$H$r(B
+$B2DG=$K$7$^$9!#(B
 
-$B:G6a$G$O?7J9!"%a!<%j%s%0%j%9%H!"7G<(HD!"$"$k$$$O$$$/$D$+$N8D?M$NF|5-$,%&%'(B
-$B%V$G8x3+$5$l$F$$$^$9!#(B@samp{Shimbun} $B%i%$%V%i%j$O8=:_!"D+F|?7J9!"FIGd%*(B
-$B%s%i%$%s!"(BEmacs Devel$B!"(BXEmacs Beta$B!"(BGnus/Mew/Wanderlust $B$J$I$N%a!<%j%s%0(B
-$B%j%9%H!">.@tF|K\9q<sAj$N%a!<%k%^%,%8%s!"(BSlashdot Japan$B!"$*$h$SB>$N$?$/$5(B
-$B$s$N$b$N$KBP1~$7$F$$$^$9!#(B
+$B$^$9$^$9B?$/$N?7J9!"%a!<%j%s%0%j%9%H!"7G<(HD!"$"$k$$$O8D?M$NF|5-(B (hyper
+nikki system$B!"(Bweblogs $B$^$?$O(B blogs) $B$,%&%'%V$G8x3+$5$l$F$$$^$9!#(B
+@samp{Shimbun} $B%i%$%V%i%j$O8=:_!"D+F|?7J9!"FIGd%*%s%i%$%s!"(BEmacs Devel$B!"(B
+XEmacs Beta$B!"(BGnus/Mew/Wanderlust $B$J$I$N%a!<%j%s%0%j%9%H!">.@tF|K\9q<sAj(B
+$B$N%a!<%k%^%,%8%s!"(BSlashdot Japan$B!"$*$h$SB>$N$?$/$5$s$N$b$N$KBP1~$7$F$$$^(B
+$B$9!#(B
 
 Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @sc{flim} $B%Q%C%1!<%8(B ($B2C$((B
 $B$F(B @samp{nnshimbun} $B$r;H$$$?$1$l$P(B Gnus) $B$r%$%s%9%H!<%k$9$kI,MW$,$"$k$3(B
 $B$H$KCm0U$7$F$/$@$5$$!#(B@sc{flim} $B%Q%C%1!<%8$K$O(B @sc{apel} $B%Q%C%1!<%8$,I,(B
-$BMW$G$9!#$D$^$j!"$=$&$$$&$3$H$G$9(B (@pxref{Other Requirements})$B!#(B
+$BMW$G$9!#$"$J$?$O(B @xref{Other Requirements} $B$b8+$k$Y$-$+$b$7$l$^$;$s!#(B
 
 @menu
 * Nnshimbun::                   Gnus $B$r%&%'%V%V%i%&%6$K$9$k(B!
@@ -2098,13 +2308,14 @@ Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @sc{flim} $B%Q%C%1!<%8(B ($B2C
 @cindex nnshimbun
 @cindex Web Newspaper
 
-@samp{Nnshimbun} $B$O(B Gnus $B$N%P%C%/%(%s%I$N0l$D$G$9!#$7$+$7$J$,$i!"Nc30E*(B
-$B$K(B Gnus $B$G$O$J$/$F(B emacs-w3m $B$H$H$b$KG[I[$5$l$F$$$^$9!#(B
-@samp{Nnshimbun} $B$O(B Gnus $B$rJB30$l$FJXMx$J%&%'%V%V%i%&%6$K$9$k$3$H$,$G$-(B
-$B$^$9!#BgNL$N9-9p$KHQ$o$5$l$:$K?7J9<R$N%&%'%V%5!<%P$G5-;v$r=&$$FI$_$9$k$3(B
-$B$H$,$G$-$^$9!#%a!<%j%s%0%j%9%H$N5-;v%"!<%+%$%V$r!"$=$N%j%9%H$K9VFIEPO?$7(B
-$B$F$$$k$h$&$KFI$`$3$H$,$G$-$^$9!#7G<(HD$N=q$-9~$_$rFI$`$3$H$,$G$-$^$9$,!"(B
-$B%U%)%m!<$7$?$$$H$-$O(B emacs-w3m $B$r;H$C$F2<$5$$!#(B
+@samp{Nnshimbun} $B$O(B Gnus $B$N%P%C%/%(%s%I$G$9!#$7$+$7$J$,$i!"Nc30E*$K(B Gnus
+$B$G$O$J$/$F(B emacs-w3m $B$H$H$b$KG[I[$5$l$F$$$^$9!#(B@samp{Nnshimbun} $B$O(B Gnus
+$B$rJB30$l$FJXMx$J%&%'%V%V%i%&%6$K$9$k$3$H$,$G$-$^$9!#$9$Y$F$N9-9p$KHQ$o$5(B
+$B$l$:$K?7J9<R$N%&%'%V%5!<%P$G5-;v$r=&$$FI$_$9$k$3$H$,$G$-$^$9!#%a!<%j%s%0(B
+$B%j%9%H$N5-;v%"!<%+%$%V$r!"$=$N%j%9%H$K9VFIEPO?$7$F$$$k$h$&$KFI$`$3$H$,$G(B
+$B$-$^$9!#7G<(HD$N=q$-9~$_$bFI$`$3$H$,$G$-$^$9!#Ey!9(B... $B$G(B
+$B$b(B Gnus $B$O(B @samp{nnshimbun} $B$G(B web $B$r2p$7$?Ej9F$,$G$-$J$$$N$G!"%U%)%m!<(B
+$B$7$?$$$H$-$O(B emacs-w3m $B$r;H$&I,MW$o$J$1$l$P$$$1$J$$$3$H$KCm0U$7$F2<$5$$!#(B
 
 $B0J2<$N9T$r(B @file{~/.gnus.el} $B%U%!%$%k$KF~$l$F2<$5$$(B:
 
@@ -2126,14 +2337,14 @@ Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @sc{flim} $B%Q%C%1!<%8(B ($B2C
 @kbd{M-x gnus-group-make-shimbun-group RET asahi RET national RET}
 @c @kbd{G n asahi RET national RET}
 
-@samp{asahi} $B$H(B @samp{national} $B$O!"@\B3$7$?$$%5!<%P!<$N%"%I%l%9$r<($9%7(B
-$B%s%\%k$H6=L#$N$"$k%0%k!<%W$K!"$=$l$>$lCV$-49$($F2<$5$$!#(B
+@samp{asahi} $B$H(B @samp{national} $B$O!"@\B3$7$?$$%5!<%P!<$KBP1~$7$?%-!<%o!<(B
+$B%I$H6=L#$N$"$k%0%k!<%W$K!"$=$l$>$lCV$-49$($F2<$5$$!#(B
 @key{TAB} $B$+(B @key{SPC} $B$r%?%$%W$9$k$3$H$K$h$C$F!"$=$l$i$NL>A0$rN>J}$H$b(B
 $BJd40$9$k$3$H$,$G$-$^$9!#(B
 
-$B$b$79,1?$K$b(B @code{gnus-group-mode-map} $B$K6u$-$,$"$k$J$i$P!"0J2<$N$h$&$J(B
-$B$b$N$r(B @file{~/.gnus.el} $B%U%!%$%k$K2C$($F2<$5$$(B (T-gnus $B$K$O$3$l$HF1MM$N(B
-$B$b$N$,$9$G$K$"$k$N$G!"$o$6$o$6DI2C$9$kI,MW$O$"$j$^$;$s(B):
+$B$b$7(B @code{gnus-group-mode-map} $B$K==J,$J6u$-$,$"$k$J$i$P!"0J2<$N$h$&$J$b(B
+$B$N$r(B @file{~/.gnus.el} $B%U%!%$%k$K2C$($F2<$5$$(B (T-gnus $B$K$O$3$l$HF1MM$N$b(B
+$B$N$,$9$G$K$"$k$N$G!"$o$6$o$6DI2C$9$kI,MW$O$"$j$^$;$s(B):
 
 @lisp
 (eval-after-load "gnus-group"
@@ -2153,10 +2364,10 @@ Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @sc{flim} $B%Q%C%1!<%8(B ($B2C
 $B$l$r5-;v$H$7$FI=<($7$^$9$,!"1JB35-(B
 $B;v(B (@pxref{(gnus)Persistent Articles}) $B$r:n$k>l9g$r=|$$$F!"%m!<%+%k%U%!(B
 $B%$%k$K5-;v$r%;!<%V$9$k$3$H$O$"$j$^$;$s!#(B
-@samp{Nnshimbun} $B$O(B @samp{nnml} $B%P%C%/%(%s%I$H$[$\F1$8(B @sc{nov} $B%U%!%$%k(B
-$B$r!"$=$l$>$l$N(B @samp{nnshimbun} $B%0%k!<%W$G;H$$$^$9!#(B
+@samp{Nnshimbun} $B$O(B @sc{nov} $B%U%!%$%k$r!"$=$l$>$l$N(B @samp{nnshimbun} $B%0(B
+$B%k!<%W$G;H$$$^$9!#$=$N%P%C%/%(%s%I$O(B @samp{nnml} $B$H$[$\F1$8$G$9!#(B
 
-$B0J2<$N(B @samp{nnshimbun} $B$K4X$9$kJQ?t$rJQ$($k$3$H$,2DG=$G$9(B:
+$B0J2<$N(B @samp{nnshimbun} $B$K4X$9$kJQ?t$r%+%9%?%^%$%:$9$k$3$H$,2DG=$G$9(B:
 
 @table @code
 @item nnshimbun-directory
@@ -2181,31 +2392,28 @@ Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @sc{flim} $B%Q%C%1!<%8(B ($B2C
               expiry-wait 6)
 @end lisp
 
-$B<B:]$K$O$3$N$h$&$J%j%9%H$N@hF,$K(B @code{nnshimbun-group-parameters} $B$H$$(B
-$B$&%7%s%\%k$,IU2C$5$l$?(B Lisp $B%*%V%8%'%/%H$,;H$o$l$^$9(B ($B$=$7(B
-$B$F(B @file{~/.newsrc.eld} $B%U%!%$%k$K5-O?$5$l$b$7$^$9(B)$B!#0J9_$O$3$l$i$N%0%k!<(B
-$B%W%Q%i%a!<%?$H!"4XO"$9$kJQ?t$N@bL@$G$9!#(B
+$B0J9_$O$3$l$i$N%0%k!<%W%Q%i%a!<%?$H!"4XO"$9$kJQ?t$N@bL@$G$9!#(B
 
 @table @code
 @item prefetch-articles
 @vindex nnshimbun-pre-fetch-article
-$B$3$N%0%k!<%W%Q%i%a!<%?$,(B @code{off} $B$^$?$O(B @code{nil} $B0J30$NCM$K@_Dj$5$l(B
-$B$F$$$k%0%k!<%W$G$O!"(B@samp{nnshimbun} $B$O?7$7$$5-;v$rC5$9$@$1$G$O$J$/!"$=(B
-$B$l$i$N5-;v$N%@%&%s%m!<%I$b9T$$$^$9!#$3$l$O?7$7$$5-;v$N8!:w$rCY$/$7$^$9$,!"(B
-$B5-;v$r1\Mw$9$k$H$-$KBT$?$5$l$^$;$s!#$3$N%0%k!<%W%Q%i%a!<%?$,@_Dj$5$l$F$$(B
-$B$J$$$+!"$=$NCM$,(B @code{nil} $B$K$J$C$F$$$k%0%k!<%W$G$O!"Be$o$j$KJQ(B
+$B$3$N%0%k!<%W%Q%i%a!<%?$,(B @code{off} $B$^$?$O(B @code{nil} $B0J30$N2?$+$K@_Dj$5(B
+$B$l$F$$$k%0%k!<%W$G$O!"(B@samp{nnshimbun} $B$O?7$7$$5-;v$rC5$9$@$1$G$O$J$/!"(B
+$B$=$l$i$N5-;v$N%@%&%s%m!<%I$b9T$$$^$9!#$3$l$O?7$7$$5-;v$N8!:w$rCY$/$7$^$9(B
+$B$,!"5-;v$r1\Mw$9$k$H$-$KBT$?$5$l$^$;$s!#$3$N%0%k!<%W%Q%i%a!<%?$,@_Dj$5$l(B
+$B$F$$$J$$$+!"$=$NCM$,(B @code{nil} $B$K$J$C$F$$$k%0%k!<%W$G$O!"Be$o$j$KJQ(B
 $B?t(B @code{nnshimbun-pre-fetch-article} $B$NCM(B ($B%G%U%)%k%H$O(B @code{off}) $B$,(B
 $B;H$o$l$^$9!#(B
 
 @item encapsulate-images
 @vindex nnshimbun-encapsulate-images
-$B$3$N%0%k!<%W%Q%i%a!<%?$,(B @code{off} $B$^$?$O(B @code{nil} $B0J30$NCM$K@_Dj$5$l(B
-$B$F$$$k%0%k!<%W$G$O!"(B@samp{nnshimbun} $B$O85$N5-;v$KKd$a9~$^$l$F$$$k2hA|%G!<(B
-$B%?$r(B MIME $B$N(B @samp{multipart/related} $B%Q!<%H$H$7$F5-;v$K$O$a9~$_$^$9!#$3(B
-$B$N%0%k!<%W%Q%i%a!<%?$,@_Dj$5$l$F$$$J$$$+!"$=$NCM$,(B @code{nil} $B$K$J$C$F$$(B
-$B$k%0%k!<%W$G$O!"Be$o$j$KJQ?t(B @code{nnshimbun-encapsulate-images} $B$NCM$,(B
-$B;H$o$l$^$9!#$3$NJQ?t(B @code{nnshimbun-encapsulate-images} $B$N%G%U%)%k%HCM(B
-$B$O!"(B@samp{shimbun} $B%i%$%V%i%j$K$h$C$FDs6!$5$l$kJQ(B
+$B$3$N%0%k!<%W%Q%i%a!<%?$,(B @code{off} $B$^$?$O(B @code{nil} $B0J30$N2?$+$K@_Dj$5(B
+$B$l$F$$$k%0%k!<%W$G$O!"(B@samp{nnshimbun} $B$O85$N5-;v$KKd$a9~$^$l$F$$$k2hA|(B
+$B%G!<%?$r(B MIME $B$N(B @samp{multipart/related} $B%Q!<%H$H$7$F5-;v$K$O$a9~$_$^$9!#(B
+$B$3$N%0%k!<%W%Q%i%a!<%?$,@_Dj$5$l$F$$$J$$$+!"$=$NCM$,(B @code{nil} $B$K$J$C$F(B
+$B$$$k%0%k!<%W$G$O!"Be$o$j$KJQ?t(B @code{nnshimbun-encapsulate-images} $B$NCM(B
+$B$,;H$o$l$^$9!#$3$NJQ?t(B @code{nnshimbun-encapsulate-images} $B$N%G%U%)%k%H(B
+$BCM$O!"(B@samp{shimbun} $B%i%$%V%i%j$K$h$C$FDs6!$5$l$kJQ(B
 $B?t(B @code{shimbun-encapsulate-images} $B$NCM$G$9(B ($B$?$V$s%G%U%)%k%HCM(B
 $B$O(B @code{t} $B$G$9(B)$B!#(B
 
@@ -2232,7 +2440,7 @@ Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @sc{flim} $B%Q%C%1!<%8(B ($B2C
 $BM-L5$rD4$Y$^$9!#%5!<%P!<$K$h$C$F$O$=$N$h$&$JL\<!%Z!<%8$,J#?tB8:_$9$k>l9g(B
 $B$,$"$j$^$9!#Nc$($P!"%a!<%j%s%0%j%9%H$N5-;v$rDs6!$7$F$$$k%5!<%P!<$N>l9g$O!"(B
 $B$=$N5-;v$,Ej9F$5$l$?F|IU$K$h$C$FJ,N`$5$l$?L\<!$K$J$C$F$$$k$3$H$,0lHLE*$G(B
-$B$9!#FC$KCY$$2s@~$rMxMQ$7$F$$$k;~$K!"$=$l$i$NJ#?t$G5pBg$JL\<!$rD4$Y$k$K$O!"(B
+$B$9!#FC$KCY$$2s@~$rMxMQ$7$F$$$k;~$K!"$=$l$i$9$Y$F$N5pBg$JL\<!$rD4$Y$k$K$O!"(B
 $BAjEv$J;~4V$,$+$+$k$G$7$g$&!#(B
 
 @samp{Nnshimbun} $B$OA02s$N@\B3;~$KD4$Y$?L\<!$K$D$$$F$O!"$J$k$Y$/D4$Y$:$K(B
@@ -2248,7 +2456,7 @@ Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @sc{flim} $B%Q%C%1!<%8(B ($B2C
 @item nnshimbun-group-parameters-alist
 @vindex nnshimbun-group-parameters-alist
 $B$3$l$O(B Emacs Lisp $BJQ?t$G!"%0%k!<%WL>$N@55,I=8=$H(B @samp{nnshimbun} $BMQ%0%k!<(B
-$B%W%Q%i%a!<%?$NO"A[%j%9%H$G$9!#%G%U%)%k%H$O(B @code{nil} $B$G$9!#3F!9$NMWAG(B
+$B%W%Q%i%a!<%?$NO"A[%j%9%H$G$9!#%G%U%)%k%HCM$O(B @code{nil} $B$G$9!#3F!9$NMWAG(B
 $B$O(B @samp{(REGEXP KEYWORD VALUE KEYWORD VALUE...)} $B$N7A<0$r;}$A$^$9!#Nc$((B
 $B$P(B:
 
@@ -2271,31 +2479,32 @@ Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @sc{flim} $B%Q%C%1!<%8(B ($B2C
 @vindex nnmail-expiry-wait
 @samp{Nnshimbun} $B$K$O5-;v$N4|8B@Z$l>C5n$r9T$J$o$;$k$3$H$,$G$-$^(B
 $B$9(B@footnote{@samp{Nnshimbun} $B%0%k!<%W$G<+F04|8B@Z$l>C5n$r9T$J$&J}K!$O<g(B
-$B$KFs$D$"$j$^$9!#0l$D$O(B ``^nnshimbun\\+'' $B$G;O$^$k%0%k!<%WL>$N@55,I=8=$r(B
-$BJQ?t(B @code{gnus-auto-expirable-newsgroups} $B$KDI2C$7$F!">C5n$9$k$^$G$NF|(B
-$B?t$r3F%0%k!<%WKh$K(B @code{nnmail-expiry-wait-function} $B$G;XDj$9$k$3$H$G$9!#(B
-$B$b$&0l$D$O!"<+F04|8B@Z$l>C5n$r9T$J$o$;$?$$$?$$$9$Y$F(B
-$B$N(B @samp{nnshimbun} $B%0%k!<%W$G!"%0%k!<%W%Q%i%a!<(B
-$B%?(B @code{auto-expire} $B$r(B @code{t} $B$K@_Dj$7$F!"%0%k!<%W%Q%i%a!<(B
-$B%?(B @code{expiry-wait} $B$G>C5n$9$k$^$G$N4|8B$r;XDj$9$k$d$jJ}$G$9!#>\$7$$$3(B
-$B$H$O(B @ref{(gnus)Expiring Mail} $B$r;2>H$7$F2<$5$$!#(B@code{expiry-wait} $B%0%k!<(B
-$B%W%Q%i%a!<%?$,@_Dj$5$l$F$$$J$$%0%k!<%W$G$O!"%G%U%)%k%H$NCM$,E,MQ$5$l$^$9!#(B}$B!#(B
-$B$"$"!"$"$J$?$,;0F|A0$N?7J95-;v$r>C5n$9$k$h$&$K@_Dj$7$?$+$i$H$$$C$F!"?7J9(B
-$B<R$N%5!<%P!<$K$"$k;0F|0J>eA0$N5-;v$,>C$($F$7$^$&$3$H$O5/$3$j$^$;$s!#>C$((B
-$B$k$N$O$"$J$?<+?H$N(B @samp{nnshimbun} $BMQ$N(B @sc{nov} $B%U%!%$(B
-$B%k(B@footnote{@samp{Nnshimbun} $BMQ$N(B @sc{nov} $B%U%!%$%k(B
+$B$KFs$D$"$j$^$9!#0l$D$O%0%k!<%WL>$N@55,I=8=(B (``^nnshimbun\\+'' $B$G;O$^$i$J(B
+$B$1$l$P$J$j$^$;$s(B) $B$rJQ?t(B @code{gnus-auto-expirable-newsgroups} $B$KDI2C$7(B
+$B$F!">C5n$9$k$^$G$NF|?t$r3F%0%k!<%WKh(B
+$B$K(B @code{nnmail-expiry-wait-function} $B$G;XDj$9$k$3$H$G$9!#$b$&0l$D$O!"<+(B
+$BF04|8B@Z$l>C5n$r9T$J$o$;$?$$$?$$$9$Y$F$N(B @samp{nnshimbun} $B%0%k!<%W$G!"%0(B
+$B%k!<%W%Q%i%a!<%?(B @code{auto-expire} $B$r(B @code{t} $B$K@_Dj$7$F!"%0%k!<%W%Q%i(B
+$B%a!<%?(B @code{expiry-wait} $B$G>C5n$9$k$^$G$N4|8B$r;XDj$9$k$d$jJ}$G$9!#>\$7(B
+$B$$$3$H$O(B @ref{(gnus)Expiring Mail} $B$r;2>H$7$F2<$5$$!#(B
+@code{expiry-wait} $B%0%k!<%W%Q%i%a!<%?$,@_Dj$5$l$F$$$J$$%0%k!<%W$G$O!"%G(B
+$B%U%)%k%H$NCM$,E,MQ$5$l$^$9!#(B}$B!#5-;v$,4|8B@Z$l>C5n$5$l$k$H8@$C$F$b!"$=$l(B
+$B$,1s3V%5!<%P!<$+$i:o=|$5$l$k$o$1$G$O$J$/!"$=$l$O$:$C$H$=$3$+$i<hF@2DG=$G(B
+$B$"$k$3$H$r3P$($F$*$$$F2<$5$$!#>C$($k$N$O$"$J$?<+?H$N(B @samp{nnshimbun} $BMQ(B
+$B$N(B @sc{nov} $B%U%!%$%k(B@footnote{@samp{Nnshimbun} $BMQ$N(B @sc{nov} $B%U%!%$%k(B
 $B$O(B ``~/News/shimbun/asahi/national/.overview'' $B$N$h$&$JL>A0$G$9!#(B} $B$N!"(B
 $B>C5n$5$l$k5-;v$K3:Ev$9$k9T$G$9!#$=$l$K$h$C$F$=$N5-;v$OFsEY$H35N,%P%C%U%!(B
 $B$K8=$l$J$/$J$j$^$9!#(B
 
 @samp{Nnshimbun} $B%0%k!<%W$G5-;v$N4|8B@Z$l>C5n$r9T$J$o$J$$$H(B @sc{nov} $B%U%!(B
 $B%$%k$,:]8BL5$/B@$jB3$1!"Hs>o$K8E$$5-;v$,$"$?$+$bB8:_$7$F$$$k$h$&$K8+$($k(B
-$B$+$b$7$l$^$;$s(B ($B<B:]$K$O!"$=$l$i$O?7J9<R$N%5!<%P!<$G;0G/A0(B! $B$K4|8B@Z$l>C(B
-$B5n$5$l$F$7$^$C$F$$$k(B)$B!#$=$l$rFI$b$&$H$7$F$b5-;v%P%C%U%!$K$O2?$b8=$l$J$$(B
-$B$G$7$g$&!#0lJ}!"%a!<%j%s%0%j%9%H$N5-;v$rDs6!$7$F$$$kB?$/$N%5!<%P!<$O!"0l(B
-$BHLE*$K2a5n$NA45-;v$rDs6!$7$F$$$^$9!#8E$-NI$-;~Be$K$"$J$?$,6=$8$?0lO"$N5-(B
-$B;v$rFI$_JV$7$F2{$+$7$`$?$a$K!"$=$&$$$&%0%k!<%W$G$O4|8B@Z$l>C5n$O$5$;$?$/(B
-$B$J$$$H;W$&$+$b$7$l$^$;$s!#(B
+$B$+$b$7$l$^$;$s(B ($B<B:]$K$O!"$=$l$i$O?7J9<R$N%5!<%P!<$G;0G/A0$K4|8B@Z$l>C5n(B
+$B$5$l$F$7$^$C$F$$$k$+$b$7$l$J$$(B!)$B!#$=$l$rFI$b$&$H$7$F$b5-;v%P%C%U%!$K$O2?(B
+$B$b8=$l$J$$$G$7$g$&!#0lJ}!"%a!<%j%s%0%j%9%H$N5-;v$rDs6!$7$F$$$k$?$$$F$$$N(B
+$B%5!<%P!<$O!"0lHLE*$K2a5n$NA45-;v$rDs6!$7$F$$$^$9!#M+=%$NH`J}$K5n$j$78E$-(B
+$BNI$-;~Be$K!"$"$J$?$,6=$8$?5-;v$r2{$+$7$/$&$k$&$k$7$FFI$_JV$9$3$H$,$G$-$k(B
+$B$h$&$K!"$=$&$$$&%0%k!<%W$G$O4|8B@Z$l>C5n$O$5$;$?$/$J$$$H;W$&$+$b$7$l$^$;(B
+$B$s!#(B
 
 $BB>$N%a!<%k%P%C%/%(%s%I$HF1MM$K!"(B@samp{nnshimbun} $B$N%0%k!<%WKh$K5-;v$K<+(B
 $BF04|8B@Z$l>C5n$N0u$rIU$1$F!";D$7$F$*$/4|4V$r@_Dj$9$k$3$H$,$G$-$^$9!#$?$@(B
@@ -2304,9 +2513,8 @@ Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @sc{flim} $B%Q%C%1!<%8(B ($B2C
 
 @itemize @bullet
 @item
-$BBh0l$K!";D$7$F$*$/4|4V$N%G%U%)%k%HCM$O0J2<$NM%@hEY$G7hDj$5$l$^$9!#$"(B
-$B$k(B @samp{shimbun} $B%b%8%e!<%k$,%G%U%)%k%HCM$K4X78$9$k$+$b$7$l$J$$$3$H$KCm(B
-$B0U$7$F2<$5$$!#(B
+$BBh0l$K!";D$7$F$*$/4|4V$N%G%U%)%k%HCM$O0J2<$NM%@hEY$G7hDj$5$l$^$9!#%0%k!<(B
+$B%W$K$h$C$F%G%U%)%k%HCM$,0[$J$k$+$b$7$l$J$$$3$H$KCm0U$7$F2<$5$$!#(B
 
 @enumerate
 @item
@@ -2326,7 +2534,7 @@ Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @sc{flim} $B%Q%C%1!<%8(B ($B2C
 $BBhFs$K!"JQ?t(B @code{nnmail-expiry-wait-function} $B$K$h$C$F@_Dj$5$l$k4X?t$K(B
 $BM?$($i$l$k0z?t$K!"(B``nnshimbun+asahi:national'' $B$N$h$&$K%P%C%/%(%s%I$H%5!<(B
 $B%P!<$NL>A0$,4^$^$l$k$3$H$G$9!#B>$N%a!<%k%P%C%/%(%s%I$N>l9g$K$O%0%k!<%WL>(B
-$B$@$1$,M?$($i$l$k$N$K!"$G$9!#0l$DNc$r5s$2$^$7$g$&(B:
+$B$@$1$,M?$($i$l$k$N$K!"$G$9!#Nc$r5s$2$^$7$g$&(B:
 
 @lisp
 (setq nnmail-expiry-wait-function
@@ -2336,19 +2544,18 @@ Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @sc{flim} $B%Q%C%1!<%8(B ($B2C
 @end lisp
 
 $B$3$l$O!"F1$8(B ding $B%a!<%j%s%0%j%9%HMQ$KFs$D$N%0%k!<%W$,$"$k$3$H$r0UL#$7$^(B
-$B$9!((B $B0l$D$O%j%9%H$N%a%s%P!<$H$7$F9VFIEPO?$7$F$$$^$9!#$b$&0l$D$O(B Gnus $B%?(B
-$B%o!<$N%a!<%j%s%0%j%9%H%"!<%+%$%V$+$iFI$`$?$a$N$b$N$G$9!#$I$&$G$9!"$J$+$J(B
-$B$+8-$$$G$7$g(B?  ``ding'' $B%0%k!<%W$N%m!<%+%k$J%a!<%k%U%!%$%k$O<7F|$G4|8B@Z(B
-$B$l>C5n$5$l!"%m!<%+%k%G%#%9%/$NMFNL$,@aLs$5$l$^$9!#$7$+$7Fs$DL\$N%0%k!<%W(B
-$B$G$O!"A0@$5*$N5-;v$G$5$(FI$`$3$H$,$G$-$^$9(B ($B$=$l$,K\Ev$KI,MW$J$i$P!"$G$9(B
-$B$,(B)$B!#(B
+$B$9(B: $B0l$D$O%j%9%H$N%a%s%P!<$H$7$F9VFIEPO?$7$F$$$^$9!#$b$&0l$D$O(B Gnus $B%?%o!<(B
+$B$N%a!<%j%s%0%j%9%H%"!<%+%$%V$+$iFI$`$?$a$N$b$N$G$9!#$I$&$G$9!"$J$+$J$+8-(B
+$B$$$G$7$g(B?  ``ding'' $B%0%k!<%W$N%m!<%+%k$J%a!<%k%U%!%$%k$O<7F|$G4|8B@Z$l>C(B
+$B5n$5$l!"%m!<%+%k%G%#%9%/$NMFNL$,@aLs$5$l$^$9!#$7$+$7Fs$DL\$N%0%k!<%W$G$O!"(B
+$BA0@$5*$N5-;v$G$5$(FI$`$3$H$,$G$-$^$9(B ($B$=$l$,K\Ev$KI,MW$J$i$P!"$G$9$,(B)$B!#(B
 
-$BBh;0$K!"$3$l$O$"$J$?$,IT?3$K;W$C$?$H$-$K;W$$=P$7$F$b$i$&$?$a$K=q$+$l$F$$(B
-$B$^$9(B; $B%0%k!<%W$N$9$Y$F$N5-;v$,4|8B@Z$l>C5n$NBP>]$K$J$C$F$7$^$C$?$H$-$G$b!"(B
-@samp{nnshimbun} $B$O:G8e$N0lDL$@$1$O>C$5$:$K;D$7$F$*$-$^$9!#$3$l$O$"$J$?(B
-$B$NL$N}?4$rK~B-$5$;$k$?$a$G$O$J$/!"%5!<%P!<$+$i8E$$5-;v$r:F$S<hF@$7$F$7$^(B
-$B$o$J$$$?$a$NBP:v$G$9(B (@samp{nnshimbun} $B$O?7$7$$=g$K5-;v$rD4$Y$F!"$=$N:G(B
-$B8e$N5-;v$HF1$8(B Message-ID $B$r;}$D5-;v$,8+$D$+$C$?$iD4$Y$k$N$r;_$a$^$9(B)$B!#(B
+$BBh;0$K!"$3$l$O$"$J$?$K5?G0$,J($$$?$H$-$K;W$$=P$9$3$H$,$G$-$k$h$&$K=q$-N1(B
+$B$a$i$l$F$$$^$9(B: @samp{nnshimbun} $B%0%k!<%W$N$9$Y$F$N5-;v$,4|8B@Z$l>C5n$5(B
+$B$l$k$Y$-$H$-$G$b!":G?7$N0lDL$@$1$O>C$5$:$K;D$7$F$*$-$^$9!#$3$l$O$"$J$?$N(B
+$BL$N}?4$rK~B-$5$;$k$?$a$G$O$J$/!"<!2s$K$3$N%0%k!<%W$N?7$7$$5-;v$r<hF@$7$h(B
+$B$&$H$7$?$H$-$K!"(B@samp{nnshimbun} $B$,$I$3$+$i;O$a$k$+$rCN$C$F!"$9$Y$F$N5-(B
+$B;v$r<hF@$7D>$5$J$$$h$&$K$9$k$?$a$G$9!#(B
 @end itemize
 
 @samp{Nnshimbun} $B$N4|8B@Z$l>C5n$K4X78$9$k%0%k!<%W%Q%i%a!<%?$HJQ?t$O0J2<(B
@@ -2379,31 +2586,38 @@ Gnus $B$,0l$D$NFCDj$N%P%C%/%(%s%I$N$?$a$KF/$/(B ($B$9$J$o$A!"(B
 
 @item nnshimbun-keep-unparsable-dated-articles
 @vindex nnshimbun-keep-unparsable-dated-articles
-$B$3$NJQ?t$NCM$,(B @code{nil} $B$G$J$$>l9g$O!":n@.$5$l$?$jAw?.$5$l$?;~9o$,$o$+(B
-$B$i$J$$5-;v$O4|8B@Z$l>C5n$5$l$^$;$s!#$J$K$7$m4|8B$,$o$+$i$J$$$s$G$9$+$i!#(B
-$B%G%U%)%k%H$O(B @code{t} $B$G$9!#(B@code{nil} $B$K@_Dj$9$k$H!"4|8B@Z$l>C5n$N=hM}(B
-$B$,9T$J$o$l$k$H$-$K!"4|8B$,$o$+$i$J$$5-;v$G$bL5>r7o$G>C$5$l$F$7$^$$$^$9!#(B
-$B$^$"!"G/$NJk$l$NBgA]=|$NLr$K$ON)$D$+$b$7$l$^$;$s!#(B
+$B$3$NJQ?t$NCM$,(B @code{nil} $B$G$J$$>l9g$O!":n@.$5$l$?(B ($B$^$?$OE~Ce$7$?(B) $B;~9o(B
+$B$,$o$+$i$J$$5-;v$O4|8B@Z$l>C5n$5$l$^$;$s!#$J$K$7$m$I$N$/$i$$8E$$$N$+$o$+(B
+$B$i$J$$$s$G$9$+$i!#%G%U%)%k%HCM$O(B @code{t} $B$G$9!#(B@code{nil} $B$K@_Dj$9$k$H!"(B
+$B4|8B@Z$l>C5n$N=hM}$,9T$J$o$l$k$H$-$K!"4|8B$,$o$+$i$J$$5-;v$G$bL5>r7o$G>C(B
+$B$5$l$F$7$^$$$^$9!#$^$"!"G/$NJk$l$NBgA]=|$NLr$K$ON)$D$3$H$,H=L@$9$k$+$b$7(B
+$B$l$^$;$s!#(B
 @end table
 
 @node Mew Shimbun
 @section Mew $B$G?7J9$rFI$`(B
 
-Mew Shimbun $B$O(B Mew version 2.1 $B0J9_$r;H$C$F(B @samp{shimbun} $B$r3Z$7$`$?$a(B
-$B$N(B Emacs Lisp $B%W%m%0%i%`$G$9!#(BMew, @sc{apel}, @sc{flim} $B$,%$%s%9%H!<%k$5(B
-$B$l$F$$$l$P!"(Bemacs-w3m $B$r%$%s%9%H!<%k$9$k$H$-$K0l=o$K%$%s%9%H!<%k$5$l$^$9!#(B
+Mew Shimbun $B$O(B @samp{shimbun} $B$H(B Mew (version 2.1 $B0J9_(B) $B$H$H$b$K;H$&$3$H(B
+$B$r0U?^$7$?(B Emacs Lisp $B%W%m%0%i%`$G$9!#(BMew, @sc{apel} $B$*$h$S(B @sc{flim} $B$b(B
+$B%$%s%9%H!<%k$5$l$F$$$l$P!"(Bemacs-w3m $B$r%$%s%9%H!<%k$9$k$H$-$K0l=o$K%$%s%9(B
+$B%H!<%k$5$l$^$9!#(B
 
 @ref{Mew} $B$b;2>H$9$k$3$H$r$*4+$a$7$^$9!#(B
 
 @enumerate
 @item
-$B@_Dj(B
+$B=t@_Dj(B
 
 $B0J2<$N3F9T$r(B @file{~/.mew.el} $B%U%!%$%k$N:G8e$K=q$$$F2<$5$$(B:
 
 @format
 ;;; mew-shimbun $B$N%m!<%I!"%-!<Dj5A(B
-;; (setq mew-shimbun-use-unseen t)              ;;; (*1)
+@end format
+
+;; (setq mew-shimbun-use-unseen t) ;; @footnote{$BL$FI4IM}$r$9$k$H$-$O%3%a(B
+$B%s%H$r30$7$F2<$5$$!#$3$NJQ?t$OI,$:(B @code{(require 'mew-shimbun)} $B$NA0$G(B
+$B@_Dj$7$J$$$H$$$1$^$;$s!#(B}
+@format
 (require 'mew-shimbun)
 (define-key mew-summary-mode-map "G"  (make-sparse-keymap))
 (define-key mew-summary-mode-map "Gg" 'mew-shimbun-goto-folder)
@@ -2414,9 +2628,6 @@ Mew Shimbun $B$O(B Mew version 2.1 $B0J9_$r;H$C$F(B @samp{shimbun} $B$r3Z$7
 (define-key mew-summary-mode-map "GR" 'mew-shimbun-re-retrieve-all)
 (define-key mew-summary-mode-map "Ge" 'mew-shimbun-expire)
 (define-key mew-summary-mode-map "GE" 'mew-shimbun-expire-all)
-
-;;; (*1) $B$O8e=R$9$kL$FI4IM}$r$9$k$H$-$K@_Dj$7$^$9!#$3$NJQ?t$O!"(B
-;;; $BI,$:(B @code{(require 'mew-shimbun)} $B$NA0$G@_Dj$7$J$$$H$$$1$^$;$s!#(B
 
 ;; @code{mew-shimbun-folder-groups} $B$K(B Mew $B$G9XFI$9$k(B @samp{shimbun} servers $B5Z$S(B
 ;; group $B$r@_Dj$7$^$9!#$=$l$>$l$NMWAG$O(B
@@ -2460,7 +2671,7 @@ Mew Shimbun $B$O(B Mew version 2.1 $B0J9_$r;H$C$F(B @samp{shimbun} $B$r3Z$7
 
 $B>e5-$N@_Dj$r$7$?$"$H!"$^$:(B @kbd{G I} $B$7$^$7$g(B
 $B$&(B (@code{mew-shimbun-retrieve-all})$B!#(B
-@code{mew-shimbun-folder-groups} $B$G@_Dj$7$?(B @samp{shimbun}
+@code{mew-shimbun-folder-groups} $B$G<o!9$N@_Dj$r9T$J$C$?(B @samp{shimbun}
 folder $B$,(B @samp{+shimbun} $B0J2<$K=PMh$^$9!#$^$?!"?7$?$K(B group $B$rDI2C$7$?(B
 $B$H$-$b(B @kbd{G I} $B$9$k$HJXMx$G$9!#$J$*!"(B
 @samp{+shimbun} $B$O(B @code{mew-shimbun-folder} $B$H$$$&JQ?t$G9%$_$N$b$N$KJQ(B
@@ -2488,13 +2699,13 @@ folder $BC10L$G$N5-;v$N<hF@(B
 $BFCDj$N5-;v$rI=<($7$?>uBV$G(B @kbd{G r} (@code{mew-shimbun-re-retrieve}) $B$9(B
 $B$k$H!"$=$N5-;v$,99?7$5$l$F$$$?$i99?7$7!"F1;~$K?75,5-;v$b<hF@$7$^$9!#(B
 @kbd{C-u G r} $B$H$9$k$H!"(B@code{mew-shimbun-mark-re-retrieve} $B$K;XDj$7$?%^!<(B
-$B%/(B ($B%G%U%)%k%H$O(B @samp{@@}) $B$N5-;v$N99?7$r;n$_$^$9!#(BCNET $B$J$I$G;H$&$HJX(B
-$BMx$G$7$g$&!#(B
+$B%/(B ($B%G%U%)%k%HCM$O(B @samp{@@}) $B$N5-;v$N99?7$r;n$_$^$9!#(BCNET $B$J$I$G;H$&$H(B
+$BJXMx$G$7$g$&!#(B
 
 @kbd{G R} (@code{mew-shimbun-re-retrieve-all}) $B$G$O!"$9$Y$F$N5-;v$N?75,(B
 $B@-$rD4$Y<hF@$7$J$*$7$^$9!#(B@kbd{C-u G R} $B$G$O%j!<%8%g%s$G;XDj$7$?HO0O$N5-(B
-$B;v$rBP>]$H$7$^$9!#$*$=$i$/%O%$%Q!<F|5-%7%9%F%`$NF|5-%5%$%H$GM-0U5A$J%3%^(B
-$B%s%I$G$7$g$&!#(B
+$B;v$rBP>]$H$7$^$9!#$*$=$i$/%O%$%Q!<F|5-%7%9%F%`$,2TF/$7$F$$$kF|5-%5%$%H$G(B
+$B$OM-0U5A$J%3%^%s%I$G$7$g$&!#(B
 @end enumerate
 
 @item
@@ -2519,17 +2730,17 @@ folder $BC10L$G$N5-;v$N<hF@(B
 
 Mew $B$N=*N;;~$d(B folder $B$N(B kill $B;~(B (@kbd{C-c C-q} $B$r;H$C$?$H(B
 $B$-(B) $B$K(B @samp{shimbun} folder $B$O<+F0E*$K(B @file{.mew-cache} $B%U%!%$%k$rJ]B8(B
-$B$9$k$h$&$K$J$j$^$9!#$?$@$7!"3N<B(B (*2) $B$KJ]B8$9$k$o$1$G$O$"$j$^$;$s!#4{FI(B
-$B$K$J$C$?>pJs$r3N<B$K(B cache $B$KJ]B8$9$k$K$O!"$=$N(B folder $B$rFI$_=*$o$C$?$H(B
-$B$-$K(B @samp{scan update} $B$r$9$k=,47$r$D$1$k$HNI$$$G$7$g$&!#(B
+$B$9$k$h$&$K$J$j$^$9!#$?$@$7!"3N<B(B
+@footnote{@code{mew-touch-folder-p} $B$,(B @code{t} $B$N?M$O$[$\(B 100% $BJ]B8$G$-(B
+$B$^$9$,!"(B@code{nil} $B$N?M$,J]B8$G$-$k2DG=@-$O$[$H$s$I(B 0% $B$@$H;W$o$l$^$9!#(B}
+$B$KJ]B8$9$k$o$1$G$O$"$j$^$;$s!#4{FI$K$J$C$?>pJs$r3N<B$K(B cache $B$KJ]B8$9$k(B
+$B$K$O!"$=$N(B folder $B$rFI$_=*$o$C$?$H$-$K(B @samp{scan update} $B$r$9$k=,47$r$D(B
+$B$1$k$HNI$$$G$7$g$&!#(B
 
 $BL$FI$K;H$&%^!<%/$,(B @samp{*} $B$8$c%@%a!"$H$$$&J}$O!"JQ(B
 $B?t(B @code{mew-shimbun-mark-unseen} $B$r%+%9%?%^%$%:$7$F$/$@$5$$(B ($B>e=R(B)$B!#(B
 @kbd{C-u N} $B$G$=$N%^!<%/$r;XDj$9$k$H3Z$7$$L$FI%i%$%U$r$*$/$k$3$H$,$G$-$k(B
 $B$H;W$$$^$9!#(B
-
-(*2) @code{mew-touch-folder-p} $B$,(B @code{t} $B$N?M$O$[$\(B 100% $BJ]B8$G$-$^$9(B
-$B$,!"(B@code{nil} $B$N?M$,J]B8$G$-$k2DG=@-$O$[$H$s$I(B 0% $B$@$H;W$o$l$^$9!#(B
 
 @item
 $B4|8B@Z$l5-;v$N>C5n(B
@@ -2550,7 +2761,7 @@ Mew $B$N=*N;;~$d(B folder $B$N(B kill $B;~(B (@kbd{C-c C-q} $B$r;H$C$?$H
 $B$J$$(B @samp{shimbun} folder $B$O>C5n$7$^$;$s!#(B@kbd{G e}
 (@code{mew-shimbun-expire}) $B$G$=$N(B folder $B$N4|8B@Z$l5-;v$r>C5n$7$^$9!#(B
 @kbd{G e} (@code{mew-shimbun-expire}) $B$G@_Dj$7$?A4$F$N(B folder $B$G5-;v$N>C(B
-$B5n$r<B9T$7$^$9!#$J$*!"0lEY>C5n$7$?5-;v$OI|3h=PMh$^$;$s$N$GCm0U$7$F$/$@$5(B
+$B5n$r<B9T$7$^$9!#$J$*!"0lEY>C5n$7$?5-;v$OI|5l=PMh$^$;$s$N$GCm0U$7$F$/$@$5(B
 $B$$!#(B
 
 @item
@@ -2627,20 +2838,21 @@ Wanderlust $B$K$O(B ELMO $B%b%8%e!<%k$N0l$D$H$7$F(B @samp{elmo-shimbun} $B$
 @cindex Subscribing to the emacs-w3m mailing list
 @cindex Reporting bugs
 
-Emacs-w3m $B$K$D$$$F5DO@$9$k%a!<%j%s%0%j%9%H(B
+Emacs-w3m $B$K4X$9$k$9$Y$F$N$3$H$,$i$rOC$79g$&$?$a$N%a!<%j%s%0%j%9%H$,MQ0U(B
+$B$5$l$F$$$^$9!#9VFI$7$F$$$J$$?M$bEj9F$G$-$^$9!#%P%0$r8+$D$1$?$j!"$3$s$J5!(B
+$BG=$,M_$7$$$J$H;W$C$?$j!"$"$k$$$O%3!<%I$r=q$-$^$7$?$H$$$&?M$O$I$&$>Ej9F$7(B
+$B$F2<$5$$!#C1$J$k%f!<%6$@$1$l$I$b%W%m%0%i%`$K6=L#$,$"$k$H$$$&?M$b!"$<$R;2(B
+$B2C$7$F2<$5$$!#%"%I%l%9$O(B:
 
 @display
 Emacs-w3m $B%a!<%j%s%0%j%9%H(B @t{<emacs-w3m@@namazu.org>}
 @end display
 
-$B$,$"$j$^$9!#9VFI$7$F$$$J$$?M$bEj9F$G$-$^$9!#%P%0$r8+$D$1$?$j!"$3$s$J5!G=(B
-$B$,M_$7$$$J$H;W$C$?$j!"$"$k$$$O%3!<%I$r=q$-$^$7$?$H$$$&?M$O$I$&$>Ej9F$7$F(B
-$B2<$5$$!#(B
-
-$B$3$N%a!<%j%s%0%j%9%H$G;H$o$l$F$$$k8@8l$OF|K\8l$H1Q8l$G$9!#$^$?!"Ej9F$5$l(B
-$B$?5-;v$O%&%'%V>e(B (@uref{http://emacs-w3m.namazu.org/ml/}) $B$d(B NetNews
-($B%5!<%P(B @samp{news.gmane.org} $B>e$N(B @samp{gmane.emacs.w3m} $B$H$$$&%0%k!<%W(B)
-$B$G$bFI$`$3$H$,$G$-$^$9!#(B
+$B$G$9!#$3$N%j%9%H$KEj9F$9$k$H$-$O!"F|K\8l$+1Q8l$r;H$C$F2<$5$$!#B?$/$N%a%s(B
+$B%P!<$OF|K\?M$G$9!#Ej9F$5$l$?5-;v$O8x3+$5$l$F$$$F!"%&%'(B
+$B%V(B (@uref{http://emacs-w3m.namazu.org/ml/}) $B$d(B NetNews ($B%5!<(B
+$B%P(B @samp{news.gmane.org} $B>e$N(B @samp{gmane.emacs.w3m} $B$H$$$&%0%k!<%W(B) $B$G(B
+$B$bFI$`$3$H$,$G$-$^$9!#(B
 
 $B$3$N%j%9%H$N%a%C%;!<%8$r%a!<%k$G<u$1<h$j$?$$?M$O!"K\J8$K(B
 
