@@ -1662,7 +1662,8 @@ This variable will be made buffer-local under Emacs 21 or XEmacs.")
 
 (defvar w3m-initial-frames nil
   "Variable used to keep a list of the frame-IDs when emacs-w3m sessions
-are popped up as new frames.")
+are popped-up as new frames.  This variable is used for the control
+for not deleting frames made for aims other than emacs-w3m sessions.")
 (make-variable-buffer-local 'w3m-initial-frames)
 
 (defvar w3m-current-process nil "Current retrieving process of this buffer.")
@@ -6963,7 +6964,10 @@ initial) window.
 
 The optional NEW-SESSION and INTERACTIVE-P are for the internal use."
   (interactive
-   (let ((url (w3m-examine-command-line-args)))
+   (let ((url
+	  ;; Emacs 21.4 calls a Lisp command interactively even if it
+	  ;; is in the batch mode.
+	  (w3m-examine-command-line-args)))
      (list
       ;; url
       (or url
@@ -6976,13 +6980,15 @@ The optional NEW-SESSION and INTERACTIVE-P are for the internal use."
   (let ((nofetch (eq url 'popup))
 	(buffer (unless new-session
 		  (w3m-alive-p t)))
+	(popup-frame-p (and (not interactive-p) (w3m-popup-frame-p)))
 	(w3m-pop-up-frames (and interactive-p w3m-pop-up-frames))
 	(w3m-pop-up-windows (and interactive-p w3m-pop-up-windows)))
     (unless (and (stringp url)
 		 (> (length url) 0))
       (if buffer
 	  (setq nofetch t)
-	;; This command may be called non-interactively.
+	;; This command was possibly be called non-interactively or as
+	;; the batch mode.
 	(setq url (or (w3m-examine-command-line-args)
 		      ;; Unlikely but this function was called with no url.
 		      "about:")
@@ -6992,6 +6998,8 @@ The optional NEW-SESSION and INTERACTIVE-P are for the internal use."
       (with-current-buffer (setq buffer (generate-new-buffer "*w3m*"))
 	(w3m-mode))
       (w3m-popup-buffer buffer)
+      (when popup-frame-p
+	(setq w3m-initial-frames (list (selected-frame))))
       (w3m-display-progress-message url))
     (unwind-protect
 	(unless nofetch
