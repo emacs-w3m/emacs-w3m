@@ -1,3 +1,8 @@
+2004-04-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* Makefile.in (install-lisp): Do not install w3mhack.el.
+	(install-package): Install neither w3mhack.el nor w3m-load.el.
+
 2004-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-treat-image-size): Default to nil.

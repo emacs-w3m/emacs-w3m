@@ -22,6 +22,7 @@ DISTDIR = $(PACKAGE)-$(VERSION)
 DOCS    = COPYING ChangeLog ChangeLog.1 README README.ja
 DISTS   = Makefile.in aclocal.m4 configure configure.in install-sh mkinstalldirs
 SUBDIRS = attic doc icons icons30 patches shimbun
+IGNORES = w3mhack.el
 
 default: all
 
@@ -58,8 +59,11 @@ install-ja: install-lisp install-info-ja
 install-lisp: lisp
 	@$(SHELL) $(srcdir)/mkinstalldirs $(lispdir);\
 	for p in ChangeLog* *.el; do\
-	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
-	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	  case "$$p" in\
+	    $(IGNORES)) ;;\
+	    *) echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
+	       $(INSTALL_DATA) $$p $(lispdir)/$$p;;\
+	  esac;\
 	done;\
 	for p in *.elc; do\
 	  if test -f "$$p"; then\
@@ -114,7 +118,7 @@ install-package:
 	  echo "What a pity!  Your \"$(EMACS)\" does not support"\
 		"a package system.";\
 	else\
-	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install-lisp;\
+	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" IGNORES="w3mhack.el|w3m-load.el" install-lisp;\
 	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons30;\
 	  $(MAKE) infodir="$(PACKAGEDIR)/info" install-info;\
 	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
