@@ -762,20 +762,21 @@ in advance.  It's only a joke, you should NEVER use it."
     (when clear-history
       (setq w3m-history nil
 	    w3m-history-flat nil))
-    (let (url title)
-      (mapatoms
-       (function
-	(lambda (symbol)
-	  (when symbol
-	    (setq url (symbol-name symbol)
-		  title (get symbol 'title))
-	    (w3m-history-push url (when title
-				    (list ':title title)))
-	    (w3m-history-push
-	     (car (w3m-history-current-1
-		   (caddr (nth (random (length w3m-history-flat))
-			       w3m-history-flat))))))))
-       w3m-arrived-db))
+    (let (url-title title)
+      (mapatoms (function
+		 (lambda (symbol)
+		   (when symbol
+		     (if (setq title (get symbol 'title))
+			 (push (list (symbol-name symbol)
+				     (list ':title title))
+			       url-title)
+		       (push (list (symbol-name symbol)) url-title)))))
+		w3m-arrived-db)
+      (apply 'w3m-history-push (nth (random (length url-title)) url-title))
+      (while url-title
+	(w3m-history-push (car (nth (random (length w3m-history-flat))
+				    w3m-history-flat)))
+	(apply 'w3m-history-push (pop url-title))))
     (w3m-goto-url "about://history/")))
 
 (provide 'w3m-hist)
