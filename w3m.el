@@ -675,10 +675,7 @@ Don't say HP, which is the abbreviated name of a certain company. ;-)"
   :type '(integer :size 0))
 
 (defcustom w3m-follow-redirection 9
-  "*Maximum number of redirections which emacs-w3m honors and follows.
-If nil, redirections are followed by the w3m command.  Don't set it to
-nil if you allow to use cookies (i.e. you have set `w3m-use-cookies'
-to non-nil) since cookies may be shared among many redirected pages."
+  "*Maximum number of redirections which emacs-w3m honors and follows."
   :group 'w3m
   :type '(integer :size 0))
 
@@ -3988,7 +3985,7 @@ argument, when retrieve is complete."
 	(attr (progn
 		(set-buffer-multibyte nil)
 		(w3m-w3m-retrieve-1 url post-data referer no-cache
-				    w3m-follow-redirection handler)))
+				    (or w3m-follow-redirection 0) handler)))
       (when attr
 	(if (or no-decode
 		(w3m-decode-encoded-contents (nth 4 attr)))
@@ -4406,6 +4403,14 @@ argument.  Otherwise, it will be called with nil."
 		(w3m-arrived-add url nil modified-time arrived-time)
 		(unless modified-time
 		  (setf (w3m-arrived-last-modified url) nil))
+		(let ((real (w3m-real-url url)))
+		  (unless (string= url real)
+		    (w3m-arrived-add url nil nil arrived-time)
+		    (setf (w3m-arrived-title real)
+			  (w3m-arrived-title url))
+		    (setf (w3m-arrived-last-modified real)
+			  (w3m-arrived-last-modified url))
+		    (setq url real)))
 		(prog1 (w3m-create-page url
 					(or (w3m-arrived-content-type url)
 					    type)
@@ -4413,17 +4418,6 @@ argument.  Otherwise, it will be called with nil."
 					    (w3m-arrived-content-charset url)
 					    (w3m-content-charset url))
 					page-buffer)
-		  ;; FIXME: w3m-cache-* は，ユーザーから入力された URL
-		  ;; に基づいてキャッシュを管理しているので，
-		  ;; w3m-content-type() などの引数としては，real URL
-		  ;; が使えない．
-		  (let ((real (w3m-real-url url)))
-		    (unless (string= url real)
-		      (w3m-arrived-add real nil nil arrived-time)
-		      (setf (w3m-arrived-title real)
-			    (w3m-arrived-title url))
-		      (setf (w3m-arrived-last-modified real)
-			    (w3m-arrived-last-modified url))))
 		  (and w3m-verbose
 		       (not (get-buffer-window page-buffer))
 		       (message "The content (%s) has been retrieved in %s"
