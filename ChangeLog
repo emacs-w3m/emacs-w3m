@@ -1,5 +1,12 @@
 2004-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Rewrite the
+	kyoiku section.
+	(shimbun-yomiuri-get-headers): Remove a special treatment for the
+	kyoiku group.
+	(shimbun-yomiuri-prepare-article): Rewrite the code for extracting
+	article bodies in the kyoiku group.
+
 	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Add the
 	market group; remove stockjp, exchange, stockwo-us and stockwo-eu.
 	(shimbun-nikkei-get-headers-markets): Remove.
