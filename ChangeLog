@@ -1,3 +1,8 @@
+2001-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-toolbar, w3m-toolbar-buttons): Add history.
+	* icons/history-up.xpm: New file.
+
 2001-04-20  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-view-source): Don't execute if can't load its source.
