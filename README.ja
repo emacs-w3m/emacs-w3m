@@ -104,9 +104,6 @@
 
       http://prdownloads.sourceforge.net/w3m/w3m-0.2.3.1.tar.gz
 
-   w3m-m17n / w3mmee などの w3m から派生したプログラムを利用する場合には，
-   patches/ 以下の必要なパッチを適用して，再コンパイルしてください．
-
 
 4. 連絡先
 
