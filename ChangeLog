@@ -1,3 +1,10 @@
+2002-01-29  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3mhack.el (w3mhack-examine-modules): Add octet.el to the module list
+	if FLIM is installed.
+
+	* octet.el: New file.
+
 2002-01-29  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-meadow.el (shimbun-headers): Fixed problem when

@@ -88,11 +88,13 @@
 		 (locate-library "un-define"))
       (push "w3m-ucs.el" ignores))
     (if (locate-library "mime-def")
-	;; Add shimbun modules.
 	(progn
+	  ;; Add shimbun modules.
 	  (dolist (file (directory-files (expand-file-name shimbun-dir)
 					 nil "^[^#]+\\.el$"))
 	    (setq modules (nconc modules (list (concat shimbun-dir file)))))
+	  ;; Add octet.el
+	  (setq modules (nconc modules (list "octet.el")))
 	  ;; mew-shimbun check
 	  (unless (locate-library "mew")
 	    (push (concat shimbun-dir "mew-shimbun.el") ignores)))
