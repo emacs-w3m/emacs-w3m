@@ -1,3 +1,65 @@
+2004-06-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-make-new-session): New user option.
+	(w3m): Make a new emacs-w3m buffer if w3m-make-new-session is
+	non-nil and a user specifies a url string.
+
+	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-x-face-alist): New variable.
+
+2004-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add the
+	editorial group and the tensei-jingo group as tenjin.
+	(shimbun-asahi-get-headers): Add a special treatment for the
+	groups editorial and tenjin.
+	(shimbun-asahi-get-headers-for-today): New function.
+	(shimbun-asahi-prepare-article): Rename from
+	shimbun-asahi-adjust-date-header; remove garbages for the groups
+	editorial and tenjin.
+	(shimbun-make-contents): Use shimbun-asahi-prepare-article.
+
+	* shimbun/sb-asahi-html.el (shimbun-make-contents): Use
+	shimbun-asahi-prepare-article.
+
+2004-06-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-popup-buffer): Don't use focus-frame in Emacs.
+
+	* shimbun/sb-x51.el (shimbun-make-contents): Make sure there are
+	the start and the end of contents.
+
+	* shimbun/sb-zeit-de.el (shimbun-make-contents): Ditto.
+
+2004-06-02  Tsuyoshi CHO  <mfalcon21@hotmail.com>
+
+	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-content-start): Improve
+	regexp.
+	(shimbun-cnn-jp-prepare-article): New function.
+	(shimbun-make-contents): Use it to correct date headers.
+
+	* shimbun/sb-x51.el (shimbun-x51-content-end): Improve regexp.
+	(shimbun-get-headers): Don't put hour:min in date headers.
+	(shimbun-x51-prepare-article): New function.
+	(shimbun-make-contents): Use it to correct date headers.
+
+2004-06-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-proc.el (w3m-process-wait-discard-input): Abolish.
+	(w3m-process-wait-process): Don't use accept-process-output to
+	make it possible to show progress messages; discard key press
+	events while waiting for finishing of a process.
+
+2004-05-27  Andreas Seltenreich  <seltenreich@gmx.de>
+
+	* shimbun/sb-zeit-de.el (shimbun-zeit-de-content-end): Improve
+	regexp.
+	(shimbun-make-contents): Correct date headers if possible.
+
+2004-05-24  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-form.el (w3m-form-put-by-name): Overwrite ID value when a name
+	is found.
+
 2004-05-24  MATSUURA Kyo  <kyo@chimons.org>
 
 	* sb-security-memo.el (shimbun-security-memo-url): Reduced.
@@ -6,6 +68,20 @@
 	(shimbun-security-memo-groups): New method.
 	(shimbun-index-url): Ditto.
 	(shimbun-reply-to): Check the current group name.
+
+2004-05-24  Andreas Seltenreich  <seltenreich@gmx.de>
+
+	* shimbun/sb-zeit-de.el: New file.  The shimbun backend for
+	www.zeit.de.
+
+	* shimbun/sb-n24-de.el: New file.  The shimbun backend for
+	www.n24.de.
+
+2004-05-22  Tsuyoshi CHO  <mfalcon21@hotmail.com>
+
+	* shimbun/sb-cnn-jp.el: New file.
+
+	* shimbun/sb-x51.el: New file.
 
 2004-05-22  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 

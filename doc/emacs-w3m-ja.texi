@@ -2563,6 +2563,14 @@ that the variables @code{special-display-buffer-names},
 @code{same-window-regexps} will be bound to @code{nil} while popping up
 a buffer.
 
+@item w3m-make-new-session
+@vindex w3m-make-new-session
+Non-@code{nil} means the @code{w3m} command mostly makes a new emacs-w3m
+buffer.  It does so if a user specifies a url string when invoking the
+command.  Otherwise, the @code{w3m} command uses an existing emacs-w3m
+buffer to show the specified page or simply pops it up.  The default
+value is @code{nil}.
+
 @item w3m-mbconv-command
 @vindex w3m-mbconv-command
 Name of the @samp{mbconv} command provided by the @samp{libmoe} package.
@@ -4332,10 +4340,10 @@ Folder, wl-ja, The Wanderlust-ja Manual})。
 
 @table @asis
 @item @uref{http://www.asahi.com/, 朝日新聞}
-asahi.business asahi.culture asahi.english asahi.international
-asahi.kansai asahi.kansai-special asahi.national asahi.politics
-asahi.science asahi.sports asahi.nankyoku asahi.whitemail
-asahi.borderless
+asahi.borderless asahi.business asahi.culture asahi.editorial
+asahi.english asahi.international asahi.kansai asahi.kansai-special
+asahi.nankyoku asahi.national asahi.politics asahi.science asahi.sports
+asahi.tenjin asahi.whitemail
 
 これらは、テキストのみの記事を作成しますが、記事中に含まれる写真などをイ
 ンライン表示するように拡張された @samp{asahi-html} というバックエンドも
@@ -4440,6 +4448,17 @@ yahoo.market yahoo.stock yahoo.industry yahoo.international
 yahoo.entertainment yahoo.sports yahoo.computer yahoo.hokkaido
 yahoo.tohoku yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
 yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
+
+@item @uref{http://www.cnn.co.jp/, CNN Japan}
+cnn-jp.business cnn-jp.fringe cnn-jp.science cnn-jp.showbiz
+cnn-jp.sports cnn-jp.top cnn-jp.usa cnn-jp.world
+
+@item @uref{http://www.n24.de/, N24}
+n24-de.boerse n24-de.boulevard n24-de.nachrichten n24-de.netnews
+n24-de.politik n24-de.sport n24-de.wirtschaft
+
+@item @uref{http://www.zeit.de/, Die Zeit}
+zeit-de.news
 @end table
 
 @node Mailing Lists Supported by Shimbun
@@ -4931,6 +4950,12 @@ atmarkit.fsecurity atmarkit.fbiz atmarkit.jibun
 
 @item @uref{http://www.matsusaka-u.ac.jp/~okumura/texfaq/qa/, TeX Q&A 掲示板}
 texfaq.qanda
+
+@item @uref{http://x51.org/, X51}
+x51.art x51.auction x51.blow x51.cabal x51.crime x51.disaster x51.edge
+x51.homme x51.info x51.life x51.love x51.media x51.medical x51.military
+x51.northkorea x51.oparts x51.phallic x51.psychics x51.religion
+x51.science x51.top x51.ufo x51.uma x51.xfiles
 @end table
 
 @node Shimbun Basics
