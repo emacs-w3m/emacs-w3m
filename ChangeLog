@@ -1,4 +1,6 @@
-2003-02-09  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+2003-02-09  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-coldsync.el: New file.
 
 	* shimbun/sb-vinelinux.el (shimbun-make-contents): Change for web
 	page rearranging.
