@@ -1,3 +1,10 @@
+2002-04-10  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-image.el (w3m-imagick-convert-data): Check buffer size.
+	(w3m-imagick-start-convert-data): Ditto.
+	(w3m-imagick-start-convert-buffer): Don't use output file
+	(Because it sometimes causes multiple files).
+
 2002-04-10  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3mhack.el (w3mhack-examine-modules): Reverse the turn of the

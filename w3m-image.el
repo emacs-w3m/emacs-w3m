@@ -83,6 +83,7 @@
     (set-buffer-multibyte nil)
     (insert data)
     (and (apply 'w3m-imagick-convert-buffer from-type to-type args)
+	 (not (zerop (buffer-size)))
 	 (buffer-string))))
 
 ;;; Asynchronous image conversion.
@@ -94,13 +95,13 @@
 		 (insert data)
 		 (apply 'w3m-imagick-start-convert-buffer
 			handler from-type to-type args)))
-    (if success (buffer-string))))
+    (if (and success
+	     (not (zerop (buffer-size))))
+	(buffer-string))))
 
 (defun w3m-imagick-start-convert-buffer (handler from-type to-type &rest args)
   (lexical-let ((in-file (make-temp-name
 			  (expand-file-name "w3mel" w3m-profile-directory)))
-		(out-file (make-temp-name
-			   (expand-file-name "w3mel" w3m-profile-directory)))
 		(out-buffer (current-buffer)))
     (setq w3m-current-url "non-existent")
     (let ((file-coding-system 'binary)
@@ -111,7 +112,8 @@
 	  format-alist)
       (write-region (point-min) (point-max) in-file nil 'nomsg))
     (w3m-process-do
-	(success (progn
+	(success (with-current-buffer out-buffer
+		   (erase-buffer)
 		   (apply
 		    'w3m-imagick-start handler
 		    (append args
@@ -122,16 +124,10 @@
 			      in-file)
 			     (concat
 			      (if to-type
-				  (concat to-type ":"))
-			      out-file))))))
-      (with-current-buffer out-buffer
-	(erase-buffer)
-	(ignore-errors
-	  (insert-file-contents-literally out-file)))
+				  (concat to-type ":-")
+				"-")))))))
       (when (file-exists-p in-file)
 	(delete-file in-file))
-      (when (file-exists-p out-file)
-	(delete-file out-file))
       success)))
 
 (defun w3m-imagick-start (handler &rest arguments)
