@@ -5,6 +5,8 @@
 	(w3m-w3m-dump-head-source): Removed code which refers
 	`w3m-process-message'.
 	(w3m-w3m-dump-source): Ditto.
+	(w3m-parse-attributes): Remove leading and trailing white space in
+	CDATA attribute values.
 
 2001-04-03  Hideyuki SHIRAI  <shirai@meadowy.org>
 

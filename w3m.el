@@ -902,9 +902,10 @@ If N is negative, last N items of LIST is returned."
 			    (symbolp (car attr)))
 		       (error "Internal error, type mismatch."))
 		   (let ((sexp (quote
-				(or (match-string 2)
-				    (match-string 3)
-				    (match-string 1)))))
+				(w3m-remove-redundant-spaces
+				 (or (match-string 2)
+				     (match-string 3)
+				     (match-string 1))))))
 		     (when (listp attr)
 		       (cond
 			((eq (nth 1 attr) :case-ignore)
@@ -1331,7 +1332,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
             (unwind-protect
                 (prog2
 		    (while (eq (process-status proc) 'run)
-		      (accept-process-output proc 0 200))
+		      (accept-process-output nil 0 200))
 		    (process-exit-status proc)
 		  (and w3m-current-url
 		       w3m-process-user
@@ -1522,11 +1523,9 @@ to nil."
 (defun w3m-remove-redundant-spaces (str)
   "Remove spaces/tabs at the front of a string and at the end of a string"
   (save-match-data
-    (if (string-match "^[ \t\r\f\n]+" str)
-	(setq str (substring str (match-end 0))))
-    (if (string-match "[ \t\r\f\n]+$" str)
-	(setq str (substring str 0 (match-beginning 0)))))
-  str)
+    (substring str
+	       (if (string-match "^[ \t\r\f\n]+" str) (match-end 0) 0)
+	       (and (string-match "[ \t\r\f\n]+$" str) (match-beginning 0)))))
 
 (defun w3m-w3m-get-header (url &optional no-cache)
   "Return the header string of the URL.
