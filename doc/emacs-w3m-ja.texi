@@ -1009,60 +1009,57 @@ C-c M-w	Kill other w3m buffers.
 @section 画像表示を ON/OFF する
 @cindex Displaying images
 
-@c TRANSLATEME!
-If the Emacs version you're using is capable of displaying images in
-buffers, then emacs-w3m can display them in web pages, just like
-``graphical'' browsers like Netscape do.  You should make sure your
-Emacs is correctly setup for images before trying to use any of the
-following commands (@pxref{Required Emacs Version}).
+使用している Emacs のバージョンがバッファに画像を表示することができるな
+らば、あたかも Netscape のような「グラフィカル」ブラウザのように、
+emacs-w3m はウェブページにそれらを表示することができます。下記のコマンド
+のどれかを使おうとする前に、あなたの Emacs が正しく画像表示に使えること
+を確かめて下さい (@pxref{Required Emacs Version})。
 
-To toggle displaying of images in the current buffer, use @kbd{T}.  It
-makes emacs-w3m fetch the images from the server, then display them in
-the buffer, at the position they would have in a ``graphical'' browser.
-If you hit the key again, images will disappear from the buffer.
+現在のバッファにおける画像の表示を切り替えるには @kbd{T} を使って下さい。
+それによって emacs-w3m はサーバから画像を取ってきて、しかる後にそれらを
+「グラフィカル」ブラウザとしてそうなるであろうバッファの位置に表示します。
+もう一度キーを叩くと、画像はバッファから消え去ります。
 
-By default, emacs-w3m won't display images, but you can change its
-behavior and choose to always display images, for this you need to
-customize the @code{w3m-default-display-inline-images} variable and
-change its value from @code{nil} to @code{t}. @xref{Customizable
-Options}.
+デフォルトでは emacs-w3m は画像を表示しませんが、その振る舞いを変更して
+常に画像表示することを選ぶのは可能で、それに
+は @code{w3m-default-display-inline-images} 変数をカスタマイズして、その
+値を @code{nil} から @code{t} に変更する必要があります。
+@xref{Customizable Options}。
 
-Emacs-w3m also comes with nifty features that let you zoom an image in
-or out, save it to a file, or view it in a external viewer.  See also
-@ref{Moving in a page} for instructions on how to move from image to
-image in an emacs-w3m buffer.
+さらに Emacs-w3m には、画像の拡大縮小、ファイルへのセーブ、または外部ビュー
+ワーで見る、といった気の利いた機能が付属しています。
 
 @table @kbd
 @item T
 @kindex T
 @findex w3m-toggle-inline-images
-Toggle displaying of inline images in this buffer (and buffers created
-from this buffer, later on).
+現在のバッファ (および後でそれから生成されるバッファ) におけるインライン
+画像の表示をトグルで切り替えます。
 
 @item I
 @kindex I
 @findex w3m-view-image
 @cindex Viewing images
-View the image under point in an external viewer.
+ポイントの下にある画像を外部ビューワーで見ます。
 
 @item M-i
 @kindex M-i
 @findex w3m-save-image
 @cindex Saving images
-Save the image under point to an external file.  The default name will
-be the original name of the image, so most of the time @kbd{M-i RET}
-will save the image with the right name.
+ポイントの下にある画像を外部ファイルにセーブします。デフォルトの名前はそ
+の画像の元の名前です。それ故に、ほとんどの場合に @kbd{M-i RET} は正しい
+名前で画像をセーブするでしょう。
 
 @cindex Zooming images
 @item M-[
 @kindex M-[
 @findex w3m-zoom-out-image
-Zoom out the image under point.
+ポイントの下にある画像を縮小 (zoom out) します。
 
 @item M-]
 @kindex M-]
 @findex w3m-zoom-in-image
-Zoom in the image under point.
+ポイントの下にある画像を拡大 (zoom in) します。
 @end table
 
 @node Tracing History
