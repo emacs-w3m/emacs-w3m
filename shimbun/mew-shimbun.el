@@ -25,29 +25,11 @@
 ;; Inc.; 59 Temple Place, Suite 330; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
-;; This package is SHIMBUN interface for Mew version 2.1 or later.
+;; This package is `Shimbun' interface for Mew version 2.1 or later.
+;; SHIMBUN 
 
-;;; Instalation:
-;; Simply load this file and add followings in your ~/.mew file.
-;; If you can understand Japanese, please read 'README.shimbun.ja'.
-;;
-;;; Comment out below one line, if you use 'Mew Shimbun unseen mark'.
-;;
-;;; (setq mew-shimbun-use-unseen t)
-;;;; (setq mew-shimbun-use-unseen-cache-save t)
-;;
-;; (setq mew-shimbun-folder-groups .... ;; at your service
-;;
-;; (require 'mew-shimbun)
-;; (define-key mew-summary-mode-map "G"  (make-sparse-keymap))
-;; (define-key mew-summary-mode-map "Gg" 'mew-shimbun-goto-folder)
-;; (define-key mew-summary-mode-map "GG" 'mew-shimbun-goto-unseen-folder)
-;; (define-key mew-summary-mode-map "Gi" 'mew-shimbun-retrieve)
-;; (define-key mew-summary-mode-map "GI" 'mew-shimbun-retrieve-all)
-;; (define-key mew-summary-mode-map "Gr" 'mew-shimbun-re-retrieve)
-;; (define-key mew-summary-mode-map "GR" 'mew-shimbun-re-retrieve-all)
-;; (define-key mew-summary-mode-map "Ge" 'mew-shimbun-expire)
-;; (define-key mew-summary-mode-map "GE" 'mew-shimbun-expire-all)
+;;; Instalation & Usage:
+;; Please read the emacs-w3m info (C-h i m emacs-w3m(-ja) RET m Mew Shimbun RET).
 ;;
 
 ;;; Code:
