@@ -4,6 +4,10 @@
 	`euc-japan' of "waei" and "kokugo". Tnx, Mr. Saito (sai@yedo.com)
 	for his report.
 
+2003-03-30  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-canna-dev.el: New file.
+
 2003-03-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna-check-all-sites): Call `make-symbol'
