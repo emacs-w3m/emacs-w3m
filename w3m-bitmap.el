@@ -281,9 +281,6 @@ property ."
     (goto-char home)
     ovr))
 
-;; Transparent face used to overlays.
-(make-face 'w3m-bitmap-transparent-face)
-
 (defun w3m-bitmap-image-insert (pos image &optional props ovr)
   "Insert IMAGE to POS.  IMAGE should be a list of bitmap image lines or
 a non-list text.  PROPS specifies properties for bitmap images.  OVR
@@ -300,7 +297,8 @@ a new overlay will be created and returned."
 	(setq ovr (make-overlay ovrbeg ovrbeg))
 	(overlay-put ovr 'w3m-bitmap-image-line t)
 	(overlay-put ovr 'w3m-bitmap-image-count 0)
-	(overlay-put ovr 'face 'w3m-bitmap-transparent-face))
+	;; Make the overlay transparent to the face text property.
+	(overlay-put ovr 'face '((:background) (:foreground))))
       (if (consp image)
 	  (progn
 	    (insert-before-markers (car image))

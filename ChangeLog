@@ -1,3 +1,9 @@
+2002-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bitmap.el (w3m-bitmap-transparent-face): Remove.
+	(w3m-bitmap-image-insert): Use the list form instead of
+	`w3m-bitmap-transparent-face' to make the overlay transparent.
+
 2002-04-23  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-bitmap.el (w3m-bitmap-convert-arguments) 
