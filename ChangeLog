@@ -1,3 +1,8 @@
+2001-05-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-meadow.el (shimbun-get-headers): Use
+	`shimbun-expand-url' instead of `w3m-expand-url'.
+
 2001-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-rename-url): Don't use
