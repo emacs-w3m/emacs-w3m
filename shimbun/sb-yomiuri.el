@@ -52,81 +52,78 @@
 	     "<a" s1 "href=\"/"
 	     ;; 1. url
 	     "\\(%s/news/"
-	     ;; 2. serial number
-	     "\\(20[0-9][0-9][01][0-9][0-3][0-9][0-9a-z]+\\)"
+	     ;; 2,3. serial number
+	     "\\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\\([0-9a-z]+\\)"
 	     "\\.htm\\)\">" s0
-	     ;; 3. subject
+	     ;; 4. subject
 	     "\\([^<>]+\\)"
 	     s0 "("
-	     ;; 4. month
+	     ;; 5. month
 	     "\\([01]?[0-9]\\)"
 	     "/"
-	     ;; 5. day
+	     ;; 6. day
 	     "\\([0-3]?[0-9]\\)"
 	     s1
-	     ;; 6. hour:minute
+	     ;; 7. hour:minute
 	     "\\([012][0-9]:[0-5][0-9]\\)"
 	     ")" s0 "</a>")
-	    1 2 3 4 5 6)))
+	    1 2 3 4 5 6 7)))
     `(("business" "経済面" "index.htm" ,@default)
       ("culture" "芸能・文化面" "index.htm" ,@default)
       ("editorial" "社説・コラム" "index.htm"
        ,(concat "<a" s1 "href=\"/"
 		;; 1. url
 		"\\(%s/news/"
-		;; 2. serial number
-		"\\(20[0-9][0-9][01][0-9][0-3][0-9][0-9a-z]+\\)"
+		;; 2,3. serial number
+		"\\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\\([0-9a-z]+\\)"
 		"\\.htm\\)"
 		"\">" s0
-		;; 3. month(ja)
+		;; 4. month(ja)
 		"\\([０１]?[０-９]\\)"
 		"月"
-		;; 4. day(ja)
+		;; 5. day(ja)
 		"\\([０-３]?[０-９]\\)"
 		"日付・"
-		;; 5. subject
+		;; 6. subject
 		"\\(.+\\)" s0 "</a>")
-       1 2 5 nil nil nil 3 4)
+       1 2 3 6 4 5)
       ("kyoiku" "教育メール" "main.htm"
        ,(concat "<a" s1 "href=\"/"
-		;; 1. url
-		"\\(%s/"
-		;; 2. parent-directory
-		"\\([0-9]+\\)"
-		"/"
-		;; 3. serial number
-		"\\("
-		;; 4. year
-		"\\(20[0-9][0-9]\\)"
-		;; 5. month
+		;; 1. url-0
+		"\\(%s/[0-9]+\\)"
+		;; 2. url-1
+		"\\(/"
+		;; 3,6. serial number
+		"\\(20[0-9][0-9]"
+		;; 4. month
 		"\\([01][0-9]\\)"
-		;; 6. day
+		;; 5. day
 		"\\([0-3][0-9]\\)"
-		"[0-9a-z]+\\)"
+		"\\)\\([0-9a-z]+\\)"
 		"\\.htm\\)\""
 		s1 "target=\"_top\">" s0 "\\(<[^<>]+>" s0 "\\)+◆?"
 		;; 8. subject
 		"\\([^<>]+\\)" s0)
-		1 3 8 5 6 nil 2)
+       1 3 6 8 4 5 nil 2)
       ("national" "社会面" "index.htm" ,@default)
       ("obit" "おくやみ" "index.htm"
        ,(concat "<a" s1 "href=\"/"
 		;; 1. url
 		"\\(%s/news/"
-		;; 2. serial number
-		"\\(20[0-9][0-9][01][0-9][0-3][0-9][0-9a-z]+\\)"
+		;; 2,3. serial number
+		"\\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\\([0-9a-z]+\\)"
 		"\\.htm\\)"
 		"\">" s0
-		;; 3. subject
+		;; 4. subject
 		"\\(.+\\)"
 		s0 "("
-		;; 4. month
+		;; 5. month
 		"\\([01]?[0-9]\\)"
 		"/"
-		;; 5. day
+		;; 6. day
 		"\\([0-3]?[0-9]\\)"
 		")" s0 "</a>")
-       1 2 3 4 5)
+       1 2 3 4 5 6)
       ("politics" "政治面" "index.htm" ,@default)
       ("science" "科学面" "index.htm" ,@default)
       ("sports" "スポーツ面" "index.htm" ,@default)
@@ -135,8 +132,8 @@
 regexps and numbers.
 Regexp may contain the \"%s\" token which is replaced with a
 regexp-quoted group name.  Numbers point to the search result in order
-of a url, a serial number, a subject, a month, a day, an hour:minute
-and extra keywords.")
+of [0]a url, [1,2]serial numbers, [3]a subject, [4]a month, [5]a day,
+[6]an hour:minute and [7-]extra keywords.")
 
 (defvar shimbun-yomiuri-content-start "\n<!--  honbun start  -->\n")
 
@@ -309,11 +306,11 @@ It does also shorten too much spaces."
     (while (re-search-forward regexp nil t)
       (if (string-equal group "editorial")
 	  (setq month (shimbun-yomiuri-japanese-string-to-number
-		       (match-string (nth 6 numbers)))
+		       (match-string (nth 4 numbers)))
 		day (shimbun-yomiuri-japanese-string-to-number
-		     (match-string (nth 7 numbers))))
-	(setq month (string-to-number (match-string (nth 3 numbers)))
-	      day (string-to-number (match-string (nth 4 numbers)))))
+		     (match-string (nth 5 numbers))))
+	(setq month (string-to-number (match-string (nth 4 numbers)))
+	      day (string-to-number (match-string (nth 5 numbers)))))
       (push (shimbun-make-header
 	     ;; number
 	     0
@@ -323,8 +320,8 @@ It does also shorten too much spaces."
 		  (format "%02d/%02d %s"
 			  month day
 			  (shimbun-yomiuri-shorten-brackets-in-string
-			   (match-string (nth 2 numbers)))))
-	       (shimbun-mime-encode-string (match-string (nth 2 numbers))))
+			   (match-string (nth 3 numbers)))))
+	       (shimbun-mime-encode-string (match-string (nth 3 numbers))))
 	     ;; from
 	     from
 	     ;; date
@@ -335,25 +332,20 @@ It does also shorten too much spaces."
 					     (t
 					      cyear))
 				       month day
-				       (when (nth 5 numbers)
-					 (match-string (nth 5 numbers))))
+				       (when (nth 6 numbers)
+					 (match-string (nth 6 numbers))))
 	     ;; id
-	     (concat
-	      "<" (buffer-substring (match-beginning (nth 1 numbers))
-				    (+ (match-beginning (nth 1 numbers)) 8))
-	      "." (buffer-substring (+ (match-beginning (nth 1 numbers)) 8)
-				    (match-end (nth 1 numbers)))
-	      "%" group "." shimbun-yomiuri-top-level-domain ">")
+	     (concat "<" (match-string (nth 1 numbers))
+		     "." (match-string (nth 2 numbers))
+		     "%" group "." shimbun-yomiuri-top-level-domain ">")
 	     ;; references, chars, lines
 	     "" 0 0
 	     ;; xref
 	     (if (string-equal group "kyoiku")
 		 (concat shimbun-yomiuri-url
-			 (buffer-substring (match-beginning (nth 0 numbers))
-					   (match-end (nth 6 numbers)))
+			 (match-string (nth 0 numbers))
 			 "a"
-			 (buffer-substring (match-end (nth 6 numbers))
-					   (match-end (nth 0 numbers))))
+			 (match-string (nth 7 numbers)))
 	       (concat shimbun-yomiuri-url (match-string (nth 0 numbers)))))
 	    headers))
     headers))
