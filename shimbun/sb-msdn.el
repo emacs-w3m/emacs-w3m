@@ -63,6 +63,7 @@ List is available at:
  http://msdn.microsoft.com/aboutmsdn/rss/
  http://www.microsoft.com/japan/msdn/aboutmsdn/rss/")
 
+(defvar shimbun-msdn-from-address "nobody@microsoft.com")
 (defvar shimbun-msdn-content-start "\\(<!--\\(pull table\\|BEGIN_CONTENT\\| Begin Content \\)-->\\|<table id=\"hpcontenttable\".*>\\)")
 (defvar shimbun-msdn-content-end "\\(</body>\\|<!--\\(END_CONTENT\\| End Content \\)-->\\)")
 

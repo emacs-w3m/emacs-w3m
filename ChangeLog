@@ -1,5 +1,7 @@
 2004-09-26  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
+	* shimbun/sb-msdn.el (shimbun-msdn-from-address): Define.
+
 	* shimbun/sb-exconn.el (shimbun-get-headers): Overwrite from
 	address.
 
