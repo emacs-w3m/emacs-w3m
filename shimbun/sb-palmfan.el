@@ -147,7 +147,7 @@
 		      body (buffer-substring-no-properties start end))
 		;; move file size to SUBJECT
 		;;<TD align="center" width="45">8KB</TD>
-		(when (string-match "<TD \\( *nowrap *\\)*align=\"[^>]+>\\([0-9]+KB\\)</TD>" body)
+		(when (string-match "<TD \\( *nowrap *\\)*align=\"[^>]+>\\([0-9]+KB*\\)</TD>" body)
 		  (setq subject (concat subject "/" (match-string 2 body)) ; move to subject
 			body (concat (substring body 0 (match-beginning 0))
 				     (substring body (match-end 0)))))

@@ -1,3 +1,8 @@
+2002-05-20  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-palmwarefan-headers):
+	Modify regexp to pick up price from BODY for working around.
+	
 2002-05-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mailman.el (shimbun-mailman-make-contents): New
