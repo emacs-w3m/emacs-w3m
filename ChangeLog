@@ -1,5 +1,8 @@
 2001-11-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-goto-ftp-url): Rewrote.
+	(w3m-download): Use `w3m-goto-ftp-url' for ftp files.
+
 	* w3m-e20.el (w3m-make-ccl-coding-system): Copied from w3m-fsf.el;
 	don't call `make-coding-system' if a coding-system already exists.
 	* w3m-e21.el (w3m-make-ccl-coding-system): Moved from w3m-fsf.el.
