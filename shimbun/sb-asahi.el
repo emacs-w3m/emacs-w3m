@@ -655,6 +655,7 @@ and tenjin, it tries to fetch the article for that day if it failed."
 <!--[\t\n ]*End of Headline[\t\n ]*-->"
 			       nil t)
 	(insert "<!-- Start of Kiji -->")))
+     ((string-equal group "rss"))
      (t
       (when (re-search-forward
 	     (eval-when-compile

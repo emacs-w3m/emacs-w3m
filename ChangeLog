@@ -2,6 +2,7 @@
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Improve regexp
 	for the rss group.
+	(shimbun-asahi-prepare-article): Do nothing for the rss group.
 
 2005-04-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
