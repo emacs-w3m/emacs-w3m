@@ -2076,10 +2076,12 @@ this function returns t.  Otherwise, returns nil."
     (and add-kill-ring url (kill-new url))
     (message "%s" (or url "Not found"))))
 
-(defun w3m-save-this-url ()
+(defun w3m-edit-current-url ()
+  "*Edit the local file pointed by the URL of current page"
   (interactive)
-  (let ((url (w3m-anchor)))
-    (if url (kill-new url))))
+  (if (w3m-url-local-p w3m-current-url)
+      (find-file (w3m-url-to-file-name w3m-current-url))
+    (error "The URL of current page is not local.")))
 
 (defun w3m-goto-next-anchor ()
   ;; move to the end of the current anchor
@@ -2218,6 +2220,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "\\" 'w3m-view-source)
     (define-key map "=" 'w3m-view-header)
     (define-key map "s" 'w3m-history)
+    (define-key map "E" 'w3m-edit-current-url)
     (setq w3m-mode-map map)))
 
 (defun w3m-alive-p ()

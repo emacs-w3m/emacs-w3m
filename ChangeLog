@@ -1,3 +1,9 @@
+2001-04-06  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-edit-current-url): New command.
+	(w3m-mode-map): `w3m-edit-current-url' is registered.
+	(w3m-save-this-url): Removed.
+
 2001-04-05  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-xemacs.el (shimbun-get-headers): Examine
