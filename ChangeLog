@@ -1,3 +1,24 @@
+2000-10-11  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-mailto-url-function, w3m-use-cygdrive,
+	w3m-default-save-dir, w3m-arrived-list-file, w3m-arrived-list-keep,
+	w3m-arrived-anchor-face, w3m-exec-process-type,
+	w3m-process-connection-type, w3m-arrived-anchor-list):
+	New user custumize variables.
+	(w3m-mode): Change doc-string for key binding.
+	(w3m-arrived-list-add, w3m-arrived-list-load, w3m-arrived-list-save):
+	New functions for handling arrived anchor.
+	(w3m-fontify): Add arrived anchor face.
+	(w3m-exec-process, w3m-exec-filter, w3m-exec-sentinel): New functions
+	for asynchronous w3m execution.
+	(w3m-find-file, w3m-read-file-name, w3m-read-passwd):
+	New miscellaneous functions.
+	(w3m-expand-file-name): Support old cygwin.
+	(w3m-view-current-url-with-external-browser): If w3m-browser-command
+	is function, funcall it.
+	(w3m-mailto-url): If w3m-mailto-url-function is function, funcall it.
+	(w3m-mode-map): If running xemacs, use (button2) instead of (mouse-2).
+
 2000-09-21  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* w3m.el (w3m): Cancel last change, use switch-to-buffer again.

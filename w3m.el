@@ -77,14 +77,30 @@
   :type '(repeat (restricted-sexp :match-alternatives (stringp 'file))))
 
 (defcustom w3m-browser-command "netscape"
-  "*Name of the browser."
+  "*Command name or function name of the browser."
   :group 'w3m
-  :type 'string)
+  :type '(choice (string :tag "Name of command")
+		 (function :tag "Name of function")))
 
 (defcustom w3m-browser-command-arguments '(url)
-  "Arguments of browser."
+  "*Arguments of browser."
   :group 'w3m
   :type '(repeat (restricted-sexp :match-alternatives (stringp 'url))))
+
+(defcustom w3m-mailto-url-function nil
+  "*Mailto handling Function."
+  :group 'w3m
+  :type 'function)
+
+(defcustom w3m-use-cygdrive t
+  "*If non-nil, use /cygdrive/ rule when expand-file-name."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-default-save-dir "~/.w3m"
+  "*Default directory for save file."
+  :group 'w3m
+  :type 'directory)
 
 (defcustom w3m-coding-system (if (boundp 'MULE) '*euc-japan* 'euc-japan)
   "*Coding system for w3m."
@@ -96,6 +112,16 @@
   :group 'w3m
   :type 'file)
 
+(defcustom w3m-arrived-list-file (expand-file-name "~/.w3m/.arrived")
+  "*Arrived file of w3m."
+  :group 'w3m
+  :type 'file)
+
+(defcustom w3m-arrived-list-keep 500
+  "*Arrived keep count of w3m."
+  :group 'w3m
+  :type 'integer)
+
 (defcustom w3m-fill-column (- (frame-width) 4)
   "*Fill column of w3m."
   :group 'w3m
@@ -106,6 +132,13 @@
     (((class color) (background dark)) (:foreground "blue" :underline t))
     (t (:underline t)))
   "*Face to fontify anchors."
+  :group 'w3m-face)
+
+(defface w3m-arrived-anchor-face
+  '((((class color) (background light)) (:foreground "navy" :underline t :bold t))
+    (((class color) (background dark)) (:foreground "blue" :underline t :bold t))
+    (t (:underline t)))
+  "*Face to fontify anchors, if arrived."
   :group 'w3m-face)
 
 (defface w3m-image-face
@@ -135,6 +168,63 @@
   :group 'w3m
   :type 'hook)
 
+(defcustom w3m-exec-process-type 'call-process
+  "*Function type for w3m execution."
+  :group 'w3m
+  :type '(choice (symbol :tag "call-process" call-process)
+		 (symbol :tag "start-process" start-process)))
+
+(defcustom w3m-process-connection-type t
+  "*Process connection type for w3m."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-keep-backlog 300
+  "*Back log size of w3m."
+  :group 'w3m
+  :type 'integer)
+
+(defvar w3m-backlog-buffer nil)
+(defvar w3m-backlog-articles nil)
+(defvar w3m-backlog-hashtb nil)
+(defvar w3m-input-url-history nil)
+
+(defvar w3m-arrived-anchor-list nil)
+(defvar w3m-current-url nil "URL of this buffer.")
+(defvar w3m-current-title nil "Title of this buffer.")
+(defvar w3m-url-history nil "History of URL.")
+
+(defun w3m-arrived-list-add (&optional url)
+  "Cons url to 'w3m-arrived-anchor-list'. CAR is newest."
+  (setq url (or url w3m-current-url))
+  (when (> (length url) 5) ;; ignore short
+    (set-text-properties 0 (length url) nil url)
+    (setq w3m-arrived-anchor-list
+	  (cons url (delete url w3m-arrived-anchor-list)))))
+	  
+(defun w3m-arrived-list-load ()
+  "Load arrived url list from 'w3m-arrived-list-file'."
+  (when (file-readable-p w3m-arrived-list-file)
+    (with-temp-buffer
+      (insert-file-contents w3m-arrived-list-file)
+      (condition-case nil
+	  (read (current-buffer))
+	(error nil)))))
+
+(defun w3m-arrived-list-save ()
+  "Save arrived url list to 'w3m-arrived-list-file'."
+  (when (> (length w3m-arrived-anchor-list) w3m-arrived-list-keep)
+    (setq w3m-arrived-anchor-list
+	  (nreverse (nthcdr (- (length w3m-arrived-anchor-list)
+			       w3m-arrived-list-keep)
+			    (nreverse w3m-arrived-anchor-list)))))
+  (if (file-writable-p w3m-arrived-list-file)
+      (with-temp-buffer
+	(prin1 w3m-arrived-anchor-list (current-buffer))
+	(princ "\n" (current-buffer))
+	(write-region (point-min) (point-max)
+		      w3m-arrived-list-file nil 'nomsg)
+	(setq w3m-arrived-anchor-list nil))))
 
 (defun w3m-fontify ()
   "Fontify this buffer."
@@ -179,7 +269,10 @@
 	(cond (url
 	       (when (search-forward "</a>" nil t)
 		 (delete-region (setq end (match-beginning 0)) (match-end 0))
-		 (put-text-property start end 'face 'w3m-anchor-face)
+		 (if (member (w3m-expand-url url w3m-current-url)
+			     w3m-arrived-anchor-list)
+		     (put-text-property start end 'face 'w3m-arrived-anchor-face)
+		   (put-text-property start end 'face 'w3m-anchor-face))
 		 (put-text-property start end 'w3m-href-anchor url))
 	       (when tag
 		 (put-text-property start end 'w3m-name-anchor tag)))
@@ -216,12 +309,12 @@
     (run-hooks 'w3m-fontify-after-hook)))
 
 
-(defvar w3m-input-url-history nil)
-
 (defun w3m-input-url (&optional prompt default)
   "Read a URL from the minibuffer, prompting with string PROMPT."
   (let (url candidates)
     (w3m-backlog-setup)
+    (or w3m-input-url-history
+	(setq w3m-input-url-history (w3m-arrived-list-load)))
     (mapatoms (lambda (x)
 		(setq candidates (cons (cons (symbol-name x) x) candidates)))
 	      w3m-backlog-hashtb)
@@ -234,14 +327,6 @@
     url))
 
 
-(defcustom w3m-keep-backlog 300
-  "*Back log size of w3m."
-  :group 'w3m
-  :type 'integer)
-
-(defvar w3m-backlog-buffer nil)
-(defvar w3m-backlog-articles nil)
-(defvar w3m-backlog-hashtb nil)
 
 (defun w3m-backlog-setup ()
   "Initialize backlog variables."
@@ -343,9 +428,12 @@
 		 (insert-buffer-substring w3m-backlog-buffer beg end))
 	       t))))))
 
-(defvar w3m-current-url nil "URL of this buffer.")
-(defvar w3m-current-title nil "Title of this buffer.")
-(defvar w3m-url-history nil "History of URL.")
+(defvar w3m-process nil)
+(defvar w3m-process-string nil)
+(defvar w3m-process-url nil)
+(make-variable-buffer-local 'w3m-process)
+(make-variable-buffer-local 'w3m-process-string)
+(make-variable-buffer-local 'w3m-process-url)
 
 (defun w3m-exec (url &optional buffer)
   "Download URL with w3m to the BUFFER.
@@ -353,26 +441,8 @@ If BUFFER is nil, all data is placed to the current buffer."
   (save-excursion
     (if buffer (set-buffer buffer))
     (delete-region (point-min) (point-max))
-    (or (w3m-backlog-request url)
-	(let ((coding-system-for-read w3m-coding-system)
-	      (default-process-coding-system (cons w3m-coding-system w3m-coding-system))
-	      (args (copy-sequence w3m-command-arguments)))
-	  (cond
-	   ((string-match "\\.s?html?$\\|/$" url)) ; do nothing
-	   ((string-match "\\.\\(txt\\|el\\)$" url)
-	    (setq args (cons "-dump" (delete "-halfdump" args))))
-;;	   (t
-;;	    (error "Unsupported suffix to retrieve.")))
-	   )
-	  (message "Loading page...")
-	  (apply 'call-process w3m-command nil t nil
-		 (mapcar (lambda (arg)
-			   (if (eq arg 'col)
-			       (format "%d" w3m-fill-column)
-			     (eval arg)))
-			 args))
-	  (w3m-backlog-enter url (current-buffer))
-	  (message "Loading page...done")))
+    (or (w3m-backlog-request url) (w3m-exec-process url))
+    (w3m-backlog-enter url (current-buffer))
     ;; Setting buffer local variables.
     (set (make-local-variable 'w3m-current-url) url)
     (goto-char (point-min))
@@ -393,6 +463,168 @@ If BUFFER is nil, all data is placed to the current buffer."
     (setq-default w3m-url-history
 		  (cons url (default-value 'w3m-url-history)))))
 
+(defun w3m-exec-process (url)
+  (save-excursion
+    (let ((coding-system-for-read w3m-coding-system)
+	  (coding-system-for-write w3m-coding-system)
+	  (process-connection-type w3m-process-connection-type)
+	  (args (copy-sequence w3m-command-arguments)))
+      (cond
+       ((string-match "\\.s?html?$\\|/$" url)) ; do nothing
+       ((string-match "\\.\\(txt\\|el\\)$" url)
+	(setq args (cons "-dump" (delete "-halfdump" args))))
+       ;; (t
+       ;;  (error "Unsupported suffix to retrieve.")))
+       )
+      (message "Loading page...")
+      (if (eq w3m-exec-process-type 'start-process)
+	  ;; start-process
+	  (unwind-protect nil
+	    (let ()
+	      ;; (pop-to-buffer (current-buffer))
+	      (setq w3m-process-url url)
+	      (setq w3m-process-string nil)
+	      (setq buffer-read-only t)
+	      (setq w3m-process
+		    (apply 'start-process w3m-command (current-buffer) w3m-command
+			   (mapcar (lambda (arg)
+				     (if (eq arg 'col)
+					 (format "%d" w3m-fill-column)
+				       (eval arg)))
+				   args)))
+	      (set-process-coding-system w3m-process w3m-coding-system)
+	      (set-process-filter w3m-process 'w3m-exec-filter)
+	      (set-process-sentinel w3m-process 'w3m-exec-sentinel)
+	      (while w3m-process
+		(sit-for 0.5)
+		(discard-input)))
+	    (setq w3m-process nil)
+	    (setq w3m-process-url url)
+	    (setq w3m-process-string nil)
+	    (setq buffer-read-only nil))
+	;; call-process
+	(apply 'call-process w3m-command nil t nil
+	       (mapcar (lambda (arg)
+			 (if (eq arg 'col)
+			     (format "%d" w3m-fill-column)
+			   (eval arg)))
+		       args)))
+      (message "Loading page... done."))))
+
+(defun w3m-exec-filter (process string)
+  (if (bufferp (process-buffer process))
+      (let ((obuf (buffer-name)))
+	(unwind-protect
+	    (progn
+	      (set-buffer (process-buffer process))
+	      (let ((buffer-read-only nil)
+		    (case-fold-search nil)
+		    file input prompt)
+		(goto-char (point-max))
+		(setq w3m-process-string
+		      (concat w3m-process-string string))
+		(while (string-match "\n" w3m-process-string)
+		  (insert (concat
+			   (substring w3m-process-string 0 (match-beginning 0))
+			   "\n"))
+		  (setq w3m-process-string
+			(substring w3m-process-string (match-end 0))))
+		(cond
+		 ;; username
+		 ((string-match "^Username: " w3m-process-string)
+		  (setq prompt (match-string 0 w3m-process-string))
+		  (setq w3m-process-string "")
+		  (setq input (read-from-minibuffer prompt))
+		  (process-send-string process (concat input "\n")))
+		 ;; passwd
+		 ((string-match "^Password: " w3m-process-string)
+		  (setq prompt (match-string 0 w3m-process-string))
+		  (setq w3m-process-string "")
+		  (setq input (w3m-read-passwd prompt))
+		  (process-send-string process (concat input "\n")))
+		 ;; save file
+		 ((string-match "Save file to:" w3m-process-string)
+		  (setq w3m-process-string "")
+		  (setq file (if w3m-process-url
+				 (file-name-nondirectory w3m-process-url)))
+		  (setq prompt (if file (format "Save filt to (%s): " file)
+				 "Save file to: "))
+		  (setq input (w3m-read-file-name prompt nil file))
+		  (process-send-string process (concat input "\n"))
+		  (insert (format "Save to %s.\n" input)))
+		 ;; overwrite
+		 ((string-match "File exists. Overwrite? (y or n)" w3m-process-string)
+		  (setq w3m-process-string "")
+		  (condition-case nil
+		      (process-send-string process "y\n")
+		    (error nil)))
+		 ;; quit
+		 ((string-match " *Hit any key to quit w3m:" w3m-process-string)
+		  (condition-case nil
+		      (quit-process process)
+		    (error nil))))))
+	  (message "Loading page...")
+	  (if (get-buffer obuf)
+	      (set-buffer obuf))))))
+
+(defun w3m-exec-sentinel (process event)
+  (setq w3m-process-string nil)
+  (setq w3m-process nil))
+
+(defun w3m-read-file-name (&optional prompt directory default existing initial)
+  (let* ((prompt (or prompt (if default (format "File(%s): " default) "File: ")))
+	 (directory (file-name-as-directory (or directory w3m-default-save-dir)))
+	 (insert-default-directory t)
+	 file)
+    (setq file (read-file-name prompt directory default existing initial))
+    (if (file-directory-p file)
+	(progn
+	  (setq w3m-default-save-dir file)
+	  (if default
+	      (setq file (expand-file-name default file))))
+      (setq w3m-default-save-dir
+	    (or (file-name-directory file) w3m-default-save-dir)))
+    (expand-file-name file)))
+
+(defun w3m-read-passwd (prompt)
+  (let ((inhibit-input-event-recording t))
+    (if (fboundp 'read-passwd)
+	(condition-case nil
+	    (read-passwd prompt)
+	  (error ""))
+      (let ((pass "")
+	    (c 0)
+	    (echo-keystrokes 0)
+	    (ociea cursor-in-echo-area))
+	(condition-case nil
+	    (progn
+	      (setq cursor-in-echo-area 1)
+	      (while (and (/= c ?\r) (/= c ?\n) (/= c ?\e) (/= c 7)) ;; ^G
+		(message "%s%s"
+			 prompt
+			 (make-string (length pass) ?.))
+		(setq c (read-char-exclusive))
+		(cond
+		 ((char-equal c ?\C-u)
+		  (setq pass ""))
+		 ((or (char-equal c ?\b) (char-equal c ?\177))  ;; BS DELL
+		  ;; delete one character in the end
+		  (if (not (equal pass ""))
+		      (setq pass (substring pass 0 -1))))
+		 ((< c 32) ()) ;; control, just ignore
+		 (t
+		  (setq pass (concat pass (char-to-string c))))))
+	      (setq cursor-in-echo-area -1))
+	  (quit
+	   (setq cursor-in-echo-area ociea)
+	   (signal 'quit nil))
+	  (error
+	   ;; Probably not happen. Just align to the code above.
+	   (setq pass "")))
+	(setq cursor-in-echo-area ociea)
+	(message "")
+	(sit-for 0)
+	pass))))
 
 (defun w3m-search-name-anchor (name &optional quiet)
   (interactive "sName: ")
@@ -481,7 +713,8 @@ If BUFFER is nil, all data is placed to the current buffer."
 		 "w3m-view"
 		 buffer
 		 w3m-viewer-command
-		 (mapcar 'eval w3m-viewer-command-arguments))))))
+		 (mapcar 'eval w3m-viewer-command-arguments)))
+      (message "NO file."))))
 
 
 (defun w3m-save-image ()
@@ -497,12 +730,15 @@ If BUFFER is nil, all data is placed to the current buffer."
   (let ((buffer (get-buffer-create " *w3m-view*"))
 	(url (w3m-expand-url (get-text-property (point) 'w3m-href-anchor)
 			     w3m-current-url)))
-    (apply 'start-process
-	   "w3m-external-browser"
-	   buffer
-	   w3m-browser-command
-	   (mapcar (function eval)
-		   w3m-browser-command-arguments))))
+    (if (and (symbolp w3m-browser-command)
+	     (fboundp w3m-browser-command))
+	(funcall w3m-browser-command url)
+      (apply 'start-process
+	     "w3m-external-browser"
+	     buffer
+	     w3m-browser-command
+	     (mapcar (function eval)
+		     w3m-browser-command-arguments)))))
 
 
 (defun w3m-download-this-url ()
@@ -557,11 +793,15 @@ If BUFFER is nil, all data is placed to the current buffer."
       (goto-char (previous-single-property-change pos 'w3m-href-anchor))
       (setq arg (1- arg)))))
 
+
 (defun w3m-expand-file-name (file)
   (setq file (expand-file-name file))
   (if (string-match "^\\(.\\):\\(.*\\)" file)
-      (concat "/cygdrive/" (match-string 1 file) (match-string 2 file))
+      (if w3m-use-cygdrive
+	  (concat "/cygdrive/" (match-string 1 file) (match-string 2 file))
+	(concat "file://" (match-string 1 file) (match-string 2 file)))
     file))
+
 
 (defun w3m-view-bookmark ()
   (interactive)
@@ -622,7 +862,9 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (define-key w3m-mode-map [up] 'w3m-previous-anchor)
   (define-key w3m-mode-map "\C-m" 'w3m-view-this-url)
   (define-key w3m-mode-map [right] 'w3m-view-this-url)
-  (define-key w3m-mode-map [mouse-2] 'w3m-mouse-view-this-url)
+  (if (featurep 'xemacs)
+      (define-key w3m-mode-map [(button2)] 'w3m-mouse-view-this-url)
+    (define-key w3m-mode-map [mouse-2] 'w3m-mouse-view-this-url))
   (define-key w3m-mode-map [left] 'w3m-view-previous-page)
   (define-key w3m-mode-map "B" 'w3m-view-previous-page)
   (define-key w3m-mode-map "d" 'w3m-download-this-url)
@@ -639,11 +881,13 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (define-key w3m-mode-map "Q" (lambda () (interactive) (w3m-quit t)))
   (define-key w3m-mode-map "\M-n" 'w3m-copy-buffer)
   (define-key w3m-mode-map "R" 'w3m-reload-this-page)
+  (define-key w3m-mode-map "?" 'describe-mode)
   )
 
 
 (defun w3m-quit (&optional force)
   (interactive "P")
+  (w3m-arrived-list-save)
   (when (or force
 	    (y-or-n-p "Do you want to exit w3m? "))
     (kill-buffer (current-buffer))
@@ -658,34 +902,73 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 
 
 (defun w3m-mode ()
-  "Major mode to browsing w3m buffer."
+  "\\<w3m-mode-map>
+   Major mode to browsing w3m buffer.
+
+\\[w3m-view-this-url]	View this url.
+\\[w3m-mouse-view-this-url]	View this url.
+\\[w3m-reload-this-page]	Reload this page.
+\\[w3m-next-anchor]	Jump next anchor.
+\\[w3m-previous-anchor]	Jump previous anchor.
+\\[w3m-view-previous-page]	Back to previous page.
+
+\\[w3m-download-this-url]	Download this url.
+\\[w3m-print-this-url]	Print this url.
+\\[w3m-view-image]	View image.
+\\[w3m-save-image]	Save image.
+
+\\[w3m-print-current-url]	Print current url.
+\\[w3m-view-current-url-with-external-browser]	View current url with external browser.
+
+\\[scroll-up]	Scroll up.
+\\[scroll-down]	Scroll down.
+
+\\[next-line]	Next line.
+\\[previous-line]	Previous line.
+
+\\[forward-char]	Forward char.
+\\[backward-char]	Backward char.
+
+\\[goto-line]	Jump to line.
+
+\\[w3m]	w3m.
+\\[w3m-view-bookmark]	w3m-view-bookmark.
+\\[w3m-copy-buffer]	w3m-copy-buffer.
+
+\\[w3m-quit]	w3m-quit.
+\\[describe-mode]	describe-mode.
+"
   (kill-all-local-variables)
+  (buffer-disable-undo)
   (setq major-mode 'w3m-mode
 	mode-name "w3m")
   (use-local-map w3m-mode-map)
   (run-hooks 'w3m-mode-hook))
 
 (defun w3m-mailto-url (url)
-  (let (func)
-    ;; Require `mail-user-agent' setting
-    (if (not (and (boundp 'mail-user-agent)
-		  mail-user-agent
-		  (setq comp (intern-soft (concat (symbol-name mail-user-agent)
-						  "-compose")))
-		  (fboundp comp)))
-	(error "You must specify valid `mail-user-agent'."))
-    ;; Use rfc2368.el if exist.
-    ;; rfc2368.el is written by Sen Nagata.
-    ;; You can find it in "contrib" directory of Mew package
-    ;; or in "utils" directory of Wanderlust package.
-    (if (or (featurep 'rfc2368)
-	    (condition-case nil (require 'rfc2368) (error nil)))
-	(let ((info (rfc2368-parse-mailto-url url)))
-	  (apply comp (mapcar (lambda (x)
-				(cdr (assoc x info)))
-			      '("To" "Subject"))))
-      ;; without rfc2368.el.
-      (funcall comp (match-string 1 url)))))
+  (if (and (symbolp w3m-mailto-url-function)
+	   (fboundp w3m-mailto-url-function))
+      (funcall w3m-mailto-url-function url)
+    (let (comp)
+      ;; Require `mail-user-agent' setting
+      (if (not (and (boundp 'mail-user-agent)
+		    mail-user-agent
+		    (setq comp (intern-soft (concat (symbol-name mail-user-agent)
+						    "-compose")))
+		    (fboundp comp)))
+	  (error "You must specify valid `mail-user-agent'."))
+      ;; Use rfc2368.el if exist.
+      ;; rfc2368.el is written by Sen Nagata.
+      ;; You can find it in "contrib" directory of Mew package
+      ;; or in "utils" directory of Wanderlust package.
+      (if (or (featurep 'rfc2368)
+	      (condition-case nil (require 'rfc2368) (error nil)))
+	  (let ((info (rfc2368-parse-mailto-url url)))
+	    (apply comp (mapcar (lambda (x)
+				  (cdr (assoc x info)))
+				'("To" "Subject"))))
+	;; without rfc2368.el.
+	(funcall comp (match-string 1 url))))))
 
 
 (defun w3m-goto-url (url &optional reload)
@@ -704,6 +987,9 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
       (setq buffer-read-only nil)
       (w3m-save-position w3m-current-url)
       (w3m-exec url)
+      (or w3m-arrived-anchor-list
+	  (setq w3m-arrived-anchor-list (w3m-arrived-list-load)))
+      (w3m-arrived-list-add w3m-current-url)
       (w3m-fontify)
       (setq buffer-read-only t)
       (set-buffer-modified-p nil)
@@ -741,6 +1027,11 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
      (browse-url-interactive-arg "w3m URL: ")))
   (if new-window (split-window))
   (w3m url))
+
+(defun w3m-find-file (file)
+  "w3m Interface function for local file."
+  (interactive "fFilename: ")
+  (w3m (w3m-expand-file-name file)))
 
 
 (provide 'w3m)
