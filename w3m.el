@@ -2351,16 +2351,6 @@ ex.) c:/dir/file => //c/dir/file"
       (insert "</body>")))
   "text/html")
 
-(defun w3m-about-db-history-sort-time (x1 y1)
-  (let ((x (cdr x1)) (y (cdr y1)))
-    (cond
-     ((null x) nil)
-     ((null y) t)
-     ((> (nth 0 x) (nth 0 y)) t)
-     ((= (nth 0 x) (nth 0 y))
-      (if (> (nth 1 x) (nth 1 y)) t nil))
-     (t nil))))
-
 (defun w3m-about-db-history (&rest args)
   (let* ((width (- (if (< 0 w3m-fill-column)
 		       w3m-fill-column
@@ -2374,9 +2364,9 @@ ex.) c:/dir/file => //c/dir/file"
 		    (setq url (symbol-name sym))
 		    (not (string-match w3m-about-history-except-regex url)))
 	   (setq time (w3m-arrived-last-modified url))
-	   (setq alist (cons (cons url time) alist))))
+	   (push (cons url time) alist)))
        w3m-arrived-db)
-      (setq alist (sort alist (function w3m-about-db-history-sort-time))))
+      (setq alist (sort alist (lambda (a b) (w3m-time-newer-p (cdr a) (cdr b))))))
     (w3m-with-work-buffer
       (delete-region (point-min) (point-max))
       (insert "<html><head><title>URL history in DataBase</title></head><body>\n")
