@@ -590,7 +590,7 @@ See the file balloon-help.el for more information."
   "An alist of CONTENT-TYPE and IMAGE-TYPE.")
 
 (defconst w3m-toolbar-buttons
-  '("back" "forward" "reload" "open" "home" "search" "image"
+  '("back" "parent" "forward" "reload" "open" "home" "search" "image"
     "weather" "antenna")
   "Toolbar button list for w3m.")
 
@@ -598,6 +598,9 @@ See the file balloon-help.el for more information."
   '([w3m-toolbar-back-icon w3m-view-previous-page
 			   (w3m-history-previous-link-available-p)
 			   "前のページに戻る"]
+    [w3m-toolbar-parent-icon w3m-view-parent-page
+			     (w3m-parent-page-available-p)
+			     "上のディレクトリへ移動する"]
     [w3m-toolbar-forward-icon w3m-view-next-page
 			      (w3m-history-next-link-available-p)
 			      "次のページに進む"]
@@ -1949,6 +1952,12 @@ this function returns t.  Otherwise, returns nil."
       (unless quiet
 	(message "Not found such name anchor."))
       nil)))
+
+(defun w3m-parent-page-available-p ()
+  (if (null w3m-current-url)
+      nil
+    (save-match-data
+      (string-match "[a-z]+://?[^/]+/." w3m-current-url))))
 
 (defun w3m-view-parent-page ()
   (interactive)
