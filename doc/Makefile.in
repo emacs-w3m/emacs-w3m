@@ -1,0 +1,83 @@
+.SUFFIXES: .texi .info
+
+INSTALL      = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_INFO = install-info
+prefix       = @prefix@
+infodir      = @infodir@
+srcdir       = @srcdir@
+subdir       = doc
+top_srcdir   = @top_srcdir@
+ADDITIONAL_LOAD_PATH = @ADDITIONAL_LOAD_PATH@
+
+SHELL        = /bin/sh
+
+@SET_MAKE@
+MAKEINFO     = @MAKEINFO@
+EMACS        = @EMACS@
+FLAGS = -q -no-site-file -batch -l ./w3mhack.el $(ADDITIONAL_LOAD_PATH)
+EMACSINFO    = cd $(top_srcdir) && $(EMACS) $(FLAGS) -f w3mhack-makeinfo
+
+INFO_DEPS    = emacs-w3m.info emacs-w3m-ja.info
+INFO_DEPS_EN = emacs-w3m.info
+INFO_DEPS_JA = emacs-w3m-ja.info
+
+default: $(INFO_DEPS)
+
+en: $(INFO_DEPS_EN)
+
+ja: $(INFO_DEPS_JA)
+
+version.texi: $(top_srcdir)/w3m.el
+	@version=`cd $(top_srcdir)\
+		&& $(EMACS) $(FLAGS) -f w3mhack-version 2>/dev/null`;\
+	echo "@set VERSION $$version"> version.texi
+
+emacs-w3m.info: version.texi emacs-w3m.texi
+
+emacs-w3m-ja.info: version.texi emacs-w3m-ja.texi
+
+.texi.info:
+	@texi=$<;\
+	if test "$(MAKEINFO)" = "no" -o "$$texi" != "emacs-w3m.texi"; then\
+	  rm -f $@;\
+	  $(EMACSINFO) $$texi;\
+	else\
+	  echo "Formatting $$texi using $(MAKEINFO)...";\
+	  $(MAKEINFO) -o $@ $$texi;\
+	  echo "Formatting $$texi using $(MAKEINFO)...done";\
+	fi
+
+install: $(INFO_DEPS)
+	$(SHELL) $(top_srcdir)/mkinstalldirs $(infodir)
+	@list='$(INFO_DEPS)';\
+	for file in $$list; do\
+	  for ifile in `echo $$file $$file-[0-9] $$file-[0-9][0-9]`; do\
+	    if test -f $$ifile; then\
+	      echo " $(INSTALL_DATA) $$ifile $(infodir)/$$ifile";\
+	      $(INSTALL_DATA) $$ifile $(infodir)/$$ifile;\
+	    else : ; fi;\
+	  done;\
+	done
+	@if $(SHELL) -c $(INSTALL_INFO)' --version| sed 1q\
+		| fgrep -s -v -i debian'>/dev/null 2>&1; then\
+	  list='$(INFO_DEPS)';\
+	  for file in $$list; do\
+	    echo " $(INSTALL_INFO) --info-dir=$(infodir) $(infodir)/$$file";\
+	    $(INSTALL_INFO) --info-dir=$(infodir) $(infodir)/$$file || :;\
+	  done;\
+	else : ; fi
+
+install-en: $(INFO_DEPS_EN)
+	$(MAKE) INFO_DEPS='$(INFO_DEPS_EN)' EMACS="$(EMACS)"\
+		infodir="$(infodir)" install
+
+install-ja: $(INFO_DEPS_JA)
+	$(MAKE) INFO_DEPS='$(INFO_DEPS_JA)' EMACS="$(EMACS)"\
+		infodir="$(infodir)" install
+
+clean:
+	-rm -rf *~ *.info *.info-[0-9] *.info-[0-9][0-9]
+
+distclean: clean
+	-rm -f Makefile

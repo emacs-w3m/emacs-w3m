@@ -1,0 +1,2853 @@
+\input texinfo @c -*-texinfo -*-
+@c %**start of header
+@setfilename emacs-w3m.info
+@settitle Emacs-w3m -- an Emacs interface to w3m --
+@c %**end of header
+@documentlanguage en
+@include version.texi
+@synindex pg cp
+@finalout
+
+@dircategory GNU Emacs Lisp
+@direntry
+* Emacs-w3m: (emacs-w3m).  An Emacs interface to w3m
+@end direntry
+
+@c permissions text appears in an Info file before the first node.
+@ifinfo
+This file documents emacs-w3m, an Emacs interface to w3m.
+
+Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}.
+
+This edition is for emacs-w3m version @value{VERSION}.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being ``A GNU
+Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
+license is included in the section entitled ``GNU Free Documentation
+License'' in the Emacs manual.
+
+(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
+this GNU Manual, like GNU software.  Copies published by the Free
+Software Foundation raise funds for GNU development.''
+
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
+
+@end ifinfo
+
+@titlepage
+@sp 10
+@title Emacs-w3m User's Manual
+@subtitle An Emacs interface to w3m for emacs-w3m version @value{VERSION}
+@author The emacs-w3m development team
+@page
+
+@vskip 0pt plus 1filll
+Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}.
+
+This manual corresponds to emacs-w3m version @value{VERSION}.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being ``A GNU
+Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
+license is included in the section entitled ``GNU Free Documentation
+License'' in the Emacs manual.
+
+(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
+this GNU Manual, like GNU software.  Copies published by the Free
+Software Foundation raise funds for GNU development.''
+
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
+
+@end titlepage
+
+@ifnottex
+@node Top
+@top Emacs-w3m User's Manual
+
+@flushright
+The emacs-w3m development team
+@end flushright
+
+This manual corresponds to emacs-w3m version @value{VERSION}.
+
+@end ifnottex
+
+@menu
+* Introduction::                Preliminary remarks
+* Getting Started::             It's so easy to begin to use emacs-w3m
+* Basic Usage::                 Basic usage
+* Pretty Good Features::        Pretty good features
+* Customizable Variables::      Customizable variables
+* Hooking into MUAs::           Hooking emacs-w3m into mail/newsreaders
+* Frequently Asked Questions::  There isn't always an answer
+* Known Problems::              You can surely solve it
+* Shimbun Library::             A tool for reading a web newspaper
+* Mailing List::                Mailing list and submitting bug reports
+* Emacs-w3m Functions::         Details of some emacs-w3m functions
+* Index::                       Index
+
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Getting Started
+
+* Required Emacs Version::      What version of Emacs can be used?
+* You Need w3m::                Using w3m: the reason why emacs-w3m is fast
+* Other Requirements::          Things required to run emacs-w3m
+* Installing Emacs-w3m::        Installing emacs-w3m
+* Non-UNIX-like systems::       Installing on non-UNIX-like systems
+* Minimal Settings::            Minimal settings to run emacs-w3m
+
+Basic Usage
+
+* Browsing Web Pages::          Let's go netsurfing!
+* Inline Images::               Toggle displaying inline images
+* Tracing History::             Going back through time and space
+* Managing Bookmarks::          That's a favorite with me!
+* Using Tabs::                  Everybody likes tabs
+* Working with buffers::        Creating, killing and moving across buffers
+* Downloading::                 Downloading a file
+* Submitting Forms::            Filling in HTML forms
+
+Pretty Good Features
+
+* Using Search Engines::        A convenient way to search the web
+* Grouping URLs::               Visiting several web pages in one URL
+* Weather Information::         It will be fine tomorrow
+* Using Antenna::               Raise your antenna
+* Showing Directory Tree::      Showing the tree structure of local directory
+* Viewing Perl Documents::      Viewing Perl Documents
+* Using Namazu::                Searching files with Namazu
+* Octet::                       Viewing data in various octal form
+
+Customizable Variables
+
+* General Variables::           General variables
+* Image Variables::             Variables related to images
+* Bookmark Variables::          Variables related to bookmarks
+* Search Variables::            Variables related to searching the web
+* Weather Variables::           Variables related to weather information
+* Dtree Variables::             Variables related to the dtree feature
+* Antenna Variables::           Variables related to antenna
+* Perldoc Variables::           Variables related to perldoc
+* Namazu Variables::            Variables related to namazu
+* Octet Variables::             Variables related to the octet feature
+* Other Variables::             Other variables
+
+Hooking into MUAs
+
+* Gnus::                        Reading HTML mails in Gnus
+* Mew::                         Reading HTML mails in Mew
+* SEMI MUAs::                   Reading HTML mails in SEMI MUAs
+
+Frequently Asked Questions
+
+Known Problems
+
+Shimbun Library
+
+* Nnshimbun::                   Making Gnus into a web browser!
+* Mew Shimbun::                 Reading web newspapers with Mew
+* Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
+* Shimbun Basics::              How to make your own shimbun modules
+
+Mailing List
+
+Emacs-w3m Functions
+
+@end detailmenu
+@end menu
+
+@node Introduction
+@chapter Preliminary remarks
+@cindex Introduction
+
+Our special thanks go to Akinori ITO and the w3m team for the excellent
+w3m program.  We would also like to thank everybody who has submitted
+comments, suggestions, and bug fixes.  Even though we're not aware of
+any problems, all responsibility for this program is ours (the emacs-w3m
+development team), but there is absolutely no warranty.  The emacs-w3m
+program was first created by TSUCHIYA Masatoshi in June 2000.
+
+See also the emacs-w3m official page: @uref{http://emacs-w3m.namazu.org/}
+
+@node Getting Started
+@chapter It's so easy to begin to use emacs-w3m
+@cindex Getting started
+@cindex Starting up
+
+Emacs-w3m may have already been installed on your system, in which case
+you can skip this section and begin to use the program at once.  If
+you're not that lucky, read on to learn how to install emacs-w3m.
+
+@menu
+* Required Emacs Version::      What version of Emacs can be used?
+* You Need w3m::                Using w3m: the reason why emacs-w3m is fast
+* Other Requirements::          Things required to run emacs-w3m
+* Installing Emacs-w3m::        Installing emacs-w3m
+* Non-UNIX-like systems::       Installing on non-UNIX-like systems
+* Minimal Settings::            Minimal settings to run emacs-w3m
+@end menu
+
+@node Required Emacs Version
+@section What version of Emacs can be used?
+@cindex Possible Emacs versions
+
+You can run emacs-w3m in various versions of Emacsen listed below:
+
+@table @samp
+
+@item Emacs 21.x
+No additional package is required.
+
+@item XEmacs 21.x
+The @sc{apel} package and the @samp{gifsicle} program are required
+(@pxref{Other Requirements}).  We recommend using the most recent XEmacs
+21.4 since that version of XEmacs seems to be most stable.
+
+@item Emacs 20.x
+No additional package is required.  Furthermore, you can see monochrome
+bitmap images inline by using the @sc{bitmap-mule} package (@pxref{Other
+Requirements}).
+
+@item Emacs 19.34 (including Mule 2.3)
+The @sc{apel} package, the @samp{new custom} package and the
+@file{regexp-opt.el} module are required.  If you are using Mule 2.3
+based on Emacs 19.34, you can see monochrome bitmap images inline by
+using the @sc{bitmap-mule} package (@pxref{Other Requirements}).
+
+@end table
+
+@node You Need w3m
+@section Using w3m: the reason why emacs-w3m is fast
+@cindex w3m
+
+Emacs-w3m uses the external w3m program as a back-end to retrieve web
+contents and as an HTML rendering engine; that's how we could create an
+accelerated Emacs web browser with asynchronous operation.
+
+You must install the latest w3m, it is available at:
+
+@uref{http://prdownloads.sourceforge.net/w3m/}
+
+@node Other Requirements
+@section Things required to run emacs-w3m
+@cindex APEL package
+@cindex Gifsicle program
+@cindex ImageMagick package
+@cindex BITMAP-MULE package
+@cindex New custom
+@cindex regexp-opt.el
+@cindex FLIM package
+
+Depending on the version of Emacs, third party packages may be required.
+This section provides resources to help you find and install them.
+
+@table @samp
+
+@item APEL
+Indispensable to XEmacs, Emacs 19.34 or Mule 2.3.  You should install
+@sc{apel} before building emacs-w3m.  @sc{apel} is available at:
+
+@uref{ftp://ftp.m17n.org/pub/mule/apel/apel-10.4.tar.gz}
+
+If you are using XEmacs and already have the @sc{apel} XEmacs package
+installed, we strongly recommend replacing it with @sc{apel} which is
+linked above.  To replace it, use the directives like shown below:
+
+@example
+# rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
+# cd apel-10.4
+# make install-package XEMACS=xemacs-21.4.x\
+  PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
+@end example
+
+@item gifsicle
+Indispensable to XEmacs.  There is a known bug in all XEmacs 21.x series
+that won't let it display optimized animated gifs correctly or may make
+it crash when some kind of an interlaced gif image is displayed.
+Emacs-w3m uses the @samp{gifsicle} program to convert gif data in order
+to make it possible to be handled by XEmacs 21.x.  It is available at:
+
+@uref{http://www.lcdf.org/gifsicle/}
+
+@item ImageMagick
+If the @samp{convert} program bundled with the ImageMagick package is
+available in your system, emacs-w3m will use it for resizing images or
+converting a @samp{favicon} image into a certain format which Emacs can
+handle.  Emacs-w3m works without ImageMagick, but it will improve the
+appearance of web pages.  You can get the ImageMagick package from:
+
+@uref{ftp://ftp.imagemagick.org/pub/ImageMagick/}
+
+We have roughly checked that the ImageMagick version 5.4.0-5 and later
+can be used for manipulating @samp{favicon} images.
+
+@item BITMAP-MULE
+Used to display monochrome bitmap images inline in Emacs 20.x or Mule
+2.3 based on Emacs 19.34.  It isn't necessary if you aren't interested
+in images.  It is available at:
+
+@uref{ftp://ftp.jpl.org/pub/elisp/bitmap/}
+
+@item new custom
+Indispensable to Emacs 19.34 (including Mule 2.3).  The @samp{custom}
+library bundled with Emacs 19.34 is too @emph{old}, its API is
+incompatible with the @samp{new custom} bundled with recent Emacsen.
+The @samp{new custom} for Emacs 19.34 is available at:
+
+@uref{ftp://ftp.dina.kvl.dk/pub/Staff/Per.Abrahamsen/custom/custom-1.9962.tar.gz}
+
+Note that Mule 2.3 users should slightly modify it by applying the
+following patch:
+
+@example
+----8<------8<------8<------8<------8<------8<------8<------8<----
+--- custom-1.9962/cus-face.el~  Wed Mar  4 19:52:39 1998
++++ custom-1.9962/cus-face.el   Mon Mar  9 08:05:33 1998
+@@@@ -96,7 +96,7 @@@@
+       "Define a new FACE on all frames, ignoring X resources."
+       (interactive "SMake face: ")
+       (or (internal-find-face name)
+-         (let ((face (make-vector 8 nil)))
++         (let ((face (make-vector face-vector-length nil)))
+            (aset face 0 'face)
+            (aset face 1 name)
+            (let* ((frames (frame-list))
+----8<------8<------8<------8<------8<------8<------8<------8<----
+@end example
+
+@item regexp-opt.el
+Indispensable to Emacs 19.34 (including Mule 2.3).  The file
+@file{regexp-opt.el} is included in the @file{attic/} directory of the
+emacs-w3m distribution.  You may simply copy it somewhere (e.g.
+@file{site-lisp/} directory) and perform byte-compilation as follows:
+
+@example
+# cp -p attic/regexp-opt.el /usr/local/share/emacs/19.34/site-lisp
+# cd /usr/local/share/emacs/19.34/site-lisp
+# emacs -batch -q -no-site-file -f batch-byte-compile regexp-opt.el
+@end example
+
+@item FLIM
+The @sc{flim} package is required to use the @samp{shimbun} library.
+The @samp{shimbun} library is a collection of tools for reading a web
+newspaper, you can use it with Gnus, Mew, Nana-gnus, T-gnus, Wanderlust,
+etc. @xref{Shimbun Library}.
+
+Note that the @sc{flim} package requires the @sc{apel} package even if
+you are using Emacs 20.x or Emacs 21.x.  Therefore, you must install
+both @sc{apel} and @sc{flim} if you would like to use the @samp{shimbun}
+library.  The @sc{flim} package is available at:
+
+@uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
+
+@end table
+
+@node Installing Emacs-w3m
+@section Installing emacs-w3m
+@cindex Installing emacs-w3m
+
+See the official page @uref{http://emacs-w3m.namazu.org/} for
+instructions on how to get the latest emacs-w3m.  Is everything ready?
+Now, let's begin.
+
+In order to install emacs-w3m on non-UNIX-like systems (or any system
+lacking the ability to execute the @samp{configure} script or has no
+@samp{make} command), skip this section and go to the next section
+@xref{Non-UNIX-like systems}.
+
+@enumerate
+@item
+First, extract a tarball of the emacs-w3m distribution and enter the top
+directory as follows:
+
+@example
+% tar zxf emacs-w3m-@value{VERSION}.tar.gz
+% cd emacs-w3m-@value{VERSION}
+@end example
+
+If you've checked out emacs-w3m from CVS, you have to run
+@samp{autoconf} with no argument to generate the @samp{configure}
+script.
+
+@item
+Run the @samp{configure} script.
+
+@example
+% ./configure
+@end example
+
+@emph{Important notice to the Gnus users}:
+
+If the various versions of Gnusae are installed in your system (it is
+likely that there are the released version and the development version
+of Gnusae), make sure that priority is given to the directory where the
+@file{gnus.elc} file which you use is installed in the @code{load-path}.
+To do that, use the @samp{--with-addpath} option as follows:
+
+@example
+% ./configure --with-addpath=/usr/local/share/emacs/site-lisp/gnus
+@end example
+
+If you've installed @sc{apel}, @sc{flim} or something in non-standard
+directories other than the default @code{load-path}, you must specify
+them using the @samp{--with-addpath} option as follows (you may also
+include the Gnus directory in it separated with @samp{:}):
+
+@example
+% ./configure --with-addpath=/opt/share/apel:/opt/share/flim
+@end example
+
+@item
+Just run @samp{make} and @samp{make install}.  See also the next step if
+you are using XEmacs.
+
+@example
+% make
+% make install
+@end example
+
+All Lisp and info files will be installed in the appropriate
+directories.  Now, how do you know what files will go where?  To know it
+beforehand, use this:
+
+@example
+% make what-where
+@end example
+
+If you are using Emacs 21 or XEmacs, you had better install icon image
+files.  To do this:
+
+@example
+% make install-icons
+@end example
+
+@item
+You can also install emacs-w3m as an XEmacs package using @samp{make
+install-package} instead of @samp{make install} as follows:
+
+@example
+% make
+% make install-package
+@end example
+
+In this case, you don't have to execute @samp{make install-icons}.
+
+If you need to specify the package directory, there are two ways to do
+that:
+
+@itemize @bullet
+
+@item
+Use the @samp{configure} option @samp{--with-packagedir=}.  For example:
+
+@example
+% ./configure --with-packagedir=/opt/xemacs/xemacs-packages
+% make what-where
+% make
+% make install-package
+@end example
+
+@item
+Use the @samp{PACKAGEDIR} variable.  For example:
+
+@example
+% ./configure
+% make what-where PACKAGEDIR=/opt/xemacs/xemacs-packages
+% make
+% make install-package PACKAGEDIR=/opt/xemacs/xemacs-packages
+@end example
+
+@end itemize
+
+@end enumerate
+
+@node Non-UNIX-like systems
+@section Installing on non-UNIX-like systems
+@cindex Installing on non-UNIX-like systems
+
+If you cannot execute the @samp{configure} script on your system, or if
+no @samp{make} command is available, cast the following spell:
+
+@example
+% emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
+@end example
+
+If @sc{apel}, @sc{flim} (or any other library) aren't installed in the
+ordinary places, the installer will leave them out.  In such a case, it
+is necessary to tell those places to the installer as shown below:
+
+@example
+% emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
+@end example
+
+@node Minimal Settings
+@section Minimal settings to run emacs-w3m
+
+There are only fundamental items in this section.  Many variables which
+can be customized by user's preferences are described in
+@ref{Customizable Variables}.
+
+@table @samp
+
+@item Autoloads
+@cindex Adding autoload settings
+
+You never need to set the autoload definitions if you've emacs-w3m
+installed as an XEmacs package (@pxref{Installing Emacs-w3m}) because of
+the @file{w3m/auto-autoloads.el} file.  If not, put the following line
+in your @file{~/.emacs} file:
+
+@lisp
+(autoload 'w3m "w3m"
+  "Visit the WWW page using w3m" t)
+@end lisp
+
+In addition to this, put the following setups if needed:
+
+@lisp
+(autoload 'w3m-find-file "w3m"
+  "Find a local file using emacs-w3m." t)
+(autoload 'w3m-browse-url "w3m"
+  "Ask emacs-w3m to show a URL." t)
+(autoload 'w3m-antenna "w3m-antenna"
+  "Report changes of web sites." t)
+(autoload 'w3m-bookmark-view "w3m-bookmark"
+  "Show bookmarks." t)
+(autoload 'w3m-dtree "w3m-dtree"
+  "Display a directory tree." t)
+(autoload 'w3m-namazu "w3m-namazu"
+  "Search files with Namazu." t)
+(autoload 'w3m-perldoc "w3m-perldoc"
+  "View Perl documents" t)
+(autoload 'w3m-search "w3m-search"
+  "Search words using emacs-w3m." t)
+(autoload 'w3m-weather "w3m-weather"
+  "Display a weather report." t)
+@end lisp
+
+@item Startup File
+@cindex Startup file
+@vindex w3m-init-file
+
+We recommend using the file @file{~/.emacs-w3m} (which is the default
+value of @code{w3m-init-file}) when you twiddle some variables of
+emacs-w3m.  This file is similar to @file{~/.emacs}, but is read when
+emacs-w3m starts.  However, note that there are commands which shouldn't
+be put there, for example, the autoload definitions as
+mentioned above.
+
+@item Proxy Gateway
+@cindex Firewall
+@cindex Proxy gateways
+@cindex Proxy servers
+@vindex w3m-command-arguments
+@vindex w3m-no-proxy-domains
+
+If you are behind a firewall and only have access to foreign web sites
+through the proxy gateway, you need to instruct w3m to use the proxy
+gateway.
+
+There are some ways to do this, one is to set the @code{http_proxy}
+environment variable globally in the shell something like:
+
+@example
+setenv http_proxy http://proxy.hogege.com:8000/
+@end example
+
+Another way is to customize the @code{w3m-command-arguments} variable to
+add the options @samp{-o} and
+@samp{http_proxy=http://PROXY_SERVER_NAME:PORT/}.
+
+This can also be done in your @file{~/.emacs-w3m} file as shown below:
+
+@lisp
+(setq w3m-command-arguments
+      (nconc w3m-command-arguments
+             '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
+@end lisp
+
+To specify @code{no-proxy} hosts, which shouldn't be connected to with
+proxy gateways, you can set the @code{no_proxy} environment variable with
+the comma separated host names, or set the @code{w3m-no-proxy-domains}
+variable with a list of domain names (not host names) as follows:
+
+@lisp
+(setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
+@end lisp
+
+See also the documentation for the @code{w3m-command-arguments-alist}
+variable to use regexps to specify the @code{no-proxy} hosts.
+
+@end table
+
+@node Basic Usage
+@chapter Basic usage
+
+@menu
+* Browsing Web Pages::          Let's go netsurfing!
+* Inline Images::               Toggle displaying inline images
+* Tracing History::             Going back through time and space
+* Managing Bookmarks::          That's a favorite with me!
+* Using Tabs::                  Everybody likes tabs
+* Working with buffers::        Creating, killing and moving across buffers
+* Downloading::                 Downloading a file
+* Submitting Forms::            Filling in HTML forms
+@end menu
+
+@node Browsing Web Pages
+@section Let's go netsurfing!
+
+@menu
+* Launching and Jumping::       Go ahead, just try it
+* Moving in a page::            Moving from place to place in a page
+* Moving over pages::           Moving from page to page
+@end menu
+
+@node Launching and Jumping
+@subsection Go ahead, just try it
+
+You can invoke emacs-w3m using three different commands, listed below.
+Try one of these commands: a web page is displayed in an Emacs buffer
+named ``*w3m*'', meaning that it is an emacs-w3m buffer.  As you will
+probably notice, the major mode for an emacs-w3m buffer is
+@code{w3m-mode}, there are also minor modes (@pxref{Managing
+Bookmarks}).
+
+This section explains the most fundamental usage of these commands, see
+@ref{Emacs-w3m Functions} for more information on each command.  And see
+@ref{Customizable Variables} for details on the variables which affect
+the behavior of emacs-w3m by user's preferences.
+
+@table @code
+@item w3m
+@findex w3m
+@vindex w3m-home-page
+@vindex w3m-quick-start
+@cindex Using emacs-w3m as a batch command
+Start emacs-w3m, displaying the homepage specified in the
+@code{w3m-home-page} variable.  The default value for
+@code{w3m-home-page} is ``about:''.  Set the @code{w3m-quick-start}
+variable to @code{nil} if each time you want to specify URL.
+
+You can also use this as an Emacs batch command.  Here's an example:
+
+@example
+% emacs -f w3m
+@end example
+
+To specify a URL, you could also use:
+
+@example
+% emacs -f w3m http://emacs-w3m.namazu.org/
+@end example
+
+@item w3m-find-file
+@findex w3m-find-file
+Prompt for a local file name in the minibuffer, and display it in
+emacs-w3m.
+
+@item w3m-browse-url
+@findex w3m-browse-url
+Prompt for a URL in the minibuffer, and display it in emacs-w3m.  This
+command is provided, if anything, in order to start emacs-w3m from other
+application programs.
+@end table
+
+Moving in an emacs-w3m buffer won't be painful if you're an Emacs user
+already, since many of the standard keys work as intended.  For
+instance, @kbd{C-n}, @kbd{C-v} and @kbd{C-s} (which are commonly used to
+move down one line, one page, or search downwards for a word) are valid
+keys in an emacs-w3m buffer.
+
+To follow a link, use the @kbd{RET} key.  You have to move the point to
+a link to do this; links are easily recognizable in a buffer because
+they are not displayed like ordinary text: they can be underlined, or
+have a different color.  The face @code{w3m-anchor-face} controls how
+they are to be displayed (@pxref{Customizable Variables}).
+
+@table @kbd
+@item RET
+@kindex RET
+@findex w3m-view-this-url
+Display the page pointed by the link under point
+(@code{w3m-view-this-url}).
+
+The exact behavior of this command depends on the properties of the link
+under point, and on whether you give it a prefix argument or not.  See
+@ref{Emacs-w3m Functions} for details.
+@end table
+
+As mentioned above, you can be prompted for a URL when you use the
+command @kbd{M-x w3m}, by setting the @code{w3m-quick-start} variable to
+@code{nil}.  In an emacs-w3m buffer, there are also two popular ways to
+go to new pages by entering their URLs.
+
+@table @kbd
+@item RET
+@kindex RET
+@findex w3m-view-this-url
+In an emacs-w3m buffer, you can be prompted for a URL in the minibuffer
+and make emacs-w3m display the corresponding page by hitting @key{RET}
+after moving the point to the URL displayed in the @samp{header-line}.
+This feature will feel familiar to you if you are used to GUI-based web
+browsers like Mozilla.  Detailed explanations about this can be found in
+@ref{Emacs-w3m Functions} (@code{w3m-view-this-url}).
+
+@item g
+@kindex g
+@findex w3m-goto-url
+You can be prompted for a URL in the minibuffer and make emacs-w3m
+display the corresponding page by typing the @key{g} key (independently
+of the position of the point) in an emacs-w3m buffer.  This binding will
+be familiar to you if you already use Gnus or Mew (@code{w3m-goto-url}).
+
+@item c
+@kindex c
+@findex w3m-print-current-url
+Display the URL of the page being displayed in the echo area and put it
+into the @code{kill-ring} (@code{w3m-print-current-url}).
+
+@item u
+@kindex u
+@findex w3m-print-this-url
+Display the URL under point in the echo area and put it into the
+@code{kill-ring} (@code{w3m-print-this-url}).
+@end table
+
+If the page you are reading is today's news or someone's diary, it may
+have been updated since you loaded it.  You can fetch the newest
+contents of the page by using the following command.  (This command can
+also be useful to force a full redisplay of the page if it looks
+broken.)
+
+@table @kbd
+@item R
+@kindex R
+@findex w3m-reload-this-page
+Reload the page which is currently displayed
+(@code{w3m-reload-this-page}).
+@end table
+
+@node Moving in a page
+@subsection Moving from place to place in a page
+@cindex Moving in a page
+
+Being able to use familiar Emacs movement bindings while browsing a web
+page probably fascinates you already.  Believe it or not, there is
+more!  Since we value your time, we have added keys to move the point,
+scroll the page or find links in a very fast way.  When you master
+them, you will understand how handy they are.
+
+The keys are assigned so that scroll commands can be called using
+shorter keystrokes than the standard key bindings of Emacs.  And since
+places where you can input text are pretty specific in web pages
+(@pxref{Submitting Forms}), most keys have special meanings and aren't
+assigned to @code{self-insert-command} anymore.
+
+@c Scrolling
+@table @kbd
+@item SPC
+@kindex SPC
+@findex w3m-scroll-up-or-next-url
+Scroll downwards.  You may be used to it if you have been using the
+@samp{more} command, the @samp{less} command, or the @code{view-mode} on
+Emacs (@code{w3m-scroll-up-or-next-url}).
+
+@item DEL
+@kindex DEL
+@findex w3m-scroll-down-or-previous-url
+Scroll upwards.  You may be used to it if you have been using the
+@samp{less} command or the @code{view-mode} on Emacs
+(@code{w3m-scroll-down-or-previous-url}).
+
+@item >
+@kindex >
+@findex w3m-scroll-left
+@vindex w3m-horizontal-scroll-columns
+Scroll to the left.  The scroll step is given by the
+@code{w3m-horizontal-scroll-columns} variable, default 10
+(@code{w3m-scroll-left}).
+
+@item <
+@kindex <
+@findex w3m-scroll-right
+@vindex w3m-horizontal-scroll-columns
+Scroll to the right.  The scroll step is given by the
+@code{w3m-horizontal-scroll-columns} variable, default 10
+(@code{w3m-scroll-right}).
+
+@item .
+@kindex .
+@findex w3m-shift-left
+@vindex w3m-horizontal-shift-columns
+Shift to the left (a fine level horizontal scrolling).  The shift step
+is given by the @code{w3m-horizontal-shift-columns} variable, default 2
+(@code{w3m-shift-left}).
+
+@item ,
+@kindex ,
+@findex w3m-shift-right
+@vindex w3m-horizontal-shift-columns
+Shift to the right (a fine level horizontal scrolling).  The shift step
+is given by the @code{w3m-horizontal-shift-columns} variable, default 2
+(@code{w3m-shift-right}).
+
+@item M-l
+@kindex M-l
+@findex w3m-horizontal-recenter
+Scroll horizontally so that the current position is centered
+(@code{w3m-horizontal-recenter}).
+@end table
+
+@c Moving
+The @code{w3m-mode} major mode defines commands to move to various kinds
+of things; namely links, forms, and images (whether they are displayed
+or not).
+
+Let's consider this simple example: suppose we want to search for a word
+on the widely-known Google search engine.  Step one: open
+@uref{http://www.google.com} in emacs-w3m.  Step two: after opening the
+page, hit @kbd{]}.  Tadaa!  The point has been moved to the first form
+input in the page, you can now hit @kbd{RET} to enter something in it,
+and then @kbd{C-c C-c} to submit it.  Without this command, you would
+have had to move into the page using @kbd{C-n}, @kbd{C-f} and so forth,
+it would have been a real pain.
+
+@table @key
+@item TAB
+@kindex TAB
+@findex w3m-next-anchor
+Move the point to the next anchor.  More strictly speaking, move the
+point forward to the nearest anchor.
+@end table
+
+@table @kbd
+@item M-@key{TAB}
+@itemx S-@key{TAB}
+@kindex M-@key{TAB}
+@kindex S-@key{TAB}
+@findex w3m-previous-anchor
+Move the point to the previous anchor.  More strictly speaking, move the
+point backward to the nearest anchor (@code{w3m-previous-anchor}).
+
+@item ]
+@kindex ]
+@findex w3m-next-form
+Move the point to the next form.  More strictly speaking, move the point
+forward to the nearest form (@code{w3m-next-form}).
+
+@item [
+@kindex [
+@findex w3m-previous-form
+Move the point to the previous form.  More strictly speaking, move the
+point backward to the nearest form (@code{w3m-previous-form}).
+
+@item @}
+@kindex @}
+@findex w3m-next-image
+Move the point to the next image.  More strictly speaking, move the
+point forward to the nearest image (@code{w3m-next-image}).
+
+@item @{
+@kindex @{
+@findex w3m-previous-image
+Move the point to the previous image.  More strictly speaking, move the
+point backward to the nearest image (@code{w3m-previous-image}).
+@end table
+
+@c TODO?
+@c C-a  Go to the entire beginning of line.
+@c C-e  Go to the entire end of line.
+@c j    Next line.
+@c k    Previous line.
+
+@c l    Forward char.
+@c h    Backward char.
+
+@c M-g  Jump to line.
+
+@node Moving over pages
+@subsection Moving from page to page
+
+This section explains how to move from page to page, but not by
+following links or inputing URLs (these ways of moving are explained in
+@ref{Launching and Jumping}).
+
+This includes commands to move backwards and forwards in history (the
+familiar ``Back'' and ``Forward'' from other browsers), and the
+obligatory ``Go to the home page'' feature.  You will probably
+understand this better after reading the @ref{Tracing History} section.
+
+@table @kbd
+@item B
+@kindex B
+@findex w3m-view-previous-page
+Move back one page in history (@code{w3m-view-previous-page}).  With a
+numeric argument ARG, move back ARG pages.  This is the preferred way to
+go back in time.
+
+@item N
+@kindex N
+@findex w3m-view-next-page
+Move forward one page in history (@code{w3m-view-next-page}).  Of
+course, this will work only if you've used @kbd{B} to move back in
+history.  If called with a numeric argument ARG, move forward ARG pages.
+This command actually allows you to go back to the future!
+
+@item H
+@kindex H
+@findex w3m-gohome
+@vindex w3m-quick-start
+Move to the home page (@code{w3m-gohome}).  You can specify the URL of
+the home page by customizing the @code{w3m-home-page} variable
+(``about:'' by default).
+@end table
+
+These commands are exclusive features of emacs-w3m, we were able to
+obtain patents on them, so you won't find them anywhere else.  That's
+why you must learn to use them today!  (Just kidding.)
+
+@table @kbd
+@item ^
+@kindex ^
+@findex w3m-view-parent-page
+Attempt to move to the parent directory of the page currently displayed.
+For instance, it will attempt to move to ``http://foo/'' when
+``http://foo/bar/'' is displayed.  This function has been implemented
+because of the following observation: users of web browsers often have
+to move up one level of directories because the information they're
+looking for isn't displayed on the current page (either because it has
+been deleted, or because a search engine took them to the wrong page).
+
+When you use another web browser, you usually need to remove the last
+component from the URL by using the @key{DEL} key, etc. several times
+manually.  In emacs-w3m, this operation can be performed in only one
+keystroke, by typing @kbd{^}!
+@end table
+
+@table @key
+@item SPC
+@findex w3m-view-next-page
+Scroll up or go to next url.
+(TODO)
+
+@item DEL
+@findex w3m-view-previous-page
+Scroll down or go to previous url.
+(TODO)
+@end table
+
+@node Inline Images
+@section Toggle displaying inline images
+@cindex Displaying images
+
+If the Emacs version you're using is capable of displaying images in
+buffers, then emacs-w3m can display them in web pages, just like
+``graphical'' browsers like Netscape do.  You should make sure your
+Emacs is correctly setup for images before trying to use any of the
+following commands (@pxref{Required Emacs Version}).
+
+To toggle displaying of images in the current buffer, use @kbd{T}.  It
+makes emacs-w3m fetch the images from the server, then display them in
+the buffer, at the position they would have in a ``graphical'' browser.
+If you hit the key again, images will disappear from the buffer.
+
+By default, emacs-w3m won't display images, but you can change its
+behavior and choose to always display images, for this you need to
+customize the @code{w3m-default-display-inline-images} variable and
+change its value from @code{nil} to @code{t}.  @xref{Customizable
+Variables}.
+
+Emacs-w3m also comes with nifty features that let you zoom an image in
+or out, save it to a file, or view it in a external viewer.  See also
+@ref{Moving in a page} for instructions on how to move from image to
+image in an emacs-w3m buffer.
+
+@table @kbd
+@item T
+@kindex T
+@findex w3m-toggle-inline-images
+Toggle displaying of inline images in this buffer and buffers created
+from this buffer, later on (@code{w3m-toggle-inline-images}).
+
+@item I
+@kindex I
+@findex w3m-view-image
+@cindex Viewing images
+View the image under point in an external viewer
+(@code{w3m-view-image}).
+
+@item M-i
+@kindex M-i
+@findex w3m-save-image
+@cindex Saving images
+Save the image under point to an external file.  The default name will
+be the original name of the image, so most of the time @kbd{M-i RET}
+will save the image with the right name (@code{w3m-save-image}).
+
+@cindex Zooming images
+@item M-[
+@kindex M-[
+@findex w3m-zoom-out-image
+Zoom out the image under point (@code{w3m-zoom-out-image}).
+
+@item M-]
+@kindex M-]
+@findex w3m-zoom-in-image
+Zoom in the image under point (@code{w3m-zoom-in-image}).
+@end table
+
+@node Tracing History
+@section Going back through time and space
+@cindex Browsing history
+@cindex Arrived URLs
+
+Emacs-w3m has several ways to present you with a list of all the pages
+you visited before.  The first way is simply called the ``emacs-w3m
+history'', it is a list of the pages you visited in this session,
+presented hierarchically, that is: when you follow a link, the page
+you're leaving becomes the ``parent'' of the page you're going to.  It
+is a very nice to keep track of the pages you visited, and remember
+from where you came if the history gets too long.
+
+Here is an example of this feature in action, after a short visit to the
+GNU Project's homepage:
+
+@example
+GNU's Not Unix! - the GNU Project and the Free Software Foundation (FSF)
+  Philosophy of the GNU Project - Free Software Foundation (FSF)
+    GNU Emacs - GNU Project - Free Software Foundation (FSF)
+     Order from the Free Software Foundation (FSF)
+  Links to Other Free Software Sites - GNU Project - Free Software Fo...
+    EFF: Homepage
+@end example
+
+(In fact, this example is slightly edited to fit in 72 columns; the
+URLs won't be cut in the actual emacs-w3m buffer.)
+
+You can get this kind of history using the @kbd{s} key in any emacs-w3m
+buffer.
+
+Please note that this history is buffer-local, i.e. specific to an
+emacs-w3m buffer.  But emacs-w3m has a unique feature: when you visit a
+new page, the history is copied over to the new buffer, so that you can
+still access the pages you visited so far.  This is different from the
+way Mozilla and others work; in these browsers the history always starts
+from scratch in new buffers.
+
+The other way to have information about past pages is the ``arrived
+URLs'' list: it is a list of the last 500 URLs you have visited in
+emacs-w3m.  The list is ordered by date, the most recent coming first,
+and for each page the time of visit is displayed.  Here's an example
+(edited):
+
+@example
+Order from the Free Software Foundation (FSF)             22:53:25
+GNU Emacs - GNU Project - Free Software Foundation (FS    22:53:05
+Philosophy of the GNU Project - Free Software Foundati... 22:52:46
+Philosophy of the GNU Project - Free Software Foundati... 22:52:39
+EFF: Homepage                                             22:52:18
+Links to Other Free Software Sites - GNU Project - Fre... 22:52:07
+Links to Other Free Software Sites - GNU Project - Fre... 22:52:07
+GNU's Not Unix! - the GNU Project and the Free Softwar... 22:51:32
+Bookmarks                                                 22:51:02
+The DICT Development Group- upwards                       2003-01-08
+the monkey puzzle: new debian packages as an rss feed     2003-01-08
+new-debian-packages.rss                                   2003-01-07
+it's a miracle                                            2003-01-06
+@end example
+
+You can get this history by passing a prefix argument to the previous
+command, i.e. using @kbd{C-u s}.  The number of URLs showed in this page
+is customizable, see the @code{w3m-keep-arrived-urls} variable.  It
+cannot exceed 500.  @xref{Customizable Variables}.
+
+Of course, in all cases all the lines showed in the examples are links,
+you can go to any of the pages you visited previously just like if you
+were visiting a regular page, by following the link.
+
+@table @kbd
+@item s
+@kindex s
+@findex w3m-history
+Display the list of URLs visited in this session.  If called with a
+prefix argument, show the list of arrived URLs instead
+(@code{w3m-history}).
+@end table
+
+Also see the @ref{Moving over pages} section, it explains how to move in
+the history with simple keybindings, i.e. the ``Back'' and ``Next''
+feature.
+
+@node Managing Bookmarks
+@section That's a favorite with me!
+@cindex Bookmarks
+
+Like all modern browsers, emacs-w3m has advanced features related to
+bookmarks: it lets you classify them in categories, edit them and of
+course, browse them easily.
+
+@menu
+* Adding Bookmarks::            Adding a URL to your favorites
+* Consulting Bookmarks::        Browse your bookmarks
+* Editing Bookmarks::           How to change your bookmarks
+@end menu
+
+@node Adding Bookmarks
+@subsection Adding a URL to your favorites
+@cindex Adding a bookmark
+@kindex a
+@kindex C-u a
+@findex w3m-bookmark-add-current-url
+@kindex M-a
+@findex w3m-bookmark-add-this-url
+
+There are several ways to add a URL to your bookmarks.  The first one is
+to use the @kbd{a} key (or call the @code{w3m-bookmark-add-current-url}
+command) to add the page you're currently browsing: it will prompt you
+for a section to where the bookmark should go (completion is available
+with the @key{TAB} key) and will let you edit the title of the bookmark
+(the default being the title of the current page).  Complete these two
+steps, validating each with @kbd{RET}, and you will see the message
+``Added'' in the minibuffer, which means (surprise!) that the page has
+been added to your bookmarks.
+
+Another way to add a bookmark is to use the @kbd{M-a} key (or call the
+@code{w3m-bookmark-add-this-url} command): it adds the URL under point
+(that means, the URL you would be taken to if you followed the link) to
+the bookmarks.  As before, you will have to input the section for this
+bookmark and its title, the default being this time the name of the
+link itself.
+
+The third and final way to do this is to use @kbd{C-u a}, this time you
+will be prompted for the URL to add, its section, and the title to use
+for it in the bookmarks.
+
+@table @kbd
+@item a
+Add the current page to the bookmarks, or if called with a prefix
+argument, prompt for a URL and add it
+(@code{w3m-bookmark-add-current-url}).
+
+@item M-a
+Add the URL under point to the bookmarks
+(@code{w3m-bookmark-add-this-url}).
+@end table
+
+@node Consulting Bookmarks
+@subsection Browse your bookmarks
+@cindex Consulting bookmarks
+@kindex v
+@findex w3m-bookmark-view
+
+The easiest way to see the bookmarks is to use the @kbd{v} key in an
+emacs-w3m buffer; another possibility is to go to the special URL
+@uref{about://bookmark/}.  You will see your bookmarks, organized by
+section, each line being one bookmark.  You can browse them exactly
+like you would browse any other page.
+
+On the bookmarks page a w3m minor mode is activated, the bookmark mode.
+It adds key bindings to edit the bookmarks.  @xref{Editing Bookmarks}.
+
+@table @kbd
+@item v
+Visit the bookmarks page (@code{w3m-bookmark-view}).
+@end table
+
+@node Editing Bookmarks
+@subsection How to change your bookmarks
+@cindex Editing bookmarks
+
+The bookmark minor mode (@pxref{Consulting Bookmarks}) offers several
+key bindings related to bookmark edition, most noticeably @kbd{C-k} to
+kill (i.e. delete) a bookmark, and @kbd{E} to edit the bookmark file.
+
+Bookmarks are kept in an HTML file, so you can edit the file by hand,
+but be very careful: if you erase the comments emacs-w3m needs to
+recognize section names, things can break easily.  If you know the
+basics of HTML, the file should otherwise be quite self-explanatory.
+
+@table @kbd
+@item C-k
+@findex w3m-bookmark-kill-entry
+Kill the bookmark under point (@code{w3m-bookmark-kill-entry}).
+
+@item E
+@findex w3m-bookmark-edit
+Visit the bookmarks file (@code{w3m-bookmark-edit}).
+
+@item C-_
+@findex w3m-bookmark-undo
+Undo the last changes (@code{w3m-bookmark-undo}).
+@end table
+
+@node Using Tabs
+@section Everybody likes tabs
+
+Unlike most other text-based browsers, emacs-w3m has support for tabbed
+browsing@footnote{It's nobody's fault but Emacs 19 or 20 users cannot
+use tabs.}.  What is tabbed browsing, you might ask?  It's very simple:
+it is a way to represent all active emacs-w3m buffers in a single
+window, by showing a line at the top which shows all the buffers in a
+simple and self-explaining way, each buffer being shown as a ``tab''.
+This line stays visible all the time and does not scroll with the rest
+of the buffer, so that you can switch to another buffer, or use the
+feedback it provides at any moment.
+
+The easiest way to get the feeling of it is to just try, so go on and
+open an emacs-w3m session.  If you didn't change anything to the
+configuration, the tabs line is active by default, it is this bright
+line at the top with a smaller rectangle that shows the title of the
+current page.  Now create another w3m buffer (with @kbd{G}, for
+example): now you have two of these rectangles.  These are tabs.
+
+The most obvious use of tabs is switching: by clicking with the
+@kbd{mouse-1} button on a tab, you make the buffer it represents active.
+It also works with the @kbd{mouse-2} button.  It's a very quick and easy
+way to work with several emacs-w3m buffers, you just have to point and
+click.
+
+Another nifty feature is the feedback it provides.  If you are on a
+color terminal or window system, emacs-w3m shows the text in the tab in
+different colors to show the status of the page@footnote{Although XEmacs
+shows all tabs in the same colors at every moment, you can easily
+distinguish the selected tab and others and see the status of the
+current page in the modeline.}.  For example, when the page is being
+loaded, the text is in red, and goes back to its default color (usually
+black) when the loading is complete.  This way you can tell with a
+single glance at the tabs line if the page you're waiting for has
+arrived or not.
+
+Finally, if the web page provides a favicon, it will be shown in the
+tab as well@footnote{Under XEmacs, favicons will currently not be shown
+in the tabs line.}.  More eye-candy for the emacs-w3m user!
+
+User options:
+
+@table @code
+@item w3m-use-tab
+@vindex w3m-use-tab
+Whether to activate tabbed browsing or not.
+@end table
+
+@node Working with buffers
+@section Creating, killing and moving across buffers
+
+Sooner or later, you will be addicted to emacs-w3m, and you'll have to
+manage all your browsing needs with it.  To help you with this daunting
+task, we have imagined many different ways to work with emacs-w3m
+buffers.
+
+@menu
+* Creating and killing buffers:: Creating and killing buffers
+* Moving across buffers::        Moving across buffers
+* Selecting buffers::            Selecting buffers from a list
+@end menu
+
+@node Creating and killing buffers
+@subsection Creating and killing buffers
+@cindex Creating new buffers
+@cindex Killing buffers
+
+It is sometimes useful to create a new buffer without opening a new web
+page in it.  This operation is called ``creating a twin copy'' of a
+buffer, in emacs-w3m lingo.  It will simply create a new buffer whose
+contents are identical to the currently active buffer.
+
+The opposite of this is closing buffers: you can just close one buffer
+(because you're not interested in its contents anymore) or you can
+decide to close all buffers but the current one.  Emacs-w3m lets you do
+this with the following commands:
+
+@table @kbd
+@item C-c C-t
+@kindex C-c C-t
+@findex w3m-copy-buffer
+Create an identical copy of the currently active buffer, under a new
+name.  This is used to start a new session without loading a web page in
+the new buffer (@code{w3m-copy-buffer}).
+
+@item C-c C-w
+@kindex C-c C-w
+@findex w3m-delete-buffer
+Close the current emacs-w3m buffer (@code{w3m-delete-buffer}).
+
+@item C-c M-w
+@kindex C-c M-w
+@findex w3m-delete-other-buffers
+Close all emacs-w3m buffers, but the active one
+(@code{w3m-delete-other-buffers}).
+@end table
+
+@node Moving across buffers
+@subsection Moving across buffers
+
+The commands you will probably use most often are those who allow you
+to go to an adjacent buffer; that is a buffer just ``after'' or
+``before'' the current one.  The meaning of this will be obvious if you
+use tabs: the next buffer is the one just after the active one, on the
+right, and the previous buffer is the one on the left.  However, XEmacs
+displays tabs in random order unfortunately, so you need to pay
+attention to the number which is displayed in each tab in order to know
+what is the adjacent buffer if you are using XEmacs.  The key bindings
+for these commands are @kbd{C-c C-p} and @kbd{C-c C-n}.
+
+These commands understand the numeric argument convention, i.e. if you
+call them with a number N as argument, you will be taken N buffers away
+from the current one.  For example, to go two buffers on the right from
+the current position, use @kbd{2 C-c C-n}@footnote{You can use @kbd{C-u
+2 C-c C-n} instead of @kbd{2 C-c C-n} as usual.  But keep in mind all
+numeric keys and minus-sign are assigned to the numeric prefix arguments
+in emacs-w3m buffers.}.
+
+@table @kbd
+@item C-c C-p
+@kindex C-c C-p
+@findex w3m-previous-buffer
+Move to the previous emacs-w3m buffer.  This is usually the next buffer
+to the left in the tabs line under Emacs 21.  If called with a numeric
+argument N, move N buffers to the previous (@code{w3m-previous-buffer}).
+
+@item C-c C-n
+@kindex C-c C-n
+@findex w3m-next-buffer
+Move to the next emacs-w3m buffer.  This is usually the next buffer to
+the right in the tabs line under Emacs 21.  If called with a numeric
+argument N, move N buffers to the next (@code{w3m-next-buffer}).
+@end table
+
+Also note that if these commands don't fit you well despite our efforts,
+you might find what you need in ``generalist'' buffer management
+packages such as ibuffer or iswitchb---since emacs-w3m buffers are
+regular Emacs buffers, they will work fine too.
+
+@node Selecting buffers
+@subsection Selecting buffers from a list
+
+There are two ways to select emacs-w3m buffers from a list.  The first
+one is a minibuffer-based interface, called with @kbd{C-c C-a}.  You can
+choose the buffer you want to display using the @kbd{M-p} and @kbd{M-n}
+keys (or the ``up'' and ``down'' arrow keys), they will make you cycle
+through the list.  You can also edit the prompt and type the title of an
+existing web page, using @kbd{TAB} for completion.  For example, if you
+have a ``Google Search'' page opened, you can type ``Goo'' then hit
+@kbd{TAB} and the page title will be completed.  After the page name,
+the buffer name is given (between brackets).  Then use @kbd{RET} to
+switch to the buffer you have chosen.
+
+The second and more sophisticated interface is called the emacs-w3m
+buffer list, it is invoked with @kbd{C-c C-s}.  It shows you the list of
+all opened buffers in a separate window (either a vertical or a
+horizontal window---@kbd{C-c C-s} toggles between the two modes) and
+allows you to view the buffers in real-time: when you move the point in
+the buffer list, the buffer under point is displayed in the main window,
+which allows you to have direct visual feedback of the buffer you're
+switching to.
+
+To move in the buffer list, you can use the @kbd{p} and @kbd{n} keys
+(or the arrow keys).  In the buffer list, @kbd{DEL} and @kbd{SPC} allow
+you to scroll the buffer displayed in the main window, which is handy
+if you want to check that you're seeing the right buffer.  To select
+the buffer under point, you can use the @kbd{RET} key, in which case
+the buffer list will be buried, or the @kbd{w} key, in which case the
+buffer list will remain visible and the focus given to the main window.
+
+You can also close and create buffers from this menu, using the same
+bindings as the one used in regular buffers (@pxref{Creating and killing
+buffers}).
+
+Finally, the @kbd{?} key shows a short help, @kbd{g} refreshes the list
+and the @kbd{q} key exits the buffer list, not changing the active
+buffer.
+
+@table @kbd
+@item C-c C-a
+@kindex C-c C-a
+@findex w3m-switch-buffer
+@cindex Switching buffers using the minibuffer
+Prompt for a buffer name in the minibuffer.  @kbd{M-p} and @kbd{M-n}
+cycle through the list of existing buffers and @kbd{TAB} completes
+(@code{w3m-switch-buffer}).
+
+@item C-c C-s
+@kindex C-c C-s
+@findex w3m-select-buffer
+@cindex Switching buffers using the buffer list
+Show the buffer list in a separate window (@code{w3m-select-buffer}).
+In this window, @kbd{C-c C-s} toggles between horizontal and vertical
+modes, @kbd{RET} selects the buffer under point and buries the buffer
+list, @kbd{w} selects the buffer under point and gives it the focus,
+@kbd{n}, @kbd{p} and the arrow keys can be used to move down or up.
+@end table
+
+@node Downloading
+@section Downloading a file
+
+It is possible to download (i.e. fetch, but not display) any web page or
+file with emacs-w3m: just put the point on the link you want to
+download and hit @kbd{d}.  You will be prompted for a filename under
+which to save the file locally, by default it will be the name of the
+file on the remote server.  Confirm with @kbd{RET}.  The download will
+be asynchronous and not block your Emacs session, you can continue your
+emacs-w3m browsing in another buffer if you want.
+
+Please note that this download mechanism uses w3m to download things,
+you might want to use the more powerful wget downloader instead.  Have a
+look at our friend project ``emacs-wget'', its homepage is at
+@uref{http://pop-club.hp.infoseek.co.jp/emacs/emacs-wget/}.
+
+@table @kbd
+@item d
+@kindex d
+@findex w3m-download-this-url
+@cindex Downloading files
+Download the file or page pointed by the link under point
+(@code{w3m-download-this-url}).
+@end table
+
+@node Submitting Forms
+@section Filling in HTML forms
+
+These emacs-w3m commands let you move between forms and fill in fields,
+using simple key bindings and optionally prompting you for values in
+Emacs windows or in the minibuffer.
+
+The main key binding to remember is @kbd{RET}.  It has different
+meanings, depending on the thing under point: for textareas, you will be
+prompted for a value in the minibuffer.  For select tags, you will be
+given a list of choices in an electric Emacs window (you can move using
+the arrow keys, and pick one with the @kbd{RET} key).  For radio and
+checkbox buttons, the @kbd{RET} key selects one of the elements.
+
+When in the minibuffer or in the electric window, you can cancel with
+the @kbd{C-c C-q} sequence.  To submit the form, use @kbd{C-c C-c}.
+
+@table @kbd
+@item ]
+Jump to the next form (@code{w3m-next-form}).
+
+@item [
+Jump to the previous form (@code{w3m-previous-form}).
+
+@item C-c C-c
+Submit form at point (@code{w3m-submit-form}).
+
+@item RET
+Edit the value of the form item under point.
+
+@item RET @r{(w3m-form-*-keymap)}
+Accept the value.
+
+@item C-c C-q @r{(w3m-form-*-keymap)}
+Quit editing the form item, leaving changes.
+@end table
+
+@node Pretty Good Features
+@chapter Pretty good features
+
+@menu
+* Using Search Engines::        Convenient ways to search the web
+* Grouping URLs::               Visiting several web pages in one URL
+* Weather Information::         It will be fine tomorrow
+* Using Antenna::               Raise your antenna
+* Showing Directory Tree::      Showing the tree structure of local directory
+* Viewing Perl Documents::      Viewing Perl Documents
+* Using Namazu::                Searching files with Namazu
+* Octet::                       Viewing data in various octal form
+@end menu
+
+@node Using Search Engines
+@section Convenient ways to search the web
+@cindex Search engines
+
+Emacs-w3m comes with advanced features related to search engines, they
+are accessible through two interfaces:
+
+@itemize
+@item
+The regular interface, invoked by the @kbd{S} key in any emacs-w3m
+buffer.  It is a simple interactive way to choose which search engine to
+use and input a search term; see @ref{The Search Interface}.
+
+@item
+The Quicksearch interface: it is a faster (yet more complicated) way to
+use search engines, by going to specially crafted URLs.  For more
+information about this feature, see @ref{Quick Searching}.
+@end itemize
+
+@menu
+* The Search Interface::        How to search with emacs-w3m
+* Quick Searching::             An alternative (and fast) way to search the web
+* Adding New Search Engines::   Using your favorite engines
+@end menu
+
+@node The Search Interface
+@subsection How to search with emacs-w3m
+@cindex Searching
+
+You can fire up the regular search interface by using the @kbd{S} key in
+an emacs-w3m buffer (provided you use the default keymap).  You will see
+a prompt in the minibuffer, asking for a search term.  Type one or
+several words at the prompt, then hit @kbd{RET}.  The result page of
+your search in the engine appears, you can then browse the results, just
+as if you had used the normal web based entry point to the engine.
+
+You probably noticed that you have not been given a chance to choose
+which engine you want to search with.  By default, emacs-w3m will use
+the Google search engine, you can change this behavior by customizing
+the @code{w3m-search-default-engine} variable (see @ref{Customizable
+Variables}), or you can specify the search engine each time you use the
+command.
+
+To specify which engine to use, you have to give the command a prefix
+argument (usually, this means hitting @kbd{C-u} before the command,
+e.g. @kbd{C-u S}).  Emacs-w3m will prompt you for an engine, you can
+choose one by typing its name (completion is also available with the
+@key{TAB} key).  Once you have made your choice, hit the @kbd{RET} key.
+You can then type your search term, hit @kbd{RET}, and you will see the
+search results.
+
+@table @kbd
+@item S
+@kindex S
+@findex w3m-search
+@vindex w3m-search-default-engine
+Begin a new search.  If called with a prefix argument, prompt for the
+engine to use (@code{w3m-search}).
+@end table
+
+@node Quick Searching
+@subsection An alternative (and fast) way to search the web
+@cindex Quick Searching
+@cindex Special URLs
+@vindex w3m-search-quick-search-engine-alist
+@vindex w3m-search-engine-alist
+@vindex w3m-default-coding-system
+
+If you're a ``Web Power User'' (and since you're reading this, you
+probably are), you need a quick and efficient way to perform searches.
+The Quick Searching feature is one.
+
+What does it do?  It lets you launch web searches by simply going to a
+special URL such as @uref{gg:emacs}.  The advantages of this mode of
+operation are:
+
+@itemize
+@item
+It's fast.  You just have to type a URL to choose the engine and the
+search word(s), in one go.
+
+@item
+It's convenient.  With this feature, you can easily open a new emacs-w3m
+tab or window, and launch a search in it, using for example, the @kbd{G}
+key to open a URL in a new window, and going to a Quicksearch URL.  You
+can also bookmark searches just by bookmarking the special Quicksearch
+URL.
+
+@item
+It works with the grouping feature.  You can launch two searches at the
+same time, with a URL like @uref{group:gg:emacs&ya:w3m}.  This would
+for instance launch a search for ``emacs'' on Google and for ``w3m'' on
+Yahoo!.  @xref{Grouping URLs}.
+@end itemize
+
+Using it is very simple: suppose you want to search for the word ``gnu''
+on Google.  Hit @kbd{g} to go to a new URL, and type ``gg:gnu''.  The
+first part of this expression, ``gg'' indicates that we want to use the
+Google search engine.  The second term is the word we will be searching
+for.  The prefix and the search term must be separated by a colon.  Hit
+@kbd{RET}, and you will see the results of your search.  Please note
+that you can input several words by separating them with spaces (to
+type a space in the minibuffer, hit @kbd{C-q} first, e.g. @kbd{C-q
+@key{SPC}}).
+
+The default configuration of emacs-w3m includes several prefixes you can
+use, they are defined in the @code{w3m-search-quick-search-engine-alist}
+variable.  There's for example ``gg'' for Google, ``ggg'' for Google
+Groups, ``ya'' for Yahoo!, ``al'' for Altavista, to name a few.  You can
+also add prefixes for the search engines you define, @xref{Adding New
+Search Engines}.
+
+Instead of prefixes, you can also use full engine names in Quicksearch
+URLs, such as ``google'' or ``yahoo''.  These names are defined in
+the @code{w3m-search-engine-alist} variable.
+
+@node Adding New Search Engines
+@subsection Using your favorite engines
+@cindex Adding new search engines
+
+Emacs-w3m has a number of built-in search engines you can use.  What if
+you want to use your favorite search engine and it's not listed in the
+known search engines?  You have to add it to the list of search
+engines, and it's quite easy:
+
+@enumerate
+@item
+First, you have to find what's the entry point of the search engine you
+want to add, for example:
+
+@uref{http://my.searchengine.com/?query=foobar}
+
+where foobar is the term you want to search for.
+
+@item
+Once you have this information, add this to your @file{~/.emacs-w3m}
+file:
+
+@lisp
+(eval-after-load "w3m-search"
+  '(add-to-list 'w3m-search-engine-alist
+                '("My engine"
+                  "http://my.searchengine.com/?query=%s"
+                  nil)))
+@end lisp
+
+Replace the first field ``My engine'' with the description of your
+engine, the second field with the entry point (the @samp{%s} is
+important, it will be replaced by the search term when you issue the
+search), and the third field is the encoding to use, @code{nil} or
+omitting this field means to use the value of
+@code{w3m-default-coding-system} as a regular encoding.
+
+For English search engines, you rarely have to worry about this.
+However, for some Japanese search engines, you may need to specify
+something (e.g. @code{euc-japan}) there.
+
+@item
+You can now use this engine to search, using the normal @kbd{S} key in
+emacs-w3m.  If you use this engine often, you can also add it to the
+Quicksearch (see @ref{Quick Searching}) engines and give it a small
+prefix, by adding this to your @file{~/.emacs-w3m} instead:
+
+@lisp
+(eval-after-load "w3m-search"
+  '(progn
+     (add-to-list 'w3m-search-engine-alist
+                  '("My engine"
+                    "http://my.searchengine.com/?query=%s"
+                    nil))
+     (add-to-list 'w3m-search-quick-search-engine-alist
+                  '("my" . "My engine"))))
+@end lisp
+
+This way you can also use a URL like @uref{my:foobar} to search for the
+term ``foobar'' with your engine.
+@end enumerate
+
+@node Grouping URLs
+@section Visiting several web pages in one URL
+@cindex Grouping URLs
+
+Emacs-w3m can manipulate ``group URLs'': special URLs that contain
+several real URLs.  When you open these group URLs, emacs-w3m will open
+one buffer for each URL in the group, allowing you to open several pages
+in one go.
+
+To build group URLs, you just have to put together (i.e. concatenate)
+all the addresses you want to open, separating them with the ampersand
+symbol (that's ``&''), and prefixing the grouped URLs with ``group:''.
+For example, suppose you want to visit the GNU Project's homepage,
+@uref{http://www.gnu.org/}, and the Savannah homepage,
+@uref{http://savannah.nongnu.org/}: the group URL would be
+
+@uref{group:http://www.gnu.org/&http://savannah.nongnu.org/}
+
+Since this syntax can be quite hard to use on a daily basis, this
+feature will be most useful when used with very short URLs (Quicksearch
+URLs for example, see @ref{Quick Searching}); or in non-interactive
+contexts.
+
+@node Weather Information
+@section It will be fine tomorrow
+
+@node Using Antenna
+@section Raise your antenna
+@cindex Antenna
+@cindex Tracking changes in web pages
+@cindex about://antenna/
+
+Antenna is a tool to keep track of changes in web pages.  Using Antenna,
+you can periodically check if particular pages have been updated, and if
+they haven't, know the last time you saw them.
+
+You can start Antenna using the @kbd{A} key in any emacs-w3m buffer.
+Alternatively, you can go to the special URL @uref{about://antenna/}; it
+does the same thing.
+
+@menu
+* Setting up Antenna::          How to add your web sites to Antenna
+* Daily web tracking::          Tracking changes with Antenna
+@end menu
+
+@node Setting up Antenna
+@subsection How to add your web sites to Antenna
+@cindex about://antenna-edit/
+
+Antenna has a specific customization interface accessible via the
+``Edit'' button in the Antenna page, or via the special
+@uref{about://antenna-edit/} URL.  It is pretty self-explanatory, to add
+a website, do the following:
+
+@enumerate
+@item
+In the ``Key'' field, put the complete URL of the web page you want to
+watch, for example ``http://my.website.com/index.html''.
+
+@item
+In the ``Title'' field, type a title for your webpage, such as ``My
+website''.
+
+@item
+In the ``Time'' field, choose either ``Normal'', ``Time'' or ``HNS''.
+You probably want the first choice.
+@end enumerate
+
+Once all the fields are filled, hit the ``New'' button.  Your website
+is now added to the Antenna database; repeat the same steps for the
+other sites you want to track.
+
+An alternative way to add a website to Antenna is to go to this site,
+and to use the @kbd{+} key.  You will be taken to the Antenna
+customization buffer, with all fields already set up for you.  You just
+have to hit the buttons ``Save for future sessions'' and ``Finish''.
+
+@table @kbd
+@item +
+@kindex +
+@findex w3m-antenna-add-current-url
+Add a URL to the Antenna database.  If called with a prefix argument,
+ask for a URL instead of adding the current page
+(@code{w3m-antenna-add-current-url}).
+@end table
+
+@node Daily web tracking
+@subsection Tracking changes with Antenna
+@cindex The Antenna interface
+
+On the Antenna page, you will see two sections: one called ``Updated''
+and another called ``Visited''.  In the ``Updated'' section, you will
+find websites which have changed since the last Antenna update, and in
+the ``Visited'' section, the websites which haven't.  In each section,
+each line stands for one website of the Antenna database, and has the
+following structure:
+
+@samp{  * 2002/12/15 16:43  (T)  My website}
+
+The first part is the last time the website was updated, or if this
+information is not available, the last time Antenna noticed a change in
+this page.
+
+The @samp{(T)} stands for ``Time'', it means that the change was
+detected because the last modification time of that page has changed
+since the last Antenna update.  Another possible value here is @samp{S}
+(for ``Size''), which means that the change has been detected because
+the size of the page has changed.
+
+The last part of this line is the title you gave to this website when
+you added it to the database.
+
+Please note that the Antenna database doesn't get automatically updated,
+you have to update it each time you want to check if the sites have
+changed, either by hitting @kbd{R} in the Antenna page, or by passing a
+prefix argument to the command (start Antenna with @kbd{C-u A}, for
+example).
+
+@table @kbd
+@item A
+@kindex A
+@findex w3m-antenna
+Visit the Antenna page.  If called with a prefix argument, update the
+Antenna database before displaying it (@code{w3m-antenna}).
+@end table
+
+@node Showing Directory Tree
+@section Showing the tree structure of local directory
+@cindex Showing the tree structure of local directory
+
+Using the @code{w3m-dtree} command, you can display a tree of all
+subdirectories of a local directory, and browse it like a regular web
+page.  The emacs-w3m buffer you get when you use this feature is very
+similar to the output of the external ``tree'' utility, hence the
+name.  Emacs-w3m adds a bonus: if you call the command with a prefix
+argument, it will display files as well, turning emacs-w3m into a
+full-featured file browser.
+
+Here is an example of what an emacs-w3m dtree run looks like:
+
+@example
+/home/romain/.elisp/emacs-w3m/
+ |-CVS/
+ |-attic/
+ |  +-CVS/
+ |-autom4te.cache/
+ |-doc/
+ |  |-CVS/
+ |  +-emacs-w3m/
+ |-icons/
+ |  +-CVS/
+ |-patches/
+ |  +-CVS/
+ +-shimbun/
+    +-CVS/
+@end example
+
+And with a prefix argument, you get something like this instead:
+
+@example
+/home/romain/.elisp/emacs-w3m/ (allfiles)
+ |-(f).cvsignore
+ |-(f)BUGS.ja
+ |-(f)COPYING
+ |-[d]CVS/
+ |  |-(f)Entries
+ |  |-(f)Repository
+ |  +-(f)Root
+ |-(f)ChangeLog
+ |-(f)ChangeLog.1
+ |-(f)FAQ
+ |-(f)FAQ.ja
+ |-(f)Makefile
+ |-(f)Makefile.in
+ |-(f)README
+ |-(f)README.ja
+ |-(f)README.namazu.ja
+ |-(f)README.shimbun.ja
+ |-(f)TIPS
+ |-(f)TIPS.ja
+@end example
+
+@table @kbd
+@item D
+@kindex D
+@findex w3m-dtree
+Prompt for a local directory in the minibuffer, then display its tree
+structure.  If called with a prefix argument (e.g. @kbd{C-u D}), show
+files in the directories as well (@code{w3m-dtree}).
+@end table
+
+@node Viewing Perl Documents
+@section Viewing perl documents
+
+
+@node Using Namazu
+@section Searching files with Namazu
+
+
+@node Octet
+@section Viewing data in various octal form
+
+
+@node Customizable Variables
+@chapter Customizable variables
+@cindex Customizing user options
+@vindex w3m-init-file
+
+A lot of emacs-w3m variables are customizable via the Custom mechanism,
+a graphical Emacs interface to define user options.  Custom offers
+several methods to define your customizations, you can use for example
+@kbd{M-x customize-option} for a single option (i.e. an Emacs Lisp
+variable) or @kbd{M-x customize-group} to see all available options
+(including variables and faces) for a ``group'' and change them; in
+which case the group to use is @code{w3m}.
+
+Alternatively (if you don't want to use Custom), you can put arbitrary
+Emacs Lisp expressions in your emacs-w3m initialization file, which is
+@file{~/.emacs-w3m} by default.  This example:
+
+@lisp
+(setq w3m-home-page "http://emacs-w3m.namazu.org/")
+@end lisp
+
+@noindent
+would set the default homepage to @uref{http://emacs-w3m.namazu.org/}.
+The syntax to use is the same as in your @file{.emacs}
+file.  @xref{(emacs)Init File}.
+
+Please note that some variables from external modules could be undefined
+at the time the @file{~/.emacs-w3m} file is loaded, thus making them
+impossible to modify (of course if you don't care about the default
+value, you can override them completely in your
+@file{~/.emacs-w3m}).  The @code{w3m-search-quick-search-engine-alist}
+variable is a typical example (@pxref{Search Variables}).
+
+@table @code
+
+@item w3m-init-file
+When emacs-w3m starts, it will read the @code{w3m-init-file} file.  The
+default value is @file{~/.emacs-w3m}.  You probably don't need to change
+this.  This is a normal Emacs Lisp file and can be used to avoid
+cluttering your @file{~/.emacs} and @file{site-init} files with
+emacs-w3m stuff.  Emacs-w3m will also check for files with the same
+names as this, but with @file{.elc} and @file{.el} extensions (in other
+words, @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el} and
+@file{~/.emacs-w3m}, in this order).
+
+@end table
+
+@menu
+* General Variables::           General variables
+* Image Variables::             Variables related to images
+* Bookmark Variables::          Variables related to bookmarks
+* Search Variables::            Variables related to searching the web
+* Weather Variables::           Variables related to weather information
+* Dtree Variables::             Variables related to the dtree feature
+* Antenna Variables::           Variables related to antenna
+* Perldoc Variables::           Variables related to perldoc
+* Namazu Variables::            Variables related to namazu
+* Octet Variables::             Variables related to the octet feature
+* Other Variables::             Other variables
+@end menu
+
+@node General Variables
+@section General variables
+
+
+@node Image Variables
+@section Variables related to images
+
+
+@node Bookmark Variables
+@section Variables related to bookmarks
+
+
+@node Search Variables
+@section Variables related to searching the web
+
+
+@node Weather Variables
+@section Variables related to weather information
+
+
+@node Dtree Variables
+@section Variables related to the dtree feature
+
+
+@node Antenna Variables
+@section Variables related to antenna
+
+
+@node Perldoc Variables
+@section Variables related to perldoc
+
+
+@node Namazu Variables
+@section Variables related to namazu
+
+
+@node Octet Variables
+@section Variables related to the octet feature
+
+
+@node Other Variables
+@section Other variables
+
+
+@node Hooking into MUAs
+@chapter Hooking emacs-w3m into mail/newsreaders
+
+This section introduces three Message User Agents (MUAs).  All those
+MUAs can display HTML mails properly using emacs-w3m.  You'll find here
+HowTo's and some notes about setting up and using emacs-w3m with each
+of these MUAs.
+
+Quick note about the conventions we use: what does @samp{message}
+mean?@* When a Gnus user says @samp{message}, it often means a draft of
+a message to be sent as mail or news.  However, it is the term used by
+Mew or Wanderlust users for received mail.  They use @samp{draft} for
+the draft of a message to be sent.  On the other hand, a received
+message is called an @samp{article} by Gnus users.
+
+@menu
+* Gnus::                        Reading HTML mails in Gnus
+* Mew::                         Reading HTML mails in Mew
+* SEMI MUAs::                   Reading HTML mails in SEMI MUAs
+@end menu
+
+@node Gnus
+@section Reading HTML mails in Gnus
+@cindex Reading HTML mails in Gnus
+@vindex mm-inline-text-html-with-images
+@vindex mm-inline-text-html-with-w3m-keymap
+@vindex mm-text-html-renderer
+@vindex w3m-minor-mode
+@vindex w3m-minor-mode-command-alist
+
+Did you know that Gnus, the Emacs newsreader, supports emacs-w3m?
+
+Actually, the version of Gnus bundled with Emacs (or an XEmacs package)
+does not support emacs-w3m (yet).  You'd better use the development
+version of Gnus known as @samp{Oort Gnus}.  It is available at:
+
+@uref{ftp://ftp.gnus.org/pub/gnus/ognus.tar.gz}
+
+Note: if emacs-w3m @strong{is} supported in the Gnus version that comes
+with your Emacs distribution, it means either that this documentation is
+out-of-date (please report this bug as described in @ref{Mailing List}),
+or that you're using a very old version of emacs-w3m (in which case you
+should update it to a newer version).
+
+@itemize @bullet
+@item
+What can you do with emacs-w3m?
+
+You can convert HTML spam mails to be human-readable using emacs-w3m.
+Of course, it works for HTML ham (non-spam) mails as well, and for both
+emacs-w3m is probably faster than the default converter.  You don't need
+to perform any additional operation.  It will simply be displayed.
+
+On HTML parts of an article buffer, the @code{w3m-minor-mode} is turned
+on and you can use the same main keys as the keys of emacs-w3m, for
+instance, @key{RET} is for visiting a page which a link in the current
+position points to.  Those keys are defined in the
+@code{w3m-minor-mode-command-alist} variable.  Keep in mind that some
+commands are replaced by others similar to them, for security reasons
+(see below).
+
+@item
+What do you have to do?
+
+Read the Gnus manual (@pxref{(emacs-mime)Display Customization}).  The
+easiest way is to put the following line in your @file{~/.gnus.el} file:
+
+@lisp
+(setq mm-text-html-renderer 'w3m)
+@end lisp
+
+If you don't need to use emacs-w3m keys in article buffers, add the
+following line too:
+
+@lisp
+(setq mm-inline-text-html-with-w3m-keymap nil)
+@end lisp
+
+@item
+Notes
+
+The above description about spam and ham is not for kidding, it's just
+here to get your attention.  Some HTML mails might contain a nasty trick
+used by spammers, using the @samp{<img>} tag which is far more evil than
+the @samp{Click Here!} button.  It is most likely intended to check
+whether the ominous spam mail has reached your eyes or not, in which
+case the spammer knows for sure that your email address is valid.  It is
+done by embedding an identifier string into a URL that you might
+automatically retrieve when displaying the image.  By default, the
+@code{mm-inline-text-html-with-images} variable is @code{nil} and Gnus
+will never connect to the spammer's site arbitrarily.
+
+You can display images inline in an article buffer if you set
+@code{mm-inline-text-html-with-images} to @code{t}, can't you?  No, not
+exactly: you're still being protected.  If you don't care about leaking
+information (i.e. the fact that your mail address is reachable), set the
+@code{mm-w3m-safe-url-regexp} variable to @code{nil}.  The default value
+for @code{mm-w3m-safe-url-regexp} is @samp{"\\`cid:"} which means we
+consider that images included in a mail with the @samp{cid:} URL are
+safe (that is, you can display such images without modifying the
+@code{mm-w3m-safe-url-regexp} variable).
+@end itemize
+
+See also @ref{Nnshimbun}.
+
+@node Mew
+@section Reading HTML mails in Mew
+
+By using emacs-w3m with Mew, you can see HTML mails as it intended to be
+displayed.  To do so, put the following line in the @file{~/.mew.el}
+file:
+
+@lisp
+(require 'mew-w3m)
+@end lisp
+
+@noindent
+With just this, an HTML mail will be displayed in the message window as
+if it were a plain text.  You can still use the @kbd{C-c C-e} command
+(@code{mew-summary-execute-external}) there.
+
+It is also quite common these days to see mails containing the same
+information twice, they use the @samp{multipart/alternative} format
+which consists of both a @samp{text/plain} part and a @samp{text/html}
+part (what a waste of bandwidth it is).  Mew displays only the
+@samp{text/plain} part of such a mail by default.  However, you perhaps
+want to see the @samp{text/html} part since you are using emacs-w3m.
+If so, add the following lines to the @file{~/.mew.el} file:
+
+@lisp
+(setq mew-mime-multipart-alternative-list
+      '("Text/Html" "Text/Plain" ".*"))
+@end lisp
+
+There are some customizable variables related to Mew:
+
+@table @code
+@item mew-use-w3m-minor-mode
+If non-@code{nil}, the @code{w3m-minor-mode} is turned on in the message
+buffer where a text/html part is displayed, and you can use the same
+main keys as the keys of emacs-w3m, for instance, @key{RET} is for
+visiting a page which a link in the current position points to.  Those
+keys are defined in the @code{w3m-minor-mode-command-alist} variable.
+Keep in mind that some commands are replaced by others similar to them,
+for security reasons.  The default value is @code{nil}.
+
+@item mew-w3m-auto-insert-image
+If non-@code{nil}, you can see images inline in the message buffer when
+you read a multipart/related message.  Note that mew-w3m only allows
+images contained in the message body with a @samp{cid:} URL to be
+displayed (as we consider them safe).  The default value is @code{nil}.
+
+@item mew-w3m-cid-retrieve-hook
+A hook run just after retrieving a @samp{cid:} URL.  The default value
+is @code{nil}.
+@end table
+
+See also @ref{Mew Shimbun}.
+
+@node SEMI MUAs
+@section Reading HTML mails in SEMI MUAs
+
+You can display HTML mails as human-readable, using emacs-w3m and
+@sc{semi} MUAs, for example, Wanderlust, T-gnus, etc.  Since those MUAs
+depend on @sc{semi} (and also @sc{flim}) for MIME functions, we
+generically call them @sc{semi} MUAs.  Although @sc{semi} uses Emacs/W3
+for rendering HTML mails by default, it can easily be altered to
+emacs-w3m and it will make your cyber life still more comfortable.
+
+You simply need to put the following line in @file{~/.emacs} file:
+
+@lisp
+(require 'mime-w3m)
+@end lisp
+
+The @code{mime-w3m} and @code{mime-w3} modules are functionally alike,
+as you might have guessed (see how the names sound alike?).  The latter
+is included in the @sc{semi} package.
+
+On HTML parts of an article buffer, the @code{w3m-minor-mode} is turned
+on and you can use the same main keys as the keys of emacs-w3m, for
+instance, @key{RET} is for visiting a page which a link in the current
+position points to.  Those keys are defined in the
+@code{w3m-minor-mode-command-alist} variable.  Keep in mind that some
+commands are replaced by others similar to them, for security reasons.
+
+There are some customizable variables related to the @code{mime-w3m}
+module:
+
+@table @code
+@item mime-w3m-display-inline-images
+If it is non-@code{nil}, images will be displayed inline in HTML mails.
+If it is the symbol @code{default} (which is the default) at the first
+time, the value of this variable will be replaced with the value of the
+@code{w3m-default-display-inline-images} variable.  You probably don't
+need to change this.
+
+@item mime-w3m-safe-url-regexp
+Regexp matching URLs which are considered to be safe.  The default value
+is @samp{"\\`cid:"} which means we consider that images included in a
+mail with the @samp{cid:} URLs are safe.  See also @ref{Gnus} about
+rogue attacks.
+
+@item mime-w3m-setup-hook
+A hook run just after setting up the cooperation of the @code{mime-w3m}
+module and @sc{semi}.  The default value is @code{nil}.
+@end table
+
+See also @ref{Nnshimbun} if you are using T-gnus or Nana-gnus.
+
+@node Frequently Asked Questions
+@chapter There isn't always an answer
+
+
+@node Known Problems
+@chapter You can surely solve it
+
+
+@node Shimbun Library
+@chapter A tool for reading a newspaper
+@cindex Shimbun library
+
+Shimbun is pronounced ``she-n-boon'' (but actually vowels shouldn't be
+prolonged), it means ``newspaper'' in Japanese.  The @samp{shimbun}
+library is a collection of many modules, but each of them serves no
+useful purpose alone.  This section explains three typical
+@samp{shimbun} applications (two of which are included in the
+@samp{shimbun} library) and how to make @samp{shimbun} modules by
+yourself (you need to be able to write Emacs Lisp programs).  All three
+applications make it possible to fetch continuously-updating information
+from web sites around the world and to read them as if you were reading
+mail messages.
+
+More and more newspapers, mailing list archives, bulletin boards, and
+individual diaries (hyper nikki system, weblogs or blogs) are open to
+the public through the web.  The @samp{shimbun} library currently
+supports Asahi Shimbun, Yomiuri On-line, Emacs Devel, XEmacs Beta,
+mailing lists for Gnus, Mew, Wanderlust, etc., the Japanese Prime
+Minister Koizumi's mail magazine, Slashdot Japan, and a lot of others.
+
+Note that you need to have installed the @sc{flim} package (and Gnus if
+you'd like to use @samp{nnshimbun}) before building and installing
+emacs-w3m.  The @sc{flim} package requires the @sc{apel} package.  You
+might also want to see @xref{Other Requirements}.
+
+@menu
+* Nnshimbun::                   Turning Gnus into a web browser!
+* Mew Shimbun::                 Reading web newspapers with Mew
+* Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
+* Shimbun Basics::              How to make your own shimbun modules
+@end menu
+
+@node Nnshimbun
+@section Turning Gnus into a web browser!
+@cindex nnshimbun
+@cindex Web Newspaper
+
+@samp{Nnshimbun} is a Gnus back end, but it is distributed with
+emacs-w3m, not Gnus, exceptionally.  @samp{Nnshimbun} allows you to turn
+Gnus into an exceptionally useful web browser.  You can skim through the
+articles on a newspaper's web server without having to see all the
+advertisement.  You can read articles in mailing list archives as if you
+were subscribed to the list.  You can also read submissions in bulletin
+boards, etc...  Note that if you want to followup, you still need to use
+emacs-w3m as Gnus can't post via the web with @samp{nnshimbun}.
+
+Put the following line in your @file{~/.gnus.el} file:
+
+@lisp
+(autoload 'gnus-group-make-shimbun-group "nnshimbun" nil t)
+@end lisp
+
+Note: it isn't necessary if you are using T-gnus.
+
+See also @ref{Gnus} for rendering HTML messages with emacs-w3m if you
+use Gnus, see @ref{SEMI MUAs} for T-gnus or Nana-gnus instead.
+
+@findex gnus-group-make-shimbun-group
+@c @kindex G n (Group)
+The easiest way to get started with @samp{nnshimbun} is to use
+something like the following in the Group buffer:
+
+@kbd{M-x gnus-group-make-shimbun-group RET asahi RET national RET}
+@c @kbd{G n asahi RET national RET}
+
+@noindent
+Replace @samp{asahi} and @samp{national} with the keyword corresponding
+to the server you'd like to connect to and the group you're interested
+in respectively.  You can complete both of those names by using
+@key{TAB} or @key{SPC}.
+
+You can also bind that to a key if there's enough room in the
+@code{gnus-group-mode-map} map, you can add something like the following
+in your @file{~/.gnus.el} file (T-gnus users, you don't need to bother
+to add it, since there's already the similar thing in T-gnus):
+
+@lisp
+(eval-after-load "gnus-group"
+  '(define-key gnus-group-mode-map "Gn"
+     'gnus-group-make-shimbun-group))
+@end lisp
+
+@noindent
+Then, you can use @kbd{G n} instead of @kbd{M-x
+gnus-group-make-shimbun-group}.
+
+@emph{Could someone book this keystroke at the Gnus Tower?}
+
+@c Otherwise, you can also see articles by browsing the back end using
+@c @kbd{B nnshimbun RET asahi RET}.
+
+@samp{Nnshimbun} simply fetches HTML contents from the web server and
+displays them as an article, but it will never save articles in the
+local file system, except if you use persistent articles
+(@pxref{(gnus)Persistent Articles}).  @samp{Nnshimbun} uses @sc{nov}
+files for each @samp{nnshimbun} group, and its back end is almost the
+same as @samp{nnml}.
+
+The following @samp{nnshimbun} variables can be customized:
+
+@table @code
+@item nnshimbun-keep-backlog
+@vindex nnshimbun-keep-backlog
+@vindex gnus-keep-backlog
+This variable overrides the @code{gnus-keep-backlog} variable
+(@pxref{(gnus)Article Backlog}) in @samp{nnshimbun} groups.  If you set
+@code{nnshimbun-keep-backlog} to a number @var{n}, @samp{nnshimbun} will
+store at most @var{n} old articles in a buffer for later re-fetching.
+If this variable is non-@code{nil} and is not a number, @samp{nnshimbun}
+will store @emph{all} read articles (this is not a good idea).  The
+default value is 300.
+
+Note that smaller values may spoil the @code{prefetch-articles} feature
+(see below), since @samp{nnshimbun} uses the backlog to keep the
+prefetched articles.
+
+@item nnshimbun-directory
+@vindex nnshimbun-directory
+Directory where @samp{nnshimbun} saves @sc{nov} files.  The default
+value is @samp{~/News/shimbun/}.
+@end table
+
+@cindex group parameters
+You can use the specially made group parameter for @samp{nnshimbun} in
+addition to the standard group parameters provided by Gnus@footnote{The
+easiest way to specify group parameters is to type @kbd{G c} in the
+group buffer after moving the point to the group you'd like to customize
+(@pxref{(gnus)Group Parameters}).}.  Several parameters for
+@samp{nnshimbun} are collected into the single group parameter
+@code{nnshimbun-group-parameters} which is a property list (the values
+can be different for every group).  Here's an example:
+
+@lisp
+'(index-range all prefetch-articles off encapsulate-images on
+              expiry-wait 6)
+@end lisp
+
+Below is the documentation for those group parameters and related
+variables.
+
+@table @code
+@item prefetch-articles
+@vindex nnshimbun-pre-fetch-article
+In a group where this group parameter is set to something else than
+@code{off} or @code{nil}, @samp{nnshimbun} not only checks for new
+articles, but also downloads them.  Though it will slow checking of new
+articles down, you won't be kept waiting when reading articles.  In the
+group where this group parameter is not set or its value is @code{nil},
+the value of the @code{nnshimbun-pre-fetch-article} variable (@code{off}
+by default) is used instead.
+
+@item encapsulate-images
+@vindex nnshimbun-encapsulate-images
+In a group where this group parameter is set to something else than
+@code{off} or @code{nil}, @samp{nnshimbun} will put image data embedded
+in the original contents into an article as @samp{multipart/related}
+parts of the MIME format.  In the group where this group parameter is
+not set or its value is @code{nil}, the value of the
+@code{nnshimbun-encapsulate-images} variable is used instead.  The
+default value for the @code{nnshimbun-encapsulate-images} variable is
+the value of the @code{shimbun-encapsulate-images} variable which is
+provided in the @samp{shimbun} library (the default value is probably
+@code{t}).
+
+@item index-range
+@vindex nnshimbun-index-range
+You can specify the range of articles to be fetched from the web server
+using the @code{index-range} group parameter.  To specify the range, use
+the following values:
+
+@table @code
+@item nil
+@item all
+all pages
+
+@item last
+only the latest page
+@end table
+
+@table @samp
+@item integer N
+the latest N pages
+@end table
+
+@samp{Nnshimbun} checks whether there are new articles by parsing the
+index page of the server.  It is possible that there are two or more
+index pages on the server.  For instance, in the case of the mailing
+list servers, index pages are generally classified according to the date
+on which the article was posted.  It would take a considerable amount of
+time to check all those huge index pages especially if you are
+connecting via a slow line.
+
+If it is possible, @samp{nnshimbun} won't check index pages which have
+already been checked at the last connection.  If you want to save even
+more time, use @code{last}.  It makes @samp{nnshimbun} refer to only the
+latest index page for checking new articles.
+
+In the group where the @code{index-range} group parameter is not set or
+its value is @code{nil}, the value of the @code{nnshimbun-index-range}
+variable (@code{nil} by default) is used.
+
+@item nnshimbun-group-parameters-alist
+@vindex nnshimbun-group-parameters-alist
+This is an Emacs Lisp variable, an alist of regexp of group names and
+@samp{nnshimbun} group parameters.  The default value is @code{nil}.
+Each element may have the form @samp{(REGEXP KEYWORD VALUE KEYWORD
+VALUE...)}, for example:
+
+@lisp
+'("^nnshimbun\\+asahi:" index-range all prefetch-articles off
+  encapsulate-images on expiry-wait 6)
+@end lisp
+
+Since you can use this variable to specify the same @samp{nnshimbun}
+group parameters for two or more groups which have similar names (i.e.,
+those groups are likely to have similar characteristics each other), it
+is useful that it can be used instead of specifying the @samp{nnshimbun}
+group parameters to several groups respectively.  If the group parameter
+has already been set in a group, that takes precedence over this
+variable.
+@end table
+
+@cindex article expiry
+@cindex auto-expire
+@cindex expiry-wait
+@vindex nnmail-expiry-wait-function
+@vindex nnmail-expiry-wait
+You can instruct @samp{nnshimbun} to expire articles@footnote{There are
+mainly two ways to expire articles automatically in the @samp{nnshimbun}
+groups.  One is to add a group name regular expression (it should begin
+with ``^nnshimbun\\+'') to the @code{gnus-auto-expirable-newsgroups}
+variable and to put the expiry period for each group into the
+@code{nnmail-expiry-wait-function} variable.  Another is to set the
+@code{auto-expire} group parameter to @code{t} and to set the expiry
+period with the @code{expiry-wait} group parameter in every
+@samp{nnshimbun} group which you want to expire automatically.  See
+@ref{(gnus)Expiring Mail} for more information.  In the group to which
+the @code{expiry-wait} group parameter is not specified, a default
+expiry period will be applied.}. Keep in mind that when an article is
+expired, it is not deleted from the remote server, it's still available
+there.  What is deleted is the line in your own @sc{nov} file for
+@samp{nnshimbun}@footnote{The @sc{nov} file for @samp{nnshimbun} is
+named something like ``~/News/shimbun/asahi/national/.overview''.}
+corresponding to the article to be expired.  Then the article won't
+appear in the Summary buffer, forever and ever.
+
+If you don't expire articles in @samp{nnshimbun} groups, the @sc{nov}
+files will continue to grow fat indefinitely and you may see very old
+articles in the Summary buffer as if they were existing (in fact, they
+might have expired three years ago on the remote server!).  Even if you
+try to read such an article, nothing will appear in the article buffer.
+On the other hand, most mailing list servers generally offer all the
+past articles.  You may not feel like expiring articles in such groups
+in order to look back with nostalgia to the good old days and to be able
+to read, eyes filled with tears, articles which you thought long gone.
+
+You can mark @samp{nnshimbun} articles as expirable and specify the
+expiry period in each @samp{nnshimbun} group as well as the other mail
+back ends.  However, there are a little differences between
+@samp{nnshimbun} and the other mail back ends:
+
+@itemize @bullet
+@item
+First of all, the expiry period is determined with the following
+priorities.  Note that the default value might be different from group
+to group.
+
+@enumerate
+@item
+The value of the @code{expiry-wait} group parameter in a group.
+
+@item
+The value produced by evaluating the @code{nnmail-expiry-wait-function}
+variable for a group.
+
+@item
+The default value provided by the @samp{shimbun} module corresponding to
+a group.
+
+@item
+The value of the @code{nnmail-expiry-wait} variable.
+@end enumerate
+
+@item
+Second of all, the argument to be passed to the function specified by
+the @code{nnmail-expiry-wait-function} variable will contain the names
+of the back end and the server like ``nnshimbun+asahi:national'', while
+only the group name will be given in the case of the other mail
+back ends.  Here's an example:
+
+@lisp
+(setq nnmail-expiry-wait-function
+      (lambda (group)
+        (cond ((string-equal group "ding") 7)
+              ((string-equal group "nnshimbun+ding:ding") 'never))))
+@end lisp
+
+This means that there are two groups for the same ding mailing list; one
+is subscribed as a list member, the other is for reading from the
+mailing list archive at the Gnus Towers.  Ahem, isn't it clever?  The
+local mail files in the ``ding'' group will be expired in seven days and
+your local disk space will be saved, but you can read even the articles
+of the last century in the second group (if it is really needed,
+though).
+
+@item
+Third of all, and this is written down so that you can remember it when
+you're filled with doubt: even when all articles from a @samp{nnshimbun}
+group should be expired, the most recent one will be kept.  This is not
+to satisfy your indecisive heart, it's because the next time you fetch
+new articles for this group, @samp{nnshimbun} will know where to begin
+and not fetch all the articles all over again.
+@end itemize
+
+The group parameters and the variables related to expiring
+@samp{nnshimbun} articles are:
+
+@table @code
+@item expiry-wait
+@cindex expiry-wait
+Don't be confused, please.  The @code{expiry-wait} group parameter is
+provided as one of the elements of @code{nnshimbun-group-parameters},
+the specially made group parameter for @samp{nnshimbun}.  It has the
+same name and the same meaning as the standard group parameter.  You may
+use whichever you like.  If nnshimbun's one is set to non-@code{nil}
+value, it takes precedence over the standard one.  It is provided in
+order to concentrate things related to @samp{nnshimbun} at one place of
+the ``Gnus Customize'' buffer (which will appear by typing @kbd{G c} in
+the group buffer) and to realize managing collectively by the
+@code{nnshimbun-group-parameters-alist} variable@footnote{We've already
+prepared the answer to the question that why @code{auto-expire}
+etc. aren't included in the nnshimbun's special group parameter?  The
+answer is, @code{expiry-wait} is handled by the @samp{nnshimbun}
+back end, but @code{auto-expire} is handled by the Gnus core.
+Therefore, it is contrary to the design policy of Gnus to extend the
+Gnus core functions so that it may work for one particular back end
+(i.e. reading a value from the nnshimbun's special group parameter).}.
+The values which can be used are a number of expiry period, @code{never}
+or @code{immediate} as well as the standard group parameter.
+
+@item nnshimbun-keep-unparsable-dated-articles
+@vindex nnshimbun-keep-unparsable-dated-articles
+If this variable is non-@code{nil}, the articles of which the time of
+creation (or the time of arrival) is unknown will never be expired,
+since their age is unknown.  The default is @code{t}.  If you set this
+variable to @code{nil}, the articles of which the time is unknown will
+also be expired unconditionally when the time to expire has come.  Well,
+it might prove useful for a general cleaning at the end of a year.
+@end table
+
+@node Mew Shimbun
+@section Reading web newspapers with Mew
+
+Mew Shimbun is an Emacs Lisp program meant to be used with
+@samp{shimbun} and Mew (version 2.1 and later).  The @file{mew-shimbun}
+module will be installed together with emacs-w3m if Mew, @sc{apel}, and
+@sc{flim} are also installed.
+
+We recommend you also see @ref{Mew}.
+
+@enumerate
+@item
+Setting things up
+
+Put the following lines in the last of the @file{~/.mew.el} file:
+
+@format
+;;; Loading mew-shimbun, defining keys.
+;; (setq mew-shimbun-use-unseen t)              ;;; @footnote{Uncomment
+this line if you'd like to manage unseen messages.  It must be placed
+before the @code{(require 'mew-shimbun)} line.}
+(require 'mew-shimbun)
+(define-key mew-summary-mode-map "G"  (make-sparse-keymap))
+(define-key mew-summary-mode-map "Gg" 'mew-shimbun-goto-folder)
+(define-key mew-summary-mode-map "GG" 'mew-shimbun-goto-unseen-folder)
+(define-key mew-summary-mode-map "Gi" 'mew-shimbun-retrieve)
+(define-key mew-summary-mode-map "GI" 'mew-shimbun-retrieve-all)
+(define-key mew-summary-mode-map "Gr" 'mew-shimbun-re-retrieve)
+(define-key mew-summary-mode-map "GR" 'mew-shimbun-re-retrieve-all)
+(define-key mew-summary-mode-map "Ge" 'mew-shimbun-expire)
+(define-key mew-summary-mode-map "GE" 'mew-shimbun-expire-all)
+
+;; Specifying @samp{shimbun} servers and groups to be read with Mew in the
+;; @code{mew-shimbun-folder-groups} variable.  Each element has the form
+;; @code{("folder" ("server.group" . range) ...)}.  You can use @code{all},
+;; @code{last}, and a number for the @code{range} item.
+
+(setq mew-shimbun-folder-groups
+      '(;; Fetching @samp{yomiuri.shakai}, @samp{yomiuri.sports}, etc.
+        ;; into the @samp{+shimbun/yomiuri} folder collectively.
+        ("yomiuri"
+         ("yomiuri.shakai" . 2)
+         ("yomiuri.sports". 2)
+         ("yomiuri.kokusai". 2))
+        ;; Fetching @samp{security-memo.memo}
+        ;; into @samp{+shimbun/security-memo}.
+        ("security-memo"
+         ("security-memo.memo" . 2))
+        ("slashdot-jp"
+         ("slashdot-jp.story" . last))
+        ;; You can read several groups in one folder (@samp{+shimbun/comp})
+        ;; as follows even if each group comes from a different server.
+        ("comp"
+         ("cnet.comp" . last)
+         ("zdnet.comp" . last))
+        ;; Fetching diaries into @samp{+shimbun/hns/arisawa} and
+        ;; @samp{+shimbun/hns/miyoshi} respectively.
+        ("hns/arisawa"
+         ("hns.arisawa" . last))
+        ("hns/miyoshi"
+         ("hns.miyoshi" . last))))
+@end format
+
+You did the fundamental setups.  For the other user definable variables,
+use @kbd{M-x customize-group} for the @code{mew-shimbun} group or see
+the source code.
+
+@item
+Reading @samp{shimbun} messages
+
+@enumerate a
+@item
+Getting started
+
+Type @kbd{G I} (@code{mew-shimbun-retrieve-all}) first, after setting
+things up as mentioned above.  The @samp{shimbun} folders specified by
+the @code{mew-shimbun-folder-groups} variable will be created under the
+@samp{+shimbun} parent folder.  Typing @kbd{G I} is also useful when you
+have added new groups.  You can change the name of the parent folder
+(@samp{+shimbun} by default) by customizing the
+@code{mew-shimbun-folder} variable.
+
+@item
+Moving into a @samp{shimbun} folder
+
+You can move to any folder (including @samp{shimbun}) by typing @kbd{g}
+(@code{mew-summary-goto-folder}), but @kbd{G g}
+(@code{mew-shimbun-goto-folder}) is restricted to moving to only the
+@samp{shimbun} folder.  In addition, folders which have new messages
+(in other words, folders which have not been scanned) will be displayed
+when using a prefix argument with @kbd{G g} (i.e. @kbd{C-u G g}).  A
+prefix argument similarly affects @kbd{G G} as well.
+
+@item
+Fetching messages in each folder
+
+You can fetch new messages for the current folder exclusively by typing
+@kbd{G i} (@code{mew-shimbun-retrieve}) in a @samp{shimbun} folder.
+
+@item
+Fetching updated messages
+
+If you perform the @kbd{G r} command (@code{mew-shimbun-re-retrieve})
+when a particular message is being displayed, the message will be
+updated if it is possible, and new messages will be fetched.  With a
+prefix argument (i.e. @kbd{C-u G r}), it will attempt to update messages
+which are marked with the mark specified by the
+@code{mew-shimbun-mark-re-retrieve} variable (@samp{@@} by default).  It
+would be useful for CNET, etc.
+
+The @kbd{G R} command (@code{mew-shimbun-re-retrieve-all}) checks the
+freshness of all messages and re-fetches the updated messages.  If a
+prefix argument is given (i.e. @kbd{C-u G R}), the messages within the
+region will be processed.  It is probably worthwhile if the site is
+running the hyper nikki system (@samp{nikki} means ``diary'' in
+Japanese).
+@end enumerate
+
+@item
+Managing unseen messages
+
+If you have the following setting in the @file{~/.mew.el} file,
+
+@lisp
+(setq mew-shimbun-use-unseen t)
+@end lisp
+
+newly fetched messages will be marked with the mark specified by the
+@code{mew-shimbun-mark-unseen} variable (@samp{*} by default), and it
+will disappear automatically after reading the message.
+
+Normally, the unseen marks will not be saved in the @file{.mew-cache}
+file if scanning is not performed after adding or deleting marks in the
+Mew summary mode, but if you add the following line to the
+@file{~/.mew.el} file,
+
+@lisp
+(setq mew-shimbun-use-unseen-cache-save t)
+@end lisp
+
+the unseen marks will be saved in the @file{.mew-cache} file
+automatically for the @samp{shimbun} groups when exiting Mew or killing
+a folder (using @kbd{C-c C-q}).  However, it is not securely saved
+@footnote{People who have set the @code{mew-touch-folder-p} variable to
+@code{t} will succeed 100% in saving marks, but people who use
+@code{nil} value seem not to be 0% successful.}.  To do this securely,
+you had better have the habit of performing the @samp{scan update}
+command after reading the folder.
+
+If you don't like the @samp{*} mark for unseen messages, customize
+the @code{mew-shimbun-mark-unseen} variable (see above).  By specifying
+the mark by @kbd{C-u N}, you will be able to lead a better life with
+taking care of unseen messages.
+
+@item
+Expiring messages
+
+You can expire messages if you set the @code{mew-shimbun-expires}
+variable beforehand.  For example:
+
+@lisp
+(setq mew-shimbun-expires
+      '(("yomiuri" . 7)
+        ("asahi" . 1)
+        ("slashdot-jp" . 7)
+        ("comp" . 7)))
+@end lisp
+
+If you set this variable as shown above, you can specify the expiry
+period; 7 days for @samp{+shimbun/yomiuri}, 1 day for
+@samp{+shimbun/asahi}.  Messages in the @samp{shimbun} folder where the
+expiry period is not specified will never be expired.  You can use the
+@kbd{G e} command (@code{mew-shimbun-expire}) to expire the expirable
+messages in the current folder.  The @kbd{G E} command
+(@code{mew-shimbun-expire-all}) is for expiring the expirable messages
+in all the @samp{shimbun} folders.  Note that once the messages have
+been expired, you cannot recover them.
+
+@item
+How to mark messages with @samp{$} as unseen
+
+Put the following lines in the @file{~/.mew.el} file in order to define
+the @samp{$} mark and use @samp{$} for the mark of unseen.  See
+@uref{http://www.mew.org/ml/mew-dist-2.0/msg01251.html} if you would
+like to replace the @samp{$} mark with another.
+
+@format
+;;----------------------------------------------------------------------
+;;; Code for using @samp{$} as the unseen mark.
+(setq mew-mark-unseen ?$)
+(setq mew-shimbun-mark-unseen mew-mark-unseen)
+(setq mew-mark-show-list (cons mew-mark-unseen mew-mark-show-list))
+(setq mew-mark-afterstep-spec
+      (cons (cons mew-mark-unseen '(1 0 1 0 0 0 0))
+            mew-mark-afterstep-spec))
+(setq mew-mark-spec
+      (cons (list mew-mark-unseen "unseen" 0 nil nil nil nil nil)
+            mew-mark-spec))
+(setq mew-highlight-mark-keywords
+      (cons
+       (cons mew-mark-unseen 'mew-face-mark-unseen)
+       mew-highlight-mark-keywords))
+(defface mew-face-mark-unseen
+  '((((class color) (type tty))
+     (:foreground "green"))
+    (((class color) (background light))
+     (:foreground "deep pink" :bold t :italic t))
+    (((class color) (background dark))
+     (:foreground "thistle"))
+    (t (:bold t)))
+  "*Face to highlight the unseen mark"
+  :group 'mew-highlight)
+(defun mew-summary-unseen (&optional count)
+  "Put the unseen mark(default is '$') in COUNT times."
+  (interactive "P")
+  (mew-mark-put-mark-loop (function mew-summary-unseen-one) count nil))
+(defun mew-summary-unseen-one (&optional no-msg)
+  "Put the unseen mark(default is '$') on this message."
+  (mew-mark-put-mark mew-mark-unseen no-msg))
+(defun mew-summary-mark-unseen ()
+  "Change the '*' mark into the '$' mark."
+  (interactive)
+  (mew-summary-exchange-mark mew-mark-review mew-mark-unseen))
+(defun mew-thread-mark-unseen ()
+  "Put the '$' mark on all messages of the current sub-thread."
+  (interactive)
+  (mew-thread-mark mew-mark-unseen))
+
+(define-key mew-summary-mode-map "$"  'mew-summary-unseen)
+(define-key mew-summary-mode-map "m$" 'mew-summary-mark-unseen)
+(define-key mew-summary-mode-map "t$" 'mew-thread-mark-unseen)
+;;----------------------------------------------------------------------
+@end format
+@end enumerate
+
+@node Shimbun with Wanderlust
+@section Reading web newspapers with Wanderlust
+
+Wanderlust includes @samp{elmo-shimbun} as an ELMO module, so you can
+read @samp{shimbun} by just accessing a folder beginning with @samp{@@}
+(@pxref{(wl)Shimbun Folder}).
+
+@node Shimbun Basics
+@section How to make your own shimbun modules
+
+
+@node Mailing List
+@chapter Mailing list and submitting bug reports
+@cindex Subscribing to the emacs-w3m mailing list
+@cindex Reporting bugs
+
+We have set up a mailing list to discuss all things emacs-w3m.  You can
+post without subscribing.  If you find a bug, have a feature request, or
+have written some code, don't hesitate to post to the list.  And if
+you're just a user and like the program, please tell us too!
+
+The address is:
+
+@display
+Emacs-w3m Mailing List @t{<emacs-w3m@@namazu.org>}
+@end display
+
+You can also send a bug report using the @code{report-emacs-w3m-bug}
+command (or the @kbd{C-c C-b} key) if you have set the
+@code{mail-user-agent} variable that will work properly.
+
+English and Japanese can be used when posting to this list, since many
+of its members are Japanese.  Articles posted to the list are opened to
+the public and you can read them on the web (at
+@uref{http://emacs-w3m.namazu.org/ml/}), or in NetNews (group
+@samp{gmane.emacs.w3m} on the server @samp{news.gmane.org}).
+
+If you want to receive articles by mail, send a mail containing
+
+@example
+subscribe Your Name
+@end example
+
+(please write your name, not your email address) in its body to
+@samp{emacs-w3m-ctl@@namazu.org}, then you can subscribe to the list.
+To unsubscribe from it, send a mail containing just
+
+@example
+# bye
+@end example
+
+in its body to @samp{emacs-w3m-ctl@@namazu.org}.
+
+@node Emacs-w3m Functions
+@chapter Details of some emacs-w3m functions
+@cindex Functions details
+
+
+@node Index
+@unnumbered Index
+
+@menu
+* Concept Index::               Concept Index
+* Key Index::                   Key Index
+* Variable Index::              Variable Index
+* Function Index::              Function Index
+@end menu
+
+@node Concept Index
+@unnumberedsec Concept Index
+@printindex cp
+
+@node Key Index
+@unnumberedsec Key Index
+@printindex ky
+
+@node Variable Index
+@unnumberedsec Variable Index
+@printindex vr
+
+@node Function Index
+@unnumberedsec Function Index
+@printindex fn
+
+@summarycontents
+@contents
+@bye
+
+@c Local Variables:
+@c fill-column: 72
+@c End:
