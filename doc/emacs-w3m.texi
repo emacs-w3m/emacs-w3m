@@ -1047,8 +1047,6 @@ text, e.g. URL, forms, etc.  Note that sometimes you might still need to
 use modifier keys since the emacs-w3m developers are all Emacs
 otaku@dots{}
 
--Use @kbd{mouse-2} for the ``following a link'' operation which the first
--basic of web browsing.
 Use @kbd{mouse-2} to ``follow links'' (the first basic of web browsing).
 Under Emacs 22.1 and newer, you can also follow links using
 @kbd{mouse-1}, depending of the value of
