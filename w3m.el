@@ -433,7 +433,9 @@ reason.  The value will be referred by the function `w3m-load-list'.")
 		 (custom-set-default symbol value)
 	       ;; XEmacs or Emacs 19 does not have `custom-set-default'.
 	       (set-default symbol value))
-	   (if noninteractive
+	   (if (or noninteractive
+		   ;; Loading w3m.elc is just in progress...
+		   (not (featurep 'w3m)))
 	       nil
 	     (if (and;; Gnus binds `w3m-mode-map' for compiling.
 		  (boundp 'w3m-mode-map)
