@@ -1311,44 +1311,60 @@ this function returns t.  Otherwise, returns nil."
   "*Print the URL of the link under point."
   (interactive)
   (let ((url (get-text-property (point) 'w3m-href-anchor)))
-    (if url
-	(kill-new (setq url (w3m-expand-url url w3m-current-url))))
-    (message "%s" (or url "Not found."))))
+    (message "%s" (if url
+		      (w3m-expand-url url w3m-current-url)
+		    "Not found"))))
 
+(defun w3m-save-this-url ()
+  (interactive)
+  (let ((url (get-text-property (point) 'w3m-href-anchor)))
+    (if url
+	(kill-new (w3m-expand-url url w3m-current-url)))))
+
+(defun w3m-goto-next-anchor ()
+  ;; move to the end of the current anchor
+  (when (get-text-property (point) 'w3m-href-anchor)
+    (goto-char (next-single-property-change (point) 'w3m-href-anchor)))
+  ;; find the next anchor
+  (let ((pos (next-single-property-change (point) 'w3m-href-anchor)))
+    (if pos (progn (goto-char pos) t) nil)))
 
 (defun w3m-next-anchor (&optional arg)
   "*Move cursor to the next anchor."
   (interactive "p")
   (unless arg (setq arg 1))
-  (let (pos)
-    (if (< arg 0)
-	;; If ARG is negative.
-	(w3m-previous-anchor (- arg))
-      (when (get-text-property (point) 'w3m-href-anchor)
-	(goto-char (next-single-property-change (point) 'w3m-href-anchor)))
-      (while (and
-	      (> arg 0)
-	      (setq pos (next-single-property-change (point) 'w3m-href-anchor)))
-	(goto-char pos)
-	(unless (zerop (setq arg (1- arg)))
-	  (goto-char (next-single-property-change (point) 'w3m-href-anchor)))))))
+  (if (< arg 0)
+      (w3m-previous-anchor (- arg))
+    (while (> arg 0)
+      (unless (w3m-goto-next-anchor)
+	;; search from the beginning of the buffer
+	(goto-char (point-min))
+	(w3m-goto-next-anchor))
+      (setq arg (1- arg)))
+    (w3m-print-this-url)))
 
+(defun w3m-goto-previous-anchor ()
+  ;; move to the beginning of the current anchor
+  (when (and (not (bobp)) (get-text-property (1- (point)) 'w3m-href-anchor))
+    (goto-char (previous-single-property-change (point) 'w3m-href-anchor)))
+  ;; find the previous anchor
+  (let ((pos (previous-single-property-change (point) 'w3m-href-anchor)))
+    (if pos (progn (goto-char (previous-single-property-change
+			       pos 'w3m-href-anchor)) t) nil)))
 
 (defun w3m-previous-anchor (&optional arg)
   "Move cursor to the previous anchor."
   (interactive "p")
   (unless arg (setq arg 1))
-  (let (pos)
-    (if (< arg 0)
-	;; If ARG is negative.
-	(w3m-next-anchor (- arg))
-      (when (get-text-property (point) 'w3m-href-anchor)
-	(goto-char (previous-single-property-change (1+ (point)) 'w3m-href-anchor)))
-      (while (and
-	      (> arg 0)
-	      (setq pos (previous-single-property-change (point) 'w3m-href-anchor)))
-	(goto-char (previous-single-property-change pos 'w3m-href-anchor))
-	(setq arg (1- arg))))))
+  (if (< arg 0)
+      (w3m-next-anchor (- arg))
+    (while (> arg 0)
+      (unless (w3m-goto-previous-anchor)
+	;; search from the end of the buffer
+	(goto-char (point-max))
+	(w3m-goto-previous-anchor))
+      (setq arg (1- arg)))
+    (w3m-print-this-url)))
 
 
 (defun w3m-view-bookmark ()
