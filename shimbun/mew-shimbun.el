@@ -166,7 +166,9 @@ show below example,
   :group 'mew-shimbun
   :type '(string :size 0))
 
-(defcustom mew-shimbun-mark-re-retrieve mew-mark-multi
+(defcustom mew-shimbun-mark-re-retrieve (or (and (boundp 'mew-mark-multi)
+						 mew-mark-multi)
+					    mew-mark-review)
   "*Shimbun re-retrieve mark."
   :group 'shimbun
   :group 'mew-shimbun
