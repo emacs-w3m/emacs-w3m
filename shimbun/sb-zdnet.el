@@ -82,8 +82,12 @@ RM#72\\p;3XZ~j|7T)QC7\"(A;~Hr\n fP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
 	       (month (string-to-number (match-string 4)))
 	       (day (string-to-number (match-string 5)))
 	       (filename (match-string 6))
-	       (id (format "<%04d%02d%02d%s%%%s@www.zdnet.co.jp>"
-			 year month day filename group))
+	       (id (format "<%s%s%s%s%%%s>"
+			   (match-string 3)
+			   (match-string 4)
+			   (match-string 5)
+			   (match-string 6)
+			   group))
 	       (subject (mapconcat 'identity
 				   (split-string
 				    (buffer-substring

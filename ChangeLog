@@ -1,3 +1,8 @@
+2002-05-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-zdnet.el (shimbun-get-headers): Restore Message-ID
+	format.
+
 2002-05-28  Kenichi SATO <ksato@iijmio-mail.jp>
 
 	* sb-zdnet.el (shimbun-zdnet-group-url-alist): Abolishded.
