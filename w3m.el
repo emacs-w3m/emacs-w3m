@@ -628,12 +628,19 @@ See the file balloon-help.el for more information."
   "Like `pop-up-windows', except that it only affects the command
 `w3m-copy-buffer'.  If this value is non-nil and the value of the
 option `w3m-pop-up-frames' is nil, split the windows when a new
-session is created."
+session is created.  If you are using XEmacs with the buffers tab in
+the gutter area, it is recommended a bit that setting both this option
+and the option `w3m-pop-up-frames' to nil and you turn on the option
+`w3m-xmas-show-current-title-in-buffer-tab'."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-pop-up-frames nil
-  "Like `pop-up-frames', except that it only affects the `w3m' commands."
+  "Like `pop-up-frames', except that it only affects the `w3m' commands.
+If you are using XEmacs with the buffers tab in the gutter area, it is
+recommended a bit that setting both this option and the option
+`w3m-pop-up-windows' to nil and you turn on the option
+`w3m-xmas-show-current-title-in-buffer-tab'."
   :group 'w3m
   :type 'boolean)
 

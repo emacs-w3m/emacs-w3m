@@ -76,7 +76,16 @@
 	 print-level print-length)
     (unless (locate-library "mew")
       (push "mew-w3m.el" ignores))
-    (unless (locate-library "un-define")
+    (unless (and (boundp 'emacs-major-version)
+		 (if (featurep 'xemacs)
+		     ;; Mule-UCS does not support XEmacs versions prior
+		     ;; to 21.2.37.
+		     (and (>= emacs-major-version 21)
+			  (or (> emacs-minor-version 2)
+			      (and (= emacs-major-version 2)
+				   (>= emacs-beta-version 37))))
+		   (>= emacs-major-version 20))
+		 (locate-library "un-define"))
       (push "w3m-ucs.el" ignores))
     (if (locate-library "mime-def")
 	;; Add shimbun modules.
