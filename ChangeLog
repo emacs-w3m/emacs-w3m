@@ -1,3 +1,14 @@
+2005-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-markets):
+	Improve regexp.
+	(shimbun-nikkei-get-headers-kawase): Improve regexp.
+	(shimbun-nikkei-get-headers-bunkatsu2): Improve regexp.
+	(shimbun-nikkei-get-headers-kinri): Improve regexp.
+	(shimbun-nikkei-get-headers-ft): Improve regexp.
+	(shimbun-nikkei-get-headers-dj): Improve regexp.
+	(shimbun-nikkei-get-headers-gyoseki): Improve regexp.
+
 2005-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-market):

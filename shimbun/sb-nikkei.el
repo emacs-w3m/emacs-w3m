@@ -534,14 +534,12 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			;; 2. url
 			"\\(\\?genre="
 			;; 3. serial number
-			"\\([^\"]+\\)"
-			s0
+			"\\([^\"]+date=\\)"
 			;; 4. year
 			"\\(20[0-9][0-9]\\)"
-			s0
 			;; 5. serial number
 			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
-			s0 "\">" s0
+			"\"" s0 ">" s0
 			;; 6. subject
 			"\\([^<]+\\)" s0 "（"
 			;; 7. month
@@ -588,14 +586,12 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			;; 2. url
 			"\\(\\?id="
 			;; 3. serial number
-			"\\([^\"]+\\)"
-			s0
+			"\\([^\"]+date=\\)"
 			;; 4. year
 			"\\(20[0-9][0-9]\\)"
-			s0
 			;; 5. serial number
 			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
-			s0 "\">" s0
+			"\"" s0 ">" s0
 			;; 6. subject
 			"\\([^<]+\\)" s0 "（"
 			;; 7. month
@@ -642,16 +638,14 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			;; 2. url
 			"\\(&id="
 			;; 3. serial number
-			"\\([^\"]+\\)"
-			s0
+			"\\([^\"]+date=\\)"
 			;; 4. year
 			"\\(20[0-9][0-9]\\)"
-			s0
 			;; 5. serial number
 			"\\([01][0-9][0-3][0-9]"
 			;; 6. serial number
 			"\\([^\"]+\\)\\)\\)\\)"
-			s0 "\">" s0
+			"\"" s0 ">" s0
 			;; 7. subject
 			"\\([^<]+\\)" s0 "（"
 			;; 8. month
@@ -698,14 +692,12 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			;; 2. url
 			"\\(\\?id="
 			;; 3. serial number
-			"\\([^\"]+\\)"
-			s0
+			"\\([^\"]+date=\\)"
 			;; 4. year
 			"\\(20[0-9][0-9]\\)"
-			s0
 			;; 5. serial number
 			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
-			s0 "\">" s0
+			"\"" s0 ">" s0
 			;; 6. subject
 			"\\([^<]+\\)" s0 "（"
 			;; 7. month
@@ -752,14 +744,12 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			;; 2. url
 			"\\(\\?id="
 			;; 3. serial number
-			"\\([^\"]+\\)"
-			s0
+			"\\([^\"]+date=\\)"
 			;; 4. year
 			"\\(20[0-9][0-9]\\)"
-			s0
 			;; 5. serial number
 			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
-			s0 "\">" s0
+			"\"" s0 ">" s0
 			;; 6. subject
 			"\\([^<]+\\)" s0 "("
 			;; 7. month
@@ -801,14 +791,12 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			;; 2. url
 			"\\(\\?id="
 			;; 3. serial number
-			"\\([^\"]+\\)"
-			s0
+			"\\([^\"]+date=\\)"
 			;; 4. year
 			"\\(20[0-9][0-9]\\)"
-			s0
 			;; 5. serial number
 			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
-			s0 "\">" s0
+			"\"" s0 ">" s0
 			;; 6. subject
 			"\\([^<]+\\)" s0 "（"
 			;; 7. month
@@ -855,14 +843,12 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			;; 2. url
 			"\\(\\?id="
 			;; 3. serial number
-			"\\([^\"]+\\)"
-			s0
+			"\\([^\"]+date=\\)"
 			;; 4. year
 			"\\(20[0-9][0-9]\\)"
-			s0
 			;; 5. serial number
 			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
-			s0 "\">" s0
+			"\"" s0 ">" s0
 			;; 6. subject
 			"\\([^<]+\\)" s0 "（"
 			;; 7. month
