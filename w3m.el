@@ -6190,7 +6190,7 @@ Cannot run two w3m processes simultaneously \
 		      (when (and (null post-data) ;; If post, always reload.
 				 (w3m-cache-available-p url))
 			;; Don't use `w3m-history-plist-get' here.
-			(plist-get (cadr element) :forms)))
+			(plist-get (nthcdr 3 element) :forms)))
 	    ;; Mark that the form is from history structure.
 	    (setq w3m-current-forms (cons t w3m-current-forms)))
 	  (when (and post-data element)
@@ -6374,19 +6374,18 @@ the current session.  Otherwise, the new session will start afresh."
 If called with '\\[universal-argument]', clear form and post datas"
   (interactive "P")
   (if w3m-current-url
-      (let ((post-data (w3m-history-plist-get :post-data))
-	    (form-data (w3m-history-plist-get :forms))
-	    (referer (w3m-history-plist-get :referer)))
-	(when arg
-	  (when form-data
-	    (w3m-history-remove-properties '(:forms nil)))
-	  (when post-data
-	    (setq post-data nil)
-	    (w3m-history-remove-properties '(:post-data nil)))
-	  (setq w3m-current-forms nil))
-	(if (and post-data (y-or-n-p "Repost form data? "))
-	    (w3m-goto-url w3m-current-url 'reload nil post-data referer)
-	  (w3m-goto-url w3m-current-url 'reload nil nil referer)))
+      (let (post-data)
+	(if arg
+	    (progn
+	      (w3m-history-remove-properties '(:forms nil :post-data nil))
+	      (setq w3m-current-forms nil))
+	  (when (and (setq post-data (w3m-history-plist-get :post-data))
+		     (not (y-or-n-p "Repost form data? ")))
+	    (setq post-data nil)))
+	(w3m-goto-url w3m-current-url 'reload nil post-data
+		      (w3m-history-plist-get :referer)
+		      nil
+		      (w3m-history-element (cadar w3m-history) t)))
     (w3m-message "Can't reload this page")))
 
 (defun w3m-redisplay-this-page (&optional arg)
