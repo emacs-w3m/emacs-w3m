@@ -265,9 +265,18 @@ In other environment, use 'native."
 (defcustom w3m-content-type-alist
   '(("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
     ("text/html" "\\.s?html?$" ("netscape" url))
-    ("image/jpg" "\\.jpg$" ("xv" file))
+    ("image/jpeg" "\\.jpe?g$" ("xv" file))
     ("image/png" "\\.png$" ("xv" file))
-    ("application/postscript" "\\.\\(ps\\|eps\\|pdf\\)$" ("gv" file)))
+    ("image/gif" "\\gif$" ("xv" file))
+    ("image/tiff" "\\tif?f$" ("xv" file))
+    ("image/x-xwd" "\\.xwd$" ("xv" file))
+    ("image/x-xbm" "\\.xbm$" ("xv" file))
+    ("image/x-xpm" "\\.xpm$" ("xv" file))
+    ("image/x-bmp" "\\.bmp$" ("xv" file))
+    ("video/mpeg" "\\.mpe?g$" ("mpeg_play" file))
+    ("video/quicktime" "\\.mov$" ("mpeg_play" file))
+    ("application/postscript" "\\.\\(ps\\|eps\\)$" ("gv" file))
+    ("application/pdf" "\\.pdf$" ("acroread" file)))
   "Alist of file suffixes vs. content type."
   :group 'w3m
   :type '(repeat
@@ -1014,18 +1023,18 @@ are retrieved."
 		 (length  (nth 2 headers)))
 	     (when (or (not accept-type-regexp)
 		       (string-match accept-type-regexp type))
-	       (let ((w3m-current-url url)
-		     (w3m-w3m-retrieve-length length)
-		     (w3m-process-message
-		      (lambda ()
-			(if w3m-w3m-retrieve-length
-			    (w3m-message
-			     "Reading... %s of %s (%d%%)"
-			     (w3m-pretty-length (buffer-size))
-			     (w3m-pretty-length w3m-w3m-retrieve-length)
-			     (/ (* (buffer-size) 100) w3m-w3m-retrieve-length))
-			  (w3m-message "Reading... %s"
-				       (w3m-pretty-length (buffer-size)))))))
+	       (let* ((w3m-current-url url)
+		      (w3m-w3m-retrieve-length length)
+		      (w3m-process-message
+		       (lambda ()
+			 (if w3m-w3m-retrieve-length
+			     (w3m-message
+			      "Reading... %s of %s (%d%%)"
+			      (w3m-pretty-length (buffer-size))
+			      (w3m-pretty-length w3m-w3m-retrieve-length)
+			      (/ (* (buffer-size) 100) w3m-w3m-retrieve-length))
+			   (w3m-message "Reading... %s"
+					(w3m-pretty-length (buffer-size)))))))
 		 (w3m-message "Reading...")
 		 (delete-region (point-min) (point-max))
 		 (w3m-exec-process "-dump_source" url)
