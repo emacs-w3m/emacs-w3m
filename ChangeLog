@@ -1,3 +1,9 @@
+2004-03-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-weather.el (w3m-weather-get-seikatu-sisu): Relax regular
+	expressions to extract indices, to follow the change of the site
+	design.
+
 2004-03-06  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* shimbun/sb-f1express.el (shimbun-get-headers): Follow the change
