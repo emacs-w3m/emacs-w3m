@@ -258,7 +258,8 @@ stored in the `w3m-favicon-image' buffer-local variable."
 		     (>= (buffer-size) 4))
 		(setq idata (buffer-string)
 		      image (w3m-favicon-convert idata type))
-	      (w3m-message "Reading %s...done (no favicon)" url))
+	      (w3m-message "Reading %s...done (no favicon)"
+			   (w3m-url-readable-string url)))
 	    (with-current-buffer target
 	      (w3m-favicon-set-image image)
 	      (push (list url idata (current-time) w3m-favicon-image)

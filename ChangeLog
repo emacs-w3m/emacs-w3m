@@ -1,6 +1,12 @@
 2005-03-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m.el (w3m-url-readable-string): save matching data.
+	* w3m.el (w3m-url-readable-string): Save matching data.  Check
+	whether `w3m-current-url' is string before checking it.
+	(w3m-display-progress-message): Cancel the last change.
+	(w3m-copy-buffer): Cancel a part of the last change.
+
+	* w3m-favicon.el (w3m-favicon-retrieve): Decode an URL when
+	displaying it.
 
 	* w3m-form.el (w3m-form-input-textarea-mode-setup): An expression
 	is evaluated without checking type, and save matching data.

@@ -2861,7 +2861,8 @@ a decoding scheme."
 	       (catch 'found-rule
 		 (save-match-data
 		   (dolist (elem w3m-show-decoded-url)
-		     (when (if (stringp (car elem))
+		     (when (if (and (stringp w3m-current-url)
+				    (stringp (car elem)))
 			       (string-match (car elem) w3m-current-url)
 			     (if (functionp (car elem))
 				 (funcall (car elem))
@@ -5460,7 +5461,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 (defun w3m-display-progress-message (url)
   "Show \"Reading URL...\" message in the middle of a buffer."
   (insert (make-string (max 0 (/ (1- (window-height)) 2)) ?\n)
-	  "Reading " (w3m-url-readable-string (w3m-url-strip-authinfo url)) "...")
+	  "Reading " (w3m-url-strip-authinfo url) "...")
   (beginning-of-line)
   (let ((fill-column (window-width)))
     (center-region (point) (point-max)))
@@ -6129,13 +6130,13 @@ a page in a new buffer with the correct width."
       ;;
       (set-buffer (setq new (generate-new-buffer newname)))
       (w3m-mode)
-      (w3m-copy-local-variables buffer)
-      (if w3m-toggle-inline-images-permanently
-	  (setq w3m-display-inline-images images)
-	(setq w3m-display-inline-images w3m-default-display-inline-images))
       ;; Make copies of `w3m-history' and `w3m-history-flat'.
       (w3m-history-copy buffer)
-      (setq w3m-initial-frames init-frames))
+      (setq w3m-initial-frames init-frames
+	    w3m-display-inline-images
+	    (if w3m-toggle-inline-images-permanently
+		images
+	      w3m-default-display-inline-images)))
     (if (and (not just-copy) empty)
 	;; Pop to a window or a frame up because `w3m-goto-url' is not called.
 	(w3m-popup-buffer new)
@@ -6147,7 +6148,7 @@ a page in a new buffer with the correct width."
 	    (w3m-history-reuse-history-elements t)
 	    (w3m-prefer-cache t))
 	(w3m-process-with-wait-handler
-	  (w3m-goto-url url nil nil nil nil handler
+	  (w3m-goto-url url 'redisplay nil nil nil handler
 			;; Pass the properties of the history elements,
 			;; although it is currently always nil.
 			(w3m-history-element (cadr positions))))
