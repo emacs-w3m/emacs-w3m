@@ -384,10 +384,10 @@ Emacs 19.34 ($B4^(B Mule 2.3) $B$KIT2D7g$G$9!#%U%!%$(B
 @end example
 
 @item FLIM
-@samp{Shimbun} $B%i%$%V%i%j(B (@pxref{Shimbun Library}) $B$r;H$&$?$a$K(B
-$B$O(B @sc{flim} $B%Q%C%1!<%8$,I,MW$G$9!#(B@samp{Shimbun} $B%i%$%V%i%j$O%&%'%V>e$N(B
-$B?7J9$rFI$`$?$a$NF;6qN`$N%3%l%/%7%g%s$G!"(BGnus$B!"(BMew$B!"(BNana-gnus$B!"(BT-gnus$B!"(B
-Wanderlust $B$J$I$H$H$b$K;H$&$3$H$,$G$-$^$9!#(B@xref{Shimbun Library}$B!#(B
+@samp{Shimbun} $B%i%$%V%i%j$r;H$&$?$a$K$O(B @sc{flim} $B%Q%C%1!<%8$,I,MW$G$9!#(B
+@samp{Shimbun} $B%i%$%V%i%j$O%&%'%V>e$N?7J9$rFI$`$?$a$NF;6qN`$N%3%l%/%7%g(B
+$B%s$G!"(BGnus$B!"(BMew$B!"(BNana-gnus$B!"(BT-gnus$B!"(BWanderlust $B$J$I$H$H$b$K;H$&$3$H$,$G(B
+$B$-$^$9!#(B@xref{Shimbun Library}$B!#(B
 
 $B$?$H$((B Emacs 20.x $B$+(B Emacs 21.x $B$r;H$C$F$$$k>l9g$G$b!"(B@sc{flim} $B%Q%C%1!<(B
 $B%8$K$O(B @sc{apel} $B%Q%C%1!<%8$,I,MW$G$"$k$3$H$KCm0U$7$F2<$5$$!#$7$?$,$C(B
@@ -2615,8 +2615,8 @@ Mew $B$N=*N;;~$d(B folder $B$N(B kill $B;~(B (@kbd{C-c C-q} $B$r;H$C$?$H
 @section Wanderlust $B$G?7J9$rFI$`(B
 
 Wanderlust $B$K$O(B ELMO $B%b%8%e!<%k$N0l$D$H$7$F(B @samp{elmo-shimbun} $B$,4^$^$l(B
-$B$F$$$k$N$G!"L>A0$,(B @samp{@@} $B$G;O$^$k%U%)%k%@$K%"%/%;%9$9$k$@$1$G(B
-@samp{shimbun} $B$rFI$`$3$H$,$G$-$^$9(B(@pxref{(wl-ja)Shimbun Folder})$B!#(B
+$B$F$$$k$N$G!"L>A0$,(B @samp{@@} $B$G;O$^$k%U%)%k%@$K%"%/%;%9$9$k$@$1(B
+$B$G(B @samp{shimbun} $B$rFI$`$3$H$,$G$-$^$9(B (@pxref{(wl-ja)Shimbun Folder})$B!#(B
 
 @node Shimbun Basics
 @section $B?7J9%b%8%e!<%k$N:n$jJ}(B
@@ -2648,7 +2648,7 @@ Emacs-w3m $B%a!<%j%s%0%j%9%H(B @t{<emacs-w3m@@namazu.org>}
 subscribe ANATANO Namae
 @end example
 
-$B$N$h$&$K=q$$$F(B($B%a!<%k%"%I%l%9$G$O$J$/$F$"$J$?$NL>A0$r=q$-$^$9(B)$B!"(B
+$B$N$h$&$K=q$$$F(B ($B%a!<%k%"%I%l%9$G$O$J$/$F$"$J$?$NL>A0$r=q$-$^$9(B)$B!"(B
 @samp{emacs-w3m-ctl@@namazu.org} $B08$K%a!<%k$rAw$k$H%a!<%j%s%0%j%9%H$KEP(B
 $BO?$5$l$^$9!#$^$?!"%a!<%k$r<u$1<h$k$N$r$d$a$k$K$O!"K\J8$K(B
 
