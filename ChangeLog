@@ -1,3 +1,7 @@
+2003-07-27  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-accept-japanese-characters): Checked loosely.
+
 2003-07-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (clean): Do not remove `shimbun-servers.el'.
