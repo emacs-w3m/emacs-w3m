@@ -1,0 +1,47 @@
+■■ browse-url
+
+   以下のように設定しておくと、URI に類似した文字列がある場所で C-x m と
+   入力すれば、w3m で表示されるようになる。
+
+(setq browse-url-browser-function 'w3m-browse-url)
+(autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
+(global-set-key "\C-xm" 'browse-url-at-point)
+
+
+
+■■ dired
+
+   以下のように設定しておくと、dired-mode のバッファでファイルを選択して
+   いる状態で C-x m と入力すれば、該当ファイルが w3m で表示されるように
+   なる。
+
+(add-hook 'dired-mode-hook
+          (lambda ()
+              (define-key dired-mode-map "\C-xm" 'dired-w3m-find-file)))
+(defun dired-w3m-find-file ()
+  (interactive)
+  (require 'w3m)
+  (let ((file (dired-get-filename)))
+    (if (y-or-n-p (format "Open 'w3m' %s " (file-name-nondirectory file)))
+        (w3m-find-file file))))
+
+
+
+■■ hnf-mode
+
+(autoload 'w3m-browse-url "w3m" nil t)
+(defun w3m-hnf-browse-url-w3m (url &optional new-window)
+  (interactive (browse-url-interactive-arg "URL: "))
+  (save-selected-window
+    (pop-to-buffer (get-buffer-create "*w3m*"))
+    (w3m-browse-url url new-window)))
+(setq hnf-browse-url-browser-function (function w3m-hnf-browse-url-w3m))
+
+
+
+
+Local Variables:
+mode: indented-text
+coding: euc-japan-unix
+fill-column: 72
+End:
