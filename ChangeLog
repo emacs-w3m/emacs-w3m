@@ -1,3 +1,13 @@
+2002-11-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Use an optional argument and the function
+	`interactive' to examine whether it is called interactively
+	instead of the function `interactive-p'.
+	Suggested by TSUCHIYA Masatoshi.
+	(w3m-goto-url-new-session): Ditto.
+	(w3m): Ditto.
+	(w3m-select-buffer-show-this-line): Ditto.
+
 2002-11-14  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-w3m-attributes): Bind `case-fold-search' to t.
