@@ -158,7 +158,7 @@
 ;;; XML functions
 
 (defun shimbun-rss-get-encoding ()
-  (let (encoding end)
+  (let (end)
     (cond
      ((search-forward "<?")
       (let (pos)
@@ -166,12 +166,11 @@
 	(setq end (search-forward "?>"))
 	(goto-char pos))
       (if (re-search-forward "encoding=\"\\(.+\\)\"" end t)
-	  (setq encoding (match-string-no-properties 1))
-	(setq encoding "utf-8")))
+	  (match-string-no-properties 1)
+	"utf-8"))
      (t	;; XML Default encoding.
-      (setq encoding "utf-8")
-      ))
-    encoding))
+      "utf-8"
+      ))))
 
 (defun shimbun-rss-node-text (namespace local-name element)
   (let* ((node (assq (intern (concat namespace (symbol-name local-name)))
