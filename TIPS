@@ -98,12 +98,23 @@
 	ad-do-it
       (require 'w3m)
       (let ((text (mm-get-part handle))
-	    (b (point)))
+	    (b (point))
+	    (charset (mail-content-type-get (mm-handle-type handle)
+					    'charset)))
 	(save-excursion
 	  (insert text)
 	  (save-restriction
 	    (narrow-to-region b (point))
 	    (goto-char (point-min))
+	    (if (re-search-forward w3m-meta-content-type-charset-regexp
+				   nil t)
+		(setq charset
+		      (or (w3m-charset-to-coding-system (match-string 2))
+			  charset)))
+	    (if charset
+		(progn
+		  (delete-region (point-min) (point-max))
+		  (insert (mm-decode-string text charset))))
 	    (w3m-region (point-min) (point-max))
 	    (setq gnus-w3m-minor-mode t))
 	  (mm-handle-set-undisplayer
