@@ -1,3 +1,9 @@
+2001-11-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-form.el (w3m-form-replace): Don't use `save-excursion' because
+	point at start time may be deleted at end time.
+	(w3m-form-textarea-info): Use `w3m-get-text-property-around'.
+
 2001-11-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-ftp-url): Rewrote.

@@ -532,31 +532,32 @@ return them with the flag."
 
 
 (defun w3m-form-replace (string &optional invisible)
-  (save-excursion
-    (let* ((start (text-property-any
-		   (point-min)
-		   (point-max)
-		   'w3m-action
-		   (w3m-get-text-property-around 'w3m-action)))
-	   (width (string-width
-		   (buffer-substring
-		    start
-		    (next-single-property-change start 'w3m-action))))
-	   (prop (text-properties-at start))
-	   (buffer-read-only))
-      (goto-char start)
-      (insert (setq string
-		    (if invisible
-			(make-string (length string) ?.)
-		      (mapconcat 'identity
-				 (split-string
-				  (truncate-string string width) "\n")
-				 "")))
-	      (make-string (- width (string-width string)) ?\ ))
-      (delete-region (point)
-		     (next-single-property-change (point) 'w3m-action))
-      (add-text-properties start (point) prop)
-      (point))))
+  (let* ((start (text-property-any
+		 (point-min)
+		 (point-max)
+		 'w3m-action
+		 (w3m-get-text-property-around 'w3m-action)))
+	 (width (string-width
+		 (buffer-substring
+		  start
+		  (next-single-property-change start 'w3m-action))))
+	 (prop (text-properties-at start))
+	 (p (point))
+	 (buffer-read-only))
+    (goto-char start)
+    (insert (setq string
+		  (if invisible
+		      (make-string (length string) ?.)
+		    (mapconcat 'identity
+			       (split-string
+				(truncate-string string width) "\n")
+			       "")))
+	    (make-string (- width (string-width string)) ?\ ))
+    (delete-region (point)
+		   (next-single-property-change (point) 'w3m-action))
+    (add-text-properties start (point) prop)
+    (prog1 (point)
+      (goto-char p))))
 
 (defun w3m-form-input (form name type width maxlength value)
   (save-excursion
@@ -670,7 +671,7 @@ character."
 				 'w3m-form-hseq))
 		     (goto-char next)))
 	  (incf lines)))
-      (cons (get-text-property (point) 'w3m-form-name) lines))))
+      (cons (w3m-get-text-property-around 'w3m-form-name) lines))))
 
 (defvar w3m-form-input-textarea-keymap nil)
 (unless w3m-form-input-textarea-keymap
