@@ -1,3 +1,8 @@
+2001-05-18  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
+
+	* shimbun/sb-hns.el (shimbun-get-headers): Fixed problem when
+	title have anchor.
+
 2001-05-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-dtree.el (w3m-dtree-indent): Remove variable.

@@ -70,7 +70,7 @@ It can be defined in the `shimbun-hns-x-face-alist', too.
 	id year month mday sect uniq xref pos subject
 	headers)
     (goto-char (point-min))
-    (while (re-search-forward "<a href=\"\\([^\\#]*#\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9]+\\)\\)\\)\">[^<]+</a>:" nil t)
+    (while (re-search-forward "<a href=\"\\([^<\\#]*#\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9]+\\)\\)\\)\">[^<]+</a>:" nil t)
       (setq year  (string-to-number (match-string 3))
 	    month (string-to-number (match-string 4))
 	    mday  (string-to-number (match-string 5))
