@@ -1,3 +1,8 @@
+2005-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e19.el: Autoload easymenu in order to avoid compile warning.
+	* w3m-om.el: Ditto.
+
 2005-02-26  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-heise.el (shimbun-heise-get-newsticker-headers): Replace
