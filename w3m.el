@@ -2974,10 +2974,12 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 
 (defun w3m-decode-entities-string (str)
   "Decode entities in the string STR."
-  (with-temp-buffer
-    (insert str)
-    (save-match-data (w3m-decode-entities))
-    (buffer-string)))
+  (save-match-data
+    (if (string-match w3m-entity-regexp str)
+	(w3m-entity-value
+	 (match-string 1 str)
+	 (match-beginning 2))
+      str)))
 
 (defun w3m-encode-specials-string (str)
   "Encode special characters in the string STR."
