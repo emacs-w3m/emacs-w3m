@@ -150,12 +150,13 @@
       (with-temp-buffer
 	(call-process command nil t nil "-version")
 	(goto-char (point-min))
-	(cond
-	 ((re-search-forward "version w3m/\\([0-9]+\\.\\)+[0-9]+\\+mee" nil t)
-	  'w3mmee)
-	 ((re-search-forward "version w3m/\\([0-9]+\\.\\)+[0-9]+\\-m17n" nil t)
-	  'w3m-m17n)
-	 (t 'w3m)))))
+	(when (re-search-forward "version w3m/0\\.\\(2\\.1\\|\
+\\(2\\.[2-9]\\(\\.[0-9]\\)*\\|3\\(\\.[0-9\\]\\)*\\)\\)\\(-inu\
+\\|\\(-m17n\\|\\(\\+mee\\)\\)\\)?" nil t)
+	  (cond
+	   ((match-beginning 7) 'w3mmee)
+	   ((match-beginning 6) 'w3m-m17n)
+	   ((or (match-beginning 5) (match-beginning 2)) 'w3m))))))
   "*Type of w3m."
   :group 'w3m
   :type '(choice (const :tag "w3m" 'w3m)
@@ -573,7 +574,9 @@ to input URL when URL-like string is not detected under the cursor."
       (deflate
 	(, (let ((file
 		  (expand-file-name
-		   (concat "../lib/" w3m-command "/"
+		   (concat "../lib/"
+			   (file-name-nondirectory w3m-command)
+			   "/"
 			   (if (memq system-type '(windows-nt OS/2 emx))
 			       "inflate.exe"
 			     "inflate"))
@@ -761,7 +764,9 @@ If nil, use an internal CGI of w3m."
   :type (` (choice (const :tag "w3m internal CGI" nil)
 		   (file :tag "path of 'dirlist.cgi'"
 			 (, (expand-file-name
-			     (concat "../lib/" w3m-command "/dirlist.cgi")
+			     (concat "../lib/"
+				     (file-name-nondirectory w3m-command)
+				     "/dirlist.cgi")
 			     (file-name-directory
 			      (w3m-which-command w3m-command))))))))
 

@@ -1,3 +1,10 @@
+2001-12-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-type): Changed condition to decide type.
+	(w3m-decoder-alist): Call `file-name-nondirectory' before
+	`w3m-command' is refered.
+	(w3m-dirlist-cgi-program): Ditto.
+
 2001-12-21  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-type): Changed condition to decide type.
