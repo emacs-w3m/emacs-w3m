@@ -51,9 +51,9 @@
 	       (cons (string-to-number (match-string 1 value))
 		     (string-to-number (match-string 2 value))))))
   :set (lambda (symbol value)
-	 (custom-set-default symbol
-			     (if (consp value)
-				 (format "%dx%d" (car value) (cdr value)))))
+	 (set-default symbol
+		      (if (consp value)
+			  (format "%dx%d" (car value) (cdr value)))))
   :type '(radio (const :tag "Not specified" nil)
 		(cons :format "%v"
 		      (integer :format "Width: %v " :size 0 :value 16)

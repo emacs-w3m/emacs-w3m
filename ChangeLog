@@ -1,5 +1,9 @@
 2003-09-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-key-binding): Don't use `custom-set-default'.
+	(w3m-use-favicon): Ditto.
+	* w3m-favicon.el (w3m-favicon-size): Ditto.
+
 	* icons/*.xpm: Remove text.
 
 2003-09-17  Yuuichi Teranishi  <teranisi@gohome.org>

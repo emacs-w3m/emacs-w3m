@@ -486,10 +486,8 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   ;; should never use CL macros like `caaaar', `when', `unless' ...
   :set (lambda (symbol value)
 	 (prog1
-	     (if (fboundp 'custom-set-default)
-		 (custom-set-default symbol value)
-	       ;; XEmacs 21.4.8 or Emacs 19 don't have `custom-set-default'.
-	       (set-default symbol value))
+	     ;; XEmacs 21.4.8 or Emacs 19 don't have `custom-set-default'.
+	     (set-default symbol value)
 	   (if (or noninteractive
 		   ;; Loading w3m.elc is just in progress...
 		   (not (featurep 'w3m)))
@@ -1084,14 +1082,10 @@ use of ImageMagick absolutely by setting this option to nil."
 	      (featurep 'w3m-image)
 	      (w3m-favicon-usable-p)))
   :set (lambda (symbol value)
-	 (funcall (if (fboundp 'custom-set-default)
-		      'custom-set-default
-		    'set-default)
-		  symbol
-		  (and (not noninteractive)
-		       value
-		       (featurep 'w3m-image)
-		       (w3m-favicon-usable-p))))
+	 (set-default symbol (and (not noninteractive)
+				  value
+				  (featurep 'w3m-image)
+				  (w3m-favicon-usable-p))))
   :group 'w3m
   :type 'boolean)
 
