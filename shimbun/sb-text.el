@@ -93,17 +93,14 @@
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-text)
 					   header)
-  (let ((case-fold-search t) (html t) (start))
-    (when (and (re-search-forward (shimbun-content-start-internal shimbun)
-				  nil t)
-	       (setq start (point))
-	       (re-search-forward (shimbun-content-end-internal shimbun)
-				  nil t))
-      (delete-region (match-beginning 0) (point-max))
-      (delete-region (point-min) start)
-      (shimbun-shallow-rendering)
-      (setq html nil))
-    (shimbun-header-insert-and-buffer-string shimbun header nil html)))
+  (shimbun-header-insert-and-buffer-string
+   shimbun header nil
+   ;; When cleaning has been succeeded, this article is treated as a
+   ;; text/plain message.  Otherwise, it is treated as a text/html
+   ;; message.
+   (if (shimbun-clear-contents shimbun header)
+       (shimbun-shallow-rendering)
+     t)))
 
 (provide 'sb-text)
 

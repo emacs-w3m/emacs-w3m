@@ -140,22 +140,11 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
       (skip-chars-forward " \t\r\f\n")
       (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
 	(delete-region (point-min) (line-end-position))))
-    (goto-char (point-min))
-    (while (and (search-forward "<!-- AD START -->" nil t)
-		(setq start (match-beginning 0))
-		(search-forward "<!-- AD END -->" nil t))
-      (delete-region start (point)))
-    (while (re-search-forward
-	    "<IMG [^>]*SRC=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
-a1100\\.g\\.akamai\\.net\\)/[^>]+>"
-	    nil t)
-      (delete-region (match-beginning 0) (match-end 0)))
-    (goto-char (point-min))
-    (while (re-search-forward
-	    "<A [^>]*HREF=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
-a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
-	    nil t)
-      (delete-region (match-beginning 0) (match-end 0)))))
+    (shimbun-remove-tags "<!-- AD START -->" "<!-- AD END -->")
+    (shimbun-remove-tags "<IMG [^>]*SRC=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
+a1100\\.g\\.akamai\\.net\\)/[^>]+>")
+    (shimbun-remove-tags "<A [^>]*HREF=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
+a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")))
 
 (defun shimbun-itmedia-retrieve-next-pages (shimbun base-cid url
 						    &optional images)

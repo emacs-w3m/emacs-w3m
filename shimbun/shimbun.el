@@ -552,25 +552,6 @@ content-type if `shimbun-encapsulate-images' is non-nil."
       (insert "MIME-Version: 1.0\n")
       (shimbun-entity-insert body))))
 
-(defsubst shimbun-make-html-contents (shimbun header)
-  (let ((case-fold-search t)
-	start)
-    (when (and (re-search-forward (shimbun-content-start-internal shimbun)
-				  nil t)
-	       (setq start (point))
-	       (re-search-forward (shimbun-content-end-internal shimbun)
-				  nil t))
-      (delete-region (match-beginning 0) (point-max))
-      (delete-region (point-min) start)
-      (goto-char (point-min))
-      (insert "<html>\n<head>\n<base href=\""
-	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
-      (goto-char (point-max))
-      (insert (shimbun-footer shimbun header t)
-	      "\n</body>\n</html>\n"))
-    (shimbun-make-mime-article shimbun header)
-    (buffer-string)))
-
 (defcustom shimbun-x-face-database-function
   (if (boundp 'shimbun-use-bbdb-for-x-face)
       (cdr (assq (symbol-value 'shimbun-use-bbdb-for-x-face)
@@ -837,8 +818,36 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
   "Return a content string of SHIMBUN article using current buffer content.
 HEADER is a header structure obtained via `shimbun-headers'.")
 
+(defsubst shimbun-make-html-contents (shimbun header)
+  (when (shimbun-clear-contents shimbun header)
+    (goto-char (point-min))
+    (insert "<html>\n<head>\n<base href=\""
+	    (shimbun-header-xref header)
+	    "\">\n</head>\n<body>\n")
+    (goto-char (point-max))
+    (insert (shimbun-footer shimbun header t)
+	    "\n</body>\n</html>\n"))
+  (shimbun-make-mime-article shimbun header)
+  (buffer-string))
+
 (luna-define-method shimbun-make-contents ((shimbun shimbun) header)
   (shimbun-make-html-contents shimbun header))
+
+(luna-define-generic shimbun-clear-contents (shimbun header)
+  "Clear a content in this current buffer for an article of SHIMBUN.
+Return nil, unless a content is cleared successfully.")
+
+(luna-define-method shimbun-clear-contents ((shimbun shimbun) header)
+  (let ((case-fold-search t)
+	start)
+    (when (and (re-search-forward (shimbun-content-start-internal shimbun)
+				  nil t)
+	       (setq start (point))
+	       (re-search-forward (shimbun-content-end-internal shimbun)
+				  nil t))
+      (delete-region (match-beginning 0) (point-max))
+      (delete-region (point-min) start)
+      t)))
 
 (luna-define-generic shimbun-footer (shimbun header &optional html)
   "Make a footer string for SHIMBUN and HEADER.")
@@ -891,8 +900,7 @@ integer n:    Retrieve n pages of header indices.")
     "Return point at the beginning of the line."
     (let ((p (point)))
       (beginning-of-line)
-      (prog1
-	  (point)
+      (prog1 (point)
 	(goto-char p))))))
 
 (static-cond
@@ -905,8 +913,7 @@ integer n:    Retrieve n pages of header indices.")
     "Return point at the end of the line."
     (let ((p (point)))
       (end-of-line)
-      (prog1
-	  (point)
+      (prog1 (point)
 	(goto-char p))))))
 
 (defun shimbun-header-insert-and-buffer-string (shimbun header
@@ -995,6 +1002,19 @@ is enclosed by at least one regexp grouping construct."
     (insert string)
     (shimbun-decode-entities)
     (buffer-string)))
+
+(defun shimbun-remove-tags (begin-tag &optional end-tag)
+  "Remove all occurrences of regions surrounded by BEGIN-TAG and END-TAG."
+  (let ((case-fold-search t))
+    (goto-char (point-min))
+    (if end-tag
+	(let (pos)
+	  (while (and (re-search-forward begin-tag nil t)
+		      (setq pos (match-beginning 0))
+		      (re-search-forward end-tag nil t))
+	    (delete-region pos (point))))
+      (while (re-search-forward begin-tag nil t)
+	(delete-region (match-beginning 0) (match-end 0))))))
 
 (defun shimbun-remove-markup ()
   "Remove all HTML markup, leaving just plain text."

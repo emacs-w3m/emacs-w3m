@@ -72,18 +72,22 @@
 	      headers)))
     headers))
 
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-f1fan)
+						    header)
+  (when (luna-call-next-method)
+    (goto-char (point-min))
+    (skip-chars-forward "\r\n")
+    (delete-region (point-min) (point))
+    t))
+
 (luna-define-method shimbun-make-contents ((shimbun shimbun-f1fan)
 					   header)
-  (let ((case-fold-search t) (html t) (start))
-    (when (and (re-search-forward (shimbun-content-start-internal shimbun)
-				  nil t)
-	       (setq start (point))
-	       (re-search-forward (shimbun-content-end-internal shimbun)
-				  nil t))
-      (delete-region (match-beginning 0) (point-max))
-      (delete-region (point-min) start)
-      (setq html nil))
-    (shimbun-header-insert-and-buffer-string shimbun header nil html)))
+  (shimbun-header-insert-and-buffer-string
+   shimbun header nil
+   ;; When cleaning has been succeeded, this article is treated as a
+   ;; text/plain message.  Otherwise, it is treated as a text/html
+   ;; message.
+   (not (shimbun-clear-contents shimbun header))))
 
 (provide 'sb-f1fan)
 
