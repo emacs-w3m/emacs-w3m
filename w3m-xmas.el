@@ -66,7 +66,12 @@
 
 ;;; Handle coding system:
 (defalias 'w3m-find-coding-system 'find-coding-system)
-(defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
+(defalias 'w3m-make-ccl-coding-system (if (featurep 'mule)
+					  'make-ccl-coding-system
+					'ignore))
+(unless (featurep 'mule)
+  (defalias 'coding-system-category 'ignore)
+  (defmacro define-ccl-program (&rest args)))
 
 (defun w3m-detect-coding-region (start end &optional priority-list)
   "Detect coding system of the text in the region between START and END.

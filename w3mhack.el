@@ -77,6 +77,7 @@
     (unless (locate-library "mew")
       (push "mew-w3m.el" ignores))
     (unless (and (boundp 'emacs-major-version)
+		 (featurep 'mule)
 		 (if (featurep 'xemacs)
 		     ;; Mule-UCS does not support XEmacs versions prior
 		     ;; to 21.2.37.
@@ -87,7 +88,8 @@
 		   (>= emacs-major-version 20))
 		 (locate-library "un-define"))
       (push "w3m-ucs.el" ignores))
-    (if (locate-library "mime-def")
+    (if (and (featurep 'mule)
+	     (locate-library "mime-def"))
 	(progn
 	  ;; Add shimbun modules.
 	  (dolist (file (directory-files (expand-file-name shimbun-dir)
@@ -98,6 +100,8 @@
 	    (push (concat shimbun-dir "mew-shimbun.el") ignores)))
       (push "mime-w3m.el" ignores)
       (push "octet.el" ignores))
+    (unless (featurep 'mule)
+      (push "w3m-weather.el" ignores))
     ;; To byte-compile w3m-util.el and a version specific module first.
     (princ "w3m-util.elc ")
     (setq modules (delete "w3m-util.el" modules))

@@ -87,7 +87,9 @@
 
 (require 'w3m-hist)
 (require 'timezone)
-(require 'ccl)
+(eval-and-compile
+  (when (featurep 'mule)
+    (require 'ccl)))
 
 ;; Add-on programs:
 (eval-and-compile
@@ -234,33 +236,37 @@ width using expression (+ (frame-width) VALUE)."
   :type 'boolean)
 
 (defvar w3m-accept-japanese-characters
-  (or (memq w3m-type '(w3mmee w3m-m17n))
-      ;; Detect that the internal character set of `w3m-command' is EUC-JP.
-      (let ((str
-	     (eval-when-compile
-	       (format
-		(concat
-		 "<!doctype html public \"-//W3C//DTD HTML 3.2//EN\">"
-		 "<html><head><meta http-equiv=\"Content-Type\" "
-		 "content=\"text/html; charset=ISO-2022-JP\">"
-		 "</head><body>%s</body>\n")
-		(string 27 36 66 52 65 59 122 27 40 66)))))
-	(with-temp-buffer
-	  (set-buffer-multibyte nil)
-	  (insert str)
-	  (let ((coding-system-for-write 'binary)
-		(coding-system-for-read 'binary)
-		(default-process-coding-system (cons 'binary 'binary)))
-	    (call-process-region (point-min) (point-max) w3m-command
-				 t t nil "-T" "text/html" "-halfdump")
-	    (goto-char (point-min))
-	    (skip-chars-forward "a-zA-Z<>/_ \n")
-	    (string= (buffer-substring (point) (min (+ 4 (point)) (point-max)))
-		     (string ?\264 ?\301 ?\273 ?\372))))))
+  (and (featurep 'mule)
+       (or (memq w3m-type '(w3mmee w3m-m17n))
+	   ;; Detect that the internal character set of `w3m-command'
+	   ;; is EUC-JP.
+	   (let ((str
+		  (eval-when-compile
+		    (format
+		     (concat
+		      "<!doctype html public \"-//W3C//DTD HTML 3.2//EN\">"
+		      "<html><head><meta http-equiv=\"Content-Type\" "
+		      "content=\"text/html; charset=ISO-2022-JP\">"
+		      "</head><body>%s</body>\n")
+		     (string 27 36 66 52 65 59 122 27 40 66)))))
+	     (with-temp-buffer
+	       (set-buffer-multibyte nil)
+	       (insert str)
+	       (let ((coding-system-for-write 'binary)
+		     (coding-system-for-read 'binary)
+		     (default-process-coding-system (cons 'binary 'binary)))
+		 (call-process-region (point-min) (point-max) w3m-command
+				      t t nil "-T" "text/html" "-halfdump")
+		 (goto-char (point-min))
+		 (skip-chars-forward "a-zA-Z<>/_ \n")
+		 (string= (buffer-substring (point) (min (+ 4 (point))
+							 (point-max)))
+			  (string ?\264 ?\301 ?\273 ?\372)))))))
   "Non-nil means that `w3m-command' accepts Japanese characters.")
 
-(defcustom w3m-coding-system
-  'iso-2022-7bit
+(defcustom w3m-coding-system (if (featurep 'mule)
+				 'iso-2022-7bit
+			       'iso-8859-1)
   "*Basic coding system for `w3m'."
   :group 'w3m
   :type 'coding-system)
@@ -286,6 +292,7 @@ width using expression (+ (frame-width) VALUE)."
 
 (defcustom w3m-output-coding-system
   (cond
+   ((not (featurep 'mule)) 'iso-8859-1)
    ((eq w3m-type 'w3mmee) 'ctext)
    ((eq w3m-type 'w3m-m17n) 'iso-2022-7bit-ss2)
    (w3m-accept-japanese-characters 'w3m-euc-japan)
@@ -294,8 +301,9 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'coding-system)
 
-(defcustom w3m-file-coding-system
-  'iso-2022-7bit
+(defcustom w3m-file-coding-system (if (featurep 'mule)
+				      'iso-2022-7bit
+				    'iso-8859-1)
   "*Coding system for writing configuration files in `w3m'.
 The value will be referred by the function `w3m-save-list'."
   :group 'w3m
@@ -1077,30 +1085,32 @@ in the optimized interlaced endlessly animated gif format and base64.")
 
 (defconst w3m-toolbar
   (if (equal "Japanese" w3m-language)
-      '([w3m-toolbar-back-icon w3m-view-previous-page
-			       (w3m-history-previous-link-available-p)
-			       "前のページに戻る"]
-	[w3m-toolbar-parent-icon w3m-view-parent-page
-				 (w3m-parent-page-available-p)
-				 "上のディレクトリへ移動する"]
-	[w3m-toolbar-forward-icon w3m-view-next-page
-				  (w3m-history-next-link-available-p)
-				  "次のページに進む"]
-	[w3m-toolbar-reload-icon w3m-reload-this-page
-				 w3m-current-url
-				 "サーバからページをもう一度読み込む"]
-	[w3m-toolbar-open-icon w3m-goto-url t "URL を入力してページを開く"]
-	[w3m-toolbar-home-icon w3m-gohome w3m-home-page
-			       "ホームページへジャンプ"]
-	[w3m-toolbar-search-icon w3m-search t "インターネット上を検索"]
-	[w3m-toolbar-image-icon w3m-toggle-inline-images t
-				"画像の表示をトグルする"]
-	[w3m-toolbar-copy-icon w3m-copy-buffer t
-			       "このセッションのコピーを作る"]
-	[w3m-toolbar-weather-icon w3m-weather t "天気予報を見る"]
-	[w3m-toolbar-antenna-icon w3m-antenna t "アンテナで受信する"]
-	[w3m-toolbar-history-icon w3m-history t "ヒストリー"]
-	[w3m-toolbar-db-history-icon w3m-db-history t "ＤＢヒストリー"])
+      (let ((a (decode-coding-string "\e$B%\"\e(B" 'iso-2022-jp)));;ア
+	`([w3m-toolbar-back-icon w3m-view-previous-page
+				 (w3m-history-previous-link-available-p)
+				 "前のページに戻る"]
+	  [w3m-toolbar-parent-icon w3m-view-parent-page
+				   (w3m-parent-page-available-p)
+				   "上のディレクトリへ移動する"]
+	  [w3m-toolbar-forward-icon w3m-view-next-page
+				    (w3m-history-next-link-available-p)
+				    "次のページに進む"]
+	  [w3m-toolbar-reload-icon w3m-reload-this-page
+				   w3m-current-url
+				   "サーバからページをもう一度読み込む"]
+	  [w3m-toolbar-open-icon w3m-goto-url t "URL を入力してページを開く"]
+	  [w3m-toolbar-home-icon w3m-gohome w3m-home-page
+				 "ホームページへジャンプ"]
+	  [w3m-toolbar-search-icon w3m-search t "インターネット上を検索"]
+	  [w3m-toolbar-image-icon w3m-toggle-inline-images t
+				  "画像の表示をトグルする"]
+	  [w3m-toolbar-copy-icon w3m-copy-buffer t
+				 "このセッションのコピーを作る"]
+	  [w3m-toolbar-weather-icon w3m-weather t "天気予報を見る"]
+	  [w3m-toolbar-antenna-icon w3m-antenna t
+				    ,(concat a "ンテナで受信する")]
+	  [w3m-toolbar-history-icon w3m-history t "ヒストリー"]
+	  [w3m-toolbar-db-history-icon w3m-db-history t "ＤＢヒストリー"]))
     '([w3m-toolbar-back-icon w3m-view-previous-page
 			     (w3m-history-previous-link-available-p)
 			     "Back to Previous Page"]

@@ -1,3 +1,21 @@
+2002-02-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-make-ccl-coding-system): Alias to `ignore' if
+	no-MULE (the feature `mule' is not provided).
+	(coding-system-category): Ditto.
+	(define-ccl-program): Define it as an empty macro.
+
+	* w3m.el (TopLevel): Don't require `ccl' if no-MULE.
+	(w3m-accept-japanese-characters): Default to nil if no-MULE.
+	(w3m-coding-system): Default to `iso-8859-1' if no-MULE.
+	(w3m-output-coding-system): Ditto.
+	(w3m-file-coding-system): Ditto.
+	(w3m-toolbar): Don't express some Japaneses chars directly.
+
+	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
+	w3m-ucs.el, shimbun modules, mime-w3m.el, octet.el and
+	w3m-weather.el if no-MULE.
+
 2002-02-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-meta-content-type-charset-regexp)
