@@ -40,9 +40,6 @@ $Date$
    --> file-name- 系の関数を url 文字列の処理に使うのは問題あり．
        [emacs-w3m:04799]
 
-   --> w3m-correct-charset-alist の整理
-       [emacs-w3m:06109]
-
    --> 変数/関数の docstring と comment の英語の整備．-- ky
 
    --> frame 対応
@@ -68,6 +65,8 @@ $Date$
     [emacs-w3m:06279]
 
 (4) w3m-antenna-sites の customize がうまく動かない．[emacs-w3m:06213]
+
+(5) quote された refresh を処理できない．[emacs-w3m:06562]
 
 
 
