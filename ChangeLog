@@ -1,3 +1,8 @@
+2004-04-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-link-numbering.el (w3m-link-numbering): Don't bother to
+	delete overlays.  Suggested by TSUCHIYA-san.
+
 2004-04-14  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-link-numbering.el (w3m-link-numbering-face): New face.

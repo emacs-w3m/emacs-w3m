@@ -44,10 +44,10 @@
   :group 'w3m
   :type 'hook)
 
-(defface w3m-link-numbering-face 
+(defface w3m-link-numbering-face
   '((((class color) (background light)) (:foreground "gray60"))
     (((class color) (background dark)) (:foreground "gray50")))
-  "Face of link number."
+  "Face used to highlight link numbers."
   :group 'w3m-face)
 
 (defvar w3m-link-numbering-mode-map
@@ -79,9 +79,6 @@
 
 (defun w3m-link-numbering (&rest args)
   "Make overlays that display link numbers."
-  (dolist (overlay (overlays-in (point-min) (point-max)))
-    (when (overlay-get overlay 'w3m-link-numbering-overlay)
-      (delete-overlay overlay)))
   (when w3m-link-numbering-mode
     (save-excursion
       (goto-char (point-min))
@@ -92,7 +89,9 @@
 		  (num (format "[%d]" (incf i))))
 	      (when (featurep 'w3m-e20)
 		(overlay-put overlay 'face (get-text-property (point) 'face)))
-	      (put-text-property 0 (length num) 'face 'w3m-link-numbering-face num)
+	      (put-text-property 0 (length num)
+				 'face 'w3m-link-numbering-face
+				 num)
 	      (overlay-put overlay 'w3m-link-numbering-overlay i)
 	      (overlay-put overlay 'before-string num)
 	      (overlay-put overlay 'evaporate t))))))))
