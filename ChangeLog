@@ -1,3 +1,7 @@
+2001-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m): Use existing frame or window.
+
 2001-05-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-dtree.el (w3m-dtree-create): Fix HTML bug.

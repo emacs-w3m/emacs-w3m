@@ -2862,9 +2862,21 @@ If input is nil, use default coding-system on w3m."
    (list (or (w3m-alive-p)
 	     (w3m-input-url))))
   (if (bufferp url)
-      (progn
-	(set-buffer url)
-	(switch-to-buffer (current-buffer)))
+      (let* ((window (get-buffer-window url t))
+	     (frame (when window
+		      (window-frame window))))
+	(cond (frame
+	       (raise-frame frame)
+	       (select-frame frame)
+	       ;; `focus-frame' might not work on some environments.
+	       (if (fboundp 'x-focus-frame)
+		   (eval (list 'x-focus-frame frame))
+		 (focus-frame frame))
+	       (select-window window))
+	      (window
+	       (select-window window))
+	      (t
+	       (switch-to-buffer url))))
     (w3m-goto-url url)))
 
 (eval-when-compile
