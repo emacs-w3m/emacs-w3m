@@ -59,6 +59,7 @@
 	 (append minibuffer-setup-hook '(beginning-of-line)))
 	(count 1)
 	(form "%s [%s]")
+	(completion-ignore-case t)
 	comp hist histlen default buf)
     (dolist (item items)
       (when (nth 2 item)	;; current-buffer

@@ -4995,6 +4995,7 @@ frame or a window in the frame is succeeded."
       (set (make-local-variable 'auto-show-mode) nil))
     (when (boundp 'hscroll-mode)
       (set (make-local-variable 'hscroll-mode) nil)))
+  (make-local-variable 'list-buffers-directory)
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-hook))
@@ -5497,6 +5498,7 @@ field for this request."
 	      (setq buffer-read-only t)
 	      (set-buffer-modified-p nil)))
 	    (w3m-arrived-add orig w3m-current-title nil nil charset ct)
+	    (setq list-buffers-directory w3m-current-title)
 	    ;; must be `w3m-current-url'
 	    (setq default-directory (w3m-current-directory w3m-current-url))
 	    (w3m-update-toolbar)

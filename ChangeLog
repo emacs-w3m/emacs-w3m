@@ -1,3 +1,12 @@
+2002-07-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-mode): Make `list-buffers-directory' to buffer
+	local variable.
+	(w3m-goto-url): Set title of the URL to `list-buffers-directory'.
+
+	* w3m-tabmenu.el (w3m-switch-buffer): Bind
+	`completion-ignore-case' to `t'.
+
 2002-07-08  OKAZAKI Tetsurou  <okazaki@be.to>
 
 	* configure.in: Use `AC_PATH_EMACS' instead of `AC_CHECK_EMACS'.
