@@ -653,9 +653,7 @@ to remove some obsolete variables in the first argument VARLIST."
 		(error nil))
 	;; This system doesn't allow hard links.
 	(setq make-hardlink 'copy-file))
-      (dolist (el (nconc (directory-files default-directory t "\\.elc\\'")
-			 (directory-files "shimbun" t "\\.elc\\'")))
-	(setq el (substring el 0 -1))
+      (dolist (el (cons w3mhack-load-file (w3mhack-module-list)))
 	(funcall make-hardlink
 		 el (expand-file-name (file-name-nondirectory el) temp-dir)))
       (with-temp-buffer
@@ -1167,16 +1165,16 @@ NOTE: This function must be called from the top directory."
 
 (defun w3mhack-generate-xemacs-load-file (file)
   (with-temp-buffer
-    (insert-file-contents w3mhack-load-file)
-    (goto-char (point-min))
-    (search-forward (format "(provide '%s)"
-			    (file-name-sans-extension w3mhack-load-file)))
-    (replace-match "\
+    (insert "\
+;;; DO NOT MODIFY THIS FILE
 \(if (featurep 'w3m-autoloads) (error \"Already loaded\"))
-\(provide 'w3m-autoloads)")
-    (goto-char (point-min))
-    (while (search-forward w3mhack-load-file nil t)
-      (replace-match (file-name-nondirectory file)))
+\(or (featurep 'w3m-load)
+    (load (expand-file-name \"" w3mhack-load-file "\"
+			    (if load-file-name
+				(file-name-directory load-file-name)))
+	  nil t t))
+\(provide 'w3m-autoloads)
+")
     (write-region (point-min) (point-max) file)))
 
 (defun w3mhack-locate-library ()

@@ -1,3 +1,9 @@
+2004-04-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* Makefile.in (install-package): Install w3m-load.el.
+
+	* w3mhack.el (w3mhack-generate-xemacs-load-file): Simplified.
+
 2004-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-generate-xemacs-load-file): Replace
