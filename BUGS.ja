@@ -2,6 +2,14 @@ $Date$
 
 ■ TODO
 
+   --> https なページの閲覧に関わる諸問題の解明と対策。
+       [emacs-w3m:04901, 04857]
+
+   --> file-name- 系の関数を url 文字列の処理に使うのは問題あり。
+       [emacs-w3m:04799]
+
+   --> 変数/関数の docstring と comment の英語の整備。-- ky
+
    --> configure 時に --with-icondir=... で指定した値を自動的に
        w3m-icon-directory の初期値として反映してほしい．[emacs-w3m:03912]
 
