@@ -1,3 +1,10 @@
+2003-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-savannah.el (shimbun-savannah-group-path-alist): Add
+	tramp-devel.
+	(shimbun-savannah-get-headers): Attempt to retrieve the default
+	index page (w/o "index.html") first.
+
 2003-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bug.el (report-emacs-w3m-bug): Make it possible to send a
