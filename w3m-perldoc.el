@@ -62,6 +62,22 @@
 	  (delq nil (delete "" (mapcar (lambda (x) (if (stringp x) x))
 				       value))))))
 
+(defcustom w3m-perldoc-input-coding-system
+  (if (string= "Japanese" w3m-language)
+      'euc-japan
+    (if (w3m-find-coding-system 'utf-8)
+	'utf-8
+      'iso-latin-1))
+  "*Coding system used when writing to `w3m-perldoc-command'."
+  :group 'w3m-perldoc
+  :type '(coding-system :size 0))
+
+(defcustom w3m-perldoc-output-coding-system
+  'undecided
+  "*Coding system used when reading from `w3m-perldoc-command'."
+  :group 'w3m-perldoc
+  :type '(coding-system :size 0))
+
 ;;;###autoload
 (defun w3m-about-perldoc (url &optional no-decode no-cache &rest args)
   (when (string-match "\\`about://perldoc/" url)
@@ -72,9 +88,11 @@
 	  (process-environment (copy-sequence process-environment)))
       ;; To specify the place in which pod2html generates its cache files.
       (setenv "HOME" (expand-file-name w3m-profile-directory))
-      (and (zerop (call-process w3m-perldoc-command
-				nil t nil "-u" docname))
-	   (progn
+      (and (let ((coding-system-for-read w3m-perldoc-output-coding-system))
+	     (zerop (call-process w3m-perldoc-command
+				  nil t nil "-u" docname)))
+	   (let ((coding-system-for-write w3m-perldoc-input-coding-system)
+		 (coding-system-for-read w3m-perldoc-input-coding-system))
 	     (w3m-static-if (featurep 'xemacs)
 		 (goto-char (point-max)))
 	     (zerop (apply (function call-process-region)

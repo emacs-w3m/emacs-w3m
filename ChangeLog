@@ -1,3 +1,10 @@
+2004-10-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-perldoc.el (w3m-perldoc-input-coding-system)
+	(w3m-perldoc-output-coding-system): New options.
+	(w3m-about-perldoc): Use the above options, to display both
+	modules encoded in EUC-JP and ones encoded in UTF-8 correctly.
+
 2004-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-tab-line): Replace "%" with "%%" in
