@@ -2,7 +2,7 @@
 
 	* w3m-bitmap.el (w3m-bitmap-image-insert): Replace `insert' with
 	`insert-before-markers'.
-	(w3m-bitmap-image-delete-internal): Delete trailing newline.
+	(w3m-bitmap-image-delete-internal): Delete trailing newlines.
 	(w3m-insert-image): Don't check for the existence of an image.
 
 	* w3m.el (w3m-history-current-url-face): Provide `font' temporally
