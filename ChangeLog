@@ -1,3 +1,8 @@
+2002-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-search.el (w3m-search-engine-alist): Specify coding-system
+	for the waei and kokugo entries.  Suggested by Hideyuki SHIRAI.
+
 2002-11-27  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
 
 	* doc/emacs-w3m-en.texi: New files.
