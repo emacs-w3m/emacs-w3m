@@ -1312,6 +1312,7 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 	  point end url image)
       (if (or force (eq w3m-display-inline-image-status 'off))
 	  (save-excursion
+	    (message "Showing images...")
 	    (run-hooks 'w3m-show-inline-images-before-hook)
 	    (goto-char (point-min))
 	    (while (if (get-text-property (point) 'w3m-image)
@@ -1345,6 +1346,7 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 		    ;; Redisplay
 		    (and w3m-force-redisplay (sit-for 0))))))
 	    (run-hooks 'w3m-show-inline-images-after-hook)
+	    (message "Showing images...done")
 	    (setq w3m-display-inline-image-status 'on))
 	(save-excursion
 	  (run-hooks 'w3m-remove-inline-images-before-hook)
