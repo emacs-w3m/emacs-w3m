@@ -4537,35 +4537,46 @@ described in Section 5.2 of RFC 2396.")
 	      url)))))
 
 (defsubst w3m-view-this-url-1 (url reload new-session)
-  (lexical-let (pos)
-    (when new-session
-      (setq pos (point-marker))
-      (let ((buffer (w3m-copy-buffer
-		     nil nil nil
-		     ;; If a new url has the #name portion, we simply copy
-		     ;; the buffer's contents to the new settion, otherwise
-		     ;; creating an empty buffer.
-		     (not
-		      (and
-		       (string-match w3m-url-components-regexp url)
-		       (match-beginning 8)
-		       (string-equal w3m-current-url
-				     (substring url
-						0 (match-beginning 8))))))))
-	(if w3m-view-this-url-new-session-in-background
-	    (set-buffer buffer)
-	  (switch-to-buffer buffer))))
+  (lexical-let (pos buffer newbuffer wconfig)
+    (if new-session
+	(progn
+	  (setq pos (point-marker)
+		buffer (w3m-copy-buffer
+			nil nil nil
+			;; If a new url has the #name portion, we simply copy
+			;; the buffer's contents to the new settion, otherwise
+			;; creating an empty buffer.
+			(not
+			 (and
+			  (string-match w3m-url-components-regexp url)
+			  (match-beginning 8)
+			  (string-equal w3m-current-url
+					(substring url
+						   0 (match-beginning 8)))))))
+	  (if w3m-view-this-url-new-session-in-background
+	      (set-buffer buffer)
+	    (switch-to-buffer buffer)))
+      (setq buffer (current-buffer)))
     (let (handler)
       (w3m-process-do
 	  (success
-	   (if (let ((case-fold-search t))
-		 (string-match "\\`mailto:" url))
-	       ;; Don't save a window configuration to popup a mail buffer.
-	       (w3m-goto-url url reload nil nil w3m-current-url handler)
-	     (save-window-excursion
-	       (w3m-goto-url url reload nil nil w3m-current-url handler))))
-	;; FIXME: 本当は w3m-goto-url() が適当な返り値を返すように
-	;; 変更して、その値を検査するべきだ
+	   (save-window-excursion
+	     (prog1
+		 (w3m-goto-url url reload nil nil w3m-current-url handler)
+	       (setq newbuffer (current-buffer)
+		     wconfig (current-window-configuration)))))
+	(unless (eq buffer newbuffer)
+	  ;; The new buffer visiting the url may not be in the w3m-mode,
+	  ;; so we have to make it visible.
+	  (set-window-configuration wconfig))
+	(when (and pos ;; The new session is created.
+		   (with-current-buffer buffer
+		     (or (not w3m-current-url)
+			 (zerop (buffer-size)))))
+	  ;; Remove useless newly created buffer.
+	  (kill-buffer buffer))
+	;; FIXME: What we should actually do is to modify the `w3m-goto-url'
+	;; function so that it may return a proper value, and checking it.
 	(when (and pos (buffer-name (marker-buffer pos)))
 	  (save-excursion
 	    (set-buffer (marker-buffer pos))
@@ -6100,11 +6111,10 @@ the `w3m-search' function and the variable `w3m-uri-replace-alist'."
 			(erase-buffer)
 			(set-buffer-modified-p nil)
 			(setq w3m-current-url base-url))
-		      (save-excursion
-			(funcall (if (functionp w3m-local-find-file-function)
-				     w3m-local-find-file-function
-				   (eval w3m-local-find-file-function))
-				 file))))))
+		      (funcall (if (functionp w3m-local-find-file-function)
+				   w3m-local-find-file-function
+				 (eval w3m-local-find-file-function))
+			       file)))))
       (error nil)))
    ((w3m-url-valid url)
     (w3m-buffer-setup)			; Setup buffer.
@@ -6295,8 +6305,8 @@ the current session.  Otherwise, the new session will start afresh."
     nil ;; referer
     t)) ;; interactive-p
   (if (eq 'w3m-mode major-mode)
-      (progn
-	(switch-to-buffer (w3m-copy-buffer nil nil interactive-p 'empty))
+      (let ((buffer (w3m-copy-buffer nil nil interactive-p 'empty)))
+	(switch-to-buffer buffer)
 	(w3m-display-progress-message url)
 	;; When new URL has `name' portion, we have to goto the base url
 	;; because generated buffer has no content at this moment.
@@ -6306,7 +6316,12 @@ the current session.  Otherwise, the new session will start afresh."
 			reload charset post-data referer
 			nil interactive-p))
 	(w3m-goto-url url reload charset post-data referer
-		      nil interactive-p))
+		      nil interactive-p)
+	(when (with-current-buffer buffer
+		(or (not w3m-current-url)
+		    (zerop (buffer-size))))
+	  ;; Remove useless newly created buffer.
+	  (kill-buffer buffer)))
     (w3m url t)))
 
 (defun w3m-move-point-for-localcgi (url)

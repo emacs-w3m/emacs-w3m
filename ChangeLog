@@ -1,3 +1,13 @@
+2003-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-view-this-url-1): Fix a window configuration if a
+	new buffer visiting the specified url is not in the `w3m-mode';
+	remove a newly created buffer if it is useless.
+	(w3m-goto-url): Don't use `save-excursion' when performing
+	find-file directly.
+	(w3m-goto-url-new-session): Remove a newly created buffer if it is
+	useless.
+
 2003-08-12  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* Makefile.in (what-where): Add space to avoid error on Solaris.
