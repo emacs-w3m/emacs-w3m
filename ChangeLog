@@ -1,3 +1,8 @@
+2003-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-retrieve-and-render): Use `w3m-message' instead of
+	`message'; don't refer to `w3m-verbose'.
+
 2003-11-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-verbose): Change its default value to nil.
