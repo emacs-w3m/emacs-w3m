@@ -596,6 +596,163 @@ See also the documentation for the option
 @section Let's go netsurfing!
 
 
+@menu
+* Elementary operations::       The first steps of operations
+@end menu
+
+@node Elementary operations
+@subsection The first steps of operations
+@findex w3m
+@findex w3m-browse-url
+@findex w3m-find-file
+@vindex w3m-home-page
+@vindex w3m-quick-start
+@findex w3m-view-this-url
+@findex w3m-goto-url
+@findex w3m-reload-this-page
+
+There are three commands which can invoke emacs-w3m.  When you use one
+of those commands, a web page will be displayed in an emacs-w3m buffer
+which has the name ``*w3m*''.  The major mode for an emacs-w3m buffer
+will be made into @code{w3m-mode}.
+
+This section explains only the most fundamental usage of the commands.
+@xref{Emacs-w3m Functions}, for more information on each command.  And
+see @ref{Customizable Options} for details on user options.
+
+@table @code
+
+@item w3m
+@findex w3m
+@vindex w3m-home-page
+@vindex w3m-quick-start
+@cindex Using emacs-w3m as a batch command
+
+Start emacs-w3m.  At that time, the homepage specified as the option
+@code{w3m-home-page} is displayed.  The default value for
+@code{w3m-home-page} is ``about:''.  Set the option
+@code{w3m-quick-start} to @code{nil} if each time you want to specify
+URL.
+
+You can also use this as an Emacs' batch command.  Here's an example:
+
+@example
+% emacs -f w3m
+@end example
+
+To specify a URL, say like this:
+
+@example
+% emacs -f w3m http://emacs-w3m.namazu.org/
+@end example
+
+@item w3m-find-file
+@findex w3m-find-file
+
+Specify a local file which you want to browse and start emacs-w3m.
+
+@item w3m-browse-url
+@findex w3m-browse-url
+
+Specify a URL which you want to visit and start emacs-w3m.  You will be
+prompted for a URL in the minibuffer.  This command is provided, if
+anything, in order to start emacs-w3m from other application programs.
+
+@end table
+
+Looking around in a web page being displayed in an emacs-w3m buffer
+wouldn't be pains to you making a habitual use of Emacs.  In an
+emacs-w3m buffer, you can use many of the standard command keys, for
+instance, @kbd{C-n}, @kbd{C-v} and @kbd{C-s}, which Emacs has bound.
+
+Use the @key{RET} key for following a link.  You can make emacs-w3m
+display a page which a link points to by typing @key{RET} key after
+moving point to the position of a link.  Links in a web page will be
+displayed with a different color from an ordinary text or underline
+which is specified by the face @code{w3m-anchor-face} (see
+@pxref{Customizable Options}).
+
+@table @key
+
+@item RET @code{(lynx, info)}
+@itemx M-x w3m-view-this-url
+@kindex RET
+@findex w3m-view-this-url
+
+Display a page which a link in the current position points to.
+
+The behavior of this command will be altered variously by a property of
+a link under point or a prefix argument which you may specify.  See
+@ref{Emacs-w3m Functions} for details.
+
+@end table
+
+This section explained to you as mentioned above that you can specify a
+URL when you type the command @kbd{M-x w3m} to display a certain page by
+setting the option @code{w3m-quick-start} to @code{nil}.  In addition,
+in an emacs-w3m buffer, there also be two popular ways to specify a URL
+when displaying a page.
+
+@table @key
+@item RET @code{(lynx, info)}
+@itemx M-x w3m-view-this-url
+@kindex RET
+@findex w3m-view-this-url
+
+In an emacs-w3m buffer, you can specify a URL in the minibuffer and make
+emacs-w3m display the corresponding page by typing the @key{RET} key
+after moving point to a URL which displayed in the @samp{header-line}.
+This feature would make you feel familiarity if you are experienced with
+GUI-based web browsers like Mozilla.  More detailed explanation about
+this command is mentioned in @xref{Emacs-w3m Functions}.
+
+@item g @code{(lynx, info)}
+@itemx M-x w3m-goto-url
+@findex w3m-goto-url
+
+You can specify a URL in the minibuffer and display the corresponding
+page by typing the @key{g} key unrelated to the current position in an
+emacs-w3m buffer.  This feature may impress you familiarity if you are
+using Gnus or Mew.
+
+@item c @code{lynx}
+@itemx M-x w3m-print-this-url
+@kindex c
+@findex w3m-print-this-url
+
+Display a URL of the page being displayed in the echo area and put it
+into @code{kill-ring} (that is, you can yank it in the other place
+later).
+
+@item u @code{lynx}
+@itemx y @code{info}
+@itemx M-x w3m-print-this-url
+@kindex u
+@kindex y
+@findex w3m-print-this-url
+
+Display a URL under point in the echo area and put it into
+@code{kill-ring} (that is, you can yank it in the other place later).
+
+@end table
+
+If the page which you are reading is the news of the day or someone's
+diary, it may have been updated with contents new now.  You can fetch
+the newest contents of the same page by using the following command.
+Even if the displayed page seems to have been broken, you may be able to
+get the right display with this command.
+
+@table @key
+
+@item R @code{(lynx, info)}
+@itemx M-x w3m-reload-this-page
+@findex w3m-reload-this-page
+
+Reload the page which is currently displayed.
+
+@end table
+
+
 @node Inline Images
 @section Toggle displaying inline images
 
