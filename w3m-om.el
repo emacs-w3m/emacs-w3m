@@ -38,6 +38,7 @@
 (require 'poem)
 (require 'pcustom)
 (require 'pccl)
+(require 'w3m-ccl)
 
 (eval-when-compile
   (unless (fboundp 'custom-declare-variable)

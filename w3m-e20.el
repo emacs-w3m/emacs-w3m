@@ -37,6 +37,7 @@
 ;;; Code:
 
 (require 'w3m-fsf)
+(require 'w3m-ccl)
 
 (eval-and-compile
   (if (locate-library "bitmap")

@@ -38,6 +38,9 @@
 (require 'w3m-util)
 (require 'w3m-proc)
 (require 'w3m-image)
+(eval-and-compile
+  (when (featurep 'mule)
+    (require 'w3m-ccl)))
 
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.

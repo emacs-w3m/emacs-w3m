@@ -1,3 +1,31 @@
+2003-07-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-retrieve-and-render): Check current content charset
+	before `w3m-create-page' is called.
+
+2003-07-17  ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
+	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (toplevel): Do not require `ccl'.
+	(w3m-input-coding-system): Change its default value.
+	(w3m-internal-characters-alist): Moved to w3m-ccl.el
+	(w3m-ccl-write-repeat): Ditto.
+	(w3m-euc-japan-decoder): Ditto.
+	(w3m-euc-japan-encoder): Ditto.
+	(w3m-iso-latin-1-decoder): Ditto.
+	(w3m-iso-latin-1-encoder): Ditto.
+
+	* w3m-ccl.el: New file.
+
+	* w3m-ucs.el: Completely rewritten.
+	(w3m-euc-japan-mule-ucs, w3m-iso-latin-1-mule-ucs): New coding
+	systems.
+
+	* w3m-e21.el (toplevel): Require `w3m-ccl'.
+	(w3m-euc-japan-encoder, w3m-iso-latin-1-encoder): New encoder.
+
+	* w3m-om.el, w3m-e20.el, w3m-xmas.el (toplevel): Require `w3m-ccl'.
+
 2003-07-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-content-start):

@@ -41,6 +41,7 @@
 (require 'w3m-proc)
 (require 'w3m-image)
 (require 'w3m-fsf)
+(require 'w3m-ccl)
 (require 'wid-edit)
 
 ;; Functions and variables which should be defined in the other module
@@ -78,6 +79,20 @@
 CODING-SYSTEM, DECODER and ENCODER must be symbol."
   (make-coding-system coding-system 4 mnemonic docstring
 		      (cons decoder encoder)))
+
+(define-ccl-program w3m-euc-japan-encoder
+  `(4
+    (loop
+     ,@w3m-ccl-write-euc-japan-character
+     ,@w3m-ccl-get-ucs-codepoint-with-emacs-unicode
+     ,@w3m-ccl-generate-ncr)))
+
+(define-ccl-program w3m-iso-latin-1-encoder
+  `(4
+    (loop
+     ,@w3m-ccl-write-iso-latin-1-character
+     ,@w3m-ccl-get-ucs-codepoint-with-emacs-unicode
+     ,@w3m-ccl-generate-ncr)))
 
 (unless (fboundp 'w3m-ucs-to-char)
   (defun w3m-ucs-to-char (codepoint)
