@@ -443,9 +443,21 @@ terminal.)"
   :group 'w3m
   :type '(coding-system :size 0))
 
+(defcustom w3m-output-coding-system
+  (cond
+   ((not (featurep 'mule)) 'iso-8859-1)
+   ((eq w3m-type 'w3mmee) 'ctext)
+   ((eq w3m-type 'w3m-m17n)
+    (if (featurep 'un-define) 'utf-8 'iso-2022-7bit-ss2))
+   (w3m-accept-japanese-characters 'w3m-euc-japan)
+   (t 'w3m-iso-latin-1))
+  "*Coding system used when reading from w3m processes."
+  :group 'w3m
+  :type '(coding-system :size 0))
+
 (defcustom w3m-input-coding-system
   (if (memq w3m-type '(w3mmee w3m-m17n))
-      'binary
+      w3m-output-coding-system
     (if w3m-accept-japanese-characters
 	(if w3m-use-mule-ucs
 	    'w3m-euc-japan-mule-ucs
@@ -461,18 +473,6 @@ terminal.)"
 It overrides `coding-system-for-write' if it is not `binary'.
 Otherwise, the value of the `w3m-current-coding-system' variable is
 used instead."
-  :group 'w3m
-  :type '(coding-system :size 0))
-
-(defcustom w3m-output-coding-system
-  (cond
-   ((not (featurep 'mule)) 'iso-8859-1)
-   ((eq w3m-type 'w3mmee) 'ctext)
-   ((eq w3m-type 'w3m-m17n)
-    (if (featurep 'un-define) 'utf-8 'iso-2022-7bit-ss2))
-   (w3m-accept-japanese-characters 'w3m-euc-japan)
-   (t 'w3m-iso-latin-1))
-  "*Coding system used when reading from w3m processes."
   :group 'w3m
   :type '(coding-system :size 0))
 
@@ -2089,14 +2089,22 @@ If it is nil, the command specified to `w3m-command' is used.")
 	 (list '(if w3m-treat-image-size
 		    "-dump=half-buffer,single-row-image"
 		  "-dump=half-buffer")
-	       '(if charset (list "-I" 'charset))
+	       '(if (eq w3m-input-coding-system 'ctext)
+		    (list "-I" "x-ctext")
+		  (when (and (eq w3m-input-coding-system 'binary)
+			     charset)
+		    (list "-I" 'charset)))
 	       "-o" "concurrent=0"))
 	((eq w3m-type 'w3m-m17n)
 	 (list "-halfdump"
 	       "-o" "ext_halfdump=1"
 	       "-o" "strict_iso2022=0"
 	       "-o" "ucs_conv=1"
-	       '(if charset (list "-I" 'charset))
+	       '(if (eq w3m-input-coding-system 'binary)
+		    (if charset (list "-I" 'charset))
+		  (list "-I" (if (eq w3m-input-coding-system 'utf-8)
+				 "UTF-8"
+			       "ISO-2022-JP-2")))
 	       "-O"
 	       '(if (eq w3m-output-coding-system 'utf-8)
 		    "UTF-8"

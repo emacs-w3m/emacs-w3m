@@ -1,3 +1,10 @@
+2004-04-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-input-coding-system): Use `w3m-output-coding-system'
+	as its default value for w3m-m17n and w3mmee.
+	(w3m-halfdump-command-arguments): Use "-I" option to disable
+	automatic-detection of coding systems for w3m-m17n and w3mmee.
+
 2004-04-16  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-meta-refresh-content-regexp): Allow quoted string as url.
