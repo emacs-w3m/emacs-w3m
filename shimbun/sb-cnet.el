@@ -1,6 +1,6 @@
-;;; sb-cnet.el --- shimbun backend for cnet -*- coding: iso-2022-7bit; -*-
+;;; sb-cnet.el --- shimbun backend for cnet
 
-;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -33,14 +33,14 @@
 
 (require 'shimbun)
 
-(luna-define-class shimbun-cnet (shimbun) ())
+(luna-define-class shimbun-cnet (shimbun-japanese-newspaper shimbun) ())
 
 (defvar shimbun-cnet-url "http://japan.cnet.com/")
 (defvar shimbun-cnet-server-name "CNET Japan")
 (defvar shimbun-cnet-groups '("news"))
 (defvar shimbun-cnet-from-address  "webmaster@japan.cnet.com")
-(defvar shimbun-cnet-content-start "\n<!-- MAIN -->\n")
-(defvar shimbun-cnet-content-end "\n<!--NEWS LETTER SUB-->\n")
+(defvar shimbun-cnet-content-start "")
+(defvar shimbun-cnet-content-end "<!--NEWS LETTER SUB-->")
 (defvar shimbun-cnet-x-face-alist
   '(("default" . "X-Face: 0p7.+XId>z%:!$ahe?x%+AEm37Abvn]n\
 *GGh+>v=;[3`a{1lqO[$,~3C3xU_ri>[JwJ!9l0\n ~Y`b*eXAQ:*q=bBI\
@@ -48,56 +48,44 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 (defvar shimbun-cnet-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-cnet))
-  (shimbun-url-internal shimbun))
+  (concat shimbun-cnet-url "news/archive.htm"))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-cnet)
 					 &optional range)
-  (let ((case-fold-search t)
-	headers)
+  (let (pt url subject headers)
     (while (re-search-forward "\
-\\(20[0-9][0-9]\\)年\\([01]?[0-9]\\)月\\([0-3]?[0-9]\\)日(\\cj)[\t ]*\
-\\([012]?[0-9]\\)時\\([0-5]?[0-9]\\)分.+\n\
-.+<a href=\"/\\(.+\\)\\(\\.html?\\)\">\\(.+\\)</a>" nil t)
-      (push (shimbun-make-header
-	     0
-	     (shimbun-mime-encode-string (match-string 8))
-	     (shimbun-from-address shimbun)
-	     (shimbun-make-date-string
-	      (string-to-number (match-string 1))
-	      (string-to-number (match-string 2))
-	      (string-to-number (match-string 3))
-	      (concat (match-string 4) ":" (match-string 5)))
-	     (concat "<"
-		     (mapconcat 'identity
-				(save-match-data
-				  (split-string (match-string 6) "[,/]+"))
-				".")
-		     "@japan.cnet.com>")
-	     "" 0 0
-	     (concat (shimbun-url-internal shimbun)
-		     (match-string 6)
-		     (match-string 7)))
-	    headers))
+<a href=\"/\\(news/[^\"]+\\)\"[^>]*>\\([^<>]+\\)"
+			      nil t)
+      (setq pt (point)
+	    url (match-string 1)
+	    subject (match-string 2))
+      (when (re-search-backward "\
+>\\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\)</"
+				nil t)
+	(goto-char pt)
+	(push (shimbun-make-header
+	       0
+	       (shimbun-mime-encode-string subject)
+	       (shimbun-from-address shimbun)
+	       (shimbun-make-date-string (string-to-number (match-string 1))
+					 (string-to-number (match-string 2))
+					 (string-to-number (match-string 3)))
+	       (concat "<"
+		       (shimbun-replace-in-string
+			(file-name-sans-extension url)
+			"[,/]" ".")
+		       "%japan.cnet.com>")
+	       "" 0 0
+	       (concat shimbun-cnet-url url))
+	      headers)))
     headers))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-cnet)
 						   header)
-  "Remove advertisements embedded with <table *> ... </table> forms."
-  (let (start end)
-    (while (search-forward "<table" nil t)
-      (setq start (match-beginning 0))
-      (when (search-forward "</table>" nil t)
-	(setq end (point))
-	(when (re-search-backward
-	       (shimbun-content-end-internal shimbun) start t)
-	  (delete-region (match-end 0) end)
-	  (setq end (point)))
-	(when (search-backward
-	       (shimbun-content-start-internal shimbun) start t)
-	  (delete-region (match-end 0) end)
-	  (setq end (point)))
-	(delete-region start end))))
-  (goto-char (point-min)))
+  (if (and (search-forward "<div class=\"plmain\">" nil t)
+	   (search-forward "</noscript>" nil t))
+      (delete-region (point-min) (point))
+    (goto-char (point-min))))
 
 (provide 'sb-cnet)
 
