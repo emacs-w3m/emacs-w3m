@@ -1,6 +1,6 @@
 2001-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-static-cond): New macro; use if for defining
+	* w3m.el (w3m-static-cond): New macro; use it for defining
 	`find-coding-system'.
 
 2001-03-15  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
