@@ -86,7 +86,7 @@ compile-time."
 
 (defmacro w3m-tag-regexp-of (&rest names)
   (` (concat "<\\("
-	     (mapconcat 'identity (, names) "\\|")
+	     (mapconcat 'identity (, (cons 'list names)) "\\|")
 	     "\\)\\([ \t\r\f\n]+[^>]*\\)?/?>")))
 
 (defmacro w3m-cleanup-plist (plist)
