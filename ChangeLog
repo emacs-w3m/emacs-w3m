@@ -1,3 +1,9 @@
+2004-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add the
+	borderless group.  There are wonderful pictures, so I strongly
+	recommend using asahi-html, not asahi. :)
+
 2004-04-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-link-numbering.el (w3m-link-numbering): Quit when links have

@@ -4162,11 +4162,14 @@ These are newspapers that are supported by @samp{shimbun} library.
 asahi.business asahi.culture asahi.english asahi.international
 asahi.kansai asahi.kansai-special asahi.national asahi.politics
 asahi.science asahi.sports asahi.nankyoku asahi.whitemail
+asahi.borderless
 
 These backends generates articles including only texts; in other hands,
 @samp{asahi-html} generates MIME articles that include texts and
 photographs.  In order to use the latter backend, specify
 asahi-html.business instead of asahi.business as the group name.
+Especially, it is recommended you use @samp{asahi-html} in order to see
+the @samp{borderless} group in which there are wonderful pictures.
 
 @item @uref{http://mytown.asahi.com/, Asahi Shimbun}
 asahi-mytown.(hokkaido@dots{}okinawa) asahi-mytown.usa
