@@ -144,6 +144,9 @@
 
      In this case, you don't have to execute `make install-icons'.
 
+     The info files will also be installed by `make install' or
+     `make install-package'.
+
 3.2. Installing on non-UNIX-like systems
 
      If you cannot execute the `configure' script on your system, or if
