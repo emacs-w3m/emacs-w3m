@@ -67,6 +67,7 @@
 		(*euc-china*	  cn-gb-2312)
 		(*euc-japan*	  euc-japan)
 		(*iso-2022-jp*	  iso-2022-jp)
+		(*iso-2022-jp*	  iso-2022-7bit)
 		(*iso-2022-ss2-7* iso-2022-7bit-ss2)
 		(*sjis*		  shift_jis)
 		(*tis620*	  tis-620)))
