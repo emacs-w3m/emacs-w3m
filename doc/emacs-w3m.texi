@@ -2673,13 +2673,20 @@ Program name of ImageMagick's @samp{convert}.
 @vindex w3m-pixels-per-character
 Integer used for the @code{-ppc} argument of the @samp{w3m} command.  If
 @code{nil}, the width of the default face is used.  It is valid only
-when @code{w3m-treat-image-size} is non-@code{nil}.
+when @code{w3m-treat-image-size} is non-@code{nil}.  The default value
+is @code{nil}.  If you want to use emacs-w3m in a character terminal and
+make @code{w3m-treat-image-size} effective, you need to set this
+variable properly.
 
 @item w3m-pixels-per-line
 @vindex w3m-pixels-per-line
 Integer used for the @samp{-ppl} argument of the @samp{w3m} command.  If
 @code{nil}, the height of the default face is used.  It is valid only
-when @code{w3m-treat-image-size} is non-@code{nil}.
+when @code{w3m-treat-image-size} is non-@code{nil}.  Note that a small
+value may not induce a good result.  The default value is @samp{64}.  If
+you want to use emacs-w3m in a character terminal and make
+@code{w3m-treat-image-size} effective, you need to set this variable
+properly.
 
 @item w3m-resize-image-scale
 @vindex w3m-resize-image-scale
