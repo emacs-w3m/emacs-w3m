@@ -1,3 +1,9 @@
+2003-07-01  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* doc/ptexinfmt.el: @verb, @tie, @/ support.
+	(ptexinfmt-broken-facility): Abolish NO-NOTICE argument.
+	Use `ptexinfmt-disable-broken-notice-flag' instead.
+
 2003-07-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-url): Use `w3m-url-strip-fragment' instead of
