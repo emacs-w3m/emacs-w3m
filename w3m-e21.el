@@ -142,6 +142,35 @@ and its cdr element is used as height."
 		  image))
 	    image))))))
 
+(defun w3m-create-resized-image (url rate &optional referer size handler)
+  "Resize an cached image object.
+URL is the image file's url.
+RATE is resize percentage.
+If REFERER is non-nil, it is used as Referer: field.
+If SIZE is non-nil, its car element is used as width
+and its cdr element is used as height."
+  (if (not handler)
+      (w3m-process-with-wait-handler
+	(w3m-create-image url nil referer size handler))
+    (lexical-let ((url url)
+		  (rate rate)
+		  image)
+      (w3m-process-do-with-temp-buffer
+	  (type (progn
+		  (set-buffer-multibyte nil)
+		  (w3m-retrieve url 'raw nil nil referer handler)))
+	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
+	  (setq image (create-image (buffer-string) type t :ascent 'center))
+	  (progn
+	    (set-buffer-multibyte t)
+	    (w3m-process-do
+		(resized (w3m-resize-image-by-rate
+			  (plist-get (cdr image) :data)
+			  rate
+			  handler))
+	      (if resized (plist-put (cdr image) :data resized))
+	      image)))))))
+
 (defun w3m-insert-image (beg end image &rest args)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."

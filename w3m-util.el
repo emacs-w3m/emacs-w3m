@@ -152,6 +152,8 @@ cursor position and around there."
   (` (w3m-get-text-property-around 'w3m-href-anchor (, position))))
 (defmacro w3m-image (&optional position)
   (` (w3m-get-text-property-around 'w3m-image (, position))))
+(defmacro w3m-image-scale (&optional position)
+  (` (w3m-get-text-property-around 'w3m-image-scale (, position))))
 (defmacro w3m-submit (&optional position)
   (` (w3m-get-text-property-around 'w3m-submit (, position))))
 

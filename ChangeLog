@@ -1,4 +1,26 @@
-2002-09-21  Kahlil HODGSON <dorge@tpg.com.au>
+2002-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-lynx-like-map): Bind key M-] to `w3m-zoom-in-image';
+	bind key M-[ to `w3m-zoom-out-image'.
+	(w3m-info-like-map): Ditto.
+	(w3m-mode): Document those new keys.
+
+2002-09-30  KURODA Chihiro  <chee@iijmio-mail.jp>
+
+	* w3m.el (w3m-resize-image-scale): New user option.
+	(w3m-toggle-inline-image): Call `w3m-zoom-in-image' without
+	resizing.
+	(w3m-resize-inline-image-internal): New inline function.
+	(w3m-zoom-in-image): New command.
+	(w3m-zoom-out-image): New command.
+
+	* w3m-util.el (w3m-image-scale): New macro.
+
+	* w3m-image.el (w3m-resize-image-by-rate): New function.
+
+	* w3m-e21.el (w3m-create-resized-image): New function.
+
+2002-09-21  Kahlil HODGSON  <dorge@tpg.com.au>
 
 	* w3m.el (ffap-url-regexp): Make sure it is non-nil.
 
