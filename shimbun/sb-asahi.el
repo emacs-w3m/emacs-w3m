@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com
 
-;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -77,15 +77,17 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
       (forward-line -1)
       (delete-region (point) (point-max))
       (goto-char (point-min))
-      (let ((case-fold-search t)
-	    headers)
-	(while (re-search-forward "\
-<a href=\"\\(\\([0-9][0-9][0-9][0-9]\\)/\\([0-9]+\\)\\.html\\)\"> *"
-				  nil t)
-	  (let* ((group (shimbun-current-group-internal entity))
-		(id (format "<%s%s%%%s>"
-			    (match-string 2) (match-string 3) group))
-		(url (match-string 1)))
+      (let* ((group (shimbun-current-group-internal entity))
+	     (regexp (concat "<a href=\"\\(/"
+			     (regexp-quote group) "/update/\\)?"
+			     "\\(\\([0-9][0-9][0-9][0-9]\\)/"
+			     "\\([0-9]+\\)\\.html\\)\"> *"))
+	     (case-fold-search t)
+	     headers)
+	(while (re-search-forward regexp nil t)
+	  (let ((id (format "<%s%s%%%s>"
+			    (match-string 3) (match-string 4) group))
+		(url (match-string 2)))
 	    (push (shimbun-make-header
 		   0
 		   (shimbun-mime-encode-string
