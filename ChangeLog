@@ -1,3 +1,13 @@
+2000-12-12  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el (w3m-sub-list, w3m-load-list, w3m-save-list): New utility
+	function.
+	(w3m-arrived-list-load): Refine and move out common code into
+	w3m-load-list.
+	(w3m-arrived-list-save): Refine and move out common code into
+	w3m-save-list and w3m-sub-list. (Previous code had side effect
+	of nreverse).
+
 2000-12-10  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* makepatch.pl, Makefile, .cvsignore: New files.
