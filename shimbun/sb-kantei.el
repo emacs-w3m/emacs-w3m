@@ -34,6 +34,11 @@
 (defvar shimbun-kantei-groups '("m-magazine"))
 (defvar shimbun-kantei-content-start "<PRE>")
 (defvar shimbun-kantei-content-end "\\(</PRE>\\)\n</FONT>\n</TD></TR></TABLE>")
+(defvar shimbun-kantei-x-face-alist
+  '(("default" . "\
+X-Face: .bsmj'!8A`wI\\o+KF!)#0.a0,f1MA~PH/5T0fu$Mg+)_5G~NSk4.0t]&|f@^c3l8-Fuz8'
+ |kr;td_Jn7|GwREbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;
+ 7+JOf6v&x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-kantei))
   (concat (shimbun-url-internal shimbun) 
