@@ -1,3 +1,8 @@
+2003-11-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-proc.el (w3m-process-wait-process): Don't specify 3 args to
+	`sit-for' for XEmacs.
+
 2003-11-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna-sittes): Change its default value.

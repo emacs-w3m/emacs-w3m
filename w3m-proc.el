@@ -348,17 +348,22 @@ Returns t when the specified process exit normally, otherwise returns
 nil."
   (catch 'timeout
     (let ((start (current-time)))
-      (while (or (w3m-static-if (or (featurep 'xemacs)
-				    (<= emacs-major-version 20))
-		     (sit-for 0 200 t)
-		   (accept-process-output (w3m-process-process process) 0 200))
+      (while (or (w3m-static-cond
+		  ((featurep 'xemacs)
+		   (sit-for 0.2 t))
+		  ((<= emacs-major-version 20)
+		   (sit-for 0 200 t))
+		  (t
+		   (accept-process-output (w3m-process-process process)
+					  0 200)))
 		 (eq 'run (process-status (w3m-process-process process))))
 	(and seconds
 	     (< seconds (w3m-time-lapse-seconds start (current-time)))
 	     (throw 'timeout nil)))
       ;; The following line is necessary to avoid a process handling
       ;; bug of Meadow1.  For more detail, see [emacs-w3m:06048].
-      (sit-for 0 50 t)
+      (w3m-static-unless (featurep 'xemacs)
+	(sit-for 0 50 t))
       t)))
 
 (defun w3m-process-start-and-wait (w3m-current-process wait-function)
