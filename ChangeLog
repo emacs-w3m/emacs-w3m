@@ -1,3 +1,15 @@
+2003-01-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-savannah.el: Change it to be based on MHonArc.
+	(shimbun-savannah-url): Change the value.
+	(shimbun-savannah-group-path-alist): Add some groups.
+	(shimbun-savannah-litemplate-regexp): New variable.
+	(shimbun-savannah-x-face-alist): Improve the appearance.
+	(shimbun-savannah-index-url): New function.
+	(shimbun-index-url): Use it.
+	(shimbun-savannah-get-headers): New function.
+	(shimbun-get-headers): Use it.
+
 2003-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 	Suggested by KURIHARA Kenichi <kenichi_kurihara@nifty.com>.
 
