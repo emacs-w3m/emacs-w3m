@@ -1,5 +1,7 @@
 2001-03-15  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
+	* README, README.ja: Update procedure of package installation.
+
 	* w3m.el (w3m-hook): Removed.
 	(w3m-goto-mailto-url): Old name is `w3m-mailto-url'.
 	(w3m-goto-ftp-url): Old name is `w3m-exec-ftp'.

@@ -8,7 +8,7 @@ This package contains a interface program of w3m.
 
        http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/
 
-   w3m.el is a simple interface program of w3m.
+   w3m.el is a simple interface program of w3m, which works on Emacs.
 
 
 2. Installation
@@ -16,8 +16,12 @@ This package contains a interface program of w3m.
    a) This package requires the latest version of w3m (see section 3).
       Please install it.
 
-   b) Put emacs-lisp programs of this package to an appropriate
-      directory.
+   b) Execlute these commands to put emacs-lisp programs of this package
+      to an appropriate directory.
+
+          % ./configure
+	  % make
+	  % make install
 
    c) Put these lines into your ~/.emacs.
 
@@ -36,20 +40,19 @@ This package contains a interface program of w3m.
    (1) w3m-0.1.10
 
        The latest official version on Jun 6th, 2000.  This version of
-       w3m has a problem of processing data when `-dump_source' option
-       is specified. Therefore, you can't use some features of w3m.el,
-       such as downloading data, viewing images, and so on.
+       w3m convert newline code when `-dump_source' option is
+       specified. Therefore, you can't use some features of w3m.el, such
+       as downloading data, viewing images, and so on.
 
    (2) w3m-0.1.11-pre
 
        The latest official beta version on Jun 14th, 2000.  This version
-       of w3m has the same problem of w3m-0.1.10.
+       of w3m works in the same way of w3m-0.1.10.
 
    (3) w3m-0.1.11-pre + w3m-0.1.11-pre-kokb23.patch.gz
 
        Okabe Katsuya maintains his private patch of w3m, which fixes
-       many bugs and added many features.  This version of w3m has no
-       problem to corporate with w3m.el.
+       many bugs and added many features.
 
    Therefore, you should use the 3rd candidate of w3m, whose sources can
    be downloaded from:
