@@ -3,8 +3,8 @@
 	* w3m.el (w3m-db-history): New command.
 	(w3m-about-history, w3m-about-history-1): Don't deactivate
 	"about://*" links.
-	(w3m-exec): Share an url string among the arrived-DB,
-	`w3m-current-url', and the history structure.
+	(w3m-exec): Share an url string between the variable
+	`w3m-current-url' and the history structure.
 	(w3m-toolbar, w3m-toolbar-buttons): Added history and db-history.
 
 	* icons/db-history-up.xpm: New file.
