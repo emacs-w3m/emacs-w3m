@@ -44,7 +44,7 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-f1fan))
   (concat
    (shimbun-url-internal shimbun)
-   "/News"
+   "News"
    (format-time-string "%Y")
    "/news-new.html"))
 

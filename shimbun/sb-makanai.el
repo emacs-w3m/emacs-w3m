@@ -53,7 +53,7 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-makanai))
   (concat (cdr (assoc (shimbun-current-group-internal shimbun)
 		      shimbun-makanai-group-alist))
-	  "01.html"))
+	  "news/001.html"))
 
 (eval-and-compile
   (unless (and (fboundp 'md5)

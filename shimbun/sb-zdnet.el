@@ -42,7 +42,7 @@
 /\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>"))
     `(("comp" "news/past" ,(format template1 "news"))
       ("biztrends" "news/biztrends" ,(format template1 "news"))
-      ("gamespot" "gamespot" ,(format template2 "gsnews"))
+      ("gamespot" "games" ,(format template2 "gsnews"))
       ("enterprise" "enterprise/archives" ,(format template1 "enterprise"))
       ("broadband" "broadband/news" ,(format template1 "broadband"))
       ("macwire" "macwire/news" ,(format template1 "macwire"))
@@ -117,9 +117,9 @@ x|3Z|D*vbQ%UY!38ikbc/EnUU_tbHVH\"9Sfk{\n w>zvk!?===x`]c5_-+<@ooVVV#D~F`e0")))
 	(start))
     (and
      (search-forward "<!--DATE-->" nil t)
-     (looking-at "[ ’¡¡]+\\([0-9]+\\)’Ç¯\\(1[012]\\|[2-9]\\)’·î\
-\\([12][0-9]?\\|3[01]?\\|[4-9]\\)’Æü[ ’¡¡]+\
-\\(0[0-9]\\|1[0-2]\\):\\([0-5][0-9]\\)[ ’¡¡]+\\([AP]M\\)")
+     (looking-at "[ $B!!(B]+\\([0-9]+\\)$BG/(B\\(1[012]\\|[2-9]\\)$B7n(B\
+\\([12][0-9]?\\|3[01]?\\|[4-9]\\)$BF|(B[ $B!!(B]+\
+\\(0[0-9]\\|1[0-2]\\):\\([0-5][0-9]\\)[ $B!!(B]+\\([AP]M\\)")
      (shimbun-header-set-date
       header
       (shimbun-make-date-string

@@ -1,5 +1,7 @@
 2003-05-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* Merge many changes of SHIMBUN module on main trunk.
+
 	* w3m.el: Simplify functions that rewrite URIs.
 	(toplevel): Autoload `w3m-search-uri-replace' instead of
 	`w3m-search-quick-search-handler'.
@@ -11,7 +13,7 @@
 	* w3m-search.el (w3m-search-quick-search-engine-alist): Abolished.
 	(w3m-search-quick-search-engines): Removed.
 	(w3m-search-quick-search-handler): Removed.
-	(w3m-search-uri-replace): New function.	
+	(w3m-search-uri-replace): New function.
 
 2003-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 

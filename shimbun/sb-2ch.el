@@ -173,8 +173,7 @@ Unfortunately, the url name format might have been changed in 2ch"))
 	ita sure)
     (catch 'stop
       (while indices
-	(message (concat "Reading " (concat url "/" (car indices) "/")
-			 "..."))
+	(message "Reading %s/%s/..." url (car indices))
 	(with-temp-buffer
 	  (set-buffer-multibyte nil)
 	  (unless (shimbun-retrieve-url (concat

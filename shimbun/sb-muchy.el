@@ -1,8 +1,8 @@
-;;; sb-muchy.el --- shimbun backend for Muchy's Palmware Review!
+;;; sb-muchy.el --- shimbun backend for Muchy's Palmware Review! -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2001, 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 
-;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
@@ -33,13 +33,15 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-muchy))
   (shimbun-url-internal shimbun))
 
-(defvar shimbun-muchy-url "http://muchy.com/")
+(defvar shimbun-muchy-url "http://muchy.com")
 (defvar shimbun-muchy-groups '("review"))
 (defvar shimbun-muchy-from-address "webmaster@muchy.com")
 (defvar shimbun-muchy-coding-system 'japanese-shift-jis-unix)
-(defvar shimbun-muchy-content-start "\n</table>\n")
+(defvar shimbun-muchy-content-start "\n<table border=0 width=100% cellspacing=0 cellpadding=0>")
 (defvar shimbun-muchy-content-end
-  "\n *<!-- VC active -->\n +<SCRIPT LANGUAGE=\"JavaScript\">")
+  "<\/td><\/tr><\/table><div align=center><p><a href=\"/index.html\">\\[HOME\\]<\/a>")
+
+(defvar shimbun-muchy-expiration-days 31)
 
 (defsubst shimbun-muchy-parse-time (str)
   (save-match-data
@@ -50,37 +52,38 @@
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-muchy)
 					 header &optional outbuf)
-  (let* ((baseurl (shimbun-url-internal shimbun))
-	 case-fold-search date-list headers)
+  (let ((url (concat (shimbun-url-internal shimbun) "/" "whatsold.html"))
+	case-fold-search date-list headers)
     (catch 'stop
-      (with-temp-buffer
-	(shimbun-retrieve-url baseurl 'reload)
-	(subst-char-in-region (point-min) (point-max) ?\t ?  t)
-	(goto-char (point-min))
-	(or (re-search-forward "<tr>.+alt=\"更新履歴\"></td></tr>" nil t nil)
-	    (throw 'stop nil))
-	(delete-region (point-min) (point))
-	(or (search-forward "<a href=\"whatsold.htm\">[これ以前の更新履歴]</a>")
-	    (throw 'stop nil))
-	(beginning-of-line)
-	(while (re-search-backward
-		"<a href=\"#\\([0-9]+/[0-9]+/[0-9]+\\)\">\\[\\1\\]</a>"
+      (subst-char-in-region (point-min) (point-max) ?\t ?  t)
+      (goto-char (point-min))
+      (when (re-search-forward
+	     "<table width=\"100%\" border=\"0\">"
+	     nil t 2)
+	(delete-region (point-min) (point)))
+      (unless (search-forward
+	       "<a href=\"\/history\/whatsold.html\">[これより前の更新履歴]</a>"
+	       nil t nil)
+	(throw 'stop nil))
+      (beginning-of-line)
+      (while (re-search-backward
+	      "<font color=white>▲</font></a> <font color=white><span class=quotation>\\([0-9][0-9][0-9][0-9]/[0-9]+/[0-9]+\\)</span></font> <a href=\"#1\"><font color=white>▼</font>"
+	      nil t nil)
+	(setq date-list (cons (match-string 1) date-list)))
+      (setq headers (shimbun-muchy-get-headers shimbun headers date-list)
+	    date-list nil)
+      (erase-buffer)
+      (shimbun-retrieve-url url 'reload)
+      (subst-char-in-region (point-min) (point-max) ?\t ?  t)
+      (goto-char (point-min))
+      (save-excursion
+	(while (re-search-forward
+		"<p><a name=\"\\([0-9][0-9][0-9][0-9]/[0-9][0-9]*/[0-9][0-9]*\\)\"></a></p>"
 		nil t nil)
-	  (setq date-list (cons (match-string 1) date-list)))
-	(setq headers (shimbun-muchy-get-headers shimbun headers date-list)
-	      date-list nil)
-	(erase-buffer)
-	(shimbun-retrieve-url (concat baseurl "whatsold.htm") 'reload)
-	(subst-char-in-region (point-min) (point-max) ?\t ?  t)
-	(goto-char (point-min))
-	(save-excursion
-	  (while (re-search-forward
-		   "<p><a name=\"\\([0-9][0-9][0-9][0-9]/[0-9][0-9]*/[0-9][0-9]*\\)\"></a></p>"
-		   nil t nil)
-	    (setq date-list (cons (match-string 1) date-list))))
-	(setq date-list (nreverse date-list))
-	(setq headers (shimbun-muchy-get-headers shimbun headers date-list))))
-    headers))
+	  (setq date-list (cons (match-string 1) date-list))))
+      (setq date-list (nreverse date-list))
+      (setq headers (shimbun-muchy-get-headers shimbun headers date-list)))
+  headers))
 
 (defun shimbun-muchy-get-headers (shimbun headers date-list)
   (let* ((from (shimbun-from-address-internal shimbun))
@@ -89,8 +92,11 @@
 	 case-fold-search date)
     (catch 'stop
       (while (and date-list
-		  (search-forward (format "<a name=\"%s\">" (car date-list))
-				  nil t nil))
+		  (search-forward
+		   (format
+		    "<font color=white><span class=quotation>%s</span></font>"
+		    (car date-list))
+		   nil t nil))
 	;; getting DATE
 	(setq date (apply 'shimbun-make-date-string
 			  (shimbun-muchy-parse-time (car date-list))))
@@ -100,59 +106,58 @@
 	      (end (save-excursion
 		     (or (and (nth 1 date-list)
 			      (search-forward
-			       (format "<a name=\"%s\">"
-				       (nth 1 date-list)) nil t nil)
-			      (progn (beginning-of-line) (point-marker)))
-			 (goto-char (point-max))
-			 (point-marker))))
-	      innerend hoshi id url subject)
+			       (format 
+				"<font color=white><span class=quotation>%s</span></font>"
+				(nth 1 date-list)) nil t nil)
+			      (progn (beginning-of-line) (point)))
+			 (point-max))))
+	      innerend star id url subject)
 	  ;; getting URL and SUBJECT
-	  (while (search-forward "</table>" end t nil)
+	  (while (re-search-forward
+		  "<img src=\"/\\(new\\|revise\\|update\\)\\.png\""
+		  end t nil)
 	    (catch 'next
-	      (setq innerend (save-excursion
-			       (or (search-forward "</table>" end t nil) end)))
-	      (if (re-search-forward
-		   ;; there is another gif file called `topics.gif'...
-		   "<img src=\"\\(new\\|revise\\|update\\)\\.gif\""
-		   innerend t nil)
-		  (setq subject (upcase (match-string 1))))
-	      (or (re-search-forward
-		   "<a href=\"\\(.+\\.html.*\\)\"> *<strong>\\(.+\\)</strong></a>"
-		   innerend t nil)
-		  (throw 'next nil))
+	      (setq subject (upcase (match-string 1))
+		    innerend (save-excursion
+			       (or
+				(and
+				 (re-search-forward
+				  "<img src=\"/\\(new\\|revise\\|update\\)\\.png\""
+				  end t nil)
+				 (goto-char (match-beginning 0))
+				 (point))
+				end)))
+	      (unless (re-search-forward
+		       "<strong><a href=\"\\(/.+\\.html.*\\)\">\\(.+\\)</a></strong>"
+		       innerend t nil)
+		(throw 'next nil))
 	      (setq url (match-string 1)
 		    subject (concat (match-string 2) "/" subject))
+	      (if (re-search-forward
+		   "<img src=\"/hoshi\\([0-9]\\)\\.png\""
+		   innerend t nil)
+		  (setq star (string-to-number (match-string 1)))
+		(setq star nil))
 	      ;; adding license fee to subject
 	      (if (re-search-forward
-		   "<small>\\(.*ウェア.*\\|\\$[,.0-9]+\\|[,0-9]+円\\)</small>"
+		   "価格; \\(<a href=\"[^<>]+\">\\)*<font color=\"#[0-9A-Z]+\">\\(標準添付\\|標準搭載\\|プレゼント\\|.*ウェア.*\\|[$\\\\][,.0-9]+\\).*</font>"
 		   innerend t nil)
-		  (setq subject (concat subject "/" (match-string 1))))
-	      ;; getting DATE
-	      ;;(setq date (apply
-	      ;;            'shimbun-make-date-string
-	      ;;            (shimbun-muchy-parse-time
-	      ;;             (if (re-search-forward
-	      ;;                  "<small>\\([0-9][0-9][0-9][0-9]/[0-9][0-9]*/[0-9][0-9]*\\)</small>"
-	      ;;                  innerend t nil)
-	      ;;                 (match-string 1)
-	      ;;               (car date-list)))))
-	      ;; adding HOSHI to subject
-	      (if (and (re-search-forward
-			"<img border=[0-9]+ src=\"images/hoshi\\([0-9]\\)\\.gif\""
-			innerend t nil)
-		       (setq hoshi (string-to-number (match-string 1)))
-		       (> hoshi 0))
-		  (setq subject (concat
-				 subject
-				 "/"
-				 (make-string hoshi (string-to-char "★")))))
+		  (setq subject (concat subject "/" (match-string 2))))
+	      (when (and star (> star 0))
+		(setq subject (concat
+			       subject
+			       "/"
+			       (make-string star (string-to-char "★")))))
 	      ;; building ID
-	      (setq id (format "<%s%08d%%%s>" url
+	      (setq id (format "<%08d@%s.%s%%muchy.com>" 
 			       (string-to-number
 				(mapconcat
 				 'number-to-string
 				 (shimbun-muchy-parse-time (car date-list))
 				 ""))
+			       (if (string-match "\\([^\/]+\\)\\.html" url)
+				   (match-string 1 url)
+				 url)
 			       group))
 	      (if (shimbun-search-id shimbun id)
 		  (throw 'stop nil))
@@ -163,64 +168,10 @@
 		    headers)
 	      (goto-char innerend)
 	      (beginning-of-line)))
-	    (setq date-list (cdr date-list))
-	    (delete-region beg end)
-	    (goto-char end))))
+	  (setq date-list (cdr date-list))
+	  (delete-region beg end)
+	  (goto-char end))))
     headers))
-
-;; (luna-define-method shimbun-make-contents ((shimbun shimbun-muchy) header)
-;;   ;; cleaning up
-;;   (let (case-fold-search)
-;;     (if (re-search-forward "</table>" nil t nil)
-;; 	(progn
-;; 	  (beginning-of-line)
-;; 	  (delete-region (point-min) (point))))
-;;     (if (search-forward "<a name=\"webclip\">" nil t nil)
-;; 	(delete-region (progn (beginning-of-line) (point))
-;; 		       (and (re-search-forward "^$" nil t nil)
-;; 			    (forward-line 1) (point))))
-;;     (if (re-search-forward "<!-- *VC layer *-->" nil t nil)
-;; 	(progn
-;; 	  (beginning-of-line)
-;; 	  (delete-region
-;; 	   (point)
-;; 	   (progn (re-search-forward "<!-- *vc layer *-->" nil t nil)
-;; 		  (point)))))
-;;     (if (re-search-forward "<!-- *VC active *-->" nil t nil)
-;; 	(progn
-;; 	  (beginning-of-line)
-;; 	  (delete-region
-;; 	   (point)
-;; 	   (progn (re-search-forward "<!-- *vc active *-->" nil t nil)
-;; 		  (point)))))
-;;     (if (search-backward "記事の内容への質問・フォローは" nil t nil)
-;; 	(delete-region (progn (beginning-of-line) (point))
-;; 		       (point-max))))
-;;   (goto-char (point-min))
-;;   (subst-char-in-region (point-min) (point-max) ?\t ?  t)
-;;   (shimbun-decode-entities)
-;;   (goto-char (point-min))
-;;   (shimbun-header-insert shimbun header)
-;;   (insert "Content-Type: text/html; charset=ISO-2022-JP\nMIME-Version: 1.0\n\n")
-;;   (encode-coding-string
-;;    (buffer-string) (mime-charset-to-coding-system "ISO-2022-JP")))
-
-(luna-define-method shimbun-make-contents
-  :before ((shimbun shimbun-muchy) header)
-  (let ((case-fold-search t))
-    (when (search-forward "<a name=\"webclip\"></a>" nil t nil)
-      (delete-region (point) (search-forward "</center>")))
-    (when (re-search-forward
-	   "<tr>\n *<td colspan=\".+\\[ソフトをパームに追加するには？\\]</a></font></td>\n *</tr>"
-	   nil t nil)
-      (delete-region (match-beginning 0) (match-end 0)))
-    ;;(when (re-search-forward
-    ;;       "<A HREF=\".+ALT=\"Click here to visit our sponsor\""
-    ;;       nil t nil)
-    ;;  (delete-region (progn (beginning-of-line) (point))
-    ;;                 (search-forward "<!-- vc layer -->\n</body> ")))
-    )
-  (goto-char (point-min)))
 
 (provide 'sb-muchy)
 

@@ -1,8 +1,8 @@
-;;; sb-ibm-dev.el --- shimbun backend for www-6.ibm.com/ja/developerworks
+;;; sb-ibm-dev.el --- shimbun backend for www-6.ibm.com/ja/developerworks -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2001 NAKAJIMA Mikio <minakaji@namazu.org>
 
-;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
