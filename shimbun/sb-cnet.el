@@ -83,11 +83,20 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-cnet)
 						   header)
   "Remove advertisements embedded with <table *> ... </table> forms."
-  (let (start)
+  (let (start end)
     (while (search-forward "<table" nil t)
       (setq start (match-beginning 0))
-      (delete-region start (or (search-forward "</table>" nil t)
-			       start))))
+      (when (search-forward "</table>" nil t)
+	(setq end (point))
+	(when (re-search-backward
+	       (shimbun-content-end-internal shimbun) start t)
+	  (delete-region (match-end 0) end)
+	  (setq end (point)))
+	(when (search-backward
+	       (shimbun-content-start-internal shimbun) start t)
+	  (delete-region (match-end 0) end)
+	  (setq end (point)))
+	(delete-region start end))))
   (goto-char (point-min)))
 
 (provide 'sb-cnet)
