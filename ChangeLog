@@ -1,3 +1,13 @@
+2005-02-18  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/nnshimbun.el (nnshimbun-decode-group-name): New function.
+	(nnshimbun-request-article, nnshimbun-request-group)
+	(nnshimbun-request-scan, nnshimbun-close-group)
+	(nnshimbun-retrieve-headers, nnshimbun-request-expire-articles)
+	(nnshimbun-request-delete-group): Decode group name.
+	(gnus-group-make-shimbun-group): The server name must be
+	unibyte string; Encode group name to utf-8.
+
 2005-02-17  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-impress.el (shimbun-impress-groups-alist): Add new

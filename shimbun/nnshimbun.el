@@ -352,6 +352,10 @@ to SYMBOL.  If FULL-NAME-P is non-nil, it treats GROUP as a full name."
 	  (t
 	   `(plist-get (nnshimbun-find-group-parameters ,name) ,symbol)))))
 
+(defun nnshimbun-decode-group-name (group)
+  (if (and group (mm-coding-system-p 'utf-8))
+      (mm-decode-coding-string group 'utf-8)
+    group))
 
 ;; Interface functions:
 
@@ -473,6 +477,7 @@ when it is called at the first time."
 	    (cons group article)))))))
 
 (deffoo nnshimbun-request-article (article &optional group server to-buffer)
+  (setq group (nnshimbun-decode-group-name group))
   (when (nnshimbun-possibly-change-group group server)
     (if (or (integerp article)
 	    (when (stringp article)
@@ -490,6 +495,7 @@ when it is called at the first time."
 		       (prin1-to-string article)))))
 
 (deffoo nnshimbun-request-group (group &optional server dont-check)
+  (setq group (nnshimbun-decode-group-name group))
   (if (not (nnshimbun-possibly-change-group group server))
       (nnheader-report 'nnshimbun "Invalid group (no such directory)")
     (let (beg end lines)
@@ -505,6 +511,7 @@ when it is called at the first time."
 		       lines (or beg 0) (or end 0) group))))
 
 (deffoo nnshimbun-request-scan (&optional group server)
+  (setq group (nnshimbun-decode-group-name group))
   (when (nnshimbun-possibly-change-group nil server)
     (if group
 	(nnshimbun-generate-nov-database group)
@@ -512,6 +519,7 @@ when it is called at the first time."
 	(nnshimbun-generate-nov-database group)))))
 
 (deffoo nnshimbun-close-group (group &optional server)
+  (setq group (nnshimbun-decode-group-name group))
   (nnshimbun-write-nov group)
   t)
 
@@ -532,6 +540,7 @@ when it is called at the first time."
     t)) ;; return value
 
 (deffoo nnshimbun-retrieve-headers (articles &optional group server fetch-old)
+  (setq group (nnshimbun-decode-group-name group))
   (when (nnshimbun-possibly-change-group group server)
     (if (nnshimbun-retrieve-headers-with-nov articles group fetch-old)
 	'nov
@@ -750,6 +759,7 @@ also be nil."
 Note that nnshimbun does not actually delete any articles, it simply
 deletes the entry in your own NOV database corresponding to the
 article to be expired.  The optional fourth argument FORCE is ignored."
+  (setq group (nnshimbun-decode-group-name group))
   (when (nnshimbun-possibly-change-group group server)
     (let* ((expirable (copy-sequence articles))
 	   (name (concat "nnshimbun+" (nnshimbun-current-server) ":" group))
@@ -799,6 +809,7 @@ article to be expired.  The optional fourth argument FORCE is ignored."
 (deffoo nnshimbun-request-delete-group (group &optional force server)
   "Delete the NOV file used for GROUP and the parent directories.
 Other files in the directory are also deleted."
+  (setq group (nnshimbun-decode-group-name group))
   (when (nnshimbun-possibly-change-group group server)
     (let ((dir (nnmail-group-pathname group (nnshimbun-server-directory)))
 	  (nov (nnshimbun-nov-buffer-name group))
@@ -889,16 +900,22 @@ The user will be prompted for a SERVER name and a GROUP name."
 	 server groups group)
      (unless (eq major-mode 'gnus-group-mode)
        (error "Command invoked outside of a Gnus group buffer"))
-     (setq server (completing-read
-		   "Shimbun server address [Hit TAB to see candidates]: "
-		   alist nil t
-		   (car (delete "" nnshimbun-server-history))
-		   'nnshimbun-server-history))
+     (setq server
+	   (let ((default-enable-multibyte-characters nil))
+	     (completing-read
+	      "Shimbun server address [Hit TAB to see candidates]: "
+	      alist nil t
+	      (car (delete "" nnshimbun-server-history))
+	      'nnshimbun-server-history)))
      (if (assoc server alist)
 	 (let ((shimbun (shimbun-open server)))
 	   (setq group (completing-read
 			"Group name [Hit TAB to see candidates]: "
 			(mapcar 'list (shimbun-groups shimbun))))
+	   ;; Unify non-ASCII text.
+	   (when (mm-coding-system-p 'utf-8)
+	     (setq group (mm-decode-coding-string
+			  (mm-encode-coding-string group 'utf-8) 'utf-8)))
 	   (unless (shimbun-group-p shimbun group)
 	     (setq group nil)))
        (setq server nil))
@@ -908,7 +925,11 @@ The user will be prompted for a SERVER name and a GROUP name."
 			gnus-newsrc-hashtb)
 	  (error "Group nnshimbun+%s:%s already exists" server group)
 	(let (nnshimbun-pre-fetch-article)
-	  (gnus-group-make-group group (list 'nnshimbun server))))
+	  (gnus-group-make-group
+	   (if (mm-coding-system-p 'utf-8)
+	       (mm-encode-coding-string group 'utf-8)
+	     group)
+	   (list 'nnshimbun server))))
     (error "Can't find group")))
 
 
