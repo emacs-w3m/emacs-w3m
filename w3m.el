@@ -641,20 +641,21 @@ new page or reload the current page in an emacs-w3m buffer."
 		(directory :format "%t: %v\n" :size 0)))
 
 (defcustom w3m-broken-proxy-cache nil
-  "*Set this variable to t if the proxy server seems not to work properly
-in caching.  However, this may be the double-edged sword; setting it
-to t will likely be harmful if the proxy server sends bad requests
-\(e.g. not including the Host header, see RFC2616 section 14.23) to
-foreign servers when the w3m command specifies the \"no-cache\"
-directive.  Also note that it may not be effective if you are using
-old w3m command."
+  "*Set it to t if the proxy server seems not to work properly in caching.
+Note that this may be the double-edged sword; setting it to t will
+likely be harmful if the proxy server sends bad requests (e.g. not
+including the Host header, see RFC2616 section 14.23) to foreign
+servers when the w3m command specifies the \"no-cache\" directive.  Also
+note that it may not be effective if you are using old w3m command."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-quick-start t
-  "*Non-nil means don't let the `M-x w3m' command prompt you for a URL
-if a string like URL exists around the cursor.  Otherwise, the
-`M-x w3m' command always ask you for the confirmation."
+  "*Non-nil means let emacs-w3m start quickly w/o requiring confirmation.
+When you invoke the `w3m' command, it attempts to visit the page of a
+string like url around the cursor or the value of `w3m-home-page'.
+You won't be asked for the confirmation then if this value is non-nil.
+Otherwise, you will be prompted for that url with the editing form."
   :group 'w3m
   :type 'boolean)
 
@@ -693,9 +694,9 @@ to non-nil) since cookies may be shared among many redirected pages."
 		(integer :size 0)))
 
 (defcustom w3m-redirect-with-get t
-  "*If non-nil, use the GET method after redirection
-when a server responds the code 301 or 302.  Here is an extract from
-RFC2616:
+  "*If non-nil, use the GET method after redirection.
+It controls how emacs-w3m works when a server responds the code 301 or
+302.  Here is an extract from RFC2616:
 
 Note: RFC 1945 and RFC 2068 specify that the client is not allowed
 to change the method on the redirected request.  However, most
@@ -1260,8 +1261,11 @@ It allows not only the alist form but also XEmacs' plist form."
 				       (sexp :format "%t: %v\n" :size 0))))))
 
 (defcustom w3m-auto-show t
-  "*Non-nil means provide the ability to horizontally scroll the window
-automatically when the point gets away from both ends of the window.
+  "*Non-nil means provide the ability to horizontally scroll the window.
+Automatic horizontal scrolling is made when the point gets away from
+both ends of the window, but nothing occurs if `truncate-lines' is set
+to nil.
+
 This feature works with the specially made program in emacs-w3m; usual
 `auto-hscroll-mode', `automatic-hscrolling', `auto-show-mode' or
 `hscroll-mode' will all be invalidated in emacs-w3m buffers."
@@ -1269,9 +1273,10 @@ This feature works with the specially made program in emacs-w3m; usual
   :type 'boolean)
 
 (defcustom w3m-horizontal-scroll-division 4
-  "*Integer used by the program making the point visible
-when it has been driven out of the window while wandering around
-anchors and forms in an emacs-w3m buffer.
+  "*Integer used by the program making the point certainly visible.
+The cursor definitely does not go missing even when it has been driven
+out of the window while wandering around anchors and forms in an
+emacs-w3m buffer.
 
 Suppose that the value of this variable is N.  When the point is
 outside the left of the window, emacs-w3m scrolls the window so that
@@ -1291,14 +1296,16 @@ be a larger integer than 1."
 			       4))))
 
 (defcustom w3m-show-error-information t
-  "*Non-nil means show an error information as a web page
-when the foreign server doesn't respond to a request to retrieve data."
+  "*Non-nil means show an error information as a web page.
+Page is made when the foreign server doesn't respond to a request to
+retrieve data."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-use-refresh t
-  "*Non-nil means emacs-w3m takes you to a url specified by the REFRESH
-attribute in META tags.  Note that they may be malicious traps."
+  "*Non-nil means honor the REFRESH attribute in META tags.
+Emacs-w3m arbitrarily takes you to a url specified by that attribute.
+Note that they may be malicious traps."
   :group 'w3m
   :type 'boolean)
 
@@ -1310,15 +1317,16 @@ of the w3m command.  See also `w3m-command'."
   :type '(string :size 0))
 
 (defcustom w3m-local-find-file-regexps '(nil . "\\.html?\\'")
-  "*Cons of two regexps matching and not matching with local file names
-which will be opened by the function specified by the
-`w3m-local-find-file-function' variable.  Nil for the regexp matches
-any file names.
+  "*Cons of two regexps matching and not matching with local file names.
+If a url of the `file:' scheme in which you entered matches the first
+form and does not match the latter form, it will be opened by the
+function specified by the `w3m-local-find-file-function' variable.
+Nil for the regexp matches any file names.
 
 For instance, the value `(nil . \"\\\\.html?\\\\'\")' allows
 \"file:///some/where/w3m.el\", not \"file:///any/where/index.html\", to
 open by the function specified by `w3m-local-find-file-function'.  The
-later will be opened as a normal web page.
+latter will be opened as a normal web page.
 
 It is effective only when the `w3m-local-find-file-function' variable
 is set properly."
@@ -1334,11 +1342,14 @@ is set properly."
   '(if (w3m-popup-frame-p)
        'find-file-other-frame
      'find-file-other-window)
-  "*Function used to open local files whose names agree with the rule
-of the `w3m-local-find-file-regexps' variable (which see).  Function
-should take one argument, the string naming the local file.  It can
-also be any Lisp form returning a function.  Set this to nil if you
-want to always use emacs-w3m to see local files."
+  "*Function used to open local files.
+If a url of the `file:' scheme in which you entered agrees with the
+rule of the `w3m-local-find-file-regexps' variable (which see), it is
+used to open the file.
+
+Function should take one argument, the string naming the local file.
+It can also be any Lisp form returning a function.  Set this to nil if
+you want to always use emacs-w3m to see local files."
   :group 'w3m
   :type '(sexp :size 0))
 
@@ -1377,14 +1388,13 @@ If it is nil, the dirlist.cgi module of the w3m command will be used."
 	    (symbol-value 'w3m-add-referer))
     (cons "\\`http:"
 	  "\\`http://\\(localhost\\|127\\.0\\.0\\.1\\)/"))
-  "*Cons of two regexps matching and not matching with url strings
-which are allowed to be sent to foreign web servers as referers.  Nil
-for the regexp matches any url.
-
-A url string will be sent as a referer if it matches the car of the
-value of this variable and it does not match the cdr of the value.
-You may set the cdr of this value to inhibit sending referers which
-will disclose your private informations, for example:
+  "*Regexps matching url strings being allowed to send as referes.
+It consists of a `cons' of two regexps, one matches and the other does
+not match.  If a url matches the first element and does not match the
+latter one, it denotes that url can be sent to foreign web servers as
+a referer.  Nil for the regexp matches any url.  You may set the cdr
+of this value to inhibit sending referers which will disclose your
+private informations, for example:
 
 \(setq w3m-add-referer-regexps
       '(\"^http:\"
@@ -1691,8 +1701,8 @@ and base64.  Emacs can display only the 1st frame of an animation, but
 XEmacs can fully display it with the help of the gifsicle program.")
 
 (defcustom w3m-process-modeline-format " loaded: %s"
-  "*Format used when displaying the progress of the external w3m process
-which is retrieving data from web servers."
+  "*Format used when displaying the progress of the external w3m process.
+It shows a percentage of the data loaded from the web server."
   :group 'w3m
   :type '(choice (string :tag "Format") function))
 
@@ -1733,40 +1743,34 @@ This variable will be made buffer-local.")
 (make-variable-buffer-local 'w3m-current-process)
 
 (defvar w3m-refresh-timer nil
-  "Variable used to keep a timer object for refreshing a page
-according to the value specified by the REFRESH attribute in the META
-tag.  It would be made buffer-local in each emacs-w3m buffer.")
+  "Variable used to keep a timer object for refreshing a page.
+It will be supplied by the REFRESH attribute in the META tag, and made
+buffer-local in each emacs-w3m buffer.")
 (make-variable-buffer-local 'w3m-refresh-timer)
 
 (defvar w3m-current-base-url nil
-  "URL specified by the <base...> tag in the <head> element of the current
-page source.")
+  "URL specified by <base...> tag in <head> element of the page source.")
 (defvar w3m-current-forms nil
   "Variable used to keep forms data for the current emacs-w3m buffer.")
 (defvar w3m-current-coding-system nil
   "Coding system used when decoding the current emacs-w3m buffer.")
 (defvar w3m-current-content-charset nil
-  "Content charset of the current page specified by the server
-or the META tag.")
+  "Content charset of the page specified by the server or the META tag.")
 (defvar w3m-icon-data nil
   "Cons of icon data and its image-type for the current emacs-w3m buffer.
-It is used for favicon data and the type is often `ico'.")
+It is used for favicon data.  The type is often `ico'.")
 (defvar w3m-next-url nil
-  "URL as the next document in the author-defined sequence
-of the documents specified by the current page source.")
+  "URL as the next document in the author-defined sequence.")
 (defvar w3m-previous-url nil
-  "URL as the previous document in the author-defined sequence
-of the documents specified by the current page source.")
+  "URL as the previous document in the author-defined sequence.")
 (defvar w3m-start-url nil
-  "URL as the first document in the author-defined sequence
-of the documents specified by the current page source.")
+  "URL as the first document in the author-defined sequence.")
 (defvar w3m-contents-url nil
   "URL as the table of contents for the current page.")
 (defvar w3m-max-anchor-sequence nil
   "Maximum number of the anchor sequence in the current page.")
 (defvar w3m-current-refresh nil
-  "Cons of the number of seconds and a url specified by the REFRESH
-attribute in the META tag for the current emacs-w3m buffer.")
+  "Cons of number of seconds and a url specified by the REFRESH attribute.")
 (defvar w3m-current-ssl nil
   "SSL certification indicator for the current emacs-w3m buffer.")
 
@@ -1976,28 +1980,30 @@ nil value means it has not been initialized.")
 (defconst w3m-meta-content-type-charset-regexp
   "<meta[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]+content\
 =\"?\\([^;]+\\);[ \t\n]*charset=\\([^\"]+\\)\"?[ \t\n]*/?>"
-  "Regexp matching the META tag containing Content-type and charset
-in the order of\
+  "Regexp matching the META tag containing Content-type and charset.
+It is in the order of:
  <META HTTP-EQUIV=\"Content-Type\" content=\"...;charset=...\">.")
 
 (defconst w3m-meta-charset-content-type-regexp
   "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*charset\
 =\\([^\"]+\\)\"?[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]*/?>"
-  "Regexp matching the META tag containing charset and Content-type
-in the order of\
+  "Regexp matching the META tag containing charset and Content-type.
+It is in the order of:
  <META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">.")
 
 (defconst w3m-meta-refresh-content-regexp
   "<meta[ \t\n]+http-equiv=\"?refresh\"?[ \t\n]+content\
 =\"?\\([^;]+\\);[ \t\n]*url=\\([^\"]+\\)\"?[ \t\n]*/?>"
-  "Regexp matching the META tag containing refresh and content
-in the order of <META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">.")
+  "Regexp matching the META tag containing refresh and content.
+It is in the order of:
+ <META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">.")
 
 (defconst w3m-meta-content-refresh-regexp
   "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*url\
 =\\([^\"]+\\)\"?[ \t\n]+http-equiv=\"?refresh\"?[ \t\n]*/?>"
-  "Regexp matching the META tag containing content and refresh
-in the order of <META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">.")
+  "Regexp matching the META tag containing content and refresh.
+It is in the order of:
+ <META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">.")
 
 (eval-and-compile
   ;; `eval-and-compile' is necessary since the value of the constant
@@ -2184,8 +2190,8 @@ ignored and return nil."
     (and symbol (put symbol property value))))
 
 (defsubst w3m-arrived-get (url property)
-  "Return the value of URL's PROPERTY that is stored in the arrived URLs
-database.  If a page of URL has not arrived, return nil."
+  "Return the value of URL's PROPERTY stored in the arrived URLs database.
+If a page of URL has not arrived, return nil."
   (let ((symbol (intern-soft url w3m-arrived-db)))
     (and symbol (get symbol property))))
 
@@ -2196,20 +2202,20 @@ database.  If a page of URL has not arrived, return nil."
   `(w3m-arrived-get ,url 'title))
 
 (defmacro w3m-arrived-last-modified (url)
-  "Return the modification time of URL having stored in the arrived URLs
-database.  If a page of URL has not arrived yet, return nil."
+  "Return the mod time of URL having stored in the arrived URLs database.
+If a page of URL has not arrived yet, return nil."
   `(w3m-arrived-get ,url 'last-modified))
 
 (defmacro w3m-arrived-content-charset (url)
-  "Return the content charset of URL having stored in the arrived URLs
-database.  If it has not been specified or a page of URL has not
-arrived yet, return nil."
+  "Return the content charset of URL stored in the arrived URLs database.
+If it has not been specified or a page of URL has not arrived yet,
+return nil."
   `(w3m-arrived-get ,url 'content-charset))
 
 (defmacro w3m-arrived-content-type (url)
-  "Return the content type of URL having stored in the arrived URLs
-database.  If it has not been specified or a page of URL has not
-arrived yet, return nil."
+  "Return the content type of URL stored in the arrived URLs database.
+If it has not been specified or a page of URL has not arrived yet,
+return nil."
   `(w3m-arrived-get ,url 'content-type))
 
 (defun w3m-arrived-load-list ()
