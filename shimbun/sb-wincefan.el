@@ -1,4 +1,4 @@
-;;; sb-wincefan.el --- shimbun backend for Muchy's Palmware Review! -*- coding: iso-2022-7bit; -*-
+;;; sb-wincefan.el --- shimbun backend for WindowsCE FAN -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 
@@ -35,7 +35,7 @@
 
 (defconst shimbun-wincefan-url "http://www.wince.ne.jp/")
 (defvar shimbun-wincefan-groups '("news"))
-(defvar shimbun-wincefan-from-address "webmaster@wincefan.ne.jp")
+(defconst shimbun-wincefan-from-address "webmaster@wince.ne.jp")
 (defvar shimbun-wincefan-coding-system 'japanese-shift-jis)
 (defvar shimbun-wincefan-content-start "\n<BLOCKQUOTE><B>■トピックスの内容</B>")
 (defvar shimbun-wincefan-content-end "</BLOCKQUOTE>\n")
@@ -77,11 +77,11 @@
 		      (string-to-number year)
 		      (string-to-number month)
 		      (string-to-number day)))
-	       (rawdate 
-		(string-to-number 
-		 (concat year
-			 (format "%02d" (string-to-number month))
-			 (format "%02d" (string-to-number day)))))
+	       (rawdate	(string-to-number
+			 (format "%04d%02d%02d"
+				 (string-to-number year)
+				 (string-to-number month)
+				 (string-to-number day))))
 	       (end (save-excursion
 		      (or (re-search-forward 
 			   "<TR><TD VALIGN=TOP NOWRAP><FONT COLOR=\"[#A-Z0-9]+\" SIZE=-1>\\([0-9]+\\)月\\([0-9]+\\)日(\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))</FONT></TD>"
@@ -92,35 +92,47 @@
 	  (while (re-search-forward
 		  "\\[<A HREF=\"[^<>]+\"><FONT COLOR=\"[#A-Z0-9]+\" SIZE=-1>\\([^<>]+\\)<\\/FONT><\\/A>\\]"
 		  end t nil)
-	    (setq subject (match-string 1))
-	    (setq count (1+ count))
-	    (when (re-search-forward "<TD><A HREF=\"\\([^<>]+\\)\">" end t nil)
-	      (setq url (match-string 1)))
-	    (when (string-match "frame.asp\\?/" url)
-	      (setq url (concat (substring url 0 (match-beginning 0))
-				(substring url (match-end 0)))))
-	    (when (re-search-forward
-		   "<FONT SIZE=-1>\\([^<>]+\\)<\/FONT><\/A><\/TD>"
-		   end t nil)
-	      (setq subject (concat (if subject (concat subject "/")) (match-string 1))))
+	    (setq subject (match-string 1)
+		  count (1+ count))
 	    ;; building ID
 	    (setq id (format "<%02d%08d%%%s@%s>" count rawdate group baseurl))
 	    (if (shimbun-search-id shimbun id)
 		(throw 'stop nil))
-	    (push (shimbun-make-header
-		   0 (shimbun-mime-encode-string subject)
-		   from date id "" 0 0 url)
-		  headers)))))
+	    (catch 'next
+	      (unless (re-search-forward "<TD><A HREF=\"\\([^<>]+\\)\"" end t nil)
+		(throw 'next nil))
+	      (setq url (w3m-expand-url(match-string 1)))
+	      (when (string-match "frame.asp\\?/" url)
+		(setq url (concat (substring url 0 (match-beginning 0))
+				  (substring url (match-end 0)))))
+	      (when (re-search-forward
+		     "<FONT SIZE=-1>\\([^<>]+\\)<\/FONT><\/A><\/TD>"
+		     end t nil)
+		(setq subject (concat
+			       (when subject (concat subject "/"))
+			       (match-string 1))))
+	      (push (shimbun-make-header
+		     0 (shimbun-mime-encode-string subject)
+		     from date id "" 0 0 url)
+		    headers))))))
     headers))
 
 (luna-define-method shimbun-make-contents :before
   ((shimbun shimbun-wincefan) header)
   (let ((case-fold-search t))
     (save-excursion
-      (when (re-search-forward "^<BLOCKQUOTE>" nil t nil)
-	(delete-region (point) (point-min)))
-      (when (re-search-forward  "^<\/BLOCKQUOTE>" nil t nil)
-	(delete-region (match-beginning 0) (point-max))))))
+      (if (re-search-forward "^<BLOCKQUOTE>" nil t nil)
+	  (progn
+	    (delete-region (point) (point-min))
+	    (when (re-search-forward  "^<\/BLOCKQUOTE>" nil t nil)
+	      (delete-region (match-beginning 0) (point-max))))
+	(when (re-search-forward
+	       "<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=100% *>"
+	       nil t 2)
+	  (delete-region (point-min) (match-beginning 0))
+	  (when (re-search-forward "<!-- *右側メニューの呼び出し\/ *-->"
+				   nil t nil)
+	    (delete-region (point) (point-max))))))))
 
 (provide 'sb-wincefan)
 

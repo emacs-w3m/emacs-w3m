@@ -1,3 +1,14 @@
+2003-03-16  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-wincefan.el (shimbun-make-contents): Remove some more
+	advertisements.
+	(shimbun-get-headers): Search message-id before seaching html file
+	diligently.
+	Fix regexp.
+	Use `w3m-expand-url for URL.
+	(shimbun-wincefan-from-address): Typo fixed.
+	Declare with defconst.
+
 2003-03-14  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-muchy.el (shimbun-muchy-content-start): Updated.
