@@ -69,6 +69,8 @@
     (ctext		. *ctext*)
     (emacs-mule		. *internal*)
     (euc-japan		. *euc-japan*)
+    (euc-korea		. *euc-korea*)
+    (euc-kr		. *euc-kr*)
     (iso-2022-7bit	. *iso-2022-jp*)
     (iso-2022-7bit-ss2	. *iso-2022-ss2-7*)
     (iso-2022-jp	. *iso-2022-jp*)
@@ -183,29 +185,18 @@
 Return the first possible coding system.
 
 PRIORITY-LIST is a list of coding systems ordered by priority."
-  (let ((categories (mapcar
-		     (function 
-		      (lambda (x) 
-			(cdr (assq x w3m-om-coding-category-alist))))
-		     priority-list))
-			w3m-om-coding-category-alist))
-	opriority x)
-    (when categories
+  (let (categories opriority x)
+    (dolist (codesys priority-list)
+      (push (cdr (assq codesys w3m-om-coding-category-alist)) categories))
+    (when (setq categories (delq nil (nreverse categories)))
       (setq opriority (sort (copy-sequence w3m-om-coding-categories)
 			    'coding-priority<))
       (set-coding-priority categories))
     (prog2
 	(setq x (code-detect-region start end))
-	(if highest
-	    (progn
-	      (when (consp x)
-		(setq x (car x)))
-	      (w3m-om-modernize-coding-system x))
-	  (if (consp x)
-	      (if (= 1 (length x))
-		  (w3m-om-modernize-coding-system (car x))
-		(mapcar 'w3m-om-modernize-coding-system x))
-	    (w3m-om-modernize-coding-system x)))
+	(w3m-om-modernize-coding-system (if (consp x)
+					    (car x)
+					  x))
       (when opriority
 	(set-coding-priority opriority)))))
 

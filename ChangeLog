@@ -1,3 +1,10 @@
+2001-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-om.el (w3m-detect-coding-region): Make it work.
+
+	* w3m-xmas.el (w3m-detect-coding-region): Return the car of the
+	return value of `detect-coding-with-priority' if it is a list.
+
 2001-10-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-coding-system-priority-list): New user option.
@@ -10,13 +17,13 @@
 
 	* w3m-xmas.el (w3m-detect-coding-region): Ditto.
 
-	* w3m-om.el (w3m-detect-coding-region): Remove argument	`highest';
+	* w3m-om.el (w3m-detect-coding-region): Remove argument `highest';
 	always return the first possible coding system.
 	Add new optional argument `priority-list'.
 
 2001-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-om.el  (w3m-detect-coding-region): Return a non-list of a
+	* w3m-om.el (w3m-detect-coding-region): Return a non-list of a
 	coding-system if the number of return value is only one; use
 	`w3m-om-modernize-coding-system' and `w3m-om-coding-categories';
 	use `code-detect-region' instead of `detect-coding-region'.

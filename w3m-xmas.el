@@ -68,10 +68,14 @@
 Return the first possible coding system.
 
 PRIORITY-LIST is a list of coding systems ordered by priority."
-  (car (detect-coding-with-priority
-	start end
-	(mapcar (function (lambda (x) (cons (coding-system-type x) x)))
-		priority-list))))
+  (let ((codesys
+	 (detect-coding-with-priority
+	  start end
+	  (mapcar (function (lambda (x) (cons (coding-system-type x) x)))
+		  priority-list))))
+    (if (consp codesys)
+	(car codesys)
+      codesys)))
 
 ;;; Handle images:
 
