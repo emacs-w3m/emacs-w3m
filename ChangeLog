@@ -1,3 +1,16 @@
+2001-10-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-weather.el (w3m-weather-url-alist): Abolished.
+	(w3m-weather-completion-table): New constant.
+	(w3m-weather-default-area): Refer `w3m-weather-completion-table'
+	instead of `w3m-weather-url-alist' to decide customize spec.
+	(w3m-weather-input-history): New variable.
+	(w3m-weather-input-area): New function.
+	(w3m-weather-area-completion): Ditto.
+	(w3m-weather): Call `w3m-weather-input-area'.
+	(w3m-about-weather): Refer `w3m-weather-completion-table' instead
+	of `w3m-weather-url-alist' to convert the area to the real URL.
+
 2001-10-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-w3m-auto-insert-image): Change from 'defcustom'
