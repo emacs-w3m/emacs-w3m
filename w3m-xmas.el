@@ -81,6 +81,12 @@
 (unless (fboundp 'coding-system-list)
   (defalias 'coding-system-list 'ignore))
 
+;; If pccl.elc has been mis-compiled for XEmacs with MULE, the macro
+;; `define-ccl-program' wouldn't be an empty macro because of advice.
+(when (and (not (featurep 'mule))
+	   (featurep 'advice))
+  (ad-unadvise 'define-ccl-program))
+
 (unless (fboundp 'define-ccl-program)
   (defmacro define-ccl-program (&rest args)))
 

@@ -1,5 +1,9 @@
 2002-05-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-xmas.el (define-ccl-program): Remove advice when non-MULE.
+	It might be specified by pccl.elc if it has been mis-compiled for
+	XEmacs with MULE.
+
 	* w3m.el (w3m-delete-frame-maybe): Don't delete the current frame
 	if it is the sole frame in the screen.
 
