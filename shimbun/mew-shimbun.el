@@ -1004,8 +1004,10 @@ If called with '\\[universal-argument]', remove 'unseen' mark in the region."
 	   (unless all
 	     (when (setq cbuf (mew-cache-buffer-get (mew-cache-get fld msg)))
 	       (set-buffer cbuf)
-	       (mew-cinfo-set
-		fld msg (mew-file-get-time file) (mew-file-get-size file))))))))
+	       (mew-cinfo-set-fld fld)
+	       (mew-cinfo-set-msg msg)
+	       (mew-cinfo-set-time (mew-file-get-time file))
+	       (mew-cinfo-set-size (mew-file-get-size file))))))))
     ;; summary buffer
     (save-excursion
       (beginning-of-line)
