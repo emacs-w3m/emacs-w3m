@@ -180,6 +180,27 @@ emacs-w3m."
 	    (setq part-list (cdr part-list)))))
     (vm-decode-mime-layout start-part)))
 
+(eval-when-compile
+  (defvar vm-mail-buffer)
+  (defvar vm-presentation-buffer)
+  (autoload 'vm-buffer-variable-value "vm-misc"))
+
+(defun vm-w3m-safe-toggle-inline-images (&optional arg)
+  "Toggle displaying of all images in the presentation buffer.
+If the prefix arg is given, all images are considered to be safe."
+  (interactive "P")
+  (let ((buffer (cond ((eq major-mode 'vm-summary-mode)
+		       (vm-buffer-variable-value vm-mail-buffer
+						 'vm-presentation-buffer))
+		      ((eq major-mode 'vm-presentation-mode)
+		       (current-buffer))
+		      ((eq major-mode 'vm-mode)
+		       vm-presentation-buffer))))
+    (if (buffer-live-p buffer)
+	(save-excursion
+	  (set-buffer buffer)
+	  (w3m-safe-toggle-inline-images arg)))))
+
 (defun vm-w3m-uninstall ()
   "Don't let VM use emacs-w3m.
 To re-install it, load the vm-w3m module again."
