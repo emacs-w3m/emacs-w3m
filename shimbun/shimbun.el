@@ -77,7 +77,7 @@
 		     (mua server current-group groups
 			  x-face x-face-alist
 			  url coding-system from-address
-			  content-start content-end use-entire-index
+			  content-start content-end
 			  expiration-days))
   (luna-define-internal-accessors 'shimbun))
 
@@ -93,13 +93,6 @@
 
 (luna-define-generic shimbun-mua-search-id (mua id)
   "Return non-nil when MUA found a message structure which corresponds to ID.")
-
-(luna-define-generic shimbun-mua-use-entire-index (mua)
-  "Return non-nil when MUA requires entire index.")
-
-;; Default is use entire index.
-(luna-define-method shimbun-mua-use-entire-index ((mua shimbun-mua))
-  t)
 
 ;;; emacs-w3m implementation of url retrieval and entity decoding.
 (require 'w3m)
@@ -298,9 +291,6 @@ Optional MUA is a `shimbun-mua' instance."
 				    :content-start content-start
 				    :content-end content-end
 				    :expiration-days expiration-days
-				    :use-entire-index
-				    (if mua
-					(shimbun-mua-use-entire-index mua))
 				    :x-face-alist x-face-alist))
     (when mua
       (shimbun-mua-set-shimbun-internal mua shimbun))

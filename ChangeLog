@@ -1,5 +1,9 @@
 2001-06-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* shimbun/shimbun.el (shimbun): Removed slot `use-entire-index'.
+	(shimbun-mua::shimbun-mua-use-entire-index): Abolish.
+	(shimbun-open): Don't setup `use-entire-index' slot.
+
 	* shimbun/sb-slashdot-jp.el (shimbun-make-contents):
 	Decide charset dynamically.
 
