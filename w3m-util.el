@@ -225,6 +225,8 @@ cursor position and around there."
   "Kill the buffer BUFFER and remove it from `w3m-work-buffer-list'.
 The argument may be a buffer or may be the name of a buffer.
 An argument of nil means kill the current buffer."
+  (unless buffer
+    (setq buffer (current-buffer)))
   (when (stringp buffer)
     (setq buffer (get-buffer buffer)))
   (when (buffer-live-p buffer)

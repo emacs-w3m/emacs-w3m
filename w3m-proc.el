@@ -50,6 +50,7 @@
   ;; They should be defined in the other module at run-time.
   (defvar w3m-current-url)
   (defvar w3m-current-buffer)
+  (defvar w3m-current-process)
   (defvar w3m-profile-directory)
   (defvar w3m-terminal-coding-system)
   (defvar w3m-command)
@@ -60,7 +61,6 @@
 
 (defconst w3m-process-max 5 "The maximum limit of the working processes.")
 (defvar w3m-process-queue nil "Queue of processes.")
-(defvar w3m-process-queue-registrable-p nil)
 
 (defvar w3m-process-exit-status nil "The last exit status of a process.")
 (defvar w3m-process-user-alist nil)
@@ -118,16 +118,19 @@
        (vectorp (cdr object))
        (eq 'w3m-process-object (aref (cdr object) 0))))
 
-(defmacro w3m-process-new (arguments buffer &optional process handlers)
+(put 'w3m-process-new 'edebug-form-spec '(form form form &optional form form))
+(defmacro w3m-process-new (command arguments buffer &optional process handlers)
   "Return a new `w3m-process' object."
-  `(cons ,arguments
+  `(cons (cons ,command ,arguments)
 	 (vector 'w3m-process-object
 		 ,buffer
 		 ,process
 		 ,handlers)))
 
+(defmacro w3m-process-command (object)
+  `(car (car ,object)))
 (defmacro w3m-process-arguments (object)
-  `(car ,object))
+  `(cdr (car ,object)))
 (defmacro w3m-process-buffer (object)
   `(aref (cdr ,object) 1))
 (defmacro w3m-process-process (object)
@@ -135,6 +138,7 @@
 (defmacro w3m-process-handlers (object)
   `(aref (cdr ,object) 3))
 
+(put 'w3m-process-handler-new 'edebug-form-spec '(form form form))
 (defmacro w3m-process-handler-new (buffer parent-buffer function)
   `(vector ,buffer ,parent-buffer ,function))
 (defmacro w3m-process-handler-buffer (handler)
@@ -148,10 +152,9 @@
   "Generate a new `w3m-process' object which is provided by HANDLER,
 ARGUMENTS and this buffer, regist it to `w3m-process-queue', and
 return it."
-  (let ((x (assoc arguments w3m-process-queue)))
-    (unless (and w3m-process-queue-registrable-p
-		 x (not (w3m-process-process x)))
-      (setq x (w3m-process-new arguments (current-buffer)))
+  (let ((x (assoc (cons w3m-command arguments) w3m-process-queue)))
+    (unless x
+      (setq x (w3m-process-new w3m-command arguments (current-buffer)))
       (push x w3m-process-queue))
     (push (w3m-process-handler-new (current-buffer) w3m-current-buffer handler)
 	  (w3m-process-handlers x))
@@ -169,10 +172,10 @@ return it."
     (with-current-buffer (w3m-process-buffer object)
       (w3m-process-with-coding-system
 	(w3m-process-with-environment w3m-command-environment
-	  (let ((proc
-		 (apply 'start-process w3m-command
-			(current-buffer) w3m-command
-			(w3m-process-arguments w3m-process-object))))
+	  (let* ((command (w3m-process-command object))
+		 (proc (apply 'start-process command
+			      (current-buffer) command
+			      (w3m-process-arguments object))))
 	    (setf (w3m-process-process object) proc)
 	    (setq w3m-process-user nil
 		  w3m-process-passwd nil
@@ -198,12 +201,16 @@ number of current working processes is less than `w3m-process-max'."
 	    (w3m-process-kill-process (w3m-process-process obj))))))))
 
 (defun w3m-process-stop (buffer)
+  "Remove handlers related to the buffer BUFFER, and stop processes
+which have no handler."
   (interactive (list (current-buffer)))
   (setq w3m-process-queue
 	(delq nil
 	      (mapcar
 	       (lambda (obj)
 		 (let ((handlers
+			;; List up handlers related to other buffer
+			;; than the buffer BUFFER.
 			(delq nil
 			      (mapcar
 			       (lambda (handler)
@@ -214,6 +221,7 @@ number of current working processes is less than `w3m-process-max'."
 			       (w3m-process-handlers obj)))))
 		   (if handlers
 		       (w3m-process-new
+			(w3m-process-command obj)
 			(w3m-process-arguments obj)
 			(w3m-process-buffer obj)
 			(w3m-process-process obj)
@@ -222,14 +230,20 @@ number of current working processes is less than `w3m-process-max'."
 					    (w3m-process-handler-buffer x))
 					  handlers))
 			    handlers
-			  (cons (lambda (x) (kill-buffer (current-buffer)))
-				handlers)))
+			  (cons
+			   ;; Dummy handler to remove buffer.
+			   (w3m-process-handler-new
+			    (w3m-process-buffer obj)
+			    (w3m-process-handler-parent-buffer (car handlers))
+			    (lambda (x) (w3m-kill-buffer (current-buffer))))
+			   handlers)))
 		     (when (w3m-process-process obj)
 		       (w3m-process-kill-process (w3m-process-process obj)))
 		     (dolist (handler (w3m-process-handlers obj))
-		       (kill-buffer (w3m-process-handler-buffer handler)))
+		       (w3m-kill-buffer (w3m-process-handler-buffer handler)))
 		     nil)))
-	       w3m-process-queue))))
+	       w3m-process-queue))
+	w3m-current-process nil))
 
 (defun w3m-process-shutdown ()
   (let ((list w3m-process-queue))
@@ -244,8 +258,7 @@ number of current working processes is less than `w3m-process-max'."
   "Generate the null handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the null
 handler."
-  `(let ((w3m-process-queue-registrable-p t)
-	 (handler (symbol-function 'identity)))
+  `(let ((handler (symbol-function 'identity)))
      ,@body
      (w3m-process-start-queued-processes)))
 (put 'w3m-process-with-null-handler 'lisp-indent-function 0)

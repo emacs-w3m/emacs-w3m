@@ -1,3 +1,46 @@
+2001-11-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Changes to avoid that multi async processes are started
+	in the same buffer.
+	(w3m-current-process): New internal variable to protect parallel
+	retriving.
+	(w3m-attributes, w3m-base-url, w3m-content-charset,
+	w3m-content-encoding, w3m-content-length, w3m-content-type,
+	w3m-last-modified, w3m-real-url): Asynchronized.
+	(w3m-toggle-inline-images-internal): Set `w3m-current-buffer' to
+	this buffer locally, in order to classify the generated async
+	process to the appropriate buffer.
+	(w3m-toggle-inline-images): Stop processes which are retrieving
+	images of this buffer.
+	(w3m-retrieve-and-render): Remove redundant `let'.
+	(w3m-view-this-url): Refontify anchor.
+	(w3m-lynx-like-map, w3m-info-like-map): Bind `C-cC-g' as the key
+	to call `w3m-process-stop'.
+	(w3m-goto-url): Check `w3m-current-process' to avoid reenterant
+	and set it to the value of `w3m-retrieve-and-render'; Before the
+	retrieving process of the next page is started, select this buffer
+	in the current window and stop processes which are retrieving
+	images of this buffer.
+	(w3m): Not select this buffer in the current window.
+
+	* w3m-proc.el (top): Define `w3m-current-process' to avoid
+	byte-compile warning.
+	(w3m-process-queue-registrable-p): Abolished.
+	(w3m-process-new): Its argument spec is changed; Changed the
+	strucuture of `w3m-process' object.
+	(w3m-process-command): New macro.
+	(w3m-process-arguments): Follow the structural change of
+	`w3m-process' object.
+	(w3m-process-push): Likewise; Follow change of `w3m-process-new';
+	No check for `w3m-process-queue-registrable-p'.
+	(w3m-process-start-process): Follow the structural change of
+	`w3m-process' object.
+	(w3m-process-stop): Ditto.
+	(w3m-process-with-null-handler): No check for
+	`w3m-process-queue-registrable-p'.
+
+	* w3m-util.el (w3m-kill-buffer): Fix code to kill this buffer.
+
 2001-11-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-select-buffer): Fix window height calculation when
