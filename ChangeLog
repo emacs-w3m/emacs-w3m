@@ -1,3 +1,8 @@
+2002-02-05  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-util.el (w3m-which-command): If called with `not string',
+	return nil.
+
 2002-02-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-touch-file-avaiable-p): New internal variable.

@@ -332,18 +332,19 @@ Otherwise return nil."
   (string-match "^\\(file:\\|/\\|[a-zA-Z]:/\\)" url))
 
 (defsubst w3m-which-command (command)
-  (if (and (file-name-absolute-p command)
-	   (file-executable-p command))
-      command
-    (setq command (file-name-nondirectory command))
-    (catch 'found-command
-      (let (bin)
-	(dolist (dir exec-path)
-	  (when (or (file-executable-p
-		     (setq bin (expand-file-name command dir)))
-		    (file-executable-p
-		     (setq bin (expand-file-name (concat command ".exe") dir))))
-	    (throw 'found-command bin)))))))
+  (when (stringp command)
+    (if (and (file-name-absolute-p command)
+	     (file-executable-p command))
+	command
+      (setq command (file-name-nondirectory command))
+      (catch 'found-command
+	(let (bin)
+	  (dolist (dir exec-path)
+	    (when (or (file-executable-p
+		       (setq bin (expand-file-name command dir)))
+		      (file-executable-p
+		       (setq bin (expand-file-name (concat command ".exe") dir))))
+	      (throw 'found-command bin))))))))
 
 (defun w3m-get-user-passwd-from-url (url)
   "Ruturn user and passwd included URL."
