@@ -2,11 +2,8 @@ $Date$
 
 ■ TODO
 
-   --> 動作全体の非同期化
-       --> タブ(またはへッダ)への状態表示
-       --> retrieve に失敗した場合、カーソルが先頭に移動してしまう
-
-   --> <meta http-equiv="Refresh" content="0; URL=http://.../"> の対応
+   --> configure 時に --with-icondir=... で指定した値を自動的に 
+       w3m-icon-directory の初期値として反映してほしい．[emacs-w3m:03912]
 
    --> frame 対応
 
