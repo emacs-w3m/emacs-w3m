@@ -6682,7 +6682,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
 				    (string-equal "<no-title>" title)
 				    (string-match "^[\t 　]*$" title))
 				url
-			      title)
+			      (w3m-encode-specials-string title))
 			    (if about "&gt;" "")))))
 	(sort-fields 0 start (point-max))
 	(goto-char start)

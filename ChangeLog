@@ -1,5 +1,8 @@
 2003-07-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-about-history): Encode special charactes included in
+	a title.
+
 	* w3m-bookmark.el (w3m-bookmark-add): Encode special charactes
 	included in a URL and a title.
 
