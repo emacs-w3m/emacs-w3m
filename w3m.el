@@ -3860,7 +3860,8 @@ type as a string argument, when retrieve is complete."
 		      w3m-halfdump-command-common-arguments
 		      ;; Image size conscious rendering
 		      (if (member "image" w3m-compile-options)
-			  (if w3m-treat-image-size
+			  (if (and w3m-treat-image-size
+				   (w3m-display-graphic-p))
 			      (append
 			       (list "-o" "display_image=on")
 			       (when (w3m-display-graphic-p)
