@@ -33,16 +33,19 @@ This package contains a interface program of w3m.
       such versions of Emacs, you have to install the module regexp-
       opt.el(c) before installing emacs-w3m as follows:
 
-          % cp attic/regexp-opt.el /usr/local/share/mule/site-lisp
-          % cd /usr/local/share/mule/site-lisp
-          % mule -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
+         % cp attic/regexp-opt.el /usr/local/share/mule/site-lisp
+         % cd /usr/local/share/mule/site-lisp
+         % mule -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
 
    e) If you want to use shimbun library of Emacs-w3m, you have to
-      install FLIM.
+      install FLIM package.
 
       Since FLIM depends on APEL described in c) above, you have to
-      install APEL even if you use Emacsen other than XEmacs/Mule-2.3
-      (you have to install APEL and succeedingly, FLIM).
+      install APEL even if you use one of Emacsen other than
+      XEmacs/Mule-2.3 (you have to install APEL, and succeedingly
+      FLIM).  You can get FLIM at:
+
+         ftp://ftp.m17n.org/pub/mule/flim/ 
 
       For more detail abut shimbun library, see README.shimbun.ja
       (sorry, Japanese only).

@@ -1,5 +1,7 @@
 2001-10-15  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
+	* README: Add description about ftp site of FLIM.
+
 	* shimbun/sb-w3m-dev.el (shimbun-get-headers, shimbun-article):
 	Use `shimbun-coding-system-internal' to access coding-system of
 	shimbun-w3m-dev instead of referring to
