@@ -7,8 +7,9 @@
 	(w3mhack-generate-load-file): Allow the optional arg which
 	overrides `w3mhack-load-file'; use `autoload-ensure-default-file'
 	if it is available; provide the feature at the beginning of the
-	file; also provide `w3m-autoloads' in XEmacs; use
-	`w3mhack-update-files-autoloads'.
+	file; if it is used for the XEmacs package, add a code to check
+	whether the file has already been loaded, and provide the
+	`w3m-autoloads' feature; use `w3mhack-update-files-autoloads'.
 
 2004-04-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
