@@ -5,6 +5,7 @@
 
 	* shimbun/sb-slashdot-jp.el
 	(shimbun-slashdot-jp-parse-date-string): `12PM' means noon.
+	'12AM' means at night.
 
 2002-03-01  Yuuichi Teranishi  <teranisi@gohome.org>
 

@@ -178,9 +178,11 @@
 	  (day   (string-to-number (match-string 2)))
 	  (hour  (string-to-number (match-string 3)))
 	  (min   (string-to-number (match-string 4))))
-      (when (and (match-beginning 6)	;; PM id found
-		 (not (= hour 12)))	;; not noon
-	(setq hour (+ 12 hour)))
+      (cond
+       ((and (match-beginning 6) (not (= hour 12)))	;; 0PM-11PM
+	(setq hour (+ 12 hour)))			;; 12PM means 12:00
+       ((and (not (match-beginning 6)) (= hour 12))	;; 12AM means 0:00
+	(setq hour (- 12 hour))))
       (shimbun-make-date-string (if (and (= month 1)
 					 (> (nth 4 time) month))
 				    (1+ (nth 5 time))
