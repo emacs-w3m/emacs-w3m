@@ -33,7 +33,10 @@
 
 (defvar shimbun-zeit-de-content-start "title\">")
 (defvar shimbun-zeit-de-content-end
-  "navigation[^>]*>[^A]\\|</p></p></td>\\|\<script\\|</body>\\|</html>")
+  (concat
+   "</body>\\|</html>\\|navigation[^><]*>[^A]\\|"
+   "<script language=\"JavaScript1\.2\" type=\"text/javascript\">"))
+
 (defvar shimbun-zeit-de-from-address "DieZeit@zeit.de")
 
 (luna-define-method shimbun-headers :before ((shimbun shimbun-zeit-de)
@@ -79,6 +82,16 @@
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-zeit-de))
   "http://newsfeed.zeit.de/")
+
+(luna-define-method shimbun-clear-contents :after ((shimbun shimbun-zeit-de)
+						    header)
+
+  ;;  remove advertisements and 1-pixel-images aka webbugs
+  (shimbun-remove-tags "<a[^>]*doubleclick.net" "</a>")
+  (shimbun-remove-tags "<IFRAME[^>]*doubleclick.net[^>]*>")
+  (shimbun-remove-tags "<img[^>]*doubleclick.net[^>]*>")
+  (shimbun-remove-tags "<img[^>]*\\(width\\|height\\)=\"1px\"[^>]*>")
+  (shimbun-remove-tags "<tr><td[^>]*>Anzeige</td></tr>"))
 
 (provide 'sb-zeit-de)
 
