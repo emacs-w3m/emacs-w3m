@@ -1,3 +1,7 @@
+2003-03-12  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-palmoslove.el: New file.
+
 2003-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-savannah.el (shimbun-savannah-group-path-alist): Add
