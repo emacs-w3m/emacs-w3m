@@ -130,6 +130,7 @@ NOTE: This function is slightly modified from `make-ccl-coding-system'
 		coding-system-category
 		coding-system-list
 		coding-system-name
+		coding-system-type
 		set-coding-category-system
 		set-coding-priority-list))
     (unless (fboundp fn)
