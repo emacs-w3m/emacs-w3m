@@ -1,3 +1,8 @@
+2002-07-09  Hironori FUJII  <fujii@chi.its.hiroshima-cu.ac.jp>
+
+	* w3m.el (w3m-highlight-current-anchor): Don't infloop at the
+	beginning of a buffer.
+
 2002-07-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-fml.el (shimbun-make-contents): Insert <base> tag.
@@ -9,7 +14,7 @@
 
 	* shimbun/sb-text.el (shimbun-make-contents): Use
 	`shimbun-header-insert-and-buffer-string'.
-	
+
 	* shimbun/shimbun.el (shimbun-header-insert-and-buffer-string):
 	New function.
 
