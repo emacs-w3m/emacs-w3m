@@ -16,8 +16,8 @@
 	Emacs-21
 	XEmacs-21.1 with Mule
 	XEmacs-21.2 with Mule (beta37以降)
-	XEmacs-21.4 with Mule 
-	XEmacs-21.5 with Mule 
+	XEmacs-21.4 with Mule
+	XEmacs-21.5 with Mule
 	Meadow
 
    なお，Mule-2.3 及び XEmacs では APEL が必要となります．APEL は
@@ -30,14 +30,14 @@
 	w3m-0.2.1 (制限あり)
 	w3m-0.2.1-inu-1.3
 	w3mmee-p19-6
-	w3m-m17n-0.19 + m17n-dump-coding.patch
+	w3m-m17n-0.19 + w3m-m17n-mnc.patch
 
 * トラブル
 
 ** Q. リンクを辿ることができません．
 
    w3m-0.2.1 を使っている場合，redirection を処理できないため，一部のペー
-   ジでリンクを辿れないことがあります．佐藤大さんによって公開されている 
+   ジでリンクを辿れないことがあります．佐藤大さんによって公開されている
    w3m-0.2.1-inu-patch を適用した w3m に更新されることを，強くお勧めしま
    す．
 
@@ -71,14 +71,14 @@
        で，対処してください．
 
        (a) Mule-UCS をインストールすると，Unicode で定義されている範囲の
-           文字は表示できるようになります．インストール後，オプション 
+           文字は表示できるようになります．インストール後，オプション
            w3m-use-mule-ucs が nil 以外の値に設定されていることを確認し
            てください．なお，EUC-JISX0213 や ISO-2022-JP-3 などの文字コー
            ドの場合は，Mule-UCS に附属の jisx0213.el もインストールする
            必要があります．
 
-       (b) w3mmee や w3m-m17n をインストールして，オプション w3m-command 
-           に適切な値を設定してください．このように設定すると，emacs-w3m 
+       (b) w3mmee や w3m-m17n をインストールして，オプション w3m-command
+           に適切な値を設定してください．このように設定すると，emacs-w3m
            は，これらのプログラムが提供する多言語機能を利用するようにな
            ります．
 
@@ -86,7 +86,7 @@
 
        ネットワークの帯域幅を節約するため，データストリームが圧縮されて
        いる場合があります(例: http://freshmeat.net/)．このようなページを
-       閲覧するためには，佐藤大さんが公開されている w3m-0.2.1-inu-patch 
+       閲覧するためには，佐藤大さんが公開されている w3m-0.2.1-inu-patch
        を適用した w3m か，または w3mmee-p19-3 以降を使う必要があります．
        以下のページで探してください．
 
@@ -135,7 +135,7 @@
 
    この機能を使うには，-post オプションを認識する w3m コマンドが必要です．
    佐藤大さんによって公開されている最新の w3m-0.2.1-inu-patch を適用した
-   の w3m か，または w3mmee-p19-6 以降が利用できます．w3m-0.2.1-inu-patch
+   w3m か，または w3mmee-p19-6 以降が利用できます．w3m-0.2.1-inu-patch
    は，以下のページで探してください．
 
        http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/index.html
