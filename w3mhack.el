@@ -700,7 +700,8 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 				    (read buffer)
 				  (error nil)))
 		(while form
-		  (setq elem (pop form))
+		  (setq elem (car-safe form)
+			form (cdr-safe form))
 		  (unless (memq (car-safe elem)
 				'(\` backquote defcustom defface defgroup
 				  define-widget quote))
