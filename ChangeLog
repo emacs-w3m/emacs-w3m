@@ -1,19 +1,26 @@
+2002-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-form.el (w3m-form-new): Ignore the 2nd arg `action' if it is
+	nil.
+	(w3m-form-parse-forms): Don't parse the value of `w3m-current-url'
+	if it is nil.
+
 2002-03-13  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-mode-display): Remove
 	no meaning `force-mode-line-update'.
 	(mew-shimbun-scan): Change to inline function and an
 	argument. Add to support Mew's new `mew-local-retrieve' function.
-	(mew-shimbun-retrieve, mew-shimbun-retrieve-all) 
-	(mew-shimbun-re-retrieve, mew-shimbun-re-retrieve-all) 
+	(mew-shimbun-retrieve, mew-shimbun-retrieve-all)
+	(mew-shimbun-re-retrieve, mew-shimbun-re-retrieve-all)
 	(mew-shimbun-unseen-check): Call `mew-shimbun-scan' with folder
 	name.
 
-2002-03-12  SAITO Takuya <reed@lily.freemail.ne.jp>	
-	
+2002-03-12  SAITO Takuya <reed@lily.freemail.ne.jp>
+
 	* shimbun/sb-ruby.el (shimbun-index-url): Search articles
 	from `(point-max)' for checking all articles.
-	
+
 2002-03-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Release emacs-w3m-1.2.6 from emacs-w3m-1_2 branch.
