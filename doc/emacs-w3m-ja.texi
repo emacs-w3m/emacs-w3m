@@ -154,11 +154,11 @@ Basic Usage
 * Browsing Web Pages::          $B%M%C%H%5!<%U%#%s$7$h$&(B!
 * Inline Images::               $B2hA|I=<($r(B ON/OFF $B$9$k(B
 * Tracing History::             $B2a5n$N%Z!<%8$r?6$jJV$k(B
-* Putting Bookmarks::           $B$\$/$N(B/$B$o$?$7$N$*5$$KF~$j(B
+* Managing Bookmarks::          $B$\$/$N(B/$B$o$?$7$N$*5$$KF~$j(B
 * Using Tabs::                  $B$3$l$,N.9T$N%?%V!&%V%i%&%6!<$@(B
 * Selecting Buffers::           $B$?$/$5$s$N%;%C%7%g%s$+$i0l$D$rA*$V(B
 * Downloading::                 $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
-* Submitting Forms::            $BF~NO%(%j%"$K5-F~$9$k(B
+* Submitting Forms::            HTML $B%U%)!<%`$K5-F~$9$k(B
 
 Pretty Good Features
 
@@ -271,8 +271,8 @@ Requirements})$B!#(B
 
 Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r!"%&%'%V%3%s%F%s%D$r<hF@$9$k$?$a$N%P%C%/(B
 $B%(%s%I$H$7$F!"$^$?$O(B HTML $B$NK]Lu%(%s%8%s$H$7$F;HMQ$7$^$9(B; $B$=$&$7$F!";d$?(B
-$B$A$OHsF14|F0:n$K$h$C$F2CB.$5$l$?(B Emacs $B%&%'%V!&%V%i%&%6$r<B8=$9$k$3$H$,(B
-$B$G$-$^$7$?!#(B
+$B$A$OHsF14|F0:n$K$h$C$F2CB.$5$l$?(B Emacs $B%&%'%V!&%V%i%&%6!<$r<B8=$9$k$3$H(B
+$B$,$G$-$^$7$?!#(B
 
 $B$"$J$?$O:G?7$N(B w3m $B$r%$%s%9%H!<%k$7$J$1$l$P$J$j$^$;$s!#$=$l$O0J2<$N>l=j(B
 $B$G<hF@$G$-$^$9(B:
@@ -620,11 +620,11 @@ setenv http_proxy http://proxy.hogege.com:8000/
 * Browsing Web Pages::          $B%M%C%H%5!<%U%#%s$7$h$&(B!
 * Inline Images::               $B2hA|I=<($r(B ON/OFF $B$9$k(B
 * Tracing History::             $B2a5n$N%Z!<%8$r?6$jJV$k(B
-* Putting Bookmarks::           $B$\$/$N(B/$B$o$?$7$N$*5$$KF~$j(B
+* Managing Bookmarks::          $B$\$/$N(B/$B$o$?$7$N$*5$$KF~$j(B
 * Using Tabs::                  $B$3$l$,N.9T$N%?%V!&%V%i%&%6!<$@(B
 * Selecting Buffers::           $B$?$/$5$s$N%;%C%7%g%s$+$i0l$D$rA*$V(B
 * Downloading::                 $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
-* Submitting Forms::            $BF~NO%(%j%"$K5-F~$9$k(B
+* Submitting Forms::            HTML $B%U%)!<%`$K5-F~$9$k(B
 @end menu
 
 @node Browsing Web Pages
@@ -639,9 +639,111 @@ setenv http_proxy http://proxy.hogege.com:8000/
 @section $B2a5n$N%Z!<%8$r?6$jJV$k(B
 
 
-@node Putting Bookmarks
+@node Managing Bookmarks
 @section $B$\$/$N(B/$B$o$?$7$N$*5$$KF~$j(B
+@cindex Bookmarks
 
+$B8=BeE*$J$"$^$?$N%V%i%&%6!<$NNc$KO3$l$:!"(Bemacs-w3m $B$K$O@h?J$N%V%C%/%^!<%/(B
+$B$N5!G=$,$"$j$^$9(B: $B$=$l$K$h$C$F%+%F%4%j!<Kh$KJ,N`$7!"$=$l$i$rJT=8$7!"$"$"!"(B
+$B$b$A$m$s4JC1$K1\Mw$9$k$3$H$,$G$-$^$9!#(B
+
+$BF|K\8lHGCm<a(B: $B%V%C%/%^!<%/$N8l8;$O!"K\$K64$`[Y(B ($B$7$*$j(B) $B$N$3$H$G$9!#(B
+
+@menu
+* Adding Bookmarks::            $B$*5$$KF~$j$K(B URL $B$r2C$($k(B
+* Consulting Bookmarks::        $B%V%C%/%^!<%/$r1\Mw$9$k(B
+* Editing Bookmarks::           $B%V%C%/%^!<%/$rJQ99$9$k$K$O(B?
+@end menu
+
+@node Adding Bookmarks
+@subsection $B$*5$$KF~$j$K(B URL $B$r2C$($k(B
+@cindex Adding a bookmark
+@kindex a
+@kindex C-u a
+@findex w3m-bookmark-add-current-url
+@kindex M-a
+@findex w3m-bookmark-add-this-url
+
+$B%V%C%/%^!<%/$K(B URL $B$r2C$($k$K$O!"$$$/$D$+$N$d$jJ}$,$"$j$^$9!#:G=i$N0l$D(B
+$B$O!"(B@kbd{a} $B%-!<$r;H$C$F(B ($B$^$?$O(B @code{w3m-bookmark-add-current-url} $B%3(B
+$B%^%s%I$r8F$s$G(B) $B:#8=:_1\Mw$7$F$$$k%Z!<%8$r2C$($k$3$H$G$9(B: $B$9$k$H!"$=$N%V%C(B
+$B%/%^!<%/$r$I$N9`L\$KF~$l$k$+$r?R$M$i$l(B (@key{TAB} $B%-!<$K$h$kJd40$,8z$-$^(B
+$B$9(B)$B!"%?%$%H%k$N=q$-49$($,B%$5$l$^$9(B ($B%G%U%)%k%H$O!"$=$N%Z!<%8$N%?%$%H%k(B
+$B$K$J$C$F$$$^$9(B)$B!#$3$l$i$NFs$D$r$3$J$7$?$i!"$=$l$i$rM-8z$K$9$k$?$a(B
+$B$K(B @kbd{RET} $B$rC!$$$F2<$5$$!#$9$k$H(B ``Added'' $B$H$$$&%a%C%;!<%8$,%_%K%P%C(B
+$B%U%!$K8=$l$F!"(B($B$&$m$?$($k$J$+$l(B!) $B$=$N%Z!<%8$,%V%C%/%^!<%/$K5-O?$5$l$^$9!#(B
+
+$B%V%C%/%^!<%/$r2C$($k$b$&0l$D$NJ}K!$O!"(B@kbd{M-a} $B$r;H$&(B ($B$^$?(B
+$B$O(B @code{w3m-bookmark-add-this-url} $B%3%^%s%I$r8F$V(B) $B$3$H$G$9(B: $B$3$l$O!"8=(B
+$B:_0LCV$N(B URL ($B$b$7$=$N%j%s%/$rC)$k$H!"1\Mw$9$k$3$H$,$G$-$k(B URL) $B$r%V%C%/(B
+$B%^!<%/$K2C$($^$9!#$=$N>l9g$G$b:G=i$K@bL@$7$?J}K!$HF1MM$K!"9`L\$NL>A0$H%?(B
+$B%$%H%k$rF~NO$7$J$1$l$P$J$j$^$;$s!#$=$N$H$-!"$=$l$i$N%G%U%)%k%H$O%j%s%/<+(B
+$BBN$NL>A0$K$J$C$F$$$^$9!#(B
+
+$B:G8e$K!";0HVL\$NJ}K!$O(B @kbd{C-u a} $B$rC!$/$3$H$G$9!#$3$N$H$-$O!"%V%C%/%^!<(B
+$B%/$K2C$($k(B URL$B!"$=$N9`L\!"$*$h$S%?%$%H%k$NF~NO$,B%$5$l$^$9!#(B
+
+@table @kbd
+@item a
+$B8=:_$N%Z!<%8$r%V%C%/%^!<%/$K2C$($^$9!#@\F,0z?tIU$-$G8F$P$l$?>l9g$O!"2C$((B
+$B$k(B URL $B$NF~NO$,5a$a$i$l$^$9(B (@code{w3m-bookmark-add-current-url})$B!#(B
+
+@item M-a
+$B8=:_0LCV$N(B URL $B$r%V%C%/%^!<%/$K2C$($^(B
+$B$9(B (@code{w3m-bookmark-add-this-url})$B!#(B
+@end table
+
+@node Consulting Bookmarks
+@subsection $B%V%C%/%^!<%/$r1\Mw$9$k(B
+@cindex Consulting bookmarks
+@kindex v
+@findex w3m-bookmark-view
+
+$B%V%C%/%^!<%/$5$l$?%Z!<%8$r1\Mw$9$k:G$b4JC1$JJ}K!$O!"(Bemacs-w3m $B$N%P%C%U%!(B
+$B$G(B @kbd{v} $B%-!<$rC!$/$3$H$G$9(B; $B$G$9$,$b$&0l$D!"FCJL$J(B URL $B$G$"(B
+$B$k(B @uref{about://bookmark/} $B$K9T$/$3$H$K$h$C$F$b2DG=$G$9!#$9$k$H0l9T$"$?(B
+$B$j0l$D$:$D$N%V%C%/%^!<%/$,!"9`L\$4$H$K$^$H$a$i$l$FI=<($5$l$k$G$7$g$&!#$=(B
+$B$3$G$O!"B>$N%Z!<%8$r1\Mw$9$k$N$HF1$8$h$&$K!"$=$l$i$r3N<B$K1\Mw$9$k$3$H$,(B
+$B$G$-$^$9!#(B
+
+$B%V%C%/%^!<%/$N%Z!<%8$G$O(B bookmark $B%^%$%J!<%b!<%I$,F/$$$F$$$^$9!#$=$l$O!"(B
+$B%V%C%/%^!<%/$rJT=8$9$k$?$a$N%-!<%P%$%s%I$rDI2C$7$^$9!#(B@xref{Editing
+Bookmarks}$B!#(B
+
+@table @kbd
+@item v
+Visit the bookmarks page (@code{w3m-bookmark-view}).
+@end table
+
+@node Editing Bookmarks
+@subsection $B%V%C%/%^!<%/$rJQ99$9$k$K$O(B?
+@cindex Editing bookmarks
+@findex w3m-bookmark-kill-entry
+@findex w3m-bookmark-edit
+@findex w3m-bookmark-undo
+
+Bookmark $B%^%$%J!<%b!<%I(B (@pxref{Consulting Bookmarks}) $B$O!"%V%C%/%^!<%/(B
+$B$rJT=8$9$k$?$a$K$$$/$D$+$N%-!<%P%$%s%I$r@_$1$F$$$^$9!#Cf$G$b%V%C%/%^!<%/(B
+$B$r(B kill ($B$9$J$o$A>C5n(B) $B$9$k$?$a$N(B @kbd{C-k} $B$H%V%C%/%^!<%/!&%U%!%$%k$rJT(B
+$B=8$9$k$?$a$N(B @kbd{E} $B$O!":G$bCmL\$KCM$7$^$9!#(B
+
+$B%V%C%/%^!<%/$O(B HTML $B%U%!%$%k$K<}$a$i$l$F$$$^$9!#$7$?$,$C$F$=$N%U%!%$%k$O(B
+$B<j$GJT=8$9$k$3$H$,$G$-$^$9$,!"==J,$KCm0U$7$F2<$5$$(B: emacs-w3m $B$,9`L\L>$r(B
+$BG'<1$9$k$?$a$KI,MW$J%3%a%s%H$r>C$7$F$7$^$&$3$H$K$h$C$F!"J*;v$r2u$7$F$7$^(B
+$B$&$N$O4JC1$G$9!#$"$J$?$,(B HTML $B$N4pK\$rCN$C$F$$$l$P!"$`$7$m%U%!%$%k$O6K$a(B
+$B$FJ,$+$j0W$$$b$N$G$7$g$&!#(B
+
+@table @kbd
+@item C-k
+$B8=:_0LCV$N%V%C%/%^!<%/$r(B kill $B$7$^$9(B (@code{w3m-bookmark-kill-entry})$B!#(B
+
+@item E
+$B%V%C%/%^!<%/!&%U%!%$%k$rFI$_9~$s$G!"JT=82DG=$J>uBV$K$7$^(B
+$B$9(B (@code{w3m-bookmark-edit})$B!#(B
+
+@item C-_
+$B$d$jD>$7$r$7$^$9(B (@code{w3m-bookmark-undo})$B!#(B
+@end table
 
 @node Using Tabs
 @section $B$3$l$,N.9T$N%?%V!&%V%i%&%6!<$@(B
@@ -656,8 +758,41 @@ setenv http_proxy http://proxy.hogege.com:8000/
 
 
 @node Submitting Forms
-@section $BF~NO%(%j%"$K5-F~$9$k(B
+@section HTML $B%U%)!<%`$K5-F~$9$k(B
 
+These emacs-w3m commands let you move between forms and fill in fields,
+using simple key bindings and optionally prompting you for values in
+Emacs windows or in the minibuffer.
+
+The main key binding to remember is @kbd{RET}.  It has different
+meanings, depending on the thing under point: for textareas, you will be
+prompted for a value in the minibuffer.  For select tags, you will be
+given a list of choices in an electric Emacs window (you can move using
+the arrow keys, and pick one with the @kbd{RET} key).  For radio and
+checkbox buttons, the @kbd{RET} key selects one of the elements.
+
+When in the minibuffer or in the electric window, you can cancel with
+the @kbd{C-c C-q} sequence.  To submit the form, use @kbd{C-c C-c}.
+
+@table @kbd
+@item ]
+Jump to the next form (@code{w3m-next-form}).
+
+@item [
+Jump to the previous form (@code{w3m-previous-form}).
+
+@item C-c C-c
+Submit form at point (@code{w3m-submit-form}).
+
+@item RET
+Edit the value of the form item under point.
+
+@item RET @r{(w3m-form-*-keymap)}
+Accept the value.
+
+@item C-c C-q @r{(w3m-form-*-keymap)}
+Quit editing the form item, leaving changes.
+@end table
 
 @node Pretty Good Features
 @chapter $B$?$/$5$s$N$9$0$l$b$N(B
@@ -676,9 +811,7 @@ setenv http_proxy http://proxy.hogege.com:8000/
 
 @node Using Search Engines
 @section $B;H$$$d$9$$%&%'%V8!:w(B
-
 @cindex Search engines
-@findex w3m-search
 
 Emacs-w3m $B$K$O8!:w%(%s%8%s$rMxMQ$9$k$?$a$N@h?J$N5!G=$,$"$j!"Fs$D$N%$%s%?!<(B
 $B%U%'!<%9$rDL$7$FMxMQ$9$k$3$H$,$G$-$^$9(B:
@@ -706,6 +839,7 @@ Emacs-w3m $B$K$O8!:w%(%s%8%s$rMxMQ$9$k$?$a$N@h?J$N5!G=$,$"$j!"Fs$D$N%$%s%?!<(B
 @subsection Emacs-w3m $B$K$h$k8!:w$N$d$jJ}(B
 @cindex Searching
 @kindex S
+@findex w3m-search
 @vindex w3m-search-default-engine
 
 Emacs-w3m $B$N%P%C%U%!!<$G(B @kbd{S} $B%-!<$r;H$&$3$H$K$h$j(B ($B%G%U%)%k%H$N%-!<(B
@@ -728,6 +862,12 @@ Options} $B;2>H(B) $B$r%+%9%?%^%$%:$9$k$3$H$K$h$C$F!"$3$N?6$kIq$$$rJQ99$9$k$3
 $B$rB%$9$N$G!"$=$NL>A0$r0l$DA*$V$3$H$,$G$-$^$9(B (@key{TAB} $B%-!<$GJd40$,$G$-(B
 $B$^$9(B)$B!#$$$C$?$sA*Br$7$?$i(B @kbd{RET} $B%-!<$rC!$$$F2<$5$$!#$=$N8e$G8!:w8l$r(B
 $BF~NO$9$k$3$H$,$G$-!"(B@kbd{RET} $B$r%?%$%W$9$l$P8!:w7k2L$,8=$l$k$G$7$g$&!#(B
+
+@table @kbd
+@item S
+Begin a new search.  If called with a prefix argument, prompt for the
+engine to use (@code{w3m-search}).
+@end table
 
 @node Quick Searching
 @subsection $B$b$&0l$D$N(B ($B$=$7$FB.$$(B) $B%&%'%V8!:w(B
@@ -846,7 +986,26 @@ Emacs-w3m $B$OMxMQ2DG=$JB?$/$N8!:w%(%s%8%s$r;}$C$F$$$^$9!#$"$J$?$N$*5$$KF~(B
 
 @node Grouping URLs
 @section $B0l$D$N(B URL $B$GJ#?t$N%&%'%V%Z!<%8$r8+$k(B
+@cindex Grouping URLs
 
+Emacs-w3m can manipulate ``group URLs'': special URLs that contain
+several real URLs.  When you open these group URLs, emacs-w3m will open
+one buffer for each URL in the group, allowing you to open several pages
+in one go.
+
+To build group URLs, you just have to put together (i.e. concatenate)
+all the addresses you want to open, separating them with the ampersand
+symbol (that's ``&''), and prefixing the grouped URLs with ``group:''.
+For example, suppose you want to visit the GNU Project's homepage,
+@uref{http://www.gnu.org/}, and the Savannah homepage,
+@uref{http://savannah.nongnu.org/}: the group URL would be
+
+@uref{group:http://www.gnu.org/&http://savannah.nongnu.org/}
+
+Since this syntax can be quite hard to use on a daily basis, this
+feature will be most useful when used with very short URLs (Quicksearch
+URLs for example, see @ref{Quick Searching}); or in non-interactive
+contexts.
 
 @node Weather Information
 @section $BL@F|$NE75$$O@2$l$G$7$g$&(B
@@ -875,6 +1034,7 @@ Emacs-w3m $B$OMxMQ2DG=$JB?$/$N8!:w%(%s%8%s$r;}$C$F$$$^$9!#$"$J$?$N$*5$$KF~(B
 @subsection $B%&%'%V%5%$%H$r%"%s%F%J$K2C$($k$K$O(B?
 @cindex about://antenna-edit/
 @kindex +
+@findex w3m-antenna-add-current-url
 
 $B%"%s%F%J$O!"%"%s%F%J!&%Z!<%8$K$"$k%+%9%?%^%$%:$N$?$a$N(B ``Edit'' $B%\%?%s!"(B
 $B$^$?$OFCJL$N(B URL @uref{about://antenna-edit/} $B$+$i%+%9%?%^%$%:$9$k$3$H$,(B
@@ -903,9 +1063,18 @@ Emacs-w3m $B$OMxMQ2DG=$JB?$/$N8!:w%(%s%8%s$r;}$C$F$$$^$9!#$"$J$?$N$*5$$KF~(B
 $B%^%$%:$9$k$?$a$N%P%C%U%!$,8=$l$k$G$7$g$&!#$"$J$?$OC1$K(B ``Save for future
 sessions'' $B$H(B ``Finish'' $B$N%\%?%s$r2!$;$PNI$$$N$G$9!#(B
 
+@table @kbd
+@item +
+Add a URL to the Antenna database.  If called with a prefix argument,
+ask for a URL instead of adding the current page
+(@code{w3m-antenna-add-current-url}).
+@end table
+
 @node Daily web tracking
 @subsection $B%"%s%F%J$GJQ2=$rDI@W$9$k(B
 @cindex The Antenna interface
+@kindex A
+@findex w3m-antenna
 
 $B%"%s%F%J!&%Z!<%8$K$OFs$D$N9`L\$,8=$l$^$9(B: $B0l$D$O(B ``Updated'' $B$H8F$P$l!"(B
 $B$b$&0l$D$O(B ``Visited'' $B$H8F$P$l$^$9!#(B``Updated'' $B$N9`L\$G$O:G8e$K%"%s%F(B
@@ -931,6 +1100,12 @@ sessions'' $B$H(B ``Finish'' $B$N%\%?%s$r2!$;$PNI$$$N$G$9!#(B
 $B$($P(B @kbd{C-u A} $B$G%"%s%F%J$r;O$a$k(B) $B$3$H$K$h$C$F!"%5%$%H$,JQ2=$7$?$+$I(B
 $B$&$+$r%A%'%C%/$7$?$$Kh$K!"$=$l$r99?7$7$J$1$l$P$J$j$^$;$s!#(B
 
+@table @kbd
+@item A
+Visit the Antenna page.  If called with a prefix argument, update the
+Antenna database before displaying it (@code{w3m-antenna}).
+@end table
+
 @node Showing Directory Tree
 @section $B%G%#%l%/%H%j$NLZ9=B$$rI=<($9$k(B
 
@@ -949,23 +1124,34 @@ sessions'' $B$H(B ``Finish'' $B$N%\%?%s$r2!$;$PNI$$$N$G$9!#(B
 
 @node Customizable Options
 @chapter $B%G%U%)%k%H$N$^$^$G$b7k9=NI$$$H;W$&$1$l$I(B
-@cindex user option
+@cindex User option
 @vindex w3m-init-file
 
-$B$9$Y$F$N(B emacs-w3m $B$N%f!<%6%*%W%7%g%s$O!"(B@kbd{M-x customize-option} $B$^$?(B
-$B$O0z?t$K(B @code{w3m} $B$r;XDj$7$?(B @kbd{M-x customize-group} $B$G%+%9%?%^%$%:(B
-$B$G$-$^$9!#Be$o$j$K!"0J2<$N$h$&$K(B Lisp $B$N<0$rD>@\(B @file{~/.emacs-w3m} $B$K(B
-$B=q$$$F$b9=$$$^$;$s(B:
+All emacs-w3m options are customizable via the Custom mechanism, a
+graphical Emacs interface to define user options.  Custom offers several
+methods to define your customizations, you can use for example @kbd{M-x
+customize-option} for a single option (i.e. an Emacs Lisp variable) or
+@kbd{M-x customize-group} to see all available options for a ``group''
+and change them; in which case the group to use is @code{w3m}.
+
+Alternatively (if you don't want to use Custom), you can put arbitrary
+Emacs Lisp expressions in your emacs-w3m initialization file, which is
+@file{~/.emacs-w3m} by default.  This example:
 
 @lisp
 (setq w3m-home-page "http://emacs-w3m.namazu.org/")
 @end lisp
 
-$B$3$3$G(B @file{~/.emacs-w3m} $B$O(B @code{w3m-init-file} $B$N%G%U%)%k%HCM$G$9!#(B
-$B$$$/$D$+$N%f!<%6%*%W%7%g%s$O=EMW$J%G%U%)%k%HCM$r;}$A!"(B
-@file{~/.emacs-w3m} $B$,(B load $B$5$l$k$H$-$K$ODj5A$5$l$F$$$J$$$3$H$KCm0U$7$F(B
-$B2<$5$$!#(B@code{w3m-search-quick-search-engine-alist} $B$OE57?E*$JNc$G(B
-$B$9(B (@pxref{Search Options} $B$r;2>H(B)$B!#(B
+would set the default homepage to @uref{http://emacs-w3m.namazu.org/}.
+The syntax to use is the same as in your @file{.emacs}
+file. @xref{(emacs)Init File}.
+
+Please note that some options from external modules could be undefined
+at the time the @file{~/.emacs-w3m} file is loaded, thus making them
+impossible to modify (of course if you don't care about the default
+value, you can override them completely in your @file{~/.emacs-w3m}).
+The @code{w3m-search-quick-search-engine-alist} option is a typical
+example (@pxref{Search Options}).
 
 @table @code
 
@@ -975,9 +1161,9 @@ Emacs-w3m $B$,5/F0$9$k$H!"(B@code{w3m-init-file} $B%U%!%$%k$rFI$_9~$_$^$9!#%G
 $BMW$OL5$$$G$7$g$&!#$3$l$OIaDL$N(B Emacs Lisp $B%U%!%$%k$G!"(B
 @file{~/.emacs} $B$d(B @file{site-init} $B%U%!%$%k$r(B emacs-w3m $B4X78$N$b$N$GMp(B
 $B;($K$7$J$$$h$&$K$9$k$?$a$K;H$&$3$H$,$G$-$^$9!#(BEmacs-w3m $B$O$3$l$HF1$8L>A0(B
-$B$K!"@\Hx8l(B @file{.elc} $B$H(B @file{.el} $B$,IU$$$F$$$k$b$N$bD4$Y$^$9!#8@$$49(B
-$B$($l$P!"(Bemacs-w3m $B$O(B @file{~/.emacs-w3m.elc}$B!"(B@file{~/.emacs-w3m.el} $B$r(B
-$BC5$7!":G8e$K(B @file{~/.emacs-w3m} $B$r(B ($B$3$N=gHV$K(B) $BC5$7$^$9!#(B
+$B$K!"3HD%;R(B @file{.elc} $B$H(B @file{.el} $B$,IU$$$F$$$k$b$N$b(B ($B8@$$49$($l$P!"(B
+@file{~/.emacs-w3m.elc}$B!"(B@file{~/.emacs-w3m.el} $B$*$h(B
+$B$S(B @file{~/.emacs-w3m} $B$N=g$K(B) $BD4$Y$^$9!#(B
 
 @end table
 
