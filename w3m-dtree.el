@@ -93,7 +93,7 @@
 		  (if allfiles " (allfiles)" "")))
   (if (file-directory-p path)
       (w3m-dtree-create-sub path allfiles dirprefix fileprefix "")
-    (insert (format "<u>Warning. Directory not found.</u>\n")))
+    (insert (format "\n<h3>Warning: Directory not found.</h3>\n")))
  (insert "</pre>\n"))
 
 (defun w3m-about-dtree (url &optional nodecode allfiles)
@@ -110,7 +110,7 @@
       (setq path (substring url prelen)))
     ;; counter drive letter 
     (w3m-with-work-buffer
-      (setq path (w3m-dtree-directory-name path))
+      (setq path (file-name-as-directory (w3m-dtree-directory-name path)))
       (setq default-directory path)
       (erase-buffer)
       (set-buffer-multibyte t)
