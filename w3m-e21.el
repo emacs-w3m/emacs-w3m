@@ -128,4 +128,44 @@ Buffer string between BEG and END are replaced with IMAGE."
     (w3m-e21-make-toolbar-buttons w3m-toolbar-buttons)
     (w3m-e21-setup-toolbar w3m-mode-map w3m-toolbar)))
 
+;;; Header line
+(defface w3m-header-line-location-title-face
+  '((((class color) (background light)) (:foreground "Blue"))
+    (((class color) (background dark)) (:foreground "Cyan")))
+  "*Face for header-line location title."
+  :group 'w3m-face)
+
+(defface w3m-header-line-location-content-face
+  '((((class color) (background light)) (:foreground "DarkGoldenrod"))
+    (((class color) (background dark)) (:foreground "LightGoldenrod")))
+  "*Face for header-line location content."
+  :group 'w3m-face)
+
+(defcustom w3m-use-header-line t
+  "Non-nil activates header-line of w3m."
+  :group 'w3m
+  :type 'boolean)
+
+(defun w3m-setup-header-line ()
+  "Setup header line."
+  (if w3m-use-header-line
+      (setq header-line-format (list 
+				(propertize
+				 "Location: "
+				 'face
+				 'w3m-header-line-location-title-face)
+				'(:eval
+				  (propertize
+				   w3m-current-url
+				   'face
+				   'w3m-header-line-location-content-face
+				   'local-map
+				   (let ((map (make-sparse-keymap)))
+				     (define-key map [header-line mouse-2]
+				       'w3m-goto-url)
+				     map)
+				   'help-echo
+				   "mouse-2 prompts to input URL."))))))
+
+(add-hook 'w3m-mode-hook 'w3m-setup-header-line)
 ;;; w3m-e21.el ends here.

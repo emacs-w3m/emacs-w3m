@@ -1,5 +1,11 @@
 2001-04-15  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-e21.el (w3m-header-line-location-title-face): New face.
+	(w3m-header-line-location-content-face): Ditto.
+	(w3m-use-header-line): New user option.
+	(w3m-setup-header-line): New function.
+	(w3m-mode-hook): Add `w3m-setup-header-line'.
+
 	* shimbun/sb-airs.el (shimbun-airs-coding-system): Fixed redundant
 	definition.
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-coding-system): Ditto.
