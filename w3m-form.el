@@ -447,6 +447,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					(accept-charset :case-ignore)
 					(enctype :case-ignore)
 					(charset :case-ignore))
+	    (when action
+	      (setq action (w3m-decode-anchor-string action)))
 	    (setq forms
 		  (cons
 		   (cons
