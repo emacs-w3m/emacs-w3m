@@ -1,3 +1,99 @@
+2001-11-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el (shimbun-retrieve-url,
+	shimbun-retrieve-url-buffer): Follow the change of `w3m-retrieve'.
+
+	* w3mhack.el (w3mhack-examine-modules): Handle `w3m-proc.el'.
+
+	* w3m.el: Modified to retrieve contents asynchronously.
+	(top): Require `w3m-proc.el' instead of `w3m-macro.el'.
+	(w3m-command-environment): Old name is `w3m-process-environment'.
+	(w3m-display-hook): Changed the default value.
+	(w3m-current-buffer): New internal variable.
+	(w3m-arrived-user-alist): Renamed to `w3m-process-user-alist' and
+	exported to `w3m-proc.el'.
+	(w3m-process-connection-type, w3m-process-user,
+	w3m-process-passwd, w3m-process-user-counter, w3m-process-realm,
+	w3m-process-temp-file, w3m-process-exit-status): Exported to
+	`w3m-proc.el'.
+	(w3m-toggle-inline-images-internal): Follow change of
+	`w3m-create-image'.
+	(w3m-exec-process): Removed.
+	(w3m-exec-get-user): Renamed to `w3m-process-get-user' and
+	exported to `w3m-proc.el'.
+	(w3m-exec-get-passwd): Renamed to `w3m-process-get-passwd' and
+	exported to `w3m-proc.el'.
+	(w3m-exec-set-user): Renamed to `w3m-process-set-user' and
+	exported to `w3m-proc.el'.
+	(w3m-get-server-root): Renamed to `w3m-process-get-server-root'
+	and exported to `w3m-proc.el'.
+	(w3m-proxy-user): Renamed to `w3m-process-proxy-user' and exported
+	to `w3m-proc.el'.
+	(w3m-proxy-passwd): Renamed to `w3m-process-proxy-passwd' and
+	exported to `w3m-proc.el'.
+	(w3m-exec-filter): Renamed to `w3m-process-filter' and exported to
+	`w3m-proc.el'; Slightly modified to protect illegal type of
+	`w3m-current-url'.
+	(w3m-decode-encoded-contents, w3m-x-moe-decode-buffer,
+	w3m-local-dirlist-cgi, w3m-rendering-half-dump): Use
+	`w3m-process-with-environment' to adjust the environment
+	variables.
+	(w3m-local-retrieve, w3m-cid-retrieve): Insert the retrieved
+	content to this current buffer.
+	(w3m-w3m-get-header): Call `w3m-process-start' instead of
+	`w3m-exec-process'.
+	(w3m-w3m-dump-head-source, w3m-w3m-retrieve, w3m-about-retrieve,
+	w3m-retrieve, w3m-download): Reconstructed to support asynchronous
+	operation.
+	(w3m-exec): Removed.
+	(w3m-retrieve-and-render, w3m-prepare-content): New function.
+	(w3m-quit): Call `w3m-process-shutdown'.
+	(w3m-buffer-setup): New inline function.
+	(w3m-goto-url): Accept the 6th optional argument, and modified for
+	asynchronous processing.
+	(w3m-goto-url-localcgi-movepoint): Removed.
+	(w3m-move-point-for-localcgi): New function.
+	(w3m): Removed redundant quote from the definition of
+	`focusing-function'; Display the browsing buffer.
+	(w3m-region): Set `w3m-current-buffer' to this current buffer.
+	(w3m-about, w3m-about-header): Insert the generated content to
+	this current buffer.
+	(w3m-about-history, w3m-about-db-history): To access buffer-local
+	variables, refer the value of `w3m-current-buffer'.
+
+	* w3m-xmas.el (top): Require `w3m-proc.el' instead of
+	`w3m-macro.el'.
+	(w3m-create-image): Accept the 4th optional argument, and modified
+	for asynchronous processing.
+
+	* w3m-weather.el (w3m-about-weather): Insert the generated content
+	to this current buffer.
+
+	* w3m-proc.el: New file.
+
+	* w3m-namazu.el (w3m-about-namazu): Insert the generated content
+	to this current buffer.
+
+	* w3m-macro.el (w3m-with-work-buffer): Removed.
+	(w3m-kill-buffer): New inline function.
+
+	* w3m-filter.el (w3m-filter): Filtering the content in this
+	current buffer.
+
+	* w3m-e21.el (top): Require `w3m-proc.el' instead of
+	`w3m-macro.el'.
+	(w3m-create-image): Accept the 4th optional argument, and modified
+	for asynchronous processing.
+
+	* w3m-antenna.el (w3m-about-antenna): Insert the generated content
+	to this current buffer.
+
+	* mime-w3m.el (mime-w3m-cid-retrieve): Insert the retrieved
+	content to this current buffer.
+
+	* mew-w3m.el (mew-w3m-cid-retrieve): Insert the retrieved content
+	to this current buffer.
+
 2001-11-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-use-tab-menubar): Abolished.
@@ -49,8 +145,8 @@
 
 	* w3m.el (w3m-use-tab-menubar): New user variable.
 	(w3m-setup-menu): Handling tab-menubar.
-	(w3m-tab-menubar-open-buffer, w3m-tab-menubar-update) 
-	(w3m-tab-menubar-make-items): New functions.
+	(w3m-tab-menubar-open-buffer, w3m-tab-menubar-update,
+	w3m-tab-menubar-make-items): New functions.
 	(w3m-tab-menubar-pull-bufnum): New macro.
 	(top-level): Add define-key-after() to avoid byte-compile
 	warnings, if XEmacs.
@@ -83,8 +179,8 @@
 
 2001-11-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
-	* w3m-form.el (w3m-form-replace): Don't use `save-excursion' because
-	point at start time may be deleted at end time.
+	* w3m-form.el (w3m-form-replace): Don't use `save-excursion'
+	because point at start time may be deleted at end time.
 	(w3m-form-textarea-replace): Ditto.
 	(w3m-form-textarea-info): Use `w3m-get-text-property-around'.
 
@@ -277,7 +373,7 @@
 
 	* w3m.el (w3m-reload-this-page): Change the semantic of the prefix
 	argument to `clear form and post datas'.
-	
+
 2001-10-31  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-pop-up-windows): Changed default value

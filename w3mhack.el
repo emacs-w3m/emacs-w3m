@@ -100,6 +100,8 @@
     ;; To byte-compile w3m-macro.el and a version specific module first.
     (princ "w3m-macro.elc ")
     (setq modules (delete "w3m-macro.el" modules))
+    (princ "w3m-proc.elc ")
+    (setq modules (delete "w3m-proc.el" modules))
     (dolist (module version-specific-modules)
       (when (and (not (member module ignores))
 		 (member module modules))

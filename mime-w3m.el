@@ -107,12 +107,11 @@
 
 (defun mime-w3m-cid-retrieve (url &rest args)
   (let ((entity (mime-find-entity-from-content-id
-		 (mime-uri-parse-cid url) mime-w3m-message-structure)))
+		 (mime-uri-parse-cid url)
+		 (with-current-buffer w3m-current-buffer
+		   mime-w3m-message-structure))))
     (when entity
-      (w3m-with-work-buffer
-       (delete-region (point-min) (point-max))
-       (set-buffer-multibyte nil)
-       (mime-insert-entity-content entity))
+      (mime-insert-entity-content entity)
       (mime-entity-type/subtype entity))))
 
 (push (cons 'mime-view-mode 'mime-w3m-cid-retrieve)

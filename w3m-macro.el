@@ -70,20 +70,6 @@ compile-time."
   (if clauses
       (cons 'progn (cdr (car clauses)))))
 
-(defmacro w3m-with-work-buffer (&rest body)
-  "Execute the forms in BODY with working buffer as the current buffer."
-  (let ((temp-hist (make-symbol "hist"))
-	(temp-flat (make-symbol "flat")))
-    (` (let (((, temp-hist) w3m-history)
-	     ((, temp-flat) w3m-history-flat))
-	 (with-current-buffer
-	     (w3m-get-buffer-create w3m-work-buffer-name)
-	   (setq w3m-history (, temp-hist)
-		 w3m-history-flat (, temp-flat))
-	   (,@ body))))))
-(put 'w3m-with-work-buffer 'lisp-indent-function 0)
-(put 'w3m-with-work-buffer 'edebug-form-spec '(body))
-
 (defmacro w3m-add-text-properties (start end props &optional object)
   "Like `add-text-properties' but always add the non-sticky properties."
   (let ((non-stickies
@@ -103,6 +89,17 @@ compile-time."
 	(setq w3m-work-buffer-list (cons buf w3m-work-buffer-list))
 	(buffer-disable-undo buf)
 	buf)))
+
+(defsubst w3m-kill-buffer (buffer)
+  "Kill the buffer BUFFER and remove it from `w3m-work-buffer-list'.
+The argument may be a buffer or may be the name of a buffer.
+An argument of nil means kill the current buffer."
+  (when (stringp buffer)
+    (setq buffer (get-buffer buffer)))
+  (when (buffer-live-p buffer)
+    (kill-buffer buffer))
+  (setq w3m-work-buffer-list (delq buffer w3m-work-buffer-list))
+  nil)
 
 (defmacro w3m-tag-regexp-of (&rest names)
   "Return a regexp string, not a funtion form.  A regexp should match tags
@@ -127,5 +124,4 @@ constants, any other expressions are not allowed."
 	    (throw 'found-command bin)))))))
 
 (provide 'w3m-macro)
-
 ;;; w3m-macro.el ends here.

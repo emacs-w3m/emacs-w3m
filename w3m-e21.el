@@ -34,7 +34,7 @@
 
 ;;; Code:
 
-(require 'w3m-macro)
+(require 'w3m-proc)
 (require 'w3m-fsf)
 (require 'wid-edit)
 
@@ -81,19 +81,21 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 circumstances."
   (and w3m-current-image-status (display-images-p)))
 
-(defun w3m-create-image (url &optional no-cache referer)
+(defun w3m-create-image (url &optional no-cache referer handler)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used.
 If second optional argument REFERER is non-nil, it is used as Referer: field."
-  (condition-case err
-      (let ((type (w3m-retrieve url 'raw no-cache nil referer)))
+  (if (not handler)
+      (w3m-process-with-wait-handler
+	(w3m-create-image url no-cache referer handler))
+    (w3m-process-do-with-temp-buffer
+	(type (w3m-retrieve url 'raw no-cache nil referer handler))
+      (ignore-errors
 	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-	  (w3m-with-work-buffer
-	    (create-image (buffer-string)
-			  type
-			  t
-			  :ascent 'center))))
-    (error nil)))
+	  (create-image (buffer-string)
+			type
+			t
+			:ascent 'center))))))
 
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
