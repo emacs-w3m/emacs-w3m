@@ -1,5 +1,10 @@
 2003-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-open-all-links-in-new-session): Don't use
+	`w3m-select-buffer'.
+
+2003-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-popup-frame-p): Make it accept the `interactive-p'
 	argument.
 	(w3m-examine-command-line-args): New function.
