@@ -360,7 +360,7 @@ zero."
   ;; Note that this is a kludge to replace a text between `start' and
   ;; `end' with just a `string', because there are not only a `string'
   ;; but also some markups.  However, markups have become worthless at
-  ;;the time, so there is no real problem."
+  ;; the time, so there is no real problem."
   (when (and (stringp string)
 	     (> (length string) 0))
     (delete-region (goto-char start) end)
