@@ -143,8 +143,9 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
 (luna-define-method shimbun-clear-contents :before ((shimbun shimbun-sankei)
 						    header)
   ;; Remove advertisement.
-  (shimbun-remove-tags "<!--[\t\n ]*ad--honbun[\t\n ]*-->"
-		       "<!--[\t\n ]*ad\\.end[\t\n ]*-->"))
+  (shimbun-remove-tags "<!--◆レクタングル広告ここから ◆-->"
+		       "<!--◆レクタングル広告ここまで ◆-->")
+  (goto-char (point-min)))
 
 (provide 'sb-sankei)
 
