@@ -219,7 +219,6 @@ content-type if `shimbun-encapsulate-images' is non-nil."
 	(count 0)
 	beg end
 	url type img imgs boundary charset)
-    (current-buffer)
     (setq charset
 	  (upcase (symbol-name
 		   (detect-mime-charset-region (point-min)(point-max)))))
@@ -451,10 +450,22 @@ Return nil when articles are not expired."
 HEADER is a shimbun-header which is obtained by `shimbun-headers'.
 If OUTBUF is not specified, article is retrieved to the current buffer.")
 
+(defmacro shimbun-insert-string (string)
+  "Insert STRING at point, AS-IS.
+Point and before-insertion markers move forward to end up
+after the inserted text.
+Any other markers at the point of insertion remain before the text."
+  `(if (featurep 'xemacs)
+       (insert ,string)
+     (insert
+      (if enable-multibyte-characters
+	  (string-as-multibyte ,string)
+	(string-as-unibyte ,string)))))
+
 (luna-define-method shimbun-article ((shimbun shimbun) header &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
     (with-current-buffer (or outbuf (current-buffer))
-      (insert
+      (shimbun-insert-string
        (or (with-temp-buffer
 	     (shimbun-retrieve-url (shimbun-article-url shimbun header))
 	     (message "shimbun: Make contents...")

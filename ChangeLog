@@ -1,3 +1,9 @@
+2002-04-19  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun-make-mime-article): Removed garbage.
+	(shimbun-insert-string): New macro.
+	(shimbun-article): Use it.
+
 2002-04-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bitmap.el (w3m-bitmap-next-line): Handle
