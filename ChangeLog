@@ -1,3 +1,8 @@
+2002-03-07  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
+
+	* w3m.el (w3m-lynx-like-map): Switch J and K so as to behave like
+	w3m.
+
 2002-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_EXAMINE_PACKAGEDIR): Use `(eq 0 foo)' instead of
