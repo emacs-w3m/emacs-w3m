@@ -146,9 +146,9 @@ If no field in forward, return nil without moving."
 	    (when name
 	      (cond
 	       ((string= type "submit")
-		(w3m-form-put (car forms)
-			      name
-			      (or value (w3m-form-get (car forms) name))))
+		;; Submit button input, not set name and value here.
+		;; They are set in `w3m-form-submit'.
+		nil)
 	       ((string= type "checkbox") 
 		;; Check box input, one name has multiple values
 		;; Value is list of item VALUE which has same NAME.
@@ -559,7 +559,8 @@ If no field in forward, return nil without moving."
 ;;; 
 
 (defun w3m-form-submit (form &optional name value)
-  (when name (w3m-form-put form name value))
+  (when (and name (not (zerop (length name))))
+    (w3m-form-put form name value))
   (let ((url (cond ((w3m-form-action form)
 		    (w3m-expand-url (w3m-form-action form) w3m-current-url))
 		   ((string-match "\\?" w3m-current-url)

@@ -1,3 +1,9 @@
+2001-07-11  Akihiro Arisawa  <ari@atesoft.advantest.co.jp>
+
+	* w3m-form.el (w3m-form-parse-region): Don't extract value from
+	submit button, again.
+	(w3m-form-submit): Don't set value when NAME is omitted.
+
 2001-07-11  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* w3m.el (w3m-rendering-region): Do not break matching data.
