@@ -2143,20 +2143,20 @@ to nil."
 
 ;;; Retrieve data:
 (eval-and-compile
-  (if (and (fboundp 'make-ccl-coding-system)
-	   (>= emacs-major-version 20))
-      (condition-case nil
-	  (require 'pccl)
-	(error
-	 (require 'ccl)
-	 ;; from APEL
-	 (defun make-ccl-coding-system
-	   (coding-system mnemonic docstring decoder encoder)
-	   "Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
+  (unless (fboundp 'make-ccl-coding-system)
+    (if (>= emacs-major-version 20)
+	(condition-case nil
+	    (require 'pccl)
+	  (error
+	   (require 'ccl)
+	   ;; from APEL
+	   (defun make-ccl-coding-system
+	     (coding-system mnemonic docstring decoder encoder)
+	     "Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
 CODING-SYSTEM, DECODER and ENCODER must be symbol."
-	   (make-coding-system coding-system 4 mnemonic docstring
-			       (cons decoder encoder)))))
-    (require 'pccl)))
+	     (make-coding-system coding-system 4 mnemonic docstring
+				 (cons decoder encoder)))))
+      (require 'pccl))))
 
 (define-ccl-program w3m-euc-japan-decoder
   `(2
