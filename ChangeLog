@@ -1,3 +1,10 @@
+2002-02-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-mhonarc.el (shimbun-mhonarc-optional-headers): New
+	internal variable.
+	(shimbun-make-contents): Optional headers which are registerd in
+	the variable are inserted to an article.
+
 2002-02-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-icon-data): New buffer local variable.
