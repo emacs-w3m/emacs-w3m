@@ -1,3 +1,8 @@
+2003-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-make-contents): New function to
+	get a correct date header.
+
 2003-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-savannah.el (shimbun-savannah-get-headers): Revoke
