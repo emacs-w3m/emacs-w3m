@@ -1,7 +1,8 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Yuuichi Teranishi  <teranisi@gohome.org>
+;;         Yuuichi Teranishi  <teranisi@gohome.org>,
+;;         Katsumi Yamaoka    <yamaoka@jpl.org>
 
 ;; Keywords: news
 
@@ -49,64 +50,58 @@
 (defvar shimbun-asahi-expiration-days 6)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-asahi))
-  (format "%s%s/update/list.html"
-	  (shimbun-url-internal shimbun)
-	  (shimbun-current-group-internal shimbun)))
+  (concat (shimbun-url-internal shimbun)
+	  (shimbun-current-group-internal shimbun)
+	  "/"))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-asahi)
 					 &optional range)
-  (when (search-forward "\n<!-- Start of past -->\n" nil t)
-    (delete-region (point-min) (point))
-    (when (search-forward "\n<!-- End of past -->\n" nil t)
-      (forward-line -1)
-      (delete-region (point) (point-max))
-      (goto-char (point-min))
-      (let ((case-fold-search t)
-	    headers)
-	(while (re-search-forward
-		"<a href=\"\\(\\([0-9][0-9][0-9][0-9]\\)/\\([0-9]+\\)\\.html\\)\"> *"
-		nil t)
-	  (let ((id (format "<%s%s%%%s>"
-			    (match-string 2)
-			    (match-string 3)
-			    (shimbun-current-group-internal shimbun)))
-		(url (match-string 1)))
-	    (push (shimbun-make-header
-		   0
-		   (shimbun-mime-encode-string
-		    (mapconcat 'identity
-			       (split-string
-				(buffer-substring
-				 (match-end 0)
-				 (progn (search-forward "<br>" nil t) (point)))
-				"\\(<[^>]+>\\|\r\\)")
-			       ""))
-		   (shimbun-from-address-internal shimbun)
-		   "" id "" 0 0 (format "%s%s/update/%s"
-					(shimbun-url-internal shimbun)
-					(shimbun-current-group-internal
-					 shimbun)
-					url))
-		  headers)))
-	(setq headers (nreverse headers))
-	(let ((i 0))
-	  (while (and (nth i headers)
-		      (re-search-forward
-		       "^(\\([0-9][0-9]\\)/\\([0-9][0-9]\\) \\([0-9][0-9]:[0-9][0-9]\\))"
-		       nil t))
-	    (let ((month (string-to-number (match-string 1)))
-		  (date (decode-time (current-time))))
-	      (shimbun-header-set-date
-	       (nth i headers)
-	       (shimbun-make-date-string
-		(if (and (eq 12 month) (eq 1 (nth 4 date)))
-		    (1- (nth 5 date))
-		  (nth 5 date))
-		month
-		(string-to-number (match-string 2))
-		(match-string 3))))
-	    (setq i (1+ i))))
-	(nreverse headers)))))
+  (let* ((group (shimbun-current-group-internal shimbun))
+	 (regexp (concat "<a[\t\n ]+href=[\t\n ]*\"/\\("
+			 (regexp-quote group)
+			 "/update/\\([0-9][0-9][0-9][0-9]\\)"
+			 "/\\([0-9]+\\).html\\)\"[\t\n ]*>[\t\n ]*"))
+	 (case-fold-search t)
+	 (next t)
+	 (date (decode-time))
+	 subject url id month headers)
+    (while (and next
+		(if (numberp next)
+		    (goto-char next)
+		  (re-search-forward regexp nil t)))
+      (setq subject (match-end 0)
+	    url (match-string 1)
+	    id (concat "<" (match-string 2) (match-string 3) "%" group ">")
+	    next (re-search-forward regexp nil t))
+      (goto-char subject)
+      (save-match-data
+	(setq subject (if (re-search-forward "[\t\n ]*</a>" next t)
+			  (shimbun-mime-encode-string
+			   (buffer-substring subject (match-beginning 0)))
+			"(none)")
+	      month (when (re-search-forward "\
+<span[\t\n ]+class=[\t\n ]*\"Time\"[\t\n ]*>[\t\n ]*([\t\n ]*\
+\\([0-9][0-9]\\)/\\([0-9][0-9]\\)[^()0-9:;]+;[\t\n ]*\
+\\([0-9][0-9]:[0-9][0-9]\\)[\t\n ]*)[\t\n ]*</span>" next t)
+		      (string-to-number (match-string 1))))
+	(push
+	 (shimbun-make-header
+	  0
+	  subject
+	  (shimbun-from-address-internal shimbun)
+	  (if month
+	      (shimbun-make-date-string (if (and (eq 12 month)
+						 (eq 1 (nth 4 date)))
+					    (1- (nth 5 date))
+					  (nth 5 date))
+					month
+					(string-to-number (match-string 2))
+					(match-string 3))
+	    "")
+	  id "" 0 0
+	  (concat (shimbun-url-internal shimbun) url))
+	 headers)))
+    headers))
 
 (provide 'sb-asahi)
 
