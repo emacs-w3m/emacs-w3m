@@ -1,5 +1,27 @@
 2003-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-e21.el: Move the favicon stuff to w3m-favicon.el.
+
+	* w3m-favicon.el: New file detached from w3m-e21.el.
+	(w3m-favicon-type): Adapt it to XEmacs as well.
+	(w3m-setup-favicon): Ditto.
+	(w3m-buffer-favicon): Ditto.
+	(w3m-retrieve-favicon): Replace `float-time' with `w3m-float-time'.
+	(w3m-arrived-setup-functions): Don't add-hook it here.
+	(w3m-arrived-shutdown-functions): Ditto.
+
+	* w3m-xmas.el: Require `w3m-favicon'.
+
+	* w3m.el (w3m-arrived-setup-functions): Add
+	`w3m-favicon-load-cache-file' if w3m-favicon is loaded.
+	(w3m-arrived-shutdown-functions): Add `w3m-favicon-save-cache-file'
+	if w3m-favicon is loaded.
+
+	* w3m-util.el (w3m-float-time): New function.
+
+	* w3mhack.el (w3mhack-examine-modules): Exclude w3m-favicon.el
+	from the files to be byte-compiled.
+
 	* shimbun/sb-sankei.el (shimbun-sankei-content-start): Improve the
 	value to be able to fetch inline images.
 
