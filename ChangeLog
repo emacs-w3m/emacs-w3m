@@ -1,3 +1,16 @@
+2003-02-28  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-show-error-information): New customized variable.
+	(w3m-w3m-attributes): Message strange `Location:' like lynx.
+	(w3m-retrieve-and-render): When error occur, show error message
+	in `w3m buffer' to be accompanied by `w3m-show-error-information'.
+	(w3m-reload-this-page, w3m-redisplay-this-page)
+	(w3m-redisplay-and-reset, w3m-redisplay-with-charset)
+	(w3m-view-source, w3m-view-header): If `w3m-current-url' is nil,
+	dont' execute command.
+	(w3m): Guard from the bug of `select-frame-set-input-focus' in
+	Emacs-21.3.x. If `w3m-current-url' is nil in `w3m buffer'
+
 2003-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-generate-shimbun-servers-file): Exclude fml,

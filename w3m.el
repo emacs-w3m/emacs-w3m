@@ -1071,6 +1071,11 @@ allows a kludge that it can also be a plist of frame properties."
   :group 'w3m
   :type 'integer)
 
+(defcustom w3m-show-error-information t
+  "*Show error information."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-use-refresh t
   "*If non-nil, support REFRESH attribute in META tags."
   :group 'w3m
@@ -3334,10 +3339,12 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(when (string-match ";\\'" type)
 		  (setq type (substring type 0 (match-beginning 0)))))
 	      (setq type (downcase type)))
-	    (when (and moved (assoc "location" alist))
-	      (setq w3m-current-redirect
-		    (cons (string-to-number moved)
-			  (w3m-expand-url (cdr (assoc "location" alist))))))
+	    (when moved
+	      (if (assoc "location" alist)
+		  (setq w3m-current-redirect
+			(cons (string-to-number moved)
+			      (w3m-expand-url (cdr (assoc "location" alist)))))
+		(w3m-message "Warning: Got redirection with no Location header.")))
 	    (setq w3m-current-ssl (cdr (assoc "w3m-ssl-certificate" alist)))
 	    (list (or type (w3m-local-content-type url))
 		  (or charset
@@ -4114,16 +4121,19 @@ argument.  Otherwise, it will be called with nil."
 			  url (buffer-name output-buffer)))))
 	 (t
 	  (ding)
-	  (if (eq (car w3m-current-forms) t)
-	      (setq w3m-current-forms (cdr w3m-current-forms)))
-	  (w3m-message "Cannot retrieve URL: %s%s"
-		       url
-		       (if w3m-process-exit-status
-			   (format " (exit status: %s)"
-				   w3m-process-exit-status)
-			 ""))
-	  nil))))))
-
+	  (when (eq (car w3m-current-forms) t)
+	    (setq w3m-current-forms (cdr w3m-current-forms)))
+	  (prog1
+	      (when (and w3m-show-error-information
+			 (not (or (w3m-url-local-p url)
+				  (string-match "\\`about:" url))))
+		(w3m-prepare-content url "text/html" output-buffer content-charset))
+	    (w3m-message "Cannot retrieve URL: %s%s"
+			 url
+			 (if w3m-process-exit-status
+			     (format " (exit status: %s)"
+				     w3m-process-exit-status))))))))))
+	    
 (defconst w3m-content-prepare-functions
   '(("\\`text/" . w3m-prepare-text-content)
     ("\\`image/" . w3m-prepare-image-content)
@@ -6118,63 +6128,73 @@ the current session.  Otherwise, the new session will start afresh."
   "Reload current page without cache.
 If called with '\\[universal-argument]', clear form and post datas"
   (interactive "P")
-  (let ((post-data (w3m-history-plist-get :post-data nil nil t))
-	(form-data (w3m-history-plist-get :forms nil nil t))
-	(referer (w3m-history-plist-get :referer nil nil t)))
-    (when arg
-      (when form-data
-	(w3m-history-remove-properties '(:forms) nil nil t))
-      (when post-data
-	(setq post-data nil)
-	(w3m-history-remove-properties '(:post-data) nil nil t))
-      (setq w3m-current-forms nil))
-    (if (and post-data (y-or-n-p "Repost form data? "))
-	(w3m-goto-url w3m-current-url 'reload nil post-data referer)
-      (w3m-goto-url w3m-current-url 'reload nil nil referer))))
+  (if w3m-current-url
+      (let ((post-data (w3m-history-plist-get :post-data nil nil t))
+	    (form-data (w3m-history-plist-get :forms nil nil t))
+	    (referer (w3m-history-plist-get :referer nil nil t)))
+	(when arg
+	  (when form-data
+	    (w3m-history-remove-properties '(:forms) nil nil t))
+	  (when post-data
+	    (setq post-data nil)
+	    (w3m-history-remove-properties '(:post-data) nil nil t))
+	  (setq w3m-current-forms nil))
+	(if (and post-data (y-or-n-p "Repost form data? "))
+	    (w3m-goto-url w3m-current-url 'reload nil post-data referer)
+	  (w3m-goto-url w3m-current-url 'reload nil nil referer)))
+    (w3m-message "Can't reload this page")))
 
 (defun w3m-redisplay-this-page (&optional arg)
   "Redisplay current page."
   (interactive "P")
-  (when arg
-    (setq w3m-display-inline-images (not w3m-display-inline-images)))
-  (w3m-goto-url w3m-current-url 'redisplay))
+  (if (null w3m-current-url)
+      (w3m-message "Can't redisplay this page")
+    (when arg
+      (setq w3m-display-inline-images (not w3m-display-inline-images)))
+    (w3m-goto-url w3m-current-url 'redisplay)))
 
 (defun w3m-redisplay-and-reset (&optional arg)
   "Redisplay current page and reset of specified charset and content-type."
   (interactive "P")
-  (w3m-arrived-modify w3m-current-url nil nil nil 'reset 'reset)
-  (w3m-redisplay-this-page arg))
+  (if (null w3m-current-url)
+      (w3m-message "Can't execute this page")
+    (w3m-arrived-modify w3m-current-url nil nil nil 'reset 'reset)
+    (w3m-redisplay-this-page arg)))
 
 (defun w3m-redisplay-with-charset (&optional arg)
   "Redisplay current page with specified charset.
 If input is nil, use default coding-system on w3m."
   (interactive "P")
-  (let ((charset
-	 (w3m-read-content-charset
-	  (format "Content-charset (current %s, default reset): "
-		  w3m-current-coding-system)
-	   ;; Default action is reseting charset entry in arrived DB.
-	  'reset)))
-    (w3m-arrived-modify w3m-current-url nil nil nil charset nil)
-    (w3m-redisplay-this-page arg)))
+  (if (null w3m-current-url)
+      (w3m-message "Can't execute this page")
+    (let ((charset
+	   (w3m-read-content-charset
+	    (format "Content-charset (current %s, default reset): "
+		    w3m-current-coding-system)
+	    ;; Default action is reseting charset entry in arrived DB.
+	    'reset)))
+      (w3m-arrived-modify w3m-current-url nil nil nil charset nil)
+      (w3m-redisplay-this-page arg))))
 
 (defun w3m-redisplay-with-content-type (&optional arg)
   "Redisplay current page with specified content-type.
 If input is nil, use default content-type on w3m."
   (interactive "P")
-  (let ((url w3m-current-url) ct)
-    (setq ct (completing-read
-	      (format "Content-type (current %s, default reset): "
-		      (or (w3m-arrived-content-type url)
-			  (if (w3m-url-local-p url)
-			      (w3m-local-content-type url)
-			    (w3m-content-type url))))
-	      w3m-content-type-alist nil t))
-    ;; Default action is reseting content-type entry in arrived DB.
-    (when (string= ct "")
-      (setq ct 'reset))
-    (w3m-arrived-modify url nil nil nil nil ct)
-    (w3m-redisplay-this-page arg)))
+  (if (null w3m-current-url)
+      (w3m-message "Can't execute this page")
+    (let ((url w3m-current-url) ct)
+      (setq ct (completing-read
+		(format "Content-type (current %s, default reset): "
+			(or (w3m-arrived-content-type url)
+			    (if (w3m-url-local-p url)
+				(w3m-local-content-type url)
+			      (w3m-content-type url))))
+		w3m-content-type-alist nil t))
+      ;; Default action is reseting content-type entry in arrived DB.
+      (when (string= ct "")
+	(setq ct 'reset))
+      (w3m-arrived-modify url nil nil nil nil ct)
+      (w3m-redisplay-this-page arg))))
 
 ;;;###autoload
 (defun w3m (&optional url new-session interactive-p)
@@ -6247,7 +6267,8 @@ Optional NEW-SESSION is intended to be used by the command
 	  (when (setq window (get-buffer-window buffer t))
 	    (setq frame (window-frame window)))
 	  (cond (frame
-		 (funcall focusing-function frame)
+		 (unless (eq frame (selected-frame))
+		   (funcall focusing-function frame))
 		 (select-window window)
 		 (setq frame nil))
 		(window
@@ -6269,8 +6290,11 @@ Optional NEW-SESSION is intended to be used by the command
 	(unless nofetch
 	  (w3m-goto-url url nil nil nil nil nil interactive-p))
       (unless w3m-current-url
-	(erase-buffer)
-	(set-buffer-modified-p nil))
+	(condition-case nil
+	    (progn
+	      (erase-buffer)
+	      (set-buffer-modified-p nil))
+	  (error nil)))
       (when frame
 	(setq w3m-initial-frame frame)))))
 
@@ -6346,13 +6370,15 @@ works on Emacs.
 (defun w3m-view-source ()
   "Display source of this current buffer."
   (interactive)
-  (w3m-goto-url
-   (cond
-    ((string-match "\\`about://source/" w3m-current-url)
-     (substring w3m-current-url (match-end 0)))
-    ((string-match "\\`about://header/" w3m-current-url)
-     (concat "about://source/" (substring w3m-current-url (match-end 0))))
-    (t (concat "about://source/" w3m-current-url)))))
+  (if w3m-current-url
+      (w3m-goto-url
+       (cond
+	((string-match "\\`about://source/" w3m-current-url)
+	 (substring w3m-current-url (match-end 0)))
+	((string-match "\\`about://header/" w3m-current-url)
+	 (concat "about://source/" (substring w3m-current-url (match-end 0))))
+	(t (concat "about://source/" w3m-current-url))))
+    (w3m-message "Can't view page source")))
 
 (defun w3m-make-separator ()
   (if (string= w3m-language "Japanese")
@@ -6427,15 +6453,17 @@ works on Emacs.
 (defun w3m-view-header ()
   "Display header of this current buffer."
   (interactive)
-  (w3m-goto-url
-   (cond
-    ((string-match "\\`about://header/" w3m-current-url)
-     (substring w3m-current-url (match-end 0)))
-    ((string-match "\\`about://source/" w3m-current-url)
-     (concat "about://header/" (substring w3m-current-url (match-end 0))))
-    ((string-match "\\`about:" w3m-current-url)
-     (error "Can't load a header for %s" w3m-current-url))
-    (t (concat "about://header/" w3m-current-url)))))
+  (if w3m-current-url
+      (w3m-goto-url
+       (cond
+	((string-match "\\`about://header/" w3m-current-url)
+	 (substring w3m-current-url (match-end 0)))
+	((string-match "\\`about://source/" w3m-current-url)
+	 (concat "about://header/" (substring w3m-current-url (match-end 0))))
+	((string-match "\\`about:" w3m-current-url)
+	 (error "Can't load a header for %s" w3m-current-url))
+	(t (concat "about://header/" w3m-current-url))))
+    (w3m-message "Can't view page header")))
 
 (defvar w3m-about-history-max-indentation '(/ (* (window-width) 2) 3)
   "*Number to limit the indentation when showing a tree-structured
