@@ -196,7 +196,8 @@ favicon is ready."
 	   (w3m-favicon-convert
 	    (base64-decode-string (symbol-value icon)) 'ico))))
        ((or (string-match "\\`https?://" url)
-	    (and (string-match "\\`about://source/https?://" url)
+	    (and (string-match "\\`about://\\(header\\|source\\)/https?://"
+			       url)
 		 (setq url (substring url 15))))
 	(if w3m-icon-data
 	    (w3m-favicon-retrieve (car w3m-icon-data) (cdr w3m-icon-data)

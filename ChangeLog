@@ -5,7 +5,7 @@
 	(w3m-view-source): Set `truncate-lines' to nil.
 
 	* w3m-favicon.el (w3m-favicon-setup): Retrieve favicon even when
-	viewing the page source.
+	viewing the header or the page source.
 
 2003-11-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
