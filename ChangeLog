@@ -1,3 +1,10 @@
+2001-06-10  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-w3m-dev.el: Remove comment.
+	(shimbun-w3m-dev-coding-system): Change iso-2022-jp to euc-jp.
+
+	* shimbun/sb-vinelinux.el: New file.
+
 2001-06-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-form.el (w3m-form-parse-region): Check the value of

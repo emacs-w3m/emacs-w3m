@@ -32,15 +32,10 @@
 
 (defvar shimbun-w3m-dev-url "http://mi.med.tohoku.ac.jp/~satodai/w3m-dev/")
 (defvar shimbun-w3m-dev-groups '("w3m-dev"))
-(defvar shimbun-w3m-dev-coding-system 'iso-2022-jp)
+(defvar shimbun-w3m-dev-coding-system 'euc-jp)
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-w3m-dev))
   "w3m-dev@mi.med.tohoku.ac.jp")
-
-;;(luna-define-method shimbun-get-headers :before ((shimbun shimbun-w3m-dev)
-;;						   &optional header)
-;;  (shimbun-set-use-entire-index-internal shimbun t)
-;;  (luna-call-next-method))
 
 (provide 'sb-w3m-dev)
 
