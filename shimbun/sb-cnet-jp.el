@@ -76,6 +76,10 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 (luna-define-method shimbun-clear-contents :before
   ((shimbun shimbun-cnet-jp) header)
   (shimbun-strip-cr)
+  ;; remove advertisement <div class="ad.*"> - </div>
+  (shimbun-remove-tags "<div +class=\"?ad" "</div>")
+  ;; remove column <div class="pall5( bd1)"> - </div>
+  (shimbun-remove-tags "<div +class=\"?pall5" "</div>")
   (shimbun-remove-tags "<script" "</script>")
   (shimbun-remove-tags "<noscript" "</noscript>"))
 

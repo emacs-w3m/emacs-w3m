@@ -1,3 +1,8 @@
+2004-12-12  Tsuyoshi CHO  <mfalcon21@hotmail.com>
+
+	* shimbun/sb-cnet-jp.el (shimbun-clear-contents): Append tag
+	removal: advertisement and column link.
+
 2004-12-11  David Hansen  <david.hansen@gmx.net>
 
 	* shimbun/sb-heise.el (shimbun-heise-get-telepolis-headers): Fixed
