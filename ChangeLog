@@ -1,3 +1,10 @@
+2002-04-22  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-w3m-view-inline-image): Toggle
+	`mew-w3m-auto-insert-image'.
+	(mew-w3m-cid-retrieve-hook): New customize hook.
+	(mew-w3m-cid-retrieve): Run `mew-w3m-cid-retrieve-hook'.
+
 2002-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-insert-string): Prevent doubling expansion on
