@@ -391,6 +391,38 @@ so don't specify them for the normal use."
 	    (setq w3m-history-flat (nreverse alist)))))
     (setq w3m-history-flat nil)))
 
+(defun w3m-history-tree ()
+  "Make a tree-structured history in the variable `w3m-history' from the
+value of `w3m-history-flat'.  The position pointers will be set to the
+beginning of a history."
+  (if w3m-history-flat
+      (let ((flat w3m-history-flat)
+	    element positions rest position)
+	(setq w3m-history (list (list nil nil)))
+	(while (setq element (pop flat))
+	  (setq positions (caddr element)
+		rest w3m-history)
+	  (while positions
+	    (setq position (pop positions))
+	    (unless (> (length rest) position)
+	      (setcdr (nthcdr (1- (length rest)) rest)
+		      (make-list (- position (length rest) -1)
+				 (list nil nil))))
+	    (setq rest (nth position rest))
+	    (when positions
+	      (setq position (pop positions))
+	      (unless (> (- (length rest) 2) position)
+		(setcdr (nthcdr (1- (length rest)) rest)
+			(make-list (- position (length rest) -3)
+				   (list (list nil nil)))))
+	      (setq rest (nth (+ position 2) rest))))
+	  (setcar rest (car element))
+	  (setcar (cdr rest) (cadr element)))
+	(setq w3m-history (cons (list nil nil (list 0)) w3m-history))
+	(w3m-history-forward-1)
+	w3m-history)
+    (setq w3m-history nil)))
+
 (defun w3m-history-assoc (url &optional set-current properties replace-props)
   "Return a history element if URL is `equal' to the `car' of an element
 of `w3m-history-flat'.  Elements of the return value is actually the
