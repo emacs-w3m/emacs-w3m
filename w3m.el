@@ -930,10 +930,11 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
 ;; FIXME: we need to improve so that to set up the value of this
 ;; variable may be performed by parsing the mailcap file.
 (defcustom w3m-content-type-alist
-  (let* ((fiber-viewer (when (eq system-type 'windows-nt)
+  (let* ((fiber-viewer (when (and (eq system-type 'windows-nt)
+				  (w3m-which-command "fiber"))
 			 (list "fiber.exe" "-s" 'file)))
 	 (external-browser
-	  (if (eq system-type 'windows-nt)
+	  (if (and (eq system-type 'windows-nt) (w3m-which-command "fiber"))
 	      'w3m-w32-browser-with-fiber
 	    (or (when (condition-case nil (require 'browse-url) (error nil))
 		  (if (or (not (boundp 'browse-url-browser-function))
