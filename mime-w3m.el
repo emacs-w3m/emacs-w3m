@@ -189,8 +189,7 @@ map.")))
       (mime-entity-type/subtype entity))))
 
 (let (current-load-list)
-  (defadvice kill-new (before strip-keymap-properties-from-kill
-			      (string &optional replace) activate)
+  (defadvice kill-new (before strip-keymap-properties-from-kill activate)
     "Advised by emacs-w3m.
 Strip `keymap' or `local-map' properties from a killed string."
     (if (text-property-any 0 (length (ad-get-arg 0))
