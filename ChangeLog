@@ -1,3 +1,7 @@
+2005-03-20  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-fau.el: new file.
+
 2005-03-19  Takashi Hiromatsu  <matsuan@ca2.so-net.ne.jp>
 
 	* shimbun/sb-sourceforge-jp.el (shimbun-sourceforge-jp-mailing-lists):
