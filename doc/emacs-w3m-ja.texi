@@ -1129,31 +1129,32 @@ URL をアンテナ・データベースに加えます。接頭引数付きで呼ばれた場合は、現
 @cindex User option
 @vindex w3m-init-file
 
-All emacs-w3m options are customizable via the Custom mechanism, a
-graphical Emacs interface to define user options.  Custom offers several
-methods to define your customizations, you can use for example @kbd{M-x
-customize-option} for a single option (i.e. an Emacs Lisp variable) or
-@kbd{M-x customize-group} to see all available options for a ``group''
-and change them; in which case the group to use is @code{w3m}.
+すべての emacs-w3m のユーザオプションは、Custom の仕掛けによってカスタマ
+イズすることができます。Custom はユーザオプションを定義するための、
+Emacs のグラフィック・インターフェースです。Custom にはいくつかのカスタ
+マイズのための手段があり、例えば単一のオプション (Emacs Lisp 変数) のた
+めの @kbd{M-x customize-option}、またはある ``group'' (この場合のグルー
+プは @code{w3m}) に属するすべてのオプションを見て、かつ変更するため
+の @kbd{M-x customize-group} が使えます。
 
-Alternatively (if you don't want to use Custom), you can put arbitrary
-Emacs Lisp expressions in your emacs-w3m initialization file, which is
-@file{~/.emacs-w3m} by default.  This example:
+あるいは (もし Custom を使いたくないのであれば)、任意の Emacs Lisp 式
+を emacs-w3m 初期設定ファイルに書き込むことができます。デフォルトのファ
+イルは @file{~/.emacs-w3m} です。例えば、
 
 @lisp
 (setq w3m-home-page "http://emacs-w3m.namazu.org/")
 @end lisp
 
-would set the default homepage to @uref{http://emacs-w3m.namazu.org/}.
-The syntax to use is the same as in your @file{.emacs}
-file. @xref{(emacs)Init File}.
+これはデフォルトのホームページを @uref{http://emacs-w3m.namazu.org/} に
+設定します。シンタックスは @file{.emacs} ファイルと同じです。
+@xref{(emacs)Init File}.
 
-Please note that some options from external modules could be undefined
-at the time the @file{~/.emacs-w3m} file is loaded, thus making them
-impossible to modify (of course if you don't care about the default
-value, you can override them completely in your @file{~/.emacs-w3m}).
-The @code{w3m-search-quick-search-engine-alist} option is a typical
-example (@pxref{Search Options}).
+気を付けなければいけないのは、外部モジュールで定義されているいくつかのオ
+プションが @file{~/.emacs-w3m} が読み込まれるときには未定義で、それらを
+変更できないかもしれないことです (もちろん、デフォルトの値を気にしないの
+であれば、@file{~/.emacs-w3m} で完璧に上書きしてしまうことは可能なのです
+けれどね)。オプション @code{w3m-search-quick-search-engine-alist} は典型
+的な例です (@pxref{Search Options})。
 
 @table @code
 
