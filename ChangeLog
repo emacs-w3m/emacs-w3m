@@ -1,3 +1,12 @@
+2002-02-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-after-cursor-move-hook): New option.
+	(w3m-check-current-position): New function.
+	(w3m-print-this-url-after-command): Removed.
+	(w3m-buffer-setup): Set `w3m-check-current-position' to
+	`post-command-hook', instead of `w3m-print-this-url-after-command'.
+	(w3m-add-local-hook): Check version of Emacsen dynamically.
+
 2002-02-07  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-fontify-images): Changed regexp to more generic one

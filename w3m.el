@@ -566,6 +566,13 @@ to input URL when URL-like string is not detected under the cursor."
   :group 'w3m
   :type 'hook)
 
+(defcustom w3m-after-cursor-move-hook
+  '(w3m-highlight-current-anchor
+    w3m-print-this-url)
+  "*Hook run after cursor moved."
+  :group 'w3m
+  :type 'hook)
+
 (defcustom w3m-arrived-setup-hook nil
   "*Hook run at the end of `w3m-arrived-setup'."
   :group 'w3m
@@ -4479,7 +4486,7 @@ it will prompt user where to save a file."
 
 (defun w3m-add-local-hook (hook function &optional append)
   "Add to the buffer-local value of HOOK the function FUNCTION."
-  (w3m-static-when (or (featurep 'xemacs) (< emacs-major-version 21))
+  (when (or (featurep 'xemacs) (< emacs-major-version 21))
     (make-local-hook hook))
   (add-hook hook function append t))
 
@@ -4492,13 +4499,12 @@ commands.  This function is designed as the hook function which is
 registered to `pre-command-hook' by `w3m-buffer-setup'."
   (setq w3m-current-position (point)))
 
-(defun w3m-print-this-url-after-command ()
-  "Print the URL pointed by the anchor under the cursor after every
-commands.  This function is designed as the hook function which is
+(defun w3m-check-current-position ()
+  "Call functions set to `w3m-after-cursor-move-hook' after cursor is
+moved.  This function is designed as the hook function which is
 registered to `post-command-hook' by `w3m-buffer-setup'."
   (when (/= (point) w3m-current-position)
-    (w3m-highlight-current-anchor)
-    (w3m-print-this-url)))
+    (run-hooks 'w3m-after-cursor-move-hook)))
 
 (defsubst w3m-buffer-setup ()
   "When this buffer's major mode is not w3m-mode, generate an
@@ -4508,7 +4514,7 @@ appropriate buffer and select it."
     (unless (eq major-mode 'w3m-mode)
       (w3m-mode)))
   (w3m-add-local-hook 'pre-command-hook 'w3m-store-current-position)
-  (w3m-add-local-hook 'post-command-hook 'w3m-print-this-url-after-command)
+  (w3m-add-local-hook 'post-command-hook 'w3m-check-current-position)
   (setq mode-line-buffer-identification
 	(list "%b "
 	      '((w3m-current-process
