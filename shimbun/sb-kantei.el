@@ -1,6 +1,6 @@
 ;;; sb-kantei.el --- shimbun backend for kantei mail magazine backnumber -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2004 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2003, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
@@ -53,9 +53,9 @@ x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
     (concat (shimbun-url-internal shimbun)
 	    (cond ((string-equal group "m-magazine-en")
 		   "foreign/m-magazine")
-		  ((string-equal group "m-magazine-ja")
+		  ((string-equal group "m-magazine") ;; Backward compatibility.
 		   "jp/m-magazine")
-		  ((string-equal group "m-magazine")
+		  (t
 		   "jp/m-magazine"))
 	    "/backnumber/")))
 
