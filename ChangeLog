@@ -7,7 +7,7 @@
 2001-12-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-type): Follow the new official release of w3m.
-	(w3m-attributes): Follow the change of error symbols which is
+	(w3m-attributes): Follow the change of error symbols which are
 	defined in w3m-proc.el.
 	(w3m-retrieve): Ditto.
 	(w3m-about-header): Likewise.  Ignore optional arguments safely.
