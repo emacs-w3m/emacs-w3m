@@ -2749,9 +2749,15 @@ For example:
 				   '(face w3m-strike-through-face)))))))
 
 (defsubst w3m-decode-anchor-string (str)
-  ;; FIXME: This is a quite ad-hoc function to process encoded URL
-  ;;        string.  More discussion about timing &-sequence decode is
-  ;;        required.  See [emacs-w3m:00150] for detail.
+  ;; FIXME: This is a quite ad-hoc function to process encoded URL string.
+  ;; More discussion about timing &-sequence decode is required.  The
+  ;; following article (written in Japanese) is origin of this issue:
+  ;;
+  ;; [emacs-w3m:00150] <URL:http://emacs-w3m.namazu.org/ml/msg00149.html>
+  ;;
+  ;; Takaaki MORIYAMA wrote in the article that the string "&amp;" which
+  ;; is replaced from "&" and embedded in the w3m's halfdump should be
+  ;; restored to "&" some time.
   (let ((start 0) (buf))
     (while (string-match "&amp;" str start)
       (setq buf (cons "&" (cons (substring str start (match-beginning 0)) buf))
@@ -2760,7 +2766,7 @@ For example:
 	   (nreverse (cons (substring str start) buf)))))
 
 (defun w3m-image-type (content-type)
-  "Return image type which corresponds to CONTENT-TYPE."
+  "Return an image type which corresponds to CONTENT-TYPE."
   (cdr (assoc content-type w3m-image-type-alist)))
 
 (defun w3m-imitate-widget-button ()
@@ -2772,7 +2778,7 @@ For example:
     (and w3m-imitate-widget-button t)))
 
 (defun w3m-fontify-anchors ()
-  "Fontify anchor tags in this buffer which contains half-dumped data."
+  "Fontify anchor tags in the buffer which contains halfdump'ed data."
   (let ((help (w3m-make-help-echo w3m-href-anchor))
 	(balloon (w3m-make-balloon-help w3m-href-anchor))
 	prenames start end)
@@ -2881,8 +2887,7 @@ For example:
 	  )))))
 
 (defun w3m-fontify-images ()
-  "Fontify image alternate strings in this buffer which contains
-half-dumped data."
+  "Fontify img_alt strings of images in the buffer containing halfdump."
   (goto-char (point-min))
   (let ((help (w3m-make-help-echo w3m-image))
 	(balloon (w3m-make-balloon-help w3m-image))
