@@ -175,6 +175,20 @@ Note that this function requires that the `convert' program allows the
 	       (concat (number-to-string rate) "%")))
     result))
 
+(defun w3m-favicon-usable-p ()
+  "Check whether ImageMagick's `convert' supports a Windoze ico format in
+a large number of bits per pixel."
+  (let ((xpm (condition-case nil
+		 (w3m-imagick-convert-data
+		  (string 0 0 1 0 1 0 2 1 0 0 1 0 24 0 52 0
+			  0 0 22 0 0 0 40 0 0 0 2 0 0 0 2 0
+			  0 0 1 0 24 0 0 0 0 0 0 0 0 0 0 0
+			  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+			  0 255 255 255 0 0 0 0 0 0)
+		  "ico" "xpm")
+	       (error nil))))
+    (and xpm (string-match "\"2 1 2 1\"" xpm) t)))
+
 (provide 'w3m-image)
 
 ;;; w3m-image.el ends here

@@ -1,3 +1,13 @@
+2002-12-12  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-use-favicon): Moved from w3m-e21.el.
+
+	* w3m-image.el (w3m-favicon-usable-p): Moved from w3m-e21.el.
+
+	* w3m-e21.el : Bind `w3m-use-favicon' when compiling.
+	(w3m-favicon-usable-p): Moved to w3m-image.el.
+	(w3m-use-favicon): Moved to w3m.el.
+
 2002-12-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yomiuri.el (shimbun-get-headers): Remove garbages.
