@@ -86,7 +86,7 @@
   (format "<%s%%%s@atmarkit.co.jp>" (match-string-no-properties 1 url)
 	  (shimbun-current-group-internal shimbun)))
 
-(luna-define-method shimbun-article ((shimbun shimbun) header &optional outbuf)
+(luna-define-method shimbun-article ((shimbun shimbun-atmarkit) header &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
     (with-current-buffer (or outbuf (current-buffer))
       (w3m-insert-string
