@@ -423,7 +423,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defface w3m-tab-unselected-face
   '((((type x w32 mac) (class color))
      :background "Gray50" :foreground "Gray20"
-     :box (:line-width 1 :style released-button))
+     :box (:line-width -1 :style released-button))
     (((class color))
      (:background "blue" :foreground "black")))
   "*Face to fontify unselected tabs."
@@ -432,7 +432,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defface w3m-tab-unselected-retrieving-face
   '((((type x w32 mac) (class color))
      :background "Gray50" :foreground "OrangeRed"
-     :box (:line-width 1 :style released-button))
+     :box (:line-width -1 :style released-button))
     (((class color))
      (:background "blue" :foreground "OrangeRed")))
   "*Face to fontify unselected tabs which are retrieving their pages."
@@ -441,7 +441,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defface w3m-tab-selected-face
   '((((type x w32 mac) (class color))
      :background "Gray85" :foreground "black"
-     :box (:line-width 1 :style released-button))
+     :box (:line-width -1 :style released-button))
     (((class color))
      (:background "cyan" :foreground "black"))
     (t (:underline t)))
@@ -451,7 +451,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defface w3m-tab-selected-retrieving-face
   '((((type x w32 mac) (class color))
      :background "Gray85" :foreground "red"
-     :box (:line-width 1 :style released-button))
+     :box (:line-width -1 :style released-button))
     (((class color))
      (:background "cyan" :foreground "red"))
     (t (:underline t)))
@@ -579,11 +579,11 @@ cleared by a timer.")
 			   w3m-show-graphic-icons-in-header-line))
 	     (margin (if window-system
 			 (+ (if graphic 3.0 0.5)
-			    ;; Vertical shadows.
-			    (/ (if graphic 4.0 2.0) (frame-char-width)))
+			    ;; Right and left shadows.
+			    (/ 2.0 (frame-char-width)))
 		       1))
 	     (spinner (when w3m-process-queue
-			(w3m-make-spinner-image -1)))
+			(w3m-make-spinner-image)))
 	     buffer title data datum process face keymap icon line)
 	(setq w3m-tab-timer
 	      (run-at-time 0.1 nil
@@ -632,17 +632,14 @@ cleared by a timer.")
 			(process
 			 (when spinner
 			   (propertize
-			    "  "
+			    " "
 			    'display spinner
 			    'local-map w3m-tab-spinner-map
 			    'help-echo w3m-spinner-map-help-echo)))
 			((nth 3 datum)
 			 (propertize
-			  "  "
-			  'display (cons 'image
-					 (plist-put
-					  (copy-sequence (cdr (nth 3 datum)))
-					  :relief 1))
+			  " "
+			  'display (nth 3 datum)
 			  'local-map keymap
 			  'help-echo title))))
 		breadth (cond (icon width)
@@ -778,10 +775,9 @@ italic font in the modeline."
 	(setq w3m-modeline-process-status-on
 	      (get 'w3m-modeline-process-status-on 'string))))))
 
-(defun w3m-make-spinner-image (&optional relief)
+(defun w3m-make-spinner-image ()
   "Make an image used to show a spinner.
-If RELIEF is non-nil, put a relief around an image.  This function
-should be called periodically in order to spin the spinner."
+It should be called periodically in order to spin the spinner."
   (when w3m-spinner-image-file
     (unless (< (incf w3m-spinner-image-index) w3m-spinner-image-frames)
       (setq w3m-spinner-image-index 0))
@@ -793,12 +789,7 @@ should be called periodically in order to spin the spinner."
 			'display image
 			'local-map w3m-modeline-spinner-map
 			'help-echo w3m-spinner-map-help-echo))
-      (if relief
-	  (create-image w3m-spinner-image-file 'gif nil
-			:ascent 'center :mask 'heuristic
-			:index w3m-spinner-image-index
-			:relief relief)
-	image))))
+      image)))
 
 (provide 'w3m-e21)
 
