@@ -6,7 +6,8 @@
 
 	* w3mhack.el (w3mhack-make-package): Add shimbun modules in
 	MANIFEST.w3m file.
-	(w3mhack-examine-modules): Return shimbun modules as well.
+	(w3mhack-examine-modules): Look for the library "mime-def" instead
+	of "mime" to check whether FLIM has been installed or not.
 	* Makefile.in (install): Install shimbun modules as well.
 	(install-icons): Show subdirectory name.
 
