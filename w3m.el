@@ -2700,16 +2700,6 @@ use `w3m-url-encode-string' instead."
     (apply 'concat
 	   (nreverse (cons (substring url start) buf)))))
 
-(defmacro w3m-delete-all-overlays (&optional all)
-  "Delete all momentary overlays.
-If ALL is non-nil, simply delete all overlays."
-  (if all
-      '(dolist (overlay (overlays-in (point-min) (point-max)))
-	 (delete-overlay overlay))
-    '(dolist (overlay (overlays-in (point-min) (point-max)))
-       (if (overlay-get overlay 'w3m-momentary-overlay)
-	   (delete-overlay overlay)))))
-
 
 ;;; HTML character entity handling:
 (defun w3m-entity-db-setup ()
@@ -2889,10 +2879,12 @@ For example:
 	      (let ((widget-button-face (if (w3m-arrived-p href)
 					    'w3m-arrived-anchor-face
 					  'w3m-anchor-face))
-		    (widget-mouse-face 'highlight))
-		(widget-convert-button 'default start end
-				       :button-keymap nil
-				       :help-echo href)))
+		    (widget-mouse-face 'highlight)
+		    w)
+		(setq w (widget-convert-button 'default start end
+					       :button-keymap nil
+					       :help-echo href))
+		(overlay-put (widget-get w :button-overlay) 'evaporate t)))
 	    (when name
 	      (w3m-add-text-properties start (point-max)
 				       (list 'w3m-name-anchor
@@ -4817,7 +4809,6 @@ specified in the `w3m-content-type-alist' variable."
       (let (buffer-read-only)
 	(widen)
 	(delete-region (point-min) (point-max))
-	(w3m-delete-all-overlays 'all)
 	(insert-buffer-substring result-buffer)
 	(w3m-copy-local-variables result-buffer)
 	(set-buffer-file-coding-system w3m-current-coding-system)
@@ -4833,7 +4824,6 @@ specified in the `w3m-content-type-alist' variable."
 	      w3m-current-title (file-name-nondirectory url))
 	(widen)
 	(delete-region (point-min) (point-max))
-	(w3m-delete-all-overlays 'all)
 	(insert w3m-current-title)
 	(w3m-add-text-properties (point-min) (point-max)
 				 (list 'face 'w3m-image-face
@@ -5437,6 +5427,7 @@ Return t if highlighting is successful."
 	(setq ov (make-overlay beg pos))
 	(overlay-put ov 'face 'w3m-current-anchor-face)
 	(overlay-put ov 'w3m-momentary-overlay t)
+	(overlay-put ov 'evaporate t)
 	t))))
 
 (defun w3m-highlight-current-anchor ()
@@ -5450,7 +5441,6 @@ Return t if highlighting is successful."
 				       ovs nil))
 			     (setq ovs (cdr ovs)))
 			   ov))))
-    (w3m-delete-all-overlays)
     (save-excursion
       (let ((seq (w3m-anchor-sequence))
 	    (pos (point)))

@@ -337,9 +337,10 @@ Buffer string between BEG and END are replaced with IMAGE."
 		 (insert " ")
 		 (setq start (1+ start)
 		       end (1- end)))))
-	(widget-convert-button
-	 'w3m-form-button start end
-	 :w3m-form-action (plist-get properties 'w3m-action))
+	(let ((w (widget-convert-button
+		  'w3m-form-button start end
+		  :w3m-form-action (plist-get properties 'w3m-action))))
+	  (overlay-put (widget-get w :button-overlay) 'evaporate t))
 	(add-text-properties start end properties))
     (add-text-properties start end (append '(face w3m-form-face)
 					   properties))))

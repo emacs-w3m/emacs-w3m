@@ -1,5 +1,24 @@
 2004-04-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-delete-all-overlays): Remove.
+
+2004-04-07  Masatake YAMATO  <jet@gyve.org>
+
+	* w3m-bitmap.el (w3m-bitmap-image-insert): Enable the evaporate
+	property on overlays.
+
+	* w3m-e21.el (w3m-form-make-button): Enable the evaporate property
+	on buttun overlays.
+
+	* w3m.el (w3m-fontify-anchors): Ditto.
+	(w3m-create-text-page): No need to delete zombie overlays.
+	(w3m-create-image-page): Ditto.
+	(w3m-highlight-current-anchor-1): Enable the evaporate property on
+	overlays.
+	(w3m-highlight-current-anchor): No need to delete overlays.
+
+2004-04-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-rendering-extract-title): Remove too much whitespace.
 
 2004-04-05  Katsumi Yamaoka  <yamaoka@jpl.org>
