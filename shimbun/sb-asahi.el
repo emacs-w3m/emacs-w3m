@@ -67,12 +67,13 @@
 	 subject url id month headers)
     (while (and next
 		(if (numberp next)
-		    (goto-char next)
+		    (goto-char (match-end 0))
 		  (re-search-forward regexp nil t)))
       (setq subject (match-end 0)
 	    url (match-string 1)
 	    id (concat "<" (match-string 2) (match-string 3) "%" group ">")
-	    next (re-search-forward regexp nil t))
+	    next (when (re-search-forward regexp nil t)
+		   (match-beginning 0)))
       (goto-char subject)
       (save-match-data
 	(setq subject (if (re-search-forward "[\t\n ]*</a>" next t)
