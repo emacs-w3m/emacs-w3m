@@ -1,3 +1,11 @@
+2001-10-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-attributes): Return the pseudo-normalized URL as
+	the real URL of the target URL, when it lacks a scheme part or a
+	hierachical part.
+	(w3m-about-header): Select the character which is used to draw a
+	rule, based on the value of `w3m-language'.
+
 2001-10-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-form.el (w3m-form-parse-forms): Dismantle `w3m-current-url'

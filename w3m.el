@@ -2675,22 +2675,36 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	    (setq type (w3m-remove-redundant-spaces type))
 	    (when (string-match ";$" type)
 	      (setq type (substring type 0 (match-beginning 0))))))
-	(list (or type (w3m-local-content-type url))
-	      (or charset
-		  (and (memq w3m-type '(w3mmee w3m-m17n))
-		       (setq charset
-			     (cdr (assoc "w3m-document-charset" alist)))
-		       (car (split-string charset))))
-	      (let ((v (cdr (assoc "content-length" alist))))
-		(and v (setq v (string-to-number v)) (> v 0) v))
-	      (cdr (assoc "content-encoding" alist))
-	      (let ((v (cdr (assoc "last-modified" alist))))
-		(and v (w3m-time-parse-string v)))
-	      (or (cdr (assoc "w3m-current-url" alist))
-		  url)
-	      (or (cdr (assoc "w3m-base-url" alist))
-		  (cdr (assoc "w3m-current-url" alist))
-		  url))))
+	(let (pseudo-url)
+	  (unless w3m-accept-dump-extra-option
+	    (unless (string-match ":" url)
+	      ;; When URL has no scheme part.
+	      (setq pseudo-url
+		    (concat "http://"
+			    (if (string-match "\\`/+" url)
+				(substring url (match-end 0))
+			      url))))
+	    (when (string-match "\\`http://[^/?#]*\\'" (or pseudo-url url))
+	      ;; When URL has no hierarchical part.
+	      (setq pseudo-url (concat (or pseudo-url url) "/"))))
+	  (list (or type (w3m-local-content-type url))
+		(or charset
+		    (and (memq w3m-type '(w3mmee w3m-m17n))
+			 (setq charset
+			       (cdr (assoc "w3m-document-charset" alist)))
+			 (car (split-string charset))))
+		(let ((v (cdr (assoc "content-length" alist))))
+		  (and v (setq v (string-to-number v)) (> v 0) v))
+		(cdr (assoc "content-encoding" alist))
+		(let ((v (cdr (assoc "last-modified" alist))))
+		  (and v (w3m-time-parse-string v)))
+		(or (cdr (assoc "w3m-current-url" alist))
+		    pseudo-url
+		    url)
+		(or (cdr (assoc "w3m-base-url" alist))
+		    (cdr (assoc "w3m-current-url" alist))
+		    pseudo-url
+		    url)))))
      ;; FIXME: adhoc implementation
      ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
      ;; HTTP/1.0 501 Method Not Implemented
@@ -4495,7 +4509,9 @@ works on Emacs.
 	(and (not (w3m-url-local-p url))
 	     (setq header (w3m-w3m-get-header url no-cache))
 	     (insert
-	      "\n\n━━━━━━━━━━━━━━━━━━━\n\nHeader information\n\n"
+	      (if (string= w3m-language "Japanese")
+		  "\n\n━━━━━━━━━━━━━━━━━━━\n\nHeader information\n\n"
+		"\n\n--------------------------------------\n\nHeader information\n\n")
 	      header))))
     "text/plain"))
 
