@@ -130,10 +130,6 @@
 (eval-when-compile
   (autoload 'rfc2368-parse-mailto-url "rfc2368"))
 
-(eval-when-compile
-  (when (featurep 'xemacs)
-    (defalias 'define-key-after 'ignore)))
-
 (defconst emacs-w3m-version
   (eval-when-compile
     (let ((rev "$Revision$"))
@@ -684,6 +680,11 @@ See the file balloon-help.el for more information."
 
 (defcustom w3m-use-tab t
   "Use w3m as a tab browser."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-use-tab-menubar t
+  "Use 'TAB' menubar."
   :group 'w3m
   :type 'boolean)
 
@@ -3780,6 +3781,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "\C-c\C-p" 'w3m-previous-buffer)
     (define-key map "\C-c\C-n" 'w3m-next-buffer)
     (define-key map "\C-c\C-w" 'w3m-delete-buffer)
+    (define-key map "\C-c\C-s" 'w3m-select-buffer)
     (define-key map "R" 'w3m-reload-this-page)
     (define-key map "C" 'w3m-redisplay-with-charset)
     (define-key map "?" 'describe-mode)
@@ -3862,6 +3864,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "\C-c\C-p" 'w3m-previous-buffer)
     (define-key map "\C-c\C-n" 'w3m-next-buffer)
     (define-key map "\C-c\C-w" 'w3m-delete-buffer)
+    (define-key map "\C-c\C-s" 'w3m-select-buffer)
     (define-key map "o" 'w3m-history)
     (define-key map "O" 'w3m-db-history)
     (define-key map "p" 'w3m-view-previous-page)
@@ -3956,10 +3959,6 @@ Return t if deleting current frame or window is succeeded."
 	    w3m-info-like-map
 	  w3m-lynx-like-map)))
 
-(eval-and-compile
-  (unless (fboundp 'w3m-setup-tab)
-    (autoload 'w3m-setup-tab "w3m-tab")))
-
 (defun w3m-mode ()
   "\\<w3m-mode-map>
    Major mode to browsing w3m buffer.
@@ -4034,6 +4033,10 @@ Return t if deleting current frame or window is succeeded."
 \\[w3m-bookmark-add-this-url]	Add link under cursor to bookmark.
 
 \\[w3m-copy-buffer]	Create a twin copy of the current buffer.
+\\[w3m-next-buffer]	Switch to next w3m buffer.
+\\[w3m-previous-buffer]	Switch to previous w3m buffer.
+\\[w3m-delete-buffer]	Kill current w3m buffer.
+\\[w3m-select-buffer]	Select one buffer of all w3m buffers.
 
 \\[w3m]	w3m.
 \\[w3m-close-window]	Close this window and make the other buffer current.
@@ -4049,7 +4052,7 @@ Return t if deleting current frame or window is succeeded."
   (setq truncate-lines t)
   (w3m-setup-toolbar)
   (w3m-setup-menu)
-  (when w3m-use-tab (w3m-setup-tab))
+  (when w3m-use-tab-menubar (w3m-setup-tab-menu))
   (run-hooks 'w3m-mode-hook))
 
 (defun w3m-scroll-up-or-next-url (arg)

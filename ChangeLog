@@ -1,3 +1,35 @@
+2001-11-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (Top): Abolished autoload of `w3m-setup-tab'.
+	(w3m-use-tab-menubar): Revival.
+	(w3m-lynx-like-map): Bind `C-cC-s' as the key to call
+	`w3m-select-buffer'.
+	(w3m-info-like-map): Ditto.
+	(w3m-mode): Update the doc-string for the commands
+	`w3m-next-buffer',  `w3m-previous-buffer', `w3m-delete-buffer' and
+	`w3m-select-buffer'.
+	Use `w3m-use-tab-menubar' and `w3m-setup-tab-menu()'.
+
+	* w3m-e21.el (Top): Require `w3m-tabmenu'.
+
+	* w3m-e20.el (Top): Ditto.
+
+	* w3m-om.el (Top): Ditto.
+
+	* w3m-tabmenu.el: Rename from `w3m-tab.el'.
+	(w3m-setup-tab-menu): Rename from `w3m-setup-tab'.
+	(w3m-tab-menubar-make-items): Add new option `nomenu' for
+	w3m-select-buffer().
+	(w3m-select-buffer): New function.
+
+	* w3m-xmas.el (w3m-setup-tab-menu): Use `defun' insted of `ignore'
+	to avoid byte-compile warnings.
+	(w3m-tab-menubar-pull-bufnum, w3m-tab-menubar-make-items) 
+	(w3m-select-buffer): Copy from w3m-tabmenu.el
+
+	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
+	`w3m-tabmenu.el' when XEmacs.
+	
 2001-11-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-expand-url): Remove the last segment of the base URL
