@@ -62,22 +62,21 @@ HEADERS is the header structure list to be appended.
 If optional NO-BREAK is non-nil, don't stop even when header found."
   (let ((case-fold-search t)
 	(url (shimbun-index-url shimbun))
-	num from subject date id
+	num uname uaddr uid subject date id
 	references body st point)
     (goto-char (point-max))
     (while (re-search-backward "<dt>\\([0-9]+\\) ：" nil t)
       (goto-char (match-end 0))
       (setq point (match-beginning 0)
-	    num (string-to-number (match-string 1))
-	    from
-	    (cond
-	     ((looking-at "<a href=\"mailto:\\([^\"]+\\)\"><b>\\([^<]+\\)<")
-	      (concat (match-string 2) " <" (match-string 1) ">"))
-	     ((looking-at "<font color=green><b>\\([^<]+\\)<")
-	      (concat (match-string 1) " <>"))
-	     ((looking-at "<b>\\([^<]+\\)<")
-	      (match-string 1))
-	     (t "(none)")))
+	    num (string-to-number (match-string 1)))
+      (cond
+       ((looking-at "<a href=\"mailto:\\([^\"]+\\)\"><b>\\([^<]+\\)<")
+	(setq uname (match-string 2)
+	      uaddr (match-string 1)))
+       ((looking-at "<font color=green><b>\\([^<]+\\)<")
+	(setq uname (match-string 1)))
+       ((looking-at "<b>\\([^<]+\\)<")
+	(setq uaddr (match-string 1))))
       (when (re-search-forward "\
 ：\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)\\(\([^\)]\)\\)? \\([0-9]+:[0-9]+\\)"
 			       nil t)
@@ -88,6 +87,13 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
 					     (string-to-number
 					      (match-string 3))
 					     (match-string 5))))
+      (when (looking-at " \\(ID:[^ <]+\\)")
+	(setq uid (match-string 1)))
+      (setq from (mapconcat
+		  'identity
+		  (delq nil (list uname (if uid (concat "(" uid ")"))
+				  (concat "<" uaddr ">")))
+		  " "))
       (setq id (format "<%s.%s@%s.2ch.net>" num sure ita))
       (if (and (not no-break)
 	       (/= num 1)
