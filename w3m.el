@@ -59,7 +59,11 @@
 (require 'thingatpt)
 
 ;; this package using a few CL macros
-(eval-when-compile (require 'cl))
+(eval-when-compile
+  (require 'cl)
+  (unless (dolist (var nil t))
+    ;; Override the macro `dolist' which might be defined in egg.el.
+    (load "cl-macs" nil t)))
 
 (put 'w3m-static-if 'lisp-indent-function 2)
 (eval-and-compile
@@ -72,6 +76,31 @@
 	  "Return OBJ if it is a coding-system."
 	  (if (coding-system-p obj) obj))
       (require 'pces)))
+
+(w3m-static-if (boundp 'MULE)
+    (dolist (elem '((*autoconv*		. undecided)
+		    (*ctext*		. ctext)
+		    (*euc-china*	. cn-gb-2312)
+		    (*euc-japan*	. euc-japan)
+		    (*iso-2022-jp*	. iso-2022-jp)
+		    (*iso-2022-ss2-7*	. iso-2022-7bit-ss2)
+		    (*sjis*		. shift_jis)
+		    (*tis620*		. tis-620)))
+      (unless (coding-system-p (cdr elem))
+	(condition-case nil
+	    (let* ((info (get-code (car elem)))
+		   (doc (aref info 2))
+		   (id "(generated automatically by `w3m')"))
+	      (copy-coding-system (car elem) (cdr elem))
+	      (aset info 2
+		    (if (and (stringp doc)
+			     (> (length doc) 0))
+			(if (string-match "\\.[\t\n ]*$" doc)
+			    (concat (substring doc 0 (match-beginning 0))
+				    " " id ".")
+			  (concat doc " " id "."))
+		      id)))
+	  (error)))))
 
 (defconst emacs-w3m-version
   (eval-when-compile
@@ -109,26 +138,22 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'function)
 
-(defcustom w3m-coding-system
-  (w3m-static-if (boundp 'MULE) '*euc-japan* 'euc-japan)
+(defcustom w3m-coding-system 'euc-japan
   "*Coding system for w3m."
   :group 'w3m
   :type 'symbol)
 
-(defcustom w3m-input-coding-system
-  (w3m-static-if (boundp 'MULE) '*iso-2022-jp* 'iso-2022-jp)
+(defcustom w3m-input-coding-system 'iso-2022-jp
   "*Coding system for w3m."
   :group 'w3m
   :type 'symbol)
 
-(defcustom w3m-output-coding-system
-  (w3m-static-if (boundp 'MULE) '*euc-japan* 'euc-japan)
+(defcustom w3m-output-coding-system 'euc-japan
   "*Coding system for w3m."
   :group 'w3m
   :type 'symbol)
 
-(defcustom w3m-default-url-coding-system
-  (w3m-static-if (boundp 'MULE) '*euc-japan* 'euc-japan)
+(defcustom w3m-default-url-coding-system 'euc-japan
   "*Coding system to encode search query string.
 This value is default and used only when spec defined by
 `w3m-search-engine-alist' does not have encoding information."
@@ -187,8 +212,7 @@ This value is default and used only when spec defined by
   :group 'w3m
   :type 'file)
 
-(defcustom w3m-bookmark-file-coding-system
-  (w3m-static-if (boundp 'MULE) '*euc-japan* 'euc-japan)
+(defcustom w3m-bookmark-file-coding-system 'euc-japan
   "*Coding system for bookmark file."
   :group 'w3m
   :type 'symbol)
@@ -209,8 +233,7 @@ This value is default and used only when spec defined by
   :group 'w3m
   :type 'file)
 
-(defcustom w3m-arrived-file-coding-system
-  (w3m-static-if (boundp 'MULE) '*euc-japan* 'euc-japan)
+(defcustom w3m-arrived-file-coding-system 'euc-japan
   "*Coding system for arrived file."
   :group 'w3m
   :type 'symbol)
@@ -655,9 +678,11 @@ See also `w3m-search-engine-alist'."
 (defvar w3m-current-title nil "Title of this buffer.")
 (defvar w3m-current-forms nil "Forms of this buffer.")
 (defvar w3m-url-history nil "History of URL.")
+(defvar w3m-url-yrotsih nil "FIXME: Sample of wrong symbol name.")
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-title)
 (make-variable-buffer-local 'w3m-url-history)
+(make-variable-buffer-local 'w3m-url-yrotsih)
 
 (defvar w3m-verbose t "Flag variable to control messages.")
 
@@ -1579,12 +1604,9 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 (defun w3m-exec-process (&rest args)
   "Run w3m-command and return process exit status."
   (save-excursion
-    (let ((coding-system-for-read
-	   (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
+    (let ((coding-system-for-read 'binary)
 	  (coding-system-for-write w3m-coding-system)
-	  (default-process-coding-system
-	    (cons (w3m-static-if (boundp 'MULE) '*noconv* 'binary)
-		  w3m-coding-system))
+	  (default-process-coding-system (cons 'binary w3m-coding-system))
 	  (process-connection-type w3m-process-connection-type))
       (if w3m-async-exec
 	  ;; start-process
@@ -1785,10 +1807,8 @@ are retrieved."
 	      (set-buffer-multibyte t)
 	      (insert-file-contents file))
 	  (set-buffer-multibyte nil)
-	  (let ((coding-system-for-read
-		 (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
-		(file-coding-system-for-read
-		 (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
+	  (let ((coding-system-for-read 'binary)
+		(file-coding-system-for-read 'binary)
 		jka-compr-compression-info-list
 		jam-zcat-filename-list
 		format-alist)
@@ -1955,10 +1975,8 @@ are retrieved."
     (setq filename (w3m-read-file-name nil nil url)))
   (if (w3m-retrieve url t nil no-cache)
       (with-current-buffer (get-buffer w3m-work-buffer-name)
-	(let ((buffer-file-coding-system
-	       (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
-	      (coding-system-for-write
-	       (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
+	(let ((buffer-file-coding-system 'binary)
+	      (coding-system-for-write 'binary)
 	      jka-compr-compression-info-list
 	      jam-zcat-filename-list
 	      format-alist)
@@ -2008,11 +2026,9 @@ are retrieved."
     (narrow-to-region start end)
     (let ((buf (w3m-get-buffer-create " *w3m-rendering-region*"))
 	  (coding-system-for-write w3m-input-coding-system)
-	  (coding-system-for-read
-	   (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
+	  (coding-system-for-read 'binary)
 	  (default-process-coding-system
-	    (cons (w3m-static-if (boundp 'MULE) '*noconv* 'binary)
-		  w3m-input-coding-system)))
+	    (cons 'binary w3m-input-coding-system)))
       (with-current-buffer buf
 	(delete-region (point-min) (point-max))
 	(set-buffer-multibyte nil))
@@ -2067,6 +2083,8 @@ this function returns t.  Otherwise, returns nil."
 		(setq w3m-url-history (cons url w3m-url-history))
 		(setq-default w3m-url-history
 			      (cons url (default-value 'w3m-url-history)))
+		(setq w3m-url-yrotsih nil) 
+		(setq-default w3m-url-yrotsih nil)
 		(delete-region (point-min) (point-max))
 		(insert-buffer w3m-work-buffer-name)
 		(if (string= "text/html" type)
@@ -2080,6 +2098,8 @@ this function returns t.  Otherwise, returns nil."
 		(setq w3m-url-history (cons url w3m-url-history))
 		(setq-default w3m-url-history
 			      (cons url (default-value 'w3m-url-history)))
+		(setq w3m-url-yrotsih nil) 
+		(setq-default w3m-url-yrotsih nil)
 		(delete-region (point-min) (point-max))
 		(insert (file-name-nondirectory url))
 		(set-text-properties (point-min)(point-max)
@@ -2132,11 +2152,31 @@ this function returns t.  Otherwise, returns nil."
   (unless arg (setq arg 1))
   (let ((url (nth arg w3m-url-history)))
     (when url
-      (let (w3m-url-history) (w3m-goto-url url))
+      (let (w3m-url-history w3m-url-yrotsih) 
+	(w3m-goto-url url))
       ;; restore last position
       (w3m-arrived-restore-position url)
-      (setq w3m-url-history
-	    (nthcdr arg w3m-url-history)))))
+      (while (< 0 arg)
+	(setq w3m-url-yrotsih 
+	      (cons (car w3m-url-history) w3m-url-yrotsih)
+	      w3m-url-history (cdr w3m-url-history)
+	      arg (1- arg))))))
+
+(defun w3m-view-next-page (&optional arg)
+  (interactive "p")
+  (unless arg (setq arg 1))
+  (setq arg (1- arg))
+  (let ((url (nth arg w3m-url-yrotsih)))
+    (when url
+      (let (w3m-url-history w3m-url-yrotsih) 
+	(w3m-goto-url url))
+      ;; restore last position
+      (w3m-arrived-restore-position url)
+      (while (< -1 arg)
+	(setq w3m-url-history 
+	      (cons (car w3m-url-yrotsih) w3m-url-history)
+	      w3m-url-yrotsih (cdr w3m-url-yrotsih)
+	      arg (1- arg))))))
 
 (defun w3m-view-previous-point ()
   (interactive)
@@ -2408,6 +2448,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "\C-c\C-b" 'w3m-view-previous-point)
     (define-key map [left] 'w3m-view-previous-page)
     (define-key map "B" 'w3m-view-previous-page)
+    (define-key map "N" 'w3m-view-next-page)
     (define-key map "^" 'w3m-view-parent-page)
     (define-key map "d" 'w3m-download-this-url)
     (define-key map "u" 'w3m-print-this-url)
@@ -2473,6 +2514,8 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 \\[w3m-next-anchor]	Jump to next anchor.
 \\[w3m-previous-anchor]	Jump to previous anchor.
 \\[w3m-view-previous-page]	Back to previous page.
+\\[w3m-view-next-page]	Forward to next page.
+\\[w3m-view-parent-page]	Forward to next page.
 
 \\[w3m-download-this-url]	Download this url.
 \\[w3m-print-this-url]	Print this url.
@@ -2585,7 +2628,8 @@ or prefix ARG columns."
 (defun w3m-reload-this-page (&optional arg)
   "Reload current page without cache."
   (interactive "P")
-  (let ((w3m-display-inline-image (if arg t w3m-display-inline-image)))
+  (let ((w3m-display-inline-image (if arg t w3m-display-inline-image))
+	w3m-url-yrotsih)
     (setq w3m-url-history (cdr w3m-url-history))
     (w3m-goto-url w3m-current-url 'reload)))
 

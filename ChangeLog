@@ -1,3 +1,34 @@
+2001-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-rendering-region): Make no exceptions of Mule 2 in
+	coding-systems.
+	(w3m-download): Ditto.
+	(w3m-local-retrieve): Ditto.
+	(w3m-exec-process): Ditto.
+	(w3m-arrived-file-coding-system): Unified the default value to
+	`euc-japan'.
+	(w3m-bookmark-file-coding-system): Ditto.
+	(w3m-default-url-coding-system): Ditto.
+	(w3m-output-coding-system): Ditto.
+	(w3m-coding-system): Ditto.
+	(w3m-input-coding-system): Unified the default value to
+	`iso-2022-jp'.
+	(TopLevel): Generate some coding-systems by copying for Mule 2.
+	(TopLevel): Load "cl-macs" if the macro `dolist' has been defined
+	incorrectly.
+
+2001-03-13  Masatake YAMATO  <jet@gyve.org>
+
+	* w3m.el (w3m-url-yrotsih): New variable.
+	(w3m-view-previous-page): Set w3m-url-yrotsih.
+	Use while/cdr instead of nthcdr.
+	(w3m-view-next-page): New function.
+	(w3m-mode-map): Bind w3m-view-next-page.
+	(w3m-mode): Added w3m-view-next-page and w3m-view-parent-page
+	to the function document.
+	(w3m-reload-this-page): Guard w3m-url-yrotsih from resetting.
+	(w3m-exec): Reset yrotsih.
+
 2001-03-13  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-content-type-alist): [UNIX] Change method for
