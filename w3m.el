@@ -159,12 +159,13 @@
 	(call-process command nil t nil "-version")
 	(goto-char (point-min))
 	(when (re-search-forward "version w3m/0\\.\\(2\\.1\\|\
-\\(2\\.[2-9]\\(\\.[0-9]\\)*\\|3\\(\\.[0-9\\]\\)*\\)\\)\\(-inu\
+\\(2\\.[2-9]\\(\\.[0-9]\\)*\\|3\\(\\.[0-9\\]\\)*\\)\\)\
+\\(+cvs\\(-[0-9]\\.[0-9]*\\)?\\)?\\(-inu\
 \\|\\(-m17n\\|\\(\\+mee\\)\\)\\)?" nil t)
 	  (cond
-	   ((match-beginning 7) 'w3mmee)
-	   ((match-beginning 6) 'w3m-m17n)
-	   ((or (match-beginning 5) (match-beginning 2)) 'w3m)
+	   ((match-beginning 9) 'w3mmee)
+	   ((match-beginning 8) 'w3m-m17n)
+	   ((or (match-beginning 7) (match-beginning 2)) 'w3m)
 	   (t 'w3m-0.2.1))))))
   "*Type of w3m."
   :group 'w3m
