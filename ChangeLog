@@ -1,3 +1,8 @@
+2002-06-26  Tadashi Watanabe  <watanabe@sigmaitec.co.jp>
+
+	* w3m.el (w3m-info-like-map): Don't use FSF Emacs style key format
+	for XEmacs.
+
 2002-06-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.2.51.
