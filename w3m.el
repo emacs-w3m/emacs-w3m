@@ -118,7 +118,6 @@
     "View Perl documents" t)
   (autoload 'w3m-about-perldoc "w3m-perldoc")
   (autoload 'w3m-fontify-forms "w3m-form")
-  (autoload 'w3m-form-parse-buffer "w3m-form")
   (autoload 'w3m-filter "w3m-filter")
   (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
   (autoload 'w3m-switch-buffer "w3m-tabmenu"))
@@ -1107,7 +1106,6 @@ in the optimized interlaced endlessly animated gif format and base64.")
   (setq w3m-current-url nil
 	w3m-current-base-url nil
 	w3m-current-title nil
-	w3m-current-forms nil
 	w3m-current-coding-system nil
 	w3m-icon-data nil
 	w3m-next-url nil
@@ -1124,7 +1122,6 @@ in the optimized interlaced endlessly animated gif format and base64.")
       (setq url w3m-current-url
 	    base w3m-current-base-url
 	    title w3m-current-title
-	    forms w3m-current-forms
 	    cs w3m-current-coding-system
 	    icon w3m-icon-data
 	    next w3m-next-url
@@ -1137,7 +1134,6 @@ in the optimized interlaced endlessly animated gif format and base64.")
     (setq w3m-current-url url
 	  w3m-current-base-url base
 	  w3m-current-title title
-	  w3m-current-forms forms
 	  w3m-current-coding-system cs
 	  w3m-icon-data icon
 	  w3m-next-url next
@@ -2865,7 +2861,7 @@ to add the option \"-no-proxy\"."
 	(setq args (cdr def))))
     (when (and w3m-no-proxy-domains
 	       (not (member "-no-proxy" args))
-	       (string-match "^[a-z]+://\\([^/]+\\)" url)
+	       (string-match "^[a-z]+://\\([^/:]+\\)" url)
 	       (catch 'domain-match
 		 (setq host (match-string 1 url))
 		 (dolist (domain w3m-no-proxy-domains)
@@ -3296,7 +3292,6 @@ type as a string argument, when retrieve is complete."
   (when w3m-use-filter (w3m-filter w3m-current-url))
   (w3m-remove-comments)
   (w3m-check-link-tags)
-  (when w3m-use-form (setq w3m-current-forms (w3m-form-parse-buffer)))
   (w3m-remove-meta-charset-tags)
   (if binary-buffer
       (progn
@@ -4744,6 +4739,12 @@ field for this request."
       (when w3m-current-forms
 	;; Store the current forms in the history structure.
 	(w3m-history-plist-put :forms w3m-current-forms nil nil t))
+      ;; Set current forms using the history structure.
+      (when (setq w3m-current-forms
+		  (when (w3m-cache-available-p url)
+		    (w3m-history-plist-get :forms url nil t)))
+	;; Mark that the form is from history structure.
+	(setq w3m-current-forms (cons t w3m-current-forms)))
       (when (and post-data (w3m-history-assoc url))
 	;; Remove processing url's forms from the history structure.
 	(w3m-history-remove-properties '(:forms) url nil t))

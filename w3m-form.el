@@ -187,190 +187,11 @@ If no field in forward, return nil without moving."
 						    coding)))
 		   buf "&")))))
 
-;;;###autoload
-(defun w3m-form-parse-buffer ()
-  "Parse HTML data in this buffer and return form/map objects.
-Check the cached form/map objects are available, and if available
-return them with the flag."
-  (or (when (w3m-cache-available-p w3m-current-url)
-	(let ((forms (w3m-history-plist-get :forms w3m-current-url nil t)))
-	  ;; Mark that `w3m-current-forms' is resumed from history.
-	  (and forms (cons t forms))))
-      (nreverse
-       (w3m-form-parse-forms))))
-
-(defun w3m-form-parse-forms ()
-  "Parse Form/usemap objects in this buffer."
-  (let ((case-fold-search t)
-	forms tag)
-    (goto-char (point-min))
-    (while (re-search-forward (w3m-tag-regexp-of "form" "img") nil t)
-      (setq tag (downcase (match-string 1)))
-      (goto-char (match-end 1))
-      (cond
-       ((string= tag "img")
-	;; Parse USEMAP property of IMG tag
-	(w3m-parse-attributes (usemap)
-	  (when usemap
-	    (if (not (string-match "^#" usemap))
-		(setq forms (cons nil forms)) ;; Sure ?
-	      (setq usemap (substring usemap 1))
-	      (setq forms
-		    (cons (w3m-form-new "map" usemap)
-			  forms))
-	      (save-excursion
-		(goto-char (point-min))
-		(let (candidates)
-		  (when (re-search-forward
-			 (concat "<map +name=\"" usemap "\"[^>]*>") nil t)
-		    (while (and (re-search-forward
-				 (w3m-tag-regexp-of "area" "/map") nil t)
-				(not (char-equal
-				      (char-after (match-beginning 1))
-				      ?/)))
-		      (goto-char (match-end 1))
-		      (w3m-parse-attributes (href alt)
-			(when href
-			  (setq candidates (cons (cons href (or alt href))
-						 candidates)))))
-		    (when candidates
-		      (w3m-form-put (car forms)
-				    "link"
-				    (nreverse candidates))))))))))
-       (t
-	;; Parse attribute of FORM tag
-	;; accept-charset <= charset,charset,...
-	;; charset <= valid only w3mmee with frame
-	(w3m-parse-attributes (action (method :case-ignore)
-				      (accept-charset :case-ignore)
-				      (charset :case-ignore))
-	  (if accept-charset
-	      (setq accept-charset (split-string accept-charset ","))
-	    (when (and charset (eq w3m-type 'w3mmee))
-	      (cond
-	       ((string= charset "e")	;; w3mee without libmoe
-		(setq accept-charset (list "euc-jp")))
-	       ((string= charset "s")	;; w3mee without libmoe
-		(setq accept-charset (list "shift-jis")))
-	       ((string= charset "n")	;; w3mee without libmoe
-		(setq accept-charset (list "iso-2022-7bit")))
-	       (t				;; w3mee with libmoe
-		(setq accept-charset (list charset))))))
-	  (setq forms
-		(cons (w3m-form-new
-		       (or method "get")
-		       (or action
-			   (and w3m-current-url
-				(string-match w3m-url-components-regexp
-					      w3m-current-url)
-				(substring w3m-current-url 0
-					   (or (match-beginning 6)
-					       (match-beginning 8)))))
-		       nil
-		       accept-charset)
-		      forms)))
-	;; Parse form fields until </FORM>
-	(while (and (re-search-forward
-		     (w3m-tag-regexp-of "input" "textarea" "select" "/form")
-		     nil t)
-		    (not (char-equal (char-after (match-beginning 1)) ?/)))
-	  (setq tag (downcase (match-string 1)))
-	  (goto-char (match-end 1))	; go to end of tag name
-	  (cond
-	   ((string= tag "input")
-	    ;; When <INPUT> is found.
-	    (w3m-parse-attributes (name (value :decode-entity)
-					(type :case-ignore)
-					(checked :bool)
-					src)
-	      (cond
-	       ((string= type "submit")
-		;; Submit button input, not set name and value here.
-		;; They are set in `w3m-form-submit'.
-		nil)
-	       ((string= type "image")
-		(w3m-form-put-property (car forms) (or name "") :src src))
-	       (name
-		(cond
-		 ((string= type "checkbox")
-		  ;; Check box input, one name has multiple values
-		  ;; Value is list of item VALUE which has same NAME.
-		  (let ((cvalue (w3m-form-get (car forms) name)))
-		    (w3m-form-put (car forms) name
-				  (if checked
-				      (cons value cvalue)
-				    cvalue))))
-		 ((string= type "radio")
-		  ;; Radio button input, one name has one value
-		  (w3m-form-put (car forms) name
-				(if checked value
-				  (w3m-form-get (car forms) name))))
-		 (t
-		  ;; ordinaly text input
-		  (w3m-form-put (car forms)
-				name
-				(or value (w3m-form-get (car forms)
-							name)))))))))
-	   ((string= tag "textarea")
-	    ;; When <TEXTAREA> is found.
-	    (w3m-parse-attributes (name)
-	      (let ((start (point))
-		    value)
-		(skip-chars-forward "^<")
-		(setq value (w3m-decode-entities-string
-			     (buffer-substring start (point))))
-		(when name
-		  (w3m-form-put (car forms)
-				name
-				(or value (w3m-form-get (car forms) name)))))))
-	   ;; When <SELECT> is found.
-	   ((string= tag "select")
-	    (let (vbeg svalue cvalue candidates)
-	      (goto-char (match-end 1))
-	      (w3m-parse-attributes (name)
-		;; Parse FORM SELECT fields until </SELECT> (or </FORM>)
-		(while (and (re-search-forward
-			     (w3m-tag-regexp-of "option" "/select" "/form")
-			     nil t)
-			    (not (char-equal (char-after (match-beginning 1))
-					     ?/)))
-		  ;; <OPTION> is found
-		  (goto-char (match-end 1)) ; goto very after "<xxxx"
-		  (w3m-parse-attributes ((value :decode-entity)
-					 (selected :bool))
-		    (setq vbeg (point))
-		    (if (re-search-forward
-			 (w3m-tag-regexp-of "/?option" "/optgroup" "/select" "/form")
-			 nil t)
-			(goto-char (match-beginning 0))
-		      (skip-chars-forward "^<"))
-		    (skip-chars-backward " \t\r\f\n")
-		    (setq svalue
-			  (w3m-decode-entities-string
-			   (mapconcat 'identity
-				      (split-string
-				       (buffer-substring vbeg (point))
-				       "[ \t\r\f\n]+")
-				      " ")))
-		    (unless value
-		      (setq value svalue))
-		    (when selected
-		      (setq cvalue value))
-		    (push (cons value svalue) candidates)))
-		(setq candidates (nreverse candidates))
-		(when name
-		  (w3m-form-put (car forms)
-				name
-				(cons (or cvalue ; current value
-					  (caar candidates))
-				      candidates)))))))))))
-    forms))
-
 (defun w3m-form-resume (forms)
   "Resume content of all forms in the current buffer using FORMS."
   (save-excursion
     (goto-char (point-min))
-    (let (fid type name form textareas)
+    (let (fid type name form cform textareas)
       (while (w3m-form-goto-next-field)
 	(setq fid (get-text-property (point) 'w3m-form-field-id))
 	(when (and fid
@@ -379,6 +200,8 @@ return them with the flag."
 		    fid))
 	  (setq form (nth (string-to-number (match-string 1 fid))
 			  forms)
+		cform (nth (string-to-number (match-string 1 fid))
+			   w3m-current-forms)
 		type (match-string 2 fid)
 		name (match-string 3 fid))
 	  (cond
@@ -386,54 +209,62 @@ return them with the flag."
 		(string= type "image"))
 	    ;; Remove status to support forms containing multiple
 	    ;; submit buttons.
-	    (w3m-form-put form name nil))
+	    (w3m-form-put cform name nil))
 	   ((or (string= type "reset")
 		(string= type "hidden")
 		;; Do nothing.
 		))
 	   ((string= type "password")
 	    (w3m-form-replace (w3m-form-get form name)
-			      'invisible))
+			      'invisible)
+	    (unless (eq form cform)
+	      (w3m-form-put cform name (w3m-form-get form name))))
 	   ((or (string= type "checkbox")
 		(string= type "radio"))
 	    (when (stringp (w3m-form-get form name))
 	      (w3m-form-replace
 	       (if (string= (w3m-form-get form name)
 			    (nth 3 (w3m-action)))
-		   "*" " "))))
+		   "*" " "))
+	      (unless (eq form cform)
+		(w3m-form-put cform name (w3m-form-get form name)))))
 	   ((string= type "select")
 	    (let ((selects (w3m-form-get form name)))
 	      (when (car selects)
-		(w3m-form-replace (cdr (assoc (car selects) (cdr selects)))))))
+		(w3m-form-replace (cdr (assoc (car selects) (cdr selects)))))
+	      (unless (eq form cform)
+		(w3m-form-put cform name value))))
 	   ((string= type "textarea")
-	    (let ((hseq (nth 2 (w3m-action))))
+	    (let ((hseq (nth 2 (w3m-action)))
+		  (value (w3m-form-get form name)))
 	      (when (> hseq 0)
-		(setq textareas
-		      (cons (cons hseq (w3m-form-get form name))
-			    textareas)))))
+		(setq textareas (cons (cons hseq value) textareas)))
+	      (unless (eq form cform)
+		(w3m-form-put cform name value))))
 	   ((string= type "file")
 	    (let ((value (w3m-form-get form name)))
 	      (when (and value
 			 (consp value))
-		(w3m-form-replace (cdr value)))))
+		(w3m-form-replace (cdr value)))
+	      (unless (eq form cform)
+		(w3m-form-put cform name value))))
 	   (t
 	    (let ((value (w3m-form-get form name)))
 	      (when value
-		(w3m-form-replace value)))))))
+		(w3m-form-replace value))
+	      (unless (eq form cform)
+		(w3m-form-put cform name value)))))))
       (dolist (textarea textareas)
 	(when (cdr textarea)
 	  (w3m-form-textarea-replace (car textarea) (cdr textarea)))))))
 
 ;;;###autoload
 (defun w3m-fontify-forms ()
-  "Process half-dumped data in this buffer and fontify <input_alt> tags."
-  ;; Check whether `w3m-current-forms' is resumed from history.
-  (if (eq t (car w3m-current-forms))
-      (progn
-	(setq w3m-current-forms (cdr w3m-current-forms))
-	(w3m-form-fontify w3m-current-forms)
-	(w3m-form-resume w3m-current-forms))
-    (w3m-form-fontify w3m-current-forms)))
+  "Process half-dumped data and fontify forms in this buffer."
+  ;; If `w3m-current-forms' is resumed from history, reuse it.
+  (w3m-form-parse-and-fontify
+   (when (eq t (car w3m-current-forms))
+     (setq w3m-current-forms (cdr w3m-current-forms)))))
 
 (eval-and-compile
   (unless (fboundp 'w3m-form-make-button)
@@ -441,145 +272,262 @@ return them with the flag."
       "Make button on the region from START to END."
       (add-text-properties start end (append '(face w3m-form-face) properties)))))
 
-(defun w3m-form-fontify (forms)
-  "Process half-dumped data in this buffer and fontify <input_alt> tags using FORMS."
-  (goto-char (point-min))
-  (while (search-forward "<input_alt " nil t)
-    (let (start)
-      (setq start (match-beginning 0))
-      (goto-char (match-end 0))
-      (w3m-parse-attributes ((fid :integer)
-			     (type :case-ignore)
-			     (width :integer)
-			     (maxlength :integer)
-			     (hseq :integer)
-			     name value)
-	(delete-region start (point))
-	(search-forward "</input_alt>")
-	(goto-char (match-beginning 0))
-	(delete-region (match-beginning 0) (match-end 0))
-	(let ((form (nth fid forms))
-	      (abs-hseq (or (and (null hseq) 0) (abs hseq))))
-	  (setq w3m-max-anchor-sequence (max abs-hseq w3m-max-anchor-sequence))
-	  (when form
-	    (cond
-	     ((and (string= type "hidden")
-		   (string= name "link"))
-	      (add-text-properties
-	       start (point)
-	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
-		 face w3m-form-face
-		 w3m-action (w3m-form-input-map ,form ,name)
-		 w3m-anchor-sequence ,abs-hseq)))
-	     ((string= type "submit")
-	      (w3m-form-make-button
-	       start (point)
-	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
-		 w3m-action (w3m-form-submit ,form ,name ,value)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
-		 w3m-anchor-sequence ,abs-hseq)))
-	     ((string= type "image")
-	      (let ((end (point-marker))
-		    (src (w3m-form-get-property form name :src)))
-		(when src
-		  (goto-char start)
-		  (insert (format "<img_alt src=\"%s\">" src))
-		  (setq start (point))
-		  (goto-char end)
-		  (insert "</img_alt>"))
+(defun w3m-form-parse-and-fontify (&optional reuse-forms)
+  "Parse forms of the half-dumped data in this buffer and fontify them.
+Result form structure is saved to the local variable `w3m-current-forms'.
+If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
+  (let ((case-fold-search t)
+	tag start end internal-start textareas selects forms maps)
+    (goto-char (point-min))
+    (while (re-search-forward (w3m-tag-regexp-of
+			       "form_int" "map" "img_alt"
+			       "input_alt" "/input_alt") nil t)
+      (setq tag (downcase (match-string 1)))
+      (goto-char (match-end 1))
+      (setq start (match-end 0))
+      (cond
+       ((string= tag "form_int")
+	(w3m-parse-attributes (action (method :case-ignore)
+				      (accept-charset :case-ignore)
+				      (charset :case-ignore))
+	  (unless (string= method "internal")
+	    (if accept-charset
+		(setq accept-charset (split-string accept-charset ","))
+	      (when (and charset (eq w3m-type 'w3mmee))
+		(cond
+		 ((string= charset "e")	;; w3mee without libmoe
+		  (setq accept-charset (list "euc-jp")))
+		 ((string= charset "s")	;; w3mee without libmoe
+		  (setq accept-charset (list "shift-jis")))
+		 ((string= charset "n")	;; w3mee without libmoe
+		  (setq accept-charset (list "iso-2022-7bit")))
+		 (t				;; w3mee with libmoe
+		  (setq accept-charset (list charset))))))
+	    (setq forms
+		  (cons
+		   (w3m-form-new
+		    (or method "get")
+		    (or 
+		     action
+		     (and w3m-current-url
+			  (string-match w3m-url-components-regexp 
+					w3m-current-url)
+			  (substring w3m-current-url 0
+				     (or (match-beginning 6)
+					 (match-beginning 8)))))
+		    nil
+		    accept-charset)
+		   forms)))))
+       ((string= tag "map")
+	(let (candidates)
+	  (w3m-parse-attributes (name)
+	    (while (and (re-search-forward
+			 (w3m-tag-regexp-of "area" "/map") nil t)
+			(not (char-equal
+			      (char-after (match-beginning 1))
+			      ?/)))
+	      (goto-char (match-end 1))
+	      (w3m-parse-attributes (href alt)
+		(when href
+		  (setq candidates (cons (cons href (or alt href))
+					 candidates)))))
+	    (unless maps (setq maps (w3m-form-new "map" ".")))
+	    (when candidates
+	      (w3m-form-put maps
+			    name
+			    (nreverse candidates))))))
+       ((string= tag "img_alt")
+ 	(w3m-parse-attributes (usemap)
+ 	  (re-search-forward (w3m-tag-regexp-of "/img_alt") nil t)
+	  (unless maps (setq maps (w3m-form-new "map" ".")))
+ 	  (when usemap
+ 	    (add-text-properties
+ 	     start (match-beginning 0)
+ 	     `(face w3m-form-face
+ 	     w3m-action (w3m-form-input-map ,maps ,usemap))))))
+       ((string= tag "/input_alt")
+	(replace-match ""))
+       ((string= tag "input_alt")
+	(w3m-parse-attributes ((fid :integer)
+			       (type :case-ignore)
+			       (width :integer)
+			       (maxlength :integer)
+			       (hseq :integer)
+			       (selectnumber :integer) ; select
+			       (textareanumber :integer) ; textarea
+			       (size :integer) ; textarea
+			       (rows :integer) ; textarea
+			       (top_mergin :integer) ; textarea
+			       (checked :bool) ; checkbox, radio
+			       no_effect ; map
+			       name value)
+	  (save-excursion
+	    (search-forward "</input_alt>")
+	    (setq end (match-beginning 0)))
+	  (let ((form (car forms))
+		(abs-hseq (or (and (null hseq) 0) (abs hseq))))
+	    (setq w3m-max-anchor-sequence 
+		  (max abs-hseq w3m-max-anchor-sequence))
+	    (when form
+	      (cond
+	       ((and (string= type "hidden")
+		     (string= name "link"))
+		;; Do nothing.
+		)
+	       ((string= type "submit")
+		(unless (string= no_effect "true")
+		  (w3m-form-make-button
+		   start end
+		   `(w3m-form-field-id
+		     ,(format "fid=%d/type=%s/name=%s" fid type name)
+		     w3m-action (w3m-form-submit ,form ,name ,value)
+		     w3m-submit (w3m-form-submit ,form ,name
+						 (w3m-form-get ,form ,name))
+		     w3m-anchor-sequence ,abs-hseq))))
+	       ((string= type "reset")
+		(w3m-form-make-button
+		 start end
+		 `(w3m-form-field-id
+		   ,(format "fid=%d/type=%s/name=%s" fid type name)
+		   w3m-action (w3m-form-reset ,form)
+		   w3m-anchor-sequence ,abs-hseq)))
+	       ((string= type "textarea")
 		(add-text-properties
 		 start end
 		 `(w3m-form-field-id
 		   ,(format "fid=%d/type=%s/name=%s" fid type name)
 		   face w3m-form-face
-		   w3m-action (w3m-form-submit ,form ,name ,value)
+		   w3m-action (w3m-form-input-textarea ,form ,hseq)
 		   w3m-submit (w3m-form-submit ,form ,name
 					       (w3m-form-get ,form ,name))
-		   w3m-anchor-sequence ,abs-hseq))))
-	     ((string= type "reset")
-	      (w3m-form-make-button
-	       start (point)
-	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
-		 w3m-action (w3m-form-reset ,form)
-		 w3m-anchor-sequence ,abs-hseq)))
-	     ((string= type "textarea")
-	      (add-text-properties
-	       start (point)
-	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
-		 face w3m-form-face
-		 w3m-action (w3m-form-input-textarea ,form ,hseq)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
-		 w3m-form-hseq ,hseq
-		 w3m-anchor-sequence ,abs-hseq))
-	      (when (> hseq 0)
-		(add-text-properties start (point) `(w3m-form-name ,name))))
-	     ((string= type "select")
-	      (add-text-properties
-	       start (point)
-	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
-		 face w3m-form-face
-		 w3m-action (w3m-form-input-select ,form ,name)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
-		 w3m-anchor-sequence ,abs-hseq)))
-	     ((string= type "password")
-	      (add-text-properties
-	       start (point)
-	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
-		 face w3m-form-face
-		 w3m-action (w3m-form-input-password ,form ,name)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
-		 w3m-anchor-sequence ,abs-hseq)))
-	     ((string= type "checkbox")
-	      (add-text-properties
-	       start (point)
-	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
-		 face w3m-form-face
-		 w3m-action (w3m-form-input-checkbox ,form ,name ,value)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
-		 w3m-anchor-sequence ,abs-hseq)))
-	     ((string= type "radio")
-	      (add-text-properties
-	       start (point)
-	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
-		 face w3m-form-face
-		 w3m-action (w3m-form-input-radio ,form ,name ,value)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
-		 w3m-anchor-sequence ,abs-hseq)))
-	     ((string= type "file")
-	      (add-text-properties
-	       start (point)
-	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
-		 face w3m-form-face
-		 w3m-action (w3m-form-input-file ,form ,name ,value)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
-		 w3m-anchor-sequence ,abs-hseq)))
-	     (t ;; input button.
-	      (add-text-properties
-	       start (point)
-	       `(w3m-form-field-id
-		 ,(format "fid=%d/type=%s/name=%s" fid type name)
-		 face w3m-form-face
-		 w3m-action (w3m-form-input ,form ,name ,type
-					    ,width ,maxlength ,value)
-		 w3m-submit (w3m-form-submit ,form ,name
-					     (w3m-form-get ,form ,name))
-		 w3m-anchor-sequence ,abs-hseq))))))))))
+		   w3m-form-hseq ,hseq
+		   w3m-anchor-sequence ,abs-hseq))
+		(setq textareas (cons (list textareanumber form name)
+				      textareas))
+		(when (> hseq 0)
+		  (add-text-properties start end `(w3m-form-name ,name))))
+	       ((string= type "select")
+		(add-text-properties
+		 start end
+		 `(w3m-form-field-id
+		   ,(format "fid=%d/type=%s/name=%s" fid type name)
+		   face w3m-form-face
+		   w3m-action (w3m-form-input-select ,form ,name)
+		   w3m-submit (w3m-form-submit ,form ,name
+					       (w3m-form-get ,form ,name))
+		   w3m-anchor-sequence ,abs-hseq))
+		(setq selects (cons (list selectnumber form name)
+				    selects)))
+	       ((string= type "password")
+		(add-text-properties
+		 start end
+		 `(w3m-form-field-id
+		   ,(format "fid=%d/type=%s/name=%s" fid type name)
+		   face w3m-form-face
+		   w3m-action (w3m-form-input-password ,form ,name)
+		   w3m-submit (w3m-form-submit ,form ,name
+					       (w3m-form-get ,form ,name))
+		   w3m-anchor-sequence ,abs-hseq)))
+	       ((string= type "checkbox")
+		(let ((cvalue (w3m-form-get (car forms) name)))
+		  (w3m-form-put (car forms) name
+				(if checked
+				    (cons value cvalue)
+				  cvalue)))
+		(add-text-properties
+		 start end
+		 `(w3m-form-field-id
+		   ,(format "fid=%d/type=%s/name=%s" fid type name)
+		   face w3m-form-face
+		   w3m-action (w3m-form-input-checkbox ,form ,name ,value)
+		   w3m-submit (w3m-form-submit ,form ,name
+					       (w3m-form-get ,form ,name))
+		   w3m-anchor-sequence ,abs-hseq)))
+	       ((string= type "radio")
+		;; Radio button input, one name has one value
+		(w3m-form-put (car forms) name
+			      (if checked value
+				(w3m-form-get (car forms) name)))
+		(add-text-properties
+		 start end
+		 `(w3m-form-field-id
+		   ,(format "fid=%d/type=%s/name=%s" fid type name)
+		   face w3m-form-face
+		   w3m-action (w3m-form-input-radio ,form ,name ,value)
+		   w3m-submit (w3m-form-submit ,form ,name
+					       (w3m-form-get ,form ,name))
+		   w3m-anchor-sequence ,abs-hseq)))
+	       ((string= type "file")
+		(add-text-properties
+		 start end
+		 `(w3m-form-field-id
+		   ,(format "fid=%d/type=%s/name=%s" fid type name)
+		   face w3m-form-face
+		   w3m-action (w3m-form-input-file ,form ,name ,value)
+		   w3m-submit (w3m-form-submit ,form ,name
+					       (w3m-form-get ,form ,name))
+		   w3m-anchor-sequence ,abs-hseq)))
+	       (t
+		(w3m-form-put (car forms)
+			      name
+			      (or value (w3m-form-get (car forms) name)))
+		(add-text-properties
+		 start end
+		 `(w3m-form-field-id
+		   ,(format "fid=%d/type=%s/name=%s" fid type name)
+		   face w3m-form-face
+		   w3m-action (w3m-form-input ,form ,name ,type
+					      ,width ,maxlength ,value)
+		   w3m-submit (w3m-form-submit ,form ,name
+					       (w3m-form-get ,form ,name))
+		   w3m-anchor-sequence ,abs-hseq))))))))))
+    ;; Process <internal> tag.
+    (when (search-forward "<internal>" nil t)
+      (setq internal-start (match-beginning 0))
+      (while (and (null reuse-forms)
+		  (re-search-forward "<\\([a-z]+\\)_int" nil t))
+	(cond
+	 ((string= (match-string 1) "select")
+	  (w3m-parse-attributes ((selectnumber :integer))
+	    (let ((selectinfo (cdr (assq selectnumber selects)))
+		  current candidates)
+	      (when selectinfo
+		;; Parse FORM SELECT fields until </SELECT> (or </FORM>)
+		(while (and (re-search-forward
+			     (w3m-tag-regexp-of "option_int" "/select_int")
+			     nil t)
+			    (not (char-equal (char-after (match-beginning 1))
+					     ?/)))
+		  ;; <option_int> is found
+		  (goto-char (match-end 1))
+		  (w3m-parse-attributes ((value :decode-entity)
+					 (label :decode-entity)
+					 (selected :bool))
+		    (push (cons value label) candidates)
+		    (if selected (setq current value))
+		    (skip-chars-forward ">\n")))
+		(setq candidates (nreverse candidates))
+		(w3m-form-put (nth 0 selectinfo)
+			      (nth 1 selectinfo)
+			      (cons (or current ; current value
+					(caar candidates))
+				    candidates))))))
+	 ((string= (match-string 1) "textarea")
+	  (w3m-parse-attributes ((textareanumber :integer))
+	    (forward-char 1) ; skip newline character.
+	    (let ((textareainfo (cdr (assq textareanumber textareas)))
+		  end)
+	      (when textareainfo
+		(setq start (point))
+		(skip-chars-forward "^<")
+		(w3m-form-put (nth 0 textareainfo)
+			      (nth 1 textareainfo)
+			      (w3m-decode-entities-string
+			       (buffer-substring start (point))))))))))
+      (when (search-forward "</internal>" nil t)
+	(delete-region internal-start (match-end 0)))
+      (setq w3m-current-forms (nreverse forms))
+      (w3m-form-resume (or reuse-forms w3m-current-forms)))))
 
 (defun w3m-form-replace (string &optional invisible)
   (let* ((start (text-property-any
@@ -975,7 +923,9 @@ character."
 	(setq value (cdr value))
 	(dolist (candidate value)
 	  (setq pos (point))
-	  (insert (cdr candidate))
+	  (insert (if (zerop (length (cdr candidate)))
+		      " " ; "" -> " "
+		    (cdr candidate)))
 	  (add-text-properties pos (point)
 			       (list 'w3m-form-select-value (car candidate)
 				     'mouse-face w3m-form-mouse-face))
