@@ -1,3 +1,4 @@
+;;; -*- mode: Emacs-Lisp; coding: iso-2022-7bit -*-
 ;;; w3m-dtree.el --- The add-on program to display local directory tree.
 
 ;; Copyright (C) 2001  Free Software Foundation, Inc.
@@ -36,15 +37,32 @@
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-dtree-indent "+-"
-  "*String of indent for w3m-dtree."
-  :group 'w3m
-  :type 'string)
+(defcustom w3m-dtree-indent-strings ["|-" "+-" "|  " "   "]
+  "*Vector of strings to be used for indentation with w3m-dtree.
 
-(defcustom w3m-dtree-fancy-display nil
-  "*If non-nil, use fancy style."
+If use default value or choice 'ASCII', display like this,
+/home/shirai/work/emacs-w3m/
+ |-CVS/
+ |-icons/
+ |  +-CVS/
+ +-shimbun/
+    +-CVS/
+
+If choice 'Japanese', display like this,
+/home/shirai/work/emacs-w3m/
+ ├CVS/
+ ├icons/
+ │ └CVS/
+ └shimbun/
+ 　 └CVS/
+
+If you care for another style, set manually and try it :-).
+"
   :group 'w3m
-  :type 'boolean)
+  :type '(choice
+	  (const :tag "ASCII" ["|-" "+-" "|  " "   "])
+	  (const :tag "Japanese" ["├" "└" "│ " "　 "])
+	  (vector :tag "Ohters" string string string string)))
 
 (defsubst w3m-dtree-expand-file-name (path)
   (if (string-match "^\\(.\\):\\(.*\\)" path)
@@ -68,58 +86,36 @@
        (and (nth 1 (file-attributes (, path)))
 	    (/= (nth 1 (file-attributes (, path))) 2)))))
 
-(defun w3m-dtree-create-fancy (path allfiles dirprefix fileprefix indent)
-  (let ((files (directory-files path nil "[^.]"))
-	(indent-sub1 "├") (indent-sub2 "│ ")
-	file fullpath tmp)
-    (unless allfiles
-      (while (setq file (car files))
-	(when (file-directory-p (expand-file-name file path))
-	  (setq tmp (cons file tmp)))
-	(setq files (cdr files)))
-      (setq files (nreverse tmp)))
-    (while (setq file (car files))
-      (when (= (length files) 1)
-	(setq indent-sub1 "└")
-	(setq indent-sub2 "   "))
-      (cond
-       ((file-directory-p (setq fullpath (expand-file-name file path)))
-	(insert (format "%s%s%s<A HREF=\"%s%s\">%s</A>\n"
-			indent indent-sub1
-			(if allfiles "<B>[d]</B>" "")
-			dirprefix
-			(w3m-dtree-expand-file-name (file-name-as-directory fullpath))
-			(concat file "/")))
-	(when (or allfiles (w3m-dtree-has-child fullpath))
-	  (w3m-dtree-create-fancy fullpath allfiles dirprefix fileprefix
-				  (concat indent indent-sub2))))
-       ((and allfiles (file-exists-p fullpath))
-	(insert (format "%s%s%s<A HREF=\"%s%s\">%s</A>\n"
-			indent indent-sub1
-			(if allfiles "(f)" "")
-			fileprefix (w3m-dtree-expand-file-name fullpath)
-			file))))
-      (setq files (cdr files)))))
-
 (defun w3m-dtree-create-sub (path allfiles dirprefix fileprefix indent)
   (let ((files (directory-files path nil "[^.]"))
-	(indent-len (length w3m-dtree-indent))
-	file fullpath)
+	(indent-sub1 (aref w3m-dtree-indent-strings 0))
+	(indent-sub2 (aref w3m-dtree-indent-strings 2))
+	file fullpath tmp)
+    (unless allfiles
+      (setq tmp files)
+      (while (setq file (car tmp))
+	(unless (file-directory-p (expand-file-name file path))
+	  (setq files (delete file files)))
+	(setq tmp (cdr tmp))))
     (while (setq file (car files))
+      (when (= (length files) 1)
+	(setq indent-sub1 (aref w3m-dtree-indent-strings 1))
+	(setq indent-sub2 (aref w3m-dtree-indent-strings 3)))
+      (setq fullpath (expand-file-name file path))
       (cond
-       ((file-directory-p (setq fullpath (expand-file-name file path)))
+       ((or (not allfiles) (file-directory-p fullpath))
 	(insert (format "%s%s%s<A HREF=\"%s%s\">%s</A>\n"
-			indent w3m-dtree-indent
+			indent indent-sub1
 			(if allfiles "<B>[d]</B>" "")
 			dirprefix
 			(w3m-dtree-expand-file-name (file-name-as-directory fullpath))
 			(concat file "/")))
 	(when (or allfiles (w3m-dtree-has-child fullpath))
 	  (w3m-dtree-create-sub fullpath allfiles dirprefix fileprefix
-				(concat indent (make-string indent-len ? )))))
+				(concat indent indent-sub2))))
        ((and allfiles (file-exists-p fullpath))
 	(insert (format "%s%s%s<A HREF=\"%s%s\">%s</A>\n"
-			indent w3m-dtree-indent
+			indent indent-sub1
 			(if allfiles "(f)" "")
 			fileprefix (w3m-dtree-expand-file-name fullpath)
 			file))))
@@ -134,9 +130,7 @@
 		  dirprefix (w3m-dtree-expand-file-name path) path
 		  (if allfiles " (allfiles)" "")))
   (if (file-directory-p path)
-      (if w3m-dtree-fancy-display
-	  (w3m-dtree-create-fancy path allfiles dirprefix fileprefix " ")
-	(w3m-dtree-create-sub path allfiles dirprefix fileprefix ""))
+      (w3m-dtree-create-sub path allfiles dirprefix fileprefix " ")
     (insert (format "\n<h3>Warning: Directory not found.</h3>\n")))
   (insert "</pre>\n</body>\n</html>\n"))
 
@@ -158,7 +152,9 @@
       (setq default-directory path)
       (erase-buffer)
       (set-buffer-multibyte t)
+      (w3m-message "Dtree ...")
       (w3m-dtree-create path allfiles dirprefix fileprefix)
+      (w3m-message "Dtree ... done.")
       "text/html")))
 
 (defun w3m-dtree (allfiles path)

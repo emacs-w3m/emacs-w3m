@@ -1,3 +1,13 @@
+2001-05-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-dtree.el (w3m-dtree-indent): Remove variable.
+	(w3m-dtree-fancy-display): Ditto.
+	(w3m-dtree-indent-strings): New variable.
+	(w3m-dtree-create-fancy): Remove function.
+	(w3m-dtree-create-sub): Rename function from w3m-dtree-create-fancy()
+	and tiny modified.
+	(w3m-about-dtree): Remove 'fancy style' method.
+
 2001-05-18  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-gnome.el (toplevel): Require 'sb-mhonarc.
