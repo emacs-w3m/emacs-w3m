@@ -2557,6 +2557,8 @@ Mule-UCS (@pxref{Other Requirements}) $B$r%$%s%9%H!<%k$9$k$H!"(BUnicode $B$GD
 w3mmee $B$d(B w3m-m17n $B$r%$%s%9%H!<%k$7$F!"JQ?t(B @code{w3m-command} $B$KE,@Z$J(B
 $BCM$r@_Dj$7$F2<$5$$!#$3$N$h$&$K@_Dj$9$k$H!"(Bemacs-w3m $B$O$3$l$i$N%W%m%0%i%`(B
 $B$,Ds6!$9$kB?8@8l5!G=$rMxMQ$9$k$h$&$K$J$j$^$9!#(B
+$B$?$@$7!"(BEmacs $B$,07$($kJ8;z%3!<%I$K8B$i$l$^$9$N$G!"I,MW$K1~$8$F(B Mule-UCS
+$B$b%$%s%9%H!<%k$7$F$/$@$5$$!#(B
 @end enumerate
 
 @item
