@@ -245,7 +245,6 @@ Emacs-w3m $B$N8x<0%Z!<%8(B @uref{http://emacs-w3m.namazu.org/} $B$bJ;$;$F$4Mw
 $B$,$G$-$^$9!#(B
 
 @table @samp
-
 @item Emacs 21.x
 $BDI2C$N%Q%C%1!<%8$OITMW$G$9!#(B
 
@@ -265,7 +264,6 @@ APEL $B%Q%C%1!<%8!"(B@samp{$B?7$7$$(B custom} $B%Q%C%1!<%8$*$h(B
 $B$?(B Mule 2.3 $B$G$O!"(BBITMAP-MULE $B%Q%C%1!<%8$r;H$&$3$H$K$h$C$F!"Gr9u$N%S%C%H(B
 $B%^%C%W2hA|$r%$%s%i%$%sI=<($9$k$3$H$,$G$-$^$9(B (@pxref{Other
 Requirements})$B!#(B
-
 @end table
 
 @node You Need w3m
@@ -297,7 +295,6 @@ Emacs $B$N%P!<%8%g%s$K$h$C$F$O!"%5!<%I%Q!<%F%#$N%Q%C%1!<%8$,I,MW$G$9!#$3$N(B
 $B9`$G$O!"$=$l$i$r8+$D$1$F%$%s%9%H!<%k$9$k$?$a$N;qNA$rDs6!$7$^$9!#(B
 
 @table @samp
-
 @item APEL
 XEmacs$B!"(BEmacs 19.34 $B$^$?$O(B Mule 2.3 $B$KIT2D7g$G$9!#(BEmacs-w3m $B$r9=C[$9$kA0(B
 $B$K(B APEL $B$r%$%s%9%H!<%k$7$J$1$l$P$J$j$^$;$s!#(BAPEL $B$O0J2<$N>l=j$K$"$j$^$9(B:
@@ -538,7 +535,6 @@ APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$
 $B$-$k$?$/$5$s$N%*%W%7%g%s$O(B @xref{Customizable Options} $B$K=q$+$l$F$$$^$9!#(B
 
 @table @samp
-
 @item Autoloads
 @cindex Adding autoload settings
 
@@ -626,7 +622,6 @@ setenv http_proxy http://proxy.hogege.com:8000/
 
 @code{no-proxy} $B%[%9%H$N@_Dj$K@55,I=8=$r;H$&$K$O!"%*%W%7%g(B
 $B%s(B @code{w3m-command-arguments-alist} $B$N%I%-%e%a%s%H$r8+$F2<$5$$!#(B
-
 @end table
 
 @node Basic Usage
@@ -677,15 +672,15 @@ w3m-lynx-like-map$B$,%G%U%)%k%H$N%-!<%^%C%W$H$7$F;H$o$l$^$9!#(B
 $B$G$9!#(B
 
 @menu
-* Basic operations::            $B:G=i$K3P$($k$3$H(B(FIXME:$BNI$$%?%$%H%k$G$J$$(B)
+* Elementary operations::       $B=iJb$NA`:n(B
 * Moving in a page::            $B%Z!<%8Fb$rHt$S$^$o$k(B
 * Moving over pages::           $B%Z!<%84V$rEO$jJb$/(B
 * Browsing with mouse operations:: $B%^%&%9$G%5!<%U%#%s(B
 * Leaving for daily hacking and/or daily writing:: $BIaCJ$N@83h$KLa$k$K$O(B
 @end menu
 
-@node Basic operations
-@subsection $B:G=i$K3P$($k$3$H(B
+@node Elementary operations
+@subsection $B=iJb$NA`:n(B
 @findex w3m
 @findex w3m-browse-url
 @findex w3m-find-file
@@ -702,7 +697,7 @@ Emacs-w3m $B$r5/F0$9$k$3$H$,$G$-$k%3%^%s%I$O;0$D$"$j$^$9!#$3$l$i$N%3%^%s%I(B
 
 $B$3$3$G$O!"%3%^%s%I$N:G$b4pK\E*$J;H$$J}$@$1$r@bL@$7$^$9!#8D!9$N%3%^%s%I$K(B
 $B$D$$$F!"$b$C$H>\$7$/CN$j$?$$>l9g$O(B @xref{Emacs-w3m Functions} $B$r;2>H$7$F(B
-$B2<$5$$!#$^$?!"%f!<%6%*%W%7%g%s$K4X$9$k>\:Y$O(B @xref{Customizable
+$B2<$5$$!#$^$?!"%f!<%6%*%W%7%g%s$K4X$9$k>\:Y$O(B @ref{Customizable
 Options} $B$r$4Mw2<$5$$!#(B
 
 @table @code
@@ -717,13 +712,13 @@ Emacs-w3m $B$r5/F0$7$^$9!#$3$N$H$-(B @code{w3m-home-page} $B$H$$$&%f!<%6%*%W%
 $B%6%*%W%7%g%s(B @code{w3m-quick-start} $B$NCM$r(B @code{nil} $B$K$7$F2<$5(B
 $B$$(B (@pxref{Customizable Options})$B!#(B
 
-$B$3$N%3%^%s%I$O(B Emacs $B$N%P%C%A%b!<%I$G;H$&$3$H$b$G$-$^$9!#0J2<$ONc$G$9(B:
+$B$3$l$O(B Emacs $B$N%P%C%A%3%^%s%I$H$7$F;H$&$3$H$b$G$-$^$9!#0J2<$ONc$G$9(B:
 
 @example
 % emacs -f w3m
 @end example
 
-$B%P%C%A%b!<%I$G(B URL $B$r;XDj$9$k$K$O!"$3$N$h$&$K$7$F2<$5$$(B:
+URL $B$r;XDj$9$k$K$O!"$3$N$h$&$K$7$F2<$5$$(B:
 
 @example
 % emacs -f w3m http://emacs-w3m.namazu.org/
@@ -738,11 +733,10 @@ Emacs-w3m $B$r5/F0$7$^$9!#$3$N$H$-(B @code{w3m-home-page} $B$H$$$&%f!<%6%*%W%
 $B1\Mw$7$?$$(B URL $B$r;XDj$7$F(B emacs-w3m $B$r5/F0$7$^$9!#(BURL $B$O%_%K%P%C%U%!$+$i(B
 $BM?$($^$9!#$3$N%3%^%s%I$O!"$I$A$i$+$H8@$($P!"B>$N%"%W%j%1!<%7%g%s!&%W%m%0(B
 $B%i%`$+$i(B emacs-w3m $B$r5/F0$9$k$?$a$KMQ0U$5$l$F$$$^$9!#(B
-
 @end table
 
-$B%&%'%V%Z!<%8$,(B emacs-w3m $B$N%P%C%U%!$KI=<($5$l$?8e$G$O!">oF|:"(B Emacs $B$r;H$C(B
-$B$F$$$k$"$J$?$K$H$C$F%Z!<%8Fb$r8+$F$^$o$k$N$K6lO+$OL5$$$G$7$g$&!#(B
+Emacs-w3m $B$N%P%C%U%!$KI=<($5$l$F$$$k%&%'%V%Z!<%8$NCf$G!">oF|:"(B Emacs $B$r(B
+$B;H$C$F$$$k$"$J$?$K$H$C$F%Z!<%8Fb$r8+$F$^$o$k$N$K6lO+$OL5$$$G$7$g$&!#(B
 @kbd{C-n}$B!"(B@kbd{C-v}$B!"(B@kbd{C-s} $B$H$$$C$?!"(BEmacs $B$N%-!<$KI8=`$G3dEv$F$i$l(B
 $B$F$$$k%3%^%s%I$NB?$/$O!"(Bemacs-w3m $B$N%P%C%U%!$G$b$=$N$^$^;H$&$3$H$,$G$-$^(B
 $B$9!#(B
@@ -750,7 +744,7 @@ Emacs-w3m $B$r5/F0$7$^$9!#$3$N$H$-(B @code{w3m-home-page} $B$H$$$&%f!<%6%*%W%
 $B%j%s%/$rC)$k$K$O(B @key{RET} $B%-!<$r;H$C$F2<$5$$!#%]%$%s%H$r%j%s%/$N>l=j$X(B
 $B0\F0$5$;$F(B @key{RET} $B%-!<$r2!$9$H!"$=$N%j%s%/$N@h$K$"$k%Z!<%8$rI=<($5$;(B
 $B$k$3$H$,$G$-$^$9!#%&%'%V%Z!<%8Fb$N%j%s%/$O(B @code{w3m-anchor-face} $B$G;XDj(B
-$B$5$l$?%U%'!<%9$G!"B>$N%F%-%9%H$H$O0c$&?'!"$^$?$O2<@~IU$-$GI=<($5$l$^(B
+$B$5$l$?%U%'!<%9$G!"DL>o$N%F%-%9%H$H$O0c$&?'!"$^$?$O2<@~IU$-$GI=<($5$l$^(B
 $B$9(B (@pxref{Customizable Options} $B;2>H(B)$B!#(B
 
 @table @key
@@ -761,15 +755,15 @@ Emacs-w3m $B$r5/F0$7$^$9!#$3$N$H$-(B @code{w3m-home-page} $B$H$$$&%f!<%6%*%W%
 $B8=:_0LCV$N%j%s%/@h$K$"$k%Z!<%8$rI=<($7$^$9!#(B
 
 $B$3$N%3%^%s%I$O!"8=:_0LCV$N%j%s%/$N<oJL$K$h$C$F!"$^$?$OM?$($k@\F,0z?t$K$h$C(B
-$B$F!"$=$N?6$kIq$$$,$$$m$$$m$KJQ$o$j$^$9!#>\:Y$O(B @xref{Emacs-w3m
+$B$F!"$=$N?6$kIq$$$,$$$m$$$m$KJQ$o$j$^$9!#>\:Y$O(B @ref{Emacs-w3m
 Functions} $B$r;2>H$7$F2<$5$$!#(B
-
 @end table
 
-$B$3$N@a$G$O!"%*%W%7%g%s(B @code{w3m-quick-start} $B$NCM$r(B @code{nil} $B$K$9$k$3(B
-$B$H$K$h$C$F!"(B@kbd{M-x w3m} $B$H%?%$%W$7$?$H$-$K(B URL $B$r;XDj$7$F%Z!<%8$rI=<((B
-$B$G$-$k$3$H$r@bL@$7$^$7$?!#2C$($F!"(Bemacs-w3m $B$N%P%C%U%!$G$OFs$D$NJ}K!(B
-$B$G(B URL $B$r;XDj$7$F%Z!<%8$rI=<($5$;$k$3$H$,$G$-$^$9!#(B
+$B$3$N@a$G$O!"A0=R$N$h$&$K!"%*%W%7%g%s(B @code{w3m-quick-start} $B$NCM(B
+$B$r(B @code{nil} $B$K$9$k$3$H$K$h$C$F!"(B@kbd{M-x w3m} $B$H%?%$%W$7$?$H$-(B
+$B$K(B URL $B$r;XDj$7$F%Z!<%8$rI=<($G$-$k$3$H$r@bL@$7$^$7$?!#2C$($F!"(B
+emacs-w3m $B$N%P%C%U%!$G$O!"$5$i$KFs$D$N0lHLE*$JJ}K!$G(B URL $B$r;XDj$7$F%Z!<(B
+$B%8$rI=<($5$;$k$3$H$,$G$-$^$9!#(B
 
 @table @key
 @item RET @code{(lynx, info)}
@@ -786,9 +780,9 @@ Functions} $B$K=q$+$l$F$$$^$9!#(B
 @item g @code{(lynx, info)}
 @itemx M-x w3m-goto-url
 @findex w3m-goto-url
-$B8=:_$N%]%$%s%H$N0LCV$K4X78$J$/!"(B@kbd{g} $B%-!<$r2!$9$H%_%K%P%C%U%!$+$i(B URL
-$B$rM?$($F!"$=$N%Z!<%8$rI=<($9$k$3$H$,$G$-$^$9!#$3$N5!G=$O!"(BGnus $B$d(B Mew $B$r(B
-$BMxMQ$7$F$$$k?M$K$O?F$7$_$d$9$$$b$N$+$b$7$l$^$;$s!#(B
+$B8=:_$N%]%$%s%H$N0LCV$K4X78$J$/!"(B@kbd{g} $B%-!<$r2!$9$H%_%K%P%C%U%!$+(B
+$B$i(B URL $B$rM?$($F!"$=$N%Z!<%8$rI=<($9$k$3$H$,$G$-$^$9!#$3$N5!G=$O!"(B
+Gnus $B$d(B Mew $B$rMxMQ$7$F$$$k?M$K$O?F$7$_$d$9$$$b$N$+$b$7$l$^$;$s!#(B
 
 @item c @code{lynx}
 @itemx M-x w3m-print-this-url
@@ -806,7 +800,6 @@ Functions} $B$K=q$+$l$F$$$^$9!#(B
 $B8=:_0LCV$N%j%s%/$,;X$7<($9(B URL $B$r%(%3!<%(%j%"$KI=<($9$k$H$H$b$K!"%-%k%j(B
 $B%s%0$K(B URL $B$rA^F~$7$^$9(B ($B$9$J$o$A!"8e$GJL$N>l=j$G(B yank $B$9$k$3$H$,$G$-$^(B
 $B$9(B)$B!#(B
-
 @end table
 
 $B$5$F!"$"$J$?$,FI$s$G$$$k%Z!<%8$,;~;v%K%e!<%9$d$@$l$+$NF|5-$@$C$?$i!":#$G(B
@@ -815,12 +808,11 @@ Functions} $B$K=q$+$l$F$$$^$9!#(B
 $B$$$k$h$&$K8+$($k>l9g$G$b!"$3$N%3%^%s%I$r;H$&$H@5$7$$I=<($rF@$k$3$H$,$G$-(B
 $B$k$+$b$7$l$^$;$s!#(B
 
-@table @kbd
+@table @key
 @item R @code{(lynx, info)}
 @itemx M-x w3m-reload-this-page
 @findex w3m-reload-this-page
 $B8=:_I=<($7$F$$$k%Z!<%8$rFI$_9~$_D>$7$^$9!#(B
-
 @end table
 
 @node Moving in a page
@@ -882,7 +874,7 @@ Emacs$B$NI8=`$N%-!<%P%$%s%I$KHf$Y$F(Bw3m$B%b!<%I$G$O!"$h$jC;$$%-!<%9%H%m!<%/$
 
 @c
 @c $B0\F0(B
-@c 
+@c
 w3m$B$G$O!"%&%'%V%Z!<%8$N;}$D9=B$$K4p$E$$$?%]%$%s%H0\F0MQ$N%3%^%s%I$,$"$j$^$9!#(B
 $B>/$J$$%-!<%9%H%m!<%/$G!"L\E*$N8D=j$K%]%$%s%H$r0\F0$G$-$k$h$&!"MxMQ$7$F$$$^$9!#(B
 
@@ -920,17 +912,17 @@ Jump to previous image.
 @subsection $B%Z!<%84V$rEO$jJb$/(B
 
 @table @kbd
-@item B 
+@item B
 Back to previous page.
 @end table
 
 @table @kbd
-@item N	
+@item N
 Forward to next page.
 @end table
 
 @table @kbd
-@item ^	
+@item ^
 View the parent page.
 @end table
 
@@ -1108,7 +1100,7 @@ Bookmarks}$B!#(B
 
 @table @kbd
 @item v
-Visit the bookmarks page (@code{w3m-bookmark-view}).
+$B%V%C%/%^!<%/$N%Z!<%8$r8F$S=P$7$^$9(B (@code{w3m-bookmark-view})$B!#(B
 @end table
 
 @node Editing Bookmarks
@@ -1263,8 +1255,8 @@ Options} $B;2>H(B) $B$r%+%9%?%^%$%:$9$k$3$H$K$h$C$F!"$3$N?6$kIq$$$rJQ99$9$k$3
 
 @table @kbd
 @item S
-Begin a new search.  If called with a prefix argument, prompt for the
-engine to use (@code{w3m-search}).
+$B?7$7$$8!:w$r;O$a$^$9!#@\F,0z?tIU$-$G8F$P$l$?>l9g$O!"$I$N%(%s%8%s$r;H$&$+(B
+$B$r?R$M$^$9(B (@code{w3m-search})$B!#(B
 @end table
 
 @node Quick Searching
@@ -1553,7 +1545,6 @@ Emacs $B$N%0%i%U%#%C%/!&%$%s%?!<%U%'!<%9$G$9!#(BCustom $B$K$O$$$/$D$+$N%+%9%?
 $BE*$JNc$G$9(B (@pxref{Search Options})$B!#(B
 
 @table @code
-
 @item w3m-init-file
 Emacs-w3m $B$,5/F0$9$k$H!"(B@code{w3m-init-file} $B%U%!%$%k$rFI$_9~$_$^$9!#%G(B
 $B%U%)%k%HCM$O(B @file{~/.emacs-w3m} $B$G$9!#$?$V$s!"$"$J$?$O$3$l$rJQ99$9$kI,(B
@@ -1563,7 +1554,6 @@ Emacs-w3m $B$,5/F0$9$k$H!"(B@code{w3m-init-file} $B%U%!%$%k$rFI$_9~$_$^$9!#%G
 $B$K!"3HD%;R(B @file{.elc} $B$H(B @file{.el} $B$,IU$$$F$$$k$b$N$b(B ($B8@$$49$($l$P!"(B
 @file{~/.emacs-w3m.elc}$B!"(B@file{~/.emacs-w3m.el} $B$*$h(B
 $B$S(B @file{~/.emacs-w3m} $B$N=g$K(B) $BD4$Y$^$9!#(B
-
 @end table
 
 @menu
@@ -1666,7 +1656,7 @@ Emacs-w3m $B$,5/F0$9$k$H!"(B@code{w3m-init-file} $B%U%!%$%k$rFI$_9~$_$^$9!#%G
 
 
 @node Emacs-w3m Functions
-@chapter Emacs-w3m $B$N4X?t$N>\$7$$@bL@(B 
+@chapter Emacs-w3m $B$N4X?t$N>\$7$$@bL@(B
 @cindex Functions details
 
 
