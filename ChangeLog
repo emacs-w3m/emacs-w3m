@@ -1,3 +1,14 @@
+2005-02-19  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-atmarkit.el (shimbun-atmarkit-content-start): Remove.
+	(shimbun-atmarkit-content-end): Ditto.
+	(shimbun-atmarkit-coding-system): Change 'euc-japan' by print page
+	(shimbun-atmarkit-print-page-url): New variable.
+	(shimbun-atmarkit-group-path-alist): Add "news","fdb","farc" groups.
+	(shimbun-article): New method.
+	(shimbun-make-contents): Ditto.
+	(shimbun-clear-contents): Ditto.
+
 2005-02-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-rss.el (shimbun-get-headers): Headers are returned
