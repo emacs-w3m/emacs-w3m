@@ -1,25 +1,37 @@
 ■■ browse-url
 
-   以下のように設定しておくと、URI に類似した文字列がある場所で C-x m と
-   入力すれば、w3m で表示されるようになる。また Emacs21 などに附属する
-   html-mode で C-c C-v とすれば編集の HTML ファイルを w3m でプレビュー
-   できる。
+   以下のように設定しておくと，URI に類似した文字列がある場所で C-x m と
+   入力すれば，emacs-w3m で表示されるようになります．また Emacs21 などに
+   附属するhtml-mode で C-c C-v とすれば編集の HTML ファイルを emacs-w3m 
+   で preview できます．
 
 (setq browse-url-browser-function 'w3m-browse-url)
 (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
 (global-set-key "\C-xm" 'browse-url-at-point)
 
+   もしも，w3m-mode のバッファ内部で C-x m と打鍵した場合には，emacs-w3m 
+   を利用せずに，直接，外部ブラウザを呼び出したい場合には，以下のように
+   設定してください．
+
+(defadvice browse-url-at-point
+  (around change-browse-url-browser-function activate compile)
+  (let ((browse-url-browser-function
+         (if (eq major-mode 'w3m-mode)
+             'browse-url-netscape
+           'w3m-browse-url)))
+    ad-do-it))
+
 
 
 ■■ dired
 
-   以下のように設定しておくと、dired-mode のバッファでファイルを選択して
-   いる状態で C-x m と入力すれば、該当ファイルが w3m で表示されるように
-   なる。
+   以下のように設定しておくと，dired-mode のバッファでファイルを選択して
+   いる状態で C-x m と入力すれば，該当ファイルが emacs-w3m で表示される
+   ようになります．
 
 (add-hook 'dired-mode-hook
           (lambda ()
-              (define-key dired-mode-map "\C-xm" 'dired-w3m-find-file)))
+            (define-key dired-mode-map "\C-xm" 'dired-w3m-find-file)))
 (defun dired-w3m-find-file ()
   (interactive)
   (require 'w3m)
@@ -31,8 +43,8 @@
 
 ■■ hnf-mode
 
-   以下のように設定しておくと、hnf-mode にて C-c C-b と入力すれば、
-   w3m で最新の日記が表示されるようになる。
+   以下のように設定しておくと，hnf-mode にて C-c C-b と入力すれば，
+   emacs-w3m で最新の日記が表示されるようになります．
 
 (autoload 'w3m-browse-url "w3m" nil t)
 (defun w3m-hnf-browse-url-w3m (url &optional new-window)
@@ -46,11 +58,11 @@
 
 ■■ Gnus
 
-   Oort Gnus や Gnus v5.8.8, v5.9 でも、最新の T-gnus 6.15 に含まれてい
+   Oort Gnus や Gnus v5.8.8, v5.9 でも，最新の T-gnus 6.15 に含まれてい
    る nnshimbun.el を lisp/ ディレクトリにコピーしてから make install を
-   行なうと、nnshimbun で記事を読むことができるようになります。加えて、
-   text/html のコンテンツの表示に Emacs-W3 ではなくて Emacs-W3M を使うに
-   は、以下の設定を .gnus ファイルに追加して下さい。
+   行なうと，nnshimbun で記事を読むことができるようになります．加えて，
+   text/html のコンテンツの表示に Emacs-W3 ではなくて emacs-w3m を使うに
+   は，以下の設定を .gnus ファイルに追加して下さい．
 
 ;; From: greg@visiontech-dml.com
 ;; Newsgroups: gnu.emacs.help
@@ -97,8 +109,8 @@
 ;; To: semi-gnus-ja@meadowy.org
 ;; Subject: [nnshimbun] toggle inline images
 
-;; 小泉メルマガなどの multipart/related な絵を見る。
-;; 表示される場所に難あり。^^;;
+;; 小泉メルマガなどの multipart/related な絵を見る．
+;; 表示される場所に難あり．^^;;
 
 (eval-after-load "gnus-art"
   '(or (assoc "multipart/related" gnus-mime-multipart-functions)
@@ -115,8 +127,8 @@
 
 ■■ yahtml-mode
 
-   以下のように設定しておくと、yahtml-mode で編集中のファイルを preview 
-   する時に emacs-w3m を利用することができる。
+   以下のように設定しておくと，yahtml-mode で編集中のファイルを preview 
+   する時に emacs-w3m を利用することができます．
 
 (autoload 'w3m-goto-url "w3m")
 (defadvice yahtml-browse-html
@@ -127,5 +139,7 @@
 Local Variables:
 mode: indented-text
 coding: euc-japan-unix
+use-kuten-for-period: nil
+use-touten-for-comma: nil
 fill-column: 72
 End:

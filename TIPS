@@ -1,18 +1,31 @@
 ** browse-url
 
-   By following setting, "C-x m" on URL like string calls w3m. And you
-   can preview HTML file by "C-c C-v" on html-mode which is distributed
-   with Emacs21.
+   By following setting, "C-x m" on URL like string calls emacs-w3m. And
+   you can preview HTML file by "C-c C-v" on html-mode which is
+   distributed with Emacs21.
 
 (setq browse-url-browser-function 'w3m-browse-url)
 (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
 (global-set-key "\C-xm" 'browse-url-at-point)
 
+   If you want to use the other browser than emacs-w3m when "C-x m" is
+   typed in w3m-mode buffers, you can put the following setting to your
+   ~/.emacs.
+
+(defadvice browse-url-at-point
+  (around change-browse-url-browser-function activate compile)
+  (let ((browse-url-browser-function
+         (if (eq major-mode 'w3m-mode)
+             'browse-url-netscape
+           'w3m-browse-url)))
+    ad-do-it))
+
 
 
 ** dired
 
-   By "C-x m" on html file in dired-mode, you can open the file by w3m.
+   By "C-x m" on a html file in dired-mode, you can open it by
+   emacs-w3m.
 
 (add-hook 'dired-mode-hook
           (lambda ()
@@ -28,8 +41,8 @@
 
 ** hnf-mode
 
-   With following setting, you can see newest diary via emacs-w3m by
-   "C-c C-b" in hnf-mode.
+   With the following setting, you can see the newest diary via
+   emacs-w3m by "C-c C-b" in hnf-mode.
 
 (autoload 'w3m-browse-url "w3m" nil t)
 (defun w3m-hnf-browse-url-w3m (url &optional new-window)
@@ -112,8 +125,8 @@
 
 ** yahtml-mode
 
-   You can preview html file via emacs-w3m which you are editing in
-   yahtml-mode.
+   You can preview the html file with emacs-w3m, which you are editing
+   in yahtml-mode.
 
 (autoload 'w3m-goto-url "w3m")
 (defadvice yahtml-browse-html
