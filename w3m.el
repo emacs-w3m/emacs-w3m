@@ -564,7 +564,7 @@ If 'w3m-dtree, display directory tree by the use of w3m-dtree."
 		 (const :tag "Directory tree" w3m-dtree)))
 
 (defcustom w3m-dirlist-cgi-program
-  (cond ((eq system-type 'windows-nt) 
+  (cond ((eq system-type 'windows-nt)
 	 "c:/usr/local/lib/w3m/dirlist.cgi")
 	((memq system-type '(OS/2 emx))
 	 (expand-file-name "dirlist.cmd" (getenv "W3M_LIB_DIR")))
@@ -689,28 +689,54 @@ If nil, use an internal CGI of w3m."
   "Toolbar button list for w3m.")
 
 (defconst w3m-toolbar
-  '([w3m-toolbar-back-icon w3m-view-previous-page
-			   (w3m-history-previous-link-available-p)
-			   "前のページに戻る"]
-    [w3m-toolbar-parent-icon w3m-view-parent-page
-			     (w3m-parent-page-available-p)
-			     "上のディレクトリへ移動する"]
-    [w3m-toolbar-forward-icon w3m-view-next-page
-			      (w3m-history-next-link-available-p)
-			      "次のページに進む"]
-    [w3m-toolbar-reload-icon w3m-reload-this-page
-			     w3m-current-url
-			     "サーバからページをもう一度読み込む"]
-    [w3m-toolbar-open-icon w3m-goto-url t "URL を入力してページを開く"]
-    [w3m-toolbar-home-icon w3m-gohome w3m-home-page "ホームページへジャンプ"]
-    [w3m-toolbar-search-icon w3m-search t "インターネット上を検索"]
-    [w3m-toolbar-image-icon w3m-toggle-inline-images t "画像の表示をトグルする"]
-    [w3m-toolbar-copy-icon w3m-copy-buffer t "このセッションのコピーを作る"]
-    [w3m-toolbar-weather-icon w3m-weather t "天気予報を見る"]
-    [w3m-toolbar-antenna-icon w3m-antenna t "アンテナで受信する"]
-    [w3m-toolbar-history-icon w3m-history t "ヒストリー"]
-    [w3m-toolbar-db-history-icon w3m-db-history t "ＤＢヒストリー"]
-    )
+  (if (and (boundp 'current-language-environment)
+	   (string-equal "Japanese"
+			 (symbol-value 'current-language-environment)))
+      '([w3m-toolbar-back-icon w3m-view-previous-page
+			       (w3m-history-previous-link-available-p)
+			       "前のページに戻る"]
+	[w3m-toolbar-parent-icon w3m-view-parent-page
+				 (w3m-parent-page-available-p)
+				 "上のディレクトリへ移動する"]
+	[w3m-toolbar-forward-icon w3m-view-next-page
+				  (w3m-history-next-link-available-p)
+				  "次のページに進む"]
+	[w3m-toolbar-reload-icon w3m-reload-this-page
+				 w3m-current-url
+				 "サーバからページをもう一度読み込む"]
+	[w3m-toolbar-open-icon w3m-goto-url t "URL を入力してページを開く"]
+	[w3m-toolbar-home-icon w3m-gohome w3m-home-page
+			       "ホームページへジャンプ"]
+	[w3m-toolbar-search-icon w3m-search t "インターネット上を検索"]
+	[w3m-toolbar-image-icon w3m-toggle-inline-images t
+				"画像の表示をトグルする"]
+	[w3m-toolbar-copy-icon w3m-copy-buffer t
+			       "このセッションのコピーを作る"]
+	[w3m-toolbar-weather-icon w3m-weather t "天気予報を見る"]
+	[w3m-toolbar-antenna-icon w3m-antenna t "アンテナで受信する"]
+	[w3m-toolbar-history-icon w3m-history t "ヒストリー"]
+	[w3m-toolbar-db-history-icon w3m-db-history t "ＤＢヒストリー"])
+    '([w3m-toolbar-back-icon w3m-view-previous-page
+			     (w3m-history-previous-link-available-p)
+			     "Back to Previous Page"]
+      [w3m-toolbar-parent-icon w3m-view-parent-page
+			       (w3m-parent-page-available-p)
+			       "Upward to Parent Page"]
+      [w3m-toolbar-forward-icon w3m-view-next-page
+				(w3m-history-next-link-available-p)
+				"Forward to Next Page"]
+      [w3m-toolbar-reload-icon w3m-reload-this-page
+			       w3m-current-url
+			       "Reload This Page"]
+      [w3m-toolbar-open-icon w3m-goto-url t "Go to..."]
+      [w3m-toolbar-home-icon w3m-gohome w3m-home-page "Go to Home Page"]
+      [w3m-toolbar-search-icon w3m-search t "Search the Internet"]
+      [w3m-toolbar-image-icon w3m-toggle-inline-images t "Toggle Images"]
+      [w3m-toolbar-copy-icon w3m-copy-buffer t "Make a Copy of This Session"]
+      [w3m-toolbar-weather-icon w3m-weather t "Weather Forecast"]
+      [w3m-toolbar-antenna-icon w3m-antenna t "Investigate with Antenna"]
+      [w3m-toolbar-history-icon w3m-history t "Show a History"]
+      [w3m-toolbar-db-history-icon w3m-db-history t "Show a DB History"]))
   "Toolbar definition for w3m.")
 
 (defconst w3m-menubar
@@ -3041,7 +3067,7 @@ or prefix ARG columns."
   (let ((height (/ (window-height) 5))
 	(pos (point-min)))
     (when (= (point-min) (point))
-      (goto-char 
+      (goto-char
        (catch 'detect
 	 (while (and (not (eobp))
 		     (setq pos (next-single-property-change
