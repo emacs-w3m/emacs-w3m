@@ -5,7 +5,7 @@ w3m-namazu は全文検索ソフト Namazu の Emacs 上のインターフェースです。検
 
 w3m-namazu を使う為には、Namazu をインストール必要が有ります。Namazu は
 
-http://www.namazu.org
+http://www.namazu.org/
 
 から取得する事が出来ます。
 
@@ -46,7 +46,7 @@ w3m-namazu を動かす為に、いくつかの変数を定義しておかなければなりません。
  (setq w3m-namazu-default-index "AliasName")
 
 
-3. w3m-namaz を使う
+3. w3m-namazu を使う
 
 w3m-namazu を使うには
 
