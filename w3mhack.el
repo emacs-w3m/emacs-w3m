@@ -296,14 +296,8 @@ emacs-w3m.")
       (push "w3m-bitmap.el" ignores))
     ;; Shimbun modules which need xml.el.
     (unless (locate-library "xml")
-      (setq ignores (nconc ignores
-			   (mapcar (lambda (sb) (concat shimbun-dir sb))
-				   '("sb-atmarkit-rss.el"
-				     "sb-bbc-rss.el"
-				     "sb-cnet-rss.el"
-				     "sb-pukiwiki-rss.el"
-				     "sb-rss.el"
-				     "sb-slashdot-jp-rss.el")))))
+      (dolist (file (w3mhack-shimbun-modules-using-rss))
+	(push file ignores)))
     ;; To byte-compile w3m-util.el and a version specific module first.
     (princ "w3m-util.elc ")
     (setq modules (delete "w3m-util.el" modules))
@@ -317,6 +311,25 @@ emacs-w3m.")
     (dolist (module modules)
       (unless (member module ignores)
 	(princ (format "%sc " module))))))
+
+(defun w3mhack-shimbun-modules-using-rss ()
+  "Return a list of shimbun modules using RSS."
+  (let* ((dir (file-name-as-directory shimbun-module-directory))
+	 (files (list (concat dir "sb-rss.el"))))
+    (dolist (file (directory-files shimbun-module-directory nil "\\.el$"))
+      (setq file (concat dir file))
+      (catch 'next-file
+	(with-temp-buffer
+	  (insert-file-contents file)
+	  (let (form)
+	    (goto-char (point-min))
+	    (while (setq form (condition-case nil
+				  (read (current-buffer))
+				(error nil)))
+	      (when (equal form '(require (quote sb-rss)))
+		(push file files)
+		(throw 'next-file nil)))))))
+    files))
 
 (when (or (<= w3mhack-emacs-major-version 19)
 	  (and (= w3mhack-emacs-major-version 20)

@@ -1,3 +1,9 @@
+2003-06-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3mhack.el (w3mhack-shimbun-modules-using-rss): New function.
+	(w3mhack-examine-modules): Call the above instead of a literal
+	list.
+
 2003-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* doc/Makefile.in (install): Don't run install-info for non-
@@ -5,7 +11,7 @@
 
 	* w3mhack.el (w3mhack-examine-modules): Also examine
 	"sb-pukiwiki-rss.el".
-	
+
 2003-06-20  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-rss.el (shimbun-rss-build-message-id): Add new arg
