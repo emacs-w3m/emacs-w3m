@@ -1,7 +1,10 @@
 2001-07-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-make-help-echo): Specify the third argument of
-	`get-text-property' where the buffer is to be checked.
+	* w3m.el (w3m-make-help-echo): For FSF Emacs 21, specify the third
+	argument of `get-text-property' where the buffer is to be checked;
+	for XEmacs, make it not to work if the buffer is not focused.
+	(w3m-make-balloon-help): Make it not to work if the buffer is not
+	focused.
 
 2001-07-27  Yuuichi Teranishi  <teranisi@gohome.org>
 
