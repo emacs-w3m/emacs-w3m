@@ -1,3 +1,8 @@
+2002-11-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-view-this-url-1): Keep position when new-session
+	and `w3m-view-this-url-new-session-in-background' is non-nil.
+
 2002-11-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-mime-text/html-w3m): Remove any properties of
