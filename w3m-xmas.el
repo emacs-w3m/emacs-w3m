@@ -386,15 +386,15 @@ and its cdr element is used as height."
 	  (setq data (buffer-string)
 		fmt type)
 	  (w3m-process-do
-	      (resized (or (w3m-resize-image-by-rate data rate handler)
-			   data))
-	    (or (and (eq fmt 'gif)
-		     (or w3m-should-unoptimize-animated-gifs
-			 w3m-should-convert-interlaced-gifs)
-		     w3m-gifsicle-program
-		     (let (w3m-cache-fixed-gif-images)
-		       (w3m-fix-gif url resized t)))
-		(w3m-make-glyph resized fmt))))))))
+	      (resized (w3m-resize-image-by-rate data rate handler))
+	    (when resized
+	      (or (and (eq fmt 'gif)
+		       (or w3m-should-unoptimize-animated-gifs
+			   w3m-should-convert-interlaced-gifs)
+		       w3m-gifsicle-program
+		       (let (w3m-cache-fixed-gif-images)
+			 (w3m-fix-gif url resized t)))
+		  (w3m-make-glyph resized fmt)))))))))
 
 (defun w3m-insert-image (beg end image &rest args)
   "Display image on the current buffer.
