@@ -124,26 +124,26 @@
 	 "<a" s1 "href=\"/"
 	 ;; 1. url
 	 "\\("
-	 ;; 3 or 4. extra keyword
-	 "\\(%s/\\([a-z]+\\)\\|\\([a-z]+\\)\\(/.+\\)+\\)"
+	 ;; 3 or 5. extra keyword
+	 "\\(%s/\\([a-z]+\\)\\(/.+\\)*\\|\\([a-z]+\\)\\(/.+\\)+\\)"
 	 "/"
-	 ;; 6. serial number
+	 ;; 7. serial number
 	 "\\([a-z]+20[0-9][0-9][01][0-9][0-3][0-9]+\\)"
 	 "\\.html\\)"
 	 "\">" s0
-	 ;; 7. subject
+	 ;; 8. subject
 	 "\\(.+\\)"
 	 s0 "</a>[\t\n 　]*("
-	 ;; 8. month
+	 ;; 9. month
 	 "\\([01][0-9]\\)"
 	 "/"
-	 ;; 9. day
+	 ;; 10. day
 	 "\\([0-3][0-9]\\)"
 	 "\\(" s1
-	 ;; 11. hour:minute
+	 ;; 12. hour:minute
 	 "\\([012][0-9]:[0-5][0-9]\\)"
 	 "\\)?)")
-       1 nil 6 7 8 9 11 3 4)))
+       1 nil 7 8 9 10 12 3 5)))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the
