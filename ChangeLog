@@ -10,8 +10,6 @@
 	* w3m-om.el: Remove redundant `function'.
 	(w3m-om-character-set-alist): New variable.
 	(charset-id): New function.
-	(w3m-euc-japan-encoder, w3m-iso-latin-1-decoder): New dummy
-	encoders.
 
 	* w3m.el (w3m-input-coding-system): Change its default value for
 	Mule2.3 and Emacsen without Mule.

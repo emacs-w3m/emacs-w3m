@@ -274,13 +274,6 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 ;; charset-id() is required in w3m-ccl.el.
 (require 'w3m-ccl)
 
-;; Dummy encoders.
-(define-ccl-program w3m-euc-japan-encoder
-  (` (1 (loop (read r0) (write-repeat r0)))))
-
-(define-ccl-program w3m-iso-latin-1-encoder
-  (` (1 (loop (read r0) (write-repeat r0)))))
-
 
 ;;; Generic functions.
 (defun w3m-expand-path-name (name &optional base)

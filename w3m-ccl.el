@@ -37,11 +37,15 @@
 
 ;;; Code:
 
-(require 'ccl)
-
 (eval-and-compile
-  (if (boundp 'MULE)
-      (autoload 'charset-id "w3m-om")))
+  (cond
+   ((featurep 'xemacs)
+    (require 'pccl))
+   ((boundp 'MULE)
+    (autoload 'charset-id "w3m-om")
+    (require 'pccl))
+   (t
+    (require 'ccl))))
 
 ;;; CCL programs:
 
@@ -58,7 +62,7 @@
     (unless r1
       (setq r1 (if (eq r0 'r1) 'r0 'r1)))
     (let ((bytes (if (boundp 'MULE)
-		     (char-bytes (charset-id charset))
+		     (eval '(char-bytes (charset-id charset)))
 		   (charset-bytes charset))))
       (if (fboundp 'ccl-compile-write-multibyte-character)
 	  (` (((, r1) &= ?\x7f)
@@ -165,10 +169,7 @@ in NCR (Numeric Character References)."))
        (write-repeat r0)))))
 
 (define-ccl-program w3m-euc-japan-encoder
-  `(1
-    (loop
-     ,@w3m-ccl-write-euc-japan-character
-     (write-repeat ?~))))
+  (` (1 (loop (read r0) (write-repeat r0)))))
 
 (define-ccl-program w3m-iso-latin-1-decoder
   (` (2
@@ -188,10 +189,8 @@ in NCR (Numeric Character References)."))
        (write-repeat r0)))))
 
 (define-ccl-program w3m-iso-latin-1-encoder
-  `(1
-    (loop
-     ,@w3m-ccl-write-iso-latin-1-character
-     (write-repeat ?~))))
+  (` (1 (loop (read r0) (write-repeat r0)))))
+
 
 (provide 'w3m-ccl)
 
