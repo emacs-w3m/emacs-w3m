@@ -46,7 +46,7 @@
      "http://njb.virtualave.net/BBS.cgi?b=nmain")
     ("yamagata" .
      "http://ruitomo.com/~hiroo/bbs/BBS.cgi?b=kohobu"))
-  "*An alist of CGI_Board bulletin systems and their URLs."
+  "*An alist of CGI_Board bulletin board systems and their URLs."
   :group 'shimbun
   :type '(repeat
 	  (cons :format "%v" :indent 4
