@@ -5161,7 +5161,7 @@ ffii.de.informations-infrastruktur ffii.fr.brevets-logiciels
 ffii.fr.brevets-logiciels.ffii ffii.nl.softwarepatenten
 ffii.nl.softwarepatenten.ffii
 
-@item @uref{http://bbs.com.nifty.com/mes/, フォーラム@nifty}
+@item @uref{http://bbs.com.nifty.com/mes/, フォーラム@@nifty}
 nifty-forum.fphys12 nifty-forum.fphys13 nifty-forum.fphys14
 nifty-forum.fphys15 nifty-forum.fphys16 nifty-forum.fphys17
 nifty-forum.fphys18 nifty-forum.fphys24 nifty-forum.fphys25
