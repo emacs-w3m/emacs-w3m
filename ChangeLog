@@ -1,5 +1,9 @@
 2005-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el (w3m-set-match-data): New macro which converts
+	points into markers under XEmacs.
+	(w3m-search-tag-1): Use it.
+
 	* w3m-e19.el: Autoload easymenu in order to avoid compile warning.
 	* w3m-om.el: Ditto.
 

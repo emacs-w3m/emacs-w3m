@@ -628,6 +628,15 @@ objects will not be deleted:
   (and url (not (string-match w3m-url-invalid-regexp url))
        url))
 
+(defmacro w3m-set-match-data (list)
+  "Same as the `set-match-data'; convert points into markers under XEmacs."
+  (if (featurep 'xemacs)
+      `(let ((list ,list))
+	 (store-match-data (dolist (pt (prog1 list (setq list nil))
+				       (nreverse list))
+			     (push (set-marker (make-marker) pt) list))))
+    `(set-match-data ,list)))
+
 (defun w3m-search-tag-1 (regexp)
   "Subroutine used by `w3m-search-tag'."
   (let ((start (point))
@@ -640,7 +649,7 @@ objects will not be deleted:
 		      (search-forward ">" nil t))))
 	(prog1
 	    (goto-char (match-end 0))
-	  (set-match-data
+	  (w3m-set-match-data
 	   (cond ((= end (match-beginning 0))
 		  (list begin (match-end 0)
 			(1+ begin) end))
