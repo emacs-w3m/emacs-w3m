@@ -1,3 +1,7 @@
+2000-09-20  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el (w3m): Do not switch buffer if w3m window already exists.
+
 2000-09-20  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el: Add declaration of dependency on APEL.
