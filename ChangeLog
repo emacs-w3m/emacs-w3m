@@ -1,3 +1,9 @@
+2001-11-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-expand-url): Remove the last segment of the base URL
+	before concatination the specified URL which has only a query part
+	and the base URL.
+
 2001-11-08  Takenobu Sugiyama  <sugiyama@ae.advantest.co.jp>
 
 	* shimbun/sb-nikkansports.el (shimbun-get-headers): Add new
