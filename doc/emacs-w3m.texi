@@ -223,7 +223,8 @@ You can run emacs-w3m in various versions of Emacsen listed below:
 @table @samp
 
 @item Emacs 21.x
-No additional package is required.
+No additional package is required.  When you use Emacs of the CVS head,
+it needs to be the version on and after March, 2004.
 
 @item XEmacs 21.x
 The @acronym{APEL} package and the @samp{gifsicle} program are required

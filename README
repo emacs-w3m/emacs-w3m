@@ -38,7 +38,8 @@
    Info.
 
    a) Emacs 21.x
-      No additional package is required.
+      No additional package is required.  When you use Emacs of the CVS
+      head, it needs to be the version on and after March, 2004.
 
    b) Emacs 20.x
       No additional package is required.

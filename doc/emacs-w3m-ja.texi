@@ -256,7 +256,8 @@ Emacs-w3m Functions
 
 @table @samp
 @item Emacs 21.x
-追加のパッケージは不要です。
+追加のパッケージは不要です。CVS head の Emacs を使う場合、それは 2004年
+3月以降のバージョンである必要があります．
 
 @item XEmacs 21.x
 @acronym{APEL} パッケージと @samp{gifsicle} プログラムが必要で
