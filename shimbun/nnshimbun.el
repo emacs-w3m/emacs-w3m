@@ -366,8 +366,20 @@ GROUP has a full name."
   (nnoo-close-server 'nnshimbun server)
   t)
 
-(eval-when-compile
-  (require 'gnus-sum)) ;; For the macro `gnus-summary-article-header'.
+(defun nnshimbun-replace-date-header (article header)
+  "This function definition should be replaced with the proper one for
+the running Gnus version to keep compatibility with the Gnusae variants
+when it is called at the first time."
+  (require 'gnus-sum)
+  (require 'bytecomp)
+  (defalias 'nnshimbun-replace-date-header
+    (byte-compile
+     '(lambda (article header)
+	"Replace ARTICLE's date header with HEADER."
+	(let ((x (gnus-summary-article-header article)))
+	  (when x
+	    (mail-header-set-date x (shimbun-header-date header)))))))
+  (funcall 'nnshimbun-replace-date-header article header))
 
 (defun nnshimbun-request-article-1 (article &optional group server to-buffer)
   (if (nnshimbun-backlog
@@ -385,14 +397,9 @@ GROUP has a full name."
 		 (nnshimbun-find-parameter group 'encapsulate-images)))
 	    (shimbun-article nnshimbun-shimbun header))
 	  (when (> (buffer-size) 0)
-	    ;; Kludge! replace a date string in `gnus-newsgroup-data'
-	    ;; based on the newly retrieved article.
-	    (let ((x (gnus-summary-article-header article)))
-	      (when x
-		;; Trick to suppress byte compile of mail-header-set-date(),
-		;; in order to keep compatibility between T-gnus and Oort Gnus.
-		(eval
-		 `(mail-header-set-date ,x ,(shimbun-header-date header)))))
+	    ;; Kludge! replace the date string in `gnus-newsgroup-data'
+	    ;; with the newly retrieved article's one.
+	    (nnshimbun-replace-date-header article header)
 	    (nnshimbun-replace-nov-entry group article header original-id)
 	    (nnshimbun-backlog
 	      (gnus-backlog-enter-article group article (current-buffer)))
