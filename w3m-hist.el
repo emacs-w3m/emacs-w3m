@@ -627,7 +627,7 @@ It's only a joke, you should NEVER use it."
 		  "Are you sure you really want to destroy the history? ")
 	       (message "")))
     (when w3m-history
-      (setcar w3m-history '(nil (0) nil)))
+      (w3m-history-push (car (w3m-history-current-1 '(0))) t))
     (let (url title)
       (mapatoms
        (function
