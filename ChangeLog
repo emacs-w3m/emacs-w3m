@@ -1,5 +1,11 @@
 2004-01-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-cnet.el (shimbun-get-headers): Don't use
+	`file-name-sans-extension' for a url string.  In Emacs 21.3 and
+	older, it expands a name into the absolute pathname.
+
+2004-01-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/sb-cnet.el (shimbun-cnet): Define class with
 	`shimbun-japanese-newspaper'.
 	(shimbun-cnet-content-start): Invalidate it with "".
