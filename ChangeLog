@@ -1,5 +1,16 @@
 2003-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-e21.el (w3m-spinner-map-on-header-line): Abolish.
+	(w3m-modeline-spinner-map): Rename from
+	`w3m-spinner-map-on-mode-line'.
+	(w3m-setup-header-line): Don't initialize
+	`w3m-spinner-map-on-header-line'.
+	(w3m-tab-spinner-map): New variable.
+	(w3m-tab-make-keymap): Initialize it.
+	(w3m-tab-line): Use it.
+
+2003-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-modeline-separator): New variable.
 	(w3m-modeline-favicon): New variable.
 	(w3m-favicon-image): Move from w3m-favicon.el.

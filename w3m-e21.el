@@ -454,40 +454,32 @@ Buffer string between BEG and END are replaced with IMAGE."
   "*Face to fontify background of tab line."
   :group 'w3m-face)
 
-(defvar w3m-spinner-map-on-header-line nil
-  "Keymap used on the spinner in the header-line.")
-
-(defvar w3m-spinner-map-on-mode-line nil
+(defvar w3m-modeline-spinner-map nil
   "Keymap used on the spinner in the mode-line.")
 
 (defvar w3m-spinner-map-help-echo "mouse-2 kills the current process"
   "String used for the :help-echo property on the spinner.")
 
 (defun w3m-setup-header-line ()
-  (cond
-   (w3m-use-tab
-    (unless w3m-spinner-map-on-header-line
-      (define-key (setq w3m-spinner-map-on-header-line (make-sparse-keymap))
-	[header-line mouse-2]
-	'w3m-process-stop))
-    (setq header-line-format '(:eval (w3m-tab-line))))
-   (w3m-use-header-line
-    (setq header-line-format
-	  (list
-	   (propertize
-	    "Location: "
-	    'face 'w3m-header-line-location-title-face)
-	   '(:eval
-	     (propertize
-	      (if (stringp w3m-current-url)
-		  (replace-regexp-in-string "%" "%%" w3m-current-url)
-		"")
-	      'face 'w3m-header-line-location-content-face
-	      'local-map (let ((map (make-sparse-keymap)))
-			   (define-key map [header-line mouse-2]
-			     'w3m-goto-url)
-			   map)
-	      'help-echo "mouse-2 prompts to input URL")))))))
+  (setq header-line-format
+	(cond (w3m-use-tab
+	       '(:eval (w3m-tab-line)))
+	      (w3m-use-header-line
+	       (list
+		(propertize
+		 "Location: "
+		 'face 'w3m-header-line-location-title-face)
+		'(:eval
+		  (propertize
+		   (if (stringp w3m-current-url)
+		       (replace-regexp-in-string "%" "%%" w3m-current-url)
+		     "")
+		   'face 'w3m-header-line-location-content-face
+		   'local-map (let ((map (make-sparse-keymap)))
+				(define-key map [header-line mouse-2]
+				  'w3m-goto-url)
+				map)
+		   'help-echo "mouse-2 prompts to input URL")))))))
 
 (defun w3m-tab-drag-mouse-function (event buffer)
   (let ((window (posn-window (event-end event)))
@@ -510,22 +502,33 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defvar w3m-tab-map nil)
 (make-variable-buffer-local 'w3m-tab-map)
 
+(defvar w3m-tab-spinner-map nil)
+(make-variable-buffer-local 'w3m-tab-spinner-map)
+
 (defun w3m-tab-make-keymap ()
   (unless w3m-tab-map
-    (prog1
-	(setq w3m-tab-map (make-sparse-keymap))
-      (let ((drag-action `(lambda (e)
-			    (interactive "e")
-			    (w3m-tab-drag-mouse-function e ,(buffer-name))))
-	    (up-action `(lambda (e)
+    (setq w3m-tab-map (make-sparse-keymap))
+    (let ((drag-action `(lambda (e)
 			  (interactive "e")
-			  (switch-to-buffer ,(buffer-name)))))
-	(define-key w3m-tab-map [header-line down-mouse-1] 'ignore)
-	(define-key w3m-tab-map [header-line down-mouse-2] 'ignore)
-	(define-key w3m-tab-map [header-line drag-mouse-1] drag-action)
-	(define-key w3m-tab-map [header-line drag-mouse-2] drag-action)
-	(define-key w3m-tab-map [header-line mouse-1] up-action)
-	(define-key w3m-tab-map [header-line mouse-2] up-action)))))
+			  (w3m-tab-drag-mouse-function e ,(buffer-name))))
+	  (up-action `(lambda (e)
+			(interactive "e")
+			(switch-to-buffer ,(buffer-name)))))
+      (define-key w3m-tab-map [header-line down-mouse-1] 'ignore)
+      (define-key w3m-tab-map [header-line down-mouse-2] 'ignore)
+      (define-key w3m-tab-map [header-line drag-mouse-1] drag-action)
+      (define-key w3m-tab-map [header-line drag-mouse-2] drag-action)
+      (define-key w3m-tab-map [header-line mouse-1] up-action)
+      (define-key w3m-tab-map [header-line mouse-2] up-action)))
+  (unless w3m-tab-spinner-map
+    (setq w3m-tab-spinner-map (make-sparse-keymap))
+    (define-key w3m-tab-spinner-map [header-line mouse-2]
+      `(lambda (e)
+	 (interactive "e")
+	 (save-current-buffer
+	   ;; Why the `(w3m-process-stop BUFFER)' doesn't work?
+	   (set-buffer ,(buffer-name))
+	   (call-interactively 'w3m-process-stop))))))
 
 (defvar w3m-tab-line-format nil
   "Internal variable used to keep contents to be shown in the header-line.")
@@ -581,7 +584,7 @@ cleared by a timer.")
 			     'display icon
 			     'mouse-face 'highlight
 			     'face face
-			     'local-map w3m-spinner-map-on-header-line
+			     'local-map w3m-tab-spinner-map
 			     'help-echo w3m-spinner-map-help-echo))))
 		   (w3m-use-favicon
 		    (setq icon (when w3m-favicon-image
@@ -693,7 +696,7 @@ italic font in the modeline."
 		    (setq file (expand-file-name "spinner.gif"
 						 w3m-icon-directory))))
 	  (setq w3m-spinner-image-file file)
-	  (define-key (setq w3m-spinner-map-on-mode-line (make-sparse-keymap))
+	  (define-key (setq w3m-modeline-spinner-map (make-sparse-keymap))
 	    [mode-line mouse-2]
 	    'w3m-process-stop)
 	  (setq w3m-modeline-process-status-on
@@ -717,7 +720,7 @@ italic font in the modeline."
 	    (propertize "  "
 			'display image
 			'mouse-face 'highlight
-			'local-map w3m-spinner-map-on-mode-line
+			'local-map w3m-modeline-spinner-map
 			'help-echo w3m-spinner-map-help-echo))
       image)))
 
