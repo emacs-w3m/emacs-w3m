@@ -655,7 +655,7 @@ italic font in the modeline."
   (let ((spinner (expand-file-name "spinner.gif" w3m-icon-directory))
 	(coding-system-for-read 'binary)
 	(coding-system-for-write 'binary)
-	background)
+	format-alist background)
     (when (and (device-on-window-system-p)
 	       (featurep 'gif)
 	       (not w3m-spinner-image)
