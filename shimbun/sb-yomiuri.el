@@ -389,6 +389,14 @@ information available, removing useless contents, etc."
 	(goto-char (point-min))
 	(shimbun-remove-tags "<!--  rectangle start  -->"
 			     "<!--  rectangle end  -->")
+	;; Break continuous lines.
+	(goto-char (point-min))
+	(when (and (string-equal group "editorial")
+		   (string-match " \\(よみうり寸評\\|編集手帳\\)\\'"
+				 (shimbun-header-subject header 'no-encode)))
+	  (goto-char (point-min))
+	  (while (search-forward "◆" nil t)
+	    (replace-match "。<br>\\&<br>")))
 	(widen))))
   (goto-char (point-min)))
 
