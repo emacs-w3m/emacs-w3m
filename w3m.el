@@ -1423,8 +1423,9 @@ SECTION is category name in bookmark."
 	;; add to existing section
 	(nconc ent (list (cons title url))) ; add to tail
       ;; add as new section 
-      (nconc w3m-bookmark-data
-	     (list (list sec (cons title url)))))
+      (setq w3m-bookmark-data
+	    (nconc w3m-bookmark-data
+		   (list (list sec (cons title url))))))
     ;; then save to file. (xxx, force saving, should we ask?)
     (w3m-bookmark-save)))
 
