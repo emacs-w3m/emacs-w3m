@@ -1,6 +1,6 @@
 ;;; mime-w3m.el --- mime-view content filter for text
 
-;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
@@ -124,15 +124,17 @@ set this value to nil if you consider all the urls to be safe."
 	   (font-set-face-background 'default color (current-buffer))))
     (cons 'progn body)))
 
-(eval-and-compile
-  (unless (or (featurep 'xemacs)
-	      (>= emacs-major-version 21))
-    (defvar mime-w3m-mode-map nil
-      "Keymap for text/html part rendered by `mime-w3m-preview-text/html'.
+(unless (or (featurep 'xemacs)
+	    (>= emacs-major-version 21))
+  (defvar mime-w3m-mode-map nil
+    "Keymap for text/html part rendered by `mime-w3m-preview-text/html'.
 This map is overwritten by `mime-w3m-local-map-property' based on the
 value of `w3m-minor-mode-map'.  Therefore, in order to add some
 commands to this map, add them to `w3m-minor-mode-map' instead of this
-map.")))
+map."))
+
+(eval-when-compile
+  (defvar mime-w3m-mode-map))
 
 (defsubst mime-w3m-local-map-property ()
   (if (or (featurep 'xemacs)

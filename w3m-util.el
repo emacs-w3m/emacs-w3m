@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -133,34 +133,65 @@ or `debug-on-quit' is non-nil."
 			    (append (, non-stickies) (, props))
 			    (, object)))))
 
-(defmacro w3m-get-text-property-around (prop &optional position)
-  "Search for the text property PROP in the POSITION and return a value
-or nil.  If POSITION is omitted, searching is performed in the current
-cursor position and around there."
-  (if position
-      (` (get-text-property (, position) (, prop)))
-    (` (let ((position (point)))
-	 (or (get-text-property position (, prop))
-	     (and (not (bolp))
-		  (get-text-property (1- position) (, prop)))
-	     (and (not (eolp))
-		  (get-text-property (1+ position) (, prop))))))))
+(defmacro w3m-get-text-property-around (prop)
+  "Search for the text property PROP in one character before and behind
+the current position.  Return the value corresponding to PROP or nil.
+If PROP is not found at the current position, point will move to the
+position where PROP exists."
+  (` (let ((position (point))
+	   value)
+       (or (get-text-property position (, prop))
+	   (and (not (bolp))
+		(setq value (get-text-property (1- position) (, prop)))
+		(goto-char (1- position))
+		value)
+	   (and (not (eolp))
+		(setq value (get-text-property (1+ position) (, prop)))
+		(goto-char (1+ position))
+		value)))))
 
 (defmacro w3m-action (&optional position)
-  (` (w3m-get-text-property-around 'w3m-action (, position))))
+  "Return the value of the `w3m-action' property at the given POSITION.
+NOTE: If POSITION is omitted, it searches for the property in one
+character before and behind the current position, and point will move
+to the position where the property exists."
+  (if position
+      (` (get-text-property (, position) 'w3m-action))
+    (` (w3m-get-text-property-around 'w3m-action))))
+
 (defmacro w3m-anchor (&optional position)
-  (` (w3m-get-text-property-around 'w3m-href-anchor (, position))))
+  "Return the value of the `w3m-href-anchor' property at the given POSITION.
+NOTE: If POSITION is omitted, it searches for the property in one
+character before and behind the current position, and point will move
+to the position where the property exists."
+  (if position
+      (` (get-text-property (, position) 'w3m-href-anchor))
+    (` (w3m-get-text-property-around 'w3m-href-anchor))))
+
 (defmacro w3m-image (&optional position)
-  (` (w3m-get-text-property-around 'w3m-image (, position))))
-(defmacro w3m-image-scale (&optional position)
-  (` (w3m-get-text-property-around 'w3m-image-scale (, position))))
+  "Return the value of the `w3m-image' property at the given POSITION.
+NOTE: If POSITION is omitted, it searches for the property in one
+character before and behind the current position, and point will move
+to the position where the property exists."
+  (if position
+      (` (get-text-property (, position) 'w3m-image))
+    (` (w3m-get-text-property-around 'w3m-image))))
+
 (defmacro w3m-submit (&optional position)
-  (` (w3m-get-text-property-around 'w3m-submit (, position))))
+  "Return the value of the `w3m-submit' property at the given POSITION.
+NOTE: If POSITION is omitted, it searches for the property in one
+character before and behind the current position, and point will move
+to the position where the property exists."
+  (if position
+      (` (get-text-property (, position) 'w3m-submit))
+    (` (w3m-get-text-property-around 'w3m-submit))))
 
 (defmacro w3m-anchor-sequence (&optional position)
+  "Return the value of the `w3m-anchor-sequence' property at POSITION.
+If POSITION is omitted, the current position is assumed."
   (if position
       (` (get-text-property (, position) 'w3m-anchor-sequence))
-    (` (get-text-property (point) 'w3m-anchor-sequence))))
+    '(get-text-property (point) 'w3m-anchor-sequence)))
 
 ;;; Attributes:
 

@@ -1,3 +1,57 @@
+2003-01-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-image-type): Move backward.
+	(w3m-fontify-images): Use `w3m-action' and `w3m-anchor' instead of
+	`get-text-property'.
+	(w3m-toggle-inline-images-internal): Use `w3m-image' instead of
+	`get-text-property'.
+	(w3m-toggle-inline-image): Don't specify the arg to `w3m-image'.
+	(w3m-resize-inline-image-internal): Use `w3m-image' instead of
+	`get-text-property'.
+	(w3m-zoom-in-image): Don't specify the arg to `w3m-image'.
+	(w3m-zoom-out-image): Ditto.
+	(w3m-view-this-url): Don't bother to call `w3m-anchor' if it is
+	needless.
+	(w3m-print-this-url): Don't pull-in the point into the link if it
+	is called non-interactively.
+	(w3m-highlight-current-anchor-1): Use `w3m-anchor-sequence'
+	instead of `get-text-property'.
+	(w3m-next-anchor): Don't put `nil' element into
+	`w3m-goto-anchor-hist'; use `push' instead of `cons'.
+	(w3m-previous-anchor): Ditto.
+	(w3m-next-form): Use `w3m-action' instead of `get-text-property';
+	don't put `nil' element into `w3m-goto-anchor-hist'; specify the
+	current position to `w3m-action'; use `push' instead of `cons'.
+	(w3m-goto-previous-form): indent.
+	(w3m-previous-form): Use `w3m-action' instead of
+	`get-text-property'; don't put `nil' element into
+	`w3m-goto-anchor-hist'; specify the current position to
+	`w3m-action'; use `push' instead of `cons'.
+	(w3m-next-image): Use `w3m-image' instead of `get-text-property';
+	don't put `nil' element into `w3m-goto-anchor-hist'; specify the
+	current position to `w3m-image'; use `push' instead of `cons'.
+	(w3m-previous-image): Ditto.
+
+	* w3m-form.el (w3m-form-resume): Use `w3m-action' instead of
+	`get-text-property'; specify the current position to `w3m-action'.
+	(w3m-fontify-textareas): Use `w3m-anchor-sequence' instead of
+	`get-text-property'.
+	(w3m-form-replace): Use `w3m-action' instead of
+	`get-text-property'.
+	(w3m-form-textarea-info): Use `get-text-property' instead of
+	`w3m-get-text-property-around'.
+	(w3m-form-reset): Use `w3m-action' instead of `get-text-property'.
+
+	* w3m-util.el (w3m-get-text-property-around): Always search for
+	the text prop around there and pull-in the point into the position
+	where the prop exists.
+	(w3m-action, w3m-anchor, w3m-image, w3m-submit): Use
+	`get-text-property' if the argument is omitted.
+	(w3m-image-scale): Abolished.
+	(w3m-anchor-sequence): Simplified.
+
+	* mime-w3m.el (mime-w3m-mode-map): Bind it when compiling.
+
 2003-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (top): Move the last addition (modifying the value
