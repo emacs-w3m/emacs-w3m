@@ -52,7 +52,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
   (let (category categories)
     (dolist (codesys priority-list)
       (setq category (coding-system-category codesys))
-      (unless (assq category categories)
+      (unless (or (null category) (assq category categories))
 	(push (cons category codesys) categories)))
     (car (detect-coding-with-priority start end (nreverse categories)))))
 

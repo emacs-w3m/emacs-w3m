@@ -1,3 +1,8 @@
+2005-03-10  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-fsf.el (w3m-detect-coding-region): Guard error for
+	`undecided'.
+
 2005-03-10  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-pocketgames.el (shimbun-pocketgames-content-start): Fix
