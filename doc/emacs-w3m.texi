@@ -3504,29 +3504,41 @@ package has been installed.  Here's an example:
 @chapter A tool for reading a newspaper
 @cindex Shimbun library
 
-Shimbun is pronounced ``she-n-boon'' (but actually vowels shouldn't be
-prolonged), it means ``newspaper'' in Japanese.  The @samp{shimbun}
-library is a collection of many modules, but each of them serves no
-useful purpose alone.  This section explains three typical
-@samp{shimbun} applications (two of which are included in the
-@samp{shimbun} library) and how to make @samp{shimbun} modules by
-yourself (you need to be able to write Emacs Lisp programs).  All three
-applications make it possible to fetch continuously-updating information
-from web sites around the world and to read them as if you were reading
-mail messages.
-
 More and more newspapers, mailing list archives, bulletin boards, and
-individual diaries (hyper nikki system, weblogs or blogs) are open to
-the public through the web.  The @samp{shimbun} library currently
-supports Asahi Shimbun, Yomiuri On-line, Emacs Devel, XEmacs Beta,
-mailing lists for Gnus, Mew, Wanderlust, etc., the Japanese Prime
-Minister Koizumi's mail magazine, Slashdot Japan, and a lot of others.
+individual diaries (such as hyper nikki system, weblogs and blogs) are
+published on the web.  @samp{Shimbun} library enables you to read those
+contents with your favorite mail/news reader.  Actually, @samp{Shimbun}
+library provides functions to convert those contents into articles like
+common e-mails.
 
-Note that you need to have installed the @acronym{FLIM} package (and
-Gnus if you'd like to use @samp{nnshimbun}) before building and
-installing emacs-w3m.  The @acronym{FLIM} package requires the
-@acronym{APEL} package.  You might also want to see @xref{Other
-Requirements}.
+@quotation
+@samp{Shimbun} is pronounced ``she-n-boon'' (but actually vowels
+shouldn't be prolonged), it means ``newspaper'' in Japanese.
+@end quotation
+
+@samp{Shimbun} library currently supports Asahi Shimbun, Yomiuri
+On-line, many maling list archives such as Emacs Devel, XEmacs Beta,
+Gnus, Mew, and Wanderlust, the Japanese Prime Minister Koizumi's mail
+magazine, Slashdot Japan, and a lot of others.  For more detail, see
+@ref{Shimbun Sites}.
+
+By the way, you have to pay attention to copyright when using
+@samp{Shimbun} library.  Copyrights of articles generated with
+@samp{Shimbun} library are reserved by copyright holders of those
+original contents.  Therefore, you are obliged not to violate rights of
+copyright holders, when you enjoy generated articles.  It means that you
+can enjoy generated articles on ``fair use'' that is described in the
+copyright law.
+
+We, emacs-w3m development team, give no warranty to you, if
+@samp{Shimbun} library causes a damage to you, or if you face a lawsuit
+about violation of copyrights.
+
+@samp{Shimbun} library is a collection of many modules, but each of them
+serves no useful purpose alone.  This section explains three typical
+@samp{Shimbun} applications (two of which are included in the
+@samp{Shimbun} library) and how to make @samp{Shimbun} modules by
+yourself (you need to be able to write Emacs Lisp programs).
 
 @menu
 * Nnshimbun::                   Turning Gnus into a web browser!
@@ -3535,6 +3547,12 @@ Requirements}.
 * Shimbun Sites::               Sites supported by Shimbun
 * Shimbun Basics::              How to make a new shimbun module
 @end menu
+
+Note that you need to have installed the @acronym{FLIM} package (and
+Gnus if you'd like to use @samp{nnshimbun}) before building and
+installing emacs-w3m.  The @acronym{FLIM} package requires the
+@acronym{APEL} package.  You might also want to see @xref{Other
+Requirements}.
 
 @node Nnshimbun
 @section Turning Gnus into a web browser!
