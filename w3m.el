@@ -144,20 +144,25 @@
     ;; Fontify anchors.
     (goto-char (point-min))
     (while (re-search-forward
-	    "<a\\( hseq=\"[-0-9]+\"\\)?\\( href=\"\\([^\"]*\\)\"\\)?\\( name=\"\\([^\"]*\\)\"\\)?[^>]*>"
+	    "<a\\( hseq=\"[-0-9]+\"\\)?\\([ \t\n]+href=\"\\([^\"]*\\)\"\\)?\\([ \t\n]+name=\"\\([^\"]*\\)\"\\)?[^>]*>"
 	    nil t)
       (let ((url (match-string 3))
 	    (tag (match-string 5))
 	    (start (match-beginning 0))
 	    (end))
 	(delete-region start (match-end 0))
-	(when (search-forward "</a>" nil t)
-	  (delete-region (setq end (match-beginning 0)) (match-end 0))
-	  (when url
-	    (put-text-property start end 'face 'w3m-anchor-face)
-	    (put-text-property start end 'w3m-href-anchor url))
-	  (when tag
-	    (put-text-property start end 'w3m-name-anchor tag)))))
+	(cond (url
+	       (when (search-forward "</a>" nil t)
+		 (delete-region (setq end (match-beginning 0)) (match-end 0))
+		 (put-text-property start end 'face 'w3m-anchor-face)
+		 (put-text-property start end 'w3m-href-anchor url))
+	       (when tag
+		 (put-text-property start end 'w3m-name-anchor tag)))
+	      (tag
+	       (when (re-search-forward "<\\|\n" nil t)
+		 (setq end (match-beginning 0))
+		 (put-text-property start end 'w3m-name-anchor tag))))))
+	       
     ;; Fontify image alternate strings.
     (goto-char (point-min))
     (while (re-search-forward "<img_alt src=\"\\([^\"]*\\)\">" nil t)
@@ -578,7 +583,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 	(goto-char (point-min)))))
 
 
-(defun w3m (url)
+(defun w3m (url &optional args)
   "Interface for w3m on Emacs."
   (interactive (list (w3m-input-url)))
   (set-buffer (get-buffer-create "*w3m*"))
