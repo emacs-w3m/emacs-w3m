@@ -191,6 +191,10 @@ Hooking into MUAs
 
 Frequently Asked Questions
 
+* General FAQ::                 $B0lHLE*$J<ALd(B
+* Trouble FAQ::                 $B%H%i%V%k(B
+* Shimbun FAQ::                 Shimbun $B$K4X$9$k<ALd(B
+
 Known Problems
 
 Shimbun Library
@@ -2320,6 +2324,231 @@ T-gnus $B$+(B Nana-gnus $B$r$*;H$$$J$i$P(B @ref{Nnshimbun} $B$b;2>H$7$F2<$5
 
 @node Frequently Asked Questions
 @chapter $BI,$:Ez$,$"$k$H$O8B$i$J$$(B
+
+@menu
+* General FAQ::                 $B0lHLE*$J<ALd(B
+* Trouble FAQ::                 $B%H%i%V%k(B
+* Shimbun FAQ::                 Shimbun $B$K4X$9$k<ALd(B
+@end menu
+
+@node General FAQ
+@section $B0lHLE*$J<ALd(B
+
+@itemize @bullet
+@item
+Q. emacs-w3m $B$C$F2?$G$9$+(B?
+
+w3m $B$r(B Emacs $B>e$GF0$+$9%$%s%?!<%U%'!<%9%W%m%0%i%`$G$9!#>\:Y$O!"IUB0$7$F(B
+$B$$$k(B @file{README.ja} $B$r;2>H$7$F$/$@$5$$!#(B
+
+@item
+Q. $BF0:n$9$k(B Emacs $B$O(B?
+
+$B0J2<$N(B Emacsen $B$GF0:n$9$k$3$H$,3NG'$5$l$F$$$^$9!%(B
+
+@itemize @bullet
+@item Mule 2.3 (Emacs 19.34 $B$r85$K$7$?$b$N(B)
+@item Emacs 19.34
+@item Emacs 20
+@item Emacs 21
+@item XEmacs 21.1 with Mule
+@item XEmacs 21.2 with Mule (beta37$B0J9_(B)
+@item XEmacs 21.4 with/without Mule
+@item XEmacs 21.5 with/without Mule
+@item Meadow
+@end itemize
+
+$B$J$*!$(BMule 2.3, Emacs 19.34 $BKt$O(B XEmacs $B$G$O(B APEL $B$,I,MW$H$J$j$^$9!%(B
+$B>\$7$/$O(B @xref{Other Requirements} $B$r3NG'$7$F$/$@$5$$!#(B
+
+emacs-w3m $B$O(B Emacs 19.34 $B$d(B Mule $B5!G=$,L5$$(B XEmacs $B$GF0:n$7$^$9!%$?$@$7(B
+$BF|K\$NE75$M=Js$r8+$k$J$I!$$$$/$D$+$N%3%^%s%I$,;H$($^$;$s!%(B
+$B$=$l$i$O(B Mule $B$N5!G=$K6/$/0MB8$7$F$$$k$N$G!$(B
+Emacs 19.34 $B$d(B Mule $B$,L5$$(B XEmacs $B$G$OF0:n$7$^$;$s!%(B
+
+@item
+Q. $BF0:n$9$k(B w3m $B$O(B?
+
+$B0J2<$N(B w3m $B$GF0:n$9$k$3$H$,3NG'$5$l$F$$$^$9!%(B
+
+@itemize @bullet
+@item w3m-0.3
+@item w3mmee-p23-2
+@end itemize
+
+@item
+XEmacs $B$N(B SUMO $B$K4^$^$l$F$$$k(B APEL $B$r%$%s%9%H!<%k$7$F$"$k$N$G$9$,(B?
+
+XEmacs $B$N(B APEL $B%Q%C%1!<%8$K$O$$$m$$$mLdBj$,$"$j$^$9(B;
+$B$9$Y$F$N%b%8%e!<%k$,(B Mule $BIU$-$N(B XEmacs $BMQ$K%3%s%Q%$%k$5$l$F$$$k!$(Bstd11 
+$B%b%8%e!<%k$,(B FLIM $B$N$b$N$H$+$A9g$&!$$J$I!%(B
+$B$=$l$G$b(B apel-1.23-pkg.tar.gz $B0J>e$N$b$N$@$C$?$i!$$=$7$F(B shimbun $B$N5!G=(B
+$B$N$?$a$K(B FLIM $B$r;H$o$J$$$J$i$P!$(BMule $BIU$-$HL5$7N>J}$N(B XEmacs $B$G;H$($k$N(B
+$B$G$9$,!$%*%j%8%J%k$N(B APEL $B$GCV$-49$($k$+?75,$K%$%s%9%H!<%k$9$k$3$H$r4+$a(B
+$B$^$9!%<hF@>l=j$O(B @xref{Other Requirements} $B$r8+$F2<$5$$!%(B
+@end itemize
+
+@node Trouble FAQ
+@section $B%H%i%V%k(B
+
+@itemize @bullet
+@item
+Q. $BG'>Z$NI,MW$J%Z!<%8$N%Q%9%o!<%I$,F~NO$G$-$^$;$s!%(B
+
+$B%*%W%7%g%s(B @code{w3m-async-exec} $B$K(B @code{nil} $B0J30$NCM$,@_Dj$5$l$F$$$k(B
+$B$3$H$r3NG'$7$F$/$@$5$$!%(B
+
+@item
+Q. $BG'>Z$NI,MW$J(B proxy $B%5!<%P!<$N%Q%9%o!<%I$,F~NO$G$-$^$;$s!%(B
+
+$B%*%W%7%g%s(B @code{w3m-async-exec} $B$K(B @code{nil} $B0J30$NCM$,@_Dj$5$l$F$$$k(B
+$B$3$H$r3NG'$7$F$/$@$5$$!%(B
+
+@item
+Q. $B%j%s%/$,C)$l$^$;$s!%(B
+
+@samp{-header} $B%*%W%7%g%s$r<u$1IU$1$k(B w3m $B%3%^%s%I$,I,MW$G$9!%(Bw3m $B$N%P!<(B
+$B%8%g%s$r3NG'$7$F$/$@$5$$!%(B
+
+@item
+Q. $BJ8;z2=$1$7$^$9!%(B
+
+$B$$$/$D$+$N860x$,$"$j$^$9!%(B
+
+@enumerate
+@item
+HTML $B%U%!%$%k$NLdBj(B
+
+HTML $B%U%!%$%kCf$G(B <meta> $B%?%0$K$h$C$F;XDj$5$l$F$$$kJ8;z%3!<%I$H!$<B:]$N(B
+$BJ8;z%3!<%I$,0[$J$k$H!$@5>o$KI=<($5$l$^$;$s!%(B
+@kbd{M-x w3m-redisplay-with-charset RET} $B$^$?$O(B @kbd{C c} $B$G@5$7$$J8;z%3!<(B
+$B%I$r;XDj$7$F:FIA2h$7$F$/$@$5$$!%(B
+
+@item
+$BJ8;z%3!<%I(B
+
+ISO-2022-JP(jis), EUC-JP, SHIFT_JIS $B0J30$NJ8;z%3!<%I$G5-=R$5$l$?%Z!<%8$K(B
+$B$D$$$F$O!$I=<($G$-$J$$>l9g$,$"$j$^$9!%<!$N$$$:$l$+$NJ}K!$G!$BP=h$7$F$/$@(B
+$B$5$$!%(B
+
+@enumerate a
+@item
+Mule-UCS $B$r%$%s%9%H!<%k$9$k$H!$(BUnicode $B$GDj5A$5$l$F$$$kHO0O$NJ8;z$OI=<((B
+$B$G$-$k$h$&$K$J$j$^$9!%%$%s%9%H!<%k8e!$(B
+$B%*%W%7%g%s(B @code{w3m-use-mule-ucs} $B$,(B @code{nil} $B0J30$NCM$K@_Dj$5$l$F$$(B
+$B$k$3$H$r3NG'$7$F$/$@$5$$!%$J$*!$(BEUC-JISX0213 $B$d(B ISO-2022-JP-3 $B$J$I$NJ8;z(B
+$B%3!<%I$N>l9g$O!$(BMule-UCS $B$KImB0$N(B @file{jisx0213.el} $B$b%$%s%9%H!<%k$9$k(B
+$BI,MW$,$"$j$^$9!%(B
+
+@item
+w3mmee $B$d(B w3m-m17n $B$r%$%s%9%H!<%k$7$F!$%*%W%7%g%s(B @code{w3m-command} $B$K(B
+$BE,@Z$JCM$r@_Dj$7$F$/$@$5$$!%$3$N$h$&$K@_Dj$9$k$H!$(Bemacs-w3m $B$O!$$3$l$i$N(B
+$B%W%m%0%i%`$,Ds6!$9$kB?8@8l5!G=$rMxMQ$9$k$h$&$K$J$j$^$9!%(B
+@end enumerate
+
+@item
+Emacsen $B$NLdBj(B
+
+XEmacs 21.1 $B$G$O(B SHIFT_JIS $B$N%Z!<%8$,2=$1$k$3$H$,$"$j$^$9!%(B
+
+XEmacs 21.2 $B$G$O(B beta36 $B0JA0$G$OLdBj$,$"$j$^$9!%(Bbeta36 $B0JA0$r$*;H$$$N>l(B
+$B9g$O(B XEmacs $B$r(B upgrade $B$7$F$/$@$5$$!%(B
+@end enumerate
+
+@item
+Q. $B2hA|I=<($G$-$^$;$s!%(B
+
+$B$$$/$D$+$N860x$,$"$j$^$9!%(B
+
+Emacs 21 $B$G$O(B libungif $B$K%P!<%8%g%s$K$h$C$F$O!$(Bgif $B2hA|$,@5>o$KI=<($5$l(B
+$B$J$$$3$H$,$"$j$^$9!%(Blibungif-4.1.0b1 $B0J9_$K(B upgrade $B$7$F$/$@$5$$!%(B
+
+XEmacs $B$G$OI,$:(B @samp{gifsicle} $B%W%m%0%i%`$r%$%s%9%H!<%k$7$F$/$@$5$$!%8=(B
+$B:_MxMQ$G$-$kA4$F$N(B XEmacs 21.x $B$K$O%P%0$,$"$j!$(Bemacs-w3m $B$G$O$3$l$r;H$C(B
+$B$FBP:v$7$F$$$^$9(B @ref{Other Requirements}.
+
+$B8E$$(B w3m $B%3%^%s%I$G$O!$@5>o$KI=<($G$-$^$;$s!%(Bw3m $B$N%P!<%8%g%s$r3NG'$7$F(B
+$B$/$@$5$$!%(B
+
+@item
+Q. Cookie $B$,I,MW$J%Z!<%8$r1\Mw$G$-$^$;$s!%(B
+
+($B$^$@<B83E*$J5!G=$G$9!%(B)
+
+$B%*%W%7%g%s(B @code{w3m-use-cookies} $B$K(B @code{nil} $B0J30$NCM$,@_Dj$5$l$F$$$k(B
+$B$3$H$r3NG'$7$F$/$@$5$$!%(B
+
+@item
+Q. $B%U%)!<%`$KF~NO$G$-$^$;$s!%(B
+
+($B$^$@<B83E*$J5!G=$G$9!%(B)
+
+$B%*%W%7%g%s(B @code{w3m-use-form} $B$K(B @code{nil} $B0J30$NCM$,@_Dj$5$l$F$$$k$3(B
+$B$H$r3NG'$7$F$/$@$5$$!%(B
+
+@item
+Q. $B%U%)!<%`$rAw?.$G$-$^$;$s!%(B
+
+($B$^$@<B83E*$J5!G=$G$9!%(B)
+
+$B%*%W%7%g%s(B @code{w3m-use-form} $B$K(B @code{nil} $B0J30$NCM$,@_Dj$5$l$F$$$k$3(B
+$B$H$r3NG'$7$F$/$@$5$$!%(B
+
+$B$3$N5!G=$r;H$&$K$O!$(B-post $B%*%W%7%g%s$rG'<1$9$k(B w3m $B%3%^%s%I$,I,MW$G$9!%(B
+w3m $B$N%P!<%8%g%s$r3NG'$7$F$/$@$5$$!%(B
+
+@item
+Q. $B%U%l!<%`$,%l%s%@%j%s%0$5$l$^$;$s!%(B
+
+w3mmee $B$r;H$C$F$/$@$5$$!%(B
+
+@item
+Q. Emacs21 $B$N(B tab bar $B$K(B favicon $B$rI=<($7$h$&$H$7$?$N$G$9$,!"%(%i!<$K(B
+$B$J$j$^$9!#(B
+
+Image Magick $B$N(B @samp{convert} $B$,I,MW$G$9!#(B
+@uref{http://www.imagemagick.org/} $B$+$iF~<j$7$F%$%s%9%H!<%k$7$F$/$@$5$$!#(B
+
+@item
+Q. Emacs21 $B$G(B favicon $B$rI=<($7$h$&$H$7$?$N$G$9$,!"(BEmacs $B$,%m%C%/$7$^$7$?(B 
+/ $B$^$?$O(B emacs-w3m $B$rN)$A>e$2$h$&$H$7$?$i!"7c$7$/%G%#%9%/%"%/%;%9$7$?8e!"(B
+"process `convert' exited abnormally with code `10'" $B$J$I$HI=<($5$l$^$7(B
+$B$?!#(B
+
+Image Magick $B$N%P!<%8%g%s$r3NG'$7$F$/$@$5$$!#(B
+ImageMagick-5.2.1 $BIUB0$N(B @samp{convert} $B$G$O$=$&$J$j$^$7$?!#(B
+ImageMagick-5.4.0-5 $B0J>e$KIUB0$N(B @samp{convert} $B$G$OF0:n3NG'$5$l$F$$$^$9!#(B
+
+$B$b$7(B ImageMagick $B$,;H$($J$$(B/$B;H$$$?$/$J$$>l9g$O(B @file{~/.emacs-w3m} $B%U%!(B
+$B%$%k$J$I$K(B
+
+@example
+(setq w3m-use-favicon nil)
+@end example
+
+$B$N@_Dj$rDI2C$7$F2<$5$$!#(B
+@end itemize
+
+
+@node Shimbun FAQ
+@section Shimbun $B$K4X$9$k<ALd(B
+
+@itemize @bullet
+@item
+Q. shimbun/ $B0J2<$,%$%s%9%H!<%k$5$l$^$;$s!%(B
+
+FLIM $B$,%$%s%9%H!<%k$5$l$F$$$J$$$H(B @file{shimbun/} $B0J2<$O%$%s%9%H!<%k$5$l(B
+$B$^$;$s!%(B
+
+@file{configure} $B%9%/%j%W%H$O!$<+F0E*$K(B FLIM $B$NM-L5$rH=Dj$9$k$h$&@_7W$5(B
+$B$l$F$$$^$9$,!$I8=`E*$G$O$J$$%G%#%l%/%H%j$K(B FLIM $B$,%$%s%9%H!<%k$5$l$F$$$k(B
+$B$H!$H=Dj$K<:GT$7$^$9!%$=$N>l9g$O!$(B@samp{--with-addpath} $B%*%W%7%g%s$r;H$C(B
+$B$F!$(BFLIM $B$N%$%s%9%H!<%k$5$l$F$$%G%#%l%/%H%j$rL@<(E*$K;XDj$7$F$/$@$5$$!%(B
+
+@example
+% ./configure --with-addpath=$HOME/share/emacs/site-lisp/flim
+@end example
+@end itemize
 
 
 @node Known Problems

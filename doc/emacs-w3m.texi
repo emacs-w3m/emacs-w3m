@@ -153,6 +153,10 @@ Hooking into MUAs
 
 Frequently Asked Questions
 
+* General FAQ::                 General Questions
+* Trouble FAQ::                 Troubleshooting
+* Shimbun FAQ::                 Questions of Shimbun Library
+
 Known Problems
 
 Shimbun Library
@@ -2170,6 +2174,235 @@ See also @ref{Nnshimbun} if you are using T-gnus or Nana-gnus.
 
 @node Frequently Asked Questions
 @chapter There isn't always an answer
+
+@menu
+* General FAQ::                 General Questions
+* Trouble FAQ::                 Troubleshooting
+* Shimbun FAQ::                 Questions of Shimbun Library
+@end menu
+
+
+@node General FAQ
+@section General Questions
+
+@itemize @bullet
+@item
+Q. What is emacs-w3m?
+
+It is an interface program for Emacs which controls w3m. For details,
+see the README file.
+
+@item
+Q. Which emacs versions are supported?
+
+The following "Emacsen" have been checked for emacs-w3m support.
+
+@itemize @bullet
+@item Mule 2.3 (based on Emacs 19.34)
+@item Emacs 19.34
+@item Emacs 20
+@item Emacs 21
+@item XEmacs 21.1 with Mule
+@item XEmacs 21.2 with Mule (beta37 or greater)
+@item XEmacs 21.4 with/without Mule
+@item XEmacs 21.5 with/without Mule
+@item Meadow
+@end itemize
+
+For Mule 2.3, Emacs 19.34 or XEmacs, it is necessary to use APEL.  For
+more detail, see @ref{Other Requirements}.
+
+emacs-w3m works on Emacs 19.34 or XEmacs without Mule except for several
+commands, such as the command to look weather forecasts in Japan.  They
+strongly depends on Mule feature, so that they must not work on Emacs
+19.34 or XEmacs without Mule.
+
+@item
+Q. Which w3m versions are supported?
+
+The following w3m versions have been checked for emacs-w3m support:
+
+@itemize @bullet
+@item w3m-0.3
+@item w3mmee-p23-2
+@end itemize
+
+@item
+Q. I've already installed APEL in XEmacs SUMO package, is it ok?
+
+There are some problems in the XEmacs APEL package; all modules have
+been compiled for XEmacs with Mule, the std11 modules conflicts with the
+FLIM's one, etc.  Even though you can use apel-1.23-pkg.tar.gz or later
+for both XEmacs with Mule and non-Mule XEmacs if you don't use FLIM for
+the shimbun features, we recommend you replace it or newly install the
+original APEL package.  See above where to get it from.
+@end itemize
+
+
+@node Trouble FAQ
+@section Troubleshooting
+
+@itemize @bullet
+@item
+Q. Why can't I enter a password on pages which require authentication?
+
+Check if the optional variable @code{w3m-async-exec} is set to a value
+other than @code{nil}.
+
+@item
+Q. Why can't I enter a password for a proxy server which requires
+authentication?
+
+Check if the option variable @code{w3m-async-exec} is set to a value
+other than @code{nil}.
+
+@item
+Q. Why doesn't it traverse links?
+
+The development version of emacs-w3m requires a w3m that understands the
+argument @samp{-header}.  Check the version of your using w3m.
+
+@item
+Q. Why do garbage characters appear?
+
+It could be caused by the following:
+
+@enumerate
+@item
+Bad HTML file
+
+If in the middle of a HTML file, a <meta> tag is used with a character
+code which differs from the actual character code used in the HTML, then
+the HTML file will not be rendered correctly.  Using the command
+@kbd{w3m-redisplay-with-charset}, set the correct display code and force
+the redisplay of the page.
+
+@item
+Limitation of character code.
+
+Pages with character codes other than ISO-2022-JP(jis), EUC-JP,
+SHIFT_JIS, may or may not display correctly.  This maybe alleviated by
+using one of the following methods.
+
+@enumerate a
+@item
+If you install Mule-UCS, any characters defined in Unicode will show up
+correctly.  After installation, confirm that the value of the option
+variable @code{w3m-use-mule-ucs} is a value other than @code{nil}.
+Also, for EUC-JISX0213, ISO-2022-JP-3, or other similar character sets,
+it may be necessary to install @file{jisx0213.el}, available in the same
+package.
+
+@item
+Install either w3mmee or w3m-m17n, and set the option variable
+@code{w3m-command} to the appropriate value.  If this is set, emacs-w3m
+will use the programs' multilanguage features.
+@end enumerate
+
+@item
+Emacsen incompatibility.
+
+Regarding XEmacs 21.1, pages with SHIFT_JIS may not be displaied
+correctly.
+
+Regarding XEmacs 21.2, there is a problem with previous versions
+up to beta36.  If you use those versions, it is recommended that
+you upgrade.
+@end enumerate
+
+@item
+Q. Why does graphics not show up?
+
+It could be caused by the following:
+
+Depending on the version of libungif in Emacs 21, GIF graphics may or
+may not render correctly.  If you are using libungif-4.1.0b1 or earlier,
+it is recommend you upgrade that library.
+
+For XEmacs, install the @samp{gifsicle} program.  Within
+emacs-w3m-supported XEmacs 21.x, there is a bug which can be countered
+by using this program (@pxref{Other Requirements}).
+
+If you use versions prior to w3m-0.2.1, graphics are not rendered
+correctly.  If you use those versions, it is recommended that you
+upgrade.
+
+@item
+Q. Why does browsing pages required cookie not work?
+
+(This is still experimental functionality.)
+
+Check if the option variable @code{w3m-use-cookies} is set to a value
+other than @code{nil}.
+
+@item
+Q. Why does inputting into a form not work?
+
+(This is still experimental functionality.)
+
+Check if the option variable @code{w3m-use-form} is set to a value other
+than @code{nil}.
+
+@item
+Q. Why does sending form information not work?
+
+(This is still experimental functionality.)
+
+Check if the option variable @code{w3m-use-form} is set to a value other
+than @code{nil}.
+
+If you use this functionality, you will need to use a w3m that
+understands the @samp{-post} option.  Check the version of your using
+w3m.
+
+@item
+Q. Why do frames not render?
+
+Use w3mmee.
+
+@item
+Q. Why does `favicon' not show up at tab bar with Emacs21?
+
+Install @samp{convert} included the ImageMagick.  It is available from
+@uref{http://www.imagemagick.org/}.
+
+@item
+Q. Why do lock Emacs21 when show up `favicon' , or it's very annoying
+that my computer accesses the disk drive violently and says "process
+`convert' exited abnormally with code `10'" in the end.
+
+Do you use the old ImageMagick? Please use the newest it, version 5.4.0
+or later.
+
+If you don't want to use ImageMagick, or if you couldn't use the most
+recent version of ImageMagick, add the following line in your
+@file{~/.emacs-w3m}:
+
+@example
+(setq w3m-use-favicon nil)
+@end example
+@end itemize
+
+
+@node Shimbun FAQ
+@section Questions of Shimbun Library
+
+@itemize @bullet
+@item
+Q. Why are contents under shimbun/ not installed?
+
+If FLIM is not installed, the contents under @file{shimbun/} are not
+installed.
+
+The configure script determines automatically if FLIM is installed or
+not.  If FLIM is installed in a non-standard directory, the
+determination fails.  In this case, use the @samp{--with-addpath}
+configure option to explicitly set the FLIM installed directory path.
+
+@example
+% ./configure --with-addpath=$HOME/share/emacs/site-lisp/flim
+@end example
+@end itemize
 
 
 @node Known Problems
