@@ -1,3 +1,13 @@
+2001-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fontify-images): Use `match-string-no-properties'
+	instead of `buffer-substring-no-properties'.
+	(w3m-parse-attributes): Use `match-string-no-properties' instead of
+	`match-string' to remove text properties.
+
+	* w3m-xmas.el: Require `poe' for the function
+	`match-string-no-properties'.
+
 2001-04-17  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-impress.el: New file.
