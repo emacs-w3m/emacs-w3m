@@ -1,3 +1,23 @@
+2002-03-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-find-coding-system): Alias to ignore if the
+	function `find-coding-system' is not available.
+	(w3m-make-ccl-coding-system): Check whether the function
+	`make-ccl-coding-system' is available instead of checking the
+	feature `mule' to determine what function should be aliased to.
+	(coding-system-list): Alias to ignore if it is not available.
+	(define-ccl-program): Check whether it is available instead of
+	checking the feature `mule' to determine if it is aliased to
+	`ignore'.
+	(w3m-detect-coding-with-priority): Quote
+	`w3m-default-coding-system'.
+
+2002-03-24  Nix  <nix@esperi.demon.co.uk>
+
+	* w3m-xmas.el (w3m-detect-coding-with-priority): New macro, handle
+	non-MULE XEmacsen.
+	(w3m-detect-coding-region): Use it.
+
 2002-03-26  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-cookie.el (w3m-cookie-1-set): Fixed problem when no `Expires',

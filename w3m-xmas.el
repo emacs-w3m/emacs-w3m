@@ -1,6 +1,6 @@
 ;;; w3m-xmas.el --- The stuffs to use emacs-w3m on XEmacs
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -65,13 +65,31 @@
 (require 'pccl)
 
 ;;; Handle coding system:
-(defalias 'w3m-find-coding-system 'find-coding-system)
-(defalias 'w3m-make-ccl-coding-system (if (featurep 'mule)
+(defalias 'w3m-find-coding-system (if (fboundp 'find-coding-system)
+				      'find-coding-system
+				    'ignore))
+
+(defalias 'w3m-make-ccl-coding-system (if (fboundp 'make-ccl-coding-system)
 					  'make-ccl-coding-system
 					'ignore))
-(unless (featurep 'mule)
-  (defalias 'coding-system-category 'ignore)
+
+(unless (fboundp 'coding-system-category)
+  (defalias 'coding-system-category 'ignore))
+
+(unless (fboundp 'coding-system-list)
+  (defalias 'coding-system-list 'ignore))
+
+(unless (fboundp 'define-ccl-program)
   (defmacro define-ccl-program (&rest args)))
+
+(defmacro w3m-detect-coding-with-priority (from to priority-list)
+  (cond
+   ((featurep 'mule)
+    `(detect-coding-with-priority ,from ,to ,priority-list))
+   ((featurep 'file-coding)
+    `(detect-coding-region ,from ,to))
+   (t
+    'w3m-default-coding-system)))
 
 (defun w3m-detect-coding-region (start end &optional priority-list)
   "Detect coding system of the text in the region between START and END.
@@ -83,7 +101,7 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
       (setq category (coding-system-category codesys))
       (unless (assq category categories)
 	(push (cons category codesys) categories)))
-    (if (consp (setq codesys (detect-coding-with-priority
+    (if (consp (setq codesys (w3m-detect-coding-with-priority
 			      start end (nreverse categories))))
 	(car codesys)
       codesys)))
