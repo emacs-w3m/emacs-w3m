@@ -45,6 +45,7 @@
   (defvar w3m-work-buffer-name)
   (autoload 'w3m-expand-url "w3m")
   (autoload 'w3m-load-list "w3m")
+  (autoload 'w3m-message "w3m")
   (autoload 'w3m-retrieve "w3m")
   (autoload 'w3m-save-list "w3m"))
 
