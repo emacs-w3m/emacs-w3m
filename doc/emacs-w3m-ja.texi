@@ -693,7 +693,7 @@ Emacs-w3m でのウェブブラウジングは、御期待通り、キー操作で全て行なうこと
 * Launching and Jumping::       とにかく動かしてみよう
 * Moving in a page::            ページ内を飛びまわる
 * Moving over pages::           ページ間を渡り歩く
-* Browsing with mouse operations:: マウスでサーフィン
+* Browsing With Mouse Operations:: マウスでサーフィン
 * Leaving for daily hacking and/or daily writing:: 普段の生活に戻るには
 @end menu
 
