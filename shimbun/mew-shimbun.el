@@ -337,13 +337,15 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		  (and (boundp 'mew-local-folder-list) mew-local-folder-list)
 		  (and (boundp 'mew-local-folder-alist)
 		       (mapcar 'car mew-local-folder-alist))))
-	sbflds alst fld cfile)
+	sbflds alst fld cfile removes)
     (save-excursion
       (dolist (fld flds)
 	(when (and (mew-shimbun-folder-p fld)
 		   (file-exists-p
 		    (expand-file-name mew-shimbun-db-file
 				      (mew-expand-folder fld))))
+	  (when (string-match "/$" fld)
+	    (setq removes (cons (substring fld 0 (match-beginning 0)) removes)))
 	  (if (null args)
 	      (setq sbflds (cons fld sbflds))
 	    (if (mew-shimbun-folder-new-p fld)
@@ -365,7 +367,8 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 						  (mew-shimbun-unseen-regex)) nil t)
 		       (setq sbflds (cons fld sbflds))))))))))))
     (mapcar (lambda (x)
-	      (setq alst (cons (list x) alst)))
+	      (unless (member x removes)
+		(setq alst (cons (list x) alst))))
 	    sbflds)
     (let ((completion-ignore-case mew-complete-folder-ignore-case))
       (setq fld (completing-read
@@ -379,6 +382,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
       (setq fld (substring fld 0 (match-beginning 0)))
       (setcar mew-shimbun-input-hist fld))
     (setq mew-input-folder-hist (cons fld mew-input-folder-hist))
+    (setq fld (directory-file-name fld))
     (let ((newfld (mew-summary-switch-to-folder fld)))
       (if (eq 1 (function-max-args 'mew-summary-ls))
 	  (mew-summary-ls newfld)

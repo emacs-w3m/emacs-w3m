@@ -1,3 +1,8 @@
+2005-03-14  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-goto-folder): Treat folder
+	surely; inlude last `/' of folder name.
+
 2005-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi-html.el (shimbun-asahi-html-content-start):
