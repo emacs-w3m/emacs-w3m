@@ -130,6 +130,8 @@ Customizable Variables
 
 * General Variables::           General variables
 * Image Variables::             Variables related to images
+* Form Variables::              Variables related to forms
+* Cookie Variables::            Variables related to cookies
 * Bookmark Variables::          Variables related to bookmarks
 * Search Variables::            Variables related to searching the web
 * Weather Variables::           Variables related to weather information
@@ -138,6 +140,7 @@ Customizable Variables
 * Perldoc Variables::           Variables related to perldoc
 * Namazu Variables::            Variables related to namazu
 * Octet Variables::             Variables related to the octet feature
+* Hooks::                       Hooks
 * Other Variables::             Other variables
 
 Hooking into MUAs
@@ -2016,7 +2019,6 @@ value, you can override them completely in your
 a typical example (@pxref{Search Variables}).
 
 @table @code
-
 @item w3m-init-file
 When emacs-w3m starts, it will read the @code{w3m-init-file} file.  The
 default value is @file{~/.emacs-w3m}.  You probably don't need to change
@@ -2026,12 +2028,13 @@ emacs-w3m stuff.  Emacs-w3m will also check for files with the same
 names as this, but with @file{.elc} and @file{.el} extensions (in other
 words, @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el} and
 @file{~/.emacs-w3m}, in this order).
-
 @end table
 
 @menu
 * General Variables::           General variables
 * Image Variables::             Variables related to images
+* Form Variables::              Variables related to forms
+* Cookie Variables::            Variables related to cookies
 * Bookmark Variables::          Variables related to bookmarks
 * Search Variables::            Variables related to searching the web
 * Weather Variables::           Variables related to weather information
@@ -2040,16 +2043,737 @@ words, @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el} and
 * Perldoc Variables::           Variables related to perldoc
 * Namazu Variables::            Variables related to namazu
 * Octet Variables::             Variables related to the octet feature
+* Hooks::                       Hooks
 * Other Variables::             Other variables
 @end menu
 
 @node General Variables
 @section General variables
+@cindex General variables
 
+@table @code
+@item w3m-accept-languages
+@vindex w3m-accept-languages
+List of acceptable languages in descending order of priority.  The
+default value is set according to the @samp{accept_language} entry of
+the @samp{w3m} configuration file (normally @file{~/.w3m/config}).
+
+@item w3m-add-referer-regexps
+@vindex w3m-add-referer-regexps
+Regexps matching url strings being allowed to send as referes.  It
+consists of a @code{cons} of two regexps, one matches and the other does
+not match.  If a url matches the first element and does not match the
+latter one, it denotes that url can be sent to foreign web servers as a
+referer.  @code{Nil} for the regexp matches any url.  You may set the
+cdr of this value to inhibit sending referers which will disclose your
+private informations, for example:
+
+@lisp
+(setq w3m-add-referer-regexps
+      '("^http:"
+        . "^http://\\([^./]+\\.\\)*your-company\\.com/"))
+@end lisp
+
+@item w3m-add-user-agent
+@vindex w3m-add-user-agent
+Non-@code{nil} means add the User-Agent field to the request header.
+The value of @code{w3m-user-agent} is used for the field body.
+
+@item w3m-arrived-file
+@vindex w3m-arrived-file
+Name of the file to keep the arrived @acronym{URL}s database.
+
+@item w3m-auto-show
+@vindex w3m-auto-show
+Non-@code{nil} means provide the ability to horizontally scroll the
+window.  Automatic horizontal scrolling is made when the point gets away
+from both ends of the window, but nothing occurs if
+@code{truncate-lines} is set to @code{nil}.
+
+This feature works with the specially made program in emacs-w3m; usual
+@code{auto-hscroll-mode}, @code{automatic-hscrolling},
+@code{auto-show-mode} or @code{hscroll-mode} will all be invalidated in
+emacs-w3m buffers.
+
+@item w3m-charset-coding-system-alist
+@vindex w3m-charset-coding-system-alist
+Alist of @acronym{MIME} charsets and coding systems.  Both charsets and
+coding systems must be symbols.
+
+@item w3m-coding-system
+@vindex w3m-coding-system
+Default coding system used to communicate with the @samp{w3m} command.
+
+@item w3m-coding-system-priority-list
+@vindex w3m-coding-system-priority-list
+Coding systems in order of priority used for emacs-w3m sessions.
+
+@item w3m-command
+@vindex w3m-command
+Name of the executable file of the @samp{w3m} command.  You normally
+don't have to specify the value, since emacs-w3m looks for the existing
+commands in order of @samp{w3m}, @samp{w3mmee} and @samp{w3m-m17n} in
+the @code{exec-path} directories in order if it is @code{nil} in the
+beginning.
+
+If you want to use the other @samp{w3m} command, specify the value of
+this variable explicitly in the .emacs file or customize the value and
+save it.  In this case, you need to restart Emacs and emacs-w3m.  That
+is, there is currently no way to apply the changing of the @samp{w3m}
+command to all the emacs-w3m programs safely after loading the
+@file{w3m.elc} module.
+
+@item w3m-command-arguments
+@c @vindex w3m-command-arguments
+List of the default arguments passed to the @samp{w3m} command.  See
+also @code{w3m-command-arguments-alist}.
+
+@item w3m-command-arguments-alist
+@vindex w3m-command-arguments-alist
+Alist of regexps matching urls and additional arguments passed to
+@samp{w3m}.  A typical usage of this variable is to specify whether to
+use the proxy server for the particular hosts.  The first match made
+will be used.  Here is an example of how to set this variable:
+
+@lisp
+(setq w3m-command-arguments-alist
+      '(;; Don't use any additional options to visit local web pages.
+        ("^http://\\([^/]*\\.\\)*your-company\\.com\\(/\\|$\\)"
+         "-no-proxy")
+        ;; Use the proxy server to visit any foreign urls.
+        (""
+         "-o" "http_proxy=http://proxy.your-company.com:8080/")))
+@end lisp
+
+@noindent
+Where the first element matches the url that the scheme is @samp{http}
+and the hostname is either @samp{your-company.com} or a name ended with
+@samp{.your-company.com}, and the proxy server is not used for those
+hosts.  If you are a novice on the regexps, you can use the
+@code{w3m-no-proxy-domains} variable instead.
+
+@item w3m-command-environment
+@vindex w3m-command-environment
+Alist of environment variables for subprocesses to inherit.
+
+@item w3m-content-type-alist
+@vindex w3m-content-type-alist
+Alist of file suffixes and content types.
+
+@item w3m-correct-charset-alist
+@vindex w3m-correct-charset-alist
+Alist of @acronym{MIME} charsets; strange ones and standard ones.
+
+@item w3m-db-history-display-size
+@vindex w3m-db-history-display-size
+Maximum number of arrived @acronym{URL}s which are displayed per page.
+
+@item w3m-decoder-alist
+@vindex w3m-decoder-alist
+Alist of encoding types, decoder commands, and arguments.
+
+@item w3m-default-coding-system
+@c @vindex w3m-default-coding-system
+Default coding system used to encode url strings and post-data.
+
+@item w3m-default-content-type
+@vindex w3m-default-content-type
+Default value assumed as the content type of local files.
+
+@item w3m-default-save-directory
+@vindex w3m-default-save-directory
+Default directory where downloaded files will be saved to.
+
+@item w3m-delete-duplicated-empty-lines
+@vindex w3m-delete-duplicated-empty-lines
+Non-@code{nil} means display two or more continuous empty lines into
+single.
+
+@item w3m-dirlist-cgi-program
+@vindex w3m-dirlist-cgi-program
+Name of the @acronym{CGI} program to list a local directory.  If it is
+@code{nil}, the dirlist.cgi module of the @samp{w3m} command will be
+used.
+
+@item w3m-edit-function
+@vindex w3m-edit-function
+Function used for editing local files.  It is used when the
+@code{w3m-edit-current-url} command or the @code{w3m-edit-this-url}
+command is invoked.
+
+@item w3m-encoding-type-alist
+@vindex w3m-encoding-type-alist
+Alist of file suffixes and content encoding types.
+
+@item w3m-file-coding-system
+@vindex w3m-file-coding-system
+Coding system used when writing configuration files.  This value will be
+referred to by the @code{w3m-save-list} function.
+
+@item w3m-file-name-coding-system
+@vindex w3m-file-name-coding-system
+Coding system used to convert pathnames when emacs-w3m accesses files.
+
+@item w3m-fill-column
+@vindex w3m-fill-column
+Integer used as the value for @code{fill-column} in emacs-w3m buffers.
+If it is positive, pages will be displayed within the columns of that
+number.  If it is zero or negative, the number of columns which
+subtracted that number from the window width is applied to the maximum
+width of pages.  Note that XEmacs does not always obey this setting.
+
+@item w3m-follow-redirection
+@vindex w3m-follow-redirection
+Maximum number of redirections which emacs-w3m honors and follows.  If
+@code{nil}, redirections are followed by the @samp{w3m} command.  Don't
+set it to @code{nil} if you allow to use cookies (i.e., you have set
+@code{w3m-use-cookies} to non-@code{nil}) since cookies may be shared
+among many redirected pages.
+
+@item w3m-home-page
+@c @vindex w3m-home-page
+This variable specifies the url string to open when emacs-w3m starts.
+Don't say HP, which is the abbreviated name of a certain company. ;-)
+
+@item w3m-horizontal-scroll-columns
+@c @vindex w3m-horizontal-scroll-columns
+Number of steps in columns used when scrolling a window horizontally.
+
+@item w3m-horizontal-scroll-division
+@vindex w3m-horizontal-scroll-division
+Integer used by the program making the point certainly visible.  The
+cursor definitely does not go missing even when it has been driven out
+of the window while wandering around anchors and forms in an emacs-w3m
+buffer.
+
+Suppose that the value of this variable is N.  When the point is outside
+the left of the window, emacs-w3m scrolls the window so that the point
+may be displayed on the position within 1/N of the width of the window
+from the left.  Similarly, when the point is outside the right of the
+window, emacs-w3m scrolls the window so that the point may be displayed
+on the position of 1/N of the width of the window from the right.
+
+This feature doesn't work if @code{w3m-auto-show} is @code{nil}.  The
+value must be a larger integer than 1.
+
+@item w3m-horizontal-shift-columns
+@c @vindex w3m-horizontal-shift-columns
+Number of steps in columns used when shifting a window horizontally.
+The term @samp{shifting} means a fine level scrolling.
+
+@item w3m-imitate-widget-button
+@vindex w3m-imitate-widget-button
+If non-@code{nil}, imitate the widget buttons on link (anchor) buttons.
+It is useful for moving about in a Gnus article buffer using @kbd{TAB}
+key.  It can also be any Lisp form that should return a boolean value.
+
+@item w3m-init-file
+@c @vindex w3m-init-file
+Your emacs-w3m startup file name.  If a file with the @samp{.el} or
+@samp{.elc} suffixes exists, it will be read instead.
+
+Note: This file is used as the startup configuration @emph{NOT} for the
+@samp{w3m} command but for emacs-w3m.  In order to modify configurations
+for the @samp{w3m} command, edit the file named @file{~/.w3m/config}
+normally.
+
+@item w3m-input-coding-system
+@vindex w3m-input-coding-system
+Coding system used when writing to @samp{w3m} processes.  It overrides
+@code{coding-system-for-write} if it is not @code{binary}.  Otherwise,
+the value of the @code{w3m-current-coding-system} variable is used
+instead.
+
+@item w3m-keep-arrived-urls
+@vindex w3m-keep-arrived-urls
+Maximum number of @acronym{URL}s which the arrived @acronym{URL}s
+database keeps.
+
+@item w3m-keep-cache-size
+@vindex w3m-keep-cache-size
+Maximum number of pages to be cached in emacs-w3m.
+
+@item w3m-key-binding
+@vindex w3m-key-binding
+Type of key binding set used in emacs-w3m sessions.  The valid values
+include @code{info} which provides Info-like keys, and @code{nil} which
+provides Lynx-like keys.
+
+@item w3m-language
+@vindex w3m-language
+Your preferred language used in emacs-w3m sessions.
+
+@item w3m-local-directory-view-method
+@vindex w3m-local-directory-view-method
+Symbol of the method to view a local directory tree.  The valid values
+include @code{w3m-cgi} using the @acronym{CGI} program specified by the
+@code{w3m-dirlist-cgi-program} variable (which see), and
+@code{w3m-dtree} using the w3m-dtree Lisp module.
+
+@item w3m-local-find-file-function
+@vindex w3m-local-find-file-function
+Function used to open local files.  If a url of the @code{file:} scheme
+in which you entered agrees with the rule of the
+@code{w3m-local-find-file-regexps} variable (which see), it is used to
+open the file.
+
+Function should take one argument, the string naming the local file.  It
+can also be any Lisp form returning a function.  Set this to @code{nil}
+if you want to always use emacs-w3m to see local files.
+
+@item w3m-local-find-file-regexps
+@vindex w3m-local-find-file-regexps
+@code{Cons} of two regexps matching and not matching with local file
+names.  If a url of the @code{file:} scheme in which you entered matches
+the first form and does not match the latter form, it will be opened by
+the function specified by the @code{w3m-local-find-file-function}
+variable.  @code{Nil} for the regexp matches any file names.
+
+For instance, the value @code{(nil . "\\.html?\\'")} allows
+@file{file:///some/where/w3m.el}, not
+@file{file:///any/where/index.html}, to open by the function specified
+by @code{w3m-local-find-file-function}.  The latter will be opened as a
+normal web page.
+
+It is effective only when the @code{w3m-local-find-file-function}
+variable is set properly.
+
+@item w3m-mailto-url-function
+@vindex w3m-mailto-url-function
+Function used to handle the @code{mailto} urls.  Function is called with
+one argument, just a url.  If it is @code{nil}, a function specified by
+the @code{mail-user-agent} variable will be used for composing mail
+messages.
+
+@item w3m-mailto-url-popup-function-alist
+@vindex w3m-mailto-url-popup-function-alist
+Alist of @code{(MAJOR-MODE . FUNCTION)} pairs used to popup a mail
+buffer.  If a user clicks on a @code{mailto} url and a mail buffer is
+composed by @code{mail-user-agent} with the @code{MAJOR-MODE},
+@code{FUNCTION} will be called with a mail buffer as an argument.  Note
+that the variables @code{special-display-buffer-names},
+@code{special-display-regexps}, @code{same-window-buffer-names} and
+@code{same-window-regexps} will be bound to @code{nil} while popping up
+a buffer.
+
+@item w3m-mbconv-command
+@vindex w3m-mbconv-command
+Name of the @samp{mbconv} command provided by the @samp{libmoe} package.
+The @samp{libmoe} package is used when you use the @samp{w3mmee} command
+instead of the @samp{w3m} command.  See also @code{w3m-command}.
+
+@item w3m-no-proxy-domains
+@c @vindex w3m-no-proxy-domains
+List of domain names with which emacs-w3m will not use a proxy server.
+Each element should be exactly a domain name which means the latter
+common part of the host names, not a regexp.
+
+@item w3m-output-coding-system
+@vindex w3m-output-coding-system
+Coding system used when reading from @samp{w3m} processes.
+
+@item w3m-pop-up-frames
+@vindex w3m-pop-up-frames
+Non-@code{nil} means popup a new frame for an emacs-w3m session.  This
+variable is similar to @code{pop-up-frames} and does override
+@code{w3m-pop-up-windows}.  If @code{w3m-use-tab} is non-@code{nil} or
+there is the buffers selection window (for the @code{w3m-select-buffer}
+feature), this variable is ignored when creating the second or more
+emacs-w3m session.
+
+@item w3m-pop-up-windows
+@vindex w3m-pop-up-windows
+Non-@code{nil} means split the windows when a new emacs-w3m session is
+created.  This variable is similar to @code{pop-up-windows} and quite
+overridden by @code{w3m-pop-up-frames} as if @code{pop-up-frames}
+influences.  Furthermore, if @code{w3m-use-tab} is non-@code{nil} or
+there is the buffers selection window (for the @code{w3m-select-buffer}
+feature), this variable is ignored when creating the second or more
+emacs-w3m session.
+
+@item w3m-popup-frame-parameters
+@vindex w3m-popup-frame-parameters
+Alist of frame parameters used when creating a new emacs-w3m frame.  It
+allows not only the alist form but also XEmacs' plist form.
+
+@item w3m-profile-directory
+@vindex w3m-profile-directory
+Directory where emacs-w3m config files are loaded from or saved to.
+
+@item w3m-quick-start
+@c @vindex w3m-quick-start
+Non-@code{nil} means let emacs-w3m start quickly w/o requiring
+confirmation.  When you invoke the @code{w3m} command, it attempts to
+visit the page of a string like url around the cursor or the value of
+@code{w3m-home-page}.  You won't be asked for the confirmation then if
+this value is non-@code{nil}.  Otherwise, you will be prompted for that
+url with the editing form.
+
+@item w3m-redirect-with-get
+@vindex w3m-redirect-with-get
+If non-@code{nil}, use the GET method after redirection.  It controls
+how emacs-w3m works when a server responds the code 301 or 302.  Here is
+an extract from RFC2616:
+
+Note: RFC 1945 and RFC 2068 specify that the client is not allowed to
+change the method on the redirected request.  However, most existing
+user agent implementations treat 302 as if it were a 303 response,
+performing a GET on the Location field-value regardless of the original
+request method.
+
+@item w3m-select-buffer-horizontal-window
+@vindex w3m-select-buffer-horizontal-window
+Non-@code{nil} means split windows horizontally to open the selection
+window.
+
+@item w3m-select-buffer-window-ratio
+@vindex w3m-select-buffer-window-ratio
+The percentage of the selection window to the whole frame.  The car is
+used when splitting windows horizontally and the cdr is for splitting
+windows vertically.
+
+@item w3m-show-error-information
+@vindex w3m-show-error-information
+Non-@code{nil} means show an error information as a web page.  Page is
+made when the foreign server doesn't respond to a request to retrieve
+data.
+
+@item w3m-space-before-favicon
+@vindex w3m-space-before-favicon
+String of space char(s) to be put in front of favicon in the mode-line.
+It may be better to use two or more spaces if you are using oblique or
+italic font in the modeline.
+
+@item w3m-space-before-modeline-icon
+@vindex w3m-space-before-modeline-icon
+String of space character(s) to be put in front of the modeline icon.
+It may be better to use one or more spaces if you are using oblique or
+italic font in the modeline.
+
+@item w3m-terminal-coding-system
+@vindex w3m-terminal-coding-system
+Default coding system used when writing to @samp{w3m} processes.  It is
+just a default value to set process' coding system initially.  (This
+variable name is analogically derived from the behavior of the
+@samp{w3m} command which accepts data from Emacs just like reads from
+the terminal.)
+
+@item w3m-touch-command
+@vindex w3m-touch-command
+Name of the executable file of the touch command.  Note that the command
+is required to be able to modify file's timestamp with the @samp{-t}
+option.
+
+@item w3m-track-mouse
+@vindex w3m-track-mouse
+Whether to track the mouse and message the url under the mouse.  This
+feature does not work under Emacs or XEmacs versions prior to 21.  See
+also @code{show-help-function} if you are using Emacs 21.
+
+@noindent
+A tip for XEmacs users:
+
+You can also use the @code{balloon-help} feature by the @kbd{M-x
+balloon-help-mode} command with arg 1.  If the window manager decorates
+the balloon-help frame, and that is not to your taste, you may strip it
+off with the following directives:
+
+@example
+For ol[v]wm use this in .Xdefaults:
+   olvwm.NoDecor: balloon-help
+     or
+   olwm.MinimalDecor: balloon-help
+
+For fvwm version 1 use this in your .fvwmrc:
+   NoTitle balloon-help
+or
+   Style "balloon-help" NoTitle, NoHandles, BorderWidth 0
+
+For twm use this in your .twmrc:
+   NoTitle @{ "balloon-help" @}
+@end example
+
+See the @file{balloon-help.el} file for more information.
+
+@item w3m-uri-replace-alist
+@c @vindex w3m-uri-replace-alist
+Alist of regexps matching @acronym{URI}s, and some types of
+replacements.  It can be used universally to replace @acronym{URI}
+strings in the local rule to the valid forms in the Internet.
+
+Each element looks like the @code{(REGEXP FUNCTION OPTIONS...)} form.
+@code{FUNCTION} takes one or more arguments, a uri and @code{OPTIONS}.
+You can use the grouping constructs @samp{\\(...\\)} in @code{REGEXP},
+and they can be referred by the @samp{\N} forms in a replacement (which
+is one of @code{OPTIONS}).
+
+Here are some predefined functions which can be used for those ways:
+
+@table @code
+@item w3m-pattern-uri-replace
+@findex w3m-pattern-uri-replace
+Replace a @acronym{URI} using PATTERN (which is just an @code{OPTION}).
+It is allowed that PATTERN contains the @samp{\N} forms in the same
+manner of @code{replace-match}.
+
+@item w3m-search-uri-replace
+@findex w3m-search-uri-replace
+Generate the valid forms to query words to some specified search
+engines.  For example, the element
+
+@lisp
+("\\`gg:" w3m-search-uri-replace "google")
+@end lisp
+
+@noindent
+makes it possible to replace the @acronym{URI} @samp{gg:emacs} to the
+form to query the word @samp{emacs} to the Google site.
+@end table
+
+@item w3m-url-local-directory-alist
+@vindex w3m-url-local-directory-alist
+Alist of @acronym{URL}s and local directories.  If directory names of a
+given @acronym{URL} and the car of an element are the same, emacs-w3m
+assumes that the file exists in the local directory where the cdr of an
+element points to.  The default value will be set to a value of the
+@code{yahtml-path-url-alist} variable which exchanged the car and the
+cdr in each element if it is available.
+
+@item w3m-use-ange-ftp
+@vindex w3m-use-ange-ftp
+Non-@code{nil} means that @code{ange-ftp} or @code{efs} is used to
+access FTP servers.
+
+@item w3m-use-cygdrive
+@vindex w3m-use-cygdrive
+If non-@code{nil}, use the @samp{/cygdrive/} rule when performing
+@code{expand-file-name}.
+
+@item w3m-use-filter
+@vindex w3m-use-filter
+Non-@code{nil} means use filter programs to convert web contents.  See
+also @code{w3m-filter-rules}.
+
+@item w3m-use-form
+@vindex w3m-use-form
+Non-@code{nil} means make it possible to use form
+extensions. @emph{(EXPERIMENTAL)}
+
+@item w3m-use-header-line
+@vindex w3m-use-header-line
+Non-@code{nil} means display the header line.
+
+@item w3m-use-mule-ucs
+@vindex w3m-use-mule-ucs
+Non-@code{nil} means use the multi-script support with Mule-UCS.
+
+@item w3m-use-refresh
+@vindex w3m-use-refresh
+Non-@code{nil} means honor the REFRESH attribute in META tags.
+Emacs-w3m arbitrarily takes you to a url specified by that attribute.
+Note that they may be malicious traps.
+
+@item w3m-use-symbol
+@vindex w3m-use-symbol
+Non-@code{nil} means replace symbols that the @samp{<_SYMBOL>} tags lead
+into.  It is meaningful only when the @samp{w3m-m17n} command is used
+and (X)Emacs handles unicode charsets.
+
+@item w3m-use-tab
+@c @vindex w3m-use-tab
+Non-@code{nil} means make emacs-w3m a tab browser.  It makes it possible
+to show all emacs-w3m buffers in a single window with the tabs line, and
+you can choose one by clicking a mouse on it.  Unfortunately, users of
+Emacs 20 and less cannot enjoy the benefit.  See also
+@code{w3m-use-tab-menubar}.
+
+@item w3m-use-tab-menubar
+@vindex w3m-use-tab-menubar
+Non-@code{nil} means use the TAB pull-down menu in the menubar.  It
+makes it possible to show all emacs-w3m buffers in a single window, and
+you can choose one by clicking a mouse on it.  This feature requires
+that Emacs has been built to be able to display multilingual text in the
+menubar if you often visit web sites written in non-ascii text.  See
+also @code{w3m-use-tab}.
+
+@item w3m-use-toolbar
+@vindex w3m-use-toolbar
+Non-@code{nil} activates toolbar of @samp{w3m}.
+
+@item w3m-user-agent
+@vindex w3m-user-agent
+String used for the User-Agent field.  See also
+@code{w3m-add-user-agent}.
+
+@item w3m-view-this-url-new-session-in-background
+@vindex w3m-view-this-url-new-session-in-background
+Run @code{w3m-view-this-url} without switching to the newly created
+buffer.  It is useful if you enabled the tabs line or the buffers
+selection window for the @code{w3m-select-buffer} feature.  Note that it
+is meaningful only when specifying a prefix argument to the
+@code{w3m-view-this-url} command or using the
+@code{w3m-view-this-url-new-session} command in order to create a new
+emacs-w3m session.
+@end table
 
 @node Image Variables
 @section Variables related to images
+@cindex Variables related to images
 
+@table @code
+@item w3m-default-display-inline-images
+@vindex w3m-default-display-inline-images
+Non-@code{nil} means display images inline in emacs-w3m buffers.  You
+can toggle the visibility of images by the
+@code{w3m-toggle-inline-images} command.  See also
+@code{w3m-toggle-inline-images-permanently}.
+
+@item w3m-favicon-cache-expire-wait
+@vindex w3m-favicon-cache-expire-wait
+The cache will be expired after specified seconds passed since
+retrieval.  If this variable is @code{nil}, never expired.
+
+@item w3m-favicon-cache-file
+@vindex w3m-favicon-cache-file
+Filename of saving favicon cache.  It defaults to the file named
+@file{.favicon} under the directory specified by the
+@code{w3m-profile-directory} variable.
+
+@item w3m-favicon-size
+@vindex w3m-favicon-size
+Size of favicon. This value is used as geometry argument for
+@code{convert}.
+
+@item w3m-favicon-type
+@vindex w3m-favicon-type
+Image type of display favicon.
+
+@item w3m-favicon-use-cache-file
+@vindex w3m-favicon-use-cache-file
+If non-@code{nil}, use favicon cache file.
+
+@item w3m-icon-directory
+@vindex w3m-icon-directory
+Directory where emacs-w3m should find icon files.
+
+@item w3m-imagick-convert-program
+@vindex w3m-imagick-convert-program
+Program name of ImageMagick's @samp{convert}.
+
+@item w3m-pixels-per-character
+@vindex w3m-pixels-per-character
+Integer used for the @code{-ppc} argument of the @samp{w3m} command.  If
+@code{nil}, the width of the default face is used.  It is valid only
+when @code{w3m-treat-image-size} is non-@code{nil}.
+
+@item w3m-pixels-per-line
+@vindex w3m-pixels-per-line
+Integer used for the @samp{-ppl} argument of the @samp{w3m} command.  If
+@code{nil}, the height of the default face is used.  It is valid only
+when @code{w3m-treat-image-size} is non-@code{nil}.
+
+@item w3m-resize-image-scale
+@vindex w3m-resize-image-scale
+Number of steps in percent used when resizing images.
+
+@item w3m-resize-images
+@vindex w3m-resize-images
+If non-@code{nil}, resize images to the specified width and height.
+
+@item w3m-show-graphic-icons-in-header-line
+@vindex w3m-show-graphic-icons-in-header-line
+Non-@code{nil} means show graphic status indicators in the header-line.
+If it is @code{nil}, also the favicon won't be shown in the header-line
+even if @code{w3m-use-favicon} is non-@code{nil}.  This variable is
+currently meaningless under XEmacs.
+
+@item w3m-show-graphic-icons-in-mode-line
+@vindex w3m-show-graphic-icons-in-mode-line
+Non-@code{nil} means show graphic status indicators in the mode-line.
+If it is @code{nil}, also the favicon won't be shown in the mode-line
+even if @code{w3m-use-favicon} is non-@code{nil}.
+
+@item w3m-toggle-inline-images-permanently
+@vindex w3m-toggle-inline-images-permanently
+Non-@code{nil} means let the visibility of images continue permanently.
+The visibility of images is initialized according to
+@code{w3m-default-display-inline-images} at the first time, and except
+that it may be toggled by the @code{w3m-toggle-inline-images} command,
+it does not change hereafter, if it is non-@code{nil}.  Otherwise,
+whether images are visible is initialized according to
+@code{w3m-default-display-inline-images} whenever you visit a new page
+or reload the current page in an emacs-w3m buffer.
+
+@item w3m-treat-image-size
+@vindex w3m-treat-image-size
+Non-@code{nil} means let @samp{w3m} mind the ratio of the size of images
+and text.  See also @code{w3m-pixels-per-character} and
+@code{w3m-pixels-per-line}.
+
+@item w3m-use-favicon
+@vindex w3m-use-favicon
+Non-@code{nil} means show favicon images if they are available.  It will
+be set to @code{nil} automatically if ImageMagick's @code{convert}
+program does not support the ico format.
+@end table
+
+@node Form Variables
+@section Variables related to forms
+@cindex Variables related to forms
+
+@table @code
+@item w3m-form-input-map-buffer-lines
+@vindex w3m-form-input-map-buffer-lines
+Buffer lines for form select map buffer.
+
+@item w3m-form-input-select-buffer-lines
+@vindex w3m-form-input-select-buffer-lines
+Buffer lines for form select buffer.
+
+@item w3m-form-input-textarea-buffer-lines
+@vindex w3m-form-input-textarea-buffer-lines
+Buffer lines for form textarea buffer.
+
+@item w3m-form-mouse-face
+@vindex w3m-form-mouse-face
+Mouse face to highlight selected value.
+
+@item w3m-form-treat-textarea-size
+@vindex w3m-form-treat-textarea-size
+Non-@code{nil} means to process textarea size (treat textarea rows).
+
+@item w3m-form-use-fancy-faces
+@vindex w3m-form-use-fancy-faces
+Use fancy faces to fontify @samp{<form>} tags.
+@end table
+
+@node Cookie Variables
+@section Variables related to cookies
+@cindex Variables related to cookies
+
+@table @code
+@item w3m-cookie-accept-bad-cookies
+@vindex w3m-cookie-accept-bad-cookies
+If @code{nil}, don't accept bad cookies.  If @code{t}, accept bad
+cookies.  If ask, ask user whether accept bad cookies or not.
+
+@item w3m-cookie-accept-domains
+@vindex w3m-cookie-accept-domains
+A list of trusted domain name string.
+
+@item w3m-cookie-file
+@vindex w3m-cookie-file
+File in which cookies are kept.
+
+@item w3m-cookie-reject-domains
+@vindex w3m-cookie-reject-domains
+A list of untrusted domain name string.
+
+@item w3m-use-cookies
+@vindex w3m-use-cookies
+Non-@code{nil} means enable emacs-w3m to use cookies.
+@emph{(EXPERIMENTAL)}
+@end table
 
 @node Bookmark Variables
 @section Variables related to bookmarks
@@ -2083,9 +2807,138 @@ words, @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el} and
 @section Variables related to the octet feature
 
 
+@node Hooks
+@section Hooks
+@cindex Hooks
+
+@table @code
+@item w3m-after-cursor-move-hook
+@vindex w3m-after-cursor-move-hook
+Hook run each time after the cursor moves in emacs-w3m buffers.  This
+hook is called by the @code{w3m-check-current-position} function by way
+of @code{post-command-hook}.
+
+@item w3m-delete-buffer-hook
+@vindex w3m-delete-buffer-hook
+Hook run when every emacs-w3m buffer is deleted.
+
+@item w3m-display-hook
+@vindex w3m-display-hook
+Hook run after displaying pages in emacs-w3m buffers.  Each function is
+called with a url string as the argument.  This hook is evaluated by the
+@code{w3m-goto-url} function.
+
+@item w3m-fontify-after-hook
+@vindex w3m-fontify-after-hook
+Hook run after fontifying emacs-w3m buffers.  This hook is evaluated by
+the @code{w3m-fontify} function.
+
+@item w3m-fontify-before-hook
+@vindex w3m-fontify-before-hook
+Hook run when starting to fontify emacs-w3m buffers.  This hook is
+evaluated by the @code{w3m-fontify} function.
+
+@item w3m-form-input-map-mode-hook
+@vindex w3m-form-input-map-mode-hook
+A hook called after w3m-form-input-map-mode.
+
+@item w3m-form-input-map-set-hook
+@vindex w3m-form-input-map-set-hook
+A Hook called before w3m-form-input-map-set.
+
+@item w3m-form-input-select-mode-hook
+@vindex w3m-form-input-select-mode-hook
+A hook called after w3m-form-input-select-mode.
+
+@item w3m-form-input-select-set-hook
+@vindex w3m-form-input-select-set-hook
+A Hook called before w3m-form-input-select-set.
+
+@item w3m-form-input-textarea-mode-hook
+@vindex w3m-form-input-textarea-mode-hook
+A hook called after w3m-form-input-textarea-mode.
+
+@item w3m-form-input-textarea-set-hook
+@vindex w3m-form-input-textarea-set-hook
+A Hook called before w3m-form-input-textarea-set.
+
+@item w3m-minor-mode-hook
+@vindex w3m-minor-mode-hook
+Hook run after @code{w3m-minor-mode} initialization.
+
+@item w3m-mode-hook
+@vindex w3m-mode-hook
+Hook run after @code{w3m-mode} initialization.  This hook is evaluated
+by the @code{w3m-mode} function.
+
+@item w3m-select-buffer-hook
+@vindex w3m-select-buffer-hook
+Hook run when a different emacs-w3m buffer is selected.
+@end table
+
 @node Other Variables
 @section Other variables
+@cindex Other variables
 
+@table @code
+@item w3m-async-exec
+@vindex w3m-async-exec
+Non-@code{nil} means execute the @samp{w3m} command asynchronously in
+Emacs process.
+
+@item w3m-broken-proxy-cache
+@vindex w3m-broken-proxy-cache
+Set it to @code{t} if the proxy server seems not to work properly in
+caching.  Note that this may be the double-edged sword; setting it to
+@code{t} will likely be harmful if the proxy server sends bad requests
+(e.g., not including the Host header, see RFC2616 section 14.23) to
+foreign servers when the @samp{w3m} command specifies the
+@samp{no-cache} directive.  Also note that it may not be effective if
+you are using old @samp{w3m} command.
+
+@item w3m-history-minimize-in-new-session
+@vindex w3m-history-minimize-in-new-session
+Non-@code{nil} means minimize copied history so that there's only
+current page.  This variable only affects creating of the new session by
+copying.
+
+@item w3m-history-reuse-history-elements
+@vindex w3m-history-reuse-history-elements
+Non-@code{nil} means reuse the history element when re-visiting the
+page.  Otherwise, a new history element will be created even if there
+are elements for the same url in the history.
+
+Emacs-w3m used to do as if it is non-@code{nil}, however it sometimes
+brought about users' dissatisfaction.  For example, if a user visits the
+pages A -> B -> C -> B in order, the operation BACK on the second B
+brings a user to A.  @emph{That's weird!}  The reason why it occurred is
+that the @code{w3m-history} variable only had the list @code{(A B C)} as
+a history and B
+is the current position for that time.
+
+The default value for this variable is @code{nil}, and the
+@code{w3m-history} variable can have the list @code{(A B C B)}.  Where
+contents of two B's are the identical Lisp objects, so the Lisp
+resources won't be much wasted.
+
+See the documentation for the variables @code{w3m-history} and
+@code{w3m-history-flat} for more information.
+
+@item w3m-process-connection-type
+@vindex w3m-process-connection-type
+Value for @code{process-connection-type} used when communicating with
+@samp{w3m}.
+
+@item w3m-process-modeline-format
+@vindex w3m-process-modeline-format
+Format used when displaying the progress of the external @samp{w3m}
+process.  It shows a percentage of the data loaded from the web server.
+
+@item w3m-xmas-show-current-title-in-buffer-tab
+@vindex w3m-xmas-show-current-title-in-buffer-tab
+If non-@code{nil}, show the title strings in the buffers tab.  It has no
+effect if your XEmacs does not support the gutter items.
+@end table
 
 @node Hooking into MUAs
 @chapter Hooking emacs-w3m into mail/newsreaders
