@@ -811,16 +811,6 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-cookie-accept-domains nil
-  "A list of trusted domain name string."
-  :group 'w3m
-  :type '(repeat string))
-
-(defcustom w3m-cookie-reject-domains nil
-  "A list of untrusted domain name string."
-  :group 'w3m
-  :type '(repeat string))
-
 (defcustom w3m-use-filter nil
   "*Non nil means filtering of WEB is used."
   :group 'w3m
@@ -2815,15 +2805,10 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(setq type (w3m-remove-redundant-spaces type))
 		(when (string-match ";\\'" type)
 		  (setq type (substring type 0 (match-beginning 0))))))
-	    (when w3m-use-cookies
-	      (dolist (pair alist)
-		(when (string= (car pair) "set-cookie")
-		  (w3m-cookie-set url (cdr pair)))))
 	    (when moved
 	      (setq w3m-current-refresh
 		    (cons 0
-			  (w3m-expand-url
-			   (cdr (assoc "location" alist))))))
+			  (w3m-expand-url (cdr (assoc "location" alist))))))
 	    (setq w3m-current-ssl (cdr (assoc "w3m-ssl-certificate" alist)))
 	    (list (or type (w3m-local-content-type url))
 		  (or charset
@@ -2884,6 +2869,8 @@ complete."
 	  (delete-region (point-min) (match-beginning 0))
 	  (when (search-forward "\n\n" nil t)
 	    (w3m-cache-header url (buffer-substring (point-min) (point)) t)
+	    (when w3m-use-cookies
+	      (w3m-cookie-set url (point-min) (point)))
 	    (delete-region (point-min) (point))
 	    (w3m-cache-contents url (current-buffer))
 	    (w3m-w3m-attributes url nil handler)))))))
@@ -2919,19 +2906,11 @@ to add the option \"-no-proxy\"."
   "Return cookie related arguments for w3m command."
   (if w3m-use-cookies
       (append
-       (list "-cookie")
+       (list "-no-cookie")
        (list "-o" "follow_redirection=0") ; Don't follow redirection.
        (let ((cookie-header (w3m-cookie-get url)))
 	 (when cookie-header
-	   (list "-header" (concat "Cookie: " cookie-header))))
-       (when (consp w3m-cookie-accept-domains)
-	 (list "-o"
-	       (concat "cookie_accept_domains="
-		       (mapconcat 'identity w3m-cookie-accept-domains ","))))
-       (when (consp w3m-cookie-reject-domains)
-	 (list "-o"
-	       (concat "cookie_reject_domains="
-		       (mapconcat 'identity w3m-cookie-reject-domains ",")))))
+	   (list "-header" (concat "Cookie: " cookie-header)))))
     (list "-no-cookie")))
 
 (defun w3m-w3m-retrieve (url no-decode no-cache post-data referer handler)

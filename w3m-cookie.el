@@ -38,6 +38,7 @@
 ;;; Code:
 
 (require 'w3m-util)
+(require 'w3m)
 
 (defvar w3m-cookies nil
   "A list of cookie elements.
@@ -50,6 +51,32 @@ Currently only browser local cookies are stored.")
 	  "\\)$")
   "A regular expression of top-level domains that only require two matching
 '.'s in the domain name in order to set a cookie.")
+
+(defcustom w3m-cookie-accept-domains nil
+  "A list of trusted domain name string."
+  :group 'w3m
+  :type '(repeat string))
+
+(defcustom w3m-cookie-reject-domains nil
+  "A list of untrusted domain name string."
+  :group 'w3m
+  :type '(repeat string))
+
+(defcustom w3m-cookie-accept-bad-cookies nil
+  "If nil, don't accept bad cookies.
+If t, accept bad cookies.
+If ask, ask user whether accept bad cookies or not."
+  :group 'w3m
+  :type '(choice
+	  (const :tag "Don't accept bad cookies" nil)
+	  (const :tag "Ask accepting bad cookies" ask)
+	  (const :tag "Always accept bad cookies" t)))
+
+(defcustom w3m-cookie-file nil
+  "Filename of saving cache file.
+If nil, `.cookie' file under the `w3m-profile-directory' is assumed."
+  :group 'w3m
+  :type 'file)
 
 ;;; Cookie accessor.
 (defsubst w3m-cookie-url (cookie)
@@ -95,16 +122,16 @@ Currently only browser local cookies are stored.")
   (aset cookie 6 version))
 
 (defsubst w3m-cookie-expires (cookie)
-  (aref cookie 7)) ; not used
+  (aref cookie 7))
 
 (defsubst w3m-cookie-set-expires (cookie expires)
-  (aset cookie 7 expires)) ; not used
+  (aset cookie 7 expires))
 
 (defsubst w3m-cookie-ignore (cookie)
   (aref cookie 8)) ; not used
 
 (defsubst w3m-cookie-set-ignore (cookie ignore)
-  (aset cookie 7 ignore)) ; not used
+  (aset cookie 8 ignore)) ; not used
 
 (defsubst w3m-cookie-create (&rest args)
   (let ((cookie (make-vector 9 nil)))
@@ -145,25 +172,33 @@ Currently only browser local cookies are stored.")
 (defun w3m-cookie-retrieve (host path &optional secure)
   "Retrieve cookies for DOMAIN and PATH."
   (let ((case-fold-search t)
-	cookies)
+	expires	cookies)
     (dolist (c w3m-cookies)
-      (when (and (string-match (concat 
-				(regexp-quote (w3m-cookie-domain c)) "$")
-			       host)
-		 (string-match (concat
-				"^" (regexp-quote (w3m-cookie-path c)))
-			       path))
-	(if (w3m-cookie-secure c)
-	    (if secure
-		(push c cookies))
-	  (push c cookies))))
+      (if (and (w3m-cookie-expires c)
+	       (> (w3m-time-lapse-seconds (w3m-time-parse-string
+					   (w3m-cookie-expires c))
+					  (current-time)) 0))
+	  (push c expires)
+	(when (and (string-match (concat 
+				  (regexp-quote (w3m-cookie-domain c)) "$")
+				 host)
+		   (string-match (concat
+				  "^" (regexp-quote (w3m-cookie-path c)))
+				 path))
+	  (if (w3m-cookie-secure c)
+	      (if secure
+		  (push c cookies))
+	    (push c cookies)))))
+    ;; Delete expired cookies.
+    (dolist (expire expires)
+      (setq w3m-cookies (delq expire w3m-cookies)))
     cookies))
 
 ;; HTTP URL parser.
 (defun w3m-parse-http-url (url)
   "Parse an absolute HTTP URL."
   (let (secure split)
-    (when (and (string-match (symbol-value 'w3m-url-components-regexp) url)
+    (when (and (string-match w3m-url-components-regexp url)
 	       (or (string= (match-string 2 url) "http")
 		   (setq secure (string= (match-string 2 url) "https")))
 	       (match-beginning 4)
@@ -257,8 +292,9 @@ Currently only browser local cookies are stored.")
 	       (string= (downcase x) (downcase y))))))
 
 (defun w3m-cookie-trusted-host-p (host)
-  (let ((accept (symbol-value 'w3m-cookie-accept-domains))
-	(reject (symbol-value 'w3m-cookie-reject-domains))
+  "Returns non-nil when the HOST is specified as trusted by user."
+  (let ((accept w3m-cookie-accept-domains)
+	(reject w3m-cookie-reject-domains)
 	(trusted t)
 	regexp tlen rlen)
     (while accept
@@ -267,8 +303,10 @@ Currently only browser local cookies are stored.")
 	(setq regexp ".*"))
        ((string= (car accept) ".local")
 	(setq regexp "^[^\\.]+$"))
-       (t (setq regexp (regexp-quote (car accept)))))
-      (when (string-match (concat regexp "$") host)
+       ((eq (string-to-char (car accept)) ?.)
+	(setq regexp (concat (regexp-quote (car accept)) "$")))
+       (t (setq regexp (concat "^" (regexp-quote (car accept)) "$"))))
+      (when (string-match regexp host)
 	(setq tlen (length (car accept))
 	      accept nil))
       (pop accept))
@@ -278,7 +316,9 @@ Currently only browser local cookies are stored.")
 	(setq regexp ".*"))
        ((string= (car reject) ".local")
 	(setq regexp "^[^\\.]+$"))
-       (t (setq regexp (regexp-quote (car reject)))))
+       ((eq (string-to-char (car reject)) ?.)
+	(setq regexp (concat (regexp-quote (car reject)) "$")))
+       (t (setq regexp (concat "^" (regexp-quote (car reject)) "$"))))
       (when (string-match (concat regexp "$") host)
 	(setq rlen (length (car reject))
 	      reject nil))
@@ -335,28 +375,30 @@ Currently only browser local cookies are stored.")
        ((not (w3m-cookie-trusted-host-p (w3m-http-url-host http-url)))
 	;; The site was explicity marked as untrusted by the user
 	nil)
-       ((w3m-cookie-1-acceptable-p (w3m-http-url-host http-url) domain)
+       ((or (w3m-cookie-1-acceptable-p (w3m-http-url-host http-url) domain)
+	    (eq w3m-cookie-accept-bad-cookies t)
+	    (and (eq w3m-cookie-accept-bad-cookies 'ask)
+		 (y-or-n-p (format "Accept bad cookie from %s for %s? "
+				   (w3m-http-url-host http-url) domain))))
 	;; Cookie is accepted by the user, and passes our security checks
 	(dolist (elem rest)
 	  ;; If a CGI script wishes to delete a cookie, it can do so by
 	  ;; returning a cookie with the same name, and an expires time
 	  ;; which is in the past.
-	  (if (and expires
-		   (> (w3m-time-lapse-seconds (w3m-time-parse-string expires)
-					      (current-time)) 0))
-	      (w3m-cookie-remove domain path (car elem)))
-	  (unless expires ; Stores only a browser local cookies.
-	    (w3m-cookie-store
-	     (w3m-cookie-create :url url
-				:domain domain
-				:name (car elem)
-				:value (cdr elem)
-				:path path
-				:secure secure)))))
+	  (when (> (w3m-time-lapse-seconds (w3m-time-parse-string expires)
+					   (current-time)) 0)
+	    (w3m-cookie-remove domain path (car elem)))
+	  (w3m-cookie-store
+	   (w3m-cookie-create :url url
+			      :domain domain
+			      :name (car elem)
+			      :value (cdr elem)
+			      :path path
+			      :expires expires
+			      :secure secure))))
        (t
-	(unless expires ; Treat only browser local cookies.
-	  (message "%s tried to set a cookie for domain %s - rejected."
-		   (w3m-http-url-host http-url) domain)))))))
+	(message "%s tried to set a cookie for domain %s - rejected."
+		 (w3m-http-url-host http-url) domain))))))
 
 ;;; Version 1 cookie.
 (defun w3m-cookie-2-acceptable-p (http-url domain)
@@ -387,29 +429,80 @@ Currently only browser local cookies are stored.")
   ;; Not implemented yet.
   )
 
-;;;###autoload
-(defun w3m-cookie-shutdown ()
-  "Clear cookies."
-  (interactive)
+
+;;; Save & Load
+(defvar w3m-cookie-init nil)
+
+(defun w3m-cookie-clear ()
+  "Clear cookie list."
   (setq w3m-cookies nil))
 
+(defun w3m-cookie-save ()
+  "Save cookies."
+  (let (cookies)
+    (dolist (cookie w3m-cookies)
+      (when (and (w3m-cookie-expires cookie)
+		 (< (w3m-time-lapse-seconds (w3m-time-parse-string
+					     (w3m-cookie-expires cookie))
+					    (current-time)) 0))
+	(push cookie cookies)))
+    (w3m-save-list (or w3m-cookie-file
+		       (expand-file-name ".cookie" w3m-profile-directory))
+		   cookies)))
+
+(defun w3m-cookie-load ()
+  "Load cookies."
+  (when (null w3m-cookies)
+    (setq w3m-cookies
+	  (w3m-load-list
+	   (or w3m-cookie-file
+	       (expand-file-name ".cookie" w3m-profile-directory))))))
+
+(defun w3m-cookie-setup ()
+  "Setup cookies. Returns immediataly if already initialized."
+  (interactive)
+  (unless w3m-cookie-init
+    (w3m-cookie-load)
+    (setq w3m-cookie-init t)))
+
 ;;;###autoload
-(defun w3m-cookie-set (url data &optional version)
+(defun w3m-cookie-shutdown ()
+  "Save cookies."
+  (interactive)
+  (w3m-cookie-save)
+  (setq w3m-cookie-init nil)
+  (w3m-cookie-clear)
+  (if (get-buffer " *w3m-cookie-parse-temp*")
+      (kill-buffer (get-buffer " *w3m-cookie-parse-temp*"))))
+
+;;;###autoload
+(defun w3m-cookie-set (url beg end)
   "Register cookies.
 URL is the url which corresponds to the cookie.
-DATA is the content of Set-Cookie: or Set-Cookie2: field.
-VERSION is 0 or 1. If omitted, 0 is assumed."
-  (when (and url data)
-    (let ((version (or version 0)))
-      (apply
-       (case version
-	 (0 'w3m-cookie-1-set)
-	 (1 'w3m-cookie-2-set))
-       url (w3m-cookie-parse-args data)))))
+BEG and END should be an HTTP response header region on current buffer."
+  (w3m-cookie-setup)
+  (when (and url beg end)
+    (save-excursion
+      (let ((case-fold-search t)
+	    (version 0)
+	    data)
+	(goto-char beg)
+	(while (re-search-forward
+		"^\\(Set-Cookie\\(2\\)?:\\) *\\(.*\\(\n[ \t].*\\)*\\)\n"
+		end t)
+	  (setq data (match-string 3))
+	  (if (match-beginning 2)
+	      (setq version 1))
+	  (apply
+	   (case version
+	     (0 'w3m-cookie-1-set)
+	     (1 'w3m-cookie-2-set))
+	   url (w3m-cookie-parse-args data 'nodowncase)))))))
 
 ;;;###autoload
 (defun w3m-cookie-get (url)
   "Get a cookie field string which corresponds to the URL."
+  (w3m-cookie-setup)
   (let* ((http-url (w3m-parse-http-url url))
 	 (cookies (and http-url
 		       (w3m-cookie-retrieve (w3m-http-url-host http-url)

@@ -1,5 +1,29 @@
 2002-03-25  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m.el (w3m-w3m-attributes): Don't call w3m-cookie-set.
+	(w3m-w3m-dump-head-source): Call w3m-cookie-set.
+	(w3m-cookie-command-arguments): Set `-no-cookie';
+	Don't set cookie_accept_domains, cookie_reject_domains.
+
+	* w3m-cookie.el (toplevel): Require 'w3m.
+	(w3m-cookie-accept-domains): Moved from w3m.el.
+	(w3m-cookie-reject-domains): Ditto.
+	(w3m-cookie-accept-bad-cookies): New user option.
+	(w3m-cookie-file): Ditto.
+	(w3m-cookie-set-ignore): Fix.
+	(w3m-cookie-retrieve): Remove expired cookies.
+	(w3m-cookie-trusted-host-p): Fixed domain match.
+	(w3m-cookie-1-set): Treat all cookies.
+	Accept bad cookies according to w3m-cookie-accept-bad-cookies.
+	(w3m-cookie-init): New variable.
+	(w3m-cookie-clear): New function.
+	(w3m-cookie-save): Ditto.
+	(w3m-cookie-load): Ditto.
+	(w3m-cookie-setup): Ditto.
+	(w3m-cookie-shutdown): Rewrite.
+	(w3m-cookie-set): Call w3m-cookie-setup; Changed API.
+	(w3m-cookie-get): Call w3m-cookie-setup.
+
 	* w3m.el (w3m-goto-url): Don't resume form from history when POST.
 
 2002-03-24  Yuuichi Teranishi  <teranisi@gohome.org>
