@@ -1,3 +1,8 @@
+2003-02-18  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-date-regexp): Removed.
+	(shimbun-palmfan-news-headers): Do not use `shimbun-palmfan-date-regexp'.
+
 2003-02-16  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-type): Support "release candidate" of w3m.
