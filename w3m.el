@@ -1500,16 +1500,16 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
   (unless (and force (eq w3m-display-inline-image-status 'on))
     (let ((cur-point (point))
 	  (buffer-read-only)
-	  point end url image)
+	  point end url image message)
       (if (or force (eq w3m-display-inline-image-status 'off))
 	  (save-excursion
-	    (message "Showing images...")
 	    (run-hooks 'w3m-show-inline-images-before-hook)
 	    (goto-char (point-min))
 	    (while (if (get-text-property (point) 'w3m-image)
 		       (setq point (point))
 		     (setq point (next-single-property-change (point)
 							      'w3m-image)))
+	      (unless message (setq message (message "Showing images...")))
 	      (setq end (or (next-single-property-change point 'w3m-image)
 			    (point-max)))
 	      (goto-char end)
@@ -1538,7 +1538,7 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 		    ;; Redisplay
 		    (and w3m-force-redisplay (sit-for 0))))))
 	    (run-hooks 'w3m-show-inline-images-after-hook)
-	    (message "Showing images...done")
+	    (when message (message "Showing images...done"))
 	    (setq w3m-display-inline-image-status 'on))
 	(save-excursion
 	  (run-hooks 'w3m-remove-inline-images-before-hook)
