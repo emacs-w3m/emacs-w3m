@@ -230,60 +230,51 @@
 (make-variable-buffer-local 'w3m-process-passwd)
 (make-variable-buffer-local 'w3m-process-user-counter)
 
+(defun w3m-sub-list (list n)
+  "Make new list from LIST with top most N items.
+If N is negative, last N items of LIST is returned."
+  (if (< n 0)
+      ;; N is negative, get items from tail of list
+      (nthcdr (+ (length list) n) (copy-sequence list))
+    ;; N is non-negative, get items from top of list
+    (nreverse (nthcdr (- (length list) n) (reverse list)))))
+
+(defun w3m-load-list (file coding)
+  "Load list from FILE with CODING and return list."
+  (when (file-readable-p file)
+    (with-temp-buffer
+      (let ((file-coding-system-for-read coding)
+	    (coding-system-for-read coding))
+	(insert-file-contents file)
+	(condition-case nil
+	    (read (current-buffer))	; return value
+	  (error nil))))))
+
+(defun w3m-save-list (file coding list)
+  "Save LIST into file with CODING."
+  (when (and list (file-writable-p file))
+    (with-temp-buffer
+      (let ((file-coding-system coding)
+	    (coding-system-for-write coding))
+	(print list (current-buffer))
+	(write-region (point-min) (point-max)
+		      file nil 'nomsg)))))
+
 (defun w3m-arrived-list-load ()
   "Load arrived url list from 'w3m-arrived-list-file'
 and 'w3m-arrived-ct-file'."
-  (when (file-readable-p w3m-arrived-ct-file)
-    (with-temp-buffer
-      (let ((file-coding-system-for-read w3m-arrived-file-cs)
-	    (coding-system-for-read w3m-arrived-file-cs))
-	(insert-file-contents w3m-arrived-ct-file)
-	(setq w3m-arrived-url-ct
-	      (condition-case nil
-		  (read (current-buffer))
-		(error nil))))))
-  (when (file-readable-p w3m-arrived-list-file)
-    (with-temp-buffer
-      (let ((file-coding-system-for-read w3m-arrived-file-cs)
-	    (coding-system-for-read w3m-arrived-file-cs))
-	(insert-file-contents w3m-arrived-list-file)
-	(setq w3m-arrived-anchor-list
-	      (condition-case nil
-		  (read (current-buffer))
-		(error nil)))))))
+  (setq w3m-arrived-url-ct 
+	(w3m-load-list w3m-arrived-ct-file w3m-arrived-file-cs)
+	w3m-arrived-anchor-list
+	(w3m-load-list w3m-arrived-list-file w3m-arrived-file-cs)))
 
 (defun w3m-arrived-list-save ()
   "Save arrived url list to 'w3m-arrived-list-file'
 and 'w3m-arrived-ct-file'."
-  (when (> (length w3m-arrived-url-ct) w3m-arrived-list-keep)
-    (setq w3m-arrived-url-ct
-	  (nreverse (nthcdr (- (length w3m-arrived-url-ct)
-			       w3m-arrived-list-keep)
-			    (nreverse w3m-arrived-url-ct)))))
-  (when (and w3m-arrived-url-ct
-	     (file-writable-p w3m-arrived-ct-file))
-    (with-temp-buffer
-      (let ((file-coding-system w3m-arrived-file-cs)
-	    (coding-system-for-write w3m-arrived-file-cs))
-	(prin1 w3m-arrived-url-ct (current-buffer))
-	(princ "\n" (current-buffer))
-	(write-region (point-min) (point-max)
-		      w3m-arrived-ct-file nil 'nomsg))))
-  (when (> (length w3m-arrived-anchor-list) w3m-arrived-list-keep)
-    (setq w3m-arrived-anchor-list
-	  (nreverse (nthcdr (- (length w3m-arrived-anchor-list)
-			       w3m-arrived-list-keep)
-			    (nreverse w3m-arrived-anchor-list)))))
-  (when (and w3m-arrived-anchor-list
-	     (file-writable-p w3m-arrived-list-file))
-    (with-temp-buffer
-      (let ((file-coding-system w3m-arrived-file-cs)
-	    (coding-system-for-write w3m-arrived-file-cs))
-	(prin1 w3m-arrived-anchor-list (current-buffer))
-	(princ "\n" (current-buffer))
-	(write-region (point-min) (point-max)
-		      w3m-arrived-list-file nil 'nomsg)
-	(setq w3m-arrived-anchor-list nil)))))
+  (w3m-save-list w3m-arrived-ct-file w3m-arrived-file-cs
+		 (w3m-sub-list w3m-arrived-url-ct w3m-arrived-list-keep))
+  (w3m-save-list w3m-arrived-list-file w3m-arrived-file-cs
+		 (w3m-sub-list w3m-arrived-anchor-list w3m-arrived-list-keep)))
 
 (defun w3m-arrived-list-add (&optional url)
   "Cons url to 'w3m-arrived-anchor-list'. CAR is newest."
