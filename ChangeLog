@@ -1,3 +1,15 @@
+2001-03-29  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-real-url): Return original url when real url is nil.
+
+	* w3m-antenna.el (w3m-antenna-sites): Add 'time' type.
+	(w3m-antenna-alist): Modify comment.
+	(w3m-antenna-hns-last-modified): Don't use old 'Last-Modified:'
+	format.
+	(w3m-antenna-last-modified): Use w3m-last-modified() when can not get
+	'diary/di.cgi'.
+	(w3m-antenna-check-sites): Push current-time() if (nth 6 pre) is nil.
+
 2001-03-29  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el: Support deflated contents and redirected URLs.

@@ -57,6 +57,7 @@
 	   (string :tag "Title")
 	   (choice :tag "Class"
 		   (const :tag "Normal" nil)
+		   (const :tag "Modified Time" time)
 		   (const :tag "HNS" hns)))))
 
 (defcustom w3m-antenna-html-skeleton
@@ -116,7 +117,7 @@ antenna database is not initialised.  Each site information is a list
 whose elements are:
  0. Format string of URL.
  1. Title.
- 2. Class (Normal or HNS).
+ 2. Class (Normal, HNS or TIME).
  3. Real URL.
  4. Last modification time.
  5. Size in bytes.
@@ -172,16 +173,18 @@ whose elements are:
 (defun w3m-antenna-hns-last-modified (url &optional no-cache)
   (when (w3m-retrieve (w3m-expand-url "di.cgi" url) nil no-cache)
     (w3m-with-work-buffer
-      (let (start)
+      (let (start str)
 	(or
-	 ;; Process a line such as "Last-modified: 2001, 15 03   GMT<br>".
+	 ;; Process a line such as "Tue, 27 Mar 2001 12:43:16 GMT<br>".
 	 (and (progn
 		(goto-char (point-min))
 		(search-forward "\nLast-Modified: " nil t))
 	      (setq start (match-end 0))
 	      (search-forward "<br>" nil t)
-	      (w3m-time-parse-string
-	       (buffer-substring start (match-beginning 0))))
+	      (setq str (buffer-substring start (match-beginning 0)))
+	      ;; ignore format such as "2001, 27 03   GMT", old hns
+	      (not (string-match " *[0-9][0-9][0-9][0-9], +[0-9][0-9] +[0-9][0-9] +" str))
+	      (w3m-time-parse-string str))
 	 ;; Process a line such as "newest day is 2001/03/15".
 	 (and (progn
 		(goto-char (point-min))
@@ -195,12 +198,12 @@ whose elements are:
 			   "JST")))))))
 
 (defun w3m-antenna-last-modified (url class &optional no-cache)
-  (if (eq class 'hns)
-      (w3m-antenna-hns-last-modified url no-cache)
-    (w3m-last-modified url no-cache)))
+  (or (and (eq class 'hns)
+	   (w3m-antenna-hns-last-modified url no-cache))
+      (w3m-last-modified url no-cache)))
 
 (defun w3m-antenna-size (url class &optional no-cache)
-  (unless (eq class 'hns)
+  (unless (memq class '(hns time))
     (or (w3m-content-length url no-cache)
 	(progn
 	  (w3m-retrieve url t no-cache)
@@ -225,7 +228,7 @@ whose elements are:
 				 (nth 5 pre)
 				 (if (/= size (nth 5 pre))
 				     (current-time)
-				   (nth 6 pre)))))
+				   (or (nth 6 pre) (current-time))))))
 	      alist)))
     alist))
 

@@ -651,7 +651,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 (defmacro w3m-last-modified (url &optional no-cache)
   (` (nth 4 (w3m-attributes (, url) (, no-cache)))))
 (defmacro w3m-real-url (url &optional no-cache)
-  (` (nth 5 (w3m-attributes (, url) (, no-cache)))))
+  (` (or (nth 5 (w3m-attributes (, url) (, no-cache))) (, url))))
 
 (defsubst w3m-anchor (&optional point)
   (get-text-property (or point (point)) 'w3m-href-anchor))
