@@ -1,6 +1,6 @@
 2001-05-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-e21.el (w3m-setup-header-line): Replace "%" with "%%" in a
+	* w3m-e21.el (w3m-setup-header-line): Replace "%" with "%%" in an
 	url string.
 
 2001-05-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
