@@ -184,7 +184,7 @@ width using expression (+ (frame-width) VALUE)."
   (and (eq w3m-type 'w3m)
        (locate-library "un-define.el")
        (boundp 'emacs-major-version)
-       (>= (symbol-value 'emacs-major-version) 20))
+       (>= emacs-major-version 20))
   "*Non nil means using multi-script support with Mule-UCS."
   :group 'w3m
   :type 'boolean
@@ -3710,8 +3710,8 @@ called non-interactively."
   (interactive "fFilename: ")
   (w3m-goto-url (w3m-expand-file-name-as-url file)
 		nil
-		(if (fboundp 'universal-coding-system-argument)
-		    (symbol-value 'coding-system-for-read))))
+		(w3m-static-if (fboundp 'universal-coding-system-argument)
+		    coding-system-for-read)))
 
 
 (defun w3m-cygwin-path (path)
