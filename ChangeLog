@@ -1,4 +1,4 @@
-2002-02-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2002-02-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-touch-command): New option.
 	(w3m-touch-file): New function.
