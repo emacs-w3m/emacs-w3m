@@ -39,7 +39,6 @@
       bitmap images inline on an Emacs frame.  It is available at:
 
           ftp://ftp.jpl.org/pub/elisp/bitmap/
-          or http://www.jpl.org/ftp/pub/elisp/bitmap/
 
    c) XEmacs
       APEL package is required.  It is available at:
@@ -250,8 +249,7 @@
        Before installing it, it is necessary to install APEL.
 
    [3] BITMAP-MULE
-       It can be downloaded from ftp://ftp.jpl.org/pub/elisp/bitmap/
-       of http://www.jpl.org/ftp/pub/elisp/bitmap/.
+       It can be downloaded from ftp://ftp.jpl.org/pub/elisp/bitmap/.
 
    [4] gifsicle
        It can be downloaded from http://www.lcdf.org/gifsicle/.

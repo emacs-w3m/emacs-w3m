@@ -1,6 +1,6 @@
 ;;; w3m-bitmap.el --- Display bitmap image functions for w3m
 
-;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
 ;;          Katsumi Yamaoka <yamaoka@jpl.org>
@@ -27,7 +27,7 @@
 
 ;; This module requires BITMAP-MULE package.  It can be downloaded from:
 ;;
-;;    http://www.jpl.org/elips/bitmap/
+;;    ftp://ftp.jpl.org/pub/elisp/bitmap/
 
 ;;; Code:
 
