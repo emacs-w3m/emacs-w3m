@@ -357,6 +357,9 @@ as the value."
 
 (eval-after-load "wid-edit" '(w3m-om-define-missing-widgets))
 
+;;; Miscellaneous:
+(defalias 'multibyte-string-p 'stringp)
+
 (provide 'w3m-om)
 
 ;;; w3m-om.el ends here

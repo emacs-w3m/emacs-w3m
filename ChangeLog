@@ -1,5 +1,10 @@
 2002-04-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-xmas.el (multibyte-string-p): Alias to `stringp' if MULE,
+	otherwise `ignore'.
+
+	* w3m-om.el (multibyte-string-p): Alias to `stringp'.
+
 	* w3m-util.el: Require `pcustom' for old Emacsen.
 
 2002-04-05  Takenobu Sugiyama  <sugiyama@ae.advantest.co.jp>

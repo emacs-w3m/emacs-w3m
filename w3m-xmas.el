@@ -544,6 +544,11 @@ title contains non-ascii characters, show a url name by default."
   (when (symbol-value 'gutter-buffers-tab-enabled)
     (add-hook 'w3m-display-hook 'w3m-xmas-update-tab-in-gutter)))
 
+;;; Miscellaneous:
+(if (featurep 'mule)
+    (defalias 'multibyte-string-p 'stringp)
+  (defalias 'multibyte-string-p 'ignore))
+
 (provide 'w3m-xmas)
 
 ;;; w3m-xmas.el ends here
