@@ -4129,7 +4129,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 \\(GIF8\\)\\|\\(\211PNG\\)\\|\\(\377\330\377\\(\340\356\\)\\)")
 		(setq type (cond ((match-beginning 1) "gif")
 				 ((match-beginning 2) "png")
-				 ((match-beginning 1) "jpeg")))
+				 ((match-beginning 3) "jpeg")))
 		(when (re-search-backward "^content-type: image/\\(.+\\)$"
 					  nil t)
 		  (delete-region (goto-char (match-beginning 1))
