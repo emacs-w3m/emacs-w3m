@@ -66,18 +66,21 @@
   (let ((case-fold-search t)
 	(pages (shimbun-header-index-pages range))
 	(count 0)
-	headers months)
+	headers months month url)
     (goto-char (point-min))
     (catch 'stop
       (while (and (if pages (<= (incf count) pages) t)
-		  (re-search-forward "<A HREF=\"\\([12][0-9][0-9][0-9][01][0-9]\\)/\">" nil t)
-		  (push (match-string 1) months)))
+		  (re-search-forward
+		   "<A HREF=\"\\([12][0-9][0-9][0-9][01][0-9]\\)/\">"
+		   nil t))
+	(push (match-string 1) months))
       (setq months (nreverse months))
-      (dolist (month months)
-	(with-temp-buffer
-	  (let ((url (shimbun-airs-concat-url shimbun (concat month "/"))))
-	    (shimbun-retrieve-url url t)
-	    (shimbun-mhonarc-get-headers shimbun url headers month)))))
+      (while months
+	(setq month (pop months)
+	      url (shimbun-airs-concat-url shimbun (concat month "/")))
+	(erase-buffer)
+	(shimbun-retrieve-url url t)
+	(shimbun-mhonarc-get-headers shimbun url headers month)))
     headers))
 
 (provide 'sb-airs)
