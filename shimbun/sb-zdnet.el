@@ -188,16 +188,15 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
 	  (erase-buffer)
 	  (if (= (length texts) 1)
 	      (setq body (car texts))
-	    (setq body (shimbun-make-multipart-entity nil
-						      (concat "shimbun.0."
-							      base-cid)))
+	    (setq body (shimbun-make-multipart-entity))
 	    (let ((i 0))
 	      (dolist (text texts)
 		(setf (shimbun-entity-cid text)
 		      (format "shimbun.%d.%s" (incf i) base-cid))))
 	    (apply 'shimbun-entity-add-child body texts))
 	  (when images
-	    (let ((new (shimbun-make-multipart-entity nil)))
+	    (setf (shimbun-entity-cid body) (concat "shimbun.0." base-cid))
+	    (let ((new (shimbun-make-multipart-entity)))
 	      (shimbun-entity-add-child new body)
 	      (apply 'shimbun-entity-add-child new
 		     (mapcar 'cdr (nreverse images)))

@@ -1,3 +1,20 @@
+2003-10-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el (shimbun-make-multipart-entity): Change its
+	argument spec to make `type' optional.
+	(shimbun-make-mime-article): Follow the above change.
+	(shimbun-entity-type) [shimbun-multipart-entity]: Add type
+	parameter when a subtype is "related".  Thanks to Mr. Teranisi for
+	his suggestion in [emacs-w3m:05964].
+	(initialize-instance) [shimbun-text-entity]: Removed.
+	(shimbun-text-entity-charset): New method.
+	(shimbun-entity-type) [shimbun-text-entity]: Use the above.
+	(initialize-instance) [shimbun-image-entity]: Do not set a default
+	value of a media type.
+
+	* shimbun/sb-zdnet.el (shimbun-make-contents): Follow the above
+	changes.
+
 2003-10-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun.el: Define LUNA classes that represent MIME entities
