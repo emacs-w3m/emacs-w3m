@@ -22,11 +22,17 @@
 
 * mule-2.3@19.34.patch
 
-  Changes to make Mule 2.3 based on Emacs 19.34 work correctly on
-  managing column numbers for bitmap characters, and distinguishing
-  S-SPC key from SPC.  The former is contributed by TSUCHIYA Masatoshi
-  <tsuchiya@namazu.org>, the latter has been done in Emacs 20 by RMS.
-  Note that you have need of rebuilding Mule after applying this patch.
+  This patch consists of three parts.  The first part is the change to
+  make Mule 2.3 based on Emacs 19.34 work correctly on managing column
+  numbers for bitmap characters.  This is contributed by
+  Ken'ichi HANDA <handa@etl.go.jp> The second part is the change to to
+  make Mule 2.3 based on Emacs 19.34 work correctly on managing column
+  numbers on the overlay properties before-string or after-string
+  containing multibyte characters.  This is contributed by
+  TSUCHIYA Masatoshi <tsuchiya@namazu.org>.  The last part is the change
+  to distinguish S-SPC key from SPC.  This is introduced to Emacs 20 by
+  RMS.  Note that you have need of rebuilding Mule after applying this
+  patch.
 
 
 Local Variables:

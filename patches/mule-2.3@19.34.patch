@@ -1,12 +1,13 @@
 1999-05-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* indent.c (current_column_1): Make it work correctly on multibyte
-	characters even if there are any overlays or text properties.
-
 	* indent.c (compute_motion): Make it work correctly on the overlay
 	properties before-string or after-string containing multibyte
 	characters.
 	* xdisp.c (display_text_line): Ditto.
+
+1998-10-16  Ken'ichi HANDA  <handa@etl.go.jp>
+
+	* indent.c (current_column_1): Fix for composit character.
 
 1997-07-14  Richard Stallman  <rms@psilocin.gnu.ai.mit.edu>
 
@@ -15,21 +16,15 @@
 
 --- mule-2.3@19.34/src/indent.c~	1996-07-15 09:09:46 +0000
 +++ mule-2.3@19.34/src/indent.c	1999-05-09 14:28:35 +0000
-@@ -518,11 +518,11 @@
+@@ -517,6 +517,7 @@
+ 		{
  		  int bytes = char_bytes[(c = FETCH_CHAR (scan) - 0x20)];
  
++		  scan++;
  		  /* Check existence of trailing non ascii character.  */
--		  while (--bytes && scan < pos
-+		  while (bytes-- && scan < pos
+ 		  while (--bytes && scan < pos
  			 && NONASCII_P (FETCH_CHAR (scan)))
- 		    scan++;
- 
--		  if (bytes)
-+		  if (bytes != -1)
- 		    /* Incomplete multibyte form.  */
- 		    {
- 		      scan = oldscan, width = 4;
-@@ -1253,7 +1253,42 @@
+@@ -1253,7 +1254,42 @@
  	       strings must contain single-column printing characters;
  	       if we want to relax that restriction, something will have
  	       to be changed here.  */
