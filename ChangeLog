@@ -1,3 +1,7 @@
+2003-07-17  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-about-db-history): Call `w3m-arrived-time' with string.
+
 2003-07-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-uri-replace-alist): Improve the customizing widget.

@@ -6762,7 +6762,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
 	      (setq url (symbol-name sym))
 	      (not (string-match "#" url))
 	      (not (string-match w3m-history-ignored-regexp url))
-	      (push (cons url (w3m-arrived-time sym)) alist)))
+	      (push (cons url (w3m-arrived-time url)) alist)))
        w3m-arrived-db)
       (setq alist (sort alist
 			(lambda (a b)
