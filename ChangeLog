@@ -1,3 +1,8 @@
+2003-09-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* icons/*.xpm: Shrink the size of all icons.
+	* icons30/: Old icons are here.
+
 2003-09-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-activate-zmacs-regions): New macro.
