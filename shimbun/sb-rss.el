@@ -29,7 +29,9 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile
+  (require 'cl)
+  (require 'static))
 
 (require 'shimbun)
 (eval-when-compile
@@ -122,6 +124,12 @@ but you can identify it from the URL, define this method in a backend.")
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-rss)
 					 &optional range)
+  (static-when (featurep 'xemacs)
+    ;; It's one of many bugs in XEmacs that the coding systems *-dos
+    ;; provided by Mule-UCS don't convert CRLF to LF when decoding.
+    (goto-char (point-min))
+    (while (search-forward "\r\n" nil t)
+      (delete-region (- (point) 2) (1- (point)))))
   (let* ((xml (xml-parse-region (point-min) (point-max)))
 	 (dc-ns (shimbun-rss-get-namespace-prefix
 		 xml "http://purl.org/dc/elements/1.1/"))
