@@ -40,7 +40,6 @@
     ("ruby-talk" . "ruby/ruby-talk")))
 
 (defvar shimbun-ruby-groups (mapcar 'car shimbun-ruby-group-path-alist))
-(defvar shimbun-ruby-coding-system 'euc-jp)
 
 ;;(luna-define-method shimbun-reply-to ((shimbun shimbun-ruby))
 ;;

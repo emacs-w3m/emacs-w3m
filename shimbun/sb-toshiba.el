@@ -34,7 +34,6 @@
 
 (defvar shimbun-toshiba-url "http://linux.toshiba-dme.co.jp/ML/tlinux-users-j/")
 (defvar shimbun-toshiba-groups '("linux-users-j"))
-(defvar shimbun-toshiba-coding-system 'iso-2022-jp)
 
 (provide 'sb-toshiba)
 

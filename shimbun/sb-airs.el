@@ -38,7 +38,6 @@
 
 (defvar shimbun-airs-url "http://lists.airs.net/")
 (defvar shimbun-airs-groups (mapcar 'car shimbun-airs-group-path-alist))
-(defvar shimbun-airs-coding-system 'euc-jp)
 (defvar shimbun-airs-reverse-flag nil)
 (defvar shimbun-airs-litemplate-regexp
   "<STRONG><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a></STRONG> <EM>\\([^<]+\\)</EM>")

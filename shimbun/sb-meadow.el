@@ -37,7 +37,6 @@
 
 (defvar shimbun-meadow-url "http://www.ysnb.net/meadow/")
 (defvar shimbun-meadow-groups '("meadow-develop" "meadow-users-jp"))
-(defvar shimbun-meadow-coding-system 'iso-2022-jp)
 (defvar shimbun-meadow-reverse-flag nil)
 (defvar shimbun-meadow-litemplate-regexp
   "<STRONG><A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a> \\([^<]+\\)</STRONG>")

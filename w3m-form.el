@@ -93,7 +93,11 @@
 		 (format "%s=%s"
 			 (w3m-url-encode-string (symbol-name (car plist))
 						coding)
-			 (w3m-url-encode-string (nth 1 plist) coding))
+			 (w3m-url-encode-string 
+			  (if (consp (nth 1 plist)) ; select.
+			      (car (nth 1 plist))
+			    (nth 1 plist))
+			  coding))
 		 buf)
 	    plist (nthcdr 2 plist)))
     (when buf
@@ -133,7 +137,7 @@
 			    (or value (w3m-form-get (car forms) name))))))
 	 ((match-string 4)
 	  ;; When <TEXTAREA> is found.
-	  (w3m-parse-attributes (name (type :case-ignore))
+	  (w3m-parse-attributes (name)
 	    (let ((start (point))
 		  value)
 	      (skip-chars-forward "^<")
@@ -144,12 +148,29 @@
 			      (or value (w3m-form-get (car forms) name)))))))
 	 ;; When <SELECT> is found.
 	 (t
-	  ;; FIXME: この部分では、更に <OPTION> タグを処理して、後から
-	  ;; 利用できるように値のリストを作成し、保存しておく必要があ
-	  ;; る。しかし、これを実装するのは、まっとうな HTML parser を
-	  ;; 実装するのに等しい労力が必要であるので、今回は手抜きして
-	  ;; おく。
-	  )))
+	  (let ((beg (point))
+		end vbeg svalue cvalue candidates)
+	    (when (re-search-forward "</select>" nil t) ; end of select
+	      (setq end (match-beginning 0))
+	      (goto-char beg)
+	      (w3m-parse-attributes (name)
+		(while (re-search-forward "<option[ \t\r\f\n]*" end t)
+		  (w3m-parse-attributes (value (selected :case-ignore))
+		    (setq vbeg (point))
+		    (skip-chars-forward "^<")
+		    (setq svalue
+			  (mapconcat 'identity 
+			       (split-string
+				(buffer-substring vbeg (point)) "\n")
+			       ""))
+		    (if selected (setq cvalue value))
+		    (setq candidates (cons (cons value svalue)
+					   candidates))))
+		(when name
+		  (w3m-form-put (car forms) name (cons
+						  cvalue ; current value
+						  (nreverse
+						   candidates))))))))))
       (save-current-buffer
 	(when (or (bufferp w3m-current-buffer)
 		  (stringp w3m-current-buffer))
@@ -178,7 +199,7 @@
 	      (add-text-properties start (point)
 				   (list 'face 'w3m-form-face
 					 'w3m-action
-					 `(w3m-form-submit ,form)
+					 `(w3m-form-submit ,form ,name ,value)
 					 'w3m-cursor-anchor
 					 `(w3m-form-submit ,form))))
 	     ((string= type "reset")
@@ -207,31 +228,33 @@
 							  ,value))))
 	     (w3m-form-put form name value))))))))
 
-(defun w3m-form-replace (string)
-  (let* ((start (text-property-any
-		 (point-min)
-		 (point-max)
-		 'w3m-action
-		 (get-text-property (point) 'w3m-action)))
-	 (width (string-width
-		 (buffer-substring
-		  start
-		  (next-single-property-change start 'w3m-action))))
-	 (prop (text-properties-at start))
-	 (buffer-read-only))
-    (goto-char start)
-    (insert (setq string 
-		  (mapconcat 'identity 
-			     (split-string (truncate-string string width) "\n")
-			     ""))
-	    (make-string (- width (string-width string)) ?\ ))
-    (delete-region (point)
-		   (next-single-property-change (point) 'w3m-action))
-    (add-text-properties start (point) prop)
-    (point)))
+(defun w3m-form-replace (string &optional invisible)
+  (save-excursion
+    (let* ((start (text-property-any
+		   (point-min)
+		   (point-max)
+		   'w3m-action
+		   (get-text-property (point) 'w3m-action)))
+	   (width (string-width
+		   (buffer-substring
+		    start
+		    (next-single-property-change start 'w3m-action))))
+	   (prop (text-properties-at start))
+	   (buffer-read-only))
+      (goto-char start)
+      (insert (setq string
+		    (if invisible
+			(make-string (length string) ?.)
+		      (mapconcat 'identity 
+				 (split-string
+				  (truncate-string string width) "\n")
+				 "")))
+	      (make-string (- width (string-width string)) ?\ ))
+      (delete-region (point)
+		     (next-single-property-change (point) 'w3m-action))
+      (add-text-properties start (point) prop)
+      (point))))
 
-;;; FIXME: 本当は type の値に合わせて、適切な値のみを受け付けるように
-;;; チェックしたり、入力方法を変えたりするような実装が必要。
 (defun w3m-form-input (form name type width maxlength value)
   (save-excursion
     (let (input fvalue)
@@ -240,6 +263,16 @@
       (cond
        ((string= type "TEXTAREA")
 	(w3m-form-input-textarea form name fvalue))
+       ((string= type "SELECT")
+	(w3m-form-input-select form name fvalue))
+       ((string= type "PASSWORD")
+	(setq input (read-passwd (concat (upcase type)
+					 (if fvalue
+					     " (default is no change)")
+					 ": ") nil
+					 fvalue))
+	(w3m-form-put form name input)
+	(w3m-form-replace input 'invisible))
        (t
 	(setq input (read-from-minibuffer (concat (upcase type) ": ") fvalue))
 	(w3m-form-put form name input)
@@ -275,7 +308,6 @@
 (make-variable-buffer-local 'w3m-form-input-textarea-form)
 (make-variable-buffer-local 'w3m-form-input-textarea-name)
 (make-variable-buffer-local 'w3m-form-input-textarea-point)
-
 
 (defun w3m-form-input-textarea-set ()
   "Save and exit from w3m form textarea mode."
@@ -327,9 +359,119 @@
       (goto-char (point-min))
       (w3m-form-input-textarea-mode))))
 
+;;; SELECT
+
+(defcustom w3m-form-input-select-buffer-lines 10
+  "*Buffer lines for form select buffer."
+  :group 'w3m
+  :type 'integer)
+
+(defcustom w3m-form-input-select-mode-hook nil
+  "*A hook called after w3m-form-input-select-mode."
+  :group 'w3m
+  :type 'hook)
+
+(defcustom w3m-form-input-select-set-hook nil
+  "*A Hook called before w3m-form-input-select-set."
+  :group 'w3m
+  :type 'hook)
+
+(defvar w3m-form-input-select-keymap nil)
+(unless w3m-form-input-select-keymap
+  (setq w3m-form-input-select-keymap (make-sparse-keymap))
+  (define-key w3m-form-input-select-keymap "\C-c\C-c"
+    'w3m-form-input-select-set)
+  (define-key w3m-form-input-select-keymap "\r"
+    'w3m-form-input-select-set)
+  (define-key w3m-form-input-select-keymap "\C-m"
+    'w3m-form-input-select-set))
+(defvar w3m-form-input-select-buffer nil)
+(defvar w3m-form-input-select-form nil)
+(defvar w3m-form-input-select-name nil)
+(defvar w3m-form-input-select-point nil)
+(defvar w3m-form-input-select-candidates nil)
+(make-variable-buffer-local 'w3m-form-input-select-buffer)
+(make-variable-buffer-local 'w3m-form-input-select-form)
+(make-variable-buffer-local 'w3m-form-input-select-name)
+(make-variable-buffer-local 'w3m-form-input-select-point)
+(make-variable-buffer-local 'w3m-form-input-select-candidates)
+
+(defun w3m-form-input-select-set ()
+  "Save and exit from w3m form select mode."
+  (interactive)
+  (run-hooks 'w3m-form-input-select-set-hook)
+  (let* ((cur (get-text-property (point)
+				 'w3m-form-select-value))
+	 (buffer (current-buffer))
+	 (name w3m-form-input-select-name)
+	 (form w3m-form-input-select-form)
+	 (point w3m-form-input-select-point)
+	 (w3mbuffer w3m-form-input-select-buffer)
+	 input)
+    (setcar w3m-form-input-select-candidates cur)
+    (setq input w3m-form-input-select-candidates)
+    (when (buffer-live-p w3mbuffer)
+      (or (one-window-p) (delete-window))
+      (kill-buffer buffer)
+      (pop-to-buffer w3mbuffer)
+      (when (and form point)
+	(goto-char point)
+	(w3m-form-put form name input)
+	(w3m-form-replace (cdr (assoc cur (cdr input))))))))
+
+(defun w3m-form-input-select-mode ()
+  "Major mode for w3m form select."
+  (setq mode-name "w3m form select"
+	major-mode 'w3m-form-input-select-mode)
+  (setq buffer-read-only t)
+  (use-local-map w3m-form-input-select-keymap)
+  (run-hooks 'w3m-form-input-select-mode-hook))
+
+(defun w3m-form-input-select (form name value)
+  (let* ((cur-win (selected-window))
+	 (w3mbuffer (current-buffer))
+	 (point (point))
+	 (size (min
+		(- (window-height cur-win)
+		   window-min-height 1)
+		(- (window-height cur-win)
+		   (max window-min-height
+			(1+ w3m-form-input-select-buffer-lines)))))
+	 (buffer (generate-new-buffer "*w3m form select*"))
+	 cur pos)
+    (split-window cur-win (if (> size 0) size window-min-height))
+    (select-window (next-window))
+    (let ((pop-up-windows nil))
+      (switch-to-buffer buffer)
+      (set-buffer buffer)
+      (setq w3m-form-input-select-form form)
+      (setq w3m-form-input-select-name name)      
+      (setq w3m-form-input-select-buffer w3mbuffer)
+      (setq w3m-form-input-select-point point)
+      (setq w3m-form-input-select-candidates value)
+      (when value
+	(setq cur (car value))
+	(setq value (cdr value))
+	(dolist (candidate value)
+	  (setq pos (point))
+	  (insert (cdr candidate))
+	  (put-text-property pos (point) 'w3m-form-select-value
+			     (car candidate))
+	  (insert "\n")))
+      (goto-char (point-min))
+      (while (and (not (eobp))
+		  (not (equal cur (get-text-property (point)
+						     'w3m-form-select-value))))
+	(goto-char (next-single-property-change (point)
+						'w3m-form-select-value)))
+      (set-buffer-modified-p nil)
+      (beginning-of-line)
+      (w3m-form-input-select-mode))))
+
 ;;; 
 
-(defun w3m-form-submit (form)
+(defun w3m-form-submit (form &optional name value)
+  (when name (w3m-form-put form name value))
   (let ((url (w3m-form-make-get-string form)))
     (if url
 	(w3m-goto-url (w3m-expand-url url w3m-current-url))

@@ -30,7 +30,6 @@
 
 (defvar shimbun-h14m-url "http://www.h14m.org/ml/")
 (defvar shimbun-h14m-groups '("hns-dev" "hns-users"))
-(defvar shimbun-h14m-coding-system 'euc-jp)
 (defvar shimbun-h14m-reverse-flag nil)
 (defvar shimbun-h14m-litemplate-regexp
   "<STRONG><A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</A></STRONG>\n<UL><LI><EM>From</EM>: \\([^<]+\\)</LI></UL>")

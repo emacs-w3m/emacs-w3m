@@ -40,7 +40,6 @@
     ("gamespot" . "gamespot")))
 
 (defvar shimbun-zdnet-groups (mapcar 'car shimbun-zdnet-group-url-alist))
-(defvar shimbun-zdnet-coding-system 'shift_jis)
 (defvar shimbun-zdnet-from-address "zdnn@softbank.co.jp")
 (defvar shimbun-zdnet-content-start "\\(<!--BODY-->\\|<!--DATE-->\\)")
 (defvar shimbun-zdnet-content-end "\\(<!--BODYEND-->\\|<!--BYLINEEND-->\\)")

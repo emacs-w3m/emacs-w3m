@@ -38,7 +38,6 @@
 
 (defvar shimbun-nikkei-groups '("seikei" "kaigai" "market" "sangyo" "tento" "shakai" "retto" "shasetsu" "zinzi" "okuyami"))
  
-(defvar shimbun-nikkei-coding-system 'shift_jis)
 (defvar shimbun-nikkei-from-address "webmaster@nikkei.co.jp")
 (defvar shimbun-nikkei-content-start "<!--FJZONE START NAME=\"HONBUN\" -->")
 (defvar shimbun-nikkei-content-end   "<!--FJZONE END NAME=\"HONBUN\" -->")

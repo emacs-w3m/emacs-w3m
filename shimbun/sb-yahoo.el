@@ -38,7 +38,6 @@
 
 (defvar shimbun-yahoo-groups '("cpt" "dom" "int" "bus" "brf" "biz" "ent" "spo" "nkn" "clm"))
  
-(defvar shimbun-yahoo-coding-system 'euc-jp)
 (defvar shimbun-yahoo-from-address "news-admin@mail.yahoo.co.jp")
 (defvar shimbun-yahoo-content-start "\n<!-- TextStart -->\n")
 (defvar shimbun-yahoo-content-end   "\n<!-- TextEnd -->\n")

@@ -44,7 +44,6 @@
 
 (defvar shimbun-mew-url "http://www.mew.org/archive/")
 (defvar shimbun-mew-groups (mapcar 'car shimbun-mew-groups-alist))
-(defvar shimbun-mew-coding-system 'iso-2022-jp)
 
 (defmacro shimbun-mew-concat-url (shimbun url)
   (` (concat (shimbun-url-internal (, shimbun))

@@ -37,7 +37,6 @@
 
 (defvar shimbun-wired-url "http://www.hotwired.co.jp/")
 (defvar shimbun-wired-groups '("business" "culture" "technology"))
-(defvar shimbun-wired-coding-system 'euc-jp)
 (defvar shimbun-wired-from-address "webmaster@www.hotwired.co.jp")
 (defvar shimbun-wired-content-start
   "<FONT color=\"#ff0000\" size=\"-1\">.*</FONT>\n")

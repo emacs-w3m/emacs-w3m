@@ -34,7 +34,6 @@
 
 (defvar shimbun-linuxce-jp-url "http://www.peanuts.gr.jp/~kei/ml-archive/")
 (defvar shimbun-linuxce-jp-groups '("users"))
-(defvar shimbun-linuxce-jp-coding-system 'iso-2022-jp)
 
 (provide 'sb-linuxce-jp)
 

@@ -39,7 +39,6 @@
     ("emacs-w3m" . "~tsuchiya/emacs-w3m/ml")))
 
 (defvar shimbun-namazu-groups (mapcar 'car shimbun-namazu-group-url-alist))
-(defvar shimbun-namazu-coding-system 'euc-jp)
 (defvar shimbun-namazu-use-entire-index nil)
 (defvar shimbun-namazu-reverse-flag t)
 (defvar shimbun-namazu-litemplate-regexp

@@ -46,7 +46,6 @@
 
 (defconst shimbun-vinelinux-groups
   (mapcar 'car shimbun-vinelinux-group-path-alist))
-(defconst shimbun-vinelinux-coding-system 'iso-2022-jp)
 (defconst shimbun-vinelinux-from-address "webmaster@www.vinelinux.com")
 
 (defsubst shimbun-vinelinux-parse-time (str)

@@ -1,5 +1,50 @@
 2001-07-09  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-form.el (w3m-form-make-form-urlencoded): If second value of plist
+	is consp, use car value (for select).
+	(w3m-form-parse-region): Don't parse type attribute for textarea;
+	Process select.
+	(w3m-fontify-forms): Save value and name for submit.
+	(w3m-form-replace): Added optional argument `invisible'.
+	(w3m-form-input): Process SELECT and PASSWORD.
+	(w3m-form-input-select-buffer-lines): New user option.
+	(w3m-form-input-select-mode-hook): Ditto.
+	(w3m-form-input-select-set-hook): Ditto.
+	(w3m-form-input-select-keymap): New keymap.
+	(w3m-form-input-select-buffer): New buffer local variable.
+	(w3m-form-input-select-form): Ditto.
+	(w3m-form-input-select-name): Ditto.
+	(w3m-form-input-select-point): Ditto.
+	(w3m-form-input-select-candidates): Ditto.
+	(w3m-form-input-select-set): New function.
+	(w3m-form-input-select-mode): Ditto.
+	(w3m-form-input-select): Ditto.
+	(w3m-form-submit): Added optional argument name and value.
+
+	* shimbun/sb-airs.el (shimbun-airs-coding-system): Removed.
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html-coding-system): Ditto.
+	* shimbun/sb-asahi.el (shimbun-asahi-coding-system): Ditto.
+	* shimbun/sb-bbdb-ml.el (shimbun-bbdb-ml-coding-system): Ditto.
+	* shimbun/sb-cnet.el (shimbun-cnet-coding-system): Ditto.
+	* shimbun/sb-h14m.el (shimbun-h14m-coding-system): Ditto.
+	* shimbun/sb-impress.el (shimbun-impress-coding-system): Ditto.
+	(shimbun-impress-groups-alist): Removed jijinews, sports.
+	* shimbun/sb-linuxce-jp.el (shimbun-linuxce-jp-coding-system): Ditto.
+	* shimbun/sb-meadow.el (shimbun-meadow-coding-system): Ditto.
+	* shimbun/sb-mew.el (shimbun-mew-coding-system): Ditto.
+	* shimbun/sb-namazu.el (shimbun-namazu-coding-system): Ditto.
+	* shimbun/sb-netbsd.el (shimbun-netbsd-coding-system): Ditto.
+	* shimbun/sb-nikkei.el (shimbun-nikkei-coding-system): Ditto.
+	* shimbun/sb-ruby.el (shimbun-ruby-coding-system): Ditto.
+	* shimbun/sb-sponichi.el (shimbun-sponichi-coding-system): Ditto.
+	* shimbun/sb-toshiba.el (shimbun-toshiba-coding-system): Ditto.
+	* shimbun/sb-vinelinux.el (shimbun-vinelinux-coding-system): Ditto.
+	* shimbun/sb-w3m-dev.el (shimbun-w3m-dev-coding-system): Ditto.
+	* shimbun/sb-wired.el (shimbun-wired-coding-system): Ditto.
+	* shimbun/sb-yahoo.el (shimbun-yahoo-coding-system): Ditto.
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-coding-system): Ditto.
+	* shimbun/sb-zdnet.el (shimbun-zdnet-coding-system): Ditto.
+
 	* w3m.el (w3m-remove-comments): New function.
 	(w3m-rendering-region): Call it.
 

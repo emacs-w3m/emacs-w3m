@@ -39,7 +39,6 @@
 (defvar shimbun-sponichi-url "http://www.sponichi.co.jp/")
 (defvar shimbun-sponichi-groups '("baseball" "soccer" "usa" "others"
 				  "society" "entertainment" "horseracing"))
-(defvar shimbun-sponichi-coding-system 'shift_jis)
 (defvar shimbun-sponichi-from-address "webmaster@www.sponichi.co.jp")
 (defvar shimbun-sponichi-content-start "<!--ニュース記事ここから -->")
 (defvar shimbun-sponichi-content-end "<!--ニュース記事ここまで -->")

@@ -37,7 +37,6 @@
 
 (defvar shimbun-bbdb-ml-url "http://www.rc.tutrp.tut.ac.jp/bbdb-ml/")
 (defvar shimbun-bbdb-ml-groups '("bbdb-ml"))
-(defvar shimbun-bbdb-ml-coding-system 'iso-2022-jp)
 
 (provide 'sb-bbdb-ml)
 

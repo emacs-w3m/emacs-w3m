@@ -37,7 +37,6 @@
 (defvar shimbun-asahi-url "http://spin.asahi.com/")
 (defvar shimbun-asahi-groups '("national" "business" "politics"
 			       "international" "sports"))
-(defvar shimbun-asahi-coding-system 'shift_jis)
 (defvar shimbun-asahi-from-address "webmaster@www.asahi.com")
 
 (defvar shimbun-asahi-content-start "\n<!-- Start of kiji -->\n")
