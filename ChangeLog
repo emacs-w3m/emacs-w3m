@@ -1,3 +1,7 @@
+2001-11-01  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-form.el (w3m-form-resume): Fix typo.
+
 2001-10-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-w3m-attributes): Return the pseudo-normalized URL as

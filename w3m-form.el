@@ -356,7 +356,7 @@ return them with the flag."
 		name (match-string 3 fid))
 	  (cond
 	   ((or (string= type "submit")
-		(string= type "clear")
+		(string= type "reset")
 		(string= type "hidden")
 		;; Do nothing.
 		))
