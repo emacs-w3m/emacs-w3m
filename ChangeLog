@@ -1,5 +1,8 @@
 2001-11-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-vinelinux.el: Changed the coding system of this file
+	to iso-2022-7bit.
+
 	* w3m.el (emacs-w3m-version): Incremted to 1.2.1rc1.
 
 	* w3m-xmas.el (top): Define `w3m-current-title' to avoid
