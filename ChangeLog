@@ -3,6 +3,15 @@
 	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers): Follow the
 	change of the Web site.
 
+2002-07-31  YAMASAKI  <tyms_ml@plum.freemail.ne.jp>
+
+	* shimbun/sb-slashdot-jp.el
+	(shimbun-slashdot-jp-make-story-article): Go to the beginning of
+	the buffer before searching for a significant pattern.
+	(shimbun-slashdot-jp-make-comment-article): Ditto.
+	(shimbun-slashdot-jp-make-story-headers): Ditto.
+	(shimbun-slashdot-jp-make-comment-headers): Ditto.
+
 2002-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-get-headers-in-the-list-page):
