@@ -1,3 +1,8 @@
+2003-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-view-this-url-1): Simply copy buffer's contents to
+	the new session rather than to call `w3m-goto-url'.
+
 2003-07-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-local-file-type): Check whether a regular expression
