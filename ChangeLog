@@ -1,3 +1,8 @@
+2004-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-relationship-estimate-rules): Fix regexp for Google.
+	Suggested by Romain Francoise <romain@orebokech.com>.
+
 2004-08-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi-mytown.el (shimbun-asahi-mytown-get-headers):
@@ -23,7 +28,7 @@
 	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Simply remove
 	`<...>'s from a subject when parsing the kansai-special group.
 
-2004-07-30  Romain Francoise <romain@orebokech.com>
+2004-07-30  Romain Francoise  <romain@orebokech.com>
 
 	Enable emacs-w3m to be built with Emacs --without-x.
 

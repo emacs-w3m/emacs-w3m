@@ -1591,9 +1591,9 @@ Here are some predefined functions which can be used for those ways:
   `((w3m-relationship-simple-estimate
      "\\`http://www\\.google\\.[^/]+/search"
      ,(concat "<a href=" w3m-html-string-regexp
-	      "><img src=/\\(intl/[^/]+/\\)nav_next.gif")
+	      "><img src=/\\(intl/[^/]+/\\)?nav_next\\.gif")
      ,(concat "<a href=" w3m-html-string-regexp
-	      "><img src=/\\(intl/[^/]+/\\)nav_previous.gif")
+	      "><img src=/\\(intl/[^/]+/\\)?nav_previous\\.gif")
      nil nil)
     (w3m-relationship-simple-estimate
      "\\`http://www\\.zdnet\\.co\\.jp/news/"
