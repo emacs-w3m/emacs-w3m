@@ -251,78 +251,79 @@ If no field in forward, return nil without moving."
 	(setq forms (cdr forms)))
     (save-excursion
       (goto-char (point-min))
-      (let (fid type name form cform textareas id)
+      (let (textareas)
 	(while (w3m-form-goto-next-field)
-	  (setq fid (get-text-property (point) 'w3m-form-field-id))
-	  (when
-	      (and fid
-		   (string-match
-	  "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
-		    fid))
-	    (setq form (nth (string-to-number (match-string 1 fid))
-			    forms)
-		  cform (nth (string-to-number (match-string 1 fid))
-			     w3m-current-forms)
-		  type (match-string 2 fid)
-		  name (match-string 3 fid)
-		  id (string-to-number (match-string 4 fid)))
-	    (cond
-	     ((or (string= type "submit")
-		  (string= type "image"))
-	      ;; Remove status to support forms containing multiple
-	      ;; submit buttons.
-	      (w3m-form-put cform id name nil))
-	     ((or (string= type "reset")
-		  (string= type "hidden")
-		  ;; Do nothing.
-		  ))
-	     ((string= type "password")
-	      (w3m-form-replace (w3m-form-get form id)
-				'invisible)
-	      (unless (eq form cform)
-		(w3m-form-put cform id name (w3m-form-get form id))))
-	     ((string= type "radio")
-	      (let ((value (w3m-form-get-by-name form name)))
-		(when value
-		  (w3m-form-replace
-		   (if (string= value (nth 4 (w3m-action (point))))
-		       "*" " ")))
-		(unless (eq form cform)
-		  (w3m-form-put-by-name cform id name value))))
-	     ((string= type "checkbox")
-	      (let ((value (w3m-form-get form id)))
-		(when value
-		  (w3m-form-replace
-		   (if (member (nth 4 (w3m-action (point))) value)
-		       "*" " ")))
-		(unless (eq form cform)
-		  (w3m-form-put cform id name value))))
-	     ((string= type "select")
-	      (let ((selects (w3m-form-get form id)))
-		(when (car selects)
-		  (w3m-form-replace (cdr (assoc (car selects) (cdr selects)))))
-		(unless (eq form cform)
-		  (w3m-form-put cform id name selects))))
-	     ((string= type "textarea")
-	      (let ((hseq (nth 2 (w3m-action (point))))
-		    (value (w3m-form-get form id)))
-		(when (> hseq 0)
-		  (setq textareas (cons (cons hseq value) textareas)))
-		(unless (eq form cform)
-		  (w3m-form-put cform id name value))))
-	     ((string= type "file")
-	      (let ((value (w3m-form-get form id)))
-		(when (and value
-			   (consp value))
-		  (w3m-form-replace (cdr value)))
-		(unless (eq form cform)
-		  (w3m-form-put cform id name value))))
-	     (t
-	      (let ((value (w3m-form-get form id)))
-		(when (stringp value)
-		  (w3m-form-replace value))
-		(unless (eq form cform)
-		  (w3m-form-put cform id name value)))))))
+	  (let ((fid (get-text-property (point) 'w3m-form-field-id)))
+	    (when (and fid
+		       (string-match "\
+fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
+				     fid))
+	      (let ((form (nth (string-to-number (match-string 1 fid))
+			       forms))
+		    (cform (nth (string-to-number (match-string 1 fid))
+				w3m-current-forms))
+		    (type (match-string 2 fid))
+		    (name (match-string 3 fid))
+		    (id (string-to-number (match-string 4 fid))))
+		(when form
+		  (cond
+		   ((or (string= type "submit")
+			(string= type "image"))
+		    ;; Remove status to support forms containing multiple
+		    ;; submit buttons.
+		    (w3m-form-put cform id name nil))
+		   ((or (string= type "reset")
+			(string= type "hidden")
+			;; Do nothing.
+			))
+		   ((string= type "password")
+		    (w3m-form-replace (w3m-form-get form id)
+				      'invisible)
+		    (unless (eq form cform)
+		      (w3m-form-put cform id name (w3m-form-get form id))))
+		   ((string= type "radio")
+		    (let ((value (w3m-form-get-by-name form name)))
+		      (when value
+			(w3m-form-replace
+			 (if (string= value (nth 4 (w3m-action (point))))
+			     "*" " ")))
+		      (unless (eq form cform)
+			(w3m-form-put-by-name cform id name value))))
+		   ((string= type "checkbox")
+		    (let ((value (w3m-form-get form id)))
+		      (when value
+			(w3m-form-replace
+			 (if (member (nth 4 (w3m-action (point))) value)
+			     "*" " ")))
+		      (unless (eq form cform)
+			(w3m-form-put cform id name value))))
+		   ((string= type "select")
+		    (let ((selects (w3m-form-get form id)))
+		      (when (car selects)
+			(w3m-form-replace (cdr (assoc (car selects)
+						      (cdr selects)))))
+		      (unless (eq form cform)
+			(w3m-form-put cform id name selects))))
+		   ((string= type "textarea")
+		    (let ((hseq (nth 2 (w3m-action (point))))
+			  (value (w3m-form-get form id)))
+		      (when (> hseq 0)
+			(setq textareas (cons (cons hseq value) textareas)))
+		      (unless (eq form cform)
+			(w3m-form-put cform id name value))))
+		   ((string= type "file")
+		    (let ((value (w3m-form-get form id)))
+		      (when (and value
+				 (consp value))
+			(w3m-form-replace (cdr value)))
+		      (unless (eq form cform)
+			(w3m-form-put cform id name value))))
+		   (t
+		    (let ((value (w3m-form-get form id)))
+		      (when (stringp value)
+			(w3m-form-replace value))
+		      (unless (eq form cform)
+			(w3m-form-put cform id name value))))))))))
 	(unless w3m-form-treat-textarea-size
 	  (dolist (textarea textareas)
 	    (when (cdr textarea)

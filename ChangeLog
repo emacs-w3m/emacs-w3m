@@ -1,3 +1,8 @@
+2004-11-26  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m-form.el (w3m-form-resume): Check whether a form exists,
+	before resuming its values from its history.
+
 2004-11-25  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
 	* shimbun/sb-exconn.el (shimbun-exconn-content-start): Synchronize.
