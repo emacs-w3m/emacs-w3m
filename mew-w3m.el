@@ -2,7 +2,7 @@
 
 ;; Copyright (c) 2001 Shun-ichi Goto.
 
-;; Author: Shun-ichi GOTO <gotoh@taiyo.co.jp>
+;; Author: Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 ;; Created: Wed Feb 28 03:31:00 2001
 ;; Version: $Revision$
 ;; Keywords: Mew, mail, w3m, WWW, hypermedia
@@ -53,6 +53,10 @@
 When viewing Text/Html contents rendering with w3m, use `w3m-minor-mode'
 and its keymap in message buffer.")
 
+(defvar mew-w3m-auto-insert-image t
+  "*If t, an image inserts automatic in Multipart/Related message.
+This variable effected only XEmacs or Emacs 21.")
+  
 ;; these are defined here.
 ;; It's not reasonable to merge into w3m.el, i think
 (defvar mew-w3m-minor-mode nil)
@@ -69,6 +73,7 @@ and its keymap in message buffer.")
       (mew-mime-text/html cache begin end params execute)
     (mew-elet
       (let ((file (format "%s.html" (mew-make-temp-name)))
+	    (w3m-display-inline-image mew-w3m-auto-insert-image)
 	    charset wcs)
 	(setq charset (mew-syntax-get-param params "charset"))
 	(if charset 
@@ -80,6 +85,43 @@ and its keymap in message buffer.")
 		      (progn (insert-buffer-substring cache begin end) 
 			     (point)))
 	  (put-text-property (point-min) (1+ (point-min)) 'w3m t))))))
+
+(defun mew-w3m-cid-retrieve (url &optional no-decode accept-type-regexp no-cache)
+  (when (string-match "^cid:\\(.+\\)" url)
+    (setq url (match-string 1 url))
+    (let* ((fld (mew-current-get-fld (mew-frame-id)))
+	   (msg (mew-current-get-msg (mew-frame-id)))
+	   (part (mew-current-get-part (mew-frame-id)))
+	   (cache (mew-cache-hit fld msg 'must-hit))
+	   (syntax (mew-cache-decode-syntax cache))
+	   (part1 (car part))
+	   (part2 1)
+	   len cid cidpart beg end)
+      (when (= (length part) 2)
+	(setq len
+	      (- (length
+		  (mew-syntax-get-part (mew-syntax-get-entry syntax (list part1))))
+		 mew-syntax-magic))
+	(setq cidpart
+	      (catch 'detcid
+		(while (>= len part2)
+		  (setq cid (mew-syntax-get-cid
+			     (mew-syntax-get-entry syntax (list part1 part2))))
+		  (when (and cid (string= cid url))
+		    (throw 'detcid (list part1 part2)))
+		  (setq part2 (1+ part2)))))
+	(when cidpart
+	  (setq syntax (mew-syntax-get-entry syntax cidpart))
+	  (setq beg (mew-syntax-get-begin syntax))
+	  (setq end (mew-syntax-get-end syntax))
+	  (w3m-with-work-buffer
+	    (delete-region (point-min) (point-max))
+	    (set-buffer-multibyte nil)
+	    (insert-buffer-substring cache beg end))
+	  (car (mew-syntax-get-ct syntax)))))))
+
+(push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
+      w3m-cid-retrieve-function-alist)
 
 ;;;
 (provide 'mew-w3m)

@@ -1,3 +1,10 @@
+2001-03-09  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-w3m-auto-insert-image): New variable.
+	(mew-mime-text/html-w3m): Bind 'w3m-display-inline-image' with
+	'mew-w3m-auto-insert-image'.
+	(mew-w3m-cid-retrieve): New function.
+
 2001-03-09  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-mode-map): Add `w3m-close-window',
