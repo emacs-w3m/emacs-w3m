@@ -294,7 +294,8 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defconst w3m-favicon-name "favicon.ico"
   "The favicon name.")
 
-(defvar w3m-current-favicon-data nil)
+(defvar w3m-current-favicon-data nil
+  "A cons cell of (IMAGE-DATA . IMAGE-TYPE).")
 (defvar w3m-current-favicon-image nil)
 (make-variable-buffer-local 'w3m-current-favicon-data)
 (make-variable-buffer-local 'w3m-current-favicon-image)
@@ -341,8 +342,9 @@ a large number of bits per pixel."
     (and xpm (string-match "\"2 1 2 1\"" xpm) t)))
 
 (defcustom w3m-use-favicon t
-  "*Use favicon.  It will be set to nil automatically if ImageMagick's
-`convert' does not support a Windoze ico format.  You can inhibit the
+  "*If non-nil, use favicon.
+It will be set to nil automatically if ImageMagick's
+`convert' does not support a ico format.  You can inhibit the
 use of ImageMagick absolutely by setting this option to nil."
   :get (lambda (symbol)
 	 (and (not noninteractive)
@@ -383,7 +385,8 @@ Each information is a list whose elements are:
   `(assoc ,url w3m-favicon-cache-data))
 
 (defmacro w3m-favicon-cache-favicon (url)
-  `(nth 1 (assoc ,url w3m-favicon-cache-data)))
+  `(let ((data (nth 1 (assoc ,url w3m-favicon-cache-data))))
+     (if (stringp data) (cons data 'ico) data)))
 
 (defmacro w3m-favicon-cache-retrived (url)
   `(nth 2 (assoc ,url w3m-favicon-cache-data)))
@@ -405,19 +408,23 @@ Each information is a list whose elements are:
 				(symbol-value icon))))))))
      ((string-match "\\`https?://" url)
       (w3m-retrieve-favicon
-       (w3m-expand-url (concat "/" w3m-favicon-name) url)
+       (or (symbol-value 'w3m-icon-data)
+	   (cons 
+	    (w3m-expand-url (concat "/" w3m-favicon-name)
+			    url)
+	    'ico))
        w3m-current-buffer)))))
 
 (defun w3m-buffer-favicon (buffer)
   (with-current-buffer buffer
-    (when w3m-current-favicon-data
+    (when (and w3m-current-favicon-data (car w3m-current-favicon-data))
       (or w3m-current-favicon-image
 	  (let* ((height (number-to-string (frame-char-height)))
 		 (xpm (w3m-imagick-convert-data
-		       w3m-current-favicon-data
-		       "ico" "xpm" "-geometry" (or 
-						w3m-favicon-size
-						(concat height "x" height)))))
+		       (car w3m-current-favicon-data)
+		       (symbol-name (cdr w3m-current-favicon-data))
+		       "xpm" "-geometry" (or w3m-favicon-size
+					     (concat height "x" height)))))
 	    (if xpm
 		(setq w3m-current-favicon-image
 		      (create-image xpm
@@ -426,24 +433,27 @@ Each information is a list whose elements are:
 				    :ascent 'center))
 	      (setq w3m-current-favicon-data nil)))))))
 
-(defun w3m-retrieve-favicon (url target &optional handler)
-  (if (and (w3m-favicon-cache-p url)
+(defun w3m-retrieve-favicon (pair target &optional handler)
+  (if (and (w3m-favicon-cache-p (car pair))
 	   (or (null w3m-favicon-cache-expire-wait)
 	       (< (- (float-time)
-		     (float-time (w3m-favicon-cache-retrived url)))
+		     (float-time (w3m-favicon-cache-retrived
+				  (car pair))))
 		  w3m-favicon-cache-expire-wait)))
       (setq w3m-current-favicon-data
-	    (w3m-favicon-cache-favicon url))
-    (lexical-let ((url url)
+	    (w3m-favicon-cache-favicon (car pair)))
+    (lexical-let ((pair pair)
 		  (target target))
       (w3m-process-do-with-temp-buffer
-	  (ok (w3m-retrieve url 'raw nil nil nil handler))
-	(let (data)
+	  (ok (w3m-retrieve (car pair) 'raw nil nil nil handler))
+	(let (idata)
 	  (when ok
-	    (setq data (buffer-string))
+	    (setq idata (buffer-string))
 	    (with-current-buffer target
-	      (setq w3m-current-favicon-data data)))
-	  (push (list url data (current-time)) w3m-favicon-cache-data))))))
+	      (setq w3m-current-favicon-data (cons idata (cdr pair)))))
+	  (push (list (car pair) (and idata (cons idata (cdr pair)))
+		      (current-time))
+		w3m-favicon-cache-data))))))
 
 (defun w3m-favicon-save-cache-file ()
   (when w3m-favicon-use-cache-file

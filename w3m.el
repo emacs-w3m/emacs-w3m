@@ -1034,6 +1034,8 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (defvar w3m-current-base-url nil "Base URL of this buffer.")
 (defvar w3m-current-forms nil "Forms of this buffer.")
 (defvar w3m-current-coding-system nil "Current coding-system of this buffer.")
+(defvar w3m-icon-data nil
+  "Cons cell of icon URL and its IMAGE-TYPE of this buffer.")
 (defvar w3m-next-url nil "Next URL of this buffer.")
 (defvar w3m-previous-url nil "Previous URL of this buffer.")
 (defvar w3m-start-url nil "Start URL of this buffer.")
@@ -1046,6 +1048,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (make-variable-buffer-local 'w3m-current-title)
 (make-variable-buffer-local 'w3m-current-forms)
 (make-variable-buffer-local 'w3m-current-coding-system)
+(make-variable-buffer-local 'w3m-icon-data)
 (make-variable-buffer-local 'w3m-next-url)
 (make-variable-buffer-local 'w3m-previous-url)
 (make-variable-buffer-local 'w3m-start-url)
@@ -1059,6 +1062,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	w3m-current-title nil
 	w3m-current-forms nil
 	w3m-current-coding-system nil
+	w3m-icon-data nil
 	w3m-next-url nil
 	w3m-previous-url nil
 	w3m-start-url nil
@@ -1067,13 +1071,14 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	w3m-current-refresh nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url base title forms cs next prev start toc hseq refresh)
+  (let (url base title forms cs icon next prev start toc hseq refresh)
     (with-current-buffer from-buffer
       (setq url w3m-current-url
 	    base w3m-current-base-url
 	    title w3m-current-title
 	    forms w3m-current-forms
 	    cs w3m-current-coding-system
+	    icon w3m-icon-data
 	    next w3m-next-url
 	    prev w3m-previous-url
 	    start w3m-start-url
@@ -1085,6 +1090,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	  w3m-current-title title
 	  w3m-current-forms forms
 	  w3m-current-coding-system cs
+	  w3m-icon-data icon
 	  w3m-next-url next
 	  w3m-previous-url prev
 	  w3m-start-url start
@@ -1918,6 +1924,9 @@ with ^ as `cat -v' does."
 			     (point-max))))
 	    (w3m-add-text-properties start end
 				     (list 'w3m-name-anchor name)))))))
+    (when w3m-icon-data
+      (setq w3m-icon-data (cons (w3m-expand-url (car w3m-icon-data))
+				(w3m-image-type (cdr w3m-icon-data)))))
     (when w3m-next-url
       (setq w3m-next-url (w3m-expand-url w3m-next-url)))
     (when w3m-previous-url
@@ -3108,10 +3117,11 @@ type as a string argument, when retrieve is complete."
 	(narrow-to-region (point-min) (point))
 	(goto-char (point-min))
 	(while (re-search-forward "<link[ \t\r\f\n]+" nil t)
-	  (w3m-parse-attributes ((rel :case-ignore) href)
+	  (w3m-parse-attributes ((rel :case-ignore) href type)
 	    (when rel
 	      (setq rel (split-string rel))
 	      (cond
+	       ((member "icon" rel) (setq w3m-icon-data (cons href type)))
 	       ((member "next" rel) (setq w3m-next-url href))
 	       ((or (member "prev" rel) (member "previous" rel))
 		(setq w3m-previous-url href))
@@ -4668,7 +4678,8 @@ field for this request."
 		 url (substring url 0 (match-beginning 8))))
       (lexical-let ((ct (w3m-arrived-content-type url))
 		    (cs (unless (eq t charset)
-			  (or charset (w3m-arrived-content-charset url)))))
+			  (or charset (w3m-arrived-content-charset url))))
+		    (real-url))
 	(if ct
 	    (when reload
 	      (let* ((minibuffer-setup-hook
@@ -4704,9 +4715,10 @@ field for this request."
 					      referer handler))))
 	  (with-current-buffer w3m-current-buffer
 	    (setq w3m-current-process nil)
+	    (setq real-url (w3m-real-url url))
 	    (cond
 	     ((not action)
-	      (w3m-history-push (w3m-real-url url)
+	      (w3m-history-push real-url
 				(list :title (file-name-nondirectory url)))
 	      (w3m-history-push w3m-current-url)
 	      (w3m-refontify-anchor))
@@ -4732,7 +4744,7 @@ field for this request."
 	    ;; must be `w3m-current-url'
 	    (setq default-directory (w3m-current-directory w3m-current-url))
 	    (w3m-update-toolbar)
-	    (run-hook-with-args 'w3m-display-hook url)
+	    (run-hook-with-args 'w3m-display-hook (or real-url url))
 	    (w3m-refresh-at-time))))))))
 
 (defun w3m-current-directory (url)

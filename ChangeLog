@@ -1,3 +1,21 @@
+2002-02-08  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-icon-data): New buffer local variable.
+	(w3m-clear-local-variables): Add `w3m-icon-data'.
+	(w3m-copy-local-variables): Ditto.
+	(w3m-fontify-anchors): Setup `w3m-icon-data'.
+	(w3m-check-link-tags): Parse `type' of link attribute;
+	Set `w3m-icon-data' if `icon' rel attribute exist.
+	(w3m-goto-url): Added local variable real-data.
+
+	* w3m-e21.el (w3m-favicon-cache-favicon): Added compatibility code.
+	(w3m-setup-favicon): Use w3m-icon-data if it exists;
+	Changed first argument for `w3m-retrieve-favicon'.
+	(w3m-buffer-favicon): Use car of `w3m-current-favicon-data' as
+	image data and cdr as image type.
+	(w3m-retrieve-favicon): Changed first argument to cons cell of
+	image data and its type.
+
 2002-02-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-save-list): Allow the 4th arg `escape-ctl-chars'.
