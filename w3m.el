@@ -4665,21 +4665,25 @@ POST-DATA and REFERER will be sent to the web server with a request."
   (setq w3m-current-refresh nil)
   (when w3m-use-refresh
     (let ((case-fold-search t)
-	  sec refurl)
+	  (refurl w3m-current-url)
+	  sec)
       (goto-char (point-min))
       (catch 'found
 	(while (re-search-forward "<meta[ \t\r\f\n]+" nil t)
 	  (w3m-parse-attributes ((http-equiv :case-ignore) content)
-	    (when (and (string= http-equiv "refresh")
-		       (string-match
-			"\\([^;]+\\);[ \t\n]*url=[\"']?\\([^\"']+\\)"
-			content))
-	      (setq sec (match-string-no-properties 1 content))
-	      (setq refurl (w3m-decode-entities-string
-			    (match-string-no-properties 2 content)))
-	      (when (string-match "\\`[\"']\\(.*\\)[\"']\\'" refurl)
-		(setq refurl (match-string 1 refurl)))
-	      (unless (string-match "[^0-9]" sec)
+	    (when (string= http-equiv "refresh")
+	      (cond
+	       ((string-match "\\`[0-9]+\\'" content)
+		(setq sec (match-string-no-properties 0 content)))
+	       ((string-match
+		 "\\([^;]+\\);[ \t\n]*url=[\"']?\\([^\"']+\\)"
+		 content)
+		(setq sec (match-string-no-properties 1 content))
+		(setq refurl (w3m-decode-entities-string
+			      (match-string-no-properties 2 content)))
+		(when (string-match "\\`[\"']\\(.*\\)[\"']\\'" refurl)
+		  (setq refurl (match-string 1 refurl)))))
+	      (when (and sec (string-match "\\`[0-9]+\\'" sec))
 		(throw 'found
 		       (setq w3m-current-refresh
 			     (cons (string-to-number sec)
@@ -7156,7 +7160,8 @@ Cannot run two w3m processes simultaneously \
 	  (pop-to-buffer buffer)
 	  (with-current-buffer buffer
 	    (w3m-cancel-refresh-timer buffer)
-	    (w3m-goto-url url)))
+	    (w3m-goto-url url (and w3m-current-url
+				   (string= url w3m-current-url)))))
       (with-current-buffer buffer
 	(w3m-cancel-refresh-timer buffer)))))
 
