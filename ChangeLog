@@ -1,3 +1,20 @@
+2001-12-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+	Suggested by OHASHI Akira <bg66@koka-in.org>.
+	
+	* w3m.el (w3m-print-this-url): Display a message when it is called
+	interactively.
+	(w3m-forward-char, w3m-backward-char, w3m-next-line,
+	w3m-previous-line, w3m-scroll-up, w3m-scroll-down, w3m-goto-line):
+	New commands.
+	(w3m-lynx-like-map, w3m-info-like-map): These commands are
+	registered.
+	(w3m-mode): Modified docstring to follow changes of keymaps.
+
+2001-12-29  OHASHI Akira  <bg66@koka-in.org>
+
+	* w3m.el (w3m-print-this-url): Don't print any messages	when
+	there is no url or form under point.
+
 2001-12-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-url-local-directory-alist): Renamed from

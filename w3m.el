@@ -3429,14 +3429,16 @@ session."
   (kill-new w3m-current-url)
   (message "%s" w3m-current-url))
 
-(defun w3m-print-this-url (&optional add-kill-ring)
+(defun w3m-print-this-url (&optional arg)
   "Print the URL of the link under point."
   (interactive (list t))
   (let ((url (or (w3m-anchor) (w3m-image))))
-    (and add-kill-ring url (kill-new url))
-    (message "%s" (or url
-		      (and (w3m-action) "There is a form")
-		      "There is no url"))))
+    (when (or url arg)
+      (and url arg (kill-new url))
+      (message "%s"
+	       (or url
+		   (and (w3m-action) "There is a form")
+		   "There is no url")))))
 
 (defun w3m-edit-url (url)
   "Edit the local file pointed by URL."
@@ -3775,6 +3777,13 @@ If EMPTY is non-nil, the created buffer has empty content."
 (unless w3m-lynx-like-map
   (let ((map (make-keymap)))
     (suppress-keymap map)
+    (let ((global-map (current-global-map)))
+      (substitute-key-definition 'forward-char 'w3m-forward-char map global-map)
+      (substitute-key-definition 'backward-char 'w3m-backward-char map global-map)
+      (substitute-key-definition 'next-line 'w3m-next-line map global-map)
+      (substitute-key-definition 'previous-line 'w3m-previous-line map global-map)
+      (substitute-key-definition 'scroll-up 'w3m-scroll-up map global-map)
+      (substitute-key-definition 'scroll-down 'w3m-scroll-down map global-map))
     (define-key map " " 'w3m-scroll-up-or-next-url)
     (define-key map "b" 'w3m-scroll-down-or-previous-url)
     (define-key map [backspace] 'w3m-scroll-down-or-previous-url)
@@ -3783,13 +3792,13 @@ If EMPTY is non-nil, the created buffer has empty content."
 	(define-key map [(shift space)] 'w3m-scroll-down-or-previous-url)
       ;; Note: It does not have an effect on Emacs 19.
       (define-key map [?\S-\ ] 'w3m-scroll-down-or-previous-url))
-    (define-key map "h" 'backward-char)
-    (define-key map "j" 'next-line)
-    (define-key map "k" 'previous-line)
-    (define-key map "l" 'forward-char)
-    (define-key map "J" (lambda () (interactive) (scroll-down 1)))
-    (define-key map "K" (lambda () (interactive) (scroll-up 1)))
-    (define-key map "\M-g" 'goto-line)
+    (define-key map "h" 'w3m-backward-char)
+    (define-key map "j" 'w3m-next-line)
+    (define-key map "k" 'w3m-previous-line)
+    (define-key map "l" 'w3m-forward-char)
+    (define-key map "J" (lambda () (interactive) (w3m-scroll-down 1)))
+    (define-key map "K" (lambda () (interactive) (w3m-scroll-up 1)))
+    (define-key map "\M-g" 'w3m-goto-line)
     (define-key map "\C-?" 'w3m-scroll-down-or-previous-url)
     (define-key map "\t" 'w3m-next-anchor)
     (define-key map [(shift tab)] 'w3m-previous-anchor)
@@ -3869,6 +3878,13 @@ If EMPTY is non-nil, the created buffer has empty content."
 (unless w3m-info-like-map
   (let ((map (make-keymap)))
     (suppress-keymap map)
+    (let ((global-map (current-global-map)))
+      (substitute-key-definition 'forward-char 'w3m-forward-char map global-map)
+      (substitute-key-definition 'backward-char 'w3m-backward-char map global-map)
+      (substitute-key-definition 'next-line 'w3m-next-line map global-map)
+      (substitute-key-definition 'previous-line 'w3m-previous-line map global-map)
+      (substitute-key-definition 'scroll-up 'w3m-scroll-up map global-map)
+      (substitute-key-definition 'scroll-down 'w3m-scroll-down map global-map))
     (define-key map [backspace] 'w3m-scroll-down-or-previous-url)
     (define-key map [delete] 'w3m-scroll-down-or-previous-url)
     (define-key map "\C-?" 'w3m-scroll-down-or-previous-url)
@@ -3907,7 +3923,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "E" 'w3m-edit-this-url)
     (define-key map "f" 'undefined) ;; reserved.
     (define-key map "g" 'w3m-goto-url)
-    (define-key map "\M-g" 'goto-line)
+    (define-key map "\M-g" 'w3m-goto-line)
     (define-key map "G" 'w3m-goto-url-new-session)
     (define-key map "h" 'describe-mode)
     (define-key map "H" 'w3m-gohome)
@@ -4080,13 +4096,13 @@ Return t if deleting current frame or window is succeeded."
 \\[w3m-scroll-left]	Scroll to left.
 \\[w3m-scroll-right]	Scroll to right.
 
-\\[next-line]	Next line.
-\\[previous-line]	Previous line.
+\\[w3m-next-line]	Next line.
+\\[w3m-previous-line]	Previous line.
 
-\\[forward-char]	Forward char.
-\\[backward-char]	Backward char.
+\\[w3m-forward-char]	Forward char.
+\\[w3m-backward-char]	Backward char.
 
-\\[goto-line]	Jump to line.
+\\[w3m-goto-line]	Jump to line.
 \\[w3m-history-store-position]	Mark the current position.
 \\[w3m-history-restore-position]	Goto the last position.
 
@@ -4132,6 +4148,50 @@ Return t if deleting current frame or window is succeeded."
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-hook))
+
+(defun w3m-forward-char (&optional n)
+  "Move point right N characters (left if N is negative).
+On reaching end of buffer, stop and signal error."
+  (interactive "p")
+  (prog1 (forward-char n)
+    (w3m-print-this-url)))
+
+(defun w3m-backward-char (&optional n)
+  "Move point left N characters (right if N is negative).
+On attempt to pass beginning or end of buffer, stop and signal error."
+  (interactive "p")
+  (prog1 (forward-char (- n))
+    (w3m-print-this-url)))
+
+(defun w3m-next-line (&optional arg)
+  "Move cursor vertically down ARG lines."
+  (interactive "p")
+  (prog1 (next-line arg)
+    (w3m-print-this-url)))
+
+(defun w3m-previous-line (&optional arg)
+  "Move cursor vertically up ARG lines."
+  (interactive "p")
+  (prog1 (next-line (- arg))
+    (w3m-print-this-url)))
+
+(defun w3m-goto-line (arg)
+  "Goto line ARG, counting from line 1 at beginning of buffer."
+  (interactive "NGoto line: ")
+  (prog1 (goto-line arg)
+    (w3m-print-this-url)))
+
+(defun w3m-scroll-up (&optional arg)
+  "Scroll text of current window upward ARG lines; or near full screen if no ARG."
+  (interactive "P")
+  (prog1 (scroll-up arg)
+    (w3m-print-this-url)))
+
+(defun w3m-scroll-down (&optional arg)
+  "Scroll text of current window down ARG lines; or near full screen if no ARG."
+  (interactive "P")
+  (prog1 (scroll-down arg)
+    (w3m-print-this-url)))
 
 (defun w3m-scroll-up-or-next-url (arg)
   "Scroll text of current window upward ARG lines; or go to next url."
