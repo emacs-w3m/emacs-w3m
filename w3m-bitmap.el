@@ -181,13 +181,13 @@ a new overlay will be created and returned."
 (defun w3m-bitmap-image-delete-internal (pos ovr &optional width)
   (save-excursion
     (goto-char pos)
-    (let ((eol (line-end-position))
-	  col)
+    (let (col eol)
       (if ovr
 	  (progn
 	    (overlay-put ovr 'evaporate nil)
 	    (setq col (w3m-bitmap-current-column))
 	    (while (< (point) (overlay-end ovr))
+	      (setq eol (line-end-position))
 	      (w3m-bitmap-move-to-column-force col)
 	      (delete-region (point)
 			     (if width
@@ -195,8 +195,12 @@ a new overlay will be created and returned."
 			       (or (text-property-not-all (point) eol
 							  'w3m-bitmap-image t)
 				   eol)))
-	      (forward-line)
-	      (setq eol (line-end-position))))
+	      (if (and (bolp)
+		       (eolp)
+		       (> (point) pos))
+		  (delete-char 1)
+		(forward-line))))
+	(setq eol (line-end-position))
 	(delete-region pos (if width
 			       (min (+ pos width) eol)
 			     (or (text-property-not-all pos eol

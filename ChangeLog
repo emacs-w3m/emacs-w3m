@@ -2,6 +2,7 @@
 
 	* w3m-bitmap.el (w3m-bitmap-image-insert): Replace `insert' with
 	`insert-before-markers'.
+	(w3m-bitmap-image-delete-internal): Delete trailing newline.
 	(w3m-insert-image): Don't check for the existence of an image.
 
 	* w3m.el (w3m-history-current-url-face): Provide `font' temporally
@@ -52,7 +53,7 @@
 
 2002-04-07  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
 
-	* shimbun/sb-asahi-html.el (shimbun-asahi-html-url): Changed 
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html-url): Changed
 	default value.
 
 	* shimbun/sb-asahi.el (shimbun-asahi-url): Ditto.
@@ -117,7 +118,7 @@
 	* w3m-image.el (w3m-imagick-start-convert-buffer): Removed needless
 	`concat'.
 
-	* w3m-bitmap.el (w3m-create-image): 
+	* w3m-bitmap.el (w3m-create-image):
 	Call `w3m-imagick-start-convert-buffer' instead of
 	`w3m-imagick-convert-data'.
 
@@ -358,7 +359,7 @@
 	(w3m-bitmap-image-delete): Ditto.
 	(w3m-bitmap-image-delete-string): Ditto.
 	(w3m-bitmap-image-add-text-properties): Ditto.
-	(w3m-display-graphic-p): New implementation. 
+	(w3m-display-graphic-p): New implementation.
 	(w3m-display-inline-images-p): Ditto.
 	(w3m-image-type-available-p): Ditto.
 	(w3m-create-image): New implementation. It use w3m-bitmap-image-*.
