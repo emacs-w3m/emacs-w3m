@@ -40,19 +40,20 @@
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
 (eval-when-compile
-  (defvar w3m-default-coding-system)
-  (defvar w3m-current-url)
   (defvar w3m-current-image-status)
+  (defvar w3m-current-url)
+  (defvar w3m-default-coding-system)
+  (defvar w3m-history)
+  (defvar w3m-history-flat)
   (defvar w3m-icon-directory)
   (defvar w3m-menubar)
   (defvar w3m-toolbar)
   (defvar w3m-toolbar-buttons)
   (defvar w3m-use-header-line)
   (defvar w3m-work-buffer-name)
-  (defvar w3m-history)
-  (defvar w3m-history-flat)
-  (defalias 'w3m-retrieve 'ignore)
-  (defalias 'w3m-image-type 'ignore))
+  (autoload 'update-tab-in-gutter "gutter-items")
+  (autoload 'w3m-image-type "w3m")
+  (autoload 'w3m-retrieve "w3m"))
 
 (require 'path-util)
 (require 'poe)
@@ -315,7 +316,7 @@ Buffer string between BEG and END are replaced with IMAGE."
     (set-specifier default-toolbar
 		   (cons (current-buffer) w3m-toolbar))))
 
-;;; Menu
+;;; Menu:
 (defun w3m-setup-menu ()
   "Define menubar buttons for XEmacs."
   (when (and (featurep 'menubar)
@@ -377,7 +378,7 @@ as the value."
 
 (eval-after-load "wid-edit" '(w3m-xmas-define-missing-widgets))
 
-;;; Header line (emulating Emacs 21).
+;;; Header line (emulating Emacs 21):
 (defvar w3m-header-line-map (make-sparse-keymap))
 (define-key w3m-header-line-map 'button2 'w3m-goto-url)
 
@@ -405,6 +406,92 @@ as the value."
 			 'face 'w3m-header-line-location-content-face)
       (unless (eolp)
 	(insert "\n")))))
+
+;;; Gutter:
+(defcustom w3m-xmas-show-current-title-in-buffer-tab
+  (and (boundp 'gutter-buffers-tab-enabled)
+       (symbol-value 'gutter-buffers-tab-enabled))
+  "If non-nil, shown the title string in the buffer tab.  It has no
+effect if your XEmacs does not support the gutter items.  If you turn
+on this option, it is recommended a bit that setting both the option
+`w3m-pop-up-windows' and the option `w3m-pop-up-frames' to nil."
+  :group 'w3m
+  :type 'boolean
+  :get (lambda (symbol)
+	 (if (boundp 'gutter-buffers-tab-enabled)
+	     (default-value symbol)))
+  :set (lambda (symbol value)
+	 (prog2
+	     (or (boundp 'gutter-buffers-tab-enabled)
+		 (setq value nil))
+	     (set-default symbol value)
+	   (if value
+	       (add-hook 'w3m-display-hook 'w3m-xmas-update-tab-in-gutter)
+	     (remove-hook 'w3m-display-hook 'w3m-xmas-update-tab-in-gutter))
+	   (condition-case nil
+	       (progn
+		 (if value
+		     (ad-enable-advice
+		      'format-buffers-tab-line 'around
+		      'w3m-xmas-show-current-title-in-buffer-tab)
+		   (ad-disable-advice
+		    'format-buffers-tab-line 'around
+		    'w3m-xmas-show-current-title-in-buffer-tab))
+		 (if (boundp 'gutter-buffers-tab-enabled)
+		     (mapc #'update-tab-in-gutter (frame-list))))
+	     (error)))))
+
+(when (boundp 'gutter-buffers-tab-enabled)
+  (defadvice format-buffers-tab-line
+    (around w3m-xmas-show-current-title-in-buffer-tab (buffer) activate)
+    "Advised by Emacs-W3M.
+Show the current title string in the buffer tab.  Unfortunately,
+existing XEmacs does not support showing non-ascii characters.  When a
+title contains non-ascii characters, show a url name by default."
+    (with-current-buffer buffer
+      (if (and w3m-xmas-show-current-title-in-buffer-tab
+	       (symbol-value 'gutter-buffers-tab-enabled)
+	       (eq 'w3m-mode major-mode))
+	  (let* ((len (specifier-instance
+		       (symbol-value 'buffers-tab-default-buffer-line-length)))
+		 (name (if (string-match "^[ -~]+$"
+					 (symbol-value 'w3m-current-title))
+			   (symbol-value 'w3m-current-title)
+			 (directory-file-name
+			  (if (string-match "^[^/:]+:/+"
+					    (symbol-value 'w3m-current-url))
+			      (substring (symbol-value 'w3m-current-url)
+					 (match-end 0))
+			    (symbol-value 'w3m-current-url)))))
+		 (num (if (string-match ".*<\\(.+\\)>$" (buffer-name buffer))
+			  (match-string 1 (buffer-name buffer))))
+		 (lnum (length num)))
+	    (setq ad-return-value
+		  (if num
+		      (if (and (> len 0)
+			       (> (+ (length name) lnum) len))
+			  (concat "[" num "]"
+				  (substring name 0 (max 0 (- len lnum 5 )))
+				  "...")
+			(concat "[" num "]" name))
+		    (if (and (> len 0)
+			     (> (length name) len))
+			(concat (substring name 0 (max 0 (- len 3))) "...")
+		      name))))
+	ad-do-it)))
+
+  (if w3m-xmas-show-current-title-in-buffer-tab
+      (ad-enable-advice 'format-buffers-tab-line 'around
+			'w3m-xmas-show-current-title-in-buffer-tab)
+    (ad-disable-advice 'format-buffers-tab-line 'around
+		       'w3m-xmas-show-current-title-in-buffer-tab))
+
+  (defun w3m-xmas-update-tab-in-gutter (&rest args)
+    "Update the tab control in the gutter area."
+    (update-tab-in-gutter (selected-frame)))
+
+  (when (symbol-value 'gutter-buffers-tab-enabled)
+    (add-hook 'w3m-display-hook 'w3m-xmas-update-tab-in-gutter)))
 
 (provide 'w3m-xmas)
 

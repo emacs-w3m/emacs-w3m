@@ -1,3 +1,21 @@
+2001-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
+	w3m-ucs.el when the version of XEmacs is not greater than 21.2.37.
+
+	* w3m.el (w3m-pop-up-frames, w3m-pop-up-windows): Add a
+	recommendation to the doc-string about the use of XEmacs' buffers
+	tab.
+
+	* w3m-xmas.el (w3m-xmas-update-tab-in-gutter): New function; add
+	it to `w3m-display-hook'.
+	(format-buffers-tab-line): Advise the function to show the current
+	title string in the buffer tab.
+	(w3m-xmas-show-current-title-in-buffer-tab): New user option.
+	(TopLevel): When compiling, use `autoload' "w3m" for the void
+	functions instead of the use of `defalias' to `ignore'; autoload
+	"gutter-items" for `update-tab-in-gutter'.
+
 2001-10-25  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-vinelinux.el (shimbun-vinelinux-url) Bug fixed.
