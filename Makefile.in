@@ -1,15 +1,3 @@
-PACKAGE   = w3m_el
-TARBALL   = $(PACKAGE)-$(VERSION).tar.gz
-DISTDIR   = $(PACKAGE)-$(VERSION)
-DISTFILES = COPYING ChangeLog README README.ja $(wildcard *.el)
-BASEVER   = 0.2
-REVISION  =
-ifeq "$(REVISION)" ""
-VERSION = $(BASEVER)
-else
-VERSION = $(BASEVER).$(REVISION)
-endif
-
 prefix  = @prefix@
 lispdir = @lispdir@
 INSTALL = @INSTALL@
@@ -19,19 +7,22 @@ ADDITIONAL_LOAD_PATH = @ADDITIONAL_LOAD_PATH@
 @SET_MAKE@
 EMACS   = @EMACS@
 FLAGS   = -q -no-site-file -batch -l w3mhack.el $(ADDITIONAL_LOAD_PATH)
-ECC     = $(EMACS) $(FLAGS) -l w3m.el -f batch-byte-compile
+ECC     = $(EMACS) $(FLAGS) -f batch-byte-compile
 
 MODULES = `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`
+
+PACKAGE = w3m_el
+TARBALL = $(PACKAGE)-$(VERSION).tar.gz
+DISTDIR = $(PACKAGE)-$(VERSION)
+DOCS    = COPYING ChangeLog README README.ja
 
 .SUFFIXES:
 .SUFFIXES: .elc .el
 
 default:
-	@for p in $(MODULES); do\
-	  $(MAKE) -s $$p;\
-	done
+	@for p in $(MODULES); do $(MAKE) -s "$$p"; done
 
-%.elc: %.el
+.el.elc:
 	$(ECC) $<
 
 install: default
@@ -44,21 +35,19 @@ install: default
 	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
 	done
 
+dist:
+	$(MAKE) VERSION=`$(EMACS) $(FLAGS) -f w3mhack-version 2>/dev/null` tarball
+
 tarball:
-	$(MAKE) REVISION=$(shell cvs status w3m.el|perl -ne '/Working revision:[ \t]*(?:\d+\.)+(\d+)/ and print $$1-28') dist
-
-dist: $(TARBALL)
-
-$(TARBALL): $(DISTFILES)
-	-rm -f $(TARBALL) $(basename $(TARBALL))
+	-rm -f $(TARBALL) `basename $(TARBALL) .gz`
 	mkdir $(DISTDIR)
-	cp -p $(DISTFILES) $(DISTDIR)
-	tar -cf $(basename $(TARBALL)) $(DISTDIR)
-	gzip -9 $(basename $(TARBALL))
+	cp -p $(DOCS) *.el $(DISTDIR)
+	tar -cf `basename $(TARBALL) .gz` $(DISTDIR)
+	gzip -9 `basename $(TARBALL) .gz`
 	rm -rf $(DISTDIR)
 
 clean:
-	-rm -rf *~ *.elc w3m_el*
+	-rm -rf *~ *.elc $(PACKAGE)*
 
 distclean: clean
-	rm -f configure config.log config.status config.cache Makefile
+	-rm -f configure config.log config.status config.cache Makefile

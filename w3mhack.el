@@ -45,6 +45,7 @@
 
 ;; Needed for interdependencies between w3m modules.
 (push default-directory load-path)
+(load-file (expand-file-name "w3m.el" default-directory))
 
 (defun w3mhack-examine-modules ()
   "Examine w3m modules should be byte-compile'd."
@@ -54,6 +55,9 @@
 		       ((and (boundp 'emacs-major-version)
 			     (>= emacs-major-version 21))
 			'("w3m-om.el" "w3m-xmas.el"))
+		       ((and (boundp 'emacs-major-version)
+			     (= emacs-major-version 20))
+			'("w3m-e21.el" "w3m-om.el" "w3m-xmas.el"))
 		       ((boundp 'MULE)
 			'("w3m-e21.el" "w3m-xmas.el"))))
 	(mime (locate-library "mime")))
@@ -67,5 +71,9 @@
     (dolist (module modules)
       (unless (member module deletes)
 	(princ (format "%sc\n" module))))))
+
+(defun w3mhack-version ()
+  "Print version of w3m.el."
+  (princ emacs-w3m-version))
 
 ;;; w3mhack.el ends here

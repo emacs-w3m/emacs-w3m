@@ -175,23 +175,10 @@ width using expression (+ (frame-width) VALUE)."
 	(concat "file://" (match-string 1 file) (match-string 2 file)))
     file))
 
-(defcustom w3m-bookmark-file
-  (expand-file-name "bookmark.html" w3m-profile-directory)
-  "*Bookmark file of w3m."
-  :group 'w3m
-  :type 'file)
-
-(defcustom w3m-bookmark-file-coding-system 'euc-japan
-  "*Coding system for bookmark file."
-  :group 'w3m
-  :type 'coding-system)
-
 (defcustom w3m-home-page
   (or (getenv "HTTP_HOME")
       (getenv "WWW_HOME")
-      (if (file-readable-p w3m-bookmark-file)
-	  (w3m-expand-file-name-as-url w3m-bookmark-file)
-	"http://namazu.org/~tsuchiya/emacs-w3m/"))
+      "http://namazu.org/~tsuchiya/emacs-w3m/")
   "*Home page of w3m.el."
   :group 'w3m
   :type 'string)
@@ -465,11 +452,6 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 (defvar w3m-process-temp-file nil)
 (make-variable-buffer-local 'w3m-process-temp-file)
 
-(defvar w3m-bookmark-data nil)
-(defvar w3m-bookmark-file-time-stamp nil)
-(defvar w3m-bookmark-section-history nil)
-(defvar w3m-bookmark-title-history nil)
-
 (defvar w3m-display-inline-image-status nil) ; 'on means image is displayed
 (make-variable-buffer-local 'w3m-display-inline-image-status)
 
@@ -564,8 +546,8 @@ If N is negative, last N items of LIST is returned."
       (let ((file-coding-system coding)
 	    (coding-system-for-write coding))
 	(print list (current-buffer))
-	(write-region (point-min) (point-max)
-		      file nil 'nomsg)))))
+	(write-region (point-min) (point-max)	
+	      file nil 'nomsg)))))
 
 (defsubst w3m-arrived-p (url)
   "If URL has been arrived, return non-nil value.  Otherwise return nil."
@@ -1842,12 +1824,6 @@ this function returns t.  Otherwise, returns nil."
     (w3m-print-this-url)))
 
 
-(defun w3m-view-bookmark ()
-  (interactive)
-  (if (file-readable-p w3m-bookmark-file)
-      (w3m (w3m-expand-file-name-as-url w3m-bookmark-file))))
-
-
 (defun w3m-copy-buffer (buf &optional newname and-pop) "\
 Create a twin copy of the current buffer.
 if NEWNAME is nil, it defaults to the current buffer's name.
@@ -1920,7 +1896,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "t" 'w3m-toggle-inline-images)
     (define-key map "U" 'w3m)
     (define-key map "V" 'w3m)
-    (define-key map "v" 'w3m-view-bookmark)
+    (define-key map "v" 'w3m-bookmark-view)
     (define-key map "q" 'w3m-close-window)
     (define-key map "Q" 'w3m-quit)
     (define-key map "\M-n" 'w3m-copy-buffer)
@@ -2000,7 +1976,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 \\[w3m-view-previous-point]	w3m-view-previous-point.
 
 \\[w3m]	w3m.
-\\[w3m-view-bookmark]	w3m-view-bookmark.
+\\[w3m-bookmark-view]	w3m-bookmark-view.
 \\[w3m-copy-buffer]	w3m-copy-buffer.
 
 \\[w3m-quit]	w3m-quit.
@@ -2122,171 +2098,6 @@ or prefix ARG columns."
   (interactive "fFilename: ")
   (w3m (w3m-expand-file-name-as-url file)))
 
-;; bookmark operations
-
-(defun w3m-bookmark-file-modified-p ()
-  "Predicate for FILE is something modified."
-  (and (file-exists-p w3m-bookmark-file)
-       w3m-bookmark-file-time-stamp
-       (not (equal (elt (file-attributes w3m-bookmark-file) 5)
-		   w3m-bookmark-file-time-stamp))))
-
-;; bookmark data format
-;; bookmark has some section.
-;; section has some entries.
-;; entry is pair of link name (title) and url
-;; for example:
-;; bookmark := ( ("My Favorites"                    ; section
-;;                ( "title1" . "http://foo.com/" )  ; entry
-;;                ( "title2" . "http://bar.org/" )) ; entry
-;;               ("For Study"                       ; section
-;;                ( "Title3" . "http://baz.net/" )) ; entry
-;;
-;; In w3m, section is h2 level contents. (HTML/BODY/H2)
-;; entry is A item (represented as UL/LI)
-;; `w3m-bookmark-parse' assumes above
-;;  because this is easy implementation. :-)
-
-(defun w3m-bookmark-parse ()
-  "Parse current buffer and returns bookmark data alist for internal."
-  (let (bookmark tag url str)
-    (goto-char 1)
-    (while (re-search-forward
-	    "<\\(h2\\|a\\)\\( *href=\"\\([^\"]+\\)\"[^>]*\\)?>" nil t)
-      (setq tag (match-string 1))
-      (cond
-       ((string= tag "h2")
-	;; make new section (in top)
-	(setq bookmark (cons (list (buffer-substring
-				    (match-end 0)
-				    (progn (re-search-forward "</h2>")
-					   (match-beginning 0))))
-			     bookmark)))
-       ((string= tag "a")
-	(if (null (match-beginning 2))
-	    (error "parse error, href attribute is expected."))
-	(setq url (match-string 3)
-	      str (buffer-substring (match-end 0)
-				    (progn
-				      (re-search-forward "</a>")
-				      (match-beginning 0))))
-	(setcar bookmark (cons (cons str url) (car bookmark))))
-       (t (error "parse error, unknown tag is matched."))))
-    ;; reverse entries and sections
-    (nreverse (mapcar 'nreverse bookmark))))
-
-
-
-(defun w3m-bookmark-load (&optional file)
-  "Load bookmark from FILE.
-Parsed bookmark data is hold in `w3m-bookmark-data'."
-  (or file
-      (setq file w3m-bookmark-file))	; default name
-  (message "Loading bookmarks...")
-  (with-temp-buffer
-    (if (file-exists-p w3m-bookmark-file)
-	(insert-file-contents w3m-bookmark-file))
-    ;; parse
-    (setq w3m-bookmark-data (w3m-bookmark-parse)
-	  w3m-bookmark-file-time-stamp (elt (file-attributes file) 5)))
-  (message "Loading bookmarks...done"))
-
-
-(defun w3m-bookmark-save (&optional file)
-  "Save internal bookmark data into bookmark file as w3m format."
-  (or file
-      (setq file w3m-bookmark-file))	; default name
-  ;; check output directory
-  (if (not (file-writable-p file))
-      (message "Can't write! Bookmark file is not saved.")
-    ;;
-    (with-temp-buffer
-      ;; print beginning of html
-      (insert "<html><head><title>Bookmarks</title></head>\n"
-	      "<body>\n"
-	      "<h1>Bookmarks</h1>\n")
-      (dolist (entries w3m-bookmark-data)
-	(insert "<h2>" (car entries) "</h2>\n"
-		"<ul>\n")
-	(dolist (ent (cdr entries))
-	  (insert "<li><a href=\"" (cdr ent) "\">" (car ent) "</a>\n"))
-	(insert "<!--End of section (do not delete this comment)-->\n"
-		"</ul>\n"))
-      ;; print end of html
-      (insert "</body>\n"
-	      "</html>\n")
-      ;; write to file!
-      (let ((coding-system-for-write w3m-bookmark-file-coding-system))
-	(write-region (point-min) (point-max) file))
-      (setq w3m-bookmark-file-time-stamp (elt (file-attributes file) 5))
-      (message "Saved to '%s'" file))))
-
-(defun w3m-bookmark-data-prepare ()
-  "Prepare for bookmark operation.
-If bookmark data is not loaded, load it.
-If bookmark file is modified since last load, ask reloading."
-  (if (and (null w3m-bookmark-file-time-stamp)
-	   (null w3m-bookmark-data)
-	   (file-exists-p w3m-bookmark-file))
-      (w3m-bookmark-load w3m-bookmark-file)))
-
-
-(defun w3m-bookmark-add (url &optional title section)
-  "Add URL to bookmark data and save it to file.
-Optional argument TITLE is title of link.
-SECTION is category name in bookmark."
-  (let (sec ent)
-    (w3m-bookmark-data-prepare)
-    ;; check time stamp of bookmark file (localy modified?)
-    (if (and (w3m-bookmark-file-modified-p)
-	     (y-or-n-p "Bookmark file is modified. Reload it? (y/n): "))
-	(w3m-bookmark-load))
-    ;; go on ...
-    ;; ask section (with completion).
-    (setq sec (completing-read
-	       "Section: "
-	       w3m-bookmark-data nil nil nil
-	       'w3m-bookmark-section-history ))
-    (if (string-match sec "^ *$")
-	(error "You must specify section name."))
-    ;; ask title (with default)
-    (setq title (read-string "Title: " title 'w3m-bookmark-title-history))
-    (if (string-match sec "^ *$")
-	(error "You must specify title."))
-    ;; add it to internal bookmark data.
-    (if (setq ent (assoc sec w3m-bookmark-data))
-	;; add to existing section
-	(nconc ent (list (cons title url))) ; add to tail
-      ;; add as new section
-      (setq w3m-bookmark-data
-	    (nconc w3m-bookmark-data
-		   (list (list sec (cons title url))))))
-    ;; then save to file. (xxx, force saving, should we ask?)
-    (w3m-bookmark-save)))
-
-
-(defun w3m-bookmark-add-this-url ()
-  "Add link under cursor to bookmark."
-  (interactive)
-  (if (null (w3m-anchor))
-      (message "No anchor.")		; nothing to do
-    (let ((url (w3m-anchor))
-	  (title (buffer-substring-no-properties
-		  (previous-single-property-change (1+ (point))
-						   'w3m-href-anchor)
-		  (next-single-property-change (point) 'w3m-href-anchor))))
-      (w3m-bookmark-add url title))
-    (message "Added.")))
-
-
-(defun w3m-bookmark-add-current-url (&optional arg)
-  "Add link of current page to bookmark.
-With prefix, ask new url to add instead of current page."
-  (interactive "P")
-  (w3m-bookmark-add (if (null arg) w3m-current-url (w3m-input-url))
-		    w3m-current-title)
-  (message "Added."))
-
 
 (defun w3m-cygwin-path (path)
   "Convert win32 path into cygwin format.
@@ -2365,10 +2176,18 @@ ex.) c:/dir/file => //c/dir/file"
 
 
 ;; Add-on programs:
+(when (locate-library "w3m-bookmark.el")
+  (autoload 'w3m-bookmark-view "w3m-bookmark" nil t)
+  (autoload 'w3m-bookmark-add-this-url "w3m-bookmark"
+    "*Add link under cursor to bookmark." t)
+  (autoload 'w3m-bookmark-add-current-url "w3m-bookmark"
+    "*Add link of current page to bookmark." t))
 (when (locate-library "w3m-search.el")
-  (autoload 'w3m-search "w3m-search" "*Search QUERY using SEARCH-ENGINE." t))
+  (autoload 'w3m-search "w3m-search"
+    "*Search QUERY using SEARCH-ENGINE." t))
 (when (locate-library "w3m-weather.el")
-  (autoload 'w3m-weather "w3m-weather" "*Display weather report." t)
+  (autoload 'w3m-weather "w3m-weather"
+    "*Display weather report." t)
   (autoload 'w3m-about-weather "w3m-weather"))
 
 (provide 'w3m)
