@@ -2477,6 +2477,11 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 		(concat "about://source/" (nth 5 attrs))))))
      ((string-match "\\`about:" url)
       (list "text/html" w3m-coding-system nil nil nil url))
+     ((string-match "\\`cid:" url)
+      (let ((w3m-current-buffer (current-buffer)))
+	(w3m-process-do-with-temp-buffer
+	    (type (w3m-cid-retrieve url nil nil))
+	  (list type nil nil nil nil url url))))
      ((w3m-url-local-p url)
       (w3m-local-attributes url))
      (t
@@ -5461,10 +5466,11 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 		    (setq file (concat file suffix))))
 		(cond
 		 ((and command (memq 'file arguments))
-		  (w3m-process-do
-		      (success (w3m-download url file no-cache handler))
-		    (when success
-		      (w3m-external-view-file command file url arguments))))
+		  (let ((w3m-current-buffer (current-buffer)))
+		    (w3m-process-do
+			(success (w3m-download url file no-cache handler))
+		      (when success
+			(w3m-external-view-file command file url arguments)))))
 		 (command
 		  (w3m-external-view-file command nil url arguments))
 		 (t
