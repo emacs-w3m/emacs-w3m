@@ -4206,13 +4206,23 @@ cnet.perspectives
 cnet-jp.news cnet-jp.blog.umeda cnet-jp.blog.lessig cnet-jp.blog.mori
 cnet-jp.blog.kenn
 
+@item @uref{http://www.hotwired.co.jp/, HotWired Japan}
+wired.business wired.culture wired.technology
+
 @item @uref{http://www.watch.impress.co.jp/, Impress}
 impress.internet impress.pc impress.akiba impress.game impress.av
 impress.jijinews impress.sports
 
+@item @uref{http://www.itmedia.co.jp/, ITmedia}
+itmedia.news itmedia.enterprise itmedia.mobile itmedia.pcupdate
+itmedia.lifestyle itmedia.games
+
 @item @uref{http://japan.linux.com/, japan.linux.com}
 linux-ja.news linux-ja.desktop linux-ja.enterprise linux-ja.kernel
 linux-ja.opensource linux-ja.security
+
+@item @uref{http://www.japantimes.co.jp/, Japan Times}
+japantimes.general japantimes.business
 
 @item @uref{http://slashdot.jp/, Slashdot Japan}
 slashdot-jp.story
@@ -4220,19 +4230,12 @@ slashdot-jp.story
 @item @uref{http://slashdot.jp/, Slashdot Japan based on RSS}
 slashdot-jp-rss.story
 
-@item @uref{http://www.hotwired.co.jp/, HotWired Japan}
-wired.business wired.culture wired.technology
-
 @item @uref{http://headlines.yahoo.co.jp/, Yahoo! Japan}
 yahoo.politics yahoo.society yahoo.people yahoo.business-all
 yahoo.market yahoo.stock yahoo.industry yahoo.international
 yahoo.entertainment yahoo.sports yahoo.computer yahoo.hokkaido
 yahoo.tohoku yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
 yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
-
-@item @uref{http://www.itmedia.co.jp/, ITmedia}
-itmedia.news itmedia.enterprise itmedia.mobile itmedia.pcupdate
-itmedia.lifestyle itmedia.games
 @end table
 
 @node Mailing Lists Supported by Shimbun
@@ -4560,11 +4563,6 @@ Add appropriate configurations to the variable
 @code{shimbun-tcup-group-alist}, you can browse other bulletin board
 systems that are provided at @uref{http://www.tcup.com/}.
 
-@item @uref{http://www.vinelinux.org, VineLinux Errata}
-vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
-vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
-vinelinux.errata.1x
-
 @item 2ch
 This is an example to browse Meadow BBS and emacs-w3m BBS on 2ch.
 @lisp
@@ -4642,6 +4640,11 @@ all contents of a page.
 	))
 @end lisp
 
+@item @uref{http://www.vinelinux.org, VineLinux Errata}
+vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
+vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
+vinelinux.errata.1x
+
 @item @uref{http://www.kantei.go.jp/jp/, Koizumu Cabinet Mail Magazine}
 kantei.m-magazine
 
@@ -4686,6 +4689,9 @@ lotusex.bbs
 atmarkit.fwin2k atmarkit.fdotnet atmarkit.fsys atmarkit.fxml
 atmarkit.flinux atmarkit.fnetwork atmarkit.fjava
 atmarkit.fsecurity atmarkit.fbiz atmarkit.jibun
+
+@item @uref{http://www.matsusaka-u.ac.jp/~okumura/texfaq/qa/, TeX Q&A Bulletin Board}
+texfaq.qanda
 @end table
 
 @node Shimbun Basics
