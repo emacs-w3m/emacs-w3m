@@ -2347,7 +2347,7 @@ supports separate frames."
 
 (defmacro w3m-use-tab-p ()
   "Return non-nil if `w3m-use-tab' is non-nil and Emacs really supports
-tabs line."
+the tabs line."
   (cond ((featurep 'xemacs)
 	 '(and w3m-use-tab (device-on-window-system-p)))
 	((<= emacs-major-version 19)
@@ -2370,17 +2370,72 @@ situation allows it."
 (defun w3m-popup-buffer (buffer)
   "Pop up BUFFER as a new window or a new frame
 according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
-  (let ((pop-up-frames (unless (w3m-use-tab-p)
-			 (w3m-popup-frame-p))))
-    (if pop-up-frames
-	(let* ((pop-up-frame-alist (w3m-popup-frame-parameters))
-	       (pop-up-frame-plist pop-up-frame-alist))
-	  (pop-to-buffer buffer)
-	  (setq w3m-initial-frame (selected-frame)))
+  (let ((window (get-buffer-window buffer t))
+	(oframe (selected-frame))
+	(popup-frame-p (w3m-popup-frame-p))
+	frame pop-up-frames buffers other)
+    (if (setq
+	 pop-up-frames
+	 (if window ;; The window showing BUFFER already exists.
+	     ;; Don't pop up a new frame if it is just the current frame.
+	     (not (eq (setq frame (window-frame window)) oframe))
+	   ;; There is no window for BUFFER, so look for the existing
+	   ;; emacs-w3m window if the tabs line is enabled or the
+	   ;; selection window exists (i.e. we can reuse it).
+	   (if (or (w3m-use-tab-p)
+		   (get-buffer-window w3m-select-buffer-name t))
+	       (progn
+		 (setq buffers (delq buffer (w3m-list-buffers t)))
+		 (while (and (not window)
+			     buffers)
+		   (setq window
+			 (get-buffer-window (setq other (pop buffers)) t)))
+		 (if window ;; The window showing another buffer exists.
+		     (not (eq (setq frame (window-frame window)) oframe))
+		   (setq other nil)
+		   ;; There is no window after all, so leave to the value
+		   ;; of `w3m-pop-up-frames' whether to pop up a new frame.
+		   popup-frame-p))
+	     ;; Ditto.
+	     popup-frame-p)))
+	(progn
+	  (cond (other
+		 ;; Pop up another emacs-w3m buffer and switch to BUFFER.
+		 (pop-to-buffer other)
+		 ;; Change the value for BUFFER's `w3m-initial-frame'.
+		 (setq w3m-initial-frame
+		       (prog1
+			   w3m-initial-frame
+			 (switch-to-buffer buffer))))
+		(frame
+		 ;; Pop up the existing frame which shows BUFFER.
+		 ;; Probably the window/frame for BUFFER was opened in the
+		 ;; past to visit a web site, so it is unnecessary to change
+		 ;; the value for `w3m-initial-frame'.
+		 (pop-to-buffer buffer))
+		(t
+		 ;; Pop up a new frame.
+		 (let* ((pop-up-frame-alist (w3m-popup-frame-parameters))
+			(pop-up-frame-plist pop-up-frame-alist))
+		   (pop-to-buffer buffer))
+		 (setq frame (window-frame (get-buffer-window buffer t))
+		       w3m-initial-frame frame)))
+	  ;; Raise, select and focus the frame.
+	  (if (fboundp 'select-frame-set-input-focus)
+	      (select-frame-set-input-focus frame)
+	    (raise-frame frame)
+	    (select-frame frame)
+	    (focus-frame frame)))
+      ;; Simply switch to BUFFER in the current frame.
       (if (w3m-popup-window-p)
 	  (let ((pop-up-windows t))
 	    (pop-to-buffer buffer))
 	(switch-to-buffer buffer)))))
+
+(eval-when-compile
+  (when (and (fboundp 'select-frame-set-input-focus)
+	     (eq (symbol-function 'select-frame-set-input-focus) 'ignore))
+    (fmakunbound 'select-frame-set-input-focus)))
 
 (defun w3m-message (&rest args)
   "Alternative function of `message' for emacs-w3m."
@@ -4754,22 +4809,23 @@ described in Section 5.2 of RFC 2396.")
 (defsubst w3m-view-this-url-1 (url reload new-session)
   (lexical-let (pos buffer newbuffer wconfig)
     (if new-session
-	(progn
+	(let ((empty
+	       ;; If a new url has the #name portion, we simply copy
+	       ;; the buffer's contents to the new settion, otherwise
+	       ;; creating an empty buffer.
+	       (not (and (string-match w3m-url-components-regexp url)
+			 (match-beginning 8)
+			 (string-equal w3m-current-url
+				       (substring url
+						  0 (match-beginning 8)))))))
 	  (setq pos (point-marker)
 		buffer (w3m-copy-buffer
 			nil nil w3m-view-this-url-new-session-in-background
-			;; If a new url has the #name portion, we simply copy
-			;; the buffer's contents to the new settion, otherwise
-			;; creating an empty buffer.
-			(not
-			 (and
-			  (string-match w3m-url-components-regexp url)
-			  (match-beginning 8)
-			  (string-equal w3m-current-url
-					(substring url
-						   0 (match-beginning 8)))))))
+			empty))
 	  (when w3m-view-this-url-new-session-in-background
-	    (set-buffer buffer)))
+	    (set-buffer buffer))
+	  (when empty
+	    (w3m-display-progress-message url)))
       (setq buffer (current-buffer)))
     (let (handler)
       (w3m-process-do
@@ -5405,9 +5461,7 @@ a page in a new buffer with the correct width."
 	(w3m-clear-local-variables)))
     (unless just-copy
       ;; Maybe pop up a window or a frame, and switch to a new buffer anyway.
-      (if (get-buffer-window w3m-select-buffer-name)
-	  (switch-to-buffer new)
-	(w3m-popup-buffer new)))
+      (w3m-popup-buffer new))
     (unless empty
       ;; Render a page.
       (w3m-process-with-wait-handler
@@ -5745,15 +5799,22 @@ passed to the `w3m-quit' function (which see)."
     (define-key map "\C-c\C-k" 'w3m-process-stop)
     (setq w3m-info-like-map map)))
 
-(defun w3m-alive-p ()
-  "When w3m is running, return that buffer.  Otherwise return nil."
-  (catch 'alive
-    (save-current-buffer
-      (dolist (buf (buffer-list))
-	(set-buffer buf)
-	(when (eq major-mode 'w3m-mode)
-	  (throw 'alive buf))))
-    nil))
+(defun w3m-alive-p (&optional visible)
+  "Return a buffer in which emacs-w3m is running.
+If there is no emacs-w3m session, return nil.  If the optional VISIBLE
+is non-nil, a visible emacs-w3m buffer is preferred."
+  (let* ((buffers (inline (w3m-list-buffers (not visible))))
+	 (buf (car buffers)))
+    (if visible
+	(progn
+	  (setq visible nil)
+	  (while (and (not visible)
+		      buffers)
+	    (when (get-buffer-window (car buffers) t)
+	      (setq visible (car buffers)))
+	    (setq buffers (cdr buffers)))
+	  (or visible buf))
+      buf)))
 
 (defun w3m-delete-frames-and-windows (&optional exception)
   "Delete all frames and windows related to emacs-w3m buffers except for
@@ -6811,39 +6872,36 @@ the command line like: ``emacs -f w3m'' or ``emacs -f w3m url''."
 
 ;;;###autoload
 (defun w3m (&optional url new-session interactive-p)
-  "Visit the World Wide Web page using the external command w3m, w3mmee
-or w3m-m17n.
+  "Visit World Wide Web pages using the external w3m command.
 
 When you invoke this command interactively for the first time, it will
-visit the home page which is specified by the option `w3m-home-page',
-otherwise if the option `w3m-quick-start' is nil (default t) or the
-value of `w3m-home-page' is nil, it will prompt you for a URL where
-you wish to go.  The option `w3m-pop-up-frames' controls whether this
-command should make a new frame for the session.
+visit a page which is pointed to by a string like url under the cursor
+or the home page specified by the `w3m-home-page' variable, but you
+will be prompted for a URL if `w3m-quick-start' is nil (default t) or
+`w3m-home-page' is nil.
 
-When the session for w3m has already been opened, this command will
-popup the existing window or frame (it is controlled by the option
-`w3m-pop-up-frames'), otherwise if the option `w3m-quick-start' is nil
-\(default t), it will prompt you for a URL where you wish to go in the
-existing session.
+The variables `w3m-pop-up-windows' and `w3m-pop-up-frames' control
+whether this command should pop up a window or a frame for the session.
+
+When emacs-w3m sessions have already been opened, this command will
+pop up the existing window or frame, but if `w3m-quick-start' is nil,
+\(default t), you will be prompted for a URL (which defaults to
+`popup' meaning pop up an existing emacs-w3m buffer).
 
 In addition, if the prefix argument is given or you enter the empty
-string for the prompt, it will visit the home page which is specified
-by the option `w3m-home-page'.
+string for the prompt, it will visit the home page specified by the
+`w3m-home-page' variable or the \"about:\" page.
 
-URL should be a string which defaults to the value of `w3m-home-page'
-or \"about:\".
-
-You can run this command in the batch mode something like:
+You can also run this command in the batch mode as follows:
 
   emacs -f w3m http://emacs-w3m.namazu.org/ &
 
 In that case, or if this command is called non-interactively, the
-value of `w3m-pop-up-frames' will be ignored (treated as nil) and it
-will not popup a frame.
+variables `w3m-pop-up-windows' and `w3m-pop-up-frames' will be ignored
+\(treated as nil) and it will run emacs-w3m at the current (or the
+initial) window.
 
-Optional NEW-SESSION is intended to be used by the command
-`w3m-goto-url-new-session' to create a new session."
+The optional NEW-SESSION and INTERACTIVE-P are for the internal use."
   (interactive
    (let ((url (w3m-examine-command-line-args)))
      (list
@@ -6855,59 +6913,35 @@ Optional NEW-SESSION is intended to be used by the command
 	      (w3m-input-url nil nil default w3m-quick-start))))
       nil ;; new-session
       (not url)))) ;; interactive-p
-  (let* ((nofetch (eq url 'popup))
-	 (buffer (unless new-session
-		   (w3m-alive-p)))
-	 (params (w3m-popup-frame-parameters))
-	 (pop-up-windows w3m-pop-up-windows)
-	 (pop-up-frames (and (or new-session interactive-p)
-			     (w3m-popup-frame-p)))
-	 (pop-up-frame-alist (w3m-popup-frame-parameters))
-	 (pop-up-frame-plist pop-up-frame-alist)
-	 (oframe (selected-frame))
-	 window frame)
+  (let ((nofetch (eq url 'popup))
+	(buffer (unless new-session
+		  (w3m-alive-p t)))
+	(w3m-pop-up-frames (and interactive-p w3m-pop-up-frames))
+	(w3m-pop-up-windows (and interactive-p w3m-pop-up-windows)))
     (unless (and (stringp url)
 		 (> (length url) 0))
       (if buffer
 	  (setq nofetch t)
 	;; This command may be called non-interactively.
-	(setq url (w3m-examine-command-line-args)
+	(setq url (or (w3m-examine-command-line-args)
+		      ;; Unlikely but this function was called with no url.
+		      "about:")
 	      nofetch nil)))
-    (if (bufferp buffer)
-	(progn
-	  (when (setq window (get-buffer-window buffer t))
-	    (setq frame (window-frame window)))
-	  (cond (frame
-		 (unless (eq frame (selected-frame))
-		   (if (fboundp 'select-frame-set-input-focus)
-		       (select-frame-set-input-focus frame)
-		     (raise-frame frame)
-		     (select-frame frame)
-		     (focus-frame frame)))
-		 (select-window window)
-		 (setq frame nil))
-		(window
-		 (select-window window))
-		(t
-		 (pop-to-buffer buffer)
-		 (when (eq oframe (setq frame (selected-frame)))
-		   (setq frame nil)))))
-      (pop-to-buffer (generate-new-buffer "*w3m*"))
-      (when (eq oframe (setq frame (selected-frame)))
-	(setq frame nil))
-      (w3m-display-progress-message url)
-      (w3m-mode))
+    (if buffer
+	(w3m-popup-buffer buffer)
+      (with-current-buffer (setq buffer (generate-new-buffer "*w3m*"))
+	(w3m-mode))
+      (w3m-popup-buffer buffer)
+      (w3m-display-progress-message url))
     (unwind-protect
 	(unless nofetch
-	  (w3m-goto-url url nil nil nil nil nil nil interactive-p))
+	  (w3m-goto-url url))
       (unless w3m-current-url
 	(condition-case nil
 	    (progn
 	      (erase-buffer)
 	      (set-buffer-modified-p nil))
-	  (error nil)))
-      (when frame
-	(setq w3m-initial-frame frame)))))
+	  (error nil))))))
 
 (eval-when-compile
   (autoload 'browse-url-interactive-arg "browse-url"))
