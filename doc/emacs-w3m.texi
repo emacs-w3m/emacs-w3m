@@ -113,11 +113,11 @@ Basic Usage
 * Browsing Web Pages::          Let's go netsurfing!
 * Inline Images::               Toggle displaying inline images
 * Tracing History::             Looking back at the old pages
-* Putting Bookmarks::           That's a favorite with me!
+* Managing Bookmarks::          That's a favorite with me!
 * Using Tabs::                  This is the tab browser of fashion
 * Selecting Buffers::           Choosing one from many sessions
 * Downloading::                 Downloading a file
-* Submitting Forms::            Filling in a text field
+* Submitting Forms::            Filling in HTML forms
 
 Pretty Good Features
 
@@ -569,11 +569,11 @@ See also the documentation for the option
 * Browsing Web Pages::          Let's go netsurfing!
 * Inline Images::               Toggle displaying inline images
 * Tracing History::             Looking back at the old pages
-* Putting Bookmarks::           That's a favorite with me!
+* Managing Bookmarks::          That's a favorite with me!
 * Using Tabs::                  This is the tab browser of fashion
 * Selecting Buffers::           Choosing one from many sessions
 * Downloading::                 Downloading a file
-* Submitting Forms::            Filling in a text field
+* Submitting Forms::            Filling in HTML forms
 @end menu
 
 @node Browsing Web Pages
@@ -588,9 +588,107 @@ See also the documentation for the option
 @section Looking back at the old pages
 
 
-@node Putting Bookmarks
+@node Managing Bookmarks
 @section That's a favorite with me!
+@cindex Bookmarks
 
+Like all modern browsers, emacs-w3m has advanced features related to
+bookmarks: it lets you classify them in categories, edit them and of
+course, browse them easily.
+
+@menu
+* Adding Bookmarks::            Adding a URL to your favorites
+* Consulting Bookmarks::        Browse your bookmarks
+* Editing Bookmarks::           How to change your bookmarks
+@end menu
+
+@node Adding Bookmarks
+@subsection Adding a URL to your favorites
+@cindex Adding a bookmark
+@kindex a
+@kindex C-u a
+@findex w3m-bookmark-add-current-url
+@kindex M-a
+@findex w3m-bookmark-add-this-url
+
+There are several ways to add a URL to your bookmarks.  The first one is
+to use the @kbd{a} key (or call the @code{w3m-bookmark-add-current-url}
+command) to add the page you're currently browsing: it will prompt you
+for a section to where the bookmark should go (completion is available
+with the @key{TAB} key) and will let you edit the title of the bookmark
+(the default being the title of the current page).  Complete these two
+steps, validating each with @kbd{RET}, and you will see the message
+``Added'' in the minibuffer, which means (surprise!) that the page has
+been added to your bookmarks.
+
+Another way to add a bookmark is to use the @kbd{M-a} key (or call the
+@code{w3m-bookmark-add-this-url} command): it adds the URL under point
+(that means, the URL you would be taken to if you followed the link) to
+the bookmarks.  As before, you will have to input the section for this
+bookmark and its title, the default being this time the name of the
+link itself.
+
+The third and final way to do this is to use @kbd{C-u a}, this time you
+will be prompted for the URL to add, its section, and the title to use
+for it in the bookmarks.
+
+@table @kbd
+@item a
+Add the current page to the bookmarks, or if called with a prefix
+argument, prompt for a URL and add it
+(@code{w3m-bookmark-add-current-url}).
+
+@item M-a
+Add the URL under point to the bookmarks
+(@code{w3m-bookmark-add-this-url}).
+@end table
+
+@node Consulting Bookmarks
+@subsection Browse your bookmarks
+@cindex Consulting bookmarks
+@kindex v
+@findex w3m-bookmark-view
+
+The easiest way to see the bookmarks is to use the @kbd{v} key in an
+emacs-w3m buffer; another possibility is to go to the special URL
+@uref{about://bookmark/}.  You will see your bookmarks, organized by
+section, each line being one bookmark.  You can browse them exactly
+like you would browse any other page.
+
+On the bookmarks page a w3m minor mode is activated, the bookmark mode.
+It adds key bindings to edit the bookmarks. @xref{Editing Bookmarks}.
+
+@table @kbd
+@item v
+Visit the bookmarks page (@code{w3m-bookmark-view}).
+@end table
+
+@node Editing Bookmarks
+@subsection How to change your bookmarks
+@cindex Editing bookmarks
+@findex w3m-bookmark-kill-entry
+@findex w3m-bookmark-edit
+@findex w3m-bookmark-undo
+
+The bookmark minor mode (@pxref{Consulting Bookmarks}) offers several
+key bindings related to bookmark edition, most noticeably @kbd{C-k} to
+kill (i.e. delete) a bookmark, and @kbd{E} to edit the bookmark file.
+
+Bookmarks are kept in a HTML file, so you can edit the file by hand, but
+be very careful: if you erase the comments emacs-w3m needs to recognize
+section names, things can break easily.  If you know the basics of HTML,
+the file should otherwise be quite self-explanatory.
+
+@table @kbd
+@item C-k
+Kill the bookmark under point (@code{w3m-bookmark-kill-entry}.
+
+@item E
+Visit the bookmarks file (@code{w3m-bookmark-edit}).
+
+@item C-_
+Undo the last changes (@code{w3m-bookmark-undo}).
+@end table
 
 @node Using Tabs
 @section This is the tab browser of fashion
@@ -605,8 +703,41 @@ See also the documentation for the option
 
 
 @node Submitting Forms
-@section Filling in a text field
+@section Filling in HTML forms
 
+These emacs-w3m commands let you move between forms and fill in fields,
+using simple key bindings and optionally prompting you for values in
+Emacs windows or in the minibuffer.
+
+The main key binding to remember is @kbd{RET}.  It has different
+meanings, depending on the thing under point: for textareas, you will be
+prompted for a value in the minibuffer.  For select tags, you will be
+given a list of choices in an electric Emacs window (you can move using
+the arrow keys, and pick one with the @kbd{RET} key).  For radio and
+checkbox buttons, the @kbd{RET} key selects one of the elements.
+
+When in the minibuffer or in the electric window, you can cancel with
+the @kbd{C-c C-q} sequence.  To submit the form, use @kbd{C-c C-c}.
+
+@table @kbd
+@item ]
+Jump to the next form (@code{w3m-next-form}).
+
+@item [
+Jump to the previous form (@code{w3m-previous-form}).
+
+@item C-c C-c
+Submit form at point (@code{w3m-submit-form}).
+
+@item RET
+Edit the value of the form item under point.
+
+@item RET @r{(w3m-form-*-keymap)}
+Accept the value.
+
+@item C-c C-q @r{(w3m-form-*-keymap)}
+Quit editing the form item, leaving changes.
+@end table
 
 @node Pretty Good Features
 @chapter Pretty good features
@@ -626,7 +757,6 @@ See also the documentation for the option
 @node Using Search Engines
 @section Convenient ways to search the web
 @cindex Search engines
-@findex w3m-search
 
 Emacs-w3m comes with advanced features related to search engines, they
 are accessible through two interfaces:
@@ -653,6 +783,7 @@ information about this feature, see @ref{Quick Searching}.
 @subsection How to search with emacs-w3m
 @cindex Searching
 @kindex S
+@findex w3m-search
 @vindex w3m-search-default-engine
 
 You can fire up the regular search interface by using the @kbd{S} key in
@@ -676,6 +807,12 @@ choose one by typing its name (completion is also available with the
 @key{TAB} key).  Once you have made your choice, hit the @kbd{RET} key.
 You can then type your search term, hit @kbd{RET}, and you will see the
 search results.
+
+@table @kbd
+@item S
+Begin a new search.  If called with a prefix argument, prompt for the
+engine to use (@code{w3m-search}).
+@end table
 
 @node Quick Searching
 @subsection An alternative (and fast) way to search the web
@@ -797,7 +934,26 @@ term ``foobar'' with your engine.
 
 @node Grouping URLs
 @section Visiting several web pages in one URL
+@cindex Grouping URLs
 
+Emacs-w3m can manipulate ``group URLs'': special URLs that contain
+several real URLs.  When you open these group URLs, emacs-w3m will open
+one buffer for each URL in the group, allowing you to open several pages
+in one go.
+
+To build group URLs, you just have to put together (i.e. concatenate)
+all the addresses you want to open, separating them with the ampersand
+symbol (that's ``&''), and prefixing the grouped URLs with ``group:''.
+For example, suppose you want to visit the GNU Project's homepage,
+@uref{http://www.gnu.org/}, and the Savannah homepage,
+@uref{http://savannah.nongnu.org/}: the group URL would be
+
+@uref{group:http://www.gnu.org/&http://savannah.nongnu.org/}
+
+Since this syntax can be quite hard to use on a daily basis, this
+feature will be most useful when used with very short URLs (Quicksearch
+URLs for example, see @ref{Quick Searching}); or in non-interactive
+contexts.
 
 @node Weather Information
 @section It will be fine tomorrow
@@ -826,6 +982,7 @@ does the same thing.
 @subsection How to add your web sites to Antenna
 @cindex about://antenna-edit/
 @kindex +
+@findex w3m-antenna-add-current-url
 
 Antenna has a specific customization interface accessible via the
 ``Edit'' button in the Antenna page, or via the special
@@ -855,9 +1012,18 @@ and to use the @kbd{+} key.  You will be taken to the Antenna
 customization buffer, with all fields already set up for you.  You just
 have to hit the buttons ``Save for future sessions'' and ``Finish''.
 
+@table @kbd
+@item +
+Add a URL to the Antenna database.  If called with a prefix argument,
+ask for a URL instead of adding the current page
+(@code{w3m-antenna-add-current-url}).
+@end table
+
 @node Daily web tracking
 @subsection Tracking changes with Antenna
 @cindex The Antenna interface
+@kindex A
+@findex w3m-antenna
 
 On the Antenna page, you will see two sections: one called ``Updated''
 and another called ``Visited''.  In the ``Updated'' section, you will
@@ -887,6 +1053,12 @@ changed, either by hitting @kbd{R} in the Antenna page, or by passing a
 prefix argument to the command (start Antenna with @kbd{C-u A}, for
 example).
 
+@table @kbd
+@item A
+Visit the Antenna page.  If called with a prefix argument, update the
+Antenna database before displaying it (@code{w3m-antenna}).
+@end table
+
 @node Showing Directory Tree
 @section Showing the tree structure of local directory
 
@@ -905,23 +1077,34 @@ example).
 
 @node Customizable Options
 @chapter Customizable options
-@cindex user option
+@cindex User options
 @vindex w3m-init-file
 
-You can customize all those emacs-w3m options using @kbd{M-x
-customize-option} or @kbd{M-x customize-group} with the @code{w3m}
-argument.  Instead, you may put Lisp expressions directly into the
-@file{~/.emacs-w3m} file as follows:
+All emacs-w3m options are customizable via the Custom mechanism, a
+graphical Emacs interface to define user options.  Custom offers several
+methods to define your customizations, you can use for example @kbd{M-x
+customize-option} for a single option (i.e. an Emacs Lisp variable) or
+@kbd{M-x customize-group} to see all available options for a ``group''
+and change them; in which case the group to use is @code{w3m}.
+
+Alternatively (if you don't want to use Custom), you can put arbitrary
+Emacs Lisp expressions in your emacs-w3m initialization file, which is
+@file{~/.emacs-w3m} by default.  This example:
 
 @lisp
 (setq w3m-home-page "http://emacs-w3m.namazu.org/")
 @end lisp
 
-Where @file{~/.emacs-w3m} is the default value of @code{w3m-init-file}.
-Please note that some options have a significant default value and won't
-be defined when the @file{~/.emacs-w3m} file is loaded. The
-@code{w3m-search-quick-search-engine-alist} option is a typical example
-(see @pxref{Search Options}).
+would set the default homepage to @uref{http://emacs-w3m.namazu.org/}.
+The syntax to use is the same as in your @file{.emacs}
+file. @xref{(emacs)Init File}.
+
+Please note that some options from external modules could be undefined
+at the time the @file{~/.emacs-w3m} file is loaded, thus making them
+impossible to modify (of course if you don't care about the default
+value, you can override them completely in your @file{~/.emacs-w3m}).
+The @code{w3m-search-quick-search-engine-alist} option is a typical
+example (@pxref{Search Options}).
 
 @table @code
 
@@ -931,9 +1114,9 @@ default value is @file{~/.emacs-w3m}.  You probably don't need to change
 this.  This is a normal Emacs Lisp file and can be used to avoid
 cluttering your @file{~/.emacs} and @file{site-init} files with
 emacs-w3m stuff.  Emacs-w3m will also check for files with the same
-names as this, but with @file{.elc} and @file{.el} suffixes.  In other
-words, it will look for @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el},
-and finally @file{~/.emacs-w3m} (in this order).
+names as this, but with @file{.elc} and @file{.el} extensions (in other
+words, @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el} and
+@file{~/.emacs-w3m}, in this order).
 
 @end table
 
