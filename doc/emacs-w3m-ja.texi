@@ -637,16 +637,17 @@ setenv http_proxy http://proxy.hogege.com:8000/
              '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
 @end lisp
 
-Proxy ゲートウェイを通さずに接続しなければならない @code{no-proxy} ホス
-トを指定するには、環境変数 @code{no-proxy} にコンマで区分けされたホスト
-名を設定するか、または以下のようにドメイン名 (ホスト名ではない) のリスト
-を、変数 @code{w3m-no-proxy-domains} に設定して下さい。
+Proxy ゲートウェイを通さずに接続しなければならない @code{no_proxy} ホス
+トを指定するには、環境変数 @code{no_proxy} (@code{no-proxy} ではないこと
+にご注意) にコンマで区分けされたホスト名を設定するか、または以下のように
+ドメイン名 (ホスト名ではない) のリストを、変
+数 @code{w3m-no-proxy-domains} に設定して下さい。
 
 @lisp
 (setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
 @end lisp
 
-@code{no-proxy} ホストの設定に正規表現を使うには、変
+@code{no_proxy} ホストの設定に正規表現を使うには、変
 数 @code{w3m-command-arguments-alist} のドキュメントを見て下さい。
 @end table
 
