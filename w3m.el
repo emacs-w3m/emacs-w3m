@@ -1023,6 +1023,12 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (defconst w3m-modeline-status-off "[ - ]"
   "Modeline string which is displayed when default status.")
 
+(defconst w3m-modeline-ssl-image-status-on "[IMG(SSL)]"
+  "Modeline string which is displayed when inline image is on and use SSL connection.")
+
+(defconst w3m-modeline-ssl-status-off "[SSL]"
+  "Modeline string which is displayed when SSL connection status.")
+
 (defvar w3m-initial-frame nil "Initial frame of this session.")
 (make-variable-buffer-local 'w3m-initial-frame)
 
@@ -1046,6 +1052,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (defvar w3m-contents-url nil "Table of Contents URL of this buffer.")
 (defvar w3m-max-anchor-sequence nil "Maximum number of anchor sequence on this buffer.")
 (defvar w3m-current-refresh nil "Cons pair of refresh attribute, '(sec . url).")
+(defvar w3m-current-ssl nil "SSL certification indicator.")
 
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-base-url)
@@ -1059,6 +1066,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (make-variable-buffer-local 'w3m-contents-url)
 (make-variable-buffer-local 'w3m-max-anchor-sequence)
 (make-variable-buffer-local 'w3m-current-refresh)
+(make-variable-buffer-local 'w3m-current-ssl)
 
 (defsubst w3m-clear-local-variables ()
   (setq w3m-current-url nil
@@ -1072,10 +1080,11 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	w3m-start-url nil
 	w3m-contents-url nil
 	w3m-max-anchor-sequence nil
-	w3m-current-refresh nil))
+	w3m-current-refresh nil
+	w3m-current-ssl nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url base title forms cs icon next prev start toc hseq refresh)
+  (let (url base title forms cs icon next prev start toc hseq refresh ssl)
     (with-current-buffer from-buffer
       (setq url w3m-current-url
 	    base w3m-current-base-url
@@ -1088,7 +1097,8 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	    start w3m-start-url
 	    toc w3m-contents-url
 	    hseq w3m-max-anchor-sequence
-	    refresh w3m-current-refresh))
+	    refresh w3m-current-refresh
+	    ssl w3m-current-ssl))
     (setq w3m-current-url url
 	  w3m-current-base-url base
 	  w3m-current-title title
@@ -1100,7 +1110,8 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	  w3m-start-url start
 	  w3m-contents-url toc
 	  w3m-max-anchor-sequence hseq
-	  w3m-current-refresh refresh)))
+	  w3m-current-refresh refresh
+	  w3m-current-ssl ssl)))
 
 (defvar w3m-verbose t "Flag variable to control messages.")
 
@@ -2725,7 +2736,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
       (when header
 	(let (alist type charset)
 	  (dolist (line (split-string header "\n"))
-	    (when (string-match "^\\([^:]+\\):[ \t]*" line)
+	    (when (string-match "^\\([^ \t:]+\\):[ \t]*" line)
 	      (push (cons (downcase (match-string 1 line))
 			  (substring line (match-end 0)))
 		    alist)))
@@ -2745,6 +2756,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(setq type (w3m-remove-redundant-spaces type))
 		(when (string-match ";\\'" type)
 		  (setq type (substring type 0 (match-beginning 0))))))
+	    (setq w3m-current-ssl (cdr (assoc "w3m-ssl-certificate" alist)))
 	    (list (or type (w3m-local-content-type url))
 		  (or charset
 		      (and (memq w3m-type '(w3mmee w3m-m17n))
@@ -4611,9 +4623,13 @@ appropriate buffer and select it."
 	(list "%b "
 	      '((w3m-current-process
 		 w3m-modeline-process-status-on
-		 (w3m-display-inline-images
-		  w3m-modeline-image-status-on
-		  w3m-modeline-status-off)))
+		 (w3m-current-ssl
+		  (w3m-display-inline-images
+		   w3m-modeline-ssl-image-status-on
+		   w3m-modeline-ssl-status-off)
+		  (w3m-display-inline-images
+		   w3m-modeline-image-status-on
+		   w3m-modeline-status-off))))
 	      " / "
 	      'w3m-current-title)))
 
@@ -5085,20 +5101,40 @@ works on Emacs.
 	    "\nLast Modified:  "
 	    (let ((time (w3m-last-modified url)))
 	      (if time (current-time-string time) "")))
-    (let ((charset (w3m-arrived-content-charset url)))
+    (let ((charset (w3m-arrived-content-charset url))
+	  (separator (if (string= w3m-language "Japanese")
+			 (make-string (- (/ (window-width) 2) 2)
+				      (make-char 'japanese-jisx0208 40 44))
+		       (make-string (- (window-width) 4) ?-)))
+	  (case-fold-search t)
+	  header ssl beg end)
       (when charset
-	(insert "\nDocument Code:  " charset)))
-    (let (header)
-      (and (not (w3m-url-local-p url))
-	   (setq header (condition-case nil
-			    (w3m-process-with-wait-handler
-			      (w3m-w3m-get-header url no-cache handler))
-			  (w3m-process-timeout nil)))
-	   (insert
-	    (if (string= w3m-language "Japanese")
-		"\n\n━━━━━━━━━━━━━━━━━━━\n\nHeader information\n\n"
-	      "\n\n--------------------------------------\n\nHeader information\n\n")
-	    header)))
+	(insert "\nDocument Code:  " charset))
+      (when (and (not (w3m-url-local-p url))
+		 (setq header (condition-case nil
+				  (w3m-process-with-wait-handler
+				    (w3m-w3m-get-header url no-cache handler))
+				(w3m-process-timeout nil))))
+	(insert "\n\n" separator "\n\nHeader information\n\n" header)
+	(goto-char (point-min))
+	(when (re-search-forward "^w3m-ssl-certificate: " nil t)
+	  (setq beg (match-end 0))
+	  (forward-line)
+	  (while (and (not (eobp)) (looking-at "^[ \t]"))
+	    (forward-line))
+	  (setq ssl (buffer-substring beg (point)))
+	  (delete-region beg (point))
+	  (goto-char beg)
+	  (insert "SSL\n")
+	  (goto-char (point-max))
+	  (insert separator "\n\nSSL information\n\n")
+	  (setq beg (point))
+	  (insert ssl)
+	  (goto-char beg)
+	  (while (re-search-forward "^\t" nil t)
+	    (delete-char -1)
+	    (when (looking-at "Certificate:")
+	      (insert "\n"))))))
     "text/plain"))
 
 (defun w3m-view-header ()

@@ -1,3 +1,17 @@
+2002-02-14  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-modeline-ssl-image-status-on)
+	(w3m-modeline-ssl-status-off): New constants.
+	(w3m-current-ssl): New buffer local variable.
+	(w3m-clear-local-variables, w3m-copy-local-variables): Handling
+	`w3m-current-ssl'.
+	(w3m-w3m-attributes): When detect `W3m-ssl-certificate:' header,
+	set `w3m-current-ssl'. Skip reading of folded lines of each
+	header.
+	(w3m-buffer-setup): Display SSL indicator at mode-line.
+	(w3m-about-header): Display SSL information when exist
+	`W3m-ssl-certificate:' header.
+
 2002-02-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-mhonarc.el (shimbun-mhonarc-optional-headers): Add
