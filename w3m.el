@@ -389,7 +389,10 @@ and lines which images occupy."
 (defcustom w3m-pixels-per-line 64
   "*Integer used for the `-ppl' argument of the w3m command.
 If nil, the height of the default face is used.  It is valid only when
-`w3m-treat-image-size' is non-nil."
+`w3m-treat-image-size' is non-nil.  Note that a small value may not
+induce a good result.  If you want to use emacs-w3m in a character
+terminal and make `w3m-treat-image-size' effective, you need to set
+this variable properly."
   :group 'w3m
   :type '(choice (const :tag "Auto Detect" nil)
 		 (integer :tag "Specify Pixels")))
@@ -397,7 +400,9 @@ If nil, the height of the default face is used.  It is valid only when
 (defcustom w3m-pixels-per-character nil
   "*Integer used for the `-ppc' argument of the w3m command.
 If nil, the width of the default face is used.  It is valid only when
-`w3m-treat-image-size' is non-nil."
+`w3m-treat-image-size' is non-nil.  If you want to use emacs-w3m in a
+character terminal and make `w3m-treat-image-size' effective, you need
+to set this variable properly."
   :group 'w3m
   :type '(radio (const :tag "Auto Detect" nil)
 		(integer :format "Specify Pixels: %v\n" :size 0)))
