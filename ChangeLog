@@ -1,3 +1,33 @@
+2005-02-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (top): Add autoloads of `w3m-form-textarea-kill-buffer'
+	and `w3m-form-textarea-set-number' to avoid byte-compile warnings.
+	(w3m-delete-buffer): Call `w3m-form-textarea-kill-buffer' when use
+	form.
+	(w3m-delete-other-buffers): Ditto.
+	(w3m-quit): Ditto.
+	(w3m-select-buffer-delete-buffer): Ditto.
+	(w3m-pack-buffer-numbers): Call `w3m-form-textarea-set-number'
+	when use form.
+
+	* w3m-form.el (top): Move all buffer local variables on the top to
+	avoid byte-compile warnings.
+	(w3m-form-parse-and-fontify): Set `w3m-form-use-textarea-backup-p'
+	to nil.
+	(w3m-form-input-textarea-save): Use
+	`w3m-form-use-textarea-backup-p' instead of
+	`w3m-form-use-textarea-backup'.
+	(w3m-form-input-textarea-set): Allways remove textarea buffer and
+	window.
+	(w3m-form-input-textarea-exit): Ditto.
+	(w3m-form-input-textarea): Check to call for backup. Check
+	identity of existed textarea buffer and w3m buffer. Treat
+	`w3m-form-use-textarea-backup-p'.
+	(w3m-form-use-textarea-backup-p): New function.
+	(w3m-form-textarea-set-number): Ditto.
+	(w3m-form-textarea-kill-buffer): Ditto.
+	(w3m-form-submit-get-textarea-files): If no backup, return nil.
+
 2005-02-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el (shimbun-make-mime-article): Call

@@ -132,6 +132,8 @@
   (autoload 'w3m-fontify-textareas "w3m-form")
   (autoload 'w3m-form-textarea-file-cleanup "w3m-form")
   (autoload 'w3m-form-textarea-files-remove "w3m-form")
+  (autoload 'w3m-form-textarea-kill-buffer "w3m-form")
+  (autoload 'w3m-form-textarea-set-number "w3m-form")
   (autoload 'w3m-filter "w3m-filter")
   (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
   (autoload 'w3m-switch-buffer "w3m-tabmenu")
@@ -6128,6 +6130,8 @@ passed to the `w3m-quit' function (which see)."
 		   (delete-window))))))
       (w3m-process-stop cur)
       (kill-buffer cur)
+      (when w3m-use-form
+	(w3m-form-textarea-kill-buffer cur))
       (run-hooks 'w3m-delete-buffer-hook)))
   (w3m-select-buffer-update))
 
@@ -6158,7 +6162,9 @@ as if the folder command of MH performs with the -pack option."
       (setq number (w3m-buffer-number buffer))
       (when number
 	(unless (eq number count)
-	  (w3m-buffer-set-number buffer count))
+	  (when (and (w3m-buffer-set-number buffer count)
+		     w3m-use-form)
+	    (w3m-form-textarea-set-number buffer count)))
 	(incf count)))))
 
 (defun w3m-delete-other-buffers (&optional buffer)
@@ -6171,7 +6177,9 @@ as if the folder command of MH performs with the -pack option."
     (while buffers
       (setq buffer (pop buffers))
       (w3m-process-stop buffer)
-      (kill-buffer buffer)))
+      (kill-buffer buffer)
+      (when w3m-use-form
+	(w3m-form-textarea-kill-buffer buffer))))
   (run-hooks 'w3m-delete-buffer-hook)
   (w3m-select-buffer-update))
 
@@ -6438,7 +6446,9 @@ is specified, otherwise prompt you for the confirmation.  See also
     (sit-for 0) ;; Delete frames seemingly fast.
     (dolist (buffer (w3m-list-buffers t))
       (w3m-cancel-refresh-timer buffer)
-      (kill-buffer buffer))
+      (kill-buffer buffer)
+      (when w3m-use-form
+	(w3m-form-textarea-kill-buffer buffer)))
     (when w3m-use-form
       (w3m-form-textarea-file-cleanup))
     (w3m-select-buffer-close-window)
@@ -8312,6 +8322,8 @@ passed to the `w3m-quit' function (which see)."
       (forward-line -1)
       (w3m-process-stop buffer)
       (kill-buffer buffer)
+      (when w3m-use-form
+	(w3m-form-textarea-kill-buffer buffer))
       (run-hooks 'w3m-delete-buffer-hook)
       (w3m-select-buffer-generate-contents (w3m-select-buffer-current-buffer))
       (w3m-select-buffer-show-this-line))))
