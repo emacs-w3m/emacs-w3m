@@ -1,5 +1,9 @@
 2002-04-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-form.el (w3m-char-to-int): New alias.
+	(w3m-form-mee-attr-unquote): Use it.
+	(w3m-form-mee-new): Ditto.
+
 	* w3m-xmas.el (toplevel): Require 'w3m-image.
 	(w3m-make-glyph): New inline function.
 	(w3m-create-image): Resize images when w3m-resize-images is non-nil.

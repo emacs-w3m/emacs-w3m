@@ -284,12 +284,16 @@ If no field in forward, return nil without moving."
 
 ;;; w3mmee
 ;;
+(if (fboundp 'char-to-int)
+    (defalias 'w3m-char-to-int 'char-to-int)
+  (defalias 'w3m-char-to-int 'identity))
+
 (defmacro w3m-form-mee-attr-unquote (x)
   "Unquote form attribute of w3mmee."
   '(let (attr)
      (when (eq (car x) ?T)
        (setq x (cdr x))
-       (while (and x (not (eq (car x) 0)))
+       (while (and x (not (eq (w3m-char-to-int (car x)) 0)))
 	 (setq attr (concat attr (char-to-string (car x))))
 	 (setq x (cdr x))))
      attr))
@@ -307,12 +311,12 @@ If no field in forward, return nil without moving."
   "Decode form information of w3mmee."
   (setq x (w3m-string-to-char-list (w3m-url-decode-string x)))
   (let (method enctype action charset target name)
-    (setq method (case (/ (car x) 16)
+    (setq method (case (/ (w3m-char-to-int (car x)) 16)
 		   (0 "get")
 		   (1 "post")
 		   (2 "internal")
 		   (3 "head"))
-	  enctype (case (% (car x) 16)
+	  enctype (case (% (w3m-char-to-int (car x)) 16)
 		    (0 'urlencoded)
 		    (1 'multipart)))
     (setq x (cdr x))
