@@ -70,7 +70,7 @@
       (push "mew-w3m.el" deletes))
     (dolist (module modules)
       (unless (member module deletes)
-	(princ (format "%sc\n" module))))))
+	(princ (format "%sc " module))))))
 
 (defun w3mhack-version ()
   "Print version of w3m.el."
