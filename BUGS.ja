@@ -24,6 +24,8 @@ $Date$
 
    --> 説明文書の整備
 
+   --> autoconf + installer
+
 
 
 ■ 既知の問題
@@ -44,22 +46,22 @@ $Date$
 (4) w3m-view-next-page がない。
 
 
-(5) http://clotho.ku3g.org/negi.html が文字化けした。これは、本家 w3m 
-    でも化けたので、w3m.el で対処できる問題ではないのかもしれないが。
-
-
-(6) 同じ anchor が複数行に分割されて表示されている場合、TAB で移動すると
+(5) 同じ anchor が複数行に分割されて表示されている場合、TAB で移動すると
     余分にカーソルが止まってしまう。
 
 
-(7) TAB で次の anchor に移動した時、その anchor が表示領域外ならば、きち
+(6) TAB で次の anchor に移動した時、その anchor が表示領域外ならば、きち
     んと表示されるように画面全体を移動して欲しい。<table> を利用して極端
     に横長のページを作ると、横方向に移動するとカーソルが見えなくなる。し
     かも、その後で前のページに戻ると横幅がおかしくなっている。
     Ex) http://namazu.org/~tsuchiya/emacs-w3m/yokonaga.html
 
 
-(8) XEmacs で "<", ">" が機能していないのでは?
+(7) XEmacs で "<", ">" が機能していないのでは?
+
+
+(8) Mule-2.3 上で w3m-view-image による画像の閲覧ができない。何処かで余
+    分な変換をしてしまっているらしい。
 
 
 
@@ -88,6 +90,12 @@ $Date$
     く分からない。
 
     --> revision 1.100 で対処 [emacs-w3m:00165] (Tnx. 森山さん)
+
+
+(5) http://clotho.ku3g.org/negi.html が文字化けした。
+
+    --> このページは UTF-8 である [emacs-w3m:00220] (Tnx. 白井さん)
+
 
 
 Local Variables:
