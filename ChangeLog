@@ -1,3 +1,12 @@
+2002-12-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-e21.el (w3m-favicon-type): Change default value and type of
+	custom.
+	(w3m-favicon-type-alist): New internal variable.
+	(w3m-setup-favicon): Don't check 'xpm.
+	(w3m-buffer-favicon): Decide image type of Emacs use
+	`w3m-favicon-type-alist'.
+
 2002-12-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-type): Suppert `stable version notation' of

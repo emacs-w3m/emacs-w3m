@@ -407,15 +407,23 @@ If this variable is nil, never expired."
   :group 'w3m
   :type 'integer)
 
-(defcustom w3m-favicon-type 'xpm
+(defcustom w3m-favicon-type (let ((types '(bmp pbm png gif xpm)))
+			      (catch 'det
+				(while types
+				  (when (image-type-available-p (car types))
+				    (throw 'det (car types)))
+				  (setq types (cdr types)))))
   "*Image type of display favicon."
   :group 'w3m
   :type (cons 'choice
 	      (mapcar (lambda (x)
 			`(const :tag ,(symbol-name x) ,x))
-		      (delq 'postscript
-			    (delq 'xbm
-				  (delq 'pbm (copy-sequence image-types)))))))
+		      (delq 'postscript (copy-sequence image-types)))))
+
+(defvar w3m-favicon-type-alist '((pbm . ppm))
+  "A list of a difference type of image between Emacs and ImageMagick.
+ 0. Type of Emacs
+ 1. Type of ImageMagick")
 
 (defvar w3m-favicon-cache-data nil
   "A list of favicon cache (internal variable).
@@ -440,7 +448,6 @@ Each information is a list whose elements are:
 	w3m-favicon-converted nil)
   (when (and w3m-use-favicon
 	     w3m-current-url
-	     (w3m-image-type-available-p 'xpm)
 	     (w3m-image-type-available-p w3m-favicon-type))
     (cond
      ((string-match "\\`about://\\([^/]+\\)/" url)
@@ -476,7 +483,9 @@ Each information is a list whose elements are:
 			handler
 			(car w3m-current-favicon-data)
 			(symbol-name (cdr w3m-current-favicon-data))
-			(symbol-name w3m-favicon-type)
+			(symbol-name (or (cdr (assq w3m-favicon-type
+						    w3m-favicon-type-alist))
+					 w3m-favicon-type))
 			"-geometry" (or w3m-favicon-size
 					(concat height "x" height))))
 		(with-current-buffer buffer
