@@ -3328,15 +3328,16 @@ session."
     (if url
 	(lexical-let ((pos (point-marker))
 		      (url w3m-current-url))
-	  (w3m-process-do
-	      (success (w3m-download url nil nil handler))
-	    (and success
-		 (buffer-name (marker-buffer pos))
-		 (save-excursion
-		   (set-buffer (marker-buffer pos))
-		   (when (equal url w3m-current-url)
-		     (goto-char pos)
-		     (w3m-refontify-anchor))))))
+	  (w3m-process-with-null-handler
+	    (w3m-process-do
+		(success (w3m-download url nil nil handler))
+	      (and success
+		   (buffer-name (marker-buffer pos))
+		   (save-excursion
+		     (set-buffer (marker-buffer pos))
+		     (when (equal url w3m-current-url)
+		       (goto-char pos)
+		       (w3m-refontify-anchor)))))))
       (message "No URL at point"))))
 
 (defun w3m-print-current-url ()

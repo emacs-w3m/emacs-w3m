@@ -1,5 +1,9 @@
 2001-11-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-download-this-url): Wrap the form which is evaluated
+	in asynchronous context with `w3m-process-with-null-handler', to
+	fix the bug reported by Hideyuki SHIRAI <shirai@meadowy.org>.
+
 	* w3m-xmas.el (w3m-create-image): Modified to avoid calling
 	`w3m-process-with-wait-handler'.
 
