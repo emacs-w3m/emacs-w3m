@@ -145,7 +145,11 @@ since nnshimbun uses the backlog to keep the prefetched articles."
     (eval-when-compile
       ;; The `gnus-define-group-parameter' macro isn't available in old Gnusae,
       ;; e.g. installed Emacs 21 may contain Gnus v5.9 which is the old Gnus.
-      (fboundp 'gnus-define-group-parameter))
+      (and (fboundp 'gnus-define-group-parameter)
+	   (condition-case nil
+	       (macroexpand '(gnus-define-group-parameter PARAM))
+	     (error nil))
+	   t))
     "Non-nil means the nnshimbun.elc file is compiled for the modern Gnus.
 Users should never modify the value."))
 
