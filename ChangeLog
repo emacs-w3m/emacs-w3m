@@ -1,3 +1,20 @@
+2004-12-28  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+
+	* w3m-form.el (w3m-form-use-textarea-backup): New user option.
+	(w3m-form-textarea-directory): Ditto.
+	(w3m-form-get-coding-system): New function.
+	(w3m-form-make-form-data): Use `w3m-form-get-coding-system'.
+	(w3m-form-input-textarea-keymap): Define "C-xC-s" to
+	`w3m-form-input-textarea-save'.
+	(w3m-form-input-textarea-file): New variable.
+	(w3m-form-input-textarea-coding-system): Ditto.
+	(w3m-form-input-textarea-filename): New function.
+	(w3m-form-input-textarea-save): Ditto.
+	(w3m-form-input-textarea-set): Call `w3m-form-input-textarea-save'.
+	(w3m-form-input-textarea-exit): Ditto.
+	(w3m-form-input-textarea-mode): Modify doc-string.
+	(w3m-form-input-textarea): Handling filename and coding-system.
+
 2004-12-27  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
 
 	* w3m.el (w3m-view-this-url-1): Revert 2004-12-17 change.

@@ -57,6 +57,17 @@
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-form-use-textarea-backup t
+  "*Use automatic backup file of textarea input."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-form-textarea-directory
+  (expand-file-name ".textarea" w3m-profile-directory)
+  "*Name of the directory to save the file of textarea input."
+  :group 'w3m
+  :type '(directory :size 0))
+
 (defface w3m-form-face
   '((((class color) (background light)) (:foreground "cyan" :underline t))
     (((class color) (background dark)) (:foreground "red" :underline t))
@@ -164,20 +175,22 @@ If no field in forward, return nil without moving."
 	(goto-char next)
       nil)))
 
+(defun w3m-form-get-coding-system (coding)
+  (or (catch 'det
+	(while coding
+	  (if (w3m-charset-to-coding-system (car coding))
+	      (throw 'det (w3m-charset-to-coding-system (car coding)))
+	    (setq coding (cdr coding)))))
+      w3m-current-coding-system
+      (w3m-charset-to-coding-system
+       (w3m-content-charset w3m-current-url))
+      w3m-default-coding-system))
+
 (defun w3m-form-make-form-data (form)
   (let ((plist (w3m-form-plist form))
 	(coding (w3m-form-charlst form))
 	buf bufs)
-    (setq coding
-	  (or (catch 'det
-		(while coding
-		  (if (w3m-charset-to-coding-system (car coding))
-		      (throw 'det (w3m-charset-to-coding-system (car coding)))
-		    (setq coding (cdr coding)))))
-	      w3m-current-coding-system
-	      (w3m-charset-to-coding-system
-	       (w3m-content-charset w3m-current-url))
-	      w3m-default-coding-system))
+    (setq coding (w3m-form-get-coding-system coding))
     (while plist
       (let* ((number (car plist))
 	     (pair (plist-get (cadr plist) :value))
@@ -391,9 +404,9 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
 		      (?s "shift-jis")
 		      (?n "iso-2022-7bit"))))
     (setq x (cdr x))
-    (setq target (w3m-form-mee-attr-unquote x)) ; not used.
+    (setq target (w3m-form-mee-attr-unquote x))	; not used.
     (setq x (cdr x))
-    (setq name (w3m-form-mee-attr-unquote x))   ; not used.
+    (setq name (w3m-form-mee-attr-unquote x)) ; not used.
     (w3m-form-new method action nil (and charset (list charset)) enctype)))
 
 (defun w3m-form-mee-select-value (value)
@@ -570,13 +583,13 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			       (width :integer)
 			       (maxlength :integer)
 			       (hseq :integer)
-			       (selectnumber :integer) ; select
+			       (selectnumber :integer)	 ; select
 			       (textareanumber :integer) ; textarea
-			       (size :integer) ; textarea
-			       (rows :integer) ; textarea
-			       (top_mergin :integer) ; textarea
+			       (size :integer)		 ; textarea
+			       (rows :integer)		 ; textarea
+			       (top_mergin :integer)	 ; textarea
 			       (checked :bool) ; checkbox, radio
-			       no_effect ; map
+			       no_effect       ; map
 			       name value)
 	  (incf id)
 	  (when value
@@ -747,12 +760,12 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		(w3m-form-put (nth 0 selectinfo)
 			      (nth 1 selectinfo)
 			      (nth 2 selectinfo)
-			      (cons (or current ; current value
+			      (cons (or current	; current value
 					(caar candidates))
 				    candidates))))))
 	 ((string= (match-string 1) "textarea")
 	  (w3m-parse-attributes ((textareanumber :integer))
-	    (forward-char 1) ; skip newline character.
+	    (forward-char 1)		; skip newline character.
 	    (let ((textareainfo (cdr (assq textareanumber textareas)))
 		  (buffer (current-buffer))
 		  end text)
@@ -945,18 +958,58 @@ character."
   (define-key w3m-form-input-textarea-keymap "\C-c\C-q"
     'w3m-form-input-textarea-exit)
   (define-key w3m-form-input-textarea-keymap "\C-c\C-k"
-    'w3m-form-input-textarea-exit))
+    'w3m-form-input-textarea-exit)
+  (define-key w3m-form-input-textarea-keymap "\C-x\C-s"
+    'w3m-form-input-textarea-save))
 
 (defvar w3m-form-input-textarea-buffer nil)
 (defvar w3m-form-input-textarea-form nil)
 (defvar w3m-form-input-textarea-hseq nil)
 (defvar w3m-form-input-textarea-point nil)
 (defvar w3m-form-input-textarea-wincfg nil)
+(defvar w3m-form-input-textarea-file nil)
+(defvar w3m-form-input-textarea-coding-system nil)
 (make-variable-buffer-local 'w3m-form-input-textarea-buffer)
 (make-variable-buffer-local 'w3m-form-input-textarea-form)
 (make-variable-buffer-local 'w3m-form-input-textarea-hseq)
 (make-variable-buffer-local 'w3m-form-input-textarea-point)
 (make-variable-buffer-local 'w3m-form-input-textarea-wincfg)
+(make-variable-buffer-local 'w3m-form-input-textarea-file)
+(make-variable-buffer-local 'w3m-form-input-textarea-coding-system)
+
+(defun w3m-form-input-textarea-filename (url id)
+  ;; replace is
+  (let ((file "")
+	;; Interdit chars of Windows
+	(replace (regexp-opt '("\\" "/" ":" "*" "?" "\"" "<" ">" "|"))))
+    (while (string-match replace url)
+      (setq file (concat file (substring url 0 (match-beginning 0)) "_"))
+      (setq url (substring url (match-end 0))))
+    (setq file (concat file url "-"))
+    (while (string-match replace id)
+      (setq file (concat file (substring id 0 (match-beginning 0)) "_"))
+      (setq id (substring id (match-end 0))))
+    (setq file (concat file id ".txt"))
+    (convert-standard-filename file)))
+
+(defun w3m-form-input-textarea-save (&optional buffer file)
+  "Save textarea buffer."
+  (interactive)
+  (setq buffer (or buffer (current-buffer)))
+  (setq file (or file w3m-form-input-textarea-file))
+  (with-current-buffer buffer
+    (if (/= (buffer-size) 0)
+	(when (or w3m-form-use-textarea-backup
+		  (eq this-command 'w3m-form-input-textarea-save))
+	  (let ((buffer-file-coding-system w3m-form-input-textarea-coding-system)
+		(file-coding-system w3m-form-input-textarea-coding-system)
+		(coding-system-for-write w3m-form-input-textarea-coding-system))
+	    (write-region (point-min) (point-max) file nil 'nomsg)))
+      (when (file-exists-p file)
+	(delete-file file))
+      (when (file-exists-p (make-backup-file-name file))
+	(delete-file (make-backup-file-name file))))
+    (set-buffer-modified-p nil)))
 
 (defun w3m-form-input-textarea-set ()
   "Save and exit from w3m form textarea mode."
@@ -969,7 +1022,9 @@ character."
 	(point w3m-form-input-textarea-point)
 	(w3mbuffer w3m-form-input-textarea-buffer)
 	(wincfg w3m-form-input-textarea-wincfg)
+	(file w3m-form-input-textarea-file)
 	info)
+    (w3m-form-input-textarea-save buffer file)
     (when (buffer-live-p w3mbuffer)
       (or (one-window-p) (delete-window))
       (kill-buffer buffer)
@@ -987,7 +1042,9 @@ character."
   (let ((buffer (current-buffer))
 	(point w3m-form-input-textarea-point)
 	(w3mbuffer w3m-form-input-textarea-buffer)
-	(wincfg w3m-form-input-textarea-wincfg))
+	(wincfg w3m-form-input-textarea-wincfg)
+	(file w3m-form-input-textarea-file))
+    (w3m-form-input-textarea-save buffer file)
     (when (buffer-live-p w3mbuffer)
       (or (one-window-p) (delete-window))
       (kill-buffer buffer)
@@ -1001,6 +1058,7 @@ character."
 
 \\[w3m-form-input-textarea-set]	Save and exit from w3m form textarea mode.
 \\[w3m-form-input-textarea-exit]	Exit from w3m form textarea mode.
+\\[w3m-form-input-textarea-save]	Save textarea.
 "
   (setq mode-name "w3m form textarea"
 	major-mode 'w3m-form-input-textarea-mode)
@@ -1020,7 +1078,19 @@ character."
 		(- (window-height cur-win)
 		   (max window-min-height
 			(1+ w3m-form-input-textarea-buffer-lines)))))
-	 (buffer (generate-new-buffer "*w3m form textarea*")))
+	 (buffer (generate-new-buffer "*w3m form textarea*"))
+	 (file (expand-file-name
+		(w3m-form-input-textarea-filename
+		 w3m-current-url
+		 (get-text-property (point) 'w3m-form-field-id))
+		w3m-form-textarea-directory))
+	 (dir (file-chase-links (expand-file-name w3m-form-textarea-directory)))
+	 (coding (w3m-form-charlst form)))
+    (setq coding (w3m-form-get-coding-system coding))
+    (unless (and (file-exists-p dir)
+		 (file-directory-p dir))
+      (when (file-regular-p dir) (delete-file dir))
+      (make-directory dir))
     (condition-case nil
 	(split-window cur-win (if (> size 0) size window-min-height))
       (error
@@ -1036,6 +1106,18 @@ character."
       (setq w3m-form-input-textarea-buffer w3mbuffer)
       (setq w3m-form-input-textarea-point point)
       (setq w3m-form-input-textarea-wincfg wincfg)
+      (setq w3m-form-input-textarea-file file)
+      (setq w3m-form-input-textarea-coding-system coding)
+      (when (file-exists-p file)
+	(if (y-or-n-p "Exist the editted file of this form. Read it? ")
+	    (let ((buffer-file-coding-system w3m-form-input-textarea-coding-system)
+		  (file-coding-system w3m-form-input-textarea-coding-system)
+		  (coding-system-for-read w3m-form-input-textarea-coding-system))
+	      (insert-file-contents file)
+	      (setq value nil))
+	  (delete-file file)
+	  (when (file-exists-p (make-backup-file-name file))
+	    (delete-file (make-backup-file-name file)))))
       (if value (insert value))
       (goto-char (point-min))
       (forward-line (1- (nth 2 info)))
@@ -1202,7 +1284,7 @@ character."
 	(dolist (candidate value)
 	  (setq pos (point))
 	  (insert (if (zerop (length (cdr candidate)))
-		      " " ; "" -> " "
+		      " "		; "" -> " "
 		    (cdr candidate)))
 	  (add-text-properties pos (point)
 			       (list 'w3m-form-select-value (car candidate)
