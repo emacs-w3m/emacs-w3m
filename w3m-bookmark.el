@@ -148,6 +148,7 @@ Optional argument TITLE is title of link."
 	(error "You must specify title."))
     (w3m-bookmark-write-file url title section)))
 
+;;;###autoload
 (defun w3m-bookmark-add-this-url ()
   "Add link under cursor to bookmark."
   (interactive)
@@ -160,6 +161,7 @@ Optional argument TITLE is title of link."
       (w3m-bookmark-add url title))
     (message "Added.")))
 
+;;;###autoload
 (defun w3m-bookmark-add-current-url (&optional arg)
   "Add link of current page to bookmark.
 With prefix, ask new url to add instead of current page."
@@ -168,6 +170,7 @@ With prefix, ask new url to add instead of current page."
 		    w3m-current-title)
   (message "Added."))
 
+;;;###autoload
 (defun w3m-bookmark-view ()
   (interactive)
   (if (file-readable-p w3m-bookmark-file)

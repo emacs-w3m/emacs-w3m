@@ -68,6 +68,7 @@
 	   ))
     (cons 'progn body)))
 
+;;;###autoload
 (defun mime-w3m-preview-text/html (entity situation)
   (setq mime-w3m-message-structure (mime-find-root-entity entity))
   (let ((p (point))

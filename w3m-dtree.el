@@ -134,6 +134,7 @@ If you care for another style, set manually and try it :-).
     (insert (format "\n<h3>Warning: Directory not found.</h3>\n")))
   (insert "</pre>\n</body>\n</html>\n"))
 
+;;;###autoload
 (defun w3m-about-dtree (url &optional nodecode allfiles)
   (let ((prelen (length "about://dtree"))
 	(dirprefix "about://dtree")
@@ -154,6 +155,7 @@ If you care for another style, set manually and try it :-).
     (w3m-message "Dtree ... done.")
     "text/html"))
 
+;;;###autoload
 (defun w3m-dtree (allfiles path)
   "Display directory tree on local file system.
 If called with 'prefix argument', display all directorys and files."

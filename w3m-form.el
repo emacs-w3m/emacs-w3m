@@ -96,6 +96,7 @@
 		  (mapconcat (function identity) buf "&"))
 	(w3m-form-action form)))))
 
+;;;###autoload
 (defun w3m-form-parse-region (start end)
   "Parse HTML data in this buffer and return form objects."
   (save-restriction
@@ -130,6 +131,7 @@
 	  )))
       (set (make-local-variable 'w3m-current-forms) (nreverse forms)))))
 
+;;;###autoload
 (defun w3m-fontify-forms ()
   "Process half-dumped data in this buffer and fontify <input_alt> tags."
   (goto-char (point-min))

@@ -294,6 +294,7 @@ whose elements are:
 	    (goto-char (point-max)))
 	(delete-region (match-beginning 1) (match-end 1))))))
 
+;;;###autoload
 (defun w3m-about-antenna (url &optional no-decode no-cache &rest args)
   (unwind-protect
       (let (changed unchanged)
@@ -318,6 +319,7 @@ whose elements are:
 	"text/html")
     (setq w3m-antenna-alist nil)))
 
+;;;###autoload
 (defun w3m-antenna (&optional no-cache)
   "Report change of WEB sites, which is specified in `w3m-antenna-sites'."
   (interactive "P")

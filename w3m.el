@@ -2927,6 +2927,7 @@ or prefix ARG columns."
 	(dired-other-window ftp)
       (copy-file ftp (w3m-read-file-name nil nil file)))))
 
+;;;###autoload
 (defun w3m-goto-url (url &optional reload charset)
   "Retrieve contents of URL."
   (interactive

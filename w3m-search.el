@@ -84,6 +84,7 @@ See also `w3m-search-engine-alist'."
    (split-string str)
    "+"))
 
+;;;###autoload
 (defun w3m-search (search-engine query)
   "Search QUERY using SEARCH-ENGINE.
 When called interactively with prefix argument, you can choose search

@@ -214,6 +214,7 @@
   :type 'hook)
 
 ;;; Weather:
+;;;###autoload
 (defun w3m-weather (area)
   "Display weather report."
   (interactive
@@ -222,6 +223,7 @@
 	   w3m-weather-default-area)))
   (w3m (format "about://weather/%s" area)))
 
+;;;###autoload
 (defun w3m-about-weather (url &rest args)
   (let (area furl)
     (if (and (string-match "^about://weather/" url)

@@ -78,6 +78,7 @@
 		       (symbol-value ident))))))
       (setq w3m-filter-db db))))
 
+;;;###autoload
 (defun w3m-filter (url)
   "Exec filtering rule of URL to contents in this buffer."
   (w3m-filter-setup)

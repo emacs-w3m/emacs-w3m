@@ -1,3 +1,16 @@
+2001-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Add autoload magic cookie.
+	* w3m-weather.el (w3m-about-weather, w3m-weather): Ditto.
+	* w3m-search.el (w3m-search): Ditto.
+	* w3m-form.el (w3m-fontify-forms, w3m-form-parse-region): Ditto.
+	* w3m-filter.el (w3m-filter): Ditto.
+	* w3m-dtree.el (w3m-dtree, w3m-about-dtree): Ditto.
+	* w3m-bookmark.el (w3m-bookmark-view, w3m-bookmark-add-current-url,
+	w3m-bookmark-add-this-url): Ditto.
+	* w3m-antenna.el (w3m-antenna, w3m-about-antenna): Ditto.
+	* mime-w3m.el (mime-w3m-preview-text/html): Ditto.
+
 2001-05-23  Kazuyoshi KOREEDA   <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
 
 	* shimbun/sb-nikkei.el: New file.
