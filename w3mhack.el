@@ -32,7 +32,11 @@
   (load "cl-macs" nil t))
 (require 'bytecomp)
 
-(when (boundp 'MULE)
+(defconst w3mhack-emacs-major-version (if (boundp 'emacs-major-version)
+					  emacs-major-version
+					(string-to-int emacs-version)))
+
+(when (<= w3mhack-emacs-major-version 19)
   ;; Make `locate-library' run quietly.
   (let (current-load-list)
     ;; Mainly for the compile-time.
@@ -78,8 +82,7 @@ to the specified name LIBRARY (a la calling `load' instead of `load-library')."
 
 ;; Check for the required modules.
 (when (or (featurep 'xemacs)
-	  (not (boundp 'emacs-major-version))
-	  (<= emacs-major-version 19))
+	  (<= w3mhack-emacs-major-version 19))
   (let ((apel (locate-library "path-util"))
 	(emu (locate-library "pccl")))
     (if (and apel emu)
@@ -133,31 +136,42 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 (push default-directory load-path)
 (push (expand-file-name shimbun-module-directory default-directory) load-path)
 
+(defun w3mhack-mdelete (elts list)
+  "Like `delete', except that it also works for a list of subtractions."
+  (if elts
+      (if (consp elts)
+	  (let ((rest (delete (car elts) list)))
+	    (while (setq elts (cdr elts))
+	      (setq rest (delete (car elts) rest))
+	      (delete (car elts) list))
+	    rest)
+	(delete elts list))
+    list))
+
 (defun w3mhack-examine-modules ()
   "Examine w3m modules should be byte-compile'd."
   (let* ((modules (directory-files default-directory nil "^[^#]+\\.el$"))
-	 (version-specific-modules '("w3m-e20.el" "w3m-e21.el"
-				     "w3m-om.el" "w3m-xmas.el"))
-	 (ignores (delete (cond
-			   ((featurep 'xemacs)
-			    (push "w3m-fsf.el" version-specific-modules)
-			    "w3m-xmas.el")
-			   ((boundp 'MULE)
-			    (push "w3m-fsf.el" version-specific-modules)
-			    "w3m-om.el")
-			   ((boundp 'emacs-major-version)
-			    (if (>= emacs-major-version 21)
-				"w3m-e21.el"
-			      "w3m-e20.el")))
-			  (append version-specific-modules
-				  (list "w3mhack.el"
-					w3mhack-colon-keywords-file))))
+	 (version-specific-modules '("w3m-e19.el" "w3m-e20.el" "w3m-e21.el"
+				     "w3m-fsf.el" "w3m-om.el" "w3m-xmas.el"))
+	 (ignores;; modules not to be byte-compiled.
+	  (append
+	   (list "w3mhack.el" w3mhack-colon-keywords-file)
+	   (w3mhack-mdelete (cond ((featurep 'xemacs)
+				   "w3m-xmas.el")
+				  ((boundp 'MULE)
+				   "w3m-om.el")
+				  ((>= w3mhack-emacs-major-version 21)
+				   '("w3m-e21.el" "w3m-fsf.el"))
+				  ((= w3mhack-emacs-major-version 20)
+				   '("w3m-e20.el" "w3m-fsf.el"))
+				  (t
+				   "w3m-e19.el"))
+			    (copy-sequence version-specific-modules))))
 	 (shimbun-dir (file-name-as-directory shimbun-module-directory))
 	 print-level print-length)
     (unless (locate-library "mew")
       (push "mew-w3m.el" ignores))
-    (unless (and (boundp 'emacs-major-version)
-		 (featurep 'mule)
+    (unless (and (featurep 'mule)
 		 (if (featurep 'xemacs)
 		     ;; Mule-UCS does not support XEmacs versions prior
 		     ;; to 21.2.37.
@@ -165,7 +179,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 			  (or (> emacs-minor-version 2)
 			      (and (= emacs-major-version 2)
 				   (>= emacs-beta-version 37))))
-		   (>= emacs-major-version 20))
+		   (>= w3mhack-emacs-major-version 20))
 		 (locate-library "un-define"))
       (push "w3m-ucs.el" ignores))
     (if (and (featurep 'mule)
@@ -182,9 +196,8 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
       (push "octet.el" ignores))
     (unless (featurep 'mule)
       (push "w3m-weather.el" ignores))
-    (if (and (boundp 'emacs-major-version)
-	     (not (featurep 'xemacs))
-	     (<= emacs-major-version 20)
+    (if (and (not (featurep 'xemacs))
+	     (<= w3mhack-emacs-major-version 20)
 	     (locate-library "bitmap"))
 	;; Against the error "Already defined charset: 242".
 	(when (locate-library "un-define")
@@ -206,9 +219,8 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
       (unless (member module ignores)
 	(princ (format "%sc " module))))))
 
-(when (or (not (boundp 'emacs-major-version))
-	  (= emacs-major-version 19)
-	  (and (= emacs-major-version 20)
+(when (or (<= w3mhack-emacs-major-version 19)
+	  (and (= w3mhack-emacs-major-version 20)
 	       (<= emacs-minor-version 2)))
   ;; Not to get the byte-code for `current-column' inlined.
   (put 'current-column 'byte-compile nil))
@@ -432,7 +444,7 @@ to remove some obsolete variables in the first argument VARLIST."
 	    (insert "etc/w3m/" icon "\n")))
 	(message "Generating %s...done" manifest)))))
 
- ((boundp 'MULE)
+ ((= w3mhack-emacs-major-version 19)
   ;; Bind defcustom'ed variables.
   (put 'custom-declare-variable 'byte-hunk-handler
        (lambda (form)
@@ -534,6 +546,7 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 			  (insert-file-contents temp nil nil nil t)
 			(delete-file temp))))
 		(insert-file-contents file nil nil nil t))
+	      (goto-char (point-min))
 	      (while (setq form (condition-case nil
 				    (read buffer)
 				  (error nil)))
@@ -606,18 +619,16 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 	 (push (file-name-directory x) paths))
     (if (setq x (locate-library "mew"))
 	(push (file-name-directory x) paths))
-    (and (boundp 'emacs-major-version)
-	 (if (featurep 'xemacs)
+    (and (if (featurep 'xemacs)
 	     ;; Mule-UCS does not support XEmacs versions prior to 21.2.37.
 	     (and (>= emacs-major-version 21)
 		  (or (> emacs-minor-version 2)
 		      (and (= emacs-major-version 2)
 			   (>= emacs-beta-version 37))))
-	   (>= emacs-major-version 20))
+	   (>= w3mhack-emacs-major-version 20))
 	 (setq x (locate-library "un-define"))
 	 (push (file-name-directory x) paths))
-    (and (boundp 'emacs-major-version)
-	 (= emacs-major-version 20)
+    (and (= w3mhack-emacs-major-version 20)
 	 (setq x (locate-library "bitmap"))
 	 (push (file-name-directory x) paths))
     (let (print-level print-length)

@@ -33,14 +33,15 @@
       might be stuck.  And you wouldn't get out of the difficulty except
       kill Mule.
 
-   d) If you use XEmacs or Mule-2.3, you have to install APEL before
+   d) If you use XEmacs or Mule 2.3, you have to install APEL before
       installing Emacs-w3m.  APEL is available at:
 
          ftp://ftp.m17n.org/pub/mule/apel/
 
-      Also, Emacs-w3m requires "new custom". If you use Mule-2.3, you
-      have to install it before installing emacs-w3m. For more detail,
-      see README.en distributed with APEL.
+      Also, Emacs-w3m requires "new custom". If you use Emacs 19.34 or
+      Mule 2.3, you have to install it before installing emacs-w3m. For
+      more detail, see http://www.dina.kvl.dk/~abraham/custom/ (for
+      Emacs 19.34) or README.en distributed with APEL (for Mule 2.3).
 
       NOTE: XEmacs APEL package versions 1.23 and later can also be used
        for both XEmacs with MULE and non-MULE XEmacs to run emacs-w3m.
@@ -49,10 +50,10 @@
        std11 modules.  So, we recommend you install the original APEL
        mentioned above if you have energy enough to do that.
 
-   e) Emacs-w3m requires the module regexp-opt.el(c) which might not
-      be provided in the old Emacsen (e.g. Mule 2).  If you are using
-      such versions of Emacs, you have to install the module regexp-
-      opt.el(c) before installing emacs-w3m as follows:
+   e) Emacs-w3m requires the module regexp-opt.el(c) which might not be
+      provided in the old Emacsen (e.g. Emacs 19.34 and Mule 2.3).  If
+      you are using such versions of Emacs, you have to install the
+      module regexp-opt.el(c) before installing emacs-w3m as follows:
 
          % cp attic/regexp-opt.el /usr/local/share/mule/site-lisp
          % cd /usr/local/share/mule/site-lisp
@@ -63,7 +64,7 @@
 
       Since FLIM depends on APEL described in d) above, you have to
       install APEL even if you use one of Emacsen other than
-      XEmacs/Mule-2.3 (you have to install APEL, and succeedingly
+      XEmacs or Mule 2.3 (you have to install APEL, and succeedingly
       FLIM).  You can get FLIM at:
 
          ftp://ftp.m17n.org/pub/mule/flim/

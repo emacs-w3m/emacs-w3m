@@ -42,8 +42,11 @@
 (require 'w3m-util)
 
 (eval-and-compile
-  (if (boundp 'MULE)
-      (autoload 'read-passwd "w3m-om")))
+  (cond ((boundp 'MULE)
+	 (autoload 'read-passwd "w3m-om"))
+	((and (boundp 'emacs-major-version)
+	      (= emacs-major-version 19))
+	 (autoload 'read-passwd "w3m-19"))))
 
 (eval-when-compile
   ;; Variable(s) which are used in the following inline functions.

@@ -82,8 +82,11 @@
     (require 'w3m-e21))
    ((boundp 'MULE)
     (require 'w3m-om))
+   ((and (boundp 'emacs-major-version)
+	 (= emacs-major-version 20))
+    (require 'w3m-e20))
    (t
-    (require 'w3m-e20))))
+    (require 'w3m-e19))))
 
 (require 'w3m-hist)
 (require 'timezone)
@@ -425,7 +428,7 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :group 'w3m
   :type '(choice
 	  (const :tag "Use Info-like key mapping." info)
-	  (other :tag "Use Lynx-like key mapping." nil))
+	  (const :tag "Use Lynx-like key mapping." nil))
   ;; Since the following form won't be byte-compiled, you developers
   ;; should never use CL macros like `caaaar', `when', `unless' ...
   :set (lambda (symbol value)
@@ -1108,9 +1111,10 @@ Here is an example of how to set this option:
 		  (lambda (entity)
 		    (cons (car entity)
 			  (char-to-string
-			   (make-char
-			    (w3m-static-if (boundp 'MULE) lc-ltn1 'latin-iso8859-1)
-			    (cdr entity))))))
+			   (make-char (w3m-static-if (boundp 'MULE)
+					  lc-ltn1
+					'latin-iso8859-1)
+				      (cdr entity))))))
 		 latin1-entity))))))
 
 (defconst w3m-entity-regexp

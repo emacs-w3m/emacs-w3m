@@ -36,14 +36,15 @@
       てしまうかもしれません．そして kill する以外に窮地を抜けられなくなっ
       てしまうでしょう．
 
-   d) もしあなたが XEmacs か Mule-2.3 をお使いならば，APEL を先にインス
+   d) もしあなたが XEmacs か Mule 2.3 をお使いならば，APEL を先にインス
       トールしなければなりません．
       APEL は ftp://ftp.m17n.org/pub/mule/apel/ から入手できます．
 
-      また，Emacs-w3m は「新しい custom」が必要です．もしあなたが
-      Mule-2.3 をお使いならば，emacs-w3m をインストールする前にそれを
-      インストールしなければなりません．詳細は APEL に附属の README.ja
-      をご覧下さい．
+      また，Emacs-w3m は「新しい custom」が必要です．もしあなたが Emacs
+      19.34 か Mule 2.3 をお使いならば，emacs-w3m をインストールする前に
+      それをインストールしなければなりません．
+      詳細は http://www.dina.kvl.dk/~abraham/custom/ (Emacs 19.34 の場合)
+      または APEL に附属の README.ja (Mule 2.3 の場合) をご覧下さい．
 
       注意: バージョン 1.23 以降の XEmacs 用 APEL パッケージが，MULE あ
        り/なし両方の XEmacs で emacs-w3m を動作させるために使うことがで
@@ -53,10 +54,10 @@
        リジナルの APEL をインストールすることをお勧めします．
 
    e) Emacs-w3m は regexp-opt.el(c) モジュールを必要としますが，古い
-      Emacsen (例えば Mule 2) にはありません．もしあなたがそんなバージョ
-      ンの Emacs を使っているのならば，emacs-w3m をインストールする前
-      に以下のように regexp-opt.el(c) モジュールをインストールしなけれ
-      ばなりません．
+      Emacsen (例えば Emacs 19.34 や Mule 2.3) にはありません．もしあな
+      たがそんなバージョンの Emacs を使っているのならば，emacs-w3m をイ
+      ンストールする前に以下のように regexp-opt.el(c) モジュールをインス
+      トールしなければなりません．
 
           % cp attic/regexp-opt.el /usr/local/share/mule/site-lisp
           % cd /usr/local/share/mule/site-lisp
@@ -65,7 +66,7 @@
    f) もしあなたが，Emacs-w3m の shimbun ライブラリを使いたいとお思いな
       らば，FLIM パッケージが必要です．
 
-      FLIM は d) にて前述の APEL に依存していますので，XEmacs/Mule-2.3
+      FLIM は d) にて前述の APEL に依存していますので XEmacs や Mule 2.3
       以外のユーザの方であっても APEL も必要となります (APEL -> FLIM の
       順でインストールする必要があります)．FLIM は
       ftp://ftp.m17n.org/pub/mule/flim/ から取得することができます．

@@ -69,7 +69,8 @@
     (require 'poem))))
 
 (eval-and-compile
-  (cond ((boundp 'MULE)
+  (cond ((and (boundp 'emacs-major-version)
+	      (= emacs-major-version 19))
 	 (autoload 'cancel-timer "timer"))))
 
 ;;; Things should be defined in advance:

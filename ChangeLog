@@ -1,3 +1,48 @@
+2002-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e19.el: Remove many emulating functions on the condition
+	that APEL should be used; require `cl' only when compiling;
+	require `pcustom' instead of `custom'.
+	(compose-mail): New function.
+	(read-passwd): Autoload "ange-ftp".
+
+	* w3m-proc.el (read-passwd): Autoload "w3m-e19" for Emacs 19.
+
+	* w3m-util.el (cancel-timer): Autoload "timer" for not only Mule 2
+	but also Emacs 19.
+
+	* w3m.el: Require `w3m-e19' for Emacs 19.
+
+	* w3mhack.el (w3mhack-emacs-major-version): New constant.
+	(TopLevel): Silence the byte-compiler for not only Mule 2 but also
+	Emacs 19.
+	(w3mhack-mdelete): New function.
+	(w3mhack-examine-modules): Use it to make the code simple.
+	(w3mhack-generate-colon-keywords-file): Be sure to go to the
+	beginning of each file before looking for colon keywords (I
+	noticed that `insert-file-contents' doesn't always position point
+	to the top).
+
+	* README.ja: Update for the use of Emacs 19.
+
+2002-05-30  Kevin Rodgers  <kevin.rodgers@ihs.com>
+
+	NOTE: The following changes have been posted to the emacs-w3m
+	mailing list, they were not installed in the CVS repository at the
+	time.  The original article has been archived in:
+
+	http://emacs-w3m.namazu.org/ml/msg03472.html
+
+	* w3m-e19.el: New file.
+
+	* w3m.el: Require `w3m-e19' for Emacs 19.
+	(w3m-key-binding): Replace the widget `other' with `const'.
+
+	* w3mhack.el (w3mhack-examine-modules): Include w3m-e19.el in the
+	listing for Emacs 19.
+
+	* README: Update for the use of Emacs 19.
+
 2002-06-13  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-prepare-content): When cdr of
