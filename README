@@ -42,6 +42,13 @@
       have to install it before installing emacs-w3m. For more detail,
       see README.en distributed with APEL.
 
+      NOTE: XEmacs APEL package versions 1.23 and later can also be used
+       for both XEmacs with MULE and non-MULE XEmacs to run emacs-w3m.
+       However, those packages are incompatible with FLIM (and possibly
+       with some other packages, e.g. Wanderlust, T-gnus) because of the
+       std11 modules.  So, we recommend you install the original APEL
+       mentioned above if you have energy enough to do that.
+
    e) Emacs-w3m requires the module regexp-opt.el(c) which might not
       be provided in the old Emacsen (e.g. Mule 2).  If you are using
       such versions of Emacs, you have to install the module regexp-

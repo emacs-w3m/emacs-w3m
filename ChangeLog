@@ -1,3 +1,8 @@
+2002-05-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el: Modify the error message that XEmacs APEL package
+	versions 1.23 and later can barely be used to run emacs-w3m.
+
 2002-05-14  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-2ch.el (shimbun-2ch-parse-page): Add `ID:' to the From
