@@ -1,3 +1,12 @@
+2005-03-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-setup-toolbar): Make sure icon files exist.
+	(w3m-update-toolbar): Make sure toolbar items have been specified.
+	(w3m-initialize-graphic-icons): Make sure icon files exist.
+
+	* w3m-e21.el (w3m-setup-toolbar): Make sure icon files exist.
+	(w3m-initialize-graphic-icons): Ditto.
+
 2005-03-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (tarball): Remove `w3m-e23.el' instead of
@@ -1148,7 +1157,7 @@
 	(w3m-form-input-textarea): Use same textarea buffer if exist.
 	Don't ask user if don't modify its area without tailed white
 	space.
-	Visible the editted text when ask user.	Guard against 'C-g'.
+	Visible the editted text when ask user. Guard against 'C-g'.
 	Added `w3m-form-textarea-file-cleanup' to hook as
 	`kill-emacs-hook'
 	(w3m-form-textarea-same-check): New function.

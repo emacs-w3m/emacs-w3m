@@ -536,14 +536,22 @@ A buffer string between BEG and END are replaced with IMAGE."
 
 (defun w3m-setup-toolbar ()
   "Setup toolbar."
-  (when w3m-use-toolbar
+  (when (and w3m-use-toolbar
+	     w3m-icon-directory
+	     (file-directory-p w3m-icon-directory)
+	     (file-exists-p (expand-file-name "antenna-up.xpm"
+					      w3m-icon-directory)))
     (w3m-xmas-make-toolbar-buttons w3m-toolbar-buttons)
     (set-specifier default-toolbar
-		   (cons (current-buffer) w3m-toolbar))))
+		   (cons (current-buffer) w3m-toolbar))
+    t))
 
 (defun w3m-update-toolbar ()
   "Update toolbar."
-  (when w3m-use-toolbar
+  (when (and w3m-use-toolbar
+	     (or (and (boundp 'w3m-toolbar-antenna-icon)
+		      (symbol-value 'w3m-toolbar-antenna-icon))
+		 (w3m-setup-toolbar)))
     (set-specifier default-toolbar
 		   (cons (current-buffer) w3m-toolbar))))
 
@@ -740,12 +748,15 @@ italic font in the modeline."
       (setq def (car defs)
 	    defs (cdr defs)
 	    icon (car def)
-	    file (expand-file-name (nth 1 def) w3m-icon-directory)
+	    file (nth 1 def)
 	    status (nth 2 def))
       (if (and w3m-show-graphic-icons-in-mode-line
 	       (device-on-window-system-p)
 	       (featurep 'xpm)
-	       (file-exists-p file))
+	       w3m-icon-directory
+	       (file-directory-p w3m-icon-directory)
+	       (file-exists-p
+		(setq file (expand-file-name file w3m-icon-directory))))
 	  (progn
 	    (when (or force (not (symbol-value icon)))
 	      (unless extent
@@ -771,6 +782,8 @@ italic font in the modeline."
     (if (and w3m-show-graphic-icons-in-mode-line
 	     (device-on-window-system-p)
 	     (featurep 'gif)
+	     w3m-icon-directory
+	     (file-directory-p w3m-icon-directory)
 	     (file-exists-p
 	      (setq file (expand-file-name "spinner.gif"
 					   w3m-icon-directory))))

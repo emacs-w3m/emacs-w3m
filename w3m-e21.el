@@ -411,7 +411,11 @@ Buffer string between BEG and END are replaced with IMAGE."
 	  (error "Icon file %s not found" up))))))
 
 (defun w3m-setup-toolbar ()
-  (when w3m-use-toolbar
+  (when (and w3m-use-toolbar
+	     w3m-icon-directory
+	     (file-directory-p w3m-icon-directory)
+	     (file-exists-p (expand-file-name "antenna-up.xpm"
+					      w3m-icon-directory)))
     (w3m-e21-make-toolbar-buttons w3m-toolbar-buttons)
     (w3m-e21-setup-toolbar w3m-mode-map w3m-toolbar)))
 
@@ -794,13 +798,16 @@ italic font in the modeline."
       (setq def (car defs)
 	    defs (cdr defs)
 	    icon (car def)
-	    file (expand-file-name (nth 1 def) w3m-icon-directory)
+	    file (nth 1 def)
 	    status (nth 2 def))
       (if (and window-system
 	       w3m-show-graphic-icons-in-mode-line
 	       (display-images-p)
 	       (image-type-available-p 'xpm)
-	       (file-exists-p file))
+	       w3m-icon-directory
+	       (file-directory-p w3m-icon-directory)
+	       (file-exists-p
+		(setq file (expand-file-name file w3m-icon-directory))))
 	  (progn
 	    (when (or force (not (symbol-value icon)))
 	      (unless keymap
@@ -823,6 +830,8 @@ italic font in the modeline."
     ;; Spinner
     (when (and (or force (not w3m-spinner-image-file))
 	       (image-type-available-p 'gif)
+	       w3m-icon-directory
+	       (file-directory-p w3m-icon-directory)
 	       (file-exists-p
 		(setq file (expand-file-name "spinner.gif"
 					     w3m-icon-directory))))
