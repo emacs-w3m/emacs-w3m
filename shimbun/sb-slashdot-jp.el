@@ -72,9 +72,10 @@
 (luna-define-method shimbun-make-contents ((shimbun shimbun-slashdot-jp) head)
   (multiple-value-bind (sid cid)
       (shimbun-slashdot-jp-extract-sid-and-cid (shimbun-header-id head))
-    (if cid
-	(shimbun-slashdot-jp-make-comment-article shimbun head sid cid)
-      (shimbun-slashdot-jp-make-story-article shimbun head))))
+    (let ((case-fold-search t))
+      (if cid
+	  (shimbun-slashdot-jp-make-comment-article shimbun head sid cid)
+	(shimbun-slashdot-jp-make-story-article shimbun head)))))
 
 (defsubst shimbun-slashdot-jp-make-article-after (shimbun head)
   (goto-char (point-min))
@@ -120,7 +121,7 @@
   (cond
    ((eq range 'all) (setq range nil))
    ((eq range 'last) (setq range 1)))
-  (let (headers)
+  (let ((case-fold-search t) (headers))
     (catch 'range-check
       (dolist (head (shimbun-slashdot-jp-make-story-headers shimbun))
 	(unless (shimbun-search-id shimbun (shimbun-header-id head))
