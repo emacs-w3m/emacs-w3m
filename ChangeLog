@@ -1,8 +1,13 @@
+2003-06-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-marc-aims.el (shimbun-marc-aims-group-alist):
+	Declared as an option with `defcustom' instead of `defvar'.
+
 2003-05-31  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-yahoo.el (shimbun-get-headers): Modify regexp to pick
 	up all articles.
-	
+
 2003-05-30  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* octet.el (toplevel): Require poe.

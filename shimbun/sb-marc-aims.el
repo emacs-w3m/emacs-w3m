@@ -32,10 +32,18 @@
 
 (defvar shimbun-marc-aims-url "http://marc.theaimsgroup.com")
 
-; (defcustom shimbun-marc-aims-group-alist nil)
-(defvar shimbun-marc-aims-group-alist
-  '(("fop-dev" "fop-dev" nil nil)))
-; ML-name reply-to x-face
+(defcustom shimbun-marc-aims-group-alist
+  '(("fop-dev" "fop-dev" nil nil))
+  "Table of mailing lists archives kept at http://marc.theaimsgroup.com/."
+  :group 'shimbun
+  :type '(repeat
+	  (list (string :tag "Group Name")
+		(string :tag "List Name")
+		(choice (const :tag "No Reply-To" nil)
+			(string :tag "Reply-To"))
+		(choice (const :tag "No X-Face" nil)
+			(string :tag "X-Face")))))
+
 (defvar shimbun-marc-aims-content-start "RAW</a>\\]</b>")
 (defvar shimbun-marc-aims-content-end "<p>\\[<font ")
 
