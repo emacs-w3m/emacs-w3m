@@ -174,7 +174,9 @@ show below example,
   :group 'mew-shimbun
   :type 'character)
 
-(defcustom mew-shimbun-mark-unseen mew-mark-review
+(defcustom mew-shimbun-mark-unseen (or (and (boundp 'mew-mark-unread)
+					    mew-mark-unread)
+				       mew-mark-review)
   "*Shimbun unseen mark."
   :group 'shimbun
   :group 'mew-shimbun
@@ -836,7 +838,8 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
       (with-current-buffer fld
 	(goto-char (point-min))
 	(when (mew-shimbun-jump-msg msg)
-	  (mew-mark-put-mark mew-shimbun-mark-unseen))))
+	  (mew-mark-put-mark mew-shimbun-mark-unseen))
+	(forward-line)))
     ;; for summary redraw
     (sit-for 0.01)))
 
@@ -1035,8 +1038,9 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
   "`Shimbun unseen mark' support advices."
   (interactive)
   (when mew-shimbun-use-unseen
-    (defadvice mew-summary-cursor-postscript (before shimbun-unseen activate)
-      (mew-shimbun-unseen-remove-advice))
+    (unless (boundp 'mew-mark-unread)
+      (defadvice mew-summary-cursor-postscript (before shimbun-unseen activate)
+	(mew-shimbun-unseen-remove-advice)))
 
     (when mew-shimbun-use-unseen-cache-save
       ;; "C-cC-q"
