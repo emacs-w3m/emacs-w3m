@@ -1,3 +1,8 @@
+2001-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-decode-entities): Save-match-data when
+	`w3m-entity-value' is called.
+
 2001-10-03  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-xmas.el (w3m-detect-coding-region): Return just the return

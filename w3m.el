@@ -1783,7 +1783,9 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
       (while (re-search-forward w3m-entity-regexp nil t)
 	(if reserve-prop
 	    (setq prop (text-properties-at (match-beginning 0))))
-	(replace-match (w3m-entity-value (match-string 1)) nil t)
+	(replace-match (save-match-data
+			 (w3m-entity-value (match-string 1)))
+		       nil t)
 	(if (and reserve-prop prop)
 	    (w3m-add-text-properties (match-beginning 0) (point) prop))))))
 
