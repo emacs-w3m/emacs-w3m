@@ -148,25 +148,37 @@
 	  (when form
 	    (cond
 	     ((string= type "submit")
-	      (put-text-property start (point)
-				 'w3m-action
-				 `(w3m-form-submit ,form)))
+	      (add-text-properties start (point)
+				   (list 'face 'w3m-form-face
+					 'w3m-action
+					 `(w3m-form-submit ,form)
+					 'w3m-cursor-anchor
+					 `(w3m-form-submit ,form))))
 	     ((string= type "reset")
-	      (put-text-property start (point)
-				 'w3m-action
-				 `(w3m-form-reset ,form)))
+	      (add-text-properties start (point)
+				   (list 'face 'w3m-form-face
+					 'w3m-action
+					 `(w3m-form-reset ,form)
+					 'w3m-cursor-anchor
+					 `(w3m-form-submit ,form))))
 	     (t ;; input button.
-	      (put-text-property start (point)
-				 'w3m-action
-				 `(w3m-form-input ,form
-						  ,name
-						  ,type
-						  ,width
-						  ,maxlength
-						  ,value))
-	      (w3m-form-put form name value)))
-	    (put-text-property start (point) 'face 'w3m-form-face))
-	  )))))
+	      (add-text-properties start (point)
+				   (list 'face 'w3m-form-face
+					 'w3m-action
+					 `(w3m-form-input ,form
+							  ,name
+							  ,type
+							  ,width
+							  ,maxlength
+							  ,value)
+					 'w3m-cursor-anchor
+					 `(w3m-form-input ,form
+							  ,name
+							  ,type
+							  ,width
+							  ,maxlength
+							  ,value))))
+	     (w3m-form-put form name value))))))))
 
 (defun w3m-form-replace (string)
   (let* ((start (text-property-any

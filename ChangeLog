@@ -1,3 +1,18 @@
+2001-05-11  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-cursor-anchor): New defsubst.
+	(w3m-fontify-anchors): Add 'w3m-cursor-anchor property for
+	w3m-goto-(next|previous)-anchor.
+	(w3m-goto-anchor-hist): New buffer local variable.
+	(w3m-goto-next-anchor): Use 'w3m-cursor-anchor property.
+	(w3m-goto-previous-anchor): Ditto.
+	(w3m-next-anchor): Don't stop divided anchor using
+	'w3m-goto-anchor-hist'.
+	(w3m-previous-anchor): Ditto.
+
+	* w3m-form.el (w3m-fontify-forms): Add 'w3m-cursor-anchor property for
+	w3m-goto-(next|previous)-anchor.
+
 2001-05-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-copy): New implementation without

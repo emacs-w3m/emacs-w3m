@@ -768,6 +768,9 @@ If optional argument NO-CACHE is non-nil, cache is not used."
   (get-text-property (or point (point)) 'w3m-image))
 (defsubst w3m-action (&optional point)
   (get-text-property (or point (point)) 'w3m-action))
+(defsubst w3m-cursor-anchor (&optional point)
+  (get-text-property (or point (point)) 'w3m-cursor-anchor))
+
 
 (defsubst w3m-get-buffer-create (name)
   "Return the buffer named NAME, or create such a buffer and return it."
@@ -1174,6 +1177,7 @@ If N is negative, last N items of LIST is returned."
 						 'w3m-arrived-anchor-face
 					       'w3m-anchor-face)
 				       'w3m-href-anchor href
+				       'w3m-cursor-anchor href
 				       'mouse-face 'highlight
 				       'w3m-name-anchor name
 				       'help-echo help
@@ -2263,73 +2267,80 @@ this function returns t.  Otherwise, returns nil."
 	(funcall w3m-edit-function (w3m-url-to-file-name url))
       (error "URL:%s is not local." url))))
 
+(defvar w3m-goto-anchor-hist nil)
+(make-variable-buffer-local 'w3m-goto-anchor-hist)
+
 (defun w3m-goto-next-anchor ()
   ;; move to the end of the current anchor
-  (if (w3m-anchor)
-      (goto-char (next-single-property-change (point) 'w3m-href-anchor))
-    (if (w3m-action)
-	(goto-char (next-single-property-change (point) 'w3m-action))))
+  (when (w3m-cursor-anchor)
+    (goto-char (next-single-property-change (point) 'w3m-cursor-anchor)))
   ;; find the next anchor
-  (or (w3m-anchor)
-      (w3m-action)
-      (let ((pos
-	     (min (or (next-single-property-change (point) 'w3m-href-anchor)
-		      (1+ (point-max)))
-		  (or (next-single-property-change (point) 'w3m-action)
-		      (1+ (point-max))))))
-	(if (= pos (1+ (point-max)))
-	    nil
-	  (goto-char pos) t))))
+  (or (w3m-cursor-anchor)
+      (let ((pos (next-single-property-change (point) 'w3m-cursor-anchor)))
+	(when pos
+	  (goto-char pos)
+	  t))))
 
 (defun w3m-next-anchor (&optional arg)
   "*Move cursor to the next anchor."
   (interactive "p")
   (unless arg (setq arg 1))
+  (if (null (memq last-command '(w3m-next-anchor w3m-previous-anchor)))
+      (setq w3m-goto-anchor-hist
+	    (list (get-text-property (point) 'w3m-cursor-anchor)))
+    (if (eq last-command 'w3m-previous-anchor)
+	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
   (if (< arg 0)
       (w3m-previous-anchor (- arg))
     (while (> arg 0)
       (unless (w3m-goto-next-anchor)
 	;; search from the beginning of the buffer
+	(setq w3m-goto-anchor-hist nil)
 	(goto-char (point-min))
 	(w3m-goto-next-anchor))
-      (setq arg (1- arg)))
+      (setq arg (1- arg))
+      (if (member (w3m-cursor-anchor) w3m-goto-anchor-hist)
+	  (setq arg (1+ arg))
+	(setq w3m-goto-anchor-hist
+	      (cons (get-text-property (point) 'w3m-cursor-anchor)
+		    w3m-goto-anchor-hist))))
     (w3m-print-this-url)))
 
 (defun w3m-goto-previous-anchor ()
   ;; move to the beginning of the current anchor
-  (if (w3m-anchor)
-      (goto-char (previous-single-property-change (1+ (point))
-						  'w3m-href-anchor))
-    (if (w3m-action)
-	(goto-char (previous-single-property-change (1+ (point))
-						    'w3m-action))))
+  (when (w3m-cursor-anchor)
+    (goto-char (previous-single-property-change (1+ (point))
+						'w3m-cursor-anchor)))
   ;; find the previous anchor
-  (let ((pos
-	 (max (or (previous-single-property-change (point) 'w3m-href-anchor)
-		  (1- (point-min)))
-	      (or (previous-single-property-change (point) 'w3m-action)
-		  (1- (point-min))))))
-    (if (= pos (1- (point-min)))
-	nil
-      (goto-char
-       (if (w3m-anchor pos) pos
-	 (max (or (previous-single-property-change pos 'w3m-href-anchor)
-		  (1- (point-min)))
-	      (or (previous-single-property-change pos 'w3m-action)
-		  (1- (point-min)))))))))
+  (let ((pos (previous-single-property-change (point) 'w3m-cursor-anchor)))
+    (if pos
+	(goto-char
+	 (if (w3m-cursor-anchor pos) pos
+	   (previous-single-property-change pos 'w3m-cursor-anchor))))))
 
 (defun w3m-previous-anchor (&optional arg)
   "Move cursor to the previous anchor."
   (interactive "p")
   (unless arg (setq arg 1))
+  (if (null (memq last-command '(w3m-next-anchor w3m-previous-anchor)))
+      (setq w3m-goto-anchor-hist
+	    (list (get-text-property (point) 'w3m-cursor-anchor)))
+    (if (eq last-command 'w3m-next-anchor)
+	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
   (if (< arg 0)
       (w3m-next-anchor (- arg))
     (while (> arg 0)
       (unless (w3m-goto-previous-anchor)
 	;; search from the end of the buffer
+	(setq w3m-goto-anchor-hist nil)
 	(goto-char (point-max))
 	(w3m-goto-previous-anchor))
-      (setq arg (1- arg)))
+      (setq arg (1- arg))
+      (if (member (w3m-cursor-anchor) w3m-goto-anchor-hist)
+	  (setq arg (1+ arg))
+	(setq w3m-goto-anchor-hist
+	      (cons (get-text-property (point) 'w3m-cursor-anchor)
+		    w3m-goto-anchor-hist))))
     (w3m-print-this-url)))
 
 
