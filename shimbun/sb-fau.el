@@ -46,6 +46,11 @@
 <p>\\s-*
 ..*?<a\\s-+class=\"red\"\\s-+href=\"javascript:window.print()\"")
 
+(defvar shimbun-fau-coding-system
+  (or (shimbun-find-coding-system 'windows-1252)
+      (shimbun-find-coding-system 'iso-8859-1))
+  "Coding system used to decode article contents.")
+
 (luna-define-method shimbun-index-url ((shimbun shimbun-fau))
   shimbun-fau-url)
 
@@ -63,6 +68,33 @@
   (unless (string-match "/[^/]*$" url)
     (error "Cannot find message-id base"))
   (concat "<" (match-string 0 url) "@fau.de>"))
+
+(luna-define-method shimbun-article ((shimbun shimbun) header
+				     &optional outbuf)
+  (when (shimbun-current-group-internal shimbun)
+    (with-current-buffer (or outbuf (current-buffer))
+      (w3m-insert-string
+       (or (with-temp-buffer
+	     (if (shimbun-coding-system-internal shimbun)
+		 (progn
+		   (shimbun-fetch-url shimbun
+				      (shimbun-article-url shimbun header)
+				      nil t
+				      (shimbun-article-base-url shimbun
+								header))
+		   (set-buffer-multibyte t)
+		   (decode-coding-region
+		    (point-min) (point-max)
+		    (shimbun-coding-system-internal shimbun)))
+	       (shimbun-fetch-url shimbun
+				  (shimbun-article-url shimbun header)
+				  nil nil
+				  (shimbun-article-base-url shimbun header)))
+	     (shimbun-message shimbun "shimbun: Make contents...")
+	     (goto-char (point-min))
+	     (prog1 (shimbun-make-contents shimbun header)
+	       (shimbun-message shimbun "shimbun: Make contents...done")))
+	   "")))))
 
 (provide 'sb-fau)
 

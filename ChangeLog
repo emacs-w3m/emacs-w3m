@@ -1,18 +1,35 @@
-2005-03-21 David Hansen <david.hansen@physik.fu-berlin.de>
+2005-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-fau.el (shimbun-article): New overriding method to
+	decode article contents according to shimbun-fau-coding-system.
+
+2005-03-22  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-fau.el (shimbun-fau-coding-system): New variable.
+
+	* shimbun/shimbun.el (shimbun-find-coding-system): Alias to
+	w3m-find-coding-system.
+
+2005-03-21  David Hansen  <david.hansen@physik.fu-berlin.de>
 
 	* shimbun/sb-heise.el (shimbun-heise-get-telepolis-headers):
 	Fixed broken message id.
 
-2005-03-20 David Hansen  <david.hansen@physik.fu-berlin.de>
+2005-03-20  David Hansen  <david.hansen@physik.fu-berlin.de>
 
 	* shimbun/sb-heise.el (shimbun-heise-get-newsticker-headers):
 	Removed forgotten debug code.
 	(shimbun-heise-get-telepolis-headers): Follow the change of site
 	design.
 
-2005-03-20  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+2005-03-19  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
-	* shimbun/sb-fau.el: new file.
+	* shimbun/sb-fau.el (shimbun-fau-x-face-alist): New variable.
+	(shimbun-fau-content-end): Improve regexp.
+
+2005-03-19  David Hansen  <david.hansen@physik.fu-berlin.de>
+
+	* shimbun/sb-fau.el: New file.
 
 2005-03-19  Takashi Hiromatsu  <matsuan@ca2.so-net.ne.jp>
 
