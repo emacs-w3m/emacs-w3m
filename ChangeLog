@@ -1,3 +1,8 @@
+2003-04-16  Chihiro Kuroda  <chee@iijmio-mail.jp>
+
+	* w3m.el (w3m-download): Download a directory url to index.html
+	(by default) instead of signaling an error.
+
 2003-04-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-make-contents): Return nil when
