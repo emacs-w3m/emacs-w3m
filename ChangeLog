@@ -1,3 +1,10 @@
+2004-11-23  Tsuyoshi CHO  <mfalcon21@hotmail.com>
+
+	* shimbun/sb-wikimedia.el (shimbun-wikimedia-l10n-make-contents):
+	Add alternate atmark(@) pattern.
+	(shimbun-wikimedia-date-decode-rule-alist): Fix regular expression
+	for date string mismatching problem.
+
 2004-11-23  S V N Vishwanathan  <vishketan@yahoo.com>
 
 	* shimbun/sb-rediff.el: New file.
