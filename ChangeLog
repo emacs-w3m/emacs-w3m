@@ -1,3 +1,11 @@
+2001-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-version): Bind `print-level' and
+	`print-length' to nil.
+	(w3mhack-examine-modules): Ditto.
+	* w3m.el (w3m-rendering-region): Ditto.
+	* w3m-form.el (w3m-form-submit): Ditto.
+
 2001-06-21  Mito  <mit@nines.nec.co.jp>
 
 	* shimbun/sb-hns.el (shimbun-hns-article): Add title string to the

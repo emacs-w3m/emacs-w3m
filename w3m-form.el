@@ -221,7 +221,8 @@
     (if url
 	(w3m-goto-url url)
       (w3m-message "This form's method has not been supported: %s"
-		   (prin1-to-string (w3m-form-method form))))))
+		   (let (print-level print-length)
+		     (prin1-to-string (w3m-form-method form)))))))
 
 (defsubst w3m-form-real-reset (form sexp)
   (and (eq 'w3m-form-input (car sexp))

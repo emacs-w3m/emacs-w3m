@@ -63,7 +63,8 @@
 				     "w3m-e21.el"
 				   "w3m-e20.el")))
 			  (append version-specific-modules '("w3mhack.el"))))
-	 (shimbun-dir (file-name-as-directory shimbun-module-directory)))
+	 (shimbun-dir (file-name-as-directory shimbun-module-directory))
+	 print-level print-length)
     (unless (locate-library "mew")
       (push "mew-w3m.el" ignores))
     (if (locate-library "mime-def")
@@ -351,6 +352,7 @@ to the specified name LIBRARY (a la calling `load' instead of `load-library')."
 (defun w3mhack-version ()
   "Print version of w3m.el."
   (require 'w3m)
-  (princ emacs-w3m-version))
+  (let (print-level print-length)
+    (princ emacs-w3m-version)))
 
 ;;; w3mhack.el ends here
