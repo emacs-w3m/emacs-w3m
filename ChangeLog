@@ -1,5 +1,5 @@
 2003-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
-	Suggested by KURIHARA Kenichi <kenichi_kurihara@nifty.com>
+	Suggested by KURIHARA Kenichi <kenichi_kurihara@nifty.com>.
 
 	* w3m.el (w3m-async-exec): Always default to `t'.
 	(w3m-process-connection-type): Default to `nil' under MacOS X.
