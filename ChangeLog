@@ -1,6 +1,7 @@
 2001-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-macro.el (w3m-cleanup-plist): New macro.
+	(w3m-tag-regexp-of): Use backquote.
 
 	* w3m-hist.el (w3m-history-modify-properties): Don't infloop.
 

@@ -85,9 +85,9 @@ compile-time."
 	buf)))
 
 (defmacro w3m-tag-regexp-of (&rest names)
-  (concat "<\\("
-	  (mapconcat 'identity names "\\|")
-	  "\\)\\([ \t\r\f\n]+[^>]*\\)?/?>"))
+  (` (concat "<\\("
+	     (mapconcat 'identity (, names) "\\|")
+	     "\\)\\([ \t\r\f\n]+[^>]*\\)?/?>")))
 
 (defmacro w3m-cleanup-plist (plist)
   "Remove properties with the value `nil' in PLIST."
