@@ -1,3 +1,8 @@
+2002-01-25  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-vinelinux.el (shimbun-make-contents): Modify regexp
+	slightly.
+
 2002-01-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-tmp-urluser-alist): New variable.

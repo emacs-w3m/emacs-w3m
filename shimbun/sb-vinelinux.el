@@ -64,7 +64,6 @@
 (luna-define-method shimbun-get-headers ((shimbun shimbun-vinelinux)
 					 &optional range)
   (let ((case-fold-search t)
-	;;(pages (shimbun-header-index-pages range))
 	(count 0)
 	start end headers aux url id date subject)
     (with-temp-buffer
@@ -79,13 +78,11 @@
       (goto-char start)
       ;; Use entire archive.
       (catch 'stop
-	(while ;;(and (if pages (<= (incf count) pages) t)
-	    (re-search-forward
-	     ;; <td><a href="20010501.html">quota の更新</a></td>
-;; <td><a href="20010501-3.html">Vine Linux 2.1.5 にアップグレードした時の xdvi や tgif 等の日本語表示の不具合</a></td>
-	     "^<td><a href=\"\\(\\([0-9]+\\)\\(-[0-9]+\\)*\\.html\\)\">\\(.+\\)</a></td>"
-	     end t)
-	  ;;)
+	(while (re-search-forward
+		;; <td><a href="20010501.html">quota の更新</a></td>
+		;; <td><a href="20010501-3.html">Vine Linux 2.1.5 にアップグレードした時の xdvi や tgif 等の日本語表示の不具合</a></td>
+		"^<td><a href=\"\\(\\([0-9]+\\)\\(-[0-9]+\\)*\\.html\\)\">\\(.+\\)</a></td>"
+		end t)
 	  (setq url (concat shimbun-vinelinux-url
 			    "/"
 			    (cdr (assoc (shimbun-current-group-internal shimbun)
@@ -96,7 +93,6 @@
 			   (string-to-number (match-string-no-properties 2))
 			   (shimbun-current-group-internal shimbun))
 		date (shimbun-vinelinux-parse-time (match-string-no-properties 2))
-		;; from (match-string 4)
 		subject (match-string 4))
 	  (if (shimbun-search-id shimbun id)
 	      (throw 'stop nil))
@@ -108,7 +104,8 @@
     headers))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-vinelinux) header)
-  (if (not (re-search-forward "^<h4>●[,0-9]+●.*</h4>" nil t nil))
+  ;;<h4>●2002,1,22(2002,1,24 更新)● ppxp パッケージの修正</h4>
+  (if (not (re-search-forward "^<h4>●[,0-9]+.*●.*</h4>" nil t nil))
       nil
     (delete-region (progn (forward-line 1) (point)) (point-min))
     (shimbun-header-insert shimbun header)
