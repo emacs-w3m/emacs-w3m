@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; w3m-e21.el --- The stuffs to use w3m.el on Emacs-21.
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
