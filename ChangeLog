@@ -1,5 +1,7 @@
 2001-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-hist.el, w3m.el: Don't quote colon keywords.
+
 	* Makefile.in (install): Don't install w3mkwds.el.
 
 2001-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>

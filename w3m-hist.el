@@ -737,8 +737,8 @@ renaming will be done for all the w3m buffers."
   "Store the current position point in the history structure."
   (interactive)
   (when (cadar w3m-history)
-    (w3m-history-add-properties (list ':window-start (window-start)
-				      ':position (point))
+    (w3m-history-add-properties (list :window-start (window-start)
+				      :position (point))
 				nil nil t)
     (when (interactive-p)
       (message "The position point has registered"))))
@@ -747,10 +747,10 @@ renaming will be done for all the w3m buffers."
   "Restore the last position point for the current url."
   (interactive)
   (when (cadar w3m-history)
-    (let ((start (w3m-history-plist-get ':window-start nil nil t))
+    (let ((start (w3m-history-plist-get :window-start nil nil t))
 	  position)
       (cond ((and start
-		  (setq position (w3m-history-plist-get ':position
+		  (setq position (w3m-history-plist-get :position
 							nil nil t)))
 	     (set-window-start nil start)
 	     (goto-char position))
@@ -782,7 +782,7 @@ in advance.  It's only a joke, you should NEVER use it."
 		   (when symbol
 		     (if (setq title (get symbol 'title))
 			 (push (list (symbol-name symbol)
-				     (list ':title title))
+				     (list :title title))
 			       url-title)
 		       (push (list (symbol-name symbol)) url-title)))))
 		w3m-arrived-db)

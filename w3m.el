@@ -877,14 +877,6 @@ If nil, use an internal CGI of w3m."
 (defvar w3m-cid-retrieve-function-alist nil)
 (defvar w3m-force-redisplay t)
 
-(eval-and-compile
-  (condition-case nil
-      :symbol-for-testing-whether-colon-keyword-is-available-or-not
-    (void-variable
-     (eval '(defconst :bool ':bool))
-     (eval '(defconst :case-ignore ':case-ignore))
-     (eval '(defconst :integer ':integer)))))
-
 (defvar w3m-work-buffer-list nil)
 (defconst w3m-work-buffer-name " *w3m-work*")
 
@@ -2875,8 +2867,8 @@ forward is performed.  Otherwise, COUNT is treated as 1 by default."
 	       (w3m-history-backward))))
     (when url
       (w3m-goto-url url nil nil
-		    (w3m-history-plist-get ':post-data)
-		    (w3m-history-plist-get ':referer))
+		    (w3m-history-plist-get :post-data)
+		    (w3m-history-plist-get :referer))
       ;; restore last position
       (w3m-history-restore-position))))
 
@@ -3638,16 +3630,16 @@ the request."
 			   (if w3m-add-referer referer nil)))
 	    (progn
 	      (w3m-history-push (w3m-real-url url)
-				(list ':title (file-name-nondirectory url)))
+				(list :title (file-name-nondirectory url)))
 	      (w3m-history-push w3m-current-url)
 	      (w3m-refontify-anchor))
 	  (setq w3m-current-post-data post-data
 		w3m-current-referer referer)
 	  (w3m-history-push w3m-current-url
 			    (w3m-cleanup-plist
-			     (list ':title w3m-current-title
-				   ':referer w3m-current-referer
-				   ':post-data w3m-current-post-data)))
+			     (list :title w3m-current-title
+				   :referer w3m-current-referer
+				   :post-data w3m-current-post-data)))
 	  (or (and name (w3m-search-name-anchor name))
 	      (goto-char (point-min)))
 	  (setq w3m-display-inline-image-status 'off)
@@ -3923,7 +3915,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
 	  (setq element (pop history)
 		url (car element)
 		about (string-match w3m-history-ignored-regexp url)
-		title (plist-get (cadr element) ':title)
+		title (plist-get (cadr element) :title)
 		position (caddr element))
 	  (insert (format "h%s %d <a href=\"%s\">%s%s%s</a>\n"
 			  (mapconcat (function (lambda (d) (format form d)))
