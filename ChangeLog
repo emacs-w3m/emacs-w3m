@@ -1,3 +1,7 @@
+2003-03-09  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-anthy.el: New file.
+
 2003-03-08  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-pocketgames.el: New file.
