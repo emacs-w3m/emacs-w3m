@@ -1,3 +1,15 @@
+2001-10-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-create-image): Call `w3m-fix-gif' if
+	`w3m-should-convert-interlaced-gifs' is non-nil.
+	(w3m-fix-gif): Renamed from `w3m-unoptimize-animated-gif'; convert
+	an interlaced gif to be non-interlaced as well as unoptimization.
+	(w3m-cache-fixed-gif-images-max-length): Renamed from
+	`w3m-cache-unoptimized-gif-images-max-length'.
+	(w3m-cache-fixed-gif-images): Renamed from
+	`w3m-cache-unoptimized-gif-images'.
+	(w3m-should-convert-interlaced-gifs): New variable.
+
 2001-10-16  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* README.ja: Add description about "new custom".

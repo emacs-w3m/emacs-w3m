@@ -98,18 +98,26 @@ circumstances."
 It is applicable to XEmacs 21.2.20 or later, since which only support
 to show unoptimized animated gif images.")
 
+(defvar w3m-should-convert-interlaced-gifs t
+  "Specify whether w3m should convert interlaced gif images to be non-
+interlaced.  There is a known bug in the whole version of XEmacs so
+far that it may crashes when an interlaced gif image is displayed.")
+
 (defvar w3m-gifsicle-program (when (exec-installed-p "gifsicle")
 			       "gifsicle")
-  "*Name of the gifsicle program used to unoptimize animated gif images.")
+  "*Name of the gifsicle program used to unoptimize animated gif images
+or to convert interlaced gif images to be non-interlaced.")
 
-(defvar w3m-cache-unoptimized-gif-images nil
-  "Cache used to keep unoptimized animated gif images.  It is an alist of
-a URL and a glyph.  Glyph will be nil if there is no need to
-unoptimize.  Each element should be updated when a URL is newly
-retrieved.")
+(defvar w3m-cache-fixed-gif-images nil
+  "Cache used to keep fixed gif images.  Fixed gif means that an
+unoptimized animated gif or a non-interlaced gif which is converted
+from an interlaced gif.  The value is an alist of a URL and a glyph.
+Glyph will be nil if there is no need to be unoptimized nor to convert
+to be non-interlaced.  Each element should be updated when a URL is
+newly retrieved.")
 
-(defvar w3m-cache-unoptimized-gif-images-max-length 32
-  "*Number to limit the length of `w3m-cache-unoptimized-gif-images'.")
+(defvar w3m-cache-fixed-gif-images-max-length 32
+  "*Number to limit the length of `w3m-cache-fixed-gif-images'.")
 
 (defvar w3m-animated-gif-maximum-size 1048579
   "*Maximum size (width * height * frames) of animated gif images.  If a
@@ -117,37 +125,44 @@ size of an image is larger than this (it might be a bomb!), only the
 first frame will be shown.  You can make it to be unlimited with the
 value nil if your computer has TerrrrrrraBytes of memories.")
 
-(defun w3m-unoptimize-animated-gif (url data no-cache)
-  "Return a glyph of an unoptimized animated gif data DATA corresponding
-to URL, which is suitable for XEmacs.  Otherwise it returns nil when
-there is no need to unoptimize (or, unfortunately, the unoptimization
-is failed).  It manages the cache `w3m-cache-unoptimized-gif-images'.
-If NO-CACHE is non-nil, a cached data will not be used and it will be
-updated by a new data.  See also the documentation for the variable
+(defun w3m-fix-gif (url data no-cache)
+  "Return a glyph image of a gif DATA corresponding to a URL which is
+suitable for XEmacs.  It will unoptimize an animated gif or convert
+an interlaced gif to be non-interlaced.  Otherwise it returns nil when
+there is no need to be unoptimized nor to convert to be non-interlaced
+\(or, unfortunately, the unoptimization or the conversion is failed).
+It manages the cache `w3m-cache-fixed-gif-images'.  If NO-CACHE is
+non-nil, a cached data will not be used and it will be updated by a
+new glyph image.  See also the documentation for the variable
 `w3m-animated-gif-maximum-size'."
-  (let ((cache (assoc url w3m-cache-unoptimized-gif-images)))
+  (let ((cache (assoc url w3m-cache-fixed-gif-images)))
     ;; Move the element which is associated with `url' to the
-    ;; top of the cache.  No need to use `equal' nor `delete'
-    ;; in the following procedures.
+    ;; top of the cache.
     (when (and cache
-	       (not (eq cache (car w3m-cache-unoptimized-gif-images))))
-      (setq w3m-cache-unoptimized-gif-images
-	    (cons cache (delq cache w3m-cache-unoptimized-gif-images))))
+	       (not (eq cache (car w3m-cache-fixed-gif-images))))
+      (setq w3m-cache-fixed-gif-images
+	    (cons cache (delq cache w3m-cache-fixed-gif-images))))
     (if (or no-cache
 	    (not cache))
 	(with-temp-buffer
 	  (let ((coding-system-for-read 'binary)
 		(coding-system-for-write 'binary)
-		should-process size1 size2 glyph)
+		should-be-non-interlaced should-unoptimize size1 size2 glyph)
 	    (insert data)
 	    (goto-char (point-min))
-	    (when (looking-at "GIF89a")
-	      ;; Check whether a `data' is optimized or larger than
-	      ;; the value of `w3m-animated-gif-maximum-size'.
+	    (when (looking-at "GIF8[79]")
 	      (call-process-region (point-min) (point-max)
 				   w3m-gifsicle-program
 				   t t nil "--info")
 	      (goto-char (point-min))
+	      ;; Check whether a `data' is interlaced.
+	      (setq should-be-non-interlaced
+		    (re-search-forward
+		     "  \\+ image #[0-9]+ \\([0-9]+x[0-9]+\\).* interlaced"
+		     nil t))
+	      (goto-char (point-min))
+	      ;; Check whether a `data' is optimized or larger than
+	      ;; the value of `w3m-animated-gif-maximum-size'.
 	      (when (and w3m-animated-gif-maximum-size
 			 (looking-at ".+ \\([0-9]+\\) images\r?$"))
 		(setq size1 (string-to-number (match-string 1)))
@@ -162,26 +177,31 @@ updated by a new data.  See also the documentation for the variable
 						      (match-string 2)))))
 			     (<= size1 w3m-animated-gif-maximum-size))
 		  ;; It should be truncated to be only one frame.
-		  (setq should-process "#0"))
-		(setq size1 nil))
-	      (while (and (not should-process)
-			  (re-search-forward
-			   "  \\+ image #[0-9]+ \\([0-9]+x[0-9]+\\)"
-			   nil t))
-		(if size1
-		    (if (string-equal size1 (setq size2 (match-string 1)))
-			(setq size1 size2)
-		      (setq should-process "--unoptimize"))
-		  (setq size1 (match-string 1))))
-	      (when should-process
+		  (setq should-unoptimize "#0"))
+		(setq size1 nil)
+		(while (and (not should-unoptimize)
+			    (re-search-forward
+			     "  \\+ image #[0-9]+ \\([0-9]+x[0-9]+\\)"
+			     nil t))
+		  (if size1
+		      (if (string-equal size1 (setq size2 (match-string 1)))
+			  (setq size1 size2)
+			(setq should-unoptimize "--unoptimize"))
+		    (setq size1 (match-string 1)))))
+	      (when (or should-unoptimize should-be-non-interlaced)
 		(erase-buffer)
 		(insert data)
 		;; Unoptimize anyway.
-		(call-process-region (point-min) (point-max)
-				     w3m-gifsicle-program
-				     t t nil should-process)
+		(if should-unoptimize
+		    (call-process-region (point-min) (point-max)
+					 w3m-gifsicle-program
+					 t t nil should-unoptimize
+					 "--no-interlace")
+		  (call-process-region (point-min) (point-max)
+				       w3m-gifsicle-program
+				       t t nil "--no-interlace"))
 		(goto-char (point-min))
-		(when (or (looking-at "GIF89a")
+		(when (or (looking-at "GIF8[79]")
 			  ;; Unoptimization is failed. :-<
 			  ;; Attempt to extract the first frame.
 			  (progn
@@ -189,24 +209,21 @@ updated by a new data.  See also the documentation for the variable
 			    (insert data)
 			    (call-process-region (point-min) (point-max)
 						 w3m-gifsicle-program
-						 t t nil "#0")
+						 t t nil "#0" "--no-interlace")
 			    (goto-char (point-min))
-			    (looking-at "GIF89a")))
+			    (looking-at "GIF8[79]")))
 		  ;; Perhaps the unoptimization is succeeded.
-		  (setq glyph (make-glyph (vector 'gif
-						  :data
-						  (buffer-string)))))))
+		  (setq glyph
+			(make-glyph (vector 'gif :data (buffer-string)))))))
 	    ;; Update a cache.
 	    (if cache
 		(setcdr cache glyph)
-	      (push (cons url glyph) w3m-cache-unoptimized-gif-images)
-	      (let ((maxlen w3m-cache-unoptimized-gif-images-max-length))
+	      (push (cons url glyph) w3m-cache-fixed-gif-images)
+	      (let ((maxlen w3m-cache-fixed-gif-images-max-length))
 		(when (and (integerp maxlen)
 			   (>= maxlen 1)
-			   (> (length w3m-cache-unoptimized-gif-images)
-			      maxlen))
-		  (setcdr (nthcdr (1- maxlen)
-				  w3m-cache-unoptimized-gif-images)
+			   (> (length w3m-cache-fixed-gif-images) maxlen))
+		  (setcdr (nthcdr (1- maxlen) w3m-cache-fixed-gif-images)
 			  nil))))
 	    glyph))
       ;; Use a cached glyph.
@@ -224,9 +241,10 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
     (when (w3m-image-type-available-p (setq type (w3m-image-type type)))
       (let ((data (w3m-with-work-buffer (buffer-string))))
 	(or (and (eq type 'gif)
-		 w3m-should-unoptimize-animated-gifs
+		 (or w3m-should-unoptimize-animated-gifs
+		     w3m-should-convert-interlaced-gifs)
 		 w3m-gifsicle-program
-		 (w3m-unoptimize-animated-gif url data no-cache))
+		 (w3m-fix-gif url data no-cache))
 	    (make-glyph (vector type :data data)))))))
 
 (defun w3m-insert-image (beg end image)
@@ -389,4 +407,4 @@ as the value."
 
 (provide 'w3m-xmas)
 
-;;; w3m-xmas.el ends here.
+;;; w3m-xmas.el ends here
