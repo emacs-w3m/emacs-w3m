@@ -1,5 +1,8 @@
 2005-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-zeit-de.el (shimbun-rss-build-message-id): Make it
+	work even if there's no subdirectory in url.
+
 	* w3m.el (w3m-modeline-title): Replace truncate-string-to-width
 	with w3m-truncate-string.
 
