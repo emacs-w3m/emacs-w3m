@@ -1974,6 +1974,11 @@ Gnus が勝手に spammer のサイトに接続することはありません。
 リスト、小泉日本国首相のメールマガジン、Slashdot Japan、および他のたくさ
 んのものに対応しています。
 
+Emacs-w3m を構築してインストールする前に @sc{flim} パッケージ (加え
+て @samp{nnshimbun} を使いたければ Gnus) をインストールする必要があるこ
+とに注意してください。@sc{flim} パッケージには @sc{apel} パッケージが必
+要です。つまり、そういうことです (@pxref{Other Requirements})。
+
 @menu
 * Nnshimbun::                   Gnus をウェブブラウザにする!
 * Mew Shimbun::                 Mew で新聞を読む

@@ -1862,6 +1862,11 @@ Emacs Devel, XEmacs Beta, mailing lists for Gnus, Mew, Wanderlust, etc.,
 the Japanese Prime Minister Koizumi's mail magazine, Slashdot Japan, and
 a lot of others.
 
+Note that you need to have installed the @sc{flim} package (and Gnus if
+you'd like to use @samp{nnshimbun}) before building and installing
+emacs-w3m.  The @sc{flim} package requires the @sc{apel} package.  So,
+here it is (@pxref{Other Requirements}).
+
 @menu
 * Nnshimbun::                   Making Gnus into a web browser!
 * Mew Shimbun::                 Reading web newspapers with Mew
