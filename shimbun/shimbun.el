@@ -116,6 +116,7 @@
       (current-buffer))))
 
 (defalias 'shimbun-decode-entities 'w3m-decode-entities)
+(defalias 'shimbun-expand-url 'w3m-expand-url)
 
 ;;; Implementation of Header API.
 (defun shimbun-make-header (&optional number subject from date id

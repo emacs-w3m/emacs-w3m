@@ -57,15 +57,19 @@ ADDRESS is the e-mail address for the diary owner.")
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-hns))
   (let ((case-fold-search t)
-	id year month mday sect uniq pos subject
+	id year month mday sect uniq xref pos subject
 	headers)
     (goto-char (point-min))
-    (while (re-search-forward "<a href=\"[^\\?]*\\?\\([^\\#]*#\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9]+\\)\\)\">[^<]+</a>:" nil t)
-      (setq year  (string-to-number (match-string 2))
-	    month (string-to-number (match-string 3))
-	    mday  (string-to-number (match-string 4))
-	    sect  (string-to-number (match-string 5))
-	    uniq  (match-string 1)
+    (while (re-search-forward "<a href=\"\\([^\\#]*#\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9]+\\)\\)\\)\">[^<]+</a>:" nil t)
+      (setq year  (string-to-number (match-string 3))
+	    month (string-to-number (match-string 4))
+	    mday  (string-to-number (match-string 5))
+	    sect  (string-to-number (match-string 6))
+	    uniq  (match-string 2)
+	    xref  (shimbun-expand-url
+		   (match-string 1)
+		   (cadr (assoc (shimbun-current-group-internal shimbun)
+				shimbun-hns-group-alist)))
 	    pos (point))
       (when (re-search-forward "<br>" nil t)
 	(setq subject (buffer-substring pos (match-beginning 0))
@@ -88,7 +92,7 @@ ADDRESS is the e-mail address for the diary owner.")
 			   shimbun-hns-group-alist))
 	     (shimbun-make-date-string year month mday
 				       (format "00:%02d" sect))
-	     id "" 0 0 uniq)
+	     id "" 0 0 xref)
 	    headers))
     headers))
 ;    ;; sort by xref
@@ -97,30 +101,25 @@ ADDRESS is the e-mail address for the diary owner.")
 
 (defun shimbun-hns-article (shimbun xref)
   "Return article string which corresponds to SHIMBUN and XREF."
-  (let (uniq start sym prefix)
+  (let (uniq start sym)
     (when (string-match "#" xref)
-      (setq prefix (substring xref 0 (match-end 0)))
-      (if (boundp (setq sym (intern xref
+      (setq uniq (substring xref (match-end 0)))
+      (if (boundp (setq sym (intern uniq
 				    (shimbun-hns-content-hash-internal
 				     shimbun))))
 	  (symbol-value sym)
-	(with-current-buffer (shimbun-retrieve-url-buffer
-			      (concat
-			       (cadr (assoc
-				      (shimbun-current-group-internal shimbun)
-				      shimbun-hns-group-alist))
-			       "?" xref) 'reload)
+	(with-current-buffer (shimbun-retrieve-url-buffer xref 'reload)
 	  ;; Add articles to the content hash.
 	  (goto-char (point-min))
 	  (while (re-search-forward 
 		  "<h3 class=\"new\"><a [^<]*name=\"\\([0-9]+\\)\"" nil t)
-	    (setq uniq (concat prefix (match-string 1)))
-	    (when (re-search-forward "</h3>" nil t)
-	      (setq start (point))
-	      (when (re-search-forward "<!-- end of L?NEW -->" nil t)
-		(set (intern uniq (shimbun-hns-content-hash-internal shimbun))
-		     (buffer-substring start (point))))))
-	  (if (boundp (setq sym (intern-soft xref
+	    (let ((id (match-string 1)))
+	      (when (re-search-forward "</h3>" nil t)
+		(setq start (point))
+		(when (re-search-forward "<!-- end of L?NEW -->" nil t)
+		  (set (intern id (shimbun-hns-content-hash-internal shimbun))
+		       (buffer-substring start (point)))))))
+	  (if (boundp (setq sym (intern-soft uniq
 					     (shimbun-hns-content-hash-internal
 					      shimbun))))
 	      (symbol-value sym)))))))
@@ -133,10 +132,10 @@ ADDRESS is the e-mail address for the diary owner.")
       (insert "Content-Type: " "text/html" "; charset=ISO-2022-JP\n"
 	      "MIME-Version: 1.0\n"
 	      "\n"
-	      (encode-coding-string
-	       (or (shimbun-hns-article shimbun (shimbun-header-xref header))
-		   "")
-	       (mime-charset-to-coding-system "ISO-2022-JP"))))))
+	      (or (shimbun-hns-article shimbun (shimbun-header-xref header))
+		  ""))
+      (encode-coding-region (point-min) (point-max)
+			    (mime-charset-to-coding-system "ISO-2022-JP")))))
 
 (luna-define-method shimbun-close :after ((shimbun shimbun-hns))
   (shimbun-hns-set-content-hash-internal shimbun nil))
