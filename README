@@ -19,9 +19,9 @@ This package contains a interface program of w3m.
    b) In addition, if you are using XEmacs 21.x, you should install the
       program "gifsicle".  There is a known bug in the whole XEmacs 21.x
       series so far that it won't display optimized animated gifs
-      correctly or it may crash when an interlaced gif image is
-      displayed.  emacs-w3m will use it to convert gif data to be
-      suitable for XEmacs 21.x.  It is available from:
+      correctly or it may crash when some kind of an interlaced gif
+      image is displayed.  emacs-w3m will use it to convert gif data to
+      be suitable for XEmacs 21.x.  It is available from:
 
          http://www.lcdf.org/gifsicle/
 
@@ -51,7 +51,7 @@ This package contains a interface program of w3m.
       XEmacs/Mule-2.3 (you have to install APEL, and succeedingly
       FLIM).  You can get FLIM at:
 
-         ftp://ftp.m17n.org/pub/mule/flim/ 
+         ftp://ftp.m17n.org/pub/mule/flim/
 
       For more detail abut shimbun library, see README.shimbun.ja
       (sorry, Japanese only).
