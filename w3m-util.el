@@ -49,6 +49,7 @@
   (defvar w3m-pop-up-windows)
   (defvar w3m-popup-frame-parameters)
   (defvar w3m-refresh-timer)
+  (defvar w3m-safe-url-regexp)
   (defvar w3m-select-buffer-name)
   (defvar w3m-use-refresh)
   (defvar w3m-use-tab)
@@ -819,22 +820,43 @@ article buffer exists, return the article buffer.
 
 If the current buffer's `major-mode' is `w3m-mode' or there are
 contents rendered by emacs-w3m clearly (where perhaps the article
-buffer is selected), return the current buffer."
+buffer is selected), return the current buffer.
+
+When this function is called for searching an article buffer of some
+MUAs, the value of `w3m-safe-url-regexp' is set to the value specified
+peculiarly by each MUA.  Therefore, the `w3m-safe-url-regexp' variable
+should be bound by the `let' form before performing this function as
+follows:
+
+\(let* ((w3m-find-w3m-buffer w3m-find-w3m-buffer)
+       (buffer (w3m-find-w3m-buffer)))
+  (save-excursion
+    (set-buffer buffer)
+    ...
+    ))"
   (if (eq major-mode 'w3m-mode)
       (current-buffer)
-    (let ((fn (lambda nil
-		(let ((start (point-min))
-		      (end (point-max)))
-		  (or (text-property-any start end ;; Gnus
-					 'mm-inline-text-html-with-w3m t)
-		      (eq major-mode 'mew-message-mode) ;; Mew
-		      (text-property-any start end ;; SEMI MUAs
-					 'text-rendered-by-mime-w3m t)
-		      (text-property-any start end ;; VM
-					 'text-rendered-by-emacs-w3m t)))))
-	  buffer)
-      (if (funcall fn)
-	  (current-buffer)
+    (let ((fn
+	   (lambda nil
+	     (let ((start (point-min))
+		   (end (point-max)))
+	       (or (when (text-property-any start end ;; Gnus
+					    'mm-inline-text-html-with-w3m t)
+		     (list (symbol-value 'mm-w3m-safe-url-regexp)))
+		   (when (eq major-mode 'mew-message-mode) ;; Mew
+		     (list (if (symbol-value 'mew-w3m-use-safe-url-regexp)
+			       (symbol-value 'mew-w3m-safe-url-regexp))))
+		   (when (text-property-any start end ;; SEMI MUAs
+					    'text-rendered-by-mime-w3m t)
+		     (list (symbol-value 'mime-w3m-safe-url-regexp)))
+		   (when (text-property-any start end ;; VM
+					    'text-rendered-by-emacs-w3m t)
+		     (list (symbol-value 'vm-w3m-safe-url-regexp)))))))
+	  regexps buffer)
+      (if (setq regexps (funcall fn))
+	  (progn
+	    (setq w3m-safe-url-regexp (car regexps))
+	    (current-buffer))
 	(setq buffer
 	      (cond ((eq major-mode 'gnus-summary-mode)
 		     (symbol-value 'gnus-article-buffer))
@@ -857,7 +879,8 @@ buffer is selected), return the current buffer."
 			      'buffer-name)
 			    buffer)
 		   (with-current-buffer buffer
-		     (funcall fn)))
+		     (setq regexps (funcall fn))))
+	  (setq w3m-safe-url-regexp (car regexps))
 	  (get-buffer buffer))))))
 
 (defmacro w3m-with-w3m-buffer (&rest forms)
@@ -870,8 +893,13 @@ return to the summary buffer.
 
 If the current buffer's `major-mode' is `w3m-mode' or there are
 contents rendered by emacs-w3m clearly (where perhaps the article
-buffer is selected), simply run FORMS in the current buffer."
-  `(let ((buffer (w3m-find-w3m-buffer)))
+buffer is selected), simply run FORMS in the current buffer.
+
+When FORMS run in the article buffer of some MUAs, the value of
+`w3m-safe-url-regexp' is bound to the value specified peculiarly by
+each MUA."
+  `(let* ((w3m-safe-url-regexp w3m-safe-url-regexp)
+	  (buffer (w3m-find-w3m-buffer)))
      (when buffer
        (save-excursion
 	 (set-buffer buffer)
