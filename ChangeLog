@@ -1,3 +1,15 @@
+2003-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-delete-buffer): New implementation.
+	(w3m-delete-frame-maybe): Abolish.
+	(w3m-delete-frames-and-windows): New function.
+	(w3m-quit): Use it.
+	(w3m-close-window): New implementation.
+	(w3m-select-buffer-show-this-line): Specify the 1st arg to
+	`one-window-p'.
+	(w3m-select-buffer-quit): Ditto.
+	(w3m-select-buffer-close-window): Ditto.
+
 2003-11-06  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-fontify-strike-through): Support <strike> element.
