@@ -71,7 +71,7 @@
 	  (and action
 	       (w3m-expand-url action baseurl))
 	  charlst
-	  (or enctype 'urlencoded)
+	  (or enctype 'application/x-www-form-urlencoded)
 	  nil))
 
 (defsubst w3m-form-p (obj)
@@ -156,7 +156,7 @@ If no field in forward, return nil without moving."
 	  (setq buf (cons (cons name value) buf))))
 	(setq plist (cddr plist))))
     (when buf
-      (if (eq (w3m-form-enctype form) 'multipart)
+      (if (eq (w3m-form-enctype form) 'multipart/form-data)
 	  (let ((boundary (apply 'format "--_%d_%d_%d" (current-time)))
 		file type)
 	    (setq buf (nreverse buf))
@@ -331,8 +331,8 @@ If no field in forward, return nil without moving."
 		   (2 "internal")
 		   (3 "head"))
 	  enctype (case (% (w3m-char-to-int (car x)) 16)
-		    (0 'urlencoded)
-		    (1 'multipart)))
+		    (0 'application/x-www-form-urlencoded)
+		    (1 'multipart/form-data)))
     (setq x (cdr x))
     (setq action (w3m-form-mee-attr-unquote x))
     (setq x (cdr x))
@@ -476,7 +476,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		  (setf (w3m-form-enctype form)
 			(if enctype
 			    (intern enctype)
-			  'urlencoded)))
+			  'application/x-www-form-urlencoded)))
 	      (setq form (w3m-form-new
 			  (or method "get")
 			  (or action (and w3m-current-url
@@ -493,7 +493,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 				    (split-string accept-charset ",")))
 			  (if enctype
 			      (intern enctype)
-			    'urlencoded)))
+			    'application/x-www-form-urlencoded)))
 	      (setq forms (cons (cons fid form) forms))))))
        ((string= tag "map")
 	(let (candidates)
