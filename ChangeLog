@@ -1,3 +1,17 @@
+2005-01-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-ibm-dev.el (shimbun-ibm-dev-content-start): Follow
+	the change of site design.
+	(shimbun-ibm-dev-content-end): Ditto.
+	(shimbun-make-contents): Removed.
+	(shimbun-clear-contents): New method.
+
+2005-01-30  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
+
+	* shimbun/sb-ibm-dev.el (shimbun-ibm-dev-groups): Add "autonomic".
+	(shimbun-get-headers): New method support "range" option.
+	(shimbun-headers): Succeeded by `shimbun-get-headers'.
+
 2005-01-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-force-window-update): Make it work whatever the
