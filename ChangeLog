@@ -1,5 +1,8 @@
 2005-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-xmas.el (w3m-detect-coding-region): Use the name of the
+	coding system instead of the coding category if it is void.
+
 	* w3m-util.el (w3m-set-match-data): New macro which converts
 	points into markers under XEmacs.
 	(w3m-search-tag-1): Use it.

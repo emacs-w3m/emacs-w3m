@@ -130,6 +130,9 @@ NOTE: This function is slightly modified from `make-ccl-coding-system'
 (unless (fboundp 'coding-system-list)
   (defalias 'coding-system-list 'ignore))
 
+(unless (fboundp 'coding-system-name)
+  (defalias 'coding-system-name 'ignore))
+
 ;; If pccl.elc has been mis-compiled for XEmacs with MULE, the macro
 ;; `define-ccl-program' wouldn't be an empty macro because of advice.
 (when (and (not (featurep 'mule))
@@ -155,7 +158,8 @@ Return the first possible coding system.
 PRIORITY-LIST is a list of coding systems ordered by priority."
   (let (category categories codesys)
     (dolist (codesys priority-list)
-      (setq category (coding-system-category codesys))
+      (setq category (or (coding-system-category codesys)
+			 (coding-system-name codesys)))
       (unless (assq category categories)
 	(push (cons category codesys) categories)))
     (if (consp (setq codesys (w3m-detect-coding-with-priority
