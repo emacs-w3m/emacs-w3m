@@ -2337,6 +2337,8 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 				       (concat w3m-process-user "\n"))
 		(error nil)))))))))
 
+(defconst w3m-process-dummy-realm "*w3m-process-dummy-realm*")
+
 (defun w3m-exec-compatible-filter (process string)
   (if (buffer-name (process-buffer process))
       (with-current-buffer (process-buffer process)
@@ -2357,7 +2359,9 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		    (or (w3m-exec-get-passwd
 			 w3m-current-url w3m-process-realm w3m-process-user)
 			(read-passwd
-			 (format "Password for %s: " w3m-process-realm))))
+			 (if (string= w3m-process-realm w3m-process-dummy-realm)
+			     "Password: "
+			   (format "Password for %s: " w3m-process-realm)))))
 	      (condition-case nil
 		  (progn
 		    (process-send-string process
@@ -2368,11 +2372,13 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		    "\\(\nWrong username or password\n\\)?Username\\( for \\(.*\\)\n?\\)?: ")
 		   (= (match-end 0) (point-max)))
 	      (setq w3m-process-realm
-		    (if (match-beginning 3) (match-string 3) "dummy")
+		    (if (match-beginning 3) (match-string 3) w3m-process-dummy-realm)
 		    w3m-process-user
 		    (or (w3m-exec-get-user w3m-current-url w3m-process-realm)
 			(read-from-minibuffer
-			 (format "Username for %s: " w3m-process-realm))))
+			 (if (string= w3m-process-realm w3m-process-dummy-realm)
+			     "Username: "
+			   (format "Username for %s: " w3m-process-realm)))))
 	      (condition-case nil
 		  (process-send-string process
 				       (concat w3m-process-user "\n"))
