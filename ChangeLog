@@ -4,7 +4,7 @@
 	`w3m-form-parse-buffer'.
 	(w3m-clear-local-variables): Don't treat w3m-current-forms any more.
 	(w3m-copy-local-variables): Ditto.
-	(w3m-additional-command-arguments): Fixed problem whem no-proxy host
+	(w3m-additional-command-arguments): Fixed problem when no-proxy host
 	has port number other than 80.
 	(w3m-rendering-buffer-1): Don't call w3m-form-parse-buffer.
 	(w3m-goto-url): Setup w3m-current-forms from history structure.
