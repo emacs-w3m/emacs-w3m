@@ -37,6 +37,13 @@
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-dtree-directory-depth 8
+  "*Interger of a depth of the viewing directory."
+  :group 'w3m
+  :type '(choice
+	  (const :tag "No limit" nil)
+	  (integer :tag "depth" 10)))
+
 (defcustom w3m-dtree-indent-strings ["|-" "+-" "|  " "   "]
   "*Vector of strings to be used for indentation with w3m-dtree.
 
@@ -62,7 +69,16 @@ If you care for another style, set manually and try it :-).
   :type '(choice
 	  (const :tag "ASCII" ["|-" "+-" "|  " "   "])
 	  (const :tag "Japanese" ["├" "└" "│ " "　 "])
-	  (vector :tag "Ohters" string string string string)))
+	  (vector :tag "Others" string string string string)))
+
+(defcustom w3m-dtree-stop-strings ["|=" "+="]
+  "*Vector of strings to be used for indentation when a depth of directory
+over the 'w3m-dtree-directory-depth'."
+  :group 'w3m
+  :type '(choice
+	  (const :tag "ASCII" ["|=" "+="])
+	  (const :tag "Japanese" ["┣" "┗"])
+	  (vector :tag "Others" string string)))
 
 (defsubst w3m-dtree-expand-file-name (path)
   (if (string-match "^\\(.\\):\\(.*\\)" path)
@@ -86,22 +102,31 @@ If you care for another style, set manually and try it :-).
        (and (nth 1 (file-attributes (, path)))
 	    (/= (nth 1 (file-attributes (, path))) 2)))))
 
-(defun w3m-dtree-create-sub (path allfiles dirprefix fileprefix indent)
-  (let ((files (directory-files path nil "[^.]"))
-	(indent-sub1 (aref w3m-dtree-indent-strings 0))
-	(indent-sub2 (aref w3m-dtree-indent-strings 2))
-	file fullpath tmp)
+(defun w3m-dtree-create-sub (path allfiles dirprefix fileprefix indent depth)
+  (let* ((files (directory-files path t))
+	 (limit (and (integerp w3m-dtree-directory-depth)
+		     (>= depth w3m-dtree-directory-depth)))
+	 (indent-sub1 (if limit
+			  (aref w3m-dtree-stop-strings 0)
+			(aref w3m-dtree-indent-strings 0)))
+	 (indent-sub2 (aref w3m-dtree-indent-strings 2))
+	 file fullpath tmp)
+    (setq files (delete (concat (file-name-as-directory path) ".")
+			(delete (concat (file-name-as-directory path) "..")
+				files)))
     (unless allfiles
       (setq tmp files)
       (while (setq file (car tmp))
-	(unless (file-directory-p (expand-file-name file path))
+	(unless (file-directory-p file)
 	  (setq files (delete file files)))
 	(setq tmp (cdr tmp))))
-    (while (setq file (car files))
+    (while (setq fullpath (car files))
       (when (= (length files) 1)
-	(setq indent-sub1 (aref w3m-dtree-indent-strings 1))
+	(if limit
+	    (setq indent-sub1 (aref w3m-dtree-stop-strings 1))
+	  (setq indent-sub1 (aref w3m-dtree-indent-strings 1)))
 	(setq indent-sub2 (aref w3m-dtree-indent-strings 3)))
-      (setq fullpath (expand-file-name file path))
+      (setq file (file-name-nondirectory fullpath))
       (cond
        ((or (not allfiles) (file-directory-p fullpath))
 	(insert (format "%s%s%s<A HREF=\"%s%s\">%s</A>\n"
@@ -110,9 +135,10 @@ If you care for another style, set manually and try it :-).
 			dirprefix
 			(w3m-dtree-expand-file-name (file-name-as-directory fullpath))
 			(concat file "/")))
-	(when (or allfiles (w3m-dtree-has-child fullpath))
+	(when (and (null limit)
+		   (or allfiles (w3m-dtree-has-child fullpath)))
 	  (w3m-dtree-create-sub fullpath allfiles dirprefix fileprefix
-				(concat indent indent-sub2))))
+				(concat indent indent-sub2) (1+ depth))))
        ((and allfiles (file-exists-p fullpath))
 	(insert (format "%s%s%s<A HREF=\"%s%s\">%s</A>\n"
 			indent indent-sub1
@@ -130,7 +156,7 @@ If you care for another style, set manually and try it :-).
 		  dirprefix (w3m-dtree-expand-file-name path) path
 		  (if allfiles " (allfiles)" "")))
   (if (file-directory-p path)
-      (w3m-dtree-create-sub path allfiles dirprefix fileprefix " ")
+      (w3m-dtree-create-sub path allfiles dirprefix fileprefix " " 0)
     (insert (format "\n<h3>Warning: Directory not found.</h3>\n")))
   (insert "</pre>\n</body>\n</html>\n"))
 
