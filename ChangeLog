@@ -1,3 +1,10 @@
+2003-09-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-open-all-links-in-new-session): New function.
+	Suggested by Yoichi NAKAYAMA <yoichi@geiin.org>.
+	(w3m-view-this-url-new-session): Call
+	`w3m-open-all-links-in-new-session' if the region is active.
+
 2003-09-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-key-binding): Don't use `custom-set-default'.
