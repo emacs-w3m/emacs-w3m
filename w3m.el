@@ -1185,8 +1185,24 @@ Here is an example of how to set this option:
 	       ("eth" . 240) ("ntilde" . 241) ("ograve" . 242) ("oacute" . 243)
 	       ("ocirc" . 244) ("otilde" . 245) ("ouml" . 246) ("divide" . 247)
 	       ("oslash" . 248) ("ugrave" . 249) ("uacute" . 250) ("ucirc" . 251)
-	       ("uuml" . 252) ("yacute" . 253) ("thorn" . 254) ("yuml" . 255))))
+	       ("uuml" . 252) ("yacute" . 253) ("thorn" . 254) ("yuml" . 255)))
+	    (greek-entity
+	     '(("Alpha" . 65) ("Beta" . 66) ("Gamma" . 67) ("Delta" . 68)
+	       ("Epsilon" . 69) ("Zeta" . 70) ("Eta" . 71) ("Theta" . 72)
+	       ("Iota" . 73) ("Kappa" . 74) ("Lambda" . 75) ("Mu" . 76)
+	       ("Nu" . 77) ("Xi" . 78) ("Omicron" . 79) ("Pi" . 80)
+	       ("Rho" . 81) ; No ("Sigmaf" . 82)
+	       ("Sigma" . 83) ("Tau" . 84) ("Upsilon" . 85) ("Phi" . 86)
+	       ("Chi" . 87) ("Psi" . 88) ("Omega" . 89) 
+	       ("alpha" . 97) ("beta" . 98) ("gamma" . 99) ("delta" . 100)
+	       ("epsilon" . 101) ("zeta" . 102) ("eta" . 103) ("theta" . 104)
+	       ("iota" . 105) ("kappa" . 106) ("lambda" . 107) ("mu" . 108)
+	       ("nu" . 109) ("xi" . 110) ("omicron" . 111) ("pi" . 112)
+	       ("rho" . 113) ("sigmaf" . 114) ("sigma" . 115) ("tau" . 116)
+	       ("upsilon" . 117) ("phi" . 118) ("chi" . 119) ("psi" . 120)
+	       ("omega" . 121) ("thetasym" . 122) ("upsih" . 123) ("piv" . 124))))
 	(append basic-entity-alist
+		;; latin1
 		(mapcar
 		 (function
 		  (lambda (entity)
@@ -1196,7 +1212,18 @@ Here is an example of how to set this option:
 					  lc-ltn1
 					'latin-iso8859-1)
 				      (cdr entity))))))
-		 latin1-entity))))))
+		 latin1-entity)
+		;; greek
+		(mapcar
+		 (function
+		  (lambda (entity)
+		    (cons (car entity)
+			  (char-to-string
+			   (make-char (w3m-static-if (boundp 'MULE)
+					  lc-grk
+					'greek-iso8859-7)
+				      (cdr entity))))))
+		 greek-entity))))))
 
 (defconst w3m-entity-regexp
   (eval-when-compile
