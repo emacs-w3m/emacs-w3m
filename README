@@ -91,7 +91,11 @@ This package contains a interface program of w3m.
 
    i) If you want to use contributed programs, some additional settings
       are required.  Please see the head of those programs for more
-      detail.
+      details.  For instance, mime-w3m.el is used to show text/html part
+      using emacs-w3m under SEMI MUAs (e.g. T-gnus, Wanderlust, etc.),
+      you have to put the following line in your .emacs file.
+
+          (require 'mime-w3m)
 
 
 3. How to specify proxy gateways
