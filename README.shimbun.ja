@@ -144,7 +144,7 @@ Debian ´ØÏ¢	debian.debian-announce debian.debian-commercial
 		debian.debian-faq debian.debian-gcc
 		debian.debian-glibc debian.debian-gtk-gnome
 		debian.debian-hams debian.debian-ipv6
-		debian.debian-java debian.debian-jr
+		debian.debian-java debian.debian-jr debian.debian-med
 		debian.debian-mentors debian.debian-newmaint
 		debian.debian-newmaint-admin debian.debian-ocaml-maint
 		debian.debian-openoffice debian.debian-perl
