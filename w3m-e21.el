@@ -316,6 +316,19 @@ Buffer string between BEG and END are replaced with IMAGE."
     (and (apply 'w3m-imagick-convert-buffer from-type to-type args)
 	 (buffer-string))))
 
+;; Check the validity of the outputs of ImageMagick, in order to avoid
+;; the endless loop which is caused by the bug of old ImageMagick.
+(when w3m-use-favicon
+  (setq w3m-use-favicon
+	(let ((xpm (w3m-imagick-convert-data 
+		    (string 0 0 1 0 1 0 2 1 0 0 1 0 24 0 52 0
+			    0 0 22 0 0 0 40 0 0 0 2 0 0 0 2 0
+			    0 0 1 0 24 0 0 0 0 0 0 0 0 0 0 0
+			    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+			    0 255 255 255 0 0 0 0 0 0)
+		    "ico" "xpm")))
+	  (and xpm (string-match "\"2 1 2 1\"" xpm) t))))
+
 (defun w3m-setup-favicon (url)
   (setq w3m-current-favicon-data nil
 	w3m-current-favicon-image nil)

@@ -1,3 +1,9 @@
+2001-12-06  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>,
+	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-e21.el (top): Installed the check of the validity of
+	ImageMagick.
+
 2001-12-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-type): Follow the new official release of w3m.
