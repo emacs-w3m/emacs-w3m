@@ -4160,7 +4160,7 @@ These are newspapers that are supported by @samp{shimbun} library.
 @item @uref{http://www.asahi.com/, Asahi Shimbun}
 asahi.business asahi.culture asahi.english asahi.international
 asahi.kansai asahi.kansai-special asahi.national asahi.politics
-asahi.science asahi.sports
+asahi.science asahi.sports asahi.nankyoku asahi.whitemail
 
 These backends generates articles including only texts; in other hands,
 @samp{asahi-html} generates MIME articles that include texts and
