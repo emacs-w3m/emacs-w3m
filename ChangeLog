@@ -1,3 +1,60 @@
+2002-02-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-perldoc.el: New file.
+
+	* w3m.el (top): Add autoload for `w3m-perldoc.el'.
+	(w3m-tmp-urluser-alist): Abolished.
+	(w3m-read-file-name): Call `w3m-url-strip-query'.
+	(w3m-download): Ditto.
+	(w3m-w3m-get-header): Accept URLs which includes authentication
+	information like scheme://user:pass@netloc/.  Set
+	`w3m-current-url' before `w3m-process-start' is called.
+	(w3m-w3m-dump-head-source): Ditto.
+	(w3m-retrieve): Call `w3m-url-strip-fragment'.
+	(w3m-retrieve-and-render): Modified to accept URLs which includes
+	authentication information.  Do not set `w3m-current-url'.
+	(w3m-goto-url): Modified to accept URLs which includes
+	authentication information and to pass them through to
+	sub-routines.
+	(w3m): Small modified to accept URLs which includes authentication
+	information.
+
+	* w3m-util.el (w3m-url-authinfo-regexp): New internal constant.
+	(w3m-url-authinfo): New function.
+	(w3m-url-strip-authinfo): Ditto.
+	(w3m-url-strip-fragment): Ditto.
+	(w3m-url-strip-query): Ditto.
+
+	* w3m-proc.el (top): No bind `w3m-tmp-urluser-alist'.
+	(w3m-process-authinfo-alist): Renamed from
+	`w3m-process-user-alist'.
+	(w3m-process-accept-list): Abolished.
+	(w3m-process-accept-alist): New internal variable.
+	(w3m-process-user-counter): Abolished.
+	(w3m-process-start-process): In order to set `w3m-process-user'
+	and `w3m-process-passwd' call `w3m-url-authinfo', instead of
+	refering `w3m-tmp-urluser-alist'.
+	(w3m-process-stop): Reset `w3m-process-authinfo-alist' and
+	`w3m-process-accept-alist'.
+	(w3m-process-sentinel): Regist an authentication information only
+	when `w3m-process-realm' is set.
+	(w3m-process-filter): Call `w3m-process-y-or-n-p' instead of
+	`w3m-process-accept-get' and `w3m-process-accept-set'.  When a
+	user name and a password of a proxy server are reasked, their old
+	values are discarded.  Reconstruct the part checking user names
+	and passwords.
+	(w3m-process-get-server-root): Its regular expression are small
+	modified.  Call `w3m-url-strip-authinfo'.
+	(w3m-process-get-user): Removed.
+	(w3m-process-get-passwd): Ditto.
+	(w3m-process-set-user): Ditto.
+	(w3m-process-accept-get): Ditto.
+	(w3m-process-accept-set): Ditto.
+	(w3m-process-set-authinfo): New function.
+	(w3m-process-read-user): Ditto.
+	(w3m-process-read-passwd): Ditto.
+	(w3m-process-y-or-n-p): Ditto.
+
 2002-02-23  OHASHI Akira  <bg66@koka-in.org>
 
 	* shimbun/sb-debian.el (shimbun-debian-fetch-headers-max):
@@ -1019,7 +1076,7 @@
 	* Makefile.in (default): Reintroduce of checking time stamps of
 	w3m-util.elc and w3m-proc.elc.
 
-	* w3m-proc.el (w3m-process-temp-file): Abolishded.
+	* w3m-proc.el (w3m-process-temp-file): Abolished.
 
 	* w3m.el (w3m-content-charset, w3m-content-encoding,
 	w3m-content-length, w3m-content-type, w3m-last-modified,

@@ -331,6 +331,36 @@ nil."
 Otherwise return nil."
   (string-match "^\\(file:\\|/\\|[a-zA-Z]:/\\)" url))
 
+(defconst w3m-url-authinfo-regexp
+  "\\`\\([^:/?#]+:\\)?//\\([^/?#:]+\\)\\(:\\([^/?#@]+\\)\\)?@"
+  "Regular expression for parsing the authentication part of a URI reference")
+
+(defsubst w3m-url-authinfo (url)
+  "Return a user name and a password to authenticate URL."
+  (when (string-match w3m-url-authinfo-regexp url)
+    (cons (match-string 2 url)
+	  (match-string 4 url))))
+
+(defsubst w3m-url-strip-authinfo (url)
+  "Remove the authentication part from the URL."
+  (if (string-match w3m-url-authinfo-regexp url)
+      (concat (match-string 1 url)
+	      "//"
+	      (substring url (match-end 0)))
+    url))
+
+(defsubst w3m-url-strip-fragment (url)
+  "Remove the fragment identifier from the URL."
+  (if (string-match "\\`\\([^#]*\\)#" url)
+      (match-string 1 url)
+    url))
+
+(defsubst w3m-url-strip-query (url)
+  "Remove the query part and the fragment identifier from the URL."
+  (if (string-match "\\`\\([^?#]*\\)[?#]" url)
+      (match-string 1 url)
+    url))
+
 (defsubst w3m-which-command (command)
   (when (stringp command)
     (if (and (file-name-absolute-p command)
@@ -345,25 +375,6 @@ Otherwise return nil."
 		      (file-executable-p
 		       (setq bin (expand-file-name (concat command ".exe") dir))))
 	      (throw 'found-command bin))))))))
-
-(defun w3m-get-user-passwd-from-url (url)
-  "Ruturn user and passwd included URL."
-  (let (user pass)
-    (when (and (stringp url)
-	       (string-match "^\\(about://source/\\)?\\(https?\\|ftp\\)://\\([^@/]+\\)@"
-			     url))
-      (setq user (match-string 3 url))
-      (when (string-match "^\\([^:]+\\):\\([^:]+\\)$" user)
-	(setq pass (match-string 2 user))
-	(setq user (match-string 1 user)))
-      (cons user pass))))
-
-(defun w3m-remove-passwd-from-url (url)
-  "Remove passwd from URL."
-  (if (and url (string-match "://[^@:/]+\\(:.+\\)@" url))
-      (concat (substring url 0 (match-beginning 1))
-	      (substring url (match-end 1)))
-    url))
 
 (defun w3m-cancel-refresh-timer (&optional buffer)
   "Cancel the timer for REFRESH attribute in META tag."

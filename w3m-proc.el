@@ -57,8 +57,7 @@
   (defvar w3m-command-arguments)
   (defvar w3m-command-environment)
   (defvar w3m-async-exec)
-  (defvar w3m-process-connection-type)
-  (defvar w3m-tmp-urluser-alist))
+  (defvar w3m-process-connection-type))
 
 (defvar w3m-process-inhibit-quit t
   "`w3m-process-sentinel' binds `inhibit-quit' according to this variable.")
@@ -69,17 +68,15 @@
 (defvar w3m-process-queue nil "Queue of processes.")
 
 (defvar w3m-process-exit-status nil "The last exit status of a process.")
-(defvar w3m-process-user-alist nil)
-(defvar w3m-process-accept-list nil)
+(defvar w3m-process-authinfo-alist nil)
+(defvar w3m-process-accept-alist nil)
 
 (defvar w3m-process-user nil)
 (defvar w3m-process-passwd nil)
-(defvar w3m-process-user-counter 0)
 (defvar w3m-process-realm nil)
 (defvar w3m-process-object nil)
 (make-variable-buffer-local 'w3m-process-user)
 (make-variable-buffer-local 'w3m-process-passwd)
-(make-variable-buffer-local 'w3m-process-user-counter)
 (make-variable-buffer-local 'w3m-process-realm)
 (make-variable-buffer-local 'w3m-process-object)
 
@@ -189,14 +186,11 @@ generated asynchronous process is ignored.  Otherwise,
 		 (proc (apply 'start-process command
 			      (current-buffer) command
 			      (w3m-process-arguments object)))
-		 urluser)
-	    (setf (w3m-process-process object) proc)
-	    (setq urluser (assoc w3m-current-url w3m-tmp-urluser-alist))
-	    (setq w3m-process-user (car (cdr urluser))
-		  w3m-process-passwd (cdr (cdr urluser))
-		  w3m-process-user-counter 2
+		 (authinfo (w3m-url-authinfo w3m-current-url)))
+	    (setq w3m-process-user (car authinfo)
+		  w3m-process-passwd (cdr authinfo)
 		  w3m-process-realm nil)
-	    (setq w3m-tmp-urluser-alist (delete urluser w3m-tmp-urluser-alist))
+	    (setf (w3m-process-process object) proc)
 	    (set-process-filter proc 'w3m-process-filter)
 	    (set-process-sentinel proc (if no-sentinel
 					   'ignore
@@ -268,7 +262,9 @@ which have no handler."
 
 (defun w3m-process-shutdown ()
   (let ((list w3m-process-queue))
-    (setq w3m-process-queue nil)
+    (setq w3m-process-queue nil
+	  w3m-process-authinfo-alist nil
+	  w3m-process-accept-alist nil)
     (dolist (obj list)
       (when (buffer-name (w3m-process-buffer obj))
 	(when (w3m-process-process obj)
@@ -490,7 +486,9 @@ evaluated in a temporary buffer."
 		    (let ((w3m-process-exit-status)
 			  (w3m-current-buffer
 			   (w3m-process-handler-parent-buffer x)))
-		      (w3m-process-set-user w3m-current-url realm user passwd)
+		      (when realm
+			(w3m-process-set-authinfo w3m-current-url
+						  realm user passwd))
 		      (funcall (w3m-process-handler-function x)
 			       exit-status))))))
 	  ;; Something wrong has been occured.
@@ -517,19 +515,17 @@ evaluated in a temporary buffer."
 		 (= (match-end 0) (point-max)))
 	    ;; ssl certificate
 	    (message "")
-	    (let* ((msg (match-string 2))
-		   (yn (if (or (w3m-process-accept-get w3m-current-url)
-			       (w3m-process-accept-set (y-or-n-p msg) w3m-current-url))
-			   "y" "n")))
+	    (let ((yn (w3m-process-y-or-n-p w3m-current-url (match-string 2))))
 	      (condition-case nil
 		  (progn
-		    (process-send-string process (concat yn "\n"))
+		    (process-send-string process (if yn "y\n" "n\n"))
 		    (delete-region (point-min) (point-max)))
 		(error nil))))
 	   ((and (looking-at
 		  "\\(\n?Wrong username or password\n\\)?Proxy Username for \\(.*\\): Proxy Password: ")
 		 (= (match-end 0) (point-max)))
-	    (unless w3m-process-proxy-passwd
+	    (when (or (match-beginning 1)
+		      (not (stringp w3m-process-proxy-passwd)))
 	      (setq w3m-process-proxy-passwd
 		    (read-passwd "Proxy Password: ")))
 	    (condition-case nil
@@ -541,7 +537,8 @@ evaluated in a temporary buffer."
 	   ((and (looking-at
 		  "\\(\n?Wrong username or password\n\\)?Proxy Username for \\(.*\\): ")
 		 (= (match-end 0) (point-max)))
-	    (unless w3m-process-proxy-user
+	    (when (or (match-beginning 1)
+		      (not (stringp w3m-process-proxy-user)))
 	      (setq w3m-process-proxy-user
 		    (read-from-minibuffer (concat
 					   "Proxy Username for "
@@ -551,23 +548,15 @@ evaluated in a temporary buffer."
 				     (concat w3m-process-proxy-user "\n"))
 	      (error nil)))
 	   ((and (looking-at
-		  "\\(\n?Wrong username or password\n\\)?Username for \\(.*\\)\n?: Password: ")
+		  "\\(\n?Wrong username or password\n\\)?Username for .*\n?: Password: ")
 		 (= (match-end 0) (point-max)))
-	    (setq w3m-process-realm (match-string 2))
-	    (setq w3m-process-passwd
-		  (or (and (stringp w3m-current-url)
-			   (w3m-process-get-passwd
-			    w3m-current-url w3m-process-realm w3m-process-user))
-		      (let ((pass w3m-process-passwd))
-			(read-passwd
-			 (format "Password for %s%s: " w3m-process-realm
-				 (if (and (stringp pass) (> (length pass) 0)
-					  (not (featurep 'xemacs)))
-				     (concat " ("
-					     (make-string (length pass) ?\*)
-					     ")")
-				   ""))
-			 nil pass))))
+	    (when (or (match-beginning 1)
+		      (not (stringp w3m-process-passwd)))
+	      (setq w3m-process-passwd
+		    (w3m-process-read-passwd w3m-current-url
+					     w3m-process-realm
+					     w3m-process-user
+					     (match-beginning 1))))
 	    (condition-case nil
 		(progn
 		  (process-send-string process
@@ -578,108 +567,114 @@ evaluated in a temporary buffer."
 		  "\\(\n?Wrong username or password\n\\)?Username for \\(.*\\)\n?: ")
 		 (= (match-end 0) (point-max)))
 	    (setq w3m-process-realm (match-string 2))
-	    (setq w3m-process-user
-		  (or (and (stringp w3m-current-url)
-			   (w3m-process-get-user w3m-current-url
-						 w3m-process-realm))
-		      (read-from-minibuffer
-		       (format "Username for %s: " w3m-process-realm)
-		       w3m-process-user)))
+	    (when (or (match-beginning 1)
+		      (not (stringp w3m-process-user)))
+	      (setq w3m-process-user
+		    (w3m-process-read-user w3m-current-url
+					   w3m-process-realm
+					   (match-beginning 1))))
 	    (condition-case nil
 		(process-send-string process
 				     (concat w3m-process-user "\n"))
 	      (error nil)))))))))
 
 (defun w3m-process-get-server-root (url)
-  "Get server root for realm."
-  (when (string-match "\\`about://[^/]+/" url)
+  "Extract a server root from URL."
+  (when (string-match "\\`about://[^/?#]+/" url)
     (setq url (substring url (match-end 0))))
-  (if (string-match "^[^/]*/+\\([^/]+\\)" url)
+  (setq url (w3m-url-strip-authinfo url))
+  (if (string-match "\\`[^:/?#]+://\\([^/?#]+\\)" url)
       (downcase (match-string 1 url))
     url))
 
-;; w3m-process-user-alist has an association list as below format.
-;; (("root1" ("realm11" ("user11" "pass11")
-;;                      ("user12" "pass12"))
-;;           ("realm12" ("user13" "pass13")))
-;;  ("root2" ("realm21" ("user21" "pass21"))))
-(defun w3m-process-get-user (url realm &optional multi)
-  "Get user from arrived-user-alist."
-  (if (= w3m-process-user-counter 0)
-      nil
-    (let (userlst)
-      (setq userlst
-	    (cdr (assoc realm
-			(cdr (assoc (w3m-process-get-server-root url)
-				    w3m-process-user-alist)))))
-      (when userlst
-	(setq w3m-process-user-counter (1- w3m-process-user-counter))
-	(cond
-	 (multi userlst)
-	 ((= (length userlst) 1)
-	  ;; single user
-	  (car (car userlst)))
-	 (t
-	  ;; have multi user
-	  (completing-read (format "Select Username for %s: " realm)
-			   (mapcar (lambda (x) (cons (car x) (car x)))
-				   userlst)
-			   nil t)))))))
+;; w3m-process-authinfo-alist has an association list as below format.
+;; (("root1" ("realm11" ("user11" . "pass11")
+;;                      ("user12" . "pass12"))
+;;           ("realm12" ("user13" . "pass13")))
+;;  ("root2" ("realm21" ("user21" . "pass21"))))
+(defun w3m-process-set-authinfo (url realm username password)
+  (let (x y z (root (w3m-process-get-server-root url)))
+    (if (setq x (assoc root w3m-process-authinfo-alist))
+	(if (setq y (assoc realm x))
+	    (if (setq z (assoc username y))
+		;; Change a password only.
+		(setcdr z password)
+	      ;; Add a pair of a username and a password.
+	      (setcdr y (cons (cons username password) (cdr y))))
+	  ;; Add a 3-tuple of a realm, a username and a password.
+	  (setcdr x (cons (cons realm (list (cons username password)))
+			  (cdr x))))
+      ;; Add a 4-tuple of a server root, a realm, a username and a password.
+      (push (cons root (list (cons realm (list (cons username password)))))
+	    w3m-process-authinfo-alist))))
 
-(defun w3m-process-get-passwd (url realm user)
-  "Get passwd from arrived-user-alist."
-  (if (= w3m-process-user-counter 0)
-      nil
-    (let (pass)
-      (setq pass
-	    (cdr
-	     (assoc user
-		    (cdr
-		     (assoc realm
-			    (cdr (assoc (w3m-process-get-server-root url)
-					w3m-process-user-alist)))))))
-      (when pass
-	(setq w3m-process-user-counter (1- w3m-process-user-counter)))
-      pass)))
+(defun w3m-process-read-user (url &optional realm ignore-history)
+  "Read a user name for URL and REALM."
+  (let* ((root (when (stringp url) (w3m-process-get-server-root url)))
+	 (ident (or realm root))
+	 (alist))
+    (if (and (not ignore-history)
+	     (setq alist
+		   (cdr (assoc realm
+			       (cdr (assoc root
+					   w3m-process-authinfo-alist))))))
+	(if (= 1 (length alist))
+	    (caar alist)
+	  (completing-read (if ident
+			       (format "Select username for %s: " ident)
+			     "Select username: ")
+			   (mapcar (lambda (x) (cons (car x) (car x))) alist)
+			   nil t))
+      (read-from-minibuffer (if ident
+				(format "Username for %s: " ident)
+			      "Username: ")))))
 
-(defun w3m-process-set-user (url realm user pass)
-  (when (and url realm user pass)
-    (let* ((root (w3m-process-get-server-root url))
-	   (tmproot (cdr (assoc root w3m-process-user-alist)))
-	   (tmprealm (cdr (assoc realm tmproot)))
-	   (tmpuser (assoc user tmprealm))
-	   (tmppass (cdr tmpuser))
-	   (w3m-process-user-counter 2))
-      (cond
-       ((and tmproot tmprealm tmpuser tmppass (string= pass tmppass))
-	;; nothing to do
-	nil)
-       ((and tmproot tmprealm tmpuser)
-	;; passwd change
-	(setcdr tmpuser pass))
-       ((and tmproot tmprealm)
-	;; add user and passwd
-	(nconc tmprealm (list (cons user pass))))
-       (tmproot
-	;; add realm, user, and passwd
-	(nconc tmproot (list (cons realm (list (cons user pass))))))
-       (t
-	;; add root, realm, user, and passwd
-	(setq w3m-process-user-alist
-	      (append
-	       (list (cons root (list (cons realm (list (cons user pass))))))
-	       w3m-process-user-alist)))))))
+(defun w3m-process-read-passwd (url &optional realm username ignore-history)
+  "Read a password for URL, REALM, and USERNAME."
+  (let* ((root (when (stringp url) (w3m-process-get-server-root url)))
+	 (ident (or realm root))
+	 (pass (cdr (assoc username
+			   (cdr (assoc realm
+				       (cdr (assoc root
+						   w3m-process-authinfo-alist))))))))
+    (if (and pass (not ignore-history))
+	pass
+      (read-passwd (format (if ident
+			       (format "Password for %s%%s: " ident)
+			     "Password%s: ")
+			   (if (and (stringp pass)
+				    (> (length pass) 0)
+				    (not (featurep 'xemacs)))
+			       (concat " (default "
+				       (make-string (length pass) ?\*)
+				       ")")
+			     ""))
+		   nil pass))))
 
-(defun w3m-process-accept-get (url)
-  (if (stringp url)
-      (member (w3m-process-get-server-root url) w3m-process-accept-list)
-    ;; url is nil, means image, favicon, etc...
-    t))
-
-(defun w3m-process-accept-set (yn url)
-  (when (and yn (stringp url) (not (w3m-process-accept-get url)))
-    (setq w3m-process-accept-list
-	  (cons (w3m-process-get-server-root url) w3m-process-accept-list))))
+;; FIXME: この関数の処理はセキュリティホールの危険が大きい．完全に削除
+;; するか，もう少し粒度の細かい対応が必要．
+(defun w3m-process-y-or-n-p (url prompt)
+  "Ask user a \"y or n\" question.  Return t if answer is \"y\".
+NOTE: This function is designed to avoid annoying questions.  So when
+the same questions is reasked, its previous answer is reused without
+prompt."
+  (let (elem answer (root (w3m-process-get-server-root url)))
+    (if (setq elem (assoc root w3m-process-accept-alist))
+	(if (setq answer (assoc prompt (cdr elem)))
+	    ;; When the same question has been asked, the previous
+	    ;; answer is reused.
+	    (setq answer (cdr answer))
+	  ;; When any question for the same server has been asked,
+	  ;; regist the pair of this question and its answer to
+	  ;; `w3m-process-accept-alist'.
+	  (setq answer (y-or-n-p prompt))
+	  (setcdr elem (cons (cons prompt answer) (cdr elem))))
+      ;; When no question for the same server has been asked, regist
+      ;; the 3-tuple of the server, the question and its answer to
+      ;; `w3m-process-accept-alist'.
+      (setq answer (y-or-n-p prompt))
+      (push (cons root (list (cons prompt answer))) w3m-process-accept-alist))
+    answer))
 
 (provide 'w3m-proc)
 

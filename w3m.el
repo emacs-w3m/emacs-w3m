@@ -114,6 +114,9 @@
   (autoload 'w3m-namazu "w3m-namazu"
     "Search files with Namazu." t)
   (autoload 'w3m-about-namazu "w3m-namazu")
+  (autoload 'w3m-perldoc "w3m-perldoc"
+    "View Perl documents" t)
+  (autoload 'w3m-about-perldoc "w3m-perldoc")
   (autoload 'w3m-fontify-forms "w3m-form")
   (autoload 'w3m-form-parse-buffer "w3m-form")
   (autoload 'w3m-filter "w3m-filter")
@@ -1125,8 +1128,6 @@ in the optimized interlaced endlessly animated gif format and base64.")
 
 (defconst w3m-arrived-db-size 1023)
 (defvar w3m-arrived-db nil)		; nil means un-initialized.
-
-(defvar w3m-tmp-urluser-alist nil)	; temporary variable (url . (user pass))
 
 (defconst w3m-image-type-alist
   '(("image/jpeg" . jpeg)
@@ -2441,12 +2442,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 
 (defun w3m-read-file-name (&optional prompt dir default existing)
   (when default
-    (if (and (string-match w3m-url-components-regexp default)
-	     (match-beginning 6))
-	(setq default (file-name-nondirectory
-		       ;; Strip the query part.
-		       (substring default 0 (match-beginning 6))))
-      (setq default (file-name-nondirectory default))))
+    (setq default (file-name-nondirectory (w3m-url-strip-query default))))
   (unless prompt
     (setq prompt (if default
 		     (format "Save to (%s): " default)
@@ -2707,12 +2703,13 @@ succeed."
   "Return the header string of the URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
   (or (unless no-cache
-	(w3m-cache-request-header url))
+	(w3m-cache-request-header (w3m-url-strip-authinfo url)))
       (lexical-let ((url url))
 	(w3m-message "Request sent, waiting for response...")
 	(w3m-process-do-with-temp-buffer
 	    (success (progn
-		       (setq w3m-current-url url)
+		       (setq w3m-current-url url
+			     url (w3m-url-strip-authinfo url))
 		       (w3m-process-start handler "-dump_head" url)))
 	  (w3m-message "Request sent, waiting for response...done")
 	  (when success
@@ -2797,6 +2794,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 function with attributes of the retrieved content when retrieval is
 complete."
   (lexical-let ((url url))
+    (setq w3m-current-url url
+	  url (w3m-url-strip-authinfo url))
     (w3m-message "Reading %s..." url)
     (w3m-process-do
 	(result
@@ -2930,8 +2929,7 @@ type as a string argument, when retrieve is complete."
 	(w3m-process-timeout nil))
     (unless (and w3m-safe-url-regexp
 		 (not (string-match w3m-safe-url-regexp url)))
-      (when (string-match "\\`\\([^#]*\\)#" url)
-	(setq url (substring url 0 (match-end 1))))
+      (setq url (w3m-url-strip-fragment url))
       (set-buffer-multibyte nil)
       (cond
        ((string-match "\\`about:" url)
@@ -2954,12 +2952,7 @@ type as a string argument, when retrieve is complete."
 				    w3m-current-url)
 		      (substring w3m-current-url (match-end 0))
 		    w3m-current-url))))
-	  (basename (if (and (string-match w3m-url-components-regexp url)
-			     (match-beginning 6))
-			(file-name-nondirectory
-			 ;; Strip the query part.
-			 (substring url 0 (match-beginning 6)))
-		      (file-name-nondirectory url))))
+	  (basename (file-name-nondirectory (w3m-url-strip-query url))))
      (if (string-match "^[\t ]*$" basename)
 	 (error "You should specify the existing file name")
        (list url
@@ -3299,9 +3292,9 @@ argument.  Otherwise, it will be called with nil."
     (w3m-process-do-with-temp-buffer
 	(type (progn
 		(w3m-clear-local-variables)
-		(setq w3m-current-url url)
 		(w3m-retrieve url nil no-cache post-data referer handler)))
       (when (buffer-live-p output-buffer)
+	(setq url (w3m-url-strip-authinfo url))
 	(if type
 	    (prog1 (w3m-prepare-content url (or content-type type)
 					output-buffer content-charset)
@@ -4677,33 +4670,28 @@ field for this request."
     (when w3m-current-process
       (error "%s" "Can not run two w3m processes simultaneously"))
     (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.
-    ;; user and passwd included URL
-    (let ((user (w3m-get-user-passwd-from-url url)))
-      (setq url (w3m-remove-passwd-from-url url))
-      (when user
-	(setq w3m-tmp-urluser-alist (cons (cons url user) w3m-tmp-urluser-alist))))
     ;; Store the current position in the history structure.
     (w3m-history-store-position)
-    (when w3m-current-forms
-      ;; Store the current forms in the history structure.
-      (w3m-history-plist-put :forms w3m-current-forms nil nil t))
-    (when (and post-data (w3m-history-assoc url))
-      ;; Remove processing url's forms from the history structure.
-      (w3m-history-remove-properties '(:forms) url nil t))
     ;; Retrieve.
-    (lexical-let ((url url)
+    (lexical-let ((orig url)
+		  (url (w3m-url-strip-authinfo url))
 		  (reload reload)
 		  (charset charset)
 		  (post-data post-data)
 		  (referer referer)
-		  (orig url)
 		  (name))
+      (when w3m-current-forms
+	;; Store the current forms in the history structure.
+	(w3m-history-plist-put :forms w3m-current-forms nil nil t))
+      (when (and post-data (w3m-history-assoc url))
+	;; Remove processing url's forms from the history structure.
+	(w3m-history-remove-properties '(:forms) url nil t))
       ;; local directory URL check
       (if (and (w3m-url-local-p url)
 	       (file-directory-p (w3m-url-to-file-name url))
 	       (setq url (file-name-as-directory url))
 	       (eq w3m-local-directory-view-method 'w3m-dtree)
-	       (string-match "^file:///" url))
+	       (string-match "\\`file:///" url))
 	  (setq url (replace-match "about://dtree/" nil nil url)))
       (and (string-match w3m-url-components-regexp url)
 	   (match-beginning 8)
@@ -4744,7 +4732,8 @@ field for this request."
 	       (setq w3m-image-only-page nil
 		     w3m-current-buffer (current-buffer)
 		     w3m-current-process
-		     (w3m-retrieve-and-render url reload cs ct post-data
+		     (w3m-retrieve-and-render (w3m-url-strip-fragment orig)
+					      reload cs ct post-data
 					      referer handler))))
 	  (with-current-buffer w3m-current-buffer
 	    (setq w3m-current-process nil)
@@ -4996,7 +4985,7 @@ Optional NEW-SESSION is intended to be used by the command
 	    (switch-to-buffer buffer))
 	(switch-to-buffer buffer))
       (insert (make-string (max 0 (/ (1- (window-height)) 2)) ?\n)
-	      "Reading " (w3m-remove-passwd-from-url url) "...")
+	      "Reading " (w3m-url-strip-authinfo url) "...")
       (beginning-of-line)
       (let ((fill-column (window-width)))
 	(center-region (point) (point-max)))
