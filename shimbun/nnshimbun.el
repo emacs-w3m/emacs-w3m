@@ -749,19 +749,7 @@ optional fourth argument FORCE is ignored."
   (interactive)
   (let* ((minibuffer-setup-hook
 	  (append minibuffer-setup-hook '(beginning-of-line)))
-	 (alist
-	  (apply 'nconc
-		 (mapcar
-		  (lambda (d)
-		    (and (stringp d)
-			 (file-directory-p d)
-			 (delq nil
-			       (mapcar
-				(lambda (f)
-				  (and (string-match "^sb-\\(.*\\)\\.el$" f)
-				       (list (match-string 1 f))))
-				(directory-files d)))))
-		  load-path)))
+	 (alist (shimbun-servers-alist))
 	 (server (completing-read
 		  "Shimbun address: "
 		  alist nil t
