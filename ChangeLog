@@ -1,5 +1,15 @@
 2002-04-09  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m-bitmap.el: Convert CRLF to LF.
+	(w3m-display-graphic-p): Ruturn nil if no window-system.
+	(w3m-image-type-available-p): Ruturn nil if not found "convert".
+
+	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
+	w3m-bitmap.el under XEmacs or FSF Emacs-21.
+
+	* w3m.el (w3m-fontify): When delete duplicated empty line, keep
+	'w3m-name-anchor property surely.
+
 	* w3m-e20.el (top): Require 'w3m-bitmap if have BITMAP.
 
 2002-04-09  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>

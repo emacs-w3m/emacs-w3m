@@ -178,7 +178,8 @@
 
 ;; Function which returns non-nil when the current display device can
 ;; show images inline.
-(defun w3m-display-graphic-p () t)
+(defun w3m-display-graphic-p ()
+  window-system)
 
 (defun w3m-display-inline-images-p ()
   "Returns non-nil when images can be displayed under the present
@@ -239,6 +240,6 @@ Buffer string between BEG and END are replaced with IMAGE."
       (+ beg (length name)))))
 
 (defun w3m-image-type-available-p (image-type)
-  (w3m-static-if (featurep 'bitmap) t nil))
+  w3m-imagick-convert-program)
 
 (provide 'w3m-bitmap)

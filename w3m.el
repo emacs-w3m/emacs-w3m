@@ -2007,7 +2007,6 @@ with ^ as `cat -v' does."
 	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)))
 	    (setq hseq (or (and (null hseq) 0) (abs hseq)))
 	    (setq w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
-	    
 	    (w3m-add-text-properties start end
 				     (list 'face (if (w3m-arrived-p href)
 						     'w3m-arrived-anchor-face
@@ -2287,12 +2286,21 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (w3m-decode-entities 'reserve-prop)
     (goto-char (point-min))
     (when w3m-delete-duplicated-empty-lines
+      ;; keep 'w3m-name-anchor
       (while (re-search-forward "^[ \t]*\n\\([ \t]*\n\\)+" nil t)
-	(put-text-property (match-beginning 0) (1- (match-end 0))
-			   'invisible t)
-	(put-text-property (max (1- (match-beginning 0)) (point-min))
-			   (1- (match-end 0))
-			   'intangible t)))
+	(let* ((start (match-beginning 0))
+	       (pos start)
+	       (end (match-end 0))
+	       props)
+	  (while (not (eq (setq pos
+				(next-single-property-change pos 'w3m-name-anchor
+							     nil end))
+			  end))
+	    (setq props (append (get-text-property pos 'w3m-name-anchor)
+				props)))
+	  (w3m-add-text-properties (1- end) end
+				   (list 'w3m-name-anchor props))
+	  (delete-region start (1- end)))))
     (w3m-message "Fontifying...done")
     (run-hooks 'w3m-fontify-after-hook)))
 
