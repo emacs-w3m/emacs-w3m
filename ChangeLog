@@ -1,3 +1,7 @@
+2001-04-24  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-0.2.1-mnc.patch: See [emacs-w3m:00629].
+
 2001-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-url): Use `w3m-history-store-position' instead
