@@ -5816,7 +5816,8 @@ a page in a new buffer with the correct width."
     (unless empty
       ;; Render a page.
       (let ((positions (copy-sequence (car w3m-history)))
-	    (w3m-history-reuse-history-elements t))
+	    (w3m-history-reuse-history-elements t)
+	    (w3m-prefer-cache t))
 	(w3m-process-with-wait-handler
 	  (w3m-goto-url url nil nil nil nil handler
 			;; Pass the properties of the history elements,
