@@ -1984,7 +1984,7 @@ with ^ as `cat -v' does."
 (defun w3m-arrived-setup ()
   "Load arrived url list from `w3m-arrived-file' and setup hash database."
   (unless w3m-arrived-db
-    (setq w3m-arrived-db (make-vector w3m-arrived-db-size nil))
+    (setq w3m-arrived-db (make-vector w3m-arrived-db-size 0))
     (let ((list (w3m-load-list w3m-arrived-file)))
       (when (stringp (car list))
 	;; When arrived URL database is too old, its data is ignored.
