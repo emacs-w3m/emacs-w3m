@@ -212,27 +212,22 @@ Unfortunately, the url name format might have been changed in 2ch"))
 				     &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
     (with-current-buffer (or outbuf (current-buffer))
-      (insert
-       (with-temp-buffer
-	 (let ((sym (intern-soft (shimbun-header-id header)
+      (let ((sym (intern-soft (shimbun-header-id header)
+			      (shimbun-2ch-content-hash-internal
+			       shimbun))))
+	(unless sym
+	  (shimbun-2ch-request-article shimbun header)
+	  (setq sym (intern-soft (shimbun-header-id header)
 				 (shimbun-2ch-content-hash-internal
 				  shimbun))))
-	   (unless sym
-	     (shimbun-2ch-request-article shimbun header)
-	     (setq sym (intern-soft (shimbun-header-id header)
-				    (shimbun-2ch-content-hash-internal
-				     shimbun))))
-	   (goto-char (point-min))
-	   (shimbun-header-insert shimbun header)
-	   (insert "Content-Type: " "text/html"
-		   "; charset=SHIFT_JIS\n"
-		   "Content-Transfer-Encoding: base64\n"
-		   "MIME-Version: 1.0\n\n"
-		   (shimbun-base64-encode-string
-		    (encode-coding-string (symbol-value sym)
-					  (mime-charset-to-coding-system
-					   "SHIFT_JIS"))))
-	   (buffer-string)))))))
+	(shimbun-header-insert shimbun header)
+	(insert "Content-Type: " "text/html"
+		"; charset=SHIFT_JIS\n"
+		"Content-Transfer-Encoding: 8bit\n"
+		"MIME-Version: 1.0\n\n")
+	(w3m-insert-string (encode-coding-string (symbol-value sym)
+						 (mime-charset-to-coding-system
+						  "SHIFT_JIS")))))))
 
 (provide 'sb-2ch)
 
