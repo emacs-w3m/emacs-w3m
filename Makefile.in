@@ -118,7 +118,7 @@ install-package:
 	  echo "What a pity!  Your \"$(EMACS)\" does not support"\
 		"a package system.";\
 	else\
-	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" IGNORES="w3mhack.el|w3m-load.el" install-lisp;\
+	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" IGNORES="$(IGNORES)|w3m-load.el" install-lisp;\
 	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons30;\
 	  $(MAKE) infodir="$(PACKAGEDIR)/info" install-info;\
 	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
