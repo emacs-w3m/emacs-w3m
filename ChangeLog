@@ -1,3 +1,10 @@
+2003-09-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-view-previous-page): Skip the current page if it
+	seems broken.
+	(w3m-goto-url): Use `lexical-let' to pass the history position
+	data to the asynchronous w3m process.
+
 2003-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el: Move the favicon stuff to w3m-favicon.el.
