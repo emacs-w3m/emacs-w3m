@@ -1,6 +1,6 @@
 ;;; w3m.el --- Interface program of w3m on Emacs
 
-;; Copyright (C) 2000,2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000, 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -1570,13 +1570,19 @@ which defaults to the value of `w3m-file-coding-system-for-read'."
 		    file (error-message-string err))
 	   nil))))))
 
-(defun w3m-save-list (file list &optional coding-system)
-  "Save LIST into file with CODING."
+(defun w3m-save-list (file list &optional coding-system escape-ctl-chars)
+  "Save LIST form into FILE.  Contents will be encoded with CODING-SYSTEM
+which defaults to the value of `w3m-file-coding-system'.  Optional
+ESCAPE-CTL-CHARS if it is non-nil, control chars will be represented
+with ^ as `cat -v' does."
   (when (and list (file-writable-p file))
     (with-temp-buffer
       (let ((file-coding-system (or coding-system w3m-file-coding-system))
 	    (coding-system-for-write (or coding-system w3m-file-coding-system))
 	    (standard-output (current-buffer))
+	    (print-fn (if escape-ctl-chars
+			  'w3m-prin1
+			'prin1))
 	    element print-length print-level)
 	(insert (format "\
 ;;; %s  -*- mode: emacs-lisp%s -*-
@@ -1595,15 +1601,15 @@ which defaults to the value of `w3m-file-coding-system-for-read'."
 	  (if (consp element)
 	      (progn
 		(insert "(")
-		(w3m-prin1 (car element))
+		(funcall print-fn (car element))
 		(insert "\n")
 		(while (setq element (cdr element))
 		  (insert "  ")
-		  (w3m-prin1 (car element))
+		  (funcall print-fn (car element))
 		  (insert "\n"))
 		(backward-delete-char 1)
 		(insert ")\n "))
-	    (w3m-prin1 element)
+	    (funcall print-fn element)
 	    (insert "\n")))
 	(skip-chars-backward "\n ")
 	(delete-region (point) (point-max))
@@ -1743,7 +1749,8 @@ which defaults to the value of `w3m-file-coding-system-for-read'."
 		      (sort list
 			    (lambda (a b)
 			      (w3m-time-newer-p (nth 3 a) (nth 3 b))))
-		      w3m-keep-arrived-urls)))
+		      w3m-keep-arrived-urls)
+		     nil t))
     (setq w3m-arrived-db nil)
     (run-hooks 'w3m-arrived-shutdown-hook)))
 

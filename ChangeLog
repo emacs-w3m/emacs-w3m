@@ -1,3 +1,11 @@
+2002-02-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-save-list): Allow the 2nd arg `escape-ctl-chars'.
+	(w3m-arrived-shutdown): Call it with the 2nd arg.
+
+	* w3m-antenna.el (w3m-antenna-shutdown): Call `w3m-save-list' with
+	the 2nd arg.
+
 2002-02-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-pixels-per-line): Renamed from w3m-pixel-per-line;

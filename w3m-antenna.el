@@ -187,7 +187,7 @@ whose elements are:
 
 (defun w3m-antenna-shutdown ()
   (when w3m-antenna-alist
-    (w3m-save-list w3m-antenna-file w3m-antenna-alist)
+    (w3m-save-list w3m-antenna-file w3m-antenna-alist nil t)
     (setq w3m-antenna-alist nil)))
 
 (defun w3m-antenna-hns-last-modified (url &optional no-cache)
