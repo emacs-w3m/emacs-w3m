@@ -133,8 +133,7 @@ person; read it over again when you install a new version of emacs-w3m.
 @end menu
 
 @node Required Emacs Version
-@section Required Emacs Version
-@chapter What version of Emacs can be used?
+@section What version of Emacs can be used?
 @cindex emacs version
 
 You can run emacs-w3m in various versions of Emacsen listed below:
@@ -163,8 +162,7 @@ using the BITMAP-MULE package (@pxref{Other Requirements}).
 @end table
 
 @node You Need w3m
-@section You Need w3m
-@chapter Using w3m: the reason why emacs-w3m is fast
+@section Using w3m: the reason why emacs-w3m is fast
 @cindex w3m
 
 Emacs-w3m uses the external w3m command as a back end to retrieve web
@@ -176,8 +174,7 @@ is available in:
 @uref{http://prdownloads.sourceforge.net/w3m/}
 
 @node Other Requirements
-@section Other Requirements
-@chapter Things required to run emacs-w3m
+@section Things required to run emacs-w3m
 @cindex APEL
 @cindex gifsicle
 @cindex BITMAP-MULE
@@ -274,13 +271,12 @@ libraries.  The FLIM package is available in:
 @end table
 
 @node Installing Emacs-w3m
-@section Installing Emacs-w3m
-@chapter Installing emacs-w3m
+@section Installing emacs-w3m
 @cindex install
 
 
 @node Shimbun Libraries
-@chapter Shimbun Libraries
+@chapter A tool for reading a newspaper conveniently
 @cindex shimbun
 
 
