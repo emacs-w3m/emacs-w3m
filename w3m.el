@@ -2465,7 +2465,8 @@ RATE is resize percentage."
 		  (if image
 		      (when (equal url w3m-current-url)
 			(let (buffer-read-only)
-			  (w3m-remove-image start end)
+			  (w3m-static-when (featurep 'xemacs)
+			    (w3m-remove-image start end))
 			  (w3m-insert-image start end image iurl))
 			;; Redisplay
 			(when w3m-force-redisplay

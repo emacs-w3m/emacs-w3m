@@ -43,6 +43,7 @@
       (require 'w3m-bitmap)
     ;; Dummy functions.
     (defalias 'w3m-create-image 'ignore)
+    (defalias 'w3m-create-resized-image 'ignore)
     (defalias 'w3m-insert-image 'ignore)
     (defalias 'w3m-remove-image 'ignore)
     (defalias 'w3m-image-type-available-p 'ignore)
