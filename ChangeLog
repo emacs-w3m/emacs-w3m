@@ -1,5 +1,13 @@
 2003-09-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el (w3m-activate-zmacs-regions): New macro.
+	* w3m.el (w3m-next-anchor, w3m-previous-anchor, w3m-next-form,
+	w3m-previous-form, w3m-next-image, w3m-previous-image,
+	w3m-scroll-up-or-next-url, w3m-scroll-down-or-previous-url,
+	w3m-beginning-of-line, w3m-end-of-line): Use it.
+
+2003-09-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-hist.el (w3m-history-backward): Return nil if there is no
 	previous element.
 
