@@ -598,6 +598,19 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 	  (const :tag "View with other window" view-file-other-window)
 	  (function :tag "Other" view-file)))
 
+(defcustom w3m-edit-url-directory-alist
+  (when (boundp 'yahtml-path-url-alist)
+    (mapcar
+     (lambda (pair)
+       (cons (cdr pair) (car pair)))
+     (symbol-value 'yahtml-path-url-alist)))
+  "*Alist of a URL and a local directory."
+  :type '(repeat
+	  (cons
+	   (string :tag "URL")
+	   (directory :tag "Directory")))
+  :group 'w3m)
+
 (defcustom w3m-track-mouse t
   "*Whether to track the mouse and message the url under the mouse.
 This feature does not work under Emacs or XEmacs versions prior to 21.
@@ -3099,24 +3112,37 @@ is performed.  Otherwise, COUNT is treated as 1 by default."
 		      (and (w3m-action) "There's a form")
 		      "There's no url"))))
 
+(defun w3m-edit-url (url)
+  "Edit the local file pointed by URL."
+  (funcall
+   w3m-edit-function
+   (if (or (w3m-url-local-p url)
+	   (w3m-url-dtree-p url))
+       (w3m-url-to-file-name url)
+     (catch 'found
+       (dolist (pair w3m-edit-url-directory-alist)
+	 (when (string-match
+		(concat "\\`"
+			(regexp-quote (file-name-as-directory (car pair))))
+		url)
+	   (throw 'found
+		  (expand-file-name (substring url (match-end 0))
+				    (cdr pair)))))
+       (error "URL:%s is not a local file" url)))))
+
 (defun w3m-edit-current-url ()
-  "Edit the local file pointed by the URL of current page"
+  "Edit the local file pointed by URL of current page."
   (interactive)
-  (if (or (w3m-url-local-p w3m-current-url)
-	  (w3m-url-dtree-p w3m-current-url))
-      (funcall w3m-edit-function (w3m-url-to-file-name w3m-current-url))
-    (error "The URL of current page is not local")))
+  (w3m-edit-url w3m-current-url))
 
 (defun w3m-edit-this-url (&optional url)
-  "Edit the local file by the under point."
+  "Edit the local file pointed by URL under point."
   (interactive)
-  (setq url (or url (w3m-anchor)))
-  (if (null url)
-      (message "No URL at point")
-    (if (or (w3m-url-local-p url)
-	    (w3m-url-dtree-p url))
-	(funcall w3m-edit-function (w3m-url-to-file-name url))
-      (error "URL:%s is not a local file" url))))
+  (unless url
+    (setq url (w3m-anchor)))
+  (if url
+      (w3m-edit-url url)
+    (message "No URL at point")))
 
 (defvar w3m-goto-anchor-hist nil)
 (make-variable-buffer-local 'w3m-goto-anchor-hist)

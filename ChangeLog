@@ -1,3 +1,10 @@
+2001-10-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-edit-url-directory-alist): New option.
+	(w3m-edit-url): New function.
+	(w3m-edit-current-url): Call `w3m-edit-url'.
+	(w3m-edit-this-url): Ditto.
+
 2001-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-om.el (w3m-detect-coding-region): Prefer the coding-category
