@@ -1,4 +1,4 @@
-;;; w3m-link-numbering.el --- Operations using link numbers
+;;; w3m-lnum.el --- Operations using link numbers
 
 ;; Copyright (C) 2004, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -32,7 +32,7 @@
 ;; Install this file to an appropriate directory, and add these
 ;; expressions to your ~/.emacs-w3m.
 
-;;      (autoload 'w3m-link-numbering "w3m-link-numbering" nil t)
+;;      (autoload 'w3m-link-numbering "w3m-lnum" nil t)
 ;;	(add-hook 'w3m-mode-hook 'w3m-link-numbering-mode)
 
 ;;; Code:
@@ -130,6 +130,6 @@ of moving cursor."
 	(error "Cannot found your specified link: %d" arg))
     (w3m-view-this-url)))
 
-(provide 'w3m-link-numbering)
+(provide 'w3m-lnum)
 
-;;; w3m-link-numbering.el ends here
+;;; w3m-lnum.el ends here
