@@ -71,7 +71,7 @@
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-atmarkit) url date)
-  (unless (string-match "\\([^\/]+\\)\\.html" url)
+  (unless (string-match "http://[^\/]+/\\(.+\\)\\.html" url)
     (error "Cannot find message-id base"))
   (format "%s%%%s@atmarkit.co.jp" (match-string-no-properties 1 url)
 	  (shimbun-current-group-internal shimbun)))

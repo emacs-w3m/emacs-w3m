@@ -3,6 +3,7 @@
 	* shimbun/sb-atmarkit.el: Rename from sb-atmarkit-rss.el.
 	(shimbun-rss-build-message-id): Build message-id without string
 	`rss'.
+	Bug fixed.
 
 	* shimbun/sb-wiki.el: Rename from sb-pukiwiki-rss.el.
 	(shimbun-wiki-group-alist): Add optional 4th and 5th elements to
