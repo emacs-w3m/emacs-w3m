@@ -3575,28 +3575,27 @@ message-id $B$N:n@.$K$OCm0U$rMW$7$^$9!#0lIt$N5-;v$,FI$a$J$+$C$?$j$7$^$9$N(B
 RFC2387, RFC822 $B$r$4;2>H2<$5$$!#(B
 
 $B6lO+$7$F<hF@$7$?$3$l$i$N>pJs$O(B @code{shimbun-make-header} $B$H$$$&4X?t$rMx(B
-$BMQ$7$F%X%C%@$K<}$a$^$9!#6qBNE*$JJ}K!$O!"(B@file{sb-fml.el} $B$r8+$k$H;29M$K(B
-$B$J$k$+$b$7$l$^$;$s!#(B
+$BMQ$7$F%X%C%@$K<}$a$^$9!#(B
 
 $B$=$l$G7k6I(B @file{sb-foobar.el} $B$NCf$G$N(B @code{shimbun-get-headers} $B$NDj(B
 $B5A$N9|AH$_$O$3$s$JIw$K$J$j$^$9$M!#(B
 
 @lisp
 (luna-define-method shimbun-get-headers ((shimbun shimbun-foobar)
-					 &optional range)
+                                         &optional range)
   (let ((regexp "....")
-  	subject from date id url headers)
+        subject from date id url headers)
     ...
     (catch 'stop
       (while (re-search-forward regexp nil t nil)
-	...
-	(when (shimbun-search-id shimbun id)
-	  (throw 'stop nil))
-	(push (shimbun-make-header
-	       0 (shimbun-mime-encode-string subject)
+        ...
+        (when (shimbun-search-id shimbun id)
+          (throw 'stop nil))
+        (push (shimbun-make-header
+               0 (shimbun-mime-encode-string subject)
                (shimbun-mime-encode-string from)
               date id "" 0 0 url)
-	      headers)))
+              headers)))
     headers))
 @end lisp
 
@@ -3659,12 +3658,13 @@ the GNU Mailing List Manager. $B0JA0$O(B pipermail $B$H8F$P$l$F$$$^$7$?!#>\:Y
 @noindent
 $B5.J}$,(B @xref{web page $B5Z$S%X%C%@>pJs$r<hF@$9$k(B} $B$N%9%F%C%W$G!"<hF@$7$?(B
 web page $B$N%=!<%9$rJ,@O$7$F$$$k$H$-$K!"$3$l$i%a!<%j%s%0%j%9%H%^%M!<%8%c(B
-$B$NL>A0$r8+$D$1$?$i!"$=$l$O$9$4$/%i%C%-!<$J$3$H$G$9!#(B
-@file{sb-mailman.el}, @file{sb-mhonarc.el}, @file{sb-fml.el},
-@file{sb-mailarc.el} $B$K4{$K(B @code{shimbun-get-headers} $B$J$I$NI,MW$J%a%=%C(B
-$B%I$,Dj5A$5$l$F$$$^$9!#$3$l$i$rMxMQ$7$F(B (require $B$7$^$9(B) $B$J$*B-$j$J$$ItJ,(B
-$B$@$1$N:9J,%W%m%0%i%_%s%0$r$9$l$P!"5.J}$N(B @file{sb-foobar.el} $B$OAaB.F0$-(B
-$B$^$9!#(B
+$B$NL>A0$r8+$D$1$?$i(B@footnote{web page $B$N%=!<%9$NCf$K$3$l$i%a!<%j%s%0%j%9(B
+$B%H%^%M!<%8%c$NL>A0$,I=<($5$l$F$$$k$3$H$,B?$$$G$9!#(B}$B!"$=$l$O$9$4$/%i%C%-!<(B
+$B$J$3$H$G$9!#(B@file{sb-mailman.el}, @file{sb-mhonarc.el},
+@file{sb-fml.el}, @file{sb-mailarc.el} $B$K4{$K(B @code{shimbun-get-headers}
+$B$J$I$NI,MW$J%a%=%C%I$,Dj5A$5$l$F$$$^$9!#$3$l$i$rMxMQ$7$F(B (require $B$7$^$9(B)
+$B$J$*B-$j$J$$ItJ,$@$1$N:9J,%W%m%0%i%_%s%0$r$9$l$P!"5.J}$N(B
+@file{sb-foobar.el} $B$OAaB.F0$-$^$9!#(B
 
 $BNc$($P(B @file{sb-mailman.el} $B$rMxMQ$9$k$J$i%/%i%9$N@k8@$O!"(B
 
