@@ -1,3 +1,8 @@
+2001-10-03  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-xmas.el (w3m-detect-coding-region): Return just the return
+	value of `detect-coding-with-priority' if it is not a list, again.
+
 2001-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-om.el (read-string): Advise the function to allow the 4th
