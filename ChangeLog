@@ -1,7 +1,31 @@
+2003-02-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (TopLevel): Don't gererate the w3m-kwds.el file if
+	there is no permission to write.
+
+	* shimbun/.cvsignore: New file.
+
+	* Makefile.in (clean): Remove shimbun/shimbun-servers.el.
+
+2003-02-04  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
+	Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-generate-shimbun-servers-file): New function.
+	(TopLevel): Call it.
+
+2003-02-04  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
+
+	* w3mhack.el (shimbun-servers-file): New constant.
+
+	* shimbun/shimbun.el (TopLevel): Require `shimbun-servers'.
+
+	* shimbun/nnshimbun.el (gnus-group-make-shimbun-group): Use
+	`shimbun-servers-alist'.
+
 2003-02-04  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-mode): Bind `auto-hscroll-mode' for Emacs-21.3.
-	
+
 2003-01-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-image-type): Move forward.
