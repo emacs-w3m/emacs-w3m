@@ -48,6 +48,7 @@
   (defalias 'w3m-retrieve 'ignore)
   (defalias 'w3m-image-type 'ignore))
 
+(require 'path-util)
 (require 'poe)
 (require 'poem)
 

@@ -1,3 +1,7 @@
+2001-06-06  Kenichi OKADA  <okada@opaopa.org>
+
+	* w3m-xmas.el: Require `path-util'.
+
 2001-06-07  NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 	* w3m.el (w3m-exec-process): Replace `delete' with `delq'.
