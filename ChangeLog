@@ -1,3 +1,9 @@
+2004-08-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist): Fetch
+	/enterprise/articles/ as well as /news/articles/ in burst group.
+	(shimbun-get-headers): Ignore headers if there's no subject.
+
 2004-08-23  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-mark-re-retrieve): Change
