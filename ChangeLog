@@ -1,3 +1,7 @@
+2002-12-28  NABEYA Kenichi  <emacs-w3m@nabeken.com>
+
+	* shimbun/sb-mew.el (shimbun-mew-group-url-alist): Update.
+
 2002-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mailman.el (shimbun-mailman-make-contents): Make
