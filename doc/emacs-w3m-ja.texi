@@ -4311,6 +4311,9 @@ sankei.bungei sankei.book sankei.person sankei.dead
 
 @item @uref{http://www.bbc.co.uk/, BBC}
 bbc.news
+
+@item @uref{http://www.spiegel.de/, Spiegel Online}
+spiegel.news
 @end table
 
 @node News Sites Supported by Shimbun
@@ -4327,6 +4330,9 @@ cnet.perspectives
 @item @uref{http://japan.cnet.com/, CNET Japan}
 cnet-jp.news cnet-jp.blog.inoue cnet-jp.blog.kenn cnet-jp.blog.lessig
 cnet-jp.blog.mori cnet-jp.blog.umeda cnet-jp.blog.watanabe
+
+@item @uref{http://www.heise.de/, Heise Online}
+heise.news heise.telepolis
 
 @item @uref{http://www.hotwired.co.jp/, HotWired Japan}
 wired.business wired.culture wired.technology
@@ -4749,6 +4755,9 @@ CGI_Board を使っている掲示板の URL を調べて、
 (setq shimbun-rakuten-group-alist
       '(("rakuten-id" . "email-address")))
 @end lisp
+
+@item @uref{http://www.emacswiki.org/, EmacsWiKi}
+emacswiki.diff
 
 @item Wiki コンテンツ
 閲覧したい Wiki の URL を調べて、以下のように設定して使います。
