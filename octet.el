@@ -80,6 +80,12 @@
     ("txt"  . text))
   "Alist of suffix-to-octet-type.")
 
+(defvar octet-content-type-alist
+  '(("application/vnd\\.ms-excel"       . msexcel)
+    ("application/vnd\\.ms-powerpoint"  . msppt)
+    ("application/msword"               . msword))
+  "Alist of content-type-regexp-to-octet-type.")
+
 (defvar octet-type-filter-alist
   `((msexcel octet-filter-call1       "xlhtml" ("-te")  html-u8)
     (msppt   octet-filter-call1       "ppthtml" nil     html-u8)
@@ -156,6 +162,16 @@ Returns 0 if succeed."
     (cdr (assoc (match-string 1 name)
 		octet-suffix-type-alist))))
 
+(defun octet-guess-type-from-content-type (content-type)
+  (let ((alist octet-content-type-alist)
+	type)
+    (while alist
+      (when (string-match (car (car alist)) content-type)
+	(setq type (cdr (car alist))
+	      alist nil))
+      (setq alist (cdr alist)))
+    type))
+
 (defun octet-filter-buffer (type)
   "Call a filter function in `octet-type-filter-alist'.
 TYPE is the symbol of type.
@@ -165,12 +181,16 @@ Returns NEW-TYPE."
 	(nth 4 elem))))
 
 ;;;###autoload
-(defun octet-buffer (&optional name)
+(defun octet-buffer (&optional name content-type)
   "View octet-stream content according to `octet-type-filter-alist'.
-NAME is the filename."
+Optional NAME is the filename.
+If optional CONTENT-TYPE is specified, it is used for type guess."
   (interactive)
   (let (type result)
-    (setq type (or (and (or name buffer-file-name)
+    (setq type (or (and content-type
+			(octet-guess-type-from-content-type
+			 content-type))
+		   (and (or name buffer-file-name)
 			(octet-guess-type-from-name
 			 (or name buffer-file-name)))
 		   (cdr (assoc (completing-read "Octet Type(text): "

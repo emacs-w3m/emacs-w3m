@@ -2,6 +2,9 @@
 
 	* octet.el (octet-guess-type-from-name): Return nil if guess failed.
 	(octet-buffer): Ask octet type if guess failed.
+	(octet-content-type-alist): New variable.
+	(octet-guess-type-from-content-type): New function.
+	(octet-buffer): Added optional argument `content-type'.
 
 2002-01-29  Yuuichi Teranishi  <teranisi@gohome.org>
 
