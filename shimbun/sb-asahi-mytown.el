@@ -72,8 +72,7 @@
     ("kagawa" "香川")
     ("ehime" "愛媛")
     ("kochi" "高知")
-    ("kitakyu" "北九州")
-    ("fukuoka" "福岡")
+    ("fukuoka" "福岡・北九州")
     ("saga" "佐賀")
     ("nagasaki" "長崎")
     ("kumamoto" "熊本")
@@ -143,7 +142,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 		      day (string-to-number (match-string 2)))
 		(goto-char start)
 		(re-search-forward ">\\([\t\n\r ]*<[^<>]+>\\)*[\t\n\r ]*\
-\\([^<>]+\\)[\t\n\r ]*<" limit t)
+\\([^<>]+\\)[\t\n\r ]*<?" limit t)
 		(setq subject (match-string 2)))
       (setq year (cond ((and (= 12 month) (= 1 cmonth))
 			(1- cyear))
