@@ -1,3 +1,15 @@
+2001-10-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-accept-languages): New option.
+	(w3m-dump-head-source-command-argument): Abolished.
+	(w3m-dump-head-source-command-arguments): New constant.
+	(w3m-w3m-expand-arguments): New macro.
+	(w3m-w3m-dump-head-source): To generate command arguments for w3m,
+	use `w3m-w3m-expand-arguments' and refer
+	`w3m-dump-head-source-command-arguments'.
+	(w3m-rendering-half-dump): To generate command arguments for w3m,
+	use `w3m-w3m-expand-arguments'.
+
 2001-10-31  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-reload-this-page): Change the semantic of the prefix

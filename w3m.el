@@ -342,6 +342,21 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :group 'w3m
   :type 'directory)
 
+(defcustom w3m-accept-languages
+  (let ((file (expand-file-name "config" w3m-profile-directory)))
+    (cond
+     ((file-readable-p file)
+      (with-temp-buffer
+	(insert-file-contents file)
+	(goto-char (point-min))
+	(when (re-search-forward "^accept_language +" nil t)
+	  (split-string (buffer-substring (match-end 0) (point-at-eol))))))
+     ((string= w3m-language "Japanese")
+      '("ja" "en"))))
+  "*Prioirity for acceptable languages."
+  :group 'w3m
+  :type '(repeat string))
+
 (defcustom w3m-delete-duplicated-empty-lines t
   "*Compactize page by deleting duplicated empty lines."
   :group 'w3m
@@ -1005,8 +1020,12 @@ for a charset indication")
     "\\(\"\\([^\"]+\\)\"\\|'\\([^\']+\\)'\\|[^\"\'<> \t\r\f\n]*\\)"
     "Regexp used in parsing to detect string."))
 
-(defconst w3m-dump-head-source-command-argument
-  (if (eq w3m-type 'w3mmee) "-dump=extra,head,source" "-dump_extra")
+(defconst w3m-dump-head-source-command-arguments
+  (list
+   '(if w3m-accept-languages "-o")
+   '(if w3m-accept-languages
+	(concat "accept_language=" (mapconcat 'identity w3m-accept-languages " ")))
+   (if (eq w3m-type 'w3mmee) "-dump=extra,head,source" "-dump_extra"))
   "Arguments for 'dump_extra' execution of w3m.")
 
 (defvar w3m-halfdump-command nil
@@ -2652,11 +2671,27 @@ If optional argument NO-CACHE is non-nil, cache is not used."
      ((and header (string-match "HTTP/1\\.[0-9] 50[0-9]" header))
       (list "text/html" nil nil nil nil url url)))))
 
+(defmacro w3m-w3m-expand-arguments (arguments)
+  (` (delq nil
+	   (mapcar
+	    (lambda (x)
+	      (cond
+	       ((stringp x) x)
+	       ((setq x (eval x))
+		(if (stringp x)
+		    x
+		  (let (print-level print-length)
+		    (prin1-to-string x))))))
+	    (, arguments)))))
+
 (defun w3m-w3m-dump-head-source (url)
   (and (let ((w3m-current-url url))
 	 (w3m-message "Reading %s..." url)
 	 (prog1
-	     (w3m-exec-process w3m-dump-head-source-command-argument url)
+	     (apply 'w3m-exec-process
+		    (w3m-w3m-expand-arguments
+		     (append w3m-dump-head-source-command-arguments
+			     (list url))))
 	   (w3m-message "Reading %s...done" url)))
        (goto-char (point-min))
        (let ((case-fold-search t))
@@ -2988,18 +3023,9 @@ to nil.
 	   (point-max)
 	   (or w3m-halfdump-command w3m-command)
 	   t t nil
-	   (delq nil
-		 (mapcar
-		  (lambda (x)
-		    (cond
-		     ((stringp x) x)
-		     ((setq x (eval x))
-		      (if (stringp x)
-			  x
-			(let (print-level print-length)
-			  (prin1-to-string x))))))
-		  (append w3m-halfdump-command-arguments
-			  w3m-halfdump-command-common-arguments))))))
+	   (w3m-w3m-expand-arguments
+	    (append w3m-halfdump-command-arguments
+		    w3m-halfdump-command-common-arguments)))))
 
 (defun w3m-rendering-buffer-1 ()
   (w3m-message "Rendering...")
