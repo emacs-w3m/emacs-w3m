@@ -739,7 +739,8 @@ want to add, for example:
 where foobar is the term you want to search for.
 
 @item
-Once you have this information, add this to your .emacs:
+Once you have this information, add this to your @file{~/.emacs} file:
+@c FIXME: this should be able to put into .emacs-w3m file.
 
 @lisp
 (eval-after-load "w3m-search"
@@ -764,7 +765,8 @@ engine, you may need to specify something (e.g. @code{euc-japan}) to it.
 You can now use this engine to search, using the normal @kbd{S} key in
 emacs-w3m.  If you use this engine often, you can also add it to the
 Quicksearch (see @ref{Quick Searching}) engines and give it a small
-prefix, by adding this to your @file{.emacs} instead:
+prefix, by adding this to your @file{~/.emacs} instead:
+@c FIXME: this should be able to put into .emacs-w3m file.
 
 @lisp
 (eval-after-load "w3m-search"
