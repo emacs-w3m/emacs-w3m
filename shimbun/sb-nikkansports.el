@@ -54,6 +54,14 @@
   "\\(<br><b>[^<]+</b></font>\n\\)?<ul>")
 (defvar shimbun-nikkansports-expiration-days 17)
 
+(defvar shimbun-nikkansports-end-of-header-regexp
+  (concat "\n<!--\\("
+	  " End of Header "	"\\|"
+	  "header"		"\\|"
+	  "◆◆◆◆◆◆ここまでヘッダー◆◆◆◆◆◆"
+	  "\\)-->\n")
+  "*Regexp used to look for the end of the header in a html contents.")
+
 (luna-define-method shimbun-index-url ((shimbun shimbun-nikkansports))
   (concat (shimbun-url-internal shimbun)
 	  "news/"
@@ -70,8 +78,8 @@
       (delete-region (point) (point-max))
       (goto-char (point-min))
       (let ((case-fold-search t) headers)
-	(while (re-search-forward
-		"<li><a href=\"\\(.+\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)-\\([0-9]+\\)\\.html\\)\">\\([^<]+\\)</a>" nil t)
+	(while (re-search-forward shimbun-nikkansports-end-of-header-regexp
+				  nil t)
 	  (let ((url (match-string 1))
 		(year (match-string 2))
 		(month (match-string 3))
