@@ -2187,7 +2187,7 @@ Well, it might be useful for a general cleaning of the end of a year.
 Mew Shimbun is an Emacs Lisp program for enjoying yourself with
 @samp{shimbun} using the Mew version 2.1 and later.  The
 @file{mew-shimbun} module will be installed together with emacs-w3m if
-there have been Mew, @sc{APEL}, and @sc{FLIM} installed.
+there have been Mew, @sc{apel}, and @sc{flim} installed.
 
 @enumerate
 @item
