@@ -25,6 +25,10 @@
 	* shimbun/sb-lump.el (shimbun-headers): Ditto.
 	* shimbun/sb-meadow.el (shimbun-headers): Ditto.
 	* shimbun/sb-slashdot-jp.el (shimbun-headers): Ditto.
+	(shimbun-slashdot-jp-story-max-pages): New variable.
+	(shimbun-slashdot-jp-comment-max-pages): Ditto.
+	(shimbun-slashdot-jp-comments-per-story): Ditto.
+
 	* shimbun/sb-tcup.el (shimbun-headers): Ditto.
 
 	* shimbun/shimbun.el (shimbun-headers): Added optional argument
