@@ -1,3 +1,8 @@
+2003-02-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-w3m-attributes): Allow imperfect Status-Line like no
+	Reason-Phrase. Guard broken header like no location field.
+
 2003-02-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/nnshimbun.el: Doc fixes.
