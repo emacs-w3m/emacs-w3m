@@ -182,29 +182,37 @@ If no field in forward, return nil without moving."
 
 ;;;###autoload
 (defun w3m-form-parse-region (start end &optional charset)
-  "Parse HTML data in this buffer and return form/map objects."
-  (save-restriction
-    (narrow-to-region start end)
-    (if (memq w3m-type '(w3mmee w3m-m17n))
-	;; *w3m-work* buffer is 'binary.
-	(let ((str (buffer-string)))
-	  (with-temp-buffer
-	    (insert str)
-	    (goto-char (point-min))
-	    (when (and (eq w3m-type 'w3mmee)
-		       (or (re-search-forward
-			    w3m-meta-content-type-charset-regexp nil t)
-			   (re-search-forward
-			    w3m-meta-charset-content-type-regexp nil t))
-		       (string= "x-moe-internal"
-				(downcase
-				 (match-string-no-properties 2))))
-	      (setq charset (w3m-x-moe-decode-buffer)))
-	    (decode-coding-region (point-min) (point-max)
-				  (or (w3m-charset-to-coding-system charset)
-				      'undecided))
-	    (nreverse (w3m-form-parse-forms))))
-      (nreverse (w3m-form-parse-forms)))))
+  "Parse HTML data in this buffer and return form/map objects.
+Check the cached form/map objects are available, and if available
+return them with the flag."
+  (or (when (w3m-cache-available-p w3m-current-url)
+	(let* ((url w3m-current-url)
+	       (forms (with-current-buffer w3m-current-buffer
+			(w3m-history-plist-get :forms url nil t))))
+	  (and forms
+	       (cons t forms)))) ;; Mark that `w3m-current-forms' is resumed from history.
+      (save-restriction
+	(narrow-to-region start end)
+	(if (memq w3m-type '(w3mmee w3m-m17n))
+	    ;; *w3m-work* buffer is 'binary.
+	    (let ((str (buffer-string)))
+	      (with-temp-buffer
+		(insert str)
+		(goto-char (point-min))
+		(when (and (eq w3m-type 'w3mmee)
+			   (or (re-search-forward
+				w3m-meta-content-type-charset-regexp nil t)
+			       (re-search-forward
+				w3m-meta-charset-content-type-regexp nil t))
+			   (string= "x-moe-internal"
+				    (downcase
+				     (match-string-no-properties 2))))
+		  (setq charset (w3m-x-moe-decode-buffer)))
+		(decode-coding-region (point-min) (point-max)
+				      (or (w3m-charset-to-coding-system charset)
+					  'undecided))
+		(nreverse (w3m-form-parse-forms))))
+	  (nreverse (w3m-form-parse-forms))))))
 
 (defun w3m-form-parse-forms ()
   "Parse Form/usemap objects in this buffer."
@@ -409,6 +417,16 @@ If no field in forward, return nil without moving."
 ;;;###autoload
 (defun w3m-fontify-forms ()
   "Process half-dumped data in this buffer and fontify <input_alt> tags."
+  ;; Check whether `w3m-current-forms' is resumed from history.
+  (if (eq t (car w3m-current-forms))
+      (progn
+	(setq w3m-current-forms (cdr w3m-current-forms))
+	(w3m-form-fontify w3m-current-forms)
+	(w3m-form-resume w3m-current-forms))
+    (w3m-form-fontify w3m-current-forms)))
+
+(defun w3m-form-fontify (forms)
+  "Process half-dumped data in this buffer and fontify <input_alt> tags using FORMS."
   (goto-char (point-min))
   (while (search-forward "<input_alt " nil t)
     (let (start)
@@ -420,9 +438,11 @@ If no field in forward, return nil without moving."
 			     (maxlength :integer)
 			     (hseq :integer)
 			     name value)
+	(delete-region start (point))
 	(search-forward "</input_alt>")
-	(goto-char (match-end 0))
-	(let ((form (nth fid w3m-current-forms)))
+	(goto-char (match-beginning 0))
+	(delete-region (match-beginning 0) (match-end 0))
+	(let ((form (nth fid forms)))
 	  (when form
 	    (cond
 	     ((and (string= type "hidden")

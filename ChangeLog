@@ -1,3 +1,21 @@
+2001-09-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-resume-forms): Abolished.
+	(w3m-clear-local-variables): Don't handle `w3m-resume-forms'.
+	(w3m-copy-local-variables): Ditto.
+	(w3m-fontify): Don't call `w3m-form-resume'.
+	(w3m-cache-available-p): Protect against the illegal type of
+	arguments.
+	(w3m-rendering-region): Removed the fourth optional argument,
+	`forms'.
+	(w3m-exec): Follow change of `w3m-rendering-region'.
+
+	* w3m-form.el (w3m-form-parse-region): Check the cached form/map
+	objects are available, and if available return them with the flag.
+	(w3m-fontify-forms): Its real part is moved to `w3m-form-fontify'.
+	Call `w3m-form-resume' if `w3m-current-forms' includes the flag.
+	(w3m-form-fontify): New function.
+
 2001-09-15  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-resume): Ignore `hidden' type form;

@@ -735,7 +735,6 @@ will disclose your private informations, for example:
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
 (defvar w3m-current-forms nil "Forms of this buffer.")
-(defvar w3m-resume-forms nil "A flag whether resume current forms or not.")
 (defvar w3m-current-coding-system nil "Current coding-system of this buffer.")
 (defvar w3m-next-url nil "Next URL of this buffer.")
 (defvar w3m-previous-url nil "Previous URL of this buffer.")
@@ -743,7 +742,6 @@ will disclose your private informations, for example:
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-title)
 (make-variable-buffer-local 'w3m-current-forms)
-(make-variable-buffer-local 'w3m-resume-forms)
 (make-variable-buffer-local 'w3m-current-coding-system)
 (make-variable-buffer-local 'w3m-next-url)
 (make-variable-buffer-local 'w3m-previous-url)
@@ -752,26 +750,23 @@ will disclose your private informations, for example:
   (setq w3m-current-url nil
 	w3m-current-title nil
 	w3m-current-forms nil
-	w3m-resume-forms nil
 	w3m-current-coding-system nil
 	w3m-next-url nil
 	w3m-previous-url nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url title forms resume cs next prev)
+  (let (url title forms cs next prev)
     (save-current-buffer
       (when from-buffer (set-buffer from-buffer))
       (setq url w3m-current-url
 	    title w3m-current-title
 	    forms w3m-current-forms
-	    resume w3m-resume-forms
 	    cs w3m-current-coding-system
 	    next w3m-next-url
 	    prev w3m-previous-url))
     (setq w3m-current-url url
 	  w3m-current-title title
 	  w3m-current-forms forms
-	  w3m-resume-forms resume
 	  w3m-current-coding-system cs
 	  w3m-next-url next
 	  w3m-previous-url prev)))
@@ -1731,9 +1726,9 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (w3m-fontify-bold)
     (w3m-fontify-underline)
     (w3m-fontify-anchors)
-    (if w3m-use-form
-	(w3m-fontify-forms))
     (w3m-fontify-images)
+    (when w3m-use-form
+      (w3m-fontify-forms))
     ;; Remove other markups.
     (goto-char (point-min))
     (while (re-search-forward "</?[A-Za-z_][^>]*>" nil t)
@@ -1744,8 +1739,6 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (if w3m-delete-duplicated-empty-lines
 	(while (re-search-forward "^[ \t]*\n\\([ \t]*\n\\)+" nil t)
 	  (replace-match "\n" nil t)))
-    (when w3m-resume-forms
-      (w3m-form-resume w3m-current-forms))
     (w3m-message "Fontifying...done")
     (run-hooks 'w3m-fontify-after-hook)))
 
@@ -1941,8 +1934,9 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 (defun w3m-cache-available-p (url)
   "Return non-nil, if URL's data is cached."
   (w3m-cache-setup)
-  (let ((ident (intern url w3m-cache-hashtb)))
-    (and (memq ident w3m-cache-articles) ident)))
+  (and (stringp url)
+       (let ((ident (intern url w3m-cache-hashtb)))
+	 (and (memq ident w3m-cache-articles) ident))))
 
 
 ;;; Handle process:
@@ -2729,7 +2723,7 @@ to nil.
 	       w3m-meta-charset-content-type-regexp nil t))
       (delete-region (match-beginning 0) (match-end 0)))))
 
-(defun w3m-rendering-region (start end &optional charset forms)
+(defun w3m-rendering-region (start end &optional charset)
   "Do rendering of contents in this buffer as HTML and return title."
   (save-restriction
     (narrow-to-region start end)
@@ -2739,9 +2733,7 @@ to nil.
     (w3m-remove-meta-tags)
     (when w3m-use-form
       (setq w3m-current-forms
-	    (or forms
-		(w3m-form-parse-region (point-min) (point-max) charset)))
-      (when forms (setq w3m-resume-forms t)))
+	    (w3m-form-parse-region (point-min) (point-max) charset)))
     (w3m-message "Rendering...")
     (let ((coding-system-for-read w3m-output-coding-system)
 	  (coding-system-for-write w3m-input-coding-system)
@@ -2806,9 +2798,7 @@ this function returns t.  Otherwise, returns nil."
 	      (setq type content-type))
 	    (cond
 	     ((string-match "^text/" type)
-	      (let ((forms (when (w3m-cache-available-p url)
-			     (w3m-history-plist-get :forms url nil t)))
-		    buffer-read-only)
+	      (let (buffer-read-only)
 		(w3m-with-work-buffer
 		  (w3m-clear-local-variables)
 		  (setq w3m-current-url (w3m-real-url url)
@@ -2818,7 +2808,7 @@ this function returns t.  Otherwise, returns nil."
 			      (unless (memq w3m-type '(w3mmee w3m-m17n))
 				(w3m-decode-buffer url content-charset type))
 			      (w3m-rendering-region (point-min) (point-max)
-						    content-charset forms))
+						    content-charset))
 			  (w3m-decode-buffer url content-charset type)
 			  (file-name-nondirectory url))))
 		(delete-region (point-min) (point-max))
