@@ -1,3 +1,10 @@
+2005-01-24  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-article): Disable
+	mew-biff while retrieving.
+	(mew-shimbun-re-retrieve-article): Ditto.
+	(mew-shimbun-scan-message): Disable message from Mew.
+
 2005-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-markets):
