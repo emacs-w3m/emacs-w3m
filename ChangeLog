@@ -1,3 +1,13 @@
+2001-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-icon-directory): Hide the actual function name
+	`locate-data-directory' for old Emacsen to avoid byte-compile
+	warnings.
+
+	* w3m-om.el (w3m-om-define-missing-widgets): New function.
+	(TopLevel): Use it for defining some missing widgets after the
+	library wid-edit is loaded.
+
 2001-04-12  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/shimbun.el (shimbun-index-url): Removed method definition.
