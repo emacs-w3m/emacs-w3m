@@ -1912,11 +1912,8 @@ interactively."
 
 ;; When buggy timezone.el is loaded, parse-time.el will be used
 ;; instead of timezone.el.
-(unless (let* ((x (current-time))
-	       (system-time-locale "C")
-	       (y (w3m-time-parse-string
-		   (format-time-string "%A, %d-%b-%y %T %Z" x))))
-	  (and (eq (car x) (car y)) (eq (nth 1 x) (nth 1 y))))
+(unless (equal (w3m-time-parse-string "Thursday, 01-Jan-1970 00:00:00 GMT")
+	       '(0 0))
   (ignore-errors
     (require 'parse-time))
   (defun w3m-time-parse-string (string)
