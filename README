@@ -96,10 +96,10 @@ This package contains a interface program of w3m.
 
 3. How to specify proxy gateways
 
-   There are some ways to do this, one is to set the environment variable
-   HTTP_proxy globally in the shell something like:
+   There are some ways to do this, one is to set the environment
+   variable http_proxy globally in the shell something like:
 
-      setenv HTTP_proxy http://proxy.hogege.com:8000/
+      setenv http_proxy http://proxy.hogege.com:8000/
 
    Another way is to customize the option `w3m-command-arguments' to
    add the options "-o" and "http_proxy=http://PROXY_SERVER_NAME:PORT/".
