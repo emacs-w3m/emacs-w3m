@@ -1,3 +1,8 @@
+2003-05-31  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-yahoo.el (shimbun-get-headers): Modify regexp to pick
+	up all articles.
+	
 2003-05-30  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* octet.el (toplevel): Require poe.

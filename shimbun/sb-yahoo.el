@@ -93,7 +93,7 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 	(when (re-search-forward "<!--- OUTLINE_TABLE -->" nil t)
 	  (delete-region (point) (point-max))
 	  (goto-char (point-min))
-	  (while (re-search-forward "<a href=\"\\(http://headlines.yahoo.co.jp/hl\\?a=\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)-\\([0-9]+\\)-[^\"]+\\)\">\\([^<]+\\)</a>\\([^0-9]\\|[\n\r]\\)*\\([0-9]+日[^0-9]*\\)?\\([0-9]+\\)時\\([0-9]+\\)分" nil t)
+	  (while (re-search-forward "<a href=\"\\(http://headlines.yahoo.co.jp/hl\\?a=\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)-\\([0-9]+-[^\"]+\\)\\)\">\\([^<]+\\)</a>\\([^0-9]\\|[\n\r]\\)*\\([0-9]+日[^0-9]*\\)?\\([0-9]+\\)時\\([0-9]+\\)分" nil t)
 	    (let ((url (match-string 1))
 		  (year (match-string 2))
 		  (month (match-string 3))
