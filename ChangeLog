@@ -1,3 +1,7 @@
+2002-03-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Release 1.2.6.
+
 2002-03-11  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-ucs.el (w3m-euc-japan-encoder): Treat japanese-jisx0208-1978
@@ -83,6 +87,11 @@
 	* Makefile.in (install): Don't chdir to shimbun/ while installing
 	shimbun modules.
 	(install-icons): Don't chdir to icons/ while installing icons.
+
+2002-02-07  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-fontify-images): Changed regexp to more generic one
+	to search img_alt tag.
 
 2002-03-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

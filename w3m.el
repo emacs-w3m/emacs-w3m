@@ -135,7 +135,7 @@
 				  "w3m-xmas"
 				"w3m-e21")))
 
-(defconst emacs-w3m-version "1.2.5"
+(defconst emacs-w3m-version "1.2.6"
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -1876,7 +1876,8 @@ half-dumped data."
   (let ((help (w3m-make-help-echo w3m-image))
 	(balloon (w3m-make-balloon-help w3m-image))
 	src upper start end)
-    (while (re-search-forward "<\\(img_alt\\) src=\"\\([^\"]*\\)\">" nil t)
+    (while (re-search-forward
+	    "<\\(img_alt\\)[^>]*src=\"\\([^\"]*\\)\"[^>]*>" nil t)
       (setq src (match-string-no-properties 2)
 	    upper (string= (match-string 1) "IMG_ALT")
 	    start (match-beginning 0))
