@@ -126,7 +126,7 @@
 (luna-define-method shimbun-make-contents ((shimbun shimbun-ibm-dev) header)
   (catch 'stop
     ;; cleaning up
-    (let (beg end buffer subject)
+    (let (beg end buffer)
       (if (re-search-forward "<!--[ 　]*Title[ 　]*-->" nil t nil)
 	  (delete-region (point-min) (point))
 	(throw 'stop nil))
@@ -157,7 +157,7 @@
     (goto-char (point-min))
     ;; getting SUBJECT field infomation (really necessary?  already have it)
     (if (re-search-forward "<h1>\\(.*\\)</h1>" nil t nil)
-	(progn
+	(let (subject)
 	  (setq subject (match-string 1))
 	  (while (string-match "\\(<font class=\".+\">\\|</font>\\)" subject)
 	    (setq subject (concat (substring subject 0 (match-beginning 0))

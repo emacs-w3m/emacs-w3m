@@ -4,6 +4,7 @@
 	(shimbun-make-contents): Move a reference to a PDF file to the end
 	of buffer.
 	Remove font class attribute from a subject string.
+	(shimbun-make-contents): Declare a local variable SUBJECT.
 
 2001-10-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
