@@ -6213,6 +6213,9 @@ as if the folder command of MH performs with the -pack option."
 	  (define-key map [(shift button2)]
 	    'w3m-mouse-view-this-url-new-session))
       (define-key map [mouse-2] 'w3m-mouse-view-this-url)
+      ;; Support for mouse-1 on Emacs 22.
+      (when (boundp 'mouse-1-click-follows-link)
+	(define-key map [follow-link] 'mouse-face))
       (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
     (define-key map "\C-c\C-@" 'w3m-history-store-position)
     (if (featurep 'xemacs)
@@ -6313,6 +6316,9 @@ as if the folder command of MH performs with the -pack option."
 	  (define-key map [(shift button2)]
 	    'w3m-mouse-view-this-url-new-session))
       (define-key map [mouse-2] 'w3m-mouse-view-this-url)
+      ;; Support for mouse-1 on Emacs 22.
+      (when (boundp 'mouse-1-click-follows-link)
+	(define-key map [follow-link] 'mouse-face))
       (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
     (define-key map "\C-c\C-@" 'w3m-history-store-position)
     (define-key map [?\C-c?\C- ] 'w3m-history-store-position)
