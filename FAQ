@@ -133,7 +133,9 @@
    Install "convert" included the ImageMagick. It is available from
    `http://www.imagemagick.org/'.
 
-** Q. Why do lock Emacs21 when show up `favicon'.
+** Q. Why do lock Emacs21 when show up `favicon' , or it's very annoying
+   that my computer accesses the disk drive violently and says
+   "process `convert' exited abnormally with code `10'" in the end.
 
    Do you use the old ImageMagick? Please use the newest it, version
    5.4.0 or later.
