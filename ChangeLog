@@ -1,3 +1,10 @@
+2002-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bitmap.el (w3m-bitmap-current-column): New function for old
+	Emacsen; alias to `current-column' for the recent Emacsen.
+	(w3m-bitmap-move-to-column-force): New function for old Emacsen;
+	alias to `move-to-column-force' for the recent Emacsen.
+
 2002-04-10  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-image.el (w3m-imagick-convert-data): Check buffer size.

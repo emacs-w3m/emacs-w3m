@@ -55,6 +55,47 @@
 (defvar w3m-bitmap-image-use-cache t
   "*If non-nil, bitmap-image is cached to this alist")
 
+(eval-and-compile
+  (if (or (>= emacs-major-version 21)
+	  (and (= emacs-major-version 20)
+	       (>= emacs-minor-version 3)))
+      (progn
+	(defalias 'w3m-bitmap-current-column 'current-column)
+	(defalias 'w3m-bitmap-move-to-column-force 'move-to-column-force))
+
+    (defun w3m-bitmap-current-column ()
+      "Like `current-column', except that works with byte-indexed bitmap
+chars as well."
+      (let ((home (point))
+	    (cols 0))
+	(while (not (bolp))
+	  (forward-char -1)
+	  (setq cols (+ cols (char-width (following-char)))))
+	(goto-char home)
+	cols))
+
+    (defun w3m-bitmap-move-to-column-force (column)
+      "Like `move-to-column-force', except that works with byte-indexed
+bitmap chars as well."
+      (beginning-of-line)
+      (let ((cols 0)
+	    width)
+	(if (wholenump column)
+	    (progn
+	      (while (and (not (eolp))
+			  (< cols column))
+		(setq width (char-width (following-char))
+		      cols (+ cols width))
+		(forward-char 1))
+	      (cond ((> cols column)
+		     (delete-backward-char 1)
+		     (insert-char ?\  width)
+		     (forward-char (- column cols)))
+		    ((< cols column)
+		     (insert-char ?\  (- column cols))))
+	      column)
+	  (signal 'wrong-type-argument (list 'wholenump column)))))))
+
 (defun w3m-bitmap-image-cleanup ()
   "Clean up bitmap-image overlays."
   (dolist (ovr (overlays-in (point-min) (point-max)))
