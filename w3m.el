@@ -778,14 +778,14 @@ of the original request method. -- RFC2616"
   :group 'w3m
   :type 'boolean)
 
-;; As far as we know, Emacs 20/21 under MacOS X[1] and XEmacs under
+;; As far as we know, Emacs 20/21 under Mac OS X[1] and XEmacs under
 ;; Solaris[2] won't run the asynchronous operations correctly when
 ;; both `w3m-async-exec' and `w3m-process-connection-type' are non-nil;
 ;; [1] the final kilobyte or so might get lost from raw data downloaded
 ;; from a web site; [2] XEmacs hangs up.
 
 (defcustom w3m-process-connection-type
-  (not (or (memq system-type '(macos))
+  (not (or (memq system-type '(darwin macos))
 	   (and (featurep 'xemacs)
 		(string-match "solaris" system-configuration))))
   "*Process connection type for w3m execution."

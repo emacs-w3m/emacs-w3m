@@ -1,3 +1,8 @@
+2003-09-23  OHASHI Akira  <bg66@koka-in.org>
+
+	* w3m.el (w3m-process-connection-type): Set nil when system-type
+	is darwin.
+
 2003-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-favicon.el: Bind `w3m-icon-data' when compiling.
