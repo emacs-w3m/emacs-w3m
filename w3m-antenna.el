@@ -478,9 +478,9 @@ asynchronous process that has not finished yet."
       (dolist (site alist)
 	(if (w3m-time-newer-p (or (w3m-antenna-site-last-modified site)
 				  (w3m-antenna-site-size-detected site))
-			      (or (w3m-arrived-last-modified
+			      (or (w3m-arrived-time
 				   (w3m-antenna-site-url site))
-				  (w3m-arrived-time
+				  (w3m-arrived-last-modified
 				   (w3m-antenna-site-url site))))
 	    (progn
 	      (w3m-cache-remove (w3m-antenna-site-url site))
