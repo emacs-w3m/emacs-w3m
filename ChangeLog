@@ -8,7 +8,6 @@
 	* w3m-xmas.el (w3m-make-spinner-image): Use the spinner.gif file.
 
 	* w3m-e21.el (w3m-tab-line-format): New variable (see doc-string).
-	(w3m-tab-line-timer): New variable.
 	(w3m-tab-line): Use it; use a timer to suppress this function
 	running too frequently.
 
