@@ -66,9 +66,9 @@ w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 	(case-fold-search t)
 	prefix basename headers)
     (goto-char (point-min))
-    (when (re-search-forward "<!-- timeStamp -->\
+    (when (re-search-forward "<!-- timeStamp -->\n?\
 \\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\) \
-\\([0-2][0-9]:[0-5][0-9]\\)\
+\\([0-2][0-9]:[0-5][0-9]\\)\n?\
 <!-- /timeStamp -->"
 			     nil t)
       (setq date
@@ -77,14 +77,14 @@ w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 				      (string-to-number (match-string 3))
 				      (match-string 4)))
       (goto-char (point-min)))
-    (while (re-search-forward "<!-- aLink --><\\(!-- \\)?\
+    (while (re-search-forward "<!-- aLink -->\n?<\\(!-- \\)?\
 a href=\"\\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\\(.+\\)\\.html"
 			      nil t)
       (setq prefix (match-string 2)
 	    basename (match-string 3))
       (when (re-search-forward
-	     "<!-- headline -->\\(.+\\)<!-- /headline -->"
-	     (line-end-position) t)
+	     "<!-- headline -->\n?\\(.+\\)\n?<!-- /headline -->"
+	     nil t)
 	(push (shimbun-make-header
 	       0
 	       (shimbun-mime-encode-string (match-string 1))
