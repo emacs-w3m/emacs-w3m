@@ -1,3 +1,7 @@
+2005-02-23  Felix E. Klee <felix.klee@inka.de>
+
+	* shimbun/sb-ffii.el: New module.
+
 2005-02-23  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-antenna.el (w3m-antenna-check-rss): Parse all date fields.
