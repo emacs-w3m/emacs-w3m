@@ -221,16 +221,17 @@ Unfortunately, the url name format might have been changed in 2ch"))
 	     (setq sym (intern-soft (shimbun-header-id header)
 				    (shimbun-2ch-content-hash-internal
 				     shimbun))))
-	   (insert (symbol-value sym))
 	   (goto-char (point-min))
 	   (shimbun-header-insert shimbun header)
 	   (insert "Content-Type: " "text/html"
 		   "; charset=SHIFT_JIS\n"
-		   "MIME-Version: 1.0\n")
-	   (insert "\n")
-	   (encode-coding-string
-	    (buffer-string)
-	    (mime-charset-to-coding-system "SHIFT_JIS"))))))))
+		   "Content-Transfer-Encoding: base64\n"
+		   "MIME-Version: 1.0\n\n"
+		   (shimbun-base64-encode-string
+		    (encode-coding-string (symbol-value sym)
+					  (mime-charset-to-coding-system
+					   "SHIFT_JIS"))))
+	   (buffer-string)))))))
 
 (provide 'sb-2ch)
 
