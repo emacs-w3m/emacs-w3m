@@ -42,7 +42,6 @@
 	(w3m-check-refresh-attribute): Condition relaxed.
 	(w3m-region): Disable checking refresh attribute.
 
->>>>>>> 1.1661
 2003-06-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Some miscellaneous changes and large changes to make a
