@@ -4,7 +4,8 @@
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
-;;         Katsumi Yamaoka    <yamaoka@jpl.org>
+;;         Katsumi Yamaoka    <yamaoka@jpl.org>,
+;;         NOMIYA Masaru      <nomiya@ttmy.ne.jp>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
@@ -108,7 +109,10 @@
 	 "\\([0-3][0-9]\\)"
 	 "\\)\\.html\\)")
        1 nil 2 nil 3 4)
-      ("english" "ENGLISH" "%s/"
+      ("edu" "教育" "%s/news/index.html" ,@default)
+      ("edu.it" "IT教育" "edu/it/index.html" ,@default)
+      ("edu.nyushi" "大学・入試情報" "edu/nyushi/index.html" ,@default)
+      ("english" "ENGLISH" "%s/index.html"
        ,(concat
 	 "<a" s1 "href=\"/"
 	 ;; 1. url
@@ -128,7 +132,47 @@
 	 "\\(" no-nl "\\)"
 	 s0 "</a>")
        1 5 nil 6 3 4 nil 2)
-      ("international" "国際" "%s/" ,@default)
+      ("international" "国際" "%s/list.html" ,@default)
+      ("international.jinmin" "人民日報" "international/jinmin/index.html"
+       ,@default)
+      ("job" "就職・転職" "%s/news/"
+       ,(concat
+	 "<a" s1 "href=\"/"
+	 ;; 1. url
+	 "\\(%s/news/"
+	 ;; 2. serial number
+	 "\\([a-z]+[0-9]+\\)"
+	 "\\.html\\)"
+	 "\">" s0
+	 ;; 3. subject
+	 "\\(" no-nl "\\)"
+	 s0 "</a>" s0 "([0-9][0-9]/"
+	 ;; 4. month
+	 "\\([01][0-9]\\)"
+	 "/"
+	 ;; 5. day
+	 "\\([0-3][0-9]\\)")
+       1 nil 2 3 4 5)
+      ("job.special" "週刊朝日・ＡＥＲＡから" "job/special/"
+       ,(concat
+	 "<a" s1 "href=\"/"
+	 ;; 1. url
+	 "\\(%s/"
+	 ;; 2. serial number
+	 "\\([a-z]+20[0-9][0-9]"
+	 ;; 3. month
+	 "\\([01][0-9]\\)"
+	 ;; 4. day
+	 "\\([0-3][0-9]\\)"
+	 "[0-9]+\\)"
+	 "\\.html\\)"
+	 "\">" s0
+	 ;; 5. subject
+	 "\\(" no-nl "\\)"
+	 s0 "</a>[^<>]（"
+	 ;; 6. extra
+	 "\\([^：]+\\)")
+       1 nil 2 5 3 4 nil 6)
       ("kansai" "関西" "%s/" ,@default)
       ("kansai-special" "関西特集" "kansai/special/"
        ,(concat
@@ -266,7 +310,9 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
     (setq regexp (assoc group shimbun-asahi-group-table)
 	  jname (nth 1 regexp)
 	  numbers (nthcdr 4 regexp)
-	  regexp (format (nth 3 regexp) (regexp-quote group))
+	  regexp (format (nth 3 regexp)
+			 (regexp-quote (shimbun-subst-char-in-string
+					?. ?/ group)))
 	  cyear (decode-time)
 	  cmonth (nth 4 cyear)
 	  cyear (nth 5 cyear))
@@ -309,11 +355,6 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	     (cond (kansai-special
 		    (concat "[" kansai-special "] "
 			    (match-string (nth 3 numbers))))
-		   ((and (string-equal group "international")
-			 (string-equal (substring serial
-						  0 (min 7 (length serial)))
-				       "jinmin."))
-		    (concat "[人民日報] " (match-string (nth 3 numbers))))
 		   ((and (setq num (nth 7 numbers))
 			 (match-beginning num))
 		    (concat "[" (match-string num) "] "
@@ -336,7 +377,8 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 				   ((member group '("editorial" "tenjin"))
 				    "07:00")))
 	     ;; id
-	     (if extra
+	     (if (and extra
+		      (not (member group '("job.special"))))
 		 (concat "<" serial "%" extra "." group "."
 			 shimbun-asahi-top-level-domain ">")
 	       (concat "<" serial "%" group "."

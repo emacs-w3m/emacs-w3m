@@ -4359,10 +4359,11 @@ Folder, wl-ja, The Wanderlust-ja Manual})。
 
 @table @asis
 @item @uref{http://www.asahi.com/, 朝日新聞}
-asahi.borderless asahi.business asahi.culture asahi.editorial
-asahi.english asahi.international asahi.kansai asahi.kansai-special
-asahi.nankyoku asahi.nankyoku-people asahi.national asahi.politics
-asahi.science asahi.sports asahi.tenjin asahi.whitemail
+asahi.borderless asahi.business asahi.culture asahi.editorial asahi.edu
+asahi.edu.it asahi.edu.nyushi asahi.english asahi.international
+asahi.international.jinmin asahi.job asahi.job.special asahi.kansai
+asahi.kansai-special asahi.nankyoku asahi.nankyoku-people asahi.national
+asahi.politics asahi.science asahi.sports asahi.tenjin asahi.whitemail
 
 これらは、テキストのみの記事を作成しますが、記事中に含まれる写真などをイ
 ンライン表示するように拡張された @samp{asahi-html} というバックエンドも
