@@ -561,7 +561,7 @@ buffer."
 			   (copy-sequence (cadar w3m-history))
 			   (copy-sequence (caddar w3m-history)))
 	    flat w3m-history-flat))
-    (set-buffer currenr)
+    (set-buffer current)
     (when position
       ;; Remove buffer-local properties from the new `w3m-history-flat'.
       (let (element rest)
@@ -722,7 +722,7 @@ renaming will be done for all the w3m buffers."
 	   (buffers (delq current (buffer-list)))
 	   element)
       (while buffers
-	(set-buffer buffer)
+	(set-buffer (pop buffers)
 	(when (and (eq major-mode 'w3m-mode)
 		   (setq element (w3m-history-assoc old-url)))
 	  (setcar element new-url)
