@@ -875,7 +875,7 @@ well.  The emacs-w3m strictly manages internally a list (history) of
 pages which have been visited before.  There are only fundamental
 functiond in this section, although the advanced history commands than
 just the ``Back'' or ``Forward'' commands are also implemented.  See
-@xref{Tracing History} for details of the advanced history commands.
+@xref{Tracing History}, for details of the advanced history commands.
 
 @table @kbd
 @item B
