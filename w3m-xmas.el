@@ -525,8 +525,8 @@ option, it is recommended a bit that setting both the option
 		 (setq value nil))
 	     (set-default symbol value)
 	   (if value
-	       (add-hook 'w3m-display-hook 'w3m-xmas-update-tab-in-gutter)
-	     (remove-hook 'w3m-display-hook 'w3m-xmas-update-tab-in-gutter))
+	       (add-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter)
+	     (remove-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter))
 	   (condition-case nil
 	       (progn
 		 (if value
@@ -590,7 +590,7 @@ title contains non-ascii characters, show a url name by default."
     (update-tab-in-gutter (selected-frame)))
 
   (when (symbol-value 'gutter-buffers-tab-enabled)
-    (add-hook 'w3m-display-hook 'w3m-xmas-update-tab-in-gutter)))
+    (add-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter)))
 
 ;;; Miscellaneous:
 (if (featurep 'mule)

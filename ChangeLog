@@ -1,3 +1,163 @@
+2002-08-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-init-file, w3m-load-hook): New option.
+	(toplevel): Load `w3m-init-file' and run `w3m-load-hook'.
+
+2002-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el: Require `custom' for Emacs 19 because of the
+	function `custom-initialize-set'.
+
+2002-08-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Clean up hook options.
+	(toplevel): Define the dummy function of `w3m-update-tab-line'.
+	(w3m-mode-hook, w3m-fontify-after-hook, w3m-select-buffer-hook):
+	Clean up its default value to nil.
+	(w3m-display-hook, w3m-delete-buffer-hook): Minimize its default
+	value and use `w3m-custom-hook-initialize' as the initialize
+	function.
+	(w3m-arrived-setup-hook, w3m-arrived-shutdown-hook): Abolished.
+	(w3m-arrived-setup-functions, w3m-arrived-shutdown-functions,
+	w3m-mode-setup-functions, w3m-display-functions): New interanal
+	variables.
+	(w3m-arrived-setup): Refer `w3m-arrived-setup-functions' instead
+	of `w3m-arrived-setup-hook'.
+	(w3m-arrived-shutdown): Refer `w3m-arrived-shutdown-functions'
+	instead of `w3m-arrived-shutdown-hook'.
+	(w3m-fontify): Call `w3m-header-line-insert' by itself.
+	(w3m-next-buffer, w3m-delete-buffer, w3m-delete-other-buffers):
+	Call `w3m-select-buffer-update' by itself.
+	(w3m-clean-hook-options): New function.
+	(w3m-mode): Call `w3m-clean-hook-options', and run functions
+	registered to `w3m-mode-setup-functions'.
+	(w3m-goto-url): Call `w3m-select-buffer-update' by itself, and Run
+	functions registered to `w3m-display-functions'.
+	(w3m-select-buffer-update): Call `w3m-update-tab-line'.
+
+	* w3m-util.el (w3m-custom-hook-initialize): New function.
+
+	* w3m-xmas.el: Cancel the last change and refer
+	`w3m-display-functions' instead of `w3m-display-hook'.
+
+	* w3m-e21.el (toplevel): Add `w3m-setup-favicon' to
+	`w3m-display-functions', `w3m-favicon-load-cache-file' to
+	`w3m-arrived-setup-functions', `w3m-favicon-save-cache-file' to
+	`w3m-arrived-shutdown-functions', and add `w3m-setup-header-line'
+	and `w3m-setup-widget-faces' to `w3m-mode-setup-functions'
+
+	* w3mhack.el (w3mhack-load-path) [Mule]: Add the path of bitmap.el
+	to `load-path'.
+
+	* w3m.el (w3m-select-buffer-hook): Renamed from
+	`w3m-change-buffer-hook'.
+	(w3m-next-buffer): Accept a numerical argument.
+	(w3m-previous-buffer): Accept a numerical argument, and call
+	`w3m-next-buffer'.
+	(w3m-delete-buffer): Call `w3m-next-buffer' instead of
+	`w3m-previous-buffer'.
+
+	* w3m.el (w3m-delete-buffer-hook): Change its default value.
+	(w3m-change-buffer-hook): New option.
+	(w3m-delete-other-buffers-hook, w3m-previous-buffer-hook,
+	w3m-next-buffer-hook): Abolished.
+	(w3m-next-buffer): Run `w3m-change-buffer-hook' instead of
+	`w3m-next-buffer-hook'.
+	(w3m-previous-buffer): Run `w3m-change-buffer-hook' instead of
+	`w3m-previous-buffer-hook'.
+	(w3m-delete-buffer): Not call `w3m-select-buffer-update', which is
+	added to `w3m-delete-buffer-hook'.
+	(w3m-delete-other-buffers): Likewise.  Run
+	`w3m-delete-buffer-hook' instead of `w3m-delete-other-buffers-hook'.
+
+2002-08-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (toplevel): Remove expressions to register hook functions
+	to `w3m-delete-buffer-hook', `w3m-delete-other-buffers-hook',
+	`w3m-display-hook', and `w3m-fontify-after-hook'.
+	(w3m-mode-hook, w3m-fontify-after-hookk, w3m-display-hook,
+	w3m-arrived-setup-hook, w3m-arrived-shutdown-hook,
+	w3m-delete-buffer-hook, w3m-delete-other-buffers-hook,
+	w3m-previous-buffer-hook, w3m-next-buffer-hook): Changed their
+	default values to avoid inconsistency of their customize.
+	(w3m-toolbar): Fix its help messages.
+	(w3m-arrived-file, w3m-keep-arrived-urls,
+	w3m-db-history-display-size): Fix their docstrings.
+	(w3m-history): Moved to avoid a byte compile warning.
+
+	* w3m-xmas.el (toplevel): Remove an expression to register
+	`w3m-xmas-update-tab-in-gutter' to `w3m-display-hook'.
+	(w3m-xmas-show-current-title-in-buffer-tab): Remove expressions to
+	handle `w3m-display-hook' from the form to change its value.
+
+	* w3m-e21.el (toplevel): Remove expressions to register hook
+	functions to `w3m-display-hook', `w3m-arrived-setup-hook',
+	`w3m-arrived-shutdown-hook', `w3m-mode-hook',
+	`w3m-fontify-after-hook', `w3m-next-buffer-hook',
+	`w3m-previous-buffer-hook', `w3m-delete-buffer-hook' and
+	`w3m-delete-other-buffers-hook'.
+
+2002-08-28  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-delete-buffer-hook): New hook.
+	(w3m-other-delete-buffers-hook): Ditto.
+	(w3m-previous-buffer-hook): Ditto.
+	(w3m-next-buffer-hook): Ditto.
+	(w3m-view-this-url-new-session-in-background): Fixed docstring.
+	(w3m-next-buffer): Run `w3m-next-buffer-hook'.
+	(w3m-previous-buffer): Run `w3m-previous-buffer-hook'.
+	(w3m-delete-buffer): Run `w3m-delete-buffer-hook'.
+	(w3m-delete-other-buffers): Run `w3m-delete-other-buffers-hook'.
+	(w3m-pack-buffer-numbers): New function.
+	(w3m-delete-buffer-hook): Add `w3m-pack-buffer-numbers'.
+	(w3m-delete-other-buffer-hook): Add `w3m-pack-buffer-numbers'.
+
+	* w3m-util.el (w3m-buffer-number): New inline function.
+	(w3m-buffer-set-number): Ditto.
+
+	* w3m-e21.el (w3m-update-tab-line): New function.
+	(w3m-mode-hook): Add `w3m-update-tab-line'.
+	(w3m-fontify-after-hook): Ditto.
+	(w3m-previous-buffer-hook): Ditto.
+	(w3m-next-buffer-hook): Ditto.
+	(w3m-delete-buffer-hook): Ditto.
+	(w3m-delete-other-buffers-hook): Ditto.
+	(w3m-tab-width): Changed default value to 16.
+	(w3m-tab-line): Calculate tab width dynamically.
+
+2002-08-27  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-output-coding-system,
+	w3m-halfdump-command-arguments): Use 'utf-8 when `w3m-m17n'
+	with Mule-UCS environment.
+	(w3m-charset-coding-system-alist): Add Windows Code Point.
+	(w3m-current-content-charset): New buffer-local variable.
+	(w3m-clear-local-variables, w3m-copy-local-variables): Handle it.
+	(w3m-decode-buffer): Set `w3m-current-content-charset'.
+	(w3m-rendering-half-dump): Use
+	`w3m-current-content-charset' when `w3m-m17n' or `w3mmee'.
+
+2002-08-27  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-history): Call `w3m-db-history' instead of goto
+	`about://db-history/'.
+
+2002-08-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-delete-other-buffers): New user command.
+	(w3m-lynx-like-map): Bind the key `C-c w' to the command
+	`w3m-delete-other-buffers'.
+	(w3m-info-like-map): Ditto.
+	(w3m-select-buffer-mode-map): Bind the key to the command
+	`w3m-select-buffer-delete-other-buffers'.
+	(w3m-select-buffer-delete-other-buffers): New user command.
+
+2002-08-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-about-db-history): Accept range specification in URL.
+	(w3m-db-history-display-size): New option.
+	(w3m-db-history): Refer it.
+
 2002-08-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-mhonarc.el (shimbun-make-contents): Encode the value

@@ -71,7 +71,8 @@
 (eval-and-compile
   (cond ((and (boundp 'emacs-major-version)
 	      (= emacs-major-version 19))
-	 (autoload 'cancel-timer "timer"))))
+	 (autoload 'cancel-timer "timer")
+	 (require 'custom))))
 
 ;;; Things should be defined in advance:
 
@@ -261,6 +262,23 @@ An argument of nil means kill the current buffer."
 	   (substring w3m-current-url (match-end 0))
 	 w3m-current-url)))
      (t "<no-title>"))))
+
+(defsubst w3m-buffer-number (buffer)
+  (when (and (bufferp buffer)
+	     (string-match "\\`\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'"
+			   (buffer-name buffer)))
+    (if (match-beginning 1)
+	(string-to-number (match-string 2 (buffer-name buffer)))
+      0)))
+
+(defsubst w3m-buffer-set-number (buffer number)
+  (unless (eq (w3m-buffer-number buffer) number)
+    (with-current-buffer buffer
+      (let ((newname (if (zerop number)
+			 "*w3m*"
+		       (format "*w3m*<%d>" number))))
+	(unless (get-buffer newname)
+	  (rename-buffer newname))))))
 
 (defun w3m-buffer-name-lessp (x y)
   "Return t if first arg buffer's name is less than second."
@@ -502,6 +520,16 @@ multibyteness of the buffer."
   "The initial `default' face color spec.  Since `defface' under FSF Emacs
 versions prior to 21 won't inherit the `dafault' face colors by default,
 we will use this value for the default `defface' color spec.")
+
+(defun w3m-custom-hook-initialize (symbol value)
+  "Initialize the hook option pointed by the SYMBOL with the default VALUE."
+  (if (boundp symbol)
+      (progn
+	(setq value (eval value))
+	(while value
+	  (add-hook symbol (car value))
+	  (setq value (cdr value))))
+    (custom-initialize-set symbol value)))
 
 (provide 'w3m-util)
 
