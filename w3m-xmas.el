@@ -394,22 +394,22 @@ as the value."
 	     (eq 'w3m-mode major-mode))
     (goto-char (point-min))
     (insert "Location: ")
-    (set-extent-property (make-extent (point-min) (point))
-			 'face 'w3m-header-line-location-title-face)
+    (put-text-property (point-min) (point)
+		       'face 'w3m-header-line-location-title-face)
     (let ((start (point))
 	  (help "button2 prompts to input URL"))
       (insert w3m-current-url)
-      (set-extent-properties (make-extent start (point))
-			     (list 'face
-				   'w3m-header-line-location-content-face
-				   'mouse-face 'highlight
-				   'keymap w3m-header-line-map
-				   'help-echo help
-				   'balloon-help help))
+      (add-text-properties start (point)
+			   (list 'face
+				 'w3m-header-line-location-content-face
+				 'mouse-face 'highlight
+				 'keymap w3m-header-line-map
+				 'help-echo help
+				 'balloon-help help))
       (setq start (point))
       (insert-char ?\  (max 0 (- (window-width) (current-column) 1)))
-      (set-extent-property (make-extent start (point))
-			   'face 'w3m-header-line-location-content-face)
+      (put-text-property start (point)
+			 'face 'w3m-header-line-location-content-face)
       (unless (eolp)
 	(insert "\n")))))
 

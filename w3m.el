@@ -561,7 +561,7 @@ See the file balloon-help.el for more information."
   :type 'boolean)
 
 (defcustom w3m-pop-up-frames nil
-  "Like `pop-up-frames', except that it only affects the `w3m' command."
+  "Like `pop-up-frames', except that it only affects the `w3m' commands."
   :group 'w3m
   :type 'boolean)
 
@@ -668,8 +668,10 @@ If nil, use an internal CGI of w3m."
 
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
+(defvar w3m-initial-frame nil "Initial frame of this session.")
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-title)
+(make-variable-buffer-local 'w3m-initial-frame)
 
 (defvar w3m-current-buffer nil "The current w3m buffer.")
 
@@ -953,6 +955,30 @@ cursor position and around there."
 	   (when (and (featurep 'bytecomp)
 		      (not (compiled-function-p (symbol-function fn))))
 	     (byte-compile fn)))))))
+
+(defmacro w3m-pop-up-frame-parameters ()
+  "Return a pop-up frame plist if this file is compiled for XEmacs,
+otherwise return an alist."
+  (if (featurep 'xemacs)
+      '(let ((params (or w3m-pop-up-frame-parameters pop-up-frame-plist)))
+	 (if (consp (car-safe params))
+	     (alist-to-plist params)
+	   params))
+    '(let ((params (or w3m-pop-up-frame-parameters pop-up-frame-alist))
+	   alist)
+       (if (consp (car-safe params))
+	   params
+	 (while params
+	   (push (cons (car params) (cdr params)) alist)
+	   (setq params (cddr params)))
+	 (nreverse alist)))))
+
+(defmacro w3m-popup-frame-p ()
+  "Return non-nil if the command `w3m' should popup a new frame."
+  (list 'and 'w3m-pop-up-frames '(interactive-p)
+	(if (featurep 'xemacs)
+	    '(device-on-window-system-p)
+	  'window-system)))
 
 (defun w3m-message (&rest args)
   "Alternative function of `message' for emacs-w3m."
@@ -2715,8 +2741,9 @@ this function returns t.  Otherwise, returns nil."
 
 (defun w3m-copy-buffer (buf &optional newname and-pop) "\
 Create a twin copy of the current buffer.
-if NEWNAME is nil, it defaults to the current buffer's name.
-if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
+If NEWNAME is nil, it defaults to the current buffer's name.
+If AND-POP is non-nil, the new buffer is shown with `pop-to-buffer',
+that is affected by `w3m-pop-up-frames'."
   (interactive (list (current-buffer)
 		     (if current-prefix-arg (read-string "Name: "))
 		     t))
@@ -2730,7 +2757,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 	  (mode major-mode)
 	  (lvars (buffer-local-variables))
 	  (new (generate-new-buffer (or newname (buffer-name))))
-          (pt (point)))
+	  (pt (point)))
       (with-current-buffer new
 	;;(erase-buffer)
 	(insert content)
@@ -2750,7 +2777,15 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 	;; Make copies of `w3m-history' and `w3m-history-flat'.
 	(w3m-history-copy buf)
 	(goto-char pt)
-	(when and-pop (pop-to-buffer new))
+	(when and-pop
+	  (let* ((pop-up-frames w3m-pop-up-frames)
+		 (pop-up-frame-alist (w3m-pop-up-frame-parameters))
+		 (pop-up-frame-plist pop-up-frame-alist)
+		 (oframe (selected-frame))
+		 nframe)
+	    (pop-to-buffer new)
+	    (unless (eq oframe (setq nframe (selected-frame)))
+	      (setq w3m-initial-frame (selected-frame)))))
 	new))))
 
 
@@ -2887,6 +2922,26 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 	  (throw 'alive buf))))
     nil))
 
+(defun w3m-delete-frame-maybe ()
+  "Delete this frame if it has popped up as w3m frame in the beginning.
+Even so, if there are other windows, it won't delete the frame.
+Return t if deleting current frame or window is succeeded."
+  (let ((frame (selected-frame))
+	(window (selected-window)))
+    (cond ((eq w3m-initial-frame frame)
+	   (if (eq (next-window) window)
+	       (delete-frame frame)
+	     (delete-window window))
+	   t)
+	  ((and (frame-live-p w3m-initial-frame)
+		(eq (window-buffer
+		     (setq window (frame-first-window w3m-initial-frame)))
+		    (current-buffer)))
+	   (if (eq (next-window window) window)
+	       (delete-frame w3m-initial-frame)
+	     (delete-window window))
+	   nil))))
+
 (defun w3m-quit (&optional force)
   "Quit browsing WWW after updating arrived URLs list."
   (interactive "P")
@@ -2894,7 +2949,9 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 	    (prog1
 		(y-or-n-p "Do you want to exit w3m? ")
 	      (message "")))
-    (kill-buffer (current-buffer))
+    (let ((buffer (current-buffer)))
+      (w3m-delete-frame-maybe)
+      (kill-buffer buffer))
     (unless (w3m-alive-p)
       ;; If no w3m is running, then destruct all data.
       (w3m-cache-shutdown)
@@ -2905,8 +2962,11 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 (defun w3m-close-window ()
   "Close this window and make the other buffer current."
   (interactive)
-  (bury-buffer (current-buffer))
-  (set-window-buffer (selected-window) (other-buffer)))
+  (unless (let ((buffer (current-buffer)))
+	    (prog1
+		(w3m-delete-frame-maybe)
+	      (bury-buffer (current-buffer))))
+    (set-window-buffer (selected-window) (other-buffer))))
 
 (unless w3m-mode-map
   (setq w3m-mode-map
@@ -3223,41 +3283,29 @@ called non-interactively."
 		 (if (fboundp 'x-focus-frame)
 		     '((x-focus-frame frame))
 		   '((focus-frame frame)))))
-	(props w3m-pop-up-frame-parameters)
-	popup-frame-p)
-    (w3m-static-if (featurep 'xemacs)
-	(progn
-	  (setq popup-frame-p (and w3m-pop-up-frames
-				   (interactive-p)
-				   (device-on-window-system-p)))
-	  (when (consp (car-safe props))
-	    (setq props (alist-to-plist props))))
-      (setq popup-frame-p (and w3m-pop-up-frames
-			       (interactive-p)
-			       window-system))
-      (when (and props
-		 (not (consp (car-safe props))))
-	(let (alist)
-	  (while props
-	    (push (cons (car props) (cdr props)) alist)
-	    (setq props (cddr props)))
-	  (setq props (nreverse alist)))))
+	(params (w3m-pop-up-frame-parameters))
+	(popup-frame-p (w3m-popup-frame-p))
+	window frame)
     (if (bufferp url)
-	(let* ((window (get-buffer-window url t))
-	       (frame (when window
-			(window-frame window))))
+	(progn
+	  (when (setq window (get-buffer-window url t))
+	    (setq frame (window-frame window)))
 	  (cond (frame
 		 (funcall focusing-function frame)
-		 (select-window window))
+		 (select-window window)
+		 (setq frame nil))
 		(window
 		 (select-window window))
 		(t
 		 (when popup-frame-p
-		   (funcall focusing-function (make-frame props)))
+		   (funcall focusing-function
+			    (setq frame (make-frame params))))
 		 (switch-to-buffer url))))
       (when popup-frame-p
-	(funcall focusing-function (make-frame props)))
-      (w3m-goto-url url))))
+	(funcall focusing-function (setq frame (make-frame params))))
+      (w3m-goto-url url))
+    (when frame
+      (setq w3m-initial-frame frame))))
 
 (eval-when-compile
   (autoload 'browse-url-interactive-arg "browse-url"))

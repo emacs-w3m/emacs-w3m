@@ -181,7 +181,9 @@ Examples of the optimization:
 	 (coding-system-for-write codesys))
     (save-buffer))
 "
-    (let ((obsoletes '(file-coding-system file-coding-system-for-read))
+    (let ((obsoletes '(file-coding-system
+		       file-coding-system-for-read
+		       pop-up-frame-alist))
 	  (varlist (copy-sequence (cadr form)))
 	  obsolete elements element value)
       (while (setq obsolete (pop obsoletes))

@@ -1,3 +1,22 @@
+2001-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-byte-optimize-letX): Remove
+	`pop-up-frame-alist' when compiling.
+
+	* w3m.el (w3m): Use the new macros; set the value of
+	`w3m-initial-frame' in the popped up frame.
+	(w3m-close-window): Use `w3m-delete-frame-maybe'.
+	(w3m-quit): Use `w3m-delete-frame-maybe'.
+	(w3m-delete-frame-maybe): New function.
+	(w3m-copy-buffer): Pop up a new frame if `w3m-pop-up-frames' is
+	non-nil; set the value of `w3m-initial-frame' in the new frame.
+	(w3m-popup-frame-p): New macro.
+	(w3m-pop-up-frame-parameters): New macro.
+	(w3m-initial-frame): New internal variable.
+
+	* w3m-xmas.el (w3m-setup-header-line): Use text-properties instead
+	of the raw extents for highlighting a header line.
+
 2001-07-13  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-form.el (w3m-form-new): Added 'charlst' option.
@@ -22,7 +41,7 @@
 
 	* w3m.el (w3m-charset-coding-system-alist): Added 'us_ascii'.
 	(w3m-w3m-attributes): Use content of w3m-document-charset: field as
-	charset	if exists.
+	charset if exists.
 
 2001-07-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
@@ -95,7 +114,7 @@
 	(w3m-form-submit): If ACTION is not specified, send data to current
 	url.
 	(w3m-form-make-get-string): Removed.
-	
+
 2001-07-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Bind `:bool' for old Emacsen.
