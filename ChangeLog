@@ -1,5 +1,10 @@
 2003-11-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-goto-url): Make `w3m-local-find-file-function' don't
+	handle directories.
+
+2003-11-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-util.el: Bind `w3m-current-process', `w3m-pop-up-frames',
 	`w3m-pop-up-windows', `w3m-popup-frame-parameters',
 	`w3m-select-buffer-name' and `w3m-use-tab', and fbind
