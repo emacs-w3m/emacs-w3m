@@ -1,12 +1,17 @@
 2003-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-asahi.el (shimbun-asahi-make-contents): New function
+	used to get a correct date header for the science group.
+	(shimbun-make-contents): Use it.
+	* shimbun/sb-asahi-html.el (shimbun-make-contents): Use it.
+
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-make-contents): New
-	function to get a correct date header.
+	function used to get a correct date header.
 	(shimbun-make-contents): Use it.
 	* shimbun/sb-yomiuri-html.el (shimbun-make-contents): Use it.
 
-	* shimbun/sb-mainichi.el (shimbun-make-contents): New function to
-	get a correct date header.
+	* shimbun/sb-mainichi.el (shimbun-make-contents): New function
+	used to get a correct date header.
 
 2003-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
