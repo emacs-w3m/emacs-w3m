@@ -1,3 +1,11 @@
+2003-09-26  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-mailarc.el (shimbun-get-headers): Allow double quoted
+	string for href attribute.
+
+	* shimbun/sb-quickml.el (shimbun-quickml-groups): 
+	Added "software-patent".
+
 2003-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* icons/spinner.gif: New file (without LZW compression).
