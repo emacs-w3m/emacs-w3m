@@ -1,3 +1,17 @@
+2004-12-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add the job group.
+	(shimbun-asahi-get-headers): Replace `.' with `/' in group names;
+	remove a special treatment for the international group; don't add
+	extra keywords in Message-IDs for the job.special group.
+
+2004-12-23  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add edu, edu.it,
+	edu.nyushi, job.special and international.jinmin groups; fix url
+	for the english group; exclude Jinmin-Nippou from the international
+	group.
+
 2004-12-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-makeinfo): Revert.
