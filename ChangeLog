@@ -1,3 +1,8 @@
+2005-02-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-what-where): Fix the form.
+	(w3mhack-makeinfo): Silence it when formatting @multitable section.
+
 2005-02-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (top): Add autoloads of `w3m-form-textarea-kill-buffer'

@@ -970,7 +970,7 @@ install:
     (unless (string-equal "NONE/" icon-dir)
       (message "
 install-icons:
-  *.xpm                   -> %s"
+  *.gif, *.xpm            -> %s"
 	       icon-dir))
     (setq package-dir (file-name-as-directory package-dir))
     (message "
@@ -981,7 +981,7 @@ install-info:
       (message "
 install-package:
   *.el, *.elc, ChangeLog* -> %slisp/w3m/
-  *.xpm                   -> %setc/images/w3m/
+  *.gif, *.xpm            -> %setc/images/w3m/
   *.info, *.info-*        -> %sinfo/
   MANIFEST.w3m            -> %spkginfo/"
 	       package-dir package-dir package-dir package-dir)))
@@ -1078,7 +1078,8 @@ NOTE: This function must be called from the top directory."
 	    (texinfo-every-node-update)
 	    (set-buffer-modified-p nil)
 	    (message "texinfo formatting %s..." file)
-	    (let ((si:message (symbol-function 'message)))
+	    (let ((si:message (symbol-function 'message))
+		  (si:push-mark (symbol-function 'push-mark)))
 	      (fset
 	       'message
 	       (cond ((featurep 'mule)
@@ -1113,9 +1114,15 @@ NOTE: This function must be called from the top directory."
 			    (apply ,si:message fmt args)))))
 		     (t
 		      si:message)))
+	      ;; Silence it when formatting @multitable section.
+	      (fset 'push-mark
+		    (byte-compile
+		     `(lambda (&rest args)
+			(apply ,si:push-mark (car args) t (cddr args)))))
 	      (unwind-protect
 		  (texinfo-format-buffer nil)
-		(fset 'message si:message)))
+		(fset 'message si:message)
+		(fset 'push-mark si:push-mark)))
 	    (if (buffer-modified-p)
 		(progn (message "Saving modified %s" (buffer-file-name))
 		       (save-buffer))))
