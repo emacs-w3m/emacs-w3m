@@ -567,7 +567,8 @@ See also `w3m-search-engine-alist'."
   :type 'hook)
 
 (defconst w3m-extended-charcters-table
-  '(("\xa0" . " ")))
+  '(("\xa0" . " ")
+    ("\x80" . " ")))
 
 (eval-and-compile
   (defconst w3m-entity-alist	  ; html character entities and values
@@ -2025,6 +2026,26 @@ this function returns t.  Otherwise, returns nil."
 	(message "Not found such name anchor."))
       nil)))
 
+(defun w3m-view-parent-page ()
+  (interactive)
+  (if (null w3m-current-url)
+      (error "w3m-current-url is not set"))
+  (let (parent-url)
+    ;; Check whether http://foo/bar/ or http://foo/bar
+    (if (string-match "/$" w3m-current-url)
+	(if (string-match "\\(.*\\)/[^/]+/$" w3m-current-url)
+	    ;; http://foo/bar/ -> http://foo
+	    (setq parent-url (match-string 1 w3m-current-url)))
+      (if (string-match "\\(.*\\)/.+$" w3m-current-url)
+	  ;; http://foo/bar -> http://foo
+	  (setq parent-url (match-string 1 w3m-current-url))))
+    ;; Ignore "http:/"
+    (if (and parent-url
+	     (string-match "^[a-z]+:/$" parent-url))
+	(setq parent-url nil))
+    (if parent-url
+	(w3m parent-url)
+      (error "No parent page for: %s" w3m-current-url))))
 
 (defun w3m-view-previous-page (&optional arg)
   (interactive "p")
@@ -2295,6 +2316,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "\C-c\C-b" 'w3m-view-previous-point)
     (define-key map [left] 'w3m-view-previous-page)
     (define-key map "B" 'w3m-view-previous-page)
+    (define-key map "^" 'w3m-view-parent-page)
     (define-key map "d" 'w3m-download-this-url)
     (define-key map "u" 'w3m-print-this-url)
     (define-key map "I" 'w3m-view-image)
