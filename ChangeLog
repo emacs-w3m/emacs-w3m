@@ -1,5 +1,10 @@
 2003-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/nnshimbun.el (nnshimbun-is-compiled-for-modern-gnus):
+	Make sure the `gnus-define-group-parameter' macro really works.
+
+2003-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-search.el (w3m-search-engine-alist): Add www.alltheweb.com
 	suggested by Chris Beggy <chrisb@kippona.com>; make the default
 	value more suitable to the language environment; don't use the old
