@@ -700,9 +700,11 @@ If nil, use an internal CGI of w3m."
 		     (bzip . ("x-bzip" "bzip" "bzip2"))
 		     (deflate . ("x-deflate" "deflate")))))))
 
+(defvar w3m-initial-frame nil "Initial frame of this session.")
+(make-variable-buffer-local 'w3m-initial-frame)
+
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
-(defvar w3m-initial-frame nil "Initial frame of this session.")
 (defvar w3m-current-forms nil "Forms of this buffer.")
 (defvar w3m-current-post-data nil "POST data of this buffer.")
 (defvar w3m-current-referer nil "Referer of this buffer.")
@@ -712,7 +714,6 @@ If nil, use an internal CGI of w3m."
 
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-title)
-(make-variable-buffer-local 'w3m-initial-frame)
 (make-variable-buffer-local 'w3m-current-forms)
 (make-variable-buffer-local 'w3m-current-post-data)
 (make-variable-buffer-local 'w3m-current-referer)
@@ -723,7 +724,6 @@ If nil, use an internal CGI of w3m."
 (defsubst w3m-clear-local-variables ()
   (setq w3m-current-url nil
 	w3m-current-title nil
-	w3m-initial-frame nil
 	w3m-current-forms nil
 	w3m-current-post-data nil
 	w3m-current-referer nil
@@ -732,12 +732,11 @@ If nil, use an internal CGI of w3m."
 	w3m-previous-url nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url title frame forms post referer cs next prev)
+  (let (url title forms post referer cs next prev)
     (save-current-buffer
       (when from-buffer (set-buffer from-buffer))
       (setq url w3m-current-url
 	    title w3m-current-title
-	    frame w3m-initial-frame
 	    forms w3m-current-forms
 	    post w3m-current-post-data
 	    referer w3m-current-referer
@@ -746,7 +745,6 @@ If nil, use an internal CGI of w3m."
 	    prev w3m-previous-url))
     (setq w3m-current-url url
 	  w3m-current-title title
-	  w3m-initial-frame frame
 	  w3m-current-forms forms
 	  w3m-current-post-data post
 	  w3m-current-referer referer

@@ -1,3 +1,11 @@
+2001-09-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-clear-local-variables): Not reset `w3m-initial-frame'.
+	(w3m-copy-local-variables): Not copy `w3m-initial-frame'.
+
+	* w3m-form.el (w3m-form-parse-region): Modify `w3m-current-forms'
+	in this buffer.
+
 2001-09-11  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-expand-url): Use `expand-file-name' to expand path;

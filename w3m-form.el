@@ -205,11 +205,7 @@ If no field in forward, return nil without moving."
 					'undecided))
 	      (setq forms (w3m-form-parse-forms))))
 	(setq forms (w3m-form-parse-forms)))
-      (save-current-buffer
-	(when (or (bufferp w3m-current-buffer)
-		  (stringp w3m-current-buffer))
-	  (set-buffer w3m-current-buffer))
-	(setq w3m-current-forms (nreverse forms))))))
+      (setq w3m-current-forms (nreverse forms)))))
 
 (defun w3m-form-parse-forms ()
   "Parse Form/usemap objects in this buffer."
