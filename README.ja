@@ -44,6 +44,7 @@
       イン画像を白黒表示させることができます．以下の場所から入手できます:
 
           ftp://ftp.jpl.org/pub/elisp/bitmap/
+          または http://www.jpl.org/ftp/pub/elisp/bitmap/
 
    c) XEmacs
       APEL を前もってインストールしておく必要があります．
@@ -176,26 +177,26 @@
 
 4.1. 基本
 
-     次の設定を ~/.emacs に追加してください．
+     次の設定を ~/.emacs ファイルに追加してください．
 
          (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
 
      付属プログラムを使用するには，追加の設定が必要な場合があります．詳
      細については，個々の付属プログラムのソースファイルの先頭に記載され
      ているコメントを参照してください．良く分からない場合は，とりあえず，
-     以下の設定を ~/.emacs に追加しておいてください．
+     以下の設定を ~/.emacs ファイルに追加しておいてください．
 
-         (autoload 'w3m-find-file "w3m" "w3m interface function for local file." t)
-         (autoload 'w3m-search "w3m-search" "Search QUERY using SEARCH-ENGINE." t)
-         (autoload 'w3m-weather "w3m-weather" "Display weather report." t)
-         (autoload 'w3m-antenna "w3m-antenna" "Report chenge of WEB sites." t)
+         (autoload 'w3m-find-file "w3m" "Find a local file using emacs-w3m." t)
+         (autoload 'w3m-search "w3m-search" "Search words using emacs-w3m." t)
+         (autoload 'w3m-weather "w3m-weather" "Display a weather report." t)
+         (autoload 'w3m-antenna "w3m-antenna" "Report changes of web sites." t)
          (autoload 'w3m-namazu "w3m-namazu" "Search files with Namazu." t)
 
 4.2. mime-w3m
 
      T-gnus や Wanderlust などの SEMI MUA 上で，メッセージ中の text/html
-     パートを emacs-w3m を使って表示させるには，以下の設定を ~/.emacs に
-     追加する必要があります．
+     パートを emacs-w3m を使って表示させるには，以下の設定を ~/.emacs ファ
+     イルに追加する必要があります．
 
          (require 'mime-w3m)
 
@@ -250,7 +251,8 @@
        ています．
 
    [3] BITMAP-MULE
-       ftp://ftp.jpl.org/pub/elisp/bitmap/ から入手できます．
+       ftp://ftp.jpl.org/pub/elisp/bitmap/ または
+       http://www.jpl.org/ftp/pub/elisp/bitmap/ から入手できます．
 
    [4] gifsicle
        http://www.lcdf.org/gifsicle/ から入手できます．
