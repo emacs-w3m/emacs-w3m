@@ -593,6 +593,18 @@ to input URL when URL-like string is not detected under the cursor."
 					   (stringp 'file 'url))))
 	    (function :tag "Function")))))
 
+;; FIXME: w3m-encoding-type-alist / w3m-decoder-alist / w3m-encoding-alist
+;; の相互の関係が複雑かつ冗長なので整理の必要あり．
+(defcustom w3m-encoding-type-alist
+  '(("\\.gz\\'" . "gzip")
+    ("\\.bz2?\\'" . "bzip"))
+  "*Alist of file suffixes vs. content encoding types."
+  :group 'w3m
+  :type '(repeat
+	  (cons
+	   (string :tag "Regexp of Suffixes")
+	   (string :tag "Encoding Type"))))
+
 (defcustom w3m-decoder-alist
   (` ((gzip "gunzip" nil)
       (bzip "bunzip2" nil)
@@ -2419,16 +2431,27 @@ If the user enters null input, return second argument DEFAULT."
     charset))
 
 ;;; Retrieve local data:
-(defun w3m-local-content-type (url)
-  (if (file-directory-p
-       (if (w3m-url-local-p url)
-	   (w3m-url-to-file-name url)
-	 url))
-      "text/html"
-    (catch 'type-detected
-      (dolist (elem w3m-content-type-alist "unknown")
-	(if (string-match (nth 1 elem) url)
-	    (throw 'type-detected (car elem)))))))
+(defun w3m-local-file-type (url)
+  "Return the content type and the content encoding type."
+  (if (file-directory-p (if (w3m-url-local-p url)
+			    (w3m-url-to-file-name url)
+			  url))
+      (cons "text/html" nil)
+    (let ((encoding
+	   (catch 'encoding-detected
+	     (dolist (elem w3m-encoding-type-alist)
+	       (when (string-match (car elem) url)
+		 (setq url (substring url 0 (match-beginning 0)))
+		 (throw 'encoding-detected (cdr elem)))))))
+      (cons (catch 'type-detected
+	      (dolist (elem w3m-content-type-alist)
+		(if (string-match (nth 1 elem) url)
+		    (throw 'type-detected (car elem))))
+	      "unknown")
+	    encoding))))
+
+(defmacro w3m-local-content-type (url)
+  `(car (w3m-local-file-type ,url)))
 
 (defun w3m-local-attributes (url &rest args)
   "Return a list of attributes of URL.
@@ -2444,11 +2467,12 @@ elements are:
 "
   (let* ((file (w3m-url-to-file-name url))
 	 (attr (when (file-exists-p file)
-		 (file-attributes file))))
-    (list (w3m-local-content-type url)
+		 (file-attributes file)))
+	 (type (w3m-local-file-type url)))
+    (list (car type)
 	  nil
 	  (nth 7 attr)
-	  nil
+	  (cdr type)
 	  (nth 5 attr)
 	  (w3m-expand-file-name-as-url (file-truename file))
 	  ;; FIXME: ファイルに含まれている <base> タグの指定を解釈する
@@ -2795,7 +2819,8 @@ type as a string argument, when retrieve is complete."
 	     current-prefix-arg))))
   (if (and w3m-use-ange-ftp (string-match "\\`ftp://" url))
       (w3m-goto-ftp-url url filename)
-    (lexical-let ((filename (or filename (w3m-read-file-name nil nil url))))
+    (lexical-let ((url url)
+		  (filename (or filename (w3m-read-file-name nil nil url))))
       (w3m-process-do-with-temp-buffer
 	  (type (progn
 		  (w3m-clear-local-variables)
@@ -2814,11 +2839,11 @@ type as a string argument, when retrieve is complete."
 		(write-region (point-min) (point-max) filename)
 		t))
 	  (ding)
-	  (w3m-message "Cannot retrieve URL: %s%s"
-		       url
-		       (if w3m-process-exit-status
-			   (format " (exit status: %s)" w3m-process-exit-status)
-			 ""))
+	  (message "Cannot retrieve URL: %s%s"
+		   url
+		   (if w3m-process-exit-status
+		       (format " (exit status: %s)" w3m-process-exit-status)
+		     ""))
 	  nil)))))
 
 ;;; Retrieve data:

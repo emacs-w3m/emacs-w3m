@@ -1,5 +1,13 @@
 2002-01-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-encoding-type-alist): New option.
+	(w3m-local-file-type): New function.
+	(w3m-local-content-type): New implementation.
+	(w3m-local-attributes): Call `w3m-local-file-type' instead of
+	`w3m-local-content-type'.
+	(w3m-download): `url' is lexically binded.  Call `message' to
+	display error messages.
+
 	* w3mhack.el (w3mhack-examine-modules): Fix to avoid that octet.el
 	is byte-compiled repeatedly.
 
