@@ -1,3 +1,12 @@
+2001-11-02  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-lynx-like-map): Remove binding of `C-tab' and `C-S-tab'
+	Bind `C-cC-t' as the key to call `w3m-copy-buffer'.
+	Bind `C-cC-p' as the key to call `w3m-previous-buffer'.
+	Bind `C-cC-n' as the key to call `w3m-next-buffer'.
+	Bind `C-cC-w' as the key to call `w3m-delete-buffer'.
+	(w3m-info-like-map): Ditto.
+
 2001-11-02  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-reload-this-page): When execute with prefix
