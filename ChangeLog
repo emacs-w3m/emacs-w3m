@@ -2,6 +2,9 @@
 
 	* w3m.el (w3m-fontify): Add code to handle irregular ordered
 	elements of anchor tags.
+	(w3m-mailto-url): Adopt for Emacs-19.
+	(w3m-input-url): Call `w3m-backlog-setup' to initialize
+	`w3m-backlog-hashtb'.
 
 2000-09-19  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 

@@ -215,6 +215,7 @@
 (defun w3m-input-url (&optional prompt default)
   "Read a URL from the minibuffer, prompting with string PROMPT."
   (let (url candidates)
+    (w3m-backlog-setup)
     (mapatoms (lambda (x)
 		(setq candidates (cons (cons (symbol-name x) x) candidates)))
 	      w3m-backlog-hashtb)
