@@ -1492,7 +1492,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 			     "Back to Previous Page"]
       [w3m-toolbar-parent-icon w3m-view-parent-page
 			       (w3m-parent-page-available-p)
-			       "Upward to Parent Page"]
+			       "View the parent page"]
       [w3m-toolbar-forward-icon w3m-view-next-page
 				(w3m-history-next-link-available-p)
 				"Forward to Next Page"]
@@ -1517,7 +1517,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
      (w3m-history-previous-link-available-p)]
     ["Forward to Next Page" w3m-view-next-page
      (w3m-history-next-link-available-p)]
-    ["Upward to Parent Page" w3m-view-parent-page
+    ["View the parent page" w3m-view-parent-page
      (w3m-parent-page-available-p)]
     ;;
     ["Reload This Page" w3m-reload-this-page w3m-current-url]
@@ -1546,7 +1546,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
     ["View Arrived URLs" w3m-db-history t]
     ;;
     ["Download This URL" w3m-download-this-url t]
-    ["Print Current URL" w3m-print-current-url t]
+    ["Print the Current URL" w3m-print-current-url t]
     ;;
     ["Send a Bug Report" report-emacs-w3m-bug t]
     )
@@ -4180,6 +4180,8 @@ argument.  Otherwise, it will be called with nil."
       (string-match "[a-z]+://?[^/]+/." w3m-current-url))))
 
 (defun w3m-view-parent-page ()
+  "View the parent of the current page, e.g. \"http://foo/\" if you're
+currently viewing \"http://foo/bar/\"."
   (interactive)
   (if (null w3m-current-url)
       (error "w3m-current-url is not set"))
@@ -4523,14 +4525,14 @@ session."
       (w3m-display-message "No URL at point"))))
 
 (defun w3m-print-current-url ()
-  "Print the URL of current page and push it into kill-ring."
+  "Print the URL of the current page and push it into the kill-ring."
   (interactive)
   (when w3m-current-url
     (kill-new w3m-current-url)
     (w3m-display-message "%s" w3m-current-url)))
 
 (defun w3m-print-this-url (&optional arg)
-  "Print the URL of the link under point."
+  "Print the URL of the link under point and push it into the kill-ring."
   (interactive (list t))
   (let ((url (or (w3m-anchor) (w3m-image))))
     (when (or url arg)
@@ -5321,7 +5323,7 @@ frame or a window in the frame is succeeded."
 
 \\[w3m-view-previous-page]	Back to previous page.
 \\[w3m-view-next-page]	Forward to next page.
-\\[w3m-view-parent-page]	Upward to parent page.
+\\[w3m-view-parent-page]	View the parent page.
 
 \\[w3m-goto-url]	Goto URL.
 \\[w3m-goto-url-new-session]	Goto URL in the new session.
@@ -5335,7 +5337,7 @@ frame or a window in the frame is succeeded."
 \\[w3m-zoom-out-image]	Zoom out image on cursor point.
 \\[w3m-zoom-in-image]	Zoom in image on cursor point.
 
-\\[w3m-print-current-url]	Print current url.
+\\[w3m-print-current-url]	Print the current url.
 \\[w3m-view-url-with-external-browser]	View current url with external browser.
 \\[w3m-view-source]	Display source of this current buffer.
 \\[w3m-view-header]	Display header of this current buffer.
@@ -5344,10 +5346,10 @@ frame or a window in the frame is succeeded."
 
 \\[w3m-scroll-up-or-next-url]	Scroll up or go to next url.
 \\[w3m-scroll-down-or-previous-url]	Scroll down or go to previous url.
-\\[w3m-scroll-left]	Scroll to left.
-\\[w3m-scroll-right]	Scroll to right.
-\\[w3m-shift-left]	Shift to left.
-\\[w3m-shift-right]	Shift to right.
+\\[w3m-scroll-left]	Scroll to the left.
+\\[w3m-scroll-right]	Scroll to the right.
+\\[w3m-shift-left]	Shift to the left.
+\\[w3m-shift-right]	Shift to the right.
 \\[w3m-horizontal-recenter]	Recenter horizontally.
 \\[w3m-beginning-of-line]	Go to the entire beginning of line.
 \\[w3m-end-of-line]	Go to the entire end of line.
@@ -5436,7 +5438,7 @@ frame or a window in the frame is succeeded."
     (scroll-down arg)))
 
 (defun w3m-scroll-left (arg)
-  "Scroll to left.
+  "Scroll to the left.
 Scroll size is `w3m-horizontal-scroll-columns' columns
 or prefix ARG columns."
   (interactive "P")
@@ -5445,7 +5447,7 @@ or prefix ARG columns."
 				 w3m-horizontal-scroll-columns)))
 
 (defun w3m-scroll-right (arg)
-  "Scroll to right.
+  "Scroll to the right.
 Scroll size is `w3m-horizontal-scroll-columns' columns
 or prefix ARG columns."
   (interactive "P")
@@ -5454,7 +5456,7 @@ or prefix ARG columns."
 				  w3m-horizontal-scroll-columns)))
 
 (defun w3m-shift-left (arg)
-  "Shift to left.
+  "Shift to the left.
 Shift size is `w3m-horizontal-shift-columns' columns
 or prefix ARG columns."
   (interactive "P")
@@ -5463,7 +5465,7 @@ or prefix ARG columns."
 				 w3m-horizontal-shift-columns)))
 
 (defun w3m-shift-right (arg)
-  "Shift to right.
+  "Shift to the right.
 Shift size is `w3m-horizontal-shift-columns' columns
 or prefix ARG columns."
   (interactive "P")
@@ -6728,7 +6730,7 @@ Major mode to select a buffer from the set of w3m-mode buffers.
 \\[w3m-select-buffer-show-this-line]\
 	Show the current buffer or scroll up.
 \\[w3m-select-buffer-show-this-line-and-down]\
-	Show the current buffer or scroll down.
+	Show the current buffer on this menu line or scroll\n\t it down.
 \\[w3m-select-buffer-show-this-line-and-switch]\
 	Show the current buffer and set cusor to w3m buffer.
 \\[w3m-select-buffer-show-this-line-and-quit]\
@@ -6798,7 +6800,7 @@ select them."
     buffer))
 
 (defun w3m-select-buffer-show-this-line-and-down ()
-  "Show the current buffer on this menu line or scroll down its."
+  "Show the current buffer on this menu line or scroll it down."
   (interactive)
   (let ((obuffer (and (window-live-p w3m-select-buffer-window)
 		      (window-buffer w3m-select-buffer-window)))
