@@ -1,8 +1,5 @@
 2003-06-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* shimbun/sb-pocketgames.el (shimbun-reply-to): Insert docstring
-	to avoid the bug of XEmacs's byte compiler.
-
 	* shimbun/sb-pilot-mailsync.el (shimbun-reply-to): Ditto.
 
 	* shimbun/sb-dennou.el (shimbun-reply-to): Ditto.
