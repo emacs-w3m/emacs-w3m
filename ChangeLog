@@ -1,3 +1,16 @@
+2001-04-15  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-airs.el (shimbun-airs-coding-system): Fixed redundant
+	definition.
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-coding-system): Ditto.
+	* shimbun/sb-wired.el (shimbun-wired-coding-system): Ditto.
+	* shimbun/sb-sponichi.el (shimbun-sponichi-coding-system): Ditto.
+	* shimbun/sb-netbsd.el (shimbun-netbsd-coding-system): Ditto.
+	* shimbun/sb-cnet.el (shimbun-cnet-coding-system): Ditto.
+	* shimbun/sb-bbdb-ml.el (shimbun-bbdb-ml-coding-system): Ditto.
+
+	* shimbun/sb-mew.el: Fixed.
+
 2001-04-13  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-xemacs.el (shimbun-get-headers): Undo last change.

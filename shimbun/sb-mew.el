@@ -34,7 +34,7 @@
 (require 'sb-mhonarc)
 (luna-define-class shimbun-mew (shimbun-mhonarc) ())
 
-(defconst shimbun-mew-groups
+(defconst shimbun-mew-groups-alist
   '(("meadow-develop" "meadow-develop" nil t)
     ("meadow-users-jp" "meadow-users-jp")
     ("mule-win32" "mule-win32")
@@ -42,31 +42,25 @@
     ("mew-dist" "mew-dist/3300" t)
     ("mgp-users-jp" "mgp-users-jp/A" t t)))
 
-(luna-define-method initialize-instance :after ((shimbun shimbun-mew)
-						&rest init-args)
-  (shimbun-set-url-internal shimbun "http://www.mew.org/archive/")
-  (shimbun-set-groups-internal shimbun
-			       (mapcar 'car shimbun-mew-groups))
-  (shimbun-set-coding-system-internal shimbun
-				      (static-if (boundp 'MULE)
-					  '*iso-2022-jp* 'iso-2022-jp))
-  shimbun)
+(defvar shimbun-mew-url "http://www.mew.org/archive/")
+(defvar shimbun-mew-groups (mapcar 'car shimbun-mew-groups-alist))
+(defvar shimbun-mew-coding-system 'iso-2022-jp)
 
 (defmacro shimbun-mew-concat-url (shimbun url)
   (` (concat (shimbun-url-internal (, shimbun))
 	     (nth 1 (assoc
 		     (shimbun-current-group-internal (, shimbun))
-		     shimbun-mew-groups))
+		     shimbun-mew-groups-alist))
 	     "/"
 	     (, url))))
 
 (defmacro shimbun-mew-reverse-order-p (shimbun)
   (` (nth 2 (assoc (shimbun-current-group-internal (, shimbun))
-		   shimbun-mew-groups))))
+		   shimbun-mew-groups-alist))))
 
 (defmacro shimbun-mew-spew-p (shimbun)
   (` (nth 3 (assoc (shimbun-current-group-internal (, shimbun))
-		   shimbun-mew-groups))))
+		   shimbun-mew-groups-alist))))
 
 (defsubst shimbun-mew-retrieve-xover (shimbun aux)
   (erase-buffer)

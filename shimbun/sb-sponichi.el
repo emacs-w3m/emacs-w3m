@@ -38,8 +38,7 @@
 (defvar shimbun-sponichi-url "http://www.sponichi.co.jp/")
 (defvar shimbun-sponichi-groups '("baseball" "soccer" "usa" "others"
 				  "society" "entertainment" "horseracing"))
-(defvar shimbun-sponichi-coding-system (static-if (boundp 'MULE)
-					   '*sjis* 'shift_jis))
+(defvar shimbun-sponichi-coding-system 'shift_jis)
 (defvar shimbun-sponichi-from-address "webmaster@www.sponichi.co.jp")
 (defvar shimbun-sponichi-content-start "\n<span class=\"text\">　")
 (defvar shimbun-sponichi-content-end "\n")

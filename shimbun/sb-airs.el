@@ -38,8 +38,7 @@
 
 (defvar shimbun-airs-url "http://lists.airs.net/")
 (defvar shimbun-airs-groups (mapcar 'car shimbun-airs-group-path-alist))
-(defvar shimbun-airs-coding-system (static-if (boundp 'MULE)
-				       '*euc-japan* 'euc-jp))
+(defvar shimbun-airs-coding-system 'euc-jp)
 
 (defmacro shimbun-airs-concat-url (shimbun url)
   (` (concat (shimbun-url-internal (, shimbun))

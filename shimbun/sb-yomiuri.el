@@ -38,8 +38,7 @@
 (defvar shimbun-yomiuri-url "http://www.yomiuri.co.jp/")
 (defvar shimbun-yomiuri-groups '("shakai" "sports" "seiji" "keizai"
 				 "kokusai" "fuho"))
-(defvar shimbun-yomiuri-coding-system  (static-if (boundp 'MULE)
-					   '*sjis* 'shift_jis))
+(defvar shimbun-yomiuri-coding-system 'shift_jis)
 (defvar shimbun-yomiuri-from-address  "webmaster@www.yomiuri.co.jp")
 (defvar shimbun-yomiuri-content-start "\n<!--  honbun start  -->\n")
 (defvar shimbun-yomiuri-content-end  "\n<!--  honbun end  -->\n")

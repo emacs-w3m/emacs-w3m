@@ -41,8 +41,7 @@
 				"port-mac68k-ja" "port-mips-ja"
 				"port-powerpc-ja" "hpcmips-changes-ja"
 				"members-ja" "admin-ja" "www-changes-ja"))
-(defvar shimbun-netbsd-coding-system (static-if (boundp 'MULE)
-					 '*iso-2022-jp* 'iso-2022-jp))
+(defvar shimbun-netbsd-coding-system 'iso-2022-jp)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-netbsd))
   (format "%s%s/index.html" (shimbun-url-internal shimbun)

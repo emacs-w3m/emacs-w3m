@@ -36,8 +36,7 @@
 
 (defvar shimbun-cnet-url "http://cnet.sphere.ne.jp/")
 (defvar shimbun-cnet-groups '("comp"))
-(defvar shimbun-cnet-coding-system  (static-if (boundp 'MULE)
-					'*sjis* 'shift_jis))
+(defvar shimbun-cnet-coding-system 'shift_jis)
 (defvar shimbun-cnet-from-address  "cnet@sphere.ad.jp")
 (defvar shimbun-cnet-content-start "\n<!--KIJI-->\n")
 (defvar shimbun-cnet-content-end "\n<!--/KIJI-->\n")
