@@ -39,6 +39,22 @@
 
 (luna-define-class shimbun-rss (shimbun) ())
 
+(eval-and-compile
+  (cond
+   ((fboundp 'replace-in-string)
+    (defalias 'shimbun-replace-in-string 'replace-in-string))
+   ((fboundp 'replace-regexp-in-string)
+    (defun shimbun-replace-in-string  (string regexp newtext &optional literal)
+      (replace-regexp-in-string regexp newtext string nil literal)))
+   (t
+    (defun shimbun-replace-in-string (string regexp newtext &optional literal)
+      (let ((start 0) tail)
+	(while (string-match regexp string start)
+	  (setq tail (- (length string) (match-end 0)))
+	  (setq string (replace-match newtext nil literal string))
+	  (setq start (- (length string) tail))))
+      string))))
+
 (luna-define-generic shimbun-rss-process-date (shimbun-rss date)
   "Process DATE string and return proper Date string for showing it in MUA.")
 
@@ -175,7 +191,7 @@
 	 (text (if (and node (listp node))
 		   (shimbun-rss-node-just-text node)
 		 node))
-	 (cleaned-text (if text (shimbun-rss-replace-in-string
+	 (cleaned-text (if text (shimbun-replace-in-string
 				 text "^[\000-\037\177]+\\|^ +\\| +$" ""))))
     (if (string-equal "" cleaned-text)
 	nil
@@ -185,14 +201,6 @@
   (if (and node (listp node))
       (mapconcat 'shimbun-rss-node-just-text (cddr node) " ")
     node))
-
-(defun shimbun-rss-replace-in-string (string regexp newtext &optional literal)
-  (let ((start 0) tail)
-    (while (string-match regexp string start)
-      (setq tail (- (length string) (match-end 0)))
-      (setq string (replace-match newtext nil literal string))
-      (setq start (- (length string) tail)))
-    string))
 
 (defun shimbun-rss-find-el (tag data &optional found-list)
   "Find the all matching elements in the data.  Careful with this on

@@ -1,3 +1,8 @@
+2003-07-25  Koichiro Ohba  <koichiro@meadowy.org>
+
+	* shimbun/sb-rss.el (shimbun-rss-replace-in-string): Removed.
+	(shimbun-rss-node-text): Use `shimbun-replace-in-string'.
+
 2003-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-generate-shimbun-servers-file): Exclude rss.
