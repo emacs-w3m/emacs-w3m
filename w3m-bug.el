@@ -1,6 +1,6 @@
 ;;; w3m-bug.el --- command to report emacs-w3m bugs -*- coding: euc-japan -*-
 
-;; Copyright (C) 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -76,55 +76,79 @@
 	      (= emacs-major-version 19))
 	 (require 'w3m-e19))))
 
-(defun report-emacs-w3m-bug (topic)
+(defun report-emacs-w3m-bug (topic &optional buffer)
   "Report a bug in emacs-w3m.
 Prompts for bug subject.  Leaves you in a mail buffer."
   (interactive
-   (if (or (eq major-mode 'w3m-mode)
-	   (let ((keymap (or (get-text-property (point) 'keymap)
-			     (get-text-property (point) 'local-map))))
-	     (and (keymapp keymap)
-		  (where-is-internal 'w3m-print-current-url keymap))))
-       (list (read-string "Bug Subject: "))
-     (error "`%s' must be invoked from the `w3m-mode' buffer" this-command)))
+   (let* ((buffer (current-buffer))
+	  (buffers (cons buffer (delq buffer (buffer-list))))
+	  (inhibit-point-motion-hooks t)
+	  keymap)
+     (save-excursion
+       (while buffers
+	 (setq buffer (car buffers)
+	       buffers (cdr buffers))
+	 (set-buffer buffer)
+	 (save-restriction
+	   (widen)
+	   (if (or (eq major-mode 'w3m-mode)
+		   (and (keymapp (setq keymap
+				       (or (get-text-property
+					    (max (1- (point-max)) (point-min))
+					    'keymap)
+					   (get-text-property
+					    (max (1- (point-max)) (point-min))
+					    'local-map)))))
+		   (where-is-internal 'w3m-print-current-url keymap))
+	       (setq buffers nil)
+	     (setq buffer nil)))))
+     (list (read-string "Bug Subject: ") buffer)))
   (let (after-load-alist)
     ;; See the comment for `report-emacs-w3m-bug-system-informations'.
     (load "w3m-bug"))
-  (let ((w3m-buffer (current-buffer)))
-    (compose-mail report-emacs-w3m-bug-address topic)
-    (goto-char (point-min))
-    (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
-    (forward-line 1)
-    (unless report-emacs-w3m-bug-no-explanations
-      ;; Insert warnings for novice users.
-      (if (string-equal (symbol-value 'w3m-language) "Japanese")
-	  (progn
-	    (insert "このバグリポートは emacs-w3m 開発チームに送られます。\n")
-	    (put-text-property (point)
-			       (progn
-				 (insert "\
+  (compose-mail report-emacs-w3m-bug-address topic)
+  (goto-char (point-min))
+  (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
+  (forward-line 1)
+  (unless buffer
+    (insert
+     (if (and (boundp 'w3m-language)
+	      (equal (symbol-value 'w3m-language) "Japanese"))
+	 "もし可能なら emacs-w3m を起動してからやり直して下さい。\n"
+       "It is if possible, please redo after starting emacs-w3m.\n")
+     "\
+================================================================\n"))
+  (unless report-emacs-w3m-bug-no-explanations
+    ;; Insert warnings for the novice users.
+    (if (and (boundp 'w3m-language)
+	     (equal (symbol-value 'w3m-language) "Japanese"))
+	(progn
+	  (insert "このバグリポートは emacs-w3m 開発チームに送られます。\n")
+	  (put-text-property (point)
+			     (progn
+			       (insert "\
 あなたのローカルサイトの管理者宛てではありません!!")
-				 (point))
-			       'face 'underline)
-	    (insert "\n\nできるだけ簡潔に述べて下さい:
+			       (point))
+			     'face 'underline)
+	  (insert "\n\nできるだけ簡潔に述べて下さい:
 \t- 何が起きましたか?
 \t- 本当はどうなるべきだったと思いますか?
 \t- そのとき何をしましたか? (正確に)
 
 もし Lisp のバックトレースがあれば添付して下さい。\n"))
-	(insert "\
+      (insert "\
 This bug report will be sent to the emacs-w3m development team,\n")
-	(put-text-property (point)
-			   (progn
-			     (insert " not to your local site managers!!")
-			     (point))
-			   'face 'italic)
-	(insert "\nPlease write in ")
-	(put-text-property (point) (progn
-				     (insert "simple")
-				     (point))
-			   'face 'italic)
-	(insert " English, because the emacs-w3m developers
+      (put-text-property (point)
+			 (progn
+			   (insert " not to your local site managers!!")
+			   (point))
+			 'face 'italic)
+      (insert "\nPlease write in ")
+      (put-text-property (point) (progn
+				   (insert "simple")
+				   (point))
+			 'face 'italic)
+      (insert " English, because the emacs-w3m developers
 aren't good at English reading. ;-)
 
 Please describe as succinctly as possible:
@@ -133,38 +157,39 @@ Please describe as succinctly as possible:
 \t- Precisely what you were doing at the time.
 
 Please also include any Lisp back-traces that you may have.\n"))
-      (insert "\
+    (insert "\
 ================================================================\n"))
-    (insert "Dear Bug Team!\n\n")
-    (let ((user-point (point))
-	  (print-escape-newlines t)
-	  infos print-length print-level)
-      (insert "\n
+  (insert "Dear Bug Team!\n\n")
+  (let ((user-point (point))
+	(print-escape-newlines t)
+	infos print-length print-level)
+    (insert "\n
 ================================================================
 
 System Info to help track down your bug:
 ---------------------------------------\n")
-      (with-current-buffer w3m-buffer
-	(dolist (info report-emacs-w3m-bug-system-informations)
-	  (push (prin1-to-string info) infos)
-	  (push "\n => " infos)
-	  (push (cond ((functionp info)
-		       (prin1-to-string (condition-case code
-					    (funcall info)
-					  (error
-					   code))))
-		      ((symbolp info)
-		       (if (boundp info)
-			   (prin1-to-string (symbol-value info))
-			 "(not bound)"))
-		      ((consp info)
-		       (prin1-to-string (condition-case code
-					    (eval info)
-					  (error
-					   code)))))
-		infos)
-	  (push "\n" infos)))
-      (apply 'insert (nreverse infos))
-      (goto-char user-point))))
+    (with-current-buffer (or buffer (current-buffer))
+      (dolist (info report-emacs-w3m-bug-system-informations)
+	(push (prin1-to-string info) infos)
+	(push "\n => " infos)
+	(push (cond ((functionp info)
+		     (prin1-to-string (condition-case code
+					  (funcall info)
+					(error
+					 code))))
+		    ((symbolp info)
+		     (prin1-to-string (condition-case code
+					  (symbol-value info)
+					(error
+					 code))))
+		    ((consp info)
+		     (prin1-to-string (condition-case code
+					  (eval info)
+					(error
+					 code)))))
+	      infos)
+	(push "\n" infos)))
+    (apply 'insert (nreverse infos))
+    (goto-char user-point)))
 
 ;;; w3m-bug.el ends here
