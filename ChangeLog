@@ -1,3 +1,9 @@
+2003-07-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-content-start): Improve
+	the value.
+	(shimbun-mainichi-content-end): Ditto.
+
 2003-07-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-goto-url): Do not encode a given URL when it points
