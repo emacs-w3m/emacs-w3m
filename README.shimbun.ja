@@ -108,6 +108,9 @@ netbsd 関連	netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
 		netbsd.hpcmips-changes-ja netbsd.members-ja
 		netbsd.admin-ja netbsd.www-changes-ja
 QuickML 関連	quickml.quickml-users quickml.quickml-server
+		quickml.chatty quickml.dotnet quickml.linux-zaurus
+		quickml.ming quickml.pdumpfs quickml.stationery
+		quickml.tty-mania
 ruby 関連	ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
 		ruby.ruby-dev ruby.ruby-ext ruby.ruby-list
 		ruby.ruby-math ruby.ruby-talk
