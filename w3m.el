@@ -5699,14 +5699,14 @@ a page in a new buffer with the correct width."
       (set-buffer new))
     (unless empty
       ;; Render a page.
-      (w3m-process-with-wait-handler
-	(let ((positions (copy-sequence (car w3m-history)))
-	      (w3m-history-reuse-history-elements t))
+      (let ((positions (copy-sequence (car w3m-history)))
+	    (w3m-history-reuse-history-elements t))
+	(w3m-process-with-wait-handler
 	  (w3m-goto-url url nil nil nil nil handler
 			;; Pass the properties of the history elements,
 			;; although it is currently always nil.
-			(w3m-history-element (cadr positions)))
-	  (setcar w3m-history positions))))
+			(w3m-history-element (cadr positions))))
+	(setcar w3m-history positions)))
     new))
 
 (defun w3m-next-buffer (arg)

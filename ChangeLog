@@ -4,6 +4,8 @@
 	(w3m-process-with-wait-handler): Reimplemented.
 
 	* w3m.el (w3m-input-url): Accept other symbols than `popup'.
+	(w3m-copy-buffer): Fix the bug that drops an asynchronous handler
+	returned by `w3m-goto-url'.
 
 2004-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
