@@ -1494,7 +1494,8 @@ half-dumped data."
 	    upper (string= (match-string 1) "IMG_ALT")
 	    start (match-beginning 0))
       (delete-region start (match-end 0))
-      (setq src (w3m-expand-url src w3m-current-url))
+      (setq src (w3m-expand-url (w3m-decode-anchor-string src)
+				w3m-current-url))
       (when (search-forward "</img_alt>" nil t)
 	(delete-region (setq end (match-beginning 0)) (match-end 0))
 	(w3m-add-text-properties start end (list 'w3m-image src

@@ -1,3 +1,8 @@
+2001-08-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fontify-images): Use `w3m-decode-anchor-string' to
+	convert "&amp;" to "&" in the url string.
+
 2001-08-10  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
 
 	* w3m.el (w3m-content-type-alist): Fix typos for gif and tiff.
