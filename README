@@ -56,7 +56,7 @@
       it won't let it display optimized animated gifs correctly or may
       make it crash when some kind of an interlaced gif image is
       displayed.  Emacs-w3m uses the gifsicle program to convert gif
-      data in order to make it possible to be handled by XEmacs 21.x.  
+      data in order to make it possible to be handled by XEmacs 21.x.
 
           http://www.lcdf.org/gifsicle/
 
@@ -107,9 +107,20 @@
 
          % ./configure
 
+     Important nitice to the Gnus users:
+     ===================================
+     If the various versions of Gnusae are installed in your system (it
+     is likely that there are the released version and the development
+     version of Gnusae), make sure that priority is given to the
+     directory where the gnus.elc file which you use is installed in the
+     load-path.  To do that, use the --with-addpath option as follows:
+
+         % ./configure --with-addpath=/usr/local/share/emacs/site-lisp/gnus
+
      If you've installed APEL, FLIM or something in non-standard
      directories other than the default load-path, you must specify them
-     using the --with-addpath option as follows:
+     using the --with-addpath option as follows (you may also include
+     the Gnus directory in it separated with `:'):
 
          % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 
