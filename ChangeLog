@@ -1,10 +1,22 @@
+2002-03-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-function-max-args): Alias to `function-max-args'
+	under XEmacs, otherwise define it as a function.
+	(symbol-for-testing-whether-colon-keyword-is-available-or-not):
+	Use `dont-compile' instead of `eval'.
+
+	* shimbun/mew-shimbun.el (mew-shimbun-goto-folder): Use
+	`w3m-function-max-args' to examine how many arguments does
+	`mew-summary-ls' take; use `dont-compile' to call `mew-summary-ls'
+	with two arguments.
+
 2002-03-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Release emacs-w3m-1.2.5 from emacs-w3m-1_2 branch.
 
 2002-03-01  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-article) 
+	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-article)
 	(mew-shimbun-re-retrieve-article): Sort headers by the date.
 
 	* shimbun/sb-slashdot-jp.el

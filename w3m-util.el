@@ -50,8 +50,8 @@
   (defvar w3m-use-refresh))
 
 (eval-and-compile
-  (eval
-   '(condition-case nil
+  (dont-compile
+    (condition-case nil
 	:symbol-for-testing-whether-colon-keyword-is-available-or-not
       (void-variable
        (let (w3m-colon-keywords)
@@ -426,6 +426,23 @@ Otherwise return nil."
 	`(display-message 'no-log ,string))
     `(let (message-log-max)
        (message ,string ,@args))))
+
+(if (featurep 'xemacs)
+    (defalias 'w3m-function-max-args 'function-max-args)
+  (eval-and-compile
+    (require 'advice))
+  (defun w3m-function-max-args (function)
+    "Return the maximum number of arguments a function may be called with.
+The function may be any form that can be passed to `funcall',
+any special form, or any macro.
+If the function takes an arbitrary number of arguments or is
+a built-in special form, nil is returned."
+    (let ((arglist (ad-arglist (if (symbolp function)
+				   (symbol-function function)
+				 function))))
+      (if (memq '&rest arglist)
+	  nil
+	(length (delq '&optional arglist))))))
 
 (provide 'w3m-util)
 
