@@ -2,7 +2,8 @@
 
 	* w3mhack.el: Check whether the shell command can be used.
 
-	* attic/addpath.el: Ditto.
+	* attic/addpath.el: Ditto; add early-package-load-path to
+	load-path for XEmacs 21.5.
 
 	* shimbun/nnshimbun.el: Load gnus-bcklg safely (see the comment).
 
