@@ -1,5 +1,8 @@
 2003-06-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun.el (toplevel): Slot definition order of `shimbun' class
+	is changed to avoid mismatching.
+
 	* shimbun.el: Changes to eliminate dependence between modules
 	caused by compiled macros of internal accesors.
 	(shimbun-server, shimbun-current-group, shimbun-mua-shimbun): New

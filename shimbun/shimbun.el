@@ -80,12 +80,11 @@
 
 (eval-and-compile
   (luna-define-class shimbun ()
-		     (mua server server-name
-			  current-group groups
+		     (mua server current-group groups
 			  x-face x-face-alist
 			  url coding-system from-address
 			  content-start content-end
-			  expiration-days))
+			  expiration-days server-name))
   (luna-define-internal-accessors 'shimbun))
 
 (defgroup shimbun nil
