@@ -111,6 +111,16 @@
 
 
 
+■■ yahtml-mode
+
+   以下のように設定しておくと、yahtml-mode で編集中のファイルを preview 
+   する時に emacs-w3m を利用することができる。
+
+(autoload 'w3m-goto-url "w3m")
+(defadvice yahtml-browse-html
+  (around w3m-yahtml-browse-html activate compile)
+  (w3m-goto-url (ad-get-arg 0) t))
+
 
 Local Variables:
 mode: indented-text
