@@ -1157,18 +1157,15 @@ character."
 		    (insert-file-contents file)
 		    (setq before (buffer-substring-no-properties
 				  (point-min) (point-max)))
-		    (setq same (string= value before))))
-		(if (and (not same)
-			 (progn
-			   (insert before)
-			   (goto-char (abs (w3m-compare-strings
-					    before 0 (length before)
-					    value 0 (length value))))
-			   (y-or-n-p "Exist the editted text of this form. Use this? ")))
-		    (setq value nil)
-		  (delete-file file)
-		  (when (file-exists-p (make-backup-file-name file))
-		    (delete-file (make-backup-file-name file)))))
+		    (setq same (w3m-form-textarea-same-check value before))))
+		(when (and (not same)
+			   (progn
+			     (insert before)
+			     (goto-char (abs (w3m-compare-strings
+					      before 0 (length before)
+					      value 0 (length value))))
+			     (y-or-n-p "Exist the editted text of this form. Use this? ")))
+		  (setq value nil)))
 	    (when (or (and quit-flag before)
 		      value)
 	      (delete-region (point-min) (point-max))
@@ -1176,6 +1173,14 @@ character."
 	    (goto-char (point-min))
 	    (forward-line (1- (nth 2 info)))
 	    (w3m-form-input-textarea-mode)))))))
+
+(defun w3m-form-textarea-same-check (str1 str2)
+  "Compare STR1 and STR2 without tailed whitespace."
+  (when (string-match "[ \t\n\r]+$" str1)
+    (setq str1 (substring str1 0 (match-beginning 0))))
+  (when (string-match "[ \t\n\r]+$" str2)
+    (setq str2 (substring str2 0 (match-beginning 0))))
+  (string= str1 str2))
 
 (defun w3m-form-textarea-file-cleanup ()
   "Remove all textarea files."
@@ -1216,7 +1221,11 @@ character."
       (when (and (member file w3m-form-textarea-files)
 		 (file-exists-p file)
 		 (file-writable-p file))
-	(delete-file file)))))
+	(delete-file file)
+	(setq file (make-backup-file-name file))
+	(when (and (file-exists-p file)
+		   (file-writable-p file))
+	  (delete-file file))))))
 
 ;;; SELECT
 

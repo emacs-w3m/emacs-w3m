@@ -13,10 +13,12 @@
 	(w3m-form-parse-and-fontify): Set `w3m-form-textarea-files'. Put
 	`w3m-form-file-name' property on the form of textarea.
 	(w3m-form-input-textarea): Use same textarea buffer if exist.
-	Don't ask user if don't modify its area.
+	Don't ask user if don't modify its area without tailed white
+	space.
 	Visible the editted text when ask user.	Guard against 'C-g'.
 	Added `w3m-form-textarea-file-cleanup' to hook as
 	`kill-emacs-hook'
+	(w3m-form-textarea-same-check): New function.
 	(w3m-form-textarea-file-cleanup): Remove myself from
 	`kill-emacs-hook'.
 	(w3m-form-textarea-files-remove): New function.
