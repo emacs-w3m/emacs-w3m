@@ -1229,7 +1229,7 @@ way:
 	   (lambda (widget)
 	     (require 'w3m-search)
 	     (list
-	      'choice
+	      'choice :format "%[Value Menu%] %v"
 	      :args
 	      (append
 	       '((list :tag "Replacement Using Pattern"
@@ -1239,15 +1239,18 @@ way:
 	       (mapcar
 		(lambda (elem)
 		  (let ((engine (car elem))
-			scheme)
-		    (setq scheme (mapconcat 'identity
+			prefix)
+		    (setq prefix (mapconcat 'identity
 					    (split-string (downcase engine))
 					    "-"))
-		    (list 'list :tag (concat "Quick Search: " scheme)
-			  (list 'string :tag "Regexp" :value
-				(concat "\\`" (regexp-quote scheme) ":"))
+		    (list 'list
+			  :format "Quick Search:\n%v"
+			  :tag (concat "Quick Search: " prefix)
+			  (list 'regexp
+				:tag "Prefix URL Regexp"
+				(concat "\\`" (regexp-quote prefix) ":"))
 			  '(function-item :format "" w3m-search-uri-replace)
-			  (list 'string :tag "Engine" engine))))
+			  (list 'string :tag "Quick Search Engine" engine))))
 		w3m-search-engine-alist)
 	       '((list :tag "User Defined Function"
 		       (string :tag "Regexp" :value "")
