@@ -153,14 +153,6 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'symbol)
 
-(defcustom w3m-default-url-coding-system 'euc-japan
-  "*Coding system to encode search query string.
-This value is default and used only when spec defined by
-`w3m-search-engine-alist' does not have encoding information."
-  :group 'w3m
-;  :type 'string)
-  :type '(restricted-sexp :match-alternatives (coding-system-p)))
-
 (defcustom w3m-use-cygdrive t
   "*If non-nil, use /cygdrive/ rule when expand-file-name."
   :group 'w3m
@@ -400,35 +392,6 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
   :type '(repeat (cons symbol coding-system)))
 
-(defcustom w3m-search-engine-alist
-  '(("yahoo" "http://search.yahoo.com/bin/search?p=%s" nil)
-    ("yahoo-ja" "http://search.yahoo.co.jp/bin/search?p=%s" euc-japan)
-    ("google" "http://www.google.com/search?q=%s" nil)
-    ("google-ja" "http://www.google.com/search?q=%s&hl=ja&lr=" shift_jis)
-    ("goo-ja" "http://www.goo.ne.jp/default.asp?MT=%s" euc-japan)
-    ("rpmfind" "http://rpmfind.net/linux/rpm2html/search.php?query=%s"))
-  "*An alist of search engines.
-Each elemnt looks like (ENGINE ACTION CODING)
-ENGINE is a string, the name of the search engine.
-ACTION is a string, the URL that performs a search.
-ACTION must contain a \"%s\", which is substituted by a query string.
-CODING is optional value which is coding system for query string.
-If omitted, `w3m-default-url-coding-system' is used.
-"
-  :group 'w3m
-  :type '(repeat
-	  (list
-	   (string :tag "Engine")
-	   (string :tag "Action")
-	   (restricted-sexp :match-alternatives (coding-system-p nil)
-			    :tag "Coding"))))
-
-(defcustom w3m-default-search-engine "yahoo"
-  "*Default search engine name.
-See also `w3m-search-engine-alist'."
-  :group 'w3m
-  :type 'string)
-
 (defcustom w3m-horizontal-scroll-columns 10
   "*Column size to scroll horizontaly."
   :group 'w3m
@@ -438,178 +401,6 @@ See also `w3m-search-engine-alist'."
   "*Non-nil activates form extension. (EXPERIMENTAL)"
   :group 'w3m
   :type 'boolean)
-
-(defconst w3m-weather-url-alist
-  (eval-when-compile
-    (let ((format "http://channel.goo.ne.jp/weather/area/%s.html")
-	  (alist
-	   '(("ËÌ³¤Æ»¡¦½¡Ã«ÃÏÊý" . "011")
-	     ("ËÌ³¤Æ»¡¦ÌÖÁöÃÏÊý" . "021")
-	     ("ËÌ³¤Æ»¡¦ËÌ¸«ÃÏÊý" . "022")
-	     ("ËÌ³¤Æ»¡¦ÌæÊÌÃÏÊý" . "023")
-	     ("ËÌ³¤Æ»¡¦¾åÀîÃÏÊý" . "031")
-	     ("ËÌ³¤Æ»¡¦Î±Ë¨ÃÏÊý" . "032")
-	     ("ËÌ³¤Æ»¡¦¶üÏ©ÃÏÊý" . "041")
-	     ("ËÌ³¤Æ»¡¦º¬¼¼ÃÏÊý" . "042")
-	     ("ËÌ³¤Æ»¡¦½½¾¡ÃÏÊý" . "043")
-	     ("ËÌ³¤Æ»¡¦ÃÀ¿¶ÃÏÊý" . "051")
-	     ("ËÌ³¤Æ»¡¦Æü¹âÃÏÊý" . "052")
-	     ("ËÌ³¤Æ»¡¦ÀÐ¼íÃÏÊý" . "061")
-	     ("ËÌ³¤Æ»¡¦¶õÃÎÃÏÊý" . "062")
-	     ("ËÌ³¤Æ»¡¦¸å»ÖÃÏÊý" . "063")
-	     ("ËÌ³¤Æ»¡¦ÅÏÅçÃÏÊý" . "071")
-	     ("ËÌ³¤Æ»¡¦ÛØ»³ÃÏÊý" . "072")
-	     ("ÀÄ¿¹¸©¡¦ÄÅ·ÚÃÏÊý" . "081")
-	     ("ÀÄ¿¹¸©¡¦²¼ËÌÃÏÊý" . "082")
-	     ("ÀÄ¿¹¸©¡¦»°È¬¾åËÌÃÏÊý" . "083")
-	     ("½©ÅÄ¸©¡¦±è´ßÉô" . "091")
-	     ("½©ÅÄ¸©¡¦ÆâÎ¦Éô" . "092")
-	     ("´ä¼ê¸©¡¦ÆâÎ¦Éô" . "101")
-	     ("´ä¼ê¸©¡¦±è´ßËÌÉô" . "102")
-	     ("´ä¼ê¸©¡¦±è´ßÆîÉô" . "103")
-	     ("»³·Á¸©¡¦Â¼»³ÃÏÊý" . "111")
-	     ("»³·Á¸©¡¦ÃÖ»òÃÏÊý" . "112")
-	     ("»³·Á¸©¡¦¾±ÆâÃÏÊý" . "113")
-	     ("»³·Á¸©¡¦ºÇ¾åÃÏÊý" . "114")
-	     ("µÜ¾ë¸©¡¦Ê¿ÌîÉô" . "121")
-	     ("µÜ¾ë¸©¡¦»³±è¤¤" . "122")
-	     ("Ê¡Åç¸©¡¦ÃæÄÌ¤ê" . "131")
-	     ("Ê¡Åç¸©¡¦ÉÍÄÌ¤ê" . "132")
-	     ("Ê¡Åç¸©¡¦²ñÄÅÃÏÊý" . "133")
-	     ("¿·³ã¸©¡¦²¼±ÛÃÏÊý" . "141")
-	     ("¿·³ã¸©¡¦Ãæ±ÛÃÏÊý" . "142")
-	     ("¿·³ã¸©¡¦¾å±ÛÃÏÊý" . "143")
-	     ("¿·³ã¸©¡¦º´ÅÏÅç" . "144")
-	     ("ÉÙ»³¸©¡¦ÅìÉô" . "151")
-	     ("ÉÙ»³¸©¡¦À¾Éô" . "152")
-	     ("ÀÐÀî¸©¡¦²Ã²ìÃÏÊý" . "161")
-	     ("ÀÐÀî¸©¡¦Ç½ÅÐÃÏÊý" . "162")
-	     ("Ê¡°æ¸©¡¦ÎæËÌ" . "171")
-	     ("Ê¡°æ¸©¡¦ÎæÆî" . "172")
-	     ("ÆÊÌÚ¸©¡¦ÆîÉô" . "181")
-	     ("ÆÊÌÚ¸©¡¦ËÌÉô" . "182")
-	     ("·²ÇÏ¸©¡¦ÆîÉô" . "191")
-	     ("·²ÇÏ¸©¡¦ËÌÉô" . "192")
-	     ("ºë¶Ì¸©¡¦ÆîÉô" . "201")
-	     ("ºë¶Ì¸©¡¦ËÌÉô" . "202")
-	     ("ºë¶Ì¸©¡¦ÃáÉãÃÏÊý" . "203")
-	     ("°ñ¾ë¸©¡¦ËÌÉô" . "211")
-	     ("°ñ¾ë¸©¡¦ÆîÉô" . "212")
-	     ("ÀéÍÕ¸©¡¦ËÌÀ¾Éô" . "221")
-	     ("ÀéÍÕ¸©¡¦ËÌÅìÉô" . "222")
-	     ("ÀéÍÕ¸©¡¦ÆîÉô" . "223")
-	     ("ÅìµþÅÔ" . "231")
-	     ("ÅìµþÅÔ¡¦°ËÆ¦½ôÅçËÌÉô" . "232")
-	     ("ÅìµþÅÔ¡¦°ËÆ¦½ôÅçÆîÉô" . "233")
-	     ("ÅìµþÅÔ¡¦¾®³Þ¸¶" . "234")
-	     ("¿ÀÆàÀî¸©¡¦ÅìÉô" . "261")
-	     ("¿ÀÆàÀî¸©¡¦À¾Éô" . "262")
-	     ("Ä¹Ìî¸©¡¦ËÌÉô" . "271")
-	     ("Ä¹Ìî¸©¡¦ÃæÉô" . "272")
-	     ("Ä¹Ìî¸©¡¦ÆîÉô" . "273")
-	     ("»³Íü¸©¡¦ÃæÀ¾Éô" . "281")
-	     ("»³Íü¸©¡¦ÅìÉôÉÙ»Î¸Þ¸Ð" . "282")
-	     ("ÀÅ²¬¸©¡¦ÃæÉô" . "291")
-	     ("ÀÅ²¬¸©¡¦À¾Éô" . "292")
-	     ("ÀÅ²¬¸©¡¦ÅìÉô" . "293")
-	     ("ÀÅ²¬¸©¡¦°ËÆ¦ÃÏÊý" . "294")
-	     ("´ôÉì¸©¡¦ÈþÇ»ÃÏÊý" . "301")
-	     ("´ôÉì¸©¡¦ÈôÂÍÃÏÊý" . "302")
-	     ("»°½Å¸©¡¦ËÌÃæÉô" . "311")
-	     ("»°½Å¸©¡¦ÆîÉô" . "312")
-	     ("°¦ÃÎ¸©¡¦À¾Éô" . "321")
-	     ("°¦ÃÎ¸©¡¦ÅìÉô" . "322")
-	     ("µþÅÔÉÜ¡¦ÆîÉô" . "331")
-	     ("µþÅÔÉÜ¡¦ËÌÉô" . "332")
-	     ("Ê¼¸Ë¸©¡¦ÆîÉô" . "341")
-	     ("Ê¼¸Ë¸©¡¦ËÌÉô" . "342")
-	     ("ÆàÎÉ¸©¡¦ËÌÉô" . "351")
-	     ("ÆàÎÉ¸©¡¦ÆîÉô" . "352")
-	     ("¼¢²ì¸©¡¦ÆîÉô" . "361")
-	     ("¼¢²ì¸©¡¦ËÌÉô" . "362")
-	     ("ÏÂ²Î»³¸©¡¦ËÌÉô" . "371")
-	     ("ÏÂ²Î»³¸©¡¦ÆîÉô" . "372")
-	     ("ÂçºåÉÜ" . "381")
-	     ("Ä»¼è¸©¡¦ÅìÉô" . "391")
-	     ("Ä»¼è¸©¡¦À¾Éô" . "392")
-	     ("Åçº¬¸©¡¦ÅìÉô" . "401")
-	     ("Åçº¬¸©¡¦À¾Éô" . "402")
-	     ("Åçº¬¸©¡¦±£´ô½ôÅç" . "403")
-	     ("²¬»³¸©¡¦ÆîÉô" . "411")
-	     ("²¬»³¸©¡¦ËÌÉô" . "412")
-	     ("¹­Åç¸©¡¦ÆîÉô" . "421")
-	     ("¹­Åç¸©¡¦ËÌÉô" . "422")
-	     ("»³¸ý¸©¡¦À¾Éô" . "431")
-	     ("»³¸ý¸©¡¦ÃæÉô" . "432")
-	     ("»³¸ý¸©¡¦ÅìÉô" . "433")
-	     ("»³¸ý¸©¡¦ËÌÉô" . "434")
-	     ("¹áÀî¸©" . "441")
-	     ("°¦É²¸©¡¦ÃæÍ½ÃÏÊý" . "451")
-	     ("°¦É²¸©¡¦ÅìÍ½ÃÏÊý" . "452")
-	     ("°¦É²¸©¡¦ÆîÍ½ÃÏÊý" . "453")
-	     ("ÆÁÅç¸©¡¦ËÌÉô" . "461")
-	     ("ÆÁÅç¸©¡¦ÆîÉô" . "462")
-	     ("¹âÃÎ¸©¡¦ÃæÉô" . "471")
-	     ("¹âÃÎ¸©¡¦ÅìÉô" . "472")
-	     ("¹âÃÎ¸©¡¦À¾Éô" . "473")
-	     ("Ê¡²¬¸©¡¦Ê¡²¬ÃÏÊý" . "481")
-	     ("Ê¡²¬¸©¡¦ËÌ¶å½£ÃÏÊý" . "482")
-	     ("Ê¡²¬¸©¡¦ÃÞË­ÃÏÊý" . "483")
-	     ("Ê¡²¬¸©¡¦ÃÞ¸åÃÏÊý" . "484")
-	     ("ÂçÊ¬¸©¡¦ÃæÉô" . "491")
-	     ("ÂçÊ¬¸©¡¦ËÌÉô" . "492")
-	     ("ÂçÊ¬¸©¡¦À¾Éô" . "493")
-	     ("ÂçÊ¬¸©¡¦ÆîÉô" . "494")
-	     ("º´²ì¸©¡¦ÆîÉô" . "501")
-	     ("º´²ì¸©¡¦ËÌÉô" . "502")
-	     ("·§ËÜ¸©¡¦·§ËÜÃÏÊý" . "511")
-	     ("·§ËÜ¸©¡¦°¤ÁÉÃÏÊý" . "512")
-	     ("·§ËÜ¸©¡¦Å·Áð°²ËÌÃÏÊý" . "513")
-	     ("·§ËÜ¸©¡¦µåËáÃÏÊý" . "514")
-	     ("µÜºê¸©¡¦ÆîÉôÊ¿Ìî" . "521")
-	     ("µÜºê¸©¡¦ÆîÉô»³±è¤¤" . "522")
-	     ("µÜºê¸©¡¦ËÌÉôÊ¿Ìî" . "523")
-	     ("µÜºê¸©¡¦ËÌÉô»³±è¤¤" . "524")
-	     ("Ä¹ºê¸©¡¦ÆîÉô" . "531")
-	     ("Ä¹ºê¸©¡¦ËÌÉô" . "532")
-	     ("Ä¹ºê¸©¡¦°í´ôÂÐÇÏÃÏÊý" . "533")
-	     ("Ä¹ºê¸©¡¦¸ÞÅçÃÏÊý" . "534")
-	     ("¼¯»ùÅç¸©¡¦»§ËàÃÏÊý" . "561")
-	     ("¼¯»ùÅç¸©¡¦Âç¶ùÃÏÊý" . "562")
-	     ("¼¯»ùÅç¸©¡¦¼ï»ÒÅç" . "563")
-	     ("¼¯»ùÅç¸©¡¦²°µ×Åç" . "563")
-	     ("±âÈþ½ôÅç" . "564")
-	     ("²­Æì¸©¡¦ÃæÆîÉô" . "591")
-	     ("²­Æì¸©¡¦ËÌÉô" . "592")
-	     ("²­Æì¸©¡¦µ×ÊÆÅç" . "593")
-	     ("²­Æì¸©¡¦ÂçÅìÅç" . "594")
-	     ("²­Æì¸©¡¦µÜ¸ÅÅç" . "595")
-	     ("²­Æì¸©¡¦ÀÐ³ÀÅç" . "596")
-	     ("²­Æì¸©¡¦Í¿Æá¹ñÅç" . "597"))))
-      (mapcar (lambda (area)
-		(cons (car area) (format format (cdr area))))
-	      alist)))
-  "Associative list of regions and urls.")
-
-(defcustom w3m-weather-default-area
-  "µþÅÔÉÜ¡¦ÆîÉô"
-  "Default region to check weateher."
-  :group 'w3m
-  :type (cons 'radio
-	      (mapcar (lambda (area) (list 'const (car area)))
-		      w3m-weather-url-alist)))
-
-(defcustom w3m-weather-filter-functions
-  '(w3m-weather-remove-headers
-    w3m-weather-remove-footers
-    w3m-weather-remove-weather-images
-    w3m-weather-remove-washing-images
-    w3m-weather-remove-futon-images
-    w3m-weather-remove-week-weather-images
-    w3m-weather-insert-title)
-  "Filter functions to remove useless tags."
-  :group 'w3m
-  :type 'hook)
 
 (defconst w3m-extended-charcters-table
   '(("\xa0" . " ")
@@ -2635,7 +2426,7 @@ or prefix ARG columns."
 
 
 (defun w3m (url &optional args)
-  "Interface for w3m on Emacs."
+  "*Interface for w3m on Emacs."
   (interactive (list (w3m-input-url)))
   (set-buffer (get-buffer-create "*w3m*"))
   (or (eq major-mode 'w3m-mode)
@@ -2847,35 +2638,6 @@ ex.) c:/dir/file => //c/dir/file"
 	(w3m-toggle-inline-images 'force))))
 
 
-(defun w3m-escape-query-string (str &optional coding)
-  (mapconcat
-   (lambda (s)
-     (w3m-url-encode-string s coding))
-   (split-string str)
-   "+"))
-
-(defun w3m-search (search-engine query)
-  "Search QUERY using SEARCH-ENGINE.
-When called interactively with prefix argument, you can choose search
-engine deinfed in `w3m-search-engine-alist'.  Otherwise use
-`w3m-default-search-engine'."
-  (interactive
-   (let ((engine
-	  (if current-prefix-arg
-	      (completing-read
-	       (format "Which Engine? (%s): " w3m-default-search-engine)
-	       w3m-search-engine-alist nil t)
-	    w3m-default-search-engine)))
-     (list engine
-	   (read-string (format "%s search: " engine)))))
-  (unless (string= query "")
-    (let ((info (assoc search-engine w3m-search-engine-alist)))
-      (if info
-	  (w3m (format (cadr info)
-		       (w3m-escape-query-string query (caddr info))))
-	(error "Unknown search engine: %s" search-engine)))))
-
-
 ;;; About:
 (defun w3m-about (url &rest args)
   (w3m-with-work-buffer
@@ -2930,102 +2692,11 @@ engine deinfed in `w3m-search-engine-alist'.  Otherwise use
     (setq url (concat (match-string 1 url) ":" (match-string 2 url)))))
   (start-process "w3m-w32-browser-with-fiber" (current-buffer) "fiber.exe" url))
 
-;;; Weather:
-(defun w3m-weather (area)
-  "*Display weather report."
-  (interactive
-   (list (if current-prefix-arg
-	     (completing-read "Input area: " w3m-weather-url-alist nil t)
-	   w3m-weather-default-area)))
-  (w3m (format "about://weather/%s" area)))
 
-(defun w3m-about-weather (url &rest args)
-  (let (area furl)
-    (if (and (string-match "^about://weather/" url)
-	     (setq area (substring url (match-end 0))
-		   furl (cdr (assoc area w3m-weather-url-alist))))
-	(save-excursion
-	  (w3m-retrieve furl)
-	  (set-buffer w3m-work-buffer-name)
-	  (run-hook-with-args 'w3m-weather-filter-functions area)
-	  "text/html")
-      (w3m-message "Unknown URL: %s" url)
-      nil)))
-
-(defun w3m-weather-remove-headers (&rest args)
-  "Remove header of the weather forecast page."
-  (goto-char (point-min))
-  (when (search-forward "<!-- area_s_title -->" nil t)
-    (delete-region (point-min) (point))
-    (when (search-forward "<img src=\"/common/clear.gif\"")
-      (let ((start))
-	(and (search-backward "<tr>" nil t)
-	     (setq start (point))
-	     (search-forward "</tr>" nil t)
-	     (delete-region start (point)))))))
-
-(defun w3m-weather-remove-footers (&rest args)
-  "Remove footer of the weather forecast page."
-  (goto-char (point-max))
-  (when (search-backward "<!-- /area_7days -->" nil t)
-    (delete-region (point) (point-max))
-    (forward-line -2)
-    (when (looking-at "<div")
-      (delete-region (point) (point-max)))))
-
-(defun w3m-weather-remove-weather-images (&rest args)
-  "Remove images which stand for weather forecasts."
-  (let ((case-fold-search t) start end)
-    (goto-char (point-min))
-    (and (re-search-forward
-	  "\\(<td[^>]*>Å·µ¤</td>\\)[ \t\r\f\n]*<td[^>]*><img src=\"/weather/images/"
-	  nil t)
-	 (setq start (match-beginning 1)
-	       end (match-end 1))
-	 (search-forward
-	  "<tr bgcolor=\"#FFFFFF\">"
-	  (prog2 (forward-line 5) (point) (goto-char (match-end 0)))
-	  t)
-	 (progn
-	   (delete-region end (point))
-	   (goto-char start)
-	   (when (re-search-forward "\\([ \t\r\f\n]rowspan=\"[0-9]+\"\\)[> \t\r\f\n]" end t)
-	     (delete-region (match-beginning 1) (match-end 1)))))))
-
-(defun w3m-weather-remove-washing-images (&rest args)
-  "Remove images which stand for washing index."
-  (let ((case-fold-search t))
-    (goto-char (point-min))
-    (while (re-search-forward
-	    "<td[^>]*>\\(<img src=\"/weather/images/wash[-0-9]*.gif\"[^>]*><br>\\)"
-	    nil t)
-      (delete-region (match-beginning 1) (match-end 1)))))
-
-(defun w3m-weather-remove-futon-images (&rest args)
-  "Remove images which stand for futon index."
-  (let ((case-fold-search t))
-    (goto-char (point-min))
-    (while (re-search-forward
-	    "<td[^>]*>\\(<img src=\"/weather/images/bed[-0-9]*.gif\"[^>]*><br>\\)"
-	    nil t)
-      (delete-region (match-beginning 1) (match-end 1)))))
-
-(defun w3m-weather-remove-week-weather-images (&rest args)
-  "Remove images which stand for the weather forecast for the week."
-  (let ((case-fold-search t))
-    (goto-char (point-min))
-    (while (re-search-forward
-	    "<td[^>]*>\\(<img src=\"/weather/images/tk[0-9]*.gif\"[^>]*><br>\\)"
-	    nil t)
-      (delete-region (match-beginning 1) (match-end 1)))))
-
-(defun w3m-weather-insert-title (area &rest args)
-  "Insert title."
-  (goto-char (point-min))
-  (insert "<head><title>Weather forecast of " area "</title></head><body>")
-  (goto-char (point-max))
-  (insert "</body>"))
-
+;; Add-on programs:
+(autoload 'w3m-search "w3m-search" "*Search QUERY using SEARCH-ENGINE." t)
+(autoload 'w3m-weather "w3m-weather" "*Display weather report." t)
+(autoload 'w3m-about-weather "w3m-weather")
 
 (provide 'w3m)
 ;;; w3m.el ends here.
