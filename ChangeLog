@@ -1,3 +1,9 @@
+2003-09-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Rearrange
+	regexps.
+	(shimbun-yomiuri-get-headers): Synch to the change.
+
 2003-09-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Add the
