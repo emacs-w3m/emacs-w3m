@@ -82,7 +82,7 @@
 
 (cond
  ((featurep 'xemacs)
-  ;; Don't wran for the the unused non-global variables.
+  ;; Don't warn for the unused non-global variables.
   (setq byte-compile-warnings
 	(delq 'unused-vars (copy-sequence byte-compile-default-warnings)))
 
