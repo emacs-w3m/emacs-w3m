@@ -412,6 +412,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	      (unless (mew-shimbun-db-search-id id)
 		(with-current-buffer buf
 		  (mew-erase-buffer)
+		  (set-buffer-multibyte nil)
 		  (shimbun-article shimbun head)
 		  (setq md5 (mew-shimbun-md5))
 		  (when (and (> (buffer-size) 0)
@@ -581,6 +582,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 		(setq file (mew-expand-folder fld msg))
 		(with-current-buffer buf
 		  (mew-erase-buffer)
+		  (set-buffer-multibyte nil)
 		  (shimbun-article shimbun head)
 		  (when (> (buffer-size) 0)
 		    (setq newmd5 (mew-shimbun-md5))
