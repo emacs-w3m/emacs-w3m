@@ -1,3 +1,7 @@
+2003-01-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/nnshimbun.el: Import from Semi-gnus.
+
 2003-01-23  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-palmfan.el (shimbun-palmfan-date-regexp): Typo fixed.
