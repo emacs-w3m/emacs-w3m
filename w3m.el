@@ -5529,8 +5529,9 @@ The default name will be the original name of the image."
 
 (defun w3m-view-url-with-external-browser ()
   "Launch the external browser and display the same web page.
-The browser is defined in `w3m-content-type-alist' for every type of a
-url."
+If the cursor points to a link, it visits the url of the link instead
+of the url currently displayed.  The browser is defined in
+`w3m-content-type-alist' for every type of a url."
   (interactive)
   (let ((url (or (w3m-anchor)
 		 (unless w3m-display-inline-images
