@@ -249,27 +249,19 @@
        ,(concat
 	 "<a" s1 "href=\"/"
 	 ;; 1. url
-	 "\\("
-	 ;; 3 or 5. extra keyword
-	 "\\(%s/\\([a-z]+\\)\\(/" no-nl "\\)*\\|\\([a-z]+\\)/" no-nl "\\)"
-	 "/"
-	 ;; 6. serial number
-	 "\\(" no-nl "\\)"
-	 "\\.html\\)"
-	 "\">" s0
-	 ;; 7. subject
-	 "\\(" no-nl "\\)"
-	 s0 "</a>[\t\n 　]*("
-	 ;; 8. month
+	 "\\(%s/" no-nl "/"
+	 ;; 2. month
 	 "\\([01][0-9]\\)"
-	 "/"
-	 ;; 9. day
+	 ;; 3. day
 	 "\\([0-3][0-9]\\)"
-	 "\\(" s1
-	 ;; 11. hour:minute
-	 "\\([012][0-9]:[0-5][0-9]\\)"
-	 "\\)?)")
-       1 nil 6 7 8 9 11 3 5)
+	 "/"
+	 ;; 4. serial number
+	 "\\(" no-nl "\\)"
+	 "\\.html\\)\"" s0 ">" s0
+	 ;; 5. subject
+	 "\\(" no-nl "\\)"
+	 s0 "</a>")
+       1 4 nil 5 2 3)
       ("tenjin" "天声人語" "paper/column.html"
        ,(concat
 	 "<a" s1 "href=\"/"
@@ -547,7 +539,43 @@ there is a correct information available."
 				      nil t)
 	      (delete-region (match-beginning 0) (match-end 0))))
 	(erase-buffer)
-	(insert "Couldn't retrieve the page.\n")))))
+	(insert "Couldn't retrieve the page.\n")))
+     ((string-equal group "sports")
+      (when (re-search-forward
+	     (eval-when-compile
+	       (let ((s0 "[\t\n ]*")
+		     (s1 "[\t\n ]+"))
+		 (concat "<p" s1 "class" s0 "=" s0 "\"day\"" s0 ">" s0
+			 ;; 1. year
+			 "\\(20[0-9][0-9]\\)年"
+			 ;; 2. month
+			 "\\([01]?[0-9]\\)月"
+			 ;; 3. day
+			 "\\([0-3]?[0-9]\\)日"
+			 ;; 4. hour
+			 "\\([012]?[0-9]\\)時"
+			 ;; 5. minute
+			 "\\([0-5]?[0-9]\\)分"
+			 s0 "</p>")))
+	     nil t)
+	(shimbun-header-set-date
+	 header
+	 (shimbun-make-date-string
+	  (string-to-number (match-string 1))
+	  (string-to-number (match-string 2))
+	  (string-to-number (match-string 3))
+	  (concat (match-string 4) ":" (match-string 5))
+	  "+0900")))
+      (when (and (re-search-forward
+		  "<!-- Start of Kiji -->\\([\t\n ]*<[^>]+>\\)*[\t\n ]*"
+		  nil t)
+		 (progn
+		   (insert "<!--FJZONE START NAME=\"HONBUN\"-->\n")
+		   (re-search-forward
+		    "[\t\n ]*\\(<[^>]+>[\t\n ]*\\)*<!-- End of Kiji -->"
+		    nil t)))
+	(goto-char (match-beginning 0))
+	(insert "\n<!--FJZONE END NAME=\"HONBUN\"-->\n")))))
   (goto-char (point-min)))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-asahi)
