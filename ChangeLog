@@ -1,5 +1,10 @@
 2005-01-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Don't use
+	too complex regexp.
+
+2005-01-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Ease limits
 	on the regexp used to match unquoted text.
 
