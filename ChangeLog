@@ -1,5 +1,13 @@
 2002-08-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-select-buffer-hook): Renamed from
+	`w3m-change-buffer-hook'.
+	(w3m-next-buffer): Accept a numerical argument.
+	(w3m-previous-buffer): Accept a numerical argument, and call
+	`w3m-next-buffer'.
+	(w3m-delete-buffer): Call `w3m-next-buffer' instead of
+	`w3m-previous-buffer'.
+
 	* w3m.el (w3m-delete-buffer-hook): Change its default value.
 	(w3m-change-buffer-hook): New option.
 	(w3m-delete-other-buffers-hook, w3m-previous-buffer-hook,

@@ -724,13 +724,13 @@ of the original request method. -- RFC2616"
    '(w3m-pack-buffer-numbers
      w3m-select-buffer-update)
    (when (featurep 'w3m-e21) '(w3m-update-tab-line)))
-  "*Hook run when w3m buffer is deleted."
+  "*Hook run when any w3m buffers are deleted."
   :group 'w3m
   :type 'hook)
 
-(defcustom w3m-change-buffer-hook
+(defcustom w3m-select-buffer-hook
   (when (featurep 'w3m-e21) '(w3m-update-tab-line))
-  "*Hook run when w3m buffer is changed."
+  "*Hook run when a different w3m buffer is selected."
   :group 'w3m
   :type 'hook)
 
@@ -4633,23 +4633,23 @@ If EMPTY is non-nil, the created buffer has empty content."
 	      (setq w3m-initial-frame (selected-frame)))))
 	new))))
 
-(defun w3m-next-buffer ()
-  "Switch to next w3m buffer."
-  (interactive)
-  (let ((buffers (w3m-list-buffers)))
-    (switch-to-buffer
-     (or (cadr (memq (current-buffer) buffers))
-	 (car buffers))))
-  (run-hooks 'w3m-change-buffer-hook))
+(defun w3m-next-buffer (arg)
+  "Select the ARG'th different w3m buffer."
+  (interactive "p")
+  (unless (zerop arg)
+    (let ((buffers (if (> arg 0)
+		       (w3m-list-buffers)
+		     (setq arg (- arg))
+		     (nreverse (w3m-list-buffers)))))
+      (switch-to-buffer
+       (or (nth arg (memq (current-buffer) buffers))
+	   (nth (1- arg) buffers))))
+    (run-hooks 'w3m-select-buffer-hook)))
 
-(defun w3m-previous-buffer ()
-  "Switch to previous w3m buffer."
-  (interactive)
-  (let ((buffers (nreverse (w3m-list-buffers))))
-    (switch-to-buffer
-     (or (cadr (memq (current-buffer) buffers))
-	 (car buffers))))
-  (run-hooks 'w3m-change-buffer-hook))
+(defun w3m-previous-buffer (arg)
+  "Select the ARG'th different w3m buffer in the opposite order."
+  (interactive "p")
+  (w3m-next-buffer (- arg)))
 
 (defun w3m-delete-buffer (&optional force)
   "Delete w3m buffer and switch to previous w3m buffer if exists."
@@ -4657,7 +4657,7 @@ If EMPTY is non-nil, the created buffer has empty content."
   (if (= 1 (length (w3m-list-buffers t)))
       (w3m-quit force)
     (let ((buffer (current-buffer)))
-      (w3m-previous-buffer)
+      (w3m-next-buffer -1)
       (kill-buffer buffer)))
   (run-hooks 'w3m-delete-buffer-hook))
 
