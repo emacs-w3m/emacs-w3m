@@ -88,7 +88,7 @@
 			    '(background background-pixmap foreground)))
 		(delete-region ,(point-min-marker)
 			       ,(point-max-marker))))))))))
-   
+
 ;; Date: Fri, 27 Jul 2001 12:51:12 +0900
 ;; Message-ID: <yosuwv4v3u8f.fsf@jpl.org>
 ;; From: Katsumi Yamaoka <yamaoka@jpl.org>
