@@ -3425,7 +3425,7 @@ type as a string argument, when retrieve is complete."
   "Process <LINK> tags in the current buffer."
   (let ((case-fold-search t))
     (goto-char (point-min))
-    (when (search-forward "</head>" nil t)
+    (when (re-search-forward "</head\\([ \t\r\f\n][^>]*\\)?>" nil t)
       (save-restriction
 	(narrow-to-region (point-min) (point))
 	(goto-char (point-min))
