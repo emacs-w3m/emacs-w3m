@@ -1,5 +1,43 @@
 2003-11-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el: Bind `w3m-current-process', `w3m-pop-up-frames',
+	`w3m-pop-up-windows', `w3m-popup-frame-parameters',
+	`w3m-select-buffer-name' and `w3m-use-tab', and fbind
+	`select-frame-set-input-focus' when compiling.
+	(w3m-popup-frame-parameters): Move from w3m.el.
+	(w3m-popup-frame-p): Ditto.
+	(w3m-use-tab-p): Ditto.
+	(w3m-popup-window-p): Ditto.
+	(w3m-initial-frames): Ditto.
+	(w3m-last-visited-buffer): Ditto.
+	(w3m-popup-buffer): Ditto; also move the program to make
+	`select-frame-set-input-focus' unbound from w3m.el.
+	(w3m-add-w3m-initial-frames): Ditto; also move the program to add
+	it to `create-frame-hook', `after-make-frame-functions' or
+	`after-make-frame-hook' from w3m.el.
+	(w3m-delete-frames-and-windows): Ditto.
+	(w3m-display-progress-message): Mark a progress message with the
+	`w3m-progress-message' text property.
+
+	* w3m.el: Don't fbind `select-frame-set-input-focus'.
+	(w3m-local-find-file-function): Use `w3m-popup-frame-p'.
+	(w3m-initial-frames): Move to w3m-util.el.
+	(w3m-popup-frame-parameters): Ditto.
+	(w3m-popup-frame-p): Ditto.
+	(w3m-use-tab-p): Ditto.
+	(w3m-popup-window-p): Ditto.
+	(w3m-last-visited-buffer): Ditto.
+	(w3m-popup-buffer): Ditto; also move the program to make
+	`select-frame-set-input-focus' unbound to w3m-util.el.
+	(w3m-add-w3m-initial-frames): Ditto; also move the program to add
+	it to `create-frame-hook', `after-make-frame-functions' or
+	`after-make-frame-hook' to w3m-util.el.
+	(w3m-delete-frames-and-windows): Ditto.
+	(w3m-delete-buffer-if-empty): New function.
+	(w3m-view-this-url-1): Use it.
+	(w3m-goto-url-new-session): Use it.
+	(w3m): Use it.
+
 	* w3m-e21.el (w3m-euc-japan-encoder): Compute the ccl program in
 	each time to load w3m-e21.elc to keep the compatibility of the
 	module with Emacs 21.3 and the later versions.
