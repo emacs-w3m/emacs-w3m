@@ -4614,7 +4614,10 @@ If EMPTY is non-nil, the created buffer has empty content."
       (define-key map [mouse-2] 'w3m-mouse-view-this-url)
       (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
     (define-key map "\C-c\C-@" 'w3m-history-store-position)
-    (define-key map [?\C-c?\C- ] 'w3m-history-store-position)
+    (if (featurep 'xemacs)
+	(define-key map [?\C-c (control space)] 'w3m-history-store-position)
+      ;; `C- ' doesn't mean `C-SPC' in XEmacs.
+      (define-key map [?\C-c ?\C-\ ] 'w3m-history-store-position))
     (define-key map "\C-c\C-v" 'w3m-history-restore-position)
     (define-key map [left] 'w3m-view-previous-page)
     (define-key map "B" 'w3m-view-previous-page)
