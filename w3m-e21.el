@@ -58,6 +58,8 @@
   (defvar w3m-mode-map)
   (defvar w3m-modeline-process-status-on)
   (defvar w3m-process-queue)
+  (defvar w3m-show-graphic-icons-in-header-line)
+  (defvar w3m-show-graphic-icons-in-mode-line)
   (defvar w3m-toolbar)
   (defvar w3m-toolbar-buttons)
   (defvar w3m-use-favicon)
@@ -548,6 +550,8 @@ cleared by a timer.")
 			(max (- (/ (window-width) (length buffers)) 5) 1)
 		      w3m-tab-width))
 	     (window (get-buffer-window current t))
+	     (spinner (when w3m-process-queue
+			(w3m-make-spinner-image)))
 	     process face keymap icon title)
 	(setq w3m-tab-line-timer
 	      (run-at-time 0.1 nil
@@ -575,21 +579,21 @@ cleared by a timer.")
 			  (if (eq buffer current)
 			      'w3m-tab-selected-face
 			    'w3m-tab-unselected-face))
-		   keymap w3m-tab-map)
-	     (if process
-		    (when (setq icon (w3m-make-spinner-image))
-		      (setq icon
-			    (propertize
-			     "  "
-			     'display icon
-			     'mouse-face 'highlight
-			     'face face
-			     'local-map w3m-tab-spinner-map
-			     'help-echo w3m-spinner-map-help-echo)))
-	       (setq icon (when (and w3m-use-favicon
-				     w3m-favicon-image)
-			    (propertize "  "
-					'display w3m-favicon-image))))
+		   keymap w3m-tab-map
+		   icon (when w3m-show-graphic-icons-in-header-line
+			  (if process
+			      (when spinner
+				(propertize
+				 "  "
+				 'display spinner
+				 'mouse-face 'highlight
+				 'face face
+				 'local-map w3m-tab-spinner-map
+				 'help-echo w3m-spinner-map-help-echo))
+			    (when (and w3m-use-favicon
+				       w3m-favicon-image)
+			      (propertize "  "
+					  'display w3m-favicon-image)))))
 	     (set-buffer current)
 	     (setq title (w3m-buffer-title buffer))
 	     (concat
@@ -653,62 +657,79 @@ italic font in the modeline."
 (defun w3m-initialize-graphic-icons (&optional force)
   "Make icon images which will be displayed in the mode-line."
   (interactive "P")
-  (when (display-images-p)
-    (let ((defs '((w3m-modeline-status-off-icon
-		   "state-00.xpm"
-		   w3m-modeline-status-off)
-		  (w3m-modeline-image-status-on-icon
-		   "state-01.xpm"
-		   w3m-modeline-image-status-on)
-		  (w3m-modeline-ssl-status-off-icon
-		   "state-10.xpm"
-		   w3m-modeline-ssl-status-off)
-		  (w3m-modeline-ssl-image-status-on-icon
-		   "state-11.xpm"
-		   w3m-modeline-ssl-image-status-on)))
-	  def image file keymap status)
-      (when (image-type-available-p 'xpm)
-	(while defs
-	  (setq def (car defs)
-		defs (cdr defs)
-		image (car def))
-	  (when (and (or force (not (symbol-value image)))
-		     (file-exists-p
-		      (setq file (expand-file-name (nth 1 def)
-						   w3m-icon-directory))))
-	    (unless keymap
-	      (setq keymap (make-mode-line-mouse-map 'mouse-2
-						     'w3m-reload-this-page)))
-	    (set image (propertize
-			"  "
-			'display (create-image file 'xpm nil :ascent 'center)
-			'mouse-face 'highlight
-			'local-map keymap
-			'help-echo "mouse-2 reloads this page"))
-	    (put image 'risky-local-variable t)
-	    (put (setq status (nth 2 def)) 'risky-local-variable t)
-	    (set status (list "" 'w3m-space-before-modeline-icon image)))))
-      ;; Spinner
-      (unless w3m-spinner-image-file
-	(when (and (image-type-available-p 'gif)
-		   (file-exists-p
-		    (setq file (expand-file-name "spinner.gif"
-						 w3m-icon-directory))))
-	  (setq w3m-spinner-image-file file)
-	  (define-key (setq w3m-modeline-spinner-map (make-sparse-keymap))
-	    [mode-line mouse-2]
-	    'w3m-process-stop)
+  (let ((defs '((w3m-modeline-status-off-icon
+		 "state-00.xpm"
+		 w3m-modeline-status-off)
+		(w3m-modeline-image-status-on-icon
+		 "state-01.xpm"
+		 w3m-modeline-image-status-on)
+		(w3m-modeline-ssl-status-off-icon
+		 "state-10.xpm"
+		 w3m-modeline-ssl-status-off)
+		(w3m-modeline-ssl-image-status-on-icon
+		 "state-11.xpm"
+		 w3m-modeline-ssl-image-status-on)))
+	def icon file status keymap)
+    (while defs
+      (setq def (car defs)
+	    defs (cdr defs)
+	    icon (car def)
+	    file (expand-file-name (nth 1 def) w3m-icon-directory)
+	    status (nth 2 def))
+      (if (and w3m-show-graphic-icons-in-mode-line
+	       (display-images-p)
+	       (image-type-available-p 'xpm)
+	       (file-exists-p file))
+	  (progn
+	    (when (or force (not (symbol-value icon)))
+	      (unless keymap
+		(setq keymap (make-mode-line-mouse-map 'mouse-2
+						       'w3m-reload-this-page)))
+	      (set icon (propertize
+			 "  "
+			 'display (create-image file 'xpm nil :ascent 'center)
+			 'mouse-face 'highlight
+			 'local-map keymap
+			 'help-echo "mouse-2 reloads this page"))
+	      (put icon 'risky-local-variable t)
+	      (put status 'risky-local-variable t))
+	    (when (stringp (symbol-value status))
+	      ;; Save the original status strings as properties.
+	      (put status 'string (symbol-value status)))
+	    (set status (list "" 'w3m-space-before-modeline-icon icon)))
+	;; Don't use graphic icons.
+	(when (get status 'string)
+	  (set status (get status 'string)))))
+    ;; Spinner
+    (when (and (or force (not w3m-spinner-image-file))
+	       (image-type-available-p 'gif)
+	       (file-exists-p
+		(setq file (expand-file-name "spinner.gif"
+					     w3m-icon-directory))))
+      (setq w3m-spinner-image-file file)
+      (define-key (setq w3m-modeline-spinner-map (make-sparse-keymap))
+	[mode-line mouse-2]
+	'w3m-process-stop)
+      (put 'w3m-modeline-process-status-on 'risky-local-variable t)
+      (put 'w3m-modeline-process-status-on-icon 'risky-local-variable t))
+    (if (and w3m-show-graphic-icons-in-mode-line
+	     w3m-spinner-image-file)
+	(progn
+	  (when (stringp w3m-modeline-process-status-on)
+	    ;; Save the original status strings as properties.
+	    (put 'w3m-modeline-process-status-on 'string
+		 w3m-modeline-process-status-on))
 	  (setq w3m-modeline-process-status-on
 		'(""
 		  w3m-space-before-modeline-icon
-		  w3m-modeline-process-status-on-icon))
-	  (put 'w3m-modeline-process-status-on
-	       'risky-local-variable t)
-	  (put 'w3m-modeline-process-status-on-icon
-	       'risky-local-variable t))))))
+		  w3m-modeline-process-status-on-icon)))
+      (when (get 'w3m-modeline-process-status-on 'string)
+	(setq w3m-modeline-process-status-on
+	      (get 'w3m-modeline-process-status-on 'string))))))
 
 (defun w3m-make-spinner-image ()
-  "Make an image used to show a spinner."
+  "Make an image used to show a spinner.
+It should be called periodically in order to spin the spinner."
   (when w3m-spinner-image-file
     (unless (< (incf w3m-spinner-image-index) w3m-spinner-image-frames)
       (setq w3m-spinner-image-index 0))
