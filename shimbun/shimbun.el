@@ -969,7 +969,7 @@ zone."
 		   ((< year 1000)	; possible 3-digit years.
 		    (+ year 1900))	; why isn't it 1000?
 		   (t year)))
-  (let ((cts (current-time-string (encode-time 0 0 0 day month year "+0000"))))
+  (let ((cts (current-time-string (encode-time 0 0 0 day month year))))
     (format "%s, %02d %s %04d %s %s"
 	    (substring cts 0 3)
 	    day
