@@ -1207,16 +1207,18 @@ meaningless under XEmacs."
   "Non-nil means split the windows when a new emacs-w3m session is created.
 This variable is similar to `pop-up-windows' and quite overridden by
 `w3m-pop-up-frames' as if `pop-up-frames' influences.  Furthermore, if
-`w3m-use-tab' is non-nil, this variable is ignored when creating the
-second or more emacs-w3m session."
+`w3m-use-tab' is non-nil or there is the selection window (for the
+`w3m-select-buffer' feature), this variable is ignored when creating
+the second or more emacs-w3m session."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-pop-up-frames nil
   "Non-nil means popup a new frame for an emacs-w3m session.
 This variable is similar to `pop-up-frames' and does override
-`w3m-pop-up-windows'.  If `w3m-use-tab' is non-nil, this variable is
-ignored when creating the second or more emacs-w3m session."
+`w3m-pop-up-windows'.  If `w3m-use-tab' is non-nil or there is the
+selection window (for the `w3m-select-buffer' feature), this variable
+is ignored when creating the second or more emacs-w3m session."
   :group 'w3m
   :type 'boolean)
 
@@ -1231,13 +1233,18 @@ is non-nil."
   :type 'boolean)
 
 (defcustom w3m-view-this-url-new-session-in-background nil
-  "Execute `w3m-view-this-url' without switching to the newly created buffer."
+  "Run `w3m-view-this-url' without switching to the newly created buffer.
+It is useful if you enabled the tabs line or the selection window for
+the `w3m-select-buffer' feature.  Note that it is meaningful only when
+specifying a prefix argument to the `w3m-view-this-url' command or
+using the `w3m-view-this-url-new-session' command in order to create a
+new emacs-w3m session."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-popup-frame-parameters nil
-  "Alist of frame parameters used when creating a new w3m frame.  It
-allows a kludge that it can also be a plist of frame properties."
+  "Alist of frame parameters used when creating a new emacs-w3m frame.
+It allows not only the alist form but also XEmacs' plist form."
   :group 'w3m
   :type '(choice (group :inline t :tag "Frame Parameters (Emacs)"
 			(repeat :inline t :tag "Frame Parameters (Emacs)"
