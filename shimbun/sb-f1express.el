@@ -41,7 +41,6 @@
 (defvar shimbun-f1express-content-end  "</td></tr>")
 
 (defvar shimbun-f1express-expiration-days 7)
-(defvar shimbun-f1express-coding-system 'shift_jis)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-f1express))
   (concat (shimbun-url-internal shimbun)

@@ -72,7 +72,6 @@
   (mapcar 'car shimbun-isize-sports-group-alist))
 (defvar shimbun-isize-sports-from-address "http://www.isize.com/sports/")
 (defvar shimbun-isize-sports-max-pages 2)
-(defvar shimbun-isize-sports-coding-system 'shift_jis)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-isize-sports))
   (concat (shimbun-url-internal shimbun)

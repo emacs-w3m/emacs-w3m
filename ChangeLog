@@ -1,3 +1,11 @@
+2001-10-12  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+
+	* shimbun/sb-f1express.el (shimbun-f1express-coding-system):
+	Abolished.
+
+	* shimbun/sb-isize-sports.el (shimbun-isize-sports-coding-system):
+	Ditto.
+
 2001-10-11  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-local-dirlist-cgi): Remove <from>...</form>.
