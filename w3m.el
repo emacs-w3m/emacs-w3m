@@ -1791,6 +1791,11 @@ with ^ as `cat -v' does."
 	  (w3m-arrived-add-1 ident title modified-time arrived-time
 			     content-charset content-type))))))
 
+(defsubst w3m-arrived-p (url)
+  "If URL has been arrived, return non-nil value.  Otherwise return nil."
+  (or (string-match w3m-arrived-ignored-regexp url)
+      (intern-soft url w3m-arrived-db)))
+
 (defun w3m-arrived-modify (url &optional title modified-time
 			       arrived-time content-charset content-type)
   "Modify hash database of URL. If some optional argument is 'reset, reset its."
@@ -1812,11 +1817,6 @@ with ^ as `cat -v' does."
 		     (cond ((eq content-type 'reset) nil)
 			   (content-type content-type)
 			   (t (w3m-arrived-content-type url))))))
-
-(defsubst w3m-arrived-p (url)
-  "If URL has been arrived, return non-nil value.  Otherwise return nil."
-  (or (string-match w3m-arrived-ignored-regexp url)
-      (intern-soft url w3m-arrived-db)))
 
 (defun w3m-arrived-time (url)
   "If URL has been arrived, return its arrived time.  Otherwise return nil."
