@@ -159,11 +159,14 @@
 (defsubst shimbun-slashdot-jp-parse-date-string ()
   (let (month day hour min)
     (when (looking-at " *\\([0-9]+\\)年\\([01][0-9]\\)月\\([0123][0-9]\\)日\
- *\\([0-9]+:[0-9]+\\)")
+ *\\(\\([0-9]+\\)時\\([0-9]+\\)分\\|\\([0-9]+:[0-9]+\\)\\)")
       (shimbun-make-date-string (string-to-number (match-string 1))
 				(string-to-number (match-string 2))
 				(string-to-number (match-string 3))
-				(match-string 4)))))
+				(if (match-beginning 4)
+				    (concat
+				     (match-string 4) ":" (match-string 5))
+				  (match-string 6))))))
 
 (defconst shimbun-slashdot-jp-story-head-start-pattern
   "<!-- start template: ID 45, storysearch;search;default -->")
