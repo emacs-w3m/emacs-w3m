@@ -137,14 +137,16 @@ They handle non-initial \"~\" in the different way."
 	   (mapcar
 	    (lambda (str)
 	      (when (stringp str)
-		(setq start 1
-		      buf (list (if (string-match "\\`_" str)
-				    "_u"
-				  (char-to-string
-				   (string-to-char str)))))
+		(if (string-match "\\`~" str)
+		    (setq start 1
+			  buf (list "~"))
+		  (setq start 0
+			buf nil))
 		(while (string-match "[~_]" str start)
 		  (setq buf
-			(cons (if (string= "_" (match-string 0 str)) "_u" "_t")
+			(cons (if (eq ?_ (aref str (match-beginning 0)))
+				  "_u"
+				"_t")
 			      (cons (substring str start (match-beginning 0))
 				    buf))
 			start (match-end 0)))
@@ -156,7 +158,9 @@ They handle non-initial \"~\" in the different way."
 	  buf nil)
     (while (string-match "_[ut]" name start)
       (setq buf
-	    (cons (if (string= "_u" (match-string 0 name)) "_" "~")
+	    (cons (if (eq ?u (aref name (1+ (match-beginning 0))))
+		      "_"
+		    "~")
 		  (cons (substring name start (match-beginning 0))
 			buf))
 	    start (match-end 0)))
