@@ -4142,7 +4142,7 @@ Mew Shimbun $B$O(B @samp{shimbun} $B$H(B Mew (version 2.1 $B0J9_(B) $B$H$
         ;; (@samp{+shimbun/emacs}) $B$GFI$`$3$H$,$G$-$^$9!#(B
         ("emacs"
          ("airs.wl" . last)
-         ("namazu.emacs-w3m" . last))
+         ("emacs-w3m.emacs-w3m" . last))
         ;; @samp{+shimbun/hns/arisawa}, @samp{+shimbun/hns/miyoshi} $B$K$=$l$>$l$N(B
         ;; $BF|5-$r<hF@$7$^$9!#(B
         ("hns/arisawa"
