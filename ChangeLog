@@ -6,9 +6,7 @@
 
 2002-01-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m.el (w3m-local-attributes): Encode paths of local files.
-	(w3m-local-retrieve): Decode paths of local files.
-	(w3m-about-header): Protect against null title.
+	* w3m.el (w3m-about-header): Protect against null title.
 	(w3m-arrived-setup): Ignore database of arrived URLs in too old
 	style.
 
