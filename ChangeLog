@@ -1,3 +1,13 @@
+2001-03-19  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-url-to-file-name): Fix (Cf. RFC-1808).
+	(w3m-expand-file-name-as-url): Ditto.
+	(w3m-url-local-p): New function.
+	(w3m-goto-url): Set `default-directory' when URL points a local
+	file.
+	(w3m-find-file): Use `w3m-goto-url'.
+	(w3m-w32-browser-with-fiber): Use `w3m-url-to-file-name'.
+
 2001-03-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-make-package): Fixed entries of autoloads and

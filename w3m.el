@@ -189,13 +189,21 @@ width using expression (+ (frame-width) VALUE)."
   :type 'directory)
 
 (defun w3m-url-to-file-name (url)
-  (if (string-match "^file:" url)
-      (setq url (substring url (match-end 0))))
-  (if (string-match "^\\(//\\|/cygdrive/\\)\\(.\\)/\\(.*\\)" url)
-      (setq url (concat (match-string 2 url) ":/" (match-string 3 url))))
+  "Return the file name which is pointed by URL."
+  ;; Remove scheme part and net_loc part.
+  (when (string-match "^file://" url)
+    (setq url (substring url (match-end 0))))
+  ;; Process abs_path part in Windows.
+  (when (string-match "^/\\(\\([A-z]\\)[|:]\\|cygdrive/\\([A-z]\\)\\)/" url)
+    (setq url (concat
+	       (or (match-string 2 url)
+		   (match-string 3 url))
+	       ":/"
+	       (substring url (match-end 0)))))
   url)
 
 (defun w3m-expand-file-name-as-url (file &optional directory)
+  "Return URL which points the FILE."
   ;; if filename is cygwin format,
   ;; then remove cygdrive prefix before expand-file-name
   (if directory
@@ -205,8 +213,8 @@ width using expression (+ (frame-width) VALUE)."
   (if (string-match "^\\(.\\):\\(.*\\)" file)
       (if w3m-use-cygdrive
 	  (concat "/cygdrive/" (match-string 1 file) (match-string 2 file))
-	(concat "file://" (match-string 1 file) (match-string 2 file)))
-    file))
+	(concat "file:///" (match-string 1 file) (match-string 2 file)))
+    (concat "file://" file)))
 
 (defcustom w3m-home-page
   (or (getenv "HTTP_HOME")
@@ -1482,6 +1490,10 @@ to nil."
 		  (w3m-decode-buffer type charset))
 	     type)))))))
 
+(defsubst w3m-url-local-p (url)
+  "If URL points a file on the local system, return non-nil value.  Otherwise return nil."
+  (string-match "^\\(file:\\|/\\)" url))
+
 (defun w3m-retrieve (url &optional no-decode no-cache)
   "Retrieve content of URL and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
@@ -1496,7 +1508,7 @@ to nil."
 	       (fboundp func))
 	  (funcall func url no-decode no-cache)
 	(w3m-about url no-decode no-cache))))
-   ((string-match "^\\(file:\\|/\\)" url)
+   ((w3m-url-local-p url)
     (w3m-local-retrieve url no-decode))
    ((string-match "^cid:" url)
     (let ((func (cdr (assq major-mode w3m-cid-retrieve-function-alist))))
@@ -1792,7 +1804,8 @@ this function returns t.  Otherwise, returns nil."
 	    (unwind-protect
 		(with-current-buffer
 		    (generate-new-buffer " *w3m-external-view*")
-		  (if (memq 'file arguments) (w3m-download url file))
+		  (when (memq 'file arguments)
+		    (w3m-download url file))
 		  (setq proc
 			(apply 'start-process
 			       "w3m-external-view"
@@ -2190,6 +2203,10 @@ or prefix ARG columns."
 	  (w3m-toggle-inline-images 'force reload))
 	(setq buffer-read-only t)
 	(set-buffer-modified-p nil))
+      (setq default-directory
+	    (if (w3m-url-local-p url)
+		(file-name-directory (w3m-url-to-file-name url))
+	      w3m-profile-directory))
       (switch-to-buffer (current-buffer))))))
 
 
@@ -2227,7 +2244,7 @@ or prefix ARG columns."
 (defun w3m-find-file (file)
   "w3m Interface function for local file."
   (interactive "fFilename: ")
-  (w3m (w3m-expand-file-name-as-url file)))
+  (w3m-goto-url (w3m-expand-file-name-as-url file)))
 
 
 (defun w3m-cygwin-path (path)
@@ -2302,12 +2319,10 @@ ex.) c:/dir/file => //c/dir/file"
   (w3m-goto-url "about://history/"))
 
 (defun w3m-w32-browser-with-fiber (url)
-  (cond
-   ((string-match "^file://\\([a-z]\\)\\(.*\\)" url)
-    (setq url (concat (match-string 1 url) ":" (match-string 2 url))))
-   ((string-match "^/cygdrive/\\([a-z]\\)\\(.*\\)" url)
-    (setq url (concat (match-string 1 url) ":" (match-string 2 url)))))
-  (start-process "w3m-w32-browser-with-fiber" (current-buffer) "fiber.exe" url))
+  (start-process "w3m-w32-browser-with-fiber"
+		 (current-buffer)
+		 "fiber.exe"
+		 (w3m-url-to-file-name url)))
 
 
 ;; Add-on programs:

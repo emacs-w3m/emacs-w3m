@@ -25,9 +25,6 @@ $Date$
 
    --> autoconf + installer
 
-   --> w3m-find-file や file://URL でローカルのファイルを閲覧している場
-       合、default-directory も同時に変更していてくれる方が有り難い。
-
    --> ローカルのファイルの場合、たとえファイル形式が拡張子からは自動的
        に判別できなくとも、そのファイルを save するか、という質問は不適
        切だ。できれば、text file か否かを別の方法でも検査出来ると良い。
@@ -68,16 +65,6 @@ $Date$
 (6) XEmacs で "<", ">" が機能していないのでは?
 
 
-(7) Mule-2.3 上で w3m-view-image による画像の閲覧ができない。何処かで余
-    分な変換をしてしまっているらしい。
-
-
-(8) v で bookmark を表示した後、s でヒストリ表示に移動すると、bookmark 
-    に該当するリンク表示が about://history/home/user/.w3m/bookmark.html 
-    になってしまっている。これは URL の生成が何処かで間違っているのだと
-    思うが…。
-
-
 ■ 解決済みの問題
 
 (1) w3m-fontify で _id というタグが処理されていない。
@@ -108,6 +95,13 @@ $Date$
 (5) http://clotho.ku3g.org/negi.html が文字化けした。
 
     --> このページは UTF-8 である [emacs-w3m:00220] (Tnx. 白井さん)
+
+
+(6) Mule-2.3 上で w3m-view-image による画像の閲覧ができない。何処かで余
+    分な変換をしてしまっているらしい。
+
+    --> w3m-download で変換してしまっていた [emacs-w3m:00281] (Tnx. 有沢さん)
+
 
 
 
