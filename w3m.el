@@ -1114,16 +1114,17 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
   (let (url candidates)
     (w3m-arrived-setup)
     (mapatoms (lambda (x)
-		(when x
-		  (setq candidates (cons (cons (symbol-name x) x) candidates))))
+		(when x (push (cons (symbol-name x) x) candidates)))
 	      w3m-arrived-db)
     (setq default (or default (thing-at-point 'url)))
-    (setq url (completing-read (or prompt
-				   (if default
-				       "URL: "
-				     (format "URL (default %s): " w3m-home-page)))
-			       candidates nil nil default
-			       'w3m-input-url-history))
+    (setq url (let ((minibuffer-setup-hook (append minibuffer-setup-hook
+						   '(beginning-of-line))))
+		(completing-read (or prompt
+				     (if default
+					 "URL: "
+				       (format "URL (default %s): " w3m-home-page)))
+				 candidates nil nil default
+				 'w3m-input-url-history)))
     (if (string= "" url) (setq url w3m-home-page))
     ;; remove duplication
     (setq w3m-input-url-history (cons url (delete url w3m-input-url-history)))

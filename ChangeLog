@@ -1,3 +1,7 @@
+2001-03-24  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-goto-url): Put cursor at the top of minibuffer.
+
 2001-03-23  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-w3m-attributes): Don't check "OK" string in Status-Line.
