@@ -1,5 +1,7 @@
 2004-04-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-link-numbering.el: New file.
+
 	* w3m.el (w3m-browse-url): Load `browse-url' before calling
 	`browse-url-interactive-arg'.
 
