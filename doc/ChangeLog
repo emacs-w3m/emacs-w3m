@@ -1,3 +1,13 @@
+2002-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* .cvsignore: New file.
+
+	* emacs-w3m.texi, emacs-w3m-ja.texi: Correct copyright holder.
+
+	* emacs-w3m.texi: Renamed from emacs-w3m-en.texi.
+
+	* txi.tex: Renamed from txi-en.tex.
+
 2002-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* emacs-w3m-en.texi, emacs-w3m-en.texi: Convert to GFDL.

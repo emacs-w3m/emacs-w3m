@@ -21,10 +21,7 @@ This file documents Emacs-w3m, an interface program of w3m on Emacsen.
 このファイルは Emacs で動く w3m のインタフェースである Emacs-w3m に関す
 る説明書です。
 
-Copyright @copyright{} 2000, 2001, 2002 @w{Akihiro Arisawa},
-@w{Shun-ichi Goto}, @w{Keisuke Nishida}, @w{Hideyuki Shirai},
-@w{Satoru Takabayashi}, @w{Yuuichi Teranishi}, @w{Masatoshi Tsuchiya},
-and @w{Katsumi Yamaoka}.
+Copyright @copyright{} 2000, 2001, 2002 @w{TSUCHIYA Masatoshi}.
 
 This edition is for Emacs-w3m version @value{VERSION}.
 
@@ -82,10 +79,7 @@ license to the document, as described in section 6 of the license.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000, 2001, 2002 @w{Akihiro Arisawa},
-@w{Shun-ichi Goto}, @w{Keisuke Nishida}, @w{Hideyuki Shirai},
-@w{Satoru Takabayashi}, @w{Yuuichi Teranishi}, @w{Masatoshi Tsuchiya},
-and @w{Katsumi Yamaoka}.
+Copyright @copyright{} 2000, 2001, 2002 @w{TSUCHIYA Masatoshi}.
 
 This manual is for Emacs-w3m version @value{VERSION}.
 
