@@ -5,7 +5,8 @@
 2002-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-header-line-insert): Use the property `keymap'
-	instead of `local-map' for the recent Emacsen; fix a typo.
+	instead of `local-map' for the recent Emacsen; add a help echo;
+	fix a typo.
 
 	* w3m-xmas.el (w3m-setup-header-line): Remove.
 
