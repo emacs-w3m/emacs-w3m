@@ -4,7 +4,7 @@
 	using dolist macro, adding handling codes html character entities,
 	correct bug of w3m-view-bookmark on win32 environment, 
 	fixing some small bugs, etc.
-	(w3m-local-file-name): New function.
+	(w3m-url-to-file-name): New function.
 	(w3m-expand-file-name-as-url): Renamed from w3m-expand-file-name.
 	(w3m-bookmark-file): Initialize as native filename format.
 	(w3m-arrived-urls-file): Likewise.
