@@ -5180,7 +5180,7 @@ expressions to the @file{sb-foobar.el} file.
 (luna-define-method shimbun-index-url ((shimbun shimbun-foobar))
   (concat shimbun-foobar-url
           (cdr (assoc (shimbun-current-group-internal shimbun)
-                      shimbun-foobar-groups))))
+                      shimbun-foobar-group-path-alist))))
 @end lisp
 
 @noindent
