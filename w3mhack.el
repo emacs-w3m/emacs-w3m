@@ -301,6 +301,7 @@ emacs-w3m.")
 				   '("sb-atmarkit-rss.el"
 				     "sb-bbc-rss.el"
 				     "sb-cnet-rss.el"
+				     "sb-pukiwiki-rss.el"
 				     "sb-rss.el"
 				     "sb-slashdot-jp-rss.el")))))
     ;; To byte-compile w3m-util.el and a version specific module first.
