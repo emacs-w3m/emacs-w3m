@@ -146,23 +146,14 @@
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-type nil
-  "*Type of w3m."
-  :group 'w3m
-  :type '(choice (const :tag "w3m" 'w3m)
-		 (const :tag "w3mmee" 'w3mmee)
-		 (const :tag "w3m-m17n" 'w3m-m17n)
-		 (symbol :tag "other" 'other)))
+(defvar w3m-type nil "Type of w3m.
+These values are acceptable: w3m, w3mmee, w3m-m17n.")
+(defvar w3m-compile-options nil "Compile options of w3m.")
 
-(defcustom w3m-options nil
-  "*Option list of w3m."
-  :group 'w3m
-  :type '(repeat string))
-
-;; Set w3m-command, w3m-type and w3m-options
+;; Set w3m-command, w3m-type and w3m-compile-options
 (when (or (null w3m-command)
 	  (null w3m-type)
-	  (null w3m-options))
+	  (null w3m-compile-options))
   (let ((command (or w3m-command
 		     (w3m-which-command "w3m")
 		     (w3m-which-command "w3mmee")
@@ -182,12 +173,13 @@
 		 ((or (match-beginning 5) (match-beginning 2)) 'w3m)
 		 (t 'other))))
 	(when (re-search-forward "options +" nil t)
-	  (setq w3m-options (or (split-string (buffer-substring
-					       (match-end 0)
-					       (save-excursion (end-of-line)
-							       (point)))
-					      ",")
-				(list nil))))))))
+	  (setq w3m-compile-options
+		(or (split-string (buffer-substring
+				   (match-end 0)
+				   (save-excursion (end-of-line)
+						   (point)))
+				  ",")
+		    (list nil))))))))
 
 (defcustom w3m-language
   (if (or (and (boundp 'current-language-environment)
@@ -250,7 +242,7 @@ width using expression (+ (window-width) VALUE)."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-treat-image-size (and (member "image" w3m-options) t)
+(defcustom w3m-treat-image-size (and (member "image" w3m-compile-options) t)
   "*Non-nil means to let the w3m HTML rendering be conscious of image size.
 `w3m-pixel-per-character' is used for the `-ppc' argument of the w3m command.
 `w3m-pixel-per-line' is used for the `-ppl' argument of the w3m command."
@@ -2535,9 +2527,10 @@ If the user enters null input, return second argument DEFAULT."
 ;;; Retrieve local data:
 (defun w3m-local-file-type (url)
   "Return the content type and the content encoding type."
-  (if (file-directory-p (if (w3m-url-local-p url)
-			    (w3m-url-to-file-name url)
-			  url))
+  (setq url (or (w3m-url-to-file-name url)
+		(file-name-nondirectory url)))
+  (if (and (file-name-absolute-p url)
+	   (file-directory-p url))
       (cons "text/html" nil)
     (let ((encoding
 	   (catch 'encoding-detected
@@ -2985,9 +2978,10 @@ type as a string argument, when retrieve is complete."
        time
        (w3m-which-command w3m-touch-command)
        (file-exists-p file)
-       (zerop (call-process w3m-touch-command nil nil nil
-			    "-t" (format-time-string "%Y%m%d%H%M.%S" time)
-			    file))))
+       (zerop (let ((default-directory (file-name-directory file)))
+		(call-process w3m-touch-command nil nil nil
+			      "-t" (format-time-string "%Y%m%d%H%M.%S" time)
+			      file)))))
 
 ;;; Retrieve data:
 (eval-and-compile
@@ -3164,7 +3158,7 @@ type as a string argument, when retrieve is complete."
 	      (append w3m-halfdump-command-arguments
 		      w3m-halfdump-command-common-arguments
 		      ;; Image size conscious rendering
-		      (if (member "image" w3m-options)
+		      (if (member "image" w3m-compile-options)
 			  (if w3m-treat-image-size
 			      (append
 			       (list "-o" "display_image=on")

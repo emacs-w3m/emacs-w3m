@@ -1,3 +1,16 @@
+2002-02-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-type): Considerd as an internal variable.
+	(w3m-options): Removed.
+	(w3m-compile-options): New internal variable.
+	(toplevel): Set `w3m-compile-options' instead of `w3m-options'.
+	(w3m-treat-image-size): Refer `w3m-compile-options' instead of
+	`w3m-options'.
+	(w3m-rendering-half-dump): Ditto.
+	(w3m-local-file-type): When a remote URL is passed, refer its
+	non-directory part to decide its content type.
+	(w3m-touch-file): Bind `default-directory' locally.
+
 2002-02-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-pixel-per-line): New user option.
