@@ -104,8 +104,6 @@
   (autoload 'w3m-antenna "w3m-antenna"
     "*Display antenna report." t)
   (autoload 'w3m-about-antenna "w3m-antenna")
-  (autoload 'w3m-fontify-forms "w3m-form")
-  (autoload 'w3m-form-parse-region "w3m-form")
   (autoload 'w3m-filter "w3m-filter"))
 
 ;; Avoid byte-compile warnings.
@@ -115,12 +113,7 @@
 				  "w3m-xmas"
 				"w3m-e21")))
 
-(defconst emacs-w3m-version
-  (eval-when-compile
-    (let ((rev "$Revision$"))
-      (and (string-match "\\.\\([0-9]+\\) \$$" rev)
-	   (format "0.2.%d"
-		   (- (string-to-number (match-string 1 rev)) 28)))))
+(defconst emacs-w3m-version "1.0pre1"
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -428,12 +421,6 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
   :type 'integer)
 
-(defcustom w3m-use-form nil
-  "*Non-nil means form extension is activated. (EXPERIMENTAL)"
-  :group 'w3m
-  :type 'boolean
-  :require 'w3m-form)
-
 (defcustom w3m-use-filter nil
   "*Non nil means filtering of WEB is used."
   :group 'w3m
@@ -663,6 +650,8 @@ for a charset indication")
 (defconst w3m-about-history-ignored-regexp
   "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\)/.*\\)?$"
   "Regexp of urls to be ignored in an arrived-db or a history.")
+
+(defvar w3m-mode-map nil "Keymap used in w3m-mode buffers.")
 
 ;; Generic macros and inline functions:
 (put 'w3m-with-work-buffer 'lisp-indent-function 0)
@@ -1294,8 +1283,6 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (w3m-fontify-bold)
     (w3m-fontify-underline)
     (w3m-fontify-anchors)
-    (if w3m-use-form
-	(w3m-fontify-forms))
     (w3m-fontify-images)
     ;; Remove other markups.
     (goto-char (point-min))
@@ -1905,8 +1892,6 @@ to nil."
       (with-current-buffer buf
 	(delete-region (point-min) (point-max))
 	(set-buffer-multibyte nil))
-      (if w3m-use-form
-	  (w3m-form-parse-region start end))
       (w3m-message "Rendering...")
       (apply 'call-process-region
 	     start end w3m-command t buf nil
@@ -2398,6 +2383,12 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "." 'beginning-of-buffer)
     (setq w3m-info-like-map map)))
 
+(unless w3m-mode-map
+  (setq w3m-mode-map
+	(if (eq w3m-key-binding 'info)
+	    w3m-info-like-map
+	  w3m-lynx-like-map)))
+
 (defun w3m-alive-p ()
   "When w3m is running, return that buffer.  Otherwise return nil."
   (catch 'alive
@@ -2429,13 +2420,6 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (bury-buffer (current-buffer))
   (set-window-buffer (selected-window) (other-buffer)))
 
-
-(defvar w3m-mode-map nil "Keymap used in w3m-mode buffers.")
-(unless w3m-mode-map
-  (setq w3m-mode-map
-	(if (eq w3m-key-binding 'info)
-	    w3m-info-like-map
-	  w3m-lynx-like-map)))
 
 (defun w3m-mode ()
   "\\<w3m-mode-map>

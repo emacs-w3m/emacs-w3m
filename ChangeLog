@@ -1,5 +1,16 @@
 2001-05-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (emacs-w3m-version): Up to 1.0pre1.
+	(w3m-rendering-region): Removed form support.
+	(w3m-fontify): Ditto.
+	(w3m-use-form): Removed.
+	(top-level): Removed autoload code of form support.
+	(w3m-mode-map): Moved in order to avoid compile warning.
+
+	* w3m-form.el: Removed.
+
+2001-05-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
 	* w3m.el (w3m-w3m-attributes): Check validity of contents length,
 	to avoid the problem reported in [emacs-w3m:00682].
 
