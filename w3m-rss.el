@@ -79,17 +79,17 @@ http://www.w3.org/TR/NOTE-datetime.
 T?\\(\\([0-9][0-9]\\):\\([0-9][0-9]\\)\\(:\\([.0-9]+\\)\\)?\\)?\
 \\(\\([-+]\\)\\([0-9][0-9]\\):?\\([0-9][0-9]\\)\\|Z\\)?"
 			   date))
-    (labels ((substr (n &optional default)
+    (labels ((substr (n default)
 		     (if (match-beginning n)
 			 (string-to-number
 			  (match-string-no-properties n date))
-		       (or default 0))))
-      (encode-time (substr 10)		; seconds
-		   (substr 8)		; minitue
-		   (substr 7)		; hour
-		   (substr 5 1)		; day
-		   (substr 3 1)		; month
-		   (substr 1)		; year
+		       default)))
+      (encode-time (substr 10 0)	; seconds
+		   (substr 8  0)	; minitue
+		   (substr 7  0)	; hour
+		   (substr 5  1)	; day
+		   (substr 3  1)	; month
+		   (substr 1  0)	; year
 		   (if (match-beginning 12)
 		       (funcall (intern (match-string-no-properties 12 date))
 				0
