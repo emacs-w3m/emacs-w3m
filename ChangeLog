@@ -14,7 +14,7 @@
 	Use `shimbun-coding-system-internal' to access coding-system of
 	shimbun-w3m-dev instead of referring to
 	`shimbun-w3m-dev-coding-system' directly.
-	
+
 2001-10-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-w3m-auto-insert-image): Change from 'defcont' to
@@ -31,9 +31,9 @@
 	Add new section 2. c), 2. e) about APEL, FLIM, shimbun library.
 	* README: Ditto.
 
-	* FAQ.ja (Q. 動作する Emacs は?): Add description about where to
+	* FAQ.ja (Q. 動作する Emacs は?): Add description about where to
 	get APEL.
-	
+
 2001-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-expand-url): Accept URL which has the scheme part
@@ -60,7 +60,7 @@
 	Call `shimbun-retrieve-url' with arg RELOAD.
 	Set enable-multibyte-characters to t and decode region according
 	to CODING-SYSTEM when CODING-SYSTEM is non-nil.
-	
+
 	* shimbun/sb-w3m-dev.el (shimbun-w3m-dev-coding-system): New
 	variable.
 
