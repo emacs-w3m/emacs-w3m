@@ -146,7 +146,7 @@
 		(let ((date (shimbun-header-field-value)))
 		  (shimbun-header-set-date
 		   header
-		   (if (string-match "\\([-+][0-9][0-9][0-9][0-9]\\) +([a-Z][a-Z][a-Z])\\'"
+		   (if (string-match "\\([-+][0-9][0-9][0-9][0-9]\\) +([a-zA-Z][a-zA-Z][a-zA-Z])\\'"
 				     date)
 		       (substring date 0 (match-end 1))
 		     date)))
