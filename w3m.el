@@ -1228,10 +1228,11 @@ text.  See also `w3m-use-tab'."
   :type 'boolean)
 
 (defcustom w3m-make-new-session nil
-  "*Non-nil means the `w3m' command mostly makes a new emacs-w3m buffer.
-It does so if a user specifies a url string when invoking the command.
-Otherwise, the `w3m' command uses an existing emacs-w3m buffer to show
-the specified page or simply pops it up."
+  "*Non-nil means making new emacs-w3m buffers when visiting new pages.
+If it is non-nil and there are already emacs-w3m buffers, the `w3m'
+command makes a new emacs-w3m buffer if a user specifies a url string
+in the minibuffer, and the `w3m-safe-view-this-url' command also makes
+a new buffer at any rate."
   :group 'w3m
   :type 'boolean)
 
@@ -8261,14 +8262,19 @@ vicious forms is viewed, this command should be used instead of
 
 Note that this command depends on the value of `w3m-safe-url-regexp'
 \(which see) to consider whether the URL is safe.  You need to keep in
-mind that there may be pages which cause security problems."
+mind that there may be pages which cause security problems.
+
+This command makes a new emacs-w3m buffer if `w3m-make-new-session' is
+non-nil, otherwise use an existing emacs-w3m buffer."
   (interactive)
   (let ((w3m-pop-up-windows nil)
 	(url (w3m-url-valid (w3m-anchor))))
     (cond
      (url (or (when (fboundp w3m-goto-article-function)
 		(funcall w3m-goto-article-function url))
-	      (w3m-goto-url url)))
+	      (if w3m-make-new-session
+		  (w3m-goto-url-new-session url)
+		(w3m-goto-url url))))
      ((w3m-url-valid (w3m-image))
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
