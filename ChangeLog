@@ -1,3 +1,8 @@
+2002-02-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-touch-file-avaiable-p): New internal variable.
+	(w3m-touch-file): Check the validity of `touch' command.
+
 2002-02-05  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-touch-file): Call touch command with "-t time"

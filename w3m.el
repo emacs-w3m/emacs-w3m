@@ -2894,15 +2894,42 @@ type as a string argument, when retrieve is complete."
 		     ""))
 	  nil)))))
 
+(defvar w3m-touch-file-available-p 'undecided)
+
 (defun w3m-touch-file (file time)
   "Change the access and/or modification TIME of the specified FILE."
-  (and time
+  ;; Check the validity of `touch' command.
+  (when (eq w3m-touch-file-available-p 'undecided)
+    (let ((time '(0 0))
+	  (file (make-temp-name
+		 (expand-file-name "w3mel" w3m-profile-directory))))
+      (unwind-protect
+	  (setq w3m-touch-file-available-p
+		(when (w3m-which-command w3m-touch-command)
+		  (with-temp-buffer
+		    (insert "touch check")
+		    (write-region (point-min) (point-max) file nil 'nomsg))
+		  (and (let ((default-directory w3m-profile-directory)
+			     (w3m-touch-file-available-p t))
+			 (w3m-touch-file file time))
+		       (zerop (w3m-time-lapse-seconds
+			       time (nth 5 (file-attributes file)))))))
+	(when (file-exists-p file)
+	  (ignore-errors (delete-file file)))
+	(when (file-exists-p
+	       (setq file (expand-file-name
+			   (format-time-string "%Y%m%d%H%M.%S" time)
+			   w3m-profile-directory)))
+	  (ignore-errors (delete-file file))))))
+  (and w3m-touch-file-available-p
+       time
        (w3m-which-command w3m-touch-command)
        (file-exists-p file)
-       (call-process w3m-touch-command nil nil nil
-		     "-t"
-		     (format-time-string "%Y%m%d%H%M.%S" time)
-		     file)))
+       (zerop (call-process w3m-touch-command nil nil nil
+			    "-t" (format-time-string "%Y%m%d%H%M.%S" time)
+			    file))))
+
+;; Check `touch' command.
 
 ;;; Retrieve data:
 (eval-and-compile
