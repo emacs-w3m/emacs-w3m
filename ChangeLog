@@ -1,5 +1,17 @@
 2002-04-01  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m.el (w3m-follow-redirection): New user option.
+	(w3m-w3m-attributes): Set w3m-current-redirect as nil.
+	(w3m-cookie-command-arguments): Abolish.
+	(w3m-request-arguments): Use cookie only when w3m-use-cookies is
+	non-nil.
+	(w3m-header-arguments): New function.
+	(w3m-w3m-retrieve): Treat redirection when w3m-follow-redirection
+	is non-nil.
+	(w3m-w3m-retrieve-1): Renamed from w3m-w3m-retrieve.
+	(w3m-prepare-content): Don't care w3m-current-redirect.
+	(w3m-goto-url): Ditto.
+
 	* w3m-form.el (w3m-form-new): Added argumnet enctype.
 	(w3m-form-enctype): New macro.
 	(w3m-form-plist): Changed definition.

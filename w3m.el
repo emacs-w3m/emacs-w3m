@@ -576,6 +576,15 @@ to input URL when URL-like string is not detected under the cursor."
   :group 'w3m
   :type 'integer)
 
+(defcustom w3m-follow-redirection 9
+  "*Follow this number of redirections.
+If this value is nil, w3m command itself follows redirection.
+If you want to use cookies, (i.e. set `w3m-use-cookies' as non-nil),
+you should not set this value as nil because many cookie enabled pages set
+cookies between redirections."
+  :group 'w3m
+  :type 'integer)
+
 (defface w3m-anchor-face
   '((((class color) (background light)) (:foreground "blue"))
     (((class color) (background dark)) (:foreground "cyan"))
@@ -2817,6 +2826,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	(header (w3m-w3m-get-header url no-cache handler))
       (when header
 	(let (alist type charset moved)
+	  (setq w3m-current-redirect nil)
 	  (dolist (line (split-string header "[\t ]*\n"))
 	    (when (string-match "^\\([^ \t:]+\\):[ \t]*" line)
 	      (push (cons (downcase (match-string 1 line))
@@ -2935,18 +2945,6 @@ to add the option \"-no-proxy\"."
       (push "-no-proxy" args))
     args))
 
-(defun w3m-cookie-command-arguments (url)
-  "Return cookie related arguments for w3m command."
-  (if w3m-use-cookies
-      (append
-       (list "-no-cookie")
-       (list "-o" "follow_redirection=0") ; Don't follow redirection.
-       (unless (eq w3m-type 'w3mmee)
-	 (let ((cookie-header (w3m-cookie-get url)))
-	   (when cookie-header
-	     (list "-header" (concat "Cookie: " cookie-header))))))
-    (list "-no-cookie")))
-
 ;; Currently, -request argument is supported only by w3mmee.
 (defun w3m-request-arguments (method url temp-file
 				     &optional body referer content-type)
@@ -2958,7 +2956,7 @@ Second optional REFERER is the Referer: field content.
 Third optional CONTENT-TYPE is the Content-Type: field content."
   (with-temp-buffer
     (let ((modes (default-file-modes))
-	  (cookie (w3m-cookie-get url)))
+	  (cookie (and w3m-use-cookies (w3m-cookie-get url))))
       (when w3m-add-user-agent (insert "User-Agent: " w3m-user-agent "\n"))
       (when (and (stringp referer)
 		 (not (and (cdr w3m-add-referer-regexps)
@@ -2984,63 +2982,126 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
 	(set-default-file-modes modes))))
   (list "-request" (concat method ":" temp-file)))
 
+;; Currently, w3m uses this function.
+(defun w3m-header-arguments (method url temp-file
+				    &optional body referer content-type)
+  "Make an `-header' arguments.
+METHOD is an HTTP method name.
+TEMP-FILE is a name of temporal file to write post body to.
+Optional BODY is the post body content string. 
+Second optional REFERER is the Referer: field content.
+Third optional CONTENT-TYPE is the Content-Type: field content."
+  (let ((modes (default-file-modes))
+	(cookie (and w3m-use-cookies (w3m-cookie-get url)))
+	args)
+    (when w3m-add-user-agent
+      (setq args (nconc args
+			(list "-o" (concat "user_agent=" w3m-user-agent)))))
+    (when cookie
+      (setq args (nconc args
+			(list "-header" (concat "Cookie: " cookie)))))
+    (when (and (string= method "post") temp-file)
+      (with-temp-buffer
+	(when body (insert body))
+	(unwind-protect
+	    (let ((coding-system-for-write 'binary))
+	      (set-default-file-modes (* 64 6))
+	      (write-region (point-min) (point-max) temp-file nil 'silent))
+	  (set-default-file-modes modes)))
+      (setq args (nconc args
+			(when content-type
+			  (list "-header" (concat "Content-Type: "
+						  content-type)))
+			(list "-post" temp-file))))
+    (when (and (stringp referer)
+	       (not (and (cdr w3m-add-referer-regexps)
+			 (string-match (cdr w3m-add-referer-regexps)
+				       referer)))
+	       (car w3m-add-referer-regexps)
+	       (string-match (car w3m-add-referer-regexps) referer))
+      (setq args (nconc args (list "-header" (concat "Referer: " referer)))))
+    args))
+
 (defun w3m-w3m-retrieve (url no-decode no-cache post-data referer handler)
   "Retrieve content pointed by URL with w3m, insert it to this buffer,
 and call the HANDLER function with its content type as a string
 argument, when retrieve is complete."
-  (let ((w3m-command-arguments (append w3m-command-arguments
-				       (w3m-cookie-command-arguments url)
-				       (w3m-additional-command-arguments url)))
+  (lexical-let ((i w3m-follow-redirection)
+		(orig-url url)
+		(url url)
+		(no-decode no-decode)
+		(no-cache no-cache)
+		(post-data post-data)
+		(referer referer)
+		(orig-handler handler)
+		redirect-handler
+		sync return)
+    (setq redirect-handler
+	  (lambda (type)
+	    (if (or (null w3m-follow-redirection)
+		    (null w3m-current-redirect))
+		;; No redirection exists.
+		(progn
+		  (w3m-cache-header orig-url
+				    (w3m-cache-request-header url))
+		  (funcall orig-handler type))
+	      ;; Follow the redirection.
+	      (if (zerop i)
+		  ;; Redirection number exceeds `w3m-follow-redirection'.
+		  (funcall orig-handler type)
+		(setq i (1- i))
+		(setq url w3m-current-redirect)
+		(erase-buffer)
+		;; XXX Cache is not used,
+		;; POST method is automatically changed to GET.
+		(if sync
+		    (condition-case nil
+			(w3m-process-with-wait-handler
+			  (w3m-w3m-retrieve-1 url no-decode 'no-cache nil
+					      nil redirect-handler))
+		      (w3m-process-timeout nil))
+		  (w3m-w3m-retrieve-1 url no-decode 'no-cache nil
+				      nil redirect-handler))))))
+    ;; The first retrieval.
+    (prog1 (setq return (w3m-w3m-retrieve-1 
+			 url no-decode no-cache post-data referer 
+			 redirect-handler))
+      (setq sync (w3m-process-p return)))))
+
+(defun w3m-w3m-retrieve-1 (url no-decode no-cache post-data referer handler)
+  "Internal function for w3m-w3m-retrieve.
+The value of `w3m-current-url' is set in this function."
+  (let ((w3m-command-arguments
+	 (append w3m-command-arguments
+		 (list "-no-cookie")
+		 ;; Don't follow redirection within w3m command.
+		 (when w3m-follow-redirection
+		   (list "-o" "follow_redirection=0"))
+		 (w3m-additional-command-arguments url)))
 	(temp-file))
     (and no-cache
 	 w3m-broken-proxy-cache
 	 (setq w3m-command-arguments
 	       (append w3m-command-arguments '("-o" "no_cache=1"))))
-    (if (eq w3m-type 'w3mmee)
-	(progn
-	  (setq temp-file (make-temp-name
-			   (expand-file-name "w3mel" w3m-profile-directory)))
-	  (setq w3m-command-arguments
-		(append w3m-command-arguments
-			(w3m-request-arguments
-			 (if post-data "post" "get")
-			 url
-			 temp-file
-			 (if (consp post-data)
-			     (cdr post-data)
-			   post-data)
-			 referer
-			 (if (consp post-data) (car post-data))))))
-      (if w3m-add-user-agent
-	  (setq w3m-command-arguments
-		(append w3m-command-arguments
-			`("-o" ,(concat "user_agent=" w3m-user-agent)))))
-      (when post-data
-	(setq temp-file (make-temp-name
-			 (expand-file-name "w3mel" w3m-profile-directory)))
-	(with-temp-buffer
-	  (insert (if (consp post-data) (cdr post-data) post-data))
-	  (let ((modes (default-file-modes)))
-	    (unwind-protect
-		(let ((coding-system-for-write 'binary))
-		  (set-default-file-modes (* 64 6))
-		  (write-region (point-min) (point-max) temp-file nil 'silent))
-	      (set-default-file-modes modes))))
-	(setq w3m-command-arguments
-	      (append w3m-command-arguments
-		      (if (consp post-data)
-			  (list "-header" (concat "Content-Type: "
-						  (car post-data))))
-		      (list "-post" temp-file))))
-      (when (and (stringp referer)
-		 (not (and (cdr w3m-add-referer-regexps)
-			   (string-match (cdr w3m-add-referer-regexps)
-					 referer)))
-		 (car w3m-add-referer-regexps)
-		 (string-match (car w3m-add-referer-regexps) referer))
-	(setq w3m-command-arguments
-	      (append w3m-command-arguments
-		      (list "-header" (concat "Referer: " referer))))))
+    (setq temp-file
+	  (when (or (eq w3m-type 'w3mmee)
+		    post-data)
+	    (make-temp-name
+	     (expand-file-name "w3mel" w3m-profile-directory))))
+    (setq w3m-command-arguments
+	  (append w3m-command-arguments
+		  (apply (if (eq w3m-type 'w3mmee)
+			     'w3m-request-arguments
+			   'w3m-header-arguments)
+			 (list
+			  (if post-data "post" "get")
+			  url
+			  temp-file
+			  (if (consp post-data)
+			      (cdr post-data)
+			    post-data)
+			  referer
+			  (if (consp post-data) (car post-data))))))
     (lexical-let ((url url)
 		  (no-decode no-decode)
 		  (temp-file temp-file))
@@ -3507,15 +3568,14 @@ argument.  Otherwise, it will be called with nil."
     ("\\`image/" . w3m-prepare-image-content)))
 
 (defun w3m-prepare-content (url type output-buffer &optional content-charset)
-  (unless w3m-current-redirect
-    (catch 'content-prepared
-      (dolist (elem w3m-content-prepare-functions)
-	(and (string-match (car elem) type)
-	     (funcall (cdr elem) url type output-buffer content-charset)
-	     (throw 'content-prepared t)))
-      (with-current-buffer output-buffer
-	(w3m-external-view url))
-      nil)))
+  (catch 'content-prepared
+    (dolist (elem w3m-content-prepare-functions)
+      (and (string-match (car elem) type)
+	   (funcall (cdr elem) url type output-buffer content-charset)
+	   (throw 'content-prepared t)))
+    (with-current-buffer output-buffer
+      (w3m-external-view url))
+    nil))
 
 (defun w3m-prepare-text-content (url type output-buffer
 				     &optional content-charset)
@@ -4965,40 +5025,38 @@ field for this request."
 	  (with-current-buffer w3m-current-buffer
 	    (setq w3m-current-process nil)
 	    (setq real-url (w3m-real-url url))
-	    (if w3m-current-redirect
-		(w3m-goto-url w3m-current-redirect 'reload)
-	      (cond
-	       ((not action)
-		(w3m-history-push real-url
-				  (list :title (file-name-nondirectory url)))
-		(w3m-history-push w3m-current-url)
-		(w3m-refontify-anchor))
-	       ((not (eq action 'cursor-moved))
-		(w3m-history-push w3m-current-url
-				  (list :title w3m-current-title))
-		(w3m-history-add-properties (list :referer referer
-						  :post-data post-data)
-					    nil nil t)
-		(or (and name (w3m-search-name-anchor name))
-		    (goto-char (point-min)))
-		(unless w3m-toggle-inline-images-permanently
-		  (setq w3m-display-inline-images
-			w3m-default-display-inline-images))
-		(cond ((w3m-display-inline-images-p)
-		       (and w3m-force-redisplay (sit-for 0))
-		       (w3m-toggle-inline-images 'force reload))
-		      ((and (w3m-display-graphic-p)
-			    w3m-image-only-page)
-		       (and w3m-force-redisplay (sit-for 0))
-		       (w3m-toggle-inline-image 'force reload)))
-		(setq buffer-read-only t)
-		(set-buffer-modified-p nil)))
-	      (w3m-arrived-add orig w3m-current-title nil nil cs ct)
-	      ;; must be `w3m-current-url'
-	      (setq default-directory (w3m-current-directory w3m-current-url))
-	      (w3m-update-toolbar)
-	      (run-hook-with-args 'w3m-display-hook (or real-url url))
-	      (w3m-refresh-at-time)))))))))
+	    (cond
+	     ((not action)
+	      (w3m-history-push real-url
+				(list :title (file-name-nondirectory url)))
+	      (w3m-history-push w3m-current-url)
+	      (w3m-refontify-anchor))
+	     ((not (eq action 'cursor-moved))
+	      (w3m-history-push w3m-current-url
+				(list :title w3m-current-title))
+	      (w3m-history-add-properties (list :referer referer
+						:post-data post-data)
+					  nil nil t)
+	      (or (and name (w3m-search-name-anchor name))
+		  (goto-char (point-min)))
+	      (unless w3m-toggle-inline-images-permanently
+		(setq w3m-display-inline-images
+		      w3m-default-display-inline-images))
+	      (cond ((w3m-display-inline-images-p)
+		     (and w3m-force-redisplay (sit-for 0))
+		     (w3m-toggle-inline-images 'force reload))
+		    ((and (w3m-display-graphic-p)
+			  w3m-image-only-page)
+		     (and w3m-force-redisplay (sit-for 0))
+		     (w3m-toggle-inline-image 'force reload)))
+	      (setq buffer-read-only t)
+	      (set-buffer-modified-p nil)))
+	    (w3m-arrived-add orig w3m-current-title nil nil cs ct)
+	    ;; must be `w3m-current-url'
+	    (setq default-directory (w3m-current-directory w3m-current-url))
+	    (w3m-update-toolbar)
+	    (run-hook-with-args 'w3m-display-hook (or real-url url))
+	    (w3m-refresh-at-time))))))))
 
 (defun w3m-current-directory (url)
   (let (file)
