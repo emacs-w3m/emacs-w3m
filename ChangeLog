@@ -1,3 +1,10 @@
+2001-03-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-e21.el (w3m-create-image): Changed arguments spec,
+	`accept-type-regexp' is removed.
+
+	* w3m-xmas.el (w3m-create-image): Ditto.
+
 2001-03-16  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el: Arrived URL database format is changed and code to get

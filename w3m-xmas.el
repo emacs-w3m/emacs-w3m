@@ -38,7 +38,7 @@
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used."
   (condition-case err
-      (let ((type (w3m-retrieve url 'raw nil no-cache)))
+      (let ((type (w3m-retrieve url 'raw no-cache)))
 	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
 	  (let ((data (w3m-with-work-buffer (buffer-string))))
 	    (make-glyph
