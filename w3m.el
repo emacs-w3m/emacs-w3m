@@ -1587,9 +1587,6 @@ This variable will be made buffer-local under Emacs 21 or XEmacs.")
   "Favicon image of the page.
 This variable will be made buffer-local under Emacs 21 or XEmacs.")
 
-(defvar w3m-initial-frame nil "Initial frame of this session.")
-(make-variable-buffer-local 'w3m-initial-frame)
-
 (defvar w3m-current-process nil "Current retrieving process of this buffer.")
 (make-variable-buffer-local 'w3m-current-process)
 
@@ -5278,13 +5275,10 @@ If EMPTY is non-nil, the created buffer has empty content."
 	  (let* ((pop-up-windows w3m-pop-up-windows)
 		 (pop-up-frames w3m-pop-up-frames)
 		 (pop-up-frame-alist (w3m-pop-up-frame-parameters))
-		 (pop-up-frame-plist pop-up-frame-alist)
-		 (oframe (selected-frame)))
+		 (pop-up-frame-plist pop-up-frame-alist))
 	    (if pop-up-windows
 		(pop-to-buffer new)
-	      (switch-to-buffer new))
-	    (unless (eq oframe (selected-frame))
-	      (setq w3m-initial-frame (selected-frame)))))
+	      (switch-to-buffer new))))
 	new))))
 
 (defun w3m-next-buffer (arg)
@@ -5585,36 +5579,17 @@ The optional argument BUFFER will be used exclusively by the command
     nil))
 
 (defun w3m-delete-frame-maybe ()
-  "Delete this frame if it has popped up as w3m frame in the beginning.
-Even so, if there are other windows in the frame or there are no other
-visible frames, it won't delete the frame.  Return t if deleting the
-frame or a window in the frame is succeeded."
-  (let ((frame (selected-frame))
-	(window (selected-window)))
-    (cond ((eq w3m-initial-frame frame)
-	   (if (eq (next-window) window)
-	       (if (w3m-static-if (featurep 'xemacs)
-		       (filtered-frame-list
-			(lambda (f)
-			  (not (or (eq f frame)
-				   (frame-iconified-p f)))))
-		     (filtered-frame-list
-		      (lambda (f)
-			(unless (eq f frame)
-			  (member '(visibility . t) (frame-parameters f))))))
-		   (progn
-		     (delete-frame frame)
-		     t))
-	     (delete-window window)
-	     t))
-	  ((and (frame-live-p w3m-initial-frame)
-		(eq (window-buffer
-		     (setq window (frame-first-window w3m-initial-frame)))
-		    (current-buffer)))
-	   (if (eq (next-window window) window)
-	       (delete-frame w3m-initial-frame)
-	     (delete-window window))
-	   nil))))
+  "Delete the current frame if there is only one window.
+Otherwise, it only deletes the selected window if there are other
+windows in the frame or there are no other visible frames.  Return t
+if deleting the frame or the window is successful."
+  (if (eq (next-window) (selected-window))
+      (unless (eq (next-frame) (selected-frame))
+	(progn
+	  (delete-frame)
+	  t))
+    (delete-window)
+    t))
 
 (defun w3m-quit (&optional force)
   "Quit browsing WWW after updating arrived URLs list."
@@ -6720,9 +6695,7 @@ Optional NEW-SESSION is intended to be used by the command
 	    (progn
 	      (erase-buffer)
 	      (set-buffer-modified-p nil))
-	  (error nil)))
-      (when frame
-	(setq w3m-initial-frame frame)))))
+	  (error nil))))))
 
 (eval-when-compile
   (autoload 'browse-url-interactive-arg "browse-url"))

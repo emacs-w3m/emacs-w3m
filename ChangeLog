@@ -1,3 +1,8 @@
+2003-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Abolish `w3m-initial-frame' throughout.
+	(w3m-delete-frame-maybe): Simplify.
+
 2003-10-19  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
 
 	* shimbun/shimbun.el (shimbun-footer) [shimbun-japanese-newspaper]:
