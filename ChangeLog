@@ -1,3 +1,8 @@
+2002-09-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-filter.el (w3m-filter-rules): Add 'assahi shimbun' rule.
+	(w3m-filter-asahi-shimbun): New function.
+
 2002-09-10  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-unseen-remove-one): Use

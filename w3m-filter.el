@@ -42,7 +42,8 @@
      "<!-- DAC CHANNEL AD START -->" "<!-- DAC CHANNEL AD END -->")
     ("http://lwn.net/" . w3m-filter-lwn.net)
     ("http://www.google.com/search" . w3m-filter-google.com)
-    ("http://www.zdnet.co.jp/news/" . w3m-filter-www.zdnet.co.jp))
+    ("http://www.zdnet.co.jp/news/" . w3m-filter-www.zdnet.co.jp)
+    ("http://www.asahi.com/" . w3m-filter-asahi-shimbun))
   "Rules to filter advertisements on WEB sites."
   :group 'w3m
   :type '(repeat
@@ -166,5 +167,18 @@
       (when next (insert "\n<link rel=\"next\" href=" next ">")))
     t))
 
+(defun w3m-filter-asahi-shimbun (url)
+  "Convert entity reference of UCS."
+  (when w3m-use-mule-ucs
+    (goto-char (point-min))
+    (let ((case-fold-search t)
+	  end ucs)
+      (while (re-search-forward "alt=\"\\([^\"]+\\)" nil t)
+	(goto-char (match-beginning 1))
+	(setq end (match-end 1))
+	(while (re-search-forward "&#\\([0-9]+\\);" end t)
+	  (setq ucs (string-to-number (match-string 1)))
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (insert-char (w3m-ucs-to-char ucs) 1))))))
 
 ;;; w3m-filter.el ends here.
