@@ -1,3 +1,7 @@
+2002-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-what-where): Don't say [-ja] especially.
+
 2002-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* doc/ptexinfmt.el: Modify it not to use APEL functions.

@@ -806,7 +806,7 @@ infodir=%s"
 	     lisp-dir icon-dir package-dir info-dir)
     (setq info-dir (file-name-as-directory info-dir))
     (message "
-install[-ja]:
+install:
   *.el, *.elc, ChangeLog* -> %s
   *.info, *.info-*        -> %s"
 	     (file-name-as-directory lisp-dir) info-dir)
@@ -818,12 +818,12 @@ install-icons:
 	       icon-dir))
     (setq package-dir (file-name-as-directory package-dir))
     (message "
-install-info[-ja]:
+install-info:
   *.info, *.info-*        -> %s"
 	     info-dir)
     (unless (string-equal "NONE/" package-dir)
       (message "
-install-package[-ja]:
+install-package:
   *.el, *.elc, ChangeLog* -> %slisp/w3m/
   *.xpm                   -> %setc/w3m/
   *.info, *.info-*        -> %sinfo/
