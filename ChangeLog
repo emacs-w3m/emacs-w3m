@@ -1,3 +1,9 @@
+2001-09-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-search.el (w3m-search-engine-alist): Changed default value
+	for `google' and `google-ja'.  Add new engines `debian-pkg',
+	`debian-bts', and `iij-archie'.
+
 2001-09-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (top): Require `ccl'.

@@ -53,12 +53,19 @@ This value is default and used only when spec defined by
   :type 'coding-system)
 
 (defcustom w3m-search-engine-alist
-  '(("yahoo" "http://search.yahoo.com/bin/search?p=%s" nil)
-    ("yahoo-ja" "http://search.yahoo.co.jp/bin/search?p=%s" euc-japan)
-    ("google" "http://www.google.com/search?q=%s" nil)
-    ("google-ja" "http://www.google.com/search?q=%s&hl=ja&lr=" shift_jis)
-    ("goo-ja" "http://www.goo.ne.jp/default.asp?MT=%s" euc-japan)
-    ("rpmfind" "http://rpmfind.net/linux/rpm2html/search.php?query=%s" nil))
+  (` (("yahoo" "http://search.yahoo.com/bin/search?p=%s" nil)
+      ("yahoo-ja" "http://search.yahoo.co.jp/bin/search?p=%s" euc-japan)
+      (, (if (and (boundp 'current-language-environment)
+		  (string= "Japanese"
+			   (symbol-value 'current-language-environment)))
+	     '("google" "http://www.google.com/search?q=%s&hl=ja" shift_jis)
+	   '("google" "http://www.google.com/search?q=%s" nil)))
+      ("google-ja" "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja" shift_jis)
+      ("goo-ja" "http://www.goo.ne.jp/default.asp?MT=%s" euc-japan)
+      ("rpmfind" "http://rpmfind.net/linux/rpm2html/search.php?query=%s" nil)
+      ("debian-pkg" "http://packages.debian.org/cgi-bin/search_contents.pl?directories=yes&arch=i386&version=unstable&case=insensitive&word=%s" nil)
+      ("debian-bts" "http://bugs.debian.org/cgi-bin/pkgreport.cgi?archive=yes&pkg=%s" nil)
+      ("iij-archie" "http://www.iij.ad.jp/cgi-bin/archieplexform?query=%s&type=Case+Insensitive+Substring+Match&order=host&server=archie1.iij.ad.jp&hits=95&nice=Nice")))
   "*An alist of search engines.
 Each elemnt looks like (ENGINE ACTION CODING)
 ENGINE is a string, the name of the search engine.
