@@ -5,6 +5,7 @@
 	(shimbun-slashdot-jp-sid-url): Follow the above change.
 	(shimbun-headers): Ditto.
 	(shimbun-slashdot-jp-make-comment-headers): Reverse order.
+	(shimbun-slashdot-jp-parse-date-string): Fix.
 
 	* shimbun/sb-slashdot-jp.el (shimbun-make-contents): Follow the
 	argument spec change of `shimbun-slashdot-jp-make-story-article'.

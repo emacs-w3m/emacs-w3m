@@ -167,7 +167,8 @@
 	  (min   (string-to-number (match-string 4))))
       (when (match-beginning 6) ;; PM id found
 	(setq hour (+ 12 hour)))
-      (shimbun-make-date-string (if (< (nth 4 time) month)
+      (shimbun-make-date-string (if (and (= month 1)
+					 (> (nth 4 time) month))
 				    (1+ (nth 5 time))
 				  (nth 5 time))
 				month day
