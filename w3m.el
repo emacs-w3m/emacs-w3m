@@ -787,19 +787,20 @@ downloading something from a url."
   (` ((gzip "gzip" ("-d"))	;; Don't use "gunzip" and "bunzip2"
       (bzip "bzip2" ("-d"))	;; for broken OS & environment
       (deflate
-	(, (let ((file
-		  (expand-file-name
-		   (concat "../lib/"
-			   (file-name-nondirectory w3m-command)
-			   "/"
-			   (if (memq system-type '(windows-nt OS/2 emx))
-			       "inflate.exe"
-			     "inflate"))
-		   (file-name-directory
-		    (w3m-which-command w3m-command)))))
-	     (if (file-executable-p file)
-		 file
-	       "inflate")))
+	(, (if (not noninteractive)
+	       (let ((file
+		      (expand-file-name
+		       (concat "../lib/"
+			       (file-name-nondirectory w3m-command)
+			       "/"
+			       (if (memq system-type '(windows-nt OS/2 emx))
+				   "inflate.exe"
+				 "inflate"))
+		       (file-name-directory
+			(w3m-which-command w3m-command)))))
+		 (if (file-executable-p file)
+		     file
+		   "inflate"))))
 	nil)))
   "Associative list of DECODER."
   :group 'w3m
@@ -1003,12 +1004,13 @@ If nil, use an internal CGI of w3m."
   :group 'w3m
   :type (` (choice (const :tag "w3m internal CGI" nil)
 		   (file :tag "path of 'dirlist.cgi'"
-			 (, (expand-file-name
-			     (concat "../lib/"
-				     (file-name-nondirectory w3m-command)
-				     "/dirlist.cgi")
-			     (file-name-directory
-			      (w3m-which-command w3m-command))))))))
+			 (, (if (not noninteractive)
+				(expand-file-name
+				 (concat "../lib/"
+					 (file-name-nondirectory w3m-command)
+					 "/dirlist.cgi")
+				 (file-name-directory
+				  (w3m-which-command w3m-command)))))))))
 
 (defcustom w3m-add-referer-regexps
   (when (or (not (boundp 'w3m-add-referer))
