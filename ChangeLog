@@ -1,3 +1,19 @@
+2001-11-29  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-e21.el (w3m-imagick-convert-program): New user option.
+	(w3m-favicon-size): Ditto.
+	(w3m-use-favicon): Ditto.
+	(w3m-favicon-name): New constant.
+	(w3m-current-favicon-data): New buffer local variable.
+	(w3m-current-favicon-image): Ditto.
+	(w3m-display-hook): Added 'w3m-setup-favicon.
+	(w3m-imagick-convert-buffer): New function.
+	(w3m-imagick-convert-data): Ditto.
+	(w3m-setup-favicon): Ditto.
+	(w3m-buffer-favicon): Ditto.
+	(w3m-retrieve-favicon): Ditto.
+	(w3m-tab-line): Display favicon on tab.
+
 2001-11-28  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-xmas.el (w3m-insert-image): Rewrite.

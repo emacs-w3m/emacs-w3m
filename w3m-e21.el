@@ -45,6 +45,7 @@
   (defvar w3m-current-url)
   (defvar w3m-current-title)
   (defvar w3m-current-process)
+  (defvar w3m-current-buffer)
   (defvar w3m-display-inline-images)
   (defvar w3m-icon-directory)
   (defvar w3m-mode-map)
@@ -56,6 +57,7 @@
   (defvar w3m-history)
   (defvar w3m-history-flat)
   (defvar w3m-form-use-fancy-faces)
+  (autoload 'w3m-expand-url "w3m")
   (autoload 'w3m-retrieve "w3m")
   (autoload 'w3m-image-type "w3m"))
 
@@ -263,6 +265,80 @@ Buffer string between BEG and END are replaced with IMAGE."
 
 (defalias 'w3m-update-toolbar 'ignore)
 
+;;; favicon
+(defcustom w3m-imagick-convert-program "convert"
+  "*Program name of ImageMagick's `convert'."
+  :group 'w3m
+  :type 'string)
+
+(defcustom w3m-favicon-size "16x16"
+  "*Size of favicon. This value is used as geometry argument for `convert'."
+  :group 'w3m
+  :type 'string)
+
+(defcustom w3m-use-favicon nil
+  "*Use favicon."
+  :group 'w3m
+  :type 'boolean)
+
+(defconst w3m-favicon-name "favicon.ico"
+  "The favicon name.")
+
+(defvar w3m-current-favicon-data nil)
+(defvar w3m-current-favicon-image nil)
+(make-variable-buffer-local 'w3m-current-favicon-data)
+(make-variable-buffer-local 'w3m-current-favicon-image)
+(add-hook 'w3m-display-hook 'w3m-setup-favicon)
+
+(defun w3m-imagick-convert-buffer (from-type to-type &rest args)
+  (let ((coding-system-for-read 'binary)
+	(coding-system-for-write 'binary)
+	(default-process-coding-system (cons 'binary 'binary)))
+    (zerop (apply 'call-process-region
+		  (point-min) (point-max)
+		  w3m-imagick-convert-program
+		  t t nil (append args (list (concat from-type ":-")
+					     (concat to-type ":-")))))))
+
+(defun w3m-imagick-convert-data (data from-type to-type &rest args)
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (insert data)
+    (and (apply 'w3m-imagick-convert-buffer from-type to-type args)
+	 (buffer-string))))
+
+(defun w3m-setup-favicon (url)
+  (setq w3m-current-favicon-data nil
+	w3m-current-favicon-image nil)
+  (when (and w3m-use-favicon (w3m-image-type-available-p 'xpm))
+    (w3m-retrieve-favicon
+     (w3m-expand-url (concat "/" w3m-favicon-name) url)
+     w3m-current-buffer)))
+
+(defun w3m-buffer-favicon (buffer)
+  (with-current-buffer buffer
+    (when w3m-current-favicon-data
+      (or w3m-current-favicon-image
+	  (let ((png (w3m-imagick-convert-data
+		      w3m-current-favicon-data
+		      "ico" "xpm" "-geometry" w3m-favicon-size)))
+	    (and png
+		 (setq w3m-current-favicon-image
+		       (create-image png
+				     'xpm
+				     t
+				     :ascent 'center))))))))
+
+(defun w3m-retrieve-favicon (url target &optional handler)
+  (lexical-let ((url url)
+		(target target))
+    (w3m-process-do-with-temp-buffer
+	(ok (w3m-retrieve url 'raw nil nil nil handler))
+      (when ok
+	(let ((data (buffer-string)))
+	  (with-current-buffer target
+	    (setq w3m-current-favicon-data data)))))))
+
 ;;; Header line & Tabs
 (defface w3m-header-line-location-title-face
     '((((class color) (background light))
@@ -407,9 +483,12 @@ Buffer string between BEG and END are replaced with IMAGE."
      (save-current-buffer
        (mapconcat
 	(lambda (buffer)
-	  (let ((title (w3m-buffer-title buffer)))
+	  (let ((title (w3m-buffer-title buffer))
+		(favicon (w3m-buffer-favicon buffer)))
 	    (propertize
-	     (concat " "
+	     (concat (if favicon
+			 (propertize " " 'display favicon)
+		       " ")
 		     (if (and (> w3m-tab-width 0)
 			      (> (string-width title) w3m-tab-width))
 			 (concat (truncate-string-to-width
