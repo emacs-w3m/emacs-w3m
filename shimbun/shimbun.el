@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
@@ -65,6 +65,8 @@
 ;; shimbun-header-extra
 ;; shimbun-header-set-extra
 
+;;; Code:
+
 (eval-when-compile (require 'cl))
 (eval-when-compile (require 'static))
 
@@ -72,6 +74,7 @@
 (require 'eword-encode)
 (require 'luna)
 (require 'std11)
+(require 'shimbun-servers)
 
 (eval-and-compile
   (luna-define-class shimbun ()
