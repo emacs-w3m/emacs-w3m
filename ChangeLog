@@ -1,3 +1,8 @@
+2004-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el (w3m-tab-line): Replace "%" with "%%" in
+	w3m-tab-line-format.
+
 2004-10-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-retrieve): Add autoload cookie.
