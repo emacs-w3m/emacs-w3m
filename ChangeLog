@@ -1,3 +1,7 @@
+2001-11-06  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-yomiuri-html.el: New file.
+
 2001-11-06  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-md5): Remove `X-Face:'
