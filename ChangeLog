@@ -1,7 +1,6 @@
 2001-10-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-ccl-write-repeat): Quote and eval the form to call
-	the function `charset-id' to avoid a byte-compile warning.
+	* w3m.el (w3m-ccl-write-repeat): Avoid a byte-compile warning.
 
 2001-10-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

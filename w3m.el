@@ -2838,7 +2838,7 @@ to nil.
 			   (japanese-jisx0212 . lc-jp2)
 			   (katakana-jisx0201 . lc-kana))))
 		    (eval (cdr (assq charset alist))))
-		(eval (list 'charset-id (quote charset))))))
+		(eval '(charset-id charset)))))
       (if (fboundp 'ccl-compile-write-multibyte-character)
 	  (` ((r0 = (, id))
 	      (write-multibyte-character r0 r1)
