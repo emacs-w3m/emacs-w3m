@@ -4125,8 +4125,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 	    (when (search-forward "\n\n" nil t)
 	      ;; Asahi-shimbun sometimes says gif as jpeg mistakenly.  So,
 	      ;; we cannot help trusting the magic at the beginning of data.
-	      (when (looking-at "\
-\\(GIF8\\)\\|\\(\377\330\377[\340\356]\\)\\|\\(\211PNG\\)")
+	      (when (looking-at "\\(GIF8\\)\\|\\(\377\330\\)\\|\\(\211PNG\\)")
 		(setq type (cond ((match-beginning 1) "gif")
 				 ((match-beginning 2) "jpeg")
 				 ((match-beginning 3) "png")))
