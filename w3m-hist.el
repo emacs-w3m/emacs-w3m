@@ -179,7 +179,7 @@ history element of the current position."
 	      element (nth (pop position) element)))
       element)))
 
-(defun w3m-history-flat (&optional history position alist)
+(defun w3m-history-flat (&optional history position)
   "Return a flattened alist of `w3m-url-history'.  Each element will have
 the following records:
 
@@ -197,7 +197,7 @@ to recursive funcall itself internally."
     (unless position
       (setq position '(t)))
     (let ((i 0)
-	  element branches j)
+	  element alist branches j)
       (while (setq element (pop history))
 	(setcar (nthcdr (1- (length position)) position) i)
 	(setq i (1+ i))
@@ -211,8 +211,8 @@ to recursive funcall itself internally."
 			       (w3m-history-flat (pop branches)
 						 (append position
 							 (list j t))))
-		  j (1+ j))))))
-    alist))
+		  j (1+ j)))))
+      alist)))
 
 ;;(not-provided-yet 'w3m-hist)
 
