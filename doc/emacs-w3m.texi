@@ -99,6 +99,7 @@ Getting Started
 * You Need w3m::                Using w3m: the reason why emacs-w3m is fast
 * Other Requirements::          Things required to run emacs-w3m
 * Installing Emacs-w3m::        Installing emacs-w3m
+* Non-UNIX-like systems::       Installing in non-UNIX-like systems
 
 Shimbun Library
 
@@ -132,6 +133,7 @@ person; read it over again when you install a new version of emacs-w3m.
 * You Need w3m::                Using w3m: the reason why emacs-w3m is fast
 * Other Requirements::          Things required to run emacs-w3m
 * Installing Emacs-w3m::        Installing emacs-w3m
+* Non-UNIX-like systems::       Installing in non-UNIX-like systems
 @end menu
 
 @node Required Emacs Version
@@ -283,6 +285,11 @@ is available in:
 See the official page @uref{http://emacs-w3m.namazu.org/} for getting
 emacs-w3m.  Is everything ready?  Now, let's begin.
 
+In order to install emacs-w3m to non-UNIX-like system which is lacking
+in an ability to execute the @samp{configure} script or has no
+@samp{make} command, skip this section to go to the next section
+@xref{Non-UNIX-like systems}.
+
 @enumerate
 @item
 First, extract a tarball of emacs-w3m distribution at some place and
@@ -348,6 +355,26 @@ In this case, you don't have to execute @samp{make install-icons}
 command.
 
 @end enumerate
+
+@node Non-UNIX-like systems
+@section Installing in non-UNIX-like systems
+@cindex install
+@cindex non-UNIX
+
+If you cannot execute the @samp{configure} script in your system and
+@samp{make} command is not available neither, cast the following spell:
+
+@example
+% emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
+@end example
+
+If you haven't APEL, FLIM or something installed in the ordinary places,
+the installer will leave them out.  In such a case, it is necessary to
+tell those places to the installer as shown below:
+
+@example
+% emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
+@end example
 
 @node Shimbun Library
 @chapter A tool for reading a newspaper

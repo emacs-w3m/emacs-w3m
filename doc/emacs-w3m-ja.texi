@@ -140,6 +140,7 @@ Getting Started
 * You Need w3m::                w3m $B$r;H$$$^$9(B: emacs-w3m $B$,B.$$$o$1(B
 * Other Requirements::          Emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
 * Installing Emacs-w3m::        Emacs-w3m $B$r%$%s%9%H!<%k$9$k(B
+* Non-UNIX-like systems::       $BHs(B UNIX $B7O4D6-$G$N%$%s%9%H!<%k(B
 
 Shimbun Library
 
@@ -175,6 +176,7 @@ Emacs-w3m $B$N8x<0%Z!<%8(B @uref{http://emacs-w3m.namazu.org/} $B$bJ;$;$F$4Mw
 * You Need w3m::                w3m $B$r;H$$$^$9(B: emacs-w3m $B$,B.$$$o$1(B
 * Other Requirements::          Emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
 * Installing Emacs-w3m::        Emacs-w3m $B$r%$%s%9%H!<%k$9$k(B
+* Non-UNIX-like systems::       $BHs(B UNIX $B7O4D6-$G$N%$%s%9%H!<%k(B
 @end menu
 
 @node Required Emacs Version
@@ -335,6 +337,10 @@ Emacs-w3m $B$N<hF@$K4X$7$F$O8x<0%Z!<(B
 $B%8(B @uref{http://emacs-w3m.namazu.org/} $B$r;2>H$7$F2<$5$$!#$9$Y$F=`Hw$G$-(B
 $B$^$7$?$+(B?  $B$G$O;O$a$^$7$g$&!#(B
 
+@samp{configure} $B$r<B9T$G$-$J$$$+(B @samp{make} $B%3%^%s%I$,L5$$Hs(B UNIX $B7O$N(B
+$B%7%9%F%`$K(B emacs-w3m $B$r%$%s%9%H!<%k$9$k$K$O!"$3$N9`$rHt$P$7$F<!$N(B
+$B9`(B @xref{Non-UNIX-like systems} $B$K9T$C$F2<$5$$!#(B
+
 @enumerate
 @item
 $B:G=i$K!"0J2<$N$h$&$KG[I[$5$l$?(B emacs-w3m $B$N(B tarball $B$rE,Ev$J>l=j$GE83+$7(B
@@ -403,6 +409,26 @@ emacs-w3m $B$r(B XEmacs $B%Q%C%1!<%8$H$7$F%$%s%9%H!<%k$9$k$3$H$b$G$-$^$9(B:
 $B$3$N>l9g(B @samp{make install-icons} $B$r<B9T$9$kI,MW$O$"$j$^$;$s!%(B
 
 @end enumerate
+
+@node Non-UNIX-like systems
+@section $BHs(B UNIX $B7O4D6-$G$N%$%s%9%H!<%k(B
+@cindex install
+@cindex non-UNIX
+
+$B$"$J$?$N%7%9%F%`$G$O(B @samp{configure} $B%9%/%j%W%H$r<B9T$9$k$3$H$,$G$-$J$/(B
+$B$F!"(B@samp{make} $B%3%^%s%I$bMxMQ$G$-$J$$>l9g$O!"0J2<$NJ86g$r>'$($F2<$5$$!#(B
+
+@example
+% emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
+@end example
+
+APEL$B!"(BFLIM $B$^$?$OB>$N2?$+$rIaDL$N>l=j$K%$%s%9%H!<%k$7$F$$$J$$$H!"%$%s%9(B
+$B%H!<%i$O$=$l$i$rL5;k$7$F$7$^$&$G$7$g$&!#$=$s$J>l9g$O!"0J2<$K<($9$h$&$K!"(B
+$B$=$l$i$N>l=j$r%$%s%9%H!<%i$K9p$2$kI,MW$,$"$j$^$9(B:
+
+@example
+% emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
+@end example
 
 @node Shimbun Library
 @chapter $B%&%'%V>e$N?7J9$rFI$`$?$a$NF;6q(B
