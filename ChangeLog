@@ -1,3 +1,8 @@
+2001-10-11  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-decoder-alist): Fix for Windows or OS/2
+	environments.
+
 2001-10-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-display-inline-image): Update document.

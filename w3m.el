@@ -492,9 +492,12 @@ apply the patch posted in [emacs-w3m:01119]."
       (bzip "bunzip2" nil)
       (deflate
 	(, (let ((file
-		  (expand-file-name "../lib/w3m/inflate"
-				    (file-name-directory
-				     (w3m-which-command "w3m")))))
+		  (expand-file-name
+		     (if (memq system-type '(windows-nt OS/2 emx))
+			 "../lib/w3m/inflate.exe"
+		       "../lib/w3m/inflate")
+		     (file-name-directory
+		      (w3m-which-command "w3m")))))
 	     (if (file-executable-p file)
 		 file
 	       "inflate")))
