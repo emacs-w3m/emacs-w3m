@@ -94,6 +94,9 @@ tarball: $(DOCS) $(DISTS)
 	cp -p `echo patches/*|sed s,patches/CVS,,` $(DISTDIR)/patches
 	mkdir $(DISTDIR)/shimbun
 	cp -p shimbun/*.el $(DISTDIR)/shimbun
+	find $(DISTDIR) -type d | xargs chmod 755
+	find $(DISTDIR) -type f | xargs chmod 644
+	chmod 755 $(DISTDIR)/install-sh
 	tar -cf `basename $(TARBALL) .gz` $(DISTDIR)
 	gzip -9 `basename $(TARBALL) .gz`
 	rm -rf $(DISTDIR)
