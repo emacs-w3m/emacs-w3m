@@ -51,6 +51,8 @@
 (if (featurep 'xemacs)
     (require 'poem))
 
+(require 'ffap)
+
 (unless (fboundp 'find-coding-system)
   (if (fboundp 'coding-system-p)
       (defsubst find-coding-system (obj)
@@ -570,9 +572,12 @@ If N is negative, last N items of LIST is returned."
     (mapatoms (lambda (x)
 		(setq candidates (cons (cons (symbol-name x) x) candidates)))
 	      w3m-backlog-hashtb)
-    (setq url (completing-read (or prompt "URL: ")
-			       candidates nil nil
-			       default 'w3m-input-url-history))
+    (setq default (or default (ffap-url-at-point)))
+    (setq prompt (or prompt
+		     (if default "URL: "
+		       (format "URL (default %s): " w3m-home-page))))
+    (setq url (completing-read prompt candidates nil nil default
+			       'w3m-input-url-history w3m-home-page))
     ;; remove duplication
     (setq w3m-input-url-history (cons url (delete url w3m-input-url-history)))
     ;; return value
@@ -1556,9 +1561,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
       (w3m-mode))
   (setq mode-line-buffer-identification
 	(list "%b" " / " 'w3m-current-title))
-  (if (string= url "")
-      (w3m-goto-url w3m-home-page)
-    (w3m-goto-url url))
+  (w3m-goto-url url)
   (switch-to-buffer (current-buffer))
   (run-hooks 'w3m-hook))
 
