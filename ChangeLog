@@ -1,3 +1,11 @@
+2002-02-23  OHASHI Akira  <bg66@koka-in.org>
+
+	* shimbun/sb-debian.el (shimbun-debian-fetch-headers-max):
+	New variable.
+	(shimbun-debian-get-headers): New macro for handling date.
+	(shimbun-get-headers): Use it and handle multi pages.
+	(Implemented by YAMASHITA Junji <ysjj@unixuser.org>)
+
 2002-02-19  OHASHI Akira  <bg66@koka-in.org>
 
 	* shimbun/sb-pcweb-column.el: New file.
