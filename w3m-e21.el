@@ -106,7 +106,7 @@ circumstances."
 		 (insert data)
 		 (apply 'w3m-imagick-start-convert-buffer
 			handler from-type to-type args)))
-    (if success (string-as-unibyte (buffer-string)))))
+    (if success (buffer-string))))
 
 (defun w3m-imagick-start-convert-buffer (handler from-type to-type &rest args)
   (lexical-let ((in-file (make-temp-name
