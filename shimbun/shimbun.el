@@ -388,11 +388,10 @@ you want to use no database."
      (autoload 'bbdb-get-field "bbdb"))))
 
 (defun shimbun-bbdb-get-x-face (person)
-  "Search a face of a PERSON from LSDB.  When missing it, return nil."
+  "Search a face of a PERSON from BBDB.  When missing it, return nil."
   (let (x)
-    (and (setq x (bbdb-search-simple
-		  nil
-		  (cadr (mail-extract-address-components person))))
+    (and (setq x (cadr (mail-extract-address-components person)))
+	 (setq x (bbdb-search-simple nil x))
 	 (setq x (bbdb-get-field x 'face))
 	 (not (zerop (length x)))
 	 (concat "X-Face: "
@@ -408,17 +407,20 @@ you want to use no database."
      (autoload 'lsdb-lookup-records "lsdb"))))
 
 (defun shimbun-lsdb-get-x-face (person)
-  "Return a face of a PERSON from BBDB.  When missing it, return nil."
+  "Return a face of a PERSON from LSDB.  When missing it, return nil."
   (lsdb-maybe-load-hash-tables)
   (let (x)
-    (and (setq x (car (lsdb-lookup-records
-		       (car (mail-extract-address-components person)))))
-	 (setq x (cadr (assq 'x-face x)))
+    (and (setq x (car (mail-extract-address-components person)))
+	 (setq x (car (lsdb-lookup-records x)))
+	 (setq x (cdr (assq 'x-face x)))
 	 (not (zerop (length x)))
-	 (concat "X-Face: "
-		 (mapconcat 'identity
-			    (split-string x)
-			    "\n ")))))
+	 (mapconcat (lambda (x-face)
+		      (concat "X-Face: "
+			      (mapconcat 'identity
+					 (split-string x-face)
+					 "\n ")))
+		    x
+		    "\n"))))
 
 ;;; Implementation of Shimbun API.
 
