@@ -436,6 +436,24 @@ Buffer string between BEG and END are replaced with IMAGE."
 				map)
 		   'help-echo "mouse-2 prompts to input URL")))))))
 
+(eval-when-compile
+  ;; Shut up the byte-compiler in old Emacs 21.
+  (defmacro w3m-force-window-update-1 (object)
+    (if (fboundp 'force-window-update)
+	`(force-window-update ,object))))
+
+(eval-and-compile
+  (defalias 'w3m-force-window-update
+    (if (fboundp 'force-window-update)
+	(lambda (&optional window) "\
+Force redisplay of WINDOW which defaults to the selected window."
+	  (w3m-force-window-update-1 (or window (selected-window))))
+      (lambda (&optional ignore) "\
+Wobble the selected window size to force redisplay of the header-line."
+	(let ((window-min-height 0))
+	  (shrink-window 1)
+	  (enlarge-window 1))))))
+
 (defun w3m-tab-drag-mouse-function (event buffer)
   (let ((window (posn-window (event-end event)))
 	mpos)
@@ -452,12 +470,13 @@ Buffer string between BEG and END are replaced with IMAGE."
       (unless (eq (window-buffer window) buffer)
 	(select-window window)
 	(switch-to-buffer buffer)
-	(w3m-e21-wobble-window-size)))))
+	(w3m-force-window-update window)))))
 
 (defun w3m-tab-click-mouse-function (event buffer)
-  (select-window (posn-window (event-start event)))
-  (switch-to-buffer buffer)
-  (w3m-e21-wobble-window-size))
+  (let ((window (posn-window (event-start event))))
+    (select-window window)
+    (switch-to-buffer buffer)
+    (w3m-force-window-update window)))
 
 (defvar w3m-tab-map nil)
 (make-variable-buffer-local 'w3m-tab-map)
@@ -513,12 +532,6 @@ cleared by a timer.")
 	      'display '(space :width 0.5))
   "String used to separate tabs.")
 
-(defun w3m-e21-wobble-window-size ()
-  "Wobble the window size to force redisplay of the header-line."
-  (let ((window-min-height 0))
-    (shrink-window 1)
-    (enlarge-window 1)))
-
 (defun w3m-tab-line ()
   (or (and w3m-tab-timer w3m-tab-line-format)
       (let* ((current (current-buffer))
@@ -552,7 +565,7 @@ cleared by a timer.")
 			   (when (and (eq (selected-window)
 					  (get-buffer-window buffer))
 				      w3m-process-queue)
-			     (inline (w3m-e21-wobble-window-size))))))
+			     (inline (w3m-force-window-update))))))
 		     current)
 	(save-current-buffer
 	  (while buffers
@@ -644,7 +657,7 @@ Redisplaying is done by wobbling the window size."
       (switch-to-buffer buffer norecord)
     (when (and header-line-format
 	       (eq major-mode 'w3m-mode))
-      (w3m-e21-wobble-window-size))))
+      (w3m-force-window-update))))
 
 (defun w3m-e21-subst-switch-to-buffer-keys ()
   "Substitute keys for `switch-to-buffer' with `w3m-e21-switch-to-buffer'."
@@ -655,7 +668,7 @@ Redisplaying is done by wobbling the window size."
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-header-line)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-widget-faces)
 (add-hook 'w3m-mode-setup-functions 'w3m-e21-subst-switch-to-buffer-keys)
-(add-hook 'w3m-select-buffer-hook 'w3m-e21-wobble-window-size)
+(add-hook 'w3m-select-buffer-hook 'w3m-force-window-update)
 
 ;; Graphic icons.
 (defcustom w3m-space-before-modeline-icon ""

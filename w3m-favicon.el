@@ -1,6 +1,7 @@
 ;;; w3m-favicon.el --- utilities for handling favicon in emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -260,18 +261,14 @@ stored in the `w3m-favicon-image' buffer-local variable."
 	      (w3m-favicon-set-image image)
 	      (push (list url idata (current-time) w3m-favicon-image)
 		    w3m-favicon-cache-data)))))))
-  (w3m-static-unless (featurep 'xemacs)
+  (w3m-static-when (boundp 'header-line-format)
     ;; Emacs frame needs to be redisplayed to make favicon come out.
     (run-at-time 1 nil
 		 (lambda (buffer)
 		   (if (and (buffer-live-p buffer)
 			    (eq (get-buffer-window buffer t)
 				(selected-window)))
-		       ;; Wobble the window size to force redisplay
-		       ;; of the header-line.
-		       (let ((window-min-height 0))
-			 (shrink-window 1)
-			 (enlarge-window 1))))
+		       (w3m-force-window-update)))
 		 target)))
 
 (defun w3m-favicon-save-cache-file ()

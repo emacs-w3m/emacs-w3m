@@ -1,6 +1,7 @@
 ;;; w3m-proc.el --- Functions and macros to control sub-processes
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -45,7 +46,10 @@
   (cond ((boundp 'MULE)
 	 (autoload 'read-passwd "w3m-om"))
 	((= emacs-major-version 19)
-	 (autoload 'read-passwd "w3m-19"))))
+	 (autoload 'read-passwd "w3m-19"))
+	((boundp 'header-line-format)
+	 (autoload 'w3m-force-window-update
+	   (format "w3m-e%d" emacs-major-version)))))
 
 (eval-when-compile
   ;; Variable(s) which are used in the following inline functions.
@@ -305,9 +309,7 @@ which have no handler."
 		   (if (and (buffer-live-p buffer)
 			    (eq (get-buffer-window buffer t)
 				(selected-window)))
-		       (let ((window-min-height 0))
-			 (shrink-window 1)
-			 (enlarge-window 1))))
+		       (w3m-force-window-update)))
 		 buffer)))
 
 (defun w3m-process-shutdown ()
