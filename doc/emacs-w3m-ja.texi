@@ -3595,6 +3595,32 @@ vinelinux.errata.1x
          "miyoshi@@meadowy.org")))
 @end lisp
 
+@item Wiki コンテンツ
+閲覧したい Wiki の URL を調べて、以下のように設定して使います。PukiWiki
+と Hiki に対応しています。
+@lisp
+(setq shimbun-wiki-group-alist
+      '(("pukiwiki" ;; グループ名
+	 "http://pukiwiki.org/index.php?cmd=rss10" ;; URL
+	 "webmaster@@pukiwiki.org" ;; メールアドレス
+	 nil ;; X-Face
+	 "\n<h3 id=\"" ;; contents の start を示す regexp
+	 "</address>") ;; contents の end を示す regexp
+	("hiki"
+	 "http://www.namaraii.com/hiki/?c=rss"
+	 "webmaster@@fdiary.net"
+	 nil
+	 "<div class=\"section\">"
+	 "<div class=\"sidebar\">")
+	("apollo"
+	 "http://wiki.fdiary.net/apollo/?c=rss"
+	 "moriq@@moriq.com"
+	 nil
+	 "<div class=\"section\">"
+	 "<div class=\"sidebar\">")
+	))
+@end lisp
+
 @item @uref{http://www.kantei.go.jp/jp/, 小泉内閣メールマガジン}
 kantei.m-magazine
 
@@ -3642,6 +3668,11 @@ pcweb-column.tech pcweb-column.speed
 lotusex.news lotusex.library lotusex.operation lotusex.primer
 lotusex.tips lotusex.practical lotusex.qanda lotusex.lounge
 lotusex.bbs
+
+@item @uref{http://www.atmarkit.co.jp, ＠ITフォーラム}
+atmarkit.fwin2k atmarkit.fdotnet atmarkit.fsys atmarkit.fxml
+atmarkit.flinux atmarkit.fnetwork atmarkit.fjava 
+atmarkit.fsecurity atmarkit.fbiz atmarkit.jibun
 @end table
 
 @node Shimbun Basics

@@ -3462,6 +3462,34 @@ This is an example to use @samp{sb-hns}.
          "miyoshi@@meadowy.org")))
 @end lisp
 
+@item Wiki contents
+This is an example to use @samp{sb-wiki}.  @samp{sb-wiki} support
+PukiWiki and Hiki.  If you don't know which regexps to set to 4th and
+5th elements of an inner list, just set @code{nil} and you'll just see
+all contents of a page.
+@lisp
+(setq shimbun-wiki-group-alist
+      '(("pukiwiki" ;; Group Name 
+	 "http://pukiwiki.org/index.php?cmd=rss10" ;; URL
+	 "webmaster@@pukiwiki.org" ;; E-Mail Address
+	 nil ;; X-Face
+	 "\n<h3 id=\"" ;; regexp to represent contents start
+	 "</address>") ;; regexp to represent contents end
+	("hiki"
+	 "http://www.namaraii.com/hiki/?c=rss"
+	 "webmaster@@fdiary.net"
+	 nil
+	 "<div class=\"section\">"
+	 "<div class=\"sidebar\">")
+	("apollo"
+	 "http://wiki.fdiary.net/apollo/?c=rss"
+	 "moriq@@moriq.com"
+	 nil
+	 "<div class=\"section\">"
+	 "<div class=\"sidebar\">")
+	))
+@end lisp
+
 @item @uref{http://www.kantei.go.jp/jp/, Koizumu Cabinet Mail Magazine}
 kantei.m-magazine
 
@@ -3509,6 +3537,11 @@ pcweb-column.tech pcweb-column.speed
 lotusex.news lotusex.library lotusex.operation lotusex.primer
 lotusex.tips lotusex.practical lotusex.qanda lotusex.lounge
 lotusex.bbs
+
+@item @uref{http://www.atmarkit.co.jp, @@IT forum}
+atmarkit.fwin2k atmarkit.fdotnet atmarkit.fsys atmarkit.fxml
+atmarkit.flinux atmarkit.fnetwork atmarkit.fjava 
+atmarkit.fsecurity atmarkit.fbiz atmarkit.jibun
 @end table
 
 @node Shimbun Basics

@@ -1,4 +1,4 @@
-;;; sb-atmarkit-rss.el --- shimbun backend for atmarkit-rss
+;;; sb-atmarkit.el --- shimbun backend for atmarkit
 
 ;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 
@@ -30,16 +30,16 @@
 (require 'shimbun)
 (require 'sb-rss)
 
-(luna-define-class shimbun-atmarkit-rss (shimbun-rss) ())
+(luna-define-class shimbun-atmarkit (shimbun-rss) ())
 
-(defvar shimbun-atmarkit-rss-from-address  "info@atmarkit.co.jp")
-(defvar shimbun-atmarkit-rss-coding-system 'shift_jis-dos)
-(defvar shimbun-atmarkit-rss-content-start
+(defvar shimbun-atmarkit-from-address  "info@atmarkit.co.jp")
+(defvar shimbun-atmarkit-coding-system 'shift_jis-dos)
+(defvar shimbun-atmarkit-content-start
   "<!-- #BeginEditable \"%[%A-Z0-9]+\" -->")
-(defvar shimbun-atmarkit-rss-content-end
+(defvar shimbun-atmarkit-content-end
   "\n<!-- #EndEditable -->")
 
-(defvar shimbun-atmarkit-rss-group-path-alist
+(defvar shimbun-atmarkit-group-path-alist
   '(
     ;;Windows Server Insider¥Õ¥©¡¼¥é¥à
     ("fwin2k" . "http://www.atmarkit.co.jp/rss/fwin2k/rss2dc.xml")
@@ -62,20 +62,20 @@
     ;;¡÷IT¼«Ê¬ÀïÎ¬¸¦µæ½ê
     ("jibun" . "http://jibun.atmarkit.co.jp/rss/rss2dc.xml")))
 
-(defvar shimbun-atmarkit-rss-groups
-  (mapcar 'car shimbun-atmarkit-rss-group-path-alist))
+(defvar shimbun-atmarkit-groups
+  (mapcar 'car shimbun-atmarkit-group-path-alist))
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-atmarkit-rss))
+(luna-define-method shimbun-index-url ((shimbun shimbun-atmarkit))
   (cdr (assoc (shimbun-current-group-internal shimbun)
-	      shimbun-atmarkit-rss-group-path-alist)))
+	      shimbun-atmarkit-group-path-alist)))
 
 (luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-atmarkit-rss) url date)
+  ((shimbun shimbun-atmarkit) url date)
   (unless (string-match "\\([^\/]+\\)\\.html" url)
     (error "Cannot find message-id base"))
-  (format "%s%%%s%%rss@atmarkit.co.jp" (match-string-no-properties 1 url)
+  (format "%s%%%s@atmarkit.co.jp" (match-string-no-properties 1 url)
 	  (shimbun-current-group-internal shimbun)))
 
-(provide 'sb-atmarkit-rss)
+(provide 'sb-atmarkit)
 
-;;; sb-atmarkit-rss.el ends here
+;;; sb-atmarkit.el ends here
