@@ -193,6 +193,13 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'coding-system)
 
+(defcustom w3m-file-name-coding-system
+  (if (memq system-type '(windows-nt OS/2 emx))
+      'shift_jis 'euc-japan)
+  "*Coding system for encoding file names of `w3m'."
+  :group 'w3m
+  :type 'coding-system)
+
 (defcustom w3m-key-binding
   nil
   "*This variable decides default key mapping used in w3m-mode buffers."
@@ -475,7 +482,7 @@ It will be used for the w3m system internal for Emacs 21.")
       (or (w3m-find-coding-system (car (car rest)))
 	  (setq dest (cons (car rest) dest)))
       (setq rest (cdr rest)))
-    dest)
+    (nreverse dest))
   "Alist MIME CHARSET vs CODING-SYSTEM.
 MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
@@ -556,15 +563,18 @@ If 'w3m-dtree, display directory tree by the use of w3m-dtree."
   :type '(choice (const :tag "Dirlist CGI" w3m-cgi)
 		 (const :tag "Directory tree" w3m-dtree)))
 
-(defcustom w3m-direlist-cgi-program
-  (if (eq system-type 'windows-nt) "c:/usr/local/lib/w3m/dirlist.cgi" nil)
+(defcustom w3m-dirlist-cgi-program
+  (cond ((eq system-type 'windows-nt) 
+	 "c:/usr/local/lib/w3m/dirlist.cgi")
+	((memq system-type '(OS/2 emx))
+	 (expand-file-name "dirlist.cmd" (getenv "W3M_LIB_DIR")))
+	(t nil))
   "*Name of the diretory list CGI Program.
-If nil, use an internal CGI of w3m.
-If your OS is broken, set a path of 'direlist.cgi'."
+If nil, use an internal CGI of w3m."
   :group 'w3m
   :type '(choice (const :tag "w3m internal CGI" nil)
 		 (file :tag "path of 'dirlist.cgi'"
-		  "c:/usr/local/lib/w3m/dirlist.cgi")))
+		  "/usr/local/lib/w3m/dirlist.cgi")))
 
 (eval-and-compile
   (defconst w3m-entity-alist		; html character entities and values
@@ -1881,16 +1891,17 @@ to nil."
 
 (defun w3m-local-dirlist-cgi (url)
   (w3m-message "Reading...")
-  (if w3m-direlist-cgi-program
-      (if (file-executable-p w3m-direlist-cgi-program)
+  (if w3m-dirlist-cgi-program
+      (if (file-executable-p w3m-dirlist-cgi-program)
 	  (let ((coding-system-for-read 'binary)
-		(coding-system-for-write w3m-terminal-coding-system)
 		(default-process-coding-system
-		  (cons 'binary w3m-terminal-coding-system))
+		  (cons 'binary 'binary))
 		(process-environment process-environment)
 		file beg end)
-	    (setenv "QUERY_STRING" (w3m-url-to-file-name url))
-	    (call-process w3m-direlist-cgi-program nil t nil)
+	    (setenv "QUERY_STRING"
+		    (encode-coding-string (w3m-url-to-file-name url)
+					  w3m-file-name-coding-system))
+	    (call-process w3m-dirlist-cgi-program nil t nil)
 	    (goto-char (point-min))
 	    (when (re-search-forward "^<html>" nil t)
 	      (delete-region (point-min) (match-beginning 0))
@@ -1906,9 +1917,19 @@ to nil."
 		(delete-region beg end)
 		(goto-char beg)
 		(insert file))))
-	(error "Can't execute: %s." w3m-direlist-cgi-program))
+	(error "Can't execute: %s." w3m-dirlist-cgi-program))
     ;; execute w3m internal CGI
     (w3m-exec-process "-dump_source" url))
+  ;; bind charset to w3m-file-name-coding-system
+  (let ((charset (or (car (rassq w3m-file-name-coding-system
+				 w3m-charset-coding-system-alist))
+		     'unknown)))
+    (goto-char (point-min))
+    (when (re-search-forward "<head>" nil t)
+      (insert "\n<meta http-equiv=\"CONTENT-TYPE\" "
+	      "content=\"text/html; charset="
+	      (symbol-name charset)
+	      "\">")))
   (w3m-message "Reading... done"))
 
 ;;; Retrieve data via HTTP:

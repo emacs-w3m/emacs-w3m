@@ -1,3 +1,12 @@
+2001-05-30  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-file-name-coding-system): New customizable value.
+	(w3m-charset-coding-system-alist): Reverse list.
+	(w3m-dirlist-cgi-program): Change default value for OS/2.
+	(w3m-local-dirlist-cgi): Set "QUERY_STRING" to encoded string of
+	'w3m-file-name-coding-system'. Insert 'Meta tag' to the binding of
+	charset.
+		
 2001-05-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-goto-url): Set a string representing file
