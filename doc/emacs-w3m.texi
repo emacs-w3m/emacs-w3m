@@ -579,6 +579,13 @@ in your @file{~/.emacs} file:
 (require 'w3m-load)
 @end lisp
 
+Supposing you are using both Emacs and XEmacs, the following way is one
+of recommendations:
+
+@lisp
+(load "w3m-load" t t)
+@end lisp
+
 @item Startup File
 @cindex Startup file
 @vindex w3m-init-file
