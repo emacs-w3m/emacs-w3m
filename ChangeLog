@@ -1,3 +1,12 @@
+2004-12-29  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-quit): Call `w3m-form-textarea-file-cleanup'.
+	(w3m-view-this-url-1): Revert final change.
+
+	* w3m-form.el (w3m-form-textarea-file-expire-date): New user
+	option.
+	(w3m-form-textarea-file-cleanup): New function.
+
 2004-12-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-retto): Prepend

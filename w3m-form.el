@@ -62,6 +62,13 @@
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-form-textarea-file-expire-date 3
+  "*Date to expire of the file for textarea's backup."
+  :group 'w3m
+  :type '(choice (integer :tag "Expire date")
+		 (const :tag "Remove immediately" t)
+		 (const :tag "No expire" nil)))
+
 (defcustom w3m-form-textarea-directory
   (expand-file-name ".textarea" w3m-profile-directory)
   "*Name of the directory to save the file of textarea input."
@@ -1122,6 +1129,35 @@ character."
       (goto-char (point-min))
       (forward-line (1- (nth 2 info)))
       (w3m-form-input-textarea-mode))))
+
+(defun w3m-form-textarea-file-cleanup ()
+  (let ((dir (file-chase-links
+	      (expand-file-name w3m-form-textarea-directory)))
+	(checktime t)
+	files file time)
+    (when (and w3m-form-textarea-file-expire-date
+	       (file-directory-p dir))
+      (when (integerp w3m-form-textarea-file-expire-date)
+	(setq checktime (decode-time (current-time)))
+	(setq checktime (encode-time (nth 0 checktime) ;; seconds
+				     (nth 1 checktime) ;; minutes
+				     (nth 2 checktime) ;; hour
+				     (- (nth 3 checktime) ;; day
+					w3m-form-textarea-file-expire-date)
+				     (nth 4 checktime) ;; month
+				     (nth 5 checktime) ;; year
+				     (nth 6 checktime) ;; dow
+				     (nth 7 checktime) ;; dst
+				     (nth 8 checktime)))) ;; zone
+      (setq files (directory-files dir 'full "[^.]" 'nosort))
+      (while (setq file (car files))
+	(setq files (cdr files))
+	(when (file-writable-p file)
+	  (if (eq checktime t)
+	      (delete-file file)
+	    (setq time (nth 5 (file-attributes file)))
+	    (when (w3m-time-newer-p checktime time)
+	      (delete-file file))))))))
 
 ;;; SELECT
 

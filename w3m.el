@@ -129,6 +129,7 @@
   (autoload 'w3m-about-perldoc "w3m-perldoc")
   (autoload 'w3m-fontify-forms "w3m-form")
   (autoload 'w3m-fontify-textareas "w3m-form")
+  (autoload 'w3m-form-textarea-file-cleanup "w3m-form")
   (autoload 'w3m-filter "w3m-filter")
   (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
   (autoload 'w3m-switch-buffer "w3m-tabmenu")
@@ -5256,7 +5257,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	      url)))))
 
 (defsubst w3m-view-this-url-1 (url reload new-session)
-  (lexical-let (pos buffer newbuffer wconfig newwindow newposition newstart)
+  (lexical-let (pos buffer newbuffer wconfig)
     (if new-session
 	(let ((empty
 	       ;; If a new url has the #name portion, we simply copy
@@ -5283,27 +5284,18 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	     (prog1
 		 (w3m-goto-url url reload nil nil w3m-current-url handler)
 	       (setq newbuffer (current-buffer)
-		     newwindow (get-buffer-window (current-buffer))
-		     newposition (point)
-		     newstart (window-start newwindow)
 		     wconfig (current-window-configuration)))))
-	(cond
-	 ;; When the buffer's major mode has changed from the w3m-mode
-	 ;; to another by visiting the new url (possibly a local file,
-	 ;; a mailto url, etc.), we need to make the new buffer visible.
-	 ((and (eq (with-current-buffer buffer major-mode)
-		   'w3m-mode)
-	       (not (eq (with-current-buffer newbuffer major-mode)
-			'w3m-mode)))
-	  ;; Buffer must delete before restore window configuration.
+	;; When the buffer's major mode has changed from the w3m-mode
+	;; to another by visiting the new url (possibly a local file,
+	;; a mailto url, etc.), we need to make the new buffer visible.
+	(when (and (eq (with-current-buffer buffer major-mode)
+		       'w3m-mode)
+		   (not (eq (with-current-buffer newbuffer major-mode)
+			    'w3m-mode)))
+	  ;; Empty buffer must delete before restore window configuration.
 	  (when pos
 	    (w3m-delete-buffer-if-empty buffer))
 	  (set-window-configuration wconfig))
-	 ;; restore window position of w3m-display-hook
-	 ((and newwindow newposition newstart
-	       (eq newwindow (get-buffer-window (current-buffer))))
-	  (set-window-start newwindow newstart)
-	  (goto-char (min newposition (point-max)))))
 	;; The new session is created.
 	(when pos
 	  ;; Already empty buffer killed if the new url is not the w3m-mode.
@@ -6336,6 +6328,8 @@ is specified, otherwise prompt you for the confirmation.  See also
     (dolist (buffer (w3m-list-buffers t))
       (w3m-cancel-refresh-timer buffer)
       (kill-buffer buffer))
+    (when w3m-use-form
+      (w3m-form-textarea-file-cleanup))
     (w3m-select-buffer-close-window)
     (w3m-cache-shutdown)
     (w3m-arrived-shutdown)
