@@ -268,8 +268,9 @@ information."
 	     (if (cdr element)
 		 ;; We should sprout a new branch.
 		 (progn
-		   (setcdr (nthcdr class position) '(0 0))
-		   (setcdr (cdar element)
+		   (setq number (1- (length (car element))))
+		   (setcdr (nthcdr class position) (list (1- number) 0))
+		   (setcdr (nthcdr number (car element))
 			   (list (list (list url attributes)))))
 	       ;; The current position is the last of the branch.
 	       (setcar (nthcdr class position)
