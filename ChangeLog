@@ -1,3 +1,7 @@
+2003-02-11  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-pilot-mailsync.el: New file.
+
 2003-02-10  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-palmfan.el: Update copyright notice.
