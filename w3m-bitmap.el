@@ -113,9 +113,11 @@ bitmap chars as well."
     (defun w3m-bitmap-next-line (arg)
       "Simple emulation to `next-line' to work with byte-indexed bitmap chars."
       (interactive "p")
-      (let ((column (w3m-bitmap-current-column)))
-	(forward-line arg)
-	(w3m-bitmap-move-to-column column)))
+      (unless (memq last-command '(w3m-bitmap-next-line
+				   w3m-bitmap-previous-line))
+	(setq temporary-goal-column (w3m-bitmap-current-column)))
+      (forward-line arg)
+      (w3m-bitmap-move-to-column temporary-goal-column))
 
     (defun w3m-bitmap-previous-line (arg)
       "Simple emulation to `previous-line' to work with byte-indexed bitmap
