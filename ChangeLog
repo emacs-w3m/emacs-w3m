@@ -1,3 +1,7 @@
+2004-08-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Release 1.4.3.
+
 2004-08-15  Kazuhiro UCHIDA  <kayoujin@yahoo.co.jp>
 
 	* w3m.el (w3m-remove-meta-charset-tags): Check that a content
