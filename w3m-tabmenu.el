@@ -96,13 +96,6 @@
 		      (car w3m-tab-menubar-dummy)
 		      (w3m-tab-menubar-make-items))))
 
-(defsubst w3m-tab-menubar-pull-bufnum (bufname)
-  (cond
-   ((string= "*w3m*" bufname) 1)
-   ((string-match "\\*w3m\\*<\\([0-9]+\\)>" bufname)
-    (string-to-number (match-string 1 bufname)))
-   (t 100)))
-
 (defun w3m-tab-menubar-make-items (&optional nomenu)
   "Create w3m tab menu items."
   (let ((cbuf (current-buffer))
@@ -123,8 +116,8 @@
 	  (setq bufs (cons (list (buffer-name) title (eq cbuf buf)) bufs)))))
     (setq bufs
 	  (sort bufs (lambda (x y)
-		       (< (w3m-tab-menubar-pull-bufnum (car x))
-			  (w3m-tab-menubar-pull-bufnum (car y))))))
+		       (< (w3m-pullout-buffer-number (car x))
+			  (w3m-pullout-buffer-number (car y))))))
     (dolist (elem  bufs)
       (setq menus
 	    (cons
@@ -133,7 +126,8 @@
 		       (format "%s%s"
 			       (if (nth 2 elem) "* " "")
 			       (nth 1 elem)))
-	       (vector (format "%s%s"
+	       (vector (format "%d: %s%s"
+			       (w3m-pullout-buffer-number (nth 0 elem))
 			       (if (nth 2 elem) "* " "  ")
 			       (nth 1 elem))
 		       (list 'w3m-tab-menubar-open-item (nth 0 elem))

@@ -404,8 +404,8 @@ Buffer string between BEG and END are replaced with IMAGE."
 	  (setq buffers (cons (list buffer name orig) buffers)))))
     (setq buffers (sort buffers
 			(lambda (x y)
-			  (string< (buffer-name (car x))
-				   (buffer-name (car y))))))
+			  (< (w3m-pullout-buffer-number (car x))
+			     (w3m-pullout-buffer-number (car y))))))
     (while buffers
       (setq line (concat
 		  line

@@ -136,6 +136,15 @@ constants, any other expressions are not allowed."
 		     (setq bin (expand-file-name (concat command ".exe") dir))))
 	    (throw 'found-command bin)))))))
 
+(defsubst w3m-pullout-buffer-number (buf)
+  "Return a suffix number of w3m buffer."
+  (when (bufferp buf) (setq buf (buffer-name buf)))
+  (cond
+   ((string= "*w3m*" buf) 1)
+   ((string-match "\\*w3m\\*<\\([0-9]+\\)>" buf)
+    (string-to-number (match-string 1 buf)))
+   (t 999)))
+
 (provide 'w3m-macro)
 
 ;;; w3m-macro.el ends here.

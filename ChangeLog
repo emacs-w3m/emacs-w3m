@@ -1,3 +1,25 @@
+2001-11-14  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-next-buffer): Use `w3m-pullout-buffer-number' when
+	sort buffer-name.
+	(w3m-previous-buffer): Ditto.
+	(w3m-select-buffer): Change the turn to call of functions.
+	(w3m-select-buffer-generate-contents): Use
+	`w3m-pullout-buffer-number' when sort buffer-name.
+	Use text-property instead of point when move to point.
+	(w3m-select-buffer-recheck): Fix read-only error.
+	(w3m-select-buffer-copy-buffer): Rewrite.
+
+	* w3m-tabmenu.el (w3m-tab-menubar-make-items): Use
+	`w3m-pullout-buffer-number' instead of
+	`w3m-tab-menubar-pull-bufnum'.
+	(w3m-tab-menubar-pull-bufnum): Remove.
+
+	* w3m-macro.el (w3m-pullout-buffer-number): New defsubst.
+
+	* w3m-e21.el (w3m-tab-line): Use `w3m-pullout-buffer-number' when
+	sort buffer-name.
+
 2001-11-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-macro.el (w3m-condition-case): New macro.

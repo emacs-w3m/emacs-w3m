@@ -3719,8 +3719,8 @@ If EMPTY is non-nil, the created buffer has empty content."
 	  (setq buffers (cons buffer buffers)))))
     (setq buffers (sort buffers
 			(lambda (x y)
-			  (string< (buffer-name x)
-				   (buffer-name y)))))
+			  (< (w3m-pullout-buffer-number x)
+			     (w3m-pullout-buffer-number y)))))
     (switch-to-buffer
      (if (setq next (cadr (memq (current-buffer) buffers)))
 	 next
@@ -3736,8 +3736,8 @@ If EMPTY is non-nil, the created buffer has empty content."
 	  (setq buffers (cons buffer buffers)))))
     (setq buffers (sort buffers
 			(lambda (x y)
-			  (not (string< (buffer-name x)
-					(buffer-name y))))))
+			  (>= (w3m-pullout-buffer-number x)
+			      (w3m-pullout-buffer-number y)))))
     (switch-to-buffer
      (if (setq next (cadr (memq (current-buffer) buffers)))
 	 next
@@ -4829,15 +4829,15 @@ buffers.  User can type following keys:
 	(current-buffer (current-buffer)))
     (set-buffer (w3m-get-buffer-create w3m-select-buffer-name))
     (setq w3m-select-buffer-window selected-window)
-    (w3m-select-buffer-generate-contents current-buffer)
-    (w3m-select-buffer-mode)
     (let ((w (or (get-buffer-window w3m-select-buffer-name)
 		 (split-window selected-window
 			       (- (window-width)
 				  w3m-select-buffer-window-size)
 			       w3m-select-buffer-horizontal-window))))
       (set-window-buffer w (current-buffer))
-      (select-window w)))
+      (select-window w))
+    (w3m-select-buffer-generate-contents current-buffer))
+    (w3m-select-buffer-mode)
   (or nomsg (message w3m-select-buffer-message)))
 
 (defun w3m-select-buffer-update (&rest args)
@@ -4846,7 +4846,7 @@ buffers.  User can type following keys:
       (w3m-select-buffer 'nomsg))))
 
 (defun w3m-select-buffer-generate-contents (current-buffer)
-  (let (buffer-read-only pos)
+  (let (buffer-read-only)
     (delete-region (point-min) (point-max))
     (dolist (pair
 	     (sort (delq nil
@@ -4867,17 +4867,17 @@ buffers.  User can type following keys:
 					 (t "No title"))))))
 			  (buffer-list)))
 		   (lambda (x y)
-		     (string< (buffer-name (car x))
-			      (buffer-name (car y))))))
-      (when (eq (car pair) current-buffer)
-	  (setq pos (point)))
+		     (< (w3m-pullout-buffer-number (car x))
+			(w3m-pullout-buffer-number (car y))))))
       (put-text-property (point)
 			 (progn (insert (cdr pair) "\n") (point))
 			 'w3m-select-buffer (car pair)))
     (skip-chars-backward " \t\r\f\n")
     (delete-region (point) (point-max))
     (set-buffer-modified-p nil)
-    (goto-char (or pos (point-min)))))
+    (goto-char (or (text-property-any (point-min) (point-max)
+				      'w3m-select-buffer current-buffer)
+		   (point-min)))))
 
 (defvar w3m-select-buffer-mode-map nil)
 (unless w3m-select-buffer-mode-map
@@ -4936,7 +4936,8 @@ Major mode to select a buffer from the set of w3m-mode buffers.
   "Recheck all w3m-mode buffers and regenerate the menu content to
 select them."
   (interactive)
-  (erase-buffer)
+  (let ((buffer-read-only nil))
+    (erase-buffer))
   (w3m-select-buffer-generate-contents
    (window-buffer w3m-select-buffer-window))
   (w3m-select-buffer-show-this-line))
@@ -4981,13 +4982,15 @@ menu line."
 (defun w3m-select-buffer-copy-buffer ()
   "Create a copy of the buffer on the current menu line, and show it."
   (interactive)
+  (w3m-select-buffer-show-this-line)
   (let ((selected-window (selected-window))
-	(current-buffer (current-buffer))
-	w3m-pop-up-frames w3m-pop-up-windows)
-    (w3m-select-buffer-generate-contents
-     (w3m-copy-buffer (w3m-select-buffer-current-buffer)))
-    (w3m-select-buffer-show-this-line)
-    (set-window-buffer selected-window current-buffer)))
+	w3m-pop-up-frames w3m-pop-up-windows
+	pop-up-windows buf)
+    (pop-to-buffer (w3m-select-buffer-current-buffer))
+    (setq buf (w3m-copy-buffer (current-buffer)))
+    ;; w3m-select-buffer was updated automatically.
+    (select-window selected-window)
+    (w3m-select-buffer-show-this-line)))
 
 (defun w3m-select-buffer-delete-buffer ()
   "Delete the buffer on the current menu line."
