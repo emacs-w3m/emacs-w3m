@@ -1,3 +1,12 @@
+2005-03-22  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-yahoo-auctions.el (shimbun-yahoo-auctions-content-start)
+	(shimbun-yahoo-auctions-content-end): Follow the change of the site
+	design.
+	(shimbun-get-headers): Reverse the order of the return value.
+	(shimbun-article-url): New overridden method.
+	(shimbun-make-contents): Ditto.
+
 2005-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-fau.el (shimbun-article): Fix the class name.

@@ -39,9 +39,8 @@ URL is the URL for category or search result."
 		       (string :tag "Group name")
 		       (string :tag "URL"))))
 
-(defvar shimbun-yahoo-auctions-content-start "<hr size=1 noshade>")
-(defvar shimbun-yahoo-auctions-content-end
-  "<table CELLPADDING=\"2\" CELLSPACING=\"0\" BGCOLOR=\"#666666\" BORDER=\"0\">")
+(defvar shimbun-yahoo-auctions-content-start "<hr SIZE=\"1\" NOSHADE>")
+(defvar shimbun-yahoo-auctions-content-end nil)
 
 (luna-define-method shimbun-groups ((shimbun shimbun-yahoo-auctions))
   (mapcar 'car shimbun-yahoo-auctions-group-alist))
@@ -68,7 +67,31 @@ URL is the URL for category or search result."
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-yahoo-auctions)
 					 &optional range)
-  (shimbun-rss-get-headers shimbun range t t))
+  (nreverse (shimbun-rss-get-headers shimbun range t t)))
+
+(luna-define-method shimbun-article-url :around
+  ((shimbun shimbun-yahoo-auctions) header)
+  (shimbun-real-url (luna-call-next-method)))
+
+(luna-define-method shimbun-make-contents ((shimbun shimbun-yahoo-auctions)
+					   header)
+  (let ((case-fold-search t))
+    (goto-char (point-min))
+    (when (and (stringp (shimbun-content-start-internal shimbun))
+	       (re-search-forward (shimbun-content-start-internal shimbun)
+				  nil t))
+      (delete-region (point-min) (point))
+      (insert "<html>\n<head>\n<base href=\""
+	      (shimbun-article-url shimbun header)
+	      "\">\n</head>\n<body>\n"))
+    (when (and (stringp (shimbun-content-end-internal shimbun))
+	       (re-search-forward (shimbun-content-end-internal shimbun)
+				  nil t))
+      (delete-region (match-beginning 0) (point-max))
+      (insert (shimbun-footer shimbun header t)
+	      "\n</body>\n</html>\n")))
+  (shimbun-make-mime-article shimbun header)
+  (buffer-string))
 
 (provide 'sb-yahoo-auctions)
 ;;; sb-yahoo-auctions.el ends here
