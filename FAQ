@@ -128,6 +128,16 @@
 
    Use w3mmee.
 
+** Q. Why does `favicon' not show up at tab bar with Emacs21?
+
+   Install "convert" included the ImageMagick. It is available from
+   `http://www.imagemagick.org/'.
+
+** Q. Why do lock Emacs21 when show up `favicon'.
+
+   Do you use the old ImageMagick? Please use the newest it, version
+   5.4.0 or later.
+
 * shimbun
 
 ** Q. Why are contents under shimbun/ not installed?

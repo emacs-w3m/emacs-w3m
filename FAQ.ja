@@ -117,16 +117,18 @@
 
    w3mmee を使ってください．
 
-** Q. Emacs21 で favicon を表示しようとしたのですが、エラーになります。
+** Q. Emacs21 の tab bar に favicon を表示しようとしたのですが、エラーに
+   なります。
 
-   Image Magick の convert が必要です。
+   Image Magick の "convert" が必要です。
    http://www.imagemagick.org/ から入手してインストールしてください。
 
-** Q. Emacs21 で favicon を表示しようとしたのですが、Emacs がロックしました。
+** Q. Emacs21 で favicon を表示しようとしたのですが、Emacs がロックしま
+   した。
 
    Image Magick のバージョンを確認してください。
    ImageMagick-5.2.1 付属の convert ではそうなりました。
-   ImageMagick-5.4.0-5 付属の convert では動作確認がなされています。
+   ImageMagick-5.4.0-5 付属の convert では動作確認されています。
 
 * shimbun
 
