@@ -1,8 +1,8 @@
 ;;; sb-wired.el --- shimbun backend for Wired Japan
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>
-;;         Yuuichi Teranishi <teranisi@gohome.org>
+;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
+;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>,
+;;         Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Keywords: news
 
@@ -26,7 +26,7 @@
 ;;; Commentary:
 
 ;; Original code was nnshimbun.el written by
-;; TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>.
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
 
 ;;; Code:
 

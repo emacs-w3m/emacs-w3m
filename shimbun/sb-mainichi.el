@@ -24,7 +24,7 @@
 ;;; Commentary:
 
 ;; Original code was sb-yomiuri.el which is written by
-;; TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp> and 
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org> and 
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;;; Code:

@@ -25,8 +25,8 @@
 
 ;;; Commentary:
 
-;; w3m-antenna.el is the add-on utility to detect changes of WEB.  For
-;; more detail about emacs-w3m, see:
+;; w3m-antenna.el is the add-on utility of emacs-w3m to detect changes
+;; of WEB pages.  For more detail about emacs-w3m, see:
 ;;
 ;;    http://emacs-w3m.namazu.org/
 

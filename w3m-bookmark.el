@@ -26,8 +26,8 @@
 
 ;;; Commentary:
 
-;; w3m-bookmark.el is the add-on program to operate bookmark file.
-;; For more detail about emacs-w3m, see:
+;; w3m-bookmark.el is the add-on program of emacs-w3m to operate
+;; bookmark file.  For more detail about emacs-w3m, see:
 ;;
 ;;    http://emacs-w3m.namazu.org/
 

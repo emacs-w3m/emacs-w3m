@@ -8,7 +8,7 @@ This package contains a interface program of w3m.
 
        http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/
 
-   w3m.el is a simple interface program of w3m, which works on Emacs.
+   emacs-w3m is a simple interface program of w3m, which works on Emacs.
 
 
 2. Installation

@@ -40,9 +40,11 @@
 
 ;;; How to install:
 
-;; In the top level directory of the w3m distribution, run the program
-;; `configure' and then type `make install'.  See README file for more
-;; information.
+;; See README and verify that the latest version of w3m is available.
+;;
+;; In the top level directory of the emacs-w3m distribution, run the
+;; program `configure' and then type `make install'.  See README file
+;; for more information.
 
 
 ;;; Code:

@@ -1,6 +1,6 @@
 ;;; sb-linuxce-jp.el --- shimbun backend for linuxce-jp ML
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Keywords: news
 

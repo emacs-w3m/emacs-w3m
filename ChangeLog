@@ -2106,7 +2106,7 @@
 	* w3m.el (w3m-copy-buffer): Use `w3m-history-copy' to make copies
 	of `w3m-history' and `w3m-history-flat'.
 
-2001-04-10  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-04-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* mime-w3m.el (mime-w3m-mode-map): Refer `w3m-key-binding' to
 	avoid the problem reported in [emacs-w3m:00498].
@@ -2160,7 +2160,7 @@
 	(shimbun-headers): Retrieve headers using
 	`shimbun-retrieve-url-buffer'.
 
-2001-04-09  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-04-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-key-binding): New user option.
 	(w3m-lynx-like-map, w3m-info-like-map): New keymaps.
@@ -2186,7 +2186,7 @@
 	Define internal accessor.
 	(shimbun-open): Setup shimbun slot.
 
-2001-04-06  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-04-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-edit-current-url): New command.
 	(w3m-mode-map): `w3m-edit-current-url' is registered.
@@ -2200,7 +2200,7 @@
 	use-entire-index slot and use shimbun-search-id.
 	(shimbun-xemacs-coding-system): Fixed redundant definition.
 
-2001-04-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-04-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (default): Depends `Makefile'.
 	(Makefile): Removed `--recheck' option in order to re-create
@@ -2309,7 +2309,7 @@
 	(w3m-mode): Change doc string.
 	(w3m-redisplay-with-coding-system): New function.
 
-2001-04-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-04-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-w3m-attributes): When content type has trailing
 	semicolon, make it removed.
@@ -2331,12 +2331,12 @@
 	* shimbun/shimbun.el (shimbun-decode-entities):
 	Define as an alias for `w3m-decode-entities'.
 
-2001-04-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-04-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-print-this-url): New optional argument
 	`add-kill-ring' is added.
 
-2001-04-03  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-04-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-filter.el: New file.
 
@@ -2369,7 +2369,7 @@
 	(mew-w3m-cid-retrieve): Use mew-syntax-get-entry-by-cid(),
 	Tnx, Kazu Yamamoto <kazu@mew.org>.
 
-2001-04-03  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-04-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-process-message): Removed.
 	(w3m-exec-process): Clean up.
@@ -2384,7 +2384,7 @@
 	* w3m-hist.el (w3m-history-copy): Make a copy of `w3m-history-flat'
 	using `w3m-history-flat' instead of `w3m-history-copy-1'.
 
-2001-04-02  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-04-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (DISTS): Removed `Makefile'.
 
@@ -2399,7 +2399,7 @@
 	the optional argument `count'.
 	(w3m-history-backward-1, w3m-history-forward-1): New macros.
 
-2001-04-02  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-04-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-0.2.1-mnc.patch: Apply patch posted in [w3m-dev 01887].
 
@@ -2436,7 +2436,7 @@
 	* w3m.el (w3m-html-string-regexp): Make no exception of back-quote.
 	(w3m-parse-attributes): Follow up above change.
 
-2001-03-30  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-home-page): Default value is changed.
 	(w3m-html-string-regexp): Support single quoted string.
@@ -2476,12 +2476,12 @@
 	(w3m-history-assoc): Return a history element of `w3m-history-flat'
 	instead of `w3m-history'.
 
-2001-03-30  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-w3m-attributes): Fixed spec of return value when
 	response code is greater than 500.
 
-2001-03-29  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Fix bugs in caching deflated contents.
 	(w3m-attributes): Fixed spec of return value when `about:' is
@@ -2525,7 +2525,7 @@
 	'diary/di.cgi'.
 	(w3m-antenna-check-sites): Push current-time() if (nth 6 pre) is nil.
 
-2001-03-29  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Support deflated contents and redirected URLs.
 	(w3m-decoder-alist, w3m-mnc): New variable.
@@ -2582,7 +2582,7 @@
 
 	* w3m-hist.el (w3m-history-forward): New function.
 
-2001-03-24  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-goto-url): Put cursor at the top of minibuffer.
 
@@ -2601,7 +2601,7 @@
 
 	* w3m-hist.el: New file.
 
-2001-03-23  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-time-parse-string): Fix condition to detect
 	timezone.el includes bug.
@@ -2616,7 +2616,7 @@
 	* w3m-antenna.el (w3m-antenna-hns-last-modified): Follow change of
 	`w3m-time-parse-string'.
 
-2001-03-23  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* README, README.ja: Update for w3m-0.2.1.
 
@@ -2658,7 +2658,7 @@
 	* w3m-form.el: Require `w3m'.
 	* w3m-e21.el: Provide `w3m-e21' and then require `w3m'.
 
-2001-03-22  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el: All occurrence of `natsumikan' is replaced with
 	`natsumican'.
@@ -2680,7 +2680,7 @@
 	* w3m.el (w3m-save-list): Use 'pp' if have pp().
 	Bind 'print-length' and 'print-level' to nil.
 
-2001-03-22  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Structure of hash database of arrived urls is
 	changed.
@@ -2697,7 +2697,7 @@
 	* w3m.el (w3m-goto-url): Refresh the visibility of toolbar when
 	XEmacs is running.
 
-2001-03-22  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-url-to-file-name): Fix bug reported in
 	[emacs-w3m:00305].
@@ -2713,7 +2713,7 @@
 	(w3m-arrived-put-title): New function.
 	(w3m-arrived-arrived-time): Ditto.
 
-2001-03-21  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-arrived-shutdown): Check sites which are arrived on
 	the other emacs process.
@@ -2722,7 +2722,7 @@
 
 	* w3m.el (w3m-input-url): 'nil' don't add candidates.
 
-2001-03-21  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna-make-summary-function): Default
 	value is changed.
@@ -2743,7 +2743,7 @@
 	(w3m-w3m-attributes): Adhoc implementation when server return
 	'HTTP/1.x 500x'.
 
-2001-03-19  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Format of arrived URL database is changed in order to
 	store page's title.
@@ -2759,7 +2759,7 @@
 	non-cygwin Windows.
 	(w3m-about-history): Uniq history. Insert exposition of html.
 
-2001-03-19  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-url-to-file-name): Fix (Cf. RFC-1808).
 	(w3m-expand-file-name-as-url): Ditto.
@@ -2781,7 +2781,7 @@
 	* w3m.el (w3m-download): Bind `file-coding-system' to binary.
 	(w3m-content-type-alist): Fix.
 
-2001-03-18  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna): Optional argument, `no-cache' is
 	added.
@@ -2802,7 +2802,7 @@
 	execute.
 	(w3m-fontify-anchors): Put w3m-name-anchor certainty.
 
-2001-03-17  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el: Changed antenna database format.
 	(w3m-antenna-site-key, w3m-antenna-site-title,
@@ -2825,7 +2825,7 @@
 	(w3m-toolbar): Ditto;
 	Fixed behavior of `home'.
 
-2001-03-16  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el, w3m-antenna.el: Fix typo.
 
@@ -2865,7 +2865,7 @@
 
 	* mew-w3m.el (mew-w3m-cid-retrieve): Change mime-part handling.
 
-2001-03-16  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna-sort-function): Removed.
 	(w3m-antenna-sort-changed-sites-function): New variable.
@@ -2880,7 +2880,7 @@
 	(w3m-time-zoneinfo): Ditto.
 	(w3m-time-parse-integer): Ditto.
 
-2001-03-16  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (TopLevel): Require `w3m-time'.
 	(w3m-w3m-attributes): Use `w3m-time-parse-string' instead of
@@ -2898,7 +2898,7 @@
 
 	* w3m-xmas.el (w3m-create-image): Ditto.
 
-2001-03-16  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Arrived URL database format is changed and code to get
 	headers and to retrieve contents is cleaned up.
@@ -2971,7 +2971,7 @@
 	* w3mhack.el (XEmacs): Implemented the source level optimizer for
 	`let' or `let*' form to remove some obsolete variables.
 
-2001-03-15  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* README, README.ja: Update procedure of package installation.
 
@@ -3004,7 +3004,7 @@
 	(w3m-entity-regexp): Don't funcall `regexp-opt' directly for
 	avoiding compile warning.
 
-2001-03-15  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-exec-process): Add `delete-process' to clean up
 	resources of child process.
@@ -3046,7 +3046,7 @@
 	* mew-w3m.el (mew-w3m-minor-mode-setter): Defun it after defining
 	some variables.
 
-2001-03-15  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (default): Add `-k' option to continue byte-compile
 	as much as possible after an error.
@@ -3057,7 +3057,7 @@
 	* w3mhack.el (w3mhack-examine-modules): Use space instead of
 	newline for the module names separator.
 
-2001-03-14  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Removed functions and variables of bookmark.
 	* w3m-bookmark.el: New file.
@@ -3079,7 +3079,7 @@
 	New files.
 	* Makefile: Removed.
 
-2001-03-14  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Split file.
 
@@ -3097,7 +3097,7 @@
 	(w3m-toggle-inline-images): Set cursor point before image insertion.
 	(w3m-goto-url): Set cursor point before redisplay.
 
-2001-03-14  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-read-passwd): Removed.
 	(w3m-exec-filter): Use `read-passwd' instead of `w3m-read-passwd'.
@@ -3109,7 +3109,7 @@
 	* w3m-om.el: Rewrite to insert "-" into the name of eol-type
 	variants of each newly generated coding-system.
 
-2001-03-14  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Split files.
 	(w3m-coding-system): Changed customize type.
@@ -3136,7 +3136,7 @@
 	systems; use `eval-when-compile' separately from "cl" for loading
 	"cl-macs".
 
-2001-03-13  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Split files.
 	* w3m-search.el: New file.
@@ -3173,13 +3173,13 @@
 	(w3m-reload-this-page): Guard w3m-url-yrotsih from resetting.
 	(w3m-exec): Reset yrotsih.
 
-2001-03-13  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-content-type-alist): [UNIX] Change method for
 	text/html type.
 
 2001-03-13  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>,
-	    TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Require `poem' when Mule 2.3 is running.  Bind keywods
 	`:case-ignore' and `:integer' for Mule 2.3.
@@ -3193,7 +3193,7 @@
 	(w3m-rendering-region): Use an unibyte temporary buffer and call
 	`w3m-decode-extended-characters'.
 
-2001-03-13  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-exec-process): Return process exit status.
 	(w3m-w3m-get-header): Check the return value of w3m-exec-process.
@@ -3210,7 +3210,7 @@
 	for determination of win32.
 	(w3m-content-type-alist): Ditto.
 
-2001-03-12  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-which-command): Support executable suffix, `.exe'
 	for win32.
@@ -3220,7 +3220,7 @@
 	* w3m.el (w3m-content-type-alist): Add 'use fiber.exe' alist for Windows.
 	(w3m-w32-browser-with-fiber): New funciton.
 
-2001-03-12  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-which-command): New function.
 	(w3m-external-view): When no viewing method is defined, call
@@ -3252,7 +3252,7 @@
 	* w3m.el (w3m-view-parent-page): New command.
 	(w3m-mode-map): Add `w3m-view-parent-page'.
 
-2001-03-10  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* mime-w3m.el (mime-w3m-message-structure): Make variable buffer
 	local at top leve.
@@ -3262,7 +3262,7 @@
 	* w3m.el (w3m-entity-alist): Eval at compile time.;
 	Add character entity references for ISO 8859-1 characters.
 
-2001-03-09  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-entity-regexp): New constant.
 	(w3m-fontify): Use `w3m-entity-regexp'.
@@ -3279,7 +3279,7 @@
 	'mew-w3m-auto-insert-image'.
 	(mew-w3m-cid-retrieve): New function. Fix wrong guess.
 
-2001-03-09  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-mode-map): Add `w3m-close-window',
 	`w3m-view-source', `w3m-view-header', and `w3m-history'.  Keybind
@@ -3313,7 +3313,7 @@
 	(toplevel): Encloses old emacs judgement with eval-and-compile;
 	Define `find-coding-system' using `w3m-static-if'.
 
-2001-03-08  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: All w3m-backlog-* symbols are renamed into w3m-cache-*,
 	and coupling of retrieve module and cache module are cleand up.
@@ -3386,7 +3386,7 @@
 	* w3m.el (w3m-search-engine-alist): Added "rpmfind".
 	(w3m-fontify-anchors): Treat single quotes (') as quotation marks.
 
-2001-03-08  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Backlog module is separated from front-end functions and
 	code to access the list of arrived URLs is put in order.
@@ -3417,7 +3417,7 @@
 	* w3m.el (w3m-create-image) [XEmacs]: Retrieve header to determine
 	image type when `w3m-local-content-type' failed.
 
-2001-03-07  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-arrived-file-coding-system): Default value is
 	changed to avoid unknown coding system error on XEmacs.
@@ -3430,7 +3430,7 @@
 	(inline-image-features): Patch from Yuuichi Teranishi san
 	<teranisi@gohome.org> at [emacs-w3m:00103].
 
-2001-03-07  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* mime-w3m.el: Renamed mime-w3m-preview-text/html from
 	w3m-mime-preview-text/html.  Check of user setting is required.
@@ -3454,7 +3454,7 @@
 	(w3m-w3m-retrieve): Cygwin binary data support. Remove Prompt
 	handling.
 
-2001-03-06  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): New constant.
 	(find-coding-system): Removed duplicated definition.
@@ -3508,7 +3508,7 @@
 	(w3m-bookmark-add-this-url): Likewise and refine.
 	(w3m-url-encode-string): Do not escape ':' and '/'.
 
-2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-retrieve): Add support for URLs which has `about:'
 	prefix.
@@ -3526,7 +3526,7 @@
 	(w3m-entity-value): When unknown entity is specified, return
 	original string instead of null string.
 
-2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-url-encode-string): New function.
 	(w3m-escape-query-string): Use `w3m-url-encode-string'.
@@ -3555,16 +3555,16 @@
 	* w3m.el (w3m-sub-list): Guard error for XEmacs (N must count from
 	zero).
 
-2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-search): Simplify.
 	(w3m-do-search): Removed.
 
-2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Merge form branch to main trunk.
 
-2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-form-new): Changed w3m-form structure.
 	(w3m-form-p): Likewise.
@@ -3600,7 +3600,7 @@
 	(w3m-goto-previous-anchor): Bug fix.
 	(w3m-escape-query-string): Bug: Escape SPC char as "+" not "%20".
 
-2001-03-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-form-string-regexp): Add `eval-and-compile' to
 	suprress byte-compile error.
@@ -3641,7 +3641,7 @@
 	(w3m-search): New interactive function for searching word with
 	various search engine.
 
-2001-03-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Start implementation of code to process <form> tag.
 	(w3m-form-face): New face.
@@ -3678,14 +3678,14 @@
 	as default if not specified.
 	(w3m): Do not specify default url for w3m-input-url.
 
-2001-03-02  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-backlog-enter): Overwrite backlog data when
 	specified URL is duplicated.
 	(w3m-home-page): Changed official emacs-w3m page's address to
 	namazu.org.
 
-2001-03-02  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Renamed w3m-http-* to w3m-w3m-* in order to prepare name
 	space of symbols processing HTTP protocol directly, and fix for
@@ -3700,7 +3700,7 @@
 	(w3m-fontify): Move point to the top of the buffer before delete
 	<?xml ... ?> tag.
 
-2001-03-02  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (TOP): Changed code to detect XEmacs and add to define
 	`find-coding-system'.
@@ -3750,11 +3750,11 @@
 	(w3m-view-bookmark): Use w3m to do initialize on interactive call.
 	(w3m-find-file): Fix for renamed function.
 
-2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Merge changes on `url' branch to main trunk.
 
-2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-home-page): Changed to official w3m.el page.
 	(w3m-anchor-face): Changed default face in dark backgraound.
@@ -3768,7 +3768,7 @@
 
 	* mew-w3m.el: New file to use w3m with Mew.
 
-2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* mime-w3m.el: New file to use w3m with SEMI.
 
@@ -3784,13 +3784,13 @@
 	(w3m-pretty-length): New function.
 	(w3m-rendering-region): Add code to show progress status.
 
-2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-http-retrieve): Add adhoc fragment to avoid new-line
 	replacement.
 	(w3m-decode-buffer): Renamed from w3m-html-decode-buffer.
 
-2001-02-28  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-02-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-content-type-alist): Accept .htm as text/html.
 	(w3m-backlog-enter): Add code to memory w3m-current-title.
@@ -3813,7 +3813,7 @@
 	* w3m.el (w3m-bookmark-add): Fix problem of adding bookmark first
 	time.
 
-2001-02-28  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-02-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Reconstructed drastically and removed w3 depended codes.
 
@@ -3823,7 +3823,7 @@
 	(w3m-cygwin-path): New function.
 	(w3m-region): New function.
 
-2001-02-26  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2001-02-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-fontify): Add code to decode w3m-specific extended
 	charcters.
@@ -3872,7 +3872,7 @@
 	w3m-save-list and w3m-sub-list. (Previous code had side effect
 	of nreverse).
 
-2000-12-10  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2000-12-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* makepatch.pl, Makefile, .cvsignore: New files.
 
@@ -3950,7 +3950,7 @@
 
 	* w3m.el (w3m): Do not switch buffer if w3m window already exists.
 
-2000-09-20  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2000-09-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Add declaration of dependency on APEL.
 	(w3m-quit): When other w3m buffers exist, don't destruct cache.
@@ -3979,7 +3979,7 @@
 	(w3m): Set mode-line-buffer-identification after changing major
 	mode because it overwrite that variable.
 
-2000-09-19  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2000-09-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-fontify): Add code to handle irregular ordered
 	elements of anchor tags.
@@ -4000,7 +4000,7 @@
 	(w3m-mode-map): Assign mouse middle button to view page.
 	(w3m): Change mode-line spec to show title of current page.
 
-2000-09-18  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2000-09-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Add authors.
 
@@ -4046,19 +4046,19 @@
 	bug?).  This is Patch from Satoru Takabayashi
 	<satoru-t@is.aist-nara.ac.jp> in ELF-ML, Seq# 876.
 
-2000-07-13  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2000-07-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Added handling of name anchors. Add comments.
 
-2000-07-12  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2000-07-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Improved to handle multi buffer. Fix broken cache and
 	order of fontify.
 
-2000-07-01  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2000-07-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Handle &-sequence. Add history and cache.
 
-2000-06-25  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2000-06-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: New file.

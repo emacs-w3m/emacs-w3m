@@ -1,6 +1,6 @@
 ;;; sb-meadow.el --- shimbun backend for meadow-ml
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>,
+;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
 
@@ -26,7 +26,7 @@
 ;;; Commentary:
 
 ;; Original code was sb-mew.el written by
-;; TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp> and
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org> and
 ;; Yuuichi Teranishi <teranisi@gohome.org>.
 
 ;;; Code:
