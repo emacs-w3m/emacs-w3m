@@ -62,10 +62,10 @@ This package contains a interface program of w3m.
       ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/w3m-0.2.1.tar.gz
 
    In order to use this package, you must apply the last version of
-   w3m-0.2.1-inu-patch, which is maintained by Dai Sato.  This patch can
-   be downloaded from:
+   w3m-0.2.1-inu-patch, which is maintained by Dai Sato.  It can be
+   downloaded from:
 
-      http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/200107/.
+      http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/index.html.
 
    To use variants such as w3m-m17n and w3mmee, you must apply some
    patches and must rebuild binary.  See patches/README for more detail.
