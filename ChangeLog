@@ -1,5 +1,8 @@
 2002-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el: Check for the validity on APEL also for XEmacs with
+	MULE.
+
 	* w3m-bug.el (report-emacs-w3m-bug-system-informations): Add
 	(featurep 'mule) and (featurep 'file-coding).
 
