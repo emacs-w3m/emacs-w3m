@@ -1,3 +1,14 @@
+2001-09-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-arrived-auto-detected-coding-system): New function.
+	(w3m-arrived-set-auto-detected-coding-system): Ditto.
+	(w3m-decode-buffer): Call
+	`w3m-arrived-set-auto-detected-coding-system' to store the coding
+	system detectd by this function.
+	(w3m-w3m-attributes): Use content of w3m-document-charset: field
+	as charset, only when `w3m-type' equals `w3mmee' or `w3m-m17n'.
+	Otherwise, call `w3m-arrived-auto-detected-coding-system'.
+
 2001-09-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-use-mule-ucs): Strict checking.

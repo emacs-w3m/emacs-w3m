@@ -1246,6 +1246,16 @@ If N is negative, last N items of LIST is returned."
   (let ((v (intern-soft url w3m-arrived-db)))
     (and v (get v 'content-type))))
 
+(defun w3m-arrived-auto-detected-coding-system (url)
+  "Return URL's coding-system detected by `w3m-decode-buffer'."
+  (let ((v (intern-soft url w3m-arrived-db)))
+    (and v (get v 'auto-detected-coding-system))))
+
+(defun w3m-arrived-set-auto-detected-coding-system (url coding-system)
+  "Stor URL's CODING-SYSTEM for future access."
+  (let ((v (intern-soft url w3m-arrived-db)))
+    (and v (put v 'auto-detected-coding-system coding-system))))
+
 (defun w3m-arrived-setup ()
   "Load arrived url list from `w3m-arrived-file' and setup hash database."
   (unless w3m-arrived-db
@@ -2165,12 +2175,14 @@ If the user enters null input, return second argument DEFAULT."
     (setq content-charset (w3m-x-moe-decode-buffer)))
   (decode-coding-region
    (point-min) (point-max)
-   (if content-charset
-       (w3m-charset-to-coding-system content-charset)
-     (let ((codesys (detect-coding-region (point-min) (point-max))))
-       (if (consp codesys)
-	   (car codesys)
-	 codesys))))
+   (w3m-arrived-set-auto-detected-coding-system
+    url
+    (if content-charset
+	(w3m-charset-to-coding-system content-charset)
+      (let ((codesys (detect-coding-region (point-min) (point-max))))
+	(if (consp codesys)
+	    (car codesys)
+	  codesys)))))
   (set-buffer-multibyte t))
 
 (defun w3m-x-moe-decode-buffer ()
@@ -2341,9 +2353,12 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	      (setq type (substring type 0 (match-beginning 0))))))
 	(list (or type (w3m-local-content-type url))
 	      (or charset
-		  (when (setq charset (cdr (assoc "w3m-document-charset"
-						  alist)))
-		    (car (split-string charset))))
+		  (if (memq w3m-type '(w3mmee w3m-m17n))
+		      (progn
+			(setq charset
+			      (cdr (assoc "w3m-document-charset" alist)))
+			(car (split-string charset)))
+		    (w3m-arrived-auto-detected-coding-system url)))
 	      (let ((v (cdr (assoc "content-length" alist))))
 		(and v (setq v (string-to-number v)) (> v 0) v))
 	      (cdr (assoc "content-encoding" alist))
