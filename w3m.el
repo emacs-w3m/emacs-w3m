@@ -2869,7 +2869,9 @@ to add the option \"-no-proxy\"."
 	       (catch 'domain-match
 		 (setq host (match-string 1 url))
 		 (dolist (domain w3m-no-proxy-domains)
-		   (when (string-match (concat (regexp-quote domain) "$")
+		   (when (string-match (concat "\\(^\\|\\.\\)"
+					       (regexp-quote domain)
+					       "$")
 				       host)
 		     (throw 'domain-match t)))))
       (push "-no-proxy" args))
