@@ -45,7 +45,8 @@
 
 ;; Needed for interdependencies between w3m modules.
 (push default-directory load-path)
-(load-file (expand-file-name "w3m.el" default-directory))
+
+(require 'w3m)
 
 (defun w3mhack-examine-modules ()
   "Examine w3m modules should be byte-compile'd."

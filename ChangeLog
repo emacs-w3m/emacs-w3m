@@ -1,5 +1,10 @@
 2001-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el: Use `require' instead of `load' for loading "w3m" to
+	avoid undesirable newlines in stdout.
+
+2001-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-xmas.el: Require `wid-edit' when the widget `coding-system'
 	is not available.
 
