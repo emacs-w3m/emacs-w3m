@@ -37,11 +37,9 @@
 
 ;;; How to install:
 
-;; Please put this file to appropriate directory, and if you want
-;; byte-compile it.  And add following lisp expressions to your
-;; ~/.emacs.
-;;
-;;     (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
+;; In the top level directory of the w3m distribution, run the program
+;; `configure' and then type `make install'.  See README file for more
+;; information.
 
 
 ;;; Code:
