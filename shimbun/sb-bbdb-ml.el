@@ -1,8 +1,7 @@
 ;;; sb-bbdb-ml.el --- shimbun backend for bbdb-ml
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
-;;         Yuuichi Teranishi  <teranisi@gohome.org>
+;; Author: Akihiro Arisawa   <ari@mbf.sphere.ne.jp>,
+;;         Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Keywords: news
 
