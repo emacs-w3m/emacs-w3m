@@ -5257,8 +5257,8 @@ emacs-w3m を使って HTML ファイルを閲覧することができます。
 (setq gnus-treat-strip-banner '(or t (typep "text/html")))
 @end lisp
 
-詳しいことは @ref{Customizing Articles, ,Customizing Articles, gnus,
-The Gnus Manual} を見て下さい。
+詳しいことは @xref{Customizing Articles, ,Customizing Articles, gnus,
+The Gnus Manual}, を見て下さい。
 
 加えて、以下の実験的なコードは @samp{multipart/related} な絵を見るための
 ものです。表示される場所に難があります。
