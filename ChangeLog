@@ -1,3 +1,8 @@
+2003-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-makeinfo): Force texinfmt.elc to load
+	texinfo.elc from the correct place.  <cf. [emacs-w3m:05573]>
+
 2003-07-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-get-headers): Convert CRLF to LF.

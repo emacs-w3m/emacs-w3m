@@ -1036,14 +1036,23 @@ install-package:
 (defun w3mhack-makeinfo ()
   "Emacs makeinfo in batch mode.
 NOTE: This function must be called from the top directory."
-  (load "doc/ptexinfmt.el" nil t t)
-  (cd "doc")
   (let ((file (pop command-line-args-left))
 	auto-save-default
 	find-file-run-dired
 	coding-system-for-write
 	output-coding-system
-	(error 0))
+	(error 0)
+	(load-path load-path)
+	(texinfmt (locate-library "texinfmt")))
+    ;; ptexinfmt.elc requires texinfmt.elc and texinfmt.elc requires
+    ;; texinfo.elc in the same directory where texinfmt.elc is installed.
+    ;; However, another version of texinfo.elc (e.g. auctex provides such
+    ;; one) may be loaded depending on the value of the `load-path'.  So,
+    ;; we need to force it to load the correct one.
+    (when texinfmt
+      (push (file-name-directory texinfmt) load-path))
+    (load "doc/ptexinfmt.el" nil t t)
+    (cd "doc")
     (if (and (string-match "-ja\\.texi\\'" file)
 	     (not (featurep 'mule)))
 	(message "Cannot format %s with this version of %sEmacs (ignored)"
