@@ -4807,7 +4807,6 @@ The optional argument BUFFER will be used exclusively by the command
     (define-key map "W" 'w3m-weather)
     (define-key map "S" 'w3m-search)
     (define-key map "D" 'w3m-dtree)
-    (define-key map "N" 'w3m-namazu)
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
     (define-key map "." 'w3m-shift-left)
@@ -5110,7 +5109,7 @@ frame or a window in the frame is succeeded."
 	If called with '\\[universal-argument]', this command displays arrived-DB history.
 \\[w3m-antenna]	Display the report change of WEB sites.
 	If called with '\\[universal-argument]', this command reloads report.
-\\[w3m-antenna-add-current-url]	Add link under cursor to antenna.
+\\[w3m-antenna-add-current-url]	Add the current page to antenna.
 \\[w3m-search]	Search query.
 	If called with '\\[universal-argument]', you can choose search engine.
 \\[w3m-weather]	Display weather report.
