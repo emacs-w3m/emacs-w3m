@@ -1,3 +1,9 @@
+2004-10-20  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-buffer-setup): Modify
+	`mode-line-buffer-identification'; display "Loading..." instead of
+	`w3m-current-titile' when process of w3m active.
+
 2004-10-16  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-touch-file): Use `set-file-times' if available;

@@ -6883,7 +6883,8 @@ generate a new buffer."
 	     w3m-modeline-separator)
 	    w3m-modeline-separator)
 	   w3m-modeline-separator)
-	  w3m-current-title))
+	  (w3m-current-process
+	   "Loading..." w3m-current-title)))
   (unless (assq 'w3m-current-process mode-line-process)
     (setq mode-line-process
 	  (cons (list 'w3m-current-process 'w3m-process-modeline-string)
