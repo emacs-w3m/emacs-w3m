@@ -1,3 +1,10 @@
+2001-06-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el (shimbun): New customize group.
+	(shimbun-x-face): Defined as customize option.
+	(shimbun-encapsulate-article): Ditto.
+	(shimbun-use-bbdb-for-x-face): Ditto.
+
 2001-06-12  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/shimbun.el (shimbun-retrieve-url): Return content-type.

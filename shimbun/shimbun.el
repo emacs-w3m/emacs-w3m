@@ -81,10 +81,17 @@
 			  expiration-days))
   (luna-define-internal-accessors 'shimbun))
 
-(defvar shimbun-x-face
+(defgroup shimbun nil
+  "shimbun - the backend library to read web newspapers."
+  :group 'w3m
+  :group 'hypermedia)
+
+(defcustom shimbun-x-face
   "X-Face: Ygq$6P.,%Xt$U)DS)cRY@k$VkW!7(X'X'?U{{osjjFG\"E]hND;SPJ-J?O?R|a?L
         g2$0rVng=O3Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%"
-  "Default X-Face field for shimbun.")
+  "*Default X-Face field for shimbun."
+  :group 'shimbun
+  :type 'string)
 
 ;;; Shimbun MUA
 (eval-and-compile
@@ -206,9 +213,11 @@ Return content-type of URL as string when retrieval succeeded."
 	      (shimbun-header-xref header))
     (shimbun-header-xref header)))
 
-(defvar shimbun-encapsulate-article t
+(defcustom shimbun-encapsulate-article t
   "*If non-nil, inline images in the shimbun article are encapsulated.
-Generated article have a multipart/related content-type.")
+Generated article have a multipart/related content-type."
+  :group 'shimbun
+  :type 'boolean)
 
 (defun shimbun-make-mime-article (shimbun header)
   "Make a MIME article according to SHIMBUN and HEADER.
@@ -295,10 +304,14 @@ content-type if `shimbun-encapsulate-article' is non-nil."
      (autoload 'bbdb-search-simple "bbdb")
      (autoload 'bbdb-get-field "bbdb"))))
 
-(defvar shimbun-use-bbdb-for-x-face nil
+(defcustom shimbun-use-bbdb-for-x-face nil
   "*Say whether to use BBDB for choosing the author's X-Face.  It will be
 set to t when the initial value is nil and BBDB is loaded.  You can
-set this to `never' if you never want to use BBDB.")
+set this to `never' if you never want to use BBDB."
+  :group 'shimbun
+  :type '(choice (const :tag "Default" nil)
+		 (const :tag "Use BBDB" t)
+		 (const :tag "No use BBDB" never)))
 
 (defun shimbun-header-insert (shimbun header)
   (let ((from (shimbun-header-from header))
