@@ -443,9 +443,13 @@ for a charset indication")
 If N is negative, last N items of LIST is returned."
   (if (< n 0)
       ;; N is negative, get items from tail of list
-      (nthcdr (+ (length list) n) (copy-sequence list))
+      (if (>= (- n) (length list))
+	  (copy-sequence list)
+	(nthcdr (+ (length list) n) (copy-sequence list)))
     ;; N is non-negative, get items from top of list
-    (nreverse (nthcdr (- (length list) n) (reverse list)))))
+    (if (>= n (length list))
+	(copy-sequence list)
+      (nreverse (nthcdr (- (length list) n) (reverse list))))))
 
 (defun w3m-load-list (file coding)
   "Load list from FILE with CODING and return list."

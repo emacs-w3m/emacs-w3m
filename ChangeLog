@@ -1,3 +1,8 @@
+2001-03-05  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-sub-list): Guard error for XEmacs (N must count from
+	zero).
+
 2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-search): Simplify.
