@@ -1,5 +1,8 @@
 2002-06-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-macro.el (w3m-insert-string): Import from w3m-util.el on
+	main trunk.
+
 	* Merge fixes of the shimbun module on the main trunk.
 
 	* w3m-weather.el: Require CL when this module is byte-compiled.

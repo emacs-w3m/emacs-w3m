@@ -126,6 +126,17 @@ constants, any other expressions are not allowed."
 		     (setq bin (expand-file-name (concat command ".exe") dir))))
 	    (throw 'found-command bin)))))))
 
+(defmacro w3m-insert-string (string)
+  "Insert STRING at point without conversions in either case the
+multibyteness of the buffer."
+  (if (and (fboundp 'string-as-multibyte)
+	   (subrp (symbol-function 'string-as-multibyte)))
+      `(let ((string ,string))
+	 (insert (if enable-multibyte-characters
+		     (string-as-multibyte string)
+		   (string-as-unibyte string))))
+    `(insert ,string)))
+
 (provide 'w3m-macro)
 
 ;;; w3m-macro.el ends here.
