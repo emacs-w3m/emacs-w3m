@@ -438,16 +438,16 @@ Buffer string between BEG and END are replaced with IMAGE."
 
 (eval-when-compile
   ;; Shut up the byte-compiler in old Emacs 21.
-  (defmacro w3m-force-window-update-1 (object)
-    (if (fboundp 'force-window-update)
-	`(force-window-update ,object))))
+  (unless (fboundp 'force-window-update)
+    (defalias 'force-window-update 'ignore)))
 
 (eval-and-compile
   (defalias 'w3m-force-window-update
-    (if (fboundp 'force-window-update)
+    (if (and (fboundp 'force-window-update)
+	     (not (eq (symbol-function 'force-window-update) 'ignore)))
 	(lambda (&optional window) "\
 Force redisplay of WINDOW which defaults to the selected window."
-	  (w3m-force-window-update-1 (or window (selected-window))))
+	  (force-window-update (or window (selected-window))))
       (lambda (&optional ignore) "\
 Wobble the selected window size to force redisplay of the header-line."
 	(let ((window-min-height 0))
