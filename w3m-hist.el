@@ -722,7 +722,7 @@ renaming will be done for all the w3m buffers."
 	   (buffers (delq current (buffer-list)))
 	   element)
       (while buffers
-	(set-buffer (pop buffers)
+	(set-buffer (pop buffers))
 	(when (and (eq major-mode 'w3m-mode)
 		   (setq element (w3m-history-assoc old-url)))
 	  (setcar element new-url)
