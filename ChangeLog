@@ -1,3 +1,25 @@
+2003-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el: Require `sb-text'.
+	(shimbun-asahi): Make it inherit the `shimbun-text' class.
+	(shimbun-from-address): Encode names collectively.
+	(shimbun-asahi-adjust-date-header): New function suggested by
+	TSUCHIYA-san.
+	(shimbun-asahi-make-contents): Remove.
+	(shimbun-make-contents): Use `shimbun-asahi-adjust-date-header' as
+	a preprocessor.
+
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html): Make it inherit
+	the `shimbun' class.
+	(shimbun-groups, shimbun-from-address, shimbun-index-url,
+	shimbun-get-headers): New methods copied from sb-asahi.el.
+	(shimbun-asahi-html-make-contents): Remove.
+	(shimbun-make-contents): Use `shimbun-asahi-adjust-date-header' as
+	a preprocessor.
+
+	* shimbun/sb-text.el (shimbun-shallow-rendering): Revert last
+	change.
+
 2003-06-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-server-name): New
