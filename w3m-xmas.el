@@ -176,4 +176,32 @@ as the value."
 (unless (fboundp 'coding-system-category)
   (defalias 'coding-system-category 'coding-system-type))
 
+;;; Header line (emulating Emacs 21).
+(defvar w3m-header-line-map (make-sparse-keymap))
+(define-key w3m-header-line-map 'button2 'w3m-goto-url)
+
+(defun w3m-setup-header-line ()
+  "Setup header line (emulating Emacs 21)."
+  (when w3m-use-header-line
+    (goto-char (point-min))
+    (insert "Location: ")
+    (set-extent-property (make-extent (point-min) (point))
+			 'face 'w3m-header-line-location-title-face)
+    (let ((start (point))
+	  (help "button2 prompts to input URL"))
+      (insert w3m-current-url)
+      (set-extent-properties (make-extent start (point))
+			     (list 'face
+				   'w3m-header-line-location-content-face
+				   'mouse-face 'highlight
+				   'keymap w3m-header-line-map
+				   'help-echo help
+				   'balloon-help help))
+      (setq start (point))
+      (insert-char ?\  (max 0 (- (window-width) (current-column) 1)))
+      (set-extent-property (make-extent start (point))
+			   'face 'w3m-header-line-location-content-face)
+      (unless (eolp)
+	(insert "\n")))))
+
 ;;; w3m-xmas.el ends here.
