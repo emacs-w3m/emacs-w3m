@@ -1,3 +1,12 @@
+2001-04-03  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-airs.el, shimbun/sb-mew.el, shimbun/sb-wired.el,
+	shimbun/sb-asahi.el, shimbun/sb-mhonarc.el, shimbun/sb-xemacs.el,
+	shimbun/sb-bbdb-ml.el, shimbun/sb-netbsd.el, shimbun/sb-yomiuri.el,
+	shimbun/sb-cnet.el, shimbun/sb-sponichi.el, shimbun/sb-zdnet.el,
+	shimbun/sb-fml.el, shimbun/sb-tcup.el, shimbun/shimbun.el,
+	shimbun/sb-lump.el, shimbun/sb-text.el: New files.
+
 2001-04-03  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-force-redisplay): New variable, default is 't'.
