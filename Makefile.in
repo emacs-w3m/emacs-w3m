@@ -152,7 +152,7 @@ dist: Makefile w3m.elc
 tarball: CVS/Root CVS/Repository
 	-rm -rf $(DISTDIR) $(TARBALL) `basename $(TARBALL) .gz`
 	cvs -d `cat CVS/Root` -w export -d $(DISTDIR) -r $(BRANCH) `cat CVS/Repository`
-	cvs diff |( cd $(DISTDIR) && patch -p0 )
+	-cvs diff |( cd $(DISTDIR) && patch -p0 )
 	for f in BUGS.ja w3m-e22.el; do\
 	  if [ -f $(DISTDIR)/$${f} ]; then\
 	    rm -f $(DISTDIR)/$${f} || exit 1;\
