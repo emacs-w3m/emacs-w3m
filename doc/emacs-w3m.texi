@@ -113,6 +113,7 @@ Basic Usage
 * Working with buffers::        Creating, killing and moving across buffers
 * Downloading::                 Downloading a file
 * Submitting Forms::            Filling in HTML forms
+* HTML File Information::       Support for web page editing and hacking
 
 Pretty Good Features
 
@@ -628,6 +629,7 @@ variable to use regexps to specify the @code{no_proxy} hosts.
 * Working with buffers::        Creating, killing and moving across buffers
 * Downloading::                 Downloading a file
 * Submitting Forms::            Filling in HTML forms
+* HTML File Information::       Support for web page editing and hacking
 @end menu
 
 @node Browsing Web Pages
@@ -637,6 +639,8 @@ variable to use regexps to specify the @code{no_proxy} hosts.
 * Launching and Jumping::       Go ahead, just try it
 * Moving in a page::            Moving from place to place in a page
 * Moving over pages::           Moving from page to page
+* Browsing with Mouse Operations::   Surfing with mouse
+* Going Back to Daily Hacking and/or Daily Writing::    Return to an Ordinary Life
 @end menu
 
 @node Launching and Jumping
@@ -971,6 +975,72 @@ Scroll up or go to next url.
 @findex w3m-view-previous-page
 Scroll down or go to previous url.
 (TODO)
+@end table
+
+@node Browsing with Mouse Operations
+@subsection Surfing with mouse
+
+The emacs-w3m developers made an effort so that honest people who aren't
+Emacs otaku can also use emacs-w3m.  You can perform almost web browsing
+operations only with a mouse except for entering text, e.g. URL.
+Sometimes you need to use modifier keys since the emacs-w3m
+developers are Emacs otaku at all@dots{}
+
+Use @kbd{mouse-2} for the ``following a link'' operation which is the
+basics of web browsing.
+
+@table @kbd
+@item mouse-2
+@kindex mouse-2
+@findex w3m-mouse-view-this-url
+Follow a link under the mouse pointer (@code{w3m-mouse-view-this-url}).
+
+@item S-mouse-2
+@kindex S-mouse-2
+@findex w3m-mouse-view-this-url-new-session
+Follow a link under the mouse pointer in a new session
+(@code{w3m-mouse-view-this-url-new-session}).
+@end table
+
+Scrollbar, menubar and toolbar are helpful in emacs-w3m when using a
+mouse (you need Emacs supporting them and not to invalidate them). 
+You can scroll an emacs-w3m window using scrollbar.  You can invoke many
+emacs-w3m commands described in this manual from the ``W3M'' menu which
+appears in the leftmost menubar pushing the ``File'' menu aside.  And
+further, it isn't necessary to use menubar for the typical emacs-w3m
+commands.  Use toolbar items instead.
+
+To switch an emacs-w3m window using ``Tabs'' (@pxref{Using Tabs}), click
+the topmost line in an emacs-w3m window directory using @kbd{mouse-2} or
+choose one from the ``TAB'' menu which appears next to the ``W3M'' menu.
+
+@node Going Back to Daily Hacking and/or Daily Writing
+@subsection Return to an Ordinary Life
+
+Think again. This time, probably you started Emacs not for browsing the web,
+but for replacing a built-in interpreter in an editor with scheme, 
+making Info documents, writing your opinion to the government about 
+software license, etc. While using Emacs, you ran into the need to browse 
+the web for your work. But you happened to be able to see the web page without 
+leaving Emacs at all. Wow.
+
+Now the time has come when returning to the work.  Keep it up or the
+world won't change!  Type @kbd{q} if there may be a need to browse web
+again.  Type @kbd{Q} if you don't have an intention to go back to
+emacs-w3m for a long while.
+
+@table @kbd
+@item q
+@kindex q
+@findex w3m-close-window
+Close an emacs-w3m window and select the other buffer
+(@code{w3m-close-window}).
+
+@item Q
+@kindex Q
+@findex w3m-quit
+Save the ``arrived URLs'' list in the file (@pxref{Tracing History}) and
+really quit emacs-w3m (@code{w3m-quit}).
 @end table
 
 @node Inline Images
@@ -1476,6 +1546,59 @@ Accept the value.
 
 @item C-c C-q @r{(w3m-form-*-keymap)}
 Quit editing the form item, leaving changes.
+@end table
+
+@node HTML File Information
+@section Support for web page editing and hacking
+
+For those who usually use Emacs for writing documents or programs, it
+would be very convenient if they can browse the web in the same Emacs.
+If you are editing a HTML file in Emacs, you can preview it without
+launching other web-browsing program. Also, you can quickly copy sample
+codes from the documents of library during programming.
+
+How about the opposite? That is, you can edit or refer to the source of
+the web page in a web browser.  Don't you think it cool if you can do
+it? For instance, you found an error in your document after previewing
+it in emacs-w3m. You probably want to correct it soon. Or if you are a
+programmer specialized in web technology, sometimes you might want to
+see the raw HTML file for the current web page@dots{} especially if you
+are an author of a Shimbun module (@pxref{Shimbun Basics}).
+
+It is possible to switch Emacs buffers loading HTML files by pointing
+out a specific buffer name, but emacs-w3m has an specially-assigned key
+for it.  Emacs-w3m knows the URL of the web page that it is currently
+displaying.  Why don't you take advantage of such information?
+   
+@table @kbd
+@item \
+@kindex \
+@findex w3m-view-source
+Display the current web page in the raw HTML 
+format(@code{w3m-view-source}).
+
+@item =
+@kindex =
+@findex w3m-view-header
+Show the information about currently displayed web page. It includes
+title, URL, document type, last modified date(@code{w3m-view-header}). 
+
+@item E
+@kindex E
+@findex w3m-edit-current-url
+Edit the local file pointed by URL of current page(@code{w3m-edit-current-url}).
+
+@item e
+@kindex e
+@findex w3m-edit-this-url
+Edit the local file pointed by URL under point(@code{w3m-edit-this-url}).
+
+@item M
+@kindex M
+@findex w3m-view-url-with-external-browser
+Launch an external browser (other than emacs-w3m) and display the same web
+page as currently displayed in emacs-w3m(@code{w3m-view-url-with-external-browser}).
+
 @end table
 
 @node Pretty Good Features
@@ -4170,6 +4293,8 @@ Romain FRANCOISE
 NAKAJIMA Mikio
 @item
 Yoichi NAKAYAMA
+@item
+Ryoko NARITOKU(Translation only)
 @item
 Hideyuki SHIRAI
 @item
