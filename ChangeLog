@@ -1,5 +1,9 @@
 2005-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-wikimedia.el (shimbun-wikimedia-ja-date-decode):
+	Allow the RFC822 style date format which has been used in the
+	early days.
+
 	* w3mhack.el: Remove the byte-optimizer which replaces
 	truncate-string with truncate-string-to-width.
 
