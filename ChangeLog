@@ -1,3 +1,8 @@
+2004-12-08  Andreas Seltenreich  <seltenreich@gmx.de>
+
+	* shimbun/sb-heise.el (shimbun-heise-get-telepolis-headers):
+	Improve regexp used to extract id string.
+
 2004-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Rewrite the
