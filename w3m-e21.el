@@ -399,9 +399,7 @@ Each information is a list whose elements are:
 	      (setq w3m-current-favicon-data
 		    (eval (list 'base64-decode-string
 				(symbol-value icon))))))))
-     ((string-match "\\`ftp://" url)
-      nil)
-     (t
+     ((string-match "\\`https?://" url)
       (w3m-retrieve-favicon
        (w3m-expand-url (concat "/" w3m-favicon-name) url)
        w3m-current-buffer)))))

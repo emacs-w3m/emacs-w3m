@@ -1,3 +1,8 @@
+2002-01-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-e21.el (w3m-setup-favicon): Reversed the condition that
+	decide whether favicons are used.
+
 2002-01-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-e21.el (w3m-setup-favicon): If url is `ftp://', not retrieve
