@@ -2569,8 +2569,8 @@ Non-@code{nil} means making new emacs-w3m buffers when visiting new
 pages.  If it is non-@code{nil} and there are already emacs-w3m buffers,
 the @code{w3m} command makes a new emacs-w3m buffer if a user specifies
 a url string in the minibuffer, and the @code{w3m-safe-view-this-url}
-command also makes a new buffer at any rate.  The default value is
-@code{nil}.
+command also makes a new buffer if a user invokes it in a buffer not
+being running the @code{w3m-mode}.  The default value is @code{nil}.
 
 @item w3m-mbconv-command
 @vindex w3m-mbconv-command

@@ -1,3 +1,10 @@
+2004-06-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-make-new-session): Doc fix.
+	(w3m-safe-view-this-url): Use w3m-goto-url-new-session only when a
+	user invokes this command in a buffer not being running the
+	w3m-mode.
+
 2004-06-07  Masatake YAMATO  <jet@gyve.org>
 
 	* w3m-hist.el (w3m-history-store-position): Fix a wrong message.
