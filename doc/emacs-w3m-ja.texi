@@ -4,7 +4,6 @@
 @settitle Emacs-w3m -- an interface program of w3m --
 @c %**end of header
 @documentlanguage ja
-@documentencoding iso-2022-jp
 @include version.texi
 @synindex pg cp
 @finalout
