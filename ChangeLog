@@ -1,3 +1,9 @@
+2002-10-21  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-goto-url): Process 'about://group/...'.
+
+	* w3m-bookmark.el (w3m-bookmark-add-current-url-group): New function.
+
 2002-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-delete-buffer): Run `w3m-delete-buffer-hook' only

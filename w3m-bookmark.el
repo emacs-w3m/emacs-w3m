@@ -175,6 +175,20 @@ With prefix, ask new url to add instead of current page."
 		    w3m-current-title)
   (message "Added"))
 
+(defun w3m-bookmark-add-current-url-group ()
+  "Add link of the group of current urls to the bookmark."
+  (interactive)
+  (w3m-bookmark-add 
+   (concat "about://group/"
+	   (base64-encode-string
+	    (prin1-to-string
+	     (mapcar (lambda (buffer)
+		       (with-current-buffer buffer w3m-current-url))
+		     (w3m-list-buffers)))
+	    'no-line-break))
+   "")
+  (message "Added as URL group"))
+
 ;;;###autoload
 (defun w3m-bookmark-view ()
   (interactive)

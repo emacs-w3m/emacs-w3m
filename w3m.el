@@ -5762,114 +5762,126 @@ field for this request."
       (error "%s"
 	     (substitute-command-keys "
 Cannot run two w3m processes simultaneously \
-(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")))
+\(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process\)")))
     (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.
     ;; Store the current position in the history structure.
     (w3m-history-store-position)
-    ;; Retrieve.
-    (lexical-let ((orig url)
-		  (url (w3m-url-strip-authinfo url))
-		  (reload (and (not (eq reload 'redisplay)) reload))
-		  (redisplay (eq reload 'redisplay))
-		  (charset charset)
-		  (post-data post-data)
-		  (referer referer)
-		  (name))
-      (when w3m-current-forms
-	;; Store the current forms in the history structure.
-	(w3m-history-plist-put :forms w3m-current-forms nil nil t))
-      ;; Set current forms using the history structure.
-      (when (setq w3m-current-forms
-		  (when (and (null post-data) ; If post, always reload.
-			     (w3m-cache-available-p url))
-		    (w3m-history-plist-get :forms url nil t)))
-	;; Mark that the form is from history structure.
-	(setq w3m-current-forms (cons t w3m-current-forms)))
-      (when (and post-data (w3m-history-assoc url))
-	;; Remove processing url's forms from the history structure.
-	(w3m-history-remove-properties '(:forms) url nil t))
-      ;; local directory URL check
-      (when (and (w3m-url-local-p url)
-		 (file-directory-p (w3m-url-to-file-name url))
-		 (setq url (file-name-as-directory url))
-		 (eq w3m-local-directory-view-method 'w3m-dtree)
-		 (string-match "\\`file:///" url))
-	(setq url (replace-match "about://dtree/" nil nil url))
-	(setq orig url))
-      (and (string-match w3m-url-components-regexp url)
-	   (match-beginning 8)
-	   (setq name (match-string 9 url)
-		 url (substring url 0 (match-beginning 8))))
-      (lexical-let ((ct (w3m-arrived-content-type url))
-		    (charset (or charset (w3m-arrived-content-charset url)))
-		    (real-url))
-	(when (and (not ct)
-		   (w3m-url-local-p url)
-		   (string= "unknown" (w3m-local-content-type url)))
-	  (let ((s (completing-read
-		    (format "Input %s's content type (default %s): "
-			    (file-name-nondirectory url)
-			    w3m-default-content-type)
-		    w3m-content-type-alist nil t)))
-	    (setq ct (if (string= "" s) w3m-default-content-type s))))
-	(w3m-process-do
-	    (action
-	     (if (and (not reload)
-		      (not redisplay)
-		      (stringp w3m-current-url)
-		      (string= url w3m-current-url))
-		 (progn
-		   (w3m-refontify-anchor)
-		   (or (when name (w3m-search-name-anchor name))
-		       (goto-char (point-min)))
-		   'cursor-moved)
-	       (setq w3m-image-only-page nil
-		     w3m-current-buffer (current-buffer)
-		     w3m-current-process
-		     (w3m-retrieve-and-render (w3m-url-strip-fragment orig)
-					      reload charset ct post-data
-					      referer handler))))
-	  (with-current-buffer w3m-current-buffer
-	    (setq w3m-current-process nil)
-	    (setq real-url (w3m-real-url url))
-	    (cond
-	     ((not action)
-	      (w3m-history-push real-url
-				(list :title (file-name-nondirectory url)))
-	      (w3m-history-push w3m-current-url)
-	      (w3m-refontify-anchor))
-	     ((not (eq action 'cursor-moved))
-	      (w3m-history-push w3m-current-url
-				(list :title w3m-current-title))
-	      (w3m-history-add-properties (list :referer referer
-						:post-data post-data)
-					  nil nil t)
-	      (or (and name (w3m-search-name-anchor name))
-		  (goto-char (point-min)))
-	      (unless w3m-toggle-inline-images-permanently
-		(setq w3m-display-inline-images
-		      w3m-default-display-inline-images))
-	      (cond ((w3m-display-inline-images-p)
-		     (and w3m-force-redisplay (sit-for 0))
-		     (w3m-toggle-inline-images 'force reload))
-		    ((and (w3m-display-graphic-p)
-			  w3m-image-only-page)
-		     (and w3m-force-redisplay (sit-for 0))
-		     (w3m-toggle-inline-image 'force reload)))
-	      (setq buffer-read-only t)
-	      (set-buffer-modified-p nil)))
-	    (w3m-arrived-add orig w3m-current-title nil nil charset ct)
-	    (setq list-buffers-directory w3m-current-title)
-	    ;; must be `w3m-current-url'
-	    (setq default-directory (w3m-current-directory w3m-current-url))
-	    (w3m-update-toolbar)
-	    (w3m-select-buffer-update)
-	    (run-hook-with-args 'w3m-display-functions (or real-url url))
-	    (run-hook-with-args 'w3m-display-hook (or real-url url))
-	    ;; restore position must call after hooks for localcgi.
-	    (when (or reload redisplay)
-	      (w3m-history-restore-position))
-	    (w3m-refresh-at-time))))))))
+    ;; Access url group
+    (if (string-match "\\`about://group/" url)
+	(let ((urls (read (base64-decode-string
+			   (substring url (match-end 0))))))
+	  (w3m-process-do
+	      (type (prog1
+			(w3m-goto-url (car urls))
+		      (dolist (url (cdr urls))
+			(save-excursion
+			  (set-buffer (w3m-copy-buffer nil nil nil 'empty))
+			  (save-window-excursion (w3m-goto-url url))))))
+	    type))
+      ;; Retrieve the page.
+      (lexical-let ((orig url)
+		    (url (w3m-url-strip-authinfo url))
+		    (reload (and (not (eq reload 'redisplay)) reload))
+		    (redisplay (eq reload 'redisplay))
+		    (charset charset)
+		    (post-data post-data)
+		    (referer referer)
+		    (name))
+	(when w3m-current-forms
+	  ;; Store the current forms in the history structure.
+	  (w3m-history-plist-put :forms w3m-current-forms nil nil t))
+	;; Set current forms using the history structure.
+	(when (setq w3m-current-forms
+		    (when (and (null post-data) ; If post, always reload.
+			       (w3m-cache-available-p url))
+		      (w3m-history-plist-get :forms url nil t)))
+	  ;; Mark that the form is from history structure.
+	  (setq w3m-current-forms (cons t w3m-current-forms)))
+	(when (and post-data (w3m-history-assoc url))
+	  ;; Remove processing url's forms from the history structure.
+	  (w3m-history-remove-properties '(:forms) url nil t))
+	;; local directory URL check
+	(when (and (w3m-url-local-p url)
+		   (file-directory-p (w3m-url-to-file-name url))
+		   (setq url (file-name-as-directory url))
+		   (eq w3m-local-directory-view-method 'w3m-dtree)
+		   (string-match "\\`file:///" url))
+	  (setq url (replace-match "about://dtree/" nil nil url))
+	  (setq orig url))
+	(and (string-match w3m-url-components-regexp url)
+	     (match-beginning 8)
+	     (setq name (match-string 9 url)
+		   url (substring url 0 (match-beginning 8))))
+	(lexical-let ((ct (w3m-arrived-content-type url))
+		      (charset (or charset (w3m-arrived-content-charset url)))
+		      (real-url))
+	  (when (and (not ct)
+		     (w3m-url-local-p url)
+		     (string= "unknown" (w3m-local-content-type url)))
+	    (let ((s (completing-read
+		      (format "Input %s's content type (default %s): "
+			      (file-name-nondirectory url)
+			      w3m-default-content-type)
+		      w3m-content-type-alist nil t)))
+	      (setq ct (if (string= "" s) w3m-default-content-type s))))
+	  (w3m-process-do
+	      (action
+	       (if (and (not reload)
+			(not redisplay)
+			(stringp w3m-current-url)
+			(string= url w3m-current-url))
+		   (progn
+		     (w3m-refontify-anchor)
+		     (or (when name (w3m-search-name-anchor name))
+			 (goto-char (point-min)))
+		     'cursor-moved)
+		 (setq w3m-image-only-page nil
+		       w3m-current-buffer (current-buffer)
+		       w3m-current-process
+		       (w3m-retrieve-and-render (w3m-url-strip-fragment orig)
+						reload charset ct post-data
+						referer handler))))
+	    (with-current-buffer w3m-current-buffer
+	      (setq w3m-current-process nil)
+	      (setq real-url (w3m-real-url url))
+	      (cond
+	       ((not action)
+		(w3m-history-push real-url
+				  (list :title (file-name-nondirectory url)))
+		(w3m-history-push w3m-current-url)
+		(w3m-refontify-anchor))
+	       ((not (eq action 'cursor-moved))
+		(w3m-history-push w3m-current-url
+				  (list :title w3m-current-title))
+		(w3m-history-add-properties (list :referer referer
+						  :post-data post-data)
+					    nil nil t)
+		(or (and name (w3m-search-name-anchor name))
+		    (goto-char (point-min)))
+		(unless w3m-toggle-inline-images-permanently
+		  (setq w3m-display-inline-images
+			w3m-default-display-inline-images))
+		(cond ((w3m-display-inline-images-p)
+		       (and w3m-force-redisplay (sit-for 0))
+		       (w3m-toggle-inline-images 'force reload))
+		      ((and (w3m-display-graphic-p)
+			    w3m-image-only-page)
+		       (and w3m-force-redisplay (sit-for 0))
+		       (w3m-toggle-inline-image 'force reload)))
+		(setq buffer-read-only t)
+		(set-buffer-modified-p nil)))
+	      (w3m-arrived-add orig w3m-current-title nil nil charset ct)
+	      (setq list-buffers-directory w3m-current-title)
+	      ;; must be `w3m-current-url'
+	      (setq default-directory (w3m-current-directory w3m-current-url))
+	      (w3m-update-toolbar)
+	      (w3m-select-buffer-update)
+	      (run-hook-with-args 'w3m-display-functions (or real-url url))
+	      (run-hook-with-args 'w3m-display-hook (or real-url url))
+	      ;; restore position must call after hooks for localcgi.
+	      (when (or reload redisplay)
+		(w3m-history-restore-position))
+	      (w3m-refresh-at-time)))))))))
 
 (defun w3m-current-directory (url)
   (let (file)
