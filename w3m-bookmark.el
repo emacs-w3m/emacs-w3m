@@ -63,7 +63,7 @@
 	    "</body>\n</html>\n")))
 
 (defcustom w3m-bookmark-default-section
-  (caar (w3m-bookmark-sections))
+  nil
   "Default section to add new entry."
   :group 'w3m
   :type 'string)
@@ -94,6 +94,9 @@
 		    nil)
 	      sections)))
     (nreverse sections)))
+
+(unless w3m-bookmark-default-section
+  (setq w3m-bookmark-default-section (caar (w3m-bookmark-sections))))
 
 (defun w3m-bookmark-write-file (url title section)
   "Make new bookmark with specified spec, and save it."
