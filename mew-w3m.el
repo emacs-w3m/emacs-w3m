@@ -82,8 +82,9 @@
 
 (defcustom mew-use-w3m-minor-mode nil
   "*Use w3m minor mode in message buffer.
-When viewing Text/Html contents rendering with w3m, use `w3m-minor-mode'
-and its keymap in message buffer."
+Non-nil means that the minor mode whose keymap contains keys binded to
+some emacs-w3m commands are activated in message buffer, when viewing
+Text/Html contents."
   :group 'mew-w3m
   :type 'boolean)
 
@@ -100,14 +101,19 @@ This variable effected only XEmacs or Emacs 21."
 
 ;; these are defined here.
 ;; It's not reasonable to merge into w3m.el, I think
+(defvar mew-w3m-minor-mode-map (w3m-make-minor-mode-keymap))
 (defvar mew-w3m-minor-mode nil)
+(make-variable-buffer-local 'mew-w3m-minor-mode)
+(unless (assq 'mew-w3m-minor-mode minor-mode-alist)
+  (push (list 'mew-w3m-minor-mode " w3m") minor-mode-alist))
+(unless (assq 'mew-w3m-minor-mode minor-mode-map-alist)
+  (push (cons 'mew-w3m-minor-mode mew-w3m-minor-mode-map) minor-mode-map-alist))
 (defconst mew-w3m-safe-url-regexp "\\`cid:")
 
 (defun mew-w3m-minor-mode-setter ()
   "Check message buffer and activate w3m-minor-mode."
-  (w3m-minor-mode (or (and (get-text-property (point-min) 'w3m)
-			   mew-use-w3m-minor-mode)
-		      0)))
+  (setq mew-w3m-minor-mode (and (get-text-property (point-min) 'w3m)
+				mew-use-w3m-minor-mode)))
 
 (defun mew-w3m-view-inline-image (&optional allimage)
   "Display the images of Text/Html part.
@@ -227,7 +233,7 @@ This variable effected only XEmacs or Emacs 21."
 		    (set-buffer-multibyte nil)
 		    (downcase (car (mew-syntax-get-ct cidstx))))
 		(run-hooks 'mew-w3m-cid-retrieve-hook)))))))))
-    
+
 (when w3m-mew-support-cid
   (push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
 	w3m-cid-retrieve-function-alist))
