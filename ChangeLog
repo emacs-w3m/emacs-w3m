@@ -1,3 +1,10 @@
+2005-03-20 David Hansen  <david.hansen@physik.fu-berlin.de>
+
+	* sb-heise.el (shimbun-heise-get-newsticker-headers): Removed
+	forgotten debug code.
+	(shimbun-heise-get-telepolis-headers): Follow the change of site
+	design.
+
 2005-03-20  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-fau.el: new file.

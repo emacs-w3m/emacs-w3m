@@ -71,7 +71,6 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 	(setq id (concat "<newsticker" id "@heise.de>"))
 	(when (shimbun-search-id shimbun id)
 	  (throw 'stop nil))
-	(message id)
 	(push (shimbun-make-header
 	       0 (shimbun-mime-encode-string subject)
 	       (shimbun-mime-encode-string from)
@@ -80,45 +79,46 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
     headers))
 
 
-(defconst sb-heise-tp-url-re
-  (concat "<p[^>]*class=\"inhalt-head\"[^>]*>"
-	  "[^<]*<a href=\"\\([^\"]*\\)\"[^>]*>"
-	  "\\(.*?\n?.*?\\)</a></p>"))
+(defconst shimbun-heise-date-re "<td[^>]+class=\"date-cell\"\\s-*>\\sw*,\
+\\s-*\\([0-9]+\\)\\.\\([0-9]+\\)\\.\\([0-9]+\\)\\s-*</td>")
 
-(defconst sb-heise-tp-auth-date-re
-  (concat "<p[^>]*class=\"inhalt-autor\"[^>]*>"
-	  "\\([^<]+\\)<span[^>]*class=\"date\"[^>]*>"
-	  "[^<]*\\([0-9]+\\.[0-9]+\\.[0-9]+\\)[^<]*"
-	  "</span>"))
+(defconst shimbun-heise-author-re "<p\\s-+class=\"inhalt-autor\">\\(.*?\\)</p>")
+
+(defconst shimbun-heise-url-re "<p\\s-+class=\"inhalt-head\">.*?\
+<a\\s-+href=\"\\(/.*?/\\([0-9]+\\)/\\([0-9]+\\).html\\)\".*?\n*\
+\\(.*?\\)</a></p>")
 
 (defun shimbun-heise-get-telepolis-headers (shimbun)
-  (let (headers)
+  (let (headers (limit (re-search-forward shimbun-heise-date-re nil t)))
     (catch 'stop
-      (while (re-search-forward sb-heise-tp-url-re nil t nil)
-	(let ((url (match-string 1))
-	      (subject (match-string 2)))
-	  (when (re-search-forward sb-heise-tp-auth-date-re nil t nil)
-	    (let ((author (concat (match-string 1) " <invalid@heise.de>"))
-		  (date (match-string 2)) (id))
-	      (setq url (shimbun-expand-url url shimbun-heise-url))
-	      (string-match "\\(/\\w+/[0-9]+/\\)[^/]+\\.html" url)
-	      (setq id (concat "<telepolis" (match-string 1 url) "@heise.de>"))
-	      (when (shimbun-search-id shimbun id)
-		(throw 'stop nil))
-	      (string-match "\\([0-9]+\\)\\.\\([0-9]+\\)\\.\\([0-9]+\\)" date)
-	      (push (shimbun-create-header
-		     0 subject author
-		     (shimbun-make-date-string
-		      (string-to-number (match-string 3 date)) ; year
-		      (string-to-number (match-string 2 date)) ; month
-		      (string-to-number (match-string 1 date)) ; day
-		      "00:00"		; time
-		      ;; FIXME: timezone is always wrong, slightly better than
-		      ;; the default "+0900"
-		      "+0000")
-		     id "" 0 0 url) headers))))))
+      (while limit
+        (goto-char limit)
+        (let ((day (match-string 1))
+              (month (match-string 2))
+              (year (match-string 3)))
+          (setq limit (save-excursion
+                        (re-search-forward shimbun-heise-date-re nil t)))
+          (save-match-data
+            (while (re-search-forward shimbun-heise-url-re limit t)
+              (let ((url (match-string 1))
+                    (mid (concat (match-string 2) "x" (match-string 3)))
+                    (subj (match-string 4)))
+                (when (shimbun-search-id shimbun mid)
+                  (throw 'stop nil))
+                (when (re-search-forward shimbun-heise-author-re limit t)
+                  (let ((author (match-string 1)))
+                    (push (shimbun-create-header
+                           0 subj author
+                           (shimbun-make-date-string
+                            (string-to-number year)
+                            (string-to-number month)
+                            (string-to-number day)
+                            "00:00"
+                            ;; FIXME: timezone is always wrong, slightly better than
+                            ;; the default "+0900"
+                            "+0000")
+                           mid "" 0 0 url) headers)))))))))
     headers))
-
 
 (luna-define-method shimbun-get-headers
   ((shimbun shimbun-heise) &optional range)
