@@ -116,7 +116,9 @@ Return content-type of URL as string when retrieval succeeded."
   (let (type)
     (when (and url (setq type (w3m-retrieve url nil no-cache)))
       (unless no-decode
-	(w3m-decode-buffer url))
+	(let (w3m-use-refresh)
+	  (w3m-decode-buffer url)
+	  (goto-char (point-min))))
       type)))
 
 (defalias 'shimbun-content-type 'w3m-content-type)
