@@ -2853,25 +2853,27 @@ to nil.
 	     (w3m-read-file-name (format "Download %s to: " basename)
 				 w3m-default-save-directory basename)
 	     current-prefix-arg))))
-  (unless filename
-    (setq filename (w3m-read-file-name nil nil url)))
-  (if (w3m-retrieve url t no-cache)
-      (with-current-buffer (get-buffer w3m-work-buffer-name)
-	(let ((buffer-file-coding-system 'binary)
-	      (file-coding-system 'binary)
-	      (coding-system-for-write 'binary)
-	      jka-compr-compression-info-list
-	      jam-zcat-filename-list
-	      format-alist)
-	  (if (or (not (file-exists-p filename))
-		  (y-or-n-p (format "File(%s) is already exists. Overwrite? "
-				    filename)))
-	      (write-region (point-min) (point-max) filename))))
-    (error "Cannot retrieve URL: %s%s"
-	   url
-	   (if w3m-process-exit-status
-	       (format " (exit status: %s)" w3m-process-exit-status)
-	     ""))))
+  (if (string-match "\\`ftp://" url)
+      (w3m-goto-ftp-url url filename)
+    (unless filename
+      (setq filename (w3m-read-file-name nil nil url)))
+    (if (w3m-retrieve url t no-cache)
+	(with-current-buffer (get-buffer w3m-work-buffer-name)
+	  (let ((buffer-file-coding-system 'binary)
+		(file-coding-system 'binary)
+		(coding-system-for-write 'binary)
+		jka-compr-compression-info-list
+		jam-zcat-filename-list
+		format-alist)
+	    (if (or (not (file-exists-p filename))
+		    (y-or-n-p (format "File(%s) already exists. Overwrite? "
+				      filename)))
+		(write-region (point-min) (point-max) filename))))
+      (error "Cannot retrieve URL: %s%s"
+	     url
+	     (if w3m-process-exit-status
+		 (format " (exit status: %s)" w3m-process-exit-status)
+	       "")))))
 
 
 ;;; Retrieve data:
@@ -4071,12 +4073,35 @@ or prefix ARG columns."
 		   (substring url (match-end 2))))
       (error "URL is strange")))
 
-(defun w3m-goto-ftp-url (url)
-  (let* ((ftp (w3m-convert-ftp-url-for-emacsen url))
-	 (file (file-name-nondirectory ftp)))
-    (if (file-directory-p ftp)
+(defun w3m-goto-ftp-url (url &optional filename)
+  "Copy a remote file to a local file if URL looks like a file, otherwise
+run `dired-other-window' for URL using `ange-ftp' or `efs'.  Optional
+FILENAME specifies the name of a local file.  If FILENAME is omitted,
+it will prompt user where to save a file."
+  (let ((ftp (w3m-convert-ftp-url-for-emacsen url))
+	file)
+    (if (or (string-equal "/" (substring ftp -1))
+	    ;; `file-directory-p' takes a long time for remote files.
+	    (file-directory-p ftp))
 	(dired-other-window ftp)
-      (copy-file ftp (w3m-read-file-name nil nil file)))))
+      (setq file (file-name-nondirectory ftp))
+      (unless filename
+	(setq filename (w3m-read-file-name nil nil file)))
+      (unless (file-writable-p (file-name-directory filename))
+	(error "Permission denied, %s" (file-name-directory filename)))
+      (when (or (not (file-exists-p filename))
+		(if (file-writable-p filename)
+		    (and (prog1
+			     (y-or-n-p
+			      (format "File(%s) already exists. Overwrite? "
+				      filename))
+			   (message ""))
+			 (progn
+			   (delete-file filename)
+			   t))
+		  (error "Permission denied, %s" filename)))
+	(copy-file ftp filename)
+	(message "Wrote %s" filename)))))
 
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer)
@@ -4745,4 +4770,5 @@ If called with 'prefix argument', display arrived-DB history."
 	  (insert "\n"))))))
 
 (provide 'w3m)
-;;; w3m.el ends here.
+
+;;; w3m.el ends here
