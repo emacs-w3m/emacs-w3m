@@ -26,8 +26,8 @@
 
    If you want to use the shimbun library which is included in the
    emacs-w3m distribution, you have to install FLIM package.  For more
-   detail about the shimbun library, see the README.shimbun.ja file
-   (written in Japanese, sorry).
+   detail about the shimbun library, see "Shimbun Library" section in
+   Info.
 
    a) Emacs 21.x
       No additional package is required.
