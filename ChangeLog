@@ -15,7 +15,7 @@
 	* w3m-xmas.el (w3m-make-ccl-coding-system): Alias to `ignore' if
 	no-MULE (the feature `mule' is not provided).
 	(coding-system-category): Ditto.
-	(define-ccl-program): Define it as an empty macro.
+	(define-ccl-program): Define it as an empty macro if no-MULE.
 
 	* w3m.el (TopLevel): Don't require `ccl' if no-MULE.
 	(w3m-accept-japanese-characters): Default to nil if no-MULE.
