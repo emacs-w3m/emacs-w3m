@@ -37,6 +37,7 @@
 (eval-when-compile
   (defvar w3m-current-buffer)
   (defvar w3m-current-url)
+  (defvar w3m-icon-data)
   (defvar w3m-profile-directory)
   (defvar w3m-use-favicon)
   (defvar w3m-work-buffer-name)
@@ -68,13 +69,9 @@
 (defconst w3m-favicon-name "favicon.ico"
   "The favicon name.")
 
-(defvar w3m-current-favicon-data nil
-  "A cons cell of (IMAGE-DATA . IMAGE-TYPE).")
 (defvar w3m-current-favicon-image nil)
-(defvar w3m-favicon-converted nil)
-(make-variable-buffer-local 'w3m-current-favicon-data)
 (make-variable-buffer-local 'w3m-current-favicon-image)
-(make-variable-buffer-local 'w3m-favicon-converted)
+
 (add-hook 'w3m-display-functions 'w3m-setup-favicon)
 
 (defcustom w3m-favicon-use-cache-file nil
@@ -83,7 +80,9 @@
   :type 'boolean)
 
 (defcustom w3m-favicon-cache-file nil
-  "Filename of saving favicon cache."
+  "Filename of saving favicon cache.
+It defaults to the file named \".favicon\" under the directory specified
+by the `w3m-profile-directory' variable."
   :group 'w3m
   :type '(radio (const :format "Not specified\n")
 		(file :format "%t: %v\n" :size 0)))
@@ -127,134 +126,138 @@ If this variable is nil, never expired."
 (defvar w3m-favicon-cache-data nil
   "A list of favicon cache (internal variable).
 Each information is a list whose elements are:
+
  0. URL
- 1. Favicon
- 2. Retrieved date")
+ 1. (RAW_DATA . TYPE)
+ 2. DATE when the RAW_DATA was retrieved
+ 3. IMAGE
+
+Where IMAGE highly depends on the Emacs version and is not saved in
+the cache file.")
 
 (defmacro w3m-favicon-cache-p (url)
   "Say whether the favicon data for URL has been chached."
   `(assoc ,url w3m-favicon-cache-data))
 
 (defmacro w3m-favicon-cache-favicon (url)
-  "Pull out the favicon data corresponding to URL from the cache."
-  `(let ((data (nth 1 (assoc ,url w3m-favicon-cache-data))))
-     (if (stringp data) (cons data 'ico) data)))
+  "Pull out the favicon image corresponding to URL from the cache."
+  `(nth 3 (assoc ,url w3m-favicon-cache-data)))
 
 (defmacro w3m-favicon-cache-retrieved (url)
   "Return the time when the favicon data for URL was retrieved."
   `(nth 2 (assoc ,url w3m-favicon-cache-data)))
 
 (defun w3m-setup-favicon (url)
-  "Set up the favicon data in the current buffer.  Three local variables
-`w3m-current-favicon-data', `w3m-current-favicon-image' and
-`w3m-favicon-converted' will be non-nil when the favicon is ready."
-  (setq w3m-current-favicon-data nil
-	w3m-current-favicon-image nil
-	w3m-favicon-converted nil)
+  "Set up the favicon data in the current buffer.  The buffer-local
+variable `w3m-current-favicon-image' will be set to non-nil value
+when the favicon is ready."
+  (setq w3m-current-favicon-image nil)
   (when (and w3m-use-favicon
 	     w3m-current-url
 	     (w3m-static-if (featurep 'xemacs)
 		 (and (device-on-window-system-p)
 		      (featurep w3m-favicon-type))
-	       (display-images-p)
-	       (image-type-available-p w3m-favicon-type)))
+	       (and (display-images-p)
+		    (image-type-available-p w3m-favicon-type))))
     (cond
      ((string-match "\\`about://\\([^/]+\\)/" url)
       (let ((icon (intern-soft (concat "w3m-about-" (match-string 1 url)
 				       "-favicon"))))
-	(if (and (fboundp 'base64-decode-string)
-		 icon)
+	(if icon
 	    (with-current-buffer w3m-current-buffer
-	      (setq w3m-current-favicon-data
-		    (cons (eval (list 'base64-decode-string
-				      (symbol-value icon)))
-			  'ico))
-	      (w3m-convert-favicon)))))
+	      (setq w3m-current-favicon-image
+		    (w3m-convert-favicon
+		     (base64-decode-string (symbol-value icon)) 'ico))))))
      ((string-match "\\`https?://" url)
-      (w3m-retrieve-favicon
-       (or (symbol-value 'w3m-icon-data)
-	   (cons (w3m-expand-url (concat "/" w3m-favicon-name)
-				 url)
-		 'ico))
-       w3m-current-buffer)))))
+      (if w3m-icon-data
+	  (w3m-retrieve-favicon (car w3m-icon-data) (cdr w3m-icon-data)
+				w3m-current-buffer)
+	(w3m-retrieve-favicon (w3m-expand-url (concat "/" w3m-favicon-name)
+					      url)
+			      'ico w3m-current-buffer))))))
 
 (defun w3m-buffer-favicon (buffer)
   "Return the favicon image from BUFFER."
   (with-current-buffer buffer
-    (when (and w3m-current-favicon-data (car w3m-current-favicon-data))
-      (or w3m-current-favicon-image
-	  w3m-favicon-converted
-	  (w3m-convert-favicon)))))
+    w3m-current-favicon-image))
 
-(defun w3m-convert-favicon ()
-  "Convert the favicon data to the favicon image and return it."
-  (let* ((height (number-to-string
-		  (w3m-static-if (featurep 'xemacs)
-		      (face-height 'default)
-		    (frame-char-height))))
+(defun w3m-convert-favicon (data type)
+  "Convert the favicon DATA in TYPE to the favicon image and return it."
+  (let* (height
 	 (img (w3m-imagick-convert-data
-	       (car w3m-current-favicon-data)
-	       (symbol-name (cdr w3m-current-favicon-data))
+	       data (symbol-name type)
 	       (symbol-name (or (cdr (assq w3m-favicon-type
 					   w3m-favicon-type-alist))
 				w3m-favicon-type))
-	       "-geometry" (or w3m-favicon-size
-			       (concat height "x" height)))))
-    (if img
-	(setq w3m-current-favicon-image
-	      (w3m-static-if (featurep 'xemacs)
-		  (make-glyph
-		   (make-image-instance
-		    (vector w3m-favicon-type :data img)))
-		(create-image img
-			      w3m-favicon-type
-			      t
-			      :ascent 'center))
-	      w3m-favicon-converted t)
-      (setq w3m-current-favicon-data nil
-	    w3m-current-favicon-image nil))))
+	       "-geometry"
+	       (or w3m-favicon-size
+		   (progn
+		     (setq height (w3m-static-if (featurep 'xemacs)
+				      (face-height 'default)
+				    (frame-char-height)))
+		     (format "%dx%d" height height))))))
+    (when img
+      (w3m-static-if (featurep 'xemacs)
+	  (make-glyph
+	   (make-image-instance (vector w3m-favicon-type :data img)))
+	(create-image img w3m-favicon-type t :ascent 'center)))))
 
-(defun w3m-retrieve-favicon (pair target &optional handler)
-  "Retrieve the favicon and convert it to the image in the TARGET buffer.
-PAIR is a cons of the url string and the data type symbol."
-  (if (and (w3m-favicon-cache-p (car pair))
+(defun w3m-retrieve-favicon (url type target &optional handler)
+  "Retrieve favicon from URL and convert it to image as TYPE in TARGET.
+TYPE is a symbol like `ico' and TARGET is a buffer where the image is
+stored in the `w3m-current-favicon-image' buffer-local variable."
+  (if (and (w3m-favicon-cache-p url)
 	   (or (null w3m-favicon-cache-expire-wait)
 	       (< (- (w3m-float-time)
-		     (w3m-float-time (w3m-favicon-cache-retrieved
-				      (car pair))))
+		     (w3m-float-time (w3m-favicon-cache-retrieved url)))
 		  w3m-favicon-cache-expire-wait)))
-      (setq w3m-current-favicon-data
-	    (w3m-favicon-cache-favicon (car pair)))
-    (lexical-let ((pair pair)
+      (with-current-buffer target
+	(setq w3m-current-favicon-image
+	      (w3m-favicon-cache-favicon url)))
+    (lexical-let ((url url)
+		  (type type)
 		  (target target))
       (w3m-process-do-with-temp-buffer
-	  (ok (w3m-retrieve (car pair) 'raw nil nil nil handler))
-	(let (idata)
+	  (ok (w3m-retrieve url 'raw nil nil nil handler))
+	(let (idata image)
 	  (when ok
-	    (setq idata (buffer-string))
-	    (with-current-buffer target
-	      (setq w3m-current-favicon-data (cons idata (cdr pair)))
-	      (w3m-convert-favicon)))
-	  (push (list (car pair) (and idata (cons idata (cdr pair)))
-		      (current-time))
-		w3m-favicon-cache-data))))))
+	    (setq idata (buffer-string)
+		  image (w3m-convert-favicon idata type)))
+	  (with-current-buffer target
+	    (push (list url idata (current-time)
+			(setq w3m-current-favicon-image image))
+		  w3m-favicon-cache-data)))))))
 
 (defun w3m-favicon-save-cache-file ()
   "Save the cached favicon data into the local file."
   (when w3m-favicon-use-cache-file
     (w3m-save-list (or w3m-favicon-cache-file
 		       (expand-file-name ".favicon" w3m-profile-directory))
-		   w3m-favicon-cache-data 'binary)))
+		   (delq nil (mapcar (lambda (elem)
+				       (when (= (length elem) 4)
+					 (butlast elem)))
+				     w3m-favicon-cache-data))
+		   'binary)))
 
 (defun w3m-favicon-load-cache-file ()
   "Load the cached favicon data from the local file."
   (when (and w3m-favicon-use-cache-file
 	     (null w3m-favicon-cache-data))
-    (setq w3m-favicon-cache-data
-	  (w3m-load-list
-	   (or w3m-favicon-cache-file
-	       (expand-file-name ".favicon" w3m-profile-directory))
-	   'binary))))
+    (let ((cache (w3m-load-list
+		  (or w3m-favicon-cache-file
+		      (expand-file-name ".favicon" w3m-profile-directory))
+		  'binary))
+	  elem data image)
+      (while cache
+	(setq elem (car cache)
+	      cache (cdr cache)
+	      data (cadr elem))
+	(when (stringp data)
+	  (setcar (cdr elem) (setq data (cons data 'ico))))
+	(when (setq image (condition-case nil
+			      (w3m-convert-favicon (car data) (cdr data))
+			    (error nil)))
+	  (push (nconc elem (list image)) w3m-favicon-cache-data))))))
 
 (provide 'w3m-favicon)
 

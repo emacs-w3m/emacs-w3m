@@ -6145,7 +6145,7 @@ appropriate buffer and select it."
 		   w3m-modeline-status-off))))
 	      (w3m-static-if (featurep 'xemacs)
 		  '(w3m-use-favicon
-		    (w3m-favicon-converted
+		    (w3m-current-favicon-image
 		     ("  " w3m-current-favicon-image) " / ")
 		    " / ")
 		" / ")
@@ -6527,15 +6527,19 @@ If input is nil, use default content-type on w3m."
 
 (defun w3m-examine-command-line-args ()
   "Return a url string if it seems that the `w3m' command is invoked from
-the command line like: ``emacs -f w3m'' or ``emacs -f w3m url''.  This
-function is used only when Emacs 21.4 or later is running."
+the command line like: ``emacs -f w3m'' or ``emacs -f w3m url''."
   (let ((url (car command-line-args-left))
 	(directives '("-f" "-funcall" "--funcall" "-e"))
 	args directive num)
     (if (and url
 	     (not (string-match "\\`-" url)))
 	(when (and
-	       (setq args (memq url command-line-args))
+	       (setq args (w3m-static-if (featurep 'xemacs)
+			      ;; Elements aren't identical under XEmacs
+			      ;; between `command-line-args' and
+			      ;; `command-line-args-left'.
+			      (member url command-line-args)
+			    (memq url command-line-args)))
 	       (>= (setq num (- (length command-line-args) (length args) 1))
 		   2)
 	       (equal (nth num command-line-args) "w3m")
