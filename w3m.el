@@ -2669,6 +2669,7 @@ succeed."
 	(error "Can't execute: %s" w3m-dirlist-cgi-program))
     ;; execute w3m internal CGI
     (w3m-process-with-wait-handler
+      (setq w3m-current-url url)
       (w3m-process-start handler "-dump_source" url)))
   ;; bind charset to w3m-file-name-coding-system
   (let ((charset (or (car (rassq w3m-file-name-coding-system
@@ -4687,12 +4688,13 @@ field for this request."
 	;; Remove processing url's forms from the history structure.
 	(w3m-history-remove-properties '(:forms) url nil t))
       ;; local directory URL check
-      (if (and (w3m-url-local-p url)
-	       (file-directory-p (w3m-url-to-file-name url))
-	       (setq url (file-name-as-directory url))
-	       (eq w3m-local-directory-view-method 'w3m-dtree)
-	       (string-match "\\`file:///" url))
-	  (setq url (replace-match "about://dtree/" nil nil url)))
+      (when (and (w3m-url-local-p url)
+		 (file-directory-p (w3m-url-to-file-name url))
+		 (setq url (file-name-as-directory url))
+		 (eq w3m-local-directory-view-method 'w3m-dtree)
+		 (string-match "\\`file:///" url))
+	(setq url (replace-match "about://dtree/" nil nil url))
+	(setq orig url))
       (and (string-match w3m-url-components-regexp url)
 	   (match-beginning 8)
 	   (setq name (match-string 9 url)

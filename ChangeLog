@@ -1,3 +1,10 @@
+2002-03-05  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-local-dirlist-cgi): Set `w3m-current-url' for avoid
+	error in `w3m-process-start-process()'.
+	(w3m-goto-url): When use w3m-dtree and the URL is local directory,
+	change the URL to `about://dtree' securely.
+
 2002-03-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-function-max-args): Alias to `function-max-args'
