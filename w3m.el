@@ -389,7 +389,8 @@ It is valid only when `w3m-treat-image-size' is non-nil."
   (cond
    ((not (featurep 'mule)) 'iso-8859-1)
    ((eq w3m-type 'w3mmee) 'ctext)
-   ((eq w3m-type 'w3m-m17n) 'iso-2022-7bit-ss2)
+   ((and (eq w3m-type 'w3m-m17n) w3m-use-mule-ucs) 'utf-8)
+   ((and (eq w3m-type 'w3m-m17n)) 'iso-2022-7bit-ss2)
    (w3m-accept-japanese-characters 'w3m-euc-japan)
    (t 'w3m-iso-latin-1))
   "*Coding system for read operations of `w3m'."
@@ -839,6 +840,15 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
 	   (x-ctext       . ctext)
 	   (unknown       . undecided)
 	   (x-unknown     . undecided)
+	   (windows-1250  . cp1250)
+	   (windows-1251  . cp1251)
+	   (windows-1252  . cp1252)
+	   (windows-1253  . cp1253)
+	   (windows-1254  . cp1254)
+	   (windows-1255  . cp1255)
+	   (windows-1256  . cp1256)
+	   (windows-1257  . cp1257)
+	   (windows-1258  . cp1258)
 	   (euc-jp        . euc-japan)
 	   (shift-jis     . shift_jis)
 	   (shift_jis     . shift_jis)
@@ -1200,6 +1210,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (defvar w3m-current-base-url nil "Base URL of this buffer.")
 (defvar w3m-current-forms nil "Forms of this buffer.")
 (defvar w3m-current-coding-system nil "Current coding-system of this buffer.")
+(defvar w3m-current-content-charset nil "Current content-charset of this buffer.")
 (defvar w3m-icon-data nil
   "Cons cell of icon URL and its IMAGE-TYPE of this buffer.")
 (defvar w3m-next-url nil "Next URL of this buffer.")
@@ -1216,6 +1227,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (make-variable-buffer-local 'w3m-current-title)
 (make-variable-buffer-local 'w3m-current-forms)
 (make-variable-buffer-local 'w3m-current-coding-system)
+(make-variable-buffer-local 'w3m-current-content-charset)
 (make-variable-buffer-local 'w3m-icon-data)
 (make-variable-buffer-local 'w3m-next-url)
 (make-variable-buffer-local 'w3m-previous-url)
@@ -1231,6 +1243,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	w3m-current-base-url nil
 	w3m-current-title nil
 	w3m-current-coding-system nil
+	w3m-current-content-charset nil
 	w3m-icon-data nil
 	w3m-next-url nil
 	w3m-previous-url nil
@@ -1242,13 +1255,14 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	w3m-current-redirect nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url base title forms cs icon next prev
+  (let (url base title forms cs char icon next prev
 	    start toc hseq refresh ssl redirect)
     (with-current-buffer from-buffer
       (setq url w3m-current-url
 	    base w3m-current-base-url
 	    title w3m-current-title
 	    cs w3m-current-coding-system
+	    char w3m-current-content-charset	    
 	    icon w3m-icon-data
 	    next w3m-next-url
 	    prev w3m-previous-url
@@ -1262,6 +1276,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	  w3m-current-base-url base
 	  w3m-current-title title
 	  w3m-current-coding-system cs
+	  w3m-current-content-charset char
 	  w3m-icon-data icon
 	  w3m-next-url next
 	  w3m-previous-url prev
@@ -1459,8 +1474,10 @@ for a refresh indication")
 	((eq w3m-type 'w3m-m17n)
 	 (list "-halfdump"
 	       "-o" "ext_halfdump=1"
+	       "-o" "strict_iso2022=0"
 	       '(if charset "-I") 'charset
-	       "-O" "ISO-2022-JP-2" "-o" "strict_iso2022=0"))
+	       "-O"
+	       (if w3m-use-mule-ucs "UTF-8" "ISO-2022-JP-2" )))
 	((eq w3m-input-coding-system 'w3m-euc-japan)
 	 (list "-halfdump" "-I" "e"))
 	(t (list "-halfdump")))
@@ -2750,6 +2767,7 @@ If the user enters null input, return second argument DEFAULT."
 			(string= "x-moe-internal" (downcase content-charset)))
 		   (eq content-charset 'x-moe-internal)))
       (setq cs (w3m-x-moe-decode-buffer)))
+    (setq w3m-current-content-charset content-charset)    
     (decode-coding-region
      (point-min) (point-max)
      (setq w3m-current-coding-system
@@ -3646,6 +3664,8 @@ type as a string argument, when retrieve is complete."
 	(coding-system-for-write w3m-input-coding-system)
 	(default-process-coding-system
 	  (cons w3m-output-coding-system w3m-input-coding-system)))
+    (when (and (memq w3m-type '(w3mmee w3m-m17n)) (not charset))
+      (setq charset w3m-current-content-charset))
     (w3m-process-with-environment w3m-command-environment
       (apply 'call-process-region
 	     (point-min)
@@ -3686,10 +3706,11 @@ type as a string argument, when retrieve is complete."
   (w3m-check-header-tags)
   (w3m-remove-meta-charset-tags)
   (if binary-buffer
-      (progn
+      (let ((cbuf (current-buffer)))
 	(delete-region (point-min) (point-max))
 	(insert-buffer
 	 (with-current-buffer binary-buffer
+	   (w3m-copy-local-variables cbuf)
 	   (w3m-rendering-half-dump content-charset)
 	   (current-buffer)))
 	(w3m-kill-buffer binary-buffer))

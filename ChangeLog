@@ -1,3 +1,15 @@
+2002-08-27  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-output-coding-system,
+	w3m-halfdump-command-arguments): Use 'utf-8 when `w3m-m17n'
+	with Mule-UCS environment.
+	(w3m-charset-coding-system-alist): Add Windows Code Point.
+	(w3m-current-content-charset): New buffer-local variable.
+	(w3m-clear-local-variables, w3m-copy-local-variables): Handle it.
+	(w3m-decode-buffer): Set `w3m-current-content-charset'.
+	(w3m-rendering-half-dump): Use
+	`w3m-current-content-charset' when `w3m-m17n' or `w3mmee'.
+
 2002-08-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-mhonarc.el (shimbun-make-contents): Encode the value
