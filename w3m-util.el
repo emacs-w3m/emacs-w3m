@@ -395,7 +395,7 @@ Otherwise return nil."
 `cat -v' does."
   (if (stringp object)
       (let (rest)
-	(dolist (char (append (format "%s" object) nil) rest)
+	(dolist (char (append object nil) rest)
 	  (cond ((eq char ?\C-?)
 		 (push "^?" rest))
 		((or (memq char '(?\t ?\n))
