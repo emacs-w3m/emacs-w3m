@@ -3297,7 +3297,7 @@ your favorite archive to the variable
 @code{shimbun-geocrawler-group-alist}.
 
 @item @uref{http://marc.theaimsgroup.com/, Mailing list ARChives}
-Mailing list ARChives (@acronym(MARC) is supported by @samp{shimbun}
+Mailing list ARChives (@acronym{MARC}) is supported by @samp{shimbun}
 library.  Add a group name of your favorite archive and its URL to the
 variable @code{shimbun-marc-aims-group-alist}, and you can browse it.
 

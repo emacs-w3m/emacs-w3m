@@ -3432,8 +3432,8 @@ Geocrawler に保存されている全てのメーリングリストを閲覧できます。
 ださい。
 
 @item @uref{http://marc.theaimsgroup.com/, Mailing list ARChives}
-Mailing list ARChives (@acronym(MARC) に保存されている全てのメーリングリ
-ストを閲覧できます。閲覧したいグループのグループ名と URL を、
+Mailing list ARChives (@acronym{MARC}) に保存されている全てのメーリング
+リストを閲覧できます。閲覧したいグループのグループ名と URL を、
 変数 @code{shimbun-marc-aims-group-alist} に登録してください。
 
 @item @uref{http://sources.redhat.com/ml/, RedHat}
