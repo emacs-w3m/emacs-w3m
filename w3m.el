@@ -666,8 +666,19 @@ If N is negative, last N items of LIST is returned."
 	(setq w3m-input-url-history (mapcar (function car) list))))))
 
 (defun w3m-arrived-shutdown ()
-  "Save hash database of arrived URLs to 'w3m-arrived-file'."
+  "Save hash database of arrived URLs to `w3m-arrived-file'."
   (when w3m-arrived-db
+    ;; Re-read arrived DB file, and check sites which are arrived on
+    ;; the other emacs process.
+    (dolist (elem (w3m-load-list w3m-arrived-file
+				 w3m-arrived-file-coding-system))
+      (and
+       ;; Check format of arrived DB file.
+       (or (not (nth 1 elem)) (stringp (nth 1 elem)))
+       (w3m-time-newer-p (nth 2 elem)
+			 (w3m-arrived-last-modified (car elem)))
+       (w3m-arrived-add (car elem) (nth 2 elem))))
+    ;; Convert current arrived DB to a list.
     (let (list)
       (mapatoms
        (lambda (sym)
