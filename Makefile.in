@@ -36,15 +36,14 @@ install: default
 	    $(INSTALL_DATA) $$p $(lispdir)/$$p;\
 	  fi;\
 	done;\
-	cd shimbun;\
-	if test -f shimbun.elc; then\
-	  for p in *.el; do\
+	if test -f shimbun/shimbun.elc; then\
+	  for p in `cd shimbun && echo *.el`; do\
 	    echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p";\
-	    $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	    $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p;\
 	  done;\
-	  for p in *.elc; do\
+	  for p in `cd shimbun && echo *.elc`; do\
 	    echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p";\
-	    $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	    $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p;\
 	  done;\
 	fi
 
@@ -53,10 +52,9 @@ install-icons:
 	  echo "You don't have to install icon files for \"$(EMACS)\".";\
 	else\
 	  $(SHELL) ./mkinstalldirs $(ICONDIR);\
-	  cd icons;\
-	  for i in *.xpm; do\
+	  for i in `cd icons && echo *.xpm`; do\
 	    echo " $(INSTALL_DATA) icons/$$i $(ICONDIR)/$$i";\
-	    $(INSTALL_DATA) $$i $(ICONDIR)/$$i;\
+	    $(INSTALL_DATA) icons/$$i $(ICONDIR)/$$i;\
 	  done;\
 	fi
 
