@@ -1,8 +1,12 @@
 2001-10-31  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m.el (w3m-pop-up-windows): Changed default value
+	(See [emacs-w3m: 01999]).
+
 	* w3m-e21.el (w3m-tab-unselected-face): Changed underline color.
 	(w3m-tab-selected-face): Ditto.
 	(w3m-tab-background-face): Ditto.
+	(w3m-tab-line): Removed needless local variable `len'.
 
 2001-10-30  Yuuichi Teranishi  <teranisi@gohome.org>
 

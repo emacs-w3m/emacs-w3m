@@ -664,7 +664,8 @@ See the file balloon-help.el for more information."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-pop-up-windows t
+(defcustom w3m-pop-up-windows
+  (if (boundp 'w3m-use-tab) (not (symbol-value 'w3m-use-tab)) t)
   "Like `pop-up-windows', except that it only affects the command
 `w3m-copy-buffer'.  If this value is non-nil and the value of the
 option `w3m-pop-up-frames' is nil, split the windows when a new

@@ -369,8 +369,7 @@ Buffer string between BEG and END are replaced with IMAGE."
     map))
 
 (defun w3m-tab-line ()
-  (let ((len w3m-tab-width)
-        buffer-read-only
+  (let (buffer-read-only
 	buffers name orig line)
     (dolist (buffer (buffer-list))
       (with-current-buffer buffer
@@ -385,11 +384,11 @@ Buffer string between BEG and END are replaced with IMAGE."
                           (symbol-value 'w3m-current-url))))
                 name (concat " "
 			     (if (and 
-				  (> len 0)
-				  (> (string-width orig) len))
+				  (> w3m-tab-width 0)
+				  (> (string-width orig) w3m-tab-width))
 				 (concat (truncate-string-to-width
 					  orig
-					  (max 0 (- len 3)))
+					  (max 0 (- w3m-tab-width 3)))
 					 "...")
 			       orig) " "))
           (setq buffers (cons (list buffer name orig) buffers)))))
