@@ -33,8 +33,8 @@
 (luna-define-class shimbun-airs (shimbun-mhonarc) ())
 
 (defconst shimbun-airs-group-path-alist
-  '(("semi-gnus-ja" . "semi-gnus/archive")
-    ("wl" . "wl/archive")))
+  '(("semi-gnus-ja" "semi-gnus/archive" "semi-gnus-ja@meadowy.org")
+    ("wl" "wl/archive" "wl@lists.airs.net")))
 
 (defvar shimbun-airs-url "http://lists.airs.net/")
 (defvar shimbun-airs-groups (mapcar 'car shimbun-airs-group-path-alist))
@@ -42,13 +42,17 @@
 
 (defmacro shimbun-airs-concat-url (shimbun url)
   (` (concat (shimbun-url-internal (, shimbun))
-	     (cdr (assoc (shimbun-current-group-internal (, shimbun))
-			 shimbun-airs-group-path-alist))
+	     (nth 1 (assoc (shimbun-current-group-internal (, shimbun))
+			   shimbun-airs-group-path-alist))
 	     "/"
 	     (, url))))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-airs))
   (shimbun-airs-concat-url shimbun "index.html"))
+
+(luna-define-method shimbun-reply-to ((shimbun shimbun-airs))
+  (nth 2 (assoc (shimbun-current-group-internal shimbun)
+		shimbun-airs-group-path-alist)))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-airs))
   (let ((case-fold-search t) headers months)

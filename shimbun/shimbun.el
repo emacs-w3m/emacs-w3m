@@ -35,6 +35,7 @@
 ;; shimbun-open-group
 ;; shimbun-close-group
 ;; shimbun-headers
+;; shimbun-reply-to
 ;; shimbun-search-id
 ;; shimbun-article
 ;; shimbun-close
@@ -259,6 +260,12 @@ Optional MUA is a `shimbun-mua' instance."
   (with-current-buffer (shimbun-retrieve-url-buffer 
 			(shimbun-index-url shimbun) 'reload)
     (shimbun-get-headers shimbun)))
+
+(luna-define-generic shimbun-reply-to (shimbun)
+  "Return a reply-to field value for SHIMBUN.")
+
+(luna-define-method shimbun-reply-to ((shimbun shimbun))
+  nil)
 
 (defun shimbun-search-id (shimbun id)
   "Return non-nil when MUA found a message structure which corresponds to ID."
