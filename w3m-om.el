@@ -67,6 +67,7 @@
     (binary		. *noconv*)
     (cn-gb-2312		. *euc-china*)
     (ctext		. *ctext*)
+    (emacs-mule		. *internal*)
     (euc-japan		. *euc-japan*)
     (iso-2022-7bit	. *iso-2022-jp*)
     (iso-2022-7bit-ss2	. *iso-2022-ss2-7*)
@@ -84,17 +85,22 @@
     (undecided		. *autoconv*))
   "*Alist of a modern coding-system and a traditional coding-system.")
 
+(defconst w3m-om-coding-categories
+  (sort (list '*coding-category-internal*
+	      '*coding-category-sjis*
+	      '*coding-category-iso-7*
+	      '*coding-category-iso-8-1*
+	      '*coding-category-iso-8-2*
+	      '*coding-category-iso-else*
+	      '*coding-category-big5*
+	      '*coding-category-bin*)
+	'coding-priority<)
+  "List of coding categories.")
+
 (defvar w3m-om-coding-category-alist
   (let ((defs (cons '(iso-2022-7bit . *junet*) w3m-om-coding-system-alist))
 	pair rest)
-    (dolist (category '(*coding-category-internal*
-			*coding-category-sjis*
-			*coding-category-iso-7*
-			*coding-category-iso-8-1*
-			*coding-category-iso-8-2*
-			*coding-category-iso-else*
-			*coding-category-big5*
-			*coding-category-bin*))
+    (dolist (category w3m-om-coding-categories)
       (when (setq pair (rassq (symbol-value category) defs))
 	(push (cons (car pair) category) rest)))
     (nreverse rest))
@@ -152,6 +158,26 @@
 
 (defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
 
+(defun w3m-om-modernize-coding-system (coding-system)
+  "Return a modern coding-system name of CODING-SYSTEM if it is available."
+  (let ((base (and (coding-system-p coding-system)
+		   (get-base-code coding-system)))
+	name name-eol eol)
+    (if base
+	(if (setq name (car (rassq base w3m-om-coding-system-alist)))
+	    (if (and (setq eol (get coding-system 'eol-type))
+		     (integerp eol)
+		     (coding-system-p
+		      (setq name-eol
+			    (intern (format "%s-%s"
+					    name
+					    (plist-get '(1 unix 2 dos 3 mac)
+						       eol))))))
+		name-eol
+	      name)
+	  coding-system)
+      'binary)))
+
 (defun w3m-detect-coding-region (start end &optional highest)
   "Detect coding system of the text in the region between START and END
 Return a list of possible coding systems ordered by priority.
@@ -162,31 +188,22 @@ highest priority."
 			w3m-om-coding-category-alist))
 	opriority x)
     (when category
-      (setq opriority (sort (list '*coding-category-internal*
-				  '*coding-category-sjis*
-				  '*coding-category-iso-7*
-				  '*coding-category-iso-8-1*
-				  '*coding-category-iso-8-2*
-				  '*coding-category-iso-else*
-				  '*coding-category-big5*
-				  '*coding-category-bin*)
+      (setq opriority (sort (copy-sequence w3m-om-coding-categories)
 			    'coding-priority<))
       (set-coding-priority (list (cdr category))))
     (prog2
-	(setq x (detect-coding-region start end))
+	(setq x (code-detect-region start end))
 	(if highest
 	    (progn
 	      (when (consp x)
 		(setq x (car x)))
-	      (or (car (rassq x w3m-om-coding-system-alist))
-		  x))
-	  (mapcar (function
-		   (lambda (codesys)
-		     (or (car (rassq codesys w3m-om-coding-system-alist))
-			 codesys)))
-		  (if (consp x)
-		      x
-		    (list x))))
+	      (w3m-om-modernize-coding-system x))
+	  (setq x (mapcar 'w3m-om-modernize-coding-system (if (consp x)
+							      x
+							    (list x))))
+	  (if (= 1 (length x))
+	      (car x)
+	    x))
       (when opriority
 	(set-coding-priority opriority)))))
 
