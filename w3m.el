@@ -179,7 +179,7 @@ width using expression (+ (frame-width) VALUE)."
 	  (const :tag "Use Info-like key mapping." info)
 	  (other :tag "Use Lynx-like key mapping." nil)))
 
-(defcustom w3m-use-cygdrive t
+(defcustom w3m-use-cygdrive (eq system-type 'windows-nt)
   "*If non-nil, use /cygdrive/ rule when expand-file-name."
   :group 'w3m
   :type 'boolean)
@@ -321,14 +321,14 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-executable-type
-  (if (eq system-type 'windows-nt)
-      'cygwin				; xxx, cygwin on win32 by default
-    'native)
-  "*Executable binary type of w3m program.
-Value is 'native or 'cygwin.
-This value is mainly used for win32 environment.
-In other environment, use 'native."
+(defcustom w3m-linefeed-type
+  (if (memq system-type '(windows-nt OS/2 emx))
+      'crlf				; xxx, crlf on win32 and OS/2 by default
+    'lf)
+  "*Linefeed type of w3m program output.
+Value is 'crlf or 'lf.
+'crlf is mainly used for win32 or OS/2 environment.
+In other environment, use 'lf."
   :group 'w3m
   :type '(choice (const cygwin) (const native)))
 
@@ -1717,7 +1717,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
     (format "%2.2fM" (/ n (* 1024 1024.0))))))
 
 (defun w3m-crlf-to-lf ()
-  (when (eq w3m-executable-type 'cygwin)
+  (when (eq w3m-linefeed-type 'crlf)
     (save-excursion
       (goto-char (point-min))
       (while (search-forward "\r\n" nil t)

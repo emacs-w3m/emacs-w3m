@@ -1,3 +1,11 @@
+2001-04-19  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-use-cygdrive): Change default value.
+	(w3m-linefeed-type): New customize variable.
+	(w3m-executable-type): Remove variable.
+	(w3m-crlf-to-lf): Use 'w3m-linefeed-type' instead of
+	'w3m-executable-type'.
+
 2001-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el: Byte-optimize `match-string-no-properties' not to use
