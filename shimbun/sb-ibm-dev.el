@@ -32,8 +32,7 @@
 
 (defvar shimbun-ibm-dev-url "http://www-6.ibm.com/jp/developerworks/")
 (defvar shimbun-ibm-dev-groups
-  '("components" "java" "linux" "opensource" "security" "unicode"
-    "usability" "web" "webservices" "xml"))
+  '("java" "linux" "opensource" "webservices" "xml"))
 (defvar shimbun-ibm-dev-from-address "webmaster@www-6.ibm.com")
 (defvar shimbun-ibm-dev-coding-system 'japanese-shift-jis-unix)
 (defvar shimbun-ibm-dev-content-start "<!--[ 　]*Title[ 　]*-->")

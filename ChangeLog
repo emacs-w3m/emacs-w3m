@@ -9,6 +9,8 @@
 	Build message-id using domain www-6.ibm.com.
 	(shimbun-make-contents): Change its method-qualifier to :before.
 	Use `when' instead of `if' if there aren't `else S expressions'.
+	(shimbun-ibm-dev-groups): Remove "components", "security",
+	"unicode", "usability" and "web" from its default value.
 
 2003-05-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
