@@ -1644,7 +1644,7 @@ words, @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el} and
 @vindex w3m-minor-mode
 @vindex w3m-minor-mode-command-alist
 
-Did you know that Gnus, the Emacs newsreader, supports emacs-w3m?  
+Did you know that Gnus, the Emacs newsreader, supports emacs-w3m?
 
 Actually, the version of Gnus bundled with Emacs (or an XEmacs package)
 does not support emacs-w3m (yet).  You'd better use the development
@@ -1652,11 +1652,11 @@ version of Gnus known as @samp{Oort Gnus}.  It is available at:
 
 @uref{ftp://ftp.gnus.org/pub/gnus/ognus.tar.gz}
 
-@c FIXME:  rf (01/08/03) Katsumi, what do you mean?  :-)
-@c What, the Emacs version of Gnus already supports emacs-w3m?  Oh, you
-@c should get hold of the newest version of emacs-w3m (@pxref{Installing
-@c Emacs-w3m}), or send a mail to the emacs-w3m development team including
-@c a patch (or a complaint) (@pxref{Mailing List}).
+Note: if emacs-w3m @strong{is} supported in the Gnus version that comes
+with your Emacs distribution, it means either that this documentation is
+out-of-date (please report this bug as described in @ref{Mailing List}),
+or that you're using a very old version of emacs-w3m (in which case you
+should update it to a newer version).
 
 @itemize @bullet
 @item
