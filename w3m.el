@@ -1,4 +1,4 @@
-n;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
 
 ;; Copyright (C) 2000 TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
@@ -340,7 +340,8 @@ and 'w3m-arrived-ct-file'."
 			     w3m-arrived-anchor-list)
 		     (put-text-property start end 'face 'w3m-arrived-anchor-face)
 		   (put-text-property start end 'face 'w3m-anchor-face))
-		 (put-text-property start end 'w3m-href-anchor url))
+		 (put-text-property start end 'w3m-href-anchor url)
+		 (put-text-property start end 'mouse-face 'highlight))
 	       (when tag
 		 (put-text-property start end 'w3m-name-anchor tag)))
 	      (tag
@@ -357,7 +358,8 @@ and 'w3m-arrived-ct-file'."
 	(when (search-forward "</img_alt>" nil t)
 	  (delete-region (setq end (match-beginning 0)) (match-end 0))
 	  (put-text-property start end 'face 'w3m-image-face)
-	  (put-text-property start end 'w3m-image src))))
+	  (put-text-property start end 'w3m-image src)
+	  (put-text-property start end 'mouse-face 'highlight))))
     ;; Remove other markups.
     (goto-char (point-min))
     (while (re-search-forward "</?[A-z][^>]*>" nil t)
@@ -890,7 +892,7 @@ CT denotes content-type."
       (concat server path)))))
 
 
-(defun w3m-view-this-url (arg)
+(defun w3m-view-this-url (&optional arg)
   "*View the URL of the link under point."
   (interactive "P")
   (let ((url (get-text-property (point) 'w3m-href-anchor)))
@@ -899,7 +901,12 @@ CT denotes content-type."
 (defun w3m-mouse-view-this-url (event)
   (interactive "e")
   (mouse-set-point event)
-  (call-interactively (function w3m-view-this-url)))
+  (let ((url (get-text-property (point) 'w3m-href-anchor))
+	(img (get-text-property (point) 'w3m-image)))
+    (cond
+     (url (w3m-view-this-url))
+     (img (w3m-view-image))
+     (t (message "No URL at point.")))))
 
 (defun w3m-view-image ()
   "*View the image under point."
@@ -977,33 +984,35 @@ CT denotes content-type."
   "*Move cursor to the next anchor."
   (interactive "p")
   (unless arg (setq arg 1))
-  (if (< arg 0)
-      ;; If ARG is negative.
-      (w3m-previous-anchor (- arg))
-    (when (get-text-property (point) 'w3m-href-anchor)
-      (goto-char (next-single-property-change (point) 'w3m-href-anchor)))
-    (while (and
-	    (> arg 0)
-	    (setq pos (next-single-property-change (point) 'w3m-href-anchor)))
-      (goto-char pos)
-      (unless (zerop (setq arg (1- arg)))
-	(goto-char (next-single-property-change (point) 'w3m-href-anchor))))))
+  (let (pos)
+    (if (< arg 0)
+	;; If ARG is negative.
+	(w3m-previous-anchor (- arg))
+      (when (get-text-property (point) 'w3m-href-anchor)
+	(goto-char (next-single-property-change (point) 'w3m-href-anchor)))
+      (while (and
+	      (> arg 0)
+	      (setq pos (next-single-property-change (point) 'w3m-href-anchor)))
+	(goto-char pos)
+	(unless (zerop (setq arg (1- arg)))
+	  (goto-char (next-single-property-change (point) 'w3m-href-anchor)))))))
 
 
 (defun w3m-previous-anchor (&optional arg)
   "Move cursor to the previous anchor."
   (interactive "p")
   (unless arg (setq arg 1))
-  (if (< arg 0)
-      ;; If ARG is negative.
-      (w3m-next-anchor (- arg))
-    (when (get-text-property (point) 'w3m-href-anchor)
-      (goto-char (previous-single-property-change (1+ (point)) 'w3m-href-anchor)))
-    (while (and
-	    (> arg 0)
-	    (setq pos (previous-single-property-change (point) 'w3m-href-anchor)))
-      (goto-char (previous-single-property-change pos 'w3m-href-anchor))
-      (setq arg (1- arg)))))
+  (let (pos)
+    (if (< arg 0)
+	;; If ARG is negative.
+	(w3m-next-anchor (- arg))
+      (when (get-text-property (point) 'w3m-href-anchor)
+	(goto-char (previous-single-property-change (1+ (point)) 'w3m-href-anchor)))
+      (while (and
+	      (> arg 0)
+	      (setq pos (previous-single-property-change (point) 'w3m-href-anchor)))
+	(goto-char (previous-single-property-change pos 'w3m-href-anchor))
+	(setq arg (1- arg))))))
 
 
 (defun w3m-expand-file-name (file)

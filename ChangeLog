@@ -1,3 +1,10 @@
+2000-10-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-view-this-url): Chang optinal argument 'arg'.
+	(w3m-next-anchor, w3m-previous-anchor): Bind 'pos'.
+	(w3m-fontify): Put mouse-face at anchor and image property.
+	(w3m-mouse-view-this-url): Handling 'w3m-image property.
+
 2000-10-20  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-process-type): Change default valule to 'start-process.
