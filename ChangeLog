@@ -1,3 +1,7 @@
+2002-09-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-mode): Fix typo in its docstring.
+
 2002-09-20  Kahlil HODGSON  <dorge@tpg.com.au>
 
 	* w3m.el (w3m-fontify-bold): Permit class attributes, newlines or
