@@ -1,3 +1,18 @@
+2005-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-report): Make
+	Date header.
+	(shimbun-nikkei-prepare-article-report): New function.
+
+2005-01-04  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Add tento,
+	zinzi and report groups.
+	(shimbun-nikkei-get-headers-default2): New function.
+	(shimbun-nikkei-get-headers-report): New function.
+	(shimbun-nikkei-prepare-article-default2): Rename from
+	shimbun-nikkei-prepare-article-retto.
+
 2005-01-02  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
 
 	* shimbun/sb-x51.el (shimbun-x51-group-alist): Fix "psychic" entry
