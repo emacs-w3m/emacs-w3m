@@ -1,3 +1,8 @@
+2004-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-itmedia.el (shimbun-get-headers): Improve appearance
+	of subject string.
+
 2004-11-28  David Hansen  <david.hansen@gmx.net>
 
 	* shimbun/sb-heise.el: (nearly) complete rewrite of the telepolis
