@@ -1,3 +1,11 @@
+2001-11-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-quick-start): New option.
+	(w3m-input-url): When the default string is equal to nil, it is
+	not displayed in the prompt.
+	(w3m): Refer `w3m-quick-start' to decide the action when
+	interactively called.
+
 2001-11-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-current-title, w3m-current-url): Define them before
