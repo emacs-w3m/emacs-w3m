@@ -1,3 +1,13 @@
+2002-12-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-makeinfo): Don't format Japanes info if the
+	mule feature is not provided.
+
+	* aclocal.m4 (AC_PATH_LISPDIR, AC_PATH_ICONDIR): Undo last change.
+
+	* doc/Makefile.in (INSTALL_INFO): New variable.
+	(install): Use it.
+
 2002-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (srcdir): New variable.

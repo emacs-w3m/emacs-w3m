@@ -150,7 +150,7 @@ AC_DEFUN(AC_PATH_LISPDIR, [
   fi
   if test ${EMACS_FLAVOR} = xemacs; then
     AC_MSG_RESULT(${lispdir}/
-         (it will be ignored when \"make install-package{-ja}\" is done))
+         (it will be ignored when \"make install-package\" is done))
   else
     AC_MSG_RESULT(${lispdir}/)
   fi
@@ -183,7 +183,7 @@ AC_DEFUN(AC_PATH_ICONDIR,
     fi
     if test ${EMACS_FLAVOR} = xemacs; then
       AC_MSG_RESULT(${ICONDIR}/
-         (it will be ignored when \"make install-package{-ja}\" is done))
+         (it will be ignored when \"make install-package\" is done))
     else
       AC_MSG_RESULT(${ICONDIR})
     fi

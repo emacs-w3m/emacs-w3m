@@ -1,17 +1,20 @@
 INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
+INSTALL_INFO = install-info
 prefix       = @prefix@
 infodir      = @infodir@
 srcdir       = @srcdir@
 subdir       = doc
 top_srcdir   = @top_srcdir@
-MAKEINFO     = @MAKEINFO@
-EMACS        = @EMACS@
 ADDITIONAL_LOAD_PATH = @ADDITIONAL_LOAD_PATH@
-FLAGS = -q -no-site-file -batch -l ./w3mhack.el $(ADDITIONAL_LOAD_PATH)
-EMACSINFO    = cd $(top_srcdir) && $(EMACS) $(FLAGS) -f w3mhack-makeinfo
 
 SHELL        = /bin/sh
+
+@SET_MAKE@
+MAKEINFO     = @MAKEINFO@
+EMACS        = @EMACS@
+FLAGS = -q -no-site-file -batch -l ./w3mhack.el $(ADDITIONAL_LOAD_PATH)
+EMACSINFO    = cd $(top_srcdir) && $(EMACS) $(FLAGS) -f w3mhack-makeinfo
 
 INFO_DEPS    = emacs-w3m.info emacs-w3m-ja.info
 INFO_DEPS_EN = emacs-w3m.info
@@ -58,12 +61,12 @@ install: $(INFO_DEPS)
 	    else : ; fi;\
 	  done;\
 	done
-	@if $(SHELL) -c 'install-info --version| sed 1q\
+	@if $(SHELL) -c $(INSTALL_INFO)' --version| sed 1q\
 		| fgrep -s -v -i debian'>/dev/null 2>&1; then\
 	  list='$(INFO_DEPS)';\
 	  for file in $$list; do\
-	    echo " install-info --info-dir=$(infodir) $(infodir)/$$file";\
-	    install-info --info-dir=$(infodir) $(infodir)/$$file || :;\
+	    echo " $(INSTALL_INFO) --info-dir=$(infodir) $(infodir)/$$file";\
+	    $(INSTALL_INFO) --info-dir=$(infodir) $(infodir)/$$file || :;\
 	  done;\
 	else : ; fi
 

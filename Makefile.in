@@ -18,7 +18,7 @@ FLAGS   = -q -no-site-file -batch -l $(srcdir)/w3mhack.el $(ADDITIONAL_LOAD_PATH
 PACKAGE = emacs-w3m
 TARBALL = $(PACKAGE)-$(VERSION).tar.gz
 DISTDIR = $(PACKAGE)-$(VERSION)
-DOCS    = COPYING ChangeLog ChangeLog.1 FAQ FAQ.ja README README.ja \
+DOCS    = COPYING ChangeLog ChangeLog.1 FAQ FAQ.ja README README.ja\
 	  README.namazu.ja README.shimbun.ja TIPS TIPS.ja
 DISTS   = Makefile.in aclocal.m4 configure configure.in install-sh mkinstalldirs
 
