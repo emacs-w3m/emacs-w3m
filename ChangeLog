@@ -1,5 +1,7 @@
 2003-10-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-zdnet.el (shimbun-make-contents): Small fix.
+
 	* shimbun/sb-zdnet.el (shimbun-zdnet-clean-text-page): New
 	function.
 	(shimbun-zdnet-retrieve-next-pages): Likewise.

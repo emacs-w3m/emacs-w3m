@@ -214,6 +214,7 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
 		 (detect-mime-charset-region (point-min) (point-max))))))
 	  (encode-coding-region (point-min) (point-max)
 				(mime-charset-to-coding-system charset))
+	  (goto-char (point-min))
 	  (insert "Content-Type: text/html; charset=" charset "\n\n")))
       (goto-char (point-min))
       (shimbun-header-insert shimbun header)
