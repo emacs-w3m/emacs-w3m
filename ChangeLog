@@ -1,5 +1,11 @@
 2004-01-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-cnet.el (shimbun-cnet-content-start,
+	shimbun-cnet-content-end): Abolished.
+	(shimbun-cnet-extract-body, shimbun-cnet-remove-footer,
+	shimbun-cnet-remove-useless-tags): New functions.
+	(shimbun-clear-contents): Reimplemented.
+
 	* shimbun/shimbun.el (shimbun-strip-cr): New function.
 
 	* shimbun/sb-cnet.el (shimbun-clear-contents): Call

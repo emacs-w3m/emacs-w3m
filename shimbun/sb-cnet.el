@@ -58,9 +58,6 @@ For more detail, see <URL:http://news.com.com/2009-1090-980549.html>.")
 
 (defvar shimbun-cnet-server-name "CNET")
 (defvar shimbun-cnet-from-address  "webmaster@news.com.com")
-(defvar shimbun-cnet-content-start "<div id=\"\\(story\\|blogs\\)\">")
-(defvar shimbun-cnet-content-end
-  "<div \\(class=\"quote\"\\|id=\"rightcol\"\\)>")
 (defvar shimbun-cnet-x-face-alist
   '(("default" . "X-Face: 0p7.+XId>z%:!$ahe?x%+AEm37Abvn]n\
 *GGh+>v=;[3`a{1lqO[$,~3C3xU_ri>[JwJ!9l0\n ~Y`b*eXAQ:*q=bBI\
@@ -91,24 +88,64 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 	      (shimbun-current-group shimbun) "@news.com.com>")
     (error "Cannot find message-id base")))
 
-(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-cnet)
-						    header)
-  (shimbun-strip-cr)
+(defun shimbun-cnet-extract-body ()
+  "Extract a body of an article.
+In CNET site, bodies are surrounded by either <div id=\"story\"> or
+<div id=\"blogs\">.  This function removes the outside parts of the
+body."
+  (catch 'found
+    (goto-char (point-min))
+    (when (re-search-forward "<div id=\"\\(story\\|blogs\\)\">" nil t)
+      (let ((start (match-beginning 0))
+	    (level 1))
+	(while (re-search-forward "<\\(div\\|\\(/div>\\)\\)" nil t)
+	  (if (match-beginning 2)
+	      (decf level)
+	    (incf level))
+	  (when (zerop level)
+	    (delete-region (point) (point-max))
+	    (delete-region (point-min) start)
+	    (throw 'found t)))))))
+
+(defun shimbun-cnet-remove-footer ()
+  "Remove a footer.
+In CNET, articles contain either \"Related quotes\" section or
+\"Whitepaper\" section.  This function removes these sections and the
+following part."
+  (goto-char (point-min))
+  (when (re-search-forward "<div id=\"story\\(q\\|wht\\)\"" nil t)
+    (delete-region (match-beginning 0) (point-max)))
+  (let ((level 0))
+    (while (re-search-backward "<\\(div\\|\\(/div>\\)\\)" nil t)
+      (if (match-beginning 2)
+	  (decf level)
+	(incf level)))
+    (goto-char (point-max))
+    (while (>= (decf level) 0)
+      (insert "</div>\n"))))
+
+(defun shimbun-cnet-remove-useless-tags ()
   (shimbun-remove-tags "<script" "</script>")
   (shimbun-remove-tags "<noscript" "</noscript>")
   (shimbun-remove-tags "<a href=\"[^\"]+\\?tag=st_util_print\">" "</a>")
   (shimbun-remove-tags "<a href=\"[^\"]+\\?tag=st_util_email\">" "</a>")
   (shimbun-remove-tags "<a onclick" "</a>")
-  (shimbun-remove-tags "<newselement type=\"table\">" "</newselement>")
-  (shimbun-remove-tags "<img src=\"[^\"]+/story_relatedq.jpg\"[^>]*/>")
-  (goto-char (point-min))
-  (when (re-search-forward "<img src=\"[^\"]+/story_related.jpg\"[^>]*/>"
-			   nil t)
-    (insert "Related stories\n")
-    (delete-region (match-beginning 0) (match-end 0)))
-  (when (luna-call-next-method)
+  (shimbun-remove-tags "<a href=\"javascript" "</a>")
+  (shimbun-remove-tags "<newselement type=\"table\">" "</newselement>"))
+
+(luna-define-method shimbun-clear-contents ((shimbun shimbun-cnet) header)
+  (shimbun-strip-cr)
+  (when (shimbun-cnet-extract-body)
+    (shimbun-cnet-remove-useless-tags)
+    (shimbun-cnet-remove-footer)
     (goto-char (point-min))
-    (when (re-search-forward "<a href=\"mailto:\\([^\\?]+\\)\\?subject=" nil t)
+    (when (re-search-forward
+	   "<img src=\"[^\"]+/story_related.jpg\"[^>]*/>" nil t)
+      (insert "Related stories\n")
+      (delete-region (match-beginning 0) (match-end 0)))
+    (goto-char (point-min))
+    (when (re-search-forward
+	   "<a href=\"mailto:\\([^\\?]+\\)\\?subject=" nil t)
       (shimbun-header-set-from header (match-string 1)))
     t))
 
