@@ -1028,6 +1028,12 @@ is enclosed by at least one regexp grouping construct."
     (while (re-search-forward "<[^>]+>" nil t)
       (replace-match "" t t))))
 
+(defsubst shimbun-strip-cr ()
+  "Strip ^M from the end of all lines."
+  (goto-char (point-max))
+  (while (search-backward "\r\n" nil t)
+    (delete-char 1)))
+
 (eval-and-compile
   (cond
    ((fboundp 'replace-in-string)

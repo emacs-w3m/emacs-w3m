@@ -1,5 +1,15 @@
 2004-01-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/shimbun.el (shimbun-strip-cr): New function.
+
+	* shimbun/sb-cnet.el (shimbun-clear-contents): Call
+	`shimbun-strip-cr'.
+	* shimbun/sb-cnet-jp.el (shimbun-clear-contents): Ditto.
+	* shimbun/sb-mainichi.el (shimbun-get-headers,
+	shimbun-clear-contents): Ditto.
+
+	* shimbun/sb-rss.el (shimbun-get-headers): Simplified.
+
 	* shimbun/sb-cnet.el: Rewritten for the original house of CNET.
 
 	* shimbun/sb-cnet-jp.el: Renamed from sb-cnet-rss.el.

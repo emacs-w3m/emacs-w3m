@@ -108,7 +108,7 @@ but you can identify it from the URL, define this method in a backend.")
 
 (luna-define-method shimbun-rss-get-date ((shimbun shimbun-rss) url)
   nil)
-		  
+
 (luna-define-generic shimbun-rss-build-message-id (shimbun-rss url date)
   "Build unique message-id from URL and DATE and return it.")
 
@@ -127,45 +127,33 @@ but you can identify it from the URL, define this method in a backend.")
   (static-when (featurep 'xemacs)
     ;; It's one of many bugs in XEmacs that the coding systems *-dos
     ;; provided by Mule-UCS don't convert CRLF to LF when decoding.
-    (goto-char (point-min))
-    (while (search-forward "\r\n" nil t)
-      (delete-region (- (point) 2) (1- (point)))))
+    (shimbun-strip-cr))
   (let* ((xml (xml-parse-region (point-min) (point-max)))
 	 (dc-ns (shimbun-rss-get-namespace-prefix
 		 xml "http://purl.org/dc/elements/1.1/"))
 	 (rss-ns (shimbun-rss-get-namespace-prefix
 		  xml "http://purl.org/rss/1.0/"))
-         ;;(rdf-ns (shimbun-rss-get-namespace-prefix
-         ;;         xml "http://www.w3.org/1999/02/22-rdf-syntax-ns#"))
-         ;;(content-ns (shimbun-rss-get-namespace-prefix
-         ;;             xml "http://purl.org/rss/1.0/modules/content/"))
-	 headers from subject date id url ; extra
-	 )
-    (dolist (item (nreverse (shimbun-rss-find-el (intern (concat rss-ns "item")) xml)))
-      (catch 'next
-	(when (and (listp item)
-		   (eq (intern (concat rss-ns "item")) (car item))
-		   (setq url (shimbun-rss-node-text rss-ns 'link (cddr item))))
- 	  (setq date (or (shimbun-rss-get-date shimbun url)
- 			 (shimbun-rss-node-text dc-ns 'date item)
-			 (shimbun-rss-node-text rss-ns 'pubDate item)))
-	  (setq id (shimbun-rss-build-message-id shimbun url date))
-	  (when (shimbun-search-id shimbun id)
-	    (throw 'next nil))
-	  (setq subject (shimbun-rss-node-text rss-ns 'title item))
-          ;;(setq extra (or (shimbun-rss-node-text content-ns 'encoded item)
-          ;;                (shimbun-rss-node-text rss-ns 'description item)))
-	  (setq from (or (shimbun-rss-node-text rss-ns 'author item)
+	 (headers))
+    (dolist (item (shimbun-rss-find-el (intern (concat rss-ns "item")) xml))
+      (let ((url (and (listp item)
+		      (eq (intern (concat rss-ns "item")) (car item))
+		      (shimbun-rss-node-text rss-ns 'link (cddr item)))))
+	(when url
+	  (let* ((date (or (shimbun-rss-get-date shimbun url)
+			   (shimbun-rss-node-text dc-ns 'date item)
+			   (shimbun-rss-node-text rss-ns 'pubDate item)))
+		 (id (shimbun-rss-build-message-id shimbun url date)))
+	    (unless (shimbun-search-id shimbun id)
+	      (push (shimbun-create-header
+		     0
+		     (shimbun-rss-node-text rss-ns 'title item)
+		     (or (shimbun-rss-node-text rss-ns 'author item)
 			 (shimbun-rss-node-text dc-ns 'creator item)
-			 (shimbun-from-address shimbun)))
-	  (setq date (shimbun-rss-process-date shimbun date))
-	  (push (shimbun-make-header
-		 0
-		 (shimbun-mime-encode-string subject)
-		 (shimbun-mime-encode-string from)
-		 date id "" 0 0 url)
-		headers))))
-    (nreverse headers)))
+			 (shimbun-from-address shimbun))
+		     (shimbun-rss-process-date shimbun date)
+		     id "" 0 0 url)
+		    headers))))))
+    headers))
 
 ;;; Internal functions
 

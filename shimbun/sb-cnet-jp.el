@@ -71,9 +71,7 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 
 (luna-define-method shimbun-clear-contents :before
   ((shimbun shimbun-cnet-jp) header)
-  (goto-char (point-min))
-  (while (search-forward "\r\n" nil t)
-    (delete-region (match-beginning 0) (1+ (match-beginning 0))))
+  (shimbun-strip-cr)
   (shimbun-remove-tags "<script" "</script>")
   (shimbun-remove-tags "<noscript" "</noscript>"))
 
