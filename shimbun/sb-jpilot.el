@@ -28,6 +28,7 @@
 
 (require 'shimbun)
 (require 'sb-mailman)
+(require 'sendmail)
 
 (luna-define-class shimbun-jpilot (shimbun-mailman) ())
 
@@ -38,8 +39,25 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-jpilot))
   shimbun-jpilot-url)
 
+(luna-define-method shimbun-make-contents :after
+  ((shimbun shimbun-jpilot) header)
+  (save-excursion
+    (let ((end (and (mail-position-on-field "From") (point)))
+	  (begin (progn (beginning-of-line) (point)))
+	  (marker (make-marker)))
+      (when end
+	(narrow-to-region begin end)
+	(goto-char (point-min))
+	(when (re-search-forward " at " nil t nil)
+	  (set-marker marker (match-beginning 0))
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (goto-char marker)
+	  (insert "@"))
+	(widen))))
+  (buffer-string))
+    
 ;;(luna-define-method shimbun-reply-to ((shimbun shimbun-jpilot))
-;;  "")
+;;  "jpilot@jpilot.org")
 
 (provide 'sb-jpilot)
 ;;; sb-jpilot.el ends here

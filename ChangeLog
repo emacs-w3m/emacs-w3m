@@ -1,3 +1,10 @@
+2003-05-03  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-jpo.el (shimbun-jpo-cleanup-article): Modify regexps.
+	
+	* shimbun/sb-jpilot.el: Require sendmail.
+	(shimbun-make-contents): New method.
+
 2003-04-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-imitate-widget-button): New variable.

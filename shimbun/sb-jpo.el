@@ -45,9 +45,12 @@
 
 ;;(luna-define-method shimbun-reply-to ((shimbun shimbun-jpo))
 ;;  (shimbun-from-address-internal shimbun))
+(defvar shimbun-jpo-debugging t)
 
 (defun shimbun-jpo-retrieve-url (url &optional no-cache no-decode)
-  (let (w3m-async-exec)
+  (if shimbun-jpo-debugging
+      (let (w3m-async-exec)
+	(shimbun-retrieve-url url no-cache no-decode))
     (shimbun-retrieve-url url no-cache no-decode)))
 
 (luna-define-method shimbun-headers ((shimbun shimbun-jpo) &optional range)
@@ -61,13 +64,13 @@
       (if (string= group "news")
 	  (progn
 	    (setq url (concat url "torikumi/torikumi_list.htm"))
-	    (shimbun-retrieve-url url 'reload)
+	    (shimbun-jpo-retrieve-url url 'reload)
 	    (setq headers (shimbun-jpo-headers-1
 			   shimbun url "\\(hiroba/.*\\)"))
 	    (erase-buffer)
 	    (setq url (concat shimbun-jpo-url
 			      "torikumi/puresu/puresu_list.htm"))
-	    (shimbun-retrieve-url url 'reload)
+	    (shimbun-jpo-retrieve-url url 'reload)
 	    (setq headers (nconc headers (shimbun-jpo-headers-1 shimbun url))))
 	(if (string= group "details")
 	    (setq headers (shimbun-jpo-headers-group-details shimbun))
@@ -76,7 +79,7 @@
 	    (if (string= group "lawguide")
 		(setq url (concat url "seido/seido_list.htm"))
 	      (error "unknown group %s" group)))
-	  (shimbun-retrieve-url url 'reload)
+	  (shimbun-jpo-retrieve-url url 'reload)
 	  (setq headers (shimbun-jpo-headers-1 shimbun url)))))
     headers))
 
@@ -143,7 +146,7 @@
 	(setq urlprefix (substring (car urllist) 0 (1+ (match-beginning 0)))))
       (setq url (concat shimbun-jpo-url (car urllist)))
       (erase-buffer)
-      (shimbun-retrieve-url url 'reload)
+      (shimbun-jpo-retrieve-url url 'reload)
       (setq temp (cdr (assoc urlprefix exceptions-alist)))
       (goto-char (point-min))
       (setq headers (nconc headers
@@ -169,7 +172,7 @@
       (while pages
 	(setq url (concat shimbun-jpo-url (car pages)))
 	(erase-buffer)
-	(shimbun-retrieve-url url 'reload)
+	(shimbun-jpo-retrieve-url url 'reload)
 	(setq headers (nconc
 		       headers
 		       (shimbun-jpo-headers-1 shimbun url)))
@@ -211,24 +214,39 @@
   (save-excursion
     (let ((case-fold-search t))
       (goto-char (point-min))
-      (when (re-search-forward 
-	     "<tr>\n+<td align=\"left\"><img src=\"\\(\\.\\./\\)?images/title\\.gif\" *[^<>]+\">\\(<\/a>\\)?<\/td>\n+<\/tr>"
-	     nil t nil)
+      ;; <td align="center"><a href="#top"><img src="images/gotop.gif" width="89" height="13" border="0" vspace="10" alt="ページの先頭へ"></a></td>
+      (while (re-search-forward
+	      "<img src=\"images/gotop.gif\" .*alt=\"ページの先頭へ\">"
+	      nil t nil)
+	(delete-region (progn (beginning-of-line) (point)) (progn (end-of-line) (point))))
+      (goto-char (point-min))
+      ;; <td align="left"><a href="../../../indexj.htm" target="_top">HOME</a> &gt; <a href="../../torikumi_list.htm">特許庁の取り組み（特許法第３０条等新規性の喪失の例外）の適用に関して）</a> &gt;<br><br></td>
+      ;; <td align="left"><a href="../../indexj.htm" target="_top">HOME</a> &gt; <a href="../torikumi_list.htm">特許庁
+      (while (re-search-forward
+	      "<td align=\"left\"><a href=\"\\(\\.\\./\\)+indexj.htm\" target=\"_top\">HOME<\/a> *\\&gt;"
+	      nil t nil)
+	(delete-region (match-beginning 0) (progn (end-of-line) (point))))
+      (goto-char (point-min))
+      (while (re-search-forward 
+	      "<tr>\n+<td align=\"left\"><img src=\"\\(\\.\\./\\)?images/title\\.gif\" *[^<>]+\">\\(<\/a>\\)?<\/td>\n+<\/tr>"
+	      nil t nil)
 	(delete-region (match-beginning 0) (match-end 0)))
       (goto-char (point-min))
-      (when (re-search-forward
-	     "<td><a href=\"http://www.adobe.co.jp/products/acrobat/readstep.html"
-	     nil t nil)
-	(delete-region (match-beginning 0) (progn (end-of-line) (point))))
-      (when (re-search-forward
-	     "<td>PDFファイルを初めてお使いになる方は、 *Adobe Acrobat Readerダウンロードページへ"
-	     nil t nil)
+      (while (re-search-forward
+	      "^\\(<td>\\)?<a href=\"http://www.adobe.co.jp/products/acrobat/readstep.html"
+	      nil t nil)
 	(delete-region (match-beginning 0) (progn (end-of-line) (point))))
       (goto-char (point-min))
-      (when (re-search-forward 
-	     "<tr>\n+<td align=\"center\"><a href=\"#top\">\
+      (while (re-search-forward
+	      ;; PDFファイルを初めてお使いになる方は、Adobe Acrobat Readerダウンロードページへ   
+	      "Adobe Acrobat Reader *ダウンロードページ"
+	      nil t nil)
+	(delete-region (progn (beginning-of-line) (point)) (progn (end-of-line) (point))))
+      (goto-char (point-min))
+      (while (re-search-forward 
+	      "<tr>\n+<td align=\"center\"><a href=\"#top\">\
 <img src=\"\\(\\.\\.\/\\)?images/gotop\\.gif\" [^<>]+\">\\(<\/a>\\)?<\/td>\n+<\/tr>"
-	     nil t nil)
+	      nil t nil)
 	(delete-region (match-beginning 0) (match-end 0))))))
 
 (provide 'sb-jpo)
