@@ -283,10 +283,12 @@ search result in order of [0]a url, [1,2]a serial number, [3]a subject,
 \[4]a month, [5]a day, [6]an hour:minute and [7,8,9]an extra keyword.")
 
 (defvar shimbun-asahi-content-start
-  "<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
+  "<!--[\t\n ]*Start of Kiji[\t\n ]*-->\
+\\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-content-end
-  "<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
+  "<!--[\t\n ]*End of Kiji[\t\n ]*-->\
+\\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-x-face-alist
   '(("default" . "X-Face: +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|\
@@ -565,17 +567,7 @@ there is a correct information available."
 	  (string-to-number (match-string 2))
 	  (string-to-number (match-string 3))
 	  (concat (match-string 4) ":" (match-string 5))
-	  "+0900")))
-      (when (and (re-search-forward
-		  "<!-- Start of Kiji -->\\([\t\n ]*<[^>]+>\\)*[\t\n ]*"
-		  nil t)
-		 (progn
-		   (insert "<!--FJZONE START NAME=\"HONBUN\"-->\n")
-		   (re-search-forward
-		    "[\t\n ]*\\(<[^>]+>[\t\n ]*\\)*<!-- End of Kiji -->"
-		    nil t)))
-	(goto-char (match-beginning 0))
-	(insert "\n<!--FJZONE END NAME=\"HONBUN\"-->\n")))))
+	  "+0900"))))))
   (goto-char (point-min)))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-asahi)

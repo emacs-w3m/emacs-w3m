@@ -1,6 +1,7 @@
 ;;; sb-asahi-html.el --- shimbun backend for asahi.com (HTML version)
 
-;; Copyright (C) 2001, 2002, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi  <teranisi@gohome.org>
 ;; Keywords: news
@@ -32,11 +33,12 @@
 (luna-define-class shimbun-asahi-html (shimbun-asahi) ())
 
 (defvar shimbun-asahi-html-content-start
-  "<!--[\t\n ]*Start of photo[\t\n ]*-->\
+  "<!--[\t\n ]*Start of \\(Kiji\\|photo\\)[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-html-content-end
-  "<!--[\t\n ]*End of related link[\t\n ]*-->\
+  "<!--[\t\n ]*End of Kiji[\t\n ]*-->\
+\\|<!--[\t\n ]*End of related link[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-asahi-html)

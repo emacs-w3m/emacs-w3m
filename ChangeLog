@@ -1,5 +1,16 @@
 2005-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html-content-start):
+	Improve.
+	(shimbun-asahi-html-content-end): Improve.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-content-start): Improve.
+	(shimbun-asahi-content-end): Improve.
+	(shimbun-asahi-prepare-article): Don't remove adv for the sports
+	group there.
+
+2005-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Modify regexp
 	for the sports group following the change of the site.
 	(shimbun-asahi-prepare-article): Set date and remove adv for the
