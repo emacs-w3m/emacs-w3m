@@ -24,7 +24,34 @@
 
 ;;; Commentary:
 
+;; When you use a non-UNIX system, such as MS-DOS, you can type the
+;; following command to install emacs-w3m programs and datas.
+;;
+;;     emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
+;;
+;; In order to install programs and datas to unusual directories, edit
+;; this file and set your request to `w3mhack-nonunix-lispdir' and
+;; `w3mhack-nonunix-icondir'.
+;;
+;; When optional modules, such as FLIM, are installed into unusual
+;; directories, it is necessary to tell them to this installer, as
+;; follows:
+;;
+;;     emacs -batch -q -no-site-file -l w3mhack.el //c/home/elisp/flim -f w3mhack-nonunix-install
+
 ;;; Code:
+
+(defvar w3mhack-nonunix-lispdir nil
+  "*Directory to where emacs-w3m lisp programs are installed.
+nil means that all programs are installed to the default directory.")
+
+(defvar w3mhack-nonunix-icondir nil
+  "*Directory to where emacs-w3m icons are installed.
+nil means that all icons are installed to the default directory.")
+
+(defvar w3mhack-nonunix-dryrun nil
+  "*Non-nil means that print the commands to install programs and datas,
+but do not execute them.")
 
 (require 'cl)
 (unless (dolist (var nil t))
@@ -251,6 +278,42 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	  (byte-compile-file (car modules))
 	(error))
       (setq modules (cdr modules)))))
+
+(defun w3mhack-nonunix-install ()
+  "Byte-compile the w3m modules and install them."
+  (w3mhack-compile)
+  (unless w3mhack-nonunix-lispdir
+    (setq w3mhack-nonunix-lispdir
+	  (expand-file-name "../../site-lisp/w3m" data-directory)))
+  (and (not w3mhack-nonunix-icondir)
+       (or (featurep 'xemacs)
+	   (> w3mhack-emacs-major-version 20))
+       (setq w3mhack-nonunix-icondir
+	     (expand-file-name "w3m/icons" data-directory)))
+  (labels
+      ((mkdir (dir)
+	      (unless (file-directory-p dir)
+		(message "mkdir %s" dir)
+		(unless w3mhack-nonunix-dryrun
+		  (make-directory dir))))
+       (install (srcdir dstdir pattern)
+		(dolist (src (directory-files srcdir t pattern))
+		  (let ((dst (expand-file-name
+			      (file-name-nondirectory src) dstdir)))
+		    (message "cp %s %s"
+			     (file-relative-name src default-directory) dst)
+		    (unless w3mhack-nonunix-dryrun
+		      (copy-file src dst t t))))))
+    (mkdir w3mhack-nonunix-lispdir)
+    (install default-directory w3mhack-nonunix-lispdir "\\.elc?\\'")
+    (let ((shimbun-directory
+	   (expand-file-name shimbun-module-directory default-directory)))
+      (when (file-exists-p (expand-file-name "shimbun.elc" shimbun-directory))
+	(install shimbun-directory w3mhack-nonunix-lispdir "\\.elc?\\'")))
+    (when w3mhack-nonunix-icondir
+      (mkdir w3mhack-nonunix-icondir)
+      (install (expand-file-name "icons") w3mhack-nonunix-icondir
+	       "\\.xpm\\'"))))
 
 ;; Byte optimizers and version specific functions.
 (put 'truncate-string 'byte-optimizer
