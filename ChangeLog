@@ -1,3 +1,7 @@
+2001-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-backward): New function.
+
 2001-03-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-forward): New function.

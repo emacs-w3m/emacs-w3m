@@ -155,7 +155,19 @@ history element of the current position."
 position.  The position pointer of `w3m-url-history' will go backward.
 If the previous element does not exist in the history, it returns a
 history element of the current position."
-  )
+  (let* ((position (car w3m-url-history))
+	 (class (1- (length position)))
+	 (number (nth class position)))
+    (if (zerop number)
+	;; This element is the first element of the branch.
+	(if (zerop class)
+	    ;; No previous element.
+	    nil
+	  ;; This element has a parent.
+	  (nbutlast position 2))
+      ;; Previous element exists in the branch.
+      (setcar (nthcdr class position) (1- number)))
+    (w3m-history-current)))
 
 ;;(not-provided-yet 'w3m-hist)
 
