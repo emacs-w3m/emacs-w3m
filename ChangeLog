@@ -1,3 +1,16 @@
+2001-11-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-attributes): Wrap `w3m-w3m-attributes' with
+	`w3m-process-with-wait-handler'.
+	(w3m-w3m-attributes): Changed the argument spec.  Now, this
+	function can be used only in asynchronous context.
+	(w3m-rendering-unibyte-buffer): Changed the argument spec, and the
+	first argument `url' is refered instead of `w3m-current-url'.
+	This change is made to avoid using `w3m-process-with-wait-handler'
+	in asynchronous context.
+	(w3m-prepare-content): Follow the change of
+	`w3m-rendering-unibyte-buffer'.
+
 2001-11-14  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-next-buffer): Use `w3m-pullout-buffer-number' when

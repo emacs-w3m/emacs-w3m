@@ -1164,7 +1164,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
    ((w3m-url-local-p url)
     (w3m-local-attributes url))
    (t
-    (w3m-w3m-attributes url no-cache))))
+    (w3m-process-with-wait-handler
+      (w3m-w3m-attributes url no-cache handler)))))
 
 (defmacro w3m-base-url (url &optional no-cache)
   (` (nth 6 (w3m-attributes (, url) (, no-cache)))))
@@ -2398,7 +2399,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	  (when success
 	    (w3m-cache-header url (buffer-string)))))))
 
-(defun w3m-w3m-attributes (url &optional no-cache handler)
+(defun w3m-w3m-attributes (url no-cache handler)
   "Return a list of attributes of URL.
 Value is nil if retrieval of header is failed.  Otherwise, list
 elements are:
@@ -2410,50 +2411,47 @@ elements are:
  5. Real URL.
  6. Base URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
-  (if (not handler)
-      (w3m-process-with-wait-handler
-	(w3m-w3m-attributes url no-cache handler))
-    (lexical-let ((url url))
-      (w3m-process-do
-	  (header (w3m-w3m-get-header url no-cache handler))
-	(cond
-	 ((and header (string-match "HTTP/1\\.[0-9] 200 " header))
-	  (let (alist type charset)
-	    (dolist (line (split-string header "\n"))
-	      (when (string-match "^\\([^:]+\\):[ \t]*" line)
-		(push (cons (downcase (match-string 1 line))
-			    (substring line (match-end 0)))
-		      alist)))
-	    (when (setq type (cdr (assoc "content-type" alist)))
-	      (if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" type)
-		  (setq charset (w3m-remove-redundant-spaces
-				 (match-string 1 type))
-			type (w3m-remove-redundant-spaces
-			      (substring type 0 (match-beginning 0))))
-		(setq type (w3m-remove-redundant-spaces type))
-		(when (string-match ";$" type)
-		  (setq type (substring type 0 (match-beginning 0))))))
-	    (list (or type (w3m-local-content-type url))
-		  (or charset
-		      (and (memq w3m-type '(w3mmee w3m-m17n))
-			   (setq charset
-				 (cdr (assoc "w3m-document-charset" alist)))
-			   (car (split-string charset))))
-		  (let ((v (cdr (assoc "content-length" alist))))
-		    (and v (setq v (string-to-number v)) (> v 0) v))
-		  (cdr (assoc "content-encoding" alist))
-		  (let ((v (cdr (assoc "last-modified" alist))))
-		    (and v (w3m-time-parse-string v)))
-		  (or (cdr (assoc "w3m-current-url" alist))
-		      url)
-		  (or (cdr (assoc "w3m-base-url" alist))
-		      (cdr (assoc "w3m-current-url" alist))
-		      url))))
-	 ;; FIXME: adhoc implementation
-	 ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
-	 ;; HTTP/1.0 501 Method Not Implemented
-	 ((and header (string-match "HTTP/1\\.[0-9] 50[0-9]" header))
-	  (list "text/html" nil nil nil nil url url)))))))
+  (lexical-let ((url url))
+    (w3m-process-do
+	(header (w3m-w3m-get-header url no-cache handler))
+      (cond
+       ((and header (string-match "HTTP/1\\.[0-9] 200 " header))
+	(let (alist type charset)
+	  (dolist (line (split-string header "\n"))
+	    (when (string-match "^\\([^:]+\\):[ \t]*" line)
+	      (push (cons (downcase (match-string 1 line))
+			  (substring line (match-end 0)))
+		    alist)))
+	  (when (setq type (cdr (assoc "content-type" alist)))
+	    (if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" type)
+		(setq charset (w3m-remove-redundant-spaces
+			       (match-string 1 type))
+		      type (w3m-remove-redundant-spaces
+			    (substring type 0 (match-beginning 0))))
+	      (setq type (w3m-remove-redundant-spaces type))
+	      (when (string-match ";$" type)
+		(setq type (substring type 0 (match-beginning 0))))))
+	  (list (or type (w3m-local-content-type url))
+		(or charset
+		    (and (memq w3m-type '(w3mmee w3m-m17n))
+			 (setq charset
+			       (cdr (assoc "w3m-document-charset" alist)))
+			 (car (split-string charset))))
+		(let ((v (cdr (assoc "content-length" alist))))
+		  (and v (setq v (string-to-number v)) (> v 0) v))
+		(cdr (assoc "content-encoding" alist))
+		(let ((v (cdr (assoc "last-modified" alist))))
+		  (and v (w3m-time-parse-string v)))
+		(or (cdr (assoc "w3m-current-url" alist))
+		    url)
+		(or (cdr (assoc "w3m-base-url" alist))
+		    (cdr (assoc "w3m-current-url" alist))
+		    url))))
+       ;; FIXME: adhoc implementation
+       ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
+       ;; HTTP/1.0 501 Method Not Implemented
+       ((and header (string-match "HTTP/1\\.[0-9] 50[0-9]" header))
+	(list "text/html" nil nil nil nil url url))))))
 
 (defmacro w3m-w3m-expand-arguments (arguments)
   (` (delq nil
@@ -2849,7 +2847,7 @@ type as a string argument, when retrieve is complete."
   (w3m-message "Rendering...done")
   (w3m-rendering-extract-title))
 
-(defun w3m-rendering-unibyte-buffer (&optional content-charset)
+(defun w3m-rendering-unibyte-buffer (url &optional content-charset)
   "Do rendering of contents in this buffer as HTML and return title."
   (when (memq w3m-type '(w3mmee w3m-m17n))
     (let ((original-buffer (current-buffer)))
@@ -2860,7 +2858,7 @@ type as a string argument, when retrieve is complete."
 	(insert-buffer original-buffer)
 	(set-buffer-multibyte t)
 	(w3m-copy-local-variables original-buffer))))
-  (w3m-decode-buffer w3m-current-url content-charset "text/html")
+  (w3m-decode-buffer url content-charset "text/html")
   (w3m-rendering-buffer-1))
 
 (defun w3m-rendering-multibyte-buffer ()
@@ -2913,7 +2911,7 @@ argument.  Otherwise, it will be called with nil."
 	  w3m-current-base-url (w3m-base-url url)
 	  w3m-current-title
 	  (if (string= "text/html" type)
-	      (w3m-rendering-unibyte-buffer content-charset)
+	      (w3m-rendering-unibyte-buffer url content-charset)
 	    (w3m-decode-buffer url content-charset type)
 	    (or (when (string-match "\\`about://\\(source\\|header\\)/" url)
 		  (w3m-arrived-title (substring url (match-end 0))))
