@@ -152,7 +152,10 @@ This variable effected only XEmacs or Emacs 21."
 	    (when (and (re-search-forward "^X-Shimbun-Id: " eoh t)
 		       (goto-char (point-min))
 		       (re-search-forward "^Xref: \\(.+\\)\n" eoh t))
-	      (setq xref (match-string 1))))))
+	      (w3m-static-if (fboundp 'match-string-no-properties)
+		  (setq xref (match-string-no-properties 1))
+		(setq xref (match-string 1))
+		(set-text-properties 0 (length xref) nil xref))))))
       (mew-elet
        (cond
 	((and (null cache) (eq w3m-type 'w3m-m17n))
