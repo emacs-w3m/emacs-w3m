@@ -1938,14 +1938,15 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 	(push line buf)))
     (mapconcat (function identity) (nreverse buf) "\n")))
 
-(defun w3m-cache-header (url header)
+(defun w3m-cache-header (url header &optional overwrite)
   "Store up URL's HEADER in cache."
   (w3m-cache-setup)
   (let ((ident (intern url w3m-cache-hashtb)))
     (if (boundp ident)
-	(if (string=
-	     (w3m-cache-header-delete-variable-part header)
-	     (w3m-cache-header-delete-variable-part (symbol-value ident)))
+	(if (and (not overwrite)
+		 (string=
+		  (w3m-cache-header-delete-variable-part header)
+		  (w3m-cache-header-delete-variable-part (symbol-value ident))))
 	    (symbol-value ident)
 	  (w3m-cache-remove url)
 	  (set ident header))
@@ -2544,7 +2545,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	 (re-search-forward "^w3m-current-url:" nil t))
        (search-forward "\n\n" nil t)
        (progn
-	 (w3m-cache-header url (buffer-substring (point-min) (point)))
+	 (w3m-cache-header url (buffer-substring (point-min) (point)) t)
 	 (delete-region (point-min) (point))
 	 (w3m-cache-contents url (current-buffer))
 	 (w3m-w3m-attributes url))))
