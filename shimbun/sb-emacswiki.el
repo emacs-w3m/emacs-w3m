@@ -49,22 +49,45 @@ e2ibWOZWTFz8j~/m")))
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-emacswiki)
 						 &optional range)
-  (let ((headers (luna-call-next-method)))
-    (when (string= (shimbun-current-group shimbun) "diff")
-      (dolist (header headers)
-	(let ((url (shimbun-header-xref header)))
-	  (when (string-match "id=.*?;\\(revision=[0-9]+\\)" url)
-	    (shimbun-header-set-xref
-	     header
-	     (replace-match "diff=1" t nil url 1))))))
-    headers))
+  (static-when (featurep 'xemacs)
+    ;; It's one of many bugs in XEmacs that the coding systems *-dos
+    ;; provided by Mule-UCS don't convert CRLF to LF when decoding.
+    (shimbun-strip-cr))
+  (let* ((xml (xml-parse-region (point-min) (point-max)))
+	 (dc-ns (shimbun-rss-get-namespace-prefix
+		 xml "http://purl.org/dc/elements/1.1/"))
+	 (rss-ns (shimbun-rss-get-namespace-prefix
+		  xml "http://purl.org/rss/1.0/"))
+	 (wiki-ns (shimbun-rss-get-namespace-prefix
+		   xml "http://purl.org/rss/1.0/modules/wiki/"))
+	 url headers)
+    (dolist (item (shimbun-rss-find-el (intern (concat rss-ns "item")) xml)
+		  headers)
+      (setq url (and (listp item)
+		     (eq (intern (concat rss-ns "item")) (car item))
+		     (if (string= (shimbun-current-group shimbun) "changes")
+			 (shimbun-rss-node-text rss-ns 'link (cddr item))
+		       (shimbun-rss-node-text wiki-ns 'diff (cddr item)))))
+      (when url
+	(let* ((date (or (shimbun-rss-node-text dc-ns 'date item)
+			 (shimbun-rss-node-text rss-ns 'pubDate item)))
+	       (id (shimbun-rss-build-message-id shimbun url date)))
+	  (unless (shimbun-search-id shimbun id)
+	    (push (shimbun-create-header
+		   0
+		   (shimbun-rss-node-text rss-ns 'title item)
+		   (or (shimbun-rss-node-text dc-ns 'contributor item)
+		       (shimbun-from-address shimbun))
+		   (shimbun-rss-process-date shimbun date)
+		   id "" 0 0 url)
+		  headers)))))))
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-emacswiki) url date)
-  (unless (string-match "id=\\(.*?\\);revision=\\([0-9]+\\)" url)
+  (unless (or (string-match "id=\\(.+\\)$" url)
+	      (string-match "/\\([^/]+\\)$" url))
     (error "Cannot find message-id base"))
-  (concat "<" (match-string 1 url) (match-string 2 url)
-	  "%" (shimbun-current-group shimbun) "@emacswiki.org>"))
+  (concat "<" (match-string 1 url) date "@emacswiki.org>"))
 
 (provide 'sb-emacswiki)
 
