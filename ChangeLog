@@ -1,3 +1,8 @@
+2003-02-05  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (w3m-form-submit): Remove `!CURRENT_URL!' from
+	action tag.
+
 2003-02-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (TopLevel): Don't gererate the w3m-kwds.el file if
