@@ -211,9 +211,8 @@ favicon is ready."
   (let* (height
 	 (img (when (or
 		     (not (eq type 'ico))
-		     ;; `ico' is the default type and `data' may contain a
-		     ;; string "There's no such file" returned from a server,
-		     ;; so we check whether the magic numbers are 00 00 01 00.
+		     ;; Since most of favicons are the `ico' types, we
+		     ;; make sure of the magic-numbers only as for them.
 		     (string-equal "\x00\x00\x01\x00" (substring data 0 4)))
 		(w3m-imagick-convert-data
 		 data (symbol-name type)
