@@ -135,7 +135,7 @@
     (cond
      (url (w3m url))
      (img (w3m-view-image))
-     (t (message "No URL at point.")))))
+     (t (message "No URL at point")))))
 
 (provide 'mime-w3m)
 ;;; mime-w3m.el ends here

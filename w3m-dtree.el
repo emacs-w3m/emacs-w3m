@@ -183,12 +183,12 @@ over the 'w3m-dtree-directory-depth'."
       (if w3m-dtree-default-allfiles
 	  (setq allfiles (not allfiles)))
       (setq path (substring url prelen)))
-    ;; counter drive letter 
+    ;; counter drive letter
     (setq path (file-name-as-directory (w3m-dtree-directory-name path)))
     (setq default-directory path)
-    (w3m-message "Dtree (%s) ..." path)
+    (w3m-message "Dtree (%s)..." path)
     (w3m-dtree-create path allfiles dirprefix fileprefix)
-    (w3m-message "Dtree ... done.")
+    (w3m-message "Dtree...done")
     "text/html"))
 
 ;;;###autoload

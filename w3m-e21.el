@@ -210,7 +210,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 				       'w3m-goto-url)
 				     map)
 				   'help-echo
-				   "mouse-2 prompts to input URL."))))))
+				   "mouse-2 prompts to input URL"))))))
 
 (add-hook 'w3m-mode-hook 'w3m-setup-header-line)
 

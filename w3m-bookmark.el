@@ -117,7 +117,7 @@
 	    (insert (format "<li><a href=\"%s\">%s</a>\n" url title)))
 	;; New section.
 	(unless (search-forward "</body>\n" nil t)
-	  (error "%s" "Can't find delimiter of bookmark contents."))
+	  (error "%s" "Can't find delimiter of bookmark contents"))
 	(goto-char (match-beginning 0))
 	(insert (format w3m-bookmark-section-format
 			section url title))))
@@ -145,10 +145,10 @@ Optional argument TITLE is title of link."
     (and (string= section "")
 	 (setq section w3m-bookmark-default-section))
     (if (string-match section "^ *$")
-	(error "You must specify section name."))
+	(error "You must specify section name"))
     (setq title (read-string "Title: " title 'w3m-bookmark-title-history))
     (if (string-match title "^ *$")
-	(error "You must specify title."))
+	(error "You must specify title"))
     (w3m-bookmark-write-file url title section)))
 
 ;;;###autoload
@@ -156,13 +156,13 @@ Optional argument TITLE is title of link."
   "Add link under cursor to bookmark."
   (interactive)
   (if (null (w3m-anchor))
-      (message "No anchor.")		; nothing to do
+      (message "No anchor")		; nothing to do
     (let ((url (w3m-anchor))
 	  (title (buffer-substring-no-properties
 		  (previous-single-property-change (1+ (point)) 'w3m-href-anchor)
 		  (next-single-property-change (point) 'w3m-href-anchor))))
       (w3m-bookmark-add url title))
-    (message "Added.")))
+    (message "Added")))
 
 ;;;###autoload
 (defun w3m-bookmark-add-current-url (&optional arg)
@@ -171,7 +171,7 @@ With prefix, ask new url to add instead of current page."
   (interactive "P")
   (w3m-bookmark-add (if arg (w3m-input-url) w3m-current-url)
 		    w3m-current-title)
-  (message "Added."))
+  (message "Added"))
 
 ;;;###autoload
 (defun w3m-bookmark-view ()

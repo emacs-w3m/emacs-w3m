@@ -1260,7 +1260,7 @@ If N is negative, last N items of LIST is returned."
 		       (and (listp attr)
 			    (<= (length attr) 2)
 			    (symbolp (car attr)))
-		       (error "Internal error, type mismatch."))
+		       (error "Internal error, type mismatch"))
 		   (let ((sexp (quote
 				(w3m-remove-redundant-spaces
 				 (or (match-string-no-properties 2)
@@ -1277,7 +1277,7 @@ If N is negative, last N items of LIST is returned."
 			((eq type :bool)
 			 (setq sexp t))
 			((nth 1 attr)
-			 (error "Internal error, unknown modifier.")))
+			 (error "Internal error, unknown modifier")))
 		       (setq attr (car attr)))
 		     (` ((looking-at
 			  (, (if (eq type :bool)
@@ -1452,7 +1452,7 @@ If optional argument FORCE is non-nil, displaying is forced.
 If second optional argument NO-CACHE is non-nil, cache is not used."
   (interactive "P")
   (unless (w3m-display-graphic-p)
-    (error "Can't display images in this environment."))
+    (error "Can't display images in this environment"))
   (unless (and force (eq w3m-display-inline-image-status 'on))
     (let ((cur-point (point))
 	  (buffer-read-only)
@@ -1538,7 +1538,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
   (let ((case-fold-search t)
 	(buffer-read-only))
     (run-hooks 'w3m-fontify-before-hook)
-    (w3m-message "Fontify...")
+    (w3m-message "Fontifying...")
     ;; Delete <?xml ... ?> tag
     (goto-char (point-min))
     (if (search-forward "<?xml" nil t)
@@ -1568,7 +1568,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (if w3m-delete-duplicated-empty-lines
 	(while (re-search-forward "^[ \t]*\n\\([ \t]*\n\\)+" nil t)
 	  (replace-match "\n" nil t)))
-    (w3m-message "Fontify... done")
+    (w3m-message "Fontifying...done")
     (run-hooks 'w3m-fontify-after-hook)))
 
 ;;
@@ -2024,7 +2024,7 @@ to nil."
 	(w3m-local-content-type url)))))
 
 (defun w3m-local-dirlist-cgi (url)
-  (w3m-message "Reading...")
+  (w3m-message "Reading %s..." url)
   (if w3m-dirlist-cgi-program
       (if (file-executable-p w3m-dirlist-cgi-program)
 	  (let ((coding-system-for-read 'binary)
@@ -2051,7 +2051,7 @@ to nil."
 		(delete-region beg end)
 		(goto-char beg)
 		(insert file))))
-	(error "Can't execute: %s." w3m-dirlist-cgi-program))
+	(error "Can't execute: %s" w3m-dirlist-cgi-program))
     ;; execute w3m internal CGI
     (w3m-exec-process "-dump_source" url))
   ;; bind charset to w3m-file-name-coding-system
@@ -2064,14 +2064,14 @@ to nil."
 	      "content=\"text/html; charset="
 	      (symbol-name charset)
 	      "\">")))
-  (w3m-message "Reading... done"))
+  (w3m-message "Reading %s...done" url))
 
 ;;; Retrieve data via HTTP:
 (defun w3m-remove-redundant-spaces (str)
   "Remove spaces/tabs at the front of a string and at the end of a string"
   (save-match-data
     (setq str
-	  (substring str 
+	  (substring str
 		     (if (string-match "^[ \t\r\f\n]+" str) (match-end 0) 0)))
     (substring str 0
 	       (and (string-match "[ \t\r\f\n]+$" str) (match-beginning 0)))))
@@ -2086,7 +2086,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	  (w3m-message "Request sent, waiting for response...")
 	  (when (prog1
 		    (w3m-exec-process "-dump_head" url)
-		  (w3m-message "Request sent, waiting for response... done"))
+		  (w3m-message "Request sent, waiting for response...done"))
 	    (w3m-cache-header url (buffer-string)))))))
 
 (defun w3m-w3m-attributes (url &optional no-cache)
@@ -2119,7 +2119,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	    (when (string-match ";$" type)
 	      (setq type (substring type 0 (match-beginning 0))))))
 	(list (or type (w3m-local-content-type url))
-	      (or charset 
+	      (or charset
 		  (when (setq charset (cdr (assoc "w3m-document-charset"
 						  alist)))
 		    (car (split-string charset))))
@@ -2138,10 +2138,10 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 
 (defun w3m-w3m-dump-head-source (url)
   (and (let ((w3m-current-url url))
-	 (w3m-message "Reading...")
+	 (w3m-message "Reading %s..." url)
 	 (prog1
 	     (w3m-exec-process w3m-dump-head-source-command-argument url)
-	   (w3m-message "Reading... done")))
+	   (w3m-message "Reading %s...done" url)))
        (goto-char (point-min))
        (let ((case-fold-search t))
 	 (re-search-forward "^w3m-current-url:" nil t))
@@ -2158,10 +2158,10 @@ If optional argument NO-CACHE is non-nil, cache is not used."
       (let ((type   (car headers))
 	    (length (nth 2 headers)))
 	(when (let ((w3m-current-url url))
-		(w3m-message "Reading...")
+		(w3m-message "Reading %s..." url)
 		(prog1
 		    (w3m-exec-process "-dump_source" url)
-		  (w3m-message "Reading... done")))
+		  (w3m-message "Reading %s...done" url)))
 	  (cond
 	   ((and length (> (buffer-size) length))
 	    (delete-region (point-min) (- (point-max) length)))
@@ -2395,7 +2395,7 @@ to nil."
 			    (prin1-to-string x))))))
 		    (append w3m-halfdump-command-arguments
 			    w3m-halfdump-command-common-arguments)))))
-    (w3m-message "Rendering... done")
+    (w3m-message "Rendering...done")
     (goto-char (point-min))
     ;; FIXME: Adhoc support for w3m with patch in [w3m-dev 01876].
     (and (looking-at "<!DOCTYPE w3mhalfdump public")
@@ -2578,7 +2578,7 @@ this function returns t.  Otherwise, returns nil."
     (cond
      ((not method)
       (if (w3m-url-local-p url)
-	  (error "No method to view `%s' is registered. Use `w3m-edit-this-url'."
+	  (error "No method to view `%s' is registered. Use `w3m-edit-this-url'"
 		 (file-name-nondirectory (w3m-url-to-file-name url)))
 	(w3m-download url)))
      ((functionp method)
@@ -2676,7 +2676,7 @@ this function returns t.  Otherwise, returns nil."
   (if (or (w3m-url-local-p w3m-current-url)
 	  (w3m-url-dtree-p w3m-current-url))
       (funcall w3m-edit-function (w3m-url-to-file-name w3m-current-url))
-    (error "The URL of current page is not local.")))
+    (error "The URL of current page is not local")))
 
 (defun w3m-edit-this-url (&optional url)
   "Edit the local file by the under point."
@@ -3110,7 +3110,7 @@ or prefix ARG columns."
 		    (setq comp (intern-soft (concat (symbol-name mail-user-agent)
 						    "-compose")))
 		    (fboundp comp)))
-	  (error "You must specify valid `mail-user-agent'."))
+	  (error "You must specify valid `mail-user-agent'"))
       ;; Use rfc2368.el if exist.
       ;; rfc2368.el is written by Sen Nagata.
       ;; You can find it in "contrib" directory of Mew package
@@ -3133,7 +3133,7 @@ or prefix ARG columns."
 		   (substring url (match-beginning 2) (match-end 2))
 		   ":"
 		   (substring url (match-end 2))))
-      (error "URL is strange.")))
+      (error "URL is strange")))
 
 (defun w3m-goto-ftp-url (url)
   (let* ((ftp (w3m-convert-ftp-url-for-emacsen url))
@@ -3259,7 +3259,7 @@ or prefix ARG columns."
   "Go to the Home page."
   (interactive)
   (unless w3m-home-page
-    (error "You have to specify the value of `w3m-home-page'."))
+    (error "You have to specify the value of `w3m-home-page'"))
   (w3m-goto-url w3m-home-page))
 
 (defun w3m-reload-this-page (&optional arg)
@@ -3408,7 +3408,7 @@ works on Emacs.
   "Display source of this current buffer."
   (interactive)
   (if (string-match "^about://header/" w3m-current-url)
-      (message "Can't load a source for %s." w3m-current-url)
+      (message "Can't load a source for %s" w3m-current-url)
     (w3m-goto-url (if (string-match "^about://source/" w3m-current-url)
 		      (substring w3m-current-url (match-end 0))
 		    (concat "about://source/" w3m-current-url)))))

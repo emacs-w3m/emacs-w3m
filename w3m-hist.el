@@ -594,7 +594,7 @@ whether to access the buffer-local properties."
 		       (cadddr element)
 		     (cadr element))
 		   keyword)
-      (error "No history element found to be extracted."))))
+      (error "No history element found to be extracted"))))
 
 (defun w3m-history-plist-put (keyword value &optional url set-current local)
   "Change value in the properties of a history element of KEYWORD to
@@ -605,7 +605,7 @@ element corresponding to URL will be set as the current history
 element.  LOCAL specifies whether to access the buffer-local
 properties."
   (w3m-history-with-element url set-current
-    "No history element found to be modified."
+    "No history element found to be modified"
     (if local
 	(let ((properties (w3m-history-modify-properties
 			   nil
@@ -633,7 +633,7 @@ element.  If SET-CURRENT is non-nil, the history element corresponding
 to URL will be set as the current history element.  LOCAL specifies
 whether to access the buffer-local properties."
   (w3m-history-with-element url set-current
-    "No history element found to add properties."
+    "No history element found to add properties"
     (let* ((former (if local
 		       (cadddr element)
 		     (cadr element)))
@@ -677,7 +677,7 @@ element.  If SET-CURRENT is non-nil, the history element corresponding
 to URL will be set as the current history element.  LOCAL specifies
 whether to access the buffer-local properties."
   (w3m-history-with-element url set-current
-    "No history element found to remove properties."
+    "No history element found to remove properties"
     (let* ((former (if local
 		       (cadddr element)
 		     (cadr element)))
@@ -718,7 +718,7 @@ If SET-CURRENT is non-nil, the history element corresponding to URL
 will be set as the current history element.  If THIS-BUFFER is nil,
 renaming will be done for all the w3m buffers."
   (w3m-history-with-element old-url set-current
-    "No history element found to be renamed."
+    "No history element found to be renamed"
     (setcar element new-url)
     (setcar (w3m-history-current-1 (caddr element)) new-url))
   (unless this-buffer
@@ -767,7 +767,7 @@ If arg CLEAR-HISTORY is given, the current history will be cleared
 in advance.  It's only a joke, you should NEVER use it."
   (interactive "P")
   (unless (eq 'w3m-mode major-mode)
-    (error "`%s' must be invoked from a w3m buffer." this-command))
+    (error "`%s' must be invoked from a w3m buffer" this-command))
   (when (and w3m-arrived-db
 	     (prog1
 		 (yes-or-no-p
