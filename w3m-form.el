@@ -127,6 +127,19 @@
 	      plist nil))
       (setq plist (cddr plist)))
     value))
+(defun w3m-form-put-by-name (form id name value)
+  (let ((plist (w3m-form-plist form))
+	pair found)
+    (while plist
+      (setq pair (plist-get (cadr plist) :value))
+      (when (and pair
+		 (string= (car pair) name))
+	(setcdr pair value)
+	(setq found t
+	      plist nil))
+      (setq plist (cddr plist)))
+    (unless found
+      (w3m-form-put form id name value))))
 
 (defun w3m-form-goto-next-field ()
   "Move to next form field and return the point.
@@ -254,13 +267,13 @@ If no field in forward, return nil without moving."
 	      (unless (eq form cform)
 		(w3m-form-put cform id name (w3m-form-get form id))))
 	     ((string= type "radio")
-	      (let ((value (w3m-form-get form id)))
+	      (let ((value (w3m-form-get-by-name form name)))
 		(when value
 		  (w3m-form-replace
-		   (if (string= value (nth 3 (w3m-action (point))))
+		   (if (string= value (nth 4 (w3m-action (point))))
 		       "*" " ")))
 		(unless (eq form cform)
-		  (w3m-form-put cform id name value))))
+		  (w3m-form-put-by-name cform id name value))))
 	     ((string= type "checkbox")
 	      (let ((value (w3m-form-get form id)))
 		(when value
@@ -667,9 +680,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "radio")
 	      ;; Radio button input, one name has one value
-	      (w3m-form-put form id name
-			    (if checked value
-			      (w3m-form-get form id)))
+	      (if checked
+		  (w3m-form-put-by-name form id name value))
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -677,7 +689,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 face w3m-form-face
 		 w3m-action (w3m-form-input-radio ,form ,id ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
-					     (w3m-form-get ,form ,id))
+					     (w3m-form-get-by-name
+					      ,form ,name))
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "file")
 	      (add-text-properties
@@ -845,10 +858,11 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	  (when (and (string= (nth 0 fid) (nth 0 cur-fid))
 		     (string= (nth 1 fid) (nth 1 cur-fid))
 		     (string= (nth 2 fid) (nth 2 cur-fid)))
-	    (w3m-form-put form (string-to-number (nth 3 fid)) (nth 2 fid) nil)
+	    (w3m-form-put-by-name
+	     form (string-to-number (nth 3 fid)) (nth 2 fid) nil)
 	    (w3m-form-replace " ")))))) ; erase check
   ;; Then set this field as checked.
-  (w3m-form-put form id name value)
+  (w3m-form-put-by-name form id name value)
   (w3m-form-replace "*"))
 
 (defun w3m-form-input-file (form id name value)
