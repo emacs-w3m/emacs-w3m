@@ -1446,7 +1446,7 @@ This function is imported from mcharset.el."
 	  (zerop (apply 'call-process-region
 			(point-min) (point-max) (car x) t '(t nil) nil (nth 1 x)))))))
 
-(defun w3m-decode-buffer (url)
+(defun w3m-decode-buffer (url &optional cs)
   (let ((type (w3m-content-type url))
 	(charset (w3m-content-charset url))
 	(encoding (w3m-content-encoding url)))
@@ -1463,8 +1463,11 @@ This function is imported from mcharset.el."
 		     (match-string-no-properties 2)))))
     (decode-coding-region
      (point-min) (point-max)
-     (if charset
-	 (w3m-charset-to-coding-system charset)
+     (cond
+      (cs cs)
+      (charset
+       (w3m-charset-to-coding-system charset))
+      (t
        (let ((default (condition-case nil
 			  (coding-system-category w3m-coding-system)
 			(error nil)))
@@ -1478,7 +1481,7 @@ This function is imported from mcharset.el."
 	   (if (eq (coding-system-category 'binary)
 		   (coding-system-category (car candidate)))
 	       w3m-coding-system
-	     (car candidate))))))
+	     (car candidate)))))))
     (set-buffer-multibyte t)))
 
 
@@ -1660,7 +1663,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	  (w3m-cache-contents url (current-buffer))
 	  headers)))))
 
-(defun w3m-w3m-retrieve (url &optional no-decode no-cache)
+(defun w3m-w3m-retrieve (url &optional no-decode no-cache cs)
   "Retrieve content of URL with w3m and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
@@ -1673,7 +1676,7 @@ to nil."
 	    (let ((type (w3m-content-type url)))
 	      (and (string-match "^text/" type)
 		   (unless no-decode
-		     (w3m-decode-buffer url)))
+		     (w3m-decode-buffer url cs)))
 	      type)))
 	(let ((type (car (if w3m-mnc
 			     (w3m-w3m-dump-head-source url)
@@ -1681,14 +1684,14 @@ to nil."
 	  (when type
 	    (and (string-match "^text/" type)
 		 (not no-decode)
-		 (w3m-decode-buffer url))
+		 (w3m-decode-buffer url cs))
 	    type)))))
 
 (defsubst w3m-url-local-p (url)
   "If URL points a file on the local system, return non-nil value.  Otherwise return nil."
   (string-match "^\\(file:\\|/\\)" url))
 
-(defun w3m-retrieve (url &optional no-decode no-cache)
+(defun w3m-retrieve (url &optional no-decode no-cache cs)
   "Retrieve content of URL and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
@@ -1709,7 +1712,7 @@ to nil."
 	       (when func
 		 (funcall func url no-decode no-cache))))
 	    (t
-	     (w3m-w3m-retrieve url no-decode no-cache)))))
+	     (w3m-w3m-retrieve url no-decode no-cache cs)))))
     (and v
 	 (not no-decode)
 	 w3m-use-filter
@@ -1791,14 +1794,14 @@ to nil."
 	    (setq title (file-name-nondirectory w3m-current-url)))
 	(setq w3m-current-title (or title "<no-title>"))))))
 
-(defun w3m-exec (url &optional buffer no-cache)
+(defun w3m-exec (url &optional buffer no-cache cs)
   "Download URL with w3m to the BUFFER.
 If BUFFER is nil, all data is placed to the current buffer.  When new
 content is retrieved and half-dumped data is placed in the BUFFER,
 this function returns t.  Otherwise, returns nil."
   (save-excursion
     (if buffer (set-buffer buffer))
-    (let ((type (w3m-retrieve url nil no-cache)))
+    (let ((type (w3m-retrieve url nil no-cache cs)))
       (if type
 	  (cond
 	   ((string-match "^text/" type)
@@ -2191,6 +2194,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "Q" 'w3m-quit)
     (define-key map "\M-n" 'w3m-copy-buffer)
     (define-key map "R" 'w3m-reload-this-page)
+    (define-key map "C" 'w3m-redisplay-with-coding-system)
     (define-key map "?" 'describe-mode)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
@@ -2237,6 +2241,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 \\[w3m-view-this-url]	View this url.
 \\[w3m-mouse-view-this-url]	View this url.
 \\[w3m-reload-this-page]	Reload this page.
+\\[w3m-redisplay-with-coding-system]	Redisplay this page with specified coding-system.
 \\[w3m-next-anchor]	Jump to next anchor.
 \\[w3m-previous-anchor]	Jump to previous anchor.
 \\[w3m-view-previous-page]	Back to previous page.
@@ -2342,7 +2347,7 @@ or prefix ARG columns."
 	(copy-file ftp (w3m-read-file-name nil nil file))
       (dired-other-window ftp))))
 
-(defun w3m-goto-url (url &optional reload)
+(defun w3m-goto-url (url &optional reload cs)
   "*Retrieve contents of URL."
   (interactive
    (list
@@ -2379,7 +2384,7 @@ or prefix ARG columns."
       (when (string-match "#\\([^#]+\\)$" url)
 	(setq name (match-string 1 url)
 	      url (substring url 0 (match-beginning 0))))
-      (if (not (w3m-exec url nil reload))
+      (if (not (w3m-exec url nil reload cs))
 	  (w3m-refontify-anchor)
 	(w3m-fontify)
 	(or (and name (w3m-search-name-anchor name))
@@ -2408,6 +2413,14 @@ or prefix ARG columns."
     (setq w3m-url-history (cdr w3m-url-history))
     (w3m-goto-url w3m-current-url 'reload)))
 
+(defun w3m-redisplay-with-coding-system (&optional arg)
+  "Redisplay current page with specified coding-system."
+  (interactive "P")
+  (let ((w3m-display-inline-image (if arg t w3m-display-inline-image))
+	w3m-url-yrotsih)
+    (setq w3m-url-history (cdr w3m-url-history))
+    (w3m-goto-url w3m-current-url arg
+		  (read-coding-system "Coding-system: "))))
 
 ;;;###autoload
 (defun w3m (url &optional args)

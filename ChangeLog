@@ -1,3 +1,14 @@
+2001-04-04  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-w3m-retrieve): Add 'cs(coding-system)' option.
+	(w3m-retrieve): Ditto.
+	(w3m-exec): Ditto.
+	(w3m-goto-url): Ditto.
+	(w3m-decode-buffer): Ditto. If 'cs' specify, decoding use it.
+	(w3m-mode-map): Add w3m-redisplay-with-coding-system() at "C".
+	(w3m-mode): Change doc string.
+	(w3m-redisplay-with-coding-system): New function.
+
 2001-04-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-w3m-attributes): When content type has trailing
