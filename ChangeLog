@@ -1,3 +1,9 @@
+2003-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers): Extract a
+	timestamp from the index page for okuyami and shasetsu groups;
+	don't use `w3m-current-url' (temporally).
+
 2003-11-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-proc.el (w3m-process-wait-process): Invert the return value
