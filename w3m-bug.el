@@ -71,7 +71,8 @@
 (eval-and-compile
   (cond ((boundp 'MULE)
 	 (require 'w3m-om))
-	((and (boundp 'emacs-major-version)
+	((and (not (featurep 'xemacs))
+	      (boundp 'emacs-major-version)
 	      (= emacs-major-version 19))
 	 (require 'w3m-e19))))
 
