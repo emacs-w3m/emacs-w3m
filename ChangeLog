@@ -1,8 +1,10 @@
 2003-12-30  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
-	* w3m.el (w3m-dump-head-source-command-arguments): Use a camma
-	instead of a white space to concatenate elements of
-	`w3m-accept-languages'.  Cf. Section 14.4 of RFC2047.
+	* w3m.el (w3m-accept-languages): Split the option of w3m with a
+	comma surrounded by some spaces.
+	(w3m-dump-head-source-command-arguments): Use a comma instead of a
+	white space to concatenate elements of `w3m-accept-languages'.
+	Cf. Section 14.4 of RFC2047.
 
 2003-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 

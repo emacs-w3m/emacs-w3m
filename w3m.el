@@ -586,7 +586,8 @@ w3m command, edit the file named \"~/.w3m/config\" normally."
 	    (insert-file-contents file)
 	    (goto-char (point-min))
 	    (when (re-search-forward "^accept_language[\t ]+\\(.+\\)$" nil t)
-	      (delete "" (split-string (match-string 1))))))
+	      (delete "" (split-string (match-string 1)
+				       "[ \t\r\f\n]*,[ \t\r\f\n]*")))))
 	(when (string= w3m-language "Japanese")
 	  '("ja" "en"))))
   "*List of acceptable languages in descending order of priority.
