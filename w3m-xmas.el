@@ -88,7 +88,7 @@ retrieved.")
   "*Number to limit the length of `w3m-cache-unoptimized-gif-images'.")
 
 (defvar w3m-animated-gif-maximum-size 1048579
-  "*Maximun size (width * height * frames) of animated gif images.  If a
+  "*Maximum size (width * height * frames) of animated gif images.  If a
 size of an image is larger than this (it might be a bomb!), only the
 first frame will be shown.  You can make it to be unlimited with the
 value nil if your computer has TerrrrrrraBytes of memories.")
