@@ -1,5 +1,13 @@
 2001-05-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-view-this-url): Message if there is no link.
+	(w3m-cursor-anchor): Redefine as a macro for byte-optimization.
+	(w3m-action, w3m-image, w3m-anchor): Redefine as a macro using
+	`w3m-get-text-property-around'.
+	(w3m-get-text-property-around): New macro.
+
+2001-05-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-exec): Report a process exit status if an error has
 	occurred.
 	(w3m-download): Ditto.

@@ -765,14 +765,30 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 (defmacro w3m-real-url (url &optional no-cache)
   (` (nth 5 (w3m-attributes (, url) (, no-cache)))))
 
-(defsubst w3m-anchor (&optional point)
-  (get-text-property (or point (point)) 'w3m-href-anchor))
-(defsubst w3m-image (&optional point)
-  (get-text-property (or point (point)) 'w3m-image))
-(defsubst w3m-action (&optional point)
-  (get-text-property (or point (point)) 'w3m-action))
-(defsubst w3m-cursor-anchor (&optional point)
-  (get-text-property (or point (point)) 'w3m-cursor-anchor))
+(defmacro w3m-get-text-property-around (prop &optional position)
+  "Search for the text property PROP in the POSITION and return a value
+or nil.  If POSITION is omitted, searching is performed in the current
+cursor position and around there."
+  (if position
+      (` (get-text-property (, position) (, prop)))
+    (` (let ((position (point)))
+	 (or (get-text-property position (, prop))
+	     (and (not (bolp))
+		  (get-text-property (1- position) (, prop)))
+	     (and (not (eolp))
+		  (get-text-property (1+ position) (, prop))))))))
+
+(defmacro w3m-anchor (&optional position)
+  (` (w3m-get-text-property-around 'w3m-href-anchor (, position))))
+(defmacro w3m-image (&optional position)
+  (` (w3m-get-text-property-around 'w3m-image (, position))))
+(defmacro w3m-action (&optional position)
+  (` (w3m-get-text-property-around 'w3m-action (, position))))
+
+(defmacro w3m-cursor-anchor (&optional position)
+  (if position
+      (` (get-text-property (, position) 'w3m-cursor-anchor))
+    (` (get-text-property (point) 'w3m-cursor-anchor))))
 
 
 (defsubst w3m-get-buffer-create (name)
@@ -2166,7 +2182,8 @@ this function returns t.  Otherwise, returns nil."
   (let ((url (w3m-anchor)) (act (w3m-action)))
     (cond
      (url (w3m-goto-url url arg))
-     (act (eval act)))))
+     (act (eval act))
+     (t (message "No URL at point.")))))
 
 (defun w3m-mouse-view-this-url (event)
   (interactive "e")
