@@ -22,6 +22,10 @@ $Date$
    --> w3m-correct-charset-alist と w3m-charset-coding-system-alist の整
        理．[emacs-w3m:06109]
 
+   --> 意図しない字形の変換を避けるため，できるだけ元のページの文字コー
+       ドのままで処理を行うようにする．
+       [emacs-w3m:06674], [emacs-w3m:06701]
+
    --> w3m-safe-* コマンドの整理．「安全」を定義する必要あり．
        [emacs-w3m:06240]
 
@@ -62,11 +66,7 @@ $Date$
 (2) <a id="..."> という書式で指定されたアンカーにジャンプできない．
     [emacs-w3m:05816]
 
-(3) mime-w3m.el を利用して画像付きの text/html メッセージを表示した場合，
-    (args-out-of-range 3115 3115) のようなエラーが発生する．
-    [emacs-w3m:06279]
-
-(4) w3m-antenna-sites の customize がうまく動かない．[emacs-w3m:06213]
+(3) w3m-antenna-sites の customize がうまく動かない．[emacs-w3m:06213]
 
 
 
