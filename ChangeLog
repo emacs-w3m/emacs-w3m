@@ -1,3 +1,8 @@
+2002-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-w3m-dump-head-source): Fixed caching logic.
+	(w3m-w3m-retrieve): Use cache if available after redirection.
+
 2002-04-04  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-e20.el (top): Avoid byte-compile warnings when not found
