@@ -155,6 +155,7 @@ If you care for another style, set manually and try it :-).
       (w3m-message "Dtree ...")
       (w3m-dtree-create path allfiles dirprefix fileprefix)
       (w3m-message "Dtree ... done.")
+      (encode-coding-region (point-min) (point-max) w3m-input-coding-system)
       "text/html")))
 
 (defun w3m-dtree (allfiles path)

@@ -111,7 +111,7 @@ This variable effected only XEmacs or Emacs 21."
 
 (defvar w3m-mew-support-cid (fboundp 'mew-syntax-get-entry-by-cid))
     
-(defun mew-w3m-cid-retrieve (url &optional no-decode no-cache)
+(defun mew-w3m-cid-retrieve (url &rest args)
   (save-excursion
     (when (and w3m-mew-support-cid
 	       (string-match "^cid:\\(.+\\)" url))

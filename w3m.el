@@ -57,6 +57,7 @@
 (require 'w3m-hist)
 (require 'thingatpt)
 (require 'timezone)
+(require 'pccl)
 
 ;; this package using a few CL macros
 (eval-when-compile
@@ -135,12 +136,23 @@
   :group 'w3m
   :prefix "w3m-")
 
-(defcustom w3m-command "w3m"
+(defcustom w3m-type
+  (if (and (boundp 'w3m-mnc) w3m-mnc) 'w3m-mnc 'w3m)
+  "*Type of w3m."
+  :group 'w3m
+  :type '(choice (const :tag "w3m" 'w3m)
+		 (const :tag "w3m with MNC patch" 'w3m-mnc)
+		 (const :tag "w3mmee" 'w3mmee)
+		 (symbol :tag "other" nil)))
+
+(defcustom w3m-command
+  (if (eq w3m-type 'w3mmee) "w3mmee" "w3m")
   "*Name of the executable file of w3m."
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-command-arguments '()
+(defcustom w3m-command-arguments
+  (if (eq w3m-type 'w3mmee) '("-o" "concurrent=0" "-F") nil)
   "*Arguments for execution of w3m."
   :group 'w3m
   :type '(repeat string))
@@ -169,7 +181,7 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'coding-system)
 
-(defcustom w3m-output-coding-system 'euc-japan
+(defcustom w3m-output-coding-system 'w3m-euc-japan
   "*Coding system for w3m."
   :group 'w3m
   :type 'coding-system)
@@ -187,12 +199,14 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-profile-directory "~/.w3m"
+(defcustom w3m-profile-directory
+  (concat "~/." (file-name-nondirectory w3m-command))
   "*Directory of w3m profiles."
   :group 'w3m
   :type 'directory)
 
-(defcustom w3m-default-save-directory "~/.w3m"
+(defcustom w3m-default-save-directory
+  (concat "~/." (file-name-nondirectory w3m-command))
   "*Default directory for save file."
   :group 'w3m
   :type 'directory)
@@ -465,35 +479,6 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :type 'boolean
   :require 'w3m-filter)
 
-(defcustom w3m-mnc nil
-  "*When using w3m with M.N.C. patch, set non-nil value."
-  :group 'w3m
-  :type 'boolean)
-
-(defcustom w3m-linefeed-type
-  (and (null w3m-mnc)
-       (memq system-type '(windows-nt OS/2 emx))
-       'crlf)
-  "*Linefeed type of w3m program output.
-Value is 'crlf or nil.
-'crlf is mainly used for win32 or OS/2 environment if 'w3m-mnc' is nil."
-  :group 'w3m
-  :type '(choice (const :tag "CRLF" crlf) (const :tag "native" nil)))
-
-;; below defvar for 'w3mmee' support.
-;; xxxxx
-(defvar w3m-dump-head-source-option "-dump_extra"
-  "w3m dump_extra option.")
-
-(defvar w3m-decode-all-to-this-charset nil
-  "If non-nil, always decode this charset.")
-
-(defvar w3m-halfdump-option "-halfdump"
-  "w3m rendering option.")
-
-(defvar w3m-halfdump-expand-options '()
-  "w3m rendering expand options.")
-
 (defcustom w3m-edit-function 'find-file
   "*Function of editting local file."
   :group 'w3m
@@ -529,11 +514,6 @@ For twm use this in your .twmrc:
 See the file balloon-help.el for more information."
   :group 'w3m
   :type 'boolean)
-
-(defconst w3m-extended-characters-table
-  '(("\xa0" . " ")
-    ("\x80" . " ")
-    ("\x90" . " ")))
 
 (eval-and-compile
   (defconst w3m-entity-alist		; html character entities and values
@@ -731,12 +711,23 @@ for a charset indication")
     "\\(\"\\([^\"]+\\)\"\\|'\\([^\']+\\)'\\|[^\"\'<> \t\r\f\n]*\\)"
     "Regexp used in parsing to detect string."))
 
+(defconst w3m-dump-head-source-command-arguments
+  (if (eq w3m-type 'w3mmee) "-dump=extra,head,source" "-dump_extra")
+  "Arguments for 'dump_extra' execution of w3m.")
+
 (defconst w3m-halfdump-command-arguments
-  '("-T" "text/html" "-t" tab-width
-    "-cols" (if (< 0 w3m-fill-column)
-		w3m-fill-column		; fixed columns
-	      (+ (frame-width) (or w3m-fill-column -1)))) ; fit for frame
-  "Arguments for 'halfdump' execution of w3m.")
+  (nconc
+   (if (eq w3m-type 'w3mmee)
+       (list "-dump=half"
+	     '(if charset "-I")
+	     'charset
+	     "-o" "concurrent=0")
+     (list "-halfdump"))
+   '("-T" "text/html" "-t" tab-width
+     "-cols" (if (< 0 w3m-fill-column)
+		 w3m-fill-column		; fixed columns
+	       (+ (frame-width) (or w3m-fill-column -1))))) ; fit for frame
+   "Arguments for 'halfdump' execution of w3m.")
 
 (defconst w3m-arrived-ignored-regexp
   "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\)/.*\\)?$"
@@ -961,16 +952,17 @@ If N is negative, last N items of LIST is returned."
 	  (when mode (set-file-modes file mode)))))))
 
 (eval-when-compile
-  (defmacro w3m-arrived-add-1 (ident title modified-time
-				     arrived-time coding-system)
+  (defmacro w3m-arrived-add-1 (ident title modified-time arrived-time
+				     coding-system content-type)
     (` (progn
 	 (put (, ident) 'title (, title))
 	 (put (, ident) 'last-modified (, modified-time))
 	 (put (, ident) 'coding-system (, coding-system))
+	 (put (, ident) 'content-type (, content-type))
 	 (set (, ident) (, arrived-time))))))
 
 (defun w3m-arrived-add (url &optional title modified-time
-			    arrived-time coding-system)
+			    arrived-time coding-system content-type)
   "Add URL to hash database of arrived URLs."
   (unless (or (<= (length url) 5);; ignore trifles or about:*.
 	      (string-match w3m-arrived-ignored-regexp url))
@@ -986,12 +978,12 @@ If N is negative, last N items of LIST is returned."
 	    (setq arrived-time ct))))
       (prog1
 	  (setq ident (intern url w3m-arrived-db))
-	(w3m-arrived-add-1 ident title modified-time
-			   arrived-time coding-system)
+	(w3m-arrived-add-1 ident title modified-time arrived-time
+			   coding-system content-type)
 	(when parent
 	  (setq ident (intern parent w3m-arrived-db))
-	  (w3m-arrived-add-1 ident title modified-time
-			     arrived-time coding-system))))))
+	  (w3m-arrived-add-1 ident title modified-time arrived-time
+			     coding-system content-type))))))
 
 (defsubst w3m-arrived-p (url)
   "If URL has been arrived, return non-nil value.  Otherwise return nil."
@@ -1017,7 +1009,16 @@ If N is negative, last N items of LIST is returned."
   "If URL has been specified coding-system, return its coding-system.
   Otherwise return nil."
   (let ((v (intern-soft url w3m-arrived-db)))
-    (and v (get v 'coding-system))))
+    (and v
+	 (setq v (get v 'coding-system))
+	 (find-coding-system v)
+	 v)))
+
+(defun w3m-arrived-content-type (url)
+  "If URL has been specified content-type, return its content-type.
+  Otherwise return nil."
+  (let ((v (intern-soft url w3m-arrived-db)))
+    (and v (get v 'content-type))))
 
 (defun w3m-arrived-setup ()
   "Load arrived url list from `w3m-arrived-file' and setup hash database."
@@ -1034,10 +1035,11 @@ If N is negative, last N items of LIST is returned."
 			     (nth 1 elem)
 			     (nth 2 elem)
 			     (or (nth 3 elem) (nth 2 elem))
-			     (nth 4 elem))
+			     (nth 4 elem)
+			     (nth 5 elem))
 	  ;; Process old format of arrived URL database, is used
 	  ;; before revision 1.135.
-	  (w3m-arrived-add (car elem) nil (cdr elem) (cdr elem) nil)))
+	  (w3m-arrived-add (car elem) nil (cdr elem) (cdr elem))))
       (unless w3m-input-url-history
 	(setq w3m-input-url-history (mapcar (function car) list))))))
 
@@ -1058,7 +1060,8 @@ If N is negative, last N items of LIST is returned."
 			(nth 1 elem)
 			(nth 2 elem)
 			(nth 3 elem)
-			(nth 4 elem))))
+			(nth 4 elem)
+			(nth 5 elem))))
     ;; Convert current arrived DB to a list.
     (let (list)
       (mapatoms
@@ -1069,7 +1072,8 @@ If N is negative, last N items of LIST is returned."
 			  (get sym 'title)
 			  (get sym 'last-modified)
 			  (symbol-value sym)
-			  (get sym 'coding-system))
+			  (get sym 'coding-system)
+			  (get sym 'content-type))
 		    list)))
        w3m-arrived-db)
       (w3m-save-list w3m-arrived-file
@@ -1622,7 +1626,9 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	  (coding-system-for-write w3m-coding-system)
 	  (default-process-coding-system (cons 'binary w3m-coding-system))
 	  (process-connection-type w3m-process-connection-type)
+	  (process-environment process-environment)
 	  status)
+      (setenv "CYGWIN" "binmode tty") ; Ensure that w3m prints data as binary on Windows.
       (setq args (append w3m-command-arguments args)
 	    w3m-process-exit-status nil)
       (if w3m-async-exec
@@ -1733,6 +1739,14 @@ This function is imported from mcharset.el."
     (if (find-coding-system cs)
 	cs)))
 
+(unless (fboundp 'w3m-coding-system-to-charset)
+  (defun w3m-coding-system-to-charset (coding-system)
+    "Convert CODING-SYSTEM to a MIME-charset.
+Return nil if corresponding MIME-charset is not found.
+This function is imported from mcs-e20.el."
+    (or (car (rassq coding-system w3m-charset-coding-system-alist))
+	(coding-system-get coding-system 'mime-charset))))
+
 
 ;;; Handle encoding of contents:
 (defsubst w3m-which-command (command)
@@ -1745,58 +1759,54 @@ This function is imported from mcharset.el."
 		   (setq bin (expand-file-name (concat command ".exe") dir))))
 	  (throw 'found-command bin))))))
 
-(defun w3m-decode-encoded-buffer (encoding)
+(defun w3m-decode-encoded-contents (encoding)
+  "Decode encoded (gziped, bziped, deflated, etc) contents in this buffer."
   (let ((x (and (stringp encoding)
 		(assoc encoding w3m-encoding-alist))))
     (or (not (and x (setq x (cdr (assq (cdr x) w3m-decoder-alist)))))
 	(let ((coding-system-for-write 'binary)
 	      (coding-system-for-read 'binary)
-	      (default-process-coding-system (cons 'binary 'binary)))
+	      (default-process-coding-system (cons 'binary 'binary))
+	      (process-environment process-environment))
+	  (setenv "CYGWIN" "binmode tty") ; Ensure that w3m prints data as binary on Windows.
 	  (zerop (apply 'call-process-region
 			(point-min) (point-max)
 			(w3m-which-command (car x))
 			t '(t nil) nil (nth 1 x)))))))
 
-(defun w3m-decode-buffer (url &optional cs)
-  (if w3m-decode-all-to-this-charset
-      (decode-coding-region
-       (point-min) (point-max)
-       (w3m-charset-to-coding-system w3m-decode-all-to-this-charset))
-    (let ((type (w3m-content-type url))
-	  (charset (w3m-content-charset url))
-	  (encoding (w3m-content-encoding url)))
-      (unless (w3m-decode-encoded-buffer encoding)
-	(error "Can't decode encoded contents: %s" url))
-      (if (and (not charset) (string= type "text/html"))
-	  (setq charset
-		(let ((case-fold-search t))
-		  (goto-char (point-min))
-		  (and (or (re-search-forward
-			    w3m-meta-content-type-charset-regexp nil t)
-			   (re-search-forward
-			    w3m-meta-charset-content-type-regexp nil t))
-		       (match-string-no-properties 2)))))
-      (decode-coding-region
-       (point-min) (point-max)
-       (cond
-	(cs cs)
-	(charset
-	 (w3m-charset-to-coding-system charset))
-	(t
-	 (let ((default (condition-case nil
-			    (coding-system-category w3m-coding-system)
-			  (error nil)))
-	       (candidate (detect-coding-region (point-min) (point-max))))
-	   (unless (listp candidate)
-	     (setq candidate (list candidate)))
-	   (catch 'coding
-	     (dolist (coding candidate)
-	       (if (eq default (coding-system-category coding))
-		   (throw 'coding coding)))
-	     (if (eq (coding-system-category 'binary)
-		     (coding-system-category (car candidate)))
-		 w3m-coding-system
-	       (car candidate)))))))))
+(defun w3m-decode-buffer (url &optional coding-system content-type)
+  (unless coding-system
+    (setq coding-system
+	  (w3m-charset-to-coding-system
+	   (or (w3m-content-charset url)
+	       (when (string= "text/html"
+			      (or content-type
+				  (w3m-content-type url)))
+		 (let ((case-fold-search t))
+		   (goto-char (point-min))
+		   (when (or (re-search-forward
+			      w3m-meta-content-type-charset-regexp nil t)
+			     (re-search-forward
+			      w3m-meta-charset-content-type-regexp nil t))
+		     (match-string-no-properties 2))))))))
+  (decode-coding-region
+   (point-min) (point-max)
+   (if coding-system
+       coding-system
+     (let ((default (condition-case nil
+			(coding-system-category w3m-coding-system)
+		      (error nil)))
+	   (candidate (detect-coding-region (point-min) (point-max))))
+       (unless (listp candidate)
+	 (setq candidate (list candidate)))
+       (catch 'coding
+	 (dolist (coding candidate)
+	   (if (eq default (coding-system-category coding))
+	       (throw 'coding coding)))
+	 (if (eq (coding-system-category 'binary)
+		 (coding-system-category (car candidate)))
+	     w3m-coding-system
+	   (car candidate))))))
   (set-buffer-multibyte t))
 
 
@@ -1833,26 +1843,21 @@ elements are:
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
 to nil."
-  (let ((type (w3m-local-content-type url))
-	(file))
-    (setq file (w3m-url-to-file-name url))
+  (let ((file (w3m-url-to-file-name url)))
     (w3m-with-work-buffer
       (delete-region (point-min) (point-max))
+      (set-buffer-multibyte nil)
       (when (and (file-readable-p file)
 		 (not (file-directory-p file)))
-	(if (and (string-match "^text/" type)
-		 (not no-decode))
-	    (progn
-	      (set-buffer-multibyte t)
-	      (insert-file-contents file))
-	  (set-buffer-multibyte nil)
-	  (let ((coding-system-for-read 'binary)
-		(file-coding-system-for-read 'binary)
-		jka-compr-compression-info-list
-		jam-zcat-filename-list
-		format-alist)
-	    (insert-file-contents file)))))
-    type))
+	(let ((coding-system-for-read 'binary)
+	      (file-coding-system-for-read 'binary))
+	  (if no-decode
+	      (let (jka-compr-compression-info-list
+		    jam-zcat-filename-list
+		    format-alist)
+		(insert-file-contents file))
+	    (insert-file-contents file)))
+	(w3m-local-content-type url)))))
 
 ;;; Retrieve data via HTTP:
 (defun w3m-remove-redundant-spaces (str)
@@ -1919,30 +1924,12 @@ If optional argument NO-CACHE is non-nil, cache is not used."
      ((and header (string-match "HTTP/1\\.[0-9] 50[0-9]" header))
       (list "text/html" nil nil nil nil url)))))
 
-(defun w3m-pretty-length (n)
-  ;; This function imported from url.el.
-  (cond
-   ((< n 1024)
-    (format "%d bytes" n))
-   ((< n (* 1024 1024))
-    (format "%dk" (/ n 1024.0)))
-   (t
-    (format "%2.2fM" (/ n (* 1024 1024.0))))))
-
-(defun w3m-crlf-to-lf ()
-  (when (eq w3m-linefeed-type 'crlf)
-    (save-excursion
-      (goto-char (point-min))
-      (while (search-forward "\r\n" nil t)
-	(delete-region (- (point) 2) (1- (point)))))))
-
 (defun w3m-w3m-dump-head-source (url)
   (and (let ((w3m-current-url url))
 	 (w3m-message "Reading...")
 	 (prog1
-	     (w3m-exec-process w3m-dump-head-source-option url)
-	   (w3m-message "Reading... done")
-	   (w3m-crlf-to-lf)))
+	     (w3m-exec-process w3m-dump-head-source-command-arguments url)
+	   (w3m-message "Reading... done")))
        (goto-char (point-min))
        (let ((case-fold-search t))
 	 (re-search-forward "^w3m-current-url:" nil t))
@@ -1963,7 +1950,6 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(prog1
 		    (w3m-exec-process "-dump_source" url)
 		  (w3m-message "Reading... done")))
-	  (w3m-crlf-to-lf)
 	  (cond
 	   ((and length (> (buffer-size) length))
 	    (delete-region (point-min) (- (point-max) length)))
@@ -1980,7 +1966,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	  (w3m-cache-contents url (current-buffer))
 	  headers)))))
 
-(defun w3m-w3m-retrieve (url &optional no-decode no-cache cs)
+(defun w3m-w3m-retrieve (url &optional no-decode no-cache)
   "Retrieve content of URL with w3m and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
@@ -1988,29 +1974,25 @@ to nil."
   (w3m-with-work-buffer
     (delete-region (point-min) (point-max))
     (set-buffer-multibyte nil)
-    (or (unless no-cache
-	  (when (w3m-cache-request-contents url)
-	    (let ((type (w3m-content-type url)))
-	      (when type
-		(and (string-match "^text/" type)
-		     (unless no-decode
-		       (w3m-decode-buffer url cs)))
-		type))))
-	(let ((type (car (if w3m-mnc
-			     (w3m-w3m-dump-head-source url)
-			   (w3m-w3m-dump-source url)))))
-	  (when type
-	    (and (string-match "^text/" type)
-		 (not no-decode)
-		 (w3m-decode-buffer url cs))
-	    type)))))
+    (let ((type
+	   (or (unless no-cache
+		 (and (w3m-cache-request-contents url)
+		      (w3m-content-type url)))
+	       (car (if (memq w3m-type '(w3m-mnc w3mmee))
+			(w3m-w3m-dump-head-source url)
+		      (w3m-w3m-dump-source url))))))
+      (when type
+	(or no-decode
+	    (w3m-decode-encoded-contents (w3m-content-encoding url))
+	    (error "Can't decode encoded contents: %s" url))
+	type))))
 
 (defsubst w3m-url-local-p (url)
   "If URL points a file on the local system, return non-nil value.  Otherwise return nil."
   (or (string-match "^\\(file:\\|/\\)" url)
       (string-match "^about://dtree/" url)))
 
-(defun w3m-retrieve (url &optional no-decode no-cache cs)
+(defun w3m-retrieve (url &optional no-decode no-cache)
   "Retrieve content of URL and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
@@ -2019,19 +2001,21 @@ to nil."
 	    ((string-match "^about:" url)
 	     (let (func)
 	       (if (and (string-match "^about://\\([^/]+\\)/" url)
-			(setq func (intern-soft
-				    (concat "w3m-about-" (match-string 1 url))))
+			(setq func
+			      (intern-soft
+			       (concat "w3m-about-" (match-string 1 url))))
 			(fboundp func))
 		   (funcall func url no-decode no-cache)
 		 (w3m-about url no-decode no-cache))))
-	    ((w3m-url-local-p url)
-	     (w3m-local-retrieve url no-decode))
 	    ((string-match "^cid:" url)
-	     (let ((func (cdr (assq major-mode w3m-cid-retrieve-function-alist))))
+	     (let ((func
+		    (cdr (assq major-mode w3m-cid-retrieve-function-alist))))
 	       (when func
 		 (funcall func url no-decode no-cache))))
+	    ((w3m-url-local-p url)
+	     (w3m-local-retrieve url no-decode))
 	    (t
-	     (w3m-w3m-retrieve url no-decode no-cache cs)))))
+	     (w3m-w3m-retrieve url no-decode no-cache)))))
     (and v
 	 (not no-decode)
 	 w3m-use-filter
@@ -2061,51 +2045,86 @@ to nil."
 
 
 ;;; Retrieve data:
-(defsubst w3m-decode-extended-characters ()
-  "Decode w3m-specific extended characters in this buffer."
-  (dolist (elem w3m-extended-characters-table)
-    (goto-char (point-min))
-    (while (search-forward (car elem) nil t)
-      (delete-region (match-beginning 0) (match-end 0))
-      (insert (cdr elem)))))
+(define-ccl-program w3m-euc-japan-decoder
+  `(2
+    (loop
+     (read r0)
+     ;; Process normal EUC characters.
+     (if (r0 < ?\x80)
+	 (write-repeat r0))
+     (if (r0 > ?\xa0)
+	 ((read r1)
+	  (write ,(w3m-static-if (boundp 'MULE)
+		      lc-jp
+		    (charset-id 'japanese-jisx0208)))
+	  (write r0)
+	  (write-repeat r1)))
+     (if (r0 == ?\x8e)
+	 ((read r0)
+	  (write ,(w3m-static-if (boundp 'MULE)
+		      lc-kana
+		    (charset-id 'katakana-jisx0201)))
+	  (write-repeat r0)))
+     (if (r0 == ?\x8f)
+	 ((read r0)
+	  (read r1)
+	  (write ,(w3m-static-if (boundp 'MULE)
+		      lc-jp2
+		    (charset-id 'japanese-jisx0212)))
+	  (write r0)
+	  (write-repeat r1)))
+     ;; Process internal characters used in w3m.
+     (if (r0 == ?\x80)			; Old ANSP (w3m-0.1.11pre+kokb23)
+	 (write-repeat 32))
+     (if (r0 == ?\x90)			; ANSP (use for empty anchor)
+	 (write-repeat 32))
+     (if (r0 == ?\x91)			; IMSP (blank around image)
+	 (write-repeat 32))
+     (if (r0 == ?\xa0)			; NBSP (non breakble space)
+	 (write-repeat 32))
+     (write-repeat r0))))
 
-(defun w3m-rendering-region (start end)
+(define-ccl-program w3m-euc-japan-encoder
+  `(1 (loop (read r0) (write-repeat r0))))
+
+(make-ccl-coding-system
+ 'w3m-euc-japan ?E
+ "ISO 2022 based EUC encoding for Japanese with w3m internal characters.
+  (generated by `w3m')"
+ 'w3m-euc-japan-decoder 'w3m-euc-japan-encoder)
+
+(defun w3m-rendering-region (start end &optional charset)
   "Do rendering of contents in this buffer as HTML and return title."
   (save-restriction
     (narrow-to-region start end)
-    (let ((buf (w3m-get-buffer-create " *w3m-rendering-region*"))
-	  (coding-system-for-write w3m-input-coding-system)
-	  (coding-system-for-read 'binary)
-	  (default-process-coding-system
-	    (cons 'binary w3m-input-coding-system)))
-      (with-current-buffer buf
-	(delete-region (point-min) (point-max))
-	(set-buffer-multibyte nil))
+    (let* ((coding-system-for-write
+	    (if (eq w3m-type 'w3mmee) 'binary w3m-input-coding-system))
+	   (coding-system-for-read 'binary)
+	   (default-process-coding-system
+	     (cons coding-system-for-read coding-system-for-write)))
       (if w3m-use-form
 	  (w3m-form-parse-region start end))
       (w3m-message "Rendering...")
       (apply 'call-process-region
-	     start end w3m-command t buf nil
-	     (mapcar (lambda (x)
-		       (if (stringp x)
-			   x
-			 (prin1-to-string (eval x))))
-		     (append (list w3m-halfdump-option)
-			     w3m-halfdump-command-arguments
-			     w3m-halfdump-expand-options)))
+	     start end w3m-command t t nil
+	     (delq nil
+		   (mapcar 
+		    (lambda (x)
+		      (cond
+		       ((stringp x) x)
+		       ((setq x (eval x))
+			(if (stringp x) x (prin1-to-string x)))))
+		    w3m-halfdump-command-arguments)))
       (w3m-message "Rendering... done")
+      (decode-coding-region (point-min)
+			    (point-max)
+			    w3m-output-coding-system)
+      (set-buffer-multibyte t)
       (goto-char (point-min))
-      (insert
-       (with-current-buffer buf
-	 (goto-char (point-min))
-	 ;; FIXME: Adhoc support for w3m with patch in [w3m-dev 01876].
-	 (and (looking-at "<!DOCTYPE w3mhalfdump public")
-	      (search-forward "\n<pre>\n" nil t)
-	      (delete-region (point-min) (1+ (match-beginning 0))))
-	 (w3m-decode-extended-characters)
-	 (decode-coding-region (point-min) (point-max) w3m-output-coding-system)
-	 (set-buffer-multibyte t)
-	 (buffer-string)))
+      ;; FIXME: Adhoc support for w3m with patch in [w3m-dev 01876].
+      (and (looking-at "<!DOCTYPE w3mhalfdump public")
+	   (search-forward "\n<pre>\n" nil t)
+	   (delete-region (point-min) (1+ (match-beginning 0))))
       (goto-char (point-min))
       (let (title)
 	(dolist (regexp '("<title_alt[ \t\n]+title=\"\\([^\"]+\\)\">"
@@ -2118,48 +2137,54 @@ to nil."
 		 (stringp w3m-current-url)
 		 (< 0 (length (file-name-nondirectory w3m-current-url))))
 	    (setq title (file-name-nondirectory w3m-current-url)))
-	(setq w3m-current-title (or title "<no-title>"))))))
+	(or title "<no-title>")))))
 
-(defun w3m-exec (url &optional buffer no-cache cs)
+(defun w3m-exec (url &optional buffer no-cache coding-system content-type)
   "Download URL with w3m to the BUFFER.
 If BUFFER is nil, all data is placed to the current buffer.  When new
 content is retrieved and half-dumped data is placed in the BUFFER,
 this function returns t.  Otherwise, returns nil."
   (save-excursion
-    (if buffer (set-buffer buffer))
-    (let ((type (w3m-retrieve url nil no-cache cs)))
+    (when buffer (set-buffer buffer))
+    (let ((type (w3m-retrieve url nil no-cache)))
       (if type
-	  (cond
-	   ((string-match "^text/" type)
-	    (let (buffer-read-only)
-	      (setq w3m-current-url (w3m-real-url url))
-	      (delete-region (point-min) (point-max))
-	      (insert-buffer w3m-work-buffer-name)
-	      (prog1
-		  (if (string= "text/html" type)
-		      (progn
-			(w3m-rendering-region (point-min) (point-max))
-			t)
-		    (setq w3m-current-title (file-name-nondirectory url))
-		    nil)
-		(w3m-history-push w3m-current-url
-				  (list ':title w3m-current-title)))))
-	   ((and (w3m-image-type-available-p (w3m-image-type type))
-		 (string-match "^image/" type))
-	    (let (buffer-read-only)
-	      (setq w3m-current-url (w3m-real-url url)
-		    w3m-current-title (file-name-nondirectory url))
-	      (delete-region (point-min) (point-max))
-	      (insert w3m-current-title)
-	      (w3m-add-text-properties (point-min) (point-max)
-				       (list 'face 'w3m-image-face
-					     'w3m-image url
-					     'mouse-face 'highlight))
-	      (w3m-history-push w3m-current-url
-				(list ':title w3m-current-title))
-	      t))
-	   (t (w3m-external-view url no-cache)
-	      nil))
+	  (progn
+	    (when content-type (setq type content-type))
+	    (cond
+	     ((string-match "^text/" type)
+	      (let (buffer-read-only)
+		(setq w3m-current-url (w3m-real-url url)
+		      w3m-current-title
+		      (w3m-with-work-buffer
+			(if (string= "text/html" type)
+			    (progn
+			      (unless (eq w3m-type 'w3mmee)
+				(w3m-decode-buffer url coding-system type))
+			      (w3m-rendering-region
+			       (point-min) (point-max)
+			       (if coding-system
+				   (w3m-coding-system-to-charset coding-system)
+				 (w3m-content-charset url))))
+			  (w3m-decode-buffer url coding-system content-type)
+			  (file-name-nondirectory url))))
+		(delete-region (point-min) (point-max))
+		(insert-buffer w3m-work-buffer-name)
+		(when (string= "text/html" type) (w3m-fontify))
+		t))
+	     ((and (w3m-image-type-available-p (w3m-image-type type))
+		   (string-match "^image/" type))
+	      (let (buffer-read-only)
+		(setq w3m-current-url (w3m-real-url url)
+		      w3m-current-title (file-name-nondirectory url))
+		(delete-region (point-min) (point-max))
+		(insert w3m-current-title)
+		(w3m-add-text-properties (point-min) (point-max)
+					 (list 'face 'w3m-image-face
+					       'w3m-image url
+					       'mouse-face 'highlight))
+		t))
+	     (t (w3m-external-view url no-cache)
+		nil)))
 	(error "Cannot retrieve URL: %s%s"
 	       url
 	       (if w3m-process-exit-status
@@ -2803,7 +2828,7 @@ or prefix ARG columns."
 	(dired-other-window ftp)
       (copy-file ftp (w3m-read-file-name nil nil file)))))
 
-(defun w3m-goto-url (url &optional reload cs)
+(defun w3m-goto-url (url &optional reload coding-system)
   "Retrieve contents of URL."
   (interactive
    (list
@@ -2837,26 +2862,42 @@ or prefix ARG columns."
     ;; Store the current position point in the history structure.
     (w3m-history-store-position)
     ;; Retrieve.
-    (let ((orig url)
-	  (name))
+    (let ((orig url) (name))
       (when (string-match "#\\([^#]+\\)$" url)
 	(setq name (match-string 1 url)
 	      url (substring url 0 (match-beginning 0))))
-      (setq cs (and (not (eq cs 'reset))
-		    (or cs
-			(and (find-coding-system (w3m-arrived-coding-system url))
-			     (w3m-arrived-coding-system url)))))
-      (if (not (w3m-exec url nil reload cs))
-	  (w3m-refontify-anchor)
-	(w3m-fontify)
-	(or (and name (w3m-search-name-anchor name))
-	    (goto-char (point-min)))
-	(setq w3m-display-inline-image-status 'off)
-	(when w3m-display-inline-image
-	  (and w3m-force-redisplay (sit-for 0))
-	  (w3m-toggle-inline-images 'force reload))
-	(setq buffer-read-only t)
-	(set-buffer-modified-p nil))
+      (let ((ct (w3m-arrived-content-type url))
+	    (cs (or coding-system (w3m-arrived-coding-system url))))
+	(if ct
+	    (when reload
+	      (let* ((minibuffer-setup-hook
+		      (append minibuffer-setup-hook '(beginning-of-line)))
+		     (s (completing-read
+			 (format "Input %s's content type: "
+				 (file-name-nondirectory url))
+			 w3m-content-type-alist nil t ct)))
+		(setq ct (if (string= "" s) nil s))))
+	  (and (w3m-url-local-p url)
+	       (string= "unknown" (w3m-local-content-type url))
+	       (let ((s (completing-read
+			 (format "Input %s's content type (default %s): "
+				 (file-name-nondirectory url)
+				 w3m-default-content-type)
+			 w3m-content-type-alist nil t)))
+		 (setq ct (if (string= "" s) w3m-default-content-type s)))))
+	(if (not (w3m-exec url nil reload cs ct))
+	    (w3m-refontify-anchor)
+	  (w3m-history-push w3m-current-url
+			    (list ':title w3m-current-title))
+	  (or (and name (w3m-search-name-anchor name))
+	      (goto-char (point-min)))
+	  (setq w3m-display-inline-image-status 'off)
+	  (when w3m-display-inline-image
+	    (and w3m-force-redisplay (sit-for 0))
+	    (w3m-toggle-inline-images 'force reload))
+	  (setq buffer-read-only t)
+	  (set-buffer-modified-p nil))
+	(w3m-arrived-add orig w3m-current-title nil nil cs ct))
       (setq default-directory
 	    (file-name-as-directory
 	     (if (and (w3m-url-local-p url)
@@ -2864,7 +2905,6 @@ or prefix ARG columns."
 					 (w3m-url-to-file-name url))))
 		 (file-name-directory (w3m-url-to-file-name url))
 	       w3m-profile-directory)))
-      (w3m-arrived-add orig w3m-current-title nil nil cs)
       (w3m-update-toolbar)
       (switch-to-buffer (current-buffer))))))
 
@@ -2881,14 +2921,14 @@ or prefix ARG columns."
   (let ((w3m-display-inline-image (if arg t w3m-display-inline-image)))
     (w3m-goto-url w3m-current-url 'reload)))
 
+;; FIXME: 現在はどの文字コードとして解釈されているのか表示して欲しい
 (defun w3m-redisplay-with-coding-system (&optional arg)
   "Redisplay current page with specified coding-system.
 If input is nil, use default coding-system on w3m."
   (interactive "P")
-  (let ((w3m-display-inline-image (if arg t w3m-display-inline-image))
-	(cs (w3m-read-coding-system "Decode coding-system: ")))
-    (unless (and cs (find-coding-system cs)) (setq cs 'reset))
-    (w3m-goto-url w3m-current-url nil cs)))
+  (let ((w3m-display-inline-image (if arg t w3m-display-inline-image)))
+    (w3m-goto-url w3m-current-url nil
+		  (w3m-read-coding-system "Decode coding-system: "))))
 
 
 ;;;###autoload
@@ -2926,26 +2966,10 @@ If input is nil, use default coding-system on w3m."
     (if new-window (split-window))
     (w3m-goto-url url)))
 
-(defun w3m-find-file (file &optional type)
+(defun w3m-find-file (file)
   "w3m Interface function for local file."
-  (interactive
-   (let* ((f (read-file-name "Filename: "))
-	  (ct (if (or current-prefix-arg
-		      (string= "unknown" (w3m-local-content-type f)))
-		  (completing-read (format "Input %s's content type (default %s): "
-					   (file-name-nondirectory f)
-					   w3m-default-content-type)
-				   w3m-content-type-alist nil t))))
-     (list f (and ct (if (string= "" ct) w3m-default-content-type ct)))))
-  (let ((w3m-content-type-alist w3m-content-type-alist))
-    (setq file (w3m-expand-file-name-as-url file))
-    (when type
-      (setq w3m-content-type-alist
-	    (cons (copy-sequence (assoc type w3m-content-type-alist))
-		  w3m-content-type-alist))
-      (setcar (nthcdr 1 (car w3m-content-type-alist))
-	      (concat "^" (regexp-quote file) "$")))
-    (w3m-goto-url file)))
+  (interactive "fFilename: ")
+  (w3m-goto-url (w3m-expand-file-name-as-url file)))
 
 
 (defun w3m-cygwin-path (path)
@@ -2961,7 +2985,8 @@ ex.) c:/dir/file => //c/dir/file"
   (interactive "r")
   (save-restriction
     (narrow-to-region start end)
-    (w3m-rendering-region start end)
+    (encode-coding-region (point-min) (point-max) w3m-input-coding-system)
+    (setq w3m-current-title (w3m-rendering-region start end))
     (w3m-fontify)
     (setq w3m-display-inline-image-status 'off)
     (when w3m-display-inline-image
@@ -3115,7 +3140,8 @@ showing a tree-structured history by the command `w3m-about-history'.")
 				    nil t))
 	(beginning-of-line)
 	(delete-char 1)
-	(insert "&gt;"))))
+	(insert "&gt;"))
+      (encode-coding-region (point-min) (point-max) w3m-input-coding-system)))
   "text/html")
 
 (defun w3m-about-db-history (&rest args)
@@ -3173,7 +3199,8 @@ showing a tree-structured history by the command `w3m-about-history'.")
 	  (insert "</tr>\n")
 	  (setq alist (cdr alist)))
 	(insert "</table>"))
-      (insert "</body></html>\n")))
+      (insert "</body></html>\n")
+      (encode-coding-region (point-min) (point-max) w3m-input-coding-system)))
   "text/html")
 
 (defun w3m-history (&optional arg)

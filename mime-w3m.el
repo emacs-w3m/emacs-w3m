@@ -91,12 +91,11 @@
 			  (w3m-static-if (featurep 'xemacs)
 			      'keymap
 			    'local-map)
-			  mime-w3m-mode-map)
-       ))))
+			  mime-w3m-mode-map)))))
 
-(defun mime-w3m-cid-retrieve (url &optional no-decode no-cache)
-  (let ((entity (mime-find-entity-from-content-id (mime-uri-parse-cid url)
-						  mime-w3m-message-structure)))
+(defun mime-w3m-cid-retrieve (url &rest args)
+  (let ((entity (mime-find-entity-from-content-id
+		 (mime-uri-parse-cid url) mime-w3m-message-structure)))
     (when entity
       (w3m-with-work-buffer
        (delete-region (point-min) (point-max))

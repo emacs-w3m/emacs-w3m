@@ -1,3 +1,69 @@
+2001-05-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Add support code of w3mmee.  Reorganaized codes to
+	handle content types and coding systems which are specified by user.
+	(toplevel): Require 'pccl.
+	(w3m-type): New user option.
+	(w3m-mnc): Removed user option.
+	(w3m-linefeed-type): Removed variable.
+	(w3m-dump-head-source-option): Ditto.
+	(w3m-decode-all-to-this-charset): Ditto.
+	(w3m-halfdump-option): Ditto.
+	(w3m-halfdump-expand-options): Ditto.
+	(w3m-extended-characters-table): Ditto.
+	(w3m-command): Refer `w3m-type' to decide default value.
+	(w3m-command-arguments): Ditto.
+	(w3m-output-coding-system): Changed default value to `w3m-euc-japan'.
+	(w3m-profile-directory): Refer `w3m-command' to decide default value.
+	(w3m-default-save-directory): Ditto.
+	(w3m-dump-head-source-command-arguments): New constant.
+	(w3m-halfdump-command-arguments): Refer `w3m-type' to decide default value.
+	(w3m-arrived-add-1): Add an argument `content-type'.
+	(w3m-arrived-add): Likewise and follow change of `w3m-arrived-add-1'.
+	(w3m-arrived-coding-system): Strict checking of return value.
+	(w3m-arrived-content-type): New function.
+	(w3m-arrived-setup): Follow change of `w3m-arrived-add'.
+	(w3m-arrived-shutdown): Ditto.
+	(w3m-exec-process): Set process environment to avoid unexpected
+	conversion in Windows.
+	(w3m-charset-to-coding-system): New function.
+	(w3m-decode-encoded-contents): Old name is `w3m-decode-encoded-buffer'.
+	Set process environment to avoid unexpected conversion in Windows.
+	(w3m-local-retrieve). Simplified.
+	(w3m-pretty-length): Removed.
+	(w3m-crlf-to-lf): Removed.
+	(w3m-w3m-dump-head-source): No call `w3m-crlf-to-lf'.
+	(w3m-w3m-dump-source): Ditto.
+	(w3m-w3m-retrieve) Removed optional argument `cs' and simplified.
+	(w3m-retrieve): Ditto.
+	(w3m-decode-extended-characters): Removed.
+	(w3m-euc-japan-decoder): New CCL program.
+	(w3m-euc-japan-encoder): Dummy CCL program.
+	(w3m-euc-japan): New coding system.
+	(w3m-rendering-region): New optional argument `charset' and
+	support codes of `w3mmee' are added.  Handle new defintion style
+	of `w3m-halfdump-command-arguments'.  Refer `w3m-euc-japan' to
+	process outputs of `w3m'.
+	(w3m-exec): Reconstructed.  This accepts new optional argument
+	`content-type'.
+	(w3m-goto-url): Reconstructed to handle files which have unknown
+	cotent-types.
+	(w3m-redisplay-with-coding-system): Simplified.
+	(w3m-find-file): Simplified and optional argument `type' is
+	removed.
+	(w3m-region): Encode output buffer into `w3m-input-coding-system'.
+	(w3m-about-history): Ditto.
+	(w3m-about-db-history): Ditto.
+
+	* w3m-antenna.el (w3m-about-antenna): Encode output buffer into
+	`w3m-input-coding-system'.
+
+	* w3m-dtree.el (w3m-about-dtree): Ditto.
+
+	* mime-w3m.el (mime-w3m-cid-retrieve): Changed spec of arguments.
+
+	* mew-w3m.el (mew-w3m-cid-retrieve): Ditto.
+
 2001-05-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-toggle-inline-images): Message "Showing...".
