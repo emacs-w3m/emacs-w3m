@@ -8,7 +8,7 @@
 	(w3m-arrived-time): New function.
 	(w3m-arrived-seq, w3m-arrived-put-title, w3m-arrived-arrived-time,
 	w3m-arrived-put-arrived-time): Removed.
-	(w3m-goto-url): Follow change or `w3m-arrived-add'.
+	(w3m-goto-url): Follow change of `w3m-arrived-add'.
 
 2001-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
