@@ -103,8 +103,9 @@
 
 ;;; BASE 64
 (require 'mel)
-(fset 'shimbun-base64-encode-string
-      (mel-find-function 'mime-encode-string "base64"))
+(eval-and-compile
+  (fset 'shimbun-base64-encode-string
+	(mel-find-function 'mime-encode-string "base64")))
 
 ;;; emacs-w3m implementation of url retrieval and entity decoding.
 (require 'w3m)
