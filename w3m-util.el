@@ -71,7 +71,8 @@
 (eval-and-compile
   (cond ((and (boundp 'emacs-major-version)
 	      (= emacs-major-version 19))
-	 (autoload 'cancel-timer "timer"))))
+	 (autoload 'cancel-timer "timer")
+	 (require 'custom))))
 
 ;;; Things should be defined in advance:
 

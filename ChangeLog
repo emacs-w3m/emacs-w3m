@@ -1,3 +1,8 @@
+2002-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el: Require `custom' for Emacs 19 because of the
+	function `custom-initialize-set'.
+
 2002-08-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Clean up hook options.
