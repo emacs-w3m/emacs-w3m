@@ -62,6 +62,13 @@ $Date$
 (2) 表示中のバッファを narrowing しておいて、URL の移動を行うと表示がお
     かしくなる。
 
+(3)cgi での post method が効かないときがある。具体的には
+   http://openlab.ring.gr.jp/skk/registdic.cgi で付けられたコメント
+   (URL は
+   http://openlab.ring.gr.jp/skk/registcomment.cgi?midasi=foo&word=bar
+   foo は見出し語、bar は変換後の単語が encode されたものが入る) ページ
+   で送信ボタンを押すと、書き込みできずに
+   http://openlab.ring.gr.jp/skk/index.html に飛んでしまう。
 
 
 Local Variables:

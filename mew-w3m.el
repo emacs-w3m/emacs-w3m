@@ -111,6 +111,7 @@ This variable effected only XEmacs or Emacs 21."
 ;; Avoid bytecompile error and warnings.
 (eval-when-compile
   (unless (fboundp 'mew-current-get-fld)
+    (autoload 'mew-coding-system-p "mew")
     (autoload 'mew-current-get-fld "mew")
     (autoload 'mew-current-get-msg "mew")
     (autoload 'mew-syntax-get-entry-by-cid "mew")

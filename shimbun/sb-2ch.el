@@ -140,7 +140,7 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
   (with-temp-buffer
     (set-buffer-multibyte nil)
     (let* ((url (shimbun-index-url shimbun))
-	   (number (aref header 0))
+	   (number (shimbun-header-number header))
 	   (index (format "%d-%d" (max 1 (- number 49))
 			  (+ number 50))))
       (unless (shimbun-retrieve-url (concat
@@ -198,7 +198,7 @@ Unfortunately, the url name format might have been changed in 2ch"))
 						headers))
 	  (when (and headers first)
 	    (setq first nil)
-	    (let ((cur (aref (car headers) 2))
+	    (let ((cur (shimbun-header-number (car headers)))
 		  last)
 	      (while (not (eq cur 1))
 		(setq last cur)
