@@ -1,3 +1,10 @@
+2001-11-08  Takenobu Sugiyama  <sugiyama@ae.advantest.co.jp>
+
+	* shimbun/sb-nikkansports.el (shimbun-get-headers): Add new
+	separated string for nikkansports.mlb.
+	(shimbun-nikkansports-end-of-header-regexp): New variable (added
+	by yamaoka 2001-11-12).
+
 2001-11-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-db-length): Rename from
