@@ -63,6 +63,8 @@
   "`w3m-process-sentinel' binds `inhibit-quit' according to this variable.")
 (defvar w3m-process-timeout 300
   "Number of seconds idle time waiting for processes to terminate.")
+(defvar w3m-process-kill-surely (featurep 'meadow)
+  "If non-nil, kill the process surely.")
 
 (defconst w3m-process-max 5 "The maximum limit of the working processes.")
 (defvar w3m-process-queue nil "Queue of processes.")
@@ -169,7 +171,10 @@ return it."
     (set-process-filter process 'ignore)
     (set-process-sentinel process 'ignore)
     (when (eq (process-status process) 'run)
-      (kill-process process))))
+      (kill-process process)
+      (when w3m-process-kill-surely
+	(while (eq (process-status process) 'run)
+	  (sit-for 0.1))))))
 
 (defun w3m-process-start-process (object &optional no-sentinel)
   "Start a process spcified by the OBJECT, return always nil.
