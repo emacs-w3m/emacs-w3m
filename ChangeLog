@@ -1,3 +1,11 @@
+2001-10-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (top): It doesn't require `thingatpt'.
+	(w3m-url-at-point): New function.
+	(w3m-input-url): Call `w3m-url-at-point' instead of
+	`thing-at-point'; The 4th optional argument is added.
+	(w3m): Call `w3m-input-url' with the 4th argument.
+
 2001-10-15  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* README: Add description about ftp site of FLIM.
@@ -5485,6 +5493,7 @@
 
 	* w3m.el: New file.
 
+
 Local Variables:
-buffer-file-coding-system: iso-2022-jp
+coding: iso-2022-7bit
 End:

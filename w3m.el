@@ -89,7 +89,6 @@
     (require 'w3m-e20))))
 
 (require 'w3m-hist)
-(require 'thingatpt)
 (require 'timezone)
 (require 'ccl)
 
@@ -1895,32 +1894,48 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
      ((eq flag 'lambda)
       (if (w3m-arrived-p url) t nil)))))
 
-(defun w3m-input-url (&optional prompt initial default)
+(cond
+ ((locate-library "ffap")
+  (autoload 'ffap-url-at-point "ffap")
+  (defalias 'w3m-url-at-point 'ffap-url-at-point))
+ ((locate-library "thingatpt")
+  (autoload 'thing-at-point "thingatpt")
+  (defun w3m-url-at-point ()
+    "Return url from around point if it exists, or nil."
+    (thing-at-point 'url)))
+ (t
+  (defalias 'w3m-url-at-point 'ignore)))
+
+(defun w3m-input-url (&optional prompt initial default quick-start)
   "Read a URL from the minibuffer, prompting with string PROMPT."
   (let (url)
     (w3m-arrived-setup)
     (unless default
       (setq default w3m-home-page))
     (unless initial
-      (setq initial (thing-at-point 'url)))
-    (setq url (let ((minibuffer-setup-hook
-		     (append minibuffer-setup-hook '(beginning-of-line))))
-		(completing-read
-		 (or prompt
-		     (format "URL (default %s): "
-			     (if (stringp default)
-				 (if (eq default w3m-home-page)
-				     "HOME" default)
-			       (prin1-to-string default))))
-		 'w3m-url-completion nil nil initial
-		 'w3m-input-url-history)))
-    (if (string= "" url) (setq url default))
-    ;; remove duplication
-    (when (stringp url)
-      (setq w3m-input-url-history
-	    (cons url (delete url w3m-input-url-history))))
-    ;; return value
-    url))
+      (setq initial (w3m-url-at-point)))
+    (if (and quick-start
+	     default
+	     (not initial))
+	default
+      (setq url (let ((minibuffer-setup-hook
+		       (append minibuffer-setup-hook '(beginning-of-line))))
+		  (completing-read
+		   (or prompt
+		       (format "URL (default %s): "
+			       (if (stringp default)
+				   (if (eq default w3m-home-page)
+				       "HOME" default)
+				 (prin1-to-string default))))
+		   'w3m-url-completion nil nil initial
+		   'w3m-input-url-history)))
+      (if (string= "" url) (setq url default))
+      ;; remove duplication
+      (when (stringp url)
+	(setq w3m-input-url-history
+	      (cons url (delete url w3m-input-url-history))))
+      ;; return value
+      url)))
 
 
 ;;; Cache:
@@ -3985,7 +4000,7 @@ is called non-interactively."
      (list
       (if current-prefix-arg
 	  default
-	(w3m-input-url nil nil default)))))
+	(w3m-input-url nil nil default t)))))
   (let ((nofetch (eq url 'popup))
 	(buffer (w3m-alive-p))
 	(focusing-function
