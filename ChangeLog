@@ -1,3 +1,9 @@
+2004-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-treat-image-size): Default to nil.
+	(w3m-rendering-half-dump): Fix a logic determining whether to
+	specify `-ppl' and `-ppc' options to the w3m command.
+
 2004-04-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3mhack.el: Create w3m-load.el.
