@@ -1,3 +1,10 @@
+2003-06-15  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-atmarkit-rss.el: New file.
+	* shimbun/sb-slashdot-jp-rss.el: Ditto.
+	* shimbun/sb-cnet-rss.el: Ditto.
+	* shimbun/sb-rss.el: Ditto.
+
 2003-06-14  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-moz-users.el: New file.
