@@ -1287,7 +1287,7 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 	    (cond
 	     ((get-text-property point 'w3m-image-redundant)
 	      ;; Remove invisible property.
-	      (remove-text-properties point end '(invisible)))
+	      (remove-text-properties point end '(invisible nil)))
 	     ((get-text-property point 'w3m-image-dummy)
 	      ;; Remove dummy string.
 	      (delete-region point end))

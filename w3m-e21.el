@@ -61,7 +61,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."
-  (remove-text-properties beg end '(display intangible)))
+  (remove-text-properties beg end '(display nil intangible nil)))
 
 (defun w3m-image-type-available-p (image-type)
   "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
