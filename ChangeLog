@@ -1,3 +1,16 @@
+2001-12-20  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-lock-format1)
+	(mew-shimbun-lock-format2): New variable.
+	(mew-shimbun-element-body): Add argument. Display process of
+	SHIMBUN status at mode-line.
+	(mew-shimbun-mode-display): New inline function.
+	(mew-shimbun-retrieve, mew-shimbun-retrieve-all)
+	(mew-shimbun-re-retrieve-all): Call `mew-shimbun-element-body'
+	with more arguments.
+	(mew-shimbun-retrieve-article, mew-shimbun-re-retrieve-article):
+	Display mode-line process.
+
 2001-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3m-use-favicon): Don't bind it.
