@@ -59,11 +59,14 @@ install-package:
 dist: Makefile
 	$(MAKE) VERSION=`$(EMACS) $(FLAGS) -f w3mhack-version 2>/dev/null` tarball
 
-Makefile: Makefile.in configure
-	./configure
+Makefile: Makefile.in config.status
+	./config.status
 
 configure: configure.in aclocal.m4
 	autoconf
+
+config.status: configure
+	./config.status --recheck
 
 tarball:
 	-rm -f $(TARBALL) `basename $(TARBALL) .gz`
