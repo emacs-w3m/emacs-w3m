@@ -621,7 +621,7 @@ See the file balloon-help.el for more information."
 
 (defconst w3m-toolbar-buttons
   '("back" "parent" "forward" "reload" "open" "home" "search" "image"
-    "weather" "antenna" "history" "db-history")
+    "copy" "weather" "antenna" "history" "db-history")
   "Toolbar button list for w3m.")
 
 (defconst w3m-toolbar
@@ -634,19 +634,47 @@ See the file balloon-help.el for more information."
     [w3m-toolbar-forward-icon w3m-view-next-page
 			      (w3m-history-next-link-available-p)
 			      "次のページに進む"]
-    [w3m-toolbar-reload-icon w3m-reload-this-page t "サーバからページをもう一度読み込む"]
+    [w3m-toolbar-reload-icon w3m-reload-this-page
+			     w3m-current-url
+			     "サーバからページをもう一度読み込む"]
     [w3m-toolbar-open-icon w3m-goto-url t "URL を入力してページを開く"]
-    [w3m-toolbar-home-icon
-     (lambda () (interactive) (w3m-goto-url w3m-home-page))
-     w3m-home-page "ホームページへジャンプ"]
+    [w3m-toolbar-home-icon w3m-gohome w3m-home-page "ホームページへジャンプ"]
     [w3m-toolbar-search-icon w3m-search t "インターネット上を検索"]
     [w3m-toolbar-image-icon w3m-toggle-inline-images t "画像の表示をトグルする"]
+    [w3m-toolbar-copy-icon w3m-copy-buffer t "このセッションのコピーを作る"]
     [w3m-toolbar-weather-icon w3m-weather t "天気予報を見る"]
     [w3m-toolbar-antenna-icon w3m-antenna t "アンテナで受信する"]
     [w3m-toolbar-history-icon w3m-history t "ヒストリー"]
     [w3m-toolbar-db-history-icon w3m-db-history t "ＤＢヒストリー"]
     )
   "Toolbar definition for w3m.")
+
+(defconst w3m-menubar
+  '("W3M"
+    ["Back to Previous Page" w3m-view-previous-page
+     (w3m-history-previous-link-available-p)]
+    ["Forward to Next Page" w3m-view-next-page
+     (w3m-history-next-link-available-p)]
+    ["Upward to Parent Page" w3m-view-parent-page
+     (w3m-parent-page-available-p)]
+    ["Reload This Page" w3m-reload-this-page w3m-current-url]
+    ["Go to..." w3m-goto-url t]
+    ["Go to Home Page" w3m-gohome w3m-home-page]
+    ["Search the Internet" w3m-search t]
+    ["Toggle Images" w3m-toggle-inline-images
+     (or (featurep 'xemacs)
+	 (and (boundp 'emacs-major-version)
+	      (>= emacs-major-version 21)))]
+    ["Make a Copy of This Session" w3m-copy-buffer t]
+    ["Weather Forecast" w3m-weather t]
+    ["Investigate with Antenna" w3m-antenna t]
+    ["Show a History" w3m-history t]
+    ["Show a DB History" w3m-db-history t]
+    ["Download This URL" w3m-download-this-url t]
+    ["Print Current URL" w3m-print-current-url t]
+    ["View Bookmark" w3m-bookmark-view t]
+    )
+  "Menubar definition for w3m.")
 
 (defvar w3m-cid-retrieve-function-alist nil)
 (defvar w3m-force-redisplay t)
@@ -1181,24 +1209,10 @@ If N is negative, last N items of LIST is returned."
 	  (set (make-local-variable 'menu-bar-final-items)
 	       (delq 'w3m items))))
       (unless (keymapp (lookup-key w3m-mode-map [menu-bar w3m]))
-	(let* ((w3m-menu '("W3M"
-			   ["Go to..." w3m-goto-url t]
-			   ["Reload This Page" w3m-reload-this-page t]
-			   ["Back to previous page" w3m-view-previous-page
-			    (w3m-history-previous-link-available-p)]
-			   ["Forward to Next Page" w3m-view-next-page
-			    (w3m-history-next-link-available-p)]
-			   ["Upward to Parent Page" w3m-view-parent-page
-			    (w3m-parent-page-available-p)]
-			   ["Download This URL" w3m-download-this-url t]
-			   ["Print Current URL" w3m-print-current-url t]
-			   ["View Bookmark" w3m-bookmark-view t]
-			   ["Copy Buffer" w3m-copy-buffer t]
-			   ))
-	       (map (make-sparse-keymap (car w3m-menu))))
+	(let ((map (make-sparse-keymap (car w3m-menubar))))
 	  (define-key w3m-mode-map [menu-bar] (make-sparse-keymap))
-	  (define-key w3m-mode-map [menu-bar w3m] (cons (car w3m-menu) map))
-	  (dolist (def (nreverse (cdr w3m-menu)))
+	  (define-key w3m-mode-map [menu-bar w3m] (cons (car w3m-menubar) map))
+	  (dolist (def (reverse (cdr w3m-menubar)))
 	    (define-key map (vector (aref def 1)) (cons (aref def 0)
 							(aref def 1)))
 	    (put (aref def 1) 'menu-enable (aref def 2)))
@@ -2722,6 +2736,13 @@ or prefix ARG columns."
       (w3m-arrived-add orig w3m-current-title nil nil cs)
       (w3m-update-toolbar)
       (switch-to-buffer (current-buffer))))))
+
+(defun w3m-gohome ()
+  "Go to the Home page."
+  (interactive)
+  (unless w3m-home-page
+    (error "You have to specify the value of `w3m-home-page'."))
+  (w3m-goto-url w3m-home-page))
 
 (defun w3m-reload-this-page (&optional arg)
   "Reload current page without cache."
