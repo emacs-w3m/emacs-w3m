@@ -235,13 +235,37 @@ When BODY is evaluated, the local variable `handler' is set to nil."
   "Generate the waiting handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the handler
 which will wait for the end of the evaluation."
-  (let ((tempvar (make-symbol "tempvar")))
-    `(let ((,tempvar ',tempvar))
-       (let ((handler (lambda (x) (setq ,tempvar x))))
-	 ,@body)
-       (while (eq ,tempvar ',tempvar)
-	 (sit-for 0.2))
-       ,tempvar)))
+  `(let (w3m-async-exec)
+     ,@body))
+;; ASYNC: 本当は、以下のように非同期的に実行して、非同期プロセスの終了
+;; を待つように実装する必要があるのだが、どうしても、バグの原因が分か
+;; らなかったので、adhoc に対処している。そのため、パスワードなどの入
+;; 力が必要な場合に不具合が生じることがある。
+;;
+;;    (defmacro w3m-process-with-wait-handler (&rest body)
+;;      "Generate the waiting handler, and evaluate BODY.
+;;    When BODY is evaluated, the local variable `handler' keeps the handler
+;;    which will wait for the end of the evaluation."
+;;      (let ((tempvar (make-symbol "tempvar")))
+;;        `(let ((,tempvar ',tempvar))
+;;           (let ((handler (lambda (x) (setq ,tempvar x))))
+;;             ,@body)
+;;           (while (eq ,tempvar ',tempvar)
+;;             (sit-for 0.2))
+;;           ,tempvar)))
+;;
+;; 具体的には、[emacs-w3m:02167] で報告した以下の式が正常に評価できる
+;; ように修正する必要がある。
+;;
+;;     (with-current-buffer (get-buffer-create "*TEST*")
+;;       (pop-to-buffer (current-buffer))
+;;       (require 'w3m)
+;;       (w3m-process-with-null-handler
+;;         (w3m-process-do
+;;             (success (w3m-process-start handler "-version"))
+;;           (w3m-process-with-wait-handler
+;;             (w3m-process-start handler "-version")))))
+;;
 (put 'w3m-process-with-wait-handler 'lisp-indent-function 0)
 (put 'w3m-process-with-wait-handler 'edebug-form-spec '(body))
 
@@ -331,8 +355,7 @@ buffer."
 	     (prog1 (w3m-process-push handler arguments)
 	       (w3m-process-start-internal))
 	   (w3m-process-with-environment w3m-command-environment
-	     (apply 'call-process w3m-command nil
-		    output-buffer nil w3m-command arguments))))
+	     (apply 'call-process w3m-command nil t nil arguments))))
       (cond
        ((numberp exit-status)
 	(zerop (setq w3m-process-exit-status exit-status)))

@@ -50,8 +50,7 @@
 (require 'mime)
 (eval-when-compile (require 'cl))
 
-(defcustom mime-w3m-display-inline-image
-  w3m-display-inline-image
+(defcustom mime-w3m-display-inline-images w3m-default-display-inline-images
   "Non-nil means that inline images are displayed."
   :group 'w3m
   :group 'mime-view
@@ -92,7 +91,7 @@
        (run-hooks 'mime-text-decode-hook)
        (condition-case err
 	   (let ((w3m-safe-url-regexp "\\`cid:")
-		 (w3m-current-image-status mime-w3m-display-inline-image))
+		 (w3m-display-inline-images mime-w3m-display-inline-images))
 	     (w3m-region p
 			 (point-max)
 			 (and (stringp xref)

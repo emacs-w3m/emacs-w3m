@@ -1,3 +1,130 @@
+2001-11-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-proc.el (w3m-process-with-wait-handler): Adhoc workaround.
+	(w3m-process-start): Fix.
+
+2001-11-13  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-lynx-like-map): Bind `C-cC-a' as the key to call
+	`w3m-switch-buffer'.
+	(w3m-info-like-map): Ditto. Bind `\C-c\C-@' and `C-c\C- ' as the
+	key to call `w3m-history-store-position'. Bind `C-cC-b' as the key
+	to call `w3m-history-restore-position'.
+	(w3m-mode): Modify doc-string.
+
+2001-11-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-select-buffer-horizontal-window): New user option.
+	(w3m-select-buffer-window-size): Ditto.
+	(w3m-lynx-like-map): Bind `C-cC-b' as the key to call
+	`w3m-switch-buffer.
+	(w3m-info-like-map): Ditto.
+	(w3m-select-buffer-window): New internal variable.
+	(w3m-select-buffer-message): New internal constant.
+	(w3m-select-buffer): New implementation.
+	(w3m-select-buffer-generate-contents): New function.
+	(w3m-select-buffer-mode-map): New keymap.
+	(w3m-select-buffer-mode): New function.
+	(w3m-select-buffer-recheck): New command.
+	(w3m-select-buffer-current-buffer): New macro.
+	(w3m-select-buffer-show-this-line): New command.
+	(w3m-select-buffer-next-line): Ditto.
+	(w3m-select-buffer-previous-line): Ditto.
+	(w3m-select-buffer-copy-buffer): Ditto.
+	(w3m-select-buffer-delete-buffer): Ditto.
+	(w3m-select-buffer-quit): Ditto.
+	(w3m-select-buffer-show-this-line-and-quit): Ditto.
+
+	* w3m-xmas.el (w3m-switch-buffer): Renamed from
+	`w3m-select-buffer'.
+
+	* w3m-tabmenu.el (w3m-switch-buffer): Renamed from
+	`w3m-select-buffer'.
+
+2001-11-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-e20.el (w3m-display-inline-images-p): Renamed from
+	`w3m-display-inline-image-p'.
+
+	* w3m-om.el (w3m-display-inline-images-p): Ditto.
+
+2001-11-12  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* mew-w3m.el (mew-mime-text/html-w3m): Bind `w3m-display-inline-images'
+	instead of `w3m-current-image-status'.
+
+	* mime-w3m.el (mime-w3m-display-inline-images): Renamed from
+	`mime-w3m-display-inline-image'.
+	(mime-w3m-preview-text/html): Follow the change above;
+	Bind `w3m-display-inline-images' instead of `w3m-current-image-status'.
+
+	* w3m-xmas.el (w3m-display-inline-images-p): Renamed from
+	`w3m-display-inline-image-p'; Refer `w3m-display-inline-images'
+	instead of `w3m-current-image-status'.
+
+	* w3m-e21.el (w3m-display-inline-images-p): Renamed from
+	`w3m-display-inline-image-p'; Refer `w3m-display-inline-images'
+	instead of `w3m-current-image-status'.
+
+	* w3m.el (w3m-display-inline-image): Abolish.
+	(w3m-current-image-status): Ditto.
+	(w3m-display-inline-images): New buffer local variable.
+	(w3m-default-display-inline-images): New user option.
+	(w3m-toggle-inline-images-permanently): Ditto.
+	(w3m-toggle-inline-image): Added docstring.
+	(w3m-toggle-inline-images): Ditto;
+	Refer `w3m-display-inline-images' instead of
+	`w3m-current-image-status'.
+	(w3m-view-url-with-external-browser): Ditto.
+	(w3m-goto-url): Ditto.
+	(w3m-toggle-inline-images): Change the value of
+	`w3m-display-inline-images' even when displaying images is not
+	completed.
+	(w3m-copy-buffer): Set `w3m-display-inline-images' according to
+	`w3m-toggle-inline-images-permanently'.
+	(w3m-mode): Set value of `w3m-display-inline-images'
+	according to `w3m-default-display-inline-images'.
+	(w3m-goto-url):  Set `w3m-display-inline-images' according to
+	`w3m-toggle-inline-images-permanently';
+	Use `w3m-display-inline-images-p' instead of
+	`w3m-display-inline-image-p'.
+	(w3m-redisplay-with-charset): Use `w3m-display-inline-images'
+	instead of `w3m-display-inline-image'.
+	(w3m-region): Use `w3m-display-inline-images-p' instead of
+	`w3m-display-inline-image-p'.
+
+2001-11-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (Top): Abolished autoload of `w3m-setup-tab'.
+	(w3m-use-tab-menubar): Revival.
+	(w3m-lynx-like-map): Bind `C-cC-s' as the key to call
+	`w3m-select-buffer'.
+	(w3m-info-like-map): Ditto.
+	(w3m-mode): Update the doc-string for the commands
+	`w3m-next-buffer',  `w3m-previous-buffer', `w3m-delete-buffer' and
+	`w3m-select-buffer'.
+	Use `w3m-use-tab-menubar' and `w3m-setup-tab-menu()'.
+
+	* w3m-e21.el (Top): Require `w3m-tabmenu'.
+
+	* w3m-e20.el (Top): Ditto.
+
+	* w3m-om.el (Top): Ditto.
+
+	* w3m-tabmenu.el: Rename from `w3m-tab.el'.
+	(w3m-setup-tab-menu): Rename from `w3m-setup-tab'.
+	(w3m-tab-menubar-make-items): Add new option `nomenu' for
+	w3m-select-buffer().
+	(w3m-select-buffer): New function.
+
+	* w3m-xmas.el (w3m-setup-tab-menu): Use `defun' insted of `ignore'
+	to avoid byte-compile warnings.
+	(w3m-tab-menubar-pull-bufnum, w3m-tab-menubar-make-items) 
+	(w3m-select-buffer): Copy from w3m-tabmenu.el
+
+	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
+	`w3m-tabmenu.el' when XEmacs.
+
 2001-11-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-expand-url): Remove the last segment of the base URL

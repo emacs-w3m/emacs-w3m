@@ -38,6 +38,7 @@
 (require 'poem)
 (require 'pcustom)
 (require 'pccl)
+(require 'w3m-tabmenu)
 
 (eval-when-compile
   (unless (fboundp 'custom-declare-variable)
@@ -58,7 +59,7 @@
 (defalias 'w3m-setup-toolbar 'ignore)
 (defalias 'w3m-update-toolbar 'ignore)
 (defalias 'w3m-display-graphic-p 'ignore)
-(defalias 'w3m-display-inline-image-p 'ignore)
+(defalias 'w3m-display-inline-images-p 'ignore)
 
 ;; Required for old Emacsen.  See the file README for details.
 (eval-and-compile

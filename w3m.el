@@ -130,12 +130,8 @@
 (eval-when-compile
   (autoload 'rfc2368-parse-mailto-url "rfc2368"))
 
-(eval-when-compile
-  (when (featurep 'xemacs)
-    (defalias 'define-key-after 'ignore)))
-
 (defconst emacs-w3m-version
-  "async-0.02"
+  "async-0.03"
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -369,8 +365,24 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-display-inline-image nil
-  "Whether to display images inline."
+(defvar w3m-display-inline-images nil
+  "Non-nil means images are displayed inline in the w3m buffer.
+This variable is buffer-local which defaults to the value of
+`w3m-default-display-inline-images'.
+You should not set it directly; You can toggle the value of this variable by
+using the command \\<w3m-mode-map>`\\[w3m-toggle-inline-images]'.")
+(make-variable-buffer-local 'w3m-display-inline-images)
+
+(defcustom w3m-default-display-inline-images nil
+  "Default value of `w3m-display-inline-images' for buffers not overriding it."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-toggle-inline-images-permanently t
+  "*If nil, apply the value of `w3m-default-display-inline-images' to
+`w3m-display-inline-images' in the current w3m buffer when you visit a
+new page for each time.  Otherwise, the value of
+`w3m-display-inline-images' won't be changed."
   :group 'w3m
   :type 'boolean)
 
@@ -676,6 +688,11 @@ See the file balloon-help.el for more information."
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-use-tab-menubar t
+  "Use 'TAB' menubar."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-pop-up-windows
   (if (or (featurep 'xemacs)
 	  (and (boundp 'emacs-major-version)
@@ -854,9 +871,6 @@ encoded in the optimized animated gif format and base64.")
 
 (defvar w3m-image-only-page nil "Non-nil if image only page.")
 (make-variable-buffer-local 'w3m-image-only-page)
-
-(defvar w3m-current-image-status w3m-display-inline-image)
-(make-variable-buffer-local 'w3m-current-image-status)
 
 (defvar w3m-current-base-url nil "Base URL of this buffer.")
 (defvar w3m-current-forms nil "Forms of this buffer.")
@@ -1915,6 +1929,9 @@ If URL is specified, only the image with URL is toggled."
 	    (w3m-add-text-properties beg end '(w3m-image-status off))))))))
 
 (defun w3m-toggle-inline-image (&optional force no-cache)
+  "Toggle displaying of inline image on cursor point.
+If FORCE is non-nil, image displaying is forced.
+If NO-CACHE is non-nil, cache is not used."
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
@@ -1929,19 +1946,22 @@ If URL is specified, only the image with URL is toggled."
       (message "No image at point"))))
 
 (defun w3m-toggle-inline-images (&optional force no-cache)
+  "Toggle displaying of inline images on current buffer.
+If FORCE is non-nil, image displaying is forced.
+If NO-CACHE is non-nil, cache is not used."
   (interactive "P")
-  (unless (w3m-display-graphic-p)
-    (error "Can't display images in this environment"))
-  (if force (setq w3m-current-image-status nil))
-  (unwind-protect
-      (progn
-	(w3m-toggle-inline-images-internal (if w3m-current-image-status
+  (let ((status w3m-display-inline-images))
+    (unless (w3m-display-graphic-p)
+      (error "Can't display images in this environment"))
+    (if force (setq w3m-display-inline-images nil
+		    status nil))
+    (unwind-protect
+	(w3m-toggle-inline-images-internal (if w3m-display-inline-images
 					       'on 'off)
 					   no-cache nil)
-	(setq w3m-current-image-status
-	      (not w3m-current-image-status)))
-    (set-buffer-modified-p nil)
-    (force-mode-line-update)))
+      (setq w3m-display-inline-images (not status))
+      (set-buffer-modified-p nil)
+      (force-mode-line-update))))
 
 (defun w3m-decode-entities (&optional reserve-prop)
   "Decode entities in the current buffer.
@@ -3314,7 +3334,7 @@ session."
   "View this URL."
   (interactive)
   (let ((url (or (w3m-anchor)
-		 (unless w3m-current-image-status
+		 (unless w3m-display-inline-images
 		   (w3m-image))
 		 (when (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
 		   w3m-current-url))))
@@ -3477,11 +3497,15 @@ If EMPTY is non-nil, the created buffer has empty content."
     (let ((ptmin (point-min))
 	  (ptmax (point-max))
 	  (url w3m-current-url)
+	  (images w3m-display-inline-images)
 	  (mode major-mode)
 	  (lvars (buffer-local-variables))
 	  (new (generate-new-buffer newname)))
       (with-current-buffer new
 	(funcall mode)			;still needed??  -sm
+	(if w3m-toggle-inline-images-permanently
+	    (setq w3m-display-inline-images images)
+	  (setq w3m-display-inline-images w3m-default-display-inline-images))
 	(unless empty (w3m-goto-url url))
 	(dolist (v lvars)
 	  (cond ((not (consp v))
@@ -3614,6 +3638,8 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "\C-c\C-p" 'w3m-previous-buffer)
     (define-key map "\C-c\C-n" 'w3m-next-buffer)
     (define-key map "\C-c\C-w" 'w3m-delete-buffer)
+    (define-key map "\C-c\C-s" 'w3m-select-buffer)
+    (define-key map "\C-c\C-a" 'w3m-switch-buffer)
     (define-key map "R" 'w3m-reload-this-page)
     (define-key map "C" 'w3m-redisplay-with-charset)
     (define-key map "?" 'describe-mode)
@@ -3662,6 +3688,9 @@ If EMPTY is non-nil, the created buffer has empty content."
 	    'w3m-mouse-view-this-url-new-session))
       (define-key map [mouse-2] 'w3m-mouse-view-this-url)
       (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
+    (define-key map "\C-c\C-@" 'w3m-history-store-position)
+    (define-key map [?\C-c?\C- ] 'w3m-history-store-position)
+    (define-key map "\C-c\C-b" 'w3m-history-restore-position)
     (define-key map " " 'w3m-scroll-up-or-next-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
@@ -3696,6 +3725,8 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "\C-c\C-p" 'w3m-previous-buffer)
     (define-key map "\C-c\C-n" 'w3m-next-buffer)
     (define-key map "\C-c\C-w" 'w3m-delete-buffer)
+    (define-key map "\C-c\C-s" 'w3m-select-buffer)
+    (define-key map "\C-c\C-a" 'w3m-switch-buffer)
     (define-key map "o" 'w3m-history)
     (define-key map "O" 'w3m-db-history)
     (define-key map "p" 'w3m-view-previous-page)
@@ -3791,10 +3822,6 @@ Return t if deleting current frame or window is succeeded."
 	    w3m-info-like-map
 	  w3m-lynx-like-map)))
 
-(eval-and-compile
-  (unless (fboundp 'w3m-setup-tab)
-    (autoload 'w3m-setup-tab "w3m-tab")))
-
 (defun w3m-mode ()
   "\\<w3m-mode-map>
    Major mode to browsing w3m buffer.
@@ -3869,6 +3896,11 @@ Return t if deleting current frame or window is succeeded."
 \\[w3m-bookmark-add-this-url]	Add link under cursor to bookmark.
 
 \\[w3m-copy-buffer]	Create a twin copy of the current buffer.
+\\[w3m-next-buffer]	Switch to next w3m buffer.
+\\[w3m-previous-buffer]	Switch to previous w3m buffer.
+\\[w3m-select-buffer]	Select one buffer of all w3m buffers.
+\\[w3m-switch-buffer]	Switch one buffer of all w3m buffers.
+\\[w3m-delete-buffer]	Kill current w3m buffer.
 
 \\[w3m]	w3m.
 \\[w3m-close-window]	Close this window and make the other buffer current.
@@ -3881,10 +3913,11 @@ Return t if deleting current frame or window is succeeded."
   (setq major-mode 'w3m-mode)
   (setq mode-name "w3m")
   (use-local-map w3m-mode-map)
-  (setq truncate-lines t)
+  (setq truncate-lines t
+	w3m-display-inline-images w3m-default-display-inline-images)
   (w3m-setup-toolbar)
   (w3m-setup-menu)
-  (when w3m-use-tab (w3m-setup-tab))
+  (when w3m-use-tab-menubar (w3m-setup-tab-menu))
   (run-hooks 'w3m-mode-hook))
 
 (defun w3m-scroll-up-or-next-url (arg)
@@ -3999,7 +4032,7 @@ appropriate buffer and select it."
   (setq mode-line-buffer-identification (list "%b"))
   (if (w3m-display-graphic-p)
       (nconc mode-line-buffer-identification
-	     (list " " '((w3m-current-image-status
+	     (list " " '((w3m-display-inline-images
 			  w3m-modeline-image-status-on
 			  w3m-modeline-image-status-off)))))
   (nconc mode-line-buffer-identification
@@ -4119,7 +4152,9 @@ field for this request."
 					  nil nil t)
 	      (or (and name (w3m-search-name-anchor name))
 		  (goto-char (point-min)))
-	      (cond ((w3m-display-inline-image-p)
+	      (unless w3m-toggle-inline-images-permanently
+		(setq w3m-display-inline-images w3m-default-display-inline-images))
+	      (cond ((w3m-display-inline-images-p)
 		     (and w3m-force-redisplay (sit-for 0))
 		     (w3m-toggle-inline-images 'force reload))
 		    ((and (w3m-display-graphic-p)
@@ -4226,7 +4261,7 @@ If input is nil, use default coding-system on w3m."
 	  t ;; Default action is reseting charset entry in arrived DB.
 	  )))
     (when arg
-      (setq w3m-current-image-status (not w3m-current-image-status)))
+      (setq w3m-display-inline-images (not w3m-display-inline-images)))
     (w3m-goto-url w3m-current-url nil charset)))
 
 
@@ -4354,7 +4389,7 @@ ex.) c:/dir/file => //c/dir/file"
 	  w3m-current-base-url url
 	  w3m-current-title (w3m-rendering-multibyte-buffer))
     (w3m-fontify)
-    (when (w3m-display-inline-image-p)
+    (when (w3m-display-inline-images-p)
       (and w3m-force-redisplay (sit-for 0))
       (w3m-toggle-inline-images 'force))))
 
@@ -4613,6 +4648,202 @@ If called with 'prefix argument', display arrived-DB history."
 			     (w3m-url-to-file-name url))))
     (set-process-filter proc 'ignore)
     (set-process-sentinel proc 'ignore)))
+
+
+;;; Interactive select buffer.
+(defcustom w3m-select-buffer-horizontal-window t
+  "*Non-nil means that `w3m-select-buffer' generates its window horizontally."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-select-buffer-window-size 20
+  "*The size of `w3m-select-buffer'."
+  :group 'w3m
+  :type 'integer)
+
+(defvar w3m-select-buffer-window nil)
+(defconst w3m-select-buffer-message
+  "n: next buffer, p: previous buffer, q: quit.")
+
+(defun w3m-select-buffer ()
+  "Display a new buffer to select a buffer among the set of w3m-mode
+buffers.  User can type following keys:
+
+\\{w3m-select-buffer-mode-map}"
+  (interactive)
+  (let ((selected-window (selected-window))
+	(current-buffer (current-buffer)))
+    (set-buffer (w3m-get-buffer-create " *w3m buffers*"))
+    (setq w3m-select-buffer-window selected-window)
+    (w3m-select-buffer-generate-contents current-buffer)
+    (w3m-select-buffer-mode)
+    (let ((w (split-window selected-window
+			   (- (window-width)
+			      w3m-select-buffer-window-size)
+			   w3m-select-buffer-horizontal-window)))
+      (set-window-buffer w (current-buffer))
+      (select-window w)))
+  (message w3m-select-buffer-message))
+
+(defun w3m-select-buffer-generate-contents (current-buffer)
+  (let (buffer-read-only pos)
+    (delete-region (point-min) (point-max))
+    (dolist (pair
+	     (sort (delq nil
+			 (mapcar
+			  (lambda (buffer)
+			    (with-current-buffer buffer
+				(when (eq 'w3m-mode major-mode)
+				  (cons buffer w3m-current-title))))
+			  (buffer-list)))
+		   (lambda (x y)
+		     (string< (buffer-name (car x))
+			      (buffer-name (car y))))))
+      (when (eq (car pair) current-buffer)
+	  (setq pos (point)))
+      (put-text-property (point)
+			 (progn (insert (cdr pair) "\n") (point))
+			 'w3m-select-buffer (car pair)))
+    (skip-chars-backward " \t\r\f\n")
+    (delete-region (point) (point-max))
+    (set-buffer-modified-p nil)
+    (goto-char (or pos (point-min)))))
+
+(defvar w3m-select-buffer-mode-map nil)
+(unless w3m-select-buffer-mode-map
+  (let ((map (make-keymap)))
+    (suppress-keymap map)
+    (substitute-key-definition
+     'next-line 'w3m-select-buffer-next-line map global-map)
+    (substitute-key-definition
+     'previous-line 'w3m-select-buffer-previous-line map global-map)
+    (substitute-key-definition
+     'w3m-copy-buffer 'w3m-select-buffer-copy-buffer map w3m-mode-map)
+    (substitute-key-definition
+     'w3m-next-buffer 'w3m-select-buffer-next-line map w3m-mode-map)
+    (substitute-key-definition
+     'w3m-previous-buffer 'w3m-select-buffer-previous-line map w3m-mode-map)
+    (substitute-key-definition
+     'w3m-delete-buffer 'w3m-select-buffer-delete-buffer map w3m-mode-map)
+    (substitute-key-definition
+     'w3m-select-buffer 'w3m-select-buffer-quit map w3m-mode-map)
+    (define-key map " " 'w3m-select-buffer-show-this-line)
+    (define-key map "g" 'w3m-select-buffer-recheck)
+    (define-key map "h" 'describe-mode)
+    (define-key map "j" 'w3m-select-buffer-next-line)
+    (define-key map "k" 'w3m-select-buffer-previous-line)
+    (define-key map "n" 'w3m-select-buffer-next-line)
+    (define-key map "p" 'w3m-select-buffer-previous-line)
+    (define-key map "q" 'w3m-select-buffer-quit)
+    (define-key map "?" 'describe-mode)
+    (define-key map "\C-m" 'w3m-select-buffer-show-this-line-and-quit)
+    (define-key map "\C-c\C-c" 'w3m-select-buffer-show-this-line-and-quit)
+    (define-key map "\C-c\C-k" 'w3m-select-buffer-quit)
+    (define-key map "\C-c\C-q" 'w3m-select-buffer-quit)
+    (setq w3m-select-buffer-mode-map map)))
+
+(defun w3m-select-buffer-mode ()
+  "\\<w3m-select-buffer-mode-map>
+Major mode to select a buffer from the set of w3m-mode buffers.
+
+\\[w3m-select-buffer-next-line]	Next line.
+\\[w3m-select-buffer-previous-line]	Previous line.
+\\[w3m-select-buffer-show-this-line]	Show the current buffer.
+\\[w3m-select-buffer-show-this-line-and-quit]	Show the current buffer and quit menu.
+\\[w3m-select-buffer-quit]	Quit menu.
+\\[w3m-select-buffer-recheck]	Recheck buffers.
+"
+  (setq major-mode 'w3m-select-buffer-mode
+	mode-name "w3m buffers"
+	truncate-lines t
+	buffer-read-only t)
+  (use-local-map w3m-select-buffer-mode-map)
+  (run-hooks 'w3m-select-buffer-mode-hook))
+
+(defun w3m-select-buffer-recheck ()
+  "Recheck all w3m-mode buffers and regenerate the menu content to
+select them."
+  (interactive)
+  (erase-buffer)
+  (w3m-select-buffer-generate-contents
+   (window-buffer w3m-select-buffer-window))
+  (w3m-select-buffer-show-this-line))
+
+(defmacro w3m-select-buffer-current-buffer ()
+  `(get-text-property (point) 'w3m-select-buffer))
+
+(defun w3m-select-buffer-show-this-line ()
+  "Show the current buffer on this menu line."
+  (interactive)
+  (forward-line 0)
+  (let ((buffer (w3m-select-buffer-current-buffer)))
+    (unless buffer
+      (error "No buffer at point"))
+    (unless (window-live-p w3m-select-buffer-window)
+      (if (one-window-p)
+	  (progn
+	    (setq w3m-select-buffer-window (selected-window))
+	    (select-window
+	     (split-window nil
+			   (- (window-width)
+			      w3m-select-buffer-window-size)
+			   w3m-select-buffer-horizontal-window)))
+	(setq w3m-select-buffer-window (get-largest-window))))
+    (set-window-buffer w3m-select-buffer-window buffer)
+    (message w3m-select-buffer-message)))
+
+(defun w3m-select-buffer-next-line (&optional n)
+  "Move cursor vertically down ARG lines and show the buffer on the
+new menu line."
+  (interactive "p")
+  (forward-line n)
+  (w3m-select-buffer-show-this-line))
+
+(defun w3m-select-buffer-previous-line (&optional n)
+  "Move cursor vertically up ARG lines and show the buffer on the new
+menu line."
+  (interactive "p")
+  (w3m-select-buffer-next-line (- n)))
+
+(defun w3m-select-buffer-copy-buffer ()
+  "Create a copy of the buffer on the current menu line, and show it."
+  (interactive)
+  (let ((selected-window (selected-window))
+	(current-buffer (current-buffer))
+	w3m-pop-up-frames w3m-pop-up-windows)
+    (w3m-select-buffer-generate-contents
+     (w3m-copy-buffer (w3m-select-buffer-current-buffer)))
+    (w3m-select-buffer-show-this-line)
+    (set-window-buffer selected-window current-buffer)))
+
+(defun w3m-select-buffer-delete-buffer ()
+  "Delete the buffer on the current menu line."
+  (interactive)
+  (let ((buffer (w3m-select-buffer-current-buffer)))
+    (forward-line -1)
+    (unless (and (eq buffer (w3m-select-buffer-current-buffer))
+		 (progn (forward-line 1) (eobp)))
+      (kill-buffer buffer)
+      (w3m-select-buffer-generate-contents
+       (w3m-select-buffer-current-buffer))
+      (w3m-select-buffer-show-this-line))))
+
+(defun w3m-select-buffer-quit ()
+  "Quit the menu to select a buffer from w3m-mode buffers."
+  (interactive)
+  (if (one-window-p)
+      (set-window-buffer (selected-window)
+			 (or (w3m-select-buffer-current-buffer)
+			     (w3m-alive-p)))
+    (delete-window)))
+
+(defun w3m-select-buffer-show-this-line-and-quit ()
+  "Show the current buffer, and quit the menu to select a buffer from
+w3m-mode buffers."
+  (interactive)
+  (w3m-select-buffer-show-this-line)
+  (message "")
+  (delete-window))
 
 
 ;;; Header line (emulating Emacs 21).

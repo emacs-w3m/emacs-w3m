@@ -40,7 +40,7 @@
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
 (eval-when-compile
-  (defvar w3m-current-image-status)
+  (defvar w3m-display-inline-images)
   (defvar w3m-current-url)
   (defvar w3m-current-title)
   (defvar w3m-default-coding-system)
@@ -86,10 +86,10 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 ;; show images inline.
 (defalias 'w3m-display-graphic-p 'device-on-window-system-p)
 
-(defun w3m-display-inline-image-p ()
+(defun w3m-display-inline-images-p ()
   "Returns non-nil when images can be displayed under the present
 circumstances."
-  (and w3m-current-image-status (device-on-window-system-p)))
+  (and w3m-display-inline-images (device-on-window-system-p)))
 
 (defvar w3m-should-unoptimize-animated-gifs
   (and (= emacs-major-version 21)
@@ -411,8 +411,6 @@ as the value."
 	(insert "\n")))))
 
 ;;; Gutter:
-(defalias 'w3m-setup-tab 'ignore)
-
 (defcustom w3m-xmas-show-current-title-in-buffer-tab
   (and (boundp 'gutter-buffers-tab-enabled)
        (symbol-value 'gutter-buffers-tab-enabled))
@@ -497,6 +495,81 @@ title contains non-ascii characters, show a url name by default."
 
   (when (symbol-value 'gutter-buffers-tab-enabled)
     (add-hook 'w3m-display-hook 'w3m-xmas-update-tab-in-gutter)))
+
+;;; tab menubar
+(defun w3m-setup-tab-menu ()
+  "Dummy function for XEmacs."
+  ())
+
+(defsubst w3m-tab-menubar-pull-bufnum (bufname)
+  (cond
+   ((string= "*w3m*" bufname) 1)
+   ((string-match "\\*w3m\\*<\\([0-9]+\\)>" bufname)
+    (string-to-number (match-string 1 bufname)))
+   (t 100)))
+
+(defun w3m-tab-menubar-make-items (&optional nomenu)
+  "Create w3m tab menu items."
+  (let ((cbuf (current-buffer))
+	menus bufs title item)
+    (dolist (buf (buffer-list))
+      (with-current-buffer buf
+	(when (eq major-mode 'w3m-mode)
+	  (setq title (cond
+		       ((and (stringp w3m-current-title)
+			     (not (string= w3m-current-title "<no-title>")))
+			w3m-current-title)
+		       ((stringp w3m-current-url)
+			(directory-file-name
+			 (if (string-match "^[^/:]+:/+" w3m-current-url)
+			     (substring w3m-current-url (match-end 0))
+			   w3m-current-url)))
+		       (t "No title")))
+	  (setq bufs (cons (list (buffer-name) title (eq cbuf buf)) bufs)))))
+    (setq bufs
+	  (sort bufs (lambda (x y)
+		       (< (w3m-tab-menubar-pull-bufnum (car x))
+			  (w3m-tab-menubar-pull-bufnum (car y))))))
+    (dolist (elem bufs)
+      (setq item (nconc (list (nth 0 elem)
+			      (format "%s%s"
+				      (if nomenu
+					  (if (nth 2 elem) "* " "")
+					(if (nth 2 elem) "* " "  "))
+				      (nth 1 elem))
+			      (cons nil nil))
+			'w3m-tab-menubar-open-buffer))
+      (setq menus (cons item menus)))
+    (nreverse menus)))
+
+(defun w3m-switch-buffer ()
+  "Switch `w3m-mode' buffer in the current window."
+  (interactive)
+  (let ((items (w3m-tab-menubar-make-items 'nomenu))
+	(count 1)
+	(form "%s [%s]")
+	comp hist histlen default buf)
+    (dolist (item items)
+      (when (string-match "^\\* " (nth 1 item))	;; current-buffer
+	(setq default count))
+      (setq comp (cons
+		  (cons
+		   (format form (nth 1 item) (nth 0 item)) (nth 0 item))
+		  comp))
+      (setq hist (cons (format form (nth 1 item) (nth 0 item)) hist))
+      (setq count (1+ count)))
+    (setq comp (nreverse comp))
+    (setq histlen (length hist))
+    (setq hist (append hist hist hist hist hist)) ;; STARTPOS 3rd hist
+    (setq buf
+	  (completing-read
+	   "Switch to w3m buffer: "
+	   comp nil t (car (nth (1- default) comp))
+	   (cons 'hist (+ (* 3 histlen) (- histlen default -1)))
+	   (car (nth (1- default) comp))))
+    (setq buf (cdr (assoc buf comp)))
+    (when (get-buffer buf)
+      (switch-to-buffer buf))))
 
 (provide 'w3m-xmas)
 
