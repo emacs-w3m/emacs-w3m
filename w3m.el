@@ -153,7 +153,8 @@
 	(goto-char (point-min))
 	(cond
 	 ((looking-at "version w3m/0\\.2\\.1-inu") 'w3m)
-	 ((looking-at "version w3m/0\\.2\\.1\\+mee") 'w3mmee)))))
+	 ((looking-at "version w3m/0\\.2\\.1\\+mee") 'w3mmee)
+	 ((looking-at "version w3m/0\\.2\\.1-m17n") 'w3m-m17n)))))
   "*Type of w3m."
   :group 'w3m
   :type '(choice (const :tag "w3m" 'w3m)
@@ -225,7 +226,7 @@ width using expression (+ (frame-width) VALUE)."
 
 (defvar w3m-accept-japanese-characters
   (or (memq w3m-type '(w3mmee w3m-m17n))
-      ;; Detect that the internal character set of `w3m' is EUC-JP.
+      ;; Detect that the internal character set of `w3m-command' is EUC-JP.
       (let ((str
 	     (eval-when-compile
 	       (format
@@ -242,9 +243,11 @@ width using expression (+ (frame-width) VALUE)."
 		(coding-system-for-read 'binary)
 		(default-process-coding-system (cons 'binary 'binary)))
 	    (call-process-region (point-min) (point-max) w3m-command
-				 t t nil "-T" "text/html" "-dump")
-	    (string= (buffer-string)
-		     (string ?\264 ?\301 ?\273 ?\372 ?\n))))))
+				 t t nil "-T" "text/html" "-halfdump")
+	    (goto-char (point-min))
+	    (skip-chars-forward "a-zA-Z<>/_ \n")
+	    (string= (buffer-substring (point) (min (+ 4 (point)) (point-max)))
+		     (string ?\264 ?\301 ?\273 ?\372))))))
   "Non-nil means that `w3m' accepts Japanese characters.")
 
 (defcustom w3m-coding-system
@@ -326,13 +329,15 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :type 'boolean)
 
 (defcustom w3m-profile-directory
-  (concat "~/." (file-name-nondirectory w3m-command))
+  (concat "~/." (file-name-sans-extension
+		 (file-name-nondirectory w3m-command)))
   "*Directory of w3m profiles."
   :group 'w3m
   :type 'directory)
 
 (defcustom w3m-default-save-directory
-  (concat "~/." (file-name-nondirectory w3m-command))
+  (concat "~/." (file-name-sans-extension
+		 (file-name-nondirectory w3m-command)))
   "*Default directory for save file."
   :group 'w3m
   :type 'directory)
@@ -1004,7 +1009,7 @@ for a charset indication")
   "Arguments for 'dump_extra' execution of w3m.")
 
 (defvar w3m-halfdump-command nil
-  "Name of the executable file of w3m. If nil use 'w3m-command'.")
+  "Name of the executable file of w3m.  If nil use `w3m-command'.")
 
 (defconst w3m-halfdump-command-arguments
   (cond ((eq w3m-type 'w3mmee)
@@ -2168,7 +2173,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 
 ;;; Handle process:
 (defun w3m-exec-process (&rest args)
-  "Run w3m-command and return t if succeeded otherwise nil."
+  "Run `w3m-command' and return t if succeeded otherwise nil."
   (save-excursion
     (let ((coding-system-for-read 'binary)
 	  (coding-system-for-write w3m-terminal-coding-system)
@@ -2869,7 +2874,7 @@ to nil.
 
 (unless (get 'w3m-euc-japan-encoder 'ccl-program-idx)
   (define-ccl-program w3m-euc-japan-encoder
-    `(1 (loop (read r0) (write-repeat r0)))))
+    (` (1 (loop (read r0) (write-repeat r0))))))
 
 (w3m-make-ccl-coding-system
  'w3m-euc-japan ?E
@@ -2898,7 +2903,7 @@ to nil.
 
 (unless (get 'w3m-iso-latin-1-encoder 'ccl-program-idx)
   (define-ccl-program w3m-iso-latin-1-encoder
-    `(1 (loop (read r0) (write-repeat r0)))))
+    (` (1 (loop (read r0) (write-repeat r0))))))
 
 (w3m-make-ccl-coding-system
  'w3m-iso-latin-1 ?1
