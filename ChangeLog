@@ -1,3 +1,7 @@
+2003-09-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-favicon.el: Bind some external variables when compiling.
+
 2003-09-19  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-make-form-data): Insert "--" before the

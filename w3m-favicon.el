@@ -35,6 +35,11 @@
 (require 'w3m-image)
 
 (eval-when-compile
+  (defvar w3m-current-buffer)
+  (defvar w3m-current-url)
+  (defvar w3m-profile-directory)
+  (defvar w3m-use-favicon)
+  (defvar w3m-work-buffer-name)
   (autoload 'w3m-retrieve "w3m")
   (autoload 'w3m-save-list "w3m")
   (autoload 'w3m-load-list "w3m"))
