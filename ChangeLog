@@ -1,6 +1,10 @@
 2002-03-26  Yuuichi Teranishi  <teranisi@gohome.org>
 
-	* w3m.el (toplevel): Added autoload setting for w3m-about-cookie.
+	* w3m-cookie.el (w3m-cookie): New command.
+	(w3m-about-cookie): Do nothing if w3m-use-cookies is nil.
+
+	* w3m.el (toplevel): Added autoload setting for w3m-about-cookie;
+	Added autoload setting for w3m-cookie.
 
 	* w3m-cookie.el (w3m-cookie-store): Don't replace if ignored cookie.
 	(w3m-cookie-retrieve): Don't use cookie which is ignored.
