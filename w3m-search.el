@@ -1,6 +1,6 @@
 ;;; w3m-search.el --- The add-on program to access WEB search engines.
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -111,7 +111,9 @@ engine deinfed in `w3m-search-engine-alist'.  Otherwise use
 	       (format "Which Engine? (%s): " w3m-search-default-engine)
 	       w3m-search-engine-alist nil t)
 	    w3m-search-default-engine))
-	 (default (thing-at-point 'word))
+	 (default (unless (eq (get-text-property (point-at-bol) 'face)
+			      'w3m-header-line-location-title-face)
+		    (thing-at-point 'word)))
 	 prompt query)
      (when default
        (set-text-properties 0 (length default) nil default))
@@ -134,4 +136,5 @@ engine deinfed in `w3m-search-engine-alist'.  Otherwise use
 
 
 (provide 'w3m-search)
-;;; w3m-search.el ends here.
+
+;;; w3m-search.el ends here

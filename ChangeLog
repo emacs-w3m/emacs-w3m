@@ -1,3 +1,8 @@
+2002-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-search.el (w3m-search): Don't extract a default word from
+	the header line.
+
 2002-06-18  NOKUBI Takatsugu  <knok@daionet.gr.jp>
 
 	* shimbun/sb-marc-aims.el: New file.
