@@ -248,10 +248,11 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :type 'coding-system)
 
 (defcustom w3m-default-coding-system
-  (and (boundp 'current-language-environment)
-       (string= "Japanese"
-		(symbol-value 'current-language-environment))
-       'shift_jis)
+  (if (or (and (boundp 'current-language-environment)
+	       (string= "Japanese"
+			(symbol-value 'current-language-environment)))
+	  (boundp 'MULE))
+      'shift_jis)
   "*Default coding system."
   :group 'w3m
   :type 'coding-system)

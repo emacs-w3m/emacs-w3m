@@ -1,3 +1,13 @@
+2001-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-om.el (w3m-detect-coding-region): Prefer the coding-category
+	that the value of `w3m-default-coding-system' belongs to.
+	(w3m-om-coding-category-alist): New variable.
+	(w3m-om-coding-system-alist): New variable.
+
+	* w3m.el (w3m-default-coding-system): Default to `shift_jis' when
+	Mule2 is running.
+
 2001-09-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3mhack.el (w3mhack-examine-modules): Handle `w3m-fsf.el'.

@@ -47,7 +47,8 @@
 ;; Variables which will be defined in the other module.
 (eval-when-compile
   (defvar w3m-mode-map)
-  (defvar w3m-menubar))
+  (defvar w3m-menubar)
+  (defvar w3m-default-coding-system))
 
 ;; Dummy functions.
 (defalias 'w3m-create-image 'ignore)
@@ -61,21 +62,51 @@
 ;; Generate some coding-systems which have a modern name.
 ;; No need to contain the eol-type variants in the following alist
 ;; because they will also be generated for each coding-system.
-(dolist (elem '((*autoconv*	  undecided)
-		(*ctext*	  ctext)
-		(*euc-china*	  cn-gb-2312)
-		(*euc-japan*	  euc-japan)
-		(*iso-2022-jp*	  iso-2022-jp)
-		(*iso-2022-jp*	  iso-2022-7bit)
-		(*iso-2022-ss2-7* iso-2022-7bit-ss2)
-		(*sjis*		  shift_jis)
-		(*tis620*	  tis-620)))
-  (unless (coding-system-p (cadr elem))
-    (let* ((from (car elem))
-	   (to (cadr elem))
+(defvar w3m-om-coding-system-alist
+  '((big5		. *big5*)
+    (binary		. *noconv*)
+    (cn-gb-2312		. *euc-china*)
+    (ctext		. *ctext*)
+    (euc-japan		. *euc-japan*)
+    (iso-2022-7bit	. *iso-2022-jp*)
+    (iso-2022-7bit-ss2	. *iso-2022-ss2-7*)
+    (iso-2022-jp	. *iso-2022-jp*)
+    (iso-8859-1		. *iso-8859-1*)
+    (iso-8859-2		. *iso-8859-2*)
+    (iso-8859-3		. *iso-8859-3*)
+    (iso-8859-4		. *iso-8859-4*)
+    (iso-8859-5		. *iso-8859-5*)
+    (iso-8859-7		. *iso-8859-7*)
+    (iso-8859-8		. *iso-8859-8*)
+    (iso-8859-9		. *iso-8859-9*)
+    (shift_jis		. *sjis*)
+    (tis-620		. *tis620*)
+    (undecided		. *autoconv*))
+  "*Alist of a modern coding-system and a traditional coding-system.")
+
+(defvar w3m-om-coding-category-alist
+  (let ((defs (cons '(iso-2022-7bit . *junet*) w3m-om-coding-system-alist))
+	pair rest)
+    (dolist (category '(*coding-category-internal*
+			*coding-category-sjis*
+			*coding-category-iso-7*
+			*coding-category-iso-8-1*
+			*coding-category-iso-8-2*
+			*coding-category-iso-else*
+			*coding-category-big5*
+			*coding-category-bin*))
+      (when (setq pair (rassq (symbol-value category) defs))
+	(push (cons (car pair) category) rest)))
+    (nreverse rest))
+  "*Alist of a modern coding-system and a traditional coding-category.")
+
+(dolist (elem w3m-om-coding-system-alist)
+  (unless (coding-system-p (car elem))
+    (let* ((from (cdr elem))
+	   (to (car elem))
 	   (info-vector (copy-sequence (get-code from)))
 	   (document (aref info-vector 2))
-	   (id "(generated automatically by `w3m')")
+	   (id "(generated automatically by Emacs-W3M)")
 	   i)
       (aset info-vector 2 (if (and (stringp document)
 				   (> (length document) 0))
@@ -127,10 +158,37 @@ Return a list of possible coding systems ordered by priority.
 
 If optional argument HIGHEST is non-nil, return the coding system of
 highest priority."
-  (let ((x (detect-coding-region start end)))
-    (if highest
-	(if (consp x) (car x) x)
-      x)))
+  (let ((category (assq w3m-default-coding-system
+			w3m-om-coding-category-alist))
+	opriority x)
+    (when category
+      (setq opriority (sort (list '*coding-category-internal*
+				  '*coding-category-sjis*
+				  '*coding-category-iso-7*
+				  '*coding-category-iso-8-1*
+				  '*coding-category-iso-8-2*
+				  '*coding-category-iso-else*
+				  '*coding-category-big5*
+				  '*coding-category-bin*)
+			    'coding-priority<))
+      (set-coding-priority (list (cdr category))))
+    (prog2
+	(setq x (detect-coding-region start end))
+	(if highest
+	    (progn
+	      (when (consp x)
+		(setq x (car x)))
+	      (or (car (rassq x w3m-om-coding-system-alist))
+		  x))
+	  (mapcar (function
+		   (lambda (codesys)
+		     (or (car (rassq codesys w3m-om-coding-system-alist))
+			 codesys)))
+		  (if (consp x)
+		      x
+		    (list x))))
+      (when opriority
+	(set-coding-priority opriority)))))
 
 ;;; Generic functions.
 (defun w3m-expand-path-name (name)
