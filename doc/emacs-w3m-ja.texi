@@ -292,8 +292,9 @@ Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r!"%&%'%V%3%s%F%s%D$r<hF@$9$k$?$a$N%P%C%/
 @cindex regexp-opt.el
 @cindex FLIM package
 
-Emacs $B$N%P!<%8%g%s$K$h$C$F$O!"%5!<%I%Q!<%F%#$N%Q%C%1!<%8$,I,MW$G$9!#$3$N(B
-$B9`$G$O!"$=$l$i$r8+$D$1$F%$%s%9%H!<%k$9$k$?$a$N;qNA$rDs6!$7$^$9!#(B
+Emacs $B$N%P!<%8%g%s$K$h$C$F$O!"%5!<%I%Q!<%F%#$N%Q%C%1!<%8$,I,MW$K$J$k$3$H(B
+$B$,$"$j$^$9!#$3$N9`$G$O!"$=$l$i$r8+$D$1$F%$%s%9%H!<%k$9$k$?$a$N;qNA$rDs6!(B
+$B$7$^$9!#(B
 
 @table @samp
 @item APEL
@@ -526,7 +527,7 @@ emacs-w3m $B$r(B XEmacs $B%Q%C%1!<%8$H$7$F%$%s%9%H!<%k$9$k$3$H$b$G$-$^$9(B:
 @section $B@_Dj$7$J$1$l$P$J$i$J$$:GDc8B$N$b$N(B
 
 $B$3$N9`$K$O4pK\E*$J@_Dj$7$+$"$j$^$;$s!#%f!<%6$N9%$_$K$h$C$F%+%9%?%^%$%:$G(B
-$B$-$k$?$/$5$s$NJQ?t$O(B @xref{Customizable Variables} $B$K=q$+$l$F$$$^$9!#(B
+$B$-$k$?$/$5$s$NJQ?t$O(B @ref{Customizable Variables} $B$K=q$+$l$F$$$^$9!#(B
 
 @table @samp
 @item Autoloads
@@ -571,8 +572,8 @@ Emacs-w3m $B$N$$$m$s$JJQ?t$r$$$8$k$H$-$O!"(B@file{~/.emacs-w3m} $B%U%!%$(B
 $B%k(B ($B$3$l$O(B @code{w3m-init-file} $B$H$$$&JQ?t$N%G%U%)%k%HCM$G$9(B) $B$NMxMQ$r?d(B
 $B>)$7$^$9!#$3$N%U%!%$%k$O(B @file{~/.emacs} $B$H;w$F$$$^$9$,!"$3$A$i(B
 $B$O(B emacs-w3m $B$,5/F0$9$k$H$-$KFI$_9~$^$l$^$9!#$7$+$7!"Nc$($PA0=R(B
-$B$N(B autoload $B$NDj5A$N$h$&$K!"$=$3$K=q$1$J$$Nc30$N@_Dj$,$"$k$3$H$KCm0U$7$F(B
-$B2<$5$$!#(B
+$B$N(B autoload $B$NDj5A$N$h$&$K!"$=$3$K=q$/$Y$-$G$O$J$$%3%^%s%I$,$"$k$3$H$KCm(B
+$B0U$7$F2<$5$$!#(B
 
 @item Proxy Gateway
 @cindex Firewall
@@ -603,10 +604,10 @@ setenv http_proxy http://proxy.hogege.com:8000/
              '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
 @end lisp
 
-$B4D6-JQ?t(B @code{no-proxy} $B$K%3%s%^$G6hJ,$1$5$l$?%[%9%HL>$r@_Dj$9$k$+!"$^(B
-$B$?$O0J2<$N$h$&$K%I%a%$%sL>(B ($B%[%9%HL>$G$O$J$$(B) $B$N%j%9%H$rJQ(B
-$B?t(B @code{w3m-no-proxy-domains} $B$K@_Dj$9$k$3$H$K$h$C$F!"(Bproxy $B%2!<%H%&%'(B
-$B%$$r;H$o$:$K@\B3$9$k%[%9%H$r;XDj$9$k$3$H$,$G$-$^$9!#(B
+Proxy $B%2!<%H%&%'%$$rDL$5$:$K@\B3$7$J$1$l$P$J$i$J$$(B @code{no-proxy} $B%[%9(B
+$B%H$r;XDj$9$k$K$O!"4D6-JQ?t(B @code{no-proxy} $B$K%3%s%^$G6hJ,$1$5$l$?%[%9%H(B
+$BL>$r@_Dj$9$k$+!"$^$?$O0J2<$N$h$&$K%I%a%$%sL>(B ($B%[%9%HL>$G$O$J$$(B) $B$N%j%9%H(B
+$B$r!"JQ?t(B @code{w3m-no-proxy-domains} $B$K@_Dj$7$F2<$5$$!#(B
 
 @lisp
 (setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
@@ -1727,10 +1728,9 @@ Emacs-w3m $B$OMxMQ2DG=$JB?$/$N8!:w%(%s%8%s$r;}$C$F$$$^$9!#$"$J$?$N$*5$$KF~(B
 $B?t(B @code{w3m-default-coding-system} $B$NCM$,I8=`$N%(%s%3!<%G%#%s%0$H$7$F;H(B
 $B$o$l$^$9!#(B
 
-$B%(%s%3!<%G%#%s%0$K4X$7$F$4;29M$^$G$K!"1Q8l$N8!:w%(%s%8%s$N$?$a$K$O!"$[$H(B
-$B$s$I$=$l$r9MN8$9$kI,MW$,$"$j$^$;$s!#$7$+$7$J$,$i!"$"$kF|K\$N8!:w%(%s%8%s(B
-$B$K$D$$$F$O!"$=$l$K2?$+(B ($BNc$($P(B @code{euc-japan}) $B$r;XDj$9$kI,MW$,$"$k$+(B
-$B$b$7$l$^$;$s!#(B
+$B1Q8l$N8!:w%(%s%8%s$G$OLGB?$K5$$K$9$kI,MW$,L5$$$3$H$J$N$G$9$,!"$$$/$D$+$N(B
+$BF|K\$N8!:w%(%s%8%s$G$O!"$=$l$K2?$+(B ($BNc$($P(B @code{euc-japan}) $B$r;XDj$9$k(B
+$BI,MW$,$"$k$+$b$7$l$^$;$s!#(B
 
 @item
 $B:#$d$3$N8!:w%(%s%8%s$O!"(Bemacs-w3m $B$GDL>o$N(B @kbd{S} $B%-!<$G;H$&$3$H$,$G$-(B
@@ -2175,7 +2175,7 @@ Emacs-w3m $B$r;H$&$3$H$K$h$C$F!"(BText/Html $B$r(B Message $B%b!<%I$KI=<($G
 $B$O(B @samp{text/plain} $B%Q!<%H$H(B @samp{text/html} $B%Q!<%H$NN>J}$+$i@.$k(B ($B2?(B
 $B$A$e$&%P%s%II}$NL5BL;H$$$@(B) @samp{multipart/alternative} $B%U%)!<%^%C%H$r(B
 $B;H$C$F$$$^$9!#(BMew $B$O%G%U%)%k%H$G$O(B @samp{text/plain} $B%Q!<%H$@$1$rI=<($7(B
-$B$^$9!#$"$J$?$O(B emacs-w3m $B$r;H$C$F$$$k$N$G$9$+$i!"(B@samp{text/plain} $B%Q!<(B
+$B$^$9!#$"$J$?$O(B emacs-w3m $B$r;H$C$F$$$k$N$G$9$+$i!"(B@samp{text/html} $B%Q!<(B
 $B%H$NJ}$rM%@h$7$?$/$J$k$+$b$7$l$^$;$s!#$=$l$J$i$P!"0J2<$N@_Dj(B
 $B$r(B @file{~/.mew.el} $B%U%!%$%k$K2C$($F2<$5$$(B:
 
@@ -2227,8 +2227,8 @@ Emacs-w3m $B$H(B @sc{semi} MUA$B!"Nc$($P(B Wanderlust $B$d(B T-gnus $B$J$
 @end lisp
 
 @code{mime-w3m} $B%b%8%e!<%k$H(B @code{mime-w3} $B%b%8%e!<%k$O!"$4A[A|$NDL$j5!(B
-$BG=E*$K$[$\F1$8$b$N$G$9(B ($BL>A0$b1$$rF'$s$G$$$k$G$7$g$&(B?)$B!#8e<T(B
-$B$O(B @sc{semi} $B%Q%C%1!<%8$K4^$^$l$F$$$^$9!#(B
+$BG=E*$K$[$\F1$8$b$N$G$9(B ($BL>A0$b;w$F$$$k$G$7$g$&(B?)$B!#8e<T$O(B @sc{semi} $B%Q%C(B
+$B%1!<%8$K4^$^$l$F$$$^$9!#(B
 
 $B5-;v%P%C%U%!$N(B HTML $B$NItJ,$G$O(B @code{w3m-minor-mode} $B$,(B on $B$K$J$C$F!"(B
 emacs-w3m $B$N$HF1$8<gMW$J%-!<$r;H$&$3$H$,$G$-$^$9!#Nc$($P(B @key{RET} $B$O!"(B
