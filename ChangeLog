@@ -1,3 +1,11 @@
+2002-08-21  OHASHI Akira  <bg66@koka-in.org>
+
+	* shimbun/sb-macosx-jp.el: New file.
+	* shimbun/sb-fml.el (shimbun-get-headers): Use `shimbun-index-url'
+	instead of `shimbun-url-internal'.
+
+	* shimbun/sb-redhat.el: Fix.
+
 2002-08-18  OHASHI Akira  <bg66@koka-in.org>
 
 	* shimbun/sb-redhat.el: New file.

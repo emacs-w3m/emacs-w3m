@@ -58,6 +58,7 @@
   "<td align=\"left\"><b><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+\.html\\)\">\\([^<]+\\)</a></b></td>\n<td align=\"right\">\\([^<]+\\)</td>")
 (defvar shimbun-redhat-litemplate-regexp-old
   " </tt><b><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+\.html\\)\">\\([^<]+\\)</a></b><tt> </tt>\\(.+\\)")
+
 (luna-define-method shimbun-index-url ((shimbun shimbun-redhat))
   (concat (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun) "/"))
