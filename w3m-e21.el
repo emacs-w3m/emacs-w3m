@@ -203,6 +203,14 @@ Buffer string between BEG and END are replaced with IMAGE."
     (add-text-properties start end (append '(face w3m-form-face)
 					   properties))))
 
+(defun w3m-setup-widget-faces ()
+  (make-local-variable 'widget-button-face)
+  (make-local-variable 'widget-mouse-face)
+  (make-local-variable 'widget-button-pressed-face)
+  (setq widget-button-face 'w3m-form-button-face)
+  (setq widget-mouse-face 'w3m-form-button-mouse-face)
+  (setq widget-button-pressed-face 'w3m-form-button-pressed-face))
+
 ;;; Toolbar
 (defcustom w3m-use-toolbar (w3m-image-type-available-p 'xpm)
   "Non-nil activates toolbar of w3m."
@@ -423,22 +431,6 @@ use of ImageMagick absolutely by setting this option to nil."
 (add-hook 'w3m-mode-hook 'w3m-favicon-load-cache-file)
 
 ;;; Header line & Tabs
-(defface w3m-header-line-location-title-face
-    '((((class color) (background light))
-       (:foreground "Blue" :background "Gray90"))
-      (((class color) (background dark))
-       (:foreground "Cyan" :background "Gray20")))
-  "*Face for header-line location title."
-  :group 'w3m-face)
-
-(defface w3m-header-line-location-content-face
-  '((((class color) (background light))
-     (:foreground "DarkGoldenrod" :background "Gray90"))
-    (((class color) (background dark))
-     (:foreground "LightGoldenrod" :background "Gray20")))
-  "*Face for header-line location content."
-  :group 'w3m-face)
-
 (defcustom w3m-tab-width 11
   "w3m tab width."
   :group 'w3m
@@ -491,66 +483,27 @@ use of ImageMagick absolutely by setting this option to nil."
   "*Face to fontify background of tab line."
   :group 'w3m-face)
 
-(defvar w3m-header-line-map (make-sparse-keymap))
-(define-key w3m-header-line-map [mouse-2] 'w3m-goto-url)
-
 (defun w3m-setup-header-line ()
-  (if w3m-use-tab
-      (setq header-line-format (list '(:eval (w3m-tab-line))))
-    (if w3m-use-header-line
-	(setq header-line-format
-	      (list
-	       (propertize
-		"Location: "
-		'face
-		'w3m-header-line-location-title-face)
-	       '(:eval
-		 (propertize
-		  (if (stringp w3m-current-url)
-		      (replace-regexp-in-string "%" "%%" w3m-current-url)
-		    "")
-		  'face
-		  'w3m-header-line-location-content-face
-		  'local-map
-		  (let ((map (make-sparse-keymap)))
-		    (define-key map [header-line mouse-2]
-		      'w3m-goto-url)
-		    map)
-		  'help-echo
-		  "mouse-2 prompts to input URL")))))))
-
-(defun w3m-insert-header-line ()
-  (when (and w3m-use-tab
-	     w3m-use-header-line
-	     (stringp w3m-current-url)
-	     (eq 'w3m-mode major-mode))
-    (goto-char (point-min))
-    (insert "Location: ")
-    (put-text-property (point-min) (point)
-		       'face 'w3m-header-line-location-title-face)
-    (let ((start (point))
-	  (help "button2 prompts to input URL"))
-      (insert w3m-current-url)
-      (add-text-properties start (point)
-			   (list 'face
-				 'w3m-header-line-location-content-face
-				 'mouse-face 'highlight
-				 'keymap w3m-header-line-map
-				 'help-echo help
-				 'balloon-help help))
-      (setq start (point))
-      (insert-char ?\  (max 0 (- (window-width) (current-column) 1)))
-      (put-text-property start (point)
-			 'face 'w3m-header-line-location-content-face)
-      (insert "\n"))))
-
-(defun w3m-setup-widget-faces ()
-  (make-local-variable 'widget-button-face)
-  (make-local-variable 'widget-mouse-face)
-  (make-local-variable 'widget-button-pressed-face)
-  (setq widget-button-face 'w3m-form-button-face)
-  (setq widget-mouse-face 'w3m-form-button-mouse-face)
-  (setq widget-button-pressed-face 'w3m-form-button-pressed-face))
+  (setq header-line-format
+	(cond
+	 (w3m-use-tab
+	  (list '(:eval (w3m-tab-line))))
+	 (w3m-use-header-line
+	  (list
+	   (propertize
+	    "Location: "
+	    'face 'w3m-header-line-location-title-face)
+	   '(:eval
+	     (propertize
+	      (if (stringp w3m-current-url)
+		  (replace-regexp-in-string "%" "%%" w3m-current-url)
+		"")
+	      'face 'w3m-header-line-location-content-face
+	      'local-map (let ((map (make-sparse-keymap)))
+			   (define-key map [header-line mouse-2]
+			     'w3m-goto-url)
+			   map)
+	      'help-echo "mouse-2 prompts to input URL")))))))
 
 (defun w3m-tab-make-keymap (buffer)
   (let ((map (make-sparse-keymap))
@@ -597,7 +550,6 @@ use of ImageMagick absolutely by setting this option to nil."
 
 (add-hook 'w3m-mode-hook 'w3m-setup-header-line)
 (add-hook 'w3m-mode-hook 'w3m-setup-widget-faces)
-(add-hook 'w3m-fontify-after-hook 'w3m-insert-header-line)
 
 (provide 'w3m-e21)
 

@@ -3777,13 +3777,6 @@ If EMPTY is non-nil, the created buffer has empty content."
 (unless w3m-lynx-like-map
   (let ((map (make-keymap)))
     (suppress-keymap map)
-    (let ((global-map (current-global-map)))
-      (substitute-key-definition 'forward-char 'w3m-forward-char map global-map)
-      (substitute-key-definition 'backward-char 'w3m-backward-char map global-map)
-      (substitute-key-definition 'next-line 'w3m-next-line map global-map)
-      (substitute-key-definition 'previous-line 'w3m-previous-line map global-map)
-      (substitute-key-definition 'scroll-up 'w3m-scroll-up map global-map)
-      (substitute-key-definition 'scroll-down 'w3m-scroll-down map global-map))
     (define-key map " " 'w3m-scroll-up-or-next-url)
     (define-key map "b" 'w3m-scroll-down-or-previous-url)
     (define-key map [backspace] 'w3m-scroll-down-or-previous-url)
@@ -3792,13 +3785,13 @@ If EMPTY is non-nil, the created buffer has empty content."
 	(define-key map [(shift space)] 'w3m-scroll-down-or-previous-url)
       ;; Note: It does not have an effect on Emacs 19.
       (define-key map [?\S-\ ] 'w3m-scroll-down-or-previous-url))
-    (define-key map "h" 'w3m-backward-char)
-    (define-key map "j" 'w3m-next-line)
-    (define-key map "k" 'w3m-previous-line)
-    (define-key map "l" 'w3m-forward-char)
-    (define-key map "J" (lambda () (interactive) (w3m-scroll-down 1)))
-    (define-key map "K" (lambda () (interactive) (w3m-scroll-up 1)))
-    (define-key map "\M-g" 'w3m-goto-line)
+    (define-key map "h" 'backward-char)
+    (define-key map "j" 'next-line)
+    (define-key map "k" 'previous-line)
+    (define-key map "l" 'forward-char)
+    (define-key map "J" (lambda () (interactive) (scroll-down 1)))
+    (define-key map "K" (lambda () (interactive) (scroll-up 1)))
+    (define-key map "\M-g" 'goto-line)
     (define-key map "\C-?" 'w3m-scroll-down-or-previous-url)
     (define-key map "\t" 'w3m-next-anchor)
     (define-key map [(shift tab)] 'w3m-previous-anchor)
@@ -3878,13 +3871,6 @@ If EMPTY is non-nil, the created buffer has empty content."
 (unless w3m-info-like-map
   (let ((map (make-keymap)))
     (suppress-keymap map)
-    (let ((global-map (current-global-map)))
-      (substitute-key-definition 'forward-char 'w3m-forward-char map global-map)
-      (substitute-key-definition 'backward-char 'w3m-backward-char map global-map)
-      (substitute-key-definition 'next-line 'w3m-next-line map global-map)
-      (substitute-key-definition 'previous-line 'w3m-previous-line map global-map)
-      (substitute-key-definition 'scroll-up 'w3m-scroll-up map global-map)
-      (substitute-key-definition 'scroll-down 'w3m-scroll-down map global-map))
     (define-key map [backspace] 'w3m-scroll-down-or-previous-url)
     (define-key map [delete] 'w3m-scroll-down-or-previous-url)
     (define-key map "\C-?" 'w3m-scroll-down-or-previous-url)
@@ -3923,7 +3909,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "E" 'w3m-edit-this-url)
     (define-key map "f" 'undefined) ;; reserved.
     (define-key map "g" 'w3m-goto-url)
-    (define-key map "\M-g" 'w3m-goto-line)
+    (define-key map "\M-g" 'goto-line)
     (define-key map "G" 'w3m-goto-url-new-session)
     (define-key map "h" 'describe-mode)
     (define-key map "H" 'w3m-gohome)
@@ -4096,13 +4082,13 @@ Return t if deleting current frame or window is succeeded."
 \\[w3m-scroll-left]	Scroll to left.
 \\[w3m-scroll-right]	Scroll to right.
 
-\\[w3m-next-line]	Next line.
-\\[w3m-previous-line]	Previous line.
+\\[next-line]	Next line.
+\\[previous-line]	Previous line.
 
-\\[w3m-forward-char]	Forward char.
-\\[w3m-backward-char]	Backward char.
+\\[forward-char]	Forward char.
+\\[backward-char]	Backward char.
 
-\\[w3m-goto-line]	Jump to line.
+\\[goto-line]	Jump to line.
 \\[w3m-history-store-position]	Mark the current position.
 \\[w3m-history-restore-position]	Goto the last position.
 
@@ -4148,50 +4134,6 @@ Return t if deleting current frame or window is succeeded."
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-hook))
-
-(defun w3m-forward-char (&optional n)
-  "Move point right N characters (left if N is negative).
-On reaching end of buffer, stop and signal error."
-  (interactive "p")
-  (prog1 (forward-char n)
-    (w3m-print-this-url)))
-
-(defun w3m-backward-char (&optional n)
-  "Move point left N characters (right if N is negative).
-On attempt to pass beginning or end of buffer, stop and signal error."
-  (interactive "p")
-  (prog1 (forward-char (- n))
-    (w3m-print-this-url)))
-
-(defun w3m-next-line (&optional arg)
-  "Move cursor vertically down ARG lines."
-  (interactive "p")
-  (prog1 (next-line arg)
-    (w3m-print-this-url)))
-
-(defun w3m-previous-line (&optional arg)
-  "Move cursor vertically up ARG lines."
-  (interactive "p")
-  (prog1 (next-line (- arg))
-    (w3m-print-this-url)))
-
-(defun w3m-goto-line (arg)
-  "Goto line ARG, counting from line 1 at beginning of buffer."
-  (interactive "NGoto line: ")
-  (prog1 (goto-line arg)
-    (w3m-print-this-url)))
-
-(defun w3m-scroll-up (&optional arg)
-  "Scroll text of current window upward ARG lines; or near full screen if no ARG."
-  (interactive "P")
-  (prog1 (scroll-up arg)
-    (w3m-print-this-url)))
-
-(defun w3m-scroll-down (&optional arg)
-  "Scroll text of current window down ARG lines; or near full screen if no ARG."
-  (interactive "P")
-  (prog1 (scroll-down arg)
-    (w3m-print-this-url)))
 
 (defun w3m-scroll-up-or-next-url (arg)
   "Scroll text of current window upward ARG lines; or go to next url."
@@ -4304,6 +4246,28 @@ it will prompt user where to save a file."
 	(copy-file ftp filename)
 	(message "Wrote %s" filename)))))
 
+(defun w3m-add-local-hook (hook function &optional append)
+  "Add to the buffer-local value of HOOK the function FUNCTION."
+  (w3m-static-when (or (featurep 'xemacs) (< emacs-major-version 21))
+    (make-local-hook hook))
+  (add-hook hook function append t))
+
+(defvar w3m-current-position -1)
+(make-variable-buffer-local 'w3m-current-position)
+
+(defun w3m-store-current-position ()
+  "Store the current position to `w3m-current-position' before every
+commands.  This function is designed as the hook function which is
+registered to `pre-command-hook' by `w3m-buffer-setup'."
+  (setq w3m-current-position (point)))
+
+(defun w3m-print-this-url-after-command ()
+  "Print the URL pointed by the anchor under the cursor after every
+commands.  This function is designed as the hook function which is
+registered to `post-command-hook' by `w3m-buffer-setup'."
+  (when (/= (point) w3m-current-position)
+    (w3m-print-this-url)))
+
 (defsubst w3m-buffer-setup ()
   "When this buffer's major mode is not w3m-mode, generate an
 appropriate buffer and select it."
@@ -4311,6 +4275,8 @@ appropriate buffer and select it."
     (set-buffer (get-buffer-create "*w3m*"))
     (unless (eq major-mode 'w3m-mode)
       (w3m-mode)))
+  (w3m-add-local-hook 'pre-command-hook 'w3m-store-current-position)
+  (w3m-add-local-hook 'post-command-hook 'w3m-print-this-url-after-command)
   (setq mode-line-buffer-identification
 	(list "%b "
 	      '((w3m-current-process
@@ -5222,65 +5188,60 @@ w3m-mode buffers."
        (/ (* (frame-height) (cdr w3m-select-buffer-window-ratio)) 100))))
 
 
-;;; Header line (emulating Emacs 21).
+;;; Header line
 (defcustom w3m-use-header-line t
   "*Non-nil activates header-line of w3m."
   :group 'w3m
   :type 'boolean)
 
-(when (or (featurep 'xemacs)
-	  (not (boundp 'emacs-major-version))
-	  (<= emacs-major-version 20))
-  ;; Faces for Emacs 21 will be declared in w3m-e21.el.
-  (defface w3m-header-line-location-title-face
-    '((((class color) (background light))
-       (:foreground "Blue" :background "Gray90"))
-      (((class color) (background dark))
-       (:foreground "Cyan" :background "Gray20")))
-    "Face for header-line location title."
-    :group 'w3m-face)
+(defface w3m-header-line-location-title-face
+  '((((class color) (background light))
+     (:foreground "Blue" :background "Gray90"))
+    (((class color) (background dark))
+     (:foreground "Cyan" :background "Gray20")))
+  "Face for header-line location title."
+  :group 'w3m-face)
 
-  (defface w3m-header-line-location-content-face
-    '((((class color) (background light))
-       (:foreground "DarkGoldenrod" :background "Gray90"))
-      (((class color) (background dark))
-       (:foreground "LightGoldenrod" :background "Gray20")))
-    "Face for header-line location content."
-    :group 'w3m-face)
+(defface w3m-header-line-location-content-face
+  '((((class color) (background light))
+     (:foreground "DarkGoldenrod" :background "Gray90"))
+    (((class color) (background dark))
+     (:foreground "LightGoldenrod" :background "Gray20")))
+  "Face for header-line location content."
+  :group 'w3m-face)
 
-  (add-hook 'w3m-fontify-after-hook 'w3m-setup-header-line))
+(defvar w3m-header-line-map nil)
+(unless w3m-header-line-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mouse-2] 'w3m-goto-url)
+    (setq w3m-header-line-map map)))
 
-(unless (or (featurep 'xemacs)
-	    (and (boundp 'emacs-major-version)
-		 (>= emacs-major-version 21)))
-  ;; The following definitions are for Emacs 19 and 20, otherwise, the
-  ;; analogs for Emacs 21 or XEmacs will be defined in w3m-e21.el or
-  ;; w3m-xmas.el.
-  (defvar w3m-header-line-map (make-sparse-keymap))
-  (define-key w3m-header-line-map [mouse-2] 'w3m-goto-url)
+(defun w3m-header-line-insert ()
+  "Insert the header line to this buffer."
+  (when (and (or (fboundp 'xemacs)
+		 (< emacs-major-version 21)
+		 w3m-use-tab)
+	     w3m-use-header-line
+	     w3m-current-url
+	     (eq 'w3m-mode major-mode))
+    (goto-char (point-min))
+    (insert "Location: ")
+    (w3m-add-text-properties (point-min) (point)
+			     `(face w3m-header-line-location-title-face))
+    (let ((start (point)))
+      (insert w3m-current-url)
+      (w3m-add-text-properties start (point)
+			       `(face w3m-header-line-location-content-face
+				 mouse-face highlight
+				 local-map ,w3m-header-line-map))
+      (setq start (point))
+      (insert-char ?\  (max 0 (- (window-width) (current-column) 1)))
+      (w3m-add-text-properties start (point)
+			       `(face w3m-header-line-location-content-face))
+      (unless (eolp)
+	(insert "\n")))))
 
-  (defun w3m-setup-header-line ()
-    "Setup header line (emulating Emacs 21)."
-    (when (and w3m-use-header-line
-	       w3m-current-url
-	       (eq 'w3m-mode major-mode))
-      (goto-char (point-min))
-      (insert "Location: ")
-      (w3m-add-text-properties (point-min) (point)
-			       '(face w3m-header-line-location-title-face))
-      (let ((start (point)))
-	(insert w3m-current-url)
-	(w3m-add-text-properties start (point)
-				 (list 'face
-				       'w3m-header-line-location-content-face
-				       'mouse-face 'highlight
-				       'local-map w3m-header-line-map))
-	(setq start (point))
-	(insert-char ?\  (max 0 (- (window-width) (current-column) 1)))
-	(w3m-add-text-properties start (point)
-				 '(face w3m-header-line-location-content-face))
-	(unless (eolp)
-	  (insert "\n"))))))
+(add-hook 'w3m-fontify-after-hook 'w3m-header-line-insert)
 
 (provide 'w3m)
 

@@ -120,7 +120,7 @@ or `debug-on-quit' is non-nil."
 ;;; Text props:
 
 (defmacro w3m-add-text-properties (start end props &optional object)
-  "Like `add-text-properties' but always add the non-sticky properties."
+  "Like `add-text-properties' but always add non-sticky properties."
   (let ((non-stickies
 	 (if (featurep 'xemacs)
 	     ;; Default to start-closed and end-open in XEmacsen.

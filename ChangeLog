@@ -1,18 +1,31 @@
-2001-12-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+2001-12-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-add-local-hook): New function.
+	(w3m-current-position): New buffer local variable.
+	(w3m-store-current-position): New hook function.
+	(w3m-print-this-url-after-command): New hook funtcion.
+	(w3m-buffer-setup): Regist these hook functions.
+	(w3m-header-line-location-title-face): Integrated with the
+	defition in w3m-e21.el
+	(w3m-header-line-location-content-face): Ditto.
+	(w3m-header-line-map): Ditto.
+	(w3m-header-line-insert): Renamed from `w3m-insert-header-line'.
+
+	* w3m-e21.el (w3m-header-line-location-title-face): Integrated to
+	the defition in w3m.el.
+	(w3m-header-line-location-content-face): Ditto.
+	(w3m-header-line-map): Ditto.
+	(w3m-setup-header-line): Clean up.
+	(w3m-insert-header-line): Removed.
+
+2001-12-30  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-url-to-file-name): Fix its regexp.
 
 2001-12-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
-	Suggested by OHASHI Akira <bg66@koka-in.org>.
 	
 	* w3m.el (w3m-print-this-url): Display a message when it is called
 	interactively.
-	(w3m-forward-char, w3m-backward-char, w3m-next-line,
-	w3m-previous-line, w3m-scroll-up, w3m-scroll-down, w3m-goto-line):
-	New commands.
-	(w3m-lynx-like-map, w3m-info-like-map): These commands are
-	registered.
-	(w3m-mode): Modified docstring to follow changes of keymaps.
 
 2001-12-29  OHASHI Akira  <bg66@koka-in.org>
 
