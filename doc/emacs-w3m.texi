@@ -4446,6 +4446,9 @@ laut-de.platten_rock
 
 @item @uref{http://www.rediff.com/, Rediff.com}
 rediff.news
+
+@item @uref{http://www.excite.co.jp/, Excite News}
+excite.bit-koneta excite.world-odd
 @end table
 
 @node Mailing Lists Supported by Shimbun

@@ -1,3 +1,13 @@
+2005-01-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Allow not
+	quoted url in img tags.
+	Suggested by Tsuyoshi CHO <mfalcon_sky@emailuser.net>.
+
+2004-12-24  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
+
+	* shimbun/sb-excite.el: New file.
+
 2005-01-08  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
 
 	* shimbun/sb-japantimes.el (shimbun-japantimes-content-start):
