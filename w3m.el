@@ -206,6 +206,17 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'coding-system)
 
+(defcustom w3m-file-coding-system 'iso-2022-7bit
+  "*Coding system for writing configuration files in `w3m'.
+The value will be referred by the function `w3m-save-list'."
+  :group 'w3m
+  :type 'coding-system)
+
+(defvar w3m-file-coding-system-for-read nil
+  "*Coding system for reading configuration files in `w3m'.  Is is strongly
+recommended that you do not set this variable if there is no particular
+reason.  The value will be referred by the function `w3m-load-list'.")
+
 (defcustom w3m-file-name-coding-system
   (if (memq system-type '(windows-nt OS/2 emx))
       'shift_jis 'euc-japan)
@@ -330,11 +341,6 @@ apply the patch posted in [emacs-w3m:01119]."
   "*File which has list of arrived URLs."
   :group 'w3m
   :type 'file)
-
-(defcustom w3m-arrived-file-coding-system 'euc-japan
-  "*Coding system for arrived file."
-  :group 'w3m
-  :type 'coding-system)
 
 (defcustom w3m-keep-arrived-urls 500
   "*Arrived keep count of w3m."
@@ -1056,25 +1062,37 @@ If N is negative, last N items of LIST is returned."
 	  (nreverse (nthcdr (- (length list) n) (reverse list)))))
     (copy-sequence list)))
 
-(defun w3m-load-list (file coding)
+(defun w3m-load-list (file &optional coding-system)
   "Load list from FILE with CODING and return list."
   (when (file-readable-p file)
     (with-temp-buffer
-      (let ((file-coding-system-for-read coding)
-	    (coding-system-for-read coding))
+      (let ((file-coding-system-for-read (or coding-system
+					     w3m-file-coding-system-for-read))
+	    (coding-system-for-read (or coding-system
+					w3m-file-coding-system-for-read)))
 	(insert-file-contents file)
 	(condition-case nil
 	    (read (current-buffer))	; return value
 	  (error nil))))))
 
-(defun w3m-save-list (file coding list)
+(defun w3m-save-list (file list &optional coding-system)
   "Save LIST into file with CODING."
   (when (and list (file-writable-p file))
     (with-temp-buffer
-      (let ((file-coding-system coding)
-	    (coding-system-for-write coding)
+      (let ((file-coding-system (or coding-system w3m-file-coding-system))
+	    (coding-system-for-write (or coding-system w3m-file-coding-system))
 	    (standard-output (current-buffer))
 	    element print-length print-level)
+	(insert (format "\
+;;; %s  -*- mode: emacs-lisp%s -*-
+;; This file is generated automatically by Emacs-W3M v%s.
+
+"
+			(file-name-nondirectory file)
+			(if coding-system-for-write
+			    (format "; coding: %s" coding-system-for-write)
+			  "")
+			emacs-w3m-version))
 	(insert "(")
 	(while list
 	  (setq element (car list)
@@ -1170,8 +1188,7 @@ If N is negative, last N items of LIST is returned."
   "Load arrived url list from `w3m-arrived-file' and setup hash database."
   (unless w3m-arrived-db
     (setq w3m-arrived-db (make-vector w3m-arrived-db-size nil))
-    (let ((list (w3m-load-list w3m-arrived-file
-			       w3m-arrived-file-coding-system)))
+    (let ((list (w3m-load-list w3m-arrived-file)))
       (dolist (elem list)
 	(if (or (not (nth 1 elem)) (stringp (nth 1 elem)))
 	    ;; Process new format of arrived URL database.
@@ -1194,8 +1211,7 @@ If N is negative, last N items of LIST is returned."
   (when w3m-arrived-db
     ;; Re-read arrived DB file, and check sites which are arrived on
     ;; the other emacs process.
-    (dolist (elem (w3m-load-list w3m-arrived-file
-				 w3m-arrived-file-coding-system))
+    (dolist (elem (w3m-load-list w3m-arrived-file))
       (and
        ;; Check format of arrived DB file.
        (or (not (nth 1 elem)) (stringp (nth 1 elem)))
@@ -1223,7 +1239,6 @@ If N is negative, last N items of LIST is returned."
 		    list)))
        w3m-arrived-db)
       (w3m-save-list w3m-arrived-file
-		     w3m-arrived-file-coding-system
 		     (w3m-sub-list
 		      (sort list
 			    (lambda (a b)
@@ -1804,14 +1819,14 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	    (set-process-filter proc 'w3m-exec-filter)
 	    (set-process-sentinel proc 'ignore)
 	    (process-kill-without-query proc)
-            (unwind-protect
-                (progn
+	    (unwind-protect
+		(progn
 		  (while (eq (process-status proc) 'run)
 		    (accept-process-output nil 0 200))
 		  (setq status (process-exit-status proc))
 		  (w3m-exec-set-user w3m-current-url w3m-process-realm
 				     w3m-process-user w3m-process-passwd))
-              (delete-process proc)));; Clean up resources of process.
+	      (delete-process proc)));; Clean up resources of process.
 	;; call-process
 	(setq status (apply 'call-process w3m-command nil t nil args)))
       (cond ((numberp status)
@@ -1900,7 +1915,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		   (= (match-end 0) (point-max)))
 	      (unless w3m-proxy-user
 		(setq w3m-proxy-user
-		      (read-from-minibuffer (concat 
+		      (read-from-minibuffer (concat
 					     "Proxy Username for "
 					     (match-string 2) ": "))))
 	      (condition-case nil
@@ -1911,7 +1926,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		    "\\(\nWrong username or password\n\\)?Username for \\(.*\\)\n?: Password: ")
 		   (= (match-end 0) (point-max)))
 	      (setq w3m-process-realm (match-string 2))
-	      (setq w3m-process-passwd 
+	      (setq w3m-process-passwd
 		    (or (cdr (w3m-exec-get-user
 			      w3m-current-url w3m-process-realm))
 			(read-passwd
@@ -1930,7 +1945,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		    (or (car (w3m-exec-get-user
 			      w3m-current-url w3m-process-realm))
 			(read-from-minibuffer (format "Username for %s: "
-						      w3m-process-realm))))	      
+						      w3m-process-realm))))
 	      (condition-case nil
 		  (process-send-string process
 				       (concat w3m-process-user "\n"))

@@ -1,3 +1,24 @@
+2001-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-antenna.el (w3m-antenna-shutdown): Don't specify a
+	coding-system to `w3m-save-list'.
+	(w3m-antenna-setup): Don't specify a coding-system to
+	`w3m-load-list'.
+	(w3m-antenna-file-coding-system): Abolished.
+
+	* w3m.el (w3m-arrived-shutdown): Don't specify a coding-system to
+	`w3m-save-list'.
+	(w3m-arrived-shutdown, w3m-arrived-setup): Don't specify a
+	coding-system to `w3m-load-list'.
+	(w3m-save-list): Made the arg `coding-system' optional; refer to
+	`w3m-file-coding-system' by default; insert the file magic in the
+	beginning of a file.
+	(w3m-load-list): Made the arg `coding-system' optional; refer to
+	`w3m-file-coding-system-for-read' by default.
+	(w3m-arrived-file-coding-system): Abolished.
+	(w3m-file-coding-system-for-read): New variable.
+	(w3m-file-coding-system): New user option.
+
 2001-08-02  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-arrived-user-alist): Rename from

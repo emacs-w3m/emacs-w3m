@@ -109,11 +109,6 @@
   :group 'w3m-antenna
   :type 'file)
 
-(defcustom w3m-antenna-file-coding-system 'euc-japan
-  "Coding system for antenna file."
-  :group 'w3m-antenna
-  :type 'coding-system)
-
 (defvar w3m-antenna-alist nil
   "A list of site information (internal variable).  nil means that
 antenna database is not initialised.  Each site information is a list
@@ -144,8 +139,7 @@ whose elements are:
 
 (defun w3m-antenna-setup ()
   (unless w3m-antenna-alist
-    (setq w3m-antenna-alist
-	  (w3m-load-list w3m-antenna-file w3m-antenna-file-coding-system))
+    (setq w3m-antenna-alist (w3m-load-list w3m-antenna-file))
     ;; Convert old format of antenna database file, which is used
     ;; before revision 1.5.
     (and w3m-antenna-alist
@@ -170,7 +164,7 @@ whose elements are:
 
 (defun w3m-antenna-shutdown ()
   (when w3m-antenna-alist
-    (w3m-save-list w3m-antenna-file w3m-antenna-file-coding-system w3m-antenna-alist)
+    (w3m-save-list w3m-antenna-file w3m-antenna-alist)
     (setq w3m-antenna-alist nil)))
 
 (defun w3m-antenna-hns-last-modified (url &optional no-cache)
