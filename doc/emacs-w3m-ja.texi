@@ -1600,19 +1600,16 @@ URL をアンテナ・データベースに加えます。接頭引数付きで呼ばれた場合は、現
 
 @node Showing Directory Tree
 @section ディレクトリの木構造を表示する
-
-@c TRANSLATEME!
 @cindex Showing the tree structure of local directory
 
-Using the @code{w3m-dtree} command, you can display a tree of all
-subdirectories of a local directory, and browse it like a regular web
-page.  The emacs-w3m buffer you get when you use this feature is very
-similar to the output of the external ``tree'' utility, hence the
-name.  Emacs-w3m adds a bonus: if you call the command with a prefix
-argument, it will display files as well, turning emacs-w3m into a
-full-featured file browser.
+@code{w3m-dtree} コマンドを使うと、ローカルディレクトリのすべてのサブディ
+レクトリの木構造を表示して、普通のウェブページのように閲覧することができ
+ます。この機能を使ったときに現れる emacs-w3m のバッファは、その名前ゆえ
+に外部の ``tree'' プログラムの出力に非常に類似したものになります。さら
+にemacs-w3m からのボーナス: このコマンドを接頭引数付きで呼ぶとファイルも
+表示し、emacs-w3m は完全装備のファイル閲覧器に変身します。
 
-Here is an example of what an emacs-w3m dtree run looks like:
+Emacs-w3m dtree がどんなふうに動作するかの例です:
 
 @example
 /home/romain/.elisp/emacs-w3m/
@@ -1631,7 +1628,7 @@ Here is an example of what an emacs-w3m dtree run looks like:
     +-CVS/
 @end example
 
-And with a prefix argument, you get something like this instead:
+接頭引数を付けると、代わりにこんなふうになります:
 
 @example
 /home/romain/.elisp/emacs-w3m/ (allfiles)
@@ -1660,9 +1657,9 @@ And with a prefix argument, you get something like this instead:
 @item D
 @kindex D
 @findex w3m-dtree
-Prompt for a local directory in the minibuffer, then display its tree
-structure.  If called with a prefix argument (e.g. @kbd{C-u D}), show
-files in the directories as well.
+ミニバッファでローカルディレクトリの入力を求め、その木構造を表示します。
+接頭引数付きで呼ばれると (例: @kbd{C-u D})、そのディレクトリにあるファイ
+ルも表示します。
 @end table
 
 @node Viewing Perl Documents
