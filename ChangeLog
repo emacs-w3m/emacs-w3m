@@ -1,3 +1,8 @@
+2002-04-03  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-fontify): Put invisible and intangible properties at
+	the duplicated empty lines instead of delete them.
+
 2002-04-03  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-e21.el (w3m-resize-image): Asynchronous implementation.
