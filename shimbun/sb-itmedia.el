@@ -42,15 +42,36 @@
 (defvar shimbun-itmedia-group-alist
   (let ((template "<a href=\"/\\(\\(%s\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\
 /\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>"))
-    `(("news" "news/past" ,(format template "news/articles")
-       "(\\([0-9]+:[0-9]+\\))")
-      ("enterprise" "enterprise/news" ,(format template "enterprise")
+    `(("anchordesk" "anchordesk"
+       ,(format template "anchordesk/articles")
        "［[^ ]* \\([0-9]+:[0-9]+\\)］")
-      ("mobile" "mobile/news" ,(format template "mobile/articles") nil)
-      ("pcupdate" "pcupdate/news" ,(format template "pcupdate/articles") nil)
-      ("lifestyle" "lifestyle/news.html"
-       ,(format template "lifestyle/articles") nil)
-      ("games" "games/news" ,(format template "games/gsnews") nil))))
+      ("bursts" "news/bursts"
+       ,(format template "news/articles")
+       "［[^ ]* \\([0-9]+:[0-9]+\\)］")
+      ("business" "news/business"
+       ,(format template "news/articles")
+       nil)
+      ("enterprise" "enterprise"
+       ,(format template "enterprise/articles")
+       "［[^ ]* \\([0-9]+:[0-9]+\\)］")
+      ("games" "games/news"
+       ,(format template "games/gsnews")
+       nil)
+      ("lifestyle" "lifestyle"
+       ,(format template "lifestyle/articles")
+       nil)
+      ("mobile" "mobile/news"
+       ,(format template "mobile/articles")
+       nil)
+      ("news" "news/past"
+       ,(format template "news/articles")
+       "(\\([0-9]+:[0-9]+\\))")
+      ("pcupdate" "pcupdate/news"
+       ,(format template "pcupdate/articles")
+       nil)
+      ("technology" "news/technology"
+       ,(format template "news/articles")
+       nil))))
 
 (defvar shimbun-itmedia-server-name "ITmedia")
 (defvar shimbun-itmedia-from-address "webmaster@itmedia.co.jp")
@@ -76,15 +97,25 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-itmedia)
 					 &optional range)
+;;;<DEBUG>
+;;  (shimbun-itmedia-get-headers shimbun))
+;;
+;;(defun shimbun-itmedia-get-headers (shimbun)
+;;;</DEBUG>
   (let* ((case-fold-search t)
 	 (group (shimbun-current-group-internal shimbun))
 	 (url-regexp (nth 2 (assoc group shimbun-itmedia-group-alist)))
 	 (time-regexp (nth 3 (assoc group shimbun-itmedia-group-alist)))
-	 headers)
-    (while (re-search-forward "\r" nil t)
+	 next headers)
+    (while (search-forward "\r" nil t)
       (replace-match "\n"))
     (goto-char (point-min))
-    (while (re-search-forward url-regexp nil t)
+    (while (if next
+	       (progn
+		 (set-match-data next)
+		 (setq next nil)
+		 (goto-char (match-end 0)))
+	     (re-search-forward url-regexp nil t))
       (unless (string= "index" (match-string 6))
 	(let* ((url (match-string 1))
 	       (year (+ 2000 (string-to-number (match-string 3))))
@@ -100,7 +131,9 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 				   (split-string
 				    (buffer-substring
 				     (match-end 0)
-				     (progn (search-forward "</A>" nil t) (point)))
+				     (progn
+				       (search-forward "</A>" nil t)
+				       (point)))
 				    "<[^>]+>")
 				   ""))
 	       time)
@@ -108,18 +141,24 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 	    (setq subject (concat (substring subject 0 (match-beginning 0))
 				  (substring subject (match-end 0)))))
 	  (when time-regexp
-	    (re-search-forward time-regexp nil t)
-	    (setq time (match-string 1)))
+	    (setq next (point)
+		  next (when (re-search-forward url-regexp nil t)
+			 (goto-char next)
+			 (match-data))
+		  time (when (re-search-forward time-regexp (car next) t)
+			 (match-string 1))))
 	  (push (shimbun-make-header
 		 0
 		 (shimbun-mime-encode-string subject)
 		 (shimbun-from-address shimbun)
 		 (shimbun-make-date-string year month day time)
 		 id  "" 0 0
-		 (cond ((equal group "gamespot") (concat (shimbun-index-url shimbun) url))
-		       (t (concat shimbun-itmedia-url url))))
+		 (cond ((equal group "gamespot")
+			(concat (shimbun-index-url shimbun) url))
+		       (t
+			(concat shimbun-itmedia-url url))))
 		headers))))
-    headers))
+    (shimbun-sort-headers headers)))
 
 (defun shimbun-itmedia-clean-text-page ()
   (let ((case-fold-search t) (start))
@@ -141,9 +180,11 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
       (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
 	(delete-region (point-min) (line-end-position))))
     (shimbun-remove-tags "<!-- AD START -->" "<!-- AD END -->")
-    (shimbun-remove-tags "<IMG [^>]*SRC=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
+    (shimbun-remove-tags "\
+<IMG [^>]*SRC=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
 a1100\\.g\\.akamai\\.net\\)/[^>]+>")
-    (shimbun-remove-tags "<A [^>]*HREF=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
+    (shimbun-remove-tags "\
+<A [^>]*HREF=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
 a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")))
 
 (defun shimbun-itmedia-retrieve-next-pages (shimbun base-cid url
