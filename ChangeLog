@@ -1,3 +1,8 @@
+2001-03-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-goto-url): Switch to buffer of w3m, certainty.
+	(w3m): Ditto.
+
 2001-03-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-halfdump-command-arguments): Rename from

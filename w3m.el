@@ -2188,8 +2188,8 @@ or prefix ARG columns."
 	  (sit-for 0)
 	  (w3m-toggle-inline-images 'force reload))
 	(setq buffer-read-only t)
-	(set-buffer-modified-p nil)
-	(switch-to-buffer (current-buffer)))))))
+	(set-buffer-modified-p nil))
+      (switch-to-buffer (current-buffer))))))
 
 
 (defun w3m-reload-this-page (&optional arg)
@@ -2208,9 +2208,10 @@ or prefix ARG columns."
    (list (or (w3m-alive-p)
 	     (w3m-input-url))))
   (if (bufferp url)
-      (set-buffer url)
-    (w3m-goto-url url))
-  (switch-to-buffer (current-buffer)))
+      (progn
+	(set-buffer url)
+	(switch-to-buffer (current-buffer)))
+    (w3m-goto-url url)))
 
 
 (defun w3m-browse-url (url &optional new-window)
