@@ -3926,21 +3926,22 @@ works on Emacs.
     (setq url (substring url (match-end 0)))
     (w3m-with-work-buffer
       (delete-region (point-min) (point-max))
-      (insert "Information about current page\n"
+      (insert "Page Information\n"
 	      "\nTitle:          " (w3m-arrived-title url)
 	      "\nURL:            " url
 	      "\nDocument Type:  " (w3m-content-type url)
 	      "\nLast Modified:  "
-	      (let ((time (w3m-arrived-last-modified url)))
+	      (let ((time (w3m-last-modified url)))
 		(if time (current-time-string time) "")))
       (let ((charset (w3m-arrived-content-charset url)))
 	(when charset
 	  (insert "\nDocument Code:  " charset)))
-      (let ((header (w3m-w3m-get-header url no-cache)))
-	(when header
-	  (insert
-	   "\n\n━━━━━━━━━━━━━━━━━━━\n\nHeader information\n\n"
-	   header))))
+      (let (header)
+	(and (not (w3m-url-local-p url))
+	     (setq header (w3m-w3m-get-header url no-cache))
+	     (insert
+	      "\n\n━━━━━━━━━━━━━━━━━━━\n\nHeader information\n\n"
+	      header))))
     "text/plain"))
 
 (defun w3m-view-header ()
