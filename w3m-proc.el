@@ -442,28 +442,38 @@ Like `w3m-process-do', but the form FORM and the body BODY are
 evaluated in a temporary buffer."
   (let ((var (or (car spec) (gensym "--tempvar--")))
 	(form (cdr spec))
-	(post-function (gensym "--post-function--"))
-	(temp-buffer (gensym "--temp-buffer--")))
+	(post-body (gensym "--post-body--"))
+	(post-handler (gensym "--post-handler--"))
+	(temp-buffer (gensym "--temp-buffer--"))
+	(current-buffer (gensym "--current-buffer--")))
     `(lexical-let ((,temp-buffer
 		    (w3m-get-buffer-create
-		     (generate-new-buffer-name w3m-work-buffer-name))))
-       (let ((,post-function
-	      (lambda (,var)
-		(unwind-protect
-		    (with-current-buffer ,temp-buffer
-		      ,@body)
-		  (w3m-kill-buffer ,temp-buffer)))))
-	 (let ((,var (let ((handler (cons ,post-function handler)))
+		     (generate-new-buffer-name w3m-work-buffer-name)))
+		   (,current-buffer (current-buffer)))
+       (labels ((,post-body (,var)
+			    (when (buffer-name ,temp-buffer)
+			      (set-buffer ,temp-buffer))
+			    ,@body)
+		(,post-handler (,var)
+			       (when (buffer-name ,temp-buffer)
+				 (kill-buffer ,temp-buffer))
+			       (when (buffer-name ,current-buffer)
+				 (set-buffer ,current-buffer))
+			       ,var))
+	 (let ((,var (let ((handler
+			    (cons ',post-body (cons ',post-handler handler))))
 		       (with-current-buffer ,temp-buffer ,@form))))
 	   (if (w3m-process-p ,var)
 	       (if handler
 		   ,var
 		 (w3m-process-start-process ,var))
-	     (if (w3m-process-p (setq ,var (funcall ,post-function ,var)))
+	     (if (w3m-process-p
+		  (setq ,var (let ((handler (cons ',post-handler handler)))
+			       (,post-body ,var))))
 		 (if handler
 		     ,var
 		   (w3m-process-start-process ,var))
-	       ,var)))))))
+	       (,post-handler ,var))))))))
 (put 'w3m-process-do-with-temp-buffer 'lisp-indent-function 1)
 (put 'w3m-process-do-with-temp-buffer 'edebug-form-spec
      '((symbolp form) def-body))

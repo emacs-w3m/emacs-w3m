@@ -1681,7 +1681,6 @@ up as a new frame.")
 (defvar w3m-max-anchor-sequence nil "Maximum number of anchor sequence on this buffer.")
 (defvar w3m-current-refresh nil "Cons pair of refresh attribute, '(sec . url).")
 (defvar w3m-current-ssl nil "SSL certification indicator.")
-(defvar w3m-current-redirect nil "Redirect location.")
 
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-base-url)
@@ -1697,7 +1696,6 @@ up as a new frame.")
 (make-variable-buffer-local 'w3m-max-anchor-sequence)
 (make-variable-buffer-local 'w3m-current-refresh)
 (make-variable-buffer-local 'w3m-current-ssl)
-(make-variable-buffer-local 'w3m-current-redirect)
 
 (defsubst w3m-clear-local-variables ()
   (setq w3m-current-url nil
@@ -1712,12 +1710,10 @@ up as a new frame.")
 	w3m-contents-url nil
 	w3m-max-anchor-sequence nil
 	w3m-current-refresh nil
-	w3m-current-ssl nil
-	w3m-current-redirect nil))
+	w3m-current-ssl nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url base title cs char icon next prev
-	    start toc hseq refresh ssl redirect)
+  (let (url base title cs char icon next prev start toc hseq refresh ssl)
     (with-current-buffer from-buffer
       (setq url w3m-current-url
 	    base w3m-current-base-url
@@ -1731,8 +1727,7 @@ up as a new frame.")
 	    toc w3m-contents-url
 	    hseq w3m-max-anchor-sequence
 	    refresh w3m-current-refresh
-	    ssl w3m-current-ssl
-	    redirect w3m-current-redirect))
+	    ssl w3m-current-ssl))
     (setq w3m-current-url url
 	  w3m-current-base-url base
 	  w3m-current-title title
@@ -1745,8 +1740,7 @@ up as a new frame.")
 	  w3m-contents-url toc
 	  w3m-max-anchor-sequence hseq
 	  w3m-current-refresh refresh
-	  w3m-current-ssl ssl
-	  w3m-current-redirect redirect)))
+	  w3m-current-ssl ssl)))
 
 (defvar w3m-verbose t "Flag variable to control messages.")
 

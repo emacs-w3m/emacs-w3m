@@ -1,3 +1,12 @@
+2003-11-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-current-redirect): Abolished.
+	(w3m-clear-local-variables, w3m-copy-local-variables): Follow the
+	above change.
+
+	* w3m-proc.el (w3m-process-do-with-temp-buffer): Keep the current
+	directly after given FORM and BODY are evaluated.
+
 2003-11-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-follow-redirection): Fix its docstring.
