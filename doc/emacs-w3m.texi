@@ -1661,7 +1661,7 @@ prefix, by adding this to your @file{~/.emacs-w3m} file instead:
                     "http://my.searchengine.com/?query=%s"
                     nil))
      (add-to-list 'w3m-uri-replace-alist
-                  '("my" w3m-search-uri-replace "My engine"))))
+                  '("\\`my:" w3m-search-uri-replace "My engine"))))
 @end lisp
 
 This way you can also use a URL like @uref{my:foobar} to search for the
