@@ -1,3 +1,7 @@
+2004-01-08  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-itmedia.el: New file.
+
 2004-01-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-util.el (w3m-keep-region-active): Renamed from
