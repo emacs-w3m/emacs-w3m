@@ -1,3 +1,17 @@
+2005-03-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-show-decoded-url): Update its customize spec to use
+	it as the rule set to decode URIs when displaying them.  Changed
+	its default value.
+	(w3m-url-readable-string): New function to process the above option.
+	(w3m-make-help-echo, w3m-make-balloon-help): Do not accept
+	`url-decode' option, and use the above function to decore URIs.
+	(w3m-fontify-anchors): Follow the above change.
+	(w3m-print-current-url, w3m-print-this-url): Call the above function.
+	(w3m-make-url-decode-function): Removed.
+	(w3m-entity-alist, w3m-about-history): Remove redundant `function'.
+	For more detail, see http://www.mew.org/~kazu/doc/elisp/function.html.
+
 2005-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-modeline-title-string): New variable.

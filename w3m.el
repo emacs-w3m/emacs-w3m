@@ -1265,10 +1265,64 @@ See the balloon-help.el file for more information."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-show-decoded-url t
-  "If non-nil, show decoded url in mode-line and tooltip."
+(defcustom w3m-show-decoded-url
+  '(("\\`http://\\([^./?#]+\\.\\)*wikipedia\\.org/" . utf-8)
+    (t . t))
+  "*Non-nil means that URIs are decoded when displaying them."
   :group 'w3m
-  :type 'boolean)
+  :type
+  '(choice
+    :format "%{%t%}: %[Value Menu%]\n  %v"
+    (coding-system :tag "Specify encoding" :format "Use this encoding: %v"
+		   :match (lambda (widget value)
+			    (w3m-find-coding-system value)))
+    (const :tag "Prefer the encoding of the current page"
+	   :format "%t: %{t%}\n" :sample-face widget-field-face
+	   t)
+    (group :tag "List of prefered encodings"
+	   :match (lambda (widget value)
+		    (and (car-safe value)
+			 (symbolp (car-safe value))))
+	   (repeat :format "List of prefered encodings:\n%v%i\n"
+		   :inline t
+		   (coding-system :tag "Encoding")))
+    (group :tag "Rules to select an encoding of URIs on the current page"
+	   :match (lambda (widget value) value)
+	   (repeat
+	    :format
+	    "Rules to select an encoding of URIs on the current page:\n%v%i\n"
+	    :inline t
+	    (cons
+	     :format "%v" :indent 2
+	     (choice
+	      :format "\n  %[Value Menu for the car%]\n    %v"
+	      (regexp :tag "Regexp matches the current page")
+	      (function :tag "Predicate checks for the current page")
+	      (sexp :tag "Expression checks for the current page"))
+	     (choice
+	      :format "%[Value Menu for the cdr%]\n    %v"
+	      (coding-system :tag "Specify encoding"
+			     :format "Use this encoding: %v"
+			     :match (lambda (widget value)
+				      (if (featurep 'xemacs)
+					  nil ;; ??
+					(or (and (< emacs-major-version 21)
+						 (not value))
+					    (w3m-find-coding-system value)))))
+	      (const :tag "Prefer the encoding of the current page"
+		     :format "%t: %{t%}\n" :sample-face widget-field-face
+		     t)
+	      (group :tag "List of prefered encodings"
+		     (repeat :tag "List of prefered encodings"
+			     :inline t
+			     :extra-offset 4
+			     (coding-system :tag "Encoding")))
+	      (const :tag "Don't decode URIs"
+		     :format "%t: %{nil%}\n" :sample-face widget-field-face
+		     nil)))))
+    (const :tag "Don't decode URIs"
+	   :format "%t: %{nil%}\n" :sample-face widget-field-face
+	   nil)))
 
 (defcustom w3m-use-tab t
   "Non-nil means make emacs-w3m a tab browser.
@@ -1734,25 +1788,23 @@ Here are some predefined functions which can be used for those ways:
        (append basic-entity-alist
 	       ;; latin1
 	       (mapcar
-		(function
-		 (lambda (entity)
-		   (cons (car entity)
-			 (char-to-string
-			  (make-char (w3m-static-if (boundp 'MULE)
-					 lc-ltn1
-				       'latin-iso8859-1)
-				     (cdr entity))))))
+		(lambda (entity)
+		  (cons (car entity)
+			(char-to-string
+			 (make-char (w3m-static-if (boundp 'MULE)
+					lc-ltn1
+				      'latin-iso8859-1)
+				    (cdr entity)))))
 		latin1-entity)
 	       ;; greek
 	       (mapcar
-		(function
-		 (lambda (entity)
-		   (cons (car entity)
-			 (char-to-string
-			  (make-char (w3m-static-if (boundp 'MULE)
-					 lc-grk
-				       'greek-iso8859-7)
-				     (cdr entity))))))
+		(lambda (entity)
+		  (cons (car entity)
+			(char-to-string
+			 (make-char (w3m-static-if (boundp 'MULE)
+					lc-grk
+				      'greek-iso8859-7)
+				    (cdr entity)))))
 		greek-entity))))
    (when (w3m-mule-unicode-p)
      (let ((latin-extended-a
@@ -1811,26 +1863,24 @@ Here are some predefined functions which can be used for those ways:
        (append
 	(apply 'append
 	       (mapcar
-		(function
-		 (lambda (entities)
-		   (let ((code1 (car entities)))
-		     (mapcar
-		      (lambda (entity)
-			(cons (car entity)
-			      (char-to-string
-			       (make-char 'mule-unicode-0100-24ff
-					  code1 (cdr entity)))))
-		      (cdr entities)))))
+		(lambda (entities)
+		  (let ((code1 (car entities)))
+		    (mapcar
+		     (lambda (entity)
+		       (cons (car entity)
+			     (char-to-string
+			      (make-char 'mule-unicode-0100-24ff
+					 code1 (cdr entity)))))
+		     (cdr entities))))
 		`(,@latin-extended-a ,@latin-extended-b ,@general-punctuation
 		  ,@greek ,@letterlike-symbols ,@arrows
 		  ,@mathematical-operators ,@miscellaneous-technical)))
 	(mapcar
-	 (function
-	  (lambda (entity)
-	    (cons (car entity)
-		  (char-to-string
-		   (make-char 'mule-unicode-2500-33ff
-			      (car (cdr entity)) (cdr (cdr entity)))))))
+	 (lambda (entity)
+	   (cons (car entity)
+		 (char-to-string
+		  (make-char 'mule-unicode-2500-33ff
+			     (car (cdr entity)) (cdr (cdr entity))))))
 	 suit)))))
   "Alist of html character entities and values.")
 
@@ -2569,17 +2619,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 	   (nth 5 attrs)))
     `(nth 5 (w3m-attributes ,url ,no-cache))))
 
-(defsubst w3m-make-url-decode-function (str url-decode)
-  (if url-decode
-      `(let ((str ,str))
-	 (if w3m-show-decoded-url
-	     (w3m-url-decode-string str
-				    (cons w3m-current-coding-system
-					  w3m-coding-system-priority-list))
-	   str))
-    str))
-
-(defmacro w3m-make-help-echo (property &optional url-decode)
+(defmacro w3m-make-help-echo (property)
   "Make a function returning a string used for the `help-echo' message.
 PROPERTY is a symbol (which doesn't need to be quoted) of a text
 property (in XEmacs, it is an extent) with the value of a string which
@@ -2589,23 +2629,20 @@ need to know what function will be made, use `macroexpand'."
       (let ((str `(get-text-property (extent-start-position extent)
 				     ',property)))
 	`(if (>= emacs-major-version 21)
-	     (function
-	      (lambda (extent)
-		(if (and w3m-track-mouse
-			 (eq (extent-object extent) (current-buffer)))
-		    ,(w3m-make-url-decode-function str url-decode))))))
+	     (lambda (extent)
+	       (if (and w3m-track-mouse
+			(eq (extent-object extent) (current-buffer)))
+		   (w3m-url-readable-string str)))))
     `(if (>= emacs-major-version 21)
-	 (function
-	  (lambda (window object pos)
-	    (if w3m-track-mouse
-		(progn
-		  (w3m-message "")	; Clear the echo area.
-		  ,(w3m-make-url-decode-function
-		    `(get-text-property pos ',property
-					(window-buffer window))
-		    url-decode))))))))
+	 (lambda (window object pos)
+	   (if w3m-track-mouse
+	       (progn
+		 (w3m-message "")	; Clear the echo area.
+		 (w3m-url-readable-string
+		  (get-text-property pos ',property
+				     (window-buffer window)))))))))
 
-(defmacro w3m-make-balloon-help (property &optional url-decode)
+(defmacro w3m-make-balloon-help (property)
   "Make a function returning a string used for the `balloon-help' message.
 Functions made are used only when emacs-w3m is running under XEmacs.
 It returns an interned symbol of a function.  PROPERTY is a symbol
@@ -2624,7 +2661,7 @@ message."
 	       (lambda (extent)
 		 (if (and w3m-track-mouse
 			  (eq (extent-object extent) (current-buffer)))
-		     ,(w3m-make-url-decode-function str url-decode)))))
+		     (w3m-url-readable-string str)))))
 	   (when (and (featurep 'bytecomp)
 		      (not (compiled-function-p (symbol-function fn))))
 	     (byte-compile fn)))))))
@@ -2813,6 +2850,32 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 				w3m-coding-system
 				'iso-2022-7bit)))))
 
+(defun w3m-url-readable-string (url)
+  "Return a readable string for a give encoded URL.
+If `w3m-show-decoded-url' has non-nil value, it is refered to decide
+a decoding scheme."
+  (when (stringp url)
+    (let ((rule
+	   (if (and (listp w3m-show-decoded-url)
+		    (consp (car w3m-show-decoded-url)))
+	       (catch 'found-rule
+		 (dolist (elem w3m-show-decoded-url)
+		   (when (or (when (stringp (car elem))
+			       (string-match (car elem) w3m-current-url))
+			     (when (functionp (car elem))
+			       (funcall (car elem)))
+			     (when (listp (car elem))
+			       (eval (car elem))))
+		     (throw 'found-rule (cdr elem)))))
+	     w3m-show-decoded-url)))
+      (if rule
+	  (w3m-url-decode-string url
+				 (if (eq t rule)
+				     (cons w3m-current-coding-system
+					   w3m-coding-system-priority-list)
+				   rule))
+	url))))
+
 (defsubst w3m-url-transfer-encode-string (url &optional coding)
   "Encode non-ascii characters in URL into the sequence of escaped octets.
 CODING which defaults to `w3m-current-coding-system' (which see) is a
@@ -2957,8 +3020,8 @@ For example:
 
 (defun w3m-fontify-anchors ()
   "Fontify anchor tags in the buffer which contains halfdump."
-  (let ((help (w3m-make-help-echo w3m-href-anchor t))
-	(balloon (w3m-make-balloon-help w3m-href-anchor t))
+  (let ((help (w3m-make-help-echo w3m-href-anchor))
+	(balloon (w3m-make-balloon-help w3m-href-anchor))
 	prenames start end)
     (goto-char (point-min))
     (setq w3m-max-anchor-sequence 0)	;; reset max-hseq
@@ -5677,7 +5740,7 @@ of the url currently displayed.  The browser is defined in
   (interactive)
   (when w3m-current-url
     (kill-new w3m-current-url)
-    (w3m-message "%s" w3m-current-url)))
+    (w3m-message "%s" (w3m-url-readable-string w3m-current-url))))
 
 (defun w3m-print-this-url (&optional interactive-p)
   "Display the url under point in the echo area and put it into `kill-ring'."
@@ -5688,7 +5751,7 @@ of the url currently displayed.  The browser is defined in
     (when (or url interactive-p)
       (and url interactive-p (kill-new url))
       (w3m-message "%s"
-		   (or url
+		   (or (w3m-url-readable-string url)
 		       (and (w3m-action) "There is a form")
 		       "There is no url")))))
 
@@ -7911,11 +7974,10 @@ A history page is invoked by the `w3m-about-history' command.")
 		(apply 'max
 		       (apply 'append
 			      (mapcar
-			       (function
-				;; Don't use `caddr' here, since it won't
-				;; be substituted by the compiler macro.
-				(lambda (e)
-				  (car (cdr (cdr e)))))
+			       ;; Don't use `caddr' here, since it won't
+			       ;; be substituted by the compiler macro.
+			       (lambda (e)
+				 (car (cdr (cdr e))))
 			       history)))))))
 	    (cur (current-buffer))
 	    (margin (if (> w3m-about-history-indent-level 1)
@@ -7938,7 +8000,7 @@ A history page is invoked by the `w3m-about-history' command.")
 		position (caddr element))
 	  (when url
 	    (insert (format "h%s %d %d <a href=\"%s\">%s%s%s %s</a>\n"
-			    (mapconcat (function (lambda (d) (format form d)))
+			    (mapconcat (lambda (d) (format form d))
 				       position
 				       "-")
 			    (/ (1- (length position)) 2)
