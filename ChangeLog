@@ -3,7 +3,7 @@
 	* Makefile.in (clean): Do not remove `shimbun-servers.el'.
 
 	* shimbun/shimbun.el: Do not require `shimbun-servers.el'.
-	(shimbun-backend-additional-path): New option.
+	(shimbun-server-additional-path): New option.
 	(shimbun-servers-list, shimbun-servers-alist): New functions.
 	(shimbun-open): Use the above option to override `load-path'.
 

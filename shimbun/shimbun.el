@@ -99,17 +99,17 @@ dJrT4Cd<Ls?U!G4}0S%FA~KegR;YZWieoc%`|$4M\\\"i*2avWm?"
   :group 'shimbun
   :type 'string)
 
-(defcustom shimbun-backend-additional-path
+(defcustom shimbun-server-additional-path
   nil
-  "*List of additional directories to search for shimbun backends."
+  "*List of additional directories to search for shimbun servers."
   :group 'shimbun
   :type '(repeat directory))
 
 (defun shimbun-servers-list ()
-  "Return a list of shimbun backends."
+  "Return a list of shimbun servers."
   (let (servers)
     (dolist (dir (cons (file-name-directory (locate-library "shimbun"))
-		       shimbun-backend-additional-path))
+		       shimbun-server-additional-path))
       (when (file-directory-p dir)
 	(dolist (file (directory-files dir nil nil t))
 	  (and (string-match "\\`sb-\\(.*\\)\\.el\\'" file)
@@ -120,7 +120,7 @@ dJrT4Cd<Ls?U!G4}0S%FA~KegR;YZWieoc%`|$4M\\\"i*2avWm?"
     (sort servers 'string-lessp)))
 
 (defun shimbun-servers-alist ()
-  "Return an associative list of shimbun backends."
+  "Return an associative list of shimbun servers."
   (mapcar 'list (shimbun-servers-list)))
 
 ;;; Shimbun MUA
@@ -532,10 +532,7 @@ you want to use no database."
 (defun shimbun-open (server &optional mua)
   "Open a shimbun for SERVER.
 Optional MUA is a `shimbun-mua' instance."
-  (let ((load-path
-	 (append (cons (file-name-directory (locate-library "shimbun"))
-		       shimbun-backend-additional-path)
-		 load-path)))
+  (let ((load-path (append shimbun-server-additional-path load-path)))
     (require (intern (concat "sb-" server))))
   (let (url groups coding-system server-name from-address
 	    content-start content-end x-face-alist shimbun expiration-days)
@@ -682,7 +679,7 @@ HEADER is a header structure obtained via `shimbun-headers'.")
   "Make a footer string for SHIMBUN and HEADER.")
 
 (luna-define-method shimbun-footer ((shimbun shimbun) header &optional html)
-  "Return a null string for backends that have no footer."
+  "Return a null string for servers that have no footer."
   "")
 
 (luna-define-generic shimbun-index-url (shimbun)
