@@ -1,3 +1,8 @@
+2001-03-07  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-view-current-url-with-external-browser): Fix typo when
+	browse current URL.
+
 2001-03-07  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-create-image) [XEmacs]: Retrieve header to determine

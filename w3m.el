@@ -1918,8 +1918,8 @@ this function returns t.  Otherwise, returns nil."
   (interactive)
   (let ((url (w3m-anchor)))
     (or url
-	(y-or-n-p (format "Browse <%s> ? " w3m-current-url))
-	(setq url w3m-current-url))
+	(and (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
+	     (setq url w3m-current-url)))
     (when url
       (message "Browse <%s>" url)
       (w3m-external-view url))))
