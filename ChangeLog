@@ -1,5 +1,10 @@
 2001-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el: Don't make the coding-system `w3m-euc-japan' if it
+	already exists to make w3m.el reloadable in Emacs 20.
+
+2001-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-about): Put an icon image as about://emacs-w3m.gif.
 	(w3m-retrieve): Make an exception of about://emacs-w3m.gif.
 	(w3m-attributes): Ditto.
