@@ -47,7 +47,7 @@
 (require 'w3m)
 
 ;;; initializer for mew
-(defgroup mew-w3m
+(defgroup mew-w3m nil
   "mew-w3m - Inline HTML rendering extension of Mew"
   :group 'w3m)
 
