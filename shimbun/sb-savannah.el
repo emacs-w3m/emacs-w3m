@@ -50,6 +50,8 @@
 (defvar shimbun-savannah-groups
   (mapcar 'car shimbun-savannah-group-path-alist))
 
+(defvar shimbun-savannah-reverse-flag t)
+
 (defvar shimbun-savannah-litemplate-regexp
   "<li><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+\\.html\\)\">\
 \\([^<]+\\)</a>, <i>\\([^<]+\\)</i>")
@@ -73,23 +75,20 @@ ej<20'LI/le]z)n!%Bb(KI(@c&\"<`Ah~3&6Yn%+>-K>`@13\n T?OXgWz^><'44jgi;\
   (let ((case-fold-search t)
 	(pages (shimbun-header-index-pages range))
 	(parent (shimbun-savannah-index-url entity))
-	headers heads months url)
+	headers months url)
     (goto-char (point-min))
     (catch 'stop
       (while (and (or (not pages)
 		      (>= (decf pages) 0))
 		  (re-search-forward
-		   "<a href=\"\\(200[0-9]-[01][0-9]/index\\.html\\)\">"
+		   "<a href=\"\\(20[0-9][0-9]-[01][0-9]/\\)index\\.html\">"
 		   nil t))
 	(push (match-string 1) months))
-      (setq months (nreverse months))
-      (dolist (month months)
-	(setq url (concat parent month))
+      (dolist (month (nreverse months))
+	(setq url (concat parent month "index.html"))
 	(shimbun-retrieve-url url t)
-	(shimbun-mhonarc-get-headers entity url heads month)
-	(setq headers (nconc (nreverse heads) headers)
-	      heads nil)))
-    (nconc (nreverse heads) headers)))
+	(shimbun-mhonarc-get-headers entity url headers month)))
+    headers))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-savannah)
 					 &optional range)
