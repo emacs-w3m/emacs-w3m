@@ -1,3 +1,7 @@
+2001-05-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-mode): Modify doc-string for describe mode, again.
+
 2001-05-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-impress.el (shimbun-get-headers): Remove CRLF characters

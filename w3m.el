@@ -2443,9 +2443,11 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
    Major mode to browsing w3m buffer.
 
 \\[w3m-view-this-url]	View this url.
-\\[w3m-mouse-view-this-url]	View this url.
+\\[w3m-mouse-view-this-url]	View this url use mouse.
+
 \\[w3m-reload-this-page]	Reload this page.
 \\[w3m-redisplay-with-coding-system]	Redisplay this page with specified coding-system.
+
 \\[w3m-next-anchor]	Jump to next anchor.
 \\[w3m-previous-anchor]	Jump to previous anchor.
 \\[w3m-view-previous-page]	Back to previous page.
@@ -2459,6 +2461,9 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 
 \\[w3m-print-current-url]	Print current url.
 \\[w3m-view-current-url-with-external-browser]	View current url with external browser.
+\\[w3m-view-source]	Display source of this current buffer.
+\\[w3m-view-header]	Display header of this current buffer.
+\\[w3m-edit-current-url]	Edit the local file pointed by the URL of current page.
 
 \\[scroll-up]	Scroll up.
 \\[scroll-down]	Scroll down.
@@ -2484,11 +2489,17 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 \\[w3m-weather]	Display weather report.
 	If called with '\\[universal-argument]', you can choose local area.
 
-\\[w3m]	w3m.
 \\[w3m-bookmark-view]	w3m-bookmark-view.
-\\[w3m-copy-buffer]	w3m-copy-buffer.
+\\[w3m-bookmark-add-current-url]	Add link of current page to bookmark.
+	If called with  '\\[universal-argument]', ask new url to add instead of current page.
+\\[w3m-bookmark-add-this-url]	Add link under cursor to bookmark.
 
-\\[w3m-quit]	w3m-quit.
+\\[w3m-copy-buffer]	Create a twin copy of the current buffer.
+
+\\[w3m]	w3m.
+\\[w3m-close-window]	Close this window and make the other buffer current.
+\\[w3m-quit]	Quit browsing WWW after updating arrived URLs list.
+
 \\[describe-mode]	describe-mode.
 "
   (kill-all-local-variables)
