@@ -1,12 +1,14 @@
-;; mew-w3m.el -- View Text/Html content with w3m in Mew
+;; mew-w3m.el --- View Text/Html content with w3m in Mew
 
-;; Copyright (c) 2001 Shun-ichi Goto.
+;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Shun-ichi GOTO  <gotoh@taiyo.co.jp>,
 ;;         Hideyuki SHIRAI <shirai@meadowy.org>
 ;; Created: Wed Feb 28 03:31:00 2001
 ;; Version: $Revision$
 ;; Keywords: Mew, mail, w3m, WWW, hypermedia
+
+;; This file is a part of emacs-w3m.
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
