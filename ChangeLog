@@ -1,3 +1,8 @@
+2004-10-27  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-check-refresh-attribute): Support own page reload.
+	(w3m-goto-url-with-timer): Ditto.
+
 2004-10-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_ADD_LOAD_PATH): Clarify the error message.
