@@ -1,7 +1,7 @@
 2001-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-om.el (w3m-icon-directory): Define it as the constant nil
-	to avoid byte-compile warnings.
+	to avoid byte-compile warnings when compiling.
 	* w3m.el (w3m-icon-directory): Undo last change.
 
 2001-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
