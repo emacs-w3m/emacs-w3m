@@ -53,8 +53,7 @@
 				     &optional range)
   (let ((case-fold-search t)
 	(url (shimbun-index-url shimbun))
-	(count -1)
-	from year month day date lastyear lastmonth lastday
+	from year month day time date
 	next point subject id start end body headers)
     (with-temp-buffer
       (shimbun-retrieve-url url 'reload 'binary)
@@ -70,23 +69,17 @@
 	  (goto-char start)
 	  (unless
 	      (re-search-forward
-	       "Posted by: \\(.+\\) on \\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) (\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))"
+	       "Posted by: \\(.+\\) on \\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) (\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))  - \\([0-9][0-9]:[0-9][0-9]\\) JST <\/font>"
 	       end t nil)
 	    (throw 'next nil))
 	  (setq from (shimbun-mime-encode-string (match-string 1))
 		year (string-to-number (match-string 2))
 		month (string-to-number (match-string 3))
 		day (string-to-number (match-string 4))
-		date (shimbun-make-date-string year month day))
-	  (if (and lastyear lastmonth lastday
-		   (= lastday day) (= lastmonth month) (= lastyear year))
-	      (setq count (1+ count))
-	    (setq count 0))
-	  (setq id (format "<%02d%04d%02d%02d.news.pocketgames>"
-			   count year month day)
-		lastyear year
-		lastmonth month
-		lastday day
+		time (match-string 6)
+		date (shimbun-make-date-string year month day time))
+	  (setq id (format "<%04d%02d%02d%s.news.pocketgames>"
+		    year month day time)
 		point (point)
 		next (or (re-search-forward
 			  "\">\\([^<>]+\\)</a></font><br>" nil t nil)
@@ -113,9 +106,8 @@
       headers))
 
 (defun shimbun-pocketgames-comment-article (shimbun headers baseurl ref-id end)
-  (let ((count 0)
-	url from year month day date
-	subject body id	lastyear lastmonth lastday)
+  (let (url from year month day date time
+	subject body id)
     (save-excursion
       (when (re-search-forward
 	     "<a class=\"pn-normal\" href=\"\\(modules.php\?.+\\)\">[0-9]+ コメント<\/a>"
@@ -128,30 +120,29 @@
 				(shimbun-coding-system-internal shimbun))
 	  (goto-char (point-min))
 	  (re-search-forward "<!-- *COMMENTS NAVIGATION BAR END *-->" nil t nil)
-	  (while (re-search-forward
-		  "<br>by \\(.+\\) on \\([0-9]+\\)年\\([0-9]+\\)月\\([0-9]+\\)日.*</font>.+<font class=\"pn-normal\">\\([^\n\r]+\\)"
-		  nil t nil)
+	  (while (re-search-forward "<font class=\"pn-title\">\\(Re: [^<]+\\)" nil t nil)
 	    (catch 'next
+	      (setq subject (match-string-no-properties 1))
+	      (unless (re-search-forward
+		       ;; <br>by <a class="pn-normal" href="mailto:-">aoshimak</a> <b>(-)</b></font><font class="pn-sub"> on 2003年3月08日 - 06:15 PM<br><font class="pn-normal">
+		       "<br>by \\(.+\\) on \\([0-9]+\\)年\\([0-9]+\\)月\\([0-9]+\\)日 - \\([0-9][0-9]+:[0-9][0-9]+\\) \\(AM\\|PM\\)\\(</font></td></tr><tr><td>\\|<br>\\)<font class=\"pn-normal\">"
+		       nil t nil)
+		(throw 'next nil))
 	      (setq from (match-string-no-properties 1)
 		    year (string-to-number (match-string-no-properties 2))
 		    month (string-to-number (match-string-no-properties 3))
 		    day (string-to-number (match-string-no-properties 4))
-		    subject (match-string-no-properties 5)
+		    time (match-string-no-properties 5)
 		    body (buffer-substring
 			  (point)
-			  (search-forward 
-			   "</font></td></tr></table><br><br><font class=\"pn-normal\">"
-			   nil t nil))
-		    date (shimbun-make-date-string year month day))
-	      (if (and lastyear lastmonth lastday
-		       (= lastday day) (= lastmonth month) (= lastyear year))
-		  (setq count (1+ count))
-		(setq count 0))
-	      (setq id (format "<%02d%04d%02d%02d.comment.pocketgames>"
-			       count year month day)
-		    lastyear year
-		    lastmonth month
-		    lastday day)
+			  (progn
+			    (search-forward 
+			     "</font></td></tr></table><br><br><font class=\"pn-normal\">"
+			     nil t nil)
+			    (match-beginning 0)))
+		    date (shimbun-make-date-string year month day time))
+	      (setq id (format "<%04d%02d%02d%s.comment.pocketgames>"
+			year month day time))
 	      (when (shimbun-search-id shimbun id)
 		(throw 'next nil))
 	      (with-temp-buffer

@@ -1,3 +1,8 @@
+2003-03-10  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-pocketgames.el (shimbun-headers): Bug fixed.
+	(shimbun-pocketgames-comment-article): Ditto.
+
 2003-03-09  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-palmfan.el (shimbun-palmfan-pickup-date): Bug fixed.
