@@ -1,3 +1,8 @@
+2004-01-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-e21.el (w3m-tab-line): Check the length of the current
+	title, before checking the breadth of its first character.
+
 2004-01-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add `nankyoku'

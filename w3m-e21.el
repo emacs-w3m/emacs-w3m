@@ -608,11 +608,14 @@ cleared by a timer.")
 	(save-current-buffer
 	  (while buffers
 	    (set-buffer (setq buffer (pop buffers)))
+	    (setq title (w3m-current-title))
 	    (setq breadth
 		  (max breadth
 		       ;; There may be a wide character in the beginning of
 		       ;; the title.
-		       (char-width (aref (setq title (w3m-current-title)) 0))))
+		       (if (> (length title) 0)
+			   (char-width (aref title 0))
+			 0)))
 	    (push (list (eq current buffer)
 			w3m-current-process
 			title
