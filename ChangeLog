@@ -1,6 +1,7 @@
 2001-10-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m.el (w3m-use-mule-ucs): Simplified.
+	* w3m.el (emacs-w3m-version): Imcremented to `1.2rc3'.
+	(w3m-use-mule-ucs): Simplified.
 	(w3m-ccl-write-repeat): Fixed.
 	(w3m-euc-japan-decoder): Ditto.
 
