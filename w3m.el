@@ -435,7 +435,7 @@ It will be used for the w3m system internal for Emacs 21.")
 	   (string :tag "Regexp")
 	   (choice
 	    (const :tag "None" nil)
-	    (cons :tag "Externai viewer"
+	    (cons :tag "External viewer"
 		  (string :tag "Command")
 		  (repeat :tag "Arguments"
 			  (restricted-sexp :match-alternatives
@@ -506,7 +506,7 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :require 'w3m-filter)
 
 (defcustom w3m-edit-function 'find-file
-  "*Function of editting local file."
+  "*Function of editing local file."
   :group 'w3m
   :type '(choice
 	  (const :tag "Edit" find-file)
@@ -569,7 +569,7 @@ If 'w3m-dtree, display directory tree by the use of w3m-dtree."
 	((memq system-type '(OS/2 emx))
 	 (expand-file-name "dirlist.cmd" (getenv "W3M_LIB_DIR")))
 	(t nil))
-  "*Name of the diretory list CGI Program.
+  "*Name of the directory list CGI Program.
 If nil, use an internal CGI of w3m."
   :group 'w3m
   :type '(choice (const :tag "w3m internal CGI" nil)
@@ -833,7 +833,7 @@ for a charset indication")
 ;; Generic macros and inline functions:
 (defsubst w3m-attributes (url &optional no-cache)
   "Return a list of attributes of URL.
-Value is nil if retirieval of header is failed.  Otherwise, list
+Value is nil if retrieval of header is failed.  Otherwise, list
 elements are:
  0. Type of contents.
  1. Charset of contents.
@@ -1224,14 +1224,14 @@ If N is negative, last N items of LIST is returned."
 
 ;;; HTML character entity handling:
 (defun w3m-entity-db-setup ()
-  ;; initialise entity database (obarray)
+  ;; initialize entity database (obarray)
   (setq w3m-entity-db (make-vector w3m-entity-db-size 0))
   (dolist (elem w3m-entity-alist)
     (set (intern (car elem) w3m-entity-db)
 	 (cdr elem))))
 
 (defsubst w3m-entity-value (name)
-  ;; initialise if need
+  ;; initialize if need
   (if (null w3m-entity-db)
       (w3m-entity-db-setup))
   ;; return value of specified entity, or empty string for unknown entity.
@@ -1560,7 +1560,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 
 ;;; Cache:
 (defun w3m-cache-setup ()
-  "Initialise cache variables."
+  "Initialize cache variables."
   (unless (and (bufferp w3m-cache-buffer)
 	       (buffer-live-p w3m-cache-buffer))
     (save-excursion
@@ -1824,7 +1824,7 @@ If the user enters null input, return second argument DEFAULT."
 	  (throw 'found-command bin))))))
 
 (defun w3m-decode-encoded-contents (encoding)
-  "Decode encoded (gziped, bziped, deflated, etc) contents in this buffer."
+  "Decode encoded (gzipped, bzipped, deflated, etc) contents in this buffer."
   (let ((x (and (stringp encoding)
 		(assoc encoding w3m-encoding-alist))))
     (or (not (and x (setq x (cdr (assq (cdr x) w3m-decoder-alist)))))
@@ -1874,7 +1874,7 @@ If the user enters null input, return second argument DEFAULT."
 
 (defun w3m-local-attributes (url &rest args)
   "Return a list of attributes of URL.
-Value is nil if retirieval of header is failed.  Otherwise, list
+Value is nil if retrieval of header is failed.  Otherwise, list
 elements are:
  0. Type of contents.
  1. Charset of contents.
@@ -1981,7 +1981,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 
 (defun w3m-w3m-attributes (url &optional no-cache)
   "Return a list of attributes of URL.
-Value is nil if retirieval of header is failed.  Otherwise, list
+Value is nil if retrieval of header is failed.  Otherwise, list
 elements are:
  0. Type of contents.
  1. Charset of contents.
@@ -2387,7 +2387,7 @@ this function returns t.  Otherwise, returns nil."
       (w3m-history-restore-position))))
 
 (defun w3m-expand-url (url base)
-  "Convert URL to absolute, and canonicalise it."
+  "Convert URL to absolute, and canonicalize it."
   (save-match-data
     (unless base
       (setq base ""))
@@ -2883,7 +2883,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 \\[w3m-weather]	Display weather report.
 	If called with '\\[universal-argument]', you can choose local area.
 \\[w3m-dtree]	Display directory tree.
-	If called with '\\[universal-argument]', view all directorys and files.
+	If called with '\\[universal-argument]', view all directories and files.
 
 \\[w3m-bookmark-view]	w3m-bookmark-view.
 \\[w3m-bookmark-add-current-url]	Add link of current page to bookmark.
