@@ -3063,7 +3063,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
   (let ((width (- (if (< 0 w3m-fill-column)
 		      w3m-fill-column
 		    (+ (frame-width) (or w3m-fill-column -1)))
-		  26))
+		  18))
 	(today (format-time-string "%Y-%m-%d" (current-time)))
 	url title time alist date)
     (when w3m-arrived-db
@@ -3088,11 +3088,22 @@ showing a tree-structured history by the command `w3m-about-history'.")
 	(while alist
 	  (setq url (car (car alist)))
 	  (setq title (w3m-arrived-title url))
-	  (when (or (null title)
-		    (string= "<no-title>" title))
-	    (setq title (if (<= (length url) width)
-			    url
-			  (substring url 0 width))));; only ASCII characters.
+	  (if (or (null title)
+		  (string= "<no-title>" title))
+	      (setq title (concat
+			   "&lt;"
+			   (if (<= (length url) width)
+			       url
+			     (substring url 0 width)) ;; only ASCII characters.
+			   "&gt;"))
+	    (when (>= (string-width title) width)
+	      (setq title
+		    (concat
+		     (with-temp-buffer
+		       (insert title)
+		       (move-to-column width)
+		       (buffer-substring (point-min) (point)))
+		     "..."))))
 	  (insert (format "<tr><td><a href=\"%s\">%s</a></td>" url title))
 	  (when (cdr (car alist))
 	    (setq date (format-time-string "%Y-%m-%d" (cdr (car alist))))
