@@ -233,15 +233,17 @@ width using expression (+ (frame-width) VALUE)."
   :type 'directory)
 
 (defconst w3m-emacs-w3m-icon "\
-R0lGODlhQgAOAPAAAAAAAP///yH5BAQyAP8ALAAAAABCAA4AAAJojI+py+0Po5y02ggyuLyH
-fYDeiCFio4GpmIaam6HGds5fa+a0fe7hl1uogLMYcPj7+Xqxms20Ivp0UmhrWeQxjNtoYod8
-Uo/jrQPZIxPF5CFrqmZ/n2ms1U1vFrk48xpnRyI4SFhoUAAAIfkEBTIAAAAsCQACADcACgAA
-AhWMj6nL7Q+jnLTai7PevPsPhuJIagUAIfkEBTIAAQAsCQAFAAYABwAAAgyEHZCRqr3gQ9Mx
-UAAAIfkEBTIAAQAsEAAFAAYABwAAAgwMDhari5Ygky49UAAAIfkEBTIAAQAsFwAFAAYABwAA
-AgsMDhZryfockwqlAgAh+QQFMgABACweAAUABgAHAAACDAwOFqvJex5ULKFUAAAh+QQFMgAB
-ACwlAAcABgABAAACAoRfACH5BAUyAAEALCwABQAGAAcAAAILRGJgiJsK03GzsgIAIfkEBTIA
-AQAsMwACAAYACgAAAg4MDhZryf4WYpEeCxVKBQAh+QQFMgABACw6AAUABgAHAAACDIQdkJGq
-veBD0zFQAAA7"
+R0lGODlhQgAOAPIAAEFp4f+MAJkyzC6LV////yCyqv9FAP8AACH5BAQhAP8ALAAAAABCAA4A
+AAOjSLrc/jDKSau9OOt6+tlgSHwLKZ6VwZgR4AqKIMvLDCtDPixFX0QBRVDV+Hg6DQBDCbs1
+GbDdYvfjQYKEIJZg6CqM36WYGYPSbg0pz9fLCt0NFXi0dNkJZILTqYcMqhA9AYNbCypyYQtK
+SXhlaH2PDmoPVViFh1yJCoubjYt5ek81BJOTDVWVDEOZdHUunZ8xZ7I0ODoSqAuElqxEKL/A
+wcIKCQAh+QQFIQAAACwAAAAAAQABAAACAkQBACH5BAUhAAAALAAAAAABAAEAAAICRAEAIfkE
+BSEAAAAsAgACAD4ACgAAAxhIutz+MMpJq7046827/2AojmRpnmiqhgkAIfkEBSEAAQAsAgAF
+AA0ABwAAAhMMHqkK25teNPDYJmelemJveVEBACH5BAUhAAAALAYABQAXAAcAAAIdFCCZh8r/
+jEGUTQjnbRLHo2mV920diV2LiYKruxQAIfkEBSEAAAAsFwAFAA0ABwAAAg/EPqCruc4ig3LW
+Su27KBUAIfkEBSEAAAAsHgAFABMABwAAAxYItQX+ELY3o72MXVdx39YHStwYTUUCACH5BAUh
+AAAALCwABQAPAAcAAAIUDGCni2fJnITRhVtjolkqzlwYUgAAIfkEBSEAAAAsMQAEAA8ACAAA
+AxQIYNre7Elp6rzxOpY1XxoEhuKSAAA7"
   "A small icon image for the url about://emacs-w3m.gif.  It is currently
 encoded in the optimized animated gif format and base64.")
 
@@ -820,9 +822,12 @@ cursor position and around there."
 
 (defmacro w3m-add-text-properties (start end props &optional object)
   "Like `add-text-properties' but always add the non-sticky properties."
-  (let ((non-stickies (if (featurep 'xemacs)
-			  '(list 'start-open t 'end-open t)
-			'(list 'front-nonsticky t 'rear-nonsticky t))))
+  (let ((non-stickies
+	 (if (featurep 'xemacs)
+	     ;; Default to start-closed and end-open in XEmacsen.
+	     '(list 'start-open t)
+	   ;; Default to front-nonsticky and rear-sticky in FSF Emacsen.
+	   '(list 'rear-nonsticky t))))
     (` (add-text-properties (, start) (, end)
 			    (append (, non-stickies) (, props))
 			    (, object)))))
