@@ -2,11 +2,12 @@
 
 	* shimbun/sb-tigris.el: New File.
 
-	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-group-alist): Remove closed blog entiry : "inoue","mori","umeda";
-	Add blog entiry : "editors".
+	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-group-alist): Remove
+	closed blog entiry: "inoue","mori","umeda"; add blog entiry:
+	"editors".
 
-	* shimbun/sb-x51.el (shimbun-get-headers): Remove duplicate webpage retrieving;
-	Add buffer erasing before webpage retrieving.
+	* shimbun/sb-x51.el (shimbun-get-headers): Remove duplicate
+	webpage retrieving; add buffer erasing before webpage retrieving.
 
 2005-02-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
