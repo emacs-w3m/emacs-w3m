@@ -12,7 +12,8 @@
 
 	* shimbun/shimbun.el (shimbun-footer) [shimbun-japanese-newspaper]:
 	Add <br> in order to make a newline certainly.
-	* shimbun/sb-tdiary.el: Encode group names.
+	* shimbun/sb-tdiary.el (shimbun-tdiary-get-headers): Encode group
+	names.
 
 2003-10-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
