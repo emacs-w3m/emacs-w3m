@@ -1,3 +1,7 @@
+2004-12-15  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+
+	* w3m-namazu.el (w3m-namazu): Added optional argument `reload'.
+
 2004-12-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkansports.el (shimbun-nikkansports-group-table):
