@@ -1037,6 +1037,35 @@ will disclose your private informations, for example:
   :group 'w3m
   :type 'string)
 
+(defcustom w3m-uri-replace-alist nil
+  "*Alist of a regexp matching uri and replacement.
+
+Each element of the alist is (REGEXP . REPLACEMENT) or (REGEXP . FUNCTION).
+
+REGEXP is a regular expression for uri. 
+
+Matched string is replaced with REPLACEMENT.
+You can refer matched substring of REGEXP. See `replace-match' for more detail.
+
+If FUNCTION is specified, it will be called with the uri, and replaced with
+the return value.
+
+
+Here is an example of how to set this option:
+
+\(setq w3m-uri-replace-alist
+      '((\"^urn:ietf:rfc:\\\\([0-9]+\\\\)\" . \"http://www.ietf.org/rfc/rfc\\\\1.txt\")
+	(\"^urn:isbn:\" . 
+	 (lambda (uri)
+	   (concat \"http://www.amazon.co.jp/exec/obidos/ASIN/\" 
+		   (apply 'concat (split-string (substring uri 9) \"-\"))
+		   \"/\")))))
+"
+  :group 'w3m
+  :type '(repeat (cons (string :tag "Regexp")
+		       (choice (string :tag "Replacement")
+			       (function :tag "Function")))))
+
 (eval-and-compile
   (defconst w3m-entity-alist		; html character entities and values
     (eval-when-compile
@@ -5178,6 +5207,18 @@ positions around there (+/-3 lines) visible."
   (w3m-set-window-hscroll (selected-window)
 			  (max (- arg (window-width) -2) 0)))
 
+(defun w3m-uri-replace (uri)
+  (let ((alist w3m-uri-replace-alist))
+    (while (and alist
+		(not (string-match (car (car alist)) uri)))
+      (setq alist (cdr alist)))
+    (if alist
+	(cond ((functionp (cdr (car alist)))
+	       (funcall (cdr (car alist)) uri))
+	      ((stringp (cdr (car alist)))
+	       (replace-match (cdr (car alist)) nil nil uri)))
+      uri)))
+
 (defun w3m-goto-mailto-url (url &optional post-data)
   (if (and (symbolp w3m-mailto-url-function)
 	   (fboundp w3m-mailto-url-function))
@@ -5343,6 +5384,7 @@ field for this request."
     (w3m-static-if (fboundp 'universal-coding-system-argument)
 	coding-system-for-read)))
   (set-text-properties 0 (length url) nil url)
+  (setq url (w3m-uri-replace url))
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:\\(.*\\)" url)

@@ -1,3 +1,9 @@
+2002-06-12  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-uri-replace-alist): New user option.
+	(w3m-uri-replace): New function.
+	(w3m-goto-url): Call `w3m-uri-replace'.
+
 2002-06-05  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-muchy.el (shimbun-muchy-content-start): New variable.
