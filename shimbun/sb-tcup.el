@@ -62,14 +62,13 @@ BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'")
 (defvar shimbun-tcup-coding-system 'shift_jis)
 (defvar shimbun-tcup-content-hash-length 31)
 (defvar shimbun-tcup-x-face-alist
-  '(("yutopia" .
-     "X-Face: ,Em61:vG$KP!G`Q]ZsO\\@&g`VXE-kicRnKs\"Wd'ZSFQ*O'i6OJ2(U$x6/gytz:<jCUn+&*e
- 8$BTg.~1,7OS%tjW#ty4Cp7x%6SD;aNfn(ugANCC]q(-foA:@ULvLAJz_oeP1@a~C+Bxc3I\\+^W<%n
- y,z@:VoRoJXl'E`kX]3i1m;+I`")
-    ("meadow" .
-     "X-Face: xo];SyM=kg&iWSACakk9gGth>s`0KE!+n9}l[&WSG!QUj`15/+hzWfCvZ\\`R!i<c8{QI=hw
- Ez}CH&IOYewgffOCh5jTPWx/ehA\\:Qe[;P>8re^8`\\8omn]t;P~wC{X%Y$q/f!zC%IG1RVFj~Jf`c6
- t98[2O!+vgw!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
+  '(("yutopia" . "X-Face: ,Em61:vG$KP!G`Q]ZsO\\@&g`VXE-kicRnKs\"Wd'ZSF\
+Q*O'i6OJ2(U$x6/gytz:<jCUn+&*e\n 8$BTg.~1,7OS%tjW#ty4Cp7x%6SD;aNfn(ugAN\
+CC]q(-foA:@ULvLAJz_oeP1@a~C+Bxc3I\\+^W<%n\n y,z@:VoRoJXl'E`kX]3i1m;+I`")
+    ("meadow" . "X-Face: xo];SyM=kg&iWSACakk9gGth>s`0KE!+n9}l[&W\
+SG!QUj`15/+hzWfCvZ\\`R!i<c8{QI=hw\n Ez}CH&IOYewgffOCh5jTPWx/ehA\\\
+:Qe[;P>8re^8`\\8omn]t;P~wC{X%Y$q/f!zC%IG1RVFj~Jf`c6\n t98[2O!+vg\
+w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-tcup)
 						&rest init-args)

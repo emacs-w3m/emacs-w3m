@@ -38,10 +38,9 @@
 (defvar shimbun-asahi-html-content-start "\n<!-- Start of photo1 -->\n")
 (defvar shimbun-asahi-html-content-end "\n<!-- End of kiji -->\n")
 (defvar shimbun-asahi-html-x-face-alist
-  '(("default" .
-     "X-Face:  +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|bIy3rr^<Q#lf&~ADU:X!t5t>
-        gW5)Q]N{MmnL]suPpL|gFjV{S|]a-:)\\FR7GRf9uL:ue5_=;h{V%@()={u
-        Td@l?eXBppF%`6W%;h`#]2q+f*81n$Bh|t")))
+  '(("default" . "X-Face: +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|\
+bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
+7GRf9uL:ue5_=;h{V%@()={uTd@l?eXBppF%`6W%;h`#]2q+f*81n$B\n h|t")))
 
 (defvar shimbun-asahi-html-expiration-days 6)
 

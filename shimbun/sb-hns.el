@@ -44,10 +44,10 @@ It can be defined in the `shimbun-hns-x-face-alist', too.
 (defvar shimbun-hns-content-hash-length 31)
 
 (defvar shimbun-hns-x-face-alist
-  '(("default" .
-     "X-Face: @a`mMVT%~3Um4-$Sx\\K<}C%MwIx/g]o(Z:3qR3BsyZ_Bp@;$m~@,]+*=`@Y$4754xsoPo~/
- eJSA]x(_m@-BmURu#F8nZm'M4!vX$a3`)e}~`]8^'3^3s/gg+]|xf}gg2[BZZAR)-5pOF6BgPu(%yx
- At\\)Z\"e,V#i5>7]N{lif*16&rrh3=:)\"dB[w:{_Mu@7+)~qLo6.z&Bb|Gq0A1}xpj:>9o9$")))
+  '(("default" . "X-Face: @a`mMVT%~3Um4-$Sx\\K<}C%MwIx/g]o(Z:3qR\
+3BsyZ_Bp@;$m~@,]+*=`@Y$4754xsoPo~/\n eJSA]x(_m@-BmURu#F8nZm'M4!v\
+X$a3`)e}~`]8^'3^3s/gg+]|xf}gg2[BZZAR)-5pOF6BgPu(%yx\n At\\)Z\"e,\
+V#i5>7]N{lif*16&rrh3=:)\"dB[w:{_Mu@7+)~qLo6.z&Bb|Gq0A1}xpj:>9o9$")))
 
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-hns)
