@@ -1,5 +1,11 @@
 2005-03-12  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
+	* shimbun/sb-toshiba.el (Toplevel): Add 'require cl' when compiling.
+	(shimbun-toshiba-from-address): New variable.
+	(shimbun-get-headers): New method define.
+
+2005-03-12  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
 	* shimbun/sb-plucker.el (shimbun-plucker-litemplate-regexp): Improve Regexp.
 	(shimbun-plucker-extract-header-values): Fix supporting new regexp.
 
