@@ -151,7 +151,7 @@
      or
          % make install-icons30
 
-     The later is for using the slightly larger icon images.
+     The latter will install the slightly larger icons with characters.
 
      You can also install emacs-w3m as an XEmacs package using
      `make install-package' instead of `make install'.
@@ -278,6 +278,8 @@
 
 Local Variables:
 mode: indented-text
+mode: outline-minor
+outline-regexp: "[0-9]\\.[0-9]\\.[0-9]\\.\\|[0-9]\\.[0-9]\\.\\|[0-9]\\."
 coding: ascii
 fill-column: 72
 End:

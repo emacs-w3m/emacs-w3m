@@ -154,7 +154,7 @@
      または
          % make install-icons30
 
-     後者はちょっと大きなアイコン画像を使うためのものです．
+     後者はちょっと大きな，文字も入ったアイコン画像を使うためのものです．
 
      install の代わりに install-package を使うと，XEmacs の package とし
      てインストールすることもできます．
@@ -278,6 +278,8 @@
 
 Local Variables:
 mode: indented-text
+mode: outline-minor
+outline-regexp: "[0-9]\\.[0-9]\\.[0-9]\\.\\|[0-9]\\.[0-9]\\.\\|[0-9]\\."
 coding: euc-japan
 use-kuten-for-period: nil
 use-touten-for-comma: nil
