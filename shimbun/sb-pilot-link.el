@@ -36,7 +36,8 @@
 (defconst shimbun-pilot-link-group-path-alist
   '(("announce" . "pilot-link-announce")
     ("devel" . "pilot-link-devel")
-    ("general" . "pilot-link-general")))
+    ("general" . "pilot-link-general")
+    ("unix-ng" . "pilot-unix-ng")))
 
 (defvar shimbun-pilot-link-groups
   (mapcar 'car shimbun-pilot-link-group-path-alist))

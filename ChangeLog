@@ -1,3 +1,8 @@
+2002-07-29  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-pilot-link.el (shimbun-pilot-link-group-path-alist):
+	Add unix-ng entry.
+
 2002-07-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (toplevel): Bind `mew-set-file-modes' and
