@@ -1,7 +1,6 @@
 ;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Keywords: news

@@ -1,7 +1,7 @@
 ;;; sb-mew.el --- shimbun backend for mew.org
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>,
+;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Keywords: news
@@ -34,95 +34,52 @@
 (require 'sb-mhonarc)
 (luna-define-class shimbun-mew (shimbun-mhonarc) ())
 
-(defconst shimbun-mew-groups-alist
-  '(("meadow-develop" "meadow-develop" nil t)
-    ("meadow-users-jp" "meadow-users-jp")
-    ("mule-win32" "mule-win32")
-    ("mew-win32" "mew-win32")
-    ("mew-dist" "mew-dist/3300" t)
-    ("mgp-users-jp" "mgp-users-jp/A" t t)))
+(defvar shimbun-mew-url "http://www.mew.org/ml/")
 
-(defvar shimbun-mew-url "http://www.mew.org/archive/")
-(defvar shimbun-mew-groups (mapcar 'car shimbun-mew-groups-alist))
+(defconst shimbun-mew-group-url-alist
+  '(("mew-dist" . "mew-dist-2.0")
+    ("mew-dist-old" . "mew-dist-1.94")
+    ("mew-win32" . "mew-win32-2.0")
+    ("mew-win32-old" . "mew-win32-0")
+    ("mew-int" . "mew-int-2.0")
+    ("mew-int-old" . "mew-int-0")
+    ("mgp-users" . "mgp-users")
+    ("mgp-users-jp" . "mgp-users-jp")))
 
-(defmacro shimbun-mew-concat-url (shimbun url)
-  (` (concat (shimbun-url-internal (, shimbun))
-	     (nth 1 (assoc
-		     (shimbun-current-group-internal (, shimbun))
-		     shimbun-mew-groups-alist))
-	     "/"
-	     (, url))))
-
-(defmacro shimbun-mew-reverse-order-p (shimbun)
-  (` (nth 2 (assoc (shimbun-current-group-internal (, shimbun))
-		   shimbun-mew-groups-alist))))
-
-(defmacro shimbun-mew-spew-p (shimbun)
-  (` (nth 3 (assoc (shimbun-current-group-internal (, shimbun))
-		   shimbun-mew-groups-alist))))
-
-(defsubst shimbun-mew-retrieve-xover (shimbun aux)
-  (erase-buffer)
-  (shimbun-retrieve-url
-   (shimbun-mew-concat-url
-    shimbun
-    (if (= aux 1) "index.html" (format "mail%d.html" aux)))
-   t))
-
-(defconst shimbun-mew-regexp "<A[^>]*HREF=\"\\(msg\\([0-9]+\\).html\\)\">\\([^<]+\\)<")
-
-(defsubst shimbun-mew-extract-header-values (shimbun)
-  (let (url id subject)
-    (setq url (shimbun-mew-concat-url shimbun (match-string 1))
-	  id (format "<%05d%%%s>"
-		     (1- (string-to-number (match-string 2)))
-		     (shimbun-current-group-internal shimbun))
-	  subject (match-string 3))
-    (forward-line 1)
-    (shimbun-make-header
-     0
-     (shimbun-mime-encode-string subject)
-     (if (looking-at "<EM>\\([^<]+\\)<")
-	 (shimbun-mime-encode-string (match-string 1))
-       "")
-     "" id "" 0 0 url)))
+(defvar shimbun-mew-groups (mapcar 'car shimbun-mew-group-url-alist))
+(defvar shimbun-mew-reverse-flag t)
+(defvar shimbun-mew-litemplate-regexp
+  "<STRONG><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a></STRONG>&nbsp;\\([^<]+\\)</LI>")
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-mew))
-  (shimbun-mew-concat-url shimbun "index.html"))
+  (concat
+   (shimbun-url-internal shimbun) "/"
+   (cdr (assoc (shimbun-current-group-internal shimbun)
+	       shimbun-mew-group-url-alist)) "/"))
+
+(luna-define-method shimbun-reply-to ((shimbun shimbun-mew))
+  (concat (shimbun-current-group-internal shimbun)
+	  "@mew.org"))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-mew)
 					 &optional range)
-  (shimbun-mew-get-headers shimbun range))
-
-(defun shimbun-mew-get-headers (shimbun range)
-  (let ((case-fold-search t)
+  (let ((url (shimbun-index-url shimbun))
 	(pages (shimbun-header-index-pages range))
 	(count 0)
-	headers)
-    (goto-char (point-min))
-    (when (re-search-forward
-	   "<A[^>]*href=\"mail\\([0-9]+\\)\\.html\">\\[?Last Page\\]?</A>"
-	   nil t)
-      (let ((limit 1));(string-to-number (match-string 1))))
-	(catch 'stop
-	  (if (shimbun-mew-reverse-order-p shimbun)
-	      (let ((aux 1))
-		(while (let (id url subject)
-			 (while (re-search-forward shimbun-mew-regexp nil t)
-			   (push (shimbun-mew-extract-header-values shimbun)
-				 headers))
-			 (< aux limit))
-		  (shimbun-mew-retrieve-xover shimbun (setq aux (1+ aux)))))
-	    (while (> limit 0)
-	      (shimbun-mew-retrieve-xover shimbun limit)
-	      (setq limit (1- limit))
-	      (let (id url subject)
-		(goto-char (point-max))
-		(while (re-search-backward shimbun-mew-regexp nil t)
-		  (push (shimbun-mew-extract-header-values shimbun)
-			headers)
-		  (forward-line -2)))))
-	  headers)))))
+	headers aux)
+    (catch 'stop
+      (shimbun-mhonarc-get-headers shimbun url headers)
+      (while (and (if pages (< (incf count) pages) t)
+		  (re-search-forward
+		   "<A href=\"\\(mail[0-9]+.html\\)\">Prev Page</A>"
+		   nil t)
+		  (not (string-equal (match-string 1) aux)))
+	(setq aux (match-string 1)
+	      url (shimbun-expand-url aux url))
+	(erase-buffer)
+	(shimbun-retrieve-url url)
+	(shimbun-mhonarc-get-headers shimbun url headers))
+      headers)))
 
 (provide 'sb-mew)
 

@@ -1,3 +1,7 @@
+2001-08-21  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-mew.el: Rewrite for renewal of mew.org ml archive.
+
 2001-08-13  NAKAGAWA Takayuki  <tknakaga@kanagawa.hitachi.co.jp>
 
 	* w3m.el (w3m-w3m-attributes): Refer `w3m-base-url' as current
