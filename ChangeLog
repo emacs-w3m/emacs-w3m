@@ -1,3 +1,9 @@
+2003-07-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-e21.el (w3m-euc-japan-encoder): Fixed comment.
+
+	* shimbun/sb-h14m.el: Removed.
+
 2003-07-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Release emacs-w3m-1.3.6 from emacs-w3m-1_3 branch.

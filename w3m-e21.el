@@ -107,7 +107,7 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
     "CCL program to convert multibyte char to ucs with emacs-unicode."))
 
 (if (get 'utf-translation-table-for-encode 'translation-table-id)
-    ;; For Emacs 21.3.50 and later.
+    ;; For Emacs 21.3 and later.
     (define-ccl-program w3m-euc-japan-encoder
       `(4
 	(loop
@@ -115,7 +115,7 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 	 (translate-character utf-translation-table-for-encode r1 r0)
 	 ,@w3m-ccl-get-ucs-codepoint-with-emacs-unicode
 	 ,@w3m-ccl-generate-ncr)))
-  ;; For Emacs 21.[123] that does not have `utf-translation-table-for-encode'.
+  ;; For Emacs 21.[12] that does not have `utf-translation-table-for-encode'.
   (define-ccl-program w3m-euc-japan-encoder
     `(4
       (loop
