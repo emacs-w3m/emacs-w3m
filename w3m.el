@@ -59,10 +59,10 @@
 (eval-when-compile
   (require 'cl))
 
-;; Override the `dolist' macro which may be faultily provided by old
-;; egg.el.
 (eval-when-compile
   (unless (dolist (var nil t))
+    ;; Override the `dolist' macro which may be faultily provided by
+    ;; old egg.el.
     (load "cl-macs" nil t)))
 
 ;; The following variables will be referred to by the external modules
@@ -1733,7 +1733,10 @@ This variable will be made buffer-local under Emacs 21 or XEmacs.")
 This variable will be made buffer-local.")
 (make-variable-buffer-local 'w3m-current-process)
 
-(defvar w3m-refresh-timer nil "Timer of refresh process,")
+(defvar w3m-refresh-timer nil
+  "Variable used to keep a timer object for refreshing a page
+according to the REFRESH attribute in a META tag.  It would be made
+buffer-local in each emacs-w3m buffer.")
 (make-variable-buffer-local 'w3m-refresh-timer)
 
 (defvar w3m-current-base-url nil "Base URL of this buffer.")
@@ -6378,6 +6381,7 @@ appropriate buffer and select it."
     (set-buffer (get-buffer-create "*w3m*"))
     (unless (eq major-mode 'w3m-mode)
       (w3m-mode)))
+  (setq truncate-lines t)
   (w3m-add-local-hook 'pre-command-hook 'w3m-store-current-position)
   (w3m-add-local-hook 'post-command-hook 'w3m-check-current-position)
   (w3m-static-when (or (featurep 'xemacs)
@@ -6978,16 +6982,16 @@ works on Emacs.
   "Display source of this current buffer."
   (interactive)
   (if w3m-current-url
-      (progn
-	(w3m-goto-url
-	 (cond
-	  ((string-match "\\`about://source/" w3m-current-url)
-	   (substring w3m-current-url (match-end 0)))
-	  ((string-match "\\`about://header/" w3m-current-url)
-	   (concat "about://source/"
-		   (substring w3m-current-url (match-end 0))))
-	  (t (concat "about://source/" w3m-current-url))))
+      (cond
+       ((string-match "\\`about://source/" w3m-current-url)
+	(w3m-goto-url (substring w3m-current-url (match-end 0))))
+       ((string-match "\\`about://header/" w3m-current-url)
+	(w3m-goto-url (concat "about://source/"
+			      (substring w3m-current-url (match-end 0))))
 	(setq truncate-lines nil))
+       (t
+	(w3m-goto-url  (concat "about://source/" w3m-current-url))
+	(setq truncate-lines nil)))
     (w3m-message "Can't view page source")))
 
 (defun w3m-make-separator ()
@@ -7062,15 +7066,18 @@ works on Emacs.
   "Display header of this current buffer."
   (interactive)
   (if w3m-current-url
-      (w3m-goto-url
-       (cond
-	((string-match "\\`about://header/" w3m-current-url)
-	 (substring w3m-current-url (match-end 0)))
-	((string-match "\\`about://source/" w3m-current-url)
-	 (concat "about://header/" (substring w3m-current-url (match-end 0))))
-	((string-match "\\`about:" w3m-current-url)
-	 (error "Can't load a header for %s" w3m-current-url))
-	(t (concat "about://header/" w3m-current-url))))
+      (cond
+       ((string-match "\\`about://header/" w3m-current-url)
+	(w3m-goto-url (substring w3m-current-url (match-end 0))))
+       ((string-match "\\`about://source/" w3m-current-url)
+	(w3m-goto-url (concat "about://header/"
+			      (substring w3m-current-url (match-end 0))))
+	(setq truncate-lines nil))
+       ((string-match "\\`about:" w3m-current-url)
+	(error "Can't load a header for %s" w3m-current-url))
+       (t
+	(w3m-goto-url (concat "about://header/" w3m-current-url))
+	(setq truncate-lines nil)))
     (w3m-message "Can't view page header")))
 
 (defvar w3m-about-history-max-indentation '(/ (* (window-width) 2) 3)

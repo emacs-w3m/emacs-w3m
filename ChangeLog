@@ -1,3 +1,11 @@
+2003-11-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-buffer-setup): Make sure that `truncate-lines' is t.
+	(w3m-view-source): Don't set `truncate-lines' to nil when quitting
+	viewing a source.
+	(w3m-view-header): Set `truncate-lines' to nil when viewing a
+	header.
+
 2003-11-18  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-put-by-name): New function.
