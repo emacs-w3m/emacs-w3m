@@ -1,3 +1,16 @@
+2003-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-groups-should-use-list-page):
+	Abolish.
+	(shimbun-asahi-content-start, shimbun-asahi-content-end): Follow
+	the change of the web site.
+	(shimbun-asahi-index-url): New function.
+	(shimbun-index-url): Use it.
+	(shimbun-asahi-get-headers-in-the-list-page): Abolish.
+	(shimbun-asahi-get-headers): Rename from
+	`shimbun-asahi-get-headers-in-the-top-page'.
+	(shimbun-get-headers): Use it.
+
 2003-02-28  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-util.el (w3m-get-server-hostname): Rename and move from
