@@ -294,7 +294,33 @@ empty input."
 	  (message nil)
 	  (or pass default ""))))))
 
-(if (and (= emacs-major-version 19) (>= emacs-minor-version 29))
+(let (current-load-list)
+  (if (and (= emacs-major-version 19) (>= emacs-minor-version 29))
+      (defadvice read-string (after allow-4th-arg (prompt &optional
+							  initial-input
+							  history
+							  default-value)
+				    activate)
+	"Advised by Emacs-W3M.
+Allow the optional fourth argument DEFAULT-VALUE which will be used as
+the value to return if the user enters the empty string."
+	(if (zerop (length ad-return-value))
+	    (if (stringp default-value)
+		(progn
+		  (if history
+		      (set history
+			   (cons default-value
+				 (delete default-value
+					 (delete ad-return-value
+						 (symbol-value history))))))
+		  (setq ad-return-value default-value))
+	      (if history
+		  (set history
+		       (delete ad-return-value (symbol-value history)))))
+	  (if history
+	      (set history
+		   (cons ad-return-value
+			 (delete ad-return-value (symbol-value history)))))))
     (defadvice read-string (after allow-4th-arg (prompt &optional
 							initial-input
 							history
@@ -303,34 +329,9 @@ empty input."
       "Advised by Emacs-W3M.
 Allow the optional fourth argument DEFAULT-VALUE which will be used as
 the value to return if the user enters the empty string."
-      (if (zerop (length ad-return-value))
-	  (if (stringp default-value)
-	      (progn
-		(if history
-		    (set history
-			 (cons default-value
-			       (delete default-value
-				       (delete ad-return-value
-					       (symbol-value history))))))
-		(setq ad-return-value default-value))
-	    (if history
-		(set history
-		     (delete ad-return-value (symbol-value history)))))
-	(if history
-	    (set history
-		 (cons ad-return-value
-		       (delete ad-return-value (symbol-value history)))))))
-  (defadvice read-string (after allow-4th-arg (prompt &optional
-						      initial-input
-						      history
-						      default-value)
-				activate)
-    "Advised by Emacs-W3M.
-Allow the optional fourth argument DEFAULT-VALUE which will be used as
-the value to return if the user enters the empty string."
-    (if (and (zerop (length ad-return-value))
-	     (stringp default-value))
-	(setq ad-return-value default-value))))
+      (if (and (zerop (length ad-return-value))
+	       (stringp default-value))
+	  (setq ad-return-value default-value)))))
 
 
 ;;; Widget:

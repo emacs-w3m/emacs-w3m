@@ -1,5 +1,12 @@
 2001-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-om.el (read-string): Don't modify the value of
+	`current-load-list' when advising it.
+
+	* mime-w3m.el (mime-w3m-remove-text-properties): Don't modify the
+	value of `current-load-list' when advising the function `kill-new';
+	add a doc-string.
+
 	* w3m.el (w3m-decode-entities): Save-match-data when
 	`w3m-entity-value' is called.
 
