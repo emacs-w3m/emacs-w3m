@@ -1,5 +1,33 @@
 2001-11-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (top): Colon keywords definition are moved to
+	`w3m-macro.el'.
+	(w3m-process-connection-type): Imported from `w3m-proc.el'.
+	(w3m-next-buffer, w3m-previous-buffer): Simplified.
+	(w3m-delete-buffer): Call `w3m-quit' when the number of w3m-mode
+	buffers is equal to 1.
+	(w3m-quit): Kill all w3m-mode buffers.
+	(w3m-close-window): Call `w3m-select-buffer-close-window'.
+	(w3m-select-buffer-generate-contents): Simplified.
+	(w3m-select-buffer-close-window): New function.
+
+	* w3m-tabmenu.el (w3m-tab-menubar-make-items): Use
+	`w3m-buffer-title' and `w3m-list-buffers'.
+
+	* w3m-proc.el (top): Require `poe' module in XEmacs; Require
+	`w3m-om' in Mule; Define `w3m-current-title' to avoid byte-compile
+	warning.
+	(w3m-process-connection-type): Exported to `w3m.el'.
+	(w3m-buffer-title, w3m-buffer-name-lessp, w3m-list-buffers): New
+	functions.
+
+	* w3m-macro.el (top): Colon keywords definition are imported from
+	`w3m.el'.
+	(w3m-pullout-buffer-number): Removed.
+
+	* w3m-e21.el (w3m-tab-line): Use `w3m-buffer-title' and
+	`w3m-list-buffers'.
+
 	* w3m.el (w3m-attributes): Wrap `w3m-w3m-attributes' with
 	`w3m-process-with-wait-handler'.
 	(w3m-w3m-attributes): Changed the argument spec.  Now, this

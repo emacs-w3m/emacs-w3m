@@ -58,24 +58,12 @@
 (eval-when-compile
   (require 'cl))
 
-(require 'w3m-macro)
-
 ;; Override the macro `dolist' which may have been defined in egg.el.
 (eval-when-compile
   (unless (dolist (var nil t))
     (load "cl-macs" nil t)))
 
-(eval-and-compile
-  (eval
-   '(condition-case nil
-	:symbol-for-testing-whether-colon-keyword-is-available-or-not
-      (void-variable
-       (let (w3m-colon-keywords)
-	 (load "w3m-kwds.el" nil t t)
-	 (while w3m-colon-keywords
-	   (set (car w3m-colon-keywords) (car w3m-colon-keywords))
-	   (setq w3m-colon-keywords (cdr w3m-colon-keywords))))))))
-
+(require 'w3m-macro)
 (require 'w3m-proc)
 
 ;; The following variables will be referred by the version specific
@@ -497,13 +485,22 @@ to input URL when URL-like string is not detected under the cursor."
   :type 'hook)
 
 (defcustom w3m-display-hook
-  '(w3m-history-highlight-current-url w3m-move-point-for-localcgi w3m-select-buffer-update)
+  '(w3m-history-highlight-current-url
+    w3m-move-point-for-localcgi
+    w3m-select-buffer-update)
   "*Hook run at the end of `w3m-goto-url'."
   :group 'w3m
   :type 'hook)
 
 (defcustom w3m-async-exec t
   "*If non-nil, w3m is executed as an asynchronous process."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-process-connection-type
+  (not (and (featurep 'xemacs)
+	    (string-match "solaris" system-configuration)))
+  "*Process connection type for w3m execution."
   :group 'w3m
   :type 'boolean)
 
@@ -3434,43 +3431,28 @@ If EMPTY is non-nil, the created buffer has empty content."
 (defun w3m-next-buffer ()
   "Switch to next w3m buffer."
   (interactive)
-  (let (buffers next)
-    (dolist (buffer (buffer-list))
-      (with-current-buffer buffer
-	(when (eq major-mode 'w3m-mode)
-	  (setq buffers (cons buffer buffers)))))
-    (setq buffers (sort buffers
-			(lambda (x y)
-			  (< (w3m-pullout-buffer-number x)
-			     (w3m-pullout-buffer-number y)))))
+  (let ((buffers (w3m-list-buffers)))
     (switch-to-buffer
-     (if (setq next (cadr (memq (current-buffer) buffers)))
-	 next
-       (car buffers)))))
+     (or (cadr (memq (current-buffer) buffers))
+	 (car buffers)))))
 
 (defun w3m-previous-buffer ()
   "Switch to previous w3m buffer."
   (interactive)
-  (let (buffers next)
-    (dolist (buffer (buffer-list))
-      (with-current-buffer buffer
-	(when (eq major-mode 'w3m-mode)
-	  (setq buffers (cons buffer buffers)))))
-    (setq buffers (sort buffers
-			(lambda (x y)
-			  (>= (w3m-pullout-buffer-number x)
-			      (w3m-pullout-buffer-number y)))))
+  (let ((buffers (nreverse (w3m-list-buffers))))
     (switch-to-buffer
-     (if (setq next (cadr (memq (current-buffer) buffers)))
-	 next
-       (car buffers)))))
+     (or (cadr (memq (current-buffer) buffers))
+	 (car buffers)))))
 
-(defun w3m-delete-buffer ()
+(defun w3m-delete-buffer (&optional force)
   "Delete w3m buffer and switch to previous w3m buffer if exists."
-  (interactive)
-  (let ((buffer (current-buffer)))
-    (w3m-previous-buffer)
-    (kill-buffer buffer)))
+  (interactive "P")
+  (if (= 1 (length (w3m-list-buffers t)))
+      (w3m-quit force)
+    (let ((buffer (current-buffer)))
+      (w3m-previous-buffer)
+      (kill-buffer buffer))
+    (w3m-select-buffer-update)))
 
 (defvar w3m-lynx-like-map nil
   "Lynx-like keymap used in w3m-mode buffers.")
@@ -3687,19 +3669,17 @@ Return t if deleting current frame or window is succeeded."
   "Quit browsing WWW after updating arrived URLs list."
   (interactive "P")
   (when (or force
-	    (prog1
-		(y-or-n-p "Do you want to exit w3m? ")
+	    (prog1 (y-or-n-p "Do you want to exit w3m? ")
 	      (message "")))
-    (let ((buffer (current-buffer)))
-      (w3m-delete-frame-maybe)
+    (w3m-delete-frame-maybe)
+    (dolist (buffer (w3m-list-buffers t))
       (kill-buffer buffer))
-    (unless (w3m-alive-p)
-      ;; If no w3m is running, then destruct all data.
-      (w3m-cache-shutdown)
-      (w3m-arrived-shutdown)
-      (remove-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
-      (w3m-process-shutdown)
-      (w3m-kill-all-buffer))))
+    (w3m-select-buffer-close-window)
+    (w3m-cache-shutdown)
+    (w3m-arrived-shutdown)
+    (remove-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
+    (w3m-process-shutdown)
+    (w3m-kill-all-buffer)))
 
 (defun w3m-close-window ()
   "Close this window and make the other buffer current."
@@ -3713,7 +3693,8 @@ Return t if deleting current frame or window is succeeded."
 			    (eq major-mode 'w3m-mode)))
 		(bury-buffer cur)
 		(push cur buffers))))
-    (set-window-buffer (selected-window) (other-buffer))))
+    (set-window-buffer (selected-window) (other-buffer))
+    (w3m-select-buffer-close-window)))
 
 (unless w3m-mode-map
   (setq w3m-mode-map
@@ -4593,30 +4574,12 @@ buffers.  User can type following keys:
 (defun w3m-select-buffer-generate-contents (current-buffer)
   (let (buffer-read-only)
     (delete-region (point-min) (point-max))
-    (dolist (pair
-	     (sort (delq nil
-			 (mapcar
-			  (lambda (buffer)
-			    (with-current-buffer buffer
-				(when (eq 'w3m-mode major-mode)
-				  (cons buffer
-					(cond
-					 ((and (stringp w3m-current-title)
-					       (not (string= w3m-current-title "<no-title>")))
-					  w3m-current-title)
-					 ((stringp w3m-current-url)
-					  (directory-file-name
-					   (if (string-match "^[^/:]+:/+" w3m-current-url)
-					       (substring w3m-current-url (match-end 0))
-					     w3m-current-url)))
-					 (t "No title"))))))
-			  (buffer-list)))
-		   (lambda (x y)
-		     (< (w3m-pullout-buffer-number (car x))
-			(w3m-pullout-buffer-number (car y))))))
+    (dolist (buffer (w3m-list-buffers))
       (put-text-property (point)
-			 (progn (insert (cdr pair) "\n") (point))
-			 'w3m-select-buffer (car pair)))
+			 (progn
+			   (insert (w3m-buffer-title buffer) "\n")
+			   (point))
+			 'w3m-select-buffer buffer))
     (skip-chars-backward " \t\r\f\n")
     (delete-region (point) (point-max))
     (set-buffer-modified-p nil)
@@ -4775,6 +4738,13 @@ w3m-mode buffers."
   (w3m-select-buffer-show-this-line-and-switch)
   (and (get-buffer-window w3m-select-buffer-name)
        (delete-windows-on (get-buffer w3m-select-buffer-name))))
+
+(defun w3m-select-buffer-close-window ()
+  "Close the window which displays the menu to select w3m-mode buffers."
+  (if (one-window-p)
+      (set-window-buffer (get-buffer-window w3m-select-buffer-name)
+			 (other-buffer))
+    (delete-window (get-buffer-window w3m-select-buffer-name))))
 
 
 ;;; Header line (emulating Emacs 21).

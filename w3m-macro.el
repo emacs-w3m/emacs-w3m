@@ -44,6 +44,17 @@
   (defvar w3m-html-string-regexp)
   (defvar w3m-work-buffer-list))
 
+(eval-and-compile
+  (eval
+   '(condition-case nil
+	:symbol-for-testing-whether-colon-keyword-is-available-or-not
+      (void-variable
+       (let (w3m-colon-keywords)
+	 (load "w3m-kwds.el" nil t t)
+	 (while w3m-colon-keywords
+	   (set (car w3m-colon-keywords) (car w3m-colon-keywords))
+	   (setq w3m-colon-keywords (cdr w3m-colon-keywords))))))))
+
 ;;; Things should be defined in advance:
 
 ;; (There are no objects so far.)
@@ -252,15 +263,6 @@ Otherwise return nil."
 		    (file-executable-p
 		     (setq bin (expand-file-name (concat command ".exe") dir))))
 	    (throw 'found-command bin)))))))
-
-(defsubst w3m-pullout-buffer-number (buf)
-  "Return a suffix number of w3m buffer."
-  (when (bufferp buf) (setq buf (buffer-name buf)))
-  (cond
-   ((string= "*w3m*" buf) 1)
-   ((string-match "\\*w3m\\*<\\([0-9]+\\)>" buf)
-    (string-to-number (match-string 1 buf)))
-   (t 999)))
 
 (provide 'w3m-macro)
 

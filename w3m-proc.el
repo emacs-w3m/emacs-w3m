@@ -41,24 +41,26 @@
 
 (require 'w3m-macro)
 
-(defcustom w3m-process-connection-type
-  (not (and (featurep 'xemacs)
-	    (string-match "solaris" system-configuration)))
-  "*Process connection type for w3m execution."
-  :group 'w3m
-  :type 'boolean)
+(eval-and-compile
+  (cond
+   ((featurep 'xemacs)
+    (require 'poe))
+   ((boundp 'MULE)
+    (require 'w3m-om))))
 
 (eval-when-compile
   ;; Variable(s) which are used in the following inline functions.
   ;; They should be defined in the other module at run-time.
   (defvar w3m-current-url)
+  (defvar w3m-current-title) ;; for w3m-buffer-title()
   (defvar w3m-current-buffer)
   (defvar w3m-profile-directory)
   (defvar w3m-terminal-coding-system)
   (defvar w3m-command)
   (defvar w3m-command-arguments)
   (defvar w3m-command-environment)
-  (defvar w3m-async-exec))
+  (defvar w3m-async-exec)
+  (defvar w3m-process-connection-type))
 
 (defconst w3m-process-max 5 "The maximum limit of the working processes.")
 (defvar w3m-process-queue nil "Queue of processes.")
@@ -598,6 +600,55 @@ evaluated in a temporary buffer."
 	      (append
 	       (list (cons root (list (cons realm (list (cons user pass))))))
 	       w3m-process-user-alist)))))))
+
+
+;;; Miscellaneous functions:
+
+(defun w3m-buffer-title (buffer)
+  "Return the title of the buffer BUFFER."
+  (with-current-buffer buffer
+    (cond
+     ((and (stringp w3m-current-title)
+	   (not (string= w3m-current-title "<no-title>")))
+      w3m-current-title)
+     ((stringp w3m-current-url)
+      (directory-file-name
+       (if (string-match "^[^/:]+:/+" w3m-current-url)
+	   (substring w3m-current-url (match-end 0))
+	 w3m-current-url)))
+     (t "<no-title>"))))
+
+(defun w3m-buffer-name-lessp (x y)
+  "Return t if first arg buffer's name is less than second."
+  (when (bufferp x)
+    (setq x (buffer-name x)))
+  (when (bufferp y)
+    (setq y (buffer-name y)))
+  (if (and (string-match "\\`\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'" x)
+	   (setq x (cons x
+			 (if (match-beginning 1)
+			     (string-to-number (match-string 2 x))
+			   0))))
+      (if (string-match "\\`\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'" y)
+	  (< (cdr x)
+	     (if (match-beginning 1)
+		 (string-to-number (match-string 2 y))
+	       0))
+	(string< (car x) y))
+    (string< x y)))
+
+(defun w3m-list-buffers (&optional nosort)
+  "Return list of w3m-mode buffers."
+  (if nosort
+      (save-current-buffer
+	(delq nil
+	      (mapcar
+	       (lambda (buffer)
+		 (set-buffer buffer)
+		 (when (eq major-mode 'w3m-mode) buffer))
+	       (buffer-list))))
+    (sort (w3m-list-buffers t)
+	  (function w3m-buffer-name-lessp))))
 
 (provide 'w3m-proc)
 
