@@ -213,8 +213,10 @@ Set hooks run arround each command is executed."
   "Run `mime-w3m-after-cursor-move-hook' if the cursor has been moved."
   (when (and (/= (point) (car w3m-current-position))
 	     (ignore-errors
-	       (get-text-property (car w3m-current-position)
-				  'text-rendered-by-mime-w3m)))
+	       (or (get-text-property (point)
+				      'text-rendered-by-mime-w3m)
+		   (get-text-property (car w3m-current-position)
+				      'text-rendered-by-mime-w3m))))
     (run-hooks 'mime-w3m-after-cursor-move-hook)))
 
 ;; To avoid byte-compile warning in `mime-w3m-cid-retrieve'.
