@@ -1,5 +1,21 @@
 2003-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-safe-toggle-inline-image): New function.
+	(w3m-toggle-inline-images): Revoke the recent changes.
+	(w3m-safe-toggle-inline-images): New function.
+	(w3m-safe-view-this-url): Doc fix.
+	(w3m-minor-mode-command-alist): Use `w3m-safe-toggle-inline-image'
+	and `w3m-safe-toggle-inline-images'.
+
+	* w3m-util.el (w3m-find-w3m-buffer): Abolish.
+	(w3m-with-w3m-buffer): Abolish.
+
+	* mew-w3m.el (mew-w3m-view-inline-image): Revert.
+
+	* attic/vm-w3m.el (vm-w3m-safe-toggle-inline-images): New function.
+
+2003-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-toggle-inline-images): Ignore `w3m-safe-url-regexp'
 	when the prefix argument is given.
 

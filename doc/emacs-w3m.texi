@@ -3055,19 +3055,26 @@ safe (that is, you can display such images without modifying the
 @item
 Giveaway
 
-Even when you are in the summary buffer, you can use the
-@code{w3m-toggle-inline-images} command in order to toggle displaying of
+Even when you are in the summary buffer, you can toggle displaying of
 images in the article buffer.  It is effective only when those images
-are displayed by emacs-w3m, though.  You may want to add the command key
-as follows:
+are displayed by emacs-w3m, though.  Here's an example:
 
 @lisp
+(defun gnus-summary-w3m-safe-toggle-inline-images (&optional arg)
+  "Toggle displaying of all images in the article buffer.
+If the prefix arg is given, all images are considered to be safe."
+  (interactive "P")
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (w3m-safe-toggle-inline-images arg)))
+
 (eval-after-load "gnus-sum"
   '(define-key gnus-summary-mode-map
-     "\C-i" 'w3m-toggle-inline-images))
+     "\C-i" 'gnus-summary-w3m-safe-toggle-inline-images))
 @end lisp
 @end itemize
 
+@noindent
 See also @ref{Nnshimbun}.
 
 @node Mew
@@ -3099,6 +3106,7 @@ If so, add the following lines to the @file{~/.mew.el} file:
       '("Text/Html" "Text/Plain" ".*"))
 @end lisp
 
+@noindent
 There are some customizable variables related to Mew:
 
 @table @code
@@ -3131,6 +3139,7 @@ A hook run just after retrieving a @samp{cid:} URL.  The default value
 is @code{nil}.
 @end table
 
+@noindent
 See also @ref{Mew Shimbun}.
 
 @node SEMI MUAs
@@ -3144,6 +3153,7 @@ functions, we generically call them @acronym{SEMI} MUAs.  Although
 easily be altered to emacs-w3m and it will make your cyber life still
 more comfortable.
 
+@noindent
 You simply need to put the following line in @file{~/.emacs} file:
 
 @lisp
@@ -3183,6 +3193,41 @@ A hook run just after setting up the cooperation of the @code{mime-w3m}
 module and @acronym{SEMI}.  The default value is @code{nil}.
 @end table
 
+By the way, even when you are in the summary buffer, you can toggle
+displaying of images in the article buffer (which is what is called the
+message buffer in the Wanderlust community).  It is effective only when
+those images are displayed by emacs-w3m, though.  Here're examples for
+T-gnus, Nana-gnus and Wanderlust:
+
+@lisp
+;; T-gnus or Nana-gnus:
+(defun gnus-summary-w3m-safe-toggle-inline-images (&optional arg)
+  "Toggle displaying of all images in the article buffer.
+If the prefix arg is given, all images are considered to be safe."
+  (interactive "P")
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (w3m-safe-toggle-inline-images arg)))
+
+(eval-after-load "gnus-sum"
+  '(define-key gnus-summary-mode-map
+     "\C-i" 'gnus-summary-w3m-safe-toggle-inline-images))
+
+;; Wanderlust:
+(defun wl-summary-w3m-safe-toggle-inline-images (&optional arg)
+  "Toggle displaying of all images in the message buffer.
+If the prefix arg is given, all images are considered to be safe."
+  (interactive "P")
+  (save-excursion
+    (set-buffer wl-message-buffer)
+    (w3m-safe-toggle-inline-images arg)))
+
+(eval-after-load "wl-summary"
+  '(define-key wl-summary-mode-map
+     "\M-i" 'wl-summary-w3m-safe-toggle-inline-images))
+@end lisp
+
+@noindent
 See also @ref{Nnshimbun} if you are using T-gnus or Nana-gnus.
 
 @node VM
@@ -3193,6 +3238,13 @@ is no VM user in the emacs-w3m team.  However, don't be pessimistic.
 There is the @file{vm-w3m.el} module in the attic directory of the
 emacs-w3m distribution.  You are a lucky person if it is helpful to you.
 Try it anyhow.  You can find how to use it in the file itself.
+
+If you want to toggle displaying of images in the presentation buffer
+when you are in any VM buffer, use the following:
+
+@lisp
+(define-key vm-mode-map "T" 'vm-w3m-safe-toggle-inline-images)
+@end lisp
 
 @node Frequently Asked Questions
 @chapter There isn't always an answer

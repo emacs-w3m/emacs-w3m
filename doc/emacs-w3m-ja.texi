@@ -3161,18 +3161,25 @@ Customization})$B!#:G$b4JC1$JJ}K!$O!"0J2<$N9T$r(B @file{~/.gnus.el} $B%U%!%$%
 @item
 $B$*$^$1(B
 
-$B35N,%P%C%U%!$K$$$k$H$-$G$b!"(B@code{w3m-toggle-inline-images} $B%3%^%s%I$G5-(B
-$B;v%P%C%U%!$N2hA|I=<($r%H%0%k$K@Z$j49$($k$3$H$,$G$-$^$9!#$=$l$i$N2hA|(B
-$B$,(B emacs-w3m $B$K$h$C$FI=<($5$l$k>l9g$@$1$G$9$1$l$I$M!#0J2<$N$h$&$K%3%^%s(B
-$B%I!&%-!<$rDI2C$9$kI,MW$,$"$k$+$b$7$l$^$;$s(B:
+$B35N,%P%C%U%!$K$$$k$H$-$G$b!"5-;v%P%C%U%!$N2hA|I=<($r%H%0%k$K@Z$j49$($k$3(B
+$B$H$,$G$-$^$9!#$=$l$i$N2hA|$,(B emacs-w3m $B$K$h$C$FI=<($5$l$k>l9g$@$1$G$9$1(B
+$B$l$I$M!#Nc$G$9(B:
 
 @lisp
+(defun gnus-summary-w3m-safe-toggle-inline-images (&optional arg)
+  "Toggle displaying of all images in the article buffer.
+If the prefix arg is given, all images are considered to be safe."
+  (interactive "P")
+  (with-current-buffer gnus-article-buffer
+    (w3m-safe-toggle-inline-images arg)))
+
 (eval-after-load "gnus-sum"
   '(define-key gnus-summary-mode-map
-     "\C-i" 'w3m-toggle-inline-images))
+     "\C-i" 'gnus-summary-w3m-safe-toggle-inline-images))
 @end lisp
 @end itemize
 
+@noindent
 @ref{Nnshimbun} $B$b;2>H$7$F2<$5$$!#(B
 
 @node Mew
@@ -3185,6 +3192,7 @@ Emacs-w3m $B$r;H$&$3$H$K$h$C$F!"(BText/Html $B$r(B Message $B%b!<%I$KI=<($G
 (require 'mew-w3m)
 @end lisp
 
+@noindent
 $B$3$l$G!"$"$?$+$b(B Text/Plain $B$G$"$k$+$N$h$&$K!"(BText/Html $B$r(B Message $B%b!<(B
 $B%I$KI=<($G$-$k$h$&$K$J$j$^$9!#$3$N:]$b!"(B@kbd{C-c C-e} $B$NA`:n$OM-8z$G$9!#(B
 
@@ -3201,6 +3209,7 @@ Emacs-w3m $B$r;H$&$3$H$K$h$C$F!"(BText/Html $B$r(B Message $B%b!<%I$KI=<($G
       '("Text/Html" "Text/Plain" ".*"))
 @end lisp
 
+@noindent
 Mew $B$K4XO"$9$k$$$/$D$+$N%+%9%?%^%$%:2DG=$JJQ?t$,$"$j$^$9(B:
 
 @table @code
@@ -3235,6 +3244,7 @@ Mew $B$K4XO"$9$k$$$/$D$+$N%+%9%?%^%$%:2DG=$JJQ?t$,$"$j$^$9(B:
 $B$O(B @code{nil} $B$G$9!#(B
 @end table
 
+@noindent
 @ref{Mew Shimbun} $B$b;2>H$7$F2<$5$$!#(B
 
 @node SEMI MUAs
@@ -3248,6 +3258,7 @@ Emacs-w3m $B$H(B @acronym{SEMI} MUA$B!"Nc$($P(B Wanderlust $B$d(B T-gnus 
 $B$G(B Emacs/W3 $B$r;H$$$^$9$,!"MF0W$K(B emacs-w3m $B$GCV$-49$($k$3$H$,2DG=$G!"$=(B
 $B$l$K$h$C$F$"$J$?$NEEG>@83h$O$h$j2wE,$K$J$k$G$7$g$&!#(B
 
+@noindent
 $BC1$K0J2<$N9T$r(B @file{~/.emacs} $B%U%!%$%k$KF~$l$l$PNI$$$N$G$9(B:
 
 @lisp
@@ -3286,6 +3297,41 @@ emacs-w3m $B$N$HF1$8<gMW$J%-!<$r;H$&$3$H$,$G$-$^$9!#Nc$($P(B @key{RET} $B$O!"
 $B9T$5$l$k%U%C%/$G$9!#%G%U%)%k%HCM$O(B @code{nil} $B$G$9!#(B
 @end table
 
+$B$H$3$m$G!"(Bsummary $B%P%C%U%!$K$$$k$H$-$G$b!"(Barticle $B%P%C(B
+$B%U%!(B (Wanderlust $B$N%3%_%e%K%F%#$G$O(B message $B%P%C%U%!$H8F$P$l$F$$$k(B) $B$N2h(B
+$BA|I=<($r%H%0%k$K@Z$j49$($k$3$H$,$G$-$^$9!#$=$l$i$N2hA|$,(B emacs-w3m $B$K$h$C(B
+$B$FI=<($5$l$k>l9g$@$1$G$9$1$l$I$M!#(BT-gnus, Nana-gnus $B$*$h$S(B Wanderlust $BMQ(B
+$B$NNc$G$9(B:
+
+@lisp
+;; T-gnus or Nana-gnus:
+(defun gnus-summary-w3m-safe-toggle-inline-images (&optional arg)
+  "Toggle displaying of all images in the article buffer.
+If the prefix arg is given, all images are considered to be safe."
+  (interactive "P")
+  (save-excursion
+    (set-buffer gnus-article-buffer)
+    (w3m-safe-toggle-inline-images arg)))
+
+(eval-after-load "gnus-sum"
+  '(define-key gnus-summary-mode-map
+     "\C-i" 'gnus-summary-w3m-safe-toggle-inline-images))
+
+;; Wanderlust:
+(defun wl-summary-w3m-safe-toggle-inline-images (&optional arg)
+  "Toggle displaying of all images in the message buffer.
+If the prefix arg is given, all images are considered to be safe."
+  (interactive "P")
+  (save-excursion
+    (set-buffer wl-message-buffer)
+    (w3m-safe-toggle-inline-images arg)))
+
+(eval-after-load "wl-summary"
+  '(define-key wl-summary-mode-map
+     "\M-i" 'wl-summary-w3m-safe-toggle-inline-images))
+@end lisp
+
+@noindent
 T-gnus $B$+(B Nana-gnus $B$r$*;H$$$J$i$P(B @ref{Nnshimbun} $B$b;2>H$7$F2<$5$$!#(B
 
 @node VM
@@ -3296,6 +3342,13 @@ Emacs-w3m $B$O(B VM $B$r@Q6KE*$K%5%]!<%H$7$F$$$^$;$s!#$=$l$OC1$K(B emacs-w3m
 $B$N(B attic $B%G%#%l%/%H%j$K(B @file{vm-w3m.el} $B%b%8%e!<%k$,$"$j$^$9!#$=$l$,;H(B
 $B$($l$P$a$C$1$b$s$G$9!#$H$K$+$/;n$7$F8+$F2<$5$$!#;H$$J}$O$=$N%U%!%$%k$K$"(B
 $B$j$^$9!#(B
+
+VM $B$N$I$l$+$N%P%C%U%!$K$$$k$H$-$K!"%W%l%<%s%F!<%7%g%s!&%P%C%U%!$N2hA|I=(B
+$B<($r%H%0%k$K@Z$j49$($?$$>l9g$O!"0J2<$r;H$C$F2<$5$$(B:
+
+@lisp
+(define-key vm-mode-map "T" 'vm-w3m-safe-toggle-inline-images)
+@end lisp
 
 @node Frequently Asked Questions
 @chapter $BI,$:Ez$,$"$k$H$O8B$i$J$$(B
