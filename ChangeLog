@@ -1,3 +1,13 @@
+2002-10-22  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el (w3m-entity-regexp): As simple regexp. Existance of final
+	semi-collon is to be detected.
+	(w3m-entity-value): 2nd argument STRICT is added. If not STRICT,
+	find entity from db by maxmum length matching, and returns it with
+	appending unused chars. Returns nil if not match.
+	And also use defun instead of defsubst.
+	(w3m-decode-entities): Use new `w3m-entity-value' with 2nd arg.
+
 2002-10-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-minor-mode): Define without `define-minor-mode'.
