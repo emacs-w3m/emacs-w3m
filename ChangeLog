@@ -1,5 +1,7 @@
 2003-02-22  NAKAJIMA Mikio  <minakaji@namazu.org>
 
+	* shimbun/sb-dennou.el: New file.
+
 	* shimbun/sb-palmfan.el (shimbun-palmfan-pickup-date): New
 	function.
 	(shimbun-palmfan-get-first-article-date): Ditto.
