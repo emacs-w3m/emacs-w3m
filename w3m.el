@@ -1032,7 +1032,7 @@ If N is negative, last N items of LIST is returned."
   ;; Re-ordering anchor elements.
   (goto-char (point-min))
   (let (href)
-    (while (re-search-forward "<a\\([ \t\n]\\)[^>]+[ \t\n]href=\\(\"?[^\" >]*\"?\\)" nil t)
+    (while (re-search-forward "<a\\([ \t\n]\\)[^>]+[ \t\n]href=\\([\"']?[^\"' >]*[\"']?\\)" nil t)
       (setq href (buffer-substring (match-beginning 2) (match-end 2)))
       (delete-region (match-beginning 2) (match-end 2))
       (goto-char (match-beginning 1))
@@ -1040,7 +1040,7 @@ If N is negative, last N items of LIST is returned."
   ;; Fontify anchor tags.
   (goto-char (point-min))
   (while (re-search-forward
-	  "<a\\([ \t\n]+href=\"?\\([^\" >]*\\)\"?\\)?\\([ \t\n]+name=\"?\\([^\" >]*\\)\"?\\)?[^>]*>"
+	  "<a\\([ \t\n]+href=[\"']?\\([^\"' >]*\\)[\"']?\\)?\\([ \t\n]+name=\"?\\([^\" >]*\\)\"?\\)?[^>]*>"
 	  nil t)
     (let ((url (match-string 2))
 	  (tag (match-string 4))

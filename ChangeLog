@@ -1,6 +1,7 @@
 2001-03-07  Keisuke Nishida  <kxn30@po.cwru.edu>
 
 	* w3m.el (w3m-search-engine-alist): Added "rpmfind".
+	(w3m-fontify-anchors): Treat single quotes (') as quotation marks.
 
 2001-03-08  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
