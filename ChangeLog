@@ -1,3 +1,22 @@
+2001-11-21  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-max-anchor-sequence): New buffer local variable.
+	(w3m-copy-local-variables): Handle `w3m-max-anchor-sequence'.
+	(w3m-fontify-anchors): Reset `w3m-max-anchor-sequence' to zero.
+	Use the text-property `w3m-anchor-sequence' insted of
+	`w3m-cursor-anchor'.
+	(w3m-goto-next-anchor, w3m-next-anchor, w3m-goto-previous-anchor)
+	(w3m-previous-anchor): Rewrite use the text-property
+	`w3m-anchor-sequence'.
+	(w3m-next-form, w3m-goto-next-image, w3m-next-image)
+	(w3m-previous-image): Fix mistake as modified last time.
+
+	* w3m-util.el (w3m-anchor-sequence): New macro.
+	(w3m-cursor-anchor) Remove macro.
+
+	* w3m-form.el (w3m-form-fontify): Use the text-property
+	`w3m-anchor-sequence' insted of `w3m-cursor-anchor'.
+
 2001-11-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-download-this-url): Wrap the form which is evaluated
@@ -85,7 +104,7 @@
 	(w3m-lynx-like-map, w3m-info-like-map): Bind "]" as the key to
 	call `w3m-next-form'. Bind "[" as the key to call
 	`w3m-previous-form'.
-	
+
 2001-11-19  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-ibm-dev.el: Add copyright notice.
@@ -599,7 +618,7 @@
 
 	* w3m-xmas.el (w3m-setup-tab-menu): Use `defun' insted of `ignore'
 	to avoid byte-compile warnings.
-	(w3m-tab-menubar-pull-bufnum, w3m-tab-menubar-make-items) 
+	(w3m-tab-menubar-pull-bufnum, w3m-tab-menubar-make-items)
 	(w3m-select-buffer): Copy from w3m-tabmenu.el
 
 	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
@@ -649,7 +668,7 @@
 	`mew-shimbun-unseen-remove-one'.
 	(mew-shimbun-retrieve-article, mew-shimbun-re-retrieve-article):
 	Handling modeline.
-	(mew-shimbun-retrieve, mew-shimbun-retrieve-all) 
+	(mew-shimbun-retrieve, mew-shimbun-retrieve-all)
 	(mew-shimbun-re-retrieve, mew-shimbun-re-retrieve-all): Execute
 	Scan of summary when finish to retrieve articles.
 
@@ -1071,7 +1090,7 @@
 
 	* shimbun/mew-shimbun.el (mew-shimbun-remove-unseen-one): Remove
 	'win' option. Do not save mew-cache.
-	(mew-shimbun-remove-unseen, mew-shimbun-remove-unseen-all) 
+	(mew-shimbun-remove-unseen, mew-shimbun-remove-unseen-all)
 	(mew-shimbun-remove-unseen-advice): Call
 	mew-shimbun-remove-unseen-one() without `win' option.
 	(mew-shimbun-unseen-setup): New defadvice for mew-kill-buffer()

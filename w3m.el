@@ -890,6 +890,7 @@ encoded in the optimized animated gif format and base64.")
 (defvar w3m-previous-url nil "Previous URL of this buffer.")
 (defvar w3m-start-url nil "Start URL of this buffer.")
 (defvar w3m-contents-url nil "Table of Contents URL of this buffer.")
+(defvar w3m-max-anchor-sequence nil "Maximum number of anchor sequence on this buffer.")
 
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-base-url)
@@ -900,6 +901,7 @@ encoded in the optimized animated gif format and base64.")
 (make-variable-buffer-local 'w3m-previous-url)
 (make-variable-buffer-local 'w3m-start-url)
 (make-variable-buffer-local 'w3m-contents-url)
+(make-variable-buffer-local 'w3m-max-anchor-sequence)
 
 (defsubst w3m-clear-local-variables ()
   (setq w3m-current-url nil
@@ -913,7 +915,7 @@ encoded in the optimized animated gif format and base64.")
 	w3m-contents-url nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url base title forms cs next prev start toc)
+  (let (url base title forms cs next prev start toc hseq)
     (with-current-buffer from-buffer
       (setq url w3m-current-url
 	    base w3m-current-base-url
@@ -923,7 +925,8 @@ encoded in the optimized animated gif format and base64.")
 	    next w3m-next-url
 	    prev w3m-previous-url
 	    start w3m-start-url
-	    toc w3m-contents-url))
+	    toc w3m-contents-url
+	    hseq w3m-max-anchor-sequence))
     (setq w3m-current-url url
 	  w3m-current-base-url base
 	  w3m-current-title title
@@ -932,7 +935,8 @@ encoded in the optimized animated gif format and base64.")
 	  w3m-next-url next
 	  w3m-previous-url prev
 	  w3m-start-url start
-	  w3m-contents-url toc)))
+	  w3m-contents-url toc
+	  w3m-max-anchor-sequence hseq)))
 
 (defvar w3m-verbose t "Flag variable to control messages.")
 
@@ -1671,6 +1675,7 @@ If N is negative, last N items of LIST is returned."
 	(balloon (w3m-make-balloon-help w3m-href-anchor))
 	start end)
     (goto-char (point-min))
+    (setq w3m-max-anchor-sequence 0)	;; reset max-hseq
     (while (re-search-forward "<_id[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
       (w3m-parse-attributes (id)
@@ -1684,7 +1689,7 @@ If N is negative, last N items of LIST is returned."
     (goto-char (point-min))
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
-      (w3m-parse-attributes (href name (rel :case-ignore))
+      (w3m-parse-attributes (href name (rel :case-ignore) (hseq :integer))
 	(when rel
 	  (setq rel (split-string rel))
 	  (cond
@@ -1700,14 +1705,16 @@ If N is negative, last N items of LIST is returned."
 	    (setq end (match-beginning 0))
 	    (delete-region (match-beginning 1) (match-end 1))
 	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)))
+	    (setq hseq (or (and (null hseq) 0) (abs hseq)))
+	    (setq w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
 	    (w3m-add-text-properties start end
 				     (list 'face (if (w3m-arrived-p href)
 						     'w3m-arrived-anchor-face
 						   'w3m-anchor-face)
 					   'w3m-href-anchor href
-					   'w3m-cursor-anchor href
 					   'mouse-face 'highlight
 					   'w3m-name-anchor name
+					   'w3m-anchor-sequence hseq
 					   'help-echo help
 					   'balloon-help balloon))))
 	 (name
@@ -3393,25 +3400,29 @@ session."
 (make-variable-buffer-local 'w3m-goto-anchor-hist)
 
 (defun w3m-goto-next-anchor ()
-  ;; move to the end of the current anchor
-  (when (w3m-cursor-anchor)
-    (goto-char (next-single-property-change (point) 'w3m-cursor-anchor)))
-  ;; find the next anchor
-  (or (w3m-cursor-anchor)
-      (let ((pos (next-single-property-change (point) 'w3m-cursor-anchor)))
-	(when pos
-	  (goto-char pos)
-	  t))))
+  (let ((hseq (w3m-anchor-sequence))
+	(pos (next-single-property-change (point) 'w3m-anchor-sequence)))
+    (if (or (not hseq) (< hseq 1))
+	(and pos (goto-char pos))
+      (setq pos
+	    ;; hseq is not sequence in form.
+	    (catch 'loop
+	      (setq hseq (1+ hseq))
+	      (while (<= hseq w3m-max-anchor-sequence)
+		(setq pos (text-property-any
+			   (point-min) (point-max) 'w3m-anchor-sequence hseq))
+		(when pos (throw 'loop pos))
+		(setq hseq (1+ hseq)))))
+      (and pos (goto-char pos)))))
 
 (defun w3m-next-anchor (&optional arg)
   "Move cursor to the next anchor."
   (interactive "p")
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-anchor w3m-previous-anchor)))
-      (setq w3m-goto-anchor-hist
-	    (list (get-text-property (point) 'w3m-cursor-anchor)))
-    (if (eq last-command 'w3m-previous-anchor)
-	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
+      (setq w3m-goto-anchor-hist (list (w3m-anchor-sequence)))
+    (if (and (eq last-command 'w3m-previous-anchor) w3m-goto-anchor-hist)
+	(setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-previous-anchor (- arg))
     (while (> arg 0)
@@ -3421,34 +3432,42 @@ session."
 	(goto-char (point-min))
 	(w3m-goto-next-anchor))
       (setq arg (1- arg))
-      (if (member (w3m-cursor-anchor) w3m-goto-anchor-hist)
+      (if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
 	(setq w3m-goto-anchor-hist
-	      (cons (get-text-property (point) 'w3m-cursor-anchor)
-		    w3m-goto-anchor-hist))))
+	      (cons (w3m-anchor-sequence) w3m-goto-anchor-hist))))
     (w3m-print-this-url)))
 
 (defun w3m-goto-previous-anchor ()
-  ;; move to the beginning of the current anchor
-  (when (w3m-cursor-anchor)
-    (goto-char (previous-single-property-change (1+ (point))
-						'w3m-cursor-anchor)))
-  ;; find the previous anchor
-  (let ((pos (previous-single-property-change (point) 'w3m-cursor-anchor)))
-    (if pos
-	(goto-char
-	 (if (w3m-cursor-anchor pos) pos
-	   (previous-single-property-change pos 'w3m-cursor-anchor))))))
+  (let ((hseq (w3m-anchor-sequence))
+	(pos (previous-single-property-change (point) 'w3m-anchor-sequence)))
+    (cond
+     ((and (not hseq) pos)
+      (if (w3m-anchor-sequence pos)
+	  (goto-char pos)
+	(setq pos (previous-single-property-change pos 'w3m-anchor-sequence))
+	(and pos (goto-char pos))))
+     ((or (not pos) (< hseq 2)) nil)
+     (t
+      (setq pos
+	    ;; hseq is not sequence in form.
+	    (catch 'loop
+	      (setq hseq (1- hseq))
+	      (while (> hseq 0)
+		(setq pos (text-property-any
+			   (point-min) (point-max) 'w3m-anchor-sequence hseq))
+		(when pos (throw 'loop pos))
+		(setq hseq (1- hseq)))))
+      (and pos (goto-char pos))))))
 
 (defun w3m-previous-anchor (&optional arg)
   "Move cursor to the previous anchor."
   (interactive "p")
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-anchor w3m-previous-anchor)))
-      (setq w3m-goto-anchor-hist
-	    (list (get-text-property (point) 'w3m-cursor-anchor)))
-    (if (eq last-command 'w3m-next-anchor)
-	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
+      (setq w3m-goto-anchor-hist (list (w3m-anchor-sequence)))
+    (if (and (eq last-command 'w3m-next-anchor) w3m-goto-anchor-hist)
+	(setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-next-anchor (- arg))
     (while (> arg 0)
@@ -3458,11 +3477,10 @@ session."
 	(goto-char (point-max))
 	(w3m-goto-previous-anchor))
       (setq arg (1- arg))
-      (if (member (w3m-cursor-anchor) w3m-goto-anchor-hist)
+      (if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
 	(setq w3m-goto-anchor-hist
-	      (cons (get-text-property (point) 'w3m-cursor-anchor)
-		    w3m-goto-anchor-hist))))
+	      (cons (w3m-anchor-sequence) w3m-goto-anchor-hist))))
     (w3m-print-this-url)))
 
 (defun w3m-goto-next-form ()
@@ -3483,8 +3501,8 @@ session."
   (if (null (memq last-command '(w3m-next-form w3m-previous-form)))
       (setq w3m-goto-anchor-hist
 	    (list (get-text-property (point) 'w3m-action)))
-    (if (eq last-command 'w3m-previous-form)
-	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
+    (if (and (eq last-command 'w3m-previous-form) w3m-goto-anchor-hist)
+	(setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-previous-form (- arg))
     (while (> arg 0)
@@ -3520,8 +3538,8 @@ session."
   (if (null (memq last-command '(w3m-next-form w3m-previous-form)))
       (setq w3m-goto-anchor-hist
 	    (list (get-text-property (point) 'w3m-action)))
-    (if (eq last-command 'w3m-next-form)
-	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
+    (if (and (eq last-command 'w3m-next-form) w3m-goto-anchor-hist)
+	(setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-next-form (- arg))
     (while (> arg 0)
@@ -3556,9 +3574,9 @@ session."
   (if (null (memq last-command
 		  '(w3m-next-image w3m-previous-image)))
       (setq w3m-goto-anchor-hist
-	    (list (get-text-property (point) 'w3m-action)))
-    (if (eq last-command 'w3m-previous-image)
-	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
+	    (list (get-text-property (point) 'w3m-image)))
+    (if (and (eq last-command 'w3m-previous-image) w3m-goto-anchor-hist)
+	(setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-previous-image (- arg))
     (while (> arg 0)
@@ -3594,9 +3612,9 @@ session."
   (if (null (memq last-command
 		  '(w3m-next-image w3m-previous-image)))
       (setq w3m-goto-anchor-hist
-	    (list (get-text-property (point) 'w3m-action)))
-    (if (eq last-command 'w3m-next-image)
-	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
+	    (list (get-text-property (point) 'w3m-image)))
+    (if (and (eq last-command 'w3m-next-image) w3m-goto-anchor-hist)
+	(setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-next-image (- arg))
     (while (> arg 0)

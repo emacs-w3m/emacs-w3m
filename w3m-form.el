@@ -444,24 +444,29 @@ return them with the flag."
 	(search-forward "</input_alt>")
 	(goto-char (match-beginning 0))
 	(delete-region (match-beginning 0) (match-end 0))
-	(let ((form (nth fid forms)))
+	(let ((form (nth fid forms))
+	      (abs-hseq (or (and (null hseq) 0) (abs hseq))))
+	  (setq w3m-max-anchor-sequence (max abs-hseq w3m-max-anchor-sequence))
 	  (when form
 	    (cond
 	     ((and (string= type "hidden")
 		   (string= name "link"))
 	      (add-text-properties
 	       start (point)
-	       `(face
-		 w3m-form-face
+	       `(w3m-form-field-id
+		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 face w3m-form-face
 		 w3m-action (w3m-form-input-map ,form ,name)
-		 w3m-cursor-anchor (w3m-form-input-map ,form ,name))))
+		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "submit")
 	      (w3m-form-make-button
 	       start (point)
-	       `(w3m-action (w3m-form-submit ,form ,name ,value)
+	       `(w3m-form-field-id
+		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 w3m-action (w3m-form-submit ,form ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,name
 					     (w3m-form-get ,form ,name))
-		 w3m-cursor-anchor (w3m-form-submit ,form))))
+		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "image")
 	      (let ((end (point-marker))
 		    (src (w3m-form-get-property form name :src)))
@@ -473,94 +478,94 @@ return them with the flag."
 		  (insert "</img_alt>"))
 		(add-text-properties
 		 start end
-		 `(face
-		   w3m-form-face
+		 `(w3m-form-field-id
+		   (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		   face w3m-form-face
 		   w3m-action (w3m-form-submit ,form ,name ,value)
 		   w3m-submit (w3m-form-submit ,form ,name
 					       (w3m-form-get ,form ,name))
-		   w3m-cursor-anchor (w3m-form-submit ,form)))))
+		   w3m-anchor-sequence ,abs-hseq))))
 	     ((string= type "reset")
 	      (w3m-form-make-button
 	       start (point)
-	       `(w3m-action (w3m-form-reset ,form)
-		 w3m-cursor-anchor (w3m-form-reset ,form))))
+	       `(w3m-form-field-id
+		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 w3m-action (w3m-form-reset ,form)
+		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "textarea")
 	      (add-text-properties
 	       start (point)
-	       `(face
-		 w3m-form-face
+	       `(w3m-form-field-id
+		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 face w3m-form-face
 		 w3m-action (w3m-form-input-textarea ,form ,hseq)
 		 w3m-submit (w3m-form-submit ,form ,name
 					     (w3m-form-get ,form ,name))
-		 w3m-form-hseq ,hseq))
+		 w3m-form-hseq ,hseq
+		 w3m-anchor-sequence ,abs-hseq))
 	      (when (> hseq 0)
-		(add-text-properties
-		 start (point)
-		 `(w3m-cursor-anchor
-		   (w3m-form-input-textarea ,form ,hseq)
-		   w3m-form-name ,name))))
+		(add-text-properties start (point) `(w3m-form-name ,name))))
 	     ((string= type "select")
 	      (add-text-properties
 	       start (point)
-	       `(face
-		 w3m-form-face
+	       `(w3m-form-field-id
+		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 face w3m-form-face
 		 w3m-action (w3m-form-input-select ,form ,name)
 		 w3m-submit (w3m-form-submit ,form ,name
 					     (w3m-form-get ,form ,name))
-		 w3m-cursor-anchor (w3m-form-input-select ,form ,name))))
+		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "password")
 	      (add-text-properties
 	       start (point)
-	       `(face
-		 w3m-form-face
+	       `(w3m-form-field-id
+		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 face w3m-form-face
 		 w3m-action (w3m-form-input-password ,form ,name)
 		 w3m-submit (w3m-form-submit ,form ,name
 					     (w3m-form-get ,form ,name))
-		 w3m-cursor-anchor (w3m-form-input-password ,form ,name))))
+		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "checkbox")
 	      (add-text-properties
 	       start (point)
-	       `(face
-		 w3m-form-face
+	       `(w3m-form-field-id
+		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 face w3m-form-face
 		 w3m-action (w3m-form-input-checkbox ,form ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,name
 					     (w3m-form-get ,form ,name))
-		 w3m-cursor-anchor (w3m-form-input-checkbox ,form ,name
-							    ,value))))
+		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "radio")
 	      (add-text-properties
 	       start (point)
-	       `(face
-		 w3m-form-face
+	       `(w3m-form-field-id
+		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 face w3m-form-face
 		 w3m-action (w3m-form-input-radio ,form ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,name
 					     (w3m-form-get ,form ,name))
-		 w3m-cursor-anchor (w3m-form-input-radio ,form ,name ,value))))
+		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "file")
 	      (add-text-properties
 	       start (point)
-	       `(face
-		 w3m-form-face
+	       `(w3m-form-field-id
+		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 face w3m-form-face
 		 w3m-action (w3m-form-input-file ,form ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,name
 					     (w3m-form-get ,form ,name))
-		 w3m-cursor-anchor (w3m-form-input-file ,form ,name ,value))))
+		 w3m-anchor-sequence ,abs-hseq)))
 	     (t ;; input button.
 	      (add-text-properties
 	       start (point)
-	       `(face
-		 w3m-form-face
+	       `(w3m-form-field-id
+		 (format "fid=%d/type=%s/name=%s" ,fid ,type ,name)
+		 face w3m-form-face
 		 w3m-action (w3m-form-input ,form ,name ,type
 					    ,width ,maxlength ,value)
 		 w3m-submit (w3m-form-submit ,form ,name
 					     (w3m-form-get ,form ,name))
-		 w3m-cursor-anchor (w3m-form-input ,form ,name ,type
-						   ,width ,maxlength
-						   ,value)))))))
-	(put-text-property start (point)
-			   'w3m-form-field-id
-			   (format "fid=%d/type=%s/name=%s" fid type name))))))
-
+		 w3m-anchor-sequence ,abs-hseq))))))))))
 
 (defun w3m-form-replace (string &optional invisible)
   (let* ((start (text-property-any

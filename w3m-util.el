@@ -146,11 +146,10 @@ cursor position and around there."
 (defmacro w3m-submit (&optional position)
   (` (w3m-get-text-property-around 'w3m-submit (, position))))
 
-(defmacro w3m-cursor-anchor (&optional position)
+(defmacro w3m-anchor-sequence (&optional position)
   (if position
-      (` (get-text-property (, position) 'w3m-cursor-anchor))
-    (` (get-text-property (point) 'w3m-cursor-anchor))))
-
+      (` (get-text-property (, position) 'w3m-anchor-sequence))
+    (` (get-text-property (point) 'w3m-anchor-sequence))))
 
 ;;; Attributes:
 
