@@ -1,3 +1,10 @@
+2003-05-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fontify-anchors): Invalidate the widget keymap in
+	XEmacs; add a help-echo to the widget button.
+	(w3m-make-minor-mode-keymap): Bind [down-mouse-2] to `undefined'
+	to invalidate the `widget-button-click' command in FSF Emacs.
+
 2003-04-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-imitate-widget-button): New variable.

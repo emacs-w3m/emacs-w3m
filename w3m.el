@@ -2249,7 +2249,9 @@ with ^ as `cat -v' does."
 					    'w3m-arrived-anchor-face
 					  'w3m-anchor-face))
 		    (widget-mouse-face 'highlight))
-		(widget-convert-button 'default start end)))
+		(widget-convert-button 'default start end
+				       :button-keymap nil
+				       :help-echo href)))
 	    (when name
 	      (w3m-add-text-properties start (point-max)
 				       (list 'w3m-name-anchor
@@ -7027,6 +7029,10 @@ FROM-COMMAND is defined to `w3m-minor-mode-map' for same keys in
       (substitute-key-definition (car pair)
 				 (or (cdr pair) (car pair))
 				 keymap w3m-mode-map))
+    (unless (featurep 'xemacs)
+      ;; Inhibit the `widget-button-click' command when
+      ;; `w3m-imitate-widget-button' is activated.
+      (define-key keymap [down-mouse-2] 'undefined))
     keymap))
 
 (defvar w3m-minor-mode-map (w3m-make-minor-mode-keymap)
