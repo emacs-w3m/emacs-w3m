@@ -63,7 +63,8 @@ Place, Suite 330; Boston, MA 02111-1307, USA.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000, 2001, 2002, 2003, 2004 @w{TSUCHIYA Masatoshi}
+Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005
+@w{TSUCHIYA Masatoshi}
 
 This manual corresponds to emacs-w3m version @value{VERSION}.
 
