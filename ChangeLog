@@ -1,7 +1,7 @@
 2001-12-10  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-form.el (w3m-form-parse-forms): Use `w3m-decode-entities-string'
-	to value in the textarea.
+	to value in the textarea and option menu.
 
 2001-12-11  Mito  <mito@mxa.nes.nec.co.jp>
 

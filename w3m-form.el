@@ -333,14 +333,16 @@ return them with the flag."
 					     ?/)))
 		  ;; <OPTION> is found
 		  (goto-char (match-end 1)) ; goto very after "<xxxx"
-		  (w3m-parse-attributes (value (selected :bool))
+		  (w3m-parse-attributes ((value :decode-entity)
+					 (selected :bool))
 		    (setq vbeg (point))
 		    (skip-chars-forward "^<")
 		    (setq svalue
-			  (mapconcat 'identity
-				     (split-string
-				      (buffer-substring vbeg (point)) "\n")
-				     ""))
+			  (w3m-decode-entities-string
+			   (mapconcat 'identity
+				      (split-string
+				       (buffer-substring vbeg (point)) "\n")
+				      "")))
 		    (unless value
 		      (setq value svalue))
 		    (when selected
