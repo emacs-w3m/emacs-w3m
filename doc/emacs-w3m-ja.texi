@@ -195,6 +195,11 @@ Known Problems
 
 Shimbun Library
 
+* Nnshimbun::                   Gnus $B$r%&%'%V%V%i%&%6$K$9$k(B!
+* Mew Shimbun::                 Mew $B$G?7J9$rFI$`(B
+* Shimbun with Wanderlust::     Wanderlust $B$G?7J9$rFI$`(B
+* Shimbun Basics::              $B?7J9%b%8%e!<%k$N:n$jJ}(B
+
 Mailing List
 
 Emacs-w3m Functions
@@ -246,20 +251,21 @@ Emacs-w3m $B$N8x<0%Z!<%8(B @uref{http://emacs-w3m.namazu.org/} $B$bJ;$;$F$4Mw
 $BDI2C$N%Q%C%1!<%8$OITMW$G$9!#(B
 
 @item XEmacs 21.x
-APEL $B%Q%C%1!<%8$H(B @samp{gifsicle} $B%W%m%0%i%`$,I,MW$G$9(B (@pxref{Other
-Requirements})$B!#:G$b0BDj$7$F$$$k:G?7$N(B XEmacs 21.4 $B$r;H$&$3$H$r?d>)$7$^(B
-$B$9!#(B
+@sc{apel} $B%Q%C%1!<%8$H(B @samp{gifsicle} $B%W%m%0%i%`$,I,MW$G(B
+$B$9(B (@pxref{Other Requirements})$B!#:G$b0BDj$7$F$$$k:G?7$N(B XEmacs 21.4 $B$r;H(B
+$B$&$3$H$r?d>)$7$^$9!#(B
 
 @item Emacs 20.x
-$BDI2C$N%Q%C%1!<%8$OITMW$G$9!#$5$i$K(B BITMAP-MULE $B%Q%C%1!<%8$r;H$&$3$H$K$h$C(B
-$B$F!"Gr9u$N%S%C%H%^%C%W2hA|$r%$%s%i%$%sI=<($9$k$3$H$,$G$-$^(B
+$BDI2C$N%Q%C%1!<%8$OITMW$G$9!#$5$i$K(B @sc{bitmap-mule} $B%Q%C%1!<%8$r;H$&$3$H(B
+$B$K$h$C$F!"Gr9u$N%S%C%H%^%C%W2hA|$r%$%s%i%$%sI=<($9$k$3$H$,$G$-$^(B
 $B$9(B (@pxref{Other Requirements})$B!#(B
 
+
 @item Emacs 19.34 ($B4^(B Mule 2.3)
-APEL $B%Q%C%1!<%8!"(B@samp{$B?7$7$$(B custom} $B%Q%C%1!<%8$*$h(B
+@sc{apel} $B%Q%C%1!<%8!"(B@samp{$B?7$7$$(B custom} $B%Q%C%1!<%8$*$h(B
 $B$S(B @file{regexp-opt.el} $B%b%8%e!<%k$,I,MW$G$9!#(BEmacs 19.34 $B$r85$K$7(B
-$B$?(B Mule 2.3 $B$G$O!"(BBITMAP-MULE $B%Q%C%1!<%8$r;H$&$3$H$K$h$C$F!"Gr9u$N%S%C%H(B
-$B%^%C%W2hA|$r%$%s%i%$%sI=<($9$k$3$H$,$G$-$^$9(B (@pxref{Other
+$B$?(B Mule 2.3 $B$G$O!"(B@sc{bitmap-mule} $B%Q%C%1!<%8$r;H$&$3$H$K$h$C$F!"Gr9u$N(B
+$B%S%C%H%^%C%W2hA|$r%$%s%i%$%sI=<($9$k$3$H$,$G$-$^$9(B (@pxref{Other
 Requirements})$B!#(B
 @end table
 
@@ -293,13 +299,14 @@ Emacs $B$N%P!<%8%g%s$K$h$C$F$O!"%5!<%I%Q!<%F%#$N%Q%C%1!<%8$,I,MW$G$9!#$3$N(B
 @table @samp
 @item APEL
 XEmacs$B!"(BEmacs 19.34 $B$^$?$O(B Mule 2.3 $B$KIT2D7g$G$9!#(BEmacs-w3m $B$r9=C[$9$kA0(B
-$B$K(B APEL $B$r%$%s%9%H!<%k$7$J$1$l$P$J$j$^$;$s!#(BAPEL $B$O0J2<$N>l=j$K$"$j$^$9(B:
+$B$K(B @sc{apel} $B$r%$%s%9%H!<%k$7$J$1$l$P$J$j$^$;$s!#(B@sc{apel} $B$O0J2<$N>l=j(B
+$B$K$"$j$^$9(B:
 
 @uref{ftp://ftp.m17n.org/pub/mule/apel/apel-10.4.tar.gz}
 
-$B$b$7$9$G$K(B APEL XEmacs $B%Q%C%1!<%8$r%$%s%9%H!<%k$7$F$$$k$J$i$P!"$=$l$r>e(B
-$B5-$N%j%s%/$G<($7$?(B APEL $B$GCV$-49$($k$3$H$r6/$/4+$a$^$9!#CV$-49$($k$K$O!"(B
-$B0J2<$K<($9$h$&$JL?Na$r;H$C$F2<$5$$(B:
+$B$b$7$9$G$K(B @sc{apel} XEmacs $B%Q%C%1!<%8$r%$%s%9%H!<%k$7$F$$$k$J$i$P!"$=$l(B
+$B$r>e5-$N%j%s%/$G<($7$?(B @sc{apel} $B$GCV$-49$($k$3$H$r6/$/4+$a$^$9!#CV$-49(B
+$B$($k$K$O!"0J2<$K<($9$h$&$JL?Na$r;H$C$F2<$5$$(B:
 
 @example
 % rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
@@ -353,7 +360,7 @@ Mule 2.3 $B$N%f!<%6$O!"0J2<$N%Q%C%A$rEv$F$F!">/$7JQ99$7$J$1$l$P$J$i$J$$$3(B
 ----8<------8<------8<------8<------8<------8<------8<------8<----
 --- custom-1.9962/cus-face.el~	Wed Mar  4 19:52:39 1998
 +++ custom-1.9962/cus-face.el	Mon Mar  9 08:05:33 1998
-@@ -96,7 +96,7 @@
+@@@@ -96,7 +96,7 @@@@
        "Define a new FACE on all frames, ignoring X resources."
        (interactive "SMake face: ")
        (or (internal-find-face name)
@@ -378,15 +385,16 @@ Emacs 19.34 ($B4^(B Mule 2.3) $B$KIT2D7g$G$9!#%U%!%$(B
 @end example
 
 @item FLIM
-Shimbun $B%i%$%V%i%j(B (@pxref{Shimbun Library}) $B$r;H$&$?$a$K$O(B FLIM $B%Q%C%1!<(B
-$B%8$,I,MW$G$9!#(BShimbun $B%i%$%V%i%j$O%&%'%V>e$N?7J9$rFI$`$?$a$NF;6qN`$N%3%l(B
-$B%/%7%g%s$G!"(BGnus$B!"(BMew$B!"(BNana-gnus$B!"(BT-gnus$B!"(BWanderlust $B$J$I$H$H$b$K;H$&$3(B
-$B$H$,$G$-$^$9!#(B@xref{Shimbun Library}$B!#(B
+@samp{Shimbun} $B%i%$%V%i%j(B (@pxref{Shimbun Library}) $B$r;H$&$?$a$K(B
+$B$O(B @sc{flim} $B%Q%C%1!<%8$,I,MW$G$9!#(B@samp{Shimbun} $B%i%$%V%i%j$O%&%'%V>e$N(B
+$B?7J9$rFI$`$?$a$NF;6qN`$N%3%l%/%7%g%s$G!"(BGnus$B!"(BMew$B!"(BNana-gnus$B!"(BT-gnus$B!"(B
+Wanderlust $B$J$I$H$H$b$K;H$&$3$H$,$G$-$^$9!#(B@xref{Shimbun Library}$B!#(B
 
-$B$?$H$((B Emacs 20.x $B$+(B Emacs 21.x $B$r;H$C$F$$$k>l9g$G$b!"(BFLIM $B%Q%C%1!<%8$K(B
-$B$O(B APEL $B%Q%C%1!<%8$,I,MW$G$"$k$3$H$KCm0U$7$F2<$5$$!#$7$?$,$C(B
-$B$F(B shimbun $B%i%$%V%i%j$r;H$&$K$O!"(BAPEL $B$H(B FLIM $B$NN>J}$r%$%s%9%H!<%k$7$J$1(B
-$B$l$P$J$j$^$;$s!#(BFLIM $B%Q%C%1!<%8$O0J2<$N>l=j$K$"$j$^$9(B:
+$B$?$H$((B Emacs 20.x $B$+(B Emacs 21.x $B$r;H$C$F$$$k>l9g$G$b!"(B@sc{flim} $B%Q%C%1!<(B
+$B%8$K$O(B @sc{apel} $B%Q%C%1!<%8$,I,MW$G$"$k$3$H$KCm0U$7$F2<$5$$!#$7$?$,$C(B
+$B$F(B @samp{shimbun} $B%i%$%V%i%j$r;H$&$K$O!"(B@sc{apel} $B$H(B @sc{flim} $B$NN>J}$r(B
+$B%$%s%9%H!<%k$7$J$1$l$P$J$j$^$;$s!#(B@sc{flim} $B%Q%C%1!<%8$O0J2<$N>l=j$K$"$j(B
+$B$^$9(B:
 
 @uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
 @end table
@@ -423,8 +431,8 @@ Emacs-w3m $B$r(B CVS $B$G<hF@$7$?$N$J$i$P!"(B@samp{configure} $B%9%/%j%W%H$
 % ./configure
 @end example
 
-APEL$B!"(BFLIM $B$^$?$OB>$N2?$+$r!"%G%U%)%k%H$N(B @code{load-path} $B0J30$NHsI8=`(B
-$B%G%#%l%/%H%j$K%$%s%9%H!<%k$7$F$"$k>l9g$O!"0J2<$N$h$&(B
+@sc{apel}$B!"(B@sc{flim} $B$^$?$OB>$N2?$+$r!"%G%U%)%k%H$N(B @code{load-path} $B0J(B
+$B30$NHsI8=`%G%#%l%/%H%j$K%$%s%9%H!<%k$7$F$"$k>l9g$O!"0J2<$N$h$&(B
 $B$K(B @samp{--with-addpath} $B%*%W%7%g%s$r;H$C$F$=$l$i$r;XDj$7$J$1$l$P$J$j$^(B
 $B$;$s(B:
 
@@ -507,9 +515,9 @@ emacs-w3m $B$r(B XEmacs $B%Q%C%1!<%8$H$7$F%$%s%9%H!<%k$9$k$3$H$b$G$-$^$9(B:
 % emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
 @end example
 
-APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$$$H!"%$(B
-$B%s%9%H!<%i$O$=$l$i$rL5;k$7$F$7$^$&$G$7$g$&!#$=$s$J>l9g$O!"0J2<$K<($9$h$&(B
-$B$K!"$=$l$i$N>l=j$r%$%s%9%H!<%i$K9p$2$kI,MW$,$"$j$^$9(B:
+@sc{apel}$B!"(B@sc{flim} ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$(B
+$B$J$$$H!"%$%s%9%H!<%i$O$=$l$i$rL5;k$7$F$7$^$&$G$7$g$&!#$=$s$J>l9g$O!"0J2<(B
+$B$K<($9$h$&$K!"$=$l$i$N>l=j$r%$%s%9%H!<%i$K9p$2$kI,MW$,$"$j$^$9(B:
 
 @example
 % emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
@@ -1947,6 +1955,40 @@ Gnus $B$,>!<j$K(B spammer $B$N%5%$%H$K@\B3$9$k$3$H$O$"$j$^$;$s!#(B
 @node Shimbun Library
 @chapter $B%&%'%V>e$N?7J9$rFI$`$?$a$NF;6q(B
 @cindex Shimbun library
+
+$B?7J9$O(B ``she-n-boon'' $B$N$h$&$KJ9$3$($^$9!#<B:]$K$O$I$NJl2;$b?-$P$7$F$O$$(B
+$B$1$^$;$s!#$=$l$O87L)$K(B newspaper $B$N$3$H$G$9(B ($BF|K\8lHG$K$3$s$J$3$H$r=q$$(B
+$B$F$b0UL#L5$$$G$9$M(B)$B!#(B@samp{Shimbun} $B%i%$%V%i%j$OMM!9$J%b%8%e!<%k$N%3%l%/(B
+$B%7%g%s$G!"3F!9$OC1FH$G$O2?$b$9$k$3$H$,$G$-$^$;$s!#$3$3$G$OBeI=E*$J;0$D(B
+$B$N(B @samp{shimbun} $B$N%"%W%j%1!<%7%g%s%W%m%0%i%`(B ($B$=$l$i$N$&$A$NFs$D(B
+$B$O(B @samp{shimbun} $B%i%$%V%i%j$K4^$^$l$F$$$^$9(B) $B$H!"$"$J$?$,<+J,(B
+$B$G(B @samp{shimbun} $B%b%8%e!<%k$r:n$kJ}K!$K$D$$$F@bL@$7$^$9(B (Emacs Lisp $B%W(B
+$B%m%0%i%`$r=q$/$3$H$,$G$-$kI,MW$,$"$j$^$9(B)$B!#$=$l$i;0$D$N%"%W%j%1!<%7%g%s(B
+$B%W%m%0%i%`$O$9$Y$F!"@$3&Cf$N%&%'%V%5%$%H$+$i?7$7$$>pJs(B ($B$=$l$i$O;~!99o!9(B
+$B$H99?7$5$l$F$$$k(B) $B$r<h$C$FMh$F!"$"$?$+$b%a!<%k%a%C%;!<%8$rF|:"FI$s$G$$$k(B
+$B$+$N$h$&$K$=$l$i$rFI$`$3$H$r2DG=$K$7$^$9!#(B
+
+@menu
+* Nnshimbun::                   Gnus $B$r%&%'%V%V%i%&%6$K$9$k(B!
+* Mew Shimbun::                 Mew $B$G?7J9$rFI$`(B
+* Shimbun with Wanderlust::     Wanderlust $B$G?7J9$rFI$`(B
+* Shimbun Basics::              $B?7J9%b%8%e!<%k$N:n$jJ}(B
+@end menu
+
+@node Nnshimbun
+@section Gnus $B$r%&%'%V%V%i%&%6$K$9$k(B!
+
+
+@node Mew Shimbun
+@section Mew $B$G?7J9$rFI$`(B
+
+
+@node Shimbun with Wanderlust
+@section Wanderlust $B$G?7J9$rFI$`(B
+
+
+@node Shimbun Basics
+@section $B?7J9%b%8%e!<%k$N:n$jJ}(B
 
 
 @node Mailing List

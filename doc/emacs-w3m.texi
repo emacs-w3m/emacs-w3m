@@ -157,6 +157,11 @@ Known Problems
 
 Shimbun Library
 
+* Nnshimbun::                   Making Gnus into a web browser!
+* Mew Shimbun::                 Reading web newspapers with Mew
+* Shimbun with Wanderlus::      Reading web newspapers with Wanderlust
+* Shimbun Basics::              How to make your own shimbun modules
+
 Mailing List
 
 Emacs-w3m Functions
@@ -207,20 +212,20 @@ You can run emacs-w3m in various versions of Emacsen listed below:
 No additional package is required.
 
 @item XEmacs 21.x
-The APEL package and the @samp{gifsicle} program are required
+The @sc{apel} package and the @samp{gifsicle} program are required
 (@pxref{Other Requirements}).  We recommend using the most recent XEmacs
 21.4 since that version of XEmacs seems to be most stable.
 
 @item Emacs 20.x
 No additional package is required.  Furthermore, you can see monochrome
-bitmap images inline by using the BITMAP-MULE package (@pxref{Other
+bitmap images inline by using the @sc{bitmap-mule} package (@pxref{Other
 Requirements}).
 
 @item Emacs 19.34 (including Mule 2.3)
-The APEL package, the @samp{new custom} package and the
+The @sc{apel} package, the @samp{new custom} package and the
 @file{regexp-opt.el} module are required.  If you are using Mule 2.3
 based on Emacs 19.34, you can see monochrome bitmap images inline by
-using the BITMAP-MULE package (@pxref{Other Requirements}).
+using the @sc{bitmap-mule} package (@pxref{Other Requirements}).
 
 @end table
 
@@ -253,12 +258,12 @@ This section provides resources to help you find and install them.
 
 @item APEL
 Indispensable to XEmacs, Emacs 19.34 or Mule 2.3.  You should install
-APEL before building emacs-w3m.  APEL is available at:
+@sc{apel} before building emacs-w3m.  @sc{apel} is available at:
 
 @uref{ftp://ftp.m17n.org/pub/mule/apel/apel-10.4.tar.gz}
 
-If you are using XEmacs and already have the APEL XEmacs package
-installed, we strongly recommend replacing it with APEL which is
+If you are using XEmacs and already have the @sc{apel} XEmacs package
+installed, we strongly recommend replacing it with @sc{apel} which is
 linked above.  To replace it, use the directives like shown below:
 
 @example
@@ -311,7 +316,7 @@ following patch:
 ----8<------8<------8<------8<------8<------8<------8<------8<----
 --- custom-1.9962/cus-face.el~  Wed Mar  4 19:52:39 1998
 +++ custom-1.9962/cus-face.el   Mon Mar  9 08:05:33 1998
-@@ -96,7 +96,7 @@
+@@@@ -96,7 +96,7 @@@@
        "Define a new FACE on all frames, ignoring X resources."
        (interactive "SMake face: ")
        (or (internal-find-face name)
@@ -336,15 +341,15 @@ emacs-w3m distribution.  You may simply copy it somewhere (e.g.
 @end example
 
 @item FLIM
-The FLIM package is required to use the shimbun library.  The shimbun
-library is a collection of tools for reading a web newspaper, you can
-use it with Gnus, Mew, Nana-gnus, T-gnus, Wanderlust, etc.
-@xref{Shimbun Library}.
+The @sc{flim} package is required to use the @samp{shimbun} library.
+The @samp{shimbun} library is a collection of tools for reading a web
+newspaper, you can use it with Gnus, Mew, Nana-gnus, T-gnus, Wanderlust,
+etc. @xref{Shimbun Library}.
 
-Note that the FLIM package requires the APEL package even if you are
-using Emacs 20.x or Emacs 21.x.  Therefore, you must install both APEL
-and FLIM if you would like to use the shimbun library.  The FLIM package
-is available at:
+Note that the @sc{flim} package requires the @sc{apel} package even if
+you are using Emacs 20.x or Emacs 21.x.  Therefore, you must install
+both @sc{apel} and @sc{flim} if you would like to use the @samp{shimbun}
+library.  The @sc{flim} package is available at:
 
 @uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
 
@@ -384,9 +389,9 @@ Run @samp{configure} script.
 % ./configure
 @end example
 
-If you've installed APEL, FLIM or something in non-standard directories
-other than the default @code{load-path}, you must specify them using the
-@samp{--with-addpath} option as follows:
+If you've installed @sc{apel}, @sc{flim} or something in non-standard
+directories other than the default @code{load-path}, you must specify
+them using the @samp{--with-addpath} option as follows:
 
 @example
 % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
@@ -467,9 +472,9 @@ no @samp{make} command is available, cast the following spell:
 % emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
 @end example
 
-If APEL, FLIM (or any other library) aren't installed in the ordinary
-places, the installer will leave them out.  In such a case, it is
-necessary to tell those places to the installer as shown below:
+If @sc{apel}, @sc{flim} (or any other library) aren't installed in the
+ordinary places, the installer will leave them out.  In such a case, it
+is necessary to tell those places to the installer as shown below:
 
 @example
 % emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
@@ -1838,6 +1843,39 @@ safe (that is, you can display such images without modifying the
 @node Shimbun Library
 @chapter A tool for reading a newspaper
 @cindex Shimbun library
+
+Shimbun sounds like ``she-n-boon'', but actually any vowels shouldn't be
+prolonged.  It strictly means a newspaper in Japanese.  The
+@samp{shimbun} library is a collection of various modules and each one
+is unable to do nothing by itself.  This section explains typical three
+@samp{shimbun} applications (two of whom are included in the
+@samp{shimbun} library) and how to make @samp{shimbun} modules by
+yourself (you need to be able to write Emacs Lisp programs).  All those
+three applications make it possible to fetch the new informations (which
+are updated every moment) from the web sites in the world and to read
+them as if you were reading mail messages usually.
+
+@menu
+* Nnshimbun::                   Making Gnus into a web browser!
+* Mew Shimbun::                 Reading web newspapers with Mew
+* Shimbun with Wanderlus::      Reading web newspapers with Wanderlust
+* Shimbun Basics::              How to make your own shimbun modules
+@end menu
+
+@node Nnshimbun
+@section Making Gnus into a web browser!
+
+
+@node Mew Shimbun
+@section Reading web newspapers with Mew
+
+
+@node Shimbun with Wanderlus
+@section Reading web newspapers with Wanderlust
+
+
+@node Shimbun Basics
+@section How to make your own shimbun modules
 
 
 @node Mailing List
