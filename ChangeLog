@@ -1,3 +1,8 @@
+2004-02-11  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* doc/ptexinfmt.el: Support @docbook, @ifdocbook, @ifnotdocbook,
+	and @registeredsymbol.
+
 2004-02-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-active-region-or-url-at-point): Move the point
