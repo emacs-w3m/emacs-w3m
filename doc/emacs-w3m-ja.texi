@@ -258,7 +258,7 @@ Requirements})$B!#:G$b0BDj$7$F$$$k:G?7$N(B XEmacs 21.4 $B$r;H$&$3$H$r?d>)$7$^
 
 @item Emacs 19.34 ($B4^(B Mule 2.3)
 APEL $B%Q%C%1!<%8!"(B@samp{$B?7$7$$(B custom} $B%Q%C%1!<%8$*$h(B
-$B$S(B @file{regexp-opt.el} $B%b%8%e!<%k$,I,MW$G$9!#(BEmacs Emacs 19.34 $B$r85$K$7(B
+$B$S(B @file{regexp-opt.el} $B%b%8%e!<%k$,I,MW$G$9!#(BEmacs 19.34 $B$r85$K$7(B
 $B$?(B Mule 2.3 $B$G$O!"(BBITMAP-MULE $B%Q%C%1!<%8$r;H$&$3$H$K$h$C$F!"Gr9u$N%S%C%H(B
 $B%^%C%W2hA|$r%$%s%i%$%sI=<($9$k$3$H$,$G$-$^$9(B (@pxref{Other
 Requirements})$B!#(B
