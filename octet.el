@@ -96,7 +96,8 @@
     ("image/png"                        . png)
     ("image/tiff"                       . tiff)
     ("audio/midi"                       . ignore)
-    ("video/mpeg"                       . ignore))
+    ("video/mpeg"                       . ignore)
+    ("text/html"                        . html-un))
   "Alist of content-type-regexp-to-octet-type.")
 
 (defvar octet-magic-type-alist
@@ -106,7 +107,11 @@
     ("^II\\*\000"			image tiff)
     ("^MM\000\\*"			image tiff)
     ("^MThd"				audio midi)
-    ("^\000\000\001\263"		video mpeg))
+    ("^\000\000\001\263"		video mpeg)
+    ("<!doctype html"		        text  html)
+    ("<head"		                text  html)
+    ("<title"		                text  html)
+    ("<html"		                text  html))
   "*Alist of regexp about magic-number vs. corresponding content-types.
 Each element looks like (REGEXP TYPE SUBTYPE).
 REGEXP is a regular expression to match against the beginning of the
@@ -120,16 +125,22 @@ SUBTYPE is symbol to indicate subtype of content-type.")
     (msword  octet-filter-call2-extra "wvHtml"  nil     html-u8)
     (html    octet-render-html        nil       nil     nil)
     (html-u8 octet-decode-u8-text     nil       nil     html)
-    (gzip    octet-filter-call1       "gunzip"  ("-c")  text) ; should guess.
+    (html-un octet-decode-text        nil       nil     html)
+    (gzip    octet-filter-call1       "gunzip"  ("-c")  guess)
     (text    octet-decode-text        nil       nil     nil)
     (ignore  ignore                   nil       nil     nil)
     (jpeg    octet-decode-image       nil       jpeg    nil)
     (gif     octet-decode-image       nil       gif     nil)
     (png     octet-decode-image       nil       png     nil)
-    (tiff    octet-decode-image       nil       tiff    nil))
+    (tiff    octet-decode-image       nil       tiff    nil)
+    (guess   octet-filter-guess       nil       nil     nil)
+    )
   "Alist of type-to-filter-program.
 Each element should have the form like:
-\(TYPE FUNCTION FILTER_PROGRAM ARGUMENT NEW-TYPE\)")
+\(TYPE FUNCTION FILTER_PROGRAM ARGUMENT NEW-TYPE\)
+nil in NEW-TYPE means filtering is completed.")
+
+(defvar octet-find-file-hook nil)
 
 (defvar octet-attachments nil)
 (make-variable-buffer-local 'octet-attachments)
@@ -284,6 +295,11 @@ Returns 0 if succeed."
       (if (file-exists-p infile) (delete-file infile))
       (cd last-dir))))
 
+(defun octet-filter-guess (&rest args)
+  (let (buffer-file-name)
+    (octet-buffer)
+    0))
+
 (defun octet-guess-type-from-name (name)
   (when (string-match "\\.\\([a-z]+\\)$" name)
     (cdr (assoc (match-string 1 name)
@@ -374,7 +390,8 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
       (set-buffer-modified-p nil)
       (auto-save-mode -1)
       (setq buffer-read-only t
-	    truncate-lines t))))
+	    truncate-lines t)
+      (run-hooks 'octet-find-file-hook))))
 
 ;;;
 ;; Functions for SEMI.
