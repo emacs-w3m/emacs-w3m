@@ -1,3 +1,8 @@
+2003-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-sankei.el (shimbun-sankei-content-start): Improve the
+	value to be able to fetch inline images.
+
 2003-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-sankei.el (shimbun-sankei-x-face-alist): New variable.
