@@ -31,7 +31,6 @@
 	(shimbun-make-contents): Optional headers which are registerd in
 	the variable are inserted to an article.
 
->>>>>>> 1.982
 2002-02-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-icon-data): New buffer local variable.
