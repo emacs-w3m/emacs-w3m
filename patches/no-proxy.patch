@@ -1,0 +1,46 @@
+--- fm.h.orig	Mon Apr  2 12:02:37 2001
++++ fm.h	Fri Jun  8 17:02:11 2001
+@@ -637,6 +637,7 @@
+ extern int ai_family_order_table[3][3];		/* XXX */
+ #endif				/* INET6 */
+ global TextList *NO_proxy_domains;
++global char NoCache init(FALSE);
+ global int Do_not_use_proxy init(FALSE);
+ global int Do_not_use_ti_te init(FALSE);
+ 
+--- url.c.orig	Fri May 25 18:53:52 2001
++++ url.c	Fri Jun  8 17:02:02 2001
+@@ -1066,7 +1066,7 @@
+ 	    Strcat(s, Sprintf(":%d", target->port));
+ 	Strcat_charp(s, "\r\n");
+     }
+-    if (target->is_nocache) {
++    if (target->is_nocache || NoCache) {
+ 	Strcat_charp(s, "Pragma: no-cache\r\n");
+ 	Strcat_charp(s, "Cache-control: no-cache\r\n");
+     }
+--- rc.c.orig	Fri Apr 27 14:45:14 2001
++++ rc.c	Fri Jun  8 17:01:58 2001
+@@ -81,6 +81,7 @@
+ #define CMT_FTP_PROXY    "FTPプロキシ(URLで入力)"
+ #define CMT_NO_PROXY     "プロキシから除外するドメイン"
+ #define CMT_NOPROXY_NETADDR	"ネットワークアドレスでプロキシ除外のチェック"
++#define CMT_NO_CACHE     "Cache を使わない"
+ #define CMT_DNS_ORDER	"名前解決の順序"
+ #define CMT_DROOT        "/ で表されるディレクトリ(document root)"
+ #define CMT_PDROOT       "/~user で表されるディレクトリ"
+@@ -170,6 +171,7 @@
+ #define CMT_FTP_PROXY    "URL of FTP proxy host"
+ #define CMT_NO_PROXY     "Domains for direct access (no proxy)"
+ #define CMT_NOPROXY_NETADDR	"Check noproxy by network address"
++#define CMT_NO_CACHE     "Don't use cache"
+ #define CMT_DNS_ORDER	"Order of name resolution"
+ #define CMT_DROOT        "Directory corresponds to / (document root)"
+ #define CMT_PDROOT       "Directory corresponds to /~user"
+@@ -392,6 +394,7 @@
+ #ifdef INET6
+     {"dns_order", P_INT, PI_SEL_C, (void *) &DNS_order, CMT_DNS_ORDER, dnsorders},
+ #endif				/* INET6 */
++    {"no_cache", P_CHARINT, PI_ONOFF, (void *) &NoCache, CMT_NO_CACHE, NULL},
+     {NULL, 0, 0, NULL, NULL, NULL},
+ };

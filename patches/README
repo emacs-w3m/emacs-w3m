@@ -1,0 +1,42 @@
+* dump-extra.patch
+
+  A patch was posted by Akinori ITO <aito@ei5sun.yz.yamagata-u.ac.jp> in
+  [w3m-dev 01887].  This patch defines `-dump_extra' option.
+
+  To use w3m-m17n, you must apply this patch.
+
+
+* m17n-dump-coding.patch
+
+  A patch was posted by Hironori Sakamoto <h-saka@lsi.nec.co.jp> in
+  [emacs-w3m:00849].  This patch enables to set coding system when
+  contents are half-dumped with w3m-m17n.
+
+To use w3m-m17n, you must apply this patch.
+
+
+* no-proxy.patch
+
+  A patch was posted by Hironori Sakamoto <h-saka@lsi.nec.co.jp> in
+  [emacs-w3m:011119]. 
+
+  If the caching configuration of your proxy server is broken, you
+  should apply this patch and set non-nil value to
+  `w3m-broken-proxy-cache'.
+
+
+* post-header.patch
+
+  A patch was posted by Yuuichi Teranishi <teranisi@gohome.org> in
+  [emacs-w3m:01322].  This patch adds `-post' option and `-header'
+  option.
+
+  To use w3m-m17n or w3mmee, you must apply this patch.
+
+
+
+Local Variables:
+mode: indented-text
+coding: ascii
+fill-column: 72
+End:

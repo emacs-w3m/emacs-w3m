@@ -1,0 +1,368 @@
+diff -Naru w3m-0.2.1/backend.c w3m-0.2.1-post/backend.c
+--- w3m-0.2.1/backend.c	Fri Mar 23 10:49:54 2001
++++ w3m-0.2.1-post/backend.c	Wed Jul 18 11:15:44 2001
+@@ -34,7 +34,7 @@
+ } command_table[] = {
+     { "get", "[-download_only] URL", "Retrieve URL.", get },
+     { "post", "[-download_only] [-target TARGET] [-charset CHARSET]"
+-      " [-enctype ENCTYPE] [-body BODY] [-boundary BOUNDARY] [-length LEN] URL",
++      " [-ct CONTENTTYPE] [-body BODY] [-boundary BOUNDARY] [-length LEN] URL",
+       "Retrieve URL.", post },
+     { "set", "VARIABLE VALUE", "Set VALUE to VARIABLE.", set },
+     { "show", "VARIABLE", "Show value of VARIABLE.", show },
+@@ -111,8 +111,8 @@
+ 	Strcat( s, Sprintf( " (target \"%s\")", fp->target ) );
+     if( fp->charset )
+ 	Strcat( s, Sprintf( " (charset '%s)", get_mime_charset_name(fp->charset) ) );
+-    if( fp->enctype == FORM_ENCTYPE_MULTIPART )
+-	Strcat_charp( s, " (enctype \"multipart/form-data\")" );
++    if ( fp->ct )
++        Strcat( s, Sprintf( " (content-type \"%s\")", fp->ct ) );
+     if( fp->boundary )
+ 	Strcat( s, Sprintf( " (boundary \"%s\")", fp->boundary ) );
+     Strcat_charp( s, ")\n" );
+@@ -181,7 +181,7 @@
+ static void post( TextList *argv ){
+     FormList *request;
+     char *p, *target = NULL, *charset = NULL,
+-	*enctype = NULL, *body = NULL, *boundary = NULL, *url = NULL;
++         *ct = NULL, *body = NULL, *boundary = NULL, *url = NULL;
+     int flag = FALSE, length = 0;
+ 
+     while(( p = popText( argv ) )){
+@@ -191,8 +191,8 @@
+ 	    target = popText( argv );
+ 	else if( !strcasecmp( p, "-charset" ) )
+ 	    charset = popText( argv );
+-	else if( !strcasecmp( p, "-enctype" ) )
+-	    enctype = popText( argv );
++	else if( !strcasecmp( p, "-ct" ) )
++	    ct = popText( argv );
+ 	else if( !strcasecmp( p, "-body" ) )
+ 	    body = popText( argv );
+ 	else if( !strcasecmp( p, "-boundary" ) )
+@@ -203,7 +203,7 @@
+ 	    url = p;
+     }
+     if( url ){
+-	request = newFormList( NULL, "post", charset, enctype, target, NULL );
++	request = newFormList( NULL, "post", charset, ct, target, NULL );
+ 	request->body = body;
+ 	request->boundary = boundary;
+ 	request->length = ( length > 0 )? length : ( body ? strlen(body) : 0 );
+diff -Naru w3m-0.2.1/file.c w3m-0.2.1-post/file.c
+--- w3m-0.2.1/file.c	Fri Mar 23 11:19:54 2001
++++ w3m-0.2.1-post/file.c	Wed Jul 18 11:15:44 2001
+@@ -2691,6 +2691,7 @@
+ {
+     char *p, *q, *r, *s, *tg;
+     char cs = 0;
++    char *ct = NULL;
+ 
+     p = "get";
+     parsedtag_get_value(tag, ATTR_METHOD, &p);
+@@ -2719,8 +2720,10 @@
+ 	forms = New_Reuse(FormList *, forms, forms_size);
+ 	form_stack = New_Reuse(int, form_stack, forms_size);
+     }
++    if (s != NULL && !strcasecmp(s, "multipart/form-data"))
++	ct = s;
+     forms[form_max] =
+-	newFormList(q, p, &cs, s, tg, (form_max > 0) ? forms[form_max - 1] : NULL);
++	newFormList(q, p, &cs, ct, tg, (form_max > 0) ? forms[form_max - 1] : NULL);
+     form_stack[form_sp] = form_max;
+ 
+     return NULL;
+diff -Naru w3m-0.2.1/fm.h w3m-0.2.1-post/fm.h
+--- w3m-0.2.1/fm.h	Wed Jul 18 19:06:55 2001
++++ w3m-0.2.1-post/fm.h	Wed Jul 18 17:53:45 2001
+@@ -660,6 +660,8 @@
+ global int w3m_debug;
+ global int w3m_halfdump init(FALSE);
+ global int w3m_halfload init(FALSE);
++global char *post_file init(NULL);
++global char *post_ct init(NULL);
+ 
+ #ifdef COLOR
+ global int useColor init(TRUE);
+diff -Naru w3m-0.2.1/form.c w3m-0.2.1-post/form.c
+--- w3m-0.2.1/form.c	Fri Mar 23 10:49:53 2001
++++ w3m-0.2.1-post/form.c	Wed Jul 18 11:15:44 2001
+@@ -43,14 +43,18 @@
+ };
+ 
+ struct form_list *
+-newFormList(char *action, char *method, char *charset, char *enctype, char *target, struct form_list *_next)
++newFormList(char *action, char *method, char *charset, char *ct, char *target, struct form_list *_next)
+ {
+     struct form_list *l;
+     Str a = Strnew_charp(action);
+     int m = FORM_METHOD_GET;
+-    int e = FORM_ENCTYPE_URLENCODED;
+     int c = 0;
++    Str t;
+ 
++    if (ct == NULL)
++        t = Strnew_charp ("application/x-www-urlencoded");
++    else
++        t = Strnew_charp (ct);
+     if (method == NULL || !strcasecmp(method, "get"))
+ 	m = FORM_METHOD_GET;
+     else if (!strcasecmp(method, "post"))
+@@ -59,8 +63,7 @@
+ 	m = FORM_METHOD_INTERNAL;
+     /* unknown method is regarded as 'get' */
+ 
+-    if (enctype != NULL && !strcasecmp(enctype, "multipart/form-data")) {
+-	e = FORM_ENCTYPE_MULTIPART;
++    if (ct != NULL && !strcasecmp(ct, "multipart/form-data")) {
+ 	if (m == FORM_METHOD_GET)
+ 	    m = FORM_METHOD_POST;
+     }
+@@ -73,7 +76,7 @@
+     l->action = a;
+     l->method = m;
+     l->charset = c;
+-    l->enctype = e;
++    l->ct = t;
+     l->target = target;
+     l->next = _next;
+     l->nitems = 0;
+diff -Naru w3m-0.2.1/form.h w3m-0.2.1-post/form.h
+--- w3m-0.2.1/form.h	Fri Mar 23 10:49:53 2001
++++ w3m-0.2.1-post/form.h	Wed Jul 18 11:15:44 2001
+@@ -29,9 +29,6 @@
+ #define FORM_METHOD_INTERNAL 2
+ #define FORM_METHOD_HEAD 3
+ 
+-#define FORM_ENCTYPE_URLENCODED 0
+-#define FORM_ENCTYPE_MULTIPART  1
+-
+ #define MAX_TEXTAREA 100	/* max number of * <textarea>..</textarea> 
+ 				 * within one * document */
+ #ifdef MENU_SELECT
+@@ -46,7 +43,7 @@
+     Str action;
+     char *target;
+     int charset;
+-    int enctype;
++    Str ct;
+     struct form_list *next;
+     int nitems;
+     char *body;
+diff -Naru w3m-0.2.1/html.c w3m-0.2.1-post/html.c
+--- w3m-0.2.1/html.c	Fri Mar 23 10:49:54 2001
++++ w3m-0.2.1-post/html.c	Wed Jul 18 11:15:44 2001
+@@ -230,7 +230,7 @@
+     {"cols"          ,	VTYPE_MLENGTH, 0},        /* 13 ATTR_COLS           */
+     {"colspan"       ,	VTYPE_NUMBER,  0},        /* 14 ATTR_COLSPAN        */
+     {"content"       ,	VTYPE_STR,     0},        /* 15 ATTR_CONTENT        */
+-    {"enctype"       ,	VTYPE_ENCTYPE, 0},        /* 16 ATTR_ENCTYPE        */
++    {"enctype"       ,	VTYPE_STR,     0},        /* 16 ATTR_ENCTYPE        */
+     {"height"        ,	VTYPE_LENGTH,  0},        /* 17 ATTR_HEIGHT         */
+     {"href"          ,	VTYPE_STR,     0},        /* 18 ATTR_HREF           */
+     {"http-equiv"    ,	VTYPE_STR,     0},        /* 19 ATTR_HTTP_EQUIV     */
+diff -Naru w3m-0.2.1/html.h w3m-0.2.1-post/html.h
+--- w3m-0.2.1/html.h	Fri Mar 23 10:49:53 2001
++++ w3m-0.2.1-post/html.h	Wed Jul 18 11:15:44 2001
+@@ -286,10 +286,9 @@
+ #define VTYPE_ALIGN     4
+ #define VTYPE_VALIGN    5
+ #define VTYPE_ACTION    6
+-#define VTYPE_ENCTYPE   7
+-#define VTYPE_METHOD    8
+-#define VTYPE_MLENGTH   9
+-#define VTYPE_TYPE      10
++#define VTYPE_METHOD    7
++#define VTYPE_MLENGTH   8
++#define VTYPE_TYPE      9
+ 
+ extern TagInfo TagMAP[];
+ extern TagAttrInfo AttrMAP[];
+diff -Naru w3m-0.2.1/local.c w3m-0.2.1-post/local.c
+--- w3m-0.2.1/local.c	Fri Mar 23 10:49:53 2001
++++ w3m-0.2.1-post/local.c	Wed Jul 18 11:15:44 2001
+@@ -306,6 +306,7 @@
+     FILE *f;
+     Str tmp1, tmp2;
+     int status;
++    int multipart;
+ 
+     tmp1 = Strnew_charp(file);
+     file = cgi_filename(file, &status);
+@@ -316,19 +317,20 @@
+     set_environ("CONTENT_LENGTH", Sprintf("%d", request->length)->ptr);
+     if (referer && referer != NO_REFERER)
+         set_environ("HTTP_REFERER",referer);
+-    if (request->enctype == FORM_ENCTYPE_MULTIPART) {
++    multipart = !Strcasecmp_charp(request->ct,"multipart/form-data");
++    if (multipart) {
+ 	set_environ("CONTENT_TYPE",
+ 		    Sprintf("multipart/form-data; boundary=%s", request->boundary)->ptr);
+     }
+     else {
+-	set_environ("CONTENT_TYPE", "application/x-www-form-urlencoded");
++	set_environ("CONTENT_TYPE", request->ct->ptr);
+     }
+     tmp1 = tmpfname(TMPF_DFL, NULL);
+     f = fopen(tmp1->ptr, "w");
+     if (f == NULL)
+ 	return NULL;
+     pushText(fileToDelete, tmp1->ptr);
+-    if (request->enctype == FORM_ENCTYPE_MULTIPART) {
++    if (multipart) {
+ 	FILE *fd;
+ 	int c;
+ 	fd = fopen(request->body, "r");
+diff -Naru w3m-0.2.1/main.c w3m-0.2.1-post/main.c
+--- w3m-0.2.1/main.c	Wed Jul 18 19:07:50 2001
++++ w3m-0.2.1-post/main.c	Wed Jul 18 18:09:48 2001
+@@ -112,6 +112,8 @@
+     fprintf(f, "    +<num>           goto <num> line\n");
+     fprintf(f, "    -num             show line number\n");
+     fprintf(f, "    -no-proxy        don't use proxy\n");
++    fprintf(f, "    -post file       use POST method with file content\n");
++    fprintf(f, "    -post_ct type    specify content-type of the POST body (used with -post)\n");    
+ #ifdef MOUSE
+     fprintf(f, "    -no-mouse        don't use mouse\n");
+ #endif				/* MOUSE */
+@@ -451,6 +453,16 @@
+ 		showLineNum = TRUE;
+ 	    else if (!strcmp("-no-proxy", argv[i]))
+ 		Do_not_use_proxy = TRUE;
++	    else if (!strcmp("-post", argv[i])) {
++		if (++i >= argc)
++		    usage();
++		post_file = argv[i];
++	    }
++ 	    else if (!strcmp("-post_ct", argv[i])) {
++ 		if (++i >= argc)
++ 		    usage();
++ 		post_ct = argv[i];
++ 	    }	    
+ #ifdef MOUSE
+ 	    else if (!strcmp("-no-mouse", argv[i])) {
+ 		mouse_end();
+@@ -627,7 +639,31 @@
+ 		newbuf = loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0, request);
+ 	    }
+ 	    else {
+-		newbuf = loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0, NULL);
++ 	        if (post_file) {
++		    FILE *fp;
++		    Str body;
++ 		    if (post_ct != NULL &&
++ 			!strcasecmp(post_ct, "multipart/form-data")) {
++		        fprintf(stderr, "w3m: post multipart/form-data requires boundary data.\n");
++ 			continue;
++ 		    }
++		    if (!strcmp (post_file, "-"))
++		        fp = stdin;
++		    else
++		        fp = fopen (post_file, "r");
++		    if (fp == NULL)
++		        fprintf(stderr, "w3m: cannot open %s\n", post_file);
++		    body = Strfgetall (fp);
++ 		    request = newFormList (NULL, "post", NULL, post_ct, NULL, NULL);
++ 		    request->body = body->ptr;
++ 		    request->boundary = NULL;
++ 		    request->length = strlen (body->ptr);
++ 		}
++ 		else {
++ 		  request = NULL;
++ 		}
++ 	        
++ 		newbuf = loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0, request);
+ 	    }
+ 	    if (newbuf == NULL) {
+ 		fprintf(stderr, "w3m: Can't load %s\n", load_argv[i]);
+@@ -2306,7 +2342,7 @@
+     list->method = srclist->method;
+     list->action = Strdup(srclist->action);
+     list->charset = srclist->charset;
+-    list->enctype = srclist->enctype;
++    list->ct = srclist->ct;
+     list->nitems = srclist->nitems;
+     list->body = srclist->body;
+     list->boundary = srclist->boundary;
+@@ -2554,7 +2590,7 @@
+     case FORM_INPUT_BUTTON:
+       do_submit:
+ 	multipart = (fi->parent->method == FORM_METHOD_POST &&
+-		     fi->parent->enctype == FORM_ENCTYPE_MULTIPART);
++		     !Strcasecmp_charp(fi->parent->ct,"multipart/form-data"));
+ 	query_from_followform(&tmp, fi, multipart);
+ 
+ 	tmp2 = Strdup(fi->parent->action);
+@@ -3469,7 +3505,7 @@
+     if (Currentbuf->form_submit) {
+ 	request = Currentbuf->form_submit->parent;
+ 	if (request->method == FORM_METHOD_POST
+-	    && request->enctype == FORM_ENCTYPE_MULTIPART) {
++	    && !Strcasecmp_charp(request->ct,"multipart/form-data")) {
+ 	    Str query;
+ 	    struct stat st;
+ 	    multipart = 1;
+diff -Naru w3m-0.2.1/parsetagx.c w3m-0.2.1-post/parsetagx.c
+--- w3m-0.2.1/parsetagx.c	Fri Mar 23 10:49:54 2001
++++ w3m-0.2.1-post/parsetagx.c	Wed Jul 18 11:15:44 2001
+@@ -23,7 +23,6 @@
+     toAlign,		/* VTYPE_ALIGN   */
+     toVAlign,		/* VTYPE_VALIGN  */
+     noConv,		/* VTYPE_ACTION  */
+-    noConv,		/* VTYPE_ENCTYPE */
+     noConv,		/* VTYPE_METHOD  */
+     noConv,		/* VTYPE_MLENGTH */
+     noConv,		/* VTYPE_TYPE    */
+diff -Naru w3m-0.2.1/proto.h w3m-0.2.1-post/proto.h
+--- w3m-0.2.1/proto.h	Fri Mar 23 10:49:53 2001
++++ w3m-0.2.1-post/proto.h	Wed Jul 18 11:15:44 2001
+@@ -246,7 +246,7 @@
+ extern int feed_table(struct table *tbl, char *line, struct table_mode *mode, int width, int internal);
+ extern void feed_table1(struct table *tbl, Str tok, struct table_mode *mode, int width);
+ extern void pushTable(struct table *, struct table *);
+-extern struct form_list *newFormList(char *action, char *method, char *charset, char *enctype, char *target, struct form_list *_next);
++extern struct form_list *newFormList(char *action, char *method, char *charset, char *ct, char *target, struct form_list *_next);
+ extern struct form_item_list *formList_addInput(struct form_list *fl, struct parsed_tag *tag);
+ extern char *form2str(FormItemList * fi);
+ extern int formtype(char *typestr);
+diff -Naru w3m-0.2.1/url.c w3m-0.2.1-post/url.c
+--- w3m-0.2.1/url.c	Fri Mar 23 10:51:04 2001
++++ w3m-0.2.1-post/url.c	Wed Jul 18 11:15:44 2001
+@@ -1137,15 +1137,15 @@
+     }
+ #endif				/* USE_COOKIE */
+     if (hr->command == HR_COMMAND_POST) {
+-	if (hr->request->enctype == FORM_ENCTYPE_MULTIPART) {
++	if (!Strcasecmp_charp(hr->request->ct,"multipart/form-data")) {
+ 	    Strcat_charp(tmp, "Content-type: multipart/form-data; boundary=");
+-	    Strcat_charp(tmp, hr->request->boundary);
++	    Strcat_charp(tmp, hr->request->boundary);	  
+ 	    Strcat_charp(tmp, "\r\n");
+ 	    Strcat(tmp, Sprintf("Content-length: %ld\r\n", hr->request->length));
+ 	    Strcat_charp(tmp, "\r\n");
+ 	}
+ 	else {
+-	    Strcat_charp(tmp, "Content-type: application/x-www-form-urlencoded\r\n");
++	    Strcat(tmp, Sprintf("Content-type: %s\r\n", hr->request->ct->ptr));
+ 	    Strcat(tmp, Sprintf("Content-length: %ld\r\n", hr->request->length));
+ 	    Strcat_charp(tmp, "\r\n");
+ 	    Strcat_charp(tmp, hr->request->body);
+@@ -1425,7 +1425,7 @@
+ 	    else
+ 		write(sock, tmp->ptr, tmp->length);
+ 	    if (hr.command == HR_COMMAND_POST &&
+-		request->enctype == FORM_ENCTYPE_MULTIPART) {
++		!Strcasecmp_charp(request->ct, "multipart/form-data") {
+ 		if (sslh)
+ 		    SSL_write_from_file(sslh, request->body);
+ 		else
+@@ -1445,7 +1445,7 @@
+ 	    }
+ #endif				/* HTTP_DEBUG */
+ 	    if (hr.command == HR_COMMAND_POST &&
+-		request->enctype == FORM_ENCTYPE_MULTIPART)
++		!Strcasecmp_charp(request->ct, "multipart/form-data"))
+ 		write_from_file(sock, request->body);
+ 	}
+ 	break;

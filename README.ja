@@ -68,6 +68,9 @@
 
       http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/200107/
 
+   w3m-m17n / w3mmee などの w3m から派生したプログラムを利用する場合には，
+   patches/ 以下の必要なパッチを適用して，再コンパイルしてください．
+
 
 4. 連絡先
 

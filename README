@@ -67,6 +67,9 @@ This package contains a interface program of w3m.
 
       http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/200107/.
 
+   To use variants such as w3m-m17n and w3mmee, you must apply some
+   patches and must rebuild binary.  See patches/README for more detail.
+
 
 4. Contact
 
