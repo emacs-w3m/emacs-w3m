@@ -1,7 +1,21 @@
+2004-06-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-mailman.el [shimbun-mailman-ja]: New class.
+	(shimbun-make-contents) [shimbun-mailman-ja]: New method.
+	(shimbun-mailman-ja-make-contents): New function.
+
+	* sb-squeak-ja.el: Inherit `shimbun-mailman-ja' instead of
+	`shimbun-mailman'.
+	(shimbun-make-contents, shimbun-squeak-ja-make-contents): Removed.
+
+	* sb-namazu.el: Inherit `shimbun-mailman-ja' instead of
+	`shimbun-mailman'.
+	(shimbun-make-contents, shimbun-namazu-make-contents): Removed.
+
 2004-06-25  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
-	* shimbun/sb-namazu.el (shimbun-namazu-groups): Add "kakasi-commits",
-	"kakasi-dev" and "sary".
+	* shimbun/sb-namazu.el (shimbun-namazu-groups): Add
+	"kakasi-commits", "kakasi-dev" and "sary".
 
 2004-06-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
