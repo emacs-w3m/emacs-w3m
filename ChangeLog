@@ -1,3 +1,13 @@
+2002-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (datadir): New variable.
+
+2002-03-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (install): Don't chdir to shimbun/ while installing
+	shimbun modules.
+	(install-icons): Don't chdir to icons/ while installing icons.
+
 2002-03-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.2.5.
