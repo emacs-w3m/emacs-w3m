@@ -1,3 +1,8 @@
+2001-12-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-mailto-url): Use the property `composefunc' to
+	get the function to compose a mail from `mail-user-agent'.
+
 2001-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-load-list): Removed a bogus code for XEmacs; don't

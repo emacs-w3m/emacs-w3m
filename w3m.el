@@ -4114,13 +4114,14 @@ or prefix ARG columns."
       (funcall w3m-mailto-url-function url)
     (let (comp)
       ;; Require `mail-user-agent' setting
-      (if (not (and (boundp 'mail-user-agent)
-		    mail-user-agent
-		    (setq comp (intern-soft
-				(concat (symbol-name mail-user-agent)
-					"-compose")))
-		    (fboundp comp)))
-	  (error "You must specify valid `mail-user-agent'"))
+      (unless (and (boundp 'mail-user-agent)
+		   (symbol-value 'mail-user-agent))
+	(error "You must specify the valid value to `mail-user-agent'"))
+      (unless (and (setq comp (get (symbol-value 'mail-user-agent)
+				   'composefunc))
+		   (fboundp comp))
+	(error "No function to compose a mail in `%s'"
+	       (symbol-value 'mail-user-agent)))
       ;; Use rfc2368.el if exist.
       ;; rfc2368.el is written by Sen Nagata.
       ;; You can find it in "contrib" directory of Mew package
