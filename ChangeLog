@@ -1,3 +1,9 @@
+2002-03-18  KAMO Tomoyuki  <kamo@ITmanage.co.jp>
+	
+	* shimbun/sb-tcup.el (shimbun-tcup-get-group-key): Follow the
+	structual change of the master site.
+	(shimbun-tcup-make-id): Ditto.
+	
 2002-03-18  Masamichi Goudge M.D. <Matanuki@Goudge.org>
 
 	* shimbun/sb-orca.el: New file.
