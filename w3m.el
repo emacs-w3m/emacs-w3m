@@ -1313,55 +1313,34 @@ If N is negative, last N items of LIST is returned."
     (copy-sequence list)))
 
 (defun w3m-load-list (file &optional coding-system)
-  "Load list from FILE with CODING and return list."
-  (when (file-exists-p file)
+  "Return contents of FILE as a list.  CODING-SYSTEM is used to read FILE
+which defaults to the value of `w3m-file-coding-system-for-read'."
+  (when (and (file-readable-p file)
+	     ;; XEmacs 21.4 might crash when inserting a directory.
+	     (not (file-directory-p file)))
     (with-temp-buffer
-      (when (condition-case err
-		(let* ((coding-system-for-read
-			(or coding-system w3m-file-coding-system-for-read))
-		       (file-coding-system-for-read coding-system-for-read))
+      (when (condition-case nil
+		(let ((coding-system-for-read
+		       (or coding-system
+			   w3m-file-coding-system-for-read))
+		      (file-coding-system-for-read
+		       (or coding-system
+			   w3m-file-coding-system-for-read
+			   (if (boundp 'file-coding-system-for-read)
+			       (symbol-value 'file-coding-system-for-read)))))
 		  (insert-file-contents file))
 	      (error
-	       (message "Error while loading %s; %s" file err)
+	       (message "Error while loading %s" file)
 	       nil))
-	(let (data errsig)
-	  (unless (condition-case err
-		      (progn
-			;; point is not always moved to the beginning of
-			;; the buffer after `insert-file-contents' is done.
-			(goto-char (point-min))
-			(setq data (read (current-buffer)))
-			t)
-		    (error
-		     (message "Error while reading %s; %s, retrying..."
-			      file err)
-		     nil))
-	    ;; Unfortunately, XEmacsen do not handle the coding-system
-	    ;; magic cookie.  So we should attempt to retry to read.
-	    (goto-char (point-min))
-	    (if (and (looking-at "\
-^[^\n]*-\\*-[^\n]*coding: \\([^\t\n ;]+\\)[^\n]*-\\*-")
-		     (condition-case err
-			 (let* ((coding-system-for-read
-				 (intern (match-string 1)))
-				(file-coding-system-for-read
-				 coding-system-for-read))
-			   (insert-file-contents file nil nil nil t)
-			   t)
-		       (error
-			(setq errsig err)
-			nil))
-		     (condition-case err
-			 (progn
-			   (goto-char (point-min))
-			   (setq data (read (current-buffer)))
-			   t)
-		       (error
-			(setq errsig err)
-			nil)))
-		(message "Retrying to read %s...succeeded" file)
-	      (message "Retrying to read %s...failed; %s" file errsig)))
-	  data)))))
+	;; point is not always moved to the beginning of the buffer
+	;; after `insert-file-contents' is done.
+	(goto-char (point-min))
+	(condition-case err
+	    (read (current-buffer))
+	  (error
+	   (message "Error while reading %s; %s"
+		    file (error-message-string err))
+	   nil))))))
 
 (defun w3m-save-list (file list &optional coding-system)
   "Save LIST into file with CODING."
