@@ -1,13 +1,13 @@
 2002-10-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* w3m.el (w3m-entity-alist): Use `w3m-chasetp' instead of
+	* w3m.el (w3m-entity-alist): Use `w3m-mule-unicode-p' instead of
 	`w3m-use-mule-ucs'.
 
-	* w3m-xmas.el (w3m-charsetp): Set aliase to `find-charset'.
+	* w3m-xmas.el (w3m-mule-unicode-p): New function.
 
-	* w3m-fsf.el (w3m-charsetp): Set aliase to `charsetp'.
+	* w3m-fsf.el (w3m-mule-unicode-p): New function.
 
-	* w3m-om.el (w3m-charsetp): Set aliase to `ignore'.
+	* w3m-om.el (w3m-mule-unicode-p): Set aliase to `ignore'.
 
 2002-10-25  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 

@@ -1214,8 +1214,7 @@ Here is an example of how to set this option:
 				       'greek-iso8859-7)
 				     (cdr entity))))))
 		greek-entity))))
-   (when (and (w3m-charsetp 'mule-unicode-0100-24ff)
-	      (w3m-charsetp 'mule-unicode-2500-33ff))
+   (when (w3m-mule-unicode-p)
      (let ((latin-extended-a
 	    '((32 . (("OElig" . 114) ("oelig" . 115)))
 	      (33 . (("Scaron" . 32) ("scaron" . 33) ("Yuml" . 56)))))

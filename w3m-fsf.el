@@ -55,7 +55,11 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	(push (cons category codesys) categories)))
     (car (detect-coding-with-priority start end (nreverse categories)))))
 
-(defalias 'w3m-charsetp 'charsetp)
+(defun w3m-mule-unicode-p ()
+  "Check the existence as charsets of mule-unicode."
+  (and (charsetp 'mule-unicode-0100-24ff)
+       (charsetp 'mule-unicode-2500-33ff)
+       (charsetp 'mule-unicode-e000-ffff)))
 
 (provide 'w3m-fsf)
 

@@ -412,7 +412,7 @@ as the value."
 
 (eval-after-load "wid-edit" '(w3m-om-define-missing-widgets))
 
-(defalias 'w3m-charsetp 'ignore)
+(defalias 'w3m-mule-unicode-p 'ignore)
 
 (provide 'w3m-om)
 
