@@ -6,5 +6,5 @@ config.cache
 config.log
 config.status*
 configure
-w3mkwds.el
+w3m-kwds.el
 autom4te.cache
