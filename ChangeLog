@@ -1,5 +1,22 @@
 2003-12-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* aclocal.m4 (AC_SET_VANILLA_FLAG): New function specifying the
+	`VANILLA_FLAG' variavle.  XEmacs 21.5 needs to be given `-vanilla'
+	rather than `-q -no-site-file'.
+	(AC_EMACS_LISP): Use `VANILLA_FLAG'.
+	(AC_PATH_EMACS): Call `AC_SET_VANILLA_FLAG'.
+	(AC_ADD_LOAD_PATH): Use `VANILLA_FLAG'.
+	(AC_CHECK_ELISP): Ditto.
+
+	* configure.in: Check for `EGREP' before calling `AC_PATH_EMACS'.
+
+	* Makefile.in (VANILLA_FLAG): New variable.
+	(FLAGS): Use it.
+	(very-slow): Use it.
+
+	* doc/Makefile.in (VANILLA_FLAG): New variable.
+	(FLAGS): Use it.
+
 	* w3m-xmas.el (w3m-xmas-run-at-time): Use a simple function
 	definition if there is not a bug in `start-itimer'.
 

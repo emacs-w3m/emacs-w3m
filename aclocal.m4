@@ -1,3 +1,13 @@
+AC_DEFUN(AC_SET_VANILLA_FLAG,
+ [dnl Determine arguments to run Emacs as vanilla.
+  retval=`echo ${EMACS}| ${EGREP} xemacs| ${EGREP} -v '^$'`
+  if test -z "${retval}"; then
+	VANILLA_FLAG="-q -no-site-file"
+  else
+	VANILLA_FLAG="-vanilla"
+  fi
+  AC_SUBST(VANILLA_FLAG)])
+
 AC_DEFUN(AC_EMACS_LISP, [
 elisp="$2"
 if test -z "$3"; then
@@ -5,8 +15,8 @@ if test -z "$3"; then
 fi
 AC_CACHE_VAL(EMACS_cv_SYS_$1,[
 	OUTPUT=./conftest-$$
-	echo ${EMACS}' -q -no-site-file -batch -eval '\''(let ((x '"${elisp}"')) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
-	eval ${EMACS}' -q -no-site-file -batch -eval '\''(let ((x '"${elisp}"')) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
+	echo ${EMACS}' '${VANILLA_FLAG}' -batch -eval '\''(let ((x '"${elisp}"')) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
+	eval ${EMACS}' '${VANILLA_FLAG}' -batch -eval '\''(let ((x '"${elisp}"')) (write-region (if (stringp x) (princ x) (prin1-to-string x)) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
 	retval="`cat ${OUTPUT}`"
 	echo "=> ${retval}" >& AC_FD_CC 2>&1
 	rm -f ${OUTPUT}
@@ -44,6 +54,7 @@ AC_DEFUN(AC_PATH_EMACS,
     fi])
   test -z "${EMACS}" && AC_PATH_PROGS(EMACS, emacs xemacs mule, emacs)
   AC_SUBST(EMACS)
+  AC_SET_VANILLA_FLAG
 
   AC_MSG_CHECKING([what a flavor does ${EMACS} have])
   AC_EMACS_LISP(flavor,
@@ -219,7 +230,7 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
         ADDITIONAL_LOAD_PATH=${ADDITIONAL_LOAD_PATH}:`pwd`/attic
       fi
     fi])
-  retval=`"$EMACS" -q -no-site-file -batch -l w3mhack.el "$ADDITIONAL_LOAD_PATH" -f w3mhack-print-status`
+  retval=`eval $EMACS' '${VANILLA_FLAG}' -batch -l w3mhack.el '${ADDITIONAL_LOAD_PATH}' -f w3mhack-print-status'`
   if test x"$retval" != xOK; then
     AC_MSG_ERROR(APEL is missing)
   fi
@@ -228,7 +239,7 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
 AC_DEFUN(AC_CHECK_ELISP,
  [dnl Check for requried elisp library.
   AC_MSG_CHECKING(for $1)
-  retval=`"$EMACS" -q -no-site-file -batch -l w3mhack.el "$ADDITIONAL_LOAD_PATH" -f w3mhack-locate-library "$1" 2>/dev/null | $EGREP -v '^$'`
+  retval=`eval $EMACS' '${VANILLA_FLAG}' -batch -l w3mhack.el '${ADDITIONAL_LOAD_PATH}' -f w3mhack-locate-library '$1' 2>/dev/null | $EGREP -v '\''^$'\'`
   if test x"$retval" != x; then
     AC_MSG_RESULT(${retval})
   else

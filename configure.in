@@ -5,11 +5,11 @@ AC_CHECK_PROG(MAKEINFO, makeinfo, makeinfo, no)
 AC_CHECK_PROG(TEXI2DVI, texi2dvi, texi2dvi, false)
 AC_CHECK_PROG(PTEX, ptex, ptex, false)
 AC_CHECK_PROG(JBIBTEX, jbibtex, jbibtex, false)
+AC_CHECK_PROGS(EGREP, egrep grep, )
 AC_PATH_EMACS
 AC_PATH_LISPDIR
 AC_PATH_PACKAGEDIR
 AC_PATH_ICONDIR
-AC_CHECK_PROGS(EGREP, egrep grep, )
 AC_ADD_LOAD_PATH
 AC_CHECK_ELISP(regexp-opt)
 AC_CHECK_ELISP(xml)

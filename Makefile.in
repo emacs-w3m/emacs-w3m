@@ -13,7 +13,8 @@ SHELL        = /bin/sh
 
 @SET_MAKE@
 EMACS   = @EMACS@
-FLAGS   = -q -no-site-file -batch -l $(srcdir)/w3mhack.el $(ADDITIONAL_LOAD_PATH)
+VANILLA_FLAG = @VANILLA_FLAG@
+FLAGS   = $(VANILLA_FLAG) -batch -l $(srcdir)/w3mhack.el $(ADDITIONAL_LOAD_PATH)
 
 PACKAGE = emacs-w3m
 TARBALL = $(PACKAGE)-$(VERSION).tar.gz
@@ -182,7 +183,7 @@ slow: Makefile
 	do $(MAKE) -s $$i; done
 
 very-slow: clean keywords Makefile
-	@args="-q -no-site-file -batch";\
+	@args="$(VANILLA_FLAG) -batch";\
 	args="$$args -l $(srcdir)/attic/addpath.el $(ADDITIONAL_LOAD_PATH)";\
 	echo "=============================================";\
 	echo "Compiling the 1st stage-----without elc files";\
