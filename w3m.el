@@ -3523,6 +3523,10 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "b" 'w3m-scroll-down-or-previous-url)
     (define-key map [backspace] 'w3m-scroll-down-or-previous-url)
     (define-key map [delete] 'w3m-scroll-down-or-previous-url)
+    (if (featurep 'xemacs)
+	(define-key map [(shift space)] 'w3m-scroll-down-or-previous-url)
+      ;; FIXME: It won't have an effect on Emacs 19.
+      (define-key map [?\S-\ ] 'w3m-scroll-down-or-previous-url))
     (define-key map "h" 'backward-char)
     (define-key map "j" 'next-line)
     (define-key map "k" 'previous-line)
@@ -3599,6 +3603,10 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map [backspace] 'w3m-scroll-down-or-previous-url)
     (define-key map [delete] 'w3m-scroll-down-or-previous-url)
     (define-key map "\C-?" 'w3m-scroll-down-or-previous-url)
+    (if (featurep 'xemacs)
+	(define-key map [(shift space)] 'w3m-scroll-down-or-previous-url)
+      ;; FIXME: It won't have an effect on Emacs 19.
+      (define-key map [?\S-\ ] 'w3m-scroll-down-or-previous-url))
     (define-key map "\t" 'w3m-next-anchor)
     (define-key map [(shift tab)] 'w3m-previous-anchor)
     (define-key map [(shift iso-lefttab)] 'w3m-previous-anchor)
