@@ -14,6 +14,11 @@
 	* w3m.el (w3m-relationship-estimate-rules): Fix regexp for Google.
 	Suggested by Romain Francoise <romain@orebokech.com>.
 
+2004-08-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-cgi-board.el (shimbun-get-headers): Check whether a
+	current header has been canceled or not.
+
 2004-08-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi-mytown.el (shimbun-asahi-mytown-get-headers):
