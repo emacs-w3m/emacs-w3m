@@ -1,3 +1,9 @@
+2002-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el: Ignore byte-compile warnings for the dummy autoloads,
+	mis-judging of cl run-time functions and the obsoleteness of
+	`make-local-hook' under Emacs CVS.
+
 2002-09-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3mhack.el (w3mhack-examine-modules): Do not compile
@@ -5,7 +11,7 @@
 
 	* mew-w3m.el (top): Avoid byte-compile error and warning for old
 	Mew. Do not push 'mew-w3m-cid-retrieve' for old Mew.
-	
+
 2002-09-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-arrived-setup): Use 0 instead of nil as the initial
@@ -18,7 +24,7 @@
 
 	* shimbun/mew-shimbun.el (top): Add comment for expire.
 	(mew-shimbun-expires): New user variable.
-	(mew-shimbun-expire-all, mew-shimbun-expire) 
+	(mew-shimbun-expire-all, mew-shimbun-expire)
 	(mew-shimbun-expire-day): New functions.
 
 2002-09-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>

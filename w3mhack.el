@@ -582,6 +582,18 @@ to remove some obsolete variables in the first argument VARLIST."
 	    (insert "etc/w3m/" icon "\n")))
 	(message "Generating %s...done" manifest)))))
 
+ ((>= w3mhack-emacs-major-version 21)
+  ;; Don't warn for the dummy autoloads and mis-judging of the cl
+  ;; run-time functions.
+  (setq byte-compile-warnings
+	(delq 'noruntime
+	      (delq 'cl-functions
+		    (copy-sequence byte-compile-warning-types))))
+  ;; Don't warn for the use of `make-local-hook'.
+  (when (eq 'byte-compile-obsolete (get 'make-local-hook 'byte-compile))
+    (put 'make-local-hook 'byte-compile nil)
+    (put 'make-local-hook 'byte-obsolete-info nil)))
+
  ((= w3mhack-emacs-major-version 19)
   ;; Bind defcustom'ed variables.
   (put 'custom-declare-variable 'byte-hunk-handler
@@ -590,7 +602,6 @@ to remove some obsolete variables in the first argument VARLIST."
 	     (setq byte-compile-bound-variables
 		   (cons (nth 1 (nth 1 form)) byte-compile-bound-variables)))
 	 form))
-
   ;; Make `locate-library' run quietly at run-time.
   (put 'locate-library 'byte-optimizer
        (lambda (form)
