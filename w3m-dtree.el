@@ -86,15 +86,17 @@
       (setq files (cdr files)))))
 
 (defun w3m-dtree-create (path allfiles dirprefix fileprefix)
-  (insert "<pre>\n")
-  (insert (format "<title>%s</title>\n\n" path))
+  (insert "<!doctype html public \"-//W3C//DTD HTML 3.2//EN\">\n"
+	  "<html>\n<head>\n<title>"
+	  path
+	  "</title>\n</head>\n<body>\n<pre>\n")
   (insert (format "<A HREF=\"%s%s\">%s</A>%s\n"
 		  dirprefix (w3m-dtree-expand-file-name path) path
 		  (if allfiles " (allfiles)" "")))
   (if (file-directory-p path)
       (w3m-dtree-create-sub path allfiles dirprefix fileprefix "")
     (insert (format "\n<h3>Warning: Directory not found.</h3>\n")))
- (insert "</pre>\n"))
+ (insert "</pre>\n</body>\n</html>\n"))
 
 (defun w3m-about-dtree (url &optional nodecode allfiles)
   (let ((prelen (length "about://dtree"))
