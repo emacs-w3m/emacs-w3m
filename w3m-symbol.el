@@ -133,8 +133,7 @@
   :type w3m-symbol-custom-type)
 
 (defcustom w3m-mule-unicode-symbol
-  (when (and (charsetp 'mule-unicode-0100-24ff)
-	     (charsetp 'mule-unicode-2500-33ff))
+  (when (w3m-mule-unicode-p)
     (append
      (mapcar (lambda (p)
 	       (if p
@@ -154,8 +153,7 @@
 		   (make-char 'mule-unicode-0100-24ff 118 115)))))
   "List of symbol string, using mule-unicode characters."
   :group 'w3m-symbol
-  :type (if (and (charsetp 'mule-unicode-0100-24ff)
-		 (charsetp 'mule-unicode-2500-33ff))
+  :type (if (w3m-mule-unicode-p)
 	    w3m-symbol-custom-type
 	  '(const :format "%{%t%}: %v")))
 
