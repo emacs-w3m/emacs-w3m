@@ -3432,6 +3432,7 @@ invalid url if Gmane doesn't handle the group is natural."
   (save-excursion
     (let ((fmt "http://news.gmane.org/group//thread=%s/force_load=t")
 	  (start (point))
+	  (inhibit-point-motion-hooks t)
 	  md case-fold-search)
       (goto-char (point-min))
       (re-search-forward (concat "^\\("
