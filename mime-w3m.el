@@ -126,16 +126,17 @@
   "View the URL of the link under point."
   (interactive)
   (let ((url (w3m-anchor)))
-    (when url (w3m url))))
+    (cond
+     (url (w3m url))
+     ((w3m-image)
+      (if (w3m-display-graphic-p)
+	  (w3m-toggle-inline-image)
+	(w3m-view-image))))))
 
 (defun mime-w3m-mouse-view-this-url (event)
   (interactive "e")
   (mouse-set-point event)
-  (let ((url (w3m-anchor)) (img (w3m-image)))
-    (cond
-     (url (w3m url))
-     (img (w3m-view-image))
-     (t (message "No URL at point")))))
+  (mime-w3m-view-this-url))
 
 (let (current-load-list)
   (defadvice kill-new (after mime-w3m-remove-text-properties activate compile)

@@ -2987,80 +2987,96 @@ is performed.  Otherwise, COUNT is treated as 1 by default."
 (unless (fboundp 'w3m-expand-path-name)
   (defalias 'w3m-expand-path-name 'expand-file-name))
 
+(defconst w3m-url-components-regexp
+  "\\`\\(\\([^:/\\?#]+\\):\\)?\\(//\\([^/\\?#]*\\)\\)?\\([^\\?#]*\\)\\(\\?\\([^#]*\\)\\)?\\(#\\(.*\\)\\)?\\'"
+  "Regular expression for parsing the potential four components and
+fragment identifier of a URI reference.  For more detail, see Appendix
+B of RFC2396 <URL:http://www.ietf.org/rfc/rfc2396.txt>.")
+
+(defconst w3m-url-hierarchical-schemes
+  '("http" "https" "ftp")
+  "List of schemes which may have hierarchical parts.  This list is
+refered in `w3m-expand-url' to keep backward compatibility which is
+described in Section 5.2 of RFC 2396.")
+
 (defun w3m-expand-url (url &optional base)
   "Convert URL to absolute, and canonicalize it."
   (save-match-data
-    (if (string-match "^[^/?]+:" url)
-	;; URL may have an absolute spec.
-	url
-      (setq base (or base w3m-current-base-url w3m-current-url ""))
-      (let (scheme server path)
-	(when (string-match "^\\([^/:]+\\)://\\([^/]*\\)\\(/\\)?" base)
-	  (setq scheme (match-string 1 base)
-		server (match-string 2 base))
-	  (if (match-beginning 3)
-	      (setq path (file-name-directory (substring base
-							 (match-beginning 3))))
-	    (setq path "/"
-		  base (concat base path))))
-	(cond ((and (>= (length url) 1)
-		    (eq ?# (aref url 0)))
-	       ;; Maybe a relative URL on the BASE.
-	       (concat base url))
-	      ((and (>= (length url) 1)
-		    (eq ?/ (aref url 0)))
-	       (if scheme
-		   (if (and (>= (length url) 2)
-			    (eq ?/ (aref url 1)))
-		       ;; There may not be a scheme (omitted from a full-URL).
-		       (concat scheme ":" url)
-		     ;; Maybe a top page of the server.
-		     (concat scheme "://" server url))
-		 ;; Maybe a local file.
-		 url))
-	      (t
-	       (when path
-		 (setq url (concat path url)))
-	       (setq url (if (string-match "\\?" url)
-			     ;; scheme://server/path?query (expand only path)
-			     (concat (w3m-expand-path-name
-				      (substring url 0 (match-beginning 0)))
-				     (substring url (match-beginning 0)))
-			   (w3m-expand-path-name url)))
-	       (when (string-match "^.:" url)
-		 ;; remove a drive letter (for Win32 platform).
-		 (setq url (substring url (match-end 0))))
-	       (if scheme
-		   (concat scheme "://" server url)
-		 url)))))))
+    (unless base
+      (setq base (or w3m-current-base-url w3m-current-url "")))
+    (string-match w3m-url-components-regexp url)
+    ;; Remove an empty query part and an empty fragment part.
+    (or (and (match-beginning 6)
+	     (= (match-beginning 7) (match-end 7))
+	     (setq url (substring url 0 (match-beginning 6))))
+	(and (match-beginning 8)
+	     (= (match-beginning 9) (match-end 9))
+	     (setq url (substring url 0 (match-beginning 8)))))
+    (cond
+     ((match-beginning 1)
+      ;; URL has a scheme part. => URL may have an absolute spec.
+      (if (or (match-beginning 3)
+	      (eq ?/ (aref url (match-beginning 5))))
+	  ;; URL has a net-location part or a absolute hierarchical
+	  ;; part. => URL has an absolute spec.
+	  url
+	(let ((scheme (match-string 2 url)))
+	  (if (and (member scheme w3m-url-hierarchical-schemes)
+		   (string-match w3m-url-components-regexp base)
+		   (string= scheme (match-string 2 base)))
+	      (w3m-expand-url (substring url (match-end 1)) base)
+	    url))))
+     ((match-beginning 3)
+      ;; URL has a net-location part. => The hierarchical part of URL
+      ;; has an absolute spec.
+      (string-match w3m-url-components-regexp base)
+      (concat (substring base 0 (match-end 1)) url))
+     ((> (match-end 5) (match-beginning 5))
+      ;; URL has a hierarchical part.
+      (if (eq ?/ (aref url (match-beginning 5)))
+	  ;; Its first character is the slash "/". => The hierarchical
+	  ;; part of URL has an absolute spec.
+	  (progn
+	    (string-match w3m-url-components-regexp base)
+	    (concat (substring base 0 (match-end 3)) url))
+	;; The hierarchical part of URL has a relative spec.
+	(let ((path-end (match-end 5)))
+	  (string-match w3m-url-components-regexp base)
+	  (concat
+	   (substring base 0 (match-beginning 5))
+	   (w3m-expand-path-name
+	    (concat (file-name-directory (match-string 5 base))
+		    (substring url 0 path-end)))
+	   (substring url path-end)))))
+     ((match-beginning 6)
+      ;; URL has a query part.
+      (string-match w3m-url-components-regexp base)
+      (concat (substring base 0 (or (match-beginning 6) (match-beginning 8)))
+	      url))
+     (t
+      ;; URL has only fragment part.
+      (string-match w3m-url-components-regexp base)
+      (concat (substring base 0 (match-beginning 8))
+	      url)))))
 
 (defun w3m-view-this-url (&optional arg)
   "View the URL of the link under point."
   (interactive "P")
   (let ((url (w3m-anchor))
-	(act (w3m-action))
-	(img (w3m-image)))
+	(act (w3m-action)))
     (cond
      (url (w3m-goto-url url arg nil nil w3m-current-url))
      (act (eval act))
-     (img (if (w3m-display-graphic-p)
-	      (w3m-toggle-inline-image)
-	    (w3m-view-image)))
+     ((w3m-image)
+      (if (w3m-display-graphic-p)
+	  (w3m-toggle-inline-image)
+	(w3m-view-image)))
      (t (message "No URL at point")))))
 
 (defun w3m-mouse-view-this-url (event)
   (interactive "e")
   (mouse-set-point event)
-  (let ((url (w3m-anchor))
-	(act (w3m-action))
-	(img (w3m-image)))
-    (cond
-     (url (w3m-view-this-url))
-     (act (eval act))
-     (img (if (w3m-display-graphic-p)
-	      (w3m-toggle-inline-image)
-	    (w3m-view-image)))
-     (t (message "No URL at point")))))
+  (w3m-view-this-url))
 
 (defun w3m-submit-form ()
   "Submit form at point."
@@ -3762,9 +3778,10 @@ of the request."
 		   (string-match "^file:///" url))
 	      (setq url (replace-match "about://dtree/" nil nil url))
 	    (setq localcgi t)))
-      (when (string-match "#\\([^#]+\\)$" url)
-	(setq name (match-string 1 url)
-	      url (substring url 0 (match-beginning 0))))
+      (and (string-match w3m-url-components-regexp url)
+	   (match-beginning 8)
+	   (setq name (match-string 9 url)
+		 url (substring url 0 (match-beginning 8))))
       (let ((ct (w3m-arrived-content-type url))
 	    (cs (unless (eq t charset)
 		  (or charset (w3m-arrived-content-charset url)))))

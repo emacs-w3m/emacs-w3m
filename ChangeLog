@@ -1,3 +1,17 @@
+2001-10-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-url-components-regexp): New constant.
+	(w3m-url-hierarchical-schemes): Ditto.
+	(w3m-expand-url): Reimplemented.
+	(w3m-view-this-url): Remove a redundant local variable.
+	(w3m-mouse-view-this-url): Call `mime-w3m-view-this-url'.
+	(w3m-goto-url): Refer `w3m-url-components-regexp' to delete a
+	fragment part of URL.
+
+	* mime-w3m.el (mime-w3m-view-this-url): When there is an inline
+	image under point, display it.
+	(mime-w3m-mouse-view-this-url): Call `mime-w3m-view-this-url'.
+
 2001-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-expand-url): Emergency fixed.
