@@ -33,7 +33,7 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-muchy))
   (shimbun-url-internal shimbun))
 
-(defvar shimbun-muchy-url "http://muchy.com/")
+(defvar shimbun-muchy-url "http://muchy.com")
 (defvar shimbun-muchy-groups '("review"))
 (defvar shimbun-muchy-from-address "webmaster@muchy.com")
 (defvar shimbun-muchy-coding-system 'japanese-shift-jis-unix)
@@ -52,7 +52,7 @@
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-muchy)
 					 header &optional outbuf)
-  (let ((url (concat (shimbun-url-internal shimbun) "whatsold.html"))
+  (let ((url (concat (shimbun-url-internal shimbun) "/" "whatsold.html"))
 	case-fold-search date-list headers)
     (catch 'stop
       (subst-char-in-region (point-min) (point-max) ?\t ?  t)
@@ -140,7 +140,7 @@
 		(setq star nil))
 	      ;; adding license fee to subject
 	      (if (re-search-forward
-		   "価格; \\(<a href=\"[^<>]+\">\\)*<font color=\"#[0-9A-Z]+\">\\(標準添付\\|標準搭載\\|プレゼント\\|.*ウェア.*\\|[$\\\\][,.0-9]+\\)</font>"
+		   "価格; \\(<a href=\"[^<>]+\">\\)*<font color=\"#[0-9A-Z]+\">\\(標準添付\\|標準搭載\\|プレゼント\\|.*ウェア.*\\|[$\\\\][,.0-9]+\\).*</font>"
 		   innerend t nil)
 		  (setq subject (concat subject "/" (match-string 2))))
 	      (when (and star (> star 0))

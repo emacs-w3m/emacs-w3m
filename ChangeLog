@@ -1,3 +1,17 @@
+2003-05-22  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-muchy.el (shimbun-muchy-get-headers): Modify regexp
+	slightly.
+
+2003-05-21  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-jpo.el (shimbun-jpo-headers): Use `w3m-expand-url' to
+	get full URL.
+	(shimbun-jpo-headers-1): Ditto.
+	Bug fixed.
+	(shimbun-jpo-headers-group-details): Use `dolist' to simplify code.
+	Use `w3m-expand-url' to	get full URL.
+	
 2003-05-19  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-jpo.el (shimbun-jpo-contents): Modify regexp to pick
