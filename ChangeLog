@@ -1,3 +1,7 @@
+2001-03-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el: New file.
+
 2001-03-23  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-time-parse-string): Fix condition to detect
