@@ -22,7 +22,7 @@
 
 ;;; Commentary:
 ;;
-;; April 2002 
+;; April 2002
 ;; Modified by Yuuichi Teranishi <teranisi@gohome.org> so that it can read
 ;; current read.cgi outputs.
 
@@ -39,7 +39,7 @@
 (defvar shimbun-2ch-content-hash-length 31)
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-2ch)
-                                                &rest init-args)
+						&rest init-args)
   (shimbun-2ch-set-content-hash-internal
    shimbun
    (make-vector shimbun-2ch-content-hash-length 0))
@@ -70,7 +70,7 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
       (setq point (match-beginning 0)
 	    num (string-to-number (match-string 1))
 	    from
-	    (cond 
+	    (cond
 	     ((looking-at "<a href=\"mailto:\\([^\"]+\\)\"><b>\\([^<]+\\)<")
 	      (concat (match-string 2) " <" (match-string 1) ">"))
 	     ((looking-at "<font color=green><b>\\([^<]+\\)<")
@@ -78,9 +78,9 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
 	     ((looking-at "<b>\\([^<]+\\)<")
 	      (match-string 1))
 	     (t "(none)")))
-      (when (re-search-forward 
-	     "：\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)\\(\([^\)]\)\\)? \\([0-9]+:[0-9]+\\)"
-	     nil t)
+      (when (re-search-forward "\
+：\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)\\(\([^\)]\)\\)? \\([0-9]+:[0-9]+\\)"
+			       nil t)
 	(setq date (shimbun-make-date-string (string-to-number
 					      (match-string 1))
 					     (string-to-number
@@ -143,12 +143,15 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
       (set-buffer-multibyte t)
       (decode-coding-region (point-min) (point-max)
 			    (shimbun-coding-system-internal shimbun))
-      (when (string-match ".*/read.cgi/\\([^/]+\\)/\\([0-9]+\\)" url)
-	(setq ita (match-string 1 url)
-	      sure (match-string 2 url)))
+      (unless (string-match ".*/read.cgi/\\([^/]+\\)/\\([0-9]+\\)" url)
+	(error "\
+Unfortunately, the url name format might have been changed in 2ch"))
       (shimbun-2ch-parse-page shimbun
-			      (string-match "^1-" index)
-			      ita sure nil 'no-break))))
+			      (save-match-data
+				(string-match "^1-" index))
+			      (match-string 1 url);; ita
+			      (match-string 2 url);; sure
+			      nil 'no-break))))
 
 (luna-define-method shimbun-headers ((shimbun shimbun-2ch) &optional range)
   (cond
@@ -158,7 +161,8 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
 	(count 0)
 	(url (shimbun-index-url shimbun))
 	border headers
-	(indices (list "l50")))
+	(indices (list "l50"))
+	ita sure)
     (catch 'stop
       (while indices
 	(message (concat "Reading " (concat url "/" (car indices) "/")
@@ -174,9 +178,11 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
 	  (decode-coding-region (point-min) (point-max)
 				(shimbun-coding-system-internal shimbun))
 	  (when first
-	    (when (string-match ".*/read.cgi/\\([^/]+\\)/\\([0-9]+\\)" url)
-	      (setq ita (match-string 1 url)
-		    sure (match-string 2 url))))
+	    (unless (string-match ".*/read.cgi/\\([^/]+\\)/\\([0-9]+\\)" url)
+	      (error "\
+Unfortunately, the url name format might have been changed in 2ch"))
+	    (setq ita (match-string 1 url)
+		  sure (match-string 2 url)))
 	  (setq headers (shimbun-2ch-parse-page shimbun
 						(string-match "^1-"
 							      (car indices))
@@ -200,14 +206,14 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
       headers)))
 
 (luna-define-method shimbun-article ((shimbun shimbun-2ch) header
-                                     &optional outbuf)
+				     &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
     (with-current-buffer (or outbuf (current-buffer))
       (insert
        (with-temp-buffer
-         (let ((sym (intern-soft (shimbun-header-id header)
-                                 (shimbun-2ch-content-hash-internal
-                                  shimbun))))
+	 (let ((sym (intern-soft (shimbun-header-id header)
+				 (shimbun-2ch-content-hash-internal
+				  shimbun))))
 	   (unless sym
 	     (shimbun-request-article shimbun header)
 	     (setq sym (intern-soft (shimbun-header-id header)
