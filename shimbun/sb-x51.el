@@ -53,7 +53,7 @@
     ("northkorea" . "x/northkorea.php")
     ("oparts"     . "x/oparts.php")
     ("phallic"    . "x/phallic.php")
-    ("psychics"   . "x/psychics.php")
+    ("psychic"    . "x/psychic.php")
     ("religion"   . "x/religion.php")
     ("science"    . "x/science.php")
     ("story"      . "x/story.php")
@@ -67,9 +67,9 @@
 (defvar shimbun-x51-auther "X51")
 (defvar shimbun-x51-coding-system 'utf-8)
 (defvar shimbun-x51-content-start
-  "<div class=\"individualbody\">")
+  "<!-- Article -->")
 (defvar shimbun-x51-content-end
-  "<span class=\"posted\">")
+  "<!---/ Article --->")
 
 ;; X-Face create from banner
 (defvar shimbun-x51-x-face-alist
@@ -100,55 +100,75 @@
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-x51)
 						 &optional range)
   (with-temp-buffer
-    (shimbun-retrieve-url (shimbun-index-url shimbun))
-    (let ((case-fold-search nil) url headers)
-      ;(message "group %s" (shimbun-groups shimbun)) ;; debug
+    (let* ((case-fold-search t) (url (shimbun-index-url shimbun)) headers)
+    (shimbun-retrieve-url url)
       (if (string-match "top" (car (assoc (shimbun-current-group-internal shimbun)
 					  shimbun-x51-group-alist)))
 	  (progn
 	    (luna-call-next-method)) ;; call parent method
 	(progn
-	  (let (beg end)
-	    ;; buffer narrowing
-	    ;; <!--CategoryArcivesList--> (start)
-	    ;; <div class="pages"> (end)
-	    (goto-char (point-min))
-	    (search-forward "<!--CategoryArcivesList-->")
-	    (setq beg (point))
-	    (search-forward "<div class=\"pages\">")
-	    (setq end (point))
-	    ;(message "begin %d / end %d" beg end)
-	    (goto-char beg)
-	    (save-excursion
-	      (narrow-to-region beg end)
-	      ;; get header source
+	  (let ((pages (shimbun-header-index-pages range))
+		(indexes)
+		beg end)
+	    (push (cons "1" (concat url "?page=1")) indexes) ;; push page 1
+	    (when (if pages (< 1 pages) t)
 	      (goto-char (point-min))
-	      (let (title url date id)
-		(while (re-search-forward
-			"<a ?href=\"http://x51\\.org/x/\\([0-9]*\\)/\\([0-9]*\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\.php\">\\([^<]*\\)</a>"
-			nil t)
-		  (setq url (shimbun-expand-url (concat
-						 "http://x51.org/x/"
-						 (match-string 1) "/"
-						 (match-string 2) "/"
-						 (match-string 3) (match-string 4)
-						 ".php")
-						(shimbun-index-url shimbun))) ; url
-		  (setq title (match-string 5)) ; title
-		  (setq date  (shimbun-make-date-string
-			       (string-to-int (match-string 1))
-			       (string-to-int (match-string 2))
-			       (string-to-int (match-string 3)))) ; date
-		  (setq id (shimbun-rss-build-message-id shimbun url date)) ; id
-		  ;; create header & push header
-		  ;; from sb-rss
-		  (push (shimbun-create-header
-			 0
-			 title
-			 (shimbun-from-address shimbun)
-			 date
-			 id "" 0 0 url)
-			headers))))
+	      (search-forward "<div class=\"middlebar\">")
+	      (setq beg (point))
+	      (search-forward "</div>")
+	      (setq end (point))
+	      (goto-char (point-min))
+	      (save-excursion
+		(narrow-to-region beg end)
+		(goto-char (point-min))
+		(let* ((count 2))
+		       (while (and (if pages (<= count pages) t)
+				   (re-search-forward (format "<a href=\"[^?]*\\?page=%d\"" count) nil t))
+			 (push (cons (format "%d" count)
+				     (format "%s%s%d" url "?page=" count)) indexes) ;; push linked for page 2-end
+			 (incf count)
+			 ))
+		(widen)
+		))
+	    (dolist (elem (reverse indexes))
+	      (shimbun-retrieve-url (cdr elem) t) ;; retrieve target page
+	      (goto-char (point-min))
+	      (re-search-forward "<!--top article-->")
+	      (setq beg (point))
+	      (search-forward "<!--/ middle bar  -->")
+	      (setq end (point))
+	      (goto-char beg)
+	      (save-excursion
+		(narrow-to-region beg end) ;; narrow
+		;; get header source
+		(goto-char (point-min))
+		(let (title url date id)
+		  (while (re-search-forward
+			  "<a ?href=\"http://x51\\.org/x/\\([0-9]*\\)/\\([0-9]*\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\.php\" +class=\"title[^\"]*\">\\([^<]*\\)</a>"
+			  nil t)
+		    (setq url (shimbun-expand-url (concat
+						   "http://x51.org/x/"
+						   (match-string 1) "/"
+						   (match-string 2) "/"
+						   (match-string 3) (match-string 4)
+						   ".php")
+						  (shimbun-index-url shimbun))) ; url
+		    (setq title (match-string 5)) ; title
+		    (setq date  (shimbun-make-date-string
+				 (string-to-int (match-string 1))
+				 (string-to-int (match-string 2))
+				 (string-to-int (match-string 3)))) ; date
+		    (setq id (shimbun-rss-build-message-id shimbun url date)) ; id
+		    ;; create header & push header
+		    ;; from sb-rss
+		    (push (shimbun-create-header
+			   0
+			   title
+			   (shimbun-from-address shimbun)
+			   date
+			   id "" 0 0 url)
+			  headers))
+		  (widen))))
 	    headers))))))
 
 ;; date normalize
@@ -178,6 +198,15 @@ information available."
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-x51)
 						   header)
   (shimbun-x51-prepare-article shimbun header))
+
+(luna-define-method shimbun-clear-contents :before
+		    ((shimbun shimbun-x51) header)
+  (shimbun-strip-cr)
+  (shimbun-remove-tags "<script" "</script>")
+  (shimbun-remove-tags "<noscript" "</noscript>")
+  (shimbun-remove-tags "<div class=\"notes\"" "</div>")
+  (shimbun-remove-tags "<div class=\"line\"" "</div>")
+  (shimbun-remove-tags "<div class=\"middlebar\"" "</div>"))
 
 (provide 'sb-x51)
 
