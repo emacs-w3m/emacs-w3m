@@ -1128,7 +1128,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
-  (let (extent glyph glyphs)
+  (let (extent glyphs)
     (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
       (setq glyphs (cons (extent-end-glyph extent) glyphs)))
     (setq extent (make-extent beg end))
@@ -1147,7 +1147,12 @@ Buffer string between BEG and END are replaced with IMAGE."
     (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
       (if (extent-end-glyph extent)
 	  (set-extent-end-glyph extent nil))
+      (set-extent-property extent 'invisible nil))
+    (while (setq extent (extent-at end nil 'w3m-xmas-icon extent 'at))
+      (if (extent-end-glyph extent)
+	  (set-extent-end-glyph extent nil))
       (set-extent-property extent 'invisible nil))))
+
 ;; end of XEmacs definition.
 )
 (defun w3m-create-image (url &optional no-cache))
@@ -1158,8 +1163,9 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defun w3m-fontify-images ()
   "Fontify image alternate strings in this buffer which contains half-dumped data."
   (goto-char (point-min))
-  (while (re-search-forward "<img_alt src=\"\\([^\"]*\\)\">" nil t)
-    (let ((src (match-string 1))
+  (while (re-search-forward "<\\(img_alt\\) src=\"\\([^\"]*\\)\">" nil t)
+    (let ((src (match-string 2))
+	  (upper (string= (match-string 1) "IMG_ALT"))
 	  (start (match-beginning 0))
 	  (end))
       (delete-region start (match-end 0))
@@ -1168,16 +1174,18 @@ Buffer string between BEG and END are replaced with IMAGE."
 	(delete-region (setq end (match-beginning 0)) (match-end 0))
 	(put-text-property start end 'face 'w3m-image-face)
 	(put-text-property start end 'w3m-image src)
+	(if upper (put-text-property start end 'w3m-image-redundant t))
 	(put-text-property start end 'mouse-face 'highlight)))))
 
 (defun w3m-toggle-inline-images (&optional force no-cache)
   "Toggle displaying of inline images on current buffer.
-If optional argument NO-CACHE is non-nil, cache is not used."
+If optional argument FORCE is non-nil, displaying is forced.
+If second optional argument NO-CACHE is non-nil, cache is not used."
   (interactive "P")
   (unless (and force (eq w3m-display-inline-image-status 'on))
     (let ((cur-point (point)) 
 	  (buffer-read-only)
-	  point end url image)
+	  point end url image delim)
       (if (or force (eq w3m-display-inline-image-status 'off))
 	  (save-excursion
 	    (goto-char (point-min))
@@ -1190,23 +1198,47 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	      (goto-char end)
 	      (if (setq url (w3m-image point))
 		  (setq url (w3m-expand-url url w3m-current-url)))
-	      (when (and url (setq image (w3m-create-image url no-cache)))
-		(w3m-insert-image point end image)
-		;; Redisplay
-		(save-excursion
-		  (goto-char cur-point)
-		  (sit-for 0))))
+	      (if (get-text-property point 'w3m-image-redundant)
+		  (progn
+		    ;; Insert dummy string instead of redundant image.
+		    (setq image
+			  (make-string
+			   (string-width (buffer-substring point end))
+			   ? ))
+		    (put-text-property point end 'invisible t)
+		    (setq point (point))
+		    (insert image)
+		    (put-text-property point (point) 'w3m-image-dummy t)
+		    (put-text-property point (point) 'w3m-image "dummy"))
+		(when (and url
+			   (setq image (w3m-create-image url no-cache)))
+		  (w3m-insert-image point end image)
+		  ;; Redisplay
+		  (save-excursion
+		    (goto-char cur-point)
+		    (sit-for 0)))))
 	    (setq w3m-display-inline-image-status 'on))
 	(save-excursion
 	  (goto-char (point-min))
 	  (while (if (get-text-property (point) 'w3m-image)
-		       (setq point (point))
-		     (setq point (next-single-property-change (point)
-							      'w3m-image)))
+		     (setq point (point))
+		   (setq point (next-single-property-change (point)
+							    'w3m-image)))
 	    (setq end (or (next-single-property-change point 'w3m-image)
 			  (point-max)))
 	    (goto-char end)
-	    (w3m-remove-image point end))
+	    ;; IMAGE-ALT-STRING DUMMY-STRING
+	    ;; <--------w3m-image---------->
+	    ;; <---redundant--><---dummy--->
+	    ;; <---invisible-->
+	    (cond
+	     ((get-text-property point 'w3m-image-redundant)
+	      ;; Remove invisible property.
+	      (remove-text-properties point end '(invisible)))
+	     ((get-text-property point 'w3m-image-dummy)
+	      ;; Remove dummy string.
+	      (delete-region point end))
+	     (t (w3m-remove-image point end))))
 	  (setq w3m-display-inline-image-status 'off))))))
 
 (defun w3m-fontify ()

@@ -1,3 +1,13 @@
+2001-03-08  Yuuichi Teranishi  <teranisi@isl.ntt.co.jp>
+
+	* w3m.el (w3m-insert-image): Eliminated needless local variable.
+	(w3m-remove-image) [XEmacs]: Remove images at `end' too.
+	(w3m-fontify-images): Set `w3m-image-redundant' property
+	if "img_alt" string is upper case.
+	(w3m-toggle-inline-images): Fixed docstring;
+	Insert and remove dummy string if alt string has `w3m-image-redundant'
+	property.
+
 2001-03-08  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* w3m.el (w3m-fontify): Allow '_' char for element name.
