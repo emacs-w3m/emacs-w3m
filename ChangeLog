@@ -1,3 +1,8 @@
+2001-05-23  Kazuyoshi KOREEDA   <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
+
+	* shimbun/sb-nikkei.el: New file.
+	* shimbun/sb-yahoo.el: New file.
+
 2001-05-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-coding-system): Changed default value to
