@@ -1,3 +1,7 @@
+2001-03-08  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el (w3m-fontify): Allow '_' char for element name.
+
 2001-03-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-display-inline-image-status): New variable.
