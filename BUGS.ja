@@ -6,8 +6,6 @@ $Date$
        --> タブ(またはへッダ)への状態表示
        --> retrieve に失敗した場合、カーソルが先頭に移動してしまう
 
-   --> 文書を reload した場合に、カーソル位置が変化しないで欲しい。
-
    --> <meta http-equiv="Refresh" content="0; URL=http://.../"> の対応
 
    --> frame 対応
@@ -45,17 +43,12 @@ $Date$
 
 ■ 既知の問題
 
-(1) TAB で次の anchor に移動した時、その anchor が表示領域外ならば、きち
-    んと表示されるように画面全体を移動して欲しい。<table> を利用して極端
-    に横長のページを作ると、横方向に移動するとカーソルが見えなくなる。し
-    かも、その後で前のページに戻ると横幅がおかしくなっている。
-    Ex) http://namazu.org/~tsuchiya/emacs-w3m/yokonaga.html
+(1) XEmacs で ">" "," すると、カーソルが隠れる時がある。
+    XEmacs で w3m-horizontal-shift-columns の値を char-width より小さく
+    すると、"," が動かないときがある。
 
 
-(2) XEmacs で "<", ">" が機能していないのでは?
-
-
-(3) 表示中のバッファを narrowing しておいて、URL の移動を行うと表示がお
+(2) 表示中のバッファを narrowing しておいて、URL の移動を行うと表示がお
     かしくなる。
 
 
