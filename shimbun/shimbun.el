@@ -619,7 +619,10 @@ you want to use no database."
        (unless shimbun-x-face-database-function
 	 (when (and (fboundp 'bbdb-get-field)
 		    (not (eq 'autoload
-			     (car-safe (symbol-function 'bbdb-get-field)))))
+			     (car-safe (symbol-function 'bbdb-get-field))))
+		    (boundp 'bbdb-file)
+		    (stringp (symbol-value 'bbdb-file))
+		    (file-exists-p (symbol-value 'bbdb-file)))
 	   (setq shimbun-x-face-database-function 'shimbun-bbdb-get-x-face)))
        (unless shimbun-x-face-database-function
 	 (when (and
