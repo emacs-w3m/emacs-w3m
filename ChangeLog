@@ -1,3 +1,9 @@
+2004-08-12  Romain Francoise  <romain@orebokech.com>
+
+	* w3m.el (w3m-relationship-estimate-rules): Improve regexp for
+	Google in order to make the scroll-to-next-page feature work on
+	Google Groups as well.
+
 2004-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-relationship-estimate-rules): Fix regexp for Google.
