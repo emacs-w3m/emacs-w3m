@@ -94,6 +94,7 @@ This manual corresponds to emacs-w3m version @value{VERSION}.
 * Known Problems::              You can surely solve it
 * Shimbun Library::             A tool for reading a web newspaper
 * Mailing List::                Mailing list and submitting bug reports
+* Emacs-w3m Functions::         Details of some emacs-w3m functions
 * Index::                       Index
 
 @detailmenu
@@ -157,6 +158,8 @@ Known Problems
 Shimbun Library
 
 Mailing List
+
+Emacs-w3m Functions
 
 @end detailmenu
 @end menu
@@ -1230,6 +1233,11 @@ words, @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el} and
 @chapter Mailing list and submitting bug reports
 @cindex Subscribing to the emacs-w3m mailing list
 @cindex Reporting bugs
+
+
+@node Emacs-w3m Functions
+@chapter Details of some emacs-w3m functions
+@cindex Functions details
 
 
 @node Index
