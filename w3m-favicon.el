@@ -241,8 +241,8 @@ stored in the `w3m-favicon-image' buffer-local variable."
 		       (setq idata (buffer-string)
 			     image (w3m-favicon-convert idata type)))
 		     (with-current-buffer target
-		       (push (list url idata (current-time)
-				   (w3m-favicon-set-image image))
+		       (w3m-favicon-set-image image)
+		       (push (list url idata (current-time) w3m-favicon-image)
 			     w3m-favicon-cache-data))))))
   (w3m-static-unless (featurep 'xemacs)
     ;; Emacs frame needs to be redisplayed to make favicon come out.
