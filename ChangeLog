@@ -1,3 +1,9 @@
+2003-12-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-xmas-run-at-time): New function.
+
+	* w3m.el (w3m-refresh-at-time): Use it.
+
 2003-12-05  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/sb-tdiary.el (shimbun-get-headers): Erase buffer before

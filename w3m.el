@@ -6882,11 +6882,22 @@ Cannot run two w3m processes simultaneously \
     (if (= (car w3m-current-refresh) 0)
 	(w3m-goto-url-with-timer (cdr w3m-current-refresh) (current-buffer))
       (setq w3m-refresh-timer
-	    (run-at-time (car w3m-current-refresh)
-			 nil
-			 'w3m-goto-url-with-timer
-			 (cdr w3m-current-refresh)
-			 (current-buffer))))))
+	    ;; `run-at-time' of the XEmacs version runs the timer function
+	    ;; almost immediately, so we use `start-itimer' instead.  Note
+	    ;; that `start-itimer' is also incomplete; it won't pass the
+	    ;; arguments to the timer function.  So, we take the following
+	    ;; way.
+	    (w3m-static-if (featurep 'xemacs)
+		(w3m-xmas-run-at-time (car w3m-current-refresh)
+				      nil
+				      'w3m-goto-url-with-timer
+				      (cdr w3m-current-refresh)
+				      (current-buffer))
+	      (run-at-time (car w3m-current-refresh)
+			   nil
+			   'w3m-goto-url-with-timer
+			   (cdr w3m-current-refresh)
+			   (current-buffer)))))))
 
 (defun w3m-goto-url-with-timer (url buffer)
   "Run the `w3m-goto-url' function by the refresh timer."
