@@ -1,3 +1,9 @@
+2005-01-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Fix regexp
+	in order to obey HTML 4.01, the 3.2.2 Attributes section.
+	Suggested by Yoichi NAKAYAMA <yoichi@geiin.org>.
+
 2005-01-15  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
 
 	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-retrieve-next-pages): Fix
