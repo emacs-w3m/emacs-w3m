@@ -1,3 +1,7 @@
+2002-06-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-form.el (w3m-resume-form): Fix the last wrong change.
+
 2002-06-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.2.7.
