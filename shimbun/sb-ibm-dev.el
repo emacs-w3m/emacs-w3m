@@ -64,7 +64,7 @@
 		subject (match-string 2))
 	  ;; getting DATE
 	  (if (re-search-forward
-	       "(\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\))<br>"
+	       "(\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)) *<br */?>"
 	       nil t)
 	      (setq datelist (list (string-to-number (match-string 1))
 				   (string-to-number (match-string 2))
