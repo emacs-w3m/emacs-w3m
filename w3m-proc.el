@@ -69,7 +69,7 @@
 
 (defvar w3m-process-exit-status nil "The last exit status of a process.")
 (defvar w3m-process-authinfo-alist nil)
-(defvar w3m-process-accept-alist nil)
+(defvar w3m-process-accept-unsecure-ssl-hosts nil)
 
 (defvar w3m-process-user nil)
 (defvar w3m-process-passwd nil)
@@ -513,14 +513,18 @@ evaluated in a temporary buffer."
 	  (cond
 	   ((and (looking-at "\\(Accept [^\n]+\n\\)*\\([^\n]+: accept\\? \\)(y/n)")
 		 (= (match-end 0) (point-max)))
-	    ;; ssl certificate
+	    ;; SSL certificate
 	    (message "")
-	    (let ((yn (w3m-process-y-or-n-p w3m-current-url (match-string 2))))
-	      (condition-case nil
-		  (progn
-		    (process-send-string process (if yn "y\n" "n\n"))
-		    (delete-region (point-min) (point-max)))
-		(error nil))))
+	    (let* ((prompt (match-string 2))
+		   (yn
+		    (if (let ((root (w3m-process-get-server-root w3m-current-url)))
+			  (or (member root w3m-process-accept-unsecure-ssl-hosts)
+			      (when (y-or-n-p prompt)
+				(push root w3m-process-accept-unsecure-ssl-hosts))))
+			"y\n" "n\n")))
+	      (ignore-errors
+		(process-send-string process yn)
+		(delete-region (point-min) (point-max)))))
 	   ((and (looking-at
 		  "\\(\n?Wrong username or password\n\\)?Proxy Username for \\(.*\\): Proxy Password: ")
 		 (= (match-end 0) (point-max)))
@@ -528,12 +532,10 @@ evaluated in a temporary buffer."
 		      (not (stringp w3m-process-proxy-passwd)))
 	      (setq w3m-process-proxy-passwd
 		    (read-passwd "Proxy Password: ")))
-	    (condition-case nil
-		(progn
-		  (process-send-string process
-				       (concat w3m-process-proxy-passwd "\n"))
-		  (delete-region (point-min) (point-max)))
-	      (error nil)))
+	    (ignore-errors
+	      (process-send-string process
+				   (concat w3m-process-proxy-passwd "\n"))
+	      (delete-region (point-min) (point-max))))
 	   ((and (looking-at
 		  "\\(\n?Wrong username or password\n\\)?Proxy Username for \\(.*\\): ")
 		 (= (match-end 0) (point-max)))
@@ -543,10 +545,9 @@ evaluated in a temporary buffer."
 		    (read-from-minibuffer (concat
 					   "Proxy Username for "
 					   (match-string 2) ": "))))
-	    (condition-case nil
-		(process-send-string process
-				     (concat w3m-process-proxy-user "\n"))
-	      (error nil)))
+	    (ignore-errors
+	      (process-send-string process
+				   (concat w3m-process-proxy-user "\n"))))
 	   ((and (looking-at
 		  "\\(\n?Wrong username or password\n\\)?Username for .*\n?: Password: ")
 		 (= (match-end 0) (point-max)))
@@ -557,12 +558,10 @@ evaluated in a temporary buffer."
 					     w3m-process-realm
 					     w3m-process-user
 					     (match-beginning 1))))
-	    (condition-case nil
-		(progn
-		  (process-send-string process
-				       (concat w3m-process-passwd "\n"))
-		  (delete-region (point-min) (point-max)))
-	      (error nil)))
+	    (ignore-errors
+	      (process-send-string process
+				   (concat w3m-process-passwd "\n"))
+	      (delete-region (point-min) (point-max))))
 	   ((and (looking-at
 		  "\\(\n?Wrong username or password\n\\)?Username for \\(.*\\)\n?: ")
 		 (= (match-end 0) (point-max)))
@@ -573,10 +572,9 @@ evaluated in a temporary buffer."
 		    (w3m-process-read-user w3m-current-url
 					   w3m-process-realm
 					   (match-beginning 1))))
-	    (condition-case nil
-		(process-send-string process
-				     (concat w3m-process-user "\n"))
-	      (error nil)))))))))
+	    (ignore-errors
+	      (process-send-string process
+				   (concat w3m-process-user "\n"))))))))))
 
 (defun w3m-process-get-server-root (url)
   "Extract a server root from URL."
@@ -650,31 +648,6 @@ evaluated in a temporary buffer."
 				       ")")
 			     ""))
 		   nil pass))))
-
-;; FIXME: この関数の処理はセキュリティホールの危険が大きい．完全に削除
-;; するか，もう少し粒度の細かい対応が必要．
-(defun w3m-process-y-or-n-p (url prompt)
-  "Ask user a \"y or n\" question.  Return t if answer is \"y\".
-NOTE: This function is designed to avoid annoying questions.  So when
-the same questions is reasked, its previous answer is reused without
-prompt."
-  (let (elem answer (root (w3m-process-get-server-root url)))
-    (if (setq elem (assoc root w3m-process-accept-alist))
-	(if (setq answer (assoc prompt (cdr elem)))
-	    ;; When the same question has been asked, the previous
-	    ;; answer is reused.
-	    (setq answer (cdr answer))
-	  ;; When any question for the same server has been asked,
-	  ;; regist the pair of this question and its answer to
-	  ;; `w3m-process-accept-alist'.
-	  (setq answer (y-or-n-p prompt))
-	  (setcdr elem (cons (cons prompt answer) (cdr elem))))
-      ;; When no question for the same server has been asked, regist
-      ;; the 3-tuple of the server, the question and its answer to
-      ;; `w3m-process-accept-alist'.
-      (setq answer (y-or-n-p prompt))
-      (push (cons root (list (cons prompt answer))) w3m-process-accept-alist))
-    answer))
 
 (provide 'w3m-proc)
 
