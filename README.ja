@@ -1,5 +1,5 @@
-このパッケージには w3m を Emacs 上で動かすためのプログラムが含まれていま
-す．
+このパッケージには w3m を Emacs 上で動かすためのプログラム emacs-w3m が
+含まれています．
 
 1. はじめに
 
@@ -41,10 +41,14 @@
       りません．
 
       BITMAP-MULE パッケージをインストールしておくと，WEB ページのインラ
-      イン画像を白黒表示させることができます．
+      イン画像を白黒表示させることができます．以下の場所から入手できます:
+
+          ftp://ftp.jpl.org/pub/elisp/bitmap/
 
    c) XEmacs
       APEL を前もってインストールしておく必要があります．
+
+          ftp://ftp.m17n.org/pub/mule/apel/apel-10.4.tar.gz
 
       注意: バージョン 1.23 以降の XEmacs 用 APEL パッケージが，MULE あ
        り/なし両方の XEmacs で emacs-w3m を動作させるために使うことがで
@@ -81,9 +85,12 @@
       emacs-w3m は「新しい custom」パッケージを必要とします．Emacs 19.34
       または Mule 2.3 を使っている場合は，emacs-w3m をインストールする前
       にそれをインストールしなければなりません．「新しい custom」パッケー
-      ジについて，詳細は http://www.dina.kvl.dk/~abraham/custom/ を参照
-      してください．特に Mule 2.3 を使う場合は APEL に附属している
-      README.ja も必ず調べて下さい．
+      ジについて，詳細は以下のページを参照してください．
+
+          http://www.dina.kvl.dk/~abraham/custom/
+
+      特に Mule 2.3 を使う場合は APEL に附属している README.ja も必ず調
+      べて下さい．
 
       また，emacs-w3m は regexp-opt.el(c) モジュールを必要としますが，
       Emacs 19.34 や Mule 2.3 などの古い Emacsen には含まれていません．
@@ -100,7 +107,7 @@
 
 3. インストール
 
-3.1. 一般的な UNIX 環境の場合
+3.1. UNIX 系の環境でインストールする場合
 
      最初に，configure スクリプトを実行してください．
 
@@ -112,14 +119,14 @@
 
          % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 
-     次に，同梱されている emacs-lisp のソースファイルを適当なディレクト
-     リにインストールするため，次のコマンドを実行してください．
+     次に，emacs-w3m を適当なディレクトリにインストールするため，次のコ
+     マンドを実行してください．
 
          % make
          % make install
 
-     加えて，XEmacs や Emacs 21 用のアイコンを，以下のようにインストール
-     することができます．
+     Emacs 21 または XEmacs を使っているならば、アイコン画像のファイルを
+     インストールした方が良いでしょう。それを行なうには:
 
          % make install-icons
 
@@ -134,7 +141,7 @@
      `make install' または `make install-package' によって info ファイル
      もインストールされます．
 
-3.2. 非 UNIX 環境の場合
+3.2. 非 UNIX 系の環境でインストールする場合
 
      configure スクリプトを実行できない，または make コマンドが存在しな
      い環境の場合は，以下のコマンドを実行してください．
