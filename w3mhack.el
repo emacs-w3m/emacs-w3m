@@ -225,7 +225,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 				     "w3m-fsf.el" "w3m-om.el" "w3m-xmas.el"))
 	 (ignores;; modules not to be byte-compiled.
 	  (append
-	   (list "w3mhack.el" w3mhack-colon-keywords-file)
+	   (list "w3mhack.el" "w3m-setup.el" w3mhack-colon-keywords-file)
 	   (w3mhack-mdelete (cond ((featurep 'xemacs)
 				   "w3m-xmas.el")
 				  ((boundp 'MULE)

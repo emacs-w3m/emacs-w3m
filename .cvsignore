@@ -1,11 +1,12 @@
 *.elc
-patch
-w3m_el*
 Makefile
+autom4te.cache
+confdefs.h
 config.cache
 config.log
 config.status*
 configure
+patch
 w3m-kwds.el
-autom4te.cache
-confdefs.h
+w3m-setup.el
+w3m_el*
