@@ -1820,7 +1820,10 @@ If the user enters null input, return second argument DEFAULT."
    (point-min) (point-max)
    (if content-charset
        (w3m-charset-to-coding-system content-charset)
-     (car (detect-coding-region (point-min) (point-max)))))
+     (let ((codesys (detect-coding-region (point-min) (point-max))))
+       (if (consp codesys)
+	   (car codesys)
+	 codesys))))
   (set-buffer-multibyte t))
 
 
