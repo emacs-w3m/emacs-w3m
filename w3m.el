@@ -5,7 +5,7 @@
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
 ;;          Satoru Takabayashi <satoru-t@is.aist-nara.ac.jp>,
-;;          Hideyuki SHIRAI    <shirai@meadowy.org>
+;;          Hideyuki SHIRAI    <shirai@meadowy.org>,
 ;;          Keisuke Nishida    <kxn30@po.cwru.edu>
 ;; Keywords: w3m, WWW, hypermedia
 
@@ -84,9 +84,13 @@
   :group 'w3m
   :type 'string)
 
+(defcustom w3m-fill-column (- (frame-width) 4)
+  "*Fill column of w3m."
+  :group 'w3m
+  :type 'integer)
+
 (defcustom w3m-command-arguments
-  '("-T" "text/html" "-t" tab-width "-halfdump"
-    "-cols" (1- (frame-width)))
+  '("-T" "text/html" "-t" tab-width "-halfdump" "-cols" w3m-fill-column)
   "*Arguments of w3m."
   :group 'w3m
   :type '(repeat sexp))
@@ -407,9 +411,10 @@ for a charset indication")
   "Regexp used in parsing `<META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">
 for a charset indication")
 
-(defconst w3m-form-string-regexp 
-  "\\(\"\\(\\([^\"\\\\]+\\|\\\\.\\)+\\)\"\\|[^\"<> \t\r\f\n]*\\)"
-  "Regexp used in parsing to detect string.")
+(eval-and-compile
+  (defconst w3m-form-string-regexp
+    "\\(\"\\(\\([^\"\\\\]+\\|\\\\.\\)+\\)\"\\|[^\"<> \t\r\f\n]*\\)"
+    "Regexp used in parsing to detect string."))
 
 
 (defun w3m-message (&rest args)
@@ -482,7 +487,7 @@ If N is negative, last N items of LIST is returned."
   "Return t if OBJ is a form object."
   (and (vectorp obj)
        (symbolp (aref 0 obj))
-       (string= (symbol-name (aref 0 obj) "w3m-form-object"))))
+       (string= (symbol-name (aref 0 obj)) "w3m-form-object")))
 
 (defmacro w3m-form-symbol (form)
   `(aref ,form 0))
@@ -1713,8 +1718,8 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "?" 'describe-mode)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
-    (define-key map "<" 'w3m-scroll-left)
-    (define-key map ">" 'w3m-scroll-right)
+    (define-key map ">" 'w3m-scroll-left)
+    (define-key map "<" 'w3m-scroll-right)
     (setq w3m-mode-map map)))
 
 

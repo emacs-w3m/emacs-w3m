@@ -1,3 +1,13 @@
+2001-03-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-fill-column): Revivaled.
+	(w3m-command-arguments): Use w3m-fill-column.
+	(w3m-form-string-regexp): Add `eval-and-compile' to suprress
+	byte-compile error.
+	(w3m-form-p): Fix typo.
+	(w3m-mode-map): Swapped keybindings of w3m-scroll-left and
+	w3m-scroll-right to fit w3m's keybindings.
+
 2001-03-04  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* w3m.el: Add Keisuke Nishida as author.
