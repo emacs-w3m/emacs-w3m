@@ -1,5 +1,13 @@
 2005-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el: Autoload cancel-timer for XEmacs.
+
+	* w3m-xmas.el (w3m-run-at-time): Use run-at-time which comes from
+	timer-funcs.el if it seems to work correctly.
+	(cancel-timer): Defun if it is void.
+
+2005-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* doc/ptexinfmt.el (texinfo-multitable-widths): Reverse the logic
 	that shows whether it is broken.
 

@@ -1,6 +1,6 @@
 ;;; w3m-xmas.el --- The stuffs to use emacs-w3m on XEmacs
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -808,14 +808,18 @@ italic font in the modeline."
 		(> (itimer-value itimer) 0)
 	      (delete-itimer itimer))))
       (error nil))
-    (defun w3m-run-at-time (time repeat function &rest args)
-      "Emulating function run as `run-at-time'.
+    (if (condition-case nil
+	    (require 'timer-funcs)
+	  (error nil))
+	(defalias 'w3m-run-at-time 'run-at-time)
+      (defun w3m-run-at-time (time repeat function &rest args)
+	"Emulating function run as `run-at-time'.
 TIME should be nil meaning now, or a number of seconds from now.
 Return an itimer object which can be used in either `delete-itimer'
 or `cancel-timer'."
-      (apply #'start-itimer "w3m-run-at-time"
-	     function (if time (max time 1e-9) 1e-9)
-	     repeat nil t args))
+	(apply #'start-itimer "w3m-run-at-time"
+	       function (if time (max time 1e-9) 1e-9)
+	       repeat nil t args)))
   (defun w3m-run-at-time (time repeat function &rest args)
     "Emulating function run as `run-at-time' in the right way.
 TIME should be nil meaning now, or a number of seconds from now.
@@ -849,6 +853,14 @@ or `cancel-timer'."
 		     (append (list itimer function) args)))))
 	      1e-9 (if time (max time 1e-9) 1e-9)
 	      nil t itimers repeat function args)))))
+
+(unless (fboundp 'cancel-timer)
+  (defun cancel-timer (timer)
+    "Remove TIMER from the list of active timers."
+    (or (itimerp timer)
+	(error "Invalid timer"))
+    (delete-itimer timer)
+    nil))
 
 (when (featurep 'mule)
   (defun w3m-window-hscroll (&optional window)

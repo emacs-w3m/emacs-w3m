@@ -79,8 +79,9 @@
   (cond ((= emacs-major-version 19)
 	 (autoload 'cancel-timer "timer")
 	 (autoload 'regexp-opt "regexp-opt")
-	 (require 'custom))))
-
+	 (require 'custom))
+	((featurep 'xemacs)
+	 (autoload 'cancel-timer "w3m-xmas"))))
 
 ;;; Things should be defined in advance:
 
