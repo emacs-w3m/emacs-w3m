@@ -1,6 +1,7 @@
 2003-03-12  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-palmoslove.el: New file.
+	(shimbun-headers): Remove \n and \r from SUBJECT.
 
 2003-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 

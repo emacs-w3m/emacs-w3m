@@ -128,6 +128,10 @@
 		    (throw 'stop nil))
 		(set (intern id (shimbun-palmoslove-content-hash-internal shimbun))
 		     body)
+		(while (string-match "[\n\r]+" subject)
+		  (setq subject (concat
+				 (substring subject 0 (match-beginning 0))
+				 (substring subject (match-end 0)))))
 		(push (shimbun-make-header
 		       0 (shimbun-mime-encode-string subject)
 		       from date id "" 0 0 url)
