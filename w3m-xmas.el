@@ -37,6 +37,7 @@
 
 (require 'w3m-util)
 (require 'w3m-proc)
+(require 'w3m-image)
 
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
@@ -258,6 +259,27 @@ new glyph image.  See also the documentation for the variable
       ;; Use a cached glyph.
       (cdr cache))))
 
+(defsubst w3m-make-glyph (data type)
+  (or (and (eq type 'xbm)
+	   (let (width height content)
+	     (with-temp-buffer
+	       (insert data)
+	       (goto-char (point-min))
+	       (if (re-search-forward "width[ \t]+\\([0-9]+\\)")
+		   (setq width (string-to-int (match-string 1))))
+	       (if (re-search-forward "height[ \t]+\\([0-9]+\\)")
+		   (setq height (string-to-int (match-string 1))))
+	       (while (re-search-forward "0x\\(..\\)" nil t)
+		 (setq content (cons
+				(string-to-int
+				 (match-string 1) 16) content)))
+	       (setq content (concat (nreverse content))))
+	     (setq glyph
+		   (make-glyph (vector 'xbm :data
+				       (list width height
+					     content))))))
+      (make-glyph (vector type :data data))))
+
 (defun w3m-create-image (url &optional no-cache referer size handler)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used.
@@ -267,32 +289,50 @@ Third optional argument SIZE is currently ignored."
       (w3m-process-with-wait-handler
 	(w3m-create-image url no-cache referer handler))
     (lexical-let ((url url)
-		  (no-cache no-cache))
+		  (set-size size)
+		  (no-cache no-cache)
+		  size)
       (w3m-process-do-with-temp-buffer
 	  (type (condition-case err
 		    (w3m-retrieve url 'raw no-cache nil referer handler)
 		  (error (message "While retrieving %s: %s" url err) nil)))
-	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-	  (let ((data (buffer-string)))
-	    (or (and (eq type 'gif)
-		     (or w3m-should-unoptimize-animated-gifs
-			 w3m-should-convert-interlaced-gifs)
-		     w3m-gifsicle-program
-		     (w3m-fix-gif url data no-cache))
-		(and (eq type 'xbm)
-		     (let (width height content)
-		       (with-temp-buffer
-			 (insert data)
-			 (goto-char (point-min))
-			 (if (re-search-forward "width[ \t]+\\([0-9]+\\)")
-			     (setq width (string-to-int (match-string 1))))
-			 (if (re-search-forward "height[ \t]+\\([0-9]+\\)")
-			     (setq height (string-to-int (match-string 1))))
-			 (while (re-search-forward "0x\\(..\\)" nil t)
-			   (setq content (cons (string-to-int (match-string 1) 16) content)))
-			 (setq content (concat (nreverse content))))
-		       (make-glyph (vector 'xbm :data (list width height content)))))
-		(make-glyph (vector type :data data)))))))))
+	(let ((data (buffer-string))
+	      fixed glyph)
+	  (setq glyph
+		(when (w3m-image-type-available-p (setq type 
+							(w3m-image-type type)))
+		  (or (and (eq type 'gif)
+			   (or w3m-should-unoptimize-animated-gifs
+			       w3m-should-convert-interlaced-gifs)
+			   w3m-gifsicle-program
+			   (prog1 (w3m-fix-gif url data no-cache)
+			     (setq fixed t)))
+		      (w3m-make-glyph data type))))
+	  (if (and w3m-resize-images set-size (not fixed))
+	      (progn
+		(setq size (cons (glyph-width glyph)
+				 (glyph-height glyph)))
+		(if (and (null (car set-size)) (cdr set-size))
+		    (setcar set-size
+			    (/ (* (car size) (cdr set-size))
+			       (cdr size))))
+		(if (and (null (cdr set-size)) (car set-size))
+		    (setcdr set-size
+			    (/ (* (cdr size) (car set-size))
+			       (car size))))
+		(if (or (not (eq (car size)
+				 (car set-size)))  ; width is different
+			(not (eq (cdr size)
+				 (cdr set-size)))) ; height is different
+		    (lexical-let ((type type))
+		      (w3m-process-do
+			  (resized (w3m-resize-image
+				    data
+				    (car set-size)(cdr set-size)
+				    handler))
+			(w3m-make-glyph resized type)))
+		  glyph))
+	    glyph))))))
 
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
