@@ -1,7 +1,7 @@
 ;;; sb-fml.el --- shimbun backend class for fml archiver.
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>,
+;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Keywords: news

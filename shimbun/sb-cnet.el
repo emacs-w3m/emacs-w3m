@@ -1,7 +1,6 @@
 ;;; sb-cnet.el --- shimbun backend for cnet
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Keywords: news

@@ -1,7 +1,6 @@
 ;;; sb-zdnet.el --- shimbun backend for Zdnet Japan
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Keywords: news

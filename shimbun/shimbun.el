@@ -1,7 +1,7 @@
 ;;; shimbun.el --- interfacing with web newspapers
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>,
+;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Keywords: news

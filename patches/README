@@ -12,13 +12,13 @@
   [emacs-w3m:00849].  This patch enables to set coding system when
   contents are half-dumped with w3m-m17n.
 
-To use w3m-m17n, you must apply this patch.
+  To use w3m-m17n, you must apply this patch.
 
 
 * no-proxy.patch
 
   A patch was posted by Hironori Sakamoto <h-saka@lsi.nec.co.jp> in
-  [emacs-w3m:011119]. 
+  [emacs-w3m:01119]. 
 
   If the caching configuration of your proxy server is broken, you
   should apply this patch and set non-nil value to

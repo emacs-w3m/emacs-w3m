@@ -1,7 +1,6 @@
 ;;; sb-netbsd.el --- shimbun backend for netbsd.org
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Keywords: news

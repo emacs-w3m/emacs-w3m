@@ -1,4 +1,4 @@
-	emacs-w3m FAQ (2001.6.3版)
+	emacs-w3m FAQ ($Date$)
 
 * emacs-w3m 一般
 
@@ -26,10 +26,9 @@ w3m を Emacs 上で動かすインターフェースプログラムです．
 
 以下の w3m で動作することが確認されています．
 
-	w3m-0.2.1	(emacs-w3m 附属の w3m-XXX-mnc.patch を適用するこ
-			 とをおすすめします．)
-	w3mmee-p19-pre	(w3m-type を 'w3mmee にしてください．)
-	w3m-m17n-0.19
+	w3m-0.2.1-inu-1.3
+	w3mmee-p19-3 + post-header.patch (w3m-type を 'w3mmee にしてください．)
+	w3m-m17n-0.19 + some patches (w3m-type を 'w3m-m17n にしてください．)
 
 * トラブル
 
@@ -41,19 +40,10 @@ w3m を Emacs 上で動かすインターフェースプログラムです．
 
 (setq w3m-async-exec nil) という設定を ~/.emacs に追加してください．
 
-** Q. Web ページが表示できません．
-
-Nifty などでは index まで指定せずに HEAD でアクセスすると "404 Not
-found" が返ってくるため，表示できません．
-index まで指定するか，mnc.patch を適用した w3m などを使用し，
-(setq w3m-type 'w3m-mnc) としてください．
-
 ** Q. リンクが辿れません．
 
-http://pine.kuee.kyoto-u.ac.jp/member/tsuchiya/emacs-w3m/ からなど，
-Redirection されたページからのリンクはうまく辿れません．
-附属の mnc.patch を適用した w3m などを使用し，(setq w3m-type 'w3m-mnc)
-としてください．
+w3m コマンドが -header オプションを使える必要があります。
+w3m-0.2.1-inu-1.3 以降に upgrade してください。
 
 ** Q. 文字化けします．
 
@@ -67,28 +57,21 @@ html 中で指定されている文字コードと，実際の文字コードが異なる場合には文
 
 (2) html の文字コード
 
-ISO-2022-JP(jis), EUC-JP, SHIFT_JIS 以外の文字コードの場合は，w3mmee を
-使用してください．
+ISO-2022-JP(jis), EUC-JP, SHIFT_JIS 以外の文字コードの場合は，w3mmee や
+w3m-m17n を使用してください．
 
 日本語の UTF-8 のページの場合は，Mule-UCS 等により Emacs が UTF-8 を理解
 できるようにすることにより対応することもできます．
 
 (3) w3m の variant
 
-w3mmee を使用している場合は，(setq w3m-type 'w3mmee) としてください．
+w3mmee を使用している場合は，(setq w3m-type 'w3mmee) と，w3m-m17n を使用
+している場合は (setq w3m-type 'w3m-m17n) としてください．
 
 (4) Emacsen の問題
 
 XEmacs-21.2 では beta36 以前では問題があります．beta36 以前をお使いの場
 合は XEmacs を upgrade してください．
-
-(5) Content-Encoding の問題
-
-Content-Encoding が "gzip" や "x-bzip" の場合は，外部プログラム "gunzip"
-や "bunzip2" などでデコードします．
-しかし，mod_gzip が使用されている場合などは，HEAD でアクセスした時に
-Content-Encoding は表示されないため，デコードされません．mnc.patch を適
-用した w3m を使用してください．
 
 ** Q. 画像表示できません．
 
@@ -111,7 +94,7 @@ XEmacs ではアニメーション gif が正常に表示されないことがあります．
 
 (まだ実験的な機能です．)
 w3m-use-form を t にしてください．
-なお，POST メソッドによる送信には，mnc.patch を適用した w3m が必要です．
+なお，w3m-0.2.1-inu-1.3 以降が必要です。
 
 ** Q. フレームがレンダリングされません．
 

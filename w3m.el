@@ -130,12 +130,10 @@
   :group 'w3m
   :prefix "w3m-")
 
-(defcustom w3m-type
-  (if (and (boundp 'w3m-mnc) (symbol-value 'w3m-mnc)) 'w3m-mnc 'w3m)
+(defcustom w3m-type 'w3m
   "*Type of w3m."
   :group 'w3m
   :type '(choice (const :tag "w3m" 'w3m)
-		 (const :tag "w3m with MNC patch" 'w3m-mnc)
 		 (const :tag "w3mmee" 'w3mmee)
 		 (const :tag "w3m-m17n" 'w3m-m17n)
 		 (symbol :tag "other" nil)))
@@ -2313,32 +2311,6 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	 (w3m-cache-contents url (current-buffer))
 	 (w3m-w3m-attributes url))))
 
-(defun w3m-w3m-dump-source (url)
-  (let ((headers (w3m-w3m-attributes url t)))
-    (when headers
-      (let ((type   (car headers))
-	    (length (nth 2 headers)))
-	(when (let ((w3m-current-url url))
-		(w3m-message "Reading %s..." url)
-		(prog1
-		    (w3m-exec-process "-dump_source" url)
-		  (w3m-message "Reading %s...done" url)))
-	  (cond
-	   ((and length (> (buffer-size) length))
-	    (delete-region (point-min) (- (point-max) length)))
-	   ((string= "text/html" type)
-	    ;; Remove cookies.
-	    (goto-char (point-min))
-	    (while (and (not (eobp))
-			(looking-at "Received cookie: "))
-	      (forward-line 1))
-	    (skip-chars-forward " \t\r\f\n")
-	    (if (or (looking-at "<!DOCTYPE")
-		    (looking-at "<HTML>")) ; for eGroups.
-		(delete-region (point-min) (point)))))
-	  (w3m-cache-contents url (current-buffer))
-	  headers)))))
-
 (defun w3m-w3m-retrieve (url &optional no-decode no-cache post-data referer)
   "Retrieve content of URL with w3m and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
@@ -2380,9 +2352,7 @@ to nil."
 		(or (unless no-cache
 		      (and (w3m-cache-request-contents url)
 			   (w3m-content-type url)))
-		    (car (if (memq w3m-type '(w3m-mnc w3mmee))
-			     (w3m-w3m-dump-head-source url)
-			   (w3m-w3m-dump-source url)))))
+		    (car (w3m-w3m-dump-head-source url))))
 	(if file (delete-file file)))
       (when type
 	(or no-decode

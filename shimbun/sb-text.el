@@ -1,7 +1,6 @@
 ;;; sb-text.el -- shimbun backend class for text content -*- coding: junet; -*-
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Keywords: news

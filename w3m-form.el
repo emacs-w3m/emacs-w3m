@@ -6,7 +6,7 @@
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          Hideyuki SHIRAI    <shirai@meadowy.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
-;;          Akihiro Arisawa    <ari@atesoft.advantest.co.jp>
+;;          Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; This file is a part of emacs-w3m.
