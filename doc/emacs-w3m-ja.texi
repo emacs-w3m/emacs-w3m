@@ -1061,50 +1061,48 @@ You may use the prefix arg `2' or `C-u C-u' to make a new session.
 @node Leaving for daily hacking and/or daily writing
 @subsection 普段の生活に戻るには
 
+思い出して下さい。そももあなたが今Emacsを使っているのは、ウェブを見るた
+めではなかったはずです。元々は...エディタの内蔵インタープリタをschemeに
+置き換えたり、ソフトウェアのinfoドキュメントを作成したり、ソフトウェアの
+ライセンスに関する自分の考えを記したメールを政府に送るためだったはずです。
+作業の過程でたまたまウェブを見る必要があり、しかもたまたまEmacsのバッファ
+でウェブを見れてしまったせいで、あなたはEmacsでウェブを見ていたのです。
+
+さぁ、本来の作業に戻る時が来ました。あなたががんばらないと世界は変りませ
+ん。すぐに又ウェブを閲覧する必要があるなら@kbd{q}を、
+しばらく emacs-w3m に戻ってくるつもりがないなら@kbd{Q}を使って下さい。
+
 @table @kbd
 @item q
-Close this window and make the other buffer current.
-@end table
+@kindex q
+@findex w3m-close-window
+emacs-w3mのウィンドウと閉じて、他のバッファを選択します。
 
-@table @kbd
 @item Q
-Quit browsing WWW after updating arrived URLs list.
+@kindex Q
+@findex w3m-quit
+Arrived URLs(閲覧履歴, @pxref{Tracing History}参照)を
+保存して emacs-w3m を終了します。
 @end table
 
-@example
-G	Goto URL in the new session.
+@c TODO
+@c セッションについて説明している個所で
+@c G	Goto URL in the new session.
 
-M	View current url with external browser.
-\	Display source of this current buffer.
-=	Display header of this current buffer.
-E	Edit the local file pointed by the URL of current page.
-e	Edit the local file by the under the point.
+@c どうしよう
+@c M	View current url with external browser.
 
-C-c C-@@	Mark the current position.
-C-c C-v	Goto the last position.
+@c ウェブページの情報を表示する。
+@c \	Display source of this current buffer.
+@c =	Display header of this current buffer.
 
-s	Display arrived history.
-	If called with 'C-u', this command displays arrived-DB history.
-A	Display the report change of WEB sites.
-	If called with 'C-u', this command reloads report.
-+	Add the current page to antenna.
-S	Search query.
-	If called with 'C-u', you can choose search engine.
-W	Display weather report.
-	If called with 'C-u', you can choose local area.
-D	Display directory tree.
-	If called with 'C-u', view all directories and files.
-M-x w3m-namazu	Search files with Namazu.
-	If called with 'C-u', you can choose index.
+@c ウェブページを編集する。
+@c E	Edit the local file pointed by the URL of current page.
+@c e	Edit the local file by the under the point.
 
-C-c C-t	Create a twin copy of the current buffer.
-C-c C-n	Switch to next w3m buffer.
-C-c C-p	Switch to previous w3m buffer.
-C-c C-s	Select one buffer of all w3m buffers.
-C-c C-a	Switch one buffer of all w3m buffers.
-C-c C-w	Kill current w3m buffer.
-C-c M-w	Kill other w3m buffers.
-@end example
+@c どうしよう
+@c C-c C-@@	Mark the current position.
+@c C-c C-v	Goto the last position.
 
 @node Inline Images
 @section 画像表示を ON/OFF する
@@ -1820,6 +1818,9 @@ emacs-w3m は一度に複数のページを開くために、そのグループに含まれるそれぞ
 
 @node Weather Information
 @section 明日の天気は晴れでしょう
+
+@c W	Display weather report.
+@c	If called with 'C-u', you can choose local area.
 
 @node Using Antenna
 @section アンテナを張り巡らそう
