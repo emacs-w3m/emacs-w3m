@@ -47,7 +47,7 @@
 (defvar shimbun-asahi-group-table
   (let* ((s0 "[\t\n ]*")
 	 (s1 "[\t\n ]+")
-	 (no-nl "[^\n]+")
+	 (no-nl "[^\n<>]+")
 	 (default (list
 		   (concat
 		    "<a" s1 "href=\"/"
@@ -62,7 +62,7 @@
 		    "\\.html\\)"
 		    "\">" s0
 		    ;; 5. subject
-		    "\\([^<>]+\\)"
+		    "\\(" no-nl "\\)"
 		    s0 "</a>" s0 "("
 		    ;; 6. month
 		    "\\([01][0-9]\\)"

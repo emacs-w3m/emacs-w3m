@@ -1,3 +1,12 @@
+2003-10-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Improve regexp
+	more.
+	* shimbun/sb-mainichi.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-sankei.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Ditto.
+	(shimbun-yomiuri-prepare-article): Ditto.
+
 2003-10-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	We shouldn't use too simple elements like ".+" in the deep nested
