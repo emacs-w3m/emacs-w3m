@@ -1,3 +1,7 @@
+2001-05-10  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-impress.el (shimbun-impress-x-face-alist): New variable.
+
 2001-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-insert-image): Remove `face' property from a text
@@ -53,8 +57,6 @@
 
 	* w3m.el (w3m-setup-menu): Don't set up menu if it has already been
 	available.
-
-2001-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-setup-menu): Locate W3M menu in the forefront of the
 	menubar.

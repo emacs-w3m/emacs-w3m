@@ -41,6 +41,11 @@
 (defvar shimbun-impress-groups (mapcar 'car shimbun-impress-groups-alist))
 (defvar shimbun-impress-coding-system 'shift_jis)
 (defvar shimbun-impress-from-address "www-admin@impress.co.jp")
+(defvar shimbun-impress-x-face-alist
+  '(("default" . 
+     "X-Face: F3zvh@X{;Lw`hU&~@uiX9J0dwTeROiIzoSoe'Y.gU#(EqHA5K}v}2ah,QlHa[S^}5ZuTefR
+ ZA[pF1_ZNlDB5D_DJzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r9wC\"6
+ ebr5rj1[UJ5zDEDsfo`N7~s%;P`\\JK'#y.w^>K]E~{`wZru")))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-impress))
   (let ((index (or (nth 4 (assoc (shimbun-current-group-internal shimbun)
