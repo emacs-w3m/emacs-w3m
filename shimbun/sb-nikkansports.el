@@ -39,7 +39,7 @@
   '(("baseball" . "news/baseball/menu-bb.html")
     ("mlb" . "news2/mlb/02/top-mb.html")
     ("soccer" . "news/soccer/menu-sc.html")
-    ("world-soccer" . "news/soccer/world/menu-wf.html")
+    ("world-soccer" . "news2/soccer2/world/top-wf.html")
     ("sports" . "news/sports/menu-sp.html")
     ("battle" . "news/battle/menu-bt.html")
     ("horseracing" . "news/horserace/menu-hr.html")

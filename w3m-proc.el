@@ -102,7 +102,7 @@
 
 (defmacro w3m-process-with-environment (alist &rest body)
   "Set the environment variables according to ALIST, and evaluate BODY."
-  `(let ((process-environment process-environment)
+  `(let ((process-environment (copy-sequence process-environment))
 	 (temporary-file-directory
 	  (if (file-directory-p w3m-profile-directory)
 	      (file-name-as-directory w3m-profile-directory)

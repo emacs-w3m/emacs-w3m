@@ -109,7 +109,6 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	  (while (and (nth i headers)
 		      (re-search-forward "\
 >(\\([0-9][0-9]\\)/\\([0-9][0-9]\\) \\([0-9][0-9]:[0-9][0-9]\\))"
-
 					 nil t))
 	    (let ((month (string-to-number (match-string 1)))
 		  (date (decode-time (current-time))))
