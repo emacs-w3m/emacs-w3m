@@ -2983,8 +2983,8 @@ message is called an @samp{article} by Gnus users.
 Did you know that Gnus, the Emacs newsreader, supports emacs-w3m?
 
 Actually, the version of Gnus bundled with Emacs does not support
-emacs-w3m (yet).  You'd better use the latest version of Gnus known as
-@samp{Gnus v5.10}.  It is available at:
+emacs-w3m (yet).  You'd better use the latest version of Gnus.  It is
+available at:
 
 @uref{ftp://ftp.gnus.org/pub/gnus/gnus.tar.gz}
 

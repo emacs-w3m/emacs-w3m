@@ -3089,8 +3089,8 @@ Gnus (Emacs $B$N%K%e!<%:%j!<%@!<(B) $B$,(B emacs-w3m $B$r%5%]!<%H$7$F$$$k$C
 $B$F$$$^$7$?$+(B?
 
 $B<B:]$K$O(B Emacs $B$KF1:-$5$l$F$$$k(B Gnus $B$O!"(B($B:#$O$^$@(B) emacs-w3m $B$r%5%]!<%H(B
-$B$7$F$$$^$;$s!#(B@samp{Gnus v5.10} $B$H$7$FCN$i$l$F$$$k:G?7HG$N(B Gnus $B$r;H$&$N(B
-$B$,NI$$$G$7$g$&!#$=$l$O0J2<$N>l=j$G<j$KF~$j$^$9(B:
+$B$7$F$$$^$;$s!#:G?7HG$N(B Gnus $B$r;H$&$N$,NI$$$G$7$g$&!#$=$l$O0J2<$N>l=j$G<j(B
+$B$KF~$j$^$9(B:
 
 @uref{ftp://ftp.gnus.org/pub/gnus/gnus.tar.gz}
 
