@@ -205,17 +205,12 @@ width using expression (+ (frame-width) VALUE)."
   :type 'boolean)
 
 (defcustom w3m-icon-directory
-  (let ((ldd 'locate-data-directory))
-    ;; Hide the actual function name `locate-data-directory' for old
-    ;; Emacsen, which does not have a new custom package (`defvar' is
-    ;; used for a substitution of `defcustom'), to avoid byte-compile
-    ;; warnings.
-    (if (fboundp ldd)
-	(funcall ldd "w3m")
-      (let ((icons (expand-file-name "w3m/icons/"
-				     data-directory)))
-	(if (file-directory-p icons)
-	    icons))))
+  (if (fboundp 'locate-data-directory)
+      (locate-data-directory "w3m")
+    (let ((icons (expand-file-name "w3m/icons/"
+				   data-directory)))
+      (if (file-directory-p icons)
+	  icons)))
   "*Icon directory for w3m (XEmacs or Emacs 21)."
   :group 'w3m
   :type 'directory)
