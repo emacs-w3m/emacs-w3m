@@ -1157,15 +1157,16 @@ Minor mode to edit form textareas of w3m.
 	       w3m-form-textarea-edit-mode
 	     (or (when (buffer-live-p caller-buffer)
 		   (with-current-buffer caller-buffer
-		     (catch 'found-mode
-		       (dolist (elem w3m-form-textarea-edit-mode)
-			 (when (or (when (stringp (car elem))
-				     (string-match (car elem) w3m-current-url))
-				   (when (functionp (car elem))
-				     (funcall (car elem)))
-				   (when (listp (car elem))
+		     (save-match-data
+		       (catch 'found-mode
+			 (dolist (elem w3m-form-textarea-edit-mode)
+			   (when (if (stringp (car elem))
+				     (string-match (car elem)
+						   w3m-current-url)
+				   (if (functionp (car elem))
+				       (funcall (car elem))
 				     (eval (car elem))))
-			   (throw 'found-mode (cdr elem)))))))
+			     (throw 'found-mode (cdr elem))))))))
 		 'text-mode)))
   (w3m-form-input-textarea-mode 1)
   (message "%s"

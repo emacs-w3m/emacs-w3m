@@ -2859,14 +2859,14 @@ a decoding scheme."
 	   (if (and (listp w3m-show-decoded-url)
 		    (consp (car w3m-show-decoded-url)))
 	       (catch 'found-rule
-		 (dolist (elem w3m-show-decoded-url)
-		   (when (cond ((stringp (car elem))
-				(string-match (car elem) w3m-current-url))
-			       ((functionp (car elem))
-				(funcall (car elem)))
-			       (t
-				(eval (car elem))))
-		     (throw 'found-rule (cdr elem)))))
+		 (save-match-data
+		   (dolist (elem w3m-show-decoded-url)
+		     (when (if (stringp (car elem))
+			       (string-match (car elem) w3m-current-url)
+			     (if (functionp (car elem))
+				 (funcall (car elem))
+			       (eval (car elem))))
+		       (throw 'found-rule (cdr elem))))))
 	     w3m-show-decoded-url)))
       (if rule
 	  (w3m-url-decode-string
