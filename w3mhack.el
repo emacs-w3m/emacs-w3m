@@ -165,7 +165,7 @@ to remove some obsolete variables in the first argument VARLIST."
 	(byte-compile-file custom-load)
 	(push "lisp/w3m/custom-load.el" els)
 	(push "lisp/w3m/custom-load.elc" elcs))
-      (message "Updating autoloads for directory %s..." lisp-dir)
+      (message "Updating autoloads for the directory %s..." lisp-dir)
       (when (file-exists-p generated-autoload-file)
 	(delete-file generated-autoload-file))
       (defun message (fmt &rest args)
