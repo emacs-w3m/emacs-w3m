@@ -4359,8 +4359,8 @@ asahi-mytown.(hokkaido@dots{}okinawa) asahi-mytown.usa
 
 @item @uref{http://www.mainichi-msn.co.jp/, 毎日新聞}
 mainichi.shakai mainichi.sports mainichi.geinou mainichi.kurashi
-mainichi.it mainichi.kagaku mainichi.seiji mainichi.keizai
-mainichi.kokusai
+mainichi.it mainichi.kagaku.science kagaku.env kagaku.medical
+mainichi.seiji mainichi.keizai mainichi.kokusai
 
 @item @uref{http://www.nikkansports.com/, 日刊スポーツ}
 nikkansports.baseball nikkansports.mlb nikkansports.soccer
