@@ -1,3 +1,7 @@
+2001-03-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-push): New function.
+
 2001-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-url-history): Define it here.

@@ -21,8 +21,9 @@
 
 ;;; Commentary:
 
-;; w3m keeps history in the buffer-local variable `w3m-url-history'.
-;; See the documentation of that variable for details.
+;; w3m keeps history in the buffer-local variable `w3m-url-history'
+;; which contains a list of all the links you have visited.  See the
+;; documentation of that variable for details.
 
 ;;; Code:
 
@@ -51,10 +52,8 @@ of the first branch which is sprouted from the history element U1.0.0.
 The trunk or each branch is a simple list which will have some history
 elements.  History elements in the trunk or each branch should be
 arranged in order of increasing precedence (the newest history element
-should be the last element of the list).
-
-Each history element represents a link which consists of the following
-records:
+should be the last element of the list).  Each history element
+represents a link which consists of the following records:
 
      (URL ATTRIBUTES BRANCH BRANCH ...)
 
@@ -84,7 +83,7 @@ is occurred instead of to sprout the new branch from U2.0.2.
 In addition, the variable `w3m-url-history' has a pointer in its car
 cell to designate the current position in the history.  It is a list
 of integers.  (0) points U0, (2 0 1) points U2.0.1, etc.  Finally the
-value of `w3m-url-history' will be as such as follows:
+value of `w3m-url-history' will come to be as such as follows:
 
 \((2 0 1)
  (\"http://www.U0.org/\" (title \"U0\" content-type \"text/html\"))
@@ -113,12 +112,18 @@ value of `w3m-url-history' will be as such as follows:
 (make-variable-buffer-local 'w3m-url-history)
 
 (defun w3m-history-current ()
-  "Return a history element of the current position."
+  "Return a history element of the current position.  The value looks
+like the following:
+
+     (URL ATTRIBUTES BRANCH BRANCH ...)
+
+See the documentation for the variable `w3m-url-history' for more
+information."
   (when w3m-url-history
     (let ((position (car w3m-url-history))
 	  element)
       (setq element (nth (pop position) (cdr w3m-url-history)))
-      (while (> (length position) 0)
+      (while position
 	(setq element (nth (pop position) (cddr element))
 	      element (nth (pop position) element)))
       element)))
@@ -134,7 +139,7 @@ history element of the current position."
       (setq branch (cdr w3m-url-history)
 	    number (pop position)
 	    element (nth number branch))
-      (while (> (length position) 0)
+      (while position
 	(setq branch (nth (pop position) (cddr element))
 	      number (pop position)
 	      element (nth number branch)))
@@ -174,7 +179,7 @@ history element of the current position."
 	;; Previous element exists in the branch.
 	(setcar (nthcdr class position) (1- number)))
       (setq element (nth (pop position) (cdr w3m-url-history)))
-      (while (> (length position) 0)
+      (while position
 	(setq element (nth (pop position) (cddr element))
 	      element (nth (pop position) element)))
       element)))
@@ -183,7 +188,7 @@ history element of the current position."
   "Return a flattened alist of `w3m-url-history'.  Each element will have
 the following records:
 
-\(URL ATTRIBUTES POSITION)
+	(URL ATTRIBUTES POSITION)
 
 Where URL is a string of an address of a link, ATTRIBUTES is a plist
 to supplement the URL, POSITION is a list of integers to designate the
@@ -217,9 +222,9 @@ to recursive funcall itself internally."
 (defun w3m-history-assoc (url &optional set-current)
   "Return a history element if URL is `equal' to the car of an element of
 `w3m-url-history'.  The value is actually the element of the history
-structure whose car equals URL.  If the optional argument SET-CURRENT
-is non-nil, the position pointer of the history will come to designate
-the element whose car equals URL."
+structure.  If the optional argument SET-CURRENT is non-nil, the
+position pointer will come to point the element in the history
+structure."
   (let ((element (assoc url (w3m-history-flat)))
 	position)
     (when element
@@ -231,6 +236,46 @@ the element whose car equals URL."
 	(setq element (nth (pop position) (cddr element))
 	      element (nth (pop position) element)))
       element)))
+
+(defun w3m-history-push (url &rest attributes)
+  "Push URL and ATTRIBUTES onto `w3m-url-history' as the new current
+history element.  URL should be a string of an address of a link.
+ATTRIBUTES is a plist of any kind of data to supplement the URL.
+See the documentation for the variable `w3m-url-history' for more
+information."
+  (let (element)
+    (cond ((null w3m-url-history)
+	   ;; The dawn of the history.
+	   (setq w3m-url-history (list '(0) (list url attributes)))
+	   '(0))
+	  ((setq element (w3m-history-assoc url t))
+	   ;; URL has been registered in the history.
+	   (when (zerop (% (length attributes) 2))
+	     ;; Don't modify the existing records if the rest args
+	     ;; does not look like a plist or null.
+	     (setcdr element (list attributes)))
+	   (car w3m-url-history))
+	  (t
+	   (let* ((position (car w3m-url-history))
+		  (class (1- (length position)))
+		  (number 0))
+	     (setq element (nthcdr (car position) (cdr w3m-url-history)))
+	     (while (> class number)
+	       (setq number (1+ number)
+		     element (nth (nth number position) (cddar element))
+		     number (1+ number)
+		     element (nthcdr (nth number position) element)))
+	     (if (cdr element)
+		 ;; We should sprout a new branch.
+		 (progn
+		   (setcdr (nthcdr class position) '(0 0))
+		   (setcdr (cdar element)
+			   (list (list (list url attributes)))))
+	       ;; The current position is the last of the branch.
+	       (setcar (nthcdr class position)
+		       (1+ (car (nthcdr class position))))
+	       (setcdr element (list (list url attributes))))
+	     position)))))
 
 ;;(not-provided-yet 'w3m-hist)
 
