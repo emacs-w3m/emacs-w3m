@@ -1,3 +1,7 @@
+2002-08-18  OHASHI Akira  <bg66@koka-in.org>
+
+	* shimbun/sb-redhat.el: New file.
+
 2002-08-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el (shimbun-retrieve-url): Disable reflesh
