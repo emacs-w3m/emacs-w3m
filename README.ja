@@ -30,7 +30,7 @@
 
    emacs-w3m に同梱して配布されている shimbun ライブラリを利用するために
    は，FLIM を前もってインストールしておく必要があります．詳細については，
-   README.shimbun.ja を確認してください．
+   Info の「Shimbun Library」節を確認してください．
 
    a) Emacs 21.x
       emacs-w3m を動かすために，余分にインストールが必要なモジュールはあ
