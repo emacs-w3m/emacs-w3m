@@ -5262,8 +5262,7 @@ point."
      (t (w3m-message "No URL at point")))))
 
 (eval-and-compile
-  (unless (fboundp 'mouse-set-point)
-    (defalias 'mouse-set-point 'ignore)))
+  (autoload 'mouse-set-point "mouse"))
 
 (defun w3m-mouse-view-this-url (event &optional arg)
   "Follow the link under the mouse pointer."

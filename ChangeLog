@@ -12,7 +12,7 @@
 	* w3m-favicon.el (w3m-favicon-type): Don't use image-types if it
 	is not available.
 
-	* w3m.el (mouse-set-point): Alias to ignore if it is not available.
+	* w3m.el (mouse-set-point): Autoload mouse.elc.
 
 2004-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
