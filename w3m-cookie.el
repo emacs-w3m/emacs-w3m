@@ -352,8 +352,9 @@ If ask, ask user whether accept bad cookies or not."
 	  ;; If a CGI script wishes to delete a cookie, it can do so by
 	  ;; returning a cookie with the same name, and an expires time
 	  ;; which is in the past.
-	  (when (w3m-time-newer-p (current-time)
-				  (w3m-time-parse-string expires))
+	  (when (and expires
+		     (w3m-time-newer-p (current-time)
+				       (w3m-time-parse-string expires)))
 	    (w3m-cookie-remove domain path (car elem)))
 	  (w3m-cookie-store
 	   (w3m-cookie-create :url url
