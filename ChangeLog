@@ -1,3 +1,8 @@
+2005-01-15  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
+
+	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-retrieve-next-pages): Fix
+	footer cut; fix ad-hoc `shimbun-clear-contents' call.
+
 2005-01-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Fix regexp.

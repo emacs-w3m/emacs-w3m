@@ -91,13 +91,22 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
     (goto-char (point-min))
     (when (re-search-forward
 	   "<a +href=\"\\([^\"]*\\)\"[^>]*>次のページ" nil t)
-      (setq next (shimbun-expand-url (match-string 1) url))
-      ;; remove previous page's footer
-      (goto-char (point-min))
-      (re-search-forward " | 1 /[^|]*|" nil t) ;; FIXME regexp simplify
-      (delete-region (match-beginning 0) (point-max))
-      )
+      (setq next (shimbun-expand-url (match-string 1) url)))
     (shimbun-cnet-jp-clean-text-page)
+    (goto-char (point-min))
+    ;; remove page footer (last page is ignored)
+    (when (re-search-forward "| [0-9]+ / [0-9]+ |" nil t)
+      (if next
+	  ;; isn't last
+	  (progn
+	    (goto-char (match-end 0))
+	    (re-search-backward "\\(<a\\|| 1 \\)" nil t) ;; "<a href...>前の..." or "| 1 "
+	    (delete-region (match-beginning 0) (point-max)))
+	;; last page
+	(let ((end (match-end 0)))
+	  (goto-char end)
+	  (re-search-backward "<a" nil t) ;; "<a href...>前の..."
+	  (delete-region (match-beginning 0) end))))
     (goto-char (point-min))
     (insert "<html>\n<head>\n<base href=\"" url "\">\n</head>\n<body>\n")
     (goto-char (point-max))
@@ -110,9 +119,7 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 	  (result (when next
 		    (with-temp-buffer
 		      (shimbun-fetch-url shimbun next)
-		      ;; FIXME shimbun.el impl is non-using `header' arg,
-		      ;; ad-hoc nil instead header.
-		      (shimbun-clear-contents shimbun nil)
+		      (shimbun-clear-contents shimbun header)
 		      (shimbun-cnet-jp-retrieve-next-pages
 		       shimbun header base-cid next images)))))
       (list (cons body (car result))
