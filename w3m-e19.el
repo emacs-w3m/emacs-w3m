@@ -92,31 +92,33 @@ the empty string."
 	   default-value)
       (setq ad-return-value default-value)))
 
-(cond ((locate-library "base64")
-       (autoload 'base64-decode-string "base64")
-       (autoload 'base64-encode-string "base64"))
-      ((exec-installed-p "mmencode")
-       (defalias 'base64-decode-string
-	 (function
-	  (lambda (string)
-	    "Base64-decode STRING and return the result."
-	    (with-temp-buffer
-	      (insert string)
-	      (call-process-region (point-min) (point-max)
-				   "mmencode" t t nil "-u")
-	      (buffer-string)))))
-       (defalias 'base64-encode-string
-	 (function
-	  (lambda (string)
-	    "Base64 encode STRING and return the result."
-	    (with-temp-buffer
-	      (insert string)
-	      (call-process-region (point-min) (point-max)
-				   "mmencode" t t)
-	      (buffer-string))))))
-      (t
-       (defalias 'base64-decode-string 'identity)
-       (defalias 'base64-encode-string 'identity)))
+(unless (and (fboundp 'base64-decode-string)
+	     (fboundp 'base64-encode-string))
+  (cond ((locate-library "base64")
+	 (autoload 'base64-decode-string "base64")
+	 (autoload 'base64-encode-string "base64"))
+	((exec-installed-p "mmencode")
+	 (defalias 'base64-decode-string
+	   (function
+	    (lambda (string)
+	      "Base64-decode STRING and return the result."
+	      (with-temp-buffer
+		(insert string)
+		(call-process-region (point-min) (point-max)
+				     "mmencode" t t nil "-u")
+		(buffer-string)))))
+	 (defalias 'base64-encode-string
+	   (function
+	    (lambda (string)
+	      "Base64 encode STRING and return the result."
+	      (with-temp-buffer
+		(insert string)
+		(call-process-region (point-min) (point-max)
+				     "mmencode" t t)
+		(buffer-string))))))
+	(t
+	 (defalias 'base64-decode-string 'identity)
+	 (defalias 'base64-encode-string 'identity))))
 
 (provide 'w3m-e19)
 
