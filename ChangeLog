@@ -1,3 +1,9 @@
+2002-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+	Follow the change in Gnus.
+
+	* mime-w3m.el (mime-w3m-mode-ignored-keys): New variable.
+	(mime-w3m-setup): Use it.
+
 2002-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-lynx-like-map): Unbind the key "N" to the command
