@@ -3860,7 +3860,7 @@ modules @file{sb-mailman.el}, @file{sb-mhonarc.el}, @file{sb-fml.el} and
 already, when you write small code that is not defined in such
 @samp{shimbun} modules, your new @file{sb-foobar.el} module works!
 
-If you use @the file{sb-mailman.el} module, write the following S
+If you use the @file{sb-mailman.el} module, write the following S
 expressions to the top of the @file{sb-foobar.el} file:
 
 @lisp
