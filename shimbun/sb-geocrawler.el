@@ -32,17 +32,20 @@
 
 (defvar shimbun-geocrawler-url "http://www.geocrawler.com/archives/")
 
-(defvar shimbun-geocrawler-group-alist
-  '(("acpi-devel" "3/17428" nil nil)
-    ("linux-kernel" "3/35" nil nil)
-    ("linux-security" "3/92" nil nil)
-    ("spamassasin-devel" "3/20914" nil nil))
-  "Table of mailing lists which is archived by geocrawler.com.
-Each element consists 4 entries:
-    (0) name of a mailing list,
-    (1) its identification string,
-    (2) its address and
-    (3) its x-face header.")
+(defcustom shimbun-geocrawler-group-alist
+  '(("acpi-devel" "17428" nil nil)
+    ("linux-kernel" "35" nil nil)
+    ("linux-security" "92" nil nil)
+    ("spamassasin-devel" "20914" nil nil))
+  "Table of mailing lists which is archived by geocrawler.com."
+  :group 'shimbun
+  :type '(repeat
+	  (list (string :tag "Name")
+		(string :tag "List ID")
+		(choice (const :tag "No Reply-To" nil)
+			(string :tag "Reply-To"))
+		(choice (const :tag "No X-Face" nil)
+			(string :tag "X-Face")))))
 
 (defvar shimbun-geocrawler-content-start "<P>&nbsp;<P>")
 (defvar shimbun-geocrawler-content-end "</BODY>")
@@ -51,11 +54,11 @@ Each element consists 4 entries:
   (mapcar 'car shimbun-geocrawler-group-alist))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-geocrawler))
-  (shimbun-expand-url
-   (concat (nth 1 (assoc (shimbun-current-group-internal shimbun)
+  (concat shimbun-geocrawler
+	  "3/"
+	  (nth 1 (assoc (shimbun-current-group-internal shimbun)
 			 shimbun-geocrawler-group-alist))
-	   "/")
-   shimbun-geocrawler-url))
+	  "/"))
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-geocrawler))
   (nth 2 (assoc (shimbun-current-group-internal shimbun)
@@ -141,6 +144,44 @@ Each element consists 4 entries:
 			  (shimbun-expand-url (concat (match-string 1) "/")
 					      url))))))))))
     headers))
+
+;; FIXME: 対話的に shimbun-geocrawler-group-alist にグループを追加する
+;;	  コマンドになる予定．
+(defun shimbun-geocrawler-check-mailing-lists ()
+  "Display all mailing lists which are archived by geocrawler.com."
+  (interactive)
+  (let ((url (shimbun-expand-url "/lists/3/" shimbun-geocrawler-url))
+	(lists)
+	(categories)
+	(case-fold-search t))
+  (with-temp-buffer
+    (shimbun-retrieve-url url)
+      (while (re-search-forward
+	      "<a href=\"\\([^\"]+\\)\"><img src=\"/img/cfolder.png"
+	      nil t)
+	(push (shimbun-expand-url (match-string 1) url) categories))
+      (dolist (category categories)
+	(message "Checking %s ..." category)
+	(erase-buffer)
+	(shimbun-retrieve-url category)
+	(while (re-search-forward
+		"<a href=\"\\([0-9]+\\)/0/\"><img src=\"/img/cfolder.png\"[^>]*> &nbsp;"
+		nil t)
+	  (let* ((id (match-string 1))
+		 (group (buffer-substring
+			 (point)
+			 (progn
+			   (search-forward "</a>" nil t)
+			   (match-beginning 0))))
+		 (info (assoc group shimbun-geocrawler-group-alist)))
+	    (push (list group id (nth 2 info) (nth 3 info))
+		  lists)))
+	(message "Checking %s ... done" category)))
+  (with-output-to-temp-buffer "*Geocrawler*"
+    (pp (sort lists
+	      (lambda (a b)
+		(string< (downcase (car a))
+			 (downcase (car b)))))))))
 
 (provide 'sb-geocrawler)
 
