@@ -1,3 +1,24 @@
+2005-02-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (install-package): Change the default directory in
+	which icon files will be installed from `etc/w3m/icons/' into
+	`etc/images/w3m/' following the most recent Emacs and Gnus.
+	(install-package-ja): Ditto.
+
+	* aclocal.m4 (AC_EXAMINE_PACKAGEDIR): Use configure-package-path.
+	(AC_PATH_ICONDIR): Change the default directory in which icon files
+	will be installed from `etc/w3m/icons/' into `etc/images/w3m/'
+	following the most recent Emacs and Gnus.
+
+	* w3m.el (w3m-icon-directory): Improve the way to determin the
+	default value.
+
+	* w3mhack.el (w3mhack-nonunix-install): Change the default directory
+	in which icon files will be installed from `etc/w3m/icons/' into
+	`etc/images/w3m/' following the most recent Emacs and Gnus.
+	(w3mhack-make-package): Ditto.
+	(w3mhack-what-where): Ditto.
+
 2005-02-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-rss.el (shimbun-rss-get-headers): New function.

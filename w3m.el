@@ -668,12 +668,43 @@ new page or reload the current page in an emacs-w3m buffer."
   :type 'boolean)
 
 (defcustom w3m-icon-directory
-  (if (fboundp 'locate-data-directory)
-      (locate-data-directory "w3m")
-    (let ((icons (expand-file-name "w3m/icons/"
-				   data-directory)))
-      (if (file-directory-p icons)
-	  icons)))
+  (let (dir)
+    (or
+     (catch 'found-dir
+       (let* ((path (locate-library "w3m"))
+	      (paths (if path
+			 (cons (file-name-directory path) load-path)
+		       load-path)))
+	 (while paths
+	   (setq path (car paths)
+		 paths (cdr paths))
+	   (if path
+	       (progn
+		 (if (file-directory-p
+		      (setq dir
+			    (expand-file-name "../../etc/images/w3m/" path)))
+		     (throw 'found-dir dir))
+		 (if (file-directory-p
+		      (setq dir
+			    (expand-file-name "../etc/images/w3m/" path)))
+		     (throw 'found-dir dir))
+		 (if (file-directory-p
+		      (setq dir
+			    (expand-file-name "../../etc/w3m/icons/" path)))
+		     (throw 'found-dir dir))
+		 (if (file-directory-p
+		      (setq dir
+			    (expand-file-name "../etc/w3m/icons/" path)))
+		     (throw 'found-dir dir)))))))
+     (and (fboundp 'locate-data-directory)
+	  (or (locate-data-directory "images/w3m")
+	      (locate-data-directory "w3m")))
+     (and (file-directory-p
+	   (setq dir (expand-file-name "images/w3m/" data-directory)))
+	  dir)
+     (and (file-directory-p
+	   (setq dir (expand-file-name "w3m/icons/" data-directory)))
+	  dir)))
   "*Directory where emacs-w3m should find icon files."
   :group 'w3m
   :type '(radio (const :tag "Not specified")

@@ -447,7 +447,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
        (or (featurep 'xemacs)
 	   (> emacs-major-version 20))
        (setq w3mhack-nonunix-icondir
-	     (expand-file-name "w3m/icons" data-directory)))
+	     (expand-file-name "images/w3m" data-directory)))
   (labels
       ((mkdir (dir)
 	      (unless (file-directory-p dir)
@@ -724,7 +724,7 @@ to remove some obsolete variables in the first argument VARLIST."
 	    (when (member (concat el "c") elcs)
 	      (insert "lisp/w3m/" el "c\n")))
 	  (dolist (icon icons)
-	    (insert "etc/w3m/" icon "\n"))
+	    (insert "etc/images/w3m/" icon "\n"))
 	  (dolist (info infos)
 	    (insert "info/" info "\n")))
 	(message "Generating %s...done" manifest)))))
@@ -981,7 +981,7 @@ install-info:
       (message "
 install-package:
   *.el, *.elc, ChangeLog* -> %slisp/w3m/
-  *.xpm                   -> %setc/w3m/
+  *.xpm                   -> %setc/images/w3m/
   *.info, *.info-*        -> %sinfo/
   MANIFEST.w3m            -> %spkginfo/"
 	       package-dir package-dir package-dir package-dir)))

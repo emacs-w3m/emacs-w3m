@@ -117,7 +117,7 @@ install-package:
 		"a package system.";\
 	else\
 	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install-lisp;\
-	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons30;\
+	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/images/w3m" install-icons30;\
 	  $(MAKE) infodir="$(PACKAGEDIR)/info" install-info;\
 	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
 	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
@@ -129,7 +129,7 @@ install-package-ja:
 		"a package system.";\
 	else\
 	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install-lisp;\
-	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons30;\
+	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/images/w3m" install-icons30;\
 	  $(MAKE) infodir="$(PACKAGEDIR)/info" install-info-ja;\
 	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
 	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
