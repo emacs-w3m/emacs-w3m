@@ -1,3 +1,8 @@
+2002-10-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3mhack.el (w3mhack-generate-colon-keywords-file): Protect
+	against unexpected data structure.
+
 2002-10-29  Ken'ichi SATO  <ksato@iijmio-mail.jp>
 
 	* shimbun/sb-zdnet.el (shimbun-zdnet-group-alist): Follow the
