@@ -5,7 +5,7 @@ shimbun ライブラリでは、新聞やニュースサイト、メーリングリストアーカイブ
 
 shimbun ライブラリを利用できるユーザエージェントは、以下の通りです。
 
-	Wanderlust (elmo-lunafy 枝)
+	Wanderlust (2.7.0 以降)
 	T-gnus-6_15
 	Gnus (T-gnus の nnshimbun.el が必要)
 
@@ -112,6 +112,7 @@ vinelinux web サイト	vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
 			vinelinux.errata.2x.sparc
 			vinelinux.errata.2x.alpha vinelinux.errata.1x
 HNS による日記
+小泉内閣メールマガジン  kantei.m-magazine
 
 Local Variables:
 mode: text
