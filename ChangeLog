@@ -1,3 +1,7 @@
+2001-09-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-ucs.el (w3m-euc-japan-encoder): Simplified.
+
 2001-09-10  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* w3m-ucs.el (w3m-euc-japan-encoder): Fixed for ASCII under XEmacs.

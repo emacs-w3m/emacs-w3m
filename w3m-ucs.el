@@ -57,22 +57,16 @@
   `(4
     (loop
      (read-multibyte-character r1 r0)
-     (if (r1 == ,(w3m-static-if (boundp 'MULE)
-		     lc-ascii
-		   (charset-id 'ascii)))
+     (if (r1 == ,(charset-id 'ascii))
 	 ;; (1) ASCII characters
 	 (write-repeat r0)
-       (if (r1 == ,(w3m-static-if (boundp 'MULE)
-		       lc-jp
-		     (charset-id 'japanese-jisx0208)))
+       (if (r1 == ,(charset-id 'japanese-jisx0208))
 	   ;; (2) Characters of Japanese JISX0208.
 	   ((r1 = ((r0 & 127) | 128))
 	    (r0 = ((r0 >> 7) | 128))
 	    (write r0)
 	    (write-repeat r1))
-	 (if (r1 == ,(w3m-static-if (boundp 'MULE)
-			 lc-kana
-		       (charset-id 'katakana-jisx0201)))
+	 (if (r1 == ,(charset-id 'katakana-jisx0201))
 	     ;; (3) Katakana Part of Japanese JISX0201.1976
 	     ((r0 |= 128)
 	      (write ?\x8e)
