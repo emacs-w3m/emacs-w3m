@@ -1,5 +1,20 @@
 2001-03-04  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
+	* w3m.el: Add Keisuke Nishida as author.
+	(TOP): Use thingatpt instead of ffap.
+	(w3m-fill-column): Obsoleted. Determine in dynamic.
+	(w3m-command-arguments): Specify as lambda
+	(w3m-command-arguments): Change initial value.
+	(w3m-search-engine-alist): Change spec more simple.
+	(w3m-input-url): Use thing-at-point.
+	(w3m-do-search): Adapt to new w3m-search-engine-alist spec.
+	(w3m-search): Change variable name and refine codes.
+
+	* w3m.el: (w3m-entity-value): Allow immediate entity (&#nnn).
+	(w3m-fontify): Likewise.
+
+2001-03-04  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
 	* w3m.el (w3m-delete-duplicated-empty-lines): New variable.
 	(w3m-search-engine-alist): New variable.
 	(w3m-default-search-engine): New variable.
