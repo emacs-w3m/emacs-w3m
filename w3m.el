@@ -3311,12 +3311,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		      url)
 		  (or (cdr (assoc "w3m-base-url" alist))
 		      (cdr (assoc "w3m-current-url" alist))
-		      url)))
-	   ;; FIXME: adhoc implementation
-	   ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
-	   ;; HTTP/1.0 501 Method Not Implemented
-	   ((string-match "HTTP/1\\.[0-9] 50[0-9]" header)
-	    (list "text/html" nil nil nil nil url url))))))))
+		      url)))))))))
 
 (defmacro w3m-w3m-expand-arguments (arguments)
   (` (delq nil
