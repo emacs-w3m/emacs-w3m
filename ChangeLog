@@ -1,3 +1,8 @@
+2003-07-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Use `w3m-url-strip-fragment' instead of
+	`w3m-base-url' for local files.
+
 2003-06-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-makeinfo): Include other files first.
@@ -24,6 +29,18 @@
 
 	* w3m-form.el (w3m-form-parse-and-fontify): Encode URL with the
 	attribute `charset'.
+
+2003-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Don't use
+	`save-match-data'
+	* shimbun/sb-gnome.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-get-headers): Ditto.
+
+2003-06-18  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/shimbun.el (shimbun-mime-encode-string): Use
+	`save-match-data'.
 
 2003-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
