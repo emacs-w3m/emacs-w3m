@@ -209,7 +209,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 					 &optional range)
   (shimbun-mainichi-get-headers shimbun))
 
-(defun shimbun-mainichi-prepare-article (header)
+(defun shimbun-mainichi-prepare-article (shimbun header)
   (let ((case-fold-search t))
     (while (search-forward "\r" nil t)
       (delete-backward-char 1))
@@ -251,22 +251,11 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 		(string-to-number (match-string 4))
 		(string-to-number (match-string 5))))))
     ;; Break long lines.
-    (goto-char (point-min))
-    (re-search-forward shimbun-mainichi-content-start nil t)
-    (narrow-to-region
-     (point)
-     (if (re-search-forward shimbun-mainichi-content-end nil t)
-	 (match-beginning 0)
-       (point-max)))
-    (goto-char (point-min))
-    (while (re-search-forward "<p[^>]*>\\|</p>\\|[、。）」]+" nil t)
-      (unless (eolp)
-	(insert "\n")))
-    (widen)))
+    (shimbun-break-long-japanese-lines shimbun)))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-mainichi)
 						   header)
-  (shimbun-mainichi-prepare-article header))
+  (shimbun-mainichi-prepare-article shimbun header))
 
 (provide 'sb-mainichi)
 

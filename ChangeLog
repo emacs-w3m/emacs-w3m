@@ -1,3 +1,9 @@
+2004-10-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-break-long-japanese-lines): New function.
+	* shimbun/sb-mainichi.el (shimbun-mainichi-prepare-article): Use it.
+	* shimbun/sb-wired.el (shimbun-make-contents): Use it.
+
 2004-10-27  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-check-refresh-attribute): Support own page reload.

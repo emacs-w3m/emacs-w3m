@@ -1142,6 +1142,29 @@ controls whether this function should preserve a message in the
 	    (apply 'message fmt args))))
     (apply 'format fmt args)))
 
+(defun shimbun-break-long-japanese-lines (&optional shimbun)
+  "Break long Japanese lines in an article.
+Article should be charset decoded html data.  If SHIMBUN is given,
+this function will narrow the buffer to just an article using the
+shimbun class variables `content-start' and `content-end'.  Otherwise,
+it considers the buffer has already been narrowed to an article."
+  (save-restriction
+    (when shimbun
+      (goto-char (point-min))
+      (let ((case-fold-search t)
+	    start)
+	(when (and (re-search-forward (shimbun-content-start-internal shimbun)
+				      nil t)
+		   (setq start (point))
+		   (re-search-forward (shimbun-content-end-internal shimbun)
+				      nil t))
+	  (narrow-to-region start (match-beginning 0)))))
+    (goto-char (point-min))
+    (while (re-search-forward "<p[^>]*>\\|</p>\\|[、。）」]+" nil t)
+      (unless (eolp)
+	(insert "\n"))))
+  (goto-char (point-min)))
+
 (provide 'shimbun)
 
 ;;; shimbun.el ends here
