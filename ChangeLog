@@ -4,6 +4,7 @@
 	Change its customize spec.
 	(shimbun-slashdot-jp-sid-url): Follow the above change.
 	(shimbun-headers): Ditto.
+	(shimbun-slashdot-jp-make-comment-headers): Reverse order.
 
 	* shimbun/sb-slashdot-jp.el (shimbun-make-contents): Follow the
 	argument spec change of `shimbun-slashdot-jp-make-story-article'.

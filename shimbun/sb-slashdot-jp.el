@@ -235,7 +235,7 @@
 							      nil parent))
 	  (unless (shimbun-search-id shimbun (shimbun-header-id head))
 	    (push head headers)))))
-    headers))
+    (nreverse headers)))
 
 (defun shimbun-slashdot-jp-search-comment-head (shimbun sid &optional
 							cid parent)
