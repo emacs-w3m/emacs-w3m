@@ -1,3 +1,11 @@
+2001-05-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-euc-japan-decoder): Not define when it has been
+	already defined.
+
+	* w3m-xmas.el (w3m-euc-japan-decoder): Define when XEmacs whose
+	version is greater than 21.2.19 is used.
+
 2001-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Modify messages in `w3m-view-header', `w3m-view-source',

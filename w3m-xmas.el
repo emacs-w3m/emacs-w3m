@@ -296,6 +296,47 @@ as the value."
 (unless (fboundp 'coding-system-category)
   (defalias 'coding-system-category 'coding-system-type))
 
+(w3m-static-if (and (>= emacs-major-version 21)
+		    (>= emacs-minor-version 2)
+		    (>= emacs-patch-level 19))
+    (define-ccl-program ari-euc-japan-decoder
+      `(2
+	(loop
+	 (read r0)
+	 ;; Process normal EUC characters.
+	 (if (r0 < ?\x80)
+	     (write-repeat r0))
+	 (if (r0 > ?\xa0)
+	     ((read r1)
+	      (r1 &= ?\x7f)
+	      (r1 |= ((r0 & ?\x7f) << 7))
+	      (r0 = ,(charset-id 'japanese-jisx0208))
+	      (write-multibyte-character r0 r1)
+	      (repeat)))
+	 (if (r0 == ?\x8e)
+	     ((read r1)
+	      (r0 = ,(charset-id 'katakana-jisx0201))
+	      (write-multibyte-character r0 r1)
+	      (repeat)))
+	 (if (r0 == ?\x8f)
+	     ((read r0 r1)
+	      (r1 &= ?\x7f)
+	      (r1 |= ((r0 & ?\x7f) << 7))
+	      (r0 = ,(charset-id 'japanese-jisx0212))
+	      (write-multibyte-character r0 r1)
+	      (repeat)))
+	 ;; Process internal characters used in w3m.
+	 (if (r0 == ?\x80)	     ; Old ANSP (w3m-0.1.11pre+kokb23)
+	     (write-repeat 32))
+	 (if (r0 == ?\x90)		; ANSP (use for empty anchor)
+	     (write-repeat 32))
+	 (if (r0 == ?\x91)		; IMSP (blank around image)
+	     (write-repeat 32))
+	 (if (r0 == ?\xa0)		; NBSP (non breakble space)
+	     (write-repeat 32))
+	 (write-repeat r0)))))
+
+
 ;;; Header line (emulating Emacs 21).
 (defvar w3m-header-line-map (make-sparse-keymap))
 (define-key w3m-header-line-map 'button2 'w3m-goto-url)

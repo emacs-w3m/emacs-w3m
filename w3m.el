@@ -2148,44 +2148,45 @@ to nil."
 
 
 ;;; Retrieve data:
-(define-ccl-program w3m-euc-japan-decoder
-  `(2
-    (loop
-     (read r0)
-     ;; Process normal EUC characters.
-     (if (r0 < ?\x80)
-	 (write-repeat r0))
-     (if (r0 > ?\xa0)
-	 ((read r1)
-	  (write ,(w3m-static-if (boundp 'MULE)
-		      lc-jp
-		    (charset-id 'japanese-jisx0208)))
-	  (write r0)
-	  (write-repeat r1)))
-     (if (r0 == ?\x8e)
-	 ((read r0)
-	  (write ,(w3m-static-if (boundp 'MULE)
-		      lc-kana
-		    (charset-id 'katakana-jisx0201)))
-	  (write-repeat r0)))
-     (if (r0 == ?\x8f)
-	 ((read r0)
-	  (read r1)
-	  (write ,(w3m-static-if (boundp 'MULE)
-		      lc-jp2
-		    (charset-id 'japanese-jisx0212)))
-	  (write r0)
-	  (write-repeat r1)))
-     ;; Process internal characters used in w3m.
-     (if (r0 == ?\x80)			; Old ANSP (w3m-0.1.11pre+kokb23)
-	 (write-repeat 32))
-     (if (r0 == ?\x90)			; ANSP (use for empty anchor)
-	 (write-repeat 32))
-     (if (r0 == ?\x91)			; IMSP (blank around image)
-	 (write-repeat 32))
-     (if (r0 == ?\xa0)			; NBSP (non breakble space)
-	 (write-repeat 32))
-     (write-repeat r0))))
+(unless (get 'w3m-euc-japan-decoder 'ccl-program-idx)
+  (define-ccl-program w3m-euc-japan-decoder
+    `(2
+      (loop
+       (read r0)
+       ;; Process normal EUC characters.
+       (if (r0 < ?\x80)
+	   (write-repeat r0))
+       (if (r0 > ?\xa0)
+	   ((read r1)
+	    (write ,(w3m-static-if (boundp 'MULE)
+			lc-jp
+		      (charset-id 'japanese-jisx0208)))
+	    (write r0)
+	    (write-repeat r1)))
+       (if (r0 == ?\x8e)
+	   ((read r0)
+	    (write ,(w3m-static-if (boundp 'MULE)
+			lc-kana
+		      (charset-id 'katakana-jisx0201)))
+	    (write-repeat r0)))
+       (if (r0 == ?\x8f)
+	   ((read r0)
+	    (read r1)
+	    (write ,(w3m-static-if (boundp 'MULE)
+			lc-jp2
+		      (charset-id 'japanese-jisx0212)))
+	    (write r0)
+	    (write-repeat r1)))
+       ;; Process internal characters used in w3m.
+       (if (r0 == ?\x80)	     ; Old ANSP (w3m-0.1.11pre+kokb23)
+	   (write-repeat 32))
+       (if (r0 == ?\x90)		; ANSP (use for empty anchor)
+	   (write-repeat 32))
+       (if (r0 == ?\x91)		; IMSP (blank around image)
+	   (write-repeat 32))
+       (if (r0 == ?\xa0)		; NBSP (non breakble space)
+	   (write-repeat 32))
+       (write-repeat r0)))))
 
 (define-ccl-program w3m-euc-japan-encoder
   `(1 (loop (read r0) (write-repeat r0))))
