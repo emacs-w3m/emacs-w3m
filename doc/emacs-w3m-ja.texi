@@ -686,7 +686,7 @@ Emacs-w3m $B$K$O8!:w%(%s%8%s$rMxMQ$9$k$?$a$N@h?J$N5!G=$,$"$j!"Fs$D$N%$%s%?!<(B
 @menu
 * The Search Interface::        Emacs-w3m $B$K$h$k8!:w$N$d$jJ}(B
 * Quick Searching::             $B$b$&0l$D$N(B ($B$=$7$FB.$$(B) $B%&%'%V8!:w(B
-* Adding New Search Engines::   $B$*5$$KF~$j$N%(%s%8%s$r;H$&$K$O(B
+* Adding New Search Engines::   $B$*5$$KF~$j$N%(%s%8%s$r;H$&$K$O(B?
 @end menu
 
 @node The Search Interface
@@ -697,11 +697,10 @@ Emacs-w3m $B$K$O8!:w%(%s%8%s$rMxMQ$9$k$?$a$N@h?J$N5!G=$,$"$j!"Fs$D$N%$%s%?!<(B
 
 Emacs-w3m $B$N%P%C%U%!!<$G(B @kbd{S} $B%-!<$r;H$&$3$H$K$h$j(B ($B%G%U%)%k%H$N%-!<(B
 $B%^%C%W$r;H$&$b$N$H$7$^$9(B)$B!"I8=`$N8!:w%$%s%?!<%U%'!<%9$rN)$A>e$2$k$3$H$,(B
-$B$G$-$^$9!#$9$k$H!"%_%K%P%C%U%!$G8!:w8l$NF~NO$r5a$a$k%W%m%s%W%H$,8=$l$k$G(B
-$B$7$g$&!#$=$&$7$?$i!"0l$D$^$?$OJ#?t$N8l$rF~$l$F!"(B@kbd{RET} $B$rC!$$$F2<$5$$!#(B
-$B$=$N%(%s%8%s$N8!:w7k2L$N%Z!<%8$,8=$l!"$=$N8e!"$"$?$+$b8!:w%(%s%8%s$KDL>o(B
-$B$N%&%'%V$NN.57$K$h$kF~NO$r9T$J$C$?$H$-$N$h$&$K!"7k2L$r1\Mw$9$k$3$H$,$G$-(B
-$B$^$9!#(B
+$B$G$-$^$9!#$9$k$H!"%_%K%P%C%U%!$G8!:w8l$NF~NO$r5a$a$k%W%m%s%W%H$,8=$l$k$N(B
+$B$G!"0l$D$^$?$OJ#?t$N8l$rF~$l$F!"(B@kbd{RET} $B$rC!$$$F2<$5$$!#$=$N%(%s%8%s$N(B
+$B8!:w7k2L$N%Z!<%8$,8=$l!"$=$N8e!"$"$?$+$b8!:w%(%s%8%s$KDL>o$N%&%'%V$NN.57(B
+$B$K$h$kF~NO$r9T$J$C$?$H$-$N$h$&$K!"7k2L$r1\Mw$9$k$3$H$,$G$-$^$9!#(B
 
 $B$?$V$s!"$"$J$?$O$I$N%(%s%8%s$GC5:w$7$?$$$+$r7h$a$k5!2q$,M?$($i$l$F$$$J$$(B
 $B$3$H$K5$IU$/$G$7$g$&!#(BEmacs-w3m $B$O%G%U%)%k%H$G(B Google $B8!:w%(%s%8%s$r;H$$(B
@@ -711,7 +710,7 @@ Options} $B;2>H(B) $B$r%+%9%?%^%$%:$9$k$3$H$K$h$C$F!"$3$N?6$kIq$$$rJQ99$9$k$3
 $B$H$,$G$-$^$9!#(B
 
 $B$I$N%(%s%8%s$r;HMQ$9$k$+$rL@<($9$k$?$a$K$O!"%3%^%s%I$K@\F,0z?t$rM?$($J$1(B
-$B$l$P$J$j$^$;$s(B ($B$3$l$O(B @kbd{C-u S} $B$N$h$&$J%3%^%s%I$NA0$K!"DL(B
+$B$l$P$J$j$^$;$s(B ($B$3$l$O(B @kbd{C-u S} $B$N$h$&$K!"%3%^%s%I$NA0$KDL(B
 $B>o(B @kbd{C-u} $B$rC!$/$3$H$r0UL#$7$^$9(B)$B!#$9$k$H(B emacs-w3m $B$O%(%s%8%s$NF~NO(B
 $B$rB%$9$N$G!"$=$NL>A0$r0l$DA*$V$3$H$,$G$-$^$9(B (@key{TAB} $B%-!<$GJd40$,$G$-(B
 $B$^$9(B)$B!#$$$C$?$sA*Br$7$?$i(B @kbd{RET} $B%-!<$rC!$$$F2<$5$$!#$=$N8e$G8!:w8l$r(B
@@ -769,13 +768,13 @@ Engines} $B$r;2>H$7$F2<$5$$!#(B
 $B?t(B @code{w3m-search-engine-alist} $B$GDj5A$5$l$^$9!#(B
 
 @node Adding New Search Engines
-@subsection $B$*5$$KF~$j$N%(%s%8%s$r;H$&$K$O(B
+@subsection $B$*5$$KF~$j$N%(%s%8%s$r;H$&$K$O(B?
 @cindex Adding new search engines
 
-Emacs-w3m $B$O!"MxMQ2DG=$JB?$/$N8!:w%(%s%8%s$r;}$C$F$$$^$9!#$"$J$?$N$*5$$K(B
-$BF~$j$N8!:w%(%s%8%s$r;H$$$?$$$N$K!"K|$,0l$K$b$=$l$,4{CN$N8!:w%(%s%8%s$N%j(B
-$B%9%H$K:\$C$F$$$J$+$C$?$i!"$I$&$7$^$7$g$&(B?  $B$=$l$r8!:w%(%s%8%s$N%j%9%H$K(B
-$B2C$($l$PNI$$$N$G$9!#$=$7$F$=$l$O!"6K$a$F4JC1$G$9(B:
+Emacs-w3m $B$OMxMQ2DG=$JB?$/$N8!:w%(%s%8%s$r;}$C$F$$$^$9!#$"$J$?$N$*5$$KF~(B
+$B$j$N8!:w%(%s%8%s$r;H$$$?$$$N$K!"K|$,0l$K$b$=$l$,4{CN$N8!:w%(%s%8%s$N%j%9(B
+$B%H$K:\$C$F$$$J$+$C$?$i$I$&$7$^$7$g$&(B?  $B$=$l$r8!:w%(%s%8%s$N%j%9%H$K2C$((B
+$B$l$PNI$$$N$G$9!#$=$7$F$=$l$O6K$a$F4JC1$G$9(B:
 
 @enumerate
 @item
@@ -783,6 +782,7 @@ Emacs-w3m $B$O!"MxMQ2DG=$JB?$/$N8!:w%(%s%8%s$r;}$C$F$$$^$9!#$"$J$?$N$*5$$K(B
 $B$1$l$P$J$j$^$;$s!#Nc$($P(B:
 
 @uref{http://my.searchengine.com/?query=foobar}
+
 
 $B$3$3$G(B foobar $B$O$"$J$?$,8!:w$7$?$$8l$G$9!#(B
 
@@ -801,14 +801,14 @@ Emacs-w3m $B$O!"MxMQ2DG=$JB?$/$N8!:w%(%s%8%s$r;}$C$F$$$^$9!#$"$J$?$N$*5$$K(B
 $BBh0l%U%#!<%k%I$N(B "My engine" $B$r$"$J$?$N%(%s%8%s$N@bL@$G!"BhFs%U%#!<%k%I(B
 $B$r%(%s%H%j!<!&%]%$%s%H$GCV$-49$($F2<$5$$(B (@samp{%s} $B$O=EMW$G$9!#$3$l$O8!(B
 $B:w$r9T$J$&$H$-$K!"8!:w8l$GCV$-49$($i$l$^$9(B)$B!#$=$7$FBh;0%U%#!<%k%I$O;HMQ(B
-$B$9$k%(%s%3!<%G%#%s%0$r0UL#$7!"(B@code{nil} $B$^$?$O$=$l$,>JN,$5$l$?>l9g$O!"(B
-$BJQ?t(B @code{w3m-default-coding-system} $B$NCM$,I8=`$N%(%s%3!<%G%#%s%0$H$7$F(B
-$B;H$o$l$^$9!#(B
+$B$9$k%(%s%3!<%G%#%s%0$r0UL#$7!"(B@code{nil} $B$^$?$O$=$l$,>JN,$5$l$?>l9g$OJQ(B
+$B?t(B @code{w3m-default-coding-system} $B$NCM$,I8=`$N%(%s%3!<%G%#%s%0$H$7$F;H(B
+$B$o$l$^$9!#(B
 
 $B%(%s%3!<%G%#%s%0$K4X$7$F$4;29M$^$G$K!"1Q8l$N8!:w%(%s%8%s$N$?$a$K$O!"$[$H(B
-$B$s$I9MN8$9$kI,MW$,$"$j$^$;$s!#$7$+$7$J$,$i!"$"$kF|K\$N8!:w%(%s%8%s$K$D$$(B
-$B$F$O!"$=$l$K2?$+(B ($BNc$($P(B @code{euc-japan}) $B$r;XDj$9$kI,MW$,$"$k$+$b$7$l(B
-$B$^$;$s!#(B
+$B$s$I$=$l$r9MN8$9$kI,MW$,$"$j$^$;$s!#$7$+$7$J$,$i!"$"$kF|K\$N8!:w%(%s%8%s(B
+$B$K$D$$$F$O!"$=$l$K2?$+(B ($BNc$($P(B @code{euc-japan}) $B$r;XDj$9$kI,MW$,$"$k$+(B
+$B$b$7$l$^$;$s!#(B
 
 @item
 $B:#$d$3$N8!:w%(%s%8%s$O!"(Bemacs-w3m $B$GDL>o$N(B @kbd{S} $B%-!<$G;H$&$3$H$,$G$-(B
@@ -846,83 +846,78 @@ Emacs-w3m $B$O!"MxMQ2DG=$JB?$/$N8!:w%(%s%8%s$r;}$C$F$$$^$9!#$"$J$?$N$*5$$K(B
 @cindex Tracking changes in web pages
 @cindex about://antenna/
 
-Antenna is a tool to keep track of changes in web pages.  Using Antenna,
-you can periodically check if particular pages have been updated, and if
-they haven't, know the last time you saw them.
+$B%"%s%F%J$O%&%'%V%Z!<%8$NJQ2=$rDI@W$9$k$?$a$NF;6q$G$9!#%"%s%F%J$r;H$&$H!"(B
+$BFCDj$N%Z!<%8$,!"0JA0$K8+$?$H$-$+$i99?7$5$l$?$+$5$l$J$+$C$?$+$r!"<~4|E*$K(B
+$B%A%'%C%/$9$k$3$H$,$G$-$^$9!#(B
 
-You can start Antenna using the @kbd{A} key in any emacs-w3m buffer.
-Alternatively, you can go to the special URL @uref{about://antenna/}; it
-does the same thing.
+$B$$$:$l$+$N(B emacs-w3m $B%P%C%U%!$G(B @kbd{A} $B$r;H$&$3$H$K$h$C$F!"%"%s%F%J$r;O(B
+$B$a$k$3$H$,$G$-$^$9!#$"$k$$$O!"FCJL$N(B URL @uref{about://antenna/} $B$K9T$/(B
+$B$3$H$K$h$C$F$bF1$8$3$H$,$G$-$^$9!#(B
 
 @menu
-* Setting up Antenna::          How to add your web sites to Antenna
-* Daily web tracking::          Tracking changes with Antenna
+* Setting up Antenna::          $B%&%'%V%5%$%H$r%"%s%F%J$K2C$($k$K$O(B?
+* Daily web tracking::          $B%"%s%F%J$GJQ2=$rDI@W$9$k(B
 @end menu
 
 @node Setting up Antenna
-@subsection How to add your web sites to Antenna
+@subsection $B%&%'%V%5%$%H$r%"%s%F%J$K2C$($k$K$O(B?
 @cindex about://antenna-edit/
 @kindex +
 
-Antenna has a specific customization interface accessible via the
-``Edit'' button in the Antenna page, or via the special
-@uref{about://antenna-edit/} URL.  It is pretty self-explanatory, to add
-a website, do the following:
+$B%"%s%F%J$O!"%"%s%F%J!&%Z!<%8$K$"$k%+%9%?%^%$%:$N$?$a$N(B ``Edit'' $B%\%?%s!"(B
+$B$^$?$OFCJL$N(B URL @uref{about://antenna-edit/} $B$+$i%+%9%?%^%$%:$9$k$3$H$,(B
+$B$G$-$^$9!#$=$l$O$+$J$jJ,$+$j$d$9$$$b$N$G$9!#%&%'%V%5%$%H$r2C$($k$K$O0J2<(B
+$B$N$3$H$r9T$J$C$F2<$5$$(B:
 
 @enumerate
 @item
-In the ``Key'' field, put the complete URL of the web page you want to
-watch, for example ``http://my.website.com/index.html''.
+$BNc$($P(B ``http://my.website.com/index.html'' $B$N$h$&$J!"4F;k$7$?$$%&%'%V%Z!<(B
+$B%8$N40A4$J(B URL$B$r!"(B``Key'' $B%U%#!<%k%I$KDI2C$7$F2<$5$$!#(B
 
 @item
-In the ``Title'' field, type a title for your webpage, such as ``My
-website''.
+``Title'' $B%U%#!<%k%I$K!"(B``My website'' $B$N$h$&$J%?%$%H%k$r5-F~$7$F2<$5$$!#(B
 
 @item
-In the ``Time'' field, choose either ``Normal'', ``Time'' or ``HNS''.
-You probably want the first choice.
+``Time'' $B%U%#!<%k%I$G!"(B``Normal''$B!"(B``Time'' $B$^$?$O(B ``HNS'' $B$N$I$l$+$rA*(B
+$B$s$G2<$5$$!#$"$J$?$O$?$V$sBh0l8uJd$rK>$`$G$7$g$&!#(B
 @end enumerate
 
-Once all the fields are filled, hit the ``New'' button.  Your website
-is now added to the Antenna database; repeat the same steps for the
-other sites you want to track.
+$B$9$Y$F$N%U%#!<%k%I$rK~$?$7$?$i!"(B``New'' $B$N%\%?%s$r2!$7$F2<$5$$!#$9$k$H!"(B
+$B$"$J$?$N%&%'%V%5%$%H$O%"%s%F%J!&%G!<%?%Y!<%9$K2C$($i$l$^$9(B; $BDI@W$7$?$$B>(B
+$B$N%5%$%H$KBP$7$F!"F1$8A`:n$r7+$jJV$7$F2<$5$$!#(B
 
-An alternative way to add a website to Antenna is to go to this site,
-and to use the @kbd{+} key.  You will be taken to the Antenna
-customization buffer, with all fields already set up for you.  You just
-have to hit the buttons ``Save for future sessions'' and ``Finish''.
+$B%"%s%F%J$K%&%'%V%5%$%H$r2C$($kB>$NJ}K!$O!"$=$N%5%$%H$K9T$C$F(B @kbd{+} $B%-!<(B
+$B$r;H$&$3$H$G$9!#$9$Y$F$N%U%#!<%k%I$,$9$G$K=q$-$3$^$l$?!"%"%s%F%J$r%+%9%?(B
+$B%^%$%:$9$k$?$a$N%P%C%U%!$,8=$l$k$G$7$g$&!#$"$J$?$OC1$K(B ``Save for future
+sessions'' $B$H(B ``Finish'' $B$N%\%?%s$r2!$;$PNI$$$N$G$9!#(B
 
 @node Daily web tracking
-@subsection Tracking changes with Antenna
+@subsection $B%"%s%F%J$GJQ2=$rDI@W$9$k(B
 @cindex The Antenna interface
 
-On the Antenna page, you will see two sections: one called ``Updated''
-and another called ``Visited''.  In the ``Updated'' section, you will
-find websites which have changed since the last Antenna update, and in
-the ``Visited'' section, the websites which haven't.  In each section,
-each line stands for one website of the Antenna database, and has the
-following structure:
+$B%"%s%F%J!&%Z!<%8$K$OFs$D$N9`L\$,8=$l$^$9(B: $B0l$D$O(B ``Updated'' $B$H8F$P$l!"(B
+$B$b$&0l$D$O(B ``Visited'' $B$H8F$P$l$^$9!#(B``Updated'' $B$N9`L\$G$O:G8e$K%"%s%F(B
+$B%J$r99?7$7$?8e$GJQ2=$7$?%&%'%V%5%$%H$,!"$=$7$F(B ``Visited'' $B$N9`L\$G$OJQ(B
+$B2=$7$J$+$C$?%&%'%V%5%$%H$,8+$D$+$j$^$9!#$=$l$>$l$N9`L\$G!"3F9T$O%"%s%F%J!&(B
+$B%G!<%?%Y!<%9$N0l$D$N%&%'%V%5%$%H$rI=$7!"0J2<$N9=B$$K$J$C$F$$$^$9(B:
 
 @samp{  * 2002/12/15 16:43  (T)  My website}
 
-The first part is the last time the website was updated, or if this
-information is not available, the last time Antenna noticed a change in
-this page.
+$B:G=i$NItJ,$O!"%"%s%F%J$,:G8e$K$=$N%Z!<%8$NJQ2=$rJs9p$7$?!"$=$N%&%'%V%5%$(B
+$B%H$,99?7$5$l$?:G=*;~9o$G$9!#$^$?$O$=$N>pJs$,F@$i$l$J$$$3$H$b$"$j$^$9!#(B
 
-The @samp{(T)} stands for ``Time'', it means that the change was
-detected because the last modification time of that page has changed
-since the last Antenna update.  Another possible value here is @samp{S}
-(for ``Size''), which means that the change has been detected because
-the size of the page has changed.
+@samp{(T)} $B$O(B ``Time'' $B$rI=$7!":G8e$K%"%s%F%J$r99?7$7$?8e$G!"$=$N%Z!<%8(B
+$B$NJQ99;~9o$,JQ2=$7$?$N$G!"JQ2=$,8!=P$5$l$?$3$H$r0UL#$7$^$9!#$b$&0l$D$N2D(B
+$BG=@-$,$"$kCM$O(B @samp{S} (``Size'' $B$N$3$H(B) $B$G!"$=$N%Z!<%8$N%5%$%:$,JQ2=$7(B
+$B$?$N$G!"JQ2=$,8!=P$5$l$?$3$H$r0UL#$7$^$9!#(B
 
-The last part of this line is the title you gave to this website when
-you added it to the database.
+$B9T$N:G8e$NItJ,$O!"%G!<%?%Y!<%9$KDI2C$7$?$H$-$KM?$($?!"$3$N%&%'%V%5%$%H$N(B
+$B%?%$%H%k$G$9!#(B
 
-Please note that the Antenna database doesn't get automatically updated,
-you have to update it each time you want to check if the sites have
-changed, either by hitting @kbd{R} in the Antenna page, or by passing a
-prefix argument to the command (start Antenna with @kbd{C-u A}, for
-example).
+$B$I$&$+!"%"%s%F%J!&%G!<%?%Y!<%9$O<+F0E*$K99?7$5$l$J$$$3$H$KCm0U$7$F2<$5$$!#(B
+$B%"%s%F%J!&%Z!<%8$G(B @kbd{R} $B$rC!$/$+!"$^$?$O@\F,0z?t$r%3%^%s%I$KEO$9(B ($BNc(B
+$B$($P(B @kbd{C-u A} $B$G%"%s%F%J$r;O$a$k(B) $B$3$H$K$h$C$F!"%5%$%H$,JQ2=$7$?$+$I(B
+$B$&$+$r%A%'%C%/$7$?$$Kh$K!"$=$l$r99?7$7$J$1$l$P$J$j$^$;$s!#(B
 
 @node Showing Directory Tree
 @section $B%G%#%l%/%H%j$NLZ9=B$$rI=<($9$k(B
