@@ -103,15 +103,11 @@ This variable effected only XEmacs or Emacs 21."
 (defvar mew-w3m-minor-mode nil)
 (defconst mew-w3m-safe-url-regexp "\\`cid:")
 
-(make-variable-buffer-local 'mew-w3m-minor-mode)
-(add-to-list 'minor-mode-alist '(mew-w3m-minor-mode " w3m"))
-(add-to-list 'minor-mode-map-alist (cons 'mew-w3m-minor-mode w3m-mode-map))
-
 (defun mew-w3m-minor-mode-setter ()
-  "Check message buffer and activate mew-w3m-minor-mode."
-  (setq mew-w3m-minor-mode (and (get-text-property (point-min) 'w3m)
-				mew-use-w3m-minor-mode)))
-
+  "Check message buffer and activate w3m-minor-mode."
+  (w3m-minor-mode (or (and (get-text-property (point-min) 'w3m)
+			   mew-use-w3m-minor-mode)
+		      0)))
 
 (defun mew-w3m-view-inline-image (&optional allimage)
   "Display the images of Text/Html part.
