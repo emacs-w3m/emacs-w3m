@@ -1,5 +1,10 @@
 2001-04-13  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* shimbun/sb-xemacs.el (shimbun-get-headers): Retrieve header
+	to the temp buffer.
+
+	* shimbun/sb-airs.el (shimbun-get-headers): Ditto.
+
 	* shimbun/shimbun.el (shimbun-retrieve-url-buffer):
 	Return an empty buffer when `w3m-retrieve' returns nil.
 
