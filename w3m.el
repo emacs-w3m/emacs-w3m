@@ -459,7 +459,25 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   "Whether to track the mouse and message the url under the mouse.
 This feature does not work under Emacs or XEmacs versions prior to 21.
 See also the documentations for the variable `show-help-function' if
-you are using FSF Emacs 21."
+you are using Emacs 21.  You can also use the `balloon-help' feature
+under XEmacs by the command M-x balloon-help-mode with arg 1.  If the
+window manager decorates the balloon-help frame, and that is not to
+your taste, you may strip it off with the following directives.
+
+For ol[v]wm use this in .Xdefaults:
+   olvwm.NoDecor: balloon-help
+     or
+   olwm.MinimalDecor: balloon-help
+
+For fvwm version 1 use this in your .fvwmrc:
+   NoTitle balloon-help
+or
+   Style \"balloon-help\" NoTitle, NoHandles, BorderWidth 0
+
+For twm use this in your .twmrc:
+   NoTitle { \"balloon-help\" }
+
+See the file balloon-help.el for more information."
   :group 'w3m
   :type 'boolean)
 
@@ -705,6 +723,23 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	(` (lambda (window object pos)
 	     (if w3m-track-mouse
 		 (get-text-property pos (quote (, property)))))))))
+
+(defmacro w3m-make-balloon-help (property)
+  "Make a function for showing a `balloon-help' under XEmacs."
+  (when (featurep 'xemacs)
+    (` (let ((fn (intern (format "w3m-balloon-help-for-%s"
+				 (quote (, property))))))
+	 (prog1
+	     fn
+	   (unless (fboundp fn)
+	     (defalias fn
+	       (lambda (extent)
+		 (if w3m-track-mouse
+		     (get-text-property (extent-start-position extent)
+					(quote (, property)))))))
+	   (when (and (featurep 'bytecomp)
+		      (not (compiled-function-p (symbol-function fn))))
+	     (byte-compile fn)))))))
 
 (defun w3m-message (&rest args)
   "Alternative function of `message' for w3m.el."
@@ -1042,6 +1077,7 @@ If N is negative, last N items of LIST is returned."
   "Fontify anchor tags in this buffer which contains half-dumped data."
   (goto-char (point-min))
   (let ((help (w3m-make-help-echo w3m-href-anchor))
+	(balloon (w3m-make-balloon-help w3m-href-anchor))
 	start end)
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
@@ -1060,7 +1096,8 @@ If N is negative, last N items of LIST is returned."
 				       'w3m-href-anchor href
 				       'mouse-face 'highlight
 				       'w3m-name-anchor name
-				       'help-echo help))))
+				       'help-echo help
+				       'balloon-help balloon))))
 	 (name
 	  (when (re-search-forward "<\\|\n" nil t)
 	    (setq end (match-beginning 0))
@@ -1091,6 +1128,7 @@ If N is negative, last N items of LIST is returned."
 half-dumped data."
   (goto-char (point-min))
   (let ((help (w3m-make-help-echo w3m-image))
+	(balloon (w3m-make-balloon-help w3m-image))
 	src upper start end)
     (while (re-search-forward "<\\(img_alt\\) src=\"\\([^\"]*\\)\">" nil t)
       (setq src (buffer-substring-no-properties (match-beginning 2)
@@ -1105,7 +1143,8 @@ half-dumped data."
 					     'w3m-image src
 					     'mouse-face 'highlight
 					     'w3m-image-redundant upper
-					     'help-echo help))))))
+					     'help-echo help
+					     'balloon-help balloon))))))
 
 (defun w3m-toggle-inline-images (&optional force no-cache)
   "Toggle displaying of inline images on current buffer.
