@@ -63,29 +63,15 @@
 (defalias 'w3m-find-coding-system 'find-coding-system)
 (defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
 
-(defun w3m-detect-coding-region (start end &optional highest)
-  "Detect coding system of the text in the region between START and END
-Return a list of possible coding systems ordered by priority.
+(defun w3m-detect-coding-region (start end &optional priority-list)
+  "Detect coding system of the text in the region between START and END.
+Return the first possible coding system.
 
-If optional argument HIGHEST is non-nil, return the coding system of
-highest priority."
-  (let ((x
-	 (let (category)
-	   (if (and w3m-default-coding-system
-		    (setq category
-			  (coding-system-type w3m-default-coding-system)))
-	       (let ((orig (copy-sequence (coding-priority-list))))
-		 (unwind-protect
-		     (progn
-		       (set-coding-priority-list
-			(cons category
-			      (delq category (coding-priority-list))))
-		       (detect-coding-region start end))
-		   (set-coding-priority-list orig)))
-	     (detect-coding-region start end)))))
-    (if highest
-	(if (consp x) (car x) x)
-      x)))
+PRIORITY-LIST is a list of coding systems ordered by priority."
+  (car (detect-coding-with-priority
+	start end
+	(mapcar (function (lambda (x) (cons (coding-system-type x) x)))
+		priority-list))))
 
 ;;; Handle images:
 

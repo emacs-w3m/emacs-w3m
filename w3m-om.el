@@ -178,19 +178,22 @@
 	  coding-system)
       'binary)))
 
-(defun w3m-detect-coding-region (start end &optional highest)
-  "Detect coding system of the text in the region between START and END
-Return a list of possible coding systems ordered by priority.
+(defun w3m-detect-coding-region (start end &optional priority-list)
+  "Detect coding system of the text in the region between START and END.
+Return the first possible coding system.
 
-If optional argument HIGHEST is non-nil, return the coding system of
-highest priority."
-  (let ((category (assq w3m-default-coding-system
+PRIORITY-LIST is a list of coding systems ordered by priority."
+  (let ((categories (mapcar
+		     (function 
+		      (lambda (x) 
+			(cdr (assq x w3m-om-coding-category-alist))))
+		     priority-list))
 			w3m-om-coding-category-alist))
 	opriority x)
-    (when category
+    (when categories
       (setq opriority (sort (copy-sequence w3m-om-coding-categories)
 			    'coding-priority<))
-      (set-coding-priority (list (cdr category))))
+      (set-coding-priority categories))
     (prog2
 	(setq x (code-detect-region start end))
 	(if highest

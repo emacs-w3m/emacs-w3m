@@ -1,3 +1,19 @@
+2001-10-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-coding-system-priority-list): New user option.
+	(w3m-decode-buffer): Use it.
+
+	* w3m-fsf.el (w3m-detect-coding-region): Remove argument `highest';
+	always return the first possible coding system.
+	Add new optional argument `priority-list'.
+	Use `detect-coding-with-priority'.
+
+	* w3m-xmas.el (w3m-detect-coding-region): Ditto.
+
+	* w3m-om.el (w3m-detect-coding-region): Remove argument	`highest';
+	always return the first possible coding system.
+	Add new optional argument `priority-list'.
+
 2001-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-om.el  (w3m-detect-coding-region): Return a non-list of a

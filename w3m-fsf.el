@@ -43,26 +43,15 @@
   "Return OBJ if it is a coding-system."
   (if (coding-system-p obj) obj))
 
-(defun w3m-detect-coding-region (start end &optional highest)
-  "Detect coding system of the text in the region between START and END
-Return a list of possible coding systems ordered by priority.
+(defun w3m-detect-coding-region (start end &optional priority-list)
+  "Detect coding system of the text in the region between START and END.
+Return the first possible coding system.
 
-If optional argument HIGHEST is non-nil, return the coding system of
-highest priority."
-  (let (category)
-    (if (and w3m-default-coding-system
-	     (setq category
-		   (coding-system-category w3m-default-coding-system)))
-	(let ((orig coding-category-list))
-	  (unwind-protect
-	      (progn
-		(set-coding-priority
-		 (cons category
-		       (delq category
-			     (copy-sequence coding-category-list))))
-		(detect-coding-region start end highest))
-	    (set-coding-priority orig)))
-      (detect-coding-region start end highest))))
+PRIORITY-LIST is a list of coding systems ordered by priority."
+  (car (detect-coding-with-priority
+	start end
+	(mapcar (function (lambda (x) (cons (coding-system-category x) x)))
+		priority-list))))
 
 (defun w3m-make-ccl-coding-system
   (coding-system mnemonic docstring decoder encoder)
