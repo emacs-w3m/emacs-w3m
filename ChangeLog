@@ -9,6 +9,9 @@
 	* w3m-form.el: Require `w3m'.
 	* w3m-e21.el: Provide `w3m-e21' and then require `w3m'.
 
+	* w3mhack.el (w3mhack-version): Take back again the last change;
+	don't require `w3m' in the top level.
+
 2001-03-22  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m-antenna.el: All occurrence of `natsumikan' is replaced with
