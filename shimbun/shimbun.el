@@ -1,6 +1,7 @@
 ;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
@@ -506,39 +507,47 @@ Generated article have a multipart/related content-type."
    (shimbun-base64-encode-string (shimbun-entity-data-internal entity))))
 
 (defun shimbun-mime-replace-image-tags (base-cid &optional base-url images)
-  "Replace all occurrences of IMG tags with references to inlined
-image parts.  This function takes a BASE-CID as a base string for CIDs
-of inlined image parts, and returns an alist of URLs and image
-entities."
+  "Replace all IMG tags with references to inlined image parts.
+This function takes a BASE-CID as a base string for CIDs of inlined
+image parts, and returns an alist of URLs and image entities."
   (goto-char (point-min))
-  (let (begin end url img)
-    (while (re-search-forward "<img" nil t)
-      (setq begin (point))
-      (when (search-forward ">" nil t)
-	(setq end (point))
-	(goto-char begin)
-	(when (re-search-forward
-	       "src[ \t\r\f\n]*=[ \t\r\f\n]*\"\\([^\"]*\\)\"" end t)
-	  (setq url (shimbun-expand-url (match-string 1) base-url))
-	  (unless (setq img (assoc url images))
-	    (save-match-data
-	      (with-temp-buffer
-		(set-buffer-multibyte nil)
-		(let ((type (shimbun-retrieve-url url nil t base-url)))
-		  (when (and type (string-match "\\`image/" type))
-		    (push (setq img
-				(cons url
-				      (shimbun-make-image-entity
-				       type
-				       (buffer-string)
-				       (format "shimbun.inline.%d.%s"
-					       (length images) base-cid))))
-			  images))))))
-	  (when img
-	    ;; Only when an image is successfully retrieved, its
-	    ;; source URI should be rewritten.
-	    (replace-match
-	     (concat "src=\"cid:" (shimbun-entity-cid (cdr img)) "\"")))))))
+  (let ((case-fold-search t)
+	start end url img type)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((spc "\t\n\f\r "))
+		(concat "<[" spc "]*img[" spc "]+"
+			;; 1. replaceable part
+			"\\(src[" spc "]*=[" spc "]*"
+			"\\(\""
+			;; 3. quoted url
+			"\\([^\"]+\\)"
+			"\"\\|"
+			;; 4. unquoted url, though that's illegal
+			"\\([^\t\n\f\r \">]+\\)"
+			"\\)\\)")))
+	    nil t)
+      (setq start (match-beginning 1)
+	    end (match-end 1)
+	    url (or (match-string 3) (match-string 4)))
+      (unless (setq img (assoc url images))
+	(with-temp-buffer
+	  (set-buffer-multibyte nil)
+	  (setq type (shimbun-retrieve-url url nil t base-url))
+	  (when (and type (string-match "\\`image/" type))
+	    (push (setq img (cons url
+				  (shimbun-make-image-entity
+				   type
+				   (buffer-string)
+				   (format "shimbun.inline.%d.%s"
+					   (length images) base-cid))))
+		  images))))
+      (when img
+	;; Only when an image is successfully retrieved, its
+	;; source URI should be rewritten.
+	(goto-char start)
+	(delete-region start end)
+	(insert "src=\"cid:" (shimbun-entity-cid (cdr img)) "\""))))
   images)
 
 (defun shimbun-make-mime-article (shimbun header)
