@@ -1,3 +1,7 @@
+2003-07-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-decoder-alist): Simplified.
+
 2003-07-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-decoder-alist): Look for the newest inflate command.
