@@ -1188,6 +1188,16 @@ recommended a bit that setting both this option and the option
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-obey-w3m-pop-up-frames t
+  "Non-nil means popup a new frame when a command which calls `w3m' (e.g.
+`w3m-search') is performed and `w3m-pop-up-frames' is non-nil and
+there is no emacs-w3m frame in the screen.  It is just for backward
+conpatibility.  Set it to nil if you prefer the old behavior that the
+`w3m-search' command doesn't popup a frame even if `w3m-pop-up-frames'
+is non-nil."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-view-this-url-new-session-in-background nil
   "Execute `w3m-view-this-url' without switching to the newly created buffer."
   :group 'w3m
@@ -1618,7 +1628,9 @@ This variable will be made buffer-local under Emacs 21 or XEmacs.")
   "Favicon image of the page.
 This variable will be made buffer-local under Emacs 21 or XEmacs.")
 
-(defvar w3m-initial-frame nil "Initial frame of this session.")
+(defvar w3m-initial-frame nil
+  "Variable used to keep the frame-id when the emacs-w3m window is popped
+up as a new frame.")
 (make-variable-buffer-local 'w3m-initial-frame)
 
 (defvar w3m-current-process nil "Current retrieving process of this buffer.")
@@ -5259,63 +5271,67 @@ Return t if current line has a same anchor sequence."
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
-(defun w3m-copy-buffer (&optional buf newname and-pop empty)
-  "Create a copy of the buffer BUF which defaults to the current buffer.
-If NEWNAME is nil, it defaults to the current buffer's name.
-If AND-POP is non-nil, the new buffer is shown with `pop-to-buffer',
-that is affected by `w3m-pop-up-frames'.
-If EMPTY is non-nil, the created buffer has empty content."
+(defun w3m-copy-buffer (&optional buffer newname and-pop empty)
+  "Create a copy of the BUFFER in which emacs-w3m is working.
+If BUFFER is nil, the current buffer is assumed.  If NEWNAME is nil,
+it defaults to the current buffer's name.  If AND-POP is non-nil, the
+new buffer is shows itself with `pop-to-buffer' which is affected by
+`w3m-pop-up-frames'.  If EMPTY is non-nil, an empty buffer is created."
   (interactive (list (current-buffer)
 		     (if current-prefix-arg (read-string "Name: "))
 		     t))
   (when (and w3m-pop-up-windows
 	     (not (string= (buffer-name) w3m-select-buffer-name))
 	     (get-buffer-window w3m-select-buffer-name))
-    ;; w3m-select-buffer too thin
+    ;; Delete the too thin selection window.
     (delete-windows-on (get-buffer w3m-select-buffer-name)))
-  (unless buf
-    (setq buf (current-buffer)))
+  (unless buffer
+    (setq buffer (current-buffer)))
   (unless newname
-    (setq newname (buffer-name buf)))
+    (setq newname (buffer-name buffer)))
   (when (string-match "<[0-9]+>\\'" newname)
     (setq newname (substring newname 0 (match-beginning 0))))
-  (with-current-buffer buf
-    (let ((url (or w3m-current-url
-		   (car (w3m-history-element (cadar w3m-history)))))
-	  (images w3m-display-inline-images)
-	  (new (generate-new-buffer newname)))
-      (with-current-buffer new
-	(w3m-mode)
-	(if w3m-toggle-inline-images-permanently
-	    (setq w3m-display-inline-images images)
-	  (setq w3m-display-inline-images w3m-default-display-inline-images))
-	;; Make copies of `w3m-history' and `w3m-history-flat'.
-	(w3m-history-copy buf)
-	(unless empty
-	  (w3m-process-with-wait-handler
-	    (let ((positions (copy-sequence (car w3m-history)))
-		  (w3m-history-reuse-history-elements t))
-	      ;; There is actually no need to specify the history element
-	      ;; to the `w3m-goto-url' function since the `w3m-history-copy'
-	      ;; function currently does not copy properties of history
-	      ;; elements.  It is just a preparation for the future.
-	      (w3m-goto-url url nil nil nil nil handler
-			    (w3m-history-element (cadr positions) t))
-	      (setcar w3m-history positions))))
-	(when empty
-	  (w3m-clear-local-variables))
-	(when and-pop
-	  (let* ((pop-up-windows w3m-pop-up-windows)
-		 (pop-up-frames w3m-pop-up-frames)
-		 (pop-up-frame-alist (w3m-pop-up-frame-parameters))
-		 (pop-up-frame-plist pop-up-frame-alist)
-		 (oframe (selected-frame)))
-	    (if pop-up-windows
-		(pop-to-buffer new)
-	      (switch-to-buffer new))
-	    (unless (eq oframe (selected-frame))
-	      (setq w3m-initial-frame (selected-frame)))))
-	new))))
+  (let (url images init-frame new)
+    (with-current-buffer buffer
+      (setq url (or w3m-current-url
+		    (car (w3m-history-element (cadar w3m-history))))
+	    images w3m-display-inline-images
+	    init-frame w3m-initial-frame))
+    (with-current-buffer (setq new (generate-new-buffer newname))
+      (w3m-mode)
+      (if w3m-toggle-inline-images-permanently
+	  (setq w3m-display-inline-images images)
+	(setq w3m-display-inline-images w3m-default-display-inline-images))
+      ;; Make copies of `w3m-history' and `w3m-history-flat'.
+      (w3m-history-copy buffer)
+      (if empty
+	  (w3m-clear-local-variables)
+	(w3m-process-with-wait-handler
+	  (let ((positions (copy-sequence (car w3m-history)))
+		(w3m-history-reuse-history-elements t))
+	    ;; We actually don't need to pass the history element to
+	    ;; `w3m-goto-url' since `w3m-history-copy' currently doesn't
+	    ;; copy properties of the history elements.  It is just a
+	    ;; preparation for the future.
+	    (w3m-goto-url url nil nil nil nil handler
+			  (w3m-history-element (cadr positions) t))
+	    (setcar w3m-history positions))))
+      (when and-pop
+	(let* ((pop-up-windows w3m-pop-up-windows)
+	       (pop-up-frames w3m-pop-up-frames)
+	       (pop-up-frame-alist (w3m-pop-up-frame-parameters))
+	       (pop-up-frame-plist pop-up-frame-alist)
+	       (window (get-buffer-window buffer t))
+	       (oframe (when window
+			 (window-frame window))))
+	  (if pop-up-windows
+	      (pop-to-buffer new)
+	    (switch-to-buffer new))
+	  (setq w3m-initial-frame
+		(if (eq oframe (selected-frame))
+		    init-frame
+		  (selected-frame)))))
+      new)))
 
 (defun w3m-next-buffer (arg)
   "Select the ARG'th different w3m buffer."
@@ -5615,26 +5631,18 @@ The optional argument BUFFER will be used exclusively by the command
     nil))
 
 (defun w3m-delete-frame-maybe ()
-  "Delete this frame if it has popped up as w3m frame in the beginning.
-Even so, if there are other windows in the frame or there are no other
-visible frames, it won't delete the frame.  Return t if deleting the
-frame or a window in the frame is succeeded."
+  "Delete the current frame if it was created for the emacs-w3m session.
+Exceptionally, deleting of the frame will not be done if it is the
+sole frame in the screen or there are other windows in the frame.
+Return t when deleting of the current frame or the current window is
+successful."
   (let ((frame (selected-frame))
 	(window (selected-window)))
     (cond ((eq w3m-initial-frame frame)
 	   (if (eq (next-window) window)
-	       (if (w3m-static-if (featurep 'xemacs)
-		       (filtered-frame-list
-			(lambda (f)
-			  (not (or (eq f frame)
-				   (frame-iconified-p f)))))
-		     (filtered-frame-list
-		      (lambda (f)
-			(unless (eq f frame)
-			  (member '(visibility . t) (frame-parameters f))))))
-		   (progn
-		     (delete-frame frame)
-		     t))
+	       (unless (eq (next-frame frame) frame)
+		 (delete-frame frame)
+		 t)
 	     (delete-window window)
 	     t))
 	  ((and (frame-live-p w3m-initial-frame)
@@ -6693,10 +6701,8 @@ Optional NEW-SESSION is intended to be used by the command
 	    (if current-prefix-arg
 		default
 	      (w3m-input-url nil nil default w3m-quick-start))))
-      ;; new-session
-      nil
-      ;; interactive-p
-      (not url))))
+      nil ;; new-session
+      (not url)))) ;; interactive-p
   (let ((nofetch (eq url 'popup))
 	(buffer (unless new-session
 		  (w3m-alive-p)))
@@ -6714,7 +6720,7 @@ Optional NEW-SESSION is intended to be used by the command
 		 (> (length url) 0))
       (if buffer
 	  (setq nofetch t)
-	;; It may be called non-interactively.
+	;; This command may be called non-interactively.
 	(setq url (w3m-examine-command-line-args)
 	      nofetch nil)))
     (if (bufferp buffer)

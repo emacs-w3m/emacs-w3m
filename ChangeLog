@@ -1,5 +1,14 @@
 2003-10-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-obey-w3m-pop-up-frames): New variable.
+	(w3m-copy-buffer): Inherit the value of `w3m-initial-frame' into
+	the new buffer if a new frame is not created for the new buffer.
+	(w3m-delete-frame-maybe): Simplify it in the different way.
+
+	* w3m-search.el (w3m-search): Specify the 3rd arg of `w3m'.
+
+2003-10-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el: Revive `w3m-initial-frame' throughout.
 	(w3m-delete-frame-maybe): Revert 2003-10-20 change.
 
