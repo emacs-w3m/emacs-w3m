@@ -1,3 +1,7 @@
+2005-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-bbdb-ml.el (shimbun-bbdb-ml-url): Update.
+
 2005-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yahoo.el (shimbun-get-headers): Leave garbages around

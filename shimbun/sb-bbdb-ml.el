@@ -1,7 +1,7 @@
 ;;; sb-bbdb-ml.el --- shimbun backend for bbdb-ml
 
-;; Copyright (C) 2001 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
-;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2005 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001, 2005 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Akihiro Arisawa   <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi <teranisi@gohome.org>
@@ -36,7 +36,7 @@
 
 (luna-define-class shimbun-bbdb-ml (shimbun-fml) ())
 
-(defvar shimbun-bbdb-ml-url "http://www.rc.tutrp.tut.ac.jp/bbdb-ml/")
+(defvar shimbun-bbdb-ml-url "http://heimat.jp/~nakaji/bbdb/")
 (defvar shimbun-bbdb-ml-groups '("bbdb-ml"))
 
 (provide 'sb-bbdb-ml)
