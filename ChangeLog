@@ -1,3 +1,8 @@
+2002-03-09  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-accept-post-header-option): Use "-help" option
+	instead of "-version" option.
+
 2002-03-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-w3m-cid-retrieve): Return lowercase string

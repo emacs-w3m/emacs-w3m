@@ -2744,7 +2744,7 @@ to nil."
 (defvar w3m-accept-post-header-option
   (or (eq w3m-type 'w3m)
       (with-temp-buffer
-	(call-process w3m-command nil t nil "-version")
+	(call-process w3m-command nil t nil "-help")
 	(and (progn
 	       (goto-char (point-min))
 	       (search-forward " -post " nil t))
