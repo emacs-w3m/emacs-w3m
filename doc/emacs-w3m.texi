@@ -4896,23 +4896,8 @@ example to add two boards, @samp{foo} and @samp{bar}, to the list:
 (eval-after-load "sb-tcup"
   '(setq shimbun-tcup-group-alist
          (append
-          '(("foo" "http://MMMM.teacup.com/foo/bbs")
-            ("bar" "http://NNNN.teacup.com/bar/bbs"))
-          shimbun-tcup-group-alist)))
-@end lisp
-
-The clock has been advancing for nine hours in some boards.  In that
-case, set the time-lag parameter to 32400 for such a board.  Here is an
-example of the case where it is necessary to adjust the time in the
-@samp{foo} board:
-
-@lisp
-(eval-after-load "sb-tcup"
-  '(setq shimbun-tcup-group-alist
-         (append
-          '(("foo" "http://MMMM.teacup.com/foo/bbs"
-             nil nil nil nil nil 32400)
-            ("bar" "http://NNNN.teacup.com/bar/bbs"))
+          '(("foo" "http://MMMM.teacup.com/foo/bbs2")
+            ("bar" "http://NNNN.teacup.com/bar/bbs2"))
           shimbun-tcup-group-alist)))
 @end lisp
 

@@ -4954,22 +4954,8 @@ Tea Cup Communication によって提供される、様々な掲示板を講読することがで
 (eval-after-load "sb-tcup"
   '(setq shimbun-tcup-group-alist
          (append
-          '(("foo" "http://MMMM.teacup.com/foo/bbs")
-            ("bar" "http://NNNN.teacup.com/bar/bbs"))
-          shimbun-tcup-group-alist)))
-@end lisp
-
-いくつかの掲示板では時計が 9時間進んでいます。その場合、そのような掲示板
-のために 時刻ずれ パラメータを 32400 に設定して下さい。@samp{foo} 掲示板
-が時刻を調整するのが必要である場合の例です。
-
-@lisp
-(eval-after-load "sb-tcup"
-  '(setq shimbun-tcup-group-alist
-         (append
-          '(("foo" "http://MMMM.teacup.com/foo/bbs"
-             nil nil nil nil nil 32400)
-            ("bar" "http://NNNN.teacup.com/bar/bbs"))
+          '(("foo" "http://MMMM.teacup.com/foo/bbs2")
+            ("bar" "http://NNNN.teacup.com/bar/bbs2"))
           shimbun-tcup-group-alist)))
 @end lisp
 

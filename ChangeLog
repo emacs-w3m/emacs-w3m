@@ -1,3 +1,10 @@
+2005-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-tcup.el (shimbun-tcup-group-alist): Remove the
+	time-lag parameter.
+	(shimbun-get-headers): Adjust date for articles posted up in the
+	level-one boards in which the clock has been advanced for 9 hours.
+
 2005-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el: Add early-package-load-path to load-path for XEmacs
