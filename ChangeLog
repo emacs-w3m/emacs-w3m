@@ -1,3 +1,17 @@
+2003-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-checking-new-news-format): New
+	variable.
+	(shimbun-verbose): New variable.
+	(shimbun-message-enable-logging): New variable.
+	(shimbun-headers): Say "Checking new news..." message.
+	(shimbun-article): Replace `message' with `shimbun-message'.
+	(shimbun-replace-in-string): Move from sb-rss.el.
+	(shimbun-message): New function.
+
+	* shimbun/sb-rss.el (shimbun-replace-in-string): Move to
+	shimbun.el.
+
 2003-11-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-minor-mode): Run hooks only when this minor mode is
