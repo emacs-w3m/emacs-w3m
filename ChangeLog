@@ -1,3 +1,7 @@
+2001-04-04  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-namazu.el, shimbun/sb-emacs-w3m.el: New files.
+
 2001-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/shimbun.el (shimbun-mua-use-entire-index): New method.
