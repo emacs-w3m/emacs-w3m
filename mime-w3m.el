@@ -101,6 +101,9 @@
 	   ))
     (cons 'progn body)))
 
+(defmacro mime-w3m-keymap-property ()
+  (if (featurep 'xemacs) '(quote keymap) '(quote local-map)))
+
 ;;;###autoload
 (defun mime-w3m-preview-text/html (entity situation)
   (mime-w3m-setup)
@@ -127,9 +130,7 @@
 			      xref)))
 	 (error (message (format "%s" err))))
        (put-text-property p (point-max)
-			  (w3m-static-if (featurep 'xemacs)
-			      'keymap
-			    'local-map)
+			  (mime-w3m-keymap-property)
 			  mime-w3m-mode-map)))))
 
 ;; To avoid byte-compile warning in `mime-w3m-cid-retrieve'.
@@ -167,9 +168,7 @@ Protect `kill-ring-save' against the `local-map' text property."
     (and (eq this-command 'kill-ring-save)
 	 (eq major-mode 'mime-view-mode)
 	 (put-text-property 0 (length (car kill-ring))
-			    (w3m-static-if (featurep 'xemacs)
-				'keymap 'local-map)
-			    nil
+			    (mime-w3m-keymap-property) nil
 			    (car kill-ring)))))
 
 (mime-w3m-insinuate)
