@@ -1,5 +1,13 @@
 2003-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-goto-url-new-session): Find an existing emacs-w3m
+	buffer and then make a copy of it; use `w3m-goto-url' instead of
+	`w3m' if there is no emacs-w3m buffer.
+	(w3m-browse-url): Revert last change; rename the optional arg to
+	`new-session'; call `w3m-goto-url-new-session' or `w3m-goto-url'.
+
+2003-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-antenna.el (w3m-antenna): Don't pass the interactive flag to
 	`w3m-goto-url'.
 	* w3m-bookmark.el (w3m-bookmark-view): Ditto.

@@ -4873,12 +4873,12 @@ described in Section 5.2 of RFC 2396.")
 	      (w3m-refontify-anchor))))))))
 
 (defun w3m-view-this-url (&optional arg new-session)
-  "View the URL of the link under point.  If ARG is the number 2 or the
-list of the number 16 (you may produce this by typing `C-u' twice) or
-NEW-SESSION is non-nil, and the link is an anchor, make a copy of the
-current session in advance.  Otherwise, if ARG is non-nil, force
-reload the url at point.  If the option `w3m-pop-up-frames' is non-nil,
-also make a new frame for the copied session."
+  "View the URL of the link under point.
+If ARG is the number 2 or the list of the number 16 (you may produce
+this by typing `C-u' twice) or NEW-SESSION is non-nil and the link is
+an anchor, this function makes a copy of the current session in
+advance.  Otherwise, if ARG is non-nil, it forces to reload the url at
+point."
   (interactive (if (member current-prefix-arg '(2 (16)))
 		   (list nil t)
 		 (list current-prefix-arg nil)))
@@ -6748,20 +6748,26 @@ the current session.  Otherwise, the new session will start afresh."
 	coding-system-for-read)
     nil ;; post-data
     nil)) ;; referer
-  (if (eq 'w3m-mode major-mode)
-      (let ((buffer (w3m-copy-buffer nil nil nil 'empty)))
-	(switch-to-buffer buffer)
-	(w3m-display-progress-message url)
-	;; When new URL has `name' portion, we have to goto the base url
-	;; because generated buffer has no content at this moment.
-	(when (and (string-match w3m-url-components-regexp url)
-		   (match-beginning 8))
-	  (w3m-goto-url (substring url 0 (match-beginning 8))
-			reload charset post-data referer))
-	(w3m-goto-url url reload charset post-data referer)
-	;; Delete useless newly created buffer if it is empty.
-	(w3m-delete-buffer-if-empty buffer))
-    (w3m url t)))
+  (let (buffer)
+    (if (or (eq 'w3m-mode major-mode)
+	    (and (setq buffer (w3m-alive-p))
+		 (progn
+		   (w3m-popup-buffer buffer)
+		   t)))
+	(progn
+	  (switch-to-buffer (setq buffer
+				  (w3m-copy-buffer nil nil nil 'empty)))
+	  (w3m-display-progress-message url)
+	  ;; When new URL has `name' portion, we have to goto the base url
+	  ;; because generated buffer has no content at this moment.
+	  (when (and (string-match w3m-url-components-regexp url)
+		     (match-beginning 8))
+	    (w3m-goto-url (substring url 0 (match-beginning 8))
+			  reload charset post-data referer))
+	  (w3m-goto-url url reload charset post-data referer)
+	  ;; Delete useless newly created buffer if it is empty.
+	  (w3m-delete-buffer-if-empty buffer))
+      (w3m-goto-url url))))
 
 (defun w3m-move-point-for-localcgi (url)
   (when (and (w3m-url-local-p url)
@@ -6962,30 +6968,17 @@ The optional NEW-SESSION and INTERACTIVE-P are for the internal use."
   (autoload 'browse-url-interactive-arg "browse-url"))
 
 ;;;###autoload
-(defun w3m-browse-url (url &optional new-window)
+(defun w3m-browse-url (url &optional new-session)
   "Ask the emacs-w3m WWW browser to load URL.
-Default to the URL around or before point.  Note that the feature of
-popping up a window or a frame is degenerated in order to emulate
-`browse-url-w3' or `browse-url-w3m' (XEmacs)."
+Default to the URL around or before point.  A new emacs-w3m session is
+created if the optional NEW-SESSION is non-nil or this command is
+called interactively with no prefix argument.  Pop up a window a frame
+according to `w3m-pop-up-windows' and `w3m-pop-up-frames'."
   (interactive (browse-url-interactive-arg "Emacs-w3m URL: "))
   (when (stringp url)
-    (let (w3m-pop-up-frames w3m-pop-up-windows buffer)
-      (when (if (fboundp 'browse-url-maybe-new-window)
-		;; The following `if' form is an expansion of
-		;; the `browse-url-maybe-new-window' macro.
-		(if (interactive-p)
-		    (symbol-value 'browse-url-new-window-flag)
-		  new-window)
-	      new-window)
-	(split-window)
-	(other-window 1))
-      (unless (and (setq buffer (w3m-alive-p))
-		   (progn
-		     (switch-to-buffer buffer)
-		     (when (equal url w3m-current-url)
-		       (w3m-reload-this-page t)
-		       t)))
-	(w3m-goto-url-new-session url)))))
+    (if new-session
+	(w3m-goto-url-new-session url)
+      (w3m-goto-url url))))
 
 ;;;###autoload
 (defun w3m-find-file (file)
