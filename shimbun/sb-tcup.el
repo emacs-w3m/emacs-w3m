@@ -34,7 +34,8 @@
   (luna-define-internal-accessors 'shimbun-tcup))
 
 (defconst shimbun-tcup-group-alist
-  '(("yutopia" "http://www66.tcup.com/6629/yutopia.html")))
+  '(("yutopia" "http://www66.tcup.com/6629/yutopia.html")
+    ("chocard" "http://www81.tcup.com/8108/29811031.html")))
 
 (defvar shimbun-tcup-url "http://www.tcup.com/")
 (defvar shimbun-tcup-groups (mapcar 'car shimbun-tcup-group-alist))
