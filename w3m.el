@@ -6951,6 +6951,8 @@ FROM-COMMAND is defined to `w3m-minor-mode-map' for same keys in
 
 (defvar w3m-minor-mode nil "Non-nil if w3m minor mode is enabled.")
 (make-variable-buffer-local 'w3m-minor-mode)
+(add-to-list 'minor-mode-alist '(w3m-minor-mode " w3m"))
+(add-to-list 'minor-mode-map-alist (cons 'w3m-minor-mode w3m-minor-mode-map))
 
 (defun w3m-minor-mode (&optional arg)
   "Minor mode to view HTML part in articles."
