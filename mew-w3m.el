@@ -71,25 +71,35 @@ This variable effected only XEmacs or Emacs 21.")
 				mew-use-w3m-minor-mode)))
 
 ;; processing Text/Html contents with w3m.
-(defun mew-mime-text/html-w3m (cache begin end &optional params execute)
+(defun mew-mime-text/html-w3m (&rest args)
   "View Text/Html contents with w3m rendering output."
-  (if (or execute
-	  (<= end begin))
-      (mew-mime-text/html cache begin end params execute)
-    (mew-elet
-     (let ((file (format "%s.html" (mew-make-temp-name)))
-	   (w3m-display-inline-image mew-w3m-auto-insert-image)
-	   w3m-force-redisplay	;; don't redraw
-	   charset wcs)
+  (let ((w3m-display-inline-image mew-w3m-auto-insert-image)
+	w3m-force-redisplay	;; don't redraw
+	charset wcs
+	cache begin end params execute)
+    (if (= (length args) 2)
+	;; Mew 1.95b120 or later
+	(setq begin (nth 0 args) end (nth 1 args))
+      (setq cache (nth 0 args))
+      (setq begin (nth 1 args))
+      (setq end (nth 2 args))
+      (setq params (nth 3 args))
+      (setq execute (nth 4 args)))
+    (if (or execute (<= end begin))
+	(mew-mime-text/html cache begin end params execute)
+      (mew-elet
        (setq charset (mew-syntax-get-param params "charset"))
-       (if charset 
+       (if charset
 	   (setq wcs (mew-charset-to-cs charset))
 	 (setq wcs mew-cs-text-for-write))
        (mew-frwlet
 	mew-cs-dummy wcs
-	(w3m-region (point)
-		    (progn (insert-buffer-substring cache begin end) 
-			   (point)))
+	(if cache
+	    (w3m-region (point)
+			(progn (insert-buffer-substring cache begin end) 
+			       (point)))
+	  ;; Mew 1.95b120 or later
+	  (w3m-region begin end))
 	(put-text-property (point-min) (1+ (point-min)) 'w3m t))))))
 
 (defvar w3m-mew-support-cid (fboundp 'mew-syntax-get-entry-by-cid))

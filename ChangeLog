@@ -1,3 +1,7 @@
+2001-04-24  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-mime-text/html-w3m): Support Mew 1.95b120 or later.
+
 2001-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-quit): Clear the echo area just after prompting.
