@@ -1,3 +1,7 @@
+2001-05-07  Masatake YAMATO  <jet@gyve.org>
+
+	* w3m-xmas.el (w3m-setup-menu): Implemented.
+
 2001-05-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Up to 1.0pre1.
