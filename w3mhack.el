@@ -261,8 +261,8 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	(delete elts list))
     list))
 
-(defun w3mhack-examine-modules ()
-  "Examine w3m modules should be byte-compile'd."
+(defun w3mhack-module-list ()
+  "Returna a list of w3m modules should be byte-compile'd."
   (let* ((modules (directory-files default-directory nil "^[^#]+\\.el$"))
 	 (version-specific-modules '("w3m-e19.el" "w3m-e20.el" "w3m-e21.el"
 				     "w3m-e22.el"
@@ -341,19 +341,26 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
     ;; List shimbun modules which cannot be byte-compiled with this system.
     (unless (locate-library "xml")
       (setq ignores (nconc ignores (w3mhack-shimbun-modules-using-rss))))
-    ;; To byte-compile w3m-util.el and a version specific module first.
-    (princ "w3m-util.elc ")
-    (setq modules (delete "w3m-util.el" modules))
-    (princ "w3m-proc.elc ")
-    (setq modules (delete "w3m-proc.el" modules))
-    (dolist (module version-specific-modules)
-      (when (and (not (member module ignores))
-		 (member module modules))
-	(setq modules (delete module modules))
-	(princ (format "%sc " module))))
-    (dolist (module modules)
-      (unless (member module ignores)
-	(princ (format "%sc " module))))))
+    (let (list)
+      ;; To byte-compile w3m-util.el and a version specific module first.
+      (push "w3m-util.el" list)
+      (setq modules (delete "w3m-util.el" modules))
+      (push "w3m-proc.el" list)
+      (setq modules (delete "w3m-proc.el" modules))
+      (dolist (module version-specific-modules)
+	(when (and (not (member module ignores))
+		   (member module modules))
+	  (setq modules (delete module modules))
+	  (push module list)))
+      (dolist (module modules)
+	(unless (member module ignores)
+	  (push module list)))
+      (nreverse list))))
+
+(defun w3mhack-examine-modules ()
+  "Examine w3m modules should be byte-compile'd."
+  (dolist (module (w3mhack-module-list))
+    (princ (format "%sc " module))))
 
 (defun w3mhack-shimbun-modules-using-rss ()
   "Return a list of shimbun modules using RSS."
@@ -392,23 +399,14 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
   (w3mhack-check-colon-keywords-file)
   (w3mhack-generate-load-file)
   (let (modules)
-    (let* ((buffer (generate-new-buffer " *modules*"))
-	   (standard-output buffer)
-	   elc el)
-      (w3mhack-examine-modules)
-      (save-excursion
-	(set-buffer buffer)
-	(goto-char (point-min))
-	(while (re-search-forward "\\([^ ]+\\.el\\)c" nil t)
-	  (setq elc (buffer-substring (match-beginning 0) (match-end 0))
-		el (buffer-substring (match-beginning 1) (match-end 1)))
-	  (if (file-exists-p elc)
-	      (if (file-newer-than-file-p elc el)
-		  (message " `%s' is up to date" elc)
-		(delete-file elc)
-		(setq modules (cons el modules)))
-	    (setq modules (cons el modules)))))
-      (kill-buffer buffer))
+    (dolist (el (w3mhack-module-list))
+      (let ((elc (concat el "c")))
+	(if (file-exists-p elc)
+	    (if (file-newer-than-file-p elc el)
+		(message " `%s' is up to date" elc)
+	      (delete-file elc)
+	      (push el modules))
+	  (push el modules))))
     (setq modules (nreverse modules))
     (while modules
       (condition-case nil
@@ -1114,25 +1112,14 @@ NOTE: This function must be called from the top directory."
 
 (defun w3mhack-generate-load-file ()
   "Generate a file including all autoload stubs."
-  (interactive)
   (require 'autoload)
-  (let (files)
-    (let* ((buffer (generate-new-buffer " *modules*"))
-	   (standard-output buffer))
-      (w3mhack-examine-modules)
-      (save-excursion
-	(set-buffer buffer)
-	(goto-char (point-min))
-	(while (re-search-forward "\\([^ ]+\\.el\\)c" nil t)
-	  (setq files
-		(cons (expand-file-name
-		       (buffer-substring (match-beginning 1) (match-end 1)))
-		      files)))))
-    (when (or (not (file-exists-p w3mhack-load-file))
-	      (catch 'modified
-		(dolist (file files)
-		  (when (file-newer-than-file-p file w3mhack-load-file)
-		    (throw 'modified t)))))
+  (let ((files (w3mhack-module-list)))
+    (if (and (file-exists-p w3mhack-load-file)
+	     (not (catch 'modified
+		    (dolist (file files)
+		      (when (file-newer-than-file-p file w3mhack-load-file)
+			(throw 'modified t))))))
+	(message " `%s' is up to date" w3mhack-load-file)
       (let ((generated-autoload-file (expand-file-name w3mhack-load-file))
 	    (make-backup-files nil)
 	    (autoload-package-name "emacs-w3m"))

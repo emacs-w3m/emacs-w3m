@@ -1,3 +1,12 @@
+2004-04-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-zdnet.el: Removed.
+
+	* w3mhack.el (w3mhack-module-list): New function.
+	(w3mhack-examine-modules): Use the above.
+	(w3mhack-compile, w3mhack-generate-load-file): Use
+	`w3mhack-module-list' instead of `w3mhack-examine-modules'.
+
 2004-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-treat-image-size): Default to t.
