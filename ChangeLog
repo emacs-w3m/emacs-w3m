@@ -1,4 +1,4 @@
-2003-03-26  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+2003-03-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna-check-all-sites): Call `make-symbol'
 	instead of `gensym', in order to make this function free from
