@@ -1,5 +1,7 @@
 2002-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* texinfo.tex: Replaced with the latest version.
+
 	* Makefile.in, .cvsignore: New file.
 
 	* emacs-w3m.texi, emacs-w3m-ja.texi: Correct copyright holder.
