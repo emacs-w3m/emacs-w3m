@@ -133,7 +133,7 @@
 	(when (or (bufferp w3m-current-buffer)
 		  (stringp w3m-current-buffer))
 	  (set-buffer w3m-current-buffer))
-	(setq w3m-current-forms w3m-current-buffer)))))
+	(setq w3m-current-forms (nreverse forms))))))
 
 ;;;###autoload
 (defun w3m-fontify-forms ()
