@@ -1,3 +1,7 @@
+2002-05-31  Mito <mito@mxa.nes.nec.co.jp>
+
+	* w3m-weather.el (w3m-weather-completion-table): Fix "niigata-kaetsu".
+
 2002-05-30  Kenichi SATO <ksato@iijmio-mail.jp>
 
 	* sb-sponichi.el (shimbun-sponichi-groups): Add golf and battle.

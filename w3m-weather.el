@@ -104,7 +104,7 @@
 	       "toukyoutoizushotounanbu" "izushotounanbu")
 	      ("14/4610" "神奈川県・東部" "kanagawakentoubu")
 	      ("14/4620" "神奈川県・西部" "kanagawakenseibu")
-	      ("15/5410" "新潟県・下越" "niigatakenshimoetsu" "shimoetsu")
+	      ("15/5410" "新潟県・下越" "niigatakenkaetsu" "kaetsu")
 	      ("15/5420" "新潟県・中越" "niigatakenchuuetsu" "chuuetsu")
 	      ("15/5430" "新潟県・上越" "niigatakenjouetsu" "jouetsu")
 	      ("15/5440" "新潟県・佐渡" "niigatakensado" "sado")
