@@ -1,5 +1,11 @@
 2004-04-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-cgi-board.el (shimbun-clear-contents): Removed.
+	(shimbun-make-contents): New method, which is a successor of the
+	above method, but returns nil when missing a target article.
+
+	* Makefile.in (tarball): Remove w3m-kwds.el and w3m-load.el.
+
 	* configure.in, aclocal.m4: Add `--with-xml' option.
 
 	* shimbun/sb-zdnet.el: Removed.
