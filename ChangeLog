@@ -1,3 +1,15 @@
+2001-04-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-info-like-map): Use `(shift iso-lefttab)' instead of
+	`S-iso-lefttab'.
+	(w3m-lynx-like-map): Ditto.
+
+	* w3mhack.el (w3mhack-make-package): Added shimbun modules in
+	MANIFEST.w3m file.
+	(w3mhack-examine-modules): Return shimbun modules as well.
+	* Makefile.in (install): Install shimbun modules as well.
+	(install-icons): Show subdirectory name.
+
 2001-04-09  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/shimbun.el (shimbun): Removed `headers' slot.

@@ -29,9 +29,22 @@ install: default
 	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
 	done;\
 	for p in *.elc; do\
-	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
-	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
-	done
+	  if test -f "$$p"; then\
+	    echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
+	    $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	  fi;\
+	done;\
+	cd shimbun;\
+	if test -f shimbun.elc; then\
+	  for p in *.el; do\
+	    echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p";\
+	    $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	  done;\
+	  for p in *.elc; do\
+	    echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p";\
+	    $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	  done;\
+	fi
 
 install-icons:
 	@if test $(ICONDIR) = NONE; then\
@@ -40,7 +53,7 @@ install-icons:
 	  $(SHELL) ./mkinstalldirs $(ICONDIR);\
 	  cd icons;\
 	  for i in *.xpm; do\
-	    echo " $(INSTALL_DATA) $$i $(ICONDIR)/$$i";\
+	    echo " $(INSTALL_DATA) icons/$$i $(ICONDIR)/$$i";\
 	    $(INSTALL_DATA) $$i $(ICONDIR)/$$i;\
 	  done;\
 	fi

@@ -52,37 +52,26 @@
 (defun w3mhack-examine-modules ()
   "Examine w3m modules should be byte-compile'd."
   (let ((modules (directory-files default-directory nil "^[^#]+\\.el$"))
-	(deletes (cond ((featurep 'xemacs)
-			'("w3m-e21.el" "w3m-om.el"))
-		       ((and (boundp 'emacs-major-version)
-			     (>= emacs-major-version 21))
-			'("w3m-om.el" "w3m-xmas.el"))
-		       ((and (boundp 'emacs-major-version)
-			     (= emacs-major-version 20))
-			'("w3m-e21.el" "w3m-om.el" "w3m-xmas.el"))
-		       ((boundp 'MULE)
-			'("w3m-e21.el" "w3m-xmas.el"))))
-	(mime (locate-library "mime")))
-    (push "w3mhack.el" deletes)
-    (unless (and mime
-		 ;; It is very unlikely that Umerin's mime exists.
-		 (string-match "/flim/$" (file-name-directory mime)))
-      (push "mime-w3m.el" deletes))
+	(ignores (delete (cond ((featurep 'xemacs)
+				"w3m-xmas.el")
+			       ((and (boundp 'emacs-major-version)
+				     (>= emacs-major-version 21))
+				"w3m-e21.el")
+			       ((boundp 'MULE)
+				"w3m-om.el"))
+			 (list "w3m-e21.el" "w3m-om.el" "w3m-xmas.el"
+			       "w3mhack.el")))
+	(shimbun-dir (file-name-as-directory shimbun-module-directory)))
     (unless (locate-library "mew")
-      (push "mew-w3m.el" deletes))
-    ;; shimbun modules
-    (when mime
-      (setq modules
-	    (nconc modules
-		   (mapcar
-		    (lambda (file)
-		      (concat shimbun-module-directory "/" file))
-		    (directory-files (expand-file-name
-				      shimbun-module-directory
-				      default-directory) nil
-				      "^[^#]+\\.el$")))))
+      (push "mew-w3m.el" ignores))
+    (if (locate-library "mime-def")
+	;; Add shimbun modules.
+	(dolist (file (directory-files (expand-file-name shimbun-dir)
+				       nil "^[^#]+\\.el$"))
+	  (setq modules (nconc modules (list (concat shimbun-dir file)))))
+      (push "mime-w3m.el" ignores))
     (dolist (module modules)
-      (unless (member module deletes)
+      (unless (member module ignores)
 	(princ (format "%sc " module))))))
 
 (require 'bytecomp)
@@ -187,11 +176,14 @@ to remove some obsolete variables in the first argument VARLIST."
 	   (custom-load (expand-file-name "custom-load.el" lisp-dir))
 	   (generated-autoload-file (expand-file-name "auto-autoloads.el"
 						      lisp-dir))
-	   (els (directory-files default-directory nil "^[^#]+\\.el$"))
+	   (els (nconc (directory-files default-directory nil "^[^#]+\\.el$")
+		       (directory-files (expand-file-name
+					 shimbun-module-directory)
+					nil "^[^#]+\\.el$")))
 	   (elcs (with-temp-buffer
 		   (let ((standard-output (current-buffer)))
 		     (w3mhack-examine-modules)
-		     (split-string (buffer-string)))))
+		     (split-string (buffer-string) " \\|shimbun/"))))
 	   (icons (directory-files (expand-file-name "icons/") nil
 				   "^[^#]+\\.xpm$"))
 	   (si:message (symbol-function 'message))
