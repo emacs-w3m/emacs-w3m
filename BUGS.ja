@@ -1,0 +1,37 @@
+$Date$
+
+■ TODO
+   --> form 対応
+   --> ソースコード中の FIXME を直す
+   --> エラーチェックが手抜きなのを直す
+   --> 処理の経過についてのメッセージを追加する
+
+
+■ 既知の問題
+   --> 動作が遅くなった?
+
+   --> 現実装では、backlog には halfdump 後のデータが格納されているが、
+       w3m-fill-column が変更される可能性を考慮するなら、halfdump 以前の
+       生データを格納しておくべきだ。
+   --> w3m-exec の返り値がおかしい。このままでは、text/plain なデータを 
+       w3m-fontify してしまう可能性がある。
+
+   --> w3m-fontify で &ouml; が処理されていない。
+       Ex) http://tanaka-www.cs.titech.ac.jp/~euske/doc/openssh/history.html
+
+   --> w3m-fontify で _id というタグが処理されていない
+       Ex) http://www.debian.or.jp/License.html
+
+   --> http://www.lib.i.kyoto-u.ac.jp/ のレンダリングが崩れる。どうも 
+       \200 という文字が悪さをしているようだが、どう処理すべきなのか、良
+       く分からない。
+
+   --> http://clotho.ku3g.org/negi.html が文字化けした。これは、本家 w3m 
+       でも化けたので、w3m.el で対処できる問題ではないのかも…。
+
+
+Local Variables:
+mode: indented-text
+coding: euc-japan-unix
+fill-column: 72
+End:

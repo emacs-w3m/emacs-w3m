@@ -1,3 +1,53 @@
+2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* Merge changes on `url' branch to main trunk.
+
+2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-home-page): Changed to official w3m.el page.
+	(w3m-anchor-face): Changed default face in dark backgraound.
+	(w3m-arrived-anchor-face): Ditto.
+	(w3m-download): Fix typo.
+	(w3m-content-type-alist): Accept .png file.
+	(w3m-external-view): Fix typo.
+	(w3m-view-image): Fix.
+
+2001-03-01  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* mew-w3m.el: New file to use w3m with Mew.
+
+2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* mime-w3m.el: New file to use w3m with SEMI.
+
+	* w3m.el (w3m-message): New function.
+	(w3m-verbose): New variable.
+	(w3m-process-message): Ditto.
+	(w3m-process-url): Removed.
+	(w3m-exec-process): Add code to show progress status.
+	(w3m-exec-filter): Fix prompt bug and clean up codes.
+	(w3m-retrieve): Changed arguments spec.
+	(w3m-local-retrieve): Ditto.
+	(w3m-http-retrieve): Ditto.
+	(w3m-pretty-length): New function.
+	(w3m-rendering-region): Add code to show progress status.
+
+2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-http-retrieve): Add adhoc fragment to avoid new-line
+	replacement.
+	(w3m-decode-buffer): Renamed from w3m-html-decode-buffer.
+
+2001-02-28  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-content-type-alist): Accept .htm as text/html.
+	(w3m-backlog-enter): Add code to memory w3m-current-title.
+	(w3m-backlog-request): Resume w3m-current-title from backlog data.
+	(w3m-html-decode-buffer): Change arguments spec.
+	(w3m-rendering-region): Removed code to set w3m-current-url.
+	(w3m-exec): Fix bug of proecessing text/plain files and changed
+	data format to preserve in backlog.
+
 2001-02-28  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* w3m.el: Support XEmacs using APEL.
@@ -10,6 +60,10 @@
 
 	* w3m.el (w3m-bookmark-add): Fix problem of adding bookmark first
 	time.
+
+2001-02-28  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Reconstructed drastically and removed w3 depended codes.
 
 2001-02-28  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
