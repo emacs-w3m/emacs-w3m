@@ -52,9 +52,11 @@
   (defvar w3m-current-process)
   (defvar w3m-current-url)
   (defvar w3m-display-inline-images)
+  (defvar w3m-favicon-image)
   (defvar w3m-form-use-fancy-faces)
   (defvar w3m-icon-directory)
   (defvar w3m-mode-map)
+  (defvar w3m-modeline-process-status-on)
   (defvar w3m-process-queue)
   (defvar w3m-toolbar)
   (defvar w3m-toolbar-buttons)
@@ -452,12 +454,25 @@ Buffer string between BEG and END are replaced with IMAGE."
   "*Face to fontify background of tab line."
   :group 'w3m-face)
 
+(defvar w3m-spinner-map-on-header-line nil
+  "Keymap used on the spinner in the header-line.")
+
+(defvar w3m-spinner-map-on-mode-line nil
+  "Keymap used on the spinner in the mode-line.")
+
+(defvar w3m-spinner-map-help-echo "mouse-2 kills the current process"
+  "String used for the :help-echo property on the spinner.")
+
 (defun w3m-setup-header-line ()
-  (setq header-line-format
-	(cond
-	 (w3m-use-tab
-	  (list '(:eval (w3m-tab-line))))
-	 (w3m-use-header-line
+  (cond
+   (w3m-use-tab
+    (unless w3m-spinner-map-on-header-line
+      (define-key (setq w3m-spinner-map-on-header-line (make-sparse-keymap))
+	[header-line mouse-2]
+	'w3m-process-stop))
+    (setq header-line-format '(:eval (w3m-tab-line))))
+   (w3m-use-header-line
+    (setq header-line-format
 	  (list
 	   (propertize
 	    "Location: "
@@ -492,20 +507,25 @@ Buffer string between BEG and END are replaced with IMAGE."
 	(select-window window)
 	(switch-to-buffer buffer)))))
 
-(defun w3m-tab-make-keymap (buffer)
-  (let ((map (make-sparse-keymap))
-	(drag-action `(lambda (e) (interactive "e")
-			(w3m-tab-drag-mouse-function
-			 e ,(buffer-name buffer))))
-	(up-action `(lambda (e) (interactive "e")
-		      (switch-to-buffer ,(buffer-name buffer)))))
-    (define-key map [header-line down-mouse-1] 'ignore)
-    (define-key map [header-line down-mouse-2] 'ignore)
-    (define-key map [header-line drag-mouse-1] drag-action)
-    (define-key map [header-line drag-mouse-2] drag-action)
-    (define-key map [header-line mouse-1] up-action)
-    (define-key map [header-line mouse-2] up-action)
-    map))
+(defvar w3m-tab-map nil)
+(make-variable-buffer-local 'w3m-tab-map)
+
+(defun w3m-tab-make-keymap ()
+  (unless w3m-tab-map
+    (prog1
+	(setq w3m-tab-map (make-sparse-keymap))
+      (let ((drag-action `(lambda (e)
+			    (interactive "e")
+			    (w3m-tab-drag-mouse-function e ,(buffer-name))))
+	    (up-action `(lambda (e)
+			  (interactive "e")
+			  (switch-to-buffer ,(buffer-name)))))
+	(define-key w3m-tab-map [header-line down-mouse-1] 'ignore)
+	(define-key w3m-tab-map [header-line down-mouse-2] 'ignore)
+	(define-key w3m-tab-map [header-line drag-mouse-1] drag-action)
+	(define-key w3m-tab-map [header-line drag-mouse-2] drag-action)
+	(define-key w3m-tab-map [header-line mouse-1] up-action)
+	(define-key w3m-tab-map [header-line mouse-2] up-action)))))
 
 (defvar w3m-tab-line-format nil
   "Internal variable used to keep contents to be shown in the header-line.")
@@ -525,7 +545,7 @@ cleared by a timer.")
 			(max (- (/ (window-width) (length buffers)) 5) 1)
 		      w3m-tab-width))
 	     (window (get-buffer-window current t))
-	     process icon title)
+	     process face keymap icon title)
 	(setq w3m-tab-line-timer
 	      (run-at-time 0.1 nil
 			   (lambda (window)
@@ -545,42 +565,51 @@ cleared by a timer.")
 	   (lambda (buffer)
 	     (set-buffer buffer)
 	     (setq process w3m-current-process
-		   icon (cond (process
-			       (w3m-make-spinner-image))
-			      (w3m-use-favicon
-			       w3m-favicon-image)))
+		   face (if process
+			    (if (eq buffer current)
+				'w3m-tab-selected-retrieving-face
+			      'w3m-tab-unselected-retrieving-face)
+			  (if (eq buffer current)
+			      'w3m-tab-selected-face
+			    'w3m-tab-unselected-face))
+		   keymap w3m-tab-map)
+	     (cond (process
+		    (when (setq icon (w3m-make-spinner-image))
+		      (setq icon
+			    (propertize
+			     "  "
+			     'display icon
+			     'mouse-face 'highlight
+			     'face face
+			     'local-map w3m-spinner-map-on-header-line
+			     'help-echo w3m-spinner-map-help-echo))))
+		   (w3m-use-favicon
+		    (setq icon (when w3m-favicon-image
+				 (propertize
+				  "  "
+				  'display w3m-favicon-image)))))
 	     (set-buffer current)
 	     (setq title (w3m-buffer-title buffer))
-	     (propertize
-	      (concat (if icon
-			  (propertize "  " 'display icon)
-			"  ")
-		      (if (and (> width 0)
-			       (> (string-width title) width))
-			  (if (> width 6)
-			      (concat
-			       (truncate-string-to-width
-				title
-				(max 0 (- width 3)))
-			       "...")
-			    (truncate-string-to-width title width))
-			(concat title
-				(make-string (max 0
-						  (-
-						   width
-						   (string-width title)))
-					     ?\ )))
-		      "  ")
-	      'mouse-face 'highlight
-	      'face (if process
-			(if (eq buffer current)
-			    'w3m-tab-selected-retrieving-face
-			  'w3m-tab-unselected-retrieving-face)
-		      (if (eq buffer current)
-			  'w3m-tab-selected-face
-			'w3m-tab-unselected-face))
-	      'local-map (w3m-tab-make-keymap buffer)
-	      'help-echo title))
+	     (concat
+	      icon
+	      (propertize
+	       (concat
+		(unless icon "  ")
+		(if (and (> width 0)
+			 (> (string-width title) width))
+		    (if (> width 6)
+			(concat (truncate-string-to-width title
+							  (max 0 (- width 3)))
+				"...")
+		      (truncate-string-to-width title width))
+		  (concat title
+			  (make-string (max 0 (- width (string-width title)))
+				       ?\ )))
+		"  ")
+	       'mouse-face 'highlight
+	       'face face
+	       'local-map keymap
+	       'help-echo title)))
 	   buffers
 	   (propertize " " 'face 'w3m-tab-background-face))
 	  (propertize (make-string (window-width) ?\ )
@@ -591,10 +620,18 @@ cleared by a timer.")
   (when w3m-use-tab
     (set-cursor-color (frame-parameter (selected-frame) 'cursor-color))))
 
+(add-hook 'w3m-mode-setup-functions 'w3m-tab-make-keymap)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-header-line)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-widget-faces)
 
-;; Spinner.
+;; Graphic icons.
+(defcustom w3m-space-before-modeline-icon ""
+  "String of space character(s) to be put in front of the mode-line icon.
+It may be better to use one or more spaces if you are using oblique or
+italic font in the modeline."
+  :group 'w3m
+  :type 'string)
+
 (defvar w3m-spinner-image-file nil
   "Image file used to show a spinner in the header-line.")
 
@@ -604,22 +641,85 @@ cleared by a timer.")
 (defvar w3m-spinner-image-index 0
   "Counter used to rotate spinner images.")
 
+;; Images to be displayed in the modeline.
+(defvar w3m-modeline-process-status-on-icon nil)
+(defvar w3m-modeline-image-status-on-icon nil)
+(defvar w3m-modeline-status-off-icon nil)
+(defvar w3m-modeline-ssl-image-status-on-icon nil)
+(defvar w3m-modeline-ssl-status-off-icon nil)
+
+(defun w3m-initialize-graphic-icons (&optional force)
+  "Make icon images which will be displayed in the mode-line."
+  (interactive "P")
+  (when (display-images-p)
+    (let ((defs '((w3m-modeline-status-off-icon
+		   "state-00.xpm"
+		   w3m-modeline-status-off)
+		  (w3m-modeline-image-status-on-icon
+		   "state-01.xpm"
+		   w3m-modeline-image-status-on)
+		  (w3m-modeline-ssl-status-off-icon
+		   "state-10.xpm"
+		   w3m-modeline-ssl-status-off)
+		  (w3m-modeline-ssl-image-status-on-icon
+		   "state-11.xpm"
+		   w3m-modeline-ssl-image-status-on)))
+	  def image file keymap status)
+      (when (image-type-available-p 'xpm)
+	(while defs
+	  (setq def (car defs)
+		defs (cdr defs)
+		image (car def))
+	  (when (and (or force (not (symbol-value image)))
+		     (file-exists-p
+		      (setq file (expand-file-name (nth 1 def)
+						   w3m-icon-directory))))
+	    (unless keymap
+	      (setq keymap (make-mode-line-mouse-map 'mouse-2
+						     'w3m-reload-this-page)))
+	    (set image (propertize
+			"  "
+			'display (create-image file 'xpm nil :ascent 'center)
+			'mouse-face 'highlight
+			'local-map keymap
+			'help-echo "mouse-2 reloads this page"))
+	    (put image 'risky-local-variable t)
+	    (put (setq status (nth 2 def)) 'risky-local-variable t)
+	    (set status (list "" 'w3m-space-before-modeline-icon image)))))
+      ;; Spinner
+      (unless w3m-spinner-image-file
+	(when (and (image-type-available-p 'gif)
+		   (file-exists-p
+		    (setq file (expand-file-name "spinner.gif"
+						 w3m-icon-directory))))
+	  (setq w3m-spinner-image-file file)
+	  (define-key (setq w3m-spinner-map-on-mode-line (make-sparse-keymap))
+	    [mode-line mouse-2]
+	    'w3m-process-stop)
+	  (setq w3m-modeline-process-status-on
+		'(""
+		  w3m-space-before-modeline-icon
+		  w3m-modeline-process-status-on-icon))
+	  (put 'w3m-modeline-process-status-on
+	       'risky-local-variable t)
+	  (put 'w3m-modeline-process-status-on-icon
+	       'risky-local-variable t))))))
+
 (defun w3m-make-spinner-image ()
   "Make an image used to show a spinner."
-  (unless w3m-spinner-image-file
-    (let ((spinner (expand-file-name "spinner.gif" w3m-icon-directory)))
-      (setq w3m-spinner-image-file
-	    (if (and (display-images-p)
-		     (image-type-available-p 'gif)
-		     (file-exists-p spinner))
-		spinner
-	      'none))))
-  (when (stringp w3m-spinner-image-file)
+  (when w3m-spinner-image-file
     (unless (< (incf w3m-spinner-image-index) w3m-spinner-image-frames)
       (setq w3m-spinner-image-index 0))
-    (create-image w3m-spinner-image-file 'gif nil
-		  :ascent 'center :mask 'heuristic
-		  :index w3m-spinner-image-index)))
+    (let ((image (create-image w3m-spinner-image-file 'gif nil
+			       :ascent 'center :mask 'heuristic
+			       :index w3m-spinner-image-index)))
+      (setq w3m-modeline-process-status-on-icon
+	    (propertize "  "
+			'display image
+			'mouse-face 'highlight
+			'local-map w3m-spinner-map-on-mode-line
+			'help-echo w3m-spinner-map-help-echo))
+      image)))
 
 (provide 'w3m-e21)
 

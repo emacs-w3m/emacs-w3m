@@ -38,6 +38,7 @@
 (eval-when-compile
   (defvar w3m-current-buffer)
   (defvar w3m-current-url)
+  (defvar w3m-favicon-image)
   (defvar w3m-icon-data)
   (defvar w3m-profile-directory)
   (defvar w3m-use-favicon)
@@ -69,9 +70,6 @@
 
 (defconst w3m-favicon-name "favicon.ico"
   "The favicon name.")
-
-(defvar w3m-favicon-image nil)
-(make-variable-buffer-local 'w3m-favicon-image)
 
 (add-hook 'w3m-display-functions 'w3m-favicon-setup)
 
@@ -119,6 +117,13 @@ If this variable is nil, never expired."
 			       (butlast types))
 		       `((const ,(car (last types))))))))
 
+(defcustom w3m-space-before-favicon " "
+  "String of space character(s) to be put in front of favicon in the
+mode-line.  It may be better to use two or more spaces if you are
+using oblique or italic font in the modeline."
+  :group 'w3m
+  :type 'string)
+
 (defvar w3m-favicon-type-alist '((pbm . ppm))
   "A list of a difference type of image between Emacs and ImageMagick.
  0. Type of Emacs
@@ -136,6 +141,13 @@ Each information is a list whose elements are:
 Where IMAGE highly depends on the Emacs version and is not saved in
 the cache file.")
 
+(w3m-static-if (featurep 'xemacs)
+    (set 'w3m-modeline-favicon
+	 '("" w3m-space-before-favicon w3m-favicon-image))
+  (put 'w3m-modeline-favicon 'risky-local-variable t))
+(make-variable-buffer-local 'w3m-modeline-favicon)
+(make-variable-buffer-local 'w3m-favicon-image)
+
 (defmacro w3m-favicon-cache-p (url)
   "Say whether the favicon data for URL has been chached."
   `(assoc ,url w3m-favicon-cache-data))
@@ -148,11 +160,21 @@ the cache file.")
   "Return the time when the favicon data for URL was retrieved."
   `(nth 2 (assoc ,url w3m-favicon-cache-data)))
 
+(defmacro w3m-favicon-set-image (image)
+  "Set IMAGE to `w3m-favicon-image' and `w3m-modeline-favicon'."
+  (if (featurep 'xemacs)
+      `(set 'w3m-favicon-image ,image)
+    `(when (setq w3m-favicon-image ,image)
+       (set 'w3m-modeline-favicon
+	    (list ""
+		  'w3m-space-before-favicon
+		  (propertize "  " 'display w3m-favicon-image))))))
+
 (defun w3m-favicon-setup (url)
   "Set up the favicon data in the current buffer.  The buffer-local
 variable `w3m-favicon-image' will be set to non-nil value when the
 favicon is ready."
-  (setq w3m-favicon-image nil)
+  (w3m-favicon-set-image nil)
   (when (and w3m-use-favicon
 	     w3m-current-url
 	     (w3m-static-if (featurep 'xemacs)
@@ -166,9 +188,9 @@ favicon is ready."
 				       "-favicon"))))
 	(if icon
 	    (with-current-buffer w3m-current-buffer
-	      (setq w3m-favicon-image
-		    (w3m-favicon-convert
-		     (base64-decode-string (symbol-value icon)) 'ico))))))
+	      (w3m-favicon-set-image
+	       (w3m-favicon-convert
+		(base64-decode-string (symbol-value icon)) 'ico))))))
      ((string-match "\\`https?://" url)
       (if w3m-icon-data
 	  (w3m-favicon-retrieve (car w3m-icon-data) (cdr w3m-icon-data)
@@ -208,7 +230,7 @@ stored in the `w3m-favicon-image' buffer-local variable."
 		     (w3m-float-time (w3m-favicon-cache-retrieved url)))
 		  w3m-favicon-cache-expire-wait)))
       (with-current-buffer target
-	(setq w3m-favicon-image (w3m-favicon-cache-favicon url)))
+	(w3m-favicon-set-image (w3m-favicon-cache-favicon url)))
     (lexical-let ((url url)
 		  (type type)
 		  (target target))
@@ -220,7 +242,7 @@ stored in the `w3m-favicon-image' buffer-local variable."
 			     image (w3m-favicon-convert idata type)))
 		     (with-current-buffer target
 		       (push (list url idata (current-time)
-				   (setq w3m-favicon-image image))
+				   (w3m-favicon-set-image image))
 			     w3m-favicon-cache-data))))))
   (w3m-static-unless (featurep 'xemacs)
     ;; Emacs frame needs to be redisplayed to make favicon come out.
