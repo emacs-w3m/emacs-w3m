@@ -631,6 +631,17 @@ for a charset indication")
 	      (+ (frame-width) (or w3m-fill-column -1)))) ; fit for frame
   "Arguments for execution of w3m.")
 
+
+(defmacro and-let* (varlist &rest body)
+  (if (null varlist)
+      (cons 'progn body)
+    (` (let ((, (car varlist)))
+	 (if (, (caar varlist))
+	     (and-let* (, (cdr varlist))
+		       (,@ body)))))))
+(put 'and-let* 'lisp-indent-function 1)
+(put 'and-let* 'edebug-form-spec '(varlist &rest body))
+
 (defun w3m-message (&rest args)
   "Alternative function of `message' for w3m.el."
   (if w3m-verbose
@@ -726,7 +737,7 @@ If N is negative, last N items of LIST is returned."
 	 (mapcar
 	  (lambda (ch)
 	    (cond
-	     ((string-match "[-a-zA-Z0-9_]" (char-to-string ch)) ; xxx?
+	     ((string-match "[-a-zA-Z0-9_:/]" (char-to-string ch)) ; xxx?
 	      (char-to-string ch))	; printable
 	     (t
 	      (format "%%%02X" ch))))	; escape
@@ -1006,9 +1017,9 @@ If N is negative, last N items of LIST is returned."
       (delete-region start (match-end 0))
       (cond (url
 	     (when (search-forward "</a>" nil t)
+	       (setq url (w3m-expand-url url w3m-current-url))
 	       (delete-region (setq end (match-beginning 0)) (match-end 0))
-	       (if (member (w3m-expand-url url w3m-current-url)
-			   w3m-arrived-anchor-list)
+	       (if (member url w3m-arrived-anchor-list)
 		   (put-text-property start end 'face 'w3m-arrived-anchor-face)
 		 (put-text-property start end 'face 'w3m-anchor-face))
 	       (put-text-property start end 'w3m-href-anchor url)
@@ -1030,6 +1041,7 @@ If N is negative, last N items of LIST is returned."
       (delete-region start (match-end 0))
       (when (search-forward "</img_alt>" nil t)
 	(delete-region (setq end (match-beginning 0)) (match-end 0))
+	(setq src (w3m-expand-url src w3m-current-url))
 	(put-text-property start end 'face 'w3m-image-face)
 	(put-text-property start end 'w3m-image src)
 	(put-text-property start end 'mouse-face 'highlight)))))
@@ -1731,125 +1743,128 @@ this function returns t.  Otherwise, returns nil."
 
 (defun w3m-expand-url (url base)
   "Convert URL to absolute, and canonicalize it."
-  (if (not base) (setq base ""))
-  (if (string-match "^[^:]+://[^/]*$" base)
-      (setq base (concat base "/")))
-  (cond
-   ;; URL is relative on BASE.
-   ((string-match "^#" url)
-    (concat base url))
-   ;; URL has absolute spec.
-   ((string-match "^[^:]+:" url)
-    url)
-   ((string-match "^/" url)
-    (if (string-match "^\\([^:]+://[^/]*\\)/" base)
-	(concat (match-string 1 base) url)
-      url))
-   (t
-    (let ((server "") path)
-      (if (string-match "^\\([^:]+://[^/]*\\)/" base)
-	  (setq server (match-string 1 base)
-		base (substring base (match-end 1))))
-      (setq path (expand-file-name url (file-name-directory base)))
-      ;; remove drive (for Win32 platform)
-      (if (string-match "^.:" path)
-	  (setq path (substring path (match-end 0))))
-      (concat server path)))))
+  (save-match-data
+    (if (not base) (setq base ""))
+    (if (string-match "^[^:/]+://[^/]*$" base)
+	(setq base (concat base "/")))
+    (cond
+     ;; URL is relative on BASE.
+     ((string-match "^#" url)
+      (concat base url))
+     ;; URL has absolute spec.
+     ((string-match "^[^:/]+:" url)
+      url)
+     ((string-match "^/" url)
+      (if (string-match "^\\([^:/]+://[^/]*\\)/" base)
+	  (concat (match-string 1 base) url)
+	url))
+     (t
+      (let ((server "") path)
+	(if (string-match "^\\([^:]+://[^/]*\\)/" base)
+	    (setq server (match-string 1 base)
+		  base (substring base (match-end 1))))
+	(setq path (expand-file-name url (file-name-directory base)))
+	;; remove drive (for Win32 platform)
+	(if (string-match "^.:" path)
+	    (setq path (substring path (match-end 0))))
+	(concat server path))))))
 
+(defun w3m-anchor (&optional point)
+  (get-text-property (or point (point)) 'w3m-href-anchor))
 
+(defun w3m-image (&optional point)
+  (get-text-property (or point (point)) 'w3m-image))
+ 
+(defun w3m-action (&optional point)
+  (get-text-property (or point (point)) 'w3m-action))
+ 
 (defun w3m-view-this-url (&optional arg)
   "*View the URL of the link under point."
   (interactive "P")
-  (let ((url (get-text-property (point) 'w3m-href-anchor))
-	(act (get-text-property (point) 'w3m-action)))
+  (let ((url (w3m-anchor)) (act (w3m-action)))
     (cond
-     (url (w3m-goto-url (w3m-expand-url url w3m-current-url) arg))
+     (url (w3m-goto-url url arg))
      (act (eval act)))))
 
 (defun w3m-mouse-view-this-url (event)
   (interactive "e")
   (mouse-set-point event)
-  (let ((url (get-text-property (point) 'w3m-href-anchor))
-	(img (get-text-property (point) 'w3m-image)))
+  (let ((url (w3m-anchor)) (img (w3m-image)))
     (cond
      (url (w3m-view-this-url))
      (img (w3m-view-image))
      (t (message "No URL at point.")))))
 
-(defun w3m-external-view (content-type url)
-  (let ((method (nth 2 (assoc content-type w3m-content-type-alist))))
-    (if method
-	(cond
-	 ((not method)
-	  (message "No external viewer is defined."))
-	 ((functionp method)
-	  (funcall method url))
-	 ((consp method)
-	  (let ((command (car method))
-		(arguments (cdr method))
-		(file (make-temp-name
-		       (expand-file-name "w3mel" w3m-profile-directory)))
-		(proc))
-	    (unwind-protect
-		(with-current-buffer
-		    (generate-new-buffer " *w3m-external-view*")
-		  (if (memq 'file arguments) (w3m-download url file))
-		  (setq proc
-			(apply 'start-process
-			       "w3m-external-view"
-			       (current-buffer)
-			       command
-			       (mapcar (function eval) arguments)))
-		  (setq w3m-process-temp-file file)
-		  (set-process-sentinel
-		   proc
-		   (lambda (proc event)
-		     (and (string-match "^\\(finished\\|exited\\)" event)
-			  (buffer-name (process-buffer proc))
-			  (save-excursion
-			    (set-buffer (process-buffer proc))
-			    (if (file-exists-p w3m-process-temp-file)
-				(delete-file w3m-process-temp-file)))
-			  (kill-buffer (process-buffer proc))))))
-	      (if (file-exists-p file)
-		  (unless (and (processp proc)
-			       (memq (process-status proc) '(run stop)))
-		    (delete-file file)))))))
-      (error "Unknown content type: %s" content-type))))
+(defun w3m-external-view (url)
+  (let ((method (nth 2 (assoc (w3m-content-type url) w3m-content-type-alist))))
+    (cond
+     ((not method)
+      (error "Unknown content type: %s" (w3m-content-type url)))
+     ((functionp method)
+      (funcall method url))
+     ((consp method)
+      (let ((command (car method))
+	    (arguments (cdr method))
+	    (file (make-temp-name
+		   (expand-file-name "w3mel" w3m-profile-directory)))
+	    (proc))
+	(unwind-protect
+	    (with-current-buffer
+		(generate-new-buffer " *w3m-external-view*")
+	      (if (memq 'file arguments) (w3m-download url file))
+	      (setq proc
+		    (apply 'start-process
+			   "w3m-external-view"
+			   (current-buffer)
+			   command
+			   (mapcar (function eval) arguments)))
+	      (setq w3m-process-temp-file file)
+	      (set-process-sentinel
+	       proc
+	       (lambda (proc event)
+		 (and (string-match "^\\(finished\\|exited\\)" event)
+		      (buffer-name (process-buffer proc))
+		      (save-excursion
+			(set-buffer (process-buffer proc))
+			(if (file-exists-p w3m-process-temp-file)
+			    (delete-file w3m-process-temp-file)))
+		      (kill-buffer (process-buffer proc))))))
+	  (if (file-exists-p file)
+	      (unless (and (processp proc)
+			   (memq (process-status proc) '(run stop)))
+		(delete-file file)))))))))
 
 (defun w3m-view-image ()
   "*View the image under point."
   (interactive)
-  (let ((file (get-text-property (point) 'w3m-image)))
-    (if file
-	(let ((url (w3m-expand-url file w3m-current-url)))
-	  (w3m-external-view (w3m-content-type url) url))
+  (let ((url (w3m-image)))
+    (if url
+	(w3m-external-view url)
       (message "No file at point."))))
 
 (defun w3m-save-image ()
   "*Save the image under point to a file."
   (interactive)
-  (let ((file (get-text-property (point) 'w3m-image)))
-    (if file
-	(w3m-download (w3m-expand-url file w3m-current-url))
+  (let ((url (w3m-image)))
+    (if url
+	(w3m-download url)
       (message "No file at point."))))
 
 (defun w3m-view-current-url-with-external-browser ()
   "*View this URL."
   (interactive)
-  (let ((url (get-text-property (point) 'w3m-href-anchor)))
-    (if url
-	(setq url (w3m-expand-url url w3m-current-url))
-      (if (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
-	  (setq url w3m-current-url)))
+  (let ((url (w3m-anchor)))
+    (or url
+	(y-or-n-p (format "Browse <%s> ? " w3m-current-url))
+	(setq url w3m-current-url))
     (when url
       (message "Browse <%s>" url)
-      (w3m-external-view (w3m-content-type url) url))))
+      (w3m-external-view url))))
 
 (defun w3m-download-this-url ()
   "*Download the URL of the link under point to a file."
   (interactive)
-  (let ((url (get-text-property (point) 'w3m-href-anchor)))
+  (let ((url (w3m-anchor)))
     (if url
 	(progn
 	  (w3m-download url)
@@ -1865,25 +1880,22 @@ this function returns t.  Otherwise, returns nil."
 (defun w3m-print-this-url ()
   "*Print the URL of the link under point."
   (interactive)
-  (let ((url (get-text-property (point) 'w3m-href-anchor)))
-    (message "%s" (if url
-		      (w3m-expand-url url w3m-current-url)
-		    "Not found"))))
+  (let ((url (w3m-anchor)))
+    (message "%s" (or url "Not found"))))
 
 (defun w3m-save-this-url ()
   (interactive)
-  (let ((url (get-text-property (point) 'w3m-href-anchor)))
-    (if url
-	(kill-new (w3m-expand-url url w3m-current-url)))))
+  (and-let* ((url (w3m-anchor)))
+    (kill-new url)))
 
 (defun w3m-goto-next-anchor ()
   ;; move to the end of the current anchor
-  (when (get-text-property (point) 'w3m-href-anchor)
+  (when (w3m-anchor)
     (goto-char (next-single-property-change (point) 'w3m-href-anchor)))
   ;; find the next anchor
-  (if (get-text-property (point) 'w3m-href-anchor) t
-    (let ((pos (next-single-property-change (point) 'w3m-href-anchor)))
-      (if pos (progn (goto-char pos) t) nil))))
+  (or (w3m-anchor)
+      (let ((pos (next-single-property-change (point) 'w3m-href-anchor)))
+	(if pos (progn (goto-char pos) t) nil))))
 
 (defun w3m-next-anchor (&optional arg)
   "*Move cursor to the next anchor."
@@ -1901,13 +1913,13 @@ this function returns t.  Otherwise, returns nil."
 
 (defun w3m-goto-previous-anchor ()
   ;; move to the beginning of the current anchor
-  (when (get-text-property (point) 'w3m-href-anchor)
+  (when (w3m-anchor)
     (goto-char (previous-single-property-change (1+ (point))
 						'w3m-href-anchor)))
   ;; find the previous anchor
   (let ((pos (previous-single-property-change (point) 'w3m-href-anchor)))
     (if pos (goto-char
-	     (if (get-text-property pos 'w3m-href-anchor) pos
+	     (if (w3m-anchor) pos
 	       (previous-single-property-change pos 'w3m-href-anchor))))))
 
 (defun w3m-previous-anchor (&optional arg)
@@ -2323,13 +2335,14 @@ SECTION is category name in bookmark."
 (defun w3m-bookmark-add-this-url ()
   "Add link under cursor to bookmark."
   (interactive)
-  (if (null (get-text-property (point) 'w3m-href-anchor))
+  (if (null (w3m-anchor))
       (message "No anchor.")		; nothing to do
-    (w3m-bookmark-add
-     (get-text-property (point) 'w3m-href-anchor) ; url
-     (buffer-substring-no-properties	; title
-      (previous-single-property-change (1+ (point)) 'w3m-href-anchor)
-      (next-single-property-change (point) 'w3m-href-anchor)))
+    (let ((url (w3m-anchor))
+	  (title (buffer-substring-no-properties
+		  (previous-single-property-change (1+ (point))
+						   'w3m-href-anchor)
+		  (next-single-property-change (point) 'w3m-href-anchor))))
+      (w3m-bookmark-add url title))
     (message "Added.")))
 
 
