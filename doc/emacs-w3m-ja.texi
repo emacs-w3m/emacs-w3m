@@ -1,0 +1,176 @@
+\input texinfo @c -*-texinfo -*- coding: iso-2022-jp -*-
+@c %**start of header
+@setfilename emacs-w3m-ja.info
+@settitle Emacs-w3m -- an interface program of w3m --
+@c %**end of header
+@documentlanguage ja
+@documentencoding iso-2022-jp
+@include version.texi
+@synindex pg cp
+@finalout
+
+@dircategory GNU Emacs Lisp
+@direntry
+* Emacs-w3m-ja: (emacs-w3m-ja).  An interface program of w3m
+@end direntry
+
+@c permissions text appears in an Info file before the first node.
+@ifinfo
+This file documents Emacs-w3m, an interface program of w3m on Emacsen.
+
+このファイルは Emacs で動く w3m のインタフェースである Emacs-w3m に関す
+る説明書です。
+
+Copyright @copyright{} 2000, 2001, 2002 @w{Akihiro Arisawa},
+@w{Shun-ichi Goto}, @w{Keisuke Nishida}, @w{Hideyuki Shirai},
+@w{Satoru Takabayashi}, @w{Yuuichi Teranishi}, @w{Masatoshi Tsuchiya},
+and @w{Katsumi Yamaoka}.
+
+This edition is for Emacs-w3m version @value{VERSION}.
+
+この版は Emacs-w3m version @value{VERSION} に対応します。
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+著作権表示とこの許可文がすべての複製に存在する限り、この説明書のまったく
+同一の複製を作り、配布することを許可する。
+
+@ignore
+Permission is granted to process this file through TeX and print the
+results, provided the printed document carries copying permission
+notice identical to this one except for the removal of this paragraph
+(this paragraph not being relevant to the printed manual).
+
+この段落が取り除かれているのを除き、これと同じ複製に関する許可文が表示さ
+れている限り、このファイルを TeX にかけて、その結果を印刷することを許可
+する(この段落は印刷されたマニュアルでは参照されません)。
+
+@end ignore
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+同一複製の条件の下で、それによって得られた結果もこの許可文の表示と同一の
+条件のもとで配布する限り、この説明書の修正版の複製をし、配布することを許
+可する。
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions.
+
+上記の修正版に関する条件の下で、この説明書の翻訳の複製を作り、配布するこ
+とを許可する。
+@end ifinfo
+
+@titlepage
+@sp 10
+@title Emacs-w3m ユーザマニュアル
+@subtitle An interface program of w3m on Emacsen
+@subtitle for Emacs-w3m version @value{VERSION}
+@author 有沢明宏
+@author 後藤俊一
+@author 白井秀行
+@author 高林哲
+@author 土屋雅稔
+@author 寺西裕一
+@author 西田圭介
+@author 山岡克美
+@page
+
+@vskip 0pt plus 1filll
+Copyright @copyright{} 2000, 2001, 2002 @w{Akihiro Arisawa},
+@w{Shun-ichi Goto}, @w{Keisuke Nishida}, @w{Hideyuki Shirai},
+@w{Satoru Takabayashi}, @w{Yuuichi Teranishi}, @w{Masatoshi Tsuchiya},
+and @w{Katsumi Yamaoka}.
+
+This manual is for Emacs-w3m version @value{VERSION}.
+
+このマニュアルは Emacs-w3m version @value{VERSION} に対応します。
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+著作権表示とこの許可文がすべての複製に存在する限り、この説明書のまったく
+同一の複製を作り、配布することを許可する。
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+同一複製の条件の下で、それによって得られた結果をこの許可文の表示と同一の
+条件のもとで配布する限り、この説明書の修正版の複製をし、配布することを許
+可する。
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions.
+
+上記の修正版に関する条件の下で、この説明書の翻訳の複製を作り、配布するこ
+とを許可する。
+@end titlepage
+
+
+@ifinfo
+@node Top, Introduction, (dir), (dir)
+@top Emacs-w3m ユーザマニュアル
+
+@flushright
+有沢明宏
+後藤俊一
+白井秀行
+高林哲
+土屋雅稔
+寺西裕一
+西田圭介
+山岡克美
+@end flushright
+
+この文書は Emacs-w3m @value{VERSION} に対応します。
+
+@end ifinfo
+
+@menu
+* Introduction::             はじめに
+* Index::                    索引
+@end menu
+
+@node Introduction, Index, Top, Top
+@chapter はじめに
+@cindex Introduction
+
+@node Index,  , Introduction, Top
+@unnumbered 索引
+
+@menu
+* Concept Index::               概念索引
+* Key Index::                   キーバインド索引
+* Variable Index::              変数索引
+* Function Index::              関数索引
+@end menu
+
+@node Concept Index, Key Index, Index, Index
+@unnumberedsec 概念索引
+@printindex cp
+
+@node Key Index, Variable Index, Concept Index, Index
+@unnumberedsec キーバインド索引
+@printindex ky
+
+@node Variable Index, Function Index, Key Index, Index
+@unnumberedsec 変数索引
+@printindex vr
+
+@node Function Index,  , Variable Index, Index
+@unnumberedsec 関数索引
+@printindex fn
+
+@summarycontents
+@contents
+@bye
+
+@c Local Variables: 
+@c fill-column: 72
+@c End:

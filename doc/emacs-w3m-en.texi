@@ -1,0 +1,148 @@
+\input texinfo @c -*-texinfo -*-
+@c %**start of header
+@setfilename emacs-w3m-en.info
+@settitle Emacs-w3m -- an interface program of w3m --
+@c %**end of header
+@documentlanguage en
+@documentencoding us-ascii
+@include version.texi
+@synindex pg cp
+@finalout
+
+@dircategory GNU Emacs Lisp
+@direntry
+* Emacs-w3m-en: (emacs-w3m-en).  An interface program of w3m
+@end direntry
+
+@c permissions text appears in an Info file before the first node.
+@ifinfo
+This file documents Emacs-w3m, an interface program of w3m on Emacsen.
+
+Copyright @copyright{} 2000, 2001, 2002 @w{Akihiro Arisawa},
+@w{Shun-ichi Goto}, @w{Keisuke Nishida}, @w{Hideyuki Shirai},
+@w{Satoru Takabayashi}, @w{Yuuichi Teranishi}, @w{Masatoshi Tsuchiya},
+and @w{Katsumi Yamaoka}.
+
+This edition is for Emacs-w3m version @value{VERSION}.
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+@ignore
+Permission is granted to process this file through TeX and print the
+results, provided the printed document carries copying permission notice
+identical to this one except for the removal of this paragraph (this
+paragraph not being relevant to the printed manual).
+
+@end ignore
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions.
+
+@end ifinfo
+
+@titlepage
+@sp 10
+@title Emacs-w3m User's Manual
+@subtitle An interface program of w3m on Emacsen
+@subtitle for Emacs-w3m version @value{VERSION}
+@author Akihiro Arisawa
+@author Shun-ichi Goto
+@author Keisuke Nishida
+@author Hideyuki Shirai
+@author Satoru Takabayashi
+@author Yuuichi Teranishi
+@author Masatoshi Tsuchiya
+@author Katsumi Yamaoka
+@page
+
+@vskip 0pt plus 1filll
+Copyright @copyright{} 2000, 2001, 2002 @w{Akihiro Arisawa},
+@w{Shun-ichi Goto}, @w{Keisuke Nishida}, @w{Hideyuki Shirai},
+@w{Satoru Takabayashi}, @w{Yuuichi Teranishi}, @w{Masatoshi Tsuchiya},
+and @w{Katsumi Yamaoka}.
+
+This manual is for Emacs-w3m version @value{VERSION}.
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions.
+
+@end titlepage
+
+
+@ifinfo
+@node Top, Introduction, (dir), (dir)
+@top Emacs-w3m User's Manual
+
+@flushright
+Akihiro Arisawa
+Shun-ichi Goto
+Keisuke Nishida
+Hideyuki Shirai
+Satoru Takabayashi
+Yuuichi Teranishi
+Masatoshi Tsuchiya
+Katsumi Yamaoka
+@end flushright
+
+This manual is for Emacs-w3m @value{VERSION}.
+
+@end ifinfo
+
+@menu
+* Introduction::             Read this first
+* Index::                    Key index
+@end menu
+
+
+@node Introduction, Index, Top, Top
+@chapter Introduction of Emacs-w3m
+@cindex Introduction
+
+@node Index,  , Introduction, Top
+@unnumbered Index
+
+@menu
+* Concept Index::               Concept Index
+* Key Index::                   Key Index
+* Variable Index::              Variable Index
+* Function Index::              Function Index
+@end menu
+
+@node Concept Index, Key Index, Index, Index
+@unnumberedsec Concept Index
+@printindex cp
+
+@node Key Index, Variable Index, Concept Index, Index
+@unnumberedsec Key Index
+@printindex ky
+
+@node Variable Index, Function Index, Key Index, Index
+@unnumberedsec Variable Index
+@printindex vr
+
+@node Function Index,  , Variable Index, Index
+@unnumberedsec Function Index
+@printindex fn
+
+@summarycontents
+@contents
+@bye
+
+@c Local Variables:
+@c fill-column: 72
+@c End:
