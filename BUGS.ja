@@ -66,6 +66,9 @@ $Date$
 (5) [emacs-w3m:01716] form vs history
 
 
+(6) [emacs-w3m:01903] 改行を含まない TEXTAREA
+
+
 ■ 解決済みの問題
 
 (1) w3m-fontify で _id というタグが処理されていない。

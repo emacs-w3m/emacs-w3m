@@ -4,12 +4,12 @@
 
 ** Q. emacs-w3m って何ですか?
 
-w3m を Emacs 上で動かすインターフェースプログラムです．
-詳細は，README.ja を参照してください．
+   w3m を Emacs 上で動かすインターフェースプログラムです．詳細は，
+   README.ja を参照してください．
 
 ** Q. 動作する Emacs は?
 
-以下の Emacsen で動作することが確認されています．
+   以下の Emacsen で動作することが確認されています．
 
 	Mule-2.3 @ Emacs-19.34
 	Emacs-20
@@ -20,100 +20,118 @@ w3m を Emacs 上で動かすインターフェースプログラムです．
 	XEmacs-21.5 with Mule 
 	Meadow
 
-なお，Mule-2.3 及び XEmacs では APEL が必要となります．APEL は
-ftp://ftp.m17n.org/pub/mule/apel/ から入手できます。
+   なお，Mule-2.3 及び XEmacs では APEL が必要となります．APEL は
+   ftp://ftp.m17n.org/pub/mule/apel/ から入手できます。
 
 ** Q. 動作する w3m は?
 
-以下の w3m で動作することが確認されています．
+   以下の w3m で動作することが確認されています．
 
-	w3m-0.2.1-inu-1.3 以降
-	w3mmee-p19-3 + post-header.patch (w3m-type を 'w3mmee にしてください．)
-	w3m-m17n-0.19 + some patches (w3m-type を 'w3m-m17n にしてください．)
+	w3m-0.2.1-inu-1.3
+	w3mmee-p19-6
+	w3m-m17n-0.19 + some patches
 
 * トラブル
 
 ** Q. 認証の必要なページのパスワードが入力できません．
 
-(setq w3m-async-exec t) という設定を ~/.emacs に追加してください．
+   オプション w3m-async-exec に nil 以外の値が設定されていることを確認し
+   てください．
 
 ** Q. 認証の必要な proxy サーバーのパスワードが入力できません．
 
-(setq w3m-async-exec t) という設定を ~/.emacs に追加してください．
+   オプション w3m-async-exec に nil 以外の値が設定されていることを確認し
+   てください．
 
 ** Q. リンクが辿れません．
-
-w3m コマンドが -header オプションを使える必要があります。
-w3m-0.2.1-inu-1.3 以降に upgrade してください。
+ 
+   -header オプションを受け付ける w3m コマンドが必要です．w3m のバージョ
+   ンを確認してください．w3m-m17n を使う場合は，patches/post-header.patch
+   を適用してください．
 
 ** Q. 文字化けします．
 
-いくつかの原因があります．
+   いくつかの原因があります．
 
-(1) html の問題
+   (1) HTML ファイルの問題
 
-html 中で指定されている文字コードと，実際の文字コードが異なる場合には文
-字化けします．`w3m-redisplay-with-charset' (C) で正しい文字コードを指定
-して再描画してください．
+       HTML ファイル中で <meta> タグによって指定されている文字コードと，
+       実際の文字コードが異なると，正常に表示されません．
+       `w3m-redisplay-with-charset' (C) で正しい文字コードを指定して再描
+       画してください．
 
-(2) html の文字コード
+   (2) 文字コード
 
-ISO-2022-JP(jis), EUC-JP, SHIFT_JIS 以外の文字コードの場合は，w3mmee や
-w3m-m17n を使用してください．
+       ISO-2022-JP(jis), EUC-JP, SHIFT_JIS 以外の文字コードで記述された
+       ページについては，表示できない場合があります．次のいずれかの方法
+       で，対処してください．
 
-また、Mule-UCS がインストールされた Emacsen では、(setq w3m-use-mule-ucs
-t) として、対応することもできます．
-なお、EUC-JISX0213 や ISO-2022-JP-3 などの文字コードの場合は、Mule-UCS に
-附属の jisx0213.el をインストールしてください。
+       (a) Mule-UCS をインストールすると，Unicode で定義されている範囲の
+           文字は表示できるようになります．インストール後，オプション 
+           w3m-use-mule-ucs が nil 以外の値に設定されていることを確認し
+           てください．なお，EUC-JISX0213 や ISO-2022-JP-3 などの文字コー
+           ドの場合は，Mule-UCS に附属の jisx0213.el もインストールする
+           必要があります．
 
-(3) w3m の variant
+       (b) w3mmee や w3m-m17n をインストールして，オプション w3m-command 
+           に適切な値を設定してください．このように設定すると，emacs-w3m 
+           は，これらのプログラムが提供する多言語機能を利用するようにな
+           ります．
 
-w3mmee を使用している場合は，(setq w3m-type 'w3mmee) と，w3m-m17n を使用
-している場合は (setq w3m-type 'w3m-m17n) としてください．
+   (3) Emacsen の問題
 
-(4) Emacsen の問題
-
-XEmacs-21.2 では beta36 以前では問題があります．beta36 以前をお使いの場
-合は XEmacs を upgrade してください．
+       XEmacs-21.2 では beta36 以前では問題があります．beta36 以前をお使
+       いの場合は XEmacs を upgrade してください．
 
 ** Q. 画像表示できません．
 
-いくつかの原因があります．
+   いくつかの原因があります．
 
-(1) w3m のバージョン
+   Emacs-21 では libungif にバージョンによっては，gif 画像が正常に表示さ
+   れないことがあります．libungif-4.1.0b1 以降に upgrade してください．
 
-w3m-0.1.11pre 以前では正常に表示できません．w3m を upgrade してください．
+   XEmacs では必ず "gifsicle" プログラムをインストールしてください．現在
+   利用できる全ての XEmacs 21.x にはバグがあり，emacs-w3m ではこれを使っ
+   て対策しています (README.ja の『2. インストール』を参照)．
 
-(2) Emacsen の問題
+   古い w3m コマンドでは，正常に表示できません．w3m のバージョンを確認し
+   てください．
 
-Emacs-21 では libungif にバージョンによっては，gif 画像が正常に表示され
-ないことがあります．libungif-4.1.0b1 以降に upgrade してください．
+** Q. フォームに入力できません．
 
-XEmacs では必ず "gifsicle" プログラムをインストールしてください．現在す
-べての XEmacs 21.x にはバグがあり，emacs-w3m ではこれを使って対策してい
-ます (README.ja の『2. インストール』を参照)．
+   (まだ実験的な機能です．)
 
-** Q. フォームへ入力できません．
+   オプション w3m-use-form に nil 以外の値が設定されていることを確認して
+   ください．
 
-(まだ実験的な機能です．)
-w3m-use-form を t にしてください．
-なお，w3m-0.2.1-inu-1.3 以降が必要です。
+** Q. フォームを送信できません．
+
+   (まだ実験的な機能です．)
+
+   オプション w3m-use-form に nil 以外の値が設定されていることを確認して
+   ください．
+
+   この機能を使うには，-post オプションを認識する w3m コマンドが必要です．
+   w3m のバージョンを確認してください．w3m-m17n を使う場合は，
+   patches/post-header.patch を適用してください．
 
 ** Q. フレームがレンダリングされません．
 
-w3mmee を使ってください．
+   w3mmee を使ってください．
 
 * shimbun
 
-** Q. shimbun 以下がインストールされません．
+** Q. shimbun/ 以下がインストールされません．
 
-FLIM がインストールされていないと shimbun 以下はインストールされません．
+   FLIM がインストールされていないと shimbun/ 以下はインストールされませ
+   ん．
 
-emacs -q で起動時に load-path に FLIM のインストールされたディレクトリが
-通らない場合は，configure 時に --with-add-path で指定してください．
+   configure スクリプトは，自動的に FLIM の有無を判定するよう設計されて
+   いますが，標準的ではないディレクトリに FLIM がインストールされている
+   と，判定に失敗します．その場合は，--with-addpath オプションを使って，
+   FLIM のインストールされていディレクトリを明示的に指定してください．
 
-	% ./configure --prefix=$HOME \
-		--with-add-path=$HOME/share/emacs/site-lisp/flim
+	% ./configure --with-addpath=$HOME/share/emacs/site-lisp/flim
 
 Local Variables:
 mode: outline
