@@ -163,13 +163,13 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
 	      (thing-at-point 'word))))
 	(initial))
     (when default
-      (set-text-properties 0 (length default) nil default))
-    (when (or w3m-search-word-at-point
-	      (and transient-mark-mode mark-active))
-      (setq initial default
-	    default nil))
-    (when mark-active
-      (deactivate-mark))
+      (set-text-properties 0 (length default) nil default)
+      (when (or w3m-search-word-at-point
+		(and transient-mark-mode mark-active))
+	(setq initial default
+	      default nil))
+      (when (and transient-mark-mode mark-active)
+	(deactivate-mark)))
     (read-string (if default
 		     (format prompt-with-default default)
 		   prompt)
