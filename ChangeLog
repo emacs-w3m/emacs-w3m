@@ -1,3 +1,9 @@
+2001-05-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-coding-system): Changed default value to
+	'iso-2022-7bit.
+	(w3m-input-coding-system): Ditto.
+
 2001-05-31  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-dtree.el (w3m-dtree-create): Insert 'Meta tag' to the

@@ -171,7 +171,7 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'function)
 
-(defcustom w3m-coding-system 'iso-2022-7bit-ss2
+(defcustom w3m-coding-system 'iso-2022-7bit
   "*Basic coding system for `w3m'."
   :group 'w3m
   :type 'coding-system)
@@ -182,7 +182,7 @@ width using expression (+ (frame-width) VALUE)."
   :type 'coding-system)
 
 (defcustom w3m-input-coding-system
-  (if (eq w3m-type 'w3mmee) 'binary 'iso-2022-7bit-ss2)
+  (if (eq w3m-type 'w3mmee) 'binary 'iso-2022-7bit)
   "*Coding system for write operations to `w3m'."
   :group 'w3m
   :type 'coding-system)
