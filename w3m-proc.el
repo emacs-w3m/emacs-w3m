@@ -479,8 +479,9 @@ evaluated in a temporary buffer."
 	 (apply 'call-process command nil t nil arguments))))))
 
 (defun w3m-process-start-after (exit-status)
-  (with-current-buffer w3m-current-buffer
-    (setq w3m-process-modeline-string nil))
+  (when w3m-current-buffer
+    (with-current-buffer w3m-current-buffer
+      (setq w3m-process-modeline-string nil)))
   (cond
    ((numberp exit-status)
     (zerop (setq w3m-process-exit-status exit-status)))
