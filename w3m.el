@@ -207,6 +207,17 @@
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-executable-type (if (memq window-system '(w32 win32))
+				   'cygwin ; xxx, cygwin on win32 by default
+				 'native)
+  "*Executable binary type of w3m program.
+Value is 'native or 'cygwin.
+This value is maily used for win32 environment.
+In other environment, use 'native."
+  :group 'w3m
+  :type '(choice (const cygwin) (const native)))
+
+
 (defconst w3m-extended-charcters-table
   '(("\xa0" . " ")))
   
@@ -1439,6 +1450,30 @@ With prefix, ask new url to add instead of current page."
 		    w3m-current-title)
   (message "Added."))
 
+(defun w3m-cygwin-path (path)
+  "Convert win32 path into cygwin format.
+ex.) c:/dir/file => //c/dir/file"
+  (if (string-match "^\\([A-Za-z]\\):" path)
+      (replace-match "//\\1" nil nil path)
+    path))
+
+(defun w3m-region (start end)
+  "Render region in current buffer and replace with result."
+  (interactive "r")
+  (let ((file (concat (make-temp-name
+		       (expand-file-name "w3mel" w3m-default-save-dir))
+		      ".html")))
+    (write-region start end file nil 0 nil)
+    (delete-region start end)
+    (unwind-protect
+	(progn
+	  ;; considering cygwin file path
+	  (w3m-exec-process (if (eq w3m-executable-type 'cygwin)
+				(w3m-cygwin-path file)
+			      file)
+			    w3m-command-arguments)
+	  (w3m-fontify))
+      (delete-file file))))
 
 (provide 'w3m)
 ;;; w3m.el ends here.
