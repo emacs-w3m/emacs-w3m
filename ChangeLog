@@ -1,3 +1,8 @@
+2004-12-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el (w3m-update-tab-line): Wobble the window size instead
+	of setting the cursor color.
+
 2004-12-15  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
 
 	* w3m-namazu.el (w3m-namazu): Added optional argument `reload'.

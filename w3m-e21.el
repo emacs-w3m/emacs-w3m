@@ -716,9 +716,19 @@ cleared by a timer.")
 				  'face 'w3m-tab-background-face))))))
 
 (defun w3m-update-tab-line ()
-  "Update tab line."
+  "Update tab line by a side effect."
   (when w3m-use-tab
-    (set-cursor-color (frame-parameter (selected-frame) 'cursor-color))))
+    ;; The following form will cause a problem if a user doesn't set the
+    ;; cursor color explicitly, because the `cursor-color' value is always
+    ;; black in such a case whatever the color of the default face may be.
+    ;; cf. <URL:http://news.gmane.org/group/gmane.emacs.w3m/thread=4625>
+
+    ;;(set-cursor-color (frame-parameter (selected-frame) 'cursor-color))))
+
+    ;; We use wobbling of the window size instead.
+    (let ((window-min-height 0))
+      (shrink-window 1)
+      (enlarge-window 1))))
 
 (defun w3m-e21-switch-to-buffer (buffer &optional norecord)
   "Run `switch-to-buffer' and redisplay the header-line.
