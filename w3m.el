@@ -221,7 +221,9 @@ The value of `w3m-user-agent' is used for the field body."
       "Japanese")
   "*Language of w3m."
   :group 'w3m
-  :type 'string)
+  :type '(choice
+	  (const "Japanese")
+	  (const nil tag: "Other")))
 
 (defcustom w3m-command-arguments
   (if (eq w3m-type 'w3mmee) '("-o" "concurrent=0" "-F") nil)
@@ -1682,8 +1684,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	  (w3m-process-with-wait-handler
 	    (w3m-attributes url no-cache handler))
 	(w3m-process-timeout nil))
-    (when (string-match "\\`\\([^#]*\\)#" url)
-      (setq url (substring url 0 (match-end 1))))
+    (setq url (w3m-url-strip-fragment url))
     (cond
      ((string= "about://emacs-w3m.gif" url)
       (list "image/gif" nil nil nil nil url url))
@@ -1963,15 +1964,7 @@ with ^ as `cat -v' does."
     (let ((parent (when (string-match "\\`\\([^#]*\\)#" url)
 		    (substring url 0 (match-end 1))))
 	  ident)
-      (unless (and modified-time arrived-time)
-	(let ((ct (current-time)))
-	  (unless modified-time
-	    (setq modified-time (or (w3m-last-modified (or parent url))
-				    ct)))
-	  (unless arrived-time
-	    (setq arrived-time ct))))
-      (prog1
-	  (setq ident (intern url w3m-arrived-db))
+      (prog1 (setq ident (intern url w3m-arrived-db))
 	(w3m-arrived-add-1 ident title modified-time arrived-time
 			   content-charset content-type)
 	(when parent
@@ -2033,29 +2026,46 @@ with ^ as `cat -v' does."
   (let ((v (intern-soft url w3m-arrived-db)))
     (and v (get v 'content-type))))
 
+(defun w3m-arrived-load-list ()
+  (let ((list (w3m-load-list w3m-arrived-file)))
+    ;; When arrived URL database is too old, its data is ignored.
+    (when (or
+	   ;; Before the revision 1.120, every element of the list was
+	   ;; a string that represented an arrived URL.
+	   (stringp (car list))
+	   ;; Before the revision 1.135, every element was a cons
+	   ;; cell: its car kept a URL, and its cdr kept a time when
+	   ;; the URL was arrived.
+	   ;; Before the revision 1.178, every element was a 4-tuple
+	   ;; that consisted of a URL, a title, a modified time, and
+	   ;; an arrived time.
+	   ;; An element of the modern database is a 6-tuple that
+	   ;; consisted of a URL, a title, a modified time, an arrived
+	   ;; time, a charset, and a content type.
+	   ;; Thus, the following condition eliminates the revision
+	   ;; 1.177 and olders.
+	   (<= (length (car list)) 4))
+      (setq list nil)
+      (when (file-exists-p w3m-arrived-file)
+	(delete-file w3m-arrived-file)))
+    list))
+
 (defun w3m-arrived-setup ()
   "Load arrived url list from `w3m-arrived-file' and setup hash database."
   (unless w3m-arrived-db
     (setq w3m-arrived-db (make-vector w3m-arrived-db-size 0))
-    (let ((list (w3m-load-list w3m-arrived-file)))
-      (when (stringp (car list))
-	;; When arrived URL database is too old, its data is ignored.
-	(setq list nil)
-	(delete-file w3m-arrived-file))
+    (let ((list (w3m-arrived-load-list)))
       (dolist (elem list)
-	(if (or (not (nth 1 elem)) (stringp (nth 1 elem)))
-	    ;; Process new format of arrived URL database.
-	    (w3m-arrived-add (if (string-match "^/" (car elem))
-				 (w3m-expand-file-name-as-url (car elem))
-			       (car elem))
-			     (nth 1 elem)
-			     (nth 2 elem)
-			     (or (nth 3 elem) (nth 2 elem))
-			     (when (stringp (nth 4 elem)) (nth 4 elem))
-			     (nth 5 elem))
-	  ;; Process old format of arrived URL database, is used
-	  ;; before revision 1.135.
-	  (w3m-arrived-add (car elem) nil (cdr elem) (cdr elem))))
+	;; Ignore an element that lacks an arrived time information.
+	(when (nth 3 elem)
+	  (w3m-arrived-add (if (string-match "\\`/" (car elem))
+			       (w3m-expand-file-name-as-url (car elem))
+			     (car elem))
+			   (nth 1 elem)
+			   (nth 2 elem)
+			   (nth 3 elem)
+			   (when (stringp (nth 4 elem)) (nth 4 elem))
+			   (nth 5 elem))))
       (unless w3m-input-url-history
 	(setq w3m-input-url-history (mapcar (function car) list))))
     (run-hooks 'w3m-arrived-setup-functions)))
@@ -2065,25 +2075,23 @@ with ^ as `cat -v' does."
   (when w3m-arrived-db
     ;; Re-read arrived DB file, and check sites which are arrived on
     ;; the other emacs process.
-    (dolist (elem (w3m-load-list w3m-arrived-file))
-      (and
-       ;; Check format of arrived DB file.
-       (or (not (nth 1 elem)) (stringp (nth 1 elem)))
-       (w3m-time-newer-p (nth 3 elem) (w3m-arrived-time (car elem)))
-       (w3m-arrived-add (if (string-match "^/" (car elem))
-			    (w3m-expand-file-name-as-url (car elem))
-			  (car elem))
-			(nth 1 elem)
-			(nth 2 elem)
-			(nth 3 elem)
-			(when (stringp (nth 4 elem)) (nth 4 elem))
-			(nth 5 elem))))
+    (dolist (elem (w3m-arrived-load-list))
+      (when (w3m-time-newer-p (nth 3 elem) (w3m-arrived-time (car elem)))
+	(w3m-arrived-add (if (string-match "\\`/" (car elem))
+			     (w3m-expand-file-name-as-url (car elem))
+			   (car elem))
+			 (nth 1 elem)
+			 (nth 2 elem)
+			 (nth 3 elem)
+			 (when (stringp (nth 4 elem)) (nth 4 elem))
+			 (nth 5 elem))))
     ;; Convert current arrived DB to a list.
     (let (list)
       (mapatoms
        (lambda (sym)
 	 (and sym
 	      (boundp sym)
+	      (symbol-value sym) ; Ignore an entry lacks an arrived time.
 	      (push (list (symbol-name sym)
 			  (get sym 'title)
 			  (get sym 'last-modified)
@@ -2133,7 +2141,7 @@ with ^ as `cat -v' does."
       (push (substring str start (match-beginning 0)) buf)
       (push (cond
 	     ((match-beginning 2)
-	      (string (string-to-number (match-string 2 str) 16)))
+	      (vector (string-to-number (match-string 2 str) 16)))
 	     ((match-beginning 1) "\n")
 	     (t " "))
 	    buf)
@@ -2650,12 +2658,28 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 	(if (and reserve-prop prop)
 	    (w3m-add-text-properties (match-beginning 0) (point) prop))))))
 
-(defun w3m-decode-entities-string (string)
-  "Decode entities in the STRING."
+(defun w3m-decode-entities-string (str)
+  "Decode entities in the string STR."
   (with-temp-buffer
-    (insert string)
+    (insert str)
     (save-match-data (w3m-decode-entities))
     (buffer-string)))
+
+(defun w3m-encode-specials-string (str)
+  "Encode special characters in the string STR."
+  (let ((pos 0)
+	(buf))
+    (while (string-match "[<>&]" str pos)
+      (setq buf
+	    (cons ";"
+		  (cons (car (rassoc (match-string 0 str) w3m-entity-alist))
+			(cons "&"
+			      (cons (substring str pos (match-beginning 0))
+				    buf))))
+	    pos (match-end 0)))
+    (if buf
+	(apply 'concat (nreverse (cons (substring str pos) buf)))
+      str)))
 
 (defun w3m-fontify ()
   "Fontify this buffer."
@@ -3023,7 +3047,6 @@ If the user enters null input, return second argument DEFAULT."
 			  t '(t nil) nil (cadr x))))))))
 
 (defun w3m-decode-buffer (url &optional content-charset content-type)
-  (w3m-decode-get-refresh url)
   (let (cs)
     (unless content-charset
       (setq content-charset
@@ -3055,23 +3078,6 @@ If the user enters null input, return second argument DEFAULT."
 		    nil
 		  w3m-coding-system-priority-list)))))
     (set-buffer-multibyte t)))
-
-(defun w3m-decode-get-refresh (url)
-  "Get REFRESH attribute in META tags."
-  (setq w3m-current-refresh nil)
-  (when (and w3m-use-refresh
-	     (not (string-match "\\`about://" url)))
-    (goto-char (point-min))
-    (let ((case-fold-search t)
-	  sec refurl)
-      (goto-char (point-min))
-      (when (or (re-search-forward w3m-meta-refresh-content-regexp nil t)
-		(re-search-forward w3m-meta-content-refresh-regexp nil t))
-	(setq sec (match-string-no-properties 1))
-	(setq refurl (match-string-no-properties 2))
-	(when (string-match "^[0-9]+$" sec)
-	  (setq w3m-current-refresh (cons (string-to-number sec)
-					  (w3m-expand-url refurl url))))))))
 
 (defun w3m-x-moe-decode-buffer ()
   (let ((args '("-i" "-cs" "x-moe-internal"))
@@ -3928,6 +3934,22 @@ type as a string argument, when retrieve is complete."
 	    (w3m-parse-attributes (href)
 	      (setq w3m-current-base-url href)))))))))
 
+(defun w3m-check-refresh-attribute ()
+  "Get REFRESH attribute in META tags."
+  (setq w3m-current-refresh nil)
+  (when w3m-use-refresh
+    (goto-char (point-min))
+    (let ((case-fold-search t)
+	  sec refurl)
+      (goto-char (point-min))
+      (when (or (re-search-forward w3m-meta-refresh-content-regexp nil t)
+		(re-search-forward w3m-meta-content-refresh-regexp nil t))
+	(setq sec (match-string-no-properties 1))
+	(setq refurl (match-string-no-properties 2))
+	(unless (string-match "[^0-9]" sec)
+	  (setq w3m-current-refresh (cons (string-to-number sec)
+					  (w3m-expand-url refurl))))))))
+
 (defun w3m-remove-meta-charset-tags ()
   (let ((case-fold-search t))
     (goto-char (point-min))
@@ -3937,32 +3959,19 @@ type as a string argument, when retrieve is complete."
 	       w3m-meta-charset-content-type-regexp nil t))
       (delete-region (match-beginning 0) (match-end 0)))))
 
-(defsubst w3m-rendering-extract-title ()
+(defun w3m-rendering-extract-title ()
   "Extract the title from the half-dumped data in this buffer."
   (goto-char (point-min))
-  ;; FIXME: Adhoc support for w3m with patch in [w3m-dev 01876].
-  (and (looking-at "<!DOCTYPE w3mhalfdump public")
-       (search-forward "\n<pre>\n" nil t)
-       (delete-region (point-min) (1+ (match-beginning 0))))
-  (goto-char (point-min))
-  (let (title)
-    (dolist (regexp '("<title_alt[ \t\n]+title=\"\\([^\"]+\\)\">"
-		      "<title>\\([^<]\\)</title>"))
-      (goto-char (point-min))
-      (when (re-search-forward regexp nil t)
-	(setq title (match-string 1))
-	(delete-region (match-beginning 0) (match-end 0))
-	(with-temp-buffer
-	  (insert title)
-	  (w3m-decode-entities)
-	  (setq title (buffer-string)))))
-    (if (and (null title)
-	     (stringp w3m-current-url)
-	     (< 0 (length (file-name-nondirectory w3m-current-url))))
-	(setq title (file-name-nondirectory w3m-current-url)))
-    (or title "<no-title>")))
+  (or (when (re-search-forward "<title_alt[ \t\n]+title=\"\\([^\"]+\\)\">"
+			       nil t)
+	(prog1 (w3m-decode-entities-string (match-string 1))
+	  (delete-region (match-beginning 0) (match-end 0))))
+      (when (and (stringp w3m-current-url)
+		 (string-match "/\\([^/]+\\)/?\\'" w3m-current-url))
+	(match-string 1 w3m-current-url))
+      "<no-title>"))
 
-(defsubst w3m-rendering-half-dump (&optional charset)
+(defun w3m-rendering-half-dump (&optional charset)
   (let ((coding-system-for-read w3m-output-coding-system)
 	(coding-system-for-write w3m-input-coding-system)
 	(default-process-coding-system
@@ -4007,6 +4016,7 @@ type as a string argument, when retrieve is complete."
   (w3m-message "Rendering...")
   (w3m-remove-comments)
   (w3m-check-header-tags)
+  (w3m-check-refresh-attribute)
   (w3m-remove-meta-charset-tags)
   (if binary-buffer
       (let ((cbuf (current-buffer)))
@@ -4059,41 +4069,36 @@ a `w3m-process' object immediately.  The HANDLER function will be
 called when rendering is complete.  When new content is retrieved in
 this buffer, the HANDLER function will be called with t as an
 argument.  Otherwise, it will be called with nil."
-  (lexical-let ((url url)
-		(content-type content-type)
-		(content-charset content-charset)
-		(output-buffer (current-buffer))
-		(secure w3m-current-ssl))
-    (w3m-process-do-with-temp-buffer
-	(type (progn
-		(w3m-clear-local-variables)
-		(w3m-retrieve url nil no-cache post-data referer handler)))
-      (when (buffer-live-p output-buffer)
-	(setq url (w3m-url-strip-authinfo url))
-	(cond
-	 ((and secure
-	       (string-match "^http://" url)
-	       (not
-		(y-or-n-p "You are about to leave secure page. continue?")))
-	  (ding))
-	 (type
-	  (prog1 (w3m-prepare-content url (or content-type type)
-				      output-buffer content-charset)
-	    (and w3m-verbose
-		 (not (get-buffer-window output-buffer))
-		 (message "The content (%s) has been retrieved in %s"
-			  url (buffer-name output-buffer)))))
-	 (t
-	  (ding)
-	  (if (eq (car w3m-current-forms) t)
-	      (setq w3m-current-forms (cdr w3m-current-forms)))
-	  (w3m-message "Cannot retrieve URL: %s%s"
-		       url
-		       (if w3m-process-exit-status
-			   (format " (exit status: %s)"
-				   w3m-process-exit-status)
-			 ""))
-	  nil))))))
+  (unless (and w3m-current-ssl
+	       (not (string-match "\\`\\(ht\\|f\\)tps://" url))
+	       (not (y-or-n-p "You are leaving secure page.  Continue? ")))
+    (lexical-let ((url url)
+		  (content-type content-type)
+		  (content-charset content-charset)
+		  (output-buffer (current-buffer)))
+      (w3m-process-do-with-temp-buffer
+	  (type (progn
+		  (w3m-clear-local-variables)
+		  (w3m-retrieve url nil no-cache post-data referer handler)))
+	(when (buffer-live-p output-buffer)
+	  (setq url (w3m-url-strip-authinfo url))
+	  (if type
+	      (prog1 (w3m-prepare-content url (or content-type type)
+					  output-buffer content-charset)
+		(and w3m-verbose
+		     (not (get-buffer-window output-buffer))
+		     (message "The content (%s) has been retrieved in %s"
+			      url (buffer-name output-buffer))))
+	    (ding)
+	    (if (eq (car w3m-current-forms) t)
+		(setq w3m-current-forms (cdr w3m-current-forms)))
+	    (w3m-message "Cannot retrieve URL: %s%s"
+			 url
+			 (if w3m-process-exit-status
+			     (format " (exit status: %s)"
+				     w3m-process-exit-status)
+			   ""))
+	    nil))))))
 
 (defconst w3m-content-prepare-functions
   '(("\\`text/" . w3m-prepare-text-content)
@@ -5859,11 +5864,11 @@ the `w3m-search' function and the variable `w3m-uri-replace-alist'."
   (setq url (w3m-uri-replace url))
   (cond
    ;; process mailto: protocol
-   ((string-match "\\`mailto:\\(.*\\)" url)
+   ((string-match "\\`mailto:" url)
     (w3m-goto-mailto-url url post-data))
    ;; process ftp: protocol
    ((and w3m-use-ange-ftp
-	 (string-match "\\`ftp://" url)
+	 (string-match "\\`ftps?://" url)
 	 (not (string= "text/html" (w3m-local-content-type url))))
     (w3m-goto-ftp-url url))
    ;; find-file directly
@@ -6009,7 +6014,11 @@ Cannot run two w3m processes simultaneously \
 		       (w3m-toggle-inline-image 'force reload)))
 		(setq buffer-read-only t)
 		(set-buffer-modified-p nil)))
-	      (w3m-arrived-add orig w3m-current-title nil nil charset ct)
+	      (w3m-arrived-add orig
+			       w3m-current-title
+			       (w3m-last-modified url)
+			       (current-time)
+			       charset ct)
 	      (setq list-buffers-directory w3m-current-title)
 	      ;; must be `w3m-current-url'
 	      (setq default-directory (w3m-current-directory w3m-current-url))
@@ -6319,7 +6328,8 @@ ex.) c:/dir/file => //c/dir/file"
     (setq w3m-current-buffer (current-buffer)
 	  w3m-current-url url
 	  w3m-current-base-url url
-	  w3m-current-title (w3m-rendering-multibyte-buffer))
+	  w3m-current-title (let (w3m-use-refresh)
+			      (w3m-rendering-multibyte-buffer)))
     (w3m-fontify)
     (when (w3m-display-inline-images-p)
       (and w3m-force-redisplay (sit-for 0))
@@ -6383,7 +6393,10 @@ works on Emacs.
   (when (string-match "\\`about://header/" url)
     (setq url (substring url (match-end 0)))
     (insert "Page Information\n"
-	    "\nTitle:          " (or (w3m-arrived-title url) "")
+	    "\nTitle:          " (or (w3m-encode-specials-string
+				      (w3m-arrived-title
+				       (w3m-url-strip-authinfo url)))
+				     "")
 	    "\nURL:            " url
 	    "\nDocument Type:  " (or (w3m-content-type url) "")
 	    "\nLast Modified:  "
@@ -6609,11 +6622,11 @@ showing a tree-structured history by the command `w3m-about-history'.")
 	(if (or (null title)
 		(string= "<no-title>" title))
 	    (setq title (concat
-			 "&lt;"
+			 "<"
 			 (if (<= (length url) width)
 			     url
 			   (substring url 0 width)) ;; only ASCII characters.
-			 "&gt;"))
+			 ">"))
 	  (when (>= (string-width title) width)
 	    (setq title
 		  (concat
@@ -6622,7 +6635,9 @@ showing a tree-structured history by the command `w3m-about-history'.")
 		     (move-to-column width)
 		     (buffer-substring (point-min) (point)))
 		   "..."))))
-	(insert (format "<tr><td><a href=\"%s\">%s</a></td>" url title))
+	(insert (format "<tr><td><a href=\"%s\">%s</a></td>"
+			url
+			(w3m-encode-specials-string title)))
 	(when (cdr (car alist))
 	  (if (<= (w3m-time-lapse-seconds (cdr (car alist)) now)
 		  64800) ;; = (* 60 60 18) 18hours ago.

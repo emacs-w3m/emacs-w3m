@@ -151,7 +151,9 @@ Optional argument TITLE is title of link."
     (setq title (read-string "Title: " title 'w3m-bookmark-title-history))
     (if (string-match title "^ *$")
 	(error "You must specify title"))
-    (w3m-bookmark-write-file url title section)))
+    (w3m-bookmark-write-file url
+			     (w3m-encode-specials-string title)
+			     (w3m-encode-specials-string section))))
 
 ;;;###autoload
 (defun w3m-bookmark-add-this-url ()
