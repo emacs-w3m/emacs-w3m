@@ -1,5 +1,8 @@
 2003-07-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-form.el (w3m-form-set-method): New inline function, that is
+	a `setf' method of `w3m-form-method'.
+
 	* w3mhack.el (w3mhack-examine-modules): Because Mew 2.x and later
 	do not support Mule2.3 and Emacs19, ignore mew-shimbun.el when
 	compiling on such Emacsen.

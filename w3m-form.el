@@ -80,6 +80,12 @@
        (symbolp (aref 0 obj))
        (eq (aref 0 obj) 'w3m-form-object)))
 
+(defsubst w3m-form-set-method (form method)
+  (aset form 1 (if (stringp method)
+		   (intern method)
+		 method)))
+(defsetf w3m-form-method w3m-form-set-method)
+
 (defmacro w3m-form-method (form)
   (` (aref (, form) 1)))
 (defmacro w3m-form-action (form)
