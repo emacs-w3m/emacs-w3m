@@ -260,7 +260,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 					 nil "^[^#]+\\.el$"))
 	    (setq modules (nconc modules (list (concat shimbun-dir file)))))
 	  ;; mew-shimbun check
-	  (unless (locate-library "mew")
+	  (unless (locate-library "mew-nntp")
 	    (push (concat shimbun-dir "mew-shimbun.el") ignores)))
       (push "mime-w3m.el" ignores)
       (push "octet.el" ignores))
