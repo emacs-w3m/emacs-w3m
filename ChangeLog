@@ -1,3 +1,8 @@
+2002-04-08  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
+
+	* w3m-e20.el (w3m-bitmap-image-insert-internal): Begin the overlay
+	on `begion-of-line'.
+
 2002-04-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* octet.el: Update URL for xlhtml.

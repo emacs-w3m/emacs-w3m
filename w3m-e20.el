@@ -97,7 +97,7 @@
   (save-excursion
     (goto-char pos)
     (let (ovr ovrbeg)
-      (setq ovrbeg (1+ (progn (beginning-of-line) (point))))
+      (setq ovrbeg (progn (beginning-of-line) (point)))
       (setq ovr (w3m-bitmap-image-get-overlay ovrbeg))
       (unless ovr
 	(setq ovr (make-overlay ovrbeg ovrbeg))
