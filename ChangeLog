@@ -1,3 +1,8 @@
+2001-03-30  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-w3m-attributes): Fixed spec of return value when
+	response code is greater than 500.
+
 2001-03-29  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el: Fix bugs in caching deflated contents.

@@ -1556,7 +1556,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
      ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
      ;; HTTP/1.0 501 Method Not Implemented
      ((and header (string-match "HTTP/1\\.[0-9] 50[0-9]" header))
-      (list "text/html")))))
+      (list "text/html" nil nil nil nil url)))))
 
 (defun w3m-pretty-length (n)
   ;; This function imported from url.el.
@@ -1591,18 +1591,18 @@ If optional argument NO-CACHE is non-nil, cache is not used."
     (when headers
       (let ((type   (car headers))
 	    (length (nth 2 headers)))
-	(when (let ((w3m-current-url url)
-		    (w3m-w3m-retrieve-length length)
-		    (w3m-process-message
-		     (lambda ()
-		       (if w3m-w3m-retrieve-length
-			   (w3m-message
-			    "Reading... %s of %s (%d%%)"
-			    (w3m-pretty-length (buffer-size))
-			    (w3m-pretty-length w3m-w3m-retrieve-length)
-			    (/ (* (buffer-size) 100) w3m-w3m-retrieve-length))
-			 (w3m-message "Reading... %s"
-				      (w3m-pretty-length (buffer-size)))))))
+	(when (let* ((w3m-current-url url)
+		     (w3m-w3m-retrieve-length length)
+		     (w3m-process-message
+		      (lambda ()
+			(if w3m-w3m-retrieve-length
+			    (w3m-message
+			     "Reading... %s of %s (%d%%)"
+			     (w3m-pretty-length (buffer-size))
+			     (w3m-pretty-length w3m-w3m-retrieve-length)
+			     (/ (* (buffer-size) 100) w3m-w3m-retrieve-length))
+			  (w3m-message "Reading... %s"
+				       (w3m-pretty-length (buffer-size)))))))
 		(w3m-message "Reading...")
 		(prog1 (zerop (w3m-exec-process "-dump_source" url))
 		  (w3m-message "Reading... done")))
