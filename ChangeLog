@@ -1,3 +1,11 @@
+2001-11-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-form.el (w3m-form-parse-forms): Decode value of input tag.
+	(w3m-form-replace): Use `w3m-get-text-property-around'.
+
+	* w3m.el (w3m-parse-attributes): Add :decode-entity attribute.
+	(w3m-decode-entities-string): New function.
+
 2001-11-02  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-copy-buffer): Call `w3m-goto-url' instead of copying
