@@ -15,16 +15,16 @@
 
 @c permissions text appears in an Info file before the first node.
 @ifinfo
-This file documents Emacs-w3m, an interface program of w3m on Emacsen.
+This file documents emacs-w3m, an interface program of w3m on Emacsen.
 
-このファイルは Emacs で動く w3m のインタフェースである Emacs-w3m に関す
+このファイルは Emacs で動く w3m のインタフェースである emacs-w3m に関す
 る説明書です。
 
 Copyright @copyright{} 2000, 2001, 2002 @w{TSUCHIYA Masatoshi}.
 
-This edition is for Emacs-w3m version @value{VERSION}.
+This edition is for emacs-w3m version @value{VERSION}.
 
-この版は Emacs-w3m version @value{VERSION} に対応します。
+この版は emacs-w3m バージョン @value{VERSION} に対応します。
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -66,7 +66,7 @@ license to the document, as described in section 6 of the license.
 @sp 10
 @title Emacs-w3m ユーザマニュアル
 @subtitle An interface program of w3m on Emacsen
-@subtitle for Emacs-w3m version @value{VERSION}
+@subtitle for emacs-w3m version @value{VERSION}
 @author 有沢明宏
 @author 後藤俊一
 @author 白井秀行
@@ -80,9 +80,9 @@ license to the document, as described in section 6 of the license.
 @vskip 0pt plus 1filll
 Copyright @copyright{} 2000, 2001, 2002 @w{TSUCHIYA Masatoshi}.
 
-This manual is for Emacs-w3m version @value{VERSION}.
+This manual corresponds to emacs-w3m version @value{VERSION}.
 
-このマニュアルは Emacs-w3m version @value{VERSION} に対応します。
+このマニュアルは emacs-w3m バージョン @value{VERSION} に対応します。
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -126,17 +126,10 @@ license to the document, as described in section 6 of the license.
 @top Emacs-w3m ユーザマニュアル
 
 @flushright
-有沢明宏
-後藤俊一
-白井秀行
-高林哲
-土屋雅稔
-寺西裕一
-西田圭介
-山岡克美
+Emacs-w3m 開発チーム
 @end flushright
 
-この文書は Emacs-w3m @value{VERSION} に対応します。
+この文書は emacs-w3m バージョン @value{VERSION} に対応します。
 
 @end ifinfo
 
@@ -148,6 +141,13 @@ license to the document, as described in section 6 of the license.
 @node Introduction, Index, Top, Top
 @chapter はじめに
 @cindex Introduction
+
+すばらしい w3m プログラムを開発してくれた伊藤彰則さんとそのお仲間に、特
+別な感謝を捧げます。W3m は emacs-w3m の実現に不可欠です。さらにコメント、
+提案およびバグの修正をしてくれたすべての人々に感謝します。たとえ問題があっ
+ても、責任はすべて私たち emacs-w3m開発チームにあります。もっとも、ご承知
+の通り保証はありません。Emacs-w3m は 2000年6月に土屋雅稔によって初めて作
+られました。
 
 @node Index,  , Introduction, Top
 @unnumbered 索引
