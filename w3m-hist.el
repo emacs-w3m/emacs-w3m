@@ -164,7 +164,7 @@ history element of the current position."
 	    ;; No previous element.
 	    nil
 	  ;; This element has a parent.
-	  (nbutlast position 2))
+	  (setcdr (nthcdr (- class 2) position) nil))
       ;; Previous element exists in the branch.
       (setcar (nthcdr class position) (1- number)))
     (w3m-history-current)))
