@@ -46,7 +46,7 @@
 (defconst shimbun-palmfan-date-regexp
   ;;<P><A name="Apr,13.2002"></A><B>　Apr,13.2002</B><A href="#Apr,12.2002">▼</A>
   ;;"^<P><A name=\"\\(Jan\\|Feb\\|Mar\\|Apr\\|May\\|Jun\\|Jul\\|Aug\\|Sep\\|Oct\\|Nov\\|Dec\\|\\),\\([0-9]+\\)\\.\\([0-9]+\\)\"></A><B>.*▼</A>$")
-  "^<!-- 日付 -->\n+.*\\(Sun\\|Mon\\|Tue\\|Wed\\|Thr\\|Fri\\|Sat\\),* \\(January\\|February\\|March\\|April\\|May\\|June\\|July\\|August\\|September\\|October\\|November\\|December\\|Jan\\|Feb\\|Mar\\|Apr\\|May\\|Jun\\|Jul\\|Aug\\|Sep\\|Oct\\|Nov\\|Dec\\) \\([0-9]+\\)\\.\\([0-9]+\\)")
+  "^<!-- 日付 -->\n+.*\\(Sun\\|Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\),* \\(January\\|February\\|March\\|April\\|May\\|June\\|July\\|August\\|September\\|October\\|November\\|December\\|Jan\\|Feb\\|Mar\\|Apr\\|May\\|Jun\\|Jul\\|Aug\\|Sep\\|Oct\\|Nov\\|Dec\\) \\([0-9]+\\)\\.\\([0-9]+\\)")
 
 (defconst shimbun-palmfan-palmwarefan-date-regexp
   "<!-- \\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]*\\)/\\([0-9][0-9]*\\) -->$")

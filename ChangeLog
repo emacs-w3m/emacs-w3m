@@ -1,3 +1,7 @@
+2003-01-23  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-date-regexp): Typo fixed.
+
 2003-01-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-function-max-args): Don't use the arglist
