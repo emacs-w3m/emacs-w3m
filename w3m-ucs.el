@@ -49,7 +49,9 @@
 
 
 (defun w3m-ucs-to-char (codepoint)
-  (or (ucs-to-char codepoint) ?~))
+  (condition-case nil
+      (or (ucs-to-char codepoint) ?~)
+    (error ?~)))
 
 
 (eval-and-compile
