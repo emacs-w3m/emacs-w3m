@@ -122,6 +122,10 @@
   :group 'w3m
   :type 'string)
 
+;; internal variables
+(defvar w3m-bookmark-section-history nil)
+(defvar w3m-bookmark-title-history nil)
+
 (defun w3m-bookmark-add (url &optional title)
   "Add URL to bookmark.
 Optional argument TITLE is title of link."
