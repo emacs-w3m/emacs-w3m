@@ -3,6 +3,9 @@
 	* doc/Makefile.in (install): Don't run install-info for non-
 	existent info files.
 
+	* w3mhack.el (w3mhack-examine-modules): Also examine
+	"sb-pukiwiki-rss.el".
+	
 2003-06-20  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-rss.el (shimbun-rss-build-message-id): Add new arg
