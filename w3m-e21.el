@@ -310,21 +310,31 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defun w3m-setup-favicon (url)
   (setq w3m-current-favicon-data nil
 	w3m-current-favicon-image nil)
-  (when (and w3m-use-favicon (w3m-image-type-available-p 'xpm))
-    (w3m-retrieve-favicon
-     (w3m-expand-url (concat "/" w3m-favicon-name) url)
-     w3m-current-buffer)))
+  (when (and w3m-use-favicon
+	     (w3m-image-type-available-p 'xpm))
+    (if (string-match "\\`about://\\([^/]+\\)/" url)
+	(let ((icon (intern-soft (concat "w3m-about-" (match-string 1 url)
+					 "-favicon"))))
+	  (if (and (fboundp 'base64-decode-string)
+		   (boundp icon))
+	      (with-current-buffer w3m-current-buffer
+		(setq w3m-current-favicon-data
+		      (eval (list 'base64-decode-string
+				  (symbol-value icon)))))))
+      (w3m-retrieve-favicon
+       (w3m-expand-url (concat "/" w3m-favicon-name) url)
+       w3m-current-buffer))))
 
 (defun w3m-buffer-favicon (buffer)
   (with-current-buffer buffer
     (when w3m-current-favicon-data
       (or w3m-current-favicon-image
-	  (let ((png (w3m-imagick-convert-data
+	  (let ((xpm (w3m-imagick-convert-data
 		      w3m-current-favicon-data
 		      "ico" "xpm" "-geometry" w3m-favicon-size)))
-	    (and png
+	    (and xpm
 		 (setq w3m-current-favicon-image
-		       (create-image png
+		       (create-image xpm
 				     'xpm
 				     t
 				     :ascent 'center))))))))
@@ -484,7 +494,7 @@ Buffer string between BEG and END are replaced with IMAGE."
        (mapconcat
 	(lambda (buffer)
 	  (let ((title (w3m-buffer-title buffer))
-		(favicon (w3m-buffer-favicon buffer)))
+		(favicon (if w3m-use-favicon (w3m-buffer-favicon buffer))))
 	    (propertize
 	     (concat (if favicon
 			 (propertize " " 'display favicon)

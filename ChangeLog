@@ -1,3 +1,10 @@
+2001-12-04  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-e21.el (w3m-setup-favicon): Fix for "about://" url.
+	(w3m-buffer-favicon): Renamed local variable.
+	(w3m-tab-line): Call `w3m-buffer-favicon' only when w3m-use-favicon
+	is non-nil.
+
 2001-12-03  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-modeline-process-status-on): Modify default value.
