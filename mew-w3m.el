@@ -99,21 +99,13 @@ This variable effected only XEmacs or Emacs 21."
   :group 'mew-w3m
   :type 'hook)
 
-;; these are defined here.
-;; It's not reasonable to merge into w3m.el, I think
-(defvar mew-w3m-minor-mode-map (w3m-make-minor-mode-keymap))
-(defvar mew-w3m-minor-mode nil)
-(make-variable-buffer-local 'mew-w3m-minor-mode)
-(unless (assq 'mew-w3m-minor-mode minor-mode-alist)
-  (push (list 'mew-w3m-minor-mode " w3m") minor-mode-alist))
-(unless (assq 'mew-w3m-minor-mode minor-mode-map-alist)
-  (push (cons 'mew-w3m-minor-mode mew-w3m-minor-mode-map) minor-mode-map-alist))
 (defconst mew-w3m-safe-url-regexp "\\`cid:")
 
 (defun mew-w3m-minor-mode-setter ()
   "Check message buffer and activate w3m-minor-mode."
-  (setq mew-w3m-minor-mode (and (get-text-property (point-min) 'w3m)
-				mew-use-w3m-minor-mode)))
+  (w3m-minor-mode (or (and (get-text-property (point-min) 'w3m)
+			   mew-use-w3m-minor-mode)
+		      0)))
 
 (defun mew-w3m-view-inline-image (&optional allimage)
   "Display the images of Text/Html part.

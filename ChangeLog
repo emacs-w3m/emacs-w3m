@@ -1,3 +1,22 @@
+2002-10-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* mew-w3m.el: Cancel the last change.  Use `w3m-minor-mode'.
+
+	* mime-w3m.el (mime-w3m-display-inline-images): Fix its docstring.
+	(mime-w3m-safe-url-regexp): Fill its docstring.
+	(mime-w3m-setup-hook): New hook.
+	(mime-w3m-setup): Do not initialize `mime-w3m-mode-map'; Run the
+	above hook.
+	(mime-w3m-mode-map): It is not defined for XEmacs and Emacs21.
+	(mime-w3m-local-map-property): New function.
+	(mime-w3m-preview-text/html): Call it.
+
+	* w3m.el (w3m-key-binding): Cancel the last change.
+	(w3m-region): Change the interactive form; Do not process <base>
+	tag by itself.
+	(w3m-minor-mode-command-alist): Cancel the last change.
+	(w3m-minor-mode-map, w3m-minor-mode-hook, w3m-minor-mode): Revival.
+
 2002-10-23  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-toggle-inline-images-internal)

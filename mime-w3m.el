@@ -48,24 +48,31 @@
     (require 'font)))
 
 (defcustom mime-w3m-display-inline-images 'default
-  "Non-nil means that inline images are displayed."
+  "*Non-nil means that inline images are displayed.
+When this option is equal to `default',
+`w3m-default-display-inline-images' is refered instead of this option,
+to decide whether inline images are displayed."
   :group 'w3m
   :group 'mime-view
   :type 'boolean)
 
 (defcustom mime-w3m-safe-url-regexp "\\`cid:"
-  "Regexp that matches safe url names.  Some HTML mails might have the
-trick of spammers using <img> tags.  It is likely to be intended to
-verify whether you have read the mail.  You can prevent your personal
-informations from leaking by setting this to the regexp which matches
-the safe url names.  The value of the variable `w3m-safe-url-regexp'
-will be bound with this value.  You may set this value to nil if you
-consider all the urls to be safe."
+  "*Regexp that matches safe url names.
+Some HTML mails might have the trick of spammers using <img> tags.  It
+is likely to be intended to verify whether you have read the mail.
+You can prevent your personal informations from leaking by setting
+this to the regexp which matches the safe url names.  The value of the
+variable `w3m-safe-url-regexp' will be bound with this value.  You may
+set this value to nil if you consider all the urls to be safe."
   :group 'mime-w3m
   :type '(choice (regexp :tag "Regexp")
 		 (const :tag "All URLs are safe" nil)))
 
-(defvar mime-w3m-mode-map nil)
+(defcustom mime-w3m-setup-hook nil
+  "*Hook run at the end of function `mime-w3m-setup'."
+  :group 'mime-w3m
+  :type 'hook)
+
 (defvar mime-w3m-message-structure nil)
 (make-variable-buffer-local 'mime-w3m-message-structure)
 
@@ -106,9 +113,7 @@ consider all the urls to be safe."
   (unless (assq 'mime-view-mode w3m-cid-retrieve-function-alist)
     (push (cons 'mime-view-mode 'mime-w3m-cid-retrieve)
 	  w3m-cid-retrieve-function-alist))
-  (unless mime-w3m-mode-map
-    (setq mime-w3m-mode-map (w3m-make-minor-mode-keymap))
-    (set-keymap-parent mime-w3m-mode-map mime-view-mode-default-map)))
+  (run-hooks 'mime-w3m-setup-hook))
 
 (def-edebug-spec mime-w3m-save-background-color t)
 (defmacro mime-w3m-save-background-color (&rest body)
@@ -118,6 +123,28 @@ consider all the urls to be safe."
 	     (progn ,@body)
 	   (font-set-face-background 'default color (current-buffer))))
     (cons 'progn body)))
+
+(eval-and-compile
+  (unless (or (featurep 'xemacs)
+	      (>= emacs-major-version 21))
+    (defvar mime-w3m-mode-map nil
+      "Keymap for text/html part rendered by `mime-w3m-preview-text/html'.
+This map is overwritten by `mime-w3m-local-map-property' based on the
+value of `w3m-minor-mode-map'.  Therefore, in order to add some
+commands to this map, add them to `w3m-minor-mode-map' instead of this
+map.")))
+
+(defsubst mime-w3m-local-map-property ()
+  (if (or (featurep 'xemacs)
+	  (>= emacs-major-version 21))
+      (list 'keymap w3m-minor-mode-map)
+    (list 'local-map
+	  (or mime-w3m-mode-map
+	      (progn
+		(setq mime-w3m-mode-map (copy-keymap w3m-minor-mode-map))
+		(set-keymap-parent mime-w3m-mode-map
+				   mime-view-mode-default-map)
+		mime-w3m-mode-map)))))
 
 ;;;###autoload
 (defun mime-w3m-preview-text/html (entity situation)
@@ -139,14 +166,13 @@ consider all the urls to be safe."
 	   (let ((w3m-safe-url-regexp mime-w3m-safe-url-regexp)
 		 (w3m-display-inline-images mime-w3m-display-inline-images)
 		 w3m-force-redisplay)
-	     (w3m-region p
-			 (point-max)
+	     (w3m-region p (point-max)
 			 (and (stringp xref)
 			      (string-match "\\`http://" xref)
 			      xref))
 	     (add-text-properties p (point-max)
-				  (list 'local-map mime-w3m-mode-map
-					'text-rendered-by-mime-w3m t)))
+				  (nconc (mime-w3m-local-map-property)
+					 '(text-rendered-by-mime-w3m t))))
 	 (error (message (format "%s" err))))))))
 
 ;; To avoid byte-compile warning in `mime-w3m-cid-retrieve'.
