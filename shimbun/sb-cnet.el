@@ -36,6 +36,7 @@
 (luna-define-class shimbun-cnet (shimbun) ())
 
 (defvar shimbun-cnet-url "http://japan.cnet.com/")
+(defvar shimbun-cnet-server-name "CNET Japan")
 (defvar shimbun-cnet-groups '("news"))
 (defvar shimbun-cnet-from-address  "webmaster@japan.cnet.com")
 (defvar shimbun-cnet-content-start "\n<!-- MAIN -->\n")
