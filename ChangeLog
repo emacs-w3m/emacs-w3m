@@ -1,3 +1,8 @@
+2005-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-bbc.el (shimbun-rss-build-message-id): Ease a
+	strictness of regexp.
+
 2005-03-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-form.el (w3m-form-mee-new): Display clear signs of
@@ -7,7 +12,7 @@
 
 	* w3m.el (w3m-decode-buffer): Decode the buffer within buffer set
 	the `multibyte'.
-	
+
 	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-article): Treat
 	folder surely over again.
 
