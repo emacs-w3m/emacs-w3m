@@ -1,3 +1,8 @@
+2001-10-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-exec-compatible-filter): Fix wrong use of
+	`w3m-exec-get-user' and `w3m-exec-get-passwd'.
+
 2001-10-26  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el: Changes to support XEmacs without MULE.
