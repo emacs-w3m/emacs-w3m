@@ -1,3 +1,11 @@
+2002-09-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-arrived-setup): Use 0 instead of nil as the initial
+	value for the new obarray.
+
+	* w3m-filter.el (w3m-filter-setup): Use 0 instead of nil as the
+	initial value for the new obarray.
+
 2002-09-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-mode): Fix typo in its docstring.

@@ -64,7 +64,7 @@
 (defun w3m-filter-setup ()
   "Initialize hash database of filtering rules."
   (unless w3m-filter-db
-    (let ((db (make-vector w3m-filter-db-size nil)))
+    (let ((db (make-vector w3m-filter-db-size 0)))
       (dolist (site w3m-filter-rules)
 	(let* ((url (car site))
 	       (func (cdr site))
