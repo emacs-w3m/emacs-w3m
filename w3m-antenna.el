@@ -280,6 +280,7 @@ whose elements are:
 
 (defun w3m-antenna-check-all-sites (&optional handler)
   "Check all sites specified in `w3m-antenna-sites'."
+  (w3m-antenna-setup)
   (if (not handler)
       (w3m-process-with-wait-handler
 	(w3m-antenna-check-all-sites handler))
@@ -293,13 +294,18 @@ whose elements are:
 			(and (= 0 (setq ,count (1- ,count)))
 			     (buffer-name ,buffer)
 			     (with-current-buffer ,buffer
-			       (funcall ,handler nil))))))
+			       (let ((alist w3m-antenna-alist))
+				 (w3m-antenna-shutdown)
+				 (funcall ,handler alist)))))))
 	(dolist (site w3m-antenna-sites)
 	  (when (w3m-process-p
 		 (setq tmp (w3m-antenna-check-site site t handler)))
 	    (push tmp processes)
 	    (set count (1+ (symbol-value count)))))
-	(when processes
+	(if (not processes)
+	    (let ((alist w3m-antenna-alist))
+	      (w3m-antenna-shutdown)
+	      alist)
 	  (w3m-process-start-queued-processes)
 	  (car processes))))))
 
@@ -365,10 +371,12 @@ whose elements are:
 			      post-data referer handler)
   (w3m-antenna-setup)
   (w3m-process-do
-      (val (when no-cache
-	     (w3m-antenna-check-all-sites handler)))
+      (alist (if no-cache
+		 (w3m-antenna-check-all-sites handler)
+	       (or w3m-antenna-alist
+		   (w3m-load-list w3m-antenna-file))))
     (let (changed unchanged)
-      (dolist (site w3m-antenna-alist)
+      (dolist (site alist)
 	(if (w3m-time-newer-p (or (w3m-antenna-site-last-modified site)
 				  (w3m-antenna-site-size-detected site))
 			      (w3m-arrived-last-modified
@@ -378,7 +386,6 @@ whose elements are:
       (w3m-antenna-make-contents
        (funcall w3m-antenna-sort-changed-sites-function (nreverse changed))
        (funcall w3m-antenna-sort-unchanged-sites-function (nreverse unchanged)))
-      (w3m-antenna-shutdown)
       "text/html")))
 
 ;;;###autoload
