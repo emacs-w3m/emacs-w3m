@@ -307,7 +307,19 @@ system of retrieved contents."
 (defun shimbun-create-header (&optional number subject from date id
 					references chars lines xref
 					extra asis)
-  "Return a new header for a shimbun article."
+  "Return a new header for a shimbun article.
+Because `shimbun-create-header' normalizes arguments with
+`shimbun-header-normalize' before creating new header object,
+following operations are unnecessary:
+
+  * MIME-encoding of subjects and from addresses.
+  * Removal of HTML tags.
+  * Decode of HTML entities.
+  * Replacement of space characteres, such as tab, newline, and
+    linefeed.
+
+If optional 11th argument ASIS is non-nil, normalization of header
+values is suppressed."
   (let ((new (luna-make-entity 'shimbun-header :number number)))
     (inline
       (shimbun-header-set-subject new subject asis)
