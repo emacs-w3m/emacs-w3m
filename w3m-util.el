@@ -334,18 +334,20 @@ An argument of nil means kill the current buffer."
 	(string< (car x) y))
     (string< x y)))
 
-(defsubst w3m-list-buffers (&optional nosort)
-  "Return list of w3m-mode buffers."
-  (if nosort
-      (save-current-buffer
-	(delq nil
-	      (mapcar
-	       (lambda (buffer)
-		 (set-buffer buffer)
-		 (when (eq major-mode 'w3m-mode) buffer))
-	       (buffer-list))))
-    (sort (w3m-list-buffers t)
-	  (function w3m-buffer-name-lessp))))
+(defun w3m-list-buffers (&optional nosort)
+  "Return a list of buffers in which emacs-w3m sessions are open.
+If the optional NOSORT is nil, the list is sorted in the order of
+buffer names."
+  (let ((buffers (buffer-list))
+	buffer rest)
+    (save-current-buffer
+      (while buffers
+	(set-buffer (setq buffer (pop buffers)))
+	(when (eq major-mode 'w3m-mode)
+	  (push buffer rest))))
+    (if nosort
+	(nreverse rest)
+      (sort rest #'w3m-buffer-name-lessp))))
 
 
 ;;; Miscellaneous:
