@@ -219,8 +219,8 @@ Return content-type of URL as string when retrieval succeeded."
 	      (shimbun-header-xref header))
     (shimbun-header-xref header)))
 
-(defcustom shimbun-encapsulate-article t
-  "*If non-nil, inline images in the shimbun article are encapsulated.
+(defcustom shimbun-encapsulate-images t
+  "*If non-nil, inline images will be encapsulated in the articles.
 Generated article have a multipart/related content-type."
   :group 'shimbun
   :type 'boolean)
@@ -228,7 +228,7 @@ Generated article have a multipart/related content-type."
 (defun shimbun-make-mime-article (shimbun header)
   "Make a MIME article according to SHIMBUN and HEADER.
 If article have inline images, generated article have a multipart/related
-content-type if `shimbun-encapsulate-article' is non-nil."
+content-type if `shimbun-encapsulate-images' is non-nil."
   (let ((case-fold-search t)
 	(count 0)
 	beg end
@@ -238,7 +238,7 @@ content-type if `shimbun-encapsulate-article' is non-nil."
 	  (upcase (symbol-name
 		   (detect-mime-charset-region (point-min)(point-max)))))
     (goto-char (point-min))
-    (when shimbun-encapsulate-article
+    (when shimbun-encapsulate-images
       (while (re-search-forward "<img" nil t)
 	(setq beg (point))
 	(when (search-forward ">" nil t)
