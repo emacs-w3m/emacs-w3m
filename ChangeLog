@@ -1,3 +1,9 @@
+2003-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-entity-insert)
+	[shimbun-multipart-entity]: Honor RFC2046 5.1.1 that the boundary
+	delimiter must begin with a line break.
+
 2003-11-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-last-visited-buffer): New variable.
