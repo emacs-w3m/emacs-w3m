@@ -1,3 +1,12 @@
+2005-03-13  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-wincefan.el (shimbun-wincefan-content-start): Updated.
+	(shimbun-wincefan-content-end): Ditto.
+	(shimbun-get-headers): Ditto.
+	(shimbun-wincefan-parse-time): Removed.
+	(shimbun-make-contents): Not to	modify the current buffer and
+	simply expand relative URLs.
+
 2005-03-13  MIYOSHI Masanori  <miyoshi@meadowy.org>
 
 	* shimbun/sb-yahoo-sports.el: New shimbun backend for

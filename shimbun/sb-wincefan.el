@@ -1,8 +1,8 @@
 ;;; sb-wincefan.el --- shimbun backend for WindowsCE FAN -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2005 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
-;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
+;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
@@ -34,16 +34,9 @@
 (defvar shimbun-wincefan-groups '("news"))
 (defconst shimbun-wincefan-from-address "webmaster@wince.ne.jp")
 (defvar shimbun-wincefan-coding-system 'japanese-shift-jis)
-(defvar shimbun-wincefan-content-start "\n<BLOCKQUOTE><B>■トピックスの内容</B>")
-(defvar shimbun-wincefan-content-end "</BLOCKQUOTE>\n")
+(defvar shimbun-wincefan-content-start "\\(<!-- *ソフト詳細情報 *-->\\|<B>■トピックスの内容<\/B>\\)")
+(defvar shimbun-wincefan-content-end "<!-- \\/*\\(記事\\|ソフト詳細情報\\)-->")
 (defvar shimbun-wincefan-expiration-days 14)
-
-(defsubst shimbun-wincefan-parse-time (str)
-  (save-match-data
-    (if (string-match "\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)" str)
-	(list (string-to-number (match-string 1 str))
-	      (string-to-number (match-string 2 str))
-	      (string-to-number (match-string 3 str))))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-wincefan)
 					 &optional outbuf)
@@ -55,81 +48,66 @@
 	 (case-fold-search t)
 	 url headers)
     (catch 'stop
-      (if (not (re-search-forward "^[\t ]+<!-+ＷＨＡＴ’Ｓ　ＮＥＷ-+>"
-				  nil t nil))
+      (if (not (re-search-forward "^<!--What's New-->" nil t nil))
 	  (throw 'stop nil)
 	(delete-region (point-min) (point)))
-      (if (not (re-search-forward "^[\t ]+<!-+ＨＯＴ　ＴＯＰＩＣＳ-+>"
-				  nil t nil))
+      (if (not (re-search-forward "^<!--//Whats' New-->" nil t nil))
 	  (throw 'stop nil)
 	(delete-region (point-max) (point)))
       (goto-char (point-min))
       (while (re-search-forward
-	      "<TR><TD VALIGN=TOP NOWRAP><FONT COLOR=\"[#A-Z0-9]+\" SIZE=-1>\\([0-9]+\\)月\\([0-9]+\\)日(\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))</FONT></TD>"
+	      ;;<FONT SIZE="-1" COLOR="#008000">1月30日(日)</FONT>
+	      "<FONT [^<>]+>\\([0-9]+\\)月\\([0-9]+\\)日(\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))<\/FONT>"
 	      nil t nil)
-	(let* ((month (match-string 1))
-	       (day (match-string 2))
-	       (year (substring (current-time-string) 20))
-	       (date (shimbun-make-date-string
-		      (string-to-number year)
-		      (string-to-number month)
-		      (string-to-number day)))
+	(let* ((month (string-to-number (match-string-no-properties 1)))
+	       (day (string-to-number (match-string-no-properties 2)))
+	       (year (string-to-number (substring (current-time-string) 20)))
+	       (date (shimbun-make-date-string year month day))
 	       (rawdate	(string-to-number
-			 (format "%04d%02d%02d"
-				 (string-to-number year)
-				 (string-to-number month)
-				 (string-to-number day))))
+			 (format "%04d%02d%02d"year month day)))
 	       (end (save-excursion
 		      (or (re-search-forward
-			   "<TR><TD VALIGN=TOP NOWRAP><FONT COLOR=\"[#A-Z0-9]+\" SIZE=-1>\\([0-9]+\\)月\\([0-9]+\\)日(\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))</FONT></TD>"
+			   "<FONT [^<>]+>\\([0-9]+\\)月\\([0-9]+\\)日(\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))<\/FONT>"
 			   nil t nil)
 			  (point-max))))
 	       (count -1)
 	       subject id)
 	  (while (re-search-forward
-		  "\\[<A HREF=\"[^<>]+\"><FONT COLOR=\"[#A-Z0-9]+\" SIZE=-1>\\([^<>]+\\)<\\/FONT><\\/A>\\]"
+		  ;;<TD><A HREF="/frame.asp?/soft2002/detail.asp?PID=3141" TARGET="_top"><FONT SIZE="-1" >くらどぅ vA20(ラジェンダ用 ToDo)</FONT></A></TD>
+		  ;;<TD><A HREF="/NewsLink/" TARGET="_top"><FONT SIZE="-1" COLOR="#FF0000">【News】</FONT><BR></A><A HREF="http://www.wince.ne.jp/snap/cnBoard.asp?PID=1376" TARGET="_top"><FONT SIZE="-1" >シャープが HDD 非搭載の廉価版 SL ザウルス「SL-C1000」を発売</FONT><BR></A><FONT SIZE="-1" ></FONT></TD>
+		  "<A HREF=\"\\([^\"]+\\)\" TARGET=\"_top\"><FONT SIZE=[^<>]+>\\([^<>]+\\)<\\/FONT>"
 		  end t nil)
-	    (setq subject (match-string 1)
-		  count (1+ count))
-	    ;; building ID
-	    (setq id (format "<%02d%08d%%%s@%s>" count rawdate group baseurl))
-	    (if (shimbun-search-id shimbun id)
-		(throw 'stop nil))
-	    (catch 'next
-	      (unless (re-search-forward "<TD><A HREF=\"\\([^<>]+\\)\"" end t nil)
-		(throw 'next nil))
-	      (setq url (shimbun-expand-url(match-string 1)))
-	      (when (string-match "frame.asp\\?/" url)
+	    (setq url (match-string-no-properties 1)
+		  subject (match-string-no-properties 2))
+	    ;; ("/NewsLink/" "【News】")
+	    (when (not (and (string-match "^/.*/$" url)
+			    (string-match "^【.*】$" subject)))
+	      (setq count (1+ count))
+	      ;; building ID
+	      (setq id (format "<%02d%08d%%%s@%s>" count rawdate group baseurl))
+	      (if (shimbun-search-id shimbun id)
+		  (throw 'stop nil))
+	      ;; not to use frame
+	      (when (string-match "/frame\\.asp\\?" url)
 		(setq url (concat (substring url 0 (match-beginning 0))
 				  (substring url (match-end 0)))))
-	      (when (re-search-forward
-		     "<FONT SIZE=-1>\\([^<>]+\\)<\/FONT><\/A><\/TD>"
-		     end t nil)
-		(setq subject (concat
-			       (when subject (concat subject "/"))
-			       (match-string 1))))
+	      (setq url (shimbun-expand-url url shimbun-wincefan-url))
 	      (push (shimbun-make-header
 		     0 (shimbun-mime-encode-string subject)
 		     from date id "" 0 0 url)
 		    headers))))))
     headers))
+    ;;(nreverse headers)))
 
 (luna-define-method shimbun-make-contents :before
   ((shimbun shimbun-wincefan) header)
   (let ((case-fold-search t))
     (save-excursion
-      (if (re-search-forward "^<BLOCKQUOTE>" nil t nil)
-	  (progn
-	    (delete-region (point) (point-min))
-	    (when (re-search-forward  "^<\/BLOCKQUOTE>" nil t nil)
-	      (delete-region (match-beginning 0) (point-max))))
-	(when (re-search-forward
-	       "<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=100% *>"
-	       nil t 2)
-	  (delete-region (point-min) (match-beginning 0))
-	  (when (re-search-forward "<!-- *右側メニューの呼び出し\/ *-->"
-				   nil t nil)
-	    (delete-region (point) (point-max))))))))
+      (while (re-search-forward "<IMG SRC=\\(\"?/[^ ]+\\)" nil t nil)
+	(let ((url (shimbun-expand-url (match-string-no-properties 1)
+				       shimbun-wincefan-url)))
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (insert "<IMG SRC=" url))))))
 
 (provide 'sb-wincefan)
 
