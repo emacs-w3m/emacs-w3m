@@ -326,38 +326,22 @@ content-type if `shimbun-encapsulate-images' is non-nil."
     (shimbun-make-mime-article shimbun header)
     (buffer-string)))
 
-(eval-when-compile
-  ;; Attempt to pick up the inline function `bbdb-search-simple'.
-  (condition-case nil
-      (require 'bbdb)
-    (error
-     (autoload 'bbdb-search-simple "bbdb")
-     (autoload 'bbdb-get-field "bbdb"))))
-
-(defcustom shimbun-use-bbdb-for-x-face nil
-  "*Say whether to use BBDB for choosing the author's X-Face.  It will be
-set to t when the initial value is nil and BBDB is loaded.  You can
-set this to `never' if you never want to use BBDB."
+(defcustom shimbun-x-face-database-function
+  (if (boundp 'shimbun-use-bbdb-for-x-face)
+      (cdr (assq (symbol-value 'shimbun-use-bbdb-for-x-face)
+		 '((t . shimbun-bbdb-get-x-face)
+		   (never . never)))))
+  "*Function to get faces from a favorite database.
+When its initial value is nil and BBDB or LSDB is loaded, it will be
+set to an appropriate default value.  You can set this to `never' if
+you want to use no database."
   :group 'shimbun
-  :type '(choice (const :tag "Default" nil)
-		 (const :tag "Use BBDB" t)
-		 (const :tag "No use BBDB" never)))
-
-(eval-when-compile
-  (condition-case nil
-      (require 'lsdb)
-    (error
-     (autoload 'lsdb-maybe-load-hash-tables "lsdb")
-     (autoload 'lsdb-lookup-records "lsdb"))))
-
-(defcustom shimbun-use-lsdb-for-x-face nil
-  "*Say whether to use LSDB for choosing the author's X-Face.  It will be
-set to t when the initial value is nil and LSDB is loaded.  You can
-set this to `never' if you never want to use LSDB."
-  :group 'shimbun
-  :type '(choice (const :tag "Default" nil)
-		 (const :tag "Use LSDB" t)
-		 (const :tag "No use LSDB" never)))
+  :type '(choice
+	  (const :tag "Default" nil)
+	  (const :tag "Use no database" never)
+	  (const :tag "Use BBDB" shimbun-bbdb-get-x-face)
+	  (const :tag "Use LSDB" shimbun-lsdb-get-x-face)
+	  (function :tag "User defined function")))
 
 (defun shimbun-header-insert (shimbun header)
   (let ((from (shimbun-header-from header))
@@ -376,47 +360,63 @@ set this to `never' if you never want to use LSDB."
     (insert "Lines: " (number-to-string (or (shimbun-header-lines header) 0))
 	    "\n"
 	    "Xref: " (or (shimbun-article-url shimbun header) "") "\n")
-    (unless shimbun-use-bbdb-for-x-face
+    (unless shimbun-x-face-database-function
       (when (and (fboundp 'bbdb-get-field)
 		 (not (eq 'autoload
 			  (car-safe (symbol-function 'bbdb-get-field)))))
-	(setq shimbun-use-bbdb-for-x-face t)))
-    (unless shimbun-use-lsdb-for-x-face
+	(setq shimbun-x-face-database-function 'shimbun-bbdb-get-x-face)))
+    (unless shimbun-x-face-database-function
       (when (and (fboundp 'lsdb-lookup-records)
 		 (not (eq 'autoload
 			  (car-safe (symbol-function 'lsdb-lookup-records)))))
-	(setq shimbun-use-lsdb-for-x-face t)))
+	(setq shimbun-x-face-database-function 'shimbun-lsdb-get-x-face)))
     (when (setq x-face
-		(or (and (eq t shimbun-use-bbdb-for-x-face)
-			 from
-			 ;; The library "mail-extr" will be autoload'ed.
-			 (setq from
-			       (cadr (mail-extract-address-components from)))
-			 (setq x-face (bbdb-search-simple nil from))
-			 (setq x-face (bbdb-get-field x-face 'face))
-			 (not (zerop (length x-face)))
+		(or (and from
+			 (fboundp shimbun-x-face-database-function)
+			 (setq x-face
+			       (funcall shimbun-x-face-database-function from))
 			 (concat "X-Face: "
 				 (mapconcat 'identity
 					    (split-string x-face)
 					    "\nX-Face: ")))
-		    (and (eq t shimbun-use-lsdb-for-x-face)
-			 from
-			 ;; The library "mail-extr" will be autoload'ed.
-			 (setq from
-			       (car (mail-extract-address-components from)))
-			 (progn
-			   (lsdb-maybe-load-hash-tables)
-			   (setq x-face (car (lsdb-lookup-records from)))
-			   (setq x-face (cadr (assoc 'x-face x-face))))
-			 (not (zerop (length x-face)))
-			 (concat "X-Face: "
-				 (mapconcat 'identity
-					    (split-string x-face)
-					    "\n ")))
 		    (shimbun-x-face shimbun)))
       (insert x-face)
       (unless (bolp)
 	(insert "\n")))))
+
+(eval-when-compile
+  ;; Attempt to pick up the inline function `bbdb-search-simple'.
+  (condition-case nil
+      (require 'bbdb)
+    (error
+     (autoload 'bbdb-search-simple "bbdb")
+     (autoload 'bbdb-get-field "bbdb"))))
+
+(defun shimbun-bbdb-get-x-face (person)
+  "Search a face of a PERSON from LSDB.  When missing it, return nil."
+  (setq person (car (mail-extract-address-components person)))
+  (let (x)
+    (and (setq x (bbdb-search-simple nil person))
+	 (setq x (bbdb-get-field x 'face))
+	 (not (zerop (length x)))
+	 x)))
+
+(eval-when-compile
+  (condition-case nil
+      (require 'lsdb)
+    (error
+     (autoload 'lsdb-maybe-load-hash-tables "lsdb")
+     (autoload 'lsdb-lookup-records "lsdb"))))
+
+(defun shimbun-lsdb-get-x-face (person)
+  "Return a face of a PERSON from BBDB.  When missing it, return nil."
+  (setq person (car (mail-extract-address-components person)))
+  (lsdb-maybe-load-hash-tables)
+  (let (x)
+    (and (setq x (car (lsdb-lookup-records person)))
+	 (setq x (cadr (assoc 'x-face x)))
+	 (not (zerop (length x)))
+	 x)))
 
 ;;; Implementation of Shimbun API.
 

@@ -1,5 +1,13 @@
 2003-07-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/shimbun.el (shimbun-use-bbdb-for-x-face): Abolished.
+	(shimbun-use-lsdb-for-x-face): Abolished.
+	(shimbun-x-face-database-function): New option.
+	(shimbun-bbdb-get-x-face): New function.
+	(shimbun-lsdb-get-x-face): New function.
+	(shimbun-header-insert): Use the above option and functions
+	instead of abolished ones.
+
 	* w3m.el (w3m-copy-buffer): Fix the logical error installed by the
 	last change at 2003-07-15.
 
