@@ -302,6 +302,9 @@ stored in the `w3m-favicon-image' buffer-local variable."
 			    (error nil)))
 	  (push (nconc elem (list image)) w3m-favicon-cache-data))))))
 
+(add-hook 'w3m-arrived-setup-functions 'w3m-favicon-load-cache-file)
+(add-hook 'w3m-arrived-shutdown-functions 'w3m-favicon-save-cache-file)
+
 (provide 'w3m-favicon)
 
 ;;; w3m-favicon.el ends here
