@@ -1,3 +1,13 @@
+2001-10-15  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* README.ja: Divided original section 2. a) into two parts, 2. a)
+	and 2. b).
+	Add new section 2. c), 2. e) about APEL, FLIM, shimbun library.
+	* README: Ditto.
+
+	* FAQ.ja (Q. 動作する Emacs は?): Add description about where to
+	get APEL.
+	
 2001-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-expand-url): Accept URL which has the scheme part

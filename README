@@ -15,14 +15,20 @@ This package contains a interface program of w3m.
 
    a) This package requires the latest version of w3m (see section 3),
       please install it in the first step.
-      In addition, if you are using XEmacs 21.2.20 or later, to use
+
+   b) In addition, if you are using XEmacs 21.2.20 or later, to use
       the program "gifsicle" is recommended (it is not always needed,
       except for showing optimized animated gif images).  It is
       available from:
 
           http://www.lcdf.org/gifsicle/
 
-      Emacs-w3m requires the module regexp-opt.el(c) which might not
+   c) If you use XEmacs or Mule-2.3, you have to install APEL before
+      installing Emacs-w3m.  APEL is available at:
+
+         ftp://ftp.m17n.org/pub/mule/apel/
+
+   d) Emacs-w3m requires the module regexp-opt.el(c) which might not
       be provided in the old Emacsen (e.g. Mule 2).  If you are using
       such versions of Emacs, you have to install the module regexp-
       opt.el(c) before installing emacs-w3m as follows:
@@ -31,7 +37,17 @@ This package contains a interface program of w3m.
           % cd /usr/local/share/mule/site-lisp
           % mule -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
 
-   b) Execlute these commands to put emacs-lisp programs of this package
+   e) If you want to use shimbun library of Emacs-w3m, you have to
+      install FLIM.
+
+      Since FLIM depends on APEL described in c) above, you have to
+      install APEL even if you use Emacsen other than XEmacs/Mule-2.3
+      (you have to install APEL and succeedingly, FLIM).
+
+      For more detail abut shimbun library, see README.shimbun.ja
+      (sorry, Japanese only).
+
+   f) Execlute these commands to put emacs-lisp programs of this package
       to an appropriate directory.
 
           % ./configure
@@ -52,11 +68,11 @@ This package contains a interface program of w3m.
 
       In this case, you have no need to execute `install-icons' command.
 
-   c) Put these lines into your ~/.emacs.
+   g) Put these lines into your ~/.emacs.
 
           (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
 
-   d) If you want to use contributed programs, some additional settings
+   h) If you want to use contributed programs, some additional settings
       are required.  Please see the head of those programs for more
       detail.
 
