@@ -1,3 +1,8 @@
+2004-08-23  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-mark-re-retrieve): Change
+	default value for Mew 4.0.66 and later.
+
 2004-08-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.4.3.
