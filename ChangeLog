@@ -8,7 +8,7 @@
 	(w3m-mode): Modify doc-string.
 
 	* w3m-form.el (w3m-fontify-forms): Add 'w3m-submit property on
-	"submit", "textarea" and "input tags.
+	all tags except the "reset".
 
 2001-07-18  Yuuichi Teranishi  <teranisi@gohome.org>
 

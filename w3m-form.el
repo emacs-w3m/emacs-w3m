@@ -328,6 +328,9 @@ If no field in forward, return nil without moving."
 				   (list 'face 'w3m-form-face
 					 'w3m-action
 					 `(w3m-form-input-select ,form ,name)
+					 'w3m-submit
+					 `(w3m-form-submit ,form ,name
+							   (w3m-form-get ,form ,name))
 					 'w3m-cursor-anchor
 					 `(w3m-form-input-select ,form ,name))))
 	     ((string= type "password")
@@ -335,6 +338,9 @@ If no field in forward, return nil without moving."
 				   (list 'face 'w3m-form-face
 					 'w3m-action
 					 `(w3m-form-input-password ,form ,name)
+					 'w3m-submit
+					 `(w3m-form-submit ,form ,name
+							   (w3m-form-get ,form ,name))
 					 'w3m-cursor-anchor
 					 `(w3m-form-input-password ,form ,name))))
 	     ((string= type "checkbox")
@@ -342,6 +348,9 @@ If no field in forward, return nil without moving."
 				   (list 'face 'w3m-form-face
 					 'w3m-action
 					 `(w3m-form-input-checkbox ,form ,name ,value)
+					 'w3m-submit
+					 `(w3m-form-submit ,form ,name
+							   (w3m-form-get ,form ,name))
 					 'w3m-cursor-anchor
 					 `(w3m-form-input-checkbox ,form ,name ,value))))
 	     ((string= type "radio")
@@ -349,6 +358,9 @@ If no field in forward, return nil without moving."
 				   (list 'face 'w3m-form-face
 					 'w3m-action
 					 `(w3m-form-input-radio ,form ,name ,value)
+					 'w3m-submit
+					 `(w3m-form-submit ,form ,name
+							   (w3m-form-get ,form ,name))
 					 'w3m-cursor-anchor
 					 `(w3m-form-input-radio ,form ,name ,value))))
 	     (t ;; input button.
