@@ -56,6 +56,9 @@
 	       shimbun-zdnet-group-url-alist))
    "/"))
 
+(luna-define-method shimbun-article-expiration-days ((shimbun shimbun-zdnet))
+  7)
+
 (defun shimbun-zdnet-comp-get-headers (shimbun)
   (let ((case-fold-search t) headers)
     (goto-char (point-min))

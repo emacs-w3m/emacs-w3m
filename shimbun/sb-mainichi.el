@@ -55,6 +55,10 @@
 		      shimbun-mainichi-group-path-alist))
 	  "/index.html"))
 
+(luna-define-method shimbun-article-expiration-days ((shimbun
+						      shimbun-mainichi))
+  7)
+
 (luna-define-method shimbun-get-headers ((shimbun shimbun-mainichi))
   (let ((case-fold-search t)
 	start headers)

@@ -49,6 +49,9 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-cnet))
   (format "%s/News/Oneweek/" (shimbun-url-internal shimbun)))
 
+(luna-define-method shimbun-article-expiration-days ((shimbun shimbun-cnet))
+  7)
+
 (luna-define-method shimbun-get-headers ((shimbun shimbun-cnet))
   (let ((case-fold-search t) headers)
     (while (search-forward "\n<!--*****見出し*****-->\n" nil t)

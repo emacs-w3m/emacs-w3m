@@ -57,6 +57,9 @@
 		      shimbun-yomiuri-group-path-alist))
 	  "/index.htm"))
 
+(luna-define-method shimbun-article-expiration-days ((shimbun shimbun-yomiuri))
+  7)
+
 (luna-define-method shimbun-get-headers ((shimbun shimbun-yomiuri))
   (let ((case-fold-search t)
 	start headers)

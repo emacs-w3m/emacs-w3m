@@ -39,6 +39,7 @@
 ;; shimbun-x-face
 ;; shimbun-header-insert
 ;; shimbun-search-id
+;; shimbun-article-expiration-days
 ;; shimbun-article
 ;; shimbun-close
 
@@ -350,6 +351,10 @@ Optional MUA is a `shimbun-mua' instance."
   "Return non-nil when MUA found a message structure which corresponds to ID."
   (when (shimbun-mua-internal shimbun)
     (shimbun-mua-search-id (shimbun-mua-internal shimbun) id)))
+
+(luna-define-generic shimbun-article-expiration-days (shimbun)
+  "Return an expiration day number of SHIMBUN.
+Return nil when articles are not expired.")
 
 (luna-define-generic shimbun-article (shimbun header &optional outbuf)
   "Retrieve a SHIMBUN article which corresponds to HEADER to the OUTBUF.

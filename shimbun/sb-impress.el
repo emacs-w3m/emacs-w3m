@@ -54,6 +54,9 @@
     (concat (shimbun-url-internal shimbun) "/"
 	    (shimbun-current-group-internal shimbun) index)))
 
+(luna-define-method shimbun-article-expiration-days ((shimbun shimbun-impress))
+  7)
+
 (luna-define-method shimbun-get-headers ((shimbun shimbun-impress))
   (let ((case-fold-search t)
 	(regexp (nth 1 (assoc (shimbun-current-group-internal shimbun)

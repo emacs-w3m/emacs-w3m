@@ -53,6 +53,9 @@
 	  (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun)))
 
+(luna-define-method shimbun-article-expiration-days ((shimbun shimbun-asahi))
+  7)
+
 (luna-define-method shimbun-get-headers ((shimbun shimbun-asahi))
   (when (search-forward "\n<!-- Start of past -->\n" nil t)
     (delete-region (point-min) (point))

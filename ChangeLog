@@ -1,3 +1,28 @@
+2001-06-06  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun-article-expiration-days): New method.
+	* sb-asahi.el (shimbun-article-expiration-days): Define as 7 days.
+	* sb-cnet.el (shimbun-article-expiration-days): Ditto.
+	* sb-impress.el (shimbun-article-expiration-days): Ditto.
+	* sb-mainichi.el (shimbun-article-expiration-days): Ditto.
+	* sb-nikkei.el (shimbun-article-expiration-days): Ditto.
+	* sb-sponichi.el (shimbun-article-expiration-days): Ditto.
+	* sb-wired.el (shimbun-article-expiration-days): Ditto.
+	* sb-yomiuri.el (shimbun-article-expiration-days): Ditto.
+	* sb-zdnet.el (shimbun-article-expiration-days): Ditto.
+
+2001-06-05  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun-retrieve-url): Don't cause an error
+	when url is nil.
+	(shimbun-retrieve-url-buffer): Ditto.
+
+	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-story-pages):
+	New variable.
+	(shimbun-slashdot-jp-comment-pages): Ditto.
+	(shimbun-headers): Retrieve pages according to above variables.
+	(shimbun-make-contents): Fixed re-search-forward arguments.
+
 2001-06-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-toolbar): Use the English language when the value of

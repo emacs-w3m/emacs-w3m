@@ -49,6 +49,10 @@
 	  (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun)))
 
+(luna-define-method shimbun-article-expiration-days ((shimbun
+						      shimbun-sponichi))
+  7)
+
 (luna-define-method shimbun-get-headers ((shimbun shimbun-sponichi))
   (when (search-forward "ニュースインデックス" nil t)
     (delete-region (point-min) (point))

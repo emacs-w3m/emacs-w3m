@@ -51,6 +51,9 @@
 	  (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun)))
 
+(luna-define-method shimbun-article-expiration-days ((shimbun shimbun-nikkei))
+  7)
+
 (luna-define-method shimbun-get-headers ((shimbun shimbun-nikkei))
   (let ((case-fold-search t)
 	p headers begin end str)
