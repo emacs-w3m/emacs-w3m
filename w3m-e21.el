@@ -721,7 +721,7 @@ cleared by a timer.")
     ;; The following form will cause a problem if a user doesn't set the
     ;; cursor color explicitly, because the `cursor-color' value is always
     ;; black in such a case whatever the color of the default face may be.
-    ;; cf. <URL:http://news.gmane.org/group/gmane.emacs.w3m/thread=4625>
+    ;; cf. <URL:http://news.gmane.org/group/gmane.emacs.w3m/thread=4605>
 
     ;;(set-cursor-color (frame-parameter (selected-frame) 'cursor-color))))
 
