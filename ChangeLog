@@ -1,5 +1,9 @@
 2003-07-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/shimbun.el (shimbun-retrieve-url): Remove local binding
+	of `w3m-use-refresh', because `w3m-decode-buffer' do not activate
+	a refresh timer.
+
 	* mime-w3m.el (mime-w3m-preview-text/html): Call `w3m-region' with
 	`charset' option.
 
