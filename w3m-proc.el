@@ -235,8 +235,12 @@ When BODY is evaluated, the local variable `handler' is set to nil."
   "Generate the waiting handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the handler
 which will wait for the end of the evaluation."
-  `(let (w3m-async-exec)
-     ,@body))
+  (let ((tempvar (make-symbol "tempvar")))
+    `(let ((,tempvar ',tempvar))
+       (let ((handler (lambda (x) (setq ,tempvar x))))
+	 (let (w3m-async-exec)
+	   ,@body)
+	 ,tempvar))))
 ;; ASYNC: 本当は、以下のように非同期的に実行して、非同期プロセスの終了
 ;; を待つように実装する必要があるのだが、どうしても、バグの原因が分か
 ;; らなかったので、adhoc に対処している。そのため、パスワードなどの入
