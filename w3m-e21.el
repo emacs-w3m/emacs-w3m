@@ -526,7 +526,7 @@ Buffer string between BEG and END are replaced with IMAGE."
        (mapconcat
 	(lambda (buffer)
 	  (let ((title (w3m-buffer-title buffer))
-		(favicon (if w3m-use-favicon (w3m-buffer-favicon buffer))))
+		(favicon (if w3m-use-favicon (w3m-favicon-image-of buffer))))
 	    (propertize
 	     (concat (if favicon
 			 (propertize "  " 'display favicon)
