@@ -1,3 +1,8 @@
+2004-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-use-symbol): Don't activate it in Emacs 20.  Advised
+	by Arisawa-san.
+
 2004-04-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Simplify the rule of sending referers.
