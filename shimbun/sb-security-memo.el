@@ -27,17 +27,31 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-w3m-dev)
+(require 'sb-fml)
 
-(luna-define-class shimbun-security-memo (shimbun-w3m-dev) ())
+(luna-define-class shimbun-security-memo (shimbun-fml) ())
 
-(defvar shimbun-security-memo-url "http://memo.st.ryukoku.ac.jp/archive/")
-(defvar shimbun-security-memo-groups '("memo"))
-(defvar shimbun-security-memo-coding-system 'euc-japan)
+(defvar shimbun-security-memo-url "http://memo.st.ryukoku.ac.jp/")
+(defvar shimbun-security-memo-group-alist
+  '(("memo" . "archive")
+    ("free-memo" . "free-memo/archive")
+    ("social-memo" . "social-memo/archive")))
+
+(defvar shimbun-security-memo-groups
+  (mapcar 'car shimbun-security-memo-group-alist))
+
+(luna-define-method shimbun-index-url ((shimbun shimbun-security-memo))
+  (concat
+   (shimbun-expand-url
+    (cdr (assoc (shimbun-current-group-internal shimbun)
+		shimbun-security-memo-group-alist))
+    (shimbun-url-internal shimbun))
+   "/"))
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-security-memo))
   "Return the mailing list address."
-  "memo@memo.st.ryukoku.ac.jp")
+  (concat (shimbun-current-group-internal shimbun)
+	  "@memo.st.ryukoku.ac.jp"))
 
 (provide 'sb-security-memo)
 
