@@ -6,6 +6,8 @@
 	* shimbun/sb-yahoo-auctions.el (shimbun-get-headers): New overridden
 	method.
 
+	* shimbun/sb-rss.el (shimbun-get-headers): Revert last change.
+
 2005-02-19  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-atmarkit.el (shimbun-atmarkit-content-start): Remove.
