@@ -132,7 +132,8 @@
 		((string= field "References")
 		 (shimbun-header-set-references header value))
 		(t
-		 (insert (concat field ": " value "\n")))))
+		 (insert (concat field ": "
+				 (shimbun-header-normalize value t) "\n")))))
 	(goto-char (point-min))
 	(shimbun-header-insert shimbun header)
 	(insert
