@@ -2,8 +2,8 @@
 
 	* w3m.el (w3m-url-readable-string): Save matching data.  Check
 	whether `w3m-current-url' is string before checking it.
-	(w3m-display-progress-message): Cancel the last change.
-	(w3m-copy-buffer): Cancel a part of the last change.
+	(w3m-goto-url-new-session, w3m-copy-buffer): Call `w3m-goto-url'
+	with `reload' option to enforce redisplaying the certain content.
 
 	* w3m-favicon.el (w3m-favicon-retrieve): Decode an URL when
 	displaying it.

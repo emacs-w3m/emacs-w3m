@@ -5167,6 +5167,7 @@ specified in the `w3m-content-type-alist' variable."
 		     (file-name-nondirectory url))
 	     w3m-content-type-alist nil t))
       (setf (w3m-arrived-content-type url) type)))
+  (setq w3m-current-coding-system nil)	; Reset decoding status of this buffer.
   (setq type (w3m-prepare-content url type charset))
   (w3m-safe-decode-buffer url charset type)
   (setq charset (or charset w3m-current-content-charset))
@@ -5461,7 +5462,8 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 (defun w3m-display-progress-message (url)
   "Show \"Reading URL...\" message in the middle of a buffer."
   (insert (make-string (max 0 (/ (1- (window-height)) 2)) ?\n)
-	  "Reading " (w3m-url-strip-authinfo url) "...")
+	  "Reading " (w3m-url-readable-string (w3m-url-strip-authinfo url))
+	  "...")
   (beginning-of-line)
   (let ((fill-column (window-width)))
     (center-region (point) (point-max)))
@@ -6119,11 +6121,12 @@ a page in a new buffer with the correct width."
     (setq newname (buffer-name buffer)))
   (when (string-match "<[0-9]+>\\'" newname)
     (setq newname (substring newname 0 (match-beginning 0))))
-  (let (url images init-frames new)
+  (let (url coding images init-frames new)
     (save-current-buffer
       (set-buffer buffer)
       (setq url (or w3m-current-url
 		    (car (w3m-history-element (cadar w3m-history))))
+	    coding w3m-current-coding-system
 	    images w3m-display-inline-images
 	    init-frames (when (w3m-popup-frame-p)
 			  (copy-sequence w3m-initial-frames)))
@@ -6132,7 +6135,9 @@ a page in a new buffer with the correct width."
       (w3m-mode)
       ;; Make copies of `w3m-history' and `w3m-history-flat'.
       (w3m-history-copy buffer)
-      (setq w3m-initial-frames init-frames
+      (setq w3m-current-url url
+	    w3m-current-coding-system coding
+	    w3m-initial-frames init-frames
 	    w3m-display-inline-images
 	    (if w3m-toggle-inline-images-permanently
 		images
@@ -7528,13 +7533,18 @@ session will start afresh."
 	  (switch-to-buffer (setq buffer
 				  (w3m-copy-buffer nil nil nil 'empty)))
 	  (w3m-display-progress-message url)
-	  ;; When new URL has `name' portion, we have to goto the base url
-	  ;; because generated buffer has no content at this moment.
-	  (when (and (string-match w3m-url-components-regexp url)
-		     (match-beginning 8))
-	    (w3m-goto-url (substring url 0 (match-beginning 8))
-			  reload charset post-data referer))
-	  (w3m-goto-url url reload charset post-data referer)
+	  (w3m-goto-url url
+			(or reload
+			    ;; When new URL has `name' portion, we have to
+			    ;; goto the base url because generated buffer
+			    ;; has no content at this moment.
+			    (and (string-match w3m-url-components-regexp url)
+				 (match-beginning 8)
+				 'redisplay)
+			    (and (stringp w3m-current-url)
+				 (string= w3m-current-url url)
+				 'redisplay))
+			charset post-data referer)
 	  ;; Delete useless newly created buffer if it is empty.
 	  (w3m-delete-buffer-if-empty buffer))
       (w3m-goto-url url))))
