@@ -841,43 +841,19 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
 	   (string :tag "Encoding Type"))))
 
 (defcustom w3m-decoder-alist
-  (list
-   '(gzip "gzip" ("-d"))	;; Don't use "gunzip" and "bunzip2"
-   '(bzip "bzip2" ("-d"))	;; for broken OS & environment
-   (list
-    'deflate
-    (if (not noninteractive)
-	(let ((re (concat "\\`" (regexp-quote
-				 (file-name-nondirectory w3m-command))
-			  "\\'"))
-	      (inflate (if (memq system-type '(windows-nt OS/2 emx))
-			   "inflate.exe" "inflate")))
-	  (or
-	   (car
-	    (sort
-	     (delq
-	      nil
-	      (mapcar
-	       (lambda (x)
-		 (if (and (file-directory-p x)
-			  (file-readable-p x)
-			  (file-executable-p
-			   (setq x (expand-file-name inflate x))))
-		     x))
-	       (apply
-		'nconc
-		(mapcar
-		 (lambda (x)
-		   (if (and (file-directory-p x) (file-readable-p x))
-		       (directory-files x t re)))
-		 (directory-files
-		  (expand-file-name
-		   ".."
-		   (file-name-directory (w3m-which-command w3m-command)))
-		  t "[^.]\\'")))))
-	     'file-newer-than-file-p))
-	   "inflate")))
-    nil))
+  `((gzip "gzip" ("-d"))	;; Don't use "gunzip" and "bunzip2"
+    (bzip "bzip2" ("-d"))	;; for broken OS & environment
+    (deflate
+      ,(if (not noninteractive)
+	   (let ((exec-path
+		  (let ((prefix (file-name-directory
+				 (directory-file-name
+				  (file-name-directory
+				   (w3m-which-command w3m-command))))))
+		    (list (expand-file-name "libexec/w3m" prefix)
+			  (expand-file-name "lib/w3m" prefix)))))
+	     (w3m-which-command "inflate")))
+      nil))
   "Associative list of DECODER."
   :group 'w3m
   :type '(repeat
@@ -4936,7 +4912,8 @@ If EMPTY is non-nil, the created buffer has empty content."
 	    (setq w3m-display-inline-images images)
 	  (setq w3m-display-inline-images w3m-default-display-inline-images))
 	(unless empty
-	  (w3m-goto-url url))
+	  (w3m-process-with-wait-handler
+	    (w3m-goto-url url nil nil nil handler)))
 	;; Make copies of `w3m-history' and `w3m-history-flat'.
 	(w3m-history-copy buf)
 	(when empty
@@ -5892,8 +5869,10 @@ the `w3m-search' function and the variable `w3m-uri-replace-alist'."
     nil ;; handler
     t)) ;; qsearch
   (set-text-properties 0 (length url) nil url)
-  (setq url (w3m-url-transfer-encode-string (w3m-uri-replace url)
-					    w3m-default-coding-system))
+  (setq url (w3m-uri-replace url))
+  (unless (or (w3m-url-local-p url)
+	      (string-match "\\`about:" url))
+    (setq url (w3m-url-transfer-encode-string url w3m-default-coding-system)))
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:" url)
@@ -6000,6 +5979,7 @@ Cannot run two w3m processes simultaneously \
 			      w3m-default-content-type)
 		      w3m-content-type-alist nil t)))
 	      (setq ct (if (string= "" s) w3m-default-content-type s))))
+	  (setq w3m-current-buffer (current-buffer))
 	  (w3m-process-do
 	      (action
 	       (if (and (not reload)
@@ -6010,13 +5990,13 @@ Cannot run two w3m processes simultaneously \
 		     (w3m-refontify-anchor)
 		     'cursor-moved)
 		 (setq w3m-image-only-page nil
-		       w3m-current-buffer (current-buffer)
 		       w3m-current-process
 		       (w3m-retrieve-and-render (w3m-url-strip-fragment orig)
 						reload charset ct post-data
 						referer handler))))
 	    (with-current-buffer w3m-current-buffer
-	      (setq w3m-current-process nil)
+	      (setq w3m-current-process nil
+		    w3m-current-buffer nil)
 	      (setq real-url (w3m-real-url url))
 	      (cond
 	       ((not action)

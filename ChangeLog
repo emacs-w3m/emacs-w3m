@@ -1,3 +1,12 @@
+2003-07-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-goto-url): Do not encode a given URL when it points
+	a local page.  Always set `w3m-current-buffer', before either
+	calling an asynchronous process or moviing a cursor.
+	(w3m-copy-buffer): Wrap `w3m-goto-url' with
+	`w3m-process-with-wait-handler', to avoid unexpected asynchronous
+	processes.
+
 2003-07-12  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
 
 	* shimbun/sb-zdnet.el (shimbun-zdnet-group-alist): Fix the folder
@@ -13,6 +22,10 @@
 
 	* doc/ptexinfmt.el (texinfo-discard-command-and-arg): New function
 	for old Emacsen.
+
+2003-07-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-decoder-alist): Simplified.
 
 2003-07-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
