@@ -2900,9 +2900,16 @@ type as a string argument, when retrieve is complete."
   "Change the access and/or modification TIME of the specified FILE."
   ;; Check the validity of `touch' command.
   (when (eq w3m-touch-file-available-p 'undecided)
-    (let ((time '(0 0))
-	  (file (make-temp-name
-		 (expand-file-name "w3mel" w3m-profile-directory))))
+    (let ((file (make-temp-name
+		 (expand-file-name "w3mel" w3m-profile-directory)))
+	  time timefile)
+      (while (progn
+	       (setq time (list (abs (% (random) 8192))
+				(abs (% (random) 65536)))
+		     timefile (expand-file-name
+			       (format-time-string "%Y%m%d%H%M.%S" time)
+			       w3m-profile-directory))
+	       (not (file-exists-p timefile))))
       (unwind-protect
 	  (setq w3m-touch-file-available-p
 		(when (w3m-which-command w3m-touch-command)
@@ -2916,11 +2923,8 @@ type as a string argument, when retrieve is complete."
 			       time (nth 5 (file-attributes file)))))))
 	(when (file-exists-p file)
 	  (ignore-errors (delete-file file)))
-	(when (file-exists-p
-	       (setq file (expand-file-name
-			   (format-time-string "%Y%m%d%H%M.%S" time)
-			   w3m-profile-directory)))
-	  (ignore-errors (delete-file file))))))
+	(when (file-exists-p timefile)
+	  (ignore-errors (delete-file timefile))))))
   (and w3m-touch-file-available-p
        time
        (w3m-which-command w3m-touch-command)
