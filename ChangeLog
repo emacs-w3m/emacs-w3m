@@ -1,5 +1,7 @@
 2001-06-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-zdnet.el (shimbun-zdnet-expiration-days): Removed.
+
 	* shimbun/sb-netbsd.el (shimbun-get-headers): Fixed order of
 	retrieved headers and condition to check whether the target header
 	is already retrieved or not.

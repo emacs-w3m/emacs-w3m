@@ -48,7 +48,6 @@
   '(("default" .
      "X-Face: 88Zbg!1nj{i#[*WdSZNrn1$Cdfat,zsG`P)OLo=U05q:RM#72\\p;3XZ
         ~j|7T)QC7\"(A;~HrfP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
-(defvar shimbun-zdnet-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-zdnet))
   (concat
