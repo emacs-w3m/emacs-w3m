@@ -129,7 +129,7 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
       (goto-char point))
     headers))
 
-(defun shimbun-request-article (shimbun header)
+(defun shimbun-2ch-request-article (shimbun header)
   (with-temp-buffer
     (set-buffer-multibyte nil)
     (let* ((url (shimbun-index-url shimbun))
@@ -217,7 +217,7 @@ Unfortunately, the url name format might have been changed in 2ch"))
 				 (shimbun-2ch-content-hash-internal
 				  shimbun))))
 	   (unless sym
-	     (shimbun-request-article shimbun header)
+	     (shimbun-2ch-request-article shimbun header)
 	     (setq sym (intern-soft (shimbun-header-id header)
 				    (shimbun-2ch-content-hash-internal
 				     shimbun))))
