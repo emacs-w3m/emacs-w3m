@@ -1,3 +1,8 @@
+2003-03-03  Michael Shields  <shields@msrl.com>
+
+	* w3m-xmas.el (w3m-create-image): Protect against images which are
+	not permitted to be loaded according to `w3m-safe-url-regexp'.
+
 2003-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-groups-should-use-list-page):
