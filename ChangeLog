@@ -1,3 +1,32 @@
+2001-11-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-expand-url): Remove the last segment of the base URL
+	before concatination the specified URL which has only a query part
+	and the base URL.
+
+2001-11-08  Takenobu Sugiyama  <sugiyama@ae.advantest.co.jp>
+
+	* shimbun/sb-nikkansports.el (shimbun-get-headers): Add new
+	separated string for nikkansports.mlb.
+	(shimbun-nikkansports-end-of-header-regexp): New variable (added
+	by yamaoka 2001-11-12).
+
+2001-11-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-proc.el (w3m-process-new): Argument spec is changed.
+	(w3m-process-process): New macro.
+	(w3m-process-handlers): Follow the change of `w3m-process-new'.
+	(w3m-process-kill-process): New inline function.
+	(w3m-process-start-internal): Strict checking.
+	(w3m-process-stop): Fixed.
+	(w3m-process-with-wait-handler): Simplified.
+	(w3m-process-do): Strict checking of redundant evaluation.
+	(w3m-process-do-with-temp-buffer): Ditto.
+	(w3m-process-start): Not bind `w3m-process-exit-status' as a local
+	variable.
+	(w3m-process-sentinel): Ensure that this function will be never
+	called repeatedly; Strict checking.
+
 2001-11-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-db-length): Rename from
