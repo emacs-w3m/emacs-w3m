@@ -1,3 +1,23 @@
+2003-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-antenna.el (w3m-antenna): Don't pass the interactive flag to
+	`w3m-goto-url'.
+	* w3m-bookmark.el (w3m-bookmark-view): Ditto.
+	* w3m-cookie.el (w3m-cookie): Ditto.
+	* w3m-dtree.el (w3m-dtree): Ditto.
+	* w3m-namazu.el (w3m-namazu): Ditto.
+	* w3m-perldoc.el (w3m-perldoc): Ditto.
+
+	* w3m.el (w3m-copy-buffer): Don't pop up a window or a frame if
+	`w3m-goto-url' is called.
+	(w3m-goto-url): Abolish the 8th arg `interactive-p'; pop up a
+	window or a frame anyway.
+	(w3m-goto-url-new-session): Abolish the `interactive-p' argument;
+	don't pass it to `w3m-goto-url'.
+	(w3m-gohome): Ditto.
+	(w3m): Don't pop up a window or a frame there.
+	(w3m-browse-url): Make it work as `browse-url-w3'.
+
 2003-11-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-proc.el (w3m-process-wait-process): Don't specify 3 args to

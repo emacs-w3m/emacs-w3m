@@ -487,11 +487,10 @@ BEG and END should be an HTTP response header region on current buffer."
 		 "; "))))
 
 ;;;###autoload
-(defun w3m-cookie (&optional no-cache interactive-p)
+(defun w3m-cookie (&optional no-cache)
   "Cookie setup."
-  (interactive (list current-prefix-arg t))
-  (w3m-goto-url "about://cookie/" no-cache
-		nil nil nil nil nil interactive-p))
+  (interactive "P")
+  (w3m-goto-url "about://cookie/" no-cache))
 
 ;;;###autoload
 (defun w3m-about-cookie (url &optional no-decode no-cache post-data &rest args)

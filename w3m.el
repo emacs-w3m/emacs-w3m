@@ -5472,9 +5472,11 @@ a page in a new buffer with the correct width."
       (setq w3m-initial-frames init-frames)
       (when empty
 	(w3m-clear-local-variables)))
-    (unless just-copy
-      ;; Maybe pop up a window or a frame, and switch to a new buffer anyway.
-      (w3m-popup-buffer new))
+    (if (and (not just-copy) empty)
+	;; Pop up a window or a frame because `w3m-goto-url' is not called.
+	(w3m-popup-buffer new)
+      ;; Need to change to the `new' buffer in which `w3m-goto-url' runs.
+      (set-buffer buffer))
     (unless empty
       ;; Render a page.
       (w3m-process-with-wait-handler
@@ -6482,7 +6484,7 @@ appropriate buffer and select it."
 
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
-			 element interactive-p)
+			 element)
   "Retrieve contents of URL.
 If the second argument RELOAD is non-nil, reload a content of URL.
 Except that if it is 'redisplay, re-display the page without reloading.
@@ -6495,8 +6497,8 @@ car of a cell is used as the content-type and the cdr of a cell is
 used as the body.
 If the fifth argument REFERER is specified, it is used for a Referer:
 field for this request.
-The remaining HANDLER, ELEMENT[1] and INTERACTIVE-P arguments are for
-the internal operations of emacs-w3m.
+The remaining HANDLER and ELEMENT[1] are for the internal operations
+of emacs-w3m.
 You can also use \"quicksearch\" url schemes such as \"gg:emacs\" which
 would search for the term \"emacs\" with the Google search engine.  See
 the `w3m-search' function and the variable `w3m-uri-replace-alist'.
@@ -6516,12 +6518,7 @@ the current page."
 			   w3m-current-url))))
     current-prefix-arg
     (w3m-static-if (fboundp 'universal-coding-system-argument)
-	coding-system-for-read)
-    nil ;; post-data
-    nil ;; referer
-    nil ;; handler
-    nil ;; element
-    t)) ;; interactive-p
+	coding-system-for-read)))
   (set-text-properties 0 (length url) nil url)
   (setq url (w3m-uri-replace url))
   (unless (or (w3m-url-local-p url)
@@ -6560,8 +6557,7 @@ the current page."
    ((w3m-url-valid url)
     (w3m-buffer-setup)			; Setup buffer.
     (w3m-arrived-setup)			; Setup arrived database.
-    (when interactive-p
-      (w3m-popup-buffer (current-buffer)))
+    (w3m-popup-buffer (current-buffer))
     (w3m-cancel-refresh-timer (current-buffer))
     (when w3m-current-process
       (error "%s"
@@ -6577,14 +6573,12 @@ Cannot run two w3m processes simultaneously \
 			    (split-string (substring url (match-end 0)) "&"))))
 	  (w3m-process-do
 	      (type (prog1
-			(w3m-goto-url (car urls)
-				      nil nil nil nil nil nil interactive-p)
+			(w3m-goto-url (car urls))
 		      (dolist (url (cdr urls))
 			(save-excursion
 			  (set-buffer (w3m-copy-buffer nil nil nil 'empty))
 			  (save-window-excursion
-			    (w3m-goto-url
-			     url nil nil nil nil nil nil interactive-p))))))
+			    (w3m-goto-url url))))))
 	    type))
       ;; Retrieve the page.
       (lexical-let ((orig url)
@@ -6736,8 +6730,8 @@ Cannot run two w3m processes simultaneously \
 	(w3m-cancel-refresh-timer buffer)))))
 
 ;;;###autoload
-(defun w3m-goto-url-new-session
-  (url &optional reload charset post-data referer interactive-p)
+(defun w3m-goto-url-new-session (url &optional reload charset post-data
+				     referer)
   "Run the command `w3m-goto-url' in the new session.  If you invoke this
 command in the w3m buffer, the new session will be created by copying
 the current session.  Otherwise, the new session will start afresh."
@@ -6753,8 +6747,7 @@ the current session.  Otherwise, the new session will start afresh."
     (w3m-static-if (fboundp 'universal-coding-system-argument)
 	coding-system-for-read)
     nil ;; post-data
-    nil ;; referer
-    t)) ;; interactive-p
+    nil)) ;; referer
   (if (eq 'w3m-mode major-mode)
       (let ((buffer (w3m-copy-buffer nil nil nil 'empty)))
 	(switch-to-buffer buffer)
@@ -6764,10 +6757,8 @@ the current session.  Otherwise, the new session will start afresh."
 	(when (and (string-match w3m-url-components-regexp url)
 		   (match-beginning 8))
 	  (w3m-goto-url (substring url 0 (match-beginning 8))
-			reload charset post-data referer
-			nil nil interactive-p))
-	(w3m-goto-url url reload charset post-data referer
-		      nil nil interactive-p)
+			reload charset post-data referer))
+	(w3m-goto-url url reload charset post-data referer)
 	;; Delete useless newly created buffer if it is empty.
 	(w3m-delete-buffer-if-empty buffer))
     (w3m url t)))
@@ -6781,12 +6772,12 @@ the current session.  Otherwise, the new session will start afresh."
     (recenter (/ (window-height) 5))))
 
 ;;;###autoload
-(defun w3m-gohome (&optional interactive-p)
+(defun w3m-gohome ()
   "Go to the Home page."
-  (interactive (list t)) ;; interactive-p
+  (interactive)
   (unless w3m-home-page
     (error "You have to specify the value of `w3m-home-page'"))
-  (w3m-goto-url w3m-home-page nil nil nil nil nil nil interactive-p))
+  (w3m-goto-url w3m-home-page))
 
 (defun w3m-reload-this-page (&optional arg)
   "Reload current page without cache.
@@ -6956,31 +6947,45 @@ The optional NEW-SESSION and INTERACTIVE-P are for the internal use."
 		      ;; Unlikely but this function was called with no url.
 		      "about:")
 	      nofetch nil)))
-    (if buffer
-	(w3m-popup-buffer buffer)
+    (unless buffer
       (with-current-buffer (setq buffer (generate-new-buffer "*w3m*"))
-	(w3m-mode))
-      (w3m-popup-buffer buffer)
-      (when popup-frame-p
-	(setq w3m-initial-frames (list (selected-frame))))
-      (w3m-display-progress-message url))
-    (unwind-protect
-	(unless nofetch
-	  (w3m-goto-url url))
-      ;; Delete useless newly created buffer if it is empty.
-      (w3m-delete-buffer-if-empty buffer))))
+	(w3m-mode)))
+    (if nofetch
+	(w3m-popup-buffer buffer)
+      ;; `unwind-protect' is needed since a process may be terminated by C-g.
+      (unwind-protect
+	  (w3m-goto-url url)
+	;; Delete useless newly created buffer if it is empty.
+	(w3m-delete-buffer-if-empty buffer)))))
 
 (eval-when-compile
   (autoload 'browse-url-interactive-arg "browse-url"))
 
 ;;;###autoload
-(defun w3m-browse-url (url &optional new-window interactive-p)
-  "w3m interface function for browse-url.el."
-  (interactive (nconc (browse-url-interactive-arg "w3m URL: ")
-		      '(t))) ;; interactive-p
-  ;; FIXME: Is ignoring the optional NEW-WINDOW ok?
+(defun w3m-browse-url (url &optional new-window)
+  "Ask the emacs-w3m WWW browser to load URL.
+Default to the URL around or before point.  Note that the feature of
+popping up a window or a frame is degenerated in order to emulate
+`browse-url-w3' or `browse-url-w3m' (XEmacs)."
+  (interactive (browse-url-interactive-arg "Emacs-w3m URL: "))
   (when (stringp url)
-    (w3m-goto-url url nil nil nil nil nil nil interactive-p)))
+    (let (w3m-pop-up-frames w3m-pop-up-windows buffer)
+      (when (if (fboundp 'browse-url-maybe-new-window)
+		;; The following `if' form is an expansion of
+		;; the `browse-url-maybe-new-window' macro.
+		(if (interactive-p)
+		    (symbol-value 'browse-url-new-window-flag)
+		  new-window)
+	      new-window)
+	(split-window)
+	(other-window 1))
+      (unless (and (setq buffer (w3m-alive-p))
+		   (progn
+		     (switch-to-buffer buffer)
+		     (when (equal url w3m-current-url)
+		       (w3m-reload-this-page t)
+		       t)))
+	(w3m-goto-url-new-session url)))))
 
 ;;;###autoload
 (defun w3m-find-file (file)

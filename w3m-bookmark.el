@@ -338,10 +338,9 @@ With prefix, ask new url to add instead of current page."
   (message "Added as URL group"))
 
 ;;;###autoload
-(defun w3m-bookmark-view (&optional reload interactive-p)
-  (interactive (list current-prefix-arg t))
-  (w3m-goto-url "about://bookmark/" reload
-		nil nil nil nil nil interactive-p))
+(defun w3m-bookmark-view (&optional reload)
+  (interactive "P")
+  (w3m-goto-url "about://bookmark/" reload))
 
 ;;;###autoload
 (defun w3m-about-bookmark (&rest args)
