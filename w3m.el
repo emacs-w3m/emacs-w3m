@@ -363,12 +363,13 @@ CODING is optional value which is coding system for query string.
 If omitted, `w3m-default-url-coding-system' is used.
 "
   :group 'w3m
-  :type '(repeat (list (string :tag "Engine") 
-		       (string :tag "Action")
-		       (restricted-sexp :match-alternatives (coding-system-p
-							     nil)
-					:tag "Coding"))))
-					
+  :type '(repeat
+	  (list
+	   (string :tag "Engine")
+	   (string :tag "Action")
+	   (restricted-sexp :match-alternatives (coding-system-p nil)
+			    :tag "Coding"))))
+
 (defcustom w3m-default-search-engine "yahoo"
   "*Default search engine name.
 See also `w3m-search-engine-alist'."
@@ -461,8 +462,8 @@ for a charset indication")
 (defun w3m-message (&rest args)
   "Alternative function of `message' for w3m.el."
   (if w3m-verbose
-      (apply #'message args)
-    (apply #'format args)))
+      (apply (function message) args)
+    (apply (function format) args)))
 
 (defun w3m-sub-list (list n)
   "Make new list from LIST with top most N items.
@@ -548,70 +549,89 @@ If N is negative, last N items of LIST is returned."
 (defmacro w3m-form-get (form name)
   `(plist-get (w3m-form-plist ,form) (intern ,name)))
 
+(defun w3m-url-encode-string (str &optional coding)
+  (apply (function concat)
+	 (mapcar
+	  (lambda (ch)
+	    (cond
+	     ((string-match "[-a-zA-Z0-9_]" (char-to-string ch)) ; xxx?
+	      (char-to-string ch))	; printable
+	     (t
+	      (format "%%%02X" ch))))	; escape
+	  (string-to-list
+	   (encode-coding-string
+	    str
+	    (or coding
+		(w3m-static-if (boundp 'MULE)
+		    '*iso-2022-jp*
+		  'iso-2022-7bit)))))))
+
 (defun w3m-form-make-get-string (form)
   (when (eq 'get (w3m-form-method form))
     (let ((plist (w3m-form-plist form))
 	  (buf))
       (while plist
 	(setq buf (cons
-		   (format
-		    "%s=%s"
-		    (w3m-escape-query-string (symbol-name (car plist)))
-		    (w3m-escape-query-string (nth 1 plist)))
+		   (format "%s=%s"
+			   (w3m-url-encode-string (symbol-name (car plist)))
+			   (w3m-url-encode-string (nth 1 plist)))
 		   buf)
 	      plist (nthcdr 2 plist)))
       (if buf
 	  (format "%s?%s"
 		  (w3m-form-action form)
-		  (mapconcat #'identity buf "&"))
+		  (mapconcat (function identity) buf "&"))
 	(w3m-form-action form)))))
 
 (put 'w3m-parse-attributes 'lisp-indent-function '1)
 (put 'w3m-parse-attributes 'edebug-form-spec '(&rest form))
 (defmacro w3m-parse-attributes (attributes &rest form)
-  `(let (,@(mapcar
-	    (lambda (attr)
-	      (if (listp attr)
-		  (car attr)
-		attr))
-	    attributes))
-     (while (cond
-	     ,@(mapcar
+  (` (let ((,@ (mapcar
 		(lambda (attr)
-		  (unless (or (symbolp attr)
-			      (and (listp attr)
-				   (<= (length attr) 2)
-				   (symbolp (car attr))))
-		    (error "Internal error, type mismatch."))
-		  (let ((sexp '(or (match-string 2)
-				   (match-string 1))))
-		    (when (listp attr)
-		      (cond
-		       ((eq (nth 1 attr) :case-ignore)
-			(setq sexp
-			      '(downcase
+		  (if (listp attr) (car attr) attr))
+		attributes)))
+       (while
+	   (cond
+	    (,@ (mapcar
+		 (lambda (attr)
+		   (or (symbolp attr)
+		       (and (listp attr)
+			    (<= (length attr) 2)
+			    (symbolp (car attr)))
+		       (error "Internal error, type mismatch."))
+		   (let ((sexp (quote
 				(or (match-string 2)
 				    (match-string 1)))))
-		       ((eq (nth 1 attr) :integer)
-			(setq sexp
-			      '(string-to-number
-				(or (match-string 2)
-				    (match-string 1)))))
-		       ((nth 1 attr)
-			(error "Internal error, unknown modifier.")))
-		      (setq attr (car attr)))
-		    `((looking-at
-		       ,(format "%s=%s"
-				(symbol-name attr)
-				w3m-form-string-regexp))
-		      (setq ,attr ,sexp))))
-		attributes)
-	     ((looking-at ,(concat "[A-z]*=" w3m-form-string-regexp)))
-	     ((looking-at "[^<> \t\r\f\n]+")))
-       (goto-char (match-end 0))
-       (skip-chars-forward " \t\r\f\n"))
-     (skip-chars-forward "^>")
-     ,@form))
+		     (when (listp attr)
+		       (cond
+			((eq (nth 1 attr) :case-ignore)
+			 (setq sexp
+			       (quote
+				(downcase
+				 (or (match-string 2)
+				     (match-string 1))))))
+			((eq (nth 1 attr) :integer)
+			 (setq sexp
+			       (quote
+				(string-to-number
+				 (or (match-string 2)
+				     (match-string 1))))))
+			((nth 1 attr)
+			 (error "Internal error, unknown modifier.")))
+		       (setq attr (car attr)))
+		     (` ((looking-at
+			  (, (format "%s=%s"
+				     (symbol-name attr)
+				     w3m-form-string-regexp)))
+			 (setq (, attr) (, sexp))))))
+		 attributes))
+	    ((looking-at
+	      (, (concat "[A-z]*=" w3m-form-string-regexp))))
+	    ((looking-at "[^<> \t\r\f\n]+")))
+	 (goto-char (match-end 0))
+	 (skip-chars-forward " \t\r\f\n"))
+       (skip-chars-forward "^>")
+       (,@ form))))
 
 (defun w3m-form-parse-region (start end)
   "Parse HTML data in this buffer and return form objects."
@@ -767,7 +787,7 @@ If N is negative, last N items of LIST is returned."
 		 (if (or (< char 32) (< 127 char))
 		     "~"		; un-supported character
 		   (char-to-string char)))))))
-  
+
 
 (defun w3m-fontify-bold ()
   "Fontify bold characters in this buffer which contains half-dumped data."
@@ -879,7 +899,9 @@ If N is negative, last N items of LIST is returned."
 	(replace-match (w3m-entity-value (match-string 1)) nil t)
 	(if prop (add-text-properties (match-beginning 0) (point) prop))))
     ;; Decode w3m-specific extended charcters.
-    (let ((x enable-multibyte-characters))
+    (let ((x (w3m-static-if (boundp 'MULE)
+		 mc-flag
+	       enable-multibyte-characters)))
       (set-buffer-multibyte nil)
       (dolist (elem w3m-extended-charcters-table)
 	(goto-char (point-min))
@@ -1876,7 +1898,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 Scroll size is `w3m-horizontal-scroll-size' columns
 or prefix ARG columns."
   (interactive "P")
-  (scroll-left (if arg 
+  (scroll-left (if arg
 		   (prefix-numeric-value arg)
 		 w3m-horizontal-scroll-columns)))
 
@@ -1977,8 +1999,8 @@ or prefix ARG columns."
 (defun w3m-bookmark-file-modified-p ()
   "Predicate for FILE is something modified."
   (and (file-exists-p w3m-bookmark-file)
-       w3m-bookmark-file-time-stamp 
-       (not (equal (elt (file-attributes w3m-bookmark-file) 5) 
+       w3m-bookmark-file-time-stamp
+       (not (equal (elt (file-attributes w3m-bookmark-file) 5)
 		   w3m-bookmark-file-time-stamp))))
 
 ;; bookmark data format
@@ -2004,7 +2026,7 @@ or prefix ARG columns."
     (while (re-search-forward
 	    "<\\(h2\\|a\\)\\( *href=\"\\([^\"]+\\)\"[^>]*\\)?>" nil t)
       (setq tag (match-string 1))
-      (cond 
+      (cond
        ((string= tag "h2")
 	;; make new section (in top)
 	(setq bookmark (cons (list (buffer-substring
@@ -2024,9 +2046,9 @@ or prefix ARG columns."
        (t (error "parse error, unknown tag is matched."))))
     ;; reverse entries and sections
     (nreverse (mapcar 'nreverse bookmark))))
-			 
-	       
-    
+
+
+
 (defun w3m-bookmark-load (&optional file)
   "Load bookmark from FILE.
 Parsed bookmark data is hold in `w3m-bookmark-data'."
@@ -2095,7 +2117,7 @@ SECTION is category name in bookmark."
     ;; ask section (with completion).
     (setq sec (completing-read
 	       "Section: "
-	       w3m-bookmark-data nil nil nil 
+	       w3m-bookmark-data nil nil nil
 	       'w3m-bookmark-section-history ))
     (if (string-match sec "^ *$")
 	(error "You must specify section name."))
@@ -2107,7 +2129,7 @@ SECTION is category name in bookmark."
     (if (setq ent (assoc sec w3m-bookmark-data))
 	;; add to existing section
 	(nconc ent (list (cons title url))) ; add to tail
-      ;; add as new section 
+      ;; add as new section
       (setq w3m-bookmark-data
 	    (nconc w3m-bookmark-data
 		   (list (list sec (cons title url))))))
@@ -2154,16 +2176,11 @@ ex.) c:/dir/file => //c/dir/file"
     (w3m-fontify)))
 
 (defun w3m-escape-query-string (str &optional coding)
-  (mapconcat (lambda (ch)
-	       (cond
-		((string-match "[-a-zA-Z0-9_]" (char-to-string ch)) ; xxx?
-		 (char-to-string ch))	; printable
-		((char-equal ch ? ) "+") ; space character
-		(t
-		 (format "%%%02X" ch)))) ; escape
-	     (string-to-list (encode-coding-string 
-			      str (or coding 'iso-2022-7bit)))
-	     ""))
+  (mapconcat
+   (lambda (s)
+     (w3m-url-encode-string s coding))
+   (split-string str)
+   "+"))
 
 (defun w3m-search (search-engine query)
   "Search QUERY using SEARCH-ENGINE.
@@ -2184,7 +2201,7 @@ engine deinfed in `w3m-search-engine-alist'.  Otherwise use
       (if info
 	  (w3m (format (cadr info)
 		       (w3m-escape-query-string query (caddr info))))
-	(error "Unknown search engine: %s" engine)))))
+	(error "Unknown search engine: %s" search-engine)))))
 
 (provide 'w3m)
 ;;; w3m.el ends here.

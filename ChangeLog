@@ -1,3 +1,12 @@
+2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-url-encode-string): New function.
+	(w3m-escape-query-string): Use `w3m-url-encode-string'.
+	(w3m-form-make-get-string): Ditto.
+	(w3m-message): Changed to support Emacs-19.
+	(w3m-parse-attributes): Ditto.
+	(w3m-fontify): Refer `mc-flag' when mule is used.
+
 2001-03-05  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* w3m.el (w3m-command-arguments): Make it as system constants user
