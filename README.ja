@@ -152,11 +152,6 @@
 
       http://prdownloads.sourceforge.net/w3m/w3m-0.3.tar.gz
 
-   注意: w3m を configure するときに [4 - Cookie model] か
-    [5 - Monster model] を選ぶ必要があります．emacs-w3m は `-no-cookie'
-    オプションを使うので，w3m コマンドはそれを受け付けられるように作られ
-    なければなりません．
-
 
 5. 連絡先
 

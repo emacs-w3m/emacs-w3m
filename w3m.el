@@ -1,4 +1,4 @@
-;;; w3m.el --- Interface program of w3m on Emacs
+de;;; w3m.el --- Interface program of w3m on Emacs
 
 ;; Copyright (C) 2000, 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -3241,7 +3241,8 @@ argument, when retrieve is complete."
 If this function is called by redirection, ORIG-URL must be set."
   (let ((w3m-command-arguments
 	 (append w3m-command-arguments
-		 (list "-no-cookie")
+		 (when (member "cookie" w3m-compile-options)
+		   (list "-no-cookie"))
 		 ;; Don't follow redirection within w3m command.
 		 (when w3m-follow-redirection
 		   (list "-o" "follow_redirection=0"))
