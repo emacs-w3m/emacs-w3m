@@ -45,11 +45,16 @@
 
           ftp://ftp.m17n.org/pub/mule/apel/apel-10.5.tar.gz
 
-      Note: The XEmacs APEL package version 1.23 and later can be used
-       for both XEmacs with Mule and non-Mule XEmacs.  However, those
-       packages aren't suitable for FLIM (and possibly Wanderlust or
-       T-gnus) because of the std11 modules.  So, we recommend you
-       install APEL which is pointed above.
+      Note: You must not use the APEL XEmacs package (which is contained
+       in SUMO).  If you have already installed the APEL XEmacs package,
+       use the following directives to replace it with APEL which is
+       linked above (you can also use the same directives in order to
+       newly install APEL):
+
+          % rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
+          % cd apel-10.5
+          % make install-package XEMACS=xemacs-21.4.x\
+            PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
 
       If you are using XEmacs 21.x, you should install the "gifsicle"
       program.  There is a known bug in all XEmacs 21.x series that

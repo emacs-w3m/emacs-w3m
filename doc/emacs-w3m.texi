@@ -270,15 +270,16 @@ at:
 
 @uref{ftp://ftp.m17n.org/pub/mule/apel/apel-10.5.tar.gz}
 
-If you are using XEmacs and already have the @acronym{APEL} XEmacs
-package installed, we strongly recommend replacing it with
-@acronym{APEL} which is linked above.  To replace it, use the directives
-like shown below:
+Note that you must not use the @acronym{APEL} XEmacs package (which is
+contained in SUMO).  If you have already installed the @acronym{APEL}
+XEmacs package, use the following directives to replace it with
+@acronym{APEL} which is linked above (you can also use the same
+directives in order to newly install @acronym{APEL}):
 
 @example
-# rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
-# cd apel-10.5
-# make install-package XEMACS=xemacs-21.4.x\
+% rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
+% cd apel-10.5
+% make install-package XEMACS=xemacs-21.4.x\
   PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
 @end example
 
