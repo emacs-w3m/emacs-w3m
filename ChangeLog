@@ -1,5 +1,7 @@
 2004-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el (labels): Remove.
+
 	* shimbun/sb-itmedia.el (shimbun-get-headers): Improve appearance
 	of subject string.
 
