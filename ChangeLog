@@ -1,6 +1,13 @@
+2002-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-create-resized-image): New function.
+
+	* w3m.el (w3m-resize-inline-image-internal): Remove an existing
+	image before resizing.
+
 2002-10-02  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-all) 
+	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-all)
 	(mew-shimbun-expire-all): Don't kill-buffer when original.
 
 2002-10-01  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>

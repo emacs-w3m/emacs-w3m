@@ -367,6 +367,35 @@ Third optional argument SIZE is currently ignored."
 		  glyph))
 	    glyph))))))
 
+(defun w3m-create-resized-image (url rate &optional referer size handler)
+  "Resize an cached image object.
+URL is the image file's url.
+RATE is resize percentage.
+If REFERER is non-nil, it is used as Referer: field.
+If SIZE is non-nil, its car element is used as width
+and its cdr element is used as height."
+  (if (not handler)
+      (w3m-process-with-wait-handler
+	(w3m-create-image url nil referer size handler))
+    (lexical-let ((url url)
+		  (rate rate)
+		  fmt data)
+      (w3m-process-do-with-temp-buffer
+	  (type (w3m-retrieve url 'raw nil nil referer handler))
+	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
+	  (setq data (buffer-string)
+		fmt type)
+	  (w3m-process-do
+	      (resized (or (w3m-resize-image-by-rate data rate handler)
+			   data))
+	    (or (and (eq fmt 'gif)
+		     (or w3m-should-unoptimize-animated-gifs
+			 w3m-should-convert-interlaced-gifs)
+		     w3m-gifsicle-program
+		     (let (w3m-cache-fixed-gif-images)
+		       (w3m-fix-gif url resized t)))
+		(w3m-make-glyph resized fmt))))))))
+
 (defun w3m-insert-image (beg end image &rest args)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
