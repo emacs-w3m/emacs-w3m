@@ -2292,7 +2292,7 @@ would be useful for CNET, etc.
 
 The @kbd{G R} command (@code{mew-shimbun-re-retrieve-all}) checks the
 freshness of all messages and re-fetch the updated messages.  If a
-prefix argument (i.e. @kbd{C-u G R}) is given, the messages within the
+prefix argument is given (i.e. @kbd{C-u G R}), the messages within the
 region will be processed.  It is probably worthwhile in the site running
 the hyper nikki system (@samp{nikki} means a diary in Japanese).
 @end enumerate
