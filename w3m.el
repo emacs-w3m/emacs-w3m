@@ -55,7 +55,7 @@
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-command-arguments '("-e" "-halfdump" "-cols" col url)
+(defcustom w3m-command-arguments '("-e" "-m" "-halfdump" "-cols" col url)
   "*Arguments of w3m."
   :group 'w3m
   :type '(repeat (restricted-sexp :match-alternatives (stringp 'col 'url))))
@@ -349,23 +349,38 @@ If BUFFER is nil, all data is placed to the current buffer."
     (delete-region (point-min) (point-max))
     (or (w3m-backlog-request url)
 	(let ((coding-system-for-read w3m-coding-system)
-	      (default-process-coding-system (cons w3m-coding-system w3m-coding-system)))
+	      (default-process-coding-system (cons w3m-coding-system w3m-coding-system))
+	      (args (copy-sequence w3m-command-arguments)))
+	  (cond
+	   ((string-match "\\.s?html?$\\|/$" url)) ; do nothing
+	   ((string-match "\\.\\(txt\\|el\\)$" url)
+	    (setq args (cons "-dump" (delete "-halfdump" args))))
+;;	   (t
+;;	    (error "Unsupported suffix to retrieve.")))
+	   )
 	  (message "Loading page...")
 	  (apply 'call-process w3m-command nil t nil
 		 (mapcar (lambda (arg)
 			   (if (eq arg 'col)
 			       (format "%d" w3m-fill-column)
 			     (eval arg)))
-			 w3m-command-arguments))
+			 args))
 	  (w3m-backlog-enter url (current-buffer))
 	  (message "Loading page...done")))
     ;; Setting buffer local variables.
     (set (make-local-variable 'w3m-current-url) url)
     (goto-char (point-min))
     (let (title)
-      (and (re-search-forward "<title_alt[ \t\n]+title=\"\\([^\"]+\\)\">" nil t)
-	   (setq title (match-string 1))
-	   (delete-region (match-beginning 0) (match-end 0)))
+      (mapcar (lambda (regexp)
+		(goto-char 1)
+		(when (re-search-forward regexp nil t)
+		  (setq title (match-string 1))
+		  (delete-region (match-beginning 0) (match-end 0))))
+	      '("<title_alt[ \t\n]+title=\"\\([^\"]+\\)\">"
+		"<title>\\([^<]\\)</title>"))
+      (if (and (null title)
+	       (< 0 (length (file-name-nondirectory url))))
+	  (setq title (file-name-nondirectory url)))
       (set (make-local-variable 'w3m-current-title) (or title "<no-title>")))
     (set (make-local-variable 'w3m-url-history)
 	 (cons url w3m-url-history))
@@ -439,11 +454,11 @@ If BUFFER is nil, all data is placed to the current buffer."
       (concat server path)))))
 
 
-(defun w3m-view-this-url ()
+(defun w3m-view-this-url (arg)
   "*View the URL of the link under point."
-  (interactive)
+  (interactive "P")
   (let ((url (get-text-property (point) 'w3m-href-anchor)))
-    (if url (w3m-goto-url (w3m-expand-url url w3m-current-url)))))
+    (if url (w3m-goto-url (w3m-expand-url url w3m-current-url) arg))))
 
 (defun w3m-mouse-view-this-url (event)
   (interactive "e")
@@ -473,14 +488,15 @@ If BUFFER is nil, all data is placed to the current buffer."
 (defun w3m-view-current-url-with-external-browser ()
   "*View this URL."
   (interactive)
-  (let ((buffer (get-buffer-create " *w3m-view*")))
+  (let ((buffer (get-buffer-create " *w3m-view*"))
+	(url (w3m-expand-url (get-text-property (point) 'w3m-href-anchor)
+			     w3m-current-url)))
     (apply 'start-process
 	   "w3m-external-browser"
 	   buffer
-	   w3m-viewer-command
-	   (mapcar (lambda (x)
-		     (if (eq x 'url) w3m-current-url x))
-		   w3m-viewer-command-arguments))))
+	   w3m-browser-command
+	   (mapcar (function eval)
+		   w3m-browser-command-arguments))))
 
 
 (defun w3m-download-this-url ()
@@ -488,11 +504,19 @@ If BUFFER is nil, all data is placed to the current buffer."
   (interactive)
   (message "Please implement this function !!"))
 
+(defun w3m-print-current-url ()
+  "*Print the URL of current page and push it into kill-ring."
+  (interactive)
+  (kill-new w3m-current-url)
+  (message "%s" w3m-current-url))
 
 (defun w3m-print-this-url ()
   "*Print the URL of the link under point."
   (interactive)
-  (message (or (get-text-property (point) 'w3m-href-anchor) "Not found.")))
+  (let ((url (get-text-property (point) 'w3m-href-anchor)))
+    (if url
+	(kill-new (setq url (w3m-expand-url url w3m-current-url))))
+    (message "%s" (or url "Not found."))))
 
 
 (defun w3m-next-anchor (&optional arg)
@@ -599,7 +623,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (define-key w3m-mode-map "u" 'w3m-print-this-url)
   (define-key w3m-mode-map "I" 'w3m-view-image)
   (define-key w3m-mode-map "\M-I" 'w3m-save-image)
-  (define-key w3m-mode-map "c" (lambda () (interactive) (message w3m-current-url)))
+  (define-key w3m-mode-map "c" 'w3m-print-current-url)
   (define-key w3m-mode-map "M" 'w3m-view-current-url-with-external-browser)
   (define-key w3m-mode-map "g" 'w3m)
   (define-key w3m-mode-map "U" 'w3m)
@@ -637,9 +661,12 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 						  "-compose")))
 		  (fboundp comp)))
 	(error "You must specify valid `mail-user-agent'."))
-    ;; use rfc2368.el if exist.
-    (if (or (featurep 'mailto)
-	    (condition-case nil (require 'mailto) (error nil)))
+    ;; Use rfc2368.el if exist.
+    ;; rfc2368.el is written by Sen Nagata.
+    ;; You can find it in "contrib" directory of Mew package
+    ;; or in "utils" directory of Wanderlust package.
+    (if (or (featurep 'rfc2368)
+	    (condition-case nil (require 'rfc2368) (error nil)))
 	(let ((info (rfc2368-parse-mailto-url url)))
 	  (apply comp (mapcar (lambda (x)
 				(cdr (assoc x info)))
@@ -648,9 +675,11 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
       (funcall comp (match-string 1 url)))))
 
 
-(defun w3m-goto-url (url)
+(defun w3m-goto-url (url &optional reload)
   "Retrieve URL and display it in this buffer."
   (let (name)
+    (if reload
+	(w3m-backlog-remove url))
     (cond
      ;; process mailto: protocol
      ((string-match "^mailto:\\(.*\\)" url)
@@ -672,23 +701,21 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 (defun w3m-reload-this-page ()
   "Reload current page without cache."
   (interactive)
-  (let ((buffer-read-only nil)
-	(p (point))
-	(top (window-start)))
-    (w3m-backlog-remove w3m-current-url)
-    (setq w3m-url-history (cdr w3m-url-history))
-    (w3m-goto-url w3m-current-url)))
+  (setq w3m-url-history (cdr w3m-url-history))
+  (w3m-goto-url w3m-current-url 'reload))
 
 
 (defun w3m (url &optional args)
   "Interface for w3m on Emacs."
   (interactive (list (w3m-input-url)))
   (set-buffer (get-buffer-create "*w3m*"))
-  (setq mode-line-buffer-identification
-	(list (buffer-name) " / " 'w3m-current-title))
   (or (eq major-mode 'w3m-mode)
       (w3m-mode))
-  (w3m-goto-url url)
+  (setq mode-line-buffer-identification
+	(list "%12b" " / " 'w3m-current-title))
+  (if (string= url "")
+      (w3m-view-bookmark)
+    (w3m-goto-url url))
   (switch-to-buffer (current-buffer))
   (run-hooks 'w3m-hook))
 
