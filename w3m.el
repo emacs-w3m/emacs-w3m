@@ -2909,7 +2909,7 @@ type as a string argument, when retrieve is complete."
 		     timefile (expand-file-name
 			       (format-time-string "%Y%m%d%H%M.%S" time)
 			       w3m-profile-directory))
-	       (not (file-exists-p timefile))))
+	       (file-exists-p timefile)))
       (unwind-protect
 	  (setq w3m-touch-file-available-p
 		(when (w3m-which-command w3m-touch-command)
