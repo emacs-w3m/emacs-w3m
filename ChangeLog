@@ -4,7 +4,7 @@
 	`S-iso-lefttab'.
 	(w3m-lynx-like-map): Ditto.
 
-	* w3mhack.el (w3mhack-make-package): Added shimbun modules in
+	* w3mhack.el (w3mhack-make-package): Add shimbun modules in
 	MANIFEST.w3m file.
 	(w3mhack-examine-modules): Return shimbun modules as well.
 	* Makefile.in (install): Install shimbun modules as well.
