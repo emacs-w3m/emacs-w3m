@@ -114,7 +114,7 @@
   "Rertrieve URL contents and insert to current buffer.
 Return content-type of URL as string when retrieval succeeded."
   (let (type)
-    (when (and url (setq type (w3m-retrieve url no-decode no-cache)))
+    (when (and url (setq type (w3m-retrieve url nil no-cache)))
       (unless no-decode
 	(w3m-decode-buffer url))
       type)))
