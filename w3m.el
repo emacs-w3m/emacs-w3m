@@ -659,6 +659,9 @@ for a charset indication")
 	      (+ (frame-width) (or w3m-fill-column -1)))) ; fit for frame
   "Arguments for 'halfdump' execution of w3m.")
 
+(defconst w3m-about-history-ignored-regexp
+  "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\)/.*\\)?$"
+  "Regexp of urls to be ignored in an arrived-db or a history.")
 
 ;; Generic macros and inline functions:
 (put 'w3m-with-work-buffer 'lisp-indent-function 0)
@@ -858,7 +861,8 @@ If N is negative, last N items of LIST is returned."
 (defun w3m-arrived-add (url &optional title modified-time
 			    arrived-time coding-system)
   "Add URL to hash database of arrived URLs."
-  (when (> (length url) 5);; ignore trifles.
+  (unless (or (<= (length url) 5);; ignore trifles or about:*.
+	      (string-match w3m-about-history-ignored-regexp url))
     (let ((parent (when (string-match "#\\([^#]+\\)$" url)
 		    (substring url 0 (match-beginning 0))))
 	  ident)
@@ -2695,10 +2699,6 @@ works on Emacs.
 		      (substring w3m-current-url (match-end 0))
 		    (concat "about://header/" w3m-current-url)))))
 
-(defconst w3m-about-history-except-regex
-  "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\)/.*\\)?$"
-  "Regexp for not show history.")
-
 (defun w3m-about-history-1 (history source depth)
   "Internal function used to `w3m-about-history' for recursive funcall."
   (let (element url title about children)
@@ -2707,7 +2707,7 @@ works on Emacs.
 	    history (cdr history)
 	    url (car element)
 	    title (plist-get (cadr element) ':title)
-	    about (string-match w3m-about-history-except-regex url)
+	    about (string-match w3m-about-history-ignored-regexp url)
 	    source (concat source
 			   (if (zerop depth)
 			       ""
@@ -2764,7 +2764,7 @@ works on Emacs.
        (lambda (sym)
 	 (when (and sym
 		    (setq url (symbol-name sym))
-		    (not (string-match w3m-about-history-except-regex url)))
+		    (not (string-match w3m-about-history-ignored-regexp url)))
 	   (setq time (w3m-arrived-time url))
 	   (push (cons url time) alist)))
        w3m-arrived-db)
