@@ -1,3 +1,10 @@
+2003-07-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-content-start):
+	Simplify.
+	(shimbun-mainichi-content-end): Ditto.
+	(shimbun-make-contents): Remove ^M's, table forms and adv's.
+
 2003-07-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-about-db-history): Call `w3m-arrived-time' with string.
