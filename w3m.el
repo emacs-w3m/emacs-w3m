@@ -6942,7 +6942,7 @@ FROM-COMMAND is defined to `w3m-minor-mode-map' for same keys in
 
 (defun w3m-make-minor-mode-keymap ()
   "Make keymap for w3m-minor-mode"
-  (let ((keymap (make-keymap)))
+  (let ((keymap (make-sparse-keymap)))
     (dolist (pair w3m-minor-mode-command-alist)
       (substitute-key-definition (car pair)
 				 (or (cdr pair) (car pair))

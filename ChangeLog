@@ -1,3 +1,15 @@
+2002-10-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* mime-w3m.el (mime-w3m-mode-map): Revival.
+	(mime-w3m-setup): Initialize `mime-w3m-mode-map' based on
+	`w3m-minor-mode-map'; Modify it to set its parent map to
+	`mime-view-mode-default-map'.
+	(mime-w3m-preview-text/html) [XEmacs,Emacs21]: Unify `local-map'
+	as text property.
+
+	* w3m.el (w3m-make-minor-mode-keymap): Call `make-spase-keymap'
+	instead of `make-keymap'.
+
 2002-10-22  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* w3m.el (w3m-entity-regexp): As simple regexp. Existance of final

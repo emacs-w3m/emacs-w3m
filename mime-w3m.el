@@ -40,7 +40,8 @@
   (require 'w3m)
   (require 'mime)
   (defvar mime-setup-enable-inline-html)
-  (defvar mime-preview-condition))
+  (defvar mime-preview-condition)
+  (defvar mime-view-mode-default-map))
 
 (eval-and-compile
   (when (featurep 'xemacs)
@@ -64,6 +65,7 @@ consider all the urls to be safe."
   :type '(choice (regexp :tag "Regexp")
 		 (const :tag "All URLs are safe" nil)))
 
+(defvar mime-w3m-mode-map nil)
 (defvar mime-w3m-message-structure nil)
 (make-variable-buffer-local 'mime-w3m-message-structure)
 
@@ -103,7 +105,10 @@ consider all the urls to be safe."
     (setq mime-w3m-display-inline-images w3m-default-display-inline-images))
   (unless (assq 'mime-view-mode w3m-cid-retrieve-function-alist)
     (push (cons 'mime-view-mode 'mime-w3m-cid-retrieve)
-	  w3m-cid-retrieve-function-alist)))
+	  w3m-cid-retrieve-function-alist))
+  (unless mime-w3m-mode-map
+    (setq mime-w3m-mode-map (copy-keymap w3m-minor-mode-map))
+    (set-keymap-parent mime-w3m-mode-map mime-view-mode-default-map)))
 
 (def-edebug-spec mime-w3m-save-background-color t)
 (defmacro mime-w3m-save-background-color (&rest body)
@@ -140,11 +145,7 @@ consider all the urls to be safe."
 			      (string-match "\\`http://" xref)
 			      xref))
 	     (add-text-properties p (point-max)
-				  (list (if (or (featurep 'xemacs)
-						(>= emacs-major-version 21))
-					    'keymap
-					  'local-map)
-					w3m-minor-mode-map
+				  (list 'local-map mime-w3m-mode-map
 					'text-rendered-by-mime-w3m t)))
 	 (error (message (format "%s" err))))))))
 
