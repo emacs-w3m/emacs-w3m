@@ -1,3 +1,7 @@
+2003-07-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-decoder-alist): Look for the newest inflate command.
+
 2003-07-09  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (w3m-mew-support-cid): Check `mew-version-number'.
