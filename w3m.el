@@ -1187,7 +1187,7 @@ Here is an example of how to set this option:
 	       ("Nu" . 77) ("Xi" . 78) ("Omicron" . 79) ("Pi" . 80)
 	       ("Rho" . 81) ; No ("Sigmaf" . 82)
 	       ("Sigma" . 83) ("Tau" . 84) ("Upsilon" . 85) ("Phi" . 86)
-	       ("Chi" . 87) ("Psi" . 88) ("Omega" . 89) 
+	       ("Chi" . 87) ("Psi" . 88) ("Omega" . 89)
 	       ("alpha" . 97) ("beta" . 98) ("gamma" . 99) ("delta" . 100)
 	       ("epsilon" . 101) ("zeta" . 102) ("eta" . 103) ("theta" . 104)
 	       ("iota" . 105) ("kappa" . 106) ("lambda" . 107) ("mu" . 108)
@@ -2158,7 +2158,7 @@ with ^ as `cat -v' does."
 	  (pre name)
 	  (post ""))
       (if (not strict)
-	  (while (and (null val) 
+	  (while (and (null val)
 		      (< 0 (length pre))
 		      (null (setq val (intern-soft pre w3m-entity-db))))
 	    (setq post (concat (substring pre -1) post)
@@ -2365,7 +2365,7 @@ If URL is specified, only the image with URL is toggled."
 		     '(w3m-image-dummy t w3m-image "dummy"))
 		    (setq end (point)))
 		(goto-char cur-point)
-		(when iurl
+		(when (w3m-url-valid iurl)
 		  (w3m-process-with-null-handler
 		    (lexical-let ((start (set-marker (make-marker) start))
 				  (end (set-marker (make-marker) end))
@@ -2435,7 +2435,7 @@ If NO-CACHE is non-nil, cache is not used."
 	(scale (get-text-property (point) 'w3m-image-scale)))
     (if (and scale (equal status 'off))
 	(w3m-zoom-in-image 0)
-      (if url
+      (if (w3m-url-valid url)
 	  (progn
 	    (if force (setq status 'off))
 	    (w3m-toggle-inline-images-internal status no-cache url))
@@ -4172,8 +4172,6 @@ is performed.  Otherwise, COUNT is treated as 1 by default."
 refered in `w3m-expand-url' to keep backward compatibility which is
 described in Section 5.2 of RFC 2396.")
 
-(defconst w3m-url-fallback-base "http:///")
-
 (defun w3m-expand-url (url &optional base)
   "Convert URL to absolute, and canonicalize it."
   (save-match-data
@@ -4293,12 +4291,12 @@ also make a new frame for the copied session."
   (interactive (if (member current-prefix-arg '(2 (16)))
 		   (list nil t)
 		 (list current-prefix-arg nil)))
-  (let ((url (w3m-anchor))
+  (let ((url (w3m-url-valid (w3m-anchor)))
 	(act (w3m-action)))
     (cond
      (act (eval act))
      (url (w3m-view-this-url-1 url arg new-session))
-     ((w3m-image)
+     ((w3m-url-valid (w3m-image))
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
 	(w3m-view-image)))
@@ -4329,47 +4327,50 @@ session."
   "Submit form at point."
   (interactive)
   (let ((submit (w3m-submit)))
-    (if submit
+    (if (and submit
+	     w3m-current-url
+	     (w3m-url-valid w3m-current-url))
 	(eval submit)
       (w3m-display-message "Can't Submit at this point"))))
 
 (defun w3m-external-view (url &optional no-cache handler)
-  (lexical-let ((url url)
-		(no-cache no-cache))
-    (w3m-process-do
-	(type (w3m-content-type url no-cache handler))
-      (when type
-	(lexical-let ((method (nth 2 (assoc type w3m-content-type-alist))))
-	  (cond
-	   ((not method)
-	    (if (w3m-url-local-p url)
-		(error "No method to view `%s' is registered. Use `w3m-edit-this-url'"
-		       (file-name-nondirectory (w3m-url-to-file-name url)))
-	      (w3m-download url nil no-cache handler)))
-	   ((functionp method)
-	    (funcall method url))
-	   ((consp method)
-	    (lexical-let
-		((command (w3m-which-command (car method)))
-		 (arguments (cdr method))
-		 (file (make-temp-name
-			(expand-file-name "w3mel" w3m-profile-directory)))
-		 suffix)
-	      (setq suffix (file-name-nondirectory url))
-	      (when (string-match "\\.[a-zA-Z0-9]+$" suffix)
-		(setq suffix (match-string 0 suffix))
-		(when (< (length suffix) 5)
-		  (setq file (concat file suffix))))
-	      (cond
-	       ((and command (memq 'file arguments))
-		(w3m-process-do
-		    (success (w3m-download url file no-cache handler))
-		  (when success
-		    (w3m-external-view-file command file url arguments))))
-	       (command
-		(w3m-external-view-file command nil url arguments))
-	       (t
-		(w3m-download url nil no-cache handler)))))))))))
+  (when (w3m-url-valid url)
+    (lexical-let ((url url)
+		  (no-cache no-cache))
+      (w3m-process-do
+	  (type (w3m-content-type url no-cache handler))
+	(when type
+	  (lexical-let ((method (nth 2 (assoc type w3m-content-type-alist))))
+	    (cond
+	     ((not method)
+	      (if (w3m-url-local-p url)
+		  (error "No method to view `%s' is registered. Use `w3m-edit-this-url'"
+			 (file-name-nondirectory (w3m-url-to-file-name url)))
+		(w3m-download url nil no-cache handler)))
+	     ((functionp method)
+	      (funcall method url))
+	     ((consp method)
+	      (lexical-let
+		  ((command (w3m-which-command (car method)))
+		   (arguments (cdr method))
+		   (file (make-temp-name
+			  (expand-file-name "w3mel" w3m-profile-directory)))
+		   suffix)
+		(setq suffix (file-name-nondirectory url))
+		(when (string-match "\\.[a-zA-Z0-9]+$" suffix)
+		  (setq suffix (match-string 0 suffix))
+		  (when (< (length suffix) 5)
+		    (setq file (concat file suffix))))
+		(cond
+		 ((and command (memq 'file arguments))
+		  (w3m-process-do
+		      (success (w3m-download url file no-cache handler))
+		    (when success
+		      (w3m-external-view-file command file url arguments))))
+		 (command
+		  (w3m-external-view-file command nil url arguments))
+		 (t
+		  (w3m-download url nil no-cache handler))))))))))))
 
 (defun w3m-external-view-file (command file url arguments)
   ;; The 3rd argument `url' is necessary to handle the constant `url'
@@ -4406,7 +4407,7 @@ session."
 (defun w3m-view-image ()
   "View the image under point."
   (interactive)
-  (let ((url (w3m-image)))
+  (let ((url (w3m-url-valid (w3m-image))))
     (if url
 	(w3m-external-view url)
       (w3m-display-message "No image at point"))))
@@ -4414,7 +4415,7 @@ session."
 (defun w3m-save-image ()
   "Save the image under point to a file."
   (interactive)
-  (let ((url (w3m-image)))
+  (let ((url (w3m-url-valid (w3m-image))))
     (if url
 	(w3m-download url)
       (w3m-display-message "No image at point"))))
@@ -4427,15 +4428,17 @@ session."
 		   (w3m-image))
 		 (when (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
 		   w3m-current-url))))
-    (when url
-      (message "Browsing <%s>..." url)
-      (w3m-external-view url))))
+    (if (w3m-url-valid url)
+	(progn
+	  (message "Browsing <%s>..." url)
+	  (w3m-external-view url))
+      (w3m-display-message "No URL at point"))))
 
 (defun w3m-download-this-url ()
   "Download the file or the image which pointed by the link under cursor."
   (interactive)
   (let ((url (or (w3m-anchor) (w3m-image))))
-    (if url
+    (if (w3m-url-valid url)
 	(lexical-let ((pos (point-marker))
 		      (curl w3m-current-url))
 	  (w3m-process-with-null-handler
@@ -4453,8 +4456,9 @@ session."
 (defun w3m-print-current-url ()
   "Print the URL of current page and push it into kill-ring."
   (interactive)
-  (kill-new w3m-current-url)
-  (w3m-display-message "%s" w3m-current-url))
+  (when w3m-current-url
+    (kill-new w3m-current-url)
+    (w3m-display-message "%s" w3m-current-url)))
 
 (defun w3m-print-this-url (&optional arg)
   "Print the URL of the link under point."
@@ -4530,14 +4534,17 @@ Return t if current line has a same anchor sequence."
 (defun w3m-edit-current-url ()
   "Edit the local file pointed by URL of current page."
   (interactive)
-  (w3m-edit-url w3m-current-url))
+  (if w3m-current-url
+      (w3m-edit-url w3m-current-url)
+    (w3m-display-message "No URL")))
+
 
 (defun w3m-edit-this-url (&optional url)
   "Edit the local file pointed by URL under point."
   (interactive)
   (unless url
     (setq url (w3m-anchor)))
-  (if url
+  (if (w3m-url-valid url)
       (w3m-edit-url url)
     (w3m-display-message "No URL at point")))
 
@@ -5757,7 +5764,7 @@ field for this request."
 	 (string-match "\\`ftp://" url)
 	 (not (string= "text/html" (w3m-local-content-type url))))
     (w3m-goto-ftp-url url))
-   (t
+   ((w3m-url-valid url)
     (w3m-buffer-setup)			; Setup buffer.
     (w3m-arrived-setup)			; Setup arrived database.
     (switch-to-buffer (current-buffer))
@@ -5772,7 +5779,7 @@ Cannot run two w3m processes simultaneously \
     (w3m-history-store-position)
     ;; Access url group
     (if (string-match "\\`group:" url)
-	(let ((urls (mapcar 'w3m-url-decode-string 
+	(let ((urls (mapcar 'w3m-url-decode-string
 			    (split-string (substring url (match-end 0)) "&"))))
 	  (w3m-process-do
 	      (type (prog1
@@ -5796,7 +5803,7 @@ Cannot run two w3m processes simultaneously \
 	  (w3m-history-plist-put :forms w3m-current-forms nil nil t))
 	;; Set current forms using the history structure.
 	(when (setq w3m-current-forms
-		    (when (and (null post-data) ; If post, always reload.
+		    (when (and (null post-data)	; If post, always reload.
 			       (w3m-cache-available-p url))
 		      (w3m-history-plist-get :forms url nil t)))
 	  ;; Mark that the form is from history structure.
@@ -5885,7 +5892,8 @@ Cannot run two w3m processes simultaneously \
 	      ;; restore position must call after hooks for localcgi.
 	      (when (or reload redisplay)
 		(w3m-history-restore-position))
-	      (w3m-refresh-at-time)))))))))
+	      (w3m-refresh-at-time)))))))
+   (t (w3m-message "Invalid URL: %s" url))))
 
 (defun w3m-current-directory (url)
   (let (file)
@@ -5918,7 +5926,7 @@ Cannot run two w3m processes simultaneously \
 
 (defun w3m-goto-url-with-timer (url buffer)
   "Run the command `w3m-goto-url' from the timer of refresh."
-  (when (and url buffer (get-buffer buffer))
+  (when (and (w3m-url-valid url) buffer (get-buffer buffer))
     (if (get-buffer-window buffer)
 	(save-selected-window
 	  (pop-to-buffer buffer)
@@ -6914,13 +6922,14 @@ strings under the cursor.  When a unsecure page which may contain
 vicious forms is viewed, this command should be used instead of
 `w3m-view-this-url'."
   (interactive)
-  (let ((url (w3m-anchor)))
+  (let ((url (w3m-url-valid (w3m-anchor))))
     (cond
      (url (w3m url))
-     ((w3m-image)
+     ((w3m-url-valid (w3m-image))
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
-	(w3m-view-image))))))
+	(w3m-view-image)))
+     (t (w3m-message "No URL at point")))))
 
 (defun w3m-mouse-safe-view-this-url (event)
   "Perform the command `w3m-safe-view-this-url' by the mouse event."
