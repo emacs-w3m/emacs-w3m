@@ -39,6 +39,7 @@
 ;; at run-time.
 (eval-when-compile
   (defvar w3m-display-inline-images)
+  (defvar w3m-mode-map)
   (defvar w3m-work-buffer-name)
   (autoload 'w3m-retrieve "w3m"))
 
@@ -55,14 +56,19 @@
 (defvar w3m-bitmap-image-use-cache t
   "*If non-nil, bitmap-image is cached to this alist")
 
-(eval-and-compile
-  (if (or (>= emacs-major-version 21)
-	  (and (= emacs-major-version 20)
-	       (>= emacs-minor-version 3)))
-      (progn
-	(defalias 'w3m-bitmap-current-column 'current-column)
-	(defalias 'w3m-bitmap-move-to-column-force 'move-to-column-force))
+(eval-when-compile
+  (defmacro w3m-bitmap-byte-indexed-characters-p ()
+    (or (not (boundp 'emacs-major-version))
+	(<= emacs-major-version 19)
+	(and (= emacs-major-version 20)
+	     (<= emacs-minor-version 2)))))
 
+(eval-and-compile
+  (unless (w3m-bitmap-byte-indexed-characters-p)
+    (defalias 'w3m-bitmap-current-column 'current-column)
+    (defalias 'w3m-bitmap-move-to-column-force 'move-to-column-force))
+
+  (when (w3m-bitmap-byte-indexed-characters-p)
     (defun w3m-bitmap-current-column ()
       "Like `current-column', except that works with byte-indexed bitmap
 chars as well."
@@ -74,9 +80,9 @@ chars as well."
 	(goto-char home)
 	cols))
 
-    (defun w3m-bitmap-move-to-column-force (column)
-      "Like `move-to-column-force', except that works with byte-indexed
-bitmap chars as well."
+    (defun w3m-bitmap-move-to-column (column &optional force)
+      "Like `move-to-column', except that works with byte-indexed bitmap
+chars as well."
       (beginning-of-line)
       (let ((cols 0)
 	    width)
@@ -87,14 +93,46 @@ bitmap chars as well."
 		(setq width (char-width (following-char))
 		      cols (+ cols width))
 		(forward-char 1))
-	      (cond ((> cols column)
-		     (delete-backward-char 1)
-		     (insert-char ?\  width)
-		     (forward-char (- column cols)))
-		    ((< cols column)
-		     (insert-char ?\  (- column cols))))
-	      column)
-	  (signal 'wrong-type-argument (list 'wholenump column)))))))
+	      (if force
+		  (progn
+		    (cond ((> cols column)
+			   (delete-backward-char 1)
+			   (insert-char ?\  width)
+			   (forward-char (- column cols)))
+			  ((< cols column)
+			   (insert-char ?\  (- column cols))))
+		    column)
+		cols))
+	  (signal 'wrong-type-argument (list 'wholenump column)))))
+
+    (defun w3m-bitmap-move-to-column-force (column)
+      "Like `move-to-column-force', except that works with byte-indexed
+bitmap chars as well."
+      (inline (w3m-bitmap-move-to-column column t)))
+
+    (defun w3m-bitmap-next-line (arg)
+      "Simple emulation to `next-line' to work with byte-indexed bitmap chars."
+      (interactive "p")
+      (let ((column (w3m-bitmap-current-column)))
+	(forward-line arg)
+	(w3m-bitmap-move-to-column column)))
+
+    (defun w3m-bitmap-previous-line (arg)
+      "Simple emulation to `previous-line' to work with byte-indexed bitmap
+chars."
+      (interactive "p")
+      (w3m-bitmap-next-line (- arg)))
+
+    (defun w3m-bitmap-substitute-key-definitions ()
+      "Substitute some key defs to work with byte-indexed bitmap chars.  Note
+that it is intended to be used to `w3m-mode-hook' exclusively."
+      (remove-hook 'w3m-mode-hook 'w3m-bitmap-substitute-key-definitions)
+      (substitute-key-definition 'next-line 'w3m-bitmap-next-line
+				 w3m-mode-map global-map)
+      (substitute-key-definition 'previous-line 'w3m-bitmap-previous-line
+				 w3m-mode-map global-map))
+
+    (add-hook 'w3m-mode-hook 'w3m-bitmap-substitute-key-definitions)))
 
 (defun w3m-bitmap-image-buffer (buffer)
   "Create bitmap-image from BUFFER."

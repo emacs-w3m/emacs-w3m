@@ -1,3 +1,14 @@
+2002-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bitmap.el (w3m-bitmap-byte-indexed-characters-p): New macro.
+	The following changes are for old Emacsen.
+	(w3m-bitmap-move-to-column): New function.
+	(w3m-bitmap-move-to-column-force): Use it.
+	(w3m-bitmap-next-line): New command.
+	(w3m-bitmap-previous-line): New command.
+	(w3m-bitmap-substitute-key-definitions): New function; add it to
+	`w3m-mode-hook' as the one-shot function.
+
 2002-04-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-halfdump-command-arguments): Add `-I e' option to
