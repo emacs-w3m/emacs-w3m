@@ -828,6 +828,16 @@ deactivated after evaluating the current command."
       (list 'region-active-p)
     (list 'and 'transient-mark-mode 'mark-active)))
 
+;; Fix a bug in Emacs 21.1 through 21.3.
+(eval-after-load "wid-edit"
+  '(if (and (fboundp 'widget-default-get)
+	    (widget-default-get '(function :value-to-external ignore)))
+       (defadvice widget-default-get (after let-it-return-external-value
+					    (widget) activate)
+	 "Let it return an external value."
+	 (setq ad-return-value
+	       (widget-apply widget :value-to-external ad-return-value)))))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here
