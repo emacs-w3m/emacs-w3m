@@ -254,7 +254,7 @@ width using expression (+ (frame-width) VALUE)."
 
 (defcustom w3m-terminal-coding-system
   (if w3m-accept-japanese-characters
-      'euc-japan 'iso-latin-1)
+      'euc-japan 'iso-8859-1)
   "*Coding system for keyboard input to `w3m'."
   :group 'w3m
   :type 'coding-system)
@@ -266,7 +266,7 @@ width using expression (+ (frame-width) VALUE)."
 	(if w3m-accept-japanese-characters
 	    'w3m-euc-japan 'w3m-iso-latin-1)
       (if w3m-accept-japanese-characters
-	  'iso-2022-7bit 'iso-latin-1)))
+	  'iso-2022-7bit 'iso-8859-1)))
   "*Coding system for write operations to `w3m'."
   :group 'w3m
   :type 'coding-system)
@@ -301,7 +301,7 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :type 'coding-system)
 
 (defcustom w3m-default-coding-system
-  (if (equal "Japanese" w3m-language) 'shift_jis 'iso-latin-1)
+  (if (equal "Japanese" w3m-language) 'shift_jis 'iso-8859-1)
   "*Default coding system to encode URL strings and post-data."
   :group 'w3m
   :type 'coding-system)
