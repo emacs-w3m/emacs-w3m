@@ -1,3 +1,7 @@
+2001-10-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Imcremented to `1.2rc4'.
+
 2001-10-29  ORI Manabu <ori@tahoo.org>
 
 	* w3m.el (w3m-type): Added the expression to detect `w3m-m17n'.
