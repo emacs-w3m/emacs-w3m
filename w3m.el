@@ -63,6 +63,16 @@
   (unless (dolist (var nil t))
     (load "cl-macs" nil t)))
 
+(defvar w3m-colon-keywords
+  (eval-when-compile
+    (when (boundp 'w3mhack-colon-keywords)
+      (symbol-value 'w3mhack-colon-keywords)))
+  "List of the colon keywords should be bound at run-time.  This variable
+defaults to a proper value only if this file is byte-compiled by make.")
+
+(dolist (keyword w3m-colon-keywords)
+  (set keyword keyword))
+
 (require 'w3m-macro)
 
 (eval-and-compile

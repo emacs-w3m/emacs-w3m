@@ -1,5 +1,14 @@
 2001-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-colon-keywords): New variable; bind some colon
+	keywords for Emacs versions prior to 20.3.
+
+	* .cvsignore: Add w3mkwds.el.
+
+	* w3mhack.el (w3mhack-bind-colon-keywords): New function; byte-
+	compile and exec it.
+	(w3mhack-examine-modules): Don't byte-compile w3mkwds.el.
+
 	* w3m-macro.el (w3m-tag-regexp-of): Reverted; add a documentation.
 	(TopLevel): Require `cl' when compiling.
 
