@@ -939,7 +939,8 @@ cursor position and around there."
 	     (function (lambda (extent)
 			 (if w3m-track-mouse
 			     (get-text-property (extent-start-position extent)
-						(quote (, property))))))))
+						(quote (, property))
+						(extent-object extent)))))))
     (` (if (and (boundp 'emacs-major-version)
 		(>= emacs-major-version 21))
 	   (function (lambda (window object pos)
