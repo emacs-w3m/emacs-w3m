@@ -294,7 +294,7 @@ If no field in forward, return nil without moving."
 (if (fboundp 'string-to-char-list)
     (defalias 'w3m-string-to-char-list 'string-to-char-list)
   (defun w3m-string-to-char-list (str)
-    (mapcar 'car str)))
+    (mapcar 'identity str)))
 
 (defun w3m-form-mee-new (x)
   "Decode form information of w3mmee."
