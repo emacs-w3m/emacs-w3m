@@ -1,3 +1,12 @@
+2001-07-06  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-form.el (w3m-form-default-coding-system): New user option.
+	(w3m-form-make-form-urlencoded): Use it.
+	(w3m-form-input-textarea-set): Get values of buffer local variables
+	before changing buffer.
+	(w3m-form-input-textarea): Set values of buffer local variables
+	after changing buffer.
+
 2001-07-06  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-form.el (comment): Modify URI of emacs-w3m.

@@ -42,6 +42,10 @@
 (defvar w3m-current-forms nil "Forms of this buffer.")
 (make-variable-buffer-local 'w3m-current-forms)
 
+(defcustom w3m-form-default-coding-system 'shift_jis-dos
+  "*Default coding system for form encoding."
+  :group 'w3m
+  :type 'coding-system)
 
 ;;; w3m-form structure:
 
@@ -82,7 +86,7 @@
   (let ((plist (w3m-form-plist form))
 	(coding (or coding (w3m-charset-to-coding-system
 			    (w3m-content-charset w3m-current-url))
-		    'shift_jis)) ; XXX FIXME; hard coding.
+		    w3m-form-default-coding-system))
 	(buf) str)
     (while plist
       (setq buf (cons
@@ -280,16 +284,17 @@
   (run-hooks 'w3m-form-input-textarea-set-hook)
   (let ((input (buffer-string))
 	(buffer (current-buffer))
+	(name w3m-form-input-textarea-name)
+	(form w3m-form-input-textarea-form)
+	(point w3m-form-input-textarea-point)
 	(w3mbuffer w3m-form-input-textarea-buffer))
     (when (buffer-live-p w3mbuffer)
       (or (one-window-p) (delete-window))
       (kill-buffer buffer)
       (pop-to-buffer w3mbuffer)
-      (when (and w3m-form-input-textarea-form
-		 w3m-form-input-textarea-point)
-	(goto-char w3m-form-input-textarea-point)
-	(w3m-form-put w3m-form-input-textarea-form
-		      w3m-form-input-textarea-name input)
+      (when (and form point)
+	(goto-char point)
+	(w3m-form-put form name input)
 	(w3m-form-replace input)))))
 
 (defun w3m-form-input-textarea-mode ()
@@ -300,25 +305,25 @@
   (run-hooks 'w3m-form-input-textarea-mode-hook))
 
 (defun w3m-form-input-textarea (form name value)
-  (setq w3m-form-input-textarea-form form)
-  (setq w3m-form-input-textarea-name name)
-  (setq w3m-form-input-textarea-buffer (current-buffer))
-  (setq w3m-form-input-textarea-point (point))
   (let* ((cur-win (selected-window))
+	 (w3mbuffer (current-buffer))
+	 (point (point))
 	 (size (min
 		(- (window-height cur-win)
 		   window-min-height 1)
 		(- (window-height cur-win)
 		   (max window-min-height
 			(1+ w3m-form-input-textarea-buffer-lines)))))
-	 (cur-buffer w3m-form-input-textarea-buffer)
 	 (buffer (generate-new-buffer "*w3m form textarea*")))
     (split-window cur-win (if (> size 0) size window-min-height))
     (select-window (next-window))
     (let ((pop-up-windows nil))
       (switch-to-buffer buffer)
       (set-buffer buffer)
-      (setq w3m-form-input-textarea-buffer cur-buffer)
+      (setq w3m-form-input-textarea-form form)
+      (setq w3m-form-input-textarea-name name)      
+      (setq w3m-form-input-textarea-buffer w3mbuffer)
+      (setq w3m-form-input-textarea-point point)
       (if value (insert value))
       (goto-char (point-min))
       (w3m-form-input-textarea-mode))))
