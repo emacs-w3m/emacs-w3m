@@ -517,19 +517,20 @@ image parts, and returns an alist of URLs and image entities."
 	    (eval-when-compile
 	      (let ((spc "\t\n\f\r "))
 		(concat "<[" spc "]*img[" spc "]+"
-			;; 1. replaceable part
+			"\\([^<=>]+=[^<=>]+[" spc "]+\\)*"
+			;; 2. replaceable part
 			"\\(src[" spc "]*=[" spc "]*"
 			"\\(\""
-			;; 3. quoted url
+			;; 4. quoted url
 			"\\([^\"]+\\)"
 			"\"\\|"
-			;; 4. unquoted url, though that's illegal
+			;; 5. unquoted url, though that's illegal
 			"\\([^\t\n\f\r \">]+\\)"
 			"\\)\\)")))
 	    nil t)
-      (setq start (match-beginning 1)
-	    end (match-end 1)
-	    url (shimbun-expand-url (or (match-string 3) (match-string 4))
+      (setq start (match-beginning 2)
+	    end (match-end 2)
+	    url (shimbun-expand-url (or (match-string 4) (match-string 5))
 				    base-url))
       (unless (setq img (assoc url images))
 	(with-temp-buffer
