@@ -292,8 +292,11 @@ It does also shorten too much spaces."
 					      cyear))
 				       month day time)
 	     ;; id
-	     (concat "<" (match-string 2) "%" group "."
-		     shimbun-yomiuri-top-level-domain ">")
+	     (concat "<" (buffer-substring (match-beginning 2)
+					   (match-end 4))
+		     "." (buffer-substring (match-end 4)
+					   (match-end 2))
+		     "%" group "." shimbun-yomiuri-top-level-domain ">")
 	     ;; references, chars, lines
 	     "" 0 0
 	     ;; xref
@@ -335,8 +338,12 @@ It does also shorten too much spaces."
 				       (when (nth 5 numbers)
 					 (match-string (nth 5 numbers))))
 	     ;; id
-	     (concat "<" (match-string (nth 1 numbers)) "%" group "."
-		     shimbun-yomiuri-top-level-domain ">")
+	     (concat
+	      "<" (buffer-substring (match-beginning (nth 1 numbers))
+				    (+ (match-beginning (nth 1 numbers)) 8))
+	      "." (buffer-substring (+ (match-beginning (nth 1 numbers)) 8)
+				    (match-end (nth 1 numbers)))
+	      "%" group "." shimbun-yomiuri-top-level-domain ">")
 	     ;; references, chars, lines
 	     "" 0 0
 	     ;; xref
