@@ -1,3 +1,10 @@
+2001-06-11  Mito  <mit@nines.nec.co.jp>
+
+	* w3m.el (w3m-broken-proxy-cache): New variable.
+	(w3m-dump-head-source-command-arguments): Defined as list.
+	(w3m-w3m-retrieve): Cache on proxy server isn't used when neither
+	`no-cache' nor `w3m-no-proxy-cache-for-foolish-server' equal to nil.
+
 2001-06-10  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-w3m-dev.el: Remove comment.

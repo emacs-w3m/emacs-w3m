@@ -109,8 +109,8 @@
   (eval-when-compile
     (let ((rev "$Revision$"))
       (and (string-match "\\.\\([0-9]+\\) \$$" rev)
-	   (format "0.2.%d"
-		   (- (string-to-number (match-string 1 rev)) 28)))))
+	   (format "1.1.%d"
+		   (- (string-to-number (match-string 1 rev)) 233)))))
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -261,6 +261,14 @@ AAAALCwABQAPAAcAAAIUDGCni2fJnITRhVtjolkqzlwYUgAAIfkEBSEAAAAsMQAEAA8ACAAA
 AxQIYNre7Elp6rzxOpY1XxoEhuKSAAA7"
   "A small icon image for the url about://emacs-w3m.gif.  It is currently
 encoded in the optimized animated gif format and base64.")
+
+(defcustom w3m-broken-proxy-cache nil
+  "*If non nil, cache on proxy server is not used.
+This feature should be enabled only if the caching configuration of
+your proxy server is broken.  In order to use this feature, you must
+apply the patch posted in [emacs-w3m:01119]."
+  :group 'w3m
+  :type 'boolean)
 
 
 ;; Generic functions:
@@ -798,7 +806,7 @@ for a charset indication")
     "Regexp used in parsing to detect string."))
 
 (defconst w3m-dump-head-source-command-arguments
-  (if (eq w3m-type 'w3mmee) "-dump=extra,head,source" "-dump_extra")
+  (if (eq w3m-type 'w3mmee) '("-dump=extra,head,source") '("-dump_extra"))
   "Arguments for 'dump_extra' execution of w3m.")
 
 (defvar w3m-halfdump-command nil
@@ -2087,13 +2095,19 @@ to nil."
   (w3m-with-work-buffer
     (delete-region (point-min) (point-max))
     (set-buffer-multibyte nil)
-    (let ((type
-	   (or (unless no-cache
-		 (and (w3m-cache-request-contents url)
-		      (w3m-content-type url)))
-	       (car (if (memq w3m-type '(w3m-mnc w3mmee))
-			(w3m-w3m-dump-head-source url)
-		      (w3m-w3m-dump-source url))))))
+    (let ((type)
+	  (w3m-command-arguments w3m-command-arguments))
+      (and no-cache
+	   w3m-broken-proxy-cache
+	   (setq w3m-command-arguments
+		 (append w3m-command-arguments '("-o" "no_cache=1"))))
+      (setq type
+	    (or (unless no-cache
+		  (and (w3m-cache-request-contents url)
+		       (w3m-content-type url)))
+		(car (if (memq w3m-type '(w3m-mnc w3mmee))
+			 (w3m-w3m-dump-head-source url)
+		       (w3m-w3m-dump-source url)))))
       (when type
 	(or no-decode
 	    (w3m-decode-encoded-contents (w3m-content-encoding url))
