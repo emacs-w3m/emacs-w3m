@@ -4427,8 +4427,8 @@ forward is performed.  Otherwise, COUNT is treated as 1 by default."
 	(w3m-use-refresh nil))
     (when hist
       (w3m-goto-url (caar hist) nil nil
-		    (w3m-history-plist-get :post-data nil nil t)
-		    (w3m-history-plist-get :referer nil nil t))
+		    (w3m-history-plist-get :post-data nil t)
+		    (w3m-history-plist-get :referer nil t))
       ;; Set the position pointers in the history.
       (setcar w3m-history (cdr hist))
       ;; Restore last position
@@ -6153,17 +6153,17 @@ Cannot run two w3m processes simultaneously \
 		    (name))
 	(when w3m-current-forms
 	  ;; Store the current forms in the history structure.
-	  (w3m-history-plist-put :forms w3m-current-forms nil nil t))
+	  (w3m-history-plist-put :forms w3m-current-forms nil t))
 	;; Set current forms using the history structure.
 	(when (setq w3m-current-forms
 		    (when (and (null post-data)	; If post, always reload.
 			       (w3m-cache-available-p url))
-		      (w3m-history-plist-get :forms url nil t)))
+		      (w3m-history-plist-get :forms url t)))
 	  ;; Mark that the form is from history structure.
 	  (setq w3m-current-forms (cons t w3m-current-forms)))
 	(when (and post-data (w3m-history-assoc url))
 	  ;; Remove processing url's forms from the history structure.
-	  (w3m-history-remove-properties '(:forms) url nil t))
+	  (w3m-history-remove-properties '(:forms) url t))
 	;; local directory URL check
 	(when (and (w3m-url-local-p url)
 		   (file-directory-p (w3m-url-to-file-name url))
@@ -6216,7 +6216,7 @@ Cannot run two w3m processes simultaneously \
 				      (list :title w3m-current-title)))
 		  (w3m-history-add-properties (list :referer referer
 						    :post-data post-data)
-					      nil nil t)
+					      nil t)
 		  (unless w3m-toggle-inline-images-permanently
 		    (setq w3m-display-inline-images
 			  w3m-default-display-inline-images))
@@ -6345,15 +6345,15 @@ the current session.  Otherwise, the new session will start afresh."
 If called with '\\[universal-argument]', clear form and post datas"
   (interactive "P")
   (if w3m-current-url
-      (let ((post-data (w3m-history-plist-get :post-data nil nil t))
-	    (form-data (w3m-history-plist-get :forms nil nil t))
-	    (referer (w3m-history-plist-get :referer nil nil t)))
+      (let ((post-data (w3m-history-plist-get :post-data nil t))
+	    (form-data (w3m-history-plist-get :forms nil t))
+	    (referer (w3m-history-plist-get :referer nil t)))
 	(when arg
 	  (when form-data
-	    (w3m-history-remove-properties '(:forms) nil nil t))
+	    (w3m-history-remove-properties '(:forms) nil t))
 	  (when post-data
 	    (setq post-data nil)
-	    (w3m-history-remove-properties '(:post-data) nil nil t))
+	    (w3m-history-remove-properties '(:post-data) nil t))
 	  (setq w3m-current-forms nil))
 	(if (and post-data (y-or-n-p "Repost form data? "))
 	    (w3m-goto-url w3m-current-url 'reload nil post-data referer)
