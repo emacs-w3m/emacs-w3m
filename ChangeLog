@@ -1,5 +1,11 @@
 2002-03-26  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-e21.el (w3m-setup-favicon): Do nothing when w3m-current-url
+	is nil.
+
+	* w3m.el (w3m-goto-url): Force reload if w3m-current-redirect is set.
+	(w3m): If w3m-current-url is nil, erase buffer.
+
 	* w3m-util.el (w3m-time-less-p): Abolish.
 	(w3m-assoc-ignore-case): Moved from w3m-cookie.el and rewrote not to
 	use assoc* (because it's cl function).

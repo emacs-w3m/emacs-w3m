@@ -4880,7 +4880,7 @@ field for this request."
 	    (setq w3m-current-process nil)
 	    (setq real-url (w3m-real-url url))
 	    (if w3m-current-redirect
-		(w3m-goto-url w3m-current-redirect)
+		(w3m-goto-url w3m-current-redirect 'reload)
 	      (cond
 	       ((not action)
 		(w3m-history-push real-url
@@ -5139,6 +5139,9 @@ Optional NEW-SESSION is intended to be used by the command
     (unwind-protect
 	(unless nofetch
 	  (w3m-goto-url url))
+      (unless w3m-current-url
+	(erase-buffer)
+	(set-buffer-modified-p nil))
       (when frame
 	(setq w3m-initial-frame frame)))))
 

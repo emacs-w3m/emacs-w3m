@@ -431,6 +431,7 @@ Each information is a list whose elements are:
   (setq w3m-current-favicon-data nil
 	w3m-current-favicon-image nil)
   (when (and w3m-use-favicon
+	     w3m-current-url
 	     (w3m-image-type-available-p 'xpm))
     (cond
      ((string-match "\\`about://\\([^/]+\\)/" url)
