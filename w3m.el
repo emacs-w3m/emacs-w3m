@@ -2860,12 +2860,12 @@ a decoding scheme."
 		    (consp (car w3m-show-decoded-url)))
 	       (catch 'found-rule
 		 (dolist (elem w3m-show-decoded-url)
-		   (when (or (when (stringp (car elem))
-			       (string-match (car elem) w3m-current-url))
-			     (when (functionp (car elem))
-			       (funcall (car elem)))
-			     (when (listp (car elem))
-			       (eval (car elem))))
+		   (when (cond ((stringp (car elem))
+				(string-match (car elem) w3m-current-url))
+			       ((functionp (car elem))
+				(funcall (car elem)))
+			       (t
+				(eval (car elem))))
 		     (throw 'found-rule (cdr elem)))))
 	     w3m-show-decoded-url)))
       (if rule

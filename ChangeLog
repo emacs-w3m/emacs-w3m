@@ -1,3 +1,8 @@
+2005-03-03  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-url-readable-string): An expression is evaluated
+	without checking type.
+
 2005-03-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-show-decoded-url): Update its customize spec to use
