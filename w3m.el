@@ -4929,8 +4929,7 @@ Return t if deleting current frame or window is succeeded."
   (use-local-map w3m-mode-map)
   (setq truncate-lines t
 	w3m-display-inline-images w3m-default-display-inline-images)
-  (when (and (boundp 'auto-show-mode)
-	     (symbol-value 'auto-show-mode))
+  (when (boundp 'auto-show-mode)
     (set (make-local-variable 'auto-show-mode) nil))
   (w3m-setup-toolbar)
   (w3m-setup-menu)
