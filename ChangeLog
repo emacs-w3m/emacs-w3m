@@ -1,6 +1,6 @@
 2004-09-21  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* w3m-antenna.el (w3m-about-antenna): Revert 2004-09-1 change.
+	* w3m-antenna.el (w3m-about-antenna): Revert 2004-09-16 change.
 
 2004-09-19  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
