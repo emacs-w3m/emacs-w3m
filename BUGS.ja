@@ -16,6 +16,9 @@ $Date$
 
 ■ TODOs
 
+   --> 斜体テキストの表示 [emacs-w3m:06172]
+       特に英文などでは太字よりも文章の強調に多用される．
+
    --> shimbun の配布パッケージの分割 [emacs-w3m:05607]
 
    --> w3m-copy-buffer() で，history に格納されている buffer-local
