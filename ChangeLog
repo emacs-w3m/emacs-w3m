@@ -1,3 +1,8 @@
+2004-09-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-antenna.el (w3m-about-antenna): Change the method to compare
+	an arrived time to a last-modified time.
+
 2004-09-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-mark-unseen): Change default
@@ -316,7 +321,7 @@
 
 	* shimbun/sb-namazu.el: Rewrite.
 
-	* shimbun/sb-fml.el (shimbun-make-contents): Guard error at 
+	* shimbun/sb-fml.el (shimbun-make-contents): Guard error at
 	unsupposed page.
 
 2004-06-08  Katsumi Yamaoka  <yamaoka@jpl.org>
