@@ -1,8 +1,11 @@
-2002-05-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+2002-05-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-geocrawler.el (shimbun-geocrawler-group-alist):
-	Changed its spec.
-	(shimbun-geocrawler-check-mailing-lists): New command.
+	Changed its default value.
+	(shimbun-index-url): Fix typo.
+	(shimbun-geocrawler-add-group): New command.
+
+2002-05-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el (shimbun-header-insert): Insert `Reply-To'
 	header.
