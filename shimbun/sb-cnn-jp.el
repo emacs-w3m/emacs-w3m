@@ -1,7 +1,6 @@
-;;;; -*- mode: lisp-interaction; syntax: elisp; coding: iso-2022-7bit -*-
-;;; sb-cnn-jp.el --- shimbun backend for CNN Japan
+;;; sb-cnn-jp.el --- shimbun backend for CNN Japan -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003 Tsuyoshi CHO <mfalcon21@hotmail.com>
 
 ;; Author: Tsuyoshi CHO <mfalcon21@hotmail.com>
 ;; Keywords: news

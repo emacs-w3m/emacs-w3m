@@ -1,5 +1,4 @@
-;;;; -*- mode: lisp-interaction; syntax: elisp; coding: iso-2022-7bit -*-
-;;; sb-x51.el --- shimbun backend for x51.org
+;;; sb-x51.el --- shimbun backend for x51.org -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2004 Tsuyoshi CHO <mfalcon21@hotmail.com>
 
