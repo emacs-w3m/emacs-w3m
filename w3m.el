@@ -4514,8 +4514,13 @@ described in Section 5.2 of RFC 2396.")
       (setq pos (point-marker))
       (let ((buffer (w3m-copy-buffer
 		     nil nil nil
-		     (not (and (string-match w3m-url-components-regexp url)
-			       (match-beginning 8))))))
+		     (not
+		      (and
+		       (string-match w3m-url-components-regexp url)
+		       (match-beginning 8)
+		       (string-equal w3m-current-url
+				     (substring url
+						0 (match-beginning 8))))))))
 	(if w3m-view-this-url-new-session-in-background
 	    (set-buffer buffer)
 	  (switch-to-buffer buffer))))
