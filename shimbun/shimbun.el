@@ -391,9 +391,9 @@ Generated article have a multipart/related content-type."
 	   (throw 'start
 		  (concat "; type=\""
 			  (shimbun-entity-type-internal child)
-			  "\"; start=<"
+			  "\"; start=\"<"
 			  (shimbun-entity-cid child)
-			  ">"))))))))
+			  ">\""))))))))
 
 (luna-define-method shimbun-entity-insert :after ((entity
 						   shimbun-multipart-entity))
