@@ -5,30 +5,30 @@
 ;; Add `configure-package-path' to `load-path' for XEmacs.  Those paths
 ;; won't appear in `load-path' when XEmacs starts with the `-vanilla'
 ;; option or the `-no-autoloads' option because of a bug. :<
-(when (and (featurep 'xemacs)
-	   (boundp 'configure-package-path)
-	   (listp configure-package-path))
-  (let ((paths
-	 (apply 'nconc
-		(mapcar
-		 (lambda (path)
-		   (when (and (stringp path)
+(if (and (featurep 'xemacs)
+	 (boundp 'configure-package-path)
+	 (listp configure-package-path))
+    (let ((paths
+	   (apply 'nconc
+		  (mapcar
+		   (lambda (path)
+		     (if (and (stringp path)
 			      (not (string-equal path ""))
 			      (file-directory-p
 			       (setq path (expand-file-name "lisp" path))))
-		     (directory-files path t)))
-		 configure-package-path)))
-	path adds)
-    (while paths
-      (setq path (car paths)
-	    paths (cdr paths))
-      (when (and path
+			 (directory-files path t)))
+		   configure-package-path)))
+	  path adds)
+      (while paths
+	(setq path (car paths)
+	      paths (cdr paths))
+	(if (and path
 		 (not (or (string-match "/\\.\\.?\\'" path)
 			  (member (file-name-as-directory path) load-path)
 			  (member path load-path)))
 		 (file-directory-p path))
-	(push (file-name-as-directory path) adds)))
-    (setq load-path (nconc (nreverse adds) load-path))))
+	    (setq adds (cons (file-name-as-directory path) adds))))
+      (setq load-path (nconc (nreverse adds) load-path))))
 
 (let ((addpath (prog1
 		   (or (car command-line-args-left)
@@ -84,3 +84,32 @@
 There is no shell command which is equivalent to /bin/sh.  Try
 ``make SHELL=foo [option...]'', where `foo' is the absolute path name
 for the proper shell command in your system.")))
+
+;; Load custom and bind defcustom'ed variables for Emacs 19.
+(if (>= emacs-major-version 20)
+    nil
+  (require 'custom)
+  (put 'custom-declare-variable 'byte-hunk-handler
+       'byte-compile-file-form-custom-declare-variable)
+  (defun byte-compile-file-form-custom-declare-variable (form)
+    (if (memq 'free-vars byte-compile-warnings)
+	(setq byte-compile-bound-variables
+	      (cons (nth 1 (nth 1 form)) byte-compile-bound-variables)))
+    (if (memq ':version (nthcdr 4 form))
+	;; Make the variable uncustomizable.
+	`(defvar ,(nth 1 (nth 1 form)) ,(nth 1 (nth 2 form))
+	   ,(substring (nth 3 form) (if (string-match "^[\t *]+" (nth 3 form))
+					(match-end 0)
+				      0)))
+      ;; Ignore unsupported keyword(s).
+      (if (memq ':set-after (nthcdr 4 form))
+	  (let ((newform (list (car form) (nth 1 form)
+			       (nth 2 form) (nth 3 form)))
+		(args (nthcdr 4 form)))
+	    (while args
+	      (or (eq (car args) ':set-after)
+		  (setq newform (nconc newform (list (car args)
+						     (car (cdr args))))))
+	      (setq args (cdr (cdr args))))
+	    newform)
+	form))))

@@ -95,10 +95,10 @@ but do not execute them.")
       (progn
 	(setq shell-file-name (executable-find "bash"))
 	(funcall test))
-      (error "\
-There is no shell command which is equivalent to /bin/sh.  Try
-``make SHELL=foo [option...]'', where `foo' is the absolute path name
-for the proper shell command in your system.")))
+      (message "\n\
+Warning: there seems to be no shell command equivalent to /bin/sh.
+ Try ``make SHELL=foo [option...]'', where `foo' is the absolute
+ path name for the proper shell command in your system.\n")))
 
 (unless (dolist (var nil t))
   ;; Override the macro `dolist' which may have been defined in egg.el.

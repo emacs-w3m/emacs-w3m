@@ -39,9 +39,11 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl)
-  ;; Variables and functions which are used in the following inline
-  ;; functions.  They should be defined in the other module at run-time.
+  (require 'cl))
+
+;; Variables and functions which are used in the following inline
+;; functions.  They should be defined in the other module at run-time.
+(eval-when-compile
   (defvar w3m-current-process)
   (defvar w3m-current-refresh)
   (defvar w3m-current-title)

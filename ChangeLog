@@ -1,5 +1,18 @@
 2005-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el: Issue a warning rather than to cause an error in the
+	case where the shell command doesn't seem to be usable.
+
+	* attic/addpath.el: Make it work with old Emacsen even if cl is
+	not loaded; load custom and bind defcustom'ed variables for Emacs
+	19.
+
+	* w3m-ccl.el: Load w3m-om instead of autoloading it for charset-id.
+
+	* w3m-util.el: Load cl independently when compiling.
+
+2005-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3mhack.el: Check whether the shell command can be used.
 
 	* attic/addpath.el: Ditto; add early-package-load-path to
