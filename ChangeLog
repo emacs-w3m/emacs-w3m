@@ -1,3 +1,12 @@
+2001-05-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-search.el (top-level): Removed magic string to decide coding
+	system.
+
+	* w3m-xmas.el (top-level): Ditto.
+
+	* w3m-e21.el (top-level): Ditto.
+
 2001-05-07  Masatake YAMATO  <jet@gyve.org>
 
 	* w3m-xmas.el (w3m-setup-menu): Implemented.
