@@ -1,3 +1,26 @@
+2003-08-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-flat): Reduce the deepness of local
+	prpoerties in the list structure.
+	(w3m-history-assoc): Simplify; redefine as an inline function.
+	(w3m-history-with-element): Abolish the macro.
+	(w3m-history-current-2): New function.
+	(w3m-history-set-plist): New function.
+	(w3m-history-modify-properties): Rewrite.
+	(w3m-history-seek-properties): Abolish the function.
+	(w3m-history-seek-element): New function.
+	(w3m-history-share-properties): Abolish the function.
+	(w3m-history-tree): Tiny change.
+	(w3m-history-push): Rewrite.
+	(w3m-history-copy): Tiny change.
+	(w3m-history-plist-get): Synch to the change of `w3m-history-flat'.
+	(w3m-history-plist-put): Rewrite.
+	(w3m-history-add-properties): Rewrite.
+	(w3m-history-remove-properties): Rewrite.
+	(w3m-history-rename-url): Abolish the function.
+	(w3m-history-store-position): Abolish the optional argument.
+	(w3m-history-minimize): New command.
+
 2003-08-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-current-1): Redefine as a function
