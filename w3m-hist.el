@@ -240,16 +240,15 @@ have new values.  If COUNT is omitted, it defaults to number one.  If
 COUNT is negative, moving backward is performed.  If there is no room
 in the history, move as far as possible."
   (when w3m-history
-    (let (goal)
-      (cond ((or (unless count
-		   (setq count 1))
-		 (> count 0))
-	     (while (and (setq goal (w3m-history-forward-1))
-			 (> (setq count (1- count)) 0))))
-	    ((< count 0)
-	     (while (and (setq goal (w3m-history-backward-1))
-			 (< (setq count (1+ count)) 0)))))
-      (w3m-history-current-1 (or goal (cadar w3m-history))))))
+    (cond ((or (unless count
+		 (setq count 1))
+	       (> count 0))
+	   (while (and (w3m-history-forward-1)
+		       (> (setq count (1- count)) 0))))
+	  ((< count 0)
+	   (while (and (w3m-history-backward-1)
+		       (< (setq count (1+ count)) 0)))))
+    (w3m-history-current-1 (cadar w3m-history))))
 
 (defun w3m-history-backward (&optional count)
   "Move backward COUNT times in the history structure and return a history
@@ -258,16 +257,15 @@ have new values.  If COUNT is omitted, it defaults to number one.  If
 COUNT is negative, moving forward is performed.  If there is no room
 in the history, move as far as possible."
   (when w3m-history
-    (let (goal)
-      (cond ((or (unless count
-		   (setq count 1))
-		 (> count 0))
-	     (while (and (setq goal (w3m-history-backward-1))
-			 (> (setq count (1- count)) 0))))
-	    ((< count 0)
-	     (while (and (setq goal (w3m-history-forward-1))
-			 (< (setq count (1+ count)) 0)))))
-      (w3m-history-current-1 (or goal (cadar w3m-history))))))
+    (cond ((or (unless count
+		 (setq count 1))
+	       (> count 0))
+	   (while (and (w3m-history-backward-1)
+		       (> (setq count (1- count)) 0))))
+	  ((< count 0)
+	   (while (and (w3m-history-forward-1)
+		       (< (setq count (1+ count)) 0)))))
+    (w3m-history-current-1 (cadar w3m-history))))
 
 (defun w3m-history-flat (&optional history position alist)
   "Set the buffer-local variable `w3m-history-flat' with the value of a

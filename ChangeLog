@@ -1,5 +1,10 @@
 2001-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-hist.el (w3m-history-backward, w3m-history-forward):
+	Simplified.
+
+2001-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-hist.el (w3m-history-backward, w3m-history-forward): Allow
 	the optional argument `count'.
 	(w3m-history-backward-1, w3m-history-forward-1): New macros.
