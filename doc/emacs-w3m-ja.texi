@@ -2407,7 +2407,7 @@ emacs-w3m $B$N$HF1$8<gMW$J%-!<$r;H$&$3$H$,$G$-$^$9!#Nc$($P(B @key{RET} $B$O!"
 $B$O(B @ref{Gnus} $B$r;2>H$7$F2<$5$$!#(B
 
 @item mime-w3m-setup-hook
-@code{mime-w3m} $B%b%8%e!<%k$H(B @acronym{SEMI} $B$N6/D4F0:n$r@_Dj$7$?D>8e$K<B(B
+@code{mime-w3m} $B%b%8%e!<%k$H(B @acronym{SEMI} $B$N6(D4F0:n$r@_Dj$7$?D>8e$K<B(B
 $B9T$5$l$k%U%C%/$G$9!#%G%U%)%k%HCM$O(B @code{nil} $B$G$9!#(B
 @end table
 
