@@ -5256,7 +5256,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	      url)))))
 
 (defsubst w3m-view-this-url-1 (url reload new-session)
-  (lexical-let (pos buffer newbuffer wconfig)
+  (lexical-let (pos buffer newbuffer wconfig newwindow newposition newstart)
     (if new-session
 	(let ((empty
 	       ;; If a new url has the #name portion, we simply copy
@@ -5283,26 +5283,40 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	     (prog1
 		 (w3m-goto-url url reload nil nil w3m-current-url handler)
 	       (setq newbuffer (current-buffer)
+		     newwindow (get-buffer-window (current-buffer))
+		     newposition (point)
+		     newstart (window-start newwindow)
 		     wconfig (current-window-configuration)))))
-	;; When the buffer's major mode has changed from the w3m-mode
-	;; to another by visiting the new url (possibly a local file,
-	;; a mailto url, etc.), we need to make the new buffer visible.
-	(when (and (eq (with-current-buffer buffer major-mode)
-		       'w3m-mode)
-		   (not (eq (with-current-buffer newbuffer major-mode)
-			    'w3m-mode)))
+	(cond
+	 ;; When the buffer's major mode has changed from the w3m-mode
+	 ;; to another by visiting the new url (possibly a local file,
+	 ;; a mailto url, etc.), we need to make the new buffer visible.
+	 ((and (eq (with-current-buffer buffer major-mode)
+		   'w3m-mode)
+	       (not (eq (with-current-buffer newbuffer major-mode)
+			'w3m-mode)))
+	  ;; Buffer must delete before restore window configuration.
+	  (when pos
+	    (w3m-delete-buffer-if-empty buffer))
 	  (set-window-configuration wconfig))
-	(when pos ;; The new session is created.
-	  ;; Delete useless newly created buffer if it is empty.
-	  (w3m-delete-buffer-if-empty buffer))
-	;; FIXME: what we should actually do is to modify the `w3m-goto-url'
-	;; function so that it may return a proper value, and checking it.
-	(when (and pos (buffer-name (marker-buffer pos)))
-	  (save-excursion
-	    (set-buffer (marker-buffer pos))
+	 ;; restore window position of w3m-display-hook
+	 ((and newwindow newposition newstart
+	       (eq newwindow (get-buffer-window (current-buffer))))
+	  (set-window-start newwindow newstart)
+	  (goto-char (min newposition (point-max)))))
+	;; The new session is created.
+	(when pos
+	  ;; Already empty buffer killed if the new url is not the w3m-mode.
+	  (when (buffer-name buffer)
+	    (w3m-delete-buffer-if-empty buffer))
+	  ;; FIXME: what we should actually do is to modify the `w3m-goto-url'
+	  ;; function so that it may return a proper value, and checking it.
+	  (when (buffer-name (marker-buffer pos))
 	    (save-excursion
-	      (goto-char pos)
-	      (w3m-refontify-anchor))))))))
+	      (set-buffer (marker-buffer pos))
+	      (save-excursion
+		(goto-char pos)
+		(w3m-refontify-anchor)))))))))
 
 (defun w3m-view-this-url (&optional arg new-session)
   "Display the page pointed to by the link under point.
