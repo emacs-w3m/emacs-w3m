@@ -804,26 +804,37 @@ article to be expired.  The optional fourth argument FORCE is ignored."
 (defvar nnshimbun-server-history nil)
 
 ;;;###autoload
-(defun gnus-group-make-shimbun-group ()
-  "Create an nnshimbun group.
-The user will be prompted for a server name and a group name."
-  (interactive)
-  (let* ((minibuffer-setup-hook
+(defun gnus-group-make-shimbun-group (server group)
+  "Create a new nnshimbun group.
+The user will be prompted for a SERVER name and a GROUP name."
+  (interactive
+   (let ((minibuffer-setup-hook
 	  (append minibuffer-setup-hook '(beginning-of-line)))
 	 (alist (shimbun-servers-alist))
-	 (server (completing-read
-		  "Shimbun address: "
-		  alist nil t
-		  (or (car nnshimbun-server-history)
-		      (caar alist))
-		  'nnshimbun-server-history))
-	 (groups)
-	 (nnshimbun-pre-fetch-article))
-    (if (setq groups (shimbun-groups (shimbun-open server)))
-	(gnus-group-make-group
-	 (completing-read "Group name: " (mapcar 'list groups) nil t nil)
-	 (list 'nnshimbun server))
-      (error "%s" "Can't find group"))))
+	 server groups group)
+     (unless (eq major-mode 'gnus-group-mode)
+       (error "Command invoked outside of a Gnus group buffer"))
+     (setq server (completing-read "Shimbun address: "
+				   alist nil t
+				   (or (car (delete ""
+						    nnshimbun-server-history))
+				       (caar alist))
+				   'nnshimbun-server-history))
+     (if (assoc server alist)
+	 (when (setq groups (shimbun-groups (shimbun-open server)))
+	   (setq group (completing-read "Group name: "
+					(mapcar 'list groups) nil t))
+	   (unless (member group groups)
+	     (setq group nil)))
+       (setq server nil))
+     (list server group)))
+  (if (and server group)
+      (if (gnus-gethash (format "nnshimbun+%s:%s" server group)
+			gnus-newsrc-hashtb)
+	  (error "Group nnshimbun+%s:%s already exists" server group)
+	(let (nnshimbun-pre-fetch-article)
+	  (gnus-group-make-group group (list 'nnshimbun server))))
+    (error "Can't find group")))
 
 
 (provide 'nnshimbun)
