@@ -1,4 +1,4 @@
-;;; sb-atmarkit.el --- shimbun backend for atmarkit
+;;; sb-atmarkit.el --- shimbun backend for atmarkit -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
@@ -34,45 +34,43 @@
 
 (defvar shimbun-atmarkit-from-address  "info@atmarkit.co.jp")
 (defvar shimbun-atmarkit-coding-system 'euc-japan)
-(defvar shimbun-atmarkit-print-page-url
-  "http://www.atmarkit.co.jp/club/print/print.php")
 
 (defvar shimbun-atmarkit-group-path-alist
-  '( ;; ¥Ë¥å¡¼¥¹·Ï
+  '( ;; $B%K%e!<%97O(B
     ;; NewsInsight
     ("news". "http://www.atmarkit.co.jp/rss/news/rss2dc.xml")
 
-    ;; ¥Õ¥©¡¼¥é¥à·Ï
-    ;; Windows Server Insider¥Õ¥©¡¼¥é¥à
+    ;; $B%U%)!<%i%`7O(B
+    ;; Windows Server Insider$B%U%)!<%i%`(B
     ("fwin2k" . "http://www.atmarkit.co.jp/rss/fwin2k/rss2dc.xml")
-    ;; Insider.NET¥Õ¥©¡¼¥é¥à
+    ;; Insider.NET$B%U%)!<%i%`(B
     ("fdotnet" . "http://www.atmarkit.co.jp/rss/fdotnet/rss2dc.xml")
-    ;; System Insider¥Õ¥©¡¼¥é¥à
+    ;; System Insider$B%U%)!<%i%`(B
     ("fsys" . "http://www.atmarkit.co.jp/rss/fsys/rss2dc.xml")
-    ;; XML & Web Services¥Õ¥©¡¼¥é¥à
+    ;; XML & Web Services$B%U%)!<%i%`(B
     ("fxml" . "http://www.atmarkit.co.jp/rss/fxml/rss2dc.xml")
-    ;; Database Expert¥Õ¥©¡¼¥é¥à
+    ;; Database Expert$B%U%)!<%i%`(B
     ("fdb". "http://www.atmarkit.co.jp/rss/fdb/rss2dc.xml")
-    ;; Linux Square¥Õ¥©¡¼¥é¥à
+    ;; Linux Square$B%U%)!<%i%`(B
     ("flinux" . "http://www.atmarkit.co.jp/rss/flinux/rss2dc.xml")
-    ;; Master of IP Network¥Õ¥©¡¼¥é¥à
+    ;; Master of IP Network$B%U%)!<%i%`(B
     ("fnetwork" . "http://www.atmarkit.co.jp/rss/fnetwork/rss2dc.xml")
-    ;; Java Solution¥Õ¥©¡¼¥é¥à
+    ;; Java Solution$B%U%)!<%i%`(B
     ("fjava" . "http://www.atmarkit.co.jp/rss/fjava/rss2dc.xml")
-    ;; Security&Trust¥Õ¥©¡¼¥é¥à
+    ;; Security&Trust$B%U%)!<%i%`(B
     ("fsecurity". "http://www.atmarkit.co.jp/rss/fsecurity/rss2dc.xml")
-    ;; IT Architect¥Õ¥©¡¼¥é¥à
+    ;; IT Architect$B%U%)!<%i%`(B
     ("farc" . "http://www.atmarkit.co.jp/rss/farc/rss2dc.xml")
 
-    ;; obsolete ¥Õ¥©¡¼¥é¥à·Ï
-    ;; Business Computing¥Õ¥©¡¼¥é¥à
+    ;; obsolete $B%U%)!<%i%`7O(B
+    ;; Business Computing$B%U%)!<%i%`(B
     ("fbiz"  . "http://www.atmarkit.co.jp/rss/fbiz/rss2dc.xml")
 
-    ;; ¡÷IT¼«Ê¬ÀïÎ¬¸¦µæ½ê
+    ;; $B!w(BIT$B<+J,@oN,8&5f=j(B
     ("jibun" . "http://jibun.atmarkit.co.jp/rss/rss2dc.xml")
     ))
 
-(defvar shimbun-atmarkit-groups
+(luna-define-method shimbun-groups ((shimbun shimbun-atmarkit))
   (mapcar 'car shimbun-atmarkit-group-path-alist))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-atmarkit))
@@ -86,23 +84,8 @@
   (format "<%s%%%s@atmarkit.co.jp>" (match-string-no-properties 1 url)
 	  (shimbun-current-group-internal shimbun)))
 
-(luna-define-method shimbun-article ((shimbun shimbun-atmarkit) header &optional outbuf)
-  (when (shimbun-current-group-internal shimbun)
-    (with-current-buffer (or outbuf (current-buffer))
-      (w3m-insert-string
-       (or (with-temp-buffer
-	     ;; get print page : referer is target page
-	     (let ((w3m-coding-system-priority-list
-		    (cons (shimbun-coding-system-internal shimbun)
-			  w3m-coding-system-priority-list)))
-	       (inline
-		 (shimbun-retrieve-url shimbun-atmarkit-print-page-url t
-				       nil (shimbun-article-url shimbun header))))
-	     (shimbun-message shimbun "shimbun: Make contents...")
-	     (goto-char (point-min))
-	     (prog1 (shimbun-make-contents shimbun header)
-	       (shimbun-message shimbun "shimbun: Make contents...done")))
-	   "")))))
+(luna-define-method shimbun-article-url ((shimbun shimbun-atmarkit) header)
+  "http://www.atmarkit.co.jp/club/print/print.php")
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-atmarkit) header)
   (re-search-forward "<body[^>]*>" nil t)

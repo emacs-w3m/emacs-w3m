@@ -1,3 +1,33 @@
+2005-02-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el: Changes to retrieve printable pages instead
+	of retrieving pages which are linked from index pages.
+	(shimbun-fetch-url): Accept the 4th argument, `referer'.
+	(shimbun-article-base-url): New inline function.
+	(shimbun-article-url): Refeined as a method.
+	(shimbun-header-insert): Call `shimbun-article-base-url' instead
+	of calling the above.
+	(shimbun-article): Retrieve the pages specified by
+	`shimbun-article-url' method.
+
+	* shimbun/sb-atmarkit.el: Fix its encoding to `iso-2022-7bit'.
+	(shimbun-atmarkit-groups): Removed.
+	(shimbun-groups): New method.
+	(shimbun-article): Removed.
+	(shimbun-article-url): New method.
+
+	* shimbun/sb-ibm-dev.el (shimbun-article): Removed.
+	(shimbun-article-url): New method.
+
+	* shimbun/sb-msdn.el (shimbun-article): Removed.
+	(shimbun-article-url): New method.
+
+	* shimbun/sb-rediff.el (shimbun-article): Removed.
+	(shimbun-article-url): New method.
+
+	* shimbun/sb-wired-jp.el (shimbun-headers): Simplified.
+	(shimbun-article-url): New method.
+
 2005-02-23  Felix E. Klee <felix.klee@inka.de>
 
 	* shimbun/sb-ffii.el: New module.
@@ -8,8 +38,8 @@
 
 2005-02-21  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
-	* shimbun/sb-impress.el (shimbun-get-headers): Add comment-outed html
-	source removal.
+	* shimbun/sb-impress.el (shimbun-get-headers): Add comment-outed
+	html source removal.
 
 2005-02-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
@@ -34,9 +64,9 @@
 	(install-package-ja): Ditto.
 
 	* aclocal.m4 (AC_EXAMINE_PACKAGEDIR): Use configure-package-path.
-	(AC_PATH_ICONDIR): Change the default directory in which icon files
-	will be installed from `etc/w3m/icons/' into `etc/images/w3m/'
-	following the most recent Emacs and Gnus.
+	(AC_PATH_ICONDIR): Change the default directory in which icon
+	files will be installed from `etc/w3m/icons/' into
+	`etc/images/w3m/' following the most recent Emacs and Gnus.
 
 	* w3m.el (w3m-icon-directory): Improve the way to determin the
 	default value.
@@ -71,7 +101,7 @@
 	(shimbun-atmarkit-content-end): Ditto.
 	(shimbun-atmarkit-coding-system): Change 'euc-japan' by print page
 	(shimbun-atmarkit-print-page-url): New variable.
-	(shimbun-atmarkit-group-path-alist): Add "news","fdb","farc" groups.
+	(shimbun-atmarkit-group-path-alist): Add "news","fdb", and "farc".
 	(shimbun-article): New method.
 	(shimbun-make-contents): Ditto.
 	(shimbun-clear-contents): Ditto.
@@ -86,11 +116,11 @@
 
 2005-02-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
-	* shimbun/sb-rss.el (shimbun-get-headers): Store description element
-	into extra slot.
+	* shimbun/sb-rss.el (shimbun-get-headers): Store description
+	element into extra slot.
 
-	* shimbun/nnshimbun.el (nnshimbun-insert-nov): Insert extra slot of
-	shimbun header.
+	* shimbun/nnshimbun.el (nnshimbun-insert-nov): Insert extra slot
+	of shimbun header.
 	(nnshimbun-parse-nov): Store extra data into extra slot.
 
 2005-02-19  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>

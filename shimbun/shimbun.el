@@ -172,7 +172,7 @@ Return content-type of URL as string when retrieval succeeded."
 	(goto-char (point-min)))
       type)))
 
-(defun shimbun-fetch-url (shimbun url &optional no-cache no-decode)
+(defun shimbun-fetch-url (shimbun url &optional no-cache no-decode referer)
   "Retrieve contents specified by URL for SHIMBUN.
 This function is exacly similar to `shimbun-retrieve-url', but
 considers the `coding-system' slot of SHIMBUN when estimating a coding
@@ -182,9 +182,9 @@ system of retrieved contents."
 	     (cons (shimbun-coding-system-internal shimbun)
 		   w3m-coding-system-priority-list)))
 	(inline
-	  (shimbun-retrieve-url url no-cache no-decode)))
+	  (shimbun-retrieve-url url no-cache no-decode referer)))
     (inline
-      (shimbun-retrieve-url url no-cache no-decode))))
+      (shimbun-retrieve-url url no-cache no-decode referer))))
 
 (defun shimbun-real-url (url &optional no-cache)
   "Return a real URL."
@@ -347,13 +347,17 @@ instead of this function."
 			 date id references chars lines xref extra t))
 
 ;; Inline functions for the internal use.
-(defsubst shimbun-article-url (shimbun header)
-  "Return URL string from SHIMBUN and HEADER."
-  (if (and (shimbun-header-xref header)
-	   (eq (aref (shimbun-header-xref header) 0) ?/))
-      (concat (shimbun-url-internal shimbun)
-	      (shimbun-header-xref header))
-    (shimbun-header-xref header)))
+(defsubst shimbun-article-base-url (shimbun header)
+  "Return URL which points the original page specified by HEADER for SHIMBUN."
+  (let ((xref (shimbun-header-xref header)))
+    (if (and xref (eq (aref xref 0) ?/))
+	(concat (shimbun-url-internal shimbun) xref)
+      xref)))
+
+(luna-define-generic shimbun-article-url (shimbun header)
+  "Return URL which points the printable page specified by HEADER for SHIMBUN.")
+(luna-define-method shimbun-article-url ((shimbun shimbun) header)
+  (shimbun-article-base-url shimbun header))
 
 (defcustom shimbun-encapsulate-images t
   "*If non-nil, inline images will be encapsulated in the articles.
@@ -631,7 +635,7 @@ you want to use no database."
        (insert "Lines: " (number-to-string (or (shimbun-header-lines header)
 					       0))
 	       "\n"
-	       "Xref: " (or (shimbun-article-url shimbun header) "") "\n")
+	       "Xref: " (or (shimbun-article-base-url shimbun header) "") "\n")
        (unless shimbun-x-face-database-function
 	 (when (and (fboundp 'bbdb-get-field)
 		    (not (eq 'autoload
@@ -847,7 +851,10 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
     (with-current-buffer (or outbuf (current-buffer))
       (w3m-insert-string
        (or (with-temp-buffer
-	     (shimbun-fetch-url shimbun (shimbun-article-url shimbun header))
+	     (shimbun-fetch-url shimbun
+				(shimbun-article-url shimbun header)
+				nil nil
+				(shimbun-article-base-url shimbun header))
 	     (shimbun-message shimbun "shimbun: Make contents...")
 	     (goto-char (point-min))
 	     (prog1 (shimbun-make-contents shimbun header)

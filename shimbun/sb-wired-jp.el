@@ -81,22 +81,12 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAQBAMAAACigOGCAAAABGdBTUEAALGPC/xhBQAAADB
 
 (luna-define-method shimbun-headers :around ((shimbun shimbun-wired-jp)
 					     &optional range)
-  (let ((headers
-	 (if (nth 1 (assoc (shimbun-current-group shimbun)
-			   shimbun-wired-jp-group-table))
-	     (luna-call-next-method)
-	   (with-temp-buffer
-	     (shimbun-fetch-url shimbun (shimbun-index-url shimbun) t)
-	     (shimbun-wired-jp-get-headers shimbun)))))
-    (dolist (header headers)
-      (let ((url (shimbun-header-xref header)))
-	(when (string-match "/news/[a-z]+/story/\\([0-9]+\\.html\\)\\'" url)
-	  (shimbun-header-set-xref header
-				   (shimbun-expand-url
-				    (concat "/news/print/"
-					    (match-string 1 url))
-				    url)))))
-    headers))
+  (if (nth 1 (assoc (shimbun-current-group shimbun)
+		    shimbun-wired-jp-group-table))
+      (luna-call-next-method)
+    (with-temp-buffer
+      (shimbun-fetch-url shimbun (shimbun-index-url shimbun) t)
+      (shimbun-wired-jp-get-headers shimbun))))
 
 (defun shimbun-wired-jp-get-headers (shimbun)
   (let ((headers)
@@ -120,6 +110,12 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAQBAMAAACigOGCAAAABGdBTUEAALGPC/xhBQAAADB
 	       "" 0 0 url)
 	      headers)))
     (nreverse headers)))
+
+(luna-define-method shimbun-article-url ((shimbun shimbun-wired-jp) header)
+  (let ((url (shimbun-article-base-url shimbun header)))
+    (if (string-match "/news/[a-z]+/story/\\([0-9]+\\.html\\)\\'" url)
+	(shimbun-expand-url (concat "/news/print/" (match-string 1 url)))
+      url)))
 
 (luna-define-method shimbun-clear-contents ((shimbun shimbun-wired-jp) header)
   (let ((case-fold-search t)

@@ -45,23 +45,17 @@
 
 ;; Print version has less ads
 
-(luna-define-method shimbun-article :before 
-  ((shimbun shimbun-rediff) header &optional outbuf)
-  (let ((url (shimbun-article-url shimbun header)))
-    (unless 
-	(string-match 
-	 "http://www.rediff.com/rss/redirect.php\\?url=http://www.rediff.com/\\(.+\\.htm\\)" 
-	 url)
-      (error (concat "Malformed URL?  " url) ))
-    (shimbun-header-set-xref 
-     header 
-     (concat 
-      "http://in.rediff.com/cms/print.jsp?docpath=" 
-      (match-string-no-properties 1 url)))))
+(luna-define-method shimbun-article-url ((shimbun shimbun-rediff) header)
+  (let ((url (shimbun-article-base-url shimbun header)))
+    (if (string-match "http://www.rediff.com/rss/redirect.php\\?url=\
+http://www.rediff.com/\\(.+\\.htm\\)" url)
+	(concat "http://in.rediff.com/cms/print.jsp?docpath="
+		(match-string-no-properties 1 url))
+      url)))
 
 ;; Three kinds of tags to strip from the print version
 
-;; Type 1: 
+;; Type 1:
 ;; <P align=center>
 ;; <B><A class="" target=new href="blah"> blah blah </A></B>
 ;; </P>
@@ -80,24 +74,24 @@
   ((shimbun shimbun-rediff) header)
   (when (luna-call-next-method)
     (shimbun-remove-tags "<P align=center><A [^>]+>" "</A>\\(</P>\\| \\)")
-    (shimbun-remove-tags 
-     "<TABLE cellSpacing=0 cellPadding=0 width=200 align=left border=0>" 
-     "</TABLE></TD></TR></TABLE>"  ) 
+    (shimbun-remove-tags
+     "<TABLE cellSpacing=0 cellPadding=0 width=200 align=left border=0>"
+     "</TABLE></TD></TR></TABLE>"  )
     (shimbun-remove-tags "<UL[^>]*><LI[^>]*><STRONG>" "</STRONG></LI></UL>")))
 
 ;; The default header has no date string
 ;; We need to parse it from the contents and set the header
 
-(luna-define-method shimbun-make-contents :before 
+(luna-define-method shimbun-make-contents :before
   ((shimbun shimbun-rediff) header)
   (setq case-fold-search nil)
-  (when (re-search-forward 
+  (when (re-search-forward
 	 "\\(January\\|February\\|March\\|April\\|May\\|June\
 \\|July\\|August\\|September\\|October\\|November\\|December\\)  \
 \\([0-3][0-9]\\), \\(20[0-9][0-9]\\) | \\([0-1][0-9]:[0-6][0-9]\\) IST" nil t)
     (shimbun-header-set-date
      header
-     (shimbun-make-date-string 
+     (shimbun-make-date-string
       (string-to-number (match-string-no-properties 3))
       (cdr (assoc (match-string-no-properties 1) shimbun-rediff-month-alist))
       (string-to-number (match-string-no-properties 2))
@@ -107,12 +101,11 @@
 
 ;; Build unique ID for the message
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-rediff) url date)
-  (unless 
-      (string-match 
-       "http://www.rediff.com/rss/redirect.php\\?url=http://www.rediff.com/\\([A-Za-z]+\\)/\\([0-9]+\\)/\\([^/]+\\)/\\(.+\\)\\.htm" 
-       url)
+(luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-rediff)
+						  url date)
+  (unless (string-match "http://www.rediff.com/rss/redirect.php\\?url=\
+http://www.rediff.com/\\([A-Za-z]+\\)/\\([0-9]+\\)/\\([^/]+\\)/\\(.+\\)\\.htm"
+			url)
     (error (concat "Cannot find a message-id base for " url) ))
   (format "<%s%s%s%s@rediff.com>"
 	  (match-string-no-properties 1 url)
