@@ -43,7 +43,7 @@
   (concat "webmaster@" shimbun-sankei-top-level-domain))
 
 (defvar shimbun-sankei-content-start
-  "<!--[\t\n ]*\\(photo\\.sta\\|honbun\\)[\t\n ]*-->[\t\n ]*")
+  "<!--[\t\n ]*\\(photo\\.sta\\|\\(ad--\\)?honbun\\)[\t\n ]*-->[\t\n ]*")
 
 (defvar shimbun-sankei-content-end
   "[\t\n ]*<!----[\t\n ]*hbn\\.end[\t\n ]*-->")
@@ -139,6 +139,17 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
 	     (concat shimbun-sankei-url "news/" (match-string 1)))
 	    headers))
     headers))
+
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-sankei)
+						   header)
+  ;; Remove advertisement.
+  (let ((case-fold-search t)
+	start)
+    (when (and (re-search-forward "<!--[\t\n ]*ad--honbun[\t\n ]*-->" nil t)
+	       (setq start (match-end 0))
+	       (re-search-forward "<!--[\t\n ]*ad\\.end[\t\n ]*-->" nil t))
+      (delete-region start (match-beginning 0))))
+  (goto-char (point-min)))
 
 (provide 'sb-sankei)
 
