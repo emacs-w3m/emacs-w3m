@@ -1,3 +1,8 @@
+2002-04-10  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-image.el (w3m-imagick-convert-async-exec): Change default
+	value for Meadow.
+
 2002-04-10  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-e21.el (w3m-favicon-converted): New buffer-local variable.

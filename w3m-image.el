@@ -45,7 +45,7 @@
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-imagick-convert-async-exec (not (featurep 'meadow))
+(defcustom w3m-imagick-convert-async-exec t
   "*If non-nil, `convert' is executed as an asynchronous process."
   :group 'w3m
   :type 'boolean)
