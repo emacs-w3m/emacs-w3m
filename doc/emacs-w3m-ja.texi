@@ -2282,6 +2282,225 @@ Gnus が一つの特定のバックエンドのために働く (すなわち、
 @node Mew Shimbun
 @section Mew で新聞を読む
 
+Mew Shimbun は Mew version 2.1 以降を使って @samp{shimbun} を楽しむため
+の Emacs Lisp プログラムです。Mew, @sc{apel}, @sc{flim} がインストールさ
+れていれば、emacs-w3m をインストールするときに一緒にインストールされます。
+
+@enumerate
+@item
+設定
+
+以下の各行を @file{~/.mew.el} ファイルの最後に書いて下さい:
+
+@format
+;;; mew-shimbun のロード、キー定義
+;; (setq mew-shimbun-use-unseen t)              ;;; (*1)
+(require 'mew-shimbun)
+(define-key mew-summary-mode-map "G"  (make-sparse-keymap))
+(define-key mew-summary-mode-map "Gg" 'mew-shimbun-goto-folder)
+(define-key mew-summary-mode-map "GG" 'mew-shimbun-goto-unseen-folder)
+(define-key mew-summary-mode-map "Gi" 'mew-shimbun-retrieve)
+(define-key mew-summary-mode-map "GI" 'mew-shimbun-retrieve-all)
+(define-key mew-summary-mode-map "Gr" 'mew-shimbun-re-retrieve)
+(define-key mew-summary-mode-map "GR" 'mew-shimbun-re-retrieve-all)
+(define-key mew-summary-mode-map "Ge" 'mew-shimbun-expire)
+(define-key mew-summary-mode-map "GE" 'mew-shimbun-expire-all)
+
+;;; (*1) は後述する未読管理をするときに設定します。この変数は、
+;;; 必ず @code{(require 'mew-shimbun)} の前で設定しないといけません。
+
+;; @code{mew-shimbun-folder-groups} に Mew で購読する @samp{shimbun} servers 及び
+;; group を設定します。それぞれの要素は
+;; @code{("folder" (("server.group" . range) ...))} の形式です。@code{range} には
+;; @code{all}, @code{last}, および数字が指定できます。
+
+(setq mew-shimbun-folder-groups
+      '(;; @samp{+shimbun/yomiuri} という folder に @samp{yomiuri.shakai},
+        ;; @samp{yomiuri.sports} などを一括して取得します。
+        ("yomiuri"
+         ("yomiuri.shakai" . 2)
+         ("yomiuri.sports". 2)
+         ("yomiuri.kokusai". 2))
+        ;; @samp{+shimbun/security-memo} に @samp{security-memo.memo} を取得します。
+        ("security-memo"
+         ("security-memo.memo" . 2))
+        ("slashdot-jp"
+         ("slashdot-jp.story" . last))
+        ;; このように、異なる server の group も一つの folder
+        ;; (@samp{+shimbun/comp}) で読むことができます。
+        ("comp"
+         ("cnet.comp" . last)
+         ("zdnet.comp" . last))
+        ;; @samp{+shimbun/hns/arisawa}, @samp{+shimbun/hns/miyoshi} にそれぞれの
+        ;; 日記を取得します。
+        ("hns/arisawa"
+         ("hns.arisawa" . last))
+        ("hns/miyoshi"
+         ("hns.miyoshi" . last))))
+@end format
+
+以上で基本的な設定は終了です。他のユーザ定義変数は @code{mew-shimbun} グ
+ループを @kbd{M-x customize-group} するか、ソースを見てください。
+
+@item
+記事の購読
+
+@enumerate a
+@item
+最初の購読
+
+上記の設定をしたあと、まず @kbd{G I} しましょ
+う (@code{mew-shimbun-retrieve-all})。
+@code{mew-shimbun-folder-groups} で設定した @samp{shimbun}
+folder が @samp{+shimbun} 以下に出来ます。また、新たに group を追加した
+ときも @kbd{G I} すると便利です。なお、
+@samp{+shimbun} は @code{mew-shimbun-folder} という変数で好みのものに変
+更できます。
+
+@item
+@samp{shimbun} folder への移動
+
+通常の @kbd{g} (@code{mew-summary-goto-folder}) でも @samp{shimbun}
+folder への移動はできますが、
+@kbd{G g} (@code{mew-shimbun-goto-folder}) を使うと @samp{shimbun}
+folder 限定で移動できます。また @kbd{C-u G g} と prefix をつけたときは、
+新規記事のある folder (まだ scan をしていない folder) のみ表示します。
+@kbd{G G} でも同様です。
+
+@item
+folder 単位での記事の取得
+
+@samp{shimbun} folder で @kbd{G i} (@code{mew-shimbun-retrieve}) すると、
+現在の @samp{shimbun} folder で新規記事を取得します。
+
+@item
+更新された記事の取得
+
+特定の記事を表示した状態で @kbd{G r} (@code{mew-shimbun-re-retrieve}) す
+ると、その記事が更新されていたら更新し、同時に新規記事も取得します。
+@kbd{C-u G r} とすると、@code{mew-shimbun-mark-re-retrieve} に指定したマー
+ク (デフォルトは @samp{@@}) の記事の更新を試みます。CNET などで使うと便
+利でしょう。
+
+@kbd{G R} (@code{mew-shimbun-re-retrieve-all}) では、すべての記事の新規
+性を調べ取得しなおします。@kbd{C-u G R} ではリージョンで指定した範囲の記
+事を対象とします。おそらくハイパー日記システムの日記サイトで有意義なコマ
+ンドでしょう。
+@end enumerate
+
+@item
+未読管理
+
+@file{~/.mew.el} ファイルで以下の設定を行なっていると、
+
+@lisp
+(setq mew-shimbun-use-unseen t)
+@end lisp
+
+新規に取得した記事に @code{mew-shimbun-mark-unseen} で設定したマーク (デ
+フォルトは @samp{*}) がつくようになり、読むと自動的に消えます。
+
+通常、Mew の summary モードでマークをつける、あるいは消した後、scan をし
+ないと @file{.mew-cache} ファイルに反映されませんが、@file{~/.mew.el} ファ
+イルで以下の設定を行なうことにより、
+
+@lisp
+(setq mew-shimbun-use-unseen-cache-save t)
+@end lisp
+
+Mew の終了時や folder の kill 時 (@kbd{C-c C-q} を使ったと
+き) に @samp{shimbun} folder は自動的に @file{.mew-cache} ファイルを保存
+するようになります。ただし、確実 (*2) に保存するわけではありません。既読
+になった情報を確実に cache に保存するには、その folder を読み終わったと
+きに @samp{scan update} をする習慣をつけると良いでしょう。
+
+未読に使うマークが @samp{*} じゃダメ、という方は、変
+数 @code{mew-shimbun-mark-unseen} をカスタマイズしてください (上述)。
+@kbd{C-u N} でそのマークを指定すると楽しい未読ライフをおくることができる
+と思います。
+
+(*2) @code{mew-touch-folder-p} が @code{t} の人はほぼ 100% 保存できます
+が、@code{nil} の人が保存できる可能性はほとんど 0% だと思われます。
+
+@item
+期限切れ記事の消去
+
+事前に @code{mew-shimbun-expires} を設定しておくと、期限切れ記事の消去を
+行なうことができます。例えば:
+
+@lisp
+(setq mew-shimbun-expires
+      '(("yomiuri" . 7)
+        ("asahi" . 1)
+        ("slashdot-jp" . 7)
+        ("comp" . 7)))
+@end lisp
+
+上記のように設定しておくと、@samp{+shimbun/yomiuri} は 7日、
+@samp{+shimbun/asahi} は 1日と期限を設定することができます。指定されてい
+ない @samp{shimbun} folder は消去しません。@kbd{G e}
+(@code{mew-shimbun-expire}) でその folder の期限切れ記事を消去します。
+@kbd{G e} (@code{mew-shimbun-expire}) で設定した全ての folder で記事の消
+去を実行します。なお、一度消去した記事は復活出来ませんので注意してくださ
+い。
+
+@item
+未読マークとして @samp{$} を追加する方法
+
+@samp{$} マークを新たに作成し、@samp{$} マークを未読マークとして使うには、
+次の記述を @file{~/.mew.el} ファイルに記述してください。なお、@samp{$}
+以外の記号にしたければ、
+@uref{http://www.mew.org/ml/mew-dist-2.0/msg01251.html} を参照して記述を
+生成してください。
+
+@format
+;;----------------------------------------------------------------------
+;;; @samp{$} を未読マークとして使うための記述
+(setq mew-mark-unseen ?$)
+(setq mew-shimbun-mark-unseen mew-mark-unseen)
+(setq mew-mark-show-list (cons mew-mark-unseen mew-mark-show-list))
+(setq mew-mark-afterstep-spec
+      (cons (cons mew-mark-unseen '(1 0 1 0 0 0 0))
+            mew-mark-afterstep-spec))
+(setq mew-mark-spec
+      (cons (list mew-mark-unseen "unseen" 0 nil nil nil nil nil)
+            mew-mark-spec))
+(setq mew-highlight-mark-keywords
+      (cons
+       (cons mew-mark-unseen 'mew-face-mark-unseen)
+       mew-highlight-mark-keywords))
+(defface mew-face-mark-unseen
+  '((((class color) (type tty))
+     (:foreground "green"))
+    (((class color) (background light))
+     (:foreground "deep pink" :bold t :italic t))
+    (((class color) (background dark))
+     (:foreground "thistle"))
+    (t (:bold t)))
+  "*Face to highlight the unseen mark"
+  :group 'mew-highlight)
+(defun mew-summary-unseen (&optional count)
+  "Put the unseen mark(default is '$') in COUNT times."
+  (interactive "P")
+  (mew-mark-put-mark-loop (function mew-summary-unseen-one) count nil))
+(defun mew-summary-unseen-one (&optional no-msg)
+  "Put the unseen mark(default is '$') on this message."
+  (mew-mark-put-mark mew-mark-unseen no-msg))
+(defun mew-summary-mark-unseen ()
+  "Change the '*' mark into the '$' mark."
+  (interactive)
+  (mew-summary-exchange-mark mew-mark-review mew-mark-unseen))
+(defun mew-thread-mark-unseen ()
+  "Put the '$' mark on all messages of the current sub-thread."
+  (interactive)
+  (mew-thread-mark mew-mark-unseen))
+
+(define-key mew-summary-mode-map "$"  'mew-summary-unseen)
+(define-key mew-summary-mode-map "m$" 'mew-summary-mark-unseen)
+(define-key mew-summary-mode-map "t$" 'mew-thread-mark-unseen)
+;;----------------------------------------------------------------------
+@end format
+@end enumerate
 
 @node Shimbun with Wanderlust
 @section Wanderlust で新聞を読む
