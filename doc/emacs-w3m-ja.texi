@@ -1711,13 +1711,12 @@ Emacs で行なっている他の仕事の邪魔をしないので、そうしたければ他のバッファ
 フォームの編集を中断して、変更を取り止めます。
 @end table
 
-最後にエレクトリック・ウィンドゥに書いたテキストはローカルファイルに保存
-され、後で同じフォームを編集し始めるとき、それを使うかどうか尋ねられるで
-しょう。保存されたテキストを常に使いたくないならば、変
-数 @code{w3m-form-use-textarea-backup} を @code{nil} に設定して下さい。
-テキストを保存するためのファイルは、変
-数 @code{w3m-form-textarea-directory} で指定されるディレクトリに格納され
-ます。
+@code{w3m-form-use-textarea-backup} が @code{nil} に設定されていなかった
+ら、textarea で入力したテキストを後で再利用できるように、バックアップ・
+ファイルに記録します。フォームの編集を始めるときにバックアップされたテキ
+ストがあったら、それを使うかどうかを尋ねられるでしょう。テキストを保存す
+るためのファイルは、変数 @code{w3m-form-textarea-directory} で指定される
+ディレクトリに格納されます。
 
 @node HTML File Information
 @section ウェブページ作りとハックのお手伝い
@@ -3066,9 +3065,9 @@ Use fancy faces to fontify @samp{<form>} tags.
 @item w3m-form-use-textarea-backup
 @vindex w3m-form-use-textarea-backup
 @vindex w3m-form-textarea-directory
-Non-@code{nil} means save and restore text that you wrote last in the
-textarea.  Files to save text are stored in the directory specified by
-the @code{w3m-form-textarea-directory} variable.
+Non-@code{nil} means save and restore backup text saved when you last
+edited this textarea.  Files to save text are stored in the directory
+specified by the @code{w3m-form-textarea-directory} variable.
 @end table
 
 @node Cookie Variables

@@ -226,10 +226,10 @@ You can run emacs-w3m in various versions of Emacsen listed below:
 @table @samp
 
 @item Emacs 21.x
-No additional package is required.
+No additional packages are required.
 
 @item Emacs 22.x
-No additional package is required.  If you're using a prerelease version
+No additional packages are required.  If you're using a prerelease version
 of Emacs 22 (such as versions 21.3.50 or 22.0), make sure it is newer
 than March 2004.
 
@@ -568,7 +568,7 @@ shown below:
 @node Minimal Settings
 @section Minimal settings to run emacs-w3m
 
-This sections mentions some fundamental settings for emacs-w3m.  If you
+This section mentions some fundamental settings for emacs-w3m.  If you
 want to fine-tune your installation, you'll find many customizable
 variables in @ref{Customizable Variables}.
 
@@ -1655,11 +1655,11 @@ Accept the value.
 Quit editing the form item, leaving changes.
 @end table
 
-Text that you wrote last in the electric window are saved in the local
-file and you will be asked whether to use it when you start editing the
-same form later.  If you never want to use the saved text, set the
-@code{w3m-form-use-textarea-backup} variable to @code{nil}.  Files to
-save text are stored in the directory specified by the
+Unless @code{w3m-form-use-textarea-backup} is set to @code{nil},
+emacs-w3m stores the text you input in textareas in backup files for
+later reuse.  When you start editing a form and there is backup text
+available, you will be asked whether you want to use it or not.  Files
+to save text are stored in the directory specified by the
 @code{w3m-form-textarea-directory} variable.
 
 @node HTML File Information
@@ -2971,9 +2971,9 @@ Use fancy faces to fontify @samp{<form>} tags.
 @item w3m-form-use-textarea-backup
 @vindex w3m-form-use-textarea-backup
 @vindex w3m-form-textarea-directory
-Non-@code{nil} means save and restore text that you wrote last in the
-textarea.  Files to save text are stored in the directory specified by
-the @code{w3m-form-textarea-directory} variable.
+Non-@code{nil} means save and restore backup text saved when you last
+edited this textarea.  Files to save text are stored in the directory
+specified by the @code{w3m-form-textarea-directory} variable.
 @end table
 
 @node Cookie Variables
