@@ -833,42 +833,6 @@ deactivated after evaluating the current command."
       (list 'region-active-p)
     (list 'and 'transient-mark-mode 'mark-active)))
 
-(if (fboundp 'image-type-from-data)
-    (defalias 'w3m-image-type-from-data 'image-type-from-data)
-  (defun w3m-image-type-from-data (data)
-    "Determine the image type from image data DATA.
-Value is a symbol specifying the image type or nil if type cannot
-be determined."
-    (when (let (case-fold-search)
-	    (string-match
-	     (eval-when-compile
-	       (concat
-		;; 1. xpm
-		"\\(" "\\`/[\t\n\r ]*\\*.*XPM.\\*/" "\\)\\|"
-		;; 2. pbm
-		"\\(" "\\`P[1-6]" "\\)\\|"
-		;; 3. gif
-		"\\(" "\\`GIF8" "\\)\\|"
-		;; 4. png
-		"\\(" "\\`\211PNG\r\n" "\\)\\|"
-		;; 5. xbm
-		"\\(" "\\`[\t\n\r ]*#define" "\\)\\|"
-		;; 6. tiff
-		"\\(" "\\`MM\0\\*\\|\\`II\\*\0" "\\)\\|"
-		;; 7. postscript
-		"\\(" "\\`[\t\n\r ]*%!PS" "\\)\\|"
-		;; 8. jpeg
-		"\\(" "\\`\xff\xd8" "\\)"))
-	     data))
-      (cond ((match-beginning 1) 'xpm)
-	    ((match-beginning 2) 'pbm)
-	    ((match-beginning 3) 'gif)
-	    ((match-beginning 4) 'png)
-	    ((match-beginning 5) 'xbm)
-	    ((match-beginning 6) 'tiff)
-	    ((match-beginning 7) 'postscript)
-	    ((match-beginning 8) 'jpeg)))))
-
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here

@@ -4118,29 +4118,33 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
       (w3m-message "Reading %s...done" url)
       (when success
 	(goto-char (point-min))
-	(let ((case-fold-search t)
-	      type)
-	  (when (re-search-forward "^w3m-current-url:" nil t)
-	    (delete-region (point-min) (match-beginning 0))
-	    (when (search-forward "\n\n" nil t)
-	      (save-excursion
-		;; Asahi-shimbun sometimes says gif as jpeg mistakenly, for
-		;; example.  So, we cannot help trusting the data itself.
-		(when (and (setq type (w3m-image-type-from-data
-				       (buffer-substring (point)
-							 (min (+ (point) 300)
-							      (point-max)))))
-			   (re-search-backward "^content-type: image/\\(.+\\)$"
-					       nil t))
-		  (delete-region (goto-char (match-beginning 1)) (match-end 1))
-		  (insert (symbol-name type))))
-	      (let ((header (buffer-substring (point-min) (point))))
-		(when w3m-use-cookies
-		  (w3m-cookie-set url (point-min) (point)))
-		(delete-region (point-min) (point))
-		(w3m-cache-header url header)
-		(w3m-cache-contents url (current-buffer))
-		(w3m-w3m-parse-header url header)))))))))
+	(let ((case-fold-search t))
+	  (when (and (re-search-forward "^w3m-current-url:" nil t)
+		     (progn
+		       (delete-region (point-min) (match-beginning 0))
+		       (search-forward "\n\n" nil t)))
+	    ;; Asahi-shimbun sometimes says gif as jpeg mistakenly, for
+	    ;; example.  So, we cannot help trusting the data itself.
+	    (when (prog2
+		      (setq case-fold-search nil)
+		      (looking-at "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n")
+		    (setq case-fold-search t))
+	      (let ((type (cond ((match-beginning 1) "gif")
+				((match-beginning 2) "jpeg")
+				(t "png"))))
+		(save-excursion
+		  (when (re-search-backward "^content-type: image/\\(.+\\)$"
+					    nil t)
+		    (delete-region (goto-char (match-beginning 1))
+				   (match-end 1))
+		    (insert type)))))
+	    (let ((header (buffer-substring (point-min) (point))))
+	      (when w3m-use-cookies
+		(w3m-cookie-set url (point-min) (point)))
+	      (delete-region (point-min) (point))
+	      (w3m-cache-header url header)
+	      (w3m-cache-contents url (current-buffer))
+	      (w3m-w3m-parse-header url header))))))))
 
 (defun w3m-additional-command-arguments (url)
   "Return a list of additional arguments passed to the w3m command.
