@@ -1,3 +1,9 @@
+2003-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-sankei.el (shimbun-sankei-content-start): Improve the
+	value.
+	(shimbun-make-contents): New function to remove ads.
+
 2003-09-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* icons/*.xpm: Remove text.
