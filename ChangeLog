@@ -1,5 +1,15 @@
 2003-06-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-jpo.el (shimbun-jpo-headers-1): Use
+	`shimbun-expand-url' instead of `w3m-expand-url'.
+	(shimbun-jpo-headers-group-details): Ditto.
+	(shimbun-jpo-headers-group-details): Ditto.
+
+	* shimbun/sb-ibm-dev.el (shimbun-headers): Ditto.
+	(shimbun-make-contents): Ditto.
+
+	* shimbun/sb-wincefan.el (shimbun-get-headers): Ditto.
+
 	* shimbun/sb-marc-aims.el (shimbun-marc-aims-group-alist):
 	Declared as an option with `defcustom' instead of `defvar'.
 

@@ -50,7 +50,7 @@
     (catch 'stop
       (with-temp-buffer
 	(shimbun-retrieve-url
-	 (w3m-expand-url "library.html" baseurl)
+	 (shimbun-expand-url "library.html" baseurl)
 	 'reload)
 	(subst-char-in-region (point-min) (point-max) ?\t ?\  t)
 	(goto-char (point-min))
@@ -61,7 +61,7 @@
 	  (setq url (match-string 1)
 		subject (match-string 2))
 	  ;; adjusting URL
-	  (setq url (w3m-expand-url url baseurl))
+	  (setq url (shimbun-expand-url url baseurl))
 	  ;; getting DATE
 	  (if (re-search-forward
 	       "(\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)) *<br */?>"
@@ -134,8 +134,8 @@
 	      (setq url (match-string 1)
 		    label (match-string 2)
 		    pdflink (format "<a href=\"%s\">この記事の%s</a>"
-				    (w3m-expand-url
-				     url 
+				    (shimbun-expand-url
+				     url
 				     (shimbun-article-url shimbun header))
 				    label))))
 	  (delete-region beg end))

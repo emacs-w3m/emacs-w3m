@@ -101,7 +101,7 @@
 	    (catch 'next
 	      (unless (re-search-forward "<TD><A HREF=\"\\([^<>]+\\)\"" end t nil)
 		(throw 'next nil))
-	      (setq url (w3m-expand-url(match-string 1)))
+	      (setq url (shimbun-expand-url(match-string 1)))
 	      (when (string-match "frame.asp\\?/" url)
 		(setq url (concat (substring url 0 (match-beginning 0))
 				  (substring url (match-end 0)))))
