@@ -1,5 +1,7 @@
 2001-10-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-weather.el (w3m-weather-area-completion): Fixed.
+
 	* w3m-weather.el (w3m-weather-url-alist): Abolished.
 	(w3m-weather-completion-table): New constant.
 	(w3m-weather-default-area): Refer `w3m-weather-completion-table'
