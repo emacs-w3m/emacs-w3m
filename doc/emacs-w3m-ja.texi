@@ -1048,8 +1048,8 @@ You may use the prefix arg `2' or `C-u C-u' to make a new session.
 @node Leaving for daily hacking and/or daily writing
 @subsection 普段の生活に戻るには
 
-思い出して下さい。そももあなたが今 Emacs を使っているのは、ウェブを見る
-ためではなかったはずです。元々は@dots{} エディタの内蔵インタープリタ
+思い出して下さい。そもそもあなたが今 Emacs を使っているのは、ウェブを見
+るためではなかったはずです。元々は@dots{} エディタの内蔵インタープリタ
 を scheme に置き換えたり、ソフトウェアの info ドキュメントを作成したり、
 ソフトウェアのライセンスに関する自分の考えを記したメールを政府に送るため
 だったはずです。作業の過程でたまたまウェブを見る必要があり、しかもたまた
