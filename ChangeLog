@@ -1,3 +1,8 @@
+2003-02-24  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-get-first-article-date):
+	Bug fixed.
+
 2003-02-23  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-palmfan.el (shimbun-palmfan-get-first-article-date):

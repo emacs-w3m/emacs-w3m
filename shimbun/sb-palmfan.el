@@ -291,15 +291,13 @@
       (setq first-article 
 	    (re-search-forward "^<!--\\(本文\\|コメント\\|ひとりごと本文\\)-->$"
 			       nil t nil))
+      (goto-char first-date)
+      (setq date (shimbun-palmfan-pickup-date)))
       (if (and first-date first-article
 	       (> first-date first-article))
-	  (progn
-	    (re-search-forward "<!-- *日付 *-->" nil t nil)
-	    (setq date (shimbun-palmfan-pickup-date))
-	    ;; XXX it cannot understand non-exsistent day...
-	    (setcar (cdr (cdr date)) (1+ (car (cdr (cdr date))))))
-	(setq date (shimbun-palmfan-pickup-date)))
-      date)))
+	  ;; XXX it cannot understand non-exsistent day...
+	  (setcar (cdr (cdr date)) (1+ (car (cdr (cdr date))))))
+      date))
 
 (defun shimbun-palmfan-pickup-date ()
   (let ((start (point))
