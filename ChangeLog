@@ -1,3 +1,11 @@
+2003-12-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-current-anchor-face): Replace backquote with quote.
+	(w3m-select-buffer-current-buffer): Ditto.
+	(w3m-header-line-insert): Ditto.
+	(w3m-about-retrieve): Use `defun' instead of `defsubst'.
+	(w3m-cid-retrieve): Ditto.
+
 2003-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-checking-new-news-format): New
