@@ -1,3 +1,7 @@
+2003-03-08  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-pocketgames.el: New file.
+
 2003-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bug.el (report-emacs-w3m-bug): Make it possible to send a
