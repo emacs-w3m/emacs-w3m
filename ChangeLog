@@ -1,3 +1,9 @@
+2001-05-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-goto-url): Set a string representing file
+	interpreted as a directory to `default-directory'.
+	(w3m-about-source): Call `w3m-decode-buffer'.
+
 2001-05-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-decode-buffer): Allow `detect-coding-region' to
