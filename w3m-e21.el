@@ -277,14 +277,14 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defface w3m-tab-unselected-face
   '((((type x w32 mac) (class color))
      :background "Gray50" :foreground "Gray20"
-     :underline t :box (:line-width -1 :style released-button)))
+     :underline "Gray85" :box (:line-width -1 :style released-button)))
   "*Face to fontify unselected tabs."
   :group 'w3m-face)
 
 (defface w3m-tab-selected-face
   '((((type x w32 mac) (class color))
      :background "Gray85" :foreground "black"
-     :underline t :box (:line-width -1 :style released-button))
+     :underline "Gray85" :box (:line-width -1 :style released-button))
     (((class color) (background light)) (:foreground "cyan" :underline t))
     (((class color) (background dark)) (:foreground "red" :underline t))
     (t (:underline t)))
@@ -294,7 +294,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defface w3m-tab-background-face
   '((((type x w32 mac) (class color))
      :background "LightSteelBlue" :foreground "black"
-     :underline t)
+     :underline "Gray85")
     (((class color) (background light)) (:foreground "black" :underline t))
     (((class color) (background dark)) (:foreground "black" :underline t))
     (t (:underline t)))
