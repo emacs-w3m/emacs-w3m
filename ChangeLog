@@ -1,10 +1,24 @@
 2001-10-30  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m.el (w3m-reload-this-page): Handle `form-data' and call
+	w3m-goto-url() with 'noform option.
+	(w3m-goto-url): Add 6th argument `noform' and call w3m-exec()
+	with `noform' option.
+	(w3m-exec): Add 8th argument `noform' and call
+	w3m-rendering-unibyte-buffer() with `noform' option.
+	(w3m-rendering-unibyte-buffer): Add 2nd argument `noform' and call
+	w3m-rendering-buffer-1()() with `noform' option.
+	(w3m-rendering-buffer-1): Add optional argument `noform' and call
+	w3m-form-parse-buffer() with `noform' option.
+
+	* w3m-form.el (w3m-form-parse-buffer): Add new option `noform'.
+	When `noform' is non-nil, do not use the form of saved history.
+
 	* shimbun/mew-shimbun.el (mew-shimbun-remove-unseen-one): Remove
 	'win' option. Do not save mew-cache.
 	(mew-shimbun-remove-unseen, mew-shimbun-remove-unseen-all) 
 	(mew-shimbun-remove-unseen-advice): Call
-	mew-shimbun-remove-unseen-one() without 'win' option.
+	mew-shimbun-remove-unseen-one() without `win' option.
 	(mew-shimbun-unseen-setup): New defadvice for mew-kill-buffer()
 	and mew-remove-buffer().
 

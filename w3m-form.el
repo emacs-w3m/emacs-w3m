@@ -179,14 +179,15 @@ If no field in forward, return nil without moving."
 		   buf "&")))))
 
 ;;;###autoload
-(defun w3m-form-parse-buffer ()
+(defun w3m-form-parse-buffer (&optional noform)
   "Parse HTML data in this buffer and return form/map objects.
 Check the cached form/map objects are available, and if available
 return them with the flag."
-  (or (when (w3m-cache-available-p w3m-current-url)
-	(let ((forms (w3m-history-plist-get :forms w3m-current-url nil t)))
-	  ;; Mark that `w3m-current-forms' is resumed from history.
-	  (and forms (cons t forms))))
+  (or (and (null noform)
+	   (w3m-cache-available-p w3m-current-url)
+	   (let ((forms (w3m-history-plist-get :forms w3m-current-url nil t)))
+	     ;; Mark that `w3m-current-forms' is resumed from history.
+	     (and forms (cons t forms))))
       (nreverse
        (w3m-form-parse-forms))))
 
