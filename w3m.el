@@ -4248,6 +4248,7 @@ argument.  Otherwise, it will be called with nil."
      (t ""))))
 
 (defun w3m-create-text-page (url type charset page-buffer)
+  (w3m-safe-decode-buffer url charset type)
   (setq w3m-current-url (w3m-real-url url)
 	w3m-current-title
 	(if (string= "text/html" type)

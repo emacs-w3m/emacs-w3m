@@ -5,7 +5,6 @@
 	(w3m-detect-meta-charset): New function.
 	(w3m-decode-buffer): Use `w3m-correct-charset' and
 	`w3m-detect-meta-charset'.
-	(w3m-create-text-page): Don't call `w3m-safe-decode-buffer'.
 	(w3m-create-page): Set `charset' to `w3m-current-content-charset'
 	if it is nil.
 	(w3m-region): If `charset' is nil, check `content-charset' in
