@@ -3088,7 +3088,7 @@ If input is nil, use default coding-system on w3m."
 w3mmee.  If you invoke this command interactively for the first time,
 it will prompt you for the URL where you wish to go, otherwise it will
 pop up an existing window or frame.  In addition, you can run this
-command in the batch mode like \"emacs -f w3 URL&\".  URL should be a
+command in the batch mode like \"emacs -f w3m URL&\".  URL should be a
 string which defaults to the value of `w3m-home-page' or \"about:\".
 The value of `w3m-pop-up-frames' specifies whether to pop up a new
 frame, however, it will be ignored (treated as nil) when this command
