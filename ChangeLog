@@ -1,3 +1,15 @@
+2004-07-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Release 1.4.2.
+	(w3m-w3m-canonicalize-url): Revival.
+	(w3m-w3m-attributes, w3m-w3m-retrieve): Call the above.
+	(w3m-canonicalize-url): Do not check a slash.
+
+2004-07-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-detect-meta-charset): Check that a content field has
+	a valid value before parsing it.
+
 2004-07-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 	Suggested by Tatsuya Kinoshita <tats@vega.ocn.ne.jp>
 
