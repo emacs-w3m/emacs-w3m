@@ -66,7 +66,6 @@
 	  (shimbun-retrieve-url
 	   (concat (shimbun-index-url shimbun) (setq aux (car auxs)) "/")
 	   'reload)
-	  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
 	  (let ((case-fold-search t)
 		id url date subject from)
 	    (goto-char (point-min))
@@ -82,18 +81,10 @@
 		    date (shimbun-fml-parse-time (match-string 3))
 		    subject (match-string 4)
 		    from (match-string 5))
-	      (setq subject (with-temp-buffer
-			      (insert subject)
-			      (shimbun-decode-entities)
-			      (shimbun-remove-markup)
-			      (buffer-string)))
 	      (if (shimbun-search-id shimbun id)
 		  (throw 'stop nil))
 	      (forward-line 1)
-	      (push (shimbun-make-header
-		     0
-		     (shimbun-mime-encode-string subject)
-		     from date id "" 0 0 url)
+	      (push (shimbun-create-header 0 subject from date id "" 0 0 url)
 		    headers)))
 	  (setq auxs (cdr auxs)))))
     headers))
@@ -115,8 +106,6 @@
       (throw 'stop nil))
     (save-restriction
       (narrow-to-region (point-min) (point))
-      (subst-char-in-region (point-min) (point-max) ?\t ?  t)
-      (shimbun-decode-entities)
       (goto-char (point-min))
       (let (field value start value-beg end)
 	(while (and (setq start (point))
@@ -128,10 +117,9 @@
 		    (setq value-beg (point))
 		    (search-forward "</SPAN>" nil t)
 		    (setq end (point)))
-	  (setq value (shimbun-mime-encode-string
-		       (buffer-substring value-beg
-					 (progn (search-backward "</SPAN>")
-						(point)))))
+	  (setq value (buffer-substring value-beg
+					(progn (search-backward "</SPAN>")
+					       (point))))
 	  (delete-region start end)
 	  (cond ((string= field "Date")
 		 (shimbun-header-set-date header value))

@@ -1,5 +1,10 @@
 2003-07-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-fml.el (shimbun-get-headers): Call
+	`shimbun-create-header' instead of `shimbun-make-header'
+	(shimbun-make-contents): Do not encode header attributes, to
+	follow the change of shimbun header structure.
+
 	* shimbun/shimbun.el (shimbun-header): New class.
 	(shimbun-header-subject, shimbun-header-set-subject,
 	shimbun-header-from, shimbun-header-set-from, shimbun-header-date,

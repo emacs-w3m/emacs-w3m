@@ -171,22 +171,26 @@ system of retrieved contents."
 (defsubst shimbun-header-normalize (string &optional keep-angle-brackets)
   (when string
     (save-match-data
-      (with-temp-buffer
-	(insert string)
-	(unless keep-angle-brackets
-	  (shimbun-remove-markup))
-	(shimbun-decode-entities)
-	(subst-char-in-region (point-min) (point-max) ?\t ?\  t)
-	(subst-char-in-region (point-min) (point-max) ?\r ?\  t)
-	(subst-char-in-region (point-min) (point-max) ?\f ?\  t)
-	(subst-char-in-region (point-min) (point-max) ?\n ?\  t)
-	(goto-char (point-min))
-	(skip-chars-forward " ")
-	(buffer-substring (point)
-			  (progn
-			    (goto-char (point-max))
-			    (skip-chars-backward " ")
-			    (point)))))))
+      ;; This is a trick to keep backward compatibility for
+      ;; `shimbun-header-set-subject' and `shimbun-header-set-from'.
+      (if (string-match eword-encoded-word-regexp string)
+	  (eword-decode-string string)
+	(with-temp-buffer
+	  (insert string)
+	  (unless keep-angle-brackets
+	    (shimbun-remove-markup))
+	  (shimbun-decode-entities)
+	  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
+	  (subst-char-in-region (point-min) (point-max) ?\r ?\  t)
+	  (subst-char-in-region (point-min) (point-max) ?\f ?\  t)
+	  (subst-char-in-region (point-min) (point-max) ?\n ?\  t)
+	  (goto-char (point-min))
+	  (skip-chars-forward " ")
+	  (buffer-substring (point)
+			    (progn
+			      (goto-char (point-max))
+			      (skip-chars-backward " ")
+			      (point))))))))
 
 (defun shimbun-header-set-subject (header subject &optional asis)
   (shimbun-header-set-subject-internal header
@@ -209,20 +213,29 @@ system of retrieved contents."
 (defun shimbun-header-date (header)
   (shimbun-header-date-internal header))
 
-(defun shimbun-header-set-date (header date)
-  (shimbun-header-set-date-internal header date))
+(defun shimbun-header-set-date (header date &optional asis)
+  (shimbun-header-set-date-internal header (if asis
+					       date
+					     (shimbun-header-normalize date))))
 
 (defun shimbun-header-id (header)
   (shimbun-header-id-internal header))
 
-(defun shimbun-header-set-id (header id)
-  (shimbun-header-set-id-internal header id))
+(defun shimbun-header-set-id (header id &optional asis)
+  (shimbun-header-set-id-internal header
+				  (if asis
+				      id
+				    (shimbun-header-normalize id t))))
 
 (defun shimbun-header-references (header)
   (shimbun-header-references-internal header))
 
-(defun shimbun-header-set-references (header references)
-  (shimbun-header-set-references-internal header references))
+(defun shimbun-header-set-references (header references &optional asis)
+  (shimbun-header-set-references-internal
+   header
+   (if asis
+       references
+     (shimbun-header-normalize references t))))
 
 (defun shimbun-header-chars (header)
   (shimbun-header-chars-internal header))
@@ -256,9 +269,9 @@ system of retrieved contents."
     (inline
       (shimbun-header-set-subject new subject asis)
       (shimbun-header-set-from new from asis)
-      (shimbun-header-set-date new date)
-      (shimbun-header-set-id new id)
-      (shimbun-header-set-references new references)
+      (shimbun-header-set-date new date asis)
+      (shimbun-header-set-id new id asis)
+      (shimbun-header-set-references new references asis)
       (shimbun-header-set-chars new chars)
       (shimbun-header-set-lines new lines)
       (shimbun-header-set-xref new xref)
