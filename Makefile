@@ -10,7 +10,18 @@ else
 VERSION = $(BASEVER).$(REVISION)
 endif
 
-default:
+EMACS   = emacs
+ECC     = $(EMACS) -q -no-site-file -batch -f batch-byte-compile
+
+.SUFFIXES:
+.SUFFIXES: .elc .el
+
+default: $(patsubst %.el,%.elc,$(wildcard *.el))
+
+%.elc: %.el
+	$(ECC) $<
+
+tarball:
 	$(MAKE) REVISION=$(shell cvs status w3m.el|perl -ne '/Working revision:[ \t]*(?:\d+\.)+(\d+)/ and print $$1-28') dist
 
 dist: $(TARBALL)

@@ -4,17 +4,13 @@ $Date$
    --> form 対応
    --> ソースコード中の FIXME を直す
    --> エラーチェックが手抜きなのを直す
-   --> 処理の経過についてのメッセージを追加する
+
+   --> source code の text/plain なページを閲覧しているときは font-lock 
+       してくれると嬉しいかもしれない。
 
 
 ■ 既知の問題
    --> 動作が遅くなった?
-
-   --> 現実装では、backlog には halfdump 後のデータが格納されているが、
-       w3m-fill-column が変更される可能性を考慮するなら、halfdump 以前の
-       生データを格納しておくべきだ。
-   --> w3m-exec の返り値がおかしい。このままでは、text/plain なデータを 
-       w3m-fontify してしまう可能性がある。
 
    --> w3m-fontify で &ouml; が処理されていない。
        Ex) http://tanaka-www.cs.titech.ac.jp/~euske/doc/openssh/history.html
