@@ -596,7 +596,6 @@ variable to use regexps to specify the @code{no-proxy} hosts.
 @node Basic Usage
 @chapter Basic usage
 
-
 @menu
 * Browsing Web Pages::          Let's go netsurfing!
 * Inline Images::               Toggle displaying inline images
@@ -610,7 +609,6 @@ variable to use regexps to specify the @code{no-proxy} hosts.
 
 @node Browsing Web Pages
 @section Let's go netsurfing!
-
 
 @menu
 * Launching and Jumping::       Go ahead, just try it
@@ -1460,7 +1458,6 @@ Quit editing the form item, leaving changes.
 @node Pretty Good Features
 @chapter Pretty good features
 
-
 @menu
 * Using Search Engines::        Convenient ways to search the web
 * Grouping URLs::               Visiting several web pages in one URL
@@ -1675,7 +1672,6 @@ contexts.
 
 @node Weather Information
 @section It will be fine tomorrow
-
 
 @node Using Antenna
 @section Raise your antenna
@@ -2790,6 +2786,10 @@ The address is:
 @display
 Emacs-w3m Mailing List @t{<emacs-w3m@@namazu.org>}
 @end display
+
+You can also send a bug report using the @code{report-emacs-w3m-bug}
+command (or the @kbd{C-c C-b} key) if you have set the
+@code{mail-user-agent} variable that will work properly.
 
 English and Japanese can be used when posting to this list, since many
 of its members are Japanese.  Articles posted to the list are opened to

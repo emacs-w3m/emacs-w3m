@@ -260,7 +260,6 @@ Emacs-w3m $B$N8x<0%Z!<%8(B @uref{http://emacs-w3m.namazu.org/} $B$bJ;$;$F$4Mw
 $B$K$h$C$F!"Gr9u$N%S%C%H%^%C%W2hA|$r%$%s%i%$%sI=<($9$k$3$H$,$G$-$^(B
 $B$9(B (@pxref{Other Requirements})$B!#(B
 
-
 @item Emacs 19.34 ($B4^(B Mule 2.3)
 @sc{apel} $B%Q%C%1!<%8!"(B@samp{$B?7$7$$(B custom} $B%Q%C%1!<%8$*$h(B
 $B$S(B @file{regexp-opt.el} $B%b%8%e!<%k$,I,MW$G$9!#(BEmacs 19.34 $B$r85$K$7(B
@@ -632,7 +631,6 @@ Proxy $B%2!<%H%&%'%$$rDL$5$:$K@\B3$7$J$1$l$P$J$i$J$$(B @code{no-proxy} $B%[%9
 
 @node Basic Usage
 @chapter $B4pK\E*$J;H$$J}(B
-
 
 @menu
 * Browsing Web Pages::          $B%M%C%H%5!<%U%#%s$7$h$&(B!
@@ -1581,7 +1579,6 @@ Search'' $B$N%Z!<%8$r3+$$$F$"$k$J$i$P!"(B``Goo'' $B$KB3$1$F(B @kbd{TAB} $B$
 @node Pretty Good Features
 @chapter $B$?$/$5$s$N$9$0$l$b$N(B
 
-
 @menu
 * Using Search Engines::        $B;H$$$d$9$$%&%'%V8!:w(B
 * Grouping URLs::               $B0l$D$N(B URL $B$GJ#?t$N%&%'%V%Z!<%8$r8+$k(B
@@ -1790,7 +1787,6 @@ emacs-w3m $B$O0lEY$KJ#?t$N%Z!<%8$r3+$/$?$a$K!"$=$N%0%k!<%W$K4^$^$l$k$=$l$>(B
 
 @node Weather Information
 @section $BL@F|$NE75$$O@2$l$G$7$g$&(B
-
 
 @node Using Antenna
 @section $B%"%s%F%J$rD%$j=d$i$=$&(B
@@ -2870,14 +2866,18 @@ Emacs-w3m $B$K4X$9$k$9$Y$F$N$3$H$,$i$rOC$79g$&$?$a$N%a!<%j%s%0%j%9%H$,MQ0U(B
 $B$5$l$F$$$^$9!#9VFI$7$F$$$J$$?M$bEj9F$G$-$^$9!#%P%0$r8+$D$1$?$j!"$3$s$J5!(B
 $BG=$,M_$7$$$J$H;W$C$?$j!"$"$k$$$O%3!<%I$r=q$-$^$7$?$H$$$&?M$O$I$&$>Ej9F$7(B
 $B$F2<$5$$!#C1$J$k%f!<%6$@$1$l$I$b%W%m%0%i%`$K6=L#$,$"$k$H$$$&?M$b!"$<$R;2(B
-$B2C$7$F2<$5$$!#%"%I%l%9$O(B:
+$B2C$7$F2<$5$$!#%"%I%l%9$O0J2<$NDL$j$G$9(B:
 
 @display
 Emacs-w3m $B%a!<%j%s%0%j%9%H(B @t{<emacs-w3m@@namazu.org>}
 @end display
 
-$B$G$9!#$3$N%j%9%H$KEj9F$9$k$H$-$O!"F|K\8l$+1Q8l$r;H$C$F2<$5$$!#B?$/$N%a%s(B
-$B%P!<$OF|K\?M$G$9!#Ej9F$5$l$?5-;v$O8x3+$5$l$F$$$F!"%&%'(B
+$B$b$7(B @code{mail-user-agent} $B$r@5$7$/F0:n$9$k$h$&$K@_Dj$7$F$"$l$P!"(B
+@code{report-emacs-w3m-bug} $B%3%^%s%I(B ($B$^$?$O(B @kbd{C-c C-b} $B%-!<(B) $B$r;H$C(B
+$B$F%P%0%j%]!<%H$rAw$k$3$H$b$G$-$^$9!#(B
+
+$B$3$N%j%9%H$KEj9F$9$k$H$-$O!"F|K\8l$+1Q8l$r;H$C$F2<$5$$!#B?$/$N%a%s%P!<$O(B
+$BF|K\?M$G$9!#Ej9F$5$l$?5-;v$O8x3+$5$l$F$$$F!"%&%'(B
 $B%V(B (@uref{http://emacs-w3m.namazu.org/ml/}) $B$d(B NetNews ($B%5!<(B
 $B%P(B @samp{news.gmane.org} $B>e$N(B @samp{gmane.emacs.w3m} $B$H$$$&%0%k!<%W(B) $B$G(B
 $B$bFI$`$3$H$,$G$-$^$9!#(B
