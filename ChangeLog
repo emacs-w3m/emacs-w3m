@@ -1,3 +1,10 @@
+2002-06-27  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-fontify-anchors): Put `w3m-name-anchor' property to
+	point-max().
+	(w3m-fontify): Remove `w3m-name-anchor' handling.
+	(w3m-search-name-anchor): Move in the screen.
+
 2002-06-26  Tadashi Watanabe  <watanabe@sigmaitec.co.jp>
 
 	* w3m.el (w3m-info-like-map): Don't use FSF Emacs style key format
