@@ -1,3 +1,13 @@
+2001-10-16  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-attributes): When URL matches `about://source/',
+	returns nil as its content-charset.
+	(w3m-about-retrieve): When URL matches `about://source/',
+	don't call `encode-coding-region'.
+	(w3m-about-source): Don't call `w3m-decode-region'.
+	(w3m-exec): Use `set-buffer-file-coding-system' instead of to set
+	`buffer-file-coding-system'.
+
 2001-10-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-exec): Substitute `w3m-current-coding-system' for
