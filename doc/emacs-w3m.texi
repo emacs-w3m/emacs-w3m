@@ -87,6 +87,7 @@ This manual corresponds to emacs-w3m version @value{VERSION}.
 @menu
 * Introduction::                Preliminary remarks to emacs-w3m
 * Getting Started::             It's so easy to begin to use emacs-w3m
+* Shimbun Libraries::           A tool for reading a newspaper conveniently
 * Index::                       Index
 
 @detailmenu
@@ -97,6 +98,9 @@ Getting Started
 * Required Emacs Version::      What version of Emacs can be used?
 * You Need w3m::                Using w3m: the reason why emacs-w3m is fast
 * Other Requirements::          Things required to run emacs-w3m
+* Installing Emacs-w3m::        Installing emacs-w3m
+
+Shimbun Libraries
 
 @end detailmenu
 @end menu
@@ -125,11 +129,13 @@ person; read it over again when you install a new version of emacs-w3m.
 * Required Emacs Version::      What version of Emacs can be used?
 * You Need w3m::                Using w3m: the reason why emacs-w3m is fast
 * Other Requirements::          Things required to run emacs-w3m
+* Installing Emacs-w3m::        Installing emacs-w3m
 @end menu
 
 @node Required Emacs Version
 @section Required Emacs Version
 @chapter What version of Emacs can be used?
+@cindex emacs version
 
 You can run emacs-w3m in various versions of Emacsen listed below:
 
@@ -159,6 +165,7 @@ using the BITMAP-MULE package (@pxref{Other Requirements}).
 @node You Need w3m
 @section You Need w3m
 @chapter Using w3m: the reason why emacs-w3m is fast
+@cindex w3m
 
 Emacs-w3m uses the external w3m command as a back end to retrieve web
 contents or a HTML rendering engine.  Since Emacs has been exempted from
@@ -171,6 +178,12 @@ is available in:
 @node Other Requirements
 @section Other Requirements
 @chapter Things required to run emacs-w3m
+@cindex APEL
+@cindex gifsicle
+@cindex BITMAP-MULE
+@cindex new custom
+@cindex regexp-opt.el
+@cindex FLIM
 
 Depending on the version of Emacs, third party's packages are required.
 In this section, we introduce places where they can be found:
@@ -249,7 +262,27 @@ emacs-w3m distributin.  You may simply copy it into somewhere (e.g.
 # emacs -batch -q -no-site-file -f batch-byte-compile regexp-opt.el
 @end example
 
+@item FLIM
+The FLIM package is required for using the shimbun libraries
+(@pxref{Shimbun Libraries}).  Note that the FLIM package requires the
+APEL package even if you are using Emacs 20.x or Emacs 21.x.  Therefore,
+you must install both APEL and FLIM if you would like to use the shimbun
+libraries.  The FLIM package is available in:
+
+@uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
+
 @end table
+
+@node Installing Emacs-w3m
+@section Installing Emacs-w3m
+@chapter Installing emacs-w3m
+@cindex install
+
+
+@node Shimbun Libraries
+@chapter Shimbun Libraries
+@cindex shimbun
+
 
 @node Index
 @unnumbered Index

@@ -128,6 +128,7 @@ Emacs-w3m $B3+H/%A!<%`(B
 @menu
 * Introduction::                $B$O$8$a$K(B
 * Getting Started::             Emacs-w3m $B$r;H$$;O$a$k$N$O$H$C$F$b4JC1(B
+* Shimbun Libraries::           $B?7J9$rJXMx$KFI$`$?$a$NF;6q(B
 * Index::                       $B:w0z(B
 
 @detailmenu
@@ -137,7 +138,10 @@ Getting Started
 
 * Required Emacs Version::      $B$I$s$J%P!<%8%g%s$N(B Emacs $B$G;H$($k$N(B?
 * You Need w3m::                w3m $B$r;H$$$^$9(B: emacs-w3m $B$,B.$$$o$1(B
-* Other Requirements::          emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
+* Other Requirements::          Emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
+* Installing Emacs-w3m::        Emacs-w3m $B$r%$%s%9%H!<%k$9$k(B
+
+Shimbun Libraries
 
 @end detailmenu
 @end menu
@@ -166,12 +170,14 @@ Getting Started
 @menu
 * Required Emacs Version::      $B$I$s$J%P!<%8%g%s$N(B Emacs $B$G;H$($k$N(B?
 * You Need w3m::                w3m $B$r;H$$$^$9(B: emacs-w3m $B$,B.$$$o$1(B
-* Other Requirements::          emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
+* Other Requirements::          Emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
+* Installing Emacs-w3m::        Emacs-w3m $B$r%$%s%9%H!<%k$9$k(B
 @end menu
 
 @node Required Emacs Version
 @section Required Emacs Version
 @chapter $B$I$s$J%P!<%8%g%s$N(B Emacs $B$G;H$($k$N(B?
+@cindex emacs version
 
 $B0J2<$K5s$2$?$$$m$$$m$J%P!<%8%g%s$N(B Emacsen $B$G(B emacs-w3m $B$rF0:n$5$;$k$3$H(B
 $B$,$G$-$^$9!#(B
@@ -203,6 +209,7 @@ Requirements})$B!#(B
 @node You Need w3m
 @section You Need w3m
 @chapter w3m $B$r;H$$$^$9(B: emacs-w3m $B$,B.$$$o$1(B
+@cindex w3m
 
 Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r(B web $B%3%s%F%s%D$r<hF@$9$k$?$a$N%P%C%/%(%s(B
 $B%I$H$7$F!"$^$?$O(B HTML $B$NK]Lu%(%s%8%s$H$7$F;HMQ$7$^$9!#(BEmacs $B$,$=$N$h$&$J(B
@@ -214,7 +221,13 @@ Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r(B web $B%3%s%F%s%D$r<hF@$9$k$?$a$N%P%
 
 @node Other Requirements
 @section Other Requirements
-@chapter emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
+@chapter Emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
+@cindex APEL
+@cindex gifsicle
+@cindex BITMAP-MULE
+@cindex new custom
+@cindex regexp-opt.el
+@cindex FLIM
 
 Emacs $B$N%P!<%8%g%s$K$h$C$F$O!"%5!<%I%Q!<%F%#$N%Q%C%1!<%8$,I,MW$G$9!#$3$N(B
 $B9`$G$O!"$=$l$i$N:_$j$+$r>R2p$7$^$9!#(B
@@ -299,7 +312,27 @@ Emacs 19.34 ($B4^(B Mule 2.3) $B$KIT2D7g$G$9!#%U%!%$(B
 # emacs -batch -q -no-site-file -f batch-byte-compile regexp-opt.el
 @end example
 
+@item FLIM
+Shimbun $B%i%$%V%i%j(B (@pxref{Shimbun Libraries}) $B$r;H$&$?$a$K$O(B FLIM $B%Q%C(B
+$B%1!<%8$,I,MW$G$9!#$?$H$((B Emacs 20.x $B$+(B Emacs 21.x $B$r;H$C$F$$$k>l9g$G$b!"(B
+FLIM $B%Q%C%1!<%8$K$O(B APEL $B%Q%C%1!<%8$,I,MW$G$"$k$3$H$KCm0U$7$F2<$5$$!#$7(B
+$B$?$,$C$F(B shimbun $B%i%$%V%i%j$r;H$&$K$O!"(BAPEL $B$H(B FLIM $B$NN>J}$r%$%s%9%H!<%k(B
+$B$7$J$1$l$P$J$j$^$;$s!#(BFLIM $B%Q%C%1!<%8$O0J2<$N>l=j$K$"$j$^$9(B:
+
+@uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
+
 @end table
+
+@node Installing Emacs-w3m
+@section Installing Emacs-w3m
+@chapter Emacs-w3m $B$r%$%s%9%H!<%k$9$k(B
+@cindex install
+
+
+@node Shimbun Libraries
+@chapter $B?7J9%i%$%V%i%j(B
+@cindex shimbun
+
 
 @node Index
 @unnumbered $B:w0z(B
