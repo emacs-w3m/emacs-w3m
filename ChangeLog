@@ -1,3 +1,20 @@
+2003-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-strike-through-face): Use the :strikethru attribute
+	in XEmacs.
+	(w3m-fontify-strike-through): Enable it also for XEmacs.
+
+2003-10-22  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+
+	* shimbun/sb-2ch.el (shimbun-headers): Correct the index of
+	article number.
+
+2003-10-22  OHASHI Akira  <bg66@koka-in.org>
+
+	* shimbun/sb-tdiary.el (shimbun-replace-in-string): Abolish.
+	(shimbun-tdiary-get-headers): Use `shimbun-create-header' instead
+	of `shimbun-make-header'.
+
 2003-10-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-w3m-retrieve): Insert no data when either retrieval
