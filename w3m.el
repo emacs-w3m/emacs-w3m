@@ -2150,6 +2150,7 @@ If URL is specified, only the image with URL is toggled."
 		    (w3m-process-with-null-handler
 		      (lexical-let ((start (set-marker (make-marker) start))
 				    (end (set-marker (make-marker) end))
+				    (iurl iurl)
 				    (url w3m-current-url))
 			(w3m-process-do
 			    (image (let ((w3m-current-buffer (current-buffer)))
@@ -2162,7 +2163,7 @@ If URL is specified, only the image with URL is toggled."
 			      (if image
 				  (when (equal url w3m-current-url)
 				    (let (buffer-read-only)
-				      (w3m-insert-image start end image))
+				      (w3m-insert-image start end image iurl))
 				    ;; Redisplay
 				    (when w3m-force-redisplay
 				      (sit-for 0)))

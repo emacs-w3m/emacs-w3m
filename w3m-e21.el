@@ -134,7 +134,7 @@ and its cdr element is used as height."
 		  image))
 	    image))))))
 
-(defun w3m-insert-image (beg end image)
+(defun w3m-insert-image (beg end image &rest args)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
   (let ((face (get-text-property beg 'face)))
@@ -408,7 +408,7 @@ Each information is a list whose elements are:
      ((string-match "\\`https?://" url)
       (w3m-retrieve-favicon
        (or (symbol-value 'w3m-icon-data)
-	   (cons 
+	   (cons
 	    (w3m-expand-url (concat "/" w3m-favicon-name)
 			    url)
 	    'ico))
@@ -580,9 +580,9 @@ Each information is a list whose elements are:
 	(up-action `(lambda (e) (interactive "e")
 		      (switch-to-buffer ,(buffer-name buffer)))))
     (define-key map [header-line down-mouse-1] 'ignore)
-    (define-key map [header-line down-mouse-2] 'ignore)    
+    (define-key map [header-line down-mouse-2] 'ignore)
     (define-key map [header-line drag-mouse-1] drag-action)
-    (define-key map [header-line drag-mouse-2] drag-action)    
+    (define-key map [header-line drag-mouse-2] drag-action)
     (define-key map [header-line mouse-1] up-action)
     (define-key map [header-line mouse-2] up-action)
     map))

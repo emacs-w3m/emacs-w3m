@@ -1,3 +1,18 @@
+2002-04-23  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-toggle-inline-images-internal): Call
+	`w3m-insert-image' with the url of image.
+
+	* w3m-xmas.el (w3m-insert-image): Add dummy argument.
+
+	* w3m-e21.el (w3m-insert-image): Add dummy argument.
+
+	* w3m-bitmap.el (w3m-bitmap-cache-image-hook): New hook.
+	(w3m-create-image): Run `w3m-bitmap-cache-image-hook' with `url'
+	when use the cached image.
+	(w3m-insert-image): Add 4th argument `url'. Do nothing which have
+	no 'w3m-image property or differ its url.
+
 2002-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make emacs-w3m can be compiled by `make slow' with no warnings.

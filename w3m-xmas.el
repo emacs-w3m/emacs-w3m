@@ -296,7 +296,7 @@ Third optional argument SIZE is currently ignored."
 	(let ((data (buffer-string))
 	      glyph)
 	  (setq glyph
-		(when (w3m-image-type-available-p (setq type 
+		(when (w3m-image-type-available-p (setq type
 							(w3m-image-type type)))
 		  (or (and (eq type 'gif)
 			   (or w3m-should-unoptimize-animated-gifs
@@ -330,7 +330,7 @@ Third optional argument SIZE is currently ignored."
 		  glyph))
 	    glyph))))))
 
-(defun w3m-insert-image (beg end image)
+(defun w3m-insert-image (beg end image &rest args)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
   (let (extent glyphs)

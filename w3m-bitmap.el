@@ -235,6 +235,11 @@ managing column numbers on bitmap characters."
   "Face used to highlight bitmap images."
   :group 'w3m-face)
 
+(defcustom w3m-bitmap-cache-image-hook nil
+  "*Hook run with use cached image."
+  :group 'w3m
+  :type 'hook)
+
 ;;; Bitmap image functions.
 (defvar w3m-bitmap-image-cache-alist nil)
 (defvar w3m-bitmap-image-use-cache t
@@ -389,11 +394,13 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 			(list url size)
 		      url)
 		    w3m-bitmap-image-cache-alist))
-	(cdr (assoc (if (and w3m-resize-images
-			     (consp size)(car size)(cdr size))
-			(list url size)
-		      url)
-		    w3m-bitmap-image-cache-alist))
+	(prog1
+	    (cdr (assoc (if (and w3m-resize-images
+				 (consp size)(car size)(cdr size))
+			    (list url size)
+			  url)
+			w3m-bitmap-image-cache-alist))
+	  (run-hook-with-args 'w3m-bitmap-cache-image-hook url))
       (w3m-process-do-with-temp-buffer
 	  (type (w3m-retrieve url nil no-cache nil referer))
 	(ignore-errors
@@ -426,19 +433,20 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 				image) w3m-bitmap-image-cache-alist)
 		    image))))))))))
 
-(defun w3m-insert-image (beg end image)
+(defun w3m-insert-image (beg end image url)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
   (let ((properties (text-properties-at beg))
 	(name (buffer-substring beg end))
 	(ovr (w3m-bitmap-image-get-overlay beg)))
-    (w3m-bitmap-image-delete-internal beg ovr (- end beg))
-    (w3m-bitmap-image-insert beg image
-			     (w3m-modify-plist properties
-					       'w3m-image-status 'on
-					       'w3m-bitmap-image t
-					       'w3m-image-name name)
-			     ovr)))
+    (when (equal (nth 1 (memq 'w3m-image properties)) url)
+      (w3m-bitmap-image-delete-internal beg ovr (- end beg))
+      (w3m-bitmap-image-insert beg image
+			       (w3m-modify-plist properties
+						 'w3m-image-status 'on
+						 'w3m-bitmap-image t
+						 'w3m-image-name name)
+			       ovr))))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END.
