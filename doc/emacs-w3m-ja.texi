@@ -643,7 +643,354 @@ setenv http_proxy http://proxy.hogege.com:8000/
 
 @node Browsing Web Pages
 @section $B%M%C%H%5!<%U%#%s$7$h$&(B!
+@vindex w3m-lynx-like-map
+@vindex w3m-info-like-map
 
+Emacs-w3m$B$G$N%&%'%V%V%i%&%8%s%0$O!"8f4|BTDL$j!"%-!<A`:n$GA4$F9T$J$&$3$H(B
+$B$,$G$-$^$9!#(BEmacs-w3m$B$K$O!"4{B8$N%&%'%V%V%i%&%6!?%I%-%e%a%s%H%V%i%&%6$K(B
+$B4p$E$$$?(B2$B<oN`$N%-!<3dEv$FBN7O(B($B%-!<%^%C%W(B)$B$,MQ0U$5$l$F$$$^$9!#0l$D$O%F%-(B
+$B%9%H%Y!<%9$N%&%'%V%V%i%&%6(Blynx$B$K4p$E$/$b$N$G$9!#$3$N%-!<%^%C%W$O(B
+Emacs-w3m$B$N%3!<%ICf$G$O!"(B@code{w3m-lynx-like-map} $B$H$$$&JQ?t$GDj5A$5$l$F(B
+$B$$$^$9!#$b$&0l$D$O!"(BGNU$B%W%m%8%'%/%H$NI8=`%I%-%e%a%s%H%V%i%&%6(B info $B$N$K(B
+$B4p$E$/$b$N$G$9!#$3$N%-!<%^%C%W$O(B@code{w3m-info-like-map} $B$H$$$&JQ?t$GDj(B
+$B5A$5$l$F$$$^$9!#%f!<%6$O<+J,$N9%$_$d(Blynx$B!"(Binfo$B$NMxMQ7P83$K4p$E$$$F!"$I$A(B
+$B$i$+$N%-!<%^%C%W$rA*$V$3$H$,$G$-$^$9!#%-!<%^%C%W$rA*Br$9$kJ}K!$K$D$$$F$O(B
+@xref{Customizable Options}$B$r8+$F2<$5$$!#FC$KA*Br$r$7$J$+$C$?>l9g!"(B
+w3m-lynx-like-map$B$,%G%U%)%k%H$N%-!<%^%C%W$H$7$F;H$o$l$^$9!#(B
+
+@c $BJ;5-$9$k!)(B
+$B0J9_$G$O!"(Bw3m-lynx-like-map(@code{lynx})$B$H(Bw3m-info-like-map(@code{info})$B$N(B
+$BN>J}$N%-!<3dEv$F(B($B%-!<%P%$%s%I(B)$B$rJ;5-$7$^$9!#(B
+@c $B$K4p$E$-(BEmacs-w3m$B$N;H$$J}$r5-=R$7$^$9!#5-=RCf(B
+@c $B$K$O!"$KBP$9$k%3%^%s%IL>$bJ;5-$7$^$9!#(B
+@c @code{w3m-info-like-map} $B$r;H$C$F$$$k>l9g$O!"(B@kbd{M-x where-is}$B$r;H$C$F!"(B
+@c $BL\E*$N%3%^%s%I$KBP$9$k%-!<%P%$%s%I$rD4$Y$F2<$5$$!#(B
+
+@c $B%^%&%9(B
+$B%?!<%_%J%k0J30$G(BEmacs$B$,F0:n$7$F$$$k>l9g!"Nc$($P(BX Window System$B$N%/%i%$%"(B
+$B%s%H$H$7$F!"(BEmacs$B$,F0:n$7$F$$$k>l9g!"B>$N(BGUI$B%Y!<%9$N%&%'%V%V%i%&%6$HF1MM(B
+$B$K%^%&%9$r;H$C$F$b%V%i%&%8%s%0$N4pK\A`:n$r9T$J$&$3$H$,$G$-$^$9!#%-!<A`:n(B
+$B$NJ}$,?WB.$J%V%i%&%8%s%0$,2DG=$G$9$,!"%^%&%9A`:n$NJ}$,3P$($k$3$H$O>/$J$$(B
+$B$G$9!#(B
+
+@menu
+* Basic operations::    $B:G=i$K3P$($k$3$H(B(FIXME:$BNI$$%?%$%H%k$G$J$$(B)
+* Moving in a page:: $B%Z!<%8Fb$rHt$S$^$o$k(B
+* Moving over pages::   $B%Z!<%84V$rEO$jJb$/(B
+* Browsing with mouse operations::      $B%^%&%9$G%5!<%U%#%s(B
+* Leaving for daily hacking and/or daily writing:: $BIaCJ$N@83h$KLa$k$K$O(B
+@end menu
+
+@node Basic operations
+@subsection $B:G=i$K3P$($k$3$H(B
+@findex w3m
+@findex w3m-browse-url
+@findex w3m-find-file
+@vindex w3m-home-page
+@findex w3m-view-this-url
+@findex w3m-goto-url
+@findex w3m-reload-this-page
+Emacs-w3m$B$N%(%s%H%j%]%$%s%H$H$J$k%3%^%s%I$O(B3$B$D$"$j$^$9!#$3$l$i$N%3%^%s%I(B
+$B$K$h$j!"%&%'%V%Z!<%8$,(B``*w3m*''$B$H$$$&L>A0$r;}$D%P%C%U%!$KI=<($5$l$^$9!#(B
+``*w3m''$B%P%C%U%!$N%a!<%8%c%b!<%I$O(Bw3m$B%b!<%I$K$J$j$^$9!#(B
+
+@table @code
+@item w3m
+@findex w3m
+@vindex w3m-home-page
+Emacs-w3m$B$r5/F0$7$^$9!#$3$N$H$-JQ?t(B@code{w3m-home-page}$B$G;XDj$5$l$?(B
+$B%[!<%`%Z!<%8$,I=<($5$l$^$9!#(B@code{w3m-home-page}$B$N%G%U%)%k%H$NCM$O!"(B
+``about:''$B$G$9!#(B(FIXME:C-u$B$K$D$$$F=q$/(B)
+@end table
+
+@table @code
+@item w3m-browse-url
+@findex w3m-browse-url
+$B1\Mw$7$?$$(BURL$B$r;XDj$7$F(BEmacs-w3m$B$r5/F0$7$^$9!#(BURL$B$O%a%C%;!<%8%P%C%U%!$+$i(B
+$BM?$($^$9!#(B
+@end table
+
+@table @code
+@item w3m-find-file
+@findex w3m-find-file
+$B1\Mw$7$?$$%m!<%+%k%U%!%$%k$r;XDj$7$F(BEmacs-w3m$B$r5/F0$7$^$9!#(B
+@end table
+
+$B%&%'%V%Z!<%8$,%P%C%U%!$KI=<($5$l$l$P!"$$$D$b(BEmacs$B$r;H$C$F$$$k$"$J$?$,%Z!<(B
+$B%8Fb$r8+$F$^$o$k$N$K6lO+$O$J$$$O$:$G$9!#(B@kbd{C-n}, @kbd{C-v}, @kbd{C-s}
+$B$H$$$C$?(BEmacs$B$KI8=`$G%-!<$K3dEv$F$i$l$F$$$k%3%^%s%I$NB?$/$O!"(Bw3m$B%b!<%I$G(B
+$B$b5!G=$7$^$9!#(B
+
+$B%j%s%/$rC)$k$K$O!"(B@key{RET}$B$r;H$$$^$9!#%]%$%s%H$r%j%s%/$X0\F0$5$;$F!"(B
+@key{RET}$B$r2!$9$H%]%$%s%H$N2<$K$"$k%j%s%/@h$K$"$k%Z!<%8$rI=<($5$;$k$3$H(B
+$B$,$G$-$^$9!#%&%'%V%Z!<%8Fb$N%j%s%/$O!"(B@code{w3m-anchor-face}$B$G;XDj$5$l$?(B
+$B%U%'!<%9$GI=<($5$l$^$9!#FC$K(B@code{w3m-anchor-face}$B$r;XDj$7$F$$$J$$>l9g!"(B
+$B%j%s%/$O(B(FIXME:$B$I$s$JIw$K$=$N%U%'!<%9$,I=<($5$l$k$+=q$/(B)$B$HI=<($5$l$^$9!#(B
+
+@table @key
+@item RET @code{(lynx, info)}
+@kindex RET
+@findex w3m-view-this-url
+$B%]%$%s%H$N2<$K$"$k%j%s%/@h$K$"$k%Z!<%8$rI=<($9$k!#(B
+(FIXME:C-u$B$K$D$$$F=q$/(B)
+@end table
+
+$B4{$K(B@code{w3m-browse-url}$B$r;H$&$H(BURL$B$r;XDj$7$F%Z!<%8$rI=<($G$-$k$3$H(B
+$B$r@bL@$7$^$7$?!#2C$($F(Bw3m$B%b!<%I$G$O!"(B2$B$D$NJ}K!$G(BURL$B$r;XDj$7$F%Z!<%8$r(B
+$BI=<($5$;$k$3$H$,$G$-$^$9!#(B
+(TODO: $BI=<($5$;$k!)I=<($9$k!)%f!<%6$NN)>l$@$H!VI=<($5$;$k!W!"4X?t%3%^%s(B
+$B%I$NN)>l$@$H!VI=<($9$k!W!#M?$($k!";XDj$9$k!"$I$C$A$,NI$$!)(B)
+
+@table @key
+@item RET @code{(lynx, info)}
+@kindex RET
+@findex w3m-view-this-url
+@c @key{RET}$B$K3dEv$F$i$l$?(B@code{w3m-view-this-url}$B$K$D$$$F4{$K@bL@$7$^$7$?!#(B
+@c $B$,!"%]%$%s%H$,$I$3$K$"$k$+$K$h$C$F(B@code{w3m-view-this-url}$B$N?6Iq$$$,JQ$j(B
+@c $B$^$9!#(B
+w3m$B%b!<%I$N%P%C%U%!$N%X%C%@%i%$%s$KI=<($5$l$F$$$k(BURL $B$N0LCV$K%]%$(B
+$B%s%H$r0\F0$5$;$F!"(B@key{RET}$B$r2!$7$?>l9g!"%_%K%P%C%U%!$+$i(BURL$B$rM?$($F%&%'(B
+$B%V%Z!<%8$rI=<($5$;$k$3$H$,$G$-$^$9!#$3$N5!G=$O!"(BMozilla$B$J$I$N(BGUI$B%Y!<%9$N(B
+$B%&%'%V%V%i%&%6$NMxMQ7P83$,$"$k?M$K$O!"?F$7$_$r$*$\$($k$3$H$G$7$g$&!#(B
+@end table
+
+@table @kbd
+@item g @code{(lynx, info)}
+@findex w3m-goto-url
+$B%]%$%s%H$N0LCV$K4X78$J$/!"(B@kbd{g}$B$r2!$9$H%_%K%P%C%U%!$+$i(BURL$B$rM?$(!"$=(B
+$B$N%Z!<%8$rI=<($9$k$3$H$,$G$-$^$9!#$3$N5!G=$O!"(BEmacs$B>e$GF0:n$9$k%K%e!<%9%j!<%@!<(B
+gnus$B$d%a%$%i!<(BMew$B$rMxMQ$7$F$$$k?M$K$O!"?F$7$_$r$*$\$($k$+$b$7$l$^$;$s!#(B
+@end table
+
+@table @kbd
+@item c @code{lynx}
+@itemx M-x w3m-print-this-url
+@kindex c
+@findex w3m-print-this-url
+$BI=<($7$F$$$k%Z!<%8$N(BURL$B$r%(%3!<%(%j%"$KI=<($9$k$H$H$b$K!"%-%k%j%s%0$K(BURL
+$B$rA^F~$7$^$9!#(B
+@end table
+
+@table @kbd
+@item u @code{lynx}
+@itemx y @code{info}
+@kindex u
+@kindex y
+@findex w3m-print-this-url
+$B%]%$%s%H2<$N%j%s%/$,;X$7<($9(BURL$B$r%(%3!<%(%j%"$KI=<($9$k$H$H$b$K!"%-%k%j(B
+$B%s%0$K(BURL$B$rA^F~$7$^$9!#(B
+@end table
+
+(TODO: $B2?$+=q$/(B)
+@table @kbd
+@item R @code{(lynx, info)}
+@findex w3m-reload-this-page
+$B8=:_I=<($7$F$$$k%Z!<%8$rFI$_9~$_$J$*$7$^$9!#(B
+@end table
+
+@node Moving in a page
+@subsection $B%Z!<%8Fb$rHt$S$^$o$k(B
+
+$B;H$$47$l$?(BEmacs$B$N%3%^%s%I(B($B$"$k$$$O!"%-!<%P%$%s%I(B)$B$,(Bw3m$B%b!<%I$N%P%C%U%!$G(B
+$B$b$=$N$^$^5!G=$9$k$3$H$,!"(BEmacs-w3m$B$NBg$-$JL%NO$G$"$k$N$O4V0c$$$"$j$^$;(B
+$B$s!#%9%/%m!<%k$N$?$a$K!"$"$k$$$O%Z!<%8Fb$N%]%$%s%H0\F0$N$?$a$K%-!<A`:n$r(B
+$B2~$a$F3P$($kIiC4$,$"$j$^$;$s!#$7$+$7(Bw3m$B%b!<%I$K$O!"%9%/%m!<%k$H%]%$%s%H(B
+$B0\F0MQ$N%3%^%s%I$,0l<0MQ0U$5$l$F$$$^$9!#$3$l$i$N%3%^%s%I$r;H$$$3$J$;$P!"(B
+$B%-!<%9%H%m!<%/$r@aLs$7$?$j!"$h$j?WB.$J1\Mw$r9T$J$&$3$H$,$G$-$^$9!#(B
+
+Emacs$B$NI8=`$N%-!<%P%$%s%I$KHf$Y$F(Bw3m$B%b!<%I$G$O!"$h$jC;$$%-!<%9%H%m!<%/$G(B
+$B%9%/%m!<%k%3%^%s%I72$r8F$S=P$;$k$h$&!"%-!<$,3dEv$F$i$l$F$$$^$9!#%&%'%V%Z!<(B
+$B%8$r1\Mw$7$F$$$k>l9g!"%P%C%U%!Fb$G%F%-%9%H$rF~NO$9$k8D=j$O8B$i$l$F$$$^$9!#(B
+$B=>$C$FB?$/$N%-!<(B(@code{self-insert}$B$,3dEv$F$i$l$F$$$k%-!<(B)$B$O!"!V6u$$$F!W(B
+$B$$$^$9!#(Bw3m$B%b!<%I$G$O!"$=$l$i$N%-!<$K?'!9$J%3%^%s%I$r3dEv$F$F$$$^$9!#(B
+
+@c
+@c scroll
+@c
+@table @key
+@item SPC
+$B=gJ}8~$K%9%/%m!<%k$7$^$9!#(Bless$B%3%^%s%I$d(BEmacs$B$N(Bview-mode$B$r;H$C$?$3$H$,$"$l$P!"(B
+$BFk@w$_$,$"$k$O$:$G$9!#(B(FIXME: $B?t0z?t$K$D$$$F=q$/!#(B)
+@end table
+
+@table @key
+@item DEL
+$B5UJ}8~$K%9%/%m!<%k$7$^$9!#(Bless$B%3%^%s%I$d(BEmacs$B$N(Bview-mode$B$r;H$C$?$3$H$,$"$l$P!"(B
+$BFk@w$_$,$"$k$O$:$G$9!#(B(FIXME: $B?t0z?t$K$D$$$F=q$/!#(B)
+@end table
+
+@table @kbd
+@item >
+$B:8$K%9%/%m!<%k$r$7$^$9!#(B(FIXME: $B?t0z?t$K$D$$$F=q$/!#(B)
+@end table
+
+@table @kbd
+@item <
+$B1&$K%9%/%m!<%k$r$7$^$9!#(B(FIXME: $B?t0z?t$K$D$$$F=q$/!#(B)
+@end table
+
+@table @kbd
+@item .
+$B:8$K%7%U%H$7$^$9(B(?)$B!#>.9o$_$K!)(B(FIXME: $B?t0z?t$K$D$$$F=q$/!#FbMF$b3NG'(B)
+@end table
+
+@table @kbd
+@item ,
+$B1&$K%7%U%H$7$^$9(B(?)$B!#>.9o$_$K!)(B(FIXME: $B?t0z?t$K$D$$$F=q$/!#FbMF$b3NG'(B)
+@end table
+
+@table @kbd
+@item M-l
+$B8=:_%]%$%s%H$,$"$k0LCV$N%F%-%9%H$,!"?eJ?J}8~$K4X$7$FCf?4$K$J$k$h$&$K(B
+$B%9%/%m!<%k$7$^$9!#(B(FIXME: $B?t0z?t$K$D$$$F=q$/!#(B)
+@end table
+
+@c
+@c $B0\F0(B
+@c 
+w3m$B$G$O!"%&%'%V%Z!<%8$N;}$D9=B$$K4p$E$$$?%]%$%s%H0\F0MQ$N%3%^%s%I$,$"$j$^$9!#(B
+$B>/$J$$%-!<%9%H%m!<%/$G!"L\E*$N8D=j$K%]%$%s%H$r0\F0$G$-$k$h$&!"MxMQ$7$F$$$^$9!#(B
+
+@table @key
+@item TAB
+Jump to next anchor.
+@end table
+
+@table @kbd
+@item M-@key{TAB}
+Jump to previous anchor.
+@end table
+
+@table @kbd
+@item ]
+Jump to next form.
+@end table
+
+@table @kbd
+@item [
+Jump to previous form.
+@end table
+
+@table @kbd
+@item @{
+Jump to next image.
+@end table
+
+@table @kbd
+@item @}
+Jump to previous image.
+@end table
+
+@node Moving over pages
+@subsection $B%Z!<%84V$rEO$jJb$/(B
+
+@table @kbd
+@item B 
+Back to previous page.
+@end table
+
+@table @kbd
+@item N	
+Forward to next page.
+@end table
+
+@table @kbd
+@item ^	
+View the parent page.
+@end table
+
+@table @kbd
+@item H
+Goto home page.
+@end table
+
+@table @key
+@item SPC
+Scroll up or go to next url.
+@end table
+
+@table @key
+@item DEL
+Scroll down or go to previous url.
+@end table
+
+
+@c C-a	Go to the entire beginning of line.
+@c C-e	Go to the entire end of line.
+@c j	Next line.
+@c k	Previous line.
+
+@c l	Forward char.
+@c h	Backward char.
+
+@c M-g	Jump to line.
+
+@node Browsing With Mouse Operations
+@subsection $B%^%&%9$G%5!<%U%#%s(B
+
+$B%D!<%k%P!<$H%a%K%e!<$K$D$$$F(B...
+@table @key
+@item mouse-2
+View this url use mouse.
+If w3m-use-form is t, RET and <mouse-2> action a form input.
+You may use the prefix arg `2' or `C-u C-u' to make a new session.
+@end table
+
+@node Leaving for daily hacking and/or daily writing
+@subsection $BIaCJ$N@83h$KLa$k$K$O(B
+
+@table @kbd
+@item q
+Close this window and make the other buffer current.
+@end table
+
+@table @kbd
+@item Q
+Quit browsing WWW after updating arrived URLs list.
+@end table
+
+@example
+G	Goto URL in the new session.
+
+I	View image.
+M-i	Save image.
+T	Toggle displaying of inline images on current buffer.
+M-[	Zoom out image on cursor point.
+M-]	Zoom in image on cursor point.
+
+
+M	View current url with external browser.
+\	Display source of this current buffer.
+=	Display header of this current buffer.
+E	Edit the local file pointed by the URL of current page.
+e	Edit the local file by the under the point.
+
+C-c C-@	Mark the current position.
+C-c C-v	Goto the last position.
+
+s	Display arrived history.
+	If called with 'C-u', this command displays arrived-DB history.
+A	Display the report change of WEB sites.
+	If called with 'C-u', this command reloads report.
++	Add the current page to antenna.
+S	Search query.
+	If called with 'C-u', you can choose search engine.
+W	Display weather report.
+	If called with 'C-u', you can choose local area.
+D	Display directory tree.
+	If called with 'C-u', view all directories and files.
+M-x w3m-namazu	Search files with Namazu.
+	If called with 'C-u', you can choose index.
+
+C-c C-t	Create a twin copy of the current buffer.
+C-c C-n	Switch to next w3m buffer.
+C-c C-p	Switch to previous w3m buffer.
+C-c C-s	Select one buffer of all w3m buffers.
+C-c C-a	Switch one buffer of all w3m buffers.
+C-c C-w	Kill current w3m buffer.
+C-c M-w	Kill other w3m buffers.
+
+@end example
 
 @node Inline Images
 @section $B2hA|I=<($r(B ON/OFF $B$9$k(B
@@ -769,7 +1116,7 @@ Bookmark $B%^%$%J!<%b!<%I(B (@pxref{Consulting Bookmarks}) $B$O!"%V%C%/%^!<%/
 
 @node Downloading
 @section $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
-
+@c d	Download this url.
 
 @node Submitting Forms
 @section HTML $B%U%)!<%`$K5-F~$9$k(B
