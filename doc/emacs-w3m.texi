@@ -1626,7 +1626,7 @@ files in the directories as well (@code{w3m-dtree}).
 
 @node Customizable Variables
 @chapter Customizable variables
-@cindex Customizing user variables
+@cindex Customizing user options
 @vindex w3m-init-file
 
 A lot of emacs-w3m variables are customizable via the Custom mechanism,
