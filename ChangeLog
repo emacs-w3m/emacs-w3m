@@ -1,3 +1,43 @@
+2003-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-command, w3m-user-agent, w3m-command-arguments,
+	w3m-command-arguments-alist, w3m-no-proxy-domains,
+	w3m-command-environment, w3m-fill-column, w3m-mailto-url-function,
+	w3m-mailto-url-popup-function-alist, w3m-imitate-widget-button,
+	w3m-pixels-per-character, w3m-coding-system,
+	w3m-terminal-coding-system, w3m-input-coding-system,
+	w3m-output-coding-system, w3m-file-coding-system,
+	w3m-file-name-coding-system, w3m-default-coding-system,
+	w3m-coding-system-priority-list, w3m-profile-directory,
+	w3m-init-file, w3m-default-save-directory, w3m-accept-languages,
+	w3m-icon-directory, w3m-home-page, w3m-arrived-file,
+	w3m-keep-arrived-urls, w3m-keep-cache-size, w3m-follow-redirection,
+	w3m-resize-image-scale, w3m-default-content-type,
+	w3m-content-type-alist, w3m-encoding-type-alist, w3m-decoder-alist,
+	w3m-charset-coding-system-alist, w3m-correct-charset-alist,
+	w3m-horizontal-scroll-columns, w3m-horizontal-shift-columns,
+	w3m-edit-function, w3m-url-local-directory-alist,
+	w3m-pop-up-frame-parameters, w3m-horizontal-scroll-division,
+	w3m-mbconv-command, w3m-local-find-file-regexps,
+	w3m-local-find-file-function, w3m-local-directory-view-method,
+	w3m-dirlist-cgi-program, w3m-add-referer-regexps,
+	w3m-touch-command, w3m-uri-replace-alist,
+	w3m-db-history-display-size, w3m-select-buffer-window-ratio):
+	Improve the customizing widgets.
+
+	* w3m-symbol.el (w3m-symbol-custom-type): New variable.
+	(w3m-default-symbol, w3m-Chinese-BIG5-symbol,
+	w3m-Chinese-CNS-symbol, w3m-Chinese-GB-symbol,
+	w3m-Japanese-symbol, w3m-Korean-symbol): Use it.
+	(w3m-symbol): Improve the customizing widgets.
+
+	* w3m-search.el (w3m-search-engine-alist,
+	w3m-search-default-engine): Improve the customizing widgets.
+	* w3m-perldoc.el (w3m-perldoc-command,
+	w3m-perldoc-pod2html-command, w3m-perldoc-pod2html-arguments):
+	Ditto.
+	* w3m-filter.el (w3m-filter-rules): Ditto.
+
 2003-07-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el (shimbun-servers-list): Count byte-compiled

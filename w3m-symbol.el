@@ -1,6 +1,6 @@
 ;;; w3m-symbol.el --- Stuffs to replace symbols for emacs-w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2002  ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2002, 2003  ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 
 ;; Author: ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 ;; Keywords: w3m, WWW, hypermedia, i18n
@@ -33,6 +33,26 @@
   "Symbols for w3m"
   :group 'w3m)
 
+(defvar w3m-symbol-custom-type
+  '(list
+    :convert-widget
+    (lambda (widget)
+      (let* ((w `(sexp :match (lambda (widget value) (stringp value))
+		       :size 4 :value ""
+		       ,@(if (not (widget-get widget :copy))
+			     ;; Emacs versions prior to 21.3.
+			     '(:value-to-internal
+			       (lambda (widget value)
+				 (if (string-match "\\`\".*\"\\'" value)
+				     value
+				   (prin1-to-string value)))))))
+	     (a `(,@w :format "%v "))
+	     (b `(,@w :format "%v\n"))
+	     (c (list a a a a a a a b))
+	     (d (list a a a a a b)))
+	`(list :indent 4 :tag "Customize"
+	       :args (,@c ,@c ,@c ,@c ,@d ,@d ,b ,b))))))
+
 (defcustom w3m-default-symbol
   '("-+" " |" "--" " +" "-|" " |" "-+" ""
     "--" " +" "--" ""   "-+" ""   ""   ""
@@ -44,7 +64,7 @@
     "<=UpDn ")
   "List of symbol string, used by defaultly."
   :group 'w3m-symbol
-  :type `(list ,@(make-list 46 'string)))
+  :type w3m-symbol-custom-type)
 
 (defcustom w3m-Chinese-BIG5-symbol
   '("$(0#3(B" "$(0#7(B" "$(0#5(B" "$(0#<(B" "$(0#6(B" "$(0#:(B" "$(0#=(B" ""
@@ -57,7 +77,7 @@
     "$(0!N"U"V(B")
   "List of symbol string, used in Chienese-BIG5 environment."
   :group 'w3m-symbol
-  :type `(list ,@(make-list 46 'string)))
+  :type w3m-symbol-custom-type)
 
 (defcustom w3m-Chinese-CNS-symbol
   '("$(G#3(B" "$(G#7(B" "$(G#5(B" "$(G#<(B" "$(G#6(B" "$(G#:(B" "$(G#=(B" ""
@@ -70,7 +90,7 @@
     "$(G!N"U"V(B")
   "List of symbol string, used in Chienese-CNS environment."
   :group 'w3m-symbol
-  :type `(list ,@(make-list 46 'string)))
+  :type w3m-symbol-custom-type)
 
 (defcustom w3m-Chinese-GB-symbol
   '("$A)`(B" "$A)@(B" "$A)P(B" "$A)0(B" "$A)H(B" "$A)&(B" "$A)4(B" ""
@@ -83,7 +103,7 @@
     "$A!6!|!}(B")
   "List of symbol string, used in Chienese-GB environment."
   :group 'w3m-symbol
-  :type `(list ,@(make-list 46 'string)))
+  :type w3m-symbol-custom-type)
 
 (defcustom w3m-Japanese-symbol
   '("$B(+(B" "$B('(B" "$B(((B" "$B(#(B" "$B()(B" "$B("(B" "$B($(B" ""
@@ -96,7 +116,7 @@
     "$B"c","-(B")
   "List of symbol string, used in Japanese environment."
   :group 'w3m-symbol
-  :type `(list ,@(make-list 46 'string)))
+  :type w3m-symbol-custom-type)
 
 (defcustom w3m-Korean-symbol
   '("$(C&+(B" "$(C&'(B" "$(C&((B" "$(C&#(B" "$(C&)(B" "$(C&"(B" "$(C&$(B" ""
@@ -109,20 +129,21 @@
     "$(C!l!h!i(B")
   "List of symbol string, used in Korean environment."
   :group 'w3m-symbol
-  :type `(list ,@(make-list 46 'string)))
+  :type w3m-symbol-custom-type)
 
 (defcustom w3m-symbol nil
   "List of symbol string."
   :group 'w3m-symbol
-  :type `(choice
-	  (const :tag "Auto detect" nil)
-	  (variable :tag "w3m-default-symbol" w3m-default-symbol)
-	  (variable :tag "w3m-Chinese-BIG5-symbol" w3m-Chinese-BIG5-symbol)
-	  (variable :tag "w3m-Chinese-CNS-symbol" w3m-Chinese-CNS-symbol)
-	  (variable :tag "w3m-Chinese-GB-symbol" w3m-Chinese-GB-symbol)
-	  (variable :tag "w3m-Japanese-symbol" w3m-Japanese-symbol)
-	  (variable :tag "w3m-Korean-symbol" w3m-Korean-symbol)
-	  (list ,@(make-list 46 'string))))
+  :type `(radio (const :format "Auto detect  " nil)
+		(const :tag "Default" w3m-default-symbol)
+		(const :format "Chinese BIG5 " w3m-Chinese-BIG5-symbol)
+		(const :format "Chinese CNS " w3m-Chinese-CNS-symbol)
+		(const :tag "Chinese GB" w3m-Chinese-GB-symbol)
+		(const :format "Japanese     " w3m-Japanese-symbol)
+		(const :tag "Korean" w3m-Korean-symbol)
+		(variable :format "%t symbol: %v\n" :size 0
+			  :value w3m-default-symbol)
+		,w3m-symbol-custom-type))
 
 (defun w3m-symbol ()
   (cond (w3m-symbol

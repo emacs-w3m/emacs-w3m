@@ -159,7 +159,8 @@
 (defcustom w3m-command nil
   "*Name of the executable file of w3m."
   :group 'w3m
-  :type 'string)
+  :type '(radio (const :format "Not specified " nil)
+		(string :format "Command: %v\n" :size 0)))
 
 (defvar w3m-type nil "Type of w3m.
 These values are acceptable: w3m, w3mmee, w3m-m17n.")
@@ -208,7 +209,7 @@ These values are acceptable: w3m, w3mmee, w3m-m17n.")
 				  " " w3m-version)
   "User agent string of this package."
   :group 'w3m
-  :type 'string)
+  :type '(string :size 0))
 
 (defcustom w3m-add-user-agent t
   "Add User-Agent field to the request header.
@@ -240,7 +241,7 @@ The value of `w3m-user-agent' is used for the field body."
   "*List of the default arguments passed to the w3m command.  See also
 the documentation for the option `w3m-command-arguments-alist'."
   :group 'w3m
-  :type '(repeat string))
+  :type '(repeat (string :format "Argument: %v\n" :size 0)))
 
 (defcustom w3m-command-arguments-alist nil
   "*Alist of a regexp matching urls and additional arguments passed to
@@ -261,17 +262,17 @@ the hostname is either \"your-company.com\" or a name ended with
 \".your-company.com\".  If you are a novice on the regexps, you can use
 the option `w3m-no-proxy-domains' instead."
   :group 'w3m
-  :type '(repeat (cons :format "%v"
-		       regexp
+  :type '(repeat (cons :format "%v" :indent 4
+		       (regexp :format "%t: %v\n" :size 0)
 		       (repeat :tag "Arguments passed to w3m command"
-			       (string :tag "Arg")))))
+			       (string :format "Arg: %v\n" :size 0)))))
 
 (defcustom w3m-no-proxy-domains nil
   "*List of domain names that emacs-w3m will not use a proxy server to
 connect to.  Each element should be exactly a domain name which means
 the latter common part of the host names, not a regexp."
   :group 'w3m
-  :type '(repeat (string :tag "Domain name")))
+  :type '(repeat (string :format "Domain name: %v\n" :size 0)))
 
 (defcustom w3m-command-environment
   (delq nil
@@ -283,9 +284,9 @@ the latter common part of the host names, not a regexp."
   "*Alist of environment variables for subprocesses to inherit."
   :group 'w3m
   :type '(repeat
-	  (cons :format "%v"
-	   (string :tag "Name")
-	   (string :tag "Value"))))
+	  (cons :format "%v" :indent 4
+		(string :format "Name: %v\n" :size 0)
+		(string :format "    Value: %v\n" :size 0))))
 
 (defcustom w3m-fill-column -1
   "*Fill column of w3m.
@@ -294,12 +295,13 @@ Positive value is for fixed column rendering.
 Zero or negative value is for fitting w3m output with current frame
 width using expression (+ (window-width) VALUE)."
   :group 'w3m
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defcustom w3m-mailto-url-function nil
   "*Mailto handling Function."
   :group 'w3m
-  :type 'function)
+  :type '(radio (const :tag "Not specified" nil)
+		(function :format "%t: %v\n" :size 0)))
 
 (defcustom w3m-mailto-url-popup-function-alist
   '((cmail-mail-mode . pop-to-buffer)
@@ -316,7 +318,9 @@ mail buffer as an argument.  Note that the variables
 `same-window-buffer-names' and `same-window-regexps' will be bound to
 nil while popping up a buffer."
   :group 'w3m
-  :type '(repeat (cons :format "%v" (symbol :tag "major-mode") function)))
+  :type '(repeat (cons :format "%v" :indent 11
+		       (symbol :format "Major-mode: %v\n" :size 0)
+		       (function :format "%t: %v\n" :size 0))))
 
 (defcustom w3m-use-mule-ucs
   (and (eq w3m-type 'w3m) (featurep 'un-define))
@@ -340,7 +344,7 @@ nil while popping up a buffer."
 It is useful for moving about in a Gnus article buffer using TAB key.
 It can also be any Lisp form that should return a boolean value."
   :group 'w3m
-  :type 'sexp)
+  :type '(sexp :size 0))
 
 (defcustom w3m-treat-image-size (and (member "image" w3m-compile-options) t)
   "*Non-nil means to let the w3m HTML rendering be conscious of image size.
@@ -362,8 +366,8 @@ It is valid only when `w3m-treat-image-size' is non-nil."
 If nil, the width of the default face font is used.
 It is valid only when `w3m-treat-image-size' is non-nil."
   :group 'w3m
-  :type '(choice (const :tag "Auto Detect" nil)
-		 (integer :tag "Specify Pixels")))
+  :type '(radio (const :tag "Auto Detect" nil)
+		(integer :format "Specify Pixels: %v\n" :size 0)))
 
 (defvar w3m-accept-japanese-characters
   (and (not noninteractive)
@@ -401,14 +405,14 @@ It is valid only when `w3m-treat-image-size' is non-nil."
 			       'iso-8859-1)
   "*Basic coding system for `w3m'."
   :group 'w3m
-  :type 'coding-system)
+  :type '(coding-system :size 0))
 
 (defcustom w3m-terminal-coding-system
   (if w3m-accept-japanese-characters
       'euc-japan 'iso-8859-1)
   "*Coding system for keyboard input to `w3m'."
   :group 'w3m
-  :type 'coding-system)
+  :type '(coding-system :size 0))
 
 (defcustom w3m-input-coding-system
   (if (memq w3m-type '(w3mmee w3m-m17n))
@@ -426,7 +430,7 @@ It is valid only when `w3m-treat-image-size' is non-nil."
 	  'iso-8859-1))))
   "*Coding system for write operations to `w3m'."
   :group 'w3m
-  :type 'coding-system)
+  :type '(coding-system :size 0))
 
 (defcustom w3m-output-coding-system
   (cond
@@ -438,7 +442,7 @@ It is valid only when `w3m-treat-image-size' is non-nil."
    (t 'w3m-iso-latin-1))
   "*Coding system for read operations of `w3m'."
   :group 'w3m
-  :type 'coding-system)
+  :type '(coding-system :size 0))
 
 (defcustom w3m-file-coding-system (if (featurep 'mule)
 				      'iso-2022-7bit
@@ -446,7 +450,7 @@ It is valid only when `w3m-treat-image-size' is non-nil."
   "*Coding system for writing configuration files in `w3m'.
 The value will be referred by the function `w3m-save-list'."
   :group 'w3m
-  :type 'coding-system)
+  :type '(coding-system :size 0))
 
 (defvar w3m-file-coding-system-for-read nil
   "*Coding system for reading configuration files in `w3m'.  It is strongly
@@ -458,19 +462,19 @@ reason.  The value will be referred by the function `w3m-load-list'.")
       'shift_jis 'euc-japan)
   "*Coding system for encoding file names of `w3m'."
   :group 'w3m
-  :type 'coding-system)
+  :type '(coding-system :size 0))
 
 (defcustom w3m-default-coding-system
   (if (equal "Japanese" w3m-language) 'shift_jis 'iso-8859-1)
   "*Default coding system to encode URL strings and post-data."
   :group 'w3m
-  :type 'coding-system)
+  :type '(coding-system :size 0))
 
 (defcustom w3m-coding-system-priority-list
   (if (equal "Japanese" w3m-language) '(shift_jis))
   "*Priority for detect coding-system."
   :group 'w3m
-  :type '(repeat coding-system))
+  :type '(repeat (coding-system :format "%t: %v\n" :size 0)))
 
 (defcustom w3m-key-binding nil
   "*This variable decides default key mapping used in w3m-mode buffers."
@@ -522,7 +526,7 @@ reason.  The value will be referred by the function `w3m-load-list'.")
 		 (file-name-nondirectory w3m-command)))
   "*Directory of w3m profiles."
   :group 'w3m
-  :type 'directory)
+  :type '(directory :size 0))
 
 (defcustom w3m-init-file "~/.emacs-w3m"
   "*Your emacs-w3m startup file name.
@@ -535,14 +539,14 @@ on terminal.  In order to modify configurations of w3m which works on
 terminal, you must edit the startup file for itself, whose name is
 ~/.w3m/config typically."
   :group 'w3m
-  :type 'file)
+  :type '(file :size 0))
 
 (defcustom w3m-default-save-directory
   (concat "~/." (file-name-sans-extension
 		 (file-name-nondirectory w3m-command)))
   "*Default directory for save file."
   :group 'w3m
-  :type 'directory)
+  :type '(directory :size 0))
 
 (defcustom w3m-accept-languages
   (let ((file (expand-file-name "config" w3m-profile-directory)))
@@ -556,7 +560,7 @@ terminal, you must edit the startup file for itself, whose name is
 	  '("ja" "en"))))
   "*Prioirity for acceptable languages."
   :group 'w3m
-  :type '(repeat string))
+  :type '(repeat (string :format "Lang: %v\n" :size 0)))
 
 (defcustom w3m-delete-duplicated-empty-lines t
   "*Compactize page by deleting duplicated empty lines."
@@ -593,7 +597,8 @@ new page for each time.  Otherwise, the value of
 	  icons)))
   "*Icon directory for w3m (XEmacs or Emacs 21)."
   :group 'w3m
-  :type 'directory)
+  :type '(radio (const :tag "Not specified")
+		(directory :format "%t: %v\n" :size 0)))
 
 (defcustom w3m-broken-proxy-cache nil
   "*If non nil, cache on proxy server is not used.
@@ -616,23 +621,23 @@ to input URL when URL-like string is not detected under the cursor."
       "about:")
   "*Home page of emacs-w3m."
   :group 'w3m
-  :type 'string)
+  :type '(string :size 0))
 
 (defcustom w3m-arrived-file
   (expand-file-name ".arrived" w3m-profile-directory)
   "*File which keep the list of arrived URLs."
   :group 'w3m
-  :type 'file)
+  :type '(file :size 0))
 
 (defcustom w3m-keep-arrived-urls 500
   "*Maximum number of arrived URLs."
   :group 'w3m
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defcustom w3m-keep-cache-size 300
   "*Cache size of w3m."
   :group 'w3m
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defcustom w3m-follow-redirection 9
   "*Follow this number of redirections.
@@ -641,12 +646,12 @@ If you want to use cookies, (i.e. set `w3m-use-cookies' as non-nil),
 you should not set this value as nil because many cookie enabled pages set
 cookies between redirections."
   :group 'w3m
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defcustom w3m-resize-image-scale 50
   "*A number of percent used to resize inline images."
   :group 'w3m
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defcustom w3m-redirect-with-get t
   "*If non-nil, use GET method after redirection by 301/302.
@@ -782,7 +787,7 @@ of the original request method. -- RFC2616"
 (defcustom w3m-default-content-type "text/html"
   "*Default content type of local files."
   :group 'w3m
-  :type 'string)
+  :type '(string :size 0))
 
 (defvar w3m-image-viewer
   (or (w3m-which-command "display")
@@ -846,22 +851,28 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
   :group 'w3m
   :type '(repeat
 	  (group
-	   (string :tag "Type")
-	   (choice :tag "Regexp"
-		   (const :tag "None" nil)
-		   (string))
-	   (choice :tag "Viewer"
-		   (const :tag "None" nil)
-		   (cons :tag "External viewer"
-			 (string :tag "Command")
-			 (repeat :tag "Arguments"
-				 (restricted-sexp :match-alternatives
-						  (stringp 'file 'url))))
-		   (function :tag "Function"))
-	   (choice :tag "Filter"
-		   (const :tag "None" nil)
-		   (string :tag "Equivalent type")
-		   (function :tag "Function")))))
+	   :indent 2
+	   (string :format "Type: %v\n" :size 0)
+	   (radio :format "%{Regexp%}: %v" :extra-offset 8
+		  :sample-face underline
+		  (const :tag "Not specified" nil)
+		  (regexp :format "String: %v\n" :size 0))
+	   (radio :format "%{Viewer%}: %v" :extra-offset 8
+		  :sample-face underline
+		  (const :tag "Not specified" nil)
+		  (cons :tag "External viewer" :extra-offset 2
+			(string :format "Command: %v\n" :size 0)
+			(repeat :format "Arguments:\n%v%i\n" :extra-offset 2
+				(restricted-sexp
+				 :format "%v\n"
+				 :match-alternatives (stringp 'file 'url)
+				 :size 0)))
+		  (function :format "%t: %v\n" :size 0))
+	   (radio :format "%{Filter%}: %v" :extra-offset 8
+		  :sample-face underline
+		  (const :tag "Not specified" nil)
+		  (string :format "Equivalent type: %v\n" :size 0)
+		  (function :format "Function: %v\n" :size 0)))))
 
 ;; FIXME: w3m-encoding-type-alist / w3m-decoder-alist / w3m-encoding-alist
 ;; の相互の関係が複雑かつ冗長なので整理の必要あり．
@@ -871,9 +882,9 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
   "*Alist of file suffixes vs. content encoding types."
   :group 'w3m
   :type '(repeat
-	  (cons :format "%v"
-		(string :tag "Regexp of Suffixes")
-		(string :tag "Encoding Type"))))
+	  (cons :format "%v" :indent 14
+		(string :format "Regexp of Suffixes: %v\n" :size 0)
+		(string :format "Encoding Type: %v\n" :size 0))))
 
 (defcustom w3m-decoder-alist
   `((gzip "gzip" ("-d"))	;; Don't use "gunzip" and "bunzip2"
@@ -892,12 +903,14 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
   "Associative list of DECODER."
   :group 'w3m
   :type '(repeat
-	  (group (choice :tag "Encoding"
-			 (const gzip)
-			 (const bzip)
-			 (const deflate))
-		 (string :tag "Command")
-		 (repeat :tag "Arguments" string))))
+	  (group :indent 4
+		 (radio :format "Encoding: %v"
+			(const :format "%v " gzip)
+			(const :format "%v " bzip)
+			(const deflate))
+		 (string :format "Command: %v\n" :size 0)
+		 (repeat :tag "Arguments" :extra-offset 2
+			 (string :format "%v\n" :size 0)))))
 
 (defcustom w3m-charset-coding-system-alist
   (let ((rest
@@ -939,7 +952,9 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
   "Alist MIME CHARSET vs CODING-SYSTEM.
 MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
-  :type '(repeat (cons :format "%v" symbol coding-system)))
+  :type '(repeat (cons :format "%v" :indent 2
+		       (symbol :format "%t: %v\n" :size 0)
+		       (coding-system :format "%t: %v\n" :size 0))))
 
 (defcustom w3m-correct-charset-alist
   '(("windows-874"  . "tis-620")
@@ -961,17 +976,19 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
     ("x-sjis"	    . "shift_jis"))
   "Alist of MIME CHARSET, strange one vs standard one."
   :group 'w3m
-  :type '(repeat (cons :format "%v" string string)))
+  :type '(repeat (cons :format "%v" :indent 11
+		       (string :format "From: %v\n" :size 0)
+		       (string :format "To: %v\n" :size 0))))
 
 (defcustom w3m-horizontal-scroll-columns 10
   "*Column size to scroll horizontally."
   :group 'w3m
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defcustom w3m-horizontal-shift-columns 2
   "*Column size to shift horizontally."
   :group 'w3m
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defcustom w3m-use-form t
   "*Non-nil means form extension is activated. (EXPERIMENTAL)"
@@ -997,14 +1014,15 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :require 'w3m-symbol)
 
 (defcustom w3m-edit-function 'find-file
-  "*Function of editing local file."
+  "*Function used for editing local files."
   :group 'w3m
-  :type '(choice
-	  (const :tag "Edit" find-file)
-	  (const :tag "Edit with other window" find-file-other-window)
-	  (const :tag "Edit with other frame" find-file-other-frame)
-	  (const :tag "View with other window" view-file-other-window)
-	  (function :tag "Other" view-file)))
+  :type '(radio
+	  (const :tag "Edit it in the current window" find-file)
+	  (const :tag "Edit it in another window" find-file-other-window)
+	  (const :tag "Edit it in another frame" find-file-other-frame)
+	  (const :tag "View it in another window" view-file-other-window)
+	  (function :format "Other function: %v\n" :size 0
+		    :value view-file)))
 
 (defcustom w3m-url-local-directory-alist
   (when (boundp 'yahtml-path-url-alist)
@@ -1014,9 +1032,9 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
      (symbol-value 'yahtml-path-url-alist)))
   "*Alist of URLs and local directories."
   :type '(repeat
-	  (cons :format "%v"
-		(string :tag "URL")
-		(directory :tag "Directory")))
+	  (cons :format "%v" :indent 3
+		(string :format "URL: %v\n" :size 0)
+		(directory :format "%t: %v\n" :size 0)))
   :group 'w3m)
 
 (defcustom w3m-track-mouse t
@@ -1113,14 +1131,16 @@ allows a kludge that it can also be a plist of frame properties."
   :group 'w3m
   :type '(choice (group :inline t :tag "Frame Parameters (Emacs)"
 			(repeat :inline t :tag "Frame Parameters (Emacs)"
-				(cons :format "%v"
-				      (symbol :tag "Parameter")
-				      sexp)))
+				(cons :format "%v" :indent 3
+				      (symbol :format "Parameter: %v\n"
+					      :size 0)
+				      (sexp :format "%t: %v\n" :size 0))))
 		 (group :inline t :tag "Frame Plist (XEmacs)"
 			(repeat :inline t :tag "Frame Plist (XEmacs)"
-				(group :inline t
-				       (symbol :tag "Property")
-				       sexp)))))
+				(group :indent 2 :inline t
+				       (symbol :format "Property: %v\n"
+					       :size 0)
+				       (sexp :format "%t: %v\n" :size 0))))))
 
 (defcustom w3m-auto-show t
   "*Use internal auto-show method."
@@ -1130,7 +1150,7 @@ allows a kludge that it can also be a plist of frame properties."
 (defcustom w3m-horizontal-scroll-division 4
   "*Division number of horizontal scroll."
   :group 'w3m
-  :type 'integer)
+  :type '(integer :size 0))
 
 (defcustom w3m-show-error-information t
   "*Show error information."
@@ -1145,7 +1165,7 @@ allows a kludge that it can also be a plist of frame properties."
 (defcustom w3m-mbconv-command "mbconv"
   "*Command name for \"mbconv\" be supplied with \"libmoe\"."
   :group 'w3m
-  :type 'string)
+  :type '(string :size 0))
 
 (defcustom w3m-local-find-file-regexps '(nil . "\\.html?\\'")
   "*Cons of two regexps matching and not matching local file names which
@@ -1157,9 +1177,11 @@ only affects when the `w3m-local-find-file-function' variable is set
 properly (see also the documentation for that variable)."
   :group 'w3m
   :type '(cons (radio :tag "Match"
-		      (const :format "All " nil) regexp)
+		      (const :format "All " nil)
+		      (regexp :format "%t: %v\n" :size 0))
 	       (radio :tag "Nomatch"
-		      (const :format "All " nil) regexp)))
+		      (const :format "All " nil)
+		      (regexp :format "%t: %v\n" :size 0))))
 
 (defcustom w3m-local-find-file-function
   '(if (or (and (featurep 'xemacs)
@@ -1173,15 +1195,15 @@ argument, the string naming the local file.  It can also be any Lisp
 form that should return a function.  Set this to nil if you want to
 always use emacs-w3m to see local files."
   :group 'w3m
-  :type 'sexp)
+  :type '(sexp :size 0))
 
 (defcustom w3m-local-directory-view-method 'w3m-cgi
   "*View method in local directory.
 If 'w3m-cgi, display directory tree by the use of w3m's dirlist.cgi.
 If 'w3m-dtree, display directory tree by the use of w3m-dtree."
   :group 'w3m
-  :type '(choice (const :tag "Dirlist CGI" w3m-cgi)
-		 (const :tag "Directory tree" w3m-dtree)))
+  :type '(radio (const :format "Dirlist CGI  " w3m-cgi)
+		(const :tag "Directory tree" w3m-dtree)))
 
 (defcustom w3m-dirlist-cgi-program
   (cond ((eq system-type 'windows-nt)
@@ -1192,9 +1214,11 @@ If 'w3m-dtree, display directory tree by the use of w3m-dtree."
   "*Name of the directory list CGI Program.
 If nil, use an internal CGI of w3m."
   :group 'w3m
-  :type (` (choice (const :tag "w3m internal CGI" nil)
-		   (file :tag "path of 'dirlist.cgi'"
-			 (, (if (not noninteractive)
+  :type (` (radio
+	    (const :tag "w3m internal CGI" nil)
+	    (file :format "path of 'dirlist.cgi': %v\n"
+		  :size 0
+		  :value (, (if (not noninteractive)
 				(expand-file-name
 				 (concat "../lib/"
 					 (file-name-nondirectory w3m-command)
@@ -1219,18 +1243,18 @@ will disclose your private informations, for example:
 "
   :group 'w3m
   :type '(cons (list :inline t :format "%v"
-		     (radio :tag "Allow"
-			    regexp
+		     (radio :indent 2 :sample-face underline :tag "Allow"
+			    (regexp :format "%t: %v\n" :size 0)
 			    (const :tag "Don't allow all" nil))
-		     (radio :tag "Don't allow"
-			    regexp
+		     (radio :indent 2 :sample-face underline :tag "Don't allow"
+			    (regexp :format "%t: %v\n" :size 0)
 			    (const :tag "Allow all" nil)))))
 
 (defcustom w3m-touch-command
   (w3m-which-command "touch")
   "*Name of the executable file of touch utilty."
   :group 'w3m
-  :type 'string)
+  :type '(string :size 0))
 
 (defcustom w3m-uri-replace-alist
   '(("\\`gg:" w3m-search-uri-replace "google")
@@ -1267,14 +1291,16 @@ way:
 	      'choice :format "%[Value Menu%] %v" :tag "Replacing URI with"
 	      :args
 	      (append
-	       '((list :tag "Replacement Using Pattern"
-		       (string :tag "Regexp" :value "")
+	       '((list :indent 4 :tag "Replacement Using Pattern"
+		       (regexp :format "%t: %v\n" :size 0)
 		       (function-item :format "" w3m-pattern-uri-replace)
-		       (string :tag "Pattern" :value "")))
-	       '((list :format "Quick Search:\n%v" :tag "Quick Search"
-		       (regexp :tag "Prefix URI Regexp")
+		       (string :format "Pattern: %v\n" :size 0)))
+	       '((list :format "%t:\n%v" :indent 4 :tag "Quick Search"
+		       (regexp :format "Prefix URI %t: %v\n"
+			       :size 0 :value "")
 		       (function-item :format "" w3m-search-uri-replace)
-		       (string :tag "Quick Search Engine")))
+		       (string :format "Quick Search Engine: %v\n"
+			       :size 0 :value "")))
 	       (mapcar
 		(lambda (elem)
 		  (let ((engine (car elem))
@@ -1291,10 +1317,20 @@ way:
 			  '(function-item :format "" w3m-search-uri-replace)
 			  (list 'string :tag "Quick Search Engine" engine))))
 		w3m-search-engine-alist)
-	       '((list :tag "User Defined Function"
-		       (string :tag "Regexp" :value "")
-		       (function)
-		       (repeat :tag "Options" sexp)))))))))
+	       '((list :indent 4 :tag "User Defined Function"
+		       (regexp :format "%t: %v\n" :size 0)
+		       (function
+			:format "%t: %v\n" :size 0
+			;; Fixing a bug in Emacs versions prior to 21.3.
+			:value-to-internal
+			(lambda (widget value)
+			  (if (stringp value)
+			      (if (string-match "\\`\".*\"\\'" value)
+				  (substring value 1 -1)
+				value)
+			    (prin1-to-string value))))
+		       (repeat :extra-offset 2 :tag "Options"
+			       (sexp :format "%t: %v\n" :size 0))))))))))
 
 (defconst w3m-entity-alist		; html character entities and values
   (append
@@ -6821,8 +6857,8 @@ showing a tree-structured history by the command `w3m-about-history'.")
   (and (> w3m-keep-arrived-urls 500) 500)
   "*Number of arrived URLs displayed per page"
   :group 'w3m
-  :type '(choice (const :tag "All entries are displayed in single page." nil)
-		 integer))
+  :type '(radio (const :tag "All entries are displayed in single page." nil)
+		(integer :format "%t: %v\n" :size 0)))
 
 (defun w3m-db-history (&optional start size)
   "Display arrived URLs."
@@ -6856,11 +6892,11 @@ If called with 'prefix argument', display arrived URLs."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-select-buffer-window-ratio `(18 . 12)
+(defcustom w3m-select-buffer-window-ratio '(18 . 12)
   "*A pair of the parcent of `w3m-select-buffer' window size for the frame size."
   :group 'w3m
-  :type '(cons (integer :tag "horizontally ratio (n/100)")
-	       (integer :tag "vertically ratio (m/100)")))
+  :type '(cons (integer :format "Horizontally Ratio: %v[%%]\n" :size 0)
+	       (integer :format "  Vertically Ratio: %v[%%]\n" :size 0)))
 
 (defvar w3m-select-buffer-window nil)
 (defconst w3m-select-buffer-message

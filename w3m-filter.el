@@ -58,7 +58,11 @@
 		   (string :size 0 :format "Start: %v\n")
 		   (string :size 0 :format "  End: %v\n"))
 	     (function :format "Filtering function:\n      Function: %v\n"
-		       :size 0 :value ignore))))))
+		       :size 0
+		       :value-to-internal
+		       (lambda (widget value)
+			 (widget-sexp-value-to-internal
+			  widget (if (functionp value) value 'ignore)))))))))
 
 
 (defvar w3m-filter-db nil) ; nil means non-initialized.
