@@ -269,7 +269,18 @@ which have no handler."
 		     nil)))
 	       w3m-process-queue))
 	w3m-current-process nil)
-  (w3m-process-start-queued-processes))
+  (w3m-process-start-queued-processes)
+  (w3m-static-when (boundp 'header-line-format)
+    ;; Redisplay the header-line.
+    (run-at-time 0.5 nil
+		 (lambda (buffer)
+		   (if (and (buffer-live-p buffer)
+			    (eq (get-buffer-window buffer t)
+				(selected-window)))
+		       (let ((window-min-height 0))
+			 (shrink-window 1)
+			 (enlarge-window 1))))
+		 buffer)))
 
 (defun w3m-process-shutdown ()
   (let ((list w3m-process-queue))
