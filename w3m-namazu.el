@@ -234,7 +234,7 @@ argument."
 (defvar w3m-namazu-query-history nil)
 
 ;;;###autoload
-(defun w3m-namazu (index query)
+(defun w3m-namazu (index query &optional interactive-p)
   "Search indexed files with Namazu."
   (interactive
    (list
@@ -253,14 +253,16 @@ argument."
 	  (if (string= s "") default s))
       (or w3m-namazu-default-index
 	  (car w3m-namazu-index-history)))
-    (read-string "Namazu Query: " nil 'w3m-namazu-query-history)))
+    (read-string "Namazu Query: " nil 'w3m-namazu-query-history)
+    t)) ;; interactive-p
   (unless (stringp index)
     (error "%s" "Index is required"))
   (unless (stringp query)
     (error "%s" "Query is required"))
   (w3m-goto-url (format "about://namazu/?index=%s&query=%s&whence=0"
 			(w3m-url-encode-string index)
-			(w3m-url-encode-string query))))
+			(w3m-url-encode-string query))
+		nil nil nil nil nil nil interactive-p))
 
 (provide 'w3m-namazu)
 ;;; w3m-namazu.el ends here

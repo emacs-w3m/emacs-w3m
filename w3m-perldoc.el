@@ -97,10 +97,12 @@
 	     "text/html")))))
 
 ;;;###autoload
-(defun w3m-perldoc (docname)
+(defun w3m-perldoc (docname &optional interactive-p)
   "View Perl documents."
-  (interactive "sDocument: ")
-  (w3m-goto-url (concat "about://perldoc/" (w3m-url-encode-string docname))))
+  (interactive (list (read-string "Document: ")
+		     t)) ;; interactive-p
+  (w3m-goto-url (concat "about://perldoc/" (w3m-url-encode-string docname))
+		nil nil nil nil nil nil interactive-p))
 
 (provide 'w3m-perldoc)
 

@@ -6769,12 +6769,12 @@ the current session.  Otherwise, the new session will start afresh."
     (recenter (/ (window-height) 5))))
 
 ;;;###autoload
-(defun w3m-gohome ()
+(defun w3m-gohome (&optional interactive-p)
   "Go to the Home page."
-  (interactive)
+  (interactive (list t)) ;; interactive-p
   (unless w3m-home-page
     (error "You have to specify the value of `w3m-home-page'"))
-  (w3m-goto-url w3m-home-page))
+  (w3m-goto-url w3m-home-page nil nil nil nil nil nil interactive-p))
 
 (defun w3m-reload-this-page (&optional arg)
   "Reload current page without cache.
@@ -6962,13 +6962,13 @@ The optional NEW-SESSION and INTERACTIVE-P are for the internal use."
   (autoload 'browse-url-interactive-arg "browse-url"))
 
 ;;;###autoload
-(defun w3m-browse-url (url &optional new-window)
+(defun w3m-browse-url (url &optional new-window interactive-p)
   "w3m interface function for browse-url.el."
-  (interactive
-   (browse-url-interactive-arg "w3m URL: "))
+  (interactive (nconc (browse-url-interactive-arg "w3m URL: ")
+		      '(t))) ;; interactive-p
+  ;; FIXME: Is ignoring the optional NEW-WINDOW ok?
   (when (stringp url)
-    (if new-window (split-window))
-    (w3m-goto-url url)))
+    (w3m-goto-url url nil nil nil nil nil nil interactive-p)))
 
 ;;;###autoload
 (defun w3m-find-file (file)

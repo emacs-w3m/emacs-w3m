@@ -408,10 +408,11 @@ whose elements are:
       "text/html")))
 
 ;;;###autoload
-(defun w3m-antenna (&optional no-cache)
+(defun w3m-antenna (&optional no-cache interactive-p)
   "Report changes of WEB sites, which is specified in `w3m-antenna-sites'."
-  (interactive "P")
-  (w3m-goto-url "about://antenna/" no-cache))
+  (interactive (list current-prefix-arg t))
+  (w3m-goto-url "about://antenna/" no-cache
+		nil nil nil nil nil interactive-p))
 
 (defvar w3m-antenna-tmp-url nil)
 (defvar w3m-antenna-tmp-title nil)
