@@ -142,9 +142,7 @@
   (autoload 'rfc2368-parse-mailto-url "rfc2368")
   (autoload 'widget-convert-button "wid-edit")
   (unless (fboundp 'char-to-int)
-    (defalias 'char-to-int 'identity))
-  (unless (fboundp 'select-frame-set-input-focus)
-    (defalias 'select-frame-set-input-focus 'ignore)))
+    (defalias 'char-to-int 'identity)))
 
 (defconst emacs-w3m-version
   (eval-when-compile
@@ -167,7 +165,14 @@
   :prefix "w3m-")
 
 (defcustom w3m-command nil
-  "*Name of the executable file of the w3m command."
+  "*Name of the executable file of the w3m command.
+You normally don't have to specify the value, since emacs-w3m looks
+for the existing commands in order of w3m, w3mmee and w3m-m17n in the
+`exec-path' directories in order if it is nil.  However, if you want
+to use the other w3m command, specify the value of this variable
+explicitly in the .emacs file (i.e., it needs to be specified before
+loading the w3m.elc module).  Note that it is currently impossible to
+change the value of this variable after loading the w3m.elc module."
   :group 'w3m
   :type '(radio (const :format "Not specified " nil)
 		(string :format "Command: %v\n" :size 0)))
@@ -677,7 +682,7 @@ Don't say HP, which is the abbreviated name of a certain company. ;-)"
 (defcustom w3m-follow-redirection 9
   "*Maximum number of redirections which emacs-w3m honors and follows.
 If nil, redirections are followed by the w3m command.  Don't set it to
-nil if you allow to use cookies (i.e. you have set `w3m-use-cookies'
+nil if you allow to use cookies (i.e., you have set `w3m-use-cookies'
 to non-nil) since cookies may be shared among many redirected pages."
   :group 'w3m
   :type '(integer :size 0))
@@ -1291,28 +1296,37 @@ be a larger integer than 1."
 			       4))))
 
 (defcustom w3m-show-error-information t
-  "*Show error information."
+  "*Non-nil means show an error information as a web page
+when the foreign server doesn't respond to a request to retrieve data."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-use-refresh t
-  "*If non-nil, support REFRESH attribute in META tags."
+  "*Non-nil means emacs-w3m takes you to a url specified by the REFRESH
+attribute in META tags.  Note that they may be malicious traps."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-mbconv-command "mbconv"
-  "*Command name for \"mbconv\" be supplied with \"libmoe\"."
+  "*Name of the \"mbconv\" command provided by the \"libmoe\" package.
+The \"libmoe\" package is used when you use the w3mmee command instead
+of the w3m command.  See also `w3m-command'."
   :group 'w3m
   :type '(string :size 0))
 
 (defcustom w3m-local-find-file-regexps '(nil . "\\.html?\\'")
-  "*Cons of two regexps matching and not matching local file names which
-will be opened by the function specified by the
-`w3m-local-find-file-function' variable.  Nil matches any file names,
-for instance, the value `(nil . \"\\\\.html?\\\\'\")' does not match
-\"file:///any/where/index.html\" but \"file:///some/where/w3m.el\".  It
-only affects when the `w3m-local-find-file-function' variable is set
-properly (see also the documentation for that variable)."
+  "*Cons of two regexps matching and not matching with local file names
+which will be opened by the function specified by the
+`w3m-local-find-file-function' variable.  Nil for the regexp matches
+any file names.
+
+For instance, the value `(nil . \"\\\\.html?\\\\'\")' allows
+\"file:///some/where/w3m.el\", not \"file:///any/where/index.html\", to
+open by the function specified by `w3m-local-find-file-function'.  The
+later will be opened as a normal web page.
+
+It is effective only when the `w3m-local-find-file-function' variable
+is set properly."
   :group 'w3m
   :type '(cons (radio :tag "Match"
 		      (const :format "All " nil)
@@ -1322,23 +1336,21 @@ properly (see also the documentation for that variable)."
 		      (regexp :format "%t: %v\n" :size 0))))
 
 (defcustom w3m-local-find-file-function
-  '(if (or (and (featurep 'xemacs)
-		(device-on-window-system-p))
-	   window-system)
+  '(if (w3m-popup-frame-p)
        'find-file-other-frame
      'find-file-other-window)
-  "*Function used to open local files whose name matches the
-`w3m-local-find-file-regexps' variable.  Function should take one
-argument, the string naming the local file.  It can also be any Lisp
-form that should return a function.  Set this to nil if you want to
-always use emacs-w3m to see local files."
+  "*Function used to open local files whose names agree with the rule of
+the `w3m-local-find-file-regexps' variable (which see).  Function
+should take one argument, the string naming the local file.  It can
+also be any Lisp form returning a function.  Set this to nil if you
+want to always use emacs-w3m to see local files."
   :group 'w3m
   :type '(sexp :size 0))
 
 (defcustom w3m-local-directory-view-method 'w3m-cgi
-  "*View method in local directory.
-If 'w3m-cgi, display directory tree by the use of w3m's dirlist.cgi.
-If 'w3m-dtree, display directory tree by the use of w3m-dtree."
+  "*Symbol of the method to view a local directory tree.
+The valid values include `w3m-cgi' using the dirlist.cgi feature of
+the w3m command and `w3m-dtree' using the w3m-dtree Lisp module."
   :group 'w3m
   :type '(radio (const :format "Dirlist CGI  " w3m-cgi)
 		(const :tag "Directory tree" w3m-dtree)))
@@ -1687,12 +1699,6 @@ This variable will be made buffer-local under Emacs 21 or XEmacs.")
 (defvar w3m-favicon-image nil
   "Favicon image of the page.
 This variable will be made buffer-local under Emacs 21 or XEmacs.")
-
-(defvar w3m-initial-frames nil
-  "Variable used to keep a list of the frame-IDs when emacs-w3m sessions
-are popped-up as new frames.  This variable is used for the control
-for not deleting frames made for aims other than emacs-w3m sessions.")
-(make-variable-buffer-local 'w3m-initial-frames)
 
 (defvar w3m-current-process nil "Current retrieving process of this buffer.")
 (make-variable-buffer-local 'w3m-current-process)
@@ -2346,149 +2352,6 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	 (when (and (featurep 'bytecomp)
 		    (not (compiled-function-p (symbol-function fn))))
 	   (byte-compile fn))))))
-
-(defmacro w3m-popup-frame-parameters ()
-  "Return a pop-up frame plist if this file is compiled for XEmacs,
-otherwise return an alist."
-  (if (featurep 'xemacs)
-      '(let ((params (or w3m-popup-frame-parameters pop-up-frame-plist)))
-	 (if (consp (car-safe params))
-	     (alist-to-plist params)
-	   params))
-    '(let ((params (or w3m-popup-frame-parameters pop-up-frame-alist))
-	   alist)
-       (if (consp (car-safe params))
-	   params
-	 (while params
-	   (push (cons (car params) (cdr params)) alist)
-	   (setq params (cddr params)))
-	 (nreverse alist)))))
-
-(defmacro w3m-popup-frame-p ()
-  "Return non-nil if `w3m-pop-up-frames' is non-nil and Emacs really
-supports separate frames."
-  (if (featurep 'xemacs)
-      '(and w3m-pop-up-frames (device-on-window-system-p))
-    '(and w3m-pop-up-frames window-system)))
-
-(defmacro w3m-use-tab-p ()
-  "Return non-nil if `w3m-use-tab' is non-nil and Emacs really supports
-the tabs line."
-  (cond ((featurep 'xemacs)
-	 '(and w3m-use-tab (device-on-window-system-p)))
-	((<= emacs-major-version 19)
-	 nil)
-	(t
-	 '(and w3m-use-tab (>= emacs-major-version 21)))))
-
-(defmacro w3m-popup-window-p ()
-  "Return non-nil if `w3m-pop-up-windows' is non-nil and the present
-situation allows it."
-  (cond ((featurep 'xemacs)
-	 '(and w3m-pop-up-windows
-	       (not (w3m-use-tab-p))
-	       (not (get-buffer-window w3m-select-buffer-name))))
-	((<= emacs-major-version 19)
-	 '(and w3m-pop-up-windows
-	       (not (get-buffer-window w3m-select-buffer-name))))
-	(t
-	 '(and w3m-pop-up-windows
-	       (or (< emacs-major-version 21)
-		   (not (w3m-use-tab-p)))
-	       (not (get-buffer-window w3m-select-buffer-name))))))
-
-(defvar w3m-last-visited-buffer nil
-  "Variable used to keep an emacs-w3m buffer which the user used last.")
-
-(defun w3m-popup-buffer (buffer)
-  "Pop up BUFFER as a new window or a new frame
-according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
-  (setq w3m-last-visited-buffer nil)
-  (let ((window (get-buffer-window buffer t))
-	(oframe (selected-frame))
-	(popup-frame-p (w3m-popup-frame-p))
-	frame pop-up-frames buffers other)
-    (if (setq
-	 pop-up-frames
-	 (if window ;; The window showing BUFFER already exists.
-	     ;; Don't pop up a new frame if it is just the current frame.
-	     (not (eq (setq frame (window-frame window)) oframe))
-	   ;; There is no window for BUFFER, so look for the existing
-	   ;; emacs-w3m window if the tabs line is enabled or the
-	   ;; selection window exists (i.e. we can reuse it).
-	   (if (or (w3m-use-tab-p)
-		   (get-buffer-window w3m-select-buffer-name t))
-	       (progn
-		 (setq buffers (delq buffer (w3m-list-buffers t)))
-		 (while (and (not window)
-			     buffers)
-		   (setq window
-			 (get-buffer-window (setq other (pop buffers)) t)))
-		 (if window ;; The window showing another buffer exists.
-		     (not (eq (setq frame (window-frame window)) oframe))
-		   (setq other nil)
-		   ;; There is no window after all, so leave to the value
-		   ;; of `w3m-pop-up-frames' whether to pop up a new frame.
-		   popup-frame-p))
-	     ;; Ditto.
-	     popup-frame-p)))
-	(progn
-	  (cond (other
-		 ;; Pop up another emacs-w3m buffer and switch to BUFFER.
-		 (pop-to-buffer other)
-		 ;; Change the value for BUFFER's `w3m-initial-frames'.
-		 (setq w3m-initial-frames
-		       (prog1
-			   (copy-sequence w3m-initial-frames)
-			 (switch-to-buffer buffer))))
-		(frame
-		 ;; Pop up the existing frame which shows BUFFER.
-		 (pop-to-buffer buffer))
-		(t
-		 ;; Pop up a new frame.
-		 (let* ((pop-up-frame-alist (w3m-popup-frame-parameters))
-			(pop-up-frame-plist pop-up-frame-alist))
-		   (pop-to-buffer buffer))
-		 (setq frame (window-frame (get-buffer-window buffer t)))))
-	  ;; Raise, select and focus the frame.
-	  (if (fboundp 'select-frame-set-input-focus)
-	      (select-frame-set-input-focus frame)
-	    (raise-frame frame)
-	    (select-frame frame)
-	    (focus-frame frame)))
-      ;; Simply switch to BUFFER in the current frame.
-      (if (w3m-popup-window-p)
-	  (let ((pop-up-windows t))
-	    (pop-to-buffer buffer))
-	(switch-to-buffer buffer)))))
-
-(eval-when-compile
-  (when (and (fboundp 'select-frame-set-input-focus)
-	     (eq (symbol-function 'select-frame-set-input-focus) 'ignore))
-    (fmakunbound 'select-frame-set-input-focus)))
-
-(defun w3m-add-w3m-initial-frames (&optional frame)
-  "Add a frame to `w3m-initial-frames' when it is newly created for the
-emacs-w3m session.  This function is added to the hook which is
-different with the version of Emacs as follows:
-
-XEmacs          create-frame-hook
-Emacs 20,21     after-make-frame-functions
-Emacs 19        after-make-frame-hook\
-"
-  (unless frame
-    (setq frame (selected-frame)))
-  (with-current-buffer (window-buffer (frame-first-window frame))
-    (when (eq major-mode 'w3m-mode)
-      (push frame w3m-initial-frames))))
-
-(add-hook (cond ((featurep 'xemacs)
-		 'create-frame-hook)
-		((>= emacs-major-version 20)
-		 'after-make-frame-functions)
-		((= emacs-major-version 19)
-		 'after-make-frame-hook))
-	  'w3m-add-w3m-initial-frames)
 
 (defun w3m-message (&rest args)
   "Alternative function of `message' for emacs-w3m."
@@ -4896,13 +4759,9 @@ described in Section 5.2 of RFC 2396.")
 		   (not (eq (with-current-buffer newbuffer major-mode)
 			    'w3m-mode)))
 	  (set-window-configuration wconfig))
-	(when (and pos ;; The new session is created.
-		   (with-current-buffer buffer
-		     (not (or w3m-current-process
-			      w3m-current-url
-			      (not (zerop (buffer-size)))))))
-	  ;; Remove useless newly created buffer.
-	  (kill-buffer buffer))
+	(when pos ;; The new session is created.
+	  ;; Delete useless newly created buffer if it is empty.
+	  (w3m-delete-buffer-if-empty buffer))
 	;; FIXME: What we should actually do is to modify the `w3m-goto-url'
 	;; function so that it may return a proper value, and checking it.
 	(when (and pos (buffer-name (marker-buffer pos)))
@@ -5613,6 +5472,20 @@ passed to the `w3m-quit' function (which see)."
       (run-hooks 'w3m-delete-buffer-hook)))
   (w3m-select-buffer-update))
 
+(defun w3m-delete-buffer-if-empty (buffer)
+  "Delete a newly created emacs-w3m buffer BUFFER if it is empty
+or there is only a progress message.  This function also deletes
+windows and frames related to BUFFER."
+  (with-current-buffer buffer
+    (unless (or w3m-current-process
+		w3m-current-url
+		(not (or (zerop (buffer-size))
+			 (and (get-text-property (point-min)
+						 'w3m-progress-message)
+			      (get-text-property (1- (point-max))
+						 'w3m-progress-message)))))
+      (w3m-delete-buffer t))))
+
 (defun w3m-pack-buffer-numbers ()
   "Pack w3m buffer numbers."
   (interactive)
@@ -5880,71 +5753,6 @@ is non-nil, a visible emacs-w3m buffer is preferred."
 	    (setq buffers (cdr buffers)))
 	  (or visible buf))
       buf)))
-
-(defun w3m-delete-frames-and-windows (&optional exception)
-  "Delete all frames and windows related to emacs-w3m buffers.
-If EXCEPTION is a buffer, a window or a frame, it and related visible
-objects will not be deleted.  There are special cases; the following
-objects will not be deleted:
-
-1. The sole frame in the display device.
-2. Frames created not for emacs-w3m sessions.
-3. Frames showing not only emacs-w3m sessions but also other windows.\
-"
-  (let ((buffers (delq exception (w3m-list-buffers t)))
-	buffer windows window frame one-window-p flag)
-    (save-current-buffer
-      (while buffers
-	(setq buffer (pop buffers)
-	      windows (delq exception
-			    (get-buffer-window-list buffer 'no-minibuf t)))
-	(set-buffer buffer)
-	(while windows
-	  (setq window (pop windows)
-		frame (window-frame window))
-	  (when (and frame
-		     (not (eq frame exception)))
-	    (setq one-window-p
-		  (w3m-static-if (featurep 'xemacs)
-		      (one-window-p t frame)
-		    ;; Emulate XEmacs version's `one-window-p'.
-		    (setq flag nil)
-		    (catch 'exceeded
-		      (walk-windows (lambda (w)
-				      (when (eq (window-frame w) frame)
-					(if flag
-					    (throw 'exceeded nil)
-					  (setq flag t))))
-				    'no-minibuf t)
-		      flag)))
-	    (if (and (memq frame w3m-initial-frames)
-		     (not (eq (next-frame frame) frame)))
-		(if (or
-		     ;; A frame having the sole window can be deleted.
-		     one-window-p
-		     ;; Also a frame having only windows for emacs-w3m
-		     ;; sessions or the buffer selection can be deleted.
-		     (progn
-		       (setq flag t)
-		       (walk-windows
-			(lambda (w)
-			  (when flag
-			    (if (eq w exception)
-				(setq flag nil)
-			      (set-buffer (window-buffer w))
-			      (setq flag (memq major-mode
-					       '(w3m-mode
-						 w3m-select-buffer-mode))))))
-			'no-minibuf)
-		       (set-buffer buffer)
-		       flag))
-		    (progn
-		      (setq w3m-initial-frames (delq frame
-						     w3m-initial-frames))
-		      (delete-frame frame))
-		  (delete-window window))
-	      (unless one-window-p
-		(delete-window window)))))))))
 
 (defun w3m-quit (&optional force)
   "Return to a peaceful life.  This command lets you quit browsing web
@@ -6855,12 +6663,8 @@ the current session.  Otherwise, the new session will start afresh."
 			nil nil interactive-p))
 	(w3m-goto-url url reload charset post-data referer
 		      nil nil interactive-p)
-	(unless (with-current-buffer buffer
-		  (or w3m-current-process
-		      w3m-current-url
-		      (not (zerop (buffer-size)))))
-	  ;; Remove useless newly created buffer.
-	  (kill-buffer buffer)))
+	;; Delete useless newly created buffer if it is empty.
+	(w3m-delete-buffer-if-empty buffer))
     (w3m url t)))
 
 (defun w3m-move-point-for-localcgi (url)
@@ -7058,12 +6862,8 @@ The optional NEW-SESSION and INTERACTIVE-P are for the internal use."
     (unwind-protect
 	(unless nofetch
 	  (w3m-goto-url url))
-      (unless w3m-current-url
-	(condition-case nil
-	    (progn
-	      (erase-buffer)
-	      (set-buffer-modified-p nil))
-	  (error nil))))))
+      ;; Delete useless newly created buffer if it is empty.
+      (w3m-delete-buffer-if-empty buffer))))
 
 (eval-when-compile
   (autoload 'browse-url-interactive-arg "browse-url"))
