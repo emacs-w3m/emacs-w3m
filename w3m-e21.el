@@ -276,11 +276,6 @@ Buffer string between BEG and END are replaced with IMAGE."
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-use-favicon nil
-  "*Use favicon."
-  :group 'w3m
-  :type 'boolean)
-
 (defconst w3m-favicon-name "favicon.ico"
   "The favicon name.")
 
@@ -316,18 +311,31 @@ Buffer string between BEG and END are replaced with IMAGE."
     (and (apply 'w3m-imagick-convert-buffer from-type to-type args)
 	 (buffer-string))))
 
-;; Check the validity of the outputs of ImageMagick, in order to avoid
-;; the endless loop which is caused by the bug of old ImageMagick.
-(when w3m-use-favicon
-  (setq w3m-use-favicon
-	(let ((xpm (w3m-imagick-convert-data 
-		    (string 0 0 1 0 1 0 2 1 0 0 1 0 24 0 52 0
-			    0 0 22 0 0 0 40 0 0 0 2 0 0 0 2 0
-			    0 0 1 0 24 0 0 0 0 0 0 0 0 0 0 0
-			    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-			    0 255 255 255 0 0 0 0 0 0)
-		    "ico" "xpm")))
-	  (and xpm (string-match "\"2 1 2 1\"" xpm) t))))
+(defun w3m-imagick-convert-usable-p ()
+  "Check whether ImageMagick's `convert' supports a Windoze ico format in
+a large number of bits per pixel."
+  (let ((xpm (condition-case nil
+		 (w3m-imagick-convert-data
+		  (string 0 0 1 0 1 0 2 1 0 0 1 0 24 0 52 0
+			  0 0 22 0 0 0 40 0 0 0 2 0 0 0 2 0
+			  0 0 1 0 24 0 0 0 0 0 0 0 0 0 0 0
+			  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+			  0 255 255 255 0 0 0 0 0 0)
+		  "ico" "xpm")
+	       (error nil))))
+    (and xpm (string-match "\"2 1 2 1\"" xpm) t)))
+
+(defcustom w3m-use-favicon (w3m-imagick-convert-usable-p)
+  "*Use favicon."
+  :get (lambda (symbol)
+	 (and (w3m-imagick-convert-usable-p)
+	      (default-value symbol)))
+  :set (lambda (symbol value)
+	 (custom-set-default symbol
+			     (and (w3m-imagick-convert-usable-p)
+				  value)))
+  :group 'w3m
+  :type 'boolean)
 
 (defun w3m-setup-favicon (url)
   (setq w3m-current-favicon-data nil
