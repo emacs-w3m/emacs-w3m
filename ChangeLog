@@ -1,3 +1,29 @@
+2005-01-07  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+
+	* w3m.el (w3m-goto-url): Call `w3m-form-textarea-files-remove' if
+	necessary.
+
+	* w3m-util.el (w3m-compare-strings): New define.
+
+	* w3m-form.el (w3m-form-textarea-file-expire-date): Modify
+	Document.
+	(w3m-fontify-textareas): Put `w3m-form-file-name' property.
+	(w3m-form-textarea-files, w3m-form-textarea-post-files): New
+	buffer local variable.
+	(w3m-form-parse-and-fontify): Set `w3m-form-textarea-files'. Put
+	`w3m-form-file-name' property on the form of textarea.
+	(w3m-form-input-textarea): Use same textarea buffer if exist.
+	Don't ask user if don't modify its area.
+	Visible the editted text when ask user.	Guard against 'C-g'.
+	Added `w3m-form-textarea-file-cleanup' to hook as
+	`kill-emacs-hook'
+	(w3m-form-textarea-file-cleanup): Remove myself from
+	`kill-emacs-hook'.
+	(w3m-form-textarea-files-remove): New function.
+	(w3m-form-submit-get-textarea-files): Ditto.
+	(w3m-form-submit): Set `w3m-form-textarea-post-files' for removing
+	files.
+
 2005-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-prepare-article-release):

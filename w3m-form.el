@@ -66,7 +66,7 @@
   "*Date to expire of the file for textarea's backup."
   :group 'w3m
   :type '(choice (integer :tag "Expire date")
-		 (const :tag "Remove immediately" t)
+		 (const :tag "Remove when emacs-w3m exit" t)
 		 (const :tag "No expire" nil)))
 
 (defcustom w3m-form-textarea-directory
@@ -447,9 +447,10 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
     (save-excursion
       (goto-char (point-min))
       (let (form fid start end type name rows start-column end-column
-		 hseq abs-hseq buffer-read-only text id)
+		 hseq abs-hseq buffer-read-only text id filename)
 	(while (w3m-form-goto-next-field)
 	  (setq fid (get-text-property (point) 'w3m-form-field-id))
+	  (setq filename (get-text-property (point) 'w3m-form-file-name))
 	  (when
 	      (and
 	       fid
@@ -492,9 +493,16 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
 		     w3m-form-hseq ,hseq
 		     w3m-anchor-sequence ,abs-hseq
 		     w3m-form-id ,id
-		     w3m-form-name ,name)))
+		     w3m-form-name ,name
+		     w3m-form-file-name ,filename)))
 		(when (setq text (w3m-form-get form id))
 		  (w3m-form-textarea-replace hseq text))))))))))
+
+(defvar w3m-form-textarea-files nil)
+(make-variable-buffer-local 'w3m-form-textarea-files)
+
+(defvar w3m-form-textarea-post-files nil)
+(make-variable-buffer-local 'w3m-form-textarea-post-files)
 
 (defun w3m-form-parse-and-fontify (&optional reuse-forms)
   "Parse forms of the half-dumped data in this buffer and fontify them.
@@ -503,7 +511,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
   (let ((case-fold-search t)
 	(id 0)
 	tag start end internal-start textareas selects forms maps mapval
-	form)
+	form filename)
+    (setq w3m-form-textarea-files nil)
     (goto-char (point-min))
     (while (if (eq w3m-type 'w3mmee)
 	       (w3m-search-tag "_f" "map" "img_alt" "input_alt"
@@ -645,6 +654,13 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 				 w3m-output-coding-system))
 		(setq textareas (cons (list textareanumber form id name)
 				      textareas)))
+	      (setq filename (expand-file-name
+			      (w3m-form-input-textarea-filename
+			       w3m-current-url
+			       (format "fid=%d/type=%s/name=%s/id=%d" fid type name id))
+			      w3m-form-textarea-directory))
+	      (setq w3m-form-textarea-files
+		    (cons filename w3m-form-textarea-files))
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -657,7 +673,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 w3m-form-hseq ,hseq
 		 w3m-anchor-sequence ,abs-hseq
 		 w3m-form-id ,id
-		 w3m-form-name ,name)))
+		 w3m-form-name ,name
+		 w3m-form-file-name ,filename)))
 	     ((string= type "select")
 	      (when (if (eq w3m-type 'w3mmee)
 			(when value
@@ -985,7 +1002,6 @@ character."
 (make-variable-buffer-local 'w3m-form-input-textarea-coding-system)
 
 (defun w3m-form-input-textarea-filename (url id)
-  ;; replace is
   (let ((file "")
 	;; Interdit chars of Windows
 	(replace (regexp-opt '("\\" "/" ":" "*" "?" "\"" "<" ">" "|"))))
@@ -1085,52 +1101,85 @@ character."
 		(- (window-height cur-win)
 		   (max window-min-height
 			(1+ w3m-form-input-textarea-buffer-lines)))))
-	 (buffer (generate-new-buffer "*w3m form textarea*"))
-	 (file (expand-file-name
-		(w3m-form-input-textarea-filename
-		 w3m-current-url
-		 (get-text-property (point) 'w3m-form-field-id))
-		w3m-form-textarea-directory))
+	 (file (get-text-property (point) 'w3m-form-file-name))
 	 (dir (file-chase-links (expand-file-name w3m-form-textarea-directory)))
-	 (coding (w3m-form-charlst form)))
+	 (coding (w3m-form-charlst form))
+	 (bufs (buffer-list))
+	 buffer)
+    (add-hook 'kill-emacs-hook 'w3m-form-textarea-file-cleanup)
     (setq coding (w3m-form-get-coding-system coding))
     (unless (and (file-exists-p dir)
 		 (file-directory-p dir))
       (when (file-regular-p dir) (delete-file dir))
       (make-directory dir))
-    (condition-case nil
-	(split-window cur-win (if (> size 0) size window-min-height))
-      (error
-       (delete-other-windows)
-       (split-window cur-win (- (window-height cur-win)
-				w3m-form-input-textarea-buffer-lines))))
-    (select-window (next-window))
-    (let ((pop-up-windows nil))
-      (switch-to-buffer buffer)
-      (set-buffer buffer)
-      (setq w3m-form-input-textarea-form form)
-      (setq w3m-form-input-textarea-hseq hseq)
-      (setq w3m-form-input-textarea-buffer w3mbuffer)
-      (setq w3m-form-input-textarea-point point)
-      (setq w3m-form-input-textarea-wincfg wincfg)
-      (setq w3m-form-input-textarea-file file)
-      (setq w3m-form-input-textarea-coding-system coding)
-      (when (file-exists-p file)
-	(if (y-or-n-p "Exist the editted file of this form. Read it? ")
-	    (let ((buffer-file-coding-system w3m-form-input-textarea-coding-system)
-		  (file-coding-system w3m-form-input-textarea-coding-system)
-		  (coding-system-for-read w3m-form-input-textarea-coding-system))
-	      (insert-file-contents file)
-	      (setq value nil))
-	  (delete-file file)
-	  (when (file-exists-p (make-backup-file-name file))
-	    (delete-file (make-backup-file-name file)))))
-      (if value (insert value))
-      (goto-char (point-min))
-      (forward-line (1- (nth 2 info)))
-      (w3m-form-input-textarea-mode))))
+    (save-excursion
+      (unless (setq buffer
+		    (catch 'detect
+		      (while bufs
+			(set-buffer (car bufs))
+			(when (and (eq major-mode 'w3m-form-input-textarea-mode)
+				   (string= w3m-form-input-textarea-file file))
+			  (throw 'detect (cons t (car bufs))))
+			(setq bufs (cdr bufs)))))
+	(setq buffer (generate-new-buffer "*w3m form textarea*"))))
+    (if (and (consp buffer)
+	     (get-buffer-window (cdr buffer)))
+	;; same frame only
+	(select-window (get-buffer-window (cdr buffer)))
+      (condition-case nil
+	  (split-window cur-win (if (> size 0) size window-min-height))
+	(error
+	 (delete-other-windows)
+	 (split-window cur-win (- (window-height cur-win)
+				  w3m-form-input-textarea-buffer-lines))))
+      (select-window (next-window))
+      (if (consp buffer)
+	  ;; popup only
+	  (let ((pop-up-windows nil))
+	    (switch-to-buffer (cdr buffer))
+	    (set-buffer (cdr buffer)))
+	(let ((pop-up-windows nil) same before)
+	  (switch-to-buffer buffer)
+	  (set-buffer buffer)
+	  (setq w3m-form-input-textarea-form form)
+	  (setq w3m-form-input-textarea-hseq hseq)
+	  (setq w3m-form-input-textarea-buffer w3mbuffer)
+	  (setq w3m-form-input-textarea-point point)
+	  (setq w3m-form-input-textarea-wincfg wincfg)
+	  (setq w3m-form-input-textarea-file file)
+	  (setq w3m-form-input-textarea-coding-system coding)
+	  (unwind-protect
+	      (when (and (file-exists-p file) (file-readable-p file))
+		(with-temp-buffer
+		  (let ((buffer-file-coding-system w3m-form-input-textarea-coding-system)
+			(file-coding-system w3m-form-input-textarea-coding-system)
+			(coding-system-for-read w3m-form-input-textarea-coding-system))
+		    (insert-file-contents file)
+		    (setq before (buffer-substring-no-properties
+				  (point-min) (point-max)))
+		    (setq same (string= value before))))
+		(if (and (not same)
+			 (progn
+			   (insert before)
+			   (goto-char (abs (w3m-compare-strings
+					    before 0 (length before)
+					    value 0 (length value))))
+			   (y-or-n-p "Exist the editted text of this form. Use this? ")))
+		    (setq value nil)
+		  (delete-file file)
+		  (when (file-exists-p (make-backup-file-name file))
+		    (delete-file (make-backup-file-name file)))))
+	    (when (or (and quit-flag before)
+		      value)
+	      (delete-region (point-min) (point-max))
+	      (if value (insert value)))
+	    (goto-char (point-min))
+	    (forward-line (1- (nth 2 info)))
+	    (w3m-form-input-textarea-mode)))))))
 
 (defun w3m-form-textarea-file-cleanup ()
+  "Remove all textarea files."
+  (remove-hook 'kill-emacs-hook 'w3m-form-textarea-file-cleanup)
   (let ((dir (file-chase-links
 	      (expand-file-name w3m-form-textarea-directory)))
 	(checktime t)
@@ -1158,6 +1207,16 @@ character."
 	    (setq time (nth 5 (file-attributes file)))
 	    (when (w3m-time-newer-p checktime time)
 	      (delete-file file))))))))
+
+(defun w3m-form-textarea-files-remove ()
+  "Remove used files of textarea."
+  (let (file)
+    (while (setq file (car w3m-form-textarea-post-files))
+      (setq w3m-form-textarea-post-files (cdr w3m-form-textarea-post-files))
+      (when (and (member file w3m-form-textarea-files)
+		 (file-exists-p file)
+		 (file-writable-p file))
+	(delete-file file)))))
 
 ;;; SELECT
 
@@ -1482,6 +1541,17 @@ character."
       (w3m-form-input-map-mode))))
 
 ;;;
+(defun w3m-form-submit-get-textarea-files (form)
+  (let ((plist (w3m-form-plist form))
+	pos id file files)
+    (while plist
+      (setq id (car plist))
+      (setq plist (cddr plist))
+      (setq pos (text-property-any (point-min) (point-max) 'w3m-form-id id))
+      (when (and pos
+		 (setq file (get-text-property pos 'w3m-form-file-name)))
+	(setq files (cons file files))))
+    files))
 
 (defun w3m-form-submit (form &optional id name value)
   (when (and id name
@@ -1492,6 +1562,8 @@ character."
 		  (if (string-match "\\?" w3m-current-url)
 		      (substring w3m-current-url 0 (match-beginning 0))
 		    w3m-current-url))))
+    (setq w3m-form-textarea-post-files
+	  (w3m-form-submit-get-textarea-files form))
     (cond ((and (not (string= url orig-url))
 		(string-match "^https://" orig-url)
 		(string-match "^http://" url)

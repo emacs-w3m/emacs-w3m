@@ -923,6 +923,25 @@ deactivated after evaluating the current command."
 	  (setq start (- (length string) tail))))
       string))))
 
+(eval-and-compile
+  (if (fboundp 'compare-strings)
+      (defalias 'w3m-compare-strings 'compare-strings)
+    (defun w3m-compare-strings (string1 start1 end1 string2 start2 end2)
+      "Compare the contents of two strings."
+      (let* ((str1 (substring string1 start1 end1))
+	     (str2 (substring string2 start2 end2))
+	     (len (min (length str1) (length str2)))
+	     (i 0))
+	(if (string= str1 str2)
+	    t
+	  (setq i (catch 'ignore
+		    (while (< i len)
+		      (when (not (eq (aref str1 i) (aref str2 i)))
+			(throw 'ignore i))
+		      (setq i (1+ i)))
+		    i))
+	  (1+ i))))))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here
