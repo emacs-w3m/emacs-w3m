@@ -4,6 +4,8 @@
 	(w3m-examine-command-line-args): Don't let it misunderstand the
 	next command as a url string; modify the arguments in
 	`command-line-args' instead of removing them.
+	(w3m): Use `w3m-examine-command-line-args' even if it is called
+	non-interactively.
 
 2003-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 

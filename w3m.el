@@ -6625,10 +6625,7 @@ Optional NEW-SESSION is intended to be used by the command
       (if buffer
 	  (setq nofetch t)
 	;; It may be called non-interactively.
-	(setq url (or (when (= 1 (length command-line-args-left))
-			(pop command-line-args-left))
-		      w3m-home-page
-		      "about:")
+	(setq url (w3m-examine-command-line-args)
 	      nofetch nil)))
     (if (bufferp buffer)
 	(progn
