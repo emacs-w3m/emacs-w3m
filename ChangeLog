@@ -1,5 +1,9 @@
 2001-08-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-add-referer): New option.
+	(w3m-goto-url): When `w3m-add-referer' equals nil, no reference
+	information is given to `w3m-exec'.
+
 	* README, README.ja: Update documents for required version of w3m.
 
 	* w3m-0.2.1-mnc.patch: Removed.
@@ -23,7 +27,6 @@
 	`w3m-form-make-form-urlencoded'.
 
 2001-07-31  Yuuichi Teranishi  <teranisi@gohome.org>
-
 
 	* w3m.el: Applied patch [emacs-w3m: 01330].
 	(w3m-exec-filter): Changed regexp for authentication realm.
