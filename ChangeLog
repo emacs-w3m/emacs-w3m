@@ -1,5 +1,14 @@
 2005-03-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-tcup.el (shimbun-tcup-group-alist): Revert; update
+	urls; add the time-lag parameter.
+	(shimbun-tcup-coding-system): Remove:
+	(shimbun-get-headers): Use it instead of shimbun-headers; fetch
+	old articles; adjust date according to the time-lag parameter.
+	(shimbun-article): Protect against missing contents.
+
+2005-03-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/sb-tcup.el (shimbun-tcup-group-alist): Add the coding
 	system parameter; set it as shift_jis for the yutopia group.
 	(shimbun-tcup-subject-regexp): Improve regexp.

@@ -4951,20 +4951,16 @@ Tea Cup Communication によって提供される、様々な掲示板を講読することがで
           shimbun-tcup-group-alist)))
 @end lisp
 
-このモジュールは、デフォルトではコンテンツが @code{euc-jp} でエンコード
-されていることを想定しますが、@code{shift_jis} でエンコードされているも
-のもあります。例えば、@samp{foo} 掲示板がコンテンツのエンコード
-に @code{shift_jis} を使っていると、それの講読に失敗するでしょう。そのよ
-うな場合は、このモジュールが @samp{foo} 掲示板から取り込んだコンテンツの
-デコードに @code{shift_jis} を使うように、coding system を指定してみて下
-さい。それをするための例です。
+いくつかの掲示板では時計が 9時間進んでいます。その場合、そのような掲示板
+のために 時刻ずれ パラメータを 32400 に設定して下さい。@samp{foo} 掲示板
+が時刻を調整するのが必要である場合の例です。
 
 @lisp
 (eval-after-load "sb-tcup"
   '(setq shimbun-tcup-group-alist
          (append
           '(("foo" "http://MMMM.teacup.com/foo/bbs"
-             nil nil nil nil nil shift_jis)
+             nil nil nil nil nil 32400)
             ("bar" "http://NNNN.teacup.com/bar/bbs"))
           shimbun-tcup-group-alist)))
 @end lisp

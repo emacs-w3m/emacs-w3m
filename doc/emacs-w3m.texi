@@ -4893,20 +4893,17 @@ example to add two boards, @samp{foo} and @samp{bar}, to the list:
           shimbun-tcup-group-alist)))
 @end lisp
 
-This module assumes by default that contents are encoded with
-@code{euc-jp}, but there are ones encoded with @code{shift_jis} too.
-For instance, if the @samp{foo} board uses @code{shift_jis} to encode
-contents, you will fail in subscribing to it.  In such a case, try
-specifying the coding system so that this module uses @code{shift_jis}
-to decode contents fetched from the @samp{foo} board.  Here is an
-example to do that:
+The clock has been advancing for nine hours in some boards.  In that
+case, set the time-lag parameter to 32400 for such a board.  Here is an
+example of the case where it is necessary to adjust the time in the
+@samp{foo} board:
 
 @lisp
 (eval-after-load "sb-tcup"
   '(setq shimbun-tcup-group-alist
          (append
           '(("foo" "http://MMMM.teacup.com/foo/bbs"
-             nil nil nil nil nil shift_jis)
+             nil nil nil nil nil 32400)
             ("bar" "http://NNNN.teacup.com/bar/bbs"))
           shimbun-tcup-group-alist)))
 @end lisp
