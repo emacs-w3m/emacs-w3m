@@ -34,7 +34,7 @@
 (defvar shimbun-kde-url "http://www.KDE.gr.jp/ml/")
 (defvar shimbun-kde-groups '("Kdeveloper" "Kuser"))
 (defvar shimbun-kde-coding-system 'euc-jp)
-(defvar shimbun-kde-reverse-flag nil)
+(defvar shimbun-kde-reverse-flag t)
 (defvar shimbun-kde-litemplate-regexp
   "<STRONG><A NAME=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</A></STRONG> <EM>\\([^<]+\\)</EM>")
 
@@ -49,6 +49,7 @@
 	(count 0)
 	(months '("index.html"))
 	headers)
+    (shimbun-mhonarc-reverse-flag-internal shimbun)
     (goto-char (point-min))
     (when pages (incf count))
     (while (and (if pages (<= (incf count) pages) t)
@@ -58,10 +59,10 @@
     (erase-buffer)
     (catch 'stop
       (dolist (month months)
-        (let ((url (concat (shimbun-index-url shimbun) "/")))
+        (let ((url (concat (shimbun-index-url shimbun) month)))
 	  (shimbun-retrieve-url url t)
 	  (shimbun-mhonarc-get-headers shimbun url headers month))))
-    (nreverse headers)))
+    headers))
 
 (provide 'sb-kde)
 

@@ -1,3 +1,10 @@
+2002-06-03  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-kde.el (shimbun-kde-reverse-flag): Set this variable
+	to t.
+	(shimbun-get-headers): Set URL properly.
+	Do not use `nreverse' for HEADERS.
+
 2002-05-31  Mito <mito@mxa.nes.nec.co.jp>
 
 	* w3m-weather.el (w3m-weather-completion-table): Fix "niigata-kaetsu".
