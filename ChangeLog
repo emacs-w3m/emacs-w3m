@@ -1,5 +1,35 @@
 2003-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-favicon.el: Bind `w3m-icon-data' when compiling.
+	(w3m-current-favicon-data): Abolish.
+	(w3m-favicon-converted): Abolish.
+	(w3m-favicon-cache-data): Contain image data.
+	(w3m-favicon-cache-favicon): Return an image instead of raw data.
+	(w3m-setup-favicon): Fix the condition to check whether Emacs
+	can display images; set the value of `w3m-current-favicon-image'
+	instead of `w3m-current-favicon-data' for the about: pages.
+	(w3m-buffer-favicon): Make it simply get the value of
+	`w3m-current-favicon-image'.
+	(w3m-convert-favicon): Accept raw data and type; simply return an
+	image.
+	(w3m-retrieve-favicon): Rearrange the arguments to accept url and
+	type independently; set the value of `w3m-current-favicon-image'
+	instead of `w3m-current-favicon-data'; store an image into
+	`w3m-favicon-cache-data'.
+	(w3m-favicon-save-cache-file): Save data only if they contained
+	images; strip images from the cache for saving.
+	(w3m-favicon-load-cache-file): Create images for all the cache.
+
+	* w3m.el (w3m-buffer-setup): Use `w3m-current-favicon-image'
+	instead of `w3m-favicon-converted' for
+	`mode-line-buffer-identification' under XEmacs in order to check
+	whether the favicon image is available.
+	(w3m-examine-command-line-args): Use `member' instead of `memq'
+	under XEmacs to check whether `command-line-args' contains the
+	same string as the car of `command-line-args-left'.
+
+2003-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-favicon.el: Autoload w3m for `w3m-expand-url' when compiling.
 	(w3m-setup-favicon): Fix the change of 2003-09-12 which was gone
 	to far.
