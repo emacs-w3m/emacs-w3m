@@ -7,8 +7,8 @@
 
 2005-02-13  Tsuyoshi CHO  <cho@namazu.org>
 
-	* shimbun/sb-mailman.el (shimbun-mailman-headers): Change url enclosing
-	'shimbun-expand-url'.
+	* shimbun/sb-mailman.el (shimbun-mailman-headers): Change url
+	enclosing 'shimbun-expand-url'.
 	(shimbun-mailman-headers): Ditto.
 
 2005-02-11  Tsuyoshi CHO  <cho@namazu.org>
@@ -16,8 +16,8 @@
 	* shimbun/sb-x51.el (shimbun-get-headers): Remove temp-buffer
 	ignored when previous committing.
 
-	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-content-start): Fix value for new
-	page design.
+	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-content-start): Fix value
+	for new page design.
 	(shimbun-cnn-jp-content-end): Ditto.
 	(shimbun-get-headers): Ditto.
 	(shimbun-cnn-jp-prepare-article): Ditto.
