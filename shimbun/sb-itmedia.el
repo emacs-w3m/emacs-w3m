@@ -53,7 +53,7 @@
       ("games" "games/news" ,(format template "games/gsnews") nil))))
 
 (defvar shimbun-itmedia-server-name "ITmedia")
-(defvar shimbun-itmedia-from-address "zdnn@softbank.co.jp")
+(defvar shimbun-itmedia-from-address "webmaster@itmedia.co.jp")
 (defvar shimbun-itmedia-content-start "\\(<!--BODY-->\\|<!--DATE-->\\)")
 (defvar shimbun-itmedia-content-end
   "\\(<!--BODY ?END-->\\|<!--BYLINE ?END-->\\)")
