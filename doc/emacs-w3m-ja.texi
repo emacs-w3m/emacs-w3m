@@ -189,7 +189,7 @@ Requirements})$B!#:G$b0BDj$7$F$$$k:G?7$N(B XEmacs 21.4 $B$r;H$&$3$H$r?d>)$7$^
 @item Emacs 20.x
 $BDI2C$N%Q%C%1!<%8$OITMW$G$9!#$5$i$K(B BITMAP-MULE $B%Q%C%1!<%8$r;H$&$3$H$K$h$C(B
 $B$F!"Gr9u$N%S%C%H%^%C%W2hA|$r%$%s%i%$%sI=<($9$k$3$H$,$G$-$^(B
-$B$9(B (@pxref{Other Requirements}$B!#(B
+$B$9(B (@pxref{Other Requirements})$B!#(B
 
 @item Emacs 19.34 ($B4^(B Mule 2.3)
 APEL $B%Q%C%1!<%8!"(B@samp{$B?7$7$$(B custom} $B%Q%C%1!<%8$*$h(B
