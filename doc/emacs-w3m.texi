@@ -1829,20 +1829,25 @@ See also @ref{Nnshimbun}.
 @node Mew
 @section Reading HTML mails in Mew
 
-By using emacs-w3m, Text/Html can be displayed in Message mode of Mew.
-Add the following to @file{~/.mew.el}:
+By using emacs-w3m with Mew, you can see HTML mails as it intended to be
+displayed.  To do so, put the following line in the @file{~/.mew.el}
+file:
 
 @lisp
 (require 'mew-w3m)
 @end lisp
 
-With this, Text/Html can be displayed in Message mode as if it were
-Text/Plain.  Even in this situation, @kbd{C-c C-e} is a valid operation.
+With just this, an HTML mail will be displayed in the message window as
+if it were a plain text.  You can still use the @kbd{C-c C-e} command
+(@code{mew-summary-execute-external}) there.
 
-Recently there are many message whose have Mulatipart/Alternative, which
-consists of Text/Plain and Text/Html.  By default, Mew selects
-Text/Plain.  However, you may want to choose Text/Html since you are
-using emacs-w3m.  If so, add the following to @file{~/.mew.el}:
+Recently, we often see a mail containing the same informations by the
+@samp{Mulatipart/Alternative} format which consists of both a
+@samp{Text/Plain} part and a @samp{Text/Html} part (what a waste of
+bandwidth it is).  Mew displays only a @samp{Text/Plain} part of such a
+mail by default.  However, you perhaps want to see a @samp{Text/Plain}
+part since you are using emacs-w3m.  If so, add the following lines to
+the @file{~/.mew.el} file:
 
 @lisp
 (setq mew-mime-multipart-alternative-list
