@@ -35,7 +35,7 @@
 (defvar shimbun-exconn-url
   "http://www.exconn.net/NewestKB.asmx/GetNewestKB?span=w&mnemonic=all")
 (defvar shimbun-exconn-groups '("news"))
-(defvar shimbun-exconn-from-address  "nobody@exconn.net")
+(defvar shimbun-exconn-from-address "nobody@exconn.net")
 (defvar shimbun-exconn-content-start
   "<!-- - - - - - - - - - - KB CONTENT BEGINS BELOW HERE - - - - - - - - - - -->")
 (defvar shimbun-exconn-content-end
@@ -55,6 +55,13 @@ http://support.microsoft.com/default.aspx\\?scid=kb;ja;\\([0-9]+\\)" url)
 	 (concat (match-string-no-properties 1 date) " +0000"))
 	(t
 	 date)))
+
+(luna-define-method shimbun-get-headers :around ((shimbun shimbun-exconn)
+						&optional range)
+  (let ((headers (luna-call-next-method)))
+    (dolist (header headers)
+      (shimbun-header-set-from header shimbun-exconn-from-address))
+    headers))
 
 (provide 'sb-exconn)
 

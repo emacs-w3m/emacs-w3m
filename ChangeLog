@@ -1,3 +1,8 @@
+2004-09-26  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* shimbun/sb-exconn.el (shimbun-get-headers): Overwrite from
+	address.
+
 2004-09-25  Yuya Nishida  <yuya@j96.org>
 
 	* shimbun/sb-impress.el (shimbun-get-headers): Include subtitles
