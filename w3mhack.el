@@ -32,9 +32,11 @@
 ;; Add supplementary directories to `load-path'.
 (let ((addpath (or (pop command-line-args-left) "NONE"))
       path paths)
-  (while (string-match "[^\0-\37:]+" addpath)
+  (while (string-match "\\([^\0-\37:]+\\)[\0-\37:]*" addpath)
     (setq path (file-name-as-directory
-		(expand-file-name (substring addpath 0 (match-end 0))))
+		(expand-file-name (substring addpath
+					     (match-beginning 1)
+					     (match-end 1))))
 	  addpath (substring addpath (match-end 0)))
     (when (file-directory-p path)
       (push path paths)))
