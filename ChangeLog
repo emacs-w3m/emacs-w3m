@@ -1,3 +1,8 @@
+2003-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (top): Move the last addition (modifying the value
+	for `shell-file-name') just after the line for loading `cl'.
+
 2003-01-28  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3mhack.el (top): Set `cmdproxy.exe' to `shell-file-name' when
