@@ -1,3 +1,7 @@
+2003-04-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Improve and bug fix the find-file code.
+
 2003-04-29  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-jpo.el: New file.
@@ -8,7 +12,7 @@
 
 	* shimbun/sb-sml.el: New file.
 	* shimbun/sb-squeak-ja.el (shimbun-headers): Removed (use
-	sb-mailman.el's original method).	
+	sb-mailman.el's original method).
 	(shimbun-squeak-ja-headers): Removed.
 
 2003-04-26  NAKAJIMA Mikio  <minakaji@namazu.org>
@@ -25,7 +29,7 @@
 	Set proper address to HEADER.
 	(shimbun-squeak-ja-headers): New function.
 	(shimbun-headers): New method.
-	
+
 2003-04-16  Chihiro Kuroda  <chee@iijmio-mail.jp>
 
 	* w3m.el (w3m-download): Download a directory url to index.html
