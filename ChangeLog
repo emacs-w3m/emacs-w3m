@@ -1,7 +1,12 @@
+2001-12-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* Merge fixes of the shimbun module on the main trunk.
+
 2001-12-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m.el: Merge obvious fixes on the main trunk.
-	(w3m-image-viewer): New variable.
+	* Merge obvious fixes on the main trunk.
+
+	* w3m.el (w3m-image-viewer): New variable.
 	(w3m-content-type-alist): Refer it.
 
 2001-12-21  Katsumi Yamaoka  <yamaoka@jpl.org>
