@@ -5149,6 +5149,9 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 		    url))
 	;; The hierarchical part of URL has a relative spec.
 	(let ((path-end (match-end 5))
+	      ;; See the following thread about a problem related to
+	      ;; the use of file-name-* functions for url string:
+	      ;; http://news.gmane.org/group/gmane.emacs.w3m/thread=4210
 	      file-name-handler-alist)
 	  (string-match w3m-url-components-regexp base)
 	  (concat
