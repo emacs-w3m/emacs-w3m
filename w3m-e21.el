@@ -33,8 +33,8 @@
 
 (require 'w3m-macro)
 
-;; Functions and variables which will be defined in the other module.
-;; They should be defined in the other module at run-time.
+;; Functions and variables which should be defined in the other module
+;; at run-time.
 (eval-when-compile
   (defvar w3m-display-inline-image)
   (defvar w3m-icon-directory)
@@ -46,7 +46,7 @@
   (defalias 'w3m-retrieve 'ignore)
   (defalias 'w3m-image-type 'ignore))
 
-;; Generic funstions.
+;; Generic functions.
 (defsubst w3m-find-coding-system (obj)
   "Return OBJ if it is a coding-system."
   (if (coding-system-p obj) obj))

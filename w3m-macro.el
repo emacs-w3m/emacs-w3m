@@ -36,7 +36,7 @@
 
 ;;; Code:
 
-;; Variables which is used in the following inline functions.
+;; Variables which are used in the following inline functions.
 ;; They should be defined in the other module at run-time.
 (eval-when-compile
   (defvar w3m-work-buffer-list))

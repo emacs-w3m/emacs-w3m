@@ -24,7 +24,7 @@
 
 ;;; Commentary:
 
-;; This file contains the stuffs to use w3m.el on XEmacs.  For more
+;; This file contains the stuff to use w3m.el on XEmacs.  For more
 ;; detail about w3m.el, see:
 ;;
 ;;    http://namazu.org/~tsuchiya/emacs-w3m/
@@ -34,8 +34,8 @@
 
 (require 'w3m-macro)
 
-;; Functions and variables which will be defined in the other module.
-;; They should be defined in the other module at run-time.
+;; Functions and variables which should be defined in the other module
+;; at run-time.
 (eval-when-compile
   (defvar w3m-current-url)
   (defvar w3m-display-inline-image)
