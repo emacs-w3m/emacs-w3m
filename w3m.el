@@ -336,13 +336,13 @@ composing mail messages."
     (mew-draft-mode . pop-to-buffer)
     (mh-letter-mode . pop-to-buffer)
     (wl-draft-mode . pop-to-buffer))
-  "*Alist of (MAJOR-MODE . FUNCTION) pairs used to popup a mail buffer.
+  "*Alist of (MAJOR-MODE . FUNCTION) pairs used to pop to a mail buffer up.
 If a user clicks on a `mailto' url and a mail buffer is composed by
 `mail-user-agent' with the MAJOR-MODE, FUNCTION will be called with a
 mail buffer as an argument.  Note that the variables
 `special-display-buffer-names', `special-display-regexps',
 `same-window-buffer-names' and `same-window-regexps' will be bound to
-nil while popping up a buffer."
+nil while popping to a buffer up."
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 11
 		       (symbol :format "Major-mode: %v\n" :size 0)
@@ -1291,7 +1291,7 @@ creating the second or more emacs-w3m session."
   :type 'boolean)
 
 (defcustom w3m-pop-up-frames nil
-  "Non-nil means popup a new frame for an emacs-w3m session.
+  "Non-nil means pop to a new frame up for an emacs-w3m session.
 This variable is similar to `pop-up-frames' and does override
 `w3m-pop-up-windows'.  If `w3m-use-tab' is non-nil or there is the
 buffers selection window (for the `w3m-select-buffer' feature), this
@@ -5841,7 +5841,7 @@ a page in a new buffer with the correct width."
       (when empty
 	(w3m-clear-local-variables)))
     (if (and (not just-copy) empty)
-	;; Pop up a window or a frame because `w3m-goto-url' is not called.
+	;; Pop to a window or a frame up because `w3m-goto-url' is not called.
 	(w3m-popup-buffer new)
       ;; Need to change to the `new' buffer in which `w3m-goto-url' runs.
       (set-buffer new))
@@ -6424,7 +6424,7 @@ closed.  See also `w3m-quit'."
 \\[w3m-copy-buffer]	Create a copy of the current page as a new session.
 \\[w3m-next-buffer]	Turn the page of emacs-w3m buffers ahead.
 \\[w3m-previous-buffer]	Turn the page of emacs-w3m buffers behind.
-\\[w3m-select-buffer]	Pop up the emacs-w3m buffers selection window.
+\\[w3m-select-buffer]	Pop to the emacs-w3m buffers selection window up.
 \\[w3m-switch-buffer]	Select one of emacs-w3m buffers at the current window.
 \\[w3m-delete-buffer]	Delete the current emacs-w3m buffer.
 \\[w3m-delete-other-buffers]	Delete emacs-w3m buffers except for the\
@@ -7303,12 +7303,13 @@ variable, but you will be prompted for a URL if `w3m-quick-start' is
 nil (default t) or `w3m-home-page' is nil.
 
 The variables `w3m-pop-up-windows' and `w3m-pop-up-frames' control
-whether this command should pop up a window or a frame for the session.
+whether this command should pop to a window or a frame up for the
+session.
 
 When emacs-w3m sessions have already been opened, this command will
-pop up the existing window or frame, but if `w3m-quick-start' is nil,
-\(default t), you will be prompted for a URL (which defaults to
-`popup' meaning pop up an existing emacs-w3m buffer).
+pop to the existing window or frame up, but if `w3m-quick-start' is
+nil, \(default t), you will be prompted for a URL (which defaults to
+`popup' meaning to pop to an existing emacs-w3m buffer up).
 
 In addition, if the prefix argument is given or you enter the empty
 string for the prompt, it will visit the home page specified by the
@@ -7388,7 +7389,7 @@ command in the batch mode."
   "Ask emacs-w3m to browse URL.
 NEW-SESSION specifies whether to create a new emacs-w3m session.  URL
 defaults to the string looking like a url around the cursor position.
-Pop up a window a frame according to `w3m-pop-up-windows' and
+Pop to a window or a frame up according to `w3m-pop-up-windows' and
 `w3m-pop-up-frames'."
   (interactive (progn
 		 (require 'browse-url)
@@ -7853,7 +7854,7 @@ splitting windows vertically."
        (or w3m-fill-column -1))))
 
 (defun w3m-select-buffer (&optional toggle nomsg)
-  "Pop up the emacs-w3m buffers selection window.
+  "Pop to the emacs-w3m buffers selection window up.
 It provides the feature for switching emacs-w3m buffers using the
 buffer list.  The following command keys are available:
 
