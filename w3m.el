@@ -133,11 +133,13 @@
   (autoload 'w3m-about-cookie "w3m-cookie")
   (autoload 'w3m-cookie-shutdown "w3m-cookie" nil t)
   (autoload 'report-emacs-w3m-bug "w3m-bug" nil t)
-  (autoload 'w3m-replace-symbol "w3m-symbol" nil t))
+  (autoload 'w3m-replace-symbol "w3m-symbol" nil t)
+  (autoload 'widget-forward "wid-edit" nil t))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
-  (autoload 'rfc2368-parse-mailto-url "rfc2368"))
+  (autoload 'rfc2368-parse-mailto-url "rfc2368")
+  (autoload 'widget-convert-button "wid-edit"))
 
 (defconst emacs-w3m-version
   (eval-when-compile
@@ -328,6 +330,13 @@ nil while popping up a buffer."
   "*Non-nil means that `ange-ftp' or `efs' is used to access FTP servers."
   :group 'w3m
   :type 'boolean)
+
+(defcustom w3m-imitate-widget-button '(eq major-mode 'gnus-article-mode)
+  "*If non-nil, imitate the widget button on link (anchor) buttons.
+It is useful for moving about in a Gnus article buffer using TAB key.
+It can also be any Lisp form that should return a boolean value."
+  :group 'w3m
+  :type 'sexp)
 
 (defcustom w3m-treat-image-size (and (member "image" w3m-compile-options) t)
   "*Non-nil means to let the w3m HTML rendering be conscious of image size.
@@ -2330,6 +2339,14 @@ with ^ as `cat -v' does."
   "Return image type which corresponds to CONTENT-TYPE."
   (cdr (assoc content-type w3m-image-type-alist)))
 
+(defun w3m-imitate-widget-button ()
+  "Return a boolean value corresponding to the variable of the same name."
+  (if (listp w3m-imitate-widget-button)
+      (condition-case nil
+	  (eval w3m-imitate-widget-button)
+	(error nil))
+    (and w3m-imitate-widget-button t)))
+
 (defun w3m-fontify-anchors ()
   "Fontify anchor tags in this buffer which contains half-dumped data."
   (let ((help (w3m-make-help-echo w3m-href-anchor))
@@ -2376,6 +2393,13 @@ with ^ as `cat -v' does."
 					   'w3m-anchor-sequence hseq
 					   'help-echo help
 					   'balloon-help balloon))
+	    (when (w3m-imitate-widget-button)
+	      (require 'wid-edit)
+	      (let ((widget-button-face (if (w3m-arrived-p href)
+					    'w3m-arrived-anchor-face
+					  'w3m-anchor-face))
+		    (widget-mouse-face 'highlight))
+		(widget-convert-button 'default start end)))
 	    (when name
 	      (w3m-add-text-properties start (point-max)
 				       (list 'w3m-name-anchor
@@ -4766,10 +4790,12 @@ Return t if current line has a same anchor sequence."
       (w3m-previous-anchor (- arg))
     (while (> arg 0)
       (unless (w3m-goto-next-anchor)
-	;; search from the beginning of the buffer
 	(setq w3m-goto-anchor-hist nil)
-	(goto-char (point-min))
-	(w3m-goto-next-anchor))
+	(if (w3m-imitate-widget-button)
+	    (widget-forward 1)
+	  ;; search from the beginning of the buffer
+	  (goto-char (point-min))
+	  (w3m-goto-next-anchor)))
       (setq arg (1- arg))
       (if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
@@ -4812,10 +4838,12 @@ Return t if current line has a same anchor sequence."
       (w3m-next-anchor (- arg))
     (while (> arg 0)
       (unless (w3m-goto-previous-anchor)
-	;; search from the end of the buffer
 	(setq w3m-goto-anchor-hist nil)
-	(goto-char (point-max))
-	(w3m-goto-previous-anchor))
+	(if (w3m-imitate-widget-button)
+	    (widget-forward -1)
+	  ;; search from the end of the buffer
+	  (goto-char (point-max))
+	  (w3m-goto-previous-anchor)))
       (setq arg (1- arg))
       (if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
