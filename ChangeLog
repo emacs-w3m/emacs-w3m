@@ -1,4 +1,5 @@
 2002-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+	Suggested by HAYASHI Chifumi <chifumi@mscom.or.jp>.
 
 	* w3m-form.el (w3m-form-new): Ignore the 2nd arg `action' if it is
 	nil.
