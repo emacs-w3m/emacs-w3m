@@ -1,3 +1,8 @@
+2004-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-make-date-string): Get a correct day
+	of week even in the west side of Greenwich.
+
 2004-04-22  Christian Schmitt  <Christian.Schmitt@Dresdner-Bank.com>
 
 	* w3m.el (w3m-expand-path-name): Bind directory-sep-char to `?/'.
