@@ -228,6 +228,11 @@ width using expression (+ (frame-width) VALUE)."
       (require 'w3m-ucs)
     (error (setq w3m-use-mule-ucs nil))))
 
+(defcustom w3m-use-ange-ftp t
+  "*Non-nil means that `ange-ftp' of `efs' is used to access FTP servers."
+  :group 'w3m
+  :type 'boolean)
+
 (defvar w3m-accept-japanese-characters
   (or (memq w3m-type '(w3mmee w3m-m17n))
       ;; Detect that the internal character set of `w3m-command' is EUC-JP.
@@ -2555,44 +2560,50 @@ If optional argument NO-CACHE is non-nil, cache is not used."
   (lexical-let ((url url))
     (w3m-process-do
 	(header (w3m-w3m-get-header url no-cache handler))
-      (cond
-       ((and header (string-match "HTTP/1\\.[0-9] 200 " header))
+      (when header
 	(let (alist type charset)
 	  (dolist (line (split-string header "\n"))
 	    (when (string-match "^\\([^:]+\\):[ \t]*" line)
 	      (push (cons (downcase (match-string 1 line))
 			  (substring line (match-end 0)))
 		    alist)))
-	  (when (setq type (cdr (assoc "content-type" alist)))
-	    (if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" type)
-		(setq charset (w3m-remove-redundant-spaces
-			       (match-string 1 type))
-		      type (w3m-remove-redundant-spaces
-			    (substring type 0 (match-beginning 0))))
-	      (setq type (w3m-remove-redundant-spaces type))
-	      (when (string-match ";$" type)
-		(setq type (substring type 0 (match-beginning 0))))))
-	  (list (or type (w3m-local-content-type url))
-		(or charset
-		    (and (memq w3m-type '(w3mmee w3m-m17n))
-			 (setq charset
-			       (cdr (assoc "w3m-document-charset" alist)))
-			 (car (split-string charset))))
-		(let ((v (cdr (assoc "content-length" alist))))
-		  (and v (setq v (string-to-number v)) (> v 0) v))
-		(cdr (assoc "content-encoding" alist))
-		(let ((v (cdr (assoc "last-modified" alist))))
-		  (and v (w3m-time-parse-string v)))
-		(or (cdr (assoc "w3m-current-url" alist))
-		    url)
-		(or (cdr (assoc "w3m-base-url" alist))
-		    (cdr (assoc "w3m-current-url" alist))
-		    url))))
-       ;; FIXME: adhoc implementation
-       ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
-       ;; HTTP/1.0 501 Method Not Implemented
-       ((and header (string-match "HTTP/1\\.[0-9] 50[0-9]" header))
-	(list "text/html" nil nil nil nil url url))))))
+	  (cond
+	   ((string-match "\\`ftp://" url)
+	    (setq url (or (cdr (assoc "w3m-current-url" alist)) url))
+	    (if (string-match "/\\'" url)
+		(list "text/html" "w3m-euc-japan" nil nil nil url url)
+	      (list (w3m-local-content-type url) nil nil nil nil url url)))
+	   ((string-match "HTTP/1\\.[0-9] 200 " header)
+	    (when (setq type (cdr (assoc "content-type" alist)))
+	      (if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" type)
+		  (setq charset (w3m-remove-redundant-spaces
+				 (match-string 1 type))
+			type (w3m-remove-redundant-spaces
+			      (substring type 0 (match-beginning 0))))
+		(setq type (w3m-remove-redundant-spaces type))
+		(when (string-match ";\\'" type)
+		  (setq type (substring type 0 (match-beginning 0))))))
+	    (list (or type (w3m-local-content-type url))
+		  (or charset
+		      (and (memq w3m-type '(w3mmee w3m-m17n))
+			   (setq charset
+				 (cdr (assoc "w3m-document-charset" alist)))
+			   (car (split-string charset))))
+		  (let ((v (cdr (assoc "content-length" alist))))
+		    (and v (setq v (string-to-number v)) (> v 0) v))
+		  (cdr (assoc "content-encoding" alist))
+		  (let ((v (cdr (assoc "last-modified" alist))))
+		    (and v (w3m-time-parse-string v)))
+		  (or (cdr (assoc "w3m-current-url" alist))
+		      url)
+		  (or (cdr (assoc "w3m-base-url" alist))
+		      (cdr (assoc "w3m-current-url" alist))
+		      url)))
+	   ;; FIXME: adhoc implementation
+	   ;; HTTP/1.1 500 Server Error on Netscape-Enterprise/3.6
+	   ;; HTTP/1.0 501 Method Not Implemented
+	   ((string-match "HTTP/1\\.[0-9] 50[0-9]" header)
+	    (list "text/html" nil nil nil nil url url))))))))
 
 (defmacro w3m-w3m-expand-arguments (arguments)
   (` (delq nil
@@ -2775,7 +2786,7 @@ type as a string argument, when retrieve is complete."
 	     (w3m-read-file-name (format "Download %s to: " basename)
 				 w3m-default-save-directory basename)
 	     current-prefix-arg))))
-  (if (string-match "\\`ftp://" url)
+  (if (and w3m-use-ange-ftp (string-match "\\`ftp://" url))
       (w3m-goto-ftp-url url filename)
     (lexical-let ((filename (or filename (w3m-read-file-name nil nil url))))
       (w3m-process-do-with-temp-buffer
@@ -4370,7 +4381,8 @@ field for this request."
    ((string-match "\\`mailto:\\(.*\\)" url)
     (w3m-goto-mailto-url url))
    ;; process ftp: protocol
-   ((and (string-match "\\`ftp://" url)
+   ((and w3m-use-ange-ftp
+	 (string-match "\\`ftp://" url)
 	 (not (string= "text/html" (w3m-local-content-type url))))
     (w3m-goto-ftp-url url))
    (t

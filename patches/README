@@ -8,17 +8,26 @@
   `w3m-broken-proxy-cache'.
 
 
+* ftp-dirlist.patch
+
+  This patch was posted by Fumitoshi UKAI <ukai@debian.or.jp>, in
+  [w3m-dev:02822] and in [w3m-dev:02828].  This patch makes w3m print
+  file list of directory at FTP servers, when dump_extra option is set.
+
+  If you don't want to access FTP servers without ange-ftp, apply this
+  patch and set `w3m-use-ange-ftp' to nil.
+
+
 * w3m-0.2.1-inu-1.5-solaris-xemacs.patch
 
   This patch was posted by Hideyuki SHIRAI <shirai@meadowy.org> in
-  [emacs-w3m:02079]. It includes
+  [emacs-w3m:02079].  It includes
 
   (1) The patch to use `getpassphase' instead of `getpass' if the system
       has a `getpassphase' like Solaris 2.x.
 
   (2) The patch to use `STDIN' instead of `getpass' if w3m is associated
       with a terminal device. It take effect for XEmacs with Solaris 2.x.
-
 
 Local Variables:
 mode: indented-text
