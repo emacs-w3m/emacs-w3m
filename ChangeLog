@@ -1,3 +1,7 @@
+2004-10-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_ADD_LOAD_PATH): Clarify the error message.
+
 2004-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (call-process-region): Add an advice in order to fix
