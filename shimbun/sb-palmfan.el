@@ -98,64 +98,65 @@
 	(beginning-of-line 1)
 	(delete-region (point) (point-max)))
       (goto-char (point-min))
-      (while (re-search-forward shimbun-palmfan-date-regexp nil t nil)
-	(let* ((month (match-string 1))
-	       (day (string-to-number (match-string 2)))
-	       (year (string-to-number (match-string 3)))
-	       (date (format "%02d %s %04d 00:00 +0900" day month year))
-	       (start (point-marker))
-	       (end (progn
-		      (if (re-search-forward shimbun-palmfan-date-regexp nil t nil)
-			  (progn
-			    (beginning-of-line)
-			    (forward-char -1))
-			(point-max))
-		      (point-marker)))
-	       (count -1))
-	  (goto-char start)
-	  (while (or (re-search-forward
-		      "^<!-- \\(トピック\\|ソフト\\)タイトル -->$" end t nil)
-		     ;; <FONT color="#0000AF">●</FONT><B>ひとりごと</B>
-		     ;; <FONT color="#0000AF">●</FONT><B>DCF・Exif・JPEGについて</B>
-		     (re-search-forward
-		      "^<FONT color=\"#0000AF\">●</FONT><B>\\(.+\\)</B>" end t nil))
-	    (let (subject id others)
-	      (if (not (member (match-string 1) '("トピック" "ソフト")))
-		  (progn
-		    (setq subject (match-string 1))
-		    (unless (string= others "ひとりごと")
-		      ;;<FONT color="#0000AF">●</FONT><B>DCF・Exif・JPEGについて</B>
-		      (setq others t)))
-		(setq subject (buffer-substring-no-properties
-			       (progn (forward-char 1) (point))
-			       (progn (re-search-forward "<BLOCKQUOTE>" end t nil)
-				      (beginning-of-line 1) (point)))))
-	      (when (or others
-			(re-search-forward "^<!--\\(本文\\|コメント\\|ひとりごと本文\\)-->$" end t nil))
-		(setq body (buffer-substring-no-properties
-			    (point) (search-forward "</BLOCKQUOTE>" end))
-		      count (1+ count)
-		      id (format "<%02d%04d%02d%02d@%s>"
-				 count year
-				 (cdr (assoc month shimbun-palmfan-month-alist))
-				 day url))
-		(if (shimbun-search-id shimbun id)
-		    (throw 'stop nil))
-		(set (intern id (shimbun-palmfan-content-hash-internal shimbun))
-		     ;;(concat body "<p>\n"))
-		     body)
-		(when (string-match "^[\n\t ]*\\(.*\\)[\n\t ]*$" subject)
-		  (setq subject (match-string 1 subject)))
-		(with-temp-buffer
-		  (insert subject)
-		  (shimbun-remove-markup)
-		  (setq subject (buffer-string)))
-		;;(when (and (> count 0) (not (string-match "^Re: " subject)))
-		;;  (setq subject (concat "Re: " subject)))
-		(push (shimbun-make-header
-		       0 (shimbun-mime-encode-string subject)
-		       from date id "" 0 0 id)
-		      headers))))))
+      (catch 'stop
+	(while (re-search-forward shimbun-palmfan-date-regexp nil t nil)
+	  (let* ((month (match-string 1))
+		 (day (string-to-number (match-string 2)))
+		 (year (string-to-number (match-string 3)))
+		 (date (format "%02d %s %04d 00:00 +0900" day month year))
+		 (start (point-marker))
+		 (end (progn
+			(if (re-search-forward shimbun-palmfan-date-regexp nil t nil)
+			    (progn
+			      (beginning-of-line)
+			      (forward-char -1))
+			  (point-max))
+			(point-marker)))
+		 (count -1))
+	    (goto-char start)
+	    (while (or (re-search-forward
+			"^<!-- \\(トピック\\|ソフト\\)タイトル -->$" end t nil)
+		       ;; <FONT color="#0000AF">●</FONT><B>ひとりごと</B>
+		       ;; <FONT color="#0000AF">●</FONT><B>DCF・Exif・JPEGについて</B>
+		       (re-search-forward
+			"^<FONT color=\"#0000AF\">●</FONT><B>\\(.+\\)</B>" end t nil))
+	      (let (subject id others)
+		(if (not (member (match-string 1) '("トピック" "ソフト")))
+		    (progn
+		      (setq subject (match-string 1))
+		      (unless (string= others "ひとりごと")
+			;;<FONT color="#0000AF">●</FONT><B>DCF・Exif・JPEGについて</B>
+			(setq others t)))
+		  (setq subject (buffer-substring-no-properties
+				 (progn (forward-char 1) (point))
+				 (progn (re-search-forward "<BLOCKQUOTE>" end t nil)
+					(beginning-of-line 1) (point)))))
+		(when (or others
+			  (re-search-forward "^<!--\\(本文\\|コメント\\|ひとりごと本文\\)-->$" end t nil))
+		  (setq body (buffer-substring-no-properties
+			      (point) (search-forward "</BLOCKQUOTE>" end))
+			count (1+ count)
+			id (format "<%02d%04d%02d%02d@%s>"
+				   count year
+				   (cdr (assoc month shimbun-palmfan-month-alist))
+				   day url))
+		  (if (shimbun-search-id shimbun id)
+		      (throw 'stop nil))
+		  (set (intern id (shimbun-palmfan-content-hash-internal shimbun))
+		       ;;(concat body "<p>\n"))
+		       body)
+		  (when (string-match "^[\n\t ]*\\(.*\\)[\n\t ]*$" subject)
+		    (setq subject (match-string 1 subject)))
+		  (with-temp-buffer
+		    (insert subject)
+		    (shimbun-remove-markup)
+		    (setq subject (buffer-string)))
+		  ;;(when (and (> count 0) (not (string-match "^Re: " subject)))
+		  ;;  (setq subject (concat "Re: " subject)))
+		  (push (shimbun-make-header
+			 0 (shimbun-mime-encode-string subject)
+			 from date id "" 0 0 id)
+			headers)))))))
       (nreverse headers))))
 
 (luna-define-method shimbun-article ((shimbun shimbun-palmfan) header

@@ -18,6 +18,7 @@
 2002-04-17  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-palmfan.el: New file.
+	(shimbun-palmfan-news-headers): Bug fixed (catch stop tag).
 
 2002-04-16  Yuuichi Teranishi  <teranisi@gohome.org>
 
