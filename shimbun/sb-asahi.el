@@ -590,55 +590,65 @@ It works for only the groups `editorial' and `tenjin'."
 (defun shimbun-asahi-prepare-article (shimbun header)
   "Prepare an article.
 Extract the article core on some groups or adjust a date header if
-there is a correct information available."
+there is a correct information available.  For the groups editorial
+and tenjin, it tries to fetch the article for that day if it failed."
   (let ((case-fold-search t)
-	(group (shimbun-current-group-internal shimbun))
-	date start end)
+	(group (shimbun-current-group-internal shimbun)))
     (cond
      ((string-equal group "editorial")
       (let ((regexp "\
-<h[0-9]\\([\t\n ]+[^>]+\\)?>[\t\n ]*<a[\t\n ]+name=\"syasetu[0-9]+\">"))
-	(if (re-search-forward regexp nil t)
-	    (progn
-	      (goto-char (match-beginning 0))
-	      (insert "<!-- Start of Kiji -->")
-	      (search-forward "</a>" nil t)
-	      (while (re-search-forward regexp nil t))
-	      (when (re-search-forward "[\n\t ]*</p>" nil t)
-		(insert "\n<!-- End of Kiji -->")))
-	  (erase-buffer)
-	  (insert "Couldn't retrieve the page.\n"))))
-     ((string-equal group "science")
-      (when (and (string-match " \\(00:00\\) "
-			       (setq date (shimbun-header-date header)))
-		 (setq start (match-beginning 1))
-		 (re-search-forward (shimbun-content-start-internal shimbun)
-				    nil t)
-		 (re-search-forward (shimbun-content-end-internal shimbun)
-				    nil t)
-		 (progn
-		   (goto-char (setq end (match-beginning 0)))
-		   (forward-line -1)
-		   (re-search-forward
-		    "([01][0-9]/[0-3][0-9] \\([012][0-9]:[0-5][0-9]\\))"
-		    end t)))
-	(shimbun-header-set-date header
-				 (concat (substring date 0 start)
-					 (match-string 1)
-					 (substring date (+ start 5))))))
+<h[0-9]\\([\t\n ]+[^>]+\\)?>[\t\n ]*<a[\t\n ]+name=\"syasetu[0-9]+\">")
+	    (retry 0)
+	    index)
+	(while (<= retry 1)
+	  (if (re-search-forward regexp nil t)
+	      (progn
+		(goto-char (match-beginning 0))
+		(insert "<!-- Start of Kiji -->")
+		(when index
+		  (insert "\
+\n<p>(指定された&nbsp;url&nbspが&nbspまだ/すでに&nbsp無いので、\
+<a href=\"" index "\">トップページ</a> から記事を取得しました)</p>\n"))
+		(search-forward "</a>" nil t)
+		(while (re-search-forward regexp nil t))
+		(when (re-search-forward "[\n\t ]*</p>" nil t)
+		  (insert "\n<!-- End of Kiji -->"))
+		(setq retry 255))
+	    (erase-buffer)
+	    (if (zerop retry)
+		(progn
+		  (shimbun-retrieve-url (setq index
+					      (shimbun-index-url shimbun)))
+		  (goto-char (point-min)))
+	      (insert "Couldn't retrieve the page.\n")))
+	  (setq retry (1+ retry)))))
      ((string-equal group "tenjin")
-      (if (and (search-forward "【天声人語】" nil t)
-	       (re-search-forward "<SPAN STYLE=[^>]+>[\t\n ]*" nil t))
-	  (progn
-	    (insert "<!-- Start of Kiji -->")
-	    (while (re-search-forward "[\t\n ]*<SPAN STYLE=[^>]+>[\t\n ]*"
-				      nil t)
-	      (delete-region (match-beginning 0) (match-end 0)))
-	    (when (re-search-forward "[\t\n ]*</SPAN>" nil t)
-	      (goto-char (match-beginning 0))
-	      (insert "\n<!-- End of Kiji -->")))
-	(erase-buffer)
-	(insert "Couldn't retrieve the page.\n")))
+      (let ((retry 0)
+	    index)
+	(while (<= retry 1)
+	  (if (and (search-forward "【天声人語】" nil t)
+		   (re-search-forward "<SPAN STYLE=[^>]+>[\t\n ]*" nil t))
+	      (progn
+		(insert "<!-- Start of Kiji -->")
+		(when index
+		  (insert "\
+\n<p>(指定された&nbsp;url&nbspが&nbspまだ/すでに&nbsp無いので、\
+<a href=\"" index "\">トップページ</a> から記事を取得しました)</p>\n"))
+		(while (re-search-forward "[\t\n ]*<SPAN STYLE=[^>]+>[\t\n ]*"
+					  nil t)
+		  (delete-region (match-beginning 0) (match-end 0)))
+		(when (re-search-forward "[\t\n ]*</SPAN>" nil t)
+		  (goto-char (match-beginning 0))
+		  (insert "\n<!-- End of Kiji -->"))
+		(setq retry 255))
+	    (erase-buffer)
+	    (if (zerop retry)
+		(progn
+		  (shimbun-retrieve-url (setq index
+					      (shimbun-index-url shimbun)))
+		  (goto-char (point-min)))
+	      (insert "Couldn't retrieve the page.\n")))
+	  (setq retry (1+ retry)))))
      (t
       (when (re-search-forward
 	     (eval-when-compile

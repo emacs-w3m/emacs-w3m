@@ -1,5 +1,9 @@
 2005-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Try to
+	fetch the article for that day if it failed for the editorial
+	group and the tenjin group; remove the science group section.
+
 	* shimbun/sb-tcup.el (shimbun-tcup-group-alist): Remove the
 	time-lag parameter.
 	(shimbun-get-headers): Adjust date for articles posted up in the
