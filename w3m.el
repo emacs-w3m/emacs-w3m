@@ -3000,12 +3000,12 @@ to nil.
 		  (append w3m-halfdump-command-arguments
 			  w3m-halfdump-command-common-arguments))))))
 
-(defun w3m-rendering-buffer-1 (&optional noform)
+(defun w3m-rendering-buffer-1 ()
   (w3m-message "Rendering...")
   (when w3m-use-filter (w3m-filter w3m-current-url))
   (w3m-remove-comments)
   (w3m-check-link-tags)
-  (when w3m-use-form (setq w3m-current-forms (w3m-form-parse-buffer noform)))
+  (when w3m-use-form (setq w3m-current-forms (w3m-form-parse-buffer)))
   (w3m-remove-meta-charset-tags)
   (if (memq w3m-type '(w3mmee w3m-m17n))
       (progn
@@ -3018,7 +3018,7 @@ to nil.
   (w3m-message "Rendering...done")
   (w3m-rendering-extract-title))
 
-(defun w3m-rendering-unibyte-buffer (&optional content-charset nofrom)
+(defun w3m-rendering-unibyte-buffer (&optional content-charset)
   "Do rendering of contents in this buffer as HTML and return title."
   (when (memq w3m-type '(w3mmee w3m-m17n))
     (let ((original-buffer (current-buffer)))
@@ -3030,7 +3030,7 @@ to nil.
 	(set-buffer-multibyte t)
 	(w3m-copy-local-variables original-buffer))))
   (w3m-decode-buffer w3m-current-url content-charset "text/html")
-  (w3m-rendering-buffer-1 nofrom))
+  (w3m-rendering-buffer-1))
 
 (defun w3m-rendering-multibyte-buffer ()
   "Do rendering of contents in this buffer as HTML and return title."
@@ -3047,7 +3047,7 @@ to nil.
   (w3m-rendering-buffer-1))
 
 (defun w3m-exec (url &optional buffer no-cache content-charset
-		     content-type post-data referer noform)
+		     content-type post-data referer)
   "Download URL with w3m to the BUFFER.
 If BUFFER is nil, all data is placed to the current buffer.  When new
 content is retrieved and half-dumped data is placed in the BUFFER,
@@ -3068,7 +3068,7 @@ this function returns t.  Otherwise, returns nil."
 			w3m-current-base-url (w3m-base-url url)
 			w3m-current-title
 			(if (string= "text/html" type)
-			    (w3m-rendering-unibyte-buffer content-charset noform)
+			    (w3m-rendering-unibyte-buffer content-charset)
 			  (w3m-decode-buffer url content-charset type)
 			  (file-name-nondirectory url))))
 		(delete-region (point-min) (point-max))
@@ -3978,7 +3978,7 @@ or prefix ARG columns."
       (copy-file ftp (w3m-read-file-name nil nil file)))))
 
 ;;;###autoload
-(defun w3m-goto-url (url &optional reload charset post-data referer noform)
+(defun w3m-goto-url (url &optional reload charset post-data referer)
   "Retrieve contents of URL.
 If the second argument RELOAD is non-nil, reload a content of URL.
 The third argument CHARSET specifies a charset to be used for decoding
@@ -3990,8 +3990,7 @@ content-type is \"x-www-form-urlencoded\".  If it is a cons cell, the
 car of a cell is used as the content-type and the cdr of a cell is
 used as the body.
 If the fifth argument REFERER is specified, it is used for a Referer:
-field for this request.
-If the sixth argument NOFORM is specified, it is no used for form data."
+field for this request."
   (interactive
    (list
     (w3m-input-url nil
@@ -4077,7 +4076,7 @@ If the sixth argument NOFORM is specified, it is no used for form data."
 	  (w3m-refontify-anchor)
 	  (or (when name (w3m-search-name-anchor name))
 	      (goto-char (point-min))))
-	 ((not (w3m-exec url nil reload cs ct post-data referer noform))
+	 ((not (w3m-exec url nil reload cs ct post-data referer))
 	  (w3m-history-push (w3m-real-url url)
 			    (list :title (file-name-nondirectory url)))
 	  (w3m-history-push w3m-current-url)
@@ -4167,18 +4166,13 @@ the current session.  Otherwise, the new session will start afresh."
 	(referer (w3m-history-plist-get :referer nil nil t)))
     (when arg
       (setq w3m-current-image-status (not w3m-current-image-status)))
-    (cond
-     (post-data
-      (if (y-or-n-p "Repost form data? ")
-	  (w3m-goto-url w3m-current-url 'reload nil post-data referer)
-	(if (and form-data (y-or-n-p "Reuse form data? "))
-	    (w3m-goto-url w3m-current-url 'reload nil nil referer)
-	  (w3m-goto-url w3m-current-url 'reload nil nil referer 'noform))))
-     (form-data
-      (if (y-or-n-p "Reuse form data? ")
-	  (w3m-goto-url w3m-current-url 'reload nil nil referer)
-	(w3m-goto-url w3m-current-url 'reload nil nil referer 'noform)))
-     (t (w3m-goto-url w3m-current-url 'reload nil nil referer)))))
+    (if (and post-data (y-or-n-p "Repost form data? "))
+	(w3m-goto-url w3m-current-url 'reload nil post-data referer)
+      (when (and (or form-data w3m-current-forms)
+		 (not (y-or-n-p "Reuse form data? ")))
+	(w3m-history-remove-properties '(:forms) nil nil t)
+	(setq w3m-current-forms nil))
+      (w3m-goto-url w3m-current-url 'reload nil nil referer))))
 
 (defun w3m-redisplay-with-charset (&optional arg)
   "Redisplay current page with specified coding-system.
