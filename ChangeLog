@@ -1,3 +1,9 @@
+2001-10-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-copy-buffer): Bind `pop-up-windows' to the value of
+	`w3m-pop-up-windows'.
+	(w3m-pop-up-windows): New user option.
+
 2001-10-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-rendering-buffer-1): Redundant argument is removed.

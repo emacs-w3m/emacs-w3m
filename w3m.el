@@ -622,6 +622,14 @@ See the file balloon-help.el for more information."
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-pop-up-windows t
+  "Like `pop-up-windows', except that it only affects the command
+`w3m-copy-buffer'.  If this value is non-nil and the value of the
+option `w3m-pop-up-frames' is nil, split the windows when a new
+session is created."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-pop-up-frames nil
   "Like `pop-up-frames', except that it only affects the `w3m' commands."
   :group 'w3m
@@ -3503,7 +3511,8 @@ that is affected by `w3m-pop-up-frames'."
 	(w3m-history-copy buf)
 	(goto-char pt)
 	(when and-pop
-	  (let* ((pop-up-frames w3m-pop-up-frames)
+	  (let* ((pop-up-windows w3m-pop-up-windows)
+		 (pop-up-frames w3m-pop-up-frames)
 		 (pop-up-frame-alist (w3m-pop-up-frame-parameters))
 		 (pop-up-frame-plist pop-up-frame-alist)
 		 (oframe (selected-frame)))
