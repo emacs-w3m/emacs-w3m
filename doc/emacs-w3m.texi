@@ -667,7 +667,8 @@ they are be displayed (@pxref{Customizable Options}).
 @item RET
 @kindex RET
 @findex w3m-view-this-url
-Display the page pointed by the link under point.
+Display the page pointed by the link under point
+(@code{w3m-view-this-url}).
 
 The exact behavior of this command depends on the properties of the link
 under point, and on whether you give it a prefix argument or not.  See
@@ -688,7 +689,7 @@ and make emacs-w3m display the corresponding page by hitting @key{RET}
 after moving the point to the URL displayed in the @samp{header-line}.
 This feature will feel familiar to you if you are used to GUI-based web
 browsers like Mozilla.  Detailed explanations about this can be found in
-@xref{Emacs-w3m Functions}.
+@ref{Emacs-w3m Functions} (@code{w3m-view-this-url}).
 
 @item g
 @kindex g
@@ -696,20 +697,19 @@ browsers like Mozilla.  Detailed explanations about this can be found in
 You can be prompted for a URL in the minibuffer and make emacs-w3m
 display the corresponding page by typing the @key{g} key (independently
 of the position of the point) in an emacs-w3m buffer.  This binding will
-be familiar to you if you already use Gnus or Mew.
+be familiar to you if you already use Gnus or Mew (@code{w3m-goto-url}).
 
 @item c
 @kindex c
 @findex w3m-print-this-url
 Display the URL of the page being displayed in the echo area and put it
-into the @code{kill-ring} (that is, you can yank it somewhere else
-later).
+into the @code{kill-ring} (@code{w3m-print-this-url}).
 
 @item u
 @kindex u
 @findex w3m-print-this-url
 Display the URL under point in the echo area and put it into the
-@code{kill-ring} (that is, you can yank it somewhere else later).
+@code{kill-ring} (@code{w3m-print-this-url}).
 @end table
 
 If the page you are reading is today's news or someone's diary, it may
@@ -722,7 +722,8 @@ broken.)
 @item R
 @kindex R
 @findex w3m-reload-this-page
-Reload the page which is currently displayed.
+Reload the page which is currently displayed
+(@code{w3m-reload-this-page}).
 @end table
 
 @node Moving in a page
@@ -748,46 +749,52 @@ assigned to @code{self-insert-command} anymore.
 @findex w3m-scroll-up-or-next-url
 Scroll downwards.  You may be used to it if you have been using the
 @samp{more} command, the @samp{less} command, or the @code{view-mode} on
-Emacs.
+Emacs (@code{w3m-scroll-up-or-next-url}).
 
 @item DEL
 @kindex DEL
 @findex w3m-scroll-down-or-previous-url
 Scroll upwards.  You may be used to it if you have been using the
-@samp{less} command or the @code{view-mode} on Emacs.
+@samp{less} command or the @code{view-mode} on Emacs
+(@code{w3m-scroll-down-or-previous-url}).
 
 @item >
 @kindex >
 @findex w3m-scroll-left
 @vindex w3m-horizontal-scroll-columns
 Scroll to the left.  The scroll step is given by the
-@code{w3m-horizontal-scroll-columns} option, default 10.
+@code{w3m-horizontal-scroll-columns} option, default 10
+(@code{w3m-scroll-left}).
 
 @item <
 @kindex <
 @findex w3m-scroll-right
 @vindex w3m-horizontal-scroll-columns
 Scroll to the right.  The scroll step is given by the
-@code{w3m-horizontal-scroll-columns} option, default 10.
+@code{w3m-horizontal-scroll-columns} option, default 10
+(@code{w3m-scroll-right}).
 
 @item .
 @kindex .
 @findex w3m-shift-left
 @vindex w3m-horizontal-shift-columns
 Shift to the left (a fine level horizontal scrolling).  The shift step
-is given by the @code{w3m-horizontal-shift-columns} option, default 2.
+is given by the @code{w3m-horizontal-shift-columns} option, default 2
+(@code{w3m-shift-left}).
 
 @item ,
 @kindex ,
 @findex w3m-shift-right
 @vindex w3m-horizontal-shift-columns
 Shift to the right (a fine level horizontal scrolling).  The shift step
-is given by the @code{w3m-horizontal-shift-columns} option, default 2.
+is given by the @code{w3m-horizontal-shift-columns} option, default 2
+(@code{w3m-shift-right}).
 
 @item M-l
 @kindex M-l
 @findex w3m-horizontal-recenter
-Scroll horizontally so that the current position is centered.
+Scroll horizontally so that the current position is centered
+(@code{w3m-horizontal-recenter}).
 @end table
 
 @c Moving
@@ -819,31 +826,31 @@ point forward to the nearest anchor.
 @kindex S-@key{TAB}
 @findex w3m-previous-anchor
 Move the point to the previous anchor.  More strictly speaking, move the
-point backward to the nearest anchor.
+point backward to the nearest anchor (@code{w3m-previous-anchor}).
 
 @item ]
 @kindex ]
 @findex w3m-next-form
 Move the point to the next form.  More strictly speaking, move the point
-forward to the nearest form.
+forward to the nearest form (@code{w3m-next-form}).
 
 @item [
 @kindex [
 @findex w3m-previous-form
 Move the point to the previous form.  More strictly speaking, move the
-point backward to the nearest form.
+point backward to the nearest form (@code{w3m-previous-form}).
 
 @item @}
 @kindex @}
 @findex w3m-next-image
 Move the point to the next image.  More strictly speaking, move the
-point forward to the nearest image.
+point forward to the nearest image (@code{w3m-next-image}).
 
 @item @{
 @kindex @{
 @findex w3m-previous-image
 Move the point to the previous image.  More strictly speaking, move the
-point backward to the nearest image.
+point backward to the nearest image (@code{w3m-previous-image}).
 @end table
 
 @c TODO?
@@ -859,67 +866,61 @@ point backward to the nearest image.
 
 @node Moving over pages
 @subsection Moving from page to page
-@findex w3m-view-previous-page
-@findex w3m-view-next-page
-@findex w3m-gohome
-@findex w3m-view-parent-page
 
-This section introduces to you some ways of moving to other pages from a
-page.  The ways of moving by following a link or specifying a URL of
-other page are described in @xref{Launching and Jumping}.
+This section explains how to move from page to page, but not by
+following links or inputing URLs (these ways of moving are explained in
+@ref{Launching and Jumping}).
 
-There are of course the commands for moving to pages which have been
-visited before known as ``Back'' and ``Forward'' familiarly in the other
-web browsers, and the ``Go to the home page'' command in emacs-w3m as
-well.  The emacs-w3m strictly manages internally a list (history) of
-pages which have been visited before.  There are only fundamental
-functions in this section, although the advanced history commands than
-just the ``Back'' or ``Forward'' commands are also implemented.  See
-@xref{Tracing History}, for details of the advanced history commands.
+This includes commands to move backwards and forwards in history (the
+familiar ``Back'' and ``Forward'' from other browsers), and the
+obligatory ``Go to the home page'' feature.  You will probably
+understand this better after reading the @ref{Tracing History} section.
 
 @table @kbd
 @item B
 @kindex B
 @findex w3m-view-previous-page
-Move to the page which you've visited before.  In other words, tracing a
-history back to the past.
+Move back one page in history (@code{w3m-view-previous-page}).  With a
+numeric argument ARG, move back ARG pages.  This is the preferred way to
+go back in time.
 
 @item N
 @kindex N
 @findex w3m-view-next-page
-If you are in the page visited by typing @kbd{B}, this command brings
-you to the page that you've been seeing before typing @kbd{B}.  In other
-words, tracing a history back to the future.
+Move forward one page in history (@code{w3m-view-next-page}).  Of
+course, this will work only if you've used @kbd{B} to move back in
+history.  If called with a numeric argument ARG, move forward ARG pages.
+This command actually allows you to go back to the future!
 
 @item H
 @kindex H
 @findex w3m-gohome
 @vindex w3m-quick-start
-Move to the home page.  You can specify a URL of the home page by
-customizing the @code{w3m-home-page} variable (``about:'' by default).
+Move to the home page (@code{w3m-gohome}).  You can specify the URL of
+the home page by customizing the @code{w3m-home-page} variable
+(``about:'' by default).
 @end table
 
-It would be against your advantage not to learn the following three
-commands, though they aren't common for functions of the web browsers.
+These commands are exclusive features of emacs-w3m, we were able to
+obtain patents on them, so you won't find them anywhere else.  That's
+why you must learn to use them today!  (Just kidding.)
 
 @table @kbd
 @item ^
 @kindex ^
 @findex w3m-view-parent-page
-Attempt to move to the parent directory based on the URL of the page
-which is currently displayed.  For instance, it will attempt to move to
-``http://foo/'' when a page for ``http://foo/bar/'' is displayed.  This
-function has been implemented based on the following observation
-results: users of web browsers are likely to attempt to visit the URL
-removing the last file name or directory name (the last component) when
-they feel like anyhow getting the information related to the page even
-if the URL isn't able to be seen for the reason of the page having been
-deleted and so forth.
+Attempt to move to the parent directory of the page currently displayed.
+For instance, it will attempt to move to ``http://foo/'' when
+``http://foo/bar/'' is displayed.  This function has been implemented
+because of the following observation: users of web browsers often have
+to move up one level of directories because the information they're
+looking for isn't displayed on the current page (either because it has
+been deleted, or because a search engine took them to the wrong page).
 
 When you use another web browser, you usually need to remove the last
-component from the URL which isn't able to be displayed by typing the
-@key{DEL} key, etc. several times manually.  In emacs-w3m, such a
-typical operation can be performed by typing @kbd{^} once.
+component from the URL by using the @key{DEL} key, etc. several times
+manually.  In emacs-w3m, this operation can be performed in only one
+keystroke, by typing @kbd{^}!
 @end table
 
 @table @key
@@ -964,14 +965,15 @@ image in an emacs-w3m buffer.
 @item T
 @kindex T
 @findex w3m-toggle-inline-images
-Toggle displaying of inline images in this buffer (and buffers created
-from this buffer, later on).
+Toggle displaying of inline images in this buffer and buffers created
+from this buffer, later on (@code{w3m-toggle-inline-images}).
 
 @item I
 @kindex I
 @findex w3m-view-image
 @cindex Viewing images
-View the image under point in an external viewer.
+View the image under point in an external viewer
+(@code{w3m-view-image}).
 
 @item M-i
 @kindex M-i
@@ -979,18 +981,18 @@ View the image under point in an external viewer.
 @cindex Saving images
 Save the image under point to an external file.  The default name will
 be the original name of the image, so most of the time @kbd{M-i RET}
-will save the image with the right name.
+will save the image with the right name (@code{w3m-save-image}).
 
 @cindex Zooming images
 @item M-[
 @kindex M-[
 @findex w3m-zoom-out-image
-Zoom out the image under point.
+Zoom out the image under point (@code{w3m-zoom-out-image}).
 
 @item M-]
 @kindex M-]
 @findex w3m-zoom-in-image
-Zoom in the image under point.
+Zoom in the image under point (@code{w3m-zoom-in-image}).
 @end table
 
 @node Tracing History
@@ -1024,11 +1026,19 @@ URLs won't be cut in the actual emacs-w3m buffer.)
 You can get this kind of history using the @kbd{s} key in any emacs-w3m
 buffer.
 
+Please note that this history is buffer-local, i.e. specific to an
+emacs-w3m buffer.  But emacs-w3m has a unique feature: when you visit a
+new page, the history is copied over to the new buffer, so that you can
+still access the pages you visited so far.  This is different from the
+way Mozilla and others work; in these browsers the history always starts
+from scratch in new buffers.
+
 
 The other way to have information about past pages is the ``arrived
-URLs'' list: it is a list the last 500 URLs you have visited!  The list
-is ordered by date, the most recent coming first, and for each page the
-time of visit is displayed.  Here's an example (edited):
+URLs'' list: it is a list of the last 500 URLs you have visited in
+emacs-w3m.  The list is ordered by date, the most recent coming first,
+and for each page the time of visit is displayed.  Here's an example
+(edited):
 
 @example
 Order from the Free Software Foundation (FSF)             22:53:25
@@ -1060,8 +1070,13 @@ were visiting a regular page, by following the link.
 @kindex s
 @findex w3m-history
 Display the list of URLs visited in this session.  If called with a
-prefix argument, show the list of arrived URLs instead.
+prefix argument, show the list of arrived URLs instead
+(@code{w3m-history}).
 @end table
+
+Also see the @ref{Moving over pages} section, it explains how to move in
+the history with simple keybindings, i.e. the ``Back'' and ``Next''
+feature.
 
 @node Managing Bookmarks
 @section That's a favorite with me!
@@ -1596,7 +1611,7 @@ And with a prefix argument, you get something like this instead:
 @findex w3m-dtree
 Prompt for a local directory in the minibuffer, then display its tree
 structure.  If called with a prefix argument (e.g. @kbd{C-u D}), show
-files in the directories as well.
+files in the directories as well (@code{w3m-dtree}).
 @end table
 
 @node Viewing Perl Documents
@@ -1768,7 +1783,7 @@ commands are replaced by others similar to them, for security reasons
 What do you have to do?
 
 Read the Gnus manual (@pxref{(emacs-mime)Display Customization}).  The
-easiest way is to put the following line in your @file{~/.gnus} file:
+easiest way is to put the following line in your @file{~/.gnus.el} file:
 
 @lisp
 (setq mm-text-html-renderer 'w3m)
