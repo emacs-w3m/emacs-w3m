@@ -1,3 +1,12 @@
+2002-02-01  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* octet.el (octet-buffer): Fixed problem when 'Quit'.
+	(mime-preview-octet-hook): New hook.
+	(mime-preview-octet): Run it.
+	(w3m-about-octet-attachments): Fixed problem when there's
+	no octet-attachment which corresponds to the src url.
+	(mime-view-octet): Set content-type argument for `octet-buffer'.
+
 2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mime-w3m.el (mime-w3m-preview-text/html): Bind

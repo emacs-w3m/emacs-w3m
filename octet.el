@@ -159,15 +159,16 @@ nil in NEW-TYPE means filtering is completed.")
 ;;; HTML rendering by w3m.el
 (defun w3m-about-octet-attachments (url &optional no-decode no-cache
 					&rest args)
-  (let (buffer attachments)
+  (let (buffer attachments pair)
     (set-buffer-multibyte nil)
     (when (string-match "\\`about://octet-attachments/\\([^/]+\\)/" url)
       (setq buffer (get-buffer (base64-decode-string (match-string 1 url)))
 	    url (substring url (match-end 0))
 	    attachments (with-current-buffer buffer
 			  octet-attachments))
-      (when (and buffer attachments)
-	(insert (cdr (assoc url attachments))))))
+      (when (and buffer attachments
+		 (setq pair (assoc url attachments)))
+	(insert (cdr pair)))))
   (car (funcall (symbol-function 'w3m-local-file-type) url)))
 
 (defun octet-w3m-region (beg end)
@@ -361,7 +362,7 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 						 octet-suffix-type-alist)
 						nil 'require-match nil nil
 						"text")
-			     (quit 'text)))))
+			     (quit "text")))))
     (while (setq type (octet-filter-buffer type)))))
 
 (static-if (featurep 'xemacs)
@@ -395,6 +396,8 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 ;;;
 ;; Functions for SEMI.
 ;;
+
+(defvar mime-preview-octet-hook nil)
 (defvar mime-view-octet-hook nil)
 
 ;;;###autoload
@@ -416,7 +419,8 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 	(octet-buffer name)
 	(set-buffer-multibyte t)
 	(with-current-buffer to-buf
-	  (octet-insert-buffer from-buf))))))
+	  (octet-insert-buffer from-buf)
+	  (run-hooks 'mime-preview-octet-hook))))))
 
 ;;;###autoload
 (defun mime-view-octet (entity situation)
@@ -440,16 +444,18 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 			      (put-alist 'subtype subtype
 					 situation))
 		   'mime-view-octet))
-      ;; Guess by filename suffix.
       (let ((buf (get-buffer-create
 		  (format "%s-%s" (buffer-name) (mime-entity-number entity))))
+	    (ctype (concat (symbol-name (cdr (assq 'type situation)))
+			   "/"
+			   (symbol-name (cdr (assq 'subtype situation)))))
 	    (name (mime-entity-filename entity)))
 	(with-current-buffer buf
 	  (set-buffer-multibyte nil)
 	  (setq buffer-read-only nil)
 	  (erase-buffer)
 	  (insert (mime-entity-content entity))
-	  (octet-buffer name)
+	  (octet-buffer name ctype)
 	  (setq buffer-read-only t
 		truncate-lines t)
 	  (set-buffer-multibyte t)
