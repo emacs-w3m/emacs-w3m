@@ -1,3 +1,12 @@
+2003-11-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-delete-other-buffers): Use
+	`w3m-delete-frames-and-windows'.
+	(w3m-delete-frames-and-windows): Take an optional argument for the
+	exception; assume a buffer may be at two or more windows.
+	(w3m-close-window): Assume a buffer may be at two or more windows.
+	(w3m-select-buffer-delete-other-buffers): Save-window-excursion.
+
 2003-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-popup-frame-parameters): Rename from

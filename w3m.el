@@ -5469,6 +5469,8 @@ terminating the emacs-w3m session."
 			  (setq buf (current-buffer)))
 			(memq (current-buffer) bufs)))
 	       (when (memq buf bufs)
+		 ;; Go to the buffer which is most suitable to be called
+		 ;; the *previous* buffer.
 		 (select-window (get-buffer-window buf))))
 	      ((eq (selected-frame) w3m-initial-frame)
 	       ;; This frame was created to show this buffer.
@@ -5497,21 +5499,14 @@ terminating the emacs-w3m session."
 	(incf count)))))
 
 (defun w3m-delete-other-buffers (&optional buffer)
-  "Delete w3m buffers except for the current buffer.
-The optional argument BUFFER will be used exclusively by the command
-`w3m-select-buffer-delete-other-buffers'."
+  "Delete emacs-w3m buffers except for BUFFER or the current buffer."
   (interactive)
-  (let (window)
-    (dolist (buffer (delq (or buffer (current-buffer))
-			  (w3m-list-buffers t)))
-      ;; Delete all windows and frames related to a buffer.
-      (while (setq window (get-buffer-window buffer t))
-	(if (eq window (next-window window))
-	    ;; If there aren't another windows on a frame, delete it.
-	    (delete-frame (window-frame window))
-	  ;; Otherwise, delete a window.
-	  (delete-window window)))
-      ;; Kill a buffer.
+  (unless buffer
+    (setq buffer (current-buffer)))
+  (w3m-delete-frames-and-windows buffer)
+  (let ((buffers (delq buffer (w3m-list-buffers t))))
+    (while buffers
+      (setq buffer (pop buffers))
       (w3m-process-stop buffer)
       (kill-buffer buffer)))
   (run-hooks 'w3m-delete-buffer-hook)
@@ -5753,45 +5748,46 @@ The optional argument BUFFER will be used exclusively by the command
 	  (throw 'alive buf))))
     nil))
 
-(defun w3m-delete-frames-and-windows ()
-  "Delete all frames and windows related to emacs-w3m sessions.
-There are some exceptions; the sole frame in the display is not
-deleted; frames created not for emacs-w3m sessions are not deleted;
-frames showing not only emacs-w3m sessions but also other windows are
-not deleted."
-  (let ((buffers (w3m-list-buffers t))
-	buffer window frame flag)
+(defun w3m-delete-frames-and-windows (&optional exception)
+  "Delete all frames and windows related to emacs-w3m buffers except for
+the buffer EXCEPTION.  There are some special cases; the sole frame in
+the display is not deleted; frames created not for emacs-w3m sessions
+are not deleted; frames showing not only emacs-w3m sessions but also
+other windows are not deleted."
+  (let ((buffers (delq exception (w3m-list-buffers t)))
+	buffer windows window frame flag)
     (save-current-buffer
       (while buffers
 	(setq buffer (pop buffers)
-	      window (get-buffer-window buffer t)
-	      frame (when window
-		      (window-frame window)))
+	      windows (get-buffer-window-list buffer 'no-minibuf t))
 	(set-buffer buffer)
-	(when frame
-	  (if (and (eq frame w3m-initial-frame)
-		   (not (eq (next-frame) frame)))
-	      (if (or (one-window-p t frame)
-		      (progn
-			(setq flag t)
-			(walk-windows
-			 (lambda (window)
-			   (when flag
-			     (set-buffer (window-buffer window))
-			     (setq flag
-				   (not (memq major-mode
-					      '(w3m-mode
-						w3m-select-buffer-mode))))))
-			 'no-minibuf)
-			flag))
-		  (delete-frame frame)
-		(delete-window window))
-	    (unless (one-window-p t frame)
-	      (delete-window window))))))))
+	(while windows
+	  (setq window (pop windows)
+		frame (window-frame window))
+	  (when frame
+	    (if (and (eq frame w3m-initial-frame)
+		     (not (eq (next-frame) frame)))
+		(if (or (one-window-p t frame)
+			(progn
+			  (setq flag t)
+			  (walk-windows
+			   (lambda (window)
+			     (when flag
+			       (set-buffer (window-buffer window))
+			       (setq flag
+				     (not (memq major-mode
+						'(w3m-mode
+						  w3m-select-buffer-mode))))))
+			   'no-minibuf)
+			  flag))
+		    (delete-frame frame)
+		  (delete-window window))
+	      (unless (one-window-p t frame)
+		(delete-window window)))))))))
 
 (defun w3m-quit (&optional force)
   "Return to a peaceful life.  This command lets you quit browsing web
-after updating the arrived URLs database."
+after updating the arrived URLs database.  See also `w3m-close-window'."
   (interactive "P")
   (when (or force
 	    (prog1 (y-or-n-p "Do you want to exit w3m? ")
@@ -5811,20 +5807,29 @@ after updating the arrived URLs database."
 (defun w3m-close-window ()
   "Return to a restless life.  This command closes all emacs-w3m windows,
 but all the emacs-w3m buffers remain.  Frames created for emacs-w3m
-sessions will also be closed."
+sessions will also be closed.  See also `w3m-quit'."
   (interactive)
   (w3m-delete-frames-and-windows)
   (let* ((buffers (w3m-list-buffers t))
 	 (bufs buffers)
-	 buf window)
+	 buf windows window)
     (while bufs
       (setq buf (pop bufs))
       (w3m-cancel-refresh-timer buf)
       (bury-buffer buf))
     (while buffers
-      (setq buf (pop buffers))
-      (while (setq window (get-buffer-window buf t))
-	(set-window-buffer window (other-buffer)))))
+      (setq buf (pop buffers)
+	    windows (get-buffer-window-list buf 'no-minibuf t))
+      (while windows
+	(setq window (pop windows))
+	(set-window-buffer
+	 window
+	 (w3m-static-cond ((featurep 'xemacs)
+			   (other-buffer buf (window-frame window) nil))
+			  ((>= emacs-major-version 20)
+			   (other-buffer buf nil (window-frame window)))
+			  (t
+			   (other-buffer buf)))))))
   (w3m-select-buffer-close-window))
 
 (unless w3m-mode-map
@@ -7584,7 +7589,8 @@ menu line."
   "Delete w3m buffers except for the current menu line."
   (interactive)
   (w3m-select-buffer-show-this-line)
-  (w3m-delete-other-buffers (w3m-select-buffer-current-buffer)))
+  (save-window-excursion
+    (w3m-delete-other-buffers (w3m-select-buffer-current-buffer))))
 
 (defun w3m-select-buffer-quit ()
   "Quit the menu to select a buffer from w3m-mode buffers."
