@@ -1,3 +1,10 @@
+2002-05-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (what-where): New rule.
+
+	* w3mhack.el (w3mhack-what-where): New function.
+	(locate-library): Make the function silent for Mule first.
+
 2002-05-13  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-horizontal-shift-columns): New user option.

@@ -30,6 +30,37 @@
 (unless (dolist (var nil t))
   ;; Override the macro `dolist' which may have been defined in egg.el.
   (load "cl-macs" nil t))
+(require 'bytecomp)
+
+(when (boundp 'MULE)
+  ;; Make `locate-library' run quietly.
+  (let (current-load-list)
+    ;; Mainly for the compile-time.
+    (defun locate-library (library &optional nosuffix)
+      "Show the full path name of Emacs library LIBRARY.
+This command searches the directories in `load-path' like `M-x load-library'
+to find the file that `M-x load-library RET LIBRARY RET' would load.
+Optional second arg NOSUFFIX non-nil means don't add suffixes `.elc' or `.el'
+to the specified name LIBRARY (a la calling `load' instead of `load-library')."
+      (interactive "sLocate library: ")
+      (catch 'answer
+	(mapcar
+	 '(lambda (dir)
+	    (mapcar
+	     '(lambda (suf)
+		(let ((try (expand-file-name (concat library suf) dir)))
+		  (and (file-readable-p try)
+		       (null (file-directory-p try))
+		       (progn
+			 (or noninteractive
+			     (message "Library is file %s" try))
+			 (throw 'answer try)))))
+	     (if nosuffix '("") '(".elc" ".el" ""))))
+	 load-path)
+	(or noninteractive
+	    (message "No library %s in search path" library))
+	nil))
+    (byte-compile 'locate-library)))
 
 ;; Add supplementary directories to `load-path'.
 (let ((addpath (or (pop command-line-args-left) "NONE"))
@@ -174,8 +205,6 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
     (dolist (module modules)
       (unless (member module ignores)
 	(princ (format "%sc " module))))))
-
-(require 'bytecomp)
 
 (when (or (not (boundp 'emacs-major-version))
 	  (= emacs-major-version 19)
@@ -420,34 +449,7 @@ to remove some obsolete variables in the first argument VARLIST."
 	      (fset 'message (function ignore))
 	      (unwind-protect
 		  (, (append '(funcall fn) (cdr form)))
-		(fset 'message msg))))))
-  (let (current-load-list)
-    ;; Mainly for the compile-time.
-    (defun locate-library (library &optional nosuffix)
-      "Show the full path name of Emacs library LIBRARY.
-This command searches the directories in `load-path' like `M-x load-library'
-to find the file that `M-x load-library RET LIBRARY RET' would load.
-Optional second arg NOSUFFIX non-nil means don't add suffixes `.elc' or `.el'
-to the specified name LIBRARY (a la calling `load' instead of `load-library')."
-      (interactive "sLocate library: ")
-      (catch 'answer
-	(mapcar
-	 '(lambda (dir)
-	    (mapcar
-	     '(lambda (suf)
-		(let ((try (expand-file-name (concat library suf) dir)))
-		  (and (file-readable-p try)
-		       (null (file-directory-p try))
-		       (progn
-			 (or noninteractive
-			     (message "Library is file %s" try))
-			 (throw 'answer try)))))
-	     (if nosuffix '("") '(".elc" ".el" ""))))
-	 load-path)
-	(or noninteractive
-	    (message "No library %s in search path" library))
-	nil))
-    (byte-compile 'locate-library))))
+		(fset 'message msg))))))))
 
 (defun w3mhack-generate-colon-keywords-file ()
   "Generate a file which contains a list of colon keywords to be bound at
@@ -622,6 +624,36 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
       (princ (mapconcat
 	      (function directory-file-name)
 	      (nreverse paths) ":")))))
+
+(defun w3mhack-what-where ()
+  "Show what files should be installed and where should they go."
+  (let ((lisp-dir (pop command-line-args-left))
+	(icon-dir (pop command-line-args-left))
+	(package-dir (pop command-line-args-left)))
+    (message "
+lispdir=%s
+ICONDIR=%s
+PACKAGEDIR=%s"
+	     lisp-dir icon-dir package-dir)
+    (message "
+install:
+  *.el, *.elc, ChangeLog* -> %s"
+	     (file-name-as-directory lisp-dir))
+    (setq icon-dir (file-name-as-directory icon-dir))
+    (unless (string-equal "NONE/" icon-dir)
+      (message "
+install-icons:
+  *.xpm                   -> %s"
+	       icon-dir))
+    (setq package-dir (file-name-as-directory package-dir))
+    (unless (string-equal "NONE/" package-dir)
+      (message "
+install-package:
+  *.el, *.elc, ChangeLog* -> %slisp/w3m/
+  *.xpm                   -> %setc/w3m
+  MANIFEST.w3m            -> %spkginfo/"
+	       package-dir package-dir package-dir)))
+  (message (if (featurep 'xemacs) "\n" "")))
 
 (defun w3mhack-version ()
   "Print version of w3m.el."
