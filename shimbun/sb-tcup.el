@@ -35,21 +35,27 @@
   (luna-define-internal-accessors 'shimbun-tcup))
 
 (defvar shimbun-tcup-group-alist
-  '(("yutopia" "http://www61.tcup.com/6116/yutopia.html"
-     nil nil nil nil nil shift_jis)
-    ("meadow" "http://www66.tcup.com/6629/yutopia.html")
-    ("skk" "http://www67.tcup.com/6718/yutopia.html"))
+  '(("yutopia" "http://6116.teacup.com/yutopia/bbs2")
+    ("meadow" "http://6629.teacup.com/yutopia/bbs2")
+    ("skk" "http://6718.teacup.com/yutopia/bbs2"))
   "An alist of tcup bbs shimbun group definition.
-Each element looks like
+Each element looks like:
+
  (NAME URL SUBJECT-REGEXP FROM-START-REGEXP DATE-START-REGEXP
-           BODY-START-REGEXP BODY-END-REGEXP CODING-SYSTEM).
-Each element have a following default value,
+           BODY-START-REGEXP BODY-END-REGEXP TIME-LAG).
+
+Each element have a following default value:
+
 SUBJECT-REGEXP: `shimbun-tcup-subject-regexp'
 FROM-START-REGEXP: `shimbun-tcup-from-start-regexp'
 DATE-START-REGEXP: `shimbun-tcup-date-start-regexp'
 BODY-START-REGEXP: `shimbun-tcup-body-start-regexp'
 BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'
-CODING-SYSTEM: `shimbun-tcup-coding-system'")
+TIME-LAG: 0
+
+TIME-LAG is the number of seconds which is used to adjust the Date
+header.  The clock has been advancing for nine hours in some boards.
+such boards, set it to 32400.")
 
 (defvar shimbun-tcup-subject-regexp
   (let ((s0 "[\t\n ]*")
@@ -69,7 +75,6 @@ CODING-SYSTEM: `shimbun-tcup-coding-system'")
   "[\t\n ]*\\(<[^>]+>[\t\n ]*\\)*</blockquote>"
   "Default regexp for body end string.")
 
-(defvar shimbun-tcup-coding-system 'euc-jp)
 (defvar shimbun-tcup-content-hash-length 31)
 (defvar shimbun-tcup-x-face-alist
   '(("yutopia" . "X-Face: ,Em61:vG$KP!G`Q]ZsO\\@&g`VXE-kicRnKs\"Wd'ZSF\
@@ -144,29 +149,26 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
     (format "<%s.%s@%s>"		; "<1576232885.yutopia@6718.teacup.com>"
 	    stime (cdr keys) (car keys))))
 
-(luna-define-method shimbun-headers ((shimbun shimbun-tcup)
+(luna-define-method shimbun-get-headers ((shimbun shimbun-tcup)
 				     &optional range)
 ;;;<DEBUG>
-;;  (shimbun-tcup-headers shimbun range))
+;;  (shimbun-tcup-get-headers shimbun range))
 ;;
-;;(defun shimbun-tcup-headers (shimbun range)
+;;(defun shimbun-tcup-get-headers (shimbun range)
 ;;;</DEBUG>
-  (with-temp-buffer
-    (let* ((case-fold-search t)
-	   (group (shimbun-current-group-internal shimbun))
-	   (param (assoc group shimbun-tcup-group-alist))
-	   (subject-regexp (or (nth 2 param) shimbun-tcup-subject-regexp))
-	   (from-regexp (or (nth 3 param) shimbun-tcup-from-start-regexp))
-	   (date-regexp (or (nth 4 param) shimbun-tcup-date-start-regexp))
-	   (body-st-regexp (or (nth 5 param) shimbun-tcup-body-start-regexp))
-	   (body-end-regexp (or (nth 6 param) shimbun-tcup-body-end-regexp))
-	   (codesys (or (nth 7 param) shimbun-tcup-coding-system))
-	   headers from subject date id url stime st body)
-      (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload 'binary)
-      (set-buffer-multibyte t)
-      (decode-coding-region (point-min) (point-max) codesys)
-      (goto-char (point-min))
-      (catch 'stop
+  (let* ((case-fold-search t)
+	 (group (shimbun-current-group-internal shimbun))
+	 (param (assoc group shimbun-tcup-group-alist))
+	 (subject-regexp (or (nth 2 param) shimbun-tcup-subject-regexp))
+	 (from-regexp (or (nth 3 param) shimbun-tcup-from-start-regexp))
+	 (date-regexp (or (nth 4 param) shimbun-tcup-date-start-regexp))
+	 (body-st-regexp (or (nth 5 param) shimbun-tcup-body-start-regexp))
+	 (body-end-regexp (or (nth 6 param) shimbun-tcup-body-end-regexp))
+	 (time-lag (nth 7 param))
+	 (index-url (shimbun-index-url shimbun))
+	 headers from subject date id url stime st body)
+    (catch 'stop
+      (while t
 	(while (re-search-forward subject-regexp nil t)
 	  (setq subject (match-string 1))
 	  (re-search-forward from-regexp)
@@ -178,23 +180,22 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 		  (match-string 2))
 		 (t "(none)")))
 	  (re-search-forward date-regexp nil t)
-	  (setq stime
-		(cond
-		 ((looking-at "[^,]+, Time: \\([^ ]+\\) ")
-		  (shimbun-tcup-stime-to-time (match-string 1)))
-		 ((looking-at "\\([^<]+\\)<")
-		  (shimbun-tcup-make-time))
-		 (t (current-time))))
-	  ;; The page using `shift_jis' is assumed to be the old format.
-	  (when (string-match "sjis\\|shift.jis"
-			      (prin1-to-string codesys))
-	    (let ((ms (car stime))
-		  (ls (cadr stime)))
-	      (if (< (setq ls (- ls 32400)) 0)
-		  (progn
-		    (setcar stime (1- ms))
-		    (setcdr stime (list (+ ls 65536))))
-		(setcdr stime (list ls)))))
+	  (cond ((looking-at "[^,]+, Time: \\([^ ]+\\) ")
+		 (setq stime (shimbun-tcup-stime-to-time (match-string 1)))
+		 (when (numberp time-lag)
+		   (let ((ms (car stime))
+			 (ls (cadr stime)))
+		     (setq ls (- ls time-lag))
+		     (cond ((< ls 0)
+			    (setq stime (list (1- ms) (+ ls 65536))))
+			   ((>= ls 65536)
+			    (setq stime (list (1+ ms) (- ls 65536))))
+			   (t
+			    (setq stime (list ms ls)))))))
+		((looking-at "\\([^<]+\\)<")
+		 (setq stime (shimbun-tcup-make-time)))
+		(t
+		 (setq stime (current-time))))
 	  (let ((system-time-locale "C"))
 	    (setq date (format-time-string "%d %b %Y %T %z" stime)))
 	  (setq stime (format "%05d%05d" (car stime) (cadr stime)))
@@ -217,11 +218,28 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 		 (shimbun-mime-encode-string subject)
 		 (shimbun-mime-encode-string from)
 		 date id "" 0 0 stime)
-		headers)))
-      headers)))
+		headers))
+	(goto-char (point-min))
+	(if (re-search-forward "<a[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*>[\t\n ]*\
+次のページ[\t\n ]*</a>"
+			       nil t)
+	    (progn
+	      (shimbun-retrieve-url
+	       (prog1
+		   (shimbun-expand-url (match-string 1) index-url)
+		 (erase-buffer))
+	       t)
+	      (goto-char (point-min)))
+	  (throw 'stop nil))))
+    headers))
 
 (luna-define-method shimbun-article ((shimbun shimbun-tcup) header
 				     &optional outbuf)
+;;;<DEBUG>
+;;  (shimbun-tcup-article shimbun header outbuf))
+;;
+;;(defun shimbun-tcup-article (shimbun header outbuf)
+;;;</DEBUG>
   (when (shimbun-current-group-internal shimbun)
     (with-current-buffer (or outbuf (current-buffer))
       (insert
@@ -230,7 +248,7 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 				 (shimbun-tcup-content-hash-internal
 				  shimbun))))
 	   (if (boundp sym)
-	       (insert (symbol-value sym)))
+	       (insert (or (symbol-value sym) "")))
 	   (goto-char (point-min))
 	   (shimbun-header-insert shimbun header)
 	   (insert "Content-Type: " "text/html"
