@@ -1,5 +1,19 @@
 2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
+	* w3m.el (w3m-message): New function.
+	(w3m-verbose): New variable.
+	(w3m-process-message): Ditto.
+	(w3m-process-url): Removed.
+	(w3m-exec-process): Add code to show progress status.
+	(w3m-exec-filter): Fix prompt bug and clean up codes.
+	(w3m-retrieve): Changed arguments spec.
+	(w3m-local-retrieve): Ditto.
+	(w3m-http-retrieve): Ditto.
+	(w3m-pretty-length): New function.
+	(w3m-rendering-region): Add code to show progress status.
+
+2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
 	* w3m.el (w3m-http-retrieve): Add adhoc fragment to avoid new-line
 	replacement.
 	(w3m-decode-buffer): Renamed from w3m-html-decode-buffer.

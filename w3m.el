@@ -295,6 +295,8 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 (defvar w3m-current-title nil "Title of this buffer.")
 (defvar w3m-url-history nil "History of URL.")
 
+(defvar w3m-verbose t "Flag variable to control messages.")
+
 (defvar w3m-backlog-buffer nil)
 (defvar w3m-backlog-articles nil)
 (defvar w3m-backlog-hashtb nil)
@@ -303,7 +305,7 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 (defvar w3m-arrived-anchor-list nil)
 (defvar w3m-arrived-user-list nil)
 
-(defvar w3m-process-url nil)
+(defvar w3m-process-message nil "Function to message status.")
 (defvar w3m-process-user nil)
 (defvar w3m-process-passwd nil)
 (defvar w3m-process-user-counter 0)
@@ -331,6 +333,12 @@ for a charset indication")
   "Regexp used in parsing `<META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">
 for a charset indication")
 
+
+(defun w3m-message (&rest args)
+  "Alternative function of `message' for w3m.el."
+  (if w3m-verbose
+      (apply #'message args)
+    (apply #'format args)))
 
 (defun w3m-sub-list (list n)
   "Make new list from LIST with top most N items.
@@ -644,6 +652,8 @@ If N is negative, last N items of LIST is returned."
 	    (set-process-sentinel proc (lambda (proc event) nil))
 	    (process-kill-without-query proc)
 	    (while (eq (process-status proc) 'run)
+	      (if (functionp w3m-process-message)
+		  (funcall w3m-process-message))
 	      (sit-for 0.2)
 	      (discard-input))
 	    (and w3m-current-url
@@ -731,22 +741,21 @@ If N is negative, last N items of LIST is returned."
       (with-current-buffer (process-buffer process)
 	(let ((buffer-read-only nil)
 	      (case-fold-search nil)
-	      (mark (process-mark process))
 	      (str))
-	  (goto-char mark)
+	  (goto-char (process-mark process))
 	  (insert string)
-	  (set-marker mark (point))
+	  (set-marker (process-mark process) (point))
 	  (forward-line 0)
 	  (cond
 	   ((looking-at "Username: Password: ")
 	    (setq w3m-process-passwd
 		  (or (nth 1 (w3m-exec-get-user w3m-current-url))
-		      (w3m-read-passwd (match-string 0)))
+		      (w3m-read-passwd "Password: "))
 		  str w3m-process-passwd))
 	   ((looking-at "Username: ")
 	    (setq w3m-process-user
 		  (or (nth 0 (w3m-exec-get-user w3m-current-url))
-		      (read-from-minibuffer (match-string 0)))
+		      (read-from-minibuffer "Username: "))
 		  str w3m-process-user)))
 	  (if str
 	      (process-send-string process (concat str "\n")))))))
@@ -807,24 +816,26 @@ This function is imported from mcharset.el."
 	(setq alist (cdr alist)))
       "unknown")))
 
-(defun w3m-local-retrieve (url &optional no-decode)
+(defun w3m-local-retrieve (url &optional no-decode accept-type-regexp)
   (let ((type (w3m-local-content-type url)))
-    (if (string-match "file:" url)
-	(setq url (substring url (match-end 0))))
-    (with-current-buffer (get-buffer-create w3m-work-buffer-name)
-      (delete-region (point-min) (point-max))
-      (if (and (string-match "^text/" type)
-	       (not no-decode))
-	  (progn
-	    (set-buffer-multibyte t)
-	    (insert-file-contents url))
-	(set-buffer-multibyte nil)
-	(let ((coding-system-for-read
-	       (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
-	      (file-coding-system-for-read
-	       (w3m-static-if (boundp 'MULE) '*noconv* 'binary)))
-	  (insert-file-contents url)))
-      type)))
+    (when (or (not accept-type-regexp)
+	      (string-match accept-type-regexp type))
+      (if (string-match "file:" url)
+	  (setq url (substring url (match-end 0))))
+      (with-current-buffer (get-buffer-create w3m-work-buffer-name)
+	(delete-region (point-min) (point-max))
+	(if (and (string-match "^text/" type)
+		 (not no-decode))
+	    (progn
+	      (set-buffer-multibyte t)
+	      (insert-file-contents url))
+	  (set-buffer-multibyte nil)
+	  (let ((coding-system-for-read
+		 (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
+		(file-coding-system-for-read
+		 (w3m-static-if (boundp 'MULE) '*noconv* 'binary)))
+	    (insert-file-contents url)))))
+    type))
 
 
 ;;; Retrieve data via HTTP:
@@ -844,7 +855,9 @@ This function is imported from mcharset.el."
     (let ((w3m-current-url url)
 	  (case-fold-search t)
 	  length type charset)
+      (w3m-message "Request sent, waiting for response...")
       (w3m-exec-process "-dump_head" url)
+      (w3m-message "Request sent, waiting for response... done")
       (goto-char (point-min))
       (if (re-search-forward "^content-type:\\([^\r\n]+\\)\r*$" nil t)
 	  (progn
@@ -862,48 +875,72 @@ This function is imported from mcharset.el."
 	    charset
 	    length))))
 
-(defun w3m-http-retrieve (url &optional no-decode)
+(defun w3m-pretty-length (n)
+  ;; This function imported from url.el.
+  (cond
+   ((< n 1024)
+    (format "%d bytes" n))
+   ((< n (* 1024 1024))
+    (format "%dk" (/ n 1024.0)))
+   (t
+    (format "%2.2fM" (/ n (* 1024 1024.0))))))
+
+(defun w3m-http-retrieve (url &optional no-decode accept-type-regexp)
   (let* ((headers (w3m-http-check-header url))
 	 (type    (car headers))
 	 (charset (nth 1 headers))
 	 (length  (nth 2 headers)))
-    (with-current-buffer (get-buffer-create w3m-work-buffer-name)
-      (delete-region (point-min) (point-max))
-      (set-buffer-multibyte nil)
-      (let ((w3m-current-url url))
-	(w3m-exec-process "-dump_source" url))
-      (if length
-	  (if (eq w3m-executable-type 'cygwin)
-	      (cond
-	       ;; No authentication and no bugs in output.
-	       ((= (buffer-size) length))
-	       ;; No authentication but new-line character is replaced to CRLF.
-	       ((= (buffer-size)
-		   (+ length (count-lines (point-min) (point-max))))
-		(while (search-forward "\r\n" nil t)
-		  (delete-region (- (point) 2) (1- (point)))))
-	       (t ;; Authentication
-		(while (and
-			(re-search-forward "^Username: Password: \n" nil t)
-			(cond
-			 ((= (- (point-max) (point)) length)
-			  (delete-region (point-min) (point))
-			  nil)
-			 ((= (- (point-max) (point))
-			     (+ length (count-lines (point) (point-max))))
-			  (delete-region (point-min) (point))
-			  (while (search-forward "\r\n" nil t)
-			    (delete-region (- (point) 2) (1- (point))))))))))
-	    (delete-region (point-min) (- (point-max) length))))
-      (and (string-match "^text/" type)
-	   (not no-decode)
-	   (w3m-decode-buffer type charset))
+    (when (or (not accept-type-regexp)
+	      (string-match accept-type-regexp type))
+      (with-current-buffer (get-buffer-create w3m-work-buffer-name)
+	(delete-region (point-min) (point-max))
+	(set-buffer-multibyte nil)
+	(let ((w3m-current-url url)
+	      (w3m-http-retrieve-length length)
+	      (w3m-process-message
+	       (lambda ()
+		 (if w3m-http-retrieve-length
+		     (w3m-message "Reading... %s of %s (%d%%)"
+				  (w3m-pretty-length (buffer-size))
+				  (w3m-pretty-length w3m-http-retrieve-length)
+				  (/ (* (buffer-size) 100) w3m-http-retrieve-length))
+		   (w3m-message "Reading... %s"
+				(w3m-pretty-length (buffer-size)))))))
+	  (w3m-message "Reading...")
+	  (w3m-exec-process "-dump_source" url)
+	  (w3m-message "Reading... done"))
+	(if length
+	    (if (eq w3m-executable-type 'cygwin)
+		(cond
+		 ;; No authentication and no bugs in output.
+		 ((= (buffer-size) length))
+		 ;; No authentication but new-line character is replaced to CRLF.
+		 ((= (buffer-size)
+		     (+ length (count-lines (point-min) (point-max))))
+		  (while (search-forward "\r\n" nil t)
+		    (delete-region (- (point) 2) (1- (point)))))
+		 (t;; Authentication
+		  (while (and
+			  (re-search-forward "^Username: Password: \n" nil t)
+			  (cond
+			   ((= (- (point-max) (point)) length)
+			    (delete-region (point-min) (point))
+			    nil)
+			   ((= (- (point-max) (point))
+			       (+ length (count-lines (point) (point-max))))
+			    (delete-region (point-min) (point))
+			    (while (search-forward "\r\n" nil t)
+			      (delete-region (- (point) 2) (1- (point))))))))))
+	      (delete-region (point-min) (- (point-max) length))))
+	(and (string-match "^text/" type)
+	     (not no-decode)
+	     (w3m-decode-buffer type charset)))
       type)))
 
-(defun w3m-retrieve (url &optional no-decode)
+(defun w3m-retrieve (url &optional no-decode accept-type-regexp)
   (if (string-match "^\\(file:\\|/\\)" url)
-      (w3m-local-retrieve url no-decode)
-    (w3m-http-retrieve url no-decode)))
+      (w3m-local-retrieve url no-decode accept-type-regexp)
+    (w3m-http-retrieve url no-decode accept-type-regexp)))
 
 (defun w3m-download (url &optional filename)
   (unless filename
@@ -947,6 +984,7 @@ This function is imported from mcharset.el."
 	(coding-system-for-write w3m-input-coding-system)
 	(default-process-coding-system
 	  (cons w3m-output-coding-system w3m-input-coding-system)))
+    (w3m-message "Rendering...")
     (apply 'call-process-region
 	   start end w3m-command t t nil
 	   (mapcar (lambda (x)
@@ -955,6 +993,7 @@ This function is imported from mcharset.el."
 		       (prin1-to-string (eval x))))
 		   w3m-command-arguments))
     (goto-char (point-min))
+    (w3m-message "Rendering... done")
     (let (title)
       (mapcar (lambda (regexp)
 		(goto-char 1)
