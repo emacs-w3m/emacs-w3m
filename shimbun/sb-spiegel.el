@@ -58,8 +58,9 @@
   (unless (string-match "[0-9,]+\\.html" url)
     (error "Cannot find message-id base"))
   (concat "<"
-	  (replace-regexp-in-string "\\(,\\|druck-\\|\\.html\\)"
-				    "" (match-string 0 url))
+	  (shimbun-replace-in-string (match-string 0 url)
+				     "\\(,\\|druck-\\|\\.html\\)"
+				     "")
 	  "@spiegel.de>"))
 
 (provide 'sb-spiegel)
