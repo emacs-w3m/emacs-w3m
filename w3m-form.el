@@ -1268,6 +1268,9 @@ character."
 		  (if (string-match "\\?" w3m-current-url)
 		      (substring w3m-current-url 0 (match-beginning 0))
 		    w3m-current-url))))
+    ;; "!CURRENT_URL!" is magic string of w3m.
+    (when (string-match "!CURRENT_URL!$" url)
+      (setq url (substring url 0 (match-beginning 0))))
     (cond ((and (not (string= url orig-url))
 		(string-match "^https://" orig-url)
 		(string-match "^http://" url)
