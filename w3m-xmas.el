@@ -85,7 +85,7 @@ updated by a new data."
 	    (insert data)
 	    (goto-char (point-min))
 	    (when (looking-at "GIF89a")
-	      ;; Check whether a `data' is animated.
+	      ;; Check whether a `data' is optimized.
 	      (call-process-region (point-min) (point-max)
 				   w3m-gifsicle-program
 				   t t nil "--info")
