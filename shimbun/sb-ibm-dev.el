@@ -54,18 +54,18 @@
     (catch 'stop
       (with-temp-buffer
 	(shimbun-retrieve-url (concat baseurl group "/library.html") 'reload)
-	(subst-char-in-region (point-min) (point-max) ?\t ?  t)
+	(subst-char-in-region (point-min) (point-max) ?\t ?\  t)
 	(goto-char (point-min))
 	(while (re-search-forward
 		;; getting URL and SUBJECT
-		"<td width=\"100%\"><a href=\"\\(.*\\.html\\)\">\\(.*\\)</a>"
+		"<td><a href=\"\\(.*\\.html\\)\">\\(.*\\)</a>"
 		nil t)
 	  (setq url (match-string 1)
 		subject (match-string 2))
 	  ;; getting DATE
 	  (if (re-search-forward
 	       "(\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\))<br>"
-	       nil t nil)
+	       nil t)
 	      (setq datelist (list (string-to-number (match-string 1))
 				   (string-to-number (match-string 2))
 				   (string-to-number (match-string 3)))
@@ -80,7 +80,8 @@
 			  ((string-match "^/jp/developerworks/" url)
 			   (concat baseurl (substring url (match-end 0))))
 			  ;; relative url
-			  (t (concat baseurl group "/" url))))
+			  (t
+			   (concat baseurl group "/" url))))
 	  ;; building ID
 	  (setq aux (if (string-match "\\([^/]+\\)\\.html" url)
 			(match-string 1 url)
@@ -111,7 +112,7 @@
 	     (goto-char (point-min))
 	     (if (re-search-forward
 		  "<meta http-equiv=\"refresh\" +content=\"0;URL=\\(.+\\)\">"
-		  nil t nil)
+		  nil t)
 		 (let ((url (match-string 1)))
 		   (message "shimbun: Redirecting...")
 		   ;;(shimbun-set-url-internal shimbun url)
@@ -120,7 +121,8 @@
 		   (message "shimbun: Redirecting...done")
 		   (message "shimbun: Make contents...")))
 	     (goto-char (point-min))
-	     (prog1 (shimbun-make-contents shimbun header)
+	     (prog1
+		 (shimbun-make-contents shimbun header)
 	       (message "shimbun: Make contents...done")))
 	   "")))))
 
@@ -128,26 +130,40 @@
   (catch 'stop
     ;; cleaning up
     (let (beg end buffer)
-      (if (re-search-forward "<!--[ 　]*Title[ 　]*-->" nil t nil)
+      (if (re-search-forward "<!--[ 　]*Title[ 　]*-->" nil t)
 	  (delete-region (point-min) (point))
 	(throw 'stop nil))
-      (while (re-search-forward "<!--[ 　]*PDF Mail[ 　]*-->" nil t nil)
-	(setq beg (progn (beginning-of-line) (point))
-	      end (progn (re-search-forward "</table>" nil t nil) (point)))
+      (while (re-search-forward "<!--[ 　]*PDF Mail[ 　]*-->" nil t)
+	(setq beg (progn
+		    (beginning-of-line)
+		    (point))
+	      end (progn
+		    (search-forward "</table>" nil t)
+		    (point)))
 	(or buffer
 	    (let (case-fold-search)
 	      (goto-char beg)
-	      (when (re-search-forward
-		     "<a href=\"\\(.*\\.pdf\\)\">.+alt=\"\\(PDF *- *[0-9]+[A-Z]+\\)\".*>"
-		     end t nil)
+	      (when (re-search-forward "\
+<a href=\"\\(.*\\.pdf\\)\">.+alt=\"\\(PDF *- *[0-9]+[A-Z]+\\)\".*>"
+				       end t)
 		(setq buffer (format "<a href=\"%s\">%s</a>"
-				     (match-string 1) (match-string 2))))))
+				     (match-string 1)
+				     (match-string 2))))))
 	(delete-region beg end))
       (goto-char (point-min))
-      (if (re-search-forward "<!--[ 　]*Contents[ 　]*-->" nil t nil)
-	  (delete-region (progn (beginning-of-line) (point))
-			 (progn (re-search-forward "</table>" nil t nil))))
-      (if (re-search-forward "<!--[ 　]*End of Contents[ 　]*-->" nil t nil)
+      ;; Remove sidebar if exist
+      (if (and (re-search-forward "<!--[ 　]*Contents[ 　]*-->" nil t)
+	       (re-search-forward "<!--[ 　]*Sidebar Gutter[ 　]*-->" nil t))
+	  (let ((sidebar-start (search-backward "<table")))
+	    (if (re-search-forward "<!--[ 　]*Start TOC[ 　]*-->" nil t)
+		(delete-region (point)
+			       (search-forward "</table>" nil t)))
+	    (delete-region sidebar-start
+			   (search-forward "</table>" nil t))))
+
+      (if (re-search-forward "\
+<!--[ 　]*\\(End of Contents\\|END PAPER BODY\\)[ 　]*-->"
+			     nil t)
 	  (progn
 	    (beginning-of-line)
 	    (delete-region (point) (point-max)))
@@ -157,41 +173,44 @@
 	(insert buffer)))
     (goto-char (point-min))
     ;; getting SUBJECT field infomation (really necessary?  already have it)
-    (if (re-search-forward "<h1>\\(.*\\)</h1>" nil t nil)
+    (if (re-search-forward "<h1>\\(.*\\)</h1>" nil t)
 	(let (subject)
 	  (setq subject (match-string 1))
 	  (while (string-match "\\(<font class=\".+\">\\|</font>\\)" subject)
 	    (setq subject (concat (substring subject 0 (match-beginning 0))
 				  (substring subject (match-end 0)))))
-	  (shimbun-header-set-subject
-	   header (shimbun-mime-encode-string subject))))
+	  (shimbun-header-set-subject header
+				      (shimbun-mime-encode-string subject))))
     ;; getting FROM field information
     (let (author address)
-      (if (re-search-forward
-	   "<a href=\"#author.*\">\\(.*\\)</a> (<a href=\"mailto:\\(.*\\)\">\\2</a>) *\n*"
-	   nil t nil)
+      (if (re-search-forward "\
+<a href=\"#author.*\">\\(.*\\)</a> (<a href=\"mailto:\\(.*\\)\">\\2</a>) *\n*"
+	   nil t)
 	  (progn
 	    (setq author (match-string 1)
 		  address (match-string 2))
 	    (delete-region (match-beginning 0) (match-end 0)))
-	(if (re-search-forward "<a href=\"#author.*\">\\(.+\\)</a>" nil t nil)
+	(if (re-search-forward "<a href=\"#author.*\">\\(.+\\)</a>" nil t)
 	    (progn
 	      (setq author (match-string 1))
 	      (goto-char (point-min))))
-	(if (re-search-forward "<a href=\"mailto:\\(.+\\)\">\\1</a>" nil t nil)
+	(if (re-search-forward "<a href=\"mailto:\\(.+\\)\">\\1</a>" nil t)
 	    (setq address (match-string 1))))
       (if address
-	  (shimbun-header-set-from
-	   header (shimbun-mime-encode-string
-		   (if author (format "%s <%s>" author address) address))))))
+	  (shimbun-header-set-from header
+				   (shimbun-mime-encode-string
+				    (if author
+					(format "%s <%s>" author address)
+				      address))))))
   (goto-char (point-min))
-  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
+  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
   (shimbun-decode-entities)
   (goto-char (point-min))
   (shimbun-header-insert shimbun header)
-  (insert "Content-Type: text/html; charset=ISO-2022-JP\nMIME-Version: 1.0\n\n")
-  (encode-coding-string
-   (buffer-string) (mime-charset-to-coding-system "ISO-2022-JP")))
+  (insert "Content-Type: text/html; charset=ISO-2022-JP\n\
+MIME-Version: 1.0\n\n")
+  (encode-coding-string (buffer-string)
+			(mime-charset-to-coding-system "ISO-2022-JP")))
 
 (provide 'sb-ibm-dev)
 

@@ -1,3 +1,17 @@
+2001-12-14  YAMASHITA Junji  <ysjj@unixuser.org>
+
+	* shimbun/sb-ibm-dev.el (shimbun-make-contents): Remove sidebar.
+
+2001-12-12  YAMASHITA Junji  <ysjj@unixuser.org>
+
+	* shimbun/sb-ibm-dev.el (shimbun-get-headers): Update the regexp
+	to find a url and a subject.
+
+2001-12-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-ibm-dev.el: Don't use the 4th arg for `re-search-*';
+	replace `re-search-*' with `search-*' if regexp is not used.
+
 2001-12-14  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-dtree.el (w3m-about-dtree): Ignore arguments on and after
