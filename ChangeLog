@@ -1,3 +1,10 @@
+2002-11-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-bookmark.el (w3m-bookmark-safe-string): Abolish its 2nd
+	`coding' argument.  Instead of it, use the coding system to be
+	used for encoding the buffer contents on saving.
+	(w3m-bookmark-write-file): Follow the above change.
+
 2002-11-06  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-fontify-textareas): Replace textarea string

@@ -34,6 +34,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
 (require 'w3m-util)
 (require 'w3m)
 
@@ -229,16 +230,20 @@ exist, returns (0 . 0)."
 	    (delete-file file)
 	  (file-error nil)))))))
 
-(defun w3m-bookmark-safe-string (string coding format)
+(defun w3m-bookmark-safe-string (string format)
   (labels ((filter (s c) (decode-coding-string (encode-coding-string s c) c)))
-    (if (or (string= string (filter string coding))
-	    (when w3m-use-mule-ucs
-	      (string= (setq string
-			     (filter string
-				     (if w3m-accept-japanese-characters
-					 'w3m-euc-japan
-				       'w3m-iso-latin-1)))
-		       (filter string coding))))
+    (if (let ((encoding
+	       (w3m-static-cond
+		((boundp 'MULE) file-coding-system)
+		((featurep 'mule) buffer-file-coding-system))))
+	  (or (string= string (filter string encoding))
+	      (when w3m-use-mule-ucs
+		(string= (setq string
+			       (filter string
+				       (if w3m-accept-japanese-characters
+					   'w3m-euc-japan
+					 'w3m-iso-latin-1)))
+			 (filter string encoding)))))
 	string
       (error format string))))
 
@@ -247,10 +252,10 @@ exist, returns (0 . 0)."
   (save-excursion
     (set-buffer (w3m-bookmark-buffer))
     (setq title (w3m-bookmark-safe-string
-		 title buffer-file-coding-system
+		 title
 		 "Specified title includes unsafe character(s): %s")
 	  section (w3m-bookmark-safe-string
-		   section buffer-file-coding-system
+		   section
 		   "Specified section includes unsafe character(s): %s"))
     (if (zerop (buffer-size))
 	;; New bookmark file.
