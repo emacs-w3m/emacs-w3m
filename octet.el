@@ -80,7 +80,7 @@
     ("jpg"  . jpeg)
     ("jpeg" . jpeg)
     ("gif"  . gif)
-    ("gif"  . png)
+    ("png"  . png)
     ("tif"  . tiff)
     ("tiff" . tiff)
     ("txt"  . text))
