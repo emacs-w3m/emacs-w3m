@@ -1,3 +1,7 @@
+2001-04-10  Keisuke Nishida  <kxn30@po.cwru.edu>
+
+	* w3m-search.el (w3m-search): Find default using thing-at-point.
+
 2001-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-about-history): Use `w3m-history-flat' instead of

@@ -90,14 +90,18 @@ When called interactively with prefix argument, you can choose search
 engine deinfed in `w3m-search-engine-alist'.  Otherwise use
 `w3m-search-default-engine'."
   (interactive
-   (let ((engine
+   (let* ((engine
 	  (if current-prefix-arg
 	      (completing-read
 	       (format "Which Engine? (%s): " w3m-search-default-engine)
 	       w3m-search-engine-alist nil t)
-	    w3m-search-default-engine)))
-     (list engine
-	   (read-string (format "%s search: " engine)))))
+	    w3m-search-default-engine))
+	  (default (thing-at-point 'word))
+	  (prompt (if default
+		      (format "%s search (default %s): " engine default)
+		    (format "%s search: " engine)))
+	  (query (read-string prompt nil nil default)))
+     (list engine query)))
   (unless (string= query "")
     (let ((info (assoc search-engine w3m-search-engine-alist)))
       (if info
