@@ -1,3 +1,8 @@
+2001-03-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-local-retrieve): Bind 'auto conversion variables' to
+	nil when insert file with binary .
+
 2001-03-08  Yuuichi Teranishi  <teranisi@isl.ntt.co.jp>
 
 	* w3m.el (w3m-insert-image): Eliminated needless local variable.
