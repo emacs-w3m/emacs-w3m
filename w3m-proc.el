@@ -85,6 +85,9 @@
 (make-variable-buffer-local 'w3m-process-realm)
 (make-variable-buffer-local 'w3m-process-object)
 
+(defvar w3m-process-waited nil
+  "Non-nil means that `w3m-process-with-wait-handler' is evaluated.")
+
 (defvar w3m-process-proxy-user nil "User name of the proxy server.")
 (defvar w3m-process-proxy-passwd nil "Password of the proxy server.")
 
@@ -293,35 +296,40 @@ handler."
 (put 'w3m-process-timeout 'error-conditions '(error w3m-process-timeout))
 (put 'w3m-process-timeout 'error-message "Time out")
 
+(defsubst w3m-process-error-handler (error-data process)
+  (setq w3m-process-queue (delq process w3m-process-queue))
+  (w3m-process-kill-process (w3m-process-process process))
+  (signal (car error-data) (cdr error-data)))
+
 (defmacro w3m-process-with-wait-handler (&rest body)
   "Generate the waiting handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the handler
 which will wait for the end of the evaluation."
-  (let ((result (gensym "--result--"))
-	(start (gensym "--start--")))
-    `(let (,result)
+  (let ((result (gensym "--result--")))
+    `(let ((,result)
+	   (w3m-process-waited t))
        (when (w3m-process-p
 	      (setq ,result
 		    (let ((handler (lambda (x) (setq ,result x))))
 		      ,@body)))
-	 (let ((,start (current-time))
-	       (w3m-current-process ,result)
-	       w3m-process-inhibit-quit inhibit-quit)
-	   ;; No sentinel function is registered and the process
-	   ;; sentinel function is called from this macro, in order to
-	   ;; avoid the dead-locking which occurs when this macro is
-	   ;; called in the environment that `w3m-process-sentinel' is
-	   ;; evaluated.
-	   (w3m-process-start-process ,result t)
-	   (while (eq (process-status (w3m-process-process ,result)) 'run)
-	     (accept-process-output nil 0 200)
-	     (and w3m-process-timeout
-		  (< w3m-process-timeout
-		     (w3m-time-lapse-seconds ,start (current-time)))
-		  (progn
-		    (setq w3m-process-queue (delq ,result w3m-process-queue))
-		    (w3m-process-kill-process (w3m-process-process ,result))
-		    (signal 'w3m-process-timeout nil)))))
+	 (condition-case error
+	     (let ((start (current-time))
+		   (w3m-current-process ,result)
+		   w3m-process-inhibit-quit inhibit-quit)
+	       ;; No sentinel function is registered and the process
+	       ;; sentinel function is called from this macro, in order to
+	       ;; avoid the dead-locking which occurs when this macro is
+	       ;; called in the environment that `w3m-process-sentinel' is
+	       ;; evaluated.
+	       (w3m-process-start-process ,result t)
+	       (while (eq (process-status (w3m-process-process ,result)) 'run)
+		 (accept-process-output nil 0 200)
+		 (when (and w3m-process-timeout
+			    (< w3m-process-timeout
+			       (w3m-time-lapse-seconds start (current-time))))
+		   (w3m-process-error-handler (cons 'w3m-process-timeout nil)
+					      ,result))))
+	   (quit (w3m-process-error-handler error ,result)))
 	 (w3m-process-sentinel (w3m-process-process ,result) "finished\n"))
        ,result)))
 (put 'w3m-process-with-wait-handler 'lisp-indent-function 0)

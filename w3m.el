@@ -3227,7 +3227,7 @@ complete."
 	  url (w3m-url-strip-authinfo url))
     (w3m-message "Reading %s...%s"
 		 url
-		 (if w3m-async-exec
+		 (if (and w3m-async-exec (not w3m-process-waited))
 		     (substitute-command-keys "\
  (Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")
 		   ""))
@@ -6151,6 +6151,30 @@ works on Emacs.
      (concat "about://source/" (substring w3m-current-url (match-end 0))))
     (t (concat "about://source/" w3m-current-url)))))
 
+(defun w3m-make-separator ()
+  (if (string= w3m-language "Japanese")
+      (w3m-static-if (boundp 'MULE)
+	  ;; `make-string' doesn't support Japanese chars
+	  ;; and the 1st arg to `make-char' should be int.
+	  (let ((default-mc-flag t))
+	    (with-temp-buffer
+	      (insert-char (make-char (symbol-value 'lc-jp)
+				      40 44)
+			   (/ (if (< 0 w3m-fill-column)
+				  w3m-fill-column
+				(+ (window-width) (or w3m-fill-column -1)))
+			      2))
+	      (buffer-string)))
+	(make-string (/ (if (< 0 w3m-fill-column)
+			    w3m-fill-column
+			  (+ (window-width) (or w3m-fill-column -1)))
+			2)
+		     (make-char 'japanese-jisx0208 40 44)))
+    (make-string (if (< 0 w3m-fill-column)
+		     w3m-fill-column
+		   (+ (window-width) (or w3m-fill-column -1)))
+		 ?-)))
+
 (defun w3m-about-header (url &optional no-decode no-cache &rest args)
   (when (string-match "\\`about://header/" url)
     (setq url (substring url (match-end 0)))
@@ -6163,19 +6187,7 @@ works on Emacs.
 	      (if time (current-time-string time) "")))
     (let ((ct (w3m-arrived-content-type url))
 	  (charset (w3m-arrived-content-charset url))
-	  (separator (if (string= w3m-language "Japanese")
-			 (if (boundp 'MULE)
-			     ;; `make-string' doesn't support Japanese chars
-			     ;; and the 1st arg to `make-char' should be int.
-			     (let ((default-mc-flag t))
-			       (with-temp-buffer
-				 (insert-char (make-char (symbol-value 'lc-jp)
-							 40 44)
-					      (- (/ (window-width) 2) 2))
-				 (buffer-string)))
-			   (make-string (- (/ (window-width) 2) 2)
-					(make-char 'japanese-jisx0208 40 44)))
-		       (make-string (- (window-width) 4) ?-)))
+	  (separator (w3m-make-separator))
 	  (case-fold-search t)
 	  header ssl beg)
       (when (or ct charset)
