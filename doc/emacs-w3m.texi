@@ -3056,12 +3056,19 @@ These are newspapers that are supported by @samp{shimbun} library.
 @table @asis
 @item @uref{http://www.asahi.com/, Asahi Shimbun}
 asahi.business asahi.culture asahi.english asahi.international
-asahi.national asahi.politics asahi.science asahi.sports
+asahi.kansai asahi.kansai-special asahi.national asahi.politics
+asahi.science asahi.sports
 
 These backends generates articles including only texts; in other hands,
 @samp{asahi-html} generates MIME articles that include texts and
 photographs.  In order to use the latter backend, specify
 asahi-html.business instead of asahi.business as the group name.
+
+@item @uref{http://mytown.asahi.com/, Asahi Shimbun}
+asahi-mytown.(hokkaido@dots{}okinawa) asahi-mytown.usa
+
+The Asahi Shimbun local-news sections including US and all the
+prefectures of Japan.
 
 @item @uref{http://www.mainichi.co.jp/, Mainichi Shimbun}
 mainichi.shakai mainichi.sports mainichi.seiji mainichi.keizai
