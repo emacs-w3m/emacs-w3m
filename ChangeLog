@@ -1,5 +1,7 @@
 2002-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mime-w3m.el (TopLevel): Remove useless codes to substitute keys.
+
 	* w3m.el (w3m-w3m-attributes): Ignore trailing whitespaces in
 	header lines.
 
@@ -20,6 +22,19 @@
 	nil.
 	(w3m-form-parse-forms): Don't parse the value of `w3m-current-url'
 	if it is nil.
+
+2001-11-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* mime-w3m.el (TopLevel): Require `w3m' and `mime' only when
+	compiling; bind `mime-setup-enable-inline-html' when compiling.
+	(mime-w3m-display-inline-image): Changed the default value.
+	(mime-w3m-insinuate): New function.
+	(mime-w3m-setup): Require `w3m' here; modify the value of
+	`w3m-cid-retrieve-function-alist' here.
+	(mime-w3m-preview-text/html): Call `mime-w3m-setup'.
+	(TopLevel): Autoload "mime-parse" to avoid a compile warning; move
+	the code to `w3m-cid-retrieve-function-alist' to `mime-w3m-setup'
+	call `mime-w3m-insinuate' when loading mime-w3m.el(c).
 
 2002-03-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
@@ -192,8 +207,8 @@
 	(w3m-toolbar): Don't express some Japaneses chars directly.
 
 	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
-	w3m-ucs.el, shimbun modules, mime-w3m.el, octet.el and
-	w3m-weather.el if no-MULE.
+	w3m-ucs.el, shimbun modules, mime-w3m.el and w3m-weather.el if
+	no-MULE.
 
 2002-02-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 

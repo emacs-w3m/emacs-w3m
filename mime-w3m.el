@@ -30,28 +30,18 @@
 ;; (2) Put this file to appropriate directory.
 ;; (3) Write these following code to your ~/.emacs or ~/.gnus.
 ;;
-;;    (setq mime-setup-enable-inline-html nil)
-;;    (eval-after-load "mime-view"
-;;      '(progn
-;;         (autoload 'mime-w3m-preview-text/html "mime-w3m")
-;;         (ctree-set-calist-strictly
-;;          'mime-preview-condition
-;;          '((type . text)
-;;            (subtype . html)
-;;            (body . visible)
-;;            (body-presentation-method . mime-w3m-preview-text/html)))
-;;         (set-alist 'mime-view-type-subtype-score-alist
-;;                    '(text . html) 3)))
+;;        (require 'mime-w3m)
 
 
 ;;; Code:
 
-(require 'w3m)
-(require 'mime)
-(eval-when-compile (require 'cl))
+(eval-when-compile
+  (require 'cl)
+  (require 'w3m)
+  (require 'mime)
+  (defvar mime-setup-enable-inline-html))
 
-(defcustom mime-w3m-display-inline-image
-  w3m-display-inline-image
+(defcustom mime-w3m-display-inline-image 'default
   "Non-nil means that inline images are displayed."
   :group 'w3m
   :group 'mime-view
@@ -76,6 +66,19 @@ consider all the urls to be safe."
 (eval-and-compile
   (when (featurep 'xemacs)
     (require 'font)))
+
+(defun mime-w3m-insinuate ()
+  "Insinuate `mime-w3m' module to SEMI."
+  (setq mime-setup-enable-inline-html nil)
+  (eval-after-load "mime-view"
+    '(progn
+       (ctree-set-calist-strictly
+	'mime-preview-condition
+	'((type . text)
+	  (subtype . html)
+	  (body . visible)
+	  (body-presentation-method . mime-w3m-preview-text/html)))
+       (set-alist 'mime-view-type-subtype-score-alist '(text . html) 3))))
 
 (defvar mime-w3m-mode-command-alist
   '((backward-char)
@@ -127,6 +130,12 @@ will not be substituted.")
 
 (defsubst mime-w3m-setup ()
   "Setup `mime-w3m' module."
+  (require 'w3m)
+  (when (eq mime-w3m-display-inline-image 'default)
+    (setq mime-w3m-display-inline-image w3m-display-inline-image))
+  (unless (assq 'mime-view-mode w3m-cid-retrieve-function-alist)
+    (push (cons 'mime-view-mode 'mime-w3m-cid-retrieve)
+	  w3m-cid-retrieve-function-alist))
   (unless mime-w3m-mode-map
     (setq mime-w3m-mode-map (copy-keymap w3m-mode-map))
     (dolist (def mime-w3m-mode-command-alist)
@@ -148,12 +157,12 @@ will not be substituted.")
       `(let ((color (color-name (face-background 'default))))
 	 (prog1
 	     (progn ,@body)
-	   (font-set-face-background 'default color (current-buffer))
-	   ))
+	   (font-set-face-background 'default color (current-buffer))))
     (cons 'progn body)))
 
 ;;;###autoload
 (defun mime-w3m-preview-text/html (entity situation)
+  (mime-w3m-setup)
   (setq mime-w3m-message-structure (mime-find-root-entity entity))
   (let ((p (point))
 	(xref
@@ -185,6 +194,9 @@ will not be substituted.")
 					'text-rendered-by-mime-w3m t)))
 	 (error (message (format "%s" err))))))))
 
+;; To avoid byte-compile warning in `mime-w3m-cid-retrieve'.
+(autoload 'mime-uri-parse-cid "mime-parse")
+
 (defun mime-w3m-cid-retrieve (url &rest args)
   (let ((entity (mime-find-entity-from-content-id
 		 (mime-uri-parse-cid url) mime-w3m-message-structure)))
@@ -194,22 +206,6 @@ will not be substituted.")
        (set-buffer-multibyte nil)
        (mime-insert-entity-content entity))
       (mime-entity-type/subtype entity))))
-
-(push (cons 'mime-view-mode 'mime-w3m-cid-retrieve)
-      w3m-cid-retrieve-function-alist)
-
-(unless mime-w3m-mode-map
-  (let ((map (copy-keymap w3m-mode-map)))
-    (substitute-key-definition 'w3m-view-this-url 'mime-w3m-view-this-url map)
-    (substitute-key-definition 'w3m-mouse-view-this-url 'mime-w3m-view-this-url map)
-    (substitute-key-definition 'w3m-quit 'mime-preview-quit map)
-    (substitute-key-definition 'w3m-close-window 'mime-preview-quit map)
-    (substitute-key-definition 'w3m-view-previous-page nil map)
-    (substitute-key-definition 'w3m-reload-this-page nil map)
-    (substitute-key-definition 'w3m-view-source nil map)
-    (substitute-key-definition 'w3m-view-header nil map)
-    (substitute-key-definition 'w3m-history nil map)
-    (setq mime-w3m-mode-map map)))
 
 (defun mime-w3m-view-this-url ()
   "View the URL of the link under point."
@@ -237,6 +233,8 @@ Strip `keymap' or `local-map' properties from a killed string."
 	(remove-text-properties 0 (length string)
 				'(keymap nil local-map nil)
 				string))))
+
+(mime-w3m-insinuate)
 
 (provide 'mime-w3m)
 
