@@ -1,3 +1,21 @@
+2003-03-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html-content-start,
+	shimbun-asahi-html-content-end): Improve regexps.
+	(shimbun-asahi-html-url, shimbun-asahi-html-groups,
+	shimbun-asahi-html-from-address, shimbun-asahi-html-x-face-alist,
+	shimbun-asahi-html-expiration-days): Default to the values which
+	are defined in sb-asahi.el.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-groups): Add "english" and
+	"science".
+	(shimbun-asahi-content-start, shimbun-asahi-content-end): Improve
+	regexps.
+	(shimbun-asahi-group-index-alist): New variable.
+	(shimbun-asahi-group-regexp-alist): New variable.
+	(shimbun-asahi-index-url): Use `shimbun-asahi-group-index-alist'.
+	(shimbun-asahi-get-headers): Rewrite.
+
 2003-03-03  Michael Shields  <shields@msrl.com>
 
 	* w3m-xmas.el (w3m-create-image): Protect against images which are
