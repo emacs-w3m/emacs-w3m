@@ -345,6 +345,25 @@ Otherwise return nil."
 		     (setq bin (expand-file-name (concat command ".exe") dir))))
 	    (throw 'found-command bin)))))))
 
+(defun w3m-get-user-passwd-from-url (url)
+  "Ruturn user and passwd included URL."
+  (let (user pass)
+    (when (and (stringp url)
+	       (string-match "^\\(about://source/\\)?\\(https?\\|ftp\\)://\\([^@/]+\\)@"
+			     url))
+      (setq user (match-string 3 url))
+      (when (string-match "^\\([^:]+\\):\\([^:]+\\)$" user)
+	(setq pass (match-string 2 user))
+	(setq user (match-string 1 user)))
+      (cons user pass))))
+
+(defun w3m-remove-passwd-from-url (url)
+  "Remove passwd from URL."
+  (if (and url (string-match "://[^@:/]+\\(:.+\\)@" url))
+      (concat (substring url 0 (match-beginning 1))
+	      (substring url (match-end 1)))
+    url))
+
 (defun w3m-cancel-refresh-timer (&optional buffer)
   "Cancel the timer for REFRESH attribute in META tag."
   (when w3m-use-refresh

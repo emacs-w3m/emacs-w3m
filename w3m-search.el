@@ -107,10 +107,8 @@ engine deinfed in `w3m-search-engine-alist'.  Otherwise use
 	       w3m-search-engine-alist nil t)
 	    w3m-search-default-engine))
 	  (default (thing-at-point 'word))
-	  (prompt (if default
-		      (format "%s search (default %s): " engine default)
-		    (format "%s search: " engine)))
-	  (query (read-string prompt nil nil default)))
+	  (prompt (format "%s search: " engine))
+	  (query (read-string prompt default)))
      (list (if (string= engine "")
 	       w3m-search-default-engine
 	     engine)

@@ -999,6 +999,8 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (defconst w3m-arrived-db-size 1023)
 (defvar w3m-arrived-db nil)		; nil means un-initialized.
 
+(defvar w3m-tmp-urluser-alist nil)	; temporary variable (url . (user pass))
+
 (defconst w3m-image-type-alist
   '(("image/jpeg" . jpeg)
     ("image/gif" . gif)
@@ -4420,6 +4422,11 @@ field for this request."
     (when w3m-current-process
       (error "%s" "Can not run two w3m processes simultaneously"))
     (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.
+    ;; user and passwd included URL
+    (let ((user (w3m-get-user-passwd-from-url url)))
+      (setq url (w3m-remove-passwd-from-url url))
+      (when user
+	(setq w3m-tmp-urluser-alist (cons (cons url user) w3m-tmp-urluser-alist))))
     ;; Store the current position in the history structure.
     (w3m-history-store-position)
     (when w3m-current-forms
@@ -4714,7 +4721,7 @@ for neither the interactive use nor the batch mode."
 	    (switch-to-buffer buffer))
 	(switch-to-buffer buffer))
       (insert (make-string (max 0 (/ (1- (window-height)) 2)) ?\n)
-	      "Reading " url "...")
+	      "Reading " (w3m-remove-passwd-from-url url) "...")
       (beginning-of-line)
       (let ((fill-column (window-width)))
 	(center-region (point) (point-max)))

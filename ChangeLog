@@ -1,3 +1,25 @@
+2002-01-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-tmp-urluser-alist): New variable.
+	(w3m-goto-url): If URL include user and passwd, set
+	`w3m-tmp-urluser-alist' for process handling.
+	Remove passwd from URL.
+	(w3m): Remove passwd from URL when insert it in buffer.
+
+	* w3m-util.el (w3m-get-user-passwd-from-url)
+	(w3m-remove-passwd-from-url): New functions.
+
+	* w3m-proc.el (top): Define `w3m-tmp-urluser-alist' to avoid
+	byte-compile warning.
+	(w3m-process-start-process): If URL include user or passwd, set
+	them to default values.
+	(w3m-process-filter): Use default values of `w3m-process-user' and
+	`w3m-process-passwd'.
+	(w3m-process-get-server-root): Remove `about://.../' from server
+	root.
+
+	* w3m-search.el (w3m-search): Insert default string in minibuffer.
+
 2002-01-25  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-about-history): Don't add to history if url is nil.
@@ -922,7 +944,7 @@
 	* w3mhack.el (w3mhack-examine-modules): Revival byte-compile
 	`w3m-tabmenu.el' when XEmacs.
 
-	* w3m-tabmenu.el (ALL): Full rewrite to 
+	* w3m-tabmenu.el (ALL): Full rewrite to
 	(w3m-select-buffer): Copy from w3m-tabmenu.el
 
 	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
@@ -4006,7 +4028,7 @@
 
 	* shimbun/shimbun.el (shimbun-index-url): Removed method definition.
 
-	* shimbun/sb-fml.el 
+	* shimbun/sb-fml.el
 	from index-url.
 
 	* shimbun/sb-mhonarc.el (shimbun-make-contents): Always insert

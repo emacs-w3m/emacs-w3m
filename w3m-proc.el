@@ -57,7 +57,8 @@
   (defvar w3m-command-arguments)
   (defvar w3m-command-environment)
   (defvar w3m-async-exec)
-  (defvar w3m-process-connection-type))
+  (defvar w3m-process-connection-type)
+  (defvar w3m-tmp-urluser-alist))
 
 (defvar w3m-process-inhibit-quit t
   "`w3m-process-sentinel' binds `inhibit-quit' according to this variable.")
@@ -186,18 +187,21 @@ generated asynchronous process is ignored.  Otherwise,
 	  (let* ((command (w3m-process-command object))
 		 (proc (apply 'start-process command
 			      (current-buffer) command
-			      (w3m-process-arguments object))))
+			      (w3m-process-arguments object)))
+		 urluser)
 	    (setf (w3m-process-process object) proc)
-	    (setq w3m-process-user nil
-		  w3m-process-passwd nil
+	    (setq urluser (assoc w3m-current-url w3m-tmp-urluser-alist))
+	    (setq w3m-process-user (car (cdr urluser))
+		  w3m-process-passwd (cdr (cdr urluser))
 		  w3m-process-user-counter 2
 		  w3m-process-realm nil)
+	    (setq w3m-tmp-urluser-alist (delete urluser w3m-tmp-urluser-alist))
 	    (set-process-filter proc 'w3m-process-filter)
 	    (set-process-sentinel proc (if no-sentinel
 					   'ignore
 					 'w3m-process-sentinel))
 	    (process-kill-without-query proc))))))
-  nil) ;; The return value of `w3m-process-start-process'.
+  nil)	;; The return value of `w3m-process-start-process'.
 
 (defun w3m-process-start-queued-processes ()
   "Start a process which is registerd in `w3m-process-queue' if the
@@ -540,8 +544,16 @@ evaluated in a temporary buffer."
 		  (or (and (stringp w3m-current-url)
 			   (w3m-process-get-passwd
 			    w3m-current-url w3m-process-realm w3m-process-user))
-		      (read-passwd
-		       (format "Password for %s: " w3m-process-realm))))
+		      (let ((pass w3m-process-passwd))
+			(read-passwd
+			 (format "Password for %s%s: " w3m-process-realm
+				 (if (and (stringp pass) (> (length pass) 0)
+					  (not (featurep 'xemacs)))
+				     (concat " ("
+					     (make-string (length pass) ?\*)
+					     ")")
+				   ""))
+			 nil pass))))
 	    (condition-case nil
 		(progn
 		  (process-send-string process
@@ -556,8 +568,9 @@ evaluated in a temporary buffer."
 		  (or (and (stringp w3m-current-url)
 			   (w3m-process-get-user w3m-current-url
 						 w3m-process-realm))
-		      (read-from-minibuffer (format "Username for %s: "
-						    w3m-process-realm))))
+		      (read-from-minibuffer
+		       (format "Username for %s: " w3m-process-realm)
+		       w3m-process-user)))
 	    (condition-case nil
 		(process-send-string process
 				     (concat w3m-process-user "\n"))
@@ -565,6 +578,8 @@ evaluated in a temporary buffer."
 
 (defun w3m-process-get-server-root (url)
   "Get server root for realm."
+  (when (string-match "\\`about://[^/]+/" url)
+    (setq url (substring url (match-end 0))))
   (if (string-match "^[^/]*/+\\([^/]+\\)" url)
       (downcase (match-string 1 url))
     url))
