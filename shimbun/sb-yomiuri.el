@@ -68,8 +68,8 @@
 	     "\\([012][0-9]:[0-5][0-9]\\)"
 	     ")" s0 "</a>")
 	    1 2 3 4 5 6 7)))
-    `(("business" "経済面" "index.htm" ,@default)
-      ("culture" "芸能・文化面" "index.htm" ,@default)
+    `(("business" "経済" "index.htm" ,@default)
+      ("culture" "芸能・文化" "index.htm" ,@default)
       ("editorial" "社説・コラム" "index.htm"
        ,(concat "<a" s1 "href=\"/"
 		;; 1. url
@@ -105,7 +105,7 @@
 		;; 8. subject
 		"\\([^<>]+\\)" s0)
        1 3 6 8 4 5 nil 2)
-      ("national" "社会面" "index.htm" ,@default)
+      ("national" "社会" "index.htm" ,@default)
       ("obit" "おくやみ" "index.htm"
        ,(concat "<a" s1 "href=\"/"
 		;; 1. url
@@ -124,16 +124,16 @@
 		"\\([0-3]?[0-9]\\)"
 		")" s0 "</a>")
        1 2 3 4 5 6)
-      ("politics" "政治面" "index.htm" ,@default)
-      ("science" "科学面" "index.htm" ,@default)
-      ("sports" "スポーツ面" "index.htm" ,@default)
-      ("world" "国際面" "index.htm" ,@default)))
+      ("politics" "政治" "index.htm" ,@default)
+      ("science" "科学" "index.htm" ,@default)
+      ("sports" "スポーツ" "index.htm" ,@default)
+      ("world" "国際" "index.htm" ,@default)))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.
 Regexp may contain the \"%s\" token which is replaced with a
 regexp-quoted group name.  Numbers point to the search result in order
 of [0]a url, [1,2]serial numbers, [3]a subject, [4]a month, [5]a day,
-[6]an hour:minute and [7-]extra keywords.")
+\[6]an hour:minute and [7-]extra keywords.")
 
 (defvar shimbun-yomiuri-content-start "\n<!--  honbun start  -->\n")
 
@@ -348,7 +348,7 @@ It does also shorten too much spaces."
 			 (match-string (nth 7 numbers)))
 	       (concat shimbun-yomiuri-url (match-string (nth 0 numbers)))))
 	    headers))
-    headers))
+    (shimbun-sort-headers headers)))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-yomiuri)
 					 &optional range)

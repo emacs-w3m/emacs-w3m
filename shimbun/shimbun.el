@@ -779,6 +779,23 @@ return the contents of this buffer as an encoded string."
 	  (or time "00:00")
 	  (or timezone "+0900")))
 
+(autoload 'timezone-fix-time "timezone")
+
+(defun shimbun-time-parse-string (string)
+  "Parse the time-string STRING into the Emacs style (HIGH LOW) time."
+  (let ((x (nreverse (append (timezone-fix-time string nil nil) nil))))
+    (apply 'encode-time (nconc (cdr x) (list (car x))))))
+
+(defun shimbun-sort-headers (headers)
+  "Return a list of sorted HEADERS by date in increasing order."
+  (sort headers
+	(lambda (a b)
+	  (setq a (shimbun-time-parse-string (shimbun-header-date a))
+		b (shimbun-time-parse-string (shimbun-header-date b)))
+	  (or (< (car a) (car b))
+	      (and (= (car a) (car b))
+		   (< (cadr a) (cadr b)))))))
+
 (if (fboundp 'regexp-opt)
     (defalias 'shimbun-regexp-opt 'regexp-opt)
   (defun shimbun-regexp-opt (strings &optional paren)

@@ -3092,8 +3092,9 @@ sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
 sponichi.society sponichi.entertainment sponichi.horseracing
 
 @item @uref{http://www.yomiuri.co.jp/, Yomiuri Shimbun}
-yomiuri.business yomiuri.editorial yomiuri.national yomiuri.obit
-yomiuri.politics yomiuri.sports yomiuri.world
+yomiuri.business yomiuri.culture yomiuri.editorial yomiuri.kyoiku
+yomiuri.national yomiuri.obit yomiuri.politics yomiuri.science
+yomiuri.sports yomiuri.world
 
 The backend, @samp{yomiuri-html}, is also supported.
 @end table
