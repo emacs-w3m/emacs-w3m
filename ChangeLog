@@ -1,5 +1,7 @@
 2002-06-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* Makefile.in (DOCS): Add `TIPS'.
+
 	* w3m.el (emacs-w3m-version): Release 1.2.52.
 
 2002-06-26  Ando Tsutomu  <ando-tom@ff.iij4u.or.jp>
