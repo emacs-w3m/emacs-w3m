@@ -1,3 +1,7 @@
+2004-07-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* Release emacs-w3m-1.4.1 from emacs-w3m-1_4 branch.
+
 2004-07-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-weather.el: Reconstructed to follow the change of site
