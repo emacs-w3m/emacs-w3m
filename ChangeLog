@@ -1,3 +1,8 @@
+2002-06-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bug.el: Require `w3m-e19' for Emacs 19 to be able to compile
+	this module alone.
+
 2002-06-18  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-mailarc.el: New file.

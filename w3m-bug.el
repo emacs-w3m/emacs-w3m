@@ -69,8 +69,11 @@
   (require 'cl))
 
 (eval-and-compile
-  (when (boundp 'MULE)
-    (require 'w3m-om)))
+  (cond ((boundp 'MULE)
+	 (require 'w3m-om))
+	((and (boundp 'emacs-major-version)
+	      (= emacs-major-version 19))
+	 (require 'w3m-e19))))
 
 (defun report-emacs-w3m-bug (topic)
   "Report a bug in emacs-w3m.
