@@ -1,3 +1,9 @@
+2001-10-30  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-sanity-convert-rot13): Rewrite.
+
+	* README.shimbun.ja: Add information for mew-shimbun.el
+
 2001-10-29  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-terminal-coding-system): Changed default value
@@ -9,7 +15,28 @@
 
 2001-10-29  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* shimbun/mew-shimbun.el (all): Many many change.
+	* shimbun/mew-shimbun.el (Top): Modify comment.
+	(mew-shimbun-groups-db-length): New customize variable.
+	(mew-shimbun-unknown-from): Ditto.
+	(mew-shimbun-mark-re-retrieve): Ditto.
+	(mew-shimbun-before-retrieve-all-hook,
+	mew-shimbun-retrieve-all-hook): Remove hook.
+	(mew-shimbun-db2): New variable.
+	(mew-shimbun-db-search-id2): New macro.
+	(mew-shimbun-goto-folder): Rewrite.
+	(mew-shimbun-re-retrieve): New function.
+	(mew-shimbun-re-retrieve-all): Ditto.
+	(mew-shimbun-get-id-msgs): Ditto.
+	(mew-shimbun-re-retrieve-article): Ditto.
+	(mew-shimbun-sanity-convert): Ditto.
+	(mew-shimbun-sanity-convert-rot13): Ditto.
+	(mew-shimbun-remove-unseen-advice): Ditto.
+	(mew-shimbun-db-setup2): Ditto.
+	(mew-shimbun-db-shutdown2): Ditto.
+	(mew-shimbun-db-add-id): Hande replace.
+	(mew-shimbun-db-length): New function.
+	(mew-shimbun-md5): Ditto.
+	(mew-shimbun-unseen-setup): Change defadvice function.
 
 2001-10-29  ORI Manabu <ori@tahoo.org>
 

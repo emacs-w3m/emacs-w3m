@@ -8,6 +8,7 @@ shimbun ライブラリを利用できるユーザエージェントは、以下の通りです。
 	Wanderlust (2.7.0 以降)
 	T-gnus-6_15
 	Gnus (T-gnus の nnshimbun.el が必要)
+	Mew (2.0 以降) "3. mew-shimbun.el について" をお読み下さい
 
 APEL および FLIM パッケージが必要です。インストールする前にそれらをイン
 ストールしてください。それらのパッケージは
@@ -146,6 +147,127 @@ IBM developerWorks	ibm-dev.components ibm-dev.java ibm-dev.linux
 			ibm-dev.webservices
 			ibm-dev.xml 
 Muchy's Palmware Review! muchy.review
+
+3. mew-shimbun.el について
+
+mew-shimbun.el は Mew version 2.0 以降を使って shimbun を楽しむ elisp で
+す。Mew と APEL、FLIM がインストールされていれば、emacs-w3m のインストー
+ル時に同時にインストールされます。
+
+3.1 設定
+~/.mew.el の最後に以下のように書きます。
+
+;;; mew-shimbun のロード、キー定義
+;; (setq mew-shimbun-use-unseen t) ;;; (*1)
+;; (setq mew-shimbun-use-unseen-cache-save t) ;;; (*2)
+(require 'mew-shimbun)
+(define-key mew-summary-mode-map "G"  (make-sparse-keymap))
+(define-key mew-summary-mode-map "Gg" 'mew-shimbun-goto-folder)
+(define-key mew-summary-mode-map "Gi" 'mew-shimbun-retrieve)
+(define-key mew-summary-mode-map "GI" 'mew-shimbun-retrieve-all)
+(define-key mew-summary-mode-map "Gr" 'mew-shimbun-re-retrieve)
+(define-key mew-summary-mode-map "GR" 'mew-shimbun-re-retrieve-all)
+(when mew-shimbun-use-unseen
+  (define-key mew-summary-mode-map "Gu" 'mew-shimbun-remove-unseen)
+  (define-key mew-summary-mode-map "GU" 'mew-shimbun-remove-unseen-all))
+
+;;; (*1), (*2) は後述する未読管理をするときに設定します。これらの変数は、
+;;; 必ず (require 'mew-shimbun) の前で設定しないといけません。
+
+;;; 変数の設定の例
+;; ハイパー日記システムを読むときは例えば以下のように設定します。
+(setq shimbun-hns-group-alist
+      '(("koseki"					;; グループ名
+	 "http://cgi.NetLaputa.ne.jp/~kose/diary/"	;; URL
+	 "kose@meadowy.org")				;; From: に挿入するメールアドレス
+	("miyoshi"
+	 "http://www.be.wakwak.com/cgi-bin/sbox/~miyoshi/hns/"
+	 "miyoshi@meadowy.org")
+	("goto"
+	 "http://www.taiyo.co.jp/~gotoh/diary/"
+	 "gotoh@meadowy.org")))
+
+;; Mew で購読する shimbun group を設定します。
+;; それぞれ、("server/group" . range) で range には all, last, 数字が指
+;; 定できます。以下に例を示します。
+(setq mew-shimbun-groups
+      '(("asahi/national" . 2)
+	("asahi/international" . 2)
+	("asahi-html/sports" . 2)
+	("mew/mew-int" . last)
+	("mew/mgp-users-jp" . last)
+	("xemacs/xemacs-beta-ja" . last)
+	("xemacs/xemacs-users-ja" . last)
+	("hns/goto" . last)
+	("hns/koseki" . last)
+	("hns/miyoshi" . last)
+	("tcup/meadow" . last)
+	("security-memo/memo" . last)
+	("slashdot-jp/story" . last)
+	("cnet/comp" . last)
+	("zdnet/comp" . last)))
+
+;;; 以上で基本的な設定は終了です。
+
+3.2 記事の購読
+
+(1) 最初の購読
+上記の設定をしたあと、まず、"GI (mew-shimbun-retrieve-all)" しましょう。
+mew-shimbun-groups で設定した shimbun folder が "asahi/national" なら、
+"+shimbun/asahi/national" に出来ています。また、新たに group を追加した
+ときも "GI" しましょう。
+
+(2) shimbun folder への移動
+通常の "g (mew-summary-goto-folder)" でも shimbun folder への移動はでき
+ますが、"Gg (mew-shimbun-goto-folder)" を使うと shimbun folder 限定で移
+動できます。また、"C-u Gg" と prefix をつけたときは、新規記事のある
+folder (まだ scan をしていない folder) のみ、最後に "*" をつけて補完候補
+に表示します。
+
+(3) folder 単位での記事の取得
+shimbun folder で "Gi (mew-shimbun-retrieve)" すると、現在の shimbun
+folder で新規記事を取得します。
+
+(4) 更新された記事の取得兼新規記事の取得
+特定の記事を表示した状態で "Gr (mew-shimbun-re-retrieve)" すると、その記
+事が更新されていたら更新し、同時に新規記事も取得します。
+"C-u Gr" とすると、mew-shimbun-mark-re-retrieve に指定したマーク(デファ
+ルトは '@') の記事の更新を試みます。CNET などでお使い下さい。
+
+"GR (mew-shimbun-re-retrieve-all)" では、すべての記事の新規性を調べ取得
+しなおします。"C-u GR" ではリージョンで指定した範囲の記事を対象とします。
+おそらくハイパー日記システムの記事で有意義なコマンドでしょう。
+
+3.3 未読管理
+
+(setq mew-shimbun-use-unseen t) としていると、新規に取得した記事に
+mew-shimbun-mark-unseen で設定したマーク(デファルトは '*') がつくように
+なり、読むと自動的に消えます。また、通常、Mew の summary モードでマーク
+をつける、あるいは消した後、scan をしないと .mew-cache に反映されません
+が、(setq mew-shimbun-use-unseen-cache-save t) とすることにより、自動的
+に .mew-cache を保存するようになります。
+
+弊害として、動作が遅くなる、複数の Emacs でおなじ shimbun を読んでいると、
+それぞれの Emacs 間で矛盾が生じる、といったことがあげられますので、注意
+して使ってください。また、未読管理自体も *力づく* で実現しています。
+
+その他の未読管理サポートとして、現在の folder をすべて既読にするには 
+"GU (mew-shimbun-remove-unseen-all)" を使います。"C-u GU" でリージョン内
+のみ既読にします。また、通常使いませんが、
+"Gu (mew-shimbun-remove-unseen)" というコマンドもあります。あとで
+全部読み直そうというときには "M-x mew-shimbun-all-unseen" も有効かもしれ
+ません。
+
+未読管理を導入すると "C-u Gg" で未読記事のある folder も表示するようにな
+ります。新規記事のある folder は最後に "*", 未読記事のある folder は最後
+に "%" をつけて表示するようになります。
+
+未読に使うマークが "*" じゃダメ、という方は、
+http://www.mew.org/ml/mew-dist-2.0/msg01251.html
+を参考にして新しいマークを定義してください。"C-u N" でそのマークを指定す
+ると楽しい未読ライフをおくることができると思います。
+
+
 
 Local Variables:
 mode: text

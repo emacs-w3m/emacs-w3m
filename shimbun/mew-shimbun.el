@@ -48,7 +48,6 @@
 ;;; Code:
 ;; disable runtime cl
 (eval-when-compile
-  (require 'mule-caesar)
   (require 'cl))
 
 (eval-when-compile
@@ -543,6 +542,13 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
     (+ newcount rplcount)))
 
 ;;; Mew interface funcitions:
+(defun mew-shimbun-scan (fld msg)
+  (let ((width (1- (mew-scan-width)))
+	(vec (mew-pop-scan-header)))
+    (mew-scan-set-folder vec fld)
+    (mew-scan-set-message vec msg)
+    (mew-scan-insert-line fld vec width msg nil)))
+
 (defun mew-shimbun-sanity-convert ()
   (if (re-search-forward mew-eoh nil t)
       (beginning-of-line)
@@ -554,62 +560,56 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	  beg end from from13)
       (narrow-to-region (point-min) (point))
       (goto-char (point-min))
-      (if (re-search-forward mew-from: nil t)
+      (if (not (re-search-forward mew-from: nil t))
+	  ;; No From:
 	  (progn
+	    (goto-char (point-max))
+	    (insert (concat mew-from: " " unknown-from "\n")))
+	(setq beg (match-end 0))
+	(forward-line)
+	(mew-header-goto-next)
+	(setq end (1- (point)))
+	(setq from (or (buffer-substring beg end) ""))
+	(setq from (or (mew-addrstr-parse-address from) ""))
+	(unless (string-match
+		 "^[-A-Za-z0-9._!%]+@[A-Za-z0-9][-A-Za-z0-9._!]+[A-Za-z0-9]$"
+		 from)
+	  ;; strange From:
+	  (goto-char (point-min))
+	  (when (re-search-forward "^From-R13:" nil t)
+	    ;; From-R13:
 	    (setq beg (match-end 0))
 	    (forward-line)
 	    (mew-header-goto-next)
-	    (setq end (1- (point)))
-	    (setq from (or (buffer-substring beg end) ""))
-	    (setq from (or (mew-addrstr-parse-address from) ""))
-	    (unless (string-match
-		     "^[-A-Za-z0-9._!%]+@[A-Za-z0-9][-A-Za-z0-9._!]+[A-Za-z0-9]$"
-		     from)
-	      ;; strange From:
-	      (goto-char (point-min))
-	      (when (re-search-forward "^From-R13:" nil t)
-		(setq beg (match-end 0))
-		(forward-line)
-		(mew-header-goto-next)
-		(setq from13 (buffer-substring beg (1- (point))))
-		(when (setq from13 (mew-shimbun-sanity-convert-rot13 from13))
-		  (setq unknown-from from13)))
-	      (goto-char end)
-	      (insert " <" unknown-from ">")))
-	;; No From:
-	(goto-char (point-max))
-	(insert (concat mew-from: " " mew-shimbun-unknown-from "\n"))))))
+	    (setq from13 (buffer-substring beg (1- (point))))
+	    (when (setq from13 (mew-shimbun-sanity-convert-rot13 from13))
+	      (setq unknown-from from13)))
+	  (goto-char end)
+	  (insert " <" unknown-from ">"))))))
 
 (defun mew-shimbun-sanity-convert-rot13 (from13)
-  ;; 
   (with-temp-buffer
     (insert from13)
     ;; from13 is binary
     (mew-cs-decode-region (point-min) (point-max) mew-cs-autoconv)
+    (goto-char (point-min))
+    ;; Extent rot14(@,A-Z,[) + rot13(a-z)
+    (while (< (point) (point-max))
+      (let* ((chr (char-after (point))))
+	(cond
+	 ((and (<= ?@ chr) (<= chr ?\[))
+	  (setq chr (+ chr 14))
+	  (when (> chr ?\[) (setq chr (- chr 28)))
+	  (delete-char 1)
+	  (insert chr))
+	 ((and (<= ?a chr) (<= chr ?z))
+	  (setq chr (+ chr 13))
+	  (when (> chr ?z) (setq chr (- chr 26)))
+	  (delete-char 1)
+	  (insert chr))
+	 (t (forward-char)))))
     (setq from13 (buffer-substring (point-min) (point-max)))
-    (setq from13 (mew-addrstr-parse-address from13))
-    (erase-buffer)
-    (insert from13)
-    ;; shimbun require APEL
-    (or (featurep 'mule-caesar) (require 'mule-caesar))
-    (mule-caesar-region (point-min) (point-max))
-    (let ((case-fold-search nil)
-	  char)
-      (goto-char (point-min))
-      (when (search-forward "A" nil t)
-	(replace-match "@"))
-      (goto-char (point-min))
-      (while (re-search-forward "[B-Z]" nil t)
-	(setq char (string-to-char (mew-match 0)))
-	(replace-match (string (1+ char))))
-      (buffer-string))))
-
-(defun mew-shimbun-scan (fld msg)
-  (let ((width (1- (mew-scan-width)))
-	(vec (mew-pop-scan-header)))
-    (mew-scan-set-folder vec fld)
-    (mew-scan-set-message vec msg)
-    (mew-scan-insert-line fld vec width msg nil)))
+    (mew-addrstr-parse-address from13)))
 
 (defun mew-shimbun-remove-unseen ()
   "Remove 'unseen' mark and 'X-Shimbun-Status:'."
