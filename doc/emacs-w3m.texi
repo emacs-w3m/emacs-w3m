@@ -3631,6 +3631,17 @@ If you are using w3mmee configured with the option @samp{lang=en} or
 @samp{lang=ja}, reconfigure w3mmee with the option @samp{lang=many} (it
 can be done by entering 3, when the @samp{configure} script prompts you,
 "Which language do you prefer?"), and rebuild w3mmee.
+
+@item
+Q. Why I cannot visit web pages using emacs-w3m?  There is no problem
+when visiting local html files or using w3m barefoot, though.
+
+What is called the asynch
+patch@footnote{@uref{http://www.page.sannet.ne.jp/knabe/w3m/w3m.html,
+w3m on cygwin}} is applied to the w3m command which some Linux
+distribution (e.g. Gentoo Linux) contains.  It is useful when using w3m
+barefoot, however it might make emacs-w3m hang.  If it is suspected, we
+recommend you reinstall the w3m command from the original source.
 @end itemize
 
 @node Shimbun FAQ
