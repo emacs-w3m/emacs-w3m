@@ -635,9 +635,32 @@ If nil, use an internal CGI of w3m."
 		  "/usr/local/lib/w3m/dirlist.cgi")))
 
 (defcustom w3m-add-referer t
-  "*If non-nil, add refererence information when sending request to HTTP server."
+  "*If non-nil, add reference information when sending request to the
+foreign HTTP servers.  See also the documentation for the option
+`w3m-add-referer-regexps'."
   :group 'w3m
   :type 'boolean)
+
+(defcustom w3m-add-referer-regexps '("^http:" . nil)
+  "*Cons of two regexps to allow and not to allow sending a reference
+information to HTTP servers.  If a reference matches the car of this
+value and it does not match the cdr of this value, it will be sent.
+You may set the cdr of this value to inhibit sending references which
+will disclose your private informations, for example:
+
+\(setq w3m-add-referer-regexps
+      '(\"^http:\"
+	. \"^http://\\\\(server1\\\\|server2\\\\)\\\\.your-company\\\\.com/\"))
+
+See also the documentation for the option `w3m-add-referer'."
+  :group 'w3m
+  :type '(cons (list :inline t :format "%v"
+		     (radio :tag "Allow"
+			    regexp
+			    (const :tag "Don't allow all" nil))
+		     (radio :tag "Don't allow"
+			    regexp
+			    (const :tag "Allow all" nil)))))
 
 (eval-and-compile
   (defconst w3m-entity-alist		; html character entities and values

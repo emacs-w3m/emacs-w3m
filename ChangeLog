@@ -1,3 +1,7 @@
+2001-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-add-referer-regexps): New user option.
+
 2001-09-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-cache-available-p): New function.
