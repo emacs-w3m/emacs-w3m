@@ -1,3 +1,10 @@
+2003-08-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add kansai and
+	kansai-special.
+	(shimbun-index-url): Add a special treatment for kansai-special.
+	(shimbun-asahi-get-headers): Ditto.
+
 2003-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-decode-entities): Don't trust in the `match-data'
