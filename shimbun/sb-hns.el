@@ -126,7 +126,7 @@ It can be defined in the `shimbun-hns-x-face-alist', too.
 	    (let ((id (match-string 1)))
 	      (when (re-search-forward "</h3>" nil t)
 		(setq start (point))
-		(when (re-search-forward "<!-- end of L?NEW -->" nil t)
+		(when (re-search-forward "<!-- end of R?L?NEW -->" nil t)
 		  (set (intern id (shimbun-hns-content-hash-internal shimbun))
 		       (buffer-substring start (point)))))))
 	  (if (boundp (setq sym (intern-soft uniq
@@ -150,14 +150,17 @@ It can be defined in the `shimbun-hns-x-face-alist', too.
 				     &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
     (with-current-buffer (or outbuf (current-buffer))
-      (shimbun-header-insert shimbun header)
-      (insert "Content-Type: " "text/html" "; charset=ISO-2022-JP\n"
-	      "MIME-Version: 1.0\n"
-	      "\n"
-	      (encode-coding-string
-	       (or (shimbun-hns-article shimbun (shimbun-header-xref header))
-		   "")
-	       (mime-charset-to-coding-system "ISO-2022-JP"))))))
+      (insert
+       (with-temp-buffer
+	 (shimbun-header-insert shimbun header)
+	 (insert "Content-Type: " "text/html" "; charset=ISO-2022-JP\n"
+		 "MIME-Version: 1.0\n"
+		 "\n"
+		 (or (shimbun-hns-article shimbun (shimbun-header-xref header))
+		     ""))
+	 (encode-coding-string
+	  (buffer-string)
+	  (mime-charset-to-coding-system "ISO-2022-JP")))))))
 
 (luna-define-method shimbun-close :after ((shimbun shimbun-hns))
   (shimbun-hns-set-content-hash-internal shimbun nil))

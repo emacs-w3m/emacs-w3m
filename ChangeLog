@@ -1,3 +1,8 @@
+2001-05-08  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-hns.el (shimbun-hns-article): Support "RLNEW".
+	(shimbun-article): Fixed problem when header contain multibyte string.
+
 2001-05-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-form.el (top-level): Modify string to 'iso-2022-7bit' for
