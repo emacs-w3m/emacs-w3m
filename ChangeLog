@@ -1,3 +1,8 @@
+2001-11-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-index-url, shimbun-get-headers):
+	Use the top page of each group instead of GROUP/update/list.html.
+
 2001-11-03  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-copy-buffer): Added argument `empty'.
