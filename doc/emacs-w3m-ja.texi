@@ -3261,12 +3261,18 @@ Wanderlust $B$K$O(B ELMO $B%b%8%e!<%k$N0l$D$H$7$F(B @samp{elmo-shimbun} $B$
 @table @asis
 @item @uref{http://www.asahi.com/, $BD+F|?7J9(B}
 asahi.business asahi.culture asahi.english asahi.international
-asahi.national asahi.politics asahi.science asahi.sports
+asahi.kansai asahi.kansai-special asahi.national asahi.politics
+asahi.science asahi.sports
 
 $B$3$l$i$O!"%F%-%9%H$N$_$N5-;v$r:n@.$7$^$9$,!"5-;vCf$K4^$^$l$k<L??$J$I$r%$(B
 $B%s%i%$%sI=<($9$k$h$&$K3HD%$5$l$?(B @samp{asahi-html} $B$H$$$&%P%C%/%(%s%I$b(B
 $B$"$j$^$9!#$3$A$i$rMxMQ$9$k>l9g$O!"(Basahi-html.business $B$H$$$&$h$&$J%0%k!<(B
 $B%WL>$K$J$j$^$9!#(B
+
+@item @uref{http://mytown.asahi.com/, $BD+F|?7J9(B}
+asahi-mytown.(hokkaido@dots{}okinawa) asahi-mytown.usa
+
+$BJF9q$HF|K\$NA4ETF;I\8)$rLVMe$9$kD+F|?7J9$NCOJ}HG$G$9!#(B
 
 @item @uref{http://www.mainichi.co.jp/, $BKhF|?7J9(B}
 mainichi.shakai mainichi.sports mainichi.seiji mainichi.keizai

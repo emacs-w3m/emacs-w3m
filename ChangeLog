@@ -1,3 +1,7 @@
+2003-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi-mytown.el: New file.
+
 2003-08-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-previous-position): New macro.
