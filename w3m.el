@@ -3268,7 +3268,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
     (w3m-process-do
 	(header (w3m-w3m-get-header url no-cache handler))
       (when header
-	(let (alist type charset moved)
+	(let (case-fold-search alist type charset moved)
 	  (setq w3m-current-redirect nil)
 	  (dolist (line (split-string header "[\t ]*\n"))
 	    (when (string-match "^\\([^ \t:]+\\):[ \t]*" line)
@@ -3286,7 +3286,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 					       header)
 				 (match-string 1 header))))
 	    (when (setq type (cdr (assoc "content-type" alist)))
-	      (if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" type)
+	      (if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" (downcase type))
 		  (setq charset (w3m-remove-redundant-spaces
 				 (match-string 1 type))
 			type (w3m-remove-redundant-spaces
