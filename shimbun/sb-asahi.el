@@ -309,13 +309,10 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	     (shimbun-mime-encode-string
 	      (cond (kansai-special
 		     (concat "[" kansai-special "] "
-			     (let ((subject (match-string (nth 3 numbers))))
-			       (with-temp-buffer
-				 (insert subject)
-				 (save-match-data
-				   (w3m-fontify))
-				 (buffer-substring-no-properties
-				  (point-min) (point-max))))))
+			     (save-match-data
+			       (shimbun-replace-in-string
+				(match-string (nth 3 numbers))
+				"<[^<>]+>" ""))))
 		    ((and (string-equal group "international")
 			  (string-equal (substring serial
 						   0 (min 7 (length serial)))

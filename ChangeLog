@@ -1,3 +1,8 @@
+2004-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Simplify
+	removing of `<...>'s in the kansai-special group.
+
 2004-07-30  Romain Francoise <romain@orebokech.com>
 
 	Enable emacs-w3m to be built with Emacs --without-x.
