@@ -244,7 +244,7 @@ It does also shorten too much spaces."
 				       (when (nth 5 numbers)
 					 (match-string (nth 5 numbers))))
 	     ;; id
-	     (format "<%d%02d%0d2.%s%%%s.%s>"
+	     (format "<%d%02d%02d.%s%%%s.%s>"
 		     year month day (match-string (nth 1 numbers)) group
 		     shimbun-yomiuri-top-level-domain)
 	     ;; references, chars, lines
