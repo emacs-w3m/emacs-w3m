@@ -1,59 +1,59 @@
-1. $B$O$8$a$K(B
+1. ¤Ï¤¸¤á¤Ë
 
-w3m-namazu $B$OA4J88!:w%=%U%H(B Namazu $B$N(B Emacs $B>e$N%$%s%?!<%U%'!<%9$G$9!#8!(B
-$B:w7k2L$r(B emacs-w3m $B$r;H$C$FI=<($7$^$9!#(B
+w3m-namazu ¤ÏÁ´Ê¸¸¡º÷¥½¥Õ¥È Namazu ¤Î Emacs ¾å¤Î¥¤¥ó¥¿¡¼¥Õ¥§¡¼¥¹¤Ç¤¹¡£¸¡
+º÷·ë²Ì¤ò emacs-w3m ¤ò»È¤Ã¤ÆÉ½¼¨¤·¤Þ¤¹¡£
 
-w3m-namazu $B$r;H$&0Y$K$O!"(BNamazu $B$r%$%s%9%H!<%kI,MW$,M-$j$^$9!#(BNamazu $B$O(B
+w3m-namazu ¤ò»È¤¦°Ù¤Ë¤Ï¡¢Namazu ¤ò¥¤¥ó¥¹¥È¡¼¥ëÉ¬Í×¤¬Í­¤ê¤Þ¤¹¡£Namazu ¤Ï
 
 http://www.namazu.org
 
-$B$+$i<hF@$9$k;v$,=PMh$^$9!#(B
+¤«¤é¼èÆÀ¤¹¤ë»ö¤¬½ÐÍè¤Þ¤¹¡£
 
 
-2. $B=`Hw(B
+2. ½àÈ÷
 
-2.1 Index $B%U%!%$%k$N:n@.(B
+2.1 Index ¥Õ¥¡¥¤¥ë¤ÎºîÀ®
 
-Namazu $B$r%$%s%9%H!<%k$7$?$i!"(BIndex $B%U%!%$%k$r:n@.$7$^$9!#>\$7$$FIL@$O(B 
-Namazu $B$N%f!<%6!<!&%^%K%e%"%k$K$f$:$k$H$7$F!"4JC1$J(B Index $B%U%!%$%k$N:n$j(B
-$BJ}$r5s$2$F$*$-$^$9!#(B
+Namazu ¤ò¥¤¥ó¥¹¥È¡¼¥ë¤·¤¿¤é¡¢Index ¥Õ¥¡¥¤¥ë¤òºîÀ®¤·¤Þ¤¹¡£¾Ü¤·¤¤ÆÉÌÀ¤Ï 
+Namazu ¤Î¥æ¡¼¥¶¡¼¡¦¥Þ¥Ë¥å¥¢¥ë¤Ë¤æ¤º¤ë¤È¤·¤Æ¡¢´ÊÃ±¤Ê Index ¥Õ¥¡¥¤¥ë¤Îºî¤ê
+Êý¤òµó¤²¤Æ¤ª¤­¤Þ¤¹¡£
 
-% mknmz -O <Index $B%U%!%$%k$rCV$/%G%#%l%/%H%j!<(B> <$B%I%-%e%a%s%H$N$"$k%G%#%l%/%H%j!<(B>
+% mknmz -O <Index ¥Õ¥¡¥¤¥ë¤òÃÖ¤¯¥Ç¥£¥ì¥¯¥È¥ê¡¼> <¥É¥­¥å¥á¥ó¥È¤Î¤¢¤ë¥Ç¥£¥ì¥¯¥È¥ê¡¼>
 
-2.2 w3m-namazu $B$N0Y$N=`Hw(B
+2.2 w3m-namazu ¤Î°Ù¤Î½àÈ÷
 
-w3m-namazu $B$O(B emacs-w3m $B$rDL>o$K%$%s%9%H!<%k$7$F$$$l$P!"0l=o$K%$%s%9%H!<(B
-$B%k$5$l$F$$$k$O$:$G$9!#%$%s%9%H!<%k$GFC$K$9$Y$-;v$O$"$j$^$;$s!#(B
+w3m-namazu ¤Ï emacs-w3m ¤òÄÌ¾ï¤Ë¥¤¥ó¥¹¥È¡¼¥ë¤·¤Æ¤¤¤ì¤Ð¡¢°ì½ï¤Ë¥¤¥ó¥¹¥È¡¼
+¥ë¤µ¤ì¤Æ¤¤¤ë¤Ï¤º¤Ç¤¹¡£¥¤¥ó¥¹¥È¡¼¥ë¤ÇÆÃ¤Ë¤¹¤Ù¤­»ö¤Ï¤¢¤ê¤Þ¤»¤ó¡£
 
-w3m-namazu $B$rF0$+$90Y$K!"$$$/$D$+$NJQ?t$rDj5A$7$F$*$+$J$1$l$P$J$j$^$;$s!#(B
-$B<!$NJQ?t$r;H$C$F$$$k4D6-$K$"$o$;$FDj5A$7$F2<$5$$!#(B
+w3m-namazu ¤òÆ°¤«¤¹°Ù¤Ë¡¢¤¤¤¯¤Ä¤«¤ÎÊÑ¿ô¤òÄêµÁ¤·¤Æ¤ª¤«¤Ê¤±¤ì¤Ð¤Ê¤ê¤Þ¤»¤ó¡£
+¼¡¤ÎÊÑ¿ô¤ò»È¤Ã¤Æ¤¤¤ë´Ä¶­¤Ë¤¢¤ï¤»¤ÆÄêµÁ¤·¤Æ²¼¤µ¤¤¡£
 
 * w3m-namazu-index-alist
- Index $B%U%!%$%k$NCV$$$F$"$k%G%#%l%/%H%j!<$r;XDj$7$^$9!#(Bw3m-namazu $B$G$O!"(B
- $B$3$l$i$N%G%#%l%/%H%j!<$r%(%$%j%"%9$r;H$C$F8F$S=P$7$^$9!#<!$N$h$&$K%(%$(B
- $B%j%"%9$H(B Index $B%G%#%l%/%H%j!<$r%;%C%H$K$7$?(B alist $B$GDj5A$7$^$9!#(B
- <$BNc(B>
+ Index ¥Õ¥¡¥¤¥ë¤ÎÃÖ¤¤¤Æ¤¢¤ë¥Ç¥£¥ì¥¯¥È¥ê¡¼¤ò»ØÄê¤·¤Þ¤¹¡£w3m-namazu ¤Ç¤Ï¡¢
+ ¤³¤ì¤é¤Î¥Ç¥£¥ì¥¯¥È¥ê¡¼¤ò¥¨¥¤¥ê¥¢¥¹¤ò»È¤Ã¤Æ¸Æ¤Ó½Ð¤·¤Þ¤¹¡£¼¡¤Î¤è¤¦¤Ë¥¨¥¤
+ ¥ê¥¢¥¹¤È Index ¥Ç¥£¥ì¥¯¥È¥ê¡¼¤ò¥»¥Ã¥È¤Ë¤·¤¿ alist ¤ÇÄêµÁ¤·¤Þ¤¹¡£
+ <Îã>
  (setq w3m-naamzu-index-alist
        '(("alias1" . "Path/to/the/index/directory1")
          ("alias2" . "Path/to/the/index/directory2")))
 
 * w3m-namazu-default-index
- $BDL>o;H$&(B Index $B$r(B w3m-namazu-index-alist $B$G@_Dj$7$?%(%$%j%"%9$G;XDj$7$^(B
- $B$9!#(B $B$3$NJQ?t$rDj5A$7$J$+$C$?>l9g$O!"(Bw3m-namazu $B$r5/F0$9$k0Y$K(B Index $B$r(B
- $BJ9$$$F$-$^$9!#%G%U%)!<%k%H0J30$N(B Index $B$r;H$&>l9g$O(B C-u M-x w3m-namazu
- $B$r;H$$$^$9!#(B
- <$BNc(B>
+ ÄÌ¾ï»È¤¦ Index ¤ò w3m-namazu-index-alist ¤ÇÀßÄê¤·¤¿¥¨¥¤¥ê¥¢¥¹¤Ç»ØÄê¤·¤Þ
+ ¤¹¡£ ¤³¤ÎÊÑ¿ô¤òÄêµÁ¤·¤Ê¤«¤Ã¤¿¾ì¹ç¤Ï¡¢w3m-namazu ¤òµ¯Æ°¤¹¤ë°Ù¤Ë Index ¤ò
+ Ê¹¤¤¤Æ¤­¤Þ¤¹¡£¥Ç¥Õ¥©¡¼¥ë¥È°Ê³°¤Î Index ¤ò»È¤¦¾ì¹ç¤Ï C-u M-x w3m-namazu
+ ¤ò»È¤¤¤Þ¤¹¡£
+ <Îã>
  (setq w3m-namazu-default-index "AliasName")
 
 
-3. w3m-namaz $B$r;H$&(B
+3. w3m-namaz ¤ò»È¤¦
 
-w3m-namazu $B$r;H$&$K$O(B
+w3m-namazu ¤ò»È¤¦¤Ë¤Ï
 
-M-x w3m-namazu $B$H$7$F2<$5$$!#(B
+M-x w3m-namazu ¤È¤·¤Æ²¼¤µ¤¤¡£
 
-$B%$%s%G%C%/%9$rJQ$($?$$;~$O!"?t0z?t$r<h$C$F8F$S=P$7$^$9!#(B
-$B$=$NB>!"JQ992DG=$J(B w3m-namazu $B$N%+%9%?%^%$%:JQ?t$O<!$NDL$j$G$9!#(B
+¥¤¥ó¥Ç¥Ã¥¯¥¹¤òÊÑ¤¨¤¿¤¤»þ¤Ï¡¢¿ô°ú¿ô¤ò¼è¤Ã¤Æ¸Æ¤Ó½Ð¤·¤Þ¤¹¡£
+¤½¤ÎÂ¾¡¢ÊÑ¹¹²ÄÇ½¤Ê w3m-namazu ¤Î¥«¥¹¥¿¥Þ¥¤¥ºÊÑ¿ô¤Ï¼¡¤ÎÄÌ¤ê¤Ç¤¹¡£
 
 w3m-namazu-cammand
 w3m-namazu-arguments
@@ -62,18 +62,18 @@ w3m-namazu-output-coding-system
 w3m-namazu-input-coding-system
 
 
-4. w3m-namazu $B$H$=$N<~JU(B
+4. w3m-namazu ¤È¤½¤Î¼þÊÕ
 
-Namazu $B$O9bNSE/$5$s$,3+H/$5$l$?A4J88!:w%=%U%H$G$9!#8=:_$b(B Namazu Project 
-$B$K$h$C$F3+H/$,B3$1$i$l$F$$$^$9!#(B
+Namazu ¤Ï¹âÎÓÅ¯¤µ¤ó¤¬³«È¯¤µ¤ì¤¿Á´Ê¸¸¡º÷¥½¥Õ¥È¤Ç¤¹¡£¸½ºß¤â Namazu Project 
+¤Ë¤è¤Ã¤Æ³«È¯¤¬Â³¤±¤é¤ì¤Æ¤¤¤Þ¤¹¡£
 
-namazu.el $B$O(B $B$^$D$b$H(B $B$f$-$R$m(B $B$5$s$,:n@.$7$?!"(B Emacs $B$+$i(B Namazu $B$r07$&(B
-$B0Y$N%$%s%?!<%U%'!<%9$G$9!#(Bnamazu.el $B$O:G?7$N(B Namazu $B$H0l=o$KG[I[$5$l$F$$(B
-$B$^$9!#(B
+namazu.el ¤Ï ¤Þ¤Ä¤â¤È ¤æ¤­¤Ò¤í ¤µ¤ó¤¬ºîÀ®¤·¤¿¡¢ Emacs ¤«¤é Namazu ¤ò°·¤¦
+°Ù¤Î¥¤¥ó¥¿¡¼¥Õ¥§¡¼¥¹¤Ç¤¹¡£namazu.el ¤ÏºÇ¿·¤Î Namazu ¤È°ì½ï¤ËÇÛÉÛ¤µ¤ì¤Æ¤¤
+¤Þ¤¹¡£
 
-w3m-namazu.el $B$O9S@nN49T$5$s$,:n@.$7!"0BBp@5G7$,=$@5$r2C$($?$b$N$r!"EZ20(B
-$B2mL-$5$s$,A4LLE*$K=q$-D>$7$F(B namazu.el $B$N@_Dj$b=PMh$k$@$10z$-7Q$0$h$&$K(B
-$B$7$?$b$N$G$9!#(B
+w3m-namazu.el ¤Ï¹ÓÀîÎ´¹Ô¤µ¤ó¤¬ºîÀ®¤·¡¢°ÂÂðÀµÇ·¤¬½¤Àµ¤ò²Ã¤¨¤¿¤â¤Î¤ò¡¢ÅÚ²°
+²íÌ­¤µ¤ó¤¬Á´ÌÌÅª¤Ë½ñ¤­Ä¾¤·¤Æ namazu.el ¤ÎÀßÄê¤â½ÐÍè¤ë¤À¤±°ú¤­·Ñ¤°¤è¤¦¤Ë
+¤·¤¿¤â¤Î¤Ç¤¹¡£
 
 
 Local Variables:
