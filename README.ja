@@ -32,11 +32,11 @@
    は，FLIM を前もってインストールしておく必要があります．詳細については，
    README.shimbun.ja を確認してください．
 
-   a) Emacs-21.x
+   a) Emacs 21.x
       emacs-w3m を動かすために，余分にインストールが必要なモジュールはあ
       りません．
 
-   b) Emacs-20.x
+   b) Emacs 20.x
       emacs-w3m を動かすために，余分にインストールが必要なモジュールはあ
       りません．
 
@@ -63,10 +63,10 @@
 
           http://www.lcdf.org/gifsicle/
 
-   d) Mule-2.3 (based on Emacs-19.34)
+   d) Mule 2.3 (based on Emacs 19.34)
       APEL を前もってインストールしておく必要があります．更に，「新しい
       custom」と regexp-opt.el(c) モジュールも必要です．詳しくは，次の
-      Emacs-19.34 についての説明を参照してください．
+      Emacs 19.34 についての説明を参照してください．
 
       BITMAP-MULE パッケージを用いて WEB ページのインライン画像を白黒表
       示させる場合には，付属のパッチを適用して Mule を作り直すことを強く
@@ -75,18 +75,18 @@
       patches/mule-2.3@19.34.patch という名前で，本パッケージに同梱され
       ています．
 
-   e) Emacs-19.34 (without MULE)
+   e) Emacs 19.34 (without MULE)
       APEL を前もってインストールしておく必要があります．
 
-      emacs-w3m は「新しい custom」パッケージを必要とします．Emacs-19.34
-      または Mule-2.3 を使っている場合は，emacs-w3m をインストールする前
+      emacs-w3m は「新しい custom」パッケージを必要とします．Emacs 19.34
+      または Mule 2.3 を使っている場合は，emacs-w3m をインストールする前
       にそれをインストールしなければなりません．「新しい custom」パッケー
       ジについて，詳細は http://www.dina.kvl.dk/~abraham/custom/ を参照
-      してください．特に Mule-2.3 を使う場合は APEL に附属している
+      してください．特に Mule 2.3 を使う場合は APEL に附属している
       README.ja も必ず調べて下さい．
 
       また，emacs-w3m は regexp-opt.el(c) モジュールを必要としますが，
-      Emacs-19.34 や Mule-2.3 などの古い Emacsen には含まれていません．
+      Emacs 19.34 や Mule 2.3 などの古い Emacsen には含まれていません．
       あなたが使っている Emacsen が該当する場合には，前もって，以下のよ
       うに regexp-opt.el(c) モジュールをインストールする必要があります．
 
@@ -115,7 +115,7 @@
          % make
          % make install
 
-     加えて，XEmacs や Emacs-21 用のアイコンを，以下のようにインストール
+     加えて，XEmacs や Emacs 21 用のアイコンを，以下のようにインストール
      することができます．
 
          % make install-icons

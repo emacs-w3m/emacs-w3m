@@ -27,7 +27,7 @@
    emacs-w3m works on Emacs 19.34 or XEmacs without Mule except for
    several commands, such as the command to look weather forecasts in
    Japan.  They strongly depends on Mule feature, so that they must not
-   work on XEmacs without Mule.
+   work on Emacs 19.34 or XEmacs without Mule.
 
 ** Q. Which w3m versions are supported?
 
