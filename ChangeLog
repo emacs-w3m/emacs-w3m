@@ -1,3 +1,9 @@
+2003-11-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi-mytown.el (shimbun-asahi-mytown-group-table):
+	Combine "kitakyu" and "fukuoka" into "fukuoka".
+	(shimbun-asahi-mytown-get-headers): Improve regexp.
+
 2003-11-05  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-delete-buffer, w3m-delete-other-buffers)
