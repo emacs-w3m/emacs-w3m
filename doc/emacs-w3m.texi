@@ -4312,8 +4312,8 @@ prefectures of Japan.
 
 @item @uref{http://www.mainichi-msn.co.jp/, MSN-Mainichi INTERACTIVE}
 mainichi.shakai mainichi.sports mainichi.geinou mainichi.kurashi
-mainichi.it mainichi.kagaku mainichi.seiji mainichi.keizai
-mainichi.kokusai
+mainichi.it mainichi.kagaku.science kagaku.env kagaku.medical
+mainichi.seiji mainichi.keizai mainichi.kokusai
 
 @item @uref{http://www.nikkansports.com/, Nikkan Sports}
 nikkansports.baseball nikkansports.mlb nikkansports.soccer
