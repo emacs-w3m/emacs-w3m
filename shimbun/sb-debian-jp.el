@@ -64,10 +64,10 @@
 		(re-search-forward "<A HREF=\"\\([0-9]+\\)/\">" nil t)
 		(push (match-string 1) months)))
     (setq months (nreverse months))
-    (erase-buffer)
     (catch 'stop
       (dolist (month months)
 	(let ((url (concat (shimbun-index-url shimbun) month "/")))
+	  (erase-buffer)
 	  (shimbun-retrieve-url url t)
 	  (shimbun-mhonarc-get-headers shimbun url headers month))))
     headers))

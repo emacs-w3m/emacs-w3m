@@ -2,6 +2,8 @@
 
 	* shimbun/sb-chalow.el (shimbun-get-headers): Erase buffer before
 	retrieving.
+	* shimbun/sb-debian-jp.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-kde.el (shimbun-get-headers): Ditto.
 
 2003-12-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
