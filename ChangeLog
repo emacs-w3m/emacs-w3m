@@ -1,3 +1,7 @@
+2003-07-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Release 1.3.5.
+
 2003-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-view-this-url-1): Simply copy buffer's contents to

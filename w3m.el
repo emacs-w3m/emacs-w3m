@@ -138,7 +138,7 @@
   (autoload 'rfc2368-parse-mailto-url "rfc2368")
   (autoload 'widget-convert-button "wid-edit"))
 
-(defconst emacs-w3m-version "1.3.4"
+(defconst emacs-w3m-version "1.3.5"
   "Version number of this package.")
 
 (defconst w3m-treat-drive-letter (memq system-type '(windows-nt OS/2 emx))
