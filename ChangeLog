@@ -1,3 +1,11 @@
+2004-09-07  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-mark-unseen): Change default
+	value.
+	(mew-shimbun-scan-message): Move to the beginning of next line.
+	(mew-shimbun-unseen-setup): Use the original function of Mew if it
+	suport 'unread'.
+
 2004-09-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-url): Don't make a new history when reloading.
