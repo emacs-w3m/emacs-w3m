@@ -209,7 +209,7 @@
 Value is integer.
 Positive value is for fixed column rendering.
 Zero or negative value is for fitting w3m output with current frame
-width using expression (+ (frame-width) VALUE)."
+width using expression (+ (window-width) VALUE)."
   :group 'w3m
   :type 'integer)
 
@@ -1238,7 +1238,7 @@ for a refresh indication")
   '("-T" "text/html" "-t" tab-width
     "-cols" (if (< 0 w3m-fill-column)
 		w3m-fill-column		; fixed columns
-	      (+ (frame-width) (or w3m-fill-column -1)))) ; fit for frame
+	      (+ (window-width) (or w3m-fill-column -1)))) ; fit for frame
   "Common arguments for 'halfdump' execution of all w3m variants.")
 
 (defconst w3m-arrived-ignored-regexp
@@ -5090,7 +5090,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
 (defun w3m-about-db-history (&rest args)
   (let ((width (- (if (< 0 w3m-fill-column)
 		      w3m-fill-column
-		    (+ (frame-width) (or w3m-fill-column -1)))
+		    (+ (window-width) (or w3m-fill-column -1)))
 		  18))
 	(now (current-time))
 	url title time alist date)

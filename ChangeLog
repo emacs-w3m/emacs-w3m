@@ -1,3 +1,9 @@
+2002-02-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-halfdump-command-common-arguments): Replace
+	`frame-width' with `window-width'.
+	(w3m-about-db-history): Ditto.
+
 2002-02-05  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-proc.el (w3m-process-accept-list): New internal variable.
