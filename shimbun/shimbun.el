@@ -521,16 +521,21 @@ image parts, and returns an alist of URLs and image entities."
 			;; 2. replaceable part
 			"\\(src[" spc "]*=[" spc "]*"
 			"\\(\""
-			;; 4. quoted url
+			;; 4. url quoted with "
 			"\\([^\"]+\\)"
-			"\"\\|"
-			;; 5. unquoted url, though that's illegal
-			"\\([^" spc "\">]+\\)"
+			"\"\\|'"
+			;; 5. url quoted with '
+			"\\([^']+\\)"
+			"'\\|"
+			;; 6. url unquoted
+			"\\([0-9a-z.:_-]+\\)"
 			"\\)\\)")))
 	    nil t)
       (setq start (match-beginning 2)
 	    end (match-end 2)
-	    url (shimbun-expand-url (or (match-string 4) (match-string 5))
+	    url (shimbun-expand-url (or (match-string 4)
+					(match-string 5)
+					(match-string 6))
 				    base-url))
       (unless (setq img (assoc url images))
 	(with-temp-buffer
