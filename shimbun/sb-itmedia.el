@@ -40,37 +40,37 @@
 (defvar shimbun-itmedia-url "http://www.itmedia.co.jp/")
 
 (defvar shimbun-itmedia-group-alist
-  (let ((template "<a href=\"/\\(%s/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\
+  (let ((template "<a href=\"/\\(\\(%s\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\
 /\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>"))
     `(("anchordesk" "anchordesk"
-       ,(format template "\\(anchordesk/articles\\)")
+       ,(format template "anchordesk/articles")
        "［[^ ]* \\([0-9]+:[0-9]+\\)］")
       ("bursts" "news/bursts"
-       ,(format template "\\(enterprise/articles\\|news/articles\\)")
+       ,(format template "enterprise/articles\\|news/articles")
        "［[^ ]* \\([0-9]+:[0-9]+\\)］")
       ("business" "news/business"
-       ,(format template "\\(news/articles\\)")
+       ,(format template "news/articles")
        nil)
       ("enterprise" "enterprise"
-       ,(format template "\\(enterprise/articles\\)")
+       ,(format template "enterprise/articles")
        "［[^ ]* \\([0-9]+:[0-9]+\\)］")
       ("games" "games/news"
-       ,(format template "\\(games/gsnews\\)")
+       ,(format template "games/gsnews")
        nil)
       ("lifestyle" "lifestyle"
-       ,(format template "\\(lifestyle/articles\\)")
+       ,(format template "lifestyle/articles")
        nil)
       ("mobile" "mobile/news"
-       ,(format template "\\(mobile/articles\\)")
+       ,(format template "mobile/articles")
        nil)
       ("news" "news/past"
-       ,(format template "\\(news/articles\\)")
+       ,(format template "news/articles")
        "(\\([0-9]+:[0-9]+\\))")
       ("pcupdate" "pcupdate/news"
-       ,(format template "\\(pcupdate/articles\\)")
+       ,(format template "pcupdate/articles")
        nil)
       ("technology" "news/technology"
-       ,(format template "\\(news/articles\\)")
+       ,(format template "news/articles")
        nil))))
 
 (defvar shimbun-itmedia-server-name "ITmedia")
