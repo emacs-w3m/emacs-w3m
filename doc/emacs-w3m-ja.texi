@@ -2554,14 +2554,14 @@ messages.
 
 @item w3m-mailto-url-popup-function-alist
 @vindex w3m-mailto-url-popup-function-alist
-Alist of @code{(MAJOR-MODE . FUNCTION)} pairs used to popup a mail
-buffer.  If a user clicks on a @code{mailto} url and a mail buffer is
+Alist of @code{(MAJOR-MODE . FUNCTION)} pairs used to pop a mail buffer
+up.  If a user clicks on a @code{mailto} url and a mail buffer is
 composed by @code{mail-user-agent} with the @code{MAJOR-MODE},
 @code{FUNCTION} will be called with a mail buffer as an argument.  Note
 that the variables @code{special-display-buffer-names},
 @code{special-display-regexps}, @code{same-window-buffer-names} and
-@code{same-window-regexps} will be bound to @code{nil} while popping up
-a buffer.
+@code{same-window-regexps} will be bound to @code{nil} while popping to
+a buffer up.
 
 @item w3m-make-new-session
 @vindex w3m-make-new-session
@@ -2590,8 +2590,8 @@ Coding system used when reading from @samp{w3m} processes.
 
 @item w3m-pop-up-frames
 @vindex w3m-pop-up-frames
-Non-@code{nil} means popup a new frame for an emacs-w3m session.  This
-variable is similar to @code{pop-up-frames} and does override
+Non-@code{nil} means pop to a new frame up for an emacs-w3m session.
+This variable is similar to @code{pop-up-frames} and does override
 @code{w3m-pop-up-windows}.  If @code{w3m-use-tab} is non-@code{nil} or
 there is the buffers selection window (for the @code{w3m-select-buffer}
 feature), this variable is ignored when creating the second or more
