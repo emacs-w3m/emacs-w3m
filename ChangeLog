@@ -1,5 +1,8 @@
 2001-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* Makefile.in (default): Report errors if it has occurred while
+	examining modules.
+
 	* w3m.el: Add autoload for `w3m-remove-image' when compiling.
 
 	* w3mhack.el: Use `require' instead of `load' for loading "w3m" to

@@ -9,7 +9,7 @@ EMACS   = @EMACS@
 FLAGS   = -q -no-site-file -batch -l w3mhack.el $(ADDITIONAL_LOAD_PATH)
 ECC     = $(EMACS) $(FLAGS) -f batch-byte-compile
 
-MODULES = `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`
+MODULES = $(EMACS) $(FLAGS) -f w3mhack-examine-modules
 
 PACKAGE = w3m_el
 TARBALL = $(PACKAGE)-$(VERSION).tar.gz
@@ -20,7 +20,14 @@ DOCS    = COPYING ChangeLog README README.ja
 .SUFFIXES: .elc .el
 
 default:
-	@modules="$(MODULES)"; echo "$(MAKE) -k $$modules"; $(MAKE) -k $$modules
+	@modules="`$(MODULES) 2>/dev/null`";\
+	if test -z "$$modules"; then\
+	  echo "Error has occurred while examining w3m modules;";\
+	  $(MODULES);\
+	else\
+	  echo "$(MAKE) -k $$modules";\
+	  $(MAKE) -k $$modules;\
+	fi
 
 .el.elc:
 	$(ECC) $<
