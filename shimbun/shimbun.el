@@ -480,7 +480,6 @@ Generated article have a multipart/related content-type."
 			   (shimbun-text-entity-charset entity
 							(point-min)
 							(point-max))))
-    (w3m-remove-meta-charset-tags)
     (goto-char (point-min))
     (luna-call-next-method)
     (goto-char (point-max))))
