@@ -826,7 +826,10 @@ way of `post-command-hook'."
 ;; from a web site; [2]XEmacs hangs up.
 
 (defcustom w3m-process-connection-type
-  (not (or (memq system-type '(darwin macos))
+  (not (or (and (memq system-type '(darwin macos))
+		(let ((ver (shell-command-to-string "uname -r")))
+		  (and (string-match "^\\([0-9]+\\)\\." ver)
+		       (< (string-to-number (match-string 1 ver)) 7))))
 	   (and (featurep 'xemacs)
 		(string-match "solaris" system-configuration))))
   "*Value for `process-connection-type' used when communicating with the
