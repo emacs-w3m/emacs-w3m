@@ -166,7 +166,7 @@ Shimbun Library
 * Mew Shimbun::                 Reading web newspapers with Mew
 * Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
 * Shimbun Sites::               Sites supported by Shimbun
-* Shimbun Basics::              How to make your own shimbun modules
+* Shimbun Basics::              How to make a new shimbun module
 
 Tips
 
@@ -2464,7 +2464,7 @@ Requirements}.
 * Mew Shimbun::                 Reading web newspapers with Mew
 * Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
 * Shimbun Sites::               Sites supported by Shimbun
-* Shimbun Basics::              How to make your own shimbun modules
+* Shimbun Basics::              How to make a new shimbun module
 @end menu
 
 @node Nnshimbun
@@ -3034,7 +3034,7 @@ read @samp{shimbun} by just accessing a folder beginning with @samp{@@}
 (under translation)
 
 @node Shimbun Basics
-@section How to make your own shimbun modules
+@section How to make a new shimbun module
 @cindex @file{shimbun.el}
 
 Shimbun module is a library set of emacs-w3m that enables you to read
