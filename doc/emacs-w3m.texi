@@ -2327,7 +2327,11 @@ of w3m you use.
 @item
 Q. Why are frames not rendered?
 
-Use w3mmee.
+Install w3mmee and put the following line in your @file{~/.emacs} file:
+
+@lisp
+(setq w3m-command "w3mmee")
+@end lisp
 
 @item
 Q. Why are favicon images not displayed in the Emacs 21 tab bar?
