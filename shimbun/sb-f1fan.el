@@ -62,7 +62,7 @@
 			id (shimbun-current-group-internal shimbun)))
 	(push (shimbun-create-header
 	       0
-	       (shimbun-mime-encode-string subject)
+	       subject
 	       (shimbun-from-address shimbun)
 	       nil
 	       id "" 0 0 (concat

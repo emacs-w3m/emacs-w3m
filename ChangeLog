@@ -1,5 +1,20 @@
 2004-05-01  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
+	* shimbun/sb-nikkansports.el (shimbun-get-headers): Use
+	shimbun-create-header() instead of shimbun-make-header() and don't
+	encode subjects.
+	
+	* shimbun/sb-msports-nifty.el (shimbun-get-headers): Don't encode
+	subjects.
+
+	* shimbun/sb-makanai.el (shimbun-makanai-scan-articles): Ditto.
+
+	* shimbun/sb-f1fan.el (shimbun-get-headers): Ditto.
+
+	* shimbun/sb-f1express.el (shimbun-get-headers): Ditto.
+
+2004-05-01  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+
 	* shimbun/sb-msports-nifty.el: New file.
 
 	* shimbun/sb-makanai.el (shimbun-makanai-server-name): New

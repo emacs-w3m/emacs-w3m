@@ -89,7 +89,7 @@
 		    (concat hour ":" min)))
 	(push (shimbun-create-header
 	       0
-	       (shimbun-mime-encode-string subject)
+	       subject
 	       (shimbun-from-address shimbun)
 	       date id "" 0 0 (concat
 			       (shimbun-url-internal shimbun)

@@ -100,9 +100,9 @@
 			(string-to-number year)
 			(string-to-number month)
 			(string-to-number day)))
-	    (push (shimbun-make-header
+	    (push (shimbun-create-header
 		   0
-		   (shimbun-mime-encode-string subject)
+		   subject
 		   (shimbun-from-address shimbun)
 		   date id "" 0 0
 		   (concat
