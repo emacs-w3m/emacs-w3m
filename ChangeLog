@@ -1,3 +1,13 @@
+2005-01-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Allow not
+	quoted url in img tags.
+	Suggested by Tsuyoshi CHO <mfalcon_sky@emailuser.net>.
+
+2004-12-24  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
+
+	* shimbun/sb-excite.el: New file.
+
 2005-01-10  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-form.el (w3m-form-input-textarea): Modify string of the
