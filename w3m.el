@@ -3021,9 +3021,9 @@ If URL is specified, only the image with URL is toggled."
 	(set-buffer-modified-p nil)))))
 
 (defun w3m-toggle-inline-image (&optional force no-cache)
-  "Toggle displaying of inline image on cursor point.
-If FORCE is non-nil, image displaying is forced.
-If NO-CACHE is non-nil, cache is not used."
+  "Toggle the visibility of an image under point.
+If FORCE is non-nil, displaying an image is forced.  If NO-CACHE is
+non-nil, cached data will not be used."
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
@@ -3039,9 +3039,9 @@ If NO-CACHE is non-nil, cache is not used."
 	(w3m-message "No image at point")))))
 
 (defun w3m-toggle-inline-images (&optional force no-cache)
-  "Toggle displaying of inline images on current buffer.
-If FORCE is non-nil, image displaying is forced.
-If NO-CACHE is non-nil, cache is not used."
+  "Toggle the visibility of all images in the buffer.
+If FORCE is non-nil, displaying images is forced.  If NO-CACHE is
+non-nil, cached data will not be used."
   (interactive "P")
   (let ((status w3m-display-inline-images))
     (unless (w3m-display-graphic-p)
@@ -3136,7 +3136,7 @@ resizing an image."
 		(set-marker end nil)))))))))
 
 (defun w3m-zoom-in-image (&optional rate)
-  "Zoom in image on cursor point."
+  "Zoom in an image on the point."
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
@@ -3148,7 +3148,7 @@ resizing an image."
       (w3m-message "No image at point"))))
 
 (defun w3m-zoom-out-image (&optional rate)
-  "Zoom out image on cursor point."
+  "Zoom out an image on the point."
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
@@ -4674,7 +4674,10 @@ called with t as an argument.  Otherwise, it will be called with nil."
   nil)
 
 (defun w3m-prepare-content (url type charset)
-  "Prepare a content in this buffer based on TYPE."
+  "Prepare contents in the current buffer according to TYPE.
+URL is assumed to be a place where the contents come from.  CHARSET is
+passed to the filter function  corresponding to TYPE if it is
+specified in the `w3m-content-type-alist' variable."
   (let ((filter (nth 3 (assoc type w3m-content-type-alist))))
     (cond
      ; Filter function is specified.
@@ -5185,7 +5188,7 @@ url."
       (w3m-message "No URL at point"))))
 
 (defun w3m-download-this-url ()
-  "Download the file or page pointed by the link under point."
+  "Download the file or the page pointed to by the link under point."
   (interactive)
   (let ((url (or (w3m-anchor) (w3m-image))))
     (if (w3m-url-valid url)
@@ -6054,52 +6057,53 @@ closed.  See also `w3m-quit'."
   "Major mode for browsing web.
 
 \\<w3m-mode-map>\
-\\[w3m-view-this-url]	View this url.
+\\[w3m-view-this-url]	Display the page pointed to by the link under point.
 	You may use the prefix arg `2' or\
  `\\[universal-argument] \\<universal-argument-map>\
-\\[universal-argument-more]\\<w3m-mode-map>' to make a new session.
-\\[w3m-mouse-view-this-url]	View this url use mouse.
-	If w3m-use-form is t, \\[w3m-view-this-url] and\
- \\[w3m-mouse-view-this-url] action a form input.
+\\[universal-argument-more]\\<w3m-mode-map>' to make the new session.
+\\[w3m-mouse-view-this-url]	Follow a link under the mouse pointer.
+	If w3m-use-form is t, `\\[w3m-view-this-url]' and\
+ `\\[w3m-mouse-view-this-url]' enable you to enter forms.
 	You may use the prefix arg `2' or\
  `\\[universal-argument] \\<universal-argument-map>\
-\\[universal-argument-more]\\<w3m-mode-map>' to make a new session.
-\\[w3m-view-this-url-new-session]	View this url in a new session.
-\\[w3m-mouse-view-this-url-new-session]	View this url in a new session use\
- mouse.
+\\[universal-argument-more]\\<w3m-mode-map>' to make the new session.
+\\[w3m-view-this-url-new-session]	Display the page of the link\
+ in the new session.
+\\[w3m-mouse-view-this-url-new-session]	Display the page of the link\
+ in the new session by mouse.
 \\[w3m-submit-form]	Submit the form at point.
 
-\\[w3m-reload-this-page]	Reload this page.
-\\[w3m-redisplay-this-page]	Redisplay this page.
-\\[w3m-redisplay-with-content-type]	Redisplay this page with specified\
- content-type.
-\\[w3m-redisplay-with-charset]	Redisplay this page with specified charset.
-\\[w3m-redisplay-and-reset]	Redisplay this page and reset of specified\
- charset and content-type.
+\\[w3m-reload-this-page]	Reload the current page.
+\\[w3m-redisplay-this-page]	Redisplay the current page.
+\\[w3m-redisplay-with-content-type]	Redisplay the page, specifying\
+ the content type.
+\\[w3m-redisplay-with-charset]	Redisplay the current page, specifying\
+ the charset.
+\\[w3m-redisplay-and-reset]	Redisplay the current page and reset\
+ the user-specified charset and\n\tcontent type.
 
-\\[w3m-next-anchor]	Jump to next anchor.
-\\[w3m-previous-anchor]	Jump to previous anchor.
-\\[w3m-next-form]	Jump to next form.
-\\[w3m-previous-form]	Jump to previous form.
-\\[w3m-next-image]	Jump to next image.
-\\[w3m-previous-image]	Jump to previous image.
+\\[w3m-next-anchor]	Move the point to the next anchor.
+\\[w3m-previous-anchor]	Move the point to the previous anchor.
+\\[w3m-next-form]	Move the point to the next form.
+\\[w3m-previous-form]	Move the point to the previous form.
+\\[w3m-next-image]	Move the point to the next image.
+\\[w3m-previous-image]	Move the point to the previous image.
 
-\\[w3m-view-previous-page]	Back to previous page.
-\\[w3m-view-next-page]	Forward to next page.
-\\[w3m-view-parent-page]	View the parent page.
+\\[w3m-view-previous-page]	Move back to the previous page in the history.
+\\[w3m-view-next-page]	Move forward to the next page in the history.
+\\[w3m-view-parent-page]	Move to the parent directory of the page.
 
-\\[w3m-goto-url]	Goto URL.
-\\[w3m-goto-url-new-session]	Goto URL in the new session.
-\\[w3m-gohome]	Goto home page.
+\\[w3m-goto-url]	Visit a web page.
+\\[w3m-goto-url-new-session]	Visit a web in the new session.
+\\[w3m-gohome]	Go to the Home page.
 
-\\[w3m-download-this-url]	Download this url.
-\\[w3m-print-this-url]	Print this url.
-\\[w3m-view-image]	View image.
-\\[w3m-save-image]	Save image.
-\\[w3m-toggle-inline-images]	Toggle displaying of inline images on current\
- buffer.
-\\[w3m-zoom-out-image]	Zoom out image on cursor point.
-\\[w3m-zoom-in-image]	Zoom in image on cursor point.
+\\[w3m-download-this-url]	Download the file or the page.
+\\[w3m-print-this-url]	Display a url under point and put it into `kill-ring'.
+\\[w3m-view-image]	View the image under point in an external viewer.
+\\[w3m-save-image]	Save the image under point to a file.
+\\[w3m-toggle-inline-images]	Toggle the visibility of all images.
+\\[w3m-zoom-out-image]	Zoom in an image on the point.
+\\[w3m-zoom-in-image]	Zoom out an image on the point.
 
 \\[w3m-print-current-url]	Print the current url.
 \\[w3m-view-url-with-external-browser]	View current url with external browser.
@@ -6630,7 +6634,7 @@ generate a new buffer."
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
 			 element)
-  "Retrieve contents of URL.
+  "Visit World Wide Web pages.  This is the primitive function of `w3m'.
 If the second argument RELOAD is non-nil, reload a content of URL.
 Except that if it is 'redisplay, re-display the page without reloading.
 The third argument CHARSET specifies a charset to be used for decoding
@@ -6932,8 +6936,8 @@ session will start afresh."
   (w3m-goto-url w3m-home-page))
 
 (defun w3m-reload-this-page (&optional arg)
-  "Reload current page without cache.
-If called with '\\[universal-argument]', clear form and post datas"
+  "Reload the current page, disregarding the cached contents.
+If the prefix arg ARG is given, it also clears forms and post data."
   (interactive "P")
   (if w3m-current-url
       (let (post-data)
@@ -6951,7 +6955,8 @@ If called with '\\[universal-argument]', clear form and post datas"
     (w3m-message "Can't reload this page")))
 
 (defun w3m-redisplay-this-page (&optional arg)
-  "Redisplay current page."
+  "Redisplay the current page.
+If the prefix arg ARG is given, it toggles the visibility of images."
   (interactive "P")
   (if (null w3m-current-url)
       (w3m-message "Can't redisplay this page")
@@ -6960,7 +6965,11 @@ If called with '\\[universal-argument]', clear form and post datas"
     (w3m-goto-url w3m-current-url 'redisplay)))
 
 (defun w3m-redisplay-and-reset (&optional arg)
-  "Redisplay current page and reset of specified charset and content-type."
+  "Redisplay the current page and reset the user-specified values.
+This function clears the charset and the content type which are
+specified for overriding the values of what the page requires.  The
+prefix arg ARG is passed to the `w3m-redisplay-this-page' function
+\(which see)."
   (interactive "P")
   (if (null w3m-current-url)
       (w3m-message "Can't execute this page")
@@ -6969,11 +6978,12 @@ If called with '\\[universal-argument]', clear form and post datas"
     (w3m-redisplay-this-page arg)))
 
 (defun w3m-redisplay-with-charset (&optional arg)
-  "Redisplay current page with specified charset.
-If input is nil, use default coding-system on w3m."
+  "Redisplay the current page, specifying the charset.
+If the user enters the empty string, the value which once was used for
+decoding the page is used."
   (interactive "P")
   (if (null w3m-current-url)
-      (w3m-message "Can't execute this page")
+      (w3m-message "Can't execute the command")
     (setf (w3m-arrived-content-charset w3m-current-url)
 	  (w3m-read-content-charset
 	   (format "Content-charset (current %s, default reset): "
@@ -6981,8 +6991,9 @@ If input is nil, use default coding-system on w3m."
     (w3m-redisplay-this-page arg)))
 
 (defun w3m-redisplay-with-content-type (&optional arg)
-  "Redisplay current page with specified content-type.
-If input is nil, use default content-type on w3m."
+  "Redisplay the current page, specifying the content type.
+If the user enters the empty string, it uses the value which was
+specified by the page's contents itself."
   (interactive "P")
   (if (null w3m-current-url)
       (w3m-message "Can't execute this page")
@@ -7579,8 +7590,11 @@ If called with 'prefix argument', display arrived URLs."
        (or w3m-fill-column -1))))
 
 (defun w3m-select-buffer (&optional toggle nomsg)
-  "Switch emacs-w3m buffers using the buffer list.
-The following command keys are available:
+  "Pop up the emacs-w3m buffers selection window.
+It provides the feature for switching emacs-w3m buffers using the
+buffer list.  When the selection window has already been popped up,
+it toggles the style of the selection window between horizontal and
+vertical.  The following command keys are available:
 
 \\{w3m-select-buffer-mode-map}"
   (interactive "P")
