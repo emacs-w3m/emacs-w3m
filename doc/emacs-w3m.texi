@@ -2213,9 +2213,10 @@ Put the following lines in the last of the @file{~/.mew.el} file:
 ;;; (see below).  It must be placed before the @code{(require 'mew-shimbun)}
 ;;; line.
 
-;; Specifying @samp{shimbun} servers and groups to be read with Mew.  Each
-;; element has the form @code{("folder" (("server.group" . range) ...))}.
-;; You can use @code{all}, @code{last}, and a number for the @code{range} item.
+;; Specifying @samp{shimbun} servers and groups to be read with Mew in the
+;; @code{mew-shimbun-folder-groups} variable.  Each element has the form
+;; @code{("folder" (("server.group" . range) ...))}.  You can use @code{all},
+;; @code{last}, and a number for the @code{range} item.
 
 (setq mew-shimbun-folder-groups
       '(;; Fetching @samp{yomiuri.shakai}, @samp{yomiuri.sports}, etc.
