@@ -9,6 +9,9 @@
 	(shimbun-muchy-get-headers): Add new arg HEADERS.
 	(shimbun-get-headers): Bug fixed.
 	Do not delete working regions.
+	(shimbun-muchy-get-headers): Remove unnecessary temporary variable
+	COUNT.
+	(shimbun-get-headers): Ditto.
 
 2001-10-20  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 

@@ -49,8 +49,7 @@
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-muchy)
 					 header &optional outbuf)
-  (let* ((count 0)
-	 (baseurl (shimbun-url-internal shimbun))
+  (let* ((baseurl (shimbun-url-internal shimbun))
 	 case-fold-search date-list headers)
     (catch 'stop
       (with-temp-buffer
@@ -83,8 +82,7 @@
     headers))
 
 (defun shimbun-muchy-get-headers (shimbun headers date-list)
-  (let* ((count 0)
-	 (from (shimbun-from-address-internal shimbun))
+  (let* ((from (shimbun-from-address-internal shimbun))
 	 (group (shimbun-current-group-internal shimbun))
 	 (baseurl (shimbun-url-internal shimbun))
 	 case-fold-search date)
