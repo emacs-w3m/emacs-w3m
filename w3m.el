@@ -4854,14 +4854,14 @@ If EMPTY is non-nil, the created buffer has empty content."
       (w3m-quit force)
     (let ((buffer (current-buffer)))
       (w3m-next-buffer -1)
-      (kill-buffer buffer)))
-  (run-hooks 'w3m-delete-buffer-hook)
+      (kill-buffer buffer)
+      (run-hooks 'w3m-delete-buffer-hook)))
   (w3m-select-buffer-update))
 
 (defun w3m-pack-buffer-numbers ()
   "Pack w3m buffer numbers."
   (interactive)
-  (let ((count 0) number)
+  (let ((count 1) number)
     (dolist (buffer (w3m-list-buffers))
       (setq number (w3m-buffer-number buffer))
       (when number
@@ -6727,7 +6727,12 @@ select them."
 new menu line."
   (interactive "p")
   (forward-line n)
-  (w3m-select-buffer-show-this-line))
+  (prog1
+      (w3m-select-buffer-show-this-line)
+    (w3m-static-when (featurep 'xemacs)
+      (save-window-excursion
+	;; Update gutter tabs.
+	(select-window w3m-select-buffer-window)))))
 
 (defun w3m-select-buffer-previous-line (&optional n)
   "Move cursor vertically up ARG lines and show the buffer on the new
@@ -6756,6 +6761,7 @@ menu line."
     (unless (and (eq buffer (w3m-select-buffer-current-buffer))
 		 (progn (forward-line 1) (eobp)))
       (kill-buffer buffer)
+      (run-hooks 'w3m-delete-buffer-hook)
       (w3m-select-buffer-generate-contents
        (w3m-select-buffer-current-buffer))
       (w3m-select-buffer-show-this-line))))
