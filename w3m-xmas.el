@@ -207,9 +207,6 @@ as the value."
   (when (and w3m-use-header-line w3m-current-url
 	     (eq 'w3m-mode major-mode))
     (goto-char (point-min))
-    (unless (eobp)
-      ;; Not to inherit the following text properties.
-      (put-text-property (point) (1+ (point)) 'start-open t))
     (insert "Location: ")
     (set-extent-property (make-extent (point-min) (point))
 			 'face 'w3m-header-line-location-title-face)

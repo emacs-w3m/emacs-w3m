@@ -792,6 +792,14 @@ cursor position and around there."
       (` (get-text-property (, position) 'w3m-cursor-anchor))
     (` (get-text-property (point) 'w3m-cursor-anchor))))
 
+(defmacro w3m-add-text-properties (start end props &optional object)
+  "Like `add-text-properties' but always add the non-sticky properties."
+  (let ((non-stickies (if (featurep 'xemacs)
+			  '(list 'start-open t 'end-open t)
+			'(list 'front-nonsticky t 'rear-nonsticky t))))
+    (` (add-text-properties (, start) (, end)
+			    (append (, non-stickies) (, props))
+			    (, object)))))
 
 (defsubst w3m-get-buffer-create (name)
   "Return the buffer named NAME, or create such a buffer and return it."
@@ -1155,7 +1163,7 @@ If N is negative, last N items of LIST is returned."
       (delete-region start (match-end 0))
       (when (search-forward "</b>" nil t)
 	(delete-region (match-beginning 0) (match-end 0))
-	(put-text-property start (match-beginning 0) 'face 'bold)))))
+	(w3m-add-text-properties start (match-beginning 0) '(face bold))))))
 
 (defun w3m-fontify-underline ()
   "Fontify underline characters in this buffer which contains half-dumped data."
@@ -1165,7 +1173,8 @@ If N is negative, last N items of LIST is returned."
       (delete-region start (match-end 0))
       (when (search-forward "</u>" nil t)
 	(delete-region (match-beginning 0) (match-end 0))
-	(put-text-property start (match-beginning 0) 'face 'underline)))))
+	(w3m-add-text-properties start (match-beginning 0)
+				 '(face underline))))))
 
 (defsubst w3m-decode-anchor-string (str)
   ;; FIXME: This is a quite ad-hoc function to process encoded URL
@@ -1194,22 +1203,23 @@ If N is negative, last N items of LIST is returned."
 	    (delete-region (setq end (match-beginning 0)) (match-end 0))
 	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)
 				       w3m-current-url))
-	    (add-text-properties start end
-				 (list 'face (if (w3m-arrived-p href)
-						 'w3m-arrived-anchor-face
-					       'w3m-anchor-face)
-				       'w3m-href-anchor href
-				       'w3m-cursor-anchor href
-				       'mouse-face 'highlight
-				       'w3m-name-anchor name
-				       'help-echo help
-				       'balloon-help balloon))))
+	    (w3m-add-text-properties start end
+				     (list 'face (if (w3m-arrived-p href)
+						     'w3m-arrived-anchor-face
+						   'w3m-anchor-face)
+					   'w3m-href-anchor href
+					   'w3m-cursor-anchor href
+					   'mouse-face 'highlight
+					   'w3m-name-anchor name
+					   'help-echo help
+					   'balloon-help balloon))))
 	 (name
 	  (when (re-search-forward "<\\|\n" nil t)
 	    (setq end (match-beginning 0))
 	    (when (= start end)
 	      (setq end (min (1+ end) (point-max))))
-	    (put-text-property start end 'w3m-name-anchor name))))))))
+	    (w3m-add-text-properties start end
+				     (list 'w3m-name-anchor name)))))))))
 
 (defun w3m-image-type (content-type)
   "Return image type which corresponds to CONTENT-TYPE."
@@ -1262,9 +1272,10 @@ half-dumped data."
       (setq src (w3m-expand-url src w3m-current-url))
       (when (search-forward "</img_alt>" nil t)
 	(delete-region (setq end (match-beginning 0)) (match-end 0))
-	(add-text-properties start end (list 'w3m-image src
-					     'w3m-image-redundant upper))
+	(w3m-add-text-properties start end (list 'w3m-image src
+						 'w3m-image-redundant upper))
 	(unless (get-text-property start 'w3m-href-anchor)
+	  ;; No need to use `w3m-add-text-properties' here.
 	  (add-text-properties start end (list 'face 'w3m-image-face
 					       'mouse-face 'highlight
 					       'help-echo help
@@ -1291,7 +1302,8 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 	    (when (car w3m-cache-underline-faces)
 	      ;; Detach the underlined faces.
 	      (dolist (elem (cdr w3m-cache-underline-faces))
-		(put-text-property (car elem) (cadr elem) 'face nil)))
+		(w3m-add-text-properties (car elem) (cadr elem)
+					 (list 'face nil))))
 	    (goto-char (point-min))
 	    (while (if (get-text-property (point) 'w3m-image)
 		       (setq point (point))
@@ -1309,11 +1321,13 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 			  (make-string
 			   (string-width (buffer-substring point end))
 			   ? ))
-		    (put-text-property point end 'invisible t)
+		    (w3m-add-text-properties point end '(invisible t))
 		    (setq point (point))
 		    (insert image)
-		    (put-text-property point (point) 'w3m-image-dummy t)
-		    (put-text-property point (point) 'w3m-image "dummy"))
+		    (w3m-add-text-properties point (point)
+					     '(w3m-image-dummy
+					       t
+					       w3m-image "dummy")))
 		(save-excursion
 		  (goto-char cur-point)
 		  (when (and url
@@ -1347,7 +1361,8 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 	     (t (w3m-remove-image point end))))
 	  ;; Restore the detached faces.
 	  (dolist (elem (cdr w3m-cache-underline-faces))
-	    (put-text-property (car elem) (cadr elem) 'face (caddr elem)))
+	    (w3m-add-text-properties (car elem) (cadr elem)
+				     (cons 'face (cddr elem))))
 	  (setq w3m-display-inline-image-status 'off))))))
 
 (defun w3m-decode-entities (&optional reserve-prop)
@@ -1361,7 +1376,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 	    (setq prop (text-properties-at (match-beginning 0))))
 	(replace-match (w3m-entity-value (match-string 1)) nil t)
 	(if (and reserve-prop prop)
-	    (add-text-properties (match-beginning 0) (point) prop))))))
+	    (w3m-add-text-properties (match-beginning 0) (point) prop))))))
 
 (defun w3m-fontify ()
   "Fontify this buffer."
@@ -1416,7 +1431,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 	     (buffer-read-only))
 	(when (and end
 		   (setq start (previous-single-property-change end 'face)))
-	  (put-text-property start end 'face 'w3m-arrived-anchor-face))
+	  (w3m-add-text-properties start end '(face w3m-arrived-anchor-face)))
 	(set-buffer-modified-p nil)))))
 
 (defun w3m-input-url (&optional prompt default)
@@ -1527,7 +1542,7 @@ Return symbol to identify its cache data."
 	  (insert-buffer-substring buffer)
 	  ;; Tag the beginning of the article with the ident.
 	  (when (> (point-max) b)
-	    (put-text-property b (1+ b) 'w3m-cache ident)
+	    (w3m-add-text-properties b (1+ b) (list 'w3m-cache ident))
 	    (setq w3m-cache-articles (cons ident w3m-cache-articles))
 	    ident))))))
 
@@ -2096,10 +2111,10 @@ this function returns t.  Otherwise, returns nil."
 		    w3m-current-title (file-name-nondirectory url))
 	      (delete-region (point-min) (point-max))
 	      (insert w3m-current-title)
-	      (add-text-properties (point-min) (point-max)
-				   (list 'face 'w3m-image-face
-					 'w3m-image url
-					 'mouse-face 'highlight))
+	      (w3m-add-text-properties (point-min) (point-max)
+				       (list 'face 'w3m-image-face
+					     'w3m-image url
+					     'mouse-face 'highlight))
 	      (w3m-history-push w3m-current-url
 				(list ':title w3m-current-title))
 	      t))
@@ -3121,19 +3136,19 @@ If called with 'prefix argument', display arrived-DB history."
 	       (eq 'w3m-mode major-mode))
       (goto-char (point-min))
       (insert "Location: ")
-      (put-text-property (point-min) (point)
-			 'face 'w3m-header-line-location-title-face)
+      (w3m-add-text-properties (point-min) (point)
+			       '(face w3m-header-line-location-title-face))
       (let ((start (point)))
 	(insert w3m-current-url)
-	(add-text-properties start (point)
-			     (list 'face
-				   'w3m-header-line-location-content-face
-				   'mouse-face 'highlight
-				   'local-map w3m-header-line-map))
+	(w3m-add-text-properties start (point)
+				 (list 'face
+				       'w3m-header-line-location-content-face
+				       'mouse-face 'highlight
+				       'local-map w3m-header-line-map))
 	(setq start (point))
 	(insert-char ?\  (max 0 (- (window-width) (current-column) 1)))
-	(put-text-property start (point)
-			   'face 'w3m-header-line-location-content-face)
+	(w3m-add-text-properties start (point)
+				 '(face w3m-header-line-location-content-face))
 	(unless (eolp)
 	  (insert "\n"))))))
 

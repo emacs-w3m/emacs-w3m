@@ -1,3 +1,18 @@
+2001-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-setup-header-line, w3m-exec, w3m-decode-entities):
+	Replace `add-text-properties' with `w3m-add-text-properties'.
+	(w3m-fontify-images, w3m-fontify-anchors): Ditto.
+	(w3m-setup-header-line, w3m-cache-contents, w3m-refontify-anchor):
+	Replace `put-text-property' with `w3m-add-text-properties'.
+	(w3m-toggle-inline-images, w3m-fontify-anchors): Ditto.
+	(w3m-fontify-underline, w3m-fontify-bold): Ditto.
+	(w3m-add-text-properties): New macro used to put non-sticky text
+	properties.
+
+	* w3m-xmas.el (w3m-setup-header-line): Don't put non-sticky text
+	property here.
+
 2001-05-16  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-w3m): Typo fix.
