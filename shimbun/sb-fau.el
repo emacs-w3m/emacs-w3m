@@ -69,7 +69,7 @@
     (error "Cannot find message-id base"))
   (concat "<" (match-string 0 url) "@fau.de>"))
 
-(luna-define-method shimbun-article ((shimbun shimbun) header
+(luna-define-method shimbun-article ((shimbun shimbun-fau) header
 				     &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
     (with-current-buffer (or outbuf (current-buffer))

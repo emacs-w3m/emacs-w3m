@@ -1,5 +1,10 @@
 2005-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-fau.el (shimbun-article): Fix the class name.
+	Suggested by ARISAWA Akihiro <ari@mbf.sphere.ne.jp>.
+
+2005-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-e21.el (display-images-p): Remove alias.
 
 	* shimbun/sb-fau.el (shimbun-article): New overriding method to
