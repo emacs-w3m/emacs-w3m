@@ -268,25 +268,30 @@ an error with ERROR-MESSAGE-IF-NO-ELEMENTS."
 (defun w3m-history-seek-properties (url)
   "Seek properties corresponding to URL in all the w3m buffers except for
 the current-buffer."
-  (let ((buffers (delq (current-buffer) (buffer-list)))
-	properties)
+  (let* ((current (current-buffer))
+	 (buffers (delq current (buffer-list)))
+	 properties)
     (while (and (not properties)
 		buffers)
-      (with-current-buffer (pop buffers)
-	(when (eq major-mode 'w3m-mode)
-	  (setq properties (cadr (w3m-history-assoc url))))))
+      (set-buffer (pop buffers))
+      (when (eq major-mode 'w3m-mode)
+	(setq properties (cadr (w3m-history-assoc url)))))
+    (set-buffer current)
     properties))
 
 (defun w3m-history-share-properties (url properties)
   "Function used to keep properties of each history element to be shared
 by all the w3m buffers."
-  (let (flat)
-    (dolist (buffer (buffer-list))
-      (with-current-buffer buffer
-	(when (and (eq major-mode 'w3m-mode)
-		   (setq flat (w3m-history-assoc url)))
-	  (setcar (cdr flat) properties)
-	  (setcar (cdr (w3m-history-current-1 (caddr flat))) properties))))))
+  (let ((buffers (buffer-list))
+	(current (current-buffer))
+	flat)
+    (while buffers
+      (set-buffer (pop buffers))
+      (when (and (eq major-mode 'w3m-mode)
+		 (setq flat (w3m-history-assoc url)))
+	(setcar (cdr flat) properties)
+	(setcar (cdr (w3m-history-current-1 (caddr flat))) properties)))
+    (set-buffer current)))
 
 ;; Generic functions.
 (defun w3m-history-previous-link-available-p ()
@@ -548,13 +553,15 @@ properties.  See the documentation for the variables `w3m-history' and
 from BUFFER to the current buffer.  This function keeps properties of
 each history element to be shared between BUFFER and the current
 buffer."
-  (let (position flat)
-    (with-current-buffer buffer
-      (when w3m-history
-	(setq position (list (copy-sequence (caar w3m-history))
-			     (copy-sequence (cadar w3m-history))
-			     (copy-sequence (caddar w3m-history)))
-	      flat w3m-history-flat)))
+  (let ((current (current-buffer))
+	position flat)
+    (set-buffer buffer)
+    (when w3m-history
+      (setq position (list (copy-sequence (caar w3m-history))
+			   (copy-sequence (cadar w3m-history))
+			   (copy-sequence (caddar w3m-history)))
+	    flat w3m-history-flat))
+    (set-buffer currenr)
     (when position
       ;; Remove buffer-local properties from the new `w3m-history-flat'.
       (let (element rest)
@@ -711,13 +718,16 @@ renaming will be done for all the w3m buffers."
     (setcar element new-url)
     (setcar (w3m-history-current-1 (caddr element)) new-url))
   (unless this-buffer
-    (let (element)
-      (dolist (buffer (delq (current-buffer) (buffer-list)))
-	(with-current-buffer buffer
-	  (when (and (eq major-mode 'w3m-mode)
-		     (setq element (w3m-history-assoc old-url)))
-	    (setcar element new-url)
-	    (setcar (w3m-history-current-1 (caddr element)) new-url)))))))
+    (let* ((current (current-buffer))
+	   (buffers (delq current (buffer-list)))
+	   element)
+      (while buffers
+	(set-buffer buffer)
+	(when (and (eq major-mode 'w3m-mode)
+		   (setq element (w3m-history-assoc old-url)))
+	  (setcar element new-url)
+	  (setcar (w3m-history-current-1 (caddr element)) new-url)))
+      (set-buffer current))))
 
 (defun w3m-history-store-position ()
   "Store the current position point in the history structure."

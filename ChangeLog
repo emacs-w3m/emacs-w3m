@@ -1,3 +1,11 @@
+2001-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-rename-url): Don't use
+	`with-current-buffer' for old Emacsen.
+	(w3m-history-copy): Ditto.
+	(w3m-history-share-properties): Ditto.
+	(w3m-history-seek-properties): Ditto.
+
 2001-05-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-sponichi.el (author): Corrected.
