@@ -1,3 +1,8 @@
+2002-05-28  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+
+	* shimbun/sb-makanai.el (shimbun-makanai-scan-articles): Follow
+	the change of the Web site.
+
 2002-05-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-geocrawler.el (shimbun-geocrawler-group-alist):
