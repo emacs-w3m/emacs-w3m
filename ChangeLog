@@ -1,3 +1,12 @@
+2003-10-24  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+
+	* shimbun/sb-2ch.el (shimbun-2ch-request-article): Use
+	shimbun-header-number() instead of aref().
+	(shimbun-headers)[shimbun-2ch]: Ditto.
+
+	* shimbun/shimbun.el (shimbun-header-number): New function.
+	(shimbun-header-set-number): Ditto.
+
 2003-10-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-obey-w3m-pop-up-frames): New variable.
