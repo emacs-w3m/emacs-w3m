@@ -1,3 +1,9 @@
+2003-10-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-base-url): Removed.
+	(w3m-attributes, w3m-local-attributes, w3m-w3m-attributes): Do not
+	return a base URI of retrieved page.
+
 2003-10-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el (shimbun-entity-insert)

@@ -2138,7 +2138,6 @@ elements are:
  3. Encoding of contents.
  4. Last modification time.
  5. Real URL.
- 6. Base URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
   (if (not handler)
       (condition-case nil
@@ -2159,10 +2158,9 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(nth 2 attrs)
 		(nth 3 attrs)
 		(nth 4 attrs)
-		(concat "about://source/" (nth 5 attrs))
-		(nth 6 attrs)))))
+		(concat "about://source/" (nth 5 attrs))))))
      ((string-match "\\`about:" url)
-      (list "text/html" w3m-coding-system nil nil nil url url))
+      (list "text/html" w3m-coding-system nil nil nil url))
      ((w3m-url-local-p url)
       (w3m-local-attributes url))
      (t
@@ -2210,13 +2208,6 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	     (attrs (w3m-attributes ,url ,no-cache handler))
 	   (nth 5 attrs)))
     `(nth 5 (w3m-attributes ,url ,no-cache))))
-(defmacro w3m-base-url (url &optional no-cache handler)
-  (if handler
-      `(let ((handler ,handler))
-	 (w3m-process-do
-	     (attrs (w3m-attributes ,url ,no-cache handler))
-	   (nth 6 attrs)))
-    `(nth 6 (w3m-attributes ,url ,no-cache))))
 
 (defmacro w3m-make-help-echo (property)
   "Make a function for showing a `help-echo' string."
@@ -3468,7 +3459,6 @@ elements are:
  3. Encoding of contents.
  4. Last modification time.
  5. Real URL.
- 6. Base URL.
 "
   (let* ((file (w3m-url-to-file-name url))
 	 (attr (when (file-exists-p file)
@@ -3479,9 +3469,6 @@ elements are:
 	  (nth 7 attr)
 	  (cdr type)
 	  (nth 5 attr)
-	  (w3m-expand-file-name-as-url (file-truename file))
-	  ;; FIXME: ファイルに含まれている <base> タグの指定を解釈する
-	  ;; 必要がある。
 	  (w3m-expand-file-name-as-url (file-truename file)))))
 
 (defun w3m-local-retrieve (url &optional no-decode &rest args)
@@ -3614,7 +3601,6 @@ elements are:
  3. Encoding of contents.
  4. Last modification time.
  5. Real URL.
- 6. Base URL.
 If optional argument NO-CACHE is non-nil, cache is not used."
   (lexical-let ((url url))
     (w3m-process-do
@@ -3669,9 +3655,6 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		  (let ((v (cdr (assoc "last-modified" alist))))
 		    (and v (w3m-time-parse-string v)))
 		  (or (cdr (assoc "w3m-current-url" alist))
-		      url)
-		  (or (cdr (assoc "w3m-base-url" alist))
-		      (cdr (assoc "w3m-current-url" alist))
 		      url)))))))))
 
 (defun w3m-w3m-expand-arguments (arguments)
