@@ -1,3 +1,9 @@
+2003-07-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/sb-tdiary.el (shimbun-tdiary-content-start): Change value.
+	(shimbun-tdiary-footnote-regex): New internal variable.
+	(shimbun-make-contents): Keep subtitle in body. Handle footnotes.
+
 2003-07-25  Koichiro Ohba  <koichiro@meadowy.org>
 
 	* shimbun/sb-rss.el (shimbun-rss-replace-in-string): Removed.
