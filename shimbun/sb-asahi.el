@@ -92,10 +92,9 @@
 	 "\\([0-9]+\\)"
 	 "\\.html\\)"
 	 "\">" s0
-	 "<!--" s0 "leadstart" s0 "-->" s0
 	 ;; 6. subject
 	 "\\(" no-nl "\\)"
-	 s0 "<!--" s0 "leadend" s0 "-->")
+	 s0 "</a>")
        1 5 nil 6 3 4 nil 2)
       ("international" "国際" "%s/" ,@default)
       ("kansai" "関西" "%s/" ,@default)
