@@ -37,12 +37,13 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl))
-
-(require 'mime)
-(require 'w3m)
-
-(eval-when-compile
+  (require 'cl)
+  ;; mime-parse.el should be loaded before mime.el so as not to make
+  ;; `mime-uri-parse-cid' an autoloaded function to which the byte
+  ;; compiler might issue a nonsense warning.
+  (require 'mime-parse)
+  (require 'mime)
+  (require 'w3m)
   (defvar mime-preview-condition)
   (defvar mime-setup-enable-inline-html)
   (defvar mime-view-mode-default-map))

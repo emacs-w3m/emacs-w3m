@@ -1,3 +1,8 @@
+2005-02-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mime-w3m.el: Load mime-parse.el before mime.el and w3m.el when
+	compiling rather than always loading mime.el and w3m.el.
+
 2005-02-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_PATH_EMACS): Show the correct Emacs version.
