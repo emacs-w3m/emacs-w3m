@@ -1,5 +1,10 @@
 2002-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-mailman.el (shimbun-mailman-make-contents): Make
+	regexps more redundant.
+
+2002-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/sb-savannah.el (shimbun-savannah-x-face-alist): New.
 
 2002-12-20  Hideyuki SHIRAI  <shirai@meadowy.org>
