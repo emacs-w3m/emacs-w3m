@@ -1,5 +1,7 @@
 2005-02-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-lnum.el: Rename from w3m-link-numbering.el.
+
 	* mime-w3m.el: Load mime-parse.el before mime.el and w3m.el when
 	compiling rather than always loading mime.el and w3m.el.
 
