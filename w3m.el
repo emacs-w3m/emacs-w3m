@@ -5768,9 +5768,8 @@ Cannot run two w3m processes simultaneously \
     (w3m-history-store-position)
     ;; Access url group
     (if (string-match "\\`group:" url)
-	(let ((urls (split-string
-		     (w3m-url-decode-string (substring url (match-end 0)))
-		     "&")))
+	(let ((urls (mapcar 'w3m-url-decode-string 
+			    (split-string (substring url (match-end 0)) "&"))))
 	  (w3m-process-do
 	      (type (prog1
 			(w3m-goto-url (car urls))
