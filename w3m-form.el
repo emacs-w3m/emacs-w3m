@@ -204,6 +204,7 @@ If no field in forward, return nil without moving."
 	    (cons
 	     (concat "multipart/form-data; boundary=" boundary)
 	     (with-temp-buffer
+	       (set-buffer-multibyte nil)
 	       (while (setq buf (cdr (car bufs)))
 		 (if (and (consp (cdr buf))
 			  (eq (car (cdr buf)) 'file))
@@ -226,7 +227,7 @@ If no field in forward, return nil without moving."
 			   "Content-Disposition: form-data; name=\""
 			   (car buf)
 			   "\"\r\n\r\n"
-			   (cdr buf)
+			   (encode-coding-string (cdr buf) coding)
 			   "\r\n"))
 		 (setq bufs (cdr bufs)))
 	       (insert "--" boundary "--\r\n")

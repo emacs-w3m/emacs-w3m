@@ -4219,6 +4219,7 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
 			(list "-header" (concat "Cookie: " cookie)))))
     (when (and (string= method "post") temp-file)
       (with-temp-buffer
+	(set-buffer-multibyte nil)
 	(when body (insert body))
 	(unwind-protect
 	    (let ((coding-system-for-write 'binary))
