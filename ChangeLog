@@ -1,3 +1,9 @@
+2002-03-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-url-at-point (ffap)): Strip text props under XEmacs.
+	(ffap-url-regexp): Modify the value to make it match to https urls
+	for Emacs 19, 20 and XEmacs.
+
 2002-03-27  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-e21.el (w3m-tab-drag-mouse-function): Fix problem when dragged

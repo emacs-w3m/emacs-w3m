@@ -2326,7 +2326,20 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 (cond
  ((locate-library "ffap")
   (autoload 'ffap-url-at-point "ffap")
-  (defalias 'w3m-url-at-point 'ffap-url-at-point))
+  (if (featurep 'xemacs)
+      (defun w3m-url-at-point ()
+	"Like `ffap-url-at-point', except that text props will be stripped."
+	(let (ffap-xemacs)
+	  (ffap-url-at-point)))
+    (defalias 'w3m-url-at-point 'ffap-url-at-point))
+  (eval-after-load "ffap"
+    ;; Under Emacs 19, 20 or XEmacs, `ffap-url-regexp' won't match to
+    ;; https urls by default.
+    '(if (and (not (string-match ffap-url-regexp "https://foo"))
+	      (string-match "\\((\\|\\\\|\\)\\(http\\)\\(\\\\|\\|\\\\)\\)"
+			    ffap-url-regexp))
+	 (setq ffap-url-regexp (replace-match "\\1\\2s?\\3"
+					      nil nil ffap-url-regexp)))))
  ((locate-library "thingatpt")
   (autoload 'thing-at-point "thingatpt")
   (defun w3m-url-at-point ()
