@@ -804,22 +804,28 @@ we will use this value for the default `defface' color spec.")
 	  (setq value (cdr value))))
     (custom-initialize-set symbol value)))
 
-(defmacro w3m-activate-zmacs-regions ()
-  "Set t to `zmacs-region-stays' when a user invoke a command.
-This is the XEmacs specific macro."
-  (if (featurep 'xemacs)
-      '(if (interactive-p)
-	   (setq zmacs-region-stays t))))
+(defmacro w3m-keep-region-active ()
+  "Keep the region active after evaluating this current command.
+In XEmacs, `zmacs-region-stays' is set to nil everywhen a command is
+evaluated.  This means that the region is always deactivated after
+evaluating the current command.  This macro sets t to it, and keeps
+the region active."
+  (when (featurep 'xemacs)
+    '(if (interactive-p)
+	 (setq zmacs-region-stays t))))
+
+(defmacro w3m-deactivate-region ()
+  "Deactivate the region.
+This macro does nothing in XEmacs, because the region is always
+deactivated after evaluating the current command."
+  (unless (featurep 'xemacs)
+    '(deactivate-mark)))
 
 (defmacro w3m-region-active-p ()
   "Say whether the region is active."
   (if (fboundp 'region-active-p)
       (list 'region-active-p)
     (list 'and 'transient-mark-mode 'mark-active)))
-
-(defalias 'w3m-deactivate-mark (if (fboundp 'deactivate-mark)
-				   'deactivate-mark
-				 'ignore))
 
 (provide 'w3m-util)
 

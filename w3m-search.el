@@ -169,7 +169,7 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
 	(setq initial default
 	      default nil))
       (when (w3m-region-active-p)
-	(w3m-deactivate-mark)))
+	(w3m-deactivate-region)))
     (read-string (if default
 		     (format prompt-with-default default)
 		   prompt)

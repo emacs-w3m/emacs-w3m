@@ -3398,7 +3398,7 @@ Like `ffap-url-at-point', except that text props will be stripped."
 In Transient Mark mode, deactivate the mark."
   (if (w3m-region-active-p)
       (prog1 (buffer-substring-no-properties (mark) (point))
-	(w3m-deactivate-mark))
+	(w3m-deactivate-region))
     (w3m-url-at-point)))
 
 (defun w3m-input-url (&optional prompt initial default quick-start)
@@ -5135,7 +5135,7 @@ lines are picked up.  If ARG is non-nil, it forces to reload all links.
 If Transient Mark mode, deactivate the mark."
   (interactive "r\nP")
   (when (w3m-region-active-p)
-    (w3m-deactivate-mark))
+    (w3m-deactivate-region))
   (let ((buffer (current-buffer))
 	(prev start)
 	(url (w3m-url-valid (w3m-anchor start)))
@@ -5432,7 +5432,7 @@ Return t if highlighting is successful."
 (defun w3m-next-anchor (&optional arg)
   "Move the point to the next anchor."
   (interactive "p")
-  (w3m-activate-zmacs-regions)
+  (w3m-keep-region-active)
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-anchor w3m-previous-anchor)))
       (when (setq w3m-goto-anchor-hist (w3m-anchor-sequence))
@@ -5481,7 +5481,7 @@ Return t if highlighting is successful."
 (defun w3m-previous-anchor (&optional arg)
   "Move the point to the previous anchor."
   (interactive "p")
-  (w3m-activate-zmacs-regions)
+  (w3m-keep-region-active)
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-anchor w3m-previous-anchor)))
       (when (setq w3m-goto-anchor-hist (w3m-anchor-sequence))
@@ -5519,7 +5519,7 @@ Return t if highlighting is successful."
 (defun w3m-next-form (&optional arg)
   "Move the point to the next form."
   (interactive "p")
-  (w3m-activate-zmacs-regions)
+  (w3m-keep-region-active)
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-form w3m-previous-form)))
       (when (setq w3m-goto-anchor-hist (w3m-action (point)))
@@ -5557,7 +5557,7 @@ Return t if highlighting is successful."
 (defun w3m-previous-form (&optional arg)
   "Move the point to the previous form."
   (interactive "p")
-  (w3m-activate-zmacs-regions)
+  (w3m-keep-region-active)
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-form w3m-previous-form)))
       (when (setq w3m-goto-anchor-hist (w3m-action (point)))
@@ -5593,7 +5593,7 @@ Return t if highlighting is successful."
 (defun w3m-next-image (&optional arg)
   "Move the point to the next image."
   (interactive "p")
-  (w3m-activate-zmacs-regions)
+  (w3m-keep-region-active)
   (unless arg (setq arg 1))
   (if (null (memq last-command
 		  '(w3m-next-image w3m-previous-image)))
@@ -5632,7 +5632,7 @@ Return t if highlighting is successful."
 (defun w3m-previous-image (&optional arg)
   "Move the point to the previous image."
   (interactive "p")
-  (w3m-activate-zmacs-regions)
+  (w3m-keep-region-active)
   (unless arg (setq arg 1))
   (if (null (memq last-command '(w3m-next-image w3m-previous-image)))
       (when (setq w3m-goto-anchor-hist (w3m-image (point)))
@@ -6320,7 +6320,7 @@ closed.  See also `w3m-quit'."
 (defun w3m-scroll-up-or-next-url (arg)
   "Scroll the current window up ARG lines, or go to the next page."
   (interactive "P")
-  (w3m-activate-zmacs-regions)
+  (w3m-keep-region-active)
   (if (pos-visible-in-window-p (point-max))
       (if w3m-next-url
 	  (w3m-goto-url w3m-next-url)
@@ -6330,7 +6330,7 @@ closed.  See also `w3m-quit'."
 (defun w3m-scroll-down-or-previous-url (arg)
   "Scroll the current window down ARG lines, or go to the previous page."
   (interactive "P")
-  (w3m-activate-zmacs-regions)
+  (w3m-keep-region-active)
   (if (pos-visible-in-window-p (point-min))
       (if w3m-previous-url
 	  (w3m-goto-url w3m-previous-url)
@@ -6482,7 +6482,7 @@ window's hscroll."
 (defun w3m-beginning-of-line (&optional arg)
   "Make the beginning of the line visible and move the point to there."
   (interactive "P")
-  (w3m-activate-zmacs-regions)
+  (w3m-keep-region-active)
   (when (listp arg)
     (setq arg (car arg)))
   (set-window-hscroll (selected-window) 0)
@@ -6493,7 +6493,7 @@ window's hscroll."
 It makes the ends of upper and lower three lines visible.  If
 `truncate-lines' is nil, it works identically as `end-of-line'."
   (interactive "P")
-  (w3m-activate-zmacs-regions)
+  (w3m-keep-region-active)
   (if truncate-lines
       (progn
 	(when (listp arg)

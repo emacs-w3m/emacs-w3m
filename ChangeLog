@@ -1,3 +1,18 @@
+2004-01-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-util.el (w3m-keep-region-active): Renamed from
+	`w3m-activate-zmacs-regions'.
+	(w3m-deactivate-region): Declared as a macro.
+
+	* w3m-search.el (w3m-search-read-query): Call
+	`w3m-deactivate-region' instead of `w3m-deactivate-mark'.
+
+	* w3m.el (w3m-next-anchor, w3m-previous-anchor, w3m-next-form,
+	w3m-previous-form, w3m-next-image, w3m-previous-image,
+	w3m-scroll-up-or-next-url, w3m-scroll-down-or-previous-url,
+	w3m-beginning-of-line, w3m-end-of-line): Call
+	`w3m-keep-region-active' instead of `w3m-activate-zmacs-regions'.
+
 2004-01-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-proc.el (w3m-process-wait-discard-input): New variable.
