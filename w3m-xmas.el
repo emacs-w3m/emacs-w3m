@@ -101,7 +101,7 @@ to show unoptimized animated gif images.")
 (defvar w3m-should-convert-interlaced-gifs t
   "Specify whether w3m should convert interlaced gif images to be non-
 interlaced.  There is a known bug in the whole version of XEmacs so
-far that it may crashes when an interlaced gif image is displayed.")
+far that it may crash when an interlaced gif image is displayed.")
 
 (defvar w3m-gifsicle-program (when (exec-installed-p "gifsicle")
 			       "gifsicle")

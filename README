@@ -16,12 +16,14 @@ This package contains a interface program of w3m.
    a) This package requires the latest version of w3m (see section 3),
       please install it in the first step.
 
-   b) In addition, if you are using XEmacs 21.2.20 or later, to use
-      the program "gifsicle" is recommended (it is not always needed,
-      except for showing optimized animated gif images).  It is
-      available from:
+   b) In addition, if you are using XEmacs 21.x, you should install the
+      program "gifsicle".  There is a known bug in the whole XEmacs 21.x
+      series so far that it won't display optimized animated gifs
+      correctly or it may crash when an interlaced gif image is
+      displayed.  emacs-w3m will use it to convert gif data to be
+      suitable for XEmacs 21.x.  It is available from:
 
-          http://www.lcdf.org/gifsicle/
+         http://www.lcdf.org/gifsicle/
 
    c) If you use XEmacs or Mule-2.3, you have to install APEL before
       installing Emacs-w3m.  APEL is available at:
