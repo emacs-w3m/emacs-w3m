@@ -74,9 +74,10 @@
 		  (push (match-string 1) months)))
       (setq months (nreverse months))
       (dolist (month months)
-	(let ((url (shimbun-airs-concat-url shimbun (concat month "/"))))
-	  (shimbun-retrieve-url url t)
-	  (shimbun-mhonarc-get-headers shimbun url headers month))))
+	(with-temp-buffer
+	  (let ((url (shimbun-airs-concat-url shimbun (concat month "/"))))
+	    (shimbun-retrieve-url url t)
+	    (shimbun-mhonarc-get-headers shimbun url headers month)))))
     headers))
 
 (provide 'sb-airs)
