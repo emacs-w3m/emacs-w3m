@@ -25,6 +25,8 @@
 	(w3m-form-submit-get-textarea-files): Ditto.
 	(w3m-form-submit): Set `w3m-form-textarea-post-files' for removing
 	files.
+	(w3m-form-resume): Check `selects' is cons.
+
 
 2005-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 

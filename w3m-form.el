@@ -319,7 +319,7 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
 			(w3m-form-put cform id name value))))
 		   ((string= type "select")
 		    (let ((selects (w3m-form-get form id)))
-		      (when (car selects)
+		      (when (and (consp selects) (car selects))
 			(w3m-form-replace (cdr (assoc (car selects)
 						      (cdr selects)))))
 		      (unless (eq form cform)
