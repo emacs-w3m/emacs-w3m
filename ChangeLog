@@ -12,8 +12,7 @@
 	timezone.
 	(shimbun-headers): Decode the contents using the coding system
 	which shimbun-tcup-group-alist specifies; improve regexp matching
-	the author's name; adjust the time by the local timezone for the
-	yutopia group.
+	the author's name; fix the time for the groups which use shift_jis.
 
 2005-03-10  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 

@@ -185,10 +185,12 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 		 ((looking-at "\\([^<]+\\)<")
 		  (shimbun-tcup-make-time))
 		 (t (current-time))))
-	  (when (string-equal group "yutopia")
+	  ;; The page using `shift_jis' is assumed to be the old format.
+	  (when (string-match "sjis\\|shift.jis\\"
+			      (prin1-to-string codesys))
 	    (let ((ms (car stime))
 		  (ls (cadr stime)))
-	      (if (< (setq ls (- ls (car (current-time-zone)))) 0)
+	      (if (< (setq ls (- ls 32400)) 0)
 		  (progn
 		    (setcar stime (1- ms))
 		    (setcdr stime (list (+ ls 65536))))
