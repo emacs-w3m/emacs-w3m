@@ -3574,16 +3574,13 @@ that is affected by `w3m-pop-up-frames'."
   (with-current-buffer buf
     (let ((ptmin (point-min))
 	  (ptmax (point-max))
-	  (content (save-restriction (widen) (buffer-string)))
+	  (url w3m-current-url)
 	  (mode major-mode)
 	  (lvars (buffer-local-variables))
-	  (new (generate-new-buffer newname))
-	  (pt (point)))
+	  (new (generate-new-buffer newname)))
       (with-current-buffer new
-	;;(erase-buffer)
-	(insert content)
-	(narrow-to-region ptmin ptmax)
 	(funcall mode)			;still needed??  -sm
+	(w3m-goto-url url)
 	(dolist (v lvars)
 	  (cond ((not (consp v))
 		 (makunbound v))
@@ -3597,7 +3594,6 @@ that is affected by `w3m-pop-up-frames'."
 		   (error nil)))))
 	;; Make copies of `w3m-history' and `w3m-history-flat'.
 	(w3m-history-copy buf)
-	(goto-char pt)
 	(when and-pop
 	  (let* ((pop-up-windows w3m-pop-up-windows)
 		 (pop-up-frames w3m-pop-up-frames)
@@ -3642,6 +3638,13 @@ that is affected by `w3m-pop-up-frames'."
      (if (setq next (cadr (memq (current-buffer) buffers)))
 	 next
        (car buffers)))))
+
+(defun w3m-delete-buffer ()
+  "Delete w3m buffer and switch to previous w3m buffer if exists."
+  (interactive)
+  (let ((buffer (current-buffer)))
+    (w3m-previous-buffer)
+    (kill-buffer buffer)))
 
 (defvar w3m-lynx-like-map nil
   "Lynx-like keymap used in w3m-mode buffers.")

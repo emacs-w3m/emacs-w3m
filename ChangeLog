@@ -1,3 +1,9 @@
+2001-11-01  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-delete-buffer): New function.
+	(w3m-copy-buffer): Call `w3m-goto-url' instead of copying buffer
+	content.
+
 2001-10-31  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-form.el (w3m-form-resume): Remove submit button status
