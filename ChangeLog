@@ -1,3 +1,7 @@
+2002-06-26  Ando Tsutomu  <ando-tom@ff.iij4u.or.jp>
+
+	* w3m-weather.el (w3m-weather-completion-table): Fix typo.
+
 2002-06-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-info-like-map): Remove redundant code.
