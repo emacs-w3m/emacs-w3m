@@ -185,8 +185,8 @@ Emacs-w3m Functions
 most popular WEB browser on Emacs, but it works so slowly that we want a
 simple and speedy alternative.  @uref{http://w3m.sourceforge.net/, w3m}
 is a pager with WWW capability, developed by Akinori ITO.  Although it
-is a pager, it can be used as a text-mode WWW browser.  Then we
-developed a simple Emacs interface to w3m.
+is a pager, it can be used as a text-mode WWW browser.  So we developed
+a simple Emacs interface to w3m.
 
 Our special thanks go to Akinori ITO and the w3m team for the excellent
 w3m program.  We would also like to thank everybody who has submitted
@@ -301,10 +301,10 @@ to make it possible to be handled by XEmacs 21.x.  It is available at:
 
 @item ImageMagick
 If the @samp{convert} program bundled with the ImageMagick package is
-available in your system, emacs-w3m will use it for resizing images or
-converting a @samp{favicon} image into a certain format which Emacs can
-handle.  Emacs-w3m works without ImageMagick, but it will improve the
-appearance of web pages.  You can get the ImageMagick package from:
+available on your system, emacs-w3m will use it for resizing images or
+converting @samp{favicon} images into a format Emacs can handle.
+Emacs-w3m works without ImageMagick, but it will improve the appearance
+of web pages.  You can get the ImageMagick package from:
 
 @uref{ftp://ftp.imagemagick.org/pub/ImageMagick/}
 
@@ -373,11 +373,11 @@ the @samp{shimbun} library.  The @acronym{FLIM} package is available at:
 @item Mule-UCS
 The Mule-UCS Emacs Lisp package makes your Emacs handle the Unicode
 system.  We recommend you install this package so that emacs-w3m can
-display pages written by UTF-8, etc.  It is available at:
+display pages written in UTF-8, etc.  It is available at:
 
 @uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
 
-If you are an XEmacs user, the ready-compiled package is here:
+If you are an XEmacs user, the compiled package is here:
 
 @uref{ftp.xemacs.org:/packages/mule-ucs-1.04-pkg.tar.gz}
 @end table
@@ -416,13 +416,13 @@ Run the @samp{configure} script.
 % ./configure
 @end example
 
-@emph{Important notice to the Gnus users}:
+@emph{Important notice to Gnus users}:
 
-If the various versions of Gnusae are installed in your system (it is
-likely that there are the released version and the development version
-of Gnusae), make sure that priority is given to the directory where the
-@file{gnus.elc} file which you use is installed in the @code{load-path}.
-To do that, use the @samp{--with-addpath} option as follows:
+If multiple versions of Gnus are installed on your system (it is likely
+that there are the released version and the development version of
+Gnus), make sure that the @code{load-path} contains the directory where
+the version you use is installed (check for the @file{gnus.elc} file).
+You can ensure that with the @samp{--with-addpath} option as follows:
 
 @example
 % ./configure --with-addpath=/usr/local/share/emacs/site-lisp/gnus
@@ -2208,12 +2208,12 @@ See also @ref{Nnshimbun} if you are using T-gnus or Nana-gnus.
 Q. What's emacs-w3m?
 
 It is an interface program on Emacs which controls w3m.  For more
-details, see @ref{Introduction}.
+information, see @ref{Introduction}.
 
 @item
 Q. Which emacs versions are supported?
 
-The following Emacsen have been checked for the emacs-w3m support:
+The following Emacsen have been checked for emacs-w3m support:
 
 @itemize @bullet
 @item Mule 2.3 (based on Emacs 19.34)
@@ -2228,8 +2228,8 @@ The following Emacsen have been checked for the emacs-w3m support:
 @end itemize
 
 Note that you're required to use @acronym{APEL} if you'd like to run
-emacs-w3m under Mule 2.3, Emacs 19.34 or XEmacs.  For more detail, see
-@ref{Other Requirements}.
+emacs-w3m under Mule 2.3, Emacs 19.34 or XEmacs.  For more information,
+see @ref{Other Requirements}.
 
 Emacs-w3m works on Emacs 19.34 or XEmacs without the Mule feature except
 for several commands, such as the command to look weather forecasts in
@@ -2239,7 +2239,7 @@ work on Emacs 19.34 or XEmacs without Mule.
 @item
 Q. Which w3m versions are supported?
 
-The following w3m versions have been checked for the emacs-w3m support:
+The following w3m versions have been checked for emacs-w3m support:
 
 @itemize @bullet
 @item w3m-0.3 and later
@@ -2265,15 +2265,13 @@ to get it from.
 
 @itemize @bullet
 @item
-
-Q. Why can't I enter a password on pages which require the
-authentication?
+Q. Why can't I enter a password on pages which require authentication?
 
 Make sure the @code{w3m-async-exec} variable is set to a value other
 than @code{nil}.
 
 @item
-Q. Why can't I enter a password for a proxy server which requires the
+Q. Why can't I enter a password for a proxy server which requires
 authentication?
 
 Make sure the @code{w3m-async-exec} variable is set to a value other
@@ -2336,7 +2334,7 @@ retired officially.
 @end enumerate
 
 @item
-Q. Why images can't be shown?
+Q. Why can't images be shown?
 
 It could be caused by the following reasons:
 
@@ -2352,7 +2350,7 @@ of w3m you use.
 @item
 Q. Why can't I browse pages which require cookies?
 
-(This is still an experimental functionality.)
+(This is still an experimental feature.)
 
 Make sure the @code{w3m-use-cookies} variable is set to a value other
 than @code{nil}.
@@ -2360,7 +2358,7 @@ than @code{nil}.
 @item
 Q. Why can't I fill in the form?
 
-(This is still an experimental functionality.)
+(This is still an experimental feature.)
 
 Make sure the @code{w3m-use-form} variable is set to a value other than
 @code{nil}.
@@ -2368,11 +2366,11 @@ Make sure the @code{w3m-use-form} variable is set to a value other than
 @item
 Q. Why can't I submit a form?
 
-(This is still an experimental functionality.)
+(This is still an experimental feature.)
 
 Make sure the @code{w3m-use-form} variable is set to a value other than
 @code{nil}.  You also need to use a version of w3m which recognizes the
-@samp{-post} option in order to use this function.  Ckeck what version
+@samp{-post} option in order to use this function.  Check what version
 of w3m you use.
 
 @item
@@ -2381,7 +2379,7 @@ Q. Why are frames not rendered?
 Use w3mmee.
 
 @item
-Q. Why is a favicon image not displayed in the Emacs 21 tab bar?
+Q. Why are favicon images not displayed in the Emacs 21 tab bar?
 
 Install the @samp{convert} program which is included in ImageMagick.
 It is available from: @uref{http://www.imagemagick.org/}
@@ -2390,18 +2388,16 @@ It is available from: @uref{http://www.imagemagick.org/}
 Q. Why does Emacs 21 get locked when a favicon image is going to be
 displayed?
 @item
-Q. It is very annoying that my computer accesses the disk drive
-violently and says @samp{process convert exited abnormally with code 10}
-in the end.
+Q. My computer accesses the disk drive violently and says @samp{process
+convert exited abnormally with code 10}.  What's the story?
 
-Don't you use the old version of ImageMagick?  As far as we know, it
-will occur when the @samp{convert} program bundled with the ImageMagick
-5.2.1 is used.  It has been confirmed that the @samp{convert} program
-bundled with the ImageMagick 5.4.0-5 and later works fine.
+Do you use an old version of ImageMagick?  As far as we know, it happens
+when you use the @samp{convert} program bundled with ImageMagick 5.2.1.
+It has been confirmed that the @samp{convert} program bundled with
+ImageMagick 5.4.0-5 (and later) works fine.
 
-If you don't want to use ImageMagick, or if you couldn't use the most
-recent version of ImageMagick, add the following line in your
-@file{~/.emacs-w3m} file:
+If you don't want to use ImageMagick, or if you can't use its most
+recent version, add the following line in your @file{~/.emacs-w3m} file:
 
 @lisp
 (setq w3m-use-favicon nil)
@@ -3404,7 +3400,7 @@ module.
 @chapter Some knick-knacks using emacs-w3m
 @cindex Tips
 
-Here are some tips to use emacs-w3m handily with the other features.
+Here are some handy tips to use emacs-w3m with other Emacs facilities.
 
 @itemize @bullet
 @item browse-url
@@ -3418,16 +3414,15 @@ put the following lines in your @file{~/.emacs} file:
 (global-set-key "\C-xm" 'browse-url-at-point)
 @end lisp
 
-Then, emacs-w3m will be invoked when you type the @kbd{C-x m} key on a
+Emacs-w3m will now be invoked when you type the @kbd{C-x m} key on a
 string which looks like a URL in any Emacs buffer.  In addition, you can
 use emacs-w3m to preview an HTML file that you are just editing by
 typing the @kbd{C-c C-v} key (note that you need to use Emacs and the
 @code{html-mode} major mode to edit the HTML file).
 
-If you'd like to use the other web browser rather than emacs-w3m by
-typing the @kbd{C-x m} key only when you are in an emacs-w3m buffer (who
-wants to do so?), add the following advice to @file{~/.emacs} file for
-example:
+If you'd like to use another web browser than emacs-w3m when using the
+@kbd{C-x m} key when you are in an emacs-w3m buffer (who wants to do
+so?), add the following advice to @file{~/.emacs} file:
 
 @lisp
 (defadvice browse-url-at-point
@@ -3500,7 +3495,7 @@ do that:
 Also @xref{Customizing Articles, ,Customizing Articles, gnus, The Gnus
 Manual}, for details.
 
-In additon, the experimental code below is used to display
+In addition, the experimental code below is used to display
 @samp{multipart/related} pictures.  The place might be something wrong.
 
 @lisp

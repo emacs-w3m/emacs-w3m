@@ -464,11 +464,11 @@ Emacs-w3m $B$r(B CVS $B$G<hF@$7$?$N$J$i$P!"(B@samp{configure} $B%9%/%j%W%H$
 
 @emph{Gnus $B%f!<%6$X$N=EMW$J$*CN$i$;(B}:
 
-$B$$$m$$$m$J%P!<%8%g%s$N(B Gnus $B$,%$%s%9%H!<%k$5$l$F$$$k>l9g(B ($B%j%j!<%9HG$H3+(B
-$BH/HG$N(B Gnus $B$,$"$k$+$b$7$l$^$;$s(B) $B$O!"$"$J$?$,;H$&(B @file{gnus.elc} $B%U%!(B
-$B%$%k$,%$%s%9%H!<%k$5$l$F$$$k%G%#%l%/%H%j$,(B @code{load-path} $B$NCf$GM%@h$5(B
-$B$l$k$h$&$K$7$F2<$5$$!#$=$l$K$O0J2<$N$h$&$K(B @samp{--with-addpath} $B%*%W%7%g(B
-$B%s$r;H$C$F2<$5$$(B:
+$BJ#?t$N%P!<%8%g%s$N(B Gnus $B$,%$%s%9%H!<%k$5$l$F$$$k>l9g(B ($B%j%j!<%9HG$H3+H/HG(B
+$B$N(B Gnus $B$,$"$k$+$b$7$l$^$;$s(B) $B$O!"(B@code{load-path} $B$K$"$J$?$,;H$&%P!<%8%g(B
+$B%s$,%$%s%9%H!<%k$5$l$F$$$k%G%#%l%/%H%j(B (@file{gnus.elc} $B%U%!%$%k$rD4$Y$^(B
+$B$7$g$&(B) $B$r4^$`$h$&$K$7$F2<$5$$!#0J2<$N$h$&$K(B @samp{--with-addpath} $B%*%W(B
+$B%7%g%s$r;H$&$3$H$K$h$C$F!"$3$l$r3N<B$K9T$J$&$3$H$,$G$-$^$9(B:
 
 @example
 % ./configure --with-addpath=/usr/local/share/emacs/site-lisp/gnus
@@ -2363,8 +2363,8 @@ T-gnus $B$+(B Nana-gnus $B$r$*;H$$$J$i$P(B @ref{Nnshimbun} $B$b;2>H$7$F2<$5
 Q. emacs-w3m $B$C$F2?$G$9$+(B?
 
 w3m $B$r(B Emacs $B>e$GF0$+$9%$%s%?!<%U%'!<%9%W%m%0%i%`$G$9!#(BEmacs $B>e$GF0$/%&%'(B
-$B%V%V%i%&%6$H$7$F;H$&$3$H$b$G$-$^$9!#(B@ref{Introduction} $B$b;2>H$7$F$/$@$5(B
-$B$$!#(B
+$B%V%V%i%&%6$H$7$F;H$&$3$H$b$G$-$^$9!#$5$i$J$k>pJs$O(B @ref{Introduction} $B$b(B
+$B;2>H$7$F$/$@$5$$!#(B
 
 @item
 Q. $BF0:n$9$k(B Emacs $B$O(B?
@@ -2536,13 +2536,16 @@ Image Magick $B$K4^$^$l$F$$$k(B @samp{convert} $B%W%m%0%i%`$r%$%s%9%H!<%k$7$F
 
 @item
 Q. Emacs21 $B$G(B favicon $B$rI=<($7$h$&$H$7$?$N$G$9$,!"(BEmacs $B$,%m%C%/$7$^$7(B
-$B$?(B / $B$^$?$O(B emacs-w3m $B$rN)$A>e$2$h$&$H$7$?$i!"7c$7$/%G%#%9%/%"%/%;%9$7$?(B
-$B8e!"(B@samp{process convert exited abnormally with code 10} $B$J$I$HI=<($5$l(B
-$B$^$7$?!#(B
+$B$?!#(B
+@item
+Emacs-w3m $B$rN)$A>e$2$h$&$H$7$?$i!"7c$7$/%G%#%9%/%"%/%;%9$7$?8e!"(B
+@samp{process convert exited abnormally with code 10} $B$J$I$HI=<($5$l$^$7(B
+$B$?!#$I$&$J$C$F$$$k$s$G$7$g$&(B?
 
-Image Magick $B$N%P!<%8%g%s$r3NG'$7$F2<$5$$!#(BImageMagick-5.2.1 $BIUB0(B
-$B$N(B @samp{convert} $B$G$O$=$&$J$j$^$7$?!#(BImageMagick-5.4.0-5 $B0J>e$KIUB0(B
-$B$N(B @samp{convert} $B$G$OF0:n3NG'$5$l$F$$$^$9!#(B
+$B8E$$%P!<%8%g%s$N(B Image Magick $B$r;H$C$F$$$^$;$s$+(B?  ImageMagick-5.2.1 $B$K(B
+$BIUB0$7$F$$$k(B @samp{convert} $B$r;H$C$F$$$k$H!"$=$&$J$k$3$H$,CN$i$l$F$$$^$9!#(B
+ImageMagick-5.4.0-5 ($B0J>e(B) $B$KIUB0$7$F$$$k(B @samp{convert} $B$G$O!"@5>oF0:n(B
+$B$,3NG'$5$l$F$$$^$9!#(B
 
 $B$b$7(B ImageMagick $B$,;H$($J$$!"$^$?$O;H$$$?$/$J$$>l9g(B
 $B$O(B @file{~/.emacs-w3m} $B%U%!%$%k$K(B
@@ -3956,7 +3959,7 @@ shimbun-mailman $B%/%i%9$r7Q>5$7(B @footnote{$B$D$^$j(B shimbun-mailman $B%
 @chapter Emacs-w3m $B$r;H$&^/Mn$?>.J*$?$A(B
 @cindex Tips
 
-$BB>$N5!G=$H$H$b$K(B emacs-w3m $B$rJXMx$K;H$&$?$a$N%R%s%H=8$G$9!#(B
+$BB>$N(B Emacs $B$N1~MQ5!G=$H$H$b$K(B emacs-w3m $B$rJXMx$K;H$&$?$a$N%R%s%H=8$G$9!#(B
 
 @itemize @bullet
 @item browse-url
@@ -3970,16 +3973,16 @@ shimbun-mailman $B%/%i%9$r7Q>5$7(B @footnote{$B$D$^$j(B shimbun-mailman $B%
 (global-set-key "\C-xm" 'browse-url-at-point)
 @end lisp
 
-$B$9$k$H!"(BEmacs $B$N$I$N%P%C%U%!$G$b!"(BURL $B$N$h$&$JJ8;zNs$N>e(B
+$B$3$&$9$k$3$H$K$h$C$F!"(BEmacs $B$N$I$N%P%C%U%!$G$b!"(BURL $B$N$h$&$JJ8;zNs$N>e(B
 $B$G(B @kbd{C-x m} $B%-!<$r%?%$%W$9$k$H!"(Bemacs-w3m $B$,5/F0$5$l$^$9!#2C$($F!"(B
 @kbd{C-c C-v} $B%-!<$r%?%$%W$9$k$3$H$K$h$C$F!"$^$5$KJT=8Cf$N(B HTML $B%U%!%$%k(B
 $B$r(B emacs-w3m $B$G2<8+(B (preview) $B$9$k$3$H$,$G$-$^$9(B (HTML $B%U%!%$%k$NJT=8$K!"(B
 Emacs $B$H(B @code{html-mode} $B%a%8%c!<%b!<%I$r;H$&I,MW$,$"$j$^$9(B)$B!#(B
 
-Emacs-w3m $B$N%P%C%U%!$K$$$k$H$-$@$1!"(B@kbd{C-x m} $B%-!<$r%?%$%W$9$k$3$H$K$h$C(B
+Emacs-w3m $B$N%P%C%U%!$K$$$k$H$-$K!"(B@kbd{C-x m} $B%-!<$r%?%$%W$9$k$3$H$K$h$C(B
 $B$F!"(Bemacs-w3m $B$NBe$o$j$KB>$N%&%'%V%V%i%&%6$r;H$$$?$$>l9g$O(B ($B$=$s$J$3$H$r(B
-$B$7$?$$?M$,$$$k$N$+$J(B?)$B!"Nc$($P0J2<$N%"%I%P%$%9$r(B @file{~/.emacs} $B%U%!%$(B
-$B%k$K2C$($F2<$5$$(B:
+$B$7$?$$?M$,$$$k$N$+$J(B?)$B!"0J2<$N%"%I%P%$%9$r(B @file{~/.emacs} $B%U%!%$%k$K2C(B
+$B$($F2<$5$$(B:
 
 @lisp
 (defadvice browse-url-at-point
