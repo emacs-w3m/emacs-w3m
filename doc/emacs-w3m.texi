@@ -87,6 +87,12 @@ This manual corresponds to emacs-w3m version @value{VERSION}.
 @menu
 * Introduction::                Preliminary remarks to emacs-w3m
 * Getting Started::             It's so easy to begin to use emacs-w3m
+* Basic Usage::                 Basic usage
+* Pretty Good Features::        Pretty good features
+* Customizable Options::        Customizable options
+* Submitting to MUAs::          Submitting emacs-w3m to mail/newsreaders
+* Frequently Asked Questions::  There isn't always an answer
+* Known Problems::              You can surely solve it
 * Shimbun Library::             A tool for reading a web newspaper
 * Index::                       Index
 
@@ -100,6 +106,38 @@ Getting Started
 * Other Requirements::          Things required to run emacs-w3m
 * Installing Emacs-w3m::        Installing emacs-w3m
 * Non-UNIX-like systems::       Installing in non-UNIX-like systems
+* Minimal Settings::            Minimal settings to run emacs-w3m
+
+Basic Usage
+
+* Browsing Web Pages::          
+* Inline Images::               
+* Tracing History::             
+* Putting Bookmarks::           
+* Using Tabs::                  
+* Selecting Buffers::           
+* Downloading::                 
+
+Pretty Good Features
+
+* Searching Words::             
+* Quick Searching::             
+* Weather Information::         
+* Using Antenna::               
+* Showing Directory Tree::      
+* Viewing Perl Documents::      
+
+Customizable Options
+
+Submitting to MUAs
+
+* Gnus::                        
+* Mew::                         
+* SEMI MUAs::                   
+
+Frequently Asked Questions
+
+Known Problems
 
 Shimbun Library
 
@@ -134,6 +172,7 @@ person; read it over again when you install a new version of emacs-w3m.
 * Other Requirements::          Things required to run emacs-w3m
 * Installing Emacs-w3m::        Installing emacs-w3m
 * Non-UNIX-like systems::       Installing in non-UNIX-like systems
+* Minimal Settings::            Minimal settings to run emacs-w3m
 @end menu
 
 @node Required Emacs Version
@@ -375,6 +414,123 @@ tell those places to the installer as shown below:
 @example
 % emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
 @end example
+
+@node Minimal Settings
+@section Minimal settings to run emacs-w3m
+
+
+@node Basic Usage
+@chapter Basic usage
+
+
+@menu
+* Browsing Web Pages::          
+* Inline Images::               
+* Tracing History::             
+* Putting Bookmarks::           
+* Using Tabs::                  
+* Selecting Buffers::           
+* Downloading::                 
+@end menu
+
+@node Browsing Web Pages
+@section Browsing web pages
+
+
+@node Inline Images
+@section Inline images
+
+
+@node Tracing History
+@section Tracing history
+
+
+@node Putting Bookmarks
+@section Putting bookmarks
+
+
+@node Using Tabs
+@section Using tabs
+
+
+@node Selecting Buffers
+@section Selecting buffers
+
+
+@node Downloading
+@section Downloading
+
+
+@node Pretty Good Features
+@chapter Pretty good features
+
+
+@menu
+* Searching Words::             
+* Quick Searching::             
+* Weather Information::         
+* Using Antenna::               
+* Showing Directory Tree::      
+* Viewing Perl Documents::      
+@end menu
+
+@node Searching Words
+@section Searching words
+
+
+@node Quick Searching
+@section Quick searching
+
+
+@node Weather Information
+@section Weather information
+
+
+@node Using Antenna
+@section Using antenna
+
+
+@node Showing Directory Tree
+@section Showing directory tree
+
+
+@node Viewing Perl Documents
+@section Viewing perl socuments
+
+
+@node Customizable Options
+@chapter Customizable options
+
+
+@node Submitting to MUAs
+@chapter Submitting emacs-w3m to mail/newsreaders
+
+
+@menu
+* Gnus::                        
+* Mew::                         
+* SEMI MUAs::                   
+@end menu
+
+@node Gnus
+@section Gnus
+
+
+@node Mew
+@section Mew
+
+
+@node SEMI MUAs
+@section SEMI MUAs
+
+
+@node Frequently Asked Questions
+@chapter There isn't always an answer
+
+
+@node Known Problems
+@chapter You can surely solve it
+
 
 @node Shimbun Library
 @chapter A tool for reading a newspaper

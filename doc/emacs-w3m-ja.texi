@@ -128,6 +128,12 @@ Emacs-w3m $B3+H/%A!<%`(B
 @menu
 * Introduction::                $B$O$8$a$K(B
 * Getting Started::             Emacs-w3m $B$r;H$$;O$a$k$N$O$H$C$F$b4JC1(B
+* Basic Usage::                 $B4pK\E*$J;H$$J}(B
+* Pretty Good Features::        $B$?$/$5$s$N$9$0$l$b$N(B
+* Customizable Options::        $B%G%U%)%k%H$N$^$^$G$b7k9=NI$$$H;W$&$1$l$I(B
+* Submitting to MUAs::          $B%a!<%k(B/$B%K%e!<%9%j!<%@!<$G;H$&(B
+* Frequently Asked Questions::  $BI,$:Ez$,$"$k$H$O8B$i$J$$(B
+* Known Problems::              $B$"$J$?$J$i$-$C$H2r7h$G$-$k(B
 * Shimbun Library::             $B%&%'%V>e$N?7J9$rFI$`$?$a$NF;6q(B
 * Index::                       $B:w0z(B
 
@@ -141,6 +147,38 @@ Getting Started
 * Other Requirements::          Emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
 * Installing Emacs-w3m::        Emacs-w3m $B$r%$%s%9%H!<%k$9$k(B
 * Non-UNIX-like systems::       $BHs(B UNIX $B7O4D6-$G$N%$%s%9%H!<%k(B
+* Minimal Settings::            $B@_Dj$7$J$1$l$P$J$i$J$$:GDc8B$N$b$N(B
+
+Basic Usage
+
+* Browsing Web Pages::          $B$5$"!"%M%C%H%5!<%U%#%s$N$O$8$^$j$^$8$^$j(B
+* Inline Images::               $B2hA|I=<($r(B ON/OFF $B$9$k(B
+* Tracing History::             $B$"$J$?$N2a5n$J$ICN$j$?$/$J$$$o(B
+* Putting Bookmarks::           $B$\$/$N(B/$B$o$?$7$N$*5$$KF~$j(B
+* Using Tabs::                  $B==2sB3$1$F%?%V$H8@$C$F$_$h$&(B
+* Selecting Buffers::           $B$?$/$5$s$N%;%C%7%g%s$+$i0l$D$rA*$V(B
+* Downloading::                 $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
+
+Pretty Good Features
+
+* Searching Words::             $B8l$N8!:w$KJXMx$J%3%^%s%I(B
+* Quick Searching::             $B?WB.%5!<%A(B
+* Weather Information::         $BE75$M=Js$r8+$k(B
+* Using Antenna::               $B%"%s%F%J$C$F2?(B?
+* Showing Directory Tree::      $B%G%#%l%/%H%j$NLZ9=B$$rI=<($9$k(B
+* Viewing Perl Documents::      Perl $B$N%I%-%e%a%s%H$r8+$k(B
+
+Customizable Options
+
+Submitting to MUAs
+
+* Gnus::                        
+* Mew::                         
+* SEMI MUAs::                   
+
+Frequently Asked Questions
+
+Known Problems
 
 Shimbun Library
 
@@ -177,6 +215,7 @@ Emacs-w3m $B$N8x<0%Z!<%8(B @uref{http://emacs-w3m.namazu.org/} $B$bJ;$;$F$4Mw
 * Other Requirements::          Emacs-w3m $B$rF0:n$5$;$k$N$KI,MW$J$b$N(B
 * Installing Emacs-w3m::        Emacs-w3m $B$r%$%s%9%H!<%k$9$k(B
 * Non-UNIX-like systems::       $BHs(B UNIX $B7O4D6-$G$N%$%s%9%H!<%k(B
+* Minimal Settings::            $B@_Dj$7$J$1$l$P$J$i$J$$:GDc8B$N$b$N(B
 @end menu
 
 @node Required Emacs Version
@@ -429,6 +468,123 @@ APEL$B!"(BFLIM $B$^$?$OB>$N2?$+$rIaDL$N>l=j$K%$%s%9%H!<%k$7$F$$$J$$$H!"%$%s%9
 @example
 % emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
 @end example
+
+@node Minimal Settings
+@section $B@_Dj$7$J$1$l$P$J$i$J$$:GDc8B$N$b$N(B
+
+
+@node Basic Usage
+@chapter $B4pK\E*$J;H$$J}(B
+
+
+@menu
+* Browsing Web Pages::          $B$5$"!"%M%C%H%5!<%U%#%s$N$O$8$^$j$^$8$^$j(B
+* Inline Images::               $B2hA|I=<($r(B ON/OFF $B$9$k(B
+* Tracing History::             $B$"$J$?$N2a5n$J$ICN$j$?$/$J$$$o(B
+* Putting Bookmarks::           $B$\$/$N(B/$B$o$?$7$N$*5$$KF~$j(B
+* Using Tabs::                  $B==2sB3$1$F%?%V$H8@$C$F$_$h$&(B
+* Selecting Buffers::           $B$?$/$5$s$N%;%C%7%g%s$+$i0l$D$rA*$V(B
+* Downloading::                 $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
+@end menu
+
+@node Browsing Web Pages
+@section $B$5$"!"%M%C%H%5!<%U%#%s$N$O$8$^$j$^$8$^$j(B
+
+
+@node Inline Images
+@section $B2hA|I=<($r(B ON/OFF $B$9$k(B
+
+
+@node Tracing History
+@section $B$"$J$?$N2a5n$J$ICN$j$?$/$J$$$o(B
+
+
+@node Putting Bookmarks
+@section $B$\$/$N(B/$B$o$?$7$N$*5$$KF~$j(B
+
+
+@node Using Tabs
+@section $B==2sB3$1$F%?%V$H8@$C$F$_$h$&(B
+
+
+@node Selecting Buffers
+@section $B$?$/$5$s$N%;%C%7%g%s$+$i0l$D$rA*$V(B
+
+
+@node Downloading
+@section $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
+
+
+@node Pretty Good Features
+@chapter $B$?$/$5$s$N$9$0$l$b$N(B
+
+
+@menu
+* Searching Words::             $B8l$N8!:w$KJXMx$J%3%^%s%I(B
+* Quick Searching::             $B?WB.%5!<%A(B
+* Weather Information::         $BE75$M=Js$r8+$k(B
+* Using Antenna::               $B%"%s%F%J$C$F2?(B?
+* Showing Directory Tree::      $B%G%#%l%/%H%j$NLZ9=B$$rI=<($9$k(B
+* Viewing Perl Documents::      Perl $B$N%I%-%e%a%s%H$r8+$k(B
+@end menu
+
+@node Searching Words
+@section $B8l$N8!:w$KJXMx$J%3%^%s%I(B
+
+
+@node Quick Searching
+@section $B?WB.%5!<%A(B
+
+
+@node Weather Information
+@section $BE75$M=Js$r8+$k(B
+
+
+@node Using Antenna
+@section $B%"%s%F%J$C$F2?(B?
+
+
+@node Showing Directory Tree
+@section $B%G%#%l%/%H%j$NLZ9=B$$rI=<($9$k(B
+
+
+@node Viewing Perl Documents
+@section Perl $B$N%I%-%e%a%s%H$r8+$k(B
+
+
+@node Customizable Options
+@chapter $B%G%U%)%k%H$N$^$^$G$b7k9=NI$$$H;W$&$1$l$I(B
+
+
+@node Submitting to MUAs
+@chapter $B%a!<%k(B/$B%K%e!<%9%j!<%@!<$G;H$&(B
+
+
+@menu
+* Gnus::                        
+* Mew::                         
+* SEMI MUAs::                   
+@end menu
+
+@node Gnus
+@section Gnus
+
+
+@node Mew
+@section Mew
+
+
+@node SEMI MUAs
+@section SEMI MUAs
+
+
+@node Frequently Asked Questions
+@chapter $BI,$:Ez$,$"$k$H$O8B$i$J$$(B
+
+
+@node Known Problems
+@chapter $B$"$J$?$J$i$-$C$H2r7h$G$-$k(B
+
 
 @node Shimbun Library
 @chapter $B%&%'%V>e$N?7J9$rFI$`$?$a$NF;6q(B
