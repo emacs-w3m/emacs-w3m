@@ -7245,7 +7245,7 @@ It currently works only with Emacs 22 and newer."
 			 (> tlen 3))
 		(setq w3m-modeline-title-string
 		      (concat (w3m-replace-in-string
-			       (truncate-string-to-width
+			       (w3m-truncate-string
 				w3m-current-title (max (- tlen excess 3) 2))
 			       "[\t ]+\\'" "")
 			      "...")))

@@ -1,3 +1,8 @@
+2005-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-modeline-title): Use w3m-truncate-string instead of
+	truncate-string-to-width.
+
 2005-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-info-like-map): Bind the `y' key to the
