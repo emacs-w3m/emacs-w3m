@@ -1,3 +1,14 @@
+2005-02-17  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-yahoo-auctions.el: New file.
+
+	* shimbun/shimbun.el (shimbun-url-encode-string): New function alias.
+	(shimbun-group-p): New method.
+	(shimbun-open-group): Use `shimbun-group-p'.
+
+	* shimbun/nnshimbun.el (gnus-group-make-shimbun-group): Allow
+	the group which is not contained in `shimbun-groups'.
+
 2005-02-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-lnum.el: Rename from w3m-link-numbering.el.

@@ -895,11 +895,11 @@ The user will be prompted for a SERVER name and a GROUP name."
 		   (car (delete "" nnshimbun-server-history))
 		   'nnshimbun-server-history))
      (if (assoc server alist)
-	 (when (setq groups (shimbun-groups (shimbun-open server)))
+	 (let ((shimbun (shimbun-open server)))
 	   (setq group (completing-read
 			"Group name [Hit TAB to see candidates]: "
-			(mapcar 'list groups) nil t))
-	   (unless (member group groups)
+			(mapcar 'list (shimbun-groups shimbun))))
+	   (unless (shimbun-group-p shimbun group)
 	     (setq group nil)))
        (setq server nil))
      (list server group)))

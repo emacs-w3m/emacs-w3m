@@ -4890,6 +4890,14 @@ all contents of a page.
         ))
 @end lisp
 
+@item @uref{http://auctions.yahoo.co.jp/, Yahoo! AUCTIONS}
+This is an example to use @samp{sb-yahoo-auctions}.
+@lisp
+(setq shimbun-yahoo-auctions-group-alist
+      '(("mp3player" . "http://list3.auctions.yahoo.co.jp/jp/show/catleaf_rss?category=2084039708&alocale=0jp")
+        ("iPod" . "http://search3.auctions.yahoo.co.jp/search_rss?p=iPod&auccat=2084039708&alocale=0jp&acc=jp")))
+@end lisp
+
 @item @uref{http://www.vinelinux.org, VineLinux Errata}
 vinelinux.errata.3x.i386 vinelinux.errata.3x.ppc
 vinelinux.errata.3x.alpha

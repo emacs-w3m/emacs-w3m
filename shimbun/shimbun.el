@@ -192,6 +192,7 @@ system of retrieved contents."
 
 (defalias 'shimbun-decode-entities 'w3m-decode-entities)
 (defalias 'shimbun-expand-url 'w3m-expand-url)
+(defalias 'shimbun-url-encode-string 'w3m-url-encode-string)
 
 ;;; Implementation of Header API.
 (eval-and-compile
@@ -748,6 +749,12 @@ Optional MUA is a `shimbun-mua' instance."
 (luna-define-method shimbun-groups ((shimbun shimbun))
   (shimbun-groups-internal shimbun))
 
+(luna-define-generic shimbun-group-p (shimbun group)
+  "Return non-nil if group is available in the SHIMBUN.")
+
+(luna-define-method shimbun-group-p ((shimbun shimbun) group)
+  (member group (shimbun-groups shimbun)))
+
 (defun shimbun-current-group (shimbun)
   "Return the current group of SHIMBUN."
   (shimbun-current-group-internal shimbun))
@@ -760,7 +767,7 @@ Optional MUA is a `shimbun-mua' instance."
 
 (defun shimbun-open-group (shimbun group)
   "Open a SHIMBUN GROUP."
-  (if (member group (shimbun-groups shimbun))
+  (if (shimbun-group-p shimbun group)
       (shimbun-set-current-group-internal shimbun group)
     (error "No such group %s" group)))
 
