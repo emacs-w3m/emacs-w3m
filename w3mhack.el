@@ -71,7 +71,7 @@
       (unless (member module deletes)
 	(princ (format "%sc " module))))))
 
-;; Byte optimizers.
+;; Byte optimizers and version specific functions.
 (require 'bytecomp)
 
 (put 'truncate-string 'byte-optimizer
