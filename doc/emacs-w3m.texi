@@ -3097,6 +3097,10 @@ yomiuri.national yomiuri.obit yomiuri.politics yomiuri.science
 yomiuri.sports yomiuri.world
 
 The backend, @samp{yomiuri-html}, is also supported.
+
+@item @uref{http://www.sankei.co.jp/, Sankei Shimbun}
+sankei.shakai sankei.sports sankei.keizai sankei.seiji sankei.kokusai
+sankei.bungei sankei.book sankei.person sankei.dead
 @end table
 
 @node News Sites Supported by Shimbun
