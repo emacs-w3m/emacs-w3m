@@ -85,7 +85,7 @@ This variable effected only XEmacs or Emacs 21.")
 			   (point)))
 	(put-text-property (point-min) (1+ (point-min)) 'w3m t))))))
 
-(defun mew-w3m-cid-retrieve (url &optional no-decode accept-type-regexp no-cache)
+(defun mew-w3m-cid-retrieve (url &optional no-decode no-cache)
   (save-excursion
     (when (string-match "^cid:\\(.+\\)" url)
       (setq url (match-string 1 url))

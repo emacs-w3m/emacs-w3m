@@ -94,8 +94,7 @@
 			  mime-w3m-mode-map)
        ))))
 
-(defun mime-w3m-cid-retrieve (url &optional no-decode accept-type-regexp
-				  no-cache)
+(defun mime-w3m-cid-retrieve (url &optional no-decode no-cache)
   (let ((entity (mime-find-entity-from-content-id (mime-uri-parse-cid url)
 						  mime-w3m-message-structure)))
     (when entity
