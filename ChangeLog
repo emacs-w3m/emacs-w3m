@@ -1,3 +1,12 @@
+2004-06-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-canonicalize-url): New function.
+	(w3m-input-url, w3m-browse-url): Call the above.
+	(w3m-w3m-canonicalize-url): Abolished.
+	(w3m-w3m-attributes, w3m-w3m-retrieve): Do not call the abolished
+	function.
+	(w3m-url-hierarchical-schemes): Add `ftps'.
+
 2004-06-25  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-emacs-w3m.el: New file.
