@@ -1,3 +1,8 @@
+2001-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (XEmacs): Require `byte-optimize' expressly before
+	advising the function `byte-optimize-form-code-walker'.
+
 2001-05-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-meadow.el (shimbun-get-headers): Use

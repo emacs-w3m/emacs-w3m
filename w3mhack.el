@@ -200,6 +200,7 @@ Examples of the optimization:
       (setcar (cdr form) varlist))
     form)
 
+  (require 'byte-optimize)
   (defadvice byte-optimize-form-code-walker
     (before w3mhack-byte-optimize-letX activate compile)
     "Byte optimize `let' or `let*' FORM in the source level
