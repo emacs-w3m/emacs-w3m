@@ -115,6 +115,7 @@ If no field in forward, return nil without moving."
 		    (setq coding (cdr coding)))))
 	      (w3m-charset-to-coding-system
 	       (w3m-content-charset w3m-current-url))
+	      (w3m-arrived-auto-detected-coding-system w3m-current-url)
 	      w3m-form-default-coding-system))
     (while plist
       (let ((name (symbol-name (car plist)))

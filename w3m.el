@@ -1217,7 +1217,8 @@ If N is negative, last N items of LIST is returned."
 (defsubst w3m-arrived-p (url)
   "If URL has been arrived, return non-nil value.  Otherwise return nil."
   (or (string-match w3m-arrived-ignored-regexp url)
-      (intern-soft url w3m-arrived-db)))
+      (let ((v (intern-soft url w3m-arrived-db)))
+	(and v (boundp v)))))
 
 (defun w3m-arrived-time (url)
   "If URL has been arrived, return its arrived time.  Otherwise return nil."
@@ -1253,8 +1254,8 @@ If N is negative, last N items of LIST is returned."
 
 (defun w3m-arrived-set-auto-detected-coding-system (url coding-system)
   "Stor URL's CODING-SYSTEM for future access."
-  (let ((v (intern-soft url w3m-arrived-db)))
-    (and v (put v 'auto-detected-coding-system coding-system))))
+  (put (intern url w3m-arrived-db)
+       'auto-detected-coding-system coding-system))
 
 (defun w3m-arrived-setup ()
   "Load arrived url list from `w3m-arrived-file' and setup hash database."
@@ -2353,12 +2354,10 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	      (setq type (substring type 0 (match-beginning 0))))))
 	(list (or type (w3m-local-content-type url))
 	      (or charset
-		  (if (memq w3m-type '(w3mmee w3m-m17n))
-		      (progn
-			(setq charset
-			      (cdr (assoc "w3m-document-charset" alist)))
-			(car (split-string charset)))
-		    (w3m-arrived-auto-detected-coding-system url)))
+		  (and (memq w3m-type '(w3mmee w3m-m17n))
+		       (setq charset
+			     (cdr (assoc "w3m-document-charset" alist)))
+		       (car (split-string charset))))
 	      (let ((v (cdr (assoc "content-length" alist))))
 		(and v (setq v (string-to-number v)) (> v 0) v))
 	      (cdr (assoc "content-encoding" alist))
@@ -3649,7 +3648,9 @@ the request."
 If input is nil, use default coding-system on w3m."
   (interactive "P")
   (let ((w3m-display-inline-image (if arg t w3m-display-inline-image))
-	(default (w3m-content-charset w3m-current-url)))
+	(default
+	  (or (w3m-content-charset w3m-current-url)
+	      (w3m-arrived-auto-detected-coding-system w3m-current-url))))
     (w3m-goto-url w3m-current-url nil
 		  (w3m-read-content-charset
 		   (if default

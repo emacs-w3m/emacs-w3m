@@ -1,13 +1,20 @@
 2001-09-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m.el (w3m-arrived-auto-detected-coding-system): New function.
+	* w3m-form.el (w3m-form-make-form-data): Call
+	`w3m-arrived-auto-detected-coding-system' when
+	`w3m-content-charset' returns nil.
+
+	* w3m.el (w3m-arrived-p): Strict checking.
+	(w3m-arrived-auto-detected-coding-system): New function.
 	(w3m-arrived-set-auto-detected-coding-system): Ditto.
 	(w3m-decode-buffer): Call
 	`w3m-arrived-set-auto-detected-coding-system' to store the coding
 	system detectd by this function.
 	(w3m-w3m-attributes): Use content of w3m-document-charset: field
 	as charset, only when `w3m-type' equals `w3mmee' or `w3m-m17n'.
-	Otherwise, call `w3m-arrived-auto-detected-coding-system'.
+	(w3m-redisplay-with-charset): Call
+	`w3m-arrived-auto-detected-coding-system' to get current
+	coding-system.
 
 2001-09-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
