@@ -344,6 +344,9 @@ handler."
   (w3m-process-kill-process (w3m-process-process process))
   (signal (car error-data) (cdr error-data)))
 
+(defvar w3m-process-waited nil
+  "Non-nil means that `w3m-process-with-wait-handler' is being evaluated.")
+
 (defvar w3m-process-wait-discard-input nil
   "Discard the inputs of user until process will exit.")
 
@@ -375,7 +378,8 @@ When BODY is evaluated, the local variable `handler' keeps the handler
 which will wait for the end of the evaluation."
   (let ((result (gensym "--result--"))
 	(wait-function (gensym "--wait-function--")))
-    `(let ((,result)
+    `(let ((w3m-process-waited t)
+	   (,result)
 	   (,wait-function (make-symbol "wait-function")))
        (fset ,wait-function 'identity)
        (setq ,result (let ((handler (list ,wait-function))) ,@body))
