@@ -305,7 +305,10 @@ PCWEB COLUMN Square	pcweb-column.gyokai pcweb-column.benri
 			pcweb-column.shitumon pcweb-column.nandemo
 			pcweb-column.hourou pcweb-column.oshigoto
 			pcweb-column.tech pcweb-column.speed
-
+ノーツ陳列館		lotusex.news lotusex.library lotusex.operation
+(Notes Exhibition)      lotusex.primer lotusex.tips lotusex.practical
+       			lotusex.qanda lotusex.lounge lotusex.bbs
+			
 3. mew-shimbun.el について
 
 mew-shimbun.el は Mew version 2.1 以降を使って shimbun を楽しむ elisp で

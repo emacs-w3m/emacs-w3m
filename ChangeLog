@@ -1,3 +1,7 @@
+2003-05-24  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-lotusex.el: New file.
+
 2003-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-make-package): Make it work under non-Mule
