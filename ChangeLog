@@ -1,3 +1,9 @@
+2003-12-21  Masatake YAMATO  <jet@gyve.org>
+
+	* w3m.el (w3m-mode): Small doc fix.
+	(w3m-relationship-estimate-rules): Relax the regular expression to
+	detect result pages of Google.
+
 2003-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-safe-toggle-inline-image): New function.

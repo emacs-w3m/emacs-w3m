@@ -1506,7 +1506,7 @@ Here are some predefined functions which can be used for those ways:
 
 (defcustom w3m-relationship-estimate-rules
   `((w3m-relationship-simple-estimate
-     "\\`http://www\\.google\\.com/search"
+     "\\`http://www\\.google\\.[^/]+/search"
      ,(concat "<a href=" w3m-html-string-regexp
 	      "><img src=/\\(intl/[^/]+/\\)nav_next.gif")
      ,(concat "<a href=" w3m-html-string-regexp
@@ -1532,6 +1532,7 @@ Here are some predefined functions which can be used for those ways:
 	   (list :tag "Estimate with a user defined function"
 		 function
 		 (repeat :tag "Arguments" sexp)))))
+
 (defconst w3m-entity-alist
   (append
    (eval-when-compile
@@ -3059,20 +3060,6 @@ non-nil, cached data will not be used."
 	    (w3m-toggle-inline-images-internal status no-cache url))
 	(w3m-message "No image at point")))))
 
-(defun w3m-safe-toggle-inline-image (&optional force no-cache)
-  "Toggle the visibility of an image under point.
-This function is mostly equivalent to `w3m-toggle-inline-image', but
-the value of `w3m-safe-url-regexp' is bound to \"\\\\`cid:\" while
-displaying an image.  You can invalidate it (treat as nil) by
-specifying the prefix argument if you don't mind it may cause a
-security problem."
-  (interactive "P")
-  (let ((w3m-safe-url-regexp (unless (and force
-					  (yes-or-no-p "\
-Are you sure you really want to show this image (maybe unsecure)? "))
-			       "\\`cid:")))
-    (w3m-toggle-inline-image force no-cache)))
-
 (defun w3m-toggle-inline-images (&optional force no-cache)
   "Toggle the visibility of all images in the buffer.
 If FORCE is non-nil, displaying images is forced.  If NO-CACHE is
@@ -3090,19 +3077,6 @@ non-nil, cached data will not be used."
       (unless (setq w3m-display-inline-images (not status))
 	(w3m-process-stop (current-buffer)))
       (force-mode-line-update))))
-
-(defun w3m-safe-toggle-inline-images (&optional force no-cache)
-  "Toggle the visibility of all images in the buffer.
-This function is mostly equivalent to `w3m-toggle-inline-images', but
-the value of `w3m-safe-url-regexp' is bound to \"\\\\`cid:\" while
-displaying images.  You can invalidate it (treat as nil) by specifying
-the prefix argument if you don't mind it may cause a security problem."
-  (interactive "P")
-  (let ((w3m-safe-url-regexp (unless (and force
-					  (yes-or-no-p "\
-Are you sure you really want to show all images (maybe unsecure)? "))
-			       "\\`cid:")))
-    (w3m-toggle-inline-images force no-cache)))
 
 (defsubst w3m-resize-inline-image-internal (url rate)
   "Resize an inline image on the cursor position.
@@ -6303,8 +6277,8 @@ closed.  See also `w3m-quit'."
 \\[w3m-delete-other-buffers]	Delete emacs-w3m buffers except for the\
  current buffer.
 
-\\[w3m]	The command which everybody knows.
-\\[w3m-close-window]	Closes all emacs-w3m windows, without deleteing\
+\\[w3m]	Start browsing web with emacs-w3m.
+\\[w3m-close-window]	Close all emacs-w3m windows, without deleteing\
  buffers.
 \\[w3m-quit]	Exit browsing web.  All emacs-w3m buffers will be deleted.
 
@@ -8111,6 +8085,33 @@ mind that there may be pages which cause security problems."
   (interactive "e")
   (mouse-set-point event)
   (w3m-safe-view-this-url))
+
+(defun w3m-safe-toggle-inline-image (&optional force no-cache)
+  "Toggle the visibility of an image under point.
+This function is mostly equivalent to `w3m-toggle-inline-image', but
+the value of `w3m-safe-url-regexp' is bound to \"\\\\`cid:\" while
+displaying an image.  You can invalidate it (treat as nil) by
+specifying the prefix argument if you don't mind it may cause a
+security problem."
+  (interactive "P")
+  (let ((w3m-safe-url-regexp (unless (and force
+					  (yes-or-no-p "\
+Are you sure you really want to show this image (maybe unsecure)? "))
+			       "\\`cid:")))
+    (w3m-toggle-inline-image force no-cache)))
+
+(defun w3m-safe-toggle-inline-images (&optional force no-cache)
+  "Toggle the visibility of all images in the buffer.
+This function is mostly equivalent to `w3m-toggle-inline-images', but
+the value of `w3m-safe-url-regexp' is bound to \"\\\\`cid:\" while
+displaying images.  You can invalidate it (treat as nil) by specifying
+the prefix argument if you don't mind it may cause a security problem."
+  (interactive "P")
+  (let ((w3m-safe-url-regexp (unless (and force
+					  (yes-or-no-p "\
+Are you sure you really want to show all images (maybe unsecure)? "))
+			       "\\`cid:")))
+    (w3m-toggle-inline-images force no-cache)))
 
 (defconst w3m-minor-mode-command-alist
   '((w3m-next-anchor)
