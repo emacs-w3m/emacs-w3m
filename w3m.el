@@ -1,4 +1,4 @@
-;;; w3m.el --- Interface program of w3m on Emacs
+;;; w3m.el --- an Emacs interface to w3m
 
 ;; Copyright (C) 2000, 2001, 2002, 2003
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -168,11 +168,13 @@
   "*Name of the executable file of the w3m command.
 You normally don't have to specify the value, since emacs-w3m looks
 for the existing commands in order of w3m, w3mmee and w3m-m17n in the
-`exec-path' directories in order if it is nil.  However, if you want
-to use the other w3m command, specify the value of this variable
-explicitly in the .emacs file (i.e., it needs to be specified before
-loading the w3m.elc module).  Note that it is currently impossible to
-change the value of this variable after loading the w3m.elc module."
+`exec-path' directories in order if it is nil.
+
+If you want to use the other w3m command, specify the value of this
+variable explicitly in the .emacs file or customize the value and save
+it.  In this case, you need to restart Emacs and emacs-w3m.  That is,
+there is currently no way to apply the changing of the w3m command to
+all the emacs-w3m programs safely after loading the w3m.elc module."
   :group 'w3m
   :type '(radio (const :format "Not specified " nil)
 		(string :format "Command: %v\n" :size 0)))
@@ -6365,7 +6367,8 @@ registered to `pre-command-hook' by `w3m-buffer-setup'."
   "Call functions set to `w3m-after-cursor-move-hook' after cursor is
 moved.  This function is designed as the hook function which is
 registered to `post-command-hook' by `w3m-buffer-setup'."
-  (when (/= (point) (car w3m-current-position))
+  (when (and truncate-lines
+	     (/= (point) (car w3m-current-position)))
     (run-hooks 'w3m-after-cursor-move-hook)))
 
 (defsubst w3m-buffer-setup ()
@@ -6975,13 +6978,16 @@ works on Emacs.
   "Display source of this current buffer."
   (interactive)
   (if w3m-current-url
-      (w3m-goto-url
-       (cond
-	((string-match "\\`about://source/" w3m-current-url)
-	 (substring w3m-current-url (match-end 0)))
-	((string-match "\\`about://header/" w3m-current-url)
-	 (concat "about://source/" (substring w3m-current-url (match-end 0))))
-	(t (concat "about://source/" w3m-current-url))))
+      (progn
+	(w3m-goto-url
+	 (cond
+	  ((string-match "\\`about://source/" w3m-current-url)
+	   (substring w3m-current-url (match-end 0)))
+	  ((string-match "\\`about://header/" w3m-current-url)
+	   (concat "about://source/"
+		   (substring w3m-current-url (match-end 0))))
+	  (t (concat "about://source/" w3m-current-url))))
+	(setq truncate-lines nil))
     (w3m-message "Can't view page source")))
 
 (defun w3m-make-separator ()

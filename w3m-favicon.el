@@ -186,22 +186,24 @@ favicon is ready."
 		      (featurep w3m-favicon-type))
 	       (and (display-images-p)
 		    (image-type-available-p w3m-favicon-type))))
-    (cond
-     ((string-match "\\`about://\\([^/]+\\)/" url)
-      (let ((icon (intern-soft (concat "w3m-about-" (match-string 1 url)
-				       "-favicon"))))
-	(if icon
-	    (with-current-buffer w3m-current-buffer
-	      (w3m-favicon-set-image
-	       (w3m-favicon-convert
-		(base64-decode-string (symbol-value icon)) 'ico))))))
-     ((string-match "\\`https?://" url)
-      (if w3m-icon-data
-	  (w3m-favicon-retrieve (car w3m-icon-data) (cdr w3m-icon-data)
-				w3m-current-buffer)
-	(w3m-favicon-retrieve (w3m-expand-url (concat "/" w3m-favicon-name)
-					      url)
-			      'ico w3m-current-buffer))))))
+    (let (icon)
+      (cond
+       ((and (string-match "\\`about://\\([^/]+\\)/" url)
+	     (setq icon (intern-soft (concat "w3m-about-" (match-string 1 url)
+					     "-favicon"))))
+	(with-current-buffer w3m-current-buffer
+	  (w3m-favicon-set-image
+	   (w3m-favicon-convert
+	    (base64-decode-string (symbol-value icon)) 'ico))))
+       ((or (string-match "\\`https?://" url)
+	    (and (string-match "\\`about://source/https?://" url)
+		 (setq url (substring url 15))))
+	(if w3m-icon-data
+	    (w3m-favicon-retrieve (car w3m-icon-data) (cdr w3m-icon-data)
+				  w3m-current-buffer)
+	  (w3m-favicon-retrieve (w3m-expand-url (concat "/" w3m-favicon-name)
+						url)
+				'ico w3m-current-buffer)))))))
 
 (defun w3m-favicon-convert (data type)
   "Convert the favicon DATA in TYPE to the favicon image and return it."
