@@ -113,7 +113,7 @@ Each element should have the form like:
 (defun octet-filter-call2 (filter &optional args)
   "Call external octed filter with two arguments (infile, outfile).
 Current buffer content is replaced.
-Returns t if succeed."
+Returns 0 if succeed."
   (let ((infile (make-temp-name "octet"))
 	(outfile (make-temp-name "octet"))
 	(last-dir default-directory)
@@ -136,7 +136,7 @@ Returns t if succeed."
 (defun octet-filter-call1 (filter &optional args)
   "Call external octed filter with two arguments (infile) and obtain stdout.
 Current buffer content is replaced.
-Returns t if succeed."
+Returns 0 if succeed."
   (let ((infile (make-temp-name "octet"))
 	(last-dir default-directory)
 	result)
@@ -169,7 +169,7 @@ Returns NEW-TYPE."
 (defun octet-buffer (&optional name)
   "View octet-stream content according to `octet-type-filter-alist'.
 NAME is the filename."
-  (interactive "r")
+  (interactive)
   (let (type result)
     (setq type (if (or name buffer-file-name)
 		   (octet-guess-type-from-name (or name buffer-file-name))

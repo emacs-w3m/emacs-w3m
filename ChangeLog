@@ -6,6 +6,9 @@
 	is not numeric.
 	(octet-filter-call1): Ditto.
 	(octet-find-file): Use unwind-protect.
+	(octet-filter-call2): Fixed docstring.
+	(octet-filter-call1): Ditto.
+	(octet-buffer): Fixed argument for `interactive'.
 
 2002-01-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
