@@ -1,3 +1,8 @@
+2001-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-om.el: Rewrite to insert "-" into the name of eol-type
+	variants of each newly generated coding-system.
+
 2001-03-14  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el: Split files.
@@ -16,9 +21,9 @@
 	* w3m-search.el (w3m-search-default-coding-system): Changed
 	customize type.
 	(w3m-search-engine-alist): Ditto.
-	
+
 	* w3m-weather.el: Fix comments.
-	
+
 2001-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Use the copy of info-vector for newly generated coding-
