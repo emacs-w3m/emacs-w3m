@@ -386,9 +386,6 @@ See also `w3m-search-engine-alist'."
   :group 'w3m
   :type 'boolean)
 
-(defconst w3m-about-url-alist
-  '(("^//weather/" . w3m-about-weather)))
-
 (defconst w3m-weather-url-alist
   (eval-when-compile
     (let ((format "http://channel.goo.ne.jp/weather/area/%s.html")
@@ -1580,17 +1577,13 @@ to nil.  Only contents whose content-type matches ACCEPT-TYPE-REGEXP
 are retrieved."
   (cond
    ((string-match "^about:" url)
-    (let ((sub (substring url (match-end 0))))
-      (catch 'found
-	(dolist (pair w3m-about-url-alist)
-	  (if (string-match (car pair) sub)
-	      (throw 'found
-		     (funcall (cdr pair)
-			      url
-			      no-decode
-			      accept-type-regexp
-			      no-cache))))
-	(w3m-about url))))
+    (let (func)
+      (if (and (string-match "^about://\\([^/]+\\)/" url)
+	       (setq func (intern-soft
+			   (concat "w3m-about-" (match-string 1 url))))
+	       (fboundp func))
+	  (funcall func url no-decode accept-type-regexp no-cache)
+	(w3m-about url no-decode accept-type-regexp no-cache))))
    ((string-match "^\\(file:\\|/\\)" url)
     (w3m-local-retrieve url no-decode accept-type-regexp))
    (t

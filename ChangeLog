@@ -10,7 +10,6 @@
 	w3m-weather-remove-futon-images,
 	w3m-weather-remove-week-weather-images, w3m-weather-insert-title):
 	New function.
-	(w3m-about-url-alist): New constant.
 	(w3m-weather-url-alist): New associative list of AREA vs. URL.
 	(w3m-weather-default-area): New customize variable.
 	(w3m-weather-default-area): Ditto.
