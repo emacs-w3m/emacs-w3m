@@ -2477,7 +2477,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 	 (if (and (not (string-match ffap-url-regexp "nntp://bar"))
 		  (string-match "\\(\\\\(news\\\\(post\\\\)\\?:\\)\\(\\\\|\\)"
 				ffap-url-regexp))
-	     (setq ffap-url-regexp (replace-match "\\1\\|nntp:\\2"
+	     (setq ffap-url-regexp (replace-match "\\1\\\\|nntp:\\2"
 						  nil nil ffap-url-regexp))))))
    ((locate-library "thingatpt")
     (autoload 'thing-at-point "thingatpt")
