@@ -44,6 +44,7 @@
 (eval-when-compile
   (defvar w3m-current-url)
   (defvar w3m-current-title)
+  (defvar w3m-current-process)
   (defvar w3m-display-inline-images)
   (defvar w3m-icon-directory)
   (defvar w3m-mode-map)
@@ -293,6 +294,15 @@ Buffer string between BEG and END are replaced with IMAGE."
   "*Face to fontify unselected tabs."
   :group 'w3m-face)
 
+(defface w3m-tab-unselected-retrieving-face
+  '((((type x w32 mac) (class color))
+     :background "Gray50" :foreground "OrangeRed"
+     :underline "Gray85" :box (:line-width -1 :style released-button))
+    (((class color))
+     (:background "cyan" :foreground "OrangeRed" :underline "blue")))
+  "*Face to fontify unselected tabs which are retrieving their pages."
+  :group 'w3m-face)
+
 (defface w3m-tab-selected-face
   '((((type x w32 mac) (class color))
      :background "Gray85" :foreground "black"
@@ -301,6 +311,16 @@ Buffer string between BEG and END are replaced with IMAGE."
      (:background "blue" :foreground "black" :underline "blue"))
     (t (:underline t)))
   "*Face to fontify selected tab."
+  :group 'w3m-face)
+
+(defface w3m-tab-selected-retrieving-face
+  '((((type x w32 mac) (class color))
+     :background "Gray85" :foreground "red"
+     :underline "Gray85" :box (:line-width -1 :style released-button))
+    (((class color))
+     (:background "blue" :foreground "red" :underline "blue"))
+    (t (:underline t)))
+  "*Face to fontify selected tab which is retrieving its page."
   :group 'w3m-face)
 
 (defface w3m-tab-background-face
@@ -384,27 +404,32 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defun w3m-tab-line ()
   (let ((current (current-buffer)))
     (concat
-     (mapconcat
-      (lambda (buffer)
-	(let ((title (w3m-buffer-title buffer)))
-	  (propertize
-	   (concat " "
-		   (if (and (> w3m-tab-width 0)
-			    (> (string-width title) w3m-tab-width))
-		       (concat (truncate-string-to-width
-				title
-				(max 0 (- w3m-tab-width 3)))
-			       "...")
-		     title)
-		   " ")
-	   'mouse-face 'highlight
-	   'face (if (eq buffer current)
-		     'w3m-tab-selected-face
-		   'w3m-tab-unselected-face)
-	   'local-map (w3m-tab-make-keymap buffer)
-	   'help-echo title)))
-      (w3m-list-buffers)
-      (propertize " " 'face 'w3m-tab-background-face))
+     (save-current-buffer
+       (mapconcat
+	(lambda (buffer)
+	  (let ((title (w3m-buffer-title buffer)))
+	    (propertize
+	     (concat " "
+		     (if (and (> w3m-tab-width 0)
+			      (> (string-width title) w3m-tab-width))
+			 (concat (truncate-string-to-width
+				  title
+				  (max 0 (- w3m-tab-width 3)))
+				 "...")
+		       title)
+		     " ")
+	     'mouse-face 'highlight
+	     'face (if (progn (set-buffer buffer) w3m-current-process)
+		       (if (eq buffer current)
+			   'w3m-tab-selected-retrieving-face
+			 'w3m-tab-unselected-retrieving-face)
+		     (if (eq buffer current)
+			 'w3m-tab-selected-face
+		       'w3m-tab-unselected-face))
+	     'local-map (w3m-tab-make-keymap buffer)
+	     'help-echo title)))
+	(w3m-list-buffers)
+	(propertize " " 'face 'w3m-tab-background-face)))
      (propertize (make-string (window-width) ?\ )
 		 'face 'w3m-tab-background-face))))
 

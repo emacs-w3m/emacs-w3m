@@ -4455,15 +4455,6 @@ showing a tree-structured history by the command `w3m-about-history'.")
 	     (insert "&gt;"))))
     "text/html"))
 
-(defsubst w3m-about-db-history-today (old now)
-  (let ((sub (* 65536 (- (nth 0 now) (nth 0 old)))))
-    (if (< sub 0)
-	nil
-      (setq sub (+ sub (- (nth 1 now) (nth 1 old))))
-      (if (< sub 0)
-	  nil
-	(<= sub 64800))))) ;; (* 60 60 18) 18hours ago.
-
 (defun w3m-about-db-history (&rest args)
   (let ((width (- (if (< 0 w3m-fill-column)
 		      w3m-fill-column
@@ -4510,7 +4501,8 @@ showing a tree-structured history by the command `w3m-about-history'.")
 		   "..."))))
 	(insert (format "<tr><td><a href=\"%s\">%s</a></td>" url title))
 	(when (cdr (car alist))
-	  (if (w3m-about-db-history-today (cdr (car alist)) now)
+	  (if (<= (w3m-time-lapse-seconds (cdr (car alist)) now)
+		  64800) ;; = (* 60 60 18) 18hours ago.
 	      (setq date (format-time-string "%H:%M:%S" (cdr (car alist))))
 	    (setq date (format-time-string "%Y-%m-%d" (cdr (car alist)))))
 	  (insert "<td>" date "</td>"))

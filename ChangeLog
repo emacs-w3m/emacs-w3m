@@ -1,3 +1,30 @@
+2001-11-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-about-db-history-today): Removed.
+	(w3m-about-db-history): Call `w3m-time-lapse-seconds' to classify
+	entries.
+
+	* w3m-proc.el: Changes to avoid endless loop.
+	(w3m-process-inhibit-quit): New internal variable.
+	(w3m-process-timeout): New variable.
+	(w3m-process-with-wait-handler): Strict check when asynchrounous
+	processes finish; Refer `w3m-process-timeout' to check idle time.
+	(w3m-process-sentinel): Bind `inhibit-quit' according to
+	`w3m-process-sentinel'.
+
+	* w3m-e21.el: Changes to display tabs which are retieving contents
+	in the other face.
+	(top): Define `w3m-current-process' to avoid byte-compile warning.
+	(w3m-tab-unselected-retrieving-face): New face.
+	(w3m-tab-selected-retrieving-face): Ditto.
+	(w3m-tab-line): Refer `w3m-current-process' in order to select the
+	face of the tab which is retriving some pages.
+
+	* w3m-util.el (w3m-time-lapse-seconds): New inline function.
+
+	* w3m-antenna.el (top): Add autoload of `w3m-filter' to avoid
+	byte-compile warning.
+
 2001-11-16  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-select-buffer): If nomsg eq 'update, don't save

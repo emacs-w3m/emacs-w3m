@@ -59,6 +59,11 @@
   (defvar w3m-async-exec)
   (defvar w3m-process-connection-type))
 
+(defvar w3m-process-inhibit-quit t
+  "`w3m-process-sentinel' binds `inhibit-quit' according to this variable.")
+(defvar w3m-process-timeout 300
+  "Number of seconds idle time waiting the finish of asynchronous process.")
+
 (defconst w3m-process-max 5 "The maximum limit of the working processes.")
 (defvar w3m-process-queue nil "Queue of processes.")
 
@@ -275,20 +280,22 @@ which will wait for the end of the evaluation.
 WARNING: This macro in asynchronous context will cause an endless loop
 because capturing the end of the generated sub-process fails."
   (let ((process (gensym "--process--"))
-	(result (gensym "--result--")))
-    `(let ((,process))
-       (lexical-let (,result)
-	 (let ((handler (lambda (x) (setq ,result x))))
-	   (if (w3m-process-p (setq ,process (progn ,@body)))
-	       (progn
-		 (w3m-process-start-process ,process)
-		 (when (processp
-			(setq ,process (w3m-process-process ,process)))
-		   (while (eq (process-status ,process) 'run)
-		     (sit-for 0.2)))
-		 (sit-for 1) ;; Adhoc waiting to evaluate handlers.
-		 ,result)
-	     ,process))))))
+	(result (gensym "--result--"))
+	(start (gensym "--start--")))
+    `(lexical-let ((,result ',result))
+       (let ((,process)
+	     (,start (current-time))
+	     (handler (lambda (x) (setq ,result x))))
+	 (if (w3m-process-p (setq ,process (progn ,@body)))
+	     (let (w3m-process-inhibit-quit)
+	       (w3m-process-start-process ,process)
+	       (while (and (or (not w3m-process-timeout)
+			       (< (w3m-time-lapse-seconds ,start (current-time))
+				  w3m-process-timeout))
+			   (eq ,result ',result))
+		 (sit-for 0.2))
+	       ,result)
+	   ,process)))))
 (put 'w3m-process-with-wait-handler 'lisp-indent-function 0)
 (put 'w3m-process-with-wait-handler 'edebug-form-spec '(body))
 
@@ -322,8 +329,8 @@ because capturing the end of the generated sub-process fails."
 ;;
 ;; と変数 handler を nil に束縛しておくと、「現時点のハンドラは空であ
 ;; る = 非同期プロセス実行後に必要な処理は存在しない」という意味になり、
-;; w3m-async-do() は、非同期プロセスが生成された場合には単に nil を返
-;; し、それ以外の場合は post-body の値を返す。
+;; w3m-process-do() は、非同期プロセスが生成された場合には単に nil を
+;; 返し、それ以外の場合は post-body の値を返す。
 ;;
 (defmacro w3m-process-do (spec &rest body)
   "(w3m-process-do (VAR FORM) BODY...): Eval the body BODY asynchronously.
@@ -434,40 +441,41 @@ evaluated in a temporary buffer."
 (defun w3m-process-sentinel (process event)
   ;; Ensure that this function will be never called repeatedly.
   (set-process-sentinel process 'ignore)
-  (unwind-protect
-      (if (buffer-name (process-buffer process))
-	  (with-current-buffer (process-buffer process)
-	    (setq w3m-process-queue
-		  (delq w3m-process-object w3m-process-queue))
-	    (let ((exit-status (process-exit-status process))
-		  (buffer (current-buffer))
-		  (realm  w3m-process-realm)
-		  (user   w3m-process-user)
-		  (passwd w3m-process-passwd)
-		  (obj    w3m-process-object))
-	      (setq w3m-process-object nil)
-	      (dolist (x (w3m-process-handlers obj))
-		(when (buffer-name (w3m-process-handler-buffer x))
-		  (with-current-buffer (w3m-process-handler-buffer x)
-		    (unless (eq buffer (current-buffer))
-		      (insert-buffer buffer)))))
-	      (dolist (x (w3m-process-handlers obj))
-		(when (buffer-name (w3m-process-handler-buffer x))
-		  (with-current-buffer (w3m-process-handler-buffer x)
-		    (let ((w3m-process-exit-status)
-			  (w3m-current-buffer
-			   (w3m-process-handler-parent-buffer x)))
-		      (w3m-process-set-user w3m-current-url realm user passwd)
-		      (funcall (w3m-process-handler-function x)
-			       exit-status)))))))
-	;; Something wrong has been occured.
-	(catch 'last
-	  (dolist (obj w3m-process-queue)
-	    (when (eq process (w3m-process-process obj))
-	      (setq w3m-process-queue (delq obj w3m-process-queue))
-	      (throw 'last nil)))))
-    (delete-process process)
-    (w3m-process-start-queued-processes)))
+  (let ((inhibit-quit w3m-process-inhibit-quit))
+    (unwind-protect
+	(if (buffer-name (process-buffer process))
+	    (with-current-buffer (process-buffer process)
+	      (setq w3m-process-queue
+		    (delq w3m-process-object w3m-process-queue))
+	      (let ((exit-status (process-exit-status process))
+		    (buffer (current-buffer))
+		    (realm  w3m-process-realm)
+		    (user   w3m-process-user)
+		    (passwd w3m-process-passwd)
+		    (obj    w3m-process-object))
+		(setq w3m-process-object nil)
+		(dolist (x (w3m-process-handlers obj))
+		  (when (buffer-name (w3m-process-handler-buffer x))
+		    (with-current-buffer (w3m-process-handler-buffer x)
+		      (unless (eq buffer (current-buffer))
+			(insert-buffer buffer)))))
+		(dolist (x (w3m-process-handlers obj))
+		  (when (buffer-name (w3m-process-handler-buffer x))
+		    (with-current-buffer (w3m-process-handler-buffer x)
+		      (let ((w3m-process-exit-status)
+			    (w3m-current-buffer
+			     (w3m-process-handler-parent-buffer x)))
+			(w3m-process-set-user w3m-current-url realm user passwd)
+			(funcall (w3m-process-handler-function x)
+				 exit-status)))))))
+	  ;; Something wrong has been occured.
+	  (catch 'last
+	    (dolist (obj w3m-process-queue)
+	      (when (eq process (w3m-process-process obj))
+		(setq w3m-process-queue (delq obj w3m-process-queue))
+		(throw 'last nil)))))
+      (delete-process process)
+      (w3m-process-start-queued-processes))))
 
 (defun w3m-process-filter (process string)
   (when (buffer-name (process-buffer process))
@@ -613,6 +621,6 @@ evaluated in a temporary buffer."
 	       (list (cons root (list (cons realm (list (cons user pass))))))
 	       w3m-process-user-alist)))))))
 
-
 (provide 'w3m-proc)
+
 ;;; w3m-proc.el ends here

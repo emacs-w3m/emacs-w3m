@@ -224,6 +224,10 @@ whose elements are:
 	(w3m-last-modified url)
       t))) ; t means that specified URL is not found.
 
+;; To avoid byte-compile warning.
+(eval-and-compile
+  (autoload 'w3m-filter "w3m-filter"))
+
 (defun w3m-antenna-size (url class &optional no-cache)
   (unless (memq class '(hns time))
     (or (w3m-content-length url no-cache)

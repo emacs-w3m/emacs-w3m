@@ -308,6 +308,13 @@ nil, it is regarded as the oldest time."
 	       (and (= (car a) (car b))
 		    (> (nth 1 a) (nth 1 b)))))))
 
+(defsubst w3m-time-lapse-seconds (start end)
+  "Return lapse seconds from START to END.
+START and END are lists which represent time in Emacs-style."
+  (+ (* (- (car end) (car start)) 65536)
+     (cadr end)
+     (- (cadr start))))
+
 (defsubst w3m-url-dtree-p (url)
   "If URL points a 'w3m-dtree', return non-nil value.  Otherwise return
 nil."
