@@ -137,5 +137,17 @@
      (img (w3m-view-image))
      (t (message "No URL at point")))))
 
+;; Advice to protect `kill-ring-save' against the `local-map' text
+;; property.
+(defadvice kill-new
+  (after mime-w3m-remove-text-properties activate compile)
+  (and (eq this-command 'kill-ring-save)
+       (eq major-mode 'mime-view-mode)
+       (put-text-property 0 (length (car kill-ring))
+			  (w3m-static-if (featurep 'xemacs)
+			      'keymap 'local-map)
+			  nil
+			  (car kill-ring))))
+
 (provide 'mime-w3m)
 ;;; mime-w3m.el ends here

@@ -1,3 +1,8 @@
+2001-10-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* mime-w3m.el (mime-w3m-remove-text-properties): New advice to
+	protect `kill-ring-save' against the `local-map' text property.
+
 2001-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-om.el (w3m-detect-coding-region): Use the fixed value for
