@@ -51,6 +51,14 @@
 (if (string-match "XEmacs" emacs-version)
     (require 'poem))
 
+(if (not (fboundp 'find-coding-system))
+    (require 'pces))
+
+;; this package using a few CL macros
+(eval-when-compile
+  (require 'cl)
+  (load "cl-macs"))
+
 (put 'w3m-static-if 'lisp-indent-function 2)
 (defmacro w3m-static-if (cond then &rest else)
   (if (eval cond) then (` (progn  (,@ else)))))
@@ -118,7 +126,19 @@
   :group 'w3m
   :type 'directory)
 
-(defun w3m-expand-file-name (file &optional directory)
+(defun w3m-local-file-name (url)
+  (if (string-match "^file:" url)
+      (setq url (substring url (match-end 0))))
+  (if (string-match "^\\(//\\|/cygdrive/\\)\\(.\\)/\\(.*\\)" url)
+      (setq url (concat (match-string 2 url) ":/" (match-string 3 url))))
+  url)
+
+(defun w3m-expand-file-name-as-url (file &optional directory)
+  ;; if filename is cygwin format,
+  ;; then remove cygdrive prefix before expand-file-name
+  (if directory
+      (setq file (w3m-local-file-name file)))
+  ;; expand to file scheme url considering Win32 environment
   (setq file (expand-file-name file directory))
   (if (string-match "^\\(.\\):\\(.*\\)" file)
       (if w3m-use-cygdrive
@@ -127,7 +147,7 @@
     file))
 
 (defcustom w3m-bookmark-file
-  (w3m-expand-file-name "bookmark.html" w3m-profile-directory)
+  (expand-file-name "bookmark.html" w3m-profile-directory)
   "*Bookmark file of w3m."
   :group 'w3m
   :type 'file)
@@ -149,7 +169,7 @@
   :type 'string)
 
 (defcustom w3m-arrived-urls-file
-  (w3m-expand-file-name ".arrived" w3m-profile-directory)
+  (expand-file-name ".arrived" w3m-profile-directory)
   "*Arrived URL file of w3m."
   :group 'w3m
   :type 'file)
@@ -278,11 +298,9 @@ In other environment, use 'native."
 	   (x-shift_jis   . shift_jis)
 	   (x-sjis        . shift_jis)))
 	dest)
-    (while rest
-      (let ((pair (car rest)))
-	(or (find-coding-system (car pair))
-	    (setq dest (cons pair dest))))
-      (setq rest (cdr rest)))
+    (dolist (pair rest)
+      (or (find-coding-system (car pair))
+	  (setq dest (cons pair dest))))
     dest)
   "Alist MIME CHARSET vs CODING-SYSTEM.
 MIME CHARSET and CODING-SYSTEM must be symbol."
@@ -291,7 +309,17 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 
 (defconst w3m-extended-charcters-table
   '(("\xa0" . " ")))
-  
+
+(defconst w3m-entity-alist		; html character entities and values
+  '(("nbsp" . " ")
+    ("gt" . ">")
+    ("lt" . "<")
+    ("amp" . "&")
+    ("quot" . "\"")
+    ("apos" . "'")))
+(defvar w3m-entity-db nil)		; nil means un-initialized
+(defconst w3m-entity-db-size 13)	; size of obarray
+
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
 (defvar w3m-url-history nil "History of URL.")
@@ -389,6 +417,24 @@ If N is negative, last N items of LIST is returned."
     (setq w3m-arrived-anchor-list
 	  (cons url (delete url w3m-arrived-anchor-list)))))
 
+;; HTML character entity handling
+
+(defun w3m-entity-db-setup ()
+  ;; initialize entity database (obarray)
+  (setq w3m-entity-db (make-vector w3m-entity-db-size 0))
+  (dolist (elem w3m-entity-alist)
+    (set (intern (car elem) w3m-entity-db)
+	 (cdr elem))))
+
+(defun w3m-entity-value (name)
+  ;; initialize if need
+  (if (null w3m-entity-db)
+      (w3m-entity-db-setup))
+  ;; return value of specified entity, or empty string for unknown entity.
+  (or (symbol-value (intern-soft (match-string 1) w3m-entity-db))
+      ""))
+  
+
 (defun w3m-fontify ()
   "Fontify this buffer."
   (let ((case-fold-search t)
@@ -467,32 +513,25 @@ If N is negative, last N items of LIST is returned."
     (goto-char (point-min))
     (while (re-search-forward "</?[A-z][^>]*>" nil t)
       (delete-region (match-beginning 0) (match-end 0)))
-    ;; Decode escaped characters.
+    ;; Decode escaped characters (entities).
     (goto-char (point-min))
     (let (prop)
-      (while (re-search-forward
-	      "&\\(\\(nbsp\\)\\|\\(gt\\)\\|\\(lt\\)\\|\\(amp\\)\\|\\(quot\\)\\|\\(apos\\)\\);"
-	      nil t)
+      (while (re-search-forward "&\\([a-z]+\\);?" nil t)
 	(setq prop (text-properties-at (match-beginning 0)))
-	(delete-region (match-beginning 0) (match-end 0))
-	(insert (if (match-beginning 2) " "
-		  (if (match-beginning 3) ">"
-		    (if (match-beginning 4) "<"
-		      (if (match-beginning 5) "&"
-			(if (match-beginning 6) "\"" "'"))))))
-	(if prop (add-text-properties (1- (point)) (point) prop))))
+	(replace-match (w3m-entity-value (match-string 1)) nil t)
+	(if prop (add-text-properties (match-beginning 0) (point) prop))))
     ;; Decode w3m-specific extended charcters.
-    (goto-char (point-min))
-    (let ((x enable-multibyte-characters)
-	  (table w3m-extended-charcters-table))
+    (let ((x enable-multibyte-characters))
       (set-buffer-multibyte nil)
-      (while table
-	(while (search-forward (car (car table)) nil t)
+      (dolist (elem w3m-extended-charcters-table)
+	(goto-char (point-min))
+	(while (search-forward (car elem) nil t)
 	  (delete-region (match-beginning 0) (match-end 0))
-	  (insert (cdr (car table))))
-	(setq table (cdr table)))
+	  (insert (cdr elem))))
       (set-buffer-multibyte x))
     (run-hooks 'w3m-fontify-after-hook)))
+
+;;
 
 (defun w3m-refontify-anchor (&optional buff)
   "Change face 'w3m-anchor-face to 'w3m-arrived-anchor-face."
@@ -671,15 +710,11 @@ If N is negative, last N items of LIST is returned."
 (defun w3m-exec-get-user (url)
   (if (= w3m-process-user-counter 0)
       nil
-    (let ((urllist w3m-arrived-user-list))
-      (catch 'get
-	(while urllist
-	  (when (string-match (concat "^"
-				      (regexp-quote (car (car urllist))))
-			      url)
-	    (setq w3m-process-user-counter (1- w3m-process-user-counter))
-	    (throw 'get (cdr (car urllist))))
-	  (setq urllist (cdr urllist)))))))
+    (catch 'get
+      (dolist (elem w3m-arrived-user-list nil)
+	(when (string-match (concat "^" (regexp-quote (car elem))) url)
+	  (setq w3m-process-user-counter (1- w3m-process-user-counter))
+	  (throw 'get (cdr elem)))))))
 
 (defun w3m-read-file-name (&optional prompt dir default existing initial)
   (let* ((default (and default (file-name-nondirectory default)))
@@ -809,33 +844,30 @@ This function is imported from mcharset.el."
 
 ;;; Retrieve local data:
 (defun w3m-local-content-type (url)
-  (let ((alist w3m-content-type-alist))
-    (catch 'type-detected
-      (while alist
-	(if (string-match (nth 1 (car alist)) url)
-	    (throw 'type-detected (car (car alist))))
-	(setq alist (cdr alist)))
-      "unknown")))
+  (catch 'type-detected
+    (dolist (elem w3m-content-type-alist "unknown")
+      (if (string-match (nth 1 elem) url)
+	  (throw 'type-detected (car elem))))))
 
 (defun w3m-local-retrieve (url &optional no-decode accept-type-regexp)
-  (let ((type (w3m-local-content-type url)))
+  (let ((type (w3m-local-content-type url))
+	file)
     (when (or (not accept-type-regexp)
 	      (string-match accept-type-regexp type))
-      (if (string-match "file:" url)
-	  (setq url (substring url (match-end 0))))
+      (setq file (w3m-local-file-name url))
       (with-current-buffer (get-buffer-create w3m-work-buffer-name)
 	(delete-region (point-min) (point-max))
 	(if (and (string-match "^text/" type)
 		 (not no-decode))
 	    (progn
 	      (set-buffer-multibyte t)
-	      (insert-file-contents url))
+	      (insert-file-contents file))
 	  (set-buffer-multibyte nil)
 	  (let ((coding-system-for-read
 		 (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
 		(file-coding-system-for-read
 		 (w3m-static-if (boundp 'MULE) '*noconv* 'binary)))
-	    (insert-file-contents url)))))
+	    (insert-file-contents file)))))
     type))
 
 
@@ -896,17 +928,17 @@ This function is imported from mcharset.el."
       (with-current-buffer (get-buffer-create w3m-work-buffer-name)
 	(delete-region (point-min) (point-max))
 	(set-buffer-multibyte nil)
-	(let ((w3m-current-url url)
-	      (w3m-http-retrieve-length length)
-	      (w3m-process-message
-	       (lambda ()
-		 (if w3m-http-retrieve-length
-		     (w3m-message "Reading... %s of %s (%d%%)"
-				  (w3m-pretty-length (buffer-size))
-				  (w3m-pretty-length w3m-http-retrieve-length)
-				  (/ (* (buffer-size) 100) w3m-http-retrieve-length))
-		   (w3m-message "Reading... %s"
-				(w3m-pretty-length (buffer-size)))))))
+	(let* ((w3m-current-url url)
+	       (w3m-http-retrieve-length length)
+	       (w3m-process-message
+		(lambda ()
+		  (if w3m-http-retrieve-length
+		      (w3m-message "Reading... %s of %s (%d%%)"
+				   (w3m-pretty-length (buffer-size))
+				   (w3m-pretty-length w3m-http-retrieve-length)
+				   (/ (* (buffer-size) 100) w3m-http-retrieve-length))
+		    (w3m-message "Reading... %s"
+				 (w3m-pretty-length (buffer-size)))))))
 	  (w3m-message "Reading...")
 	  (w3m-exec-process "-dump_source" url)
 	  (w3m-message "Reading... done"))
@@ -1006,8 +1038,8 @@ This function is imported from mcharset.el."
 	      '("<title_alt[ \t\n]+title=\"\\([^\"]+\\)\">"
 		"<title>\\([^<]\\)</title>"))
       (if (and (null title)
-	       (< 0 (length (file-name-nondirectory url))))
-	  (setq title (file-name-nondirectory url)))
+	       (< 0 (length (file-name-nondirectory w3m-current-url))))
+	  (setq title (file-name-nondirectory w3m-current-url)))
       (set (make-local-variable 'w3m-current-title) (or title "<no-title>")))))
 
 (defun w3m-exec (url &optional buffer)
@@ -1257,7 +1289,7 @@ If BUFFER is nil, all data is placed to the current buffer."
 (defun w3m-view-bookmark ()
   (interactive)
   (if (file-readable-p w3m-bookmark-file)
-      (w3m-goto-url (w3m-expand-file-name w3m-bookmark-file))))
+      (w3m (w3m-expand-file-name-as-url w3m-bookmark-file))))
 
 
 (defun w3m-copy-buffer (buf &optional newname and-pop) "\
@@ -1487,7 +1519,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 (defun w3m-find-file (file)
   "w3m Interface function for local file."
   (interactive "fFilename: ")
-  (w3m (w3m-expand-file-name file)))
+  (w3m (w3m-expand-file-name-as-url file)))
 
 ;; bookmark operations
 
@@ -1561,39 +1593,32 @@ Parsed bookmark data is hold in `w3m-bookmark-data'."
 
 (defun w3m-bookmark-save (&optional file)
   "Save internal bookmark data into bookmark file as w3m format."
-  (let ((bookmark w3m-bookmark-data)
-	entries)
-    (or file
-	(setq file w3m-bookmark-file)) ; default name
-    ;; check output directory
-    (if (not (file-writable-p file))
-	(message "Can't write! Bookmark file is not saved.")
-      ;;
-      (with-temp-buffer
-	;; print beginning of html
-	(insert "<html><head><title>Bookmarks</title></head>\n"
-		"<body>\n"
-		"<h1>Bookmarks</h1>\n")
-	(while bookmark
-	  (setq entries (car bookmark)
-		bookmark (cdr bookmark))
-	  (insert "<h2>" (car entries) "</h2>\n")
-	  (setq entries (cdr entries))
-	  (insert "<ul>\n")
-	  (while entries
-	    (insert "<li><a href=\"" (cdr (car entries)) "\">"
-		    (car (car entries)) "</a>\n")
-	    (setq entries (cdr entries)))
-	  (insert "<!--End of section (do not delete this comment)-->\n"
-		  "</ul>\n"))
-	;; print end of html
-	(insert "</body>\n"
-		"</html>\n")
-	;; write to file!
-	(let ((coding-system-for-write w3m-bookmark-file-coding-system))
-	  (write-region (point-min) (point-max) file))
-	(setq w3m-bookmark-file-time-stamp (elt (file-attributes file) 5))
-	(message "Saved to '%s'" file)))))
+  (or file
+      (setq file w3m-bookmark-file))	; default name
+  ;; check output directory
+  (if (not (file-writable-p file))
+      (message "Can't write! Bookmark file is not saved.")
+    ;;
+    (with-temp-buffer
+      ;; print beginning of html
+      (insert "<html><head><title>Bookmarks</title></head>\n"
+	      "<body>\n"
+	      "<h1>Bookmarks</h1>\n")
+      (dolist (entries w3m-bookmark-data)
+	(insert "<h2>" (car entries) "</h2>\n"
+		"<ul>\n")
+	(dolist (ent (cdr entries))
+	  (insert "<li><a href=\"" (cdr ent) "\">" (car ent) "</a>\n"))
+	(insert "<!--End of section (do not delete this comment)-->\n"
+		"</ul>\n"))
+      ;; print end of html
+      (insert "</body>\n"
+	      "</html>\n")
+      ;; write to file!
+      (let ((coding-system-for-write w3m-bookmark-file-coding-system))
+	(write-region (point-min) (point-max) file))
+      (setq w3m-bookmark-file-time-stamp (elt (file-attributes file) 5))
+      (message "Saved to '%s'" file))))
 
 (defun w3m-bookmark-data-prepare ()
   "Prepare for bookmark operation.
