@@ -1,3 +1,20 @@
+2002-04-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-arrived-modify): New function.
+	(w3m-local-attributes): If set Content-type in arrived DB, return
+	it.
+	(w3m-redisplay-this-page, w3m-redisplay-and-reset) 
+	(w3m-redisplay-with-content-type): New commands.
+	(w3m-redisplay-with-charset): Use `w3m-arrived-modify'.
+	(w3m-lynx-like-map): Bind all new commands and modify bind for
+	`w3m-redisplay-with-charset'.
+	(w3m-info-like-map): Ditto.
+	(w3m-mode): Document them.
+	(w3m-goto-url): If reload is 'redisplay, do redisplay only. Modify
+	content-type decided method at local URL.
+	(w3m-about-header): Display `Modifer Information'.
+	(w3m-header-line-insert): Display modifers when type are setting.
+
 2002-04-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-horizontal-recenter): New command.

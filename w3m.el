@@ -1767,6 +1767,28 @@ with ^ as `cat -v' does."
 	  (w3m-arrived-add-1 ident title modified-time arrived-time
 			     content-charset content-type))))))
 
+(defun w3m-arrived-modify (url &optional title modified-time
+			       arrived-time content-charset content-type)
+  "Modify hash database of URL. If some optional argument is 'reset, reset its."
+  (when (and (w3m-arrived-p url)
+	     (or title modified-time arrived-time content-charset content-type))
+    (w3m-arrived-add url
+		     (cond ((eq title 'reset) nil)
+			   (title title)
+			   (t (w3m-arrived-title url)))
+		     (cond ((eq modified-time 'reset) nil)
+			   (modified-time modified-time)
+			   (t (w3m-arrived-last-modified url)))
+		     (cond ((eq arrived-time 'reset) nil)
+			   (arrived-time arrived-time)
+			   (t (w3m-arrived-time url)))
+		     (cond ((eq content-charset 'reset) nil)
+			   (content-charset content-charset)
+			   (t (w3m-arrived-content-charset url)))
+		     (cond ((eq content-type 'reset) nil)
+			   (content-type content-type)
+			   (t (w3m-arrived-content-type url))))))
+
 (defsubst w3m-arrived-p (url)
   "If URL has been arrived, return non-nil value.  Otherwise return nil."
   (or (string-match w3m-arrived-ignored-regexp url)
@@ -2737,7 +2759,7 @@ elements are:
 	 (attr (when (file-exists-p file)
 		 (file-attributes file)))
 	 (type (w3m-local-file-type url)))
-    (list (car type)
+    (list (or (w3m-arrived-content-type url) (car type))
 	  nil
 	  (nth 7 attr)
 	  (cdr type)
@@ -2763,7 +2785,8 @@ succeed."
 		    format-alist)
 		(insert-file-contents file))
 	    (insert-file-contents file))))
-      (w3m-local-content-type file))))
+      (or (w3m-arrived-content-type url)
+	  (w3m-local-content-type file)))))
 
 (defun w3m-local-dirlist-cgi (url)
   (w3m-message "Reading %s..." url)
@@ -4537,8 +4560,8 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "\C-c\C-w" 'w3m-delete-buffer)
     (define-key map "\C-c\C-s" 'w3m-select-buffer)
     (define-key map "\C-c\C-a" 'w3m-switch-buffer)
+    (define-key map "r" 'w3m-redisplay-this-page)
     (define-key map "R" 'w3m-reload-this-page)
-    (define-key map "C" 'w3m-redisplay-with-charset)
     (define-key map "?" 'describe-mode)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "\M-k" 'w3m-cookie)
@@ -4566,6 +4589,10 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "e" 'w3m-edit-this-url)
     (define-key map "\C-c\C-c" 'w3m-submit-form)
     (define-key map "\C-c\C-g" 'w3m-process-stop)
+    (define-key map "C" (make-sparse-keymap))
+    (define-key map "Ct" 'w3m-redisplay-with-content-type)
+    (define-key map "Cc" 'w3m-redisplay-with-charset)
+    (define-key map "CC" 'w3m-redisplay-and-reset)
     (setq w3m-lynx-like-map map)))
 
 (defvar w3m-info-like-map nil
@@ -4604,7 +4631,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "A" 'w3m-antenna)
     (define-key map "b" 'w3m-scroll-down-or-previous-url)
     (define-key map "c" 'w3m-print-this-url)
-    (define-key map "C" 'w3m-redisplay-with-charset)
+    (define-key map "!" 'w3m-redisplay-with-content-type)
     (define-key map "d" 'w3m-download)
     (define-key map "D" 'w3m-download-this-url)
     (define-key map "e" 'w3m-edit-current-url)
@@ -4640,6 +4667,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "P" 'undecided) ;; reserved for print-this-buffer.
     (define-key map "q" 'w3m-close-window)
     (define-key map "Q" 'w3m-quit)
+    (define-key map "r" 'w3m-redisplay-this-page)
     (define-key map "R" 'w3m-reload-this-page)
     (define-key map "s" 'w3m-search)
     (define-key map "S" (lambda ()
@@ -4667,6 +4695,10 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "{" 'w3m-previous-image)
     (define-key map "\C-c\C-c" 'w3m-submit-form)
     (define-key map "\C-c\C-g" 'w3m-process-stop)
+    (define-key map "C" (make-sparse-keymap))
+    (define-key map "Ct" 'w3m-redisplay-with-content-type)
+    (define-key map "Cc" 'w3m-redisplay-with-charset)
+    (define-key map "CC" 'w3m-redisplay-and-reset)
     (setq w3m-info-like-map map)))
 
 (defun w3m-alive-p ()
@@ -4754,7 +4786,10 @@ Return t if deleting current frame or window is succeeded."
 \\[w3m-submit-form]	Submit the form at point.
 
 \\[w3m-reload-this-page]	Reload this page.
-\\[w3m-redisplay-with-charset]	Redisplay this page with specified coding-system.
+\\[w3m-redisplay-this-page]	Redisplay this page.
+\\[w3m-redisplay-with-content-type]	Redisplay this page with specified content-type.
+\\[w3m-redisplay-with-charset]	Redisplay this page with specified charset.
+\\[w3m-redisplay-and-reset]	Redisplay this page and reset of specified charset and content-type.
 
 \\[w3m-next-anchor]	Jump to next anchor.
 \\[w3m-previous-anchor]	Jump to previous anchor.
@@ -5091,9 +5126,9 @@ appropriate buffer and select it."
 (defun w3m-goto-url (url &optional reload charset post-data referer handler)
   "Retrieve contents of URL.
 If the second argument RELOAD is non-nil, reload a content of URL.
+Except that if it is 'redisplay, re-display the page without reloading.
 The third argument CHARSET specifies a charset to be used for decoding
-a content.  Except that if it is t, a charset entry in the arrived DB
-will be cleared.
+a content.
 The fourth argument POST-DATA should be a string or a cons cell.  If
 it is a string, it makes this function request a body as if the
 content-type is \"x-www-form-urlencoded\".  If it is a cons cell, the
@@ -5136,7 +5171,8 @@ field for this request."
     ;; Retrieve.
     (lexical-let ((orig url)
 		  (url (w3m-url-strip-authinfo url))
-		  (reload reload)
+		  (reload (and (not (eq reload 'redisplay)) reload))
+		  (redisplay (eq reload 'redisplay))
 		  (charset charset)
 		  (post-data post-data)
 		  (referer referer)
@@ -5167,30 +5203,21 @@ field for this request."
 	   (setq name (match-string 9 url)
 		 url (substring url 0 (match-beginning 8))))
       (lexical-let ((ct (w3m-arrived-content-type url))
-		    (cs (unless (eq t charset)
-			  (or charset (w3m-arrived-content-charset url))))
+		    (charset (or charset (w3m-arrived-content-charset url)))
 		    (real-url))
-	(if ct
-	    (when reload
-	      (let* ((minibuffer-setup-hook
-		      (append minibuffer-setup-hook '(beginning-of-line)))
-		     (s (completing-read
-			 (format "Input %s's content type: "
-				 (file-name-nondirectory url))
-			 w3m-content-type-alist nil t ct)))
-		(setq ct (if (string= "" s) nil s))))
-	  (and (w3m-url-local-p url)
-	       (string= "unknown" (w3m-local-content-type url))
-	       (let ((s (completing-read
-			 (format "Input %s's content type (default %s): "
-				 (file-name-nondirectory url)
-				 w3m-default-content-type)
-			 w3m-content-type-alist nil t)))
-		 (setq ct (if (string= "" s) w3m-default-content-type s)))))
+	(when (and (not ct)
+		   (w3m-url-local-p url)
+		   (string= "unknown" (w3m-local-content-type url)))
+	  (let ((s (completing-read
+		    (format "Input %s's content type (default %s): "
+			    (file-name-nondirectory url)
+			    w3m-default-content-type)
+		    w3m-content-type-alist nil t)))
+	    (setq ct (if (string= "" s) w3m-default-content-type s))))
 	(w3m-process-do
 	    (action
 	     (if (and (not reload)
-		      (not charset)
+		      (not redisplay)
 		      (stringp w3m-current-url)
 		      (string= url w3m-current-url))
 		 (progn
@@ -5202,7 +5229,7 @@ field for this request."
 		     w3m-current-buffer (current-buffer)
 		     w3m-current-process
 		     (w3m-retrieve-and-render (w3m-url-strip-fragment orig)
-					      reload cs ct post-data
+					      reload charset ct post-data
 					      referer handler))))
 	  (with-current-buffer w3m-current-buffer
 	    (setq w3m-current-process nil)
@@ -5233,7 +5260,7 @@ field for this request."
 		     (w3m-toggle-inline-image 'force reload)))
 	      (setq buffer-read-only t)
 	      (set-buffer-modified-p nil)))
-	    (w3m-arrived-add orig w3m-current-title nil nil cs ct)
+	    (w3m-arrived-add orig w3m-current-title nil nil charset ct)
 	    ;; must be `w3m-current-url'
 	    (setq default-directory (w3m-current-directory w3m-current-url))
 	    (w3m-update-toolbar)
@@ -5345,20 +5372,51 @@ If called with '\\[universal-argument]', clear form and post datas"
 	(w3m-goto-url w3m-current-url 'reload nil post-data referer)
       (w3m-goto-url w3m-current-url 'reload nil nil referer))))
 
+(defun w3m-redisplay-this-page (&optional arg)
+  "Redisplay current page."
+  (interactive "P")
+  (w3m-history-store-position)
+  (when arg
+    (setq w3m-display-inline-images (not w3m-display-inline-images)))
+  (w3m-goto-url w3m-current-url 'redisplay)
+  (w3m-history-restore-position))
+
+(defun w3m-redisplay-and-reset (&optional arg)
+  "Redisplay current page and reset of specified charset and content-type."
+  (interactive "P")
+  (w3m-arrived-modify w3m-current-url nil nil nil 'reset 'reset)
+  (w3m-redisplay-this-page arg))
+
 (defun w3m-redisplay-with-charset (&optional arg)
-  "Redisplay current page with specified coding-system.
+  "Redisplay current page with specified charset.
 If input is nil, use default coding-system on w3m."
   (interactive "P")
   (let ((charset
 	 (w3m-read-content-charset
 	  (format "Content-charset (current %s, default reset): "
 		  w3m-current-coding-system)
-	  t ;; Default action is reseting charset entry in arrived DB.
-	  )))
-    (when arg
-      (setq w3m-display-inline-images (not w3m-display-inline-images)))
-    (w3m-goto-url w3m-current-url nil charset)))
+	   ;; Default action is reseting charset entry in arrived DB.
+	  'reset)))
+    (w3m-arrived-modify w3m-current-url nil nil nil charset nil)
+    (w3m-redisplay-this-page arg)))
 
+(defun w3m-redisplay-with-content-type (&optional arg)
+  "Redisplay current page with specified content-type.
+If input is nil, use default content-type on w3m."
+  (interactive "P")
+  (let ((url w3m-current-url) ct)
+    (setq ct (completing-read
+	      (format "Content-type (current %s, default reset): "
+		      (or (w3m-arrived-content-type url)
+			  (if (w3m-url-local-p url)
+			      (w3m-local-content-type url)
+			    (w3m-content-type url))))
+	      w3m-content-type-alist nil t))
+    ;; Default action is reseting content-type entry in arrived DB.
+    (when (string= ct "")
+      (setq ct 'reset))
+    (w3m-arrived-modify url nil nil nil nil ct)
+    (w3m-redisplay-this-page arg)))
 
 ;;;###autoload
 (defun w3m (&optional url new-session)
@@ -5554,7 +5612,8 @@ works on Emacs.
 	    "\nLast Modified:  "
 	    (let ((time (w3m-last-modified url)))
 	      (if time (current-time-string time) "")))
-    (let ((charset (w3m-arrived-content-charset url))
+    (let ((ct (w3m-arrived-content-type url))
+	  (charset (w3m-arrived-content-charset url))
 	  (separator (if (string= w3m-language "Japanese")
 			 (if (boundp 'MULE)
 			     ;; `make-string' doesn't support Japanese chars
@@ -5570,14 +5629,16 @@ works on Emacs.
 		       (make-string (- (window-width) 4) ?-)))
 	  (case-fold-search t)
 	  header ssl beg)
-      (when charset
-	(insert "\nDocument Code:  " charset))
+      (when (or ct charset)
+	(insert "\n\n" separator "\n\nModifer Information\n")
+	(insert "\nDocument Content-Type:  " (or ct ""))
+	(insert "\nDocument Charset:       " (or charset "")))
       (when (and (not (w3m-url-local-p url))
 		 (setq header (condition-case nil
 				  (w3m-process-with-wait-handler
 				    (w3m-w3m-get-header url no-cache handler))
 				(w3m-process-timeout nil))))
-	(insert "\n\n" separator "\n\nHeader information\n\n" header)
+	(insert "\n\n" separator "\n\nHeader Information\n\n" header)
 	(goto-char (point-min))
 	(when (re-search-forward "^w3m-ssl-certificate: " nil t)
 	  (setq beg (match-end 0))
@@ -5589,7 +5650,7 @@ works on Emacs.
 	  (goto-char beg)
 	  (insert "SSL\n")
 	  (goto-char (point-max))
-	  (insert separator "\n\nSSL information\n\n")
+	  (insert separator "\n\nSSL Information\n\n")
 	  (setq beg (point))
 	  (insert ssl)
 	  (goto-char beg)
@@ -6104,7 +6165,12 @@ w3m-mode buffers."
 	     w3m-current-url
 	     (eq 'w3m-mode major-mode))
     (goto-char (point-min))
-    (insert "Location: ")
+    (let ((ct (w3m-arrived-content-type w3m-current-url))
+	  (charset (w3m-arrived-content-charset w3m-current-url)))
+      (insert (format "Location%s: " (cond ((and ct charset) " [TC]")
+					   (ct " [T]")
+					   (charset " [C]")
+					   (t "")))))
     (w3m-add-text-properties (point-min) (point)
 			     `(face w3m-header-line-location-title-face))
     (let ((start (point)))
