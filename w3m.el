@@ -7116,7 +7116,8 @@ frequently, set by the function itself and cleared by a timer.")
 
 (eval-when-compile
   (unless (fboundp 'format-mode-line)
-    (defalias 'format-mode-line 'ignore)
+    (defalias 'format-mode-line 'ignore))
+  (unless (fboundp 'w3m-force-window-update)
     (defalias 'w3m-force-window-update 'ignore)))
 
 (defun w3m-modeline-title ()
