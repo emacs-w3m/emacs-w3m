@@ -54,7 +54,17 @@ When this option is equal to `default',
 to decide whether inline images are displayed."
   :group 'w3m
   :group 'mime-view
-  :type 'boolean)
+  :type '(radio (const :format "%v " nil)
+		(sexp :format "non-nil "
+		      :match
+		      (lambda (widget value)
+			(and value (not (eq value 'default))))
+		      :value-to-internal
+		      (lambda (widget value)
+			(if (and value (not (equal value "default")))
+			    (widget-sexp-value-to-internal widget value)
+			  "t")))
+		(const default)))
 
 (defcustom mime-w3m-safe-url-regexp "\\`cid:"
   "*Regexp that matches safe url names.
