@@ -239,9 +239,9 @@ With prefix argument, kill that many entries from point."
 		 (end (if (search-forward "\n<li>" nil t)
 			  (min
 			   (line-beginning-position)
-			   (progn
-			     (goto-char beg)
-			     (search-forward w3m-bookmark-section-delimiter)))
+			   (and (goto-char beg)
+				(search-forward w3m-bookmark-section-delimiter)
+				(match-beginning 0)))
 			(search-forward w3m-bookmark-section-delimiter))))
 	    (delete-region beg end)
 	    (goto-char (1- beg))))))
