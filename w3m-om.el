@@ -1,6 +1,7 @@
-;;; w3m-om.el --- Mule 2 specific functions for w3m
+;;; w3m-om.el --- Mule 2 specific functions for emacs-w3m
 
-;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2005
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Katsumi Yamaoka    <yamaoka@jpl.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -447,6 +448,12 @@ as the value."
       :value 'other)))
 
 (eval-after-load "wid-edit" '(w3m-om-define-missing-widgets))
+
+;; Silence the byte compiler.  `w3m-tab-menubar-update' uses it to
+;; disable the iswitchb keymap, but it will never be used in Emacs 19
+;; since the Emacs version in which iswitchb.el appeared is 20.1.
+(eval-when-compile
+  (autoload 'easy-menu-remove-item "easymenu"))
 
 (provide 'w3m-om)
 
