@@ -1,3 +1,9 @@
+2005-01-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-e21.el (w3m-force-window-update, w3m-update-tab-line): Call
+	`enlarge-window' before calling `shrink-window', in order to avoid
+	deleting sole window.
+
 2005-01-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-content-type-alist): Check if "fiber.exe" is exist.

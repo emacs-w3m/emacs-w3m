@@ -520,8 +520,8 @@ Force redisplay of WINDOW which defaults to the selected window."
       (lambda (&optional ignore) "\
 Wobble the selected window size to force redisplay of the header-line."
 	(let ((window-min-height 0))
-	  (shrink-window 1)
-	  (enlarge-window 1))))))
+	  (enlarge-window 1)
+	  (shrink-window 1))))))
 
 (defun w3m-tab-drag-mouse-function (event buffer)
   (let ((window (posn-window (event-end event)))
@@ -727,8 +727,8 @@ cleared by a timer.")
 
     ;; We use wobbling of the window size instead.
     (let ((window-min-height 0))
-      (shrink-window 1)
-      (enlarge-window 1))))
+      (enlarge-window 1)
+      (shrink-window 1))))
 
 (defun w3m-e21-switch-to-buffer (buffer &optional norecord)
   "Run `switch-to-buffer' and redisplay the header-line.
