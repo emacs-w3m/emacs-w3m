@@ -949,21 +949,6 @@ If N is negative, last N items of LIST is returned."
 
 (add-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
 
-(defun w3m-arrived-store-position (url &optional point window-start)
-  (when (stringp url)
-    (let ((ident (intern-soft url w3m-arrived-db)))
-      (when ident
-	(put ident 'window-start (or window-start (window-start)))
-	(put ident 'point (or point (point)))))))
-
-(defun w3m-arrived-restore-position (url)
-  (let* ((ident (intern-soft url w3m-arrived-db))
-	 (start (get ident 'window-start))
-	 (point (get ident 'point)))
-    (when (and ident start point)
-      (set-window-start nil start)
-      (goto-char point))))
-
 
 ;;; Working buffers:
 (defun w3m-kill-all-buffer ()
@@ -1993,8 +1978,8 @@ this function returns t.  Otherwise, returns nil."
   (let ((url (car (w3m-history-backward arg))))
     (when url
       (w3m-goto-url url)
-      ;; restore last position
-      (w3m-arrived-restore-position url))))
+      ;; restore last position.
+      (w3m-history-restore-position))))
 
 (defun w3m-view-next-page (&optional arg)
   (interactive "p")
@@ -2002,11 +1987,7 @@ this function returns t.  Otherwise, returns nil."
     (when url
       (w3m-goto-url url)
       ;; restore last position
-      (w3m-arrived-restore-position url))))
-
-(defun w3m-view-previous-point ()
-  (interactive)
-  (w3m-arrived-restore-position w3m-current-url))
+      (w3m-history-restore-position))))
 
 (defun w3m-expand-url (url base)
   "Convert URL to absolute, and canonicalise it."
@@ -2274,7 +2255,9 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (if (featurep 'xemacs)
 	(define-key map [(button2)] 'w3m-mouse-view-this-url)
       (define-key map [mouse-2] 'w3m-mouse-view-this-url))
-    (define-key map "\C-c\C-b" 'w3m-view-previous-point)
+    (define-key map "\C-c\C-@" 'w3m-history-store-position)
+    (define-key map [?\C-c?\C- ] 'w3m-history-store-position)
+    (define-key map "\C-c\C-b" 'w3m-history-restore-position)
     (define-key map [left] 'w3m-view-previous-page)
     (define-key map "B" 'w3m-view-previous-page)
     (define-key map "N" 'w3m-view-next-page)
@@ -2429,7 +2412,8 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 \\[backward-char]	Backward char.
 
 \\[goto-line]	Jump to line.
-\\[w3m-view-previous-point]	w3m-view-previous-point.
+\\[w3m-history-store-position]	Mark the current position point.
+\\[w3m-history-restore-position]	Goto the last position point.
 
 \\[w3m]	w3m.
 \\[w3m-bookmark-view]	w3m-bookmark-view.
@@ -2539,7 +2523,8 @@ or prefix ARG columns."
 	      (list "%b" " / " 'w3m-current-title))))
     ;; Setup arrived database.
     (w3m-arrived-setup)
-    (w3m-arrived-store-position w3m-current-url)
+    ;; Store the current position point in the history structure.
+    (w3m-history-store-position)
     ;; Retrieve.
     (let ((orig url)
 	  (name))
