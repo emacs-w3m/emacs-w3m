@@ -1,5 +1,8 @@
 2002-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-bitmap.el (w3m-bitmap-image-insert): Don't put the
+	transparent face except for Emacs 20.
+
 	* w3m.el (w3m-key-binding): Don't manipulate key bindings if
 	w3m.elc has not been loaded (it will fix the problem that the face
 	colors might not be specified under Mule 2).
@@ -12,7 +15,7 @@
 
 2002-04-23  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* w3m-bitmap.el (w3m-bitmap-convert-arguments) 
+	* w3m-bitmap.el (w3m-bitmap-convert-arguments)
 	(w3m-bitmap-image-face-inherit): New customize values.
 	(w3m-create-image): Append argument `w3m-bitmap-convert-arguments'
 	when call `w3m-imagick-start-convert-buffer'.

@@ -297,8 +297,9 @@ a new overlay will be created and returned."
 	(setq ovr (make-overlay ovrbeg ovrbeg))
 	(overlay-put ovr 'w3m-bitmap-image-line t)
 	(overlay-put ovr 'w3m-bitmap-image-count 0)
-	;; Make the overlay transparent to the face text property.
-	(overlay-put ovr 'face '((:background) (:foreground))))
+	(w3m-static-when (= emacs-version 20)
+	  ;; Make the overlay transparent to the face text property.
+	  (overlay-put ovr 'face '((:background) (:foreground)))))
       (if (consp image)
 	  (progn
 	    (insert-before-markers (car image))
