@@ -1121,6 +1121,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	      (sleep-for 0.2)
 	      (discard-input))
 	    (prog1 (process-exit-status proc)
+	      (delete-process proc) ;; Clean up resources of process.
 	      (and w3m-current-url
 		   w3m-process-user
 		   (setq w3m-arrived-user-list

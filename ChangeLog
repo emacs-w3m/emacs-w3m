@@ -1,3 +1,8 @@
+2001-03-15  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-exec-process): Add `delete-process' to clean up
+	resources of child process.
+
 2001-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (default): Report errors if it has occurred while
