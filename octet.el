@@ -68,7 +68,7 @@
 (require 'static)
 (require 'w3m-util); w3m-insert-string
 
-(defvar octet-temp-directory "/tmp"
+(defvar octet-temp-directory temporary-file-directory
   "A directory to create temporal files.")
 
 (defvar octet-html-render-function 'octet-w3m-region
@@ -233,8 +233,12 @@ nil in NEW-TYPE means filtering is completed.")
   "Call octed filter with two arguments (infile, outfile).
 Current buffer content is replaced.
 Returns 0 if succeed."
-  (let ((infile (make-temp-file "octet"))
-	(outfile (make-temp-file "octet"))
+  (let ((infile (file-name-nondirectory
+		 (make-temp-file (expand-file-name "octet"
+						   octet-temp-directory))))
+	(outfile (file-name-nondirectory
+		  (make-temp-file (expand-file-name "octet"
+						    octet-temp-directory))))
 	(last-dir default-directory)
 	result)
     (cd octet-temp-directory)
@@ -258,8 +262,12 @@ Returns 0 if succeed."
 Current buffer content is replaced.
 Also, exta attachments are collected to `octet-attachments'.
 Returns 0 if succeed."
-  (let ((infile (make-temp-file "octet"))
-	(outfile (make-temp-file "octet"))
+  (let ((infile (file-name-nondirectory
+		 (make-temp-file (expand-file-name "octet"
+						   octet-temp-directory))))
+	(outfile (file-name-nondirectory
+		  (make-temp-file (expand-file-name "octet"
+						    octet-temp-directory))))
 	(last-dir default-directory)
 	result extras)
     (cd octet-temp-directory)
@@ -294,7 +302,9 @@ Returns 0 if succeed."
   "Call external octed filter with two arguments (infile) and obtain stdout.
 Current buffer content is replaced.
 Returns 0 if succeed."
-  (let ((infile (make-temp-file "octet"))
+  (let ((infile (file-name-nondirectory
+		 (make-temp-file (expand-file-name "octet"
+						   octet-temp-directory))))
 	(last-dir default-directory)
 	result)
     (cd octet-temp-directory)
