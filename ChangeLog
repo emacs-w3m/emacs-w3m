@@ -1,3 +1,7 @@
+2004-12-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-bbc.el (shimbun-bbc-url): Update.
+
 2004-12-12  Tsuyoshi CHO  <mfalcon21@hotmail.com>
 
 	* shimbun/sb-cnet-jp.el (shimbun-clear-contents): Append tag
