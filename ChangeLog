@@ -1,3 +1,8 @@
+2001-04-13  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun-retrieve-url-buffer):
+	Return an empty buffer when `w3m-retrieve' returns nil.
+
 2001-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-about-history): Show a hitrory tree (incompleted).

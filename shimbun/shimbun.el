@@ -106,8 +106,11 @@
 
 (defun shimbun-retrieve-url-buffer (url &optional no-cache)
   "Return a buffer which contains the URL contents."
-  (when (w3m-retrieve url nil no-cache)
-    (get-buffer w3m-work-buffer-name)))
+  (if (w3m-retrieve url nil no-cache)
+      (get-buffer w3m-work-buffer-name)
+    (with-current-buffer (get-buffer w3m-work-buffer-name)
+      (erase-buffer)
+      (current-buffer))))
 
 (defalias 'shimbun-decode-entities 'w3m-decode-entities)
 
