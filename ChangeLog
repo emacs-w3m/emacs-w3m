@@ -1,6 +1,8 @@
 2004-01-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-after-cursor-move-hook): Add :group keyword.
+	(w3m-auto-show): Check `truncate-lines' before scrolling.
+	(w3m-check-current-position): Do not check `truncate-lines'.
 
 	* mime-w3m.el: Changes to display URI of the current anchor.
 	(mime-w3m-after-cursor-move-hook): New option.
