@@ -1,3 +1,8 @@
+2004-07-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-detect-meta-charset): Check that a content field has
+	a valid value before parsing it.
+
 2004-07-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 	Suggested by Tatsuya Kinoshita <tats@vega.ocn.ne.jp>
 
