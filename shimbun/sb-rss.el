@@ -1,7 +1,7 @@
 ;;; sb-rss.el --- shimbun backend for RSS (Rich Site Summary).
 
-;; Copyright (C) 2003 Koichiro Ohba <koichiro@meadowy.org>
-;;               2003 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2003, 2004, 2005 Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;;         NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>

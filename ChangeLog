@@ -82,7 +82,8 @@
 
 2005-02-19  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
-	* shimbun/sb-ibm-dev.el (shimbun-get-headers): Fix index list reverse operation.
+	* shimbun/sb-ibm-dev.el (shimbun-get-headers): Fix index list
+	reverse operation.
 
 2005-02-18  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
@@ -100,8 +101,8 @@
 	groups:"enterprise" "dc" "k-tai" "bb" "forest".
 	(shimbun-impress-get-headers-date): Rename from shimbun-get-headers.
 	(shimbun-impress-get-headers-sequence): New function.
-	(shimbun-get-headers): Redefine method; function calling branched by
-	groups.
+	(shimbun-get-headers): Redefine method; function calling branched
+	by groups.
 	(shimbun-make-contents): Add date fix routine.
 
 2005-02-17  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
