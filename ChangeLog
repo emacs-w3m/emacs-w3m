@@ -1,4 +1,4 @@
-2001-03-07  Yuuichi Teranishi  <teranisi@isl.ntt.co.jp>
+2001-03-07  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-create-image) [XEmacs]: Retrieve header to determine
 	image type when `w3m-local-content-type' failed.
