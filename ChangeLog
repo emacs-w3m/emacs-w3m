@@ -1,3 +1,8 @@
+2002-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bug.el (report-emacs-w3m-bug-system-informations): Add
+	(featurep 'mule) and (featurep 'file-coding).
+
 2002-05-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-download): Modify string of the prompt.

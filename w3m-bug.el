@@ -40,6 +40,8 @@
     emacs-version
     mule-version
     Meadow-version
+    (featurep 'mule)
+    (featurep 'file-coding)
     system-type
     w3m-version
     w3m-type
