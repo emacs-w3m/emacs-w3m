@@ -60,7 +60,7 @@ represents a link which consists of the following records:
 Where URL should be a string of an address of a link.  PROPERTIES is a
 plist which contains any kind of data to propertize the URL as follows:
 
-	(PROPERTY VALUE PROPERTY VALUE ...)
+	(KEYWORD VALUE KEYWORD VALUE ...)
 
 The rest BRANCHes are branches of the history element.  Branches
 should also be arranged in order of increasing precedence (the newest
@@ -242,64 +242,62 @@ so don't specify them for the normal use."
 
 (defun w3m-history-assoc (url &optional set-current properties)
   "Return a history element if URL is `equal' to the `car' of an element
-of `w3m-history'.  The return value is actually the element of the
-history structure.  If the optional first argument SET-CURRENT is
-non-nil, the position pointer will come to point the element in the
-history structure and properties of the element will be replaced with
-the second argument PROPERTIES if it is not `t'."
+of `w3m-history-flat'.  Elements of the return value is actually the
+contents of the history structure.  If the optional first argument
+SET-CURRENT is non-nil, the position pointer will come to point the
+element in the history structure and properties of the element will
+be replaced with the second argument PROPERTIES if it is not t."
   (let ((element (assoc url w3m-history-flat))
-	elem position)
-    (when element
-      (setq position (nth 2 element))
-      (prog1
-	  (setq elem (w3m-history-current-1 position))
-	(when set-current
-	  ;; Set the current position.
-	  (setcar (cdar w3m-history) position)
-	  (unless (eq t properties)
-	    ;; Replace properties in the current history element of both
-	    ;; `w3m-history' and `w3m-history-flat' with the specified value.
-	    (setcar (cdr elem) properties)
-	    (setcar (cdr element) properties))
-	  (let* ((class (1- (length position)))
-		 (number (nth class position))
-		 branch branches)
-	    ;; Examine the previous history.
-	    (if (zerop number)
-		;; This element is the first of the branch.
-		(if (zerop class)
-		    ;; There is no previous element.
-		    (setq position nil)
-		  ;; This element has a parent.
-		  (setq position (copy-sequence position))
-		  (setcdr (nthcdr (- class 2) position) nil))
-	      ;; The previous element exists in the branch.
-	      (setq position (copy-sequence position))
-	      (setcar (nthcdr class position) (1- number)))
-	    ;; Set the previous position pointer.
-	    (setcar (car w3m-history) position)
-	    ;; Examine the next history.
-	    (setq position (cadar w3m-history)
-		  branch (cdr w3m-history)
+	position)
+    (prog1
+	element
+      (when (and element set-current)
+	(setq position (nth 2 element))
+	;; Set the current position.
+	(setcar (cdar w3m-history) position)
+	(unless (eq t properties)
+	  ;; Replace properties in the current history element of both
+	  ;; `w3m-history' and `w3m-history-flat' with the specified value.
+	  (setcar (cdr element) properties))
+	(let* ((class (1- (length position)))
+	       (number (nth class position))
+	       branch branches)
+	  ;; Examine the previous history.
+	  (if (zerop number)
+	      ;; This element is the first of the branch.
+	      (if (zerop class)
+		  ;; There is no previous element.
+		  (setq position nil)
+		;; This element has a parent.
+		(setq position (copy-sequence position))
+		(setcdr (nthcdr (- class 2) position) nil))
+	    ;; The previous element exists in the branch.
+	    (setq position (copy-sequence position))
+	    (setcar (nthcdr class position) (1- number)))
+	  ;; Set the previous position pointer.
+	  (setcar (car w3m-history) position)
+	  ;; Examine the next history.
+	  (setq position (cadar w3m-history)
+		branch (cdr w3m-history)
+		number (pop position)
+		element (nth number branch))
+	  (while position
+	    (setq branch (nth (pop position) (cddr element))
 		  number (pop position)
-		  element (nth number branch))
-	    (while position
-	      (setq branch (nth (pop position) (cddr element))
-		    number (pop position)
-		    element (nth number branch)))
-	    ;; (The value of `position' is nil.)
-	    (cond ((setq branches (cddr element))
-		   ;; This element has branch(es).
-		   (setq number (1- (length branches))
-			 position (copy-sequence (cadar w3m-history)))
-		   (setcdr (nthcdr (1- (length position)) position)
-			   (list number 0)))
-		  ((> (length branch) (setq number (1+ number)))
-		   ;; The next element exists in the branch.
-		   (setq position (copy-sequence (cadar w3m-history)))
-		   (setcar (nthcdr (1- (length position)) position) number)))
-	    ;; Set the next position pointer.
-	    (setcar (cddar w3m-history) position)))))))
+		  element (nth number branch)))
+	  ;; (The value of `position' is nil.)
+	  (cond ((setq branches (cddr element))
+		 ;; This element has branch(es).
+		 (setq number (1- (length branches))
+		       position (copy-sequence (cadar w3m-history)))
+		 (setcdr (nthcdr (1- (length position)) position)
+			 (list number 0)))
+		((> (length branch) (setq number (1+ number)))
+		 ;; The next element exists in the branch.
+		 (setq position (copy-sequence (cadar w3m-history)))
+		 (setcar (nthcdr (1- (length position)) position) number)))
+	  ;; Set the next position pointer.
+	  (setcar (cddar w3m-history) position))))))
 
 (defun w3m-history-push (url &optional properties)
   "Push URL and PROPERTIES onto both `w3m-history' and `w3m-history-flat'
@@ -308,7 +306,7 @@ address of a link.  PROPERTIES is a plist to propertize the URL.
 If the history element has already been registered in the history
 structure, only position pointers of the history will be modified.
 Even so, properties in the history element will be replaced with
-PROPERTIES.  However, if PROPERTIES is `t', properties in the history
+PROPERTIES.  However, if PROPERTIES is t, properties in the history
 won't be modified.  See the documentation for the variables
 `w3m-history' and `w3m-history-flat' for more information."
   (let (element position)
@@ -375,6 +373,142 @@ from BUFFER to the current buffer."
 	    flat (w3m-history-copy-1 w3m-history-flat)))
     (setq w3m-history tree
 	  w3m-history-flat flat)))
+
+(defun w3m-history-plist-get (keyword &optional url set-current)
+  "Extract a value from the properties of a history element.  KEYWORD is
+usually a symbol.  This function returns the value corresponding to
+the KEYWORD, or nil if KEYWORD is not one of the keyword on the
+properties.  If the optional first argument URL is omitted, it is
+performed on the current history element.  If the optional second
+argument SET-CURRENT is non-nil, the position pointer will come to
+point the element in the history structure."
+  (let ((element (if url
+		     (w3m-history-assoc url set-current t)
+		   (w3m-history-current))))
+    (if element
+	(plist-get (cadr element) keyword)
+      (error "No history element found to be extracted."))))
+
+(defun w3m-history-plist-put (keyword value &optional url set-current)
+  "Change value in the properties of a history element of KEYWORD to
+VALUE, and return the properties.  KEYWORD is usually a symbol and
+VALUE is any object.  If the optional first argument URL is omitted,
+it is performed on the current history element.  If the optional
+second argument SET-CURRENT is non-nil, the position pointer will come
+to point the element in the history structure."
+  (let (flat tree)
+    (if (if url
+	    (when (setq flat (w3m-history-assoc url set-current t))
+	      (setq tree (w3m-history-current-1 (caddr flat))))
+	  (when (setq tree (w3m-history-current))
+	    (setq flat (w3m-history-assoc (car tree)))))
+	(let ((plist (plist-put (cadr tree) keyword value))
+	      keyword value rest)
+	  ;; Remove keyword-value pairs whose value is nil.
+	  (while plist
+	    (setq keyword (car plist)
+		  value (cadr plist)
+		  plist (cddr plist))
+	    (when value
+	      (setq rest (cons value (cons keyword rest)))))
+	  (setq rest (nreverse rest))
+	  (setcar (cdr tree) rest)
+	  (setcar (cdr flat) rest))
+      (error "No history element found to be modified."))))
+
+(defun w3m-history-add-properties (properties &optional url set-current)
+  "Add each keyword-value pair of PROPERTIES to the properties of a
+history element.  Returns t if any property was changed, nil
+otherwise.  If the optional first argument URL is omitted, it is
+performed on the current history element.  If the optional second
+argument SET-CURRENT is non-nil, the position pointer will come to
+point the element in the history structure."
+  (let (flat tree)
+    (if (if url
+	    (when (setq flat (w3m-history-assoc url set-current t))
+	      (setq tree (w3m-history-current-1 (caddr flat))))
+	  (when (setq tree (w3m-history-current))
+	    (setq flat (w3m-history-assoc (car tree)))))
+	(let ((plist (cadr tree))
+	      keyword value changed rest)
+	  (while properties
+	    (setq keyword (car properties)
+		  value (cadr properties)
+		  properties (cddr properties))
+	    (unless (equal (plist-get plist keyword) value)
+	      (setq plist (plist-put plist keyword value)
+		    changed t)))
+	  ;; Remove keyword-value pairs whose value is nil.
+	  (while plist
+	    (setq keyword (car plist)
+		  value (cadr plist)
+		  plist (cddr plist))
+	    (if value
+		(setq rest (cons value (cons keyword rest)))
+	      (setq changed t)))
+	  (when changed
+	    (setq rest (nreverse rest))
+	    (setcar (cdr tree) rest)
+	    (setcar (cdr flat) rest)
+	    t))
+      (error "No history element found to add properties."))))
+
+(defun w3m-history-remove-properties (properties &optional url set-current)
+  "Remove each keyword of the keyword-value pair of PROPERTIES from the
+properties of a history element.  The values in PROPERTIES are ignored
+\(treated as nil).  Returns t if any property was changed, nil
+otherwise.  If the optional first argument URL is omitted, it is
+performed on the current history element.  If the optional second
+argument SET-CURRENT is non-nil, the position pointer will come to
+point the element in the history structure."
+  (let (flat tree)
+    (if (if url
+	    (when (setq flat (w3m-history-assoc url set-current t))
+	      (setq tree (w3m-history-current-1 (caddr flat))))
+	  (when (setq tree (w3m-history-current))
+	    (setq flat (w3m-history-assoc (car tree)))))
+	(let ((plist (cadr tree)))
+	  (when plist
+	    (let (keywords keyword value changed rest)
+	      (while properties
+		(setq keywords (cons (car properties) keywords)
+		      properties (cddr properties)))
+	      ;; Remove keyword-value pairs whose value is nil.
+	      (while plist
+		(setq keyword (car plist)
+		      value (cadr plist)
+		      plist (cddr plist))
+		(if (or (memq keyword keywords)
+			(not value))
+		    (setq changed t)
+		  (setq rest (cons value (cons keyword rest)))))
+	      (when changed
+		(setq rest (nreverse rest))
+		(setcar (cdr tree) rest)
+		(setcar (cdr flat) rest)
+		t))))
+      (error "No history element found to remove properties."))))
+
+(defun w3m-history-rename-url (new-url &optional old-url set-current)
+  "Rename the name of the url in a history element with NEW-URL.  If the
+optional first argument OLD-URL is omitted, renaming is performed on
+the current history element.  If the optional second argument
+SET-CURRENT is non-nil, the position pointer will come to point the
+element in the history structure."
+  (let ((tree (w3m-history-current))
+	url flat)
+    (if (and tree
+	     (setq url (car tree))
+	     (if old-url
+		 (when (setq flat (w3m-history-assoc old-url t t))
+		   (setq tree (w3m-history-current)))
+	       (setq flat (w3m-history-assoc url))))
+	(prog1
+	    (setcar tree new-url)
+	  (setcar flat new-url)
+	  (when (and old-url (not set-current))
+	    (w3m-history-assoc url t t)))
+      (error "No history element found to be renamed."))))
 
 (provide 'w3m-hist)
 

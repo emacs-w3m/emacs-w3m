@@ -1,3 +1,11 @@
+2001-03-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-rename-url): New function.
+	(w3m-history-remove-properties, w3m-history-add-properties):
+	(w3m-history-plist-put, w3m-history-plist-get): New functions.
+	(w3m-history-assoc): Return a history element of `w3m-history-flat'
+	instead of `w3m-history'.
+
 2001-03-30  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-w3m-attributes): Fixed spec of return value when
