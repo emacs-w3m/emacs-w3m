@@ -4954,8 +4954,8 @@ kantei.m-magazine-en kantei.m-magazine-ja
 jpo.news jpo.revision jpo.lawguide jpo.details
 
 @item @uref{http://www-6.ibm.com/jp/developerworks/, IBM developerWorks}
-ibm-dev.java ibm-dev.linux ibm-dev.opensource ibm-dev.webservices
-ibm-dev.xml
+ibm-dev.autonomic ibm-dev.java ibm-dev.linux ibm-dev.opensource
+ibm-dev.webservices ibm-dev.xml
 
 @item @uref{http://muchy.com/, Muchy's Palmware Review!}
 muchy.review
@@ -5000,6 +5000,14 @@ x51.science x51.top x51.ufo x51.uma x51.xfiles
 
 @item @uref{http://www.exconn.net/, eXperts Connection (eXConn)}
 exconn.news
+
+@item @uref{http://msdn.microsoft.com/, MSDN}
+msdn.all msdn.netframework msdn.architecture msdn.asp.net msdn.data
+msdn.longhorn msdn.mobility msdn.subscriptions msdn.msdntv msdn.office
+msdn.security msdn.sql msdn.theshow msdn.vbasic msdn.vcsharp
+msdn.visualc msdn.vfoxpro msdn.vjsharp msdn.vstudio msdn.vs2005
+msdn.webservices msdn.embedded msdn.xml msdn.japan.msdn
+msdn.japan.msdn-us
 
 @item @uref{http://haiku-os.org/, Haiku OS}
 haiku-os.news haiku-os.forums haiku-os.newsletters
