@@ -22,8 +22,8 @@
 
 * anchor-charset.patch
 
-  This patch was posted by TSUCHIYA Masatoshi <tsuchiya@namazu.org> in
-  [emacs-w3m:05229].  w3m that is applied this patch does not remove
+  This patch was posted by Fumitoshi UKAI <ukai@debian.or.jp> in
+  [emacs-w3m:05249].  w3m that is applied this patch does not remove
   `charset' attribute of anchor tags when it writes half-dumped content.
 
 
