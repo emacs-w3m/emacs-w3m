@@ -1,3 +1,7 @@
+2003-06-06  Koichiro Ohba  <koichiro@meadowy.org>
+
+	* shimbun/sb-tdiary.el : New file.
+
 2003-06-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* doc/emacs-w3m.texi, doc/emacs-w3m-ja.texi: Their license is
