@@ -1,5 +1,9 @@
 2001-10-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-namazu.el (shimbun-namazu-url,
+	shimbun-namazu-group-url-alist, shimbun-index-url): Changed URL of
+	emacs-w3m mailing list archive.
+
 	* w3m.el (w3m-expand-path-name): Fix incompatibility of drive
 	letter.
 
@@ -36,24 +40,24 @@
 	(w3m-expand-url): Fix to remove an empty query part and an empty
 	fragment part correctly.
 	(w3m-toggle-inline-images): Refer `w3m-current-image-status'
-	instead of `w3m-current-image-status'.
+	instead of `w3m-display-inline-image'.
 	(w3m-view-url-with-external-browser): Ditto.
 	(w3m-goto-url): Ditto.
 	(w3m-reload-this-page): Ditto.
 	(w3m-redisplay-with-charset): Ditto.
 
 	* w3m-e21.el (top, w3m-display-inline-image-p): Refer
-	`w3m-current-image-status' instead of `w3m-current-image-status'.
+	`w3m-current-image-status' instead of `w3m-display-inline-image'.
 
 	* w3m-om.el (w3m-expand-path-name): Add 2nd optional argument.
 
 	* w3m-macro.el (w3m-which-command): Import from w3m.el.
 
 	* w3m-xmas.el (top, w3m-display-inline-image-p): Refer
-	`w3m-current-image-status' instead of `w3m-current-image-status'.
+	`w3m-current-image-status' instead of `w3m-display-inline-image'.
 
 	* mew-w3m.el (mew-mime-text/html-w3m): Refer
-	`w3m-current-image-status' instead of `w3m-current-image-status'.
+	`w3m-current-image-status' instead of `w3m-display-inline-image'.
 
 2001-10-11  Hideyuki SHIRAI  <shirai@meadowy.org>
 

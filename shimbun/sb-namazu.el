@@ -28,7 +28,7 @@
 
 (luna-define-class shimbun-namazu (shimbun-mhonarc) ())
 
-(defvar shimbun-namazu-url "http://www.namazu.org")
+(defvar shimbun-namazu-url "http://www.namazu.org/")
 
 (defvar shimbun-namazu-group-url-alist
   '(("namazu-users-ja" . "ml/namazu-users-ja")
@@ -36,7 +36,7 @@
     ("namazu-users-en" . "ml/namazu-users-en")
     ("namazu-devel-ja" . "ml/namazu-devel-ja")
     ("namazu-devel-en" . "ml/namazu-devel-en")
-    ("emacs-w3m" . "~tsuchiya/emacs-w3m/ml")))
+    ("emacs-w3m" . "http://emacs-w3m.namazu.org/ml")))
 
 (defvar shimbun-namazu-groups (mapcar 'car shimbun-namazu-group-url-alist))
 (defvar shimbun-namazu-use-entire-index nil)
@@ -45,10 +45,12 @@
   "<Strong><A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\"> \\([^<]+\\)</a></Strong> <EM>\\([^<]+\\)</EM>")
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-namazu))
-  (concat 
-   (shimbun-url-internal shimbun) "/"
-   (cdr (assoc (shimbun-current-group-internal shimbun)
-	       shimbun-namazu-group-url-alist)) "/"))
+  (concat
+   (shimbun-expand-url
+    (cdr (assoc (shimbun-current-group-internal shimbun)
+		shimbun-namazu-group-url-alist))
+    (shimbun-url-internal shimbun))
+   "/"))
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-namazu))
   (concat (shimbun-current-group-internal shimbun)
