@@ -465,10 +465,18 @@ terminal.)"
    ((not (featurep 'mule)) 'iso-8859-1)
    ((eq w3m-type 'w3mmee) 'ctext)
    ((eq w3m-type 'w3m-m17n)
-    (if (or (equal "Japanese" w3m-language)
-	    (not (w3m-find-coding-system 'utf-8)))
-	'iso-2022-7bit-ss2
-      'utf-8))
+    (cond
+     ((and (equal "Japanese" w3m-language)
+	   (featurep 'w3m-e21)
+	   (not (featurep 'un-define))
+	   (fboundp 'utf-translate-cjk-mode))
+      'utf-8)
+     ((equal "Japanese" w3m-language)
+      'iso-2022-7bit-ss2)
+     ((w3m-find-coding-system 'utf-8)
+      'utf-8)
+     (t
+      'iso-2022-7bit-ss2)))
    (w3m-accept-japanese-characters 'w3m-euc-japan)
    (t 'w3m-iso-latin-1))
   "*Coding system used when reading from w3m processes."
@@ -476,29 +484,19 @@ terminal.)"
   :type '(coding-system :size 0))
 
 (defcustom w3m-input-coding-system
-  (cond
-   ((eq w3m-type 'w3mmee)
-    w3m-output-coding-system)
-   ((eq w3m-type 'w3m-m17n)
-    (if (and (featurep 'w3m-e21)
-	     (not (featurep 'un-define))
-	     (fboundp 'utf-translate-cjk-mode))
-	'utf-8
-      w3m-output-coding-system))
-   (w3m-accept-japanese-characters
-    (cond
-     (w3m-use-mule-ucs
-      'w3m-euc-japan-mule-ucs)
-     ((featurep 'w3m-e21)
-      'w3m-euc-japan)
-     (t
-      'euc-japan)))
-   (w3m-use-mule-ucs
-    'w3m-iso-latin-1-mule-ucs)
-   ((featurep 'w3m-e21)
-    'w3m-iso-latin-1)
-   (t
-    'iso-8859-1))
+  (if (memq w3m-type '(w3mmee w3m-m17n))
+      w3m-output-coding-system
+    (if w3m-accept-japanese-characters
+	(if w3m-use-mule-ucs
+	    'w3m-euc-japan-mule-ucs
+	  (if (featurep 'w3m-e21)
+	      'w3m-euc-japan
+	    'euc-japan))
+      (if w3m-use-mule-ucs
+	  'w3m-iso-latin-1-mule-ucs
+	(if (featurep 'w3m-e21)
+	    'w3m-iso-latin-1
+	  'iso-8859-1))))
   "*Coding system used when writing to w3m processes.
 It overrides `coding-system-for-write' if it is not `binary'.
 Otherwise, the value of the `w3m-current-coding-system' variable is
@@ -2134,6 +2132,8 @@ If it is nil, the command specified to `w3m-command' is used.")
 	 (list "-halfdump"
 	       "-o" "ext_halfdump=1"
 	       "-o" "strict_iso2022=0"
+	       "-o" "fix_width_conv=1"
+	       "-o" "use_jisx0201=0"
 	       "-o" "ucs_conv=1"
 	       '(if (eq w3m-input-coding-system 'binary)
 		    (if charset (list "-I" 'charset))

@@ -1,3 +1,11 @@
+2004-11-17  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+
+	* w3m.el (w3m-output-coding-system): Use `utf-8' if Emacs has
+	internal utf-8 only.
+	(w3m-input-coding-system): Revert last change.
+	(w3m-halfdump-command-arguments): Bind `fix_width_conv' and
+	`use_jisx0201' when w3m-m17n.
+
 2004-11-16  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
 
 	* w3m.el (w3m-input-coding-system): Use `utf-8' if Emacs has
