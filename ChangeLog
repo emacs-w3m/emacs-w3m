@@ -1,3 +1,8 @@
+2001-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el: Byte-optimize `match-string-no-properties' not to use
+	`set-text-properties' under XEmacs.
+
 2001-04-19  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-hns.el (shimbun-close): Define (clean up content-hash).
