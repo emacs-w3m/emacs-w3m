@@ -1,3 +1,38 @@
+2001-05-10  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el:
+	(w3m-dump-head-source-option): New variable.
+	(w3m-decode-all-to-this-charset): Ditto.
+	(w3m-halfdump-option): Ditto.
+	(w3m-halfdump-expand-options): Ditto.
+	(w3m-edit-function): Ditto.
+	(w3m-prog-dtree): Ditto.
+	(w3m-halfdump-command-arguments): Remove "-halfdump".
+	(w3m-fontify): Display minibuffer messages.
+	(w3m-decode-buffer): Use w3m-decode-all-to-this-charset, when its non-nil.
+	(w3m-local-retrieve): If file is directory, return 'nil'.
+	(w3m-w3m-dump-head-source): Use 'w3m-dump-head-source-option' instead of
+	"-dump_extra".
+	(w3m-rendering-region): Use 'w3m-halfdump-option',
+	'w3m-halfdump-command-arguments' and 'w3m-halfdump-expand-options',
+	when call-process.
+	(w3m-exec): Add no-cache option for w3m-dtree when call
+	w3m-external-view().
+	(w3m-external-view): Add no-cache option. If url is local directory,
+	call w3m-dtree().
+	(w3m-print-this-url): Expand output message.
+	(w3m-edit-current-url): Use 'w3m-edit-function' instead of
+	find-file().
+	(w3m-edit-this-url): New function.
+	(w3m-goto-next-anchor): Input form support.
+	(w3m-goto-previous-anchor): Ditto.
+	(keymap): Add w3m-edit-current-url() and w3m-edit-this-url().
+	(w3m-mode): Modify doc-string for new functions.
+	(w3m-view-header): Modify doc-string.
+	(w3m-history): Add doc-string.
+	(w3m-about-dtree): New function.
+	(w3m-dtree): Ditto.
+
 2001-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-flat): Don't funcall itself recursively.

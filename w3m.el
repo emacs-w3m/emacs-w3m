@@ -455,6 +455,35 @@ Value is 'crlf or nil.
   :group 'w3m
   :type '(choice (const :tag "CRLF" crlf) (const :tag "native" nil)))
 
+;; below defvar for 'w3mmee' support.
+;; xxxxx
+(defvar w3m-dump-head-source-option "-dump_extra"
+  "*W3m dump_extra option.")
+
+(defvar w3m-decode-all-to-this-charset nil
+  "*If non-nil, always decode this charset.")
+
+(defvar w3m-halfdump-option "-halfdump"
+  "*W3m rendering option.")
+
+(defvar w3m-halfdump-expand-options '()
+  "*W3m rendering expand options.")
+
+(defcustom w3m-edit-function 'find-file
+  "*Function of editting local file."
+  :group 'w3m
+  :type '(choice
+	  (const :tag "Edit" find-file)
+	  (const :tag "Edit with other window" find-file-other-window)
+	  (const :tag "Edit with other frame" find-file-other-frame)
+	  (const :tag "View with other window" view-file-other-window)
+	  (function :tag "Other" view-file)))
+	  
+(defcustom w3m-prog-dtree "htree"
+  "*Program name for w3m-dtree. See [emacs-w3m:00689]."
+  :group 'w3m
+  :type 'string)
+
 (defcustom w3m-track-mouse t
   "Whether to track the mouse and message the url under the mouse.
 This feature does not work under Emacs or XEmacs versions prior to 21.
@@ -654,7 +683,7 @@ for a charset indication")
     "Regexp used in parsing to detect string."))
 
 (defconst w3m-halfdump-command-arguments
-  '("-T" "text/html" "-t" tab-width "-halfdump"
+  '("-T" "text/html" "-t" tab-width 
     "-cols" (if (< 0 w3m-fill-column)
 		w3m-fill-column		; fixed columns
 	      (+ (frame-width) (or w3m-fill-column -1)))) ; fit for frame
@@ -1283,6 +1312,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
   (let ((case-fold-search t)
 	(buffer-read-only))
     (run-hooks 'w3m-fontify-before-hook)
+    (w3m-message "Fontify...")
     ;; Delete <?xml ... ?> tag
     (goto-char (point-min))
     (if (search-forward "<?xml" nil t)
@@ -1312,6 +1342,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (if w3m-delete-duplicated-empty-lines
 	(while (re-search-forward "^[ \t]*\n\\([ \t]*\n\\)+" nil t)
 	  (replace-match "\n" nil t)))
+    (w3m-message "Fontify... done")
     (run-hooks 'w3m-fontify-after-hook)))
 
 ;;
@@ -1602,42 +1633,46 @@ This function is imported from mcharset.el."
 			t '(t nil) nil (nth 1 x)))))))
 
 (defun w3m-decode-buffer (url &optional cs)
-  (let ((type (w3m-content-type url))
-	(charset (w3m-content-charset url))
-	(encoding (w3m-content-encoding url)))
-    (unless (w3m-decode-encoded-buffer encoding)
-      (error "Can't decode encoded contents: %s" url))
-    (if (and (not charset) (string= type "text/html"))
-	(setq charset
-	      (let ((case-fold-search t))
-		(goto-char (point-min))
-		(and (or (re-search-forward
-			  w3m-meta-content-type-charset-regexp nil t)
-			 (re-search-forward
-			  w3m-meta-charset-content-type-regexp nil t))
-		     (match-string-no-properties 2)))))
-    (decode-coding-region
-     (point-min) (point-max)
-     (cond
-      (cs cs)
-      (charset
-       (w3m-charset-to-coding-system charset))
-      (t
-       (let ((default (condition-case nil
-			  (coding-system-category w3m-coding-system)
-			(error nil)))
-	     (candidate (detect-coding-region (point-min) (point-max))))
-	 (unless (listp candidate)
-	   (setq candidate (list candidate)))
-	 (catch 'coding
-	   (dolist (coding candidate)
-	     (if (eq default (coding-system-category coding))
-		 (throw 'coding coding)))
-	   (if (eq (coding-system-category 'binary)
-		   (coding-system-category (car candidate)))
-	       w3m-coding-system
-	     (car candidate)))))))
-    (set-buffer-multibyte t)))
+  (if w3m-decode-all-to-this-charset
+      (decode-coding-region
+       (point-min) (point-max)
+       (w3m-charset-to-coding-system w3m-decode-all-to-this-charset))
+    (let ((type (w3m-content-type url))
+	  (charset (w3m-content-charset url))
+	  (encoding (w3m-content-encoding url)))
+      (unless (w3m-decode-encoded-buffer encoding)
+	(error "Can't decode encoded contents: %s" url))
+      (if (and (not charset) (string= type "text/html"))
+	  (setq charset
+		(let ((case-fold-search t))
+		  (goto-char (point-min))
+		  (and (or (re-search-forward
+			    w3m-meta-content-type-charset-regexp nil t)
+			   (re-search-forward
+			    w3m-meta-charset-content-type-regexp nil t))
+		       (match-string-no-properties 2)))))
+      (decode-coding-region
+       (point-min) (point-max)
+       (cond
+	(cs cs)
+	(charset
+	 (w3m-charset-to-coding-system charset))
+	(t
+	 (let ((default (condition-case nil
+			    (coding-system-category w3m-coding-system)
+			  (error nil)))
+	       (candidate (detect-coding-region (point-min) (point-max))))
+	   (unless (listp candidate)
+	     (setq candidate (list candidate)))
+	   (catch 'coding
+	     (dolist (coding candidate)
+	       (if (eq default (coding-system-category coding))
+		   (throw 'coding coding)))
+	     (if (eq (coding-system-category 'binary)
+		     (coding-system-category (car candidate)))
+		 w3m-coding-system
+	       (car candidate)))))))))
+  (set-buffer-multibyte t))
 
 
 ;;; Retrieve local data:
@@ -1678,20 +1713,21 @@ to nil."
     (setq file (w3m-url-to-file-name url))
     (w3m-with-work-buffer
       (delete-region (point-min) (point-max))
-      (if (and (string-match "^text/" type)
-	       (not no-decode))
-	  (progn
-	    (set-buffer-multibyte t)
-	    (insert-file-contents file))
-	(set-buffer-multibyte nil)
-	(let ((coding-system-for-read 'binary)
-	      (file-coding-system-for-read 'binary)
-	      jka-compr-compression-info-list
-	      jam-zcat-filename-list
-	      format-alist)
-	  (insert-file-contents file))))
+      (when (and (file-readable-p file)
+		 (not (file-directory-p file)))
+	(if (and (string-match "^text/" type)
+		 (not no-decode))
+	    (progn
+	      (set-buffer-multibyte t)
+	      (insert-file-contents file))
+	  (set-buffer-multibyte nil)
+	  (let ((coding-system-for-read 'binary)
+		(file-coding-system-for-read 'binary)
+		jka-compr-compression-info-list
+		jam-zcat-filename-list
+		format-alist)
+	    (insert-file-contents file)))))
     type))
-
 
 ;;; Retrieve data via HTTP:
 (defun w3m-remove-redundant-spaces (str)
@@ -1777,7 +1813,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 (defun w3m-w3m-dump-head-source (url)
   (and (let ((w3m-current-url url))
 	 (w3m-message "Reading...")
-	 (prog1 (zerop (w3m-exec-process "-dump_extra" url))
+	 (prog1 (zerop (w3m-exec-process w3m-dump-head-source-option url))	   
 	   (w3m-message "Reading... done")
 	   (w3m-crlf-to-lf)))
        (goto-char (point-min))
@@ -1920,7 +1956,9 @@ to nil."
 		       (if (stringp x)
 			   x
 			 (prin1-to-string (eval x))))
-		     w3m-halfdump-command-arguments))
+		     (append (list w3m-halfdump-option)
+			     w3m-halfdump-command-arguments
+			     w3m-halfdump-expand-options)))
       (w3m-message "Rendering... done")
       (goto-char (point-min))
       (insert
@@ -1986,7 +2024,7 @@ this function returns t.  Otherwise, returns nil."
 	      (w3m-history-push w3m-current-url
 				(list ':title w3m-current-title))
 	      t))
-	   (t (w3m-external-view url)
+	   (t (w3m-external-view url no-cache)
 	      nil))
 	(error "Unknown URL: %s" url)))))
 
@@ -2093,14 +2131,17 @@ this function returns t.  Otherwise, returns nil."
      (img (w3m-view-image))
      (t (message "No URL at point.")))))
 
-(defun w3m-external-view (url)
+(defun w3m-external-view (url &optional no-cache)
   (let* ((type (w3m-content-type url))
 	 (method (nth 2 (assoc type w3m-content-type-alist))))
     (cond
      ((not method)
       (if (w3m-url-local-p url)
-	  (error "No method to view `%s' is registered."
-		 (w3m-url-to-file-name url))
+	  (if (and (file-readable-p (w3m-url-to-file-name url))
+		   (file-directory-p (w3m-url-to-file-name url)))
+	      (w3m-dtree no-cache (w3m-url-to-file-name url))
+	    (error "No method to view `%s' is registered. Use `w3m-edit-this-url'."
+		   (file-name-nondirectory (w3m-url-to-file-name url))))
 	(w3m-download url)))
      ((functionp method)
       (funcall method url))
@@ -2187,23 +2228,44 @@ this function returns t.  Otherwise, returns nil."
   (interactive (list t))
   (let ((url (w3m-anchor)))
     (and add-kill-ring url (kill-new url))
-    (message "%s" (or url "Not found"))))
+    (message "%s" (or url
+		      (and (w3m-action) "Form found.")
+		      "Not found."))))
 
 (defun w3m-edit-current-url ()
   "*Edit the local file pointed by the URL of current page"
   (interactive)
   (if (w3m-url-local-p w3m-current-url)
-      (find-file (w3m-url-to-file-name w3m-current-url))
+      (funcall w3m-edit-function (w3m-url-to-file-name w3m-current-url))
     (error "The URL of current page is not local.")))
+
+(defun w3m-edit-this-url (&optional url)
+  "*Edit the local file by the under point."
+  (interactive)
+  (setq url (or url (w3m-anchor)))
+  (if (null url)
+      (message "No URL at point.")
+    (if (w3m-url-local-p url)
+	(funcall w3m-edit-function (w3m-url-to-file-name url))
+      (error "URL:%s is not local." url))))
 
 (defun w3m-goto-next-anchor ()
   ;; move to the end of the current anchor
-  (when (w3m-anchor)
-    (goto-char (next-single-property-change (point) 'w3m-href-anchor)))
+  (if (w3m-anchor)
+      (goto-char (next-single-property-change (point) 'w3m-href-anchor))
+    (if (w3m-action)
+	(goto-char (next-single-property-change (point) 'w3m-action))))
   ;; find the next anchor
   (or (w3m-anchor)
-      (let ((pos (next-single-property-change (point) 'w3m-href-anchor)))
-	(if pos (progn (goto-char pos) t) nil))))
+      (w3m-action)
+      (let ((pos
+	     (min (or (next-single-property-change (point) 'w3m-href-anchor)
+		      (1+ (point-max)))
+		  (or (next-single-property-change (point) 'w3m-action)
+		      (1+ (point-max))))))
+	(if (= pos (1+ (point-max)))
+	    nil
+	  (goto-char pos) t))))
 
 (defun w3m-next-anchor (&optional arg)
   "*Move cursor to the next anchor."
@@ -2221,14 +2283,26 @@ this function returns t.  Otherwise, returns nil."
 
 (defun w3m-goto-previous-anchor ()
   ;; move to the beginning of the current anchor
-  (when (w3m-anchor)
-    (goto-char (previous-single-property-change (1+ (point))
-						'w3m-href-anchor)))
+  (if (w3m-anchor)
+      (goto-char (previous-single-property-change (1+ (point))
+						  'w3m-href-anchor))
+    (if (w3m-action)
+	(goto-char (previous-single-property-change (1+ (point))
+						    'w3m-action))))
   ;; find the previous anchor
-  (let ((pos (previous-single-property-change (point) 'w3m-href-anchor)))
-    (if pos (goto-char
-	     (if (w3m-anchor pos) pos
-	       (previous-single-property-change pos 'w3m-href-anchor))))))
+  (let ((pos
+	 (max (or (previous-single-property-change (point) 'w3m-href-anchor)
+		  (1- (point-min)))
+	      (or (previous-single-property-change (point) 'w3m-action)
+		  (1- (point-min))))))
+    (if (= pos (1- (point-min)))
+	nil
+      (goto-char
+       (if (w3m-anchor pos) pos
+	 (max (or (previous-single-property-change pos 'w3m-href-anchor)
+		  (1- (point-min)))
+	      (or (previous-single-property-change pos 'w3m-action)
+		  (1- (point-min)))))))))
 
 (defun w3m-previous-anchor (&optional arg)
   "Move cursor to the previous anchor."
@@ -2342,12 +2416,14 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "A" 'w3m-antenna)
     (define-key map "W" 'w3m-weather)
     (define-key map "S" 'w3m-search)
+    (define-key map "D" 'w3m-dtree)
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
     (define-key map "\\" 'w3m-view-source)
     (define-key map "=" 'w3m-view-header)
     (define-key map "s" 'w3m-history)
     (define-key map "E" 'w3m-edit-current-url)
+    (define-key map "e" 'w3m-edit-this-url)
     (setq w3m-lynx-like-map map)))
 
 (defvar w3m-info-like-map nil
@@ -2402,6 +2478,9 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
     (define-key map "." 'beginning-of-buffer)
+    ;; FIXME xxxxx
+    ;; (define-key map "D" 'w3m-dtree)
+    ;; (define-key map "E" 'w3m-edit-this-url)
     (setq w3m-info-like-map map)))
 
 (defun w3m-alive-p ()
@@ -2469,6 +2548,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 \\[w3m-view-source]	Display source of this current buffer.
 \\[w3m-view-header]	Display header of this current buffer.
 \\[w3m-edit-current-url]	Edit the local file pointed by the URL of current page.
+\\[w3m-edit-this-url]	Edit the local file by the under the point.
 
 \\[scroll-up]	Scroll up.
 \\[scroll-down]	Scroll down.
@@ -2493,6 +2573,8 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 	If called with '\\[universal-argument]', you can choose search engine.
 \\[w3m-weather]	Display weather report.
 	If called with '\\[universal-argument]', you can choose local area.
+\\[w3m-dtree]	Display directory tree.
+	If called with '\\[universal-argument]', view all directorys and files.
 
 \\[w3m-bookmark-view]	w3m-bookmark-view.
 \\[w3m-bookmark-add-current-url]	Add link of current page to bookmark.
@@ -2751,7 +2833,7 @@ works on Emacs.
 	  "text/plain")))))
 
 (defun w3m-view-header ()
-  "*Display header of this current buffer."
+  "Display header of this current buffer."
   (interactive)
   (if (or (and (string-match "^about:" w3m-current-url)
 	       (not (string-match "^about://header/" w3m-current-url)))
@@ -2880,6 +2962,8 @@ works on Emacs.
   "text/html")
 
 (defun w3m-history (&optional arg)
+  "Display w3m history.
+If called with 'prefix argument', display arrived-DB history."
   (interactive "P")
   (if (null arg)
       (w3m-goto-url "about://history/")
@@ -2888,6 +2972,45 @@ works on Emacs.
 (defun w3m-db-history ()
   (interactive)
   (w3m-goto-url "about://db-history/"))
+
+(defun w3m-about-dtree (url &rest args)
+  (let ((prelen (length "about://dtree"))
+	(flag '("-d")) path)
+    (if (string-match "\\?allfiles=\\(\\(true\\)\\|false\\)/$" url)
+	(progn
+	  (setq path (substring url prelen (match-beginning 0)))
+	  (if (match-beginning 2) (setq flag '("-f"))))
+      (setq path (substring url prelen)))
+    ;; counter drive letter 
+    (w3m-with-work-buffer
+      (if (string-match "^/[a-zA-Z]:/" path) (setq path (substring path 1)))
+      (setq default-directory path)
+      (erase-buffer)
+      (set-buffer-multibyte t)
+      (apply 'call-process
+	     w3m-prog-dtree nil t nil 
+	     (append flag (list path)))
+      "text/html")))
+
+(defun w3m-dtree (allfiles path)
+  "Display directory tree.
+If called with 'prefix argument', display all directorys and files."
+  (interactive "P\nDDtree directory: ")
+  (if (null (w3m-which-command w3m-prog-dtree))
+      (error "Install `%s', first. See [emacs-w3m:00689]." w3m-prog-dtree)
+    (let (opath)
+      (setq path (file-name-as-directory (expand-file-name path)))
+      (if (string-match "^[a-zA-Z]:/" path)
+	  ;; drive letter
+	  (progn
+	    (setq opath path)
+	    (setq path (concat "/" path)))
+	(setq opath path))
+      (w3m-goto-url (format "about://dtree%s%s" path
+			    ;; last "/", fake file-name-nondirectory for title
+			    (if allfiles "?allfiles=true/" "")))
+      ;; drive letter
+      (setq default-directory opath))))
 
 (defun w3m-w32-browser-with-fiber (url)
   (start-process "w3m-w32-browser-with-fiber"
