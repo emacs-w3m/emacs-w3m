@@ -1590,11 +1590,11 @@ for a refresh indication")
   "Common arguments for 'halfdump' execution of all w3m variants.")
 
 (defconst w3m-arrived-ignored-regexp
-  "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
+  "\\`about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
   "Regexp of urls to be ignored in an arrived-db.")
 
 (defconst w3m-history-ignored-regexp
-  "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
+  "\\`about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
   "Regexp of urls to be ignored in a history.")
 
 (defconst w3m-url-components-regexp
@@ -2145,6 +2145,30 @@ with ^ as `cat -v' does."
 	 w3m-coding-system
 	 'iso-2022-7bit))))
 
+(defsubst w3m-url-transfer-encode-string (url &optional coding)
+  "Encode all non-ASCII characters included in URL to sequences of
+escaped octets in the specified coding system.
+This function is designed for conversion for safe transmission of URL.
+Therefore, this function handles only non-ASCII characters that can
+not be transmitted safely with network streams.  In general, you
+should use `w3m-url-encode-string' instead of this."
+  (let ((start 0)
+	(buf))
+    (while (string-match "[^\x21-\x7e]+" url start)
+      (setq buf
+	    (cons (apply 'concat
+			 (mapcar
+			  (lambda (c) (format "%%%02x" c))
+			  (append (encode-coding-string
+				   (match-string 0 url)
+				   (or coding
+				       w3m-current-coding-system)))))
+		  (cons (substring url start (match-beginning 0))
+			buf))
+	    start (match-end 0)))
+    (apply 'concat
+	   (nreverse (cons (substring url start) buf)))))
+
 
 ;;; HTML character entity handling:
 (defun w3m-entity-db-setup ()
@@ -2249,7 +2273,8 @@ with ^ as `cat -v' does."
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
       (setq prenames (get-text-property start 'w3m-name-anchor))
-      (w3m-parse-attributes (href name (rel :case-ignore) (hseq :integer))
+      (w3m-parse-attributes (href name charset
+				  (rel :case-ignore) (hseq :integer))
 	(when rel
 	  (setq rel (split-string rel))
 	  (cond
@@ -2265,8 +2290,17 @@ with ^ as `cat -v' does."
 	    (setq end (match-beginning 0))
 	    (delete-region (match-beginning 1) (match-end 1))
 	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)))
-	    (setq hseq (or (and (null hseq) 0) (abs hseq)))
-	    (setq w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
+	    (setq href (if (and (string-match w3m-url-components-regexp href)
+				(match-beginning 8))
+			   (concat (w3m-url-transfer-encode-string
+				    (substring href 0 (match-beginning 8))
+				    (w3m-charset-to-coding-system charset))
+				   "#" (match-string 9 href))
+			 (w3m-url-transfer-encode-string
+			  href
+			  (w3m-charset-to-coding-system charset)))
+		  hseq (or (and (null hseq) 0) (abs hseq))
+		  w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
 	    (w3m-add-text-properties start end
 				     (list 'face (if (w3m-arrived-p href)
 						     'w3m-arrived-anchor-face
@@ -2786,7 +2820,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 	(setq w3m-input-url-history
 	      (cons url (delete url w3m-input-url-history))))
       ;; return value
-      url)))
+      (w3m-url-transfer-encode-string url w3m-default-coding-system))))
 
 
 ;;; Cache:
@@ -6351,10 +6385,15 @@ works on Emacs.
     (insert "Page Information\n"
 	    "\nTitle:          " (or (w3m-arrived-title url) "")
 	    "\nURL:            " url
-	    "\nDocument Type:  " (w3m-content-type url)
+	    "\nDocument Type:  " (or (w3m-content-type url) "")
 	    "\nLast Modified:  "
 	    (let ((time (w3m-last-modified url)))
-	      (if time (current-time-string time) "")))
+	      (if time (current-time-string time) ""))
+	    (let ((anchor (with-current-buffer w3m-current-buffer
+			    (and (equal url w3m-current-url) (w3m-anchor)))))
+	      (if anchor
+		  (concat "\nCurrent Anchor: " anchor)
+		"")))
     (let ((ct (w3m-arrived-content-type url))
 	  (charset (w3m-arrived-content-charset url))
 	  (separator (w3m-make-separator))

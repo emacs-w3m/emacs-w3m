@@ -1,3 +1,17 @@
+2003-06-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-fontify-anchors): Do not encode fragment parts.
+
+	* w3m.el (w3m-arrived-ignored-regexp): Use "\`" instead of "^".
+	(w3m-history-ignored-regexp): Ditto.
+	(w3m-url-transfer-encode-string): New inline function.
+	(w3m-fontify-anchors): Encode URL with the attribute `charset'.
+	(w3m-input-url): Encode URL with `w3m-default-coding-system'.
+	(w3m-about-header): Display the current anchor information.
+
+	* w3m-form.el (w3m-form-parse-and-fontify): Encode URL with the
+	attribute `charset'.
+
 2003-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-makeinfo): Improve the last change.
