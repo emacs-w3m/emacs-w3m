@@ -71,7 +71,8 @@
 			 lc-kana
 		       (charset-id 'katakana-jisx0201)))
 	     ;; (3) Katakana Part of Japanese JISX0201.1976
-	     ((write ?\x8e)
+	     ((r0 |= 128)
+	      (write ?\x8e)
 	      (write-repeat r0))
 	   (;; (4) Other characters are represented in NCR (Numeric
 	    ;; Character References).
