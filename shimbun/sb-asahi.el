@@ -281,7 +281,7 @@ Every `.' in NAME will be replaced with `/'."
 	 "\\([^/]+\\)"
 	 "/update/"
 	 ;; 4 and 5. serial number
-	 "\\([0-9]+\\)/\\([0-9]+\\)"
+	 "\\([0-9]+\\)/\\([a-z]*[0-9]+\\)"
 	 "\\.html\\?ref=rss\\)"
 	 "</link>\n<description/>\n<dc:subject>"
 	 ;; 6. extra keyword (ja)
