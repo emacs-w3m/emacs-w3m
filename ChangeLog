@@ -1,5 +1,9 @@
 2002-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-form.el (w3m-form-input-textarea-keymap): Don't bind C-g.
+	(w3m-form-input-select-keymap): Ditto.
+	(w3m-form-input-map-keymap): Ditto.
+
 	* w3m.el (w3m-select-buffer-mode): Add some key descriptions to
 	the doc-string.
 

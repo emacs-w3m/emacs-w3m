@@ -1,6 +1,6 @@
 ;;; w3m-form.el --- Stuffs to handle <form> tag
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -280,7 +280,8 @@ If no field in forward, return nil without moving."
   (unless (fboundp 'w3m-form-make-button)
     (defun w3m-form-make-button (start end properties)
       "Make button on the region from START to END."
-      (add-text-properties start end (append '(face w3m-form-face) properties)))))
+      (add-text-properties start end (append '(face w3m-form-face)
+					     properties)))))
 
 ;;; w3mmee
 ;;
@@ -395,7 +396,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		    (w3m-form-new
 		     (or method "get")
 		     (or action (and w3m-current-url
-				     (string-match w3m-url-components-regexp 
+				     (string-match w3m-url-components-regexp
 						   w3m-current-url)
 				     (substring w3m-current-url 0
 						(or (match-beginning 6)
@@ -427,16 +428,16 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			    name
 			    (nreverse candidates))))))
        ((string= tag "img_alt")
- 	(w3m-parse-attributes (usemap)
- 	  (re-search-forward (w3m-tag-regexp-of "/img_alt") nil t)
- 	  (when (or usemap mapval)
+	(w3m-parse-attributes (usemap)
+	  (re-search-forward (w3m-tag-regexp-of "/img_alt") nil t)
+	  (when (or usemap mapval)
 	    (unless maps (setq maps (w3m-form-new "map" ".")))
 	    (unless usemap (setq usemap mapval))
 	    (when mapval (setq mapval nil))
- 	    (add-text-properties
- 	     start (match-beginning 0)
- 	     `(face w3m-form-face
- 	     w3m-action (w3m-form-input-map ,maps ,usemap))))))
+	    (add-text-properties
+	     start (match-beginning 0)
+	     `(face w3m-form-face
+		    w3m-action (w3m-form-input-map ,maps ,usemap))))))
        ((string= tag "/input_alt")
 	(replace-match ""))
        ((string= tag "input_alt")
@@ -457,7 +458,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	    (search-forward "</input_alt>")
 	    (setq end (match-beginning 0)))
 	  (let ((abs-hseq (or (and (null hseq) 0) (abs hseq))))
-	    (setq w3m-max-anchor-sequence 
+	    (setq w3m-max-anchor-sequence
 		  (max abs-hseq w3m-max-anchor-sequence))
 	    (if (eq w3m-type 'w3mmee)
 		(setq form (nth fid forms))
@@ -487,7 +488,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		   w3m-anchor-sequence ,abs-hseq)))
 	       ((string= type "textarea")
 		(if (eq w3m-type 'w3mmee)
-		    (w3m-form-put form name 
+		    (w3m-form-put form name
 				  (decode-coding-string
 				   (w3m-url-decode-string value)
 				   w3m-output-coding-system))
@@ -784,8 +785,6 @@ character."
   (setq w3m-form-input-textarea-keymap (make-sparse-keymap))
   (define-key w3m-form-input-textarea-keymap "\C-c\C-c"
     'w3m-form-input-textarea-set)
-  (define-key w3m-form-input-textarea-keymap "\C-g"
-    'w3m-form-input-textarea-exit)
   (define-key w3m-form-input-textarea-keymap "\C-c\C-q"
     'w3m-form-input-textarea-exit)
   (define-key w3m-form-input-textarea-keymap "\C-c\C-k"
@@ -920,8 +919,6 @@ character."
     'w3m-form-input-select-exit)
   (define-key w3m-form-input-select-keymap "q"
     'w3m-form-input-select-exit)
-  (define-key w3m-form-input-select-keymap "\C-g"
-    'w3m-form-input-select-exit)
   (define-key w3m-form-input-select-keymap "h" 'backward-char)
   (define-key w3m-form-input-select-keymap "j" 'next-line)
   (define-key w3m-form-input-select-keymap "k" 'previous-line)
@@ -993,9 +990,12 @@ character."
   "\\<w3m-form-input-select-keymap>
    Major mode for w3m form select.
 
-\\[w3m-form-input-select-set]	Save and exit from w3m form select mode.
-\\[w3m-form-input-select-exit]	Exit from w3m form select mode.
-\\[w3m-form-input-select-set-mouse]	Save and exit from w3m form select mode with mouse.
+\\[w3m-form-input-select-set]\
+	Save and exit from w3m form select mode.
+\\[w3m-form-input-select-exit]\
+	Exit from w3m form select mode.
+\\[w3m-form-input-select-set-mouse]\
+	Save and exit from w3m form select mode with mouse.
 "
   (setq mode-name "w3m form select"
 	major-mode 'w3m-form-input-select-mode)
@@ -1088,12 +1088,10 @@ character."
     'w3m-form-input-map-exit)
   (define-key w3m-form-input-map-keymap "q"
     'w3m-form-input-map-exit)
-  (define-key w3m-form-input-map-keymap "\C-g"
-    'w3m-form-input-map-exit)  
   (define-key w3m-form-input-map-keymap "h" 'backward-char)
   (define-key w3m-form-input-map-keymap "j" 'next-line)
   (define-key w3m-form-input-map-keymap "k" 'previous-line)
-  (define-key w3m-form-input-map-keymap "l" 'forward-char)  
+  (define-key w3m-form-input-map-keymap "l" 'forward-char)
   (if (featurep 'xemacs)
       (define-key w3m-form-input-map-keymap [(button2)]
 	'w3m-form-input-map-set-mouse)
@@ -1147,9 +1145,12 @@ character."
   "\\<w3m-form-input-map-keymap>
    Major mode for w3m map select.
 
-\\[w3m-form-input-map-set]	Save and exit from w3m form select map mode.
-\\[w3m-form-input-map-exit]	Exit from w3m form select map mode.
-\\[w3m-form-input-map-set-mouse]	Save and exit from w3m form select map mode with mouse.
+\\[w3m-form-input-map-set]\
+	Save and exit from w3m form select map mode.
+\\[w3m-form-input-map-exit]\
+	Exit from w3m form select map mode.
+\\[w3m-form-input-map-set-mouse]\
+	Save and exit from w3m form select map mode with mouse.
 "
   (setq mode-name "w3m map select"
 	major-mode 'w3m-form-input-map-mode)
