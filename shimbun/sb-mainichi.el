@@ -48,7 +48,9 @@
     ("geinou" "芸能")
     ("kurashi" "暮らし")
     ("it" "IT")
-    ("kagaku" "科学")
+    ("kagaku.science" "科学")
+    ("kagaku.env" "環境")
+    ("kagaku.medical" "医学")
     ("seiji" "政治")
     ("keizai" "経済")
     ("kokusai" "国際"))
@@ -84,7 +86,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-mainichi))
   (concat (shimbun-url-internal shimbun)
-	  (shimbun-current-group-internal shimbun)
+	  (shimbun-subst-char-in-string
+	   ?. ?/ (shimbun-current-group-internal shimbun))
 	  "/"))
 
 (defun shimbun-mainichi-make-date-string (&rest args)

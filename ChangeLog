@@ -1,3 +1,13 @@
+2004-07-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+	NOMIYA Masaru <nomiya@ttmy.ne.jp>,
+	Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Replace
+	kagaku with kagaku.science, kagaku.env and kagaku.medical groups.
+	(shimbun-index-url): Replace . with / in group names.
+
+	* shimbun/shimbun.el (shimbun-subst-char-in-string): New function.
+
 2004-07-20  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 
 	* doc/ptexinfmt.el: Support @s.
