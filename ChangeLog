@@ -1,5 +1,11 @@
 2002-04-10  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-bitmap.el (w3m-create-image): Use w3m-process-do-with-temp-buffer
+	instead of w3m-process-do.
+
+	* w3m-image.el (w3m-imagick-start-convert-buffer): Removed needless
+	`concat'.
+
 	* w3m-bitmap.el (w3m-create-image): 
 	Call `w3m-imagick-start-convert-buffer' instead of
 	`w3m-imagick-convert-data'.

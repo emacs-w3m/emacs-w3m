@@ -238,20 +238,24 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 	    (setq type (replace-match "" nil nil type))
 	    (lexical-let ((url url)
 			  (size size)
+			  (data (buffer-string))
 			  set-size)
 	      (if (and w3m-resize-images
 		       (consp size)(car size)(cdr size))
 		  (setq set-size t))
-	      (w3m-process-do
-		  (success (apply 'w3m-imagick-start-convert-buffer
-				  handler type "xbm"
-				  (if set-size
-				      (list "-geometry"
-					    (concat (number-to-string
-						     (car size))
-						    "x"
-						    (number-to-string
-						     (cdr size)) "!")))))
+	      (w3m-process-do-with-temp-buffer
+		  (success (progn
+			     (set-buffer-multibyte nil)
+			     (insert data)
+			     (apply 'w3m-imagick-start-convert-buffer
+				    handler type "xbm"
+				    (if set-size
+					(list "-geometry"
+					      (concat (number-to-string
+						       (car size))
+						      "x"
+						      (number-to-string
+						       (cdr size)) "!"))))))
 		(when success
 		  (let ((image (w3m-bitmap-image-buffer (current-buffer))))
 		    (push (cons (if set-size (list url size) url)

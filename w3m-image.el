@@ -122,10 +122,9 @@
 			      (if from-type
 				  (concat from-type ":"))
 			      in-file)
-			     (concat
-			      (if to-type
-				  (concat to-type ":-")
-				"-")))))))
+			     (if to-type
+				 (concat to-type ":-")
+			       "-"))))))
       (when (file-exists-p in-file)
 	(delete-file in-file))
       success)))
