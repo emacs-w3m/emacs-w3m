@@ -344,13 +344,11 @@ If BUFFER is nil, all data is placed to the current buffer."
     ;; Setting buffer local variables.
     (set (make-local-variable 'w3m-current-url) url)
     (goto-char (point-min))
-    (let (start title)
-      (and (search-forward "<title>" nil t)
-	   (setq start (match-beginning 0))
-	   (search-forward "</title>" nil t)
-	   (setq title (buffer-substring start (match-beginning 0)))
-	   (delete-region start (match-end 0)))
-      (set (make-local-variable 'w3m-current-title) title))
+    (let (title)
+      (and (re-search-forward "<title_alt[ \t\n]+title=\"\\([^\"]+\\)\">" nil t)
+	   (setq title (match-string 1))
+	   (delete-region (match-beginning 0) (match-end 0)))
+      (set (make-local-variable 'w3m-current-title) (or title "<no-title>")))
     (set (make-local-variable 'w3m-url-history)
 	 (cons url w3m-url-history))
     (setq-default w3m-url-history
@@ -429,6 +427,10 @@ If BUFFER is nil, all data is placed to the current buffer."
   (let ((url (get-text-property (point) 'w3m-href-anchor)))
     (if url (w3m-goto-url (w3m-expand-url url w3m-current-url)))))
 
+(defun w3m-mouse-view-this-url (event)
+  (interactive "e")
+  (mouse-set-point event)
+  (call-interactively (function w3m-view-this-url)))
 
 (defun w3m-view-image ()
   "*View the image under point."
@@ -572,6 +574,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (define-key w3m-mode-map [up] 'w3m-previous-anchor)
   (define-key w3m-mode-map "\C-m" 'w3m-view-this-url)
   (define-key w3m-mode-map [right] 'w3m-view-this-url)
+  (define-key w3m-mode-map [mouse-2] 'w3m-mouse-view-this-url)
   (define-key w3m-mode-map [left] 'w3m-view-previous-page)
   (define-key w3m-mode-map "B" 'w3m-view-previous-page)
   (define-key w3m-mode-map "d" 'w3m-download-this-url)
@@ -663,6 +666,8 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   "Interface for w3m on Emacs."
   (interactive (list (w3m-input-url)))
   (set-buffer (get-buffer-create "*w3m*"))
+  (setq mode-line-buffer-identification 
+	(list (buffer-name) " / " 'w3m-current-title)))
   (or (eq major-mode 'w3m-mode)
       (w3m-mode))
   (w3m-goto-url url)
