@@ -34,6 +34,11 @@ ftp://ftp.m17n.org/pub/mule/flim/
 		sponichi.entertainment sponichi.horseracing
 讀売		yomiuri.shakai yomiuri.sports yomiuri.seiji
 		yomiuri.keizai yomiuri.kokusai yomiuri.fuho
+日刊スポーツ	nikkansports.baseball nikkansports.mlb
+		nikkansports.soccer nikkansports.world-soccer
+		nikkansports.sports nikkansports.battle
+		nikkansports.horseracing nikkansports.entertainment
+		nikkansports.society nikkansports.leisure
 
 2-2. ニュースサイト
 
