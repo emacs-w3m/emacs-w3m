@@ -1,5 +1,7 @@
 2002-06-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (emacs-w3m-version): Release 1.2.7.
+
 	* w3m-macro.el (w3m-insert-string): Import from w3m-util.el on
 	main trunk.
 
