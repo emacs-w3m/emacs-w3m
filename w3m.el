@@ -1173,7 +1173,7 @@ When URL does not point any local files, it returns nil."
 		":/"
 		(substring url (match-end 0)))
       url))
-   ((string-match "\\`\\([~/]\\|\\.\\.?/\\)" url) url)
+   ((string-match "\\`\\([~/]\\|[a-zA-Z]:/\\|\\.\\.?/\\)" url) url)
    (t
     (catch 'found-file
       (dolist (pair w3m-url-local-directory-alist)

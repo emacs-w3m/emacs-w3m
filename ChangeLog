@@ -1,3 +1,7 @@
+2001-12-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-url-to-file-name): Fix its regexp.
+
 2001-12-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 	Suggested by OHASHI Akira <bg66@koka-in.org>.
 	
