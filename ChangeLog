@@ -1,5 +1,16 @@
 2001-06-11  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* shimbun/sb-slashdot-jp.el (shimbun-make-contents):
+	Call `shimbun-make-mime-article'.
+	* shimbun/sb-hns.el (shimbun-article): Ditto.
+
+	* shimbun/shimbun.el (toplevel): Require 'mel.
+	(shimbun-base64-encode-string): New function.
+	(shimbun-suffix-content-type-alist): New constant.
+	(shimbun-encapsulate-article): New variable.
+	(shimbun-make-mime-article): New function.
+	(shimbun-make-html-contents): Call `shimbun-make-mime-article'.
+
 	* shimbun/sb-asahi.el (shimbun-asahi-expiration-days): Changed
 	default value as 6.
 

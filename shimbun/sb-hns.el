@@ -153,15 +153,10 @@ It can be defined in the `shimbun-hns-x-face-alist', too.
     (with-current-buffer (or outbuf (current-buffer))
       (insert
        (with-temp-buffer
-	 (shimbun-header-insert shimbun header)
-	 (insert "Content-Type: " "text/html" "; charset=ISO-2022-JP\n"
-		 "MIME-Version: 1.0\n"
-		 "\n"
-		 (or (shimbun-hns-article shimbun (shimbun-header-xref header))
+	 (insert (or (shimbun-hns-article shimbun (shimbun-header-xref header))
 		     ""))
-	 (encode-coding-string
-	  (buffer-string)
-	  (mime-charset-to-coding-system "ISO-2022-JP")))))))
+	 (shimbun-make-mime-article shimbun header)
+	 (buffer-string))))))
 
 (luna-define-method shimbun-close :after ((shimbun shimbun-hns))
   (shimbun-hns-set-content-hash-internal shimbun nil))

@@ -180,19 +180,8 @@ One page contains 30 comments.")
 				    nil t)))
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start))
-    (goto-char (point-min))
-    (shimbun-header-insert shimbun header)
-    (setq charset
-	  (upcase (symbol-name
-		   (detect-mime-charset-region (point)(point-max)))))
-    (insert "Content-Type: text/html; charset="
-	    charset "\n"
-	    "MIME-Version: 1.0\n\n")
-    (encode-coding-region (point-min) (point-max)
-			  (mime-charset-to-coding-system charset))
+    (shimbun-make-mime-article shimbun header)
     (buffer-string)))
-
-
 
 (provide 'sb-slashdot-jp)
 

@@ -94,6 +94,11 @@
 (luna-define-generic shimbun-mua-search-id (mua id)
   "Return non-nil when MUA found a message structure which corresponds to ID.")
 
+;;; BASE 64
+(require 'mel)
+(fset 'shimbun-base64-encode-string
+      (mel-find-function 'mime-encode-string "base64"))
+
 ;;; emacs-w3m implementation of url retrieval and entity decoding.
 (require 'w3m)
 (defun shimbun-retrieve-url (url &optional no-cache no-decode)
@@ -198,8 +203,76 @@
 	      (shimbun-header-xref header))
     (shimbun-header-xref header)))
 
+(defconst shimbun-suffix-content-type-alist
+  '(("jpg" . "image/jpeg")
+    ("png" . "image/png")
+    ("gif" . "image/gif")
+    ("tif" . "image/tiff")))
+
+(defvar shimbun-encapsulate-article t
+  "*If non-nil, inline images in the shimbun article are encapsulated.")
+
+(defun shimbun-make-mime-article (shimbun header)
+  (let ((case-fold-search t)
+	(count 0)
+	url imgs boundary charset)
+    (current-buffer)
+    (setq charset
+	  (upcase (symbol-name
+		   (detect-mime-charset-region (point-min)(point-max)))))
+    (goto-char (point-min))
+    (when shimbun-encapsulate-article
+      (while (re-search-forward "<img +src=\"\\([^\"]*\\)\"" nil t)
+	(save-match-data
+	  (setq url (match-string 1))
+	  (setq imgs (cons (list (concat (format "shimbun.%d" (incf count)))
+				 (if (string-match "\\.\\([a-z]+\\)$" url)
+				     (cdr (assoc
+					   (substring url
+						      (match-beginning 1))
+					   shimbun-suffix-content-type-alist)))
+				 (with-temp-buffer
+				   (set-buffer-multibyte nil)
+				   (shimbun-retrieve-url
+				    (shimbun-expand-url
+				     url
+				     (shimbun-header-xref header))
+				    'no-cache 'no-decode)
+				   (buffer-string)))
+			   imgs)))
+	(replace-match (concat "<img src=\"cid:" (car (car imgs)) "\"")))
+      (setq imgs (nreverse imgs)))
+    (goto-char (point-min))
+    (shimbun-header-insert shimbun header)
+    (if imgs
+	(progn
+	  (setq boundary (apply 'format "===shimbun_%d_%d_%d==="
+				(current-time)))
+	  (insert "Content-Type: multipart/related; type=\"text/html\"; "
+		  "boundary=\"" boundary "\"\nMIME-Version: 1.0\n\n"
+		  "--" boundary
+		  "\nContent-Type: text/html; charset=" charset "\n\n"))
+      (insert "Content-Type: text/html; charset=" charset "\n"
+	      "MIME-Version: 1.0\n\n"))
+    (encode-coding-region (point-min) (point-max)
+			  (mime-charset-to-coding-system charset))
+    (goto-char (point-max))
+    (dolist (img imgs)
+      (unless (eq (char-before) ?\n) (insert "\n"))
+      (insert "--" boundary "\n"
+	      "Content-Type: " (or (nth 1 img) "application/octed-stream")
+	      "\nContent-Disposition: inline"
+	      "\nContent-ID: <" (car img) ">"
+	      "\nContent-Transfer-Encoding: base64"
+	      "\n\n"
+	      (shimbun-base64-encode-string (nth 2 img))))
+    (when imgs
+      (unless (eq (char-before) ?\n) (insert "\n"))
+      (insert "--" boundary "--\n"))))
+
 (defsubst shimbun-make-html-contents (shimbun header)
-  (let (start)
+  (let ((case-fold-search t)
+	start)
     (when (and (re-search-forward (shimbun-content-start-internal shimbun)
 				  nil t)
 	       (setq start (point))
@@ -207,13 +280,8 @@
 				  nil t))
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start))
-    (goto-char (point-min))
-    (shimbun-header-insert shimbun header)
-    (insert "Content-Type: text/html; charset=ISO-2022-JP\n"
-	    "MIME-Version: 1.0\n\n")
-    (encode-coding-string (buffer-string)
-			  (mime-charset-to-coding-system "ISO-2022-JP"))))
-
+    (shimbun-make-mime-article shimbun header)
+    (buffer-string)))
 
 (eval-when-compile
   ;; Attempt to pick up the inline function `bbdb-search-simple'.
