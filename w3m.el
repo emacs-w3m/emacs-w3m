@@ -2469,37 +2469,20 @@ message."
 	   (byte-compile fn))))))
 
 (defun w3m-message (&rest args)
-  "Alternative function of `message'.
-It behaves identically as `message' with ARGS at the condition (which
-is rather complicated) listed below:
-
-\(1) `w3m-verbose' is non-nil,
-\(2) the cursor is not in the minibuffer, and
-\(3) an asynchronous process related to a visible buffer is in
-    progress, or
-\(4) a buffer related to emacs-w3m is visible in the current frame.
-
-Especially, it displays a given message without logging, when
-`w3m-verbose' is equal to nil.
-
-If the current status does not meet the above conditions, this is the
-same function as `format' simply returning a string."
+  "Print a one-line message at the bottom of the screen.
+It displays a given message without logging, when the cursor is not in
+the minibuffer and `w3m-verbose' is nil.  When the cursor is in the
+minibuffer and `w3m-verbose' is nil, it behaves as `format' and simply
+returns a string.  When `w3m-verbose' is non-nil, it behaves
+identically as `message', that displays a given message with logging."
   (if w3m-verbose
       (apply (function message) args)
-    (if (and (not (eq (selected-window) (minibuffer-window)))
-	     (or (when (bufferp w3m-current-buffer)
-		   (get-buffer-window w3m-current-buffer))
-		 (catch 'found-window
-		   (save-current-buffer
-		     (walk-windows (lambda (window)
-				     (set-buffer (window-buffer window))
-				     (when (eq major-mode 'w3m-mode)
-				       (throw 'found-window window))))))))
-	(w3m-static-if (featurep 'xemacs)
-	    (display-message 'no-log (apply (function format) args))
-	  (let (message-log-max)
-	    (apply (function message) args)))
-      (apply (function format) args))))
+    (if (eq (selected-window) (minibuffer-window))
+	(apply (function format) args)
+      (w3m-static-if (featurep 'xemacs)
+	  (display-message 'no-log (apply (function format) args))
+	(let (message-log-max)
+	  (apply (function message) args))))))
 
 (defun w3m-time-parse-string (string)
   "Parse the time-string STRING into a time in the Emacs style."

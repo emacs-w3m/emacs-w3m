@@ -1,3 +1,10 @@
+2004-01-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-message): Make it verbose, even if a buffer related
+	to emacs-w3m is not displayed.  w3m-print-this-url() has been
+	broken in buffers displaying text/html messages, because
+	w3m-message() was too silent.
+
 2004-01-15  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-pocketgames.el (shimbun-make-contents): New method.
