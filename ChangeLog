@@ -1,3 +1,13 @@
+2002-08-23  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-view-this-url-new-session-in-background):
+	New user option.
+	(w3m-view-this-url-1): Use it; enclose `w3m-goto-url' with
+	`save-window-excursion'.
+
+	* w3m-form.el (w3m-form-resume): Confirm `value' for text form
+	is a string.
+
 2002-08-22  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (ffap-url-regexp): Fix last change.

@@ -969,6 +969,11 @@ recommended a bit that setting both this option and the option
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-view-this-url-new-session-in-background nil
+  "Link URL with a new session without switching to the newly created buffer."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-pop-up-frame-parameters nil
   "Alist of frame parameters used when creating a new w3m frame.  It
 allows a kludge that it can also be a plist of frame properties."
@@ -4007,16 +4012,21 @@ described in Section 5.2 of RFC 2396.")
   (lexical-let (pos)
     (when new-session
       (setq pos (point-marker))
-      (switch-to-buffer (w3m-copy-buffer nil nil t 'empty))
+      (if w3m-view-this-url-new-session-in-background
+	  (set-buffer (w3m-copy-buffer nil nil nil 'empty))
+	(switch-to-buffer (w3m-copy-buffer nil nil t 'empty)))
       ;; When new URL has `name' portion, we have to goto the base url
       ;; because generated buffer has no content at this moment.
       (when (and (string-match w3m-url-components-regexp url)
 		 (match-beginning 8))
-	(w3m-goto-url (substring url 0 (match-beginning 8))
-		      reload nil nil w3m-current-url)))
+	(save-window-excursion
+	  (w3m-goto-url (substring url 0 (match-beginning 8))
+			reload nil nil w3m-current-url))))
     (let (handler)
       (w3m-process-do
-	  (success (w3m-goto-url url reload nil nil w3m-current-url handler))
+	  (success
+	   (save-window-excursion
+	     (w3m-goto-url url reload nil nil w3m-current-url handler)))
 	;; FIXME: 本当は w3m-goto-url() が適当な返り値を返すように
 	;; 変更して、その値を検査するべきだ
 	(when (and pos (buffer-name (marker-buffer pos)))

@@ -260,7 +260,7 @@ If no field in forward, return nil without moving."
 		(w3m-form-put cform name value))))
 	   (t
 	    (let ((value (w3m-form-get form name)))
-	      (when value
+	      (when (stringp value)
 		(w3m-form-replace value))
 	      (unless (eq form cform)
 		(w3m-form-put cform name value)))))))
