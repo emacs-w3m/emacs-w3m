@@ -656,13 +656,13 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 	  (const :tag "View with other window" view-file-other-window)
 	  (function :tag "Other" view-file)))
 
-(defcustom w3m-edit-url-directory-alist
+(defcustom w3m-url-local-directory-alist
   (when (boundp 'yahtml-path-url-alist)
     (mapcar
      (lambda (pair)
        (cons (cdr pair) (car pair)))
      (symbol-value 'yahtml-path-url-alist)))
-  "*Alist of a URL and a local directory."
+  "*Alist of URLs and local directories."
   :type '(repeat
 	  (cons
 	   (string :tag "URL")
@@ -1159,36 +1159,42 @@ for a refresh indication")
 
 ;; Generic functions:
 (defun w3m-url-to-file-name (url)
-  "Return the file name which is pointed by URL."
+  "Return the file name which is pointed by URL.
+When URL does not point any local files, it returns nil."
   ;; Remove scheme part and net_loc part.  NOTE: This function accepts
   ;; only urls whose net_loc part is empty or NULL string.
-  (if (string-match "^\\(file:\\(//\\)?\\)/" url)
-      (setq url (substring url (match-end 1)))
-    (if (string-match "^\\(about://dtree\\)/" url)
-	(setq url (substring url (match-end 1)))))
-  ;; Process abs_path part in Windows.
-  (when (string-match "^/\\(\\([A-Za-z]\\)[|:]?\\|cygdrive/\\([A-Za-z]\\)\\)/" url)
-    (setq url (concat
-	       (or (match-string 2 url)
-		   (match-string 3 url))
-	       ":/"
-	       (substring url (match-end 0)))))
-  url)
+  (cond
+   ((string-match "\\`\\(file:\\(//\\)?\\|about://dtree\\)/" url)
+    (setq url (substring url (match-end 1)))
+    ;; Process abs_path part in Windows.
+    (if (string-match
+	 "\\`/\\(\\([a-zA-Z]\\)[|:]?\\|cygdrive/\\([a-zA-Z]\\)\\)/" url)
+	(concat (or (match-string 2 url) (match-string 3 url))
+		":/"
+		(substring url (match-end 0)))
+      url))
+   ((string-match "\\`\\([~/]\\|\\.\\.?/\\)" url) url)
+   (t
+    (catch 'found-file
+      (dolist (pair w3m-url-local-directory-alist)
+	(and (string-match (concat "\\`"
+				   (regexp-quote
+				    (file-name-as-directory (car pair))))
+			   url)
+	     (let ((file (expand-file-name (substring url (match-end 0))
+					   (cdr pair))))
+	       (when (file-exists-p file)
+		 (throw 'found-file file)))))))))
 
 (defun w3m-expand-file-name-as-url (file &optional directory)
   "Return URL which points the FILE."
-  ;; if filename is cygwin format,
-  ;; then remove cygdrive prefix before expand-file-name
-  (if directory
-      (setq file (w3m-url-to-file-name file)))
-  ;; expand to file scheme url considering Win32 environment
   (setq file (expand-file-name file directory))
-  (if (string-match "^\\(.\\):\\(.*\\)" file)
-      (if w3m-use-cygdrive
-	  (concat "file:///cygdrive/"
-		  (match-string 1 file) (match-string 2 file))
-	(concat "file:///" (match-string 1 file) "|" (match-string 2 file)))
-    (concat "file://" file)))
+  (concat "file://"
+	  (if (string-match "\\`\\([a-zA-Z]\\):" file)
+	      (format (if w3m-use-cygdrive "/cygdrive/%s%s" "/%s|%s")
+		      (match-string 1 file)
+		      (substring file (match-end 0)))
+	    file)))
 
 ;; Generic macros and inline functions:
 (defun w3m-attributes (url &optional no-cache handler)
@@ -2025,13 +2031,13 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 
 (defun w3m-url-completion (url predicate flag)
   "Completion function for URL."
-  (if (string-match "^\\(file:\\|/\\|~\\|[a-zA-Z]:\\)" url)
+  (if (string-match "\\`\\(file:\\|[/~]\\|\\.\\.?/\\|[a-zA-Z]:\\)" url)
       (if (eq flag 'lambda)
 	  (file-exists-p (w3m-url-to-file-name url))
 	(let* ((partial
 		(expand-file-name
 		 (cond
-		  ((string-match "^file:[^/]" url)
+		  ((string-match "\\`file:[^/]" url)
 		   (substring url 5))
 		  ((string-match "/\\(~\\)" url)
 		   (substring url (match-beginning 1)))
@@ -2043,7 +2049,12 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 		     (list (w3m-expand-file-name-as-url f dir)))
 		   (file-name-all-completions (file-name-nondirectory partial)
 					      dir)))))
-	  (setq partial (w3m-expand-file-name-as-url partial))
+	  (setq partial
+		(if (string-match "/\\.\\'" url)
+		    (concat (file-name-as-directory
+			     (w3m-expand-file-name-as-url partial))
+			    ".")
+		  (w3m-expand-file-name-as-url partial)))
 	  (cond
 	   ((not flag)
 	    (try-completion partial collection predicate))
@@ -3431,21 +3442,9 @@ session."
   "Edit the local file pointed by URL."
   (when (string-match "\\`about://\\(header\\|source\\)/" url)
     (setq url (substring url (match-end 0))))
-  (funcall
-   w3m-edit-function
-   (if (or (w3m-url-local-p url)
-	   (w3m-url-dtree-p url))
-       (w3m-url-to-file-name url)
-     (catch 'found
-       (dolist (pair w3m-edit-url-directory-alist)
-	 (when (string-match
-		(concat "\\`"
-			(regexp-quote (file-name-as-directory (car pair))))
-		url)
-	   (throw 'found
-		  (expand-file-name (substring url (match-end 0))
-				    (cdr pair)))))
-       (error "URL:%s is not a local file" url)))))
+  (funcall w3m-edit-function
+	   (or (w3m-url-to-file-name url)
+	       (error "URL:%s is not a local file" url))))
 
 (defun w3m-edit-current-url ()
   "Edit the local file pointed by URL of current page."
@@ -4319,8 +4318,7 @@ field for this request."
 		  (post-data post-data)
 		  (referer referer)
 		  (orig url)
-		  (name)
-		  (localpath))
+		  (name))
       ;; local directory URL check
       (if (and (w3m-url-local-p url)
 	       (file-directory-p (w3m-url-to-file-name url))
@@ -4395,16 +4393,14 @@ field for this request."
 	      (setq buffer-read-only t)
 	      (set-buffer-modified-p nil)))
 	    (w3m-arrived-add orig w3m-current-title nil nil cs ct)
-	    (setq localpath (and (or (w3m-url-local-p url)
-				     (w3m-url-dtree-p url))
-				 (w3m-url-to-file-name url)))
 	    (setq default-directory
 		  (file-name-as-directory
-		   (if (and localpath (file-exists-p localpath))
-		       (if (file-directory-p localpath)
-			   localpath
-			 (file-name-directory localpath))
-		     w3m-profile-directory)))
+		   (let ((file (w3m-url-to-file-name url)))
+		     (if (and file (file-exists-p file))
+			 (if (file-directory-p file)
+			     file
+			   (file-name-directory file))
+		       w3m-profile-directory))))
 	    (w3m-update-toolbar)
 	    (run-hook-with-args 'w3m-display-hook url)
 	    (w3m-refresh-at-time))))))))
@@ -4763,7 +4759,9 @@ showing a tree-structured history by the command `w3m-about-history'.")
 	(while history
 	  (setq element (pop history)
 		url (car element)
-		about (string-match w3m-history-ignored-regexp url)
+		;; FIXME: Ad-hoc workaround to avoid illegal-type error.
+		about (or (not (stringp url))
+			  (string-match w3m-history-ignored-regexp url))
 		title (plist-get (cadr element) :title)
 		position (caddr element))
 	  (insert (format "h%s %d <a href=\"%s\">%s%s%s</a>\n"

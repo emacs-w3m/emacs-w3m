@@ -1,3 +1,19 @@
+2001-12-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-url-local-directory-alist): Renamed from
+	`w3m-edit-url-directory-alist'.
+	(w3m-url-to-file-name): Return nil, when the specified URL points
+	no local file.
+	(w3m-url-completion): Modified its regexp.  Fix completion of dot
+	files.
+	(w3m-edit-url): Simplified.
+	(w3m-goto-url): Removed the redundant local variable.  Set
+	`default-directory' to the local directory to which the current
+	URL is related by `w3m-url-local-directory-alist'.
+	(w3m-about-history): Installed the ad-hoc workaround.
+
+	* w3m-util.el (w3m-url-dtree-p): Modified its regexp.
+
 2001-12-26  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-decode-get-refresh): Not run Refresh timer if the
@@ -447,7 +463,7 @@
 
 2001-11-19  Kazuhiko  <kazuhiko@ring.gr.jp>
 
-	* w3m-xmac.el (w3m-create-image): Fix a problem in handling XBM
+	* w3m-xmas.el (w3m-create-image): Fix a problem in handling XBM
 	on XEmacs.
 
 2001-11-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
