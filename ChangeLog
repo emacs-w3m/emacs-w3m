@@ -1,12 +1,9 @@
 2002-02-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m-proc.el (w3m-process-accept-unsecure-ssl-hosts): New
-	internal variable.
-	(w3m-process-filter): Check the above variable instead of calling
-	`w3m-process-y-or-n-p'.  Use `ignore-errors' instead of
+	* w3m-proc.el (w3m-process-filter): Use `ignore-errors' instead of
 	`condition-case'.
-	(w3m-process-accept-alist): Abolished.
-	(w3m-process-y-or-n-p): Removed.
+	(w3m-process-y-or-n-p): Regist answers only when they have non-nil
+	values.
 
 2002-02-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

@@ -69,7 +69,7 @@
 
 (defvar w3m-process-exit-status nil "The last exit status of a process.")
 (defvar w3m-process-authinfo-alist nil)
-(defvar w3m-process-accept-unsecure-ssl-hosts nil)
+(defvar w3m-process-accept-alist nil)
 
 (defvar w3m-process-user nil)
 (defvar w3m-process-passwd nil)
@@ -515,15 +515,9 @@ evaluated in a temporary buffer."
 		 (= (match-end 0) (point-max)))
 	    ;; SSL certificate
 	    (message "")
-	    (let* ((prompt (match-string 2))
-		   (yn
-		    (if (let ((root (w3m-process-get-server-root w3m-current-url)))
-			  (or (member root w3m-process-accept-unsecure-ssl-hosts)
-			      (when (y-or-n-p prompt)
-				(push root w3m-process-accept-unsecure-ssl-hosts))))
-			"y\n" "n\n")))
+	    (let ((yn (w3m-process-y-or-n-p w3m-current-url (match-string 2))))
 	      (ignore-errors
-		(process-send-string process yn)
+		(process-send-string process (if yn "y\n" "n\n"))
 		(delete-region (point-min) (point-max)))))
 	   ((and (looking-at
 		  "\\(\n?Wrong username or password\n\\)?Proxy Username for \\(.*\\): Proxy Password: ")
@@ -648,6 +642,29 @@ evaluated in a temporary buffer."
 				       ")")
 			     ""))
 		   nil pass))))
+
+(defun w3m-process-y-or-n-p (url prompt)
+  "Ask user a \"y or n\" question.  Return t if answer is \"y\".
+NOTE: This function is designed to avoid annoying questions.  So when
+the same questions is reasked, its previous answer is reused without
+prompt."
+  (let (elem answer (root (w3m-process-get-server-root url)))
+    (if (setq elem (assoc root w3m-process-accept-alist))
+	(if (member prompt (cdr elem))
+	    ;; When the same question has been asked, the previous
+	    ;; answer is reused.
+	    (setq answer t)
+	  ;; When any question for the same server has been asked,
+	  ;; regist the pair of this question and its answer to
+	  ;; `w3m-process-accept-alist'.
+	  (when (setq answer (y-or-n-p prompt))
+	    (setcdr elem (cons prompt (cdr elem)))))
+      ;; When no question for the same server has been asked, regist
+      ;; the 3-tuple of the server, the question and its answer to
+      ;; `w3m-process-accept-alist'.
+      (when (setq answer (y-or-n-p prompt))
+	(push (cons root (list prompt)) w3m-process-accept-alist)))
+    answer))
 
 (provide 'w3m-proc)
 
