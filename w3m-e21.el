@@ -377,7 +377,12 @@ If this variable is nil, never expired."
   :group 'w3m
   :type 'integer)
 
-(defcustom w3m-favicon-type (let ((types '(bmp pbm png gif xpm)))
+
+;; In the implementation of Meadow2, BMP and bmp are different.
+;;   o BMP: the ImageMagick decoder is used.
+;;   o bmp: the built-in decoder that is slightly poor is used.
+;; So I modify the order of priority.
+(defcustom w3m-favicon-type (let ((types '(BMP bmp pbm png gif xpm)))
 			      (catch 'det
 				(while types
 				  (when (image-type-available-p (car types))
