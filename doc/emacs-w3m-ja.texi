@@ -4538,12 +4538,6 @@ netbsd.port-mac68k-ja netbsd.port-mips-ja netbsd.port-powerpc-ja
 netbsd.hpcmips-changes-ja netbsd.members-ja netbsd.admin-ja
 netbsd.www-changes-ja
 
-@item @uref{http://namazu.org/~satoru/archives/, QuickML}
-quickml.quickml-users quickml.quickml-server
-quickml.chatty quickml.dotnet quickml.linux-zaurus quickml.ming
-quickml.pdumpfs quickml.software-patent quickml.stationery
-quickml.tty-mania
-
 @item @uref{http://blade.nagaokaut.ac.jp/, Ruby Mailing List}
 ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
 ruby.ruby-dev ruby.ruby-ext ruby.ruby-list ruby.ruby-math
