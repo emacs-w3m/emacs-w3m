@@ -1,3 +1,15 @@
+2004-12-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-retto): Prepend
+	region names in subjects.
+
+2004-12-28  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Add the retto
+	group.
+	(shimbun-nikkei-get-headers-retto): New function.
+	(shimbun-nikkei-prepare-article-retto): New function.
+
 2004-12-28  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
 
 	* w3m-form.el (w3m-form-use-textarea-backup): New user option.

@@ -4,7 +4,8 @@
 ;; Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
 
 ;; Author: Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>,
-;;         Katsumi Yamaoka   <yamaoka@jpl.org>
+;;         Katsumi Yamaoka   <yamaoka@jpl.org>,
+;;         NOMIYA Masaru     <nomiya@ttmy.ne.jp>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
@@ -71,6 +72,9 @@
     ("shakai" "社会" ,(concat shimbun-nikkei-url "news/shakai/")
      shimbun-nikkei-get-headers-default
      shimbun-nikkei-prepare-article-default)
+    ("retto" "地域経済" ,(concat shimbun-nikkei-url "news/retto/")
+     shimbun-nikkei-get-headers-retto
+     shimbun-nikkei-prepare-article-retto)
     ("sports" "スポーツ" "http://sports.nikkei.co.jp/"
      shimbun-nikkei-get-headers-sports
      shimbun-nikkei-prepare-article-sports)
@@ -353,6 +357,56 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	(setq start end))
       (shimbun-sort-headers headers))))
 
+(defun shimbun-nikkei-get-headers-retto (group folder)
+  "Function used to fetch headers for the retto group."
+  (let ((region "")
+	headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<p[^>]*>" s0 "【"
+			;; 1. region
+			"\\([^\t\n ]+\\)"
+			"】" s0 "</p>"
+			"\\|"
+			"<AREA21" s1 "HEADLINE=\""
+			;; 2. subject
+			"\\([^\"]+\\)"
+			"\"" s1 "URL=\""
+			;; 3. url
+			"\\("
+			;; 4. serial number
+			"\\(20[0-9][0-9][01][0-9][0-9a-z]+\\)"
+			"\\.html\\)"
+			"\"" s1 "ARTICLE_TIME=\""
+			;; 5. year
+			"\\(20[0-9][0-9]\\)" "/"
+			;; 6. month
+			"\\([01][0-9]\\)" "/"
+			;; 7. day
+			"\\([0-3][0-9]\\)" s1
+			;; 8. hour:minute
+			"\\([012][0-9]:[0-5][0-9]\\)")))
+	    nil t)
+      (if (match-beginning 1)
+	  (setq region (match-string 1))
+	(push (shimbun-create-header
+	       0
+	       (concat "[" region "] " (match-string 2))
+	       shimbun-nikkei-from-address
+	       (shimbun-nikkei-make-date-string
+		(string-to-number (match-string 5))
+		(string-to-number (match-string 6))
+		(string-to-number (match-string 7))
+		(match-string 8))
+	       (concat "<" (match-string 4) "%" group "."
+		       shimbun-nikkei-top-level-domain ">")
+	       "" 0 0
+	       (shimbun-nikkei-expand-url (match-string 3) folder))
+	      headers)))
+    (shimbun-sort-headers headers)))
+
 (defun shimbun-nikkei-get-headers-sports (group folder)
   "Function used to fetch headers for the sports group."
   (let (headers)
@@ -601,6 +655,18 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (goto-char (point-min)))
 	(goto-char body))
       (insert shimbun-nikkei-content-start))))
+
+(defun shimbun-nikkei-prepare-article-retto (&rest args)
+  "Function used to prepare contents of an article for the retto group."
+  (when (re-search-forward "\
+<!--[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME=\"HONBUN\"[\t\n ]+-->"
+			   nil t)
+    (insert shimbun-nikkei-content-start)
+    (when (re-search-forward "\
+<!--[\t\n ]*FJZONE[\t\n ]*END[\t\n ]*NAME=\"HONBUN\"[\t\n ]+-->"
+			     nil t)
+      (goto-char (match-beginning 0))
+      (insert shimbun-nikkei-content-end))))
 
 (defun shimbun-nikkei-prepare-article-sports (&rest args)
   "Function used to prepare contents of an article for the sports group."
