@@ -107,7 +107,7 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
 )"
 			      nil t)
       (setq month (string-to-number (match-string 5))
-	    year (cond ((and (= 12 month) (= 1 cmonth))
+	    year (cond ((>= (- month cmonth) 2)
 			(1- cyear))
 		       ((and (= 1 month) (= 12 cmonth))
 			(1+ cyear))

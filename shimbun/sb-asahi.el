@@ -246,7 +246,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 					  nil t)
 		      (match-string 1))))))
       (setq month (string-to-number (match-string (nth 4 numbers)))
-	    year (cond ((and (= 12 month) (= 1 cmonth))
+	    year (cond ((>= (- month cmonth) 2)
 			(1- cyear))
 		       ((and (= 1 month) (= 12 cmonth))
 			(1+ cyear))

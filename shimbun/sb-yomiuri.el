@@ -282,7 +282,7 @@ It does also shorten too much spaces."
 	     ;; from
 	     from
 	     ;; date
-	     (shimbun-make-date-string (cond ((and (= 12 month) (= 1 cmonth))
+	     (shimbun-make-date-string (cond ((>= (- month cmonth) 2)
 					      (1- cyear))
 					     ((and (= 1 month) (= 12 cmonth))
 					      (1+ cyear))
@@ -326,7 +326,7 @@ It does also shorten too much spaces."
 	     ;; from
 	     from
 	     ;; date
-	     (shimbun-make-date-string (cond ((and (= 12 month) (= 1 cmonth))
+	     (shimbun-make-date-string (cond ((>= (- month cmonth) 2)
 					      (1- cyear))
 					     ((and (= 1 month) (= 12 cmonth))
 					      (1+ cyear))

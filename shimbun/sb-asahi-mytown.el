@@ -144,7 +144,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 		(re-search-forward ">\\([\t\n\r ]*<[^<>]+>\\)*[\t\n\r ]*\
 \\([^<>]+\\)[\t\n\r ]*<?" limit t)
 		(setq subject (match-string 2)))
-      (setq year (cond ((and (= 12 month) (= 1 cmonth))
+      (setq year (cond ((>= (- month cmonth) 2)
 			(1- cyear))
 		       ((and (= 1 month) (= 12 cmonth))
 			(1+ cyear))
