@@ -1,3 +1,10 @@
+2002-07-08  OKAZAKI Tetsurou  <okazaki@be.to>
+
+	* configure.in: Use `AC_PATH_EMACS' instead of `AC_CHECK_EMACS'.
+
+	* aclocal.m4 (AC_PATH_EMACS): New macro.
+	(AC_CHECK_EMACS): Removed.
+
 2002-07-08  SAITO Takuya  <reed@lily.freemail.ne.jp>
 
 	* shimbun/sb-mhonarc.el (shimbun-make-contents): Not insert
