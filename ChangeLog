@@ -1,7 +1,7 @@
 2001-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-imagick-convert-buffer): Don't growl errors when
-	Emacs is running in the bacth mode.
+	Emacs is running in the batch mode.
 
 2001-12-18  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
