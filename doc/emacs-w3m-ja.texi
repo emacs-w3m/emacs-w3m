@@ -2124,7 +2124,7 @@ customize-option}$B!"$^$?$O$"$k(B ``group'' ($B$3$N>l9g$N%0%k!<%W(B
 
 $B$3$l$O%G%U%)%k%H$N%[!<%`%Z!<%8$r(B @uref{http://emacs-w3m.namazu.org/} $B$K(B
 $B@_Dj$7$^$9!#%7%s%?%C%/%9$O(B @file{.emacs} $B%U%!%$%k$HF1$8$G(B
-$B$9(B (@pxref{(emacs)Init File})$B!#(B
+$B$9(B (@pxref{Init File, ,Init File, emacs, The Emacs Manual})$B!#(B
 
 $B5$$rIU$1$J$1$l$P$$$1$J$$$N$O!"30It%b%8%e!<%k$GDj5A$5$l$F$$$k$$$/$D$+$NJQ(B
 $B?t$,(B @file{~/.emacs-w3m} $B%U%!%$%k$,FI$_9~$^$l$k$H$-$K$OL$Dj5A$G!"$=$l$i(B
@@ -3120,9 +3120,9 @@ emacs-w3m $B$N$HF1$8<gMW$J%-!<$r;H$&$3$H$,$G$-$^$9!#Nc$($P(B @key{RET} $B$O!"
 @item
 $B2?$r$7$J$1$l$P$$$1$J$$$N(B?
 
-Gnus $B$N%^%K%e%"%k$rFI$s$G2<$5$$(B (@pxref{(emacs-mime)Display
-Customization})$B!#:G$b4JC1$JJ}K!$O!"0J2<$N9T$r(B @file{~/.gnus.el} $B%U%!%$%k(B
-$B$KF~$l$k$3$H$G$9(B:
+Gnus $B$N%^%K%e%"%k$rFI$s$G2<$5$$(B (@pxref{Display Customization, ,Display
+Customization, emacs-mime, The Emacs MIME Manual})$B!#:G$b4JC1$JJ}K!$O!"0J(B
+$B2<$N9T$r(B @file{~/.gnus.el} $B%U%!%$%k$KF~$l$k$3$H$G$9(B:
 
 @lisp
 (setq mm-text-html-renderer 'w3m)
@@ -3729,9 +3729,9 @@ XEmacs Beta$B!"(BGnus/Mew/Wanderlust $B$J$I$N%a!<%j%s%0%j%9%H!">.@tF|K\9q<sAj
 
 @samp{Nnshimbun} $B$OC1$K%&%'%V%5!<%P$+$i(B HTML $B%3%s%F%s%D$r<h$j4s$;$F!"$=(B
 $B$l$r5-;v$H$7$FI=<($7$^$9$,!"1JB35-(B
-$B;v(B (@pxref{(gnus)Persistent Articles}) $B$r:n$k>l9g$r=|$$$F!"%m!<%+%k%U%!(B
-$B%$%k$K5-;v$r%;!<%V$9$k$3$H$O$"$j$^$;$s!#(B
-@samp{Nnshimbun} $B$O(B @acronym{NOV} $B%U%!%$%k$r!"$=$l$>$l(B
+$B;v(B (@pxref{Persistent Articles, ,Persistent Articles, gnus, The Gnus
+Manual}) $B$r:n$k>l9g$r=|$$$F!"%m!<%+%k%U%!%$%k$K5-;v$r%;!<%V$9$k$3$H$O$"(B
+$B$j$^$;$s!#(B@samp{Nnshimbun} $B$O(B @acronym{NOV} $B%U%!%$%k$r!"$=$l$>$l(B
 $B$N(B @samp{nnshimbun} $B%0%k!<%W$G;H$$$^$9!#$=$N%P%C%/%(%s%I(B
 $B$O(B @samp{nnml} $B$H$[$\F1$8$G$9!#(B
 
@@ -3742,10 +3742,10 @@ XEmacs Beta$B!"(BGnus/Mew/Wanderlust $B$J$I$N%a!<%j%s%0%j%9%H!">.@tF|K\9q<sAj
 @vindex nnshimbun-keep-backlog
 @vindex gnus-keep-backlog
 $B$3$NJQ?t$O(B @samp{nnshimbun} $B%0%k!<%W$G(B @code{gnus-keep-backlog} $BJQ(B
-$B?t(B (@pxref{(gnus)Article Backlog}) $B$r>e=q$-$7$^$9!#$b(B
-$B$7(B @code{nnshimbun-keep-backlog} $B$r?t;z(B @var{n} $B$K@_Dj$9$k$H!"(B
-@samp{nnshimbun} $B$O:GBg$G(B @var{n} $B$N8E$$5-;v$r8e$N:F<hF@$N$?$a$K%P%C%U%!(B
-$B$KN/$a$F$*$-$^$9!#$3$NJQ?t$,(B @code{nil} $B$G$O$J$/!"?t;z$G$b$J$$>l9g!"(B
+$B?t(B (@pxref{Article Backlog, ,Article Backlog, gnus, The Gnus Manual}) $B$r(B
+$B>e=q$-$7$^$9!#$b$7(B @code{nnshimbun-keep-backlog} $B$r?t;z(B @var{n} $B$K@_Dj$9(B
+$B$k$H!"(B@samp{nnshimbun} $B$O:GBg$G(B @var{n} $B$N8E$$5-;v$r8e$N:F<hF@$N$?$a$K%P%C(B
+$B%U%!$KN/$a$F$*$-$^$9!#$3$NJQ?t$,(B @code{nil} $B$G$O$J$/!"?t;z$G$b$J$$>l9g!"(B
 @samp{nnshimbun} $B$O(B @emph{$BA4$F(B} $B$N4{FI5-;v$rC_$($^$9(B ($B$3$l$ONI$$9M$($G$O(B
 $B$"$j$^$;$s(B)$B!#%G%U%)%k%HCM$O(B 300 $B$G$9!#(B
 
@@ -3763,9 +3763,9 @@ XEmacs Beta$B!"(BGnus/Mew/Wanderlust $B$J$I$N%a!<%j%s%0%j%9%H!">.@tF|K\9q<sAj
 @samp{Nnshimbun} $B$O(B Gnus $B$,Ds6!$9$kI8=`$N%0%k!<%W%Q%i%a!<(B
 $B%?(B@footnote{$B%0%k!<%W%Q%i%a!<%?$r@_Dj$9$k$?$a$N:G$b<j7Z$JJ}K!$O!"%0%k!<(B
 $B%W%P%C%U%!$G!"@_Dj$7$?$$%0%k!<%W$N>l=j$K0\F0$7$F$+$i(B @kbd{G c} $B$r%?%$%W(B
-$B$9$k$3$H$G$9(B (@pxref{(gnus)Group Parameters})$B!#(B} $B$K2C$($F!"(B
-@samp{nnshimbun} $B@lMQ$K@_$1$i$l$?%0%k!<%W%Q%i%a!<%?$rMxMQ$9$k$3$H$,$G$-(B
-$B$^$9!#J#?t$N(B @samp{nnshimbun} $BMQ$N%Q%i%a!<%?(B
+$B$9$k$3$H$G$9(B (@pxref{Group Parameters, ,Group Parameters, gnus, The Gnus
+Manual})$B!#(B} $B$K2C$($F!"(B@samp{nnshimbun} $B@lMQ$K@_$1$i$l$?%0%k!<%W%Q%i%a!<(B
+$B%?$rMxMQ$9$k$3$H$,$G$-$^$9!#J#?t$N(B @samp{nnshimbun} $BMQ$N%Q%i%a!<%?(B
 $B$,(B @code{nnshimbun-group-parameters} $B$H$$$&C10l$N%0%k!<%W%Q%i%a!<%?(B ($B$9(B
 $B$Y$F$N%0%k!<%W$G0c$&CM$r;}$D$3$H$,$G$-$k(B) $B$K$^$H$a$i$l$F$$$^$9!#$=$l$O%W(B
 $B%m%Q%F%#%j%9%H$G!"Nc$($P<!$N$h$&$JCM$G$9(B:
@@ -4210,7 +4210,8 @@ Mew $B$N=*N;;~$d(B folder $B$N(B kill $B;~(B (@kbd{C-c C-q} $B$r;H$C$?$H
 
 Wanderlust $B$K$O(B ELMO $B%b%8%e!<%k$N0l$D$H$7$F(B @samp{elmo-shimbun} $B$,4^$^$l(B
 $B$F$$$k$N$G!"L>A0$,(B @samp{@@} $B$G;O$^$k%U%)%k%@$K%"%/%;%9$9$k$@$1(B
-$B$G(B @samp{shimbun} $B$rFI$`$3$H$,$G$-$^$9(B (@pxref{(wl-ja)Shimbun Folder})$B!#(B
+$B$G(B @samp{shimbun} $B$rFI$`$3$H$,$G$-$^$9(B (@pxref{Shimbun Folder, ,Shimbun
+Folder, wl-ja, The Wanderlust-ja Manual})$B!#(B
 
 @node Shimbun Sites
 @section $B?7J9$,FI$a$k%5%$%H(B
