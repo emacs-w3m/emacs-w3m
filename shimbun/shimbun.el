@@ -153,67 +153,128 @@ system of retrieved contents."
 (defalias 'shimbun-expand-url 'w3m-expand-url)
 
 ;;; Implementation of Header API.
+(eval-and-compile
+  (luna-define-class shimbun-header ()
+		     (number subject from date id references
+			     chars lines xref extra))
+  (luna-define-internal-accessors 'shimbun-header))
+
+;; (defun shimbun-header-number (header)
+;;   (shimbun-header-number-internal header))
+
+(defun shimbun-header-subject (header &optional no-encode)
+  (if no-encode
+      (shimbun-header-subject-internal header)
+    (shimbun-mime-encode-string
+     (shimbun-header-subject-internal header))))
+
+(defsubst shimbun-header-normalize (string &optional keep-angle-brackets)
+  (when string
+    (save-match-data
+      (with-temp-buffer
+	(insert string)
+	(unless keep-angle-brackets
+	  (shimbun-remove-markup))
+	(shimbun-decode-entities)
+	(subst-char-in-region (point-min) (point-max) ?\t ?\  t)
+	(subst-char-in-region (point-min) (point-max) ?\r ?\  t)
+	(subst-char-in-region (point-min) (point-max) ?\f ?\  t)
+	(subst-char-in-region (point-min) (point-max) ?\n ?\  t)
+	(goto-char (point-min))
+	(skip-chars-forward " ")
+	(buffer-substring (point)
+			  (progn
+			    (goto-char (point-max))
+			    (skip-chars-backward " ")
+			    (point)))))))
+
+(defun shimbun-header-set-subject (header subject &optional asis)
+  (shimbun-header-set-subject-internal header
+				       (if asis
+					   subject
+					 (shimbun-header-normalize subject))))
+
+(defun shimbun-header-from (header &optional no-encode)
+  (if no-encode
+      (shimbun-header-from-internal header)
+    (shimbun-mime-encode-string
+     (shimbun-header-from-internal header))))
+
+(defun shimbun-header-set-from (header from &optional asis)
+  (shimbun-header-set-from-internal header
+				    (if asis
+					from
+				      (shimbun-header-normalize from t))))
+
+(defun shimbun-header-date (header)
+  (shimbun-header-date-internal header))
+
+(defun shimbun-header-set-date (header date)
+  (shimbun-header-set-date-internal header date))
+
+(defun shimbun-header-id (header)
+  (shimbun-header-id-internal header))
+
+(defun shimbun-header-set-id (header id)
+  (shimbun-header-set-id-internal header id))
+
+(defun shimbun-header-references (header)
+  (shimbun-header-references-internal header))
+
+(defun shimbun-header-set-references (header references)
+  (shimbun-header-set-references-internal header references))
+
+(defun shimbun-header-chars (header)
+  (shimbun-header-chars-internal header))
+
+(defun shimbun-header-set-chars (header chars)
+  (shimbun-header-set-chars-internal header chars))
+
+(defun shimbun-header-lines (header)
+  (shimbun-header-lines-internal header))
+
+(defun shimbun-header-set-lines (header lines)
+  (shimbun-header-set-lines-internal header lines))
+
+(defun shimbun-header-xref (header)
+  (shimbun-header-xref-internal header))
+
+(defun shimbun-header-set-xref (header xref)
+  (shimbun-header-set-xref-internal header xref))
+
+(defun shimbun-header-extra (header)
+  (shimbun-header-extra-internal header))
+
+(defun shimbun-header-set-extra (header extra)
+  (shimbun-header-set-extra-internal header extra))
+
+(defun shimbun-create-header (&optional number subject from date id
+					references chars lines xref
+					extra asis)
+  "Return a new header for a shimbun article."
+  (let ((new (luna-make-entity 'shimbun-header :number number)))
+    (inline
+      (shimbun-header-set-subject new subject asis)
+      (shimbun-header-set-from new from asis)
+      (shimbun-header-set-date new date)
+      (shimbun-header-set-id new id)
+      (shimbun-header-set-references new references)
+      (shimbun-header-set-chars new chars)
+      (shimbun-header-set-lines new lines)
+      (shimbun-header-set-xref new xref)
+      (shimbun-header-set-extra new extra))
+    new))
+
 (defun shimbun-make-header (&optional number subject from date id
 				      references chars lines xref
 				      extra)
-  (vector number subject from date id references chars lines xref extra))
-
-;;(defun shimbun-header-number (header)
-;;  (aref header 0))
-
-(defun shimbun-header-subject (header)
-  (aref header 1))
-
-(defun shimbun-header-set-subject (header subject)
-  (aset header 1 subject))
-
-(defun shimbun-header-from (header)
-  (aref header 2))
-
-(defun shimbun-header-set-from (header from)
-  (aset header 2 from))
-
-(defun shimbun-header-date (header)
-  (aref header 3))
-
-(defun shimbun-header-set-date (header date)
-  (aset header 3 date))
-
-(defun shimbun-header-id (header)
-  (aref header 4))
-
-(defun shimbun-header-set-id (header id)
-  (aset header 4 id))
-
-(defun shimbun-header-references (header)
-  (aref header 5))
-
-(defun shimbun-header-set-references (header references)
-  (aset header 5 references))
-
-(defun shimbun-header-chars (header)
-  (aref header 6))
-
-(defun shimbun-header-set-chars (header chars)
-  (aset header 6 chars))
-
-(defun shimbun-header-lines (header)
-  (aref header 7))
-
-(defun shimbun-header-set-lines (header lines)
-  (aset header 7 lines))
-
-(defun shimbun-header-xref (header)
-  (aref header 8))
-
-(defun shimbun-header-set-xref (header xref)
-  (aset header 8 xref))
-
-(defun shimbun-header-extra (header)
-  (aref header 9))
-
-(defun shimbun-header-set-extra (header extra)
-  (aset header 9 extra))
+  "Return a new header for a shimbun article.
+This function is obsolete.  You should use `shimbun-create-header'
+instead of this function."
+  (shimbun-create-header number
+			 (and subject (eword-decode-string subject))
+			 (and from (eword-decode-string from))
+			 date id references chars lines xref extra t))
 
 ;; Inline functions for the internal use.
 (defsubst shimbun-article-url (shimbun header)
@@ -348,10 +409,14 @@ you want to use no database."
 	(refs (shimbun-header-references header))
 	(reply-to (shimbun-reply-to shimbun))
 	x-face)
-    (insert "Subject: " (or (shimbun-header-subject header) "(none)") "\n"
-	    "From: " (or from "(nobody)") "\n"
-	    "Date: " (or (shimbun-header-date header) "") "\n"
-	    "Message-ID: " (shimbun-header-id header) "\n")
+    (insert "Subject: " (or (eword-encode-string
+			     (shimbun-header-subject header t))
+			    "(none)")
+	    "\nFrom: " (or (eword-encode-string
+			    (shimbun-header-from header t))
+			   "(nobody)")
+	    "\nDate: " (or (shimbun-header-date header) "")
+	    "\nMessage-ID: " (shimbun-header-id header) "\n")
     (when reply-to
       (insert "Reply-To: " reply-to "\n"))
     (when (and refs
@@ -544,8 +609,8 @@ Return nil when articles are not expired."
 
 (luna-define-method shimbun-from-address ((shimbun shimbun))
   (format "%s (%s) <%s>"
-	  (shimbun-mime-encode-string (shimbun-server-name shimbun))
-	  (shimbun-mime-encode-string (shimbun-current-group-name shimbun))
+	  (shimbun-server-name shimbun)
+	  (shimbun-current-group-name shimbun)
 	  (or (shimbun-from-address-internal shimbun)
 	      (shimbun-reply-to shimbun))))
 
@@ -671,6 +736,7 @@ quoted or not.  If optional PAREN is non-nil, ensure that the returned regexp
 is enclosed by at least one regexp grouping construct."
     (let ((open-paren (if paren "\\(" "")) (close-paren (if paren "\\)" "")))
       (concat open-paren (mapconcat 'regexp-quote strings "\\|") close-paren))))
+
 (defun shimbun-decode-entities-string (string)
   "Decode entities in the STRING."
   (with-temp-buffer

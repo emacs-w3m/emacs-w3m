@@ -1,5 +1,20 @@
 2003-07-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/shimbun.el (shimbun-header): New class.
+	(shimbun-header-subject, shimbun-header-set-subject,
+	shimbun-header-from, shimbun-header-set-from, shimbun-header-date,
+	shimbun-header-set-date, shimbun-header-id, shimbun-header-set-id,
+	shimbun-header-references, shimbun-header-set-references,
+	shimbun-header-chars, shimbun-header-set-chars,
+	shimbun-header-lines, shimbun-header-set-lines,
+	shimbun-header-xref, shimbun-header-set-xref,
+	shimbun-header-extra, shimbun-header-set-extra): Lunafied.
+	(shimbun-header-normalize): New internal function.
+	(shimbun-create-header): New function.
+	(shimbun-make-header): Rewritten to use the above function.
+	(shimbun-header-insert, shimbun-from-address): Follow the above
+	changes.
+
 	* w3m-e21.el (w3m-ccl-get-ucs-codepoint-with-emacs-unicode):
 	Remove `translate-character'.
 	(w3m-euc-japan-encoder, w3m-iso-latin-1-encoder): Select
