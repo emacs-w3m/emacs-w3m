@@ -198,6 +198,7 @@ With prefix, ask new url to add instead of current page."
     (while (search-forward (setq ident (format "w3mbk%d." i)) nil t)
       (incf i))
     (setq i 0)
+    (goto-char (point-min))
     (while (search-forward "\n<li>" nil t)
       (forward-char -1)
       (insert (format " id=\"%s%d\"" ident (incf i)))))
@@ -209,10 +210,10 @@ With prefix, ask new url to add instead of current page."
 	(eol (line-end-position))
 	(val))
     (catch 'found
-      (while (and (< pos eol)
-		  (setq pos
+      (while (and (setq pos
 			(next-single-property-change pos 'w3m-name-anchor
-						     nil eol)))
+						     nil eol))
+		  (< pos eol))
 	(and (setq val (car (get-text-property pos 'w3m-name-anchor)))
 	     (string-match "\\`w3mbk[0-9]+\\.\\([0-9]+\\)\\'" val)
 	     (throw 'found (string-to-number (match-string 1 val))))))))
@@ -221,11 +222,13 @@ With prefix, ask new url to add instead of current page."
   "Kill the bookmark entry of the current line.
 With prefix argument, kill that many entries from point."
   (interactive "p")
-  (let ((entries (list (w3m-bookmark-current-number))))
-    (while (> (decf num) 0)
-      (push (1+ (car entries)) entries))
-    (w3m-bookmark-kill-entries entries)
-    (w3m-bookmark-view t)))
+  (let ((entries (w3m-bookmark-current-number)))
+    (when entries
+      (setq entries (list entries))
+      (while (> (decf num) 0)
+	(push (1+ (car entries)) entries))
+      (w3m-bookmark-kill-entries entries)
+      (w3m-bookmark-view t))))
 
 (defun w3m-bookmark-kill-entries (entries)
   (with-current-buffer (w3m-bookmark-buffer t)
@@ -235,15 +238,14 @@ With prefix argument, kill that many entries from point."
     (let ((i 0))
       (while (search-forward "\n<li>" nil t)
 	(when (memq (incf i) entries)
-	  (let* ((beg (line-beginning-position))
-		 (end (if (search-forward "\n<li>" nil t)
-			  (min
-			   (line-beginning-position)
-			   (and (goto-char beg)
-				(search-forward w3m-bookmark-section-delimiter)
-				(match-beginning 0)))
-			(search-forward w3m-bookmark-section-delimiter))))
-	    (delete-region beg end)
+	  (let ((beg (line-beginning-position))
+		(end (progn
+		       (search-forward w3m-bookmark-section-delimiter)
+		       (match-beginning 0))))
+	    (delete-region (goto-char beg)
+			   (if (search-forward "\n<li>" end t)
+			       (line-beginning-position)
+			     end))
 	    (goto-char (1- beg))))))
     (basic-save-buffer)))
 

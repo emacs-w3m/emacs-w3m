@@ -1,3 +1,11 @@
+2002-11-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-bookmark.el (w3m-about-bookmark): Fix.
+	(w3m-bookmark-current-number): Return nil on no entry line.
+	(w3m-bookmark-kill-entry): On no entry line, do not call
+	`w3m-bookmark-kill-entries'.
+	(w3m-bookmark-kill-entries): Fix.
+
 2002-11-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-namazu.el (w3m-namazu): Change prompt.
