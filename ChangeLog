@@ -1,3 +1,7 @@
+2002-04-05  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-w3m-retrieve): Revert previous change.
+
 2002-04-05  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
 
 	* w3m-e20.el (w3m-bitmap-image-insert): Fix (point) -> pos.

@@ -3114,11 +3114,11 @@ argument, when retrieve is complete."
 		  (if sync
 		      (condition-case nil
 			  (w3m-process-with-wait-handler
-			    (w3m-w3m-retrieve-1 url no-decode no-cache
+			    (w3m-w3m-retrieve-1 url no-decode 'no-cache
 						post-data nil
 						redirect-handler))
 			(w3m-process-timeout nil))
-		    (w3m-w3m-retrieve-1 url no-decode no-cache post-data
+		    (w3m-w3m-retrieve-1 url no-decode 'no-cache post-data
 					nil redirect-handler)))))))
     ;; The first retrieval.
     (prog1 (setq return (w3m-w3m-retrieve-1 
