@@ -1,4 +1,4 @@
-;;; w3m-proc.el --- Generic functions to control sub-processes.
+;;; w3m-proc.el --- Generic functions to control sub-processes
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -36,10 +36,10 @@
 ;; for more details of emacs-w3m.
 
 ;;; Code:
-(require 'w3m-macro)
-
 (eval-when-compile
   (require 'cl))
+
+(require 'w3m-macro)
 
 (defcustom w3m-process-connection-type
   (not (and (featurep 'xemacs)
@@ -622,4 +622,5 @@ evaluated in a temporary buffer."
 	       w3m-process-user-alist)))))))
 
 (provide 'w3m-proc)
-;;; w3m-proc.el ends here.
+
+;;; w3m-proc.el ends here

@@ -1,4 +1,4 @@
-;;; w3m-xmas.el --- The stuffs to use emacs-w3m on XEmacs.
+;;; w3m-xmas.el --- The stuffs to use emacs-w3m on XEmacs
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -35,6 +35,7 @@
 
 ;;; Code:
 
+(require 'w3m-macro)
 (require 'w3m-proc)
 
 ;; Functions and variables which should be defined in the other module

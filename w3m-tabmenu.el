@@ -34,6 +34,7 @@
 
 ;;; Code:
 
+(require 'w3m-macro)
 (require 'w3m)
 (require 'easymenu)
 
@@ -142,4 +143,5 @@
     (nreverse menus)))
 
 (provide 'w3m-tabmenu)
+
 ;;; w3m-tabmenu.el ends here

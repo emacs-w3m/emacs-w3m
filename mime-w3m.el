@@ -46,9 +46,10 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+(require 'w3m-macro)
 (require 'w3m)
 (require 'mime)
-(eval-when-compile (require 'cl))
 
 (defcustom mime-w3m-display-inline-images w3m-default-display-inline-images
   "Non-nil means that inline images are displayed."
@@ -158,4 +159,5 @@ Protect `kill-ring-save' against the `local-map' text property."
 			    (car kill-ring)))))
 
 (provide 'mime-w3m)
+
 ;;; mime-w3m.el ends here

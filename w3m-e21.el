@@ -34,6 +34,7 @@
 
 ;;; Code:
 
+(require 'w3m-macro)
 (require 'w3m-proc)
 (require 'w3m-fsf)
 (require 'wid-edit)

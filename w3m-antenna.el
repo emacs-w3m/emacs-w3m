@@ -1,4 +1,4 @@
-;;; w3m-antenna.el --- Utility to detect changes of WEB.
+;;; w3m-antenna.el --- Utility to detect changes of WEB
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -43,6 +43,7 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl))
+(require 'w3m-macro)
 (require 'w3m)
 
 (defgroup w3m-antenna nil
@@ -366,4 +367,5 @@ Optional argument TITLE is title of link."
   (backward-char 2))
 
 (provide 'w3m-antenna)
-;;; w3m-antenna.el ends here.
+
+;;; w3m-antenna.el ends here

@@ -1,3 +1,19 @@
+2001-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Moved some macros and inline functions to w3m-macro.el.
+
+	* w3m-macro.el (w3m-time-newer-p, w3m-url-local-p,
+	w3m-url-dtree-p, w3m-parse-attributes, w3m-real-url,
+	w3m-last-modified,w3m-content-type, w3m-content-length,
+	w3m-content-encoding, w3m-content-charset, w3m-base-url,
+	w3m-attributes, w3m-cursor-anchor, w3m-submit, w3m-image,
+	w3m-anchor, w3m-action, w3m-get-text-property-around): Moved from
+	w3m.el.
+	(w3m-condition-case): Use old-fashioned backquotes.
+
+	* w3m.el, w3m-xmas.el, w3m-tabmenu.el, w3m-form.el, w3m-e21.el,
+	w3m-bookmark.el, w3m-antenna.el, mime-w3m.el: Require `w3m-macro'.
+
 2001-11-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-w3m-get-header, w3m-w3m-attributes): Asynchronized.

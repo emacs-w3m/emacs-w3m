@@ -37,6 +37,7 @@
 
 ;;; Code:
 
+(require 'w3m-macro)
 (require 'w3m)
 
 (eval-when-compile
