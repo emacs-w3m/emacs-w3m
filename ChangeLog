@@ -1,3 +1,12 @@
+2003-05-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yahoo.el (shimbun-yahoo-x-face-alist): New face.
+
+2003-05-11  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-yahoo.el (shimbun-yahoo-content-start): Improved the
+	default value.
+
 2003-05-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-2ch.el (shimbun-headers): Correct the wrong use of
