@@ -1,6 +1,17 @@
 2004-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-tab-line-format): Make it buffer-local variable.
+	(w3m-tab-timer): Ditto.
+	(w3m-e21-wobble-window-size): New function.
+	(w3m-tab-line): Make `w3m-tab-timer' hold boolean value; let a
+	timer function run certainly in a buffer in which a timer started;
+	use `w3m-e21-wobble-window-size'.
+	(w3m-e21-switch-to-buffer): New command.
+	(w3m-e21-subst-switch-to-buffer-keys): New function.
+	(w3m-mode-setup-functions): Add
+	`w3m-e21-subst-switch-to-buffer-keys'.
+	(w3m-select-buffer-hook): Add `w3m-e21-wobble-window-size'.
+	(w3m-spinner-image-index): Make it buffer-local variable.
 
 2004-02-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 

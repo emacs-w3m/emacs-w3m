@@ -1,6 +1,7 @@
 ;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs-22
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -485,7 +486,8 @@ Buffer string between BEG and END are replaced with IMAGE."
 	   (call-interactively 'w3m-process-stop))))))
 
 (defvar w3m-tab-line-format nil
-  "Internal variable used to keep contents to be shown in the header-line.")
+  "Internal variable used to keep contents to be shown in the header-line.
+This is a buffer-local variable.")
 (make-variable-buffer-local 'w3m-tab-line-format)
 
 (defvar w3m-tab-timer nil
@@ -493,6 +495,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 was updated last time.  It is used to control the `w3m-tab-line'
 function running too frequently, set by the function itself and
 cleared by a timer.")
+(make-variable-buffer-local 'w3m-tab-timer)
 
 (defvar w3m-tab-half-space
   (propertize " " 'display '(space :width 0.5))
@@ -503,6 +506,12 @@ cleared by a timer.")
 	      'face 'w3m-tab-background-face
 	      'display '(space :width 0.5))
   "String used to separate tabs.")
+
+(defun w3m-e21-wobble-window-size ()
+  "Wobble the window size to force redisplay of the header-line."
+  (let ((window-min-height 0))
+    (shrink-window 1)
+    (enlarge-window 1)))
 
 (defun w3m-tab-line ()
   (or (and w3m-tab-timer w3m-tab-line-format)
@@ -528,18 +537,17 @@ cleared by a timer.")
 	     (spinner (when w3m-process-queue
 			(w3m-make-spinner-image)))
 	     buffer title data datum process favicon keymap face icon line)
-	(setq w3m-tab-timer
-	      (run-at-time 0.1 nil
-			   (lambda (window)
-			     (setq w3m-tab-timer nil)
-			     (if (and (eq (selected-window) window)
+	(setq w3m-tab-timer t)
+	(run-at-time 0.1 nil
+		     (lambda (buffer)
+		       (when (buffer-live-p buffer)
+			 (with-current-buffer buffer
+			   (setq w3m-tab-timer nil)
+			   (when (and (eq (selected-window)
+					  (get-buffer-window buffer))
 				      w3m-process-queue)
-				 ;; Wobble the window size to force
-				 ;; redisplay of the header-line.
-				 (let ((window-min-height 0))
-				   (shrink-window 1)
-				   (enlarge-window 1))))
-			   (get-buffer-window current t)))
+			     (inline (w3m-e21-wobble-window-size))))))
+		     current)
 	(save-current-buffer
 	  (while buffers
 	    (set-buffer (setq buffer (pop buffers)))
@@ -622,9 +630,26 @@ cleared by a timer.")
   (when w3m-use-tab
     (set-cursor-color (frame-parameter (selected-frame) 'cursor-color))))
 
+(defun w3m-e21-switch-to-buffer (buffer &optional norecord)
+  "Run `switch-to-buffer' and redisplay the header-line.
+Redisplaying is done by wobbling the window size."
+  (interactive "BSwitch to buffer: ")
+  (prog1
+      (switch-to-buffer buffer norecord)
+    (when (and header-line-format
+	       (eq major-mode 'w3m-mode))
+      (w3m-e21-wobble-window-size))))
+
+(defun w3m-e21-subst-switch-to-buffer-keys ()
+  "Substitute keys for `switch-to-buffer' with `w3m-e21-switch-to-buffer'."
+  (substitute-key-definition 'switch-to-buffer 'w3m-e21-switch-to-buffer
+			     w3m-mode-map global-map))
+
 (add-hook 'w3m-mode-setup-functions 'w3m-tab-make-keymap)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-header-line)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-widget-faces)
+(add-hook 'w3m-mode-setup-functions 'w3m-e21-subst-switch-to-buffer-keys)
+(add-hook 'w3m-select-buffer-hook 'w3m-e21-wobble-window-size)
 
 ;; Graphic icons.
 (defcustom w3m-space-before-modeline-icon ""
@@ -641,7 +666,8 @@ italic font in the modeline."
   "Number of frames which the spinner image contains.")
 
 (defvar w3m-spinner-image-index 0
-  "Counter used to rotate spinner images.")
+  "Counter used to rotate spinner images.  This is a buffer-local variable.")
+(make-variable-buffer-local 'w3m-spinner-image-index)
 
 ;; Images to be displayed in the modeline.
 (defvar w3m-modeline-process-status-on-icon nil)
