@@ -1,4 +1,4 @@
-2003-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+2003-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-retrieve-and-render): Use `w3m-message' instead of
 	`message'; don't refer to `w3m-verbose'.
@@ -14,7 +14,7 @@
 	w3m-download-this-url, w3m-print-this-url, w3m-edit-current-url,
 	w3m-edit-this-url, w3m-quit, w3m-goto-ftp-url, w3m-select-buffer,
 	w3m-select-buffer-show-this-line,
-	w3m-select-buffer-show-this-line-and-switch): Call `w3m-image'
+	w3m-select-buffer-show-this-line-and-switch): Call `w3m-message'
 	instead of `w3m-display-message'.
 
 	* w3m-util.el (w3m-display-message): Removed.
