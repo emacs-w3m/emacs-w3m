@@ -520,13 +520,18 @@ while the external w3m process is running.  It is also used to control
 the `w3m-tab-line' function running too frequently, set by the function
 itself and cleared by a timer.")
 
+(defvar w3m-tab-line-timer nil
+  "Internal variable used to check whether a timer is alive.")
+
 (defun w3m-tab-line ()
   (or
    (when w3m-current-process
-     (or w3m-tab-line-format
-	 (progn
-	   (run-at-time 0.1 nil (lambda nil (setq w3m-tab-line-format nil)))
-	   nil)))
+     (unless (and w3m-tab-line-format w3m-tab-line-timer)
+       (setq w3m-tab-line-timer
+	     (run-at-time 0.1 nil (lambda nil
+				    (setq w3m-tab-line-format nil
+					  w3m-tab-line-timer nil)))))
+     w3m-tab-line-format)
    (let* ((current (current-buffer))
 	  (buffers (w3m-list-buffers))
 	  (width (if (> (* (length buffers) (+ 5 w3m-tab-width))
