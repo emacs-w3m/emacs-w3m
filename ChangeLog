@@ -1,3 +1,12 @@
+2001-06-12  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun-retrieve-url): Return content-type.
+	(shimbun-suffix-content-type-alist): Abolish.
+	(shimbun-encapsulate-article): Fixed docstring.
+	(shimbun-make-mime-article): Added docstring.
+	(shimbun-make-mime-article): Use return value of
+	`shimbun-retrieve-url'.
+
 2001-06-11  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-slashdot-jp.el (shimbun-make-contents):

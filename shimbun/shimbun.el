@@ -102,14 +102,17 @@
 ;;; emacs-w3m implementation of url retrieval and entity decoding.
 (require 'w3m)
 (defun shimbun-retrieve-url (url &optional no-cache no-decode)
-  "Rertrieve URL contents and insert to current buffer."
-  (when (and url (w3m-retrieve url no-decode no-cache))
-    (w3m-with-work-buffer
+  "Rertrieve URL contents and insert to current buffer.
+Return content-type of URL as string when retrieval succeeded."
+  (let (type)
+    (when (and url (setq type (w3m-retrieve url no-decode no-cache)))
+      (w3m-with-work-buffer
       (unless no-decode
 	(w3m-decode-buffer url)))
-    (unless (eq (current-buffer)
-		(get-buffer w3m-work-buffer-name))
-      (insert-buffer w3m-work-buffer-name))))
+      (unless (eq (current-buffer)
+		  (get-buffer w3m-work-buffer-name))
+	(insert-buffer w3m-work-buffer-name)))
+    type))
 
 (defun shimbun-retrieve-url-buffer (url &optional no-cache no-decode)
   "Return a buffer which contains the URL contents."
@@ -203,19 +206,17 @@
 	      (shimbun-header-xref header))
     (shimbun-header-xref header)))
 
-(defconst shimbun-suffix-content-type-alist
-  '(("jpg" . "image/jpeg")
-    ("png" . "image/png")
-    ("gif" . "image/gif")
-    ("tif" . "image/tiff")))
-
 (defvar shimbun-encapsulate-article t
-  "*If non-nil, inline images in the shimbun article are encapsulated.")
+  "*If non-nil, inline images in the shimbun article are encapsulated.
+Generated article have a multipart/related content-type.")
 
 (defun shimbun-make-mime-article (shimbun header)
+  "Make a MIME article according to SHIMBUN and HEADER.
+If article have inline images, generated article have a multipart/related
+content-type if `shimbun-encapsulate-article' is non-nil."
   (let ((case-fold-search t)
 	(count 0)
-	url imgs boundary charset)
+	url type imgs boundary charset)
     (current-buffer)
     (setq charset
 	  (upcase (symbol-name
@@ -226,19 +227,15 @@
 	(save-match-data
 	  (setq url (match-string 1))
 	  (setq imgs (cons (list (concat (format "shimbun.%d" (incf count)))
-				 (if (string-match "\\.\\([a-z]+\\)$" url)
-				     (cdr (assoc
-					   (substring url
-						      (match-beginning 1))
-					   shimbun-suffix-content-type-alist)))
 				 (with-temp-buffer
 				   (set-buffer-multibyte nil)
-				   (shimbun-retrieve-url
-				    (shimbun-expand-url
-				     url
-				     (shimbun-header-xref header))
-				    'no-cache 'no-decode)
-				   (buffer-string)))
+				   (setq type (shimbun-retrieve-url
+					       (shimbun-expand-url
+						url
+						(shimbun-header-xref header))
+					       'no-cache 'no-decode))
+				   (buffer-string))
+				 type)
 			   imgs)))
 	(replace-match (concat "<img src=\"cid:" (car (car imgs)) "\"")))
       (setq imgs (nreverse imgs)))
@@ -260,12 +257,12 @@
     (dolist (img imgs)
       (unless (eq (char-before) ?\n) (insert "\n"))
       (insert "--" boundary "\n"
-	      "Content-Type: " (or (nth 1 img) "application/octed-stream")
+	      "Content-Type: " (or (nth 2 img) "application/octed-stream")
 	      "\nContent-Disposition: inline"
 	      "\nContent-ID: <" (car img) ">"
 	      "\nContent-Transfer-Encoding: base64"
 	      "\n\n"
-	      (shimbun-base64-encode-string (nth 2 img))))
+	      (shimbun-base64-encode-string (nth 1 img))))
     (when imgs
       (unless (eq (char-before) ?\n) (insert "\n"))
       (insert "--" boundary "--\n"))))
