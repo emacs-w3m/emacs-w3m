@@ -1,3 +1,9 @@
+2004-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi-mytown.el
+	(shimbun-asahi-mytown-prepare-article): New function.
+	(shimbun-make-contents): Use it to remove a subject line.
+
 2004-04-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-link-numbering.el (w3m-view-numbered-link): Removed.
