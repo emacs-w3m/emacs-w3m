@@ -4435,16 +4435,18 @@ forward is performed.  Otherwise, COUNT is treated as 1 by default."
 	;; Inhibit sprouting a new history.
 	(w3m-history-reuse-history-elements t)
 	(w3m-use-refresh nil))
-    (when hist
-      (w3m-goto-url (caar hist) nil nil
-		    (w3m-history-plist-get :post-data)
-		    (w3m-history-plist-get :referer)
-		    nil
-		    (w3m-history-element (caddr hist) t))
-      ;; Set the position pointers in the history.
-      (setcar w3m-history (cdr hist))
-      ;; Restore last position.
-      (w3m-history-restore-position))))
+    (if hist
+	(progn
+	  (w3m-goto-url (caar hist) nil nil
+			(w3m-history-plist-get :post-data)
+			(w3m-history-plist-get :referer)
+			nil
+			(w3m-history-element (caddr hist) t))
+	  ;; Set the position pointers in the history.
+	  (setcar w3m-history (cdr hist))
+	  ;; Restore last position.
+	  (w3m-history-restore-position))
+      (message "There's no more history"))))
 
 (defun w3m-view-next-page (&optional count)
   "View next page.  If COUNT is a positive integer, move forward COUNT
