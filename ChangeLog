@@ -1,5 +1,12 @@
 2001-09-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-meta-content-type-charset-regexp): Relaxed to accept
+	<meta> tag in XML style.
+	(w3m-meta-charset-content-type-regexp): Ditto.
+	(w3m-tag-regexp-of): Exported to `w3m-macro.el'.
+
+	* w3m-macro.el (w3m-tag-regexp-of): Imported from `w3m.el'.
+
 	* w3m.el (w3m-goto-url): Changed timing when `w3m-current-referer'
 	and `w3m-current-post-data' are set.
 	(w3m-exec): Call `w3m-clear-local-variables' before image data is

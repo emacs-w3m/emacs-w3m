@@ -84,6 +84,11 @@ compile-time."
 	(buffer-disable-undo buf)
 	buf)))
 
+(defmacro w3m-tag-regexp-of (&rest names)
+  (concat "<\\("
+	  (mapconcat 'identity names "\\|")
+	  "\\)\\([ \t\r\f\n]+[^>]*\\)?/?>"))
+
 (provide 'w3m-macro)
 
 ;;; w3m-macro.el ends here.

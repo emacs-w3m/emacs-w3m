@@ -884,7 +884,7 @@ If nil, use an internal CGI of w3m."
   (eval-when-compile
     (concat "<meta[ \t]+http-equiv=\"?Content-type\"?[ \t]+content=\"\\([^;]+\\)"
 	    ";[ \t]*charset=\"?\\([^\"]+\\)\"?"
-	    ">"))
+	    "[ \t]*/?>"))
   "Regexp used in parsing `<META HTTP-EQUIV=\"Content-Type\" content=\"...;charset=...\">
 for a charset indication")
 
@@ -892,7 +892,7 @@ for a charset indication")
   (eval-when-compile
     (concat "<meta[ \t]+content=\"\\([^;]+\\)"
 	    ";[ \t]*charset=\"?\\([^\"]+\\)\"?"
-	    "[ \t]+http-equiv=\"?Content-type\"?>"))
+	    "[ \t]+http-equiv=\"?Content-type\"?[ \t]*/?>"))
   "Regexp used in parsing `<META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">
 for a charset indication")
 
@@ -907,11 +907,6 @@ for a charset indication")
 
 (defvar w3m-halfdump-command nil
   "Name of the executable file of w3m. If nil use 'w3m-command'.")
-
-(defmacro w3m-tag-regexp-of (&rest names)
-  (concat "<\\("
-	  (mapconcat 'identity names "\\|")
-	  "\\)\\([ \t\r\f\n]+[^>]*\\)?/?>"))
 
 (defconst w3m-halfdump-command-arguments
   (cond ((eq w3m-type 'w3mmee)
