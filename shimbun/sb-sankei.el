@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the Sankei Shimbun -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003 Katsumi Yamaoka
+;; Copyright (C) 2003, 2004 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -43,10 +43,10 @@
   (concat "webmaster@" shimbun-sankei-top-level-domain))
 
 (defvar shimbun-sankei-content-start
-  "<!--[\t\n ]*\\(photo\\.sta\\|\\(ad--\\)?honbun\\)[\t\n ]*-->[\t\n ]*")
+  "<!--[\t\n ]*\\(photo\\.sta\\|\\(ad--\\)?hombun\\)[\t\n ]*-->[\t\n ]*")
 
 (defvar shimbun-sankei-content-end
-  "[\t\n ]*<!----[\t\n ]*hbn\\.end[\t\n ]*-->")
+  "[\t\n ]*<!--[\t\n ]*hbnend[\t\n ]*-->")
 
 (defvar shimbun-sankei-group-table
   '(("shakai" "社会" "news/shakai.htm")
@@ -80,8 +80,7 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-sankei)
 					 &optional range)
-  (when (re-search-forward "<!--[\t\n ]*midashi\\.sta[\t\n ]*-->[\t\n ]*"
-			   nil t)
+  (when (re-search-forward "<!--[\t\n ]*mlist[\t\n ]*-->[\t\n ]*" nil t)
     (delete-region (point-min) (point)))
   (when (re-search-forward "[\t\n ]*<!--" nil t)
     (delete-region (match-beginning 0) (point-max)))
@@ -99,13 +98,13 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
 \\.htm\\)\
 \">[\t\n ]*\
 \\([^\n<>]+\\)\
-\[\t\n ]*</a>\\([\t\n ]*<[^<>]+>\\)*[\t\n ]*（\
+\[\t\n ]*</a>\\([\t\n ]*<[^<>]+>\\)*[\t\n ]*(\
 \\([01][0-9]\\)\
 /\
 \\([0-3][0-9]\\)\
 \[\t\n ]+\
 \\([012][0-9]:[0-5][0-9]\\)\
-）"
+)"
 			      nil t)
       (setq month (string-to-number (match-string 5))
 	    year (cond ((and (= 12 month) (= 1 cmonth))
