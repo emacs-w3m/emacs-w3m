@@ -3206,15 +3206,14 @@ NEW-SESSION is non-nil, and the link is an anchor, make a copy of the
 current session in advance.  Otherwise, if ARG is non-nil, force
 reload the url at point.  If the option `w3m-pop-up-frames' is non-nil,
 also make a new frame for the copied session."
-  (interactive "P")
+  (interactive (if (member current-prefix-arg '(2 (16)))
+		   (list nil t)
+		 (list current-prefix-arg nil)))
   (let ((url (w3m-anchor))
 	(act (w3m-action)))
     (cond
      (url
-      (when (or new-session
-		(when (member arg '(2 (16)))
-		  (setq arg nil)
-		  t))
+      (when new-session
 	(switch-to-buffer (w3m-copy-buffer (current-buffer) nil t)))
       (w3m-goto-url url arg nil nil w3m-current-url))
      (act (eval act))

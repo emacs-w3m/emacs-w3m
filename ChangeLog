@@ -1,4 +1,8 @@
 2001-10-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-view-this-url): Fixed the interactive spec.
+
+2001-10-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 	    Suggested by Clifford Caoile <piyokun@email.com>.
 
 	* w3m.el (w3m-info-like-map, w3m-lynx-like-map): Bind S-SPC key to
