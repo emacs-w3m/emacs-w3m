@@ -7,6 +7,7 @@ shimbun ライブラリを利用できるユーザエージェントは、以下の通りです。
 
 	Wanderlust (elmo-lunafy 枝)
 	T-gnus-6_15
+	Gnus (T-gnus の nnshimbun.el が必要)
 
 APEL および FLIM パッケージが必要です。インストールする前にそれらをイン
 ストールしてください。それらのパッケージは
