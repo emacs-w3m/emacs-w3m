@@ -1,8 +1,8 @@
 ;;; sb-kde.el --- shimbun backend for www.KDE.gr.jp
 
-;; Copyright (C) 2002 NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
-;; Authors: NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+;; Authors: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
@@ -38,6 +38,12 @@
 (defvar shimbun-kde-litemplate-regexp
   "<STRONG><A NAME=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</A></STRONG> <EM>\\([^<]+\\)</EM>")
 
+(defvar shimbun-kde-x-face-alist
+  '(("default" . "X-Face: $k<l7p@7F^!3Gz8>q]+,^4o0}[`AQ*4!ml,:9v\
+:\\1JvC:xf^dG6rsim7uO\\sF<sb\\`jotT8\n x)%/mOn~<RBUKORnGwUHtsz$}\
+&5COS0|'pT/1_A6$`o%2k`i/D(ntjnjFo9HKdpUcmQ|zW[yzHh+l<\n (NUfntXz\
+V{p:G4A}<vq\"[#f;XPl\\Ea|B5yrA4-}Q};cWbLr9hfDhCzxs]z-bRkQ<Rc`m!")))
+
 (luna-define-method shimbun-index-url ((shimbun shimbun-kde))
   (concat (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun) "/"))
@@ -46,15 +52,22 @@
 					 &optional range)
   (let ((case-fold-search t)
 	(pages (shimbun-header-index-pages range))
-	(count 0)
+	(regexp "\
+\\[Prev Page\\]\\[<a href=\"\\(.+\\.html\\)\">Next Page</a>\\]")
 	(months '("index.html"))
 	headers)
-    (shimbun-mhonarc-reverse-flag-internal shimbun)
-    (goto-char (point-min))
-    (when pages (incf count))
-    (while (and (if pages (<= (incf count) pages) t)
-		(re-search-forward "\\[Prev Page\\]\\[<a href=\"\\(.+\\.html\\)\">Next Page</a>\\]" nil t)
-		(push (match-string 1) months)))
+    (if (shimbun-mhonarc-reverse-flag-internal shimbun)
+	(progn
+	  (goto-char (point-min))
+	  (while (and (or (not pages)
+			  (>= (decf pages) 0))
+		      (re-search-forward regexp nil t))
+	    (push (match-string 1) months)))
+      (goto-char (point-max))
+      (while (and (or (not pages)
+		      (>= (decf pages) 0))
+		  (re-search-backward regexp nil t))
+	(push (match-string 1) months)))
     (setq months (nreverse months))
     (erase-buffer)
     (catch 'stop
