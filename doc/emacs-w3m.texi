@@ -3081,9 +3081,9 @@ nikkansports.horseracing nikkansports.entertainment
 nikkansports.society nikkansports.leisure
 
 @item @uref{http://www.nikkei.co.jp/, Nihon Keizai Shimbun}
-nikkei.kaigai nikkei.keizai nikkei.main nikkei.market nikkei.okuyami
-nikkei.retto nikkei.sangyo nikkei.seiji nikkei.shakai nikkei.shasetsu
-nikkei.tento nikkei.zinzi
+nikkei.main nikkei.keizai nikkei.market nikkei.kaigai nikkei.sangyo
+nikkei.tento nikkei.seiji nikkei.shakai nikkei.newpro nikkei.shasetsu
+nikkei.zinzi nikkei.okuyami nikkei.retto
 
 @item @uref{http://www.sponichi.co.jp/, Sponichi}
 sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
