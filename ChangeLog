@@ -1,3 +1,7 @@
+2004-12-27  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
+
+	* w3m.el (w3m-view-this-url-1): Revert 2004-12-17 change.
+
 2004-12-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-get-headers): Reduce
