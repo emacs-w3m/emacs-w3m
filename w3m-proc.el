@@ -114,13 +114,22 @@
 	 (temporary-file-directory
 	  (if (file-directory-p w3m-profile-directory)
 	      (file-name-as-directory w3m-profile-directory)
-	    temporary-file-directory))
+	    ,(if (featurep 'xemacs)
+		 ;; Though `temporary-file-directory' exists even in XEmacs,
+		 ;; that's only an imitation provided by APEL.
+		 '(temp-directory)
+	       'temporary-file-directory)))
 	 (default-directory
 	   (cond ((file-directory-p w3m-profile-directory)
 		  (file-name-as-directory w3m-profile-directory))
 		 ((file-directory-p (expand-file-name "~/"))
 		  (expand-file-name "~/"))
 		 (t temporary-file-directory))))
+     ;; XEmacs obtains tmp-dir from the `temp-directory' function of which
+     ;; return value can only be modified by the following env vars.
+     ,@(if (featurep 'xemacs)
+	   '((setenv "TEMP" temporary-file-directory) ;; Windoze
+	     (setenv "TMPDIR" temporary-file-directory))) ;; Un|x
      (dolist (pair ,alist)
        (setenv (car pair) (cdr pair)))
      ,@body))

@@ -1,3 +1,9 @@
+2003-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-proc.el (w3m-process-with-environment): Rely on the
+	`temp-directory' function and modify TEMP and TMPDIR env vars for
+	XEmacs.
+
 2003-11-20  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-normalize-action): New inline function.
