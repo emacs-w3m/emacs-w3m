@@ -1,7 +1,7 @@
 ;;; sb-xemacs.el --- shimbun backend for xemacs.org
 
-;; Copyright (C) 2001 Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
-;; Copyright (C) 2001 Yuuichi Teranishi  <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002 Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001, 2002 Yuuichi Teranishi  <teranisi@gohome.org>
 
 ;; Author: Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>

@@ -1,6 +1,6 @@
 ;;; sb-mailarc.el --- shimbun backend class for mailarc
 
-;; Copyright (C) 2002  Free Software Foundation, Inc.
+;; Copyright (C) 2002, 2003  Free Software Foundation, Inc.
 
 ;; Author: ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 ;; Keywords: news

@@ -1,6 +1,6 @@
 ;;; sb-orca.el --- shimbun backend for www.orca.med.or.jp ML archive
 
-;; Copyright (C) 2002, 2003 Masamichi Goudge M.D. <Matanuki@Goudge.org>
+;; Copyright (C) 2002, 2003, 2005 Masamichi Goudge M.D. <Matanuki@Goudge.org>
 
 ;; Author: Masamichi Goudge M.D. <Matanuki@Goudge.org>
 ;; Keywords: news

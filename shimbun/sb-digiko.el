@@ -1,6 +1,6 @@
 ;;; sb-digiko.el --- shimbun backend for digiko-ML.
 
-;; Copyright (C) 2001, 2002, 2003 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001, 2002, 2003, 2004 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
 ;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 ;; Keywords: news

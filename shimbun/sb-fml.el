@@ -1,7 +1,9 @@
 ;;; sb-fml.el --- shimbun backend class for fml archiver.
 
-;; Copyright (C) 2001, 2002, 2003 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
-;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,

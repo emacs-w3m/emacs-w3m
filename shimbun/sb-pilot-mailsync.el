@@ -1,6 +1,6 @@
 ;;; sb-pilot-mailsync.el --- shimbun backend for http://lists.gnu-designs.com/pipermail/pilot-mailsync/
 
-;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news

@@ -1,6 +1,6 @@
 ;;; sb-sourceforge-jp.el --- shimbun backend for lists.sourceforge.jp
 
-;; Copyright (C) 2003, 2004 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2003, 2004, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news

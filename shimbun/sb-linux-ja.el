@@ -1,6 +1,6 @@
 ;;; sb-linux-ja.el --- shimbun backend for japan.linux.com.
 
-;; Copyright (C) 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2003, 2004 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news

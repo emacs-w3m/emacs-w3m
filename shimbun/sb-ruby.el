@@ -1,6 +1,7 @@
 ;;; sb-ruby.el --- shimbun backend class for ruby ML archiver.
 
-;; Copyright (C) 2001, 2002, 2003 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2001, 2002, 2003, 2005
+;; NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Keywords: news

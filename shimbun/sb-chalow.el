@@ -1,6 +1,6 @@
 ;;; sb-chalow.el --- shimbun backend for chalow
 
-;; Copyright (C) 2003 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2003, 2004 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
