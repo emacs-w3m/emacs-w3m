@@ -1,6 +1,7 @@
 2001-11-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m.el (w3m-expand-url): Remove the last segment of the base URL
+	* w3m.el (emacs-w3m-version): Release 1.2.1.
+	(w3m-expand-url): Remove the last segment of the base URL
 	before concatination the specified URL which has only a query part
 	and the base URL.
 
