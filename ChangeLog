@@ -1,5 +1,7 @@
 2003-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/shimbun.el (shimbun-x-face): Renew.
+
 	* shimbun/sb-mainichi.el (shimbun-get-headers): Enrich subjects.
 
 2003-06-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
