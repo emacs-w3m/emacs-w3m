@@ -242,7 +242,7 @@ width using expression (+ (frame-width) VALUE)."
   (setq file (expand-file-name file directory))
   (if (string-match "^\\(.\\):\\(.*\\)" file)
       (if w3m-use-cygdrive
-	  (concat "/cygdrive/" (match-string 1 file) (match-string 2 file))
+	  (concat "file:///cygdrive/" (match-string 1 file) (match-string 2 file))
 	(concat "file:///" (match-string 1 file) "|" (match-string 2 file)))
     (concat "file://" file)))
 
