@@ -45,6 +45,7 @@
     ("help-emacs-windows" . "help-emacs-windows")
     ("help-gnu-emacs" . "help-gnu-emacs")
     ("info-gnu-emacs" . "info-gnu-emacs")
+    ("tramp-devel" . "tramp-devel")
     ("vms-gnu-emacs" . "vms-gnu-emacs")))
 
 (defvar shimbun-savannah-groups
@@ -85,9 +86,17 @@ ej<20'LI/le]z)n!%Bb(KI(@c&\"<`Ah~3&6Yn%+>-K>`@13\n T?OXgWz^><'44jgi;\
 		   nil t))
 	(push (match-string 1) months))
       (dolist (month (nreverse months))
-	(setq url (concat parent month "index.html"))
+	;; Attempt to retrieve the default index page (w/o "index.html")
+	;; first.  It might be newer for some unknown reason.
+	(setq url (concat parent month))
 	(shimbun-retrieve-url url t)
-	(shimbun-mhonarc-get-headers entity url headers month)))
+	(if (re-search-forward shimbun-savannah-litemplate-regexp nil t)
+	    (progn
+	      (goto-char (match-beginning 0))
+	      (shimbun-mhonarc-get-headers entity url headers month))
+	  (setq url (concat url "index.html"))
+	  (shimbun-retrieve-url url t)
+	  (shimbun-mhonarc-get-headers entity url headers month))))
     headers))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-savannah)
