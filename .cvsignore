@@ -8,3 +8,4 @@ config.status*
 configure
 w3m-kwds.el
 autom4te.cache
+confdefs.h
