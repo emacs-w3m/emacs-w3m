@@ -632,7 +632,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		      (make-string (length string) ?.)
 		    (mapconcat 'identity
 			       (split-string
-				(w3m-truncate-string string width) "\n")
+				(w3m-truncate-string (or string "")
+						     width) "\n")
 			       "")))
 	    (make-string (- width (string-width string)) ?\ ))
     (delete-region (point)
