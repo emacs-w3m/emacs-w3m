@@ -2,7 +2,7 @@
 
 	* shimbun/sb-asahi-mytown.el (shimbun-asahi-mytown-get-headers):
 	Use shimbun-create-header instead of shimbun-make-header.
-	c.f. <URL:http://emacs-w3m.namazu.org/ml/msg05438.html>.
+	cf. <URL:http://emacs-w3m.namazu.org/ml/msg05438.html>.
 
 	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Ditto.
 	* shimbun/sb-kantei.el (shimbun-get-headers): Ditto.
