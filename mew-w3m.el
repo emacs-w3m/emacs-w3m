@@ -110,6 +110,7 @@ This variable effected only XEmacs or Emacs 21."
 
 ;; Avoid bytecompile error and warnings.
 (eval-when-compile
+  (defvar mew-use-text/html)
   (unless (fboundp 'mew-current-get-fld)
     (autoload 'mew-coding-system-p "mew")
     (autoload 'mew-current-get-fld "mew")
@@ -133,7 +134,8 @@ This variable effected only XEmacs or Emacs 21."
   (interactive "P")
   (mew-summary-msg-or-part
    (if allimage
-       (let ((mew-w3m-auto-insert-image t)
+       (let ((mew-use-text/html t)
+	     (mew-w3m-auto-insert-image t)
 	     (mew-w3m-use-safe-url-regexp nil))
 	 (mew-summary-display 'force))
      (save-excursion

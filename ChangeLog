@@ -1,3 +1,11 @@
+2004-05-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-w3m-view-inline-image): Bind
+	mew-use-text/html as t.
+
+	* shimbun/mew-shimbun.el (mew-shimbun-expire): Add message for
+	nothing to do.
+
 2004-05-17  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-fml.el (shimbun-make-contents): Normalize header values.

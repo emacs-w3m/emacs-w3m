@@ -750,33 +750,35 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 				(lambda (x y)
 				  (< (string-to-number x) (string-to-number y)))))
 	       (setq t1 (length msgs))
-	       (message "Expire (%s) 1/%d..." fld t1)
-	       (goto-char (point-min))
-	       (dolist (msg msgs)
-		 (setq i (1+ i))
-		 (when (zerop (% i 10))
-		   (message "Expire (%s) %d/%d..." fld i t1))
-		 (when (mew-shimbun-jump-msg msg)
-		   (beginning-of-line)
-		   (mew-elet
-		    (delete-region (point)
-				   (progn (forward-line) (point)))))
-		 (setq file (mew-expand-folder fld msg))
-		 (when (and (file-exists-p file)
-			    (file-readable-p file)
-			    (file-writable-p file))
-		   (delete-file file)))
-	       (mew-elet
-		(mew-summary-folder-cache-save)
-		(set-buffer-modified-p nil))
-	       (when (and mew-shimbun-use-expire-pack
-			  (> t1 0))
-		 (if (eq 1 (function-max-args 'mew-summary-pack-body))
+	       (if (zerop t1)
+		   (message "No expire (%s)" fld t1)
+		 (message "Expire (%s) 1/%d..." fld t1)
+		 (goto-char (point-min))
+		 (dolist (msg msgs)
+		   (setq i (1+ i))
+		   (when (zerop (% i 10))
+		     (message "Expire (%s) %d/%d..." fld i t1))
+		   (when (mew-shimbun-jump-msg msg)
+		     (beginning-of-line)
+		     (mew-elet
+		      (delete-region (point)
+				     (progn (forward-line) (point)))))
+		   (setq file (mew-expand-folder fld msg))
+		   (when (and (file-exists-p file)
+			      (file-readable-p file)
+			      (file-writable-p file))
+		     (delete-file file)))
+		 (mew-elet
+		  (mew-summary-folder-cache-save)
+		  (set-buffer-modified-p nil))
+		 (when (and mew-shimbun-use-expire-pack
+			    (> t1 0))
+		   (if (eq 1 (function-max-args 'mew-summary-pack-body))
+		       (dont-compile
+			 (mew-summary-pack-body fld))
 		     (dont-compile
-		       (mew-summary-pack-body fld))
-		   (dont-compile
-		     (mew-summary-pack-body))))
-	       (message "Expire (%s) %d/%d...done" fld t1 t1)))))))))
+		       (mew-summary-pack-body))))
+		 (message "Expire (%s) %d/%d...done" fld t1 t1))))))))))
 
 (defun mew-shimbun-expire-day (fld)
   (catch 'det
