@@ -1,3 +1,10 @@
+2001-06-13  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-slashdot-jp.el (shimbun-headers): Encode `from' with
+	`shimbun-mime-encode-string';
+	Follow the search.pl's renewal;
+	Added 'mode=flat' option for comments.pl.
+
 2001-06-12  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-m17n.el: New file.

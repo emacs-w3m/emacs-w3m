@@ -77,7 +77,7 @@ One page contains 30 comments.")
 	      (setq pos (match-end 0))
 	      (search-forward "<")
 	      (setq subject (buffer-substring pos (match-beginning 0))))
-	    (when (re-search-forward "（\\([A-Za-z-]+\\)，" nil t)
+	    (when (re-search-forward "- \\([A-Za-z-]+\\)，" nil t)
 	      (setq from (match-string 1)))
 	    (when (re-search-forward
 		   "[A-z][a-z]+day \\([A-Z][a-z]+\\) \\([0-9]+\\)" nil t)
@@ -123,11 +123,11 @@ One page contains 30 comments.")
 	      (search-forward "<")
 	      (setq subject (buffer-substring pos (match-beginning 0))))
 	    (when (re-search-forward
-		   "（<a href=\"mailto:\\([^>]*\\)\">\\([^<]*\\)</a>，" nil t)
+		   "<a href=\"mailto:\\([^>]*\\)\">\\([^<]*\\)</a>" nil t)
 	      (setq from 
 		    (if (zerop (length (match-string 1)))
 			(concat (match-string 2))
-		      (concat (match-string 2) "<" (match-string 1) ">"))))
+		      (concat (match-string 2) " <" (match-string 1) ">"))))
 	    (when (re-search-forward
 		   "[A-z][a-z]+day \\([A-Z][a-z]+\\) \\([0-9]+\\)" nil t)
 	      (setq month (length
@@ -147,14 +147,14 @@ One page contains 30 comments.")
 	    (push (shimbun-make-header
 		   0
 		   (shimbun-mime-encode-string subject)
-		   from
+		   (shimbun-mime-encode-string from)
 		   (shimbun-make-date-string year month mday
 					     (format "%02d:%02d" hour min))
 		   id
 		   (format "<%s@slashdot.ne.jp>" refs)
 		   0 0 (concat 
 			(shimbun-url-internal shimbun)
-			"comments.pl?sid=" uniq))
+			"comments.pl?mode=flat&sid=" uniq))
 		  headers)))
 	(setq count (1+ count))))
     headers))
