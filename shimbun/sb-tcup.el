@@ -1,4 +1,4 @@
-;;; sb-tcup.el --- shimbun backend for www.tcup.com.
+;;; sb-tcup.el --- shimbun backend for www.tcup.com -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 

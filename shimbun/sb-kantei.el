@@ -1,4 +1,4 @@
-;;; sb-kantei.el --- shimbun backend for kantei mail magazine backnumber.
+;;; sb-kantei.el --- shimbun backend for kantei mail magazine backnumber -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 

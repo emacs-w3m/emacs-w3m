@@ -1,4 +1,4 @@
-;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp
+;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp -*- coding: iso-2022-7bit; -*-
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>

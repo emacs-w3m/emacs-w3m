@@ -1,4 +1,4 @@
-;;; sb-nikkansports.el --- shimbun backend for www.nikkansports.com
+;;; sb-nikkansports.el --- shimbun backend for www.nikkansports.com -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2001 MIYOSHI Masanori <miyoshi@boreas.dti.ne.jp>
 
