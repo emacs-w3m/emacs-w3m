@@ -339,7 +339,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	      (unless (file-directory-p dir)
 		(message "mkdir %s" dir)
 		(unless w3mhack-nonunix-dryrun
-		  (make-directory dir))))
+		  (make-directory dir 'parents))))
        (install (srcdir dstdir pattern)
 		(dolist (src (directory-files srcdir t pattern))
 		  (let ((dst (expand-file-name
