@@ -46,7 +46,6 @@
 
 ;;; Code:
 (require 'un-define)
-(require 'w3m-macro)
 
 
 (defun w3m-ucs-to-char (codepoint)
@@ -59,57 +58,61 @@
      (read-multibyte-character r1 r0)
      (if (r1 == ,(charset-id 'ascii))
 	 ;; (1) ASCII characters
-	 (write-repeat r0)
-       (if (r1 == ,(charset-id 'japanese-jisx0208))
-	   ;; (2) Characters of Japanese JISX0208.
-	   ((r1 = ((r0 & 127) | 128))
-	    (r0 = ((r0 >> 7) | 128))
-	    (write r0)
-	    (write-repeat r1))
-	 (if (r1 == ,(charset-id 'katakana-jisx0201))
-	     ;; (3) Katakana Part of Japanese JISX0201.1976
-	     ((r0 |= 128)
-	      (write ?\x8e)
-	      (write-repeat r0))
-	   (;; (4) Other characters are represented in NCR (Numeric
-	    ;; Character References).
-	    ;; (4.1) Convert a set of r1 (charset-id) and r0 (codepoint)
-	    ;; to a character in Emacs internal representation.
-	    (if (r0 > 255)
-		((r4 = (r0 & 127))
-		 (r0 = (((r0 >> 7) * 96) + r4))
-		 (r0 |= (r1 << 16)))
-	      ((r0 |= (r1 << 16))))
-	    ;; (4.2) Convert a character in Emacs to a UCS codepoint.
-	    (call emacs-char-to-ucs-codepoint-conversion)
-	    ;; (4.3) Generate a string which represents a UCS
-	    ;; codepoint in NCR.
-	    (if (r0 <= 0)
-		(write ?~)		; unknown character.
-	      ((r1 = 0)
-	       (r2 = 0)
-	       (loop
-		(r1 = (r1 << 4))
-		(r1 |= (r0 & 15))
-		(r0 = (r0 >> 4))
-		(if (r0 == 0)
-		    (break)
-		  ((r2 += 1)
-		   (repeat))))
-	       (write "&#x")
-	       (loop
-		(branch (r1 & 15)
-			,@(mapcar
-			   (lambda (i)
-			     (list 'write (string-to-char (format "%x" i))))
-			   '(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15)))
-		(r1 = (r1 >> 4))
-		(if (r2 == 0)
-		    ((write ?\;)
-		     (break))
-		  ((r2 -= 1)
-		   (repeat))))))
-	    (repeat))))))))
+	 (write-repeat r0))
+     (if (r1 == ,(charset-id 'latin-jisx0201))
+	 ;; (2) Latin Part of Japanese JISX0201.1976
+	 ;;     Convert to ASCII
+	 (write-repeat r0))
+     (if (r1 == ,(charset-id 'japanese-jisx0208))
+	 ;; (3) Characters of Japanese JISX0208.
+	 ((r1 = ((r0 & 127) | 128))
+	  (r0 = ((r0 >> 7) | 128))
+	  (write r0)
+	  (write-repeat r1)))
+     (if (r1 == ,(charset-id 'katakana-jisx0201))
+	 ;; (4) Katakana Part of Japanese JISX0201.1976
+	 ((r0 |= 128)
+	  (write ?\x8e)
+	  (write-repeat r0)))
+     (;; (5) Other characters are represented in NCR (Numeric
+      ;; Character References).
+      ;; (5.1) Convert a set of r1 (charset-id) and r0 (codepoint)
+      ;; to a character in Emacs internal representation.
+      (if (r0 > 255)
+	  ((r4 = (r0 & 127))
+	   (r0 = (((r0 >> 7) * 96) + r4))
+	   (r0 |= (r1 << 16)))
+	((r0 |= (r1 << 16))))
+      ;; (5.2) Convert a character in Emacs to a UCS codepoint.
+      (call emacs-char-to-ucs-codepoint-conversion)
+      ;; (5.3) Generate a string which represents a UCS
+      ;; codepoint in NCR.
+      (if (r0 <= 0)
+	  (write ?~)		; unknown character.
+	((r1 = 0)
+	 (r2 = 0)
+	 (loop
+	  (r1 = (r1 << 4))
+	  (r1 |= (r0 & 15))
+	  (r0 = (r0 >> 4))
+	  (if (r0 == 0)
+	      (break)
+	    ((r2 += 1)
+	     (repeat))))
+	 (write "&#x")
+	 (loop
+	  (branch (r1 & 15)
+		  ,@(mapcar
+		     (lambda (i)
+		       (list 'write (string-to-char (format "%x" i))))
+		     '(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15)))
+	  (r1 = (r1 >> 4))
+	  (if (r2 == 0)
+	      ((write ?\;)
+	       (break))
+	    ((r2 -= 1)
+	     (repeat))))))
+      (repeat)))))
 
 
 (provide 'w3m-ucs)
