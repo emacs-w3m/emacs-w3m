@@ -283,7 +283,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
   "Returna a list of w3m modules should be byte-compile'd."
   (let* ((modules (directory-files default-directory nil "^[^#]+\\.el$"))
 	 (version-specific-modules '("w3m-e19.el" "w3m-e20.el" "w3m-e21.el"
-				     "w3m-e22.el"
+				     "w3m-e23.el"
 				     "w3m-fsf.el" "w3m-om.el" "w3m-xmas.el"))
 	 (ignores;; modules not to be byte-compiled.
 	  (append
@@ -293,9 +293,8 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 				   "w3m-xmas.el")
 				  ((boundp 'MULE)
 				   "w3m-om.el")
-				  ((and (>= emacs-major-version 22)
-					(fboundp 'define-coding-system))
-				   '("w3m-e22.el" "w3m-fsf.el"))
+				  ((>= emacs-major-version 23)
+				   '("w3m-e23.el" "w3m-fsf.el"))
 				  ((>= emacs-major-version 21)
 				   '("w3m-e21.el" "w3m-fsf.el"))
 				  ((= emacs-major-version 20)

@@ -1,4 +1,4 @@
-;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs-22
+;;; w3m-e23.el --- The stuffs to use emacs-w3m on Emacs-23
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -28,7 +28,7 @@
 
 ;;; Commentary:
 
-;; This file contains the stuffs to use emacs-w3m on Emacs-21.  For
+;; This file contains the stuffs to use emacs-w3m on Emacs-23.  For
 ;; more detail about emacs-w3m, see:
 ;;
 ;;    http://emacs-w3m.namazu.org/
@@ -72,12 +72,6 @@
   (autoload 'w3m-image-type "w3m")
   (autoload 'w3m-retrieve "w3m"))
 
-(eval-and-compile
-  (unless (fboundp 'frame-current-scroll-bars)
-    (defalias 'frame-current-scroll-bars 'ignore))
-  (unless (fboundp 'window-fringes)
-    (defalias 'window-fringes 'ignore)))
-
 ;;; Coding system.
 
 (defun w3m-make-ccl-coding-system
@@ -94,10 +88,6 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 (defun w3m-add-local-hook (hook function &optional append)
   "Add to the buffer-local value of HOOK the function FUNCTION."
   (add-hook hook function append t))
-
-;; `display-images-p' has not been available prior to Emacs 21.0.105.
-(unless (fboundp 'display-images-p)
-  (defalias 'display-images-p 'display-graphic-p))
 
 ;; Function which returns non-nil when the current display device can
 ;; show images inline.
@@ -120,36 +110,36 @@ and its cdr element is used as height."
     (lexical-let ((set-size size)
 		  (url url)
 		  image size)
-      (w3m-process-do-with-temp-buffer
-	  (type (progn
-		  (set-buffer-multibyte nil)
-		  (w3m-retrieve url 'raw no-cache nil referer handler)))
-	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-	  (setq image (create-image (buffer-string) type t :ascent 'center))
-	  (if (and w3m-resize-images set-size)
-	      (progn
-		(set-buffer-multibyte t)
-		(setq size (image-size image 'pixels))
-		(if (and (null (car set-size)) (cdr set-size))
-		    (setcar set-size
-			    (/ (* (car size) (cdr set-size)) (cdr size))))
-		(if (and (null (cdr set-size)) (car set-size))
-		    (setcdr set-size
-			    (/ (* (cdr size) (car set-size)) (car size))))
-		(if (or (not (eq (car size)
-				 (car set-size)))  ; width is different
-			(not (eq (cdr size)
-				 (cdr set-size)))) ; height is different
-		    (lexical-let ((image image))
-		      (w3m-process-do
-			  (resized (w3m-resize-image
-				    (plist-get (cdr image) :data)
-				    (car set-size)(cdr set-size)
-				    handler))
-			(if resized (plist-put (cdr image) :data resized))
-			image))
-		  image))
-	    image))))))
+		 (w3m-process-do-with-temp-buffer
+		     (type (progn
+			     (set-buffer-multibyte nil)
+			     (w3m-retrieve url 'raw no-cache nil referer handler)))
+		   (when (w3m-image-type-available-p (setq type (w3m-image-type type)))
+		     (setq image (create-image (buffer-string) type t :ascent 'center))
+		     (if (and w3m-resize-images set-size)
+			 (progn
+			   (set-buffer-multibyte t)
+			   (setq size (image-size image 'pixels))
+			   (if (and (null (car set-size)) (cdr set-size))
+			       (setcar set-size
+				       (/ (* (car size) (cdr set-size)) (cdr size))))
+			   (if (and (null (cdr set-size)) (car set-size))
+			       (setcdr set-size
+				       (/ (* (cdr size) (car set-size)) (car size))))
+			   (if (or (not (eq (car size)
+					    (car set-size)))  ; width is different
+				   (not (eq (cdr size)
+					    (cdr set-size)))) ; height is different
+			       (lexical-let ((image image))
+					    (w3m-process-do
+						(resized (w3m-resize-image
+							  (plist-get (cdr image) :data)
+							  (car set-size)(cdr set-size)
+							  handler))
+					      (if resized (plist-put (cdr image) :data resized))
+					      image))
+			     image))
+		       image))))))
 
 (defun w3m-create-resized-image (url rate &optional referer size handler)
   "Resize an cached image object.
@@ -164,21 +154,21 @@ and its cdr element is used as height."
     (lexical-let ((url url)
 		  (rate rate)
 		  image)
-      (w3m-process-do-with-temp-buffer
-	  (type (progn
-		  (set-buffer-multibyte nil)
-		  (w3m-retrieve url 'raw nil nil referer handler)))
-	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-	  (setq image (create-image (buffer-string) type t :ascent 'center))
-	  (progn
-	    (set-buffer-multibyte t)
-	    (w3m-process-do
-		(resized (w3m-resize-image-by-rate
-			  (plist-get (cdr image) :data)
-			  rate
-			  handler))
-	      (if resized (plist-put (cdr image) :data resized))
-	      image)))))))
+		 (w3m-process-do-with-temp-buffer
+		     (type (progn
+			     (set-buffer-multibyte nil)
+			     (w3m-retrieve url 'raw nil nil referer handler)))
+		   (when (w3m-image-type-available-p (setq type (w3m-image-type type)))
+		     (setq image (create-image (buffer-string) type t :ascent 'center))
+		     (progn
+		       (set-buffer-multibyte t)
+		       (w3m-process-do
+			   (resized (w3m-resize-image-by-rate
+				     (plist-get (cdr image) :data)
+				     rate
+				     handler))
+			 (if resized (plist-put (cdr image) :data resized))
+			 image)))))))
 
 (defun w3m-insert-image (beg end image &rest args)
   "Display image on the current buffer.
@@ -293,15 +283,15 @@ Buffer string between BEG and END are replaced with IMAGE."
   :group 'w3m
   :type 'boolean)
 
-(defvar w3m-e21-toolbar-configurations
+(defvar w3m-e23-toolbar-configurations
   '((auto-resize-tool-bars       . t)
     (auto-raise-tool-bar-buttons . t)
     ;;(tool-bar-button-margin      . 0)
     ;;(tool-bar-button-relief      . 2)
     ))
 
-(defun w3m-e21-setup-toolbar (keymap defs)
-  (let ((configs w3m-e21-toolbar-configurations)
+(defun w3m-e23-setup-toolbar (keymap defs)
+  (let ((configs w3m-e23-toolbar-configurations)
 	config)
     (while (setq config (pop configs))
       (set (make-local-variable (car config)) (cdr config))))
@@ -321,7 +311,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 	      :enable (aref def 2)
 	      :image (symbol-value (aref def 0)))))))
 
-(defun w3m-e21-make-toolbar-buttons (buttons)
+(defun w3m-e23-make-toolbar-buttons (buttons)
   (dolist (button buttons)
     (let ((up (expand-file-name (concat button "-up.xpm")
 				w3m-icon-directory))
@@ -348,8 +338,8 @@ Buffer string between BEG and END are replaced with IMAGE."
 
 (defun w3m-setup-toolbar ()
   (when w3m-use-toolbar
-    (w3m-e21-make-toolbar-buttons w3m-toolbar-buttons)
-    (w3m-e21-setup-toolbar w3m-mode-map w3m-toolbar)))
+    (w3m-e23-make-toolbar-buttons w3m-toolbar-buttons)
+    (w3m-e23-setup-toolbar w3m-mode-map w3m-toolbar)))
 
 (defalias 'w3m-update-toolbar 'ignore)
 
@@ -437,24 +427,9 @@ Buffer string between BEG and END are replaced with IMAGE."
 				map)
 		   'help-echo "mouse-2 prompts to input URL")))))))
 
-(eval-when-compile
-  ;; Shut up the byte-compiler in old Emacs 21.
-  (unless (fboundp 'force-window-update)
-    (defalias 'force-window-update 'ignore)))
-
-(eval-and-compile
-  (defalias 'w3m-force-window-update
-    (if (and (fboundp 'force-window-update)
-	     (not (eq (symbol-function 'force-window-update) 'ignore)))
-	(lambda (&optional window) "\
-Force redisplay of WINDOW which defaults to the selected window."
-	  (force-window-update (or window (selected-window))))
-      (lambda (&optional ignore) "\
-Wobble the selected window size to force redisplay of the header-line."
-	(let ((window-min-height 0))
-	  (enlarge-window 1)
-	  (unless (eq (next-window nil 'ignore-minibuf) (selected-window))
-	    (shrink-window 1)))))))
+(defun w3m-force-window-update (&optional window)
+  "Force redisplay of WINDOW which defaults to the selected window."
+  (force-window-update (or window (selected-window))))
 
 (defun w3m-tab-drag-mouse-function (event buffer)
   (let ((window (posn-window (event-end event)))
@@ -664,7 +639,7 @@ cleared by a timer.")
       (unless (eq (next-window nil 'ignore-minibuf) (selected-window))
 	(shrink-window 1)))))
 
-(defun w3m-e21-switch-to-buffer (buffer &optional norecord)
+(defun w3m-e23-switch-to-buffer (buffer &optional norecord)
   "Run `switch-to-buffer' and redisplay the header-line.
 Redisplaying is done by wobbling the window size."
   (interactive "BSwitch to buffer: ")
@@ -674,15 +649,15 @@ Redisplaying is done by wobbling the window size."
 	       (eq major-mode 'w3m-mode))
       (w3m-force-window-update))))
 
-(defun w3m-e21-subst-switch-to-buffer-keys ()
-  "Substitute keys for `switch-to-buffer' with `w3m-e21-switch-to-buffer'."
-  (substitute-key-definition 'switch-to-buffer 'w3m-e21-switch-to-buffer
+(defun w3m-e23-subst-switch-to-buffer-keys ()
+  "Substitute keys for `switch-to-buffer' with `w3m-e23-switch-to-buffer'."
+  (substitute-key-definition 'switch-to-buffer 'w3m-e23-switch-to-buffer
 			     w3m-mode-map global-map))
 
 (add-hook 'w3m-mode-setup-functions 'w3m-tab-make-keymap)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-header-line)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-widget-faces)
-(add-hook 'w3m-mode-setup-functions 'w3m-e21-subst-switch-to-buffer-keys)
+(add-hook 'w3m-mode-setup-functions 'w3m-e23-subst-switch-to-buffer-keys)
 (add-hook 'w3m-select-buffer-hook 'w3m-force-window-update)
 
 ;; Graphic icons.
@@ -800,6 +775,6 @@ It should be called periodically in order to spin the spinner."
 			'help-echo w3m-spinner-map-help-echo))
       image)))
 
-(provide 'w3m-e22)
+(provide 'w3m-e23)
 
-;;; w3m-e22.el ends here
+;;; w3m-e23.el ends here
