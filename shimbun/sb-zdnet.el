@@ -43,7 +43,7 @@
     `(("comp" "news/past" ,(format template1 "news"))
       ("biztrends" "news/biztrends" ,(format template1 "news"))
       ("gamespot" "games" ,(format template2 "gsnews"))
-      ("enterprise" "enterprise/archives" ,(format template1 "enterprise"))
+      ("enterprise" "enterprise" ,(format template1 "enterprise"))
       ("broadband" "broadband/news" ,(format template1 "broadband"))
       ("macwire" "macwire/news" ,(format template1 "macwire"))
       ("mobile" "mobile/news" ,(format template1 "mobile")))))
