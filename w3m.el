@@ -1095,6 +1095,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (defvar w3m-max-anchor-sequence nil "Maximum number of anchor sequence on this buffer.")
 (defvar w3m-current-refresh nil "Cons pair of refresh attribute, '(sec . url).")
 (defvar w3m-current-ssl nil "SSL certification indicator.")
+(defvar w3m-current-redirect nil "Redirect location.")
 
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-base-url)
@@ -1109,6 +1110,7 @@ in the optimized interlaced endlessly animated gif format and base64.")
 (make-variable-buffer-local 'w3m-max-anchor-sequence)
 (make-variable-buffer-local 'w3m-current-refresh)
 (make-variable-buffer-local 'w3m-current-ssl)
+(make-variable-buffer-local 'w3m-current-redirect)
 
 (defsubst w3m-clear-local-variables ()
   (setq w3m-current-url nil
@@ -1122,10 +1124,12 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	w3m-contents-url nil
 	w3m-max-anchor-sequence nil
 	w3m-current-refresh nil
-	w3m-current-ssl nil))
+	w3m-current-ssl nil
+	w3m-current-redirect nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
-  (let (url base title forms cs icon next prev start toc hseq refresh ssl)
+  (let (url base title forms cs icon next prev
+        start toc hseq refresh ssl redirect)
     (with-current-buffer from-buffer
       (setq url w3m-current-url
 	    base w3m-current-base-url
@@ -1138,7 +1142,8 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	    toc w3m-contents-url
 	    hseq w3m-max-anchor-sequence
 	    refresh w3m-current-refresh
-	    ssl w3m-current-ssl))
+	    ssl w3m-current-ssl
+	    redirect w3m-current-redirect))
     (setq w3m-current-url url
 	  w3m-current-base-url base
 	  w3m-current-title title
@@ -1150,7 +1155,8 @@ in the optimized interlaced endlessly animated gif format and base64.")
 	  w3m-contents-url toc
 	  w3m-max-anchor-sequence hseq
 	  w3m-current-refresh refresh
-	  w3m-current-ssl ssl)))
+	  w3m-current-ssl ssl
+	  w3m-current-redirect redirect)))
 
 (defvar w3m-verbose t "Flag variable to control messages.")
 
@@ -2806,9 +2812,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(when (string-match ";\\'" type)
 		  (setq type (substring type 0 (match-beginning 0))))))
 	    (when moved
-	      (setq w3m-current-refresh
-		    (cons 0
-			  (w3m-expand-url (cdr (assoc "location" alist))))))
+	      (setq w3m-current-redirect
+		    (w3m-expand-url (cdr (assoc "location" alist)))))
 	    (setq w3m-current-ssl (cdr (assoc "w3m-ssl-certificate" alist)))
 	    (list (or type (w3m-local-content-type url))
 		  (or charset
@@ -3417,8 +3422,7 @@ argument.  Otherwise, it will be called with nil."
     ("\\`image/" . w3m-prepare-image-content)))
 
 (defun w3m-prepare-content (url type output-buffer &optional content-charset)
-  (unless (and w3m-current-refresh
-	       (eq (car w3m-current-refresh) 0))
+  (unless w3m-current-redirect
     (catch 'content-prepared
       (dolist (elem w3m-content-prepare-functions)
 	(and (string-match (car elem) type)
@@ -4875,36 +4879,40 @@ field for this request."
 	  (with-current-buffer w3m-current-buffer
 	    (setq w3m-current-process nil)
 	    (setq real-url (w3m-real-url url))
-	    (cond
-	     ((not action)
-	      (w3m-history-push real-url
-				(list :title (file-name-nondirectory url)))
-	      (w3m-history-push w3m-current-url)
-	      (w3m-refontify-anchor))
-	     ((not (eq action 'cursor-moved))
-	      (w3m-history-push w3m-current-url (list :title w3m-current-title))
-	      (w3m-history-add-properties (list :referer referer
-						:post-data post-data)
-					  nil nil t)
-	      (or (and name (w3m-search-name-anchor name))
-		  (goto-char (point-min)))
-	      (unless w3m-toggle-inline-images-permanently
-		(setq w3m-display-inline-images w3m-default-display-inline-images))
-	      (cond ((w3m-display-inline-images-p)
-		     (and w3m-force-redisplay (sit-for 0))
-		     (w3m-toggle-inline-images 'force reload))
-		    ((and (w3m-display-graphic-p)
-			  w3m-image-only-page)
-		     (and w3m-force-redisplay (sit-for 0))
-		     (w3m-toggle-inline-image 'force reload)))
-	      (setq buffer-read-only t)
-	      (set-buffer-modified-p nil)))
-	    (w3m-arrived-add orig w3m-current-title nil nil cs ct)
-	    ;; must be `w3m-current-url'
-	    (setq default-directory (w3m-current-directory w3m-current-url))
-	    (w3m-update-toolbar)
-	    (run-hook-with-args 'w3m-display-hook (or real-url url))
-	    (w3m-refresh-at-time))))))))
+	    (if w3m-current-redirect
+		(w3m-goto-url w3m-current-redirect)
+	      (cond
+	       ((not action)
+		(w3m-history-push real-url
+				  (list :title (file-name-nondirectory url)))
+		(w3m-history-push w3m-current-url)
+		(w3m-refontify-anchor))
+	       ((not (eq action 'cursor-moved))
+		(w3m-history-push w3m-current-url
+				  (list :title w3m-current-title))
+		(w3m-history-add-properties (list :referer referer
+						  :post-data post-data)
+					    nil nil t)
+		(or (and name (w3m-search-name-anchor name))
+		    (goto-char (point-min)))
+		(unless w3m-toggle-inline-images-permanently
+		  (setq w3m-display-inline-images
+			w3m-default-display-inline-images))
+		(cond ((w3m-display-inline-images-p)
+		       (and w3m-force-redisplay (sit-for 0))
+		       (w3m-toggle-inline-images 'force reload))
+		      ((and (w3m-display-graphic-p)
+			    w3m-image-only-page)
+		       (and w3m-force-redisplay (sit-for 0))
+		       (w3m-toggle-inline-image 'force reload)))
+		(setq buffer-read-only t)
+		(set-buffer-modified-p nil)))
+	      (w3m-arrived-add orig w3m-current-title nil nil cs ct)
+	      ;; must be `w3m-current-url'
+	      (setq default-directory (w3m-current-directory w3m-current-url))
+	      (w3m-update-toolbar)
+	      (run-hook-with-args 'w3m-display-hook (or real-url url))
+	      (w3m-refresh-at-time)))))))))
 
 (defun w3m-current-directory (url)
   (let (file)

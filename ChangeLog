@@ -1,3 +1,15 @@
+2002-03-25  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-current-redirect): New buffer local variable.
+	(w3m-clear-local-variables): Add w3m-current-redirect.
+	(w3m-copy-local-variables): Treat w3m-current-redirect.
+	(w3m-w3m-attributes): Set w3m-current-redirect instead of
+	w3m-current-refresh when 30x response.
+	(w3m-prepare-content): Use w3m-current-redirect instead of
+	w3m-current-refresh.
+	(w3m-goto-url): Do nothing but w3m-goto-url after retrieval if
+	w3m-current-redirect is set.
+
 2002-03-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-cookie.el (w3m-cookie-file): Changed default value.
