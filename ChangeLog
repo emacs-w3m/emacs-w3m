@@ -3,6 +3,10 @@
 	* shimbun/mew-shimbun.el (mew-shimbun-mark-re-retrieve): Change
 	default value for Mew 4.0.66 and later.
 
+2004-08-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* Release emacs-w3m-1.4.3 from emacs-w3m-1_4 branch.
+
 2004-08-15  Kazuhiro UCHIDA  <kayoujin@yahoo.co.jp>
 
 	* w3m.el (w3m-remove-meta-charset-tags): Check that a content
