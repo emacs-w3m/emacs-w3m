@@ -1,7 +1,6 @@
 2004-04-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* shimbun/sb-texfaq.el (shimbun-texfaq-url): Follow the change of
-	the site place.
+	* shimbun/sb-texfaq.el: Rewrite.
 
 2004-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
