@@ -42,6 +42,7 @@
 (eval-when-compile
   (defvar w3m-current-image-status)
   (defvar w3m-current-url)
+  (defvar w3m-current-title)
   (defvar w3m-default-coding-system)
   (defvar w3m-history)
   (defvar w3m-history-flat)
@@ -462,17 +463,15 @@ title contains non-ascii characters, show a url name by default."
 	       (eq 'w3m-mode major-mode))
 	  (let* ((len (specifier-instance
 		       (symbol-value 'buffers-tab-default-buffer-line-length)))
-		 (name (if (and (symbol-value 'w3m-current-title)
-				(string-match
-				 "^[ -~]+$"
-				 (symbol-value 'w3m-current-title)))
-			   (symbol-value 'w3m-current-title)
-			 (directory-file-name
-			  (if (string-match "^[^/:]+:/+"
-					    (symbol-value 'w3m-current-url))
-			      (substring (symbol-value 'w3m-current-url)
-					 (match-end 0))
-			    (symbol-value 'w3m-current-url)))))
+		 (name (if (and (stringp w3m-current-title)
+				(string-match "^[ -~]+$" w3m-current-title))
+			   w3m-current-title
+			 (if (stringp w3m-current-url)
+			     (directory-file-name
+			      (if (string-match "^[^/:]+:/+" w3m-current-url)
+				  (substring w3m-current-url (match-end 0))
+				w3m-current-url))
+			   "")))
 		 (num (if (string-match ".*<\\(.+\\)>$" (buffer-name buffer))
 			  (match-string 1 (buffer-name buffer))))
 		 (lnum (length num)))
