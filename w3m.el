@@ -668,11 +668,10 @@ of the original request method. -- RFC2616"
   :group 'w3m-face)
 
 (defcustom w3m-mode-hook
-  (nconc
-   (when (featurep 'w3m-e21)
-     '(w3m-setup-header-line
-       w3m-setup-widget-faces
-       w3m-update-tab-line)))
+  (when (featurep 'w3m-e21)
+    '(w3m-setup-header-line
+      w3m-setup-widget-faces
+      w3m-update-tab-line))
   "*Hook run before `w3m-mode' called."
   :group 'w3m
   :type 'hook)
