@@ -134,6 +134,7 @@ Emacs-w3m $B3+H/%A!<%`(B
 * Frequently Asked Questions::  $BI,$:Ez$,$"$k$H$O8B$i$J$$(B
 * Known Problems::              $B$"$J$?$J$i$-$C$H2r7h$G$-$k(B
 * Shimbun Library::             $B%&%'%V>e$N?7J9$rFI$`$?$a$NF;6q(B
+* Mailing List::                $B%a!<%j%s%0%j%9%H!"%P%0%j%]!<%H(B
 * Index::                       $B:w0z(B
 
 @detailmenu
@@ -150,36 +151,41 @@ Getting Started
 
 Basic Usage
 
-* Browsing Web Pages::          $B$5$"!"%M%C%H%5!<%U%#%s$N$O$8$^$j$^$8$^$j(B
+* Browsing Web Pages::          $B%M%C%H%5!<%U%#%s$7$h$&(B!
 * Inline Images::               $B2hA|I=<($r(B ON/OFF $B$9$k(B
-* Tracing History::             $B$"$J$?$N2a5n$J$ICN$j$?$/$J$$$o(B
+* Tracing History::             $B2a5n$N%Z!<%8$r?6$jJV$k(B
 * Putting Bookmarks::           $B$\$/$N(B/$B$o$?$7$N$*5$$KF~$j(B
-* Using Tabs::                  $B==2sB3$1$F%?%V$H8@$C$F$_$h$&(B
+* Using Tabs::                  $B$3$l$,N.9T$N%?%V!&%V%i%&%6!<$@(B
 * Selecting Buffers::           $B$?$/$5$s$N%;%C%7%g%s$+$i0l$D$rA*$V(B
 * Downloading::                 $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
+* Submitting Forms::            $BF~NO%(%j%"$K5-F~$9$k(B
 
 Pretty Good Features
 
 * Searching Words::             $B8l$N8!:w$KJXMx$J%3%^%s%I(B
 * Quick Searching::             $B?WB.%5!<%A(B
-* Weather Information::         $BE75$M=Js$r8+$k(B
-* Using Antenna::               $B%"%s%F%J$C$F2?(B?
+* Weather Information::         $BL@F|$O@2$l$k$G$7$g$&(B
+* Using Antenna::               $B%"%s%F%J$rD%$j=d$i$9(B
 * Showing Directory Tree::      $B%G%#%l%/%H%j$NLZ9=B$$rI=<($9$k(B
 * Viewing Perl Documents::      Perl $B$N%I%-%e%a%s%H$r8+$k(B
+* Using Namazu::                Namazu $B$G%U%!%$%k$r8!:w$9$k(B
+* Octet::                       application/octet-stream $B%G!<%?$r8+$k(B
 
 Customizable Options
 
 Hooking into MUAs
 
-* Gnus::                        
-* Mew::                         
-* SEMI MUAs::                   
+* Gnus::                        Gnus $B$G(B HTML $B%a!<%k$rFI$`(B
+* Mew::                         Mew $B$G(B HTML $B%a!<%k$rFI$`(B
+* SEMI MUAs::                   SEMI MUA $B$G(B HTML $B%a!<%k$rFI$`(B
 
 Frequently Asked Questions
 
 Known Problems
 
 Shimbun Library
+
+Mailing List
 
 @end detailmenu
 @end menu
@@ -446,7 +452,34 @@ emacs-w3m $B$r(B XEmacs $B%Q%C%1!<%8$H$7$F%$%s%9%H!<%k$9$k$3$H$b$G$-$^$9(B:
 % make install-package
 @end example
 
-$B$3$N>l9g(B @samp{make install-icons} $B$r<B9T$9$kI,MW$O$"$j$^$;$s!%(B
+$B$3$N>l9g(B @samp{make install-icons} $B$r<B9T$9$kI,MW$O$"$j$^$;$s!#(B
+
+$B%Q%C%1!<%8!&%G%#%l%/%H%j$r;XDj$9$k$K$OFs$D$NJ}K!$,$"$j$^$9(B:
+
+@itemize @bullet
+
+@item
+@samp{configure} $B%*%W%7%g%s$N(B @samp{--with-packagedir=} $B$r;H$$$^$9!#Nc$G(B
+$B$9(B:
+
+@example
+% ./configure --with-packagedir=/opt/xemacs/xemacs-packages
+% make what-where
+% make
+% make install-package
+@end example
+
+@item
+$BJQ?t(B @samp{PACKAGEDIR} $B$r;H$$$^$9!#Nc$G$9(B:
+
+@example
+% ./configure
+% make what-where PACKAGEDIR=/opt/xemacs/xemacs-packages
+% make
+% make install-package PACKAGEDIR=/opt/xemacs/xemacs-packages
+@end example
+
+@end itemize
 
 @end enumerate
 
@@ -473,23 +506,116 @@ APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$
 @node Minimal Settings
 @section $B@_Dj$7$J$1$l$P$J$i$J$$:GDc8B$N$b$N(B
 
+$B$3$N9`$K$O4pK\E*$J@_Dj$7$+$"$j$^$;$s!#%f!<%6$N9%$_$K$h$C$F%+%9%?%^%$%:$G(B
+$B$-$k$?$/$5$s$N%*%W%7%g%s$O(B @xref{Customizable Options} $B$K=q$+$l$F$$$^$9!#(B
+
+@table @samp
+
+@item Autoloads
+@cindex autoload
+Emacs-w3m $B$r(B XEmacs $B%Q%C%1!<%8$H$7$F%$%s%9%H!<%k(B (@pxref{Installing
+Emacs-w3m}) $B$7$F$"$l$P(B @file{w3m/auto-autoloads.el} $B%U%!%$%k$,$"$k$N$G!"(B
+autoload $B$N@_Dj$r9T$J$&I,MW$O$"$j$^$;$s!#$=$&$G$J$1$l$P!"0J2<$N9T(B
+$B$r(B @file{~/.emacs} $B%U%!%$%k$KF~$l$F2<$5$$(B:
+
+@lisp
+(autoload 'w3m "w3m"
+  "Visit the WWW page using w3m" t)
+@end lisp
+
+$B$3$l0J30$K!"I,MW$K1~$8$F0J2<$N$h$&$J@_Dj$rDI2C$7$F2<$5$$!#(B
+
+@lisp
+(autoload 'w3m-find-file "w3m"
+  "Find a local file using emacs-w3m." t)
+(autoload 'w3m-browse-url "w3m"
+  "Ask emacs-w3m to show a url." t)
+(autoload 'w3m-antenna "w3m-antenna"
+  "Report changes of web sites." t)
+(autoload 'w3m-bookmark-view "w3m-bookmark"
+  "Show bookmarks." t)
+(autoload 'w3m-dtree "w3m-dtree"
+  "Display a directory tree." t)
+(autoload 'w3m-namazu "w3m-namazu"
+  "Search files with Namazu." t)
+(autoload 'w3m-perldoc "w3m-perldoc"
+  "View Perl documents" t)
+(autoload 'w3m-search "w3m-search"
+  "Search words using emacs-w3m." t)
+(autoload 'w3m-weather "w3m-weather"
+  "Display a weather report." t)
+@end lisp
+
+@item Startup File
+@cindex startup file
+@vindex w3m-init-file
+
+Emacs-w3m $B$N$$$m$s$J%*%W%7%g%s$r$$$8$k$H$-$O!"(B
+@file{~/.emacs-w3m} (@code{w3m-init-file} $B$N%G%U%)%k%HCM(B) $B$NMxMQ$r?d>)$7(B
+$B$^$9!#$3$N%U%!%$%k$O(B @file{~/.emacs} $B$H;w$F$$$^$9$,!"$3$A$i(B
+$B$O(B emacs-w3m $B$,5/F0$9$k$H$-$KFI$_9~$^$l$^$9!#$7$+$7!"Nc$($PA0=R(B
+$B$N(B autoload $B$N$h$&$K!"$=$3$K=q$1$J$$Nc30$N@_Dj$,$"$k$3$H$KCm0U$7$F2<$5$$!#(B
+
+@item Proxy Gateway
+@cindex firewall
+@cindex proxy gateway
+@vindex w3m-command-arguments
+@vindex w3m-no-proxy-domains
+
+$B$"$J$?$,KI2PJI(B (firewall) $B$NCf$K$$$F!"(Bproxy $B%2!<%H%&%'%$$rDL$7$F$7$+30It(B
+$B$N(B web $B%5%$%H$K@\B3$G$-$J$$>l9g$O!"(Bproxy $B%2!<%H%&%(%$$r;H$&$h$&$K(B w3m $B$K(B
+$B;X<($9$kI,MW$,$"$j$^$9!#(B
+
+$B$3$l$K$O$$$/$D$+$NJ}K!$,$"$j$^$9!#0l$D$O4D6-JQ(B
+$B?t(B @code{http_proxy} $B$r(B shell $B>e$G!"$3$s$J$U$&$K%0%m!<%P%k$K@_Dj$9$k$3$H(B
+$B$G$9(B:
+
+@example
+setenv http_proxy http://proxy.hogege.com:8000/
+@end example
+
+$BB>$K!"%*%W%7%g%s(B @code{w3m-command-arguments} $B$r%+%9%?%^%$%:$7$F!"(B
+@samp{-o} $B$*$h$S(B @samp{http_proxy=http://PROXY_SERVER_NAME:PORT/} $B$rDI2C(B
+$B$9$kJ}K!$,$"$j$^$9!#$3$l$O(B @file{~/.emacs-w3m} $B%U%!%$%k$G0J2<$N$h$&$K9T(B
+$B$J$&$3$H$b$G$-$^$9!#(B
+
+@lisp
+(setq w3m-command-arguments
+      (nconc w3m-command-arguments
+             '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
+@end lisp
+
+$B4D6-JQ?t(B @code{no-proxy} $B$K%3%s%^$G6hJ,$1$5$l$?%[%9%HL>$r@_Dj$9$k$+!"$^(B
+$B$?$O0J2<$N$h$&$K%I%a%$%sL>(B ($B%[%9%HL>$G$O$J$$(B) $B$N%j%9%H$r%*%W%7%g(B
+$B%s(B @code{w3m-no-proxy-domains} $B$K@_Dj$9$k$3$H$K$h$C$F!"(Bproxy $B%2!<%H%&%'(B
+$B%$$r;H$o$:$K@\B3$9$k%[%9%H$r;XDj$9$k$3$H$,$G$-$^$9!#(B
+
+@lisp
+(setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
+@end lisp
+
+@code{no-proxy} $B%[%9%H$N@_Dj$K@55,I=8=$r;H$&$K$O!"%*%W%7%g(B
+$B%s(B @code{w3m-command-arguments-alist} $B$N%I%-%e%a%s%H$r8+$F2<$5$$!#(B
+
+@end table
 
 @node Basic Usage
 @chapter $B4pK\E*$J;H$$J}(B
 
 
 @menu
-* Browsing Web Pages::          $B$5$"!"%M%C%H%5!<%U%#%s$N$O$8$^$j$^$8$^$j(B
+* Browsing Web Pages::          $B%M%C%H%5!<%U%#%s$7$h$&(B!
 * Inline Images::               $B2hA|I=<($r(B ON/OFF $B$9$k(B
-* Tracing History::             $B$"$J$?$N2a5n$J$ICN$j$?$/$J$$$o(B
+* Tracing History::             $B2a5n$N%Z!<%8$r?6$jJV$k(B
 * Putting Bookmarks::           $B$\$/$N(B/$B$o$?$7$N$*5$$KF~$j(B
-* Using Tabs::                  $B==2sB3$1$F%?%V$H8@$C$F$_$h$&(B
+* Using Tabs::                  $B$3$l$,N.9T$N%?%V!&%V%i%&%6!<$@(B
 * Selecting Buffers::           $B$?$/$5$s$N%;%C%7%g%s$+$i0l$D$rA*$V(B
 * Downloading::                 $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
+* Submitting Forms::            $BF~NO%(%j%"$K5-F~$9$k(B
 @end menu
 
 @node Browsing Web Pages
-@section $B$5$"!"%M%C%H%5!<%U%#%s$N$O$8$^$j$^$8$^$j(B
+@section $B%M%C%H%5!<%U%#%s$7$h$&(B!
 
 
 @node Inline Images
@@ -497,7 +623,7 @@ APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$
 
 
 @node Tracing History
-@section $B$"$J$?$N2a5n$J$ICN$j$?$/$J$$$o(B
+@section $B2a5n$N%Z!<%8$r?6$jJV$k(B
 
 
 @node Putting Bookmarks
@@ -505,7 +631,7 @@ APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$
 
 
 @node Using Tabs
-@section $B==2sB3$1$F%?%V$H8@$C$F$_$h$&(B
+@section $B$3$l$,N.9T$N%?%V!&%V%i%&%6!<$@(B
 
 
 @node Selecting Buffers
@@ -516,6 +642,10 @@ APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$
 @section $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
 
 
+@node Submitting Forms
+@section $BF~NO%(%j%"$K5-F~$9$k(B
+
+
 @node Pretty Good Features
 @chapter $B$?$/$5$s$N$9$0$l$b$N(B
 
@@ -523,10 +653,12 @@ APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$
 @menu
 * Searching Words::             $B8l$N8!:w$KJXMx$J%3%^%s%I(B
 * Quick Searching::             $B?WB.%5!<%A(B
-* Weather Information::         $BE75$M=Js$r8+$k(B
-* Using Antenna::               $B%"%s%F%J$C$F2?(B?
+* Weather Information::         $BL@F|$O@2$l$k$G$7$g$&(B
+* Using Antenna::               $B%"%s%F%J$rD%$j=d$i$9(B
 * Showing Directory Tree::      $B%G%#%l%/%H%j$NLZ9=B$$rI=<($9$k(B
 * Viewing Perl Documents::      Perl $B$N%I%-%e%a%s%H$r8+$k(B
+* Using Namazu::                Namazu $B$G%U%!%$%k$r8!:w$9$k(B
+* Octet::                       application/octet-stream $B%G!<%?$r8+$k(B
 @end menu
 
 @node Searching Words
@@ -538,11 +670,11 @@ APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$
 
 
 @node Weather Information
-@section $BE75$M=Js$r8+$k(B
+@section $BL@F|$O@2$l$k$G$7$g$&(B
 
 
 @node Using Antenna
-@section $B%"%s%F%J$C$F2?(B?
+@section $B%"%s%F%J$rD%$j=d$i$9(B
 
 
 @node Showing Directory Tree
@@ -551,6 +683,14 @@ APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$
 
 @node Viewing Perl Documents
 @section Perl $B$N%I%-%e%a%s%H$r8+$k(B
+
+
+@node Using Namazu
+@section Namazu $B$G%U%!%$%k$r8!:w$9$k(B
+
+
+@node Octet
+@section application/octet-stream $B%G!<%?$r8+$k(B
 
 
 @node Customizable Options
@@ -562,21 +702,21 @@ APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$
 
 
 @menu
-* Gnus::                        
-* Mew::                         
-* SEMI MUAs::                   
+* Gnus::                        Gnus $B$G(B HTML $B%a!<%k$rFI$`(B
+* Mew::                         Mew $B$G(B HTML $B%a!<%k$rFI$`(B
+* SEMI MUAs::                   SEMI MUA $B$G(B HTML $B%a!<%k$rFI$`(B
 @end menu
 
 @node Gnus
-@section Gnus
+@section Gnus $B$G(B HTML $B%a!<%k$rFI$`(B
 
 
 @node Mew
-@section Mew
+@section Mew $B$G(B HTML $B%a!<%k$rFI$`(B
 
 
 @node SEMI MUAs
-@section SEMI MUAs
+@section SEMI MUA $B$G(B HTML $B%a!<%k$rFI$`(B
 
 
 @node Frequently Asked Questions
@@ -590,6 +730,12 @@ APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$
 @node Shimbun Library
 @chapter $B%&%'%V>e$N?7J9$rFI$`$?$a$NF;6q(B
 @cindex shimbun
+
+
+@node Mailing List
+@chapter $B%a!<%j%s%0%j%9%H!"%P%0%j%]!<%H(B
+@cindex mailing list
+@cindex bug reports
 
 
 @node Index

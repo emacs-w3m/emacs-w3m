@@ -93,6 +93,7 @@ This manual corresponds to emacs-w3m version @value{VERSION}.
 * Frequently Asked Questions::  There isn't always an answer
 * Known Problems::              You can surely solve it
 * Shimbun Library::             A tool for reading a web newspaper
+* Mailing List::                Mailing list and submitting bug reports
 * Index::                       Index
 
 @detailmenu
@@ -109,36 +110,41 @@ Getting Started
 
 Basic Usage
 
-* Browsing Web Pages::          
-* Inline Images::               
-* Tracing History::             
-* Putting Bookmarks::           
-* Using Tabs::                  
-* Selecting Buffers::           
-* Downloading::                 
+* Browsing Web Pages::          Let's go netsurfing!
+* Inline Images::               Toggle displaying inline images
+* Tracing History::             Looking back at the old pages
+* Putting Bookmarks::           That's a favorite with me!
+* Using Tabs::                  This is the tab browser of fashion
+* Selecting Buffers::           Choosing one from many sessions
+* Downloading::                 Downloading a file
+* Submitting Forms::            Filling in a text field
 
 Pretty Good Features
 
-* Searching Words::             
-* Quick Searching::             
-* Weather Information::         
-* Using Antenna::               
-* Showing Directory Tree::      
-* Viewing Perl Documents::      
+* Searching Words::             A convenient command for words reference
+* Quick Searching::             Isn't that cool?
+* Weather Information::         It will be fine tomorrow
+* Using Antenna::               Having your antenna up
+* Showing Directory Tree::      Showing the tree structure of local directory
+* Viewing Perl Documents::      Viewing Perl Documents
+* Using Namazu::                Searching files with Namazu
+* Octet::                       Viewing data in various octal form
 
 Customizable Options
 
 Hooking into MUAs
 
-* Gnus::                        
-* Mew::                         
-* SEMI MUAs::                   
+* Gnus::                        Reading HTML mails in Gnus
+* Mew::                         Reading HTML mails in Mew
+* SEMI MUAs::                   Reading HTML mails in SEMI MUAs
 
 Frequently Asked Questions
 
 Known Problems
 
 Shimbun Library
+
+Mailing List
 
 @end detailmenu
 @end menu
@@ -393,6 +399,33 @@ install-package} instead of @samp{make install} as follows:
 
 In this case, you don't have to execute @samp{make install-icons}.
 
+If you need to specify the package directory, there are two ways to do
+that:
+
+@itemize @bullet
+
+@item
+Use the @samp{configure} option @samp{--with-packagedir=}.  For example:
+
+@example
+% ./configure --with-packagedir=/opt/xemacs/xemacs-packages
+% make what-where
+% make
+% make install-package
+@end example
+
+@item
+Use the variable @samp{PACKAGEDIR}.  For example:
+
+@example
+% ./configure
+% make what-where PACKAGEDIR=/opt/xemacs/xemacs-packages
+% make
+% make install-package PACKAGEDIR=/opt/xemacs/xemacs-packages
+@end example
+
+@end itemize
+
 @end enumerate
 
 @node Non-UNIX-like systems
@@ -418,47 +451,148 @@ necessary to tell those places to the installer as shown below:
 @node Minimal Settings
 @section Minimal settings to run emacs-w3m
 
+There are only fundamental items in this section.  Many options which
+can be customized by user's preferences are described in
+@xref{Customizable Options}.
+
+@table @samp
+
+@item Autoloads
+@cindex autoload
+You never need to set the autoload definitions if you've emacs-w3m
+installed as an XEmacs package (@pxref{Installing Emacs-w3m}) because of
+the @file{w3m/auto-autoloads.el} file.  If not, put the following line
+in your @file{~/.emacs} file:
+
+@lisp
+(autoload 'w3m "w3m"
+  "Visit the WWW page using w3m" t)
+@end lisp
+
+In addition to this, put the following setups if needed:
+
+@lisp
+(autoload 'w3m-find-file "w3m"
+  "Find a local file using emacs-w3m." t)
+(autoload 'w3m-browse-url "w3m"
+  "Ask emacs-w3m to show a url." t)
+(autoload 'w3m-antenna "w3m-antenna"
+  "Report changes of web sites." t)
+(autoload 'w3m-bookmark-view "w3m-bookmark"
+  "Show bookmarks." t)
+(autoload 'w3m-dtree "w3m-dtree"
+  "Display a directory tree." t)
+(autoload 'w3m-namazu "w3m-namazu"
+  "Search files with Namazu." t)
+(autoload 'w3m-perldoc "w3m-perldoc"
+  "View Perl documents" t)
+(autoload 'w3m-search "w3m-search"
+  "Search words using emacs-w3m." t)
+(autoload 'w3m-weather "w3m-weather"
+  "Display a weather report." t)
+@end lisp
+
+@item Startup File
+@cindex startup file
+@vindex w3m-init-file
+
+We recommend using the file @file{~/.emacs-w3m} (which is the default
+value of @code{w3m-init-file}) when you twiddle some options of
+emacs-w3m.  This file is similar to @file{~/.emacs}, but is read when
+emacs-w3m starts.  However, note that there are setups of the exception
+which cannot write there, for example, the autoload definitions as
+mentioned above.
+
+@item Proxy Gateway
+@cindex firewall
+@cindex proxy gateway
+@vindex w3m-command-arguments
+@vindex w3m-no-proxy-domains
+
+If you are behind a firewall and only have access to foreign web sites
+through the proxy gateway, you need to instruct w3m to use the proxy
+gateway.
+
+There are some ways to do this, one is to set the environment variable
+@code{http_proxy} globally in the shell something like:
+
+@example
+setenv http_proxy http://proxy.hogege.com:8000/
+@end example
+
+Another way is to customize the option @code{w3m-command-arguments} to
+add the options @samp{-o} and
+@samp{http_proxy=http://PROXY_SERVER_NAME:PORT/}.
+
+This can also be done in your @file{~/.emacs-w3m} file as shown below:
+
+@lisp
+(setq w3m-command-arguments
+      (nconc w3m-command-arguments
+             '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
+@end lisp
+
+To specify @code{no-proxy} hosts that not to use proxy gateways to
+connect to, you can set the environment variable @code{no_proxy} with
+the comma separated host names, or set the option
+@code{w3m-no-proxy-domains} with a list of domain names (not host names)
+as follows:
+
+@lisp
+(setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
+@end lisp
+
+See also the documentation for the option
+@code{w3m-command-arguments-alist} to use regexps to specify the
+@code{no-proxy} hosts.
+
+@end table
 
 @node Basic Usage
 @chapter Basic usage
 
 
 @menu
-* Browsing Web Pages::          
-* Inline Images::               
-* Tracing History::             
-* Putting Bookmarks::           
-* Using Tabs::                  
-* Selecting Buffers::           
-* Downloading::                 
+* Browsing Web Pages::          Let's go netsurfing!
+* Inline Images::               Toggle displaying inline images
+* Tracing History::             Looking back at the old pages
+* Putting Bookmarks::           That's a favorite with me!
+* Using Tabs::                  This is the tab browser of fashion
+* Selecting Buffers::           Choosing one from many sessions
+* Downloading::                 Downloading a file
+* Submitting Forms::            Filling in a text field
 @end menu
 
 @node Browsing Web Pages
-@section Browsing web pages
+@section Let's go netsurfing!
 
 
 @node Inline Images
-@section Inline images
+@section Toggle displaying inline images
 
 
 @node Tracing History
-@section Tracing history
+@section Looking back at the old pages
 
 
 @node Putting Bookmarks
-@section Putting bookmarks
+@section That's a favorite with me!
 
 
 @node Using Tabs
-@section Using tabs
+@section This is the tab browser of fashion
 
 
 @node Selecting Buffers
-@section Selecting buffers
+@section Choosing one from many sessions
 
 
 @node Downloading
-@section Downloading
+@section Downloading a file
+
+
+@node Submitting Forms
+@section Filling in a text field
 
 
 @node Pretty Good Features
@@ -466,36 +600,46 @@ necessary to tell those places to the installer as shown below:
 
 
 @menu
-* Searching Words::             
-* Quick Searching::             
-* Weather Information::         
-* Using Antenna::               
-* Showing Directory Tree::      
-* Viewing Perl Documents::      
+* Searching Words::             A convenient command for words reference
+* Quick Searching::             Isn't that cool?
+* Weather Information::         It will be fine tomorrow
+* Using Antenna::               Having your antenna up
+* Showing Directory Tree::      Showing the tree structure of local directory
+* Viewing Perl Documents::      Viewing Perl Documents
+* Using Namazu::                Searching files with Namazu
+* Octet::                       Viewing data in various octal form
 @end menu
 
 @node Searching Words
-@section Searching words
+@section A convenient command for words reference
 
 
 @node Quick Searching
-@section Quick searching
+@section Isn't that cool?
 
 
 @node Weather Information
-@section Weather information
+@section It will be fine tomorrow
 
 
 @node Using Antenna
-@section Using antenna
+@section Having your antenna up
 
 
 @node Showing Directory Tree
-@section Showing directory tree
+@section Showing the tree structure of local directory
 
 
 @node Viewing Perl Documents
 @section Viewing perl socuments
+
+
+@node Using Namazu
+@section Searching files with Namazu
+
+
+@node Octet
+@section Viewing data in various octal form
 
 
 @node Customizable Options
@@ -507,21 +651,21 @@ necessary to tell those places to the installer as shown below:
 
 
 @menu
-* Gnus::                        
-* Mew::                         
-* SEMI MUAs::                   
+* Gnus::                        Reading HTML mails in Gnus
+* Mew::                         Reading HTML mails in Mew
+* SEMI MUAs::                   Reading HTML mails in SEMI MUAs
 @end menu
 
 @node Gnus
-@section Gnus
+@section Reading HTML mails in Gnus
 
 
 @node Mew
-@section Mew
+@section Reading HTML mails in Mew
 
 
 @node SEMI MUAs
-@section SEMI MUAs
+@section Reading HTML mails in SEMI MUAs
 
 
 @node Frequently Asked Questions
@@ -535,6 +679,12 @@ necessary to tell those places to the installer as shown below:
 @node Shimbun Library
 @chapter A tool for reading a newspaper
 @cindex shimbun
+
+
+@node Mailing List
+@chapter Mailing list and submitting bug reports
+@cindex mailing list
+@cindex bug reports
 
 
 @node Index
