@@ -1,5 +1,9 @@
 2001-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-xmas.el (w3m-xmas-define-missing-widgets): New function.
+	(TopLevel): Use it for defining some missing widgets after the
+	library wid-edit is loaded.
+
 	* w3m.el (w3m-track-mouse): Added a description about balloon-help.
 	(w3m-make-balloon-help): New macro.
 	(w3m-fontify-anchors, w3m-fontify-images): Use it.

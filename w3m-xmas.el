@@ -119,42 +119,58 @@ Buffer string between BEG and END are replaced with IMAGE."
 		   (cons (current-buffer) w3m-toolbar))))
 
 ;;; Widget:
-(unless (get 'coding-system 'widget-type)
-;; To avoid of lack of definition at old wid-edit.el.
-;; These codes are imported from wid-edit.el of Emacs-20.7.
-(require 'wid-edit)
+(eval-when-compile (require 'wid-edit))
 
-(defvar widget-coding-system-prompt-value-history nil
-  "History of input to `widget-coding-system-prompt-value'.")
+(defun w3m-xmas-define-missing-widgets ()
+  "Define some missing widget."
+  (unless (get 'coding-system 'widget-type)
+    ;; The following codes are imported from wid-edit.el of Emacs 20.7.
 
-(define-widget 'coding-system 'symbol
-  "A MULE coding-system."
-  :format "%{%t%}: %v"
-  :tag "Coding system"
-  :prompt-history 'widget-coding-system-prompt-value-history
-  :prompt-value 'widget-coding-system-prompt-value
-  :action 'widget-coding-system-action)
+    (defvar widget-coding-system-prompt-value-history nil
+      "History of input to `widget-coding-system-prompt-value'.")
 
-(defun widget-coding-system-prompt-value (widget prompt value unbound)
-  ;; Read coding-system from minibuffer.
-  (intern
-   (completing-read (format "%s (default %s) " prompt value)
-		    (mapcar (lambda (sym)
-			      (list (symbol-name sym)))
-			    (coding-system-list)))))
+    (defun widget-coding-system-prompt-value (widget prompt value unbound)
+      ;; Read coding-system from minibuffer.
+      (intern
+       (completing-read (format "%s (default %s) " prompt value)
+			(mapcar (lambda (sym)
+				  (list (symbol-name sym)))
+				(coding-system-list)))))
 
-(defun widget-coding-system-action (widget &optional event)
-  ;; Read a file name from the minibuffer.
-  (let ((answer
-	 (widget-coding-system-prompt-value
-	  widget
-	  (widget-apply widget :menu-tag-get)
-	  (widget-value widget)
-	  t)))
-    (widget-value-set widget answer)
-    (widget-apply widget :notify widget event)
-    (widget-setup)))
-)
+    (defun widget-coding-system-action (widget &optional event)
+      ;; Read a file name from the minibuffer.
+      (let ((answer
+	     (widget-coding-system-prompt-value
+	      widget
+	      (widget-apply widget :menu-tag-get)
+	      (widget-value widget)
+	      t)))
+	(widget-value-set widget answer)
+	(widget-apply widget :notify widget event)
+	(widget-setup))))
+
+    (define-widget 'coding-system 'symbol
+      "A MULE coding-system."
+      :format "%{%t%}: %v"
+      :tag "Coding system"
+      :prompt-history 'widget-coding-system-prompt-value-history
+      :prompt-value 'widget-coding-system-prompt-value
+      :action 'widget-coding-system-action)
+
+  (unless (get 'other 'widget-type)
+    ;; The following definition is imported from wid-edit.el of Emacs 20.7.
+    (define-widget 'other 'sexp
+      "Matches any value, but doesn't let the user edit the value.
+This is useful as last item in a `choice' widget.
+You should use this widget type with a default value,
+as in (other DEFAULT) or (other :tag \"NAME\" DEFAULT).
+If the user selects this alternative, that specifies DEFAULT
+as the value."
+      :tag "Other"
+      :format "%t%n"
+      :value 'other)))
+
+(eval-after-load "wid-edit" '(w3m-xmas-define-missing-widgets))
 
 ;;; Coding systems:
 (unless (fboundp 'coding-system-category)
