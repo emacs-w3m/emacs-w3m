@@ -5127,8 +5127,8 @@ If EMPTY is non-nil, the created buffer has empty content."
   (when (string-match "<[0-9]+>\\'" newname)
     (setq newname (substring newname 0 (match-beginning 0))))
   (with-current-buffer buf
-    (let ((url w3m-current-url)
-	  (images w3m-display-inline-images)
+    (let ((url (or w3m-current-url
+		   (car (w3m-history-element (cadar w3m-history)))))
 	  (new (generate-new-buffer newname)))
       (with-current-buffer new
 	(w3m-mode)

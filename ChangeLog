@@ -2,6 +2,8 @@
 
 	* w3m.el (w3m-view-previous-page): Skip the current page if it
 	seems broken.
+	(w3m-copy-buffer): Use the current history for the url string if
+	the current page seems broken.
 	(w3m-goto-url): Use `lexical-let' to pass the history position
 	data to the asynchronous w3m process.
 
