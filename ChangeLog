@@ -1,3 +1,16 @@
+2001-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-restore-position): Instruct
+	`w3m-history-plist-get' to work with buffer-local properties.
+	(w3m-history-store-position): Instruct `w3m-history-add-properties'
+	to work with buffer-local properties.
+	(w3m-history-remove-properties): Allow the optional arg `local'.
+	(w3m-history-add-properties): Ditto.
+	(w3m-history-plist-put): Ditto.
+	(w3m-history-plist-get): Ditto.
+	(w3m-history-copy): Remove buffer-local properties.
+	(w3m-history-flat): Made it to have buffer-local properties.
+
 2001-04-24  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-mime-text/html-w3m): Support Mew 1.95b120 or later.
