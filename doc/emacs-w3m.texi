@@ -1617,6 +1617,9 @@ page as currently displayed in emacs-w3m(@code{w3m-view-url-with-external-browse
 
 @end table
 
+The section (@pxref{Tips}) explains more examples to integrate emacs-w3m
+with other commands and sub systems of Emacs.
+
 @node Pretty Good Features
 @chapter Pretty good features
 
