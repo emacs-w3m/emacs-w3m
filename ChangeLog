@@ -1,6 +1,8 @@
 2004-04-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (install-package): Install w3m-load.el.
+	(dist, tarball): Reimplemented, in order to keep time stamps of
+	source files.
 
 	* w3mhack.el (w3mhack-generate-xemacs-load-file): Simplified.
 

@@ -16,13 +16,11 @@ EMACS   = @EMACS@
 VANILLA_FLAG = @VANILLA_FLAG@
 FLAGS   = $(VANILLA_FLAG) -batch -l $(srcdir)/w3mhack.el $(ADDITIONAL_LOAD_PATH)
 
+IGNORES = w3mhack.el
+
 PACKAGE = emacs-w3m
 TARBALL = $(PACKAGE)-$(VERSION).tar.gz
 DISTDIR = $(PACKAGE)-$(VERSION)
-DOCS    = COPYING ChangeLog ChangeLog.1 README README.ja
-DISTS   = Makefile.in aclocal.m4 configure configure.in install-sh mkinstalldirs
-SUBDIRS = attic doc icons icons30 patches shimbun
-IGNORES = w3mhack.el
 
 default: all
 
@@ -137,9 +135,6 @@ install-package-ja:
 	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
 	fi
 
-dist: Makefile
-	$(MAKE) VERSION=`$(EMACS) $(FLAGS) -f w3mhack-version 2>/dev/null` tarball
-
 Makefile: Makefile.in config.status
 	$(srcdir)/config.status
 
@@ -149,23 +144,24 @@ config.status: configure
 configure: configure.in aclocal.m4
 	autoconf
 
-tarball: $(DOCS) $(DISTS) $(SUBDIRS)
-	-rm -f $(TARBALL) `basename $(TARBALL) .gz`
-	mkdir $(DISTDIR)
-	cp -p $(DOCS) $(DISTS) *.el $(DISTDIR)
-	for f in w3m-kwds.el w3m-load.el w3m-e22.el; do\
+dist: Makefile w3m.elc
+	$(MAKE) tarball \
+	  VERSION=`$(EMACS) $(FLAGS) -f w3mhack-version 2>/dev/null` \
+	  BRANCH=`cvs status Makefile.in|grep "Sticky Tag:"|awk '{print $$3}'|sed 's,(none),HEAD,'`
+
+tarball: CVS/Root CVS/Repository
+	-rm -rf $(DISTDIR) $(TARBALL) `basename $(TARBALL) .gz`
+	cvs -d `cat CVS/Root` -w export -d $(DISTDIR) -r $(BRANCH) `cat CVS/Repository`
+	cvs diff |( cd $(DISTDIR) && patch -p0 )
+	for f in BUGS.ja w3m-e22.el; do\
 	  if [ -f $(DISTDIR)/$${f} ]; then\
 	    rm -f $(DISTDIR)/$${f} || exit 1;\
 	  fi;\
 	done
-	for d in $(SUBDIRS); do \
-	  mkdir $(DISTDIR)/$${d} || exit 1 ;\
-	  for f in `egrep '^/' $${d}/CVS/Entries|cut -f2 -d/|grep -v .cvsignore`; do \
-	    cp -p $${d}/$${f} $(DISTDIR)/$${d}/ || exit 1 ;\
-	  done ;\
-	done
+	find $(DISTDIR) -name .cvsignore | xargs rm -f
 	find $(DISTDIR) -type d | xargs chmod 755
 	find $(DISTDIR) -type f | xargs chmod 644
+	cd $(DISTDIR) && autoconf
 	chmod 755 $(DISTDIR)/configure $(DISTDIR)/install-sh
 	tar -cf `basename $(TARBALL) .gz` $(DISTDIR)
 	gzip -9 `basename $(TARBALL) .gz`
