@@ -2261,7 +2261,7 @@ used.  Here is an example of how to set this variable:
 
 @lisp
 (setq w3m-command-arguments-alist
-      '(;; Don't use any additional options to visit local web pages.
+      '(;; Don't use the proxy server to visit local web pages.
         ("^http://\\([^/]*\\.\\)*your-company\\.com\\(/\\|$\\)"
          "-no-proxy")
         ;; Use the proxy server to visit any foreign urls.
