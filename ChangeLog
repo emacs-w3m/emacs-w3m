@@ -4,7 +4,7 @@
 	of retrieving pages which are linked from index pages.
 	(shimbun-fetch-url): Accept the 4th argument, `referer'.
 	(shimbun-article-base-url): New inline function.
-	(shimbun-article-url): Refeined as a method.
+	(shimbun-article-url): Redefined as a method.
 	(shimbun-header-insert): Call `shimbun-article-base-url' instead
 	of calling the above.
 	(shimbun-article): Retrieve the pages specified by
