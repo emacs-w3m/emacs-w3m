@@ -1,3 +1,7 @@
+2001-11-06  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-asahi.el (shimbun-get-headers): Skip top article.
+
 2001-11-06  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-groups): Remove user option.

@@ -64,6 +64,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	 (next t)
 	 (date (decode-time))
 	 subject url id month headers)
+    (re-search-forward "images/gif/digest.gif" nil t) ; Skip top article.
     (while (and next
 		(if (numberp next)
 		    (goto-char (match-end 0))
