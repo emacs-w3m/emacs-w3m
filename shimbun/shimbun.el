@@ -132,6 +132,11 @@ Return content-type of URL as string when retrieval succeeded."
       (erase-buffer)
       (current-buffer))))
 
+(defalias 'shimbun-content-type 'w3m-content-type)
+(defsubst shimbun-url-exists-p (url &optional no-cache)
+  (string= "text/html"
+	   (shimbun-content-type url no-cache)))
+
 (defalias 'shimbun-decode-entities 'w3m-decode-entities)
 (defalias 'shimbun-expand-url 'w3m-expand-url)
 

@@ -1,3 +1,10 @@
+2001-06-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el (shimbun-content-type): New alias.
+	(shimbun-url-exists-p): New function.
+
+	* shimbun/sb-gyve.el: New file.
+
 2001-06-13  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-slashdot-jp.el (shimbun-headers): Encode `from' with
