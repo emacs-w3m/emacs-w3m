@@ -1,5 +1,10 @@
 2001-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-arrived-add): Don't put url into an arrived-db when
+	url matches `w3m-about-history-ignored-regexp'.
+	(w3m-about-history-ignored-regexp): Renamed from
+	`w3m-about-history-except-regex'.
+
 	* w3m-hist.el (w3m-history-restore-position): Instruct
 	`w3m-history-plist-get' to work with buffer-local properties.
 	(w3m-history-store-position): Instruct `w3m-history-add-properties'
