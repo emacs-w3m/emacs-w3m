@@ -2,7 +2,7 @@
 
 	* shimbun/sb-mhonarc.el (shimbun-mhonarc-get-subject-value) 
 	(shimbun-mhonarc-get-from-r13-value): New methods.
-	(shimbun-make-contents): Use the avove methods.
+	(shimbun-make-contents): Use the above methods.
 
 	* shimbun/sb-meadow.el (shimbun-mhonarc-get-subject-value)
 	(shimbun-mhonarc-get-from-r13-value): New methods.
