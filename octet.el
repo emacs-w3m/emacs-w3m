@@ -161,8 +161,7 @@ Each element should have the form like:
 
 (defun octet-w3m-region (beg end)
   (let ((w3m-display-inline-images t)
-	(w3m-url-hierarchical-schemes '("about"))
-	(octet-w3m-region-target-buffer (current-buffer)))
+	(w3m-url-hierarchical-schemes '("about")))
     (funcall (symbol-function 'w3m-region)
 	     beg end (concat "about://octet-attachments/"
 			     (base64-encode-string
