@@ -235,9 +235,10 @@ managing column numbers on bitmap characters."
   :group 'w3m-face)
 
 (defcustom w3m-bitmap-convert-arguments nil
-  "*List of the arguments of `convert' from any image to xbm."
+  "*List of the additional arguments passed to the convert program to
+convert from any image to xbm."
   :group 'w3m
-  :type '(repeat string))
+  :type '(repeat (string :format "Argument: %v\n" :size 0)))
 
 (defcustom w3m-bitmap-image-face-inherit t
   "*If non-nil, inherit image face from the original face.

@@ -1,6 +1,6 @@
 ;;; w3m-image.el --- Image conversion routines.
 
-;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -58,7 +58,7 @@
 (defcustom w3m-imagick-convert-program (w3m-which-command "convert")
   "*Program name of ImageMagick's `convert'."
   :group 'w3m
-  :type 'string)
+  :type '(string :size 0))
 
 (defcustom w3m-imagick-convert-async-exec t
   "*If non-nil, `convert' is executed as an asynchronous process."

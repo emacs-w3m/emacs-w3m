@@ -1,6 +1,6 @@
 ;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m
 
-;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -41,12 +41,12 @@
   (expand-file-name "bookmark.html" w3m-profile-directory)
   "Bookmark file of w3m."
   :group 'w3m
-  :type 'file)
+  :type '(file :size 0))
 
 (defcustom w3m-bookmark-file-coding-system 'euc-japan
   "Coding system for bookmark file."
   :group 'w3m
-  :type 'coding-system)
+  :type '(coding-system :size 0))
 
 (eval-and-compile
   (defconst w3m-bookmark-section-delimiter
@@ -71,7 +71,8 @@
   nil
   "Default section to add new entry."
   :group 'w3m
-  :type 'string)
+  :type '(radio (const :tag "Not specified" nil)
+		(string :format "Default section name: %v\n" :size 0)))
 
 
 ;; internal variables
