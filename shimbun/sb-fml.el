@@ -1,7 +1,7 @@
 ;;; sb-fml.el --- shimbun backend class for fml archiver.
 
-;; Copyright (C) 2001 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
-;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001, 2002 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
@@ -56,6 +56,7 @@
 	(pages (shimbun-header-index-pages range))
 	(count 0)
 	headers auxs aux)
+    (goto-char (point-min))
     (while (and (if pages (<= (incf count) pages) t)
 		(re-search-forward "<a href=\"\\([0-9]+\\(\\.week\\|\\.month\\)?\\)/index.html\">" nil t))
       (setq auxs (append auxs (list (match-string 1)))))
