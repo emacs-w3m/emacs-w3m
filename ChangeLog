@@ -1,5 +1,9 @@
 2001-03-02  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
+	* w3m.el (w3m-home-page): Initialize as URL.
+
+2001-03-02  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
 	* w3m.el: Correcting wrong use of cygwin type filename usage,
 	using dolist macro, adding handling codes html character entities,
 	correct bug of w3m-view-bookmark on win32 environment, 
