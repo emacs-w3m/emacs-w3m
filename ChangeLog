@@ -1,3 +1,8 @@
+2001-11-02  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-reload-this-page): When execute with prefix
+	argument, clear post-data certainty.
+
 2001-11-01  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-goto-url): Remove processing url's forms from the

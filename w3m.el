@@ -4240,6 +4240,7 @@ If called with '\\[universal-argument]', clear form and post datas"
       (when form-data
 	(w3m-history-remove-properties '(:forms) nil nil t))
       (when post-data
+	(setq post-data nil)
 	(w3m-history-remove-properties '(:post-data) nil nil t))
       (setq w3m-current-forms nil))
     (if (and post-data (y-or-n-p "Repost form data? "))
