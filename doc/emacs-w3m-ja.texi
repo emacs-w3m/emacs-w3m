@@ -1067,17 +1067,16 @@ emacs-w3m はウェブページにそれらを表示することができます。下記のコマンド
 @cindex Browsing history
 @cindex Arrived URLs
 
-@c TRANSLATEME!
-Emacs-w3m has several ways to present you with a list of all the pages
-you visited before.  The first way is simply called the ``emacs-w3m
-history'', it is a list of the pages you visited in this session,
-presented hierarchically, that is: when you follow a link, the page
-you're leaving becomes the ``parent'' of the page you're going to.  It
-is a very nice to keep track of the pages you visited, and remember
-from where you came if the history gets too long.
+Emacs-w3m には、以前に訪問したすべてのページのリストを提示するための、複
+数の方法があります。第一の方法は単純に「emacs-w3m ヒストリー」と呼ばれる
+もので、そのセッション (注: そのバッファ内で行なう操作とそれに対する反
+応) において訪問したページのリストを階層的に提示します。すなわち、あるリ
+ンクを辿ると、それまでのページは行き先の「親」になります。それは、訪れた
+ページの跡を辿ったり、ヒストリーが長くなってしまった場合にどこから着たか
+を思い出すためには、たいへん都合の良いものです。
 
-Here is an example of this feature in action, after a short visit to the
-GNU Project's homepage:
+これは、GNU プロジェクトのホームページをちょっと訪ねた後における、この機
+能の動作の例です:
 
 @example
 GNU's Not Unix! - the GNU Project and the Free Software Foundation (FSF)
@@ -1088,17 +1087,16 @@ GNU's Not Unix! - the GNU Project and the Free Software Foundation (FSF)
     EFF: Homepage
 @end example
 
-(In fact, this example is slightly edited to fit in 72 columns; the
-URLs won't be cut in the actual emacs-w3m buffer.)
+(実際には、この例は 72 桁に収まるように、少しばかり編集されています。現
+実の emacs-w3m バッファでは URLs は切り詰められません。)
 
-You can get this kind of history using the @kbd{s} key in any emacs-w3m
-buffer.
+どの emacs-w3m バッファからでも @kbd{s} キーを使うことによって、このよう
+なヒストリーを提示させることが可能です。
 
-
-The other way to have information about past pages is the ``arrived
-URLs'' list: it is a list the last 500 URLs you have visited!  The list
-is ordered by date, the most recent coming first, and for each page the
-time of visit is displayed.  Here's an example (edited):
+もう一つの過去に訪れたページに関する情報を手に入れる方法は、「arrived
+URLs」です。これはあなたが訪問した、最後の 500個! の URL のリストです。
+リストは日付順で、最も最近のものを先頭に、それぞれのページの訪問時刻が表
+示されます。これは例です (編集されています):
 
 @example
 Order from the Free Software Foundation (FSF)             22:53:25  
@@ -1116,21 +1114,21 @@ new-debian-packages.rss                                   2003-01-07
 it's a miracle                                            2003-01-06
 @end example
 
-You can get this history by passing a prefix argument to the previous
-command, i.e. using @kbd{C-u s}.  The number of URLs showed in this page
-is customizable, see the @code{w3m-keep-arrived-urls} variable.  It
-cannot exceed 500. @xref{Customizable Options}.
+前のコマンドに接頭引数を渡す、すなわち @kbd{C-u s} を使うことによって、
+このヒストリーを得ることができます。このページに表示される URLs の数はカ
+スタマイズできます。@code{w3m-keep-arrived-urls} 変数を参照して下さい。
+それは 500 を越えることはできません。@xref{Customizable Options}。
 
-Of course, in all cases all the lines showed in the examples are links,
-you can go to any of the pages you visited previously just like if you
-were visiting a regular page, by following the link.
+もちろん、すべての場合に、例に示されているすべての行はリンクです。そのリ
+ンクを辿ることによって、通常のページを訪問していたらちょうどそうなるよう
+に、以前に訪ねたどのページにも行くことができます。
 
 @table @kbd
 @item s
 @kindex s
 @findex w3m-history
-Display the list of URLs visited in this session.  If called with a
-prefix argument, show the list of arrived URLs instead.
+このセッションにおいて訪問した URLs のリストを表示します。接頭引数付きで
+呼ばれると、代わりに arrived URLs を表示します。
 @end table
 
 @node Managing Bookmarks
