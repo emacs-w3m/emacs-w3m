@@ -2,7 +2,7 @@
 
 	* w3m.el (w3m-view-source): Render as html if already display source.
 
-2001-03-15  Yuuichi Teranishi  <teranisi@isl.ntt.co.jp>
+2001-03-15  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-icon-directory): New variable.
 	(w3m-toolbar-buttons): New constant.
