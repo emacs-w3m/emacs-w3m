@@ -2,6 +2,7 @@
 
 	* w3m.el: Add declaration of dependency on APEL.
 	(w3m-quit): When other w3m buffers exist, don't destruct cache.
+	(w3m-browse-url): New function.
 
 2000-09-20  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 

@@ -733,5 +733,15 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (run-hooks 'w3m-hook))
 
 
+(defun w3m-browse-url (url &optional new-window)
+  "w3m interface function for browse-url.el."
+  (interactive
+   (progn
+     (require 'browse-url)
+     (browse-url-interactive-arg "w3m URL: ")))
+  (if new-window (split-window))
+  (w3m url))
+
+
 (provide 'w3m)
 ;;; w3m.el ends here.
