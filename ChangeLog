@@ -1,7 +1,13 @@
 2002-05-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/shimbun.el (shimbun-make-html-contents): Insert HTML,
+	HEAD, BASE, and BODY tag.
+
 	* shimbun/sb-zdnet.el (shimbun-get-headers): Restore Message-ID
 	format.
+	(shimbun-zdnet-groups): Abolishded.
+	(shimbun-groups): New method.
+	(shimbun-get-headers): Small clean up.
 
 2002-05-28  Kenichi SATO <ksato@iijmio-mail.jp>
 

@@ -49,7 +49,6 @@
     ("mobile" "mobile/news"
      "<A HREF=\"/\\(\\(mobile\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([^\\.\">]+\\)\\.html\\)[^>]*>")))
 
-(defvar shimbun-zdnet-groups (mapcar 'car shimbun-zdnet-group-alist))
 (defvar shimbun-zdnet-from-address "zdnn@softbank.co.jp")
 (defvar shimbun-zdnet-content-start "\\(<!--BODY-->\\|<!--DATE-->\\)")
 (defvar shimbun-zdnet-content-end "\\(<!--BODYEND-->\\|<!--BYLINEEND-->\\|<!--START RBB Logo -->\\)")
@@ -58,6 +57,9 @@
 RM#72\\p;3XZ~j|7T)QC7\"(A;~Hr\n fP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
 
 (defvar shimbun-zdnet-expiration-days 31)
+
+(luna-define-method shimbun-groups ((shimbun shimbun-zdnet))
+  (mapcar 'car shimbun-zdnet-group-alist))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-zdnet))
   (concat
@@ -76,12 +78,11 @@ RM#72\\p;3XZ~j|7T)QC7\"(A;~Hr\n fP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
       (replace-match "\n"))
     (goto-char (point-min))
     (while (re-search-forward url-regexp nil t)
-      (catch 'next
+      (unless (string= "index" (match-string 6))
 	(let* ((url (match-string 1))
 	       (year (+ 2000 (string-to-number (match-string 3))))
 	       (month (string-to-number (match-string 4)))
 	       (day (string-to-number (match-string 5)))
-	       (filename (match-string 6))
 	       (id (format "<%s%s%s%s%%%s>"
 			   (match-string 3)
 			   (match-string 4)
@@ -95,13 +96,9 @@ RM#72\\p;3XZ~j|7T)QC7\"(A;~Hr\n fP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
 				     (progn (search-forward "</A>" nil t) (point)))
 				    "<[^>]+>")
 				   "")))
-	  (when (equal filename "index")
-	    (throw 'next nil))
 	  (while (string-match "<[^>]+>" subject)
 	    (setq subject (concat (substring subject 0 (match-beginning 0))
 				  (substring subject (match-end 0)))))
-	  (when (equal subject "")
-	    (throw 'next nil))
 	  (push (shimbun-make-header
 		 0
 		 (shimbun-mime-encode-string subject)
