@@ -164,7 +164,7 @@ ARGUMENTS and this buffer, regist it to `w3m-process-queue', and
 return it."
   (let ((x (assoc (cons command arguments) w3m-process-queue)))
     (unless x
-      (setq x (w3m-process-new w3m-command arguments (current-buffer)))
+      (setq x (w3m-process-new command arguments (current-buffer)))
       (push x w3m-process-queue))
     (push (w3m-process-handler-new (current-buffer) w3m-current-buffer handler)
 	  (w3m-process-handlers x))
@@ -460,7 +460,7 @@ evaluated in a temporary buffer."
     (w3m-process-start-after
      (w3m-process-with-coding-system
        (w3m-process-with-environment w3m-command-environment
-	 (apply 'call-process w3m-command nil t nil arguments))))))
+	 (apply 'call-process command nil t nil arguments))))))
 
 (defun w3m-process-start-after (exit-status)
   (cond

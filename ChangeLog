@@ -1,3 +1,8 @@
+2002-10-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-proc.el (w3m-process-push, w3m-process-start): Fix last
+	change.
+
 2002-10-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-rendering-half-dump): To decide whether
