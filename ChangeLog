@@ -1,3 +1,8 @@
+2004-04-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-link-numbering.el (w3m-link-numbering): Quit when links have
+	already been numbered.
+
 2004-04-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-link-numbering.el (w3m-link-numbering-mode): Delete all

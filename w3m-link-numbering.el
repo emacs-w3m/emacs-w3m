@@ -86,11 +86,15 @@
   (when w3m-link-numbering-mode
     (save-excursion
       (goto-char (point-min))
-      (let ((i 0))
-	(while (w3m-goto-next-anchor)
-	  (when (w3m-anchor)
-	    (let ((overlay (make-overlay (point) (1+ (point))))
-		  (num (format "[%d]" (incf i))))
+      (let ((i 0)
+	    overlay num)
+	(catch 'already-numbered
+	  (while (w3m-goto-next-anchor)
+	    (when (w3m-anchor)
+	      (when (get-char-property (point) 'w3m-link-numbering-overlay)
+		(throw 'already-numbered nil))
+	      (setq overlay (make-overlay (point) (1+ (point)))
+		    num (format "[%d]" (incf i)))
 	      (w3m-static-if (featurep 'xemacs)
 		  (progn
 		    (overlay-put overlay 'before-string num)
@@ -102,9 +106,9 @@
 		(put-text-property 0 (length num)
 				   'face 'w3m-link-numbering-face
 				   num)
-		(overlay-put overlay 'before-string num))
-	      (overlay-put overlay 'w3m-link-numbering-overlay i)
-	      (overlay-put overlay 'evaporate t))))))))
+		(overlay-put overlay 'before-string num)
+		(overlay-put overlay 'evaporate t))
+	      (overlay-put overlay 'w3m-link-numbering-overlay i))))))))
 
 (defun w3m-view-numbered-link (&optional arg)
   "Display the page pointed to by the specified link."
