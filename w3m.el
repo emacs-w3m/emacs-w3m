@@ -1613,10 +1613,13 @@ If N is negative, last N items of LIST is returned."
 					   'help-echo help
 					   'balloon-help balloon))))
 	 (name
-	  (when (re-search-forward "<\\|\n" nil t)
-	    (setq end (match-beginning 0))
+	  (when (re-search-forward "[<\n]" nil t)
+	    (goto-char (setq end (match-beginning 0)))
 	    (when (= start end)
-	      (setq end (min (1+ end) (point-max))))
+	      (setq end (min (if (looking-at "\\(<[^>]*>\\)+")
+				 (1+ (match-end 0))
+			       (1+ end))
+			     (point-max))))
 	    (w3m-add-text-properties start end
 				     (list 'w3m-name-anchor name)))))))
     (when w3m-next-url
@@ -2999,11 +3002,20 @@ B of RFC2396 <URL:http://www.ietf.org/rfc/rfc2396.txt>.")
 refered in `w3m-expand-url' to keep backward compatibility which is
 described in Section 5.2 of RFC 2396.")
 
+(defconst w3m-url-fallback-base "http:///")
+
 (defun w3m-expand-url (url &optional base)
   "Convert URL to absolute, and canonicalize it."
   (save-match-data
-    (unless base
-      (setq base (or w3m-current-base-url w3m-current-url "")))
+    (if base
+	(unless (and (string-match w3m-url-components-regexp base)
+		     (match-beginning 1)
+		     (match-beginning 3))
+	  (error "BASE must have a scheme part and a net-location part: %s"
+		 base))
+      (setq base (or w3m-current-base-url
+		     w3m-current-url
+		     w3m-url-fallback-base)))
     (string-match w3m-url-components-regexp url)
     ;; Remove an empty query part and an empty fragment part.
     (or (and (match-beginning 6)
@@ -3023,7 +3035,7 @@ described in Section 5.2 of RFC 2396.")
 	(let ((scheme (match-string 2 url)))
 	  (if (and (member scheme w3m-url-hierarchical-schemes)
 		   (string-match w3m-url-components-regexp base)
-		   (string= scheme (match-string 2 base)))
+		   (equal scheme (match-string 2 base)))
 	      (w3m-expand-url (substring url (match-end 1)) base)
 	    url))))
      ((match-beginning 3)
