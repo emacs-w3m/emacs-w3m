@@ -1,5 +1,10 @@
 2001-03-02  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
+	* w3m.el (w3m-backlog-enter): Overwrite backlog data when
+	specified URL is duplicated.
+
+2001-03-02  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
 	* w3m.el: Renamed w3m-http-* to w3m-w3m-* in order to prepare name
 	space of symbols processing HTTP protocol directly, and fix for
 	cookie.

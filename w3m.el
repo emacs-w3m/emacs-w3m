@@ -601,28 +601,30 @@ If N is negative, last N items of LIST is returned."
 	w3m-backlog-articles nil))
 
 (defun w3m-backlog-enter (url type charset buffer)
+  "Store URL's data which is placed in the BUFFER.
+Return symbol to identify its backlog data."
   (w3m-backlog-setup)
   (let ((ident (intern url w3m-backlog-hashtb)))
-    (unless (memq ident w3m-backlog-articles)
-      ;; Remove the oldest article, if necessary.
-      (and (numberp w3m-keep-backlog)
-	   (>= (length w3m-backlog-articles) w3m-keep-backlog)
-	   (w3m-backlog-remove-oldest))
-      ;; Insert the new article.
-      (save-excursion
-	(set-buffer w3m-backlog-buffer)
-	(let (buffer-read-only)
-	  (goto-char (point-max))
-	  (unless (bolp) (insert "\n"))
-	  (let ((b (point)))
-	    (insert-buffer-substring buffer)
-	    ;; Tag the beginning of the article with the ident.
-	    (when (> (point-max) b)
-	      (put-text-property b (1+ b) 'w3m-backlog ident)
-	      (put-text-property b (1+ b) 'w3m-backlog-type type)
-	      (put-text-property b (1+ b) 'w3m-backlog-charset charset)
-	      (setq w3m-backlog-articles (cons ident w3m-backlog-articles)))
-	    ))))))
+    (w3m-backlog-remove url)
+    ;; Remove the oldest article, if necessary.
+    (and (numberp w3m-keep-backlog)
+	 (>= (length w3m-backlog-articles) w3m-keep-backlog)
+	 (w3m-backlog-remove-oldest))
+    ;; Insert the new article.
+    (save-excursion
+      (set-buffer w3m-backlog-buffer)
+      (let (buffer-read-only)
+	(goto-char (point-max))
+	(unless (bolp) (insert "\n"))
+	(let ((b (point)))
+	  (insert-buffer-substring buffer)
+	  ;; Tag the beginning of the article with the ident.
+	  (when (> (point-max) b)
+	    (put-text-property b (1+ b) 'w3m-backlog ident)
+	    (put-text-property b (1+ b) 'w3m-backlog-type type)
+	    (put-text-property b (1+ b) 'w3m-backlog-charset charset)
+	    (setq w3m-backlog-articles (cons ident w3m-backlog-articles)))
+	  )))))
 
 (defun w3m-backlog-remove-oldest ()
   (save-excursion
@@ -641,7 +643,7 @@ If N is negative, last N items of LIST is returned."
 			(1+ (point)) 'w3m-backlog nil (point-max)))))))
 
 (defun w3m-backlog-remove (url)
-  "Remove data of URL from the backlog."
+  "Remove URL's data from the backlog."
   (w3m-backlog-setup)
   (let ((ident (intern url w3m-backlog-hashtb))
 	beg end)
@@ -659,6 +661,10 @@ If N is negative, last N items of LIST is returned."
 	(setq w3m-backlog-articles (delq ident w3m-backlog-articles))))))
 
 (defun w3m-backlog-request (url &optional buffer)
+  "Insert URL's data to the BUFFER.
+If URL's data is found in the backlog, return a list of URL's content
+type and URL's charcter set name.  Otherwise return nil.  When BUFFER
+is nil, all data will be inserted in the current buffer."
   (w3m-backlog-setup)
   (let ((ident (intern url w3m-backlog-hashtb)))
     (when (memq ident w3m-backlog-articles)
