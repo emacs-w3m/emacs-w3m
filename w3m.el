@@ -1559,7 +1559,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
     (cond
      ((and header (string-match "HTTP/1\\.[0-9] 200 " header))
       (let (alist type charset)
-	(dolist (line (split-string (substring header (match-end 0)) "\n"))
+	(dolist (line (split-string header "\n"))
 	  (when (string-match "^\\([^:]+\\):[ \t]*" line)
 	    (push (cons (downcase (match-string 1 line))
 			(substring line (match-end 0)))
@@ -1611,11 +1611,13 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(w3m-message "Reading... %s"
 			     (w3m-pretty-length (buffer-size))))))
 	 (w3m-message "Reading...")
-	 (prog1 (zerop (w3m-exec-process "-dump_both" url))
+	 (prog1 (zerop (w3m-exec-process "-dump_extra" url))
 	   (w3m-message "Reading... done")
 	   (w3m-crlf-to-lf)))
        (goto-char (point-min))
-       (re-search-forward "^w3m-current-url: .*\n\n" nil t)
+       (let ((case-fold-search t))
+	 (re-search-forward "^w3m-current-url:" nil t))
+       (search-forward "\n\n" nil t)
        (progn
 	 (w3m-cache-header url (buffer-substring (point-min) (point)))
 	 (delete-region (point-min) (point))

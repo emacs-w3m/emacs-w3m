@@ -1,6 +1,13 @@
+2001-04-02  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m-0.2.1-mnc.patch: Apply patch posted in [w3m-dev 01887].
+
+	* w3m.el (w3m-w3m-dump-head-source): Follow change in MNC patch.
+	(w3m-w3m-attributes): Ditto.
+
 2001-04-02  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* w3m.el (w3m-crlf-to-lf): New funcition.
+	* w3m.el (w3m-crlf-to-lf): New function.
 	(w3m-w3m-dump-head-source): Do crlf-to-lf when executable-type eq
 	'cygwin.
 	(w3m-w3m-dump-source): All time do crlf-to-lf function when
