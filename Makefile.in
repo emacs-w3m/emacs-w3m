@@ -22,24 +22,19 @@ DOCS    = COPYING ChangeLog README README.ja TIPS.ja
 DISTS   = Makefile Makefile.in aclocal.m4 configure configure.in install-sh mkinstalldirs
 
 
-.SUFFIXES:
-.SUFFIXES: .elc .el
-
 default:
-	@modules="`$(MODULES) 2>/dev/null`";\
-	if test -z "$$modules"; then\
-	  echo "Error has occurred while examining w3m modules;";\
-	  echo "$(MODULES)";\
-	  $(MODULES);\
-	else\
-	  echo "$(MAKE) -k $$modules";\
-	  $(MAKE) -k $$modules;\
-	fi
+	$(EMACS) $(FLAGS) -f w3mhack-compile
 
-.el.elc:
-	$(ECC) $<
-
-install: default install-anyway
+install: default
+	@$(SHELL) ./mkinstalldirs $(lispdir);\
+	for p in ChangeLog *.el; do\
+	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
+	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	done;\
+	for p in *.elc; do\
+	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
+	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	done
 
 install-icons:
 	@if test $(ICONDIR) = NONE; then\
@@ -63,33 +58,6 @@ install-package:
 	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
 	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
 	fi
-
-fast:
-	$(EMACS) $(FLAGS) -f w3mhack-compile
-
-fast-install: fast install-anyway
-
-fast-install-package:
-	@if test $(PACKAGEDIR) = NONE; then\
-	  echo "What a pity!  Your \"$(EMACS)\" does not support"\
-		"a package system.";\
-	else\
-	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" fast-install;\
-	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons;\
-	  echo "$(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR)";\
-	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
-	fi
-
-install-anyway:
-	@$(SHELL) ./mkinstalldirs $(lispdir);\
-	for p in ChangeLog *.el; do\
-	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
-	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
-	done;\
-	for p in *.elc; do\
-	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
-	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
-	done
 
 dist:
 	autoconf
