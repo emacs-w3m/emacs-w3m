@@ -1,3 +1,9 @@
+2001-04-19  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-hns.el (shimbun-close): Define (clean up content-hash).
+	(shimbun-article): Avoid an error when article does not exist.
+	(shimbun-hns-article): Reload page for article.
+
 2001-04-19  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* shimbun/sb-hns.el (shimbun-get-headers): Generate pseudo time

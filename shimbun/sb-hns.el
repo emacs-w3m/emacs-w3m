@@ -35,7 +35,7 @@
   "An alist of HNS shimbun group definition.
 Each element looks like (NAME URL ADDRESS).
 NAME is a shimbun group name.
-URL is the URL for HNS access point for the group.
+URL is the URL for HNS access point of the group.
 ADDRESS is the e-mail address for the diary owner.")
 
 (defvar shimbun-hns-content-hash-length 31)
@@ -109,7 +109,7 @@ ADDRESS is the e-mail address for the diary owner.")
 			       (cadr (assoc
 				      (shimbun-current-group-internal shimbun)
 				      shimbun-hns-group-alist))
-			       "?" xref))
+			       "?" xref) 'reload)
 	  ;; Add articles to the content hash.
 	  (goto-char (point-min))
 	  (while (re-search-forward 
@@ -134,8 +134,12 @@ ADDRESS is the e-mail address for the diary owner.")
 	      "MIME-Version: 1.0\n"
 	      "\n"
 	      (encode-coding-string
-	       (shimbun-hns-article shimbun (shimbun-header-xref header))
+	       (or (shimbun-hns-article shimbun (shimbun-header-xref header))
+		   "")
 	       (mime-charset-to-coding-system "ISO-2022-JP"))))))
+
+(luna-define-method shimbun-close :after ((shimbun shimbun-hns))
+  (shimbun-hns-set-content-hash-internal shimbun nil))
 
 (provide 'sb-hns)
 
