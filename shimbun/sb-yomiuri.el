@@ -360,7 +360,7 @@ It does also shorten too much spaces."
 information available, removing useless contents, etc."
   (let ((group (shimbun-current-group-internal shimbun))
 	(case-fold-search t)
-	end)
+	start)
     (if (string-equal group "kyoiku")
 	(when (re-search-forward "^◆<b>[^\n<>]+</b>[\t\n ]*" nil t)
 	  (delete-region (point-min) (point))
@@ -370,21 +370,26 @@ information available, removing useless contents, etc."
 	      (delete-region (match-beginning 0) (match-end 0)))))
       (when (and (re-search-forward (shimbun-content-start-internal shimbun)
 				    nil t)
+		 (setq start (point))
 		 (re-search-forward (shimbun-content-end-internal shimbun)
-				    nil t)
-		 (progn
-		   (goto-char (setq end (match-beginning 0)))
-		   (forward-line -1)
-		   (re-search-forward "\\(20[0-9][0-9]\\)/\\(1?[0-9]\\)/\
+				    nil t))
+	(narrow-to-region start (match-beginning 0))
+	(goto-char (point-max))
+	(forward-line -1)
+	(when (re-search-forward "\\(20[0-9][0-9]\\)/\\(1?[0-9]\\)/\
 \\([123]?[0-9]\\)/\\([012][0-9]:[0-5][0-9]\\)"
-				      end t)))
-	(shimbun-header-set-date
-	 header
-	 (shimbun-make-date-string
-	  (string-to-number (match-string 1))
-	  (string-to-number (match-string 2))
-	  (string-to-number (match-string 3))
-	  (match-string 4))))))
+				 nil t)
+	  (shimbun-header-set-date
+	   header
+	   (shimbun-make-date-string
+	    (string-to-number (match-string 1))
+	    (string-to-number (match-string 2))
+	    (string-to-number (match-string 3))
+	    (match-string 4))))
+	(goto-char (point-min))
+	(shimbun-remove-tags "<!--  rectangle start  -->"
+			     "<!--  rectangle end  -->")
+	(widen))))
   (goto-char (point-min)))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-yomiuri)
