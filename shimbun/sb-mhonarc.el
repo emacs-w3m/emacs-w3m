@@ -78,7 +78,7 @@
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       (t (forward-line 1))))
 	    (insert "MIME-Version: 1.0\n")
-	    (insert "Content-Type: text/html; charset=ISO-2022-JP")
+	    (insert "Content-Type: text/html; charset=ISO-2022-JP\n")
 	    (if refs
 		(shimbun-header-set-references header
 					       (mapconcat 'identity refs " ")))
