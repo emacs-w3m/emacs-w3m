@@ -5,8 +5,6 @@
 
 	* shimbun/sb-pilot-mailsync.el (shimbun-reply-to): Ditto.
 
-	* shimbun/sb-pcweb-column.el (shimbun-reply-to): Ditto.
-
 	* shimbun/sb-dennou.el (shimbun-reply-to): Ditto.
 
 	* shimbun/sb-security-memo.el (shimbun-reply-to): Ditto.

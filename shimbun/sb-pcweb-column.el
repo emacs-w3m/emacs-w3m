@@ -27,8 +27,9 @@
 ;;; Code:
 
 (require 'shimbun)
+(require 'sb-text)
 
-(luna-define-class shimbun-pcweb-column (shimbun) ())
+(luna-define-class shimbun-pcweb-column (shimbun shimbun-text) ())
 
 (defvar shimbun-pcweb-column-url "http://pcweb.mycom.co.jp/column/")
 (defvar shimbun-pcweb-column-groups
@@ -71,18 +72,26 @@
 	      headers)))
     headers))
 
-(luna-define-method shimbun-make-contents :before
-  ((shimbun shimbun-pcweb-column) header)
-  (let ((case-fold-search t))
-    (when (re-search-forward
-	   "<i>\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)</i>" nil t)
-      (let ((year (string-to-number (match-string 1)))
-	    (month (string-to-number (match-string 2)))
-	    (day (string-to-number (match-string 3)))
-	    date)
-	(setq date (shimbun-make-date-string year month day))
-	(shimbun-header-set-date header date))
-      (goto-char (point-min)))))
+(luna-define-method shimbun-make-contents ((shimbun shimbun-pcweb-column)
+					   header)
+  (let ((case-fold-search t) (start))
+    (save-excursion
+      (when (re-search-forward
+	     "<i>\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)</i>" nil t)
+	(let ((year (string-to-number (match-string 1)))
+	      (month (string-to-number (match-string 2)))
+	      (day (string-to-number (match-string 3)))
+	      date)
+	  (setq date (shimbun-make-date-string year month day))
+	  (shimbun-header-set-date header date))))
+    (when (and (re-search-forward (shimbun-content-start-internal shimbun)
+				  nil t)
+	       (setq start (point))
+	       (re-search-forward (shimbun-content-end-internal shimbun)
+				  nil t))
+      (delete-region (match-beginning 0) (point-max))
+      (delete-region (point-min) start))
+    (shimbun-header-insert-and-buffer-string shimbun header nil t)))
 
 (provide 'sb-pcweb-column)
 
