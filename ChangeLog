@@ -1,3 +1,8 @@
+2003-06-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-w3m-attributes): Improve the regexp to extract
+	content-types.
+
 2003-06-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-parse-and-fontify): Apply

@@ -3400,7 +3400,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 			type (w3m-remove-redundant-spaces
 			      (substring type 0 (match-beginning 0))))
 		(setq type (w3m-remove-redundant-spaces type))
-		(when (string-match ";\\'" type)
+		(when (string-match ";" type)
 		  (setq type (substring type 0 (match-beginning 0)))))
 	      (setq type (downcase type)))
 	    (when moved
