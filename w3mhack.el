@@ -82,8 +82,63 @@
 
 (cond
  ((featurep 'xemacs)
+  ;; Don't wran for the the unused non-global variables.
   (setq byte-compile-warnings
-	(delq 'unused-vars (copy-sequence byte-compile-default-warnings))))
+	(delq 'unused-vars (copy-sequence byte-compile-default-warnings)))
+
+  (defun w3mhack-byte-optimize-letX (form)
+    "Byte optimize `let' or `let*' FORM in the source level
+to remove some obsolete variables in the first argument VARLIST.
+
+Examples of the optimization:
+
+;;From
+  (let ((coding-system-for-read 'binary)
+	(file-coding-system-for-read *noconv*))
+    (insert-file-contents FILE))
+;;To
+  (let ((coding-system-for-read 'binary))
+    (insert-file-contents FILE))
+
+;;From
+  (let* ((codesys 'utf-8)
+	 (file-coding-system codesys)
+	 (coding-system-for-write file-coding-system))
+    (save-buffer))
+;;To
+  (let* ((codesys 'utf-8)
+	 (coding-system-for-write codesys))
+    (save-buffer))
+"
+    (let ((obsoletes '(file-coding-system file-coding-system-for-read))
+	  (varlist (copy-sequence (cadr form)))
+	  obsolete elements element value)
+      (while (setq obsolete (pop obsoletes))
+	(setq elements varlist
+	      varlist nil)
+	(while (setq element (pop elements))
+	  (if (or (prog1
+		      (eq obsolete element)
+		    (setq value nil))
+		  (when (eq obsolete (car-safe element))
+		    (setq value (unless (eq obsolete (cadr element))
+				  (cadr element)))
+		    t))
+	      (when (eq 'let* (car form))
+		(while (setq element (rassoc (list obsolete) elements))
+		  (setcdr element (list value))))
+	    (setq varlist (cons element varlist))))
+	(setq varlist (nreverse varlist)))
+      (setcar (cdr form) varlist))
+    form)
+
+  (defadvice byte-optimize-form-code-walker
+    (before w3mhack-byte-optimize-letX activate compile)
+    "Byte optimize `let' or `let*' FORM in the source level
+to remove some obsolete variables in the first argument VARLIST."
+    (when (memq (car-safe (ad-get-arg 0)) '(let let*))
+      (ad-set-arg 0 (w3mhack-byte-optimize-letX (ad-get-arg 0))))))
+
  ((boundp 'MULE)
   ;; Bind defcustom'ed variables.
   (put 'custom-declare-variable 'byte-hunk-handler

@@ -1,3 +1,8 @@
+2001-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (XEmacs): Implemented the source level optimizer for
+	`let' or `let*' form to remove some obsolete variables.
+
 2001-03-15  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* README, README.ja: Update procedure of package installation.
