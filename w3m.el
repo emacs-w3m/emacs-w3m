@@ -3166,8 +3166,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	    (if (string-match "/\\'" url)
 		(list "text/html" "w3m-euc-japan" nil nil nil url url)
 	      (list (w3m-local-content-type url) nil nil nil nil url url)))
-	   ((or (string-match "HTTP/1\\.[0-9] 200 " header)
-		(setq moved (and (string-match "HTTP/1\\.[0-9] \\(30[1237]\\) "
+	   ((or (string-match "HTTP/1\\.[0-9] 200[ \n]" header)
+		(setq moved (and (string-match "HTTP/1\\.[0-9] \\(30[1237]\\)[ \n]"
 					       header)
 				 (match-string 1 header))))
 	    (when (setq type (cdr (assoc "content-type" alist)))
@@ -3180,7 +3180,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(when (string-match ";\\'" type)
 		  (setq type (substring type 0 (match-beginning 0)))))
 	      (setq type (downcase type)))
-	    (when moved
+	    (when (and moved (assoc "location" alist))
 	      (setq w3m-current-redirect
 		    (cons (string-to-number moved)
 			  (w3m-expand-url (cdr (assoc "location" alist))))))
