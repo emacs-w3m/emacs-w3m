@@ -1,3 +1,11 @@
+2002-11-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-use-unseen): Remove
+	duplicate definition.
+	(mew-shimbun-unseen-regex): New inline macro.
+	(mew-shimbun-goto-folder, mew-shimbun-unseen-remove-advice): Use
+	`mew-shimbun-unseen-regex' macro.
+
 2002-11-26  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/shimbun.el (shimbun-mime-encode-string): Wrap with

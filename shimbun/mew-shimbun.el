@@ -200,12 +200,6 @@ show below example,
   :group 'mew-shimbun
   :type 'boolean)
 
-(defcustom mew-shimbun-mark-unseen mew-mark-review
-  "*Shimbun unseen mark."
-  :group 'shimbun
-  :group 'mew-shimbun
-  :type 'character)
-
 (defcustom mew-shimbun-before-retrieve-hook nil
   "*Hook run after mew-shimbun-retrieve called."
   :group 'shimbun
@@ -222,10 +216,14 @@ show below example,
 (defconst mew-shimbun-db-buffer-name " *mew-shimbun-overview*")
 (defconst mew-shimbun-article-buffer-name " *mew-shimbun-article*")
 
-(defvar mew-shimbun-unseen-regex
-  (concat mew-regex-msg "\\("
-	  (regexp-quote (string mew-shimbun-mark-unseen))
-	  "\\)"))
+(defvar mew-shimbun-unseen-regex nil)
+
+(defmacro mew-shimbun-unseen-regex ()
+  `(or mew-shimbun-unseen-regex
+       (setq mew-shimbun-unseen-regex
+	     (concat mew-regex-msg "\\("
+		     (regexp-quote (string mew-shimbun-mark-unseen))
+		     "\\)"))))
 
 (defvar mew-shimbun-folder-regex
   (mew-folder-regex (file-name-as-directory mew-shimbun-folder)))
@@ -300,7 +298,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	      (if (get-buffer fld)
 		  (with-current-buffer fld
 		    (goto-char (point-min))
-		    (when (re-search-forward mew-shimbun-unseen-regex nil t)
+		    (when (re-search-forward (mew-shimbun-unseen-regex) nil t)
 		      (setq sbflds (cons fld sbflds))))
 		(setq cfile (mew-expand-folder fld mew-summary-cache-file))
 		(when (file-readable-p cfile)
@@ -309,7 +307,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		     mew-cs-text-for-read mew-cs-dummy
 		     (insert-file-contents cfile nil)
 		     (goto-char (point-min))
-		     (when (re-search-forward mew-shimbun-unseen-regex nil t)
+		     (when (re-search-forward (mew-shimbun-unseen-regex) nil t)
 		       (setq sbflds (cons fld sbflds))))))))))))
     (mapcar (lambda (x)
 	      (setq alst (cons (list x) alst)))
@@ -959,7 +957,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	(when (and fld msg (null part))
 	  (save-excursion
 	    (beginning-of-line)
-	    (when (looking-at mew-shimbun-unseen-regex)
+	    (when (looking-at (mew-shimbun-unseen-regex))
 	      ;; in normal or thread folder
 	      (mew-mark-unmark)
 	      (set-buffer-modified-p nil)

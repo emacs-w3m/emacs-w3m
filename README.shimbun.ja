@@ -386,10 +386,9 @@ mew-shimbun-mark-unseen で設定したマーク(デファルトは '*') がつくように
 に保存するには、その folder を読み終わったときに "scan update" をする習
 慣をつけると良いでしょう。
 
-未読に使うマークが "*" じゃダメ、という方は、
-http://www.mew.org/ml/mew-dist-2.0/msg01251.html
-を参考にして新しいマークを定義してください。"C-u N" でそのマークを指定す
-ると楽しい未読ライフをおくることができると思います。
+未読に使うマークが "*" じゃダメ、という方は、3.4節を参照してください．
+"C-u N" でそのマークを指定すると楽しい未読ライフをおくることが
+できると思います。
 
 (*2) mew-touch-folder-p が 't' の人はほぼ 100% 保存できますが、'nil'
   の人が保存できる可能性はほとんど 0% だと思われます。
@@ -409,6 +408,58 @@ http://www.mew.org/ml/mew-dist-2.0/msg01251.html
 ん。"Ge (mew-shimbun-expire)" でその folder の期限切れ記事を消去します。
 "GE (mew-shimbun-expire-all)" で設定した全ての folder で記事の消去を実行
 します。なお、一度消去した記事は復活出来ませんので注意してください。
+
+
+3.4 未読マークとして$を追加する方法
+
+$マークを新たに作成し、$マークを未読マークとして使うには，次の記述を、
+~/.mew.el に記述してください。なお、$以外の記号にしたければ、
+http://www.mew.org/ml/mew-dist-2.0/msg01251.html 
+を参照して記述を生成してください。
+
+
+----------------------------------------------------------------------
+;;; $ を未読マークとして使うための記述
+(setq mew-mark-unseen ?$)
+(setq mew-shimbun-mark-unseen mew-mark-unseen)
+(setq mew-mark-show-list (cons mew-mark-unseen mew-mark-show-list))
+(setq mew-mark-afterstep-spec
+      (cons (cons mew-mark-unseen '(1 0 1 0 0 0 0)) mew-mark-afterstep-spec))
+(setq mew-mark-spec
+      (cons (list mew-mark-unseen "unseen" 0 nil nil nil nil nil)
+	    mew-mark-spec))
+(setq mew-highlight-mark-keywords
+      (cons
+       (cons mew-mark-unseen 'mew-face-mark-unseen)
+       mew-highlight-mark-keywords))
+(defface mew-face-mark-unseen
+  '((((class color) (type tty)) (:foreground "green"))
+    (((class color) (background light)) (:foreground "deep pink" :bold t :italic t))
+    (((class color) (background dark)) (:foreground "thistle"))
+    (t (:bold t)))
+  "*Face to highlight the unseen mark"
+  :group 'mew-highlight)
+(defun mew-summary-unseen (&optional count)
+  "Put the unseen mark(default is '$') in COUNT times."
+  (interactive "P")
+  (mew-mark-put-mark-loop (function mew-summary-unseen-one) count nil))
+(defun mew-summary-unseen-one (&optional no-msg)
+  "Put the unseen mark(default is '$') on this message."
+  (mew-mark-put-mark mew-mark-unseen no-msg))
+(defun mew-summary-mark-unseen ()
+  "Change the '*' mark into the '$' mark."
+  (interactive)
+  (mew-summary-exchange-mark mew-mark-review mew-mark-unseen))
+(defun mew-thread-mark-unseen ()
+  "Put the '$' mark on all messages of the current sub-thread."
+  (interactive)
+  (mew-thread-mark mew-mark-unseen))
+
+(define-key mew-summary-mode-map "$"  'mew-summary-unseen)
+(define-key mew-summary-mode-map "m$" 'mew-summary-mark-unseen)
+(define-key mew-summary-mode-map "t$" 'mew-thread-mark-unseen)
+
+----------------------------------------------------------------------
 
 
 Local Variables:
