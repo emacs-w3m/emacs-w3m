@@ -73,7 +73,7 @@
 	(narrow-to-region start (point))
 	(goto-char start)
 	(while (re-search-forward
-		"<a href=\"/\\([0-9]+\\)/\\(\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)[A-z0-9]+\\)\\.htm\\)\"[^>]*>"
+		"<a href=\"/\\([0-9z]+\\)/\\(\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)[A-z0-9]+\\)\\.htm\\)\"[^>]*>"
 		nil t)
 	  (let ((url   (concat (match-string 1) "/"
 			       (match-string 2)))
