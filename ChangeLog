@@ -3,6 +3,7 @@
 	* shimbun/sb-sankei.el (shimbun-sankei-content-start): Improve.
 	(shimbun-sankei-content-end): Improve.
 	(shimbun-get-headers): Improve regexps.
+	(shimbun-clear-contents): Ditto.
 
 2004-02-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
