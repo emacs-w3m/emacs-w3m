@@ -76,7 +76,9 @@
   (unless (fboundp 'frame-current-scroll-bars)
     (defalias 'frame-current-scroll-bars 'ignore))
   (unless (fboundp 'window-fringes)
-    (defalias 'window-fringes 'ignore)))
+    (defalias 'window-fringes 'ignore))
+  (unless (fboundp 'image-size)
+    (defalias 'image-size 'ignore)))
 
 ;;; Coding system.
 

@@ -110,7 +110,9 @@ If this variable is nil, never expired."
   "*Image type of display favicon."
   :group 'w3m
   :type (cons 'radio
-	      (let ((types (if (featurep 'xemacs)
+	      (let ((types (if (or
+				(featurep 'xemacs)
+				(not (fboundp 'image-types)))
 			       (delq nil
 				     (mapcar (lambda (type)
 					       (if (featurep type) type))

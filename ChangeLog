@@ -1,3 +1,14 @@
+2004-07-30  Romain Francoise <romain@orebokech.com>
+
+	Enable emacs-w3m to be built with Emacs --without-x.
+
+	* w3m-e21.el (image-size): Alias to ignore if it is not available.
+
+	* w3m-favicon.el (w3m-favicon-type): Don't use image-types if it
+	is not available.
+
+	* w3m.el (mouse-set-point): Alias to ignore if it is not available.
+
 2004-07-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 	NOMIYA Masaru <nomiya@ttmy.ne.jp>,
 	Katsumi Yamaoka <yamaoka@jpl.org>
