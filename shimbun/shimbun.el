@@ -161,11 +161,11 @@ while shimbun is waiting for a server's response."
 
 ;;; emacs-w3m implementation of url retrieval and entity decoding.
 (require 'w3m)
-(defun shimbun-retrieve-url (url &optional no-cache no-decode)
+(defun shimbun-retrieve-url (url &optional no-cache no-decode referer)
   "Rertrieve URL contents and insert to current buffer.
 Return content-type of URL as string when retrieval succeeded."
   (let (type)
-    (when (and url (setq type (w3m-retrieve url nil no-cache)))
+    (when (and url (setq type (w3m-retrieve url nil no-cache nil referer)))
       (unless no-decode
 	(w3m-decode-buffer url)
 	(goto-char (point-min)))
@@ -512,7 +512,7 @@ entities."
 	    (save-match-data
 	      (with-temp-buffer
 		(set-buffer-multibyte nil)
-		(let ((type (shimbun-retrieve-url url nil t)))
+		(let ((type (shimbun-retrieve-url url nil t base-url)))
 		  (when type
 		    (push (setq img
 				(cons url

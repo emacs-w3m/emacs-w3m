@@ -1,3 +1,9 @@
+2004-02-24  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun-retrieve-url): Added argument `referer'.
+	(shimbun-mime-replace-image-tags): Call `shimbun-retrieve-url' with
+	argument `referer'.
+
 2004-02-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna-sites): Add
