@@ -4375,8 +4375,9 @@ impress.internet impress.pc impress.akiba impress.game impress.av
 impress.jijinews impress.sports
 
 @item @uref{http://www.itmedia.co.jp/, ITmedia}
-itmedia.news itmedia.enterprise itmedia.mobile itmedia.pcupdate
-itmedia.lifestyle itmedia.games
+itmedia.anchordesk itmedia.bursts itmedia.enterprise itmedia.games
+itmedia.lifestyle itmedia.mobile itmedia.news itmedia.pcupdate
+itmedia.technology
 
 @item @uref{http://japan.linux.com/, japan.linux.com}
 linux-ja.news linux-ja.desktop linux-ja.enterprise linux-ja.kernel
