@@ -1,3 +1,8 @@
+2001-07-25  NAKAGAWA Takayuki  <tknakaga@kanagawa.hitachi.co.jp>
+
+	* w3m.el (w3m-fontify-anchors): Don't delete trailing whitespaces,
+	etc. from anchors.
+
 2001-07-23  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-groups): Added "culture".

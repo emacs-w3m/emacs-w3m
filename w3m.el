@@ -1378,8 +1378,9 @@ If N is negative, last N items of LIST is returned."
 	(delete-region start (point))
 	(cond
 	 (href
-	  (when (re-search-forward "[ \t\r\f\n]*</a>" nil t)
-	    (delete-region (setq end (match-beginning 0)) (match-end 0))
+	  (when (re-search-forward "[ \t\r\f\n]*\\(</a>\\)" nil t)
+	    (setq end (match-beginning 0))
+	    (delete-region (match-beginning 1) (match-end 1))
 	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)
 				       w3m-current-url))
 	    (w3m-add-text-properties start end
