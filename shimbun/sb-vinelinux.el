@@ -1,4 +1,4 @@
-;;; sb-vinelinux.el --- shimbun backend class for vinelinux web site.
+;;; sb-vinelinux.el --- shimbun backend class for vinelinux web site. -*- coding: iso-2022-7bit; -*-
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
@@ -70,7 +70,7 @@
       (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload)
       (subst-char-in-region (point-min) (point-max) ?\t ?  t)
       (setq start (progn
-		    (search-forward "</font>¤Î¹¹¿·/¾ã³²¾ðÊó¤Ç¤¹</h4>" nil t nil)
+		    (search-forward "</font>$B$N99?7(B/$B>c32>pJs$G$9(B</h4>" nil t nil)
 		    (search-forward "<table>" nil t nil)
 		    (point))
 	    end (progn (search-forward "</table>" nil t nil)
@@ -80,8 +80,8 @@
       (catch 'stop
 	(while ;;(and (if pages (<= (incf count) pages) t)
 	    (re-search-forward
-	     ;; <td><a href="20010501.html">quota ¤Î¹¹¿·</a></td>
-;; <td><a href="20010501-3.html">Vine Linux 2.1.5 ¤Ë¥¢¥Ã¥×¥°¥ì¡¼¥É¤·¤¿»þ¤Î xdvi ¤ä tgif Åù¤ÎÆüËÜ¸ìÉ½¼¨¤ÎÉÔ¶ñ¹ç</a></td>
+	     ;; <td><a href="20010501.html">quota $B$N99?7(B</a></td>
+;; <td><a href="20010501-3.html">Vine Linux 2.1.5 $B$K%"%C%W%0%l!<%I$7$?;~$N(B xdvi $B$d(B tgif $BEy$NF|K\8lI=<($NIT6q9g(B</a></td>
 	     "^<td><a href=\"\\(\\([0-9]+\\)\\(-[0-9]+\\)*\\.html\\)\">\\(.+\\)</a></td>"
 	     end t)
 	  ;;)
@@ -107,7 +107,7 @@
     headers))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-vinelinux) header)
-  (if (not (re-search-forward "^<h4>¡ü[,0-9]+¡ü.*</h4>" nil t nil))
+  (if (not (re-search-forward "^<h4>$B!|(B[,0-9]+$B!|(B.*</h4>" nil t nil))
       nil
     (delete-region (progn (forward-line 1) (point)) (point-min))
     (shimbun-header-insert shimbun header)
