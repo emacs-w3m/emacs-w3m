@@ -1,7 +1,7 @@
 2001-10-30  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-reload-this-page): If form data exist, ask to make
-	use of its.
+	use of its. Check form data modified.
 
 	* shimbun/mew-shimbun.el (mew-shimbun-remove-unseen-one): Remove
 	'win' option. Do not save mew-cache.
