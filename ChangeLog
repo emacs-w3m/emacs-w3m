@@ -1,5 +1,13 @@
 2001-11-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m.el (w3m-modeline-process-status-on): New constant.
+	(w3m-modeline-status-off): Rename from
+	`w3m-modeline-image-status-off'.
+	(w3m-buffer-setup): Show the string of
+	`w3m-modeline-process-status-on' when process running.
+
+2001-11-19  Hideyuki SHIRAI  <shirai@meadowy.org>
+
 	* w3m.el (w3m-print-this-url): View current image info.
 	(w3m-goto-next-image, w3m-next-image, w3m-goto-previous-image)
 	(w3m-previous-image): New functions.

@@ -865,11 +865,14 @@ AxQIYNre7Elp6rzxOpY1XxoEhuKSAAA7"
   "A small icon image for the url about://emacs-w3m.gif.  It is currently
 encoded in the optimized animated gif format and base64.")
 
+(defconst w3m-modeline-process-status-on "[PRC]"
+  "Modeline string which is displayed when the process is runnning now.")
+
 (defconst w3m-modeline-image-status-on "[IMG]"
   "Modeline string which is displayed when inline image is on.")
 
-(defconst w3m-modeline-image-status-off "[ - ]"
-  "Modeline string which is displayed when inline image is off.")
+(defconst w3m-modeline-status-off "[ - ]"
+  "Modeline string which is displayed when default status.")
 
 (defvar w3m-initial-frame nil "Initial frame of this session.")
 (make-variable-buffer-local 'w3m-initial-frame)
@@ -4092,11 +4095,12 @@ appropriate buffer and select it."
     (unless (eq major-mode 'w3m-mode)
       (w3m-mode)))
   (setq mode-line-buffer-identification (list "%b"))
-  (if (w3m-display-graphic-p)
-      (nconc mode-line-buffer-identification
-	     (list " " '((w3m-display-inline-images
-			  w3m-modeline-image-status-on
-			  w3m-modeline-image-status-off)))))
+  (nconc mode-line-buffer-identification
+	 (list " " '((w3m-current-process
+		      w3m-modeline-process-status-on
+		      (w3m-display-inline-images
+		       w3m-modeline-image-status-on
+		       w3m-modeline-status-off)))))
   (nconc mode-line-buffer-identification
 	 (list " / " 'w3m-current-title)))
 
