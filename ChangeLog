@@ -1,5 +1,7 @@
 2001-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-hist.el (w3m-history-add-arrived-db): New command.
+
 	* w3m.el (w3m-db-history): New command.
 	(w3m-about-history, w3m-about-history-1): Don't deactivate
 	"about://*" links.
