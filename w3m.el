@@ -317,6 +317,21 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'hook)
 
+(defvar w3m-show-inline-images-before-hook nil
+  "Hook run before showing inline images in `w3m-toggle-inline-images'.
+It will be used for the w3m system internal for Emacs 21.")
+
+(defvar w3m-show-inline-images-after-hook nil
+  "Hook run after showing inline images in `w3m-toggle-inline-images'.
+It will be used for the w3m system internal for Emacs 21.")
+
+(defvar w3m-remove-inline-images-before-hook nil
+  "Hook run before removing inline images in `w3m-toggle-inline-images'.")
+
+(defvar w3m-remove-inline-images-after-hook nil
+  "Hook run after removing inline images in `w3m-toggle-inline-images'.
+It will be used for the w3m system internal for Emacs 21.")
+
 (defcustom w3m-async-exec nil
   "*If non-nil, w3m is executed an asynchronously process."
   :group 'w3m
@@ -1286,14 +1301,6 @@ half-dumped data."
 					       'help-echo help
 					       'balloon-help balloon)))))))
 
-(defvar w3m-cache-underline-faces nil
-  "Cache for Emacs 21's exclusive use.  It is used to keep underlined
-faces detached from a buffer when showing images inline.  It is a
-buffer-local variable which contains a list of a flag and lists of a
-beginning position, an end position and a face.  Flag will be set to
-t when caching is completed.")
-(make-variable-buffer-local 'w3m-cache-underline-faces)
-
 (defun w3m-toggle-inline-images (&optional force no-cache)
   "Toggle displaying of inline images on current buffer.
 If optional argument FORCE is non-nil, displaying is forced.
@@ -1305,11 +1312,7 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 	  point end url image)
       (if (or force (eq w3m-display-inline-image-status 'off))
 	  (save-excursion
-	    (when (car w3m-cache-underline-faces)
-	      ;; Detach the underlined faces.
-	      (dolist (elem (cdr w3m-cache-underline-faces))
-		(w3m-add-text-properties (car elem) (cadr elem)
-					 (list 'face nil))))
+	    (run-hooks 'w3m-show-inline-images-before-hook)
 	    (goto-char (point-min))
 	    (while (if (get-text-property (point) 'w3m-image)
 		       (setq point (point))
@@ -1341,10 +1344,10 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 		    (w3m-insert-image point end image)
 		    ;; Redisplay
 		    (and w3m-force-redisplay (sit-for 0))))))
-	    ;; Set a flag as the caching underlined faces is completed.
-	    (setcar w3m-cache-underline-faces t)
+	    (run-hooks 'w3m-show-inline-images-after-hook)
 	    (setq w3m-display-inline-image-status 'on))
 	(save-excursion
+	  (run-hooks 'w3m-remove-inline-images-before-hook)
 	  (goto-char (point-min))
 	  (while (if (get-text-property (point) 'w3m-image)
 		     (setq point (point))
@@ -1365,10 +1368,7 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 	      ;; Remove dummy string.
 	      (delete-region point end))
 	     (t (w3m-remove-image point end))))
-	  ;; Restore the detached faces.
-	  (dolist (elem (cdr w3m-cache-underline-faces))
-	    (w3m-add-text-properties (car elem) (cadr elem)
-				     (cons 'face (cddr elem))))
+	  (run-hooks 'w3m-remove-inline-images-after-hook)
 	  (setq w3m-display-inline-image-status 'off))))))
 
 (defun w3m-decode-entities (&optional reserve-prop)
@@ -1390,8 +1390,6 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 	(buffer-read-only))
     (run-hooks 'w3m-fontify-before-hook)
     (w3m-message "Fontify...")
-    ;; Clear the cache for underlined faces.
-    (setq w3m-cache-underline-faces (list nil))
     ;; Delete <?xml ... ?> tag
     (goto-char (point-min))
     (if (search-forward "<?xml" nil t)

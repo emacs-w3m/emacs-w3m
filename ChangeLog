@@ -1,3 +1,22 @@
+2001-05-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fontify): Don't initialize the value of
+	`w3m-cache-underline-faces' here.
+	(w3m-toggle-inline-images): Run the following new hooks instead of
+	to hide/show underlines behind inline images here.
+	(w3m-cache-underline-faces): Variable moved to w3m-e21.el.
+	(w3m-remove-inline-images-after-hook): New hook.
+	(w3m-remove-inline-images-before-hook): New hook.
+	(w3m-show-inline-images-after-hook): New hook.
+	(w3m-show-inline-images-before-hook): New hook.
+
+	* w3m-e21.el: Use `w3m-remove-inline-images-after-hook',
+	`w3m-show-inline-images-after-hook',
+	`w3m-show-inline-images-before-hook' and `w3m-fontify-before-hook'
+	to fix the undesirable feature of Emacs 21 that to show an
+	underline of a text even if it has an image as a text property.
+	(w3m-cache-underline-faces): Variable moved from w3m.el.
+
 2001-05-21  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/shimbun.el (shimbun-article-url): Fixed problem when
