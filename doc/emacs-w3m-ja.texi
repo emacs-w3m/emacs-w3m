@@ -3308,6 +3308,10 @@ cnet.comp
 impress.internet impress.pc impress.akiba impress.game impress.av
 impress.jijinews impress.sports
 
+@item @uref{http://japan.linux.com/, japan.linux.com}
+linux-ja.news linux-ja.desktop linux-ja.enterprise linux-ja.kernel
+linux-ja.opensource linux-ja.security
+
 @item @uref{http://slashdot.jp/, Slashdot Japan}
 slashdot-jp.story
 
