@@ -17,6 +17,8 @@ $Date$
    --> w3mnav.el 相当の処理ができるように 
        w3m-relationship-estimate-rules を見直す．[emacs-w3m:06211]
 
+   --> 文字コード変換を避けて通るようにする．[emacs-w3m:06674]
+
    --> w3m-correct-charset-alist と w3m-charset-coding-system-alist の整
        理．[emacs-w3m:06109]
 
