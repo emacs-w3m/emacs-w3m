@@ -1,3 +1,52 @@
+2003-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-modeline-separator): New variable.
+	(w3m-modeline-favicon): New variable.
+	(w3m-favicon-image): Move from w3m-favicon.el.
+	(w3m-buffer-setup): Also call `w3m-initialize-graphic-icons' when
+	Emacs 21 is running; simplify the value for
+	`mode-line-buffer-identification'.
+
+	* w3m-e21.el: Bind `w3m-favicon-image' and
+	`w3m-modeline-process-status-on' when compiling.
+	(w3m-spinner-map-on-header-line): New variable.
+	(w3m-spinner-map-on-mode-line): New variable.
+	(w3m-spinner-map-help-echo): New variable.
+	(w3m-setup-header-line): Initialize the value for
+	`w3m-spinner-map-on-header-line'; remove an excessive `list' from
+	the value for `header-line-format'.
+	(w3m-tab-map): New variable.
+	(w3m-tab-make-keymap): Set the value for `w3m-tab-map' in the
+	current buffer.
+	(w3m-tab-line): Add a keymap to the spinner; don't call
+	`w3m-tab-make-keymap', use `w3m-tab-map' instead.
+	(TopLevel): Add-hook `w3m-tab-make-keymap' to
+	`w3m-mode-setup-functions'.
+	(w3m-space-before-modeline-icon): New variable.
+	(w3m-modeline-process-status-on-icon,
+	w3m-modeline-image-status-on-icon, w3m-modeline-status-off-icon,
+	w3m-modeline-ssl-image-status-on-icon,
+	w3m-modeline-ssl-status-off-icon): New variables.
+	(w3m-initialize-graphic-icons): New function.
+	(w3m-make-spinner-image): Don't initialize the value for
+	`w3m-spinner-image-file' here; set the value for
+	`w3m-modeline-process-status-on-icon'.
+
+	* w3m-favicon.el: Bind `w3m-favicon-image' when compiling.
+	(w3m-favicon-image): Move to w3m.el.
+	(w3m-space-before-favicon): Move from w3m-xmas.el.
+	(TopLevel): Make `w3m-modeline-favicon' and `w3m-favicon-image'
+	buffer-local; modify the value or put the `risky-local-variable'
+	property for `w3m-modeline-favicon'.
+	(w3m-favicon-set-image): New macro.
+	(w3m-favicon-setup): Use it.
+	(w3m-favicon-retrieve): Use it.
+
+	* w3m-xmas.el (w3m-xmas-space-before-favicon): Move to
+	w3m-favicon.el and rename to `w3m-space-before-favicon'.
+	(w3m-space-before-modeline-icon): Rename from
+	`w3m-xmas-space-before-modeline-icon'.
+
 2003-10-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-proc.el (w3m-process-filter): Relax the regular expression

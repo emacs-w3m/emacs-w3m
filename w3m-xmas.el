@@ -629,16 +629,8 @@ title contains non-ascii characters, show a url name by default."
   (when (symbol-value 'gutter-buffers-tab-enabled)
     (add-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter)))
 
-;;; Favicon:
-(defcustom w3m-xmas-space-before-favicon " "
-  "String of space character(s) to be put in front of favicon.
-It may be better to use two or more spaces if you are using oblique or
-italic font in the modeline."
-  :group 'w3m
-  :type 'string)
-
 ;;; Graphic icons:
-(defcustom w3m-xmas-space-before-modeline-icon ""
+(defcustom w3m-space-before-modeline-icon ""
   "String of space character(s) to be put in front of the modeline icon.
 It may be better to use one or more spaces if you are using oblique or
 italic font in the modeline."
@@ -688,7 +680,7 @@ italic font in the modeline."
 	      (set-extent-keymap extent keymap)
 	      (set-extent-property extent 'help-echo
 				   "button2 reloads this page"))
-	    (set (nth 2 def) (list '("" w3m-xmas-space-before-modeline-icon)
+	    (set (nth 2 def) (list '("" w3m-space-before-modeline-icon)
 				   (cons extent glyph))))))
       ;; Spinner
       (when (and (or force (not w3m-modeline-process-status-on-icon))
@@ -731,7 +723,7 @@ italic font in the modeline."
 	(set-extent-property extent 'help-echo
 			     "button2 kills the current process")
 	(setq w3m-modeline-process-status-on
-	      (list '("" w3m-xmas-space-before-modeline-icon)
+	      (list '("" w3m-space-before-modeline-icon)
 		    (cons extent 'w3m-modeline-process-status-on-icon)))))))
 
 ;;; Miscellaneous:

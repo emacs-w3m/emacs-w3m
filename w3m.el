@@ -1549,6 +1549,17 @@ The value will be modified for displaying the graphic icon.")
   "Modeline string which is displayed when SSL is on.
 The value will be modified for displaying the graphic icon.")
 
+(defvar w3m-modeline-separator " / "
+  "Modeline string used to separate a status indicator and a title.")
+
+(defvar w3m-modeline-favicon nil
+  "Modeline string used to show a favicon.
+This variable will be made buffer-local under Emacs 21 or XEmacs.")
+
+(defvar w3m-favicon-image nil
+  "Favicon image of the page.
+This variable will be made buffer-local under Emacs 21 or XEmacs.")
+
 (defvar w3m-initial-frame nil "Initial frame of this session.")
 (make-variable-buffer-local 'w3m-initial-frame)
 
@@ -6151,27 +6162,27 @@ appropriate buffer and select it."
       (w3m-mode)))
   (w3m-add-local-hook 'pre-command-hook 'w3m-store-current-position)
   (w3m-add-local-hook 'post-command-hook 'w3m-check-current-position)
-  (w3m-static-when (featurep 'xemacs)
+  (w3m-static-when (or (featurep 'xemacs)
+		       (and (boundp 'emacs-major-version)
+			    (> emacs-major-version 20)))
     (w3m-initialize-graphic-icons))
   (setq mode-line-buffer-identification
-	(list "%b "
-	      '(w3m-current-process
-		w3m-modeline-process-status-on
-		(w3m-current-ssl
-		 (w3m-display-inline-images
-		  w3m-modeline-ssl-image-status-on
-		  w3m-modeline-ssl-status-off)
-		 (w3m-display-inline-images
-		  w3m-modeline-image-status-on
-		  w3m-modeline-status-off)))
-	      (w3m-static-if (featurep 'xemacs)
-		  '(w3m-use-favicon
-		    (w3m-favicon-image
-		     ("" w3m-xmas-space-before-favicon w3m-favicon-image)
-		     " / ")
-		    " / ")
-		" / ")
-	      'w3m-current-title))
+	'("%b "
+	  (w3m-current-process
+	   w3m-modeline-process-status-on
+	   (w3m-current-ssl
+	    (w3m-display-inline-images
+	     w3m-modeline-ssl-image-status-on
+	     w3m-modeline-ssl-status-off)
+	    (w3m-display-inline-images
+	     w3m-modeline-image-status-on
+	     w3m-modeline-status-off)))
+	  (w3m-use-favicon
+	   (w3m-favicon-image
+	    w3m-modeline-favicon
+	    w3m-modeline-separator)
+	   w3m-modeline-separator)
+	  w3m-current-title))
   (unless (assq 'w3m-current-process mode-line-process)
     (setq mode-line-process
 	  (cons (list 'w3m-current-process 'w3m-process-modeline-string)
