@@ -1,5 +1,10 @@
 2002-08-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (ffap-url-regexp): Modify the value to make it match to
+	nntp urls.
+
+2002-08-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* Makefile.in (very-slow): New rule.
 
 	* attic/addpath.el: New file.
