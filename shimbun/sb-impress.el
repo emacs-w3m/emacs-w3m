@@ -1,4 +1,4 @@
-;;; sb-impress.el --- shimbun backend for www.watch.impress.co.jp
+;;; sb-impress.el --- shimbun backend for www.watch.impress.co.jp -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 

@@ -1,4 +1,4 @@
-;;; sb-cnet.el --- shimbun backend for cnet
+;;; sb-cnet.el --- shimbun backend for cnet -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
 

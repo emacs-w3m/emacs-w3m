@@ -1,4 +1,4 @@
-;;; sb-2ch.el --- shimbun backend for 2ch.net
+;;; sb-2ch.el --- shimbun backend for 2ch.net -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2001 by (not 1)
 
