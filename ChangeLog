@@ -1,3 +1,11 @@
+2001-05-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-header-insert): Use BBDB records for
+	choosing the author's X-Face.
+	(shimbun-use-bbdb-for-x-face): New variable.  Users can set this
+	to `never' to inhibit the use of BBDB.
+	(TopLevel): Attempt to load `bbdb' when compiling.
+
 2001-05-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el (shimbun-mime-encode-string): Replace all
@@ -16,7 +24,7 @@
 	(w3m-local-dirlist-cgi): Set "QUERY_STRING" to encoded string of
 	'w3m-file-name-coding-system'. Insert 'Meta tag' to the binding of
 	charset.
-		
+
 2001-05-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-goto-url): Set a string representing file
