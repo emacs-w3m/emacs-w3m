@@ -3623,7 +3623,10 @@ type as a string argument, when retrieve is complete."
 			      w3m-home-page))
 	  (basename (file-name-nondirectory (w3m-url-strip-query url))))
      (if (string-match "^[\t ]*$" basename)
-	 (error "You should specify the existing file name")
+	 (list url
+	       (w3m-read-file-name (format "Download %s to: " url)
+				   w3m-default-save-directory "index.html")
+	       current-prefix-arg)
        (list url
 	     (w3m-read-file-name (format "Download %s to: " basename)
 				 w3m-default-save-directory basename)
