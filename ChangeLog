@@ -1,7 +1,11 @@
+2002-04-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el: Don't require `pcustom'.
+
 2002-04-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-image.el: New file.
-	
+
 	* w3m.el (w3m-halfdump-command-arguments): Specify single-row-image
 	dump option instead of image.
 	(w3m-goto-mailto-url): Added optional post-data argument and use it.
