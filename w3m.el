@@ -680,7 +680,8 @@ of the original request method. -- RFC2616"
 
 (defcustom w3m-after-cursor-move-hook
   '(w3m-highlight-current-anchor
-    w3m-print-this-url)
+    w3m-print-this-url
+    w3m-auto-show)
   "*Hook run after cursor moved."
   :group 'w3m
   :type 'hook)
@@ -959,6 +960,16 @@ allows a kludge that it can also be a plist of frame properties."
 			       (symbol :tag "Parameter")
 			       (sexp :tag "Value")))
 		 plist))
+
+(defcustom w3m-auto-show t
+  "*Use internal auto-show method."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-horizontal-scroll-division 4
+  "*Division number of horizontal scroll."
+  :group 'w3m
+  :type 'integer)
 
 (defcustom w3m-use-refresh t
   "*If non-nil, support REFRESH attribute in META tags."
@@ -4267,6 +4278,7 @@ Return t if current line has a same anchor sequence."
 	  (setq arg (1+ arg))
 	(setq w3m-goto-anchor-hist
 	      (cons (w3m-anchor-sequence) w3m-goto-anchor-hist))))
+    (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
 (defun w3m-goto-previous-anchor ()
@@ -4312,6 +4324,7 @@ Return t if current line has a same anchor sequence."
 	  (setq arg (1+ arg))
 	(setq w3m-goto-anchor-hist
 	      (cons (w3m-anchor-sequence) w3m-goto-anchor-hist))))
+    (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
 (defun w3m-goto-next-form ()
@@ -4348,6 +4361,7 @@ Return t if current line has a same anchor sequence."
 	(setq w3m-goto-anchor-hist
 	      (cons (get-text-property (point) 'w3m-action)
 		    w3m-goto-anchor-hist))))
+    (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
 (defun w3m-goto-previous-form ()
@@ -4385,6 +4399,7 @@ Return t if current line has a same anchor sequence."
 	(setq w3m-goto-anchor-hist
 	      (cons (get-text-property (point) 'w3m-action)
 		    w3m-goto-anchor-hist))))
+    (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
 (defun w3m-goto-next-image ()
@@ -4422,6 +4437,7 @@ Return t if current line has a same anchor sequence."
 	(setq w3m-goto-anchor-hist
 	      (cons (get-text-property (point) 'w3m-image)
 		    w3m-goto-anchor-hist))))
+    (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
 (defun w3m-goto-previous-image ()
@@ -4460,6 +4476,7 @@ Return t if current line has a same anchor sequence."
 	(setq w3m-goto-anchor-hist
 	      (cons (get-text-property (point) 'w3m-image)
 		    w3m-goto-anchor-hist))))
+    (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
 (defun w3m-copy-buffer (&optional buf newname and-pop empty)
@@ -4929,8 +4946,13 @@ Return t if deleting current frame or window is succeeded."
   (use-local-map w3m-mode-map)
   (setq truncate-lines t
 	w3m-display-inline-images w3m-default-display-inline-images)
-  (when (boundp 'auto-show-mode)
-    (set (make-local-variable 'auto-show-mode) nil))
+  (when w3m-auto-show
+    (when (boundp 'automatic-hscrolling)
+      (set (make-local-variable 'automatic-hscrolling) nil))
+    (when (boundp 'auto-show-mode)
+      (set (make-local-variable 'auto-show-mode) nil))
+    (when (boundp 'hscroll-mode)
+      (set (make-local-variable 'hscroll-mode) nil)))
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-hook))
@@ -4957,89 +4979,139 @@ Return t if deleting current frame or window is succeeded."
 Scroll size is `w3m-horizontal-scroll-columns' columns
 or prefix ARG columns."
   (interactive "P")
-  ;; When `scroll-left' is called non-interactively in Emacs21, it
-  ;; doesn't work correctly.
-  (let ((current-prefix-arg
-	 (if arg
-	     (prefix-numeric-value arg)
-	   w3m-horizontal-scroll-columns)))
-    (call-interactively 'scroll-left)))
+  (w3m-horizontal-scroll 'left (if arg
+				   (prefix-numeric-value arg)
+				 w3m-horizontal-scroll-columns)))
 
 (defun w3m-scroll-right (arg)
   "Scroll to right.
 Scroll size is `w3m-horizontal-scroll-columns' columns
 or prefix ARG columns."
   (interactive "P")
-  ;; When `scroll-right' is called non-interactively in Emacs21, it
-  ;; doesn't work correctly.
-  (let ((current-prefix-arg
-	 (if arg
-	     (prefix-numeric-value arg)
-	   w3m-horizontal-scroll-columns)))
-    (call-interactively 'scroll-right)))
+  (w3m-horizontal-scroll 'right (if arg
+				    (prefix-numeric-value arg)
+				  w3m-horizontal-scroll-columns)))
 
 (defun w3m-shift-left (arg)
   "Shift to left.
 Shift size is `w3m-horizontal-shift-columns' columns
 or prefix ARG columns."
   (interactive "P")
-  ;; When `scroll-left' is called non-interactively in Emacs21, it
-  ;; doesn't work correctly.
-  (let ((current-prefix-arg
-	 (if arg
-	     (prefix-numeric-value arg)
-	   w3m-horizontal-shift-columns)))
-    (call-interactively 'scroll-left)))
+  (w3m-horizontal-scroll 'left (if arg
+				   (prefix-numeric-value arg)
+				 w3m-horizontal-shift-columns)))
 
 (defun w3m-shift-right (arg)
   "Shift to right.
 Shift size is `w3m-horizontal-shift-columns' columns
 or prefix ARG columns."
   (interactive "P")
-  ;; When `scroll-right' is called non-interactively in Emacs21, it
-  ;; doesn't work correctly.
-  (let ((current-prefix-arg
-	 (if arg
-	     (prefix-numeric-value arg)
-	   w3m-horizontal-shift-columns)))
-    (call-interactively 'scroll-right)))
+  (w3m-horizontal-scroll 'right (if arg
+				    (prefix-numeric-value arg)
+				  w3m-horizontal-shift-columns)))
+
+(defvar w3m-horizontal-scroll-done nil)
+(make-variable-buffer-local 'w3m-horizontal-scroll-done)
+(defvar w3m-current-position '(-1 0 0))
+(make-variable-buffer-local 'w3m-current-position)
+
+(defun w3m-auto-show ()
+  "Automatic horizontal scroll."
+  (when (and w3m-auto-show
+	     (not w3m-horizontal-scroll-done)
+	     (markerp (nth 1 w3m-current-position))
+	     (markerp (nth 2 w3m-current-position))
+	     (>= (point) (marker-position (nth 1 w3m-current-position)))
+	     (<= (point) (marker-position (nth 2 w3m-current-position))))
+    (w3m-horizontal-on-screen))
+  (setq w3m-horizontal-scroll-done nil))
+
+;; XEmacs bugs ?
+(w3m-static-if (and (featurep 'xemacs) (featurep 'mule))
+    (progn
+      (defun w3m-current-column ()
+	(length (buffer-substring (point-at-bol) (point))))
+
+      (defun w3m-set-window-hscroll (window columns)
+	(if (> columns 0)
+	    (let (str)
+	      (save-excursion
+		(move-to-column columns)
+		(setq str (buffer-substring (point-at-bol) (point))))
+	      (set-window-hscroll window (length str)))
+	  (set-window-hscroll window 0)))
+      )
+  (defalias 'w3m-current-column 'current-column)
+  (defalias 'w3m-set-window-hscroll 'set-window-hscroll))
+
+(defun w3m-horizontal-scroll (type cols)
+  "Horizontal scroll for shift|scroll functions.
+TYPE is either 'left or 'right and COLS is columns."
+  (setq w3m-horizontal-scroll-done t)
+  (let ((inhibit-point-motion-hooks t))
+    (set-window-hscroll (selected-window)
+			(max 0
+			     (+ (window-hscroll)
+				(if (eq type 'left) cols (- cols)))))
+    (unless (and (>= (- (w3m-current-column) (window-hscroll)) 0)
+		 (< (- (w3m-current-column) (window-hscroll)) (window-width)))
+      (move-to-column (if (eq type 'left) (window-hscroll)
+			(+ (window-hscroll) (window-width) -2))))))
+
+(defun w3m-horizontal-on-screen ()
+  "Horizontal scroll and show current position in the window."
+  (when w3m-auto-show
+    (setq w3m-horizontal-scroll-done t)
+    (unless (and (>= (- (w3m-current-column) (window-hscroll)) 0)
+		 (< (+ (- (w3m-current-column) (window-hscroll))
+		       (if (eolp) 0 2))	;; '$$'
+		    (window-width)))
+      (let ((inhibit-point-motion-hooks t))
+	(w3m-set-window-hscroll (selected-window)
+				(- (current-column)
+				   (if (> (window-hscroll) (w3m-current-column))
+				       (/ (window-width)
+					  w3m-horizontal-scroll-division)
+				     (* (/ (window-width)
+					   w3m-horizontal-scroll-division)
+					(1- w3m-horizontal-scroll-division)))))))))
 
 (defun w3m-horizontal-recenter (&optional arg)
   "Recenter horizontally.  With ARG, put point on column ARG."
   (interactive "P")
-  (cond ((< (current-column) (window-hscroll))
+  (cond ((< (w3m-current-column) (window-hscroll))
 	 (move-to-column (window-hscroll))
 	 (setq arg 0))
-	((>= (current-column) (+ (window-hscroll) (window-width)))
+	((>= (w3m-current-column) (+ (window-hscroll) (window-width)))
 	 (move-to-column (+ (window-hscroll) (window-width) -2))
 	 (setq arg -1))
 	((listp arg)
 	 (setq arg (car arg))))
-  (set-window-hscroll (selected-window)
-		      (if (numberp arg)
-			  (if (>= arg 0)
-			      (max (- (current-column) arg) 0)
-			    (let* ((home (point))
-				   (inhibit-point-motion-hooks t)
-				   (maxcolumn (prog2
-						  (end-of-line)
-						  (1- (current-column))
-						(goto-char home))))
-			      (max (min (- (current-column)
-					   (window-width)
-					   arg
-					   -2)
-					maxcolumn)
-				   0)))
-			(max (- (current-column) (/ (window-width) 2) -1)
-			     0))))
+  (w3m-set-window-hscroll (selected-window)
+			  (if (numberp arg)
+			      (if (>= arg 0)
+				  (max (- (current-column) arg) 0)
+				(let* ((home (point))
+				       (inhibit-point-motion-hooks t)
+				       (maxcolumn (prog2
+						      (end-of-line)
+						      (1- (current-column))
+						    (goto-char home))))
+				  (max (min (- (current-column)
+					       (window-width)
+					       arg
+					       -2)
+					    maxcolumn)
+				       0)))
+			    (max (- (current-column) (/ (window-width) 2) -1)
+				 0))))
 
 (defun w3m-beginning-of-line (&optional arg)
   "Like `beginning-of-line', except that set window-hscroll to zero first."
   (interactive "P")
   (when (listp arg)
     (setq arg (car arg)))
-  (set-window-hscroll (selected-window) 0)
+  (w3m-set-window-hscroll (selected-window) 0)
   (beginning-of-line arg))
 
 (defun w3m-end-of-line (&optional arg)
@@ -5061,8 +5133,8 @@ positions around there (+/-3 lines) visible."
       (goto-char home)))
   (setq temporary-goal-column arg
 	this-command 'next-line)
-  (set-window-hscroll (selected-window)
-		      (max (- arg (window-width) -2) 0)))
+  (w3m-set-window-hscroll (selected-window)
+			  (max (- arg (window-width) -2) 0)))
 
 (defun w3m-goto-mailto-url (url &optional post-data)
   (if (and (symbolp w3m-mailto-url-function)
@@ -5164,20 +5236,19 @@ Note: This function is designed for the other emacsen than Emacs21."
       (make-local-hook hook)
       (add-hook hook function append t))))
 
-(defvar w3m-current-position -1)
-(make-variable-buffer-local 'w3m-current-position)
-
 (defun w3m-store-current-position ()
-  "Store the current position to `w3m-current-position' before every
+  "Store the current positions to `w3m-current-position' before every
 commands.  This function is designed as the hook function which is
 registered to `pre-command-hook' by `w3m-buffer-setup'."
-  (setq w3m-current-position (point)))
+  (setq w3m-current-position (list (point)
+				   (copy-marker (line-beginning-position))
+				   (copy-marker (line-end-position)))))
 
 (defun w3m-check-current-position ()
   "Call functions set to `w3m-after-cursor-move-hook' after cursor is
 moved.  This function is designed as the hook function which is
 registered to `post-command-hook' by `w3m-buffer-setup'."
-  (when (/= (point) w3m-current-position)
+  (when (/= (point) (car w3m-current-position))
     (run-hooks 'w3m-after-cursor-move-hook)))
 
 (defsubst w3m-buffer-setup ()
