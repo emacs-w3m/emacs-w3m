@@ -3042,8 +3042,8 @@ argument, when retrieve is complete."
 		    (null w3m-current-redirect))
 		;; No redirection exists.
 		(progn
-		  (w3m-cache-header orig-url
-				    (w3m-cache-request-header url))
+		  (when type
+		    (w3m-cache-header orig-url (w3m-cache-request-header url)))
 		  (funcall orig-handler type))
 	      ;; Follow the redirection.
 	      (if (zerop i)
