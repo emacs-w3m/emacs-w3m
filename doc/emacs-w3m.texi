@@ -1496,7 +1496,81 @@ words, @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el} and
 
 @node Gnus
 @section Reading HTML mails in Gnus
+@cindex Reading HTML mails in Gnus
+@vindex mm-inline-text-html-with-images
+@vindex mm-inline-text-html-with-w3m-keymap
+@vindex mm-text-html-renderer
+@vindex w3m-minor-mode
+@vindex w3m-minor-mode-command-alist
 
+Gnus supports emacs-w3m.  Do you know?  Uh, the version of Gnus bundled
+with Emacs (or an XEmacs package) currently does not support emacs-w3m
+yet (why?).  You had best use the development version of Gnus known as
+@samp{Oort Gnus}.  It is available at:
+
+@uref{ftp://ftp.gnus.org/pub/gnus/ognus.tar.gz}
+
+What, the Emacs version of Gnus already supports emacs-w3m?  Oh, you
+should get hold of the newest version of emacs-w3m (@pxref{Installing
+Emacs-w3m}), or send a mail to the emacs-w3m development team including
+a patch (or a complaint) (@pxref{Mailing List}).
+
+@itemize @bullet
+@item
+What can emacs-w3m do?
+
+You can convert HTML spam mails to be human-readable using emacs-w3m.
+Of course, it works for HTML ham (non-spam) mails, either.  Emacs-w3m is
+probably faster than the default converter.  You don't need to perform
+any additional operation.  It will simply be displayed.
+
+On HTML parts of an article buffer, the @code{w3m-minor-mode} is turned
+on and you can use the same main keys as the keys of emacs-w3m, for
+instance, @key{RET} is for visiting a page which a link in the current
+position points to.  Those keys are defined in the
+@code{w3m-minor-mode-command-alist} option.  Keep in mind that some
+commands are replaced by another command similar to them for the
+security reasons.
+
+@item
+What do you have to do?
+
+Read the Gnus manual (@pxref{(emacs-mime)Display Customization}).  The
+easiest way is to put the following line in your @file{~/.gnus} file:
+
+@lisp
+(setq mm-text-html-renderer 'w3m)
+@end lisp
+
+If you don't need to use emacs-w3m keys in article buffers, add the
+following line:
+
+@lisp
+(setq mm-inline-text-html-with-w3m-keymap nil)
+@end lisp
+
+@item
+Notes
+
+The description mentioned above about spam and ham is not for kidding,
+that is just for calling your attention.  Some HTML mails might have a
+trick of spammers using the @samp{<img>} tag which is far evil than the
+@samp{Click Here!} button.  It is most likely to be intended to verify
+whether such a mail has been reached to your eyes.  It is done by
+embedding an identifier string into a url which you might retrieve.  By
+Gnus' default, the @code{mm-inline-text-html-with-images} option is
+@code{nil} and Gnus will never connect to the spammer's site arbitrarily.
+
+You can display images inline in an article buffer if you set
+@code{mm-inline-text-html-with-images} to @code{t}, can't you?  No, it
+is insufficient, but you are being still protected.  If you don't care
+of leaking an information that your mail address is reachable, set the
+@code{mm-w3m-safe-url-regexp} option to @code{nil}.  The default value
+for @code{mm-w3m-safe-url-regexp} is @samp{"\\`cid:"} which means we
+consider that images which are included in a mail with the @samp{cid:}
+url are safe (that is, you can display such images without modifying the
+@code{mm-w3m-safe-url-regexp} option).
+@end itemize
 
 @node Mew
 @section Reading HTML mails in Mew
