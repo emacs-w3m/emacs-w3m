@@ -1411,7 +1411,7 @@ If it is nil, the dirlist.cgi module of the w3m command will be used."
 	    (symbol-value 'w3m-add-referer))
     (cons "\\`http:"
 	  "\\`http://\\(localhost\\|127\\.0\\.0\\.1\\)/"))
-  "*Regexps matching url strings being allowed to send as referes.
+  "*Regexps matching url strings being allowed to send as referers.
 It consists of a `cons' of two regexps, one matches and the other does
 not match.  If a url matches the first element and does not match the
 latter one, it denotes that url can be sent to foreign web servers as
@@ -1431,6 +1431,15 @@ private informations, for example:
 		     (radio :indent 2 :sample-face underline :tag "Don't allow"
 			    (regexp :format "%t: %v\n" :size 0)
 			    (const :tag "Allow all" nil)))))
+
+(defcustom w3m-add-referer-predicate-function
+  'w3m-add-referer-predicate-by-referer-regexps
+  "*A function to judge whether the referer should be sent or not.
+If nil, referer is not sent.
+The function must have two arguments, URL and REFERER."
+  :group 'w3m
+  :type '(radio (const :tag "Not specified" nil)
+		(function :format "%t: %v\n" :size 0)))
 
 (defcustom w3m-touch-command (w3m-which-command "touch")
   "*Name of the executable file of the touch command.
@@ -4113,6 +4122,34 @@ to add the option \"-no-proxy\"."
       (push "-no-proxy" args))
     args))
 
+(defun w3m-add-referer-predicate-by-referer-regexps (url referer)
+  "Return non-nil when URL and REFERER satisfies the condition.
+\(A candidate function for `w3m-add-referer-predicate-function'\)
+This function returns non-nil only when the referer satisfies the
+condition specified by `w3m-add-referer-regexps' (which see)."
+  (and (stringp referer)
+       (not (and (cdr w3m-add-referer-regexps)
+		 (string-match (cdr w3m-add-referer-regexps)
+			       referer)))
+       (car w3m-add-referer-regexps)
+       (string-match (car w3m-add-referer-regexps) referer)))
+
+(defun w3m-add-referer-predicate-by-hosts (url referer)
+  "Return non-nil when URL and REFERER satisfies the condition.
+\(A candidate function for `w3m-add-referer-predicate-function'\)
+This function returns non-nil only when the host parts of the
+URL and REFERER are exactly same string."
+  (when (stringp referer)
+    (let (host referer-host)
+      (when (and (string-match w3m-url-components-regexp url)
+		 (match-beginning 4))
+	(setq host (match-string 4 url)))
+      (when (and (string-match w3m-url-components-regexp referer)
+		 (match-beginning 4))
+	(setq referer-host (match-string 4 referer)))
+      (and host referer-host
+	   (string= host referer-host)))))
+
 ;; Currently, -request argument is supported only by w3mmee.
 (defun w3m-request-arguments (method url temp-file
 				     &optional body referer content-type)
@@ -4130,12 +4167,9 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
 	  (append
 	   (when w3m-add-user-agent
 	     (list "-header" (concat "User-Agent:" w3m-user-agent)))
-	   (when (and (stringp referer)
-		      (not (and (cdr w3m-add-referer-regexps)
-				(string-match (cdr w3m-add-referer-regexps)
-					      referer)))
-		      (car w3m-add-referer-regexps)
-		      (string-match (car w3m-add-referer-regexps) referer))
+	   (when (and w3m-add-referer-predicate-function
+		      (funcall w3m-add-referer-predicate-function
+			       url referer))
 	     (list "-header" (concat "Referer: " referer)))
 	   (when w3m-accept-languages
 	     (list "-header" (concat
@@ -4143,12 +4177,8 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
 			      (mapconcat 'identity w3m-accept-languages
 					 " ")))))
 	(when w3m-add-user-agent (insert "User-Agent: " w3m-user-agent "\n"))
-	(when (and (stringp referer)
-		   (not (and (cdr w3m-add-referer-regexps)
-			     (string-match (cdr w3m-add-referer-regexps)
-					   referer)))
-		   (car w3m-add-referer-regexps)
-		   (string-match (car w3m-add-referer-regexps) referer))
+	(when (and w3m-add-referer-predicate-function
+		   (funcall w3m-add-referer-predicate-function url referer))
 	  (insert "Referer: " referer "\n"))
 	(when w3m-accept-languages
 	  (insert "Accept-Language: "
@@ -4198,12 +4228,8 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
 			  (list "-header" (concat "Content-Type: "
 						  content-type)))
 			(list "-post" temp-file))))
-    (when (and (stringp referer)
-	       (not (and (cdr w3m-add-referer-regexps)
-			 (string-match (cdr w3m-add-referer-regexps)
-				       referer)))
-	       (car w3m-add-referer-regexps)
-	       (string-match (car w3m-add-referer-regexps) referer))
+    (when (and w3m-add-referer-predicate-function
+	       (funcall w3m-add-referer-predicate-function url referer))
       (setq args (nconc args (list "-header" (concat "Referer: " referer)))))
     args))
 

@@ -460,35 +460,35 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 			    (setq type (nth 1 cell)
 				  subtype (nth 2 cell)))
 		      t)))
-	(setq rest (cdr rest))))
-    (if type
-	(progn
-	  (setq situation (del-alist 'method (copy-alist situation)))
-	  (funcall (symbol-function 'mime-play-entity)
-		   entity
-		   (put-alist 'type type
-			      (put-alist 'subtype subtype
-					 situation))
-		   'mime-view-octet))
-      (let ((buf (get-buffer-create
-		  (format "%s-%s" (buffer-name) (mime-entity-number entity))))
-	    (name (mime-entity-filename entity)))
-	(with-current-buffer buf
-	  (set-buffer-multibyte nil)
-	  (setq buffer-read-only nil)
-	  (erase-buffer)
-	  (w3m-insert-string (mime-entity-content entity))
-	  (octet-buffer name (mime-entity-type/subtype entity))
-	  (setq buffer-read-only t
-		truncate-lines t)
-	  (set-buffer-multibyte t)
-	  (set-buffer-modified-p nil))
-	(let ((win (get-buffer-window (current-buffer))))
-	  (or (eq (selected-window) win)
-	      (select-window (or win (get-largest-window)))))
-	(view-buffer buf)
-	(run-hooks 'mime-view-octet-hook)
-	(goto-char (point-min))))))
+	(setq rest (cdr rest)))
+      (if type
+	  (progn
+	    (setq situation (del-alist 'method (copy-alist situation)))
+	    (funcall (symbol-function 'mime-play-entity)
+		     entity
+		     (put-alist 'type type
+				(put-alist 'subtype subtype
+					   situation))
+		     'mime-view-octet))
+	(let ((buf (get-buffer-create
+		    (format "%s-%s" (buffer-name) (mime-entity-number entity))))
+	      (name (mime-entity-filename entity)))
+	  (with-current-buffer buf
+	    (set-buffer-multibyte nil)
+	    (setq buffer-read-only nil)
+	    (erase-buffer)
+	    (w3m-insert-string mdata)
+	    (octet-buffer name (mime-entity-type/subtype entity))
+	    (setq buffer-read-only t
+		  truncate-lines t)
+	    (set-buffer-multibyte t)
+	    (set-buffer-modified-p nil))
+	  (let ((win (get-buffer-window (current-buffer))))
+	    (or (eq (selected-window) win)
+		(select-window (or win (get-largest-window)))))
+	  (view-buffer buf)
+	  (run-hooks 'mime-view-octet-hook)
+	  (goto-char (point-min)))))))
 
 ;;;###autoload
 (defun octet-mime-setup ()

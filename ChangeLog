@@ -1,3 +1,15 @@
+2004-03-19  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-add-referer-regexps): Fix typo.
+	(w3m-add-referer-predicate-function): New user option.
+	(w3m-add-referer-predicate-by-referer-regexps): New function.
+	(w3m-add-referer-predicate-by-hosts): Ditto.
+	(w3m-request-arguments): Call w3m-add-referer-predicate-function.
+	(w3m-header-arguments): Ditto.
+
+	* octet.el (mime-view-octet): Avoid redundant invocation of
+	`mime-entity-content'.
+
 2004-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-kantei.el: Support the English edition.  It may need
