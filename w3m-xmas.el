@@ -1,6 +1,6 @@
-;;; w3m-xmas.el --- The stuffs to use emacs-w3m on XEmacs.
+;;; w3m-xmas.el --- The stuffs to use emacs-w3m on XEmacs
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001,2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -59,34 +59,31 @@
 (require 'path-util)
 (require 'poe)
 (require 'poem)
+(require 'pccl)
 
 ;;; Handle coding system:
-(w3m-static-cond
- ((featurep 'mule)
-  (require 'pccl)
-  (defalias 'w3m-find-coding-system 'find-coding-system)
-  (defalias 'w3m-make-ccl-coding-system 'make-ccl-coding-system)
-  (defun w3m-detect-coding-region (start end &optional priority-list)
-    "Detect coding system of the text in the region between START and END.
+(defalias 'w3m-find-coding-system 'find-coding-system)
+(defalias 'w3m-make-ccl-coding-system (if (featurep 'mule)
+					  'make-ccl-coding-system
+					'ignore))
+(unless (featurep 'mule)
+  (defalias 'coding-system-category 'ignore)
+  (defmacro define-ccl-program (&rest args)))
+
+(defun w3m-detect-coding-region (start end &optional priority-list)
+  "Detect coding system of the text in the region between START and END.
 Return the first possible coding system.
 
 PRIORITY-LIST is a list of coding systems ordered by priority."
-    (let (category categories codesys)
-      (dolist (codesys priority-list)
-	(setq category (coding-system-category codesys))
-	(unless (assq category categories)
-	  (push (cons category codesys) categories)))
-      (if (consp (setq codesys (detect-coding-with-priority
-				start end (nreverse categories))))
-	  (car codesys)
-	codesys))))
- (t
-  ;; Dummy functions for XEmacs without MULE.
-  (defalias 'w3m-find-coding-system 'ignore)
-  (defalias 'w3m-make-ccl-coding-system 'ignore)
-  (defalias 'w3m-detect-coding-region 'ignore)
-  (defalias 'coding-system-list 'ignore)
-  (defalias 'set-buffer-multibyte 'ignore)))
+  (let (category categories codesys)
+    (dolist (codesys priority-list)
+      (setq category (coding-system-category codesys))
+      (unless (assq category categories)
+	(push (cons category codesys) categories)))
+    (if (consp (setq codesys (detect-coding-with-priority
+			      start end (nreverse categories))))
+	(car codesys)
+      codesys)))
 
 ;;; Handle images:
 
@@ -453,7 +450,7 @@ option, it is recommended a bit that setting both the option
 (when (boundp 'gutter-buffers-tab-enabled)
   (defadvice format-buffers-tab-line
     (around w3m-xmas-show-current-title-in-buffer-tab (buffer) activate)
-    "Advised by Emacs-W3M.
+    "Advised by emacs-w3m.
 Show the current title string in the buffer tab.  Unfortunately,
 existing XEmacs does not support showing non-ascii characters.  When a
 title contains non-ascii characters, show a url name by default."

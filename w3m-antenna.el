@@ -1,6 +1,6 @@
 ;;; w3m-antenna.el --- Utility to detect changes of WEB.
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001,2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -186,7 +186,7 @@ whose elements are:
 
 (defun w3m-antenna-shutdown ()
   (when w3m-antenna-alist
-    (w3m-save-list w3m-antenna-file w3m-antenna-alist)
+    (w3m-save-list w3m-antenna-file w3m-antenna-alist nil t)
     (setq w3m-antenna-alist nil)))
 
 (defun w3m-antenna-hns-last-modified (url &optional no-cache)

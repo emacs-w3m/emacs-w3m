@@ -1,3 +1,80 @@
+2002-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-read-file-name): Strip the query part from a default
+	file name.
+	(w3m-download): Ditto.
+	(w3m-url-components-regexp): Move forward.
+
+	* mime-w3m.el: Always require `font' under XEmacs.
+
+	* shimbun/sb-debian.el (shimbun-debian-groups): Add debian-med,
+	debian-newmaint-discuss, debian-qa-packages, debian-ssh,
+	debian-user-de and debian-user-german.
+
+2002-02-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-async-exec): Default to nil under MacOS X.
+
+2002-02-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-save-list): Allow the 4th arg `escape-ctl-chars'.
+	(w3m-arrived-shutdown): Call it with the 4th arg.
+
+	* w3m-antenna.el (w3m-antenna-shutdown): Call `w3m-save-list' with
+	the 4th arg.
+
+2002-02-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-display-message): New macro.
+	(w3m-make-help-echo): Clear the echo area when Emacs 21 is running;
+	use the modern styles of backquote.
+	(w3m-make-balloon-help): Use the modern styles of backquote.
+	(w3m-toggle-inline-image): Use `w3m-display-message' instead of
+	`message' to say a trivial message.
+	(w3m-view-this-url): Ditto.
+	(w3m-submit-form): Ditto.
+	(w3m-view-image): Ditto.
+	(w3m-save-image): Ditto.
+	(w3m-download-this-url): Ditto.
+	(w3m-print-current-url): Ditto.
+	(w3m-print-this-url): Ditto.
+	(w3m-edit-this-url): Ditto.
+	(w3m-quit): Ditto.
+	(w3m-goto-ftp-url): Ditto.
+
+2002-02-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-halfdump-command-common-arguments): Replace
+	`frame-width' with `window-width'.
+	(w3m-about-db-history): Ditto.
+
+2002-02-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (TopLevel): Require `pccl'.
+	(w3m-make-ccl-coding-system): Alias to `ignore' if no-MULE (the
+	feature `mule' is not provided).
+	(coding-system-category): Ditto.
+	(define-ccl-program): Define it as an empty macro if no-MULE.
+
+	* w3m.el (TopLevel): Don't require `ccl' if no-MULE.
+	(w3m-accept-japanese-characters): Default to nil if no-MULE.
+	(w3m-coding-system): Default to `iso-8859-1' if no-MULE.
+	(w3m-output-coding-system): Ditto.
+	(w3m-file-coding-system): Ditto.
+	(w3m-toolbar): Don't express some Japaneses chars directly.
+
+	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
+	w3m-ucs.el, shimbun modules, mime-w3m.el, octet.el and
+	w3m-weather.el if no-MULE.
+
+2002-02-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-prin1): New function.
+	(w3m-save-list): Use it instead of `prin1'.
+
+	* w3mhack.el, w3m.el, w3m-xmas.el, w3m-om.el: Say emacs-w3m not
+	Emacs-W3M.
+
 2002-01-31  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-hns.el (shimbun-hns-expiration-days): New variable.
@@ -13,7 +90,7 @@
 2002-01-11  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-url-encode-string): Fixed for Mule2.
-	
+
 2002-01-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-quit): Don't remove `w3m-arrived-shutdown' from
@@ -23,6 +100,7 @@
 
 	* w3m-form.el (w3m-form-parse-forms): Use `w3m-decode-entities-string'
 	to value in the textarea and option menu.
+
 
 2002-01-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
