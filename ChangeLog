@@ -1,3 +1,9 @@
+2001-09-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-about-db-history-today): New defsubst.
+	(w3m-about-db-history): If arrived time within 18 hours, display
+	with "HH:MM:SS".
+
 2001-09-22  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* shimbun/sb-isize-sports.el (shimbun-isize-sports-group-alist):
