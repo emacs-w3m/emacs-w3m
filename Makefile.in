@@ -10,16 +10,39 @@ else
 VERSION = $(BASEVER).$(REVISION)
 endif
 
-EMACS   = emacs
-ECC     = $(EMACS) -q -no-site-file -batch -f batch-byte-compile
+prefix  = @prefix@
+lispdir = @lispdir@
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+ADDITIONAL_LOAD_PATH = @ADDITIONAL_LOAD_PATH@
+
+@SET_MAKE@
+EMACS   = @EMACS@
+FLAGS   = -q -no-site-file -batch -l w3mhack.el $(ADDITIONAL_LOAD_PATH)
+ECC     = $(EMACS) $(FLAGS) -f batch-byte-compile
+
+MODULES = `$(EMACS) $(FLAGS) -f w3mhack-examine-additional-modules 2>/dev/null`
 
 .SUFFIXES:
 .SUFFIXES: .elc .el
 
-default: w3m.elc
+default:
+	@for p in $(MODULES); do\
+	  $(MAKE) -s $$p;\
+	done
 
 %.elc: %.el
 	$(ECC) $<
+
+install: default
+	@for p in ChangeLog *.el; do\
+	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
+	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	done
+	@for p in *.elc; do\
+	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
+	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	done
 
 tarball:
 	$(MAKE) REVISION=$(shell cvs status w3m.el|perl -ne '/Working revision:[ \t]*(?:\d+\.)+(\d+)/ and print $$1-28') dist
@@ -39,3 +62,6 @@ patch: $(wildcard ../*.[ch]) w3m.el makepatch.pl
 
 clean:
 	-rm -rf *~ *.elc patch w3m_el*
+
+distclean: clean
+	rm -f configure config.log config.status config.cache Makefile
