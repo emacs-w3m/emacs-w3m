@@ -309,17 +309,17 @@ following patch:
 
 @example
 ----8<------8<------8<------8<------8<------8<------8<------8<----
---- custom-1.9962/cus-face.el~	Wed Mar  4 19:52:39 1998
-+++ custom-1.9962/cus-face.el	Mon Mar  9 08:05:33 1998
+--- custom-1.9962/cus-face.el~  Wed Mar  4 19:52:39 1998
++++ custom-1.9962/cus-face.el   Mon Mar  9 08:05:33 1998
 @@ -96,7 +96,7 @@
        "Define a new FACE on all frames, ignoring X resources."
        (interactive "SMake face: ")
        (or (internal-find-face name)
--	  (let ((face (make-vector 8 nil)))
-+	  (let ((face (make-vector face-vector-length nil)))
- 	    (aset face 0 'face)
- 	    (aset face 1 name)
- 	    (let* ((frames (frame-list))
+-         (let ((face (make-vector 8 nil)))
++         (let ((face (make-vector face-vector-length nil)))
+            (aset face 0 'face)
+            (aset face 1 name)
+            (let* ((frames (frame-list))
 ----8<------8<------8<------8<------8<------8<------8<------8<----
 @end example
 
@@ -503,7 +503,7 @@ In addition to this, put the following setups if needed:
 (autoload 'w3m-find-file "w3m"
   "Find a local file using emacs-w3m." t)
 (autoload 'w3m-browse-url "w3m"
-  "Ask emacs-w3m to show a url." t)
+  "Ask emacs-w3m to show a URL." t)
 (autoload 'w3m-antenna "w3m-antenna"
   "Report changes of web sites." t)
 (autoload 'w3m-bookmark-view "w3m-bookmark"
@@ -599,6 +599,7 @@ See also the documentation for the option
 @menu
 * Launching and Jumping::       Go ahead, just try it
 * Moving in a page::            Moving from place to place in a page
+* Moving over pages::           Moving from page to page
 @end menu
 
 @node Launching and Jumping
@@ -836,13 +837,101 @@ point backward to the nearest form.
 @kindex @}
 @findex w3m-next-image
 Move the point to the next image.  More strictly speaking, move the
-point forward to the nearest image.  
+point forward to the nearest image.
 
 @item @{
 @kindex @{
 @findex w3m-previous-image
 Move the point to the previous image.  More strictly speaking, move the
 point backward to the nearest image.
+@end table
+
+@c TODO?
+@c C-a  Go to the entire beginning of line.
+@c C-e  Go to the entire end of line.
+@c j    Next line.
+@c k    Previous line.
+
+@c l    Forward char.
+@c h    Backward char.
+
+@c M-g  Jump to line.
+
+@node Moving over pages
+@subsection Moving from page to page
+@findex w3m-view-previous-page
+@findex w3m-view-next-page
+@findex w3m-gohome
+@findex w3m-view-parent-page
+
+This section introduces to you some ways of moving to other pages from a
+page.  The ways of moving by following a link or specifying a URL of
+other page are described in @xref{Launching and Jumping}.
+
+There are of course the commands for moving to pages which have been
+visited before known as ``Back'' and ``Forward'' familiarly in the other
+web browsers, and the ``Go to the home page'' command in emacs-w3m as
+well.  The emacs-w3m strictly manages internally a list (history) of
+pages which have been visited before.  There are only fundamental
+functiond in this section, although the advanced history commands than
+just the ``Back'' or ``Forward'' commands are also implemented.  See
+@xref{Tracing History} for details of the advanced history commands.
+
+@table @kbd
+@item B
+@kindex B
+@findex w3m-view-previous-page
+Move to the page which you've visited before.  In other words, tracing a
+history back to the past.
+
+@item N
+@kindex N
+@findex w3m-view-next-page
+If you are in the page visited by typing @kbd{B}, this command brings
+you to the page that you've been seeing before typing @kbd{B}.  In other
+words, tracing a history back to the future.
+
+@item H
+@kindex H
+@findex w3m-gohome
+@vindex w3m-quick-start
+Move to the home page.  You can specify a URL of the home page by
+customizing the @code{w3m-home-page} variable (``about:'' by default).
+@end table
+
+It would be against your advantage not to learn the following three
+commands, though they aren't common for functions of the web browsers.
+
+@table @kbd
+@item ^
+@kindex ^
+@findex w3m-view-parent-page
+Attempt to move to the parent directory based on the URL of the page
+which is currently displayed.  For instance, it will attempt to move to
+``http://foo/'' when a page for ``http://foo/bar/'' is displayed.  This
+function has been implemented based on the following observation
+results: users of web browsers are likely to attempt to visit the URL
+removing the last file name or directory name (the last component) when
+they feel like anyhow getting the information related to the page even
+if the URL isn't able to be seen for the reason of the page having been
+deleted and so forth.
+
+When you use another web browser, you usually need to remove the last
+component from the URL which isn't able to be displayed by typing the
+@key{DEL} key, etc. several times manually.  In emacs-w3m, such a
+typical operation can be performed by typing @kbd{^} once.
+@end table
+
+@table @key
+@item SPC
+@findex w3m-view-next-page
+Scroll up or go to next url.
+(TODO)
+
+@item DEL
+@findex w3m-view-previous-page
+Scroll down or go to previous url.
+(TODO)
 @end table
 
 @node Inline Images
@@ -942,15 +1031,15 @@ is ordered by date, the most recent coming first, and for each page the
 time of visit is displayed.  Here's an example (edited):
 
 @example
-Order from the Free Software Foundation (FSF)             22:53:25  
-GNU Emacs - GNU Project - Free Software Foundation (FS    22:53:05  
-Philosophy of the GNU Project - Free Software Foundati... 22:52:46  
-Philosophy of the GNU Project - Free Software Foundati... 22:52:39  
-EFF: Homepage                                             22:52:18  
-Links to Other Free Software Sites - GNU Project - Fre... 22:52:07  
-Links to Other Free Software Sites - GNU Project - Fre... 22:52:07  
-GNU's Not Unix! - the GNU Project and the Free Softwar... 22:51:32  
-Bookmarks                                                 22:51:02  
+Order from the Free Software Foundation (FSF)             22:53:25
+GNU Emacs - GNU Project - Free Software Foundation (FS    22:53:05
+Philosophy of the GNU Project - Free Software Foundati... 22:52:46
+Philosophy of the GNU Project - Free Software Foundati... 22:52:39
+EFF: Homepage                                             22:52:18
+Links to Other Free Software Sites - GNU Project - Fre... 22:52:07
+Links to Other Free Software Sites - GNU Project - Fre... 22:52:07
+GNU's Not Unix! - the GNU Project and the Free Softwar... 22:51:32
+Bookmarks                                                 22:51:02
 The DICT Development Group- upwards                       2003-01-08
 the monkey puzzle: new debian packages as an rss feed     2003-01-08
 new-debian-packages.rss                                   2003-01-07
@@ -1700,7 +1789,7 @@ here to get your attention.  Some HTML mails might contain a trick of
 spammers, using the @samp{<img>} tag which is far more evil than the
 @samp{Click Here!} button.  It is most likely intended to check whether
 the ominous spam mail has reached your eyes.  It is done by embedding an
-identifier string into a url which you might automatically retrieve when
+identifier string into a URL which you might automatically retrieve when
 displaying the image.  By default, the
 @code{mm-inline-text-html-with-images} option is @code{nil} and Gnus
 will never connect to the spammer's site arbitrarily.
