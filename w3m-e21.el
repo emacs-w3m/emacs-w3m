@@ -300,11 +300,12 @@ Buffer string between BEG and END are replaced with IMAGE."
     (if (and (numberp return)
 	     (zerop return))
 	t
-      (message "process `%s' exited abnormally with code `%s'"
-	       w3m-imagick-convert-program
-	       (if (stringp return)
-		   (string-as-multibyte return)
-		 return))
+      (unless noninteractive
+	(message "process `%s' exited abnormally with code `%s'"
+		 w3m-imagick-convert-program
+		 (if (stringp return)
+		     (string-as-multibyte return)
+		   return)))
       nil)))
 
 (defun w3m-imagick-convert-data (data from-type to-type &rest args)
