@@ -4933,7 +4933,8 @@ POST-DATA and REFERER will be sent to the web server with a request."
 		 ((member "contents" rel) (setq w3m-contents-url href))))))
 	   ((string= tag "base")
 	    (w3m-parse-attributes (href)
-	      (setq w3m-current-base-url href)))))))))
+	      (when (< 0 (length href))
+		(setq w3m-current-base-url href))))))))))
 
 (defun w3m-check-refresh-attribute ()
   "Get REFRESH attribute in META tags."

@@ -1,3 +1,7 @@
+2005-03-17  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* w3m.el (w3m-check-header-tags): Check abnormal `base' url.
+
 2005-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Try to
