@@ -1,9 +1,14 @@
+2004-05-04  David Hansen  <david.hansen@physik.fu-berlin.de>
+
+	* shimbun/sb-bbc.el (shimbun-bbc-content-start): Improve regexp.
+	(shimbun-bbc-content-end): Ditto.
+
 2004-05-01  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
 	* shimbun/sb-nikkansports.el (shimbun-get-headers): Use
 	shimbun-create-header() instead of shimbun-make-header() and don't
 	encode subjects.
-	
+
 	* shimbun/sb-msports-nifty.el (shimbun-get-headers): Don't encode
 	subjects.
 
