@@ -1,5 +1,11 @@
 2001-04-18  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* shimbun/sb-hns.el: New file.
+
+	* shimbun/shimbun.el (shimbun-groups): Define as generic function.
+	(shimbun-open-group): Use `shimbun-groups' instead of
+	`shimbun-groups-internal'.
+
 	* shimbun/shimbun.el (shimbun-header-insert): Added argument `shimbun'.
 	Use `shimbun-article-url' instead of `shimbun-header-xref' for the Xref
 	field.
