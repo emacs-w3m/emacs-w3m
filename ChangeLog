@@ -1,3 +1,19 @@
+2002-09-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-antenna.el (w3m-antenna-make-summary-function): Use
+	`function-item' instead of `const'.
+	(w3m-antenna-sort-changed-sites-function): Ditto.
+	(w3m-antenna-sort-unchanged-sites-function): Ditto.
+	(w3m-antenna-hns-last-modified): Asynchronized.
+	(w3m-antenna-last-modified): Removed.
+	(w3m-antenna-check-site): New function
+	(w3m-antenna-check-site-after): New function.
+	(w3m-antenna-check-sites): Removed.
+	(w3m-antenna-check-all-sites): New function.
+	(w3m-about-antenna): Asynchronized.
+	(w3m-about-antenna-edit): Reset post-data after its content is displayed.
+	(w3m-antenna-edit-reset-post-data): New function.
+
 2002-09-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-init-file): Changed its default value.
