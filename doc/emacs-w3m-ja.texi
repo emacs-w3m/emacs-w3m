@@ -4343,8 +4343,8 @@ Folder, wl-ja, The Wanderlust-ja Manual})。
 @item @uref{http://www.asahi.com/, 朝日新聞}
 asahi.borderless asahi.business asahi.culture asahi.editorial
 asahi.english asahi.international asahi.kansai asahi.kansai-special
-asahi.nankyoku asahi.national asahi.politics asahi.science asahi.sports
-asahi.tenjin asahi.whitemail
+asahi.nankyoku asahi.nankyoku-people asahi.national asahi.politics
+asahi.science asahi.sports asahi.tenjin asahi.whitemail
 
 これらは、テキストのみの記事を作成しますが、記事中に含まれる写真などをイ
 ンライン表示するように拡張された @samp{asahi-html} というバックエンドも
