@@ -165,7 +165,7 @@ If no field in forward, return nil without moving."
 (defun w3m-form-make-form-data (form)
   (let ((plist (w3m-form-plist form))
 	(coding (w3m-form-charlst form))
-	buf)
+	buf bufs)
     (setq coding
 	  (or (catch 'det
 		(while coding
@@ -177,42 +177,45 @@ If no field in forward, return nil without moving."
 	       (w3m-content-charset w3m-current-url))
 	      w3m-default-coding-system))
     (while plist
-      (let* ((pair (plist-get (cadr plist) :value))
+      (let* ((number (car plist))
+	     (pair (plist-get (cadr plist) :value))
 	     (name (car pair))
 	     (value (cdr pair)))
+	(unless number (setq number 9999)) ;; FIXME
 	(cond
 	 ((and (consp value)
 	       (eq (car value) 'file))
-	  (setq buf (cons (cons name value) buf)))
+	  (setq bufs (cons (cons number (cons name value)) bufs)))
 	 ((and (consp value)
 	       (consp (cdr value))
 	       (consp (cadr value)))	; select.
-	  (setq buf (cons (cons name (car value)) buf)))
+	  (setq bufs (cons (cons number (cons name (car value))) bufs)))
 	 ((consp value)			; checkbox
-	  (setq buf (append (mapcar (lambda (x) (cons name x)) value)
-			    buf)))
+	  (setq bufs (append (mapcar (lambda (x) (cons number (cons name x))) value)
+			     bufs)))
 	 (value
-	  (setq buf (cons (cons name value) buf))))
+	  (setq bufs (cons (cons number (cons name value)) bufs))))
 	(setq plist (cddr plist))))
-    (when buf
+    (when bufs
+      (setq bufs (sort bufs (lambda (x y) (< (car x) (car y)))))
       (if (eq (w3m-form-enctype form) 'multipart/form-data)
 	  (let ((boundary (apply 'format "--_%d_%d_%d" (current-time)))
 		file type)
-	    (setq buf (nreverse buf))
+	    ;; (setq buf (nreverse buf))
 	    (cons
 	     (concat "multipart/form-data; boundary=" boundary)
 	     (with-temp-buffer
-	       (while buf
-		 (if (and (consp (cdr (car buf)))
-			  (eq (car (cdr (car buf))) 'file))
+	       (while (setq buf (cdr (car bufs)))
+		 (if (and (consp (cdr buf))
+			  (eq (car (cdr buf)) 'file))
 		     (progn
-		       (setq file (expand-file-name (cdr (cdr (car buf)))))
+		       (setq file (expand-file-name (cdr (cdr buf))))
 		       (if (string= (setq type (w3m-local-content-type file))
 				    "unknown")
 			   (setq type "application/octet-stream"))
 		       (insert "--" boundary "\r\n"
 			       "Content-Disposition: form-data; name=\""
-			       (car (car buf))
+			       (car buf)
 			       "\"; filename=\"" file "\"\r\n"
 			       "Content-Type: " type "\r\n"
 			       "Content-Transfer-Encoding: binary\r\n\r\n")
@@ -222,21 +225,22 @@ If no field in forward, return nil without moving."
 		       (insert "\r\n"))
 		   (insert "--" boundary "\r\n"
 			   "Content-Disposition: form-data; name=\""
-			   (car (car buf))
+			   (car buf)
 			   "\"\r\n\r\n"
-			   (cdr (car buf))
+			   (cdr buf)
 			   "\r\n"))
-		 (setq buf (cdr buf)))
+		 (setq bufs (cdr bufs)))
 	       (insert "--" boundary "--\r\n")
 	       (buffer-string))))
 	(mapconcat (lambda (elem)
+		     (setq elem (cdr elem))
 		     (format "%s=%s"
 			     (w3m-url-encode-string (car elem) coding)
 			     (w3m-url-encode-string (if (stringp (cdr elem))
 							(cdr elem)
 						      "")
 						    coding)))
-		   buf "&")))))
+		   bufs "&")))))
 
 (defun w3m-form-resume (forms)
   "Resume content of all forms in the current buffer using FORMS."

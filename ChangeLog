@@ -1,3 +1,8 @@
+2004-02-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (w3m-form-make-form-data): Align form by the number
+	of `hseq'.
+
 2004-02-24  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/shimbun.el (shimbun-retrieve-url): Added argument `referer'.
