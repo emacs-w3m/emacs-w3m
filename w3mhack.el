@@ -464,6 +464,7 @@ Examples of the optimization:
 "
     (let ((obsoletes '(file-coding-system
 		       file-coding-system-for-read
+		       pathname-coding-system
 		       pop-up-frame-alist))
 	  (varlist (copy-sequence (cadr form)))
 	  obsolete elements element value)
