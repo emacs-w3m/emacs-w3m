@@ -1,3 +1,8 @@
+2003-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el (w3m-tab-line): Fix the logic determining whether to
+	display favicon.
+
 2003-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-spinner-map-on-header-line): Abolish.

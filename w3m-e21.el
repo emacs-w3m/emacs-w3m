@@ -576,7 +576,7 @@ cleared by a timer.")
 			      'w3m-tab-selected-face
 			    'w3m-tab-unselected-face))
 		   keymap w3m-tab-map)
-	     (cond (process
+	     (if process
 		    (when (setq icon (w3m-make-spinner-image))
 		      (setq icon
 			    (propertize
@@ -585,12 +585,11 @@ cleared by a timer.")
 			     'mouse-face 'highlight
 			     'face face
 			     'local-map w3m-tab-spinner-map
-			     'help-echo w3m-spinner-map-help-echo))))
-		   (w3m-use-favicon
-		    (setq icon (when w3m-favicon-image
-				 (propertize
-				  "  "
-				  'display w3m-favicon-image)))))
+			     'help-echo w3m-spinner-map-help-echo)))
+	       (setq icon (when (and w3m-use-favicon
+				     w3m-favicon-image)
+			    (propertize "  "
+					'display w3m-favicon-image))))
 	     (set-buffer current)
 	     (setq title (w3m-buffer-title buffer))
 	     (concat
