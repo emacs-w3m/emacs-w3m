@@ -27,38 +27,31 @@ This edition is for emacs-w3m version @value{VERSION}.
 この版は emacs-w3m バージョン @value{VERSION} に対応します。
 
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, with the Front-Cover texts being ``A GNU
-Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
-license is included in the section entitled ``GNU Free Documentation
-License'' in the Emacs manual.
+under the terms of the GNU General Public License, Version 2 or any
+later version published by the Free Software Foundation.
 
-この文書を、フリーソフトウェア財団発行の GNU フリー文書利用許諾契約書
-第 1.1 版またはそれ以降の版が定める条件の下で複製、配布、あるいは変更す
-ることを許可します。変更不可部分は指定しません。「A GNU Manual」は表表紙
-テキスト、以下の (a) は裏表紙テキストです。この利用許諾契約書の複写は
-「Emacs manual」の「GNU フリー文書利用許諾契約書」という章に含まれていま
-す。
+この文書を、フリーソフトウェア財団発行の GNU 一般公用使用許諾書第 2 版ま
+たはそれ以降の版が定める条件の下で複製、配布、あるいは変更することを許可
+します。
 
-(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
-this GNU Manual, like GNU software.  Copies published by the Free
-Software Foundation raise funds for GNU development.''
+This document is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
 
-(a) FSF の裏表紙テキスト:「あなたにはこの GNU Manual を GNU ソフトウェア
-のように複製したり変更する自由があります。複製はフリーソフトウェア財団に
-よって出版されました。(フリーソフトウェア財団は) GNU の開発のために必要
-な資金を集めています。」
+この文書は有用とは思いますが, 頒布にあたっては, 市場性及び特定目的適合性
+についての暗黙の保証を含めて, いかなる保証も行ないません. 詳細については 
+GNU 一般公有使用許諾書をお読みください.
 
-This document is part of a collection distributed under the GNU Free
-Documentation License.  If you want to distribute this document
-separately from the collection, you can do so by adding a copy of the
-license to the document, as described in section 6 of the license.
+You should have received a copy of the GNU General Public License along
+with this document; if not, you can either send email to this document's
+maintainer or write to: The Free Software Foundation, Inc.; 59 Temple
+Place, Suite 330; Boston, MA 02111-1307, USA.
 
-この文書は「GNU フリー文書利用許諾契約書」に基づいて配布された収集著作物
-の一部です。もしあなたがこの文書を収集著作物から分離して配布したいときは、
-契約書の第 6 項に記述されているように、文書に契約書の複写を付加すること
-によって、行なうことができます。
+あなたは, この文書と一緒にGNU一般公有使用許諾の写しを受け取っているはず
+です. そうでない場合は, 文書の管理者にメールを送るか、または、フリーソフ
+トウェア財団(675 Mass Ave, Cambridge, MA 02139, USA)に手紙を書いてくださ
+い。
 @end ifinfo
 
 @titlepage
@@ -76,38 +69,31 @@ This manual corresponds to emacs-w3m version @value{VERSION}.
 このマニュアルは emacs-w3m バージョン @value{VERSION} に対応します。
 
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, with the Front-Cover texts being ``A GNU
-Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
-license is included in the section entitled ``GNU Free Documentation
-License'' in the Emacs manual.
+under the terms of the GNU General Public License, Version 2 or any
+later version published by the Free Software Foundation.
 
-この文書を、フリーソフトウェア財団発行の GNU フリー文書利用許諾契約書
-第 1.1 版またはそれ以降の版が定める条件の下で複製、配布、あるいは変更す
-ることを許可します。変更不可部分は指定しません。「A GNU Manual」は表表紙
-テキスト、以下の (a) は裏表紙テキストです。この利用許諾契約書の複写は
-「Emacs manual」の「GNU フリー文書利用許諾契約書」という章に含まれていま
-す。
+この文書を、フリーソフトウェア財団発行の GNU 一般公用使用許諾書第 2 版ま
+たはそれ以降の版が定める条件の下で複製、配布、あるいは変更することを許可
+します。
 
-(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
-this GNU Manual, like GNU software.  Copies published by the Free
-Software Foundation raise funds for GNU development.''
+This document is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
 
-(a) FSF の裏表紙テキスト:「あなたにはこの GNU Manual を GNU ソフトウェア
-のように複製したり変更する自由があります。複製はフリーソフトウェア財団に
-よって出版されました。(フリーソフトウェア財団は) GNU の開発のために必要
-な資金を集めています。」
+この文書は有用とは思いますが, 頒布にあたっては, 市場性及び特定目的適合性
+についての暗黙の保証を含めて, いかなる保証も行ないません. 詳細については 
+GNU 一般公有使用許諾書をお読みください.
 
-This document is part of a collection distributed under the GNU Free
-Documentation License.  If you want to distribute this document
-separately from the collection, you can do so by adding a copy of the
-license to the document, as described in section 6 of the license.
+You should have received a copy of the GNU General Public License along
+with this document; if not, you can either send email to this document's
+maintainer or write to: The Free Software Foundation, Inc.; 59 Temple
+Place, Suite 330; Boston, MA 02111-1307, USA.
 
-この文書は「GNU フリー文書利用許諾契約書」に基づいて配布された収集著作物
-の一部です。もしあなたがこの文書を収集著作物から分離して配布したいときは、
-契約書の第 6 項に記述されているように、文書に契約書の複写を付加すること
-によって、行なうことができます。
+あなたは, この文書と一緒にGNU一般公有使用許諾の写しを受け取っているはず
+です. そうでない場合は, 文書の管理者にメールを送るか、または、フリーソフ
+トウェア財団(675 Mass Ave, Cambridge, MA 02139, USA)に手紙を書いてくださ
+い。
 @end titlepage
 
 @ifnottex
@@ -226,9 +212,9 @@ Emacs 上で動作するブラウザと言えば、
 動作するブラウザがあり、非常に軽快に動作するので重宝しているのですが、端
 末に移動しなければいけないのが面倒です。
 
-そこで，w3m を HTML の rendering engine として使用し，表示とインタフェー
-スのみを Emacs で動かすようにすればいいんじゃないだろうか，ということを
-考えました．つまり、emacs-w3m は、w3m を emacs 上で動かすインターフェー
+そこで、w3m を HTML の rendering engine として使用し、表示とインタフェー
+スのみを Emacs で動かすようにすればいいんじゃないだろうか、ということを
+考えました。つまり、emacs-w3m は、w3m を emacs 上で動かすインターフェー
 スプログラムですが、emacs 上で動くウェブブラウザとして使うこともできます。
 
 すばらしい w3m プログラムを開発してくれた伊藤彰則さんと w3m チームのみな

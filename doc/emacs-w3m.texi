@@ -22,22 +22,18 @@ Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}
 This edition is for emacs-w3m version @value{VERSION}.
 
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, with the Front-Cover texts being ``A GNU
-Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
-license is included in the section entitled ``GNU Free Documentation
-License'' in the Emacs manual.
+under the terms of the GNU General Public License, Version 2 or any
+later version published by the Free Software Foundation.
 
-(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
-this GNU Manual, like GNU software.  Copies published by the Free
-Software Foundation raise funds for GNU development.''
+This document is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
 
-This document is part of a collection distributed under the GNU Free
-Documentation License.  If you want to distribute this document
-separately from the collection, you can do so by adding a copy of the
-license to the document, as described in section 6 of the license.
-
+You should have received a copy of the GNU General Public License along
+with this document; if not, you can either send email to this document's
+maintainer or write to: The Free Software Foundation, Inc.; 59 Temple
+Place, Suite 330; Boston, MA 02111-1307, USA.
 @end ifinfo
 
 @titlepage
@@ -53,22 +49,18 @@ Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}
 This manual corresponds to emacs-w3m version @value{VERSION}.
 
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, with the Front-Cover texts being ``A GNU
-Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
-license is included in the section entitled ``GNU Free Documentation
-License'' in the Emacs manual.
+under the terms of the GNU General Public License, Version 2 or any
+later version published by the Free Software Foundation.
 
-(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
-this GNU Manual, like GNU software.  Copies published by the Free
-Software Foundation raise funds for GNU development.''
+This document is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
 
-This document is part of a collection distributed under the GNU Free
-Documentation License.  If you want to distribute this document
-separately from the collection, you can do so by adding a copy of the
-license to the document, as described in section 6 of the license.
-
+You should have received a copy of the GNU General Public License along
+with this document; if not, you can either send email to this document's
+maintainer or write to: The Free Software Foundation, Inc.; 59 Temple
+Place, Suite 330; Boston, MA 02111-1307, USA.
 @end titlepage
 
 @ifnottex

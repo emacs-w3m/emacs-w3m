@@ -1,3 +1,9 @@
+2003-06-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* doc/emacs-w3m.texi, doc/emacs-w3m-ja.texi: Their license is
+	changed from GNU Free Documentation License to GNU General Public
+	License.
+
 2003-06-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi-html.el (shimbun-asahi-html): Make it inherit
@@ -36,8 +42,8 @@
 
 	* shimbun/sb-nikkansports.el: Follow the change of the Web site.
 	(shimbun-nikkansports-group-table): New variable.
-	(shimbun-nikkansports-groups): Their infomation is moved to
-	`shimbun-nikkansports-group-table'.
+	(shimbun-nikkansports-groups): Removed and its infomation is moved
+	to `shimbun-nikkansports-group-table'.
 	(shimbun-groups): New method.
 	(shimbun-current-group-name): Ditto.
 
@@ -69,7 +75,8 @@
 	variable.
 	(shimbun-mainichi-group-table): New variable.
 	(shimbun-mainichi-groups, shimbun-mainichi-group-path-alist):
-	Their infomation is moved to `shimbun-mainichi-group-table'.
+	Removed and their infomation is moved to
+	`shimbun-mainichi-group-table'.
 	(shimbun-groups, shimbun-current-group-name): New method.
 	(shimbun-index-url, shimbun-get-headers): Refer
 	`shimbun-mainichi-group-table' instead of
@@ -192,7 +199,8 @@
 2003-05-30  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* octet.el (toplevel): Require poe.
-	(octet-filter-call1): Use `make-temp-file' instead of `make-temp-name'.
+	(octet-filter-call1): Use `make-temp-file' instead of
+	`make-temp-name'.
 	(octet-filter-call2): Ditto.
 	(octet-filter-call2-extra): Ditto.
 	(octet-temp-directory): Changed default value to
@@ -765,7 +773,8 @@
 
 2003-02-21  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* w3m.el (w3m-local-dirlist-cgi):  Treat a `local cookie file', again.
+	* w3m.el (w3m-local-dirlist-cgi): Treat a `local cookie file',
+	again.
 
 2003-02-18  NAKAJIMA Mikio  <minakaji@namazu.org>
 
