@@ -4653,19 +4653,11 @@ palmfan.news palmfan.palmwarefan
 dennou.report
 
 @item @uref{http://pcweb.mycom.co.jp/column/, PCWEB COLUMN Square}
-pcweb-column.gyokai pcweb-column.benri pcweb-column.hitech
-pcweb-column.business pcweb-column.winxp pcweb-column.bytes
-pcweb-column.newyork pcweb-column.asia pcweb-column.akiba
-pcweb-column.rikei pcweb-column.osx pcweb-column.game
-pcweb-column.smart98 pcweb-column.win2k pcweb-column.msdos
-pcweb-column.muteki pcweb-column.mobile pcweb-column.win98
-pcweb-column.ayashii pcweb-column.melon pcweb-column.linux
-pcweb-column.scrap pcweb-column.siterev pcweb-column.anime
-pcweb-column.soho pcweb-column.trouble pcweb-column.renai
-pcweb-column.dream pcweb-column.tworld pcweb-column.camera
-pcweb-column.denshi pcweb-column.tsushin pcweb-column.shitumon
-pcweb-column.nandemo pcweb-column.hourou pcweb-column.oshigoto
-pcweb-column.tech pcweb-column.speed
+pcweb-column.asia pcweb-column.benri pcweb-column.bytes
+pcweb-column.game pcweb-column.hitech pcweb-column.itshihonron
+pcweb-column.osx pcweb-column.rikei pcweb-column.scramble
+pcweb-column.sopinion pcweb-column.svalley pcweb-column.toolexp
+pcweb-column.winxp pcweb-column.yetanother
 
 @item @uref{http://tsuruo.dominohosting.biz/members/tsuruo/, Notes Exhibition}
 lotusex.news lotusex.library lotusex.operation lotusex.primer
