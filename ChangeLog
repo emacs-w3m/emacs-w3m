@@ -1,3 +1,8 @@
+2002-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-2ch.el (shimbun-2ch-request-article): Rename from
+	`shimbun-request-article'.
+
 2002-04-17  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-palmfan.el: New file.
