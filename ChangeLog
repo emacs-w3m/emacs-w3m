@@ -1,3 +1,9 @@
+2005-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add the rss group.
+	(shimbun-index-url): Work with the rss group.
+	(shimbun-asahi-get-headers): Ditto.
+
 2004-07-24  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
 
 	* w3m.el (w3m-menubar): Rearrange it hierarchical.
