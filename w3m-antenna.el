@@ -206,7 +206,7 @@ whose elements are:
   (unless (memq class '(hns time))
     (or (w3m-content-length url no-cache)
 	(progn
-	  (w3m-retrieve url t no-cache)
+	  (w3m-retrieve url nil no-cache)
 	  (w3m-with-work-buffer
 	    (buffer-size))))))
 

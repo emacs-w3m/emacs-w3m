@@ -101,7 +101,8 @@
     "*Display antenna report." t)
   (autoload 'w3m-about-antenna "w3m-antenna")
   (autoload 'w3m-fontify-forms "w3m-form")
-  (autoload 'w3m-form-parse-region "w3m-form"))
+  (autoload 'w3m-form-parse-region "w3m-form")
+  (autoload 'w3m-filter "w3m-filter"))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
@@ -426,10 +427,16 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :type 'integer)
 
 (defcustom w3m-use-form nil
-  "*Non-nil activates form extension. (EXPERIMENTAL)"
+  "*Non-nil means form extension is activated. (EXPERIMENTAL)"
   :group 'w3m
   :type 'boolean
   :require 'w3m-form)
+
+(defcustom w3m-use-filter nil
+  "*Non nil means filtering of WEB is used."
+  :group 'w3m
+  :type 'boolean
+  :require 'w3m-filter)
 
 (defcustom w3m-mnc nil
   "*When using w3m with M.N.C. patch, set non-nil value."
@@ -1676,23 +1683,28 @@ to nil."
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
 to nil."
-  (cond
-   ((string-match "^about:" url)
-    (let (func)
-      (if (and (string-match "^about://\\([^/]+\\)/" url)
-	       (setq func (intern-soft
-			   (concat "w3m-about-" (match-string 1 url))))
-	       (fboundp func))
-	  (funcall func url no-decode no-cache)
-	(w3m-about url no-decode no-cache))))
-   ((w3m-url-local-p url)
-    (w3m-local-retrieve url no-decode))
-   ((string-match "^cid:" url)
-    (let ((func (cdr (assq major-mode w3m-cid-retrieve-function-alist))))
-      (when func
-	(funcall func url no-decode no-cache))))
-   (t
-    (w3m-w3m-retrieve url no-decode no-cache))))
+  (let ((v (cond
+	    ((string-match "^about:" url)
+	     (let (func)
+	       (if (and (string-match "^about://\\([^/]+\\)/" url)
+			(setq func (intern-soft
+				    (concat "w3m-about-" (match-string 1 url))))
+			(fboundp func))
+		   (funcall func url no-decode no-cache)
+		 (w3m-about url no-decode no-cache))))
+	    ((w3m-url-local-p url)
+	     (w3m-local-retrieve url no-decode))
+	    ((string-match "^cid:" url)
+	     (let ((func (cdr (assq major-mode w3m-cid-retrieve-function-alist))))
+	       (when func
+		 (funcall func url no-decode no-cache))))
+	    (t
+	     (w3m-w3m-retrieve url no-decode no-cache)))))
+    (and v
+	 (not no-decode)
+	 w3m-use-filter
+	 (w3m-filter url))
+    v))
 
 (defun w3m-download (url &optional filename no-cache)
   (unless filename

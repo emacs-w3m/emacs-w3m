@@ -1,3 +1,13 @@
+2001-04-03  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m-filter.el: New file.
+
+	* w3m-antenna.el (w3m-antenna-size): Refer decoded buffer as size.
+
+	* w3m.el (TopLevel): Add autoload code of `w3m-filter'.
+	(w3m-use-filter): New user option.
+	(w3m-retriev): Call `w3m-filter' when decode.
+
 2001-04-03  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-airs.el, shimbun/sb-mew.el, shimbun/sb-wired.el,
