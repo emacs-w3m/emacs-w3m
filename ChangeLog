@@ -1,5 +1,10 @@
 2001-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-om.el (read-string): Unify the advice form.
+	(w3m-om-coding-system-alist): Fix doc-string.
+
+2001-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-om.el (read-string): Don't modify the value of
 	`current-load-list' when advising it.
 

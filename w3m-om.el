@@ -59,9 +59,6 @@
 (defalias 'w3m-display-graphic-p 'ignore)
 (defalias 'w3m-display-inline-image-p 'ignore)
 
-;; Generate some coding-systems which have a modern name.
-;; No need to contain the eol-type variants in the following alist
-;; because they will also be generated for each coding-system.
 (defvar w3m-om-coding-system-alist
   '((alternativnyj	. *alternativnyj*)
     (big5		. *big5*)
@@ -91,7 +88,10 @@
     (undecided		. *autoconv*)
     (viscii		. *viscii*)
     (vscii		. *vscii*))
-  "*Alist of a modern coding-system and a traditional coding-system.")
+  "*Alist of a modern coding-system and a traditional coding-system.
+The car of each element will be provided as a new coding-system by
+copying of the cdr of an element.  No need to contain the eol-type
+variants in this alist.")
 
 (defvar w3m-om-coding-category-alist
   '((alternativnyj	. *coding-category-iso-8-1*)
@@ -295,8 +295,8 @@ empty input."
 	  (or pass default ""))))))
 
 (let (current-load-list)
-  (if (and (= emacs-major-version 19) (>= emacs-minor-version 29))
-      (defadvice read-string (after allow-4th-arg (prompt &optional
+  (eval
+   (` (defadvice read-string (after allow-4th-arg (prompt &optional
 							  initial-input
 							  history
 							  default-value)
@@ -304,34 +304,30 @@ empty input."
 	"Advised by Emacs-W3M.
 Allow the optional fourth argument DEFAULT-VALUE which will be used as
 the value to return if the user enters the empty string."
-	(if (zerop (length ad-return-value))
-	    (if (stringp default-value)
-		(progn
+	(, (if (and (= emacs-major-version 19) (>= emacs-minor-version 29))
+	       '(if (zerop (length ad-return-value))
+		    (if (stringp default-value)
+			(progn
+			  (if history
+			      (set history
+				   (cons
+				    default-value
+				    (delete default-value
+					    (delete ad-return-value
+						    (symbol-value history))))))
+			  (setq ad-return-value default-value))
+		      (if history
+			  (set history
+			       (delete ad-return-value
+				       (symbol-value history)))))
 		  (if history
 		      (set history
-			   (cons default-value
-				 (delete default-value
-					 (delete ad-return-value
-						 (symbol-value history))))))
-		  (setq ad-return-value default-value))
-	      (if history
-		  (set history
-		       (delete ad-return-value (symbol-value history)))))
-	  (if history
-	      (set history
-		   (cons ad-return-value
-			 (delete ad-return-value (symbol-value history)))))))
-    (defadvice read-string (after allow-4th-arg (prompt &optional
-							initial-input
-							history
-							default-value)
-				  activate)
-      "Advised by Emacs-W3M.
-Allow the optional fourth argument DEFAULT-VALUE which will be used as
-the value to return if the user enters the empty string."
-      (if (and (zerop (length ad-return-value))
-	       (stringp default-value))
-	  (setq ad-return-value default-value)))))
+			   (cons ad-return-value
+				 (delete ad-return-value
+					 (symbol-value history))))))
+	     '(if (and (zerop (length ad-return-value))
+		       (stringp default-value))
+		  (setq ad-return-value default-value))))))))
 
 
 ;;; Widget:
