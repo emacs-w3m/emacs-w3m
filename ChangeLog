@@ -1,3 +1,8 @@
+2003-09-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-xmas.el (w3m-make-spinner-image): Bind `format-alist' to
+	nil.
+
 2003-09-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-tab-line-timer): New variable.
