@@ -1,5 +1,8 @@
 2005-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-impress.el (shimbun-make-contents): Fix broken image
+	tags.
+
 	* shimbun/sb-bbdb-ml.el (shimbun-bbdb-ml-url): Update.
 
 2005-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>

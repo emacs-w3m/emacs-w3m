@@ -189,9 +189,20 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 (luna-define-method shimbun-make-contents :around ((shimbun shimbun-impress)
 						   &optional header)
   (let ((entry (assoc (shimbun-current-group-internal shimbun)
-		      shimbun-impress-groups-alist)))
+		      shimbun-impress-groups-alist))
+	(case-fold-search t))
     (shimbun-set-content-start-internal shimbun (nth 2 entry))
     (shimbun-set-content-end-internal shimbun (nth 3 entry))
+    ;; Fix broken image tags.  Should it be moved to shimbun.el?
+    (goto-char (point-min))
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n\f\r ]*")
+		    (s1 "[\t\n\f\r ]+"))
+		(concat "<" s0 "\\(img\\)" s1 "\\(src\\)"
+			s0 "=" s0 "\"" s1 "/")))
+	    nil t)
+      (replace-match "<\\1 \\2=\"/"))
     (goto-char (point-min))
     (when  (and (re-search-forward "<!--\\(■*記事公開日■*\\| *公開日 *\\| *date *\\)-->" nil t)
 		(or (re-search-forward "[^(（]*[(（]\\([0-9][0-9]\\)/\
