@@ -1,5 +1,10 @@
 2003-07-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-e21.el (w3m-ccl-get-ucs-codepoint-with-emacs-unicode):
+	Remove `translate-character'.
+	(w3m-euc-japan-encoder, w3m-iso-latin-1-encoder): Select
+	appropriate encoders when thie file is loaded.
+
 	* w3m-ccl.el (w3m-ccl-write-repeat): Use a literal list of unibyte
 	character sets, instead of calling `charset-bytes', in order to
 	avoid difference between FSF Emacs and XEmacs.
