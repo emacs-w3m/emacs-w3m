@@ -1,3 +1,7 @@
+2004-04-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Reset.
+
 2004-04-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Release emacs-w3m-1.4 from emacs-w3m-1_4 branch.
