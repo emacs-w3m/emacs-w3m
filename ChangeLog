@@ -1,3 +1,7 @@
+2004-11-23  S V N Vishwanathan  <vishketan@yahoo.com>
+
+	* shimbun/sb-rediff.el: New file.
+
 2004-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-prepare-article): Break
