@@ -209,10 +209,10 @@ whose elements are:
       (w3m-save-list w3m-antenna-file w3m-antenna-alist nil t)
       (setq w3m-antenna-alist nil))))
 
-(defun w3m-antenna-hns-last-modified (url no-cache handler)
+(defun w3m-antenna-hns-last-modified (url handler)
   (w3m-process-do-with-temp-buffer
       (type (w3m-retrieve (w3m-expand-url "di.cgi" url)
-			  nil no-cache nil nil handler))
+			  nil t nil nil handler))
     (when type
       (or
        (let (start str)
@@ -245,18 +245,17 @@ whose elements are:
 (eval-and-compile
   (autoload 'w3m-filter "w3m-filter"))
 
-(defun w3m-antenna-check-site (site no-cache handler)
+(defun w3m-antenna-check-site (site handler)
   (lexical-let ((site site)
-		(no-cache no-cache)
 		(url (format-time-string (w3m-antenna-site-key site)
 					 (current-time))))
     (if (eq 'hns (w3m-antenna-site-class site))
 	(w3m-process-do
-	    (time (w3m-antenna-hns-last-modified url no-cache handler))
+	    (time (w3m-antenna-hns-last-modified url handler))
 	  (when time
 	    (w3m-antenna-check-site-after site url time nil)))
       (w3m-process-do
-	  (attr (w3m-attributes url no-cache handler))
+	  (attr (w3m-attributes url t handler))
 	(when attr
 	  (if (nth 4 attr) ; Use the value of Last-modified header.
 	      (w3m-antenna-check-site-after site url (nth 4 attr) (nth 2 attr))
@@ -266,7 +265,7 @@ whose elements are:
 		(w3m-antenna-check-site-after site url nil (nth 2 attr)))
 	       (t ; Get the real content of the SITE, and calculate its size.
 		(w3m-process-do-with-temp-buffer
-		    (type (w3m-retrieve url nil no-cache nil nil handler))
+		    (type (w3m-retrieve url nil t nil nil handler))
 		  (when type
 		    (w3m-decode-buffer url nil type)
 		    (w3m-remove-comments)
@@ -293,36 +292,54 @@ whose elements are:
 	  pre)
       (append site (list url time size nil)))))
 
+(defun w3m-antenna-mapcar (function sequence handler)
+  (let ((index -1)
+	(result (make-symbol "result"))
+	(buffer (make-symbol "buffer")))
+    (set result (make-vector (length sequence) nil))
+    (set buffer (current-buffer))
+    (dolist (element sequence)
+      (aset (symbol-value result)
+	    (incf index)
+	    (funcall function
+		     element
+		     (let ((var (make-symbol "tmpvar")))
+		       (cons `(lambda (x)
+				(aset ,result ,index x)
+				(w3m-antenna-mapcar-after ,result
+							  ,buffer
+							  ,w3m-current-buffer))
+			     handler)))))
+    (w3m-antenna-mapcar-after (symbol-value result)
+			      (symbol-value buffer)
+			      w3m-current-buffer)))
+
+(defun w3m-antenna-mapcar-after (result buffer w3m-current-buffer)
+  (or (catch 'found-proces
+	(let ((index -1))
+	  (while (< (incf index) (length result))
+	    (when (w3m-process-p (aref result index))
+	      (throw 'found-proces (aref result index))))))
+      (when (buffer-name buffer)
+	(set-buffer buffer)
+	(append result nil))))
+
 (defun w3m-antenna-check-all-sites (&optional handler)
   "Check all sites specified in `w3m-antenna-sites'."
   (w3m-antenna-setup)
   (if (not handler)
       (w3m-process-with-wait-handler
 	(w3m-antenna-check-all-sites handler))
-    (let ((count (make-symbol "antenna-count"))
-	  (buffer (make-symbol "antenna-buffer")))
-      (set count 0)
-      (set buffer (current-buffer))
-      (let ((tmp)
-	    (processes)
-	    (handler `(lambda (x)
-			(and (= 0 (setq ,count (1- ,count)))
-			     (buffer-name ,buffer)
-			     (with-current-buffer ,buffer
-			       (funcall ,handler (w3m-antenna-shutdown)))))))
-	(dolist (site (mapcar (lambda (elem)
-				(list (w3m-antenna-site-key elem)
-				      (w3m-antenna-site-title elem)
-				      (w3m-antenna-site-class elem)))
-			      w3m-antenna-alist))
-	  (when (w3m-process-p
-		 (setq tmp (w3m-antenna-check-site site t handler)))
-	    (push tmp processes)
-	    (set count (1+ (symbol-value count)))))
-	(if (not processes)
-	    (w3m-antenna-shutdown)
-	  (w3m-process-start-queued-processes)
-	  (car processes))))))
+    (w3m-process-do
+	(result
+	 (w3m-antenna-mapcar 'w3m-antenna-check-site
+			     (mapcar (lambda (elem)
+				       (list (w3m-antenna-site-key elem)
+					     (w3m-antenna-site-title elem)
+					     (w3m-antenna-site-class elem)))
+				     w3m-antenna-alist)
+			     handler))
+      (w3m-antenna-shutdown))))
 
 (defun w3m-antenna-make-summary (site)
   (format "<li><a href=\"%s\">%s</a> %s"
