@@ -1,0 +1,147 @@
+	emacs-w3m FAQ ($Date$)
+
+* General emacs-w3m questions
+
+** Q. What is emacs-w3m?
+
+   It is an interface program for Emacs which controls w3m. For details,
+   see the README file.
+
+** Q. Which emacs versions are supported?
+
+   The following "Emacsen" have been checked for emacs-w3m support.
+
+	Mule-2.3 @ Emacs-19.34
+	Emacs-20
+	Emacs-21
+	XEmacs-21.1 with Mule
+	XEmacs-21.2 with Mule (beta37 or greater)
+	XEmacs-21.4 with Mule
+	XEmacs-21.5 with Mule
+	Meadow
+
+   For Mule-2.3 and XEmacs, it is necessary to use APEL.  APEL is
+   available from ftp://ftp.m17n.org/pub/mule/apel/
+
+   emacs-w3m-1.2 works on XEmacs without Mule except for several
+   commands, such as the command to look weather forecasts in Japan.
+   They strongly depends on Mule feature, so that they must not work on
+   XEmacs without Mule.  But, the development version of emacs-w3m will
+   not work on XEmacs which lacks Mule support, because no core
+   development member uses it in daily work.
+
+** Q. Which w3m versions are supported?
+
+   The following w3m versions have been checked for emacs-w3m support:
+
+	w3m-0.2.1-inu-1.3
+	w3mmee-p19-6
+	w3m-m17n-0.19 + w3m-m17n-mnc.patch
+
+* Troubleshooting
+
+** Q. Why can't I enter a password on pages which require authentication?
+
+   Check if the optional variable w3m-async-exe is set to a value other
+   than nil.
+
+** Q. Why can't I enter a password for a proxy server which requires authentication?
+
+   Check if the option variable w3m-async-exe is set to a value
+   other than nil.
+
+** Q. Why doesn't it traverse links?
+
+   The development version of emacs-w3m requires a w3m that understands
+   the argument `-header'.  Check the version of your using w3m.
+
+** Q. Why do garbage characters appear?
+
+   It could be caused by the following:
+
+   (1) Bad HTML file
+
+       If in the middle of a HTML file, a <meta> tag is used with a
+       character code which differs from the actual character code used
+       in the HTML, then the HTML file will not be rendered correctly.
+       Using the command `w3m-redisplay-with-charset', set the correct
+       display code and force the redisplay of the page.
+
+   (2) Limitation of character code.
+
+       Pages with character codes other than ISO-2022-JP(jis), EUC-JP,
+       SHIFT_JIS, may or may not display correctly.  This maybe
+       alleviated by using one of the following methods.
+
+       (a) If you install Mule-UCS, any characters defined in Unicode
+           will show up correctly.  After installation, confirm that the
+           value of the option variable `w3m-use-mule-ucs' is a value
+           other than nil.  Also, for EUC-JISX0213, ISO-2022-JP-3, or
+           other similar character sets, it may be necessary to install
+           jisx0213.el, available in the same package.
+
+       (b) Install either w3mmee or w3m-m17n, and set the option
+           variable `w3m-command' to the appropriate value.  If this is
+           set, emacs-w3m will use the programs' multilanguage features.
+
+   (3) Emacsen incompatibility.
+
+       Regarding XEmacs-21.2, there is a problem with previous versions
+       up to beta36.  If you use those versions, it is recommended that
+       you upgrade.
+
+** Q. Why does graphics not show up?
+
+   It could be caused by the following:
+
+   Depending on the version of libungif in Emacs-21, GIF graphics may or
+   may not render correctly.  If you are using libungif-4.1.0b1 or
+   earlier, it is recommend you upgrade that library.
+
+   For XEmacs, install the "gifsicle" program.  Within
+   emacs-w3m-supported XEmacs 21.x, there is a bug which can be
+   countered by using this program. (Refer to the README, section 2
+   "Install")
+
+   If you use versions prior to w3m-0.2.1, graphics are not rendered
+   correctly.  If you use those versions, it is recommended that you
+   upgrade.
+
+** Q. Why does inputting into a form not work?
+
+   (This is still experimental functionality.)
+
+   Check if the option variable `w3m-use-form' is set to a value other
+   than nil.
+
+** Q. Why does sending form information not work?
+
+   (This is still experimental functionality.)
+
+   Check if the option variable `w3m-use-form' is set to a value other
+   than nil.
+
+   If you use this functionality, you will need to use a w3m that
+   understands the `-post' option.  Check the version of your using w3m.
+
+** Q. Why do frames not render?
+
+   Use w3mmee.
+
+* shimbun
+
+** Q. Why are contents under shimbun/ not installed?
+
+   If FLIM is not installed, the contents under shimbun/ are not installed.
+
+   The configure script determines automatically if FLIM is installed or
+   not.  If FLIM is installed in a non-standard directory, the
+   determination fails.  In this case, use the --with-addpath configure
+   option to explicitly set the FLIM installed directory path.
+
+	% ./configure --with-addpath=$HOME/share/emacs/site-lisp/flim
+
+Local Variables:
+mode: outline
+fill-column: 72
+End:
