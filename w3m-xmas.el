@@ -64,7 +64,11 @@ Buffer string between BEG and END are replaced with IMAGE."
       (setq extent (make-extent end end))
       (set-extent-property extent 'w3m-xmas-icon t)
       (set-extent-end-glyph extent (car glyphs))
-      (setq glyphs (cdr glyphs)))))
+      (setq glyphs (cdr glyphs))))
+  (when (get-text-property beg 'face)
+    (put-text-property (previous-single-property-change (1+ beg) 'face)
+		       (next-single-property-change beg 'face)
+		       'face nil)))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."
