@@ -105,6 +105,9 @@
       (shimbun-mhonarc-get-headers shimbun (shimbun-index-url shimbun)
 				   headers))))
 
+(defvar shimbun-mhonarc-optional-headers
+  '("x-ml-count" "x-mail-count" "x-ml-name" "user-agent"))
+
 (luna-define-method shimbun-make-contents ((shimbun shimbun-mhonarc)
 					   header)
   (if (search-forward "<!--X-Head-End-->" nil t)
@@ -140,7 +143,13 @@
 					  (shimbun-header-field-value)))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Date: +")
-		(shimbun-header-set-date header (shimbun-header-field-value))
+		(let ((date (shimbun-header-field-value)))
+		  (shimbun-header-set-date
+		   header
+		   (if (string-match "\\([-+][0-9][0-9][0-9][0-9]\\) +([a-zA-Z][a-zA-Z][a-zA-Z])\\'"
+				     date)
+		       (substring date 0 (match-end 1))
+		     date)))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Message-Id: +")
 		(shimbun-header-set-id header
@@ -164,6 +173,42 @@
 	    (goto-char (point-min))
 	    (shimbun-header-insert shimbun header))
 	  (goto-char (point-max)))
+	;; Processing optional headers.
+	(let ((alist)
+	      (cur-point (point))
+	      (start (search-forward "<!--X-Head-of-Message-->" nil t))
+	      (end (and (search-forward "<!--X-Head-of-Message-End-->" nil t)
+			(match-beginning 0))))
+	  (when (and start end)
+	    (save-restriction
+	      (narrow-to-region start end)
+	      (goto-char (point-min))
+	      (while (re-search-forward (shimbun-regexp-opt
+					 '("<strong>" "</strong>" "<em>" "</em>" "</li>"))
+					nil t)
+		(delete-region (match-beginning 0) (match-end 0))
+		(goto-char (match-beginning 0)))
+	      (shimbun-decode-entities)
+	      (goto-char (point-min))
+	      (while (not (eobp))
+		(when (looking-at "<LI>\\([^:]+\\): +")
+		  (when (member (downcase (match-string 1))
+				shimbun-mhonarc-optional-headers)
+		    (push (cons (match-string 1)
+				(shimbun-mime-encode-string
+				 (buffer-substring (match-end 0)
+						   (line-end-position))))
+			  alist)))
+		(forward-line 1))
+	      (delete-region (point-min) (point-max)))
+	    (save-restriction
+	      (narrow-to-region (point-min) cur-point)
+	      (goto-char (point-min))
+	      (when (search-forward "\nMime-Version:" nil t)
+		(forward-line 0)
+		(dolist (p alist)
+		  (insert (car p) ": " (cdr p) "\n")))
+	      (goto-char (point-max)))))
 	;; Processing body.
 	(save-restriction
 	  (narrow-to-region (point) (point-max))
