@@ -143,17 +143,19 @@
   (let ((command (if (boundp 'w3m-command)
 		     (symbol-value 'w3m-command)
 		   (or (w3m-which-command "w3m")
-		       (w3m-which-command "w3mmee")))))
+		       (w3m-which-command "w3mmee")
+		       (w3m-which-command "w3m-m17n")))))
     (when command
       (setq w3m-command command)
       (with-temp-buffer
 	(call-process command nil t nil "-version")
 	(goto-char (point-min))
 	(cond
-	 ((looking-at "version w3m/0\\.2\\.[12]-inu") 'w3m)
-	 ((looking-at "version w3m/0\\.2\\.[12]\\+mee") 'w3mmee)
-	 ((looking-at "version w3m/0\\.2\\.[12]-m17n") 'w3m-m17n)
-	 ((looking-at "version w3m/0\\.2\\.2") 'w3m)))))
+	 ((re-search-forward "version w3m/\\([0-9]+\\.\\)+[0-9]+\\+mee" nil t)
+	  'w3mmee)
+	 ((re-search-forward "version w3m/\\([0-9]+\\.\\)+[0-9]+\\-m17n" nil t)
+	  'w3m-m17n)
+	 (t 'w3m)))))
   "*Type of w3m."
   :group 'w3m
   :type '(choice (const :tag "w3m" 'w3m)
@@ -571,11 +573,12 @@ to input URL when URL-like string is not detected under the cursor."
       (deflate
 	(, (let ((file
 		  (expand-file-name
-		   (if (memq system-type '(windows-nt OS/2 emx))
-		       "../lib/w3m/inflate.exe"
-		     "../lib/w3m/inflate")
+		   (concat "../lib/" w3m-command "/"
+			   (if (memq system-type '(windows-nt OS/2 emx))
+			       "inflate.exe"
+			     "inflate"))
 		   (file-name-directory
-		    (w3m-which-command "w3m")))))
+		    (w3m-which-command w3m-command)))))
 	     (if (file-executable-p file)
 		 file
 	       "inflate")))
@@ -758,9 +761,9 @@ If nil, use an internal CGI of w3m."
   :type (` (choice (const :tag "w3m internal CGI" nil)
 		   (file :tag "path of 'dirlist.cgi'"
 			 (, (expand-file-name
-			     "../lib/w3m/dirlist.cgi"
+			     (concat "../lib/" w3m-command "/dirlist.cgi")
 			     (file-name-directory
-			      (w3m-which-command "w3m"))))))))
+			      (w3m-which-command w3m-command))))))))
 
 (defcustom w3m-add-referer-regexps
   (when (or (not (boundp 'w3m-add-referer))
@@ -1068,11 +1071,13 @@ for a charset indication")
     "Regexp used in parsing to detect string."))
 
 (defconst w3m-dump-head-source-command-arguments
-  (list
-   '(if w3m-accept-languages "-o")
-   '(if w3m-accept-languages
-	(concat "accept_language=" (mapconcat 'identity w3m-accept-languages " ")))
-   (if (eq w3m-type 'w3mmee) "-dump=extra,head,source" "-dump_extra"))
+  (if (eq w3m-type 'w3mmee)
+      (list "-dump=extra,head,source")
+    (list
+     '(if w3m-accept-languages "-o")
+     '(if w3m-accept-languages
+	  (concat "accept_language=" (mapconcat 'identity w3m-accept-languages " ")))
+     "-dump_extra"))
   "Arguments for 'dump_extra' execution of w3m.")
 
 (defvar w3m-halfdump-command nil
