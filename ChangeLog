@@ -1,3 +1,16 @@
+2003-10-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-process-modeline-format): New option.
+	(w3m-buffer-setup): Set `mode-line-process'.
+
+	* w3m-proc.el: Bind `w3m-process-modeline-format' to suppress
+	byte-compile warning.
+	(w3m-process-modeline-string): New buffer-local variable.
+	(w3m-process-start-after): Reset the above variable.
+	(w3m-process-filter): Check size of retrieved data and set the
+	above variable.
+	(w3m-process-modeline-format): New function.
+
 2003-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-sankei.el (shimbun-sankei-content-start): Improve the

@@ -60,7 +60,8 @@
   (defvar w3m-command-arguments)
   (defvar w3m-command-environment)
   (defvar w3m-async-exec)
-  (defvar w3m-process-connection-type))
+  (defvar w3m-process-connection-type)
+  (defvar w3m-process-modeline-format))
 
 (defvar w3m-process-inhibit-quit t
   "`w3m-process-sentinel' binds `inhibit-quit' according to this variable.")
@@ -84,6 +85,10 @@
 (make-variable-buffer-local 'w3m-process-passwd)
 (make-variable-buffer-local 'w3m-process-realm)
 (make-variable-buffer-local 'w3m-process-object)
+
+(defvar w3m-process-modeline-string nil
+  "Modeline string to show status of retrieving process.")
+(make-variable-buffer-local 'w3m-process-modeline-string)
 
 (defvar w3m-process-waited nil
   "Non-nil means that `w3m-process-with-wait-handler' is evaluated.")
@@ -474,6 +479,8 @@ evaluated in a temporary buffer."
 	 (apply 'call-process command nil t nil arguments))))))
 
 (defun w3m-process-start-after (exit-status)
+  (with-current-buffer w3m-current-buffer
+    (setq w3m-process-modeline-string nil))
   (cond
    ((numberp exit-status)
     (zerop (setq w3m-process-exit-status exit-status)))
@@ -594,7 +601,27 @@ evaluated in a temporary buffer."
 					   (match-beginning 1))))
 	    (ignore-errors
 	      (process-send-string process
-				   (concat w3m-process-user "\n"))))))))))
+				   (concat w3m-process-user "\n"))))
+	   ((progn
+	      (goto-char (point-max))
+	      (re-search-backward
+	       "^W3m-progress: \\([.0-9]+/[.0-9]+[a-zA-Z]?b\\)$" nil t))
+	    (let ((str (w3m-process-modeline-format (match-string 1))))
+	      (dolist (handler (w3m-process-handlers w3m-process-object))
+		(with-current-buffer
+		    (w3m-process-handler-parent-buffer handler)
+		  (setq w3m-process-modeline-string str)))))))))))
+
+(defun w3m-process-modeline-format (str)
+  (ignore-errors
+    (cond
+     ((stringp w3m-process-modeline-format)
+      (format w3m-process-modeline-format
+	      (if (string-match "/0\\([a-zA-Z]?b\\)\\'" str)
+		  (replace-match "\\1" t nil str)
+		str)))
+     ((functionp w3m-process-modeline-format)
+      (funcall w3m-process-modeline-format str)))))
 
 ;; w3m-process-authinfo-alist has an association list as below format.
 ;; (("root1" ("realm11" ("user11" . "pass11")

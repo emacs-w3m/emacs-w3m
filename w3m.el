@@ -1524,6 +1524,11 @@ nGU5ogjH0VZlYFN8VPoARAZZGviSlzpKdmneF5AAADs="
   "A small icon image for the url about://emacs-w3m.gif.  It is encoded
 in the optimized interlaced endlessly animated gif format and base64.")
 
+(defcustom w3m-process-modeline-format " loaded: %s"
+  "*A format to show status of retrieving process."
+  :group 'w3m
+  :type '(choice (string :tag "Format") function))
+
 (defconst w3m-modeline-process-status-on "<PRC>"
   "Modeline string which is displayed when the process is runnning now.")
 
@@ -6164,7 +6169,11 @@ appropriate buffer and select it."
 		" / ")
 	       " / ")
 	   " / ")
-	 'w3m-current-title)))
+	 'w3m-current-title))
+  (unless (assq 'w3m-current-process mode-line-process)
+    (setq mode-line-process
+	  (cons (list 'w3m-current-process 'w3m-process-modeline-string)
+		mode-line-process))))
 
 ;;;###autoload
 (defun w3m-goto-url
