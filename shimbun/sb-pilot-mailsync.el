@@ -39,6 +39,7 @@
   shimbun-pilot-mailsync-url)
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-pilot-mailsync))
+  "Return the mailing list address."
   "pilot-mailsync@pilot-mailsync.sourcefubar.net")
 
 (provide 'sb-pilot-mailsync)

@@ -53,6 +53,7 @@
    (string-to-number day)))
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-dennou))
+  "Return the author's address."
   "pc3s-nnb@asahi-net.or.jp")
 
 (luna-define-method shimbun-headers ((shimbun shimbun-dennou)

@@ -45,6 +45,7 @@
   shimbun-pocketgames-url)
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-pocketgames))
+  "Return the mailing list address."
   "info@pocketgames.jp")
 
 (defvar shimbun-pocketgames-expiration-days 6)
