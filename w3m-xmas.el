@@ -79,8 +79,8 @@ to show unoptimized animated gif images.")
 
 (defvar w3m-cache-unoptimized-gif-images nil
   "Cache used to keep unoptimized animated gif images.  It is an alist of
-an URL and a glyph.  Glyph will be nil if there is no need to
-unoptimize.  Each element should be updated when an URL is newly
+a URL and a glyph.  Glyph will be nil if there is no need to
+unoptimize.  Each element should be updated when a URL is newly
 retrieved.")
 
 (defvar w3m-cache-unoptimized-gif-images-max-length 32

@@ -1,5 +1,10 @@
-2001-05-27  Yuuichi Teranishi  <teranisi@gohome.org>
+2001-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* Makefile.in (slow): New rule for the developers to check a
+	portability for each module.
+	* w3m-xmas.el (w3m-cache-unoptimized-gif-images): Fix typo.
+
+2001-05-27  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-ruby.el (shimbun-make-contents): Call
 	`shimbun-decode-entities'.
@@ -1033,7 +1038,7 @@
 
 2001-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-goto-ftp-url): Don't give an url string to the
+	* w3m.el (w3m-goto-ftp-url): Don't give a url string to the
 	function `file-name-nondirectory'.
 
 2001-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
@@ -1151,7 +1156,7 @@
 	* w3m.el (w3m-db-history): New command.
 	(w3m-about-history, w3m-about-history-1): Don't deactivate
 	"about://*" links.
-	(w3m-exec): Share an url string between the variable
+	(w3m-exec): Share a url string between the variable
 	`w3m-current-url' and the history structure.
 	(w3m-toolbar, w3m-toolbar-buttons): Added history and db-history.
 
@@ -1475,7 +1480,7 @@
 
 2001-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-fontify-images, w3m-fontify-anchors): Put an url
+	* w3m.el (w3m-fontify-images, w3m-fontify-anchors): Put a url
 	string to each anchor as a `help-echo' property when the value of
 	`w3m-track-mouse' is non-nil.
 	(w3m-track-mouse): New user option.

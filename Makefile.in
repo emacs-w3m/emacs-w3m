@@ -98,3 +98,16 @@ clean:
 
 distclean: clean
 	-rm -f config.log config.status config.cache Makefile
+
+## Rule for the developers to check a portability for each module.
+.SUFFIXES: .elc .el
+
+.el.elc:
+	echo "$$(EMACS) $$(FLAGS) -f batch-byte-compile $*.el";\
+	$(EMACS) $(FLAGS) -f batch-byte-compile $*.el
+
+slow: Makefile
+	@echo "EMACS=$(EMACS)";\
+	echo "FLAGS=$(FLAGS)";\
+	for i in `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
+	do $(MAKE) -s $$i; done
