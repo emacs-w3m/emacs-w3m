@@ -1,3 +1,8 @@
+2003-05-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (Top): Use w3m-treat-drive-letter for
+	`w3m-expand-path-name'.
+
 2003-05-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yahoo.el (shimbun-yahoo-x-face-alist): New face.
