@@ -75,42 +75,44 @@ Prompts for bug subject.  Leaves you in a mail buffer."
 		  (where-is-internal 'w3m-print-current-url keymap))))
        (list (read-string "Bug Subject: "))
      (error "`%s' must be invoked from the `w3m-mode' buffer" this-command)))
-  ;; See the comment for `report-emacs-w3m-bug-system-informations'.
-  (load "w3m-bug")
-  (compose-mail report-emacs-w3m-bug-address topic)
-  (goto-char (point-min))
-  (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
-  (forward-line 1)
-  (unless report-emacs-w3m-bug-no-explanations
-    ;; Insert warnings for novice users.
-    (if (string-equal (symbol-value 'w3m-language) "Japanese")
-	(progn
-	  (insert "このバグリポートは emacs-w3m 開発チームに送られます。\n")
-	  (put-text-property (point)
-			     (progn
-			       (insert "\
+  (let (after-load-alist)
+    ;; See the comment for `report-emacs-w3m-bug-system-informations'.
+    (load "w3m-bug"))
+  (let ((w3m-buffer (current-buffer)))
+    (compose-mail report-emacs-w3m-bug-address topic)
+    (goto-char (point-min))
+    (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
+    (forward-line 1)
+    (unless report-emacs-w3m-bug-no-explanations
+      ;; Insert warnings for novice users.
+      (if (string-equal (symbol-value 'w3m-language) "Japanese")
+	  (progn
+	    (insert "このバグリポートは emacs-w3m 開発チームに送られます。\n")
+	    (put-text-property (point)
+			       (progn
+				 (insert "\
 あなたのローカルサイトの管理者宛てではありません!!")
-			       (point))
-			     'face 'underline)
-	  (insert "\n\nできるだけ簡潔に述べて下さい:
+				 (point))
+			       'face 'underline)
+	    (insert "\n\nできるだけ簡潔に述べて下さい:
 \t- 何が起きましたか?
 \t- 本当はどうなるべきだったと思いますか?
 \t- そのとき何をしましたか? (正確に)
 
 もし Lisp のバックトレースがあれば添付して下さい。\n"))
-      (insert "\
+	(insert "\
 This bug report will be sent to the emacs-w3m development team,\n")
-      (put-text-property (point)
-			 (progn
-			   (insert " not to your local site managers!!")
-			   (point))
-			 'face 'italic)
-      (insert "\nPlease write in ")
-      (put-text-property (point) (progn
-				   (insert "simple")
-				   (point))
-			 'face 'italic)
-      (insert " English, because the emacs-w3m developers
+	(put-text-property (point)
+			   (progn
+			     (insert " not to your local site managers!!")
+			     (point))
+			   'face 'italic)
+	(insert "\nPlease write in ")
+	(put-text-property (point) (progn
+				     (insert "simple")
+				     (point))
+			   'face 'italic)
+	(insert " English, because the emacs-w3m developers
 aren't good at English reading. ;-)
 
 Please describe as succinctly as possible:
@@ -119,43 +121,38 @@ Please describe as succinctly as possible:
 \t- Precisely what you were doing at the time.
 
 Please also include any Lisp back-traces that you may have.\n"))
-    (insert "\
+      (insert "\
 ================================================================\n"))
-  (insert "Dear Bug Team!\n\n")
-  (let ((user-point (point))
-	(standard-output (current-buffer))
-	(print-escape-newlines t))
-    (insert "\n
+    (insert "Dear Bug Team!\n\n")
+    (let ((user-point (point))
+	  (print-escape-newlines t)
+	  infos)
+      (insert "\n
 ================================================================
 
 System Info to help track down your bug:
 ---------------------------------------\n")
-    (dolist (info report-emacs-w3m-bug-system-informations)
-      (prin1 info)
-      (insert "\n => ")
-      (cond ((symbolp info)
-	     (cond ((fboundp info)
-		    (condition-case code
-			(prin1 (funcall info))
-		      (error
+      (with-current-buffer w3m-buffer
+	(dolist (info report-emacs-w3m-bug-system-informations)
+	  (push (prin1-to-string info) infos)
+	  (push "\n => " infos)
+	  (push (cond ((functionp info)
+		       (prin1-to-string (condition-case code
+					    (funcall info)
+					  (error
+					   code))))
+		      ((symbolp info)
 		       (if (boundp info)
-			   (prin1 (symbol-value info))
-			 (prin1 code)))))
-		   ((boundp info)
-		    (prin1 (symbol-value info)))
-		   (t
-		    (insert "(not bound)\n"))))
-	    ((functionp info)
-	     (condition-case code
-		 (prin1 (funcall info))
-	       (error
-		(prin1 code))))
-	    ((consp info)
-	     (condition-case code
-		 (prin1 (eval info))
-	       (error
-		(prin1 code)))))
-      (insert "\n"))
-    (goto-char user-point)))
+			   (prin1-to-string (symbol-value info))
+			 "(not bound)"))
+		      ((consp info)
+		       (prin1-to-string (condition-case code
+					    (eval info)
+					  (error
+					   code)))))
+		infos)
+	  (push "\n" infos)))
+      (apply 'insert (nreverse infos))
+      (goto-char user-point))))
 
 ;;; w3m-bug.el ends here
