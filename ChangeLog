@@ -1,3 +1,8 @@
+2004-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (labels): A temporary substitution against the Emacs
+	CVS bug.
+
 2004-11-26  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m-form.el (w3m-form-resume): Check whether a form exists,
