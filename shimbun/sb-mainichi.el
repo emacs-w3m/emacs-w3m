@@ -1,9 +1,6 @@
 ;;; sb-mainichi.el --- shimbun backend for www.mainichi.co.jp
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>
-;;         Yuuichi Teranishi <teranisi@gohome.org>
-;;         Koichiro Ohba <koichiro@meadowy.org>
+;; Author: Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Keywords: news
 
@@ -26,8 +23,9 @@
 
 ;;; Commentary:
 
-;; Original code was nnshimbun.el written by
-;; TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>.
+;; Original code was sb-yomiuri.el which is written by
+;; TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp> and 
+;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;;; Code:
 
