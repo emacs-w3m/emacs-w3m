@@ -2184,6 +2184,229 @@ Well, it might be useful for a general cleaning of the end of a year.
 @node Mew Shimbun
 @section Reading web newspapers with Mew
 
+Mew Shimbun is an Emacs Lisp program for enjoying yourself with
+@samp{shimbun} using the Mew version 2.1 and later.  The
+@file{mew-shimbun} module will be installed together with emacs-w3m if
+there have been Mew, @sc{APEL}, and @sc{FLIM} installed.
+
+@enumerate
+@item
+Setting up
+
+Put the following lines in the last of the @file{~/.mew.el} file:
+
+@format
+;;; Loading mew-shimbun, defining keys.
+;; (setq mew-shimbun-use-unseen t)              ;;; (*1)
+(require 'mew-shimbun)
+(define-key mew-summary-mode-map "G"  (make-sparse-keymap))
+(define-key mew-summary-mode-map "Gg" 'mew-shimbun-goto-folder)
+(define-key mew-summary-mode-map "GG" 'mew-shimbun-goto-unseen-folder)
+(define-key mew-summary-mode-map "Gi" 'mew-shimbun-retrieve)
+(define-key mew-summary-mode-map "GI" 'mew-shimbun-retrieve-all)
+(define-key mew-summary-mode-map "Gr" 'mew-shimbun-re-retrieve)
+(define-key mew-summary-mode-map "GR" 'mew-shimbun-re-retrieve-all)
+(define-key mew-summary-mode-map "Ge" 'mew-shimbun-expire)
+(define-key mew-summary-mode-map "GE" 'mew-shimbun-expire-all)
+
+;;; (*1) Uncomment this line if you'd like to manage unseen messages
+;;; (see below).  It must be placed before the @code{(require 'mew-shimbun)}
+;;; line.
+
+;; Specifying @samp{shimbun} servers and groups to be read with Mew.  Each
+;; element has the form @code{("folder" (("server.group" . range) ...))}.
+;; You can use @code{all}, @code{last}, and a number for the @code{range} item.
+
+(setq mew-shimbun-folder-groups
+      '(;; Fetching @samp{yomiuri.shakai}, @samp{yomiuri.sports}, etc.
+        ;; into the @samp{+shimbun/yomiuri} folder collectively.
+        ("yomiuri"
+         ("yomiuri.shakai" . 2)
+         ("yomiuri.sports". 2)
+         ("yomiuri.kokusai". 2))
+        ;; Fetching @samp{security-memo.memo}
+        ;; into @samp{+shimbun/security-memo}.
+        ("security-memo"
+         ("security-memo.memo" . 2))
+        ("slashdot-jp"
+         ("slashdot-jp.story" . last))
+        ;; You can read several groups in one folder (@samp{+shimbun/comp})
+        ;; as follows even if each group comes from a different server.
+        ("comp"
+         ("cnet.comp" . last)
+         ("zdnet.comp" . last))
+        ;; Fetching diaries into @samp{+shimbun/hns/arisawa} and
+        ;; @samp{+shimbun/hns/miyoshi} respectively.
+        ("hns/arisawa"
+         ("hns.arisawa" . last))
+        ("hns/miyoshi"
+         ("hns.miyoshi" . last))))
+@end format
+
+You did the fundamental setups.  For the other user definable variables,
+use @kbd{M-x customize-group} for the @code{mew-shimbun} group or see
+the source code.
+
+@item
+Reading @samp{shimbun} messages
+
+@enumerate a
+@item
+Getting started
+
+Type @kbd{G I} (@code{mew-shimbun-retrieve-all}) first, after setting up
+as menthoned above.  The @samp{shimbun} folders specified by the
+@code{mew-shimbun-folder-groups} variable will be created under the
+@samp{+shimbun} parent folder.  Typing @kbd{G I} is also useful when you
+have added new groups.  You can change the name of the parent folder
+(@samp{+shimbun} by default) by customizing the
+@code{mew-shimbun-folder} variable.
+
+@item
+Moving into a @samp{shimbun} folder
+
+You can move to any folder (including @samp{shimbun}) by typing @kbd{g}
+(@code{mew-summary-goto-folder}), but @kbd{G g}
+(@code{mew-shimbun-goto-folder}) is restricted to moving to only the
+@samp{shimbun} folder.  In addition, folders which have new messages
+(in other words, folders which have not been scanned) will be displayed
+when using a prefix argument with @kbd{G g} (i.e. @kbd{C-u G g}).  A
+prefix argument similarly affects to @kbd{G G} as well.
+
+@item
+Fetching messages in each folder
+
+You can fetch new messages for the current folder exclusively by typing
+@kbd{G i} (@code{mew-shimbun-retrieve}) in a @samp{shimbun} folder.
+
+@item
+Fetching updated messages
+
+If you perform the @kbd{G r} command (@code{mew-shimbun-re-retrieve})
+when a particular message is being displayed, the message will be
+updated if it is possible, and new messages will be fetched.  With a
+prefix argument (i.e. @kbd{C-u G r}), it will attempt to update messages
+which are marked with the mark specified by the
+@code{mew-shimbun-mark-re-retrieve} variable (@samp{@@} by default).  It
+would be useful for CNET, etc.
+@end enumerate
+
+@item
+Managing unseen messages
+
+If you have the following setting in the @file{~/.mew.el} file,
+
+@lisp
+(setq mew-shimbun-use-unseen t)
+@end lisp
+
+newly fetched messages will be marked with the mark specified by the
+@code{mew-shimbun-mark-unseen} variable (@samp{*} by default), and it
+will disappear automatically after reading the message.
+
+Normally, the unseen marks will not be saved in the @file{.mew-cache}
+file if scanning is not performed after adding or deleting marks in the
+Mew summary mode, but if you add the following line to the
+@file{~/.mew.el} file,
+
+@lisp
+(setq mew-shimbun-use-unseen-cache-save t)
+@end lisp
+
+the unseen marks will be saved in the @file{.mew-cache} file
+automatically for the @samp{shimbun} groups when finishing Mew or
+killing a folder (using @kbd{C-c C-q}).  However, it is not securely
+saved (*2).  To do this securely, you had better have the habit of
+performing the @samp{scan update} command after reading the folder.
+
+If you don't like the @samp{*} mark for unseen messages, customize
+the @code{mew-shimbun-mark-unseen} variable (see above).  Specifying the
+mark using @kbd{C-u N} may take you a joyful unseen life.
+
+(*2) Persons who have set the @code{mew-touch-folder-p} variable to
+@code{t} will succeed 100% in saving marks, but persons who use
+@code{nil} value seem not to be 0% successful.
+
+@item
+Expiring messages
+
+You can expire messages if you set the @code{mew-shimbun-expires}
+variable beforehand.  For example:
+
+@lisp
+(setq mew-shimbun-expires
+      '(("yomiuri" . 7)
+        ("asahi" . 1)
+        ("slashdot-jp" . 7)
+        ("comp" . 7)))
+@end lisp
+
+If you set this variable as shown above, you can specify the expiry
+periods; 7 days for @samp{+shimbun/yomiuri}, 1 day for
+@samp{+shimbun/asahi}.  Messages in the @samp{shimbun} folder where the
+expiry period is not specified will never be expired.  You can use the
+@kbd{G e} command (@code{mew-shimbun-expire}) to expire the expirable
+messages in the current folder.  The @kbd{G E} command
+(@code{mew-shimbun-expire-all}) is for expiring the expirable messages
+in all the @samp{shimbun} folders.  Note that once the messages have
+been expired, you cannot restore them.
+
+@item
+How to mark messages with @samp{$} as unseen
+
+Put the following lines in the @file{~/.mew.el} file in order to define
+the @samp{$} mark and use @samp{$} for the mark of unseen.  See
+@uref{http://www.mew.org/ml/mew-dist-2.0/msg01251.html} if you would
+like to replace the @samp{$} mark with another.
+
+@format
+;;----------------------------------------------------------------------
+;;; Code for using @samp{$} as the unseen mark.
+(setq mew-mark-unseen ?$)
+(setq mew-shimbun-mark-unseen mew-mark-unseen)
+(setq mew-mark-show-list (cons mew-mark-unseen mew-mark-show-list))
+(setq mew-mark-afterstep-spec
+      (cons (cons mew-mark-unseen '(1 0 1 0 0 0 0))
+            mew-mark-afterstep-spec))
+(setq mew-mark-spec
+      (cons (list mew-mark-unseen "unseen" 0 nil nil nil nil nil)
+            mew-mark-spec))
+(setq mew-highlight-mark-keywords
+      (cons
+       (cons mew-mark-unseen 'mew-face-mark-unseen)
+       mew-highlight-mark-keywords))
+(defface mew-face-mark-unseen
+  '((((class color) (type tty))
+     (:foreground "green"))
+    (((class color) (background light))
+     (:foreground "deep pink" :bold t :italic t))
+    (((class color) (background dark))
+     (:foreground "thistle"))
+    (t (:bold t)))
+  "*Face to highlight the unseen mark"
+  :group 'mew-highlight)
+(defun mew-summary-unseen (&optional count)
+  "Put the unseen mark(default is '$') in COUNT times."
+  (interactive "P")
+  (mew-mark-put-mark-loop (function mew-summary-unseen-one) count nil))
+(defun mew-summary-unseen-one (&optional no-msg)
+  "Put the unseen mark(default is '$') on this message."
+  (mew-mark-put-mark mew-mark-unseen no-msg))
+(defun mew-summary-mark-unseen ()
+  "Change the '*' mark into the '$' mark."
+  (interactive)
+  (mew-summary-exchange-mark mew-mark-review mew-mark-unseen))
+(defun mew-thread-mark-unseen ()
+  "Put the '$' mark on all messages of the current sub-thread."
+  (interactive)
+  (mew-thread-mark mew-mark-unseen))
+
+(define-key mew-summary-mode-map "$"  'mew-summary-unseen)
+(define-key mew-summary-mode-map "m$" 'mew-summary-mark-unseen)
+(define-key mew-summary-mode-map "t$" 'mew-thread-mark-unseen)
+;;----------------------------------------------------------------------
+@end format
+@end enumerate
 
 @node Shimbun with Wanderlus
 @section Reading web newspapers with Wanderlust
