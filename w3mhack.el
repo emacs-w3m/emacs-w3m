@@ -65,6 +65,12 @@ nil means that all icons are installed to the default directory.")
   "*Non-nil means that print the commands to install programs and datas,
 but do not execute them.")
 
+;; This file called from Makefile with "/bin/sh" on environment
+;; variable of "SHELL".
+;; However not necessarily have "/bin/sh" in win32 environment.
+(when (eq system-type 'windows-nt)
+  (setq shell-file-name "cmdproxy.exe"))
+
 (require 'cl)
 (unless (dolist (var nil t))
   ;; Override the macro `dolist' which may have been defined in egg.el.
