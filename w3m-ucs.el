@@ -105,7 +105,8 @@
 	 ;; (2) Latin Part of Japanese JISX0201.1976
 	 ;;     Convert to ASCII
 	 (write-repeat r0))
-     (if (r1 == ,(charset-id 'japanese-jisx0208))
+     (r2 = (r1 == ,(charset-id 'japanese-jisx0208-1978)))
+     (if ((r1 == ,(charset-id 'japanese-jisx0208)) | r2)
 	 ;; (3) Characters of Japanese JISX0208.
 	 ((r1 = ((r0 & 127) | 128))
 	  (r0 = ((r0 >> 7) | 128))

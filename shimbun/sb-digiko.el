@@ -71,7 +71,7 @@
       (goto-char (point-min))
       (while (and (if pages (< (incf count) pages) t)
 		  (re-search-forward
-		   "<A HREF=\"\\(mail[0-9]+.html\\)\">Next Page</A>"
+		   "<a href=\"\\(mail[0-9]+.html\\)\">Next Page</a>"
 		   nil t)
 		  (not (string-equal (match-string 1) aux)))
 	(setq aux (match-string 1)
