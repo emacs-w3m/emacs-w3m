@@ -1,3 +1,12 @@
+2002-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-mailto-url-popup-function-alist): New user option.
+	(w3m-view-this-url-1): Don't save a window configuration for
+	mailto urls here.
+	(w3m-goto-mailto-url): Save a window configuration while composing
+	a mail message; popup a mail window if the major-mode of a mail
+	buffer matches to `w3m-mailto-url-popup-function-alist'.
+
 2002-09-01  Andrew M. Scott  <ascott@sedona.ch.intel.com>
 
 	* w3m-weather.el (w3m-weather-default-area): Fix typo in its

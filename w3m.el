@@ -282,6 +282,23 @@ width using expression (+ (window-width) VALUE)."
   :group 'w3m
   :type 'function)
 
+(defcustom w3m-mailto-url-popup-function-alist
+  '((cmail-mail-mode . pop-to-buffer)
+    (mail-mode . pop-to-buffer)
+    (message-mode . pop-to-buffer)
+    (mew-draft-mode . pop-to-buffer)
+    (mh-letter-mode . pop-to-buffer)
+    (wl-draft-mode . pop-to-buffer))
+  "*Alist of (MAJOR-MODE . FUNCTION) pairs used to popup a mail buffer.
+If a user clicks on a `mailto' url and a mail buffer is composed by
+`mail-user-agent' with the MAJOR-MODE, FUNCTION will be called with a
+mail buffer as an argument.  Note that the variables
+`special-display-buffer-names', `special-display-regexps',
+`same-window-buffer-names' and `same-window-regexps' will be bound to
+nil while popping up a buffer."
+  :group 'w3m
+  :type '(repeat (cons :format "%v" (symbol :tag "major-mode") function)))
+
 (defcustom w3m-use-mule-ucs
   (and (eq w3m-type 'w3m) (featurep 'un-define))
   "*Non nil means using multi-script support with Mule-UCS."
@@ -4079,8 +4096,12 @@ described in Section 5.2 of RFC 2396.")
     (let (handler)
       (w3m-process-do
 	  (success
-	   (save-window-excursion
-	     (w3m-goto-url url reload nil nil w3m-current-url handler)))
+	   (if (let ((case-fold-search t))
+		 (string-match "\\`mailto:" url))
+	       ;; Don't save a window configuration to popup a mail buffer.
+	       (w3m-goto-url url reload nil nil w3m-current-url handler)
+	     (save-window-excursion
+	       (w3m-goto-url url reload nil nil w3m-current-url handler))))
 	;; FIXME: 本当は w3m-goto-url() が適当な返り値を返すように
 	;; 変更して、その値を検査するべきだ
 	(when (and pos (buffer-name (marker-buffer pos)))
@@ -5360,40 +5381,60 @@ positions around there (+/-3 lines) visible."
       uri)))
 
 (defun w3m-goto-mailto-url (url &optional post-data)
-  (if (and (symbolp w3m-mailto-url-function)
-	   (fboundp w3m-mailto-url-function))
-      (funcall w3m-mailto-url-function url)
-    (let (comp)
-      ;; Require `mail-user-agent' setting
-      (unless (and (boundp 'mail-user-agent)
-		   (symbol-value 'mail-user-agent))
-	(error "You must specify the valid value to `mail-user-agent'"))
-      (unless (and (setq comp (get (symbol-value 'mail-user-agent)
-				   'composefunc))
-		   (fboundp comp))
-	(error "No function to compose a mail in `%s'"
-	       (symbol-value 'mail-user-agent)))
-      ;; Use rfc2368.el if exist.
-      ;; rfc2368.el is written by Sen Nagata.
-      ;; You can find it in "contrib" directory of Mew package
-      ;; or in "utils" directory of Wanderlust package.
-      (if (or (featurep 'rfc2368)
-	      (condition-case nil (require 'rfc2368) (error nil)))
-	  (let ((info (rfc2368-parse-mailto-url url)))
-	    (apply comp
-		   (append (mapcar (lambda (x)
-				     (cdr (assoc x info)))
-				   '("To" "Subject"))
-			   (if post-data
-			       (list
-				(list (cons
-				       "body"
-				       (or (and
-					    (consp post-data)
-					    (concat (car post-data) "\n"))
-					   (concat post-data "\n")))))))))
-	;; without rfc2368.el.
-	(funcall comp (match-string 1 url))))))
+  (let ((before (nreverse (buffer-list)))
+	comp info buffers buffer function)
+    (save-window-excursion
+      (if (and (symbolp w3m-mailto-url-function)
+	       (fboundp w3m-mailto-url-function))
+	  (funcall w3m-mailto-url-function url)
+	;; Require `mail-user-agent' setting
+	(unless (and (boundp 'mail-user-agent)
+		     (symbol-value 'mail-user-agent))
+	  (error "You must specify the valid value to `mail-user-agent'"))
+	(unless (and (setq comp (get (symbol-value 'mail-user-agent)
+				     'composefunc))
+		     (fboundp comp))
+	  (error "No function to compose a mail in `%s'"
+		 (symbol-value 'mail-user-agent)))
+	;; Use rfc2368.el if exist.
+	;; rfc2368.el is written by Sen Nagata.
+	;; You can find it in "contrib" directory of Mew package
+	;; or in "utils" directory of Wanderlust package.
+	(if (or (featurep 'rfc2368)
+		(condition-case nil (require 'rfc2368) (error nil)))
+	    (progn
+	      (setq info (rfc2368-parse-mailto-url url))
+	      (apply comp
+		     (append (mapcar (lambda (x)
+				       (cdr (assoc x info)))
+				     '("To" "Subject"))
+			     (if post-data
+				 (list
+				  (list (cons
+					 "body"
+					 (or (and
+					      (consp post-data)
+					      (concat (car post-data) "\n"))
+					     (concat post-data "\n")))))))))
+	  ;; without rfc2368.el.
+	  (funcall comp (match-string 1 url)))))
+    (setq buffers (nreverse (buffer-list)))
+    (save-current-buffer
+      (while buffers
+	(setq buffer (car buffers)
+	      buffers (cdr buffers))
+	(unless (memq buffer before)
+	  (set-buffer buffer)
+	  (when (setq function
+		      (cdr (assq major-mode
+				 w3m-mailto-url-popup-function-alist)))
+	    (setq buffers nil)))))
+    (when function
+      (let (special-display-buffer-names
+	    special-display-regexps
+	    same-window-buffer-names
+	    same-window-regexps)
+	(funcall function buffer)))))
 
 (defun w3m-convert-ftp-url-for-emacsen (url)
   (or (and (string-match "^ftp://?\\([^/@]+@\\)?\\([^/]+\\)\\(/~/\\)?" url)
