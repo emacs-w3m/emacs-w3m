@@ -1,3 +1,16 @@
+2004-06-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-add-w3m-initial-frames): Share the opened frame
+	in w3m-initial-frames over all emacs-w3m buffers if w3m-use-tab is
+	non-nil.
+	(w3m-delete-w3m-initial-frames): New function; add it to
+	delete-frame-functions or delete-frame-hook, or merge into
+	delete-frame using defadvice.
+	(w3m-delete-frames-and-windows): Return to the former buffer after
+	performing walk-windows; don't manage w3m-initial-frames.
+
+	* w3m.el (w3m-delete-buffer): Don't manage w3m-initial-frames.
+
 2004-06-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-bbc.el (shimbun-bbc-content-start): Relaxed.

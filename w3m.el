@@ -5933,10 +5933,7 @@ passed to the `w3m-quit' function (which see)."
 	      ((memq (selected-frame) w3m-initial-frames)
 	       ;; Assume that this frame was created to show this buffer.
 	       (if (one-window-p t)
-		   (progn
-		     (setq w3m-initial-frames
-			   (delq (selected-frame) w3m-initial-frames))
-		     (delete-frame))
+		   (delete-frame)
 		 (delete-window)))
 	      (t
 	       (if (>= num 2)
