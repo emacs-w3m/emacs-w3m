@@ -1,3 +1,9 @@
+2001-07-12  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-charset-coding-system-alist): Added 'us_ascii'.
+	(w3m-w3m-attributes): Use content of w3m-document-charset: field as
+	charset	if exists.
+
 2001-07-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-form.el (w3m-form-parse-forms): Parse the tags only within the
@@ -17,7 +23,7 @@
 
 	* w3m.el (w3m-rendering-region): Add charset option when call
 	w3m-form-parse-region().
-	
+
 	* w3m-form.el (w3m-form-parse-region): Add charset option.
 	If w3m-type is 'w3mmee or 'w3m-m17n, forms parse within a decoded
 	temporally buffer.

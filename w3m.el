@@ -476,7 +476,8 @@ It will be used for the w3m system internal for Emacs 21.")
 
 (defcustom w3m-charset-coding-system-alist
   (let ((rest
-	 '((us-ascii      . raw-text)
+	 '((us_ascii      . raw-text)
+	   (us-ascii      . raw-text)
 	   (gb2312	  . cn-gb-2312)
 	   (cn-gb	  . cn-gb-2312)
 	   (iso-2022-jp-2 . iso-2022-7bit-ss2)
@@ -2059,7 +2060,10 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	    (when (string-match ";$" type)
 	      (setq type (substring type 0 (match-beginning 0))))))
 	(list (or type (w3m-local-content-type url))
-	      charset
+	      (or charset 
+		  (when (setq charset (cdr (assoc "w3m-document-charset"
+						  alist)))
+		    (car (split-string charset))))
 	      (let ((v (cdr (assoc "content-length" alist))))
 		(and v (setq v (string-to-number v)) (> v 0) v))
 	      (cdr (assoc "content-encoding" alist))
