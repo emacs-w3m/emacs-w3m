@@ -580,8 +580,8 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
 	    (function :tag "Function")))))
 
 (defcustom w3m-decoder-alist
-  (` ((gzip "gunzip" nil)
-      (bzip "bunzip2" nil)
+  (` ((gzip "gzip" ("-d"))	;; Don't use "gunzip" and "bunzip2"
+      (bzip "bzip2" ("-d"))	;; for broken OS & environment
       (deflate
 	(, (let ((file
 		  (expand-file-name
