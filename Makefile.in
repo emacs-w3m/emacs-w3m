@@ -25,8 +25,10 @@ default: Makefile
 install: default
 	@$(SHELL) ./mkinstalldirs $(lispdir);\
 	for p in ChangeLog *.el; do\
-	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
-	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	  if test $$p != w3mkwds.el; then\
+	    echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
+	    $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	  fi;\
 	done;\
 	for p in *.elc; do\
 	  if test -f "$$p"; then\
