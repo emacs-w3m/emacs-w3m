@@ -5017,7 +5017,7 @@ pocketgames.news
 wincefan.news
 
 @item @uref{http://www.palmfan.com/, PalmFan}
-palmfan.news palmfan.palmwarefan
+palmfan.news
 
 @item @uref{http://homepage1.nifty.com/akiba/plat.html, 電脳街の現場レポート}
 dennou.report

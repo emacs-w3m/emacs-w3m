@@ -4951,7 +4951,7 @@ pocketgames.news
 wincefan.news
 
 @item @uref{http://www.palmfan.com/, PalmFan}
-palmfan.news palmfan.palmwarefan
+palmfan.news
 
 @item @uref{http://homepage1.nifty.com/akiba/plat.html, Report of Electrical Stores Street} (in Japanese)
 dennou.report

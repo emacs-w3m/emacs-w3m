@@ -34,7 +34,8 @@
 (defvar shimbun-palmfan-coding-system 'japanese-shift-jis-mac)
 (defconst shimbun-palmfan-group-path-alist
   '(("news" . "")
-    ("palmwarefan" . "PWF/")
+    ;; Revival day?
+    ;; ("palmwarefan" . "PWF/")
     ;; not yet
     ;;("nm502i" . "cgi/tnote.cgi?book=book2")
     ;;("hotsync" . "cgi/tnote.cgi?book=book3")

@@ -1,3 +1,8 @@
+2005-03-09  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-group-path-alist):
+	Comment out `palmwarefan'.
+
 2005-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-zeit-de.el (shimbun-rss-build-message-id): Make it
