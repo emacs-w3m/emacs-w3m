@@ -48,9 +48,7 @@
         ]&fZ5xtt1Ynu6V;Cv(@BcZUf9IV$($6TZ`L)$,cegh`b:Uwy`8}#D
         b-kyCsr_UMRz=,U|>-:&`05lXB4(;h{[&~={Imb-az7&U5?|&X_8c
         ;#'L|f.P,]|\\50pgSVw_}byL+%m{TrS[\"Ew;dbskaBL[ipk2m4V")))
-
-(luna-define-method shimbun-article-expiration-days ((shimbun shimbun-wired))
-  7)
+(defvar shimbun-wired-expiration-days 7)
 
 (luna-define-method shimbun-get-group-header-alist ((shimbun shimbun-wired))
   (let ((group-header-alist (mapcar (lambda (g) (cons g nil))

@@ -48,13 +48,12 @@
         gW5)Q]N{MmnL]suPpL|gFjV{S|]a-:)\\FR7GRf9uL:ue5_=;h{V%@()={u
         Td@l?eXBppF%`6W%;h`#]2q+f*81n$Bh|t")))
 
+(defvar shimbun-asahi-expiration-days 7)
+
 (luna-define-method shimbun-index-url ((shimbun shimbun-asahi))
   (format "%s%s/update/list.html"
 	  (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun)))
-
-(luna-define-method shimbun-article-expiration-days ((shimbun shimbun-asahi))
-  7)
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-asahi))
   (when (search-forward "\n<!-- Start of past -->\n" nil t)

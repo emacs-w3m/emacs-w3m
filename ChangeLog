@@ -1,6 +1,39 @@
 2001-06-06  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* shimbun/sb-yahoo.el (shimbun-yahoo-expiration-days): New variable.
+	* shimbun/sb-zdnet.el (shimbun-zdnet-expiration-days): New variable.
+	(shimbun-article-expiration-days): Removed.
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-article-expiration-days):
+	New variable.
+	(shimbun-article-expiration-days): Removed.
+	* shimbun/sb-wired.el (shimbun-wired-expiration-days):
+	New variable.
+	(shimbun-article-expiration-days): Removed.
+	* shimbun/sb-sponichi.el (shimbun-sponichi-expiration-days):
+	New variable.
+	(shimbun-article-expiration-days): Removed.
+	* shimbun/sb-nikkei.el (shimbun-nikkei-expiration-days):
+	New variable.
+	(shimbun-article-expiration-days): Removed.
+	* shimbun/sb-mainichi.el (shimbun-mainichi-expiration-days):
+	New variable.
+	(shimbun-article-expiration-days): Removed.
+	* shimbun/sb-impress.el (shimbun-impress-expiration-days):
+	New variable.
+	(shimbun-article-expiration-days): Removed.
+	* shimbun/sb-cnet.el (shimbun-cnet-expiration-days): New variable.
+	(shimbun-article-expiration-days): Removed.
+
+2001-06-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el (shimbun): Added new slot `expiration-days'.
+	* sb-asahi.el (shimbun-asahi-article-expiration-days): New variable.
+	(shimbun-article-expiration-days): Removed.
+
+2001-06-06  Yuuichi Teranishi  <teranisi@gohome.org>
+
 	* shimbun/shimbun.el (shimbun-article-expiration-days): New method.
+
 	* sb-asahi.el (shimbun-article-expiration-days): Define as 7 days.
 	* sb-cnet.el (shimbun-article-expiration-days): Ditto.
 	* sb-impress.el (shimbun-article-expiration-days): Ditto.

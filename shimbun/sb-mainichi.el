@@ -48,16 +48,13 @@
     ("keizai" . "news/flash/keizai")
     ("kokusai" . "news/flash/kokusai")
     ("fuho"    . "news/flash/jinji")))
+(defvar shimbun-mainichi-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-mainichi))
   (concat (shimbun-url-internal shimbun)
 	  (cdr (assoc (shimbun-current-group-internal shimbun)
 		      shimbun-mainichi-group-path-alist))
 	  "/index.html"))
-
-(luna-define-method shimbun-article-expiration-days ((shimbun
-						      shimbun-mainichi))
-  7)
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-mainichi))
   (let ((case-fold-search t)

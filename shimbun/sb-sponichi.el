@@ -41,17 +41,14 @@
 				  "society" "entertainment" "horseracing"))
 (defvar shimbun-sponichi-coding-system 'shift_jis)
 (defvar shimbun-sponichi-from-address "webmaster@www.sponichi.co.jp")
-(defvar shimbun-sponichi-content-start "\n<span class=\"text\">　")
-(defvar shimbun-sponichi-content-end "\n")
+(defvar shimbun-sponichi-content-start "<!--ニュース記事ここから -->")
+(defvar shimbun-sponichi-content-end "<!--ニュース記事ここまで -->")
+(defvar shimbun-sponichi-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-sponichi))
   (format "%s%s/index.html"
 	  (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun)))
-
-(luna-define-method shimbun-article-expiration-days ((shimbun
-						      shimbun-sponichi))
-  7)
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-sponichi))
   (when (search-forward "ニュースインデックス" nil t)

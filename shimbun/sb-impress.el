@@ -46,6 +46,7 @@
      "X-Face: F3zvh@X{;Lw`hU&~@uiX9J0dwTeROiIzoSoe'Y.gU#(EqHA5K}v}2ah,QlHa[S^}5ZuTefR
  ZA[pF1_ZNlDB5D_DJzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r9wC\"6
  ebr5rj1[UJ5zDEDsfo`N7~s%;P`\\JK'#y.w^>K]E~{`wZru")))
+(defvar shimbun-impress-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-impress))
   (let ((index (or (nth 4 (assoc (shimbun-current-group-internal shimbun)
@@ -53,9 +54,6 @@
 		   "/index.htm")))
     (concat (shimbun-url-internal shimbun) "/"
 	    (shimbun-current-group-internal shimbun) index)))
-
-(luna-define-method shimbun-article-expiration-days ((shimbun shimbun-impress))
-  7)
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-impress))
   (let ((case-fold-search t)

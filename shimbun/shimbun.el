@@ -77,7 +77,8 @@
 		     (mua server current-group groups
 			  x-face x-face-alist
 			  url coding-system from-address
-			  content-start content-end use-entire-index))
+			  content-start content-end use-entire-index
+			  expiration-days))
   (luna-define-internal-accessors 'shimbun))
 
 (defvar shimbun-x-face
@@ -275,14 +276,14 @@ set this to `never' if you never want to use BBDB.")
 
 (defconst shimbun-attributes
   '(url groups coding-system from-address content-start content-end
-	x-face-alist))
+	x-face-alist expiration-days))
 
 (defun shimbun-open (server &optional mua)
   "Open a shimbun for SERVER.
 Optional MUA is a `shimbun-mua' instance."
   (require (intern (concat "sb-" server)))
   (let (url groups coding-system from-address content-start content-end
-	    x-face-alist shimbun)
+	    x-face-alist shimbun expiration-days)
     (dolist (attr shimbun-attributes)
       (set attr
 	   (symbol-value (intern-soft
@@ -296,6 +297,7 @@ Optional MUA is a `shimbun-mua' instance."
 				    :from-address from-address
 				    :content-start content-start
 				    :content-end content-end
+				    :expiration-days expiration-days
 				    :use-entire-index
 				    (if mua
 					(shimbun-mua-use-entire-index mua))
@@ -352,9 +354,10 @@ Optional MUA is a `shimbun-mua' instance."
   (when (shimbun-mua-internal shimbun)
     (shimbun-mua-search-id (shimbun-mua-internal shimbun) id)))
 
-(luna-define-generic shimbun-article-expiration-days (shimbun)
+(defun shimbun-article-expiration-days (shimbun)
   "Return an expiration day number of SHIMBUN.
-Return nil when articles are not expired.")
+Return nil when articles are not expired."
+  (shimbun-expiration-days-internal shimbun))
 
 (luna-define-generic shimbun-article (shimbun header &optional outbuf)
   "Retrieve a SHIMBUN article which corresponds to HEADER to the OUTBUF.

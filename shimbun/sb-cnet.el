@@ -45,12 +45,10 @@
        "X-Face: 0p7.+XId>z%:!$ahe?x%+AEm37Abvn]n*GGh+>v=;[3`a{1l
         qO[$,~3C3xU_ri>[JwJ!9l0~Y`b*eXAQ:*q=bBI_=ro*?]4:
         |n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
+(defvar shimbun-cnet-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-cnet))
   (format "%s/News/Oneweek/" (shimbun-url-internal shimbun)))
-
-(luna-define-method shimbun-article-expiration-days ((shimbun shimbun-cnet))
-  7)
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-cnet))
   (let ((case-fold-search t) headers)

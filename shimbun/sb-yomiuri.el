@@ -51,14 +51,13 @@
     ("kokusai" . "05")
     ("fuho"    . "zz")))
 
+(defvar shimbun-yomiuri-expiration-days 7)
+
 (luna-define-method shimbun-index-url ((shimbun shimbun-yomiuri))
   (concat (shimbun-url-internal shimbun)
 	  (cdr (assoc (shimbun-current-group-internal shimbun)
 		      shimbun-yomiuri-group-path-alist))
 	  "/index.htm"))
-
-(luna-define-method shimbun-article-expiration-days ((shimbun shimbun-yomiuri))
-  7)
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-yomiuri))
   (let ((case-fold-search t)
