@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -78,6 +78,7 @@
 (eval-and-compile
   (cond ((= emacs-major-version 19)
 	 (autoload 'cancel-timer "timer")
+	 (autoload 'regexp-opt "regexp-opt")
 	 (require 'custom))))
 
 

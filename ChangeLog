@@ -1,3 +1,12 @@
+2005-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* doc/ptexinfmt.el (texinfo-multitable-widths): Reverse the logic
+	that shows whether it is broken.
+
+	* w3m-util.el: Autoload regexp-opt for Emacs 19.
+
+	* w3mhack.el (w3mhack-makeinfo): Load poe for Emacs 19.
+
 2005-02-24  Romain Francoise  <romain@orebokech.com>
 
 	* w3m.el (w3m-lynx-like-map): Bind [follow-link] so as to make

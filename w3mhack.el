@@ -1005,6 +1005,10 @@ NOTE: This function must be called from the top directory."
     ;; we need to force it to load the correct one.
     (when texinfmt
       (push (file-name-directory texinfmt) load-path))
+    ;; ptexinfmt.el uses `with-temp-buffer' which is not available in
+    ;; Emacs 19.
+    (unless (fboundp 'with-temp-buffer)
+      (require 'poe))
     (load "doc/ptexinfmt.el" nil t t)
     (cd "doc")
     (if (and (string-match "-ja\\.texi\\'" file)
