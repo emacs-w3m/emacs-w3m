@@ -3428,7 +3428,7 @@ It replaces the faces on the arrived anchors from `w3m-anchor-face' to
   "Return a url that indicates the thread page in Gmane.
 This function works only when the cursor stays in the References header
 or the Message-ID header, otherwise returns nil.  That it returns an
-invalid url if Gmane doesn't handle the group is natural."
+invalid url if Gmane doesn't handle the group cannot be helped."
   (save-excursion
     (let ((fmt "http://news.gmane.org/group/thread=%s/force_load=t")
 	  (start (point))
