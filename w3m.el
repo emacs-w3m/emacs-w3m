@@ -3285,11 +3285,13 @@ If this function is called by redirection, ORIG-URL must be set."
 	(when (and temp-file (file-exists-p temp-file))
 	  (delete-file temp-file))
 	(when attributes
-	  (or no-decode
-	      w3m-current-redirect
-	      (w3m-decode-encoded-contents (nth 3 attributes))
-	      (error "Can't decode encoded contents: %s" url))
-	  (car attributes))))))
+	  (if (or no-decode
+		  w3m-current-redirect
+		  (w3m-decode-encoded-contents (nth 3 attributes)))
+	      (car attributes)
+	    (ding)
+	    (w3m-message "Can't decode encoded contents: %s" url)
+	    nil))))))
 
 (defsubst w3m-about-retrieve (url &optional no-decode no-cache
 				  post-data referer handler)

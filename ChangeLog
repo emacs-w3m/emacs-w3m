@@ -1,8 +1,23 @@
+2002-08-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-retrieve-1): Do not make error but return nil,
+	even if decoding is failed.
+
+2002-08-08  Nishimoto Masaki  <nishimoto@gaju.org>
+
+	* w3m-proc.el (w3m-process-with-environment): Copy
+	`process-environment' before `getenv' is called, in order to avoid
+	putting side effects to environment variables.
+
+2002-08-07  Takenobu Sugiyama  <sugiyama@ae.advantest.co.jp>
+
+	* shimbun/sb-nikkansports.el (shimbun-nikkansports-groups-alist):
+	Follow the change of the Web site.
+
 2002-08-02  Hiroya Murata  <hiroya@use-ebisu.co.jp>
 
-	* shimbun/sb-asahi.el
-	(shimbun-asahi-get-headers-in-the-list-page): Follow the change of
-	the Web site.
+	* shimbun/sb-asahi.el (shimbun-asahi-get-headers-in-the-list-page):
+	Follow the change of the Web site.
 
 2002-08-01  TOMITA Yoshinori  <yoshint@flab.fujitsu.co.jp>
 
