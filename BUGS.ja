@@ -1,6 +1,6 @@
 $Date$
 
-■ TODO
+■ TODOs stopping release
 
    --> w3m-prepare-content() / w3m-filter() の整理 [emacs-w3m:05526]
 
@@ -8,11 +8,15 @@ $Date$
 
    --> 各種 form 用の face の変更 [emacs-w3m:05490]
 
-   --> shimbun
-       --> 配布パッケージの分割 [emacs-w3m:05607]
-       --> 利用方法に関する留意点の文書を整備
+   --> shimbun の利用方法に関する留意点の文書を整備
 
    --> xml.el のインストーラの完成 [emacs-w3m:05353]
+
+
+
+■ TODOs
+
+   --> shimbun の配布パッケージの分割 [emacs-w3m:05607]
 
    --> w3m-copy-buffer() で，history に格納されている buffer-local
        properties (form data などを含む) を捨てずにコピーする．--ky
