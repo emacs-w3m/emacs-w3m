@@ -524,7 +524,8 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 ;;;###autoload
 (defun mew-shimbun-re-retrieve (&optional args)
   "Re-retrieve this message.
-If called with '\\[universal-argument]', re-retrieve messages marked with '@'."
+If called with '\\[universal-argument]', re-retrieve messages marked with
+'mew-shimbun-mark-re-retrieve'."
   (interactive "P")
   (when (mew-summary-exclusive-p)
     (mew-summary-only

@@ -2,6 +2,7 @@
 
 	* shimbun/mew-shimbun.el (mew-shimbun-goto-folder): Treat folder
 	surely; inlude last `/' of folder name.
+	(mew-shimbun-re-retrieve): Doc fix.
 
 2005-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
