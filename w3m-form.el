@@ -1164,7 +1164,7 @@ character."
 			     (goto-char (abs (w3m-compare-strings
 					      before 0 (length before)
 					      value 0 (length value))))
-			     (y-or-n-p "Exist the editted text of this form. Use this? ")))
+			     (y-or-n-p "The saved text for this form exists. Use it? ")))
 		  (setq value nil)))
 	    (when (or (and quit-flag before)
 		      value)

@@ -1,3 +1,8 @@
+2005-01-10  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (w3m-form-input-textarea): Modify string of the
+	inquiry.
+
 2005-01-08  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
 
 	* shimbun/sb-japantimes.el (shimbun-japantimes-content-start):
