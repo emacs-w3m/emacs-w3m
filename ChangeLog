@@ -1,5 +1,23 @@
 2001-03-04  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
+	* w3m.el (w3m-delete-duplicated-empty-lines): New variable.
+	(w3m-search-engine-alist): New variable.
+	(w3m-default-search-engine): New variable.
+	(w3m-horizontal-scroll-columns): New variable.
+	(w3m-fontify): Change regexp to allow non-double-quoted string for
+	href attribute value of anchor tag. Remove duplicated empty lines
+	for compact view.
+	(w3m-mode-map): Add keymap "<" and ">" to scroll horizontaly.
+	(w3m-mode): Truncate lines.
+	(w3m-scroll-left): New interactive function.
+	(w3m-scroll-right): New interactive function.
+	(w3m-escape-query-string): New function.
+	(w3m-do-search): New function.
+	(w3m-search): New interactive function for searching word with
+	various search engine.
+
+2001-03-04  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
 	* w3m.el: Patch from Keisuke Nishida <kxn30@po.cwru.edu>.
 	(w3m-print-this-url): Do not save URL, print only.
 	(w3m-save-this-url): New function. Print and save URL under cursor.
