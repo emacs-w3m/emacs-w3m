@@ -1,3 +1,8 @@
+2001-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-encapsulate-images): Renamed from
+	`shimbun-encapsulate-article'.
+
 2001-06-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-kantei.el (shimbun-kantei-x-face-alist): New variable.
