@@ -1,3 +1,7 @@
+2001-11-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-search.el: Require `cl' when compiling.
+
 2001-11-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Changes to avoid that multi async processes are started
