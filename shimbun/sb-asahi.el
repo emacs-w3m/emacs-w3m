@@ -302,34 +302,30 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 		      (and (setq num (nth 8 numbers))
 			   (match-beginning num)
 			   (match-string num))))
-      (push (shimbun-make-header
+      (push (shimbun-create-header
 	     ;; number
 	     0
 	     ;; subject
-	     (shimbun-mime-encode-string
-	      (cond (kansai-special
-		     (concat "[" kansai-special "] "
-			     (save-match-data
-			       (shimbun-replace-in-string
-				(match-string (nth 3 numbers))
-				"<[^<>]+>" ""))))
-		    ((and (string-equal group "international")
-			  (string-equal (substring serial
-						   0 (min 7 (length serial)))
-					"jinmin."))
-		     (concat "[人民日報] " (match-string (nth 3 numbers))))
-		    ((and (setq num (nth 7 numbers))
-			  (match-beginning num))
-		     (concat "[" (match-string num) "] "
-			     (match-string (nth 3 numbers))))
-		    ((and (setq num (nth 8 numbers))
-			  (match-beginning num))
-		     (concat "[" (match-string num) "] "
-			     (match-string (nth 3 numbers))))
-		    ((member group '("editorial" "tenjin"))
-		     (concat jname (format " (%d/%d)" month day)))
-		    (t
-		     (match-string (nth 3 numbers)))))
+	     (cond (kansai-special
+		    (concat "[" kansai-special "] "
+			    (match-string (nth 3 numbers))))
+		   ((and (string-equal group "international")
+			 (string-equal (substring serial
+						  0 (min 7 (length serial)))
+				       "jinmin."))
+		    (concat "[人民日報] " (match-string (nth 3 numbers))))
+		   ((and (setq num (nth 7 numbers))
+			 (match-beginning num))
+		    (concat "[" (match-string num) "] "
+			    (match-string (nth 3 numbers))))
+		   ((and (setq num (nth 8 numbers))
+			 (match-beginning num))
+		    (concat "[" (match-string num) "] "
+			    (match-string (nth 3 numbers))))
+		   ((member group '("editorial" "tenjin"))
+		    (concat jname (format " (%d/%d)" month day)))
+		   (t
+		    (match-string (nth 3 numbers))))
 	     ;; from
 	     from
 	     ;; date

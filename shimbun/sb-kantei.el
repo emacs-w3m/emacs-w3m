@@ -83,7 +83,7 @@ x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
 	    "\
 <A HREF=\"\\([^\">]+\\)\">\
 \\(\
-【\\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\)】\
+\【\\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\)】\
 \\|\
 \\[\\([01][0-9]\\)/\\([0-3][0-9]\\)/\\(20[0-9][0-9]\\)\\]\
 \\)\
@@ -97,9 +97,9 @@ x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
 		       year month mday
 		       (shimbun-current-group-internal shimbun))
 	    subject (match-string 9))
-      (push (shimbun-make-header
+      (push (shimbun-create-header
 	     0
-	     (shimbun-mime-encode-string (or subject ""))
+	     (or subject "")
 	     (shimbun-from-address shimbun)
 	     (shimbun-make-date-string year month mday)
 	     id "" 0 0

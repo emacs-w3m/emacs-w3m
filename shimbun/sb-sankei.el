@@ -113,11 +113,11 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
 			(1+ cyear))
 		       (t
 			cyear)))
-      (push (shimbun-make-header
+      (push (shimbun-create-header
 	     ;; number
 	     0
 	     ;; subject
-	     (shimbun-mime-encode-string (match-string 3))
+	     (match-string 3)
 	     ;; from
 	     from
 	     ;; date
