@@ -1,3 +1,16 @@
+2001-05-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-dtree.el (w3m-dtree-directory-depth): New variable.
+	(w3m-dtree-stop-strings): Ditto.
+	(w3m-dtree-create-sub): Add new arugument 'depth'. Stop recursive
+	call, if directory-depth over the 'w3m-dtree-directory-depth'.
+
+2001-05-25  NAKAGAWA Takayuki <tknakaga@kanagawa.hitachi.co.jp>
+
+	* w3m-dtree.el (w3m-dtree-create-sub): To avoid infinite recusion,
+	directory-files now returns absolute file names and
+	expand-file-name is omitted.
+
 2001-05-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-about-history): Get the values of `w3m-current-url'
