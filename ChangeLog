@@ -4,7 +4,7 @@
 	(rfc2368-parse-mailto-url):
 	(w3m-form-parse-region):
 	(w3m-fontify-forms): Bind them only at the compile-time as
-	autoload'ed functions to avoid compile warnings.
+	autoload'ed functions to avoid byte-compile warnings.
 
 	* w3mhack.el: Byte optimize `truncate-string' for replacing with
 	`truncate-string-to-width' if it is bound.
