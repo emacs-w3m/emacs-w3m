@@ -1,3 +1,8 @@
+2001-12-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Release 1.2.2.
+	(w3m-type): Follow the new official release of w3m.
+
 2001-11-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el: Marge main trunk fix of `charset is void on w3mmee and
