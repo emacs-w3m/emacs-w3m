@@ -116,13 +116,18 @@ encoding=shift-jis"
 	 "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=2"
 	 euc-japan)
 	("eiei"
-	 "http://www.dictionary.com/cgi-bin/dict.pl?term=%s&r=67")))
+	 "http://www.dictionary.com/cgi-bin/dict.pl?term=%s&r=67")
+	("amazon-ja"
+	 "http://www.amazon.co.jp/exec/obidos/search-handle-form/250-7496892-7797857"
+	 shift_jis
+	 "url=index=blended&search-type=quick-search&field-keywords=%s")))
   "*An alist of search engines.
-Each element looks like (ENGINE ACTION CODING)
+Each element looks like (ENGINE ACTION CODING POST-DATA)
 ENGINE is a string, the name of the search engine.
 ACTION is a string, the URL that performs a search.
 ACTION must contain a \"%s\", which is substituted by a query string.
 CODING is optional value which is coding system for query string.
+POST-DATA is optional value which is a string for POST method search engine.
 If omitted, `w3m-default-coding-system' is used.
 "
   :group 'w3m
@@ -130,7 +135,8 @@ If omitted, `w3m-default-coding-system' is used.
 	  (group :indent 2
 		 (string :format "Engine: %v\n" :size 0)
 		 (string :format "       Action: %v\n" :size 0)
-		 (coding-system :format "%t: %v\n" :size 0))))
+		 (coding-system :format "%t: %v\n" :size 0)
+		 (sexp :format "     PostData: %v\n"))))
 
 (defcustom w3m-search-default-engine "google"
   "*Name of the default search engine.
@@ -200,9 +206,14 @@ and deactivate the mark."
   (unless (string= query "")
     (let ((info (assoc search-engine w3m-search-engine-alist)))
       (if info
-	  (w3m-goto-url
-	   (format (cadr info)
-		   (w3m-search-escape-query-string query (caddr info))))
+	  (let ((query-string (w3m-search-escape-query-string query
+							      (caddr info)))
+		(post-data (cadddr info)))
+	    (w3m-goto-url
+	     (format (cadr info) query-string)
+	     post-data
+	     nil
+	     (and post-data (format post-data query-string))))
 	(error "Unknown search engine: %s" search-engine)))))
 
 ;;;###autoload
