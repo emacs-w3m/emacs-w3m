@@ -3467,25 +3467,32 @@ type as a string argument, when retrieve is complete."
       (if (search-forward "-->" nil t)
 	  (delete-region beg (point))))))
 
-(defun w3m-check-link-tags ()
-  "Process <LINK> tags in the current buffer."
-  (let ((case-fold-search t))
+(defun w3m-check-header-tags ()
+  "Process header tags (<LINK>,<BASE>) in the current buffer."
+  (let ((case-fold-search t)
+	tag)
     (goto-char (point-min))
     (when (re-search-forward "</head\\([ \t\r\f\n][^>]*\\)?>" nil t)
       (save-restriction
 	(narrow-to-region (point-min) (point))
 	(goto-char (point-min))
-	(while (re-search-forward "<link[ \t\r\f\n]+" nil t)
-	  (w3m-parse-attributes ((rel :case-ignore) href type)
-	    (when rel
-	      (setq rel (split-string rel))
-	      (cond
-	       ((member "icon" rel) (setq w3m-icon-data (cons href type)))
-	       ((member "next" rel) (setq w3m-next-url href))
-	       ((or (member "prev" rel) (member "previous" rel))
-		(setq w3m-previous-url href))
-	       ((member "start" rel) (setq w3m-start-url href))
-	       ((member "contents" rel) (setq w3m-contents-url href))))))))))
+	(while (re-search-forward "<\\(link\\|base\\)[ \t\r\f\n]+" nil t)
+	  (setq tag (match-string 1))
+	  (cond
+	   ((string= tag "link")
+	    (w3m-parse-attributes ((rel :case-ignore) href type)
+	      (when rel
+		(setq rel (split-string rel))
+		(cond
+		 ((member "icon" rel) (setq w3m-icon-data (cons href type)))
+		 ((member "next" rel) (setq w3m-next-url href))
+		 ((or (member "prev" rel) (member "previous" rel))
+		  (setq w3m-previous-url href))
+		 ((member "start" rel) (setq w3m-start-url href))
+		 ((member "contents" rel) (setq w3m-contents-url href))))))
+	   ((string= tag "base")
+	    (w3m-parse-attributes (href)
+	      (setq w3m-current-base-url href)))))))))
 
 (defun w3m-remove-meta-charset-tags ()
   (let ((case-fold-search t))
@@ -3563,7 +3570,7 @@ type as a string argument, when retrieve is complete."
   (w3m-message "Rendering...")
   (when w3m-use-filter (w3m-filter w3m-current-url))
   (w3m-remove-comments)
-  (w3m-check-link-tags)
+  (w3m-check-header-tags)
   (w3m-remove-meta-charset-tags)
   (if binary-buffer
       (progn
@@ -3668,7 +3675,6 @@ argument.  Otherwise, it will be called with nil."
 (defun w3m-prepare-text-content (url type output-buffer
 				     &optional content-charset)
   (setq w3m-current-url (w3m-real-url url)
-	w3m-current-base-url (w3m-base-url url)
 	w3m-current-title
 	(if (string= "text/html" type)
 	    (w3m-rendering-unibyte-buffer url content-charset)

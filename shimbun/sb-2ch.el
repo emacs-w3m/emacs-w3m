@@ -104,7 +104,8 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
 		(insert body)
 		(goto-char (point-min))
 		(when (or (re-search-forward "<a href=\\([0-9]+\\)" nil t)
-			  (re-search-forward ">>?\\([0-9]+\\)[^0-9]" nil t)
+			  (re-search-forward ">>\\([0-9]+\\)[^0-9]" nil t)
+			  (re-search-forward "[^a-z]>\\([0-9]+\\)[^0-9]" nil t)
 			  (re-search-forward "＞\\([0-9]+\\)[^0-9]" nil t)
 			  (re-search-forward "&gt;\\([0-9]+\\)[^0-9]" nil t))
 		  (setq references
@@ -173,7 +174,8 @@ Unfortunately, the url name format might have been changed in 2ch"))
 					 url
 					 "/" (car indices) "/")
 					'reload 'binary)
-	    (error "Retrieve failed: %s" url))
+	    (error "Retrieve failed: %s"
+		   (concat url "/" (car indices) "/")))
 	  (set-buffer-multibyte t)
 	  (decode-coding-region (point-min) (point-max)
 				(shimbun-coding-system-internal shimbun))
