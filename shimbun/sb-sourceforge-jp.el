@@ -40,22 +40,21 @@
     ("iiimf-skk-users-ja" . "iiimf-skk-users.ja")
     ("iiimf-skk-users-en" . "iiimf-skk-users.en")
     ("iiimf-skk-cvs-commit" . "iiimf-skk-cvs-commit"))
-  "*Mailing lists which is serverd by SourceForge-JP."
+  "*List of mailing lists serverd by SourceForge-JP."
   :group 'shimbun
   :type '(repeat
 	  (cons
-	   (string :tag "Mailing List Name")
+	   (string :tag "Group Name")
 	   (choice
-	    (string :tag "Last Fragment of URI")
-	    (const :tag "Last fragment of URI is same to the mailing list name"
-		   nil)))))
+	    (const :tag "Group Name and Mailing List Name are the same" nil)
+	    (string :tag "Mailing List Name")))))
 
 (defconst shimbun-sourceforge-jp-base-url
   "http://lists.sourceforge.jp/pipermail/"
-  "Base URL of mailing list archives served by SourceForge-JP")
+  "Base URL of archives served by SourceForge-JP.")
 
 (defconst shimbun-sourceforge-jp-coding-system 'euc-japan
-  "The coding system used for archives of SourceForge-JP.")
+  "Coding system used for archives of SourceForge-JP.")
 
 (luna-define-method shimbun-groups ((shimbun shimbun-sourceforge-jp))
   (mapcar 'car shimbun-sourceforge-jp-mailing-lists))
