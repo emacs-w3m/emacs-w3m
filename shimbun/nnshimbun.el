@@ -86,14 +86,17 @@
   "*If non-nil, nnshimbun will keep read articles for later re-retrieval.
 If it is a number N, then nnshimbun will only keep the last N articles
 read.  If it is neither nil nor a number, nnshimbun will keep all read
-articles.  This is not a good idea.
+articles.  That is not a good idea.
 
 Note that smaller values may spoil the `prefetch-articles' feature,
 since nnshimbun uses the backlog to keep the prefetched articles."
   :group 'nnshimbun
-  :type '(choice (const :tag "off" nil)
-		 integer
-		 (sexp :format "all"
+  :type '(choice (const :tag "Off" nil)
+		 (integer :format "%t: %v\n"
+			  :size 0)
+		 (sexp :format "All\n"
+		       :match (lambda (widget value)
+				(and value (not (numberp value))))
 		       :value t)))
 
 (defcustom nnshimbun-keep-unparsable-dated-articles t "\
@@ -133,7 +136,7 @@ since nnshimbun uses the backlog to keep the prefetched articles."
 				  :value never
 				  (const never)
 				  (const immediate)
-				  (number :tag "days"))))
+				  (integer :tag "days"))))
 	 (repeat :inline t :tag "Others"
 		 (list :inline t :format "%v"
 		       (symbol :tag "Keyword")
