@@ -1,5 +1,18 @@
 2001-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-goto-url): Use `set-text-properties' to remove all
+	text props from url string.
+	(w3m-exec): Use `add-text-properties' instead of
+	`set-text-properties'.
+	(w3m-w3m-dump-source, w3m-w3m-dump-head-source): Removed not-used
+	bound variable `w3m-w3m-retrieve-length'.
+	(w3m-cache-request-contents): Removed not-used bound variables
+	`type' and `charset'.
+	(w3m-entity-value): Removed not-used bound variable `sym'.
+	(w3m-arrived-add): Use `w3m-arrived-add-1'; don't funcall itself
+	recursively to get rid of redundancy.
+	(w3m-arrived-add-1): New macro.
+
 	* w3mhack.el (XEmacs): Byte-optimize `set-text-properties' to make
 	the program run a little bit faster.
 
