@@ -114,11 +114,11 @@
       (setq name (match-string 1)
 	    address (match-string 3))
       ;; Yoshiki.Ohshima ＠ acm.org
-      (when (string-match " \\(＠\\|at\\) " name)
+      (when (string-match " \\(＠\\|at\\|w\\|a\\|en\\) " name)
 	(setq name (concat (substring name 0 (match-beginning 0))
 			   "@"
 			   (substring name (match-end 0)))))
-      (when (string-match " \\(＠\\|at\\) " address)
+      (when (string-match " \\(＠\\|at\\|w\\|a\\|en\\) " address)
 	(setq address (concat (substring address 0 (match-beginning 0))
 			      "@"
 			      (substring address (match-end 0)))))
@@ -149,8 +149,8 @@
 
 ;; latin format pattern
 ;; 1.en: Fri Nov 19 19:38:56 UTC 2004
-;; 2.pl: Czw, 1 Sty 2004, 12:17:45 UTC
-
+;; 2a.pl: Czw, 1 Sty 2004, 12:17:45 UTC
+;; 2b.ia: Dom 11 Gen 2004 15:50:50 UTC
 (defun shimbun-wikimedia-en-date-decode (date-string)
   "Decode date function for English (default)"
   (shimbun-wikimedia-latin-date-decode date-string
@@ -200,23 +200,19 @@
 
 (defun shimbun-wikimedia-no-date-decode (date-string)
   "Decode date function for no"
-  ;; Tor 7. Okt 2004 09:17:47 UTC
   (shimbun-wikimedia-latin-date-decode date-string
 				       '("Jan" "Feb" "Mar" "Apr" "Mai" "Jun" "Jul" "Aug" "Sep" "Okt" "Nov" "Des")))
 
 (defun shimbun-wikimedia-pl-date-decode (date-string)
   "Decode date function for pl"
-  ;; Czw, 1 Sty 2004, 12:17:45 UTC
   (shimbun-wikimedia-latin-date-decode date-string
 				       '("Sty" "Lut" "Mar" "Kwi" "Maj" "Cze" "Lip" "Sie" "Wrz" "Paź" "Lis" "Gru")))
 
 (defvar shimbun-wikimedia-date-decode-rule-alist
   '(;; Regex pattern(year month day time zone)
-    ("\\([^ 0-9]+\\) *\\([^ 0-9]+\\) *\\([0-9][0-9]*\\) *\\([:0-9]+\\) *\\([A-Z]+\\) *\\([0-9][0-9][0-9][0-9]\\)" .
+    ("\\([^ ,0-9]+\\) +\\([^ ,0-9]+\\) +\\([0-9]+\\) +\\([:0-9]+\\) +\\([A-Z]+\\) +\\([0-9]+\\)" .
      (6 2 3 4 5))
-    ("\\([^ ,0-9]+\\),? *\\([0-9][0-9]*\\) *\\([^ 0-9]+\\) *\\([0-9][0-9][0-9][0-9]\\),? *\\([:0-9]+\\) *\\([A-Z]+\\)" .
-     (4 3 2 5 6))
-    ("\\([^ ,0-9]+\\) *\\([0-9][0-9]*\\)\\.? *\\([^ 0-9]+\\) *\\([0-9][0-9][0-9][0-9]\\) *\\([:0-9]+\\) *\\([A-Z]+\\)" .
+    ("\\([^ ,0-9]+\\),? +\\([0-9]+\\)\\.? +\\([^ ,0-9]+\\) +\\([0-9]+\\),? +\\([:0-9]+\\) +\\([A-Z]+\\)" .
      (4 3 2 5 6))
     ))
 
