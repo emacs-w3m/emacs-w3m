@@ -62,7 +62,7 @@ w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 	(parent (shimbun-url-internal shimbun))
 	(date "")
 	(case-fold-search t)
-	basename headers)
+	prefix basename headers)
     (goto-char (point-min))
     (when (re-search-forward "<!-- timeStamp -->\
 \\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\) \
@@ -75,10 +75,11 @@ w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 				      (string-to-number (match-string 3))
 				      (match-string 4)))
       (goto-char (point-min)))
-    (while (re-search-forward
-	    "<!-- aLink --><\\(!-- \\)?a href=\"\\(.+\\)\\.html"
-	    nil t)
-      (setq basename (match-string 2))
+    (while (re-search-forward "<!-- aLink --><\\(!-- \\)?\
+a href=\"\\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\\(.+\\)\\.html"
+			      nil t)
+      (setq prefix (match-string 2)
+	    basename (match-string 3))
       (when (re-search-forward
 	     "<!-- headline -->\\(.+\\)<!-- /headline -->"
 	     (line-end-position) t)
@@ -87,11 +88,11 @@ w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 	       (shimbun-mime-encode-string (match-string 1))
 	       from
 	       date
-	       (concat "<" basename "%" group ".nikkei>")
+	       (concat "<" basename "%" group ".nikkei.co.jp>")
 	       ""
 	       0
 	       0
-	       (concat parent group "/" basename ".html"))
+	       (concat parent group "/" prefix basename ".html"))
 	      headers)))
     headers))
 
