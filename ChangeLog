@@ -4,7 +4,7 @@
 	`w3m-cache-underline-faces'.
 	(w3m-toggle-inline-images): Remove or restore the underlined faces.
 	(w3m-cache-underline-faces): New buffer-local variable used to
-	detach underlined faces from a buffer.
+	keep the detached underlined faces from a buffer.
 
 	* w3m-xmas.el (w3m-insert-image): Detach an underlined face in
 	`w3m-cache-underline-faces'.
