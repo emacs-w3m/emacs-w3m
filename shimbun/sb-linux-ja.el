@@ -27,8 +27,9 @@
 ;;; Acknowledgment:
 
 ;; I would like to thank Hidetaka Iwai <tyuyu@bozu.sytes.net>, who
-;; wrote sb-jlc.el.  I refered it to decide values of regular
-;; expressions in this backend.
+;; wrote sb-jlc.el <http://bozu.sytes.net/~tyuyu/diary/sb-jlc.el>.
+;; I refered it to decide values of regular expressions in this
+;; backend.
 
 ;;; Code:
 
