@@ -2854,7 +2854,7 @@ this function returns t.  Otherwise, returns nil."
      ((string-match "^#" url)
       (concat base url))
      ;; URL has absolute spec.
-     ((string-match "^[^:/]+:" url)
+     ((string-match "^[^:/?]+:" url)
       url)
      ((string-match "^/" url)
       (if (string-match "^\\([^:/]+://[^/]*\\)/" base)
@@ -2865,7 +2865,7 @@ this function returns t.  Otherwise, returns nil."
 	(if (string-match "^\\([^:]+://[^/]*\\)/" base)
 	    (setq server (match-string 1 base)
 		  base (substring base (match-end 1))))
-	(setq path (expand-file-name url (file-name-directory base)))
+	(setq path (concat (file-name-directory base) url))
 	;; remove drive (for Win32 platform)
 	(if (string-match "^.:" path)
 	    (setq path (substring path (match-end 0))))

@@ -1,3 +1,8 @@
+2001-09-10  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-expand-url): Changed regexp for detecting absolute spec;
+	Don't use `expand-file-name'.
+
 2001-09-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-ucs.el (w3m-euc-japan-encoder): Simplified.
