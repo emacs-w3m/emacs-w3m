@@ -59,7 +59,7 @@
 	 (url (shimbun-index-url shimbun))
 	 (count -1)
 	 (from "pc3s-nnb@asahi-net.or.jp")
-	 idbase headers)
+	 month day subject date id start end body headers)
     (with-temp-buffer
       (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload 'binary)
       (set-buffer-multibyte t)
