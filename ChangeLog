@@ -1,3 +1,9 @@
+2001-05-22  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-mime-text/html-w3m): Fix condition when
+	mew-mime-text/html() call, again. Avoid byte-compile warning when
+	compiling.
+	
 2001-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-make-html-contents): Define it before

@@ -92,8 +92,8 @@ This variable effected only XEmacs or Emacs 21."
       (setq end (nth 2 args))
       (setq params (nth 3 args))
       (setq execute (nth 4 args)))
-    (if (and execute (<= end begin))
-	(mew-mime-text/html cache begin end params execute)
+    (if (and cache (or execute (<= end begin)))
+	(apply 'mew-mime-text/html (list cache begin end params execute))
       (mew-elet
        (setq charset (mew-syntax-get-param params "charset"))
        (if charset
