@@ -2185,8 +2185,9 @@ or prefix ARG columns."
     (w3m-goto-url w3m-current-url 'reload)))
 
 
+;;;###autoload
 (defun w3m (url &optional args)
-  "*Interface for w3m on Emacs."
+  "Interface for w3m on Emacs."
   (interactive
    (list (or (w3m-alive-p)
 	     (w3m-input-url))))

@@ -1,5 +1,7 @@
 2001-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m): Added autoload cookie.
+
 	* README: Update for `install-package' and `install-icons'.
 	* README.ja: Ditto.
 
