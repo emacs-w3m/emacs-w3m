@@ -1,3 +1,8 @@
+2004-02-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-examine-modules): Exclude w3m-e22.el except
+	for Emacs 22.
+
 2004-01-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-edit-function-alist): New option.
