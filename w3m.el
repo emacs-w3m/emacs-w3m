@@ -124,15 +124,14 @@
   "Fontify this buffer."
   (let ((case-fold-search t))
     (run-hooks 'w3m-fontify-before-hook)
-    ;; Decode escaped characters.
+    ;; Fontify bold characters.
     (goto-char (point-min))
-    (while (re-search-forward "&\\(\\(nbsp\\)\\|\\(gt\\)\\|\\(lt\\)\\|\\(amp\\)\\|\\(quot\\)\\|\\(apos\\)\\);" nil t)
-      (delete-region (match-beginning 0) (match-end 0))
-      (insert (if (match-beginning 2) " "
-		(if (match-beginning 3) ">"
-		  (if (match-beginning 4) "<"
-		    (if (match-beginning 5) "&"
-		      (if (match-beginning 6) "\"" "'")))))))
+    (while (search-forward "<b>" nil t)
+      (let ((start (match-beginning 0)))
+	(delete-region start (match-end 0))
+	(when (search-forward "</b>" nil t)
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (put-text-property start (match-beginning 0) 'face 'bold))))
     ;; Fontify anchors.
     (goto-char (point-min))
     (while (re-search-forward
@@ -161,18 +160,19 @@
 	  (delete-region (setq end (match-beginning 0)) (match-end 0))
 	  (put-text-property start end 'face 'w3m-image-face)
 	  (put-text-property start end 'w3m-image src))))
-    ;; Fontify bold characters.
-    (goto-char (point-min))
-    (while (search-forward "<b>" nil t)
-      (let ((start (match-beginning 0)))
-	(delete-region start (match-end 0))
-	(when (search-forward "</b>" nil t)
-	  (delete-region (match-beginning 0) (match-end 0))
-	  (put-text-property start (match-beginning 0) 'face 'bold))))
     ;; Remove other markups.
     (goto-char (point-min))
-    (while (re-search-forward "<[^>]*>" nil t)
+    (while (re-search-forward "</?[A-z][^>]*>" nil t)
       (delete-region (match-beginning 0) (match-end 0)))
+    ;; Decode escaped characters.
+    (goto-char (point-min))
+    (while (re-search-forward "&\\(\\(nbsp\\)\\|\\(gt\\)\\|\\(lt\\)\\|\\(amp\\)\\|\\(quot\\)\\|\\(apos\\)\\);" nil t)
+      (delete-region (match-beginning 0) (match-end 0))
+      (insert (if (match-beginning 2) " "
+		(if (match-beginning 3) ">"
+		  (if (match-beginning 4) "<"
+		    (if (match-beginning 5) "&"
+		      (if (match-beginning 6) "\"" "'")))))))
     (run-hooks 'w3m-fontify-after-hook)))
 
 
@@ -290,8 +290,8 @@
 	     (save-excursion
 	       (and buffer (set-buffer buffer))
 	       (let (buffer-read-only)
-		 (insert-buffer-substring w3m-backlog-buffer beg end)))
-	     t)))))
+		 (insert-buffer-substring w3m-backlog-buffer beg end))
+	       t))))))
 
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
@@ -318,8 +318,7 @@ If BUFFER is nil, all data is placed to the current buffer."
     (goto-char (point-min))
     (let (start title)
       (and (search-forward "<title>" nil t)
-	   (prog1 (setq start (match-beginning 0))
-	     (delete-region start (match-end 0)))
+	   (setq start (match-beginning 0))
 	   (search-forward "</title>" nil t)
 	   (setq title (buffer-substring start (match-beginning 0)))
 	   (delete-region start (match-end 0)))
