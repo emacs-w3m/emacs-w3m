@@ -2684,11 +2684,12 @@ works on Emacs.
   "text/html")
 
 (defun w3m-about-db-history (&rest args)
-  (let* ((width (- (if (< 0 w3m-fill-column)
-		       w3m-fill-column
-		     (+ (frame-width) (or w3m-fill-column -1)))
-		   26))
-	 url title time alist)
+  (let ((width (- (if (< 0 w3m-fill-column)
+		      w3m-fill-column
+		    (+ (frame-width) (or w3m-fill-column -1)))
+		  26))
+	(today (format-time-string "%Y-%m-%d" (current-time)))
+	url title time alist date)
     (when w3m-arrived-db
       (mapatoms
        (lambda (sym)
@@ -2706,7 +2707,7 @@ works on Emacs.
       (if (null alist)
 	  (insert "<h2>Nothing in DataBase.</h2>\n")
 	(insert "<table cellpadding=0>\n")
-	(insert "<tr><td><h2> Titile/URL </h2></td><td><h2>Arrived time</h2></td></tr>\n")
+	(insert "<tr><td><h2> Titile/URL </h2></td><td><h2>Time/Date</h2></td></tr>\n")
 	(while alist
 	  (setq url (car (car alist)))
 	  (setq title (w3m-arrived-title url))
@@ -2717,9 +2718,11 @@ works on Emacs.
 			  (substring url 0 width))));; only ASCII characters.
 	  (insert (format "<tr><td><a href=\"%s\">%s</a></td>" url title))
 	  (when (cdr (car alist))
-	    (insert "<td>"
-		    (format-time-string "%Y-%m-%d %T" (cdr (car alist)))
-		    "</td>"))
+	    (setq date (format-time-string "%Y-%m-%d" (cdr (car alist))))
+	    (if (and today (string= today date))
+		(setq date (format-time-string "%H:%M:%S" (cdr (car alist))))
+	      (setq today nil))
+	    (insert "<td>" date "</td>"))
 	  (insert "</tr>\n")
 	  (setq alist (cdr alist)))
 	(insert "</table>"))

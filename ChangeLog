@@ -1,3 +1,7 @@
+2001-04-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-about-db-history): Change the format on display.
+
 2001-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-om.el (w3m-icon-directory): Define it as the constant nil
