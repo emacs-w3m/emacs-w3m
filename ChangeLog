@@ -1,5 +1,9 @@
 2004-05-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-expand-url): Bind file-name-handler-alist as nil.
+
+2004-05-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-arrived-ignored-regexp): Add about:blank.
 	(w3m-history-ignored-regexp): Ditto.
 	(w3m-about-retrieve): Ditto.
