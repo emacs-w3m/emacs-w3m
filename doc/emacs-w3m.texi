@@ -1988,6 +1988,17 @@ files in the directories as well (@code{w3m-dtree}).
 
 @node Octet
 @section Viewing data in various octal form
+@findex octet-find-file
+
+(under construction)
+
+These following lines in your @file{~/.emacs} may help you to browse
+octet data files which are opened with @code{octet-find-file}.
+
+@lisp
+(add-hook 'octet-find-file-hook 'view-mode)
+(add-hook 'octet-find-file-hook 'w3m-minor-mode)
+@end lisp
 
 
 @node Customizable Variables

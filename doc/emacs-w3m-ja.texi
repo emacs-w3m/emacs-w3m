@@ -2095,6 +2095,17 @@ Namazu を使うためには、実際に検索を行う前に、検索対象となるファイルに含
 
 @node Octet
 @section application/octet-stream データを見る
+@findex octet-find-file
+
+(作成中)
+
+以下の設定を @file{~/.emacs} に書いておくと、@code{octet-find-file} でファ
+イルを開いたときに便利かも知れません。
+
+@lisp
+(add-hook 'octet-find-file-hook 'view-mode)
+(add-hook 'octet-find-file-hook 'w3m-minor-mode)
+@end lisp
 
 
 @node Customizable Variables
