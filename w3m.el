@@ -3409,7 +3409,7 @@ In Transient Mark mode, deactivate the mark."
 	(goto-char (region-beginning))
 	(skip-chars-forward "\t\n 　" limit)
 	(prog1
-	    (w3m-url-at-point)
+	    (buffer-substring-no-properties limit (point))
 	  (goto-char pt)
 	  (w3m-deactivate-region)))
     (w3m-url-at-point)))
