@@ -3768,7 +3768,7 @@ that a parent method can work properly.
 For more details see @code{shimbun-make-contents} in the
 @file{sb-ibm-dev.el} file.
 
-I said in the subsection of @xref{Getting web page and header
+I said in the subsection of @ref{Getting web page and header
 information} that if each article doesn't have a each unique URLs you
 have to ask Emacs to remember body of an article when gathering headers
 information,  In such case you don't have to get a web page from URL of
