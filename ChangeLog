@@ -1,3 +1,7 @@
+2003-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-get-headers): Enrich subjects.
+
 2003-06-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-fontify-anchors): Do not encode fragment parts.
