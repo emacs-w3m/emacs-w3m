@@ -1,4 +1,4 @@
-;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
+n;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
 
 ;; Copyright (C) 2000 TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
@@ -192,7 +192,7 @@
   :group 'w3m
   :type 'hook)
 
-(defcustom w3m-process-type 'call-process
+(defcustom w3m-process-type 'start-process
   "*Function type for w3m execution."
   :group 'w3m
   :type '(choice (symbol :tag "call-process" call-process)
@@ -221,12 +221,14 @@
 (defvar w3m-process-url nil)
 (defvar w3m-process-user nil)
 (defvar w3m-process-passwd nil)
+(defvar w3m-process-user-counter 0)
 
 (make-variable-buffer-local 'w3m-process)
 (make-variable-buffer-local 'w3m-process-string)
 (make-variable-buffer-local 'w3m-process-url)
 (make-variable-buffer-local 'w3m-process-user)
 (make-variable-buffer-local 'w3m-process-passwd)
+(make-variable-buffer-local 'w3m-process-user-counter)
 
 (defun w3m-arrived-list-load ()
   "Load arrived url list from 'w3m-arrived-list-file'
@@ -642,6 +644,7 @@ CT denotes content-type."
 	      (setq w3m-process-string nil)
 	      (setq w3m-process-user nil)
 	      (setq w3m-process-passwd nil)
+	      (setq w3m-process-user-counter 2)
 	      (setq buffer-read-only t)
 	      (setq w3m-process
 		    (apply 'start-process w3m-command (current-buffer) w3m-command
@@ -653,6 +656,7 @@ CT denotes content-type."
 	      (set-process-coding-system w3m-process w3m-coding-system)
 	      (set-process-filter w3m-process 'w3m-exec-filter)
 	      (set-process-sentinel w3m-process 'w3m-exec-sentinel)
+	      (process-kill-without-query w3m-process)
 	      (while w3m-process
 		(sit-for 0.5)
 		(discard-input)))
@@ -661,6 +665,7 @@ CT denotes content-type."
 	    (setq w3m-process-string nil)
 	    (setq w3m-process-user nil)
 	    (setq w3m-process-passwd nil)
+	    (setq w3m-process-user-counter 0)
 	    (setq buffer-read-only nil))
 	;; call-process
 	(apply 'call-process w3m-command nil t nil
@@ -694,7 +699,7 @@ CT denotes content-type."
 		  (setq prompt (match-string 0 w3m-process-string))
 		  (setq w3m-process-string "")
 		  (setq w3m-process-user
-			(or (nth 1 (assoc w3m-process-url w3m-arrived-user-list))
+			(or (nth 0 (w3m-exec-get-user w3m-process-url))
 			    (read-from-minibuffer prompt)))
 		  (process-send-string process (concat w3m-process-user "\n")))
 		 ;; passwd
@@ -702,7 +707,7 @@ CT denotes content-type."
 		  (setq prompt (match-string 0 w3m-process-string))
 		  (setq w3m-process-string "")
 		  (setq w3m-process-passwd
-			(or (nth 2 (assoc w3m-process-url w3m-arrived-user-list))
+			(or (nth 1 (w3m-exec-get-user w3m-process-url))
 			    (w3m-read-passwd prompt)))
 		  (process-send-string process (concat w3m-process-passwd "\n")))
 		 ;; save file
@@ -724,6 +729,19 @@ CT denotes content-type."
 		    (error nil))))))
 	  (if (get-buffer obuf)
 	      (set-buffer obuf))))))
+
+(defun w3m-exec-get-user (url)
+  (if (= w3m-process-user-counter 0)
+      nil
+    (let ((urllist w3m-arrived-user-list))
+      (catch 'get
+	(while urllist
+	  (when (string-match (concat "^"
+				      (regexp-quote (car (car urllist))))
+			      url)
+	    (setq w3m-process-user-counter (1- w3m-process-user-counter))
+	    (throw 'get (cdr (car urllist))))
+	  (setq urllist (cdr urllist)))))))
 
 (defun w3m-exec-sentinel (process event)
   (if (bufferp (process-buffer process))

@@ -1,3 +1,11 @@
+2000-10-20  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-process-type): Change default valule to 'start-process.
+	(w3m-process-user-counter): New buffer local variable.
+	(w3m-exec-get-user): New funciton, get user and passwd from
+	w3m-arrived-user-list.
+	(w3m-exec-filter): Use w3m-exec-get-user().
+
 2000-10-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-view-previous-point): New function.
