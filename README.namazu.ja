@@ -33,9 +33,9 @@ w3m-namazu を動かす為に、いくつかの変数を定義しておかなければなりません。
  これらのディレクトリーをエイリアスを使って呼び出します。次のようにエイ
  リアスと Index ディレクトリーをセットにした alist で定義します。
  <例>
- (setq w3m-naamzu-index-alist
-       '(("alias1" . "Path/to/the/index/directory1")
-         ("alias2" . "Path/to/the/index/directory2")))
+ (setq w3m-namazu-index-alist
+       '(("alias1" "Path/to/the/index/directory1")
+         ("alias2" "Path/to/the/index/dir2" "Path/to/the/index/dir3")))
 
 * w3m-namazu-default-index
  通常使う Index を w3m-namazu-index-alist で設定したエイリアスで指定しま
