@@ -6022,7 +6022,7 @@ the `w3m-search' function and the variable `w3m-uri-replace-alist'."
    ((condition-case nil
 	(and (w3m-url-local-p url)
 	     w3m-local-find-file-function
-	     (let ((base-url (w3m-base-url url))
+	     (let ((base-url (w3m-url-strip-fragment url))
 		   (match (car w3m-local-find-file-regexps))
 		   nomatch file)
 	       (and (or (not match)

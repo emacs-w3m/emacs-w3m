@@ -1,3 +1,8 @@
+2003-07-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Use `w3m-url-strip-fragment' instead of
+	`w3m-base-url' for local files.
+
 2003-07-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-arrived-load-list): Check that `w3m-arrived-file'
