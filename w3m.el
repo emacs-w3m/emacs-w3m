@@ -51,8 +51,12 @@
 (if (featurep 'xemacs)
     (require 'poem))
 
-(if (not (fboundp 'find-coding-system))
-    (require 'pces))
+(unless (fboundp 'find-coding-system)
+  (if (fboundp 'coding-system-p)
+      (defsubst find-coding-system (obj)
+	"Return OBJ if it is a coding-system."
+	(if (coding-system-p obj) obj))
+    (require 'pces)))
 
 ;; this package using a few CL macros
 (eval-when-compile
@@ -861,7 +865,8 @@ This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
 to nil.  Only contents whose content-type matches ACCEPT-TYPE-REGEXP
 are retrieved."
-  (let ((type (w3m-local-content-type url)))
+  (let ((type (w3m-local-content-type url))
+	(file))
     (when (or (not accept-type-regexp)
 	      (string-match accept-type-regexp type))
       (setq file (w3m-url-to-file-name url))

@@ -16,7 +16,7 @@ ECC     = $(EMACS) -q -no-site-file -batch -f batch-byte-compile
 .SUFFIXES:
 .SUFFIXES: .elc .el
 
-default: $(patsubst %.el,%.elc,$(wildcard *.el))
+default: w3m.elc
 
 %.elc: %.el
 	$(ECC) $<
