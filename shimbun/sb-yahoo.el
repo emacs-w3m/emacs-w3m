@@ -1,8 +1,6 @@
-;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp
+;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp -*- coding: iso-2022-7bit -*-
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>
-;;         Yuuichi Teranishi <teranisi@gohome.org>
+;; Author: Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
 
 ;; Keywords: news
 
@@ -25,8 +23,9 @@
 
 ;;; Commentary:
 
-;; Original code was nnshimbun.el written by
-;; TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>.
+;; Original code was sb-asahi.el which is written by
+;; TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp> and 
+;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;;; Code:
 
@@ -89,3 +88,5 @@
     (nreverse headers)))
 
 (provide 'sb-yahoo)
+
+;;; sb-yahoo.el ends here.

@@ -1,8 +1,6 @@
 ;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
-;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>
-;;         Yuuichi Teranishi <teranisi@gohome.org>
+;; Author: Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
 
 ;; Keywords: news
 
@@ -25,8 +23,9 @@
 
 ;;; Commentary:
 
-;; Original code was nnshimbun.el written by
-;; TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>.
+;; Original code was sb-asahi.el which is written by
+;; TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp> and 
+;; Yuuichi Teranishi <teranisi@gohome.org>.
 
 ;;; Code:
 
@@ -78,6 +77,4 @@
 
 (provide 'sb-nikkei)
 
-
-
-
+;;; sb-nikkei.el ends here.
