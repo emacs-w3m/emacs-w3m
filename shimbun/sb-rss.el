@@ -45,7 +45,14 @@
     (defalias 'shimbun-replace-in-string 'replace-in-string))
    ((fboundp 'replace-regexp-in-string)
     (defun shimbun-replace-in-string  (string regexp newtext &optional literal)
-      (replace-regexp-in-string regexp newtext string nil literal)))
+      ;;(replace-regexp-in-string regexp newtext string nil literal)))
+      ;;
+      ;; Don't call the symbol function `replace-regexp-in-string' directly
+      ;; in order to silence the byte-compiler when an Emacs which doesn't
+      ;; provide it is used.  The following form generates exactly the same
+      ;; byte-code.
+      (funcall (symbol-function 'replace-regexp-in-string)
+	       regexp newtext string nil literal)))
    (t
     (defun shimbun-replace-in-string (string regexp newtext &optional literal)
       (let ((start 0) tail)
