@@ -65,6 +65,9 @@
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-mainichi)
 					 &optional range)
+  (goto-char (point-min))
+  (while (search-forward "\r\n" nil t)
+    (delete-region (match-beginning 0) (1+ (match-beginning 0))))
   (let ((case-fold-search t)
 	start prefix headers)
     (goto-char (point-min))
@@ -139,9 +142,9 @@
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-mainichi)
 						   header)
+  (while (search-forward "\r\n" nil t)
+    (delete-region (match-beginning 0) (1+ (match-beginning 0))))
   (let ((case-fold-search t))
-    (while (search-forward "\r" nil t)
-      (delete-region (match-beginning 0) (match-end 0)))
     (shimbun-mainichi-remove-tags "<SCRIPT" "</SCRIPT>")
     (shimbun-mainichi-remove-tags "<NOSCRIPT" "</NOSCRIPT>")
     (shimbun-mainichi-remove-tags "<NOEMBED" "</NOEMBED>")
