@@ -1,3 +1,8 @@
+2003-09-19  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-form.el (w3m-form-make-form-data): Insert "--" before the
+	multipart post boundary.
+
 2003-09-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-underline-face): New face.

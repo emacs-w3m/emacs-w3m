@@ -171,7 +171,7 @@ If no field in forward, return nil without moving."
 		       (if (string= (setq type (w3m-local-content-type file))
 				    "unknown")
 			   (setq type "application/octet-stream"))
-		       (insert boundary "\r\n"
+		       (insert "--" boundary "\r\n"
 			       "Content-Disposition: form-data; name=\""
 			       (car (car buf))
 			       "\"; filename=\"" file "\"\r\n"
@@ -181,14 +181,14 @@ If no field in forward, return nil without moving."
 			 (insert-file-contents-literally file)
 			 (goto-char (point-max)))
 		       (insert "\r\n"))
-		   (insert boundary "\r\n"
+		   (insert "--" boundary "\r\n"
 			   "Content-Disposition: form-data; name=\""
 			   (car (car buf))
 			   "\"\r\n\r\n"
 			   (cdr (car buf))
 			   "\r\n"))
 		 (setq buf (cdr buf)))
-	       (insert boundary "--\r\n")
+	       (insert "--" boundary "--\r\n")
 	       (buffer-string))))
 	(mapconcat (lambda (elem)
 		     (format "%s=%s"
