@@ -1,3 +1,7 @@
+2003-06-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-makeinfo): Include other files first.
+
 2003-06-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-shimbun-modules-using-rss): Don't use
