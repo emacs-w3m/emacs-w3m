@@ -4132,13 +4132,13 @@ NAKAJIMA Mikio <minakaji@@namazu.org>
 @item
 Yoichi NAKAYAMA
 @item
-Katsumi Yamaoka
-@item
-Masatake YAMATO
-@item
 Hideyuki SHIRAI
 @item
 TSUCHIYA Masatoshi
+@item
+Katsumi Yamaoka
+@item
+Masatake YAMATO
 @end itemize
 
 @node Index
