@@ -359,7 +359,8 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 						   (list (symbol-name
 							  (cdr pair))))
 						 octet-suffix-type-alist)
-						nil 'require-match)
+						nil 'require-match nil nil
+						"text")
 			     (quit 'text)))))
     (while (setq type (octet-filter-buffer type)))))
 

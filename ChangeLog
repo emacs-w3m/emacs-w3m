@@ -1,3 +1,7 @@
+2002-02-01  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* octet.el (octet-buffer): Set default of `completing-read'.
+
 2002-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-key-binding): Switch `w3m-mode-map',
