@@ -3,7 +3,7 @@
 	* mew-w3m.el (mew-w3m-auto-insert-image): New variable.
 	(mew-mime-text/html-w3m): Bind 'w3m-display-inline-image' with
 	'mew-w3m-auto-insert-image'.
-	(mew-w3m-cid-retrieve): New function.
+	(mew-w3m-cid-retrieve): New function. Fix wrong guess.
 
 2001-03-09  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
