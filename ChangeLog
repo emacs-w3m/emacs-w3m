@@ -1,3 +1,10 @@
+2004-01-27  Taichi KAWABATA  <batta@beige.ocn.ne.jp>
+
+	* w3m-e22.el: New file.  This file is simply the copy of
+	w3m-e21.el except that the ccl section has been removed.
+
+	* w3m.el: Require w3m-e22 when Emacs 22 is running.
+
 2004-01-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-after-cursor-move-hook): Add :group keyword.
