@@ -395,7 +395,7 @@ byte-compile $B$9$l$PNI$$$G$9(B:
 @samp{Shimbun} $B%i%$%V%i%j$r;H$&$?$a$K$O(B @acronym{FLIM} $B%Q%C%1!<%8$,I,MW(B
 $B$G$9!#(B@samp{Shimbun} $B%i%$%V%i%j$O%&%'%V>e$N?7J9$rFI$`$?$a$NF;6qN`$N%3%l(B
 $B%/%7%g%s$G!"(BGnus$B!"(BMew$B!"(BNana-gnus$B!"(BT-gnus$B!"(BWanderlust $B$J$I$H$H$b$K;H$&$3(B
-$B$H$,$G$-$^$9!#(B@xref{Shimbun Library}$B!#(B
+$B$H$,$G$-$^$9!#(B@xref{Shimbun Library}.
 
 $B$?$H$((B Emacs 20.x $B$+(B Emacs 21.x $B$r;H$C$F$$$k>l9g$G$b!"(B@acronym{FLIM} $B%Q%C(B
 $B%1!<%8$K$O(B @acronym{APEL} $B%Q%C%1!<%8$,I,MW$G$"$k$3$H$KCm0U$7$F2<$5$$!#$7(B
@@ -428,7 +428,7 @@ Emacs-w3m $B$N<hF@$K4X$7$F$O8x<0%Z!<(B
 
 $BHs(B UNIX $B7O$N%7%9%F%`(B (@samp{configure} $B$r<B9T$G$-$J$$$+(B @samp{make} $B%3%^(B
 $B%s%I$,L5$$!"2?$i$+$N%7%9%F%`(B) $B$K(B emacs-w3m $B$r%$%s%9%H!<%k$9$k$K$O!"$3$N(B
-$B9`$rHt$P$7$F<!$N9`(B @xref{Non-UNIX-like systems} $B$K9T$C$F2<$5$$!#(B
+$B9`$rHt$P$7$F<!$N9`(B @ref{Non-UNIX-like systems} $B$K9T$C$F2<$5$$!#(B
 
 @enumerate
 @item
@@ -1112,7 +1112,7 @@ emacs-w3m $B$O%&%'%V%Z!<%8$K$=$l$i$rI=<($9$k$3$H$,$G$-$^$9!#2<5-$N%3%^%s%I(B
 $B>o$K2hA|I=<($9$k$3$H$rA*$V$N$O2DG=$G!"$=$l$K$OJQ(B
 $B?t(B @code{w3m-default-display-inline-images} $B$r%+%9%?%^%$%:$7$F!"$=$NCM(B
 $B$r(B @code{nil} $B$+$i(B @code{t} $B$KJQ99$9$kI,MW$,$"$j$^$9!#(B
-@xref{Customizable Variables}$B!#(B
+@xref{Customizable Variables}.
 
 $B$5$i$K(B Emacs-w3m $B$K$O!"2hA|$N3HBg=L>.!"%U%!%$%k$X$N%;!<%V!"$^$?$O30It%S%e!<(B
 $B%o$G8+$k!"$H$$$C$?5$$NMx$$$?5!G=$,IUB0$7$F$$$^$9!#(B
@@ -1216,7 +1216,7 @@ it's a miracle                                            2003-01-06
 $B$3$NMzNr$rF@$k$3$H$,$G$-$^$9!#$3$N%Z!<%8$KI=<($5$l$k(B URLs $B$N?t$O%+%9%?%^(B
 $B%$%:$G$-$^$9!#JQ?t(B @code{w3m-keep-arrived-urls} $B$r;2>H$7$F2<$5$$!#$=$l(B
 $B$O%G%U%)%k%H$G$O(B 500 $B$r1[$($k$3$H$O$G$-$^$;$s!#(B@xref{Customizable
-Variables}$B!#(B
+Variables}.
 
 $B$b$A$m$s!"$9$Y$F$N>l9g$K!"Nc$K<($5$l$F$$$k$9$Y$F$N9T$O%j%s%/$G$9!#$=$N%j(B
 $B%s%/$rC)$k$3$H$K$h$C$F!"DL>o$N%Z!<%8$rK,Ld$7$F$$$?$i$A$g$&$I$=$&$J$k$h$&(B
@@ -1303,7 +1303,7 @@ Variables}$B!#(B
 
 $B%V%C%/%^!<%/$N%Z!<%8$G$O(B bookmark $B%^%$%J!<%b!<%I$,F/$$$F$$$^$9!#$=$l$O!"(B
 $B%V%C%/%^!<%/$rJT=8$9$k$?$a$N%-!<%P%$%s%I$rDI2C$7$^$9!#(B@xref{Editing
-Bookmarks}$B!#(B
+Bookmarks}.
 
 @table @kbd
 @item v
@@ -1700,7 +1700,7 @@ Variables} $B;2>H(B) $B$r%+%9%?%^%$%:$9$k$3$H$K$h$C$F!"$3$N?6$kIq$$$rJQ99$9$k
 $B%0%k!<%T%s%05!G=$b;H$($k!#Nc$($P(B @uref{group:gg:emacs&ya:w3m} $B$N$h$&(B
 $B$J(B URL $B$K$h$C$F!"F1;~$KFs$D$N8!:w$r;O$a$k$3$H$,$G$-$^$9!#Nc$($P$3$N>l9g(B
 $B$O!"(BGoogle $B$G(B ``emacs'' $B$N!"(BYahoo! $B$G(B ``w3m'' $B$N8!:w$r$=$l$>$l;O$a$^$9!#(B
-@xref{Grouping URLs}$B!#(B
+@xref{Grouping URLs}.
 @end itemize
 
 $B$3$l$r;H$&$N$O$H$F$b4JC1$G$9!#(B``gnu'' $B$H$$$&C18l$r(B Google $B$GC5$7$?$$$H$9(B
@@ -1716,8 +1716,8 @@ Emacs-w3m $B$N%G%U%)%k%H$G$O!"MxMQ2DG=$J$$$/$D$+$N8!:w%(%s%8%s$NC;=L7A$,$"(B
 $B$j!"$=$l$i$OJQ?t(B @code{w3m-uri-replace-alist} $B$GDj5A$5$l$F$$$^$9!#Nc$((B
 $B$P(B Google $B$K$O(B ``gg''$B!"(BGoogle Groups $BMQ$K$O(B ``ggg''$B!"(BYahoo! $B$N$?$a(B
 $B$N(B ``ya''$B!"$*$h$S(B Altavista $B$KBP$9$k(B ``al'' $B$J$I$NC;$$L>A0$G$9!#$5$i$K8!(B
-$B:w%(%s%8%s$NC;=L7A$rDI2C$9$k$K$O!"(B@xref{Adding New Search Engines} $B$r;2(B
-$B>H$7$F2<$5$$!#(B
+$B:w%(%s%8%s$NC;=L7A$rDI2C$9$k$K$O(B @ref{Adding New Search Engines} $B$r;2>H(B
+$B$7$F2<$5$$!#(B
 
 $BC;=L7A$NBe$o$j$K!"(B``google'' $B$d(B ``yahoo'' $B$N$h$&$J40A4$J%(%s%8%s$NL>A0$r!"(B
 $B%/%$%C%/%5!<%A(B URL $B$K;H$&$3$H$b$G$-$^$9!#$=$l$i$NL>A0$O!"JQ(B
@@ -2375,7 +2375,7 @@ Q. $BF0:n$9$k(B Emacs $B$O(B?
 @end itemize
 
 $B$J$*!"(BMule 2.3, Emacs 19.34 $B$^$?$O(B XEmacs $B$G$O(B @acronym{APEL} $B$,I,MW$H$J(B
-$B$j$^$9!#>\$7$/$O(B @xref{Other Requirements} $B$r3NG'$7$F2<$5$$!#(B
+$B$j$^$9!#>\$7$/$O(B @ref{Other Requirements} $B$r3NG'$7$F2<$5$$!#(B
 
 Emacs-w3m $B$O(B Emacs 19.34 $B$d(B Mule $B5!G=$,L5$$(B XEmacs $B$G$bF0:n$7$^$9!#$?$@(B
 $B$7!"F|K\$NE75$M=Js$r8+$k$J$I$N$$$/$D$+$N%3%^%s%I$O!"(BMule $B$N5!G=$K6/$/0M(B
@@ -2606,8 +2606,7 @@ XEmacs Beta$B!"(BGnus/Mew/Wanderlust $B$J$I$N%a!<%j%s%0%j%9%H!">.@tF|K\9q<sAj
 Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @acronym{FLIM} $B%Q%C%1!<%8(B ($B2C$((B
 $B$F(B @samp{nnshimbun} $B$r;H$$$?$1$l$P(B Gnus) $B$r%$%s%9%H!<%k$9$kI,MW$,$"$k$3(B
 $B$H$KCm0U$7$F2<$5$$!#(B@acronym{FLIM} $B%Q%C%1!<%8$K$O(B @acronym{APEL} $B%Q%C%1!<(B
-$B%8$,I,MW$G$9!#$"$J$?$O(B @xref{Other Requirements} $B$b8+$k$Y$-$+$b$7$l$^$;(B
-$B$s!#(B
+$B%8$,I,MW$G$9!#$"$J$?$O(B @ref{Other Requirements} $B$b8+$k$Y$-$+$b$7$l$^$;$s!#(B
 
 @menu
 * Nnshimbun::                   Gnus $B$r%&%'%V%V%i%&%6$K$9$k(B!
@@ -3986,11 +3985,11 @@ fml mailing list server/manager.  $B>\:Y(B
 $B>\:Y$O(B @uref{http://cvs.namazu.org/mailarc/} $B$r$4Mw2<$5$$!#(B
 @end itemize
 
-$B5.J}$,(B @xref{Getting web page and header information} $B$N%9%F%C%W$G!"<hF@(B
-$B$7$?%&%'%V%Z!<%8$N%=!<%9$rJ,@O$7$F$$$k$H$-$K!"$=$N%=!<%9$NCf$K$3$l$i%a!<(B
-$B%j%s%0%j%9%H%^%M!<%8%c$NL>A0$r8+$D$1$?$i(B@footnote{$B%&%'%V%Z!<%8$N%=!<%9$N(B
-$BCf$K$3$l$i%a!<%j%s%0%j%9%H%^%M!<%8%c$NL>A0$,I=<($5$l$F$$$k$3$H$,B?$$$G(B
-$B$9!#(B}$B!"$=$l$O$9$4$/%i%C%-!<$J$3$H$G$9!#(B@file{sb-mailman.el},
+$B5.J}$,(B @ref{Getting web page and header information} $B$N%9%F%C%W$G<hF@$7(B
+$B$?%&%'%V%Z!<%8$N%=!<%9$rJ,@O$7$F$$$k$H$-$K!"$=$N%=!<%9$NCf$K$3$l$i%a!<%j(B
+$B%s%0%j%9%H%^%M!<%8%c$NL>A0$r8+$D$1$?$i(B@footnote{$B%&%'%V%Z!<%8$N%=!<%9$NCf(B
+$B$K$3$l$i%a!<%j%s%0%j%9%H%^%M!<%8%c$NL>A0$,I=<($5$l$F$$$k$3$H$,B?$$$G$9!#(B}$B!"(B
+$B$=$l$O$9$4$/%i%C%-!<$J$3$H$G$9!#(B@file{sb-mailman.el},
 @file{sb-mhonarc.el}, @file{sb-fml.el}, @file{sb-mailarc.el} $B$K4{(B
 $B$K(B @code{shimbun-get-headers} $B$J$I$NI,MW$J%a%=%C%I$,Dj5A$5$l$F$$$^$9!#$3(B
 $B$l$i$rMxMQ$7$F$J$*B-$j$J$$ItJ,$@$1$N:9J,%W%m%0%i%_%s%0$r$9$l$P!"5.J}(B
