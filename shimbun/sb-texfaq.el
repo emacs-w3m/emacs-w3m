@@ -38,7 +38,7 @@
 (defvar shimbun-texfaq-content-start "</h2>\n")
 (defvar shimbun-texfaq-content-end  "\n<hr>\n<p>")
 (defvar shimbun-texfaq-group-path-alist
-  '(("qanda" . "index.html")))
+  '(("qanda" . "")))
 (defvar shimbun-texfaq-expiration-days 7)
 (defvar shimbun-texfaq-coding-system 'euc-jp)
 
