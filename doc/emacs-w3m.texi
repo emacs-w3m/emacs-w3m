@@ -377,6 +377,11 @@ display pages written in UTF-8, etc.  It is available at:
 
 @uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
 
+When Mule-UCS is installed for Emacs-21.2, it is necessary
+to apply
+@uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html, the
+patch} before installation.
+
 If you are an XEmacs user, the compiled package is here:
 
 @uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.04-pkg.tar.gz}
@@ -4531,11 +4536,8 @@ f1express.Imamiya f1express.Toyota-news f1express.F1-release
 f1express.info
 @end table
 
-TOCHUU F1 EXPRESS requires @uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/,
-Mule-UCS}.  When Mule-UCS is installed for Emacs-21.2, it is necessary
-to apply
-@uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html, the
-patch} before installation.
+TOCHUU F1 EXPRESS requires the Mule-UCS package (@pxref{Other
+Requirements}).
 
 @node Misc Sites Supported by Shimbun
 @subsection Misc Sites Supported by Shimbun

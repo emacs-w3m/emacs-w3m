@@ -415,6 +415,10 @@ Emacs-w3m $B$,(B UTF-8 $B$J$I$G=q$+$l$?%Z!<%8$rI=<($G$-$k$h$&$K$9$k$?$a$K!"$3
 
 @uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
 
+Emacs-21.2 $B$GMxMQ$9$k>l9g$O!"(B
+Mule-UCS $B$K(B @uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html,
+patch} $B$rE,MQ$7$?$[$&$,$$$$$G$7$g$&!#(B
+
 XEmacs $B%f!<%68~$1$K$O!"$3$3$K%3%s%Q%$%k:Q$_$N%Q%C%1!<%8$,$"$j$^$9(B:
 
 @uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.04-pkg.tar.gz}
@@ -4606,11 +4610,8 @@ f1express.Imamiya f1express.Toyota-news f1express.F1-release
 f1express.info
 @end table
 
-$B$?$@$7!"%H!<%A%e%&(B F1 EXPRESS $B$r1\Mw$9$k>l9g$O!"(B
-@uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/, Mule-UCS} $B$r%$%s%9%H!<%k$7(B
-$B$F$*$/I,MW$,$"$j$^$9!#(BEmacs-21.2 $B$GMxMQ$9$k>l9g$O!"(BMule-UCS $B$K(B
-@uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html, patch}
-$B$rE,MQ$7$?$[$&$,$$$$$G$7$g$&!#(B
+$B$?$@$7!"%H!<%A%e%&(B F1 EXPRESS $B$r1\Mw$9$k>l9g$O!"(BMule-UCS (@pxref{Other
+Requirements}) $B$r%$%s%9%H!<%k$7$F$*$/I,MW$,$"$j$^$9!#(B
 
 @node Misc Sites Supported by Shimbun
 @subsection $B$=$NB>(B
