@@ -354,21 +354,22 @@ Otherwise return nil."
 	(cancel-timer w3m-refresh-timer)
 	(setq w3m-refresh-timer nil)))))
 
-(w3m-static-if (featurep 'xemacs)
-    (defun w3m-truncate-string (str end-column)
-      "Truncate string STR to end at column END-COLUMN."
-      (let ((len (length str))
-	    (column 0)
-	    (idx 0))
-	(condition-case nil
-	    (while (< column end-column)
-	      (setq column (+ column (char-width (aref str idx)))
-		    idx (1+ idx)))
+(defalias 'w3m-truncate-string
+  (if (featurep 'xemacs)
+      (lambda (str end-column)
+	"Truncate string STR to end at column END-COLUMN."
+	(let ((len (length str))
+	      (column 0)
+	      (idx 0))
+	  (condition-case nil
+	      (while (< column end-column)
+		(setq column (+ column (char-width (aref str idx)))
+		      idx (1+ idx)))
 	  (args-out-of-range (setq idx len)))
-	(when (> column end-column)
-	  (setq idx (1- idx)))
-	(substring str 0 idx)))
-  (defalias 'w3m-truncate-string 'truncate-string))
+	  (when (> column end-column)
+	    (setq idx (1- idx)))
+	  (substring str 0 idx)))
+    'truncate-string))
 
 (provide 'w3m-util)
 ;;; w3m-util.el ends here
