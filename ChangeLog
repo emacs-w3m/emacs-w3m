@@ -1,4 +1,3 @@
-
 2002-05-31  Mito <mito@mxa.nes.nec.co.jp>
 
 	* w3m-weather.el (w3m-weather-completion-table): Fix "niigata-kaetsu".
