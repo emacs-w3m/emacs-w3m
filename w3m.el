@@ -132,6 +132,12 @@
   :group 'w3m
   :type 'directory)
 
+(defcustom w3m-delete-duplicated-empty-lines t
+  "*Compactize page by deleting duplicated empty lines."
+  :group 'w3m
+  :type 'boolean)
+
+
 (defun w3m-url-to-file-name (url)
   (if (string-match "^file:" url)
       (setq url (substring url (match-end 0))))
@@ -320,6 +326,28 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
   :type '(repeat (cons symbol coding-system)))
 
+(defcustom w3m-search-engine-alist
+  '(("yahoo" "http://search.yahoo.com/bin/search" "p=%s")
+    ("google" "http://www.google.com/search?q=" "q=%s"))
+  "*Search engine database.
+Each elemnt of alist is a list as:
+\( name-of-engine url query-format \)"
+  :group 'w3m
+  :type '(repeat (list (string :tag "Engine")
+		       (string :tag "URL")
+		       (string :tag "Query-format"))))
+
+(defcustom w3m-default-search-engine "yahoo"
+  "*Default search engine name.
+See also `w3m-search-engine-alist'."
+  :group 'w3m
+  :type 'string)
+
+(defcustom w3m-horizontal-scroll-columns 10
+  "*Column size to scroll horizontaly."
+  :group 'w3m
+  :type 'number)
+
 (defconst w3m-extended-charcters-table
   '(("\xa0" . " ")))
 
@@ -482,7 +510,7 @@ If N is negative, last N items of LIST is returned."
     ;; Re-ordering anchor elements.
     (goto-char (point-min))
     (let (href)
-      (while (re-search-forward "<a\\([ \t\n]\\)[^>]+[ \t\n]href=\\(\"[^\"]*\"\\)" nil t)
+      (while (re-search-forward "<a\\([ \t\n]\\)[^>]+[ \t\n]href=\\(\"?[^\" >]*\"?\\)" nil t)
 	(setq href (buffer-substring (match-beginning 2) (match-end 2)))
 	(delete-region (match-beginning 2) (match-end 2))
 	(goto-char (match-beginning 1))
@@ -490,7 +518,7 @@ If N is negative, last N items of LIST is returned."
     ;; Fontify anchor tags.
     (goto-char (point-min))
     (while (re-search-forward
-	    "<a\\([ \t\n]+href=\"\\([^\"]*\\)\"\\)?\\([ \t\n]+name=\"\\([^\"]*\\)\"\\)?[^>]*>"
+	    "<a\\([ \t\n]+href=\"?\\([^\" >]*\\)\"?\\)?\\([ \t\n]+name=\"?\\([^\" >]*\\)\"?\\)?[^>]*>"
 	    nil t)
       (let ((url (match-string 2))
 	    (tag (match-string 4))
@@ -544,6 +572,10 @@ If N is negative, last N items of LIST is returned."
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (insert (cdr elem))))
       (set-buffer-multibyte x))
+    (goto-char (point-min))
+    (if w3m-delete-duplicated-empty-lines
+	(while (re-search-forward "^[ \t]*\n\\([ \t]*\n\\)+" nil t)
+	  (replace-match "\n" nil t)))
     (run-hooks 'w3m-fontify-after-hook)))
 
 ;;
@@ -1449,6 +1481,8 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "?" 'describe-mode)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
+    (define-key map "<" 'w3m-scroll-left)
+    (define-key map ">" 'w3m-scroll-right)
     (setq w3m-mode-map map)))
 
 
@@ -1511,7 +1545,26 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (setq major-mode 'w3m-mode
 	mode-name "w3m")
   (use-local-map w3m-mode-map)
+  (setq truncate-lines t)
   (run-hooks 'w3m-mode-hook))
+
+(defun w3m-scroll-left (arg)
+  "Scroll to left.
+Scroll size is `w3m-horizontal-scroll-size' columns
+or prefix ARG columns."
+  (interactive "P")
+  (scroll-left (if arg 
+		   (prefix-numeric-value arg)
+		 w3m-horizontal-scroll-columns)))
+
+(defun w3m-scroll-right (arg)
+  "Scroll to right.
+Scroll size is `w3m-horizontal-scroll-size' columns
+or prefix ARG columns."
+  (interactive "P")
+  (scroll-right (if arg
+		    (prefix-numeric-value arg)
+		  w3m-horizontal-scroll-columns)))
 
 (defun w3m-mailto-url (url)
   (if (and (symbolp w3m-mailto-url-function)
@@ -1777,6 +1830,45 @@ ex.) c:/dir/file => //c/dir/file"
     (w3m-rendering-region start end)
     (w3m-fontify)))
 
+(defun w3m-escape-query-string (str)
+  (mapconcat (lambda (ch)
+	       (if (string-match "[-a-zA-Z0-9_]" (char-to-string ch)) ; xxx?
+		   (char-to-string ch)	; printable
+		 (format "%%%02X" ch)))	; escape
+	     (string-to-list str)
+	     ""))
+
+(defun w3m-do-search (word engine)
+  (let ((alist (assoc engine w3m-search-engine-alist)))
+    (if (null alist) (error "Unknown search engine: %s" engine))
+    (w3m (concat (nth 1 alist) "?" 
+		 (format (nth 2 alist) (w3m-escape-query-string word))))))
+
+(defun w3m-search (arg)
+  "Search word using search-engine.  
+With prefix ARG, you can choose search engine deinfed in
+`w3m-search-engine-alist'. Otherwise use `w3m-default-search-engine'."
+  (interactive "P")
+  (let (engine word)
+    ;; decide search engine
+    (if (null arg)
+	(setq engine w3m-default-search-engine)
+      ;; with prefix, select
+      (setq engine (completing-read 
+		    (format "Which Engine? (%s): " w3m-default-search-engine)
+		    w3m-search-engine-alist nil t))
+      (if (string= engine "")
+	  (setq engine w3m-default-search-engine))
+      (if (and (string= engine w3m-default-search-engine)
+	       (y-or-n-p "Set %s as default search engine? "))
+	  (setq w3m-default-search-engine engine)))
+    ;; input search word
+    (let ((prompt "%s search word: "))
+      (while (or (null word) (string-match "^[ \t]$" word))
+	(setq word (read-string (format "%s search word: " engine)))
+	(setq prompt "%s search word again: ")))
+    ;; search it
+    (w3m-do-search word engine)))
 
 (provide 'w3m)
 ;;; w3m.el ends here.
