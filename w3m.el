@@ -139,8 +139,8 @@
   (eval-when-compile
     (let ((rev "$Revision$"))
       (and (string-match "\\.\\([0-9]+\\) \$$" rev)
-	   (format "1.2.%d"
-		   (- (string-to-number (match-string 1 rev)) 426)))))
+	   (format "1.3.%d"
+		   (- (string-to-number (match-string 1 rev)) 642)))))
   "Version number of this package.")
 
 (defgroup w3m nil
