@@ -445,41 +445,50 @@ you want to use no database."
   (let ((from (shimbun-header-from header))
 	(refs (shimbun-header-references header))
 	(reply-to (shimbun-reply-to shimbun))
-	x-face)
-    (insert "Subject: " (or (eword-encode-string
-			     (shimbun-header-subject header t))
-			    "(none)")
-	    "\nFrom: " (or (eword-encode-string
-			    (shimbun-header-from header t))
-			   "(nobody)")
-	    "\nDate: " (or (shimbun-header-date header) "")
-	    "\nMessage-ID: " (shimbun-header-id header) "\n")
-    (when reply-to
-      (insert "Reply-To: " reply-to "\n"))
-    (when (and refs
-	       (string< "" refs))
-      (insert "References: " refs "\n"))
-    (insert "Lines: " (number-to-string (or (shimbun-header-lines header) 0))
-	    "\n"
-	    "Xref: " (or (shimbun-article-url shimbun header) "") "\n")
-    (unless shimbun-x-face-database-function
-      (when (and (fboundp 'bbdb-get-field)
-		 (not (eq 'autoload
-			  (car-safe (symbol-function 'bbdb-get-field)))))
-	(setq shimbun-x-face-database-function 'shimbun-bbdb-get-x-face)))
-    (unless shimbun-x-face-database-function
-      (when (and (fboundp 'lsdb-lookup-records)
-		 (not (eq 'autoload
-			  (car-safe (symbol-function 'lsdb-lookup-records)))))
-	(setq shimbun-x-face-database-function 'shimbun-lsdb-get-x-face)))
-    (when (setq x-face
-		(or (and from
-			 (fboundp shimbun-x-face-database-function)
-			 (funcall shimbun-x-face-database-function from))
-		    (shimbun-x-face shimbun)))
-      (insert x-face)
-      (unless (bolp)
-	(insert "\n")))))
+	x-face
+	;; Make sure the temp buffer's multibyteness is true.  It is
+	;; needed to make `encode-mime-charset-string' (which is
+	;; employed by `eword-encode-string') encode non-ascii text.
+	(default-enable-multibyte-characters t))
+    (insert
+     (with-temp-buffer
+       (insert "Subject: " (or (eword-encode-string
+				(shimbun-header-subject header t))
+			       "(none)")
+	       "\nFrom: " (or (eword-encode-string
+			       (shimbun-header-from header t))
+			      "(nobody)")
+	       "\nDate: " (or (shimbun-header-date header) "")
+	       "\nMessage-ID: " (shimbun-header-id header) "\n")
+       (when reply-to
+	 (insert "Reply-To: " reply-to "\n"))
+       (when (and refs
+		  (string< "" refs))
+	 (insert "References: " refs "\n"))
+       (insert "Lines: " (number-to-string (or (shimbun-header-lines header)
+					       0))
+	       "\n"
+	       "Xref: " (or (shimbun-article-url shimbun header) "") "\n")
+       (unless shimbun-x-face-database-function
+	 (when (and (fboundp 'bbdb-get-field)
+		    (not (eq 'autoload
+			     (car-safe (symbol-function 'bbdb-get-field)))))
+	   (setq shimbun-x-face-database-function 'shimbun-bbdb-get-x-face)))
+       (unless shimbun-x-face-database-function
+	 (when (and
+		(fboundp 'lsdb-lookup-records)
+		(not (eq 'autoload
+			 (car-safe (symbol-function 'lsdb-lookup-records)))))
+	   (setq shimbun-x-face-database-function 'shimbun-lsdb-get-x-face)))
+       (when (setq x-face
+		   (or (and from
+			    (fboundp shimbun-x-face-database-function)
+			    (funcall shimbun-x-face-database-function from))
+		       (shimbun-x-face shimbun)))
+	 (insert x-face)
+	 (unless (bolp)
+	   (insert "\n")))
+       (buffer-string)))))
 
 (eval-when-compile
   ;; Attempt to pick up the inline function `bbdb-search-simple'.
@@ -742,11 +751,16 @@ return the contents of this buffer as an encoded string."
 (defun shimbun-mime-encode-string (string)
   (condition-case nil
       (save-match-data
-	(mapconcat
-	 #'identity
-	 (split-string (or (eword-encode-string
-			    (shimbun-decode-entities-string string)) ""))
-	 " "))
+	;; Make sure the temp buffer's multibyteness is true.  It is
+	;; needed to make `encode-mime-charset-string' (which is
+	;; employed by `eword-encode-string') encode non-ascii text.
+	(let ((default-enable-multibyte-characters t))
+	  (with-temp-buffer
+	    (mapconcat
+	     #'identity
+	     (split-string (or (eword-encode-string
+				(shimbun-decode-entities-string string)) ""))
+	     " "))))
     (error string)))
 
 (defun shimbun-make-date-string (year month day &optional time timezone)
