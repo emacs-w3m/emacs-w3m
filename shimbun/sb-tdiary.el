@@ -31,7 +31,7 @@
 
 (luna-define-class shimbun-tdiary (shimbun shimbun-text) ())
 
-(defvar shimbun-tdiary-content-start "<h3>")
+(defvar shimbun-tdiary-content-start "<h3")
 (defvar shimbun-tdiary-content-end "</div>")
 
 (defvar shimbun-tdiary-group-alist nil
