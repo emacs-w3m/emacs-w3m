@@ -2128,35 +2128,29 @@ ex.) c:/dir/file => //c/dir/file"
 		 (char-to-string ch))	; printable
 		((char-equal ch ? ) "+") ; space character
 		(t
-		 (FORMAT "%%%02X" ch)))) ; escape
+		 (format "%%%02X" ch)))) ; escape
 	     (string-to-list str)
 	     ""))
 
-(defun w3m-do-search (engine query)
-  (let ((pair (assoc engine w3m-search-engine-alist)))
-    (if (null pair)
-	(error "Unknown search engine: %s" engine)
-      (w3m (format (cdr pair) (w3m-escape-query-string query))))))
-
-(defun w3m-search (arg)
-  "Search query using search-engine.  
-With prefix ARG, you can choose search engine deinfed in
-`w3m-search-engine-alist'. Otherwise use `w3m-default-search-engine'."
-  (interactive "P")
-  (let (engine query)
-    ;; decide search engine
-    (if (null arg)
-	(setq engine w3m-default-search-engine)
-      ;; with prefix, select
-      (setq engine (completing-read
-		    (format "Which Engine? (%s): " w3m-default-search-engine)
-		    w3m-search-engine-alist nil t))
-      (if (string= engine "")
-	  (setq engine w3m-default-search-engine)))
-    ;; input search query
-    (setq query (read-string (format "%s search: " engine)))
-    (if (not (string= query ""))
-	(w3m-do-search engine query))))
+(defun w3m-search (search-engine query)
+  "Search QUERY using SEARCH-ENGINE.
+When called interactively wich prefix argument, you can choose search
+engine deinfed in `w3m-search-engine-alist'.  Otherwise use
+`w3m-default-search-engine'."
+  (interactive
+   (let ((engine
+	  (if current-prefix-arg
+	      (completing-read
+	       (format "Which Engine? (%s): " w3m-default-search-engine)
+	       w3m-search-engine-alist nil t)
+	    w3m-default-search-engine)))
+     (list engine
+	   (read-string (format "%s search: " engine)))))
+  (unless (string= query "")
+    (let ((pair (assoc search-engine w3m-search-engine-alist)))
+      (if pair
+	  (w3m (format (cdr pair) (w3m-escape-query-string query)))
+	(error "Unknown search engine: %s" engine)))))
 
 (provide 'w3m)
 ;;; w3m.el ends here.

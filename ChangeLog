@@ -1,5 +1,10 @@
 2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
+	* w3m.el (w3m-search): Simplify.
+	(w3m-do-search): Removed.
+
+2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
 	* Merge form branch to main trunk.
 
 2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
