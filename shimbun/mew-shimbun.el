@@ -45,6 +45,8 @@
 ;; (define-key mew-summary-mode-map "GI" 'mew-shimbun-retrieve-all)
 ;; (define-key mew-summary-mode-map "Gr" 'mew-shimbun-re-retrieve)
 ;; (define-key mew-summary-mode-map "GR" 'mew-shimbun-re-retrieve-all)
+;; (define-key mew-summary-mode-map "Ge" 'mew-shimbun-expire)
+;; (define-key mew-summary-mode-map "GE" 'mew-shimbun-expire-all)
 ;; (when mew-shimbun-use-unseen
 ;;   (define-key mew-summary-mode-map "Gu" 'mew-shimbun-unseen-check)
 ;;   (define-key mew-summary-mode-map "GU" 'mew-shimbun-unseen-remove-all))
@@ -125,6 +127,19 @@ show below example,
   :group 'shimbun
   :group 'mew-shimbun
   :type 'file)
+
+(defcustom mew-shimbun-expires nil
+  "*Alist of `shimbun folder name' and expire days.
+Show below expire,
+  '((\"yomiuri\" . 7)
+    (\"comp\" . 3)
+    (\"mew/mgp\" . nil)) ;; not expire
+"
+  :group 'shimbun
+  :group 'mew-shimbun
+  :type '(repeat
+	  (cons (string :tag "Folder")
+		(integer :tag "Days"))))
 
 (defcustom mew-shimbun-db-length nil
   "*Max length of mew-shimbun database.
@@ -620,6 +635,106 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
       (shimbun-close shimbun)
       (mew-shimbun-db-shutdown2 fld (+ newcount rplcount)))
     (list rplcount newcount same)))
+
+;;;###autoload
+(defun mew-shimbun-expire-all ()
+  "Expire all shimbun folder."
+  (interactive)
+  (let ((ofld (mew-summary-folder-name)) fld)
+    (dolist (alst mew-shimbun-expires)
+      (setq fld (concat (file-name-as-directory mew-shimbun-folder)
+			(car alst)))
+      (mew-summary-visit-folder fld)
+      (sit-for 0.5)
+      (mew-rendezvous mew-summary-buffer-process)
+      (mew-shimbun-expire)
+      (mew-kill-buffer (current-buffer)))
+    (mew-summary-visit-folder ofld)))
+
+;;;###autoload
+(defun mew-shimbun-expire ()
+  "Expire this shimbun folder."
+  (interactive)
+  (when (mew-summary-exclusive-p)
+    (mew-summary-only
+     (let* ((fld (mew-summary-folder-name))
+	    (days (mew-shimbun-expire-day fld))
+	    (i 0)
+	    file msgs msg-alist begmsg endmsg t1)
+       (if (not (mew-shimbun-folder-p fld))
+	   (message "This command can not execute here")
+	 (if (not days)
+	     (message "%s does not have an expire rule." fld)
+	   (mew-decode-syntax-delete)
+	   (message "Gathering date header in %s..." fld)
+	   (save-excursion
+	     (save-restriction
+	       (widen)
+	       (goto-char (point-min))
+	       (mew-summary-goto-message)
+	       (setq begmsg (mew-summary-message-number))
+	       (goto-char (point-max))
+	       (mew-summary-goto-message)
+	       (setq endmsg (mew-summary-message-number))
+	       (with-temp-buffer
+		 (mew-piolet
+		  mew-cs-text-for-read mew-cs-text-for-write
+		  (call-process mew-prog-mewls nil t nil
+				"-b" mew-mail-path
+				"-d" "Date:"
+				"-s" (format "%s %s-%s"
+					     fld begmsg endmsg))
+		  (goto-char (point-min))
+		  (while (not (eobp))
+		    (when (looking-at "^\\([1-9][0-9]*\\): *\\([^\n]+\\)$")
+		      (setq msg-alist (cons
+				       (cons (match-string 1)
+					     (mew-time-rfc-to-sortkey (match-string 2)))
+				       msg-alist)))
+		    (forward-line 1))))
+	       (setq t1 (decode-time (current-time)))
+	       (setq t1 (append (list (nth 0 t1) (nth 1 t1) (nth 2 t1)
+				      (- (nth 3 t1) days))
+				(nthcdr 4 t1)))
+	       (setq days (format-time-string "%Y%m%d%H%M%S"
+					      (apply 'encode-time t1)))
+	       (dolist (x msg-alist)
+		 (when (string< (cdr x) days)
+		   (setq msgs (cons (car x) msgs))))
+	       (setq msgs (sort msgs
+				(lambda (x y)
+				  (< (string-to-number x) (string-to-number y)))))
+	       (setq t1 (length msgs))
+	       (message "Expire (%s) 1/%d..." fld t1)
+	       (goto-char (point-min))
+	       (dolist (msg msgs)
+		 (setq i (1+ i))
+		 (when (zerop (% i 10))
+		   (message "Expire (%s) %d/%d..." fld i t1))
+		 (when (re-search-forward (mew-regex-jmp-msg msg) nil t)
+		   (beginning-of-line)
+		   (mew-elet
+		    (delete-region (point)
+				   (progn (forward-line) (point)))))
+		 (setq file (mew-expand-folder fld msg))
+		 (when (and (file-exists-p file)
+			    (file-readable-p file)
+			    (file-writable-p file))
+		   (delete-file file)))
+	       (mew-elet
+		(mew-summary-folder-cache-save)
+		(set-buffer-modified-p nil))
+	       (message "Expire (%s) %d/%d...done" fld t1 t1)))))))))
+
+(defun mew-shimbun-expire-day (fld)
+  (catch 'det
+    (dolist (x mew-shimbun-expires)
+      (when (string-match (concat "^" (regexp-quote
+				       (concat
+					(file-name-as-directory mew-shimbun-folder)
+					(car x))))
+			  fld)
+	(throw 'det (cdr x))))))
 
 (defun mew-shimbun-get-id-msgs (type &rest args)
   (let (id-msgs)

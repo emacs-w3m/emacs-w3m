@@ -1,3 +1,10 @@
+2002-09-24  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (top): Add comment for expire.
+	(mew-shimbun-expires): New user variable.
+	(mew-shimbun-expire-all, mew-shimbun-expire) 
+	(mew-shimbun-expire-day): New functions.
+
 2002-09-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-mode): Fix typo in its docstring.

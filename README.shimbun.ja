@@ -290,6 +290,8 @@ mew-shimbun.el は Mew version 2.1 以降を使って shimbun を楽しむ elisp で
 (define-key mew-summary-mode-map "GI" 'mew-shimbun-retrieve-all)
 (define-key mew-summary-mode-map "Gr" 'mew-shimbun-re-retrieve)
 (define-key mew-summary-mode-map "GR" 'mew-shimbun-re-retrieve-all)
+(define-key mew-summary-mode-map "Ge" 'mew-shimbun-expire)
+(define-key mew-summary-mode-map "GE" 'mew-shimbun-expire-all)
 (when mew-shimbun-use-unseen
   (define-key mew-summary-mode-map "Gu" 'mew-shimbun-unseen-check)
   (define-key mew-summary-mode-map "GU" 'mew-shimbun-unseen-remove-all))
@@ -393,6 +395,22 @@ http://www.mew.org/ml/mew-dist-2.0/msg01251.html
 
 (*2) mew-touch-folder-p が 't' の人はほぼ 100% 保存できますが、'nil'
   の人が保存できる可能性はほとんど 0% だと思われます。
+
+3.3 期限切れ記事の消去
+ 事前に mew-shimbun-expires を設定しておくと、期限切れ記事の消去を行なう
+ ことができます。
+ 
+(setq mew-shimbun-expires
+      '(("yomiuri" . 7)
+	("asahi" . 1)
+	("slashdot-jp" . 7)
+	("comp" . 7)))
+
+と設定しておくと、"+shimbun/yomiuri" は 7日、"+shimbun/asahi" は1日と期
+限を設定することができます。指定されていない shimbun folder は消去しませ
+ん。"Ge (mew-shimbun-expire)" でその folder の期限切れ記事を消去します。
+"GE (mew-shimbun-expire-all)" で設定した全ての folder で記事の消去を実行
+します。なお、一度消去した記事は復活出来ませんので注意してください。
 
 
 Local Variables:
