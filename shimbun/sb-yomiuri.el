@@ -274,7 +274,7 @@ It does also shorten too much spaces."
 	  (setq month (string-to-number (match-string 1))
 		day (string-to-number (match-string 2))
 		time (match-string 3))))
-      (push (shimbun-make-header
+      (push (shimbun-create-header
 	     ;; number
 	     0
 	     ;; subject

@@ -1,3 +1,14 @@
+2004-08-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi-mytown.el (shimbun-asahi-mytown-get-headers):
+	Use shimbun-create-header instead of shimbun-make-header.
+	c.f. <URL:http://emacs-w3m.namazu.org/ml/msg05438.html>.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Ditto.
+	* shimbun/sb-kantei.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-sankei.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-get-headers): Ditto.
+
 2004-07-31  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
 	* shimbun/sb-rss.el (shimbun-rss-node-text): Fix regexp.

@@ -150,11 +150,11 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 			(1+ cyear))
 		       (t
 			cyear)))
-      (push (shimbun-make-header
+      (push (shimbun-create-header
 	     ;; number
 	     0
 	     ;; subject
-	     (shimbun-mime-encode-string subject)
+	     subject
 	     ;; from
 	     from
 	     ;; date
