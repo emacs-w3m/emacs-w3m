@@ -158,7 +158,7 @@ When a default value for the query is discovered, prompt with string
 PROMPT-WITH-DEFAULT instead of string PROMPT."
   (let ((default
 	  (if (w3m-region-active-p)
-	      (buffer-substring (mark) (point))
+	      (buffer-substring (region-beginning) (region-end))
 	    (unless (eq (get-text-property (line-beginning-position) 'face)
 			'w3m-header-line-location-title-face)
 	      (thing-at-point 'word))))

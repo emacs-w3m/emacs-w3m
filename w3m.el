@@ -3397,7 +3397,7 @@ Like `ffap-url-at-point', except that text props will be stripped."
   "Return an active region or a url around the cursor.
 In Transient Mark mode, deactivate the mark."
   (if (w3m-region-active-p)
-      (prog1 (buffer-substring-no-properties (mark) (point))
+      (prog1 (buffer-substring-no-properties (region-beginning) (region-end))
 	(w3m-deactivate-region))
     (w3m-url-at-point)))
 
