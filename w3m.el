@@ -455,18 +455,11 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-track-mouse (and (boundp 'emacs-major-version)
-				(>= emacs-major-version 21))
+(defcustom w3m-track-mouse t
   "Whether to track the mouse and message the url under the mouse.
-If you are using Emacs or XEmacs versions prior to 21, setting this
-option to non-nil is meaningless."
-  :get (function (lambda (symbol) (and (boundp 'emacs-major-version)
-				       (>= emacs-major-version 21)
-				       (default-value symbol))))
-  :set (function (lambda (symbol value)
-		   (set-default symbol (and (boundp 'emacs-major-version)
-					    (>= emacs-major-version 21)
-					    value))))
+This feature does not work under Emacs or XEmacs versions prior to 21.
+See also the documentations for the variable `show-help-function' if
+you are using FSF Emacs 21."
   :group 'w3m
   :type 'boolean)
 
@@ -699,6 +692,19 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	(setq w3m-work-buffer-list (cons buf w3m-work-buffer-list))
 	(buffer-disable-undo buf)
 	buf)))
+
+(defmacro w3m-make-help-echo (property)
+  "Make a function for showing a `help-echo' string."
+  (if (and (boundp 'emacs-major-version)
+	   (>= emacs-major-version 21))
+      (if (featurep 'xemacs)
+	  (` (lambda (extent)
+	       (if w3m-track-mouse
+		   (get-text-property (extent-start-position extent)
+				      (quote (, property))))))
+	(` (lambda (window object pos)
+	     (if w3m-track-mouse
+		 (get-text-property pos (quote (, property)))))))))
 
 (defun w3m-message (&rest args)
   "Alternative function of `message' for w3m.el."
@@ -1035,9 +1041,10 @@ If N is negative, last N items of LIST is returned."
 (defun w3m-fontify-anchors ()
   "Fontify anchor tags in this buffer which contains half-dumped data."
   (goto-char (point-min))
-  (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
-    (let ((start (match-beginning 0))
-	  (end))
+  (let ((help (w3m-make-help-echo w3m-href-anchor))
+	start end)
+    (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
+      (setq start (match-beginning 0))
       (w3m-parse-attributes (href name)
 	(delete-region start (point))
 	(cond
@@ -1047,16 +1054,13 @@ If N is negative, last N items of LIST is returned."
 	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)
 				       w3m-current-url))
 	    (add-text-properties start end
-				 (append
-				  (list 'face (if (w3m-arrived-p href)
-						  'w3m-arrived-anchor-face
-						'w3m-anchor-face)
-					'w3m-href-anchor href
-					'mouse-face 'highlight)
-				  (when name
-				    (list 'w3m-name-anchor name))
-				  (when w3m-track-mouse
-				    (list 'help-echo href))))))
+				 (list 'face (if (w3m-arrived-p href)
+						 'w3m-arrived-anchor-face
+					       'w3m-anchor-face)
+				       'w3m-href-anchor href
+				       'mouse-face 'highlight
+				       'w3m-name-anchor name
+				       'help-echo help))))
 	 (name
 	  (when (re-search-forward "<\\|\n" nil t)
 	    (setq end (match-beginning 0))
@@ -1086,24 +1090,22 @@ If N is negative, last N items of LIST is returned."
   "Fontify image alternate strings in this buffer which contains
 half-dumped data."
   (goto-char (point-min))
-  (while (re-search-forward "<\\(img_alt\\) src=\"\\([^\"]*\\)\">" nil t)
-    (let ((src (match-string 2))
-	  (upper (string= (match-string 1) "IMG_ALT"))
-	  (start (match-beginning 0))
-	  (end))
+  (let ((help (w3m-make-help-echo w3m-image))
+	src upper start end)
+    (while (re-search-forward "<\\(img_alt\\) src=\"\\([^\"]*\\)\">" nil t)
+      (setq src (buffer-substring-no-properties (match-beginning 2)
+						(match-end 2))
+	    upper (string= (match-string 1) "IMG_ALT")
+	    start (match-beginning 0))
       (delete-region start (match-end 0))
       (setq src (w3m-expand-url src w3m-current-url))
       (when (search-forward "</img_alt>" nil t)
 	(delete-region (setq end (match-beginning 0)) (match-end 0))
-	(add-text-properties start end
-			     (append
-			      (list 'face 'w3m-image-face
-				    'w3m-image src
-				    'mouse-face 'highlight)
-			      (when upper
-				'(w3m-image-redundant t))
-			      (when w3m-track-mouse
-				(list 'help-echo src))))))))
+	(add-text-properties start end (list 'face 'w3m-image-face
+					     'w3m-image src
+					     'mouse-face 'highlight
+					     'w3m-image-redundant upper
+					     'help-echo help))))))
 
 (defun w3m-toggle-inline-images (&optional force no-cache)
   "Toggle displaying of inline images on current buffer.
