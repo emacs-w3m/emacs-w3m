@@ -406,10 +406,10 @@ byte-compile $B$9$l$PNI$$$G$9(B:
 @uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
 
 @item Mule-UCS
-Mule-UCS Emacs Lisp $B%Q%C%1!<%8$r;H$&$3$H$K$h$C$F!"$"$J$?$N(B Emacs $B$,(B
-Unicode $B%7%9%F%`$r07$&$3$H$,$G$-$k$h$&$K$J$j$^$9!#(BEmacs-w3m $B$,(B UTF-8 $B$J(B
-$B$I$G=q$+$l$?%Z!<%8$rI=<($G$-$k$h$&$K$9$k$?$a$K!"$3$l$r%$%s%9%H!<%k$9$k$3(B
-$B$H$r4+$a$^$9!#0J2<$N>l=j$+$i<hF@$7$F2<$5$$(B:
+Mule-UCS Emacs Lisp $B%Q%C%1!<%8$r;H$&$3$H$K$h$C$F!"$"$J$?(B
+$B$N(B Emacs $B$,(B Unicode $B%7%9%F%`$r07$&$3$H$,$G$-$k$h$&$K$J$j$^$9!#(B
+Emacs-w3m $B$,(B UTF-8 $B$J$I$G=q$+$l$?%Z!<%8$rI=<($G$-$k$h$&$K$9$k$?$a$K!"$3(B
+$B$l$r%$%s%9%H!<%k$9$k$3$H$r4+$a$^$9!#0J2<$N>l=j$+$i<hF@$7$F2<$5$$(B:
 
 @uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
 
@@ -1487,9 +1487,9 @@ Search'' $B$N%Z!<%8$r3+$$$F$"$k$J$i$P!"(B``Goo'' $B$KB3$1$F(B @kbd{TAB} $B$
 $B9g$O%P%C%U%!%j%9%H$,1#$5$l$^$9!#$"$k$$$O!"(B@kbd{w} $B%-!<$r;H$C$?>l9g$O%P%C(B
 $B%U%!%j%9%H$OI=<($5$l$?$^$^$G!"<g%&%#%s%I%%$K%U%)!<%+%9$7$^$9!#(B
 
-$B$^$?!"$3$N%a%K%e!<$GIaDL$N%P%C%U%!$G;H$o$l$k$N$HF1$8%-!<3d$jEv$F(B
-(@pxref{Creating and killing buffers}) $B$G!"%P%C%U%!$rJD$8$?$j:n$k$3$H$b(B
-$B$G$-$^$9!#(B
+$B$^$?!"$3$N%a%K%e!<$GIaDL$N%P%C%U%!$G;H$o$l$k$N$HF1$8%-!<3d$jEv(B
+$B$F(B (@pxref{Creating and killing buffers}) $B$G!"%P%C%U%!$rJD$8$?$j:n$k$3$H(B
+$B$b$G$-$^$9!#(B
 
 $B:G8e$K!"(B@kbd{?} $B$O%X%k%W$NI=<(!"(B@kbd{g} $B$O%j%9%H$N:n$jD>$7!"$=$7(B
 $B$F(B @kbd{q} $B$O%P%C%U%!%j%9%H$N=*N;$r<g%&%#%s%I%%$N%P%C%U%!$OJQ99$;$:$K!"(B
@@ -1522,8 +1522,8 @@ Search'' $B$N%Z!<%8$r3+$$$F$"$k$J$i$P!"(B``Goo'' $B$KB3$1$F(B @kbd{TAB} $B$
 $BI=<($G$O$"$j$^$;$s(B) $B$G$-$^$9!#C1$K%@%&%s%m!<%I$7$?$$%j%s%/$K%]%$%s%H$rCV(B
 $B$$$F(B @kbd{d} $B$rC!$$$F2<$5$$!#%m!<%+%k$K%;!<%V$9$k%U%!%$%kL>$,?R$M$i$l$^(B
 $B$9!#%G%U%)%k%H$G$O1s3V%5!<%P!<$K$*$1$k%U%!%$%k$NL>A0$K$J$j$^$9!#$=$l$GNI(B
-$B$1$l$P(B @kbd{RET} $B$r2!$7$F2<$5$$!#%@%&%s%m!<%I$OHsF14|$K<B9T$5$l!"(BEmacs
-$B$G9T$J$C$F$$$kB>$N;E;v$N<YKb$r$7$J$$$N$G!"$=$&$7$?$1$l$PB>$N%P%C%U%!(B
+$B$1$l$P(B @kbd{RET} $B$r2!$7$F2<$5$$!#%@%&%s%m!<%I$OHsF14|$K<B9T$5$l!"(B
+Emacs $B$G9T$J$C$F$$$kB>$N;E;v$N<YKb$r$7$J$$$N$G!"$=$&$7$?$1$l$PB>$N%P%C%U%!(B
 $B$G(B emacs-w3m $B$K$h$k1\Mw$rB3$1$k$3$H$,$G$-$^$9!#(B
 
 $B$3$N%@%&%s%m!<%I$N;EAH$_$O(B w3m $B$r;H$&$N$G$9$,!"Be$o$j$K$b$C$H6/NO(B
@@ -2164,8 +2164,8 @@ Customization})$B!#:G$b4JC1$JJ}K!$O!"0J2<$N9T$r(B @file{~/.gnus.el} $B%U%!%$%
 $B8z$G$"$k$3$H$r3NG'$9$k$?$a$N(B spammer $B$N0U?^$,$"$k$3$H$G$9!#$=$l$O!"2hA|(B
 $B$rI=<($9$k$H$-$K<+F0E*$K<hF@$7$K9T$/$G$"$m$&(B URL $B$K!"<1JLJ8;zNs$rKd$a9~(B
 $B$`$3$H$K$h$C$F9T$J$o$l$^$9!#%G%U%)%k%H$G$OJQ(B
-$B?t(B @code{mm-inline-text-html-with-images} $B$,(B @code{nil} $B$G$"$C$F!"(BGnus
-$B$,>!<j$K(B spammer $B$N%5%$%H$K@\B3$9$k$3$H$O$"$j$^$;$s!#(B
+$B?t(B @code{mm-inline-text-html-with-images} $B$,(B @code{nil} $B$G$"$C$F!"(B
+Gnus $B$,>!<j$K(B spammer $B$N%5%$%H$K@\B3$9$k$3$H$O$"$j$^$;$s!#(B
 
 @code{mm-inline-text-html-with-images} $B$r(B @code{t} $B$K$9$l$P!"5-;v%P%C%U%!(B
 $B$K%$%s%i%$%s2hA|$rI=<($9$k$3$H$,$G$-$^$9$h$M(B?  $B$$$$$(!"CG$8$F0c$$$^$9!#(B
@@ -2323,9 +2323,9 @@ Q. $BF0:n$9$k(B Emacs $B$O(B?
 $B$j$^$9!#>\$7$/$O(B @xref{Other Requirements} $B$r3NG'$7$F2<$5$$!#(B
 
 Emacs-w3m $B$O(B Emacs 19.34 $B$d(B Mule $B5!G=$,L5$$(B XEmacs $B$GF0:n$7$^$9!#$?$@$7(B
-$BF|K\$NE75$M=Js$r8+$k$J$I!"$$$/$D$+$N%3%^%s%I$,;H$($^$;$s!#$=$l$i$O(B Mule
-$B$N5!G=$K6/$/0MB8$7$F$$$k$N$G!"(BEmacs 19.34 $B$d(B Mule $B$,L5$$(B XEmacs $B$G$OF0:n(B
-$B$7$^$;$s!#(B
+$BF|K\$NE75$M=Js$r8+$k$J$I!"$$$/$D$+$N%3%^%s%I$,;H$($^$;$s!#$=$l$i(B
+$B$O(B Mule $B$N5!G=$K6/$/0MB8$7$F$$$k$N$G!"(BEmacs 19.34 $B$d(B Mule $B$,L5(B
+$B$$(B XEmacs $B$G$OF0:n$7$^$;$s!#(B
 
 @item
 Q. $BF0:n$9$k(B w3m $B$O(B?
@@ -2472,10 +2472,10 @@ Image Magick $B$K4^$^$l$F$$$k(B @samp{convert} $B%W%m%0%i%`$r%$%s%9%H!<%k$7$F
 $B2<$5$$!#(B@uref{http://www.imagemagick.org/} $B$+$iF~<j$G$-$^$9!#(B
 
 @item
-Q. Emacs21 $B$G(B favicon $B$rI=<($7$h$&$H$7$?$N$G$9$,!"(BEmacs $B$,%m%C%/$7$^$7$?(B
-/ $B$^$?$O(B emacs-w3m $B$rN)$A>e$2$h$&$H$7$?$i!"7c$7$/%G%#%9%/%"%/%;%9$7$?8e!"(B
-@samp{process convert exited abnormally with code 10} $B$J$I$HI=<($5$l$^$7(B
-$B$?!#(B
+Q. Emacs21 $B$G(B favicon $B$rI=<($7$h$&$H$7$?$N$G$9$,!"(BEmacs $B$,%m%C%/$7$^$7(B
+$B$?(B / $B$^$?$O(B emacs-w3m $B$rN)$A>e$2$h$&$H$7$?$i!"7c$7$/%G%#%9%/%"%/%;%9$7$?(B
+$B8e!"(B@samp{process convert exited abnormally with code 10} $B$J$I$HI=<($5$l(B
+$B$^$7$?!#(B
 
 Image Magick $B$N%P!<%8%g%s$r3NG'$7$F2<$5$$!#(BImageMagick-5.2.1 $BIUB0(B
 $B$N(B @samp{convert} $B$G$O$=$&$J$j$^$7$?!#(BImageMagick-5.4.0-5 $B0J>e$KIUB0(B
@@ -2781,10 +2781,10 @@ F1 $B%U%!%s(B		f1fan.news
                         f1express.Toyota-news f1express.F1-release
                         f1express.info
 
-* $BMxMQ$9$k$K$O!"(BMule-UCS (ftp://ftp.m17n.org/pub/mule/Mule-UCS/)$B$r%$%s%9(B
-  $B%H!<%k$7$F$*$/I,MW$,$"$j$^$9!#(Bemacs-21.2 $B$GMxMQ$9$k>l9g$O!"(BMule-UCS $B$K(B
-  patch (http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html)$B$rE,(B
-  $BMQ$7$?$[$&$,$$$$$G$7$g$&!#(B
+* $BMxMQ$9$k$K$O!"(BMule-UCS (ftp://ftp.m17n.org/pub/mule/Mule-UCS/) $B$r%$%s(B
+  $B%9%H!<%k$7$F$*$/I,MW$,$"$j$^$9!#(Bemacs-21.2 $B$GMxMQ$9$k>l9g$O!"(BMule-UCS
+  $B$K(B patch (http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html)$B$r(B
+  $BE,MQ$7$?$[$&$,$$$$$G$7$g$&!#(B
 
 2-5. $B$=$NB>(B
 
@@ -2854,14 +2854,15 @@ PCWEB COLUMN Square	pcweb-column.gyokai pcweb-column.benri
 @cindex nnshimbun
 @cindex Web Newspaper
 
-@samp{Nnshimbun} $B$O(B Gnus $B$N%P%C%/%(%s%I$G$9!#$7$+$7$J$,$i!"Nc30E*$K(B Gnus
-$B$G$O$J$/$F(B emacs-w3m $B$H$H$b$KG[I[$5$l$F$$$^$9!#(B@samp{Nnshimbun} $B$O(B Gnus
-$B$rJB30$l$FJXMx$J%&%'%V%V%i%&%6$K$9$k$3$H$,$G$-$^$9!#$9$Y$F$N9-9p$KHQ$o$5(B
-$B$l$:$K?7J9<R$N%&%'%V%5!<%P$G5-;v$r=&$$FI$_$9$k$3$H$,$G$-$^$9!#%a!<%j%s%0(B
-$B%j%9%H$N5-;v%"!<%+%$%V$r!"$=$N%j%9%H$K9VFIEPO?$7$F$$$k$h$&$KFI$`$3$H$,$G(B
-$B$-$^$9!#7G<(HD$N=q$-9~$_$bFI$`$3$H$,$G$-$^$9!#Ey!9(B... $B$G(B
-$B$b(B Gnus $B$O(B @samp{nnshimbun} $B$G%&%'%V$r2p$7$?Ej9F$,$G$-$J$$$N$G!"%U%)%m!<(B
-$B$7$?$$$H$-$O(B emacs-w3m $B$r;H$&I,MW$o$J$1$l$P$$$1$J$$$3$H$KCm0U$7$F2<$5$$!#(B
+@samp{Nnshimbun} $B$O(B Gnus $B$N%P%C%/%(%s%I$G$9!#$7$+$7$J$,$i!"Nc30E*(B
+$B$K(B Gnus $B$G$O$J$/$F(B emacs-w3m $B$H$H$b$KG[I[$5$l$F$$$^$9!#(B
+@samp{Nnshimbun} $B$O(B Gnus $B$rJB30$l$FJXMx$J%&%'%V%V%i%&%6$K$9$k$3$H$,$G$-(B
+$B$^$9!#$9$Y$F$N9-9p$KHQ$o$5$l$:$K?7J9<R$N%&%'%V%5!<%P$G5-;v$r=&$$FI$_$9$k(B
+$B$3$H$,$G$-$^$9!#%a!<%j%s%0%j%9%H$N5-;v%"!<%+%$%V$r!"$=$N%j%9%H$K9VFIEPO?(B
+$B$7$F$$$k$h$&$KFI$`$3$H$,$G$-$^$9!#7G<(HD$N=q$-9~$_$bFI$`$3$H$,$G$-$^$9!#(B
+$BEy!9(B... $B$G$b(B Gnus $B$O(B @samp{nnshimbun} $B$G%&%'%V$r2p$7$?Ej9F$,$G$-$J$$$N$G!"(B
+$B%U%)%m!<$7$?$$$H$-$O(B emacs-w3m $B$r;H$&I,MW$o$J$1$l$P$$$1$J$$$3$H$KCm0U$7(B
+$B$F2<$5$$!#(B
 
 $B0J2<$N9T$r(B @file{~/.gnus.el} $B%U%!%$%k$KF~$l$F2<$5$$(B:
 
