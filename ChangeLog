@@ -1,3 +1,7 @@
+2002-04-08  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* octet.el: Update URL for xlhtml.
+
 2002-04-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el: Don't require `pcustom'.

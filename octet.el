@@ -34,9 +34,9 @@
 ;; wvHtml for MS Word document.
 ;; (http://www.wvware.com/)
 ;; xlHtml for MS Excel document.
-;; (http://www.xlhtml.org/)
+;; (http://chicago.sourceforge.net/xlhtml/)
 ;; pptHtml for MS PowerPoint document.
-;; (http://www.xlhtml.org/)
+;; (http://chicago.sourceforge.net/xlhtml/)
 ;; gunzip for decoding gzipped file.
 
 ;; Put follwing line in your setting file:
