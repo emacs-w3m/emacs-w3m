@@ -20,7 +20,7 @@ DOCS    = COPYING ChangeLog README README.ja
 .SUFFIXES: .elc .el
 
 default:
-	@modules="$(MODULES)"; echo "$(MAKE) $$modules"; $(MAKE) $$modules
+	@modules="$(MODULES)"; echo "$(MAKE) -k $$modules"; $(MAKE) -k $$modules
 
 .el.elc:
 	$(ECC) $<
