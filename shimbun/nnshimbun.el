@@ -28,39 +28,15 @@
 
 ;;; Commentary:
 
-;; This is a Gnus back end to read newspapers on the World Wide Web.
-;; This module requires the shimbun libraries which is distributed
-;; with emacs-w3m.  Visit the following pages for more information:
+;; This is a Gnus back end to read web contents all over the world.
+;; This back end requires one or more shimbun modules to make it work.
+;; There are many pre-made shimbun modules designed for various web
+;; sites, moreover, you can even make the modules for the specific
+;; sites by yourself.
 ;;
-;;	http://emacs-w3m.namazu.org/
-;;	http://w3m.sourceforge.net/
-;;
-;; Install:
-;;
-;; You need to have installed in advance the latest APEL package, the
-;; latest FLIM package and the latest Gnus that you can find at the
-;; following places respectively:
-;;
-;;	ftp://ftp.m17n.org/pub/mule/apel/
-;;	ftp://ftp.m17n.org/pub/mule/flim/
-;;	ftp://ftp.gnus.org/pub/gnus/
-;;
-;; Consult the README file, install emacs-w3m and check whether this
-;; module, the shimbun libraries (including shimbun.elc and many of
-;; sb-*.elc files) and the emacs-w3m info files have also been
-;; installed properly.
-;;
-;; Put the following expression in your ~/.gnus.el file:
-;;
-;;	(autoload 'gnus-group-make-shimbun-group "nnshimbun" nil t)
-;;
-;; Note: it isn't necessary if you are using T-gnus.
-;;
-;; Usage:
-;;
-;; See the emacs-w3m info (C-h i m emacs-w3m RET m Nnshimbun RET), you
-;; can find the paragraph "The easiest way to get started...".
-
+;; Note that you need to have APEL and FLIM packages installed before
+;; installing this back end together with emacs-w3m.  See the emacs-w3m
+;; Info manual for further informations.
 
 ;;; Code:
 
@@ -80,7 +56,7 @@
   (autoload 'parse-time-string "parse-time"))
 
 (defgroup nnshimbun nil
-  "Reading Web Newspapers with Gnus."
+  "Reading web contents with Gnus."
   :group 'gnus)
 
 
@@ -88,9 +64,9 @@
 
 (defcustom nnshimbun-keep-backlog 300
   "*If non-nil, nnshimbun will keep read articles for later re-retrieval.
-If it is a number N, then nnshimbun will only keep the last N articles
+If it is a number N, then nnshimbun will keep only the last N articles
 read.  If it is neither nil nor a number, nnshimbun will keep all read
-articles.  That is not a good idea.
+articles.  That is not a good idea, though.
 
 Note that smaller values may spoil the `prefetch-articles' feature,
 since nnshimbun uses the backlog to keep the prefetched articles."
@@ -202,49 +178,49 @@ Return nnshimbun GROUP's group parameters as a plist."
  :variable nnshimbun-group-parameters-alist
  :variable-default nil
  :variable-document "\
-Alist of nnshimbun group parameters.  Each element should be a cons of
-a group name regexp and a plist which contains a keyword and a value
-pairs like the following:
+Alist of nnshimbun group parameters.
+Each element should be a cons of a regexp matching group names and a
+plist which contains keyword-value pairs, like the following:
 
 '(\"^nnshimbun\\\\+asahi:\" index-range all prefetch-articles off
   encapsulate-images on expiry-wait 6)
 
-`index-range' specifies a range of how many indices should be checked
-for detecting new articles.  The valid values include:
+`index-range' specifies the number of indices that should be checked
+to detect new articles.  The valid values include:
+
       all: Retrieve all header indices.
      last: Retrieve the last header index.
 integer N: Retrieve N pages of header indices.
 
-`prefetch-articles' specifies whether to pre-fetch the unread articles
-when scanning the group.
+`prefetch-articles' specifies whether to pre-fetch articles when
+scanning the group.
 
-`encapsulate-images' specifies whether to embed the inline images in
-the shimbun article.
+`encapsulate-images' specifies whether to embed inline images into
+shimbun articles.
 
-`expiry-wait' has the same meaning as the standard `expiry-wait' group
-parameter, but it takes precedence over the standard one."
+`expiry-wait' overrides the parameter of the same name in Gnus."
  :variable-group nnshimbun
  :variable-type `(repeat (cons :format "%v" (regexp :tag "Group name regexp"
 						    :value "^nnshimbun\\+")
 			       ,nnshimbun-group-parameters-custom))
  :parameter-type nnshimbun-group-parameters-custom
  :parameter-document "\
-Group parameters for the nnshimbun group.
+Group parameters for the nnshimbun groups.
 
-`Index range' specifies a range of how many indices should be checked
-for detecting new articles.  The valid values include:
+`Index range' specifies the number of indices that should be checked
+to detect new articles.  The valid values include:
+
       all: Retrieve all header indices.
      last: Retrieve the last header index.
 integer N: Retrieve N pages of header indices.
 
-`Prefetch articles' specifies whether to pre-fetch the unread articles
-when scanning the group.
+`Prefetch articles' specifies whether to pre-fetch articles when
+scanning the group.
 
-`Encapsulate article' specifies whether to embed inline images in the
-shimbun article.
+`Encapsulate article' specifies whether to embed inline images into
+shimbun articles.
 
-`Expire wait' has the same meaning as the standard `expiry-wait' group
-parameter, but it takes precedence over the standard one.")
+`Expire wait' overrides the parameter of the same name in Gnus.")
 
 
 ;; The back end definitions:
@@ -262,21 +238,21 @@ Actually, you can find the NOV file in the SERVER/GROUP/ subdirectory.")
 (defvoo nnshimbun-nov-file-name ".overview")
 
 (defvoo nnshimbun-pre-fetch-article 'off
-  "*If it is neither `off' nor nil, nnshimbun fetches unread articles when
-scanning the group.  This provides just a default value for all the
-nnshimbun groups.  You can use the `prefecth-articles' nnshimbun group
-parameter for each nnshimbun group.")
+  "*If it is neither `off' nor nil, nnshimbun will pre-fetch articles.
+It is done when scanning the group.  This simply provides a default
+value for all the nnshimbun groups.  You can use the
+`prefecth-articles' nnshimbun group parameter for each nnshimbun group.")
 
 (defvoo nnshimbun-encapsulate-images shimbun-encapsulate-images
-  "*If it is neither `off' nor nil, nnshimbun will embed the inline images
-in the shimbun article.  This provides just a default value for all
-the nnshimbun groups.  You can use the `encapsulate-images' nnshimbun
-group parameter for each nnshimbun group.")
+  "*If neither `off' or nil, nnshimbun will embed inline images in articles.
+This simply provides a default value for all the nnshimbun groups.
+You can use the `encapsulate-images' nnshimbun group parameter for
+each nnshimbun group.")
 
 (defvoo nnshimbun-index-range nil
-  "*Range of how many indices should be checked for detecting new articles.
-`all' or nil is for all indices, `last' is for the last index, and a
-integer N is for the last N pages of indices.  This provides just a
+  "*The number of indices that should be checked to detect new articles.
+`all' or nil is for all indices, `last' is for the last index, and an
+integer N is for the last N pages of indices.  This simply provides a
 default value for all the nnshimbun groups.  You can use the
 `index-range' nnshimbun group parameter for each nnshimbun group.")
 
@@ -317,8 +293,8 @@ default value for all the nnshimbun groups.  You can use the
 (put 'nnshimbun-backlog 'edebug-form-spec t)
 
 (defmacro nnshimbun-find-parameter (group symbol &optional full-name-p)
-  "Return the value of GROUP's nnshimbun group parameter which corresponds
-to SYMBOL.  If FULL-NAME-P is non-nil, it treats GROUP as a full name."
+  "Return GROUP's nnshimbun group parameter corresponding to SYMBOL.
+If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
   (let ((name (if full-name-p
 		  group
 		`(concat "nnshimbun+" (nnshimbun-current-server) ":" ,group))))
@@ -435,9 +411,8 @@ to SYMBOL.  If FULL-NAME-P is non-nil, it treats GROUP as a full name."
   t)
 
 (defun nnshimbun-replace-date-header (article header)
-  "This function definition should be replaced with the proper one for
-the running Gnus version to keep compatibility with the Gnusae variants
-when it is called at the first time."
+  ;; This function definition should be replaced with the proper one
+  ;; when it is called at the first time.
   (require 'gnus-sum)
   (require 'bytecomp)
   (defalias 'nnshimbun-replace-date-header
@@ -582,9 +557,9 @@ when it is called at the first time."
 The macro `nnshimbun-string-or' uses it exclusively.")
 
 (defmacro nnshimbun-string-or (&rest strings)
-  "Return the first element of STRINGS that is a non-blank string.  It
-should run fast, especially if two strings are given.  Each string can
-also be nil."
+  "Return the first element of STRINGS that is a non-blank string.
+It should run fast, especially if two strings are given.  nil is
+allowed for each string."
   (cond ((null strings)
 	 nil)
 	((= 1 (length strings))
@@ -608,7 +583,7 @@ also be nil."
   (insert "\n")
   (backward-char 1)
   (let ((header-id (nnshimbun-string-or (shimbun-header-id header)))
-	;; Force `princ' to work in the current buffer.
+	;; Make `princ' print string in the current buffer.
 	(standard-output (current-buffer))
 	(xref (nnshimbun-string-or (shimbun-header-xref header)))
 	(extra (shimbun-header-extra header))
@@ -701,8 +676,8 @@ also be nil."
       (when found
 	(ignore-errors (read (current-buffer)))))))
 
-;; This function is defined as the alternative of `nnheader-parse-nov',
-;; in order to keep compatibility between T-gnus and Oort Gnus.
+;; This function is defined as the alternative of `nnheader-parse-nov'
+;; in order to keep the compatibility between T-gnus and Gnus.
 (defun nnshimbun-parse-nov ()
   (let ((eol (shimbun-point-at-eol)))
     (let ((number  (nnheader-nov-read-integer))
@@ -776,7 +751,7 @@ article to be expired.  The optional fourth argument FORCE is ignored."
 	   ;; of `nnmail-expiry-wait' will be bound to that value, and the
 	   ;; value of `nnmail-expiry-wait-function' will be bound to nil.
 	   ;; See the `gnus-summary-expire-articles' function definition to
-	   ;; know how does it work.  If the group's parameter is not
+	   ;; understand how it works.  If the group's parameter is not
 	   ;; specified by the user, the shimbun's default value will be
 	   ;; used instead.
 	   (expiry-wait
@@ -856,8 +831,7 @@ Other files in the directory are also deleted."
 ;; Functions to follow anchors that point previous articles:
 
 (defun nnshimbun-search-xref (group url)
-  "Search an article generated from a given URL in the GROUP,
-and return its header."
+  "Return the header of the article corresponding to URL in GROUP."
   (let ((buffer (nnshimbun-nov-buffer-name group)))
     (when (gnus-buffer-live-p buffer)
       (with-current-buffer buffer
@@ -878,7 +852,7 @@ and return its header."
 
 ;;;###autoload
 (defun gnus-summary-refer-shimbun-article (url)
-  "Show a shimbun article pointed by the given URL."
+  "Show a shimbun article pointed to by the given URL."
   (interactive "sURL: ")
   (let ((method (gnus-find-method-for-group gnus-newsgroup-name))
 	(header))
