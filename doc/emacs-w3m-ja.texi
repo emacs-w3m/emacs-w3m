@@ -3554,9 +3554,8 @@ kantei.m-magazine
 jpo.news jpo.revision jpo.lawguide jpo.details
 
 @item IBM developerWorks
-ibm-dev.components ibm-dev.java ibm-dev.linux ibm-dev.opensource
-ibm-dev.security ibm-dev.unicode ibm-dev.usability ibm-dev.web
-ibm-dev.webservices ibm-dev.xml
+ibm-dev.java ibm-dev.linux ibm-dev.opensource ibm-dev.webservices
+ibm-dev.xml
 
 @item Muchy's Palmware Review!
 muchy.review
@@ -3623,14 +3622,17 @@ Mew $B$J$I$N(B MUA $B$rMxMQ$7!"(Bweb contents $B$r%a!<%k$HF1$8(B user inte
 
 @lisp
 (require 'shimbun)
-(luna-define-class shimbun-foobar-dev (shimbun) ())
+(luna-define-class shimbun-foobar (shimbun) ())
 @end lisp
 
 @noindent
 $B$N$h$&$J@k8@$rF~$l$F$*$/$3$H$G$9!#=y!9$KJ,$+$k$H;W$$$^$9$N$G!":#$O$*$^$8(B
-$B$J$$$H;W$C$F$*$$$F2<$5$$!#(B
+$B$J$$$H;W$C$F$*$$$F2<$5$$!#Cm0U$9$Y$-$3$H$O!"(Bshimbun $B%b%8%e!<%k$rF~$l$k%U%!(B
+$B%$%kL>$N(B @file{sb-foobar.el} $B$N(B @samp{foobar} $B$NL>A0$H!"(B
+@code{luna-define-class}  $B$NBh0l0z?t$N(B @samp{shimbun-foobar} $B$N(B
+@samp{foobar} $B$NL>A0$O9g$o$;$F$*$/I,MW$,$"$j$^$9!#(B
 
-@samp{foobar} $B%b%8%e!<%k$,$3$J$9$Y$-;E;v$OBg$-$/(B 4 $B$D$"$j$^$9!#(B
+shimbun $B%b%8%e!<%k(B @samp{foobar} $B$,$3$J$9$Y$-;E;v$OBg$-$/(B 4 $B$D$"$j$^$9!#(B
 
 @enumerate
 @item
@@ -3671,14 +3673,14 @@ MUA $B$,(B @samp{foobar} $B$N$"$k5-;v$N1\Mw$rMW5a$7$?$i!"<B:]$N5-;vFbMF$r5-:\
 
 @file{shimbun.el} $B$NCf$G$O!"(B@code{shimbun-headers} $B$,$"$k(B
 URL $B$N(B web page $B$r<hF@$7!"(B@code{shimbun-get-headers} $B$,$=$N(B web page $B$+(B
-$B$iI8Bj$J$I$rH4$-=P$7(B...$B$H$$$&A0=R$N<j=g$,%O!<%I%3!<%G%#%s%0$K$h$j7h$aBG(B
-$B$A$5$l$F$$$^$9!#$7$+$7!"7h$aBG$A$9$k$@$1$G$O!"@i:9K|JL$N(B web page $B$r!"$=(B
-$B$N(B web page $B$N9=B$$K9g$o$;$FJQ2=$5$;$k$3$H$,$G$-$^$;$s!#(B
+$BI8Bj$J$I$rH4$-=P$7(B...$B$H$$$&A0=R$N<j=g$,%O!<%I%3!<%G%#%s%0$5$l$F$$$^$9!#(B
+$B$7$+$7!"7h$aBG$A$9$k$@$1$G$O!"@i:9K|JL$N(B web page $B$r!"$=$N(B web page $B$N9=(B
+$BB$$K9g$o$;$FJQ2=$5$;$k$3$H$,$G$-$^$;$s!#(B
 
 $B$=$3$G(B luna $B$K$h$j!"%a%=%C%I$,%3!<%k$5$l$k<j=g$@$17h$a$F$*$$$F!"6&DL$G;H(B
 $B$($=$&$J$b$N$O(B @file{shimbun.el} $B$NCf$K%a%=%C%I$N<BBN$bDj5A$7$F$*$-(B ($B$=(B
-$B$l$9$i:FDj5A2DG=$G$9$,(B) $B!"(Bshimbun $B$K$h$jJQ2=$5$;$k$Y$-$H$3$m$O%a%=%C%I$N(B
-$B<BBNDj5A$r3F(B shimbun $B%b%8%e!<%k$KG$$;$F$$$k$N$G$9!#(B
+$B$l$9$i$b:FDj5A2DG=$G$9$,(B) $B!"(Bshimbun $B$K$h$jJQ2=$5$;$k$Y$-$H$3$m$O!"%a%=%C(B
+$B%I$N<BBNDj5A$r3F(B shimbun $B%b%8%e!<%k$KG$$;$F$$$k$N$G$9!#(B
 
 $B$b$&$*J,$+$j$N$h$&$K!"(B@code{luna-define-generic} $B$O!"8@$o$P]W$@$1$N@k8@!"(B
 @code{luna-define-method} $B$O!"(Bshimbun $B%b%8%e!<%kKh$K:n@.$G$-$k<BBN$N@k8@!#(B
@@ -3707,7 +3709,7 @@ URL $B$N(B web page $B$r<hF@$7!"(B@code{shimbun-get-headers} $B$,$=$N(B we
 @end lisp
 
 @code{shimbun-headers} $B%a%=%C%I$O(B @file{shimbun.el} $B$NCf$K4{$KDj5A$5$l$F(B
-$B$$$^$9$+$i!"(B@file{sb-foobar.el} $B$G(B@code{shimbun-index-url} $B%a%=%C%I$NDj(B
+$B$$$^$9$+$i!"(B@file{sb-foobar.el} $B$G(B @code{shimbun-index-url} $B%a%=%C%I$NDj(B
 $B5A$r:n@.$9$l$P(B web page $B$N<hF@$,$G$-$k$h$&$K$J$j$^$9!#(B
 @code{shimbun-headers} $B$O(B web page $B$r<hF@$7$?8e!"(B
 @code{shimbun-get-headers} $B%a%=%C%I$r8F$S!"%X%C%@>pJs$N<}=8$KF~$j$^$9!#(B
@@ -3715,7 +3717,7 @@ URL $B$N(B web page $B$r<hF@$7!"(B@code{shimbun-get-headers} $B$,$=$N(B we
 $B$j$;$s$+$i!"(B@file{sb-foobar.el} $B$NCf$GFH<+$K%a%=%C%I$r:n@.$7$J$1$l$P$J$j(B
 $B$^$;$s!#(B
 
-@file{sb-foobar.el} $B$K(B@code{shimbun-get-headers} $B$N%a%=%C%I$r:n@.$9$k$?(B
+@file{sb-foobar.el} $B$K(B @code{shimbun-get-headers} $B$N%a%=%C%I$r:n@.$9$k$?(B
 $B$a$K!"<hF@$7$?(B page $B$N%=!<%9$rJ,@O$7$^$7$g$&!#$I$N$h$&$J@55,I=8=$G5-;v$N(B
 $B%X%C%@>pJs$r<}=8$9$k$+$r8!F$$7$^$9!#5-;v$N8+=P$7$H$7$FFC$KI,MW$J>pJs$O!"(B
 $BI8Bj!"F|IU!":n@.<T!"$=$N5-;v$N(B URL$B!"$=$7$F(B message-id $B$G$9!#$3$l$i$N>pJs(B
@@ -3793,7 +3795,7 @@ message-id $B$r:n@.$9$k$H!"5.J}$,<uNN$9$kBg;v$J%a!<%k$N$=$l$H(B conflict $B$7
 
 @noindent
 $B$J$*!"$3$N%a%=%C%I$NCf$G$O(B @code{shimbun} $B$H$$$&0l;~JQ?t$G!"(Bshimbun $B%b(B
-$B%8%e!<%k(Bfoobar $B$N%$%s%9%?%s%9$K%"%/%;%9$G$-$^$9!#(B
+$B%8%e!<%k(B foobar $B$N%$%s%9%?%s%9$K%"%/%;%9$G$-$^$9!#(B
 
 $B$H$3$m$G!"@hDx@bL@$rJ]N1$K$7$?JQ?t(B @code{shimbun-foobar-groups} $B$K$D$$$F(B
 $B$4@bL@$7$^$7$g$&!#(B
