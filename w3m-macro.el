@@ -41,12 +41,7 @@
   (require 'cl)
   ;; Variables and functions which are used in the following inline
   ;; functions.  They should be defined in the other module at run-time.
-  (defvar w3m-coding-system)
-  (defvar w3m-html-string-regexp)
-  (defvar w3m-work-buffer-list)
-  (autoload 'w3m-arrived-content-charset "w3m")
-  (autoload 'w3m-local-attributes "w3m")
-  (autoload 'w3m-w3m-attributes "w3m"))
+  (defvar w3m-work-buffer-list))
 
 ;;; Things should be defined in advance:
 
