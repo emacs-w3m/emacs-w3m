@@ -1,9 +1,16 @@
+2004-06-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-rss.el (shimbun-rss-process-date): Simplified and
+	relaxed the regular expression to be used to analyze date strings.
+	Thanks to Andreas Seltenreich for his report.
+
 2004-06-12  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
-	* w3m.el (w3m-output-coding-system): Change default value for w3m-m17n.
+	* w3m.el (w3m-output-coding-system): Change default value for
+	w3m-m17n.
 
-	* w3m-bug.el (report-emacs-w3m-bug-system-informations): 
-	Add w3m-input-coding-system and w3m-output-coding-system.
+	* w3m-bug.el (report-emacs-w3m-bug-system-informations): Add
+	w3m-input-coding-system and w3m-output-coding-system.
 
 2004-06-11  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
