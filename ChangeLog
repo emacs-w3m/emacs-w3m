@@ -1,3 +1,10 @@
+2002-03-20  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (w3m-form-parse-and-fontify): If not detect `usemap'
+	attribute of `img_alt', use `value' attribute of `input_alt' for
+	the select map name; W3M removes `usemap' attribute when
+	"display_image=off".
+
 2002-03-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-w3m-attributes): Ignore `w3m-document-charset' when

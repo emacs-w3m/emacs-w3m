@@ -353,7 +353,7 @@ If no field in forward, return nil without moving."
 Result form structure is saved to the local variable `w3m-current-forms'.
 If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
   (let ((case-fold-search t)
-	tag start end internal-start textareas selects forms maps
+	tag start end internal-start textareas selects forms maps mapval
 	form)
     (goto-char (point-min))
     (while (re-search-forward (if (eq w3m-type 'w3mmee)
@@ -412,8 +412,11 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
        ((string= tag "img_alt")
  	(w3m-parse-attributes (usemap)
  	  (re-search-forward (w3m-tag-regexp-of "/img_alt") nil t)
- 	  (when usemap
+ 	  (when (or usemap mapval)
 	    (unless maps (setq maps (w3m-form-new "map" ".")))
+	    (unless usemap
+	      (setq usemap mapval)
+	      (setq mapval nil))
  	    (add-text-properties
  	     start (match-beginning 0)
  	     `(face w3m-form-face
@@ -447,8 +450,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	      (cond
 	       ((and (string= type "hidden")
 		     (string= name "link"))
-		;; Do nothing.
-		)
+		(setq mapval value))
 	       ((or (string= type "submit")
 		    (string= type "image"))
 		(unless (string= no_effect "true")
