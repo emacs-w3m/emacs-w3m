@@ -1,3 +1,11 @@
+2001-08-07  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-content-type-alist): [Win32] Executed 'fiber' with
+	synchronous mode
+	(w3m-w32-browser-with-fiber): Ditto.
+	(w3m-external-view): Add a suffix to the temporally file name if
+	possible.
+
 2001-08-06  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-async-exec): Fix doc-string.

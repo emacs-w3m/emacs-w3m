@@ -423,18 +423,18 @@ It will be used for the w3m system internal for Emacs 21.")
   (if (eq system-type 'windows-nt)
       '(("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
 	("text/html" "\\.s?html?$" w3m-w32-browser-with-fiber)
-	("image/jpeg" "\\.jpe?g$" ("fiber.exe" file))
-	("image/png" "\\.png$" ("fiber.exe" file))
-	("image/gif" "\\gif$" ("fiber.exe" file))
-	("image/tiff" "\\tif?f$" ("fiber.exe" file))
-	("image/x-xwd" "\\.xwd$" ("fiber.exe" file))
-	("image/x-xbm" "\\.xbm$" ("fiber.exe" file))
-	("image/x-xpm" "\\.xpm$" ("fiber.exe" file))
-	("image/x-bmp" "\\.bmp$" ("fiber.exe" file))
-	("video/mpeg" "\\.mpe?g$" ("fiber.exe" file))
-	("video/quicktime" "\\.mov$" ("fiber.exe" file))
-	("application/postscript" "\\.\\(ps\\|eps\\)$" ("fiber.exe" file))
-	("application/pdf" "\\.pdf$" ("fiber.exe" file)))
+	("image/jpeg" "\\.jpe?g$" ("fiber.exe" "-s" file))
+	("image/png" "\\.png$" ("fiber.exe" "-s" file))
+	("image/gif" "\\gif$" ("fiber.exe" "-s" file))
+	("image/tiff" "\\tif?f$" ("fiber.exe" "-s" file))
+	("image/x-xwd" "\\.xwd$" ("fiber.exe" "-s" file))
+	("image/x-xbm" "\\.xbm$" ("fiber.exe" "-s" file))
+	("image/x-xpm" "\\.xpm$" ("fiber.exe" "-s" file))
+	("image/x-bmp" "\\.bmp$" ("fiber.exe" "-s" file))
+	("video/mpeg" "\\.mpe?g$" ("fiber.exe" "-s" file))
+	("video/quicktime" "\\.mov$" ("fiber.exe" "-s" file))
+	("application/postscript" "\\.\\(ps\\|eps\\)$" ("fiber.exe" "-s" file))
+	("application/pdf" "\\.pdf$" ("fiber.exe" "-s" file)))
     (cons
      (list "text/html" "\\.s?html?$"
 	   (if (and (condition-case nil (require 'browse-url) (error nil))
@@ -2813,7 +2813,12 @@ this function returns t.  Otherwise, returns nil."
 	    (arguments (cdr method))
 	    (file (make-temp-name
 		   (expand-file-name "w3mel" w3m-profile-directory)))
-	    (proc))
+	    suffix proc)
+	(setq suffix (file-name-nondirectory url))
+	(when (string-match "\\.[a-zA-Z0-9]+$" suffix)
+	  (setq suffix (match-string 0 suffix))
+	  (when (< (length suffix) 5)
+	    (setq file (concat file suffix))))
 	(if command
 	    (unwind-protect
 		(with-current-buffer
@@ -3860,7 +3865,7 @@ If called with 'prefix argument', display arrived-DB history."
 (defun w3m-w32-browser-with-fiber (url)
   (let ((proc (start-process "w3m-w32-browser-with-fiber"
 			     (current-buffer)
-			     "fiber.exe"
+			     "fiber.exe" "-s"
 			     (w3m-url-to-file-name url))))
     (set-process-filter proc 'ignore)
     (set-process-sentinel proc 'ignore)))
