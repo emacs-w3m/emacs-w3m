@@ -2380,9 +2380,13 @@ situation allows it."
 		   (not (w3m-use-tab-p)))
 	       (not (get-buffer-window w3m-select-buffer-name))))))
 
+(defvar w3m-last-visited-buffer nil
+  "Variable used to keep an emacs-w3m buffer which the user used last.")
+
 (defun w3m-popup-buffer (buffer)
   "Pop up BUFFER as a new window or a new frame
 according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
+  (setq w3m-last-visited-buffer nil)
   (let ((window (get-buffer-window buffer t))
 	(oframe (selected-frame))
 	(popup-frame-p (w3m-popup-frame-p))
@@ -5951,10 +5955,13 @@ the confirmation.  See also `w3m-close-window'."
 but all the emacs-w3m buffers remain.  Frames created for emacs-w3m
 sessions will also be closed.  See also `w3m-quit'."
   (interactive)
-  (w3m-delete-frames-and-windows)
   (let* ((buffers (w3m-list-buffers t))
 	 (bufs buffers)
+	 (curr (window-buffer (selected-window)))
 	 buf windows window)
+    (setq w3m-last-visited-buffer (when (memq curr buffers)
+				    curr))
+    (w3m-delete-frames-and-windows)
     (while bufs
       (setq buf (pop bufs))
       (w3m-cancel-refresh-timer buf)
@@ -6236,24 +6243,28 @@ or prefix ARG columns."
   (defalias 'w3m-current-column 'current-column)
   (defalias 'w3m-set-window-hscroll 'set-window-hscroll))
 
-(defun w3m-horizontal-scroll (type cols)
-  "Horizontal scroll for shift|scroll functions.
-TYPE is either 'left or 'right and COLS is columns."
+(defun w3m-horizontal-scroll (direction ncol)
+  "Scroll the window NCOL columns horizontally to DIRECTION.
+DIRECTON should be the symbol `left' which specifies to scroll to the
+left, or any other Lisp object meaning to scroll to the right.  NCOL
+should be a number.  This function is a subroutine called by the
+commands `w3m-scroll-left', `w3m-scroll-right', `w3m-shift-left' and
+`w3m-shift-right'."
   (setq w3m-horizontal-scroll-done t)
   (let ((inhibit-point-motion-hooks t))
     (w3m-set-window-hscroll (selected-window)
 			    (max 0
 				 (+ (w3m-window-hscroll)
-				    (if (eq type 'left) cols (- cols)))))
+				    (if (eq direction 'left) ncol (- ncol)))))
     (let ((hs (w3m-window-hscroll)))
       (unless (and (>= (- (current-column) hs) 0)
 		   (< (- (current-column) hs) (window-width)))
-	(move-to-column (if (eq type 'left) hs
+	(move-to-column (if (eq direction 'left) hs
 			  (+ hs (window-width)
 			     (w3m-static-if (featurep 'xemacs) -3 -2))))))))
 
 (defun w3m-horizontal-on-screen ()
-  "Horizontal scroll and show current position in the window."
+  "Scroll the window horizontally so that the current position is visible."
   (when w3m-auto-show
     (setq w3m-horizontal-scroll-done t)
     (let ((hs (w3m-window-hscroll))
@@ -6264,77 +6275,86 @@ TYPE is either 'left or 'right and COLS is columns."
 			   (w3m-static-if (featurep 'xemacs)
 			       3 2)))	;; '$$'
 		      (window-width)))
-	(w3m-set-window-hscroll (selected-window)
-				(max 0
-				     (- (current-column)
-					(if (> (window-hscroll) (w3m-current-column))
-					    (/ (window-width)
-					       w3m-horizontal-scroll-division)
-					  (* (/ (window-width)
-						w3m-horizontal-scroll-division)
-					     (1- w3m-horizontal-scroll-division))))))))))
+	(w3m-set-window-hscroll
+	 (selected-window)
+	 (max 0 (- (current-column)
+		   (if (> (window-hscroll) (w3m-current-column))
+		       (/ (window-width) w3m-horizontal-scroll-division)
+		     (* (/ (window-width) w3m-horizontal-scroll-division)
+			(1- w3m-horizontal-scroll-division))))))))))
 
 (defun w3m-horizontal-recenter (&optional arg)
-  "Recenter horizontally.  With ARG, put point on column ARG."
+  "Recenter horizontally.  With ARG, put the point on the column ARG.
+If `truncate-lines' is nil, it does nothing besides resetting the
+window's hscroll."
   (interactive "P")
-  (cond ((< (w3m-current-column) (window-hscroll))
-	 (move-to-column (w3m-window-hscroll))
-	 (setq arg 0))
-	((>= (w3m-current-column) (+ (window-hscroll) (window-width)))
-	 (move-to-column (+ (w3m-window-hscroll) (window-width) -2))
-	 (setq arg -1))
-	((listp arg)
-	 (setq arg (car arg))))
-  (w3m-set-window-hscroll (selected-window)
-			  (if (numberp arg)
-			      (if (>= arg 0)
-				  (max (- (current-column) arg) 0)
-				(let* ((home (point))
-				       (inhibit-point-motion-hooks t)
-				       (maxcolumn (prog2
-						      (end-of-line)
-						      (1- (current-column))
-						    (goto-char home))))
-				  (max (min (- (current-column)
-					       (window-width)
-					       arg
-					       -2)
-					    maxcolumn)
-				       0)))
-			    (max (- (current-column) (/ (window-width) 2) -1)
-				 0))))
+  (if truncate-lines
+      (progn
+	(cond ((< (w3m-current-column) (window-hscroll))
+	       (move-to-column (w3m-window-hscroll))
+	       (setq arg 0))
+	      ((>= (w3m-current-column) (+ (window-hscroll) (window-width)))
+	       (move-to-column (+ (w3m-window-hscroll) (window-width) -2))
+	       (setq arg -1))
+	      ((listp arg)
+	       (setq arg (car arg))))
+	(w3m-set-window-hscroll
+	 (selected-window)
+	 (if (numberp arg)
+	     (if (>= arg 0)
+		 (max (- (current-column) arg) 0)
+	       (let* ((home (point))
+		      (inhibit-point-motion-hooks t)
+		      (maxcolumn (prog2
+				     (end-of-line)
+				     (1- (current-column))
+				   (goto-char home))))
+		 (max (min (- (current-column)
+			      (window-width)
+			      arg
+			      -2)
+			   maxcolumn)
+		      0)))
+	   (max (- (current-column) (/ (window-width) 2) -1)
+		0))))
+    (set-window-hscroll (selected-window) 0)))
 
 (defun w3m-beginning-of-line (&optional arg)
-  "Like `beginning-of-line', except that set window-hscroll to zero first."
+  "Make the beginning of the line visible and move the point to there."
   (interactive "P")
   (w3m-activate-zmacs-regions)
   (when (listp arg)
     (setq arg (car arg)))
-  (w3m-set-window-hscroll (selected-window) 0)
+  (set-window-hscroll (selected-window) 0)
   (beginning-of-line arg))
 
 (defun w3m-end-of-line (&optional arg)
-  "Like `end-of-line', except that scroll left to make the line end
-positions around there (+/-3 lines) visible."
+  "Move the point to the end of the line and scroll the window left
+so that the ends of upper and lower three lines are visible.  If
+`truncate-lines' is nil, it works identically as `end-of-line'."
   (interactive "P")
   (w3m-activate-zmacs-regions)
-  (when (listp arg)
-    (setq arg (car arg)))
-  (forward-line (1- (or arg 1)))
-  (let ((inhibit-point-motion-hooks t)
-	home)
-    (end-of-line)
-    (setq home (point)
-	  arg (current-column))
-    (dolist (n '(-3 -2 -1 1 2 3))
-      (forward-line n)
-      (end-of-line)
-      (setq arg (max (current-column) arg))
-      (goto-char home)))
-  (setq temporary-goal-column arg
-	this-command 'next-line)
-  (w3m-set-window-hscroll (selected-window)
-			  (max (- arg (window-width) -2) 0)))
+  (if truncate-lines
+      (progn
+	(when (listp arg)
+	  (setq arg (car arg)))
+	(forward-line (1- (or arg 1)))
+	(let ((inhibit-point-motion-hooks t)
+	      home)
+	  (end-of-line)
+	  (setq home (point)
+		arg (current-column))
+	  (dolist (n '(-3 -2 -1 1 2 3))
+	    (forward-line n)
+	    (end-of-line)
+	    (setq arg (max (current-column) arg))
+	    (goto-char home)))
+	(setq temporary-goal-column arg
+	      this-command 'next-line)
+	(w3m-set-window-hscroll (selected-window)
+				(max (- arg (window-width) -2) 0)))
+    (set-window-hscroll (selected-window) 0)
+    (end-of-line arg)))
 
 (defun w3m-pattern-uri-replace (uri format)
   "Create a new uri based on FORMAT from URI matched by last search."
@@ -6990,7 +7010,11 @@ The optional NEW-SESSION and INTERACTIVE-P are for the internal use."
       (not url)))) ;; interactive-p
   (let ((nofetch (eq url 'popup))
 	(buffer (unless new-session
-		  (w3m-alive-p t)))
+		  (if (and (bufferp w3m-last-visited-buffer)
+			   (with-current-buffer w3m-last-visited-buffer
+			     (eq major-mode 'w3m-mode)))
+		      w3m-last-visited-buffer
+		    (w3m-alive-p t))))
 	(popup-frame-p (and (not interactive-p) (w3m-popup-frame-p)))
 	(w3m-pop-up-frames (and interactive-p w3m-pop-up-frames))
 	(w3m-pop-up-windows (and interactive-p w3m-pop-up-windows)))

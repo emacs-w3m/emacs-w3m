@@ -1,6 +1,21 @@
+2003-11-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-last-visited-buffer): New variable.
+	(w3m-popup-buffer): Clear `w3m-last-visited-buffer'.
+	(w3m-close-window): Set the last emacs-w3m buffer as
+	`w3m-last-visited-buffer'.
+	(w3m): Preferably use the last emacs-w3m buffer kept in
+	`w3m-last-visited-buffer'.
+
 2003-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-display-width): Move forward (see the comment).
+	* w3m.el (w3m-horizontal-recenter): Do nothing besides resetting
+	the window's hscroll if `truncate-lines' is nil.
+	(w3m-beginning-of-line): Replace `w3m-set-window-hscroll' with
+	`set-window-hscroll'.
+	(w3m-end-of-line): Make it work identically as `end-of-line' if
+	`truncate-lines' is nil.
+	(w3m-display-width): Move downward (see the comment).
 
 2003-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
