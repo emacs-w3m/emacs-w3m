@@ -1,5 +1,10 @@
 2004-01-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-month-alist):
+	Abolished.
+	(shimbun-slashdot-jp-parse-date-string): Follow the change of the
+	site design.
+
 	* w3m.el (w3m-active-region-or-url-at-point): New function.
 	(w3m-input-url, w3m-view-this-url, w3m-goto-url): Call
 	`w3m-active-region-or-url-at-point' instead of `w3m-url-at-point'.

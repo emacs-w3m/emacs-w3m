@@ -156,43 +156,14 @@
 	     (throw 'range-check headers)))
       headers)))
 
-(defconst shimbun-slashdot-jp-month-alist
-  '(("January" . 1)
-    ("February" . 2)
-    ("March" . 3)
-    ("April" . 4)
-    ("May" . 5)
-    ("June" . 6)
-    ("July" . 7)
-    ("August" . 8)
-    ("September" . 9)
-    ("October" . 10)
-    ("November" . 11)
-    ("December" . 12)))
-
-(defsubst shimbun-slashdot-jp-parse-date-string (time)
-  (setq time (decode-time time))
-  (when (looking-at
-	 (eval-when-compile
-	   (concat
-	    " *[A-z]+ \\([A-z]+\\) \\([0-9]+\\), "
-	    "@\\([0-9]+\\):\\([0-9]+\\)\\(AM\\|\\(PM\\)\\)")))
-    (let ((month (cdr (assoc (match-string 1)
-			     shimbun-slashdot-jp-month-alist)))
-	  (day   (string-to-number (match-string 2)))
-	  (hour  (string-to-number (match-string 3)))
-	  (min   (string-to-number (match-string 4))))
-      (cond
-       ((and (match-beginning 6) (not (= hour 12)))	;; 0PM-11PM
-	(setq hour (+ 12 hour)))			;; 12PM means 12:00
-       ((and (not (match-beginning 6)) (= hour 12))	;; 12AM means 0:00
-	(setq hour (- 12 hour))))
-      (shimbun-make-date-string (if (and (= month 1)
-					 (> (nth 4 time) month))
-				    (1+ (nth 5 time))
-				  (nth 5 time))
-				month day
-				(format "%02d:%02d" hour min)))))
+(defsubst shimbun-slashdot-jp-parse-date-string ()
+  (let (month day hour min)
+    (when (looking-at " *\\([0-9]+\\)年\\([01][0-9]\\)月\\([0123][0-9]\\)日\
+ *\\([0-9]+:[0-9]+\\)")
+      (shimbun-make-date-string (string-to-number (match-string 1))
+				(string-to-number (match-string 2))
+				(string-to-number (match-string 3))
+				(match-string 4)))))
 
 (defconst shimbun-slashdot-jp-story-head-start-pattern
   "<!-- start template: ID 45, storysearch;search;default -->")
@@ -240,8 +211,7 @@
 				       (shimbun-mime-encode-string
 					(match-string 1)))
 	      (goto-char (match-end 0))
-	      (when (setq x (shimbun-slashdot-jp-parse-date-string
-			     (current-time)))
+	      (when (setq x (shimbun-slashdot-jp-parse-date-string))
 		(shimbun-header-set-date head x)
 		(push head headers)))
 	    (forward-line 1)))))
@@ -292,10 +262,10 @@
 	(let ((date (shimbun-time-parse-string (shimbun-header-date parent))))
 	  (shimbun-header-set-date
 	   head
-	   (or (shimbun-slashdot-jp-parse-date-string date)
+	   (or (shimbun-slashdot-jp-parse-date-string)
 	       (progn
 		 (forward-line 1)
-		 (shimbun-slashdot-jp-parse-date-string date))))))
+		 (shimbun-slashdot-jp-parse-date-string))))))
       (forward-line 1)
       (when parent
 	(let ((pos (point)))
