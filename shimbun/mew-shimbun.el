@@ -828,12 +828,22 @@ If called with '\\[universal-argument]', remove 'unseen' mark in the region."
   (let ((str (mew-buffer-substring
 	      (point-min)
 	      (min (point-max) (+ (point-min) 6144)))) ;; (* 4096 1.5)
-	(case-fold-search nil))
+	(case-fold-search nil)
+	beg)
     (with-temp-buffer
       (insert str)
       (goto-char (point-min))
+      ;; boundary include current-time()
       (while (re-search-forward "===shimbun_[0-9]+_[0-9]+_[0-9]+===" nil t)
 	(replace-match ""))
+      (goto-char (point-min))
+      ;; delete X-Face:
+      (when (re-search-forward "^X-Face:" nil t)
+	(beginning-of-line)
+	(setq beg (point))
+	(forward-line)
+	(mew-header-goto-next)
+	(delete-region beg (point)))
       (mew-md5
        (string-as-unibyte
 	(mew-buffer-substring (point-min)
