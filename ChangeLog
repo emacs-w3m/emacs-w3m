@@ -1,3 +1,21 @@
+2002-07-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-image-viewer): New option.
+	(w3m-content-type-alist): Refer it.
+
+2002-07-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-perldoc.el (w3m-about-perldoc): Install workaround to
+	specify the place in which pod2html generates its cache files.
+	Adjust links pointing other perldocs.
+
+2002-07-08  OKAZAKI Tetsurou  <okazaki@be.to>
+
+	* configure.in: Use `AC_PATH_EMACS' instead of `AC_CHECK_EMACS'.
+
+	* aclocal.m4 (AC_PATH_EMACS): New macro.
+	(AC_CHECK_EMACS): Removed.
+
 2002-07-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-decoder-alist): Don't examine the existence of w3m

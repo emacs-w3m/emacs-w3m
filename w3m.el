@@ -135,7 +135,12 @@
 (eval-when-compile
   (autoload 'rfc2368-parse-mailto-url "rfc2368"))
 
-(defconst emacs-w3m-version "1.3"
+(defconst emacs-w3m-version
+  (eval-when-compile
+    (let ((rev "$Revision$"))
+      (and (string-match "\\.\\([0-9]+\\) \$$" rev)
+	   (format "1.2.%d"
+		   (- (string-to-number (match-string 1 rev)) 426)))))
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -720,6 +725,15 @@ downloading something from a url."
   :group 'w3m
   :type 'string)
 
+(defvar w3m-image-viewer
+  (or (w3m-which-command "display")
+      (w3m-which-command "eeyes")
+      (w3m-which-command "xloadimage")
+      (w3m-which-command "xv"))
+  "*Command to view image files.
+Note: this option is installed temporally.  It will be abolished by
+the implement of the mailcap parser to set `w3m-content-type-alist'.")
+
 ;; FIXME: 本当は mailcap を適切に読み込んで設定する必要がある
 (defcustom w3m-content-type-alist
   (if (eq system-type 'windows-nt)
@@ -737,25 +751,24 @@ downloading something from a url."
 	("video/quicktime" "\\.mov$" ("fiber.exe" "-s" file))
 	("application/postscript" "\\.\\(ps\\|eps\\)$" ("fiber.exe" "-s" file))
 	("application/pdf" "\\.pdf$" ("fiber.exe" "-s" file)))
-    (cons
-     (list "text/html" "\\.s?html?$"
-	   (if (and (condition-case nil (require 'browse-url) (error nil))
-		    (fboundp 'browse-url-netscape))
-	       'browse-url-netscape
-	     '("netscape" url)))
-     '(("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
-       ("image/jpeg" "\\.jpe?g$" ("xv" file))
-       ("image/png" "\\.png$" ("xv" file))
-       ("image/gif" "\\.gif$" ("xv" file))
-       ("image/tiff" "\\.tif?f$" ("xv" file))
-       ("image/x-xwd" "\\.xwd$" ("xv" file))
-       ("image/x-xbm" "\\.xbm$" ("xv" file))
-       ("image/x-xpm" "\\.xpm$" ("xv" file))
-       ("image/x-bmp" "\\.bmp$" ("xv" file))
-       ("video/mpeg" "\\.mpe?g$" ("mpeg_play" file))
-       ("video/quicktime" "\\.mov$" ("mpeg_play" file))
-       ("application/postscript" "\\.\\(ps\\|eps\\)$" ("gv" file))
-       ("application/pdf" "\\.pdf$" ("acroread" file)))))
+    `(("text/html" "\\.s?html?$"
+       ,(if (and (condition-case nil (require 'browse-url) (error nil))
+		 (fboundp 'browse-url-netscape))
+	    'browse-url-netscape
+	  '("netscape" url)))
+      ("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
+      ("image/jpeg" "\\.jpe?g$" (,w3m-image-viewer file))
+      ("image/png" "\\.png$" (,w3m-image-viewer file))
+      ("image/gif" "\\.gif$" (,w3m-image-viewer file))
+      ("image/tiff" "\\.tif?f$" (,w3m-image-viewer file))
+      ("image/x-xwd" "\\.xwd$" (,w3m-image-viewer file))
+      ("image/x-xbm" "\\.xbm$" (,w3m-image-viewer file))
+      ("image/x-xpm" "\\.xpm$" (,w3m-image-viewer file))
+      ("image/x-bmp" "\\.bmp$" (,w3m-image-viewer file))
+      ("video/mpeg" "\\.mpe?g$" ("mpeg_play" file))
+      ("video/quicktime" "\\.mov$" ("mpeg_play" file))
+      ("application/postscript" "\\.\\(ps\\|eps\\)$" ("gv" file))
+      ("application/pdf" "\\.pdf$" ("acroread" file))))
   "*Alist of file suffixes vs. content type."
   :group 'w3m
   :type '(repeat

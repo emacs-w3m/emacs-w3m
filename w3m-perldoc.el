@@ -57,17 +57,33 @@
 ;;;###autoload
 (defun w3m-about-perldoc (url &optional no-decode no-cache &rest args)
   (when (string-match "\\`about://perldoc/" url)
-    (let ((default-directory w3m-profile-directory)
-	  (docname (w3m-url-decode-string (substring url (match-end 0)))))
-      (and (> (length docname) 0)
-	   (zerop (call-process w3m-perldoc-command
+    (let ((docname (if (= (length url) (match-end 0))
+		       "perl"
+		     (w3m-url-decode-string (substring url (match-end 0)))))
+	  (default-directory w3m-profile-directory)
+	  (process-environment (copy-sequence process-environment)))
+      ;; To specify the place in which pod2html generates its cache files.
+      (setenv "HOME" (expand-file-name w3m-profile-directory))
+      (and (zerop (call-process w3m-perldoc-command
 				nil t nil "-u" docname))
 	   (zerop (apply (function call-process-region)
 			 (point-min) (point-max)
 			 w3m-perldoc-pod2html-command
 			 t '(t nil) nil
-			 w3m-perldoc-pod2html-arguments))
-	   "text/html"))))
+			 (append w3m-perldoc-pod2html-arguments
+				 '("--htmlroot=about://perldoc"))))
+	   (let ((case-fold-search t))
+	     (goto-char (point-min))
+	     (while (re-search-forward
+		     "<a href=\"about://perldoc/\\([^\"]*\\)\\(\\.html\\)\">" nil t)
+	       (delete-region (match-beginning 2) (match-end 2))
+	       (save-restriction
+		 (narrow-to-region (match-beginning 1) (match-end 1))
+		 (while (search-backward "/" nil t)
+		   (delete-char 1)
+		   (insert "::"))
+		 (goto-char (point-max))))
+	     "text/html")))))
 
 ;;;###autoload
 (defun w3m-perldoc (docname)
