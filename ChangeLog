@@ -1,3 +1,15 @@
+2003-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-view-previous-page): Specify a history element of
+	the previous page to the `w3m-goto-url' function as the 7th arg.
+	(w3m-goto-url): Accept a history element as the 7th argument;
+	specify nil as the 7th argument when recursively calling itself;
+	use a given history element to examine the form data of the url
+	to be visited.
+	(w3m-goto-url-new-session): Specify nil to the `w3m-goto-url'
+	function as the 7th argument.
+	(w3m): Ditto.
+
 2003-08-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-minimize-in-new-session): New user
