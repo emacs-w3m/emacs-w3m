@@ -87,8 +87,8 @@ AC_DEFUN(AC_EXAMINE_PACKAGEDIR,
 	    (if (and prefix\
 		     (progn\
 		       (setq prefix (file-name-as-directory prefix))\
-		       (zerop (string-match (regexp-quote prefix)\
-					    package-dir))))\
+		       (eq 0 (string-match (regexp-quote prefix)\
+					   package-dir))))\
 		(replace-match \"\$(prefix)/\" nil nil package-dir)\
 	      package-dir))\
 	\"NONE\")),
@@ -175,7 +175,7 @@ AC_DEFUN(AC_PATH_ICONDIR,
 	  (if (and prefix\
 		   (progn\
 		     (setq prefix (file-name-as-directory prefix))\
-		     (zerop (string-match (regexp-quote prefix) default))))\
+		     (eq 0 (string-match (regexp-quote prefix) default))))\
 	      (replace-match \"\$(prefix)/\" nil nil default)\
 	    default)),
 	${prefix},noecho)
