@@ -45,19 +45,10 @@
 ;;; Code:
 (require 'w3m)
 
-(defcustom w3m-search-default-coding-system 'euc-japan
-  "*Coding system to encode search query string.
-This value is default and used only when spec defined by
-`w3m-search-engine-alist' does not have encoding information."
-  :group 'w3m
-  :type 'coding-system)
-
 (defcustom w3m-search-engine-alist
   (` (("yahoo" "http://search.yahoo.com/bin/search?p=%s" nil)
       ("yahoo-ja" "http://search.yahoo.co.jp/bin/search?p=%s" euc-japan)
-      (, (if (and (boundp 'current-language-environment)
-		  (string= "Japanese"
-			   (symbol-value 'current-language-environment)))
+      (, (if (equal "Japanese" w3m-language)
 	     '("google" "http://www.google.com/search?q=%s&hl=ja" shift_jis)
 	   '("google" "http://www.google.com/search?q=%s" nil)))
       ("google-ja" "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja" shift_jis)
@@ -76,7 +67,7 @@ ENGINE is a string, the name of the search engine.
 ACTION is a string, the URL that performs a search.
 ACTION must contain a \"%s\", which is substituted by a query string.
 CODING is optional value which is coding system for query string.
-If omitted, `w3m-search-default-coding-system' is used.
+If omitted, `w3m-default-coding-system' is used.
 "
   :group 'w3m
   :type '(repeat
@@ -94,7 +85,7 @@ See also `w3m-search-engine-alist'."
 (defun w3m-search-escape-query-string (str &optional coding)
   (mapconcat
    (lambda (s)
-     (w3m-url-encode-string s (or coding w3m-search-default-coding-system)))
+     (w3m-url-encode-string s (or coding w3m-default-coding-system)))
    (split-string str)
    "+"))
 

@@ -1,3 +1,30 @@
+2001-10-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-language): New option.
+	(w3m-default-coding-system): Refer `w3m-language' to decide
+	default value.
+	(w3m-coding-system-priority-list): Ditto.
+	(w3m-toolbar): Ditto.
+	(w3m-url-to-file-name): Moved to avoid byte-compile warnings.
+	(w3m-expand-file-name-as-url): Ditto.
+	(w3m-url-local-p): Ditto.
+	(w3m-url-dtree-p): Ditto.
+	(w3m-view-this-url): When there is an inline image under point,
+	display it.
+	(w3m-mouse-view-this-url): Ditto.
+	(w3m-view-url-with-external-browser): Renamed from
+	`w3m-view-current-url-with-external-browser'.  Handle an inline
+	image under point.
+	(w3m-download-this-url): Handle an inline image under point.
+	(w3m-info-like-map): Reconstructed.
+
+	* w3m-search.el (w3m-search-default-coding-system): Abolished.
+	(w3m-search-engine-alist): Refer `w3m-language' to decide default
+	value.
+	(w3m-search-escape-query-string): Refer
+	`w3m-default-coding-system' instead of
+	`w3m-search-default-coding-system'.
+
 2001-10-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-form.el (w3m-form-use-fancy-faces): New option.

@@ -150,6 +150,16 @@
 		 (const :tag "w3m-m17n" 'w3m-m17n)
 		 (symbol :tag "other" nil)))
 
+(defcustom w3m-language
+  (if (or (and (boundp 'current-language-environment)
+	       (string= "Japanese"
+			(symbol-value 'current-language-environment)))
+	  (boundp 'MULE))
+      "Japanese")
+  "*Language of w3m."
+  :group 'w3m
+  :type 'string)
+
 (defcustom w3m-command
   (cond ((eq w3m-type 'w3mmee) "w3mmee")
 	((eq w3m-type 'w3m-m17n) "w3m-m17n")
@@ -250,21 +260,13 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :type 'coding-system)
 
 (defcustom w3m-default-coding-system
-  (if (or (and (boundp 'current-language-environment)
-	       (string= "Japanese"
-			(symbol-value 'current-language-environment)))
-	  (boundp 'MULE))
-      'shift_jis)
+  (if (equal "Japanese" w3m-language) 'shift_jis)
   "*Default coding system."
   :group 'w3m
   :type 'coding-system)
 
 (defcustom w3m-coding-system-priority-list
-  (if (or (and (boundp 'current-language-environment)
-	       (string= "Japanese"
-			(symbol-value 'current-language-environment)))
-	  (boundp 'MULE))
-      (list 'shift_jis))
+  (if (equal "Japanese" w3m-language) '(shift_jis))
   "*Priority for detect coding-system."
   :group 'w3m
   :type '(repeat coding-system))
@@ -339,40 +341,6 @@ your proxy server is broken.  In order to use this feature, you must
 apply the patch posted in [emacs-w3m:01119]."
   :group 'w3m
   :type 'boolean)
-
-
-;; Generic functions:
-(defun w3m-url-to-file-name (url)
-  "Return the file name which is pointed by URL."
-  ;; Remove scheme part and net_loc part.  NOTE: This function accepts
-  ;; only urls whose net_loc part is empty or NULL string.
-  (if (string-match "^\\(file:\\(//\\)?\\)/" url)
-      (setq url (substring url (match-end 1)))
-    (if (string-match "^\\(about://dtree\\)/" url)
-	(setq url (substring url (match-end 1)))))
-  ;; Process abs_path part in Windows.
-  (when (string-match "^/\\(\\([A-Za-z]\\)[|:]?\\|cygdrive/\\([A-Za-z]\\)\\)/" url)
-    (setq url (concat
-	       (or (match-string 2 url)
-		   (match-string 3 url))
-	       ":/"
-	       (substring url (match-end 0)))))
-  url)
-
-(defun w3m-expand-file-name-as-url (file &optional directory)
-  "Return URL which points the FILE."
-  ;; if filename is cygwin format,
-  ;; then remove cygdrive prefix before expand-file-name
-  (if directory
-      (setq file (w3m-url-to-file-name file)))
-  ;; expand to file scheme url considering Win32 environment
-  (setq file (expand-file-name file directory))
-  (if (string-match "^\\(.\\):\\(.*\\)" file)
-      (if w3m-use-cygdrive
-	  (concat "file:///cygdrive/"
-		  (match-string 1 file) (match-string 2 file))
-	(concat "file:///" (match-string 1 file) "|" (match-string 2 file)))
-    (concat "file://" file)))
 
 (defcustom w3m-home-page
   (or (getenv "HTTP_HOME")
@@ -858,9 +826,7 @@ will disclose your private informations, for example:
   "Toolbar button list for w3m.")
 
 (defconst w3m-toolbar
-  (if (and (boundp 'current-language-environment)
-	   (string-equal "Japanese"
-			 (symbol-value 'current-language-environment)))
+  (if (equal "Japanese" w3m-language)
       '([w3m-toolbar-back-icon w3m-view-previous-page
 			       (w3m-history-previous-link-available-p)
 			       "前のページに戻る"]
@@ -996,6 +962,48 @@ for a charset indication")
   "Regexp of urls to be ignored in a history.")
 
 (defvar w3m-mode-map nil "Keymap used in w3m-mode buffers.")
+
+
+;; Generic functions:
+(defsubst w3m-url-local-p (url)
+  "If URL points a file on the local system, return non-nil value.  Otherwise return nil."
+  (string-match "^\\(file:\\|/\\)" url))
+
+(defsubst w3m-url-dtree-p (url)
+  "If URL points a 'w3m-dtree', return non-nil value.  Otherwise return nil."
+  (string-match "^about://dtree/" url))
+
+(defun w3m-url-to-file-name (url)
+  "Return the file name which is pointed by URL."
+  ;; Remove scheme part and net_loc part.  NOTE: This function accepts
+  ;; only urls whose net_loc part is empty or NULL string.
+  (if (string-match "^\\(file:\\(//\\)?\\)/" url)
+      (setq url (substring url (match-end 1)))
+    (if (string-match "^\\(about://dtree\\)/" url)
+	(setq url (substring url (match-end 1)))))
+  ;; Process abs_path part in Windows.
+  (when (string-match "^/\\(\\([A-Za-z]\\)[|:]?\\|cygdrive/\\([A-Za-z]\\)\\)/" url)
+    (setq url (concat
+	       (or (match-string 2 url)
+		   (match-string 3 url))
+	       ":/"
+	       (substring url (match-end 0)))))
+  url)
+
+(defun w3m-expand-file-name-as-url (file &optional directory)
+  "Return URL which points the FILE."
+  ;; if filename is cygwin format,
+  ;; then remove cygdrive prefix before expand-file-name
+  (if directory
+      (setq file (w3m-url-to-file-name file)))
+  ;; expand to file scheme url considering Win32 environment
+  (setq file (expand-file-name file directory))
+  (if (string-match "^\\(.\\):\\(.*\\)" file)
+      (if w3m-use-cygdrive
+	  (concat "file:///cygdrive/"
+		  (match-string 1 file) (match-string 2 file))
+	(concat "file:///" (match-string 1 file) "|" (match-string 2 file)))
+    (concat "file://" file)))
 
 ;; Generic macros and inline functions:
 (defsubst w3m-attributes (url &optional no-cache)
@@ -2577,14 +2585,6 @@ to nil."
 	    (error "Can't decode encoded contents: %s" url))
 	type))))
 
-(defsubst w3m-url-local-p (url)
-  "If URL points a file on the local system, return non-nil value.  Otherwise return nil."
-  (string-match "^\\(file:\\|/\\)" url))
-
-(defsubst w3m-url-dtree-p (url)
-  "If URL points a 'w3m-dtree', return non-nil value.  Otherwise return nil."
-  (string-match "^about://dtree/" url))
-
 (defsubst w3m-about-retrieve (url &optional no-decode no-cache)
   (if (string= "about://emacs-w3m.gif" url)
       (when (fboundp 'base64-decode-string)
@@ -3028,10 +3028,15 @@ is performed.  Otherwise, COUNT is treated as 1 by default."
 (defun w3m-view-this-url (&optional arg)
   "View the URL of the link under point."
   (interactive "P")
-  (let ((url (w3m-anchor)) (act (w3m-action)))
+  (let ((url (w3m-anchor))
+	(act (w3m-action))
+	(img (w3m-image)))
     (cond
      (url (w3m-goto-url url arg nil nil w3m-current-url))
      (act (eval act))
+     (img (if (w3m-display-graphic-p)
+	      (w3m-toggle-inline-image)
+	    (w3m-view-image)))
      (t (message "No URL at point")))))
 
 (defun w3m-mouse-view-this-url (event)
@@ -3043,7 +3048,9 @@ is performed.  Otherwise, COUNT is treated as 1 by default."
     (cond
      (url (w3m-view-this-url))
      (act (eval act))
-     (img (w3m-view-image))
+     (img (if (w3m-display-graphic-p)
+	      (w3m-toggle-inline-image)
+	    (w3m-view-image)))
      (t (message "No URL at point")))))
 
 (defun w3m-submit-form ()
@@ -3121,21 +3128,22 @@ is performed.  Otherwise, COUNT is treated as 1 by default."
 	(w3m-download url)
       (message "No image at point"))))
 
-(defun w3m-view-current-url-with-external-browser ()
+(defun w3m-view-url-with-external-browser ()
   "View this URL."
   (interactive)
-  (let ((url (w3m-anchor)))
-    (or url
-	(and (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
-	     (setq url w3m-current-url)))
+  (let ((url (or (w3m-anchor)
+		 (unless w3m-display-inline-image
+		   (w3m-image))
+		 (when (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
+		   w3m-current-url))))
     (when url
       (message "Browsing <%s>..." url)
       (w3m-external-view url))))
 
 (defun w3m-download-this-url ()
-  "Download the URL of the link under point to a file."
+  "Download the file or the image which pointed by the link under cursor."
   (interactive)
-  (let ((url (w3m-anchor)))
+  (let ((url (or (w3m-anchor) (w3m-image))))
     (if url
 	(progn
 	  (w3m-download url)
@@ -3355,7 +3363,7 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "I" 'w3m-view-image)
     (define-key map "\M-I" 'w3m-save-image)
     (define-key map "c" 'w3m-print-current-url)
-    (define-key map "M" 'w3m-view-current-url-with-external-browser)
+    (define-key map "M" 'w3m-view-url-with-external-browser)
     (define-key map "g" 'w3m-goto-url)
     (define-key map "T" 'w3m-toggle-inline-images)
     (define-key map "t" 'w3m-toggle-inline-image)
@@ -3407,31 +3415,40 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "A" 'w3m-antenna)
     (define-key map "b" 'w3m-scroll-down-or-previous-url)
+    (define-key map "c" 'w3m-print-this-url)
     (define-key map "C" 'w3m-redisplay-with-charset)
-    (define-key map "d" 'w3m-bookmark-view)
+    (define-key map "d" 'w3m-download)
     (define-key map "D" 'w3m-download-this-url)
     (define-key map "e" 'w3m-edit-current-url)
     (define-key map "E" 'w3m-edit-this-url)
     (define-key map "f" 'undefined) ;; reserved.
     (define-key map "g" 'w3m-goto-url)
     (define-key map "h" 'describe-mode)
-    (define-key map "I" 'w3m-view-image)
+    (define-key map "H" 'w3m-gohome)
+    (define-key map "i" (if (w3m-display-graphic-p)
+			    'w3m-toggle-inline-image
+			  'w3m-view-image))
+    (define-key map "I" 'w3m-toggle-inline-images)
     (define-key map "\M-I" 'w3m-save-image)
     (define-key map "l" 'w3m-view-previous-page)
-    (define-key map [(control L)] 'w3m-reload-this-page)
     (define-key map "\C-l" 'recenter)
-    (define-key map "M" 'w3m-view-current-url-with-external-browser)
+    (define-key map [(control L)] 'w3m-reload-this-page)
+    (define-key map "M" 'w3m-view-url-with-external-browser)
     (define-key map "n" 'w3m-view-next-page)
+    (define-key map "N" 'w3m-namazu)
     (define-key map "\M-n" 'w3m-copy-buffer)
     (define-key map "o" 'w3m-history)
-    (define-key map "T" 'w3m-dtree)
-    (define-key map "N" 'w3m-namazu)
     (define-key map "p" 'w3m-view-previous-page)
+    (define-key map "P" 'undecided) ;; reserved for print-this-buffer.
     (define-key map "q" 'w3m-close-window)
     (define-key map "Q" 'w3m-quit)
     (define-key map "R" 'w3m-reload-this-page)
     (define-key map "s" 'w3m-search)
-    (define-key map "t" 'w3m-gohome)
+    (define-key map "S" (lambda ()
+			  (interactive)
+			  (let ((current-prefix-arg t))
+			    (call-interactively 'w3m-search))))
+    (define-key map "T" 'w3m-dtree)
     (define-key map "u" 'w3m-view-parent-page)
     (define-key map "v" 'w3m-bookmark-view)
     (define-key map "W" 'w3m-weather)
@@ -3442,6 +3459,7 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
     (define-key map "." 'beginning-of-buffer)
+    (define-key map "^" 'w3m-view-parent-page)
     (define-key map "\C-c\C-c" 'w3m-submit-form)
     (setq w3m-info-like-map map)))
 
@@ -3534,7 +3552,7 @@ Return t if deleting current frame or window is succeeded."
 \\[w3m-toggle-inline-images]	Toggle displaying of inline images on current buffer.
 
 \\[w3m-print-current-url]	Print current url.
-\\[w3m-view-current-url-with-external-browser]	View current url with external browser.
+\\[w3m-view-url-with-external-browser]	View current url with external browser.
 \\[w3m-view-source]	Display source of this current buffer.
 \\[w3m-view-header]	Display header of this current buffer.
 \\[w3m-edit-current-url]	Edit the local file pointed by the URL of current page.
