@@ -1,3 +1,9 @@
+2004-01-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-cnet-jp.el (shimbun-rss-build-message-id): Replace
+	cammas included in URL with periods, because a camma is a special
+	character.  Cf. RFC822.
+
 2004-01-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-cnet.el (shimbun-cnet-content-start,

@@ -65,8 +65,10 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
        ;; For blog group
        (string-match "http://blog\\.japan\\.cnet\\.com/\
 \\([^/]+\\)/archives/\\([0-9]+\\)\\.html" url))
-      (concat "<" (match-string-no-properties 2 url) "%"
-	      (shimbun-current-group shimbun) "@japan.cnet.com>")
+      (concat "<"
+	      (shimbun-replace-in-string
+	       (match-string-no-properties 2 url) "," ".")
+	      "%" (shimbun-current-group shimbun) "@japan.cnet.com>")
     (error "Cannot find message-id base")))
 
 (luna-define-method shimbun-clear-contents :before
