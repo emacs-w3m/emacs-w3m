@@ -42,7 +42,7 @@
 Each element looks like:
 
  (NAME URL SUBJECT-REGEXP FROM-START-REGEXP DATE-START-REGEXP
-           BODY-START-REGEXP BODY-END-REGEXP TIME-LAG).
+           BODY-START-REGEXP BODY-END-REGEXP).
 
 Each element have a following default value:
 
@@ -50,12 +50,7 @@ SUBJECT-REGEXP: `shimbun-tcup-subject-regexp'
 FROM-START-REGEXP: `shimbun-tcup-from-start-regexp'
 DATE-START-REGEXP: `shimbun-tcup-date-start-regexp'
 BODY-START-REGEXP: `shimbun-tcup-body-start-regexp'
-BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'
-TIME-LAG: 0
-
-TIME-LAG is the number of seconds which is used to adjust the Date
-header.  The clock has been advancing for nine hours in some boards.
-such boards, set it to 32400.")
+BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'")
 
 (defvar shimbun-tcup-subject-regexp
   (let ((s0 "[\t\n ]*")
@@ -164,7 +159,6 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 	 (date-regexp (or (nth 4 param) shimbun-tcup-date-start-regexp))
 	 (body-st-regexp (or (nth 5 param) shimbun-tcup-body-start-regexp))
 	 (body-end-regexp (or (nth 6 param) shimbun-tcup-body-end-regexp))
-	 (time-lag (nth 7 param))
 	 (index-url (shimbun-index-url shimbun))
 	 headers from subject date id url stime st body)
     (catch 'stop
@@ -182,10 +176,12 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 	  (re-search-forward date-regexp nil t)
 	  (cond ((looking-at "[^,]+, Time: \\([^ ]+\\) ")
 		 (setq stime (shimbun-tcup-stime-to-time (match-string 1)))
-		 (when (numberp time-lag)
+		 ;; The clock has been advanced for nine hours in the
+		 ;; level-1 bulletin boards.
+		 (when (string-match "/bbs/?\\'\\|/bbs\\?" index-url)
 		   (let ((ms (car stime))
 			 (ls (cadr stime)))
-		     (setq ls (- ls time-lag))
+		     (setq ls (- ls 32400))
 		     (cond ((< ls 0)
 			    (setq stime (list (1- ms) (+ ls 65536))))
 			   ((>= ls 65536)
