@@ -32,75 +32,32 @@
 ;;
 ;;    http://emacs-w3m.namazu.org/
 
-
-
 ;;; Code:
 
+(require 'w3m)
+(require 'easymenu)
+
+(defvar w3m-tab-menubar-dummy
+  '("TAB"
+    ["dummy" w3m-switch-buffer t]))
+
 (defun w3m-setup-tab-menu ()
-  "Define TAB menubar buttons for FSF Emacsen."
-  (unless (lookup-key w3m-mode-map [menu-bar w3m-tab])
-    (define-key-after
-      (lookup-key w3m-mode-map [menu-bar])
-      [w3m-tab]
-      (cons "TAB" (cons 'keymap (w3m-tab-menubar-make-items))) t)
-    (add-hook 'menu-bar-update-hook 'w3m-tab-menubar-update)))
-
-(defun w3m-tab-menubar-open-buffer ()
-  "Open w3m buffer from tab menubar."
-  (interactive)
-  (switch-to-buffer last-command-event))
-
-(defun w3m-tab-menubar-update ()
-  "Update w3m tab menubar."
-  (when (eq major-mode 'w3m-mode)
-    (define-key w3m-mode-map [menu-bar w3m-tab]
-      (cons "TAB" (cons 'keymap (w3m-tab-menubar-make-items))))))
-
-(defsubst w3m-tab-menubar-pull-bufnum (bufname)
-  (cond
-   ((string= "*w3m*" bufname) 1)
-   ((string-match "\\*w3m\\*<\\([0-9]+\\)>" bufname)
-    (string-to-number (match-string 1 bufname)))
-   (t 100)))
-
-(defun w3m-tab-menubar-make-items (&optional nomenu)
-  "Create w3m tab menu items."
-  (let ((cbuf (current-buffer))
-	menus bufs title item)
-    (dolist (buf (buffer-list))
-      (with-current-buffer buf
-	(when (eq major-mode 'w3m-mode)
-	  (setq title (cond
-		       ((and (stringp w3m-current-title)
-			     (not (string= w3m-current-title "<no-title>")))
-			w3m-current-title)
-		       ((stringp w3m-current-url)
-			(directory-file-name
-			 (if (string-match "^[^/:]+:/+" w3m-current-url)
-			     (substring w3m-current-url (match-end 0))
-			   w3m-current-url)))
-		       (t "No title")))
-	  (setq bufs (cons (list (buffer-name) title (eq cbuf buf)) bufs)))))
-    (setq bufs
-	  (sort bufs (lambda (x y)
-		       (< (w3m-tab-menubar-pull-bufnum (car x))
-			  (w3m-tab-menubar-pull-bufnum (car y))))))
-    (dolist (elem bufs)
-      (setq item (nconc (list (nth 0 elem)
-			      (format "%s%s"
-				      (if nomenu
-					  (if (nth 2 elem) "* " "")
-					(if (nth 2 elem) "* " "  "))
-				      (nth 1 elem))
-			      (cons nil nil))
-			'w3m-tab-menubar-open-buffer))
-      (setq menus (cons item menus)))
-    (nreverse menus)))
+  "Setup w3m tab menubar."
+  (when w3m-use-tab-menubar
+    (unless (lookup-key w3m-mode-map [menu-bar w3m-tab])
+      (w3m-static-if (featurep 'xemacs)
+	  (progn
+	    (set-buffer-menubar (cons w3m-tab-menubar-dummy current-menubar))
+	    (add-hook 'activate-menubar-hook 'w3m-tab-menubar-update))
+	(define-key w3m-mode-map [menubar w3m-tab] w3m-tab-menubar-dummy)
+	(add-hook 'menu-bar-update-hook 'w3m-tab-menubar-update)))))
 
 (defun w3m-switch-buffer ()
   "Switch `w3m-mode' buffer in the current window."
   (interactive)
   (let ((items (w3m-tab-menubar-make-items 'nomenu))
+	(minibuffer-setup-hook
+	 (append minibuffer-setup-hook '(beginning-of-line)))
 	(count 1)
 	(form "%s [%s]")
 	comp hist histlen default buf)
@@ -125,6 +82,64 @@
     (setq buf (cdr (assoc buf comp)))
     (when (get-buffer buf)
       (switch-to-buffer buf))))
+
+(defun w3m-tab-menubar-open-item (buf)
+  "Open w3m buffer from tab menubar."
+  (interactive)
+  (when (get-buffer buf)
+    (switch-to-buffer buf)))
+
+(defun w3m-tab-menubar-update ()
+  "Update w3m tab menubar."
+  (when (eq major-mode 'w3m-mode)
+    (easy-menu-change nil
+		      (car w3m-tab-menubar-dummy)
+		      (w3m-tab-menubar-make-items))))
+
+(defsubst w3m-tab-menubar-pull-bufnum (bufname)
+  (cond
+   ((string= "*w3m*" bufname) 1)
+   ((string-match "\\*w3m\\*<\\([0-9]+\\)>" bufname)
+    (string-to-number (match-string 1 bufname)))
+   (t 100)))
+
+(defun w3m-tab-menubar-make-items (&optional nomenu)
+  "Create w3m tab menu items."
+  (let ((cbuf (current-buffer))
+	bufs title menus)
+    (dolist (buf (buffer-list))
+      (with-current-buffer buf
+	(when (eq major-mode 'w3m-mode)
+	  (setq title (cond
+		       ((and (stringp w3m-current-title)
+			     (not (string= w3m-current-title "<no-title>")))
+			w3m-current-title)
+		       ((stringp w3m-current-url)
+			(directory-file-name
+			 (if (string-match "^[^/:]+:/+" w3m-current-url)
+			     (substring w3m-current-url (match-end 0))
+			   w3m-current-url)))
+		       (t "No title")))
+	  (setq bufs (cons (list (buffer-name) title (eq cbuf buf)) bufs)))))
+    (setq bufs
+	  (sort bufs (lambda (x y)
+		       (< (w3m-tab-menubar-pull-bufnum (car x))
+			  (w3m-tab-menubar-pull-bufnum (car y))))))
+    (dolist (elem  bufs)
+      (setq menus
+	    (cons
+	     (if nomenu
+		 (list (nth 0 elem)
+		       (format "%s%s"
+			       (if (nth 2 elem) "* " "")
+			       (nth 1 elem)))
+	       (vector (format "%s%s"
+			       (if (nth 2 elem) "* " "  ")
+			       (nth 1 elem))
+		       (list 'w3m-tab-menubar-open-item (nth 0 elem))
+		       (get-buffer (nth 0 elem))))
+	     menus)))
+    (nreverse menus)))
 
 (provide 'w3m-tabmenu)
 ;;; w3m-tabmenu.el ends here

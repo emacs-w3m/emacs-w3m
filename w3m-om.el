@@ -38,7 +38,6 @@
 (require 'poem)
 (require 'pcustom)
 (require 'pccl)
-(require 'w3m-tabmenu)
 
 (eval-when-compile
   (unless (fboundp 'custom-declare-variable)

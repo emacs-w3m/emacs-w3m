@@ -37,7 +37,6 @@
 ;;; Code:
 
 (require 'w3m-fsf)
-(require 'w3m-tabmenu)
 
 ;; Dummy functions.
 (defalias 'w3m-create-image 'ignore)

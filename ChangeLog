@@ -6,6 +6,42 @@
 	key to call `w3m-history-store-position'. Bind `C-cC-b' as the key
 	to call `w3m-history-restore-position'.
 	(w3m-mode): Modify doc-string.
+	(w3m-select-buffer-show-this-line-and-switch): New function.
+	(w3m-select-buffer-name): New internal constant.
+	(w3m-select-buffer-mode-map): Bind `w' and `h' as the key to call
+	`w3m-select-buffer-show-this-line-and-switch'.
+	(w3m-select-buffer-mode): Modify doc-string.
+	(w3m-select-buffer): Use `w3m-select-buffer-name'. If alive
+	select-buffer, use it. 	Add optional argument `nomsg'.
+	(w3m-select-buffer-generate-contents): If w3m-current-title is
+	`<no-title>', use w3m-current-url.
+	(w3m-select-buffer-show-this-line): Return selected buffer.
+	(w3m-select-buffer-quit): Always pop up the w3m window when quit.
+	(w3m-select-buffer-show-this-line-and-quit): Rewrite.
+	(w3m-goto-url): If alive w3m-select-buffer, update it.
+	(w3m-copy-buffer): If w3m-pop-up-windows is nil, use
+	switch-to-buffer. Block to change w3m-select-buffer to w3m buffer,
+	if w3m-pop-up-windows is t.
+	(top): Add autoload of `w3m-setup-tab' and `w3m-switch-buffer'.
+	(w3m-setup-menu): Call `w3m-setup-tab-menu' when
+	w3m-use-tab-menubar is t.
+	(w3m-mode): Remove to call `w3m-setup-tab-menu'.
+
+	* w3m-e21.el (TOP): Remove `(require 'w3m-tabmenu)'.
+
+	* w3m-e20.el (TOP): Ditto.
+
+	* w3m-om.el (TOP): Ditto.
+
+	* w3m-xmas.el (w3m-setup-tab-menu, w3m-tab-menubar-pull-bufnum)
+	(w3m-tab-menubar-make-items, w3m-select-buffer): Remove.
+	(w3m-setup-menu): Call `w3m-setup-tab-menu' when
+	w3m-use-tab-menubar is t.
+
+	* w3mhack.el (w3mhack-examine-modules): Revival byte-compile
+	`w3m-tabmenu.el' when XEmacs.
+	
+	* w3m-tabmenu.el (ALL): Full rewrite to use `easymenu'.
 
 2001-11-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

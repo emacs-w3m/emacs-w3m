@@ -124,7 +124,9 @@
   (autoload 'w3m-about-namazu "w3m-namazu")
   (autoload 'w3m-fontify-forms "w3m-form")
   (autoload 'w3m-form-parse-buffer "w3m-form")
-  (autoload 'w3m-filter "w3m-filter"))
+  (autoload 'w3m-filter "w3m-filter")
+  (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
+  (autoload 'w3m-switch-buffer "w3m-tabmenu"))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
@@ -1820,6 +1822,7 @@ If N is negative, last N items of LIST is returned."
       (unless (keymapp (lookup-key w3m-mode-map [menu-bar w3m]))
 	(let ((map (make-sparse-keymap (car w3m-menubar))))
 	  (define-key w3m-mode-map [menu-bar] (make-sparse-keymap))
+	  (when w3m-use-tab-menubar (w3m-setup-tab-menu))
 	  (define-key w3m-mode-map [menu-bar w3m] (cons (car w3m-menubar) map))
 	  (dolist (def (reverse (cdr w3m-menubar)))
 	    (define-key map (vector (aref def 1)) (cons (aref def 0)
@@ -3653,6 +3656,11 @@ If EMPTY is non-nil, the created buffer has empty content."
   (interactive (list (current-buffer)
 		     (if current-prefix-arg (read-string "Name: "))
 		     t))
+  (when (and w3m-pop-up-windows
+	     (not (string= (buffer-name) w3m-select-buffer-name))
+	     (get-buffer-window w3m-select-buffer-name))
+    ;; w3m-select-buffer too thin
+    (delete-windows-on (get-buffer w3m-select-buffer-name)))
   (unless buf
     (setq buf (current-buffer)))
   (unless newname
@@ -3693,7 +3701,9 @@ If EMPTY is non-nil, the created buffer has empty content."
 		 (pop-up-frame-alist (w3m-pop-up-frame-parameters))
 		 (pop-up-frame-plist pop-up-frame-alist)
 		 (oframe (selected-frame)))
-	    (pop-to-buffer new)
+	    (if pop-up-windows
+		(pop-to-buffer new)
+	      (switch-to-buffer new))
 	    (unless (eq oframe (selected-frame))
 	      (setq w3m-initial-frame (selected-frame)))))
 	new))))
@@ -4082,7 +4092,6 @@ Return t if deleting current frame or window is succeeded."
 	w3m-display-inline-images w3m-default-display-inline-images)
   (w3m-setup-toolbar)
   (w3m-setup-menu)
-  (when w3m-use-tab-menubar (w3m-setup-tab-menu))
   (run-hooks 'w3m-mode-hook))
 
 (defun w3m-scroll-up-or-next-url (arg)
@@ -4325,7 +4334,10 @@ field for this request."
       (w3m-update-toolbar)
       (run-hook-with-args 'w3m-display-hook url)
       (switch-to-buffer (current-buffer))
-      (when localcgi (w3m-goto-url-localcgi-movepoint))))))
+      (when localcgi (w3m-goto-url-localcgi-movepoint))
+      (when (get-buffer-window w3m-select-buffer-name)
+	(save-selected-window
+	  (w3m-select-buffer 'nomsg)))))))
 
 ;;;###autoload
 (defun w3m-goto-url-new-session (url
@@ -4808,8 +4820,9 @@ If called with 'prefix argument', display arrived-DB history."
 (defvar w3m-select-buffer-window nil)
 (defconst w3m-select-buffer-message
   "n: next buffer, p: previous buffer, q: quit.")
+(defconst w3m-select-buffer-name " *w3m buffers*")
 
-(defun w3m-select-buffer ()
+(defun w3m-select-buffer (&optional nomsg)
   "Display a new buffer to select a buffer among the set of w3m-mode
 buffers.  User can type following keys:
 
@@ -4817,17 +4830,18 @@ buffers.  User can type following keys:
   (interactive)
   (let ((selected-window (selected-window))
 	(current-buffer (current-buffer)))
-    (set-buffer (w3m-get-buffer-create " *w3m buffers*"))
+    (set-buffer (w3m-get-buffer-create w3m-select-buffer-name))
     (setq w3m-select-buffer-window selected-window)
     (w3m-select-buffer-generate-contents current-buffer)
     (w3m-select-buffer-mode)
-    (let ((w (split-window selected-window
-			   (- (window-width)
-			      w3m-select-buffer-window-size)
-			   w3m-select-buffer-horizontal-window)))
+    (let ((w (or (get-buffer-window w3m-select-buffer-name)
+		 (split-window selected-window
+			       (- (window-width)
+				  w3m-select-buffer-window-size)
+			       w3m-select-buffer-horizontal-window))))
       (set-window-buffer w (current-buffer))
       (select-window w)))
-  (message w3m-select-buffer-message))
+  (or nomsg (message w3m-select-buffer-message)))
 
 (defun w3m-select-buffer-generate-contents (current-buffer)
   (let (buffer-read-only pos)
@@ -4838,7 +4852,17 @@ buffers.  User can type following keys:
 			  (lambda (buffer)
 			    (with-current-buffer buffer
 				(when (eq 'w3m-mode major-mode)
-				  (cons buffer w3m-current-title))))
+				  (cons buffer
+					(cond
+					 ((and (stringp w3m-current-title)
+					       (not (string= w3m-current-title "<no-title>")))
+					  w3m-current-title)
+					 ((stringp w3m-current-url)
+					  (directory-file-name
+					   (if (string-match "^[^/:]+:/+" w3m-current-url)
+					       (substring w3m-current-url (match-end 0))
+					     w3m-current-url)))
+					 (t "No title"))))))
 			  (buffer-list)))
 		   (lambda (x y)
 		     (string< (buffer-name (car x))
@@ -4873,17 +4897,18 @@ buffers.  User can type following keys:
      'w3m-select-buffer 'w3m-select-buffer-quit map w3m-mode-map)
     (define-key map " " 'w3m-select-buffer-show-this-line)
     (define-key map "g" 'w3m-select-buffer-recheck)
-    (define-key map "h" 'describe-mode)
     (define-key map "j" 'w3m-select-buffer-next-line)
     (define-key map "k" 'w3m-select-buffer-previous-line)
     (define-key map "n" 'w3m-select-buffer-next-line)
     (define-key map "p" 'w3m-select-buffer-previous-line)
     (define-key map "q" 'w3m-select-buffer-quit)
-    (define-key map "?" 'describe-mode)
+    (define-key map "h" 'w3m-select-buffer-show-this-line-and-switch)
+    (define-key map "w" 'w3m-select-buffer-show-this-line-and-switch)
     (define-key map "\C-m" 'w3m-select-buffer-show-this-line-and-quit)
     (define-key map "\C-c\C-c" 'w3m-select-buffer-show-this-line-and-quit)
     (define-key map "\C-c\C-k" 'w3m-select-buffer-quit)
     (define-key map "\C-c\C-q" 'w3m-select-buffer-quit)
+    (define-key map "?" 'describe-mode)
     (setq w3m-select-buffer-mode-map map)))
 
 (defun w3m-select-buffer-mode ()
@@ -4893,6 +4918,7 @@ Major mode to select a buffer from the set of w3m-mode buffers.
 \\[w3m-select-buffer-next-line]	Next line.
 \\[w3m-select-buffer-previous-line]	Previous line.
 \\[w3m-select-buffer-show-this-line]	Show the current buffer.
+\\[w3m-select-buffer-show-this-line-and-switch]	Show the current buffer and set cusor to w3m buffer.
 \\[w3m-select-buffer-show-this-line-and-quit]	Show the current buffer and quit menu.
 \\[w3m-select-buffer-quit]	Quit menu.
 \\[w3m-select-buffer-recheck]	Recheck buffers.
@@ -4934,7 +4960,8 @@ select them."
 			   w3m-select-buffer-horizontal-window)))
 	(setq w3m-select-buffer-window (get-largest-window))))
     (set-window-buffer w3m-select-buffer-window buffer)
-    (message w3m-select-buffer-message)))
+    (message w3m-select-buffer-message)
+    buffer))
 
 (defun w3m-select-buffer-next-line (&optional n)
   "Move cursor vertically down ARG lines and show the buffer on the
@@ -4979,16 +5006,25 @@ menu line."
       (set-window-buffer (selected-window)
 			 (or (w3m-select-buffer-current-buffer)
 			     (w3m-alive-p)))
-    (delete-window)))
+    (let ((buf (or (w3m-select-buffer-current-buffer)
+		   (w3m-alive-p))))
+      (pop-to-buffer buf)
+      (and (get-buffer-window w3m-select-buffer-name)
+	   (delete-windows-on (get-buffer w3m-select-buffer-name))))))
+
+(defun w3m-select-buffer-show-this-line-and-switch ()
+  "Show the current buffer, and quit select a buffer from w3m-mode buffers."
+  (interactive)
+  (pop-to-buffer (w3m-select-buffer-show-this-line))
+  (message ""))
 
 (defun w3m-select-buffer-show-this-line-and-quit ()
   "Show the current buffer, and quit the menu to select a buffer from
 w3m-mode buffers."
   (interactive)
-  (w3m-select-buffer-show-this-line)
-  (message "")
-  (delete-window))
-
+  (w3m-select-buffer-show-this-line-and-switch)
+  (and (get-buffer-window w3m-select-buffer-name)
+       (delete-windows-on (get-buffer w3m-select-buffer-name))))
 
 ;;; Header line (emulating Emacs 21).
 (defcustom w3m-use-header-line t

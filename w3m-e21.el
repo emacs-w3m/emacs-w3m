@@ -37,7 +37,6 @@
 (require 'w3m-macro)
 (require 'w3m-fsf)
 (require 'wid-edit)
-(require 'w3m-tabmenu)
 
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
