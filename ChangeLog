@@ -1,3 +1,9 @@
+2005-01-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el (w3m-force-window-update): Make it work whatever the
+	value for the resize-mini-windows variable is.
+	(w3m-update-tab-line): Ditto.
+
 2005-01-26  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Add it.zensen,
