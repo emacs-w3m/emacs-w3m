@@ -6857,7 +6857,8 @@ Cannot run two w3m processes simultaneously \
 			(w3m-history-assoc url)))))
 	  ;; Set current forms using the history structure.
 	  (when (setq w3m-current-forms
-		      (when (and (null post-data) ;; If post, always reload.
+		      (when (and (not reload) ; If reloading, ignore history.
+				 (null post-data) ; If post, ignore history.
 				 (w3m-cache-available-p url))
 			;; Don't use `w3m-history-plist-get' here.
 			(plist-get (nthcdr 3 element) :forms)))

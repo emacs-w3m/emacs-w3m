@@ -7,6 +7,7 @@
 	modified to follow the above change.
 	(w3m-edit-this-url): Its docstring is modified likewise, and it is
 	simplified.
+	(w3m-goto-url): Ignore cached form data when reloading.
 
 	* shimbun/nnshimbun.el: Changes to make nnshimbun.el more robust.
 	(nnshimbun-goto-url): Abolished.
