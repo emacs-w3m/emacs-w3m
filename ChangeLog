@@ -1,5 +1,11 @@
 2001-03-06  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
+	* w3m.el (w3m-goto-previous-anchor): Fix mistake on merging
+	w3-anchor patch. Cursor should go to beginning of anchor previous.
+	(w3m-mode-map): Assign Shift-TAB key with w3m-previous-anchor.
+
+2001-03-06  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
 	* w3m.el (TOP): No need to load cl-macs explicitly.
 	(w3m-charset-coding-system-alist): Do not use doloop in defcustom
 	because it is not expanded in compile time.
