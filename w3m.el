@@ -331,7 +331,7 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :type '(choice
 	  (const :tag "Use Info-like key mapping." info)
 	  (other :tag "Use Lynx-like key mapping." nil))
-  ;; Though the following form won't be byte-compiled, you developers
+  ;; Since the following form won't be byte-compiled, you developers
   ;; should never use CL macros like `caaaar', `when', `unless' ...
   :set (lambda (symbol value)
 	 (prog1
