@@ -3715,6 +3715,17 @@ Q. なぜ emacs-w3m が w3mmee で動作しないのですか?
 て (それは @samp{configure} スクリプトが @samp{Which language do you
 prefer?} と尋ねたときに 3 を入力することによってできます)、w3mmee を再構
 築して下さい。
+
+@item
+Q. なぜ emacs-w3m で web ページが見えないのでしょうか?  ローカル
+な html ファイルを見たり、素の w3m を使う場合は問題無いのですが。
+
+ある Linux の配布 (例えば Gentoo Linux) が含んでいる w3m コマンドには、
+async パッ
+チ@footnote{@uref{http://www.page.sannet.ne.jp/knabe/w3m/w3m.html,
+w3m on cygwin}} というものが当たっています。それは素の w3m コマンドを使
+うときに有用なのですが、emacs-w3m をハングさせるかもしれません。それが疑
+われるならば、w3m コマンドをソースから再インストールすることを勧めます。
 @end itemize
 
 @node Shimbun FAQ
