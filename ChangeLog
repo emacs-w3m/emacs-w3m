@@ -1,5 +1,12 @@
 2001-04-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-mode-map): Initialize when source file is loaded.
+
+	* mime-w3m.el (mime-w3m-mode-map): Simplify.
+
+	* mew-w3m.el (TopLevel): Initialization code of `w3m-mode-map' is
+	removed.
+
 	* w3m.el, w3m-weather.el, w3m-filter.el, w3m-form.el: Change
 	coding-system.
 

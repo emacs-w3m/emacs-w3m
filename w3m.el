@@ -2379,6 +2379,11 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 
 
 (defvar w3m-mode-map nil "Keymap used in w3m-mode buffers.")
+(unless w3m-mode-map
+  (setq w3m-mode-map
+	(if (eq w3m-key-binding 'info)
+	    w3m-info-like-map
+	  w3m-lynx-like-map)))
 
 (defun w3m-mode ()
   "\\<w3m-mode-map>
@@ -2427,11 +2432,6 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (buffer-disable-undo)
   (setq major-mode 'w3m-mode)
   (setq mode-name "w3m")
-  (cond
-   ((eq w3m-key-binding 'info)
-    (setq w3m-mode-map w3m-info-like-map))
-   (t
-    (setq w3m-mode-map w3m-lynx-like-map)))
   (use-local-map w3m-mode-map)
   (setq truncate-lines t)
   (w3m-setup-toolbar)
