@@ -30,7 +30,7 @@
 (luna-define-class shimbun-kantei (shimbun) ())
 
 (defvar shimbun-kantei-url "http://www.kantei.go.jp/jp/")
-(defvar shimbun-kantei-from-address "webmaster@www.kantei.go.jp")
+(defvar shimbun-kantei-from-address "首相官邸 <koizumi@mmz.kantei.go.jp>")
 (defvar shimbun-kantei-groups '("m-magazine"))
 (defvar shimbun-kantei-content-start "<PRE>")
 (defvar shimbun-kantei-content-end "\\(</PRE>\\)\n</FONT>\n</TD></TR></TABLE>")
@@ -63,7 +63,8 @@ X-Face: .bsmj'!8A`wI\\o+KF!)#0.a0,f1MA~PH/5T0fu$Mg+)_5G~NSk4.0t]&|f@^c3l8-Fuz8'
       (push (shimbun-make-header
 	     0
 	     (shimbun-mime-encode-string (or subject ""))
-	     (shimbun-from-address-internal shimbun)
+	     (shimbun-mime-encode-string 
+	      (shimbun-from-address-internal shimbun))
 	     (shimbun-make-date-string year month mday)
 	     id "" 0 0 (concat (shimbun-index-url shimbun) url))
 	    headers))

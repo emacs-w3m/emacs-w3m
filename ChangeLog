@@ -1,3 +1,13 @@
+2001-06-18  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-kantei.el (shimbun-kantei-from-address): Define.
+	(shimbun-get-headers): Encode from.
+
+	* shimbun/sb-slashdot-jp.el (shimbun-headers): Setup 'cid' argument for
+	comments.pl.
+	(shimbun-slashdot-jp-make-contents): New inline function.
+	(shimbun-article): Define (To reload story articles).
+
 2001-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-encapsulate-images): Renamed from

@@ -56,7 +56,7 @@ One page contains 30 comments.")
 			 shimbun-slashdot-jp-story-max-pages)
 		     shimbun-slashdot-jp-story-max-pages))
 	 year month mday uniq subject from pos hour min refs count
-	 id headers)
+	 id cid headers)
     (catch 'stop
       ;; main strories
       (setq count 0)
@@ -116,6 +116,12 @@ One page contains 30 comments.")
 	    (setq year (string-to-number (match-string 2))
 		  uniq (match-string 1))
 	    (setq id (format "<%s@slashdot.ne.jp>" uniq))
+	    (when (string-match "#\\([0-9]+\\)$" uniq)
+	      (setq cid (substring uniq (match-beginning 1)(match-end 1)))
+	      (if (string-match "^[^&]+" uniq)
+		  (setq uniq (concat (substring uniq 0 
+						(match-end 0))
+				     "&cid=" cid))))
 	    (if (shimbun-search-id shimbun id)
 		(throw 'stop nil))
 	    (when (search-forward ">" nil t)
@@ -154,13 +160,12 @@ One page contains 30 comments.")
 		   (format "<%s@slashdot.ne.jp>" refs)
 		   0 0 (concat 
 			(shimbun-url-internal shimbun)
-			"comments.pl?mode=flat&sid=" uniq))
+			"comments.pl?sid=" uniq))
 		  headers)))
 	(setq count (1+ count))))
     headers))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-slashdot-jp)
-					   header)
+(defsubst shimbun-slashdot-jp-make-contents (shimbun header)
   (let ((case-fold-search t)
 	start num charset)
     (when (progn
@@ -182,6 +187,20 @@ One page contains 30 comments.")
       (delete-region (point-min) start))
     (shimbun-make-mime-article shimbun header)
     (buffer-string)))
+
+(luna-define-method shimbun-article ((shimbun shimbun-slashdot-jp)
+				     header &optional outbuf)
+  (when (shimbun-current-group-internal shimbun)
+    (with-current-buffer (or outbuf (current-buffer))
+      (insert
+       (or (with-temp-buffer
+	     (shimbun-retrieve-url (shimbun-article-url shimbun header)
+				   'no-cache)
+	     (message "shimbun: Make contents...")
+	     (goto-char (point-min))
+	     (prog1 (shimbun-slashdot-jp-make-contents shimbun header)
+	       (message "shimbun: Make contents...done")))
+	   "")))))
 
 (provide 'sb-slashdot-jp)
 
