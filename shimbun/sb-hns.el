@@ -133,8 +133,8 @@ V#i5>7]N{lif*16&rrh3=:)\"dB[w:{_Mu@7+)~qLo6.z&Bb|Gq0A1}xpj:>9o9$")))
 	  ;; Add articles to the content hash.
 	  (goto-char (point-min))
 	  (while (re-search-forward
-		  "<h3 class=\"new\"><a [^<]*name=\"\\([0-9]+\\)\"" nil t)
-	    (let ((id (match-string 1)))
+		  "<h3 class=\"\\(new\\|subtitle\\)\"><a [^<]*name=\"\\([0-9]+\\)\"" nil t)
+	    (let ((id (match-string 2)))
 	      (when (re-search-forward "</a>" nil t)
 		(setq start (point))
 		(when (re-search-forward "<!-- end of R?L?NEW -->" nil t)
