@@ -1,3 +1,8 @@
+2004-05-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-spiegel.el (shimbun-rss-build-message-id): Use
+	shimbun-replace-in-string instead of replace-regexp-in-string.
+
 2004-05-08  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-palmoslove.el: Removed it since contents would not be
