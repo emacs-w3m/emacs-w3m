@@ -819,10 +819,28 @@ If N is negative, last N items of LIST is returned."
     (with-temp-buffer
       (let ((file-coding-system coding)
 	    (coding-system-for-write coding)
-	    print-length print-level)
-	(w3m-static-if (fboundp 'pp)
-	    (pp list (current-buffer))
-	  (print list (current-buffer)))
+	    (standard-output (current-buffer))
+	    element print-length print-level)
+	(insert "(")
+	(while list
+	  (setq element (car list)
+		list (cdr list))
+	  (if (consp element)
+	      (progn
+		(insert "(")
+		(prin1 (car element))
+		(insert "\n")
+		(while (setq element (cdr element))
+		  (insert "  ")
+		  (prin1 (car element))
+		  (insert "\n"))
+		(backward-delete-char 1)
+		(insert ")\n "))
+	    (prin1 element)
+	    (insert "\n")))
+	(skip-chars-backward "\n ")
+	(delete-region (point) (point-max))
+	(insert ")\n")
 	(let ((mode (and (file-exists-p file)
 			 (file-modes file))))
 	  (write-region (point-min) (point-max) file nil 'nomsg)
@@ -2355,7 +2373,9 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   "Quit browsing WWW after updating arrived URLs list."
   (interactive "P")
   (when (or force
-	    (y-or-n-p "Do you want to exit w3m? "))
+	    (prog1
+		(y-or-n-p "Do you want to exit w3m? ")
+	      (message "")))
     (kill-buffer (current-buffer))
     (unless (w3m-alive-p)
       ;; If no w3m is running, then destruct all data.
