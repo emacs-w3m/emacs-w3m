@@ -2454,6 +2454,9 @@ character sets EUC-JISX0213 and ISO-2022-JP-3, you have to install the
 Install w3mmee or w3m-m17n, and set the @code{w3m-command} variable to
 the appropriate value.  And emacs-w3m will use the multi-lingual
 features provided by one of those programs.
+However, a page written by a coding-system which Emacs doesn't support
+may not be displayed correctly. So please install Mule-UCS package if
+necessary.
 @end enumerate
 
 @item
