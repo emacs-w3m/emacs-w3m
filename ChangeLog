@@ -1,3 +1,11 @@
+2001-05-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Removed filter extension.
+	(w3m-use-filter): Removed.
+	(w3m-retrieve): Remove filtering code.
+
+	* w3m-filter.el: Removed.
+
 2001-05-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-mew.el: Removed.

@@ -103,8 +103,7 @@
   (autoload 'w3m-about-weather "w3m-weather")
   (autoload 'w3m-antenna "w3m-antenna"
     "*Display antenna report." t)
-  (autoload 'w3m-about-antenna "w3m-antenna")
-  (autoload 'w3m-filter "w3m-filter"))
+  (autoload 'w3m-about-antenna "w3m-antenna"))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
@@ -420,12 +419,6 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   "*Column size to scroll horizontally."
   :group 'w3m
   :type 'integer)
-
-(defcustom w3m-use-filter nil
-  "*Non nil means filtering of WEB is used."
-  :group 'w3m
-  :type 'boolean
-  :require 'w3m-filter)
 
 (defcustom w3m-mnc nil
   "*When using w3m with M.N.C. patch, set non-nil value."
@@ -1849,10 +1842,6 @@ to nil."
 		 (funcall func url no-decode no-cache))))
 	    (t
 	     (w3m-w3m-retrieve url no-decode no-cache cs)))))
-    (and v
-	 (not no-decode)
-	 w3m-use-filter
-	 (w3m-filter url))
     v))
 
 (defun w3m-download (url &optional filename no-cache)
