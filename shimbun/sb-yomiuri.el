@@ -88,24 +88,24 @@
 		;; 6. subject
 		"\\(" no-nl "\\)" s0 "</a>")
        1 2 3 6 4 5)
-      ("kyoiku" "教育メール" "main.htm"
+      ("kyoiku" "教育メール" "index.htm"
        ,(concat "<a" s1 "href=\"/"
-		;; 1. url-0
-		"\\(%s/[0-9]+\\)"
-		;; 2. url-1
-		"\\(/"
-		;; 3,6. serial number
-		"\\(20[0-9][0-9]"
-		;; 4. month
-		"\\([01][0-9]\\)"
-		;; 5. day
-		"\\([0-3][0-9]\\)"
-		"\\)\\([0-9a-z]+\\)"
-		"\\.htm\\)\""
-		s1 "target=\"_top\">" s0 "\\(<" no-nl ">" s0 "\\)+◆?"
-		;; 8. subject
-		"\\(" no-nl "\\)" s0)
-       1 3 6 8 4 5 nil 2)
+		;; 1. url
+		"\\(%s/\\([^\"/]+/\\)+"
+		;; 3,4. serial number
+		"\\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\\([0-9a-z]+\\)"
+		"\\.htm\\)"
+		"\"[^>]+>" s0
+		;; 5. subject
+		"\\([^<]+\\)"
+		"\\(" s0 "<[^>]+>\\)+" s0
+		;; 7. month
+		"\\([01]?[0-9]\\)"
+		"月\\(" s0 "<[^>]+>\\)+" s0
+		;; 9 day
+		"\\([0-3]?[0-9]\\)"
+		"日")
+       1 3 4 5 7 9)
       ("national" "社会" "index.htm" ,@default)
       ("obit" "おくやみ" "index.htm"
        ,(concat "<a" s1 "href=\"/"
@@ -342,12 +342,7 @@ It does also shorten too much spaces."
 	     ;; references, chars, lines
 	     "" 0 0
 	     ;; xref
-	     (if (string-equal group "kyoiku")
-		 (concat shimbun-yomiuri-url
-			 (match-string (nth 0 numbers))
-			 "a"
-			 (match-string (nth 7 numbers)))
-	       (concat shimbun-yomiuri-url (match-string (nth 0 numbers)))))
+	     (concat shimbun-yomiuri-url (match-string (nth 0 numbers))))
 	    headers))
     (shimbun-sort-headers headers)))
 
@@ -362,12 +357,30 @@ information available, removing useless contents, etc."
 	(case-fold-search t)
 	start)
     (if (string-equal group "kyoiku")
-	(when (re-search-forward "^◆<b>[^\n<>]+</b>[\t\n ]*" nil t)
-	  (delete-region (point-min) (point))
-	  (while (re-search-forward "[\t\n ]*\\(<\\([^<>]+\\)>[\t\n ]*\\)+"
-				    nil t)
-	    (unless (string-equal (match-string 2) "p")
-	      (delete-region (match-beginning 0) (match-end 0)))))
+	(progn
+	  (when (or (re-search-forward "\
+<!--[\t\n ]*▼写真▼[\t\n ]*-->[\t\n ]*"
+				       nil t)
+		    (re-search-forward "\
+<!--[\t\n ]*InstanceBeginEditable[\t\n ]+name=\"docbody\"[\t\n ]*-->[\t\n ]*"
+				       nil t))
+	    (delete-region (point-min) (point)))
+	  (when (or (re-search-forward
+		     "[\t\n ]*<!--[\t\n ]*▲日付▲[\t\n ]*-->"
+		     nil t)
+		    (re-search-forward "[\t\n ]*\
+<div[\t\n ]+.+</div>[\t\n ]*<!--[\t\n ]*▼フッタ−ナビ▼[\t\n ]*-->"
+				       nil t)
+		    (re-search-forward
+		     "[\t\n ]*<!--[\t\n ]*InstanceEndEditable[\t\n ]*-->"
+		     nil t))
+	    (delete-region (match-beginning 0) (point-max)))
+	  (goto-char (point-min))
+	  (when (re-search-forward "\
+<div[\t\n ]+class=\"enlargedphoto\">\\([\t\n ]*写真の拡大[\t\n ]*\
+<img[\t\n ]*src=[^>]+>[\t\n ]*\\)"
+				   nil t)
+	    (delete-region (match-beginning 1) (match-end 1))))
       (when (and (re-search-forward (shimbun-content-start-internal shimbun)
 				    nil t)
 		 (setq start (point))
