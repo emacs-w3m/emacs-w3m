@@ -1,6 +1,7 @@
 ;;; w3m-xmas.el --- The stuffs to use emacs-w3m on XEmacs
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -34,6 +35,23 @@
 
 
 ;;; Code:
+
+;; Fix an XEmacs 21.5 bug in `call-process-region'.  It has been reported
+;; as <URL:http://news.gmane.org/group/gmane.emacs.xemacs.beta/thread=16564>.
+(when (and (executable-find "cat")
+	   (with-temp-buffer
+	     (insert "bar")
+	     (backward-char)
+	     (call-process-region (1- (point)) (point) "cat" t t)
+	     (goto-char (point-min))
+	     (not (looking-at "bar"))))
+  (defadvice call-process-region (around fix-xemacs-bug activate)
+    "Narrow to the specified region while running the original function.
+It fixes an XEmacs 21.5 bug.  Advised by emacs-w3m."
+    (save-restriction
+      (narrow-to-region (ad-get-arg 0) (ad-get-arg 1))
+      (goto-char (point-max))
+      ad-do-it)))
 
 (require 'w3m-util)
 (require 'w3m-proc)
