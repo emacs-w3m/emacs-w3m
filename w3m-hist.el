@@ -611,6 +611,36 @@ is nil, renaming will be done for all the w3m buffers."
 	    (setcar element new-url)
 	    (setcar (w3m-history-current-1 (caddr element)) new-url)))))))
 
+(eval-when-compile
+  (defvar w3m-arrived-db)
+  (autoload 'w3m-goto-url "w3m"))
+
+(defun w3m-history-add-arrived-db ()
+  "Add the arrived databese to the history structure unreasonably.
+It's only a joke, you should NEVER use it."
+  (interactive)
+  (unless (eq 'w3m-mode major-mode)
+    (error "`%s' must be invoked from a w3m buffer." this-command))
+  (when (and w3m-arrived-db
+	     (prog1
+		 (yes-or-no-p
+		  "Are you sure you really want to destroy the history? ")
+	       (message "")))
+    (when w3m-history
+      (setcar w3m-history '(nil (0) nil)))
+    (let (url title)
+      (mapatoms
+       (function
+	(lambda (symbol)
+	  (when symbol
+	    (setq url (symbol-name symbol)
+		  title (get symbol 'title))
+	    (w3m-history-push url (when title
+				    (list ':title title)))
+	    (w3m-history-backward (random 2)))))
+       w3m-arrived-db))
+    (w3m-goto-url "about://history/")))
+
 (provide 'w3m-hist)
 
 ;;; w3m-hist.el ends here
