@@ -800,7 +800,7 @@ This hook is evaluated by the `w3m-fontify' function."
 (defcustom w3m-display-hook
   '(w3m-move-point-for-localcgi
     w3m-history-highlight-current-url)
-  "*List of functions run after displaying pages in emacs-w3m buffers.
+  "*Hook run after displaying pages in emacs-w3m buffers.
 Each function is called with a url string as the argument.  This hook
 is evaluated by the `w3m-goto-url' function."
   :group 'w3m
@@ -1854,11 +1854,11 @@ specifying how emacs-w3m handles the redirection.")
 (defconst w3m-arrived-db-size 1023)
 (defvar w3m-arrived-db nil
   "Hash table, the arrived URLs database.
-The name of each symbol represents a url, the arrived time in the
+The name of each symbol represents a url, the arrival time in the
 Emacs style (a list of three integers) is stored as the value, and
-informations include a title, a modified time, a content charset and a
-content type are stored as the symbol properties.  The nil value means
-it has not been initialized.")
+informations including a title, a modification time, a content charset
+and a content type are stored as the properties of the symbol.  The
+nil value means it has not been initialized.")
 
 (defvar w3m-arrived-setup-functions nil
   "Hook functions run after setting up the arrived URLs database.")
@@ -1983,43 +1983,34 @@ it has not been initialized.")
 (defconst w3m-select-buffer-name " *w3m buffers*")
 
 (defconst w3m-meta-content-type-charset-regexp
-  (eval-when-compile
-    (concat "<meta[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]+"
-	    "content=\"?\\([^;]+\\);[ \t\n]*charset=\\([^\"]+\\)\"?"
-	    "[ \t\n]*/?>"))
-  "Regexp matching the META tag containing the following refresh info:
-
-<META HTTP-EQUIV=\"Content-Type\" content=\"...;charset=...\">")
+  "<meta[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]+content\
+=\"?\\([^;]+\\);[ \t\n]*charset=\\([^\"]+\\)\"?[ \t\n]*/?>"
+  "Regexp matching the META tag containing Content-type and charset
+in the order of\
+ <META HTTP-EQUIV=\"Content-Type\" content=\"...;charset=...\">.")
 
 (defconst w3m-meta-charset-content-type-regexp
-  (eval-when-compile
-    (concat "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*charset=\\([^\"]+\\)\"?"
-	    "[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]*/?>"))
-  "Regexp matching the META tag containing the following refresh info:
-
-<META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">")
+  "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*charset\
+=\\([^\"]+\\)\"?[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]*/?>"
+  "Regexp matching the META tag containing charset and Content-type
+in the order of\
+ <META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">.")
 
 (defconst w3m-meta-refresh-content-regexp
-  (eval-when-compile
-    (concat "<meta[ \t\n]+http-equiv=\"?refresh\"?[ \t\n]+"
-	    "content=\"?\\([^;]+\\);[ \t\n]*url=\\([^\"]+\\)\"?"
-	    "[ \t\n]*/?>"))
-  "Regexp matching the META tag containing the following refresh info:
-
-<META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">")
+  "<meta[ \t\n]+http-equiv=\"?refresh\"?[ \t\n]+content\
+=\"?\\([^;]+\\);[ \t\n]*url=\\([^\"]+\\)\"?[ \t\n]*/?>"
+  "Regexp matching the META tag containing refresh and content
+in the order of <META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">.")
 
 (defconst w3m-meta-content-refresh-regexp
-  (eval-when-compile
-    (concat "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*url=\\([^\"]+\\)\"?"
-	    "[ \t\n]+http-equiv=\"?refresh\"?[ \t\n]*/?>"))
-  "Regexp matching the META tag containing the following refresh info:
+  "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*url\
+=\\([^\"]+\\)\"?[ \t\n]+http-equiv=\"?refresh\"?[ \t\n]*/?>"
+  "Regexp matching the META tag containing content and refresh
+in the order of <META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">.")
 
-<META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">")
-
-(eval-and-compile
-  (defconst w3m-html-string-regexp
-    "\\(\"\\([^\"]+\\)\"\\|'\\([^\']+\\)'\\|[^\"\'<> \t\r\f\n]*\\)"
-    "Regexp matching a string of the field-value like `<a href=\"VALUE\">'."))
+(defconst w3m-html-string-regexp
+  "\\(\"\\([^\"]+\\)\"\\|'\\([^\']+\\)'\\|[^\"\'<> \t\r\f\n]*\\)"
+  "Regexp matching a string of the field-value like <a href=\"VALUE\">.")
 
 (defconst w3m-dump-head-source-command-arguments
   (cond ((eq w3m-type 'w3mmee)
@@ -2034,7 +2025,7 @@ it has not been initialized.")
   "Arguments passed to the w3m command to run \"dump_extra\".")
 
 (defvar w3m-halfdump-command nil
-  "The alternative w3m command to run \"halfdump\".
+  "Alternative w3m command used to run \"halfdump\".
 If it is nil, the command specified to `w3m-command' is used.")
 
 (defconst w3m-halfdump-command-arguments
@@ -2061,42 +2052,48 @@ If it is nil, the command specified to `w3m-command' is used.")
 
 (defconst w3m-halfdump-command-common-arguments
   '("-T" "text/html" "-t" tab-width "-cols" (w3m-display-width))
-  "Common arguments for 'halfdump' execution of all w3m variants.")
+  "Arguments used in common by the w3m command variants to run \"halfdump\".")
 
 (defconst w3m-arrived-ignored-regexp
-  "\\`about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
-  "Regexp of urls to be ignored in an arrived-db.")
+  "\\`about:\\(//\\(header\\|source\\|history\\|\
+db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
+  "Regexp matching urls which aren't stored in the arrived URLs database.")
 
 (defconst w3m-history-ignored-regexp
-  "\\`about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
-  "Regexp of urls to be ignored in a history.")
+  "\\`about:\\(//\\(header\\|source\\|history\\|\
+db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
+  "Regexp matching urls which aren't stored in the history.")
 
 (defconst w3m-url-components-regexp
-  "\\`\\(\\([^:/?#]+\\):\\)?\\(//\\([^/?#]*\\)\\)?\\([^?#]*\\)\\(\\?\\([^#]*\\)\\)?\\(#\\(.*\\)\\)?\\'"
-  "Regular expression for parsing the potential four components and
-fragment identifier of a URI reference.  For more detail, see Appendix
-B of RFC2396 <URL:http://www.ietf.org/rfc/rfc2396.txt>.")
+  "\\`\\(\\([^:/?#]+\\):\\)?\\(//\\([^/?#]*\\)\\)?\
+\\([^?#]*\\)\\(\\?\\([^#]*\\)\\)?\\(#\\(.*\\)\\)?\\'"
+  "Regexp used for parsing a URI Reference.
+It matches the potential four components and fragment identifier of a
+URI reference.  See RFC2396, Appendix B for details.")
 
-(defvar w3m-mode-map nil "Keymap used in w3m-mode buffers.")
+(defvar w3m-mode-map nil "Keymap for emacs-w3m buffers.")
 
 (defvar w3m-mode-setup-functions nil
-  "Functions run after `w3m-mode' called.")
+  "Hook functions run after setting up the `w3m-mode'.")
 (defvar w3m-display-functions nil
-  "Functions run at the end of `w3m-goto-url'.")
+  "Hook functions run after displaying pages in emacs-w3m buffers.
+Each function is called with a url string as the argument.  This hook
+is evaluated just before evaluating `w3m-display-hook'.")
 
 (defvar w3m-load-hook nil
-  "*Hook run after loading emacs-w3m.
-It is recommended that customize code is put into `w3m-init-file'
-instead of this hook.")
+  "*Hook run after loading the w3m.elc module.
+It is not recommended that you use this hook instead of writing into
+`w3m-init-file' for customization.")
 
 
 ;; Generic functions:
 (defun w3m-url-to-file-name (url)
-  "Return the file name which is pointed by URL.
-When URL does not point any local files, it returns nil."
-  ;; Remove scheme part and net_loc part.  NOTE: This function accepts
-  ;; only urls whose net_loc part is empty, NULL string or the localhost
-  ;; name.
+  "Return the file name which is pointed to by URL.
+When URL does not point to any local files, it returns nil.  The
+actual performance of this function is to strip off the scheme part
+and the net_loc part from URL.  It is meaningless to give an argument
+whose net_loc part is not empty, a null string or the localhost name
+to this function."
   (cond
    ((string-match "\\`\\(\\(file:\\(//\\)?\\)\\|about://dtree\\)/" url)
     (setq url (substring url (match-end 1)))
@@ -2136,7 +2133,10 @@ When URL does not point any local files, it returns nil."
 		 (throw 'found-file file)))))))))
 
 (defun w3m-expand-file-name-as-url (file &optional directory)
-  "Return URL which points the FILE."
+  "Return a url string which points to the FILE.
+Optional DIRECTORY is a directory to start with if FILE is relative
+\(i.e., FILE doesn't start with slash).  It defaults to the current
+directory."
   (setq file (expand-file-name file directory))
   (concat "file://"
 	  (if (string-match "\\`\\([a-zA-Z]\\):" file)
@@ -2146,74 +2146,82 @@ When URL does not point any local files, it returns nil."
 	    file)))
 
 
-;;; Database of Arrived URLs:
-(defun w3m-arrived-add (url &optional title modified-time
-			    arrived-time content-charset content-type)
-  "Add URL to hash database of arrived URLs."
+;;; Managing the arrived URLs database:
+(defun w3m-arrived-add (url &optional title modification-time
+			    arrival-time content-charset content-type)
+  "Add URL to the arrived URLs database.
+Optional TITLE, MODIFICATION-TIME, ARRIVAL-TIME, CONTENT-CHARSET and
+CONTENT-TYPE are also be added."
   (unless (string-match w3m-arrived-ignored-regexp url)
     (let ((ident (intern url w3m-arrived-db)))
       (if (string-match "\\`\\([^#]+\\)#" url)
 	  (w3m-arrived-add (substring url 0 (match-end 1))
-			   title modified-time arrived-time
+			   title modification-time arrival-time
 			   content-charset content-type)
 	(when title
 	  (put ident 'title title))
-	(when modified-time
-	  (put ident 'last-modified modified-time))
+	(when modification-time
+	  (put ident 'last-modified modification-time))
 	(when content-charset
 	  (put ident 'content-charset content-charset))
 	(when content-type
 	  (put ident 'content-type content-type)))
-      (set ident arrived-time))))
+      (set ident arrival-time))))
 
 (defsubst w3m-arrived-p (url)
-  "If URL has been arrived, return non-nil value.  Otherwise return nil."
+  "Return non-nil if a page of URL has arrived."
   (or (string-match w3m-arrived-ignored-regexp url)
       (intern-soft url w3m-arrived-db)))
 
 (defun w3m-arrived-time (url)
-  "If URL has been arrived, return its arrived time.  Otherwise return nil."
+  "Return the arrival time of a page of URL if it has arrived.
+Otherwise return nil."
   (let ((v (intern-soft url w3m-arrived-db)))
     (and v (boundp v) (symbol-value v))))
 (defsetf w3m-arrived-time (url) (value)
   (list 'w3m-arrived-add url nil nil value))
 
 (defsubst w3m-arrived-put (url property value)
-  "Store URL's PROPERTY with VALUE on the arrived databse.
-If URL has not been arrived, discard given information and return nil."
+  "Store VALUE in the arrived URLs database as the PROPERTY of URL.
+Return VALUE if a page of URL has arrived.  Otherwise, VALUE is
+ignored and return nil."
   (let ((symbol (intern-soft url w3m-arrived-db)))
     (and symbol (put symbol property value))))
 
 (defsubst w3m-arrived-get (url property)
-  "Return the value of URL's PROPERTY that is stored in the arrived database.
-If URL has not been arrived, return nil."
+  "Return the value of URL's PROPERTY that is stored in the arrived URLs
+database.  If a page of URL has not arrived, return nil."
   (let ((symbol (intern-soft url w3m-arrived-db)))
     (and symbol (get symbol property))))
 
 (defsetf w3m-arrived-get w3m-arrived-put)
 
 (defmacro w3m-arrived-title (url)
-  "Return the stored title of the page, which is pointed by URL."
+  "Return the title of URL having stored in the arrived URLs database."
   `(w3m-arrived-get ,url 'title))
 
 (defmacro w3m-arrived-last-modified (url)
-  "If URL has been arrived, return its last modified time.
-Otherwise return nil."
+  "Return the modification time of URL having stored in the arrived URLs
+database.  If a page of URL has not arrived yet, return nil."
   `(w3m-arrived-get ,url 'last-modified))
 
 (defmacro w3m-arrived-content-charset (url)
-  "If URL has been specified content-charset, return its content-charset.
-Otherwise return nil."
+  "Return the content charset of URL having stored in the arrived URLs
+database.  If it has not been specified or a page of URL has not
+arrived yet, return nil."
   `(w3m-arrived-get ,url 'content-charset))
 
 (defmacro w3m-arrived-content-type (url)
-  "If URL has been specified content-type, return its content-type.
-Otherwise return nil."
+  "Return the content type of URL having stored in the arrived URLs
+database.  If it has not been specified or a page of URL has not
+arrived yet, return nil."
   `(w3m-arrived-get ,url 'content-type))
 
 (defun w3m-arrived-load-list ()
+  "Load the arrived URLs database file.
+The file is specified by `w3m-arrived-file'.  If the data is in old
+format, they will simply be ignored."
   (let ((list (w3m-load-list w3m-arrived-file)))
-    ;; When arrived URL database is too old, its data is ignored.
     (when (or
 	   ;; Before the revision 1.120, every element of the list was
 	   ;; a string that represented an arrived URL.
@@ -2222,11 +2230,11 @@ Otherwise return nil."
 	   ;; cell: its car kept a URL, and its cdr kept a time when
 	   ;; the URL was arrived.
 	   ;; Before the revision 1.178, every element was a 4-tuple
-	   ;; that consisted of a URL, a title, a modified time, and
-	   ;; an arrived time.
+	   ;; that consisted of a URL, a title, a modification time,
+	   ;; and an arrival time.
 	   ;; An element of the modern database is a 6-tuple that
-	   ;; consisted of a URL, a title, a modified time, an arrived
-	   ;; time, a charset, and a content type.
+	   ;; consisted of a URL, a title, a modification time, an
+	   ;; arrival time, a charset, and a content type.
 	   ;; Thus, the following condition eliminates the revision
 	   ;; 1.177 and olders.
 	   (<= (length (car list)) 4))
@@ -2236,12 +2244,14 @@ Otherwise return nil."
     list))
 
 (defun w3m-arrived-setup ()
-  "Load arrived url list from `w3m-arrived-file' and setup hash database."
+  "Load the arrived URLs database file and set up the hashed database
+as `w3m-arrived-db' if it has not been initialize yet.  The file is
+specified by `w3m-arrived-file'."
   (unless w3m-arrived-db
     (setq w3m-arrived-db (make-vector w3m-arrived-db-size 0))
     (let ((list (w3m-arrived-load-list)))
       (dolist (elem list)
-	;; Ignore an element that lacks an arrived time information.
+	;; Ignore an element that lacks an arrival time information.
 	(when (nth 3 elem)
 	  (w3m-arrived-add (if (string-match "\\`/" (car elem))
 			       (w3m-expand-file-name-as-url (car elem))
@@ -2256,10 +2266,12 @@ Otherwise return nil."
     (run-hooks 'w3m-arrived-setup-functions)))
 
 (defun w3m-arrived-shutdown ()
-  "Save hash database of arrived URLs to `w3m-arrived-file'."
+  "Save the arrived URLs database in the file.
+The database `w3m-arrived-db' will be cleared after saving.  The file
+is specified by `w3m-arrived-file'."
   (when w3m-arrived-db
-    ;; Re-read arrived DB file, and check sites which are arrived on
-    ;; the other emacs process.
+    ;; Re-read the database file, and if there are data which another
+    ;; Emacs process registered, merge them to the current database.
     (dolist (elem (w3m-arrived-load-list))
       (when (w3m-time-newer-p (nth 3 elem) (w3m-arrived-time (car elem)))
 	(w3m-arrived-add (if (string-match "\\`/" (car elem))
@@ -2270,13 +2282,13 @@ Otherwise return nil."
 			 (nth 3 elem)
 			 (when (stringp (nth 4 elem)) (nth 4 elem))
 			 (nth 5 elem))))
-    ;; Convert current arrived DB to a list.
+    ;; Convert current database to a list.
     (let (list)
       (mapatoms
        (lambda (sym)
 	 (and sym
 	      (boundp sym)
-	      (symbol-value sym) ; Ignore an entry lacks an arrived time.
+	      (symbol-value sym) ; Ignore an entry lacks an arrival time.
 	      (push (list (symbol-name sym)
 			  (get sym 'title)
 			  (get sym 'last-modified)
@@ -3845,7 +3857,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		arguments)))
 
 (defun w3m-w3m-dump-head-source (url orig-url handler)
-  "Retrive headers and content pointed by URL, and call the HANDLER
+  "Retrive headers and content pointed to by URL, and call the HANDLER
 function with attributes of the retrieved content when retrieval is
 complete."
   (lexical-let ((url url)
@@ -4008,7 +4020,7 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
     args))
 
 (defun w3m-w3m-retrieve (url no-decode no-cache post-data referer handler)
-  "Retrieve content pointed by URL with w3m, insert it to this buffer,
+  "Retrieve content pointed to by URL with w3m, insert it to this buffer,
 and call the HANDLER function with its content type as a string
 argument, when retrieve is complete."
   (lexical-let ((i w3m-follow-redirection)
@@ -4129,7 +4141,7 @@ If this function is called by redirection, ORIG-URL must be set."
 
 (defsubst w3m-about-retrieve (url &optional no-decode no-cache
 				  post-data referer handler)
-  "Retrieve content pointed by URL which has about: scheme, insert it
+  "Retrieve content pointed to by URL which has about: scheme, insert it
 to this buffer."
   (cond
    ((string= "about://emacs-w3m.gif" url)
@@ -4173,7 +4185,7 @@ to this buffer."
 	  type))))))
 
 (defsubst w3m-cid-retrieve (url &optional no-decode no-cache)
-  "Retrieve content pointed by URL which has cid: scheme, insert it to
+  "Retrieve content pointed to by URL which has cid: scheme, insert it to
 this buffer."
   (let ((func (cdr (assq (with-current-buffer w3m-current-buffer major-mode)
 			 w3m-cid-retrieve-function-alist))))
@@ -4181,7 +4193,7 @@ this buffer."
 
 (defun w3m-retrieve (url &optional no-decode no-cache
 			 post-data referer handler)
-  "Retrieve content pointed by URL, insert it to this buffer, and
+  "Retrieve content pointed to by URL, insert it to this buffer, and
 returns its content type.
 If the argument HANDLER is equal to the other value than nil, this
 function returns nil immediately and the specified content is retrived
@@ -4442,7 +4454,7 @@ type as a string argument, when retrieve is complete."
 
 (defun w3m-retrieve-and-render (url &optional no-cache charset
 				    post-data referer handler)
-  "Insert content pointed by URL to this buffer, render it, and return
+  "Insert content pointed to by URL to this buffer, render it, and return
 a `w3m-process' object immediately.  The HANDLER function will be
 called when rendering is complete.  When new content is retrieved in
 this buffer, the HANDLER function will be called with t as an
@@ -4453,7 +4465,7 @@ argument.  Otherwise, it will be called with nil."
     (lexical-let ((url (w3m-url-strip-fragment url))
 		  (charset charset)
 		  (page-buffer (current-buffer))
-		  (arrived-time (current-time)))
+		  (arrival-time (current-time)))
       (w3m-process-do-with-temp-buffer
 	  (type (progn
 		  (w3m-clear-local-variables)
@@ -4462,7 +4474,7 @@ argument.  Otherwise, it will be called with nil."
 	  (setq url (w3m-url-strip-authinfo url))
 	  (if type
 	      (let ((modified-time (w3m-last-modified url)))
-		(w3m-arrived-add url nil modified-time arrived-time)
+		(w3m-arrived-add url nil modified-time arrival-time)
 		(unless modified-time
 		  (setf (w3m-arrived-last-modified url) nil))
 		(prog1 (w3m-create-page url
@@ -4478,7 +4490,7 @@ argument.  Otherwise, it will be called with nil."
 		  ;; が使えない．
 		  (let ((real (w3m-real-url url)))
 		    (unless (string= url real)
-		      (w3m-arrived-add real nil nil arrived-time)
+		      (w3m-arrived-add real nil nil arrival-time)
 		      (setf (w3m-arrived-title real)
 			    (w3m-arrived-title url))
 		      (setf (w3m-arrived-last-modified real)
@@ -5036,7 +5048,7 @@ session."
       (w3m-display-message "No URL at point"))))
 
 (defun w3m-download-this-url ()
-  "Download the file or the image which pointed by the link under cursor."
+  "Download the file or the image which pointed to by the link under cursor."
   (interactive)
   (let ((url (or (w3m-anchor) (w3m-image))))
     (if (w3m-url-valid url)
@@ -5126,7 +5138,7 @@ Return t if current line has a same anchor sequence."
 		      (w3m-highlight-current-anchor-1 seq))))))))
 
 (defun w3m-edit-url (url)
-  "Edit the local file pointed by URL."
+  "Edit the local file pointed to by URL."
   (when (string-match "\\`about://\\(header\\|source\\)/" url)
     (setq url (substring url (match-end 0))))
   (funcall w3m-edit-function
@@ -5134,7 +5146,7 @@ Return t if current line has a same anchor sequence."
 	       (error "URL:%s is not a local file" url))))
 
 (defun w3m-edit-current-url ()
-  "Edit the local file pointed by URL of current page."
+  "Edit the local file pointed to by URL of current page."
   (interactive)
   (if w3m-current-url
       (w3m-edit-url w3m-current-url)
@@ -5142,7 +5154,7 @@ Return t if current line has a same anchor sequence."
 
 
 (defun w3m-edit-this-url (&optional url)
-  "Edit the local file pointed by URL under point."
+  "Edit the local file pointed to by URL under point."
   (interactive)
   (unless url
     (setq url (w3m-anchor)))
