@@ -189,8 +189,9 @@
   '(url groups coding-system from-address content-start content-end
 	use-entire-index x-face-alist))
 
-(defun shimbun-open (server)
-  "Open a shimbun for SERVER."
+(defun shimbun-open (server &optional mua)
+  "Open a shimbun for SERVER.
+Optional MUA is a `shimbun-mua' instance."
   (require (intern (concat "sb-" server)))
   (let (url groups coding-system from-address content-start content-end
 	    use-entire-index x-face-alist)
@@ -199,6 +200,7 @@
 	   (symbol-value (intern-soft 
 			  (concat "shimbun-" server "-" (symbol-name attr))))))
     (luna-make-entity (intern (concat "shimbun-" server))
+		      :mua mua
 		      :server server
 		      :url url
 		      :groups groups

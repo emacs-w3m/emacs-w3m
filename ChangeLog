@@ -5,6 +5,7 @@
 	(shimbun-mua-search-id): New method.
 	(shimbun-search-id): New function.
 	(shimbun-mime-encode-string): Fixed problem when string is "" or nil.
+	(shimbun-open): Added optional `MUA' argument.
 
 	* shimbun/sb-mhonarc.el (shimbun-make-contents):
 	Process content as text/html.
