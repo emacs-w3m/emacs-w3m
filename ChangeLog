@@ -7,8 +7,11 @@
 	(w3m-current-column, w3m-set-window-hscroll): Chenge method of the
 	calculation point.
 	the difference points.
-	(w3m-horizontal-scroll, w3m-horizontal-on-screen) 
+	(w3m-horizontal-scroll, w3m-horizontal-on-screen)
 	(w3m-horizontal-recenter): Use `w3m-window-hscroll'.
+	(w3m-redisplay-this-page): Don't handle store|restore position.
+	(w3m-goto-url): If reload or redisplay, restore position of
+	history.
 
 2002-05-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
@@ -33,7 +36,7 @@
 	(w3m-check-current-position): Check car of `w3m-current-position'.
 	(w3m-current-column, w3m-set-window-hscroll): New functions to
 	rescue for XEmacs with Mule.
-	
+
 2002-05-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-form.el (w3m-form-replace): Don't pad the form slot with
