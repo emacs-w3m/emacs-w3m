@@ -35,8 +35,7 @@
       No additional package is required.
 
       When BITMAP-MULE package is installed, emacs-w3m converts inline
-      images are converted into black-and-white images, and displays
-      them on Emacs.
+      images into black-and-white images, and displays them on Emacs.
 
    c) XEmacs
       APEL package is required.
