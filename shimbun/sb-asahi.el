@@ -45,117 +45,110 @@
   "Name of the parent url.")
 
 (defvar shimbun-asahi-group-table
-  (let ((default (list
-		  (concat
-		   "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
-		   ;; 1. url
-		   "\\(%s/update/[01][0-9][0-3][0-9]/"
-		   ;; 2. serial number
-		   "\\(\\([A-Z]+\\)?[0-9]+\\)" "\\.html\\)"
-		   "\"[\t\n ]*>[\t\n ]*"
-		   ;; 4. subject
-		   "\\(.+\\)" "[\t\n ]*<[\t\n ]*/a[\t\n ]*>[\t\n ]*([\t\n ]*"
-		   ;; 5. month
-		   "\\([01][0-9]\\)" "/"
-		   ;; 6. day
-		   "\\([0-3][0-9]\\)" "[\t\n ]+"
-		   ;; 7. hour:minute
-		   "\\([012][0-9]:[0-5][0-9]\\)" "[\t\n ]*)")
-		  1 2 4 5 6 7)))
-    `(("business" "経済面" "list.html" ,@default)
-      ("culture" "文化面" "" ,@default)
-      ("english" "英語面" ""
+  (let* ((s0 "[\t\n ]*")
+	 (s1 "[\t\n ]+")
+	 (default (list
+		   (concat
+		    "<a" s1 "href=\"/"
+		    ;; 1. url
+		    "\\(%s/"
+		    ;; 3 or 5. serial number
+		    "\\("
+		    "update/[01][0-9][0-3][0-9]/\\(\\([a-z]+\\)?[0-9]+\\)"
+		    "\\|"
+		    "\\(\\(.+/\\)+[^/]*20[0-9][0-9][01][0-9][0-3][0-9][^/]*\\)"
+		    "\\)"
+		    "\\.html\\)"
+		    "\">" s0
+		    ;; 7. subject
+		    "\\([^<>]+\\)"
+		    s0 "</a>" s0 "("
+		    ;; 8. month
+		    "\\([01][0-9]\\)"
+		    "/"
+		    ;; 9. day
+		    "\\([0-3][0-9]\\)"
+		    "\\(" s1
+		    ;; 11. hour:minute
+		    "\\([012][0-9]:[0-5][0-9]\\)"
+		    "\\)?)")
+		   1 3 5 7 8 9 11)))
+    `(("business" "経済" "%s/" ,@default)
+      ("culture" "文化・芸能" "%s/" ,@default)
+      ("english" "ENGLISH" "%s/"
        ,(concat
-	 "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
+	 "<a" s1 "href=\"/"
 	 ;; 1. url
 	 "\\(%s/"
 	 ;; 2. extra keyword
-	 "\\([a-z]+\\)" "/[a-z]+200[0-9]"
+	 "\\([a-z]+\\)"
+	 "/[a-z]+20[0-9][0-9]"
 	 ;; 3. month
 	 "\\([01][0-9]\\)"
 	 ;; 4. day
 	 "\\([0-3][0-9]\\)"
 	 ;; 5. serial number
-	 "\\([0-9]+\\)" "\\.html\\)"
-	 "\"[\t\n ]*>[\t\n ]*"
-	 "<!--[\t\n ]*leadstart[\t\n ]*-->[\t\n ]*"
+	 "\\([0-9]+\\)"
+	 "\\.html\\)"
+	 "\">" s0
+	 "<!--" s0 "leadstart" s0 "-->" s0
 	 ;; 6. subject
-	 "\\(.+\\)" "[\t\n ]*"
-	 "<!--[\t\n ]*leadend[\t\n ]*-->")
-       1 5 6 3 4 nil 2)
-      ("international" "国際面" "list.html" ,@default)
-      ("kansai" "関西面" ""
+	 "\\(.+\\)"
+	 s0 "<!--" s0 "leadend" s0 "-->")
+       1 5 nil 6 3 4 nil 2)
+      ("international" "国際" "%s/" ,@default)
+      ("kansai" "関西" "%s/" ,@default)
+      ("kansai-special" "関西特集" "kansai/special/"
        ,(concat
-	 "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
-	 ;; 1. url
-	 "\\(%s/news/"
-	 ;; 2. serial number
-	 "\\([A-Z]+[0-9]+\\)" "\\.html\\)"
-	 "\"[\t\n ]*>[\t\n ]*"
-	 ;; 3. subject
-	 "\\(.+\\)" "[\t\n ]*<[\t\n ]*/a[\t\n ]*>[\t\n ]*([\t\n ]*"
-	 ;; 4. month
-	 "\\([01][0-9]\\)" "/"
-	 ;; 5. day
-	 "\\([0-3][0-9]\\)" "[\t\n ]*)")
-       1 2 3 4 5)
-      ("kansai-special" "関西特集面" ""
-       ,(concat
-	 "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
+	 "<a" s1 "href=\"/"
 	 ;; 1. url
 	 "\\(kansai/special/"
 	 ;; 2. serial number
-	 "\\([A-Z]+[0-9]+\\)" "\\.html\\)"
-	 "\"[\t\n ]*>[\t\n ]*"
+	 "\\([a-z]+[0-9]+\\)"
+	 "\\.html\\)"
+	 "\">" s0
 	 ;; 3. subject
-	 "\\(.+\\)" "[\t\n ]*<[\t\n ]*/a[\t\n ]*>[\t\n ]*([0-9]+/"
+	 "\\(.+\\)"
+	 s0 "</a>" s0 "([0-9]+/"
 	 ;; 4. month
-	 "\\([01][0-9]\\)" "/"
+	 "\\([01][0-9]\\)"
+	 "/"
 	 ;; 5. day
-	 "\\([0-3][0-9]\\)" "[\t\n ]*)")
-       1 2 3 4 5)
-      ("national" "社会面" "" ,@default)
-      ("politics" "政治面" "" ,@default)
-      ("science" "科学面" "list.html"
+	 "\\([0-3][0-9]\\))")
+       1 nil 2 3 4 5)
+      ("national" "社会" "%s/" ,@default)
+      ("politics" "政治" "%s/" ,@default)
+      ("science" "科学" "%s/" ,@default)
+      ("sports" "スポーツ" "%s/"
        ,(concat
-	 "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
+	 "<a" s1 "href=\"/"
 	 ;; 1. url
-	 "\\(%s/update/[01][0-9][0-3][0-9]/"
-	 ;; 2. serial number
-	 "\\([0-9]+\\)" "\\.html\\)"
-	 "\"[\t\n ]*>[\t\n ]*"
-	 ;; 3. subject
-	 "\\(.+\\)" "[\t\n ]*<[\t\n ]*/a[\t\n ]*>[\t\n ]*([\t\n ]*"
-	 ;; 4. month
-	 "\\([01][0-9]\\)" "/"
-	 ;; 5. day
-	 "\\([0-3][0-9]\\)" "[\t\n ]*)")
-       1 2 3 4 5)
-      ("sports" "スポーツ面" ""
-       ,(concat
-	 "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
-	 ;; 1. url
-	 "\\(%s/"
-	 ;; 2. extra keyword
-	 "\\([a-z]+\\)" "/[a-z]+200[0-9][01][0-9][0-3][0-9]"
-	 ;; 3. serial number
-	 "\\([0-9]+\\)" "\\.html\\)"
-	 "\"[\t\n ]*>[\t\n ]*"
-	 ;; 4. subject
-	 "\\(.+\\)" "[\t\n ]*<[\t\n ]*/a[\t\n ]*>[\t\n ]*([\t\n ]*"
-	 ;; 5. month
-	 "\\([01][0-9]\\)" "/"
-	 ;; 6. day
-	 "\\([0-3][0-9]\\)" "[\t\n ]*"
-	 ;; 7. hour:minute
-	 "\\([012][0-9]:[0-5][0-9]\\)?" "[\t\n ]*)")
-       1 3 4 5 6 7 2)))
+	 "\\("
+	 ;; 3 or 4. extra keyword
+	 "\\(%s/\\([a-z]+\\)\\|\\([a-z]+\\)\\(/.+\\)+\\)"
+	 "/"
+	 ;; 6. serial number
+	 "\\([a-z]+20[0-9][0-9][01][0-9][0-3][0-9]+\\)"
+	 "\\.html\\)"
+	 "\">" s0
+	 ;; 7. subject
+	 "\\(.+\\)"
+	 s0 "</a>[\t\n 　]*("
+	 ;; 8. month
+	 "\\([01][0-9]\\)"
+	 "/"
+	 ;; 9. day
+	 "\\([0-3][0-9]\\)"
+	 "\\(" s1
+	 ;; 11. hour:minute
+	 "\\([012][0-9]:[0-5][0-9]\\)"
+	 "\\)?)")
+       1 nil 6 7 8 9 11 3 4)))
   "Alist of group names, their Japanese translations, index pages,
-regexps and numbers.
-Regexp may have the \"%s\" token which is replaced with a
-regexp-quoted group name.  Numbers point to the search result in order
-of a url, a serial number, a subject, a month, a day, an hour:minute
-and an extra keyword.")
+regexps and numbers.  Where index pages and regexps may contain the
+\"%s\" token which is replaced with group names, numbers point to the
+search result in order of [0]a url, [1,2]a serial number, [3]a subject,
+\[4]a month, [5]a day, [6]an hour:minute and [7,8]an extra keyword.")
 
 (defvar shimbun-asahi-content-start
   "<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
@@ -191,17 +184,16 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-asahi))
   (let ((group (shimbun-current-group-internal shimbun)))
-    (if (string-equal group "kansai-special")
-	(concat shimbun-asahi-url "kansai/special/")
-      (concat shimbun-asahi-url group "/"
-	      (nth 2 (assoc group shimbun-asahi-group-table))))))
+    (concat shimbun-asahi-url
+	    (format (nth 2 (assoc group shimbun-asahi-group-table))
+		    group))))
 
 (defun shimbun-asahi-get-headers (shimbun)
   "Return a list of headers."
   (let ((group (shimbun-current-group-internal shimbun))
 	(from (shimbun-from-address shimbun))
 	(case-fold-search t)
-	regexp numbers cyear cmonth month day year headers
+	regexp numbers cyear cmonth month year day serial num extra headers
 	kansai-special)
     (setq regexp (assoc group shimbun-asahi-group-table)
 	  numbers (nthcdr 4 regexp)
@@ -210,22 +202,38 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	  cmonth (nth 4 cyear)
 	  cyear (nth 5 cyear))
     (while (re-search-forward regexp nil t)
-      (if (string-equal group "kansai-special")
-	  (save-excursion
-	    (save-match-data
-	      (setq kansai-special
-		    (if (re-search-backward
-			 ">[\t\n ]*\\([^<>]+\\)[\t\n ]*<[\t\n ]*/th[\t\n ]*>"
-			 nil t)
-			(match-string 1))))))
-      (setq month (string-to-number (match-string (nth 3 numbers)))
+      (when (string-equal group "kansai-special")
+	(save-excursion
+	  (save-match-data
+	    (setq kansai-special
+		  (if (re-search-backward
+		       ">[\t\n ]*\\([^<>]+\\)[\t\n ]*<[\t\n ]*/th[\t\n ]*>"
+		       nil t)
+		      (match-string 1))))))
+      (setq month (string-to-number (match-string (nth 4 numbers)))
 	    year (cond ((and (= 12 month) (= 1 cmonth))
 			(1- cyear))
 		       ((and (= 1 month) (= 12 cmonth))
 			(1+ cyear))
 		       (t
 			cyear))
-	    day (string-to-number (match-string (nth 4 numbers))))
+	    day (string-to-number (match-string (nth 5 numbers)))
+	    serial (if (and (setq num (nth 1 numbers))
+			    (match-beginning num))
+		       (format "%d%02d%02d.%s"
+			       year month day (match-string num))
+		     (mapconcat 'identity
+				(save-match-data
+				  (split-string
+				   (downcase (match-string (nth 2 numbers)))
+				   "/"))
+				"."))
+	    extra (or (and (setq num (nth 7 numbers))
+			   (match-beginning num)
+			   (match-string num))
+		      (and (setq num (nth 8 numbers))
+			   (match-beginning num)
+			   (match-string num))))
       (push (shimbun-make-header
 	     ;; number
 	     0
@@ -233,36 +241,37 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	     (shimbun-mime-encode-string
 	      (cond (kansai-special
 		     (concat "[" kansai-special "] "
-			     (match-string (nth 2 numbers))))
-		    ((nth 6 numbers)
-		     (concat (match-string (nth 6 numbers)) ": "
-			     (match-string (nth 2 numbers))))
+			     (match-string (nth 3 numbers))))
+		    ((and (setq num (nth 7 numbers))
+			  (match-beginning num))
+		     (concat "[" (match-string num) "] "
+			     (match-string (nth 3 numbers))))
+		    ((and (setq num (nth 8 numbers))
+			  (match-beginning num))
+		     (concat "[" (match-string num) "] "
+			     (match-string (nth 3 numbers))))
 		    (t
-		     (match-string (nth 2 numbers)))))
+		     (match-string (nth 3 numbers)))))
 	     ;; from
 	     from
 	     ;; date
-	     (shimbun-make-date-string year month day
-				       (when (nth 5 numbers)
-					 (match-string (nth 5 numbers))))
+	     (shimbun-make-date-string
+	      year month day (when (and (setq num (nth 6 numbers))
+					(match-beginning num))
+			       (match-string num)))
 	     ;; id
-	     (if (nth 6 numbers)
-		 (format "<%d%02d%02d.%s%%%s.%s.%s>"
-			 year month day
-			 (match-string (nth 1 numbers))
-			 (match-string (nth 6 numbers))
-			 group shimbun-asahi-top-level-domain)
-	       (format "<%d%02d%02d.%s%%%s.%s>"
-		       year month day
-		       (match-string (nth 1 numbers))
-		       group shimbun-asahi-top-level-domain))
+	     (if extra
+		 (concat "<" serial "%" extra "." group "."
+			 shimbun-asahi-top-level-domain ">")
+	       (concat "<" serial "%" group "."
+		       shimbun-asahi-top-level-domain ">"))
 	     ;; references, chars, lines
 	     "" 0 0
 	     ;; xref
 	     (shimbun-expand-url (match-string (nth 0 numbers))
 				 shimbun-asahi-url))
 	    headers))
-    headers))
+    (shimbun-sort-headers headers)))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-asahi)
 					 &optional range)

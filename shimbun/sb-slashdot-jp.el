@@ -290,7 +290,7 @@
 	    (match-string 1))))))
       (forward-line 1)
       (when parent
-	(let ((date (w3m-time-parse-string (shimbun-header-date parent))))
+	(let ((date (shimbun-time-parse-string (shimbun-header-date parent))))
 	  (shimbun-header-set-date
 	   head
 	   (or (shimbun-slashdot-jp-parse-date-string date)
