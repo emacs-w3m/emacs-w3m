@@ -113,31 +113,29 @@
     "CCL program to write characters represented in `iso-latin-1'.")
 
   (defconst w3m-ccl-generate-ncr
-    `((if (r0 <= ?\xfffd)
-	  (write ?~)			; unknown character.
-	((r1 = 0)
-	 (r2 = 0)
-	 (loop
-	  (r1 = (r1 << 4))
-	  (r1 |= (r0 & 15))
-	  (r0 = (r0 >> 4))
-	  (if (r0 == 0)
-	      (break)
-	    ((r2 += 1)
-	     (repeat))))
-	 (write "&#x")
-	 (loop
-	  (branch (r1 & 15)
-		  ,@(mapcar
-		     (lambda (i)
-		       (list 'write (string-to-char (format "%x" i))))
-		     '(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15)))
-	  (r1 = (r1 >> 4))
-	  (if (r2 == 0)
-	      ((write ?\;)
-	       (break))
-	    ((r2 -= 1)
-	     (repeat))))))
+    `((r1 = 0)
+      (r2 = 0)
+      (loop
+       (r1 = (r1 << 4))
+       (r1 |= (r0 & 15))
+       (r0 = (r0 >> 4))
+       (if (r0 == 0)
+	   (break)
+	 ((r2 += 1)
+	  (repeat))))
+      (write "&#x")
+      (loop
+       (branch (r1 & 15)
+	       ,@(mapcar
+		  (lambda (i)
+		    (list 'write (string-to-char (format "%x" i))))
+		  '(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15)))
+       (r1 = (r1 >> 4))
+       (if (r2 == 0)
+	   ((write ?\;)
+	    (break))
+	 ((r2 -= 1)
+	  (repeat))))
       (repeat))
     "CCL program to generate a string which represents a UCS codepoint
 in NCR (Numeric Character References)."))

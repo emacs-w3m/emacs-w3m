@@ -65,7 +65,7 @@
       ;; (2) Convert a character in Emacs to a UCS codepoint.
       (call emacs-char-to-ucs-codepoint-conversion)
       (if (r0 <= 0)
-	  (r0 = ?\xfffd)))
+	  (write-repeat ?~)))		; unknown character.
     "CCL program to convert multibyte char to ucs with Mule-UCS."))
 
 (define-ccl-program w3m-euc-japan-mule-ucs-encoder

@@ -103,7 +103,9 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 		       (if (r7 == 0)	; lookup failed
 			   (r1 = #xfffd)))
 		   '((r1 = #xfffd)))))))
-	(r0 = r1))
+	(if (r1 == #xfffd)
+	    (write-repeat ?~)		; unknown character.
+	  (r0 = r1)))
     "CCL program to convert multibyte char to ucs with emacs-unicode."))
 
 (define-ccl-program w3m-euc-japan-encoder
