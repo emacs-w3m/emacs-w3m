@@ -1,3 +1,7 @@
+2001-04-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-info-like-map): Changed key of `w3m-reload-this-page'.
+
 2001-04-20  Taiki SUGAWARA <taiki.s@cityfujisawa.ne.jp>
 
 	* w3m.el (w3m-expand-file-name-as-url): Use "file:///cygdrive/"
