@@ -49,6 +49,7 @@
   (defvar w3m-display-inline-images)
   (defvar w3m-icon-directory)
   (defvar w3m-mode-map)
+  (defvar w3m-profile-directory)
   (defvar w3m-toolbar)
   (defvar w3m-toolbar-buttons)
   (defvar w3m-use-tab)
@@ -59,7 +60,9 @@
   (defvar w3m-form-use-fancy-faces)
   (autoload 'w3m-expand-url "w3m")
   (autoload 'w3m-retrieve "w3m")
-  (autoload 'w3m-image-type "w3m"))
+  (autoload 'w3m-image-type "w3m")
+  (autoload 'w3m-load-list "w3m")
+  (autoload 'w3m-save-list "w3m"))
 
 ;;; Coding system.
 
@@ -339,6 +342,18 @@ use of ImageMagick absolutely by setting this option to nil."
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-favicon-use-cache-file nil
+  "*If non-nil, use favicon cache file."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-favicon-cache-file nil
+  "Filename of saving favicon cache."
+  :group 'w3m
+  :type 'file)
+
+(defvar w3m-favicon-data-cache nil)
+
 (defun w3m-setup-favicon (url)
   (setq w3m-current-favicon-data nil
 	w3m-current-favicon-image nil)
@@ -373,14 +388,37 @@ use of ImageMagick absolutely by setting this option to nil."
 	      (setq w3m-current-favicon-data nil)))))))
 
 (defun w3m-retrieve-favicon (url target &optional handler)
-  (lexical-let ((url url)
-		(target target))
-    (w3m-process-do-with-temp-buffer
-	(ok (w3m-retrieve url 'raw nil nil nil handler))
-      (when ok
-	(let ((data (buffer-string)))
-	  (with-current-buffer target
-	    (setq w3m-current-favicon-data data)))))))
+  (if (assoc url w3m-favicon-data-cache)
+      (setq w3m-current-favicon-data
+	    (nth 1 (assoc url w3m-favicon-data-cache)))
+    (lexical-let ((url url)
+		  (target target))
+      (w3m-process-do-with-temp-buffer
+	  (ok (w3m-retrieve url 'raw nil nil nil handler))
+	(let (data)
+	  (when ok
+	    (setq data (buffer-string))
+	    (with-current-buffer target
+	      (setq w3m-current-favicon-data data)))
+	  (push (list url data) w3m-favicon-data-cache))))))
+
+(defun w3m-favicon-save-cache-file ()
+  (when w3m-favicon-use-cache-file
+    (w3m-save-list (or w3m-favicon-cache-file
+		       (expand-file-name ".favicon" w3m-profile-directory))
+		   w3m-favicon-data-cache 'binary)))
+
+(defun w3m-favicon-load-cache-file ()
+  (when (and w3m-favicon-use-cache-file
+	     (null w3m-favicon-data-cache))
+    (setq w3m-favicon-data-cache
+	  (w3m-load-list
+	   (or w3m-favicon-cache-file
+	       (expand-file-name ".favicon" w3m-profile-directory))
+	   'binary))))
+
+(add-hook 'kill-emacs-hook 'w3m-favicon-save-cache-file)
+(add-hook 'w3m-mode-hook 'w3m-favicon-load-cache-file)
 
 ;;; Header line & Tabs
 (defface w3m-header-line-location-title-face
