@@ -3196,16 +3196,22 @@ succeed."
 		  (cons 'binary 'binary))
 		(lcookie (make-temp-name
 			  (format "%s.%d." (user-login-name) (emacs-pid))))
+		(cfile (make-temp-name
+			(expand-file-name "w3melck" w3m-profile-directory)))
 		file beg end)
 	    (w3m-process-with-environment
 		(list
 		 (cons "LOCAL_COOKIE" lcookie)
+		 (cons "LOCAL_COOKIE_FILE" cfile)
 		 (cons "QUERY_STRING"
 		       (format "dir=%s&cookie=%s"
 			       (encode-coding-string (w3m-url-to-file-name url)
 						     w3m-file-name-coding-system)
 			       lcookie)))
 	      (call-process w3m-dirlist-cgi-program nil t nil))
+	    ;; delete local cookie file
+	    (when (and (file-exists-p cfile) (file-writable-p cfile))
+	      (delete-file cfile))
 	    (goto-char (point-min))
 	    (when (re-search-forward "^<html>" nil t)
 	      (delete-region (point-min) (match-beginning 0))
