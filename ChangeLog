@@ -1,5 +1,8 @@
 2003-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-toggle-inline-images): Ignore `w3m-safe-url-regexp'
+	when the prefix argument is given.
+
 	* w3m-util.el (w3m-find-w3m-buffer): Bind `w3m-safe-url-regexp' to
 	the value specified peculiarly by each MUA.
 	(w3m-with-w3m-buffer): Ditto.

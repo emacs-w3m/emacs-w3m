@@ -3072,8 +3072,13 @@ appearance of images in the article buffer."
    (let ((status w3m-display-inline-images))
      (unless (w3m-display-graphic-p)
        (error "Can't display images in this environment"))
-     (if force (setq w3m-display-inline-images nil
-		     status nil))
+     (if (and force
+	      (yes-or-no-p "\
+Are you sure you really want to show all images (maybe unsecure)? "))
+	 ;; `w3m-safe-url-regexp' is already bound by `w3m-with-w3m-buffer'.
+	 (setq w3m-safe-url-regexp nil
+	       w3m-display-inline-images nil
+	       status nil))
      (unwind-protect
 	 (w3m-toggle-inline-images-internal (if w3m-display-inline-images
 						'on 'off)
