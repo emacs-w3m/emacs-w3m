@@ -4628,10 +4628,62 @@ also make a new frame for the copied session."
   (mouse-set-point event)
   (w3m-view-this-url arg))
 
+(defun w3m-open-all-links-in-new-session (start end &optional arg)
+  "Open all http links between START and END as new sessions.
+If the page looks like Google's search result and the START point is
+the beginning of a line, only the links displayed in the beginning of
+lines are picked up.  If ARG is non-nil, force reload all links."
+  (interactive "r\nP")
+  (let ((buffer (current-buffer))
+	(window (selected-window))
+	(prev start)
+	(url (w3m-url-valid (w3m-anchor start)))
+	urls all height)
+    (when url
+      (setq urls (list url)))
+    (save-excursion
+      (goto-char start)
+      (setq all (not (and (bolp)
+			  w3m-current-url
+			  (string-match "\\`http://\\([^/]+\\.\\)?google\\."
+					w3m-current-url))))
+      (while (progn
+	       (w3m-next-anchor)
+	       (and (> (point) prev)
+		    (< (point) end)))
+	(setq prev (point))
+	(when (and (setq url (w3m-url-valid (w3m-anchor)))
+		   (string-match "\\`https?:" url)
+		   (or all
+		       (bolp)))
+	  (push url urls))))
+    (while urls
+      (setq url (car urls)
+	    urls (cdr urls))
+      (set-buffer buffer)
+      (w3m-view-this-url-1 url arg t))
+    (w3m-select-buffer)
+    (select-window window)
+    (message "Type `%s' to switch to the selection buffer"
+	     (condition-case nil
+		 (key-description
+		  (car (where-is-internal 'w3m-select-buffer)))
+	       (error "M-x w3m-select-buffer")))))
+
 (defun w3m-view-this-url-new-session (&optional arg)
-  "Perform the command `w3m-view-this-url' in the new session."
+  "Perform the `w3m-view-this-url' command in the new session.
+If the region is active, use the `w3m-open-all-links-in-new-session'
+command instead."
   (interactive "P")
-  (w3m-view-this-url arg t))
+  (if (w3m-static-if (featurep 'xemacs)
+	  (region-active-p)
+	;; Copied from `gnus-region-active-p'.
+	(and (boundp 'transient-mark-mode)
+	     transient-mark-mode
+	     (boundp 'mark-active)
+	     mark-active))
+      (call-interactively 'w3m-open-all-links-in-new-session)
+    (w3m-view-this-url arg t)))
 
 (defun w3m-mouse-view-this-url-new-session (event &optional arg)
   "Perform the command `w3m-view-this-url' by the mouse event in the new
