@@ -61,7 +61,7 @@ AC_DEFUN(AC_PATH_EMACS,
     (cond ((featurep (quote xemacs)) \"XEmacs\")\
           ((and (boundp (quote emacs-major-version))\
                 (>= emacs-major-version 21))\
-           \"Emacs 21\")\
+           (format \"Emacs %d\" emacs-major-version))\
           ((boundp (quote MULE)) \"MULE\")\
           (t \"Emacs\")),
     noecho)
@@ -70,7 +70,7 @@ AC_DEFUN(AC_PATH_EMACS,
     EMACS_FLAVOR=xemacs;;
   MULE)
     EMACS_FLAVOR=mule;;
-  "Emacs 21")
+  Emacs\ 2[[123]])
     EMACS_FLAVOR=emacs21;;
   *)
     EMACS_FLAVOR=emacs;;

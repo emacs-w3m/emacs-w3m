@@ -1,6 +1,7 @@
 ;;; octet.el --- An octet stream viewer.
 
-;; Copyright (C) 2000-2003 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2000, 2002, 2003, 2004, 2005
+;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Created: 2000/05/19
@@ -62,6 +63,9 @@
 ;; Added to emacs-w3m repository in 2002/01/29.
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'poe)     ; for compatibility
 (require 'pces)    ; as-binary-process

@@ -1,6 +1,7 @@
 ;;; w3m-bitmap.el --- Display bitmap image functions for w3m
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
 ;;          Katsumi Yamaoka <yamaoka@jpl.org>
@@ -220,6 +221,7 @@ managing column numbers on bitmap characters."
 (eval-when-compile
   (defvar w3m-display-inline-images)
   (defvar w3m-mode-map)
+  (defvar w3m-work-buffer-list)
   (defvar w3m-work-buffer-name)
   (autoload 'w3m-retrieve "w3m")
   (autoload 'move-to-column-force "w3m-om"))

@@ -1,3 +1,56 @@
+2005-02-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_PATH_EMACS): Show the correct Emacs version.
+
+	* mime-w3m.el: Always require mime and w3m instead of to autoload
+	mime-parse.el.
+
+	* w3m-bitmap.el: Bind w3m-work-buffer-list when compiling.
+
+	* w3m-proc.el: Silence the byte compiler complaining against gensym.
+
+	* w3m-rss.el: Use eval-and-compile in order to autoload timezone.el.
+
+	* w3m.el (w3m-treat-drive-letter): Use eval-and-compile.
+	(w3m-touch-file-available-p): Move forward.
+	(w3m-touch-file): Ditto.
+	(w3m-expand-path-name): Use eval-and-compile.
+	(w3m-window-hscroll): Ditto.
+	(w3m-current-column): Ditto.
+	(w3m-set-window-hscroll): Ditto.
+	(w3m-add-local-hook): Silence the byte compiler.
+	(w3m-run-at-time): Use eval-and-compile.
+
+	* w3mhack.el: Remove the code used to silence the byte compiler
+	which complains make-local-hook is obsolete.
+	(w3mhack-makeinfo): Silence XEmacs when formatting Infos.
+
+	* octet.el: Require cl when compiling.
+	* w3m-filter.el: Ditto.
+	* w3m-fsf.el: Ditto.
+	* w3m-link-numbering.el: Ditto.
+	* w3m-namazu.el: Ditto.
+
+	* shimbun/sb-2ch.el: Require cl when compiling.
+	(shimbun-2ch-parse-page): Use truncate-string-to-width if it is
+	available.
+
+	* shimbun/sb-msdn.el: Autoload md5 for old Emacsen.
+
+	* shimbun/sb-cnet-jp.el: Require cl when compiling.
+	* shimbun/sb-emacswiki.el: Ditto.
+	* shimbun/sb-excite.el: Ditto.
+	* shimbun/sb-exconn.el: Ditto.
+	* shimbun/sb-geocrawler.el: Ditto.
+	* shimbun/sb-ibm-dev.el: Ditto.
+	* shimbun/sb-jpo.el: Ditto.
+	* shimbun/sb-marc-aims.el: Ditto.
+	* shimbun/sb-mew.el: Ditto.
+	* shimbun/sb-mhonarc.el: Ditto.
+	* shimbun/sb-slashdot-jp.el: Ditto.
+	* shimbun/sb-tigris.el: Ditto.
+	* shimbun/sb-wired.el: Ditto.
+
 2005-02-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-wired-jp.el: New module.

@@ -1,6 +1,6 @@
 ;;; sb-2ch.el --- shimbun backend for 2ch.net -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001 by (not 1)
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005 by (not 1)
 
 ;; Author: (not 1)
 ;; Keywords: 2ch
@@ -29,7 +29,8 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl))
+  (require 'cl)
+  (require 'static))
 
 (require 'shimbun)
 
@@ -133,9 +134,12 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
 		(goto-char (point-min))
 		(while (re-search-forward "</?[A-Za-z_][^>]*>" nil t)
 		  (delete-region (match-beginning 0) (match-end 0)))
-		(shimbun-mime-encode-string (truncate-string
-					     (buffer-string)
-					     (- 80 (length "subject: "))))))
+		(shimbun-mime-encode-string
+		 (static-if (fboundp 'truncate-string-to-width)
+		     (truncate-string-to-width (buffer-string)
+					       (- 80 (length "subject: ")))
+		   (truncate-string (buffer-string)
+				    (- 80 (length "subject: ")))))))
 	(when (if (eq num 1) (if last t) t)
 	  (push (shimbun-make-header
 		 num

@@ -1,6 +1,6 @@
 ;;; w3m-link-numbering.el --- Operations using link numbers
 
-;; Copyright (C) 2004 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2004, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -36,6 +36,9 @@
 ;;	(add-hook 'w3m-mode-hook 'w3m-link-numbering-mode)
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'w3m)
 

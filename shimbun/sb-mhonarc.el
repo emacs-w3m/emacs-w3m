@@ -1,7 +1,9 @@
 ;;; sb-mhonarc.el --- shimbun backend class for mhonarc
 
-;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
-;; Copyright (C) 2001, 2002, 2003 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
@@ -31,6 +33,9 @@
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 

@@ -1,6 +1,6 @@
 ;;; sb-emacswiki.el --- emacswiki shimbun backend
 
-;; Copyright (C) 2004 David Hansen
+;; Copyright (C) 2004, 2005 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news
@@ -25,6 +25,9 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 (require 'sb-rss)

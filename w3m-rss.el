@@ -42,8 +42,9 @@
 (eval-when-compile (require 'cl))
 (autoload 'xml-parse-region "xml")
 
-(autoload 'timezone-parse-date "timezone")
-(autoload 'timezone-parse-time "timezone")
+(eval-and-compile
+  (autoload 'timezone-parse-date "timezone")
+  (autoload 'timezone-parse-time "timezone"))
 
 (defun w3m-rss-parse-date-string (date)
   "Decode DATE string written in the ISO 8601 format or the RFC822 style.

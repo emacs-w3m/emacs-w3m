@@ -1,6 +1,6 @@
 ;;; sb-exconn.el --- shimbun backend for eXperts Connection
 
-;; Copyright (C) 2004 Yoichi NAKAYAMA <yoichi@geiin.org>
+;; Copyright (C) 2004, 2005 Yoichi NAKAYAMA <yoichi@geiin.org>
 
 ;; Author: Yoichi NAKAYAMA <yoichi@geiin.org>
 ;; Keywords: news
@@ -26,6 +26,9 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 (require 'sb-rss)

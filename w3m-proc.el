@@ -1,6 +1,6 @@
 ;;; w3m-proc.el --- Functions and macros to control sub-processes
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -37,8 +37,16 @@
 ;; <URL:http://emacs-w3m.namazu.org/> for more details of emacs-w3m.
 
 ;;; Code:
+
 (eval-when-compile
   (require 'cl))
+
+;; Silence the byte compiler complaining against `gensym'.
+(eval-when-compile
+  (defvar byte-compile-cl-functions nil)
+  (when (consp byte-compile-cl-functions)
+    (setq byte-compile-cl-functions
+	  (delq 'gensym byte-compile-cl-functions))))
 
 (require 'w3m-util)
 

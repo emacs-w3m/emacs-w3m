@@ -1,6 +1,6 @@
 ;;; sb-msdn.el --- shimbun backend for MSDN
 
-;; Copyright (C) 2004 Yoichi NAKAYAMA <yoichi@geiin.org>
+;; Copyright (C) 2004, 2005 Yoichi NAKAYAMA <yoichi@geiin.org>
 
 ;; Author: Yoichi NAKAYAMA <yoichi@geiin.org>
 ;; Keywords: news
@@ -75,6 +75,9 @@ List is available at:
 
 (luna-define-method shimbun-rss-process-date ((shimbun shimbun-msdn) date)
   date)
+
+(eval-and-compile
+  (autoload 'md5 "md5"))
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-msdn) url date)

@@ -1,6 +1,6 @@
 ;;; sb-jpo.el --- shimbun backend for http://www.jpo.go.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -53,6 +53,9 @@
 ;; ■このサイトについて
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 

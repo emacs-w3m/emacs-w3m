@@ -1,6 +1,6 @@
 ;;; sb-marc-aims.el --- shimbun backend for marc.theaimsgroup.com.
 
-;; Copyright (C) 2002, 2003 NOKUBI Takatsugu <knok@daionet.gr.jp>
+;; Copyright (C) 2002, 2003, 2005 NOKUBI Takatsugu <knok@daionet.gr.jp>
 
 ;; Author: NOKUBI Takatsugu <knok@daionet.gr.jp>
 ;; Keywords: news
@@ -25,6 +25,9 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 

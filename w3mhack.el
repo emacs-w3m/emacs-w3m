@@ -1,6 +1,6 @@
 ;;; w3mhack.el --- a hack to setup the environment for building w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -735,11 +735,7 @@ to remove some obsolete variables in the first argument VARLIST."
   (setq byte-compile-warnings
 	(delq 'noruntime
 	      (delq 'cl-functions
-		    (copy-sequence byte-compile-warning-types))))
-  ;; Don't warn for the use of `make-local-hook'.
-  (when (eq 'byte-compile-obsolete (get 'make-local-hook 'byte-compile))
-    (put 'make-local-hook 'byte-compile nil)
-    (put 'make-local-hook 'byte-obsolete-info nil)))
+		    (copy-sequence byte-compile-warning-types)))))
 
  ((= emacs-major-version 19)
   ;; Bind defcustom'ed variables.
@@ -1078,26 +1074,44 @@ NOTE: This function must be called from the top directory."
 	    (texinfo-every-node-update)
 	    (set-buffer-modified-p nil)
 	    (message "texinfo formatting %s..." file)
-	    (if (featurep 'mule)
-		;; Encode messages to terminal.
-		(let ((si:message (symbol-function 'message)))
-		  (fset 'message
-			(byte-compile
-			 (if (boundp 'MULE)
-			     `(lambda (fmt &rest args)
-				(funcall ,si:message "%s"
-					 (code-convert-string
-					  (apply 'format fmt args)
-					  '*internal* '*junet*)))
-			   `(lambda (fmt &rest args)
-			      (funcall ,si:message "%s"
-				       (encode-coding-string
-					(apply 'format fmt args)
-					'iso-2022-7bit))))))
-		  (unwind-protect
-		      (texinfo-format-buffer nil)
-		    (fset 'message si:message)))
-	      (texinfo-format-buffer nil))
+	    (let ((si:message (symbol-function 'message)))
+	      (fset
+	       'message
+	       (cond ((featurep 'mule)
+		      ;; Encode messages to terminal.
+		      (byte-compile
+		       (cond ((boundp 'MULE)
+			      `(lambda (fmt &rest args)
+				 (funcall ,si:message "%s"
+					  (code-convert-string
+					   (apply 'format fmt args)
+					   '*internal* '*junet*))))
+			     ((featurep 'xemacs)
+			      `(lambda (fmt &rest args)
+				 (unless (and (string-equal fmt "%s clean")
+					      (equal (car args)
+						     buffer-file-name))
+				   (funcall ,si:message "%s"
+					    (encode-coding-string
+					     (apply 'format fmt args)
+					     'iso-2022-7bit)))))
+			     (t
+			      `(lambda (fmt &rest args)
+				 (funcall ,si:message "%s"
+					  (encode-coding-string
+					   (apply 'format fmt args)
+					   'iso-2022-7bit)))))))
+		     ((featurep 'xemacs)
+		      (byte-compile
+		       `(lambda (fmt &rest args)
+			  (unless (and (string-equal fmt "%s clean")
+				       (equal (car args) buffer-file-name))
+			    (apply ,si:message fmt args)))))
+		     (t
+		      si:message)))
+	      (unwind-protect
+		  (texinfo-format-buffer nil)
+		(fset 'message si:message)))
 	    (if (buffer-modified-p)
 		(progn (message "Saving modified %s" (buffer-file-name))
 		       (save-buffer))))
