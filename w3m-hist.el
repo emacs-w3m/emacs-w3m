@@ -1,6 +1,6 @@
-;;; w3m-hist.el --- a history management system for w3m
+;;; w3m-hist.el --- the history management system for emacs-w3m
 
-;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -65,10 +65,10 @@ following:
 In this case, the history element U1.0.0.0.0 represents the first link
 of the first branch which is sprouted from the history element U1.0.0.
 
-The trunk or each branch is a simple list which will have some history
-elements.  History elements in the trunk or each branch should be
-arranged in order of increasing precedence (the newest history element
-should be the last element of the list).  Each history element
+The trunk or each branch is a simple list which will contain some
+history elements.  History elements in the trunk or each branch should
+be arranged in order of increasing precedence (the newest history
+element should be the last element of the list).  Each history element
 represents a link which consists of the following records:
 
 	(URL PROPERTIES BRANCH BRANCH ...)
@@ -81,33 +81,35 @@ plist which contains any kind of data to propertize the URL as follows:
 The rest BRANCHes are branches of the history element.  Branches
 should also be arranged in order of increasing precedence (the newest
 one should be located in the rightmost).  Each BRANCH will also be a
-tree-structured complex list.  Thus the history structure will grow up
-infinitely.  Do you have enough memories for it? :-p
+tree-structured complex list.  Therefore the history structure will
+grow up infinitely.  Do you have enough memories for it? :-p
 
-The history management system keeps URL string and PROPERTIES of each
-history element to be shared by all the w3m buffers.  Note that if
-there is need to use buffer-local properties, use the variable
-`w3m-history-flat' instead.
+In order to save the Lisp resources, URL strings and PROPERTIES in the
+`w3m-history' variables are shared in all emacs-w3m buffers.  It means
+that each element in two `w3m-history' variables can be compared by
+`eq' rather than `equal'.  If there is a need to make some properties
+buffer-local, use the `w3m-history-flat' variable instead.
 
-There are special rules on the w3m history management system.  As you
-might expect, the operation BACK on U2.0.0 goes to U2, one more BACK
-goes to U1.  Well, where should we go next when the operation FORWARD
-is performed on U1?  The rule is, to select the newest link you have
-visited.  So, that operation should go to U1.0.0.
+There are special rules on the emacs-w3m history management system.
+As you may expect, the operation BACK on U2.0.0 brings you to U2, and
+one more BACK brings you to U1.  Well, where should we go next when
+the operation FORWARD is performed on U1?  The rule is to select the
+newest link you have visited.  So, that operation should go to U1.0.0.
 
-One more rule.  If you visit to the link U4 from U1.0.1 directly, jump
-is occurred instead of to sprout the new branch from U1.0.1.
+Another rule is that if you visit the link U4 from U1.0.1 directly,
+jumping to the existing U4 link is performed rather than to sprout the
+new branch from U1.0.1.
 
-In addition, the variable `w3m-history' has a list of pointers in its
-`car' cell which looks like the following:
+In addition, the variable `w3m-history' contains a list of pointers in
+its `car' cell which looks like the following:
 
 	(PREV CURRENT NEXT)
 
 Where the list PREV points the previous history element, the list
 CURRENT points the current one, the list NEXT points the next one.
 Each list contains an odd number of integers, e.g., (0) points U0,
-\(2 0 1) points U2.0.1, etc.  Finally the value of `w3m-history' will
-be as such as follows:
+\(2 0 1) points U2.0.1, etc.  Finally, the value of the `w3m-history'
+variable will be constructed as follows:
 
 \(((1) (2) (2 1 0))
  (\"http://www.U0.org/\" (:title \"U0\" :foo \"bar\"))
@@ -131,19 +133,19 @@ be as such as follows:
 
 (defvar w3m-history-flat nil
   "A buffer-local variable to keep a flattened alist of `w3m-history'.
-Each element will have the following records:
+Each element will contain the following records:
 
 	(URL PROPERTIES POSITION [LOCAL-PROPERTIES])
 
 Where URL is a string of an address of a link, PROPERTIES is a plist
-to propertize the URL.  The sequence PROPERTIES is exactly the same
-with the corresponding contents of `w3m-history'.  POSITION is a list
-of integers to designate the current position in the history.  The
-sequence LOCAL-PROPERTIES is similar to PROPERTIES, but it is buffer-
-local.  You can use the functions `w3m-history-plist-get',
+to propertize the URL.  The sequence PROPERTIES is the identical
+object of the corresponding contents of `w3m-history'.  POSITION is a
+list of integers to designate the current position in the history.
+The sequence LOCAL-PROPERTIES is similar to PROPERTIES, but it is
+buffer-local.  You can use the functions `w3m-history-plist-get',
 `w3m-history-plist-put', `w3m-history-add-properties' and
 `w3m-history-remove-properties' to manipulate the buffer-local
-properties.  See the documentation for the variable `w3m-history' for
+properties.  See the documentation for the `w3m-history' variable for
 more information.")
 
 (make-variable-buffer-local 'w3m-history)
