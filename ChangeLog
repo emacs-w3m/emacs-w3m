@@ -1,3 +1,13 @@
+2002-02-07  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-command): Set default value to nil.
+	(w3m-type): Ditto.
+	(w3m-options): New user option.
+	(toplevel): Set w3m-command, w3m-type and w3m-options.
+	(w3m-treat-image-size): New user option.
+	(w3m-rendering-half-dump): Set rendering options -o display_image=on/off, -ppc, -ppl
+	according to the value of `w3m-treat-image-size'.
+
 2002-02-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-display-message): New macro.

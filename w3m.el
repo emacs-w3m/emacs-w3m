@@ -141,12 +141,32 @@
   :group 'w3m
   :prefix "w3m-")
 
-(defcustom w3m-type
-  (let ((command (if (boundp 'w3m-command)
-		     (symbol-value 'w3m-command)
-		   (or (w3m-which-command "w3m")
-		       (w3m-which-command "w3mmee")
-		       (w3m-which-command "w3m-m17n")))))
+(defcustom w3m-command nil
+  "*Name of the executable file of w3m."
+  :group 'w3m
+  :type 'string)
+
+(defcustom w3m-type nil
+  "*Type of w3m."
+  :group 'w3m
+  :type '(choice (const :tag "w3m" 'w3m)
+		 (const :tag "w3mmee" 'w3mmee)
+		 (const :tag "w3m-m17n" 'w3m-m17n)
+		 (symbol :tag "other" 'other)))
+
+(defcustom w3m-options nil
+  "*Option list of w3m."
+  :group 'w3m
+  :type '(repeat string))
+
+;; Set w3m-command, w3m-type and w3m-options
+(when (or (null w3m-command)
+	  (null w3m-type)
+	  (null w3m-options))
+  (let ((command (or w3m-command
+		     (w3m-which-command "w3m")
+		     (w3m-which-command "w3mmee")
+		     (w3m-which-command "w3m-m17n"))))
     (when command
       (setq w3m-command command)
       (with-temp-buffer
@@ -155,16 +175,19 @@
 	(when (re-search-forward "version w3m/0\\.\\(2\\.1\\|\
 \\(2\\.[2-9]\\(\\.[0-9]\\)*\\|3\\(\\.[0-9\\]\\)*\\)\\)\\(-inu\
 \\|\\(-m17n\\|\\(\\+mee\\)\\)\\)?" nil t)
-	  (cond
-	   ((match-beginning 7) 'w3mmee)
-	   ((match-beginning 6) 'w3m-m17n)
-	   ((or (match-beginning 5) (match-beginning 2)) 'w3m))))))
-  "*Type of w3m."
-  :group 'w3m
-  :type '(choice (const :tag "w3m" 'w3m)
-		 (const :tag "w3mmee" 'w3mmee)
-		 (const :tag "w3m-m17n" 'w3m-m17n)
-		 (symbol :tag "other" nil)))
+	  (setq w3m-type
+		(cond
+		 ((match-beginning 7) 'w3mmee)
+		 ((match-beginning 6) 'w3m-m17n)
+		 ((or (match-beginning 5) (match-beginning 2)) 'w3m)
+		 (t 'other))))
+	(when (re-search-forward "options +" nil t)
+	  (setq w3m-options (or (split-string (buffer-substring
+					       (match-end 0)
+					       (save-excursion (end-of-line)
+							       (point)))
+					      ",")
+				(list null))))))))
 
 (defcustom w3m-language
   (if (or (and (boundp 'current-language-environment)
@@ -173,14 +196,6 @@
 	  (boundp 'MULE))
       "Japanese")
   "*Language of w3m."
-  :group 'w3m
-  :type 'string)
-
-(defcustom w3m-command
-  (cond ((eq w3m-type 'w3mmee) "w3mmee")
-	((eq w3m-type 'w3m-m17n) "w3m-m17n")
-	(t "w3m"))
-  "*Name of the executable file of w3m."
   :group 'w3m
   :type 'string)
 
@@ -232,6 +247,11 @@ width using expression (+ (window-width) VALUE)."
 
 (defcustom w3m-use-ange-ftp t
   "*Non-nil means that `ange-ftp' of `efs' is used to access FTP servers."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-treat-image-size (and (member "image" w3m-options) t)
+  "*Non-nil means to let the w3m HTML rendering be conscious of image size."
   :group 'w3m
   :type 'boolean)
 
@@ -3126,7 +3146,26 @@ type as a string argument, when retrieve is complete."
 	     t t nil
 	     (w3m-w3m-expand-arguments
 	      (append w3m-halfdump-command-arguments
-		      w3m-halfdump-command-common-arguments))))))
+		      w3m-halfdump-command-common-arguments
+		      (if (member "image" w3m-options)
+			  (if w3m-treat-image-size
+			      (append (list "-o" "display_image=on")
+				      (when (w3m-display-graphic-p)
+					(list "-ppl" 
+					      (number-to-string
+					       (w3m-static-if
+						   (featurep 'xemacs)
+						   (font-height
+						    (face-font 'default))
+						 (frame-char-height)))
+					      "-ppc" 
+					      (number-to-string
+					       (w3m-static-if
+						   (featurep 'xemacs)
+						   (font-width
+						    (face-font 'default))
+						 (frame-char-width))))))
+			    (list "-o" "display_image=off")))))))))
 
 (defun w3m-rendering-buffer-1 (&optional content-charset binary-buffer)
   (w3m-message "Rendering...")
