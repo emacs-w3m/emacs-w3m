@@ -1,3 +1,8 @@
+2003-02-15  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-jpilot.el (shimbun-index-url): Bug fixed.
+	* shimbun/sb-pilot-mailsync.el (shimbun-index-url): Ditto.
+
 2003-02-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-insert-image): Use `map-extents' instead of

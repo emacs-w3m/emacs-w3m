@@ -35,7 +35,7 @@
 
 (defvar shimbun-jpilot-groups '("main"))
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-mailman))
+(luna-define-method shimbun-index-url ((shimbun shimbun-jpilot))
   shimbun-jpilot-url)
 
 ;;(luna-define-method shimbun-reply-to ((shimbun shimbun-jpilot))
