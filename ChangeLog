@@ -1,7 +1,7 @@
 2002-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-e19.el: Attempt to define the functions
-	`base64-decode-string' and `base64-encode-string'.
+	* w3m-e19.el: Require `poe' and `path-util'; attempt to define the
+	functions `base64-decode-string' and `base64-encode-string'.
 
 	* w3m-util.el (w3m-display-progress-message): New function.
 	* w3m.el (w3m-goto-url-new-session): Use it.
