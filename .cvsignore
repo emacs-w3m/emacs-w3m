@@ -8,5 +8,4 @@ config.status*
 configure
 patch
 w3m-kwds.el
-w3m-setup.el
 w3m_el*
