@@ -93,8 +93,8 @@ T?\\(\\([0-9][0-9]\\):\\([0-9][0-9]\\)\\(:\\([.0-9]+\\)\\)?\\)?\
 		   (if (match-beginning 12)
 		       (funcall (intern (match-string-no-properties 12 date))
 				0
-				(* 3600 (substr 13))
-				(* 60 (substr 14)))
+				(* 3600 (substr 13 0))
+				(* 60 (substr 14 0)))
 		     0)))))
 
 (defun w3m-rss-find-el (tag data)
