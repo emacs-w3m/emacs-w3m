@@ -3026,7 +3026,7 @@ is performed.  Otherwise, COUNT is treated as 1 by default."
     (defalias 'w3m-expand-path-name 'expand-file-name)))
 
 (defconst w3m-url-components-regexp
-  "\\`\\(\\([^:/\\?#]+\\):\\)?\\(//\\([^/\\?#]*\\)\\)?\\([^\\?#]*\\)\\(\\?\\([^#]*\\)\\)?\\(#\\(.*\\)\\)?\\'"
+  "\\`\\(\\([^:/?#]+\\):\\)?\\(//\\([^/?#]*\\)\\)?\\([^?#]*\\)\\(\\?\\([^#]*\\)\\)?\\(#\\(.*\\)\\)?\\'"
   "Regular expression for parsing the potential four components and
 fragment identifier of a URI reference.  For more detail, see Appendix
 B of RFC2396 <URL:http://www.ietf.org/rfc/rfc2396.txt>.")
