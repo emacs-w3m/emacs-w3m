@@ -515,7 +515,10 @@ If no field in forward, return nil without moving."
 (unless w3m-form-input-textarea-keymap
   (setq w3m-form-input-textarea-keymap (make-sparse-keymap))
   (define-key w3m-form-input-textarea-keymap "\C-c\C-c"
-    'w3m-form-input-textarea-set))
+    'w3m-form-input-textarea-set)
+  (define-key w3m-form-input-textarea-keymap "\C-c\C-q"
+    'w3m-form-input-textarea-exit))
+  
 (defvar w3m-form-input-textarea-buffer nil)
 (defvar w3m-form-input-textarea-form nil)
 (defvar w3m-form-input-textarea-name nil)
@@ -548,8 +551,27 @@ If no field in forward, return nil without moving."
 	(w3m-form-put form name input)
 	(w3m-form-replace input)))))
 
+(defun w3m-form-input-textarea-exit ()
+  "Exit from w3m form textarea mode."
+  (interactive)
+  (let ((buffer (current-buffer))
+	(point w3m-form-input-textarea-point)
+	(w3mbuffer w3m-form-input-textarea-buffer)
+	(wincfg w3m-form-input-textarea-wincfg))
+    (when (buffer-live-p w3mbuffer)
+      (or (one-window-p) (delete-window))
+      (kill-buffer buffer)
+      (pop-to-buffer w3mbuffer)
+      (set-window-configuration wincfg)
+      (when point (goto-char point)))))
+
 (defun w3m-form-input-textarea-mode ()
-  "Major mode for w3m form textarea."
+  "\\<w3m-form-input-textarea-keymap>
+   Major mode for w3m form textarea.
+
+\\[w3m-form-input-textarea-set]	Save and exit from w3m form textarea mode.
+\\[w3m-form-input-textarea-exit]	Exit from w3m form textarea mode.
+"
   (setq mode-name "w3m form textarea"
 	major-mode 'w3m-form-input-textarea-mode)
   (use-local-map w3m-form-input-textarea-keymap)
@@ -618,6 +640,10 @@ If no field in forward, return nil without moving."
     'w3m-form-input-select-set)
   (define-key w3m-form-input-select-keymap "\C-m"
     'w3m-form-input-select-set)
+  (define-key w3m-form-input-select-keymap "\C-c\C-q"
+    'w3m-form-input-select-exit)
+  (define-key w3m-form-input-select-keymap "q"
+    'w3m-form-input-select-exit)
   (if (featurep 'xemacs)
       (define-key w3m-form-input-select-keymap [(button2)]
 	'w3m-form-input-select-set-mouse)
@@ -637,6 +663,7 @@ If no field in forward, return nil without moving."
 (make-variable-buffer-local 'w3m-form-input-select-wincfg)
 
 (defun w3m-form-input-select-set-mouse (event)
+  "Save and exit from w3m form select mode with mouse."
   (interactive "e")
   (mouse-set-point event)
   (w3m-form-input-select-set))
@@ -666,8 +693,28 @@ If no field in forward, return nil without moving."
 	(w3m-form-put form name input)
 	(w3m-form-replace (cdr (assoc cur (cdr input))))))))
 
+(defun w3m-form-input-select-exit ()
+  "Exit from w3m form select mode."
+  (interactive)
+  (let* ((buffer (current-buffer))
+	 (point w3m-form-input-select-point)
+	 (w3mbuffer w3m-form-input-select-buffer)
+	 (wincfg w3m-form-input-select-wincfg))
+    (when (buffer-live-p w3mbuffer)
+      (or (one-window-p) (delete-window))
+      (kill-buffer buffer)
+      (pop-to-buffer w3mbuffer)
+      (set-window-configuration wincfg)
+      (when point (goto-char point)))))
+
 (defun w3m-form-input-select-mode ()
-  "Major mode for w3m form select."
+  "\\<w3m-form-input-select-keymap>
+   Major mode for w3m form select.
+
+\\[w3m-form-input-select-set]	Save and exit from w3m form select mode.
+\\[w3m-form-input-select-exit]	Exit from w3m form select mode.
+\\[w3m-form-input-select-set-mouse]	Save and exit from w3m form select mode with mouse.
+"
   (setq mode-name "w3m form select"
 	major-mode 'w3m-form-input-select-mode)
   (setq buffer-read-only t)
@@ -751,6 +798,10 @@ If no field in forward, return nil without moving."
     'w3m-form-input-map-set)
   (define-key w3m-form-input-map-keymap "\C-m"
     'w3m-form-input-map-set)
+  (define-key w3m-form-input-map-keymap "\C-c\C-q"
+    'w3m-form-input-map-exit)
+  (define-key w3m-form-input-map-keymap "q"
+    'w3m-form-input-map-exit)
   (if (featurep 'xemacs)
       (define-key w3m-form-input-map-keymap [(button2)]
 	'w3m-form-input-map-set-mouse)
@@ -758,32 +809,57 @@ If no field in forward, return nil without moving."
       'w3m-form-input-map-set-mouse)))
 (defvar w3m-form-input-map-buffer nil)
 (defvar w3m-form-input-map-wincfg nil)
+(defvar w3m-form-input-map-point nil)
 (make-variable-buffer-local 'w3m-form-input-map-buffer)
 (make-variable-buffer-local 'w3m-form-input-map-wincfg)
+(make-variable-buffer-local 'w3m-form-input-map-point)
 
 (defun w3m-form-input-map-set-mouse (event)
+  "Save and exit from w3m form select map mode with mouse."
   (interactive "e")
   (mouse-set-point event)
   (w3m-form-input-map-set))
 
 (defun w3m-form-input-map-set ()
-  "Save and exit from w3m form select mode."
+  "Save and exit from w3m form select map mode."
   (interactive)
   (run-hooks 'w3m-form-input-map-set-hook)
   (let* ((map (get-text-property (point) 'w3m-form-map-value))
 	 (buffer (current-buffer))
 	 (w3mbuffer w3m-form-input-map-buffer)
 	 (wincfg w3m-form-input-map-wincfg)
+	 (point w3m-form-input-map-point)
 	 input)
     (when (buffer-live-p w3mbuffer)
       (or (one-window-p) (delete-window))
       (kill-buffer buffer)
       (pop-to-buffer w3mbuffer)
       (set-window-configuration wincfg)
+      (when point (goto-char point))
       (w3m-goto-url (w3m-expand-url map w3m-current-url)))))
 
+(defun w3m-form-input-map-exit ()
+  "Exit from w3m form select map mode."
+  (interactive)
+  (let* ((buffer (current-buffer))
+	 (w3mbuffer w3m-form-input-map-buffer)
+	 (wincfg w3m-form-input-map-wincfg)
+	 (point w3m-form-input-map-point))
+    (when (buffer-live-p w3mbuffer)
+      (or (one-window-p) (delete-window))
+      (kill-buffer buffer)
+      (pop-to-buffer w3mbuffer)
+      (set-window-configuration wincfg)
+      (when point (goto-char point)))))
+
 (defun w3m-form-input-map-mode ()
-  "Major mode for w3m map select."
+  "\\<w3m-form-input-map-keymap>
+   Major mode for w3m map select.
+
+\\[w3m-form-input-map-set]	Save and exit from w3m form select map mode.
+\\[w3m-form-input-map-exit]	Exit from w3m form select map mode.
+\\[w3m-form-input-map-set-mouse]	Save and exit from w3m form select map mode with mouse.
+"
   (setq mode-name "w3m map select"
 	major-mode 'w3m-form-input-map-mode)
   (setq buffer-read-only t)
@@ -795,6 +871,7 @@ If no field in forward, return nil without moving."
 	 (cur-win (selected-window))
 	 (wincfg (current-window-configuration))
 	 (w3mbuffer (current-buffer))
+	 (point (point))
 	 (size (min
 		(- (window-height cur-win)
 		   window-min-height 1)
@@ -815,6 +892,7 @@ If no field in forward, return nil without moving."
       (set-buffer buffer)
       (setq w3m-form-input-map-buffer w3mbuffer)
       (setq w3m-form-input-map-wincfg wincfg)
+      (setq w3m-form-input-map-point point)
       (when value
 	(dolist (candidate value)
 	  (setq pos (point))
