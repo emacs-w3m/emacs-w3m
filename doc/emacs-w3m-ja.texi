@@ -5060,7 +5060,7 @@ MUA $B$,(B @samp{foobar} $B%U%)%k%@$N5-;v$N1\Mw$rMW5a$7$?$i!"<B:]$N5-;vFbMF$r
 @code{luna-define-method} $B$N@k8@$,$J$$$b$N$b$"$j$^$9!#(B
 
 $B<B$O!"(B@file{shimbun.el} $B5Z$S3F(B @samp{shimbun} $B%b%8%e!<%k$O!"(B
-Emacs Lisp $B$K$F%*%V%8%'%/%H;V8~%W%m%0%i%_%s%0$r2DG=$H$9$k(B @file{luna.el}
+Emacs Lisp $B$K$F%*%V%8%'%/%H;X8~%W%m%0%i%_%s%0$r2DG=$H$9$k(B @file{luna.el}
 @footnote{@acronym{FLIM} $B$K4^$^$l$F$$$^$9!#(B} $B$rMxMQ$7$F=q$+$l$F$$$^$9!#(B
 
 @file{shimbun.el} $B$NCf$G$O!"(B@code{shimbun-headers} $B$,$"(B
@@ -5219,7 +5219,7 @@ Message-ID $B$H$7$FI=<($5$l$^$9!#Nc$($P!"2<5-$N(B
 (luna-define-method shimbun-index-url ((shimbun shimbun-foobar))
   (concat shimbun-foobar-url
           (cdr (assoc (shimbun-current-group-internal shimbun)
-                      shimbun-foobar-groups))))
+                      shimbun-foobar-group-path-alist))))
 @end lisp
 
 @noindent

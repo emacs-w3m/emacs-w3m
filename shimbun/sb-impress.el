@@ -70,11 +70,14 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 	    (pos (point))
 	    subject
 	    id)
-	(when (re-search-forward "</a>" nil t)
+	(when (re-search-forward "</TD>" nil t)
 	  (setq subject (buffer-substring pos (match-beginning 0))
 		subject (with-temp-buffer
 			  (insert subject)
 			  (goto-char (point-min))
+			  (when (re-search-forward "<br>\\(−\\|〜\\).*" nil t)
+			    (replace-match "")
+			    (goto-char (point-min)))
 			  (while (re-search-forward "[\r\n]" nil t)
 			    (replace-match ""))
 			  (shimbun-remove-markup)
