@@ -197,10 +197,10 @@ argument."
 	    (forward-char -1)
 	    (insert "file://"))
 	  (goto-char (point-min))
-	  (while (re-search-forward "<a href=\"\\(\\?\\)&\\(amp\\)?;whence="
+	  (while (re-search-forward "<a href=\"\\(\\?\\)&\\(amp;\\)?whence="
 				    nil t)
 	    (goto-char (match-beginning 1))
-	    (delete-char -1)
+	    (delete-char 1)
 	    (insert (format "about://namazu/?index=%s&query=%s" index query))))
 	"text/html"))))
 

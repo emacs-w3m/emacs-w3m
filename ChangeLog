@@ -1,3 +1,9 @@
+2003-08-12  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* Makefile.in (what-where): Add space to avoid error on Solaris.
+
+	* w3m-namazu.el (w3m-about-namazu): Fix last change.
+
 2003-08-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi-mytown.el: New file.
