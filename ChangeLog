@@ -1,3 +1,7 @@
+2001-05-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-find-file): New optional argument, `type' is added.
+
 2001-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-add-arrived-db): Improve the madness.

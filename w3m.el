@@ -2890,10 +2890,23 @@ If input is nil, use default coding-system on w3m."
     (if new-window (split-window))
     (w3m-goto-url url)))
 
-(defun w3m-find-file (file)
+(defun w3m-find-file (file &optional type)
   "w3m Interface function for local file."
-  (interactive "fFilename: ")
-  (w3m-goto-url (w3m-expand-file-name-as-url file)))
+  (interactive
+   (list
+    (read-file-name "Filename: ")
+    (if current-prefix-arg
+	(completing-read "Content-Type: "
+			 (mapcar (lambda (x) (cons (car x) (car x)))
+				 w3m-content-type-alist)
+			 nil
+			 'require-match))))
+  (let ((w3m-content-type-alist w3m-content-type-alist))
+    (when type
+      (setq w3m-content-type-alist
+	    (list (copy-sequence (assoc type w3m-content-type-alist))))
+      (setcar (nthcdr 1 (car w3m-content-type-alist)) ""))
+    (w3m-goto-url (w3m-expand-file-name-as-url file))))
 
 
 (defun w3m-cygwin-path (path)
