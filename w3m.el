@@ -5303,6 +5303,7 @@ frame or a window in the frame is succeeded."
     (scroll-up arg)))
 
 (defun w3m-scroll-down-or-previous-url (arg)
+  "Scroll text of current window downward ARG lines; or go to previous url."
   (interactive "P")
   (if (pos-visible-in-window-p (point-min))
       (if w3m-previous-url
