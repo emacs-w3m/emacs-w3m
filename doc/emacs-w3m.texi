@@ -601,17 +601,18 @@ This can also be done in your @file{~/.emacs-w3m} file as shown below:
              '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
 @end lisp
 
-To specify @code{no-proxy} hosts, which shouldn't be connected to with
-proxy gateways, you can set the @code{no_proxy} environment variable with
-the comma separated host names, or set the @code{w3m-no-proxy-domains}
-variable with a list of domain names (not host names) as follows:
+To specify @code{no_proxy} hosts, which shouldn't be connected to with
+proxy gateways, you can set the @code{no_proxy} (note that it is not
+@code{no-proxy}) environment variable with the comma separated host
+names, or set the @code{w3m-no-proxy-domains} variable with a list of
+domain names (not host names) as follows:
 
 @lisp
 (setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
 @end lisp
 
 See also the documentation for the @code{w3m-command-arguments-alist}
-variable to use regexps to specify the @code{no-proxy} hosts.
+variable to use regexps to specify the @code{no_proxy} hosts.
 
 @end table
 
