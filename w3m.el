@@ -99,6 +99,9 @@
   (autoload 'w3m-dtree "w3m-dtree"
     "Display directory tree." t)
   (autoload 'w3m-about-dtree "w3m-dtree")
+  (autoload 'w3m-namazu "w3m-namazu"
+    "Search files with Namazu." t)
+  (autoload 'w3m-about-namazu "w3m-namazu")
   (autoload 'w3m-fontify-forms "w3m-form")
   (autoload 'w3m-form-parse-region "w3m-form")
   (autoload 'w3m-filter "w3m-filter"))
@@ -2950,6 +2953,7 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "W" 'w3m-weather)
     (define-key map "S" 'w3m-search)
     (define-key map "D" 'w3m-dtree)
+    (define-key map "N" 'w3m-namazu)
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
     (define-key map "\\" 'w3m-view-source)
@@ -2998,6 +3002,7 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "\M-n" 'w3m-copy-buffer)
     (define-key map "o" 'w3m-history)
     (define-key map "T" 'w3m-dtree)
+    (define-key map "N" 'w3m-namazu)
     (define-key map "p" 'w3m-view-previous-page)
     (define-key map "q" 'w3m-close-window)
     (define-key map "Q" 'w3m-quit)
@@ -3137,6 +3142,8 @@ Return t if deleting current frame or window is succeeded."
 	If called with '\\[universal-argument]', you can choose local area.
 \\[w3m-dtree]	Display directory tree.
 	If called with '\\[universal-argument]', view all directories and files.
+\\[w3m-namazu]	Search files with Namazu.
+	If called with '\\[universal-argument]', you can choose index.
 
 \\[w3m-bookmark-view]	w3m-bookmark-view.
 \\[w3m-bookmark-add-current-url]	Add link of current page to bookmark.
