@@ -14,6 +14,8 @@
 	deleting a frame; remove a deleted frame from `w3m-initial-frames'.
 	(w3m-delete-frames-and-windows): Also allow a window or a frame as
 	the optional argument; emulate XEmacs version's `one-window-p'.
+	(w3m): Set the value for `w3m-initial-frames' even if it is
+	invoked in the batch mode.
 	(w3m-select-buffer): Delete other emacs-w3m frames and windows.
 	(w3m-select-buffer-copy-buffer): Revert the 2003-11-11 change.
 	(w3m-select-buffer-delete-buffer): Simplify.
