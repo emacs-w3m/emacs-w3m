@@ -108,7 +108,8 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	(car codesys)
       codesys)))
 
-(when (fboundp 'unicode-to-char)
+(when (and (fboundp 'unicode-to-char)
+	   (subrp (symbol-function 'unicode-to-char)))
   (defun w3m-ucs-to-char (codepoint)
     (unicode-to-char codepoint)))
 
