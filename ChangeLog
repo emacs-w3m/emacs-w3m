@@ -1,5 +1,27 @@
 2001-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m): Call `w3m-mode' for a new session; use
+	`generate-new-buffer' instead of `get-buffer-create' for a new
+	session; allow the optional 2nd arg NEW-SESSION.
+	(w3m-goto-url-new-session): New command.
+	(w3m-goto-url): Always set the value of
+	`mode-line-buffer-identification'.
+	(w3m-mode): Update the doc-string for the new command
+	`w3m-goto-url-new-session'.
+	(w3m-info-like-map): Bind the key "G" to the command
+	`w3m-goto-url-new-session'.
+	(w3m-lynx-like-map): Bind the key "G" to the command
+	`w3m-goto-url-new-session'; replace the key "G" to "\M-g" for the
+	command `goto-line'.
+	(w3m-copy-buffer): Make all the arguments optional; make the 1st
+	arg BUF default to the current buffer.
+	(w3m-view-this-url): Call `w3m-copy-buffer' with the 1st arg nil.
+	(w3m-region, w3m-find-file, w3m-browse-url, w3m-gohome,
+	w3m-download): Add autoload magic cookie.
+	(w3m-popup-frame-p): Allow the optional arg FORCE.
+
+2001-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3mhack.el (w3mhack-examine-modules): Don't byte-compile
 	w3m-ucs.el when the version of XEmacs is not greater than or
 	equal to 21.2.37.
