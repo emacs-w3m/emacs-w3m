@@ -667,7 +667,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (interactive (list (w3m-input-url)))
   (set-buffer (get-buffer-create "*w3m*"))
   (setq mode-line-buffer-identification 
-	(list (buffer-name) " / " 'w3m-current-title)))
+	(list (buffer-name) " / " 'w3m-current-title))
   (or (eq major-mode 'w3m-mode)
       (w3m-mode))
   (w3m-goto-url url)
