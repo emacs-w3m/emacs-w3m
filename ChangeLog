@@ -1,5 +1,10 @@
 2003-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/mew-shimbun.el (mew-shimbun-folder,
+	mew-shimbun-folder-groups, mew-shimbun-db-file,
+	mew-shimbun-expires, mew-shimbun-db-length,
+	mew-shimbun-unknown-from): Improve the customizing widgets.
+
 	* w3m.el (w3m-command, w3m-user-agent, w3m-command-arguments,
 	w3m-command-arguments-alist, w3m-no-proxy-domains,
 	w3m-command-environment, w3m-fill-column, w3m-mailto-url-function,
