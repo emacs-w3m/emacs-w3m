@@ -954,20 +954,26 @@ return the contents of this buffer as an encoded string."
     (error string)))
 
 (defun shimbun-make-date-string (year month day &optional time timezone)
-  (format "%02d %s %04d %s %s"
-	  day
-	  (aref [nil "Jan" "Feb" "Mar" "Apr" "May" "Jun"
-		     "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"]
-		month)
-	  (cond ((< year 69)
-		 (+ year 2000))
-		((< year 100)
-		 (+ year 1900))
-		((< year 1000)	; possible 3-digit years.
-		 (+ year 1900))
-		(t year))
-	  (or time "00:00")
-	  (or timezone "+0900")))
+  (setq year (cond ((< year 69)
+		    (+ year 2000))
+		   ((< year 100)
+		    (+ year 1900))
+		   ((< year 1000)	; possible 3-digit years.
+		    (+ year 1900))	; why isn't it 1000?
+		   (t year)))
+  (unless timezone
+    (if (< (setq timezone (/ (nth 8 (decode-time)) 36)) 0)
+	(setq timezone (format "%05d" timezone))
+      (setq timezone (format "+%04d" timezone))))
+  (let ((cts (current-time-string (encode-time 0 0 0 day month year
+					       timezone))))
+    (format "%s, %02d %s %04d %s %s"
+	    (substring cts 0 3)
+	    day
+	    (substring cts 4 7)
+	    year
+	    (or time "00:00")
+	    timezone)))
 
 (autoload 'timezone-fix-time "timezone")
 
