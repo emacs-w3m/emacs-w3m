@@ -168,6 +168,12 @@
 
 4. 設定
 
+   Emacs-w3m のいろんな変数をいじるときは、~/.emacs-w3m ファイル (これ
+   は `w3m-init-file'} という変数のデフォルト値です) の利用を推奨しま
+   す。このファイルは ~/.emacs と似ていますが、こちらは emacs-w3m が起
+   動するときに読み込まれます。しかし、例えば autoload の定義のように、
+   そこに書くべきではないコマンドがあることに注意して下さい。
+
 4.1. 基本
 
      次の設定を ~/.emacs に追加してください．
@@ -193,7 +199,7 @@
 
          (require 'mime-w3m)
 
-4.2. Proxy Gateway
+4.3. Proxy Gateway
 
      これにはいくつかの方法があります．一つは環境変数 http_proxy を
      shell 上で，こんなふうにグローバルに設定することです:
@@ -202,12 +208,12 @@
 
      他に，オプション `w3m-command-arguments' をカスタマイズして，"-o"
      および "http_proxy=http://PROXY_SERVER_NAME:PORT/" を追加する方法が
-     あります．これは .emacs ファイルで以下のように行なうこともできます．
+     あります．これは ~/.emacs-w3m ファイルで以下のように行なうことも
+     できます．
 
-        (eval-after-load "w3m"
-          '(setq w3m-command-arguments
-                 (nconc w3m-command-arguments
-                        '("-o" "http_proxy=http://proxy.hogege.com:8000/"))))
+        (setq w3m-command-arguments
+              (nconc w3m-command-arguments
+                     '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
 
      環境変数 no-proxy にコンマで区分けされたホスト名を設定するか，また
      は以下のようにドメイン名 (ホスト名ではない) のリストをオプション

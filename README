@@ -163,6 +163,12 @@
 
 4. Configuration
 
+   We recommend using the file ~/.emacs-w3m (which is the default
+   value of `w3m-init-file') when you twiddle some variables of
+   emacs-w3m.  This file is similar to ~/.emacs, but is read when
+   emacs-w3m starts.  However, note that there are commands which
+   shouldn't be put there, for example, the autoload definitions.
+
 4.1. Essential Configuration
 
      Put this line into your ~/.emacs.
@@ -196,12 +202,11 @@
 
      Another way is to customize the option `w3m-command-arguments' to
      add the options "-o" and "http_proxy=http://PROXY_SERVER_NAME:PORT/".
-     This can also be done in your ~/.emacs as shown below:
+     This can also be done in your ~/.emacs-w3m file as shown below:
 
-         (eval-after-load "w3m"
-           '(setq w3m-command-arguments
-                  (nconc w3m-command-arguments
-                         '("-o" "http_proxy=http://proxy.hogege.com:8000/"))))
+        (setq w3m-command-arguments
+              (nconc w3m-command-arguments
+                     '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
 
      To specify no-proxy hosts that not to use proxy gateways to connect
      to, you can set the environment variable no_proxy with the comma
