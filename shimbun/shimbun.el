@@ -145,61 +145,61 @@ Return content-type of URL as string when retrieval succeeded."
 				      extra)
   (vector number subject from date id references chars lines xref extra))
 
-;;(defsubst shimbun-header-number (header)
+;;(defun shimbun-header-number (header)
 ;;  (aref header 0))
 
-(defsubst shimbun-header-subject (header)
+(defun shimbun-header-subject (header)
   (aref header 1))
 
-(defsubst shimbun-header-set-subject (header subject)
+(defun shimbun-header-set-subject (header subject)
   (aset header 1 subject))
 
-(defsubst shimbun-header-from (header)
+(defun shimbun-header-from (header)
   (aref header 2))
 
-(defsubst shimbun-header-set-from (header from)
+(defun shimbun-header-set-from (header from)
   (aset header 2 from))
 
-(defsubst shimbun-header-date (header)
+(defun shimbun-header-date (header)
   (aref header 3))
 
-(defsubst shimbun-header-set-date (header date)
+(defun shimbun-header-set-date (header date)
   (aset header 3 date))
 
-(defsubst shimbun-header-id (header)
+(defun shimbun-header-id (header)
   (aref header 4))
 
-(defsubst shimbun-header-set-id (header id)
+(defun shimbun-header-set-id (header id)
   (aset header 4 id))
 
-(defsubst shimbun-header-references (header)
+(defun shimbun-header-references (header)
   (aref header 5))
 
-(defsubst shimbun-header-set-references (header references)
+(defun shimbun-header-set-references (header references)
   (aset header 5 references))
 
-(defsubst shimbun-header-chars (header)
+(defun shimbun-header-chars (header)
   (aref header 6))
 
-(defsubst shimbun-header-set-chars (header chars)
+(defun shimbun-header-set-chars (header chars)
   (aset header 6 chars))
 
-(defsubst shimbun-header-lines (header)
+(defun shimbun-header-lines (header)
   (aref header 7))
 
-(defsubst shimbun-header-set-lines (header lines)
+(defun shimbun-header-set-lines (header lines)
   (aset header 7 lines))
 
-(defsubst shimbun-header-xref (header)
+(defun shimbun-header-xref (header)
   (aref header 8))
 
-(defsubst shimbun-header-set-xref (header xref)
+(defun shimbun-header-set-xref (header xref)
   (aset header 8 xref))
 
-(defsubst shimbun-header-extra (header)
+(defun shimbun-header-extra (header)
   (aref header 9))
 
-(defsubst shimbun-header-set-extra (header extra)
+(defun shimbun-header-set-extra (header extra)
   (aset header 9 extra))
 
 ;; Inline functions for the internal use.
