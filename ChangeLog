@@ -1,3 +1,8 @@
+2003-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-make-spinner-image): Make sure the gifsicle
+	program is available.
+
 2003-09-30  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-use-symbol): Use `w3m-mule-unicode-p'.

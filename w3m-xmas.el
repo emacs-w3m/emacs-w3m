@@ -659,7 +659,8 @@ italic font in the modeline."
     (when (and (device-on-window-system-p)
 	       (featurep 'gif)
 	       (not w3m-spinner-image)
-	       (file-exists-p spinner))
+	       (file-exists-p spinner)
+	       w3m-gifsicle-program)
       (with-temp-buffer
 	(insert-file-contents spinner)
 	;; XEmacs doesn't support a transparent color on gifs, so we should
