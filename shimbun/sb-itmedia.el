@@ -125,10 +125,21 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
   (let ((case-fold-search t) (start))
     (goto-char (point-min))
     (when (and (search-forward "<!--BODY-->" nil t)
-	       (setq start (match-beginning 0))
+	       (setq start (match-end 0))
 	       (search-forward "<!--BODYEND-->" nil t))
-      (delete-region (point) (point-max))
-      (delete-region (point-min) start))
+      (delete-region (match-beginning 0) (point-max))
+      (delete-region (point-min) start)
+      ;; Remove anchors to both the next page and the previous page.
+      ;; These anchors are inserted into the head and the tail of the
+      ;; article body.
+      (skip-chars-backward " \t\r\f\n")
+      (forward-line 0)
+      (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
+	(delete-region (point) (point-max)))
+      (goto-char (point-min))
+      (skip-chars-forward " \t\r\f\n")
+      (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
+	(delete-region (point-min) (line-end-position))))
     (goto-char (point-min))
     (while (and (search-forward "<!-- AD START -->" nil t)
 		(setq start (match-beginning 0))
@@ -147,11 +158,11 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
       (delete-region (match-beginning 0) (match-end 0)))))
 
 (defun shimbun-itmedia-retrieve-next-pages (shimbun base-cid url
-						  &optional images)
+						    &optional images)
   (let ((case-fold-search t) (next))
     (goto-char (point-min))
     (when (re-search-forward
-	   "<a href=\"\\([^\"]+\\)\"><b>次のページ</b></a>" nil t)
+	   "<b><a href=\"\\([^\"]+\\)\">次のページ</a></b>" nil t)
       (setq next (shimbun-expand-url (match-string 1) url)))
     (shimbun-itmedia-clean-text-page)
     (goto-char (point-min))
@@ -165,7 +176,7 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
 		    (with-temp-buffer
 		      (shimbun-fetch-url shimbun next)
 		      (shimbun-itmedia-retrieve-next-pages shimbun base-cid
-							 next images)))))
+							   next images)))))
       (list (cons body (car result))
 	    (or (nth 1 result) images)))))
 
@@ -192,7 +203,7 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
       (let (body)
 	(multiple-value-bind (texts images)
 	    (shimbun-itmedia-retrieve-next-pages shimbun base-cid
-					       (shimbun-header-xref header))
+						 (shimbun-header-xref header))
 	  (erase-buffer)
 	  (if (= (length texts) 1)
 	      (setq body (car texts))

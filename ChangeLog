@@ -1,3 +1,10 @@
+2004-01-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-itmedia.el (shimbun-itmedia-clean-text-page): Follow
+	the change of the site design.
+	(shimbun-itmedia-retrieve-next-pages): Change the regular
+	expression to detect next pages.
+
 2004-01-08  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-itmedia.el: New file.
