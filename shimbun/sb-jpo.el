@@ -67,6 +67,7 @@
 	    (erase-buffer)
 	    (setq url (concat shimbun-jpo-url
 			      "torikumi/puresu/puresu_list.htm"))
+	    (shimbun-retrieve-url url 'reload)
 	    (setq headers (nconc headers (shimbun-jpo-headers-1 shimbun url))))
 	(if (string= group "details")
 	    (setq headers (shimbun-jpo-headers-group-details shimbun))
@@ -119,8 +120,8 @@
 	(setq id (format
 		  "<%04d%02d%02d%%%s%%%s@jpo>"
 		  (car date) (nth 1 date) (nth 2 date) pagename group))
-	(setq date (apply 'shimbun-make-date-string date))
 	(unless (shimbun-search-id shimbun id)
+	  (setq date (apply 'shimbun-make-date-string date))
 	  (push (shimbun-make-header
 		 0 (shimbun-mime-encode-string subject)
 		 from date id "" 0 0 url)
