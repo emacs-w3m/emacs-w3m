@@ -1,5 +1,7 @@
 2004-04-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (emacs-w3m-version): Release 1.4.
+
 	* Makefile.in (install-package): Install w3m-load.el.
 	(dist, tarball): Reimplemented, in order to keep time stamps of
 	source files.
