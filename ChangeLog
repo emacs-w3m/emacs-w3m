@@ -1,5 +1,16 @@
 2002-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el (TopLevel): Not to get the byte-code for
+	`current-column' inlined under old Emacsen.
+
+	* w3m-bitmap.el (w3m-bitmap-emacs-broken-p): Use
+	`ad-Orig-current-column' rather than `current-column' if it has
+	already been defined.
+	(TopLevel): Not to get the byte-code for `current-column' inlined
+	under the broken Emacsen in case when compiling manually.
+
+2002-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-bitmap.el (TopLevel) Require `cl' and possibly load cl-macs.
 	The following changes are for old Emacsen.
 	(w3m-bitmap-emacs-broken-p): New constant.

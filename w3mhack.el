@@ -1,6 +1,6 @@
 ;;; w3mhack.el --- a hack to setup the environment for building w3m
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -127,6 +127,13 @@
 	(princ (format "%sc " module))))))
 
 (require 'bytecomp)
+
+(when (or (not (boundp 'emacs-major-version))
+	  (= emacs-major-version 19)
+	  (and (= emacs-major-version 20)
+	       (<= emacs-minor-version 2)))
+  ;; Not to get the byte-code for `current-column' inlined.
+  (put 'current-column 'byte-compile nil))
 
 (defun w3mhack-compile ()
   "Byte-compile the w3m modules."

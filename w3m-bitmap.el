@@ -32,12 +32,9 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl))
-
-;; Override the macro `dolist' which may have been defined in egg.el.
-(eval-when-compile
-  (unless (dolist (var nil t))
-    (load "cl-macs" nil t)))
+  (require 'cl)
+  ;; Pickup `gensym'.
+  (load "cl-macs" nil t))
 
 (require 'w3m-util)
 (require 'w3m-proc)
@@ -49,6 +46,7 @@
 		     (= emacs-major-version 19)
 		     (and (= emacs-major-version 20)
 			  (<= emacs-minor-version 2)))
+
   (defconst w3m-bitmap-emacs-broken-p
     ;; We use `eval' in case Emacs brokenness differs from compile-time
     ;; to load-time.
@@ -63,7 +61,10 @@
 	      (insert (bitmap-compose "38c038c038084492926c00f808f008f0"))
 	      (put-text-property (point-min) (point-max)
 				 'check-for-broken-facility t)
-	      (/= (current-column) 1))
+	      (/= (if (fboundp 'ad-Orig-current-column)
+		      (ad-Orig-current-column)
+		    (current-column))
+		  1))
 	  (kill-buffer buffer))))
     "T means this Emacs has a bug on managing column numbers on bitmap
 characters if there are any overlays or text properties.  If you are
@@ -72,6 +73,10 @@ is t, we strongly recommend you fix the bug and rebuild Mule.  See
 manuals in the emacs-w3m distribution.")
 
   (when w3m-bitmap-emacs-broken-p
+    ;; Not to get the byte-code for `current-column' inlined in case
+    ;; when compiling manually.
+    (put 'current-column 'byte-compile nil)
+
     (if noninteractive
 	(message "BROKEN FACILITY DETECTED: \
 Emacs won't manage columns on bitmap chars with props.")
