@@ -4,7 +4,7 @@
 	is not available.
 	(window-fringes): Ditto.
 	(w3m-tab-width): Protect against setting illegal values.
-	(w3m-tab-unselected-face): Don't specify to the underline color.
+	(w3m-tab-unselected-face): Don't specify the underline color.
 	(w3m-tab-unselected-retrieving-face): Ditto.
 	(w3m-tab-selected-face): Ditto.
 	(w3m-tab-selected-retrieving-face): Ditto.
