@@ -1,0 +1,126 @@
+	emacs-w3m FAQ (2001.6.3版)
+
+* emacs-w3m 一般
+
+** Q. emacs-w3m って何ですか?
+
+w3m を Emacs 上で動かすインターフェースプログラムです。
+詳細は、README.ja を参照してください。
+
+** Q. 動作する Emacs は?
+
+以下の Emacsen で動作することが確認されています。
+
+	Mule-2.3 @ Emacs-19.34
+	Emacs-20
+	Emacs-21
+	XEmacs-21.1 with Mule
+	XEmacs-21.2 with Mule (beta37以降)
+	XEmacs-21.4 with Mule 
+	XEmacs-21.5 with Mule 
+	Meadow
+
+なお、Mule-2.3 及び XEmacs では APEL が必要となります。
+
+** Q. 動作する w3m は?
+
+以下の w3m で動作することが確認されています。
+
+	w3m-0.2.1	(emacs-w3m 附属の w3m-XXX-mnc.patch を適用するこ
+			 とをおすすめします。)
+	w3mmee-p19-pre	(w3m-type を 'w3mmee にしてください。)
+	w3m-m17n-0.19
+
+* トラブル
+
+** Q. Web ページが表示できません。
+
+Nifty などでは index まで指定せずに HEAD でアクセスすると "404 Not
+found" が返ってくるため、表示できません。
+index まで指定するか、mnc.patch を適用した w3m などを使用し、
+(setq w3m-type 'w3m-mnc) としてください。
+
+** Q. リンクが辿れません。
+
+http://pine.kuee.kyoto-u.ac.jp/member/tsuchiya/emacs-w3m/ からなど、
+Redirection されたページからのリンクはうまく辿れません。
+附属の mnc.patch を適用した w3m などを使用し、(setq w3m-type 'w3m-mnc)
+としてください。
+
+** Q. 文字化けします。
+
+いくつかの原因があります。
+
+(1) html の問題
+
+html 中で指定されている文字コードと、実際の文字コードが異なる場合には文
+字化けします。`w3m-redisplay-with-charset' (C) で正しい文字コードを指定
+して再描画してください。
+
+(2) html の文字コード
+
+UTF-8 のページの場合は、以下のどちらかの手があります。
+・Mule-UCS 等により、Emacs が UTF-8 を理解できるようにする。
+・w3mmee を使う。
+
+(3) w3m の variant
+
+w3mmee を使用している場合は、(setq w3m-type 'w3mmee) としてください。
+
+(4) Emacsen の問題
+
+XEmacs-21.2 では beta36 以前では問題があります。beta36 以前をお使いの場
+合は XEmacs を upgrade してください。
+
+(5) Content-Encoding の問題
+
+Content-Encoding が "gzip" や "x-bzip" の場合は、外部プログラム "gunzip"
+や "bunzip2" などでデコードします。
+しかし、mod_gzip が使用されている場合などは、HEAD でアクセスした時に
+Content-Encoding は表示されないため、デコードされません。mnc.patch を適
+用した w3m を使用してください。
+
+** Q. 画像表示できません。
+
+いくつかの原因があります。
+
+(1) w3m のバージョン
+
+w3m-0.1.11pre 以前では正常に表示できません。w3m を upgrade してください。
+
+(2) Emacsen の問題
+
+Emacs-21 では libungif にバージョンによっては、gif 画像が正常に表示され
+ないことがあります。libungif-4.1.0b1 以降に upgrade してください。
+
+XEmacs ではアニメーション gif が正常に表示されないことがあります。
+"gifsicle" プログラムをインストールしてください。(README.ja の『2. イン
+ストール』を参照)
+
+** Q. フォームへ入力できません。
+
+まだ対応していません。
+
+** Q. フレームがレンダリングされません。
+
+w3mmee を使ってください。
+
+* shimbun
+
+** Q. shimbun 以下がインストールされません。
+
+FLIM がインストールされていないと shimbun 以下はインストールされません。
+
+emacs -q で起動時に load-path に FLIM のインストールされたディレクトリが
+通らない場合は、configure 時に --with-add-path で指定してください。
+
+	% ./configure --prefix=$HOME \
+		--with-add-path=$HOME/share/emacs/site-lisp/flim
+
+Local Variables:
+mode: outline
+coding: euc-japan
+use-kuten-for-period: nil
+use-touten-for-comma: nil
+fill-column: 72
+End:

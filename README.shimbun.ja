@@ -1,0 +1,111 @@
+1. はじめに
+
+shimbun ライブラリでは、新聞やニュースサイト、メーリングリストアーカイブ
+などを適切に取り扱うためのインターフェイスを提供します。
+
+shimbun ライブラリを利用できるユーザエージェントは、以下の通りです。
+
+	Wanderlust (elmo-lunafy 枝)
+	T-gnus-6_15
+
+APEL および FLIM パッケージが必要です。インストールする前にそれらをイン
+ストールしてください。それらのパッケージは
+
+ftp://ftp.m17n.org/pub/mule/apel/
+ftp://ftp.m17n.org/pub/mule/flim/
+
+から取得することができます。
+
+2. 利用可能なコンテンツ
+
+2-1. 新聞
+
+朝日		asahi.national asahi.business asahi.politics
+		asahi.international asahi.sports
+		(asahi-html も用意されています。)
+毎日		mainichi.shakai mainichi.sports mainichi.seiji
+		mainichi.keizai mainichi.kokusai mainichi.fuho
+日経		nikkei.seikei nikkei.kaigai nikkei.market
+		nikkei.sangyo nikkei.tento nikkei.shakai nikkei.retto
+		nikkei.shasetsu nikkei.zinzi nikkei.okuyami
+スポニチ	sponichi.baseball sponichi.soccer sponichi.usa
+		sponichi.others sponichi.society
+		sponichi.entertainment sponichi.horseracing
+讀売		yomiuri.shakai yomiuri.sports yomiuri.seiji
+		yomiuri.keizai yomiuri.kokusai yomiuri.fuho
+
+2-2. ニュースサイト
+
+Japan CNET	cnet.comp
+インプレス	impress.internet impress.pc impress.akiba impress.game
+		impress.av impress.jijinews impress.sports
+HotWired	wired.business wired.culture wired.technology
+YAHOO!JAPAN	yahoo.cpt yahoo.dom yahoo.int yahoo.bus yahoo.brf
+		yahoo.biz yahoo.ent yahoo.spo yahoo.nkn yahoo.clm
+ZDNet		zdnet.comp zdnet.gamespot
+
+2-3. Mailing List
+
+semi-gnus-ja	airs.semi-gnus
+wanderlust	airs.wl	
+bbdb-ml		bbdb-ml.bbdb-ml
+ding-gnus 関連	ding.ding ding.ding-announce ding.ding-cvslog
+gnome 関連	gnome.balsa-list gnome.calendar-list
+		gnome.cvs-commits-list gnome.foundation-announce
+		gnome.foundation-list gnome.fplan-list
+		gnome.gconf-list gnome.gdome gnome.gnome-1.4-list
+		gnome.gnome-announce-list gnome.gnome-components-list
+		gnome.gnome-db-list gnome.gnome-de
+		gnome.gnome-debugger-list gnome.gnome-devel-list
+		gnome.gnome-doc-list gnome.gnome-gui-list
+		gnome.gnome-hackers gnome.gnome-hackers-readonly
+		gnome.gnome-hackers-test gnome.gnome-i18n
+		gnome.gnome-i18n-tools gnome.gnome-kde-list
+		gnome.gnome-list gnome.gnome-office-list
+		gnome.gnome-pilot-list gnome.gnome-sound-list
+		gnome.gnome-themes-list gnome.gnome-ui-hackers
+		gnome.gnome-web-list gnome.gnome-webmaster-list
+		gnome.gnome-workshop-list gnome.gnomecc-list
+		gnome.gnumeric-list gnome.gtk-app-devel-list
+		gnome.gtk-devel-list gnome.gtk-doc-list
+		gnome.gtk-i18n-list gnome.gtk-list gnome.gtk-perl-list
+		gnome.guppi-list gnome.libart gnome.libart-hackers
+		gnome.orbit-list gnome.vote gnome.wm-spec-list
+		gnome.xml gnome.xslt
+h14m 関連	h14m.hns-dev h14m.hns-users
+linux-ce	linux-ce.users
+meadow 関連	meadow.meadow-develop meadow.meadow-users-jp
+namazu 関連	namazu.namazu-users-ja namazu.namazu-win32-users-ja
+		namazu.namazu-users-en namazu.namazu-devel-ja
+		namazu.namazu-devel.en
+emacs-w3m	namazu.emacs-w3m
+netbsd 関連	netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
+		netbsd.tech-pkg-ja netbsd.port-arm32-ja
+		netbsd.port-hpcmips-ja netbsd.port-mac68k-ja
+		netbsd.port-mips-ja netbsd.port-powerpc-ja
+		netbsd.hpcmips-changes-ja netbsd.members-ja
+		netbsd.admin-ja netbsd.www-changes-ja
+ruby 関連	ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
+		ruby.ruby-dev ruby.ruby-ext ruby.ruby-list
+		ruby.ruby-math ruby.ruby-talk
+tlinux-users-j	toshiba.linux-users-j
+w3m-dev		w3m-dev.w3m-dev
+xemacs 関連	xemacs.xemacs-announce xemacs.xemacs-beta-ja
+		xemacs.xemacs-beta xemacs.xemacs-build-reports
+		xemacs.xemacs-cvs xemacs.xemacs-mule xemacs.xemacs-nt
+		xemacs.xemacs-patches xemacs.xemacs-users-ja
+		xemacs.xemacs
+
+2-4. その他
+
+ゆうτοπια掲示板	tcup.yutopia
+Meadow 掲示板	tcup.meadow
+HNS による日記
+
+Local Variables:
+mode: text
+coding: euc-japan
+use-kuten-for-period: nil
+use-touten-for-comma: nil
+fill-column: 72
+End:
