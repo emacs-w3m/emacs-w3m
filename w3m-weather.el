@@ -52,7 +52,7 @@
 	    '(;; URLの一部, 漢字表記, ローマ字表記, 別名
 	      ;; (ローマ字表記では長音を省略しないこと)
 	      ("1a/1100" "道北・宗谷" "douhokusouya" "souya")
-	      ("1a/1200" "道北・上川" "douhokukamikawa""kamikawa")
+	      ("1a/1200" "道北・上川" "douhokukamikawa" "kamikawa")
 	      ("1a/1300" "道北・留萌" "douhokurumoi" "rumoi")
 	      ("1c/1710" "道東・網走" "doutouabashiri" "abashiri")
 	      ("1c/1720" "道東・北見" "doutoukitami" "kitami")
@@ -143,7 +143,7 @@
 	      ("30/6520" "和歌山県・南部" "wakayamakennanbu")
 	      ("31/6910" "鳥取県・東部" "tottorikentoubu")
 	      ("31/6920" "鳥取県・西部" "tottorikenseibu")
-	      ("32/600" "島根県・隠岐" "shimanekenoki")
+	      ("32/600" "島根県・隠岐" "shimanekenoki" "oki")
 	      ("32/6810" "島根県・東部" "shimanekentoubu")
 	      ("32/6820" "島根県・西部" "shimanekenseibu")
 	      ("33/6610" "岡山県・南部" "okayamakennanbu")

@@ -166,7 +166,8 @@ argument."
 					    whence))
 	(let ((case-fold-search t))
 	  (goto-char (point-min))
-	  (let ((max (if (re-search-forward "<!-- HIT -->\\([0-9]+\\)<!-- HIT -->" nil t)
+	  (let ((max (if (re-search-forward
+			  "<!-- HIT -->\\([0-9]+\\)<!-- HIT -->" nil t)
 			 (string-to-number (match-string 1))
 		       0))
 		(cur (string-to-number whence)))
@@ -174,13 +175,15 @@ argument."
 	    (when (search-forward "<head>" nil t)
 	      (when (> cur 0)
 		(insert
-		 (format "\n<link rel=\"prev\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
+		 (format "
+<link rel=\"prev\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
 			 index
 			 query
 			 (max (- cur w3m-namazu-page-max) 0))))
 	      (when (> max (+ cur w3m-namazu-page-max))
 		(insert
-		 (format "\n<link rel=\"next\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
+		 (format "
+<link rel=\"next\" href=\"about://namazu/?index=%s&query=%s&whence=%d\">"
 			 index
 			 query
 			 (+ cur w3m-namazu-page-max))))))
@@ -198,22 +201,25 @@ argument."
 (defun w3m-namazu-complete-index (index predicate flag)
   "Function to complete index name"
   (if (eq flag 'lambda)
-      (or (and (assoc index w3m-namazu-index-alist) t)
-	  (file-directory-p index))
+      (and (or (and (assoc index w3m-namazu-index-alist) t)
+	       (file-directory-p index))
+	   (or (not predicate)
+	       (funcall predicate index)))
     (let ((alist
-	   (if (string-match "^[~/\\.]" index)
+	   (mapcar
+	    'list
+	    (nconc
+	     (all-completions index w3m-namazu-index-alist)
+	     (let ((partial (file-name-nondirectory index))
+		   (dir (file-name-as-directory
+			 (or (file-name-directory index)
+			     default-directory))))
 	       (delq nil
 		     (mapcar
-		      (lambda (f)
-			(and (not (string-match "/\\.\\.?$" f))
-			     (file-directory-p f)
-			     (cons (file-name-as-directory f) nil)))
-		      (directory-files (file-name-directory
-					(setq index (expand-file-name index)))
-				       t)))
-	     (mapcar
-	      (lambda (x) (cons x nil))
-	      (all-completions index w3m-namazu-index-alist)))))
+		      (lambda (file)
+			(when (file-directory-p (expand-file-name file dir))
+			  (concat dir file)))
+		      (file-name-all-completions partial dir))))))))
       (cond
        ((not flag) (try-completion index alist predicate))
        ((eq flag t) (all-completions index alist predicate))))))

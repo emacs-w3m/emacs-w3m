@@ -1,3 +1,11 @@
+2003-06-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-namazu.el (w3m-namazu-complete-index): Consider `predicate'
+	option.
+
+	* w3m-weather.el (w3m-weather-completion-table): Add `oki' as the
+	shortend form of `shimanekenoki'.
+
 2003-06-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-fontify-anchors): Do not encode fragment parts.
