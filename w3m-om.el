@@ -65,6 +65,7 @@
 ;; Dummy functions.
 (defalias 'w3m-setup-toolbar 'ignore)
 (defalias 'w3m-update-toolbar 'ignore)
+(defalias 'w3m-mule-unicode-p 'ignore)
 
 ;; Required for old Emacsen.  See the file README for details.
 (eval-and-compile
@@ -411,8 +412,6 @@ as the value."
       :value 'other)))
 
 (eval-after-load "wid-edit" '(w3m-om-define-missing-widgets))
-
-(defalias 'w3m-mule-unicode-p 'ignore)
 
 (provide 'w3m-om)
 

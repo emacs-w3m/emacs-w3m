@@ -75,6 +75,7 @@
 (defalias 'w3m-remove-image 'ignore)
 (defalias 'w3m-setup-toolbar 'ignore)
 (defalias 'w3m-update-toolbar 'ignore)
+(defalias 'w3m-mule-unicode-p 'ignore)
 
 (autoload `ange-ftp-read-passwd "ange-ftp")
 (defalias 'read-passwd 'ange-ftp-read-passwd)

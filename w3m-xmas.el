@@ -626,11 +626,13 @@ title contains non-ascii characters, show a url name by default."
     (defalias 'multibyte-string-p 'stringp)
   (defalias 'multibyte-string-p 'ignore))
 
-(defun w3m-mule-unicode-p ()
-  "Check the existence as charsets of mule-unicode."
-  (and (find-charset 'mule-unicode-0100-24ff)
-       (find-charset 'mule-unicode-2500-33ff)
-       (find-charset 'mule-unicode-e000-ffff)))
+(if (featurep 'mule)
+    (defun w3m-mule-unicode-p ()
+      "Check the existence as charsets of mule-unicode."
+      (and (find-charset 'mule-unicode-0100-24ff)
+	   (find-charset 'mule-unicode-2500-33ff)
+	   (find-charset 'mule-unicode-e000-ffff)))
+  (defalias 'w3m-mule-unicode-p 'ignore))
 
 (provide 'w3m-xmas)
 

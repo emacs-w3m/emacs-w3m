@@ -9,6 +9,8 @@
 
 	* w3m-om.el (w3m-mule-unicode-p): Set aliase to `ignore'.
 
+	* w3m-e19.el (w3m-mule-unicode-p): Set aliase to `ignore'.
+
 2002-10-25  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 
 	* w3m.el (w3m-entity-alist): Support all entities using Mule-UCS.
