@@ -1,3 +1,15 @@
+2001-05-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-gohome): New command.
+	(w3m-setup-menu): Use `w3m-menubar'.
+	(w3m-menubar): New constant.
+	(w3m-toolbar): Added "copy"; use `w3m-gohome'.
+	(w3m-toolbar-buttons): Addded "copy".
+
+	* w3m-xmas.el (w3m-setup-menu): Moved menubar definition to w3m.el.
+
+	* icons/copy-up.xpm: New file.
+
 2001-05-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna-last-modified): When specified URL
