@@ -1,3 +1,7 @@
+2003-10-07  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-form.el (w3m-form-parse-and-fontify): Fix for textarea on w3mmee.
+
 2003-10-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (frame-current-scroll-bars): Alias to `ignore' if it
