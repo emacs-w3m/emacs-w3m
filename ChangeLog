@@ -1,3 +1,8 @@
+2001-12-14  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-dtree.el (w3m-about-dtree): Ignore arguments on and after
+	4th.
+
 2001-12-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 	Suggested by NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>.
 
