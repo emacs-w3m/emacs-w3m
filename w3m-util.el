@@ -500,9 +500,12 @@ a built-in special form, nil is returned."
     (let ((arglist (ad-arglist (if (symbolp function)
 				   (symbol-function function)
 				 function))))
-      (if (memq '&rest arglist)
-	  nil
-	(length (delq '&optional arglist))))))
+      (cond ((memq '&rest arglist)
+	     nil)
+	    ((memq '&optional arglist)
+	     (1- (length arglist)))
+	    (t
+	     (length arglist))))))
 
 (defun w3m-modify-plist (plist &rest properties)
   "Change values in PLIST corresponding to PROPERTIES.  This is similar
