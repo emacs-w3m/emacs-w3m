@@ -65,18 +65,13 @@
 
 (defsubst shimbun-slashdot-jp-make-article-after (shimbun head)
   (goto-char (point-min))
-  (shimbun-header-insert shimbun head)
-  (insert (format "\
-MIME-Version: 1.0
-Content-Type: text/html; charset=iso-2022-jp
-
-<html>
-<head><base href=\"%s\"></head>
-<body>\n" (shimbun-header-xref head)))
+  (insert "<html>
+<head><base href=\"" (shimbun-header-xref head) "\"></head>
+<body>\n")
   (goto-char (point-max))
   (insert "\n</body>\n</html>\n")
-  (encode-coding-string (buffer-string)
-			(mime-charset-to-coding-system "ISO-2022-JP")))
+  (shimbun-make-mime-article shimbun head)
+  (buffer-string))
 
 (defconst shimbun-slashdot-jp-story-article-start-pattern
   "<!-- start template: ID 88, dispStory;misc;default -->")
