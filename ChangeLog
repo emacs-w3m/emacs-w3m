@@ -1,3 +1,7 @@
+2003-06-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-fontify-anchors): Do not encode fragment parts.
+
 2003-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-examine-modules): Ignore the shimbun modules

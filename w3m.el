@@ -2416,11 +2416,16 @@ should use `w3m-url-encode-string' instead of this."
 	  (when (re-search-forward "[ \t\r\f\n]*\\(</a>\\)" nil t)
 	    (setq end (match-beginning 0))
 	    (delete-region (match-beginning 1) (match-end 1))
-	    (setq href (w3m-url-transfer-encode-string
-			(w3m-expand-url (w3m-decode-anchor-string href))
-			(if charset
-			    (w3m-charset-to-coding-system charset)
-			  w3m-current-coding-system))
+	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)))
+	    (setq href (if (and (string-match w3m-url-components-regexp href)
+				(match-beginning 8))
+			   (concat (w3m-url-transfer-encode-string
+				    (substring href 0 (match-beginning 8))
+				    (w3m-charset-to-coding-system charset))
+				   "#" (match-string 9 href))
+			 (w3m-url-transfer-encode-string
+			  href
+			  (w3m-charset-to-coding-system charset)))
 		  hseq (or (and (null hseq) 0) (abs hseq))
 		  w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
 	    (w3m-add-text-properties start end
