@@ -9,7 +9,7 @@
 2001-06-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-dump-head-source-command-argument): Its old name is
-	`w3m-dump-head-source-command-argument'.
+	`w3m-dump-head-source-command-arguments'.
 
 2001-06-11  Mito  <mit@nines.nec.co.jp>
 
