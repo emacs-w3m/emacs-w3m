@@ -3,6 +3,12 @@
 	* w3m.el (w3m-redirect-with-get): New user option.
 	(w3m-w3m-retrieve): If w3m-redirect-with-get is non-nil, use GET
 	method after redirection; Ask user to use POST data after redirection.
+	(w3m-w3m-attributes): Set w3m-current-redirect as a cons cell of
+	(CODE . LOCATION).
+	(w3m-w3m-dump-head-source): Don't cache content if the response code is
+	one of 302, 303, 307.
+	(w3m-w3m-retrieve): Change POST redirection behavior according to
+	response code.
 
 	* octet.el (mime-preview-octet): Change behavior according to
 	whether the return value of mime-entity-content is multibyte or not.

@@ -2847,7 +2847,9 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(list "text/html" "w3m-euc-japan" nil nil nil url url)
 	      (list (w3m-local-content-type url) nil nil nil nil url url)))
 	   ((or (string-match "HTTP/1\\.[0-9] 200 " header)
-		(setq moved (string-match "HTTP/1\\.[0-9] 30[12] " header)))
+		(setq moved (and (string-match "HTTP/1\\.[0-9] \\(30[1237]\\) "
+					       header)
+				 (match-string 1 header))))
 	    (when (setq type (cdr (assoc "content-type" alist)))
 	      (if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" type)
 		  (setq charset (w3m-remove-redundant-spaces
@@ -2859,7 +2861,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		  (setq type (substring type 0 (match-beginning 0))))))
 	    (when moved
 	      (setq w3m-current-redirect
-		    (w3m-expand-url (cdr (assoc "location" alist)))))
+		    (cons (string-to-number moved)
+			  (w3m-expand-url (cdr (assoc "location" alist))))))
 	    (setq w3m-current-ssl (cdr (assoc "w3m-ssl-certificate" alist)))
 	    (list (or type (w3m-local-content-type url))
 		  (or charset
@@ -2923,8 +2926,12 @@ complete."
 	    (when w3m-use-cookies
 	      (w3m-cookie-set url (point-min) (point)))
 	    (delete-region (point-min) (point))
-	    (w3m-cache-contents url (current-buffer))
-	    (w3m-w3m-attributes url nil handler)))))))
+	    (prog1 (w3m-w3m-attributes url nil handler)
+	      (if (and w3m-current-redirect
+		       (or (eq (car w3m-current-redirect) 302)
+			   (eq (car w3m-current-redirect) 303)
+			   (eq (car w3m-current-redirect) 307)))
+		  (w3m-cache-contents url (current-buffer))))))))))
 
 (defun w3m-additional-command-arguments (url)
   "Return a list of additional arguments passed to the w3m command.
@@ -3058,14 +3065,26 @@ argument, when retrieve is complete."
 		  ;; Redirection number exceeds `w3m-follow-redirection'.
 		  (funcall orig-handler type)
 		(setq i (1- i))
-		(setq url w3m-current-redirect)
+		(setq url (cdr w3m-current-redirect))
 		(erase-buffer)
 		(when post-data
-		  (if w3m-redirect-with-get
-		      (setq post-data nil)
+		  (cond
+		   ((eq (car w3m-current-redirect) 303)
+		    ;; Use GET.
+		    (setq post-data nil))
+		   ((eq (car w3m-current-redirect) 307)
+		    ;; Use POST.
 		    (setq quit (not
 				(y-or-n-p 
-				 (format "Send POST data to '%s'?" url))))))
+				 (format "Send POST data to '%s'?" url)))))
+		   ((or (eq (car w3m-current-redirect) 302)
+			(eq (car w3m-current-redirect) 301))
+		    (if w3m-redirect-with-get
+			(setq post-data nil)
+		      (setq quit 
+			    (not
+			     (y-or-n-p 
+			      (format "Send POST data to '%s'?" url))))))))
 		(if quit
 		    (funcall orig-handler nil)
 		  (if sync
