@@ -55,30 +55,14 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 Buffer string between BEG and END are replaced with IMAGE."
   (let (extent glyphs)
     (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
-      (setq glyphs (cons (extent-end-glyph extent) glyphs)))
-    (setq extent (make-extent beg end))
-    (set-extent-property extent 'invisible t)
-    (set-extent-property extent 'w3m-xmas-icon t)
-    (set-extent-end-glyph extent image)
+      (push (extent-end-glyph extent) glyphs))
+    (set-extent-properties (make-extent beg end)
+			   (list 'invisible t 'w3m-xmas-icon t
+				 'end-glyph image))
     (while glyphs
-      (setq extent (make-extent end end))
-      (set-extent-property extent 'w3m-xmas-icon t)
-      (set-extent-end-glyph extent (car glyphs))
-      (setq glyphs (cdr glyphs))))
-  ;; Detach an underlined face if it exists.
-  (unless (car w3m-cache-underline-faces)
-    (let ((face (get-text-property beg 'face)))
-      (when (and face
-		 (face-underline-p face))
-	(setq beg (set-marker (make-marker)
-			      (or (previous-single-property-change
-				   (1+ beg) 'face)
-				  (point-min)))
-	      end (set-marker (make-marker)
-			      (or (next-single-property-change beg 'face)
-				  (point-max))))
-	(put-text-property beg end 'face nil)
-	(push (list beg end face) (cdr w3m-cache-underline-faces))))))
+      (set-extent-properties (make-extent end end)
+			     (list 'w3m-xmas-icon t
+				   'end-glyph (pop glyphs))))))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."

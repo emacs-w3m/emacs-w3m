@@ -1199,7 +1199,7 @@ If N is negative, last N items of LIST is returned."
 	(delete-region start (point))
 	(cond
 	 (href
-	  (when (search-forward "</a>" nil t)
+	  (when (re-search-forward "[ \t\r\f\n]*</a>" nil t)
 	    (delete-region (setq end (match-beginning 0)) (match-end 0))
 	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)
 				       w3m-current-url))
@@ -1285,7 +1285,11 @@ half-dumped data."
   "Cache used to detach underlined faces from a buffer when showing
 images inline.  It is a buffer-local variable which contains a list of
 a flag and lists of a beginning position, an end position and a face.
-Flag will be set to t when caching is completed.")
+Flag will be set to t when caching is completed.
+
+** Is is currently needed for only pretest versions of Emacs 21.
+** Perhaps it becomes useless in the future, we should pay attention
+** to a trend of Emacs development.")
 (make-variable-buffer-local 'w3m-cache-underline-faces)
 
 (defun w3m-toggle-inline-images (&optional force no-cache)

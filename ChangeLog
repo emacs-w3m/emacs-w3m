@@ -1,5 +1,14 @@
 2001-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-cache-underline-faces): Added docs that it is
+	currently needed for only pretest versions of Emacs 21.
+	(w3m-fontify-anchors): Don't fontify the trailing white spaces of a
+	href.
+	* w3m-xmas.el (w3m-insert-image): Don't handle underline faces.
+	* w3m-e21.el (w3m-insert-image): Simplified.
+
+2001-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-setup-header-line, w3m-exec, w3m-decode-entities):
 	Replace `add-text-properties' with `w3m-add-text-properties'.
 	(w3m-fontify-images, w3m-fontify-anchors): Ditto.

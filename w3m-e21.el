@@ -50,24 +50,19 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
-  (add-text-properties beg end
-		       (list 'display image
-			     'intangible image
-			     'invisible nil))
-  ;; Detach an underlined face if it exists.
+  (add-text-properties beg end (list 'display image
+				     'intangible image
+				     'invisible nil))
   (unless (car w3m-cache-underline-faces)
+    ;; Detach an underlined face if it exists.
     (let ((face (get-text-property beg 'face)))
       (when (and face
 		 (face-underline-p face))
-	(setq beg (set-marker (make-marker)
-			      (or (previous-single-property-change
-				   (1+ beg) 'face)
-				  (point-min)))
-	      end (set-marker (make-marker)
-			      (or (next-single-property-change beg 'face)
-				  (point-max))))
 	(put-text-property beg end 'face nil)
-	(push (list beg end face) (cdr w3m-cache-underline-faces))))))
+	(push (list (set-marker (make-marker) beg)
+		    (set-marker (make-marker) end)
+		    face)
+	      (cdr w3m-cache-underline-faces))))))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."
