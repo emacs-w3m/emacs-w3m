@@ -223,12 +223,9 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		      "\\([012][0-9]:[0-5][0-9]\\)"
 		      ")")))
 	  nil t)
-    (push (shimbun-make-header
+    (push (shimbun-create-header
 	   0
-	   (mapconcat 'identity
-		      (save-match-data (split-string (match-string 8)
-						     "[ \f\t\n\v　]+"))
-		      " ")
+	   (match-string 8)
 	   shimbun-nikkei-from-address
 	   (shimbun-nikkei-make-date-string
 	    (string-to-number (match-string 4))
@@ -275,12 +272,9 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		       ;; 8. hour:minute
 		       "\\([0-2][0-9]:[0-5][0-9]\\)")))
 	   nil t)
-      (push (shimbun-make-header
+      (push (shimbun-create-header
 	     0
-	     (mapconcat 'identity
-			(save-match-data (split-string (match-string 6)
-						       "[ \f\t\n\v　]+"))
-			" ")
+	     (match-string 6)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
 	      (string-to-number (match-string 3))
@@ -335,12 +329,9 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		       (t
 			cyear))
 	    url (match-string 8))
-      (push (shimbun-make-header
+      (push (shimbun-create-header
 	     0
-	     (mapconcat 'identity
-			(save-match-data (split-string (match-string 10)
-						       "[ \f\t\n\v　]+"))
-			" ")
+	     (match-string 10)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string year month day (match-string 3))
 	     (format "<%d%02d%02d%s%s.%s%%%s.markets.%s>"
@@ -380,12 +371,9 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			;; 7. subject
 			"\\([^<]+\\)")))
 	    nil t)
-      (push (shimbun-make-header
+      (push (shimbun-create-header
 	     0
-	     (mapconcat 'identity
-			(save-match-data (split-string (match-string 7)
-						       "[ \f\t\n\v　]+"))
-			" ")
+	     (match-string 7)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
 	      (string-to-number (match-string 3))
@@ -426,12 +414,9 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			  ;; 7. subject
 			  "\\([^<]+\\)")))
 	      nil t)
-	(push (shimbun-make-header
+	(push (shimbun-create-header
 	       0
-	       (mapconcat 'identity
-			  (save-match-data (split-string (match-string 7)
-							 "[ \f\t\n\v　]+"))
-			  " ")
+	       (match-string 7)
 	       shimbun-nikkei-from-address
 	       (shimbun-nikkei-make-date-string
 		(string-to-number (match-string 4))
@@ -468,12 +453,9 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
       (when (re-search-backward "\
 >[\t\n ]*\\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\)[^0-9]"
 				nil t)
-	(push (shimbun-make-header
+	(push (shimbun-create-header
 	       0
-	       (mapconcat 'identity
-			  (save-match-data (split-string subject
-							 "[ \f\t\n\v　]+"))
-			  " ")
+	       subject
 	       shimbun-nikkei-from-address
 	       (shimbun-nikkei-make-date-string
 		(setq year (string-to-number (match-string 1)))
@@ -511,12 +493,9 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			;; 6. subject
 			"\\(\\(社説\\|春秋\\)[^<]+\\)")))
 	    nil t)
-      (push (shimbun-make-header
+      (push (shimbun-create-header
 	     0
-	     (mapconcat 'identity
-			(save-match-data (split-string (match-string 6)
-						       "[ \f\t\n\v　]+"))
-			" ")
+	     (match-string 6)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
 	      (string-to-number (match-string 3))
@@ -554,12 +533,9 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			  ;; 6. subject
 			  "\\([^<]+\\)")))
 	      nil t)
-	(push (shimbun-make-header
+	(push (shimbun-create-header
 	       0
-	       (mapconcat 'identity
-			  (save-match-data (split-string (match-string 6)
-							 "[ \f\t\n\v　]+"))
-			  " ")
+	       (match-string 6)
 	       shimbun-nikkei-from-address
 	       (shimbun-nikkei-make-date-string
 		(string-to-number (match-string 3))
