@@ -1,9 +1,10 @@
 ;;; -*- mode: Emacs-Lisp; coding: euc-japan -*-
-;; $Id$
 
 ;; Copyright (C) 2000 TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
-;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>,
+;;         Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
+;;         Satoru Takabayashi <satoru-t@is.aist-nara.ac.jp>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; w3m.el is free software; you can redistribute it and/or modify it
