@@ -172,9 +172,14 @@ return it."
     (when (eq (process-status process) 'run)
       (kill-process process))))
 
-(defun w3m-process-start-process (object)
-  "Start a process spcified by the OBJECT, return always nil."
-  (unless (w3m-process-process object)
+(defun w3m-process-start-process (object &optional no-sentinel)
+  "Start a process spcified by the OBJECT, return always nil.
+When NO-SENTINEL is not equal to nil, all status changes of the
+generated asynchronous process is ignored.  Otherwise,
+`w3m-process-sentinel' is given to the process as the sentinel."
+  (if (w3m-process-process object)
+      (when no-sentinel
+	(set-process-sentinel (w3m-process-process object) 'ignore))
     (with-current-buffer (w3m-process-buffer object)
       (w3m-process-with-coding-system
 	(w3m-process-with-environment w3m-command-environment
@@ -188,9 +193,11 @@ return it."
 		  w3m-process-user-counter 2
 		  w3m-process-realm nil)
 	    (set-process-filter proc 'w3m-process-filter)
-	    (set-process-sentinel proc 'w3m-process-sentinel)
-	    (process-kill-without-query proc)
-	    nil))))))
+	    (set-process-sentinel proc (if no-sentinel
+					   'ignore
+					 'w3m-process-sentinel))
+	    (process-kill-without-query proc))))))
+  nil) ;; The return value of `w3m-process-start-process'.
 
 (defun w3m-process-start-queued-processes ()
   "Start a process which is registerd in `w3m-process-queue' if the
@@ -273,53 +280,40 @@ handler."
 (put 'w3m-process-with-null-handler 'edebug-form-spec '(body))
 
 ;; Error symbol:
-(put 'w3m-process-failure 'error-conditions
-     '(error w3m-process-error w3m-process-failure))
-(put 'w3m-process-failure 'error-message
-     "Failed detection of process exit status")
-(put 'w3m-process-timeout 'error-conditions
-     '(error w3m-process-error  w3m-process-timeout))
+(put 'w3m-process-timeout 'error-conditions '(error w3m-process-timeout))
 (put 'w3m-process-timeout 'error-message "Time out")
 
 (defmacro w3m-process-with-wait-handler (&rest body)
   "Generate the waiting handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the handler
-which will wait for the end of the evaluation.
-
-WARNING: This macro in asynchronous context will cause an endless loop
-because capturing the end of the generated sub-process fails."
-  (let ((process (gensym "--process--"))
-	(result (gensym "--result--"))
+which will wait for the end of the evaluation."
+  (let ((result (gensym "--result--"))
 	(start (gensym "--start--")))
-    `(lexical-let ((,result ',result))
-       (let ((,process)
-	     (,start (current-time))
-	     (handler (lambda (x) (setq ,result x))))
-	 (if (w3m-process-p (setq ,process (progn ,@body)))
-	     (let ((w3m-current-process ,process)
-		   w3m-process-inhibit-quit inhibit-quit)
-	       (w3m-process-start-process ,process)
-	       (setq ,process (w3m-process-process ,process))
-	       (while (eq (process-status ,process) 'run)
-		 (sit-for 0.2)
-		 (and w3m-process-timeout
-		      (< w3m-process-timeout
-			 (w3m-time-lapse-seconds ,start (current-time)))
-		      (progn
-			(setq w3m-process-queue
-			      (delq ,process w3m-process-queue))
-			(w3m-process-kill-process
-			 (w3m-process-process ,process))
-			(signal 'w3m-process-timeout nil))))
-	       ;; Adhoc waiting for asynchronous processes to finish.
-	       (setq ,start 0)
-	       (while (and (< ,start 10) (eq ,result ',result))
-		 (sit-for 0.2)
-		 (setq ,start (1+ ,start)))
-	       (when (eq ,result ',result)
-		 (signal 'w3m-process-failure nil))
-	       ,result)
-	   ,process)))))
+    `(let (,result)
+       (when (w3m-process-p
+	      (setq ,result
+		    (let ((handler (lambda (x) (setq ,result x))))
+		      ,@body)))
+	 (let ((,start (current-time))
+	       (w3m-current-process ,result)
+	       w3m-process-inhibit-quit inhibit-quit)
+	   ;; No sentinel function is registered and the process
+	   ;; sentinel function is called from this macro, in order to
+	   ;; avoid the dead-locking which occurs when this macro is
+	   ;; called in the environment that `w3m-process-sentinel' is
+	   ;; evaluated.
+	   (w3m-process-start-process ,result t)
+	   (while (eq (process-status (w3m-process-process ,result)) 'run)
+	     (accept-process-output nil 0 200)
+	     (and w3m-process-timeout
+		  (< w3m-process-timeout
+		     (w3m-time-lapse-seconds ,start (current-time)))
+		  (progn
+		    (setq w3m-process-queue (delq ,result w3m-process-queue))
+		    (w3m-process-kill-process (w3m-process-process ,result))
+		    (signal 'w3m-process-timeout nil)))))
+	 (w3m-process-sentinel (w3m-process-process ,result) "finished\n"))
+       ,result)))
 (put 'w3m-process-with-wait-handler 'lisp-indent-function 0)
 (put 'w3m-process-with-wait-handler 'edebug-form-spec '(body))
 

@@ -150,9 +150,10 @@
 	(call-process command nil t nil "-version")
 	(goto-char (point-min))
 	(cond
-	 ((looking-at "version w3m/0\\.2\\.1-inu") 'w3m)
-	 ((looking-at "version w3m/0\\.2\\.1\\+mee") 'w3mmee)
-	 ((looking-at "version w3m/0\\.2\\.1-m17n") 'w3m-m17n)))))
+	 ((looking-at "version w3m/0\\.2\\.[12]-inu") 'w3m)
+	 ((looking-at "version w3m/0\\.2\\.[12]\\+mee") 'w3mmee)
+	 ((looking-at "version w3m/0\\.2\\.[12]-m17n") 'w3m-m17n)
+	 ((looking-at "version w3m/0\\.2\\.2") 'w3m)))))
   "*Type of w3m."
   :group 'w3m
   :type '(choice (const :tag "w3m" 'w3m)
@@ -1159,7 +1160,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
       (condition-case nil
 	  (w3m-process-with-wait-handler
 	    (w3m-attributes url no-cache handler))
-	(w3m-process-error nil))
+	(w3m-process-timeout nil))
     (when (string-match "\\`\\([^#]*\\)#" url)
       (setq url (substring url 0 (match-end 1))))
     (cond
@@ -1299,7 +1300,9 @@ interactively."
 
 (defun w3m-message (&rest args)
   "Alternative function of `message' for emacs-w3m."
-  (if w3m-verbose
+  (if (and w3m-verbose
+	   (or (not (bufferp w3m-current-buffer))
+	       (get-buffer-window w3m-current-buffer)))
       (apply (function message) args)
     (apply (function format) args)))
 
@@ -2594,8 +2597,8 @@ argument, when retrieve is complete."
 	      (error "Can't decode encoded contents: %s" url))
 	  (car attributes))))))
 
-(defsubst w3m-about-retrieve
-  (url &optional no-decode no-cache post-data referer handler)
+(defsubst w3m-about-retrieve (url &optional no-decode no-cache
+				  post-data referer handler)
   "Retrieve content pointed by URL which has about: scheme, insert it
 to this buffer."
   (cond
@@ -2606,25 +2609,31 @@ to this buffer."
       "image/gif"))
    ((string-match "\\`about://source/" url)
     (w3m-process-do
-	(type (w3m-w3m-retrieve (substring url (match-end 0))
-				no-decode no-cache post-data referer handler))
+	(type (w3m-retrieve (substring url (match-end 0))
+			    no-decode no-cache post-data referer handler))
       (when type "text/plain")))
    (t
-    (set-buffer-multibyte t)
-    (let ((type
-	   (save-current-buffer
-	     (let (func)
-	       (if (and (string-match "\\`about://\\([^/]+\\)/" url)
-			(setq func
-			      (intern-soft
-			       (concat "w3m-about-" (match-string 1 url))))
-			(fboundp func))
-		   (funcall func url no-decode no-cache)
-		 (w3m-about url no-decode no-cache))))))
-      (when type
-	(encode-coding-region (point-min) (point-max) w3m-coding-system)
-	(set-buffer-multibyte nil)
-	type)))))
+    (lexical-let ((output-buffer (current-buffer)))
+      (w3m-process-do-with-temp-buffer
+	  (type (let (func)
+		  (setq w3m-current-url url)
+		  (set-buffer-multibyte t)
+		  (if (and (string-match "\\`about://\\([^/]+\\)/" url)
+			   (setq func
+				 (intern-soft
+				  (concat "w3m-about-" (match-string 1 url))))
+			   (fboundp func))
+		      (funcall func url no-decode no-cache
+			       post-data referer handler)
+		    (w3m-about url no-decode no-cache))))
+	(when type
+	  (encode-coding-region (point-min) (point-max) w3m-coding-system)
+	  (set-buffer-multibyte nil)
+	  (when (buffer-name output-buffer)
+	    (let ((temp-buffer (current-buffer)))
+	      (with-current-buffer output-buffer
+		(insert-buffer temp-buffer))))
+	  type))))))
 
 (defsubst w3m-cid-retrieve (url &optional no-decode no-cache)
   "Retrieve content pointed by URL which has cid: scheme, insert it to
@@ -2645,7 +2654,7 @@ type as a string argument, when retrieve is complete."
       (condition-case nil
 	  (w3m-process-with-wait-handler
 	    (w3m-retrieve url no-decode no-cache post-data referer handler))
-	(w3m-process-error nil))
+	(w3m-process-timeout nil))
     (unless (and w3m-safe-url-regexp
 		 (not (string-match w3m-safe-url-regexp url)))
       (when (string-match "\\`\\([^#]*\\)#" url)
@@ -2950,15 +2959,20 @@ argument.  Otherwise, it will be called with nil."
 		(w3m-retrieve url nil no-cache post-data referer handler)))
       (when (buffer-live-p output-buffer)
 	(if type
-	    (w3m-prepare-content url (or content-type type)
-				 output-buffer content-charset)
+	    (prog1 (w3m-prepare-content url (or content-type type)
+					output-buffer content-charset)
+	      (and w3m-verbose
+		   (not (get-buffer-window output-buffer))
+		   (message "The content (%s) has been retrieved in %s"
+			    url (buffer-name output-buffer))))
 	  (ding)
-	  (w3m-message
-	   "Cannot retrieve URL: %s%s"
-	   url
-	   (if w3m-process-exit-status
-	       (format " (exit status: %s)" w3m-process-exit-status)
-	     "")))))))
+	  (w3m-message "Cannot retrieve URL: %s%s"
+		       url
+		       (if w3m-process-exit-status
+			   (format " (exit status: %s)"
+				   w3m-process-exit-status)
+			 ""))
+	  nil)))))
 
 (defun w3m-prepare-content (url type output-buffer &optional content-charset)
   (cond
@@ -2975,6 +2989,7 @@ argument.  Otherwise, it will be called with nil."
     (let ((result-buffer (current-buffer)))
       (with-current-buffer output-buffer
 	(let (buffer-read-only)
+	  (widen)
 	  (delete-region (point-min) (point-max))
 	  (insert-buffer result-buffer)
 	  (w3m-copy-local-variables result-buffer)
@@ -2987,10 +3002,11 @@ argument.  Otherwise, it will be called with nil."
       (let (buffer-read-only)
 	(w3m-clear-local-variables)
 	(setq w3m-current-url (w3m-real-url url)
-	      w3m-current-title (file-name-nondirectory url))
+	      w3m-current-title (file-name-nondirectory url)
+	      w3m-image-only-page t)
+	(widen)
 	(delete-region (point-min) (point-max))
 	(insert w3m-current-title)
-	(setq w3m-image-only-page t)
 	(w3m-add-text-properties (point-min) (point-max)
 				 (list 'face 'w3m-image-face
 				       'w3m-image url
@@ -4587,7 +4603,7 @@ works on Emacs.
      (concat "about://source/" (substring w3m-current-url (match-end 0))))
     (t (concat "about://source/" w3m-current-url)))))
 
-(defun w3m-about-header (url &optional no-decode no-cache)
+(defun w3m-about-header (url &optional no-decode no-cache &rest args)
   (when (string-match "\\`about://header/" url)
     (setq url (substring url (match-end 0)))
     (insert "Page Information\n"
@@ -4605,7 +4621,7 @@ works on Emacs.
 	   (setq header (condition-case nil
 			    (w3m-process-with-wait-handler
 			      (w3m-w3m-get-header url no-cache handler))
-			  (w3m-process-error nil)))
+			  (w3m-process-timeout nil)))
 	   (insert
 	    (if (string= w3m-language "Japanese")
 		"\n\n━━━━━━━━━━━━━━━━━━━\n\nHeader information\n\n"

@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
-;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
+;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; This file is a part of emacs-w3m.
@@ -333,6 +333,7 @@
 (defcustom w3m-weather-filter-functions
   '(w3m-weather-remove-headers
     w3m-weather-remove-footers
+    w3m-weather-expand-anchors
     w3m-weather-insert-title)
   "Filter functions to remove useless tags."
   :group 'w3m
@@ -409,38 +410,31 @@
   (w3m (format "about://weather/%s" area)))
 
 ;;;###autoload
-(defun w3m-about-weather (url no-decode no-cache &rest args)
-  (let (area furl)
-    (if (and (string-match "^about://weather/" url)
-	     (setq area (substring url (match-end 0))
-		   furl (nth 2 (assoc area w3m-weather-completion-table)))
-	     (w3m-retrieve furl nil no-cache))
-	(inline
-	  (w3m-decode-buffer furl)
-	  (run-hook-with-args 'w3m-weather-filter-functions area furl)
-	  "text/html")
-      (w3m-message "Unknown URL: %s" url)
-      nil)))
+(defun w3m-about-weather (url no-decode no-cache post-data referer handler)
+  (if (string-match "\\`about://weather/" url)
+      (lexical-let* ((url url)
+		     (area (substring url (match-end 0)))
+		     (furl (nth 2 (assoc area w3m-weather-completion-table))))
+	(w3m-process-do
+	    (type (w3m-retrieve furl nil no-cache nil nil handler))
+	  (when type
+	    (w3m-decode-buffer furl)
+	    (run-hook-with-args 'w3m-weather-filter-functions area furl)
+	    "text/html")))
+    (w3m-message "Unknown URL: %s" url)
+    nil))
 
 (defun w3m-weather-remove-headers (&rest args)
   "Remove header of the weather forecast page."
   (goto-char (point-min))
-  (when (search-forward "\
-<TABLE border=\"0\" CELLSPACING=\"1\" CELLPADDING=\"0\" width=\"100%\">
-<tr><td>
-
-<table border=\"0\" CELLSPACING=\"0\" CELLPADDING=\"0\" width=\"100%\">
-<tr><td bgcolor=\"#dcdcdc\"><b>今日・明日の天気</b></td>" nil t)
+  (when (search-forward "<!--- TITLE_TABLE_1 --->" nil t)
     (delete-region (point-min) (match-beginning 0))))
 
 (defun w3m-weather-remove-footers (&rest args)
   "Remove footer of the weather forecast page."
   (goto-char (point-max))
-  (when (search-backward "\
-<table border=0 cellpadding=2 cellspacing=5 width=\"100%\">
-<tr bgcolor=\"#dcdcdc\">
-<td colspan=3><b>レジャー天気</b></td></tr>" nil t)
-    (delete-region (point) (point-max))))
+  (when (search-backward "<!--- LEISURE_LINK --->" nil t)
+    (delete-region (match-beginning 0) (point-max))))
 
 (defun w3m-weather-insert-title (area url &rest args)
   "Insert title."
@@ -454,6 +448,24 @@
   (goto-char (point-max))
   (insert "</body>"))
 
+(defun w3m-weather-expand-anchors (area url &rest args)
+  ;; FIXME: 天気予報ページに含まれている相対リンクを絶対リンクに書き換
+  ;; えるための関数．これらの相対リンクを安全に取り扱うためには，base
+  ;; URL を返せるように，about:// の構造を書き直す必要があると考えられ
+  ;; るが，とりあえず後回し．
+  (goto-char (point-min))
+  (while (re-search-forward
+	  (eval-when-compile
+	    (concat "<a[ \t\r\f\n]+href=" w3m-html-string-regexp))
+	  nil t)
+    (replace-match (format
+		    "<a href=\"%s\""
+		    (w3m-expand-url (w3m-remove-redundant-spaces
+				     (or (match-string-no-properties 2)
+					 (match-string-no-properties 3)
+					 (match-string-no-properties 1)))
+				    url)))))
 
 (provide 'w3m-weather)
+
 ;;; w3m-weather.el ends here.

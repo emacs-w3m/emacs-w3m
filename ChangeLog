@@ -1,3 +1,33 @@
+2001-12-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-type): Follow the new official release of w3m.
+	(w3m-attributes): Follow the change of error symbols which is
+	defined in w3m-proc.el.
+	(w3m-retrieve): Ditto.
+	(w3m-about-header): Likewise.  Ignore optional arguments safely.
+	(w3m-message): Display message only when original w3m buffer is
+	displayed.
+	(w3m-about-retrieve): Asynchronized.
+	(w3m-retrieve-and-render): Follow the change of `w3m-message'.
+	(w3m-prepare-content): Install the measure against narrowed
+	buffers.
+
+	* w3m-proc.el (w3m-process-start-process): Accept the 2nd optional
+	argument to reset the sentinel funtcion for the generated
+	asynchronous process.
+	(w3m-process-failure): Removed.
+	(w3m-process-timeout): Simplified its error condition.
+	(w3m-process-with-wait-handler): No sentinel function is
+	registered and the sentinel function is called from this macro
+	itself.
+
+	* w3m-weather.el (w3m-weather-filter-functions): Add
+	`w3m-weather-expand-anchors'.
+	(w3m-about-weather): Asynchronized.
+	(w3m-weather-remove-headers): Follow changes of original content.
+	(w3m-weather-remove-footers): Ditto.
+	(w3m-weather-expand-anchors): New filter function.
+
 2001-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-emacs-w3m-icon): Made it interlaced and endlessly
