@@ -118,6 +118,11 @@
   :group 'w3m
   :type 'string)
 
+(defcustom w3m-command-arguments '()
+  "*Arguments for execution of w3m."
+  :group 'w3m
+  :type '(repeat string))
+
 (defcustom w3m-fill-column -1
   "*Fill column of w3m.
 Value is integer.
@@ -547,12 +552,12 @@ for a charset indication")
     "\\(\"\\(\\([^\"\\\\]+\\|\\\\.\\)+\\)\"\\|[^\"<> \t\r\f\n]*\\)"
     "Regexp used in parsing to detect string."))
 
-(defconst w3m-command-arguments
+(defconst w3m-halfdump-command-arguments
   '("-T" "text/html" "-t" tab-width "-halfdump"
     "-cols" (if (< 0 w3m-fill-column)
 		w3m-fill-column		; fixed columns
 	      (+ (frame-width) (or w3m-fill-column -1)))) ; fit for frame
-  "Arguments for execution of w3m.")
+  "Arguments for 'halfdump' execution of w3m.")
 
 (defsubst w3m-anchor (&optional point)
   (get-text-property (or point (point)) 'w3m-href-anchor))
@@ -850,12 +855,14 @@ If N is negative, last N items of LIST is returned."
 				      'w3m-arrived-anchor-face
 				    'w3m-anchor-face))
 	       (put-text-property start end 'w3m-href-anchor url)
-	       (put-text-property start end 'mouse-face 'highlight))
-	     (when tag
-	       (put-text-property start end 'w3m-name-anchor tag)))
+	       (put-text-property start end 'mouse-face 'highlight)
+	       (when tag
+		 (put-text-property start end 'w3m-name-anchor tag))))
 	    (tag
 	     (when (re-search-forward "<\\|\n" nil t)
 	       (setq end (match-beginning 0))
+	       (when (= start end)
+		 (setq end (min (1+ end) (point-max))))
 	       (put-text-property start end 'w3m-name-anchor tag)))))))
 
 (defun w3m-image-type (content-type)
@@ -1157,6 +1164,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	  (coding-system-for-write w3m-coding-system)
 	  (default-process-coding-system (cons 'binary w3m-coding-system))
 	  (process-connection-type w3m-process-connection-type))
+      (setq args (append w3m-command-arguments args))
       (if w3m-async-exec
 	  ;; start-process
 	  (let ((w3m-process-user)
@@ -1572,7 +1580,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		       (if (stringp x)
 			   x
 			 (prin1-to-string (eval x))))
-		     w3m-command-arguments))
+		     w3m-halfdump-command-arguments))
       (w3m-message "Rendering... done")
       (goto-char (point-min))
       (insert

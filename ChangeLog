@@ -1,3 +1,14 @@
+2001-03-17  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-halfdump-command-arguments): Rename from
+	'w3m-command-arguments'.
+	(w3m-command-arguments): New customize variable.
+	(w3m-exec-process): Add w3m-command-arguments to args when w3m
+	execute.
+	(w3m-rendering-region): Use w3m-halfdump-command-arguments when w3m
+	execute.
+	(w3m-fontify-anchors): Put w3m-name-anchor certainty.
+
 2001-03-17  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m-antenna.el: Changed antenna database format.
