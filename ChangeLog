@@ -1,3 +1,9 @@
+2002-02-05  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-proc.el (w3m-process-accept-list): New internal variable.
+	(w3m-process-filter): Watch `accept? (y/n)' for certification.
+	(w3m-process-accept-get, w3m-process-accept-set): New functions.
+
 2002-02-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-make-ccl-coding-system): Alias to `ignore' if

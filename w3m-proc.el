@@ -70,6 +70,7 @@
 
 (defvar w3m-process-exit-status nil "The last exit status of a process.")
 (defvar w3m-process-user-alist nil)
+(defvar w3m-process-accept-list nil)
 
 (defvar w3m-process-user nil)
 (defvar w3m-process-passwd nil)
@@ -512,6 +513,19 @@ evaluated in a temporary buffer."
 	(unless (string= "" string)
 	  (goto-char (point-min))
 	  (cond
+	   ((and (looking-at "\\(Accept [^\n]+\n\\)*\\([^\n]+: accept\\? \\)(y/n)")
+		 (= (match-end 0) (point-max)))
+	    ;; ssl certificate
+	    (message "")
+	    (let* ((msg (match-string 2))
+		   (yn (if (or (w3m-process-accept-get w3m-current-url)
+			       (w3m-process-accept-set (y-or-n-p msg) w3m-current-url))
+			   "y" "n")))
+	      (condition-case nil
+		  (progn
+		    (process-send-string process (concat yn "\n"))
+		    (delete-region (point-min) (point-max)))
+		(error nil))))
 	   ((and (looking-at
 		  "\\(\n?Wrong username or password\n\\)?Proxy Username for \\(.*\\): Proxy Password: ")
 		 (= (match-end 0) (point-max)))
@@ -655,6 +669,17 @@ evaluated in a temporary buffer."
 	      (append
 	       (list (cons root (list (cons realm (list (cons user pass))))))
 	       w3m-process-user-alist)))))))
+
+(defun w3m-process-accept-get (url)
+  (if (stringp url)
+      (member (w3m-process-get-server-root url) w3m-process-accept-list)
+    ;; url is nil, means image, favicon, etc...
+    t))
+
+(defun w3m-process-accept-set (yn url)
+  (when (and yn (stringp url) (not (w3m-process-accept-get url)))
+    (setq w3m-process-accept-list
+	  (cons (w3m-process-get-server-root url) w3m-process-accept-list))))
 
 (provide 'w3m-proc)
 
