@@ -1,8 +1,9 @@
 ;;; sb-yomiuri-html.el --- shimbun backend for yomiuri online (HTML version)
 
-;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
+;;         Katsumi Yamaoka   <yamaoka@jpl.org>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
@@ -31,14 +32,17 @@
 
 (luna-define-class shimbun-yomiuri-html (shimbun shimbun-yomiuri) ())
 
-(defvar shimbun-yomiuri-html-url "http://www.yomiuri.co.jp/")
-(defvar shimbun-yomiuri-html-groups '("shakai" "sports" "seiji" "keizai"
-				 "kokusai" "fuho"))
-(defvar shimbun-yomiuri-html-from-address  "webmaster@www.yomiuri.co.jp")
-(defvar shimbun-yomiuri-html-content-start "\n<!--  photo start  -->\n")
-(defvar shimbun-yomiuri-html-content-end  "\n<!--  honbun end  -->\n")
+(defvar shimbun-yomiuri-html-url shimbun-yomiuri-url)
+(defvar shimbun-yomiuri-html-groups shimbun-yomiuri-groups)
+(defvar shimbun-yomiuri-html-from-address shimbun-yomiuri-from-address)
+(defvar shimbun-yomiuri-html-content-start
+  "\n<!-- ▼写真テーブル▼ -->\n\\|\n<!--  honbun start  -->\n")
+(defvar shimbun-yomiuri-html-content-end
+  "\n<!--  honbun end  -->\n")
 
-(defvar shimbun-yomiuri-html-expiration-days 7)
+(defvar shimbun-yomiuri-html-x-face-alist shimbun-yomiuri-x-face-alist)
+
+(defvar shimbun-yomiuri-html-expiration-days shimbun-yomiuri-expiration-days)
 
 (provide 'sb-yomiuri-html)
 

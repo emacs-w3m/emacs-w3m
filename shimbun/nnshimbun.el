@@ -443,11 +443,12 @@ when it is called at the first time."
 	(gnus-backlog-request-article
 	 group article (or to-buffer nntp-server-buffer)))
       (cons group article)
-    (let* ((header (with-current-buffer (nnshimbun-open-nov group)
-		     (and (nnheader-find-nov-line article)
-			  (nnshimbun-parse-nov))))
-	   (original-id (shimbun-header-id header)))
+    (let ((header (with-current-buffer (nnshimbun-open-nov group)
+		    (and (nnheader-find-nov-line article)
+			 (nnshimbun-parse-nov))))
+	  original-id)
       (when header
+	(setq original-id (shimbun-header-id header))
 	(with-current-buffer (or to-buffer nntp-server-buffer)
 	  (erase-buffer)
 	  (let ((shimbun-encapsulate-images
