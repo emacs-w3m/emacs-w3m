@@ -135,7 +135,7 @@
 (eval-when-compile
   (autoload 'rfc2368-parse-mailto-url "rfc2368"))
 
-(defconst emacs-w3m-version "1.2.50"
+(defconst emacs-w3m-version "1.2.51"
   "Version number of this package.")
 
 (defgroup w3m nil
