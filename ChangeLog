@@ -1,3 +1,8 @@
+2001-03-13  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-exec-process): Check exit status and cause an error
+	if it is not zero.
+
 2001-03-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-executable-type): Use (eq system-type 'windows-nt)
