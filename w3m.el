@@ -2674,7 +2674,7 @@ works on Emacs.
       (unless (string-match w3m-about-history-except-regex (car element))
 	(push element rest)))
     (setq history (nreverse rest)))
-  (let (element url title children child)
+  (let (element url title children)
     (while history
       (setq element (car history)
 	    history (cdr history)
@@ -2689,15 +2689,15 @@ works on Emacs.
 			     "¨¦")
 			   "<a href=\"" url "\">"
 			   (if (or (not title)
-				   (string-equal "<no-title>" title))
+				   (string-equal "<no-title>" title)
+				   (string-match "^[\t ¡¡]*$" title))
 			       url
 			     title)
 			   "</a>\n")
 	    children (cddr element))
-      (while children
-	(setq child (car children)
-	      children (cdr children)
-	      source (w3m-about-history-1 child source (1+ depth))))))
+      (when children
+	(setq source (w3m-about-history-1 (apply 'append children)
+					  source (1+ depth))))))
   source)
 
 (defun w3m-about-history (&rest args)
