@@ -1,3 +1,8 @@
+2002-01-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-url-to-file-name): When the pointed file is not
+	found, decode the specified URL and recheck it.
+
 2002-01-07  Shiro Takeda  <zbc08106@park.zero.ad.jp>
 
 	* w3m.el (w3m-bold-face, w3m-underline-face): New faces.

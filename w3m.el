@@ -1175,12 +1175,17 @@ When URL does not point any local files, it returns nil."
    ((string-match "\\`\\(file:\\(//\\)?\\|about://dtree\\)/" url)
     (setq url (substring url (match-end 1)))
     ;; Process abs_path part in Windows.
-    (if (string-match
-	 "\\`/\\(\\([a-zA-Z]\\)[|:]?\\|cygdrive/\\([a-zA-Z]\\)\\)/" url)
-	(concat (or (match-string 2 url) (match-string 3 url))
-		":/"
-		(substring url (match-end 0)))
-      url))
+    (setq url
+	  (if (string-match
+	       "\\`/\\(\\([a-zA-Z]\\)[|:]?\\|cygdrive/\\([a-zA-Z]\\)\\)/" url)
+	      (concat (or (match-string 2 url) (match-string 3 url))
+		      ":/"
+		      (substring url (match-end 0)))
+	    url))
+    (if (file-exists-p url)
+	url
+      (let ((x (w3m-url-decode-string url w3m-file-name-coding-system)))
+	(if (file-exists-p x) x url))))
    ((string-match "\\`\\([~/]\\|[a-zA-Z]:/\\|\\.\\.?/\\)" url) url)
    (t
     (catch 'found-file
@@ -1191,7 +1196,10 @@ When URL does not point any local files, it returns nil."
 			   url)
 	     (let ((file (expand-file-name (substring url (match-end 0))
 					   (cdr pair))))
-	       (when (file-exists-p file)
+	       (when (or (file-exists-p file)
+			 (file-exists-p
+			  (setq file (w3m-url-decode-string
+				      file w3m-file-name-coding-system))))
 		 (throw 'found-file file)))))))))
 
 (defun w3m-expand-file-name-as-url (file &optional directory)
