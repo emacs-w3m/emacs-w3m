@@ -40,7 +40,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 
 $B$3$NJ8=q$OM-MQ$H$O;W$$$^$9$,(B, $BHRI[$K$"$?$C$F$O(B, $B;T>l@-5Z$SFCDjL\E*E,9g@-(B
-$B$K$D$$$F$N0EL[$NJ]>Z$r4^$a$F(B, $B$$$+$J$kJ]>Z$b9T$J$$$^$;$s(B. $B>\:Y$K$D$$$F$O(B 
+$B$K$D$$$F$N0EL[$NJ]>Z$r4^$a$F(B, $B$$$+$J$kJ]>Z$b9T$J$$$^$;$s(B. $B>\:Y$K$D$$$F$O(B
 GNU $B0lHL8xM-;HMQ5vBz=q$r$*FI$_$/$@$5$$(B.
 
 You should have received a copy of the GNU General Public License along
@@ -82,7 +82,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 
 $B$3$NJ8=q$OM-MQ$H$O;W$$$^$9$,(B, $BHRI[$K$"$?$C$F$O(B, $B;T>l@-5Z$SFCDjL\E*E,9g@-(B
-$B$K$D$$$F$N0EL[$NJ]>Z$r4^$a$F(B, $B$$$+$J$kJ]>Z$b9T$J$$$^$;$s(B. $B>\:Y$K$D$$$F$O(B 
+$B$K$D$$$F$N0EL[$NJ]>Z$r4^$a$F(B, $B$$$+$J$kJ]>Z$b9T$J$$$^$;$s(B. $B>\:Y$K$D$$$F$O(B
 GNU $B0lHL8xM-;HMQ5vBz=q$r$*FI$_$/$@$5$$(B.
 
 You should have received a copy of the GNU General Public License along
@@ -3624,10 +3624,10 @@ lotusex.bbs
 @section $B?7J9%b%8%e!<%k$N:n$jJ}(B
 @cindex @file{shimbun.el}
 
-@samp{Shimbun} $B%b%8%e!<%k$O(B emacs-w3m $B$NIUB0%i%$%V%i%j$G!"(B
-Gnus $B$d(B Wanderlust$B!"(BMew $B$J$I$N(B MUA $B$rMxMQ$7!"%&%'%V%3%s%F%s%D$r%a!<%k$H(B
-$BF1$8%f!<%6%$%s%?!<%U%'!<%9$GFI$`$3$H$r2DG=$K$9$k$b$N$G$9!#$3$3$G(B
-$B$O(B @samp{shimbun} $B%b%8%e!<%k$r:n@.$9$kE57?E*$JJ}K!$r@bL@$7$^$9!#(B
+@samp{Shimbun} $B$O(B emacs-w3m $B$NIUB0%i%$%V%i%j$G!"(BGnus $B$d(B Wanderlust$B!"(B
+Mew $B$J$I$N(B MUA $B$rMxMQ$7!"%&%'%V%3%s%F%s%D$r%a!<%k$HF1$8%f!<%6%$%s%?!<%U%'!<(B
+$B%9$GFI$`$3$H$r2DG=$K$9$k$b$N$G$9!#$3$3$G$O(B @samp{shimbun} $B%b%8%e!<%k$r:n(B
+$B@.$9$kE57?E*$JJ}K!$r@bL@$7$^$9!#(B
 
 @menu
 * Overview::                    $B35N,(B
@@ -3653,11 +3653,12 @@ Gnus $B$d(B Wanderlust$B!"(BMew $B$J$I$N(B MUA $B$rMxMQ$7!"%&%'%V%3%s%F%s
 $B$J$$$H;W$C$F$*$$$F2<$5$$!#Cm0U$9$Y$-$3$H$O!"(B@samp{shimbun} $B%b%8%e!<%k$r(B
 $BF~$l$k%U%!%$%kL>$N(B @file{sb-foobar.el} $B$N(B @samp{foobar} $B$NL>A0$H!"(B
 @code{luna-define-class}  $B$NBh0l0z?t(B
-$B$N(B @samp{shimbun-foobar} $B$N(B @samp{foobar} $B$NL>A0$O9g$o$;$F$*$/I,MW$,$"$k(B
+$B$N(B @code{shimbun-foobar} $B$N(B @samp{foobar} $B$NL>A0$O9g$o$;$F$*$/I,MW$,$"$k(B
 $B$3$H$G$9!#(B
 
 @samp{Shimbun} $B%b%8%e!<%k(B @samp{shimbun-foobar} $B$,$3$J$9$Y$-;E;v$OBg$-(B
-$B$/;M$D$"$j$^$9!#(B
+$B$/;M$D$"$j$^$9(B ($B$"$J$?$,(B Gnus $B$N%f!<%6$J$i$P!"!V%U%)%k%@!W$r!V%0%k!<%W!W(B
+$B$KFI$_49$($F2<$5$$(B):
 
 @enumerate
 @item
@@ -3666,8 +3667,8 @@ MUA $B$,(B @samp{foobar} $B%U%)%k%@$r3+$$$?$i!"5-;v$NI8Bj$J$I$r%j%9%H%"%C%W$9
 $B$3$H!#(B
 
 @item
-$B<hF@$7$?%&%'%V%Z!<%8$N%=!<%9$KBP$7!"5-;v8+=P$7$rI,MW$J$$$/$D$+$N>pJs$H$H(B
-$B$b$K<hF@$7$F!"(B@code{headers} $B$H$$$&%j%9%H$KBeF~$7$FJV$9$3$H!#(B
+$B<hF@$7$?%&%'%V%Z!<%8$N%=!<%9$KBP$7!"5-;v$N8+=P$7$KI,MW$J$$$/$D$+$N>pJs$H(B
+$B$H$b$K<hF@$7$F!"(B@code{headers} $B$H$$$&%j%9%H$KBeF~$7$FJV$9$3$H!#(B
 
 @item
 MUA $B$,(B @samp{foobar} $B%U%)%k%@$N5-;v$N1\Mw$rMW5a$7$?$i!"<B:]$N5-;vFbMF$r(B
@@ -3854,8 +3855,8 @@ Message-ID $B$H$7$FI=<($5$l$^$9!#Nc$($P!"2<5-$N(B
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-foobar))
   (concat shimbun-foobar-url
-	  (cdr (assoc (shimbun-current-group-internal shimbun)
-		      shimbun-foobar-groups))))
+          (cdr (assoc (shimbun-current-group-internal shimbun)
+                      shimbun-foobar-groups))))
 @end lisp
 
 @noindent
@@ -3919,7 +3920,7 @@ Message-ID $B$H$7$FI=<($5$l$^$9!#Nc$($P!"2<5-$N(B
 
 @lisp
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-foobar)
-						   header)
+                                                   header)
   (save-excursion
     ;; cleaning up
     (while (re-search-forward "..." nil t nil)
@@ -3953,7 +3954,7 @@ The GNU Mailing List Manager. $B0JA0$O(B @samp{pipermail} $B$H8F$P$l$F$$$^$7$
 $B>\:Y$O(B @uref{http://www.gnu.org/software/mailman/index.html} $B$r$4Mw2<$5(B
 $B$$!#(B
 
-@item Mhonarc
+@item MHonArc
 $B>\:Y$O(B @uref{http://www.oac.uci.edu/indiv/ehood/mhonarc.html} $B$r$4Mw2<$5(B
 $B$$!#(B
 
