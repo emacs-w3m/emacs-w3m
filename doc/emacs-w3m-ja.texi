@@ -30,38 +30,40 @@ This edition is for Emacs-w3m version @value{VERSION}.
 
 この版は Emacs-w3m version @value{VERSION} に対応します。
 
-Permission is granted to make and distribute verbatim copies of
-this manual provided the copyright notice and this permission notice
-are preserved on all copies.
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being ``A GNU
+Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
+license is included in the section entitled ``GNU Free Documentation
+License'' in the Emacs manual.
 
-著作権表示とこの許可文がすべての複製に存在する限り、この説明書のまったく
-同一の複製を作り、配布することを許可する。
+この文書を、フリーソフトウェア財団発行の GNU フリー文書利用許諾契約書
+第 1.1 版またはそれ以降の版が定める条件の下で複製、配布、あるいは変更す
+ることを許可します。変更不可部分は指定しません。「A GNU Manual」は表表紙
+テキスト、以下の (a) は裏表紙テキストです。この利用許諾契約書の複写は
+「Emacs manual」の「GNU フリー文書利用許諾契約書」という章に含まれていま
+す。
 
-@ignore
-Permission is granted to process this file through TeX and print the
-results, provided the printed document carries copying permission
-notice identical to this one except for the removal of this paragraph
-(this paragraph not being relevant to the printed manual).
+(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
+this GNU Manual, like GNU software.  Copies published by the Free
+Software Foundation raise funds for GNU development.''
 
-この段落が取り除かれているのを除き、これと同じ複製に関する許可文が表示さ
-れている限り、このファイルを TeX にかけて、その結果を印刷することを許可
-する(この段落は印刷されたマニュアルでは参照されません)。
+(a) FSF の裏表紙テキスト:「あなたにはこの GNU Manual を GNU ソフトウェア
+のように複製したり変更する自由があります。複製はフリーソフトウェア財団に
+よって出版されました。(フリーソフトウェア財団は) GNU の開発のために必要
+な資金を集めています。」
 
-@end ignore
-Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided that the entire
-resulting derived work is distributed under the terms of a permission
-notice identical to this one.
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
 
-同一複製の条件の下で、それによって得られた結果もこの許可文の表示と同一の
-条件のもとで配布する限り、この説明書の修正版の複製をし、配布することを許
-可する。
+この文書は「GNU フリー文書利用許諾契約書」に基づいて配布された収集著作物
+の一部です。もしあなたがこの文書を収集著作物から分離して配布したいときは、
+契約書の第 6 項に記述されているように、文書に契約書の複写を付加すること
+によって、行なうことができます。
 
-Permission is granted to copy and distribute translations of this manual
-into another language, under the above conditions for modified versions.
-
-上記の修正版に関する条件の下で、この説明書の翻訳の複製を作り、配布するこ
-とを許可する。
 @end ifinfo
 
 @titlepage
@@ -89,27 +91,40 @@ This manual is for Emacs-w3m version @value{VERSION}.
 
 このマニュアルは Emacs-w3m version @value{VERSION} に対応します。
 
-Permission is granted to make and distribute verbatim copies of
-this manual provided the copyright notice and this permission notice
-are preserved on all copies.
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being ``A GNU
+Manual'', and with the Back-Cover Texts as in (a) below.  A copy of the
+license is included in the section entitled ``GNU Free Documentation
+License'' in the Emacs manual.
 
-著作権表示とこの許可文がすべての複製に存在する限り、この説明書のまったく
-同一の複製を作り、配布することを許可する。
+この文書を、フリーソフトウェア財団発行の GNU フリー文書利用許諾契約書
+第 1.1 版またはそれ以降の版が定める条件の下で複製、配布、あるいは変更す
+ることを許可します。変更不可部分は指定しません。「A GNU Manual」は表表紙
+テキスト、以下の (a) は裏表紙テキストです。この利用許諾契約書の複写は
+「Emacs manual」の「GNU フリー文書利用許諾契約書」という章に含まれていま
+す。
 
-Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided that the entire
-resulting derived work is distributed under the terms of a permission
-notice identical to this one.
+(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
+this GNU Manual, like GNU software.  Copies published by the Free
+Software Foundation raise funds for GNU development.''
 
-同一複製の条件の下で、それによって得られた結果をこの許可文の表示と同一の
-条件のもとで配布する限り、この説明書の修正版の複製をし、配布することを許
-可する。
+(a) FSF の裏表紙テキスト:「あなたにはこの GNU Manual を GNU ソフトウェア
+のように複製したり変更する自由があります。複製はフリーソフトウェア財団に
+よって出版されました。(フリーソフトウェア財団は) GNU の開発のために必要
+な資金を集めています。」
 
-Permission is granted to copy and distribute translations of this manual
-into another language, under the above conditions for modified versions.
+This document is part of a collection distributed under the GNU Free
+Documentation License.  If you want to distribute this document
+separately from the collection, you can do so by adding a copy of the
+license to the document, as described in section 6 of the license.
 
-上記の修正版に関する条件の下で、この説明書の翻訳の複製を作り、配布するこ
-とを許可する。
+この文書は「GNU フリー文書利用許諾契約書」に基づいて配布された収集著作物
+の一部です。もしあなたがこの文書を収集著作物から分離して配布したいときは、
+契約書の第 6 項に記述されているように、文書に契約書の複写を付加すること
+によって、行なうことができます。
+
 @end titlepage
 
 

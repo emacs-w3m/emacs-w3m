@@ -1,0 +1,18 @@
+2002-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* emacs-w3m-en.texi, emacs-w3m-en.texi: Convert to GFDL.
+
+2002-11-27  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
+
+	* emacs-w3m-en.texi: New files.
+	* emacs-w3m-ja.texi:
+	* ptexinfmt.el:
+	* texinfo.tex:
+	* txi-en.tex:
+	* txi-ja.tex:
+	* version.texi:
+
+
+Local Variables:
+coding: iso-2022-7bit
+End:
