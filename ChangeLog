@@ -1,3 +1,38 @@
+2001-03-16  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Arrived URL database format is changed and code to get
+	headers and to retrieve contents is cleaned up.
+	(w3m-attributes, w3m-local-attributes): New function.
+	(w3m-w3m-attributes): Old name is `w3m-w3m-check-header'.
+	(w3m-content-type): Use `w3m-attributes'.
+	(w3m-content-charset, w3m-content-length, w3m-content-encoding,
+	w3m-last-modified): New macro.
+	(w3m-retrieve, w3m-local-retrieve): Changed arguments spec,
+	`accept-type-regexp' is removed.
+	(w3m-w3m-retrieve): Changed arguments spec, `accept-type-regexp'
+	is removed.  Call `w3m-w3m-attributes' instead of `w3m-w3m-check-header'.
+	(w3m-exec): Follow change of arguments spec of w3m-retrieve.
+	(w3m-about-source, w3m-about-header): Changed arguments spec,
+	`accept-type-regexp' is removed and follow change of arguments
+	spec of w3m-retrieve.
+	(w3m-arrived-last-modified): New function.
+	(w3m-arrived-add): Support optional argument `time' and follow
+	change of database format.
+	(w3m-arrived-setup, w3m-arrived-shutdown,
+	w3m-arrived-store-position, w3m-arrived-restore-position): Follow
+	change of database format.
+	(w3m-with-work-buffer, w3m-parse-attributes): Changed
+	`edebug-form-spec', see [emacs-w3m:00238].
+	(TopLevel): Add autoload codes for `w3m-antenna.el'.
+
+	* w3m-antenna.el: New file.
+
+	* mime-w3m.el (mime-w3m-cid-retrieve): Changed arguments spec,
+	`accept-type-regexp' is removed.
+
+	* mew-w3m.el (mew-w3m-cid-retrieve): Changed arguments spec,
+	`accept-type-regexp' is removed.
+
 2001-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (install-icons): New rule.

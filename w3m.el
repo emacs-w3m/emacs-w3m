@@ -57,6 +57,7 @@
     (require 'w3m-om))))
 
 (require 'thingatpt)
+(require 'parse-time)
 
 ;; this package using a few CL macros
 (eval-when-compile
@@ -598,13 +599,21 @@ If N is negative, last N items of LIST is returned."
   "If URL has been arrived, return non-nil value.  Otherwise return nil."
   (intern-soft url w3m-arrived-db))
 
-(defsubst w3m-arrived-add (url)
+(defun w3m-arrived-last-modified (url)
+  "If URL has been arrived, return its last modified time.  Otherwise return nil."
+  (let ((v (intern-soft url w3m-arrived-db)))
+    (and v (get v 'last-modified))))
+
+(defsubst w3m-arrived-add (url &optional time)
   "Add URL to hash database of arrived URLs."
   (when (> (length url) 5) ;; ignore short
     (set-text-properties 0 (length url) nil url)
-    (put (intern url w3m-arrived-db)
-	 'w3m-arrived-seq
-	 (setq w3m-arrived-seq (1+ w3m-arrived-seq)))))
+    (let ((ident (intern url w3m-arrived-db)))
+      (put ident 'last-modified
+	   (or time
+	       (w3m-last-modified url)
+	       (current-time)))
+      (set ident (setq w3m-arrived-seq (1+ w3m-arrived-seq))))))
 
 (defun w3m-arrived-setup ()
   "Load arrived url list from 'w3m-arrived-file' and setup hash database."
@@ -613,27 +622,29 @@ If N is negative, last N items of LIST is returned."
 	  w3m-arrived-seq 0)
     (let ((list (w3m-load-list w3m-arrived-file
 			       w3m-arrived-file-coding-system)))
-      (dolist (url list) (w3m-arrived-add url))
-      (unless w3m-input-url-history
-	(setq w3m-input-url-history list)))))
+      (when (consp (car list))
+	(dolist (url list)
+	  (w3m-arrived-add (car url) (cdr url)))
+	(unless w3m-input-url-history
+	  (setq w3m-input-url-history (mapcar (function car) list)))))))
 
 (defun w3m-arrived-shutdown ()
   "Save hash database of arrived URLs to 'w3m-arrived-file'."
   (when w3m-arrived-db
     (let (list)
-      (mapatoms (lambda (sym)
-		  (when sym
-		    (setq list
-			  (cons (cons (symbol-name sym)
-				      (get sym 'w3m-arrived-seq))
-				list))))
-		w3m-arrived-db)
+      (mapatoms
+       (lambda (sym)
+	 (when sym
+	   (push (cons (symbol-value sym)
+		       (cons (symbol-name sym)
+			     (get sym 'last-modified)))
+		 list)))
+       w3m-arrived-db)
       (w3m-save-list w3m-arrived-file
 		     w3m-arrived-file-coding-system
-		     (mapcar
-		      (function car)
-		      (sort list
-			    (lambda (a b) (> (cdr a) (cdr b)))))))
+		     (mapcar (function cdr)
+			     (sort list
+				   (lambda (a b) (< (car a) (car b)))))))
     (setq w3m-arrived-db nil)))
 (add-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
 
@@ -641,14 +652,16 @@ If N is negative, last N items of LIST is returned."
   (when (stringp url)
     (let ((ident (intern-soft url w3m-arrived-db)))
       (when ident
-	(set ident (cons (or window-start (window-start))
-			 (or point (point))))))))
+	(put ident 'window-start (or window-start (window-start)))
+	(put ident 'point (or point (point)))))))
 
 (defun w3m-arrived-restore-position (url)
-  (let ((ident (intern-soft url w3m-arrived-db)))
-    (when (and ident (boundp ident))
-      (set-window-start nil (car (symbol-value ident)))
-      (goto-char (cdr (symbol-value ident))))))
+  (let* ((ident (intern-soft url w3m-arrived-db))
+	 (start (get ident 'window-start))
+	 (point (get ident 'point)))
+    (when (and ident start point)
+      (set-window-start nil start)
+      (goto-char point))))
 
 
 ;;; Working buffers:
@@ -661,7 +674,7 @@ If N is negative, last N items of LIST is returned."
 	buf)))
 
 (put 'w3m-with-work-buffer 'lisp-indent-function 0)
-(put 'w3m-with-work-buffer 'edebug-form-spec '(&rest body))
+(put 'w3m-with-work-buffer 'edebug-form-spec '(body))
 (defmacro w3m-with-work-buffer (&rest body)
   "Execute the forms in BODY with working buffer as the current buffer."
   (` (with-current-buffer
@@ -689,7 +702,7 @@ If N is negative, last N items of LIST is returned."
 		  nil))))
 
 (put 'w3m-parse-attributes 'lisp-indent-function '1)
-(put 'w3m-parse-attributes 'edebug-form-spec '(&rest form))
+(put 'w3m-parse-attributes 'edebug-form-spec '(form))
 (defmacro w3m-parse-attributes (attributes &rest form)
   (` (let ((,@ (mapcar
 		(lambda (attr)
@@ -1277,31 +1290,47 @@ This function is imported from mcharset.el."
       (if (string-match (nth 1 elem) url)
 	  (throw 'type-detected (car elem))))))
 
-(defun w3m-local-retrieve (url &optional no-decode accept-type-regexp)
+(defun w3m-local-attributes (url &rest args)
+  "Return a list of attributes of URL.
+Value is nil if retirieval of header is failed.  Otherwise, list
+elements are:
+ 0. Type of contents.
+ 1. Charset of contents.
+ 2. Size in bytes.
+ 3. Encoding of contents.
+ 4. Last modification time.
+"
+  (let* ((file (w3m-url-to-file-name url))
+	 (attr (when (file-exists-p file)
+		 (file-attributes file))))
+    (list (w3m-local-content-type url)
+	  nil
+	  (nth 7 attr)
+	  nil
+	  (nth 5 attr))))
+
+(defun w3m-local-retrieve (url &optional no-decode &rest args)
   "Retrieve content of local URL and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
-to nil.  Only contents whose content-type matches ACCEPT-TYPE-REGEXP
-are retrieved."
+to nil."
   (let ((type (w3m-local-content-type url))
 	(file))
-    (when (or (not accept-type-regexp)
-	      (string-match accept-type-regexp type))
-      (setq file (w3m-url-to-file-name url))
-      (w3m-with-work-buffer
-	(delete-region (point-min) (point-max))
-	(if (and (string-match "^text/" type)
-		 (not no-decode))
-	    (progn
-	      (set-buffer-multibyte t)
-	      (insert-file-contents file))
-	  (set-buffer-multibyte nil)
-	  (let ((coding-system-for-read 'binary)
-		(file-coding-system-for-read 'binary)
-		jka-compr-compression-info-list
-		jam-zcat-filename-list
-		format-alist)
-	    (insert-file-contents file)))))
+    (setq file (w3m-url-to-file-name url))
+    (w3m-with-work-buffer
+      (delete-region (point-min) (point-max))
+      (if (and (string-match "^text/" type)
+	       (not no-decode))
+	  (progn
+	    (set-buffer-multibyte t)
+	    (insert-file-contents file))
+	(set-buffer-multibyte nil)
+	(let ((coding-system-for-read 'binary)
+	      (file-coding-system-for-read 'binary)
+	      jka-compr-compression-info-list
+	      jam-zcat-filename-list
+	      format-alist)
+	  (insert-file-contents file))))
     type))
 
 
@@ -1327,34 +1356,39 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 			 (w3m-message "Request sent, waiting for response... done")))
 	    (w3m-cache-header url (buffer-string)))))))
 
-(defun w3m-w3m-check-header (url &optional no-cache)
-  "Return the header of the URL.
-Return nil when retirieval of header is failed.  If optional argument
-NO-CACHE is non-nil, cache is not used."
+(defun w3m-w3m-attributes (url &optional no-cache)
+  "Return a list of attributes of URL.
+Value is nil if retirieval of header is failed.  Otherwise, list
+elements are:
+ 0. Type of contents.
+ 1. Charset of contents.
+ 2. Size in bytes.
+ 3. Encoding of contents.
+ 4. Last modification time.
+If optional argument NO-CACHE is non-nil, cache is not used."
   (let ((header (w3m-w3m-get-header url no-cache)))
-    (when header
-      (w3m-with-work-buffer
-	(delete-region (point-min) (point-max))
-	(insert header)
-	(goto-char (point-min))
-	(let ((case-fold-search t)
-	      length type charset)
-	  (if (re-search-forward "^content-type:\\([^\r\n]+\\)\r*$" nil t)
-	      (progn
-		(setq type (match-string 1))
-		(if (string-match ";[ \t]*charset=" type)
-		    (setq charset (w3m-remove-redundant-spaces
-				   (substring type (match-end 0)))
-			  type (w3m-remove-redundant-spaces
-				(substring type 0 (match-beginning 0))))
-		  (setq type (w3m-remove-redundant-spaces type)))))
-	  (goto-char (point-min))
-	  (when (and (re-search-forward "HTTP/1\\.[0-9] 200" nil t)
-		     (re-search-forward "^content-length:\\([^\r\n]+\\)\r*$" nil t))
-	    (setq length (string-to-number (match-string 1))))
-	  (list (or type (w3m-local-content-type url) "unknown")
-		charset
-		length))))))
+    (when (and header (string-match "HTTP/1\\.[0-9] 200 OK" header))
+      (let (alist type charset)
+	(dolist (line (split-string (substring header (match-end 0)) "\n"))
+	  (when (string-match "^\\([^:]+\\):[ \t]*" line)
+	    (push (cons (downcase (match-string 1 line))
+			(substring line (match-end 0)))
+		  alist)))
+	(when (setq type (cdr (assoc "content-type" alist)))
+	  (if (string-match ";[ \t]*charset=" type)
+	      (setq charset (w3m-remove-redundant-spaces
+			     (substring type (match-end 0)))
+		    type (w3m-remove-redundant-spaces
+			  (substring type 0 (match-beginning 0))))
+	    (setq type (w3m-remove-redundant-spaces type))))
+	(list (or type (w3m-local-content-type url))
+	      charset
+	      (let ((v (cdr (assoc "content-length" alist))))
+		(and v (string-to-number v)))
+	      (cdr (assoc "content-encoding" alist))
+	      (let ((v (cdr (assoc "last-modified" alist))))
+		(and v (apply (function encode-time)
+			      (parse-time-string v)))))))))
 
 (defun w3m-pretty-length (n)
   ;; This function imported from url.el.
@@ -1366,81 +1400,77 @@ NO-CACHE is non-nil, cache is not used."
    (t
     (format "%2.2fM" (/ n (* 1024 1024.0))))))
 
-(defun w3m-w3m-retrieve (url &optional no-decode accept-type-regexp no-cache)
+(defun w3m-w3m-retrieve (url &optional no-decode no-cache)
   "Retrieve content of URL with w3m and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
-to nil.  Only contents whose content-type matches ACCEPT-TYPE-REGEXP
-are retrieved."
-  (let ((headers (w3m-w3m-check-header url no-cache)))
+to nil."
+  (let ((headers (w3m-w3m-attributes url no-cache)))
     (when headers
       (let ((type    (car headers))
 	    (charset (nth 1 headers))
 	    (length  (nth 2 headers)))
-	(when (or (not accept-type-regexp)
-		  (string-match accept-type-regexp type))
-	  (w3m-with-work-buffer
-	    (delete-region (point-min) (point-max))
-	    (set-buffer-multibyte nil)
-	    (or
-	     (unless no-cache
-	       (when (w3m-cache-request-contents url)
-		 (and (string-match "^text/" type)
-		      (unless no-decode
-			(w3m-decode-buffer type charset)))
-		 type))
-	     (let* ((buflines)
-		    (w3m-current-url url)
-		    (w3m-w3m-retrieve-length length)
-		    (w3m-process-message
-		     (lambda ()
-		       (if w3m-w3m-retrieve-length
-			   (w3m-message
-			    "Reading... %s of %s (%d%%)"
-			    (w3m-pretty-length (buffer-size))
-			    (w3m-pretty-length w3m-w3m-retrieve-length)
-			    (/ (* (buffer-size) 100) w3m-w3m-retrieve-length))
-			 (w3m-message "Reading... %s"
-				      (w3m-pretty-length (buffer-size)))))))
-	       (w3m-message "Reading...")
-	       (delete-region (point-min) (point-max))
-	       (w3m-exec-process "-dump_source" url)
-	       (w3m-message "Reading... done")
-	       (cond
-		((and length (eq w3m-executable-type 'cygwin))
-		 (setq buflines (count-lines (point-min) (point-max)))
-		 (cond
-		  ;; no bugs in output.
-		  ((= (buffer-size) length))
-		  ;; new-line character is replaced to CRLF.
-		  ((or (= (buffer-size) (+ length buflines))
-		       (= (buffer-size) (+ length buflines -1)))
-		   (while (search-forward "\r\n" nil t)
-		     (delete-region (- (point) 2) (1- (point)))))))
-		((and length (> (buffer-size) length))
-		 (delete-region (point-min) (- (point-max) length)))
-		((string= "text/html" type)
-		 ;; Remove cookies.
-		 (goto-char (point-min))
-		 (while (and (not (eobp))
-			     (looking-at "Received cookie: "))
-		   (forward-line 1))
-		 (skip-chars-forward " \t\r\f\n")
-		 (if (or (looking-at "<!DOCTYPE")
-			 (looking-at "<HTML>")) ; for eGroups.
-		     (delete-region (point-min) (point)))))
-	       (w3m-cache-contents url (current-buffer))
+	(w3m-with-work-buffer
+	  (delete-region (point-min) (point-max))
+	  (set-buffer-multibyte nil)
+	  (or
+	   (unless no-cache
+	     (when (w3m-cache-request-contents url)
 	       (and (string-match "^text/" type)
-		    (not no-decode)
-		    (w3m-decode-buffer type charset))
-	       type))))))))
+		    (unless no-decode
+		      (w3m-decode-buffer type charset)))
+	       type))
+	   (let* ((buflines)
+		  (w3m-current-url url)
+		  (w3m-w3m-retrieve-length length)
+		  (w3m-process-message
+		   (lambda ()
+		     (if w3m-w3m-retrieve-length
+			 (w3m-message
+			  "Reading... %s of %s (%d%%)"
+			  (w3m-pretty-length (buffer-size))
+			  (w3m-pretty-length w3m-w3m-retrieve-length)
+			  (/ (* (buffer-size) 100) w3m-w3m-retrieve-length))
+		       (w3m-message "Reading... %s"
+				    (w3m-pretty-length (buffer-size)))))))
+	     (w3m-message "Reading...")
+	     (delete-region (point-min) (point-max))
+	     (w3m-exec-process "-dump_source" url)
+	     (w3m-message "Reading... done")
+	     (cond
+	      ((and length (eq w3m-executable-type 'cygwin))
+	       (setq buflines (count-lines (point-min) (point-max)))
+	       (cond
+		;; no bugs in output.
+		((= (buffer-size) length))
+		;; new-line character is replaced to CRLF.
+		((or (= (buffer-size) (+ length buflines))
+		     (= (buffer-size) (+ length buflines -1)))
+		 (while (search-forward "\r\n" nil t)
+		   (delete-region (- (point) 2) (1- (point)))))))
+	      ((and length (> (buffer-size) length))
+	       (delete-region (point-min) (- (point-max) length)))
+	      ((string= "text/html" type)
+	       ;; Remove cookies.
+	       (goto-char (point-min))
+	       (while (and (not (eobp))
+			   (looking-at "Received cookie: "))
+		 (forward-line 1))
+	       (skip-chars-forward " \t\r\f\n")
+	       (if (or (looking-at "<!DOCTYPE")
+		       (looking-at "<HTML>")) ; for eGroups.
+		   (delete-region (point-min) (point)))))
+	     (w3m-cache-contents url (current-buffer))
+	     (and (string-match "^text/" type)
+		  (not no-decode)
+		  (w3m-decode-buffer type charset))
+	     type)))))))
 
-(defun w3m-retrieve (url &optional no-decode accept-type-regexp no-cache)
+(defun w3m-retrieve (url &optional no-decode no-cache)
   "Retrieve content of URL and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
-to nil.  Only contents whose content-type matches ACCEPT-TYPE-REGEXP
-are retrieved."
+to nil."
   (cond
    ((string-match "^about:" url)
     (let (func)
@@ -1448,21 +1478,21 @@ are retrieved."
 	       (setq func (intern-soft
 			   (concat "w3m-about-" (match-string 1 url))))
 	       (fboundp func))
-	  (funcall func url no-decode accept-type-regexp no-cache)
-	(w3m-about url no-decode accept-type-regexp no-cache))))
+	  (funcall func url no-decode no-cache)
+	(w3m-about url no-decode no-cache))))
    ((string-match "^\\(file:\\|/\\)" url)
-    (w3m-local-retrieve url no-decode accept-type-regexp))
+    (w3m-local-retrieve url no-decode))
    ((string-match "^cid:" url)
     (let ((func (cdr (assq major-mode w3m-cid-retrieve-function-alist))))
       (when func
-	(funcall func url no-decode accept-type-regexp no-cache))))
+	(funcall func url no-decode no-cache))))
    (t
-    (w3m-w3m-retrieve url no-decode accept-type-regexp no-cache))))
+    (w3m-w3m-retrieve url no-decode no-cache))))
 
 (defun w3m-download (url &optional filename no-cache)
   (unless filename
     (setq filename (w3m-read-file-name nil nil url)))
-  (if (w3m-retrieve url t nil no-cache)
+  (if (w3m-retrieve url t no-cache)
       (with-current-buffer (get-buffer w3m-work-buffer-name)
 	(let ((buffer-file-coding-system 'binary)
 	      (coding-system-for-write 'binary)
@@ -1474,12 +1504,34 @@ are retrieved."
 	      (write-region (point-min) (point-max) filename))))
     (error "Unknown URL: %s" url)))
 
-(defun w3m-content-type (url &optional no-cache)
+(defsubst w3m-attributes (url &optional no-cache)
+  "Return a list of attributes of URL.
+Value is nil if retirieval of header is failed.  Otherwise, list
+elements are:
+ 0. Type of contents.
+ 1. Charset of contents.
+ 2. Size in bytes.
+ 3. Encoding of contents.
+ 4. Last modification time.
+If optional argument NO-CACHE is non-nil, cache is not used."
   (cond
-   ((string-match "^about:" url) "text/html")
+   ((string-match "^about:" url)
+    (list "text/html" nil nil nil nil))
    ((string-match "^\\(file:\\|/\\)" url)
-    (w3m-local-content-type url))
-   (t (car (w3m-w3m-check-header url no-cache)))))
+    (w3m-local-attributes url))
+   (t
+    (w3m-w3m-attributes url no-cache))))
+
+(defmacro w3m-content-type (url &optional no-cache)
+  (` (car (w3m-attributes (, url) (, no-cache)))))
+(defmacro w3m-content-charset (url &optional no-cache)
+  (` (nth 1 (w3m-attributes (, url) (, no-cache)))))
+(defmacro w3m-content-length (url &optional no-cache)
+  (` (nth 2 (w3m-attributes (, url) (, no-cache)))))
+(defmacro w3m-content-encoding (url &optional no-cache)
+  (` (nth 3 (w3m-attributes (, url) (, no-cache)))))
+(defmacro w3m-last-modified (url &optional no-cache)
+  (` (nth 4 (w3m-attributes (, url) (, no-cache)))))
 
 
 ;;; Retrieve data:
@@ -1542,7 +1594,7 @@ content is retrieved and hald-dumped data is placed in the BUFFER,
 this function returns t.  Otherwise, returns nil."
   (save-excursion
     (if buffer (set-buffer buffer))
-    (let ((type (w3m-retrieve url nil nil no-cache)))
+    (let ((type (w3m-retrieve url nil no-cache)))
       (if type
 	  (cond
 	   ((string-match "^text/" type)
@@ -2185,10 +2237,10 @@ ex.) c:/dir/file => //c/dir/file"
     (delete-region (point-min) (point-max)))
   "text/html")
 
-(defun w3m-about-source (url &optional no-decode accept-type-regexp no-cache)
+(defun w3m-about-source (url &optional no-decode no-cache)
   (when (string-match "^about://source/" url)
     (let ((type (w3m-retrieve (substring url (match-end 0))
-			      no-decode accept-type-regexp no-cache)))
+			      no-decode no-cache)))
       (and type "text/plain"))))
 
 (defun w3m-view-source ()
@@ -2199,7 +2251,7 @@ ex.) c:/dir/file => //c/dir/file"
        (substring w3m-current-url (match-end 0))
      (concat "about://source/" w3m-current-url))))
 
-(defun w3m-about-header (url &optional no-decode accept-type-regexp no-cache)
+(defun w3m-about-header (url &optional no-decode no-cache)
   (when (string-match "^about://header/" url)
     (w3m-with-work-buffer
       (delete-region (point-min) (point-max))
@@ -2251,6 +2303,10 @@ ex.) c:/dir/file => //c/dir/file"
   (autoload 'w3m-weather "w3m-weather"
     "*Display weather report." t)
   (autoload 'w3m-about-weather "w3m-weather"))
+(when (locate-library "w3m-antenna.el")
+  (autoload 'w3m-antenna "w3m-antenna"
+    "*Display antenna report." t)
+  (autoload 'w3m-about-antenna "w3m-antenna"))
 
 (provide 'w3m)
 ;;; w3m.el ends here.
