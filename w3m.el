@@ -1260,7 +1260,11 @@ It allows not only the alist form but also XEmacs' plist form."
 				       (sexp :format "%t: %v\n" :size 0))))))
 
 (defcustom w3m-auto-show t
-  "*Use internal auto-show method."
+  "*Non-nil means provide the ability to horizontally scroll the window
+automatically when the point gets away from both ends of the window.
+This feature works with the specially made program in emacs-w3m; usual
+`auto-hscroll-mode', `automatic-hscrolling', `auto-show-mode' or
+`hscroll-mode' will all be invalidated in emacs-w3m buffers."
   :group 'w3m
   :type 'boolean)
 
