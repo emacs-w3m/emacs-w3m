@@ -1,5 +1,9 @@
 2001-11-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* Makefile.in (default): When files which define macros and inline
+	functions such as w3m-util.el and w3m-proc.el are newer than their
+	byte-compiled files, run clean target before compile.
+
 	* w3m.el (w3m-about-db-history-today): Removed.
 	(w3m-about-db-history): Call `w3m-time-lapse-seconds' to classify
 	entries.
