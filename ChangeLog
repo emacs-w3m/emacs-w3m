@@ -1,5 +1,10 @@
 2004-04-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el (w3m-add-w3m-initial-frames): Get the correct value
+	for the newly created frame in Emacs 19.
+
+	* w3m.el (w3m-about-retrieve): Load base64 for Emacs 19.
+
 	* w3m-bitmap.el (w3m-bitmap-image-insert): Don't put the evaporate
 	property on empty overlays (revert 2004-04-07 change).
 
