@@ -1,3 +1,8 @@
+2004-01-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-rakuten.el (shimbun-rakuten-group-alist): Declared as
+	an option with `defcustom' instead of `defvar'.
+
 2004-01-04  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-rakuten.el: New file.
