@@ -1,3 +1,10 @@
+2001-11-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-e20.el (w3m-display-inline-images-p): Renamed from
+	`w3m-display-inline-image-p'.
+
+	* w3m-om.el (w3m-display-inline-images-p): Ditto.
+
 2001-11-12  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* mew-w3m.el (mew-mime-text/html-w3m): Bind `w3m-display-inline-images'
