@@ -134,7 +134,7 @@ initialized.  Each site information is a list whose elements are:
 	      (search-forward "<br>" nil t)
 	      (ignore-errors
 		(apply (function encode-time)
-		       (parse-time-string
+		       (w3m-time-parse-string
 			(buffer-substring start
 					  (match-beginning 0))))))
 	 ;; Process a line such as "newest day is 2001/03/15".
@@ -171,19 +171,9 @@ initialized.  Each site information is a list whose elements are:
 	   ((nth 4 site) "Size")
 	   (t ""))))
 
-(defsubst w3m-antenna-time-newer-p (a b)
-  "Return t, if A is newer than B.  Otherwise return nil.
-A and B are lists which represent time in Emacs-style.  If value is
-nil, it is regarded as the oldest time."
-  (and a
-       (or (not b)
-	   (or (> (car a) (car b))
-	       (and (= (car a) (car b))
-		    (> (nth 1 a) (nth 1 b)))))))
-
 (defun w3m-antenna-sort-sites-by-time (sites)
   (sort sites (lambda (a b)
-		(w3m-antenna-time-newer-p (nth 3 a) (nth 3 b)))))
+		(w3m-time-newer-p (nth 3 a) (nth 3 b)))))
 
 (defun w3m-antenna-sort-sites-by-title (sites)
   (sort sites (lambda (a b)
@@ -227,8 +217,8 @@ nil, it is regarded as the oldest time."
 				     (nth 5 pre)))))
 		alist)
 	  (setq site (cons url (cdar alist)))
-	  (if (w3m-antenna-time-newer-p (or time (nth 5 site))
-				       (w3m-arrived-last-modified url))
+	  (if (w3m-time-newer-p (or time (nth 5 site))
+				(w3m-arrived-last-modified url))
 	      (push site changed)
 	    (push site unchanged))))
       (setq w3m-antenna-alist alist)

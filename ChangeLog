@@ -1,7 +1,18 @@
+2001-03-16  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (TopLevel): Require `w3m-time'.
+	(w3m-w3m-attributes): Use `w3m-time-parse-string' instead of
+	`parse-time-string'.
+
+	* w3m-time.el: Import parse-time.el of T-gnus and rename it.
+
+	* w3m-antenna.el: Use `w3m-time-parse-string' instead of
+	`parse-time-string'.
+
 2001-03-16  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-e21.el (w3m-create-image): Changed arguments spec,
-	`accept-type-regexp' is removed.
+	that `accept-type-regexp' is removed.
 
 	* w3m-xmas.el (w3m-create-image): Ditto.
 
@@ -14,12 +25,12 @@
 	(w3m-content-type): Use `w3m-attributes'.
 	(w3m-content-charset, w3m-content-length, w3m-content-encoding,
 	w3m-last-modified): New macro.
-	(w3m-retrieve, w3m-local-retrieve): Changed arguments spec,
+	(w3m-retrieve, w3m-local-retrieve): Changed arguments spec, that
 	`accept-type-regexp' is removed.
-	(w3m-w3m-retrieve): Changed arguments spec, `accept-type-regexp'
-	is removed.  Call `w3m-w3m-attributes' instead of `w3m-w3m-check-header'.
-	(w3m-exec): Follow change of arguments spec of w3m-retrieve.
-	(w3m-about-source, w3m-about-header): Changed arguments spec,
+	(w3m-w3m-retrieve): Likewise and call `w3m-w3m-attributes' instead
+	of `w3m-w3m-check-header'.
+	(w3m-exec): Follow change of arguments spec of `w3m-retrieve'.
+	(w3m-about-source, w3m-about-header): Changed arguments spec that
 	`accept-type-regexp' is removed and follow change of arguments
 	spec of w3m-retrieve.
 	(w3m-arrived-last-modified): New function.
@@ -35,10 +46,9 @@
 	* w3m-antenna.el: New file.
 
 	* mime-w3m.el (mime-w3m-cid-retrieve): Changed arguments spec,
-	`accept-type-regexp' is removed.
+	that `accept-type-regexp' is removed.
 
-	* mew-w3m.el (mew-w3m-cid-retrieve): Changed arguments spec,
-	`accept-type-regexp' is removed.
+	* mew-w3m.el (mew-w3m-cid-retrieve): Ditto.
 
 2001-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
