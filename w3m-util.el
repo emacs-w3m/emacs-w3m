@@ -127,7 +127,7 @@ or `debug-on-quit' is non-nil."
 	 (if (featurep 'xemacs)
 	     ;; Default to start-closed and end-open in XEmacsen.
 	     '(list 'start-open t)
-	   ;; Default to front-nonsticky and rear-sticky in FSF Emacsen.
+	   ;; Default to front-nonsticky and rear-sticky in Emacsen.
 	   '(list 'rear-nonsticky t))))
     (` (add-text-properties (, start) (, end)
 			    (append (, non-stickies) (, props))
@@ -594,7 +594,7 @@ multibyteness of the buffer."
 		   (fg (face-foreground 'default)))
 	       (append (if bg `(:background ,bg))
 		       (if fg `(:foreground ,fg))))))
-  "The initial `default' face color spec.  Since `defface' under FSF Emacs
+  "The initial `default' face color spec.  Since `defface' under Emacs
 versions prior to 21 won't inherit the `dafault' face colors by default,
 we will use this value for the default `defface' color spec.")
 

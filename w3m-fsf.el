@@ -1,4 +1,4 @@
-;;; w3m-fsf.el --- Common functions through FSF Emacsen
+;;; w3m-fsf.el --- Common functions through Emacsen
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -31,7 +31,7 @@
 
 ;;; Commentary:
 
-;; This module provides common functions through FSF Emacsen.  Visit
+;; This module provides common functions through Emacsen.  Visit
 ;; <URL:http://emacs-w3m.namazu.org/> for more details of emacs-w3m.
 
 ;;; Code:

@@ -50,16 +50,16 @@ AC_DEFUN(AC_PATH_EMACS,
     (cond ((featurep (quote xemacs)) \"XEmacs\")\
           ((and (boundp (quote emacs-major-version))\
                 (>= emacs-major-version 21))\
-           \"FSF Emacs 21\")\
+           \"Emacs 21\")\
           ((boundp (quote MULE)) \"MULE\")\
-          (t \"FSF Emacs\")),
+          (t \"Emacs\")),
     noecho)
   case "${flavor}" in
   XEmacs)
     EMACS_FLAVOR=xemacs;;
   MULE)
     EMACS_FLAVOR=mule;;
-  "FSF Emacs 21")
+  "Emacs 21")
     EMACS_FLAVOR=emacs21;;
   *)
     EMACS_FLAVOR=emacs;;
