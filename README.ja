@@ -44,7 +44,6 @@
       イン画像を白黒表示させることができます．以下の場所から入手できます:
 
           ftp://ftp.jpl.org/pub/elisp/bitmap/
-          または http://www.jpl.org/ftp/pub/elisp/bitmap/
 
    c) XEmacs
       APEL を前もってインストールしておく必要があります．
@@ -248,8 +247,7 @@
        ています．
 
    [3] BITMAP-MULE
-       ftp://ftp.jpl.org/pub/elisp/bitmap/ または
-       http://www.jpl.org/ftp/pub/elisp/bitmap/ から入手できます．
+       ftp://ftp.jpl.org/pub/elisp/bitmap/ から入手できます．
 
    [4] gifsicle
        http://www.lcdf.org/gifsicle/ から入手できます．
