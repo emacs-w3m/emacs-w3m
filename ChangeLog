@@ -1,5 +1,7 @@
 2001-03-01  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
+	* mime-w3m.el: New file to use w3m with SEMI.
+
 	* w3m.el (w3m-message): New function.
 	(w3m-verbose): New variable.
 	(w3m-process-message): Ditto.
