@@ -1,3 +1,18 @@
+2004-02-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Changes to validate cached contents.
+	(w3m-follow-cache-control-header): Abolished.
+	(w3m-prefer-cache): New option.
+	(w3m-cache-available-p): Check whether a cached header includes
+	cache control headers.
+	(w3m-w3m-dump-extra): Always cache both a header and a content.
+	(w3m-w3m-retrieve-1): Check whether a cache is available, before
+	using it.
+	(w3m-view-this-url): When visiting history pages, prefer cached
+	contents without checking their validity.
+	(w3m-view-previous-page, w3m-view-source, w3m-view-header):
+	Prefer cached contents without checking their validity.
+
 2004-02-05  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-show-error-information): Decode cache contents if

@@ -684,8 +684,8 @@ Don't say HP, which is the abbreviated name of a certain company. ;-)"
   :group 'w3m
   :type '(integer :size 0))
 
-(defcustom w3m-follow-cache-control-header t
-  "*Follow the headers of chache control like 'Pragma:' and 'Cache-control:'"
+(defcustom w3m-prefer-cache nil
+  "*Non-nil means that cached contents are used without checking headers."
   :group 'w3m
   :type 'boolean)
 
@@ -3580,11 +3580,21 @@ BUFFER is nil, all contents will be inserted in the current buffer."
 
 ;; FIXME: we need to check whether contents were updated in remote servers.
 (defun w3m-cache-available-p (url)
-  "Return non-nil if contents of URL have already been cached."
+  "Return non-nil if a content of URL has already been cached."
   (w3m-cache-setup)
-  (and (stringp url)
-       (let ((ident (intern url w3m-cache-hashtb)))
-	 (and (memq ident w3m-cache-articles) ident))))
+  (when (stringp url)
+    (let ((ident (intern url w3m-cache-hashtb)))
+      (and (memq ident w3m-cache-articles)
+	   (or w3m-prefer-cache
+	       (save-match-data
+		 (let ((case-fold-search t)
+		       (head (and (boundp ident) (symbol-value ident))))
+		   (and (string-match "^\\(Last-Modified\\|ETag\\):[ \t]" head)
+			(not (or (string-match "^Pragma:[ \t]+no-cache\n" head)
+				 (string-match
+				  "^Cache-control:[ \t]+\\(no-cache\\|max-age=0\\)\n"
+				  head)))))))
+	   ident))))
 
 (defun w3m-read-file-name (&optional prompt dir default existing)
   (when default
@@ -4063,16 +4073,9 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 	      (let ((header (buffer-substring (point-min) (point))))
 		(when w3m-use-cookies
 		  (w3m-cookie-set url (point-min) (point)))
-		(unless (prog1 (and w3m-follow-cache-control-header
-				    (save-excursion
-				      (or (re-search-backward
-					   "^Pragma:[ \t]+no-cache\n" nil t)
-					  (re-search-backward
-					   "^Cache-control:[ \t]+\\(no-cache\\|max-age=0\\)\n"
-					   nil t))))
-			  (delete-region (point-min) (point)))
-		  (w3m-cache-header url header)
-		  (w3m-cache-contents url (current-buffer)))
+		(delete-region (point-min) (point))
+		(w3m-cache-header url header)
+		(w3m-cache-contents url (current-buffer))
 		(w3m-w3m-parse-header url header)))))))))
 
 (defun w3m-additional-command-arguments (url)
@@ -4257,7 +4260,8 @@ It will put the retrieved contents into the current buffer.  See
 		  (temp-file temp-file))
       (w3m-process-do
 	  (attr (or (unless no-cache
-		      (and (w3m-cache-request-contents url)
+		      (and (w3m-cache-available-p url)
+			   (w3m-cache-request-contents url)
 			   (w3m-w3m-parse-header
 			    url (w3m-cache-request-header url))))
 		    (w3m-w3m-dump-extra url handler)))
@@ -4950,7 +4954,7 @@ COUNT is treated as 1 by default if it is omitted."
 	(w3m-history-reuse-history-elements t)
 	(w3m-use-refresh nil))
     (if hist
-	(progn
+	(let ((w3m-prefer-cache t))
 	  (w3m-goto-url (caar hist) nil nil
 			(w3m-history-plist-get :post-data)
 			(w3m-history-plist-get :referer)
@@ -5124,7 +5128,10 @@ point."
   (interactive (if (member current-prefix-arg '(2 (16)))
 		   (list nil t)
 		 (list current-prefix-arg nil)))
-  (let (act url)
+  (let ((w3m-prefer-cache
+	 (or w3m-prefer-cache
+	     (string-match "\\`about://\\(db-\\)?history/" w3m-current-url)))
+	act url)
     (cond
      ((setq act (w3m-action))
       (eval act))
@@ -7337,16 +7344,17 @@ works on Emacs.
   "Display the html source of the current buffer."
   (interactive)
   (if w3m-current-url
-      (cond
-       ((string-match "\\`about://source/" w3m-current-url)
-	(w3m-goto-url (substring w3m-current-url (match-end 0))))
-       ((string-match "\\`about://header/" w3m-current-url)
-	(w3m-goto-url (concat "about://source/"
-			      (substring w3m-current-url (match-end 0))))
-	(setq truncate-lines nil))
-       (t
-	(w3m-goto-url  (concat "about://source/" w3m-current-url))
-	(setq truncate-lines nil)))
+      (let ((w3m-prefer-cache t))
+	(cond
+	 ((string-match "\\`about://source/" w3m-current-url)
+	  (w3m-goto-url (substring w3m-current-url (match-end 0))))
+	 ((string-match "\\`about://header/" w3m-current-url)
+	  (w3m-goto-url (concat "about://source/"
+				(substring w3m-current-url (match-end 0))))
+	  (setq truncate-lines nil))
+	 (t
+	  (w3m-goto-url  (concat "about://source/" w3m-current-url))
+	  (setq truncate-lines nil))))
     (w3m-message "Can't view page source")))
 
 (defun w3m-make-separator ()
@@ -7423,18 +7431,19 @@ works on Emacs.
   "Display the header of the current page."
   (interactive)
   (if w3m-current-url
-      (cond
-       ((string-match "\\`about://header/" w3m-current-url)
-	(w3m-goto-url (substring w3m-current-url (match-end 0))))
-       ((string-match "\\`about://source/" w3m-current-url)
-	(w3m-goto-url (concat "about://header/"
-			      (substring w3m-current-url (match-end 0))))
-	(setq truncate-lines nil))
-       ((string-match "\\`about:" w3m-current-url)
-	(error "Can't load a header for %s" w3m-current-url))
-       (t
-	(w3m-goto-url (concat "about://header/" w3m-current-url))
-	(setq truncate-lines nil)))
+      (let ((w3m-prefer-cache t))
+	(cond
+	 ((string-match "\\`about://header/" w3m-current-url)
+	  (w3m-goto-url (substring w3m-current-url (match-end 0))))
+	 ((string-match "\\`about://source/" w3m-current-url)
+	  (w3m-goto-url (concat "about://header/"
+				(substring w3m-current-url (match-end 0))))
+	  (setq truncate-lines nil))
+	 ((string-match "\\`about:" w3m-current-url)
+	  (error "Can't load a header for %s" w3m-current-url))
+	 (t
+	  (w3m-goto-url (concat "about://header/" w3m-current-url))
+	  (setq truncate-lines nil))))
     (w3m-message "Can't view page header")))
 
 (defvar w3m-about-history-max-indentation '(/ (* (window-width) 2) 3)
