@@ -2381,6 +2381,10 @@ Emacs-w3m $B$r9=C[$7$F%$%s%9%H!<%k$9$kA0$K(B @sc{flim} $B%Q%C%1!<%8(B ($B2C
 @samp{nnshimbun} $B$O(B @emph{$BA4$F(B} $B$N4{FI5-;v$rC_$($^$9(B ($B$3$l$ONI$$9M$($G$O(B
 $B$"$j$^$;$s(B)$B!#%G%U%)%k%HCM$O(B 300 $B$G$9!#(B
 
+@samp{Nnshimbun} $B$O$"$i$+$8$a<hF@$7$?(B (prefetched) $B5-;v$NJ]B8(B
+$B$K(B backlog $B$r;H$&$N$G!">.$5$9$.$kCM$O(B @code{prefetch-articles} $B5!G=(B ($B2<(B
+$B5-;2>H(B) $B$rB;$J$&$+$b$7$l$J$$$3$H$KCm0U$7$F2<$5$$!#(B
+
 @item nnshimbun-directory
 @vindex nnshimbun-directory
 @samp{Nnshimbun} $B$,(B @sc{nov} $B%U%!%$%k$rJ]B8$9$k%G%#%l%/%H%j$G$9!#%G%U%)(B

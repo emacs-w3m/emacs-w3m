@@ -2278,6 +2278,10 @@ If this variable is non-@code{nil} and is not a number, @samp{nnshimbun}
 will store @emph{all} read articles (this is not a good idea).  The
 default value is 300.
 
+Note that smaller values may spoil the @code{prefetch-articles} feature
+(see below), since @samp{nnshimbun} uses the backlog to keep the
+prefetched articles.
+
 @item nnshimbun-directory
 @vindex nnshimbun-directory
 Directory where @samp{nnshimbun} saves @sc{nov} files.  The default
