@@ -114,7 +114,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAQBAMAAACigOGCAAAABGdBTUEAALGPC/xhBQAAADB
 (luna-define-method shimbun-article-url ((shimbun shimbun-wired-jp) header)
   (let ((url (shimbun-article-base-url shimbun header)))
     (if (string-match "/news/[a-z]+/story/\\([0-9]+\\.html\\)\\'" url)
-	(shimbun-expand-url (concat "/news/print/" (match-string 1 url)))
+	(shimbun-expand-url (concat "/news/print/" (match-string 1 url)) url)
       url)))
 
 (luna-define-method shimbun-clear-contents ((shimbun shimbun-wired-jp) header)
