@@ -11,6 +11,7 @@
 	inlining `w3m-list-buffers'.
 	(w3m): Simplify the code using `w3m-popup-buffer'; specify the
 	optional arg to `w3m-alive-p'; protect against the case of no url.
+	(w3m-select-buffer-copy-buffer): Bind `w3m-pop-up-windows' to nil.
 
 	* w3m-util.el (w3m-list-buffers): Make it into a normal function;
 	don't call itself recursively.

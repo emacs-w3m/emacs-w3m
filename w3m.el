@@ -7613,7 +7613,8 @@ menu line."
     ;; The selection buffer will be updated automatically because
     ;; `w3m-copy-buffer' calls `w3m-select-buffer-update' by way of
     ;; `w3m-goto-url'.
-    (w3m-copy-buffer (current-buffer))
+    (let (w3m-pop-up-windows)
+      (w3m-copy-buffer))
     (select-window window)))
 
 (defun w3m-select-buffer-delete-buffer (&optional force)
