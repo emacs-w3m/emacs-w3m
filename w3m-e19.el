@@ -34,9 +34,9 @@
 ;; ftp://ftp.m17n.org/pub/mule/apel/apel-10.3.tar.gz
 ;; ftp://ftp.dina.kvl.dk/pub/Staff/Per.Abrahamsen/custom/custom-1.9962.tar.gz
 ;;
-;; In addition, you need to install regexp-opt.elc in your load-path.
-;; The source file is available in attic/ directory of the emacs-w3m
-;; distribution.
+;; In addition, you need to install easy-mmode.elc and regexp-opt.elc
+;; in your load-path.  The source files is available in the attic/
+;; directory of the emacs-w3m distribution.
 
 ;;; Code:
 
@@ -44,7 +44,14 @@
   (require 'cl))
 
 (require 'pcustom)
-(require 'regexp-opt)
+
+;; Required for old Emacsen.  See the file README for details.
+(eval-and-compile
+  (unless (fboundp 'regexp-opt)
+    (require 'regexp-opt))
+  (unless (fboundp 'define-minor-mode)
+    (require 'easy-mmode)
+    (defalias 'define-minor-mode 'easy-mmode-define-minor-mode)))
 
 (unless (fboundp 'compose-mail)
   (defun compose-mail (&optional to subject other-headers continue
