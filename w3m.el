@@ -1899,25 +1899,30 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
      ((eq flag 'lambda)
       (if (w3m-arrived-p url) t nil)))))
 
-(defun w3m-input-url (&optional prompt default)
+(defun w3m-input-url (&optional prompt initial default)
   "Read a URL from the minibuffer, prompting with string PROMPT."
   (let (url)
     (w3m-arrived-setup)
     (unless default
-      (setq default (thing-at-point 'url)))
+      (setq default w3m-home-page))
+    (unless initial
+      (setq initial (thing-at-point 'url)))
     (setq url (let ((minibuffer-setup-hook
 		     (append minibuffer-setup-hook '(beginning-of-line))))
 		(completing-read
 		 (or prompt
-		     (if default
-			 "URL: "
-		       (format "URL (default %s): " w3m-home-page)))
-		 'w3m-url-completion nil nil default
+		     (format "URL (default %s): "
+			     (if (stringp default)
+				 (if (eq default w3m-home-page)
+				     "HOME" default)
+			       (prin1-to-string default))))
+		 'w3m-url-completion nil nil initial
 		 'w3m-input-url-history)))
-    (if (string= "" url) (setq url w3m-home-page))
+    (if (string= "" url) (setq url default))
     ;; remove duplication
-    (setq w3m-input-url-history
-	  (cons url (delete url w3m-input-url-history)))
+    (when (stringp url)
+      (setq w3m-input-url-history
+	    (cons url (delete url w3m-input-url-history))))
     ;; return value
     url))
 
@@ -3962,22 +3967,25 @@ If input is nil, use default coding-system on w3m."
 
 
 ;;;###autoload
-(defun w3m (&optional url nofetch)
+(defun w3m (&optional url)
   "Visit the World Wide Web page using the external command w3m, w3mmee
 or w3m-m17n.  When you invoke this command interactively, it will
-prompt you for a URL where you wish to go.  Except that if the prefix
-argument NOFETCH is given and the buffer for w3m exists, it will just
-pop up the buffer.  URL should be a string which defaults to the value
+prompt you for a URL where you wish to go.  Except that if you enters
+the empty string and the buffer for w3m exists, it will just pop up
+the buffer.  URL should be a string which defaults to the value
 of `w3m-home-page' or \"about:\".  Otherwise, you can run this command
 in the batch mode like \"emacs -f w3m http://emacs-w3m.namazu.org/&\".
 The value of `w3m-pop-up-frames' specifies whether to pop up a new
 frame, however, it will be ignored (treated as nil) when this command
 is called non-interactively."
-  (interactive (let ((arg (and current-prefix-arg (w3m-alive-p))))
-		 (list (unless arg
-			 (w3m-input-url))
-		       arg)))
-  (let ((buffer (w3m-alive-p))
+  (interactive
+   (let ((default (if (w3m-alive-p) 'popup w3m-home-page)))
+     (list
+      (if current-prefix-arg
+	  default
+	(w3m-input-url nil nil default)))))
+  (let ((nofetch (eq url 'popup))
+	(buffer (w3m-alive-p))
 	(focusing-function
 	 (append '(lambda (frame)
 		    (raise-frame frame)

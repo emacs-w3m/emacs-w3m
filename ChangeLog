@@ -1,5 +1,10 @@
+2001-10-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-input-url): Accept the 3rd optional argument.
+	(w3m): Improved interactive form.
+
 2001-10-12  Yuuichi Teranishi  <teranisi@gohome.org>,
-	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+	    TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 	* w3m-e21.el (w3m-form-button-keymap): Renamed from
 	`w3m-widget-keymap'.
