@@ -1,3 +1,8 @@
+2002-02-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-e21.el (w3m-setup-favicon): Fix handling of
+	`w3m-about-xxxx-favicon'.
+
 2002-02-10  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-ruby.el (shimbun-make-contents): Bug fixed.

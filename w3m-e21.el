@@ -404,8 +404,9 @@ Each information is a list whose elements are:
 		 icon)
 	    (with-current-buffer w3m-current-buffer
 	      (setq w3m-current-favicon-data
-		    (eval (list 'base64-decode-string
-				(symbol-value icon))))))))
+		    (cons (eval (list 'base64-decode-string
+				      (symbol-value icon)))
+			  'ico))))))
      ((string-match "\\`https?://" url)
       (w3m-retrieve-favicon
        (or (symbol-value 'w3m-icon-data)
