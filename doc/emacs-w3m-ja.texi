@@ -3296,8 +3296,9 @@ sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
 sponichi.society sponichi.entertainment sponichi.horseracing
 
 @item @uref{http://www.yomiuri.co.jp/, 讀売新聞}
-yomiuri.business yomiuri.editorial yomiuri.national yomiuri.obit
-yomiuri.politics yomiuri.sports yomiuri.world
+yomiuri.business yomiuri.culture yomiuri.editorial yomiuri.kyoiku
+yomiuri.national yomiuri.obit yomiuri.politics yomiuri.science
+yomiuri.sports yomiuri.world
 
 朝日新聞の場合と同様に、画像を含む記事を生成する @samp{yomiuri-html} も
 利用できます。

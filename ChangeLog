@@ -1,3 +1,24 @@
+2003-09-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-time-parse-string): New function.
+	(shimbun-sort-headers): New function.
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Simplify
+	Japanese group names.
+	(shimbun-yomiuri-get-headers): Sort headers.
+
+	* shimbun/sb-slashdot-jp.el
+	(shimbun-slashdot-jp-search-comment-head): Replace
+	`w3m-time-parse-string' with `shimbun-time-parse-string'.
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers): Sort headers.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Improve regexps
+	in order to fetch more articles; contain full folder names.
+	(shimbun-index-url): Simplify.
+	(shimbun-asahi-get-headers): Synch to shimbun-asahi-group-table's
+	change; sort headers.
+
 2003-09-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Rearrange
