@@ -123,7 +123,7 @@
 				  "w3m-xmas"
 				"w3m-e21")))
 
-(defconst emacs-w3m-version "1.2rc5"
+(defconst emacs-w3m-version "1.2"
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -218,7 +218,9 @@ width using expression (+ (frame-width) VALUE)."
   :require 'w3m-ucs)
 
 (when w3m-use-mule-ucs
-  (require 'w3m-ucs))
+  (condition-case nil
+      (require 'w3m-ucs)
+    (error (setq w3m-use-mule-ucs nil))))
 
 (defvar w3m-accept-japanese-characters
   (or (memq w3m-type '(w3mmee w3m-m17n))
