@@ -1,6 +1,18 @@
 2001-03-04  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
-	* w3m.el: Patch from Keisuke Nishida.
+	* w3m.el: Patch from Keisuke Nishida <kxn30@po.cwru.edu>.
+	(w3m-print-this-url): Do not save URL, print only.
+	(w3m-save-this-url): New function. Print and save URL under cursor.
+	(w3m-goto-next-anchor): New function.
+	(w3m-next-anchor): Move to top anchor on the bottom anchor.
+	Print URL after move.
+	(w3m-goto-previous-anchor): New function.
+	(w3m-previous-anchor): Move to bottom anchor on the top anchor.
+	Print URL after move.
+
+2001-03-04  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el: Patch from Keisuke Nishida <kxn30@po.cwru.edu>.
 	(TOP): Require ffap.el.
 	(w3m-input-url): Show default URL on URL input prompt,
 	and use URL under cursor if default is not specified.
