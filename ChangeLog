@@ -1,3 +1,8 @@
+2002-05-20  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-ruby.el (shimbun-get-headers): Do not use nreverse
+	for HEADERS.
+
 2002-05-19  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-palmfan.el (shimbun-palmfan-group-path-alist): Add

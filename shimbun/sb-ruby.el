@@ -112,7 +112,7 @@
 		     from date id "" 0 0 url)
 		    headers)))
 	  (setq auxs (cdr auxs)))))
-    (nreverse headers)))
+    headers))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-ruby) header)
   (let ((headers '(("^Subject: \\(.+\\)$" . shimbun-header-set-subject)
