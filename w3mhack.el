@@ -75,7 +75,7 @@
 
 (defun w3mhack-compile ()
   "Byte-compile the w3m modules."
-  (let (modules module)
+  (let (elc el modules)
     (let* ((buffer (generate-new-buffer " *modules*"))
 	   (standard-output buffer))
       (w3mhack-examine-modules)
@@ -83,19 +83,21 @@
 	(set-buffer buffer)
 	(goto-char (point-min))
 	(while (re-search-forward "\\([^ ]+\\.el\\)c" nil t)
-	  (setq modules (cons (buffer-substring (match-beginning 1)
-						(match-end 1))
-			      modules))))
-      (kill-buffer buffer)
-      (setq modules (nreverse modules)))
+	  (setq elc (buffer-substring (match-beginning 0) (match-end 0))
+		el (buffer-substring (match-beginning 1) (match-end 1)))
+	  (if (file-exists-p elc)
+	      (if (file-newer-than-file-p elc el)
+		  (message " `%sc' is up to date." el)
+		(delete-file elc)
+		(setq modules (cons el modules)))
+	    (setq modules (cons el modules)))))
+      (kill-buffer buffer))
+    (setq modules (nreverse modules))
     (while modules
-      (setq module (car modules)
-	    modules (cdr modules))
-      (if (or (not (file-exists-p (concat module "c")))
-	      (file-newer-than-file-p module (concat module "c")))
-	  (condition-case nil
-	      (byte-compile-file module)
-	    (error))))))
+      (condition-case nil
+	  (byte-compile-file (car modules))
+	(error))
+      (setq modules (cdr modules)))))
 
 ;; Byte optimizers and version specific functions.
 (put 'truncate-string 'byte-optimizer
