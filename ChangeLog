@@ -1,5 +1,10 @@
 2002-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-read-file-name): Strip the query part from a default
+	file name.
+	(w3m-download): Ditto.
+	(w3m-url-components-regexp): Move forward.
+
 	* mime-w3m.el: Always require `font' under XEmacs.
 
 	* shimbun/sb-debian.el (shimbun-debian-groups): Add debian-med,

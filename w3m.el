@@ -1296,6 +1296,12 @@ for a refresh indication")
   "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?$"
   "Regexp of urls to be ignored in a history.")
 
+(defconst w3m-url-components-regexp
+  "\\`\\(\\([^:/?#]+\\):\\)?\\(//\\([^/?#]*\\)\\)?\\([^?#]*\\)\\(\\?\\([^#]*\\)\\)?\\(#\\(.*\\)\\)?\\'"
+  "Regular expression for parsing the potential four components and
+fragment identifier of a URI reference.  For more detail, see Appendix
+B of RFC2396 <URL:http://www.ietf.org/rfc/rfc2396.txt>.")
+
 (defvar w3m-mode-map nil "Keymap used in w3m-mode buffers.")
 
 
@@ -2038,7 +2044,7 @@ If URL is specified, only the image with URL is toggled."
 				    (url w3m-current-url))
 			(w3m-process-do
 			    (image (let ((w3m-current-buffer (current-buffer)))
-				     (w3m-create-image 
+				     (w3m-create-image
 				      iurl no-cache
 				      w3m-current-url handler)))
 			  (when (buffer-live-p (marker-buffer start))
@@ -2423,12 +2429,20 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	 (and (memq ident w3m-cache-articles) ident))))
 
 (defun w3m-read-file-name (&optional prompt dir default existing)
-  (let* ((default (and default (file-name-nondirectory default)))
-	 (prompt (or prompt
-		     (if default (format "Save to (%s): " default) "Save to: ")))
-	 (dir (file-name-as-directory (or dir w3m-default-save-directory)))
-	 (default-directory dir)
-	 (file (read-file-name prompt dir nil existing default)))
+  (when default
+    (if (and (string-match w3m-url-components-regexp default)
+	     (match-beginning 6))
+	(setq default (file-name-nondirectory
+		       ;; Strip the query part.
+		       (substring default 0 (match-beginning 6))))
+      (setq default (file-name-nondirectory default))))
+  (unless prompt
+    (setq prompt (if default
+		     (format "Save to (%s): " default)
+		   "Save to: ")))
+  (setq dir (file-name-as-directory (or dir w3m-default-save-directory)))
+  (let ((default-directory dir)
+	(file (read-file-name prompt dir nil existing default)))
     (if (not (file-directory-p file))
 	(setq w3m-default-save-directory
 	      (or (file-name-directory file) w3m-default-save-directory))
@@ -2928,7 +2942,12 @@ type as a string argument, when retrieve is complete."
 				    w3m-current-url)
 		      (substring w3m-current-url (match-end 0))
 		    w3m-current-url))))
-	  (basename (file-name-nondirectory url)))
+	  (basename (if (and (string-match w3m-url-components-regexp url)
+			     (match-beginning 6))
+			(file-name-nondirectory
+			 ;; Strip the query part.
+			 (substring url 0 (match-beginning 6)))
+		      (file-name-nondirectory url))))
      (if (string-match "^[\t ]*$" basename)
 	 (error "You should specify the existing file name")
        (list url
@@ -3187,14 +3206,14 @@ type as a string argument, when retrieve is complete."
 			       (list "-o" "display_image=on")
 			       (when (w3m-display-graphic-p)
 				 (list "-ppl"
-				       (number-to-string 
+				       (number-to-string
 					(or w3m-pixels-per-line
 					    (w3m-static-if
 						(featurep 'xemacs)
 						(font-height
 						 (face-font 'default))
 					      (frame-char-height))))
-				       "-ppc" 
+				       "-ppc"
 				       (number-to-string
 					(or w3m-pixels-per-character
 					    (w3m-static-if
@@ -3415,12 +3434,6 @@ is performed.  Otherwise, COUNT is treated as 1 by default."
 	      (substring x (match-end 0))
 	    x)))
     (defalias 'w3m-expand-path-name 'expand-file-name)))
-
-(defconst w3m-url-components-regexp
-  "\\`\\(\\([^:/?#]+\\):\\)?\\(//\\([^/?#]*\\)\\)?\\([^?#]*\\)\\(\\?\\([^#]*\\)\\)?\\(#\\(.*\\)\\)?\\'"
-  "Regular expression for parsing the potential four components and
-fragment identifier of a URI reference.  For more detail, see Appendix
-B of RFC2396 <URL:http://www.ietf.org/rfc/rfc2396.txt>.")
 
 (defconst w3m-url-hierarchical-schemes
   '("http" "https" "ftp" "file")
