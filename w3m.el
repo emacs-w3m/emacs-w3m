@@ -128,8 +128,8 @@
   (eval-when-compile
     (let ((rev "$Revision$"))
       (and (string-match "\\.\\([0-9]+\\) \$$" rev)
-	   (format "1.1.%d"
-		   (- (string-to-number (match-string 1 rev)) 233)))))
+	   (format "1.2.%d"
+		   (- (string-to-number (match-string 1 rev)) 426)))))
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -222,7 +222,9 @@ width using expression (+ (frame-width) VALUE)."
   :require 'w3m-ucs)
 
 (when w3m-use-mule-ucs
-  (require 'w3m-ucs))
+  (condition-case nil
+      (require 'w3m-ucs)
+    (error (setq w3m-use-mule-ucs nil))))
 
 (defvar w3m-accept-japanese-characters
   (or (memq w3m-type '(w3mmee w3m-m17n))

@@ -1,3 +1,9 @@
+2001-11-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Modified.
+	(top): Protect against the error occurs when `w3m-ucs.el' isn't
+	found.
+
 2001-11-06  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-yomiuri-html.el: New file.
