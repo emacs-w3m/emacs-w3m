@@ -1,3 +1,21 @@
+2001-10-30  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-e21.el (w3m-header-line-location-title-face): Specify background
+	color.
+	(w3m-header-line-location-title-face): Ditto.
+	(w3m-use-tab): New user option.
+	(w3m-tab-width): Ditto.
+	(w3m-tab-unselected-face): New face.
+	(w3m-tab-selected-face): Ditto.
+	(w3m-tab-background-face): Ditto.
+	(w3m-header-line-map): New variable.
+	(w3m-setup-header-line): If w3m-use-tab is non-nil, use header-line
+	as a tab area.
+	(w3m-insert-header-line): New function.
+	(w3m-tab-make-keymap): New function.
+	(w3m-tab-line): New function.
+	(w3m-fontify-after-hook): Add 'w3m-insert-header-line.
+
 2001-10-30  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-reload-this-page): If form data exist, ask to make

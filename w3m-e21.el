@@ -247,42 +247,110 @@ Buffer string between BEG and END are replaced with IMAGE."
 
 (defalias 'w3m-update-toolbar 'ignore)
 
-;;; Header line
+;;; Header line & Tabs
 (defface w3m-header-line-location-title-face
-  '((((class color) (background light)) (:foreground "Blue"))
-    (((class color) (background dark)) (:foreground "Cyan")))
+    '((((class color) (background light))
+       (:foreground "Blue" :background "Gray90"))
+      (((class color) (background dark))
+       (:foreground "Cyan" :background "Gray20")))
   "*Face for header-line location title."
   :group 'w3m-face)
 
 (defface w3m-header-line-location-content-face
-  '((((class color) (background light)) (:foreground "DarkGoldenrod"))
-    (((class color) (background dark)) (:foreground "LightGoldenrod")))
+  '((((class color) (background light))
+     (:foreground "DarkGoldenrod" :background "Gray90"))
+    (((class color) (background dark))
+     (:foreground "LightGoldenrod" :background "Gray20")))
   "*Face for header-line location content."
   :group 'w3m-face)
 
+(defcustom w3m-use-tab t
+  "Use w3m as a tab browser."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-tab-width 11
+  "w3m tab width."
+  :group 'w3m
+  :type 'integer)
+
+(defface w3m-tab-unselected-face
+  '((((type x w32 mac) (class color))
+     :background "Gray50" :foreground "Gray20"
+     :underline t :box (:line-width -1 :style released-button)))
+  "*Face to fontify unselected tabs."
+  :group 'w3m-face)
+
+(defface w3m-tab-selected-face
+  '((((type x w32 mac) (class color))
+     :background "Gray85" :foreground "black"
+     :underline t :box (:line-width -1 :style released-button))
+    (((class color) (background light)) (:foreground "cyan" :underline t))
+    (((class color) (background dark)) (:foreground "red" :underline t))
+    (t (:underline t)))
+  "*Face to fontify selected tab."
+  :group 'w3m-face)
+
+(defface w3m-tab-background-face
+  '((((type x w32 mac) (class color))
+     :background "LightSteelBlue" :foreground "black"
+     :underline t)
+    (((class color) (background light)) (:foreground "black" :underline t))
+    (((class color) (background dark)) (:foreground "black" :underline t))
+    (t (:underline t)))
+  "*Face to fontify background of tab line."
+  :group 'w3m-face)
+
+(defvar w3m-header-line-map (make-sparse-keymap))
+(define-key w3m-header-line-map [mouse-2] 'w3m-goto-url)
+
 (defun w3m-setup-header-line ()
-  "Setup header line."
-  (if w3m-use-header-line
-      (setq header-line-format
-	    (list
-	     (propertize
-	      "Location: "
-	      'face
-	      'w3m-header-line-location-title-face)
-	     '(:eval
+  (if w3m-use-tab
+      (setq header-line-format (list '(:eval (w3m-tab-line))))
+    (if w3m-use-header-line 
+	(setq header-line-format
+	      (list
 	       (propertize
-		(if (stringp w3m-current-url)
-		    (replace-regexp-in-string "%" "%%" w3m-current-url)
-		  "")
+		"Location: "
 		'face
-		'w3m-header-line-location-content-face
-		'local-map
-		(let ((map (make-sparse-keymap)))
-		  (define-key map [header-line mouse-2]
-		    'w3m-goto-url)
-		  map)
-		'help-echo
-		"mouse-2 prompts to input URL"))))))
+		'w3m-header-line-location-title-face)
+	       '(:eval
+		 (propertize
+		  (if (stringp w3m-current-url)
+		      (replace-regexp-in-string "%" "%%" w3m-current-url)
+		    "")
+		  'face
+		  'w3m-header-line-location-content-face
+		  'local-map
+		  (let ((map (make-sparse-keymap)))
+		    (define-key map [header-line mouse-2]
+		      'w3m-goto-url)
+		    map)
+		  'help-echo
+		  "mouse-2 prompts to input URL")))))))
+
+(defun w3m-insert-header-line ()
+  (when (and w3m-use-tab w3m-use-header-line (symbol-value 'w3m-current-url)
+	     (eq 'w3m-mode major-mode))
+    (goto-char (point-min))
+    (insert "Location: ")
+    (put-text-property (point-min) (point)
+		       'face 'w3m-header-line-location-title-face)
+    (let ((start (point))
+	  (help "button2 prompts to input URL"))
+      (insert (symbol-value 'w3m-current-url))
+      (add-text-properties start (point)
+			   (list 'face
+				 'w3m-header-line-location-content-face
+				 'mouse-face 'highlight
+				 'keymap w3m-header-line-map
+				 'help-echo help
+				 'balloon-help help))
+      (setq start (point))
+      (insert-char ?\  (max 0 (- (window-width) (current-column) 1)))
+      (put-text-property start (point)
+			 'face 'w3m-header-line-location-content-face)
+      (insert "\n"))))
 
 (defun w3m-setup-widget-faces ()
   (make-local-variable 'widget-button-face)
@@ -292,8 +360,70 @@ Buffer string between BEG and END are replaced with IMAGE."
   (setq widget-mouse-face 'w3m-form-button-mouse-face)
   (setq widget-button-pressed-face 'w3m-form-button-pressed-face))
 
+(defun w3m-tab-make-keymap (buffer)
+  (let ((map (make-sparse-keymap))
+	(action `(lambda (e) (interactive "e")
+		   (switch-to-buffer ,(buffer-name buffer)))))
+    (define-key map [header-line down-mouse-1] action)
+    (define-key map [header-line down-mouse-2] action)
+    map))
+
+(defun w3m-tab-line ()
+  (let ((len w3m-tab-width)
+        buffer-read-only
+	buffers name orig line)
+    (dolist (buffer (buffer-list))
+      (with-current-buffer buffer
+        (when (eq major-mode 'w3m-mode)
+          (setq orig (if (symbol-value 'w3m-current-title)
+                         (symbol-value 'w3m-current-title)
+                       (directory-file-name
+                        (if (string-match "^[^/:]+:/+"
+                                          (symbol-value 'w3m-current-url))
+                            (substring (symbol-value 'w3m-current-url)
+                                       (match-end 0))
+                          (symbol-value 'w3m-current-url))))
+                name (concat " "
+			     (if (and 
+				  (> len 0)
+				  (> (string-width orig) len))
+				 (concat (truncate-string-to-width
+					  orig
+					  (max 0 (- len 3)))
+					 "...")
+			       orig) " "))
+          (setq buffers (cons (list buffer name orig) buffers)))))
+    (setq buffers (sort buffers
+			(lambda (x y)
+			  (string< (buffer-name (car x))
+				   (buffer-name (car y))))))
+    (while buffers
+      (setq line (concat
+		  line
+		  (propertize
+		   (nth 1 (car buffers))
+		   'mouse-face 'highlight
+		   'face (if (eq (car (car buffers))
+				 (current-buffer))
+			     'w3m-tab-selected-face
+			   'w3m-tab-unselected-face)
+		   'local-map (w3m-tab-make-keymap (car (car buffers)))
+		   'help-echo  (nth 2 (car buffers)))))
+      (if (cdr buffers) (setq line (concat line
+					   (propertize
+					    " "
+					    'face 'w3m-tab-background-face))))
+      (setq buffers (cdr buffers)))
+    (setq line
+	  (concat
+	   line
+	   (propertize (make-string (window-width) ?\ )
+		       'face 'w3m-tab-background-face)))
+    line))
+
 (add-hook 'w3m-mode-hook 'w3m-setup-header-line)
 (add-hook 'w3m-mode-hook 'w3m-setup-widget-faces)
+(add-hook 'w3m-fontify-after-hook 'w3m-insert-header-line)
 
 (provide 'w3m-e21)
 ;;; w3m-e21.el ends here.
