@@ -64,6 +64,7 @@
 (defalias 'coding-system-list 'ignore)
 (defalias 'multibyte-string-p 'ignore)
 (defalias 'w3m-create-image 'ignore)
+(defalias 'w3m-create-resized-image 'ignore)
 (defalias 'w3m-detect-coding-region 'ignore)
 (defalias 'w3m-display-graphic-p 'ignore)
 (defalias 'w3m-display-inline-images-p 'ignore)

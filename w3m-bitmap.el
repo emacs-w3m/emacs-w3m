@@ -441,6 +441,39 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 				image) w3m-bitmap-image-cache-alist)
 		    image))))))))))
 
+(defun w3m-create-resized-image (url rate &optional referer size handler)
+  "Resize an cached image object.
+URL is the image file's url.
+RATE is resize percentage.
+If REFERER is non-nil, it is used as Referer: field.
+If SIZE is non-nil, its car element is used as width
+and its cdr element is used as height."
+  (if (not handler)
+      (w3m-process-with-wait-handler
+	(w3m-create-image url nil referer size handler))
+    (lexical-let ((url url)
+		  (rate rate)
+		  fmt data)
+      (w3m-process-do-with-temp-buffer
+	  (type (w3m-retrieve url 'raw nil nil referer handler))
+	(when (and (stringp type) (string-match "^image/" type))
+	  (setq fmt (replace-match "" nil nil type)
+		data (buffer-string))
+	  (w3m-process-do
+	      (resized (or (w3m-resize-image-by-rate data rate handler)
+			   data))
+	    (w3m-process-do-with-temp-buffer
+		(success (progn
+			   (w3m-static-if (boundp 'MULE)
+			       (setq mc-flag nil)
+			     (set-buffer-multibyte nil))
+			   (insert resized)
+			   (apply 'w3m-imagick-start-convert-buffer
+				  handler fmt "xbm"
+				  w3m-bitmap-convert-arguments)))
+	      (when success
+		(w3m-bitmap-image-buffer (current-buffer))))))))))
+
 (defun w3m-insert-image (beg end image url)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."

@@ -1,3 +1,17 @@
+2002-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bitmap.el (w3m-create-resized-image): New function.
+
+	* w3m-e19.el (w3m-create-resized-image): Alias to `ignore'.
+	* w3m-e20.el (w3m-create-resized-image): Alias to `ignore' if the
+	BITMAP-MULE is not available.
+	* w3m-om.el (w3m-create-resized-image): Ditto.
+
+	* w3m-image (w3m-resize-image-by-rate): Limit the minimum scale.
+
+	* w3m.el (w3m-resize-inline-image-internal): Remove an existing
+	image only for XEmacs.
+
 2002-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-create-resized-image): New function.

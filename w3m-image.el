@@ -187,7 +187,7 @@ Note that this function requires that the `convert' program allows the
       (result (w3m-imagick-start-convert-data
 	       handler
 	       data nil nil "-resize"
-	       (concat (number-to-string rate)
+	       (concat (number-to-string (max rate 1))
 		       "%")))
     result))
 
