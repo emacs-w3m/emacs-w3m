@@ -1,3 +1,16 @@
+2003-07-17  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-correct-charset-alist): New user option.
+	(w3m-correct-charset): New inline macro.
+	(w3m-detect-meta-charset): New function.
+	(w3m-decode-buffer): Use `w3m-correct-charset' and
+	`w3m-detect-meta-charset'.
+	(w3m-create-text-page): Don't call `w3m-safe-decode-buffer'.
+	(w3m-create-page): Set `charset' to `w3m-current-content-charset'
+	if it is nil.
+	(w3m-region): If `charset' is nil, check `content-charset' in
+	`META Tag'.
+
 2003-07-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-ccl.el (toplevel): Add autoload for `charset-id' defined at

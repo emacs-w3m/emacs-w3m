@@ -934,6 +934,28 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   :group 'w3m
   :type '(repeat (cons symbol coding-system)))
 
+(defcustom w3m-correct-charset-alist
+  '(("windows-874"  . "tis-620")
+    ("cp874"	    . "tis-620")
+    ("windows-1250" . "cp1250")
+    ("windows-1251" . "cp1251")
+    ("windows-1252" . "cp1252")
+    ("windows-1253" . "cp1253")
+    ("windows-1254" . "cp1254")
+    ("windows-1255" . "cp1255")
+    ("windows-1256" . "cp1256")
+    ("windows-1257" . "cp1257")
+    ("windows-1258" . "cp1258")
+    ("shift-jis"    . "shift_jis")
+    ("sjis"	    . "shift_jis")
+    ("x-euc-jp"     . "euc-jp")
+    ("x-shift-jis"  . "shift_jis")
+    ("x-shift_jis"  . "shift_jis")
+    ("x-sjis"	    . "shift_jis"))
+  "Alist of MIME CHARSET, strange one vs standard one."
+  :group 'w3m
+  :type '(repeat (cons string sting)))
+
 (defcustom w3m-horizontal-scroll-columns 10
   "*Column size to scroll horizontally."
   :group 'w3m
@@ -3204,6 +3226,20 @@ If the user enters null input, return second argument DEFAULT."
 			  (w3m-which-command (car x))
 			  t '(t nil) nil (cadr x))))))))
 
+(defmacro w3m-correct-charset (charset)
+  `(or (and ,charset (stringp ,charset)
+	    (cdr (assoc (downcase ,charset) w3m-correct-charset-alist)))
+       ,charset))
+
+(defun w3m-detect-meta-charset ()
+  (let ((case-fold-search t))
+    (goto-char (point-min))
+    (when (or (re-search-forward
+	       w3m-meta-content-type-charset-regexp nil t)
+	      (re-search-forward
+	       w3m-meta-charset-content-type-regexp nil t))
+      (match-string-no-properties 2))))
+
 (defun w3m-decode-buffer (url &optional content-charset content-type)
   (let (cs)
     (unless content-charset
@@ -3211,20 +3247,17 @@ If the user enters null input, return second argument DEFAULT."
 	    (or (w3m-content-charset url)
 		(when (string= "text/html"
 			       (or content-type (w3m-content-type url)))
-		  (let ((case-fold-search t))
-		    (goto-char (point-min))
-		    (when (or (re-search-forward
-			       w3m-meta-content-type-charset-regexp nil t)
-			      (re-search-forward
-			       w3m-meta-charset-content-type-regexp nil t))
-		      (match-string-no-properties 2)))))))
-    (when content-charset
-      (setq cs (w3m-charset-to-coding-system content-charset)))
-    (when (and (eq w3m-type 'w3mmee)
-	       (or (and (stringp content-charset)
-			(string= "x-moe-internal" (downcase content-charset)))
-		   (eq content-charset 'x-moe-internal)))
-      (setq cs (w3m-x-moe-decode-buffer)))
+		  (w3m-detect-meta-charset)))))
+    (cond
+     ((and (eq w3m-type 'w3mmee)
+	   (or (and (stringp content-charset)
+		    (string= "x-moe-internal" (downcase content-charset)))
+	       (eq content-charset 'x-moe-internal)))
+      (setq cs (w3m-x-moe-decode-buffer))
+      (setq content-charset (symbol-name cs)))
+     (content-charset
+      (setq content-charset (w3m-correct-charset content-charset))
+      (setq cs (w3m-charset-to-coding-system content-charset))))
     (setq w3m-current-content-charset content-charset)
     (decode-coding-region
      (point-min) (point-max)
@@ -4215,7 +4248,6 @@ argument.  Otherwise, it will be called with nil."
      (t ""))))
 
 (defun w3m-create-text-page (url type charset page-buffer)
-  (w3m-safe-decode-buffer url charset type)
   (setq w3m-current-url (w3m-real-url url)
 	w3m-current-title
 	(if (string= "text/html" type)
@@ -4267,6 +4299,7 @@ argument.  Otherwise, it will be called with nil."
       (setf (w3m-arrived-content-type url) type)))
   (setq type (w3m-prepare-content url type charset))
   (w3m-safe-decode-buffer url charset type)
+  (setq charset (or charset w3m-current-content-charset))
   (when w3m-use-filter (w3m-filter url))
   ;; Create pages.
   (cond
@@ -6426,6 +6459,8 @@ ex.) c:/dir/file => //c/dir/file"
     (narrow-to-region start end)
     (w3m-clear-local-variables)
     (let ((w3m-current-buffer (current-buffer)))
+      (unless charset
+	(setq charset (w3m-correct-charset (w3m-detect-meta-charset))))
       (setq w3m-current-url url
 	    w3m-current-base-url url
 	    w3m-current-coding-system
