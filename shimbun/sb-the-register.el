@@ -1,6 +1,6 @@
 ;;; sb-the-register.el --- The Register shimbun backend
 
-;; Copyright (C) 2004 David Hansen
+;; Copyright (C) 2004, 2005 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news
@@ -53,25 +53,40 @@
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-the-register))
   (concat shimbun-the-register-url
-          (cdr (assoc (shimbun-current-group-internal shimbun)
-                      shimbun-the-register-path-alist))))
+	  (cdr (assoc (shimbun-current-group-internal shimbun)
+		      shimbun-the-register-path-alist))))
 
 (luna-define-method shimbun-get-headers :around
   ((shimbun shimbun-the-register) &optional range)
   (mapcar
    (lambda (header)
-     (shimbun-header-set-xref
-      header (concat (shimbun-header-xref header) "print.html"))
+     ;; we will get redirected from http://go.theregister.com/feed/... to
+     ;; http://www.theregister.co.uk/...
+     ;; if we don't set the URL right shimbun can't follow the <img src=
+     (let ((url (shimbun-header-xref header)))
+       (setq url (w3m-replace-in-string
+		  url
+		  "http://go\\.theregister\\.com/feed/"
+		  "http://www.theregister.co.uk/"))
+       (shimbun-header-set-xref
+	header (concat url "print.html")))
      header)
    (luna-call-next-method)))
 
 (luna-define-method shimbun-make-contents
   :before ((shimbun shimbun-the-register) header)
   (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward "(<span class=\"URL\">" nil t nil)
-      (delete-region (match-beginning 0)
-                     (re-search-forward "</span>)" nil t nil)))))
+    ;; remove annoying stuff
+    (let ((junk '(("(<span class=\"URL\">" . "</span>)")
+		  ("<div class=\"Ad\">" . "</div>"))))
+      (while junk
+	(goto-char (point-min))
+	(let ((beg-str (caar junk)) (end-str (cdar junk)) beg end)
+	  (setq junk (cdr junk))
+	  (while (search-forward beg-str nil t)
+	    (setq beg (match-beginning 0))
+	    (when (setq end (search-forward end-str nil t))
+	      (delete-region beg end))))))))
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-the-register) url date)
@@ -82,7 +97,3 @@
 (provide 'sb-the-register)
 
 ;;; sb-the-register.el ends here
-
-
-
-
