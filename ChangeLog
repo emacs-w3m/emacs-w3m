@@ -1,3 +1,7 @@
+2004-01-04  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-rakuten.el: New file.
+
 2004-01-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-month-alist):

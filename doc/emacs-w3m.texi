@@ -4588,6 +4588,13 @@ This is an example to use @samp{sb-chalow}.
         ))
 @end lisp
 
+@item Diaries at @uref{http://plaza.rakuten.co.jp/, Rakuten Plaza}
+This is an example to use @samp{sb-rakuten}.
+@lisp
+(setq shimbun-rakuten-group-alist
+      '(("rakuten-id" . "email-address")))
+@end lisp
+
 @item Wiki contents
 This is an example to use @samp{sb-wiki}.  @samp{sb-wiki} support
 PukiWiki and Hiki.  If you don't know which regexps to set to 4th and

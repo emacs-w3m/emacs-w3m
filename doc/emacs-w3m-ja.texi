@@ -4666,6 +4666,15 @@ vinelinux.errata.1x
         ))
 @end lisp
 
+@item @uref{http://plaza.rakuten.co.jp/, 楽天広場} の日記
+閲覧したい日記を開設している人の楽天 ID とメールアドレスを調べて、以下の
+ように設定して使います。
+
+@lisp
+(setq shimbun-rakuten-group-alist
+      '(("rakuten-id" . "email-address")))
+@end lisp
+
 @item Wiki コンテンツ
 閲覧したい Wiki の URL を調べて、以下のように設定して使います。
 PukiWiki と Hiki に対応しています。もし、各内側のリストの 4 番目、5 番目
