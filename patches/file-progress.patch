@@ -1,0 +1,11 @@
+--- file.c	26 Sep 2003 17:59:51 -0000	1.229
++++ file.c	2 Oct 2003 01:09:08 -0000
+@@ -6582,6 +6582,8 @@
+ 	if (src)
+ 	    Strfputs(lineBuf2, src);
+ 	linelen += lineBuf2->length;
++	if (w3m_dump & DUMP_EXTRA)
++	    printf("W3m-progress: %s\n", convert_size2(linelen, current_content_length, TRUE));
+ 	if (w3m_dump & DUMP_SOURCE)
+ 	    continue;
+ 	showProgress(&linelen, &trbyte);
