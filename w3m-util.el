@@ -431,13 +431,24 @@ Otherwise return nil."
 	(prin1 (apply 'concat (nreverse rest)) stream))
     (prin1 object stream)))
 
+(defvar w3m-display-message-enable-logging nil
+  "*If non-nil, preserve echo messages in the *Message* buffer.")
+
 (defmacro w3m-display-message (string &rest args)
-  "Like `message', except that message logging is disabled."
+  "Like `message', except that message logging is controlled by the
+variable `w3m-display-message-enable-logging'."
   (if (featurep 'xemacs)
       (if args
-	  `(display-message 'no-log (format ,string ,@args))
-	`(display-message 'no-log ,string))
-    `(let (message-log-max)
+	  `(display-message (if w3m-display-message-enable-logging
+				'message
+			      'no-log)
+	     (format ,string ,@args))
+	`(display-message (if w3m-display-message-enable-logging
+			      'message
+			    'no-log)
+	   ,string))
+    `(let ((message-log-max (if w3m-display-message-enable-logging
+				message-log-max)))
        (message ,string ,@args))))
 
 (if (featurep 'xemacs)
