@@ -1,3 +1,9 @@
+2003-10-19  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
+
+	* shimbun/shimbun.el (shimbun-footer) [shimbun-japanese-newspaper]:
+	Add <br> in order to make a newline certainly.
+	* shimbun/sb-tdiary.el: Encode group names.
+
 2003-10-19  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-base-url): Removed.
