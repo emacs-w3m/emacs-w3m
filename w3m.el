@@ -1798,7 +1798,7 @@ with ^ as `cat -v' does."
 	    (setq end (min (1+ end) (point-max))))
 	  (w3m-add-text-properties start end
 				   (list 'w3m-name-anchor
-					 (append (list id) prenames))))))
+					 (cons id prenames))))))
     (goto-char (point-min))
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
@@ -1827,7 +1827,7 @@ with ^ as `cat -v' does."
 					   'w3m-cursor-anchor href
 					   'mouse-face 'highlight
 					   'w3m-name-anchor
-					   (append (list name) prenames)
+					   (cons name prenames)
 					   'help-echo help
 					   'balloon-help balloon))))
 	 (name
@@ -1840,7 +1840,7 @@ with ^ as `cat -v' does."
 			     (point-max))))
 	    (w3m-add-text-properties start end
 				     (list 'w3m-name-anchor
-					   (append (list name) prenames))))))))
+					   (cons name prenames))))))))
     (when w3m-next-url
       (setq w3m-next-url (w3m-expand-url w3m-next-url)))
     (when w3m-previous-url
