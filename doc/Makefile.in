@@ -18,7 +18,8 @@ TEXI2DVI     = @TEXI2DVI@
 PTEX         = @PTEX@
 JBIBTEX      = @JBIBTEX@
 EMACS        = @EMACS@
-FLAGS        = -q -no-site-file -batch -l ./w3mhack.el $(ADDITIONAL_LOAD_PATH)
+VANILLA_FLAG = @VANILLA_FLAG@
+FLAGS        = $(VANILLA_FLAG) -batch -l ./w3mhack.el $(ADDITIONAL_LOAD_PATH)
 EMACSINFO    = cd $(top_srcdir) && $(EMACS) $(FLAGS) -f w3mhack-makeinfo
 
 INFO_DEPS_EN = emacs-w3m.info
