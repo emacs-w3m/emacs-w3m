@@ -88,7 +88,8 @@ URL is the URL for TDIARY access point of the group.")
 						(string-to-number day)))
 	   (setq id (format "<%s.%s%s%s.%s@tdiary.org>"
 			    topic year month day
-			    (shimbun-current-group-internal (, shimbun))))
+			    (eword-encode-string
+			     (shimbun-current-group-internal (, shimbun)))))
 	   (push (shimbun-make-header
 		  0
 		  (shimbun-mime-encode-string subject)
