@@ -1076,13 +1076,20 @@ for a charset indication")
     "Regexp used in parsing to detect string."))
 
 (defconst w3m-dump-head-source-command-arguments
-  (if (eq w3m-type 'w3mmee)
-      (list "-dump=extra,head,source")
-    (list
-     '(if w3m-accept-languages "-o")
-     '(if w3m-accept-languages
-	  (concat "accept_language=" (mapconcat 'identity w3m-accept-languages " ")))
-     "-dump_extra"))
+  (cond ((eq w3m-type 'w3mmee)
+	 (list
+	  '(if w3m-accept-languages "-o")
+	  '(if w3m-accept-languages
+	       (concat "request_header Accept-Language: "
+		       (mapconcat 'identity w3m-accept-languages " ")))
+	  "-dump=extra,head,source"))
+	(t
+	 (list
+	  '(if w3m-accept-languages "-o")
+	  '(if w3m-accept-languages
+	       (concat "accept_language="
+		       (mapconcat 'identity w3m-accept-languages " ")))
+	  "-dump_extra")))
   "Arguments for 'dump_extra' execution of w3m.")
 
 (defvar w3m-halfdump-command nil
