@@ -1,15 +1,12 @@
+2004-04-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3mhack.el (w3mhack-generate-xemacs-load-file): New function.
+	(w3mhack-make-package): Use `w3mhack-generate-xemacs-load-file.
+
 2004-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3mhack.el (w3mhack-module-list): Enable it to run without
-	shimbun directory (assuming the case `make install-package').
-	(w3mhack-make-package): Use `w3mhack-generate-load-file'.
-	(w3mhack-update-files-autoloads): New function.
-	(w3mhack-generate-load-file): Allow the optional arg which
-	overrides `w3mhack-load-file'; use `autoload-ensure-default-file'
-	if it is available; provide the feature at the beginning of the
-	file; if it is used for the XEmacs package, add a code to check
-	whether the file has already been loaded, and provide the
-	`w3m-autoloads' feature; use `w3mhack-update-files-autoloads'.
+	* w3mhack.el (w3mhack-update-files-autoloads): New function.
+	(w3mhack-generate-load-file): Use `w3mhack-update-files-autoloads'.
 
 2004-04-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
