@@ -1340,27 +1340,35 @@ is nil, all data will be inserted in the current buffer."
   (if (buffer-name (process-buffer process))
       (with-current-buffer (process-buffer process)
 	(let ((buffer-read-only nil)
-	      (case-fold-search nil)
-	      (str))
+	      (case-fold-search nil))
 	  (goto-char (process-mark process))
 	  (insert string)
 	  (set-marker (process-mark process) (point))
-	  (forward-line 0)
-	  (cond
-	   ((looking-at "Password: ")
-	    (delete-region (point-min) (match-end 0))
-	    (setq w3m-process-passwd
-		  (or (nth 1 (w3m-exec-get-user w3m-current-url))
-		      (w3m-read-passwd "Password: "))
-		  str w3m-process-passwd))
-	   ((looking-at "Username: ")
-	    (delete-region (point-min) (match-end 0))
-	    (setq w3m-process-user
-		  (or (nth 0 (w3m-exec-get-user w3m-current-url))
-		      (read-from-minibuffer "Username: "))
-		  str w3m-process-user)))
-	  (if str
-	      (process-send-string process (concat str "\n")))))))
+	  (unless (string= "" string)
+	    (goto-char (point-min))
+	    (cond
+	     ((and (looking-at
+		    "\\(\nWrong username or password\n\\)?Username: Password: ")
+		   (= (match-end 0) (point-max)))
+	      (setq w3m-process-passwd
+		    (or (nth 1 (w3m-exec-get-user w3m-current-url))
+			(w3m-read-passwd "Password: ")))
+	      (condition-case nil
+		  (progn
+		    (process-send-string process
+					 (concat w3m-process-passwd "\n"))
+		    (delete-region (point-min) (point-max)))
+		(error nil)))
+	     ((and (looking-at
+		    "\\(\nWrong username or password\n\\)?Username: ")
+		   (= (match-end 0) (point-max)))
+	      (setq w3m-process-user
+		    (or (nth 0 (w3m-exec-get-user w3m-current-url))
+			(read-from-minibuffer "Username: ")))
+	      (condition-case nil
+		  (process-send-string process
+				       (concat w3m-process-user "\n"))
+		(error nil)))))))))
 
 
 ;;; Handle character sets:
