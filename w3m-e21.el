@@ -81,33 +81,32 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 			  :ascent 'center))))
     (error nil)))
 
-(defvar w3m-cache-underline-faces nil
-  "Cache used to keep underlined faces detached from a buffer when
-showing images inline.  It is a buffer-local variable which contains a
-list of a flag and lists of a beginning position, an end position and
-a face.  Flag will be set to t when caching is completed.")
-(make-variable-buffer-local 'w3m-cache-underline-faces)
-
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
   (add-text-properties beg end (list 'display image
 				     'intangible image
 				     'invisible nil))
-  (unless (car w3m-cache-underline-faces)
-    ;; Detach an underlined face if it exists.
-    (let ((face (get-text-property beg 'face)))
-      (when (and face
-		 (face-underline-p face))
-	(put-text-property beg end 'face nil)
-	(push (list (set-marker (make-marker) beg)
-		    (set-marker (make-marker) end)
-		    face)
-	      (cdr w3m-cache-underline-faces))))))
+  ;; Hide underlines behind inline images.
+
+  ;; Gerd Moellmann <gerd@gnu.org>, the maintainer of Emacs 21, wrote in
+  ;; the article <86heyi7vks.fsf@gerd.segv.de> in the list emacs-pretest-
+  ;; bug@gnu.org on 18 May 2001 that to show an underline of a text even
+  ;; if it has an image as a text property is the feature of Emacs 21.
+  ;; However, that behavior is not welcome to the w3m buffers, so we do
+  ;; to fix it with the following stuffs.
+  (let ((face (get-text-property beg 'face)))
+    (when (and face
+	       (face-underline-p face))
+      (put-text-property beg end 'face nil)
+      (put-text-property beg end 'w3m-underline-face face))))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."
-  (remove-text-properties beg end '(display nil intangible nil)))
+  (remove-text-properties beg end '(display nil intangible nil))
+  (let ((underline (get-text-property beg 'w3m-underline-face)))
+    (when underline
+      (put-text-property beg end 'face underline))))
 
 (defun w3m-image-type-available-p (image-type)
   "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
@@ -215,41 +214,6 @@ Buffer string between BEG and END are replaced with IMAGE."
 				   "mouse-2 prompts to input URL"))))))
 
 (add-hook 'w3m-mode-hook 'w3m-setup-header-line)
-
-;;; Hide underlines behind inline images.
-
-;; Gerd Moellmann <gerd@gnu.org>, the maintainer of Emacs 21, wrote in
-;; the article <86heyi7vks.fsf@gerd.segv.de> in the list emacs-pretest-
-;; bug@gnu.org on 18 May 2001 that to show an underline of a text even
-;; if it has an image as a text property is the feature of Emacs 21.
-;; However, that behavior is not welcome to the w3m buffers, so we do
-;; to fix it with the following stuffs.
-
-(add-hook 'w3m-fontify-before-hook
-	  (lambda ()
-	    "Clear the cache for underlined faces."
-	    (setq w3m-cache-underline-faces (list nil))))
-
-(add-hook 'w3m-show-inline-images-before-hook
-	  (lambda ()
-	    "Detach the underlined faces."
-	    (when (car w3m-cache-underline-faces)
-	      (dolist (elem (cdr w3m-cache-underline-faces))
-		(w3m-add-text-properties (car elem) (cadr elem)
-					 (list 'face nil))))))
-
-(add-hook 'w3m-show-inline-images-after-hook
-	  (lambda ()
-	    "Set a flag as the caching underlined faces is completed."
-	    (when (consp w3m-cache-underline-faces)
-	      (setcar w3m-cache-underline-faces t))))
-
-(add-hook 'w3m-remove-inline-images-after-hook
-	  (lambda ()
-	    "Restore the detached faces."
-	    (dolist (elem (cdr w3m-cache-underline-faces))
-	      (w3m-add-text-properties (car elem) (cadr elem)
-				       (cons 'face (cddr elem))))))
 
 (provide 'w3m-e21)
 ;;; w3m-e21.el ends here.

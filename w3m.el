@@ -300,8 +300,9 @@ reason.  The value will be referred by the function `w3m-load-list'.")
   :type 'boolean)
 
 (defcustom w3m-display-inline-image nil
-  "Whether to display images inline.  It will be ignored when there is no
-condition to display images."
+  "Whether to display images inline.
+The value may be changed by the command `w3m-toggle-inline-images'.
+It will be ignored when there is no condition to display images."
   :group 'w3m
   :type 'boolean)
 
@@ -452,21 +453,6 @@ apply the patch posted in [emacs-w3m:01119]."
   "*Hook run after w3m-fontify called."
   :group 'w3m
   :type 'hook)
-
-(defvar w3m-show-inline-images-before-hook nil
-  "Hook run before showing inline images in `w3m-toggle-inline-images'.
-It will be used for the w3m system internal for Emacs 21.")
-
-(defvar w3m-show-inline-images-after-hook nil
-  "Hook run after showing inline images in `w3m-toggle-inline-images'.
-It will be used for the w3m system internal for Emacs 21.")
-
-(defvar w3m-remove-inline-images-before-hook nil
-  "Hook run before removing inline images in `w3m-toggle-inline-images'.")
-
-(defvar w3m-remove-inline-images-after-hook nil
-  "Hook run after removing inline images in `w3m-toggle-inline-images'.
-It will be used for the w3m system internal for Emacs 21.")
 
 (defcustom w3m-async-exec t
   "*If non-nil, w3m is executed as an asynchronous process."
@@ -784,8 +770,17 @@ will disclose your private informations, for example:
 		     (bzip . ("x-bzip" "bzip" "bzip2"))
 		     (deflate . ("x-deflate" "deflate")))))))
 
+(defconst w3m-modeline-image-status-on "[IMG]"
+  "Modeline string which is displayed when inline image is on.")
+
+(defconst w3m-modeline-image-status-off "[ - ]"
+  "Modeline string which is displayed when inline image is off.")
+
 (defvar w3m-initial-frame nil "Initial frame of this session.")
 (make-variable-buffer-local 'w3m-initial-frame)
+
+(defvar w3m-image-only-page nil "Non-nil if image only page.")
+(make-variable-buffer-local 'w3m-image-only-page)
 
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-base-url nil "Base URL of this buffer.")
@@ -848,9 +843,6 @@ will disclose your private informations, for example:
 (defvar w3m-process-temp-file nil)
 (make-variable-buffer-local 'w3m-process-temp-file)
 (defvar w3m-process-exit-status nil "The last exit status of a process.")
-
-(defvar w3m-display-inline-image-status nil) ; 'on means image is displayed
-(make-variable-buffer-local 'w3m-display-inline-image-status)
 
 (defconst w3m-image-type-alist
   '(("image/jpeg" . jpeg)
@@ -1664,6 +1656,7 @@ half-dumped data."
       (when (search-forward "</img_alt>" nil t)
 	(delete-region (setq end (match-beginning 0)) (match-end 0))
 	(w3m-add-text-properties start end (list 'w3m-image src
+						 'w3m-image-status 'off
 						 'w3m-image-redundant upper))
 	(unless (get-text-property start 'w3m-href-anchor)
 	  ;; No need to use `w3m-add-text-properties' here.
@@ -1672,31 +1665,32 @@ half-dumped data."
 					       'help-echo help
 					       'balloon-help balloon)))))))
 
-(defun w3m-toggle-inline-images (&optional force no-cache)
+(defsubst w3m-toggle-inline-images-internal (status no-cache url)
   "Toggle displaying of inline images on current buffer.
-If optional argument FORCE is non-nil, displaying is forced.
-If second optional argument NO-CACHE is non-nil, cache is not used."
+STATUS is current image status.
+If NO-CACHE is non-nil, cache is not used.
+If URL is specified, only the image with URL is toggled."
   (interactive "P")
-  (unless (w3m-display-graphic-p)
-    (error "Can't display images in this environment"))
-  (unless (and force (eq w3m-display-inline-image-status 'on))
-    (let ((cur-point (point))
-	  (buffer-read-only)
-	  point end url image message)
-      (if (or force (eq w3m-display-inline-image-status 'off))
-	  (save-excursion
-	    (run-hooks 'w3m-show-inline-images-before-hook)
-	    (goto-char (point-min))
-	    (while (if (get-text-property (point) 'w3m-image)
-		       (setq point (point))
-		     (setq point (next-single-property-change (point)
-							      'w3m-image)))
-	      (unless message (setq message (message "Showing images...")))
-	      (setq end (or (next-single-property-change point 'w3m-image)
-			    (point-max)))
-	      (goto-char end)
-	      (if (setq url (w3m-image point))
-		  (setq url (w3m-expand-url url)))
+  (let ((cur-point (point))
+	(buffer-read-only)
+	point beg end iurl image)
+    (if (equal status 'off)
+	(save-excursion
+	  (goto-char (point-min))
+	  (while (if (get-text-property (point) 'w3m-image)
+		     (setq point (point))
+		   (setq point (next-single-property-change (point)
+							    'w3m-image)))
+	    (setq beg point
+		  end (or (next-single-property-change point 'w3m-image)
+			  (point-max)))
+	    (goto-char end)
+	    (setq iurl (w3m-image point))
+	    (when (and (or (null url)
+			   ;; URL is specified and is same as the image URL.
+			   (and url (string= url iurl)))
+		       (not (eq (get-text-property beg 'w3m-image-status)
+				'on)))
 	      (if (get-text-property point 'w3m-image-redundant)
 		  (progn
 		    ;; Insert dummy string instead of redundant image.
@@ -1713,29 +1707,34 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 					       w3m-image "dummy")))
 		(save-excursion
 		  (goto-char cur-point)
-		  (when (and url
-			     (setq image (w3m-create-image url no-cache
+		  (when (and iurl
+			     (setq image (w3m-create-image iurl no-cache
 							   w3m-current-url)))
 		    (w3m-insert-image point end image)
 		    ;; Redisplay
-		    (and w3m-force-redisplay (sit-for 0))))))
-	    (run-hooks 'w3m-show-inline-images-after-hook)
-	    (when message (message "Showing images...done"))
-	    (setq w3m-display-inline-image-status 'on))
-	(save-excursion
-	  (run-hooks 'w3m-remove-inline-images-before-hook)
-	  (goto-char (point-min))
-	  (while (if (get-text-property (point) 'w3m-image)
-		     (setq point (point))
-		   (setq point (next-single-property-change (point)
-							    'w3m-image)))
-	    (setq end (or (next-single-property-change point 'w3m-image)
-			  (point-max)))
-	    (goto-char end)
-	    ;; IMAGE-ALT-STRING DUMMY-STRING
-	    ;; <--------w3m-image---------->
-	    ;; <---redundant--><---dummy--->
-	    ;; <---invisible-->
+		    (and w3m-force-redisplay (sit-for 0)))))
+	      (w3m-add-text-properties beg end '(w3m-image-status on)))))
+      ;; Remove.
+      (save-excursion
+	(goto-char (point-min))
+	(while (if (get-text-property (point) 'w3m-image)
+		   (setq point (point))
+		 (setq point (next-single-property-change (point)
+							  'w3m-image)))
+	  (setq beg point
+		end (or (next-single-property-change point 'w3m-image)
+			(point-max)))
+	  (goto-char end)
+	  (setq iurl (w3m-image point))
+	  ;; IMAGE-ALT-STRING DUMMY-STRING
+	  ;; <--------w3m-image---------->
+	  ;; <---redundant--><---dummy--->
+	  ;; <---invisible-->
+	  (when (and (or (null url)
+			 ;; URL is specified and is not same as the image URL.
+			 (and url (string= url iurl)))
+		     (not (eq (get-text-property beg 'w3m-image-status)
+			      'off)))
 	    (cond
 	     ((get-text-property point 'w3m-image-redundant)
 	      ;; Remove invisible property.
@@ -1743,9 +1742,37 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 	     ((get-text-property point 'w3m-image-dummy)
 	      ;; Remove dummy string.
 	      (delete-region point end))
-	     (t (w3m-remove-image point end))))
-	  (run-hooks 'w3m-remove-inline-images-after-hook)
-	  (setq w3m-display-inline-image-status 'off))))))
+	     (t (w3m-remove-image point end)))
+	    (w3m-add-text-properties beg end '(w3m-image-status off))))))))
+
+(defun w3m-toggle-inline-image (&optional force no-cache)
+  (interactive "P")
+  (unless (w3m-display-graphic-p)
+    (error "Can't display images in this environment"))
+  (let ((url (w3m-image (point)))
+	(status (get-text-property (point) 'w3m-image-status)))
+    (if url
+	(progn
+	  (if force (setq status 'off))
+	  (unwind-protect
+	      (w3m-toggle-inline-images-internal status no-cache url)
+	    (set-buffer-modified-p nil)))
+      (message "No image at point"))))
+
+(defun w3m-toggle-inline-images (&optional force no-cache)
+  (interactive "P")
+  (unless (w3m-display-graphic-p)
+    (error "Can't display images in this environment"))
+  (if force (setq w3m-display-inline-image nil))
+  (unwind-protect
+      (progn
+	(w3m-toggle-inline-images-internal (if w3m-display-inline-image
+					       'on 'off)
+					   no-cache nil)
+	(setq w3m-display-inline-image
+	      (not w3m-display-inline-image)))
+    (set-buffer-modified-p nil)
+    (force-mode-line-update)))
 
 (defun w3m-decode-entities (&optional reserve-prop)
   "Decode entities in the current buffer.
@@ -2877,6 +2904,7 @@ this function returns t.  Otherwise, returns nil."
 		      w3m-current-title (file-name-nondirectory url))
 		(delete-region (point-min) (point-max))
 		(insert w3m-current-title)
+		(setq w3m-image-only-page t)
 		(w3m-add-text-properties (point-min) (point-max)
 					 (list 'face 'w3m-image-face
 					       'w3m-image url
@@ -3327,7 +3355,8 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "c" 'w3m-print-current-url)
     (define-key map "M" 'w3m-view-current-url-with-external-browser)
     (define-key map "g" 'w3m-goto-url)
-    (define-key map "t" 'w3m-toggle-inline-images)
+    (define-key map "T" 'w3m-toggle-inline-images)
+    (define-key map "t" 'w3m-toggle-inline-image)
     (define-key map "U" 'w3m-goto-url)
     (define-key map "V" 'w3m-goto-url)
     (define-key map "v" 'w3m-bookmark-view)
@@ -3662,6 +3691,7 @@ of the request."
     (w3m-static-if (fboundp 'universal-coding-system-argument)
 	coding-system-for-read)))
   (set-text-properties 0 (length url) nil url)
+  (setq w3m-image-only-page nil)
   (cond
    ;; process mailto: protocol
    ((string-match "^mailto:\\(.*\\)" url)
@@ -3678,7 +3708,14 @@ of the request."
       (unless (eq major-mode 'w3m-mode)
 	(w3m-mode)
 	(setq mode-line-buffer-identification
-	      (list "%b" " / " 'w3m-current-title))))
+	      (list "%b"))
+	(if (w3m-display-graphic-p)
+	    (nconc mode-line-buffer-identification
+		   (list " " '((w3m-display-inline-image
+				w3m-modeline-image-status-on
+				w3m-modeline-image-status-off)))))
+	(nconc mode-line-buffer-identification
+	       (list " / " 'w3m-current-title))))
     ;; Setup arrived database.
     (w3m-arrived-setup)
     ;; Store the current position in the history structure.
@@ -3739,10 +3776,13 @@ of the request."
 				      nil nil t)
 	  (or (and name (w3m-search-name-anchor name))
 	      (goto-char (point-min)))
-	  (setq w3m-display-inline-image-status 'off)
-	  (when (w3m-display-inline-image-p)
-	    (and w3m-force-redisplay (sit-for 0))
-	    (w3m-toggle-inline-images 'force reload))
+	  (cond ((w3m-display-inline-image-p)
+		 (and w3m-force-redisplay (sit-for 0))
+		 (w3m-toggle-inline-images 'force reload))
+		((and (w3m-display-graphic-p)
+		      w3m-image-only-page)
+		 (and w3m-force-redisplay (sit-for 0))
+		 (w3m-toggle-inline-image 'force reload)))
 	  (setq buffer-read-only t)
 	  (set-buffer-modified-p nil)))
 	(w3m-arrived-add orig w3m-current-title nil nil cs ct))
@@ -3914,7 +3954,6 @@ ex.) c:/dir/file => //c/dir/file"
 	  w3m-current-title
 	  (w3m-rendering-region (point-min) (point-max)))
     (w3m-fontify)
-    (setq w3m-display-inline-image-status 'off)
     (when (w3m-display-inline-image-p)
       (and w3m-force-redisplay (sit-for 0))
       (w3m-toggle-inline-images 'force))))

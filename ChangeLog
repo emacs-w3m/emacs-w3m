@@ -1,3 +1,31 @@
+2001-10-03  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-show-inline-images-before-hook,
+	w3m-show-inline-images-after-hook,
+	w3m-remove-inline-images-before-hook,
+	w3m-remove-inline-images-after-hook): Abolished.
+	(w3m-modeline-image-status-on): New constant.
+	(w3m-modeline-image-status-off): Ditto.
+	(w3m-image-only-page): New buffer local variable.
+	(w3m-display-inline-image-status): Abolished.
+	(w3m-fontify-images): Put `w3m-image-status property'.
+	(w3m-toggle-inline-images-internal): New inline function.
+	(w3m-exec): Set w3m-image-only-page as t.
+	(w3m-lynx-like-map): Bind "T" to 'w3m-toggle-inline-images and
+	"t" to 'w3m-toggle-inline-image.
+	(w3m-goto-url): Set w3m-image-only-page as nil at first;
+	Setup modeline to display image display status;
+	Display image if w3m-image-only-page is nil.
+
+	* w3m-e21.el (w3m-cache-underline-faces): Abolished.
+	(w3m-insert-image): Set text property 'w3m-undeline-face to the image
+	instead of setting up w3m-cache-underline-faces.
+	(w3m-remove-image): Recover underline faces.
+	(w3m-fontify-before-hook,
+	w3m-show-inline-images-before-hook,
+	w3m-show-inline-images-after-hook,
+	w3m-remove-inline-images-after-hook): Don't set up.
+
 2001-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-om.el (w3m-detect-coding-region): Make it work.
