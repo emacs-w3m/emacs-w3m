@@ -335,7 +335,7 @@
 2002-02-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mime-w3m.el (mime-w3m-mode-dont-bind-keys): New variable.
-	(mime-setup-w3m): Don't bind keys listed in the above.
+	(mime-w3m-setup): Don't bind keys listed in the above.
 
 	* w3m.el (w3m-key-binding): Switch key bindings also in w3m-mode
 	buffers when customizing; don't manipulate keymaps when Emacs is
