@@ -582,7 +582,8 @@ configuration file (normally \"~/.w3m/config\")."
   :type '(repeat (string :format "Lang: %v\n" :size 0)))
 
 (defcustom w3m-delete-duplicated-empty-lines t
-  "*Compactize page by deleting duplicated empty lines."
+  "*Non-nil means make two or more continuous empty lines into single
+in emacs-w3m buffers."
   :group 'w3m
   :type 'boolean)
 
@@ -643,8 +644,8 @@ if a string like URL exists around the cursor.  Otherwise, the
   (or (getenv "HTTP_HOME")
       (getenv "WWW_HOME")
       "about:")
-  "*Don't say HP, which is the abbreviated name of a certain company. ;-)
-This variable specifies the URL string to open when emacs-w3m starts."
+  "*This variable specifies the URL string to open when emacs-w3m starts.
+Don't say HP, which is the abbreviated name of a certain company. ;-)"
   :group 'w3m
   :type '(string :size 0))
 
@@ -685,7 +686,7 @@ of the original request method."
   :type 'boolean)
 
 (defcustom w3m-resize-image-scale 50
-  "*Number of step in percent used when resizing images."
+  "*Number of steps in percent used when resizing images."
   :group 'w3m
   :type '(integer :size 0))
 
@@ -757,33 +758,34 @@ of the original request method."
   "Face used for displaying strike-through text."
   :group 'w3m-face)
 
-(defcustom w3m-fontify-strike-through (or (and (featurep 'w3m-e21)
-					       window-system)
-					  (and (featurep 'w3m-xmas)
-					       (device-on-window-system-p)))
-  "*Non-nil means use `strike-through' attribute to display deleted text."
-  :group 'w3m
-  :type 'boolean)
+(defvar w3m-fontify-strike-through (or (featurep 'w3m-e21)
+				       (featurep 'w3m-xmas))
+  "Non-nil means use `strike-through' attribute to display deleted text.")
 
 (defcustom w3m-mode-hook nil
-  "*Hook run after `w3m-mode' called."
+  "*Hook run after `w3m-mode' initialization.
+This hook is evaluated by the `w3m-mode' function."
   :group 'w3m
   :type 'hook)
 
 (defcustom w3m-fontify-before-hook nil
-  "*Hook run before `w3m-fontify' called."
+  "*Hook run when starting to fontify emacs-w3m buffers.
+This hook is evaluated by the `w3m-fontify' function."
   :group 'w3m
   :type 'hook)
 
 (defcustom w3m-fontify-after-hook nil
-  "*Hook run after `w3m-fontify' called."
+  "*Hook run after fontifying emacs-w3m buffers.
+This hook is evaluated by the `w3m-fontify' function."
   :group 'w3m
   :type 'hook)
 
 (defcustom w3m-display-hook
   '(w3m-move-point-for-localcgi
     w3m-history-highlight-current-url)
-  "*Hook run at the end of `w3m-goto-url'."
+  "*List of functions run after displaying pages in emacs-w3m buffers.
+Each function is called with a url string as the argument.  This hook
+is evaluated by the `w3m-goto-url' function."
   :group 'w3m
   :type 'hook
   :initialize 'w3m-custom-hook-initialize)
@@ -792,44 +794,46 @@ of the original request method."
   '(w3m-highlight-current-anchor
     w3m-print-this-url
     w3m-auto-show)
-  "*Hook run after cursor moved in w3m buffers."
-  :group 'w3m
+  "*Hook run each time after the cursor moves in emacs-w3m buffers.
+This hook is called by the `w3m-check-current-position' function by
+way of `post-command-hook'."
   :type 'hook
   :initialize 'w3m-custom-hook-initialize)
 
 (defcustom w3m-delete-buffer-hook
   '(w3m-pack-buffer-numbers)
-  "*Hook run when any w3m buffers are deleted."
+  "*Hook run when every emacs-w3m buffer is deleted."
   :group 'w3m
   :type 'hook
   :initialize 'w3m-custom-hook-initialize)
 
 (defcustom w3m-select-buffer-hook nil
-  "*Hook run when a different w3m buffer is selected."
+  "*Hook run when a different emacs-w3m buffer is selected."
   :group 'w3m
   :type 'hook)
 
 (defcustom w3m-async-exec t
-  "*If non-nil, w3m is executed as an asynchronous process."
+  "*Non-nil means execute the w3m command asynchronously in Emacs process."
   :group 'w3m
   :type 'boolean)
 
 ;; As far as we know, Emacs 20/21 under Mac OS X[1] and XEmacs under
 ;; Solaris[2] won't run the asynchronous operations correctly when
 ;; both `w3m-async-exec' and `w3m-process-connection-type' are non-nil;
-;; [1] the final kilobyte or so might get lost from raw data downloaded
-;; from a web site; [2] XEmacs hangs up.
+;; [1]the final kilobyte or so might get lost from raw data downloaded
+;; from a web site; [2]XEmacs hangs up.
 
 (defcustom w3m-process-connection-type
   (not (or (memq system-type '(darwin macos))
 	   (and (featurep 'xemacs)
 		(string-match "solaris" system-configuration))))
-  "*Process connection type for w3m execution."
+  "*Value for `process-connection-type' used when communicating with the
+w3m command."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-default-content-type "text/html"
-  "*Default content type of local files."
+  "*Default value assumed as the content type of local files."
   :group 'w3m
   :type '(string :size 0))
 
@@ -838,11 +842,12 @@ of the original request method."
       (w3m-which-command "eeyes")
       (w3m-which-command "xloadimage")
       (w3m-which-command "xv"))
-  "*Command to view image files.
-Note: this option is installed temporally.  It will be abolished by
-the implement of the mailcap parser to set `w3m-content-type-alist'.")
+  "*Command used to view image files externally.
+Note that this option is installed temporally.  It will be abolished
+when we implement the mailcap parser to set `w3m-content-type-alist'.")
 
-;; FIXME: 本当は mailcap を適切に読み込んで設定する必要がある
+;; FIXME: we need to improve so that to set up the value of this
+;; variable may be performed by parsing the mailcap file.
 (defcustom w3m-content-type-alist
   (let* ((fiber-viewer (when (eq system-type 'windows-nt)
 			 (list "fiber.exe" "-s" 'file)))
@@ -891,7 +896,7 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
       ("application/postscript" "\\.e?ps\\'" ,ps-viewer nil)
       ("application/pdf" "\\.pdf\\'" ,pdf-viewer nil)
       ("application/xhtml+xml" nil nil "text/html")))
-  "*Alist of file suffixes vs. content type."
+  "*Alist of file suffixes and content types."
   :group 'w3m
   :type '(repeat
 	  (group
@@ -918,12 +923,12 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
 		  (string :format "Equivalent type: %v\n" :size 0)
 		  (function :format "Function: %v\n" :size 0)))))
 
-;; FIXME: w3m-encoding-type-alist / w3m-decoder-alist / w3m-encoding-alist
-;; の相互の関係が複雑かつ冗長なので整理の必要あり．
+;; FIXME: we need to rearrange the complicated and redundant relation of
+;; `w3m-encoding-type-alist', `w3m-decoder-alist', and `w3m-encoding-alist'.
 (defcustom w3m-encoding-type-alist
   '(("\\.gz\\'" . "gzip")
     ("\\.bz2?\\'" . "bzip"))
-  "*Alist of file suffixes vs. content encoding types."
+  "*Alist of file suffixes and content encoding types."
   :group 'w3m
   :type '(repeat
 	  (cons :format "%v" :indent 14
@@ -932,7 +937,7 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
 
 (defcustom w3m-decoder-alist
   `((gzip "gzip" ("-d"))	;; Don't use "gunzip" and "bunzip2"
-    (bzip "bzip2" ("-d"))	;; for broken OS & environment
+    (bzip "bzip2" ("-d"))	;; for broken OS and implementations.
     (deflate
       ,(if (not noninteractive)
 	   (let ((exec-path
@@ -944,7 +949,7 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
 			  (expand-file-name "lib/w3m" prefix)))))
 	     (w3m-which-command "inflate")))
       nil))
-  "Associative list of DECODER."
+  "Alist of encoding types, decoder commands, and arguments."
   :group 'w3m
   :type '(repeat
 	  (group :indent 4
@@ -993,8 +998,8 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
 	  (setq dest (cons (car rest) dest)))
       (setq rest (cdr rest)))
     dest)
-  "Alist MIME CHARSET vs CODING-SYSTEM.
-MIME CHARSET and CODING-SYSTEM must be symbol."
+  "Alist of MIME charsets and coding systems.
+Both charsets and coding systems must be symbol."
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 2
 		       (symbol :format "%t: %v\n" :size 0)
@@ -1018,24 +1023,25 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
     ("x-shift-jis"  . "shift_jis")
     ("x-shift_jis"  . "shift_jis")
     ("x-sjis"	    . "shift_jis"))
-  "Alist of MIME CHARSET, strange one vs standard one."
+  "Alist of MIME charsets; strange ones and standard ones."
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 11
 		       (string :format "From: %v\n" :size 0)
 		       (string :format "To: %v\n" :size 0))))
 
 (defcustom w3m-horizontal-scroll-columns 10
-  "*Column size to scroll horizontally."
+  "*Number of steps in columns used when scrolling a window horizontally."
   :group 'w3m
   :type '(integer :size 0))
 
 (defcustom w3m-horizontal-shift-columns 2
-  "*Column size to shift horizontally."
+  "*Number of steps in columns used when shifting a window horizontally.
+The term `shifting' means a fine level scrolling."
   :group 'w3m
   :type '(integer :size 0))
 
 (defcustom w3m-use-form t
-  "*Non-nil means form extension is activated. (EXPERIMENTAL)"
+  "*Non-nil means activate the form extensions. (EXPERIMENTAL)"
   :group 'w3m
   :type 'boolean
   :require 'w3m-form)
@@ -2572,7 +2578,10 @@ should use `w3m-url-encode-string' instead of this."
 
 (defun w3m-fontify-strike-through ()
   "Fontify strike-through characters in this buffer which contains half-dumped data."
-  (when w3m-fontify-strike-through
+  (when (and w3m-fontify-strike-through
+	     (w3m-static-if (featurep 'xemacs)
+		 (device-on-window-system-p)
+	       window-system))
     (goto-char (point-min))
     (while (search-forward "[DEL:" nil t)
       (let ((start (match-beginning 0)))
