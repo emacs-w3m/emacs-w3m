@@ -1,6 +1,6 @@
 ;;; sb-debian.el --- shimbun backend for debian.org
 
-;; Copyright (C) 2001 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2001,2002 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -38,9 +38,9 @@
     "debian-announce" "debian-commercial" "debian-firewall" "debian-french"
     "debian-isp" "debian-italian" "debian-kde" "debian-laptop" "debian-news"
     "debian-news-german" "debian-news-portuguese" "debian-security-announce"
-    "debian-testing" "debian-user" "debian-user-catalan" "debian-user-french"
-    "debian-user-polish" "debian-user-portuguese" "debian-user-spanish"
-    "debian-user-swedish"
+    "debian-testing" "debian-user" "debian-user-catalan" "debian-user-de"
+    "debian-user-french" "debian-user-german" "debian-user-polish"
+    "debian-user-portuguese" "debian-user-spanish" "debian-user-swedish"
     ;; Developers
     "debian-admintool" "debian-apache" "debian-autobuild" "debian-beowulf"
     "debian-boot" "debian-cd" "debian-ctte" "debian-debbugs" "debian-devel"
@@ -48,13 +48,13 @@
     "debian-devel-spanish" "debian-doc" "debian-dpkg" "debian-emacsen"
     "debian-events-eu" "debian-events-na" "debian-faq" "debian-gcc"
     "debian-glibc" "debian-gtk-gnome" "debian-hams" "debian-ipv6"
-    "debian-java" "debian-jr" "debian-mentors" "debian-newmaint"
-    "debian-newmaint-admin" "debian-ocaml-maint" "debian-openoffice"
-    "debian-perl" "debian-pilot" "debian-policy" "debian-pool"
-    "debian-python" "debian-qa" "debian-qa-private" "debian-release"
-    "debian-security" "debian-snapshots" "debian-tetex-maint"
-    "debian-toolchain" "debian-vote" "debian-wnpp" "debian-www" "debian-x"
-    "deity"
+    "debian-java" "debian-jr" "debian-med" "debian-mentors" "debian-newmaint"
+    "debian-newmaint-admin" "debian-newmaint-discuss" "debian-ocaml-maint"
+    "debian-openoffice" "debian-perl" "debian-pilot" "debian-policy"
+    "debian-pool" "debian-python" "debian-qa" "debian-qa-packages"
+    "debian-qa-private" "debian-release" "debian-security" "debian-snapshots"
+    "debian-ssh" "debian-tetex-maint" "debian-toolchain" "debian-vote"
+    "debian-wnpp" "debian-www" "debian-x" "deity"
     ;; Internationalization and Translations
     "debian-chinese" "debian-chinese-big5" "debian-chinese-gb"
     "debian-esperanto" "debian-i18n" "debian-japanese" "debian-l10n-catalan"
