@@ -242,31 +242,33 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
   (if (not handler)
       (w3m-process-with-wait-handler
 	(w3m-create-image url no-cache referer handler))
-    (w3m-process-do-with-temp-buffer
-	(type (condition-case err
-		  (w3m-retrieve url 'raw no-cache nil referer handler)
-		(error (message "While retrieving %s: %s" url err) nil)))
-      (when (w3m-image-type-available-p (setq type (w3m-image-type type)))
-	(let ((data (buffer-string)))
-	  (or (and (eq type 'gif)
-		   (or w3m-should-unoptimize-animated-gifs
-		       w3m-should-convert-interlaced-gifs)
-		   w3m-gifsicle-program
-		   (w3m-fix-gif url data no-cache))
-	      (and (eq type 'xbm)
-		   (let (width height content)
-		     (with-temp-buffer
-		       (insert data)
-		       (goto-char (point-min))
-		       (if (re-search-forward "width[ \t]+\\([0-9]+\\)")
-			   (setq width (string-to-int (match-string 1))))
-		       (if (re-search-forward "height[ \t]+\\([0-9]+\\)")
-			   (setq height (string-to-int (match-string 1))))
-		       (while (re-search-forward "0x\\(..\\)" nil t)
-			 (setq content (cons (string-to-int (match-string 1) 16) content)))
-		       (setq content (concat (nreverse content))))
-		     (make-glyph (vector 'xbm :data (list width height content)))))
-	      (make-glyph (vector type :data data))))))))
+    (lexical-let ((url url)
+		  (no-cache no-cache))
+      (w3m-process-do-with-temp-buffer
+	  (type (condition-case err
+		    (w3m-retrieve url 'raw no-cache nil referer handler)
+		  (error (message "While retrieving %s: %s" url err) nil)))
+	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
+	  (let ((data (buffer-string)))
+	    (or (and (eq type 'gif)
+		     (or w3m-should-unoptimize-animated-gifs
+			 w3m-should-convert-interlaced-gifs)
+		     w3m-gifsicle-program
+		     (w3m-fix-gif url data no-cache))
+		(and (eq type 'xbm)
+		     (let (width height content)
+		       (with-temp-buffer
+			 (insert data)
+			 (goto-char (point-min))
+			 (if (re-search-forward "width[ \t]+\\([0-9]+\\)")
+			     (setq width (string-to-int (match-string 1))))
+			 (if (re-search-forward "height[ \t]+\\([0-9]+\\)")
+			     (setq height (string-to-int (match-string 1))))
+			 (while (re-search-forward "0x\\(..\\)" nil t)
+			   (setq content (cons (string-to-int (match-string 1) 16) content)))
+			 (setq content (concat (nreverse content))))
+		       (make-glyph (vector 'xbm :data (list width height content)))))
+		(make-glyph (vector type :data data)))))))))
 
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.

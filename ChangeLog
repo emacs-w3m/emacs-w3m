@@ -1,3 +1,8 @@
+2001-12-03  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-xmas.el (w3m-create-image): Bind some arguments lexically
+	for w3m-fix-gif().
+	
 2001-12-04  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-e21.el (w3m-setup-favicon): Fix for "about://" url.
