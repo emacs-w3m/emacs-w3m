@@ -1524,20 +1524,30 @@ nGU5ogjH0VZlYFN8VPoARAZZGviSlzpKdmneF5AAADs="
   "A small icon image for the url about://emacs-w3m.gif.  It is encoded
 in the optimized interlaced endlessly animated gif format and base64.")
 
-(defconst w3m-modeline-process-status-on "<PRC>"
-  "Modeline string which is displayed when the process is runnning now.")
+(defcustom w3m-process-modeline-format " loaded: %s"
+  "*A format to show status of retrieving process."
+  :group 'w3m
+  :type '(choice (string :tag "Format") function))
 
-(defconst w3m-modeline-image-status-on "[IMG]"
-  "Modeline string which is displayed when inline image is on.")
+(defvar w3m-modeline-process-status-on "<PRC>"
+  "Modeline string which is displayed when the process is runnning.
+The value will be modified for displaying the graphic icon.")
 
-(defconst w3m-modeline-status-off "[ - ]"
-  "Modeline string which is displayed when default status.")
+(defvar w3m-modeline-image-status-on "[IMG]"
+  "Modeline string which is displayed when inline images are on.
+The value will be modified for displaying the graphic icon.")
 
-(defconst w3m-modeline-ssl-image-status-on "[IMG(SSL)]"
-  "Modeline string which is displayed when inline image is on and use SSL connection.")
+(defvar w3m-modeline-status-off "[ - ]"
+  "Modeline string which is displayed by default.
+The value will be modified for displaying the graphic icon.")
 
-(defconst w3m-modeline-ssl-status-off "[SSL]"
-  "Modeline string which is displayed when SSL connection status.")
+(defvar w3m-modeline-ssl-image-status-on "[IMG(SSL)]"
+  "Modeline string which is displayed when inline image and SSL are on.
+The value will be modified for displaying the graphic icon.")
+
+(defvar w3m-modeline-ssl-status-off "[SSL]"
+  "Modeline string which is displayed when SSL is on.
+The value will be modified for displaying the graphic icon.")
 
 (defvar w3m-initial-frame nil "Initial frame of this session.")
 (make-variable-buffer-local 'w3m-initial-frame)
@@ -1825,11 +1835,12 @@ for a refresh indication")
 	 (list "-halfdump"
 	       "-o" "ext_halfdump=1"
 	       "-o" "strict_iso2022=0"
+	       "-o" "ucs_conv=1"
 	       '(if charset "-I") 'charset
 	       "-O"
-	       (if (eq w3m-output-coding-system 'utf-8)
-		   "UTF-8"
-		 "ISO-2022-JP-2" )))
+	       '(if (eq w3m-output-coding-system 'utf-8)
+		    "UTF-8"
+		  "ISO-2022-JP-2")))
 	((eq w3m-input-coding-system 'w3m-euc-japan)
 	 (list "-halfdump" "-I" "e"))
 	(t (list "-halfdump")))
@@ -6135,32 +6146,30 @@ appropriate buffer and select it."
   (w3m-add-local-hook 'pre-command-hook 'w3m-store-current-position)
   (w3m-add-local-hook 'post-command-hook 'w3m-check-current-position)
   (w3m-static-when (featurep 'xemacs)
-    (w3m-make-spinner-image))
+    (w3m-initialize-graphic-icons))
   (setq mode-line-buffer-identification
-	(list
-	 "%b "
-	 (list
-	  (list 'w3m-current-process
-		(w3m-static-if (featurep 'xemacs)
-		    '(w3m-spinner-image
-		      ("" w3m-xmas-space-before-spinner w3m-spinner-image)
-		      w3m-modeline-process-status-on)
-		  'w3m-modeline-process-status-on)
-		'(w3m-current-ssl
-		  (w3m-display-inline-images
-		   w3m-modeline-ssl-image-status-on
-		   w3m-modeline-ssl-status-off)
-		  (w3m-display-inline-images
-		   w3m-modeline-image-status-on
-		   w3m-modeline-status-off))))
-	 (w3m-static-if (featurep 'xemacs)
-	     '(w3m-use-favicon
-	       (w3m-favicon-image
-		("" w3m-xmas-space-before-favicon w3m-favicon-image)
+	(list "%b "
+	      '(w3m-current-process
+		w3m-modeline-process-status-on
+		(w3m-current-ssl
+		 (w3m-display-inline-images
+		  w3m-modeline-ssl-image-status-on
+		  w3m-modeline-ssl-status-off)
+		 (w3m-display-inline-images
+		  w3m-modeline-image-status-on
+		  w3m-modeline-status-off)))
+	      (w3m-static-if (featurep 'xemacs)
+		  '(w3m-use-favicon
+		    (w3m-favicon-image
+		     ("" w3m-xmas-space-before-favicon w3m-favicon-image)
+		     " / ")
+		    " / ")
 		" / ")
-	       " / ")
-	   " / ")
-	 'w3m-current-title)))
+	      'w3m-current-title))
+  (unless (assq 'w3m-current-process mode-line-process)
+    (setq mode-line-process
+	  (cons (list 'w3m-current-process 'w3m-process-modeline-string)
+		mode-line-process))))
 
 ;;;###autoload
 (defun w3m-goto-url
