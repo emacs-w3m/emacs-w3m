@@ -408,6 +408,26 @@ byte-compile すれば良いです:
 
 @uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
 
+@item xml.el
+更新情報が RSS 形式で配布されているサイトを対象として @samp{shimbun} ラ
+イブラリを利用する場合に必要です。Emacs 21.x には同梱されていますから、
+インストールの必要はありません。それ以外の Emacsen を利用している場合は、
+以下のように、単にどこか (例えば @file{site-lisp/} ディレクトリ) にコピー
+して、byte-compile すれば良いです:
+
+@example
+# cp -p attic/xml.el /usr/local/share/emacs/20.7/site-lisp
+# cd /usr/local/share/emacs/20.7/site-lisp
+# emacs -batch -q -no-site-file -f batch-byte-compile xml.el
+@end example
+
+ただし、Emacs 19.34 (含 Mule 2.3) では、以下のようにオプションを
+追加して byte-compile してください。
+
+@example
+# emacs -batch -eval '(put (quote char-after) (quote byte-compile) nil)' -f batch-byte-compile xml.el
+@end example
+
 @item Mule-UCS
 Mule-UCS Emacs Lisp パッケージを使うことによって、あなた
 の Emacs が Unicode システムを扱うことができるようになります。

@@ -245,3 +245,15 @@ AC_DEFUN(AC_CHECK_ELISP,
   else
     AC_MSG_ERROR($1 is missing)
   fi])
+
+AC_DEFUN(AC_CHECK_XML,
+ [RSS=yes
+  AC_ARG_WITH(xml,
+   [  --with-xml              compile shimbun modules using xml.el [default: yes]],
+   [if test "x${withval}" = xno; then
+      RSS=no
+    fi]
+   [])
+  if test "x${RSS}" = xyes; then
+    AC_CHECK_ELISP(xml)
+  fi])

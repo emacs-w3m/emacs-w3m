@@ -371,6 +371,26 @@ the @samp{shimbun} library.  The @acronym{FLIM} package is available at:
 
 @uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
 
+@item xml.el
+This file is required to use @samp{shimbun} modules designed for sites
+which provide update information with RSS format.  Because it is
+distributed with Emacs 21.x, you do not need to install it when you use
+Emacs 21.x.  Otherwise, you may simply copy it somewhere (e.g.
+@file{site-lisp/} directory) and perform byte-compilation as follows:
+
+@example
+# cp -p attic/xml.el /usr/local/share/emacs/20.7/site-lisp
+# cd /usr/local/share/emacs/20.7/site-lisp
+# emacs -batch -q -no-site-file -f batch-byte-compile xml.el
+@end example
+
+When you use Emacs 19.34 (including Mule 2.3), additional options are
+required for byte-compilation as follows:
+
+@example
+# emacs -batch -eval '(put (quote char-after) (quote byte-compile) nil)' -f batch-byte-compile xml.el
+@end example
+
 @item Mule-UCS
 The Mule-UCS Emacs Lisp package makes your Emacs handle the Unicode
 system.  We recommend you install this package so that emacs-w3m can

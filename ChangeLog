@@ -1,5 +1,7 @@
 2004-04-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* configure.in, aclocal.m4: Add `--with-xml' option.
+
 	* shimbun/sb-zdnet.el: Removed.
 
 	* w3mhack.el (w3mhack-module-list): New function.
