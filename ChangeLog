@@ -1,7 +1,8 @@
 2001-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-url-history): Define it here.
-	(w3m-history-flat, w3m-history-backward): New functions.
+	(w3m-history-assoc, w3m-history-flat, w3m-history-backward): New
+	functions.
 
 2001-03-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 

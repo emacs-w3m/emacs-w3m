@@ -214,6 +214,24 @@ to recursive funcall itself internally."
 	  alist
 	(nreverse alist)))))
 
+(defun w3m-history-assoc (url &optional set-current)
+  "Return a history element if URL is `equal' to the car of an element of
+`w3m-url-history'.  The value is actually the element of the history
+structure whose car equals URL.  If the optional argument SET-CURRENT
+is non-nil, the position pointer of the history will come to designate
+the element whose car equals URL."
+  (let ((element (assoc url (w3m-history-flat)))
+	position)
+    (when element
+      (setq position (nth 2 element))
+      (when set-current
+	(setcar w3m-url-history position))
+      (setq element (nth (pop position) (cdr w3m-url-history)))
+      (while (> (length position) 0)
+	(setq element (nth (pop position) (cddr element))
+	      element (nth (pop position) element)))
+      element)))
+
 ;;(not-provided-yet 'w3m-hist)
 
 ;;; w3m-hist.el ends here
