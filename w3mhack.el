@@ -1068,7 +1068,26 @@ NOTE: This function must be called from the top directory."
 	    (texinfo-every-node-update)
 	    (set-buffer-modified-p nil)
 	    (message "texinfo formatting %s..." file)
-	    (texinfo-format-buffer nil)
+	    (if (featurep 'mule)
+		;; Encode messages to terminal.
+		(let ((si:message (symbol-function 'message)))
+		  (fset 'message
+			(byte-compile
+			 (if (boundp 'MULE)
+			     (lambda (fmt &rest args)
+			       (funcall si:message "%s"
+					(code-convert-string
+					 (apply 'format fmt args)
+					 '*internal* '*junet*)))
+			   (lambda (fmt &rest args)
+			     (funcall si:message "%s"
+				      (encode-coding-string
+				       (apply 'format fmt args)
+				       'iso-2022-7bit))))))
+		  (unwind-protect
+		      (texinfo-format-buffer nil)
+		    (fset 'message si:message)))
+	      (texinfo-format-buffer nil))
 	    (if (buffer-modified-p)
 		(progn (message "Saving modified %s" (buffer-file-name))
 		       (save-buffer))))
