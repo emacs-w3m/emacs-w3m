@@ -162,7 +162,7 @@
   "Return a modern coding-system name of CODING-SYSTEM if it is available."
   (let ((base (and (coding-system-p coding-system)
 		   (get-base-code coding-system)))
-	name name-eol eol)
+	name eol name-eol)
     (if base
 	(if (setq name (car (rassq base w3m-om-coding-system-alist)))
 	    (if (and (setq eol (get coding-system 'eol-type))
@@ -198,12 +198,11 @@ highest priority."
 	      (when (consp x)
 		(setq x (car x)))
 	      (w3m-om-modernize-coding-system x))
-	  (setq x (mapcar 'w3m-om-modernize-coding-system (if (consp x)
-							      x
-							    (list x))))
-	  (if (= 1 (length x))
-	      (car x)
-	    x))
+	  (if (consp x)
+	      (if (= 1 (length x))
+		  (w3m-om-modernize-coding-system (car x))
+		(mapcar 'w3m-om-modernize-coding-system x))
+	    (w3m-om-modernize-coding-system x)))
       (when opriority
 	(set-coding-priority opriority)))))
 
