@@ -251,7 +251,15 @@ width using expression (+ (window-width) VALUE)."
   :type 'boolean)
 
 (defcustom w3m-treat-image-size (and (member "image" w3m-options) t)
-  "*Non-nil means to let the w3m HTML rendering be conscious of image size."
+  "*Non-nil means to let the w3m HTML rendering be conscious of image size.
+`w3m-pixel-per-line' is used for the `-ppl' argument of the w3m command.
+`-ppc' argument of the w3m command is set as the width of default face font."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-pixel-per-line 64
+  "*This value is used for the `-ppl' argument of the w3m command.
+It is valid only when `w3m-treat-image-size' is non-nil."
   :group 'w3m
   :type 'boolean)
 
@@ -3147,24 +3155,21 @@ type as a string argument, when retrieve is complete."
 	     (w3m-w3m-expand-arguments
 	      (append w3m-halfdump-command-arguments
 		      w3m-halfdump-command-common-arguments
+		      ;; Image size conscious rendering
 		      (if (member "image" w3m-options)
 			  (if w3m-treat-image-size
-			      (append (list "-o" "display_image=on")
-				      (when (w3m-display-graphic-p)
-					(list "-ppl" 
-					      (number-to-string
-					       (w3m-static-if
-						   (featurep 'xemacs)
-						   (font-height
-						    (face-font 'default))
-						 (frame-char-height)))
-					      "-ppc" 
-					      (number-to-string
-					       (w3m-static-if
-						   (featurep 'xemacs)
-						   (font-width
-						    (face-font 'default))
-						 (frame-char-width))))))
+			      (append
+			       (list "-o" "display_image=on")
+			       (when (w3m-display-graphic-p)
+				 (list "-ppl" 
+				       (number-to-string w3m-pixel-per-line)
+				       "-ppc" 
+				       (number-to-string
+					(w3m-static-if
+					    (featurep 'xemacs)
+					    (font-width
+					     (face-font 'default))
+					  (frame-char-width))))))
 			    (list "-o" "display_image=off")))))))))
 
 (defun w3m-rendering-buffer-1 (&optional content-charset binary-buffer)

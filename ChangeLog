@@ -1,3 +1,9 @@
+2002-02-08  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-pixel-per-line): New user option.
+	(w3m-rendering-half-dump): Use `w3m-pixel-per-line' as the -ppl
+	argument of the w3m command.
+
 2002-02-07  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-e21.el (w3m-favicon-size): Set default value to nil.
