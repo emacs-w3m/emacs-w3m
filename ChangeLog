@@ -1,4 +1,4 @@
-2001-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+2001-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-about-history): Show a hitrory tree (incompleted).
 	(w3m-exec): Put a title string into the history structure.
