@@ -28,6 +28,10 @@ This package contains a interface program of w3m.
 
          ftp://ftp.m17n.org/pub/mule/apel/
 
+      Also, Emacs-w3m requires "new custom". If you use Mule-2.3, you
+      have to install it before installing emacs-w3m. For more detail,
+      see README.en distributed with APEL.
+
    d) Emacs-w3m requires the module regexp-opt.el(c) which might not
       be provided in the old Emacsen (e.g. Mule 2).  If you are using
       such versions of Emacs, you have to install the module regexp-

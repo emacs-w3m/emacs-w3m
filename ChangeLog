@@ -1,5 +1,9 @@
 2001-10-16  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
+	* README.ja: Add description about "new custom".
+
+	* README: Ditto.
+
 	* w3m.el (w3m-attributes): When URL matches `about://source/',
 	returns nil as its content-charset.
 	(w3m-about-retrieve): When URL matches `about://source/',
