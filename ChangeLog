@@ -1,3 +1,19 @@
+2003-05-05  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-pocketgames.el
+	(shimbun-pocketgames-article): New function.
+	(shimbun-pocketgames-article-1): Ditto.
+	(shimbun-pocketgames-make-mime-article): Ditto.
+	(shimbun-pocketgames-headers): New function (Building Message-ID
+	with '@' instead of `:' to display inline)
+	(shimbun-pocketgames-headers-1): New function.
+	(shimbun-article): Use `shimbun-pocketgames-article'.
+	(shimbun-headers): Use `shimbun-pocketgames-headers'.
+	(shimbun-pocketgames-comment-article): Clean up unnecessary link
+	from shimbun working buffer.
+	Building Message-ID with '@' instead of `:' to display inline
+	images.
+
 2003-05-04  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-plucker.el: New file.
