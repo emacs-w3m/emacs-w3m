@@ -81,8 +81,8 @@
   "Alist of suffix-to-octet-type.")
 
 (defvar octet-type-filter-alist
-  `((msexcel octet-filter-call1       "xlHtml" ("-te")  html-u8)
-    (msppt   octet-filter-call1       "pptHtml" nil     html-u8)
+  `((msexcel octet-filter-call1       "xlhtml" ("-te")  html-u8)
+    (msppt   octet-filter-call1       "ppthtml" nil     html-u8)
     (msword  octet-filter-call2       "wvHtml"  nil     html-u8)
     (html    octet-render-html        nil       nil     nil)
     (html-u8 octet-decode-u8-text     nil       nil     html)
@@ -116,14 +116,18 @@ Current buffer content is replaced.
 Returns t if succeed."
   (let ((infile (make-temp-name "octet"))
 	(outfile (make-temp-name "octet"))
-	(last-dir default-directory))
+	(last-dir default-directory)
+	result)
     (cd octet-temp-directory)
     (write-region-as-binary (point-min) (point-max) infile nil 'no-msg)
     (unwind-protect
-	(when (zerop (apply 'call-process filter nil nil nil
-			    (append args (list infile outfile))))
-	  (erase-buffer)
-	  (insert-file-contents-as-binary outfile)
+	(progn
+	  (setq result (apply 'call-process filter nil nil nil
+			      (append args (list infile outfile))))
+	  (when (and (numberp result)
+		     (zerop result))
+	    (erase-buffer)
+	    (insert-file-contents-as-binary outfile))
 	  0)
       (if (file-exists-p infile) (delete-file infile))
       (if (file-exists-p outfile) (delete-file outfile))
@@ -134,14 +138,16 @@ Returns t if succeed."
 Current buffer content is replaced.
 Returns t if succeed."
   (let ((infile (make-temp-name "octet"))
-	(last-dir default-directory))
+	(last-dir default-directory)
+	result)
     (cd octet-temp-directory)
     (write-region-as-binary (point-min) (point-max) infile nil 'no-msg)
     (unwind-protect
 	(progn
 	  (erase-buffer)
-	  (apply 'call-process filter nil t nil
-		 (append args (list infile))))
+	  (setq result (apply 'call-process filter nil t nil
+			      (append args (list infile))))
+	  (if (numberp result) result 1))
       (if (file-exists-p infile) (delete-file infile))
       (cd last-dir))))
 

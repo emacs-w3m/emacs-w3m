@@ -1,3 +1,11 @@
+2002-01-29  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* octet.el (octet-type-filter-alist): Changed default value for
+	xlhtml and ppthtml.
+	(octet-filter-call2): Fixed problem when return value of call-process
+	is not numeric.
+	(octet-filter-call1): Ditto.
+
 2002-01-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-encoding-type-alist): New option.
