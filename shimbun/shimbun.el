@@ -614,7 +614,7 @@ you want to use no database."
 	   (setq shimbun-x-face-database-function 'shimbun-lsdb-get-x-face)))
        (when (setq x-face
 		   (or (and from
-			    (fboundp shimbun-x-face-database-function)
+			    (functionp shimbun-x-face-database-function)
 			    (funcall shimbun-x-face-database-function from))
 		       (shimbun-x-face shimbun)))
 	 (insert x-face)
