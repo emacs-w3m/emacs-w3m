@@ -2455,12 +2455,12 @@ same function as `format' simply returning a string."
     (if (and (not (eq (selected-window) (minibuffer-window)))
 	     (or (when (bufferp w3m-current-buffer)
 		   (get-buffer-window w3m-current-buffer))
-		 (save-current-buffer
-		   (catch 'found-window
-		     (dolist (window (window-list))
-		       (set-buffer (window-buffer window))
-		       (when (eq major-mode 'w3m-mode)
-			 (throw 'found-window window)))))))
+		 (catch 'found-window
+		   (save-current-buffer
+		     (walk-windows (lambda (window)
+				     (set-buffer (window-buffer window))
+				     (when (eq major-mode 'w3m-mode)
+				       (throw 'found-window window))))))))
 	(w3m-static-if (featurep 'xemacs)
 	    (display-message 'no-log (apply (function format) args))
 	  (let (message-log-max)
