@@ -1,5 +1,15 @@
 2002-04-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-bitmap.el (w3m-bitmap-image-face): New face.
+	(w3m-bitmap-image-insert-internal): Put text properties.
+	(w3m-bitmap-image-insert): Pass text properties argument to
+	`w3m-bitmap-image-insert-internal'.
+	(w3m-bitmap-image-add-text-properties): Remove.
+	(w3m-insert-image): Pass text properties to
+	`w3m-bitmap-image-insert'.
+
+2002-04-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-bitmap.el (w3m-bitmap-image-get-overlay): Use
 	`line-beginning-position' and/or `line-end-position'.
 	(w3m-bitmap-image-insert-internal): Ditto.
