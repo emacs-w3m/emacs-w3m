@@ -33,7 +33,7 @@
 (luna-define-class shimbun-bbc (shimbun-rss) ())
 
 (defvar shimbun-bbc-url
-  "http://www.bbc.co.uk/syndication/feeds/news/ukfs_news/world/rss091.xml")
+  "http://news.bbc.co.uk/rss/newsonline_uk_edition/world/rss091.xml")
 (defvar shimbun-bbc-groups '("news"))
 (defvar shimbun-bbc-from-address  "newsonline@bbc.co.uk")
 (defvar shimbun-bbc-content-start
