@@ -3733,7 +3733,7 @@ It supports the encoding types of gzip, bzip2, deflate, etc."
     (goto-char (point-min))
     (catch 'found
       (while (re-search-forward "<meta[ \t\r\f\n]+" nil t)
-	(w3m-parse-attributes ((http-equiv :case-ignore) 
+	(w3m-parse-attributes ((http-equiv :case-ignore)
 			       (content :case-ignore))
 	  (when (and (string= http-equiv "content-type")
 		     content
@@ -4681,6 +4681,7 @@ POST-DATA and REFERER will be sent to the web server with a request."
 	  (w3m-parse-attributes ((http-equiv :case-ignore)
 				 (content :case-ignore))
 	    (when (and (string= http-equiv "content-type")
+		       content
 		       (string-match ";[ \t\n]*charset=" content))
 	      (delete-region start (point))
 	      (throw 'found nil))))))))

@@ -1,3 +1,8 @@
+2004-08-12  Kazuhiro UCHIDA  <kayoujin@yahoo.co.jp>
+
+	* w3m.el (w3m-remove-meta-charset-tags): Check that a content
+	field has a valid value before parsing it.
+
 2004-08-12  Romain Francoise  <romain@orebokech.com>
 
 	* w3m.el (w3m-relationship-estimate-rules): Improve regexp for
