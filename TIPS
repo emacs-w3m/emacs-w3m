@@ -68,13 +68,25 @@
 ;; Date: 19 Jul 2001 10:59:19 +0300
 ;; Message-ID: <2fasnftcpt4.fsf@broadcom.com>
 
+;; Modified to make it work even if w3 has not installed in the system
+;; based on the diary of SHIMADA Mitsunobu, 09 Jan 2002.
+
 (defvar gnus-w3m-minor-mode nil)
 
 (make-variable-buffer-local 'gnus-w3m-minor-mode)
 (add-to-list 'minor-mode-alist '(gnus-w3m-minor-mode " w3m"))
-(add-to-list 'minor-mode-map-alist (cons 'gnus-w3m-minor-mode w3m-mode-map))
+
+(eval-after-load "w3m"
+  '(add-to-list 'minor-mode-map-alist
+		(cons 'gnus-w3m-minor-mode w3m-mode-map)))
+
+(eval-after-load "mm-decode"
+  '(let ((test (nthcdr 2 (assoc "text/html" mm-inline-media-tests))))
+     (if test
+	 (setcar test (lambda (handle) (locate-library "w3m"))))))
 
 (defadvice mm-inline-text (around use-w3m-instead (handle) activate)
+  (require 'w3m)
   (let ((type (mm-handle-media-subtype handle)))
     (if (not (equal type "html"))
 	ad-do-it
