@@ -5479,8 +5479,17 @@ works on Emacs.
 	      (if time (current-time-string time) "")))
     (let ((charset (w3m-arrived-content-charset url))
 	  (separator (if (string= w3m-language "Japanese")
-			 (make-string (- (/ (window-width) 2) 2)
-				      (make-char 'japanese-jisx0208 40 44))
+			 (if (boundp 'MULE)
+			     ;; `make-string' doesn't support Japanese chars
+			     ;; and the 1st arg to `make-char' should be int.
+			     (let ((default-mc-flag t))
+			       (with-temp-buffer
+				 (insert-char (make-char (symbol-value 'lc-jp)
+							 40 44)
+					      (- (/ (window-width) 2) 2))
+				 (buffer-string)))
+			   (make-string (- (/ (window-width) 2) 2)
+					(make-char 'japanese-jisx0208 40 44)))
 		       (make-string (- (window-width) 4) ?-)))
 	  (case-fold-search t)
 	  header ssl beg)

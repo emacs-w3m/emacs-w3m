@@ -1,3 +1,8 @@
+2002-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-about-header): Don't use `make-string' to make a
+	separator text under Mule.
+
 2002-04-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-w3m-cid-retrieve): Support w3m-bitmap.el when
