@@ -442,17 +442,22 @@ to input URL when URL-like string is not detected under the cursor."
   :type 'integer)
 
 (defface w3m-anchor-face
-  '((((class color) (background light)) (:foreground "blue" :underline t))
-    (((class color) (background dark)) (:foreground "cyan" :underline t))
+  '((((class color) (background light)) (:foreground "blue"))
+    (((class color) (background dark)) (:foreground "cyan"))
     (t (:underline t)))
   "Face used to fontify anchors."
   :group 'w3m-face)
 
 (defface w3m-arrived-anchor-face
-  '((((class color) (background light)) (:foreground "navy" :underline t))
-    (((class color) (background dark)) (:foreground "LightSkyBlue" :underline t))
+  '((((class color) (background light)) (:foreground "navy"))
+    (((class color) (background dark)) (:foreground "LightSkyBlue"))
     (t (:underline t)))
   "Face used to fontify anchors, if arrived."
+  :group 'w3m-face)
+
+(defface w3m-current-anchor-face
+  '((t (:underline t :bold t)))
+  "Face used to highlight current anchor."
   :group 'w3m-face)
 
 (defface w3m-image-face
@@ -3488,6 +3493,27 @@ session."
 		   (and (w3m-action) "There is a form")
 		   "There is no url")))))
 
+(defmacro w3m-delete-all-overlays ()
+  "Delete all momentary overlays."
+  '(dolist (overlay (overlays-in (point-min) (point-max)))
+     (if (overlay-get overlay 'w3m-momentary-overlay)
+	 (delete-overlay overlay))))
+
+(defun w3m-highlight-current-anchor ()
+  "Highlight an anchor under point."
+  (w3m-delete-all-overlays)
+  (let ((seq (w3m-anchor-sequence))
+	ov pos beg)
+    (setq pos (point-min))
+    (while (setq pos (next-single-property-change pos 'w3m-anchor-sequence))
+      (when (and seq
+		 (eq seq (get-text-property pos 'w3m-anchor-sequence)))
+	(setq beg pos)
+	(setq pos (next-single-property-change pos 'w3m-anchor-sequence))
+	(setq ov (make-overlay beg pos))
+	(overlay-put ov 'face 'w3m-current-anchor-face)
+	(overlay-put ov 'w3m-momentary-overlay t)))))
+
 (defun w3m-edit-url (url)
   "Edit the local file pointed by URL."
   (when (string-match "\\`about://\\(header\\|source\\)/" url)
@@ -4328,6 +4354,7 @@ registered to `pre-command-hook' by `w3m-buffer-setup'."
 commands.  This function is designed as the hook function which is
 registered to `post-command-hook' by `w3m-buffer-setup'."
   (when (/= (point) w3m-current-position)
+    (w3m-highlight-current-anchor)
     (w3m-print-this-url)))
 
 (defsubst w3m-buffer-setup ()
@@ -4873,19 +4900,20 @@ showing a tree-structured history by the command `w3m-about-history'.")
 			  (string-match w3m-history-ignored-regexp url))
 		title (plist-get (cadr element) :title)
 		position (caddr element))
-	  (insert (format "h%s %d <a href=\"%s\">%s%s%s</a>\n"
-			  (mapconcat (function (lambda (d) (format form d)))
-				     position
-				     "-")
-			  (/ (1- (length position)) 2)
-			  url
-			  (if about "&lt;" "")
-			  (if (or (not title)
-				  (string-equal "<no-title>" title)
-				  (string-match "^[\t 　]*$" title))
-			      url
-			    title)
-			  (if about "&gt;" ""))))
+	  (when url
+	    (insert (format "h%s %d <a href=\"%s\">%s%s%s</a>\n"
+			    (mapconcat (function (lambda (d) (format form d)))
+				       position
+				       "-")
+			    (/ (1- (length position)) 2)
+			    url
+			    (if about "&lt;" "")
+			    (if (or (not title)
+				    (string-equal "<no-title>" title)
+				    (string-match "^[\t 　]*$" title))
+				url
+			      title)
+			    (if about "&gt;" "")))))
 	(sort-fields 0 start (point-max))
 	(goto-char start)
 	(while (not (eobp))

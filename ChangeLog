@@ -1,3 +1,14 @@
+2002-01-25  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-about-history): Don't add to history if url is nil.
+	(w3m-print-this-url-after-command): Call
+	`w3m-highlight-current-anchor'.
+	(w3m-delete-all-overlays): New macro.
+	(w3m-highlight-current-anchor): New function.
+	(w3m-current-anchor-face): New face.
+	(w3m-arrived-anchor-face): Removed underline property.
+	(w3m-anchor-face): Ditto.
+
 2002-01-24  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun): New customize group and
