@@ -2048,7 +2048,7 @@ nil value means it has not been initialized.")
 
 (defconst w3m-meta-content-type-charset-regexp
   "<meta[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]+content\
-=\"?\\([^;]+\\);[ \t\n]*charset=\\([^\"]+\\)\"?[ \t\n]*/?>"
+=\"?\\([^;]+\\);[ \t\n]*charset=\\([^\">]+\\)\"?[ \t\n]*/?>"
   "Regexp matching the META tag containing Content-type and charset.
 Those are in the order of:
  <META HTTP-EQUIV=\"Content-Type\" content=\"...;charset=...\">.")

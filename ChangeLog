@@ -1,3 +1,7 @@
+2004-06-11  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-meta-content-type-charset-regexp): Fixed regexp.
+
 2004-05-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-proc.el (w3m-process-waited): Revival.
