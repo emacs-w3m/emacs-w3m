@@ -81,7 +81,7 @@
 	(narrow-to-region start (point))
 	(goto-char start)
 	(while (and (re-search-forward "\
-\n<B><FONT class=\"news-text\">■\\([^\n]+\\)</FONT></B>\n"
+\n<B><FONT class=\"news-text\">■\\([^\n<>]+\\)</FONT></B>\n"
 				       nil t)
 		    (setq prefix (match-string 1))
 		    (re-search-forward "\
