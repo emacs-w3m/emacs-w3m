@@ -37,7 +37,7 @@
 (defvar shimbun-isize-sports-group-alist
   '(("football" "football"
      "<TD[^>]*>&nbsp;&nbsp;<A href=\"\\(news_vivid_N\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9][0-9]\\)\\.html\\)\"><FONT[^>]*>\\([^<]+\\)</FONT></A></TD>"
-     "<FONT face=\"Osaka,ＭＳ Ｐゴシック\" size=\"3\">" "</FONT>")
+     "[\\s ]*<FONT face=\"Osaka,ＭＳ Ｐゴシック\" size=\"3\">" "</FONT>\n")
 ;    ("baseball" "bb" "" "" "") ; NG
     ("f1" "f1"
      "<TD[^>]*>&nbsp;&nbsp;<A href=\"\\(news_detail_N\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9][0-9]\\)\\.html\\)\"[^>]*><FONT[^>]*>\\([^<]*\\)</FONT></A></TD>"
