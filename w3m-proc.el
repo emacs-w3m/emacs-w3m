@@ -344,8 +344,8 @@ handler."
 
 (defun w3m-process-wait-process (process seconds)
   "Wait for SECONDS seconds or until PROCESS will exit.
-Returns t when the specified process exit normally, otherwise returns
-nil."
+Returns the exit status of the PROCESS when it exit normally,
+otherwise returns nil."
   (catch 'timeout
     (let ((start (current-time)))
       (while (or (w3m-static-cond
@@ -354,16 +354,18 @@ nil."
 		  ((<= emacs-major-version 20)
 		   (not (sit-for 0 200 t)))
 		  (t
-		   (accept-process-output (w3m-process-process process) 0 200)))
-		 (memq (process-status (w3m-process-process process))
-		       '(run stop)))
+		   (accept-process-output process 0 200)))
+		 (memq (process-status process) '(run stop)))
 	(and seconds
 	     (< seconds (w3m-time-lapse-seconds start (current-time)))
 	     (throw 'timeout nil)))
-      (w3m-static-if (featurep 'xemacs)
-	  (sit-for 0.05 t)
+      (w3m-static-cond
+       ((featurep 'xemacs)
+	(sit-for 0.05 t))
+       ((<= emacs-major-version 20)
 	(sit-for 0 50 t))
-      t)))
+       (t (accept-process-output process 0 0)))
+      (process-exit-status process))))
 
 (defun w3m-process-start-and-wait (w3m-current-process wait-function)
   (while (w3m-process-p w3m-current-process)
@@ -375,8 +377,9 @@ nil."
 	  ;; called in the environment that `w3m-process-sentinel' is
 	  ;; evaluated.
 	  (w3m-process-start-process w3m-current-process t)
-	  (unless (w3m-process-wait-process w3m-current-process
-					    w3m-process-timeout)
+	  (unless (w3m-process-wait-process
+		   (w3m-process-process w3m-current-process)
+		   w3m-process-timeout)
 	    (w3m-process-error-handler (cons 'w3m-process-timeout nil)
 				       w3m-current-process)))
       (quit (w3m-process-error-handler error w3m-current-process)))

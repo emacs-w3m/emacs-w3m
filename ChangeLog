@@ -1,3 +1,10 @@
+2003-12-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-proc.el (w3m-process-wait-process): Return exit status; Use
+	`accept-process-output' instead of `sit-for' in order to flush
+	pending output.
+	(w3m-process-with-wait-handler): Follow the above change.
+
 2003-12-21  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-cnet-rss.el (shimbun-rss-build-message-id): Updated.
