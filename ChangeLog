@@ -1,3 +1,8 @@
+2001-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-get-headers): Make directory
+	separator not duplicated.
+
 2001-11-27  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-download-this-url): Fix a problem of broken URL.
