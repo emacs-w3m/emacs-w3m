@@ -1,3 +1,9 @@
+2001-04-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* mime-w3m.el (mime-w3m-use-header-line): New user option.
+	(mime-w3m-preview-text/html): Refer `mime-w3m-use-header-line' to
+	control `w3m-use-header-line'.
+
 2001-04-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist: Made the history management system to keep properties
