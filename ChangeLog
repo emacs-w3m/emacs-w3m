@@ -1,3 +1,13 @@
+2003-09-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Add
+	newpro-pc, newpro-soft, newpro-auto, newpro-av, newpro-life,
+	newpro-leisure, newpro-price groups.
+	(shimbun-nikkei-get-headers): Attempt to fetch the top news for
+	newpro groups.
+	(shimbun-nikkei-prepare-article): Put a warning message in the top
+	news articles for newpro groups that contents may be renewed.
+
 2003-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkei.el: Require cl when compiling.
@@ -8,7 +18,7 @@
 	(shimbun-nikkei-content-end): Ditto.
 	(shimbun-current-group-name): Synch to shimbun-nikkei-group-table.
 	(shimbun-index-url): Ditto.
-	(shimbun-nikkei-get-headers): Renew; attempt to fetch the headline
+	(shimbun-nikkei-get-headers): Renew; attempt to fetch the top
 	news; make correct date headers if possible; modify subjects
 	suitably.
 	(shimbun-nikkei-prepare-article): New function.
