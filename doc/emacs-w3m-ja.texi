@@ -525,6 +525,7 @@ APEL$B!"(BFLIM ($B$^$?$OB>$N2?$+(B) $B$,IaDL$N>l=j$K%$%s%9%H!<%k$5$l$F$$$J$
 
 @item Autoloads
 @cindex autoload
+
 Emacs-w3m $B$r(B XEmacs $B%Q%C%1!<%8$H$7$F%$%s%9%H!<%k(B (@pxref{Installing
 Emacs-w3m}) $B$7$F$"$l$P(B @file{w3m/auto-autoloads.el} $B%U%!%$%k$,$"$k$N$G!"(B
 autoload $B$N@_Dj$r9T$J$&I,MW$O$"$j$^$;$s!#$=$&$G$J$1$l$P!"0J2<$N9T(B

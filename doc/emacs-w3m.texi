@@ -471,6 +471,7 @@ can be customized by user's preferences are described in
 
 @item Autoloads
 @cindex autoload
+
 You never need to set the autoload definitions if you've emacs-w3m
 installed as an XEmacs package (@pxref{Installing Emacs-w3m}) because of
 the @file{w3m/auto-autoloads.el} file.  If not, put the following line
