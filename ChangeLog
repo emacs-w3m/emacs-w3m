@@ -1,3 +1,9 @@
+2003-07-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/nnshimbun.el (nnshimbun-possibly-change-group): Create
+	parent directories if they do not exist, for hierarchical groups
+	that include periods in their group names.
+
 2003-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-makeinfo): Force texinfmt.elc to load

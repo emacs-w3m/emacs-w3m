@@ -364,7 +364,7 @@ to SYMBOL.  If FULL-NAME-P is non-nil, it treats GROUP as a full name."
 		(dir (nnshimbun-current-directory group)))
 	    (or (file-directory-p dir)
 		(ignore-errors
-		  (make-directory dir)
+		  (make-directory dir t)
 		  (file-directory-p dir))
 		(nnheader-report 'nnshimbun
 				 (if (file-exists-p dir)
