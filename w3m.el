@@ -3300,7 +3300,7 @@ also make a new frame for the copied session."
 	  (w3m-toggle-inline-image)
 	(w3m-view-image)))
      ((setq url (w3m-url-at-point))
-      (when (y-or-n-p (format "Browse <%s> ? " url))
+      (unless (eq 'quit (setq url (w3m-input-url nil url 'quit)))
 	(w3m-view-this-url-1 url arg new-session)))
      (t (message "No URL at point")))))
 
