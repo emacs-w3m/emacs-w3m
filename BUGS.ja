@@ -8,22 +8,43 @@ $Date$
    --> source code の text/plain なページを閲覧しているときは font-lock 
        してくれると嬉しいかもしれない。
 
+   --> 画像関係の TODO [emacs-w3m:00122]
+
+        * リンク先が画像だけのときもインラインに表示したい
+        * 非同期に画像表示されるといいな
+        * ツールバー
+
 
 ■ 既知の問題
-   --> 動作が遅くなった?
 
-   --> w3m-fontify で &ouml; が処理されていない。
-       Ex) http://tanaka-www.cs.titech.ac.jp/~euske/doc/openssh/history.html
+(1) w3m-fontify で &ouml; が処理されていない。
+        Ex) http://tanaka-www.cs.titech.ac.jp/~euske/doc/openssh/history.html
 
-   --> w3m-fontify で _id というタグが処理されていない
+    これは簡単に修正できるはず(w3m-entity-alist に要素を追加するだけ)
+    だが、正確な規格表を手にいれて、それに該当する文字をきちんと入力す
+    る手間が面倒(確か100個くらいある)。誰かやりません?
+
+
+(2) w3m-fontify で _id というタグが処理されていない。このタグって、そ
+    もそも何?
        Ex) http://www.debian.or.jp/License.html
 
-   --> http://www.lib.i.kyoto-u.ac.jp/ のレンダリングが崩れる。どうも 
-       \200 という文字が悪さをしているようだが、どう処理すべきなのか、良
-       く分からない。
 
-   --> http://clotho.ku3g.org/negi.html が文字化けした。これは、本家 w3m 
-       でも化けたので、w3m.el で対処できる問題ではないのかも…。
+(3) http://www.lib.i.kyoto-u.ac.jp/ のレンダリングが崩れる。どうも 
+    \200 という文字が悪さをしているようだが、どう処理すべきなのか、良
+    く分からない。
+
+
+(4) http://clotho.ku3g.org/negi.html が文字化けした。これは、本家 w3m 
+    でも化けたので、w3m.el で対処できる問題ではないのかもしれないが。
+
+
+(5) C-u M-x w3m-search RET google-ja RET query RET で検索を行ったとき、
+    検索結果が複数ページにわたる場合、ページ間の移動がうまく出来ない。
+    具体的には、[nav_page] という画像の代替文字列部分を使って移動すれ
+    ば正常に移動できるのに、その直下の「前へ」「2」「次へ」などのリン
+    クを使っての移動はうまくいかない。
+
 
 
 Local Variables:

@@ -217,8 +217,8 @@ This value is default and used only when spec defined by
   :group 'w3m
   :type 'integer)
 
-(defcustom w3m-keep-backlog 300
-  "*Back log size of w3m."
+(defcustom w3m-keep-cache-size 300
+  "*Cache size of w3m."
   :group 'w3m
   :type 'integer)
 
@@ -588,9 +588,9 @@ See also `w3m-search-engine-alist'."
 
 (defvar w3m-verbose t "Flag variable to control messages.")
 
-(defvar w3m-backlog-buffer nil)
-(defvar w3m-backlog-articles nil)
-(defvar w3m-backlog-hashtb nil)
+(defvar w3m-cache-buffer nil)
+(defvar w3m-cache-articles nil)
+(defvar w3m-cache-hashtb nil)
 (defvar w3m-input-url-history nil)
 
 (defconst w3m-arrived-db-size 1023)
@@ -620,6 +620,7 @@ See also `w3m-search-engine-alist'."
     ("image/x-xpm" . xpm))
   "An alist of CONTENT-TYPE and IMAGE-TYPE.")
 
+(defvar w3m-work-buffer-list nil)
 (defconst w3m-work-buffer-name " *w3m-work*")
 
 (defconst w3m-meta-content-type-charset-regexp
@@ -716,27 +717,31 @@ If N is negative, last N items of LIST is returned."
   (unless w3m-arrived-db
     (setq w3m-arrived-db (make-vector w3m-arrived-db-size nil)
 	  w3m-arrived-seq 0)
-    (dolist (url (w3m-load-list w3m-arrived-file
-				w3m-arrived-file-coding-system))
-      (w3m-arrived-add url))))
+    (let ((list (w3m-load-list w3m-arrived-file
+			       w3m-arrived-file-coding-system)))
+      (dolist (url list) (w3m-arrived-add url))
+      (unless w3m-input-url-history
+	(setq w3m-input-url-history list)))))
 
 (defun w3m-arrived-shutdown ()
   "Save hash database of arrived URLs to 'w3m-arrived-file'."
-  (let (list)
-    (mapatoms (lambda (sym)
-		(when sym
-		  (setq list
-			(cons (cons (symbol-name sym)
-				    (get sym 'w3m-arrived-seq))
-			      list))))
-	      w3m-arrived-db)
-    (w3m-save-list w3m-arrived-file
-		   w3m-arrived-file-coding-system
-		   (mapcar
-		    (function car)
-		    (sort list
-			  (lambda (a b) (> (cdr a) (cdr b)))))))
-  (setq w3m-arrived-db nil))
+  (when w3m-arrived-db
+    (let (list)
+      (mapatoms (lambda (sym)
+		  (when sym
+		    (setq list
+			  (cons (cons (symbol-name sym)
+				      (get sym 'w3m-arrived-seq))
+				list))))
+		w3m-arrived-db)
+      (w3m-save-list w3m-arrived-file
+		     w3m-arrived-file-coding-system
+		     (mapcar
+		      (function car)
+		      (sort list
+			    (lambda (a b) (> (cdr a) (cdr b)))))))
+    (setq w3m-arrived-db nil)))
+(add-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
 
 (defun w3m-arrived-store-position (url &optional point window-start)
   (when (stringp url)
@@ -750,6 +755,31 @@ If N is negative, last N items of LIST is returned."
     (when (and ident (boundp ident))
       (set-window-start nil (car (symbol-value ident)))
       (goto-char (cdr (symbol-value ident))))))
+
+
+;;; Working buffers:
+(defsubst w3m-get-buffer-create (name)
+  "Return the buffer named NAME, or create such a buffer and return it."
+  (or (get-buffer name)
+      (let ((buf (get-buffer-create name)))
+	(setq w3m-work-buffer-list (cons buf w3m-work-buffer-list))
+	(buffer-disable-undo buf)
+	buf)))
+
+(put 'w3m-with-work-buffer 'lisp-indent-function 0)
+(put 'w3m-with-work-buffer 'edebug-form-spec '(&rest body))
+(defmacro w3m-with-work-buffer (&rest body)
+  "Execute the forms in BODY with working buffer as the current buffer."
+  (` (with-current-buffer
+	 (w3m-get-buffer-create w3m-work-buffer-name)
+       (,@ body))))
+
+(defun w3m-kill-all-buffer ()
+  "Kill all working buffer."
+  (dolist (buf w3m-work-buffer-list)
+    (when (buffer-live-p buf)
+      (kill-buffer buf)))
+  (setq w3m-work-buffer-list nil))
 
 
 ;;; Form:
@@ -1090,7 +1120,7 @@ If N is negative, last N items of LIST is returned."
 If optional argument NO-CACHE is non-nil, cache is not used."
   (let ((type (w3m-retrieve url 'raw nil no-cache)))
     (when type
-      (with-current-buffer (get-buffer-create w3m-work-buffer-name)
+      (w3m-with-work-buffer
 	(create-image (buffer-string) 
 		      (cdr (assoc type w3m-image-type-alist))
 		      t
@@ -1115,9 +1145,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 If optional argument NO-CACHE is non-nil, cache is not used."
   (let ((type (w3m-retrieve url 'raw nil no-cache)))
     (when type
-      (let ((data (with-current-buffer
-		      (get-buffer-create w3m-work-buffer-name)
-		    (buffer-string))))
+      (let ((data (w3m-with-work-buffer (buffer-string))))
 	(make-glyph
 	 (make-image-instance
 	  (vector (or (cdr (assoc type w3m-image-type-alist))
@@ -1330,40 +1358,84 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
     url))
 
 
-;;; Backlog:
-(defun w3m-backlog-setup ()
-  "Initialize backlog variables."
-  (unless (and (bufferp w3m-backlog-buffer)
-	       (buffer-live-p w3m-backlog-buffer))
+;;; Cache:
+(defun w3m-cache-setup ()
+  "Initialize cache variables."
+  (unless (and (bufferp w3m-cache-buffer)
+	       (buffer-live-p w3m-cache-buffer))
     (save-excursion
-      (set-buffer (get-buffer-create " *w3m backlog*"))
+      (set-buffer (w3m-get-buffer-create " *w3m cache*"))
       (buffer-disable-undo)
       (set-buffer-multibyte nil)
       (setq buffer-read-only t
-	    w3m-backlog-buffer (current-buffer))))
-  (unless w3m-backlog-hashtb
-    (setq w3m-backlog-hashtb (make-vector 1021 0))))
+	    w3m-cache-buffer (current-buffer)
+	    w3m-cache-hashtb (make-vector 1021 0)))))
 
-(defun w3m-backlog-shutdown ()
-  "Clear all backlog variables and buffers."
-  (when (get-buffer w3m-backlog-buffer)
-    (kill-buffer w3m-backlog-buffer))
-  (setq w3m-backlog-hashtb nil
-	w3m-backlog-articles nil))
+(defun w3m-cache-shutdown ()
+  "Clear all cache variables and buffers."
+  (when (buffer-live-p w3m-cache-buffer)
+    (kill-buffer w3m-cache-buffer))
+  (setq w3m-cache-hashtb nil
+	w3m-cache-articles nil))
 
-(defun w3m-backlog-enter (url type charset buffer)
-  "Store URL's data which is placed in the BUFFER.
-Return symbol to identify its backlog data."
-  (w3m-backlog-setup)
-  (let ((ident (intern url w3m-backlog-hashtb)))
-    (w3m-backlog-remove url)
+(defun w3m-cache-header (url header)
+  "Store up URL's HEADER in cache."
+  (w3m-cache-setup)
+  (set (intern url w3m-cache-hashtb) header))
+
+(defun w3m-cache-request-header (url)
+  "Return the URL's header string, when it is stored in cache."
+  (w3m-cache-setup)
+  (let ((ident (intern url w3m-cache-hashtb)))
+    (and (boundp ident)
+	 (symbol-value ident))))
+
+(defun w3m-cache-remove-oldest ()
+  (save-excursion
+    (set-buffer w3m-cache-buffer)
+    (goto-char (point-min))
+    (unless (zerop (buffer-size))
+      (let ((ident (get-text-property (point) 'w3m-cache))
+	    buffer-read-only)
+	;; Remove the ident from the list of articles.
+	(when ident
+	  (setq w3m-cache-articles (delq ident w3m-cache-articles)))
+	;; Delete the article itself.
+	(delete-region (point)
+		       (next-single-property-change
+			(1+ (point)) 'w3m-cache nil (point-max)))))))
+
+(defun w3m-cache-remove (url)
+  "Remove URL's data from the cache."
+  (w3m-cache-setup)
+  (let ((ident (intern url w3m-cache-hashtb))
+	beg end)
+    (when (memq ident w3m-cache-articles)
+      ;; It was in the cache.
+      (save-excursion
+	(set-buffer w3m-cache-buffer)
+	(let (buffer-read-only)
+	  (when (setq beg (text-property-any
+			   (point-min) (point-max) 'w3m-cache ident))
+	    ;; Find the end (i. e., the beginning of the next article).
+	    (setq end (next-single-property-change
+		       (1+ beg) 'w3m-cache (current-buffer) (point-max)))
+	    (delete-region beg end)))
+	(setq w3m-cache-articles (delq ident w3m-cache-articles))))))
+
+(defun w3m-cache-contents (url buffer)
+  "Store URL's contents which is placed in the BUFFER.
+Return symbol to identify its cache data."
+  (w3m-cache-setup)
+  (let ((ident (intern url w3m-cache-hashtb)))
+    (w3m-cache-remove url)
     ;; Remove the oldest article, if necessary.
-    (and (numberp w3m-keep-backlog)
-	 (>= (length w3m-backlog-articles) w3m-keep-backlog)
-	 (w3m-backlog-remove-oldest))
+    (and (numberp w3m-keep-cache-size)
+	 (>= (length w3m-cache-articles) w3m-keep-cache-size)
+	 (w3m-cache-remove-oldest))
     ;; Insert the new article.
     (save-excursion
-      (set-buffer w3m-backlog-buffer)
+      (set-buffer w3m-cache-buffer)
       (let (buffer-read-only)
 	(goto-char (point-max))
 	(unless (bolp) (insert "\n"))
@@ -1371,73 +1443,36 @@ Return symbol to identify its backlog data."
 	  (insert-buffer-substring buffer)
 	  ;; Tag the beginning of the article with the ident.
 	  (when (> (point-max) b)
-	    (put-text-property b (1+ b) 'w3m-backlog ident)
-	    (put-text-property b (1+ b) 'w3m-backlog-type type)
-	    (put-text-property b (1+ b) 'w3m-backlog-charset charset)
-	    (setq w3m-backlog-articles (cons ident w3m-backlog-articles)))
-	  )))))
+	    (put-text-property b (1+ b) 'w3m-cache ident)
+	    (setq w3m-cache-articles (cons ident w3m-cache-articles))
+	    ident))))))
 
-(defun w3m-backlog-remove-oldest ()
-  (save-excursion
-    (set-buffer w3m-backlog-buffer)
-    (goto-char (point-min))
-    (unless (zerop (buffer-size))
-      (let ((ident (get-text-property (point) 'w3m-backlog))
-	    buffer-read-only)
-	;; Remove the ident from the list of articles.
-	(when ident
-	  (setq w3m-backlog-articles (delq ident w3m-backlog-articles)))
-	;; Delete the article itself.
-	(delete-region (point)
-		       (next-single-property-change
-			(1+ (point)) 'w3m-backlog nil (point-max)))))))
-
-(defun w3m-backlog-remove (url)
-  "Remove URL's data from the backlog."
-  (w3m-backlog-setup)
-  (let ((ident (intern url w3m-backlog-hashtb))
-	beg end)
-    (when (memq ident w3m-backlog-articles)
-      ;; It was in the backlog.
-      (save-excursion
-	(set-buffer w3m-backlog-buffer)
-	(let (buffer-read-only)
-	  (when (setq beg (text-property-any
-			   (point-min) (point-max) 'w3m-backlog ident))
-	    ;; Find the end (i. e., the beginning of the next article).
-	    (setq end (next-single-property-change
-		       (1+ beg) 'w3m-backlog (current-buffer) (point-max)))
-	    (delete-region beg end)))
-	(setq w3m-backlog-articles (delq ident w3m-backlog-articles))))))
-
-(defun w3m-backlog-request (url &optional buffer)
+(defun w3m-cache-request-contents (url &optional buffer)
   "Insert URL's data to the BUFFER.
-If URL's data is found in the backlog, return a list of URL's content
-type and URL's charcter set name.  Otherwise return nil.  When BUFFER
-is nil, all data will be inserted in the current buffer."
-  (w3m-backlog-setup)
-  (let ((ident (intern url w3m-backlog-hashtb)))
-    (when (memq ident w3m-backlog-articles)
-      ;; It was in the backlog.
+If URL's data is found in the cache, return t.  Otherwise return nil.
+When BUFFER is nil, all data will be inserted in the current buffer."
+  (w3m-cache-setup)
+  (let ((ident (intern url w3m-cache-hashtb)))
+    (when (memq ident w3m-cache-articles)
+      ;; It was in the cache.
       (let (beg end type charset)
 	(save-excursion
-	  (set-buffer w3m-backlog-buffer)
+	  (set-buffer w3m-cache-buffer)
 	  (if (setq beg (text-property-any
-			 (point-min) (point-max) 'w3m-backlog ident))
+			 (point-min) (point-max) 'w3m-cache ident))
 	      ;; Find the end (i. e., the beginning of the next article).
-	      (setq type (get-text-property beg 'w3m-backlog-type)
-		    charset (get-text-property beg 'w3m-backlog-charset)
-		    end (next-single-property-change
-			 (1+ beg) 'w3m-backlog (current-buffer) (point-max)))
-	    ;; It wasn't in the backlog after all.
-	    (setq w3m-backlog-articles (delq ident w3m-backlog-articles))))
+	      (setq end (next-single-property-change
+			 (1+ beg) 'w3m-cache (current-buffer) (point-max)))
+	    ;; It wasn't in the cache after all.
+	    (setq w3m-cache-articles (delq ident w3m-cache-articles))))
 	(and beg
 	     end
 	     (save-excursion
-	       (and buffer (set-buffer buffer))
+	       (when buffer
+		 (set-buffer buffer))
 	       (let (buffer-read-only)
-		 (insert-buffer-substring w3m-backlog-buffer beg end))
-	       (list type charset)))))))
+		 (insert-buffer-substring w3m-cache-buffer beg end))
+	       t))))))
 
 
 ;;; Handle process:
@@ -1637,7 +1672,7 @@ are retrieved."
     (when (or (not accept-type-regexp)
 	      (string-match accept-type-regexp type))
       (setq file (w3m-url-to-file-name url))
-      (with-current-buffer (get-buffer-create w3m-work-buffer-name)
+      (w3m-with-work-buffer
 	(delete-region (point-min) (point-max))
 	(if (and (string-match "^text/" type)
 		 (not no-decode))
@@ -1666,17 +1701,27 @@ are retrieved."
 	(setq str (substring str 0 (match-beginning 0)))))
   str)
 
-(defun w3m-w3m-check-header (url)
-  "Ask the header of the URL to HTTP server."
-  (with-current-buffer (get-buffer-create w3m-work-buffer-name)
+(defun w3m-w3m-get-header (url &optional no-cache)
+  "Return the header string of the URL.
+If optional argument NO-CACHE is non-nil, cache is not used."
+  (or (unless no-cache
+	(w3m-cache-request-header url))
+      (with-temp-buffer
+	(let ((w3m-current-url url))
+	  (w3m-message "Request sent, waiting for response...")
+	  (w3m-exec-process "-dump_head" url)
+	  (w3m-message "Request sent, waiting for response... done")
+	  (w3m-cache-header url (buffer-string))))))
+
+(defun w3m-w3m-check-header (url &optional no-cache)
+  "Ask the header of the URL to HTTP server.
+If optional argument NO-CACHE is non-nil, cache is not used."
+  (w3m-with-work-buffer
     (delete-region (point-min) (point-max))
-    (let ((w3m-current-url url)
-	  (case-fold-search t)
+    (insert (w3m-w3m-get-header url no-cache))
+    (goto-char (point-min))
+    (let ((case-fold-search t)
 	  length type charset)
-      (w3m-message "Request sent, waiting for response...")
-      (w3m-exec-process "-dump_head" url)
-      (w3m-message "Request sent, waiting for response... done")
-      (goto-char (point-min))
       (if (re-search-forward "^content-type:\\([^\r\n]+\\)\r*$" nil t)
 	  (progn
 	    (setq type (match-string 1))
@@ -1710,45 +1755,40 @@ This function will return content-type of URL as string when retrieval
 succeed.  If NO-DECODE, set the multibyte flag of the working buffer
 to nil.  Only contents whose content-type matches ACCEPT-TYPE-REGEXP
 are retrieved."
-  (with-current-buffer (get-buffer-create w3m-work-buffer-name)
-    (delete-region (point-min) (point-max))
-    (set-buffer-multibyte nil)
-    (or
-     (unless no-cache
-       (let ((headers (w3m-backlog-request url)))
-	 (if headers
-	     (let ((type (car headers))
-		   (charset (nth 1 headers)))
-	       (when (or (not accept-type-regexp)
-			 (string-match accept-type-regexp type))
+  (let ((headers (w3m-w3m-check-header url no-cache)))
+    (when headers
+      (let ((type    (car headers))
+	    (charset (nth 1 headers))
+	    (length  (nth 2 headers)))
+	(when (or (not accept-type-regexp)
+		  (string-match accept-type-regexp type))
+	  (w3m-with-work-buffer
+	    (delete-region (point-min) (point-max))
+	    (set-buffer-multibyte nil)
+	    (or
+	     (unless no-cache
+	       (when (w3m-cache-request-contents url)
 		 (and (string-match "^text/" type)
-		      (not no-decode)
-		      (w3m-decode-buffer type charset)))
-	       type))))
-     (let ((headers (w3m-w3m-check-header url)))
-       (if headers
-	   (let ((type    (car headers))
-		 (charset (nth 1 headers))
-		 (length  (nth 2 headers))
-		 buflines)		 
-	     (when (or (not accept-type-regexp)
-		       (string-match accept-type-regexp type))
-	       (let* ((w3m-current-url url)
-		      (w3m-w3m-retrieve-length length)
-		      (w3m-process-message
-		       (lambda ()
-			 (if w3m-w3m-retrieve-length
-			     (w3m-message
-			      "Reading... %s of %s (%d%%)"
-			      (w3m-pretty-length (buffer-size))
-			      (w3m-pretty-length w3m-w3m-retrieve-length)
-			      (/ (* (buffer-size) 100) w3m-w3m-retrieve-length))
-			   (w3m-message "Reading... %s"
-					(w3m-pretty-length (buffer-size)))))))
-		 (w3m-message "Reading...")
-		 (delete-region (point-min) (point-max))
-		 (w3m-exec-process "-dump_source" url)
-		 (w3m-message "Reading... done"))
+		      (unless no-decode
+			(w3m-decode-buffer type charset)))
+		 type))
+	     (let* ((buflines)
+		    (w3m-current-url url)
+		    (w3m-w3m-retrieve-length length)
+		    (w3m-process-message
+		     (lambda ()
+		       (if w3m-w3m-retrieve-length
+			   (w3m-message
+			    "Reading... %s of %s (%d%%)"
+			    (w3m-pretty-length (buffer-size))
+			    (w3m-pretty-length w3m-w3m-retrieve-length)
+			    (/ (* (buffer-size) 100) w3m-w3m-retrieve-length))
+			 (w3m-message "Reading... %s"
+				      (w3m-pretty-length (buffer-size)))))))
+	       (w3m-message "Reading...")
+	       (delete-region (point-min) (point-max))
+	       (w3m-exec-process "-dump_source" url)
+	       (w3m-message "Reading... done")
 	       (cond
 		((and length (eq w3m-executable-type 'cygwin))
 		 (setq buflines (count-lines (point-min) (point-max)))
@@ -1772,11 +1812,11 @@ are retrieved."
 		 (if (or (looking-at "<!DOCTYPE")
 			 (looking-at "<HTML>")) ; for eGroups.
 		     (delete-region (point-min) (point)))))
-	       (w3m-backlog-enter url type charset (current-buffer))
+	       (w3m-cache-contents url (current-buffer))
 	       (and (string-match "^text/" type)
 		    (not no-decode)
-		    (w3m-decode-buffer type charset)))
-	     type))))))
+		    (w3m-decode-buffer type charset))
+	       type))))))))
 
 (defun w3m-retrieve (url &optional no-decode accept-type-regexp no-cache)
   "Retrieve content of URL and insert it to the working buffer.
@@ -1801,25 +1841,26 @@ are retrieved."
 (defun w3m-download (url &optional filename no-cache)
   (unless filename
     (setq filename (w3m-read-file-name nil nil url)))
-  (w3m-retrieve url t nil no-cache)
-  (with-current-buffer (get-buffer w3m-work-buffer-name)
-    (let ((buffer-file-coding-system
-	   (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
-	  (coding-system-for-write
-	   (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
-	  jka-compr-compression-info-list
-	  jam-zcat-filename-list
-	  format-alist)
-      (if (or (not (file-exists-p filename))
-	      (y-or-n-p (format "File(%s) is aleready exists. Overwrite? " filename)))
-	  (write-region (point-min) (point-max) filename)))))
+  (if (w3m-retrieve url t nil no-cache)
+      (with-current-buffer (get-buffer w3m-work-buffer-name)
+	(let ((buffer-file-coding-system
+	       (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
+	      (coding-system-for-write
+	       (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
+	      jka-compr-compression-info-list
+	      jam-zcat-filename-list
+	      format-alist)
+	  (if (or (not (file-exists-p filename))
+		  (y-or-n-p (format "File(%s) is aleready exists. Overwrite? " filename)))
+	      (write-region (point-min) (point-max) filename))))
+    (error "Unknown URL: %s" url)))
 
-(defun w3m-content-type (url)
+(defun w3m-content-type (url &optional no-cache)
   (cond
    ((string-match "^about:" url) "text/html")
    ((string-match "^\\(file:\\|/\\)" url)
     (w3m-local-content-type url))
-   (t (car (w3m-w3m-check-header url)))))
+   (t (car (w3m-w3m-check-header url no-cache)))))
 
 
 ;;; Retrieve data via FTP:
@@ -1884,20 +1925,22 @@ this function returns t.  Otherwise, returns nil."
 	     (not (string= "text/html" (w3m-local-content-type url))))
 	(progn (w3m-exec-ftp url) nil)
       (let ((type (w3m-retrieve url nil "^text/" no-cache)))
-	(if (string-match "^text/" type)
-	    (let (buffer-read-only)
-	      (setq w3m-current-url url)
-	      (setq w3m-url-history (cons url w3m-url-history))
-	      (setq-default w3m-url-history
-			    (cons url (default-value 'w3m-url-history)))
-	      (delete-region (point-min) (point-max))
-	      (insert-buffer w3m-work-buffer-name)
-	      (if (string= "text/html" type)
-		  (progn (w3m-rendering-region (point-min) (point-max)) t)
-		(setq w3m-current-title (file-name-nondirectory url))
-		nil))
-	  (w3m-message "Requested URL has an unsuitable content type: %s" type)
-	  nil)))))
+	(if type
+	    (if (string-match "^text/" type)
+		(let (buffer-read-only)
+		  (setq w3m-current-url url)
+		  (setq w3m-url-history (cons url w3m-url-history))
+		  (setq-default w3m-url-history
+				(cons url (default-value 'w3m-url-history)))
+		  (delete-region (point-min) (point-max))
+		  (insert-buffer w3m-work-buffer-name)
+		  (if (string= "text/html" type)
+		      (progn (w3m-rendering-region (point-min) (point-max)) t)
+		    (setq w3m-current-title (file-name-nondirectory url))
+		    nil))
+	      (w3m-message "Requested URL has an unsuitable content type: %s" type)
+	      nil)
+	  (error "Unknown URL: %s" url))))))
 
 
 (defun w3m-search-name-anchor (name &optional quiet)
@@ -2205,21 +2248,26 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "<" 'w3m-scroll-right)
     (setq w3m-mode-map map)))
 
+(defun w3m-alive-p ()
+  "Return t, when w3m is running.  Otherwise return nil."
+  (catch 'alive
+    (save-current-buffer
+      (dolist (buf (buffer-list))
+	(set-buffer buf)
+	(when (eq major-mode 'w3m-mode)
+	  (throw 'alive t))))
+    nil))
 
 (defun w3m-quit (&optional force)
   (interactive "P")
   (when (or force
 	    (y-or-n-p "Do you want to exit w3m? "))
     (kill-buffer (current-buffer))
-    (w3m-arrived-shutdown)
-    (or (save-excursion
-	  ;; Check existing w3m buffers.
-	  (delq nil (mapcar (lambda (b)
-			      (set-buffer b)
-			      (eq major-mode 'w3m-mode))
-			    (buffer-list))))
-	;; If no w3m buffer exists, then destruct all cache.
-	(w3m-backlog-shutdown))))
+    (unless (w3m-alive-p)
+      ;; If no w3m is running, then destruct all data.
+      (w3m-cache-shutdown)
+      (w3m-arrived-shutdown)
+      (w3m-kill-all-buffer))))
 
 
 (defun w3m-mode ()
@@ -2593,8 +2641,7 @@ engine deinfed in `w3m-search-engine-alist'.  Otherwise use
 
 ;;; About:
 (defun w3m-about (url &rest args)
-  (save-excursion
-    (set-buffer (get-buffer-create w3m-work-buffer-name))
+  (w3m-with-work-buffer
     (delete-region (point-min) (point-max)))
   "text/html")
 

@@ -1,3 +1,30 @@
+2001-03-08  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: All w3m-backlog-* symbols are renamed into w3m-cache-*,
+	and coupling of retrieve module and cache module are cleand up.
+	(w3m-keep-cache-size): Old name is `w3m-keep-backlog'.
+	(w3m-cache-buffer, w3m-cache-articles, w3m-cache-hashtb,
+	w3m-cache-setup, w3m-cache-shutdown, w3m-cache-contents,
+	w3m-cache-request-contents): These symbols are renamed.
+	(w3m-cache-header, w3m-cache-request-header): New function.
+	(w3m-work-buffer-list): New variable.
+	(w3m-get-buffer-create): New function.
+	(w3m-with-work-buffer): New macro.
+	(w3m-kill-all-buffer): New function.
+	(w3m-create-image, w3m-local-retrieve): Use `w3m-with-work-buffer'
+	instead of `with-current-buffer'.
+	(w3m-arrived-setup): Set `w3m-input-url-history' when its value is
+	nil.
+	(w3m-arrived-shutdown): More strict error check.  This function is
+	added to `kill-emacs-hook'.
+	(w3m-w3m-get-header): New function.
+	(w3m-w3m-check-header): Use `w3m-w3m-get-header'.
+	(w3m-w3m-retrieve): Clean up code.
+	(w3m-download, w3m-exec): More strict error check.
+	(w3m-content-type): New optional argument `no-cache' is added.
+	(w3m-alive-p): New function.
+	(w3m-quit): Use `w3m-alive-p'.
+
 2001-03-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-local-retrieve): Bind 'auto conversion variables' to
