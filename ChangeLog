@@ -3,6 +3,8 @@
 	* w3m.el (w3m-edit-current-url): New command.
 	(w3m-mode-map): `w3m-edit-current-url' is registered.
 	(w3m-save-this-url): Removed.
+	(w3m-decode-encoded-buffer): Use `w3m-which-command' in order to
+	find appropriate command in Windows.
 
 2001-04-05  Yuuichi Teranishi  <teranisi@gohome.org>
 

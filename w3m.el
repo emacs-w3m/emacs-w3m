@@ -1451,6 +1451,16 @@ This function is imported from mcharset.el."
 
 
 ;;; Handle encoding of contents:
+(defsubst w3m-which-command (command)
+  (catch 'found-command
+    (let (bin)
+      (dolist (dir exec-path)
+	(when (or (file-executable-p
+		   (setq bin (expand-file-name command dir)))
+		  (file-executable-p
+		   (setq bin (expand-file-name (concat command ".exe") dir))))
+	  (throw 'found-command bin))))))
+
 (defun w3m-decode-encoded-buffer (encoding)
   (let ((x (and (stringp encoding)
 		(assoc encoding w3m-encoding-alist))))
@@ -1459,7 +1469,9 @@ This function is imported from mcharset.el."
 	      (coding-system-for-read 'binary)
 	      (default-process-coding-system (cons 'binary 'binary)))
 	  (zerop (apply 'call-process-region
-			(point-min) (point-max) (car x) t '(t nil) nil (nth 1 x)))))))
+			(point-min) (point-max)
+			(w3m-which-command (car x))
+			t '(t nil) nil (nth 1 x)))))))
 
 (defun w3m-decode-buffer (url &optional cs)
   (let ((type (w3m-content-type url))
@@ -1969,16 +1981,6 @@ this function returns t.  Otherwise, returns nil."
      (url (w3m-view-this-url))
      (img (w3m-view-image))
      (t (message "No URL at point.")))))
-
-(defsubst w3m-which-command (command)
-  (catch 'found-command
-    (let (bin)
-      (dolist (dir exec-path)
-	(when (or (file-executable-p
-		   (setq bin (expand-file-name command dir)))
-		  (file-executable-p
-		   (setq bin (expand-file-name (concat command ".exe") dir))))
-	  (throw 'found-command bin))))))
 
 (defun w3m-external-view (url)
   (let* ((type (w3m-content-type url))
