@@ -24,7 +24,6 @@
 	(w3m-rendering-extract-title): Simplified.
 	(w3m-rendering-half-dump): Define as a normal function.
 	(w3m-retrieve-and-render): Confirm at the top of this function.
-	(w3m-about-header): Encode special characters in the title.
 	(w3m-about-db-history): Encode special characters in the title.
 
 2003-07-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
