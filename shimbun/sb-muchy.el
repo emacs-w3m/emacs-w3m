@@ -69,7 +69,7 @@
 	(setq headers (shimbun-muchy-get-headers shimbun headers date-list)
 	      date-list nil)
 	(erase-buffer)
-	(shimbun-retrieve-url (concat baseurl "whatsold.htm") 'reload)	
+	(shimbun-retrieve-url (concat baseurl "whatsold.htm") 'reload)
 	(subst-char-in-region (point-min) (point-max) ?\t ?  t)
 	(goto-char (point-min))
 	(save-excursion
@@ -129,7 +129,7 @@
 	      ;; getting DATE
 	      ;;(setq date (apply
 	      ;;            'shimbun-make-date-string
-	      ;;            (shimbun-muchy-parse-time 
+	      ;;            (shimbun-muchy-parse-time
 	      ;;             (if (re-search-forward
 	      ;;                  "<small>\\([0-9][0-9][0-9][0-9]/[0-9][0-9]*/[0-9][0-9]*\\)</small>"
 	      ;;                  innerend t nil)

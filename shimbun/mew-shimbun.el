@@ -933,7 +933,7 @@ and 'X-Shimbun-Status:' effect to this function."
 	(mew-shimbun-remove-unseen-advice))
 
       (when mew-shimbun-use-unseen-cache-save
-	;; "C-cC-q" 
+	;; "C-cC-q"
 	(defadvice mew-kill-buffer (before shimbun-cache-save activate)
 	  (let* ((buf (or buf (current-buffer)))
 		 (fld (if (bufferp buf) (buffer-name buf) buf)))

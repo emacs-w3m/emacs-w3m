@@ -3637,7 +3637,7 @@ If EMPTY is non-nil, the created buffer has empty content."
 			(lambda (x y)
 			  (string< (buffer-name x)
 				   (buffer-name y)))))
-    (switch-to-buffer 
+    (switch-to-buffer
      (if (setq next (cadr (memq (current-buffer) buffers)))
 	 next
        (car buffers)))))
@@ -3654,7 +3654,7 @@ If EMPTY is non-nil, the created buffer has empty content."
 			(lambda (x y)
 			  (not (string< (buffer-name x)
 					(buffer-name y))))))
-    (switch-to-buffer 
+    (switch-to-buffer
      (if (setq next (cadr (memq (current-buffer) buffers)))
 	 next
        (car buffers)))))

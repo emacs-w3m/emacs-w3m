@@ -310,7 +310,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (defun w3m-setup-header-line ()
   (if w3m-use-tab
       (setq header-line-format (list '(:eval (w3m-tab-line))))
-    (if w3m-use-header-line 
+    (if w3m-use-header-line
 	(setq header-line-format
 	      (list
 	       (propertize
@@ -378,17 +378,17 @@ Buffer string between BEG and END are replaced with IMAGE."
 	buffers name orig line)
     (dolist (buffer (buffer-list))
       (with-current-buffer buffer
-        (when (eq major-mode 'w3m-mode)
-          (setq orig (if (stringp w3m-current-title)
-                         w3m-current-title
+	(when (eq major-mode 'w3m-mode)
+	  (setq orig (if (stringp w3m-current-title)
+			 w3m-current-title
 		       (if (stringp w3m-current-url)
 			   (directory-file-name
 			    (if (string-match "^[^/:]+:/+" w3m-current-url)
 				(substring w3m-current-url (match-end 0))
 			      w3m-current-url))
 			 ""))
-                name (concat " "
-			     (if (and 
+		name (concat " "
+			     (if (and
 				  (> w3m-tab-width 0)
 				  (> (string-width orig) w3m-tab-width))
 				 (concat (truncate-string-to-width
@@ -396,7 +396,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 					  (max 0 (- w3m-tab-width 3)))
 					 "...")
 			       orig) " "))
-          (setq buffers (cons (list buffer name orig) buffers)))))
+	  (setq buffers (cons (list buffer name orig) buffers)))))
     (setq buffers (sort buffers
 			(lambda (x y)
 			  (string< (buffer-name (car x))
