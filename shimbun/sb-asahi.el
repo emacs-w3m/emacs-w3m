@@ -32,11 +32,9 @@
 ;;; Code:
 
 (require 'shimbun)
+(require 'sb-text)
 
-(eval-and-compile
-  (autoload 'shimbun-shallow-rendering "sb-text"))
-
-(luna-define-class shimbun-asahi (shimbun) ())
+(luna-define-class shimbun-asahi (shimbun-text) ())
 
 (defvar shimbun-asahi-top-level-domain "asahi.com"
   "Name of the top level domain for the Asahi shimbun.")
@@ -121,7 +119,8 @@
 	 ;; 7. hour:minute
 	 "\\([012][0-9]:[0-5][0-9]\\)?" "[\t\n ]*)")
        1 3 4 5 6 7 2)))
-  "Alist of group names, their Japanese translations, index pages, regexps and numbers.
+  "Alist of group names, their Japanese translations, index pages,
+regexps and numbers.
 Regexp may have the \"%s\" token which is replaced with a
 regexp-quoted group name.  Numbers point to the search result in order
 of a url, a serial number, a subject, a month, a day, an hour:minute
@@ -142,22 +141,22 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
   (mapcar 'car shimbun-asahi-group-table))
 
 (luna-define-method shimbun-from-address ((shimbun shimbun-asahi))
-  (format "%s (%s) <webmaster@www.%s>"
-	  (shimbun-mime-encode-string "朝日新聞")
-	  (shimbun-mime-encode-string
-	   (nth 1 (assoc (shimbun-current-group-internal shimbun)
-			 shimbun-asahi-group-table)))
-	  shimbun-asahi-top-level-domain))
+  (concat (shimbun-mime-encode-string
+	   (concat "朝日新聞 ("
+		   (nth 1 (assoc (shimbun-current-group-internal shimbun)
+				 shimbun-asahi-group-table))
+		   ")"))
+	  " <webmaster@www." shimbun-asahi-top-level-domain ">"))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-asahi))
   (let ((group (shimbun-current-group-internal shimbun)))
     (concat shimbun-asahi-url group "/"
 	    (nth 2 (assoc group shimbun-asahi-group-table)))))
 
-(defun shimbun-asahi-get-headers (entity)
+(defun shimbun-asahi-get-headers (shimbun)
   "Return a list of headers."
-  (let ((group (shimbun-current-group-internal entity))
-	(from (shimbun-from-address entity))
+  (let ((group (shimbun-current-group-internal shimbun))
+	(from (shimbun-from-address shimbun))
 	(case-fold-search t)
 	regexp numbers cyear cmonth month day year headers)
     (setq regexp (assoc group shimbun-asahi-group-table)
@@ -214,37 +213,34 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 					 &optional range)
   (shimbun-asahi-get-headers shimbun))
 
-(defun shimbun-asahi-make-contents (entity header)
-  "Return article contents with a correct date header."
+(defun shimbun-asahi-adjust-date-header (shimbun header)
+  "Adjust a date header if there is a correct information available."
   (let ((case-fold-search t)
-	start date)
-    (when (and (re-search-forward (shimbun-content-start-internal entity)
+	date start end)
+    (when (and (member (shimbun-current-group-internal shimbun)
+		       '("science"))
+	       (string-match " \\(00:00\\) "
+			     (setq date (shimbun-header-date header)))
+	       (setq start (match-beginning 1))
+	       (re-search-forward (shimbun-content-start-internal shimbun)
 				  nil t)
-	       (setq start (point))
-	       (re-search-forward (shimbun-content-end-internal entity)
-				  nil t))
-      (delete-region (match-beginning 0) (point-max))
-      (delete-region (point-min) start)
-      (when (and (member (shimbun-current-group-internal entity)
-			 '("science"))
-		 (string-match " \\(00:00\\) "
-			       (setq date (shimbun-header-date header))))
-	(setq start (match-beginning 1))
-	(goto-char (point-max))
-	(forward-line -1)
-	(when (re-search-forward
-	       "([01][0-9]/[0-3][0-9] \\([012][0-9]:[0-5][0-9]\\))"
-	       nil t)
-	  (shimbun-header-set-date header
-				   (concat (substring date 0 start)
-					   (match-string 1)
-					   (substring date (+ start 5))))))
-      (shimbun-shallow-rendering))
-    (shimbun-header-insert-and-buffer-string entity header)))
+	       (re-search-forward (shimbun-content-end-internal shimbun)
+				  nil t)
+	       (progn
+		 (goto-char (setq end (match-beginning 0)))
+		 (forward-line -1)
+		 (re-search-forward
+		  "([01][0-9]/[0-3][0-9] \\([012][0-9]:[0-5][0-9]\\))"
+		  end t)))
+      (shimbun-header-set-date header
+			       (concat (substring date 0 start)
+				       (match-string 1)
+				       (substring date (+ start 5))))))
+  (goto-char (point-min)))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-asahi)
-					   header)
-  (shimbun-asahi-make-contents shimbun header))
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-asahi)
+						   header)
+  (shimbun-asahi-adjust-date-header shimbun header))
 
 (provide 'sb-asahi)
 

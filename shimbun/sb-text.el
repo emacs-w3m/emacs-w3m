@@ -68,7 +68,7 @@
   (forward-line 1)
   (not (eobp)))
 
-(defun shimbun-shallow-rendering ()
+(defsubst shimbun-shallow-rendering ()
   (goto-char (point-min))
   (while (search-forward "<p>" nil t)
     (insert "\n\n"))

@@ -29,7 +29,7 @@
 (require 'shimbun)
 (require 'sb-asahi)
 
-(luna-define-class shimbun-asahi-html (shimbun-asahi) ())
+(luna-define-class shimbun-asahi-html (shimbun) ())
 
 (defvar shimbun-asahi-html-content-start
   "<!--[\t\n ]*Start of photo[\t\n ]*-->\
@@ -41,42 +41,29 @@
 
 (defvar shimbun-asahi-html-expiration-days shimbun-asahi-expiration-days)
 
-(defun shimbun-asahi-html-make-contents (entity header)
-  "Return article contents with a correct date header."
-  (let ((case-fold-search t)
-	start date)
-    (when (and (re-search-forward (shimbun-content-start-internal entity)
-				  nil t)
-	       (setq start (point))
-	       (re-search-forward (shimbun-content-end-internal entity)
-				  nil t))
-      (delete-region (match-beginning 0) (point-max))
-      (delete-region (point-min) start)
-      (when (and (member (shimbun-current-group-internal entity)
-			 '("science"))
-		 (string-match " \\(00:00\\) "
-			       (setq date (shimbun-header-date header))))
-	(setq start (match-beginning 1))
-	(goto-char (point-max))
-	(forward-line -1)
-	(when (re-search-forward
-	       "([01][0-9]/[0-3][0-9] \\([012][0-9]:[0-5][0-9]\\))"
-	       nil t)
-	  (shimbun-header-set-date header
-				   (concat (substring date 0 start)
-					   (match-string 1)
-					   (substring date (+ start 5))))))
-      (goto-char (point-min))
-      (insert "<html>\n<head>\n<base href=\""
-	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
-      (goto-char (point-max))
-      (insert "\n</body>\n</html>\n"))
-    (shimbun-make-mime-article entity header)
-    (buffer-string)))
+(luna-define-method shimbun-groups ((shimbun shimbun-asahi-html))
+  (mapcar 'car shimbun-asahi-group-table))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-asahi-html)
-					   header)
-  (shimbun-asahi-html-make-contents shimbun header))
+(luna-define-method shimbun-from-address ((shimbun shimbun-asahi-html))
+  (concat (shimbun-mime-encode-string
+	   (concat "朝日新聞 ("
+		   (nth 1 (assoc (shimbun-current-group-internal shimbun)
+				 shimbun-asahi-group-table))
+		   ")"))
+	  " <webmaster@www." shimbun-asahi-top-level-domain ">"))
+
+(luna-define-method shimbun-index-url ((shimbun shimbun-asahi-html))
+  (let ((group (shimbun-current-group-internal shimbun)))
+    (concat shimbun-asahi-url group "/"
+	    (nth 2 (assoc group shimbun-asahi-group-table)))))
+
+(luna-define-method shimbun-get-headers ((shimbun shimbun-asahi-html)
+					 &optional range)
+  (shimbun-asahi-get-headers shimbun))
+
+(luna-define-method shimbun-make-contents
+  :before ((shimbun shimbun-asahi-html) header)
+  (shimbun-asahi-adjust-date-header shimbun header))
 
 (provide 'sb-asahi-html)
 
