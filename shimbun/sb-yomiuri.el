@@ -242,14 +242,12 @@ It does also shorten too much spaces."
 	     0
 	     ;; subject
 	     (if (and (nth 6 numbers) (nth 7 numbers))
-		 (save-match-data
-		   (shimbun-mime-encode-string
-		    (format "%02d/%02d %s"
-			    month day
-			    (shimbun-yomiuri-shorten-brackets-in-string
-			     (match-string (nth 2 numbers))))))
-	       (save-match-data
-		 (shimbun-mime-encode-string (match-string (nth 2 numbers)))))
+		 (shimbun-mime-encode-string
+		  (format "%02d/%02d %s"
+			  month day
+			  (shimbun-yomiuri-shorten-brackets-in-string
+			   (match-string (nth 2 numbers)))))
+	       (shimbun-mime-encode-string (match-string (nth 2 numbers))))
 	     ;; from
 	     from
 	     ;; date

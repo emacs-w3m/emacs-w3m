@@ -600,11 +600,12 @@ return the contents of this buffer as an encoded string."
 
 (defun shimbun-mime-encode-string (string)
   (condition-case nil
-      (mapconcat
-       #'identity
-       (split-string (or (eword-encode-string
-			  (shimbun-decode-entities-string string)) ""))
-       " ")
+      (save-match-data
+	(mapconcat
+	 #'identity
+	 (split-string (or (eword-encode-string
+			    (shimbun-decode-entities-string string)) ""))
+	 " "))
     (error string)))
 
 (defun shimbun-make-date-string (year month day &optional time timezone)
