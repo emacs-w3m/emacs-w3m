@@ -1,3 +1,10 @@
+2003-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Don't use
+	`save-match-data'
+	* shimbun/sb-gnome.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-get-headers): Ditto.
+
 2003-06-18  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/shimbun.el (shimbun-mime-encode-string): Use
