@@ -1,35 +1,83 @@
 $Date$
 
 ■ TODO
-   --> form 対応
-   --> ソースコード中の FIXME を直す
-   --> エラーチェックが手抜きなのを直す
+
+   --> 文字コードを指定した移動・再描画コマンドが欲しい
+
+   --> 動作全体の非同期化 (データの取得を待っている間、ずっと Emacs が使
+       えないのは、かなり痛い)
+
+   --> 画像関係の TODO [emacs-w3m:00122]
+
+        * 非同期に画像表示されるといいな
+        * ツールバー
+
+   --> Mule-2 対応
 
    --> source code の text/plain なページを閲覧しているときは font-lock 
        してくれると嬉しいかもしれない。
 
-   --> 画像関係の TODO [emacs-w3m:00122]
+   --> form 対応
+   --> ソースコード中の FIXME を直す
+   --> エラーチェックが手抜きなのを直す
+   --> ソースの整理
 
-        * リンク先が画像だけのときもインラインに表示したい
-        * 非同期に画像表示されるといいな
-        * ツールバー
+   --> 説明文書の整備
+
 
 
 ■ 既知の問題
 
-(1) w3m-fontify で _id というタグが処理されていない。このタグって、そ
-    もそも何?
-       Ex) http://www.debian.or.jp/License.html
+(1) Redirection をうまく処理できない
+    Ex) http://pine.kuee.kyoto-u.ac.jp/member/tsuchiya/emacs-w3m/
+	http://pine.kuee.kyoto-u.ac.jp/member/tsuchiya
 
 
-(2) http://www.lib.i.kyoto-u.ac.jp/ のレンダリングが崩れる。どうも 
+(2) Content-Encoding: を処理していない
+    Ex) http://cvs.m17n.org/~akr/diary/
+
+
+(3) 文書内の別の部分を指定する終点側 anchor (ex. <a name=foo>)に移動する
+    と、カーソルの場所の保存がおかしくなる。
+
+
+(4) w3m-view-next-page がない。
+
+
+(5) http://clotho.ku3g.org/negi.html が文字化けした。これは、本家 w3m 
+    でも化けたので、w3m.el で対処できる問題ではないのかもしれないが。
+
+
+(6) 同じ anchor が複数行に分割されて表示されている場合、TAB で移動すると
+    余分にカーソルが止まってしまう。
+
+
+
+■ 解決済みの問題
+
+(1) w3m-fontify で _id というタグが処理されていない。
+    Ex) http://www.debian.or.jp/License.html
+
+    --> revision 1.81 で対処 (Tnx. 後藤さん)
+
+
+(2) C-u M-x w3m-search RET google-ja RET query RET で検索を行ったとき、
+    検索結果が複数ページにわたる場合、ページ間の移動がうまく出来ない。
+
+    --> revision 1.89 で対処 [emacs-w3m:00150] (Tnx. 森山さん)
+
+
+(3) w3m-fontify で &ouml; が処理されていない。
+    Ex) http://tanaka-www.cs.titech.ac.jp/~euske/doc/openssh/history.html
+
+    --> revision 1.90 で対処 (Tnx. 有沢さん)
+
+
+(4) http://www.lib.i.kyoto-u.ac.jp/ のレンダリングが崩れる。どうも 
     \200 という文字が悪さをしているようだが、どう処理すべきなのか、良
     く分からない。
 
-
-(3) http://clotho.ku3g.org/negi.html が文字化けした。これは、本家 w3m 
-    でも化けたので、w3m.el で対処できる問題ではないのかもしれないが。
-
+    --> revision 1.100 で対処 [emacs-w3m:00165] (Tnx. 森山さん)
 
 
 Local Variables:
