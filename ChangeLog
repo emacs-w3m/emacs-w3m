@@ -1,3 +1,9 @@
+2003-07-14  OHASHI Akira  <bg66@koka-in.org>
+
+	* shimbun/sb-tdiary.el:  New backend.
+
+	* shimbun/sb-chalow.el (shimbun-chalow-get-headers): Fix regexp.
+
 2003-07-12  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
 
 	* shimbun/sb-zdnet.el (shimbun-zdnet-group-alist): Fix the folder
