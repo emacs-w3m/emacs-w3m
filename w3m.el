@@ -2441,8 +2441,9 @@ is rather complicated) listed below:
 
 \(1) `w3m-verbose' is non-nil,
 \(2) the cursor is not in minibuffer, and
-\(3) the external asynchronous w3m process is not in progress, or
-\(4) that process is running in a visible window of the current frame.
+\(3) an asynchronous process related to a visible buffer is in
+    progress, or
+\(4) a buffer related to emacs-w3m is visible in the current frame.
 
 Especially, it displays a given message without logging, when
 `w3m-verbose' is equal to nil.
@@ -2451,20 +2452,20 @@ If the current status does not meet the above conditions, this is the
 same function as `format' simply returning a string."
   (if w3m-verbose
       (apply (function message) args)
-    (w3m-static-if (featurep 'xemacs)
-	(let ((string (apply (function format) args)))
-	  (unless (or (eq (selected-window) (minibuffer-window))
-		      (when (bufferp w3m-current-buffer)
-			(not (get-buffer-window w3m-current-buffer))))
-	    (display-message 'no-log string))
-	  string)
-      (let (message-log-max)
-	(apply (if (or (eq (selected-window) (minibuffer-window))
-		       (when (bufferp w3m-current-buffer)
-			 (not (get-buffer-window w3m-current-buffer))))
-		   (function format)
-		 (function message))
-	       args)))))
+    (if (and (not (eq (selected-window) (minibuffer-window)))
+	     (or (when (bufferp w3m-current-buffer)
+		   (get-buffer-window w3m-current-buffer))
+		 (save-current-buffer
+		   (catch 'found-window
+		     (dolist (window (window-list))
+		       (set-buffer (window-buffer window))
+		       (when (eq major-mode 'w3m-mode)
+			 (throw 'found-window window)))))))
+	(w3m-static-if (featurep 'xemacs)
+	    (display-message 'no-log (apply (function format) args))
+	  (let (message-log-max)
+	    (apply (function message) args)))
+      (apply (function format) args))))
 
 (defun w3m-time-parse-string (string)
   "Parse the time-string STRING into a time in the Emacs style."
