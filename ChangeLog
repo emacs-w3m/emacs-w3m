@@ -1,9 +1,18 @@
 2003-02-28  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m-util.el (w3m-get-server-hostname): Rename and move from
+	`w3m-process-get-server-root' in `w3m-proc.el'.
+
+	* w3m-proc.el (w3m-process-set-authinfo, w3m-process-read-user)
+	(w3m-process-read-passwd, w3m-process-y-or-n-p): Use
+	`w3m-get-server-hostname' instead of
+	`w3m-process-get-server-root'.
+
 	* w3m.el (w3m-show-error-information): New customized variable.
 	(w3m-w3m-attributes): Message strange `Location:' like lynx.
 	(w3m-retrieve-and-render): When error occur, show error message
 	in `w3m buffer' to be accompanied by `w3m-show-error-information'.
+	(w3m-show-error-information): New function.
 	(w3m-reload-this-page, w3m-redisplay-this-page)
 	(w3m-redisplay-and-reset, w3m-redisplay-with-charset)
 	(w3m-view-source, w3m-view-header): If `w3m-current-url' is nil,

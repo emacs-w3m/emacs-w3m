@@ -585,22 +585,13 @@ evaluated in a temporary buffer."
 	      (process-send-string process
 				   (concat w3m-process-user "\n"))))))))))
 
-(defun w3m-process-get-server-root (url)
-  "Extract a server root from URL."
-  (when (string-match "\\`about://[^/?#]+/" url)
-    (setq url (substring url (match-end 0))))
-  (setq url (w3m-url-strip-authinfo url))
-  (if (string-match "\\`[^:/?#]+://\\([^/?#]+\\)" url)
-      (downcase (match-string 1 url))
-    url))
-
 ;; w3m-process-authinfo-alist has an association list as below format.
 ;; (("root1" ("realm11" ("user11" . "pass11")
 ;;                      ("user12" . "pass12"))
 ;;           ("realm12" ("user13" . "pass13")))
 ;;  ("root2" ("realm21" ("user21" . "pass21"))))
 (defun w3m-process-set-authinfo (url realm username password)
-  (let (x y z (root (w3m-process-get-server-root url)))
+  (let (x y z (root (w3m-get-server-hostname url)))
     (if (setq x (assoc root w3m-process-authinfo-alist))
 	(if (setq y (assoc realm x))
 	    (if (setq z (assoc username y))
@@ -617,7 +608,7 @@ evaluated in a temporary buffer."
 
 (defun w3m-process-read-user (url &optional realm ignore-history)
   "Read a user name for URL and REALM."
-  (let* ((root (when (stringp url) (w3m-process-get-server-root url)))
+  (let* ((root (when (stringp url) (w3m-get-server-hostname url)))
 	 (ident (or realm root))
 	 (alist))
     (if (and (not ignore-history)
@@ -638,7 +629,7 @@ evaluated in a temporary buffer."
 
 (defun w3m-process-read-passwd (url &optional realm username ignore-history)
   "Read a password for URL, REALM, and USERNAME."
-  (let* ((root (when (stringp url) (w3m-process-get-server-root url)))
+  (let* ((root (when (stringp url) (w3m-get-server-hostname url)))
 	 (ident (or realm root))
 	 (pass (cdr (assoc username
 			   (cdr (assoc realm
@@ -663,7 +654,7 @@ evaluated in a temporary buffer."
 NOTE: This function is designed to avoid annoying questions.  So when
 the same questions is reasked, its previous answer is reused without
 prompt."
-  (let (elem answer (root (w3m-process-get-server-root url)))
+  (let (elem answer (root (w3m-get-server-hostname url)))
     (if (setq elem (assoc root w3m-process-accept-alist))
 	(if (member prompt (cdr elem))
 	    ;; When the same question has been asked, the previous

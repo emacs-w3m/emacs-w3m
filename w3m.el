@@ -4127,12 +4127,41 @@ argument.  Otherwise, it will be called with nil."
 	      (when (and w3m-show-error-information
 			 (not (or (w3m-url-local-p url)
 				  (string-match "\\`about:" url))))
-		(w3m-prepare-content url "text/html" output-buffer content-charset))
+		(w3m-show-error-information url output-buffer content-charset))
 	    (w3m-message "Cannot retrieve URL: %s%s"
 			 url
 			 (if w3m-process-exit-status
 			     (format " (exit status: %s)"
 				     w3m-process-exit-status))))))))))
+
+(defun w3m-show-error-information (url output-buffer content-charset)
+  "Create and prepare error information."
+  (let ((case-fold-search t)
+	(header (w3m-cache-request-header url))
+	(errmsg (format "\n<br><h1>Cannot retrieve URL: %s%s</h1>"
+			(format "<a href=\"%s\">%s</a>" url url)
+			(when w3m-process-exit-status
+			  (format " (exit status: %s)" w3m-process-exit-status)))))
+    (if (or (null header)
+	    (string-match "\\`w3m: Can't load " header))
+	(progn
+	  (erase-buffer)
+	  (insert
+	   errmsg
+	   (format "<br><br><b>%s</b> could not be found."
+		   (w3m-get-server-hostname url))
+	   " Please check the name and try again."))
+      (goto-char (point-min))
+      (when (or (re-search-forward "<body>" nil t)
+		(re-search-forward "<html>" nil t))
+	(goto-char (match-end 0)))
+      (insert errmsg "<br><br><hr><br><br>")
+      (when (or (re-search-forward "</body>" nil t)
+		(re-search-forward "</html>" nil 'max))
+	(goto-char (match-end 0)))
+      (insert "\n<br><br><hr><br><br><h2>Header information</h2><br>\n<pre>"
+	      header "</pre>\n"))
+  (w3m-prepare-content url "text/html" output-buffer content-charset)))
 	    
 (defconst w3m-content-prepare-functions
   '(("\\`text/" . w3m-prepare-text-content)

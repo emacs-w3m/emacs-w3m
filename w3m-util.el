@@ -419,6 +419,15 @@ Otherwise return nil."
       (match-string 1 url)
     url))
 
+(defun w3m-get-server-hostname (url)
+  "Extract a server root from URL."
+  (when (string-match "\\`about://[^/?#]+/" url)
+    (setq url (substring url (match-end 0))))
+  (setq url (w3m-url-strip-authinfo url))
+  (if (string-match "\\`[^:/?#]+://\\([^/?#]+\\)" url)
+      (downcase (match-string 1 url))
+    url))
+
 (defsubst w3m-which-command (command)
   (when (stringp command)
     (if (and (file-name-absolute-p command)
