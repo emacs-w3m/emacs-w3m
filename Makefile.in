@@ -21,7 +21,7 @@ EMACS   = @EMACS@
 FLAGS   = -q -no-site-file -batch -l w3mhack.el $(ADDITIONAL_LOAD_PATH)
 ECC     = $(EMACS) $(FLAGS) -f batch-byte-compile
 
-MODULES = `$(EMACS) $(FLAGS) -f w3mhack-examine-additional-modules 2>/dev/null`
+MODULES = `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`
 
 .SUFFIXES:
 .SUFFIXES: .elc .el

@@ -46,8 +46,8 @@
 ;; Needed for interdependencies between w3m modules.
 (push default-directory load-path)
 
-(defun w3mhack-examine-additional-modules ()
-  "Examine additional modules should be byte-compile'd."
+(defun w3mhack-examine-modules ()
+  "Examine w3m modules should be byte-compile'd."
   (let ((modules (directory-files default-directory nil "\\.el$"))
 	(deletes (cond ((featurep 'xemacs)
 			'("w3m-e21.el" "w3m-om.el"))

@@ -1,5 +1,11 @@
 2001-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el (w3mhack-examine-modules): Renamed from
+	`w3mhack-examine-additional-modules'.
+	* Makefile.in: Ditto.
+
+2001-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* Makefile.in, aclocal.m4, configure.in, install-sh, w3mhack.el:
 	New files.
 	* Makefile: Removed.
