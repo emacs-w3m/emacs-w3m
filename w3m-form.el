@@ -233,7 +233,7 @@ If no field in forward, return nil without moving."
 	      (when (car selects)
 		(w3m-form-replace (cdr (assoc (car selects) (cdr selects)))))
 	      (unless (eq form cform)
-		(w3m-form-put cform name value))))
+		(w3m-form-put cform name selects))))
 	   ((string= type "textarea")
 	    (let ((hseq (nth 2 (w3m-action)))
 		  (value (w3m-form-get form name)))
