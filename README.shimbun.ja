@@ -26,7 +26,7 @@ ftp://ftp.m17n.org/pub/mule/flim/
 		(asahi-html も用意されています。)
 毎日		mainichi.shakai mainichi.sports mainichi.seiji
 		mainichi.keizai mainichi.kokusai mainichi.fuho
-日経		nikkei.seikei nikkei.kaigai nikkei.market
+日経		nikkei.keizai nikkei.seiji nikkei.kaigai nikkei.market
 		nikkei.sangyo nikkei.tento nikkei.shakai nikkei.retto
 		nikkei.shasetsu nikkei.zinzi nikkei.okuyami
 スポニチ		sponichi.baseball sponichi.soccer sponichi.usa
@@ -47,8 +47,13 @@ Japan CNET	cnet.comp
 		impress.av impress.jijinews impress.sports
 slashdot-jp	slashdot-jp.story
 HotWired	wired.business wired.culture wired.technology
-YAHOO!JAPAN	yahoo.cpt yahoo.dom yahoo.int yahoo.bus yahoo.brf
-		yahoo.biz yahoo.ent yahoo.spo yahoo.nkn yahoo.clm
+YAHOO!JAPAN	yahoo.politics yahoo.society yahoo.people
+		yahoo.business-all yahoo.market yahoo.stock
+		yahoo.industry yahoo.international yahoo.entertainment
+		yahoo.sports yahoo.computer yahoo.hokkaido yahoo.tohoku
+		yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
+		yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu
+		yahoo.okinawa
 ZDNet		zdnet.comp zdnet.gamespot
 
 2-3. Mailing List

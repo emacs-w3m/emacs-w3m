@@ -34,13 +34,37 @@
 
 (luna-define-class shimbun-yahoo (shimbun shimbun-text) ())
 
-(defvar shimbun-yahoo-url "http://news.yahoo.co.jp/headlines/")
+(defvar shimbun-yahoo-url "http://headlines.yahoo.co.jp/")
 
-(defvar shimbun-yahoo-groups '("cpt" "dom" "int" "bus" "brf" "biz" "ent" "spo" "nkn" "clm"))
- 
+(defvar shimbun-yahoo-groups-alist
+  '(("politics" . "pol")
+    ("society" . "soci")
+    ("people" . "peo")
+    ("business-all" . "bus_all")
+    ("market" . "brf")
+    ("stock" . "biz")
+    ("industry" . "ind")
+    ("international" . "int")
+    ("entertainment" . "ent")
+    ("sports" . "spo")
+    ("computer" . "sci")
+    ("hokkaido" . "hok")
+    ("tohoku" . "toh")
+    ("kanto" . "kan")
+    ("sinetsu" . "sin")
+    ("hokuriku" . "hor")
+    ("tokai" . "tok")
+    ("kinki" . "kin")
+    ("chugoku" . "chu")
+    ("sikoku" . "sik")
+    ("kyushu" . "kyu")
+    ("okinawa" . "oki")))
+(defvar shimbun-yahoo-groups
+  (mapcar 'car shimbun-yahoo-groups-alist))
+
 (defvar shimbun-yahoo-from-address "news-admin@mail.yahoo.co.jp")
-(defvar shimbun-yahoo-content-start "\n<!-- TextStart -->\n")
-(defvar shimbun-yahoo-content-end   "\n<!-- TextEnd -->\n")
+(defvar shimbun-yahoo-content-start "\n<!--br-->\n")
+(defvar shimbun-yahoo-content-end   "\n<center>\n")
 
 (defvar shimbun-yahoo-x-face-alist
   '(("default" . "X-Face: Ygq$6P.,%Xt$U)DS)cRY@k$VkW!7(X'X'?U{{osjjFG\"E]hND;SPJ-J?O?R|a?L
@@ -48,43 +72,52 @@
 (defvar shimbun-yahoo-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-yahoo))
-      (format "%s%s/index.html"
-	      (shimbun-url-internal shimbun)
-	      (shimbun-current-group-internal shimbun)))
+  (format "%shl?c=%s&t=l"
+	  (shimbun-url-internal shimbun)
+	  (cdr (assoc (shimbun-current-group-internal shimbun)
+		      shimbun-yahoo-groups-alist))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-yahoo)
 					 &optional range)
   (let ((case-fold-search t)
 	p headers)
     (goto-char (point-min))
-    (while (re-search-forward "<!-- GEN_HEADLINES -->" nil t)
-      (delete-region (point-min) (point))
-      (when (re-search-forward "<!-- GEN_BEFORE -->" nil t)
-	(delete-region (point) (point-max))
-	(goto-char (point-min))
-	(while (re-search-forward "<a href=\\(/headlines/[a-z]*/\\(\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\)/[a-z]*/\\([0-9][0-9]\\)\\([0-9][0-9]\\)[0-9]*_\\([a-z]*[0-9]*\\)\\.html\\)>\\([^\n]*\\)</a><br>" nil t)
-	  (let ((id (format "<%s%s%%%s>"
-			    (match-string 2)
-			    (match-string 8)
-			    (shimbun-current-group-internal shimbun)))
-		(url (match-string 1))
-		(year (+ 2000 (string-to-number (match-string 3))))
-		(month (string-to-number (match-string 4)))
-		(day   (string-to-number (match-string 5)))
-		(time  (format "%s:%s" (match-string 6) (match-string 7))))
-	    (push (shimbun-make-header
-		   0
-		   (shimbun-mime-encode-string
-		    (match-string 9))
-		   (shimbun-from-address-internal shimbun)
-		   (shimbun-make-date-string year month day time)
-		   id "" 0 0 (concat "http://news.yahoo.co.jp" url))
-		  headers)))
-	(when (re-search-forward "<a href=\\([^>]+\\)>次ページ</a>" nil t)
-	  (let ((url (concat "http://news.yahoo.co.jp" (match-string 1))))
-	    (erase-buffer)
-	    (shimbun-retrieve-url-buffer url t)
-	    (goto-char (point-min))))))
+    (catch 'stop
+      (while (re-search-forward "<!--- /COMMUNITY_CONTENTS -->" nil t)
+	(delete-region (point-min) (point))
+	(when (re-search-forward "<!--- OUTLINE_TABLE -->" nil t)
+	  (delete-region (point) (point-max))
+	  (goto-char (point-min))
+	  (while (re-search-forward "<a href=\"\\(http://headlines.yahoo.co.jp/hl\\?a=\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)-\\([0-9]+\\)-[^\"]+\\)\">\\([^<]+\\)</a>\\([^0-9]\\|[\n\r]\\)*\\([0-9]+日[^0-9]*\\)?\\([0-9]+\\)時\\([0-9]+\\)分" nil t)
+	    (let ((url (match-string 1))
+		  (year (match-string 2))
+		  (month (match-string 3))
+		  (day (match-string 4))
+		  (no (match-string 5))
+		  (subject (match-string 6))
+		  (hour (match-string 9))
+		  (min (match-string 10))
+		  id time)
+	      (setq id (format "<%s%s%s%s.%s@headlines.yahoo.co.jp>"
+			       year month day no
+			       (shimbun-current-group-internal shimbun)))
+	      (if (shimbun-search-id shimbun id)
+		  (throw 'stop nil))
+	      (setq time  (format "%s:%s" hour min))
+	      (push (shimbun-make-header
+		     0
+		     (shimbun-mime-encode-string subject)
+		     (shimbun-from-address-internal shimbun)
+		     (shimbun-make-date-string (string-to-number year)
+					       (string-to-number month)
+					       (string-to-number day) time)
+		     id "" 0 0 url)
+		    headers)))
+	  (when (re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>" nil t)
+	    (let ((url (match-string 1)))
+	      (erase-buffer)
+	      (shimbun-retrieve-url-buffer url t)
+	      (goto-char (point-min)))))))
     headers))
 
 (provide 'sb-yahoo)

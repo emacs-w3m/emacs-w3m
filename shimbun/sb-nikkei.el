@@ -36,7 +36,7 @@
 
 (defvar shimbun-nikkei-url "http://www.nikkei.co.jp/news/")
 
-(defvar shimbun-nikkei-groups '("seikei" "kaigai" "market" "sangyo" "tento" "shakai" "retto" "shasetsu" "zinzi" "okuyami"))
+(defvar shimbun-nikkei-groups '("keizai" "seiji" "kaigai" "market" "sangyo" "tento" "shakai" "retto" "shasetsu" "zinzi" "okuyami"))
  
 (defvar shimbun-nikkei-from-address "webmaster@nikkei.co.jp")
 (defvar shimbun-nikkei-content-start "<!--FJZONE START NAME=\"HONBUN\" -->")

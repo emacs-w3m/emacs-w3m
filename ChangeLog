@@ -1,3 +1,15 @@
+2001-09-09  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+
+	* shimbun/sb-yahoo.el: Follow the renewal of the Web site.
+
+	* README.shimbun.ja: Ditto.
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-groups): Apply the patch
+	posted by Takenobu Sugiyama <sugiyama@ae.advantest.co.jp> in
+	[emacs-w3m 01452].
+
+	* README.shimbun.ja: Ditto.
+
 2001-09-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-use-mule-ucs): New user option.
