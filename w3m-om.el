@@ -112,5 +112,8 @@ Optional DEFAULT is a default password to use instead of empty input."
 	(or pass default "")))))
 
 
+(defalias 'coding-system-category 'get-code-mnemonic)
+
+
 (provide 'w3m-om)
 ;;; w3m-om.el ends here

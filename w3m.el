@@ -1322,9 +1322,6 @@ This function is imported from mcharset.el."
     (if (find-coding-system cs)
 	cs)))
 
-(w3m-static-if (not (fboundp 'coding-system-category))
-    (defalias 'coding-system-category 'get-code-mnemonic))
-
 (defun w3m-decode-buffer (type charset)
   (if (and (not charset) (string= type "text/html"))
       (setq charset

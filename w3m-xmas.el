@@ -80,7 +80,7 @@ Buffer string between BEG and END are replaced with IMAGE."
   (and (device-on-window-system-p)
        (featurep image-type)))
 
-;;; Toolbar
+;;; Toolbar:
 (defcustom w3m-use-toolbar (and (featurep 'toolbar) t)
   "Non-nil activates toolbar of w3m."
   :group 'w3m
@@ -146,6 +146,10 @@ Buffer string between BEG and END are replaced with IMAGE."
     (widget-apply widget :notify widget event)
     (widget-setup)))
 )
+
+;;; Coding systems:
+(unless (fboundp 'coding-system-category)
+  (defalias 'coding-system-category 'coding-system-type))
 
 
 (provide 'w3m-xmas)

@@ -1,3 +1,15 @@
+2001-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (coding-system-category): Don't define it for the Emacs
+	variants.
+	* w3m-om.el (coding-system-category): Defalias to
+	`get-code-mnemonic'.
+	* w3m-xmas.el (coding-system-category): Defalias to
+	`coding-system-type' if it is not bound.
+
+	* w3mhack.el (w3mhack-version): Don't require `w3m' in the top
+	level, do it here instead.
+
 2001-03-22  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-save-list): Use 'pp' if have pp().
