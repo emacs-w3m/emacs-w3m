@@ -41,6 +41,12 @@
 
 ;;; Code:
 
+(or (and (boundp 'emacs-major-version)
+	 (>= emacs-major-version 20))
+    (progn
+      (require 'poe)
+      (require 'pcustom)))
+
 (defgroup w3m nil
   "w3m - the web browser of choice."
   :group 'hypermedia)
@@ -640,8 +646,15 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (interactive "P")
   (when (or force
 	    (y-or-n-p "Do you want to exit w3m? "))
-    (w3m-backlog-shutdown)
-    (kill-buffer (current-buffer))))
+    (kill-buffer (current-buffer))
+    (or (save-excursion
+	  ;; Check existing w3m buffers.
+	  (delq nil (mapcar (lambda (b)
+			      (set-buffer b)
+			      (eq major-mode 'w3m-mode))
+			    (buffer-list))))
+	;; If no w3m buffer exists, then destruct all cache.
+	(w3m-backlog-shutdown))))
 
 
 (defun w3m-mode ()
