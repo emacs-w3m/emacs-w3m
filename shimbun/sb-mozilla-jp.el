@@ -1,9 +1,10 @@
-;;; sb-anthy.el --- shimbun backend for Anthy's ML archive
+;;; sb-moz-users.el --- shimbun backend for moz-users
 
 ;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
+;; Created: Jun 7, 2003
 
 ;; This file is a part of shimbun.
 
@@ -23,23 +24,26 @@
 ;; Inc.; 59 Temple Place, Suite 330; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
-
+;; You have to put the four lines below to ~/.w3m/passwd;
+;;
+;;   machine www.mozilla.gr.jp
+;;   path /ml/logs/moz-users/
+;;   login mozilla
+;;   passwd mozilla
+;;
+;; Note that modes of ~/.w3m/passwd should be 0600 (or 0400) otherwise
+;; w3m ignores it.
+;;
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-mailman)
+(require 'sb-fml)
 
-(luna-define-class shimbun-anthy (shimbun-mailman) ())
+(luna-define-class shimbun-mozilla-jp (shimbun-fml) ())
 
-(defvar shimbun-anthy-url "http://lists.sourceforge.jp/pipermail/anthy-dev")
+(defvar shimbun-mozilla-jp-url "http://www.mozilla.gr.jp/ml/logs/moz-users/")
+(defvar shimbun-mozilla-jp-groups '("users"))
 
-(defvar shimbun-anthy-groups '("main"))
+(provide 'sb-mozilla-jp)
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-anthy))
-  shimbun-anthy-url)
-
-;;(luna-define-method shimbun-reply-to ((shimbun shimbun-anthy))
-;;  "anthy-dev@lists.sourceforge.jp")
-
-(provide 'sb-anthy)
-;;; sb-anthy.el ends here
+;;; sb-mozilla-jp.el ends here

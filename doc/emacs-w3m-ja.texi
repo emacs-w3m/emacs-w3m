@@ -3463,12 +3463,6 @@ SourceForge JP に保存されているメーリングリストの全ての公開書庫を閲覧で
 きます。閲覧したいグループを
 変数 @code{shimbun-sourceforge-jp-mailing-lists} に登録してください。
 
-@item @uref{http://lists.sourceforge.jp/pipermail/anthy-dev/, Anthy Mailing List}
-anthy.main
-
-@item @uref{http://lists.sourceforge.jp/pipermail/canna-dev/, Canna Mailing List}
-canna-dev.main
-
 @item @uref{http://heimat.jp/~nakaji/elips/, Elips Mailing List}
 elips.elips
 
@@ -3498,7 +3492,7 @@ jpilot.main
 pilot-mailsync.main
 
 @item @uref{http://www.mozilla.gr.jp/ml/logs/moz-users/, Mozilla Users Mailing List in Japan}
-moz-users.users
+mozilla-jp.users
 
 @end table
 
@@ -4019,8 +4013,8 @@ fml mailing list server/manager.  詳細
 ることも可能です)。
 
 @file{sb-mailman.el} を実際に利用したサンプルとして、
-@file{sb-anthy.el} などをご覧下さい。如何に楽ができるかがお分かりになる
-でしょう。
+@file{sb-pilot-mailsync.el} などをご覧下さい。如何に楽ができるかがお分か
+りになるでしょう。
 
 気を付けることが一つあるとすれば、これらのメーリングリストマネージャの中
 には地域化 (localize) されて、例えば日付表示を日本語で行うように改造され

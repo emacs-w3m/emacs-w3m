@@ -3329,12 +3329,6 @@ All archives served by SourceForge JP are supported by @samp{shimbun}
 library.  Add a group name of your favorite archive to the variable
 @code{shimbun-sourceforge-jp-mailing-lists}, and you can browse it.
 
-@item @uref{http://lists.sourceforge.jp/pipermail/anthy-dev/, Anthy Mailing List}
-anthy.main
-
-@item @uref{http://lists.sourceforge.jp/pipermail/canna-dev/, Canna Mailing List}
-canna-dev.main
-
 @item @uref{http://heimat.jp/~nakaji/elips/, Elips Mailing List}
 elips.elips
 
@@ -3364,7 +3358,7 @@ jpilot.main
 pilot-mailsync.main
 
 @item @uref{http://www.mozilla.gr.jp/ml/logs/moz-users/, Mozilla Users Mailing List in Japan}
-moz-users.users
+mozilla-jp.users
 
 @end table
 
@@ -3899,7 +3893,7 @@ parent class.} and methods defined in the @file{sb-mailman.el} module
 will be used in @samp{shimbun-foobar} by default.  You can overwrite
 some of parent methods, if necessary.
 
-See the @file{sb-anthy.el} file as a sample that uses the
+See the @file{sb-pilot-mailsync.el} file as a sample that uses the
 @file{sb-mailman.el} module.  You can feel how easy to create a new
 @samp{shimbun} module by using such parent modules.
 

@@ -1,5 +1,11 @@
 2003-06-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-anthy.el: Removed.
+
+	* shimbun/sb-canna-dev.el: Removed.
+
+	* shimbun/sb-mozilla-jp.el: Renamed from `shimbun/sb-moz-users.el'.
+
 	* Release emacs-w3m-1.3.4 from emacs-w3m-1_3 branch.
 
 2003-06-18  Koichiro Ohba  <koichiro@meadowy.org>
