@@ -1,6 +1,7 @@
 ;;; w3m-tabmenu.el --- Functions for TAB menu browsing
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Hideyuki SHIRAI    <shirai@meadowy.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -94,6 +95,12 @@
 
 (defun w3m-tab-menubar-update ()
   "Update w3m tab menubar."
+  (when (and (boundp 'iswitchb-global-map)
+	     (keymapp (symbol-value 'iswitchb-global-map)))
+    ;; Don't let iswitchb manage the w3m tab menubar.
+    (easy-menu-remove-item (symbol-value 'iswitchb-global-map)
+			   '(menu-bar)
+			   (car w3m-tab-menubar-dummy)))
   (when (and (eq major-mode 'w3m-mode)
 	     (w3m-static-if (featurep 'xemacs)
 		 (frame-property (selected-frame) 'menubar-visible-p)
