@@ -125,19 +125,6 @@
 
 2001-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	NOTE: `emacs-patch-level' vs `emacs-beta-version'
-	=================================================
-	The beta versions of XEmacs (e.g. XEmacs 21.5) designates its beta-
-	level in the constant `emacs-beta-version' as a number, however,
-	the value of `emacs-patch-level' is nil.  Otherwise, for the stable
-	versions (e.g. 21.1.14) or the gamma versions (e.g. 21.4.3), the
-	constant `emacs-patch-level' has a number of its patch-level and
-	the value of `emacs-beta-version' is nil.
-
-	Take heed that `emacs-patch-level' does not exist in FSFmacs or in
-	XEmacs versions earlier than 21.1.1, and also `emacs-beta-version'
-	does not exist in FSFmacs or in XEmacs versions earlier than 20.3.
-
 	* w3m-xmas.el (w3m-euc-japan-decoder): Don't check for the constant
 	`emacs-patch-level' when the beta versions of XEmacs is running.
 
