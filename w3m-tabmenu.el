@@ -91,7 +91,10 @@
 
 (defun w3m-tab-menubar-update ()
   "Update w3m tab menubar."
-  (when (eq major-mode 'w3m-mode)
+  (when (and (eq major-mode 'w3m-mode)
+	     (w3m-static-if (featurep 'xemacs)
+		 (frame-property (selected-frame) 'menubar-visible-p)
+	       menu-bar-mode))
     (easy-menu-change nil
 		      (car w3m-tab-menubar-dummy)
 		      (w3m-tab-menubar-make-items))))
