@@ -1,3 +1,9 @@
+2003-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+	Suggested by KURIHARA Kenichi <kenichi_kurihara@nifty.com>
+
+	* w3m.el (w3m-async-exec): Always default to `t'.
+	(w3m-process-connection-type): Default to `nil' under MacOS X.
+
 2003-01-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-w3m-ext-url-show): Use `mew-buffer-message'
