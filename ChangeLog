@@ -1,5 +1,19 @@
 2003-11-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/mew-shimbun.el (static-if): New macro providing only
+	when compiling.
+	(mew-shimbun-visit-folder): Replace `w3m-static-if' with
+	`static-if'.
+	(function-max-args): New macro providing only when compiling with
+	Emacs; make it work also with symbol function aliases.
+	(mew-shimbun-goto-folder): Replace `w3m-function-max-args' with
+	`function-max-args'.
+	(mew-shimbun-retrieve-article): Replace `w3m-static-if' with
+	`static-if'.
+	(mew-shimbun-scan-message): Ditto.
+
+	* w3m-util.el (w3m-function-max-args): Move to mew-shimbun.el.
+
 	* w3m.el (w3m-popup-buffer): New function (it still needs to
 	improved in order for the `w3m' function to use).
 	(w3m-view-this-url-1): Specify the value of
