@@ -213,7 +213,7 @@ width using expression (+ (frame-width) VALUE)."
   (if (string-match "^\\(.\\):\\(.*\\)" file)
       (if w3m-use-cygdrive
 	  (concat "/cygdrive/" (match-string 1 file) (match-string 2 file))
-	(concat "file:///" (match-string 1 file) (match-string 2 file)))
+	(concat "file:///" (match-string 1 file) "|" (match-string 2 file)))
     (concat "file://" file)))
 
 (defcustom w3m-home-page
