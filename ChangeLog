@@ -1,3 +1,9 @@
+2002-10-29  Ken'ichi SATO  <ksato@iijmio-mail.jp>
+
+	* shimbun/sb-zdnet.el (shimbun-zdnet-group-alist): Follow the
+	change of the web site.
+	(shimbun-zdnet-content-end): Ditto.
+
 2002-10-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-w3m-attributes): Remove workaround for servers which
