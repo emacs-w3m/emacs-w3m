@@ -731,7 +731,7 @@ and `shimbun-module-directory'."
 		      (let ((server (substring file 3 -3)))
 			(unless (member server
 					'("fml" "glimpse" "lump" "mailarc"
-					  "mailman" "mhonarc" "text"))
+					  "mailman" "mhonarc" "rss" "text"))
 			  server)))
 		    (directory-files shimbun-module-directory nil
 				     "^sb-.*\\.el$")))

@@ -1,3 +1,7 @@
+2003-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-generate-shimbun-servers-file): Exclude rss.
+
 2003-07-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-form.el (w3m-form-set-method): New inline function, that is
