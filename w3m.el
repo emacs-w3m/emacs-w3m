@@ -879,6 +879,12 @@ will disclose your private informations, for example:
 			    regexp
 			    (const :tag "Allow all" nil)))))
 
+(defcustom w3m-touch-command
+  (w3m-which-command "touch")
+  "*Name of the executable file of touch utilty."
+  :group 'w3m
+  :type 'string)
+
 (eval-and-compile
   (defconst w3m-entity-alist		; html character entities and values
     (eval-when-compile
@@ -1927,91 +1933,88 @@ If URL is specified, only the image with URL is toggled."
   (interactive "P")
   (let ((cur-point (point))
 	(buffer-read-only)
-	point beg end iurl image)
+	start end iurl image)
     (if (equal status 'off)
 	(save-excursion
 	  (goto-char (point-min))
-	  (while (if (get-text-property (point) 'w3m-image)
-		     (setq point (point))
-		   (setq point (next-single-property-change (point)
-							    'w3m-image)))
-	    (setq beg point
-		  end (or (next-single-property-change point 'w3m-image)
-			  (point-max)))
+	  (while (setq start
+		       (if (get-text-property (point) 'w3m-image)
+			   (point)
+			 (next-single-property-change (point) 'w3m-image)))
+	    (setq end (or (next-single-property-change start 'w3m-image)
+			  (point-max))
+		  iurl (w3m-image start))
 	    (goto-char end)
-	    (setq iurl (w3m-image point))
-	    (when (and (or (null url)
+	    (when (and (or (not url)
 			   ;; URL is specified and is same as the image URL.
-			   (and url (string= url iurl)))
-		       (not (eq (get-text-property beg 'w3m-image-status)
+			   (string= url iurl))
+		       (not (eq (get-text-property start 'w3m-image-status)
 				'on)))
-	      (if (get-text-property point 'w3m-image-redundant)
+	      (w3m-add-text-properties start end '(w3m-image-status on))
+	      (if (get-text-property start 'w3m-image-redundant)
 		  (progn
 		    ;; Insert dummy string instead of redundant image.
-		    (setq image
-			  (make-string
-			   (string-width (buffer-substring point end))
-			   ? ))
-		    (w3m-add-text-properties point end '(invisible t))
-		    (setq point (point))
-		    (insert image)
-		    (w3m-add-text-properties point (point)
-					     '(w3m-image-dummy
-					       t
+		    (setq image (make-string
+				 (string-width (buffer-substring start end))
+				 ? ))
+		    (w3m-add-text-properties start end '(invisible t))
+		    (w3m-add-text-properties (point)
+					     (progn (insert image) (point))
+					     '(w3m-image-dummy t
 					       w3m-image "dummy")))
-		(save-excursion
-		  (goto-char cur-point)
-		  (when iurl
-		    (w3m-process-with-null-handler
-		      (lexical-let ((start (set-marker (make-marker) point))
-				    (end (set-marker (make-marker) end))
-				    (url w3m-current-url))
-			(w3m-process-do
-			    (image (let ((w3m-current-buffer (current-buffer)))
-				     (w3m-create-image
-				      iurl no-cache w3m-current-url handler)))
-			  (when (and image
-				     (buffer-live-p (marker-buffer start)))
-			    (with-current-buffer (marker-buffer start)
-			      (when (equal url w3m-current-url)
-				(let (buffer-read-only)
-				  (w3m-insert-image start end image))
-				;; Redisplay
-				(when w3m-force-redisplay
-				  (sit-for 0))))
-			    (set-marker start nil)
-			    (set-marker end nil))))))))
-	      (w3m-add-text-properties beg end '(w3m-image-status on)))))
+		(when iurl
+		  (w3m-process-with-null-handler
+		    (lexical-let ((start (set-marker (make-marker) start))
+				  (end (set-marker (make-marker) end))
+				  (url w3m-current-url))
+		      (w3m-process-do
+			  (image (let ((w3m-current-buffer (current-buffer)))
+				   (w3m-create-image iurl no-cache
+						     w3m-current-url handler)))
+			(when (buffer-live-p (marker-buffer start))
+			  (with-current-buffer (marker-buffer start)
+			    (if image
+				(when (equal url w3m-current-url)
+				  (let (buffer-read-only)
+				    (w3m-insert-image start end image))
+				  ;; Redisplay
+				  (when w3m-force-redisplay
+				    (sit-for 0)))
+			      (let (buffer-read-only)
+				(w3m-add-text-properties
+				 start end '(w3m-image-status off))))
+			    (set-buffer-modified-p nil))
+			  (set-marker start nil)
+			  (set-marker end nil))))))))))
       ;; Remove.
       (save-excursion
 	(goto-char (point-min))
-	(while (if (get-text-property (point) 'w3m-image)
-		   (setq point (point))
-		 (setq point (next-single-property-change (point)
-							  'w3m-image)))
-	  (setq beg point
-		end (or (next-single-property-change point 'w3m-image)
-			(point-max)))
+	(while (setq start (if (get-text-property (point) 'w3m-image)
+			       (point)
+			     (next-single-property-change (point) 'w3m-image)))
+	  (setq end (or (next-single-property-change start 'w3m-image)
+			(point-max))
+		iurl (w3m-image start))
 	  (goto-char end)
-	  (setq iurl (w3m-image point))
 	  ;; IMAGE-ALT-STRING DUMMY-STRING
 	  ;; <--------w3m-image---------->
 	  ;; <---redundant--><---dummy--->
 	  ;; <---invisible-->
-	  (when (and (or (null url)
+	  (when (and (or (not url)
 			 ;; URL is specified and is not same as the image URL.
-			 (and url (string= url iurl)))
-		     (not (eq (get-text-property beg 'w3m-image-status)
+			 (string= url iurl))
+		     (not (eq (get-text-property start 'w3m-image-status)
 			      'off)))
 	    (cond
-	     ((get-text-property point 'w3m-image-redundant)
+	     ((get-text-property start 'w3m-image-redundant)
 	      ;; Remove invisible property.
-	      (remove-text-properties point end '(invisible nil)))
-	     ((get-text-property point 'w3m-image-dummy)
+	      (remove-text-properties start end '(invisible nil)))
+	     ((get-text-property start 'w3m-image-dummy)
 	      ;; Remove dummy string.
-	      (delete-region point end))
-	     (t (w3m-remove-image point end)))
-	    (w3m-add-text-properties beg end '(w3m-image-status off))))))))
+	      (delete-region start end))
+	     (t (w3m-remove-image start end)))
+	    (w3m-add-text-properties start end '(w3m-image-status off))))
+	(set-buffer-modified-p nil)))))
 
 (defun w3m-toggle-inline-image (&optional force no-cache)
   "Toggle displaying of inline image on cursor point.
@@ -2025,9 +2028,7 @@ If NO-CACHE is non-nil, cache is not used."
     (if url
 	(progn
 	  (if force (setq status 'off))
-	  (unwind-protect
-	      (w3m-toggle-inline-images-internal status no-cache url)
-	    (set-buffer-modified-p nil)))
+	  (w3m-toggle-inline-images-internal status no-cache url))
       (message "No image at point"))))
 
 (defun w3m-toggle-inline-images (&optional force no-cache)
@@ -2046,7 +2047,6 @@ If NO-CACHE is non-nil, cache is not used."
 					   no-cache nil)
       (unless (setq w3m-display-inline-images (not status))
 	(w3m-process-stop (current-buffer)))
-      (set-buffer-modified-p nil)
       (force-mode-line-update))))
 
 (defun w3m-decode-entities (&optional reserve-prop)
@@ -2884,6 +2884,7 @@ type as a string argument, when retrieve is complete."
 			(y-or-n-p (format "File(%s) already exists. Overwrite? "
 					  filename)))
 		(write-region (point-min) (point-max) filename)
+		(w3m-touch-file filename (w3m-last-modified url))
 		t))
 	  (ding)
 	  (message "Cannot retrieve URL: %s%s"
@@ -2892,6 +2893,15 @@ type as a string argument, when retrieve is complete."
 		       (format " (exit status: %s)" w3m-process-exit-status)
 		     ""))
 	  nil)))))
+
+(defun w3m-touch-file (file time)
+  (and time
+       (w3m-which-command w3m-touch-command)
+       (file-exists-p file)
+       (call-process w3m-touch-command nil nil nil
+		     "-d"
+		     (format-time-string "%Y-%m-%d %H:%M:%S" time)
+		     file)))
 
 ;;; Retrieve data:
 (eval-and-compile

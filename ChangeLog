@@ -1,3 +1,13 @@
+2002-02-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-touch-command): New option.
+	(w3m-touch-file): New function.
+	(w3m-download): Call it.
+	(w3m-toggle-inline-images-internal): Fix inconsistency of text
+	properties when images are not downloaded.
+	(w3m-toggle-inline-image): Simplified.
+	(w3m-toggle-inline-images): Ditto.
+
 2002-02-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-prin1): New function.
