@@ -170,6 +170,14 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'coding-system)
 
+(defcustom w3m-key-binding
+  nil
+  "*This variable decides default key mapping used in w3m-mode buffers."
+  :group 'w3m
+  :type '(choice
+	  (const :tag "Use Info-like key mapping." info)
+	  (other :tag "Use Lynx-like key mapping." nil)))
+
 (defcustom w3m-use-cygdrive t
   "*If non-nil, use /cygdrive/ rule when expand-file-name."
   :group 'w3m
@@ -2168,8 +2176,9 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 	new))))
 
 
-(defvar w3m-mode-map nil)
-(unless w3m-mode-map
+(defvar w3m-lynx-like-map nil
+  "Lynx-like keymap used in w3m-mode buffers.")
+(unless w3m-lynx-like-map
   (let ((map (make-keymap)))
     (define-key map " " 'scroll-up)
     (define-key map "b" 'scroll-down)
@@ -2185,6 +2194,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "\C-?" 'scroll-down)
     (define-key map "\t" 'w3m-next-anchor)
     (define-key map [(shift tab)] 'w3m-previous-anchor)
+    (define-key map [S-iso-lefttab] 'w3m-previous-anchor)
     (define-key map [down] 'w3m-next-anchor)
     (define-key map "\M-\t" 'w3m-previous-anchor)
     (define-key map [up] 'w3m-previous-anchor)
@@ -2223,7 +2233,58 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "=" 'w3m-view-header)
     (define-key map "s" 'w3m-history)
     (define-key map "E" 'w3m-edit-current-url)
-    (setq w3m-mode-map map)))
+    (setq w3m-lynx-like-map map)))
+
+(defvar w3m-info-like-map nil
+  "Info-like keymap used in w3m-mode buffers.")
+(unless w3m-info-like-map
+  (let ((map (make-keymap)))
+    (define-key map [backspace] 'scroll-down)
+    (define-key map [delete] 'scroll-down)
+    (define-key map "\C-?" 'scroll-down)
+    (define-key map "\t" 'w3m-next-anchor)
+    (define-key map [(shift tab)] 'w3m-previous-anchor)
+    (define-key map [S-iso-lefttab] 'w3m-previous-anchor)
+    (define-key map "\M-\t" 'w3m-previous-anchor)
+    (define-key map "\C-m" 'w3m-view-this-url)
+    (if (featurep 'xemacs)
+	(define-key map [(button2)] 'w3m-mouse-view-this-url)
+      (define-key map [mouse-2] 'w3m-mouse-view-this-url))
+    (define-key map " " 'scroll-up)
+    (define-key map "a" 'w3m-bookmark-add-current-url)
+    (define-key map "\M-a" 'w3m-bookmark-add-this-url)
+    (define-key map "b" 'scroll-down)
+    (define-key map "C" 'w3m-redisplay-with-coding-system)
+    (define-key map "d" 'w3m-bookmark-view)
+    (define-key map "D" 'w3m-download-this-url)
+    (define-key map "e" 'w3m-edit-current-url)
+    (define-key map "f" 'undefined) ;; reserved.
+    (define-key map "g" 'w3m-goto-url)
+    (define-key map "h" 'describe-mode)
+    (define-key map "I" 'w3m-view-image)
+    (define-key map "\M-I" 'w3m-save-image)
+    (define-key map "l" 'w3m-view-previous-page)
+    (define-key map "\C-l" 'w3m-reload-this-page)
+    (define-key map "M" 'w3m-view-current-url-with-external-browser)
+    (define-key map "n" 'w3m-view-next-page)
+    (define-key map "\M-n" 'w3m-copy-buffer)
+    (define-key map "o" 'w3m-history)
+    (define-key map "p" 'w3m-view-previous-page)
+    (define-key map "q" 'w3m-close-window)
+    (define-key map "Q" 'w3m-quit)
+    (define-key map "R" 'w3m-reload-this-page)
+    (define-key map "s" 'w3m-search)
+    (define-key map "t" (lambda () (interactive) (w3m-goto-url w3m-home-page)))
+    (define-key map "u" 'w3m-view-parent-page)
+    (define-key map "v" 'w3m-bookmark-view)
+    (define-key map "y" 'w3m-print-this-url)
+    (define-key map "=" 'w3m-view-header)
+    (define-key map "\\" 'w3m-view-source)
+    (define-key map "?" 'describe-mode)
+    (define-key map ">" 'w3m-scroll-left)
+    (define-key map "<" 'w3m-scroll-right)
+    (define-key map "." 'beginning-of-buffer)
+    (setq w3m-info-like-map map)))
 
 (defun w3m-alive-p ()
   "When w3m is running, return that buffer.  Otherwise return nil."
@@ -2254,6 +2315,8 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (bury-buffer (current-buffer))
   (set-window-buffer (selected-window) (other-buffer)))
 
+
+(defvar w3m-mode-map nil "Keymap used in w3m-mode buffers.")
 
 (defun w3m-mode ()
   "\\<w3m-mode-map>
@@ -2302,6 +2365,11 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (buffer-disable-undo)
   (setq major-mode 'w3m-mode)
   (setq mode-name "w3m")
+  (cond
+   ((eq w3m-key-binding 'info)
+    (setq w3m-mode-map w3m-info-like-map))
+   (t
+    (setq w3m-mode-map w3m-lynx-like-map)))
   (use-local-map w3m-mode-map)
   (setq truncate-lines t)
   (w3m-setup-toolbar)
