@@ -1,3 +1,7 @@
+2001-03-23  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-w3m-attributes): Don't check "OK" string in Status-Line.
+
 2001-03-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-time-parse-string the 2nd): Don't funcall

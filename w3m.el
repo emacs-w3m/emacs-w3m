@@ -1473,7 +1473,7 @@ elements are:
 If optional argument NO-CACHE is non-nil, cache is not used."
   (let ((header (w3m-w3m-get-header url no-cache)))
     (cond
-     ((and header (string-match "HTTP/1\\.[0-9] 200 OK" header))
+     ((and header (string-match "HTTP/1\\.[0-9] 200 " header))
       (let (alist type charset)
 	(dolist (line (split-string (substring header (match-end 0)) "\n"))
 	  (when (string-match "^\\([^:]+\\):[ \t]*" line)
