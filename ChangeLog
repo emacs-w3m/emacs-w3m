@@ -1,3 +1,8 @@
+2002-07-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers): Follow the
+	change of the Web site.
+
 2002-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-get-headers-in-the-list-page):
@@ -195,7 +200,7 @@
 
 2002-06-21  Yuuichi Teranishi  <teranisi@gohome.org>
 
-	* w3m.el (w3m-w3m-retrieve-1): Specify -no-cookie option only when 
+	* w3m.el (w3m-w3m-retrieve-1): Specify -no-cookie option only when
 	the w3m command is configured to accept it.
 
 2002-06-03  Hidetaka Iwai <tyuyu@mb6.seikyou.ne.jp>
@@ -212,7 +217,7 @@
 2002-05-31  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
 
 	* octet.el (octet-find-file): Bind `buffer-read-only', only while
-	calling `octet-buffer'.	
+	calling `octet-buffer'.
 
 2002-06-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
