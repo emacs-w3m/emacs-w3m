@@ -1176,9 +1176,12 @@ otherwise return an alist."
 	   (setq params (cddr params)))
 	 (nreverse alist)))))
 
-(defmacro w3m-popup-frame-p ()
-  "Return non-nil if the command `w3m' should popup a new frame."
-  (list 'and 'w3m-pop-up-frames '(interactive-p)
+(defmacro w3m-popup-frame-p (&optional force)
+  "Return non-nil if the command `w3m' should popup a new frame.  If
+optional FORCE is non-nil, treat as if the last command is called
+interactively."
+  (list 'and 'w3m-pop-up-frames
+	(list 'or force '(interactive-p))
 	(if (featurep 'xemacs)
 	    '(device-on-window-system-p)
 	  'window-system)))
@@ -2818,6 +2821,7 @@ to nil.
      (t
       (w3m-w3m-retrieve url no-decode no-cache post-data referer)))))
 
+;;;###autoload
 (defun w3m-download (url &optional filename no-cache)
   (interactive
    (let* ((url (w3m-input-url
@@ -3318,7 +3322,7 @@ also make a new frame for the copied session."
     (cond
      (url
       (when new-session
-	(switch-to-buffer (w3m-copy-buffer (current-buffer) nil t)))
+	(switch-to-buffer (w3m-copy-buffer nil nil t)))
       (w3m-goto-url url arg nil nil w3m-current-url))
      (act (eval act))
      ((w3m-image)
@@ -3568,24 +3572,27 @@ session."
     (w3m-print-this-url)))
 
 
-(defun w3m-copy-buffer (buf &optional newname and-pop) "\
-Create a twin copy of the current buffer.
+(defun w3m-copy-buffer (&optional buf newname and-pop)
+  "Create a copy of the buffer BUF which defaults to the current buffer.
 If NEWNAME is nil, it defaults to the current buffer's name.
 If AND-POP is non-nil, the new buffer is shown with `pop-to-buffer',
 that is affected by `w3m-pop-up-frames'."
   (interactive (list (current-buffer)
 		     (if current-prefix-arg (read-string "Name: "))
 		     t))
-  (setq newname (or newname (buffer-name)))
-  (if (string-match "<[0-9]+>\\'" newname)
-      (setq newname (substring newname 0 (match-beginning 0))))
+  (unless buf
+    (setq buf (current-buffer)))
+  (unless newname
+    (setq newname (buffer-name buf)))
+  (when (string-match "<[0-9]+>\\'" newname)
+    (setq newname (substring newname 0 (match-beginning 0))))
   (with-current-buffer buf
     (let ((ptmin (point-min))
 	  (ptmax (point-max))
 	  (content (save-restriction (widen) (buffer-string)))
 	  (mode major-mode)
 	  (lvars (buffer-local-variables))
-	  (new (generate-new-buffer (or newname (buffer-name))))
+	  (new (generate-new-buffer newname))
 	  (pt (point)))
       (with-current-buffer new
 	;;(erase-buffer)
@@ -3637,7 +3644,7 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "l" 'forward-char)
     (define-key map "J" (lambda () (interactive) (scroll-down 1)))
     (define-key map "K" (lambda () (interactive) (scroll-up 1)))
-    (define-key map "G" 'goto-line)
+    (define-key map "\M-g" 'goto-line)
     (define-key map "\C-?" 'w3m-scroll-down-or-previous-url)
     (define-key map "\t" 'w3m-next-anchor)
     (define-key map [(shift tab)] 'w3m-previous-anchor)
@@ -3669,6 +3676,7 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "\M-i" 'w3m-save-image)
     (define-key map "c" 'w3m-print-current-url)
     (define-key map "M" 'w3m-view-url-with-external-browser)
+    (define-key map "G" 'w3m-goto-url-new-session)
     (define-key map "g" 'w3m-goto-url)
     (define-key map "T" 'w3m-toggle-inline-images)
     (define-key map "t" 'w3m-toggle-inline-image)
@@ -3737,6 +3745,7 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "e" 'w3m-edit-current-url)
     (define-key map "E" 'w3m-edit-this-url)
     (define-key map "f" 'undefined) ;; reserved.
+    (define-key map "G" 'w3m-goto-url-new-session)
     (define-key map "g" 'w3m-goto-url)
     (define-key map "h" 'describe-mode)
     (define-key map "H" 'w3m-gohome)
@@ -3863,6 +3872,7 @@ Return t if deleting current frame or window is succeeded."
 \\[w3m-view-parent-page]	Upward to parent page.
 
 \\[w3m-goto-url]	Goto URL.
+\\[w3m-goto-url-new-session]	Goto URL in the new session.
 \\[w3m-gohome]	Goto home page.
 
 \\[w3m-download-this-url]	Download this url.
@@ -4010,15 +4020,17 @@ or prefix ARG columns."
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer)
   "Retrieve contents of URL.
-If second argument RELOAD is non-nil, content is re-loaded.
-Third argument CHARSET specifies content charset.  If CHARSET equals
-t, reset charset entry in arrived DB.
-Fourth argument POST-DATA should be a string or a cons cell.  If
-string is specified, it is used as request body and content-type is
-set as \"x-www-form-urlencoded\".  If cons cell is specified, car of
-the cell is used as content-type and cdr of the cell is used as body.
-If fifth argument REFERER is specified, it is used as Referer: field
-of the request."
+If the second argument RELOAD is non-nil, reload a content of URL.
+The third argument CHARSET specifies a charset to be used for decoding
+a content.  Except that if it is t, a charset entry in the arrived DB
+will be cleared.
+The fourth argument POST-DATA should be a string or a cons cell.  If
+it is a string, it makes this function request a body as if the
+content-type is \"x-www-form-urlencoded\".  If it is a cons cell, the
+car of a cell is used as the content-type and the cdr of a cell is
+used as the body.
+If the fifth argument REFERER is specified, it is used for a Referer:
+field for this request."
   (interactive
    (list
     (w3m-input-url nil
@@ -4046,16 +4058,15 @@ of the request."
     (unless (eq major-mode 'w3m-mode)
       (set-buffer (get-buffer-create "*w3m*"))
       (unless (eq major-mode 'w3m-mode)
-	(w3m-mode)
-	(setq mode-line-buffer-identification
-	      (list "%b"))
-	(if (w3m-display-graphic-p)
-	    (nconc mode-line-buffer-identification
-		   (list " " '((w3m-current-image-status
-				w3m-modeline-image-status-on
-				w3m-modeline-image-status-off)))))
+	(w3m-mode)))
+    (setq mode-line-buffer-identification (list "%b"))
+    (if (w3m-display-graphic-p)
 	(nconc mode-line-buffer-identification
-	       (list " / " 'w3m-current-title))))
+	       (list " " '((w3m-current-image-status
+			    w3m-modeline-image-status-on
+			    w3m-modeline-image-status-off)))))
+    (nconc mode-line-buffer-identification
+	   (list " / " 'w3m-current-title))
     ;; Setup arrived database.
     (w3m-arrived-setup)
     ;; Store the current position in the history structure.
@@ -4142,6 +4153,29 @@ of the request."
       (switch-to-buffer (current-buffer))
       (when localcgi (w3m-goto-url-localcgi-movepoint))))))
 
+;;;###autoload
+(defun w3m-goto-url-new-session (url
+				 &optional reload charset post-data referer)
+  "Run the command `w3m-goto-url' in the new session.  If you invoke this
+command in the w3m buffer, the new session will be created by copying
+the current session.  Otherwise, the new session will start afresh."
+  (interactive
+   (list
+    (w3m-input-url nil
+		   (when (stringp w3m-current-url)
+		     (if (string-match "\\`about://\\(header\\|source\\)/"
+				       w3m-current-url)
+			 (substring w3m-current-url (match-end 0))
+		       w3m-current-url)))
+    current-prefix-arg
+    (w3m-static-if (fboundp 'universal-coding-system-argument)
+	coding-system-for-read)))
+  (if (eq 'w3m-mode major-mode)
+      (progn
+	(switch-to-buffer (w3m-copy-buffer nil nil (interactive-p)))
+	(w3m-goto-url url reload charset post-data referer))
+    (w3m url t)))
+
 (defun w3m-goto-url-localcgi-movepoint ()
   (let ((height (/ (window-height) 5))
 	(pos (point-min)))
@@ -4156,6 +4190,7 @@ of the request."
 	 (point-min)))
       (recenter height))))
 
+;;;###autoload
 (defun w3m-gohome ()
   "Go to the Home page."
   (interactive)
@@ -4192,7 +4227,7 @@ If input is nil, use default coding-system on w3m."
 
 
 ;;;###autoload
-(defun w3m (&optional url)
+(defun w3m (&optional url new-session)
   "Visit the World Wide Web page using the external command w3m, w3mmee
 or w3m-m17n.  When you invoke this command interactively, it will
 prompt you for a URL where you wish to go.  Except that if the prefix
@@ -4205,7 +4240,9 @@ Otherwise, you can run this command in the batch mode like:
 
 The value of `w3m-pop-up-frames' specifies whether to pop up a new
 frame, however, it will be ignored (treated as nil) when this command
-is called non-interactively."
+is called non-interactively.  Optional NEW-SESSION is supposed to be
+used by the command `w3m-goto-url-new-session' to create a new session,
+for neither the interactive use nor the batch mode."
   (interactive
    (let ((default (if (w3m-alive-p) 'popup w3m-home-page)))
      (list
@@ -4213,7 +4250,8 @@ is called non-interactively."
 	  default
 	(w3m-input-url nil nil default t)))))
   (let ((nofetch (eq url 'popup))
-	(buffer (w3m-alive-p))
+	(buffer (unless new-session
+		  (w3m-alive-p)))
 	(focusing-function
 	 (append '(lambda (frame)
 		    (raise-frame frame)
@@ -4223,7 +4261,7 @@ is called non-interactively."
 		     '((x-focus-frame frame))
 		   '((focus-frame frame)))))
 	(params (w3m-pop-up-frame-parameters))
-	(popup-frame-p (w3m-popup-frame-p))
+	(popup-frame-p (w3m-popup-frame-p new-session))
 	window frame)
     (unless (and (stringp url)
 		 (> (length url) 0))
@@ -4250,20 +4288,20 @@ is called non-interactively."
 		 (switch-to-buffer buffer))
 		(t
 		 (switch-to-buffer buffer))))
-      (setq buffer (get-buffer-create "*w3m*"))
+      (setq buffer (generate-new-buffer "*w3m*"))
       (if popup-frame-p
 	  (progn
 	    (funcall focusing-function (setq frame (make-frame params)))
 	    (switch-to-buffer buffer))
 	(switch-to-buffer buffer))
-      (erase-buffer)
       (insert (make-string (max 0 (/ (1- (window-height)) 2)) ?\n)
 	      "Reading " url "...")
       (beginning-of-line)
       (let ((fill-column (window-width)))
 	(center-region (point) (point-max)))
       (goto-char (point-min))
-      (sit-for 0))
+      (sit-for 0)
+      (w3m-mode))
     (unwind-protect
 	(unless nofetch
 	  (w3m-goto-url url))
@@ -4273,6 +4311,7 @@ is called non-interactively."
 (eval-when-compile
   (autoload 'browse-url-interactive-arg "browse-url"))
 
+;;;###autoload
 (defun w3m-browse-url (url &optional new-window)
   "w3m interface function for browse-url.el."
   (interactive
@@ -4281,6 +4320,7 @@ is called non-interactively."
     (if new-window (split-window))
     (w3m-goto-url url)))
 
+;;;###autoload
 (defun w3m-find-file (file)
   "w3m Interface function for local file."
   (interactive "fFilename: ")
@@ -4298,6 +4338,7 @@ ex.) c:/dir/file => //c/dir/file"
     path))
 
 
+;;;###autoload
 (defun w3m-region (start end &optional url)
   "Render region in current buffer and replace with result."
   (interactive "r")
