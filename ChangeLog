@@ -1,3 +1,8 @@
+2003-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-decode-entities): Don't trust in the `match-data'
+	after the `w3m-entity-value' function is performed.
+
 2003-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-x-face,
