@@ -5969,10 +5969,9 @@ sessions will also be closed.  See also `w3m-quit'."
   (interactive)
   (let* ((buffers (w3m-list-buffers t))
 	 (bufs buffers)
-	 (curr (window-buffer (selected-window)))
 	 buf windows window)
-    (setq w3m-last-visited-buffer (when (memq curr buffers)
-				    curr))
+    (setq w3m-last-visited-buffer
+	  (car (memq (window-buffer (selected-window)) buffers)))
     (w3m-delete-frames-and-windows)
     (while bufs
       (setq buf (pop bufs))
