@@ -1,3 +1,8 @@
+2001-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-about-history-1, w3m-about-history): Deactivate all
+	"about://*" links.
+
 2001-04-16  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-gnome.el: New file.

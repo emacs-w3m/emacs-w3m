@@ -2669,32 +2669,31 @@ works on Emacs.
 
 (defun w3m-about-history-1 (history source depth)
   "Internal function used to `w3m-about-history' for recursive funcall."
-;;  (let (rest)
-;;    (dolist (element history)
-;;      (unless (string-match w3m-about-history-except-regex (car element))
-;;	(push element rest)))
-;;    (setq history (nreverse rest)))
   (let (element url title children)
     (while history
       (setq element (car history)
 	    history (cdr history)
 	    url (car element)
 	    title (plist-get (cadr element) ':title)
-	    source (concat source
-			   (if (zerop depth)
-			       ""
-			     (make-string depth ?ив))
-			   (if history
-			       "из"
-			     "иж")
-			   "<a href=\"" url "\">"
-			   (if (or (not title)
-				   (string-equal "<no-title>" title)
-				   (string-match "^[\t бб]*$" title))
-			       url
-			     title)
-			   "</a>\n")
-	    children (cddr element))
+	    children (cddr element)
+	    source (concat
+		    source
+		    (if (zerop depth)
+			""
+		      (make-string depth ?ив))
+		    (if history
+			"из"
+		      "иж")
+		    (if (string-match w3m-about-history-except-regex url)
+			"б■"
+		      (concat "<a href=\"" url "\">"
+			      (if (or (not title)
+				      (string-equal "<no-title>" title)
+				      (string-match "^[\t бб]*$" title))
+				  url
+				title)
+			      "</a>"))
+		    "\n"))
       (when children
 	(setq source (w3m-about-history-1 (apply 'append children)
 					  source (1+ depth))))))
@@ -2705,16 +2704,22 @@ works on Emacs.
   (let ((source (w3m-about-history-1 (cdr w3m-history)
 				     "\
 <head><title>URL history</title></head><body>
-<h1>List of all the links you have visited in this session</h1><pre>\n"
+<h1>List of all the links you have visited in this session.</h1><pre>\n"
 				     0)))
     (w3m-with-work-buffer
       (erase-buffer)
-      (insert source "</pre></body>")
+      (insert source)
       (goto-char (point-min))
       (when (re-search-forward "\\(иж\\)\\|\\(из\\)" nil t)
 	(replace-match (if (match-beginning 1)
 			   "иб"
-			 "ии")))))
+			 "ии")))
+      (goto-char (point-min))
+      (when (prog1
+		(search-forward "б■\n" nil t)
+	      (goto-char (point-max)))
+	(insert "\n;; All \"about://*\" links (б■) are deactivated.\n"))
+      (insert "</pre></body>")))
   "text/html")
 
 (defun w3m-about-db-history (&rest args)
