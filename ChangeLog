@@ -1,7 +1,9 @@
 2001-11-28  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-xmas.el (w3m-insert-image): Rewrite.
-	(if displayed images exist on the right side, keep them and display again)
+	(if displayed images exist on the right side, keep them and display
+	again)
+	(w3m-remove-image): Call `delete-extent' to destroy extents.
 
 2001-11-27  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
 

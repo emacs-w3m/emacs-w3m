@@ -273,14 +273,15 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 Buffer string between BEG and END are replaced with IMAGE."
   (let (extent glyphs)
     (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
-      (push (extent-end-glyph extent) glyphs))
+      (push (extent-end-glyph extent) glyphs)
+      (set-extent-end-glyph extent nil))
     (push image glyphs)
     ;; Image on the right is displayed.
     (when (extent-at end nil 'invisible nil 'at)
       (setq end (next-single-property-change end 'invisible))
       (while (setq extent (extent-at end nil 'w3m-xmas-icon extent 'at))
 	(push (extent-end-glyph extent) glyphs)
-	(set-extent-property extent 'end-glyph nil)))
+	(set-extent-end-glyph extent nil)))
     (set-extent-properties (make-extent beg end) (list 'w3m-xmas-icon t
 						       'invisible t))
     (while glyphs
@@ -290,15 +291,13 @@ Buffer string between BEG and END are replaced with IMAGE."
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."
-  (let (extent)
+  (let (extent extents)
     (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
-      (if (extent-end-glyph extent)
-	  (set-extent-end-glyph extent nil))
-      (set-extent-property extent 'invisible nil))
+      (setq extents (push extent extents)))
     (while (setq extent (extent-at end nil 'w3m-xmas-icon extent 'at))
-      (if (extent-end-glyph extent)
-	  (set-extent-end-glyph extent nil))
-      (set-extent-property extent 'invisible nil))))
+      (setq extents (push extent extents)))
+    (dolist (extent extents)
+      (delete-extent extent))))
 
 (defun w3m-image-type-available-p (image-type)
   "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
