@@ -110,6 +110,32 @@
 	   (cons 'truncate-string-to-width (cdr form))
 	 form)))
 
+(put 'match-string-no-properties 'byte-optimizer
+     (lambda (form)
+       (let ((num (nth 1 form))
+	     (string (nth 2 form)))
+	 (cond ((and string (featurep 'xemacs))
+		(` (if (match-beginning (, num))
+		       (let ((string (substring (, string)
+						(match-beginning (, num))
+						(match-end (, num)))))
+			 (map-extents (lambda (extent maparg)
+					(delete-extent extent))
+				      string 0 (lenght string))
+			 string))))
+	       (string
+		(` (if (match-beginning (, num))
+		       (let ((string (substring (, string)
+						(match-beginning (, num))
+						(match-end (, num)))))
+			 (set-text-properties 0 (length string) nil string)
+			 string))))
+	       (t
+		(` (if (match-beginning (, num))
+		       (buffer-substring-no-properties
+			(match-beginning (, num))
+			(match-end (, num))))))))))
+
 (cond
  ((featurep 'xemacs)
   ;; Don't warn for the unused non-global variables.
