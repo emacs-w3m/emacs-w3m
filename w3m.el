@@ -6383,51 +6383,12 @@ Otherwise, it defaults to `w3m-horizontal-shift-columns'."
     (w3m-horizontal-on-screen))
   (setq w3m-horizontal-scroll-done nil))
 
-;; XEmacs bugs ?
-(w3m-static-if (and (featurep 'xemacs) (featurep 'mule))
-    (progn
-      (defun w3m-window-hscroll (&optional window)
-	"Replacement of `window-hscroll' for XEmacs-Mule.
-XEmacs does not work correctly in the display control in case buffer
-contains characters of various width.  This function does not
-necessarily solve the problem completely."
-	(let ((hs (window-hscroll window))
-	      (spos (point-at-bol))
-	      (epos (point-at-eol))
-	      (buf (window-buffer window)))
-	  (save-selected-window
-	    (save-excursion
-	      (set-buffer buf)
-	      (beginning-of-line)
-	      (condition-case nil
-		  (forward-char hs)
-		(error (goto-char (point-max))))
-	      (if (< epos (point))
-		  (+ hs (- (string-width (buffer-substring spos epos))
-			   (- epos spos)))
-		(string-width (buffer-substring spos (point))))))))
-
-      (defun w3m-current-column ()
-	"Replacement of `current-column' for XEmacs-Mule.
-XEmacs does not work correctly in the display control in case buffer
-contains characters of various width.  This function does not
-necessarily solve the problem completely."
-	(- (point) (point-at-bol)))
-
-      (defun w3m-set-window-hscroll (window columns)
-	"Replacement of `set-window-hscroll' for XEmacs-Mule.
-XEmacs does not work correctly in the display control in case buffer
-contains characters of various width.  This function does not
-necessarily solve the problem completely."
-	(save-excursion
-	  (move-to-column (max columns 0))
-	  (if (> columns (current-column))
-	      (set-window-hscroll window (+ (- (point-at-eol) (point-at-bol))
-					    (- columns (current-column))))
-	    (set-window-hscroll window (- (point) (point-at-bol))))))
-      )
-  (defalias 'w3m-window-hscroll 'window-hscroll)
-  (defalias 'w3m-current-column 'current-column)
+;; Ailiases to meet XEmacs bugs?
+(unless (fboundp 'w3m-window-hscroll)
+  (defalias 'w3m-window-hscroll 'window-hscroll))
+(unless (fboundp 'w3m-current-column)
+  (defalias 'w3m-current-column 'current-column))
+(unless (fboundp 'w3m-set-window-hscroll)
   (defalias 'w3m-set-window-hscroll 'set-window-hscroll))
 
 (defun w3m-horizontal-scroll (direction ncol)
@@ -6969,13 +6930,11 @@ Cannot run two w3m processes simultaneously \
 	     w3m-profile-directory))
        w3m-profile-directory))))
 
-(eval-and-compile
-  (defalias 'w3m-run-at-time
-    (if (featurep 'xemacs)
-	;; `run-at-time' in XEmacs runs the timer function almost
-	;; immediately, so we use the emulated version instead.
-	'w3m-xmas-run-at-time
-      'run-at-time)))
+;; Alias to meet `run-at-time' bug of XEmacs.  It runs the timer
+;; function almost immediately, so we use the emulated version
+;; instead.
+(unless (fboundp 'w3m-run-at-time)
+  (defalias 'w3m-run-at-time 'run-at-time))
 
 (defun w3m-refresh-at-time ()
   (when (and w3m-use-refresh w3m-current-refresh)

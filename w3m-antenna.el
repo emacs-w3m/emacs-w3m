@@ -51,15 +51,15 @@
   :group 'w3m
   :prefix "w3m-antenna-")
 
-(define-widget 'string-with-default 'string
+(define-widget 'w3m-antenna-string 'string
   "String widget with default value.
 When creating a new widget, its value is given by an expression specified
 with :default-value-from."
   :tag "URL"
   :value-from nil
-  :create 'string-with-default-value-create)
+  :create 'w3m-antenna-string-create)
 
-(defun string-with-default-value-create (widget)
+(defun w3m-antenna-string-create (widget)
   (if (string= "" (widget-get widget :value))
       ;; No value is given.
       (widget-put widget :value
@@ -117,10 +117,10 @@ that consists of:
   :type '(repeat
 	  (group
 	   :indent 7
-	   (string-with-default :format "URL: %v\n" :size 0
-				:value-from w3m-antenna-tmp-url)
-	   (string-with-default :format "Title: %v\n" :size 0
-				:value-from w3m-antenna-tmp-title)
+	   (w3m-antenna-string :format "URL: %v\n" :size 0
+			       :value-from w3m-antenna-tmp-url)
+	   (w3m-antenna-string :format "Title: %v\n" :size 0
+			       :value-from w3m-antenna-tmp-title)
 	   (choice
 	    :tag "Procedure"
 	    (const :tag "Check either its last modified time or its size" nil)
@@ -129,10 +129,13 @@ that consists of:
 		   hns)
 	    (list :tag "Check the page linked by the anchor that matches"
 		  (function-item :format "" w3m-antenna-check-anchor)
-		  (regexp)
-		  (integer))
-	    (list :tag "Check with a user defined function"
-		  function
+		  (regexp :value "")
+		  (integer :value 0))
+	    (cons :tag "Check with a user defined function"
+		  (function :match
+			    (lambda (widget x)
+			      (and (functionp x)
+				   (not (eq x 'w3m-antenna-check-anchor)))))
 		  (repeat :tag "Arguments" sexp))))))
 
 (defcustom w3m-antenna-html-skeleton

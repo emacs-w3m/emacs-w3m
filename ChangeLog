@@ -1,3 +1,19 @@
+2003-12-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-antenna.el (w3m-antenna-string): Renamed from
+	`string-with-default'.
+	(w3m-antenna-string-create): Renamed from
+	`string-with-default-value-create'.
+	(w3m-antenna-sites): Change its customize spec.
+
+	* w3m-xmas.el (w3m-window-hscroll, w3m-current-column,
+	w3m-set-window-hscroll): Import definitions from w3m.el.
+	(w3m-run-at-time): Renamed from `w3m-xmas-run-at-time'.
+
+	* w3m.el (w3m-window-hscroll, w3m-current-column,
+	w3m-set-window-hscroll): Export definitions for XEmacs to
+	w3m-xmas.el.
+
 2003-12-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_SET_VANILLA_FLAG): New function specifying the

@@ -790,7 +790,7 @@ italic font in the modeline."
 		(> (itimer-value itimer) 0)
 	      (delete-itimer itimer))))
       (error nil))
-    (defun w3m-xmas-run-at-time (time repeat function &rest args)
+    (defun w3m-run-at-time (time repeat function &rest args)
       "Emulating function run as `run-at-time'.
 TIME should be nil meaning now, or a number of seconds from now.
 Return an itimer object which can be used in either `delete-itimer'
@@ -798,7 +798,7 @@ or `cancel-timer'."
       (apply #'start-itimer "w3m-run-at-time"
 	     function (if time (max time 1e-9) 1e-9)
 	     repeat nil t args))
-  (defun w3m-xmas-run-at-time (time repeat function &rest args)
+  (defun w3m-run-at-time (time repeat function &rest args)
     "Emulating function run as `run-at-time' in the right way.
 TIME should be nil meaning now, or a number of seconds from now.
 Return an itimer object which can be used in either `delete-itimer'
@@ -831,6 +831,48 @@ or `cancel-timer'."
 		     (append (list itimer function) args)))))
 	      1e-9 (if time (max time 1e-9) 1e-9)
 	      nil t itimers repeat function args)))))
+
+(when (featurep 'mule)
+  (defun w3m-window-hscroll (&optional window)
+    "Replacement of `window-hscroll' for XEmacs-Mule.
+XEmacs does not work correctly in the display control in case buffer
+contains characters of various width.  This function does not
+necessarily solve the problem completely."
+    (let ((hs (window-hscroll window))
+	  (spos (point-at-bol))
+	  (epos (point-at-eol))
+	  (buf (window-buffer window)))
+      (save-selected-window
+	(save-excursion
+	  (set-buffer buf)
+	  (beginning-of-line)
+	  (condition-case nil
+	      (forward-char hs)
+	    (error (goto-char (point-max))))
+	  (if (< epos (point))
+	      (+ hs (- (string-width (buffer-substring spos epos))
+		       (- epos spos)))
+	    (string-width (buffer-substring spos (point))))))))
+
+  (defun w3m-current-column ()
+    "Replacement of `current-column' for XEmacs-Mule.
+XEmacs does not work correctly in the display control in case buffer
+contains characters of various width.  This function does not
+necessarily solve the problem completely."
+    (- (point) (point-at-bol)))
+
+  (defun w3m-set-window-hscroll (window columns)
+    "Replacement of `set-window-hscroll' for XEmacs-Mule.
+XEmacs does not work correctly in the display control in case buffer
+contains characters of various width.  This function does not
+necessarily solve the problem completely."
+    (save-excursion
+      (move-to-column (max columns 0))
+      (if (> columns (current-column))
+	  (set-window-hscroll window (+ (- (point-at-eol) (point-at-bol))
+					(- columns (current-column))))
+	(set-window-hscroll window (- (point) (point-at-bol))))))
+  )
 
 (provide 'w3m-xmas)
 
