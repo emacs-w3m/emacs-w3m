@@ -38,6 +38,12 @@
 (require 'w3m)
 
 ;;; Handle images:
+
+(defun w3m-display-inline-image-p ()
+  "Returns non-nil when images can be displayed under the present
+circumstances"
+  (and w3m-display-inline-image (device-on-window-system-p)))
+
 (defvar w3m-should-unoptimize-animated-gifs
   (or (and (= emacs-major-version 21)
 	   (>= emacs-minor-version 4))

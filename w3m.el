@@ -234,7 +234,8 @@ width using expression (+ (frame-width) VALUE)."
   :type 'boolean)
 
 (defcustom w3m-display-inline-image nil
-  "*Display inline images."
+  "Whether to display images inline.  It will be ignored when there is no
+condition to display images."
   :group 'w3m
   :type 'boolean)
 
@@ -1337,7 +1338,12 @@ If N is negative, last N items of LIST is returned."
 	  ;; (define-key map [separator-eval] '("--"))
 	  ))))
   (unless (fboundp 'w3m-update-toolbar)
-    (defun w3m-update-toolbar ())))
+    (defun w3m-update-toolbar ()))
+  ;; Images
+  (unless (fboundp 'w3m-display-inline-image-p)
+    ;; Function which returns non-nil when images can be displayed
+    ;; under the present circumstances"
+    (defalias 'w3m-display-inline-image-p 'ignore)))
 
 (defun w3m-fontify-images ()
   "Fontify image alternate strings in this buffer which contains
@@ -3038,7 +3044,7 @@ or prefix ARG columns."
 	  (or (and name (w3m-search-name-anchor name))
 	      (goto-char (point-min)))
 	  (setq w3m-display-inline-image-status 'off)
-	  (when w3m-display-inline-image
+	  (when (w3m-display-inline-image-p)
 	    (and w3m-force-redisplay (sit-for 0))
 	    (w3m-toggle-inline-images 'force reload))
 	  (setq buffer-read-only t)
@@ -3084,15 +3090,15 @@ If input is nil, use default coding-system on w3m."
 
 ;;;###autoload
 (defun w3m (&optional url)
-  "Visit to the World Wide Web page using the external command w3m or
-w3mmee.  If you invoke this command interactively for the first time,
-it will prompt you for the URL where you wish to go, otherwise it will
-pop up an existing window or frame.  In addition, you can run this
-command in the batch mode like \"emacs -f w3m URL&\".  URL should be a
-string which defaults to the value of `w3m-home-page' or \"about:\".
-The value of `w3m-pop-up-frames' specifies whether to pop up a new
-frame, however, it will be ignored (treated as nil) when this command
-is called non-interactively."
+  "Visit the World Wide Web page using the external command w3m or w3mmee.
+If you invoke this command interactively for the first time, it will
+prompt you for the URL where you wish to go, otherwise it will pop up
+an existing window or frame.  In addition, you can run this command in
+the batch mode like \"emacs -f w3m URL&\".  URL should be a string
+which defaults to the value of `w3m-home-page' or \"about:\".  The
+value of `w3m-pop-up-frames' specifies whether to pop up a new frame,
+however, it will be ignored (treated as nil) when this command is
+called non-interactively."
   (interactive (list (or (w3m-alive-p)
 			 (w3m-input-url))))
   (unless url
@@ -3102,13 +3108,13 @@ is called non-interactively."
 		  w3m-home-page
 		  "about:")))
   (let ((focusing-function
-	 (list 'lambda '(frame)
-	       '(raise-frame frame)
-	       '(select-frame frame)
-	       ;; `focus-frame' might not work on some environments.
-	       (if (fboundp 'x-focus-frame)
-		   '(x-focus-frame frame)
-		 '(focus-frame frame))))
+	 (append '(lambda (frame)
+		    (raise-frame frame)
+		    (select-frame frame))
+		 ;; `focus-frame' might not work on some environments.
+		 (if (fboundp 'x-focus-frame)
+		     '((x-focus-frame frame))
+		   '((focus-frame frame)))))
 	(props w3m-pop-up-frame-parameters)
 	popup-frame-p)
     (w3m-static-if (featurep 'xemacs)
@@ -3181,7 +3187,7 @@ ex.) c:/dir/file => //c/dir/file"
 	  (w3m-rendering-region (point-min) (point-max)))
     (w3m-fontify)
     (setq w3m-display-inline-image-status 'off)
-    (when w3m-display-inline-image
+    (when (w3m-display-inline-image-p)
       (and w3m-force-redisplay (sit-for 0))
       (w3m-toggle-inline-images 'force))))
 

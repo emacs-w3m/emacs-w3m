@@ -1,3 +1,11 @@
+2001-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-region): Use `w3m-display-inline-image-p'.
+	(w3m-goto-url): Ditto.
+	(w3m-display-inline-image-p): New function.
+	* w3m-xmas.el (w3m-display-inline-image-p): New function.
+	* w3m-e21.el (w3m-display-inline-image-p): New function.
+
 2001-05-24  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-mhonarc.el: Added `revers-flag' and `litemplate-regexp'
@@ -20,7 +28,7 @@
 2001-05-24  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (toplevel): Define make-ccl-coding-system() myself, when
-	failed (require 'pccl). 
+	failed (require 'pccl).
 
 2001-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 

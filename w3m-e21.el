@@ -34,6 +34,11 @@
 (provide 'w3m-e21);; It is needed to avoid circular dependencies.
 (require 'w3m)
 
+(defun w3m-display-inline-image-p ()
+  "Returns non-nil when images can be displayed under the present
+circumstances"
+  (and w3m-display-inline-image (display-graphic-p)))
+
 (defun w3m-create-image (url &optional no-cache)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used."
