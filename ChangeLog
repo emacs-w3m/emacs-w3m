@@ -1,5 +1,8 @@
 2004-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-mainichi.el (shimbun-mainichi-prepare-article): Break
+	long lines.
+
 	* shimbun/shimbun.el (shimbun-make-date-string): Get a correct day
 	of week even in the west side of Greenwich.
 
