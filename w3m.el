@@ -548,14 +548,23 @@ allows a kludge that it can also be a plist of frame properties."
 			       (sexp :tag "Value")))
 		 plist))
 
-(defcustom w3m-local-directory-view-method
-  (if (eq system-type 'windows-nt) 'w3m-dtree 'w3m-cgi)
+(defcustom w3m-local-directory-view-method 'w3m-cgi
   "*View method in local directory.
-If 'w3m-cgi,display directory tree by the use of w3m's cgi.
+If 'w3m-cgi, display directory tree by the use of w3m's dirlist.cgi.
 If 'w3m-dtree, display directory tree by the use of w3m-dtree."
   :group 'w3m
   :type '(choice (const :tag "Dirlist CGI" w3m-cgi)
 		 (const :tag "Directory tree" w3m-dtree)))
+
+(defcustom w3m-direlist-cgi-program
+  (if (eq system-type 'windows-nt) "c:/usr/local/lib/w3m/dirlist.cgi" nil)
+  "*Name of the diretory list CGI Program.
+If nil, use an internal CGI of w3m.
+If your OS is broken, set a path of 'direlist.cgi'."
+  :group 'w3m
+  :type '(choice (const :tag "w3m internal CGI" nil)
+		 (file :tag "path of 'dirlist.cgi'"
+		  "c:/usr/local/lib/w3m/dirlist.cgi")))
 
 (eval-and-compile
   (defconst w3m-entity-alist		; html character entities and values
@@ -1458,7 +1467,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 
 (defun w3m-url-completion (url predicate flag)
   "Completion function for URL."
-  (if (string-match "^\\(file:\\|/\\|~\\)" url)
+  (if (string-match "^\\(file:\\|/\\|~\\|[a-zA-Z]:\\)" url)
       (if (eq flag 'lambda)
 	  (file-exists-p (w3m-url-to-file-name url))
 	(let* ((partial
@@ -1864,9 +1873,40 @@ to nil."
 			format-alist)
 		    (insert-file-contents file)))
 	      (insert-file-contents file))
-	  ;; kick 'dirlist.cgi'
-	  (w3m-exec-process "-dump_source" url))
+	  (w3m-local-dirlist-cgi url))
 	(w3m-local-content-type url)))))
+
+(defun w3m-local-dirlist-cgi (url)
+  (w3m-message "Reading...")
+  (if w3m-direlist-cgi-program
+      (if (file-executable-p w3m-direlist-cgi-program)
+	  (let ((coding-system-for-read 'binary)
+		(coding-system-for-write w3m-terminal-coding-system)
+		(default-process-coding-system
+		  (cons 'binary w3m-terminal-coding-system))
+		(process-environment process-environment)
+		file beg end)
+	    (setenv "QUERY_STRING" (w3m-url-to-file-name url))
+	    (call-process w3m-direlist-cgi-program nil t nil)
+	    (goto-char (point-min))
+	    (when (re-search-forward "^<html>" nil t)
+	      (delete-region (point-min) (match-beginning 0))
+	      (while (re-search-forward
+		      "<a href=\"\\([^\"]+\\)\"\\(>\\| \\)" nil t)
+		(setq file (match-string 1))
+		(setq beg (match-beginning 1))
+		(setq end (match-end 1))
+		(if (file-directory-p file)
+		    (setq file (w3m-expand-file-name-as-url
+				(file-name-as-directory file)))
+		  (setq file (w3m-expand-file-name-as-url file)))
+		(delete-region beg end)
+		(goto-char beg)
+		(insert file))))
+	(error "Can't execute: %s." w3m-direlist-cgi-program))
+    ;; execute w3m internal CGI
+    (w3m-exec-process "-dump_source" url))
+  (w3m-message "Reading... done"))
 
 ;;; Retrieve data via HTTP:
 (defun w3m-remove-redundant-spaces (str)
@@ -2974,14 +3014,18 @@ or prefix ARG columns."
       (when localcgi (w3m-goto-url-localcgi-movepoint))))))
 
 (defun w3m-goto-url-localcgi-movepoint ()
-  (let (dir)
-    (when (and (= (point-min) (point))
-	       (re-search-forward "^Directory list of \\(.+\\) *$" nil t))
-      (setq dir (buffer-substring (match-beginning 1) (match-end 1)))
-      (when (search-forward dir nil t)
-	(goto-char (match-beginning 0))
-	(beginning-of-line)
-	(w3m-next-anchor)))))
+  (let ((height (/ (window-height) 5))
+	(pos (point-min)))
+    (when (= (point-min) (point))
+      (goto-char 
+       (catch 'detect
+	 (while (and (not (eobp))
+		     (setq pos (next-single-property-change
+				pos 'w3m-name-anchor)))
+	   (when (equal (get-text-property pos 'w3m-name-anchor) "current")
+	     (throw 'detect pos)))
+	 (point-min)))
+      (recenter height))))
 
 (defun w3m-gohome ()
   "Go to the Home page."

@@ -77,6 +77,7 @@ over the 'w3m-dtree-directory-depth'."
   :group 'w3m
   :type '(choice
 	  (const :tag "ASCII" ["|=" "+="])
+	  (const :tag "ASCII Bold" ["<b>|-</b>" "<b>+-</b>"])
 	  (const :tag "Japanese" ["┣" "┗"])
 	  (vector :tag "Others" string string)))
 

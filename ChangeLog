@@ -1,3 +1,17 @@
+2001-05-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-local-directory-view-method): Modify default value.
+	(w3m-direlist-cgi-program): New variable.
+	(w3m-local-retrieve): Call w3m-local-dirlist-cgi() when local
+	directory.
+	(w3m-local-dirlist-cgi): New function. Execute either 'w3m' or
+	'direlist.cgi'.
+	(w3m-goto-url-localcgi-movepoint): Use 'w3m-name-anchor instead of
+	'patter-matching'.
+	(w3m-url-completion): Handling drive letter for any broken OSes.
+
+	* w3m-dtree.el (w3m-dtree-stop-strings): Add a new alternative.
+
 2001-05-23  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
 
 	* shimbun/sb-fml.el (shimbun-fml-parse-time): New function.
