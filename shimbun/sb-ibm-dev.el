@@ -174,13 +174,13 @@
     (goto-char (point-min))
     ;; getting SUBJECT field infomation (really necessary?  already have it)
     (if (re-search-forward "<h1>\\(.*\\)</h1>" nil t)
-	(save-restriction
-	  (narrow-to-region (match-beginning 1) (match-end 1))
-	  (goto-char (point-min))
-	  (while (re-search-forward "</?\\(font\\|span\\)[^>]*>" nil t)
-	    (delete-region (match-beginning 0) (match-end 0)))
+	(let ((subject (match-string 1)))
 	  (shimbun-header-set-subject
-	   header (shimbun-mime-encode-string (buffer-string)))))
+	   header
+	   (shimbun-mime-encode-string
+	    (mapconcat 'identity
+		       (split-string subject "</?\\(font\\|span\\)[^>]*>")
+		       "")))))
     ;; getting FROM field information
     (let (author address)
       (if (re-search-forward "\
