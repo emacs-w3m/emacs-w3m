@@ -1,3 +1,7 @@
+2001-11-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* Makefile.in (DOCS): Add `FAQ'.
+
 2001-11-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-form.el (w3m-form-parse-forms): Decode value of input tag.
