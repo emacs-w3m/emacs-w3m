@@ -59,8 +59,15 @@
    Even if you use Oort Gnus, Gnus v5.8.8 or v5.9, you can read articles
    via nnshimbun. Copy "nnshimbun.el" distributed with newest T-gnus
    6.15 to lisp/ directory and then "make install". In addition, if you
-   want to use Emacs-W3M instead of Emacs-W3 for text/html contents, add
+   want to use emacs-w3m instead of Emacs/w3 for text/html contents, add
    following setting to your ".gnus".
+
+   Fortunately, if you are using Oort Gnus v0.06 or later, you only have
+   to add the following line in your ".gnus" file:
+
+(setq mm-inline-text-html-renderer 'mm-inline-text-html-render-with-w3m)
+
+   Otherwise, try the following:
 
 ;; From: greg@visiontech-dml.com
 ;; Newsgroups: gnu.emacs.help
@@ -113,14 +120,14 @@
 		(delete-region ,(point-min-marker)
 			       ,(point-max-marker))))))))))
 
+   In additon, the experimental code below is to display
+   multipart/related pictures. The place might be something wrong :-<
+
 ;; Date: Fri, 27 Jul 2001 12:51:12 +0900
 ;; Message-ID: <yosuwv4v3u8f.fsf@jpl.org>
 ;; From: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; To: semi-gnus-ja@meadowy.org
 ;; Subject: [nnshimbun] toggle inline images
-
-;; Display multipart/related pictures.
-;; The place might be something wrong :-)
 
 (eval-after-load "gnus-art"
   '(or (assoc "multipart/related" gnus-mime-multipart-functions)

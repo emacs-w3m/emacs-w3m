@@ -61,8 +61,15 @@
    Oort Gnus や Gnus v5.8.8, v5.9 でも，最新の T-gnus 6.15 に含まれてい
    る nnshimbun.el を lisp/ ディレクトリにコピーしてから make install を
    行なうと，nnshimbun で記事を読むことができるようになります．加えて，
-   text/html のコンテンツの表示に Emacs-W3 ではなくて emacs-w3m を使うに
+   text/html のコンテンツの表示に Emacs/w3 ではなくて emacs-w3m を使うに
    は，以下の設定を .gnus ファイルに追加して下さい．
+
+   幸運にも，もしあなたが Oort Gnus v0.06 かそれ以上のものを使っているな
+   らば，以下の行を .gnus ファイルに追加するだけで済みます．
+
+(setq mm-inline-text-html-renderer 'mm-inline-text-html-render-with-w3m)
+
+   それ以外の場合は以下を試してみて下さい．
 
 ;; From: greg@visiontech-dml.com
 ;; Newsgroups: gnu.emacs.help
@@ -115,14 +122,14 @@
 		(delete-region ,(point-min-marker)
 			       ,(point-max-marker))))))))))
 
+   加えて，以下の実験的なコードは multipart/related な絵を見るためのもの
+   です．表示される場所に難があります．:-<
+
 ;; Date: Fri, 27 Jul 2001 12:51:12 +0900
 ;; Message-ID: <yosuwv4v3u8f.fsf@jpl.org>
 ;; From: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; To: semi-gnus-ja@meadowy.org
 ;; Subject: [nnshimbun] toggle inline images
-
-;; 小泉メルマガなどの multipart/related な絵を見る．
-;; 表示される場所に難あり．^^;;
 
 (eval-after-load "gnus-art"
   '(or (assoc "multipart/related" gnus-mime-multipart-functions)
