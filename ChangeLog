@@ -1,6 +1,6 @@
 2002-02-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* ChangeLog: Moved to ChangeLog.1.
+	* Makefile.in (DOCS): Add ChangeLog.1.
 
 
 Local Variables:
