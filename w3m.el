@@ -1797,13 +1797,9 @@ with ^ as `cat -v' does."
       (setq prenames (get-text-property start 'w3m-name-anchor))
       (w3m-parse-attributes (id)
 	(delete-region start (point))
-	(when (re-search-forward "<\\|\n" nil t)
-	  (setq end (match-beginning 0))
-	  (when (= start end)
-	    (setq end (min (1+ end) (point-max))))
-	  (w3m-add-text-properties start end
-				   (list 'w3m-name-anchor
-					 (cons id prenames))))))
+	(w3m-add-text-properties start (point-max)
+				 (list 'w3m-name-anchor
+				       (cons id prenames)))))
     (goto-char (point-min))
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
@@ -1831,21 +1827,16 @@ with ^ as `cat -v' does."
 					   'w3m-href-anchor href
 					   'w3m-cursor-anchor href
 					   'mouse-face 'highlight
-					   'w3m-name-anchor
-					   (delq nil (cons name prenames))
 					   'help-echo help
-					   'balloon-help balloon))))
+					   'balloon-help balloon))
+	    (when name
+	      (w3m-add-text-properties start (point-max)
+				       (list 'w3m-name-anchor
+					     (cons name prenames))))))
 	 (name
-	  (when (re-search-forward "[<\n]" nil t)
-	    (goto-char (setq end (match-beginning 0)))
-	    (when (= start end)
-	      (setq end (min (if (looking-at "\\(<[^>]*>\\)+")
-				 (1+ (match-end 0))
-			       (1+ end))
-			     (point-max))))
-	    (w3m-add-text-properties start end
-				     (list 'w3m-name-anchor
-					   (cons name prenames))))))))
+	  (w3m-add-text-properties start (point-max)
+				   (list 'w3m-name-anchor
+					 (cons name prenames)))))))
     (when w3m-next-url
       (setq w3m-next-url (w3m-expand-url w3m-next-url)))
     (when w3m-previous-url
