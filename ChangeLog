@@ -1,6 +1,12 @@
+2001-03-07  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-arrived-file-coding-system): Default value is
+	changed to avoid unknown coding system error on XEmacs.
+	(w3m-input-url): Changed for old style `completing-read'.
+
 2001-03-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* w3m.el (w3m-download): Bind 'auto convertion variables' to nil.
+	* w3m.el (w3m-download): Bind 'auto conversion variables' to nil.
 	(w3m-w3m-check-header): Fix search 'HTTP/1.[01] 200' method.
 	(inline-image-features): Patch from Yuuichi Teranishi san
 	<teranisi@gohome.org> at [emacs-w3m:00103].

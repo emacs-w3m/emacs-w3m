@@ -6,7 +6,8 @@
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
 ;;          Satoru Takabayashi <satoru-t@is.aist-nara.ac.jp>,
 ;;          Hideyuki SHIRAI    <shirai@meadowy.org>,
-;;          Keisuke Nishida    <kxn30@po.cwru.edu>
+;;          Keisuke Nishida    <kxn30@po.cwru.edu>,
+;;          Yuuichi Teranishi  <teranisi@gohome.org>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; w3m.el is free software; you can redistribute it and/or modify it
@@ -206,7 +207,7 @@ This value is default and used only when spec defined by
   :type 'file)
 
 (defcustom w3m-arrived-file-coding-system
-  (w3m-static-if (boundp 'MULE) '*euc-japan*unix 'euc-japan-unix)
+  (w3m-static-if (boundp 'MULE) '*euc-japan 'euc-japan)
   "*Coding system for arrived file."
   :group 'w3m
   :type 'symbol)
@@ -1178,11 +1179,13 @@ Buffer string between BEG and END are replaced with IMAGE."
 		(setq candidates (cons (cons (symbol-name x) x) candidates)))
 	      w3m-backlog-hashtb)
     (setq default (or default (thing-at-point 'url)))
-    (setq prompt (or prompt
-		     (if default "URL: "
-		       (format "URL (default %s): " w3m-home-page))))
-    (setq url (completing-read prompt candidates nil nil default
-			       'w3m-input-url-history w3m-home-page))
+    (setq url (completing-read (or prompt
+				   (if default
+				       "URL: "
+				     (format "URL (default %s): " w3m-home-page)))
+			       candidates nil nil default
+			       'w3m-input-url-history))
+    (if (string= "" url) (setq url w3m-home-page))
     ;; remove duplication
     (setq w3m-input-url-history (cons url (delete url w3m-input-url-history)))
     ;; return value
