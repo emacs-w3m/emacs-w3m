@@ -1,3 +1,7 @@
+2004-12-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-makeinfo): Revert.
+
 2004-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-makeinfo): Bind undo-outer-limit.
