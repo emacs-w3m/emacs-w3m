@@ -1,3 +1,8 @@
+2001-10-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-accept-languages): Don't use config file if there
+	are no contents.
+
 2001-10-31  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-all): When

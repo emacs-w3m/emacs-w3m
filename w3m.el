@@ -344,15 +344,14 @@ reason.  The value will be referred by the function `w3m-load-list'.")
 
 (defcustom w3m-accept-languages
   (let ((file (expand-file-name "config" w3m-profile-directory)))
-    (cond
-     ((file-readable-p file)
-      (with-temp-buffer
-	(insert-file-contents file)
-	(goto-char (point-min))
-	(when (re-search-forward "^accept_language +" nil t)
-	  (split-string (buffer-substring (match-end 0) (point-at-eol))))))
-     ((string= w3m-language "Japanese")
-      '("ja" "en"))))
+    (or (when (file-readable-p file)
+	  (with-temp-buffer
+	    (insert-file-contents file)
+	    (goto-char (point-min))
+	    (when (re-search-forward "^accept_language[\t ]+\\(.+\\)$" nil t)
+	      (delete "" (split-string (match-string 1))))))
+	(when (string= w3m-language "Japanese")
+	  '("ja" "en"))))
   "*Prioirity for acceptable languages."
   :group 'w3m
   :type '(repeat string))
