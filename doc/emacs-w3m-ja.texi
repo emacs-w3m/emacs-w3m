@@ -4491,6 +4491,9 @@ laut-de.news laut-de.platten laut-de.platten_alternative
 laut-de.platten_dance laut-de.platten_hiphop platten_jazz
 laut-de.platten_metal laut-de.platten_pop laut-de.platten_rnb
 laut-de.platten_rock
+
+@item @uref{http://www.rediff.com/, Rediff.com}
+rediff.news
 @end table
 
 @node Mailing Lists Supported by Shimbun
