@@ -36,7 +36,7 @@
 (defvar shimbun-slashdot-jp-content-end "</td>")
 
 (defvar shimbun-slashdot-jp-months
-  '("December" "November" "October" "August" "July" "June" "May"
+  '("December" "November" "October" "September" "August" "July" "June" "May"
     "April" "March" "February" "January"))
 
 (defvar shimbun-slashdot-jp-comments-per-story 3)

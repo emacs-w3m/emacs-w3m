@@ -1,3 +1,8 @@
+2001-10-11  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-months): Tiny
+	fix.
+
 2001-10-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-cache-header): Add 3rd optional argument.
