@@ -1,5 +1,6 @@
 2001-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* icons/parent-up.xpm: Reduced color depth.
 	* icons/parent-disabled.xpm: Renamed from parent-down.xpm.
 
 2001-04-16  Masatake YAMATO  <masata-y@gyve.aist-nara.ac.jp>
