@@ -2,13 +2,11 @@
 
 	* w3m-xmas.el (w3m-insert-image): Don't use current cursor point
 	to make a new extent.
-	(w3m-wait-for): New function.
 
 	* w3m.el (w3m-region): Call `sit-for' to redisplay before image
 	display.
 	(w3m-goto-url): Ditto.
-	(w3m-wait-for): New function.
-	(w3m-exec-process): Use `w3m-wait-for' instead of `sit-for'.
+	(w3m-exec-process): Use `sleep-for' instead of `sit-for'.
 	(w3m-toggle-inline-images): Set cursor point before image insertion.
 	(w3m-goto-url): Set cursor point before redisplay.
 

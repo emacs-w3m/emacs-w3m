@@ -1008,11 +1008,6 @@ If N is negative, last N items of LIST is returned."
   (defun w3m-image-type-available-p (image-type)
     "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
     nil))
-(unless (fboundp 'w3m-wait-for)
-  (defun w3m-wait-for (seconds)
-    "Wait SECONDS seconds or until user input is available.
-SECONDS may be a float, meaning a fractional part of a second."
-    (sit-for seconds nil 'nodisplay)))
 
 (defun w3m-fontify-images ()
   "Fontify image alternate strings in this buffer which contains half-dumped data."
@@ -1310,7 +1305,7 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	    (while (eq (process-status proc) 'run)
 	      (if (functionp w3m-process-message)
 		  (funcall w3m-process-message))
-	      (w3m-wait-for 0.2)
+	      (sleep-for 0.2)
 	      (discard-input))
 	    (prog1 (process-exit-status proc)
 	      (and w3m-current-url

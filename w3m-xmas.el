@@ -80,11 +80,6 @@ Buffer string between BEG and END are replaced with IMAGE."
   (and (device-on-window-system-p)
        (featurep image-type)))
 
-(defun w3m-wait-for (seconds)
-  "Wait SECONDS seconds or until user input is available.
-SECONDS may be a float, meaning a fractional part of a second."
-  (sit-for seconds 'nodisplay))
-
 ;;; Widget:
 (unless (get 'coding-system 'widget-type)
 ;; To avoid of lack of definition at old wid-edit.el.
