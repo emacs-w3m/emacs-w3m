@@ -1,10 +1,15 @@
+2002-10-01  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
+
+	* shimbun/sb-airs.el (shimbun-airs-group-path-alist): Add entry
+	for wl-en@lists.airs.net.
+
 2002-10-01  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-e21.el (w3m-favicon-type): New user variable.
 	(w3m-setup-favicon): Check `w3m-favicon-type'.
 	(w3m-buffer-favicon): Convert image to `w3m-favicon-type' instead
 	of 'xpm.
-	
+
 	* shimbun/mew-shimbun.el (mew-shimbun-use-expire-pack): New user
 	variable.
 	(mew-shimbun-scan): Remove.
