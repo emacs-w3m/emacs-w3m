@@ -538,6 +538,7 @@ HEADER is a header structure obtained via `shimbun-headers'.")
   "Make a footer string for SHIMBUN and HEADER.")
 
 (luna-define-method shimbun-footer ((shimbun shimbun) header &optional html)
+  "Return a null string for backends that have no footer."
   "")
 
 (luna-define-generic shimbun-index-url (shimbun)

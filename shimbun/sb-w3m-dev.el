@@ -36,6 +36,7 @@
 (defvar shimbun-w3m-dev-coding-system 'euc-japan)
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-w3m-dev))
+  "Return w3m-dev mailing list address."
   "w3m-dev@mi.med.tohoku.ac.jp")
 
 (provide 'sb-w3m-dev)
