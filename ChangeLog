@@ -1,3 +1,19 @@
+2001-07-11  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m-form.el (w3m-form-goto-next-field): New function.
+	(w3m-form-make-form-urlencoded): Refine to support value of
+	check-box type which is list of value string.
+	(w3m-form-parse-region): Support CHECKBOX type and RADIO
+	type. Note that CHECKBOX type has multiple values.
+	(w3m-fontify-forms): Use new property 'w3m-form-field-id to
+	identify each field to support RADIO type item. Also removed
+	value putting code because values are already set in parsing.
+	(w3m-form-input): Support action for CHECKBOX and RADIO type
+	field.
+
+	* w3m.el (w3m-url-encode-string): Encode SPACE(0x20) as "+".
+	(w3m-rendering-region): Decode entities in title string.
+
 2001-07-10  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-w3m-attributes): Fixed problem when charset is quoted.

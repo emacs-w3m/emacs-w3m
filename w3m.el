@@ -1193,6 +1193,8 @@ If N is negative, last N items of LIST is returned."
 	      "%0D%0A")
 	     ((string-match "[-a-zA-Z0-9_:/]" (char-to-string ch)) ; xxx?
 	      (char-to-string ch))	; printable
+	     ((char-equal ch ?\x20)	; space
+	      "+")
 	     (t
 	      (format "%%%02X" ch))))	; escape
 	  ;; Coerce a string to a list of chars.
@@ -2336,6 +2338,10 @@ to nil."
 	(goto-char (point-min))
 	(when (re-search-forward regexp nil t)
 	  (setq title (match-string 1))
+	  (with-temp-buffer
+	    (insert title)
+	    (w3m-decode-entities)
+	    (setq title (buffer-string)))
 	  (delete-region (match-beginning 0) (match-end 0))))
       (if (and (null title)
 	       (stringp w3m-current-url)

@@ -81,6 +81,18 @@
 (defmacro w3m-form-get (form name)
   (` (plist-get (w3m-form-plist (, form)) (intern (, name)))))
 
+(defun w3m-form-goto-next-field ()
+  "Move to next form field and return the point.
+If no field in forward, return nil without moving."
+  (let* ((id (get-text-property (point) 'w3m-form-field-id))
+	 (beg (if id
+		  (next-single-property-change (point) 'w3m-form-field-id)
+		(point)))
+	 (next (next-single-property-change beg 'w3m-form-field-id)))
+    (if next
+	(goto-char next)
+      nil)))
+
 (defun w3m-form-make-form-urlencoded (form &optional coding)
   (current-buffer)
   (let ((plist (w3m-form-plist form))
@@ -89,20 +101,26 @@
 		    w3m-form-default-coding-system))
 	buf)
     (while plist
-      (setq buf (cons
-		 (format "%s=%s"
-			 (w3m-url-encode-string (symbol-name (car plist))
-						coding)
-			 (w3m-url-encode-string 
-			  (if (consp (nth 1 plist)) ; select.
-			      (car (nth 1 plist))
-			    (nth 1 plist))
-			  coding))
-		 buf)
-	    plist (nthcdr 2 plist)))
+      (let ((name (symbol-name (car plist)))
+	    (value (cadr plist)))
+	(cond
+	 ((and (consp value)
+	       (consp (cdr value))
+	       (consp (cadr value)))	; select.
+	  (setq buf (cons (cons name (car value)) buf)))
+	 ((consp value)			; checkbox
+	  (setq buf (append (mapcar (lambda (x) (cons name x)) value)
+			    buf)))
+	 (value
+	  (setq buf (cons (cons name value) buf))))
+	(setq plist (cddr plist))))
     (when buf
-      (mapconcat (function identity) buf "&"))))
-    
+      (mapconcat (lambda (elem)
+		   (format "%s=%s" 
+			   (w3m-url-encode-string (car elem) coding)
+			   (w3m-url-encode-string (cdr elem) coding)))
+		 buf "&"))))
+
 ;;;###autoload
 (defun w3m-form-parse-region (start end)
   "Parse HTML data in this buffer and return form objects."
@@ -123,11 +141,32 @@
 			forms))))
 	 ((match-string 3)
 	  ;; When <INPUT> is found.
-	  (w3m-parse-attributes (name value (type :case-ignore))
-	    (when (and name (not (string= type "submit")))
-	      (w3m-form-put (car forms)
-			    name
-			    (or value (w3m-form-get (car forms) name))))))
+	  (w3m-parse-attributes (name value (type :case-ignore)
+				      (checked :bool))
+	    (when name
+	      (cond
+	       ((string= type "submit")
+		(w3m-form-put (car forms)
+			      name
+			      (or value (w3m-form-get (car forms) name))))
+	       ((string= type "checkbox") 
+		;; Check box input, one name has multiple values
+		;; Value is list of item VALUE which has same NAME.
+		(let ((cvalue (w3m-form-get (car forms) name)))
+		  (w3m-form-put (car forms) name
+				(if checked
+				    (cons value cvalue)
+				  cvalue))))
+	       ((string= type "radio")
+		;; Radio button input, one name has one value
+		(w3m-form-put (car forms) name
+			      (if checked value
+				(w3m-form-get (car forms) name))))
+	       (t
+		;; ordinaly text input
+		(w3m-form-put (car forms)
+			      name
+			      (or value (w3m-form-get (car forms) name))))))))
 	 ((match-string 4)
 	  ;; When <TEXTAREA> is found.
 	  (w3m-parse-attributes (name)
@@ -218,8 +257,10 @@
 							  ,type
 							  ,width
 							  ,maxlength
-							  ,value))))
-	     (w3m-form-put form name value))))))))
+							  ,value)))))))
+	(put-text-property start (point) 
+			   'w3m-form-field-id
+			   (format "fid=%d/type=%s/name=%s" fid type name))))))
 
 (defun w3m-form-replace (string &optional invisible)
   (save-excursion
@@ -266,6 +307,25 @@
 					 fvalue))
 	(w3m-form-put form name input)
 	(w3m-form-replace input 'invisible))
+       ((string= type "CHECKBOX")
+	(cond
+	 ((member value fvalue)		; already checked
+	  (w3m-form-put form name (delete value fvalue))
+	  (w3m-form-replace " "))
+	 (t
+	  (w3m-form-put form name (cons value fvalue))
+	  (w3m-form-replace "*"))))
+       ((string= type "RADIO")
+	;; Uncheck all RADIO input having same NAME
+	(save-excursion
+	  (let ((id (get-text-property (point) 'w3m-form-field-id)))
+	    (goto-char 1)
+	    (while (w3m-form-goto-next-field)
+	      (if (string= id (get-text-property (point) 'w3m-form-field-id))
+		  (w3m-form-replace " "))))) ; erase check
+	;; Then set this field as checked.
+	(w3m-form-put form name value)
+	(w3m-form-replace "*"))
        (t
 	(setq input (read-from-minibuffer (concat (upcase type) ": ") fvalue))
 	(w3m-form-put form name input)
