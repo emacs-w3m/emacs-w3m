@@ -90,6 +90,7 @@ This manual corresponds to emacs-w3m version @value{VERSION}.
 * Tips::                        Some knick-knacks using emacs-w3m
 * Mailing List::                Mailing list and submitting bug reports
 * Emacs-w3m Functions::         Details of some emacs-w3m functions
+* External Packages::           Companion packages you might need
 * Authors::                     People who wrote this manual
 * Index::                       Index
 
@@ -225,8 +226,12 @@ You can run emacs-w3m in various versions of Emacsen listed below:
 @table @samp
 
 @item Emacs 21.x
-No additional package is required.  If you use Emacs from CVS HEAD, make
-sure you're using a version from March 2004 or newer.
+No additional package is required.
+
+@item Emacs 22.x
+No additional package is required.  If you're using a prerelease version
+of Emacs 22 (such as versions 21.3.50 or 22.0), make sure it is newer
+than March 2004.
 
 @item XEmacs 21.x
 The @acronym{APEL} package and the @samp{gifsicle} program are required
@@ -563,19 +568,20 @@ shown below:
 @node Minimal Settings
 @section Minimal settings to run emacs-w3m
 
-There are only fundamental items in this section.  Many variables which
-can be customized by user's preferences are described in
-@ref{Customizable Variables}.
+This sections mentions some fundamental settings for emacs-w3m.  If you
+want to fine-tune your installation, you'll find many customizable
+variables in @ref{Customizable Variables}.
 
 @table @samp
 
 @item Autoloads
 @cindex Adding autoload settings
 
-You never need to set the autoload definitions if you've emacs-w3m
-installed as an XEmacs package (@pxref{Installing Emacs-w3m}) because of
-the @file{w3m/auto-autoloads.el} file.  If not, put the following line
-in your @file{~/.emacs} file:
+You don't need this if you've installed emacs-w3m as an XEmacs package
+(@pxref{Installing Emacs-w3m}) because the @file{w3m/auto-autoloads.el}
+takes care of setting up autoloads.
+
+In all other cases, put the following line in your @file{~/.emacs} file:
 
 @lisp
 (require 'w3m-load)
@@ -630,8 +636,8 @@ variable to a list of domain names (not host names) as follows:
 (setq w3m-no-proxy-domains '("local.com" "neighbor.com"))
 @end lisp
 
-See also the documentation for the @code{w3m-command-arguments-alist}
-variable for instructions on how to use regexps to specify the
+See also the documentation of the @code{w3m-command-arguments-alist}
+variable for instructions on how to use regexps to specify
 @code{no_proxy} hosts.
 
 @end table
@@ -673,9 +679,9 @@ probably notice, the major mode for an emacs-w3m buffer is
 Bookmarks}).
 
 This section explains the most fundamental usage of these commands, see
-@ref{Emacs-w3m Functions} for more information on each command.  And see
-@ref{Customizable Variables} for details on the variables which affect
-the behavior of emacs-w3m by user's preferences.
+@ref{Emacs-w3m Functions} for more information on them.  See also
+@ref{Customizable Variables} for variables you can use to customize
+emacs-w3m's behavior.
 
 @table @code
 @item w3m
@@ -686,7 +692,8 @@ the behavior of emacs-w3m by user's preferences.
 Start emacs-w3m, displaying the homepage specified in the
 @code{w3m-home-page} variable.  The default value for
 @code{w3m-home-page} is ``about:''.  Set the @code{w3m-quick-start}
-variable to @code{nil} if each time you want to specify URL.
+variable to @code{nil} if you want to input a target URL every time you
+start emacs-w3m.
 
 You can also use this as an Emacs batch command.  Here's an example:
 
@@ -739,7 +746,7 @@ under point, and on whether you give it a prefix argument or not.  See
 As mentioned above, you can be prompted for a URL when you use the
 command @kbd{M-x w3m}, by setting the @code{w3m-quick-start} variable to
 @code{nil}.  In an emacs-w3m buffer, there are also two popular ways to
-go to new pages by entering their URLs.
+go to new pages by entering their URLs, see below.
 
 @table @kbd
 @item RET
@@ -755,36 +762,44 @@ browsers like Mozilla.  Detailed explanations about this can be found in
 @item g
 @kindex g
 @findex w3m-goto-url
-You can be prompted for a URL in the minibuffer and make emacs-w3m
-display the corresponding page by typing the @key{g} key (independently
-of the position of the point) in an emacs-w3m buffer.  This binding will
-be familiar to you if you already use Gnus or Mew (@code{w3m-goto-url}).
+Prompt for a URL in the minibuffer and make emacs-w3m display the
+corresponding page (independently of the position of the point) in an
+emacs-w3m buffer.  This binding will be familiar to you if you already
+use Gnus or Mew (@code{w3m-goto-url}).
+
+@item G
+@kindex G
+@findex w3m-goto-url-new-session
+Prompt for a URL in the minibuffer, and display it in a new session.
+This function works just like @kbd{g}(@key{M-x w3m-goto-url}), except
+that it opens a new session.  When you use emacs-w3m on Emacs21 /
+XEmacs, opening a new session means displaying the page in a new tab.
+For more information about tabs, please refer to @ref{Using Tabs}
+(@code{w3m-goto-url-new-session}).
 
 @item c
 @kindex c
 @findex w3m-print-current-url
 Display the URL of the page being displayed in the echo area and put it
-into the @code{kill-ring} (@code{w3m-print-current-url}).
+in the @code{kill-ring} (@code{w3m-print-current-url}).
 
 @item u
 @kindex u
 @findex w3m-print-this-url
-Display the URL under point in the echo area and put it into the
-@code{kill-ring} (@code{w3m-print-this-url}).
+Display the target URL of the link under point in the echo area and put
+it in the @code{kill-ring} (@code{w3m-print-this-url}).
 @end table
 
 If the page you're reading is today's news or someone's diary, it may
-have been updated since you loaded it.  You can fetch the newest
-contents of the page by using the following command.  (This command can
-also be useful to force a full redisplay of the page if it looks
-broken.)
+have been updated since you loaded it.  You can refresh the page using
+the following command.  (This command can also be useful to force a full
+redisplay of the page if it looks broken.)
 
 @table @kbd
 @item R
 @kindex R
 @findex w3m-reload-this-page
-Reload the page which is currently displayed
-(@code{w3m-reload-this-page}).
+Reload the page (@code{w3m-reload-this-page}).
 @end table
 
 @node Moving in a page
@@ -798,8 +813,8 @@ scroll the page or find links in a very fast way.  When you master
 them, you will understand how handy they are.
 
 The keys are assigned so that scroll commands can be called using
-shorter keystrokes than the standard key bindings of Emacs.  And since
-places where you can input text are pretty specific in web pages
+shorter keystrokes than standard Emacs key bindings.  And since places
+where you can input text are pretty specific in web pages
 (@pxref{Submitting Forms}), most keys have special meanings and aren't
 assigned to @code{self-insert-command} anymore.
 
@@ -808,15 +823,15 @@ assigned to @code{self-insert-command} anymore.
 @item SPC
 @kindex SPC
 @findex w3m-scroll-up-or-next-url
-Scroll downwards.  You may be used to it if you have been using the
-@samp{more} command, the @samp{less} command, or the @code{view-mode} on
-Emacs (@code{w3m-scroll-up-or-next-url}).
+Scroll downwards.  You may be used to this binding if you use the
+@samp{more} or @samp{less} commands, or Emacs's @code{view-mode}
+(@code{w3m-scroll-up-or-next-url}).
 
 @item DEL
 @kindex DEL
 @findex w3m-scroll-down-or-previous-url
-Scroll upwards.  You may be used to it if you have been using the
-@samp{less} command or the @code{view-mode} on Emacs
+Scroll upwards.  You may be used to this binding if you use the
+@samp{less} command or Emacs's @code{view-mode}
 (@code{w3m-scroll-down-or-previous-url}).
 
 @item >
@@ -865,19 +880,19 @@ or not).
 
 Let's consider this simple example: suppose we want to search for a word
 on the widely-known Google search engine.  Step one: open
-@uref{http://www.google.com} in emacs-w3m.  Step two: after opening the
-page, hit @kbd{]}.  Tadaa!  The point has been moved to the first form
+@uref{http://www.google.com} in emacs-w3m.  Step two: once the page is
+loaded, hit @kbd{]}.  Tadaa!  The point has moved to the first form
 input in the page, you can now hit @kbd{RET} to enter something in it,
-and then @kbd{C-c C-c} to submit it.  Without this command, you would
-have had to move into the page using @kbd{C-n}, @kbd{C-f} and so forth,
-it would have been a real pain.
+and then @kbd{C-c C-c} to submit.  Without this command, you would have
+had to move into the page using @kbd{C-n}, @kbd{C-f} and so forth, it
+would have been a real pain.
 
 @table @key
 @item TAB
 @kindex TAB
 @findex w3m-next-anchor
-Move the point to the next anchor.  More strictly speaking, move the
-point forward to the nearest anchor.
+Move the point to the next link (an ``anchor'' in emacs-w3m lingo).
+More strictly speaking, move the point forwards to the nearest anchor.
 @end table
 
 @table @kbd
@@ -887,31 +902,31 @@ point forward to the nearest anchor.
 @kindex S-@key{TAB}
 @findex w3m-previous-anchor
 Move the point to the previous anchor.  More strictly speaking, move the
-point backward to the nearest anchor (@code{w3m-previous-anchor}).
+point backwards to the nearest anchor (@code{w3m-previous-anchor}).
 
 @item ]
 @kindex ]
 @findex w3m-next-form
 Move the point to the next form.  More strictly speaking, move the point
-forward to the nearest form (@code{w3m-next-form}).
+forwards to the nearest form (@code{w3m-next-form}).
 
 @item [
 @kindex [
 @findex w3m-previous-form
 Move the point to the previous form.  More strictly speaking, move the
-point backward to the nearest form (@code{w3m-previous-form}).
+point backwards to the nearest form (@code{w3m-previous-form}).
 
 @item @}
 @kindex @}
 @findex w3m-next-image
 Move the point to the next image.  More strictly speaking, move the
-point forward to the nearest image (@code{w3m-next-image}).
+point forwards to the nearest image (@code{w3m-next-image}).
 
 @item @{
 @kindex @{
 @findex w3m-previous-image
 Move the point to the previous image.  More strictly speaking, move the
-point backward to the nearest image (@code{w3m-previous-image}).
+point backwards to the nearest image (@code{w3m-previous-image}).
 @end table
 
 @node Moving over pages
@@ -978,10 +993,9 @@ keystroke, by typing @kbd{^}!
 @findex w3m-scroll-up-or-next-url
 When the current point is located at the end of the buffer and you
 cannot scroll down further, hit the @key{SPC} key to go on to the ``next
-page'' (@code{w3m-scroll-up-or-next-url}).  Here, the ``next page''
-means the page containing the coming-up urls that are designated in the
-``next'' field in the header of the current page.  This function has
-nothing to do with the history.
+page'' (@code{w3m-scroll-up-or-next-url}).  Here, ``next page'' means
+the page referred to in the special ``next'' header of the current page
+(read on).  This feature has nothing to do with the history.
 
 You probably noticed that some websites split their contents over
 several small pages, partly because it's not comfortable for users to
@@ -991,26 +1005,25 @@ often need to follow links manually from one page to the next in order
 the access all the information.
 
 Hopefully emacs-w3m attempts to enable you to browse a series of
-contents over pages as if you were viewing them in a single page, by
+contents over pages as if you were viewing them as a single page, by
 combining two operations: explicitly following links and scrolling.
 
 That's how it works: these kinds of websites often have fields such as
-``next'', ``prev'' or ``previous''in the header of their web pages.
+``next'', ``prev'' or ``previous'' in the headers of their web pages.
 These fields contain information about links between divided pages.
 Emacs-w3m uses these fields to know what to follow.
 
 Let's take an example with Google again to explain how the two
 operations (following links and scrolling) are combined.  Open
-@uref{http://www.google.com} and search for a word.  If you type a very
-common word for searching (e.g. ``hamburger''), you will get tons of
-search results.  Google returns the first page of search results, after
-having sorted them by Google's own algorithm and divided them into
-several pages.  When the window is filled with the contents of the web
-page, users can read further by hitting @key{SPC} to scroll.  Keep
-scrolling until you come to see the end of the web page in the window.
-Here, a goody is waiting for you.  If you use a web browser other than
-emacs-w3m and want to see the rest of the search results, one way to get
-it done is to click one of the numbers listed under
+@uref{http://www.google.com} and search for a word.  If you search for a
+very common word (e.g. ``hamburger''), you will get tons of search
+results.  Google returns the first page of search results, after having
+sorted them using its own algorithm and divided them into several pages.
+Use @key{SPC} to scroll through this first page.  Keep scrolling until
+you see the end of the web page in the window.  Here, a surprise is
+waiting for you.  If you use a web browser other than emacs-w3m and want
+to see the rest of the search results, you would have to click on any of
+the numbers listed under
 
 @example
 Gooooooogle
@@ -1073,19 +1086,20 @@ which appears in the leftmost menubar next to the ``File'' menu.  Note:
 it's not necessary to use the menubar for most emacs-w3m commands, you
 can use the toolbar icons instead.
 
-To switch an emacs-w3m window using ``Tabs'' (@pxref{Using Tabs}), click
-the topmost line in an emacs-w3m window directory using @kbd{mouse-2} or
-choose one from the ``TAB'' menu which appears next to the ``W3M'' menu.
+To switch between buffers in an emacs-w3m window using ``Tabs''
+(@pxref{Using Tabs}), click on the topmost line in an emacs-w3m window
+directory using @kbd{mouse-2} or choose one from the ``TAB'' menu which
+appears next to the ``W3M'' menu.
 
 @node Going Back to Daily Hacking and/or Daily Writing
 @subsection Return to an Ordinary Life
 
 Think back.  You probably didn't start Emacs to browse the web, but to,
 say, replace some editor's built-in interpreter with scheme, write Info
-documentation or put into print your opinion about software
-patents@dots{} who knows?  While you were using Emacs, you ran into the
-need to browse the web for your work.  But you happened to be able to
-see the web page without leaving Emacs at all.  Wow.
+documentation or put into print your opinion on software patents@dots{}
+who knows?  While you were using Emacs, you ran into the need to browse
+the web for your work.  But you happened to be able to see the web page
+without leaving Emacs at all.  Wow.
 
 Now the time has come to return to work.  Keep it up or the world won't
 change!  Type @kbd{q} if you think you might need to browse the web
@@ -1102,8 +1116,9 @@ Close an emacs-w3m window and select the other buffer
 @item Q
 @kindex Q
 @findex w3m-quit
-Save the ``arrived URLs'' list in the file (@pxref{Tracing History}) and
-really quit emacs-w3m (@code{w3m-quit}).
+Save the ``arrived URLs'' list to disk (@pxref{Tracing History}), save
+cookies (@pxref{Cookie Variables}) and really quit emacs-w3m
+(@code{w3m-quit}).
 @end table
 
 @node Inline Images
@@ -1112,9 +1127,9 @@ really quit emacs-w3m (@code{w3m-quit}).
 
 If the Emacs version you're using is capable of displaying images in
 buffers, then emacs-w3m can display them in web pages, just like
-``graphical'' browsers like Netscape do.  You should make sure your
-Emacs is correctly setup for images before trying to use any of the
-following commands (@pxref{Required Emacs Version}).
+``graphical'' browsers like Mozilla do.  You should make sure your Emacs
+is correctly setup for images before trying to use any of the following
+commands (@pxref{Required Emacs Version}).
 
 To toggle displaying of images in the current buffer, use @kbd{T}.  It
 makes emacs-w3m fetch the images from the server, then display them in
@@ -1212,16 +1227,6 @@ to that particular location within the page, press @kbd{C-c C-v} in the
 emacs-w3m buffer visiting the page.
 
 @table @kbd
-@item G
-@kindex G
-@findex w3m-goto-url-new-session
-Prompt for a URL in the minibuffer, and display it in a new session.
-This function works just like @kbd{g}(@key{M-x w3m-goto-url}), except
-that it opens a new session.  When you use emacs-w3m on Emacs21 /
-XEmacs, opening a new session means displaying the page in a new tab.
-For more information about tabs, please refer to @ref{Using Tabs}
-(@code{w3m-goto-url-new-session}).
-
 @item s
 @kindex s
 @findex w3m-history
@@ -1235,8 +1240,8 @@ Record the position of the cursor in the page in history.
 @item C-c C-v
 @kindex C-c C-v
 @findex w3m-history-restore-position
-Move to the position which has been marked with @kbd{C-c
-C-@@}(@code{w3m-goto-url-new-session}) in the currently displayed page.
+Move to the position which has been marked with @kbd{C-c C-@@}
+(@code{w3m-history-store-position}) in the currently displayed page.
 @end table
 
 The other way to have information about past pages is the ``arrived
@@ -5610,6 +5615,38 @@ in its body to @samp{emacs-w3m-ctl@@namazu.org}.
 @chapter Details of some emacs-w3m functions
 @cindex Functions details
 
+
+@node External Packages
+@chapter Companion packages you might need
+
+Even though emacs-w3m provides a wealth of features, you may want to
+check out the following external packages for even more usability:
+
+@itemize @bullet
+@item
+w3m-session.el
+
+The w3m-session.el package provides persistent emacs-w3m browsing
+sessions.  When quitting emacs-w3m you can save the current session
+(that is, the set of open tabs and the URLs they're visiting).  Upon
+restarting emacs-w3m you'll have the possibility of recovering the saved
+session.
+
+Download w3m-session.el from
+@uref{http://www.emacswiki.org/elisp/wthreem-session.el}.
+
+@item
+w3m-type-ahead.el
+
+The w3m-type-ahead.el package provides ``type ahead'' searching, similar
+to the feature by the same name from Mozilla browsers.  It allows you to
+find anchors using an interface similar to isearch, but results are
+limited to anchors in the buffer.
+
+Download w3m-type-ahead.el from
+@uref{http://alioth.debian.org/project/showfiles.php?group_id=30594}.
+
+@end itemize
 
 @node Authors
 @chapter People who wrote this manual
