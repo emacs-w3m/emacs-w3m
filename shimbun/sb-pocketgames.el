@@ -1,9 +1,11 @@
 ;;; sb-pocketgames.el --- shimbun backend class for www.pocketgames.jp. -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
+;; Version: $Id$
+;; Last Modified: $Date$
 
 ;; This file is a part of shimbun.
 
@@ -33,17 +35,13 @@
   (luna-define-class shimbun-pocketgames (shimbun) (content-hash))
   (luna-define-internal-accessors 'shimbun-pocketgames))
 
-(defvar shimbun-pocketgames-content-hash-length 31)
 (defvar shimbun-pocketgames-url "http://www.pocketgames.jp")
 (defvar shimbun-pocketgames-groups '("news"))
 (defvar shimbun-pocketgames-coding-system 'shift_jis)
-
-(luna-define-method initialize-instance :after ((shimbun shimbun-pocketgames)
-						&rest init-args)
-  (shimbun-pocketgames-set-content-hash-internal
-   shimbun
-   (make-vector shimbun-pocketgames-content-hash-length 0))
-  shimbun)
+(defvar shimbun-pocketgames-content-start
+  "<a class=\"pn-normal\" href=\"modules.php\\?op=modload\&amp;name=Search\\&amp;file=index\\&amp;action=search\\&amp;overview=1\\&amp;active_stories=[0-9]+\\&amp;stories_topics\[[0-9]+\]=\"><b>Older Articles</b></a>")
+(defvar shimbun-pocketgames-content-end
+  "</body>")
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-pocketgames))
   shimbun-pocketgames-url)
@@ -52,7 +50,7 @@
   "Return the mailing list address."
   "info@pocketgames.jp")
 
-(defvar shimbun-pocketgames-expiration-days 6)
+(defvar shimbun-pocketgames-expiration-days 14)
 
 (luna-define-method shimbun-headers ((shimbun shimbun-pocketgames)
 				     &optional range)
@@ -68,25 +66,25 @@
       (goto-char (point-min))
       (shimbun-pocketgames-headers-1 shimbun))))
 
-(defun shimbun-pocketgames-headers-1 (shimbun &optional regexp)
-  (let ((url (shimbun-index-url shimbun))
-	from year month day time date
-	next point subject id start end body
-	headers)
-    (unless regexp
-      (setq regexp "\">\\([^<>]+\\)</a></font><br>"))
-    (while (re-search-forward regexp nil t nil)
-      (catch 'next
-	(setq subject (match-string 1)
+(defun shimbun-pocketgames-headers-1 (shimbun)
+  (let ((regexp "<a class=\"pn-title\" href=\"\\(modules.php\\?op=modload\\&amp;name=News\\&amp;file=article\\&amp;sid=[0-9]+\\&amp;mode=thread\\&amp;order=0\\)\">\\([^<]+\\)</a></font><br>")
+	url from year month day time date subject id start end headers)
+    (catch 'quit
+      (while (re-search-forward regexp nil t nil)
+	(setq url (match-string-no-properties 1)
+	      subject (match-string-no-properties 2)
 	      start (point)
-	      end (and (re-search-forward "^<BR><BR>" nil t nil)
-		       (set-marker (make-marker) (point))))
+	      end (set-marker
+		   (make-marker)
+		   (or (and (re-search-forward regexp nil t nil)
+			    (match-beginning 0))
+		       (point-max))))
 	(goto-char start)
 	(unless
 	    (re-search-forward
 	     "Posted by: \\(.+\\) on \\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) (\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))  - \\([0-9][0-9]:[0-9][0-9]\\) JST <\/font>"
 	     end t nil)
-	  (throw 'next nil))
+	  (throw 'quit nil))
 	(setq from (shimbun-mime-encode-string (match-string 1))
 	      year (string-to-number (match-string 2))
 	      month (string-to-number (match-string 3))
@@ -96,139 +94,32 @@
 	      id (format "<%04d%02d%02d%s%%news@pocketgames>"
 			 year month day
 			 (apply (lambda (x y) (format "%02d%02d" x y))
-                                (mapcar 'string-to-number (split-string time ":"))))
-	      point (point)
-	      next (or (re-search-forward
-			"\">\\([^<>]+\\)</a></font><br>" nil t nil)
-		       (point-max)))
-	(goto-char point)
-	(setq headers (shimbun-pocketgames-comment-article
-		       shimbun headers url id next))
+                                (mapcar 'string-to-number (split-string time ":")))))
 	(when (shimbun-search-id shimbun id)
-	  (throw 'next nil))
+	  (throw 'quit nil))
 	(with-temp-buffer
 	  (insert subject)
 	  (shimbun-remove-markup)
 	  (setq subject (buffer-string)))
-	(setq start (re-search-forward
-		     "^<TD ALIGN=\"left\" VALIGN=\"top\" CLASS=\"pn-normal\">"
-		     end t nil))
-	;;<a class="pn-normal" href="modules.php?op=modload&amp;name=Search&amp;file=index&amp;action=search&amp;overview=1&amp;active_stories=1&amp;stories_topics[0]=7">
-	(while (re-search-forward "<br />" end t nil)
-	  (replace-match "<br>"))
-	(goto-char start)
-	(when (re-search-forward
-	       "<a class=\"pn-normal\" href=\"modules.php[^\"]+\">"
-	       end t nil)
-	  (delete-region (match-beginning 0) (match-end 0))
-	  (when (re-search-forward
-		 ;;<img src="images/topics/palmsoft_icon.gif" border="0" Alt="Palmソフトウェア" align="right" hspace="5" vspace="5"></a>
-		 "<img src=\"images/topics/.+\\.\\(gif\\|jpg\\)[^/]+</a>"
-		 end t nil)
-	    (delete-region (match-beginning 0) (match-end 0))))
-	(setq body (buffer-substring-no-properties start end))
-	(set (intern id (shimbun-pocketgames-content-hash-internal shimbun))
-	     body)
+	(setq url (w3m-expand-url
+		   (w3m-decode-anchor-string url)
+		   (concat (shimbun-index-url shimbun) "/")))
 	(push (shimbun-make-header
 	       0 (shimbun-mime-encode-string subject)
-	       from date id "" 0 0 (concat url "/"))
+	       from date id "" 0 0 url)
 	      headers)))
     headers))
 
-(defun shimbun-pocketgames-comment-article (shimbun headers baseurl ref-id end)
-  (let (url from year month day date time
-	subject body id start end)
-    (save-excursion
-      (when (re-search-forward
-	     "<a class=\"pn-normal\" href=\"\\(modules.php\?.+\\)\">[0-9]+ コメント<\/a>"
-	     end t nil)
-	(setq url (concat baseurl "/" (w3m-decode-anchor-string (match-string 1))))
-	(with-temp-buffer
-	  (shimbun-retrieve-url url 'reload 'binary)
-	  (set-buffer-multibyte t)
-	  (decode-coding-region (point-min) (point-max)
-				(shimbun-coding-system-internal shimbun))
-	  (goto-char (point-min))
-	  (re-search-forward "<!-- *COMMENTS NAVIGATION BAR END *-->" nil t nil)
-	  (while (re-search-forward "<font class=\"pn-title\">\\(Re: [^<]+\\)" nil t nil)
-	    (catch 'next
-	      (setq subject (match-string-no-properties 1))
-	      (unless (re-search-forward
-		       ;; <br>by <a class="pn-normal" href="mailto:-">aoshimak</a> <b>(-)</b></font><font class="pn-sub"> on 2003年3月08日 - 06:15 PM<br><font class="pn-normal">
-		       "<br>by \\(.+\\) on \\([0-9]+\\)年\\([0-9]+\\)月\\([0-9]+\\)日 - \\([0-9][0-9]+:[0-9][0-9]+\\) \\(AM\\|PM\\)\\(</font></td></tr><tr><td>\\|<br>\\)<font class=\"pn-normal\">"
-		       nil t nil)
-		(throw 'next nil))
-	      (setq from (match-string-no-properties 1)
-		    year (string-to-number (match-string-no-properties 2))
-		    month (string-to-number (match-string-no-properties 3))
-		    day (string-to-number (match-string-no-properties 4))
-		    time (match-string-no-properties 5)
-		    start (point)
-		    end (and (search-forward
-			      "</font></td></tr></table><br><br><font class=\"pn-normal\">"
-			      nil t nil)
-			     (set-marker (make-marker) (match-beginning 0)))
-		    date (shimbun-make-date-string year month day time)
-		    id (format "<%04d%02d%02d%s%%comment@pocketgames>"
-			year month day
-			(apply (lambda (x y) (format "%02d%02d" x y))
-			       (mapcar 'string-to-number (split-string time ":")))))
-	      (when (shimbun-search-id shimbun id)
-		(throw 'next nil))
-	      (goto-char start)
-	      (when (re-search-forward "(<a class=\"pn-normal\" href=\"user.php[^>]+>ユーザーインフォメーション<\/a> | <a href=\"modules.php[^>]+\">メッセージを送信<\/a>)" end t nil)
-		(delete-region (match-beginning 0) (match-end 0)))
-	      (setq body (buffer-substring start end))
-	      (with-temp-buffer
-		(insert from)
-		(shimbun-remove-markup)
-		(setq from (shimbun-mime-encode-string (buffer-string)))
-		(erase-buffer)
-		(insert subject)
-		(shimbun-remove-markup)
-		(setq subject (shimbun-mime-encode-string (buffer-string))))
-	      (set (intern id (shimbun-pocketgames-content-hash-internal shimbun))
-		   body)
-	      (push (shimbun-make-header 0 subject from date id ref-id 0 0 url)
-		    headers)))))
-      headers)))
-
-(luna-define-method shimbun-article
-  ((shimbun shimbun-pocketgames) header &optional outbuf)
-  (shimbun-pocketgames-article shimbun header outbuf))
-
-(defun shimbun-pocketgames-article (shimbun header outbuf)
-  (let (string)
-    (with-current-buffer (or outbuf (current-buffer))
-      (with-temp-buffer
-	(let ((sym (intern-soft (shimbun-header-id header)
-				(shimbun-pocketgames-content-hash-internal
-				 shimbun))))
-	  (if (not (and (boundp sym) (symbol-value sym)))
-	      (shimbun-pocketgames-headers-1
-	       shimbun
-	       (concat
-		"\">\\("
-		(regexp-quote (shimbun-header-subject header))
-		"\\)</a></font><br>")))
-	  (setq string (shimbun-pocketgames-article-1
-			shimbun header sym))))
-      (when string
-	(w3m-insert-string string)))))
-
-(defun shimbun-pocketgames-article-1 (shimbun header sym)
-  (message "shimbun: Make contents...")
-  (insert (symbol-value sym))
-  (goto-char (point-min))
-  (insert "<html>\n<head>\n<base href=\""
-	  (shimbun-header-xref header) "\">\n</head>\n<body>\n")
-  (goto-char (point-max))
-  (insert "\n</body>\n</html>\n")
-  (encode-coding-string
-   (buffer-string)
-   (mime-charset-to-coding-system "ISO-2022-JP"))
+(luna-define-method shimbun-make-contents ((shimbun shimbun) header)
+  (when (shimbun-clear-contents shimbun header)
+    (goto-char (point-min))
+    (insert "<html>\n<head>\n<base href=\""
+	    (shimbun-header-xref header)
+	    "\">\n</head>\n<body>\n")
+    (goto-char (point-max))
+    (insert (shimbun-footer shimbun header t)
+	    "\n</body>\n</html>\n"))
   (shimbun-pocketgames-make-mime-article shimbun header)
-  (message "shimbun: Make contents...done")
   (buffer-string))
 
 (defun shimbun-pocketgames-make-mime-article (shimbun header)

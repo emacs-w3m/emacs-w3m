@@ -1,3 +1,14 @@
+2004-01-15  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-pocketgames.el (shimbun-make-contents): New method.
+	(shimbun-pocketgames-article-1): Rename to
+	`shimbun-pocketgames-article'.
+	(shimbun-pocketgames-comment-article): Abolished.
+	(shimbun-pocketgames-article): Ditto.
+	(initialize-instance): Ditto.
+	(shimbun-article): Ditto.
+	(shimbun-pocketgames-content-hash-length): Ditto.
+
 2004-01-15  OHASHI Akira  <bg66@koka-in.org>
 
 	* shimbun/sb-tdiary.el (shimbun-tdiary-get-headers): Fix the regexp.
