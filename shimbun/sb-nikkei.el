@@ -305,6 +305,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			      (set-match-data subdata))
 		    end (point))
 	      (goto-char start))
+	  (set-match-data subdata)
 	  (setq end nil))
 	(setq subtitle (match-string 1)
 	      month (string-to-number (match-string 2))
