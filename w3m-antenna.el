@@ -170,13 +170,15 @@ that consists of:
 					      w3m-antenna-check-anchor))))))
 		  (repeat :tag "Arguments" sexp))))))
 
-(defcustom w3m-antenna-html-skeleton
+(defcustom w3m-antenna-html-skelton
   (eval-when-compile
     (concat "<!doctype html public \"-//W3C//DTD HTML 3.2//EN\">\n"
 	    "<html>\n<head>\n<title>Antenna</title>\n</head>\n<body>\n"
-	    "<h1>Antenna</h1>\n<h2>Updated</h2>\n<ul>\n%C</ul>\n"
-	    "<h2>Visited</h2>\n<ul>\n%U</ul>\n</body>\n</html>\n"))
-  "HTML skeleton of antenna."
+	    "<h1>Antenna</h1>\n<p align=\"right\">Checked at %D.</p>\n"
+	    "<h2>Updated</h2>\n<ul>\n%C</ul>\n"
+	    "<h2>Visited</h2>\n<ul>\n%U</ul>\n"
+	    "</body>\n</html>\n"))
+  "HTML skelton of antenna."
   :group 'w3m-antenna
   :type 'string)
 
@@ -485,22 +487,29 @@ asynchronous process that has not finished yet."
 		   (w3m-antenna-site-title b)))))
 
 (defun w3m-antenna-make-contents (changed-sites unchanged-sites)
-  (insert w3m-antenna-html-skeleton)
+  (insert w3m-antenna-html-skelton)
   (goto-char (point-min))
   (while (re-search-forward "%\\(.\\)" nil t)
     (let ((c (char-after (match-beginning 1))))
-      (if (memq c '(?C ?U))
-	  (save-restriction
-	    (narrow-to-region (match-beginning 0) (match-end 0))
-	    (delete-region (point-min) (point-max))
-	    (goto-char (point-min))
-	    (dolist (site (if (eq c ?C)
-			      changed-sites
-			    unchanged-sites))
-	      (insert (funcall w3m-antenna-make-summary-function site)
-		      "\n"))
-	    (goto-char (point-max)))
-	(delete-region (match-beginning 1) (match-end 1))))))
+      (cond
+       ((memq c '(?C ?U))
+	(save-restriction
+	  (narrow-to-region (match-beginning 0) (match-end 0))
+	  (delete-region (point-min) (point-max))
+	  (goto-char (point-min))
+	  (dolist (site (if (eq c ?C)
+			    changed-sites
+			  unchanged-sites))
+	    (insert (funcall w3m-antenna-make-summary-function site)
+		    "\n"))
+	  (goto-char (point-max))))
+       ((eq c '?D)
+	(goto-char (match-beginning 0))
+	(delete-region (match-beginning 0) (match-end 0))
+	(insert (let ((time (nth 5 (file-attributes w3m-antenna-file))))
+		  (if time
+		      (current-time-string time)
+		    "(unknown)"))))))))
 
 ;;;###autoload
 (defun w3m-about-antenna (url &optional no-decode no-cache
