@@ -1,3 +1,17 @@
+2001-04-02  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-crlf-to-lf): New funcition.
+	(w3m-w3m-dump-head-source): Do crlf-to-lf when executable-type eq
+	'cygwin.
+	(w3m-w3m-dump-source): All time do crlf-to-lf function when
+	executable-type eq 'cygwin.
+
+2001-04-02  oTaiki SUGAWARA <taiki.s@cityfujisawa.ne.jp>
+
+	* w3m.el (w3m-exec-process): Guard the process from some errors.
+	(w3m-copy-buffer): Restore view point with new window to the point in
+	original window. 
+
 2001-04-02  Hiroya Murata  <hiroya@use-ebisu.co.jp>
 
 	* Makefile.in (Makefile): Depends on config.status instead of

@@ -1329,21 +1329,23 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 	    (set-process-filter proc 'w3m-exec-filter)
 	    (set-process-sentinel proc (lambda (proc event) nil))
 	    (process-kill-without-query proc)
-	    (while (eq (process-status proc) 'run)
-	      (if (functionp w3m-process-message)
-		  (funcall w3m-process-message))
-	      (sleep-for 0.2)
-	      (discard-input))
-	    (prog1 (process-exit-status proc)
-	      (delete-process proc);; Clean up resources of process.
-	      (and w3m-current-url
-		   w3m-process-user
-		   (setq w3m-arrived-user-list
-			 (cons
-			  (cons w3m-current-url
-				(list w3m-process-user w3m-process-passwd))
-			  (delete (assoc w3m-current-url w3m-arrived-user-list)
-				  w3m-arrived-user-list))))))
+            (unwind-protect
+                (progn
+                  (while (eq (process-status proc) 'run)
+                    (if (functionp w3m-process-message)
+                        (funcall w3m-process-message))
+                    (sleep-for 0.2)
+                    (discard-input))
+                  (prog1 (process-exit-status proc)
+                    (and w3m-current-url
+                         w3m-process-user
+                         (setq w3m-arrived-user-list
+                               (cons
+                                (cons w3m-current-url
+                                      (list w3m-process-user w3m-process-passwd))
+                                (delete (assoc w3m-current-url w3m-arrived-user-list)
+                                        w3m-arrived-user-list))))))
+              (delete-process proc)));; Clean up resources of process.
 	;; call-process
 	(apply 'call-process w3m-command nil t nil args)))))
 
@@ -1594,6 +1596,13 @@ If optional argument NO-CACHE is non-nil, cache is not used."
    (t
     (format "%2.2fM" (/ n (* 1024 1024.0))))))
 
+(defun w3m-crlf-to-lf ()
+  (when (eq w3m-executable-type 'cygwin)
+    (save-excursion
+      (goto-char (point-min))
+      (while (search-forward "\r\n" nil t)
+	(delete-region (- (point) 2) (1- (point)))))))
+
 (defun w3m-w3m-dump-head-source (url)
   (and (let ((w3m-current-url url)
 	     (w3m-w3m-retrieve-length)
@@ -1603,7 +1612,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 			     (w3m-pretty-length (buffer-size))))))
 	 (w3m-message "Reading...")
 	 (prog1 (zerop (w3m-exec-process "-dump_both" url))
-	   (w3m-message "Reading... done")))
+	   (w3m-message "Reading... done")
+	   (w3m-crlf-to-lf)))
        (goto-char (point-min))
        (re-search-forward "^w3m-current-url: .*\n\n" nil t)
        (progn
@@ -1632,17 +1642,8 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		(w3m-message "Reading...")
 		(prog1 (zerop (w3m-exec-process "-dump_source" url))
 		  (w3m-message "Reading... done")))
+	  (w3m-crlf-to-lf)	  
 	  (cond
-	   ((and length (eq w3m-executable-type 'cygwin))
-	    (let ((buflines (count-lines (point-min) (point-max))))
-	      (cond
-	       ;; no bugs in output.
-	       ((= (buffer-size) length))
-	       ;; new-line character is replaced to CRLF.
-	       ((or (= (buffer-size) (+ length buflines))
-		    (= (buffer-size) (+ length buflines -1)))
-		(while (search-forward "\r\n" nil t)
-		  (delete-region (- (point) 2) (1- (point))))))))
 	   ((and length (> (buffer-size) length))
 	    (delete-region (point-min) (- (point-max) length)))
 	   ((string= "text/html" type)
@@ -2120,7 +2121,8 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 	  (content (save-restriction (widen) (buffer-string)))
 	  (mode major-mode)
 	  (lvars (buffer-local-variables))
-	  (new (generate-new-buffer (or newname (buffer-name)))))
+	  (new (generate-new-buffer (or newname (buffer-name))))
+          (pt (point)))	  
       (with-current-buffer new
 	;;(erase-buffer)
 	(insert content)
@@ -2132,6 +2134,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 			(set (make-local-variable (car v)) (cdr v))
 		      (error nil))))
 		lvars)
+	(goto-char pt)
 	(when and-pop (pop-to-buffer new))
 	new))))
 
