@@ -4482,9 +4482,6 @@ namazu.sary
 @item @uref{http://emacs-w3m.namazu.org/ml/, emacs-w3m Mailing List}
 emacs-w3m.emacs-w3m
 
-@item @uref{http://migemo.namazu.org/ml/, migemo Mailing List}
-namazu.migemo
-
 @item @uref{http://www.jp.netbsd.org/ja/JP/ml/, NetBSD JP Mailing List}
 netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
 netbsd.tech-pkg-ja netbsd.port-arm32-ja netbsd.port-hpcmips-ja
