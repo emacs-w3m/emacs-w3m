@@ -1496,7 +1496,8 @@ If second optional argument NO-CACHE is non-nil, cache is not used."
 		(save-excursion
 		  (goto-char cur-point)
 		  (when (and url
-			     (setq image (w3m-create-image url no-cache)))
+			     (setq image (w3m-create-image url no-cache
+							   w3m-current-url)))
 		    (w3m-insert-image point end image)
 		    ;; Redisplay
 		    (and w3m-force-redisplay (sit-for 0))))))

@@ -191,11 +191,12 @@ updated by a new data.  See also the documentation for the variable
       ;; Use a cached glyph.
       (cdr cache))))
 
-(defun w3m-create-image (url &optional no-cache)
+(defun w3m-create-image (url &optional no-cache referer)
   "Retrieve data from URL and create an image object.
-If optional argument NO-CACHE is non-nil, cache is not used."
+If optional argument NO-CACHE is non-nil, cache is not used.
+If second optional argument REFERER is non-nil, it is used as Referer: field."
   (let ((type (condition-case err
-		  (w3m-retrieve url 'raw no-cache)
+		  (w3m-retrieve url 'raw no-cache nil referer)
 		(error
 		 (message "While retrieving %s: %s" url err)
 		 nil))))

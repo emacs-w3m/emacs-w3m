@@ -65,11 +65,12 @@
 circumstances."
   (and w3m-display-inline-image (display-graphic-p)))
 
-(defun w3m-create-image (url &optional no-cache)
+(defun w3m-create-image (url &optional no-cache referer)
   "Retrieve data from URL and create an image object.
-If optional argument NO-CACHE is non-nil, cache is not used."
+If optional argument NO-CACHE is non-nil, cache is not used.
+If second optional argument REFERER is non-nil, it is used as Referer: field."
   (condition-case err
-      (let ((type (w3m-retrieve url 'raw no-cache)))
+      (let ((type (w3m-retrieve url 'raw no-cache nil referer)))
 	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
 	  (w3m-with-work-buffer
 	    (create-image (buffer-string)

@@ -1,5 +1,12 @@
 2001-07-31  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m.el (w3m-toggle-inline-images): Set `referer' argument of
+	`w3m-create-image'.
+
+	* w3m-e21.el (w3m-create-image): Added argument `referer'.
+
+	* w3m-xmas.el (w3m-create-image): Ditto.
+
 	* w3m-form.el (w3m-form-submit): Set `referer' argument of
 	w3m-goto-url.
 
