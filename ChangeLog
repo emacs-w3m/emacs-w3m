@@ -1,7 +1,8 @@
 2001-11-21  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-max-anchor-sequence): New buffer local variable.
-	(w3m-copy-local-variables): Handle `w3m-max-anchor-sequence'.
+	(w3m-copy-local-variables, w3m-clear-local-variables): Handle
+	`w3m-max-anchor-sequence'.
 	(w3m-fontify-anchors): Reset `w3m-max-anchor-sequence' to zero.
 	Use the text-property `w3m-anchor-sequence' insted of
 	`w3m-cursor-anchor'.
