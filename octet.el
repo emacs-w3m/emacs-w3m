@@ -419,7 +419,7 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
   (goto-char (point-max))
   (let ((p (point))
 	(name (mime-entity-filename entity))
-	from-buf to-buf)
+	from-buf to-buf content)
     (insert "\n")
     (goto-char p)
     (save-restriction
@@ -427,10 +427,13 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
       (setq to-buf (current-buffer))
       (with-temp-buffer
 	(setq from-buf (current-buffer))
-	(set-buffer-multibyte nil)
-	(insert (mime-entity-content entity))
+	(if (featurep 'xemacs)
+	    (insert (mime-entity-content entity))
+	  (setq content (mime-entity-content entity))
+	  (set-buffer-multibyte (multibyte-string-p content))
+	  (insert content)
+	  (set-buffer-multibyte nil))
 	(octet-buffer name (mime-entity-type/subtype entity))
-	(set-buffer-multibyte t)
 	(with-current-buffer to-buf
 	  (octet-insert-buffer from-buf)
 	  (run-hooks 'mime-preview-octet-hook))))))
@@ -459,12 +462,18 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 		   'mime-view-octet))
       (let ((buf (get-buffer-create
 		  (format "%s-%s" (buffer-name) (mime-entity-number entity))))
-	    (name (mime-entity-filename entity)))
+	    (name (mime-entity-filename entity))
+	    content)
 	(with-current-buffer buf
 	  (set-buffer-multibyte nil)
 	  (setq buffer-read-only nil)
 	  (erase-buffer)
-	  (insert (mime-entity-content entity))
+	  (if (featurep 'xemacs)
+	      (insert (mime-entity-content entity))
+	    (setq content (mime-entity-content entity))
+	    (set-buffer-multibyte (multibyte-string-p content))
+	    (insert content)
+	    (set-buffer-multibyte nil))
 	  (octet-buffer name (mime-entity-type/subtype entity))
 	  (setq buffer-read-only t
 		truncate-lines t)

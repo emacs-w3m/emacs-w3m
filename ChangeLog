@@ -1,5 +1,9 @@
 2002-04-02  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* octet.el (mime-preview-octet): Change behavior according to
+	whether the return value of mime-entity-content is multibyte or not.
+	(mime-view-octet): Ditto.
+
 	* w3m.el (w3m-w3m-retrieve): Don't call w3m-cache-request-header
 	when type is nil.
 
