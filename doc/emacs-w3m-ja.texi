@@ -2121,7 +2121,7 @@ customize-option}、またはある ``group'' (この場合のグループ
 数が @file{~/.emacs-w3m} ファイルが読み込まれるときには未定義で、それら
 を変更できないかもしれないことです (もちろん、デフォルトの値を気にしない
 のであれば、@file{~/.emacs-w3m} ファイルで完璧に上書きしてしまうことは可
-能なのですけれどね)。変数 @code{w3m-uri-replace-alist} は典型的な例で
+能なのですけれどね)。変数 @code{w3m-search-engine-alist} は典型的な例で
 す (@pxref{Search Variables})。
 
 @table @code

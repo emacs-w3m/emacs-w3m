@@ -2015,8 +2015,8 @@ Please note that some variables from external modules could be undefined
 at the time the @file{~/.emacs-w3m} file is loaded, thus making them
 impossible to modify (of course if you don't care about the default
 value, you can override them completely in your
-@file{~/.emacs-w3m}) file.  The @code{w3m-uri-replace-alist} variable is
-a typical example (@pxref{Search Variables}).
+@file{~/.emacs-w3m}) file.  The @code{w3m-search-engine-alist} variable
+is a typical example (@pxref{Search Variables}).
 
 @table @code
 @item w3m-init-file
