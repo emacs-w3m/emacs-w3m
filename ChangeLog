@@ -1,3 +1,10 @@
+2003-05-30  Yuuichi Teranishi  <teranisi@ns.templewest.net>
+
+	* octet.el (toplevel): Require poe.
+	(octet-filter-call1): Use `make-temp-file' instead of `make-temp-name'.
+	(octet-filter-call2): Ditto.
+	(octet-filter-call2-extra): Ditto.
+
 2003-05-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (DOCS): FAQ, FAQ.ja, README.namazu.ja,

@@ -62,6 +62,7 @@
 
 ;;; Code:
 
+(require 'poe)     ; for compatibility
 (require 'pces)    ; as-binary-process
 (require 'mime)    ; SEMI
 (require 'static)
@@ -232,8 +233,8 @@ nil in NEW-TYPE means filtering is completed.")
   "Call octed filter with two arguments (infile, outfile).
 Current buffer content is replaced.
 Returns 0 if succeed."
-  (let ((infile (make-temp-name "octet"))
-	(outfile (make-temp-name "octet"))
+  (let ((infile (make-temp-file "octet"))
+	(outfile (make-temp-file "octet"))
 	(last-dir default-directory)
 	result)
     (cd octet-temp-directory)
@@ -257,8 +258,8 @@ Returns 0 if succeed."
 Current buffer content is replaced.
 Also, exta attachments are collected to `octet-attachments'.
 Returns 0 if succeed."
-  (let ((infile (make-temp-name "octet"))
-	(outfile (make-temp-name "octet"))
+  (let ((infile (make-temp-file "octet"))
+	(outfile (make-temp-file "octet"))
 	(last-dir default-directory)
 	result extras)
     (cd octet-temp-directory)
@@ -293,7 +294,7 @@ Returns 0 if succeed."
   "Call external octed filter with two arguments (infile) and obtain stdout.
 Current buffer content is replaced.
 Returns 0 if succeed."
-  (let ((infile (make-temp-name "octet"))
+  (let ((infile (make-temp-file "octet"))
 	(last-dir default-directory)
 	result)
     (cd octet-temp-directory)
