@@ -1,3 +1,22 @@
+2005-02-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (all): Use `w3m-form-set-number' and
+	`w3m-form-kill-buffer' instead of `w3m-form-textarea-set-number'
+	and `w3m-form-textarea-kill-buffer'
+
+	* w3m-form.el (w3m-form-input-select-urlid): New buffer local
+	variable.
+	(w3m-form-input-map-urlname): Ditto.
+	(w3m-form-set-number): Rename from `w3m-form-textarea-set-number'
+	and treate buffers of `select' and `map'.
+	(w3m-form-kill-buffer): Ditto.
+	(w3m-form-input-select-set): Allways remove own buffer.
+	(w3m-form-input-select-exit): Ditto.
+	(w3m-form-input-map-set): Ditto.
+	(w3m-form-input-map-exit): Ditto.
+	(w3m-form-input-select): When exists same from buffer, use it.
+	(w3m-form-input-map): Ditto.
+
 2005-02-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-what-where): Fix the form.
