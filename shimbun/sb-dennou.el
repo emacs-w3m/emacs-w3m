@@ -57,7 +57,7 @@
 				     &optional range)
   (let* ((case-fold-search t)
 	 (url (shimbun-index-url shimbun))
-	 (count -1)
+	 ;;(count -1)
 	 (from "pc3s-nnb@asahi-net.or.jp")
 	 month day subject date id start end body headers)
     (with-temp-buffer
@@ -70,13 +70,12 @@
 	(while (re-search-forward "^<!-- *report start *-->" nil t nil)
 	  ;; <td><b>■2月19日（水） とりあえずの試運転．．<font color="red">【追加更新あり】</font></b></td>
 	  (re-search-forward "<td><b>■\\([0-9]+\\)月\\([0-9]+\\)日（\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\)）\\(.+\\)</b></td>" nil t nil)
-	  (setq count (1+ count)
-		month (match-string 1)
+	  (setq month (match-string 1)
 		day (match-string 2)
 		subject (match-string 4)
 		date (shimbun-dennou-make-date-string month day)
-		id (format "<%02d%04d%02d%02d@dennou>"
-			   count
+		;;id (format "<%02d%04d%02d%02d@dennou>"
+		id (format "<%04d%02d%02d@dennou>"
 			   (string-to-number
 			    (substring (current-time-string) 20))
 			   (string-to-number month)
