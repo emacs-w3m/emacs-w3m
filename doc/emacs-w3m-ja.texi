@@ -4702,24 +4702,24 @@ PukiWiki $B$H(B Hiki $B$KBP1~$7$F$$$^$9!#$b$7!"3FFbB&$N%j%9%H$N(B 4 $BHVL\!
 @lisp
 (setq shimbun-wiki-group-alist
       '(("pukiwiki" ;; $B%0%k!<%WL>(B
-	 "http://pukiwiki.org/index.php?cmd=rss10" ;; URL
-	 "webmaster@@pukiwiki.org" ;; $B%a!<%k%"%I%l%9(B
-	 nil ;; X-Face
-	 "\n<h3 id=\"" ;; contents $B$N(B start $B$r<($9(B regexp
-	 "</address>") ;; contents $B$N(B end $B$r<($9(B regexp
-	("hiki"
-	 "http://www.namaraii.com/hiki/?c=rss"
-	 "webmaster@@fdiary.net"
-	 nil
-	 "<div class=\"section\">"
-	 "<div class=\"sidebar\">")
-	("apollo"
-	 "http://wiki.fdiary.net/apollo/?c=rss"
-	 "moriq@@moriq.com"
-	 nil
-	 "<div class=\"section\">"
-	 "<div class=\"sidebar\">")
-	))
+         "http://pukiwiki.org/index.php?cmd=rss10" ;; URL
+         "webmaster@@pukiwiki.org" ;; $B%a!<%k%"%I%l%9(B
+         nil ;; X-Face
+         "\n<h3 id=\"" ;; contents $B$N(B start $B$r<($9(B regexp
+         "</address>") ;; contents $B$N(B end $B$r<($9(B regexp
+        ("hiki"
+         "http://www.namaraii.com/hiki/?c=rss"
+         "webmaster@@fdiary.net"
+         nil
+         "<div class=\"section\">"
+         "<div class=\"sidebar\">")
+        ("apollo"
+         "http://wiki.fdiary.net/apollo/?c=rss"
+         "moriq@@moriq.com"
+         nil
+         "<div class=\"section\">"
+         "<div class=\"sidebar\">")
+        ))
 @end lisp
 
 @item @uref{http://www.vinelinux.org/, VineLinux Errata}

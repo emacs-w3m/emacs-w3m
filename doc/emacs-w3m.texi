@@ -4622,24 +4622,24 @@ all contents of a page.
 @lisp
 (setq shimbun-wiki-group-alist
       '(("pukiwiki" ;; Group Name
-	 "http://pukiwiki.org/index.php?cmd=rss10" ;; URL
-	 "webmaster@@pukiwiki.org" ;; E-Mail Address
-	 nil ;; X-Face
-	 "\n<h3 id=\"" ;; regexp to represent contents start
-	 "</address>") ;; regexp to represent contents end
-	("hiki"
-	 "http://www.namaraii.com/hiki/?c=rss"
-	 "webmaster@@fdiary.net"
-	 nil
-	 "<div class=\"section\">"
-	 "<div class=\"sidebar\">")
-	("apollo"
-	 "http://wiki.fdiary.net/apollo/?c=rss"
-	 "moriq@@moriq.com"
-	 nil
-	 "<div class=\"section\">"
-	 "<div class=\"sidebar\">")
-	))
+         "http://pukiwiki.org/index.php?cmd=rss10" ;; URL
+         "webmaster@@pukiwiki.org" ;; E-Mail Address
+         nil ;; X-Face
+         "\n<h3 id=\"" ;; regexp to represent contents start
+         "</address>") ;; regexp to represent contents end
+        ("hiki"
+         "http://www.namaraii.com/hiki/?c=rss"
+         "webmaster@@fdiary.net"
+         nil
+         "<div class=\"section\">"
+         "<div class=\"sidebar\">")
+        ("apollo"
+         "http://wiki.fdiary.net/apollo/?c=rss"
+         "moriq@@moriq.com"
+         nil
+         "<div class=\"section\">"
+         "<div class=\"sidebar\">")
+        ))
 @end lisp
 
 @item @uref{http://www.vinelinux.org, VineLinux Errata}
