@@ -4394,6 +4394,7 @@ nikkansports.society nikkansports.leisure
 @item @uref{http://www.nikkei.co.jp/, 日本経済新聞}
 nikkei.top nikkei.main nikkei.keizai nikkei.sangyo nikkei.tento
 nikkei.zinzi nikkei.report nikkei.kansai nikkei.it nikkei.kokunai
+nikkei.it.zensen nikkei.it.seisaku nikkei.it.manage nikkei.it.digicore
 nikkei.markets nikkei.kawase nikkei.kinri nikkei.ft nikkei.dj
 nikkei.ngyoseki nikkei.gyosuuchi nikkei.gyoseki nikkei.market
 nikkei.kaigai nikkei.seiji nikkei.shakai nikkei.sports nikkei.newpro
