@@ -1,5 +1,9 @@
 2002-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-mailman.el: Require `cl' when compiling.
+	(shimbun-headers): Use an empty string instead of `0' for a date
+	header; reverse the order of the return value.
+
 	* w3m-bug.el (report-emacs-w3m-bug-system-informations): Don't
 	include useless infos; eval the value for each time to load it.
 	(report-emacs-w3m-bug): Bind `print-length' and `print-level' with
