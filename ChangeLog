@@ -1,5 +1,8 @@
 2002-04-19  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* shimbun/sb-2ch.el (shimbun-2ch-parse-page): Don't stop retrieving
+	headers if the article number is `1'.
+
 	* shimbun/shimbun.el (shimbun-make-mime-article): Removed garbage.
 	(shimbun-insert-string): New macro.
 	(shimbun-article): Use it.

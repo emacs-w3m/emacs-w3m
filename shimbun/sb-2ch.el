@@ -90,6 +90,7 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
 					     (match-string 5))))
       (setq id (format "<%s.%s@%s.2ch.net>" num sure ita))
       (if (and (not no-break)
+	       (/= num 1)
 	       (shimbun-search-id shimbun id))
 	  (throw 'stop headers))
       (search-forward "<dd>" nil t)
