@@ -289,11 +289,17 @@ because capturing the end of the generated sub-process fails."
 	 (if (w3m-process-p (setq ,process (progn ,@body)))
 	     (let (w3m-process-inhibit-quit)
 	       (w3m-process-start-process ,process)
-	       (while (and (or (not w3m-process-timeout)
-			       (< (w3m-time-lapse-seconds ,start (current-time))
-				  w3m-process-timeout))
-			   (eq ,result ',result))
-		 (sit-for 0.2))
+	       (while (eq ,result ',result)
+		 (sit-for 0.2)
+		 (and w3m-process-timeout
+		      (< w3m-process-timeout
+			 (w3m-time-lapse-seconds ,start (current-time)))
+		      (progn
+			(setq w3m-process-queue
+			      (delq ,process w3m-process-queue))
+			(w3m-process-kill-process
+			 (w3m-process-process ,process))
+			(error "%s" "Time out"))))
 	       ,result)
 	   ,process)))))
 (put 'w3m-process-with-wait-handler 'lisp-indent-function 0)
