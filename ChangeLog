@@ -1,3 +1,12 @@
+2001-04-16  Masatake YAMATO  <masata-y@gyve.aist-nara.ac.jp>
+
+	* w3m.el (w3m-toolbar): Added w3m-toolbar-parent-icon.
+	(w3m-toolbar-buttons): Added "parent".
+	(w3m-parent-page-available-p): New function.
+
+	* icons/parent-up.xpm: New file.
+	* icons/parent-down.xpm: New file.
+
 2001-04-16  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-about-history): Set w3m work buffer as multibyte.
