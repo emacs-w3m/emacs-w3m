@@ -148,45 +148,51 @@ but you can identify it from the URL, define this method in a backend.")
     ;; It's one of many bugs in XEmacs that the coding systems *-dos
     ;; provided by Mule-UCS don't convert CRLF to LF when decoding.
     (shimbun-strip-cr))
-  (let* ((xml (xml-parse-region (point-min) (point-max)))
-	 (dc-ns (shimbun-rss-get-namespace-prefix
-		 xml "http://purl.org/dc/elements/1.1/"))
-	 (rss-ns (shimbun-rss-get-namespace-prefix
-		  xml "http://purl.org/rss/1.0/"))
-	 (author)
-	 (headers))
-    (setq author
-	  (catch 'found-author
-	    (dolist (channel
-		     (shimbun-rss-find-el (intern (concat rss-ns "channel"))
-					  xml))
-	      (throw 'found-author
-		     (or
-		      (shimbun-rss-node-text rss-ns 'author channel)
-		      (shimbun-rss-node-text dc-ns 'creator channel)
-		      (shimbun-rss-node-text dc-ns 'contributor channel))))))
-    (dolist (item (shimbun-rss-find-el (intern (concat rss-ns "item")) xml))
-      (let ((url (and (listp item)
-		      (eq (intern (concat rss-ns "item")) (car item))
-		      (shimbun-rss-node-text rss-ns 'link (cddr item)))))
-	(when url
-	  (let* ((date (or (shimbun-rss-get-date shimbun url)
-			   (shimbun-rss-node-text dc-ns 'date item)
-			   (shimbun-rss-node-text rss-ns 'pubDate item)))
-		 (id (shimbun-rss-build-message-id shimbun url date)))
-	    (unless (shimbun-search-id shimbun id)
-	      (push (shimbun-create-header
-		     0
-		     (shimbun-rss-node-text rss-ns 'title item)
-		     (or (shimbun-rss-node-text rss-ns 'author item)
-			 (shimbun-rss-node-text dc-ns 'creator item)
-			 (shimbun-rss-node-text dc-ns 'contributor item)
-			 author
-			 (shimbun-from-address shimbun))
-		     (shimbun-rss-process-date shimbun date)
-		     id "" 0 0 url)
-		    headers))))))
-    headers))
+  (let ((xml (condition-case err
+		 (xml-parse-region (point-min) (point-max))
+	       (error
+		(message "Error while parsing %s: %s"
+			 (shimbun-index-url shimbun)
+			 (error-message-string err))
+		nil)))
+	dc-ns rss-ns author headers)
+    (when xml
+      (setq dc-ns (shimbun-rss-get-namespace-prefix
+		   xml "http://purl.org/dc/elements/1.1/")
+	    rss-ns (shimbun-rss-get-namespace-prefix
+		    xml "http://purl.org/rss/1.0/")
+	    author
+	    (catch 'found-author
+	      (dolist (channel
+		       (shimbun-rss-find-el (intern (concat rss-ns "channel"))
+					    xml))
+		(throw 'found-author
+		       (or
+			(shimbun-rss-node-text rss-ns 'author channel)
+			(shimbun-rss-node-text dc-ns 'creator channel)
+			(shimbun-rss-node-text dc-ns 'contributor channel))))))
+      (dolist (item (shimbun-rss-find-el (intern (concat rss-ns "item")) xml))
+	(let ((url (and (listp item)
+			(eq (intern (concat rss-ns "item")) (car item))
+			(shimbun-rss-node-text rss-ns 'link (cddr item)))))
+	  (when url
+	    (let* ((date (or (shimbun-rss-get-date shimbun url)
+			     (shimbun-rss-node-text dc-ns 'date item)
+			     (shimbun-rss-node-text rss-ns 'pubDate item)))
+		   (id (shimbun-rss-build-message-id shimbun url date)))
+	      (unless (shimbun-search-id shimbun id)
+		(push (shimbun-create-header
+		       0
+		       (shimbun-rss-node-text rss-ns 'title item)
+		       (or (shimbun-rss-node-text rss-ns 'author item)
+			   (shimbun-rss-node-text dc-ns 'creator item)
+			   (shimbun-rss-node-text dc-ns 'contributor item)
+			   author
+			   (shimbun-from-address shimbun))
+		       (shimbun-rss-process-date shimbun date)
+		       id "" 0 0 url)
+		      headers))))))
+      headers)))
 
 ;;; Internal functions
 

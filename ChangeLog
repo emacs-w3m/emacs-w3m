@@ -1,3 +1,11 @@
+2005-02-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-rss.el (shimbun-get-headers): Display an error
+	message rather than signaling an error when xml-parse-region fails
+	so that MUA may not be discontinued.
+
+	* shimbun/sb-emacswiki.el (shimbun-get-headers): Ditto.
+
 2005-02-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-cnet-jp.el: Changes to support orphaned groups.
