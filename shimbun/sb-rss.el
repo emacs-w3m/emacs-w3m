@@ -1,10 +1,10 @@
 ;;; sb-rss.el --- shimbun backend for RSS (Rich Site Summary).
 
 ;; Copyright (C) 2003 Koichiro Ohba <koichiro@meadowy.org>
-;;               2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;;               2003 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
-;;         NAKAJIMA Mikio <minakaji@namazu.org>
+;;         NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Keywords: news
 ;; Created: Jun 14, 2003
 
@@ -40,7 +40,7 @@
 (luna-define-class shimbun-rss (shimbun) ())
 
 (luna-define-generic shimbun-rss-process-date (shimbun-rss date)
-  "Process DATE string and return proper Date string for showing it in MUA.")
+  "Process DATE string and return proper Date string to show it in MUA.")
 
 (luna-define-method shimbun-rss-process-date ((shimbun shimbun-rss) date)
   ;; make Date string from ISO 8601 date format.  See
@@ -99,8 +99,16 @@
 	    day (string-to-number day))
       (shimbun-make-date-string year month day minutes timezone))))
 
+(luna-define-generic shimbun-rss-get-date (shimbun-rss url)
+  "Process URL and return a Date string for an article of the URL.
+When a RSS file does not contain any date information for each article,
+but you can identify it from the URL, define this method in a backend.")
+
+(luna-define-method shimbun-rss-get-date ((shimbun shimbun-rss) url)
+  nil)
+		  
 (luna-define-generic shimbun-rss-build-message-id (shimbun-rss url date)
-  "Building unique message-id from URL and DATE and return it.")
+  "Build unique message-id from URL and DATE and return it.")
 
 (luna-define-method shimbun-headers ((shimbun shimbun-rss) &optional range)
   (with-temp-buffer
@@ -130,7 +138,8 @@
 	(when (and (listp item)
 		   (eq (intern (concat rss-ns "item")) (car item))
 		   (setq url (shimbun-rss-node-text rss-ns 'link (cddr item))))
-	  (setq date (or (shimbun-rss-node-text dc-ns 'date item)
+ 	  (setq date (or (shimbun-rss-get-date shimbun url)
+ 			 (shimbun-rss-node-text dc-ns 'date item)
 			 (shimbun-rss-node-text rss-ns 'pubDate item)))
 	  (setq id (shimbun-rss-build-message-id shimbun url date))
 	  (when (shimbun-search-id shimbun id)

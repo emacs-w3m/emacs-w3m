@@ -43,9 +43,12 @@
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-cnet-rss) url date)
-  (unless (string-match "http://japan.cnet.com/svc/rss\\?id=\\([.0-9]+\\)" url)
+  (unless (string-match
+	   "http://japan.cnet.com/\\(.+\\)/\\([,0-9]+\\)\\.htm\\?ref=rss"
+	   url)
     (error "Cannot find message-id base"))
-  (concat "<" (match-string-no-properties 1 url) "%%rss@japan.cnet.com>"))
+  (concat "<" (match-string-no-properties 2 url) "%%"
+	  (match-string-no-properties 1 url) "%%rss@japan.cnet.com>"))
 
 (provide 'sb-cnet-rss)
 

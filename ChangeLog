@@ -1,3 +1,13 @@
+2003-12-21  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-cnet-rss.el (shimbun-rss-build-message-id): Updated.
+
+	* shimbun/sb-rss.el (shimbun-rss-build-message-id): Update doc string.
+	(shimbun-rss-process-date): Ditto.
+	(shimbun-rss-get-date): New method.
+	(shimbun-get-headers): Use `shimbun-rss-get-date' to get a date if
+	it is defined.
+
 2003-12-21  Masatake YAMATO  <jet@gyve.org>
 
 	* w3m.el (w3m-mode): Small doc fix.
