@@ -38,7 +38,7 @@
 (provide 'w3m-om);; It is needed to avoid circular dependencies.
 
 (defconst w3m-icon-directory nil
-  "... normally this documentation should be overriden by w3m ...
+  "... normally this documentation should be overridden by w3m ...
 It is used to avoid byte-compile warnings.")
 
 (require 'w3m)
