@@ -1,3 +1,10 @@
+2001-10-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-e21.el (w3m-widget-keymap): New keymap.
+	(w3m-form-make-button): Set `w3m-widget-keymap' as keymap on
+	buttons; Fix condition to make buttons.
+	(w3m-setup-widget-faces): Removed.
+
 2001-10-11  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
 
 	* shimbun/sb-tcup.el (shimbun-tcup-make-time): Fix time regexp.
