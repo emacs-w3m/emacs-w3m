@@ -944,14 +944,16 @@ This function is imported from mcharset.el."
 
 (defun w3m-download (url &optional filename)
   (unless filename
-    (setq filename (w3m-read-file-name)))
+    (setq filename (w3m-read-file-name nil nil url)))
   (w3m-retrieve url t)
   (with-current-buffer (get-buffer w3m-work-buffer-name)
     (let ((buffer-file-coding-system
 	   (w3m-static-if (boundp 'MULE) '*noconv* 'binary))
 	  (coding-system-for-write
 	   (w3m-static-if (boundp 'MULE) '*noconv* 'binary)))
-      (write-region (point-min) (poinat-max) filename nil nil t))))
+      (if (or (not (file-exists-p filename))
+	      (y-or-n-p (format "File(%s) is aleready exists. Overwrite? " filename)))
+	  (write-region (point-min) (point-max) filename)))))
 
 (defun w3m-content-type (url)
   (if (string-match "^\\(file:\\|/\\)" url)

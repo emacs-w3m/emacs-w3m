@@ -3,6 +3,7 @@
 	* w3m.el (w3m-home-page): Changed to official w3m.el page.
 	(w3m-anchor-face): Changed default face in dark backgraound.
 	(w3m-arrived-anchor-face): Ditto.
+	(w3m-download): Fix typo.
 
 2001-03-01  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
