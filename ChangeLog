@@ -14,9 +14,10 @@
 	(w3mhack-generate-shimbun-servers-file): Removed.
 	(w3mhack-check-shimbun-servers-file): Removed.
 
-	* w3m.el (w3m-fontify-bold, w3m-fontify-underline): Stricten
-	regular expressions to detect tags.  For more detail, see
-	[emacs-w3m:05600].
+	* w3m.el (w3m-fontify-anchors): Handle `id' attributes of anchors.
+	Thanks to Shinichiro HIDA and TAKAISHI Hayato for their reports.
+	(w3m-fontify-bold, w3m-fontify-underline): Stricten regular
+	expressions to detect tags.  For more detail, see [emacs-w3m:05600].
 
 2003-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
