@@ -84,6 +84,36 @@
 	 "<!--[\t\n ]*leadend[\t\n ]*-->")
        1 5 6 3 4 nil 2)
       ("international" "国際面" "list.html" ,@default)
+      ("kansai" "関西面" ""
+       ,(concat
+	 "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
+	 ;; 1. url
+	 "\\(%s/news/"
+	 ;; 2. serial number
+	 "\\([A-Z]+[0-9]+\\)" "\\.html\\)"
+	 "\"[\t\n ]*>[\t\n ]*"
+	 ;; 3. subject
+	 "\\(.+\\)" "[\t\n ]*<[\t\n ]*/a[\t\n ]*>[\t\n ]*([\t\n ]*"
+	 ;; 4. month
+	 "\\([01][0-9]\\)" "/"
+	 ;; 5. day
+	 "\\([0-3][0-9]\\)" "[\t\n ]*)")
+       1 2 3 4 5)
+      ("kansai-special" "関西特集面" ""
+       ,(concat
+	 "<[\t\n ]*a[\t\n ]+href[\t\n ]*=[\t\n ]*\"/"
+	 ;; 1. url
+	 "\\(kansai/special/"
+	 ;; 2. serial number
+	 "\\([A-Z]+[0-9]+\\)" "\\.html\\)"
+	 "\"[\t\n ]*>[\t\n ]*"
+	 ;; 3. subject
+	 "\\(.+\\)" "[\t\n ]*<[\t\n ]*/a[\t\n ]*>[\t\n ]*([0-9]+/"
+	 ;; 4. month
+	 "\\([01][0-9]\\)" "/"
+	 ;; 5. day
+	 "\\([0-3][0-9]\\)" "[\t\n ]*)")
+       1 2 3 4 5)
       ("national" "社会面" "" ,@default)
       ("politics" "政治面" "" ,@default)
       ("science" "科学面" "list.html"
@@ -161,15 +191,18 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-asahi))
   (let ((group (shimbun-current-group-internal shimbun)))
-    (concat shimbun-asahi-url group "/"
-	    (nth 2 (assoc group shimbun-asahi-group-table)))))
+    (if (string-equal group "kansai-special")
+	(concat shimbun-asahi-url "kansai/special/")
+      (concat shimbun-asahi-url group "/"
+	      (nth 2 (assoc group shimbun-asahi-group-table))))))
 
 (defun shimbun-asahi-get-headers (shimbun)
   "Return a list of headers."
   (let ((group (shimbun-current-group-internal shimbun))
 	(from (shimbun-from-address shimbun))
 	(case-fold-search t)
-	regexp numbers cyear cmonth month day year headers)
+	regexp numbers cyear cmonth month day year headers
+	kansai-special)
     (setq regexp (assoc group shimbun-asahi-group-table)
 	  numbers (nthcdr 4 regexp)
 	  regexp (format (nth 3 regexp) (regexp-quote group))
@@ -177,6 +210,14 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	  cmonth (nth 4 cyear)
 	  cyear (nth 5 cyear))
     (while (re-search-forward regexp nil t)
+      (if (string-equal group "kansai-special")
+	  (save-excursion
+	    (save-match-data
+	      (setq kansai-special
+		    (if (re-search-backward
+			 ">[\t\n ]*\\([^<>]+\\)[\t\n ]*<[\t\n ]*/th[\t\n ]*>"
+			 nil t)
+			(match-string 1))))))
       (setq month (string-to-number (match-string (nth 3 numbers)))
 	    year (cond ((and (= 12 month) (= 1 cmonth))
 			(1- cyear))
@@ -190,10 +231,14 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	     0
 	     ;; subject
 	     (shimbun-mime-encode-string
-	      (if (nth 6 numbers)
-		  (concat (match-string (nth 6 numbers)) ": "
-			  (match-string (nth 2 numbers)))
-		(match-string (nth 2 numbers))))
+	      (cond (kansai-special
+		     (concat "[" kansai-special "] "
+			     (match-string (nth 2 numbers))))
+		    ((nth 6 numbers)
+		     (concat (match-string (nth 6 numbers)) ": "
+			     (match-string (nth 2 numbers))))
+		    (t
+		     (match-string (nth 2 numbers)))))
 	     ;; from
 	     from
 	     ;; date
