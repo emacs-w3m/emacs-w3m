@@ -1,3 +1,11 @@
+2001-11-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-display-hook): Add `w3m-select-buffer-update'.
+	(w3m-select-buffer-name): Move the definition position to avoid
+	byte-compile warning.
+	(w3m-goto-url): Removed the code to update the select buffer.
+	(w3m-select-buffer-update): New function.
+
 2001-11-13  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-lynx-like-map): Bind `C-cC-a' as the key to call

@@ -499,7 +499,7 @@ to input URL when URL-like string is not detected under the cursor."
   :type 'hook)
 
 (defcustom w3m-display-hook
-  '(w3m-history-highlight-current-url)
+  '(w3m-history-highlight-current-url w3m-select-buffer-update)
   "*Hook run at the end of `w3m-goto-url'."
   :group 'w3m
   :type 'hook)
@@ -1049,6 +1049,7 @@ encoded in the optimized animated gif format and base64.")
 (defvar w3m-work-buffer-list nil)
 (defconst w3m-work-buffer-name " *w3m-work*")
 (defconst w3m-work-binary-buffer-name " *w3m-work*binary")
+(defconst w3m-select-buffer-name " *w3m buffers*")
 
 (defconst w3m-meta-content-type-charset-regexp
   (eval-when-compile
@@ -4334,10 +4335,7 @@ field for this request."
       (w3m-update-toolbar)
       (run-hook-with-args 'w3m-display-hook url)
       (switch-to-buffer (current-buffer))
-      (when localcgi (w3m-goto-url-localcgi-movepoint))
-      (when (get-buffer-window w3m-select-buffer-name)
-	(save-selected-window
-	  (w3m-select-buffer 'nomsg)))))))
+      (when localcgi (w3m-goto-url-localcgi-movepoint))))))
 
 ;;;###autoload
 (defun w3m-goto-url-new-session (url
@@ -4820,7 +4818,6 @@ If called with 'prefix argument', display arrived-DB history."
 (defvar w3m-select-buffer-window nil)
 (defconst w3m-select-buffer-message
   "n: next buffer, p: previous buffer, q: quit.")
-(defconst w3m-select-buffer-name " *w3m buffers*")
 
 (defun w3m-select-buffer (&optional nomsg)
   "Display a new buffer to select a buffer among the set of w3m-mode
@@ -4842,6 +4839,11 @@ buffers.  User can type following keys:
       (set-window-buffer w (current-buffer))
       (select-window w)))
   (or nomsg (message w3m-select-buffer-message)))
+
+(defun w3m-select-buffer-update (&rest args)
+  (when (get-buffer-window w3m-select-buffer-name)
+    (save-selected-window
+      (w3m-select-buffer 'nomsg))))
 
 (defun w3m-select-buffer-generate-contents (current-buffer)
   (let (buffer-read-only pos)
