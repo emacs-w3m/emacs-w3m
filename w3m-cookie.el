@@ -148,15 +148,21 @@ If ask, ask user whether accept bad cookies or not."
 
 (defun w3m-cookie-store (cookie)
   "Store COOKIE."
-  (dolist (c w3m-cookies)
-    (when (and (string= (w3m-cookie-domain c)
-			(w3m-cookie-domain cookie))
-	       (string= (w3m-cookie-path c)
-			(w3m-cookie-path cookie))
-	       (string= (w3m-cookie-name c)
-			(w3m-cookie-name cookie)))
-      (setq w3m-cookies (delq c w3m-cookies))))
-  (push cookie w3m-cookies))
+  (let (ignored)
+    (catch 'found
+      (dolist (c w3m-cookies)
+	(when (and (string= (w3m-cookie-domain c)
+			    (w3m-cookie-domain cookie))
+		   (string= (w3m-cookie-path c)
+			    (w3m-cookie-path cookie))
+		   (string= (w3m-cookie-name c)
+			    (w3m-cookie-name cookie)))
+	  (if (w3m-cookie-ignore c)
+	      (setq ignored t)
+	    (setq w3m-cookies (delq c w3m-cookies)))
+	  (throw 'found t))))
+    (unless ignored
+      (push cookie w3m-cookies))))
 
 (defun w3m-cookie-remove (domain path name)
   "Remove COOKIE if stored."
@@ -179,7 +185,8 @@ If ask, ask user whether accept bad cookies or not."
 				 (w3m-time-parse-string
 				  (w3m-cookie-expires c))))
 	  (push c expires)
-	(when (and (string-match (concat 
+	(when (and (not (w3m-cookie-ignore c))
+		   (string-match (concat 
 				  (regexp-quote (w3m-cookie-domain c)) "$")
 				 host)
 		   (string-match (concat
@@ -511,6 +518,69 @@ BEG and END should be an HTTP response header region on current buffer."
 			   "=" (w3m-cookie-value cookie)))
 		 cookies
 		 "; "))))
+
+;;;###autoload
+(defun w3m-about-cookie (url &optional no-decode no-cache post-data &rest args)
+  "Cookie setup."
+  (w3m-cookie-setup)
+  (let ((pos 0))
+    (when post-data
+      (dolist (pair (split-string post-data "&"))
+	(setq pair (split-string pair "="))
+	(w3m-cookie-set-ignore
+	 (nth (string-to-number (car pair)) w3m-cookies)
+	 (if (eq (string-to-number (cadr pair)) 0)
+	     t))))
+    (insert
+     (concat
+      "\
+<html><head><title>Cookies</title></head>
+<body><center><b>Cookies</b></center>
+<p><form method=\"post\" action=\"about://cookie/\">
+<ol>"))
+    (dolist (cookie w3m-cookies)
+      (insert
+       (concat
+	"<li><h1><a href=\""
+	(w3m-cookie-url cookie)
+	"\">"
+	(w3m-cookie-url cookie)
+	"</a></h1>"
+	"<table cellpadding=0>"
+	"<tr><td width=\"80\"><b>Cookie:</b></td><td>"
+	(w3m-cookie-name cookie) "=" (w3m-cookie-value cookie)
+	"</td></tr>"
+	(when (w3m-cookie-expires cookie)
+	  (concat
+	   "<tr><td width=\"80\"><b>Expires:</b></td><td>"
+	   (w3m-cookie-expires cookie)
+	   "</td></tr>"))
+	"<tr><td width=\"80\"><b>Version:</b></td><td>"
+	(number-to-string (w3m-cookie-version cookie))
+	"</td></tr>"
+	(when (w3m-cookie-domain cookie)
+	  (concat
+	   "<tr><td width=\"80\"><b>Domain:</b></td><td>"
+	   (w3m-cookie-domain cookie)
+	   "</td></tr>"))
+	(when (w3m-cookie-path cookie)
+	  (concat
+	   "<tr><td width=\"80\"><b>Path:</b></td><td>"
+	   (w3m-cookie-path cookie)
+	   "</td></tr>"))
+	"<tr><td width=\"80\"><b>Secure:</b></td><td>"
+	(if (w3m-cookie-secure cookie) "Yes" "No")
+	"</td></tr><tr><td>"
+	"<tr><td width=\"80\"><b>Use:</b></td><td>"
+	(format "<input type=radio name=\"%d\" value=1%s>Yes"
+		pos (if (w3m-cookie-ignore cookie) "" " checked"))
+	"&nbsp;&nbsp;"
+	(format "<input type=radio name=\"%d\" value=0%s>No"
+		pos (if (w3m-cookie-ignore cookie) " checked" ""))
+	"</td></tr><tr><td><input type=submit value=\"OK\"></table><p>"))
+      (setq pos (1+ pos)))
+    (insert "</ol></form></body></html>")
+    "text/html"))
 
 (provide 'w3m-cookie)
 

@@ -123,6 +123,7 @@
   (autoload 'w3m-switch-buffer "w3m-tabmenu")
   (autoload 'w3m-cookie-set "w3m-cookie")
   (autoload 'w3m-cookie-get "w3m-cookie")
+  (autoload 'w3m-about-cookie "w3m-cookie")
   (autoload 'w3m-cookie-shutdown "w3m-cookie" t))
 
 ;; Avoid byte-compile warnings.
