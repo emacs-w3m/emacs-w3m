@@ -1,6 +1,6 @@
 ;;; sb-asahi-mytown.el --- mytown.asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003 Katsumi Yamaoka
+;; Copyright (C) 2003, 2004 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -174,6 +174,24 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 (luna-define-method shimbun-get-headers ((shimbun shimbun-asahi-mytown)
 					 &optional range)
   (shimbun-asahi-mytown-get-headers shimbun))
+
+(defun shimbun-asahi-mytown-prepare-article ()
+  "Remove a subject line."
+  (let ((case-fold-search t)
+	start)
+    (when (and (re-search-forward "\
+<!--[\t\n\r ]*FJZONE START NAME=\"MIDASHI\"[\t\n\r ]*-->"
+				  nil t)
+	       (setq start (point))
+	       (re-search-forward "\
+<!--[\t\n\r ]*FJZONE END NAME=\"MIDASHI\"[\t\n\r ]*-->[\t\n\r ]*\
+<hr[^>]*>[\t\n\r ]*"
+				  nil t))
+      (delete-region start (point)))))
+
+(luna-define-method shimbun-make-contents
+  :before ((shimbun shimbun-asahi-mytown) header)
+  (shimbun-asahi-mytown-prepare-article))
 
 (provide 'sb-asahi-mytown)
 
