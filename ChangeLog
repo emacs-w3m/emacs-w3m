@@ -1,3 +1,8 @@
+2001-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-expand-url): Accept URL which has the scheme part
+	only.
+
 2001-10-15  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-url-components-regexp): Don't except `\' for

@@ -3070,7 +3070,8 @@ described in Section 5.2 of RFC 2396.")
      ((match-beginning 1)
       ;; URL has a scheme part. => URL may have an absolute spec.
       (if (or (match-beginning 3)
-	      (eq ?/ (aref url (match-beginning 5))))
+	      (and (< (match-beginning 5) (length url))
+		   (eq ?/ (aref url (match-beginning 5)))))
 	  ;; URL has a net-location part or a absolute hierarchical
 	  ;; part. => URL has an absolute spec.
 	  url
