@@ -1,3 +1,8 @@
+2005-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-market):
+	Improve regexp.
+
 2005-01-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-e21.el (w3m-force-window-update, w3m-update-tab-line): Call

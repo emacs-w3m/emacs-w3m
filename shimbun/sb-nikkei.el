@@ -946,7 +946,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			(s1 "[\t\n ]+"))
 		    (concat "<a" s1 "href=\""
 			    ;; 1. url
-			    "\\([^\">]+"
+			    "\\([^\">]+/"
 			    ;; 2. id
 			    "\\("
 			    ;; 3. year
