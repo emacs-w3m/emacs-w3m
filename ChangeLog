@@ -1,3 +1,8 @@
+2001-07-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (w3m-form-parse-forms): Parse the tags only within the
+	"<form ..> ... </form>".
+
 2001-07-12  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-remove-redundant-spaces): Don't cause an error when str

@@ -151,86 +151,90 @@ If no field in forward, return nil without moving."
 	(setq w3m-current-forms (nreverse forms))))))
 
 (defun w3m-form-parse-forms ()
-  "Parse HTML data in this buffer and return form objects."
+  "Parse Form objects in this buffer."
   (let ((case-fold-search t)
-	forms)
+	forms formbeg formend)
     (goto-char (point-min))
-    (while (re-search-forward
-	    "<\\(\\(form\\)\\|\\(input\\)\\|\\(textarea\\)\\|select\\)[ \t\r\f\n]+"
-	    nil t)
-      (cond
-       ((match-string 2)
+    (while (re-search-forward "<form[ \t\r\f\n]+" nil t)
+      (setq formbeg (match-end 0))
+      (when (search-forward "</form>" nil t)
+	(setq formend (match-beginning 0))
+	(goto-char formbeg)
 	;; When <FORM> is found.
 	(w3m-parse-attributes (action (method :case-ignore))
 	  (setq forms
 		(cons (w3m-form-new (or method "get")
 				    (or action w3m-current-url)
 				    w3m-current-url)
-		      forms))))
-       ((match-string 3)
-	;; When <INPUT> is found.
-	(w3m-parse-attributes (name value (type :case-ignore)
-				    (checked :bool))
-	  (when name
-	    (cond
-	     ((string= type "submit")
-	      ;; Submit button input, not set name and value here.
-	      ;; They are set in `w3m-form-submit'.
-	      nil)
-	     ((string= type "checkbox")
-	      ;; Check box input, one name has multiple values
-	      ;; Value is list of item VALUE which has same NAME.
-	      (let ((cvalue (w3m-form-get (car forms) name)))
-		(w3m-form-put (car forms) name
-			      (if checked
-				  (cons value cvalue)
-				cvalue))))
-	     ((string= type "radio")
-	      ;; Radio button input, one name has one value
-	      (w3m-form-put (car forms) name
-			    (if checked value
-			      (w3m-form-get (car forms) name))))
-	     (t
-	      ;; ordinaly text input
-	      (w3m-form-put (car forms)
-			    name
-			    (or value (w3m-form-get (car forms) name))))))))
-       ((match-string 4)
-	;; When <TEXTAREA> is found.
-	(w3m-parse-attributes (name)
-	  (let ((start (point))
-		value)
-	    (skip-chars-forward "^<")
-	    (setq value (buffer-substring start (point)))
-	    (when name
-	      (w3m-form-put (car forms)
-			    name
-			    (or value (w3m-form-get (car forms) name)))))))
-       ;; When <SELECT> is found.
-       (t
-	(let ((beg (point))
-	      end vbeg svalue cvalue candidates)
-	  (when (re-search-forward "</select>" nil t) ; end of select
-	    (setq end (match-beginning 0))
-	    (goto-char beg)
-	    (w3m-parse-attributes (name)
-	      (while (re-search-forward "<option[ \t\r\f\n]*" end t)
-		(w3m-parse-attributes (value (selected :bool))
-		  (setq vbeg (point))
-		  (skip-chars-forward "^<")
-		  (setq svalue
-			(mapconcat 'identity
-				   (split-string
-				    (buffer-substring vbeg (point)) "\n")
-				   ""))
-		  (if selected (setq cvalue value))
-		  (setq candidates (cons (cons value svalue)
-					 candidates))))
+		      forms)))
+	(while (re-search-forward
+		"<\\(\\(input\\)\\|\\(textarea\\)\\|select\\)[ \t\r\f\n]+"
+		formend t)
+	  (cond
+	   ((match-string 2)
+	    ;; When <INPUT> is found.
+	    (w3m-parse-attributes (name value (type :case-ignore)
+					(checked :bool))
 	      (when name
-		(w3m-form-put (car forms) name (cons
-						cvalue ; current value
-						(nreverse
-						 candidates))))))))))
+		(cond
+		 ((string= type "submit")
+		  ;; Submit button input, not set name and value here.
+		  ;; They are set in `w3m-form-submit'.
+		  nil)
+		 ((string= type "checkbox")
+		  ;; Check box input, one name has multiple values
+		  ;; Value is list of item VALUE which has same NAME.
+		  (let ((cvalue (w3m-form-get (car forms) name)))
+		    (w3m-form-put (car forms) name
+				  (if checked
+				      (cons value cvalue)
+				    cvalue))))
+		 ((string= type "radio")
+		  ;; Radio button input, one name has one value
+		  (w3m-form-put (car forms) name
+				(if checked value
+				  (w3m-form-get (car forms) name))))
+		 (t
+		  ;; ordinaly text input
+		  (w3m-form-put (car forms)
+				name
+				(or value (w3m-form-get (car forms) name))))))))
+	   ((match-string 3)
+	    ;; When <TEXTAREA> is found.
+	    (w3m-parse-attributes (name)
+	      (let ((start (point))
+		    value)
+		(skip-chars-forward "^<")
+		(setq value (buffer-substring start (point)))
+		(when name
+		  (w3m-form-put (car forms)
+				name
+				(or value (w3m-form-get (car forms) name)))))))
+	   ;; When <SELECT> is found.
+	   (t
+	    (let ((beg (point))
+		  end vbeg svalue cvalue candidates)
+	      (when (re-search-forward "</select>" formend t) ; end of select
+		(setq end (match-beginning 0))
+		(goto-char beg)
+		(w3m-parse-attributes (name)
+		  (while (re-search-forward "<option[ \t\r\f\n]*" end t)
+		    (w3m-parse-attributes (value (selected :bool))
+		      (setq vbeg (point))
+		      (skip-chars-forward "^<")
+		      (setq svalue
+			    (mapconcat 'identity
+				       (split-string
+					(buffer-substring vbeg (point)) "\n")
+				       ""))
+		      (if selected (setq cvalue value))
+		      (setq candidates (cons (cons value svalue)
+					     candidates))))
+		  (when name
+		    (w3m-form-put (car forms) name (cons
+						    cvalue ; current value
+						    (nreverse
+						     candidates))))))))))))
     forms))
 
 ;;;###autoload
