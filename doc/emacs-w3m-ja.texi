@@ -3458,6 +3458,11 @@ redhat.xconq-announce redhat.xconq-cvs
 macosx-jp.macosx-jp macosx-jp.macosx-dev-jp
 macosx-jp.macosx-ws-jp macosx-jp.webobjects-jp
 
+@item @uref{http://sourceforge.jp, SourceForge JP}
+SourceForge JP に保存されているメーリングリストの全ての公開書庫を閲覧で
+きます。閲覧したいグループを
+変数 @code{shimbun-sourceforge-jp-mailing-lists} に登録してください。
+
 @item @uref{http://lists.sourceforge.jp/pipermail/anthy-dev/, Anthy Mailing List}
 anthy.main
 

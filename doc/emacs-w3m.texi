@@ -3286,7 +3286,7 @@ your favorite archive to the variable
 @code{shimbun-geocrawler-group-alist}.
 
 @item @uref{http://marc.theaimsgroup.com/, Mailing list ARChives}
-Mailing list ARChives (@acronym{MARC}) is supported by @samp{shimbun}
+Mailing list ARChives (@acronym{MARC}) are supported by @samp{shimbun}
 library.  Add a group name of your favorite archive and its URL to the
 variable @code{shimbun-marc-aims-group-alist}, and you can browse it.
 
@@ -3323,6 +3323,11 @@ redhat.xconq-announce redhat.xconq-cvs
 @item @uref{http://www.tech-arts.co.jp/macosx/, MacOSX JP Mailing List}
 macosx-jp.macosx-jp macosx-jp.macosx-dev-jp
 macosx-jp.macosx-ws-jp macosx-jp.webobjects-jp
+
+@item @uref{http://sourceforge.jp, SourceForge JP}
+All archives served by SourceForge JP are supported by @samp{shimbun}
+library.  Add a group name of your favorite archive to the variable
+@code{shimbun-sourceforge-jp-mailing-lists}, and you can browse it.
 
 @item @uref{http://lists.sourceforge.jp/pipermail/anthy-dev/, Anthy Mailing List}
 anthy.main
