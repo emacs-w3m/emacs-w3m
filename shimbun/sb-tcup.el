@@ -164,7 +164,8 @@ BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'")
 	       ((looking-at "\\([^ ]+\\) <")
 		(shimbun-tcup-make-time))
 	       (t (current-time))))
-	(setq date (format-time-string "%d %b %Y %T %z" stime))
+	(let ((system-time-locale "C"))
+	  (setq date (format-time-string "%d %b %Y %T %z" stime)))
 	(setq stime (format "%05d%05d" (car stime) (cadr stime)))
 	(setq id (shimbun-tcup-make-id
 		  stime
