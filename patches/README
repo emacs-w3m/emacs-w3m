@@ -26,6 +26,18 @@
   If the caching configuration of your proxy server is broken, you
   should apply this patch and set non-nil value to
   `w3m-broken-proxy-cache'.
+
+* w3m-0.2.1-inu-1.5-solaris-xemacs.patch
+
+  This patch was posted by Hideyuki SHIRAI <shirai@meadowy.org> in
+  [emacs-w3m:02079]. It includes
+
+  (1) The patch to use `getpassphase' instead of `getpass' if the system
+      has a `getpassphase' like Solaris 2.x.
+
+  (2) The patch to use `STDIN' instead of `getpass' if w3m is associated
+      with a terminal device. It take effect for XEmacs with Solaris 2.x.
+
 
 Local Variables:
 mode: indented-text

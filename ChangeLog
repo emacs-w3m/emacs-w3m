@@ -1,3 +1,13 @@
+2001-11-07  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-exec-filter): Modify regexp pattern of "Wrong
+	username or passwd".
+
+	* patches/w3m-0.2.1-inu-1.5-solaris-xemacs.patch: New file.
+
+	* patches/README: Add description for
+	`w3m-0.2.1-inu-1.5-solaris-xemacs.patch'.
+
 2001-11-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.2.
