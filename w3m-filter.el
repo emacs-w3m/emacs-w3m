@@ -44,14 +44,6 @@
     ("\\`http://linux\\.ascii24\\.com/linux/"
      w3m-filter-delete-regions
      "<!-- DAC CHANNEL AD START -->" "<!-- DAC CHANNEL AD END -->")
-    ("\\`http://www\\.google\\.com/search"
-     w3m-filter-find-relationships
-     "<a href=\\([^>]+\\)><img src=/\\(intl/[^/]+/\\)nav_next.gif"
-     "<a href=\\([^>]+\\)><img src=/\\(intl/[^/]+/\\)nav_previous.gif")
-    ("\\`http://www\\.zdnet\\.co\\.jp/news/"
-     w3m-filter-find-relationships
-     ,(concat "<a href=\\(" w3m-html-string-regexp "\\)>次のページ</a>")
-     ,(concat "<a href=\\(" w3m-html-string-regexp "\\)>前のページ</a>"))
     ("\\`http://www\\.asahi\\.com/" w3m-filter-asahi-shimbun))
   "Rules to filter advertisements on WEB sites."
   :group 'w3m
@@ -74,7 +66,7 @@
 
 ;;;###autoload
 (defun w3m-filter (url)
-  "Exec filtering rule of URL to contents in this buffer."
+  "Apply filtering rule of URL against a content in this buffer."
   (save-match-data
     (catch 'apply-filtering-rule
       (dolist (elem w3m-filter-rules)
@@ -92,16 +84,6 @@
       (delete-region p (match-end 0))
       (incf i))
     (> i 0)))
-
-(defun w3m-filter-find-relationships (url next previous)
-  "Search relationships with a NEXT pattern and a PREVIOUS pattern."
-  (goto-char (point-max))
-  (and (not w3m-next-url)
-       (re-search-backward next nil t)
-       (setq w3m-next-url (w3m-expand-url (match-string 1) url)))
-  (and (not w3m-previous-url)
-       (re-search-backward previous nil t)
-       (setq w3m-previous-url (w3m-expand-url (match-string 1) url))))
 
 ;; Filter functions:
 (defun w3m-filter-asahi-shimbun (url)

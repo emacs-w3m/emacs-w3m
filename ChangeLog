@@ -1,3 +1,20 @@
+2003-12-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Experimentally implement the estimation layer of
+	relationships between pages.
+	(w3m-relationship-estimate-rules): New option.
+	(w3m-relationship-estimate, w3m-relationship-simple-estimate,
+	w3m-relationship-magicpoint-estimate,
+	w3m-relationship-search-patterns): New functions.
+	(w3m-use-filter): Cancel the last change; its default value is
+	changed to nil.
+
+	* w3m-filter.el (w3m-filter-rules): Remove rules to find
+	relationships.
+	(w3m-filter-find-relationships): Abolished.
+
+	* w3m-util.el (w3m-html-string-regexp): Import from w3m.el.
+
 2003-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-header-insert): Never use BBDB if

@@ -45,7 +45,6 @@
   (defvar w3m-current-refresh)
   (defvar w3m-current-title)
   (defvar w3m-current-url)
-  (defvar w3m-html-string-regexp)
   (defvar w3m-pop-up-frames)
   (defvar w3m-pop-up-windows)
   (defvar w3m-popup-frame-parameters)
@@ -202,6 +201,13 @@ If POSITION is omitted, the current position is assumed."
 
 
 ;;; Attributes:
+
+(eval-and-compile
+  ;; `eval-and-compile' is necessary since the value of the constant
+  ;; is referred to at the compile time.
+  (defconst w3m-html-string-regexp
+    "\\(\"\\([^\"]+\\)\"\\|'\\([^\']+\\)'\\|[^\"\'<> \t\r\f\n]*\\)"
+    "Regexp matching a string of the field-value like <a href=\"VALUE\">."))
 
 (put 'w3m-parse-attributes 'lisp-indent-function '1)
 (def-edebug-spec w3m-parse-attributes
