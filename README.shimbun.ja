@@ -76,10 +76,10 @@ gnome 関連	gnome.balsa-list gnome.calendar-list
 		gnome.xml gnome.xslt
 gs-cjk		gyve.gs-cjk
 h14m 関連	h14m.hns-dev h14m.hns-users
-Java カンファレンス関連	java-conf.servlet-ml java-conf.business-ml
-		java-conf.duke-in-the-box-ml java-conf.jfriends-ml
-		java-conf.JGT-ml java-conf.jini-ml java-conf.ejb-ml
-		java-conf.cm-ml java-conf.horb-ml java-conf.talk-ml
+Java カンファレンス関連	javaconf.servlet-ml javaconf.business-ml
+		javaconf.duke-in-the-box-ml javaconf.jfriends-ml
+		javaconf.JGT-ml javaconf.jini-ml javaconf.ejb-ml
+		javaconf.cm-ml javaconf.horb-ml javaconf.talk-ml
 linux-ce	linux-ce.users
 mule-ja		m17n.mule-ja
 meadow 関連	meadow.meadow-develop meadow.meadow-users-jp
