@@ -209,7 +209,9 @@ argument."
 		     "Index: ")
 		   'w3m-namazu-complete-index nil t nil
 		   'w3m-namazu-index-history)))
-	  (if (string= s "") default s))
+	  (if (string= s "")
+	      (or default (error "Index is required"))
+	    s))
       (or w3m-namazu-default-index
 	  (car w3m-namazu-index-history)))
     (read-string "Query: " nil 'w3m-namazu-query-history)))
