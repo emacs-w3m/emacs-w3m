@@ -4118,23 +4118,23 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
       (w3m-message "Reading %s...done" url)
       (when success
 	(goto-char (point-min))
-	(let ((case-fold-search t)
-	      type)
+	(let ((case-fold-search t))
 	  (when (re-search-forward "^w3m-current-url:" nil t)
 	    (delete-region (point-min) (match-beginning 0))
 	    (when (search-forward "\n\n" nil t)
 	      ;; Asahi-shimbun sometimes says gif as jpeg mistakenly.  So,
 	      ;; we cannot help trusting the magic at the beginning of data.
 	      (when (looking-at "\\(GIF8\\)\\|\\(\377\330\\)\\|\\(\211PNG\\)")
-		(setq type (cond ((match-beginning 1) "gif")
-				 ((match-beginning 2) "jpeg")
-				 ((match-beginning 3) "png")))
-		(when (re-search-backward "^content-type: image/\\(.+\\)$"
-					  nil t)
-		  (delete-region (goto-char (match-beginning 1))
-				 (match-end 0))
-		  (insert type)
-		  (search-forward "\n\n")))
+		(let ((type (cond
+			     ((match-beginning 1) "gif")
+			     ((match-beginning 2) "jpeg")
+			     ((match-beginning 3) "png"))))
+		  (save-excursion
+		    (when (re-search-backward "^content-type: image/\\(.+\\)$"
+					      nil t)
+		      (delete-region (goto-char (match-beginning 1))
+				     (match-end 1))
+		      (insert type)))))
 	      (let ((header (buffer-substring (point-min) (point))))
 		(when w3m-use-cookies
 		  (w3m-cookie-set url (point-min) (point)))
