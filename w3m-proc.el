@@ -256,47 +256,25 @@ handler."
 (defmacro w3m-process-with-wait-handler (&rest body)
   "Generate the waiting handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the handler
-which will wait for the end of the evaluation."
-  `(let ((handler (symbol-function 'identity))
-	 (w3m-async-exec))
-     ,@body))
-;; ASYNC: 本当は、以下のように非同期に実行(= process-filter を利用)し
-;; て、非同期プロセスの終了を待つように実装する必要があるのだが、どう
-;; しても、バグの原因が分からなかったので、adhoc に対処している。その
-;; ため、パスワードなどの入力が必要な場合に不具合が生じることがある。
-;;
-;;    (defmacro w3m-process-with-wait-handler (&rest body)
-;;      "Generate the waiting handler, and evaluate BODY.
-;;    When BODY is evaluated, the local variable `handler' keeps the handler
-;;    which will wait for the end of the evaluation.
-;;    
-;;    WARNING: This macro in asynchronous context will cause an endless loop
-;;    because capturing the end of the generated sub-process fails."
-;;      (let ((process (gensym "--process--"))
-;;            (result (gensym "--result--")))
-;;        `(let ((,process)
-;;               (,result ',result))
-;;           (let ((handler (lambda (x) (setq ,result x))))
-;;             (if (w3m-process-p (setq ,process (progn ,@body)))
-;;                 (progn
-;;                   (w3m-process-start-process ,process)
-;;                   (while (eq ,result ',result)
-;;                     (sit-for 0.2))
-;;                   ,result)
-;;               ,process)))))
-;;
-;; 具体的には、[emacs-w3m:02167] で報告した以下の式が正常に評価できる
-;; ように修正する必要がある。
-;;
-;;     (with-current-buffer (get-buffer-create "*TEST*")
-;;       (pop-to-buffer (current-buffer))
-;;       (require 'w3m)
-;;       (w3m-process-with-null-handler
-;;         (w3m-process-do
-;;             (success (w3m-process-start handler "-version"))
-;;           (w3m-process-with-wait-handler
-;;             (w3m-process-start handler "-version")))))
-;;
+which will wait for the end of the evaluation.
+
+WARNING: This macro in asynchronous context will cause an endless loop
+because capturing the end of the generated sub-process fails."
+  (let ((process (gensym "--process--"))
+	(result (gensym "--result--")))
+    `(let ((,process))
+       (lexical-let (,result)
+	 (let ((handler (lambda (x) (setq ,result x))))
+	   (if (w3m-process-p (setq ,process (progn ,@body)))
+	       (progn
+		 (w3m-process-start-process ,process)
+		 (when (processp
+			(setq ,process (w3m-process-process ,process)))
+		   (while (eq (process-status ,process) 'run)
+		     (sit-for 0.2)))
+		 (sit-for 1) ;; Adhoc waiting to evaluate handlers.
+		 ,result)
+	     ,process))))))
 (put 'w3m-process-with-wait-handler 'lisp-indent-function 0)
 (put 'w3m-process-with-wait-handler 'edebug-form-spec '(body))
 

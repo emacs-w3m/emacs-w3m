@@ -1,3 +1,10 @@
+2001-11-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-retrieve) Call `w3m-w3m-attributes' instead of
+	`w3m-attributes'.
+
+	* w3m-proc.el (w3m-process-with-wait-handler): Reimplemented.
+
 2001-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Moved some macros and inline functions to w3m-macro.el.

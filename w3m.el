@@ -2486,7 +2486,7 @@ argument, when retrieve is complete."
 	  (attributes
 	   (or (unless no-cache
 		 (and (w3m-cache-request-contents url)
-		      (w3m-attributes url)))
+		      (w3m-w3m-attributes url nil handler)))
 	       (w3m-w3m-dump-head-source url handler)))
 	(when temp-file
 	  (delete-file temp-file))
