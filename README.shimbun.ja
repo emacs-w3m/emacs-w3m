@@ -316,7 +316,7 @@ mew-shimbun.el は Mew version 2.1 以降を使って shimbun を楽しむ elisp で
 
 ;; mew-shimbun-folder-groups に Mew で購読する shimbun server 及び group
 ;; を設定します。
-;; それぞれ、("folder" (("server.group" . range) ...)) で range には
+;; それぞれ、("folder" ("server.group" . range) ...) で range には
 ;; all, last, 数字が指定できます。以下に例を示します。
 
 (setq mew-shimbun-folder-groups
