@@ -1169,13 +1169,12 @@ NOTE: This function must be called from the top directory."
   (with-temp-buffer
     (insert-file-contents w3mhack-load-file)
     (goto-char (point-min))
-    (when (search-forward (format "(provide '%s)"
-				  (file-name-sans-extension w3mhack-load-file))
-			  nil t)
-      (replace-match "\
+    (search-forward (format "(provide '%s)"
+			    (file-name-sans-extension w3mhack-load-file)))
+    (replace-match "\
 \(if (featurep 'w3m-autoloads) (error \"Already loaded\"))
 \(provide 'w3m-autoloads)")
-      (goto-char (point-min)))
+    (goto-char (point-min))
     (while (search-forward w3mhack-load-file nil t)
       (replace-match (file-name-nondirectory file)))
     (write-region (point-min) (point-max) file)))
