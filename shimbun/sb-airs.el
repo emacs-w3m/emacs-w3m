@@ -35,7 +35,8 @@
 
 (defconst shimbun-airs-group-path-alist
   '(("semi-gnus-ja" "semi-gnus/archive" "semi-gnus-ja@meadowy.org")
-    ("wl" "wl/archive" "wl@lists.airs.net")))
+    ("wl" "wl/archive" "wl@lists.airs.net")
+    ("wl-en" "wl-en/archive" "wl-en@lists.airs.net")))
 
 (defvar shimbun-airs-url "http://lists.airs.net/")
 (defvar shimbun-airs-groups (mapcar 'car shimbun-airs-group-path-alist))
