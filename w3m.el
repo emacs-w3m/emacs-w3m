@@ -1921,6 +1921,13 @@ When BUFFER is nil, all data will be inserted in the current buffer."
 		 (insert-buffer-substring w3m-cache-buffer beg end))
 	       t))))))
 
+;; FIXME: リモートで更新されていないか、チェックする機構が必要。
+(defun w3m-cache-available-p (url)
+  "Return non-nil, if URL's data is cached."
+  (w3m-cache-setup)
+  (let ((ident (intern url w3m-cache-hashtb)))
+    (and (memq ident w3m-cache-articles) ident)))
+
 
 ;;; Handle process:
 (defun w3m-exec-process (&rest args)
@@ -3696,6 +3703,7 @@ the request."
       (w3m-goto-url w3m-current-url 'reload nil nil w3m-current-referer))))
 
 ;; FIXME: 現在はどの文字コードとして解釈されているのか表示して欲しい
+;; FIXME: 一旦、このコマンドによって指定された文字コードの記録を解除する方法は?
 (defun w3m-redisplay-with-charset (&optional arg)
   "Redisplay current page with specified coding-system.
 If input is nil, use default coding-system on w3m."
