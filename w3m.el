@@ -729,7 +729,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (if (string= url "")
       (w3m-view-bookmark)
     (w3m-goto-url url))
-  (switch-to-buffer (current-buffer))
+  (display-buffer (current-buffer) nil 0)
   (run-hooks 'w3m-hook))
 
 
