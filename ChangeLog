@@ -1,3 +1,13 @@
+2001-07-11  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-rendering-region): Add charset option when call
+	w3m-form-parse-region().
+	
+	* w3m-form.el (w3m-form-parse-region): Add charset option.
+	If w3m-type is 'w3mmee or 'w3m-m17n, forms parse within a decoded
+	temporally buffer.
+	(w3m-form-parse-forms): New function.
+
 2001-07-11  Akihiro Arisawa  <ari@atesoft.advantest.co.jp>
 
 	* w3m-form.el (w3m-form-parse-region): Don't extract value from

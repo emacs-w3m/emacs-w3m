@@ -2299,7 +2299,7 @@ to nil."
     (set-buffer-multibyte t)
     (w3m-remove-comments)
     (when w3m-use-form
-      (w3m-form-parse-region (point-min) (point-max)))
+      (w3m-form-parse-region (point-min) (point-max) charset))
     (w3m-message "Rendering...")
     (let ((coding-system-for-read w3m-output-coding-system)
 	  (coding-system-for-write w3m-input-coding-system)
