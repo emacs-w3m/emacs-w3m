@@ -160,9 +160,10 @@
 	(call-process command nil t nil "-version")
 	(goto-char (point-min))
 	(cond
-	 ((looking-at "version w3m/0\\.2\\.1-inu") 'w3m)
-	 ((looking-at "version w3m/0\\.2\\.1\\+mee") 'w3mmee)
-	 ((looking-at "version w3m/0\\.2\\.1-m17n") 'w3m-m17n)))))
+	 ((looking-at "version w3m/0\\.2\\.[12]-inu") 'w3m)
+	 ((looking-at "version w3m/0\\.2\\.[12]\\+mee") 'w3mmee)
+	 ((looking-at "version w3m/0\\.2\\.[12]-m17n") 'w3m-m17n)
+	 ((looking-at "version w3m/0\\.2\\.2$") 'w3m)))))
   "*Type of w3m."
   :group 'w3m
   :type '(choice (const :tag "w3m" 'w3m)

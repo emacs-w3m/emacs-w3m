@@ -1,3 +1,7 @@
+2001-12-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-type): Follow the new official release of w3m.
+
 2001-11-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (top, w3m-about): Change the URL of w3m's official page.
