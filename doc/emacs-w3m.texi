@@ -3085,7 +3085,7 @@ and returning them as a structered list, @samp{headers}.
 @item
 getting web page source from the web site, for examples,
 @url{http://www.foobar.net/053003.html} when MUA requires to display an
-article of @samp{foobar} folder,
+article of @samp{foobar} folder, and
 
 @item
 removing unnecessary parts (e.x. advertisement, etc.) from the web page
@@ -3097,7 +3097,7 @@ source, if necessary.
 @code{shimbun-get-headers} does the second, @code{shimbun-article} does
 the third and @code{shimbun-make-contents} does the last.
 
-See source codes of @file{shimbun.el}.  You can see unfamiliar
+See source codes of @file{shimbun.el}.  You will see unfamiliar
 function like declarations that use @code{luna-define-generic} and
 @code{luna-define-method}.  It seems they are similar to functions
 declared with @code{defun}.  And a body is the former is just a
@@ -3115,10 +3115,10 @@ subject and other information@dots{} (which I mentioned above).  But
 in such a fixed frame, how can we change their in accordance with a
 number of format of web pages in the world?
 
-@file{shimbun.el} fixes only orders of methods called.  It leaves a
-actual function body to each shimbun module.  @file{shimbun.el} defines
-some actual function bodies as methods, however, you can override them
-in your new shimbun module, if you want.
+@file{shimbun.el} fixes only orders of methods called.  It leaves most
+of actual functions' bodies to each shimbun module.  @file{shimbun.el}
+defines some actual functions' bodies as methods, however, you can
+override them in your new shimbun module, if you want.
 
 Now you can understand that @code{luna-define-generic} provides you with
 only husks, @code{luna-define-method} defines a actual function body
@@ -3130,11 +3130,11 @@ itself in different meanings by each shimbun module, and
 @subsection Getting web page and header information
 
 Let's identify a target web page URL to gather subjects and other
-informations first.  If a web site uses a frame, a target is only one of
-web pages.  Second, lets create a body of @code{shimbun-index-url} using
-@code{luna-define-method} in your new shimbun module
-@file{sb-foobar.el}.  And make a user variable
-@code{shimbun-foobar-groups}, which I will explain later @footnote{at
+informations first.  If a web site uses a frame, a target is only one
+of the web pages.  Second, lets create a body of
+@code{shimbun-index-url} using @code{luna-define-method} in your new
+shimbun module @file{sb-foobar.el}.  And make a user variable
+@code{shimbun-foobar-groups}, which I will explain later @footnote{At
 least a group is necessary for each shimbun module even if you don't
 want it.}.
 
@@ -3149,7 +3149,7 @@ want it.}.
 
 After you create a body of @code{shimbun-index-url} method,
 @code{shimbun-headers} can get a web page source since @file{shimbun.el}
-has already a @code{shimbun-headers} method.  After
+already has a @code{shimbun-headers} method.  After
 @code{shimbun-headers} gets web page source, it calls
 @code{shimbun-get-headers} to gather headers information.
 As @file{shimbun.el} does not have a @code{shimbun-get-headers} method,
@@ -3158,7 +3158,7 @@ you have to create it in your @file{sb-foobar.el}.
 Now look carefully in the page source to create a
 @code{shimbun-get-headers} method in your @file{sb-foobar.el}.
 
-Create regular expression that can gather headers information.
+Create a regular expression that can gather headers information.
 Minimally necessary information are subject, date, author, url and
 message-id of an article.  They are used in MUA as Subject, Date, From,
 Xref and Message-ID.
@@ -3178,19 +3178,19 @@ use the following regexp;
 @end example
 
 @noindent
-You can get a value of Xref by @w{@code{(match-string 1)}}.  You can get
-a value of Date by modifying a value of @w{@code{(match-string 2)}}.
+You can get a value for Xref by @w{@code{(match-string 1)}}.  You can
+get a value for Date by modifying a value of @w{@code{(match-string 2)}}.
 Subject by @w{@code{(match-string 3)}} and From from
 @w{@code{(match-string 4)}}.  You can modify them further for showing
-additional information in MUA.  See @file{sb-muchy.el}, which makes its
-original subject from a web page source.
+additional information in MUA.  See @file{sb-muchy.el} which makes its
+original subject form from a web page source.
 
 If URL of an article is a relative path like above, use
 @code{w3m-expand-url} to expand it before putting information to header.
-If each article doesn't have a each unique URLs, you have to ask Emacs
-to remember body of an article when gathering headers information,
-For more detail see @file{sb-palmfan.el}, @file{sb-dennou.el} and
-@file{sb-tcup.el}.
+If each article doesn't have a each unique URLs (i.e. URL of headers and
+URL of articles are just same), you have to ask Emacs to remember body
+of an article when gathering headers information, For more detail see
+@file{sb-palmfan.el}, @file{sb-dennou.el} and @file{sb-tcup.el}.
 
 Sometimes you cannot identify Date information when gathering headers
 information only from a web page source.  If so, leave it, just set a
@@ -3202,7 +3202,7 @@ web site (e.x. "webmaster@@foobar.net").
 Be careful when you build a message-id.  Make sure it has uniqueness
 otherwise you may not be able to read some articles in the shimbun
 @footnote{And more, you may not be able to read actual email messages
-from someone when a message-id conflicts!}  Assure uniqueness by
+from someone when message-ids conflict!}.  Assure uniqueness by
 building message-id using date information, a domain of the page
 and/or a part of URL of the page.  And use @samp{@@} but @samp{:} as a
 part of message-id in order to display inline images.  See RFC2387 and
@@ -3273,17 +3273,16 @@ You can get the current group by using
 behavior in accordance with the current group.
 
 Each shimbun module needs at least one group.  There is not a special
-rule for naming groups, but if you don't find out good name, use
+rule for naming a group, but if you don't find out a good name, use
 @samp{news} or @samp{main}.
 
 @node Displaying an article
 @subsection Displaying an article
 
-@code{shimbun-article} method defined in @file{shimbun.el} gets Xref
-information from header information, get a web page source from URL of
-Xref, and call @code{shimbun-make-contents} in working buffer of the
-source.   Major job of @code{shimbun-make-contents} is to process such
-HTML.
+@code{shimbun-article} method defined in @file{shimbun.el} gets URL from
+Xref information of header, get a web page source from the URL, and call
+@code{shimbun-make-contents} in working buffer of the source.   Major
+job of @code{shimbun-make-contents} is to process such HTML.
 
 Imagine that a working buffer has a web page source of an article.
 @code{shimbun-make-contents} defined in @file{shimbun.el} insert (i)
@@ -3364,7 +3363,7 @@ fml mailing list server/manager.  See
 
 If you find out one of such mailing list managers' names in a web page
 source when you analize it in the step of @xref{Getting web page and
-header information}, you are very lucky @footnote{such mailing list
+header information}, you are very lucky @footnote{Such mailing list
 managers often show their own name in an archive list page}.
 @file{sb-mailman.el}, @file{sb-mhonarc.el}, @file{sb-fml.el} and 
 @file{sb-mailarc.el} have @code{shimbun-get-headers}, etc, already,
@@ -3382,8 +3381,8 @@ top of @file{sb-foobar.el};
 
 @noindent
 Those above mean that shimbun module shimbun-foobar inherits
-shimbun-mailman class and @footnote{i.e. shimbun-mailman class is a
-parent class.} methods defined in @file{sb-mailman.el} will be used in
+shimbun-mailman class @footnote{i.e. shimbun-mailman class is a parent
+class.} and methods defined in @file{sb-mailman.el} will be used in
 shimbun-foobar by default.  You can overwrite some of parent methods, if
 necessary.
 
@@ -3392,7 +3391,7 @@ can feel how easy to create a new shimbun module by using such parent
 modules.
 
 Note that there are some localized version of such mailing list
-manager, for examples, some of them shows Date information in Japanese.
+manager, for examples, some of them show Date information in Japanese.
 @file{sb-mailman.el}, @file{sb-mhonarc.el}, @file{sb-fml.el} and 
 @file{sb-mailarc.el} assumes that mailing list managers are not
 localied.
