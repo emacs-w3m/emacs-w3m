@@ -40,26 +40,63 @@
 (require 'w3m)
 
 (defcustom w3m-search-engine-alist
-  (` (("yahoo" "http://search.yahoo.com/bin/search?p=%s" nil)
-      ("yahoo-ja" "http://search.yahoo.co.jp/bin/search?p=%s" euc-japan)
+  (` (("yahoo"
+       "http://search.yahoo.com/bin/search?p=%s")
+      ("yahoo-ja"
+       "http://search.yahoo.co.jp/bin/search?p=%s"
+       euc-japan)
       (, (if (equal "Japanese" w3m-language)
-	     '("google" "http://www.google.com/search?q=%s&hl=ja" shift_jis)
-	   '("google" "http://www.google.com/search?q=%s" nil)))
-      ("google groups" "http://groups.google.com/groups?q=%s" nil)
-      ("google-ja" "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja" shift_jis)
-      ("goo-ja" "http://www.goo.ne.jp/default.asp?MT=%s" euc-japan)
-      ("excite-ja" "http://www.excite.co.jp/search.gw?target=combined&look=excite_jp&lang=jp&tsug=-1&csug=-1&search=%s" shift_jis)
-      ("lycos-ja" "http://www.lycos.co.jp/cgi-bin/pursuit?query=\"%s\"&cat=jp&encoding=shift-jis" shift_jis)
-      ("altavista" "http://altavista.com/sites/search/web?q=\"%s\"&kl=ja&search=Search"  nil)
-      ("rpmfind" "http://rpmfind.net/linux/rpm2html/search.php?query=%s" nil)
-      ("debian-pkg" "http://packages.debian.org/cgi-bin/search_contents.pl?directories=yes&arch=i386&version=unstable&case=insensitive&word=%s" nil)
-      ("debian-bts" "http://bugs.debian.org/cgi-bin/pkgreport.cgi?archive=yes&pkg=%s" nil)
-      ("freebsd-users-jp" "http://home.jp.FreeBSD.org/cgi-bin/namazu.cgi?key=\"%s\"&whence=0&max=50&format=long&sort=score&dbname=FreeBSD-users-jp" euc-japan)
-      ("iij-archie" "http://www.iij.ad.jp/cgi-bin/archieplexform?query=%s&type=Case+Insensitive+Substring+Match&order=host&server=archie1.iij.ad.jp&hits=95&nice=Nice")
-      ("waei" "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=1")
-      ("eiwa" "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=0")
-      ("kokugo" "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=2")
-      ("eiei" "http://www.dictionary.com/cgi-bin/dict.pl?term=%s&r=67")))
+	     '("google"
+	       "http://www.google.com/search?q=%s&hl=ja"
+	       shift_jis)
+	   '("google"
+	     "http://www.google.com/search?q=%s")))
+      ("google groups"
+       "http://groups.google.com/groups?q=%s")
+      ("google-ja"
+       "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja"
+       shift_jis)
+      ("goo-ja"
+       "http://www.goo.ne.jp/default.asp?MT=%s"
+       euc-japan)
+      ("excite-ja"
+       (, (concat "http://www.excite.co.jp/search.gw?target=combined"
+		  "&look=excite_jp&lang=jp&tsug=-1&csug=-1&search=%s"))
+       shift_jis)
+      ("lycos-ja"
+       (, (concat "http://www.lycos.co.jp/cgi-bin/pursuit?query=\"%s\""
+		  "&cat=jp&encoding=shift-jis"))
+       shift_jis)
+      ("altavista"
+       "http://altavista.com/sites/search/web?q=\"%s\"&kl=ja&search=Search")
+      ("rpmfind"
+       "http://rpmfind.net/linux/rpm2html/search.php?query=%s"
+       nil)
+      ("debian-pkg"
+       (, (concat "http://packages.debian.org/cgi-bin/search_contents.pl"
+		  "?directories=yes&arch=i386&version=unstable"
+		  "&case=insensitive&word=%s")))
+      ("debian-bts"
+       "http://bugs.debian.org/cgi-bin/pkgreport.cgi?archive=yes&pkg=%s")
+      ("freebsd-users-jp"
+       (, (concat "http://home.jp.FreeBSD.org/cgi-bin/namazu.cgi?key=\"%s\""
+		  "&whence=0&max=50&format=long&sort=score"
+		  "&dbname=FreeBSD-users-jp"))
+       euc-japan)
+      ("iij-archie"
+       (, (concat "http://www.iij.ad.jp/cgi-bin/archieplexform?query=%s"
+		  "&type=Case+Insensitive+Substring+Match&order=host"
+		  "&server=archie1.iij.ad.jp&hits=95&nice=Nice")))
+      ("waei"
+       "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=1"
+       shift_jis)
+      ("eiwa"
+       "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=0")
+      ("kokugo"
+       "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=2"
+       shift_jis)
+      ("eiei"
+       "http://www.dictionary.com/cgi-bin/dict.pl?term=%s&r=67")))
   "*An alist of search engines.
 Each element looks like (ENGINE ACTION CODING)
 ENGINE is a string, the name of the search engine.

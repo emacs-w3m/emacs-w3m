@@ -1,5 +1,10 @@
 2002-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-search.el (w3m-search-engine-alist): Specify coding-system
+	for the waei and kokugo entries.  Suggested by Hideyuki SHIRAI.
+
+2002-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-tabmenu.el (w3m-tab-menubar-update): Do nothing when there's
 	no menubar.
 
