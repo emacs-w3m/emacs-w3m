@@ -40,9 +40,10 @@
   (defvar w3m-profile-directory)
   (defvar w3m-use-favicon)
   (defvar w3m-work-buffer-name)
+  (autoload 'w3m-expand-url "w3m")
+  (autoload 'w3m-load-list "w3m")
   (autoload 'w3m-retrieve "w3m")
-  (autoload 'w3m-save-list "w3m")
-  (autoload 'w3m-load-list "w3m"))
+  (autoload 'w3m-save-list "w3m"))
 
 (defcustom w3m-favicon-size nil
   "*Size of favicon. This value is used as geometry argument for `convert'."
@@ -172,9 +173,8 @@ Each information is a list whose elements are:
      ((string-match "\\`https?://" url)
       (w3m-retrieve-favicon
        (or (symbol-value 'w3m-icon-data)
-	   (cons (concat url
-			 (if (string-match "/\\'" url) "" "/")
-			 w3m-favicon-name)
+	   (cons (w3m-expand-url (concat "/" w3m-favicon-name)
+				 url)
 		 'ico))
        w3m-current-buffer)))))
 

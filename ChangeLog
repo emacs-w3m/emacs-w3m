@@ -1,5 +1,9 @@
 2003-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-favicon.el: Autoload w3m for `w3m-expand-url' when compiling.
+	(w3m-setup-favicon): Fix the change of 2003-09-12 which was gone
+	to far.
+
 	* w3m.el (w3m-open-all-links-in-new-session): Improve the regexp.
 	(w3m-examine-command-line-args): Don't let it misunderstand the
 	next command as a url string; modify the arguments in
