@@ -21,6 +21,10 @@ emacs-w3m.info: emacs-w3m.texi
 
 emacs-w3m-ja.info: emacs-w3m-ja.texi
 
+%-ja.info: %-ja.texi
+	@rm -f $@;\
+	$(EMACSINFO) $<
+
 %.info: %.texi
 	@texi=$<;\
 	if test "$(MAKEINFO)" = "no" -o "$$texi" = "emacs-w3m-ja.texi"; then\
@@ -31,10 +35,6 @@ emacs-w3m-ja.info: emacs-w3m-ja.texi
 	  $(MAKEINFO) -o $@ $$texi;\
 	  echo "Formatting $$texi using $(MAKEINFO)...done";\
 	fi
-
-%-ja.info: %-ja.texi
-	@rm -f $@;\
-	$(EMACSINFO) $<
 
 install: $(INFO_DEPS)
 	$(SHELL) ../mkinstalldirs $(infodir)
@@ -60,7 +60,8 @@ install-ja: $(INFO_DEPS_JA)
 	$(MAKE) INFO_DEPS='$(INFO_DEPS_JA)' EMACS="$(EMACS)"\
 		infodir="$(infodir)" install
 
-clean: -rm -rf *~ *.info *.info-[0-9] *.info-[0-9][0-9]
+clean:
+	-rm -rf *~ *.info *.info-[0-9] *.info-[0-9][0-9]
 
 distclean: clean
 	-rm -f Makefile
