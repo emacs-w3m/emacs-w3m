@@ -71,12 +71,12 @@
   :type 'string)
 
 (defcustom w3m-antenna-make-summary-function
-  'w3m-antenna-make-summary-like-natsumikan
+  'w3m-antenna-make-summary-like-natsumican
   "Function to make summary of site information."
   :group 'w3m-antenna
   :type '(choice
 	  (const :tag "Simple style." w3m-antenna-make-summary)
-	  (const :tag "Natsumikan style." w3m-antenna-make-summary-like-natsumikan)
+	  (const :tag "Natsumican style." w3m-antenna-make-summary-like-natsumican)
 	  (function :tag "User function.")))
 
 (defcustom w3m-antenna-sort-changed-sites-function
@@ -242,7 +242,7 @@ whose elements are:
 	   ((w3m-antenna-site-size site) "Size")
 	   (t ""))))
 
-(defun w3m-antenna-make-summary-like-natsumikan (site)
+(defun w3m-antenna-make-summary-like-natsumican (site)
   (let ((t1 (w3m-antenna-site-last-modified site))
 	(t2 (w3m-antenna-site-size-detected site)))
     (format "<li>%20s&nbsp;&nbsp;(%s)&nbsp;&nbsp;<a href=\"%s\">%s</a>"
