@@ -1101,7 +1101,9 @@ otaku} $B$G$J$$IaDL$N?M$K$b(B emacs-w3m $B$r;H$C$F$b$i$($k$h$&$K!">/$79|$r@^$
 $B$,$_$s$J(B Emacs $B%.!<%/$J$N$G(B@dots{}
 
 $B%&%'%V1\Mw$N:G=i$N4pK\$H$J$k!V%j%s%/$r$?$I$kA`:n!W$K$O(B @kbd{mouse-2} $B$r(B
-$B;H$$$^$9!#(B
+$B;H$C$F2<$5$$!#(BEmacs 22.1 $B0J>e$G$O!"(B@kbd{mouse-1} $B$G(B
+$B$b(B @code{mouse-1-click-follows-link} $B$NCM$K1~$8$?!"%j%s%/$r$?$I$kA`:n$r(B
+$B9T$J$&$3$H$,$G$-$^$9!#(B
 
 @table @kbd
 @item mouse-2

@@ -1,3 +1,9 @@
+2005-02-24  Romain Francoise  <romain@orebokech.com>
+
+	* w3m.el (w3m-lynx-like-map): Bind [follow-link] so as to make
+	mouse-1 work in Emacs 22 like mouse-2.
+	(w3m-info-like-map): Ditto.
+
 2005-02-24  Felix E. Klee  <felix.klee@inka.de>
 
 	* shimbun/sb-ffii.el (shimbun-ffii-group-alist): Renamed.
