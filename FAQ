@@ -34,10 +34,12 @@
 
    The following w3m versions have been checked for emacs-w3m support:
 
-        w3m-0.2.1 (limited functionality)
-	w3m-0.2.1-inu-1.3
+	w3m-0.2.2
 	w3mmee-p19-6
 	w3m-0.2.3.1-m17n
+
+   w3m-0.2.1 is also supported but some features are unavailable.  So,
+   it is highly recommended to upgrade your using w3m.
 
 * Troubleshooting
 
@@ -46,10 +48,7 @@
    w3m-0.2.1 does not accept the argument `-dump_extra', so that
    emacs-w3m cannot detect redirected link.  Therefore, if you are using
    this version, there will be some links which cannot properly
-   traversed.  Dai SATO has released a highly recommended patch for w3m
-   (w3m-0.2.1-inu-patch) which is available from the following URL.
-
-       http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/src/index.en.html
+   traversed.  You should upgrade the using w3m.
 
 ** Q. Why can't I enter a password on pages which require authentication?
 
@@ -94,14 +93,7 @@
 
        To reduce network bandwidth usage, sometimes the http data stream
        is compressed (i.e, http://freshmeat.net).  To peruse these kinds
-       of pages, use either a w3m patched with Dai SATO's publically
-       available w3m-0.2.1-inu-patch, either w3mmee-p19-3 or
-       greater. You can find the patch in this page:
-
-           http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/src/index.en.html
-
-       If you use w3m-m17n, it is necessary to apply
-       patches/w3m-m17n-mnc.patch.
+       of pages, upgrade your using w3m.
 
    (4) Emacsen incompatibility.
 
@@ -145,14 +137,8 @@
    than nil.
 
    If you use this functionality, you will need to use a w3m that
-   understands the `-post' option.  Also, you will need to use either a
-   w3m patched with Dai SATO's publically available w3m-0.2.1-inu-patch,
-   or w3mmee-p19-6 or greater.  For the w3m-0.2.1-inu-patch, check the
-   following page.
-
-       http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/src/index.en.html
-
-   If you use w3m-m17n, apply the patches/w3m-m17n-mnc.patch.
+   understands the `-post' option.  This option is supported by
+   w3m-0.2.2.
 
 ** Q. Why do frames not render?
 
