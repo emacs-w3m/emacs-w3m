@@ -1,8 +1,17 @@
 PACKAGE   = w3m_el
-VERSION   = 0.2
 TARBALL   = $(PACKAGE)-$(VERSION).tar.gz
 DISTDIR   = $(PACKAGE)-$(VERSION)
 DISTFILES = COPYING ChangeLog $(wildcard *.el)
+BASEVER   = 0.2
+REVISION  =
+ifeq "$(REVISION)" ""
+VERSION = $(BASEVER)
+else
+VERSION = $(BASEVER).$(REVISION)
+endif
+
+default:
+	$(MAKE) REVISION=$(shell cvs status w3m.el|perl -ne '/Working revision:[ \t]*(?:\d+\.)+(\d+)/ and print $$1') dist
 
 dist: $(TARBALL)
 
