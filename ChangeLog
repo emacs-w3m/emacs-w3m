@@ -1,3 +1,8 @@
+2003-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-make-contents): New function to
+	get a correct date header.
+
 2003-03-16  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-wincefan.el (shimbun-make-contents): Remove some more
