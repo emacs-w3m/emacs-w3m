@@ -3062,20 +3062,25 @@ non-nil, cached data will not be used."
 (defun w3m-toggle-inline-images (&optional force no-cache)
   "Toggle the visibility of all images in the buffer.
 If FORCE is non-nil, displaying images is forced.  If NO-CACHE is
-non-nil, cached data will not be used."
+non-nil, cached data will not be used.
+
+This command can be invoked from not only an emacs-w3m buffer but also
+a summary buffer of Gnus, Mew, Wanderlust or VM in order to toggle the
+appearance of images in the article buffer."
   (interactive "P")
-  (let ((status w3m-display-inline-images))
-    (unless (w3m-display-graphic-p)
-      (error "Can't display images in this environment"))
-    (if force (setq w3m-display-inline-images nil
-		    status nil))
-    (unwind-protect
-	(w3m-toggle-inline-images-internal (if w3m-display-inline-images
-					       'on 'off)
-					   no-cache nil)
-      (unless (setq w3m-display-inline-images (not status))
-	(w3m-process-stop (current-buffer)))
-      (force-mode-line-update))))
+  (w3m-with-w3m-buffer
+   (let ((status w3m-display-inline-images))
+     (unless (w3m-display-graphic-p)
+       (error "Can't display images in this environment"))
+     (if force (setq w3m-display-inline-images nil
+		     status nil))
+     (unwind-protect
+	 (w3m-toggle-inline-images-internal (if w3m-display-inline-images
+						'on 'off)
+					    no-cache nil)
+       (unless (setq w3m-display-inline-images (not status))
+	 (w3m-process-stop (current-buffer)))
+       (force-mode-line-update)))))
 
 (defsubst w3m-resize-inline-image-internal (url rate)
   "Resize an inline image on the cursor position.

@@ -810,6 +810,74 @@ This is the XEmacs specific macro."
       '(if (interactive-p)
 	   (setq zmacs-region-stays t))))
 
+(defun w3m-find-w3m-buffer ()
+  "Return the buffer where the html contents rendered by emacs-w3m exist.
+
+If the `major-mode' of the current buffer is `gnus-summary-mode',
+`mew-summary-mode', `wl-summary-mode' or `vm-summary-mode', and the
+article buffer exists, return the article buffer.
+
+If the current buffer's `major-mode' is `w3m-mode' or there are
+contents rendered by emacs-w3m clearly (where perhaps the article
+buffer is selected), return the current buffer."
+  (if (eq major-mode 'w3m-mode)
+      (current-buffer)
+    (let ((fn (lambda nil
+		(let ((start (point-min))
+		      (end (point-max)))
+		  (or (text-property-any start end ;; Gnus
+					 'mm-inline-text-html-with-w3m t)
+		      (and (eq major-mode 'mew-message-mode) ;; Mew
+			   (text-property-any start end 'w3m t))
+		      (text-property-any start end ;; SEMI MUAs
+					 'text-rendered-by-mime-w3m t)
+		      (text-property-any start end ;; VM
+					 'text-rendered-by-emacs-w3m t)))))
+	  buffer)
+      (if (funcall fn)
+	  (current-buffer)
+	(setq buffer
+	      (cond ((eq major-mode 'gnus-summary-mode)
+		     (symbol-value 'gnus-article-buffer))
+		    ((memq major-mode '(mew-summary-mode mew-virtual-mode))
+		     (eval '(mew-buffer-message)))
+		    ((eq major-mode 'wl-summary-mode)
+		     (symbol-value 'wl-message-buffer))
+		    ((eq major-mode 'vm-summary-mode)
+		     (when (and (setq buffer (symbol-value 'vm-mail-buffer))
+				(funcall (if (stringp buffer)
+					     'get-buffer
+					   'buffer-name)
+					 buffer))
+		       (with-current-buffer buffer
+			 (symbol-value 'vm-presentation-buffer))))))
+	(when (and buffer
+		   (funcall (if (stringp buffer)
+				'get-buffer
+			      'buffer-name)
+			    buffer)
+		   (with-current-buffer buffer
+		     (funcall fn)))
+	  (get-buffer buffer))))))
+
+(defmacro w3m-with-w3m-buffer (&rest forms)
+  "Run FORMS in the buffer containing rendered html contents.
+
+If the `major-mode' of the current buffer is `gnus-summary-mode',
+`mew-summary-mode', `wl-summary-mode' or `vm-summary-mode', and the
+article buffer exists, select the article buffer, run FORMS there, and
+return to the summary buffer.
+
+If the current buffer's `major-mode' is `w3m-mode' or there are
+contents rendered by emacs-w3m clearly (where perhaps the article
+buffer is selected), simply run FORMS in the current buffer."
+  `(let ((buffer (w3m-find-w3m-buffer)))
+     (when buffer
+       (save-excursion
+	 (set-buffer buffer)
+	 (save-window-excursion
+	   ,@forms)))))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here

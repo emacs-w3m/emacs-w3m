@@ -1,3 +1,11 @@
+2003-12-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-toggle-inline-images): Wrap it with
+	`w3m-with-w3m-buffer'.
+
+	* w3m-util.el (w3m-find-w3m-buffer): New function.
+	(w3m-with-w3m-buffer): New macro.
+
 2003-12-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna-string): Renamed from
