@@ -44,7 +44,7 @@
      "</address>")
     ("hiki"
      "http://www.namaraii.com/hiki/?c=rss"
-     "webmaster@fdiary.net"
+     "webmaster@namaraii.com"
      nil
      "<div class=\"section\">"
      "<div class=\"sidebar\">")
