@@ -1,6 +1,6 @@
 ;;; w3m-om.el --- Mule 2 specific functions for w3m
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Katsumi Yamaoka    <yamaoka@jpl.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -166,20 +166,21 @@ variants in this alist.")
 
 ;; Functions to handle coding-system.
 (unless (fboundp 'coding-system-list)
-  (defun coding-system-list ()
-    "Return a list of all existing non-subsidiary coding systems."
-    (let ((codings nil))
-      (mapatoms
-       (function
-	(lambda (arg)
-	  (if (eq arg '*noconv*)
-	      nil
-	    (if (and (or (vectorp (get arg 'coding-system))
-			 (vectorp (get arg 'eol-type)))
-		     (null (get arg 'pre-write-conversion))
-		     (null (get arg 'post-read-conversion)))
-		(setq codings (cons arg codings)))))))
-      codings)))
+  (defalias 'coding-system-list
+    (function
+     (lambda (&optional base-only)
+       "Return a list of all existing non-subsidiary coding systems.
+The optional argument is ignored."
+       (let ((codings nil))
+	 (mapatoms
+	  (function
+	   (lambda (arg)
+	     (if (and (or (vectorp (get arg 'coding-system))
+			  (vectorp (get arg 'eol-type)))
+		      (null (get arg 'pre-write-conversion))
+		      (null (get arg 'post-read-conversion)))
+		 (setq codings (cons arg codings))))))
+	 codings)))))
 
 (defsubst w3m-find-coding-system (obj)
   "Return OBJ if it is a coding-system."
@@ -273,41 +274,43 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 (eval-and-compile
   (unless (fboundp 'read-passwd)
     ;; This code is imported from subr.el of Emacs-20.7 and slightly modified.
-    (defun read-passwd (prompt &optional confirm default)
-      "Read a password, prompting with PROMPT.  Echo `.' for each character
+    (defalias 'read-passwd
+      (function
+       (lambda (prompt &optional confirm default)
+	 "Read a password, prompting with PROMPT.  Echo `.' for each character
 typed.  End with RET, LFD, or ESC.  DEL or C-h rubs out.  C-u kills
 line.  Optional argument CONFIRM, if non-nil, then read it twice to
 make sure. Optional DEFAULT is a default password to use instead of
 empty input."
-      (if confirm
-	  (let (success)
-	    (while (not success)
-	      (let ((first (read-passwd prompt nil default))
-		    (second (read-passwd "Confirm password: " nil default)))
-		(if (equal first second)
-		    (setq success first)
-		  (message
-		   "Password not repeated accurately; please start over")
-		  (sit-for 1))))
-	    success)
-	(let ((pass nil)
-	      (c 0)
-	      (echo-keystrokes 0)
-	      (cursor-in-echo-area t)
-	      (inhibit-input-event-recording t))
-	  (while (progn (message "%s%s"
-				 prompt
-				 (make-string (length pass) ?.))
-			(setq c (read-char-exclusive))
-			(and (/= c ?\r) (/= c ?\n) (/= c ?\e)))
-	    (if (= c ?\C-u)
-		(setq pass "")
-	      (if (and (/= c ?\b) (/= c ?\177))
-		  (setq pass (concat pass (char-to-string c)))
-		(if (> (length pass) 0)
-		    (setq pass (substring pass 0 -1))))))
-	  (message nil)
-	  (or pass default ""))))))
+	 (if confirm
+	     (let (success)
+	       (while (not success)
+		 (let ((first (read-passwd prompt nil default))
+		       (second (read-passwd "Confirm password: " nil default)))
+		   (if (equal first second)
+		       (setq success first)
+		     (message
+		      "Password not repeated accurately; please start over")
+		     (sit-for 1))))
+	       success)
+	   (let ((pass nil)
+		 (c 0)
+		 (echo-keystrokes 0)
+		 (cursor-in-echo-area t)
+		 (inhibit-input-event-recording t))
+	     (while (progn (message "%s%s"
+				    prompt
+				    (make-string (length pass) ?.))
+			   (setq c (read-char-exclusive))
+			   (and (/= c ?\r) (/= c ?\n) (/= c ?\e)))
+	       (if (= c ?\C-u)
+		   (setq pass "")
+		 (if (and (/= c ?\b) (/= c ?\177))
+		     (setq pass (concat pass (char-to-string c)))
+		   (if (> (length pass) 0)
+		       (setq pass (substring pass 0 -1))))))
+	     (message nil)
+	     (or pass default ""))))))))
 
 (let (current-load-list)
   (eval
@@ -358,14 +361,15 @@ spaces and tab."
   (inline (move-to-column-strictly column t)))
 
 (unless (fboundp 'compose-mail)
-  (defun compose-mail (&optional to subject other-headers continue
-				 switch-function yank-action send-actions)
-    "Start composing a mail message to send."
-    (interactive
-     (list nil nil nil current-prefix-arg))
-    (let ((function (get mail-user-agent 'composefunc)))
-      (funcall function to subject other-headers continue
-	       switch-function yank-action send-actions))))
+  (defalias 'compose-mail
+    (function
+     (lambda (&optional to subject other-headers continue
+			switch-function yank-action send-actions)
+       "Start composing a mail message to send."
+       (interactive (list nil nil nil current-prefix-arg))
+       (let ((function (get mail-user-agent 'composefunc)))
+	 (funcall function to subject other-headers continue
+		  switch-function yank-action send-actions))))))
 
 ;;; Faces:
 (defvar w3m-om-use-overstrike-to-make-face-bold 'w3m
