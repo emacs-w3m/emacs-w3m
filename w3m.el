@@ -339,26 +339,41 @@ reason.  The value will be referred by the function `w3m-load-list'.")
 		 (custom-set-default symbol value)
 	       ;; XEmacs or Emacs 19 does not have `custom-set-default'.
 	       (set-default symbol value))
-	   (if (and (boundp 'w3m-mode-map);; Gnus bind this var for compiling.
-		    (boundp 'w3m-info-like-map)
-		    (boundp 'w3m-lynx-like-map))
-	       ;; It won't be bound at the first time.
-	       (setq w3m-mode-map
-		     (if (eq value 'info)
-			 w3m-info-like-map
-		       w3m-lynx-like-map)))
-	   (if (fboundp 'mime-w3m-setup)
-	       (condition-case nil
-		   (progn
-		     (setq mime-w3m-mode-map nil)
-		     (mime-w3m-setup))
-		 (error)))
-	   (if (fboundp 'mm-setup-w3m)
-	       (condition-case nil
-		   (let (mm-w3m-setup)
-		     (setq mm-w3m-mode-map nil)
-		     (mm-setup-w3m))
-		 (error))))))
+	   (if noninteractive
+	       nil
+	     (if (and;; Gnus binds `w3m-mode-map' for compiling.
+		  (boundp 'w3m-mode-map)
+		  (boundp 'w3m-info-like-map)
+		  (boundp 'w3m-lynx-like-map))
+		 ;; It won't be bound at the first time.
+		 (setq w3m-mode-map
+		       (if (eq value 'info)
+			   w3m-info-like-map
+			 w3m-lynx-like-map)))
+	     (let ((buffers (buffer-list)))
+	       (save-excursion
+		 (while buffers
+		   (set-buffer (car buffers))
+		   (if (eq major-mode 'w3m-mode)
+		       (condition-case nil
+			   (progn
+			     (use-local-map w3m-mode-map)
+			     (w3m-setup-toolbar)
+			     (w3m-setup-menu))
+			 (error)))
+		   (setq buffers (cdr buffers)))))
+	     (if (fboundp 'mime-w3m-setup)
+		 (condition-case nil
+		     (progn
+		       (setq mime-w3m-mode-map nil)
+		       (mime-w3m-setup))
+		   (error)))
+	     (if (fboundp 'mm-setup-w3m)
+		 (condition-case nil
+		     (let (mm-w3m-setup)
+		       (setq mm-w3m-mode-map nil)
+		       (mm-setup-w3m))
+		   (error)))))))
 
 (defcustom w3m-use-cygdrive (eq system-type 'windows-nt)
   "*If non-nil, use /cygdrive/ rule when expand-file-name."

@@ -128,6 +128,11 @@ registered in `w3m-mode-map' which will be substituted by TO-COMMAND
 in `mime-w3m-mode-map'.  If TO-COMMAND is nil, a MIME-View command key
 will not be substituted.")
 
+(defvar mime-w3m-mode-dont-bind-keys nil
+  ;; In Gnus, the default value for the `mm-w3m-mode-dont-bind-keys'
+  ;; is `(list [up] [right] [left] [down])'.
+  "List of keys which should not be bound for the emacs-w3m commands.")
+
 (defsubst mime-w3m-setup ()
   "Setup `mime-w3m' module."
   (require 'w3m)
@@ -141,6 +146,10 @@ will not be substituted.")
     (dolist (def mime-w3m-mode-command-alist)
       (condition-case nil
 	  (substitute-key-definition (car def) (cdr def) mime-w3m-mode-map)
+	(error)))
+    (dolist (key mime-w3m-mode-dont-bind-keys)
+      (condition-case nil
+	  (define-key mime-w3m-mode-map key nil)
 	(error)))
     ;; override widget.
     (if (featurep 'xemacs)
