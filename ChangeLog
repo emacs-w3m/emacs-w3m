@@ -9,6 +9,8 @@
 	of calling the above.
 	(shimbun-article): Retrieve the pages specified by
 	`shimbun-article-url' method.
+	(shimbun-make-html-contents): Call `shimbun-article-url' instead
+	of calling `shimbun-header-xref'.
 
 	* shimbun/sb-atmarkit.el: Fix its encoding to `iso-2022-7bit'.
 	(shimbun-atmarkit-groups): Removed.

@@ -869,7 +869,7 @@ HEADER is a header structure obtained via `shimbun-headers'.")
   (when (shimbun-clear-contents shimbun header)
     (goto-char (point-min))
     (insert "<html>\n<head>\n<base href=\""
-	    (shimbun-header-xref header)
+	    (shimbun-article-url shimbun header)
 	    "\">\n</head>\n<body>\n")
     (goto-char (point-max))
     (insert (shimbun-footer shimbun header t)
