@@ -1,5 +1,10 @@
 2001-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-setup-menu): Don't set up menu if it has already been
+	available.
+
+2001-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-setup-menu): Locate W3M menu in the forefront of the
 	menubar.
 	* w3m-xmas.el (w3m-setup-menu): Ditto.

@@ -1128,33 +1128,35 @@ If N is negative, last N items of LIST is returned."
     (defun w3m-setup-toolbar ()))
   (unless (fboundp 'w3m-setup-menu)
     (defun w3m-setup-menu ()
-      (let* ((w3m-menu '("W3M"
-			 ["Go to..." w3m-goto-url t]
-			 ["Reload This Page" w3m-reload-this-page t]
-			 ["Back to previous page" w3m-view-previous-page
-			  (w3m-history-previous-link-available-p)]
-			 ["Forward to Next Page" w3m-view-next-page
-			  (w3m-history-next-link-available-p)]
-			 ["Upward to Parent Page" w3m-view-parent-page
-			  (w3m-parent-page-available-p)]
-			 ["Download This URL" w3m-download-this-url t]
-			 ["Print Current URL" w3m-print-current-url t]
-			 ["View Bookmark" w3m-bookmark-view t]
-			 ["Copy Buffer" w3m-copy-buffer t]
-			 ))
-	     (map (make-sparse-keymap (car w3m-menu)))
-	     (items (mapcar 'car (cdr (lookup-key global-map [menu-bar])))))
-	(define-key w3m-mode-map [menu-bar] (make-sparse-keymap))
-	(define-key w3m-mode-map [menu-bar w3m] (cons (car w3m-menu) map))
-	(dolist (def (nreverse (cdr w3m-menu)))
-	  (define-key map (vector (aref def 1)) (cons (aref def 0)
-						      (aref def 1)))
-	  (put (aref def 1) 'menu-enable (aref def 2)))
-	;; (define-key map [separator-eval] '("--"))
+      (let ((items (mapcar 'car (cdr (lookup-key global-map [menu-bar])))))
 	(when items
 	  ;; Locate W3M menu in the forefront of the menubar.
 	  (set (make-local-variable 'menu-bar-final-items)
-	       (delq 'w3m items))))))
+	       (delq 'w3m items))))
+      (unless (keymapp (lookup-key w3m-mode-map [menu-bar w3m]))
+	(let* ((w3m-menu '("W3M"
+			   ["Go to..." w3m-goto-url t]
+			   ["Reload This Page" w3m-reload-this-page t]
+			   ["Back to previous page" w3m-view-previous-page
+			    (w3m-history-previous-link-available-p)]
+			   ["Forward to Next Page" w3m-view-next-page
+			    (w3m-history-next-link-available-p)]
+			   ["Upward to Parent Page" w3m-view-parent-page
+			    (w3m-parent-page-available-p)]
+			   ["Download This URL" w3m-download-this-url t]
+			   ["Print Current URL" w3m-print-current-url t]
+			   ["View Bookmark" w3m-bookmark-view t]
+			   ["Copy Buffer" w3m-copy-buffer t]
+			   ))
+	       (map (make-sparse-keymap (car w3m-menu))))
+	  (define-key w3m-mode-map [menu-bar] (make-sparse-keymap))
+	  (define-key w3m-mode-map [menu-bar w3m] (cons (car w3m-menu) map))
+	  (dolist (def (nreverse (cdr w3m-menu)))
+	    (define-key map (vector (aref def 1)) (cons (aref def 0)
+							(aref def 1)))
+	    (put (aref def 1) 'menu-enable (aref def 2)))
+	  ;; (define-key map [separator-eval] '("--"))
+	  ))))
   (unless (fboundp 'w3m-update-toolbar)
     (defun w3m-update-toolbar ())))
 
