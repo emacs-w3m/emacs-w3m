@@ -274,9 +274,15 @@ Buffer string between BEG and END are replaced with IMAGE."
   (let (extent glyphs)
     (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
       (push (extent-end-glyph extent) glyphs))
-    (set-extent-properties (make-extent beg end)
-			   (list 'invisible t 'w3m-xmas-icon t
-				 'end-glyph image))
+    (push image glyphs)
+    ;; Image on the right is displayed.
+    (when (extent-at end nil 'invisible nil 'at)
+      (setq end (next-single-property-change end 'invisible))
+      (while (setq extent (extent-at end nil 'w3m-xmas-icon extent 'at))
+	(push (extent-end-glyph extent) glyphs)
+	(set-extent-property extent 'end-glyph nil)))
+    (set-extent-properties (make-extent beg end) (list 'w3m-xmas-icon t
+						       'invisible t))
     (while glyphs
       (set-extent-properties (make-extent end end)
 			     (list 'w3m-xmas-icon t

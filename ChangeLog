@@ -1,3 +1,8 @@
+2001-11-28  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-xmas.el (w3m-insert-image): Rewrite.
+	(if displayed images exist on the right side, keep them and display again)
+
 2001-11-27  Yoichi NAKAYAMA  <yoichi@eken.phys.nagoya-u.ac.jp>
 
 	* TIPS: New file.
