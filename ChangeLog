@@ -1,3 +1,10 @@
+2003-11-04  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-meta-content-type-charset-regexp)
+	(w3m-meta-charset-content-type-regexp)
+	(w3m-meta-refresh-content-regexp)
+	(w3m-meta-content-refresh-regexp): Allow `\n' as whitespaces.
+
 2003-10-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-backward): Return the current history
