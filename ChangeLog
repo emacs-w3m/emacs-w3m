@@ -1,3 +1,20 @@
+2001-03-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Start implementation of code to process <form> tag.
+	(w3m-form-face): New face.
+	(w3m-current-forms): New internal variable.
+	(w3m-form-string-regexp): New internal constant.
+	(w3m-form-new, w3m-form-p, w3m-form-symbol, w3m-form-method,
+	w3m-form-action, w3m-form-put, w3m-form-get, w3m-url-encode,
+	w3m-form-make-get-string, w3m-form-parse-region,
+	w3m-fontify-forms, w3m-form-replace, w3m-form-input,
+	w3m-form-submit, w3m-form-real-reset, w3m-form-reset,
+	w3m-fontify-bold, w3m-fontify-underline, w3m-fontify-images):
+	New function.
+	(w3m-fontify): Use new functions.
+	(w3m-mode-map): Add scroll-right and scroll-left.
+	(w3m-mode): Set t to `truncate-line'.
+
 2001-03-04  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* w3m.el: Patch from Keisuke Nishida <kxn30@po.cwru.edu>.

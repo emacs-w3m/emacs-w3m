@@ -219,6 +219,13 @@
   "*Face to fontify image alternate strings."
   :group 'w3m-face)
 
+(defface w3m-form-face
+  '((((class color) (background light)) (:foreground "cyan" :underline t))
+    (((class color) (background dark)) (:foreground "red" :underline t))
+    (t (:underline t)))
+  "*Face to fontify forms."
+  :group 'w3m-face)
+
 (defcustom w3m-hook nil
   "*Hook run before w3m called."
   :group 'w3m
@@ -335,6 +342,7 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
+(defvar w3m-current-forms nil "Forms of this buffer.")
 (defvar w3m-url-history nil "History of URL.")
 
 (defvar w3m-verbose t "Flag variable to control messages.")
@@ -375,6 +383,10 @@ for a charset indication")
 	    "[ \t]+http-equiv=\"?Content-type\"?>"))
   "Regexp used in parsing `<META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">
 for a charset indication")
+
+(defconst w3m-form-string-regexp 
+  "\\(\"\\(\\([^\"\\\\]+\\|\\\\.\\)+\\)\"\\|[^\"<> \t\r\f\n]*\\)"
+  "Regexp used in parsing to detect string.")
 
 
 (defun w3m-message (&rest args)
@@ -431,7 +443,197 @@ If N is negative, last N items of LIST is returned."
     (setq w3m-arrived-anchor-list
 	  (cons url (delete url w3m-arrived-anchor-list)))))
 
-;; HTML character entity handling
+
+;;; Form:
+(defun w3m-form-new (method action &optional baseurl)
+  "Return new form object."
+  (vector (make-symbol "w3m-form-object")
+	  (if (stringp method)
+	      (intern method)
+	    method)
+	  (if baseurl
+	      (w3m-expand-url action baseurl)
+	    action)))
+
+(defsubst w3m-form-p (obj)
+  "Return t if OBJ is a form object."
+  (and (vectorp obj)
+       (symbolp (aref 0 obj))
+       (string= (symbol-name (aref 0 obj) "w3m-form-object"))))
+
+(defmacro w3m-form-symbol (form)
+  `(aref ,form 0))
+(defmacro w3m-form-method (form)
+  `(aref ,form 1))
+(defmacro w3m-form-action (form)
+  `(aref ,form 2))
+(defmacro w3m-form-put (form name value)
+  `(put (w3m-form-symbol ,form) (intern ,name) ,value))
+(defmacro w3m-form-get (form name)
+  `(get (w3m-form-symbol ,form) (intern ,name)))
+
+;; FIXME: 与えられた文字列を URL として適当な形式になるように変換する
+;;        関数。きちんと規格を調べて実装する必要がある。
+(defun w3m-url-encode (str) str)
+
+(defun w3m-form-make-get-string (form)
+  (when (eq 'get (w3m-form-method form))
+    (let ((plist (symbol-plist (w3m-form-symbol form)))
+	  (buf))
+      (while plist
+	(setq buf (cons (format
+			 "%s=%s"
+			 (w3m-url-encode (car plist))
+			 (w3m-url-encode (nth 1 plist)))
+			buf)
+	      plist (nthcdr 2 plist)))
+      (if buf
+	  (format "%s?%s"
+		  (w3m-form-action form)
+		  (mapconcat #'identity buf "&"))
+	(w3m-form-action form)))))
+
+(defun w3m-form-parse-region (start end)
+  "Parse HTML data in this buffer and return form objects."
+  (save-restriction
+    (narrow-to-region start end)
+    (let (forms)
+      (goto-char (point-min))
+      (while (re-search-forward "<form[ \t\r\f\n]+" nil t)
+	(let (action method)
+	  (while (cond
+		  ((looking-at (eval-when-compile
+				 (concat "action=" w3m-form-string-regexp)))
+		   (setq action (downcase (or (match-string 2) (match-string 1)))))
+		  ((looking-at (eval-when-compile
+				 (concat "method=" w3m-form-string-regexp)))
+		   (setq method (downcase (or (match-string 2) (match-string 1)))))
+		  ((looking-at (eval-when-compile
+				 (concat "[A-z]*=" w3m-form-string-regexp)))))
+	    (goto-char (match-end 0))
+	    (skip-chars-forward " \t\r\f\n"))
+	  (skip-chars-forward "^>")
+	  (setq forms
+		(cons (w3m-form-new (or method "get")
+				    (or action w3m-current-url)
+				    w3m-current-url)
+		      forms))))
+      (set (make-local-variable 'w3m-current-forms) (nreverse forms)))))
+
+(defun w3m-fontify-forms ()
+  "Process half-dumped data in this buffer and fontify <input_alt> tags."
+  (goto-char (point-min))
+  (while (search-forward "<input_alt " nil t)
+    (let (start fid type name width maxlength value)
+      (setq start (match-beginning 0))
+      (goto-char (match-end 0))
+      (while (cond
+	      ((looking-at (eval-when-compile
+			     (concat "fid=" w3m-form-string-regexp)))
+	       (setq fid (string-to-number (or (match-string 2) (match-string 1)))))
+	      ((looking-at (eval-when-compile
+			     (concat "type=" w3m-form-string-regexp)))
+	       (setq type (downcase (or (match-string 2) (match-string 1)))))
+	      ((looking-at (eval-when-compile
+			     (concat "name=" w3m-form-string-regexp)))
+	       (setq name (downcase (or (match-string 2) (match-string 1)))))
+	      ((looking-at (eval-when-compile
+			     (concat "width=" w3m-form-string-regexp)))
+	       (setq width (string-to-number (or (match-string 2) (match-string 1)))))
+	      ((looking-at (eval-when-compile
+			     (concat "maxlength=" w3m-form-string-regexp)))
+	       (setq maxlength (string-to-number (or (match-string 2) (match-string 1)))))
+	      ((looking-at (eval-when-compile
+			     (concat "value=" w3m-form-string-regexp)))
+	       (setq value (downcase (or (match-string 2) (match-string 1)))))
+	      ((looking-at (eval-when-compile
+			     (concat "[A-z]*=" w3m-form-string-regexp)))))
+	(goto-char (match-end 0))
+	(skip-chars-forward " \t\r\f\n"))
+      (search-forward "</input_alt>")
+      (goto-char (match-end 0))
+      (let ((form (nth fid w3m-current-forms)))
+	(when form
+	  (cond
+	   ((string= type "submit")
+	    (put-text-property start (point)
+			       'w3m-action
+			       `(w3m-form-submit ,form)))
+	   ((string= type "reset")
+	    (put-text-property start (point)
+			       'w3m-action
+			       `(w3m-form-reset ,form)))
+	   (t ;; input button.
+	    (put-text-property start (point)
+			       'w3m-action
+			       `(w3m-form-input ,form
+						,name
+						,type
+						,width
+						,maxlength
+						,value))
+	    (w3m-form-put form name value)))
+	  (put-text-property start (point) 'face 'w3m-form-face))
+	))))
+
+(defun w3m-form-replace (string)
+  (let* ((start (text-property-any
+		 (point-min)
+		 (point-max)
+		 'w3m-action
+		 (get-text-property (point) 'w3m-action)))
+	 (width (string-width
+		 (buffer-substring
+		  start
+		  (next-single-property-change start 'w3m-action))))
+	 (prop (text-properties-at start))
+	 (buffer-read-only))
+    (goto-char start)
+    (insert (setq string (truncate-string string width))
+	    (make-string (- width (string-width string)) ?\ ))
+    (delete-region (point)
+		   (next-single-property-change (point) 'w3m-action))
+    (add-text-properties start (point) prop)
+    (point)))
+
+;;; FIXME: 本当は type の値に合わせて、適切な値のみを受け付けるように
+;;; チェックしたり、入力方法を変えたりするような実装が必要。
+(defun w3m-form-input (form name type width maxlength value)
+  (save-excursion
+    (let ((input (read-from-minibuffer
+		  (concat (upcase type) ":")
+		  (w3m-form-get form name))))
+      (w3m-form-put form name input)
+      (w3m-form-replace input))))
+
+(defun w3m-form-submit (form)
+  (let ((url (w3m-form-make-get-string form)))
+    (if url
+	(w3m-goto-url url)
+      (w3m-message "This form's method has not been supported: %s"
+		   (prin1-to-string (w3m-form-method form))))))
+
+(defsubst w3m-form-real-reset (form sexp)
+  (and (eq 'w3m-form-input (car sexp))
+       (eq form (nth 1 sexp))
+       (w3m-form-put form (nth 2 sexp) (nth 6 sexp))
+       (w3m-form-replace (nth 6 sexp))))
+
+(defun w3m-form-reset (form)
+  (save-excursion
+    (let (pos prop)
+      (when (setq prop (get-text-property
+			(goto-char (point-min))
+			'w3m-action))
+	(goto-char (or (w3m-form-real-reset form prop)
+		       (next-single-property-change pos 'w3m-action))))
+      (while (setq pos (next-single-property-change (point) 'w3m-action))
+	(goto-char pos)
+	(goto-char (or (w3m-form-real-reset form (get-text-property pos 'w3m-action))
+		       (next-single-property-change pos 'w3m-action)))))))
+
+
+;;; HTML character entity handling:
 
 (defun w3m-entity-db-setup ()
   ;; initialize entity database (obarray)
@@ -448,6 +650,80 @@ If N is negative, last N items of LIST is returned."
   (or (symbol-value (intern-soft (match-string 1) w3m-entity-db))
       ""))
   
+
+(defun w3m-fontify-bold ()
+  "Fontify bold characters in this buffer which contains half-dumped data."
+  (goto-char (point-min))
+  (while (search-forward "<b>" nil t)
+    (let ((start (match-beginning 0)))
+      (delete-region start (match-end 0))
+      (when (search-forward "</b>" nil t)
+	(delete-region (match-beginning 0) (match-end 0))
+	(put-text-property start (match-beginning 0) 'face 'bold)))))
+
+(defun w3m-fontify-underline ()
+  "Fontify underline characters in this buffer which contains half-dumped data."
+  (goto-char (point-min))
+  (while (search-forward "<u>" nil t)
+    (let ((start (match-beginning 0)))
+      (delete-region start (match-end 0))
+      (when (search-forward "</u>" nil t)
+	(delete-region (match-beginning 0) (match-end 0))
+	(put-text-property start (match-beginning 0) 'face 'underline)))))
+
+(defun w3m-fontify-anchors ()
+  "Fontify anchor tags in this buffer which contains half-dumped data."
+  ;; Delete excessive `hseq' elements of anchor tags.
+  (goto-char (point-min))
+  (while (re-search-forward "<a\\( hseq=\"[-0-9]+\"\\)" nil t)
+    (delete-region (match-beginning 1) (match-end 1)))
+  ;; Re-ordering anchor elements.
+  (goto-char (point-min))
+  (let (href)
+    (while (re-search-forward "<a\\([ \t\n]\\)[^>]+[ \t\n]href=\\(\"[^\"]*\"\\)" nil t)
+      (setq href (buffer-substring (match-beginning 2) (match-end 2)))
+      (delete-region (match-beginning 2) (match-end 2))
+      (goto-char (match-beginning 1))
+      (insert " href=" href)))
+  ;; Fontify anchor tags.
+  (goto-char (point-min))
+  (while (re-search-forward
+	  "<a\\([ \t\n]+href=\"\\([^\"]*\\)\"\\)?\\([ \t\n]+name=\"\\([^\"]*\\)\"\\)?[^>]*>"
+	  nil t)
+    (let ((url (match-string 2))
+	  (tag (match-string 4))
+	  (start (match-beginning 0))
+	  (end))
+      (delete-region start (match-end 0))
+      (cond (url
+	     (when (search-forward "</a>" nil t)
+	       (delete-region (setq end (match-beginning 0)) (match-end 0))
+	       (if (member (w3m-expand-url url w3m-current-url)
+			   w3m-arrived-anchor-list)
+		   (put-text-property start end 'face 'w3m-arrived-anchor-face)
+		 (put-text-property start end 'face 'w3m-anchor-face))
+	       (put-text-property start end 'w3m-href-anchor url)
+	       (put-text-property start end 'mouse-face 'highlight))
+	     (when tag
+	       (put-text-property start end 'w3m-name-anchor tag)))
+	    (tag
+	     (when (re-search-forward "<\\|\n" nil t)
+	       (setq end (match-beginning 0))
+	       (put-text-property start end 'w3m-name-anchor tag)))))))
+
+(defun w3m-fontify-images ()
+  "Fontify image alternate strings in this buffer which contains half-dumped data."
+  (goto-char (point-min))
+  (while (re-search-forward "<img_alt src=\"\\([^\"]*\\)\">" nil t)
+    (let ((src (match-string 1))
+	  (start (match-beginning 0))
+	  (end))
+      (delete-region start (match-end 0))
+      (when (search-forward "</img_alt>" nil t)
+	(delete-region (setq end (match-beginning 0)) (match-end 0))
+	(put-text-property start end 'face 'w3m-image-face)
+	(put-text-property start end 'w3m-image src)
+	(put-text-property start end 'mouse-face 'highlight)))))
 
 (defun w3m-fontify ()
   "Fontify this buffer."
@@ -467,63 +743,11 @@ If N is negative, last N items of LIST is returned."
 	   (setq start (match-beginning 0))
 	   (search-forward "</title>" nil t)
 	   (delete-region start (match-end 0))))
-    ;; Fontify bold characters.
-    (goto-char (point-min))
-    (while (search-forward "<b>" nil t)
-      (let ((start (match-beginning 0)))
-	(delete-region start (match-end 0))
-	(when (search-forward "</b>" nil t)
-	  (delete-region (match-beginning 0) (match-end 0))
-	  (put-text-property start (match-beginning 0) 'face 'bold))))
-    ;; Delete excessive `hseq' elements of anchor tags.
-    (goto-char (point-min))
-    (while (re-search-forward "<a\\( hseq=\"[-0-9]+\"\\)" nil t)
-      (delete-region (match-beginning 1) (match-end 1)))
-    ;; Re-ordering anchor elements.
-    (goto-char (point-min))
-    (let (href)
-      (while (re-search-forward "<a\\([ \t\n]\\)[^>]+[ \t\n]href=\\(\"[^\"]*\"\\)" nil t)
-	(setq href (buffer-substring (match-beginning 2) (match-end 2)))
-	(delete-region (match-beginning 2) (match-end 2))
-	(goto-char (match-beginning 1))
-	(insert " href=" href)))
-    ;; Fontify anchor tags.
-    (goto-char (point-min))
-    (while (re-search-forward
-	    "<a\\([ \t\n]+href=\"\\([^\"]*\\)\"\\)?\\([ \t\n]+name=\"\\([^\"]*\\)\"\\)?[^>]*>"
-	    nil t)
-      (let ((url (match-string 2))
-	    (tag (match-string 4))
-	    (start (match-beginning 0))
-	    (end))
-	(delete-region start (match-end 0))
-	(cond (url
-	       (when (search-forward "</a>" nil t)
-		 (delete-region (setq end (match-beginning 0)) (match-end 0))
-		 (if (member (w3m-expand-url url w3m-current-url)
-			     w3m-arrived-anchor-list)
-		     (put-text-property start end 'face 'w3m-arrived-anchor-face)
-		   (put-text-property start end 'face 'w3m-anchor-face))
-		 (put-text-property start end 'w3m-href-anchor url)
-		 (put-text-property start end 'mouse-face 'highlight))
-	       (when tag
-		 (put-text-property start end 'w3m-name-anchor tag)))
-	      (tag
-	       (when (re-search-forward "<\\|\n" nil t)
-		 (setq end (match-beginning 0))
-		 (put-text-property start end 'w3m-name-anchor tag))))))
-    ;; Fontify image alternate strings.
-    (goto-char (point-min))
-    (while (re-search-forward "<img_alt src=\"\\([^\"]*\\)\">" nil t)
-      (let ((src (match-string 1))
-	    (start (match-beginning 0))
-	    (end))
-	(delete-region start (match-end 0))
-	(when (search-forward "</img_alt>" nil t)
-	  (delete-region (setq end (match-beginning 0)) (match-end 0))
-	  (put-text-property start end 'face 'w3m-image-face)
-	  (put-text-property start end 'w3m-image src)
-	  (put-text-property start end 'mouse-face 'highlight))))
+    (w3m-fontify-bold)
+    (w3m-fontify-underline)
+    (w3m-fontify-anchors)
+    (w3m-fontify-forms)
+    (w3m-fontify-images)
     ;; Remove other markups.
     (goto-char (point-min))
     (while (re-search-forward "</?[A-z][^>]*>" nil t)
@@ -1083,6 +1307,7 @@ are retrieved."
 	(default-process-coding-system
 	  (cons w3m-output-coding-system w3m-input-coding-system)))
     (w3m-message "Rendering...")
+    (w3m-form-parse-region start end)
     (apply 'call-process-region
 	   start end w3m-command t t nil
 	   (mapcar (lambda (x)
@@ -1208,8 +1433,11 @@ this function returns t.  Otherwise, returns nil."
 (defun w3m-view-this-url (&optional arg)
   "*View the URL of the link under point."
   (interactive "P")
-  (let ((url (get-text-property (point) 'w3m-href-anchor)))
-    (if url (w3m-goto-url (w3m-expand-url url w3m-current-url) arg))))
+  (let ((url (get-text-property (point) 'w3m-href-anchor))
+	(act (get-text-property (point) 'w3m-action)))
+    (cond
+     (url (w3m-goto-url (w3m-expand-url url w3m-current-url) arg))
+     (act (eval act)))))
 
 (defun w3m-mouse-view-this-url (event)
   (interactive "e")
@@ -1418,6 +1646,8 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "l" 'forward-char)
     (define-key map "J" (lambda () (interactive) (scroll-up 1)))
     (define-key map "K" (lambda () (interactive) (scroll-up -1)))
+    (define-key map "<" 'scroll-right)
+    (define-key map ">" 'scroll-left)
     (define-key map "G" 'goto-line)
     (define-key map "\C-?" 'scroll-down)
     (define-key map "\t" 'w3m-next-anchor)
@@ -1511,6 +1741,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (setq major-mode 'w3m-mode
 	mode-name "w3m")
   (use-local-map w3m-mode-map)
+  (setq truncate-lines t)
   (run-hooks 'w3m-mode-hook))
 
 (defun w3m-mailto-url (url)
