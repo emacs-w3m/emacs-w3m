@@ -1,3 +1,8 @@
+2003-07-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-get-headers): Convert CRLF to LF.
+	(shimbun-make-contents): Convert CRLF to LF instead of removing CR.
+
 2003-07-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-e21.el (w3m-euc-japan-encoder): Fixed comment.
