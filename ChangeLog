@@ -1,3 +1,8 @@
+2002-08-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-mhonarc.el (shimbun-make-contents): Encode the value
+	of X-From-R13 before it is refered as the from address.
+
 2002-08-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-lynx-like-map): Change the key `C-c w' to `C-c M-w'
