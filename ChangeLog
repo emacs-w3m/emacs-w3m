@@ -1,5 +1,7 @@
 2001-10-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-security-memo.el: New file.
+
 	* w3m.el (w3m-use-mule-ucs): Simplified.
 	(w3m-ccl-write-repeat): Fixed.
 	(w3m-euc-japan-decoder): Ditto.
