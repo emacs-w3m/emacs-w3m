@@ -1,3 +1,8 @@
+2003-07-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* doc/ptexinfmt.el (texinfo-discard-command-and-arg): New function
+	for old Emacsen.
+
 2003-07-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-decoder-alist): Look for the newest inflate command.

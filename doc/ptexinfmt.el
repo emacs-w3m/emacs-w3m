@@ -626,6 +626,14 @@ otherwise, insert URL-TITLE followed by URL in parentheses."
     (goto-char (+ (point) (cadr (insert-file-contents filename))))
     (message "Reading included file: %s...done" filename)))
 
+;; @hyphenation command discards an argument within braces
+(put 'hyphenation 'texinfo-format 'texinfo-discard-command-and-arg)
+(ptexinfmt-defun-if-void texinfo-discard-command-and-arg ()
+  "Discard both @-command and its argument in braces."
+  (goto-char texinfo-command-end)
+  (forward-list 1)
+  (setq texinfo-command-end (point))
+  (delete-region texinfo-command-start texinfo-command-end))
 
 
 ;;; @multitable ... @end multitable
