@@ -295,7 +295,7 @@ width using expression (+ (window-width) VALUE)."
     (error (setq w3m-use-mule-ucs nil))))
 
 (defcustom w3m-use-ange-ftp nil
-  "*Non-nil means that `ange-ftp' of `efs' is used to access FTP servers."
+  "*Non-nil means that `ange-ftp' or `efs' is used to access FTP servers."
   :group 'w3m
   :type 'boolean)
 
