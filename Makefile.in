@@ -94,7 +94,7 @@ tarball: $(DOCS) $(DISTS)
 	cp -p shimbun/*.el $(DISTDIR)/shimbun
 	find $(DISTDIR) -type d | xargs chmod 755
 	find $(DISTDIR) -type f | xargs chmod 644
-	chmod 755 $(DISTDIR)/install-sh
+	chmod 755 $(DISTDIR)/configure $(DISTDIR)/install-sh
 	tar -cf `basename $(TARBALL) .gz` $(DISTDIR)
 	gzip -9 `basename $(TARBALL) .gz`
 	rm -rf $(DISTDIR)
