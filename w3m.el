@@ -4281,17 +4281,22 @@ currently viewing \"http://foo/bar/\"."
 COUNT times in the history.  If COUNT is a negative integer, moving
 forward is performed.  Otherwise, COUNT is treated as 1 by default."
   (interactive "p")
-  (let ((url (if (and (integerp count)
-		      (not (zerop count)))
-		 (car (w3m-history-backward count))
-	       (w3m-history-backward)))
+  (let ((hist ;; Cons of a new history element and position pointers.
+	 (if (and (integerp count)
+		  (not (zerop count)))
+	     (w3m-history-backward count)
+	   (w3m-history-backward)))
+	;; Inhibit sprouting a new history.
+	(w3m-history-reuse-history-elements t)
 	(w3m-use-refresh nil))
-    (when url
-      (w3m-goto-url url nil nil
-		    (w3m-history-plist-get :post-data nil nil t)
-		    (w3m-history-plist-get :referer nil nil t))
-      ;; restore last position
-      (w3m-history-restore-position url))))
+    (when hist
+      (w3m-goto-url (caar hist) nil nil
+		    (w3m-history-plist-get :post-data)
+		    (w3m-history-plist-get :referer))
+      ;; Set the position pointers in the history.
+      (setcar w3m-history (cdr hist))
+      ;; Restore last position.
+      (w3m-history-restore-position))))
 
 (defun w3m-view-next-page (&optional count)
   "View next page.  If COUNT is a positive integer, move forward COUNT
@@ -6008,17 +6013,17 @@ Cannot run two w3m processes simultaneously \
 		    (name))
 	(when w3m-current-forms
 	  ;; Store the current forms in the history structure.
-	  (w3m-history-plist-put :forms w3m-current-forms nil nil t))
+	  (w3m-history-plist-put :forms w3m-current-forms))
 	;; Set current forms using the history structure.
 	(when (setq w3m-current-forms
 		    (when (and (null post-data)	; If post, always reload.
 			       (w3m-cache-available-p url))
-		      (w3m-history-plist-get :forms url nil t)))
+		      (w3m-history-plist-get :forms)))
 	  ;; Mark that the form is from history structure.
 	  (setq w3m-current-forms (cons t w3m-current-forms)))
 	(when (and post-data (w3m-history-assoc url))
 	  ;; Remove processing url's forms from the history structure.
-	  (w3m-history-remove-properties '(:forms) url nil t))
+	  (w3m-history-remove-properties '(:forms nil)))
 	;; local directory URL check
 	(when (and (w3m-url-local-p url)
 		   (file-directory-p (w3m-url-to-file-name url))
@@ -6043,7 +6048,9 @@ Cannot run two w3m processes simultaneously \
 			      w3m-default-content-type)
 		      w3m-content-type-alist nil t)))
 	      (setq ct (if (string= "" s) w3m-default-content-type s))))
-	  (let ((w3m-current-buffer (current-buffer)))
+	  (let ((w3m-current-buffer (current-buffer))
+		(history-position (get-text-property (point)
+						     'history-position)))
 	    (w3m-process-do
 	     (action
 	      (if (and (not reload)
@@ -6068,11 +6075,21 @@ Cannot run two w3m processes simultaneously \
 		 (w3m-history-push w3m-current-url)
 		 (w3m-refontify-anchor))
 		((not (eq action 'cursor-moved))
-		 (w3m-history-push w3m-current-url
-				   (list :title w3m-current-title))
+		 (if (equal referer "about://history/")
+		     ;; Don't sprout a new branch for the existing history
+		     ;; element.
+		     (let ((w3m-history-reuse-history-elements t))
+		       (w3m-history-push w3m-current-url
+					 (list :title w3m-current-title))
+		       ;; Fix the history position pointers.
+		       (when history-position
+			 (setcar w3m-history
+				 (w3m-history-regenerate-pointers
+				  history-position))))
+		   (w3m-history-push w3m-current-url
+				     (list :title w3m-current-title)))
 		 (w3m-history-add-properties (list :referer referer
-						   :post-data post-data)
-					     nil nil t)
+						   :post-data post-data))
 		 (unless w3m-toggle-inline-images-permanently
 		   (setq w3m-display-inline-images
 			 w3m-default-display-inline-images))
@@ -6213,15 +6230,15 @@ the current session.  Otherwise, the new session will start afresh."
   "Reload current page without cache.
 If called with '\\[universal-argument]', clear form and post datas"
   (interactive "P")
-  (let ((post-data (w3m-history-plist-get :post-data nil nil t))
-	(form-data (w3m-history-plist-get :forms nil nil t))
-	(referer (w3m-history-plist-get :referer nil nil t)))
+  (let ((post-data (w3m-history-plist-get :post-data))
+	(form-data (w3m-history-plist-get :forms))
+	(referer (w3m-history-plist-get :referer)))
     (when arg
       (when form-data
-	(w3m-history-remove-properties '(:forms) nil nil t))
+	(w3m-history-remove-properties '(:forms nil)))
       (when post-data
 	(setq post-data nil)
-	(w3m-history-remove-properties '(:post-data) nil nil t))
+	(w3m-history-remove-properties '(:post-data nil)))
       (setq w3m-current-forms nil))
     (if (and post-data (y-or-n-p "Repost form data? "))
 	(w3m-goto-url w3m-current-url 'reload nil post-data referer)
@@ -6551,9 +6568,10 @@ showing a tree-structured history by the command `w3m-about-history'.")
 
 (defun w3m-about-history (&rest args)
   "Show a tree-structured history."
-  (let ((start)
-	(history (with-current-buffer w3m-current-buffer
-		   w3m-history-flat)))
+  (let (start history current)
+    (with-current-buffer w3m-current-buffer
+      (setq history w3m-history-flat
+	    current (cadar w3m-history)))
     (insert "\
 <head><title>URL history</title></head><body>
 <h1>List of all the links you have visited in this session.</h1><pre>\n")
@@ -6568,8 +6586,8 @@ showing a tree-structured history by the command `w3m-about-history'.")
 		       (apply 'append
 			      (mapcar
 			       (function
-			     ;; Don't use `caddr' here, since it won't
-			      ;; be substituted by the compiler macro.
+				;; Don't use `caddr' here, since it won't
+				;; be substituted by the compiler macro.
 				(lambda (e)
 				  (car (cdr (cdr e)))))
 			       history)))))))
@@ -6593,11 +6611,12 @@ showing a tree-structured history by the command `w3m-about-history'.")
 		title (plist-get (cadr element) :title)
 		position (caddr element))
 	  (when url
-	    (insert (format "h%s %d <a href=\"%s\">%s%s%s</a>\n"
+	    (insert (format "h%s %d %d <a href=\"%s\">%s%s%s %s</a>\n"
 			    (mapconcat (function (lambda (d) (format form d)))
 				       position
 				       "-")
 			    (/ (1- (length position)) 2)
+			    (if (equal current position) 1 0)
 			    url
 			    (if about "&lt;" "")
 			    (if (or (not title)
@@ -6605,7 +6624,8 @@ showing a tree-structured history by the command `w3m-about-history'.")
 				    (string-match "^[\t 　]*$" title))
 				url
 			      (w3m-encode-specials-string title))
-			    (if about "&gt;" "")))))
+			    (if about "&gt;" "")
+			    position))))
 	(sort-fields 0 start (point-max))
 	(goto-char start)
 	(while (not (eobp))
@@ -6618,21 +6638,17 @@ showing a tree-structured history by the command `w3m-about-history'.")
 		last-indent indent
 		indent (+ (* w3m-about-history-indent-level indent)
 			  sub-indent))
-	  (delete-region bol (point))
-	  (insert-char ?\  (+ margin (if max-indent
-					 (min max-indent indent)
-				       indent)))
+	  (when (prog1
+		    (= (read cur) 1)
+		  (delete-region bol (point))
+		  (insert-char ?\  (+ margin (if max-indent
+						 (min max-indent indent)
+					       indent))))
+	    (beginning-of-line)
+	    (delete-char 1)
+	    (insert "&gt;"))
 	  (forward-line 1))))
     (insert "</pre></body>")
-    (goto-char start)
-    (let ((current (with-current-buffer w3m-current-buffer
-		     (car (w3m-history-current)))))
-      (and current
-	   (search-forward (concat "<a href=\"" current "\">") nil t)
-	   (progn
-	     (forward-line 0)
-	     (delete-char 1)
-	     (insert "&gt;"))))
     "text/html"))
 
 (defun w3m-about-db-history (url &rest args)
@@ -6737,17 +6753,34 @@ showing a tree-structured history by the command `w3m-about-history'.")
   "text/html")
 
 (defun w3m-history-highlight-current-url (url)
-  ;; Highlight the current url if it is a page for the history.
+  "Highlight the current url if it is a page for the history.
+It does manage history position data as well."
   (when (string-equal "about://history/" url)
-    (goto-char (point-min))
-    (when (search-forward "\n>" nil t)
+    (let ((inhibit-read-only t)
+	  (buffer (current-buffer))
+	  start)
+      ;; Make history position data invisible.
+      (goto-char (point-min))
       (w3m-next-anchor)
-      (let ((start (point))
-	    (inhibit-read-only t))
+      (while (progn
+	       (setq start (point))
+	       (re-search-forward " (\\([0-9]+ \\)*[0-9]+)$" nil t))
+	(goto-char (match-beginning 0))
+	(put-text-property start (match-beginning 0)
+			   'history-position (read buffer))
+	(add-text-properties (match-beginning 0) (match-end 0)
+			     '(invisible t intangible t))
+	(forward-char 2)
+	(skip-chars-forward "\t "))
+      ;; Highlight the current url.
+      (goto-char (point-min))
+      (when (search-forward "\n>" nil t)
+	(w3m-next-anchor)
+	(setq start (point))
 	(end-of-line)
 	(put-text-property start (point) 'face 'w3m-history-current-url-face)
-	(goto-char start)
-	(set-buffer-modified-p nil)))))
+	(goto-char start)))
+    (set-buffer-modified-p nil)))
 
 (defcustom w3m-db-history-display-size
   (and (> w3m-keep-arrived-urls 500) 500)

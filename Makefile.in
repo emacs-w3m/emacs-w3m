@@ -37,7 +37,7 @@ lisp: Makefile
 
 what-where:
 	@$(EMACS) $(FLAGS) -f w3mhack-what-where\
-	"$(lispdir)" "$(ICONDIR)" "$(PACKAGEDIR)" "$(infodir)"
+	 "$(lispdir)" "$(ICONDIR)" "$(PACKAGEDIR)" "$(infodir)"
 
 info:
 	cd doc && $(MAKE) EMACS="$(EMACS)"
