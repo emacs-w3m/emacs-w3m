@@ -1,9 +1,13 @@
 2001-02-28  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
+	* w3m.el (w3m-bookmark-add): Fix problem of adding bookmark first
+	time.
+	
+2001-02-28  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
 	* w3m.el (w3m-executable-type): New variable.
 	(w3m-cygwin-path): New function.
 	(w3m-region): New function.
-
 
 2001-02-26  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
