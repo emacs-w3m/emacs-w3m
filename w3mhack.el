@@ -1168,7 +1168,7 @@ NOTE: This function must be called from the top directory."
     (insert "\
 ;;; DO NOT MODIFY THIS FILE
 \(if (featurep 'w3m-autoloads) (error \"Already loaded\"))
-\(or (featurep 'w3m-load)
+\(or (featurep '" (file-name-sans-extension w3mhack-load-file) ")
     (load (expand-file-name \"" w3mhack-load-file "\"
 			    (if load-file-name
 				(file-name-directory load-file-name)))
