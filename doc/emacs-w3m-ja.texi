@@ -145,6 +145,7 @@ Basic Usage
 * Working with buffers::        $B%P%C%U%!$r:n$k(B/$B>C$9(B/$B0\F0$9$k(B
 * Downloading::                 $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
 * Submitting Forms::            HTML $B%U%)!<%`$K5-F~$9$k(B
+* HTML File Information::       $B%&%'%V%Z!<%8:n$j$H%O%C%/$N$*<jEA$$(B
 
 Pretty Good Features
 
@@ -663,7 +664,7 @@ Proxy $B%2!<%H%&%'%$$rDL$5$:$K@\B3$7$J$1$l$P$J$i$J$$(B @code{no_proxy} $B%[%9
 * Working with Buffers::        $B%P%C%U%!$r:n$k(B/$B>C$9(B/$B0\F0$9$k(B
 * Downloading::                 $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
 * Submitting Forms::            HTML $B%U%)!<%`$K5-F~$9$k(B
-* HTML file information::       $B%&%'%V%Z!<%8:n$j$H%O%C%/$N$*<jEA$$(B
+* HTML File Information::       $B%&%'%V%Z!<%8:n$j$H%O%C%/$N$*<jEA$$(B
 @end menu
 
 @node Browsing Web Pages
@@ -697,7 +698,7 @@ Emacs-w3m $B$G$N%&%'%V%V%i%&%8%s%0$O!"8f4|BTDL$j!"%-!<A`:n$GA4$F9T$J$&$3$H(B
 * Moving in a page::            $B%Z!<%8Fb$rHt$S$^$o$k(B
 * Moving over pages::           $B%Z!<%84V$rEO$jJb$/(B
 * Browsing With Mouse Operations:: $B%^%&%9$G%5!<%U%#%s(B
-* Leaving for daily hacking and/or daily writing:: $BIaCJ$N@83h$KLa$k$K$O(B
+* Going back to daily hacking and/or daily writing:: $BIaCJ$N@83h$KLa$k$K$O(B
 @end menu
 
 @node Launching and Jumping
@@ -1068,19 +1069,20 @@ Emacs-w3m $B$N3+H/<TC#$O!"(BEmacs $B%.!<%/$G$J$$$^$H$b$J?M$K$b(B emacs-w3m 
 @end table
 
 $B%9%/%m!<%k%P!<!"%a%K%e!<5Z$S%D!<%k%P!<$O!"%^%&%9$G(B emacs-w3m $B$r;H$&$N$K(B
-$BLrN)$A$^$9!#$?$@$7!"$*;H$$$N(B Emacsen $B$,%5%]!<%H$7$F$$$F$+$D!"%+%9%?%^%$(B
-$B%:$7$F$=$l$i$r!V%*%U!W$K$7$F$$$J$$$3$H$,>r7o$H$J$j$^$9!#8@$&$^$G$b$J$$$G(B
-$B$9$,!"%9%/%m!<%k%P!<$rF0$+$7$FI=<($r%9%/%m!<%k$5$;$k$3$H$,$G$-$^$9!#(B
-$B!V(BFile$B!W$r2!$7$N$1$F%a%K%e!<%P!<$N0lHV:8$K0LCV$9$k!V(BW3M$B!W%a%K%e!<$+$i!"(B
-$B$3$N(B info $B%I%-%e%a%s%H$G>R2p$7$F$$$k(B emacs-w3m $B$NMM!9$J5!G=$r8F$S=P$9$3(B
-$B$H$,$G$-$^$9!#<gMW$J5!G=$K$D$$$F$O%a%K%e!<%"%$%F%`$rA*$V$^$G$b$J$/!"%D!<(B
-$B%k%P!<>e$N%\%?%s%"%$%F%`$r2!$;$P8F$S=P$;$^$9!#(B
+$BLrN)$A$^$9!#$?$@$7!"$*;H$$$N(B Emacsen $B$,%9%/%m!<%k%P!<!"%a%K%e!<5Z$S%D!<(B
+$B%k%P!<$r%5%]!<%H$7$F$$$F$+$D!"%+%9%?%^%$%:$7$F$=$l$i$r!V%*%U!W$K$7$F$$$J(B
+$B$$$3$H$,>r7o$H$J$j$^$9!#8@$&$^$G$b$J$$$G$9$,!"%9%/%m!<%k%P!<$rF0$+$7$FI=(B
+$B<($r%9%/%m!<%k$5$;$k$3$H$,$G$-$^$9!#!V(BFile$B!W$r2!$7$N$1$F%a%K%e!<%P!<$N0l(B
+$BHV:8$K0LCV$9$k!V(BW3M$B!W%a%K%e!<$+$i!"$3$N(B info $B%I%-%e%a%s%H$G>R2p$7$F$$$k(B 
+emacs-w3m $B$NMM!9$J5!G=$r8F$S=P$9$3$H$,$G$-$^$9!#<gMW$J5!G=$K$D$$$F$O%a(B
+$B%K%e!<%"%$%F%`$rA*$V$^$G$b$J$/!"%D!<%k%P!<>e$N%\%?%s%"%$%F%`$r2!$;$P8F$S(B
+$B=P$;$^$9!#(B
 
 $B%?%V(B (@pxref{Using Tabs}) $B$r@Z$jBX$($k$K$O!"%&%#%s%I%&$N$F$C$Z$s$N9T(B
 $B$r(B @kbd{mouse-2}$B$GD>@\%/%j%C%/$7$^$9!#$"$k$$$O!V(BW3M$B!W%a%K%e!<$N$H$J$j$K(B
 $B$"$k!V(BTAB$B!W%a%K%e!<$+$i%"%$%F%`$r;XDj$7$^$9!#(B
 
-@node Leaving for daily hacking and/or daily writing
+@node Going back to daily hacking and/or daily writing
 @subsection $BIaCJ$N@83h$KLa$k$K$O(B
 
 $B;W$$=P$7$F2<$5$$!#$=$b$=$b$"$J$?$,:#(B Emacs $B$r;H$C$F$$$k$N$O!"%&%'%V$r8+(B
@@ -1617,7 +1619,7 @@ Emacs $B$G9T$J$C$F$$$kB>$N;E;v$N<YKb$r$7$J$$$N$G!"$=$&$7$?$1$l$PB>$N%P%C%U%!(B
 $B%U%)!<%`$NJT=8$rCfCG$7$F!"JQ99$r<h$j;_$a$^$9!#(B
 @end table
 
-@node HTML file information
+@node HTML File Information
 @section $B%&%'%V%Z!<%8:n$j$H%O%C%/$N$*<jEA$$(B
 
 @c TODO TIPS$B$X%j%s%/$r$O$k!#(B
@@ -1636,7 +1638,7 @@ Emacs $B$G9T$J$C$F$$$kB>$N;E;v$N<YKb$r$7$J$$$N$G!"$=$&$7$?$1$l$PB>$N%P%C%U%!(B
 $B$3$H$,$"$k$G$7$g$&!"FC$K!"?7J9%b%8%e!<%k$N:n<T$NJ}(B (@pxref{Shimbun
 Basics})$B!#(B
 
-HTML $B%U%!%$%k$r%m!<%I$r$7$F$$$k%P%C%U%!$NL>A0$rL@<(E*$K;XDj$7$F%P%C%U%!(B
+HTML $B%U%!%$%k$r%m!<%I$r$7$F$$$k(B Emacs $B$N%P%C%U%!$NL>A0$rL@<(E*$K;XDj$7$F%P%C%U%!(B
 $B$r@Z$jBX$($F$k$3$H$b$G$-$^$9$,!"(Bemacs-w3m $B$G$O$=$&$$$C$?L\E*$N$?$a$K@lMQ(B
 $B$N%-!<$,3dEv$F$i$l$F$$$^$9!#(BEmacs-w3m $B$O<+J,$,8=:_I=<($7$F$$$k%&%'%V%Z!<(B
 $B%8$N(B URL $B$rCN$C$F$k$s$G$9!#$=$N>pJs$r;H$o$J$$<j$O$"$j$^$;$s!#(B
@@ -1662,7 +1664,7 @@ HTML $B%U%!%$%k$r%m!<%I$r$7$F$$$k%P%C%U%!$NL>A0$rL@<(E*$K;XDj$7$F%P%C%U%!(B
 @item e
 @kindex e
 @findex w3m-edit-this-url
-$B8=:_%]%$%s%H$N2<$K%j%s%/$N@h$N%m!<%+%k%U%!%$%k$rJT=8$7$^(B
+$B8=:_%]%$%s%H$N2<$K$"$k%j%s%/@h$N%m!<%+%k%U%!%$%k$rJT=8$7$^(B
 $B$9(B (@code{w3m-edit-this-url})$B!#(B
 
 @item M
