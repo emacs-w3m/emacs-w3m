@@ -3,7 +3,8 @@
 	* w3m.el (w3m-fontify-strike-through (var)): Make it into the
 	variable which is not a user option.
 	(w3m-fontify-strike-through (fn)): Check dynamically whether the
-	window system is used .
+	window system is used.
+	(w3m-url-at-point): Unify iso646 chars to ascii on XEmacs-mule.
 
 	* mew-w3m.el: Silence the compile warning for `mew-coding-system-p'
 	for people having the Mew XEmacs package installed.
