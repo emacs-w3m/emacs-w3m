@@ -245,7 +245,8 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 		  (setq set-size t))
 	      (w3m-process-do-with-temp-buffer
 		  (success (progn
-			     (set-buffer-multibyte nil)
+			     (unless (boundp 'MULE)
+			       (set-buffer-multibyte nil))
 			     (insert data)
 			     (apply 'w3m-imagick-start-convert-buffer
 				    handler type "xbm"

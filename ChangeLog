@@ -2,6 +2,7 @@
 
 	* w3m-bitmap.el (w3m-create-image): Use w3m-process-do-with-temp-buffer
 	instead of w3m-process-do.
+	(w3m-create-image): Don't call `set-buffer-multibyte' if old mule.
 
 	* w3m-image.el (w3m-imagick-start-convert-buffer): Removed needless
 	`concat'.
