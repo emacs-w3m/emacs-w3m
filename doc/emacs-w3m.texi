@@ -1284,32 +1284,38 @@ Close all emacs-w3m buffers, but the active one
 @node Moving across buffers
 @subsection Moving across buffers
 
-The commands you will problably use most often are those who allow you
+The commands you will probably use most often are those who allow you
 to go to an adjacent buffer; that is a buffer just ``after'' or
 ``before'' the current one.  The meaning of this will be obvious if you
 use tabs: the next buffer is the one just after the active one, on the
-right, and the previous buffer is the one on the left.  The key bindings
+right, and the previous buffer is the one on the left.  However, XEmacs
+displays tabs in random order unfortunately, so you need to pay
+attention to the number which is displayed in each tab in order to know
+what is the adjacent buffer if you are using XEmacs.  The key bindings
 for these commands are @kbd{C-c C-p} and @kbd{C-c C-n}.
 
 These commands understand the numeric argument convention, i.e. if you
 call them with a number N as argument, you will be taken N buffers away
 from the current one.  For example, to go two buffers on the right from
-the current position, use @kbd{C-u 2 C-c C-n}.
+the current position, use @kbd{2 C-c C-n}@footnote{You can use @kbd{C-u
+2 C-c C-n} instead of @kbd{2 C-c C-n} as usual.  But keep in mind all
+numeric keys and minus-sign are assigned to the numeric prefix arguments
+in emacs-w3m buffers.}.
 
 @table @kbd
 @item C-c C-p
 @kindex C-c C-p
 @findex w3m-previous-buffer
 Move to the previous emacs-w3m buffer.  This is usually the next buffer
-to the left in the tabs line.  If called with a numeric argument N, move
-N buffers to the left (@code{w3m-previous-buffer}).
+to the left in the tabs line under Emacs 21.  If called with a numeric
+argument N, move N buffers to the previous (@code{w3m-previous-buffer}).
 
 @item C-c C-n
 @kindex C-c C-n
 @findex w3m-next-buffer
 Move to the next emacs-w3m buffer.  This is usually the next buffer to
-the right in the tabs line.  If called with a numeric argument N, move N
-buffers to the right (@code{w3m-next-buffer}).
+the right in the tabs line under Emacs 21.  If called with a numeric
+argument N, move N buffers to the next (@code{w3m-next-buffer}).
 @end table
 
 Also note that if these commands don't fit you well despite our efforts,
@@ -1323,7 +1329,7 @@ regular Emacs buffers, they will work fine too.
 There are two ways to select emacs-w3m buffers from a list.  The first
 one is a minibuffer-based interface, called with @kbd{C-c C-a}.  You can
 choose the buffer you want to display using the @kbd{M-p} and @kbd{M-n}
-keys (or the ``up'' and `''down'' arrow keys), they will make you cycle
+keys (or the ``up'' and ``down'' arrow keys), they will make you cycle
 through the list.  You can also edit the prompt and type the title of an
 existing web page, using @kbd{TAB} for completion.  For example, if you
 have a ``Google Search'' page opened, you can type ``Goo'' then hit
@@ -1332,7 +1338,7 @@ the buffer name is given (between brackets).  Then use @kbd{RET} to
 switch to the buffer you have chosen.
 
 The second and more sophisticated interface is called the emacs-w3m
-buffer list, it is invoked with @kbd{C-C C-s}.  It shows you the list of
+buffer list, it is invoked with @kbd{C-c C-s}.  It shows you the list of
 all opened buffers in a separate window (either a vertical or a
 horizontal window---@kbd{C-c C-s} toggles between the two modes) and
 allows you to view the buffers in real-time: when you move the point in
