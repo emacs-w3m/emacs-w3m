@@ -1,3 +1,7 @@
+2004-12-19  David Hansen  <david.hansen@gmx.net>
+
+	* shimbun/sb-the-register.el: New file.
+
 2004-12-18  Tsuyoshi CHO  <mfalcon21@hotmail.com>
 
 	* shimbun/sb-x51.el (shimbun-x51-group-alist): Append "news" and
