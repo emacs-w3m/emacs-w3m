@@ -44,6 +44,10 @@
 
 (defvar shimbun-yomiuri-html-expiration-days shimbun-yomiuri-expiration-days)
 
+(luna-define-method shimbun-make-contents ((shimbun shimbun-yomiuri-html)
+					   header)
+  (shimbun-yomiuri-make-contents shimbun header))
+
 (provide 'sb-yomiuri-html)
 
 ;;; sb-yomiuri-html.el ends here
