@@ -2460,13 +2460,20 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 	    (ffap-url-at-point)))
       (defalias 'w3m-url-at-point 'ffap-url-at-point))
     (eval-after-load "ffap"
-      ;; Under Emacs 19, 20 or XEmacs, `ffap-url-regexp' won't match to
-      ;; https urls by default.
-      '(if (and (not (string-match ffap-url-regexp "https://foo"))
-		(string-match "\\((\\|\\\\|\\)\\(http\\)\\(\\\\|\\|\\\\)\\)"
-			      ffap-url-regexp))
-	   (setq ffap-url-regexp (replace-match "\\1\\2s?\\3"
-						nil nil ffap-url-regexp)))))
+      '(progn
+	 ;; Under Emacs 19, 20 or XEmacs, `ffap-url-regexp' won't match
+	 ;; to https urls by default.
+	 (if (and (not (string-match ffap-url-regexp "https://foo"))
+		  (string-match "\\((\\|\\\\|\\)\\(http\\)\\(\\\\|\\|\\\\)\\)"
+				ffap-url-regexp))
+	     (setq ffap-url-regexp (replace-match "\\1\\2s?\\3"
+						  nil nil ffap-url-regexp)))
+	 ;; Add nntp:.
+	 (if (and (not (string-match ffap-url-regexp "nntp://bar"))
+		  (string-match "\\(\\\\(news\\\\(post\\\\)\\?:\\)\\(\\\\|\\)"
+				ffap-url-regexp))
+	     (setq ffap-url-regexp (replace-match "\\1\\|nntp:\\2"
+						  nil nil ffap-url-regexp))))))
    ((locate-library "thingatpt")
     (autoload 'thing-at-point "thingatpt")
     (defun w3m-url-at-point ()
