@@ -1,3 +1,32 @@
+2001-11-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-select-buffer-horizontal-window): New user option.
+	(w3m-select-buffer-window-size): Ditto.
+	(w3m-lynx-like-map): Bind `C-cC-b' as the key to call
+	`w3m-switch-buffer.
+	(w3m-info-like-map): Ditto.
+	(w3m-select-buffer-window): New internal variable.
+	(w3m-select-buffer-message): New internal constant.
+	(w3m-select-buffer): New implementation.
+	(w3m-select-buffer-generate-contents): New function.
+	(w3m-select-buffer-mode-map): New keymap.
+	(w3m-select-buffer-mode): New function.
+	(w3m-select-buffer-recheck): New command.
+	(w3m-select-buffer-current-buffer): New macro.
+	(w3m-select-buffer-show-this-line): New command.
+	(w3m-select-buffer-next-line): Ditto.
+	(w3m-select-buffer-previous-line): Ditto.
+	(w3m-select-buffer-copy-buffer): Ditto.
+	(w3m-select-buffer-delete-buffer): Ditto.
+	(w3m-select-buffer-quit): Ditto.
+	(w3m-select-buffer-show-this-line-and-quit): Ditto.
+
+	* w3m-xmas.el (w3m-switch-buffer): Renamed from
+	`w3m-select-buffer'.
+
+	* w3m-tabmenu.el (w3m-switch-buffer): Renamed from
+	`w3m-select-buffer'.
+
 2001-11-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-e20.el (w3m-display-inline-images-p): Renamed from

@@ -97,8 +97,8 @@
       (setq menus (cons item menus)))
     (nreverse menus)))
 
-(defun w3m-select-buffer ()
-  "Select w3m buffer from minibuffer."
+(defun w3m-switch-buffer ()
+  "Switch `w3m-mode' buffer in the current window."
   (interactive)
   (let ((items (w3m-tab-menubar-make-items 'nomenu))
 	(count 1)
