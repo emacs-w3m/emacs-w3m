@@ -158,11 +158,11 @@
 (defmacro w3m-process-handler-function (handler)
   `(aref ,handler 2))
 
-(defun w3m-process-push (handler arguments)
+(defun w3m-process-push (handler command arguments)
   "Generate a new `w3m-process' object which is provided by HANDLER,
 ARGUMENTS and this buffer, regist it to `w3m-process-queue', and
 return it."
-  (let ((x (assoc (cons w3m-command arguments) w3m-process-queue)))
+  (let ((x (assoc (cons command arguments) w3m-process-queue)))
     (unless x
       (setq x (w3m-process-new w3m-command arguments (current-buffer)))
       (push x w3m-process-queue))
@@ -451,12 +451,11 @@ evaluated in a temporary buffer."
      '((symbolp form) def-body))
 
 
-(defun w3m-process-start (handler &rest arguments)
-  "Run `w3m-command' with HANDLER and ARGUMENTS."
-  (setq arguments (append w3m-command-arguments arguments))
+(defun w3m-process-start (handler command arguments)
+  "Run COMMAND with ARGUMENTS, and eval HANDLER asynchronously."
   (if w3m-async-exec
       (w3m-process-do
-	  (exit-status (w3m-process-push handler arguments))
+	  (exit-status (w3m-process-push handler command arguments))
 	(w3m-process-start-after exit-status))
     (w3m-process-start-after
      (w3m-process-with-coding-system

@@ -60,11 +60,6 @@
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-imagick-convert-async-exec t
-  "*If non-nil, `convert' is executed as an asynchronous process."
-  :group 'w3m
-  :type 'boolean)
-
 ;;; Image handling functions.
 (defcustom w3m-resize-images (and w3m-imagick-convert-program t)
   "*If non-nil, resize images to the specified width and height."
@@ -140,30 +135,20 @@
     (w3m-process-do
 	(success (with-current-buffer out-buffer
 		   (erase-buffer)
-		   (apply
-		    'w3m-imagick-start handler
-		    (append args
-			    (list
-			     (concat
-			      (if from-type
-				  (concat from-type ":"))
-			      in-file)
-			     (if to-type
-				 (concat to-type ":-")
-			       "-"))))))
+		   (w3m-process-start handler
+				      w3m-imagick-convert-program
+				      (append args
+					      (list
+					       (concat
+						(if from-type
+						    (concat from-type ":"))
+						in-file)
+					       (if to-type
+						   (concat to-type ":-")
+						 "-"))))))
       (when (file-exists-p in-file)
 	(delete-file in-file))
       success)))
-
-(defun w3m-imagick-start (handler &rest arguments)
-  "Run ImageMagick's convert as an asynchronous process."
-  (let ((w3m-command w3m-imagick-convert-program))
-    (if (and w3m-async-exec w3m-imagick-convert-async-exec)
-	(w3m-process-do
-	    (exit-status (w3m-process-push handler arguments))
-	  (w3m-process-start-after exit-status))
-      (w3m-process-start-after
-       (apply 'call-process w3m-command nil t nil arguments)))))
 
 (defun w3m-resize-image (data width height handler)
   "Resize image DATA to WIDTH and HEIGHT asynchronously.

@@ -3086,7 +3086,10 @@ succeed."
     ;; execute w3m internal CGI
     (w3m-process-with-wait-handler
       (setq w3m-current-url url)
-      (w3m-process-start handler "-dump_source" url)))
+      (w3m-process-start handler
+			 w3m-command
+			 (append w3m-command-arguments
+				 (list "-dump_source" url)))))
   ;; bind charset to w3m-file-name-coding-system
   (let ((charset (or (car (rassq w3m-file-name-coding-system
 				 w3m-charset-coding-system-alist))
@@ -3127,7 +3130,10 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 	    (success (progn
 		       (setq w3m-current-url url
 			     url (w3m-url-strip-authinfo url))
-		       (w3m-process-start handler "-dump_head" url)))
+		       (w3m-process-start handler
+					  w3m-command
+					  (append w3m-command-arguments
+						  (list "-dump_head" url)))))
 	  (w3m-message "Request sent, waiting for response...done")
 	  (when success
 	    (w3m-cache-header url (buffer-string)))))))
@@ -3233,10 +3239,13 @@ complete."
 		   ""))
     (w3m-process-do
 	(result
-	 (apply 'w3m-process-start
-		handler
-		(w3m-w3m-expand-arguments
-		 (append w3m-dump-head-source-command-arguments (list url)))))
+	 (w3m-process-start handler
+			    w3m-command
+			    (append
+			     w3m-command-arguments
+			     (w3m-w3m-expand-arguments
+			      w3m-dump-head-source-command-arguments)
+			     (list url))))
       (w3m-message "Reading %s...done" url)
       (when result
 	(goto-char (point-min))

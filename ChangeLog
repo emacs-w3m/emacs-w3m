@@ -1,3 +1,18 @@
+2002-10-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-local-dirlist-cgi): Follow the change of
+	`w3m-process-start'.
+	(w3m-w3m-get-header): Ditto.
+	(w3m-w3m-dump-head-source): Ditto.
+
+	* w3m-image.el (w3m-imagick-convert-async-exec): Abolished.
+	(w3m-imagick-start): Removed.
+	(w3m-imagick-start-convert-buffer): Call `w3m-process-start'
+	instead of the above function.
+
+	* w3m-proc.el (w3m-process-push): Accept `command' argument.
+	(w3m-process-start): Ditto.
+
 2002-10-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-w3m-dump-head-source): Do not display the help
