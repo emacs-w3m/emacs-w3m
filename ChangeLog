@@ -1,3 +1,9 @@
+2003-12-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el: Add an advice to byte-optimize-form-code-walker to
+	avoid the warning ``...called for effect'' for the pop form when
+	running Emacs 21.3.
+
 2003-12-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-create-text-page): Use the last directory as a title
