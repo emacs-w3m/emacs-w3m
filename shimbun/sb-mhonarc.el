@@ -75,11 +75,10 @@
 		(push (concat "<" (shimbun-header-field-value) ">") refs)
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Content-Type: ")
-		(delete-region (match-end 0) (std11-field-end))
-		(insert "text/html; charset=ISO-2022-JP")
-		(forward-line 1))
+		(delete-region (point) (progn (forward-line 1) (point))))
 	       (t (forward-line 1))))
 	    (insert "MIME-Version: 1.0\n")
+	    (insert "Content-Type: text/html; charset=ISO-2022-JP")
 	    (if refs
 		(shimbun-header-set-references header
 					       (mapconcat 'identity refs " ")))

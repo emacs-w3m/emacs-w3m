@@ -1,4 +1,4 @@
-;;; sb-emacs-w3m.el --- shimbun backend for emacs-w3m mailing list
+;;; sb-ding.el --- shimbun backend for gnus.org
 
 ;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
@@ -24,16 +24,14 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-namazu)
-(luna-define-class shimbun-emacs-w3m (shimbun-namazu) ())
+(require 'sb-xemacs)
 
-(defvar shimbun-emacs-w3m-url "http://www.namazu.org/~tsuchiya/emacs-w3m/ml/")
-(defvar shimbun-emacs-w3m-groups '("emacs-w3m"))
-(defvar shimbun-emacs-w3m-coding-system 'euc-jp)
-(defvar shimbun-emacs-w3m-use-entire-index nil)
+(luna-define-class shimbun-ding (shimbun-xemacs) ())
 
-(luna-define-method shimbun-index-url ((shimbun shimbun-namazu))
-  (shimbun-url-internal shimbun))
+(defvar shimbun-ding-url "http://www.gnus.org/list-archives/")
+(defvar shimbun-ding-groups '("ding"))
+(defvar shimbun-ding-coding-system 'iso-8859-1)
 
-(provide 'sb-emacs-w3m)
-;;; sb-emacs-w3m.el ends here
+(provide 'sb-ding)
+
+;;; sb-ding.el ends here

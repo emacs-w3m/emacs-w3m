@@ -52,17 +52,21 @@
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-xemacs))
   (let ((case-fold-search t)
+	(path (if (string-match "http://[^/]+\\(/.*\\)"
+				(shimbun-index-url shimbun))
+		  (match-string 1 (shimbun-index-url shimbun))
+		"/"))
 	headers auxs aux)
     (catch 'stop
       (if (shimbun-use-entire-index-internal shimbun)
 	  (while (re-search-forward
-		  (concat "<A HREF=\"/" (shimbun-current-group-internal shimbun)
-			  "/\\([12][0-9][0-9][0-9][0-1][0-9]\\)/\">\\[Index\\]")
+		  (concat "<A HREF=\"" path
+			  "\\([12][0-9][0-9][0-9][0-1][0-9]\\)/\">\\[Index\\]")
 		  nil t)
 	    (setq auxs (append auxs (list (match-string 1)))))
 	(if (re-search-forward
-	     (concat "<A HREF=\"/" (shimbun-current-group-internal shimbun)
-		     "/\\([12][0-9][0-9][0-9][0-1][0-9]\\)/\">\\[Index\\]")
+	     (concat "<A HREF=\"" path
+		     "\\([12][0-9][0-9][0-9][0-1][0-9]\\)/\">\\[Index\\]")
 	     nil t)
 	    (setq auxs (append auxs (list (match-string 1))))))
       (while auxs

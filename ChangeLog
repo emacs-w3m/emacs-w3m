@@ -1,3 +1,17 @@
+2001-04-06  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-ding.el: New file.
+
+	* shimbun/sb-xemacs.el (shimbun-get-headers): Generate pattern
+	from index-url.
+
+	* shimbun/sb-mhonarc.el (shimbun-make-contents): Always insert
+	Content-Type.
+
+	* shimbun/sb-zdnet.el: Add `gemespot' support.
+
+	* shimbun/sb-emacs-w3m.el: Removed.
+
 2001-04-06  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/shimbun.el (shimbun-mua): Added slot `shimbun'.
@@ -1880,3 +1894,4 @@
 2000-06-25  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el: New file.
+>
