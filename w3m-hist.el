@@ -21,18 +21,18 @@
 
 ;;; Commentary:
 
-;; w3m keeps history in the buffer-local variable `w3m-url-history'
-;; which contains a list of all the links you have visited.  See the
-;; documentation of that variable for details.
+;; w3m keeps history in the buffer-local variables `w3m-history' and
+;; `w3m-history-flat'.  Each variable contains a list of all the links
+;; you have visited.  See the documentations for them for details.
 
 ;;; Code:
 
 (eval-when-compile (require 'cl))
 
-(defvar w3m-url-history nil
-  "This variable contains a tree-structured complex list of all the links
-you have visited, which is buffer-local.  For instance, it looks like
-the following:
+(defvar w3m-history nil
+  "A buffer-local variable which contains a tree-structured complex list
+of all the links you have visited.  For instance, it looks like the
+following:
 
 \[Branch-1.0.0.0]:                 +--> U1.0.0.0.0 --> U1.0.0.0.1
                                   |
@@ -40,9 +40,9 @@ the following:
                           |
          [Trunk]: U0 --> U1 --> U2 --> U3 --> U4 --> U5 --> U6
                                  |
-    [Branch-2.0]:                +--> U2.0.0 --> U2.0.1 --> U2.0.2
+    [Branch-2.0]:                +--> U2.0.0 --> U2.0.1
                                  |
-    [Branch-2.1]:                +--> U2.1.0 --> U2.1.1
+    [Branch-2.1]:                +--> U2.1.0 --> U2.1.1 --> U2.1.2
                                                     |
 \[Branch-2.1.1.0]:                                   +--> U2.1.1.0.0
 
@@ -55,15 +55,12 @@ arranged in order of increasing precedence (the newest history element
 should be the last element of the list).  Each history element
 represents a link which consists of the following records:
 
-     (URL ATTRIBUTES BRANCH BRANCH ...)
+	(URL PROPERTIES BRANCH BRANCH ...)
 
-URL should be a string of an address of a link.  ATTRIBUTES is a plist
-of any kind of data to supplement the URL as such as follows:
+Where URL should be a string of an address of a link.  PROPERTIES is a
+plist which contains any kind of data to propertize the URL as follows:
 
-     (title \"The title string of the page\"
-            date \"Thursday, 22-Mar-01 11:54:48 GMT\"
-            last-modified \"Wednesday, 31-Jan-01 09:36:30 GMT\"
-            content-type \"text/html\")
+	(PROPERTY VALUE PROPERTY VALUE ...)
 
 The rest BRANCHes are branches of the history element.  Branches
 should also be arranged in order of increasing precedence (the newest
@@ -77,59 +74,67 @@ goes to U1.  Well, where should we go next when the operation FORWARD
 is performed on U1?  The rule is, to select the newest link you have
 visited.  So, that operation should go to U1.0.0.
 
-One more rule.  If you visit to the link U4 from U2.0.2 directly, jump
-is occurred instead of to sprout the new branch from U2.0.2.
+One more rule.  If you visit to the link U4 from U1.0.1 directly, jump
+is occurred instead of to sprout the new branch from U1.0.1.
 
-In addition, the variable `w3m-url-history' has a pointer in its car
-cell to designate the current position in the history.  It is a list
-of three lists as follows:
+In addition, the variable `w3m-history' has a list of pointers in its
+`car' cell which looks like the following:
 
 	(PREV CURRENT NEXT)
 
 Where the list PREV points the previous history element, the list
 CURRENT points the current one, the list NEXT points the next one.
 Each list contains an odd number of integers, e.g., (0) points U0,
-\(2 0 1) points U2.0.1, etc.  Finally the value of `w3m-url-history'
-will come to be as such as follows:
+\(2 0 1) points U2.0.1, etc.  Finally the value of `w3m-history' will
+come to be as such as follows:
 
-\(((2 0 0) (2 0 1) (2 0 2))
- (\"http://www.U0.org/\" (title \"U0\" content-type \"text/html\"))
- (\"http://www.U1.org/\" (title \"U1\" content-type \"text/html\")
-  ((\"http://www.U100.org/\" (title \"U100\" content-type \"text/html\")
-    ((\"http://www.U10000.org/\"
-      (title \"U10000\" content-type \"text/html\"))
-     (\"http://www.U10001.org/\"
-      (title \"U10001\" content-type \"text/html\"))))
-   (\"http://www.U101.org/\" (title \"U101\" content-type \"text/html\"))
-   (\"http://www.U102.org/\" (title \"U102\" content-type \"text/html\"))))
- (\"http://www.U2.org/\" (title \"U2\" content-type \"text/html\")
-  ((\"http://www.U200.org/\" (title \"U200\" content-type \"text/html\"))
-   (\"http://www.U201.org/\" (title \"U201\" content-type \"text/html\"))
-   (\"http://www.U202.org/\" (title \"U202\" content-type \"text/html\")))
-  ((\"http://www.U210.org/\" (title \"U210\" content-type \"text/html\"))
-   (\"http://www.U211.org/\" (title \"U211\" content-type \"text/html\")
-    ((\"http://www.U21100.org/\"
-      (title \"U21100\" content-type \"text/html\"))))))
- (\"http://www.U3.org/\" (title \"U3\" content-type \"text/html\"))
- (\"http://www.U4.org/\" (title \"U4\" content-type \"text/html\"))
- (\"http://www.U5.org/\" (title \"U5\" content-type \"text/html\"))
- (\"http://www.U6.org/\" (title \"U6\" content-type \"text/html\")))
-")
+\(((1) (2) (2 1 0))
+ (\"http://www.U0.org/\" (:title \"U0\" :foo \"bar\"))
+ (\"http://www.U1.org/\" (:title \"U1\" :foo \"bar\")
+  ((\"http://www.U100.org/\" (:title \"U100\" :foo \"bar\")
+    ((\"http://www.U10000.org/\" (:title \"U10000\" :foo \"bar\"))
+     (\"http://www.U10001.org/\" (:title \"U10001\" :foo \"bar\"))))
+   (\"http://www.U101.org/\" (:title \"U101\" :foo \"bar\"))
+   (\"http://www.U102.org/\" (:title \"U102\" :foo \"bar\"))))
+ (\"http://www.U2.org/\" (:title \"U2\" :foo \"bar\")
+  ((\"http://www.U200.org/\" (:title \"U200\" :foo \"bar\"))
+   (\"http://www.U201.org/\" (:title \"U201\" :foo \"bar\")))
+  ((\"http://www.U210.org/\" (:title \"U210\" :foo \"bar\"))
+   (\"http://www.U211.org/\" (:title \"U211\" :foo \"bar\")
+    ((\"http://www.U21100.org/\" (:title \"U21100\" :foo \"bar\"))))
+   (\"http://www.U212.org/\" (:title \"U212\" :foo \"bar\"))))
+ (\"http://www.U3.org/\" (:title \"U3\" :foo \"bar\"))
+ (\"http://www.U4.org/\" (:title \"U4\" :foo \"bar\"))
+ (\"http://www.U5.org/\" (:title \"U5\" :foo \"bar\"))
+ (\"http://www.U6.org/\" (:title \"U6\" :foo \"bar\")))")
 
-(make-variable-buffer-local 'w3m-url-history)
+(defvar w3m-history-flat nil
+  "A buffer-local variable to keep a flattened alist of `w3m-history'.
+Each element will have the following records:
+
+	(URL PROPERTIES POSITION)
+
+Where URL is a string of an address of a link, PROPERTIES is a plist
+to propertize the URL.  The sequence PROPERTIES is exactly the same
+with the corresponding contents of `w3m-history'.  POSITION is a list
+of integers to designate the current position in the history.  See the
+documentation for the variable `w3m-history' for more information.")
+
+(make-variable-buffer-local 'w3m-history)
+(make-variable-buffer-local 'w3m-history-flat)
 
 (defun w3m-history-previous-link-available-p ()
   "Return non-nil if the previous history element is available."
-  (caar w3m-url-history))
+  (caar w3m-history))
 
 (defun w3m-history-next-link-available-p ()
   "Return non-nil if the next history element is available."
-  (caddar w3m-url-history))
+  (caddar w3m-history))
 
 (eval-when-compile
   (defmacro w3m-history-current-1 (position)
     (` (let* ((position (, position))
-	      (element (nth (pop position) (cdr w3m-url-history))))
+	      (element (nth (pop position) (cdr w3m-history))))
 	 (while position
 	   (setq element (nth (pop position) (cddr element))
 		 element (nth (pop position) element)))
@@ -139,60 +144,59 @@ will come to be as such as follows:
   "Return a history element of the current position.  The value looks
 like the following:
 
-     (URL ATTRIBUTES BRANCH BRANCH ...)
+     (URL PROPERTIES BRANCH BRANCH ...)
 
-See the documentation for the variable `w3m-url-history' for more
+See the documentation for the variable `w3m-history' for more
 information."
-  (when w3m-url-history
-    (w3m-history-current-1 (cadar w3m-url-history))))
+  (when w3m-history
+    (w3m-history-current-1 (cadar w3m-history))))
 
 (defun w3m-history-forward ()
   "Move forward in the history and return a history element of the
-position.  The position pointer of `w3m-url-history' will go forward.
+position.  The position pointers of `w3m-history' will go forward.
 If the next element does not exist in the history, it returns a
 history element of the current position."
-  (when w3m-url-history
-    (let ((next (caddar w3m-url-history)))
+  (when w3m-history
+    (let ((next (caddar w3m-history)))
       (prog1
-	  (w3m-history-current-1 (or next (cadar w3m-url-history)))
+	  (w3m-history-current-1 (or next (cadar w3m-history)))
 	(when next
 	  ;; Examine the next of the next history.
 	  (let (branch number element branches)
-	    (setq branch (cdr w3m-url-history)
+	    (setq branch (cdr w3m-history)
 		  number (pop next)
 		  element (nth number branch))
 	    (while next
 	      (setq branch (nth (pop next) (cddr element))
 		    number (pop next)
 		    element (nth number branch)))
-	    ;; The value of `next' is nil.
+	    ;; (The value of `next' is nil.)
 	    (cond ((setq branches (cddr element))
 		   ;; The next element has branch(es).
 		   (setq number (1- (length branches))
-			 next (copy-sequence (caddar w3m-url-history)))
+			 next (copy-sequence (caddar w3m-history)))
 		   (setcdr (nthcdr (1- (length next)) next) (list number 0)))
 		  ((> (length branch) (setq number (1+ number)))
 		   ;; The next of the next element exists in the branch.
-		   (setq next (copy-sequence (caddar w3m-url-history)))
+		   (setq next (copy-sequence (caddar w3m-history)))
 		   (setcar (nthcdr (1- (length next)) next) number))))
-	  ;; Rotate left the position pointers.
-	  (setcar w3m-url-history
-		  (nconc (cdar w3m-url-history) (list next))))))))
+	  ;; Shift left the position pointers.
+	  (setcar w3m-history
+		  (nconc (cdar w3m-history) (list next))))))))
 
 (defun w3m-history-backward ()
   "Move backward in the history and return a history element of the
-position.  The position pointer of `w3m-url-history' will go backward.
+position.  The position pointers of `w3m-history' will go backward.
 If the previous element does not exist in the history, it returns a
 history element of the current position."
-  (when w3m-url-history
-    (let ((previous (copy-sequence (caar w3m-url-history))))
+  (when w3m-history
+    (let ((previous (copy-sequence (caar w3m-history))))
       (prog1
-	  (w3m-history-current-1 (or previous (cadar w3m-url-history)))
+	  (w3m-history-current-1 (or previous (cadar w3m-history)))
 	(when previous
 	  ;; Examine the previous of the previous history.
 	  (let* ((class (1- (length previous)))
-		 (number (nth class previous))
-		 element)
+		 (number (nth class previous)))
 	    (if (zerop number)
 		;; The previous element is the first of the branch.
 		(if (zerop class)
@@ -202,61 +206,61 @@ history element of the current position."
 		  (setcdr (nthcdr (- class 2) previous) nil))
 	      ;; The previous of the previous element exists in the branch.
 	      (setcar (nthcdr class previous) (1- number))))
-	  ;; Rotate right the position pointers.
-	  (setcdr (cdar w3m-url-history) nil)
-	  (setcar w3m-url-history (cons previous
-					(car w3m-url-history))))))))
+	  ;; Shift right the position pointers.
+	  (setcdr (cdar w3m-history) nil)
+	  (setcar w3m-history (cons previous (car w3m-history))))))))
 
 (defun w3m-history-flat (&optional history position alist)
-  "Return a flattened alist of `w3m-url-history'.  Each element will have
-the following records:
+  "Set the buffer-local variable `w3m-history-flat' with the value of a
+flattened alist of `w3m-history'.  See the documentation for the
+variable `w3m-history-flat' for details.  Note that the optional
+arguments should only be used to recursive funcall itself internally,
+so don't specify them for the normal use."
+  (if (or history
+	  (setq history (cdr w3m-history)))
+      (progn
+	(unless position
+	  (setq position '(t)))
+	(let ((i 0)
+	      element branches j)
+	  (while (setq element (pop history))
+	    (setcar (nthcdr (1- (length position)) position) i)
+	    (setq i (1+ i))
+	    (push (list (car element) (cadr element) (copy-sequence position))
+		  alist)
+	    (when (setq branches (nthcdr 2 element))
+	      (setq j 0)
+	      (while branches
+		(setq alist (w3m-history-flat (pop branches)
+					      (append position (list j t))
+					      alist)
+		      j (1+ j)))))
+	  (if (cdr position)
+	      alist
+	    (setq w3m-history-flat (nreverse alist)))))
+    (setq w3m-history-flat nil)))
 
-	(URL ATTRIBUTES POSITION)
-
-Where URL is a string of an address of a link, ATTRIBUTES is a plist
-to supplement the URL, POSITION is a list of integers to designate the
-current position in the history.  See the doc-string for the variable
-`w3m-url-history' for more information.
-
-Don't specify the optional arguments in normal use, they will be used
-to recursive funcall itself internally."
-  (when (or history
-	    (setq history (cdr w3m-url-history)))
-    (unless position
-      (setq position '(t)))
-    (let ((i 0)
-	  element branches j)
-      (while (setq element (pop history))
-	(setcar (nthcdr (1- (length position)) position) i)
-	(setq i (1+ i))
-	(push (list (car element) (cadr element) (copy-sequence position))
-	      alist)
-	(when (setq branches (nthcdr 2 element))
-	  (setq j 0)
-	  (while branches
-	    (setq alist (w3m-history-flat (pop branches)
-					  (append position (list j t))
-					  alist)
-		  j (1+ j)))))
-      (if (cdr position)
-	  alist
-	(nreverse alist)))))
-
-(defun w3m-history-assoc (url &optional set-current)
-  "Return a history element if URL is `equal' to the car of an element of
-`w3m-url-history'.  The value is actually the element of the history
-structure.  If the optional argument SET-CURRENT is non-nil, the
-position pointer will come to point the element in the history
-structure."
-  (let ((element (assoc url (w3m-history-flat)))
-	position)
+(defun w3m-history-assoc (url &optional set-current properties)
+  "Return a history element if URL is `equal' to the `car' of an element
+of `w3m-history'.  The return value is actually the element of the
+history structure.  If the optional first argument SET-CURRENT is
+non-nil, the position pointer will come to point the element in the
+history structure and properties of the element will be replaced with
+the second argument PROPERTIES if it is not `t'."
+  (let ((element (assoc url w3m-history-flat))
+	elem position)
     (when element
       (setq position (nth 2 element))
       (prog1
-	  (w3m-history-current-1 position)
+	  (setq elem (w3m-history-current-1 position))
 	(when set-current
 	  ;; Set the current position.
-	  (setcar (cdar w3m-url-history) position)
+	  (setcar (cdar w3m-history) position)
+	  (unless (eq t properties)
+	    ;; Replace properties in the current history element of both
+	    ;; `w3m-history' and `w3m-history-flat' with the specified value.
+	    (setcar (cdr elem) properties)
+	    (setcar (cdr element) properties))
 	  (let* ((class (1- (length position)))
 		 (number (nth class position))
 		 branch branches)
@@ -273,53 +277,59 @@ structure."
 	      (setq position (copy-sequence position))
 	      (setcar (nthcdr class position) (1- number)))
 	    ;; Set the previous position pointer.
-	    (setcar (car w3m-url-history) position)
+	    (setcar (car w3m-history) position)
 	    ;; Examine the next history.
-	    (setq position (cadar w3m-url-history)
-		  branch (cdr w3m-url-history)
+	    (setq position (cadar w3m-history)
+		  branch (cdr w3m-history)
 		  number (pop position)
 		  element (nth number branch))
 	    (while position
 	      (setq branch (nth (pop position) (cddr element))
 		    number (pop position)
 		    element (nth number branch)))
-	    ;; The value of `position' is nil.
+	    ;; (The value of `position' is nil.)
 	    (cond ((setq branches (cddr element))
 		   ;; This element has branch(es).
 		   (setq number (1- (length branches))
-			 position (copy-sequence (cadar w3m-url-history)))
+			 position (copy-sequence (cadar w3m-history)))
 		   (setcdr (nthcdr (1- (length position)) position)
 			   (list number 0)))
 		  ((> (length branch) (setq number (1+ number)))
 		   ;; The next element exists in the branch.
-		   (setq position (copy-sequence (cadar w3m-url-history)))
+		   (setq position (copy-sequence (cadar w3m-history)))
 		   (setcar (nthcdr (1- (length position)) position) number)))
 	    ;; Set the next position pointer.
-	    (setcar (cddar w3m-url-history) position)))))))
+	    (setcar (cddar w3m-history) position)))))))
 
-(defun w3m-history-push (url &rest attributes)
-  "Push URL and ATTRIBUTES onto `w3m-url-history' as the new current
-history element.  URL should be a string of an address of a link.
-ATTRIBUTES is a plist of any kind of data to supplement the URL.
-See the documentation for the variable `w3m-url-history' for more
-information."
-  (let (element)
-    (cond ((null w3m-url-history)
+(defun w3m-history-push (url &optional properties)
+  "Push URL and PROPERTIES onto both `w3m-history' and `w3m-history-flat'
+as a new current history element.  URL should be a string of an
+address of a link.  PROPERTIES is a plist to propertize the URL.
+If the history element has already been registered in the history
+structure, only position pointers of the history will be modified.
+Even so, properties in the history element will be replaced with
+PROPERTIES.  However, if PROPERTIES is `t', properties in the history
+won't be modified.  See the documentation for the variables
+`w3m-history' and `w3m-history-flat' for more information."
+  (let (element position)
+    (cond ((null w3m-history)
 	   ;; The dawn of the history.
-	   (setq w3m-url-history (list '(nil (0) nil) (list url attributes)))
-	   '(nil (0) nil))
-	  ((setq element (w3m-history-assoc url t))
+	   (setq element (list url (and (not (eq t properties))
+					properties))
+		 position '(nil (0) nil)
+		 w3m-history (list position element)
+		 w3m-history-flat (list (append element '((0)))))
+	   position)
+	  ((w3m-history-assoc url t properties)
 	   ;; URL has been registered in the history.
-	   (when (zerop (% (length attributes) 2))
-	     ;; Don't modify the existing records if the rest args
-	     ;; does not look like a plist or null.
-	     (setcdr element (list attributes)))
-	   (car w3m-url-history))
+	   (car w3m-history))
 	  (t
-	   (let* ((position (copy-sequence (cadar w3m-url-history)))
+	   (when (eq t properties)
+	     (setq properties nil))
+	   (let* ((position (copy-sequence (cadar w3m-history)))
 		  (class (1- (length position)))
 		  (number 0))
-	     (setq element (nthcdr (car position) (cdr w3m-url-history)))
+	     (setq element (nthcdr (car position) (cdr w3m-history)))
 	     (while (> class number)
 	       (setq number (1+ number)
 		     element (nth (nth number position) (cddar element))
@@ -331,14 +341,41 @@ information."
 		   (setq number (1- (length (car element))))
 		   (setcdr (nthcdr class position) (list (1- number) 0))
 		   (setcdr (nthcdr number (car element))
-			   (list (list (list url attributes)))))
+			   (list (list (list url properties)))))
 	       ;; The current position is the last of the branch.
 	       (setcar (nthcdr class position)
 		       (1+ (car (nthcdr class position))))
-	       (setcdr element (list (list url attributes))))
-	     (setcar w3m-url-history
-		     (list (cadar w3m-url-history) position nil)))))))
+	       (setcdr element (list (list url properties))))
+	     (setq w3m-history-flat
+		   (nconc w3m-history-flat
+			  (list (list url properties position))))
+	     (setcar w3m-history
+		     (list (cadar w3m-history) position nil)))))))
 
-;;(not-provided-yet 'w3m-hist)
+(defun w3m-history-copy-1 (sequence)
+  "Internal function used to `w3m-history-copy' for recursive funcall."
+  (let ((index (length sequence))
+	element rest)
+    (while (> index 0)
+      (setq index (1- index)
+	    element (nth index sequence)
+	    rest (cons (if (consp element)
+			   (w3m-history-copy-1 element)
+			 element)
+		       rest)))
+    rest))
+
+(defun w3m-history-copy (buffer)
+  "Copy the buffer-local variables `w3m-history' and `w3m-history-flat'
+from BUFFER to the current buffer."
+  (let (tree flat)
+    (save-excursion
+      (set-buffer buffer)
+      (setq tree (w3m-history-copy-1 w3m-history)
+	    flat (w3m-history-copy-1 w3m-history-flat)))
+    (setq w3m-history tree
+	  w3m-history-flat flat)))
+
+(provide 'w3m-hist)
 
 ;;; w3m-hist.el ends here

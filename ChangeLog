@@ -1,3 +1,17 @@
+2001-03-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-hist): Provide as a feature.
+	(w3m-history-copy, w3m-history-copy-1): New function.
+	(w3m-history-push): Handle the variable `w3m-history-flat' as well
+	as `w3m-history'.
+	(w3m-history-assoc): Ditto.
+	(w3m-history-flat function): Set the value of the variable
+	`w3m-history-flat'.
+	(w3m-history-flat variable): New buffer-local variable.
+	(The whole module): Replace the term ATTRIBUTES with PROPERTIES;
+	replace the symbol name of the variable `w3m-url-history' with
+	`w3m-history'.
+
 2001-03-29  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-real-url): Return original url when real url is nil.
