@@ -238,13 +238,6 @@ width using expression (+ (frame-width) VALUE)."
   "*Face to fontify image alternate strings."
   :group 'w3m-face)
 
-(defface w3m-form-face
-  '((((class color) (background light)) (:foreground "cyan" :underline t))
-    (((class color) (background dark)) (:foreground "red" :underline t))
-    (t (:underline t)))
-  "*Face to fontify forms."
-  :group 'w3m-face)
-
 (defcustom w3m-hook nil
   "*Hook run before w3m called."
   :group 'w3m
@@ -377,7 +370,9 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 (defcustom w3m-use-form nil
   "*Non-nil activates form extension. (EXPERIMENTAL)"
   :group 'w3m
-  :type 'boolean)
+  :type 'boolean
+  :require 'w3m-form)
+(when w3m-use-form (require 'w3m-form))
 
 (defconst w3m-extended-charcters-table
   '(("\xa0" . " ")
@@ -444,7 +439,6 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
 
 (defvar w3m-current-url nil "URL of this buffer.")
 (defvar w3m-current-title nil "Title of this buffer.")
-(defvar w3m-current-forms nil "Forms of this buffer.")
 (defvar w3m-url-history nil "History of URL.")
 (defvar w3m-url-yrotsih nil "FIXME: Sample of wrong symbol name.")
 (make-variable-buffer-local 'w3m-current-url)
@@ -513,7 +507,7 @@ for a charset indication")
 for a charset indication")
 
 (eval-and-compile
-  (defconst w3m-form-string-regexp
+  (defconst w3m-html-string-regexp
     "\\(\"\\(\\([^\"\\\\]+\\|\\\\.\\)+\\)\"\\|[^\"<> \t\r\f\n]*\\)"
     "Regexp used in parsing to detect string."))
 
@@ -654,40 +648,6 @@ If N is negative, last N items of LIST is returned."
       (kill-buffer buf)))
   (setq w3m-work-buffer-list nil))
 
-
-;;; Form:
-(defun w3m-form-new (method action &optional baseurl)
-  "Return new form object."
-  (vector 'w3m-form-object
-	  (if (stringp method)
-	      (intern method)
-	    method)
-	  (if baseurl
-	      (w3m-expand-url action baseurl)
-	    action)
-	  nil))
-
-(defsubst w3m-form-p (obj)
-  "Return t if OBJ is a form object."
-  (and (vectorp obj)
-       (symbolp (aref 0 obj))
-       (eq (aref 0 obj) 'w3m-form-object)))
-
-(defmacro w3m-form-method (form)
-  (` (aref (, form) 1)))
-(defmacro w3m-form-action (form)
-  (` (aref (, form) 2)))
-(defmacro w3m-form-plist (form)
-  (` (aref (, form) 3)))
-(defmacro w3m-form-put (form name value)
-  (let ((tempvar (make-symbol "formobj")))
-    (` (let (((, tempvar) (, form)))
-	 (aset (, tempvar) 3
-	       (plist-put (w3m-form-plist (, tempvar))
-			  (intern (, name)) (, value)))))))
-(defmacro w3m-form-get (form name)
-  (` (plist-get (w3m-form-plist (, form)) (intern (, name)))))
-
 (defun w3m-url-encode-string (str &optional coding)
   (apply (function concat)
 	 (mapcar
@@ -701,23 +661,6 @@ If N is negative, last N items of LIST is returned."
 	   (encode-coding-string
 	    str
 	    (or coding 'iso-2022-jp))))))
-
-(defun w3m-form-make-get-string (form)
-  (when (eq 'get (w3m-form-method form))
-    (let ((plist (w3m-form-plist form))
-	  (buf))
-      (while plist
-	(setq buf (cons
-		   (format "%s=%s"
-			   (w3m-url-encode-string (symbol-name (car plist)))
-			   (w3m-url-encode-string (nth 1 plist)))
-		   buf)
-	      plist (nthcdr 2 plist)))
-      (if buf
-	  (format "%s?%s"
-		  (w3m-form-action form)
-		  (mapconcat (function identity) buf "&"))
-	(w3m-form-action form)))))
 
 (put 'w3m-parse-attributes 'lisp-indent-function '1)
 (put 'w3m-parse-attributes 'edebug-form-spec '(&rest form))
@@ -758,144 +701,16 @@ If N is negative, last N items of LIST is returned."
 		     (` ((looking-at
 			  (, (format "%s=%s"
 				     (symbol-name attr)
-				     w3m-form-string-regexp)))
+				     w3m-html-string-regexp)))
 			 (setq (, attr) (, sexp))))))
 		 attributes))
 	    ((looking-at
-	      (, (concat "[A-z]*=" w3m-form-string-regexp))))
+	      (, (concat "[A-z]*=" w3m-html-string-regexp))))
 	    ((looking-at "[^<> \t\r\f\n]+")))
 	 (goto-char (match-end 0))
 	 (skip-chars-forward " \t\r\f\n"))
        (skip-chars-forward "^>")
        (,@ form))))
-
-(defun w3m-form-parse-region (start end)
-  "Parse HTML data in this buffer and return form objects."
-  (save-restriction
-    (narrow-to-region start end)
-    (let ((case-fold-search t)
-	  forms)
-      (goto-char (point-min))
-      (while (re-search-forward "<\\(\\(form\\)\\|\\(input\\)\\|select\\)[ \t\r\f\n]+" nil t)
-	(cond
-	 ((match-string 2)
-	  ;; When <FORM> is found.
-	  (w3m-parse-attributes (action (method :case-ignore))
-	    (setq forms
-		  (cons (w3m-form-new (or method "get")
-				      (or action w3m-current-url)
-				      w3m-current-url)
-			forms))))
-	 ((match-string 3)
-	  ;; When <INPUT> is found.
-	  (w3m-parse-attributes (name value (type :case-ignore))
-	    (when name
-	      (w3m-form-put (car forms)
-			    name
-			    (cons value (w3m-form-get (car forms) name))))))
-	 ;; When <SELECT> is found.
-	 (t
-	  ;; FIXME: この部分では、更に <OPTION> タグを処理して、後から
-	  ;; 利用できるように値のリストを作成し、保存しておく必要があ
-	  ;; る。しかし、これを実装するのは、まっとうな HTML parser を
-	  ;; 実装するのに等しい労力が必要であるので、今回は手抜きして
-	  ;; おく。
-	  )))
-      (set (make-local-variable 'w3m-current-forms) (nreverse forms)))))
-
-(defun w3m-fontify-forms ()
-  "Process half-dumped data in this buffer and fontify <input_alt> tags."
-  (goto-char (point-min))
-  (while (search-forward "<input_alt " nil t)
-    (let (start)
-      (setq start (match-beginning 0))
-      (goto-char (match-end 0))
-      (w3m-parse-attributes ((fid :integer)
-			     (type :case-ignore)
-			     (width :integer)
-			     (maxlength :integer)
-			     name value)
-	(search-forward "</input_alt>")
-	(goto-char (match-end 0))
-	(let ((form (nth fid w3m-current-forms)))
-	  (when form
-	    (cond
-	     ((string= type "submit")
-	      (put-text-property start (point)
-				 'w3m-action
-				 `(w3m-form-submit ,form)))
-	     ((string= type "reset")
-	      (put-text-property start (point)
-				 'w3m-action
-				 `(w3m-form-reset ,form)))
-	     (t ;; input button.
-	      (put-text-property start (point)
-				 'w3m-action
-				 `(w3m-form-input ,form
-						  ,name
-						  ,type
-						  ,width
-						  ,maxlength
-						  ,value))
-	      (w3m-form-put form name value)))
-	    (put-text-property start (point) 'face 'w3m-form-face))
-	  )))))
-
-(defun w3m-form-replace (string)
-  (let* ((start (text-property-any
-		 (point-min)
-		 (point-max)
-		 'w3m-action
-		 (get-text-property (point) 'w3m-action)))
-	 (width (string-width
-		 (buffer-substring
-		  start
-		  (next-single-property-change start 'w3m-action))))
-	 (prop (text-properties-at start))
-	 (buffer-read-only))
-    (goto-char start)
-    (insert (setq string (truncate-string string width))
-	    (make-string (- width (string-width string)) ?\ ))
-    (delete-region (point)
-		   (next-single-property-change (point) 'w3m-action))
-    (add-text-properties start (point) prop)
-    (point)))
-
-;;; FIXME: 本当は type の値に合わせて、適切な値のみを受け付けるように
-;;; チェックしたり、入力方法を変えたりするような実装が必要。
-(defun w3m-form-input (form name type width maxlength value)
-  (save-excursion
-    (let ((input (read-from-minibuffer
-		  (concat (upcase type) ":")
-		  (w3m-form-get form name))))
-      (w3m-form-put form name input)
-      (w3m-form-replace input))))
-
-(defun w3m-form-submit (form)
-  (let ((url (w3m-form-make-get-string form)))
-    (if url
-	(w3m-goto-url url)
-      (w3m-message "This form's method has not been supported: %s"
-		   (prin1-to-string (w3m-form-method form))))))
-
-(defsubst w3m-form-real-reset (form sexp)
-  (and (eq 'w3m-form-input (car sexp))
-       (eq form (nth 1 sexp))
-       (w3m-form-put form (nth 2 sexp) (nth 6 sexp))
-       (w3m-form-replace (nth 6 sexp))))
-
-(defun w3m-form-reset (form)
-  (save-excursion
-    (let (pos prop)
-      (when (setq prop (get-text-property
-			(goto-char (point-min))
-			'w3m-action))
-	(goto-char (or (w3m-form-real-reset form prop)
-		       (next-single-property-change pos 'w3m-action))))
-      (while (setq pos (next-single-property-change (point) 'w3m-action))
-	(goto-char pos)
-	(goto-char (or (w3m-form-real-reset form (get-text-property pos 'w3m-action))
-		       (next-single-property-change pos 'w3m-action)))))))
 
 
 ;;; HTML character entity handling:

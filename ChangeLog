@@ -1,3 +1,9 @@
+2001-03-14  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el: Split file.
+
+	* w3m-form.el: New file.
+
 2001-03-14  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-xmas.el (w3m-insert-image): Don't use current cursor point
