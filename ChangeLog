@@ -1,3 +1,9 @@
+2002-06-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-e21.el (w3m-ucs-to-char): Don't define it when already defined.
+
+	* w3m-xmas.el (w3m-ucs-to-char): Ditto.
+
 2002-06-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Release emacs-w3m-1.2.7 from emacs-w3m-1_2 branch.
