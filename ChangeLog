@@ -1,3 +1,10 @@
+2001-10-15  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-w3m-dev.el (shimbun-get-headers, shimbun-article):
+	Use `shimbun-coding-system-internal' to access coding-system of
+	shimbun-w3m-dev instead of referring to
+	`shimbun-w3m-dev-coding-system' directly.
+	
 2001-10-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-w3m-auto-insert-image): Change from 'defcont' to
@@ -14,7 +21,7 @@
 	Add new section 2. c), 2. e) about APEL, FLIM, shimbun library.
 	* README: Ditto.
 
-	* FAQ.ja (Q. Æ°ºî¤¹¤ë Emacs ¤Ï?): Add description about where to
+	* FAQ.ja (Q. $BF0:n$9$k(B Emacs $B$O(B?): Add description about where to
 	get APEL.
 	
 2001-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
@@ -5475,3 +5482,7 @@
 2000-06-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: New file.
+
+Local Variables:
+buffer-file-coding-system: iso-2022-jp
+End:
