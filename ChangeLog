@@ -1,3 +1,19 @@
+2005-03-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-url-readable-string): Check whether
+	`w3m-current-coding-system' is valid before calling
+	`w3m-url-decode-string'.
+	(w3m-local-dirlist-cgi, w3m-w3m-dump-extra): Use
+	`w3m-url-readable-string'.
+	(w3m-copy-buffer): Copy all buffer-local variables, and do not
+	cancel them even if `empty' option is set.
+	(w3m-display-progress-message): Import from w3m-util.el to
+	suppress byte-compile warnings.
+
+	* w3m-util.el (w3m-parse-attributes): Accept XHTML format of
+	boolean atttibutes.
+	(w3m-display-progress-message): Export to w3m.el.
+
 2005-03-03  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-url-readable-string): An expression is evaluated

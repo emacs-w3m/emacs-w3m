@@ -252,7 +252,9 @@ If POSITION is omitted, the current position is assumed."
 		       (setq attr (car attr)))
 		     (` ((looking-at
 			  (, (if (eq type :bool)
-				 (symbol-name attr)
+				 (format "%s\\([ \t\r\f\n]*=[ \t\r\f\n]*%s\\)?"
+					 (symbol-name attr)
+					 w3m-html-string-regexp)
 			       (format "%s[ \t\r\f\n]*=[ \t\r\f\n]*%s"
 				       (symbol-name attr)
 				       w3m-html-string-regexp))))
@@ -830,17 +832,6 @@ Otherwise return nil."
 		 (push (concat "^" (char-to-string (+ 64 char))) rest))))
 	(prin1 (apply 'concat (nreverse rest)) stream))
     (prin1 object stream)))
-
-(defun w3m-display-progress-message (url)
-  "Show \"Reading URL...\" message in the middle of a buffer."
-  (insert (make-string (max 0 (/ (1- (window-height)) 2)) ?\n)
-	  "Reading " (w3m-url-strip-authinfo url) "...")
-  (beginning-of-line)
-  (let ((fill-column (window-width)))
-    (center-region (point) (point-max)))
-  (goto-char (point-min))
-  (put-text-property (point) (point-max) 'w3m-progress-message t)
-  (sit-for 0))
 
 (defun w3m-modify-plist (plist &rest properties)
   "Change values in PLIST corresponding to PROPERTIES.  This is similar

@@ -2869,11 +2869,14 @@ a decoding scheme."
 		     (throw 'found-rule (cdr elem)))))
 	     w3m-show-decoded-url)))
       (if rule
-	  (w3m-url-decode-string url
-				 (if (eq t rule)
-				     (cons w3m-current-coding-system
-					   w3m-coding-system-priority-list)
-				   rule))
+	  (w3m-url-decode-string
+	   url
+	   (if (eq t rule)
+	       (if w3m-current-coding-system
+		   (cons w3m-current-coding-system
+			 w3m-coding-system-priority-list)
+		 w3m-coding-system-priority-list)
+	     rule))
 	url))))
 
 (defsubst w3m-url-transfer-encode-string (url &optional coding)
@@ -4086,7 +4089,7 @@ retrieval is successful."
 	  (w3m-local-content-type file)))))
 
 (defun w3m-local-dirlist-cgi (url)
-  (w3m-message "Reading %s..." url)
+  (w3m-message "Reading %s..." (w3m-url-readable-string url))
   (if w3m-dirlist-cgi-program
       (if (file-executable-p w3m-dirlist-cgi-program)
 	  (let ((coding-system-for-read 'binary)
@@ -4157,7 +4160,7 @@ retrieval is successful."
       (setq beg (match-beginning 0))
       (when (search-forward "</form>" nil t)
 	(delete-region beg (match-end 0)))))
-  (w3m-message "Reading %s...done" url))
+  (w3m-message "Reading %s...done" (w3m-url-readable-string url)))
 
 ;;; Retrieving data via HTTP:
 (defun w3m-remove-redundant-spaces (str)
@@ -4344,7 +4347,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
     (setq w3m-current-url url
 	  url (w3m-url-strip-authinfo url))
     (w3m-message "Reading %s...%s"
-		 url
+		 (w3m-url-readable-string url)
 		 (if (and w3m-async-exec (not w3m-process-waited))
 		     (substitute-command-keys "\
  (Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")
@@ -4357,7 +4360,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 				    (w3m-w3m-expand-arguments
 				     w3m-dump-head-source-command-arguments)
 				    (list url))))
-      (w3m-message "Reading %s...done" url)
+      (w3m-message "Reading %s...done" (w3m-url-readable-string url))
       (when success
 	(goto-char (point-min))
 	(let ((case-fold-search t))
@@ -5454,6 +5457,17 @@ compatibility which is described in Section 5.2 of RFC 2396.")
       (concat (substring base 0 (match-beginning 8))
 	      url)))))
 
+(defun w3m-display-progress-message (url)
+  "Show \"Reading URL...\" message in the middle of a buffer."
+  (insert (make-string (max 0 (/ (1- (window-height)) 2)) ?\n)
+	  "Reading " (w3m-url-readable-string (w3m-url-strip-authinfo url)) "...")
+  (beginning-of-line)
+  (let ((fill-column (window-width)))
+    (center-region (point) (point-max)))
+  (goto-char (point-min))
+  (put-text-property (point) (point-max) 'w3m-progress-message t)
+  (sit-for 0))
+
 (defsubst w3m-view-this-url-1 (url reload new-session)
   (lexical-let (pos buffer newbuffer wconfig)
     (if new-session
@@ -6115,14 +6129,13 @@ a page in a new buffer with the correct width."
       ;;
       (set-buffer (setq new (generate-new-buffer newname)))
       (w3m-mode)
+      (w3m-copy-local-variables buffer)
       (if w3m-toggle-inline-images-permanently
 	  (setq w3m-display-inline-images images)
 	(setq w3m-display-inline-images w3m-default-display-inline-images))
       ;; Make copies of `w3m-history' and `w3m-history-flat'.
       (w3m-history-copy buffer)
-      (setq w3m-initial-frames init-frames)
-      (when empty
-	(w3m-clear-local-variables)))
+      (setq w3m-initial-frames init-frames))
     (if (and (not just-copy) empty)
 	;; Pop to a window or a frame up because `w3m-goto-url' is not called.
 	(w3m-popup-buffer new)
