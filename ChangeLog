@@ -1,3 +1,8 @@
+2004-12-18  Tsuyoshi CHO  <mfalcon21@hotmail.com>
+
+	* shimbun/sb-x51.el (shimbun-x51-group-alist): Append "news" and
+	"story" entries; sort entires in alphabetical order.
+
 2004-12-17  Tetsurou Okazaki  <okazaki@be.to>
 
 	* shimbun/sb-sourceforge-jp.el (shimbun-sourceforge-jp): Inherit
