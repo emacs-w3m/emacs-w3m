@@ -1,3 +1,10 @@
+2003-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-view-this-url-1): Fix a window configuration only
+	when the buffer's major mode has changed from the w3m-mode to
+	another.
+	(w3m-goto-url): Don't erase a buffer when retrieving a local file.
+
 2003-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-copy-buffer): Copy the history before visiting a
