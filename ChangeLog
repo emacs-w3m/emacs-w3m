@@ -1,3 +1,9 @@
+2003-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/nnshimbun.el: Don't require `gnus-sum'.
+	(nnshimbun-replace-date-header): New function.
+	(nnshimbun-request-article-1): Use it.
+
 2003-01-28  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-local-dirlist-cgi): Treat a `local cookie file'.
