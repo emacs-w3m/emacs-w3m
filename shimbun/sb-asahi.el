@@ -215,7 +215,7 @@
        ,@(let ((people (copy-sequence antarctica)))
 	   (setcar people (format (car people) "people"))
 	   people))
-      ("national" "社会" "%s/" ,@default)
+      ("national" "社会" "%s/list.html" ,@default)
       ("politics" "政治" "%s/" ,@default)
       ("rss" "RSS" "http://www3.asahi.com/rss/index.rdf"
        ,(concat
