@@ -1,3 +1,8 @@
+2001-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-use-mule-ucs): Don't use Mule-UCS package for XEmacs
+	versions prior to 21.2.37.
+
 2001-10-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (top): It doesn't require `thingatpt'.

@@ -205,7 +205,13 @@ width using expression (+ (frame-width) VALUE)."
   (and (eq w3m-type 'w3m)
        (locate-library "un-define.el")
        (boundp 'emacs-major-version)
-       (>= emacs-major-version 20))
+       (if (featurep 'xemacs)
+	   ;; Mule-UCS does not support XEmacs versions prior to 21.2.37.
+	   (and (>= emacs-major-version 21)
+		(or (> emacs-minor-version 2)
+		    (and (= emacs-major-version 2)
+			 (>= emacs-beta-version 37))))
+	 (>= emacs-major-version 20)))
   "*Non nil means using multi-script support with Mule-UCS."
   :group 'w3m
   :type 'boolean
