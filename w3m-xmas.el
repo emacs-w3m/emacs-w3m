@@ -119,6 +119,11 @@ Buffer string between BEG and END are replaced with IMAGE."
     (set-specifier default-toolbar
 		   (cons (current-buffer) w3m-toolbar))))
 
+;;; Menu
+(defun w3m-setup-menu ()
+  ;; TODO
+  )
+
 ;;; Widget:
 (eval-when-compile (require 'wid-edit))
 

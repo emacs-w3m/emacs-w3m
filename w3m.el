@@ -483,7 +483,8 @@ See the file balloon-help.el for more information."
 
 (defconst w3m-extended-characters-table
   '(("\xa0" . " ")
-    ("\x80" . " ")))
+    ("\x80" . " ")
+    ("\x90" . " ")))
 
 (eval-and-compile
   (defconst w3m-entity-alist		; html character entities and values
@@ -1140,8 +1141,36 @@ If N is negative, last N items of LIST is returned."
     (defun w3m-image-type-available-p (image-type)
       "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
       nil))
+  ;; Menu
   (unless (fboundp 'w3m-setup-toolbar)
     (defun w3m-setup-toolbar ()))
+  (unless (fboundp 'w3m-setup-menu)
+    (defun w3m-setup-menu ()
+      (let ((map (make-sparse-keymap "W3M")))
+	(define-key w3m-mode-map [menu-bar] (make-sparse-keymap))
+	(define-key w3m-mode-map [menu-bar w3m] (cons "W3M" map))
+	(define-key map [w3m-copy-buffer]
+	  '("Copy Buffer" . w3m-copy-buffer))
+	(define-key map [w3m-bookmark-view]
+	  '("View Bookmark" . w3m-bookmark-view))
+	(define-key map [w3m-history]
+	  '("View History" . w3m-history))
+	(define-key map [w3m-print-current-url]
+	  '("Print Current URL" . w3m-print-current-url))
+	(define-key map [w3m-download-this-url]
+	  '("Download This URL" . w3m-download-this-url))
+	(define-key map [w3m-view-parent-page]
+	  '("Upward to Parent Page" . w3m-view-parent-page))
+	(define-key map [w3m-view-next-page]
+	  '("Forward to Next Page" . w3m-view-next-page))
+	(define-key map [w3m-view-previous-page]
+	  '("Back to previous page" . w3m-view-previous-page))
+	(define-key map [w3m-reload-this-page]
+	  '("Reload This Page" . w3m-reload-this-page))
+	(define-key map [w3m-goto-url]
+	  '("Go to..." . w3m-goto-url))
+	;; (define-key map [separator-eval] '("--"))
+	)))
   (unless (fboundp 'w3m-update-toolbar)
     (defun w3m-update-toolbar ())))
 
@@ -2454,6 +2483,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
   (use-local-map w3m-mode-map)
   (setq truncate-lines t)
   (w3m-setup-toolbar)
+  (w3m-setup-menu)
   (run-hooks 'w3m-mode-hook))
 
 (defun w3m-scroll-left (arg)
