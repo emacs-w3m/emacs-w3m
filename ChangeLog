@@ -1,3 +1,11 @@
+2004-09-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Don't make a new history when reloading.
+	(w3m-reload-this-page): Ditto.
+
+	* w3m-hist.el (w3m-history-restore-position): Don't cause an error
+	even if a page has shrunk.
+
 2004-09-06  David Hansen  <david.hansen@gmx.net>
 
 	* shimbun/sb-weeklyworldnews.el: New file.
