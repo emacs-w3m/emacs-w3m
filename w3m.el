@@ -729,7 +729,7 @@ of the original request method. -- RFC2616"
   :type 'hook)
 
 (defcustom w3m-change-buffer-hook
-  (when (featurep 'w3m-e21) '(w3m-update-tab-line)))
+  (when (featurep 'w3m-e21) '(w3m-update-tab-line))
   "*Hook run when w3m buffer is changed."
   :group 'w3m
   :type 'hook)
