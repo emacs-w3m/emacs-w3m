@@ -1,8 +1,3 @@
-2003-10-14  Paul Kinnucan  <paulk@mathworks.com>
-
-	* w3m.el (w3m-decode-entities-string): Make it work faster (don't
-	use `with-temp-buffer').
-
 2003-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-tab-half-space, w3m-tab-separator): Use `:width'
