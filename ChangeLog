@@ -1,3 +1,29 @@
+2003-03-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/nnshimbun.el (nnshimbun-request-article-1): Protect
+	against non-existent articles.
+
+	* shimbun/sb-yomiuri-html.el (shimbun-yomiuri-html-url,
+	shimbun-yomiuri-html-groups, shimbun-yomiuri-html-from-address,
+	shimbun-yomiuri-html-expiration-days): Default to the values which
+	are defined in sb-yomiuri.el.
+	(shimbun-yomiuri-html-content-start): Follow the change of the web
+	site.
+	(shimbun-yomiuri-html-x-face-alist): New variable.
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-top-level-domain): New.
+	(shimbun-yomiuri-url): Use `s-y-top-level-domain'.
+	(shimbun-yomiuri-groups): Follow the change of the web site.
+	(shimbun-yomiuri-from-address): Use `s-y-top-level-domain'.
+	(shimbun-yomiuri-group-path-alist): Abolish.
+	(shimbun-yomiuri-group-regexp-alist): New variable.
+	(shimbun-yomiuri-index-url): New function.
+	(shimbun-index-url): Use `s-y-index-url'.
+	(shimbun-yomiuri-japanese-string-to-number): New macro.
+	(shimbun-yomiuri-shorten-brackets-in-string): New function.
+	(shimbun-yomiuri-get-headers): New function.
+	(shimbun-get-headers): Use `s-y-get-headers'.
+
 2003-03-04  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-scan-message): Support New
