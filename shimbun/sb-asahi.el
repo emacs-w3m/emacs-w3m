@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com
 
-;; Copyright (C) 2001, 2002 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -48,17 +48,11 @@
   "List of available group names.  Each name should be a directory name
 which is in existence under the parent url `shimbun-asahi-url'.")
 
-(defvar shimbun-asahi-groups-should-use-list-page '("business" "sports")
-  "List of groups that the new news can be found in the list page.  If a
-group is included in this list, this program will look for the new
-news in the url \"update/list.html\" under a group directory rather than
-the top page of a group.")
-
 (defvar shimbun-asahi-from-address (concat "webmaster@www."
 					   shimbun-asahi-top-level-domain))
 
-(defvar shimbun-asahi-content-start "\n<!-- Start of kiji -->\n")
-(defvar shimbun-asahi-content-end "\n<!-- End of kiji -->\n")
+(defvar shimbun-asahi-content-start "\n<!-- FJZONE START NAME=\"HONBUN\"-->")
+(defvar shimbun-asahi-content-end "\n<!-- FJZONE END NAME=\"HONBUN\"-->")
 (defvar shimbun-asahi-x-face-alist
   '(("default" . "X-Face: +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|\
 bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
@@ -66,87 +60,16 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 
 (defvar shimbun-asahi-expiration-days 6)
 
+(defun shimbun-asahi-index-url (entity)
+  "Return a url for the list page corresponding to ENTITY."
+  (concat (shimbun-url-internal entity)
+	  (shimbun-current-group-internal entity)
+	  "/list.html"))
+
 (luna-define-method shimbun-index-url ((shimbun shimbun-asahi))
-  (let ((group (shimbun-current-group-internal shimbun)))
-    (concat (shimbun-url-internal shimbun)
-	    group
-	    "/"
-	    (if (member group shimbun-asahi-groups-should-use-list-page)
-		"update/list.html"
-	      ""))))
+  (shimbun-asahi-index-url shimbun))
 
-(defun shimbun-asahi-get-headers-in-the-list-page (entity)
-  "Return a list of header objects from the list page."
-  (when (search-forward "\n<!-- Start of past -->\n" nil t)
-    (delete-region (point-min) (point))
-    (when (search-forward "\n<!-- End of past -->\n" nil t)
-      (forward-line -1)
-      (delete-region (point) (point-max))
-      (goto-char (point-min))
-      (let* ((group (shimbun-current-group-internal entity))
-	     (regexp (concat "<a href=\"\\(/"
-			     (regexp-quote group) "/update/\\)?"
-			     "\\(\\([0-9][0-9]\\)\\([0-9][0-9]\\)/"
-			     "\\([0-9]+\\)\\.html\\)\"> *"))
-	     (case-fold-search t)
-	     year cmonth month id url headers
-	     (i 0))
-	(setq year (decode-time)
-	      cmonth (nth 4 year)
-	      year (nth 5 year))
-	(while (re-search-forward regexp nil t)
-	  (setq month (string-to-number (match-string 3))
-		id (format "<%d%02d%s.%s%%%s.%s>"
-			   (cond ((and (= 12 month) (= 1 cmonth))
-				  (1- year))
-				 ((and (= 1 month) (= 12 cmonth))
-				  (1+ year))
-				 (t
-				  year))
-			   month
-			   (match-string 4)
-			   (match-string 5)
-			   group
-			   shimbun-asahi-top-level-domain)
-		url (match-string 2))
-	  (push (shimbun-make-header
-		 0
-		 (shimbun-mime-encode-string
-		  (mapconcat 'identity
-			     (split-string
-			      (buffer-substring
-			       (match-end 0)
-			       (progn
-				 (search-forward "<br>" nil t) (point)))
-			      "\\(<[^>]+>\\|\r\\)")
-			     ""))
-		 (shimbun-from-address-internal entity)
-		 "" id "" 0 0 (format "%s%s/update/%s"
-				      (shimbun-url-internal entity)
-				      group url))
-		headers))
-	(setq headers (nreverse headers))
-	(while (and (nth i headers)
-		    (re-search-forward "\
->(\\([0-9][0-9]\\)/\\([0-9][0-9]\\) \\([0-9][0-9]:[0-9][0-9]\\))"
-				       nil t))
-	  (setq month (string-to-number (match-string 1)))
-	  (shimbun-header-set-date
-	   (nth i headers)
-	   (shimbun-make-date-string
-	    (cond ((and (= 12 month) (= 1 cmonth))
-		   (1- year))
-		  ((and (= 1 month) (= 12 cmonth))
-		   (1+ year))
-		  (t
-		   year))
-	    month
-	    (string-to-number (match-string 2))
-	    (match-string 3)))
-	  (setq i (1+ i)))
-	(nreverse headers)))))
-
-(defun shimbun-asahi-get-headers-in-the-top-page (entity)
+(defun shimbun-asahi-get-headers (entity)
   "Return a list of header objects from the top page."
   (let* ((group (shimbun-current-group-internal entity))
 	 (regexp (concat "<a[\t\n ]+href=[\t\n ]*\"/\\("
@@ -216,10 +139,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-asahi)
 					 &optional range)
-  (if (member (shimbun-current-group-internal shimbun)
-	      shimbun-asahi-groups-should-use-list-page)
-      (shimbun-asahi-get-headers-in-the-list-page shimbun)
-    (shimbun-asahi-get-headers-in-the-top-page shimbun)))
+  (shimbun-asahi-get-headers shimbun))
 
 (provide 'sb-asahi)
 
