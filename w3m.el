@@ -180,6 +180,16 @@ width using expression (+ (frame-width) VALUE)."
   :group 'w3m
   :type 'function)
 
+(defcustom w3m-use-mule-ucs
+  (and (eq w3m-type 'w3m) (locate-library "un-define.el"))
+  "*Non nil means using multi-script support with Mule-UCS."
+  :group 'w3m
+  :type 'boolean
+  :require 'w3m-ucs)
+
+(when w3m-use-mule-ucs
+  (require 'w3m-ucs))
+
 (defcustom w3m-coding-system 'iso-2022-7bit
   "*Basic coding system for `w3m'."
   :group 'w3m
@@ -191,7 +201,9 @@ width using expression (+ (frame-width) VALUE)."
   :type 'coding-system)
 
 (defcustom w3m-input-coding-system
-  (if (memq w3m-type '(w3mmee w3m-m17n)) 'binary 'iso-2022-7bit)
+  (cond ((memq w3m-type '(w3mmee w3m-m17n)) 'binary)
+	(w3m-use-mule-ucs 'w3m-euc-japan)
+	(t 'iso-2022-7bit))
   "*Coding system for write operations to `w3m'."
   :group 'w3m
   :type 'coding-system)
@@ -401,12 +413,14 @@ It will be used for the w3m system internal for Emacs 21.")
   "Hook run after removing inline images in `w3m-toggle-inline-images'.
 It will be used for the w3m system internal for Emacs 21.")
 
-(defcustom w3m-async-exec nil
+(defcustom w3m-async-exec t
   "*If non-nil, w3m is executed by an asynchronous process."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-process-connection-type t
+(defcustom w3m-process-connection-type
+  (not (and (featurep 'xemacs)
+	    (string-match "solaris" system-configuration)))
   "*Process connection type for w3m execution."
   :group 'w3m
   :type 'boolean)
@@ -660,7 +674,7 @@ If nil, use an internal CGI of w3m."
 		 latin1-entity))))))
 (defconst w3m-entity-regexp
   (eval-when-compile
-    (format "&\\(%s\\|#[0-9]+\\);?"
+    (format "&\\(%s\\|#[0-9]+\\|#x[0-9a-f]+\\);?"
 	    (if (fboundp 'regexp-opt)
 		(let ((fn (function regexp-opt)))
 		  ;; Don't funcall directly for avoiding compile warning.
@@ -1397,21 +1411,27 @@ If N is negative, last N items of LIST is returned."
     (set (intern (car elem) w3m-entity-db)
 	 (cdr elem))))
 
+(eval-and-compile
+  (unless (fboundp 'w3m-ucs-to-char)
+    (defun w3m-ucs-to-char (codepoint)
+      ;; case of immediate character (accept only 0x20 .. 0x7e)
+      (if (or (< codepoint 32) (< 127 codepoint))
+	  ?~				; un-supported character
+	codepoint))))
+
 (defsubst w3m-entity-value (name)
   ;; initialize if need
-  (if (null w3m-entity-db)
-      (w3m-entity-db-setup))
+  (unless w3m-entity-db
+    (w3m-entity-db-setup))
   ;; return value of specified entity, or empty string for unknown entity.
   (or (symbol-value (intern-soft name w3m-entity-db))
       (if (not (char-equal (string-to-char name) ?#))
 	  (concat "&" name)		; unknown entity
-	;; case of immediate character (accept only 0x20 .. 0x7e)
-	(let ((char (string-to-int (substring name 1))))
-	  ;; make character's representation with learning
-	  (set (intern name w3m-entity-db)
-	       (if (or (< char 32) (< 127 char))
-		   "~"			; un-supported character
-		 (char-to-string char)))))))
+	(setq name (substring name 1))
+	(let ((codepoint (if (char-equal (string-to-char name) ?x)
+			     (string-to-number (substring name 1) 16)
+			   (string-to-number name))))
+	  (char-to-string (w3m-ucs-to-char codepoint))))))
 
 (defun w3m-fontify-bold ()
   "Fontify bold characters in this buffer which contains half-dumped data."
@@ -2542,8 +2562,9 @@ to nil.
 	   (write-repeat 32))
        (write-repeat r0)))))
 
-(define-ccl-program w3m-euc-japan-encoder
-  `(1 (loop (read r0) (write-repeat r0))))
+(unless (get 'w3m-euc-japan-encoder 'ccl-program-idx)
+  (define-ccl-program w3m-euc-japan-encoder
+    `(1 (loop (read r0) (write-repeat r0)))))
 
 (unless (w3m-static-if (featurep 'xemacs)
 	    (find-coding-system 'w3m-euc-japan)

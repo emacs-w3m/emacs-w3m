@@ -1,3 +1,17 @@
+2001-09-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-use-mule-ucs): New user option.
+	(w3m-input-coding-system): Changed default value.
+	(w3m-async-exec): Ditto.
+	(w3m-process-connection-type) [Solaris]: Changed default value.
+	(w3m-entity-alist): Enlarge a regular expression.
+	(w3m-ucs-to-char): New function.
+	(w3m-euc-japan-encoder): Follow the change of `w3m-ucs.el'.
+
+	* w3mhack.el (w3mhack-examine-modules): Handle `w3m-ucs.el'.
+
+	* w3m-ucs.el: New file.
+
 2001-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-use-toolbar): Use `w3m-image-type-available-p'.

@@ -69,6 +69,8 @@
 	 print-level print-length)
     (unless (locate-library "mew")
       (push "mew-w3m.el" ignores))
+    (unless (locate-library "un-define")
+      (push "w3m-ucs.el" ignores))
     (if (locate-library "mime-def")
 	;; Add shimbun modules.
 	(dolist (file (directory-files (expand-file-name shimbun-dir)
