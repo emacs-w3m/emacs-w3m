@@ -58,7 +58,9 @@
   :type 'boolean)
 
 (defcustom w3m-form-use-textarea-backup t
-  "*Use automatic backup file of textarea input."
+  "*Non-nil means save and restore text that you wrote last in the texarea.
+Files to save text are stored in the directory specified by the
+`w3m-form-textarea-directory' variable."
   :group 'w3m
   :type 'boolean)
 
