@@ -50,7 +50,8 @@
   (autoload 'w3m-load-list "w3m")
   (autoload 'w3m-message "w3m")
   (autoload 'w3m-retrieve "w3m")
-  (autoload 'w3m-save-list "w3m"))
+  (autoload 'w3m-save-list "w3m")
+  (autoload 'w3m-url-readable-string "w3m"))
 
 (defcustom w3m-favicon-size nil
   "*Size of favicon. This value is used as geometry argument for `convert'."

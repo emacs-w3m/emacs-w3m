@@ -1,3 +1,7 @@
+2005-03-17  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-favicon.el: Add autoload of `w3m-url-readable-string'.
+
 2005-03-17  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* w3m.el (w3m-check-header-tags): Check abnormal `base' url.
