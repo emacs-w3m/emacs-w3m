@@ -1,3 +1,5 @@
+.SUFFIXES: .texi .info
+
 INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_INFO = install-info
@@ -35,13 +37,9 @@ emacs-w3m.info: version.texi emacs-w3m.texi
 
 emacs-w3m-ja.info: version.texi emacs-w3m-ja.texi
 
-%-ja.info: %-ja.texi
-	@rm -f $@;\
-	$(EMACSINFO) $<
-
-%.info: %.texi
+.texi.info:
 	@texi=$<;\
-	if test "$(MAKEINFO)" = "no" -o "$$texi" = "emacs-w3m-ja.texi"; then\
+	if test "$(MAKEINFO)" = "no" -o "$$texi" != "emacs-w3m.texi"; then\
 	  rm -f $@;\
 	  $(EMACSINFO) $$texi;\
 	else\
