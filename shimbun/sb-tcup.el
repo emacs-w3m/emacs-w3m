@@ -87,16 +87,22 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 	       shimbun-tcup-group-alist)))
 
 (defun shimbun-tcup-get-group-key (group)
+  "Returns (hostname . board-id)"
   (let ((url (cadr (assoc group
-			  shimbun-tcup-group-alist)))
-	(n 3)
-	keys)
-    (or (string-match "\\(^\\|://\\)\\([0-9]+\\)\\..+/\\([^/]+\\)/bbs" url)
-	(string-match "\\(^\\|://\\)www.+/\\([0-9]+\\)/\\([^/]+\\).html" url))
-    (while (> n 0)
-      (push (substring url (match-beginning n) (match-end n)) keys)
-      (setq n (1- n)))
-    keys))
+			  shimbun-tcup-group-alist))))
+    (cond
+     ((string-match "\\(^\\|://\\)\\([^:/]+\\)/\\([^/]+\\)/bbs"
+		    url)		; "http://6718.teacup.com/yutopia/bbs"
+      (cons (match-string 2 url)	; "6718.teacup.com"
+	    (match-string 3 url)))	; "yutopia"
+     ((string-match "\\(^\\|://\\)www[^/]+/\\([0-9]+\\)/\\([^/]+\\)\.html"
+		    url)		; "http://www67.tcup.com/6718/yutopia.html"
+      (cons (concat
+	     (match-string 2 url)	; "6718"
+	     ".teacup.com")
+	    (match-string 3 url)))	; "yutopia"
+     (t
+      nil))))
 
 (defun shimbun-tcup-stime-to-time (stime)
   (let (a b c)
@@ -127,8 +133,8 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 
 (defun shimbun-tcup-make-id (stime group)
   (let ((keys (shimbun-tcup-get-group-key group)))
-    (format "<%s.%s@%s.teacup.com>"
-	    stime (nth 2 keys) (nth 1 keys))))
+    (format "<%s.%s@%s>"		; "<1576232885.yutopia@6718.teacup.com>"
+	    stime (cdr keys) (car keys))))
 
 (luna-define-method shimbun-headers ((shimbun shimbun-tcup)
 				     &optional range)
