@@ -869,19 +869,19 @@ the implement of the mailcap parser to set `w3m-content-type-alist'.")
 	   (string :tag "Encoding Type"))))
 
 (defcustom w3m-decoder-alist
-  (` (gzip "gzip" ("-d"))	;; Don't use "gunzip" and "bunzip2"
-     (bzip "bzip2" ("-d"))	;; for broken OS & environment
-     (deflate
-       (, (if (not noninteractive)
-	      (let ((exec-path
-		     (let ((prefix (file-name-directory
-				    (directory-file-name
-				     (file-name-directory
-				      (w3m-which-command w3m-command))))))
-		       (list (expand-file-name "libexec/w3m" prefix)
-			     (expand-file-name "lib/w3m" prefix)))))
-		(w3m-which-command "inflate"))))
-       nil))
+  `((gzip "gzip" ("-d"))	;; Don't use "gunzip" and "bunzip2"
+    (bzip "bzip2" ("-d"))	;; for broken OS & environment
+    (deflate
+      ,(if (not noninteractive)
+	   (let ((exec-path
+		  (let ((prefix (file-name-directory
+				 (directory-file-name
+				  (file-name-directory
+				   (w3m-which-command w3m-command))))))
+		    (list (expand-file-name "libexec/w3m" prefix)
+			  (expand-file-name "lib/w3m" prefix)))))
+	     (w3m-which-command "inflate")))
+      nil))
   "Associative list of DECODER."
   :group 'w3m
   :type '(repeat
