@@ -1400,39 +1400,41 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 (defmacro w3m-make-help-echo (property)
   "Make a function for showing a `help-echo' string."
   (if (featurep 'xemacs)
-      (` (if (and (boundp 'emacs-major-version)
-		  (>= emacs-major-version 21))
-	     (function
-	      (lambda (extent)
-		(if (and w3m-track-mouse
-			 (eq (extent-object extent) (current-buffer)))
-		    (get-text-property (extent-start-position extent)
-				       (quote (, property))))))))
-    (` (if (and (boundp 'emacs-major-version)
+      `(if (and (boundp 'emacs-major-version)
 		(>= emacs-major-version 21))
 	   (function
-	    (lambda (window object pos)
-	      (if w3m-track-mouse
-		  (get-text-property pos (quote (, property))
+	    (lambda (extent)
+	      (if (and w3m-track-mouse
+		       (eq (extent-object extent) (current-buffer)))
+		  (get-text-property (extent-start-position extent)
+				     ',property)))))
+    `(if (and (boundp 'emacs-major-version)
+	      (>= emacs-major-version 21))
+	 (function
+	  (lambda (window object pos)
+	    (if w3m-track-mouse
+		(progn
+		  (w3m-display-message "");; Clear the echo area.
+		  (get-text-property pos ',property
 				     (window-buffer window)))))))))
 
 (defmacro w3m-make-balloon-help (property)
   "Make a function for showing a `balloon-help' under XEmacs."
   (when (featurep 'xemacs)
-    (` (let ((fn (intern (format "w3m-balloon-help-for-%s"
-				 (quote (, property))))))
-	 (prog1
-	     fn
-	   (unless (fboundp fn)
-	     (defalias fn
-	       (lambda (extent)
-		 (if (and w3m-track-mouse
-			  (eq (extent-object extent) (current-buffer)))
-		     (get-text-property (extent-start-position extent)
-					(quote (, property)))))))
-	   (when (and (featurep 'bytecomp)
-		      (not (compiled-function-p (symbol-function fn))))
-	     (byte-compile fn)))))))
+    `(let ((fn (intern (format "w3m-balloon-help-for-%s"
+			       ',property))))
+       (prog1
+	   fn
+	 (unless (fboundp fn)
+	   (defalias fn
+	     (lambda (extent)
+	       (if (and w3m-track-mouse
+			(eq (extent-object extent) (current-buffer)))
+		   (get-text-property (extent-start-position extent)
+				      ',property)))))
+	 (when (and (featurep 'bytecomp)
+		    (not (compiled-function-p (symbol-function fn))))
+	   (byte-compile fn))))))
 
 (defmacro w3m-pop-up-frame-parameters ()
   "Return a pop-up frame plist if this file is compiled for XEmacs,
@@ -2047,7 +2049,7 @@ If NO-CACHE is non-nil, cache is not used."
 	(progn
 	  (if force (setq status 'off))
 	  (w3m-toggle-inline-images-internal status no-cache url))
-      (message "No image at point"))))
+      (w3m-display-message "No image at point"))))
 
 (defun w3m-toggle-inline-images (&optional force no-cache)
   "Toggle displaying of inline images on current buffer.
@@ -3475,7 +3477,7 @@ also make a new frame for the copied session."
      ((setq url (w3m-url-at-point))
       (unless (eq 'quit (setq url (w3m-input-url nil url 'quit)))
 	(w3m-view-this-url-1 url arg new-session)))
-     (t (message "No URL at point")))))
+     (t (w3m-display-message "No URL at point")))))
 
 (defun w3m-mouse-view-this-url (event &optional arg)
   "Perform the command `w3m-view-this-url' by the mouse event."
@@ -3501,7 +3503,7 @@ session."
   (let ((submit (w3m-submit)))
     (if submit
 	(eval submit)
-      (message "Can't Submit at this point"))))
+      (w3m-display-message "Can't Submit at this point"))))
 
 (defun w3m-external-view (url &optional no-cache handler)
   (lexical-let ((url url)
@@ -3579,7 +3581,7 @@ session."
   (let ((url (w3m-image)))
     (if url
 	(w3m-external-view url)
-      (message "No image at point"))))
+      (w3m-display-message "No image at point"))))
 
 (defun w3m-save-image ()
   "Save the image under point to a file."
@@ -3587,7 +3589,7 @@ session."
   (let ((url (w3m-image)))
     (if url
 	(w3m-download url)
-      (message "No image at point"))))
+      (w3m-display-message "No image at point"))))
 
 (defun w3m-view-url-with-external-browser ()
   "View this URL."
@@ -3618,13 +3620,13 @@ session."
 		     (when (equal curl w3m-current-url)
 		       (goto-char pos)
 		       (w3m-refontify-anchor)))))))
-      (message "No URL at point"))))
+      (w3m-display-message "No URL at point"))))
 
 (defun w3m-print-current-url ()
   "Print the URL of current page and push it into kill-ring."
   (interactive)
   (kill-new w3m-current-url)
-  (message "%s" w3m-current-url))
+  (w3m-display-message "%s" w3m-current-url))
 
 (defun w3m-print-this-url (&optional arg)
   "Print the URL of the link under point."
@@ -3632,10 +3634,10 @@ session."
   (let ((url (or (w3m-anchor) (w3m-image))))
     (when (or url arg)
       (and url arg (kill-new url))
-      (message "%s"
-	       (or url
-		   (and (w3m-action) "There is a form")
-		   "There is no url")))))
+      (w3m-display-message "%s"
+			   (or url
+			       (and (w3m-action) "There is a form")
+			       "There is no url")))))
 
 (defmacro w3m-delete-all-overlays ()
   "Delete all momentary overlays."
@@ -3684,7 +3686,7 @@ session."
     (setq url (w3m-anchor)))
   (if url
       (w3m-edit-url url)
-    (message "No URL at point")))
+    (w3m-display-message "No URL at point")))
 
 (defvar w3m-goto-anchor-hist nil)
 (make-variable-buffer-local 'w3m-goto-anchor-hist)
@@ -4222,7 +4224,7 @@ Return t if deleting current frame or window is succeeded."
   (interactive "P")
   (when (or force
 	    (prog1 (y-or-n-p "Do you want to exit w3m? ")
-	      (message "")))
+	      (w3m-display-message "")))
     (w3m-delete-frame-maybe)
     (dolist (buffer (w3m-list-buffers t))
       (w3m-cancel-refresh-timer buffer)
@@ -4476,7 +4478,7 @@ it will prompt user where to save a file."
 			     (y-or-n-p
 			      (format "File(%s) already exists. Overwrite? "
 				      filename))
-			   (message ""))
+			   (w3m-display-message ""))
 			 (progn
 			   (delete-file filename)
 			   t))
@@ -5231,7 +5233,7 @@ buffers.  User can type following keys:
       (select-window w))
     (w3m-select-buffer-generate-contents current-buffer))
   (w3m-select-buffer-mode)
-  (or nomsg (message w3m-select-buffer-message)))
+  (or nomsg (w3m-display-message w3m-select-buffer-message)))
 
 (defun w3m-select-buffer-update (&rest args)
   (when (get-buffer-window w3m-select-buffer-name)
@@ -5357,7 +5359,7 @@ select them."
       (save-selected-window
 	(pop-to-buffer buffer)
 	(w3m-scroll-up-or-next-url nil)))
-    (message w3m-select-buffer-message)
+    (w3m-display-message w3m-select-buffer-message)
     buffer))
 
 (defun w3m-select-buffer-show-this-line-and-down ()
@@ -5426,7 +5428,7 @@ menu line."
   "Show the current buffer, and quit select a buffer from w3m-mode buffers."
   (interactive)
   (pop-to-buffer (w3m-select-buffer-show-this-line))
-  (message ""))
+  (w3m-display-message ""))
 
 (defun w3m-select-buffer-show-this-line-and-quit ()
   "Show the current buffer, and quit the menu to select a buffer from

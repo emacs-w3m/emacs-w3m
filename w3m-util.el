@@ -407,6 +407,15 @@ Otherwise return nil."
 	(prin1 (apply 'concat (nreverse rest)) stream))
     (prin1 object stream)))
 
+(defmacro w3m-display-message (string &rest args)
+  "Like `message', except that message logging is disabled."
+  (if (featurep 'xemacs)
+      (if args
+	  `(display-message 'no-log (format ,string ,@args))
+	`(display-message 'no-log ,string))
+    `(let (message-log-max)
+       (message ,string ,@args))))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here

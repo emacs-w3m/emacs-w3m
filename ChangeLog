@@ -1,3 +1,26 @@
+2002-02-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-display-message): New macro.
+
+	* w3m.el (w3m-make-help-echo): Clear the echo area when Emacs 21
+	is running; use the modern styles of backquote.
+	(w3m-make-balloon-help): Use the modern styles of backquote.
+	(w3m-toggle-inline-image): Use `w3m-display-message' instead of
+	`message' to say a trivial message.
+	(w3m-view-this-url): Ditto.
+	(w3m-submit-form): Ditto.
+	(w3m-view-image): Ditto.
+	(w3m-save-image): Ditto.
+	(w3m-download-this-url): Ditto.
+	(w3m-print-current-url): Ditto.
+	(w3m-print-this-url): Ditto.
+	(w3m-edit-this-url): Ditto.
+	(w3m-quit): Ditto.
+	(w3m-goto-ftp-url): Ditto.
+	(w3m-select-buffer): Ditto.
+	(w3m-select-buffer-show-this-line): Ditto.
+	(w3m-select-buffer-show-this-line-and-switch): Ditto.
+
 2002-02-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-after-cursor-move-hook): New option.
