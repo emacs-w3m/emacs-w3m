@@ -1,3 +1,14 @@
+2003-12-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-filter.el: Reconstructed completely.
+	(w3m-filter-rules): Change its spec and its default value.
+	(w3m-filter): Reimplemented.
+	(w3m-filter-delete-regions, w3m-filter-find-relationships): New
+	functions.
+	(w3m-filter-db, w3m-filter-db-size, w3m-filter-server-regexp,
+	w3m-filter-setup, w3m-filter-delete-region, w3m-filter-lwn.net,
+	w3m-filter-google.com, w3m-filter-www.zdnet.co.jp): Removed.
+
 2003-12-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-xmas-run-at-time): Rewrite w/o using fsf-compat.
