@@ -3680,6 +3680,28 @@ vinelinux.errata.1x
          "miyoshi@@meadowy.org")))
 @end lisp
 
+@item tDiary による日記
+閲覧したい日記の URL を調べて、以下のように設定して使います。
+
+@lisp
+(setq shimbun-tdiary-group-alist
+      '(("henahena"                          ;; グループ名
+         "http://www.fan.gr.jp/~ring/d/")    ;; URL
+        ("yoichi"
+         "http://yoichi.geiin.org/d/")))
+@end lisp
+
+@item chalow による日記
+閲覧したい日記の URL を調べて、以下のように設定して使います。
+
+@lisp
+(setq shimbun-chalow-group-alist
+      '(("yto"                               ;; グループ名
+         "http://nais.to/~yto/clog/"         ;; URL
+         "yto@@nais.to")                      ;; メールアドレス
+        ))
+@end lisp
+
 @item Wiki コンテンツ
 閲覧したい Wiki の URL を調べて、以下のように設定して使います。
 PukiWiki と Hiki に対応しています。もし、各内側のリストの 4 番目、5 番目

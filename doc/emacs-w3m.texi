@@ -3471,6 +3471,26 @@ This is an example to use @samp{sb-hns}.
          "miyoshi@@meadowy.org")))
 @end lisp
 
+@item tDiary
+This is an example to use @samp{sb-tdiary}.
+@lisp
+(setq shimbun-tdiary-group-alist
+      '(("henahena"                          ;; Group Name
+         "http://www.fan.gr.jp/~ring/d/")    ;; URL
+        ("yoichi"
+         "http://yoichi.geiin.org/d/")))
+@end lisp
+
+@item chalow
+This is an example to use @samp{sb-chalow}.
+@lisp
+(setq shimbun-chalow-group-alist
+      '(("yto"                               ;; Group Name
+         "http://nais.to/~yto/clog/"         ;; URL
+         "yto@@nais.to")                      ;; E-mail Address
+        ))
+@end lisp
+
 @item Wiki contents
 This is an example to use @samp{sb-wiki}.  @samp{sb-wiki} support
 PukiWiki and Hiki.  If you don't know which regexps to set to 4th and
