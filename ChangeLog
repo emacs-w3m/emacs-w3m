@@ -1,3 +1,7 @@
+2003-06-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-gyve.el: Removed.
+
 2003-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-text.el (shimbun-shallow-rendering): Use defun

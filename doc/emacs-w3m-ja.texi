@@ -3290,9 +3290,6 @@ gnome.gtk-i18n-list gnome.gtk-list gnome.gtk-perl-list
 gnome.guppi-list gnome.libart gnome.libart-hackers gnome.orbit-list
 gnome.vote gnome.wm-spec-list gnome.xml gnome.xslt
 
-@item @uref{http://www.gyve.org/gs-cjk/archive/, gs-cjk}
-gyve.gs-cjk
-
 @item @uref{http://www.h14m.org/ml/, h14m}
 h14m.hns-dev h14m.hns-users
 
