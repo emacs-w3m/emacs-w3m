@@ -129,7 +129,7 @@ This variable effected only XEmacs or Emacs 21."
   (let ((w3m-current-image-status mew-w3m-auto-insert-image)
 	(w3m-safe-url-regexp mew-w3m-safe-url-regexp)
 	w3m-force-redisplay	;; don't redraw
-	charset wcs
+	charset wcs xref
 	cache begin end params execute)
     (if (= (length args) 2)
 	;; Mew-2
@@ -143,6 +143,18 @@ This variable effected only XEmacs or Emacs 21."
     (if (and cache (or execute (<= end begin)))
 	;; 'C-cC-e' + Old Mew
 	(apply 'mew-mime-text/html (list cache begin end params execute))
+      (save-excursion
+	;; search Xref: Header in SHIMBUN article
+	(when cache (set-buffer cache))
+	(goto-char (point-min))
+	(when (re-search-forward mew-eoh nil t)
+	  (let ((eoh (point))
+		(case-fold-search t))
+	    (goto-char (point-min))
+	    (when (and (re-search-forward "^X-Shimbun-Id: " eoh t)
+		       (goto-char (point-min))
+		       (re-search-forward "^Xref: \\(.+\\)\n" eoh t))
+	      (setq xref (mew-match 1))))))
       (mew-elet
        (cond
 	((and (null cache) (eq w3m-type 'w3m-m17n))
@@ -163,9 +175,9 @@ This variable effected only XEmacs or Emacs 21."
 			 "-o" "ext_halfdump=1"
 			 "-o" "pre_conv=1"
 			 "-o" "strict_iso2022=0")))
-	   (w3m-region begin end)))
+	   (w3m-region begin end xref)))
 	((null cache)	;; Mew-2 + w3m, w3mmee
-	 (w3m-region begin end))
+	 (w3m-region begin end xref))
 	(t		;; Old Mew
 	 (setq charset (or (mew-syntax-get-param params "charset")
 			   (save-excursion
@@ -178,7 +190,8 @@ This variable effected only XEmacs or Emacs 21."
 	  mew-cs-dummy wcs
 	  (w3m-region (point)
 		      (progn (insert-buffer-substring cache begin end)
-			     (point))))))
+			     (point))
+		      xref))))
        (put-text-property (point-min) (1+ (point-min)) 'w3m t)))))
 
 (defvar w3m-mew-support-cid (fboundp 'mew-syntax-get-entry-by-cid))

@@ -1,3 +1,8 @@
+2001-10-26  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-mime-text/html-w3m): Support `Xref' header in
+	SHIMBUN article.
+
 2001-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m): Call `w3m-mode' for a new session; use
