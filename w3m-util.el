@@ -271,12 +271,12 @@ An argument of nil means kill the current buffer."
 			   (buffer-name buffer)))
     (if (match-beginning 1)
 	(string-to-number (match-string 2 (buffer-name buffer)))
-      0)))
+      1))) ;; `1' should not be represented in the buffer name.
 
 (defsubst w3m-buffer-set-number (buffer number)
   (unless (eq (w3m-buffer-number buffer) number)
     (with-current-buffer buffer
-      (let ((newname (if (zerop number)
+      (let ((newname (if (= number 1)
 			 "*w3m*"
 		       (format "*w3m*<%d>" number))))
 	(unless (get-buffer newname)
@@ -292,12 +292,12 @@ An argument of nil means kill the current buffer."
 	   (setq x (cons x
 			 (if (match-beginning 1)
 			     (string-to-number (match-string 2 x))
-			   0))))
+			   1))))
       (if (string-match "\\`\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'" y)
 	  (< (cdr x)
 	     (if (match-beginning 1)
 		 (string-to-number (match-string 2 y))
-	       0))
+	       1))
 	(string< (car x) y))
     (string< x y)))
 
