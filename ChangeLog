@@ -1,3 +1,7 @@
+2001-03-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_CHECK_EMACS): Add an option `--with-xemacs'.
+
 2001-03-19  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-download): Bind `file-coding-system' to binary.

@@ -34,8 +34,15 @@ AC_DEFUN(AC_CHECK_EMACS,
       AC_CHECK_PROGS(EMACS, emacs xemacs mule, emacs)
     else
       AC_CHECK_PROG(EMACS, ${withval}, ${withval}, emacs)
-    fi],
-   [AC_CHECK_PROGS(EMACS, emacs xemacs mule, emacs)])
+    fi])
+  AC_ARG_WITH(xemacs,
+   [  --with-xemacs=XEMACS    compile with XEMACS [XEMACS=xemacs]],
+   [if test x$withval = xyes -o x$withval = x; then
+      AC_CHECK_PROG(EMACS, xemacs, xemacs, xemacs)
+    else
+      AC_CHECK_PROG(EMACS, $withval, $withval, xemacs)
+    fi])
+  test -z "${EMACS}" && AC_CHECK_PROGS(EMACS, emacs xemacs mule, emacs)
   AC_SUBST(EMACS)
   
   AC_MSG_CHECKING([what a flavor does ${EMACS} have])
@@ -116,7 +123,7 @@ AC_DEFUN(AC_PATH_LISPDIR, [
 	tribe=${EMACS_FLAVOR}
   fi
   if test ${prefix} = NONE; then
-	AC_MSG_CHECKING([prefix for your Emacs])
+	AC_MSG_CHECKING([prefix for ${EMACS}])
 	AC_EMACS_LISP(prefix,(expand-file-name \"..\" invocation-directory),noecho)
 	prefix=${EMACS_cv_SYS_prefix}
 	AC_MSG_RESULT(${prefix})
