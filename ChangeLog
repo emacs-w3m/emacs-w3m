@@ -3,6 +3,10 @@
 	* w3m.el (w3m-copy-buffer): Copy the history before visiting a
 	page in order to show the about://history/ page correctly; adjust
 	the position in the history after copying.
+	(w3m-goto-url): Use buffer-local properties instead of global
+	properties for form data.
+	(w3m-reload-this-page): Specify the history element to the
+	`w3m-goto-url' function in order to submit the form data.
 
 2003-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
