@@ -1,3 +1,7 @@
+2001-08-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-xemacs.el (shimbun-xemacs-x-face-alist): Added.
+
 2001-08-21  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-mew.el: Rewrite for renewal of mew.org ml archive.

@@ -45,6 +45,10 @@
 (defvar shimbun-xemacs-reverse-flag nil)
 (defvar shimbun-xemacs-litemplate-regexp
   "<td><strong><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a></strong>\n<td><em>\\([^<]+\\)</em>")
+(defvar shimbun-xemacs-x-face-alist
+  '(("default" . "\
+X-Face: %@A&y\\ef)A6pi|q43;M>uyhO)~NP*fpdo0XrUuutf0|nku\\O5JV(7EG%odc'n6}G@tYR
+ l+B#[n,%B`.sHZ5>3MZvrm%,rWE7)c}ZXjH\\>=p@AL\\y\\gyu|.lJ8B`F++86")))
 
 (provide 'sb-xemacs)
 
