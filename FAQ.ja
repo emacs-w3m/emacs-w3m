@@ -124,11 +124,19 @@
    http://www.imagemagick.org/ から入手してインストールしてください。
 
 ** Q. Emacs21 で favicon を表示しようとしたのですが、Emacs がロックしま
-   した。
+   した / または emacs-w3m を立ち上げようとしたら、激しくディスクアクセ
+   スした後、"process `convert' exited abnormally with code `10'" などと
+   表示されました。
 
    Image Magick のバージョンを確認してください。
    ImageMagick-5.2.1 付属の convert ではそうなりました。
-   ImageMagick-5.4.0-5 付属の convert では動作確認されています。
+   ImageMagick-5.4.0-5 以上に付属の convert では動作確認されています。
+
+   もし ImageMagick が使えない/使いたくない場合は .emacs ファイルなどに
+
+   (setq w3m-use-favicon nil)
+
+   の設定を追加して下さい。
 
 * shimbun
 

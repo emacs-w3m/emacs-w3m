@@ -53,6 +53,10 @@
 (push default-directory load-path)
 (push (expand-file-name shimbun-module-directory default-directory) load-path)
 
+(defconst w3m-use-favicon nil
+  "Bind the value of this option to nil to inhibit the use of ImageMagic
+when building Emacs-W3M, because it might waste the computer resources.")
+
 (defun w3mhack-examine-modules ()
   "Examine w3m modules should be byte-compile'd."
   (let* ((modules (directory-files default-directory nil "^[^#]+\\.el$"))

@@ -1,3 +1,13 @@
+2001-12-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+	Suggested by NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>.
+
+	* w3m-e21.el (w3m-use-favicon): Default to t, but it will be
+	altered to nil automatically if ImageMagick does not support a
+	favicon; never use ImageMagick if it has been set to nil.
+
+	* w3mhack.el (w3m-use-favicon): Bind it to nil to inhibit the use
+	of ImageMagic.
+
 2001-12-13  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-scan-replace): Rename from

@@ -325,15 +325,17 @@ a large number of bits per pixel."
 	       (error nil))))
     (and xpm (string-match "\"2 1 2 1\"" xpm) t)))
 
-(defcustom w3m-use-favicon (w3m-imagick-convert-usable-p)
-  "*Use favicon."
+(defcustom w3m-use-favicon t
+  "*Use favicon.  It will be set to nil automatically if ImageMagick's
+`convert' does not support a Windoze ico format.  You can inhibit the
+use of ImageMagick absolutely by setting this option to nil."
   :get (lambda (symbol)
-	 (and (w3m-imagick-convert-usable-p)
-	      (default-value symbol)))
+	 (and (default-value symbol)
+	      (w3m-imagick-convert-usable-p)))
   :set (lambda (symbol value)
 	 (custom-set-default symbol
-			     (and (w3m-imagick-convert-usable-p)
-				  value)))
+			     (and value
+				  (w3m-imagick-convert-usable-p))))
   :group 'w3m
   :type 'boolean)
 
