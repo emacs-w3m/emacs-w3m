@@ -62,9 +62,13 @@ This value is default and used only when spec defined by
 	   '("google" "http://www.google.com/search?q=%s" nil)))
       ("google-ja" "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja" shift_jis)
       ("goo-ja" "http://www.goo.ne.jp/default.asp?MT=%s" euc-japan)
+      ("excite-ja" "http://www.excite.co.jp/search.gw?target=combined&look=excite_jp&lang=jp&tsug=-1&csug=-1&search=%s" shift_jis)
+      ("lycos-ja" "http://www.lycos.co.jp/cgi-bin/pursuit?query=\"%s\"&cat=jp&encoding=shift-jis" shift_jis)
+      ("altavista" "http://altavista.com/sites/search/web?q=\"%s\"&kl=ja&search=Search"  nil)
       ("rpmfind" "http://rpmfind.net/linux/rpm2html/search.php?query=%s" nil)
       ("debian-pkg" "http://packages.debian.org/cgi-bin/search_contents.pl?directories=yes&arch=i386&version=unstable&case=insensitive&word=%s" nil)
       ("debian-bts" "http://bugs.debian.org/cgi-bin/pkgreport.cgi?archive=yes&pkg=%s" nil)
+      ("freebsd-users-jp" "http://home.jp.FreeBSD.org/cgi-bin/namazu.cgi?key=\"%s\"&whence=0&max=50&format=long&sort=score&dbname=FreeBSD-users-jp" euc-japan)
       ("iij-archie" "http://www.iij.ad.jp/cgi-bin/archieplexform?query=%s&type=Case+Insensitive+Substring+Match&order=host&server=archie1.iij.ad.jp&hits=95&nice=Nice")))
   "*An alist of search engines.
 Each elemnt looks like (ENGINE ACTION CODING)

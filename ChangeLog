@@ -1,3 +1,8 @@
+2001-09-28  kkonishi <ironbeat@mail.st.rim.or.jp>
+
+	* w3m-search.el (w3m-search-engine-alist): New search engines,
+	`excite-ja', `lycos-ja', `altavista' and `freebsd-users-jp'.
+
 2001-09-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-goto-url): Speed up the action to refer a name
