@@ -268,7 +268,7 @@ Indispensable to XEmacs, Emacs 19.34 or Mule 2.3.  You should install
 @acronym{APEL} before building emacs-w3m.  @acronym{APEL} is available
 at:
 
-@uref{ftp://ftp.m17n.org/pub/mule/apel/apel-10.5.tar.gz}
+@uref{ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz}
 
 Note that you must not use the @acronym{APEL} XEmacs package (which is
 contained in SUMO).  If you have already installed the @acronym{APEL}
@@ -278,7 +278,7 @@ directives in order to newly install @acronym{APEL}):
 
 @example
 % rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
-% cd apel-10.5
+% cd apel-10.6
 % make install-package XEMACS=xemacs-21.4.x\
   PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
 @end example

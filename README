@@ -51,7 +51,7 @@
    c) XEmacs
       APEL package is required.  It is available at:
 
-          ftp://ftp.m17n.org/pub/mule/apel/apel-10.5.tar.gz
+          ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz
 
       Note: You must not use the APEL XEmacs package (which is contained
        in SUMO).  If you have already installed the APEL XEmacs package,
@@ -60,7 +60,7 @@
        newly install APEL):
 
           % rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
-          % cd apel-10.5
+          % cd apel-10.6
           % make install-package XEMACS=xemacs-21.4.x\
             PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
 
