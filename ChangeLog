@@ -1,5 +1,11 @@
 2001-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el: Modify messages in `w3m-view-header', `w3m-view-source',
+	`w3m-edit-this-url', `w3m-print-this-url', `w3m-download-this-url',
+	`w3m-view-current-url-with-external-browser', `w3m-save-image',
+	`w3m-view-image', `w3m-mouse-view-this-url', `w3m-view-this-url'
+	and `w3m-search-name-anchor'.
+
 	* w3m.el (w3m-toggle-inline-images): Signal an error when the
 	function `w3m-display-graphic-p' returns nil.
 	(w3m-display-graphic-p): Alias to `ignore' by default.

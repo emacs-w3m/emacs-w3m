@@ -2317,7 +2317,7 @@ this function returns t.  Otherwise, returns nil."
 	  (throw 'found t))
 	(setq pos (next-single-property-change pos 'w3m-name-anchor)))
       (unless quiet
-	(message "Not found such name anchor."))
+	(message "No such anchor: %s" name))
       nil)))
 
 (defun w3m-parent-page-available-p ()
@@ -2399,7 +2399,7 @@ this function returns t.  Otherwise, returns nil."
     (cond
      (url (w3m-goto-url url arg))
      (act (eval act))
-     (t (message "No URL at point.")))))
+     (t (message "No URL at point")))))
 
 (defun w3m-mouse-view-this-url (event)
   (interactive "e")
@@ -2408,7 +2408,7 @@ this function returns t.  Otherwise, returns nil."
     (cond
      (url (w3m-view-this-url))
      (img (w3m-view-image))
-     (t (message "No URL at point.")))))
+     (t (message "No URL at point")))))
 
 (defun w3m-external-view (url &optional no-cache)
   (let* ((type (w3m-content-type url))
@@ -2462,7 +2462,7 @@ this function returns t.  Otherwise, returns nil."
   (let ((url (w3m-image)))
     (if url
 	(w3m-external-view url)
-      (message "No file at point."))))
+      (message "No image at point"))))
 
 (defun w3m-save-image ()
   "Save the image under point to a file."
@@ -2470,7 +2470,7 @@ this function returns t.  Otherwise, returns nil."
   (let ((url (w3m-image)))
     (if url
 	(w3m-download url)
-      (message "No file at point."))))
+      (message "No image at point"))))
 
 (defun w3m-view-current-url-with-external-browser ()
   "View this URL."
@@ -2480,7 +2480,7 @@ this function returns t.  Otherwise, returns nil."
 	(and (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
 	     (setq url w3m-current-url)))
     (when url
-      (message "Browse <%s>" url)
+      (message "Browsing <%s>..." url)
       (w3m-external-view url))))
 
 (defun w3m-download-this-url ()
@@ -2491,7 +2491,7 @@ this function returns t.  Otherwise, returns nil."
 	(progn
 	  (w3m-download url)
 	  (w3m-refontify-anchor (current-buffer)))
-      (message "No URL at point."))))
+      (message "No URL at point"))))
 
 (defun w3m-print-current-url ()
   "Print the URL of current page and push it into kill-ring."
@@ -2505,8 +2505,8 @@ this function returns t.  Otherwise, returns nil."
   (let ((url (w3m-anchor)))
     (and add-kill-ring url (kill-new url))
     (message "%s" (or url
-		      (and (w3m-action) "Form found.")
-		      "Not found."))))
+		      (and (w3m-action) "There's a form")
+		      "There's no url"))))
 
 (defun w3m-edit-current-url ()
   "Edit the local file pointed by the URL of current page"
@@ -2520,10 +2520,10 @@ this function returns t.  Otherwise, returns nil."
   (interactive)
   (setq url (or url (w3m-anchor)))
   (if (null url)
-      (message "No URL at point.")
+      (message "No URL at point")
     (if (w3m-url-local-p url)
 	(funcall w3m-edit-function (w3m-url-to-file-name url))
-      (error "URL:%s is not local." url))))
+      (error "URL:%s is not a local file" url))))
 
 (defvar w3m-goto-anchor-hist nil)
 (make-variable-buffer-local 'w3m-goto-anchor-hist)
@@ -3193,7 +3193,7 @@ works on Emacs.
   "Display source of this current buffer."
   (interactive)
   (if (string-match "^about://header/" w3m-current-url)
-      (message "Can't load source %s." w3m-current-url)
+      (message "Can't load a source for %s." w3m-current-url)
     (w3m-goto-url (if (string-match "^about://source/" w3m-current-url)
 		      (substring w3m-current-url (match-end 0))
 		    (concat "about://source/" w3m-current-url)))))
@@ -3213,7 +3213,7 @@ works on Emacs.
   (if (or (and (string-match "^about:" w3m-current-url)
 	       (not (string-match "^about://header/" w3m-current-url)))
 	  (string-match "^file://" w3m-current-url))
-      (message "Can't load header %s." w3m-current-url)
+      (message "Can't load a header for %s" w3m-current-url)
     (w3m-goto-url (if (string-match "^about://header/" w3m-current-url)
 		      (substring w3m-current-url (match-end 0))
 		    (concat "about://header/" w3m-current-url)))))
