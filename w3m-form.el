@@ -352,23 +352,57 @@ If no field in forward, return nil without moving."
 						   candidates))))))))))))
     forms))
 
-(defun w3m-form-replace-string (start end string width)
-  "Replace text between START and END with STRING and goto the end of
-text.  STRING will be truncated to end at the column WIDTH, width of
-text will not be changed.  It does nothing if the length of STRING is
-zero."
-  ;; Note that this is a kludge to replace a text between `start' and
-  ;; `end' with just a `string', because there are not only a `string'
-  ;; but also some markups.  However, markups have become worthless at
-  ;; the time, so there is no real problem."
-  (when (and (stringp string)
-	     (> (length string) 0))
-    (delete-region (goto-char start) end)
-    (when (prog1
-	      (and (numberp width)
-		   (setq string (truncate-string string width)))
-	    (insert string))
-      (insert-char ?\  (- width (string-width string))))))
+(defun w3m-form-resume (forms)
+  "Resume content of all forms in the current buffer using FORMS."
+  (save-excursion
+    (goto-char (point-min))
+    (let (fid type name form textareas)
+      (while (w3m-form-goto-next-field)
+	(setq fid (get-text-property (point) 'w3m-form-field-id))
+	(when (and fid
+		   (string-match 
+		    "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\(.*\\)$"
+		    fid))
+	  (setq form (nth (string-to-number (match-string 1 fid))
+			  forms)
+		type (match-string 2 fid)
+		name (match-string 3 fid))
+	  (cond
+	   ((or (string= type "submit")
+		(string= type "clear")
+		;; Do nothing.
+		))
+	   ((string= type "password")
+	    (w3m-form-replace (w3m-form-get form name)
+			      'invisible))
+	   ((or (string= type "checkbox")
+		(string= type "radio"))
+	    (when (stringp (w3m-form-get form name))
+	      (w3m-form-replace 
+	       (if (string= (w3m-form-get form name)
+			    (nth 3 (w3m-action)))
+		   "*" " "))))
+	   ((string= type "select")
+	    (let ((selects (w3m-form-get form name)))
+	      (w3m-form-replace (cdr (assoc (car selects) (cdr selects))))))
+	   ((string= type "textarea")
+	    (let ((hseq (nth 2 (w3m-action))))
+	      (when (> hseq 0)
+		(setq textareas
+		      (cons (cons hseq (w3m-form-get form name))
+			    textareas)))))
+	   ((string= type "file")
+	    (let ((value (w3m-form-get form name)))
+	      (when (and value
+			 (consp value))
+		(w3m-form-replace (cdr value)))))
+	   (t
+	    (let ((value (w3m-form-get form name)))
+	      (when value
+		(w3m-form-replace value)))))))
+      (dolist (textarea textareas)
+	(when (cdr textarea)
+	  (w3m-form-textarea-replace (car textarea) (cdr textarea)))))))
 
 ;;;###autoload
 (defun w3m-fontify-forms ()
@@ -475,8 +509,6 @@ zero."
 					     (w3m-form-get ,form ,name))
 		 w3m-cursor-anchor (w3m-form-input-file ,form ,name ,value))))
 	     (t ;; input button.
-	      (w3m-form-replace-string start (point)
-				       (w3m-form-get form name) width)
 	      (add-text-properties
 	       start (point)
 	       `(face
