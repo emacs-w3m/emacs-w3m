@@ -1,3 +1,10 @@
+2003-07-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-arrived-load-list): Check that `w3m-arrived-file'
+	exists before deleting it.
+	(w3m-check-refresh-attribute): Condition relaxed.
+	(w3m-region): Disable checking refresh attribute.
+
 2003-06-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Some miscellaneous changes and large changes to make a

@@ -2181,7 +2181,8 @@ with ^ as `cat -v' does."
 	   ;; 1.177 and olders.
 	   (<= (length (car list)) 4))
       (setq list nil)
-      (delete-file w3m-arrived-file))
+      (when (file-exists-p w3m-arrived-file)
+	(delete-file w3m-arrived-file)))
     list))
 
 (defun w3m-arrived-setup ()
@@ -4064,9 +4065,7 @@ type as a string argument, when retrieve is complete."
 (defun w3m-check-refresh-attribute ()
   "Get REFRESH attribute in META tags."
   (setq w3m-current-refresh nil)
-  (when (and w3m-use-refresh
-	     w3m-current-url
-	     (string-match "\\`\\(http\\|ftp\\)s?://" w3m-current-url))
+  (when w3m-use-refresh
     (goto-char (point-min))
     (let ((case-fold-search t)
 	  sec refurl)
@@ -6489,7 +6488,8 @@ ex.) c:/dir/file => //c/dir/file"
 	  w3m-current-coding-system (if charset
 					(w3m-charset-to-coding-system charset)
 				      w3m-coding-system)
-	  w3m-current-title (w3m-rendering-buffer charset))
+	  w3m-current-title (let (w3m-use-refresh)
+			      (w3m-rendering-buffer charset)))
     (w3m-fontify)
     (when (w3m-display-inline-images-p)
       (and w3m-force-redisplay (sit-for 0))
