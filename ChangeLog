@@ -1,3 +1,10 @@
+2002-04-07  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html-url): Changed 
+	default value.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-url): Ditto.
+
 2002-04-12  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-xemacs.el (shimbun-xemacs-groups): Add xemacs-design.
