@@ -88,7 +88,29 @@
    ((featurep 'xemacs)
     (require 'w3m-xmas))
    ((>= emacs-major-version 23)
-    (require 'w3m-e23))
+    ;; Emacs-w3m of the released version does not support Emacs 23+.
+    ;; We load w3m-e23.el(c) that exists in the same directory as
+    ;; w3m.el(c) so as to exclude ones in other places.
+    (unless (featurep 'w3m-e23)
+      (let ((files (list (and (boundp 'byte-compile-current-file)
+			      (symbol-value 'byte-compile-current-file))
+			 (and (boundp 'load-file-name)
+			      (symbol-value 'load-file-name))
+			 (locate-library "w3m")))
+	    file)
+	(while files
+	  (when (stringp (setq file (pop files)))
+	    (if (condition-case nil
+		    ;; `load' returns t if the file exists.
+		    (load (expand-file-name "w3m-e23"
+					    (file-name-directory file))
+			  nil t)
+		  (error nil))
+		(setq files nil)
+	      (unless files
+		(error "Emacs-w3m of this version does not support Emacs %d;\
+ try the development version"
+		       emacs-major-version))))))))
    ((>= emacs-major-version 21)
     (require 'w3m-e21))
    ((= emacs-major-version 20)

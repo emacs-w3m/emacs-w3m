@@ -1,7 +1,15 @@
-2005-03-11 Masaru Nomiya <nomiya@ttmy.ne.jp>
-	
-	* shimbun/sb-asahi.el : correct national group
-	* shimbun/sb-nikkei.el : shimbun-nikkei-get-headers-ft): correct 		regexp.
+2005-03-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Load w3m-e23.el(c) that exists in the same directory as
+	w3m.el(c) so as to exclude ones in other places; report the
+	precise error message if it doesn't exist.
+
+2005-03-10 Masaru Nomiya <nomiya@ttmy.ne.jp>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): correct
+	national group.
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-ft): correct
+	regexp.
 
 2005-03-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
