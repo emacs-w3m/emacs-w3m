@@ -641,11 +641,13 @@ it works although it may not be perfect."
   (interactive)
   (when (cadar w3m-history)
     (let ((start (w3m-history-plist-get :window-start))
-	  position)
+	  position window)
       (cond ((and start
 		  (setq position (w3m-history-plist-get :position)))
 	     (when (<= start (point-max))
-	       (set-window-start nil start)
+	       (setq window (get-buffer-window (current-buffer) 'all-frames))
+	       (when window
+		 (set-window-start window start))
 	       (goto-char (min position (point-max)))))
 	    ((interactive-p)
 	     (message "No cursor position saved"))))))
