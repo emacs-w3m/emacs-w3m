@@ -220,22 +220,55 @@
 			  (mime-charset-to-coding-system "ISO-2022-JP"))))
 
 
+(eval-when-compile
+  ;; Attempt to pick up the inline function `bbdb-search-simple'.
+  (condition-case nil
+      (require 'bbdb)
+    (error
+     (autoload 'bbdb-search-simple "bbdb")
+     (autoload 'bbdb-get-field "bbdb"))))
+
+(defvar shimbun-use-bbdb-for-x-face nil
+  "*Say whether to use BBDB for choosing the author's X-Face.  It will be
+set to t when the initial value is nil and BBDB is loaded.  You can
+set this to `never' if you never want to use BBDB.")
+
 (defun shimbun-header-insert (shimbun header)
-  (insert "Subject: " (or (shimbun-header-subject header) "(none)") "\n"
-	  "From: " (or (shimbun-header-from header) "(nobody)") "\n"
-	  "Date: " (or (shimbun-header-date header) "") "\n"
-	  "Message-ID: " (shimbun-header-id header) "\n")
-  (let ((refs (shimbun-header-references header)))
-    (and refs
-	 (string< "" refs)
-	 (insert "References: " refs "\n")))
-  (insert "Lines: " (number-to-string (or (shimbun-header-lines header) 0)) 
-	  "\n"
-	  "Xref: " (or (shimbun-article-url shimbun header) "") "\n")
-  (when (shimbun-x-face shimbun)
-    (insert (shimbun-x-face shimbun))
-    (unless (bolp)
-      (insert "\n"))))
+  (let ((from (shimbun-header-from header))
+	(refs (shimbun-header-references header))
+	x-face)
+    (insert "Subject: " (or (shimbun-header-subject header) "(none)") "\n"
+	    "From: " (or from "(nobody)") "\n"
+	    "Date: " (or (shimbun-header-date header) "") "\n"
+	    "Message-ID: " (shimbun-header-id header) "\n")
+    (when (and refs
+	       (string< "" refs))
+      (insert "References: " refs "\n"))
+    (insert "Lines: " (number-to-string (or (shimbun-header-lines header) 0))
+	    "\n"
+	    "Xref: " (or (shimbun-article-url shimbun header) "") "\n")
+    (unless shimbun-use-bbdb-for-x-face
+      (when (and (fboundp 'bbdb-get-field)
+		 (not (eq 'autoload
+			  (car-safe (symbol-function 'bbdb-get-field)))))
+	(setq shimbun-use-bbdb-for-x-face t)))
+    (when (setq x-face
+		(or (and (eq t shimbun-use-bbdb-for-x-face)
+			 from
+			 ;; The library "mail-extr" will be autoload'ed.
+			 (setq from
+			       (cadr (mail-extract-address-components from)))
+			 (setq x-face (bbdb-search-simple nil from))
+			 (setq x-face (bbdb-get-field x-face 'face))
+			 (not (zerop (length x-face)))
+			 (concat "X-Face: "
+				 (mapconcat 'identity
+					    (split-string x-face)
+					    "\nX-Face: ")))
+		    (shimbun-x-face shimbun)))
+      (insert x-face)
+      (unless (bolp)
+	(insert "\n")))))
 
 ;;; Implementation of Shimbun API.
 
