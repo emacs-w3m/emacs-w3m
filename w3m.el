@@ -77,7 +77,9 @@
 (require 'w3m-macro)
 
 ;; The following variables will be referred by the version specific
-;; modules which bind such variables only when compiling themselves.
+;; modules which bind such variables only when compiling themselves
+;; and some module(s) use `defadvice' which will byte-compile at the
+;; run-time.
 (defvar w3m-current-title nil "Title of this buffer.")
 (defvar w3m-current-url nil "URL of this buffer.")
 
