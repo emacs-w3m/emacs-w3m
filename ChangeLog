@@ -1,3 +1,19 @@
+2003-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el: Autoload sb-text instead of always to
+	require the feature.
+	(shimbun-asahi-make-contents): Make an article in the text/plain
+	format.
+	* shimbun/sb-asahi-html.el (shimbun-asahi-html-make-contents): New
+	function moved from sb-asahi.el.
+
+	* shimbun/sb-yomiuri.el: Autoload sb-text instead of always to
+	require the feature.
+	(shimbun-yomiuri-make-contents): Make an article in the text/plain
+	format.
+	* shimbun/sb-yomiuri-html.el (shimbun-yomiuri-html-make-contents):
+	New function moved from sb-yomiuri.el.
+
 2003-06-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el: Changes to add a server name and a current
