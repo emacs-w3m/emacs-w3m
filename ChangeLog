@@ -1,3 +1,17 @@
+2003-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-search.el (w3m-search-engine-alist): Add www.alltheweb.com
+	suggested by Chris Beggy <chrisb@kippona.com>; make the default
+	value more suitable to the language environment; don't use the old
+	fashioned backquotes.
+	(w3m-search-default-engine): Always default to google.
+	(w3m-search-prefer-japanese-site): Remove.
+	(w3m-search-inhibited-japanese-engines): Remove.
+	(w3m-search): Bind `completion-ignore-case' to t.
+	(w3m-search-quick-search-handler): Remove
+	`w3m-search-prefer-japanese-site' and
+	`w3m-search-inhibited-japanese-engines'.
+
 2003-02-26  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-w3m-attributes): Allow imperfect Status-Line like no

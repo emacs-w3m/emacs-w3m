@@ -1,6 +1,6 @@
 ;;; w3m-search.el --- functions convenient to access web search engines
 
-;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -40,63 +40,82 @@
 (require 'w3m)
 
 (defcustom w3m-search-engine-alist
-  (` (("yahoo"
-       "http://search.yahoo.com/bin/search?p=%s")
-      ("yahoo-ja"
-       "http://search.yahoo.co.jp/bin/search?p=%s"
-       euc-japan)
-      (, (if (equal "Japanese" w3m-language)
-	     '("google"
-	       "http://www.google.com/search?q=%s&hl=ja"
-	       shift_jis)
-	   '("google"
-	     "http://www.google.com/search?q=%s")))
-      ("google groups"
-       "http://groups.google.com/groups?q=%s")
-      ("google-ja"
-       "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja"
-       shift_jis)
-      ("goo-ja"
-       "http://www.goo.ne.jp/default.asp?MT=%s"
-       euc-japan)
-      ("excite-ja"
-       (, (concat "http://www.excite.co.jp/search.gw?target=combined"
-		  "&look=excite_jp&lang=jp&tsug=-1&csug=-1&search=%s"))
-       shift_jis)
-      ("lycos-ja"
-       (, (concat "http://www.lycos.co.jp/cgi-bin/pursuit?query=\"%s\""
-		  "&cat=jp&encoding=shift-jis"))
-       shift_jis)
-      ("altavista"
-       "http://altavista.com/sites/search/web?q=\"%s\"&kl=ja&search=Search")
-      ("rpmfind"
-       "http://rpmfind.net/linux/rpm2html/search.php?query=%s"
-       nil)
-      ("debian-pkg"
-       (, (concat "http://packages.debian.org/cgi-bin/search_contents.pl"
-		  "?directories=yes&arch=i386&version=unstable"
-		  "&case=insensitive&word=%s")))
-      ("debian-bts"
-       "http://bugs.debian.org/cgi-bin/pkgreport.cgi?archive=yes&pkg=%s")
-      ("freebsd-users-jp"
-       (, (concat "http://home.jp.FreeBSD.org/cgi-bin/namazu.cgi?key=\"%s\""
-		  "&whence=0&max=50&format=long&sort=score"
-		  "&dbname=FreeBSD-users-jp"))
-       euc-japan)
-      ("iij-archie"
-       (, (concat "http://www.iij.ad.jp/cgi-bin/archieplexform?query=%s"
-		  "&type=Case+Insensitive+Substring+Match&order=host"
-		  "&server=archie1.iij.ad.jp&hits=95&nice=Nice")))
-      ("waei"
-       "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=1"
-       shift_jis)
-      ("eiwa"
-       "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=0")
-      ("kokugo"
-       "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=2"
-       shift_jis)
-      ("eiei"
-       "http://www.dictionary.com/cgi-bin/dict.pl?term=%s&r=67")))
+  (let ((ja (equal "Japanese" w3m-language)))
+    `(,@(if ja
+	    '(("yahoo"
+	       "http://search.yahoo.co.jp/bin/search?p=%s"
+	       euc-japan)
+	      ("yahoo-en"
+	       "http://search.yahoo.com/bin/search?p=%s"))
+	  '(("yahoo"
+	     "http://search.yahoo.com/bin/search?p=%s")
+	    ("yahoo-ja"
+	     "http://search.yahoo.co.jp/bin/search?p=%s"
+	     euc-japan)))
+	,@(if ja
+	      '(("google"
+		 "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja"
+		 shift_jis)
+		("google-en"
+		 "http://www.google.com/search?q=%s"))
+	    '(("google"
+	       "http://www.google.com/search?q=%s")
+	      ("google-ja"
+	       "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja"
+	       shift_jis)))
+	("google groups"
+	 "http://groups.google.com/groups?q=%s")
+	,@(if ja
+	      '(("All the Web"
+		 "http://www.alltheweb.com/search?web&_sb_lang=ja&cs=euc-jp\
+&q=%s"
+		 euc-japan)
+		("All the Web-en"
+		 "http://www.alltheweb.com/search?web&_sb_lang=en&q=%s"))
+	    '(("All the Web"
+	       "http://www.alltheweb.com/search?web&_sb_lang=en&q=%s")
+	      ("All the Web-ja"
+	       "http://www.alltheweb.com/search?web&_sb_lang=ja&cs=euc-jp&q=%s"
+	       euc-japan)))
+	("goo-ja"
+	 "http://www.goo.ne.jp/default.asp?MT=%s"
+	 euc-japan)
+	("excite-ja"
+	 "http://www.excite.co.jp/search.gw?target=combined&look=excite_jp\
+&lang=jp&tsug=-1&csug=-1&search=%s"
+	 shift_jis)
+	("lycos-ja"
+	 "http://www.lycos.co.jp/cgi-bin/pursuit?query=\"%s\"&cat=jp&\
+encoding=shift-jis"
+	 shift_jis)
+	("altavista"
+	 "http://altavista.com/sites/search/web?q=\"%s\"&kl=ja&search=Search")
+	("rpmfind"
+	 "http://rpmfind.net/linux/rpm2html/search.php?query=%s"
+	 nil)
+	("debian-pkg"
+	 "http://packages.debian.org/cgi-bin/search_contents.pl\
+?directories=yes&arch=i386&version=unstable&case=insensitive&word=%s")
+	("debian-bts"
+	 "http://bugs.debian.org/cgi-bin/pkgreport.cgi?archive=yes&pkg=%s")
+	("freebsd-users-jp"
+	 "http://home.jp.FreeBSD.org/cgi-bin/namazu.cgi?key=\"%s\"&whence=0\
+&max=50&format=long&sort=score&dbname=FreeBSD-users-jp"
+	 euc-japan)
+	("iij-archie"
+	 "http://www.iij.ad.jp/cgi-bin/archieplexform?query=%s\
+&type=Case+Insensitive+Substring+Match&order=host&server=archie1.iij.ad.jp\
+&hits=95&nice=Nice")
+	("waei"
+	 "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=1"
+	 shift_jis)
+	("eiwa"
+	 "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=0")
+	("kokugo"
+	 "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=2"
+	 shift_jis)
+	("eiei"
+	 "http://www.dictionary.com/cgi-bin/dict.pl?term=%s&r=67")))
   "*An alist of search engines.
 Each element looks like (ENGINE ACTION CODING)
 ENGINE is a string, the name of the search engine.
@@ -112,9 +131,7 @@ If omitted, `w3m-default-coding-system' is used.
 	   (string :tag "Action")
 	   (coding-system))))
 
-(defcustom w3m-search-default-engine (if (equal "Japanese" w3m-language)
-					 "google-ja"
-				       "google")
+(defcustom w3m-search-default-engine "google"
   "*Name of the default search engine.
 See also `w3m-search-engine-alist'."
   :group 'w3m
@@ -138,21 +155,6 @@ engines defined in `w3m-search-engine-alist'."
   :type '(repeat (cons :format "%v"
 		       (string :tag "Abbrev")
 		       (string :tag "Engine"))))
-
-(defcustom w3m-search-prefer-japanese-site (equal "Japanese" w3m-language)
-  "*Say whether to prefer a Japanese search engine for the quicksearch.
-For instance, \"gg\" is forwarded to \"google-ja\" rather than \"google\" if
-it is non-nil.  See also `w3m-search-inhibited-japanese-engines'."
-  :group 'w3m
-  :type 'boolean)
-
-(defcustom w3m-search-inhibited-japanese-engines nil
-  "*List of search engines prevented from forwarding to a Japanese site.
-It affects how the quicksearch works.  For instance, use '(\"yahoo\") if
-you want to distinguish \"yahoo\" from \"yahoo-ja\" even if
-`w3m-search-prefer-japanese-site' is non-nil."
-  :group 'w3m
-  :type '(repeat (string :tag "Engine")))
 
 (defcustom w3m-search-word-at-point t
   "*Non-nil means that the word at point is used as initial string."
@@ -184,9 +186,10 @@ the search engines defined in `w3m-search-engine-alist'.  Otherwise use
   (interactive
    (let ((engine
 	  (if current-prefix-arg
-	      (completing-read
-	       (format "Which Engine? (%s): " w3m-search-default-engine)
-	       w3m-search-engine-alist nil t)
+	      (let ((completion-ignore-case t))
+		(completing-read
+		 (format "Which Engine? (%s): " w3m-search-default-engine)
+		 w3m-search-engine-alist nil t))
 	    w3m-search-default-engine))
 	 (default (unless (eq (get-text-property (line-beginning-position)
 						 'face)
@@ -224,13 +227,7 @@ the search engine.  If not, leave it alone."
 	(setq query (substring url (match-end 0)))
 	(unless (string= query "")
 	  (setq engine (cdr quick-search-engine)
-		info (or (and w3m-search-prefer-japanese-site
-			      (not (member
-				    engine
-				    w3m-search-inhibited-japanese-engines))
-			      (assoc (concat engine "-ja")
-				     w3m-search-engine-alist))
-			 (assoc engine w3m-search-engine-alist)))
+		info (assoc engine w3m-search-engine-alist))
 	  (when info
 	    (setq ret (format (cadr info)
 			      (w3m-search-escape-query-string
