@@ -316,6 +316,31 @@ If no field in forward, return nil without moving."
     (setq name (w3m-form-mee-attr-unquote x))   ; not used.
     (w3m-form-new method action nil (and charset (list charset)))))
 
+(defun w3m-form-mee-select-value (value)
+  "Decode select form information of w3mmee."
+  (let ((clist (w3m-string-to-char-list (w3m-url-decode-string value)))
+	label val selected candidates)
+    (while clist
+      (setq selected (eq (car clist) 1)
+	    label nil
+	    val nil)
+      (setq clist (cdr clist))
+      (while (not (eq (car clist) 0))
+	(setq label (concat label (char-to-string (car clist))))
+	(setq clist (cdr clist)))
+      (setq clist (cdr clist))
+      (while (not (eq (car clist) 0))
+	(setq val (concat val (char-to-string (car clist))))
+	(setq clist (cdr clist)))
+      (if selected (setq selected val))
+      (push (cons (and val (decode-coding-string val 
+						 w3m-current-coding-system))
+		  (and label (decode-coding-string label 
+						   w3m-current-coding-system)))
+	    candidates)
+      (setq clist (cdr clist)))
+    (cons selected (nreverse candidates))))
+
 (defun w3m-form-parse-and-fontify (&optional reuse-forms)
   "Parse forms of the half-dumped data in this buffer and fontify them.
 Result form structure is saved to the local variable `w3m-current-forms'.
@@ -452,6 +477,11 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		(when (> hseq 0)
 		  (add-text-properties start end `(w3m-form-name ,name))))
 	       ((string= type "select")
+		(if (eq w3m-type 'w3mmee)
+		    (w3m-form-put form name
+				  (w3m-form-mee-select-value value))
+		  (setq selects (cons (list selectnumber form name)
+				      selects)))
 		(add-text-properties
 		 start end
 		 `(w3m-form-field-id
@@ -460,9 +490,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		   w3m-action (w3m-form-input-select ,form ,name)
 		   w3m-submit (w3m-form-submit ,form ,name
 					       (w3m-form-get ,form ,name))
-		   w3m-anchor-sequence ,abs-hseq))
-		(setq selects (cons (list selectnumber form name)
-				    selects)))
+		   w3m-anchor-sequence ,abs-hseq)))
 	       ((string= type "password")
 		(add-text-properties
 		 start end

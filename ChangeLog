@@ -1,5 +1,10 @@
 2002-03-15  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-form.el (w3m-form-mee-select-value): New function.
+	(w3m-form-parse-and-fontify)[w3mmee]: Set select value.
+
+	* w3m.el (w3m-halfdump-command-arguments)[w3mmee]: Added image.
+
 	* w3m-form.el (w3m-form-parse-and-fontify): Set the value of form 
 	only if the method is not internal;
 	Add internal form to the w3m-current-forms;
@@ -11,6 +16,7 @@
 	(w3m-form-input-textarea-keymap): Bind C-g.
 	(w3m-form-input-select-keymap): Bind C-g, h,j,k,l.
 	(w3m-form-input-map-keymap): Ditto.
+	(w3m-form-parse-and-fontify): Set textarea value.
 
 2002-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
