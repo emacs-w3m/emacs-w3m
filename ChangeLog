@@ -1,5 +1,7 @@
 2005-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* doc/Makefile.in (.texi.info): Set LC_ALL=C.
+
 	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-report): Make
 	Date header.
 	(shimbun-nikkei-prepare-article-report): New function.
