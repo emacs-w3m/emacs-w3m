@@ -207,7 +207,7 @@ MacOSX-jp 関連	macosx-jp.macosx-jp macosx-jp.macosx-dev-jp
 
 makanai			makanai.f1news
 F1 ファン		f1fan.news
-トーチュウ F1 EXPRESS   f1express.F1 f1express.Pari-Dakar f1express.CART
+トーチュウ F1 EXPRESS(*)f1express.F1 f1express.Pari-Dakar f1express.CART
                         f1express.All-Japan f1express.WRC f1express.bike
                         f1express.Tuka-CLUB f1express.etc
                         f1express.F-Nippon f1express.JGTC
@@ -228,6 +228,11 @@ F1 ファン		f1fan.news
                         f1express.Sato f1express.Imamiya
                         f1express.Toyota-news f1express.F1-release
                         f1express.info
+
+* 利用するには、Mule-UCS (ftp://ftp.m17n.org/pub/mule/Mule-UCS/)をインス
+  トールしておく必要があります。emacs-21.2 で利用する場合は、Mule-UCS に
+  patch (http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html)を適
+  用したほうがいいでしょう。
 
 2-5. その他
 

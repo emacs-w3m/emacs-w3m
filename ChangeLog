@@ -1,5 +1,7 @@
 2002-10-08  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
 
+	* README.shimbun.ja: Add notice that f1express requires Mule-UCS.
+
 	* shimbun/sb-f1express.el: Follow the change of the Web site.
 
 	* shimbun/sb-f1fan.el: Ditto.
