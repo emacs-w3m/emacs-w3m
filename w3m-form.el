@@ -473,12 +473,12 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		(progn
 		  (setf (w3m-form-method form) (or method "get"))
 		  (setf (w3m-form-action form)
-			(and w3m-current-url
+			(or action (and w3m-current-url
 					(string-match w3m-url-components-regexp
 						      w3m-current-url)
 					(substring w3m-current-url 0
 						   (or (match-beginning 6)
-						       (match-beginning 8)))))
+						       (match-beginning 8))))))
 		  (setf (w3m-form-charlst form)
 			(if accept-charset
 			    (setq accept-charset
