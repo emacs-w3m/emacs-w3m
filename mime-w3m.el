@@ -52,6 +52,7 @@
 
 (defvar mime-w3m-mode-map nil)
 (defvar mime-w3m-message-structure nil)
+(make-variable-buffer-local 'mime-w3m-message-structure)
 
 (put 'mime-w3m-save-background-color 'edebug-form-spec '(&rest body))
 (defmacro mime-w3m-save-background-color (&rest body)

@@ -1,3 +1,8 @@
+2001-03-10  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* mime-w3m.el (mime-w3m-message-structure): Make variable buffer
+	local at top leve.
+
 2001-03-10  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-entity-alist): Eval at compile time.;
