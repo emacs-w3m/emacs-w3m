@@ -3597,7 +3597,9 @@ vinelinux.errata.1x
 
 @item Wiki コンテンツ
 閲覧したい Wiki の URL を調べて、以下のように設定して使います。PukiWiki
-と Hiki に対応しています。
+と Hiki に対応しています。もし、各内側のリストの 4 番目、5 番目の要素の
+正規表現に何を指定して良いか分からないときは、@code{nil} を指定すれば良
+いでしょう。記事の取得時に整形が行われず、ただページ全体が見えるだけです。
 @lisp
 (setq shimbun-wiki-group-alist
       '(("pukiwiki" ;; グループ名
