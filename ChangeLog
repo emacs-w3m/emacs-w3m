@@ -1,4 +1,18 @@
+2001-10-29  ORI Manabu <ori@tahoo.org>
+
+	* w3m.el (w3m-type): Added the expression to detect `w3m-m17n'.
+
 2001-10-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-accept-japanese-characters): Use `-halfdump' option
+	instead of `-dump' option in order to detect the real internal
+	character set of `w3m-command'.
+	(w3m-profile-directory): Fixed the expression to determine the
+	default value for the environment where `w3m-command' includes
+	redundant suffixes.
+	(w3m-default-save-directory): Ditto.
+	(w3m-euc-japan-encoder): Define in the old-style backquote.
+	(w3m-iso-latin-1-encoder): Ditto.
 
 	* w3m.el (emacs-w3m-version): Imcremented to `1.2rc3'.
 	(w3m-use-mule-ucs): Simplified.
