@@ -70,7 +70,7 @@
 	      shimbun-atmarkit-rss-group-path-alist)))
 
 (luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-atmarkit-rss) url)
+  ((shimbun shimbun-atmarkit-rss) url date)
   (unless (string-match "\\([^\/]+\\)\\.html" url)
     (error "Cannot find message-id base"))
   (format "%s%%%s%%rss@atmarkit.co.jp" (match-string-no-properties 1 url)

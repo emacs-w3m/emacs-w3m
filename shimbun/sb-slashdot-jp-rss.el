@@ -45,7 +45,7 @@
   shimbun-slashdot-jp-rss-url)
 
 (luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-slashdot-jp-rss) url)
+  ((shimbun shimbun-slashdot-jp-rss) url date)
   (unless (string-match
 	   "http://slashdot.jp/article.pl\\?sid=[\/0-9]+\/\\([0-9]+\\)\\&topic=[0-9]+"
 	   url)

@@ -99,8 +99,8 @@
 	    day (string-to-number day))
       (shimbun-make-date-string year month day minutes timezone))))
 
-(luna-define-generic shimbun-rss-build-message-id (shimbun-rss url)
-  "Building unique message-id from URL and return it.")
+(luna-define-generic shimbun-rss-build-message-id (shimbun-rss url date)
+  "Building unique message-id from URL and DATE and return it.")
 
 (luna-define-method shimbun-headers ((shimbun shimbun-rss) &optional range)
   (with-temp-buffer
@@ -133,7 +133,9 @@
 	(when (and (listp item)
 		   (eq (intern (concat rss-ns "item")) (car item))
 		   (setq url (shimbun-rss-node-text rss-ns 'link (cddr item))))
-	  (setq id (shimbun-rss-build-message-id shimbun url))
+	  (setq date (or (shimbun-rss-node-text dc-ns 'date item)
+			 (shimbun-rss-node-text rss-ns 'pubDate item)))
+	  (setq id (shimbun-rss-build-message-id shimbun url date))
 	  (when (shimbun-search-id shimbun id)
 	    (throw 'next nil))
 	  (setq subject (shimbun-rss-node-text rss-ns 'title item))
@@ -142,8 +144,6 @@
 	  (setq from (or (shimbun-rss-node-text rss-ns 'author item)
 			 (shimbun-rss-node-text dc-ns 'creator item)
 			 (shimbun-from-address shimbun)))
-	  (setq date (or (shimbun-rss-node-text dc-ns 'date item)
-			 (shimbun-rss-node-text rss-ns 'pubDate item)))
 	  (setq date (shimbun-rss-process-date shimbun date))
 	  (push (shimbun-make-header
 		 0
