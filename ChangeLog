@@ -1,6 +1,7 @@
 2001-04-16  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-gnome.el: New file.
+	(shimbun-gnome-groups): Removed duplicated "wm-spec-list".
 
 	* shimbun/shimbun.el (shimbun-reply-to): New generic function.
 

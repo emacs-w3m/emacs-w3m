@@ -42,7 +42,7 @@
     "gnome-webmaster-list" "gnome-workshop-list" "gnomecc-list"
     "gnumeric-list" "gtk-app-devel-list" "gtk-devel-list" "gtk-doc-list"
     "gtk-i18n-list" "gtk-list" "gtk-perl-list" "guppi-list" "libart"
-    "libart-hackers" "orbit-list" "vote" "wm-spec-list" "wm-spec-list" 
+    "libart-hackers" "orbit-list" "vote" "wm-spec-list"
     "xml" "xslt"))
 (defvar shimbun-ding-coding-system 'iso-8859-1)
 
