@@ -73,7 +73,7 @@
 	       (shimbun-make-date-string year month day time)
 	       id "" 0 0  url)
 	      headers)))
-      (nreverse headers)))
+    headers))
 
 (provide 'sb-nikkei)
 

@@ -38,16 +38,15 @@
   (shimbun-url-internal shimbun))
 
 (defsubst shimbun-fml-parse-time (str)
-  (let (yr mon day hr min sec)
-    (save-match-data
-      (if (string-match
-	   "\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) \\([0-9]+:[0-9]+:[0-9]+\\)"
-	   str)
-	  (shimbun-make-date-string (string-to-number (match-string 1 str))
-				    (string-to-number (match-string 2 str))
-				    (string-to-number (match-string 3 str))
-				    (match-string 4 str))
-	str))))
+  (save-match-data
+    (if (string-match
+	 "\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) \\([0-9]+:[0-9]+:[0-9]+\\)"
+	 str)
+	(shimbun-make-date-string (string-to-number (match-string 1 str))
+				  (string-to-number (match-string 2 str))
+				  (string-to-number (match-string 3 str))
+				  (match-string 4 str))
+      str)))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-fml))
   (let ((case-fold-search t)

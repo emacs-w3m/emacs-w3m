@@ -85,7 +85,7 @@
 	    (erase-buffer)
 	    (shimbun-retrieve-url-buffer url t)
 	    (goto-char (point-min))))))
-    (nreverse headers)))
+    headers))
 
 (provide 'sb-yahoo)
 
