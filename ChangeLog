@@ -9,6 +9,7 @@
 	Pass orig-url to w3m-w3m-retrieve-1.
 	(w3m-w3m-retrieve-1): Add argument orig-url;
 	Call w3m-dump-head-source with orig-url argument.
+	(w3m-redirect-with-get): Changed default value to t.
 
 2002-04-05  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
 
