@@ -2867,7 +2867,7 @@ For example:
     (goto-char (point-min))
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
-      (setq prenames (get-text-property start 'w3m-name-anchor))
+      (setq prenames (get-text-property start 'w3m-name-anchor2))
       (w3m-parse-attributes (href name id charset
 				  (rel :case-ignore) (hseq :integer))
 	(unless name
@@ -2921,11 +2921,11 @@ For example:
 		  (overlay-put (widget-get w :button-overlay) 'evaporate t))))
 	    (when name
 	      (w3m-add-text-properties start (point-max)
-				       (list 'w3m-name-anchor
+				       (list 'w3m-name-anchor2
 					     (cons name prenames))))))
 	 (name
 	  (w3m-add-text-properties start (point-max)
-				   (list 'w3m-name-anchor
+				   (list 'w3m-name-anchor2
 					 (cons name prenames)))))))
     (when w3m-icon-data
       (setq w3m-icon-data (cons (w3m-expand-url (car w3m-icon-data))
@@ -5016,6 +5016,13 @@ when the URL of the retrieved page matches the REGEXP."
     (catch 'found
       (while (setq pos (next-single-property-change pos 'w3m-name-anchor))
 	(when (member name (get-text-property pos 'w3m-name-anchor))
+	  (goto-char pos)
+	  (when (eolp) (forward-line))
+	  (w3m-horizontal-on-screen)
+	  (throw 'found t)))
+      (setq pos (point-min))
+      (while (setq pos (next-single-property-change pos 'w3m-name-anchor2))
+	(when (member name (get-text-property pos 'w3m-name-anchor2))
 	  (goto-char pos)
 	  (when (eolp) (forward-line))
 	  (w3m-horizontal-on-screen)
