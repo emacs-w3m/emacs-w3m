@@ -1,6 +1,6 @@
 ;;; w3m-fsf.el --- Common functions through Emacsen
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -37,6 +37,7 @@
 ;;; Code:
 
 (eval-when-compile
+  (require 'cl)
   (defvar w3m-default-coding-system))
 
 (defsubst w3m-find-coding-system (obj)

@@ -1,6 +1,7 @@
 ;;; w3m-namazu.el --- The add-on program to search files with Namazu.
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia, namazu
@@ -45,6 +46,10 @@
 
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
+
 (require 'w3m)
 
 (eval-and-compile

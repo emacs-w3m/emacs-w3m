@@ -1,7 +1,7 @@
 ;;; sb-mew.el --- shimbun backend for mew.org
 
-;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
-;; Copyright (C) 2001 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001, 2002, 2005 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2005 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
@@ -31,6 +31,9 @@
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 (require 'sb-mhonarc)

@@ -4439,8 +4439,12 @@ weeklyworldnews.news
 @item @uref{http://www.welt.de/, Die Welt}
 welt-de.news
 
-@item @uref{http://www.hotwired.co.jp/, HotWired Japan}
+@item @uref{http://hotwired.goo.ne.jp/, HotWired Japan}
 wired.business wired.culture wired.technology
+
+@item @uref{http://hotwired.goo.ne.jp/, HotWired Japan} (Experimental Module)
+wired-jp.news wired-jp.business wired-jp.culture wired-jp.technology
+wired-jp.blog.ogura wired-jp.blog.sasaki wired-jp.blog.takahashi
 
 @item @uref{http://headlines.yahoo.co.jp/, Yahoo! Japan}
 yahoo.politics yahoo.society yahoo.people yahoo.business-all

@@ -1,6 +1,6 @@
 ;;; sb-slashdot-jp.el --- shimbun backend for slashdot.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -43,6 +43,9 @@
 ;; based on RSS at January 18th, 2004.
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 (require 'sb-rss)

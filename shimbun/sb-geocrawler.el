@@ -1,6 +1,6 @@
 ;;; sb-geocrawler.el --- shimbun backend for geocrawler.com.
 
-;; Copyright (C) 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2002, 2003, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news
@@ -28,6 +28,9 @@
 ;; `shimbun-geocrawler-add-group'.
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 

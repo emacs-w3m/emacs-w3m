@@ -571,8 +571,9 @@ nil which provides Lynx-like keys."
   :group 'w3m
   :type 'boolean)
 
-(defconst w3m-treat-drive-letter (memq system-type '(windows-nt OS/2 emx))
-  "Say whether the system uses drive letters.")
+(eval-and-compile
+  (defconst w3m-treat-drive-letter (memq system-type '(windows-nt OS/2 emx))
+    "Say whether the system uses drive letters."))
 
 (defcustom w3m-profile-directory
   (concat "~/." (file-name-sans-extension
@@ -4571,6 +4572,46 @@ POST-DATA and REFERER will be sent to the web server with a request."
 	(w3m-w3m-retrieve url
 			  no-decode no-cache post-data referer handler))))))
 
+(defvar w3m-touch-file-available-p 'undecided)
+
+(defun w3m-touch-file (file time)
+  "Change the access and/or modification TIME of the specified FILE."
+  ;; Check the validity of `touch' command.
+  (when (eq w3m-touch-file-available-p 'undecided)
+    (let ((file (make-temp-name
+		 (expand-file-name "w3mel" w3m-profile-directory)))
+	  time timefile)
+      (while (progn
+	       (setq time (list (abs (% (random) 8192))
+				(abs (% (random) 65536)))
+		     timefile (expand-file-name
+			       (format-time-string "%Y%m%d%H%M.%S" time)
+			       w3m-profile-directory))
+	       (file-exists-p timefile)))
+      (unwind-protect
+	  (setq w3m-touch-file-available-p
+		(when (w3m-which-command w3m-touch-command)
+		  (with-temp-buffer
+		    (insert "touch check")
+		    (write-region (point-min) (point-max) file nil 'nomsg))
+		  (and (let ((default-directory w3m-profile-directory)
+			     (w3m-touch-file-available-p t))
+			 (w3m-touch-file file time))
+		       (zerop (w3m-time-lapse-seconds
+			       time (nth 5 (file-attributes file)))))))
+	(when (file-exists-p file)
+	  (ignore-errors (delete-file file)))
+	(when (file-exists-p timefile)
+	  (ignore-errors (delete-file timefile))))))
+  (and w3m-touch-file-available-p
+       time
+       (w3m-which-command w3m-touch-command)
+       (file-exists-p file)
+       (zerop (let ((default-directory (file-name-directory file)))
+		(call-process w3m-touch-command nil nil nil
+			      "-t" (format-time-string "%Y%m%d%H%M.%S" time)
+			      file)))))
+
 ;;;###autoload
 (defun w3m-download (url &optional filename no-cache handler)
   (interactive
@@ -4622,46 +4663,6 @@ POST-DATA and REFERER will be sent to the web server with a request."
 		       (format " (exit status: %s)" w3m-process-exit-status)
 		     ""))
 	  nil)))))
-
-(defvar w3m-touch-file-available-p 'undecided)
-
-(defun w3m-touch-file (file time)
-  "Change the access and/or modification TIME of the specified FILE."
-  ;; Check the validity of `touch' command.
-  (when (eq w3m-touch-file-available-p 'undecided)
-    (let ((file (make-temp-name
-		 (expand-file-name "w3mel" w3m-profile-directory)))
-	  time timefile)
-      (while (progn
-	       (setq time (list (abs (% (random) 8192))
-				(abs (% (random) 65536)))
-		     timefile (expand-file-name
-			       (format-time-string "%Y%m%d%H%M.%S" time)
-			       w3m-profile-directory))
-	       (file-exists-p timefile)))
-      (unwind-protect
-	  (setq w3m-touch-file-available-p
-		(when (w3m-which-command w3m-touch-command)
-		  (with-temp-buffer
-		    (insert "touch check")
-		    (write-region (point-min) (point-max) file nil 'nomsg))
-		  (and (let ((default-directory w3m-profile-directory)
-			     (w3m-touch-file-available-p t))
-			 (w3m-touch-file file time))
-		       (zerop (w3m-time-lapse-seconds
-			       time (nth 5 (file-attributes file)))))))
-	(when (file-exists-p file)
-	  (ignore-errors (delete-file file)))
-	(when (file-exists-p timefile)
-	  (ignore-errors (delete-file timefile))))))
-  (and w3m-touch-file-available-p
-       time
-       (w3m-which-command w3m-touch-command)
-       (file-exists-p file)
-       (zerop (let ((default-directory (file-name-directory file)))
-		(call-process w3m-touch-command nil nil nil
-			      "-t" (format-time-string "%Y%m%d%H%M.%S" time)
-			      file)))))
 
 ;;; Retrieve data:
 (w3m-make-ccl-coding-system
@@ -5170,26 +5171,30 @@ COUNT is treated as 1 by default if it is omitted."
   (interactive "p")
   (w3m-view-previous-page (if (integerp count) (- count) -1)))
 
-(unless (fboundp 'w3m-expand-path-name)
-  (if w3m-treat-drive-letter
-      ;; Avoid incompatibility of drive letters.
-      (defun w3m-expand-path-name (name &optional base)
-	"Convert path string NAME to the canonicalized one."
-	;; cygwin-mount.el destroys `expand-file-name';
-	;; (expand-file-name "../index.html" "/foo/bar/") => "c:/cygwin/foo/index.html"
-	(let ((inhibit-file-name-handlers '(cygwin-mount-name-hook-function
-					    cygwin-mount-map-drive-hook-function))
-	      (inhibit-file-name-operation 'expand-file-name)
-	      path)
-	  (setq path (w3m-static-if (featurep 'xemacs)
-			 ;; It is ?\ by default in XEmacs on Windows native.
-			 (let ((directory-sep-char ?/))
-			   (expand-file-name name base))
-		       (expand-file-name name base)))
-	  (if (string-match "\\`.:" path)
-	      (substring path (match-end 0))
-	    path)))
-    (defalias 'w3m-expand-path-name 'expand-file-name)))
+(eval-and-compile
+  (unless (fboundp 'w3m-expand-path-name)
+    (if w3m-treat-drive-letter
+	;; Avoid incompatibility of drive letters.
+	(defun w3m-expand-path-name (name &optional base)
+	  "Convert path string NAME to the canonicalized one."
+	  ;; cygwin-mount.el destroys `expand-file-name';
+	  ;; (expand-file-name "../index.html" "/foo/bar/")
+	  ;;  => "c:/cygwin/foo/index.html"
+	  (let ((inhibit-file-name-handlers
+		 '(cygwin-mount-name-hook-function
+		   cygwin-mount-map-drive-hook-function))
+		(inhibit-file-name-operation 'expand-file-name)
+		path)
+	    (setq path
+		  (w3m-static-if (featurep 'xemacs)
+		      ;; It is ?\ by default in XEmacs on Windows native.
+		      (let ((directory-sep-char ?/))
+			(expand-file-name name base))
+		    (expand-file-name name base)))
+	    (if (string-match "\\`.:" path)
+		(substring path (match-end 0))
+	      path)))
+      (defalias 'w3m-expand-path-name 'expand-file-name))))
 
 (defconst w3m-url-hierarchical-schemes
   '("http" "https" "ftp" "ftps" "file")
@@ -6639,12 +6644,13 @@ Otherwise, it defaults to `w3m-horizontal-shift-columns'."
   (setq w3m-horizontal-scroll-done nil))
 
 ;; Ailiases to meet XEmacs bugs?
-(unless (fboundp 'w3m-window-hscroll)
-  (defalias 'w3m-window-hscroll 'window-hscroll))
-(unless (fboundp 'w3m-current-column)
-  (defalias 'w3m-current-column 'current-column))
-(unless (fboundp 'w3m-set-window-hscroll)
-  (defalias 'w3m-set-window-hscroll 'set-window-hscroll))
+(eval-and-compile
+  (unless (fboundp 'w3m-window-hscroll)
+    (defalias 'w3m-window-hscroll 'window-hscroll))
+  (unless (fboundp 'w3m-current-column)
+    (defalias 'w3m-current-column 'current-column))
+  (unless (fboundp 'w3m-set-window-hscroll)
+    (defalias 'w3m-set-window-hscroll 'set-window-hscroll)))
 
 (defun w3m-horizontal-scroll (direction ncol)
   "Scroll the window NCOL columns horizontally to DIRECTION.
@@ -6899,6 +6905,12 @@ this function will prompt user for it."
 
 (eval-and-compile
   (unless (fboundp 'w3m-add-local-hook)
+    ;; Silence the byte compiler; `w3m-add-local-hook' will be defined
+    ;; in another place for Emacs in which `make-local-hook' is obsolete.
+    (eval-when-compile
+      (when (eq 'byte-compile-obsolete (get 'make-local-hook 'byte-compile))
+	(put 'make-local-hook 'byte-compile nil)
+	(put 'make-local-hook 'byte-obsolete-info nil)))
     (defun w3m-add-local-hook (hook function &optional append)
       "Add to the buffer-local value of HOOK the function FUNCTION.
 Note: this function is designed for Emacsen other than Emacs 21."
@@ -7201,8 +7213,9 @@ Cannot run two w3m processes simultaneously \
 ;; Alias to meet `run-at-time' bug of XEmacs.  It runs the timer
 ;; function almost immediately, so we use the emulated version
 ;; instead.
-(unless (fboundp 'w3m-run-at-time)
-  (defalias 'w3m-run-at-time 'run-at-time))
+(eval-and-compile
+  (unless (fboundp 'w3m-run-at-time)
+    (defalias 'w3m-run-at-time 'run-at-time)))
 
 (defun w3m-refresh-at-time ()
   (when (and w3m-use-refresh w3m-current-refresh)

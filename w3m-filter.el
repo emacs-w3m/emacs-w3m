@@ -1,6 +1,6 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites.
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -33,6 +33,10 @@
 ;;; Code:
 
 (provide 'w3m-filter)
+
+(eval-when-compile
+  (require 'cl))
+
 (require 'w3m)
 
 (defcustom w3m-filter-rules

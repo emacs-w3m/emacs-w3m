@@ -1,6 +1,6 @@
 ;;; sb-cnet-jp.el --- shimbun backend for CNET Japan -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio     <minakaji@namazu.org>,
 ;;         TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -29,6 +29,9 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
 
 (require 'shimbun)
 (require 'sb-rss)
@@ -110,7 +113,8 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 	  ;; isn't last
 	  (progn
 	    (goto-char (match-end 0))
-	    (re-search-backward "\\(<a\\|| 1 \\)" nil t) ;; "<a href...>前の..." or "| 1 "
+	    ;; "<a href...>前の..." or "| 1 "
+	    (re-search-backward "\\(<a\\|| 1 \\)" nil t)
 	    (delete-region (match-beginning 0) (point-max)))
 	;; last page
 	(let ((end (match-end 0)))

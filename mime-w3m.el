@@ -1,6 +1,7 @@
 ;;; mime-w3m.el --- mime-view content filter for text
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
@@ -36,11 +37,14 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl)
-  (require 'w3m)
-  (require 'mime)
-  (defvar mime-setup-enable-inline-html)
+  (require 'cl))
+
+(require 'mime)
+(require 'w3m)
+
+(eval-when-compile
   (defvar mime-preview-condition)
+  (defvar mime-setup-enable-inline-html)
   (defvar mime-view-mode-default-map))
 
 (eval-and-compile
@@ -218,9 +222,6 @@ Set hooks run arround each command is executed."
 		   (get-text-property (car w3m-current-position)
 				      'text-rendered-by-mime-w3m))))
     (run-hooks 'mime-w3m-after-cursor-move-hook)))
-
-;; To avoid byte-compile warning in `mime-w3m-cid-retrieve'.
-(autoload 'mime-uri-parse-cid "mime-parse")
 
 (defun mime-w3m-cid-retrieve (url &rest args)
   (let ((entity (mime-find-entity-from-content-id
