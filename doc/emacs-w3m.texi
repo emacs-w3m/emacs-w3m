@@ -113,7 +113,7 @@ Basic Usage
 
 * Browsing Web Pages::          Let's go netsurfing!
 * Inline Images::               Toggle displaying inline images
-* Tracing History::             Looking back at the old pages
+* Tracing History::             Going back through time and space
 * Managing Bookmarks::          That's a favorite with me!
 * Using Tabs::                  This is the tab browser of fashion
 * Selecting Buffers::           Choosing one from many sessions
@@ -584,7 +584,7 @@ See also the documentation for the option
 @menu
 * Browsing Web Pages::          Let's go netsurfing!
 * Inline Images::               Toggle displaying inline images
-* Tracing History::             Looking back at the old pages
+* Tracing History::             Going back through time and space
 * Managing Bookmarks::          That's a favorite with me!
 * Using Tabs::                  This is the tab browser of fashion
 * Selecting Buffers::           Choosing one from many sessions
@@ -603,23 +603,17 @@ See also the documentation for the option
 
 @node Launching and Jumping
 @subsection Go ahead, just try it
-@findex w3m
-@findex w3m-browse-url
-@findex w3m-find-file
-@vindex w3m-home-page
-@vindex w3m-quick-start
-@findex w3m-view-this-url
-@findex w3m-goto-url
-@findex w3m-reload-this-page
 
-There are three commands which can invoke emacs-w3m.  When you use one
-of those commands, a web page will be displayed in an emacs-w3m buffer
-which has the name ``*w3m*''.  The major mode for an emacs-w3m buffer
-will be made into @code{w3m-mode}.
+You can invoke emacs-w3m using three different commands, listed below.
+Try one of these commands: a web page is displayed in an Emacs buffer
+named ``*w3m*'', meaning that it is an emacs-w3m buffer.  As you will
+probably notice, the major mode for an emacs-w3m buffer is
+@code{w3m-mode}, there are also minor modes (@pxref{Managing
+Bookmarks}).
 
-This section explains only the most fundamental usage of the commands.
-@xref{Emacs-w3m Functions}, for more information on each command.  And
-see @ref{Customizable Options} for details on user options.
+This section explains the most fundamental usage of these commands, see
+@ref{Emacs-w3m Functions} for more information on each command.  And see
+@ref{Customizable Options} for details on user options.
 
 @table @code
 @item w3m
@@ -627,19 +621,18 @@ see @ref{Customizable Options} for details on user options.
 @vindex w3m-home-page
 @vindex w3m-quick-start
 @cindex Using emacs-w3m as a batch command
-Start emacs-w3m.  At that time, the homepage specified as the option
-@code{w3m-home-page} is displayed.  The default value for
-@code{w3m-home-page} is ``about:''.  Set the option
-@code{w3m-quick-start} to @code{nil} if each time you want to specify
-URL.
+Start emacs-w3m, displaying the homepage specified in the option
+@code{w3m-home-page}.  The default value for @code{w3m-home-page} is
+``about:''.  Set the option @code{w3m-quick-start} to @code{nil} if each
+time you want to specify URL.
 
-You can also use this as an Emacs' batch command.  Here's an example:
+You can also use this as an Emacs batch command.  Here's an example:
 
 @example
 % emacs -f w3m
 @end example
 
-To specify a URL, say like this:
+To specify a URL, you could also use:
 
 @example
 % emacs -f w3m http://emacs-w3m.namazu.org/
@@ -647,84 +640,84 @@ To specify a URL, say like this:
 
 @item w3m-find-file
 @findex w3m-find-file
-Specify a local file which you want to browse and start emacs-w3m.
+Prompt for a local file name in the minibuffer, and display it in
+emacs-w3m.
 
 @item w3m-browse-url
 @findex w3m-browse-url
-Specify a URL which you want to visit and start emacs-w3m.  You will be
-prompted for a URL in the minibuffer.  This command is provided, if
-anything, in order to start emacs-w3m from other application programs.
+Prompt for a URL in the minibuffer, and display it in emacs-w3m.  This
+command is provided, if anything, in order to start emacs-w3m from other
+application programs.
 @end table
 
-Looking around in a web page being displayed in an emacs-w3m buffer
-wouldn't be pains to you making a habitual use of Emacs.  In an
-emacs-w3m buffer, you can use many of the standard command keys, for
-instance, @kbd{C-n}, @kbd{C-v} and @kbd{C-s}, which Emacs has bound.
+Moving in an emacs-w3m buffer won't be painful if you're an Emacs user
+already, since many of the standard keys work as intented.  For
+instance, @kbd{C-n}, @kbd{C-v} and @kbd{C-s} (which are commonly used to
+move down one line, one page, or search downwards for a word) are valid
+keys in an emacs-w3m buffer.
 
-Use the @key{RET} key for following a link.  You can make emacs-w3m
-display a page which a link points to by typing @key{RET} key after
-moving point to the position of a link.  Links in a web page will be
-displayed with a different color from an ordinary text or underline
-which is specified by the face @code{w3m-anchor-face} (see
-@pxref{Customizable Options}).
+To follow a link, use the @kbd{RET} key.  You have to move the point to
+a link to do this; links are easily recognizable in a buffer because
+they are not displayed like ordinary text: they can be underlined, or
+have a different color.  The face @code{w3m-anchor-face} controls how
+they are be displayed (@pxref{Customizable Options}).
 
-@table @key
+@table @kbd
 @item RET
 @kindex RET
 @findex w3m-view-this-url
-Display a page which a link in the current position points to.
+Display the page pointed by the link under point.
 
-The behavior of this command will be altered variously by a property of
-a link under point or a prefix argument which you may specify.  See
+The exact behavior of this command depends on the properties of the link
+under point, and on whether you give it a prefix argument or not.  See
 @ref{Emacs-w3m Functions} for details.
 @end table
 
-This section explained to you as mentioned above that you can specify a
-URL when you type the command @kbd{M-x w3m} to display a certain page by
-setting the option @code{w3m-quick-start} to @code{nil}.  In addition,
-in an emacs-w3m buffer, there also be two popular ways to specify a URL
-when displaying a page.
+As mentioned above, you can be prompted for a URL when you use the
+command @kbd{M-x w3m}, by setting the option @code{w3m-quick-start} to
+@code{nil}.  In an emacs-w3m buffer, there are also two popular ways to
+go to new pages by entering their URLs.
 
-@table @key
+@table @kbd
 @item RET
 @kindex RET
 @findex w3m-view-this-url
-In an emacs-w3m buffer, you can specify a URL in the minibuffer and make
-emacs-w3m display the corresponding page by typing the @key{RET} key
-after moving point to a URL which displayed in the @samp{header-line}.
-This feature would make you feel familiarity if you are experienced with
-GUI-based web browsers like Mozilla.  More detailed explanation about
-this command is mentioned in @xref{Emacs-w3m Functions}.
+In an emacs-w3m buffer, you can be prompted for a URL in the minibuffer
+and make emacs-w3m display the corresponding page by hitting @key{RET}
+after moving the point to the URL displayed in the @samp{header-line}.
+This feature will feel familiar to you if you are used to GUI-based web
+browsers like Mozilla.  Detailed explanations about this can be found in
+@xref{Emacs-w3m Functions}.
 
 @item g
 @kindex g
 @findex w3m-goto-url
-You can specify a URL in the minibuffer and display the corresponding
-page by typing the @key{g} key unrelated to the current position in an
-emacs-w3m buffer.  This feature may impress you familiarity if you are
-using Gnus or Mew.
+You can be prompted for a URL in the minibuffer and make emacs-w3m
+display the corresponding page by typing the @key{g} key (independently
+of the position of the point) in an emacs-w3m buffer.  This binding will
+be familiar to you if you already use Gnus or Mew.
 
 @item c
 @kindex c
 @findex w3m-print-this-url
-Display a URL of the page being displayed in the echo area and put it
-into @code{kill-ring} (that is, you can yank it in the other place
+Display the URL of the page being displayed in the echo area and put it
+into the @code{kill-ring} (that is, you can yank it somewhere else
 later).
 
 @item u
 @kindex u
 @findex w3m-print-this-url
-Display a URL under point in the echo area and put it into
-@code{kill-ring} (that is, you can yank it in the other place later).
+Display the URL under point in the echo area and put it into the
+@code{kill-ring} (that is, you can yank it somewhere else later).
 @end table
 
-If the page which you are reading is the news of the day or someone's
-diary, it may have been updated with contents new now.  You can fetch
-the newest contents of the same page by using the following command.
-Even if the displayed page seems to have been broken, you may be able to
-get the right display with this command.
+If the page you are reading is today's news or someone's diary, it may
+have been updated since you loaded it.  You can fetch the newest
+contents of the page by using the following command.  (This command can
+also be useful to force a full redisplay of the page if it looks
+broken.)
 
-@table @key
+@table @kbd
 @item R
 @kindex R
 @findex w3m-reload-this-page
@@ -734,118 +727,88 @@ Reload the page which is currently displayed.
 @node Moving in a page
 @subsection Moving from place to place in a page
 @cindex Moving in a page
-@findex w3m-scroll-up-or-next-url
-@findex w3m-scroll-down-or-previous-url
-@findex w3m-scroll-right
-@findex w3m-scroll-left
-@vindex w3m-horizontal-scroll-columns
-@findex w3m-shift-left
-@findex w3m-shift-right
-@vindex w3m-horizontal-shift-columns
-@findex w3m-horizontal-recenter
-@findex w3m-next-anchor
-@findex w3m-previous-anchor
-@findex w3m-next-form
-@findex w3m-previous-form
-@findex w3m-next-image
-@findex w3m-previous-image
 
-It is surely a fascination of emacs-w3m that we can use the familiar
-Emacs' commands (or key bindings) in an emacs-w3m buffer as they are.
-There is no burden to learn operations of keys anew for scrolling or
-moving a point in a page.  However, there is a set of commands prepared
-in an emacs-w3m buffer for scrolling and moving a point.  If you master
-those commands, you can save keystrokes and do quicker browsing.
+Being able to use familiar Emacs movement bindings while browsing a web
+page probably fascinates you already.  Believe it or not, there is
+more!  Since we value your time, we have added keys to move the point,
+scroll the page or find links in a very fast way.  When you master
+them, you will understand how handy they are.
 
-The keys are assigned so that scroll commands can be called by the
-shorter keystrokes than the standard key bindings of Emacs.  Text areas
-that you can input are limited in a web page.  Therefore, many keys
-(which are assigned to @code{self-insert-command}) are @emph{unbound}.
-In the @code{w3m-mode} (the major mode for an emacs-w3m buffer), those
-@emph{unbound} keys are assigned to the scrolling commands and others.
+The keys are assigned so that scroll commands can be called using
+shorter keystrokes than the standard key bindings of Emacs.  And since
+places where you can input text are pretty specific in web pages
+(@pxref{Submitting Forms}), most keys have special meanings and aren't
+assigned to @code{self-insert-command} anymore.
 
 @c Scrolling
-@table @key
+@table @kbd
 @item SPC
 @kindex SPC
 @findex w3m-scroll-up-or-next-url
-Scroll forwards vertically.  You may be used to it if you have been
-using the @samp{more} command, the @samp{less} command, or the
-@code{view-mode} on Emacs.
+Scroll downwards.  You may be used to it if you have been using the
+@samp{more} command, the @samp{less} command, or the @code{view-mode} on
+Emacs.
 
 @item DEL
 @kindex DEL
 @findex w3m-scroll-down-or-previous-url
-Scroll backwards vertically.  You may be used to it if you have been
-using the @samp{less} command or the @code{view-mode} on Emacs.
-@end table
+Scroll upwards.  You may be used to it if you have been using the
+@samp{less} command or the @code{view-mode} on Emacs.
 
-@table @kbd
 @item >
 @kindex >
 @findex w3m-scroll-left
 @vindex w3m-horizontal-scroll-columns
 Scroll to the left.  The scroll step is given by the
-@code{w3m-horizontal-scroll-columns} option.  The default value for
-@code{w3m-horizontal-scroll-columns} is 10.
+@code{w3m-horizontal-scroll-columns} option, default 10.
 
 @item <
 @kindex <
 @findex w3m-scroll-right
 @vindex w3m-horizontal-scroll-columns
 Scroll to the right.  The scroll step is given by the
-@code{w3m-horizontal-scroll-columns} option.  The default value for
-@code{w3m-horizontal-scroll-columns} is 10.
+@code{w3m-horizontal-scroll-columns} option, default 10.
 
 @item .
 @kindex .
 @findex w3m-shift-left
 @vindex w3m-horizontal-shift-columns
 Shift to the left (a fine level horizontal scrolling).  The shift step
-is given by the @code{w3m-horizontal-shift-columns} option.  The default
-value for @code{w3m-horizontal-shift-columns} is 2.
+is given by the @code{w3m-horizontal-shift-columns} option, default 2.
 
 @item ,
 @kindex ,
 @findex w3m-shift-right
 @vindex w3m-horizontal-shift-columns
 Shift to the right (a fine level horizontal scrolling).  The shift step
-is given by the @code{w3m-horizontal-shift-columns} option.  The default
-value for @code{w3m-horizontal-shift-columns} is 2.
+is given by the @code{w3m-horizontal-shift-columns} option, default 2.
 
 @item M-l
 @kindex M-l
 @findex w3m-horizontal-recenter
-Scroll horizontally so that the current position may become center.
-
+Scroll horizontally so that the current position is centered.
 @end table
 
 @c Moving
-The commands for moving a point to the @emph{object} corresponding to
-each of three kinds of @emph{objects} in a web page are defined in the
-@code{w3m-mode}.  Objects which a point goes to are an anchor, an input
-form (a form) and an image.  An anchor includes a link and a form.  The
-move commands are defined for every various kinds.  As an example that
-the move command to an object is effective, consider a case of searching
-a word in:
+The @code{w3m-mode} major mode defines commands to move to various kinds
+of things; namely links, forms, and images (whether they are displayed
+or not).
 
-@example
-http://www.google.com
-@end example
-
-After opening the web page by the @code{w3m} command and so on, you can
-move a point to the input form for search words once you invoke the move
-command to a form (@kbd{]}).  If you don't use the move command to a
-form, you need to invoke the line-wise commands and character-wise
-commands (e.g. @kbd{C-n}, @kbd{C-f}, etc.) repeatedly depending on the
-layout and its display of a page.
+Let's consider this simple example: suppose we want to search for a word
+on the widely-known Google search engine.  Step one: open
+@uref{http://www.google.com} in emacs-w3m.  Step two: after opening the
+page, hit @kbd{]}.  Tadaa!  The point has been moved to the first form
+input in the page, you can now hit @kbd{RET} to enter something in it,
+and then @kbd{C-c C-c} to submit it.  Without this command, you would
+have had to move into the page using @kbd{C-n}, @kbd{C-f} and so forth,
+it would have been a real pain.
 
 @table @key
 @item TAB
 @kindex TAB
 @findex w3m-next-anchor
-Move a point to the next anchor.  More strictly speaking, move forward a
-point to the nearest anchor from the position.
+Move the point to the next anchor.  More strictly speaking, move the
+point forward to the nearest anchor.
 @end table
 
 @table @kbd
@@ -854,45 +817,162 @@ point to the nearest anchor from the position.
 @kindex M-@key{TAB}
 @kindex S-@key{TAB}
 @findex w3m-previous-anchor
-Move a point to the previous anchor.  More strictly speaking, move
-backward a point to the nearest anchor from the position.
+Move the point to the previous anchor.  More strictly speaking, move the
+point backward to the nearest anchor.
 
 @item ]
 @kindex ]
 @findex w3m-next-form
-Move a point to the next form.  More strictly speaking, move forward a
-point to the nearest form from the position.
+Move the point to the next form.  More strictly speaking, move the point
+forward to the nearest form.
 
 @item [
 @kindex [
 @findex w3m-previous-form
-Move a point to the previous form.  More strictly speaking, move
-backward a point to the nearest form from the position.
+Move the point to the previous form.  More strictly speaking, move the
+point backward to the nearest form.
 
 @item @}
 @kindex @}
 @findex w3m-next-image
-Move a point to the next image.  More strictly speaking, move forward a
-point to the nearest image from the position.  There is no relation to
-the behavior of this command whether images are actually displayed or
-not in a buffer.
+Move the point to the next image.  More strictly speaking, move the
+point forward to the nearest image.  
 
 @item @{
 @kindex @{
 @findex w3m-previous-image
-Move a point to the previous image.  More strictly speaking, move
-backward a point to the nearest image from the position.  There is no
-relation to the behavior of this command whether images are actually
-displayed or not in a buffer.
+Move the point to the previous image.  More strictly speaking, move the
+point backward to the nearest image.
 @end table
 
 @node Inline Images
 @section Toggle displaying inline images
+@cindex Displaying images
 
+If the Emacs version you're using is capable of displaying images in
+buffers, then emacs-w3m can display them in web pages, just like
+``graphical'' browsers like Netscape do.  You should make sure your
+Emacs is correctly setup for images before trying to use any of the
+following commands (@pxref{Required Emacs Version}).
+
+To toggle displaying of images in the current buffer, use @kbd{T}.  It
+makes emacs-w3m fetch the images from the server, then display them in
+the buffer, at the position they would have in a ``graphical'' browser.
+If you hit the key again, images will disappear from the buffer.
+
+By default, emacs-w3m won't display images, but you can change its
+behavior and choose to always display images, for this you need to
+customize the @code{w3m-default-display-inline-images} variable and
+change its value from @code{nil} to @code{t}. @xref{Customizable
+Options}.
+
+Emacs-w3m also comes with nifty features that let you zoom an image in
+or out, save it to a file, or view it in a external viewer.  See also
+@ref{Moving in a page} for instructions on how to move from image to
+image in an emacs-w3m buffer.
+
+@table @kbd
+@item T
+@kindex T
+@findex w3m-toggle-inline-images
+Toggle displaying of inline images in this buffer (and buffers created
+from this buffer, later on).
+
+@item I
+@kindex I
+@findex w3m-view-image
+@cindex Viewing images
+View the image under point in an external viewer.
+
+@item M-i
+@kindex M-i
+@findex w3m-save-image
+@cindex Saving images
+Save the image under point to an external file.  The default name will
+be the original name of the image, so most of the time @kbd{M-i RET}
+will save the image with the right name.
+
+@cindex Zooming images
+@item M-[
+@kindex M-[
+@findex w3m-zoom-out-image
+Zoom out the image under point.
+
+@item M-]
+@kindex M-]
+@findex w3m-zoom-in-image
+Zoom in the image under point.
+@end table
 
 @node Tracing History
-@section Looking back at the old pages
+@section Going back through time and space
+@cindex Browsing history
+@cindex Arrived URLs
 
+Emacs-w3m has several ways to present you with a list of all the pages
+you visited before.  The first way is simply called the ``emacs-w3m
+history'', it is a list of the pages you visited in this session,
+presented hierarchically, that is: when you follow a link, the page
+you're leaving becomes the ``parent'' of the page you're going to.  It
+is a very nice to keep track of the pages you visited, and remember
+from where you came if the history gets too long.
+
+Here is an example of this feature in action, after a short visit to the
+GNU Project's homepage:
+
+@example
+GNU's Not Unix! - the GNU Project and the Free Software Foundation (FSF)
+  Philosophy of the GNU Project - Free Software Foundation (FSF)
+    GNU Emacs - GNU Project - Free Software Foundation (FSF)
+     Order from the Free Software Foundation (FSF)
+  Links to Other Free Software Sites - GNU Project - Free Software Fo...
+    EFF: Homepage
+@end example
+
+(In fact, this example is slightly edited to fit in 72 columns; the
+URLs won't be cut in the actual emacs-w3m buffer.)
+
+You can get this kind of history using the @kbd{s} key in any emacs-w3m
+buffer.
+
+
+The other way to have information about past pages is the ``arrived
+URLs'' list: it is a list the last 500 URLs you have visited!  The list
+is ordered by date, the most recent coming first, and for each page the
+time of visit is displayed.  Here's an example (edited):
+
+@example
+Order from the Free Software Foundation (FSF)             22:53:25  
+GNU Emacs - GNU Project - Free Software Foundation (FS    22:53:05  
+Philosophy of the GNU Project - Free Software Foundati... 22:52:46  
+Philosophy of the GNU Project - Free Software Foundati... 22:52:39  
+EFF: Homepage                                             22:52:18  
+Links to Other Free Software Sites - GNU Project - Fre... 22:52:07  
+Links to Other Free Software Sites - GNU Project - Fre... 22:52:07  
+GNU's Not Unix! - the GNU Project and the Free Softwar... 22:51:32  
+Bookmarks                                                 22:51:02  
+The DICT Development Group- upwards                       2003-01-08
+the monkey puzzle: new debian packages as an rss feed     2003-01-08
+new-debian-packages.rss                                   2003-01-07
+it's a miracle                                            2003-01-06
+@end example
+
+You can get this history by passing a prefix argument to the previous
+command, i.e. using @kbd{C-u s}.  The number of URLs showed in this page
+is customizable, see the @code{w3m-keep-arrived-urls} variable.  It
+cannot exceed 500. @xref{Customizable Options}.
+
+Of course, in all cases all the lines showed in the examples are links,
+you can go to any of the pages you visited previously just like if you
+were visiting a regular page, by following the link.
+
+@table @kbd
+@item s
+@kindex s
+@findex w3m-history
+Display the list of URLs visited in this session.  If called with a
+prefix argument, show the list of arrived URLs instead.
+@end table
 
 @node Managing Bookmarks
 @section That's a favorite with me!
@@ -1367,7 +1447,68 @@ Antenna database before displaying it (@code{w3m-antenna}).
 
 @node Showing Directory Tree
 @section Showing the tree structure of local directory
+@cindex Showing the tree structure of local directory
 
+Using the @code{w3m-dtree} command, you can display a tree of all
+subdirectories of a local directory, and browse it like a regular web
+page.  The emacs-w3m buffer you get when you use this feature is very
+similar to the output of the external ``tree'' utility, hence the
+name.  Emacs-w3m adds a bonus: if you call the command with a prefix
+argument, it will display files as well, turning emacs-w3m into a
+full-featured file browser.
+
+Here is an example of what an emacs-w3m dtree run looks like:
+
+@example
+/home/romain/.elisp/emacs-w3m/
+ |-CVS/
+ |-attic/
+ |  +-CVS/
+ |-autom4te.cache/
+ |-doc/
+ |  |-CVS/
+ |  +-emacs-w3m/
+ |-icons/
+ |  +-CVS/
+ |-patches/
+ |  +-CVS/
+ +-shimbun/
+    +-CVS/
+@end example
+
+And with a prefix argument, you get something like this instead:
+
+@example
+/home/romain/.elisp/emacs-w3m/ (allfiles)
+ |-(f).cvsignore
+ |-(f)BUGS.ja
+ |-(f)COPYING
+ |-[d]CVS/
+ |  |-(f)Entries
+ |  |-(f)Repository
+ |  +-(f)Root
+ |-(f)ChangeLog
+ |-(f)ChangeLog.1
+ |-(f)FAQ
+ |-(f)FAQ.ja
+ |-(f)Makefile
+ |-(f)Makefile.in
+ |-(f)README
+ |-(f)README.ja
+ |-(f)README.namazu.ja
+ |-(f)README.shimbun.ja
+ |-(f)TIPS
+ |-(f)TIPS.ja
+@end example
+
+@table @kbd
+@item D
+@kindex D
+@findex w3m-dtree
+Prompt for a local directory in the minibuffer, then display its tree
+structure.  If called with a prefix argument (e.g. @kbd{C-u D}), show
+files in the directories as well.
+@end table
 
 @node Viewing Perl Documents
 @section Viewing perl documents
@@ -1503,34 +1644,36 @@ words, @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el} and
 @vindex w3m-minor-mode
 @vindex w3m-minor-mode-command-alist
 
-Gnus supports emacs-w3m.  Do you know?  Uh, the version of Gnus bundled
-with Emacs (or an XEmacs package) currently does not support emacs-w3m
-yet (why?).  You had best use the development version of Gnus known as
-@samp{Oort Gnus}.  It is available at:
+Did you know that Gnus, the Emacs newsreader, supports emacs-w3m?  
+
+Actually, the version of Gnus bundled with Emacs (or an XEmacs package)
+does not support emacs-w3m (yet).  You'd better use the development
+version of Gnus known as @samp{Oort Gnus}.  It is available at:
 
 @uref{ftp://ftp.gnus.org/pub/gnus/ognus.tar.gz}
 
-What, the Emacs version of Gnus already supports emacs-w3m?  Oh, you
-should get hold of the newest version of emacs-w3m (@pxref{Installing
-Emacs-w3m}), or send a mail to the emacs-w3m development team including
-a patch (or a complaint) (@pxref{Mailing List}).
+@c FIXME:  rf (01/08/03) Katsumi, what do you mean?  :-)
+@c What, the Emacs version of Gnus already supports emacs-w3m?  Oh, you
+@c should get hold of the newest version of emacs-w3m (@pxref{Installing
+@c Emacs-w3m}), or send a mail to the emacs-w3m development team including
+@c a patch (or a complaint) (@pxref{Mailing List}).
 
 @itemize @bullet
 @item
-What can emacs-w3m do?
+What can you do with emacs-w3m?
 
 You can convert HTML spam mails to be human-readable using emacs-w3m.
-Of course, it works for HTML ham (non-spam) mails, either.  Emacs-w3m is
-probably faster than the default converter.  You don't need to perform
-any additional operation.  It will simply be displayed.
+Of course, it works for HTML ham (non-spam) mails as well, and for both
+emacs-w3m is probably faster than the default converter.  You don't need
+to perform any additional operation.  It will simply be displayed.
 
 On HTML parts of an article buffer, the @code{w3m-minor-mode} is turned
 on and you can use the same main keys as the keys of emacs-w3m, for
 instance, @key{RET} is for visiting a page which a link in the current
 position points to.  Those keys are defined in the
-@code{w3m-minor-mode-command-alist} option.  Keep in mind that some
-commands are replaced by another command similar to them for the
-security reasons.
+@code{w3m-minor-mode-command-alist} variable.  Keep in mind that some
+commands are replaced by others similar to them, for security reasons
+(see below).
 
 @item
 What do you have to do?
@@ -1543,7 +1686,7 @@ easiest way is to put the following line in your @file{~/.gnus} file:
 @end lisp
 
 If you don't need to use emacs-w3m keys in article buffers, add the
-following line:
+following line too:
 
 @lisp
 (setq mm-inline-text-html-with-w3m-keymap nil)
@@ -1552,23 +1695,24 @@ following line:
 @item
 Notes
 
-The description mentioned above about spam and ham is not for kidding,
-that is just for calling your attention.  Some HTML mails might have a
-trick of spammers using the @samp{<img>} tag which is far evil than the
-@samp{Click Here!} button.  It is most likely to be intended to verify
-whether such a mail has been reached to your eyes.  It is done by
-embedding an identifier string into a url which you might retrieve.  By
-Gnus' default, the @code{mm-inline-text-html-with-images} option is
-@code{nil} and Gnus will never connect to the spammer's site arbitrarily.
+The above description about spam and ham is not for kidding, it's just
+here to get your attention.  Some HTML mails might contain a trick of
+spammers, using the @samp{<img>} tag which is far more evil than the
+@samp{Click Here!} button.  It is most likely intended to check whether
+the ominous spam mail has reached your eyes.  It is done by embedding an
+identifier string into a url which you might automatically retrieve when
+displaying the image.  By default, the
+@code{mm-inline-text-html-with-images} option is @code{nil} and Gnus
+will never connect to the spammer's site arbitrarily.
 
 You can display images inline in an article buffer if you set
-@code{mm-inline-text-html-with-images} to @code{t}, can't you?  No, it
-is insufficient, but you are being still protected.  If you don't care
-of leaking an information that your mail address is reachable, set the
-@code{mm-w3m-safe-url-regexp} option to @code{nil}.  The default value
+@code{mm-inline-text-html-with-images} to @code{t}, can't you?  No, not
+exactly: you're still being protected.  If you don't care about leaking
+information (i.e. the fact that your mail address is reachable), set the
+@code{mm-w3m-safe-url-regexp} variable to @code{nil}.  The default value
 for @code{mm-w3m-safe-url-regexp} is @samp{"\\`cid:"} which means we
-consider that images which are included in a mail with the @samp{cid:}
-url are safe (that is, you can display such images without modifying the
+consider that images included in a mail with the @samp{cid:} URL are
+safe (that is, you can display such images without modifying the
 @code{mm-w3m-safe-url-regexp} option).
 @end itemize
 
