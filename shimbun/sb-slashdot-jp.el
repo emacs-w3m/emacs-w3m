@@ -165,8 +165,8 @@
 				(string-to-number (match-string 3))
 				(if (match-beginning 4)
 				    (concat
-				     (match-string 4) ":" (match-string 5))
-				  (match-string 6))))))
+				     (match-string 5) ":" (match-string 6))
+				  (match-string 7))))))
 
 (defconst shimbun-slashdot-jp-story-head-start-pattern
   "<!-- start template: ID 45, storysearch;search;default -->")
