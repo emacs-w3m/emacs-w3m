@@ -1,7 +1,8 @@
 2002-05-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/sb-nikkei.el (shimbun-get-headers): Rewrite to adapt it
-	for the new forms on the server.
+	* shimbun/sb-nikkei.el (shimbun-asahi-x-face-alist): New face.
+	(shimbun-get-headers): Rewrite to adapt it for the new forms on
+	the server.
 
 2002-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
