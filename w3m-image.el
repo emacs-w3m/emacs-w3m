@@ -78,6 +78,7 @@
 	   (default-process-coding-system (cons 'binary 'binary))
 	   return)
       (write-region (point-min) (point-max) in-file nil 'nomsg)
+      (erase-buffer)
       (setq return (apply 'call-process
 			  w3m-imagick-convert-program
 			  nil t nil

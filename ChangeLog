@@ -1,5 +1,22 @@
 2003-09-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-favicon.el (w3m-setup-favicon): Convert favicon data to an
+	image for the about: pages using `w3m-convert-favicon'.
+	(w3m-buffer-favicon): Move the data conversion procedure to
+	`w3m-convert-favicon'.
+	(w3m-convert-favicon): New function detached from
+	`w3m-buffer-favicon'; make it work synchronously.
+	(w3m-retrieve-favicon): Convert favicon data to an image.
+
+	* w3m-image.el (w3m-imagick-convert-buffer): Erase buffer before
+	calling the convert program.
+
+	* w3m.el (w3m-buffer-setup): Modify the value for
+	`mode-line-buffer-identification' in order to make it possible to
+	show favicon under XEmacs.
+
+2003-09-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-open-all-links-in-new-session): New function.
 	Suggested by Yoichi NAKAYAMA <yoichi@geiin.org>.
 	(w3m-view-this-url-new-session): Call
