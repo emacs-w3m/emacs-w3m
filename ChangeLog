@@ -1,3 +1,11 @@
+2003-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-language, w3m-command-environment,
+	w3m-content-type-alist, w3m-encoding-type-alist, w3m-decoder-alist,
+	w3m-charset-coding-system-alist, w3m-correct-charset-alist,
+	w3m-url-local-directory-alist, w3m-pop-up-frame-parameters):
+	Improve the customizing widgets.
+
 2003-07-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/sb-tdiary.el (shimbun-tdiary-content-start): Change value.
