@@ -1,3 +1,10 @@
+2001-03-12  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-which-command): New function.
+	(w3m-external-view): When no viewing method is defined, call
+	`w3m-download' as alternative method.  Added check which command
+	exists with `w3m-which-command'.
+
 2001-03-12  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-display-inline-image-status): Define as buffer local

@@ -2138,45 +2138,54 @@ this function returns t.  Otherwise, returns nil."
      (img (w3m-view-image))
      (t (message "No URL at point.")))))
 
+(defsubst w3m-which-command (command)
+  (catch 'found-command
+    (let (bin)
+      (dolist (dir exec-path)
+	(when (file-executable-p (setq bin (expand-file-name command dir)))
+	  (throw 'found-command bin))))))
+
 (defun w3m-external-view (url)
   (let* ((type (w3m-content-type url))
 	 (method (nth 2 (assoc type w3m-content-type-alist))))
     (cond
      ((not method)
-      (error "Unknown content type: %s" type))
+      (w3m-download url))
      ((functionp method)
       (funcall method url))
      ((consp method)
-      (let ((command (car method))
+      (let ((command (w3m-which-command (car method)))
 	    (arguments (cdr method))
 	    (file (make-temp-name
 		   (expand-file-name "w3mel" w3m-profile-directory)))
 	    (proc))
-	(unwind-protect
-	    (with-current-buffer
-		(generate-new-buffer " *w3m-external-view*")
-	      (if (memq 'file arguments) (w3m-download url file))
-	      (setq proc
-		    (apply 'start-process
-			   "w3m-external-view"
-			   (current-buffer)
-			   command
-			   (mapcar (function eval) arguments)))
-	      (setq w3m-process-temp-file file)
-	      (set-process-sentinel
-	       proc
-	       (lambda (proc event)
-		 (and (string-match "^\\(finished\\|exited\\)" event)
-		      (buffer-name (process-buffer proc))
-		      (save-excursion
-			(set-buffer (process-buffer proc))
-			(if (file-exists-p w3m-process-temp-file)
-			    (delete-file w3m-process-temp-file)))
-		      (kill-buffer (process-buffer proc))))))
-	  (if (file-exists-p file)
-	      (unless (and (processp proc)
-			   (memq (process-status proc) '(run stop)))
-		(delete-file file)))))))))
+	(if command
+	    (unwind-protect
+		(with-current-buffer
+		    (generate-new-buffer " *w3m-external-view*")
+		  (if (memq 'file arguments) (w3m-download url file))
+		  (setq proc
+			(apply 'start-process
+			       "w3m-external-view"
+			       (current-buffer)
+			       command
+			       (mapcar (function eval) arguments)))
+		  (setq w3m-process-temp-file file)
+		  (set-process-sentinel
+		   proc
+		   (lambda (proc event)
+		     (and (string-match "^\\(finished\\|exited\\)" event)
+			  (buffer-name (process-buffer proc))
+			  (save-excursion
+			    (set-buffer (process-buffer proc))
+			    (if (file-exists-p w3m-process-temp-file)
+				(delete-file w3m-process-temp-file)))
+			  (kill-buffer (process-buffer proc))))))
+	      (if (file-exists-p file)
+		  (unless (and (processp proc)
+			       (memq (process-status proc) '(run stop)))
+		    (delete-file file))))
+	  (w3m-download url)))))))
 
 (defun w3m-view-image ()
   "*View the image under point."
