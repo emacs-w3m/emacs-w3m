@@ -95,6 +95,20 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+
+(eval-when-compile
+  (defvar w3m-url-history))
+
+(defun w3m-history-current ()
+  "Return a history element of the current position."
+  (let* ((position (car w3m-url-history))
+	 (element (nth (pop position) (cdr w3m-url-history))))
+    (while (> (length position) 0)
+      (setq element (nth (pop position) (cddr element))
+	    element (nth (pop position) element)))
+    element))
+
 ;;(not-provided-yet 'w3m-hist)
 
 ;;; w3m-hist.el ends here
