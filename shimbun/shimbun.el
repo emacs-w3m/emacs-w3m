@@ -769,13 +769,12 @@ Return nil if all pages should be retrieved."
   "Return a X-Face field string for SHIMBUN.")
 
 (luna-define-method shimbun-x-face ((shimbun shimbun))
-  (or (shimbun-x-face-internal shimbun)
-      (shimbun-set-x-face-internal
-       shimbun
-       (or (cdr (assoc (shimbun-current-group-internal shimbun)
-		       (shimbun-x-face-alist-internal shimbun)))
-	   (cdr (assoc "default" (shimbun-x-face-alist-internal shimbun)))
-	   shimbun-x-face))))
+  (shimbun-set-x-face-internal
+   shimbun
+   (or (cdr (assoc (shimbun-current-group-internal shimbun)
+		   (shimbun-x-face-alist-internal shimbun)))
+       (cdr (assoc "default" (shimbun-x-face-alist-internal shimbun)))
+       shimbun-x-face)))
 
 (defun shimbun-search-id (shimbun id)
   "Return non-nil when MUA found a message structure which corresponds to ID."
