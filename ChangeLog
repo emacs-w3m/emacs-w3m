@@ -1,3 +1,20 @@
+2002-03-29  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-element-body)
+	(mew-shimbun-get-id-msgs, mew-shimbun-unseen-check)
+	(mew-shimbun-unseen-setup): Use `match-string' instead of
+	`mew-match'.
+	(top): Define `mew-local-folder-alist' to avoid byte-compile
+	warings.
+	(mew-shimbun-goto-folder, mew-shimbun-retrieve-article): Support
+	Mew 3.0.55 or later.
+
+	* mew-w3m.el (mew-mime-text/html-w3m): Use `match-string' instead
+	of `mew-match'.
+
+	* w3m.el (w3m-fontify-anchors): Modify the point for
+	'w3m-name-anchor property when its has an empty body.
+
 2002-03-28  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-dump-head-source-command-arguments)[w3mmee]: Don't
@@ -192,7 +209,7 @@
 2002-03-24  SAITO Takuya <reed@lily.freemail.ne.jp>
 
 	* shimbun/sb-yahoo.el (shimbun-get-headers): Changed date format.
-	
+
 2002-03-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-remove-redundant-spaces): New implementation.

@@ -1997,8 +1997,7 @@ with ^ as `cat -v' does."
 	  (when (re-search-forward "[<\n]" nil t)
 	    (goto-char (setq end (match-beginning 0)))
 	    (when (= start end)
-	      (setq start (max (- start 1)
-			       (point-min))))
+	      (setq end (min (1+ end) (point-max))))
 	    (w3m-add-text-properties start end
 				     (list 'w3m-name-anchor name)))))))
     (when w3m-icon-data

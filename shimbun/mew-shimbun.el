@@ -75,7 +75,8 @@
   (unless (fboundp 'MEW-SHIMBUN-STS)
     (defun MEW-SHIMBUN-STS () ())))
   (defvar mew-folder-list)
-  (defvar mew-local-folder-list))
+  (defvar mew-local-folder-list)
+  (defvar mew-local-folder-alist))
 
 ;; Variables
 (defgroup mew-shimbun nil
@@ -226,8 +227,8 @@ show below example,
 
 (defmacro mew-shimbun-element-body (sgr group server &rest body)
   `(when (string-match "\\([^.]+\\)\\.\\(.+\\)" (car ,sgr))
-     (let ((server (mew-match 1 (car ,sgr)))
-	   (group (mew-match 2 (car ,sgr)))
+     (let ((server (match-string 1 (car ,sgr)))
+	   (group (match-string 2 (car ,sgr)))
 	   (range (cdr ,sgr)))
        (mew-summary-lock 'shimbun
 			 (format mew-shimbun-lock-format1 ,group ,server))
@@ -258,7 +259,9 @@ show below example,
 If called with '\\[universal-argument]', goto folder to have a few new messages."
   (interactive "P")
   (let ((flds (or (and (boundp 'mew-folder-list) mew-folder-list)
-		  (and (boundp 'mew-local-folder-list) mew-local-folder-list)))
+		  (and (boundp 'mew-local-folder-list) mew-local-folder-list)
+		  (and (boundp 'mew-local-folder-alist)
+		       (mapcar 'car mew-local-folder-alist))))
 	sbflds alst fld cfile)
     (save-excursion
       (dolist (fld flds)
@@ -429,7 +432,9 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	      (mew-shimbun-mode-display group server count dispcount sum))))
       (kill-buffer buf)
       (mew-summary-unlock)
-      (mew-folder-insert fld)
+      (w3m-static-if (fboundp 'mew-folder-insert)
+	  (mew-folder-insert fld)
+	(mew-local-folder-insert fld))
       (shimbun-close-group shimbun)
       (shimbun-close shimbun)
       (mew-shimbun-db-shutdown fld count))
@@ -616,7 +621,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	  (mew-insert-message (car args) msg mew-cs-text-for-read 512)
 	  (goto-char (point-min))
 	  (when (re-search-forward "^X-Shimbun-Id: \\(.+\\)\n" nil t)
-	    (setq id-msgs (cons (cons (mew-match 1) msg) id-msgs)))))
+	    (setq id-msgs (cons (cons (match-string 1) msg) id-msgs)))))
       (nreverse id-msgs))
      ((eq type 'range)
       ;; folder begin-message end-message
@@ -629,7 +634,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 		       "-s" (format "%s %s-%s" (nth 0 args) (nth 1 args) (nth 2 args))))
 	(goto-char (point-min))
 	(while (re-search-forward "^\\([1-9][0-9]*\\): \\([^\n]+\\)" nil t)
-	  (setq id-msgs (cons (cons (mew-match 2) (mew-match 1)) id-msgs))))
+	  (setq id-msgs (cons (cons (match-string 2) (match-string 1)) id-msgs))))
       (nreverse id-msgs))
      ;; something error
      (t nil))))
@@ -872,16 +877,16 @@ If called with '\\[universal-argument]', check messages in the region."
 		   (while (not (eobp))
 		     (when (looking-at "^\\([1-9][0-9]*\\): \\(unseen\\)?")
 		       (if (match-beginning 2)
-			   (setq msgs (cons (cons (mew-match 1) t) msgs))
-			 (setq msgs (cons (cons (mew-match 1) nil) msgs))))
+			   (setq msgs (cons (cons (match-string 1) t) msgs))
+			 (setq msgs (cons (cons (match-string 1) nil) msgs))))
 		     (forward-line))
 		   (nreverse msgs)))
 	   (goto-char (car begend))
 	   (beginning-of-line)
 	   (while (< (point) (cdr begend))
 	     (when (looking-at "^ *\\([0-9]+\\)\\([^0-9]\\)")
-	       (setq msg (mew-match 1))
-	       (setq mark (string-to-char (mew-match 2)))
+	       (setq msg (match-string 1))
+	       (setq mark (string-to-char (match-string 2)))
 	       (if (eq (cdr (assoc msg msgs)) t)
 		   ;; unseen message
 		   (unless (eq mark mew-shimbun-mark-unseen)
@@ -1021,7 +1026,7 @@ This function is modifed by mew-shimbun.el"
 	      duplicated review)
 	  (when mew-scan-form-mark-delete
 	    (when (string-match mew-regex-id id)
-	      (setq id (mew-match 1 id))
+	      (setq id (match-string 1 id))
 	      (if (member id (mew-sinfo-get-scan-id)) ;; in Summary mode
 		  (setq duplicated t)
 		(mew-sinfo-set-scan-id (cons id (mew-sinfo-get-scan-id))))))
