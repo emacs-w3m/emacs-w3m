@@ -1236,6 +1236,10 @@ way:
 		       (string :tag "Regexp" :value "")
 		       (function-item :format "" w3m-pattern-uri-replace)
 		       (string :tag "Pattern" :value "")))
+	       '((list :format "Quick Search:\n%v" :tag "Quick Search"
+		       (regexp :tag "Prefix URL Regexp")
+		       (function-item :format "" w3m-search-uri-replace)
+		       (string :tag "Quick Search Engine")))
 	       (mapcar
 		(lambda (elem)
 		  (let ((engine (car elem))
