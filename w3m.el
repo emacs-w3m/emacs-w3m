@@ -3610,9 +3610,8 @@ also make a new frame for the copied session."
 	;; because generated buffer has no content at this moment.
 	(when (and (string-match w3m-url-components-regexp url)
 		   (match-beginning 8))
-	  (let ((name (match-string 9 url))
-		(url (substring url 0 (match-beginning 8))))
-	    (w3m-goto-url url arg nil nil w3m-current-url))))
+	  (w3m-goto-url (substring url 0 (match-beginning 8))
+			arg nil nil w3m-current-url)))
       (w3m-goto-url url arg nil nil w3m-current-url))
      (act (eval act))
      ((w3m-image)
@@ -4662,9 +4661,8 @@ the current session.  Otherwise, the new session will start afresh."
 	;; because generated buffer has no content at this moment.
 	(when (and (string-match w3m-url-components-regexp url)
 		   (match-beginning 8))
-	  (let ((name (match-string 9 url))
-		(url (substring url 0 (match-beginning 8))))
-	    (w3m-goto-url url reload charset post-data referer)))
+	  (w3m-goto-url (substring url 0 (match-beginning 8))
+			reload charset post-data referer))
 	(w3m-goto-url url reload charset post-data referer))
     (w3m url t)))
 
