@@ -2175,7 +2175,7 @@ the @samp{w3m} configuration file (normally @file{~/.w3m/config}).
 
 @item w3m-add-referer-regexps
 @vindex w3m-add-referer-regexps
-Regexps matching url strings being allowed to send as referes.  It
+Regexps matching url strings being allowed to send as referers.  It
 consists of a @code{cons} of two regexps, one matches and the other does
 not match.  If a url matches the first element and does not match the
 latter one, it denotes that url can be sent to foreign web servers as a
