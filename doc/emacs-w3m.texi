@@ -4506,6 +4506,9 @@ cnn-jp.sports cnn-jp.top cnn-jp.usa cnn-jp.world
 @item @uref{http://www.excite.co.jp/, Excite News}
 excite.bit-koneta excite.world-odd
 
+@item @uref{http://www.fau.org/, FAU-IAA}
+fau.news
+
 @item @uref{http://www.heise.de/, Heise Online}
 heise.news heise.telepolis
 
