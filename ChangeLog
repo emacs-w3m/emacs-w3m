@@ -5,6 +5,7 @@
 	(w3m-header-line-insert): Ditto.
 	(w3m-about-retrieve): Use `defun' instead of `defsubst'.
 	(w3m-cid-retrieve): Ditto.
+	(w3m-current-column): Make it a function, not a macro.
 
 2003-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
