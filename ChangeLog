@@ -1,3 +1,8 @@
+2001-09-22  MIYOSHI Masanori  <miyoshi@boreas.dti.ne.jp>
+
+	* shimbun/sb-isize-sports.el (shimbun-isize-sports-group-alist):
+	Follow the change of the Web site.
+
 2001-09-18  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-ucs.el (w3m-euc-japan-encoder): Convert lain-jisx0201 to ASCII;
