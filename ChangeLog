@@ -1,3 +1,17 @@
+2003-11-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-follow-redirection): Fix its docstring.
+	(w3m-w3m-retrieve): When the above option is equal to nil, it is
+	treated as 0.
+	(w3m-retrieve-and-render): Check content type and charsets with
+	redirected real URI instead of user-specified URI.
+
+	* w3m-antenna.el (w3m-antenna-hns-last-modified): Do not accept
+	`no-cache' argument.
+	(w3m-antenna-check-site): Ditto.
+	(w3m-antenna-mapcar, w3m-antenna-mapcar-after): New functions.
+	(w3m-antenna-check-all-sites): Use the above functions.
+
 2003-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-delete-buffer): New implementation.
