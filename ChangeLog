@@ -1,3 +1,8 @@
+2004-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-touch-file): Protect against the absence of
+	file-name-coding-system and default-file-name-coding-system.
+
 2004-10-20  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-buffer-setup): Modify
