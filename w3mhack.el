@@ -294,10 +294,9 @@ emacs-w3m.")
 	  (setq bitmap-alterable-charset 'tibetan-1-column)
 	  (require 'bitmap))
       (push "w3m-bitmap.el" ignores))
-    ;; Shimbun modules which need xml.el.
+    ;; List shimbun modules which cannot be byte-compiled with this system.
     (unless (locate-library "xml")
-      (dolist (file (w3mhack-shimbun-modules-using-rss))
-	(push file ignores)))
+      (setq ignores (nconc ignores (w3mhack-shimbun-modules-using-rss))))
     ;; To byte-compile w3m-util.el and a version specific module first.
     (princ "w3m-util.elc ")
     (setq modules (delete "w3m-util.el" modules))
@@ -315,21 +314,28 @@ emacs-w3m.")
 (defun w3mhack-shimbun-modules-using-rss ()
   "Return a list of shimbun modules using RSS."
   (let* ((dir (file-name-as-directory shimbun-module-directory))
-	 (files (list (concat dir "sb-rss.el"))))
-    (dolist (file (directory-files shimbun-module-directory nil "\\.el$"))
-      (setq file (concat dir file))
-      (catch 'next-file
-	(with-temp-buffer
-	  (insert-file-contents file)
-	  (let (form)
-	    (goto-char (point-min))
-	    (while (setq form (condition-case nil
-				  (read (current-buffer))
-				(error nil)))
-	      (when (equal form '(require (quote sb-rss)))
-		(push file files)
-		(throw 'next-file nil)))))))
-    files))
+	 ;; sb-rss.el exactly needs xml.el.
+	 (files (delete "sb-rss.el" (directory-files dir nil "\\.el\\'")))
+	 (rest (list (concat dir "sb-rss.el")))
+	 (buffer (generate-new-buffer " *temp*"))
+	 file form)
+    (save-excursion
+      (set-buffer buffer)
+      (while files
+	(setq file (concat dir (car files))
+	      files (cdr files))
+	(insert-file-contents file)
+	(goto-char (point-min))
+	(while (and file
+		    (setq form (condition-case nil
+				   (read (current-buffer))
+				 (error nil))))
+	  (when (equal form '(require (quote sb-rss)))
+	    (push file rest)
+	    (setq file nil)))
+	(erase-buffer)))
+    (kill-buffer buffer)
+    rest))
 
 (when (or (<= w3mhack-emacs-major-version 19)
 	  (and (= w3mhack-emacs-major-version 20)

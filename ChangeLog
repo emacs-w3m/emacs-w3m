@@ -1,3 +1,8 @@
+2003-06-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-shimbun-modules-using-rss): Don't use
+	`with-temp-buffer'.
+
 2003-06-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3mhack.el (w3mhack-shimbun-modules-using-rss): New function.
