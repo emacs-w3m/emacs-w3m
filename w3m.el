@@ -435,8 +435,10 @@ MIME CHARSET and CODING-SYSTEM must be symbol."
   (eval-when-compile
     (format "&\\(%s\\|#[0-9]+\\);?"
 	    (if (fboundp 'regexp-opt)
-		(regexp-opt (mapcar (function car)
-				    w3m-entity-alist))
+		(let ((fn (function regexp-opt)))
+		  ;; Don't funcall directly for avoiding compile warning.
+		  (funcall fn (mapcar (function car)
+				      w3m-entity-alist)))
 	      (mapconcat (lambda (s)
 			   (regexp-quote (car s)))
 			 w3m-entity-alist
@@ -662,10 +664,9 @@ If N is negative, last N items of LIST is returned."
 	      (char-to-string ch))	; printable
 	     (t
 	      (format "%%%02X" ch))))	; escape
-	  (string-to-list
-	   (encode-coding-string
-	    str
-	    (or coding 'iso-2022-jp))))))
+	  ;; Coerce a string to a list of chars.
+	  (append (encode-coding-string str (or coding 'iso-2022-jp))
+		  nil))))
 
 (put 'w3m-parse-attributes 'lisp-indent-function '1)
 (put 'w3m-parse-attributes 'edebug-form-spec '(&rest form))

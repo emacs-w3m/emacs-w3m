@@ -46,8 +46,6 @@
 ;; Needed for interdependencies between w3m modules.
 (push default-directory load-path)
 
-(require 'w3m)
-
 (defun w3mhack-examine-modules ()
   "Examine w3m modules should be byte-compile'd."
   (let ((modules (directory-files default-directory nil "\\.el$"))
@@ -82,9 +80,57 @@
 	   (cons 'truncate-string-to-width (cdr form))
 	 form)))
 
-(when (featurep 'xemacs)
+(cond
+ ((featurep 'xemacs)
   (setq byte-compile-warnings
 	(delq 'unused-vars (copy-sequence byte-compile-default-warnings))))
+ ((boundp 'MULE)
+  ;; Bind defcustom'ed variables.
+  (put 'custom-declare-variable 'byte-hunk-handler
+       (lambda (form)
+	 (if (memq 'free-vars byte-compile-warnings)
+	     (setq byte-compile-bound-variables
+		   (cons (nth 1 (nth 1 form)) byte-compile-bound-variables)))
+	 form))
+
+  ;; Make `locate-library' run quietly at run-time.
+  (put 'locate-library 'byte-optimizer
+       (lambda (form)
+	 (` (let ((fn (function locate-library))
+		  (msg (symbol-function 'message)))
+	      (fset 'message (function ignore))
+	      (unwind-protect
+		  (, (append '(funcall fn) (cdr form)))
+		(fset 'message msg))))))
+  (let (current-load-list)
+    ;; Mainly for the compile-time.
+    (defun locate-library (library &optional nosuffix)
+      "Show the full path name of Emacs library LIBRARY.
+This command searches the directories in `load-path' like `M-x load-library'
+to find the file that `M-x load-library RET LIBRARY RET' would load.
+Optional second arg NOSUFFIX non-nil means don't add suffixes `.elc' or `.el'
+to the specified name LIBRARY (a la calling `load' instead of `load-library')."
+      (interactive "sLocate library: ")
+      (catch 'answer
+	(mapcar
+	 '(lambda (dir)
+	    (mapcar
+	     '(lambda (suf)
+		(let ((try (expand-file-name (concat library suf) dir)))
+		  (and (file-readable-p try)
+		       (null (file-directory-p try))
+		       (progn
+			 (or noninteractive
+			     (message "Library is file %s" try))
+			 (throw 'answer try)))))
+	     (if nosuffix '("") '(".elc" ".el" ""))))
+	 load-path)
+	(or noninteractive
+	    (message "No library %s in search path" library))
+	nil))
+    (byte-compile 'locate-library))))
+
+(require 'w3m)
 
 (defun w3mhack-version ()
   "Print version of w3m.el."

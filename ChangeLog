@@ -1,7 +1,15 @@
 2001-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el (MULE): Make `locate-library' run quietly; bind
+	defcustom'ed variables at compile-time; require `w3m' after
+	byte-optimizations are done.
+
 	* w3m.el (w3m-static-cond): New macro; use it for defining
 	`find-coding-system'.
+	(w3m-url-encode-string): Use `append' instead of `string-to-list'
+	to coerce a string to a list of chars.
+	(w3m-entity-regexp): Don't funcall `regexp-opt' directly for
+	avoiding compile warning.
 
 2001-03-15  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
