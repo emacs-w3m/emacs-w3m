@@ -4895,6 +4895,10 @@ f1fan.news
 @item @uref{http://forum.nifty.com/fmotor/, @@nifty:モータースポーツ}
 msports-nifty.F1 msports-nifty.IRL msports-nifty.WRC
 msports-nifty.Europe msports-nifty.USA
+
+@item @uref{http://sports.yahoo.co.jp/, Yahoo!スポーツ}
+yahoo-sports.F1 yahoo-sports.baseball yahoo-sports.keiba
+yahoo-sports.NBA yahoo-sports.NFL yahoo-sports.rugby
 @end table
 
 ただし、Emacs-21.4 またはそれ以前の版で @@nifty:モータースポーツを閲覧す

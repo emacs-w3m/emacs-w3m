@@ -1,3 +1,12 @@
+2005-03-13  MIYOSHI Masanori  <miyoshi@meadowy.org>
+
+	* shimbun/sb-yahoo-sports.el: New shimbun backend for
+	Yahoo!SPORTS.
+
+	* doc/emacs-w3m-ja.texi (Sport Sites Supported by Shimbun): Update.
+
+	* doc/emacs-w3m.texi (Sport Sites Supported by Shimbun): Ditto.
+
 2005-03-13  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-sourceforge-jp.el (shimbun-index-url): Fix generating url rule.

@@ -4836,6 +4836,10 @@ f1fan.news
 @item @uref{http://forum.nifty.com/fmotor/, @@nifty:motorsports}
 msports-nifty.F1 msports-nifty.IRL msports-nifty.WRC
 msports-nifty.Europe msports-nifty.USA
+
+@item @uref{http://sports.yahoo.co.jp/, Yahoo!SPORTS}
+yahoo-sports.F1 yahoo-sports.baseball yahoo-sports.keiba
+yahoo-sports.NBA yahoo-sports.NFL yahoo-sports.rugby
 @end table
 
 @@nifty:motorsports requires the Mule-UCS package (@pxref{Other
