@@ -44,7 +44,7 @@
 ;; (define-key mew-summary-mode-map "GR" 'mew-shimbun-re-retrieve-all)
 ;; (when mew-shimbun-use-unseen
 ;;   (define-key mew-summary-mode-map "Gu" 'mew-shimbun-remove-unseen)
-;;   (define-key mew-summary-mode-map "GU" 'mew-shimbun-remove-unseen-all)
+;;   (define-key mew-summary-mode-map "GU" 'mew-shimbun-remove-unseen-all))
 ;;
 
 ;;; Code:
@@ -282,30 +282,36 @@ If called with '\\[universal-argument]', goto folder to have few new messages."
 (defun mew-shimbun-retrieve-all ()
   "Retrieve all articles via SHIMBUN."
   (interactive)
-  (let ((mua (luna-make-entity 'shimbun-mew-mua))
-	(count 0)
-	alist)
-    (run-hooks 'mew-shimbun-before-retrieve-hook)
-    (dolist (elem (reverse mew-shimbun-groups))
-      (when (string-match "\\`\\([^/]+\\)\\/" (car elem))
-	(let* ((server (mew-match 1 (car elem)))
-	       (group (substring (car elem) (match-end 0)))
-	       (range (cdr elem))
-	       (x (assoc server alist)))
-	  (if x
-	      (unless (assoc group (cdr x))
-		(setcdr x (cons (cons group range) (cdr x))))
-	    (push (list server (cons group range)) alist)))))
-    (dolist (elem alist)
-      (dolist (pair (cdr elem))
-	(setq count
-	      (+ count
-		 (mew-shimbun-retrieve-article
-		  mua (car elem) (car pair) (cdr pair))))))
-    (run-hooks 'mew-shimbun-retrieve-hook)
-    (message "Getting %s %s done"
-	     (if (= count 0) "no" (number-to-string count))
-	     (if (> count 1) "articles" "article"))))
+  (mew-summary-only
+   (let ((mua (luna-make-entity 'shimbun-mew-mua))
+	 (count 0)
+	 alist)
+     (run-hooks 'mew-shimbun-before-retrieve-hook)
+     (dolist (elem (reverse mew-shimbun-groups))
+       (when (string-match "\\`\\([^/]+\\)\\/" (car elem))
+	 (let* ((server (mew-match 1 (car elem)))
+		(group (substring (car elem) (match-end 0)))
+		(range (cdr elem))
+		(x (assoc server alist)))
+	   (if x
+	       (unless (assoc group (cdr x))
+		 (setcdr x (cons (cons group range) (cdr x))))
+	     (push (list server (cons group range)) alist)))))
+     (dolist (elem alist)
+       (dolist (pair (cdr elem))
+	 (setq count
+	       (+ count
+		  (mew-shimbun-retrieve-article
+		   mua (car elem) (car pair) (cdr pair))))))
+     (run-hooks 'mew-shimbun-retrieve-hook)
+     (let ((fld (mew-summary-folder-name)))
+       (when (and (mew-shimbun-folder-p fld)
+		  (mew-summary-folder-dir-newp))
+	 (mew-scan (mew-scan-mewls-src fld (mew-input-range fld nil)))
+	 (mew-rendezvous mew-summary-buffer-process)))
+     (message "Getting %s %s done"
+	      (if (= count 0) "no" (number-to-string count))
+	      (if (> count 1) "articles" "article")))))
 
 (defun mew-shimbun-retrieve-article (mua server group range &optional fld scan)
   "Retrieve articles via SHIMBUN."
@@ -888,22 +894,26 @@ and 'X-Shimbun-Status:' effect to this function."
 	(mew-shimbun-remove-unseen-advice))
 
       (when mew-shimbun-use-unseen-cache-save
+	;; "C-cC-q" 
 	(defadvice mew-kill-buffer (before shimbun-cache-save activate)
 	  (let* ((buf (or buf (current-buffer)))
 		 (fld (if (bufferp buf) (buffer-name buf) buf)))
 	    (when (and (get-buffer buf) (mew-shimbun-folder-p fld))
 	      (save-excursion
 		(set-buffer buf)
-		(mew-summary-folder-cache-save)))))
+		(unless (mew-summary-folder-dir-newp)
+		  (mew-summary-folder-cache-save))))))
 
-	(defadvice mew-remove-buffer (before shimbun-cache-save activate)
-	  (let ((fld (if (bufferp buf) (buffer-name buf) buf)))
-	    (when (and (get-buffer buf) (mew-shimbun-folder-p fld))
-	      (save-excursion
-		(set-buffer buf)
-		(mew-summary-folder-cache-save)))))
+	;; "Q" or exit Emacs
+	(defadvice mew-mark-clean-up (before shimbun-cache-save activate)
+	  (save-excursion
+	    (dolist (fld mew-buffers)
+	      (when (and (get-buffer fld) (mew-shimbun-folder-p fld))
+		(set-buffer fld)
+		(unless (mew-summary-folder-dir-newp)
+		  (mew-summary-folder-cache-save))))))
 	))))
-	    
+
 ;;; unseen setup
 (when mew-shimbun-use-unseen
   (mew-shimbun-unseen-setup))

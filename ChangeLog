@@ -1,3 +1,9 @@
+2001-10-31  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-all): When
+	current-buffer is shimbun folder, scan update automatically.
+	(mew-shimbun-unseen-setup): Advices for save cache are more safer.
+
 2001-10-31  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-e21.el (w3m-tab-unselected-face): Setup color for tty.
