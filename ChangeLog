@@ -1,3 +1,9 @@
+2002-05-07  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-download): Modify string of the prompt.
+	(w3m-prepare-content): Add 5th optional argument `retry'. If not
+	determine content-type, ask its.
+
 2002-05-07  Yoichi NAKAYAMA  <yoichi@FreeBSD.org>
 
 	* shimbun/sb-savannah.el: New file.

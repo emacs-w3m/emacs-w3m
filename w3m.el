@@ -3327,13 +3327,14 @@ type as a string argument, when retrieve is complete."
 ;;;###autoload
 (defun w3m-download (url &optional filename no-cache handler)
   (interactive
-   (let* ((url (w3m-input-url
-		nil
-		(when (stringp w3m-current-url)
-		  (if (string-match "\\`about://\\(header\\|source\\)/"
-				    w3m-current-url)
-		      (substring w3m-current-url (match-end 0))
-		    w3m-current-url))))
+   (let* ((url (w3m-input-url "Download URL (default HOME): "
+			      (when (stringp w3m-current-url)
+				(if (string-match
+				     "\\`about://\\(header\\|source\\)/"
+				     w3m-current-url)
+				    (substring w3m-current-url (match-end 0))
+				  w3m-current-url))
+			      w3m-home-page))
 	  (basename (file-name-nondirectory (w3m-url-strip-query url))))
      (if (string-match "^[\t ]*$" basename)
 	 (error "You should specify the existing file name")
@@ -3713,15 +3714,33 @@ argument.  Otherwise, it will be called with nil."
   '(("\\`text/" . w3m-prepare-text-content)
     ("\\`image/" . w3m-prepare-image-content)))
 
-(defun w3m-prepare-content (url type output-buffer &optional content-charset)
+(defun w3m-prepare-content (url type output-buffer &optional content-charset retry)
   (catch 'content-prepared
     (dolist (elem w3m-content-prepare-functions)
       (and (string-match (car elem) type)
 	   (funcall (cdr elem) url type output-buffer content-charset)
 	   (throw 'content-prepared t)))
-    (with-current-buffer output-buffer
-      (w3m-external-view url))
-    nil))
+    (if (or retry (nth 2 (assoc type w3m-content-type-alist)))
+	(with-current-buffer output-buffer
+	  (w3m-external-view url)
+	  nil)
+      ;; select Content-Type
+      (let ((cwin (current-window-configuration)) ct)
+	(unwind-protect
+	    (progn
+	      (pop-to-buffer (current-buffer))
+	      (delete-other-windows)
+	      (ding)
+	      (setq ct (completing-read "Content-type (default Download): "
+					w3m-content-type-alist nil t)))
+	  (set-window-configuration cwin))
+	(if (string= ct "")
+	    ;; download
+	    (with-current-buffer output-buffer
+	      (w3m-external-view url)
+	      nil)
+	  ;; retry with specified Content-type
+	  (w3m-prepare-content url ct output-buffer content-charset 'retry))))))
 
 (defun w3m-prepare-text-content (url type output-buffer
 				     &optional content-charset)
