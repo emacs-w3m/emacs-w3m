@@ -751,7 +751,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 				  (< (string-to-number x) (string-to-number y)))))
 	       (setq t1 (length msgs))
 	       (if (zerop t1)
-		   (message "No expire (%s)" fld t1)
+		   (message "No expire (%s)" fld)
 		 (message "Expire (%s) 1/%d..." fld t1)
 		 (goto-char (point-min))
 		 (dolist (msg msgs)
