@@ -6,8 +6,7 @@ shimbun ライブラリでは、新聞やニュースサイト、メーリングリストアーカイブ
 shimbun ライブラリを利用できるメールユーザエージェントは、以下の通りです。
 
 	Wanderlust (2.7.0 以降)
-	T-gnus-6_15
-	Gnus (T-gnus の nnshimbun.el が必要)
+	Gnus (5.9 以降，T-gnus-6_15 を含む)
 	Mew (2.1 以降) "3. mew-shimbun.el について" をお読み下さい
 
 APEL および FLIM パッケージが必要です。インストールする前にそれらをイン
@@ -22,19 +21,20 @@ ftp://ftp.m17n.org/pub/mule/flim/
 
 2-1. 新聞
 
-朝日		asahi.national asahi.business asahi.politics
-		asahi.international asahi.sports
-		(asahi-html も用意されています。)
+朝日		asahi.business asahi.culture asahi.english
+		asahi.international asahi.national asahi.politics
+		asahi.science asahi.sports (asahi-html もお勧めです)
 毎日		mainichi.shakai mainichi.sports mainichi.seiji
 		mainichi.keizai mainichi.kokusai mainichi.fuho
-日経		nikkei.keizai nikkei.seiji nikkei.kaigai nikkei.market
-		nikkei.sangyo nikkei.tento nikkei.shakai nikkei.retto
-		nikkei.shasetsu nikkei.zinzi nikkei.okuyami
-スポニチ		sponichi.baseball sponichi.soccer sponichi.usa
+日経		nikkei.kaigai nikkei.keizai nikkei.main nikkei.market
+		nikkei.okuyami nikkei.retto nikkei.sangyo nikkei.seiji
+		nikkei.shakai nikkei.shasetsu nikkei.tento nikkei.zinzi
+スポニチ	sponichi.baseball sponichi.soccer sponichi.usa
 		sponichi.others sponichi.society
 		sponichi.entertainment sponichi.horseracing
-讀売		yomiuri.shakai yomiuri.sports yomiuri.seiji
-		yomiuri.keizai yomiuri.kokusai yomiuri.fuho
+讀売		yomiuri.business yomiuri.editorial yomiuri.national
+		yomiuri.obit yomiuri.politics yomiuri.sports
+		yomiuri.world (yomiuri-html もお勧めです)
 日刊スポーツ	nikkansports.baseball nikkansports.mlb
 		nikkansports.soccer nikkansports.world-soccer
 		nikkansports.sports nikkansports.battle
@@ -201,7 +201,7 @@ MARC		marc.theaimsgroup.com に保存されている全ての mailing lists.
 RedHat 関連	http://sources.redhat.com/lists.html
 MacOSX-jp 関連	macosx-jp.macosx-jp macosx-jp.macosx-dev-jp
 		macosx-jp.macosx-ws-jp macosx-jp.webobjects-jp
-
+Emacsen 全般	elips.elips
 
 2-4. スポーツ
 
@@ -269,7 +269,7 @@ IBM developerWorks	ibm-dev.components ibm-dev.java ibm-dev.linux
 Muchy's Palmware Review! muchy.review
 PalmFan			palmfan.news palmfan.palmwarefan
 pilot-link              pilot-link.announce pilot-link.devel pilot-link.general
-			unix-ng
+			pilot-link.unix-ng
 PCWEB COLUMN Square	pcweb-column.gyokai pcweb-column.benri
 			pcweb-column.hitech pcweb-column.business
 			pcweb-column.winxp pcweb-column.bytes
