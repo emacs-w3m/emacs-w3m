@@ -186,6 +186,9 @@
 (defun shimbun-jpo-contents (shimbun header)
   (let ((case-fold-search t)
 	start)
+    ;;(when (re-search-forward (char-to-string 13) nil t nil)
+    ;;  (decode-coding-region (point-min) (point-max) 'japanese-shift-jis-mac)
+    ;;  (goto-char (point-min)))
     (when (and (re-search-forward (shimbun-content-start-internal shimbun)
 				  nil t)
 	       (setq start (point))
@@ -198,7 +201,7 @@
 	   ;;Ｅ−mail：<a href="mailto:PA0A00@jpo.go.jp">PA0A00@jpo.go.jp<br>
 	   ;;E-mail：<a href="mailto:PA0420@jpo.go.jp">PA0420@jpo.go.jp</a></font>
 	   ;;　E-mail:<a href="mailto:PA0A00@jpo.go.jp"> PA0A00@jpo.go.jp</a></font>
-	   "\\(電子メール\\|[ＥｅEe][−-]*[ＭｍMm][ＡａAa][ＩｉIi][ＬｌLl]\\)[：:　] *<a href=\"mailto:\\(.*@jpo.go.jp\\)\"> *\\2"
+	   "\\(電子メール\\|[ＥｅEe][−-]*[ＭｍMm][ＡａAa][ＩｉIi][ＬｌLl]\\)[：:　] *<a href=\"mailto:\\(.*@.*jpo.go.jp\\)\"> *\\2"
 	   nil t nil)
       (shimbun-header-set-from header (match-string 2)))
     (shimbun-jpo-cleanup-article)
