@@ -1,3 +1,28 @@
+2001-05-15  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (TOP): Add autoload for w3m-dtree.
+	(w3m-url-to-file-name): If URL is started 'about://dtree', it convert
+	to local file. Change [A-z] to [A-Za-z].
+	(w3m-url-local-p): If URL is started 'about://dtree', it assume to
+	local file.
+	(w3m-prog-dtree): Delete variable.
+	(w3m-about-history-ignored-regexp): Delete constant.
+	(w3m-arrived-ignored-regexp): New constant.
+	(w3m-history-ignored-regexp): New constant.
+	(w3m-arrived-add): Use 'w3m-arrived-ignored-regexp' instead of
+	'w3m-about-history-ignored-regexp'.
+	(w3m-arrived-p): Ditto.
+	(w3m-parse-attributes): Change [A-z] to [A-Za-z].
+	(w3m-fontify): Ditto.
+	(w3m-external-view): Remove 'about://dtree' handling.
+	(w3m-about-history): Use 'w3m-history-ignored-regexp' instead of
+	'w3m-about-history-ignored-regexp'.
+	(w3m-about-db-history): Ditto.
+	(w3m-about-dtree): Move to 'w3m-dtree.el'.
+	(w3m-dtree): Ditto.
+
+	* w3m-dtree.el: New file.
+
 2001-05-11  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-cursor-anchor): New defsubst.

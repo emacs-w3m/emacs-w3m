@@ -106,6 +106,7 @@
   (autoload 'w3m-about-antenna "w3m-antenna")
   (autoload 'w3m-fontify-forms "w3m-form")
   (autoload 'w3m-form-parse-region "w3m-form")
+  (autoload 'w3m-dtree "w3m-dtree")
   (autoload 'w3m-filter "w3m-filter"))
 
 ;; Avoid byte-compile warnings.
@@ -221,10 +222,12 @@ width using expression (+ (frame-width) VALUE)."
   "Return the file name which is pointed by URL."
   ;; Remove scheme part and net_loc part.  NOTE: This function accepts
   ;; only urls whose net_loc part is empty or NULL string.
-  (when (string-match "^\\(file:\\(//\\)?\\)/" url)
-    (setq url (substring url (match-end 1))))
+  (if (string-match "^\\(file:\\(//\\)?\\)/" url)
+      (setq url (substring url (match-end 1)))
+    (if (string-match "^\\(about://dtree\\)/" url)
+	(setq url (substring url (match-end 1)))))
   ;; Process abs_path part in Windows.
-  (when (string-match "^/\\(\\([A-z]\\)[|:]?\\|cygdrive/\\([A-z]\\)\\)/" url)
+  (when (string-match "^/\\(\\([A-Za-z]\\)[|:]?\\|cygdrive/\\([A-Za-z]\\)\\)/" url)
     (setq url (concat
 	       (or (match-string 2 url)
 		   (match-string 3 url))
@@ -479,11 +482,6 @@ Value is 'crlf or nil.
 	  (const :tag "View with other window" view-file-other-window)
 	  (function :tag "Other" view-file)))
 	  
-(defcustom w3m-prog-dtree "htree"
-  "*Program name for w3m-dtree. See [emacs-w3m:00689]."
-  :group 'w3m
-  :type 'string)
-
 (defcustom w3m-track-mouse t
   "Whether to track the mouse and message the url under the mouse.
 This feature does not work under Emacs or XEmacs versions prior to 21.
@@ -717,9 +715,13 @@ for a charset indication")
 	      (+ (frame-width) (or w3m-fill-column -1)))) ; fit for frame
   "Arguments for 'halfdump' execution of w3m.")
 
-(defconst w3m-about-history-ignored-regexp
+(defconst w3m-arrived-ignored-regexp
   "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\)/.*\\)?$"
-  "Regexp of urls to be ignored in an arrived-db or a history.")
+  "Regexp of urls to be ignored in an arrived-db.")
+
+(defconst w3m-history-ignored-regexp
+  "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\|dtree\\)/.*\\)?$"
+  "Regexp of urls to be ignored in a history.")
 
 ;; Generic macros and inline functions:
 (put 'w3m-with-work-buffer 'lisp-indent-function 0)
@@ -923,7 +925,7 @@ If N is negative, last N items of LIST is returned."
 			    arrived-time coding-system)
   "Add URL to hash database of arrived URLs."
   (unless (or (<= (length url) 5);; ignore trifles or about:*.
-	      (string-match w3m-about-history-ignored-regexp url))
+	      (string-match w3m-arrived-ignored-regexp url))
     (let ((parent (when (string-match "#\\([^#]+\\)$" url)
 		    (substring url 0 (match-beginning 0))))
 	  ident)
@@ -945,7 +947,7 @@ If N is negative, last N items of LIST is returned."
 
 (defsubst w3m-arrived-p (url)
   "If URL has been arrived, return non-nil value.  Otherwise return nil."
-  (or (string-match w3m-about-history-ignored-regexp url)
+  (or (string-match w3m-arrived-ignored-regexp url)
       (intern-soft url w3m-arrived-db)))
 
 (defun w3m-arrived-time (url)
@@ -1092,7 +1094,7 @@ If N is negative, last N items of LIST is returned."
 			 (setq (, attr) (, sexp))))))
 		 attributes))
 	    ((looking-at
-	      (, (concat "[A-z]*[ \t\r\f\n]*=[ \t\r\f\n]*" w3m-html-string-regexp))))
+	      (, (concat "[A-Za-z]*[ \t\r\f\n]*=[ \t\r\f\n]*" w3m-html-string-regexp))))
 	    ((looking-at "[^<> \t\r\f\n]+")))
 	 (goto-char (match-end 0))
 	 (skip-chars-forward " \t\r\f\n"))
@@ -1352,7 +1354,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (w3m-fontify-images)
     ;; Remove other markups.
     (goto-char (point-min))
-    (while (re-search-forward "</?[A-z_][^>]*>" nil t)
+    (while (re-search-forward "</?[A-Za-z_][^>]*>" nil t)
       (delete-region (match-beginning 0) (match-end 0)))
     ;; Decode escaped characters (entities).
     (w3m-decode-entities 'reserve-prop)
@@ -1897,7 +1899,8 @@ to nil."
 
 (defsubst w3m-url-local-p (url)
   "If URL points a file on the local system, return non-nil value.  Otherwise return nil."
-  (string-match "^\\(file:\\|/\\)" url))
+  (or (string-match "^\\(file:\\|/\\)" url)
+      (string-match "^about://dtree/" url)))
 
 (defun w3m-retrieve (url &optional no-decode no-cache cs)
   "Retrieve content of URL and insert it to the working buffer.
@@ -2155,11 +2158,8 @@ this function returns t.  Otherwise, returns nil."
     (cond
      ((not method)
       (if (w3m-url-local-p url)
-	  (if (and (file-readable-p (w3m-url-to-file-name url))
-		   (file-directory-p (w3m-url-to-file-name url)))
-	      (w3m-dtree no-cache (w3m-url-to-file-name url))
-	    (error "No method to view `%s' is registered. Use `w3m-edit-this-url'."
-		   (file-name-nondirectory (w3m-url-to-file-name url))))
+	  (error "No method to view `%s' is registered. Use `w3m-edit-this-url'."
+		 (file-name-nondirectory (w3m-url-to-file-name url)))
 	(w3m-download url)))
      ((functionp method)
       (funcall method url))
@@ -2892,7 +2892,7 @@ works on Emacs.
 	      url (car element))
 	(if (stringp url)
 	    (progn
-	      (setq about (string-match w3m-about-history-ignored-regexp url)
+	      (setq about (string-match w3m-history-ignored-regexp url)
 		    title (plist-get (cadr element) ':title)
 		    element (cddr element))
 	      (if debugging
@@ -2958,7 +2958,7 @@ works on Emacs.
        (lambda (sym)
 	 (when (and sym
 		    (setq url (symbol-name sym))
-		    (not (string-match w3m-about-history-ignored-regexp url)))
+		    (not (string-match w3m-history-ignored-regexp url)))
 	   (setq time (w3m-arrived-time url))
 	   (push (cons url time) alist)))
        w3m-arrived-db)
@@ -3004,45 +3004,6 @@ If called with 'prefix argument', display arrived-DB history."
 (defun w3m-db-history ()
   (interactive)
   (w3m-goto-url "about://db-history/"))
-
-(defun w3m-about-dtree (url &rest args)
-  (let ((prelen (length "about://dtree"))
-	(flag '("-d")) path)
-    (if (string-match "\\?allfiles=\\(\\(true\\)\\|false\\)/$" url)
-	(progn
-	  (setq path (substring url prelen (match-beginning 0)))
-	  (if (match-beginning 2) (setq flag '("-f"))))
-      (setq path (substring url prelen)))
-    ;; counter drive letter 
-    (w3m-with-work-buffer
-      (if (string-match "^/[a-zA-Z]:/" path) (setq path (substring path 1)))
-      (setq default-directory path)
-      (erase-buffer)
-      (set-buffer-multibyte t)
-      (apply 'call-process
-	     w3m-prog-dtree nil t nil 
-	     (append flag (list path)))
-      "text/html")))
-
-(defun w3m-dtree (allfiles path)
-  "Display directory tree.
-If called with 'prefix argument', display all directorys and files."
-  (interactive "P\nDDtree directory: ")
-  (if (null (w3m-which-command w3m-prog-dtree))
-      (error "Install `%s', first. See [emacs-w3m:00689]." w3m-prog-dtree)
-    (let (opath)
-      (setq path (file-name-as-directory (expand-file-name path)))
-      (if (string-match "^[a-zA-Z]:/" path)
-	  ;; drive letter
-	  (progn
-	    (setq opath path)
-	    (setq path (concat "/" path)))
-	(setq opath path))
-      (w3m-goto-url (format "about://dtree%s%s" path
-			    ;; last "/", fake file-name-nondirectory for title
-			    (if allfiles "?allfiles=true/" "")))
-      ;; drive letter
-      (setq default-directory opath))))
 
 (defun w3m-w32-browser-with-fiber (url)
   (start-process "w3m-w32-browser-with-fiber"
