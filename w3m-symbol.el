@@ -148,13 +148,16 @@
 	       (115 34) (33 97) (34 102) (34 43) (33 96) (34 101)
 	       (34 46) (34 47) (33 115) (34 47) (34 43) (33 97)
 	       (34 47)))
-     (list (format "%c %c %c " 
+     (list (format "%c %c %c "
 		   (make-char 'mule-unicode-0100-24ff 121 42)
 		   (make-char 'mule-unicode-0100-24ff 118 113)
 		   (make-char 'mule-unicode-0100-24ff 118 115)))))
   "List of symbol string, using mule-unicode characters."
   :group 'w3m-symbol
-  :type w3m-symbol-custom-type)
+  :type (if (and (charsetp 'mule-unicode-0100-24ff)
+		 (charsetp 'mule-unicode-2500-33ff))
+	    w3m-symbol-custom-type
+	  '(const :format "%{%t%}: %v")))
 
 (defcustom w3m-symbol nil
   "List of symbol string."

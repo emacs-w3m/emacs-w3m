@@ -1,3 +1,7 @@
+2003-09-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-symbol.el (w3m-mule-unicode-symbol): Fix customization type.
+
 2003-09-29  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-symbol.el: Bind `w3m-output-coding-system' when compiling.
