@@ -497,7 +497,7 @@ to input URL when URL-like string is not detected under the cursor."
 		'face-custom-attributes-get
 	      'custom-face-attributes-get));; What a perverseness it is.
 	;; `custom-face-attributes-get' in CUSTOM 1.9962 attempts to require
-	;; `font' in Emacs/W3, and it requires `cl' unconditionally. :-(
+	;; `font' in Emacs/w3, and it requires `cl' unconditionally. :-(
 	(features (cons 'font features))
 	base-attributes attributes attribute)
     (require 'wid-edit);; Needed for only Emacs 20.
