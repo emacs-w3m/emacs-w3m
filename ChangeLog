@@ -1,3 +1,13 @@
+2001-11-09  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-use-tab-menubar): New user variable.
+	(w3m-setup-menu): Handling tab-menubar.
+	(w3m-tab-menubar-open-buffer, w3m-tab-menubar-update) 
+	(w3m-tab-menubar-make-items): New functions.
+	(w3m-tab-menubar-pull-bufnum): New macro.
+	(top-level): Add define-key-after() to avoid byte-compile
+	warnings, if XEmacs.
+
 2001-11-08  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 
 	* w3m.el (w3m-start-url, w3m-contents-url): New buffer-local vars.
