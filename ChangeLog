@@ -1,3 +1,7 @@
+2002-03-25  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-goto-url): Don't resume form from history when POST.
+
 2002-03-24  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-cookie: New file.

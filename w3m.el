@@ -4835,7 +4835,8 @@ field for this request."
 	(w3m-history-plist-put :forms w3m-current-forms nil nil t))
       ;; Set current forms using the history structure.
       (when (setq w3m-current-forms
-		  (when (w3m-cache-available-p url)
+		  (when (and (null post-data) ; If post, always reload.
+			     (w3m-cache-available-p url))
 		    (w3m-history-plist-get :forms url nil t)))
 	;; Mark that the form is from history structure.
 	(setq w3m-current-forms (cons t w3m-current-forms)))
