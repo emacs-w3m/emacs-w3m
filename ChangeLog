@@ -1,3 +1,11 @@
+2003-07-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-ccl.el (w3m-ccl-write-repeat): Use a literal list of unibyte
+	character sets, instead of calling `charset-bytes', in order to
+	avoid difference between FSF Emacs and XEmacs.
+	(w3m-euc-japan-encoder, w3m-iso-latin-1-encoder): Do not
+	overwrite, if they have already been defined.
+
 2003-07-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-examine-modules): Ignore w3m-ccl.el when

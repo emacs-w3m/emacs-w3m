@@ -61,18 +61,16 @@
       (setq r0 'r0))
     (unless r1
       (setq r1 (if (eq r0 'r1) 'r0 'r1)))
-    (let ((bytes (if (boundp 'MULE)
-		     (eval '(char-bytes (charset-id charset)))
-		   (charset-bytes charset))))
+    (let ((unibyte (memq charset '(latin-iso8859-1 katakana-jisx0201))))
       (if (fboundp 'ccl-compile-write-multibyte-character)
 	  (` (((, r1) &= ?\x7f)
-	      (,@ (when (> bytes 2)
+	      (,@ (unless unibyte
 		    (` (((, r1) |= (((, r0) & ?\x7f) << 7))))))
 	      ((, r0) = (, (charset-id charset)))
 	      (write-multibyte-character (, r0) (, r1))
 	      (repeat)))
 	(` ((write (, (charset-id charset)))
-	    (,@ (when (> bytes 2)
+	    (,@ (unless unibyte
 		  (` ((write (, r0))))))
 	    (write-repeat (, r1)))))))
 
@@ -168,8 +166,9 @@ in NCR (Numeric Character References)."))
 		   w3m-internal-characters-alist))
        (write-repeat r0)))))
 
-(define-ccl-program w3m-euc-japan-encoder
-  (` (1 (loop (read r0) (write-repeat r0)))))
+(unless (get 'w3m-euc-japan-encoder 'ccl-program-idx)
+  (define-ccl-program w3m-euc-japan-encoder
+    (` (1 (loop (read r0) (write-repeat r0))))))
 
 (define-ccl-program w3m-iso-latin-1-decoder
   (` (2
@@ -188,8 +187,9 @@ in NCR (Numeric Character References)."))
 		   w3m-internal-characters-alist))
        (write-repeat r0)))))
 
-(define-ccl-program w3m-iso-latin-1-encoder
-  (` (1 (loop (read r0) (write-repeat r0)))))
+(unless (get 'w3m-iso-latin-1-encoder 'ccl-program-idx)
+  (define-ccl-program w3m-iso-latin-1-encoder
+    (` (1 (loop (read r0) (write-repeat r0))))))
 
 
 (provide 'w3m-ccl)
