@@ -2667,23 +2667,50 @@ works on Emacs.
   "^about:\\(//\\(header\\|source\\|history\\|db-history\\|antenna\\)/.*\\)?$"
   "Regexp for not show history.")
 
+;;(defun w3m-about-history (&rest args)
+;;  (let* ((history (mapcar 'car w3m-history-flat))
+;;	 (tmp history)
+;;	 title)
+;;    (while tmp
+;;      (setq tmp (setcdr tmp (delete (car tmp) (cdr tmp)))))
+;;    (w3m-with-work-buffer
+;;      (delete-region (point-min) (point-max))
+;;      (insert "<head><title>URL history</title></head><body>\n")
+;;      (insert "<h1>arrived URL history</h1>\n")
+;;      (dolist (url history)
+;;	(unless (string-match w3m-about-history-except-regex url)
+;;	  (setq title (or (w3m-arrived-title url) url))
+;;	  (when (string= "<no-title>" title)
+;;	    (setq title url))
+;;	  (insert (format "<a href=\"%s\">%s</a><br>\n" url title))))
+;;      (insert "</body>")))
+;;  "text/html")
+
 (defun w3m-about-history (&rest args)
-  (let* ((history (mapcar 'car w3m-history-flat))
-	 (tmp history)
-	 title)
-    (while tmp
-      (setq tmp (setcdr tmp (delete (car tmp) (cdr tmp)))))
+  (let ((html "\
+<head><title>URL history</title></head><body>
+<h1>List of all the links you have visited in this session</h1>\n"))
+    (let (url title depth)
+      (dolist (element w3m-history-flat)
+	(unless (string-match w3m-about-history-except-regex
+			      (setq url (car element)))
+	  (setq title (w3m-history-plist-get ':title url)
+		depth (/ (length (caddr element)) 2))
+	  (setq html (concat html "<a href=\"" url "\">"
+			     (cond ((zerop depth)
+				    "")
+				   ((= 1 depth)
+				    "иж")
+				   (t
+				    (concat (make-string (1- depth) ?бб)
+					    "иж")))
+			     (if (string-equal "<no-title>" title)
+				 url
+			       title)
+			     "</a><br>\n")))))
     (w3m-with-work-buffer
-      (delete-region (point-min) (point-max))
-      (insert "<head><title>URL history</title></head><body>\n")
-      (insert "<h1>arrived URL history</h1>\n")
-      (dolist (url history)
-	(unless (string-match w3m-about-history-except-regex url)
-	  (setq title (or (w3m-arrived-title url) url))
-	  (when (string= "<no-title>" title)
-	    (setq title url))
-	  (insert (format "<a href=\"%s\">%s</a><br>\n" url title))))
-      (insert "</body>")))
+      (erase-buffer)
+      (insert html "</body>")))
   "text/html")
 
 (defun w3m-about-db-history (&rest args)

@@ -1,6 +1,7 @@
 2001-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-exec): Put a title string into the history structure.
+	* w3m.el (w3m-about-history): Show a hitrory tree (incompleted).
+	(w3m-exec): Put a title string into the history structure.
 
 2001-04-12  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
