@@ -4728,7 +4728,9 @@ specified in the `w3m-content-type-alist' variable."
 		  (w3m-rendering-buffer charset))
 	  (or (when (string-match "\\`about://\\(source\\|header\\)/" url)
 		(w3m-arrived-title (substring url (match-end 0))))
-	      (file-name-nondirectory url))))
+	      (file-name-nondirectory (if (string-match "/\\'" url)
+					  (directory-file-name url)
+					url)))))
   (let ((result-buffer (current-buffer)))
     (with-current-buffer page-buffer
       (let (buffer-read-only)
