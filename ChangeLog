@@ -1,3 +1,12 @@
+2002-07-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-mode): Make `list-buffers-directory' to buffer
+	local variable.
+	(w3m-goto-url): Set title of the URL to `list-buffers-directory'.
+
+	* w3m-tabmenu.el (w3m-switch-buffer): Bind
+	`completion-ignore-case' to `t'.
+
 2002-07-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (emacs-w3m-version): Release 1.3.
