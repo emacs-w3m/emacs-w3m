@@ -1403,40 +1403,51 @@ If it is nil, the dirlist.cgi module of the w3m command will be used."
 				 (file-name-directory
 				  (w3m-which-command w3m-command)))))))))
 
-(defcustom w3m-add-referer-regexps
-  (when (or (not (boundp 'w3m-add-referer))
-	    (symbol-value 'w3m-add-referer))
-    (cons "\\`http:"
-	  "\\`http://\\(localhost\\|127\\.0\\.0\\.1\\)/"))
-  "*Regexps matching url strings being allowed to send as referers.
-It consists of a `cons' of two regexps, one matches and the other does
-not match.  If a url matches the first element and does not match the
-latter one, it denotes that url can be sent to foreign web servers as
-a referer.  Nil for the regexp matches any url.  You may set the cdr
-of this value to inhibit sending referers which will disclose your
-private informations, for example:
+(defcustom w3m-add-referer
+  (if (boundp 'w3m-add-referer-regexps)
+      (symbol-value 'w3m-add-referer-regexps)
+    (cons "\\`http:" "\\`http://\\(localhost\\|127\\.0\\.0\\.1\\)/"))
+  "*Rule of sending referers.
+There are five choices as the valid values of this option.
 
-\(setq w3m-add-referer-regexps
-      '(\"^http:\"
-	. \"^http://\\\\([^./]+\\\\.\\\\)*your-company\\\\.com/\"))
+\(1\) nil: this means that emacs-w3m never send referers.
+\(2\) t: this means that emacs-w3m always send referers.
+\(3\) lambda: this means that emacs-w3m send referers only when both
+    the current page and the target page are provided by the same
+    server.
+\(4\) a cons cell keeping two regular expressions: this means that
+    emacs-w3m send referers when the url of the current page matches
+    the first regular expression and does not match the second regular
+    expression.  Nil for the regexp matches any url.
+\(5\) a function: emacs-w3m send referers when this function which has
+    two arguments, URL and REFERER, returns non-nil.
+
+If you become nervous about leak of your private WEB browsing history,
+set `nil' or `lambda' to this option.  When your computer belongs to a
+secret network, you may set a pair of regular expressions to inhibit
+sending referers which will disclose your private informations, as
+follows:
+
+\(setq w3m-add-referer
+      '(\"\\\\`http:\"
+	. \"\\\\`http://\\\\([^./]+\\\\.\\\\)*example\\\\.net/\")\)
 "
   :group 'w3m
-  :type '(cons (list :inline t :format "%v"
-		     (radio :indent 2 :sample-face underline :tag "Allow"
-			    (regexp :format "%t: %v\n" :size 0)
-			    (const :tag "Don't allow all" nil))
-		     (radio :indent 2 :sample-face underline :tag "Don't allow"
-			    (regexp :format "%t: %v\n" :size 0)
-			    (const :tag "Allow all" nil)))))
-
-(defcustom w3m-add-referer-predicate-function
-  'w3m-add-referer-predicate-by-referer-regexps
-  "*A function to judge whether the referer should be sent or not.
-If nil, referer is not sent.
-The function must have two arguments, URL and REFERER."
-  :group 'w3m
-  :type '(radio (const :tag "Not specified" nil)
-		(function :format "%t: %v\n" :size 0)))
+  :type '(choice
+	  (const :tag "Never send referers" nil)
+	  (const :tag "Always send referers" t)
+	  (const :tag "Send referers when accessing the same server" lambda)
+	  (cons :tag "Send referers when URI matches:"
+		(list :inline t :format "%v"
+		      (radio :indent 2 :sample-face underline
+			     :tag "Allow"
+			     (regexp :format "%t: %v\n" :size 0)
+			     (const :tag "Don't allow all" nil))
+		      (radio :indent 2 :sample-face underline
+			     :tag "Don't allow"
+			     (regexp :format "%t: %v\n" :size 0)
+			     (const :tag "Allow all" nil))))
+	  (function :tag "Send referers when your function returns non-nil")))
 
 (defcustom w3m-touch-command (w3m-which-command "touch")
   "*Name of the executable file of the touch command.
@@ -4119,33 +4130,27 @@ to add the option \"-no-proxy\"."
       (push "-no-proxy" args))
     args))
 
-(defun w3m-add-referer-predicate-by-referer-regexps (url referer)
-  "Return non-nil when URL and REFERER satisfies the condition.
-\(A candidate function for `w3m-add-referer-predicate-function'\)
-This function returns non-nil only when the referer satisfies the
-condition specified by `w3m-add-referer-regexps' (which see)."
-  (and (stringp referer)
-       (not (and (cdr w3m-add-referer-regexps)
-		 (string-match (cdr w3m-add-referer-regexps)
-			       referer)))
-       (car w3m-add-referer-regexps)
-       (string-match (car w3m-add-referer-regexps) referer)))
-
-(defun w3m-add-referer-predicate-by-hosts (url referer)
-  "Return non-nil when URL and REFERER satisfies the condition.
-\(A candidate function for `w3m-add-referer-predicate-function'\)
-This function returns non-nil only when the host parts of the
-URL and REFERER are exactly same string."
+(defun w3m-add-referer-p (url referer)
+  "Return non-nil when URL and REFERER satisfies the condition
+specified by `w3m-add-referer'."
   (when (stringp referer)
-    (let (host referer-host)
-      (when (and (string-match w3m-url-components-regexp url)
-		 (match-beginning 4))
-	(setq host (match-string 4 url)))
-      (when (and (string-match w3m-url-components-regexp referer)
-		 (match-beginning 4))
-	(setq referer-host (match-string 4 referer)))
-      (and host referer-host
-	   (string= host referer-host)))))
+    (cond
+     ((eq w3m-add-referer 'lambda)
+      (let (host)
+	(when (and (string-match w3m-url-components-regexp url)
+		   (match-beginning 4))
+	  (setq host (match-string 4 url))
+	  (when (and (string-match w3m-url-components-regexp referer)
+		     (match-beginning 4))
+	    (string= host (match-string 4 referer))))))
+     ((consp w3m-add-referer)
+      (and (not (and (cdr w3m-add-referer)
+		     (string-match (cdr w3m-add-referer) referer)))
+	   (car w3m-add-referer)
+	   (string-match (car w3m-add-referer) referer)))
+     ((functionp w3m-add-referer)
+      (funcall w3m-add-referer url referer))
+     (t w3m-add-referer))))
 
 ;; Currently, -request argument is supported only by w3mmee.
 (defun w3m-request-arguments (method url temp-file
@@ -4164,9 +4169,7 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
 	  (append
 	   (when w3m-add-user-agent
 	     (list "-header" (concat "User-Agent:" w3m-user-agent)))
-	   (when (and w3m-add-referer-predicate-function
-		      (funcall w3m-add-referer-predicate-function
-			       url referer))
+	   (when (w3m-add-referer-p url referer)
 	     (list "-header" (concat "Referer: " referer)))
 	   (when w3m-accept-languages
 	     (list "-header" (concat
@@ -4174,8 +4177,7 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
 			      (mapconcat 'identity w3m-accept-languages
 					 " ")))))
 	(when w3m-add-user-agent (insert "User-Agent: " w3m-user-agent "\n"))
-	(when (and w3m-add-referer-predicate-function
-		   (funcall w3m-add-referer-predicate-function url referer))
+	(when (w3m-add-referer-p url referer)
 	  (insert "Referer: " referer "\n"))
 	(when w3m-accept-languages
 	  (insert "Accept-Language: "
@@ -4226,8 +4228,7 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
 			  (list "-header" (concat "Content-Type: "
 						  content-type)))
 			(list "-post" temp-file))))
-    (when (and w3m-add-referer-predicate-function
-	       (funcall w3m-add-referer-predicate-function url referer))
+    (when (w3m-add-referer-p url referer)
       (setq args (nconc args (list "-header" (concat "Referer: " referer)))))
     args))
 

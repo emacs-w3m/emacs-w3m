@@ -1,3 +1,15 @@
+2004-04-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Simplify the rule of sending referers.
+	(w3m-add-referer-regexps): Abolished.
+	(w3m-add-referer-predicate-function): Abolished.
+	(w3m-add-referer): New option.
+	(w3m-add-referer-p): New function.
+	(w3m-add-referer-predicate-by-referer-regexps): Removed.
+	(w3m-add-referer-predicate-by-hosts): Removed.
+	(w3m-request-arguments, w3m-header-arguments): Follow the above
+	changes.
+
 2004-04-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-add-w3m-initial-frames): Get the correct value
