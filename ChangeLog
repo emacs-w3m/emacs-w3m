@@ -2,6 +2,9 @@
 
 	* w3m.el (emacs-w3m-version): Release 1.2.7.
 
+	* w3m-form.el (w3m-resume-form): Ad-hoc fix to avoid
+	wrong-type-argument error.
+
 	* w3m-macro.el (w3m-insert-string): Import from w3m-util.el on
 	main trunk.
 

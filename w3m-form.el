@@ -356,11 +356,11 @@ return them with the flag."
 	(when (and fid
 		   (string-match
 		    "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\(.*\\)$"
-		    fid))
-	  (setq form (nth (string-to-number (match-string 1 fid))
-			  forms)
-		type (match-string 2 fid)
-		name (match-string 3 fid))
+		    fid)
+		   (setq form (nth (string-to-number (match-string 1 fid))
+				   forms)
+			 type (match-string 2 fid)
+			 name (match-string 3 fid)))
 	  (cond
 	   ((or (string= type "submit")
 		(string= type "image"))
