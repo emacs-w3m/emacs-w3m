@@ -181,7 +181,6 @@ If no field in forward, return nil without moving."
 	     (pair (plist-get (cadr plist) :value))
 	     (name (car pair))
 	     (value (cdr pair)))
-	(unless number (setq number 9999)) ;; FIXME
 	(cond
 	 ((and (consp value)
 	       (eq (car value) 'file))
