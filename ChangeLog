@@ -1,3 +1,10 @@
+2003-02-10  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-palmfan.el: Update copyright notice.
+
+	* shimbun/sb-vinelinux.el: Update copyright notice.
+	(shimbun-vinelinux-from-address): Typo fixed.
+
 2003-02-09  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-coldsync.el: New file.
