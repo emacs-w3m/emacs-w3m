@@ -2,12 +2,59 @@
 
 	* w3m.el (w3m-w3m-attributes): Bind `case-fold-search' to t.
 
+2002-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-search.el (w3m-search-engine-alist): Add some dictionaries.
+	(w3m-search-default-engine): Default to google.
+	(w3m-search-quick-search-engine-alist): Add iij-archie; add
+	customization type.
+	(w3m-search-prefer-japanese-site): New user option.
+	(w3m-search-inhibited-japanese-engines): New user option.
+	(w3m-search-quick-search-engines): New function.
+	(w3m-search-quick-search-handler): Maybe use a Japanese site; use
+	`w3m-search-quick-search-engines' to merge
+	`w-s-engine-alist' and `w-s-quick-search-engine-alist'.
+
+	* w3m.el (w3m): Allow quicksearch urls if interactive.
+
+2002-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3.el (w3m-view-this-url-1): Copy `w3m-current-url' into a
+	copied buffer.
+	(w3m-goto-url): Allow the 7th argument `qsearch'; use it to
+	recursive call the function itself if the quicksearch feature is
+	permitted.
+	(w3m-goto-url-new-session): Specify the 7th arg of `w3m-goto-url'
+	if it is called interactively.
+
+2002-11-08  Romain FRANCOISE  <romain@orebokech.com>
+
+	* w3m-search.el (w3m-search-engine-alist): Add "google groups".
+	(w3m-search-quick-search-engine-alist): New user option.
+	(w3m-search-quick-search-handler): New function.
+
+	* w3m.el: Autoload `w3m-search-quick-search-handler'.
+	(w3m-goto-url): Use `w3m-search-quick-search-handler' to parse
+	quicksearch url schemes.
+
+2002-11-06  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-date-regexp): Updated.
+	(shimbun-palmfan-month-alist): Change month string (full spell,
+	not abbreviation) and number pairs.
+	(shimbun-palmfan-news-headers): Bug fixed.
+
 2002-11-04  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-visit-folder): New
 	definition.
 	(mew-shimbun-retrieve-all, mew-shimbun-expire-all): Use
 	`mew-shimbun-visit-folder'.
+
+2002-11-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-bookmark.el (w3m-bookmark-add-current-url-group): Call
+	`w3m-bookmark-add' without 2nd argument.
 
 2002-10-31  Hideyuki SHIRAI  <shirai@meadowy.org>
 
@@ -23,6 +70,49 @@
 	* shimbun/sb-zdnet.el (shimbun-zdnet-group-alist): Follow the
 	change of the web site.
 	(shimbun-zdnet-content-end): Ditto.
+
+2002-10-23  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-toggle-inline-images-internal)
+	(w3m-toggle-inline-image, w3m-view-this-url, w3m-view-this-url)
+	(w3m-submit-form, w3m-external-view, w3m-view-image)
+	(w3m-save-image, w3m-view-url-with-external-browser)
+	(w3m-download-this-url, w3m-edit-this-url, w3m-goto-url)
+	(w3m-goto-url-with-timer, w3m-safe-view-this-url)
+	(w3m-safe-view-this-url): Check validity of the URL.
+	(w3m-print-current-url, w3m-edit-current-url): Check
+	`w3m-current-url'.
+
+	* w3m-util.el (w3m-url-fallback-base): Move from `w3m.el'.
+	(w3m-url-invalid-regexp): New constant.
+	(w3m-url-valid): New inline function.
+
+2002-10-22  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el (w3m-entity-regexp): As simple regexp. Existance of final
+	semi-collon is to be detected.
+	(w3m-entity-value): 2nd argument STRICT is added. If not STRICT,
+	find entity from db by maxmum length matching, and returns it with
+	appending unused chars. Returns nil if not match.
+	And also use defun instead of defsubst.
+	(w3m-decode-entities): Use new `w3m-entity-value' with 2nd arg.
+
+2002-10-21  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-goto-url): Use 'group:' scheme instead of
+	'about://group/...';
+	Use url encoding for the member of URL group instead of
+	base64 encoding.
+
+	* w3m-bookmark.el (w3m-bookmark-add-current-url-group): Follow
+	the change above.
+
+2002-10-21  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-goto-url): Process 'about://group/...'.
+
+	* w3m-bookmark.el (w3m-bookmark-add-current-url-group): New
+	function.
 
 2002-10-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
@@ -179,6 +269,12 @@
 	* shimbun/sb-tcup.el (shimbun-tcup-get-group-key): Return
 	(hostname . board-id) to support Tripod "personal BBS".
 	(shimbun-tcup-make-id): Follow the above change.
+
+2002-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+	    Mito <mito@mxa.nes.nec.co.jp>
+
+	* w3m.el (w3m-rendering-half-dump): Ignore `w3m-treat-image-size'
+	when emacs-w3m is running in non-graphical display.
 
 2002-10-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

@@ -59,7 +59,7 @@
     (erase-buffer)
     (catch 'stop
       (dolist (month months)
-        (let ((url (concat (shimbun-index-url shimbun) month)))
+	(let ((url (concat (shimbun-index-url shimbun) month)))
 	  (shimbun-retrieve-url url t)
 	  (shimbun-mhonarc-get-headers shimbun url headers month))))
     headers))

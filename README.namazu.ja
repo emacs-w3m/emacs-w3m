@@ -14,7 +14,7 @@ http://www.namazu.org
 
 2.1 Index ファイルの作成
 
-Namazu をインストールしたら、Index ファイルを作成します。詳しい読明は 
+Namazu をインストールしたら、Index ファイルを作成します。詳しい読明は
 Namazu のユーザー・マニュアルにゆずるとして、簡単な Index ファイルの作り
 方を挙げておきます。
 
@@ -64,7 +64,7 @@ w3m-namazu-input-coding-system
 
 4. w3m-namazu とその周辺
 
-Namazu は高林哲さんが開発された全文検索ソフトです。現在も Namazu Project 
+Namazu は高林哲さんが開発された全文検索ソフトです。現在も Namazu Project
 によって開発が続けられています。
 
 namazu.el は まつもと ゆきひろ さんが作成した、 Emacs から Namazu を扱う

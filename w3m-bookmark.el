@@ -1,6 +1,6 @@
 ;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -174,6 +174,20 @@ With prefix, ask new url to add instead of current page."
   (w3m-bookmark-add (if arg (w3m-input-url) w3m-current-url)
 		    w3m-current-title)
   (message "Added"))
+
+;;;###autoload
+(defun w3m-bookmark-add-current-url-group ()
+  "Add link of the group of current urls to the bookmark."
+  (interactive)
+  (w3m-bookmark-add
+   (concat "group:"
+	   (mapconcat
+	    'w3m-url-encode-string
+	    (mapcar (lambda (buffer)
+		      (with-current-buffer buffer w3m-current-url))
+		    (w3m-list-buffers))
+	    "&")))
+  (message "Added as URL group"))
 
 ;;;###autoload
 (defun w3m-bookmark-view ()

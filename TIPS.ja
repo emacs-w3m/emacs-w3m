@@ -2,14 +2,14 @@
 
    以下のように設定しておくと，URI に類似した文字列がある場所で C-x m と
    入力すれば，emacs-w3m で表示されるようになります．また Emacs21 などに
-   附属するhtml-mode で C-c C-v とすれば編集の HTML ファイルを emacs-w3m 
+   附属するhtml-mode で C-c C-v とすれば編集の HTML ファイルを emacs-w3m
    で preview できます．
 
 (setq browse-url-browser-function 'w3m-browse-url)
 (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
 (global-set-key "\C-xm" 'browse-url-at-point)
 
-   もしも，w3m-mode のバッファ内部で C-x m と打鍵した場合には，emacs-w3m 
+   もしも，w3m-mode のバッファ内部で C-x m と打鍵した場合には，emacs-w3m
    を利用せずに，直接，外部ブラウザを呼び出したい場合には，以下のように
    設定してください．
 
@@ -174,7 +174,7 @@ with <img> tags.")
 
 ■■ yahtml-mode
 
-   以下のように設定しておくと，yahtml-mode で編集中のファイルを preview 
+   以下のように設定しておくと，yahtml-mode で編集中のファイルを preview
    する時に emacs-w3m を利用することができます．
 
 (autoload 'w3m-goto-url "w3m")

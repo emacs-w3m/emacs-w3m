@@ -663,7 +663,7 @@ Each information is a list whose elements are:
 			      "...")
 			   (truncate-string-to-width title width))
 		       (concat title (make-string (max 0
-						       (- 
+						       (-
 							width
 							(string-width title)))
 						  ?\ )))

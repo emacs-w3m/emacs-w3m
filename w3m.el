@@ -103,6 +103,7 @@
     "Add link of current page to bookmark." t)
   (autoload 'w3m-search "w3m-search"
     "Search QUERY using SEARCH-ENGINE." t)
+  (autoload 'w3m-search-quick-search-handler "w3m-search")
   (autoload 'w3m-weather "w3m-weather"
     "Display weather report." t)
   (autoload 'w3m-about-weather "w3m-weather")
@@ -1168,10 +1169,7 @@ Here is an example of how to set this option:
 		 latin1-entity))))))
 
 (defconst w3m-entity-regexp
-  (eval-when-compile
-    (format "&\\(%s\\|#[0-9]+\\|#x[0-9a-f]+\\);?"
-	    (let ((max-specpdl-size (max max-specpdl-size 3000)))
-	      (regexp-opt (mapcar (function car) w3m-entity-alist))))))
+  "&\\([a-z][a-z0-9]*\\|#[0-9]+\\|#x[0-9a-f]+\\)\\(;\\)?")
 
 (defvar w3m-entity-db nil)		; nil means un-initialized
 (defconst w3m-entity-db-size 13)	; size of obarray
@@ -2093,19 +2091,28 @@ with ^ as `cat -v' does."
 	  ?~				; un-supported character
 	codepoint))))
 
-(defsubst w3m-entity-value (name)
+(defun w3m-entity-value (name strict)
   ;; initialize if need
   (unless w3m-entity-db
     (w3m-entity-db-setup))
-  ;; return value of specified entity, or empty string for unknown entity.
-  (or (symbol-value (intern-soft name w3m-entity-db))
-      (if (not (char-equal (string-to-char name) ?#))
-	  (concat "&" name)		; unknown entity
+  ;; return value of specified entity, or nil if unknown.
+  (if (char-equal (string-to-char name) ?#)
+      (progn
 	(setq name (substring name 1))
 	(let ((codepoint (if (char-equal (string-to-char name) ?x)
 			     (string-to-number (substring name 1) 16)
 			   (string-to-number name))))
-	  (char-to-string (w3m-ucs-to-char codepoint))))))
+	  (char-to-string (w3m-ucs-to-char codepoint))))
+    (let ((val (intern-soft name w3m-entity-db))
+	  (pre name)
+	  (post ""))
+      (if (not strict)
+	  (while (and (null val)
+		      (< 0 (length pre))
+		      (null (setq val (intern-soft pre w3m-entity-db))))
+	    (setq post (concat (substring pre -1) post)
+		  pre (substring pre 0 -1))))
+      (and val (concat (symbol-value val) post)))))
 
 (defun w3m-fontify-bold ()
   "Fontify bold characters in this buffer which contains half-dumped data."
@@ -2307,7 +2314,7 @@ If URL is specified, only the image with URL is toggled."
 		     '(w3m-image-dummy t w3m-image "dummy"))
 		    (setq end (point)))
 		(goto-char cur-point)
-		(when iurl
+		(when (w3m-url-valid iurl)
 		  (w3m-process-with-null-handler
 		    (lexical-let ((start (set-marker (make-marker) start))
 				  (end (set-marker (make-marker) end))
@@ -2377,7 +2384,7 @@ If NO-CACHE is non-nil, cache is not used."
 	(scale (get-text-property (point) 'w3m-image-scale)))
     (if (and scale (equal status 'off))
 	(w3m-zoom-in-image 0)
-      (if url
+      (if (w3m-url-valid url)
 	  (progn
 	    (if force (setq status 'off))
 	    (w3m-toggle-inline-images-internal status no-cache url))
@@ -2514,8 +2521,9 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
       (while (re-search-forward w3m-entity-regexp nil t)
 	(if reserve-prop
 	    (setq prop (text-properties-at (match-beginning 0))))
-	(replace-match (save-match-data
-			 (w3m-entity-value (match-string 1)))
+	(replace-match (or (w3m-entity-value (match-string 1)
+					     (match-beginning 2))
+			   (match-string 0))
 		       nil t)
 	(if (and reserve-prop prop)
 	    (w3m-add-text-properties (match-beginning 0) (point) prop))))))
@@ -4104,8 +4112,6 @@ is performed.  Otherwise, COUNT is treated as 1 by default."
 refered in `w3m-expand-url' to keep backward compatibility which is
 described in Section 5.2 of RFC 2396.")
 
-(defconst w3m-url-fallback-base "http:///")
-
 (defun w3m-expand-url (url &optional base)
   "Convert URL to absolute, and canonicalize it."
   (save-match-data
@@ -4188,9 +4194,11 @@ described in Section 5.2 of RFC 2396.")
   (lexical-let (pos)
     (when new-session
       (setq pos (point-marker))
-      (if w3m-view-this-url-new-session-in-background
-	  (set-buffer (w3m-copy-buffer nil nil nil 'empty))
-	(switch-to-buffer (w3m-copy-buffer nil nil t 'empty)))
+      (let ((referer w3m-current-url))
+	(if w3m-view-this-url-new-session-in-background
+	    (set-buffer (w3m-copy-buffer nil nil nil 'empty))
+	  (switch-to-buffer (w3m-copy-buffer nil nil t 'empty)))
+	(setq w3m-current-url referer))
       ;; When new URL has `name' portion, we have to goto the base url
       ;; because generated buffer has no content at this moment.
       (when (and (string-match w3m-url-components-regexp url)
@@ -4225,12 +4233,12 @@ also make a new frame for the copied session."
   (interactive (if (member current-prefix-arg '(2 (16)))
 		   (list nil t)
 		 (list current-prefix-arg nil)))
-  (let ((url (w3m-anchor))
+  (let ((url (w3m-url-valid (w3m-anchor)))
 	(act (w3m-action)))
     (cond
      (act (eval act))
      (url (w3m-view-this-url-1 url arg new-session))
-     ((w3m-image)
+     ((w3m-url-valid (w3m-image))
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
 	(w3m-view-image)))
@@ -4261,47 +4269,50 @@ session."
   "Submit form at point."
   (interactive)
   (let ((submit (w3m-submit)))
-    (if submit
+    (if (and submit
+	     w3m-current-url
+	     (w3m-url-valid w3m-current-url))
 	(eval submit)
       (w3m-display-message "Can't Submit at this point"))))
 
 (defun w3m-external-view (url &optional no-cache handler)
-  (lexical-let ((url url)
-		(no-cache no-cache))
-    (w3m-process-do
-	(type (w3m-content-type url no-cache handler))
-      (when type
-	(lexical-let ((method (nth 2 (assoc type w3m-content-type-alist))))
-	  (cond
-	   ((not method)
-	    (if (w3m-url-local-p url)
-		(error "No method to view `%s' is registered. Use `w3m-edit-this-url'"
-		       (file-name-nondirectory (w3m-url-to-file-name url)))
-	      (w3m-download url nil no-cache handler)))
-	   ((functionp method)
-	    (funcall method url))
-	   ((consp method)
-	    (lexical-let
-		((command (w3m-which-command (car method)))
-		 (arguments (cdr method))
-		 (file (make-temp-name
-			(expand-file-name "w3mel" w3m-profile-directory)))
-		 suffix)
-	      (setq suffix (file-name-nondirectory url))
-	      (when (string-match "\\.[a-zA-Z0-9]+$" suffix)
-		(setq suffix (match-string 0 suffix))
-		(when (< (length suffix) 5)
-		  (setq file (concat file suffix))))
-	      (cond
-	       ((and command (memq 'file arguments))
-		(w3m-process-do
-		    (success (w3m-download url file no-cache handler))
-		  (when success
-		    (w3m-external-view-file command file url arguments))))
-	       (command
-		(w3m-external-view-file command nil url arguments))
-	       (t
-		(w3m-download url nil no-cache handler)))))))))))
+  (when (w3m-url-valid url)
+    (lexical-let ((url url)
+		  (no-cache no-cache))
+      (w3m-process-do
+	  (type (w3m-content-type url no-cache handler))
+	(when type
+	  (lexical-let ((method (nth 2 (assoc type w3m-content-type-alist))))
+	    (cond
+	     ((not method)
+	      (if (w3m-url-local-p url)
+		  (error "No method to view `%s' is registered. Use `w3m-edit-this-url'"
+			 (file-name-nondirectory (w3m-url-to-file-name url)))
+		(w3m-download url nil no-cache handler)))
+	     ((functionp method)
+	      (funcall method url))
+	     ((consp method)
+	      (lexical-let
+		  ((command (w3m-which-command (car method)))
+		   (arguments (cdr method))
+		   (file (make-temp-name
+			  (expand-file-name "w3mel" w3m-profile-directory)))
+		   suffix)
+		(setq suffix (file-name-nondirectory url))
+		(when (string-match "\\.[a-zA-Z0-9]+$" suffix)
+		  (setq suffix (match-string 0 suffix))
+		  (when (< (length suffix) 5)
+		    (setq file (concat file suffix))))
+		(cond
+		 ((and command (memq 'file arguments))
+		  (w3m-process-do
+		      (success (w3m-download url file no-cache handler))
+		    (when success
+		      (w3m-external-view-file command file url arguments))))
+		 (command
+		  (w3m-external-view-file command nil url arguments))
+		 (t
+		  (w3m-download url nil no-cache handler))))))))))))
 
 (defun w3m-external-view-file (command file url arguments)
   ;; The 3rd argument `url' is necessary to handle the constant `url'
@@ -4338,7 +4349,7 @@ session."
 (defun w3m-view-image ()
   "View the image under point."
   (interactive)
-  (let ((url (w3m-image)))
+  (let ((url (w3m-url-valid (w3m-image))))
     (if url
 	(w3m-external-view url)
       (w3m-display-message "No image at point"))))
@@ -4346,7 +4357,7 @@ session."
 (defun w3m-save-image ()
   "Save the image under point to a file."
   (interactive)
-  (let ((url (w3m-image)))
+  (let ((url (w3m-url-valid (w3m-image))))
     (if url
 	(w3m-download url)
       (w3m-display-message "No image at point"))))
@@ -4359,15 +4370,17 @@ session."
 		   (w3m-image))
 		 (when (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
 		   w3m-current-url))))
-    (when url
-      (message "Browsing <%s>..." url)
-      (w3m-external-view url))))
+    (if (w3m-url-valid url)
+	(progn
+	  (message "Browsing <%s>..." url)
+	  (w3m-external-view url))
+      (w3m-display-message "No URL at point"))))
 
 (defun w3m-download-this-url ()
   "Download the file or the image which pointed by the link under cursor."
   (interactive)
   (let ((url (or (w3m-anchor) (w3m-image))))
-    (if url
+    (if (w3m-url-valid url)
 	(lexical-let ((pos (point-marker))
 		      (curl w3m-current-url))
 	  (w3m-process-with-null-handler
@@ -4469,7 +4482,7 @@ Return t if current line has a same anchor sequence."
   (interactive)
   (unless url
     (setq url (w3m-anchor)))
-  (if url
+  (if (w3m-url-valid url)
       (w3m-edit-url url)
     (w3m-display-message "No URL at point")))
 
@@ -5653,7 +5666,8 @@ appropriate buffer and select it."
 	      'w3m-current-title)))
 
 ;;;###autoload
-(defun w3m-goto-url (url &optional reload charset post-data referer handler)
+(defun w3m-goto-url
+  (url &optional reload charset post-data referer handler qsearch)
   "Retrieve contents of URL.
 If the second argument RELOAD is non-nil, reload a content of URL.
 Except that if it is 'redisplay, re-display the page without reloading.
@@ -5665,7 +5679,11 @@ content-type is \"x-www-form-urlencoded\".  If it is a cons cell, the
 car of a cell is used as the content-type and the cdr of a cell is
 used as the body.
 If the fifth argument REFERER is specified, it is used for a Referer:
-field for this request."
+field for this request.
+You can also use \"quicksearch\" url schemes such as \"gg:emacs\" which
+would search for the term \"emacs\" with the Google search engine.  See
+the `w3m-search' function and the variable
+`w3m-search-quick-search-engine-alist'."
   (interactive
    (list
     (w3m-input-url nil
@@ -5680,6 +5698,12 @@ field for this request."
 	coding-system-for-read)))
   (set-text-properties 0 (length url) nil url)
   (setq url (w3m-uri-replace url))
+  (when (or qsearch
+	    (interactive-p)
+	    (equal referer "about://bookmark/"))
+    ;; quicksearch
+    (setq qsearch t
+	  url (w3m-search-quick-search-handler url)))
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:\\(.*\\)" url)
@@ -5689,7 +5713,7 @@ field for this request."
 	 (string-match "\\`ftp://" url)
 	 (not (string= "text/html" (w3m-local-content-type url))))
     (w3m-goto-ftp-url url))
-   (t
+   ((w3m-url-valid url)
     (w3m-buffer-setup)			; Setup buffer.
     (w3m-arrived-setup)			; Setup arrived database.
     (switch-to-buffer (current-buffer))
@@ -5702,110 +5726,124 @@ Cannot run two w3m processes simultaneously \
     (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.
     ;; Store the current position in the history structure.
     (w3m-history-store-position)
-    ;; Retrieve.
-    (lexical-let ((orig url)
-		  (url (w3m-url-strip-authinfo url))
-		  (reload (and (not (eq reload 'redisplay)) reload))
-		  (redisplay (eq reload 'redisplay))
-		  (charset charset)
-		  (post-data post-data)
-		  (referer referer)
-		  (name))
-      (when w3m-current-forms
-	;; Store the current forms in the history structure.
-	(w3m-history-plist-put :forms w3m-current-forms nil nil t))
-      ;; Set current forms using the history structure.
-      (when (setq w3m-current-forms
-		  (when (and (null post-data) ; If post, always reload.
-			     (w3m-cache-available-p url))
-		    (w3m-history-plist-get :forms url nil t)))
-	;; Mark that the form is from history structure.
-	(setq w3m-current-forms (cons t w3m-current-forms)))
-      (when (and post-data (w3m-history-assoc url))
-	;; Remove processing url's forms from the history structure.
-	(w3m-history-remove-properties '(:forms) url nil t))
-      ;; local directory URL check
-      (when (and (w3m-url-local-p url)
-		 (file-directory-p (w3m-url-to-file-name url))
-		 (setq url (file-name-as-directory url))
-		 (eq w3m-local-directory-view-method 'w3m-dtree)
-		 (string-match "\\`file:///" url))
-	(setq url (replace-match "about://dtree/" nil nil url))
-	(setq orig url))
-      (and (string-match w3m-url-components-regexp url)
-	   (match-beginning 8)
-	   (setq name (match-string 9 url)
-		 url (substring url 0 (match-beginning 8))))
-      (lexical-let ((ct (w3m-arrived-content-type url))
-		    (charset (or charset (w3m-arrived-content-charset url)))
-		    (real-url))
-	(when (and (not ct)
-		   (w3m-url-local-p url)
-		   (string= "unknown" (w3m-local-content-type url)))
-	  (let ((s (completing-read
-		    (format "Input %s's content type (default %s): "
-			    (file-name-nondirectory url)
-			    w3m-default-content-type)
-		    w3m-content-type-alist nil t)))
-	    (setq ct (if (string= "" s) w3m-default-content-type s))))
-	(w3m-process-do
-	    (action
-	     (if (and (not reload)
-		      (not redisplay)
-		      (stringp w3m-current-url)
-		      (string= url w3m-current-url))
-		 (progn
-		   (w3m-refontify-anchor)
-		   (or (when name (w3m-search-name-anchor name))
-		       (goto-char (point-min)))
-		   'cursor-moved)
-	       (setq w3m-image-only-page nil
-		     w3m-current-buffer (current-buffer)
-		     w3m-current-process
-		     (w3m-retrieve-and-render (w3m-url-strip-fragment orig)
-					      reload charset ct post-data
-					      referer handler))))
-	  (with-current-buffer w3m-current-buffer
-	    (setq w3m-current-process nil)
-	    (setq real-url (w3m-real-url url))
-	    (cond
-	     ((not action)
-	      (w3m-history-push real-url
-				(list :title (file-name-nondirectory url)))
-	      (w3m-history-push w3m-current-url)
-	      (w3m-refontify-anchor))
-	     ((not (eq action 'cursor-moved))
-	      (w3m-history-push w3m-current-url
-				(list :title w3m-current-title))
-	      (w3m-history-add-properties (list :referer referer
-						:post-data post-data)
-					  nil nil t)
-	      (or (and name (w3m-search-name-anchor name))
-		  (goto-char (point-min)))
-	      (unless w3m-toggle-inline-images-permanently
-		(setq w3m-display-inline-images
-		      w3m-default-display-inline-images))
-	      (cond ((w3m-display-inline-images-p)
-		     (and w3m-force-redisplay (sit-for 0))
-		     (w3m-toggle-inline-images 'force reload))
-		    ((and (w3m-display-graphic-p)
-			  w3m-image-only-page)
-		     (and w3m-force-redisplay (sit-for 0))
-		     (w3m-toggle-inline-image 'force reload)))
-	      (setq buffer-read-only t)
-	      (set-buffer-modified-p nil)))
-	    (w3m-arrived-add orig w3m-current-title nil nil charset ct)
-	    (setq list-buffers-directory w3m-current-title)
-	    ;; must be `w3m-current-url'
-	    (setq default-directory (w3m-current-directory w3m-current-url))
-	    (w3m-update-toolbar)
-	    (w3m-select-buffer-update)
-	    (run-hook-with-args 'w3m-display-functions (or real-url url))
-	    (run-hook-with-args 'w3m-display-hook (or real-url url))
-	    ;; restore position must call after hooks for localcgi.
-	    (when (or reload redisplay)
-	      (w3m-history-restore-position))
-	    (w3m-refresh-at-time))))))))
+    ;; Access url group
+    (if (string-match "\\`group:" url)
+	(let ((urls (mapcar 'w3m-url-decode-string
+			    (split-string (substring url (match-end 0)) "&"))))
+	  (w3m-process-do
+	      (type (prog1
+			(w3m-goto-url (car urls) nil nil nil nil nil qsearch)
+		      (dolist (url (cdr urls))
+			(save-excursion
+			  (set-buffer (w3m-copy-buffer nil nil nil 'empty))
+			  (save-window-excursion
+			    (w3m-goto-url url nil nil nil nil nil qsearch))))))
+	    type))
+      ;; Retrieve the page.
+      (lexical-let ((orig url)
+		    (url (w3m-url-strip-authinfo url))
+		    (reload (and (not (eq reload 'redisplay)) reload))
+		    (redisplay (eq reload 'redisplay))
+		    (charset charset)
+		    (post-data post-data)
+		    (referer referer)
+		    (name))
+	(when w3m-current-forms
+	  ;; Store the current forms in the history structure.
+	  (w3m-history-plist-put :forms w3m-current-forms nil nil t))
+	;; Set current forms using the history structure.
+	(when (setq w3m-current-forms
+		    (when (and (null post-data)	; If post, always reload.
+			       (w3m-cache-available-p url))
+		      (w3m-history-plist-get :forms url nil t)))
+	  ;; Mark that the form is from history structure.
+	  (setq w3m-current-forms (cons t w3m-current-forms)))
+	(when (and post-data (w3m-history-assoc url))
+	  ;; Remove processing url's forms from the history structure.
+	  (w3m-history-remove-properties '(:forms) url nil t))
+	;; local directory URL check
+	(when (and (w3m-url-local-p url)
+		   (file-directory-p (w3m-url-to-file-name url))
+		   (setq url (file-name-as-directory url))
+		   (eq w3m-local-directory-view-method 'w3m-dtree)
+		   (string-match "\\`file:///" url))
+	  (setq url (replace-match "about://dtree/" nil nil url))
+	  (setq orig url))
+	(and (string-match w3m-url-components-regexp url)
+	     (match-beginning 8)
+	     (setq name (match-string 9 url)
+		   url (substring url 0 (match-beginning 8))))
+	(lexical-let ((ct (w3m-arrived-content-type url))
+		      (charset (or charset (w3m-arrived-content-charset url)))
+		      (real-url))
+	  (when (and (not ct)
+		     (w3m-url-local-p url)
+		     (string= "unknown" (w3m-local-content-type url)))
+	    (let ((s (completing-read
+		      (format "Input %s's content type (default %s): "
+			      (file-name-nondirectory url)
+			      w3m-default-content-type)
+		      w3m-content-type-alist nil t)))
+	      (setq ct (if (string= "" s) w3m-default-content-type s))))
+	  (w3m-process-do
+	      (action
+	       (if (and (not reload)
+			(not redisplay)
+			(stringp w3m-current-url)
+			(string= url w3m-current-url))
+		   (progn
+		     (w3m-refontify-anchor)
+		     (or (when name (w3m-search-name-anchor name))
+			 (goto-char (point-min)))
+		     'cursor-moved)
+		 (setq w3m-image-only-page nil
+		       w3m-current-buffer (current-buffer)
+		       w3m-current-process
+		       (w3m-retrieve-and-render (w3m-url-strip-fragment orig)
+						reload charset ct post-data
+						referer handler))))
+	    (with-current-buffer w3m-current-buffer
+	      (setq w3m-current-process nil)
+	      (setq real-url (w3m-real-url url))
+	      (cond
+	       ((not action)
+		(w3m-history-push real-url
+				  (list :title (file-name-nondirectory url)))
+		(w3m-history-push w3m-current-url)
+		(w3m-refontify-anchor))
+	       ((not (eq action 'cursor-moved))
+		(w3m-history-push w3m-current-url
+				  (list :title w3m-current-title))
+		(w3m-history-add-properties (list :referer referer
+						  :post-data post-data)
+					    nil nil t)
+		(or (and name (w3m-search-name-anchor name))
+		    (goto-char (point-min)))
+		(unless w3m-toggle-inline-images-permanently
+		  (setq w3m-display-inline-images
+			w3m-default-display-inline-images))
+		(cond ((w3m-display-inline-images-p)
+		       (and w3m-force-redisplay (sit-for 0))
+		       (w3m-toggle-inline-images 'force reload))
+		      ((and (w3m-display-graphic-p)
+			    w3m-image-only-page)
+		       (and w3m-force-redisplay (sit-for 0))
+		       (w3m-toggle-inline-image 'force reload)))
+		(setq buffer-read-only t)
+		(set-buffer-modified-p nil)))
+	      (w3m-arrived-add orig w3m-current-title nil nil charset ct)
+	      (setq list-buffers-directory w3m-current-title)
+	      ;; must be `w3m-current-url'
+	      (setq default-directory (w3m-current-directory w3m-current-url))
+	      (w3m-update-toolbar)
+	      (w3m-select-buffer-update)
+	      (run-hook-with-args 'w3m-display-functions (or real-url url))
+	      (run-hook-with-args 'w3m-display-hook (or real-url url))
+	      ;; restore position must call after hooks for localcgi.
+	      (when (or reload redisplay)
+		(w3m-history-restore-position))
+	      (w3m-refresh-at-time)))))))
+   (t (w3m-message "Invalid URL: %s" url))))
 
 (defun w3m-current-directory (url)
   (let (file)
@@ -5838,7 +5876,7 @@ Cannot run two w3m processes simultaneously \
 
 (defun w3m-goto-url-with-timer (url buffer)
   "Run the command `w3m-goto-url' from the timer of refresh."
-  (when (and url buffer (get-buffer buffer))
+  (when (and (w3m-url-valid url) buffer (get-buffer buffer))
     (if (get-buffer-window buffer)
 	(save-selected-window
 	  (pop-to-buffer buffer)
@@ -5874,8 +5912,10 @@ the current session.  Otherwise, the new session will start afresh."
 	(when (and (string-match w3m-url-components-regexp url)
 		   (match-beginning 8))
 	  (w3m-goto-url (substring url 0 (match-beginning 8))
-			reload charset post-data referer))
-	(w3m-goto-url url reload charset post-data referer))
+			reload charset post-data referer
+			nil (interactive-p)))
+	(w3m-goto-url url reload charset post-data referer
+		      nil (interactive-p)))
     (w3m url t)))
 
 (defun w3m-move-point-for-localcgi (url)
@@ -6045,7 +6085,7 @@ Optional NEW-SESSION is intended to be used by the command
       (w3m-mode))
     (unwind-protect
 	(unless nofetch
-	  (w3m-goto-url url))
+	  (w3m-goto-url url nil nil nil nil nil (interactive-p)))
       (unless w3m-current-url
 	(erase-buffer)
 	(set-buffer-modified-p nil))
@@ -6832,13 +6872,14 @@ strings under the cursor.  When a unsecure page which may contain
 vicious forms is viewed, this command should be used instead of
 `w3m-view-this-url'."
   (interactive)
-  (let ((url (w3m-anchor)))
+  (let ((url (w3m-url-valid (w3m-anchor))))
     (cond
      (url (w3m url))
-     ((w3m-image)
+     ((w3m-url-valid (w3m-image))
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
-	(w3m-view-image))))))
+	(w3m-view-image)))
+     (t (w3m-message "No URL at point")))))
 
 (defun w3m-mouse-safe-view-this-url (event)
   "Perform the command `w3m-safe-view-this-url' by the mouse event."

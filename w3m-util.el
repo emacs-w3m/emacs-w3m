@@ -316,6 +316,12 @@ An argument of nil means kill the current buffer."
 
 
 ;;; Miscellaneous:
+(defconst w3m-url-fallback-base "http:///")
+(defconst w3m-url-invalid-regexp "\\`http:///")
+
+(defsubst w3m-url-valid (url)
+  (and url (not (string-match w3m-url-invalid-regexp url))
+       url))
 
 (defmacro w3m-tag-regexp-of (&rest names)
   "Return a regexp string, not a funtion form.  A regexp should match tags

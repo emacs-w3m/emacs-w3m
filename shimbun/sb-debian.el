@@ -96,7 +96,7 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-debian))
   (concat (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun) "/"))
-  
+
 (luna-define-method shimbun-reply-to ((shimbun shimbun-debian))
   (concat (shimbun-current-group-internal shimbun) "@debian.org"))
 
@@ -142,7 +142,7 @@
       (push (match-string 1) paths))
     (catch 'stop
       (dolist (path (nreverse paths))
-        (let* ((base-url (concat (shimbun-index-url shimbun)
+	(let* ((base-url (concat (shimbun-index-url shimbun)
 				 path "/mail%s.html"))
 	       url)
 	  (shimbun-retrieve-url (format base-url "list") t)

@@ -44,7 +44,7 @@ AC_DEFUN(AC_PATH_EMACS,
     fi])
   test -z "${EMACS}" && AC_PATH_PROGS(EMACS, emacs xemacs mule, emacs)
   AC_SUBST(EMACS)
-  
+
   AC_MSG_CHECKING([what a flavor does ${EMACS} have])
   AC_EMACS_LISP(flavor,
     (cond ((featurep (quote xemacs)) \"XEmacs\")\

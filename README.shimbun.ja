@@ -60,7 +60,7 @@ ZDNet		zdnet.comp zdnet.gamespot
 2-3. Mailing List
 
 semi-gnus-ja	airs.semi-gnus-ja
-wanderlust	airs.wl	
+wanderlust	airs.wl
 bbdb-ml		bbdb-ml.bbdb-ml
 ding-gnus 関連	ding.ding ding.ding-announce ding.ding-cvslog
 gnome 関連	gnome.balsa-list gnome.calendar-list
@@ -92,7 +92,7 @@ Java カンファレンス関連	javaconf.servlet-ml javaconf.business-ml
 		javaconf.JGT-ml javaconf.jini-ml javaconf.ejb-ml
 		javaconf.cm-ml javaconf.horb-ml javaconf.talk-ml
 linux-ce	linux-ce.users
-mule   		m17n.mule-ja m17n.mule
+mule		m17n.mule-ja m17n.mule
 meadow 関連	meadow.meadow-develop meadow.meadow-users-jp
 mew 関連	mew.mew-dist mew.mew-win32 mew.mew-int
 mgp 関連	mew.mgp-users mew.mgp-users-jp
@@ -200,7 +200,7 @@ Geocrawler	www.geocrawler.com に保存されている全ての mailing lists.
 MARC		marc.theaimsgroup.com に保存されている全ての mailing lists.
 RedHat 関連	http://sources.redhat.com/lists.html
 MacOSX-jp 関連	macosx-jp.macosx-jp macosx-jp.macosx-dev-jp
-	  	macosx-jp.macosx-ws-jp macosx-jp.webobjects-jp
+		macosx-jp.macosx-ws-jp macosx-jp.webobjects-jp
 
 
 2-4. スポーツ
@@ -265,7 +265,7 @@ IBM developerWorks	ibm-dev.components ibm-dev.java ibm-dev.linux
 			ibm-dev.unicode
 			ibm-dev.usability ibm-dev.web
 			ibm-dev.webservices
-			ibm-dev.xml 
+			ibm-dev.xml
 Muchy's Palmware Review! muchy.review
 PalmFan			palmfan.news palmfan.palmwarefan
 pilot-link              pilot-link.announce pilot-link.devel pilot-link.general
@@ -397,7 +397,7 @@ http://www.mew.org/ml/mew-dist-2.0/msg01251.html
 3.3 期限切れ記事の消去
  事前に mew-shimbun-expires を設定しておくと、期限切れ記事の消去を行なう
  ことができます。
- 
+
 (setq mew-shimbun-expires
       '(("yomiuri" . 7)
 	("asahi" . 1)

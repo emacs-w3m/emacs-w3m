@@ -4,10 +4,10 @@ static char *copy_up_xpm[] = {
 "32 30 7 1",
 /* colors */
 "  c #b6b2b6 s backgroundToolBarColor",
-"# c #000000",		  
-"a c #aeb2ae",	    	  
+"# c #000000",
+"a c #aeb2ae",
 "b c #c7ff86",
-"c c #f7ffbe",		  
+"c c #f7ffbe",
 "d c #aeb2ae",
 "e c #a6a6a6",
 /* pixels */

@@ -1,10 +1,11 @@
-;;; w3m-search.el --- The add-on program to access WEB search engines.
+;;; w3m-search.el --- functions convenient to access web search engines
 
 ;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
-;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
+;;          Romain FRANCOISE   <romain@orebokech.com>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; This file is a part of emacs-w3m.
@@ -24,23 +25,12 @@
 ;; program's maintainer or write to: The Free Software Foundation,
 ;; Inc.; 59 Temple Place, Suite 330; Boston, MA 02111-1307, USA.
 
-
 ;;; Commentary:
 
-;; w3m-search.el is the add-on program of emacs-w3m to access WEB
-;; search engines.  For more detail about emacs-w3m, see:
+;; This module contains the `w3m-search' command and some utilities
+;; to improve your cyberlife.  For more detail about emacs-w3m, see:
 ;;
 ;;    http://emacs-w3m.namazu.org/
-
-
-;;; How to install:
-
-;; Please put this file to appropriate directory, and if you want
-;; byte-compile it.  And add following lisp expressions to your
-;; ~/.emacs.
-;;
-;;     (autoload 'w3m-search "w3m-search" "Search QUERY using SEARCH-ENGINE." t)
-
 
 ;;; Code:
 
@@ -55,6 +45,7 @@
       (, (if (equal "Japanese" w3m-language)
 	     '("google" "http://www.google.com/search?q=%s&hl=ja" shift_jis)
 	   '("google" "http://www.google.com/search?q=%s" nil)))
+      ("google groups" "http://groups.google.com/groups?q=%s" nil)
       ("google-ja" "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja" shift_jis)
       ("goo-ja" "http://www.goo.ne.jp/default.asp?MT=%s" euc-japan)
       ("excite-ja" "http://www.excite.co.jp/search.gw?target=combined&look=excite_jp&lang=jp&tsug=-1&csug=-1&search=%s" shift_jis)
@@ -64,9 +55,13 @@
       ("debian-pkg" "http://packages.debian.org/cgi-bin/search_contents.pl?directories=yes&arch=i386&version=unstable&case=insensitive&word=%s" nil)
       ("debian-bts" "http://bugs.debian.org/cgi-bin/pkgreport.cgi?archive=yes&pkg=%s" nil)
       ("freebsd-users-jp" "http://home.jp.FreeBSD.org/cgi-bin/namazu.cgi?key=\"%s\"&whence=0&max=50&format=long&sort=score&dbname=FreeBSD-users-jp" euc-japan)
-      ("iij-archie" "http://www.iij.ad.jp/cgi-bin/archieplexform?query=%s&type=Case+Insensitive+Substring+Match&order=host&server=archie1.iij.ad.jp&hits=95&nice=Nice")))
+      ("iij-archie" "http://www.iij.ad.jp/cgi-bin/archieplexform?query=%s&type=Case+Insensitive+Substring+Match&order=host&server=archie1.iij.ad.jp&hits=95&nice=Nice")
+      ("waei" "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=1")
+      ("eiwa" "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=0")
+      ("kokugo" "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=2")
+      ("eiei" "http://www.dictionary.com/cgi-bin/dict.pl?term=%s&r=67")))
   "*An alist of search engines.
-Each elemnt looks like (ENGINE ACTION CODING)
+Each element looks like (ENGINE ACTION CODING)
 ENGINE is a string, the name of the search engine.
 ACTION is a string, the URL that performs a search.
 ACTION must contain a \"%s\", which is substituted by a query string.
@@ -80,11 +75,47 @@ If omitted, `w3m-default-coding-system' is used.
 	   (string :tag "Action")
 	   (coding-system))))
 
-(defcustom w3m-search-default-engine "yahoo"
-  "*Default search engine name.
+(defcustom w3m-search-default-engine (if (equal "Japanese" w3m-language)
+					 "google-ja"
+				       "google")
+  "*Name of the default search engine.
 See also `w3m-search-engine-alist'."
   :group 'w3m
   :type 'string)
+
+(defcustom w3m-search-quick-search-engine-alist
+  '(("gg"   . "google")
+    ("ggg"  . "google groups")
+    ("ya"   . "yahoo")
+    ("al"   . "altavista")
+    ("bts"  . "debian-bts")
+    ("dpkg" . "debian-pkg")
+    ("archie" . "iij-archie"))
+  "*An alist of short names for defined search engine names.
+Each element follows the scheme (NAME . ENGINE)
+NAME if the short name you want to use for this engine.
+ENGINE is the name of the engine as defined in `w3m-search-engine-alist'.
+Be careful: the names you use here must match exactly the names of the
+engines defined in `w3m-search-engine-alist'."
+  :group 'w3m
+  :type '(repeat (cons :format "%v"
+		       (string :tag "Abbrev")
+		       (string :tag "Engine"))))
+
+(defcustom w3m-search-prefer-japanese-site (equal "Japanese" w3m-language)
+  "*Say whether to prefer a Japanese search engine for the quicksearch.
+For instance, \"gg\" is forwarded to \"google-ja\" rather than \"google\" if
+it is non-nil.  See also `w3m-search-inhibited-japanese-engines'."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-search-inhibited-japanese-engines nil
+  "*List of search engines prevented from forwarding to a Japanese site.
+It affects how the quicksearch works.  For instance, use '(\"yahoo\") if
+you want to distinguish \"yahoo\" from \"yahoo-ja\" even if
+`w3m-search-prefer-japanese-site' is non-nil."
+  :group 'w3m
+  :type '(repeat (string :tag "Engine")))
 
 (defcustom w3m-search-word-at-point t
   "*Non-nil means that the word at point is used as initial string."
@@ -98,11 +129,20 @@ See also `w3m-search-engine-alist'."
    (split-string str)
    "+"))
 
+(defun w3m-search-quick-search-engines ()
+  "Return an alist of short names and engines merging the options
+`w3m-search-engine-alist' and `w3m-search-quick-search-engine-alist'."
+  (let ((alist w3m-search-quick-search-engine-alist)
+	engine)
+    (dolist (element w3m-search-engine-alist alist)
+      (unless (rassoc (setq engine (car element)) alist)
+	(push (cons engine engine) alist)))))
+
 ;;;###autoload
 (defun w3m-search (search-engine query)
   "Search QUERY using SEARCH-ENGINE.
-When called interactively with prefix argument, you can choose search
-engine deinfed in `w3m-search-engine-alist'.  Otherwise use
+When called interactively with a prefix argument, you can choose one of
+the search engines defined in `w3m-search-engine-alist'.  Otherwise use
 `w3m-search-default-engine'."
   (interactive
    (let ((engine
@@ -135,6 +175,29 @@ engine deinfed in `w3m-search-engine-alist'.  Otherwise use
 		       (w3m-search-escape-query-string query (caddr info))))
 	(error "Unknown search engine: %s" search-engine)))))
 
+;;;###autoload
+(defun w3m-search-quick-search-handler (url)
+  "Check if the url is a quicksearch url.
+If URL is a quicksearch url, replace it with the real url needed to access
+the search engine.  If not, leave it alone."
+  (let ((ret url)
+	query engine info)
+    (dolist (quick-search-engine (w3m-search-quick-search-engines) ret)
+      (when (string-match (concat "\\`" (car quick-search-engine) ":") url)
+	(setq query (substring url (match-end 0)))
+	(unless (string= query "")
+	  (setq engine (cdr quick-search-engine)
+		info (or (and w3m-search-prefer-japanese-site
+			      (not (member
+				    engine
+				    w3m-search-inhibited-japanese-engines))
+			      (assoc (concat engine "-ja")
+				     w3m-search-engine-alist))
+			 (assoc engine w3m-search-engine-alist)))
+	  (when info
+	    (setq ret (format (cadr info)
+			      (w3m-search-escape-query-string
+			       query (caddr info))))))))))
 
 (provide 'w3m-search)
 
