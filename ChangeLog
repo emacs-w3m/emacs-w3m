@@ -1,5 +1,10 @@
 2002-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-header-line-map): Prevent tool-bar from being
+	doubled under Emacs 21.
+
+2002-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* Makefile.in (infodir): Add a variable.
 	(default): Use `all'.
 	(all, all-ja): New rules.
