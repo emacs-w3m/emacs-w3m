@@ -1,3 +1,24 @@
+2003-11-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-antenna.el (w3m-antenna-sittes): Allow a list that consists
+	of a function and its options, as the third element of each site.
+	(w3m-antenna-html-skeleton): Remove the link to the antenna editor.
+	(w3m-antenna-setup): Make it prefer `w3m-antenna-sites' than a
+	list originated from `w3m-antenna-file'.
+	(w3m-antenna-shutdown): Simplified.
+	(w3m-antenna-site-update): New function.
+	(w3m-antenna-check-hns): Ditto.
+	(w3m-antenna-check-anchor): Ditto.
+	(w3m-antenna-check-page): Ditto.
+	(w3m-antenna-check-site): Use the above three functions.
+	(w3m-antenna-check-all-sites): Follow the above change.
+	(w3m-antenna-check-site-after): Removed.
+	(w3m-antenna-make-summary): Use a key attribute instead of an url
+	attribute, when the latter is not set.
+	(w3m-antenna-make-summary-like-natsumican): Ditto.
+	(w3m-about-antenna-edit): Removed.
+	(w3m-antenna-edit-reset-post-data): Ditto..
+
 2003-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-antenna.el (w3m-antenna): Pass the interactive flag to
@@ -175,6 +196,20 @@
 	`truncate-lines' is nil.
 	(w3m-display-width): Move downward (see the comment).
 
+2003-11-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-parse-header): Because a broken server returns a
+	relative URL in the location field, convert a URL to absolute.
+
+	* w3m-proc.el (w3m-process-wait-process): New function.
+	(w3m-process-start-and-wait): Call the above function.
+
+	* w3m-weather.el (w3m-weather-run-filter-functions): New function
+	to call filter functions asynchronously.
+	(w3m-about-weather): Call the above.
+	(w3m-weather-get-seikatu-sisu): Asynchronized.
+	(w3m-weather-insert-seikatu-sisu): Ditto.
+
 2003-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-initial-frames): Rename from `w3m-initial-frame';
@@ -269,6 +304,32 @@
 	(w3m-select-buffer-quit): Revert the 2003-11-05 change; bind
 	`pop-up-frames'.
 
+2003-11-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-proc.el (w3m-process-stop): Change `w3m-current-process' in
+	the buffer specified in the argument, instead of changing it in
+	the current buffer.
+
+2003-11-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-canonicalize-url): New function.
+	(w3m-w3m-attributes-1): New function.
+	(w3m-w3m-attributes): Call the above functions to follow
+	redirection.
+	(w3m-w3m-retrieve): Call `w3m-w3m-canonicalize-url' before
+	retrieving.
+
+	* w3m-proc.el (w3m-process-start-process): Check the value of
+	`w3m-current-url' before calling `w3m-url-authinfo'.
+	(w3m-process-start-and-wait): Make sure synchronization with
+	sub-process.
+	(w3m-process-do-with-temp-buffer): Call `w3m-kill-buffer' instead
+	of calling `kill-buffer' directly.
+
+	* w3m-antenna.el (w3m-antenna-mapcar): Simplified and follow the
+	change of `w3m-process-do-with-temp-buffer'.
+	(w3m-antenna-mapcar-after): Ditto.
+
 2003-11-07  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-atmarkit.el (shimbun-rss-build-message-id): Bug fixed.
@@ -302,6 +363,29 @@
 	(w3m-goto-url): Use `w3m-use-tab-p' and `w3m-popup-frame-p'.
 	(w3m): Modify to use new `w3m-popup-frame-p'.
 	(w3m-header-line-insert): Use `w3m-use-tab-p'.
+
+2003-11-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-current-redirect): Abolished.
+	(w3m-clear-local-variables, w3m-copy-local-variables): Follow the
+	above change.
+
+	* w3m-proc.el (w3m-process-do-with-temp-buffer): Keep the current
+	buffer after given FORM and BODY are evaluated.
+
+2003-11-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-follow-redirection): Fix its docstring.
+	(w3m-w3m-retrieve): When the above option is equal to nil, it is
+	treated as 0.
+	(w3m-retrieve-and-render): Check content type and charsets with
+	redirected real URI instead of user-specified URI.
+
+	* w3m-antenna.el (w3m-antenna-hns-last-modified): Do not accept
+	`no-cache' argument.
+	(w3m-antenna-check-site): Ditto.
+	(w3m-antenna-mapcar, w3m-antenna-mapcar-after): New functions.
+	(w3m-antenna-check-all-sites): Use the above functions.
 
 2003-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -457,6 +541,13 @@
 	* shimbun/sb-tdiary.el (shimbun-replace-in-string): Abolish.
 	(shimbun-tdiary-get-headers): Use `shimbun-create-header' instead
 	of `shimbun-make-header'.
+
+2003-10-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-retrieve): Insert no data when either retrieval
+	or decoding is failed.
+	(w3m-w3m-parse-header): Do not return a base URI of retrieved
+	page.
 
 2003-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -1409,6 +1500,32 @@
 	contain "&amp;".
 
 	* shimbun/sb-japantimes.el (shimbun-japantimes-coding-system): Removed.
+
+2003-08-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-w3m-get-header): Removed.
+	(w3m-w3m-parse-header, w3m-w3m-dump-head): New function.
+	(w3m-w3m-attributes): Call the above functions.
+	(w3m-w3m-dump-head-source): Removed.
+	(w3m-w3m-dump-extra): New function.
+	(w3m-w3m-retrieve, w3m-w3m-retrieve-1): Reimplemented.
+	(w3m-about-header): Call `w3m-w3m-dump-head' instead of
+	`w3m-w3m-get-header'.
+
+	* w3m-proc.el: Changes to support recursive call of functions
+	creating asynchronous processes.
+	(w3m-process-waited): Abolished.
+	(w3m-process-handler-new): Add result slot.
+	(w3m-process-handler-functions): Renamed from
+	`w3m-process-handler-function'.
+	(w3m-process-handler-result): New macro.
+	(w3m-process-with-null-handler): Reimplemented.
+	(w3m-process-start-and-wait): New function.
+	(w3m-process-with-wait-handler): Reimplemented.
+	(w3m-process-do): Reimplemented.
+	(w3m-process-do-with-temp-buffer): Reimplemented.
+	(w3m-process-sentinel): Accept the 3rd argument.  Follow the above
+	changes.
 
 2003-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 

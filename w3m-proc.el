@@ -90,9 +90,6 @@
   "Modeline string to show status of retrieving process.")
 (make-variable-buffer-local 'w3m-process-modeline-string)
 
-(defvar w3m-process-waited nil
-  "Non-nil means that `w3m-process-with-wait-handler' is evaluated.")
-
 (defvar w3m-process-proxy-user nil "User name of the proxy server.")
 (defvar w3m-process-proxy-passwd nil "Password of the proxy server.")
 
@@ -163,14 +160,16 @@
   `(aref (cdr ,object) 3))
 
 (put 'w3m-process-handler-new 'edebug-form-spec '(form form form))
-(defmacro w3m-process-handler-new (buffer parent-buffer function)
-  `(vector ,buffer ,parent-buffer ,function))
+(defmacro w3m-process-handler-new (buffer parent-buffer functions)
+  `(vector ,buffer ,parent-buffer ,functions nil))
 (defmacro w3m-process-handler-buffer (handler)
   `(aref ,handler 0))
 (defmacro w3m-process-handler-parent-buffer (handler)
   `(aref ,handler 1))
-(defmacro w3m-process-handler-function (handler)
+(defmacro w3m-process-handler-functions (handler)
   `(aref ,handler 2))
+(defmacro w3m-process-handler-result (handler)
+  `(aref ,handler 3))
 
 (defun w3m-process-push (handler command arguments)
   "Generate a new `w3m-process' object which is provided by HANDLER,
@@ -211,7 +210,8 @@ generated asynchronous process is ignored.  Otherwise,
 		 (proc (apply 'start-process command
 			      (current-buffer) command
 			      (w3m-process-arguments object)))
-		 (authinfo (w3m-url-authinfo w3m-current-url)))
+		 (authinfo (when w3m-current-url
+			     (w3m-url-authinfo w3m-current-url))))
 	    (setq w3m-process-user (car authinfo)
 		  w3m-process-passwd (cdr authinfo)
 		  w3m-process-realm nil)
@@ -293,8 +293,10 @@ which have no handler."
 		     (dolist (handler (w3m-process-handlers obj))
 		       (w3m-kill-buffer (w3m-process-handler-buffer handler)))
 		     nil)))
-	       w3m-process-queue))
-	w3m-current-process nil)
+	       w3m-process-queue)))
+  (when (buffer-name buffer)
+    (with-current-buffer buffer
+      (setq w3m-current-process nil)))
   (w3m-process-start-queued-processes)
   (w3m-static-when (boundp 'header-line-format)
     ;; Redisplay the header-line.
@@ -323,9 +325,11 @@ which have no handler."
   "Generate the null handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the null
 handler."
-  `(let ((handler (symbol-function 'identity)))
-     ,@body
-     (w3m-process-start-queued-processes)))
+  (let ((var (gensym "--tempvar--")))
+    `(let ((,var (let (handler) ,@body)))
+       (when (w3m-process-p ,var)
+	 (w3m-process-start-process ,var))
+       ,var)))
 (put 'w3m-process-with-null-handler 'lisp-indent-function 0)
 (put 'w3m-process-with-null-handler 'edebug-form-spec '(body))
 
@@ -338,37 +342,64 @@ handler."
   (w3m-process-kill-process (w3m-process-process process))
   (signal (car error-data) (cdr error-data)))
 
+(defun w3m-process-wait-process (process seconds)
+  "Wait for SECONDS seconds or until PROCESS will exit.
+Returns t when the specified process exit normally, otherwise returns
+nil."
+  (catch 'timeout
+    (let ((start (current-time)))
+      (while (or (w3m-static-if (or (featurep 'xemacs)
+				    (<= emacs-major-version 20))
+		     (sit-for 0 200 t)
+		   (accept-process-output (w3m-process-process process) 0 200))
+		 (eq 'run (process-status (w3m-process-process process))))
+	(and seconds
+	     (< seconds (w3m-time-lapse-seconds start (current-time)))
+	     (throw 'timeout nil)))
+      ;; The following line is necessary to avoid a process handling
+      ;; bug of Meadow1.  For more detail, see [emacs-w3m:06048].
+      (sit-for 0 50 t)
+      t)))
+
+(defun w3m-process-start-and-wait (w3m-current-process wait-function)
+  (while (w3m-process-p w3m-current-process)
+    (condition-case error
+	(let (w3m-process-inhibit-quit inhibit-quit)
+	  ;; No sentinel function is registered and the process
+	  ;; sentinel function is called from this macro, in order to
+	  ;; avoid the dead-locking which occurs when this macro is
+	  ;; called in the environment that `w3m-process-sentinel' is
+	  ;; evaluated.
+	  (w3m-process-start-process w3m-current-process t)
+	  (unless (w3m-process-wait-process w3m-current-process
+					    w3m-process-timeout)
+	    (w3m-process-error-handler (cons 'w3m-process-timeout nil)
+				       w3m-current-process)))
+      (quit (w3m-process-error-handler error w3m-current-process)))
+    (w3m-process-sentinel (w3m-process-process w3m-current-process)
+			  "finished\n" t)
+    (setq w3m-current-process
+	  (catch 'result
+	    (dolist (handler (w3m-process-handlers w3m-current-process))
+	      (when (memq wait-function
+			  (w3m-process-handler-functions handler))
+		(throw 'result (w3m-process-handler-result handler))))
+	    (w3m-process-error-handler (cons 'error "Can't find wait handler")
+				       w3m-current-process))))
+  w3m-current-process)
+
 (defmacro w3m-process-with-wait-handler (&rest body)
   "Generate the waiting handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the handler
 which will wait for the end of the evaluation."
-  (let ((result (gensym "--result--")))
+  (let ((result (gensym "--result--"))
+	(wait-function (gensym "--wait-function--")))
     `(let ((,result)
-	   (w3m-process-waited t))
-       (when (w3m-process-p
-	      (setq ,result
-		    (let ((handler (lambda (x) (setq ,result x))))
-		      ,@body)))
-	 (condition-case error
-	     (let ((start (current-time))
-		   (w3m-current-process ,result)
-		   w3m-process-inhibit-quit inhibit-quit)
-	       ;; No sentinel function is registered and the process
-	       ;; sentinel function is called from this macro, in order to
-	       ;; avoid the dead-locking which occurs when this macro is
-	       ;; called in the environment that `w3m-process-sentinel' is
-	       ;; evaluated.
-	       (w3m-process-start-process ,result t)
-	       (while (eq (process-status (w3m-process-process ,result)) 'run)
-		 (accept-process-output nil 0 200)
-		 (when (and w3m-process-timeout
-			    (< w3m-process-timeout
-			       (w3m-time-lapse-seconds start (current-time))))
-		   (w3m-process-error-handler (cons 'w3m-process-timeout nil)
-					      ,result))))
-	   (quit (w3m-process-error-handler error ,result)))
-	 (w3m-process-sentinel (w3m-process-process ,result) "finished\n"))
-       ,result)))
+	   (,wait-function (make-symbol "wait-function")))
+       (fset ,wait-function 'identity)
+       (w3m-process-start-and-wait (let ((handler (list ,wait-function)))
+				     ,@body)
+				   ,wait-function))))
 (put 'w3m-process-with-wait-handler 'lisp-indent-function 0)
 (put 'w3m-process-with-wait-handler 'edebug-form-spec '(body))
 
@@ -415,32 +446,19 @@ evaluated at the same time, and this macro returns the result of the
 body BODY."
   (let ((var (or (car spec) (gensym "--tempvar--")))
 	(form (cdr spec))
-	(this-handler (gensym "--this-handler--")))
-    `(let ((,this-handler handler))
-       (labels ((post-body (,var handler) ,@body)
-		(post-handler
-		 (,var handler)
-		 (if (w3m-process-p (setq ,var (post-body ,var handler)))
-		     ;; The generated async process will be started at
-		     ;; the end of `w3m-process-sentinel', so that
-		     ;; there is nothing to do at this part.
-		     nil
-		   (funcall (or handler (function identity)) ,var))))
-	 (let ((,var
-		(let ((handler
-		       (list 'lambda (list ',var)
-			     (list 'post-handler ',var ,this-handler))))
-		  ,@form)))
-	   (if (w3m-process-p ,var)
-	       (if ,this-handler
+	(post-function (gensym "--post-function--")))
+    `(let ((,post-function (lambda (,var) ,@body)))
+       (let ((,var (let ((handler (cons ,post-function handler)))
+		     ,@form)))
+	 (if (w3m-process-p ,var)
+	     (if handler
+		 ,var
+	       (w3m-process-start-process ,var))
+	   (if (w3m-process-p (setq ,var (funcall ,post-function ,var)))
+	       (if handler
 		   ,var
 		 (w3m-process-start-process ,var))
-	     (if (w3m-process-p
-		  (setq ,var (post-body ,var ,this-handler)))
-		 (if ,this-handler
-		     ,var
-		   (w3m-process-start-process ,var))
-	       ,var)))))))
+	     ,var))))))
 (put 'w3m-process-do 'lisp-indent-function 1)
 (put 'w3m-process-do 'edebug-form-spec '((symbolp form) def-body))
 
@@ -450,39 +468,37 @@ Like `w3m-process-do', but the form FORM and the body BODY are
 evaluated in a temporary buffer."
   (let ((var (or (car spec) (gensym "--tempvar--")))
 	(form (cdr spec))
-	(this-handler (gensym "--this-handler--"))
-	(temp-buffer (gensym "--temp-buffer--")))
-    `(let ((,this-handler handler)
-	   (,temp-buffer
-	    (w3m-get-buffer-create
-	     (generate-new-buffer-name w3m-work-buffer-name))))
-       (labels ((post-body (,var handler ,temp-buffer)
-			   (unwind-protect
-			       (with-current-buffer ,temp-buffer
-				 ,@body)
-			     (w3m-kill-buffer ,temp-buffer)))
-		(post-handler (,var handler ,temp-buffer)
-			      (unless (w3m-process-p
-				       (setq ,var (post-body ,var handler
-							     ,temp-buffer)))
-				(funcall (or handler (function identity))
-					 ,var))))
-	 (let ((,var
-		(let ((handler
-		       (list 'lambda (list ',var)
-			     (list 'post-handler ',var
-				   ,this-handler ,temp-buffer))))
-		  (with-current-buffer ,temp-buffer ,@form))))
+	(post-body (gensym "--post-body--"))
+	(post-handler (gensym "--post-handler--"))
+	(temp-buffer (gensym "--temp-buffer--"))
+	(current-buffer (gensym "--current-buffer--")))
+    `(lexical-let ((,temp-buffer
+		    (w3m-get-buffer-create
+		     (generate-new-buffer-name w3m-work-buffer-name)))
+		   (,current-buffer (current-buffer)))
+       (labels ((,post-body (,var)
+			    (when (buffer-name ,temp-buffer)
+			      (set-buffer ,temp-buffer))
+			    ,@body)
+		(,post-handler (,var)
+			       (w3m-kill-buffer ,temp-buffer)
+			       (when (buffer-name ,current-buffer)
+				 (set-buffer ,current-buffer))
+			       ,var))
+	 (let ((,var (let ((handler
+			    (cons ',post-body (cons ',post-handler handler))))
+		       (with-current-buffer ,temp-buffer ,@form))))
 	   (if (w3m-process-p ,var)
-	       (if ,this-handler
+	       (if handler
 		   ,var
 		 (w3m-process-start-process ,var))
 	     (if (w3m-process-p
-		  (setq ,var (post-body ,var ,this-handler ,temp-buffer)))
-		 (if ,this-handler
+		  (setq ,var (let ((handler (cons ',post-handler handler)))
+			       (,post-body ,var))))
+		 (if handler
 		     ,var
 		   (w3m-process-start-process ,var))
-	       ,var)))))))
+	       (,post-handler ,var))))))))
 (put 'w3m-process-do-with-temp-buffer 'lisp-indent-function 1)
 (put 'w3m-process-do-with-temp-buffer 'edebug-form-spec
      '((symbolp form) def-body))
@@ -513,14 +529,13 @@ evaluated in a temporary buffer."
 	  (string-as-multibyte (format "%s" exit-status)))
     nil)))
 
-(defun w3m-process-sentinel (process event)
+(defun w3m-process-sentinel (process event &optional ignore-queue)
   ;; Ensure that this function will be never called repeatedly.
   (set-process-sentinel process 'ignore)
   (let ((inhibit-quit w3m-process-inhibit-quit))
     (unwind-protect
 	(if (buffer-name (process-buffer process))
-	    (save-current-buffer
-	      (set-buffer (process-buffer process))
+	    (with-current-buffer (process-buffer process)
 	      (setq w3m-process-queue
 		    (delq w3m-process-object w3m-process-queue))
 	      (let ((exit-status (process-exit-status process))
@@ -540,12 +555,19 @@ evaluated in a temporary buffer."
 		    (set-buffer (w3m-process-handler-buffer x))
 		    (let ((w3m-process-exit-status)
 			  (w3m-current-buffer
-			   (w3m-process-handler-parent-buffer x)))
+			   (w3m-process-handler-parent-buffer x))
+			  (handler
+			   (w3m-process-handler-functions x))
+			  (exit-status exit-status))
 		      (when realm
 			(w3m-process-set-authinfo w3m-current-url
 						  realm user passwd))
-		      (funcall (w3m-process-handler-function x)
-			       exit-status))))))
+		      (while (and handler
+				  (not (w3m-process-p
+					(setq exit-status
+					      (funcall (pop handler)
+						       exit-status))))))
+		      (setf (w3m-process-handler-result x) exit-status))))))
 	  ;; Something wrong has been occured.
 	  (catch 'last
 	    (dolist (obj w3m-process-queue)
@@ -553,7 +575,8 @@ evaluated in a temporary buffer."
 		(setq w3m-process-queue (delq obj w3m-process-queue))
 		(throw 'last nil)))))
       (delete-process process)
-      (w3m-process-start-queued-processes))))
+      (unless ignore-queue
+	(w3m-process-start-queued-processes)))))
 
 (defun w3m-process-filter (process string)
   (when (buffer-name (process-buffer process))
