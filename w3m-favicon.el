@@ -212,22 +212,22 @@ stored in the `w3m-favicon-image' buffer-local variable."
     (lexical-let ((url url)
 		  (type type)
 		  (target target))
-      (w3m-process-do-with-temp-buffer
-	  (ok (w3m-retrieve url 'raw nil nil nil handler))
-	(let (idata image)
-	  (when ok
-	    (setq idata (buffer-string)
-		  image (w3m-favicon-convert idata type)))
-	  (with-current-buffer target
-	    (push (list url idata (current-time)
-			(setq w3m-favicon-image image))
-		  w3m-favicon-cache-data))
-	  (w3m-static-unless (featurep 'xemacs)
-	    ;; Emacs frame needs to be redisplayed to make favicon come out.
-	    (let ((window (get-buffer-window target t)))
-	      (when window
-		(run-at-time 0.2 nil
-			     'redraw-frame (window-frame window))))))))))
+		 (w3m-process-do-with-temp-buffer
+		     (ok (w3m-retrieve url 'raw nil nil nil handler))
+		   (let (idata image)
+		     (when ok
+		       (setq idata (buffer-string)
+			     image (w3m-favicon-convert idata type)))
+		     (with-current-buffer target
+		       (push (list url idata (current-time)
+				   (setq w3m-favicon-image image))
+			     w3m-favicon-cache-data))))))
+  (w3m-static-unless (featurep 'xemacs)
+    ;; Emacs frame needs to be redisplayed to make favicon come out.
+    (let ((window (get-buffer-window target t)))
+      (when window
+	(run-at-time 1 nil
+		     'redraw-frame (window-frame window))))))
 
 (defun w3m-favicon-save-cache-file ()
   "Save the cached favicon data into the local file."
