@@ -1,3 +1,7 @@
+2002-06-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-info-like-map): Remove redundant code.
+
 2002-06-27  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-fontify-anchors): Put `w3m-name-anchor' property to
