@@ -1,3 +1,11 @@
+2002-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-geocrawler.el (customize-save-variable): Shut old
+	Emacsen up when compiling.
+	* shimbun/sb-makanai.el (md5): Ditto.
+	* w3m-xmas.el (unicode-to-char): Shut XEmacs 21.5-b5 and earlier
+	up when compiling.
+
 2002-05-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el (shimbun-make-html-contents): Insert HTML,

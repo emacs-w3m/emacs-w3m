@@ -58,7 +58,8 @@
   (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
   (autoload 'update-tab-in-gutter "gutter-items")
   (autoload 'w3m-image-type "w3m")
-  (autoload 'w3m-retrieve "w3m"))
+  (autoload 'w3m-retrieve "w3m")
+  (autoload 'unicode-to-char "XEmacs-21.5-b6_and_later"))
 
 (require 'path-util)
 (require 'poe)

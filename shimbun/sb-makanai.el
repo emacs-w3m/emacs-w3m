@@ -55,6 +55,12 @@
 		      shimbun-makanai-group-alist))
 	  "01.html"))
 
+(eval-and-compile
+  (unless (and (fboundp 'md5)
+	       (subrp (symbol-function 'md5)))
+    ;; The lisp function might be provided by FLIM.
+    (autoload 'md5 "md5")))
+
 (defun shimbun-makanai-scan-articles (shimbun &optional force-rescan
 					      skip-this-page skip-next-page)
   (let (headers

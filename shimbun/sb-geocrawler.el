@@ -144,6 +144,10 @@
 					      url))))))))))
     headers))
 
+(eval-and-compile
+  ;; This is mainly for avoiding a compile warning for old Emacsen.
+  (autoload 'customize-save-variable "cus-edit"))
+
 (defun shimbun-geocrawler-add-group ()
   "Add an group to `shimbun-geocrawler-group-alist' interactively."
   (interactive)
@@ -184,4 +188,4 @@
 
 (provide 'sb-geocrawler)
 
-;;; sb-geocrawler.el ends here.
+;;; sb-geocrawler.el ends here
