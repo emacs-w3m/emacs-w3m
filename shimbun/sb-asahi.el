@@ -35,7 +35,12 @@
 (require 'sb-text)
 (luna-define-class shimbun-asahi (shimbun-text) ())
 
-(defvar shimbun-asahi-url "http://www.asahi.com/"
+(defvar shimbun-asahi-top-level-domain "asahi.com"
+  "Name of the top level domain for the Asahi shimbun.")
+
+(defvar shimbun-asahi-url (concat "http://www."
+				  shimbun-asahi-top-level-domain
+				  "/")
   "Name of the parent url.")
 
 (defvar shimbun-asahi-groups '("national" "business" "politics"
@@ -49,7 +54,8 @@ group is included in this list, this program will look for the new
 news in the url \"update/list.html\" under a group directory rather than
 the top page of a group.")
 
-(defvar shimbun-asahi-from-address "webmaster@www.asahi.com")
+(defvar shimbun-asahi-from-address (concat "webmaster@www."
+					   shimbun-asahi-top-level-domain))
 
 (defvar shimbun-asahi-content-start "\n<!-- Start of kiji -->\n")
 (defvar shimbun-asahi-content-end "\n<!-- End of kiji -->\n")
@@ -80,48 +86,64 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
       (let* ((group (shimbun-current-group-internal entity))
 	     (regexp (concat "<a href=\"\\(/"
 			     (regexp-quote group) "/update/\\)?"
-			     "\\(\\([0-9][0-9][0-9][0-9]\\)/"
+			     "\\(\\([0-9][0-9]\\)\\([0-9][0-9]\\)/"
 			     "\\([0-9]+\\)\\.html\\)\"> *"))
 	     (case-fold-search t)
-	     headers)
+	     year cmonth month id url headers
+	     (i 0))
+	(setq year (decode-time)
+	      cmonth (nth 4 year)
+	      year (nth 5 year))
 	(while (re-search-forward regexp nil t)
-	  (let ((id (format "<%s%s%%%s>"
-			    (match-string 3) (match-string 4) group))
-		(url (match-string 2)))
-	    (push (shimbun-make-header
-		   0
-		   (shimbun-mime-encode-string
-		    (mapconcat 'identity
-			       (split-string
-				(buffer-substring
-				 (match-end 0)
-				 (progn
-				   (search-forward "<br>" nil t) (point)))
-				"\\(<[^>]+>\\|\r\\)")
-			       ""))
-		   (shimbun-from-address-internal entity)
-		   "" id "" 0 0 (format "%s%s/update/%s"
-					(shimbun-url-internal entity)
-					group url))
-		  headers)))
+	  (setq month (string-to-number (match-string 3))
+		id (format "<%d%02d%s.%s%%%s.%s>"
+			   (cond ((and (= 12 month) (= 1 cmonth))
+				  (1- year))
+				 ((and (= 1 month) (= 12 cmonth))
+				  (1+ year))
+				 (t
+				  year))
+			   month
+			   (match-string 4)
+			   (match-string 5)
+			   group
+			   shimbun-asahi-top-level-domain)
+		url (match-string 2))
+	  (push (shimbun-make-header
+		 0
+		 (shimbun-mime-encode-string
+		  (mapconcat 'identity
+			     (split-string
+			      (buffer-substring
+			       (match-end 0)
+			       (progn
+				 (search-forward "<br>" nil t) (point)))
+			      "\\(<[^>]+>\\|\r\\)")
+			     ""))
+		 (shimbun-from-address-internal entity)
+		 "" id "" 0 0 (format "%s%s/update/%s"
+				      (shimbun-url-internal entity)
+				      group url))
+		headers))
 	(setq headers (nreverse headers))
-	(let ((i 0))
-	  (while (and (nth i headers)
-		      (re-search-forward "\
+	(while (and (nth i headers)
+		    (re-search-forward "\
 >(\\([0-9][0-9]\\)/\\([0-9][0-9]\\) \\([0-9][0-9]:[0-9][0-9]\\))"
-					 nil t))
-	    (let ((month (string-to-number (match-string 1)))
-		  (date (decode-time (current-time))))
-	      (shimbun-header-set-date
-	       (nth i headers)
-	       (shimbun-make-date-string
-		(if (and (eq 12 month) (eq 1 (nth 4 date)))
-		    (1- (nth 5 date))
-		  (nth 5 date))
-		month
-		(string-to-number (match-string 2))
-		(match-string 3))))
-	    (setq i (1+ i))))
+				       nil t))
+	  (setq month (string-to-number (match-string 1)))
+	  (shimbun-header-set-date
+	   (nth i headers)
+	   (shimbun-make-date-string
+	    (cond ((and (= 12 month) (= 1 cmonth))
+		   (1- year))
+		  ((and (= 1 month) (= 12 cmonth))
+		   (1+ year))
+		  (t
+		   year))
+	    month
+	    (string-to-number (match-string 2))
+	    (match-string 3)))
+	  (setq i (1+ i)))
 	(nreverse headers)))))
 
 (defun shimbun-asahi-get-headers-in-the-top-page (entity)
@@ -129,12 +151,14 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
   (let* ((group (shimbun-current-group-internal entity))
 	 (regexp (concat "<a[\t\n ]+href=[\t\n ]*\"/\\("
 			 (regexp-quote group)
-			 "/update/\\([0-9][0-9][0-9][0-9]\\)"
+			 "/update/\\([0-9][0-9]\\)\\([0-9][0-9]\\)"
 			 "/\\([0-9]+\\).html\\)\"[\t\n ]*>[\t\n ]*"))
 	 (case-fold-search t)
 	 (next t)
-	 (date (decode-time))
-	 subject url id month headers)
+	 year cmonth subject url id month headers)
+    (setq year (decode-time)
+	  cmonth (nth 4 year)
+	  year (nth 5 year))
     (re-search-forward "images/gif/digest.gif" nil t) ; Skip top article.
     (while (and next
 		(if (numberp next)
@@ -142,7 +166,19 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 		  (re-search-forward regexp nil t)))
       (setq subject (match-end 0)
 	    url (match-string 1)
-	    id (concat "<" (match-string 2) (match-string 3) "%" group ">")
+	    month (string-to-number (match-string 2))
+	    id (format "<%d%02d%s.%s%%%s.%s>"
+		       (cond ((and (= 12 month) (= 1 cmonth))
+			      (1- year))
+			     ((and (= 1 month) (= 12 cmonth))
+			      (1+ year))
+			     (t
+			      year))
+		       month
+		       (match-string 3)
+		       (match-string 4)
+		       group
+		       shimbun-asahi-top-level-domain)
 	    next (when (re-search-forward regexp nil t)
 		   (match-beginning 0)))
       (goto-char subject)
@@ -162,13 +198,16 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	  subject
 	  (shimbun-from-address-internal entity)
 	  (if month
-	      (shimbun-make-date-string (if (and (eq 12 month)
-						 (eq 1 (nth 4 date)))
-					    (1- (nth 5 date))
-					  (nth 5 date))
-					month
-					(string-to-number (match-string 2))
-					(match-string 3))
+	      (shimbun-make-date-string
+	       (cond ((and (= 12 month) (= 1 cmonth))
+		      (1- year))
+		     ((and (= 1 month) (= 12 cmonth))
+		      (1+ year))
+		     (t
+		      year))
+	       month
+	       (string-to-number (match-string 2))
+	       (match-string 3))
 	    "")
 	  id "" 0 0
 	  (concat (shimbun-url-internal entity) url))
