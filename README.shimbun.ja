@@ -107,6 +107,9 @@ netbsd 関連	netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
 		netbsd.hpcmips-changes-ja netbsd.members-ja
 		netbsd.admin-ja netbsd.www-changes-ja
 QuickML 関連	quickml.quickml-users quickml.quickml-server
+		quickml.chatty quickml.dotnet quickml.linux-zaurus
+		quickml.ming quickml.pdumpfs quickml.stationery
+		quickml.tty-mania
 ruby 関連	ruby.comp.lang.ruby ruby.fj.comp.lang.ruby
 		ruby.ruby-dev ruby.ruby-ext ruby.ruby-list
 		ruby.ruby-math ruby.ruby-talk
@@ -200,7 +203,18 @@ MARC		marc.theaimsgroup.com に保存されている全ての mailing lists.
 RedHat 関連	http://sources.redhat.com/lists.html
 MacOSX-jp 関連	macosx-jp.macosx-jp macosx-jp.macosx-dev-jp
 		macosx-jp.macosx-ws-jp macosx-jp.webobjects-jp
+Input Method 	anthy.main
+      		canna-dev.main
 Emacsen 全般	elips.elips
+Squeak-ja	squeak-ja.main
+sml		sml.main
+Squeak-dev	squeak-dev.main
+Plucker		plucker.announce plucker.list plucker.dev
+pilot-link      pilot-link.announce pilot-link.devel pilot-link.general
+		pilot-link.unix-ng
+Coldsync	coldsync.main
+J-Pilot		jpilot.main
+pilot-mailsync	pilot-mailsync.main
 
 2-4. スポーツ
 
@@ -259,6 +273,7 @@ HNS による日記
 	 "miyoshi@meadowy.org")))
 
 小泉内閣メールマガジン  kantei.m-magazine
+特許庁                  jpo.news jpo.revision jpo.lawguide jpo.details
 IBM developerWorks	ibm-dev.components ibm-dev.java ibm-dev.linux
 			ibm-dev.opensource ibm-dev.security
 			ibm-dev.unicode
@@ -266,9 +281,11 @@ IBM developerWorks	ibm-dev.components ibm-dev.java ibm-dev.linux
 			ibm-dev.webservices
 			ibm-dev.xml
 Muchy's Palmware Review! muchy.review
+palmoslove	 	palmoslove.webnews palmoslove.pdanews palmoslove.sitenews
+pocketgames             pocketgames.news
+wincefan		wincefan.news
 PalmFan			palmfan.news palmfan.palmwarefan
-pilot-link              pilot-link.announce pilot-link.devel pilot-link.general
-			pilot-link.unix-ng
+電脳街の現場レポート	dennou.report
 PCWEB COLUMN Square	pcweb-column.gyokai pcweb-column.benri
 			pcweb-column.hitech pcweb-column.business
 			pcweb-column.winxp pcweb-column.bytes
@@ -288,7 +305,10 @@ PCWEB COLUMN Square	pcweb-column.gyokai pcweb-column.benri
 			pcweb-column.shitumon pcweb-column.nandemo
 			pcweb-column.hourou pcweb-column.oshigoto
 			pcweb-column.tech pcweb-column.speed
-
+ノーツ陳列館		lotusex.news lotusex.library lotusex.operation
+(Notes Exhibition)      lotusex.primer lotusex.tips lotusex.practical
+       			lotusex.qanda lotusex.lounge lotusex.bbs
+			
 3. mew-shimbun.el について
 
 mew-shimbun.el は Mew version 2.1 以降を使って shimbun を楽しむ elisp で
