@@ -2333,6 +2333,9 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "?" 'describe-mode)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
+    (define-key map "A" 'w3m-antenna)
+    (define-key map "W" 'w3m-weather)
+    (define-key map "S" 'w3m-search)
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
     (define-key map "\\" 'w3m-view-source)
@@ -2359,6 +2362,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map " " 'scroll-up)
     (define-key map "a" 'w3m-bookmark-add-current-url)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
+    (define-key map "A" 'w3m-antenna)
     (define-key map "b" 'scroll-down)
     (define-key map "C" 'w3m-redisplay-with-coding-system)
     (define-key map "d" 'w3m-bookmark-view)
@@ -2384,6 +2388,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "t" (lambda () (interactive) (w3m-goto-url w3m-home-page)))
     (define-key map "u" 'w3m-view-parent-page)
     (define-key map "v" 'w3m-bookmark-view)
+    (define-key map "W" 'w3m-weather)
     (define-key map "y" 'w3m-print-this-url)
     (define-key map "=" 'w3m-view-header)
     (define-key map "\\" 'w3m-view-source)
@@ -2468,6 +2473,15 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 \\[goto-line]	Jump to line.
 \\[w3m-history-store-position]	Mark the current position point.
 \\[w3m-history-restore-position]	Goto the last position point.
+
+\\[w3m-history]	Display arrived history.
+	If called with '\\[universal-argument]', this command displays arrived-DB history.
+\\[w3m-antenna]	Display the report change of WEB sites.
+	If called with '\\[universal-argument]', this command reloads report.
+\\[w3m-search]	Search query.
+	If called with '\\[universal-argument]', you can choose search engine.
+\\[w3m-weather]	Display weather report.
+	If called with '\\[universal-argument]', you can choose local area.
 
 \\[w3m]	w3m.
 \\[w3m-bookmark-view]	w3m-bookmark-view.

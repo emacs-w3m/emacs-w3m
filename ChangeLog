@@ -2,6 +2,8 @@
 
 	* w3m.el (w3m-extended-characters-table): Add "\x90" entry.
 	(w3m-setup-menu): Move from w3m-e21.el.
+	(w3m-mode): Modify doc-string for describe mode.
+	(top-level): Add key-bind, w3m-antenna(), w3m-weather() and w3m-search().
 
 	* w3m-e21.el (w3m-setup-menu): Move to w3m.el.
 
