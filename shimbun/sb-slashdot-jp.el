@@ -29,10 +29,10 @@
 (luna-define-class shimbun-slashdot-jp (shimbun) ())
 
 (defvar shimbun-slashdot-jp-groups '("story"))
-(defvar shimbun-slashdot-jp-url "http://slashdot.ne.jp/")
+(defvar shimbun-slashdot-jp-url "http://slashdot.jp/")
 
 (defvar shimbun-slashdot-jp-content-start 
-  "CELLSPACING=\"0\"><TR><TD BGCOLOR=\"#FFFFFF\">")
+  "cellpadding=\"5\" cellspacing=\"0\">\n?<tr><td bgcolor=\"#FFFFFF\"")
 (defvar shimbun-slashdot-jp-content-end "</td>")
 
 (defvar shimbun-slashdot-jp-months
@@ -180,6 +180,7 @@ One page contains 30 comments.")
 	    ;; content beginning.
 	    (and (re-search-forward (shimbun-content-start-internal shimbun)
 				    nil t)
+		 (search-forward ">" nil t)
 		 (setq start (match-end 0))
 		 (re-search-forward (shimbun-content-end-internal shimbun)
 				    nil t)))

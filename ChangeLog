@@ -1,3 +1,9 @@
+2001-07-04  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-url): Changed url.
+	(shimbun-slashdot-jp-content-start): Follow the page renewal.
+	(shimbun-slashdot-jp-make-contents): Ditto.
+
 2001-06-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* mime-w3m.el (mime-w3m-preview-text/html): Search xref in the
