@@ -264,6 +264,12 @@ show below example,
 		    (format mew-shimbun-lock-format2 group server get count sum))
   (force-mode-line-update))
 
+(w3m-static-if (fboundp 'mew-summary-visit-folder)
+    (defalias 'mew-shimbun-visit-folder 'mew-summary-visit-folder)
+  (defun mew-shimbun-visit-folder (folder)
+    (mew-summary-ls
+     (mew-summary-switch-to-folder folder))))
+
 ;;; Main:
 ;;;###autoload
 (defun mew-shimbun-goto-unseen-folder ()
@@ -381,13 +387,13 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	 (setq dir (mew-expand-folder fld))
 	 (unless (file-directory-p dir)
 	   (mew-make-directory dir))
-	 (mew-summary-visit-folder fld)
+	 (mew-shimbun-visit-folder fld)
 	 (sit-for 0.5)
 	 (mew-rendezvous mew-summary-buffer-process)
 	 (mew-shimbun-retrieve)
 	 (unless (eq (get-buffer cfld) (current-buffer))
 	   (mew-kill-buffer (current-buffer)))))
-     (mew-summary-visit-folder cfld)
+     (mew-shimbun-visit-folder cfld)
      (message "Getting done"))))
 
 (defun mew-shimbun-retrieve-article (mua server group range fld)
@@ -633,13 +639,13 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
       (when (and (file-directory-p (mew-expand-folder fld))
 		 (file-exists-p (expand-file-name mew-shimbun-db-file
 						  (mew-expand-folder fld))))
-	(mew-summary-visit-folder fld)
+	(mew-shimbun-visit-folder fld)
 	(sit-for 0.5)
 	(mew-rendezvous mew-summary-buffer-process)
 	(mew-shimbun-expire)
 	(unless (eq (get-buffer cfld) (current-buffer))
 	  (mew-kill-buffer (current-buffer)))))
-    (mew-summary-visit-folder cfld)))
+    (mew-shimbun-visit-folder cfld)))
 
 ;;;###autoload
 (defun mew-shimbun-expire ()
