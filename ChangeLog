@@ -1,3 +1,11 @@
+2001-10-31  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-next-buffer): New function.
+	(w3m-previous-buffer): Ditto.
+	(w3m-lynx-like-map): Bind `C-tab' as the key to call `w3m-next-buffer';
+	Bind `C-S-tab' as the key to call `w3m-previous-buffer'.
+	(w3m-info-like-map): Ditto.
+
 2001-10-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-accept-languages): New option.

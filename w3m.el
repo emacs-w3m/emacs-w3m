@@ -3610,6 +3610,39 @@ that is affected by `w3m-pop-up-frames'."
 	      (setq w3m-initial-frame (selected-frame)))))
 	new))))
 
+(defun w3m-next-buffer ()
+  "Switch to next w3m buffer."
+  (interactive)
+  (let (buffers next)
+    (dolist (buffer (buffer-list))
+      (with-current-buffer buffer
+	(when (eq major-mode 'w3m-mode)
+	  (setq buffers (cons buffer buffers)))))
+    (setq buffers (sort buffers
+			(lambda (x y)
+			  (string< (buffer-name x)
+				   (buffer-name y)))))
+    (switch-to-buffer 
+     (if (setq next (cadr (memq (current-buffer) buffers)))
+	 next
+       (car buffers)))))
+
+(defun w3m-previous-buffer ()
+  "Switch to previous w3m buffer."
+  (interactive)
+  (let (buffers next)
+    (dolist (buffer (buffer-list))
+      (with-current-buffer buffer
+	(when (eq major-mode 'w3m-mode)
+	  (setq buffers (cons buffer buffers)))))
+    (setq buffers (sort buffers
+			(lambda (x y)
+			  (not (string< (buffer-name x)
+					(buffer-name y))))))
+    (switch-to-buffer 
+     (if (setq next (cadr (memq (current-buffer) buffers)))
+	 next
+       (car buffers)))))
 
 (defvar w3m-lynx-like-map nil
   "Lynx-like keymap used in w3m-mode buffers.")
@@ -3672,6 +3705,9 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "q" 'w3m-close-window)
     (define-key map "Q" 'w3m-quit)
     (define-key map "\M-n" 'w3m-copy-buffer)
+    (define-key map [(control tab)] 'w3m-next-buffer)
+    (define-key map [(control shift iso-lefttab)] 'w3m-previous-buffer)
+    (define-key map [(control iso-left-tab)] 'w3m-previous-buffer)
     (define-key map "R" 'w3m-reload-this-page)
     (define-key map "C" 'w3m-redisplay-with-charset)
     (define-key map "?" 'describe-mode)
@@ -3748,6 +3784,9 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "n" 'w3m-view-next-page)
     (define-key map "N" 'w3m-namazu)
     (define-key map "\M-n" 'w3m-copy-buffer)
+    (define-key map [(control tab)] 'w3m-next-buffer)
+    (define-key map [(control shift iso-lefttab)] 'w3m-previous-buffer)
+    (define-key map [(control iso-left-tab)] 'w3m-previous-buffer)
     (define-key map "o" 'w3m-history)
     (define-key map "O" 'w3m-db-history)
     (define-key map "p" 'w3m-view-previous-page)
