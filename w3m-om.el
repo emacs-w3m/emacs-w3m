@@ -125,48 +125,32 @@
 
 
 ;;; Generic functions.
-(defun w3m-expand-path-name (name &optional base)
-  "Convert filename NAME to absolute, and canonicalize it.
-This function is implemented to absorb the difference between
-`expand-file-name' of Mule2 and the same one of other Emacsen.
-They handle non-initial \"~\" in the different way."
-  (let (start buf)
-    (setq name
-	  (apply
-	   (function expand-file-name)
-	   (mapcar
-	    (lambda (str)
-	      (when (stringp str)
-		(if (string-match "\\`~" str)
-		    (setq start 1
-			  buf (list "~"))
-		  (setq start 0
-			buf nil))
-		(while (string-match "[~_]" str start)
-		  (setq buf
-			(cons (if (eq ?_ (aref str (match-beginning 0)))
-				  "_u"
-				"_t")
-			      (cons (substring str start (match-beginning 0))
-				    buf))
-			start (match-end 0)))
-		(apply
-		 (function concat)
-		 (nreverse (cons (substring str start) buf)))))
-	    (list name (or base default-directory)))))
-    (setq start 0
-	  buf nil)
-    (while (string-match "_[ut]" name start)
-      (setq buf
-	    (cons (if (eq ?u (aref name (1+ (match-beginning 0))))
-		      "_"
-		    "~")
-		  (cons (substring name start (match-beginning 0))
-			buf))
-	    start (match-end 0)))
-    (apply
-     (function concat)
-     (nreverse (cons (substring name start) buf)))))
+(defun w3m-expand-path-name (name)
+  "Convert path string NAME to the canonicalized one."
+  (with-temp-buffer
+    (insert name)
+    (let (p q path)
+      (goto-char (point-min))
+      (save-match-data
+	(while (search-forward "/" nil t)
+	  (setq p (match-beginning 0)
+		q (match-end 0))
+	  (if (search-forward "/" nil t)
+	      (goto-char (match-beginning 0))
+	    (goto-char (point-max)))
+	  (setq path (buffer-substring q (point)))
+	  (cond
+	   ((string= path ".")
+	    (delete-region q (if (eobp) (point) (match-end 0))))
+	   ((string= path "..")
+	    (setq q (point))
+	    (when (search-backward "/" nil t)
+	      (search-backward "/" nil t)
+	      (delete-region (match-end 0) q)))
+	   ((eq (length path) 0)
+	    (unless (eobp) (delete-region p (point))))))
+	(setq path (buffer-string)))
+      (if (eq (length path) 0) "/" path))))
 
 
 (eval-and-compile

@@ -1,3 +1,7 @@
+2001-09-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-om.el (w3m-expand-path-name): Cancel last change.
+
 2001-09-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-expand-path-name): Except Mule2, define alias of
