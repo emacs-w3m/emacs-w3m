@@ -1,3 +1,20 @@
+2004-11-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-rss.el: New file.
+
+	* w3m-antenna.el (w3m-antenna-check-rss): New function.
+	(w3m-antenna-sites): Improve its customize spec to support
+	`w3m-antenna-check-rss'.
+
+	* w3m.el (w3m-content-type-alist): Add text/xml, application/xml,
+	application/rdf+xml, and application/rss+xml.
+	(w3m-detect-xml-charset): New function.
+	(w3m-decode-buffer): Use the above function when decoding XML
+	contents.
+
+	* shimbun/sb-rss.el (shimbun-rss-process-date): Accept minus sign
+	character for time zone.
+
 2004-11-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-redisplay-this-page): Don't make a new history.

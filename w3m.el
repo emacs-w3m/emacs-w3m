@@ -961,6 +961,7 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
 			   (list "acroread" 'file))))))
     `(("text/plain" "\\.\\(txt\\|tex\\|el\\)\\'" nil nil)
       ("text/html" "\\.s?html?\\'" ,external-browser nil)
+      ("text/xml" "\\.xml\\'" nil "text/plain")
       ("image/jpeg" "\\.jpe?g\\'" ,image-viewer nil)
       ("image/png" "\\.png\\'" ,image-viewer nil)
       ("image/gif" "\\.gif\\'" ,image-viewer nil)
@@ -973,6 +974,9 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
       ("video/quicktime" "\\.mov\\'" ,video-viewer nil)
       ("application/postscript" "\\.e?ps\\'" ,ps-viewer nil)
       ("application/pdf" "\\.pdf\\'" ,pdf-viewer nil)
+      ("application/xml" "\\.xml\\'" nil "text/plain")
+      ("application/rdf+xml" "\\.rdf\\'" nil "text/plain")
+      ("application/rss+xml" "\\.rss\\'" nil "text/plain")
       ("application/xhtml+xml" nil nil "text/html")))
   "*Alist of file suffixes and content types."
   :group 'w3m
@@ -3750,14 +3754,28 @@ It supports the encoding types of gzip, bzip2, deflate, etc."
 		     (string-match ";[ \t\n]*charset=\\([^\"]+\\)" content))
 	    (throw 'found (match-string 1 content))))))))
 
+(defun w3m-detect-xml-charset ()
+  (let ((case-fold-search t))
+    (goto-char (point-min))
+    (or (when (looking-at "[ \t\r\f\n]*<\\?xml[ \t\r\f\n]+")
+	  (goto-char (match-end 0))
+	  (w3m-parse-attributes ((encoding :case-ignore))
+	    encoding))
+	"utf-8")))
+
 (defun w3m-decode-buffer (url &optional content-charset content-type)
   (let (cs)
+    (unless content-type
+      (setq content-type (w3m-content-type url)))
     (unless content-charset
       (setq content-charset
 	    (or (w3m-content-charset url)
-		(when (string= "text/html"
-			       (or content-type (w3m-content-type url)))
-		  (w3m-detect-meta-charset)))))
+		(when (string= "text/html" content-type)
+		  (w3m-detect-meta-charset))
+		(when (string-match
+		       "\\`\\(application\\|text\\)/\\([a-z]+\\+\\)?xml\\'"
+		       content-type)
+		  (w3m-detect-xml-charset)))))
     (cond
      ((and (eq w3m-type 'w3mmee)
 	   (or (and (stringp content-charset)
