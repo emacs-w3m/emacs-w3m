@@ -2947,6 +2947,7 @@ this function returns t.  Otherwise, returns nil."
 		(delete-region (point-min) (point-max))
 		(insert-buffer w3m-work-buffer-name)
 		(w3m-copy-local-variables w3m-work-buffer-name)
+		(setq buffer-file-coding-system w3m-current-coding-system)
 		(when (string= "text/html" type) (w3m-fontify))
 		t))
 	     ((and (w3m-image-type-available-p (w3m-image-type type))
