@@ -3,6 +3,9 @@
 	* shimbun/sb-vinelinux.el: Changed the coding system of this file
 	to iso-2022-7bit.
 
+	* w3m-xmas.el (format-buffers-tab-line): Protect aginst errors
+	caused by the illegal type of `w3m-current-url'.
+
 	* w3m-e21.el (top): Define `w3m-current-url' and
 	`w3m-current-title' to avoid byte-compile warnings.
 	(w3m-insert-header-line): Protect aginst errors caused by the
