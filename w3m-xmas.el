@@ -253,6 +253,19 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 		       w3m-should-convert-interlaced-gifs)
 		   w3m-gifsicle-program
 		   (w3m-fix-gif url data no-cache))
+	      (and (eq type 'xbm)
+		   (let (width height content)
+		     (with-temp-buffer
+		       (insert data)
+		       (goto-char (point-min))
+		       (if (re-search-forward "width[ \t]+\\([0-9]+\\)")
+			   (setq width (string-to-int (match-string 1))))
+		       (if (re-search-forward "height[ \t]+\\([0-9]+\\)")
+			   (setq height (string-to-int (match-string 1))))
+		       (while (re-search-forward "0x\\(..\\)" nil t)
+			 (setq content (cons (string-to-int (match-string 1) 16) content)))
+		       (setq content (concat (nreverse content))))
+		     (make-glyph (vector 'xbm :data (list width height content)))))
 	      (make-glyph (vector type :data data))))))))
 
 (defun w3m-insert-image (beg end image)
