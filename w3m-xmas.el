@@ -244,7 +244,7 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 	(w3m-create-image url no-cache referer handler))
     (w3m-process-do-with-temp-buffer
 	(type (condition-case err
-		  (w3m-retrieve url 'raw no-cache nil referer)
+		  (w3m-retrieve url 'raw no-cache nil referer handler)
 		(error (message "While retrieving %s: %s" url err) nil)))
       (when (w3m-image-type-available-p (setq type (w3m-image-type type)))
 	(let ((data (buffer-string)))

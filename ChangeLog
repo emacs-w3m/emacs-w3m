@@ -1,3 +1,8 @@
+2001-11-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-xmas.el (w3m-create-image): Modified to avoid calling
+	`w3m-process-with-wait-handler'.
+
 2001-11-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-proc.el (w3m-process-push): Set the buffer-local variable
