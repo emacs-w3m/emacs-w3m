@@ -1,3 +1,8 @@
+2002-09-27  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-expire-all): Don't expire
+	sure if not shimbun folder.
+	
 2002-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-zdnet.el (shimbun-make-contents): Set date string.

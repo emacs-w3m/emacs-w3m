@@ -644,11 +644,14 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
     (dolist (alst mew-shimbun-expires)
       (setq fld (concat (file-name-as-directory mew-shimbun-folder)
 			(car alst)))
-      (mew-summary-visit-folder fld)
-      (sit-for 0.5)
-      (mew-rendezvous mew-summary-buffer-process)
-      (mew-shimbun-expire)
-      (mew-kill-buffer (current-buffer)))
+      (when (and (file-directory-p (mew-expand-folder fld))
+		 (file-exists-p (expand-file-name mew-shimbun-db-file
+						  (mew-expand-folder fld))))
+	(mew-summary-visit-folder fld)
+	(sit-for 0.5)
+	(mew-rendezvous mew-summary-buffer-process)
+	(mew-shimbun-expire)
+	(mew-kill-buffer (current-buffer))))
     (mew-summary-visit-folder ofld)))
 
 ;;;###autoload
