@@ -367,7 +367,7 @@ It can also be any Lisp form that should return a boolean value."
   :group 'w3m
   :type '(sexp :size 0))
 
-(defcustom w3m-treat-image-size nil
+(defcustom w3m-treat-image-size t
   "*Non-nil means let w3m mind the ratio of the size of images and text.
 
 If it is non-nil, the w3m command will make a halfdump which reserves
