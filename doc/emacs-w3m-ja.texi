@@ -4485,6 +4485,12 @@ zeit-de.news
 
 @item @uref{http://www.weeklyworldnews.com/news/, Weekly World News}
 weeklyworldnews.news
+
+@item @uref{http://www.laut.de/, LAUT AG}
+laut-de.news laut-de.platten laut-de.platten_alternative
+laut-de.platten_dance laut-de.platten_hiphop platten_jazz
+laut-de.platten_metal laut-de.platten_pop laut-de.platten_rnb
+laut-de.platten_rock
 @end table
 
 @node Mailing Lists Supported by Shimbun

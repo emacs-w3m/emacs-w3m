@@ -1,3 +1,7 @@
+2004-10-10  Andreas Seltenreich  <seltenreich@gmx.de>
+
+	* shimbun/sb-laut-de.el: New file.
+
 2004-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-tab-line): Replace "%" with "%%" in
