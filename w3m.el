@@ -134,7 +134,7 @@
 (eval-when-compile
   (autoload 'rfc2368-parse-mailto-url "rfc2368"))
 
-(defconst emacs-w3m-version "1.3.2"
+(defconst emacs-w3m-version "1.3.3"
   "Version number of this package.")
 
 (defconst w3m-treat-drive-letter (memq system-type '(windows-nt OS/2 emx))
