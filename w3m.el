@@ -4845,20 +4845,38 @@ If input is nil, use default coding-system on w3m."
 ;;;###autoload
 (defun w3m (&optional url new-session)
   "Visit the World Wide Web page using the external command w3m, w3mmee
-or w3m-m17n.  When you invoke this command interactively, it will
-prompt you for a URL where you wish to go.  Except that if the prefix
-argument is given or you enter the empty string, and the buffer for
-w3m exists, it will just pop up the buffer.  URL should be a string
-which defaults to the value of `w3m-home-page' or \"about:\".
-Otherwise, you can run this command in the batch mode like:
+or w3m-m17n.
+
+When you invoke this command interactively for the first time, it will
+visit the home page which is specified by the option `w3m-home-page',
+otherwise if the option `w3m-quick-start' is nil (default t) or the
+value of `w3m-home-page' is nil, it will prompt you for a URL where
+you wish to go.  The option `w3m-pop-up-frames' controls whether this
+command should make a new frame for the session.
+
+When the session for w3m has already been opened, this command will
+popup the existing window or frame (it is controlled by the option
+`w3m-pop-up-frames'), otherwise if the option `w3m-quick-start' is nil
+\(default t), it will prompt you for a URL where you wish to go in the
+existing session.
+
+In addition, if the prefix argument is given or you enter the empty
+string for the prompt, it will visit the home page which is specified
+by the option `w3m-home-page'.
+
+URL should be a string which defaults to the value of `w3m-home-page'
+or \"about:\".
+
+You can run this command in the batch mode something like:
 
   emacs -f w3m http://emacs-w3m.namazu.org/ &
 
-The value of `w3m-pop-up-frames' specifies whether to pop up a new
-frame, however, it will be ignored (treated as nil) when this command
-is called non-interactively.  Optional NEW-SESSION is supposed to be
-used by the command `w3m-goto-url-new-session' to create a new session,
-for neither the interactive use nor the batch mode."
+In that case, or if this command is called non-interactively, the
+value of `w3m-pop-up-frames' will be ignored (treated as nil) and it
+will not popup a frame.
+
+Optional NEW-SESSION is intended to be used by the command
+`w3m-goto-url-new-session' to create a new session."
   (interactive
    (let ((default (if (w3m-alive-p) 'popup w3m-home-page)))
      (list
