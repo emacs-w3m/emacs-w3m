@@ -6,7 +6,7 @@
 	* w3mhack.el (w3mhack-compile): Changed message convention.
 	* w3m.el (w3m-view-source, w3m-rendering-region,
 	w3m-w3m-dump-source, w3m-w3m-dump-head-source, w3m-w3m-get-header,
-	w3m-local-dirlist-cgi, w3m-fontify): Changed message convention.
+	w3m-local-dirlist-cgi, w3m-fontify): Ditto.
 	* w3m-e21.el (w3m-setup-header-line): Ditto.
 	* w3m-dtree.el (w3m-about-dtree): Ditto.
 	* w3m-bookmark.el (w3m-bookmark-add-current-url,
