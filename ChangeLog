@@ -1,3 +1,8 @@
+2002-04-20  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-news-headers): Add
+	SUBJECT to BODY if SUBJECT contains a link.
+
 2002-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-about-header): Don't use `make-string' to make a
