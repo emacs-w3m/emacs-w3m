@@ -884,7 +884,8 @@ If N is negative, last N items of LIST is returned."
 
 (defsubst w3m-arrived-p (url)
   "If URL has been arrived, return non-nil value.  Otherwise return nil."
-  (intern-soft url w3m-arrived-db))
+  (or (string-match w3m-about-history-ignored-regexp url)
+      (intern-soft url w3m-arrived-db)))
 
 (defun w3m-arrived-time (url)
   "If URL has been arrived, return its arrived time.  Otherwise return nil."
@@ -2738,7 +2739,8 @@ works on Emacs.
 				     "\
 <head><title>URL history</title></head><body>
 <h1>List of all the links you have visited in this session.</h1><pre>\n"
-				     0)))
+				     0))
+	(previous w3m-current-url))
     (w3m-with-work-buffer
       (erase-buffer)
       (set-buffer-multibyte t)
@@ -2748,6 +2750,13 @@ works on Emacs.
 	(replace-match (if (match-beginning 1)
 			   "─"
 			 "┬")))
+      (goto-char (point-min))
+      (when (and previous
+		 (re-search-forward (concat "\\(<a href=\""
+					    (regexp-quote previous)
+					    "\">.+</a>\\)")
+				    nil t))
+	(replace-match "◆\\1◆"))
       (goto-char (point-max))
       (insert "</pre></body>")))
   "text/html")
