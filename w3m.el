@@ -548,6 +548,20 @@ See the file balloon-help.el for more information."
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-pop-up-frames nil
+  "Like `pop-up-frames', except that it only affects the `w3m' command."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-pop-up-frame-parameters nil
+  "Alist of frame parameters used when creating a new w3m frame.  It
+allows a kludge that it can also be a plist of frame properties."
+  :group 'w3m
+  :type '(choice (repeat (cons :format "%v"
+			       (symbol :tag "Parameter")
+			       (sexp :tag "Value")))
+		 plist))
+
 (eval-and-compile
   (defconst w3m-entity-alist		; html character entities and values
     (eval-when-compile
@@ -3022,23 +3036,45 @@ If input is nil, use default coding-system on w3m."
   (interactive
    (list (or (w3m-alive-p)
 	     (w3m-input-url))))
-  (if (bufferp url)
-      (let* ((window (get-buffer-window url t))
-	     (frame (when window
-		      (window-frame window))))
-	(cond (frame
-	       (raise-frame frame)
-	       (select-frame frame)
+  (let ((focusing-function
+	 (list 'lambda '(frame)
+	       '(raise-frame frame)
+	       '(select-frame frame)
 	       ;; `focus-frame' might not work on some environments.
 	       (if (fboundp 'x-focus-frame)
-		   (eval (list 'x-focus-frame frame))
-		 (focus-frame frame))
-	       (select-window window))
-	      (window
-	       (select-window window))
-	      (t
-	       (switch-to-buffer url))))
-    (w3m-goto-url url)))
+		   '(x-focus-frame frame)
+		 '(focus-frame frame))))
+	(props w3m-pop-up-frame-parameters)
+	window-system-p)
+    (w3m-static-if (featurep 'xemacs)
+	(progn
+	  (setq window-system-p (device-on-window-system-p))
+	  (when (consp (car-safe props))
+	    (setq props (alist-to-plist props))))
+      (setq window-system-p window-system)
+      (when (and props
+		 (not (consp (car-safe props))))
+	(let (alist)
+	  (while props
+	    (push (cons (car props) (cdr props)) alist)
+	    (setq props (cddr props)))
+	  (setq props (nreverse alist)))))
+    (if (bufferp url)
+	(let* ((window (get-buffer-window url t))
+	       (frame (when window
+			(window-frame window))))
+	  (cond (frame
+		 (funcall focusing-function frame)
+		 (select-window window))
+		(window
+		 (select-window window))
+		(t
+		 (when (and window-system-p w3m-pop-up-frames)
+		   (funcall focusing-function (make-frame props)))
+		 (switch-to-buffer url))))
+      (when (and window-system-p w3m-pop-up-frames)
+	(funcall focusing-function (make-frame props)))
+      (w3m-goto-url url))))
 
 (eval-when-compile
   (autoload 'browse-url-interactive-arg "browse-url"))

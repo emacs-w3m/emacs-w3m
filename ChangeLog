@@ -1,5 +1,13 @@
 2001-05-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m): Popup a new frame if there is neither a window nor
+	a frame associated with w3m and `w3m-pop-up-frames' is non-nil;
+	refer to `w3m-pop-up-frame-parameters' when creating a new w3m
+	frame.
+	(w3m-pop-up-frame-parameters): New user option which allows a
+	kludge that it can be either an alist or a plist.
+	(w3m-pop-up-frames): New user option.
+
 	* w3m-e21.el (w3m-setup-header-line): Replace "%" with "%%" in an
 	url string.
 
