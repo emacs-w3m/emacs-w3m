@@ -6372,7 +6372,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
 		    (+ (window-width) (or w3m-fill-column -1)))
 		  18))
 	(now (current-time))
-	title time alist date prev next)
+	title time alist date prev next page total)
     (when (string-match "\\`about://db-history/\\?" url)
       (dolist (s (split-string (substring url (match-end 0)) "&"))
 	(when (string-match "\\`\\(start\\|\\(size\\)\\)=" s)
@@ -6390,6 +6390,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
       (setq alist (sort alist
 			(lambda (a b)
 			  (w3m-time-newer-p (cdr a) (cdr b))))))
+    (setq total (length alist))
     (setq alist (nthcdr start alist))
     (when size
       (when (> start 0)
@@ -6399,11 +6400,16 @@ showing a tree-structured history by the command `w3m-about-history'.")
       (when (> (length alist) size)
 	(setq next
 	      (format "about://db-history/?start=%d&size=%d"
-		      (+ start size) size))))
+		      (+ start size) size)))
+      (when (> total 0)
+	(setq total (+ (/ total size) (if (> (% total size) 0) 1 0)))
+	(setq page (1+ (/ start size)))))
     (insert "<html><head><title>URL history in DataBase</title>"
 	    (if prev (format "<link rel=\"prev\" href=\"%s\">\n" prev) "")
 	    (if next (format "<link rel=\"next\" href=\"%s\">\n" next) "")
-	    "</head>\n<body>\n<h1>Arrived URL history in DataBase</h1>\n")
+	    (format "</head>\n<body>\n<h1>Arrived URL history in DataBase%s</h1>\n"
+		    (if (and page total)
+			(format " (%d/%d)" page total) "")))
     (setq prev
 	  (if (or prev next)
 	      (setq next
