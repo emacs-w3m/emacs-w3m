@@ -1,3 +1,20 @@
+2005-03-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-tcup.el (shimbun-tcup-group-alist): Add the coding
+	system parameter; set it as shift_jis for the yutopia group.
+	(shimbun-tcup-subject-regexp): Improve regexp.
+	(shimbun-tcup-from-start-regexp): Ditto.
+	(shimbun-tcup-date-start-regexp): Ditto.
+	(shimbun-tcup-body-start-regexp): Ditto.
+	(shimbun-tcup-body-end-regexp): Ditto.
+	(shimbun-tcup-coding-system): Default to euc-jp.
+	(shimbun-tcup-stime-to-time): Don't adjust the time by the local
+	timezone.
+	(shimbun-headers): Decode the contents using the coding system
+	which shimbun-tcup-group-alist specifies; improve regexp matching
+	the author's name; adjust the time by the local timezone for the
+	yutopia group.
+
 2005-03-10  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-jpilot.el (shimbun-jpilot-url): Fix url.
@@ -11,8 +28,11 @@
 
 2005-03-10 Masaru Nomiya <nomiya@ttmy.ne.jp>
 
-	* shimbun/sb-asahi.el (shimbun-asahi-group-table): correct
-	national group.
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Use
+	http://www.asahi.com/national/list.html for the national group
+	instead of http://www.asahi.com/national/ in which some articles
+	might be missed.
+
 	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-ft): correct
 	regexp.
 

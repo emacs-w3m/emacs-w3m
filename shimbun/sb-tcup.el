@@ -1,6 +1,6 @@
 ;;; sb-tcup.el --- shimbun backend for www.tcup.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2005 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
@@ -35,33 +35,41 @@
   (luna-define-internal-accessors 'shimbun-tcup))
 
 (defvar shimbun-tcup-group-alist
-  '(("yutopia" "http://www61.tcup.com/6116/yutopia.html")
+  '(("yutopia" "http://www61.tcup.com/6116/yutopia.html"
+     nil nil nil nil nil shift_jis)
     ("meadow" "http://www66.tcup.com/6629/yutopia.html")
     ("skk" "http://www67.tcup.com/6718/yutopia.html"))
   "An alist of tcup bbs shimbun group definition.
 Each element looks like
  (NAME URL SUBJECT-REGEXP FROM-START-REGEXP DATE-START-REGEXP
-           BODY-START-REGEXP BODY-END-REGEXP).
+           BODY-START-REGEXP BODY-END-REGEXP CODING-SYSTEM).
 Each element have a following default value,
 SUBJECT-REGEXP: `shimbun-tcup-subject-regexp'
 FROM-START-REGEXP: `shimbun-tcup-from-start-regexp'
 DATE-START-REGEXP: `shimbun-tcup-date-start-regexp'
 BODY-START-REGEXP: `shimbun-tcup-body-start-regexp'
-BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'")
+BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'
+CODING-SYSTEM: `shimbun-tcup-coding-system'")
 
-(defvar shimbun-tcup-subject-regexp "<font size=\"4\"[^>]*><b>\\([^<]+\\)</b></font>"
+(defvar shimbun-tcup-subject-regexp
+  (let ((s0 "[\t\n ]*")
+	(s1 "[\t\n ]+"))
+    (concat "<font" s1 "size=\"?4\"?[^>]*>" s0 "<b>" s0 "\\([^<]+\\)"
+	    s0 "</b>" s0 "</font>"))
   "Default regexp for subject.
  This have a one parenthesized expression match for subject.")
-(defvar shimbun-tcup-from-start-regexp "投稿者： *"
+(defvar shimbun-tcup-from-start-regexp "投稿者：[\t\n ]*"
   "Default regexp for from start string.")
-(defvar shimbun-tcup-date-start-regexp "投稿日： *"
+(defvar shimbun-tcup-date-start-regexp "投稿日：[\t\n ]*"
   "Default regexp for date start string.")
-(defvar shimbun-tcup-body-start-regexp "<tt><font size=\"3\"[^>]*>"
+(defvar shimbun-tcup-body-start-regexp
+  "<blockquote>\\([\t\n ]*<[^>]+>\\)*[\t\n ]*"
   "Default regexp for body start string.")
-(defvar shimbun-tcup-body-end-regexp "\\(<!-- form[^>]+>\\)?</font></tt><p>"
+(defvar shimbun-tcup-body-end-regexp
+  "[\t\n ]*\\(<[^>]+>[\t\n ]*\\)*</blockquote>"
   "Default regexp for body end string.")
 
-(defvar shimbun-tcup-coding-system 'shift_jis)
+(defvar shimbun-tcup-coding-system 'euc-jp)
 (defvar shimbun-tcup-content-hash-length 31)
 (defvar shimbun-tcup-x-face-alist
   '(("yutopia" . "X-Face: ,Em61:vG$KP!G`Q]ZsO\\@&g`VXE-kicRnKs\"Wd'ZSF\
@@ -110,7 +118,7 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
     (setq b (- (string-to-number (substring stime 0 (- a 4))) 9))
     (setq c (+ (string-to-number (substring stime (- a 4) a))
 	       (* (% b 4096) 10000)
-	       (- 90000 (car (current-time-zone)))))
+	       90000))
     (list (+ (* (/ b 4096) 625) (/ c 65536)) (% c 65536))))
 
 (defun shimbun-tcup-make-time ()
@@ -138,20 +146,25 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 
 (luna-define-method shimbun-headers ((shimbun shimbun-tcup)
 				     &optional range)
+;;;<DEBUG>
+;;  (shimbun-tcup-headers shimbun range))
+;;
+;;(defun shimbun-tcup-headers (shimbun range)
+;;;</DEBUG>
   (with-temp-buffer
-    (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload 'binary)
-    (set-buffer-multibyte t)
-    (decode-coding-region (point-min) (point-max)
-			  (shimbun-coding-system-internal shimbun))
     (let* ((case-fold-search t)
-	   (group (assoc (shimbun-current-group-internal shimbun)
-			 shimbun-tcup-group-alist))
-	   (subject-regexp (or (nth 2 group) shimbun-tcup-subject-regexp))
-	   (from-regexp (or (nth 3 group) shimbun-tcup-from-start-regexp))
-	   (date-regexp (or (nth 4 group) shimbun-tcup-date-start-regexp))
-	   (body-st-regexp (or (nth 5 group) shimbun-tcup-body-start-regexp))
-	   (body-end-regexp (or (nth 6 group) shimbun-tcup-body-end-regexp))
+	   (group (shimbun-current-group-internal shimbun))
+	   (param (assoc group shimbun-tcup-group-alist))
+	   (subject-regexp (or (nth 2 param) shimbun-tcup-subject-regexp))
+	   (from-regexp (or (nth 3 param) shimbun-tcup-from-start-regexp))
+	   (date-regexp (or (nth 4 param) shimbun-tcup-date-start-regexp))
+	   (body-st-regexp (or (nth 5 param) shimbun-tcup-body-start-regexp))
+	   (body-end-regexp (or (nth 6 param) shimbun-tcup-body-end-regexp))
+	   (codesys (or (nth 7 param) shimbun-tcup-coding-system))
 	   headers from subject date id url stime st body)
+      (shimbun-retrieve-url (shimbun-index-url shimbun) 'reload 'binary)
+      (set-buffer-multibyte t)
+      (decode-coding-region (point-min) (point-max) codesys)
       (goto-char (point-min))
       (catch 'stop
 	(while (re-search-forward subject-regexp nil t)
@@ -161,8 +174,8 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 		(cond
 		 ((looking-at "<b><a href=\"mailto:\\([^\"]+\\)\">\\([^<]+\\)<")
 		  (concat (match-string 2) " <" (match-string 1) ">"))
-		 ((looking-at "<[^>]+><b>\\([^<]+\\)<")
-		  (match-string 1))
+		 ((looking-at "\\(<[^>]+>[\t\n ]*\\)+\\([^<]+\\)[\t\n ]*<")
+		  (match-string 2))
 		 (t "(none)")))
 	  (re-search-forward date-regexp nil t)
 	  (setq stime
@@ -172,18 +185,24 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 		 ((looking-at "\\([^<]+\\)<")
 		  (shimbun-tcup-make-time))
 		 (t (current-time))))
+	  (when (string-equal group "yutopia")
+	    (let ((ms (car stime))
+		  (ls (cadr stime)))
+	      (if (< (setq ls (- ls (car (current-time-zone)))) 0)
+		  (progn
+		    (setcar stime (1- ms))
+		    (setcdr stime (list (+ ls 65536))))
+		(setcdr stime (list ls)))))
 	  (let ((system-time-locale "C"))
 	    (setq date (format-time-string "%d %b %Y %T %z" stime)))
 	  (setq stime (format "%05d%05d" (car stime) (cadr stime)))
-	  (setq id (shimbun-tcup-make-id
-		    stime
-		    (shimbun-current-group-internal shimbun)))
+	  (setq id (shimbun-tcup-make-id stime group))
 	  (when (shimbun-search-id shimbun id)
 	    (throw 'stop nil))
 	  (re-search-forward body-st-regexp)
 	  (setq st (match-end 0))
 	  (re-search-forward body-end-regexp)
-	  (setq body (buffer-substring st (match-beginning 0)))
+	  (setq body (concat (buffer-substring st (match-beginning 0)) "\n"))
 	  (forward-line 1)
 	  (setq url
 		(if (looking-at "<a[^>]+>[^<]+</a>")
