@@ -45,7 +45,12 @@ $Date$
     Ex) http://namazu.org/~tsuchiya/emacs-w3m/yokonaga.html
 
 
-(6) XEmacs で "<", ">" が機能していないのでは?
+(4) XEmacs で "<", ">" が機能していないのでは?
+
+
+(5) http://yendot.org/ の右端の日記リンクが二重に表示されることがある。
+    再描画を行うと直ってしまうので、再現性が低く、原因が分からない。
+
 
 
 ■ 解決済みの問題
