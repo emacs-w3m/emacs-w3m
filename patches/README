@@ -20,19 +20,25 @@
       with a terminal device. It take effect for XEmacs with Solaris 2.x.
 
 
+* anchor-charset.patch
+
+  This patch was posted by TSUCHIYA Masatoshi <tsuchiya@namazu.org> in
+  [emacs-w3m:05229].  w3m that is applied this patch does not remove
+  `charset' attribute of anchor tags when it writes half-dumped content.
+
+
 * mule-2.3@19.34.patch
 
-  This patch consists of three parts.  The first part is the change to
-  make Mule 2.3 based on Emacs 19.34 work correctly on managing column
-  numbers for bitmap characters.  This is contributed by
-  Ken'ichi HANDA <handa@etl.go.jp> The second part is the change to to
-  make Mule 2.3 based on Emacs 19.34 work correctly on managing column
-  numbers on the overlay properties before-string or after-string
-  containing multibyte characters.  This is contributed by
-  TSUCHIYA Masatoshi <tsuchiya@namazu.org>.  The last part is the change
-  to distinguish S-SPC key from SPC.  This is introduced to Emacs 20 by
-  RMS.  Note that you have need of rebuilding Mule after applying this
-  patch.
+  This patch consists of three parts.  The first part is contributed by
+  Ken'ichi HANDA <handa@etl.go.jp>, and provides the change to make Mule
+  2.3 based on Emacs 19.34 work correctly on managing column numbers for
+  bitmap characters.  The second part is contributed by
+  TSUCHIYA Masatoshi <tsuchiya@namazu.org>, and provides the change to
+  to make Mule 2.3 based on Emacs 19.34 work correctly on managing
+  column numbers on the overlay properties before-string or after-string
+  containing multibyte characters.  The last part is the change to
+  distinguish S-SPC key from SPC.  It is introduced to Emacs 20 by RMS.
+  Note that you have need of rebuilding Mule after applying this patch.
 
 
 Local Variables:
