@@ -1,3 +1,10 @@
+2004-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-treat-image-size): Default to t.
+
+	* w3m-filter.el (w3m-filter-asahi-shimbun): Use marker to limit
+	the search bound.
+
 2004-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-generate-load-file): Save w3m-load.el file

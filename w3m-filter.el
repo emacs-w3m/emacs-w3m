@@ -1,6 +1,7 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites.
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -94,10 +95,10 @@
 	  end ucs)
       (while (re-search-forward "alt=\"\\([^\"]+\\)" nil t)
 	(goto-char (match-beginning 1))
-	(setq end (match-end 1))
-	(while (re-search-forward "&#\\([0-9]+\\);" end t)
+	(setq end (set-marker (make-marker) (match-end 1)))
+	(while (re-search-forward "&#\\([0-9]+\\);" (max end (point)) t)
 	  (setq ucs (string-to-number (match-string 1)))
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (insert-char (w3m-ucs-to-char ucs) 1))))))
 
-;;; w3m-filter.el ends here.
+;;; w3m-filter.el ends here
