@@ -57,17 +57,17 @@
   (nth 2 (assoc (shimbun-current-group-internal shimbun)
 		shimbun-airs-group-path-alist)))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-airs))
-  (let ((case-fold-search t) headers months)
+(luna-define-method shimbun-get-headers ((shimbun shimbun-airs)
+					 &optional range)
+  (let ((case-fold-search t)
+	(pages (shimbun-header-index-pages range))
+	(count 0)
+	headers months)
     (goto-char (point-min))
     (catch 'stop
-      (if (shimbun-use-entire-index-internal shimbun)
-	  ;; Use entire archive.
-	  (while (re-search-forward "<A HREF=\"\\([0-9]+\\)/\">" nil t)
-	    (push (match-string 1) months))
-	;; Use only first month archive.
-	(if (re-search-forward "<A HREF=\"\\([0-9]+\\)/\">" nil t)
-	    (push (match-string 1) months)))
+      (while (and (if pages (<= (incf count) pages) t)
+		  (re-search-forward "<A HREF=\"\\([0-9]+\\)/\">" nil t)
+		  (push (match-string 1) months)))
       (setq months (nreverse months))
       (dolist (month months)
 	(let ((url (shimbun-airs-concat-url shimbun (concat month "/"))))

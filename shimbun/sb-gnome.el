@@ -56,16 +56,17 @@
 	  "@gnome.org"))
 
 ;; <A href="2001-March/date.html">
-(luna-define-method shimbun-get-headers ((shimbun shimbun-gnome))
-  (let ((case-fold-search t) headers months)
+(luna-define-method shimbun-get-headers ((shimbun shimbun-gnome)
+					 &optional range)
+  (let ((case-fold-search t)
+	(pages (shimbun-header-index-pages range))
+	(count 0)
+	headers months)
     (goto-char (point-min))
-    (if (shimbun-use-entire-index-internal shimbun)
-	(while (re-search-forward
-		"<a href=\"\\([^/]+\\)/date.html\">" nil t)
-	  (push (match-string 1) months))
-      (if (re-search-forward
-	   "<a href=\"\\([^/]+\\)/date.html\">" nil t)
-	  (push (match-string 1) months)))
+    (while (and (if pages (<= (incf count) pages) t)
+		(re-search-forward
+		 "<a href=\"\\([^/]+\\)/date.html\">" nil t))
+      (push (match-string 1) months))
     (catch 'stop
       (dolist (month months)
 	(shimbun-retrieve-url

@@ -56,7 +56,8 @@
 		      shimbun-mainichi-group-path-alist))
 	  "/index.html"))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-mainichi))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-mainichi)
+					 &optional range)
   (let ((case-fold-search t)
 	start headers)
     (goto-char (point-min))

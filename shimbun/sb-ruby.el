@@ -64,21 +64,21 @@
 		      shimbun-ruby-group-path-alist))
 	  "/index.shtml"))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-ruby))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-ruby)
+					 &optional range)
   (let ((case-fold-search t)
 	(start (progn (re-search-forward "^<table" nil t nil)
 		      (forward-line 1) (beginning-of-line 1)
 		      (point)))
 	(end (progn (re-search-forward "</table>" nil t nil)
 		    (point)))
+	(pages (shimbun-header-index-pages range))
+	(count 0)	
 	headers auxs aux)
-    (if (shimbun-use-entire-index-internal shimbun)
-	;; Use entire archive.
-	(while (re-search-backward "<a href=\"\\([0-9]+-[0-9]+.shtml\\)\">" start t)
-	  (setq auxs (append auxs (list (match-string 1)))))
-      ;; Only latest month.
-      (if (re-search-backward "<a href=\"\\([0-9]+-[0-9]+.shtml\\)\">" start t)
-	  (setq auxs (append auxs (list (match-string 1))))))
+    ;; Use entire archive.
+    (while (and (if pages (<= (incf count) pages) t)
+		(re-search-backward "<a href=\"\\([0-9]+-[0-9]+.shtml\\)\">" start t))
+      (setq auxs (append auxs (list (match-string 1)))))
     (catch 'stop
       (while auxs
 	(with-temp-buffer

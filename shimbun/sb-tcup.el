@@ -129,7 +129,8 @@ BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'")
     (format "<%s.%s.%s@www%s.tcup.com>" 
 	    stime (nth 2 keys) (nth 1 keys) (nth 0 keys))))
 
-(luna-define-method shimbun-headers ((shimbun shimbun-tcup))
+(luna-define-method shimbun-headers ((shimbun shimbun-tcup)
+				     &optional range)
   (with-current-buffer (shimbun-retrieve-url-buffer
 			(shimbun-index-url shimbun) 'reload 'binary)
     (set-buffer-multibyte t)

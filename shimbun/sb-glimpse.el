@@ -34,24 +34,22 @@
   (concat (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun) "/"))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-glimpse))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-glimpse)
+					 &optional range)
   (let ((case-fold-search t)
 	(path (if (string-match "http://[^/]+\\(/.*\\)"
 				(shimbun-index-url shimbun))
 		  (match-string 1 (shimbun-index-url shimbun))
 		"/"))
+	(pages (shimbun-header-index-pages range))
+	(count 0)
 	headers auxs)
-    (if (shimbun-use-entire-index-internal shimbun)
-	(while (re-search-forward
-		(concat "<A HREF=\"" path
-			"\\([12][0-9][0-9][0-9][0-1][0-9]\\)/\">\\[Index\\]")
-		nil t)
-	  (setq auxs (append auxs (list (match-string 1)))))
-      (when (re-search-forward
-	     (concat "<A HREF=\"" path
-		     "\\([12][0-9][0-9][0-9][0-1][0-9]\\)/\">\\[Index\\]")
-	     nil t)
-	(setq auxs (append auxs (list (match-string 1))))))
+    (while (and (if pages (<= (incf count) pages) t)
+		(re-search-forward
+		 (concat "<A HREF=\"" path
+			 "\\([12][0-9][0-9][0-9][0-1][0-9]\\)/\">\\[Index\\]")
+		 nil t))
+      (setq auxs (append auxs (list (match-string 1)))))
     (catch 'stop
       (dolist (aux auxs)
 	(let ((url (shimbun-expand-url (concat aux "/")

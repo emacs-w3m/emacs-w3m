@@ -55,7 +55,8 @@
 	  (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun)))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-asahi))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-asahi)
+					 &optional range)
   (when (search-forward "\n<!-- Start of past -->\n" nil t)
     (delete-region (point-min) (point))
     (when (search-forward "\n<!-- End of past -->\n" nil t)

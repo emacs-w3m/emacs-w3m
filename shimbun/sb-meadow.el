@@ -42,7 +42,8 @@
 (defvar shimbun-meadow-litemplate-regexp
   "<STRONG><A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a> \\([^<]+\\)</STRONG>")
 
-(luna-define-method shimbun-headers ((shimbun shimbun-meadow))
+(luna-define-method shimbun-headers ((shimbun shimbun-meadow)
+				     &optional range)
   (with-temp-buffer
     (shimbun-retrieve-url shimbun-meadow-url)
     (let* ((group (shimbun-current-group-internal shimbun))
@@ -50,14 +51,14 @@
 		    "<a href=\"\\(%s/\\([1-9][0-9][0-9][0-9]\\)/\\)\""
 		    (regexp-quote group)))
 	   (case-fold-search t)
-	   (indexes)
+	   (pages (shimbun-header-index-pages range))
+	   (count 0)
+	   (indexes) ; This should be `indices' ;-).
 	   (headers))
       (while (re-search-forward regexp nil t)
 	(push (cons (match-string 2)
 		    (shimbun-expand-url (match-string 1) shimbun-meadow-url))
 	      indexes))
-      (unless (shimbun-use-entire-index-internal shimbun)
-	(setq indexes (list (car indexes))))
       (catch 'stop
 	(dolist (elem indexes)
 	  (delete-region (point-min) (point-max))
@@ -74,6 +75,8 @@
 			    (shimbun-expand-url (format "mail%d.html" aux) (cdr elem))))
 		(delete-region (point-min) (point-max))
 		(shimbun-retrieve-url url)
+		(unless (if pages (<= (incf count) pages) t)
+		  (throw 'stop headers))
 		(shimbun-mhonarc-get-headers shimbun url headers (car elem))
 		(setq aux (1- aux))))))
 	headers))))

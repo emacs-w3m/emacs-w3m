@@ -65,7 +65,8 @@ It can be defined in the `shimbun-hns-x-face-alist', too.
 		       shimbun-hns-group-alist))
 	  "title.cgi"))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-hns))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-hns)
+					 &optional range)
   (let ((case-fold-search t)
 	id year month mday sect uniq xref pos subject
 	headers)

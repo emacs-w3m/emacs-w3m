@@ -39,22 +39,28 @@
   '("December" "November" "October" "August" "July" "June" "May"
     "April" "March" "February" "January"))
 
-(defvar shimbun-slashdot-jp-story-pages 2
-  "*Page number of slashdot.jp's story pages.
+(defvar shimbun-slashdot-jp-comments-per-story 3)
+
+(defvar shimbun-slashdot-jp-story-max-pages 10
+  "*Max page number of slashdot.jp's story pages.
 One page contains 30 stories.")
 
-(defvar shimbun-slashdot-jp-comment-pages 6
-  "*Page number of slashdot.jp's comment pages.
+(defvar shimbun-slashdot-jp-comment-max-pages 30
+  "*Max page number of slashdot.jp's comment pages.
 One page contains 30 comments.")
 
-(luna-define-method shimbun-headers ((shimbun shimbun-slashdot-jp))
-  (let ((case-fold-search t)
-	year month mday uniq subject from pos hour min refs count
-	id headers)
+(luna-define-method shimbun-headers ((shimbun shimbun-slashdot-jp)
+				     &optional range)
+  (let* ((case-fold-search t)
+	 (pages (min (or (shimbun-header-index-pages range)
+			 shimbun-slashdot-jp-story-max-pages)
+		     shimbun-slashdot-jp-story-max-pages))
+	 year month mday uniq subject from pos hour min refs count
+	 id headers)
     (catch 'stop
       ;; main strories
       (setq count 0)
-      (while (< count shimbun-slashdot-jp-story-pages)
+      (while (< count pages)
 	(with-current-buffer (shimbun-retrieve-url-buffer
 			      (concat shimbun-slashdot-jp-url
 				      (format "search.pl?start=%d"
@@ -98,7 +104,7 @@ One page contains 30 comments.")
     (catch 'stop
       (setq count 0)
       ;; comments
-      (while (< count shimbun-slashdot-jp-comment-pages)
+      (while (< count (* pages shimbun-slashdot-jp-comments-per-story))
 	(with-current-buffer (shimbun-retrieve-url-buffer
 			      (concat shimbun-slashdot-jp-url
 				      (format 

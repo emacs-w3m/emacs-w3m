@@ -42,21 +42,24 @@
 (luna-define-method shimbun-reply-to ((shimbun shimbun-h14m))
   (concat (shimbun-current-group-internal shimbun) "@h14m.org"))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-h14m))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-h14m)
+					 &optional range)
   (let ((url (shimbun-index-url shimbun))
+	(pages (shimbun-header-index-pages range))
+	(count 0)
 	headers)
     (catch 'stop
       (shimbun-mhonarc-get-headers shimbun url headers)
       (goto-char (point-min))
-      (when (shimbun-use-entire-index-internal shimbun)
-	(while (re-search-forward
-		"<A HREF=\"\\(mail[0-9]+\\.html\\)\">Prev Page</A>"
-		nil t)
-	  (setq url (shimbun-expand-url (match-string 1) url))
-	  (erase-buffer)
-	  (shimbun-retrieve-url url)
-	  (shimbun-mhonarc-get-headers shimbun url headers)
-	  (goto-char (point-min))))
+      (while (and (if pages (< (incf count) pages) t)
+		  (re-search-forward
+		   "<A HREF=\"\\(mail[0-9]+\\.html\\)\">Prev Page</A>"
+		   nil t))
+	(setq url (shimbun-expand-url (match-string 1) url))
+	(erase-buffer)
+	(shimbun-retrieve-url url)
+	(shimbun-mhonarc-get-headers shimbun url headers)
+	(goto-char (point-min)))
       headers)))
 
 (provide 'sb-h14m)

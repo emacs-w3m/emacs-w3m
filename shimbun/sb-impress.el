@@ -55,7 +55,8 @@
     (concat (shimbun-url-internal shimbun) "/"
 	    (shimbun-current-group-internal shimbun) index)))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-impress))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-impress)
+					 &optional range)
   (let ((case-fold-search t)
 	(regexp (nth 1 (assoc (shimbun-current-group-internal shimbun)
 			      shimbun-impress-groups-alist)))

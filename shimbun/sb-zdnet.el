@@ -121,7 +121,8 @@
 	      headers)))
     headers))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-zdnet))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-zdnet)
+					 &optional range)
   (funcall (intern (concat "shimbun-zdnet-"
 			   (shimbun-current-group-internal shimbun)
 			   "-get-headers"))

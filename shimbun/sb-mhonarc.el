@@ -96,7 +96,8 @@
 	 (forward-line 0)))
      (, headers))))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-mhonarc))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-mhonarc)
+					 &optional range)
   (let (headers)
     (catch 'stop
       (shimbun-mhonarc-get-headers shimbun (shimbun-index-url shimbun)

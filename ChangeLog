@@ -1,3 +1,37 @@
+2001-06-07  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-airs.el (shimbun-get-headers): Added optional argument
+	`range'.
+	* shimbun/sb-airs.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-asahi.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-cnet.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-fml.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-glimpse.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-gnome.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-h14m.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-hns.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-impress.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-mainichi.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-mew.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-mhonarc.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-namazu.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-netbsd.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-nikkei.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-ruby.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-sponichi.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-yahoo.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-yomiuri.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-zdnet.el (shimbun-get-headers): Ditto.
+	* shimbun/sb-lump.el (shimbun-headers): Ditto.
+	* shimbun/sb-meadow.el (shimbun-headers): Ditto.
+	* shimbun/sb-slashdot-jp.el (shimbun-headers): Ditto.
+	* shimbun/sb-tcup.el (shimbun-headers): Ditto.
+
+	* shimbun/shimbun.el (shimbun-headers): Added optional argument
+	`range'.
+	(shimbun-get-headers): Ditto.
+	(shimbun-header-index-pages): New macro.
+
 2001-06-06  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-yahoo.el (shimbun-yahoo-expiration-days): New variable.

@@ -47,44 +47,50 @@
   (format "%s%s/index.html" (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun)))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-netbsd))
-  (let ((case-fold-search t) headers months)
+(luna-define-method shimbun-get-headers ((shimbun shimbun-netbsd)
+					 &optional range)
+  (let ((case-fold-search t)
+	(pages (shimbun-header-index-pages range))
+	(count 0)
+	headers months)
     (goto-char (point-min))
-    ;; Only latest month
-    (if (re-search-forward
-	 "<A HREF=\"\\([0-9]+\\)/\\(threads.html\\)?\">" nil t)
-	(push (match-string 1) months))
+    (while (re-search-forward
+	    "<A HREF=\"\\([0-9]+\\)/\\(threads.html\\)?\">" nil t)
+      (push (match-string 1) months))
     (setq months (nreverse months))
-    (dolist (month months)
-      (erase-buffer)
-      (shimbun-retrieve-url
-       (format "%s%s/%s/maillist.html"
-	       (shimbun-url-internal shimbun)
-	       (shimbun-current-group-internal shimbun) month)
-       t)
-      (let (id url subject)
-	(while (re-search-forward
-		"<A[^>]*HREF=\"\\(msg\\([0-9]+\\)\\.html\\)\">\\([^<]+\\)</A>"
-		nil t)
-	  (setq url (format "%s%s/%s/%s"
-			    (shimbun-url-internal shimbun)
-			    (shimbun-current-group-internal shimbun)
-			    month
-			    (match-string 1))
-		id (format "<%s%05d%%%s>"
-			   month
-			   (string-to-number (match-string 2))
-			   (shimbun-current-group-internal shimbun))
-		subject (match-string 3))
-	  (push (shimbun-make-header
-		 0
-		 (shimbun-mime-encode-string subject)
-		 (if (looking-at "</STRONG> *<EM>\\([^<]+\\)<")
-		     (shimbun-mime-encode-string (match-string 1))
-		   "")
-		 "" id "" 0 0 url)
-		headers))))
-    headers))
+    (catch 'stop
+      (dolist (month months)
+	(unless (if pages (<= (incf count) pages) t)
+	  (throw 'stop headers))
+	(erase-buffer)
+	(shimbun-retrieve-url
+	 (format "%s%s/%s/maillist.html"
+		 (shimbun-url-internal shimbun)
+		 (shimbun-current-group-internal shimbun) month)
+	 t)
+	(let (id url subject)
+	  (while (re-search-forward
+		  "<A[^>]*HREF=\"\\(msg\\([0-9]+\\)\\.html\\)\">\\([^<]+\\)</A>"
+		  nil t)
+	    (setq url (format "%s%s/%s/%s"
+			      (shimbun-url-internal shimbun)
+			      (shimbun-current-group-internal shimbun)
+			      month
+			      (match-string 1))
+		  id (format "<%s%05d%%%s>"
+			     month
+			     (string-to-number (match-string 2))
+			     (shimbun-current-group-internal shimbun))
+		  subject (match-string 3))
+	    (push (shimbun-make-header
+		   0
+		   (shimbun-mime-encode-string subject)
+		   (if (looking-at "</STRONG> *<EM>\\([^<]+\\)<")
+		       (shimbun-mime-encode-string (match-string 1))
+		     "")
+		   "" id "" 0 0 url)
+		  headers))))
+      headers)))
 
 (provide 'sb-netbsd)
 

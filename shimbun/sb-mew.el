@@ -91,11 +91,14 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-mew))
   (shimbun-mew-concat-url shimbun "index.html"))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-mew))
-  (shimbun-mew-get-headers shimbun))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-mew)
+					 &optional range)
+  (shimbun-mew-get-headers shimbun range))
 
-(defun shimbun-mew-get-headers (shimbun)
+(defun shimbun-mew-get-headers (shimbun range)
   (let ((case-fold-search t)
+	(pages (shimbun-header-index-pages range))
+	(count 0)
 	headers)
     (goto-char (point-min))
     (when (re-search-forward

@@ -50,7 +50,8 @@
 	  (shimbun-url-internal shimbun)
 	  (shimbun-current-group-internal shimbun)))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-sponichi))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-sponichi)
+					 &optional range)
   (when (search-forward "ニュースインデックス" nil t)
     (delete-region (point-min) (point))
     (when (search-forward "アドタグ" nil t)

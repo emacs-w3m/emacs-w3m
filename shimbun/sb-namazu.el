@@ -55,21 +55,24 @@
   (concat (shimbun-current-group-internal shimbun)
 	  "@namazu.org"))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-namazu))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-namazu)
+					 &optional range)
   (let ((url (shimbun-index-url shimbun))
+	(pages (shimbun-header-index-pages range))
+	(count 0)
 	headers aux)
     (catch 'stop
       (shimbun-mhonarc-get-headers shimbun url headers)
-      (when (shimbun-use-entire-index-internal shimbun)
-	(while (and (re-search-forward
-		     "<A href=\"\\(mail[0-9]+.html\\)\">Next Index</A>"
-		     nil t)
-		    (not (string-equal (match-string 1) aux)))
-	  (setq aux (match-string 1)
-		url (shimbun-expand-url aux url))
-	  (erase-buffer)
-	  (shimbun-retrieve-url url)
-	  (shimbun-mhonarc-get-headers shimbun url headers)))
+      (while (and (if pages (< (incf count) pages) t)
+		  (re-search-forward
+		   "<A href=\"\\(mail[0-9]+.html\\)\">Next Index</A>"
+		   nil t)
+		  (not (string-equal (match-string 1) aux)))
+	(setq aux (match-string 1)
+	      url (shimbun-expand-url aux url))
+	(erase-buffer)
+	(shimbun-retrieve-url url)
+	(shimbun-mhonarc-get-headers shimbun url headers))
       headers)))
 
 (provide 'sb-namazu)

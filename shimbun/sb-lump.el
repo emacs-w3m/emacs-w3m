@@ -55,7 +55,8 @@
 (luna-define-generic shimbun-get-group-header-alist (shimbun)
   "Return an alist of group and header list.")
 
-(luna-define-method shimbun-headers ((shimbun shimbun-lump))
+(luna-define-method shimbun-headers ((shimbun shimbun-lump)
+				     &optional range)
   (when (shimbun-lump-check-p shimbun)
     (shimbun-lump-set-group-header-alist-internal
      shimbun (shimbun-get-group-header-alist shimbun))

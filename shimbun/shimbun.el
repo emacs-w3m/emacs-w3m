@@ -323,13 +323,24 @@ Optional MUA is a `shimbun-mua' instance."
   (when (shimbun-current-group-internal shimbun)
     (shimbun-set-current-group-internal shimbun nil)))
 
-(luna-define-generic shimbun-headers (shimbun)
-  "Return a SHIMBUN header list.")
+(luna-define-generic shimbun-headers (shimbun &optional range)
+  "Return a SHIMBUN header list.
+Optional argument RANGE is one of following:
+nil or `all': Retrieve all header indices.
+`last':       Retrieve the last header index.
+integer n:    Retrieve n pages of header indices.")
 
-(luna-define-method shimbun-headers ((shimbun shimbun))
+(defmacro shimbun-header-index-pages (range)
+  "Return number of pages to retrieve according to RANGE.
+Return nil if all pages should be retrieved."
+  (` (if (eq 'last (, range)) 1
+       (if (eq 'all (, range)) nil
+	 (, range)))))
+
+(luna-define-method shimbun-headers ((shimbun shimbun) &optional range)
   (with-current-buffer (shimbun-retrieve-url-buffer 
 			(shimbun-index-url shimbun) 'reload)
-    (shimbun-get-headers shimbun)))
+    (shimbun-get-headers shimbun range)))
 
 (luna-define-generic shimbun-reply-to (shimbun)
   "Return a reply-to field body for SHIMBUN.")
@@ -386,8 +397,12 @@ HEADER is a header structure obtained via `shimbun-headers'.")
 (luna-define-generic shimbun-index-url (shimbun)
   "Return a index URL of SHIMBUN.")
 
-(luna-define-generic shimbun-get-headers (shimbun)
-  "Return a shimbun header list of SHIMBUN.")
+(luna-define-generic shimbun-get-headers (shimbun &optional range)
+  "Return a shimbun header list of SHIMBUN.
+Optional argument RANGE is one of following:
+nil or `all': Retrieve all header indices.
+`last':       Retrieve the last header index.
+integer n:    Retrieve n pages of header indices.")
 
 (luna-define-generic shimbun-close (shimbun)
   "Close a SHIMBUN.")

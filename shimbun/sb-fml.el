@@ -48,16 +48,15 @@
 				  (match-string 4 str))
       str)))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-fml))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-fml)
+					 &optional range)
   (let ((case-fold-search t)
+	(pages (shimbun-header-index-pages range))
+	(count 0)
 	headers auxs aux)
-    (if (shimbun-use-entire-index-internal shimbun)
-	;; Use entire archive.
-	(while (re-search-forward "<a href=\"\\([0-9]+\\(\\.week\\|\\.month\\)?\\)/index.html\">" nil t)
-	  (setq auxs (append auxs (list (match-string 1)))))
-      ;; Only latest month.
-      (if (re-search-forward "<a href=\"\\([0-9]+\\(\\.week\\|\\.month\\)?\\)/index.html\">" nil t)
-	  (setq auxs (append auxs (list (match-string 1))))))
+    (while (and (if pages (<= (incf count) pages) t)
+		(re-search-forward "<a href=\"\\([0-9]+\\(\\.week\\|\\.month\\)?\\)/index.html\">" nil t))
+      (setq auxs (append auxs (list (match-string 1)))))
     (catch 'stop
       (while auxs
 	(with-temp-buffer

@@ -59,7 +59,8 @@
 		      shimbun-yomiuri-group-path-alist))
 	  "/index.htm"))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-yomiuri))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-yomiuri)
+					 &optional range)
   (let ((case-fold-search t)
 	start headers)
     (goto-char (point-min))

@@ -53,7 +53,8 @@
 	      (shimbun-url-internal shimbun)
 	      (shimbun-current-group-internal shimbun)))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-yahoo))
+(luna-define-method shimbun-get-headers ((shimbun shimbun-yahoo)
+					 &optional range)
   (let ((case-fold-search t)
 	p headers)
     (goto-char (point-min))
