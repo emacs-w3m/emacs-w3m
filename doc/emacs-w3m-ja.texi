@@ -2428,6 +2428,14 @@ Function used for editing local files.  It is used when the
 @code{w3m-edit-current-url} command or the @code{w3m-edit-this-url}
 command is invoked.
 
+@item w3m-edit-function-alist
+@vindex w3m-edit-function-alist
+Alist of functions used for editing pages.  This option is refered to
+decide which function shouled be used to edit a specified page, when
+either @code{w3m-edit-current-url} or @code{w3m-edit-this-url} is
+invoked.  When no suitable function is found from this alist,
+@code{w3m-edit-function} is used.
+
 @item w3m-encoding-type-alist
 @vindex w3m-encoding-type-alist
 Alist of file suffixes and content encoding types.
@@ -2632,6 +2640,10 @@ emacs-w3m session.
 Alist of frame parameters used when creating a new emacs-w3m frame.  It
 allows not only the alist form but also XEmacs' plist form.
 
+@item w3m-prefer-cache
+@vindex w3m-prefer-cache
+Non-nil means that cached contents are used without checking headers.
+
 @item w3m-profile-directory
 @vindex w3m-profile-directory
 Directory where emacs-w3m config files are loaded from or saved to.
@@ -2657,6 +2669,10 @@ user agent implementations treat 302 as if it were a 303 response,
 performing a GET on the Location field-value regardless of the original
 request method.
 
+@item w3m-relationship-estimate-rules
+@vindex w3m-relationship-estimate-rules
+Rules to estimate relationships between a retrieved page and others.
+
 @item w3m-select-buffer-horizontal-window
 @vindex w3m-select-buffer-horizontal-window
 Non-@code{nil} means split windows horizontally to open the selection
@@ -2667,6 +2683,48 @@ window.
 The percentage of the selection window to the whole frame.  The car is
 used when splitting windows horizontally and the cdr is for splitting
 windows vertically.
+
+@item w3m-show-decoded-url
+@vindex w3m-show-decoded-url
+Non-nil means show decoded URIs in the echo area, the balloon, etc.
+This variable can take one of the following five kinds of forms:
+
+@enumerate
+@item
+t
+
+Decode URIs using the encoding assumed by the default presumption rule
+based on the priority list including the encoding used to decode the
+current page and the value of @code{w3m-coding-system-priority-list}.
+
+@item
+Coding system
+
+Decode URIs using this value.
+
+@item
+List of coding systems
+
+Decode URIs using the encoding assumed based on this list.
+
+@item
+Alist of predicates and forms described below:
+
+Each element looks like the @code{(PREDICATE . ENCODING)} form.
+@code{PREDICATE} should be a regexp, a function or a Lisp form, and
+@code{ENCODING} should be one of the forms described here excluding this
+form.  If @code{PREDICATE} is a regexp, it will be tested whether it
+matches to the current url.  If it is a function, it will be called with
+no argument.  If it is a Lisp form, it will be simply evaluated.
+Elements are tested in turn until the result of the test of the
+predicate is true and the encoding which is associated to the predicate
+is used for decoding URIs.
+
+@item
+nil
+
+Don't decode URIs.
+@end enumerate
 
 @item w3m-show-error-information
 @vindex w3m-show-error-information
