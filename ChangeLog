@@ -1,5 +1,22 @@
 2003-10-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-e21.el (frame-current-scroll-bars): Alias to `ignore' if it
+	is not available.
+	(window-fringes): Ditto.
+	(w3m-tab-width): Protect against setting illegal values.
+	(w3m-tab-unselected-face): Don't specify to the underline color.
+	(w3m-tab-unselected-retrieving-face): Ditto.
+	(w3m-tab-selected-face): Ditto.
+	(w3m-tab-selected-retrieving-face): Ditto.
+	(w3m-tab-background-face): Ditto.
+	(w3m-tab-timer): Rename from `w3m-tab-line-timer'.
+	(w3m-tab-half-space): New variable.
+	(w3m-tab-separator): New variable.
+	(w3m-tab-line): Show many tabs as far as possible.
+
+	* w3m-favicon.el (w3m-favicon-retrieve): Clear the minibuffer
+	after retrieving favicon.
+
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Improve regexp
 	more.
 	* shimbun/sb-mainichi.el (shimbun-get-headers): Ditto.
