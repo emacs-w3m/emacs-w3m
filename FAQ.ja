@@ -12,6 +12,7 @@
    以下の Emacsen で動作することが確認されています．
 
 	Mule-2.3 @ Emacs-19.34
+	Emacs-19.34
 	Emacs-20
 	Emacs-21
 	XEmacs-21.1 with Mule
@@ -20,8 +21,8 @@
 	XEmacs-21.5 with Mule
 	Meadow
 
-   なお，Mule-2.3 及び XEmacs では APEL が必要となります．APEL は
-   ftp://ftp.m17n.org/pub/mule/apel/ から入手できます。
+   なお，Mule-2.3, Emacs-19.34 及び XEmacs では APEL が必要となります．
+   APEL はftp://ftp.m17n.org/pub/mule/apel/ から入手できます。
 
 ** Q. 動作する w3m は?
 
@@ -96,6 +97,13 @@
 
    古い w3m コマンドでは，正常に表示できません．w3m のバージョンを確認し
    てください．
+
+** Q. Cookie が必要なページを閲覧できません．
+
+   (まだ実験的な機能です．)
+
+   オプション w3m-use-cookies に nil 以外の値が設定されていることを確認
+   してください．
 
 ** Q. フォームに入力できません．
 
