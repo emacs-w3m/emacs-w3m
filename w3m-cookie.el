@@ -1,6 +1,6 @@
 ;;; w3m-cookie.el --- Functions for cookie processing
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Teranishi Yuuichi  <teranisi@gohome.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -79,71 +79,36 @@ If ask, ask user whether accept bad cookies or not."
   :type 'file)
 
 ;;; Cookie accessor.
-(defsubst w3m-cookie-url (cookie)
-  (aref cookie 0))
-
-(defsubst w3m-cookie-set-url (cookie url)
-  (aset cookie 0 url))
-
-(defsubst w3m-cookie-domain (cookie)
-  (aref cookie 1))
-
-(defsubst w3m-cookie-set-domain (cookie domain)
-  (aset cookie 1 domain))
-
-(defsubst w3m-cookie-secure (cookie)
-  (aref cookie 2))
-
-(defsubst w3m-cookie-set-secure (cookie secure)
-  (aset cookie 2 secure))
-
-(defsubst w3m-cookie-name (cookie)
-  (aref cookie 3))
-
-(defsubst w3m-cookie-set-name (cookie name)
-  (aset cookie 3 name))
-
-(defsubst w3m-cookie-value (cookie)
-  (aref cookie 4))
-
-(defsubst w3m-cookie-set-value (cookie value)
-  (aset cookie 4 value))
-
-(defsubst w3m-cookie-path (cookie)
-  (aref cookie 5))
-
-(defsubst w3m-cookie-set-path (cookie path)
-  (aset cookie 5 path))
-
-(defsubst w3m-cookie-version (cookie)
-  (aref cookie 6))
-
-(defsubst w3m-cookie-set-version (cookie version)
-  (aset cookie 6 version))
-
-(defsubst w3m-cookie-expires (cookie)
-  (aref cookie 7))
-
-(defsubst w3m-cookie-set-expires (cookie expires)
-  (aset cookie 7 expires))
-
-(defsubst w3m-cookie-ignore (cookie)
-  (aref cookie 8)) ; not used
-
-(defsubst w3m-cookie-set-ignore (cookie ignore)
-  (aset cookie 8 ignore)) ; not used
+(defmacro w3m-cookie-url (cookie)
+  `(aref ,cookie 0))
+(defmacro w3m-cookie-domain (cookie)
+  `(aref ,cookie 1))
+(defmacro w3m-cookie-secure (cookie)
+  `(aref ,cookie 2))
+(defmacro w3m-cookie-name (cookie)
+  `(aref ,cookie 3))
+(defmacro w3m-cookie-value (cookie)
+  `(aref ,cookie 4))
+(defmacro w3m-cookie-path (cookie)
+  `(aref ,cookie 5))
+(defmacro w3m-cookie-version (cookie)
+  `(aref ,cookie 6))
+(defmacro w3m-cookie-expires (cookie)
+  `(aref ,cookie 7))
+(defmacro w3m-cookie-ignore (cookie)
+  `(aref ,cookie 8))
 
 (defsubst w3m-cookie-create (&rest args)
   (let ((cookie (make-vector 9 nil)))
-    (w3m-cookie-set-url     cookie (plist-get args :url))
-    (w3m-cookie-set-domain  cookie (plist-get args :domain))
-    (w3m-cookie-set-secure  cookie (plist-get args :secure))
-    (w3m-cookie-set-name    cookie (plist-get args :name))
-    (w3m-cookie-set-value   cookie (plist-get args :value))
-    (w3m-cookie-set-path    cookie (plist-get args :path))
-    (w3m-cookie-set-version cookie (or (plist-get args :version) 0))
-    (w3m-cookie-set-expires cookie (plist-get args :expires))
-    (w3m-cookie-set-ignore  cookie (plist-get args :ignore))
+    (setf (w3m-cookie-url cookie)     (plist-get args :url))
+    (setf (w3m-cookie-domain cookie)  (plist-get args :domain))
+    (setf (w3m-cookie-secure cookie)  (plist-get args :secure))
+    (setf (w3m-cookie-name cookie)    (plist-get args :name))
+    (setf (w3m-cookie-value cookie)   (plist-get args :value))
+    (setf (w3m-cookie-path cookie)    (plist-get args :path))
+    (setf (w3m-cookie-version cookie) (or (plist-get args :version) 0))
+    (setf (w3m-cookie-expires cookie) (plist-get args :expires))
+    (setf (w3m-cookie-ignore cookie)  (plist-get args :ignore))
     cookie))
 
 (defun w3m-cookie-store (cookie)
@@ -534,10 +499,9 @@ BEG and END should be an HTTP response header region on current buffer."
     (when post-data
       (dolist (pair (split-string post-data "&"))
 	(setq pair (split-string pair "="))
-	(w3m-cookie-set-ignore
-	 (nth (string-to-number (car pair)) w3m-cookies)
-	 (if (eq (string-to-number (cadr pair)) 0)
-	     t))))
+	(setf (w3m-cookie-ignore
+	       (nth (string-to-number (car pair)) w3m-cookies))
+	      (eq (string-to-number (cadr pair)) 0))))
     (insert
      (concat
       "\

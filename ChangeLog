@@ -1,3 +1,16 @@
+2002-03-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-cookie.el (w3m-cookie-url, w3m-cookie-domain,
+	w3m-cookie-secure, w3m-cookie-name, w3m-cookie-value,
+	w3m-cookie-path, w3m-cookie-version, w3m-cookie-expires,
+	w3m-cookie-ignore): Define as macro.
+	(w3m-cookie-set-url, w3m-cookie-set-domain, w3m-cookie-set-secure,
+	w3m-cookie-set-name, w3m-cookie-set-value, w3m-cookie-set-path,
+	w3m-cookie-set-version, w3m-cookie-set-expires,
+	w3m-cookie-set-ignore): Removed.
+	(w3m-cookie-create): New implementation.
+	(w3m-about-cookie): Call `setf' instead of `w3m-cookie-set-ignore'.
+
 2002-03-26  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-fontify-anchors): Changed anchor name property position.
