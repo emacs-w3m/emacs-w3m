@@ -88,7 +88,7 @@
 		el (buffer-substring (match-beginning 1) (match-end 1)))
 	  (if (file-exists-p elc)
 	      (if (file-newer-than-file-p elc el)
-		  (message " `%sc' is up to date." el)
+		  (message " `%s' is up to date." elc)
 		(delete-file elc)
 		(setq modules (cons el modules)))
 	    (setq modules (cons el modules)))))
