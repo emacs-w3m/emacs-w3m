@@ -2179,6 +2179,13 @@ easiest way is to put the following line in your @file{~/.gnus.el} file:
 (setq mm-text-html-renderer 'w3m)
 @end lisp
 
+Also put the following line if you want to show images inline in article
+buffers:
+
+@lisp
+(setq mm-inline-text-html-with-images t)
+@end lisp
+
 If you don't need to use emacs-w3m keys in article buffers, add the
 following line too:
 
@@ -2196,9 +2203,10 @@ the @samp{Click Here!} button.  It is most likely intended to check
 whether the ominous spam mail has reached your eyes or not, in which
 case the spammer knows for sure that your email address is valid.  It is
 done by embedding an identifier string into a URL that you might
-automatically retrieve when displaying the image.  By default, the
-@code{mm-inline-text-html-with-images} variable is @code{nil} and Gnus
-will never connect to the spammer's site arbitrarily.
+automatically retrieve when displaying the image.  If the
+@code{mm-w3m-safe-url-regexp} variable has not been changed from the
+default value, Gnus will never connect to the spammer's site
+arbitrarily.
 
 You can display images inline in an article buffer if you set
 @code{mm-inline-text-html-with-images} to @code{t}, can't you?  No, not

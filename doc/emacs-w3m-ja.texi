@@ -2288,6 +2288,12 @@ Customization})$B!#:G$b4JC1$JJ}K!$O!"0J2<$N9T$r(B @file{~/.gnus.el} $B%U%!%$%
 (setq mm-text-html-renderer 'w3m)
 @end lisp
 
+$B$5$i$K!"5-;v%P%C%U%!$G2hA|$rI=<($7$?$$>l9g$O!"0J2<$N9T$rF~$l$F2<$5$$!#(B
+
+@lisp
+(setq mm-inline-text-html-with-images t)
+@end lisp
+
 $B5-;v%P%C%U%!$G(B emacs-w3m $B$N%-!<$r;H$&I,MW$,L5$$$J$i$P!"0J2<$N9T$bDI2C$7(B
 $B$F2<$5$$(B:
 
@@ -2306,9 +2312,9 @@ Customization})$B!#:G$b4JC1$JJ}K!$O!"0J2<$N9T$r(B @file{~/.gnus.el} $B%U%!%$%
 $B;_$^$C$?$+$I$&$+$r8!::$9$k!"$9$J$o$A$3$N>l9g!"$"$J$?$N%a!<%k%"%I%l%9$,M-(B
 $B8z$G$"$k$3$H$r3NG'$9$k$?$a$N(B spammer $B$N0U?^$,$"$k$3$H$G$9!#$=$l$O!"2hA|(B
 $B$rI=<($9$k$H$-$K<+F0E*$K<hF@$7$K9T$/$G$"$m$&(B URL $B$K!"<1JLJ8;zNs$rKd$a9~(B
-$B$`$3$H$K$h$C$F9T$J$o$l$^$9!#%G%U%)%k%H$G$OJQ(B
-$B?t(B @code{mm-inline-text-html-with-images} $B$,(B @code{nil} $B$G$"$C$F!"(B
-Gnus $B$,>!<j$K(B spammer $B$N%5%$%H$K@\B3$9$k$3$H$O$"$j$^$;$s!#(B
+$B$`$3$H$K$h$C$F9T$J$o$l$^$9!#JQ?t(B @code{mm-w3m-safe-url-regexp} $B$,%G%U%)(B
+$B%k%HCM$+$iJQ99$5$l$F$$$J$1$l$P!"(BGnus $B$,>!<j$K(B spammer $B$N%5%$%H$K@\B3$9$k(B
+$B$3$H$O$"$j$^$;$s!#(B
 
 @code{mm-inline-text-html-with-images} $B$r(B @code{t} $B$K$9$l$P!"5-;v%P%C%U%!(B
 $B$K%$%s%i%$%s2hA|$rI=<($9$k$3$H$,$G$-$^$9$h$M(B?  $B$$$$$(!"CG$8$F0c$$$^$9!#(B
