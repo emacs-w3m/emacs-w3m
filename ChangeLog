@@ -1,11 +1,11 @@
 2003-07-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-goto-url): Do not encode a given URL when it points
-	a local page.  Always set `w3m-current-buffer', before either
-	calling an asynchronous process or moviing a cursor.
+	a local page.  Bind `w3m-current-buffer' locally.
 	(w3m-copy-buffer): Wrap `w3m-goto-url' with
 	`w3m-process-with-wait-handler', to avoid unexpected asynchronous
 	processes.
+	(w3m-region): Bind `w3m-current-buffer' locally.
 
 2003-07-12  NOMIYA Masaru  <nomiya@ttmy.ne.jp>
 
