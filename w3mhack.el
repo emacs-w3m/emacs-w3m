@@ -642,11 +642,19 @@ The file name and the directory are specified by `shimbun-servers-file'
 and `shimbun-module-directory'."
   (let ((srvr-file (expand-file-name shimbun-servers-file
 				     shimbun-module-directory))
-	(servers (sort (mapcar (lambda (file)
-				 (substring file 3 -3))
-			       (directory-files shimbun-module-directory nil
-						"^sb-.*\\.el$"))
-		       'string-lessp))
+	(servers (sort
+		  (delq
+		   nil
+		   (mapcar
+		    (lambda (file)
+		      (let ((server (substring file 3 -3)))
+			(unless (member server
+					'("fml" "glimpse" "lump" "mailarc"
+					  "mailman" "mhonarc" "text"))
+			  server)))
+		    (directory-files shimbun-module-directory nil
+				     "^sb-.*\\.el$")))
+		  'string-lessp))
 	(buffer (get-buffer-create " *shimbun servers*"))
 	shimbun-servers-list buffer-file-format format-alist
 	insert-file-contents-post-hook insert-file-contents-pre-hook)
@@ -686,7 +694,18 @@ you can add those server names to this variable as follows:
 \\(setq shimbun-additional-servers-list '(\\\"foo\\\" \\\"bar\\\"))\")
 
 \(defconst shimbun-servers-list
-  '" (let (print-level print-length) (prin1-to-string servers)) ")
+  '(")
+	(let (server)
+	  (while servers
+	    (setq server (prin1-to-string (pop servers)))
+	    (when (> (+ (current-column) (length server)) (if servers
+							      79
+							    77))
+	      (delete-char -1)
+	      (insert "\n    "))
+	    (insert server " ")))
+	(delete-char -1)
+	(insert "))
 
 \(defun shimbun-servers-list ()
   (append shimbun-servers-list shimbun-additional-servers-list))
@@ -810,10 +829,8 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 			       (not (memq elem ignores))
 			       (not (memq elem keywords)))
 		      (push elem keywords)))))))
-	  (setq keywords (sort keywords
-			       (lambda (a b)
-				 (string-lessp (symbol-name a)
-					       (symbol-name b)))))
+	  ;; `string-lessp' allows symbols as well.
+	  (setq keywords (sort keywords 'string-lessp))
 	  (erase-buffer)
 	  (insert ";;; " w3mhack-colon-keywords-file "\
  --- List of colon keywords which will be bound at run-time
@@ -827,9 +844,18 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 		  "\n
 \(defvar w3m-colon-keywords)
 \(setq w3m-colon-keywords
-      '("
-		  (mapconcat 'symbol-name keywords "\n\t")
-		  "))\n")
+      '(" (symbol-name (pop keywords)) "\n\t")
+	  (let (keyword)
+	    (while keywords
+	      (setq keyword (symbol-name (pop keywords)))
+	      (when (> (+ (current-column) (length keyword)) (if keywords
+								 79
+							       77))
+		(delete-char -1)
+		(insert "\n\t"))
+	      (insert keyword " ")))
+	  (delete-char -1)
+	  (insert "))\n")
 	  (write-region (point-min) (point) kwds-file))))
     (kill-buffer buffer)))
 
