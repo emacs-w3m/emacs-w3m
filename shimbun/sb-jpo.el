@@ -24,6 +24,33 @@
 ;; Inc.; 59 Temple Place, Suite 330; Boston, MA 02111-1307, USA.
 
 ;;; Commentary:
+;;
+;; This shimbun backend categorizes the Japan Patent Office web site
+;; to virtual four news groups.  Following is table of a site map
+;; (summaerized page of http://www.jpo.go.jp/sitemap/index.htm) and
+;; mapped virtual groups.
+;;
+;; ■制度の紹介                          ...lawguide
+;; ■出願から審査、審判、登録まで        ...details
+;; ■特許庁の紹介                
+;; ■特許庁の取り組み                    
+;;    ■プレス発表                       ...news
+;;    ■法令改正のお知らせ               ...revision
+;;    ■広報の広場                       ...news
+;;    ■...                              ...details
+;;
+;; ■資料室                              ...details
+;; ■お問い合わせ
+;; ■更新履歴
+;; ■クイックガイド
+;; ■調達情報・公募情報
+;; ■意見募集：パブリック・コメント
+;; ■特許電子図書館
+;; ■独立行政法人　工業所有権総合情報館
+;; ■関連ホームページリンク
+;; ■旧特許庁ホームページ
+;; ■電子政府の総合窓口（総務省行政管理局）
+;; ■このサイトについて
 
 ;;; Code:
 
@@ -89,7 +116,7 @@
 	(group (shimbun-current-group-internal shimbun))
 	(regexp (format "<td><font color=\"[#0-9A-Z]+\"><a href=\"\\(%s\\.html*\\)\">\\(.*\\)</a>[　 ]*\\([.0-9]+\\)" (or urlregexp "\\(.*\\)")))
 	(urlprefix
-	 (when (string-match "^\\(http:\/\/.+\\)\\/[^\/]+\\.html*" origurl)
+	 (when (string-match "^\\(http:\/\/.+\\/\\)[^\/]+\\.html*" origurl)
 	   (match-string 1 origurl)))
 	headers id pagename subject tempdate date url)
     ;; <td><font color="#2346AB"><a href="h1504_pat_kijitu.htm">特許法等の一部を改正する法律の一部の施行期日を定める政令案について</a>　2003.4.21</font></td>
@@ -102,7 +129,7 @@
 	      date (match-string-no-properties 4))
 	(when (and unmatchregexp (string-match unmatchregexp pagename))
 	  (throw 'next nil))
-	(setq url (concat urlprefix "/" pagename)
+	(setq url (w3m-expand-url pagename urlprefix)
 	      subject (with-temp-buffer
 			  (insert subject)
 			  (shimbun-remove-markup)
@@ -122,7 +149,12 @@
 	;; building ID
 	(setq id (format
 		  "<%04d%02d%02d%%%s%%%s@jpo>"
-		  (car date) (nth 1 date) (nth 2 date) pagename group))
+		  (car date) (nth 1 date) (nth 2 date)
+		  (if (string-match "^http:\/\/.+\\/\\([^\/]+\\.html*\\)"
+				    pagename)
+		      (match-string 1 pagename)
+		    pagename)
+		  group))
 	(unless (shimbun-search-id shimbun id)
 	  (setq date (apply 'shimbun-make-date-string date))
 	  (push (shimbun-make-header
@@ -138,41 +170,43 @@
 		   "tetuzuki/tetuzuki_list.htm"
 		   "shiryou/shiryou_list.htm"))
 	(exceptions-alist
-	 '(("torikumi/" "kaisei/" "puresu/" "hiroba/")))
-	(url shimbun-jpo-url)
-	headers pages urlprefix temp exceptions ex)
+	 (list (cons "torikumi/" (list "kaisei/" "puresu/" "hiroba/"))))
+	url headers pages urlprefix temp exceptions ex)
     (while urllist
       (when (string-match "\\/" (car urllist))
 	(setq urlprefix (substring (car urllist) 0 (1+ (match-beginning 0)))))
-      (setq url (concat shimbun-jpo-url (car urllist)))
+      (setq url (w3m-expand-url (car urllist) shimbun-jpo-url))
       (erase-buffer)
       (shimbun-jpo-retrieve-url url 'reload)
-      (setq temp (cdr (assoc urlprefix exceptions-alist)))
+      (setq exceptions (cdr (assoc urlprefix exceptions-alist)))
       (goto-char (point-min))
+      ;; gathering header information of articles in the current page.
       (setq headers (nconc headers
 			   (shimbun-jpo-headers-1
 			    shimbun url nil
-			    (when temp
+			    (when exceptions
 			      (concat "\\(" 
-				      (mapconcat 'regexp-quote temp "\\|")
+				      (mapconcat 'regexp-quote exceptions "\\|")
 				      "\\)")))))
       (goto-char (point-min))
       (while (re-search-forward
 	      ;;<td><font color="#2346AB"><a href="puresu/puresu_list.htm">プレス発表</a></font></td>
 	      "<td><font color=\"[#0-9A-Z]+\"><a href=\"\\(.*\\.htm\\)\">[^<>]+<\/a><\/font><\/td>"
 	      nil t nil)
+	;; getting sub-categories.
 	(catch 'next
-	  (setq temp (match-string 1)
-		exceptions (cdr (assoc urlprefix exceptions-alist)))
-	  (while (setq e (car exceptions))
-	    (if (string-match e temp)
-		(throw 'next nil)
-	      (setq exceptions (cdr exceptions))))
-	  (setq pages (cons (concat urlprefix temp) pages))))
+	  (setq temp (match-string 1))
+	  (dolist (ex exceptions)
+	    (when (string-match ex temp)
+	      (throw 'next nil)))
+	  (setq pages (cons (w3m-expand-url
+			     temp
+			     (concat shimbun-jpo-url urlprefix)) pages))))
       (while pages
-	(setq url (concat shimbun-jpo-url (car pages)))
+	(setq url (car pages))
 	(erase-buffer)
 	(shimbun-jpo-retrieve-url url 'reload)
+	;; getting header information of articles in pages of the sub-categories.
 	(setq headers (nconc
 		       headers
 		       (shimbun-jpo-headers-1 shimbun url)))
