@@ -132,7 +132,8 @@
     ;; Fontify anchors.
     (goto-char (point-min))
     (while (re-search-forward
-	    "<a\\( hseq=\"[-0-9]+\"\\)?\\( href=\"\\([^\"]*\\)\"\\)?\\( name=\"\\([^\"]*\\)\"\\)?>" nil t)
+	    "<a\\( hseq=\"[-0-9]+\"\\)?\\( href=\"\\([^\"]*\\)\"\\)?\\( name=\"\\([^\"]*\\)\"\\)?[^>]*>"
+	    nil t)
       (let ((url (match-string 3))
 	    (tag (match-string 5))
 	    (start (match-beginning 0))
@@ -178,23 +179,138 @@
   (read-from-minibuffer (or prompt "URL: ") nil nil nil 'w3m-input-url-history default))
 
 
-(defvar w3m-url nil "URL of this buffer.")
-(defvar w3m-title nil "Title of this buffer.")
+(defcustom w3m-keep-backlog 300
+  "*Back log size of w3m."
+  :group 'w3m
+  :type 'integer)
+
+(defvar w3m-backlog-buffer nil)
+(defvar w3m-backlog-articles nil)
+(defvar w3m-backlog-hashtb nil)
+
+(defun w3m-backlog-setup ()
+  "Initialize backlog variables."
+  (unless (and (bufferp w3m-backlog-buffer)
+	       (buffer-live-p w3m-backlog-buffer))
+    (save-excursion
+      (set-buffer (get-buffer-create " *w3m backlog*"))
+      (buffer-disable-undo)
+      (setq buffer-read-only t
+	    w3m-backlog-buffer (current-buffer))))
+  (unless w3m-backlog-hashtb
+    (setq w3m-backlog-hashtb (make-vector 1024 nil))))
+
+(defun w3m-backlog-shutdown ()
+  "Clear all backlog variables and buffers."
+  (when (get-buffer w3m-backlog-buffer)
+    (kill-buffer w3m-backlog-buffer))
+  (setq w3m-backlog-hashtb nil
+	w3m-backlog-articles nil))
+
+(defun w3m-backlog-enter (url buffer)
+  (w3m-backlog-setup)
+  (let ((ident (intern url w3m-backlog-hashtb)))
+    (if (memq ident w3m-backlog-articles)
+	()				; It's already kept.
+      ;; Remove the oldest article, if necessary.
+      (and (numberp w3m-keep-backlog)
+	   (>= (length w3m-backlog-articles) w3m-keep-backlog)
+	   (w3m-backlog-remove-oldest))
+      ;; Insert the new article.
+      (save-excursion
+	(set-buffer w3m-backlog-buffer)
+	(let (buffer-read-only)
+	  (goto-char (point-max))
+	  (unless (bolp) (insert "\n"))
+	  (let ((b (point)))
+	    (insert-buffer-substring buffer)
+	    ;; Tag the beginning of the article with the ident.
+	    (when (> (point-max) b)
+	      (put-text-property b (1+ b) 'w3m-backlog ident)
+	      (setq w3m-backlog-articles (cons ident w3m-backlog-articles)))
+	    ))))))
+
+(defun w3m-backlog-remove-oldest ()
+  (save-excursion
+    (set-buffer w3m-backlog-buffer)
+    (goto-char (point-min))
+    (if (zerop (buffer-size))
+	()				; The buffer is empty.
+      (let ((ident (get-text-property (point) 'w3m-backlog))
+	    buffer-read-only)
+	;; Remove the ident from the list of articles.
+	(when ident
+	  (setq w3m-backlog-articles (delq ident w3m-backlog-articles)))
+	;; Delete the article itself.
+	(delete-region (point)
+		       (next-single-property-change
+			(1+ (point)) 'w3m-backlog nil (point-max)))))))
+
+(defun w3m-backlog-remove (url number)
+  "Remove data of URL from the backlog."
+  (when (numberp number)
+    (w3m-backlog-setup)
+    (let ((ident (intern url w3m-backlog-hashtb))
+	  beg end)
+      (when (memq ident w3m-backlog-articles)
+	;; It was in the backlog.
+	(save-excursion
+	  (set-buffer w3m-backlog-buffer)
+	  (let (buffer-read-only)
+	    (when (setq beg (text-property-any
+			     (point-min) (point-max) 'w3m-backlog ident))
+	      ;; Find the end (i. e., the beginning of the next article).
+	      (setq end (next-single-property-change
+			 (1+ beg) 'w3m-backlog (current-buffer) (point-max)))
+	      (delete-region beg end)))
+	  (setq w3m-backlog-articles (delq ident w3m-backlog-articles)))))))
+
+(defun w3m-backlog-request (url &optional buffer)
+  (w3m-backlog-setup)
+  (let ((ident (intern url w3m-backlog-hashtb)))
+    (when (memq ident w3m-backlog-articles)
+      ;; It was in the backlog.
+      (let (beg end)
+	(save-excursion
+	  (set-buffer w3m-backlog-buffer)
+	  (if (not (setq beg (text-property-any
+			      (point-min) (point-max) 'w3m-backlog ident)))
+	      ;; It wasn't in the backlog after all.
+	      (setq w3m-backlog-articles (delq ident w3m-backlog-articles))
+	    ;; Find the end (i. e., the beginning of the next article).
+	    (setq end
+		  (next-single-property-change
+		   (1+ beg) 'w3m-backlog (current-buffer) (point-max)))))
+	(and beg
+	     end
+	     (save-excursion
+	       (and buffer (set-buffer buffer))
+	       (let (buffer-read-only)
+		 (insert-buffer-substring w3m-backlog-buffer beg end)))
+	     t)))))
+
+(defvar w3m-current-url nil "URL of this buffer.")
+(defvar w3m-current-title nil "Title of this buffer.")
+(defvar w3m-url-history nil "History of URL.")
 
 (defun w3m-exec (url &optional buffer)
+  "Download URL with w3m to the BUFFER.
+If BUFFER is nil, all data is placed to the current buffer."
   (save-excursion
     (if buffer (set-buffer buffer))
     (delete-region (point-min) (point-max))
-    (let ((coding-system-for-read w3m-coding-system)
-	  (default-process-coding-system (cons w3m-coding-system w3m-coding-system)))
-      (apply 'call-process w3m-command nil t nil
-	     (mapcar (lambda (arg)
-		       (if (eq arg 'col)
-			   (format "%d" w3m-fill-column)
-			 (eval arg)))
-		     w3m-command-arguments)))
+    (or (w3m-backlog-request url)
+	(let ((coding-system-for-read w3m-coding-system)
+	      (default-process-coding-system (cons w3m-coding-system w3m-coding-system)))
+	  (apply 'call-process w3m-command nil t nil
+		 (mapcar (lambda (arg)
+			   (if (eq arg 'col)
+			       (format "%d" w3m-fill-column)
+			     (eval arg)))
+			 w3m-command-arguments))
+	  (w3m-backlog-enter url (current-buffer))))
     ;; Setting buffer local variables.
-    (set (make-local-variable 'w3m-url) url)
+    (set (make-local-variable 'w3m-current-url) url)
     (goto-char (point-min))
     (let (start title)
       (and (search-forward "<title>" nil t)
@@ -203,7 +319,21 @@
 	   (search-forward "</title>" nil t)
 	   (setq title (buffer-substring start (match-beginning 0)))
 	   (delete-region start (match-end 0)))
-      (set (make-local-variable 'w3m-title) title))))
+      (set (make-local-variable 'w3m-current-title) title))
+    (set (make-local-variable 'w3m-url-history)
+	 (cons url w3m-url-history))
+    (setq-default w3m-url-history
+		  (cons url (default-value 'w3m-url-history)))))
+
+
+(defun w3m-view-previous-page (&optional arg)
+  (interactive "p")
+  (unless arg (setq arg 1))
+  (let ((url (nth arg w3m-url-history)))
+    (when url
+      (let (w3m-url-history) (w3m url))
+      (setq w3m-url-history
+	    (nthcdr arg w3m-url-history)))))
 
 
 (defun w3m-expand-url (url base)
@@ -221,16 +351,14 @@
       (if (string-match "^\\([^:]+://[^/]*\\)/" base)
 	  (setq server (match-string 1 base)
 		base (substring base (match-end 1))))
-      (if (string-match "[^/]*$" base)
-	  (setq base (substring base 0 (match-beginning 0))))
-      (concat server (expand-file-name url base))))))
+      (concat server (expand-file-name url (file-name-directory base)))))))
     
 
 (defun w3m-view-this-url ()
   "*View the URL of the link under point."
   (interactive)
   (let ((url (get-text-property (point) 'w3m-href-anchor)))
-    (if url (w3m (w3m-expand-url url w3m-url)))))
+    (if url (w3m (w3m-expand-url url w3m-current-url)))))
 
 
 (defun w3m-view-image ()
@@ -262,7 +390,7 @@
 	   buffer
 	   w3m-viewer-command
 	   (mapcar (lambda (x)
-		     (if (eq x 'url) w3m-url x))
+		     (if (eq x 'url) w3m-current-url x))
 		   w3m-viewer-command-arguments))))
 
 
@@ -280,7 +408,7 @@
 
 (defun w3m-next-anchor (&optional arg)
   "*Move cursor to the next anchor."
-  (interactive "P")
+  (interactive "p")
   (unless arg (setq arg 1))
   (if (< arg 0)
       ;; If ARG is negative.
@@ -297,7 +425,7 @@
 
 (defun w3m-previous-anchor (&optional arg)
   "Move cursor to the previous anchor."
-  (interactive "P")
+  (interactive "p")
   (unless arg (setq arg 1))
   (if (< arg 0)
       ;; If ARG is negative.
@@ -333,33 +461,41 @@
   (define-key w3m-mode-map "G" 'goto-line)
   (define-key w3m-mode-map "\C-?" 'scroll-down)
   (define-key w3m-mode-map "\t" 'w3m-next-anchor)
+  (define-key w3m-mode-map [down] 'w3m-next-anchor)
   (define-key w3m-mode-map "\M-\t" 'w3m-previous-anchor)
+  (define-key w3m-mode-map [up] 'w3m-previous-anchor)
   (define-key w3m-mode-map "\C-m" 'w3m-view-this-url)
+  (define-key w3m-mode-map [right] 'w3m-view-this-url)
+  (define-key w3m-mode-map [left] 'w3m-view-previous-page)
   (define-key w3m-mode-map "d" 'w3m-download-this-url)
   (define-key w3m-mode-map "u" 'w3m-print-this-url)
   (define-key w3m-mode-map "I" 'w3m-view-image)
   (define-key w3m-mode-map "\M-I" 'w3m-save-image)
-  (define-key w3m-mode-map "c" (lambda () (interactive) (message w3m-url)))
+  (define-key w3m-mode-map "c" (lambda () (interactive) (message w3m-current-url)))
   (define-key w3m-mode-map "M" 'w3m-view-current-url-with-external-browser)
   (define-key w3m-mode-map "g" 'w3m)
   (define-key w3m-mode-map "U" 'w3m)
   (define-key w3m-mode-map "V" 'w3m)
   (define-key w3m-mode-map "v" 'w3m-view-bookmark)
-  (define-key w3m-mode-map "q" (lambda ()
-				 (interactive)
-				 (if (y-or-n-p "Do you want to exit w3m? ")
-				     (kill-buffer (current-buffer)))))
-  (define-key w3m-mode-map "Q" (lambda ()
-				 (interactive)
-				 (kill-buffer (current-buffer))))
+  (define-key w3m-mode-map "q" 'w3m-quit)
+  (define-key w3m-mode-map "Q" (lambda () (interactive) (w3m-quit t)))
   )
+
+
+(defun w3m-quit (&optional force)
+  (interactive "P")
+  (when (or force
+	    (y-or-n-p "Do you want to exit w3m? "))
+    (w3m-backlog-shutdown)
+    (kill-buffer (current-buffer))))
 
 
 (defun w3m-mode ()
   "Major mode to browsing w3m buffer."
-  (kill-all-local-variables)
+  (or (eq major-mode 'w3m-mode)
+      (kill-all-local-variables))
   (setq major-mode 'w3m-mode
-	mode-name   "w3m")
+	mode-name "w3m")
   (use-local-map w3m-mode-map)
   (run-hooks 'w3m-mode-hook))
 
@@ -370,7 +506,7 @@
     (set-buffer (get-buffer-create "*w3m*"))
     (w3m-mode)
     (let ((buffer-read-only nil))
-      (w3m-exec url (current-buffer))
+      (w3m-exec url)
       (w3m-fontify))
     (setq buffer-read-only t)
     (set-buffer-modified-p nil)
