@@ -1,3 +1,8 @@
+2001-04-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-print-this-url): New optional argument
+	`add-kill-ring' is added.
+
 2001-04-03  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m-filter.el: New file.
@@ -6,7 +11,7 @@
 
 	* w3m.el (TopLevel): Add autoload code of `w3m-filter'.
 	(w3m-use-filter): New user option.
-	(w3m-retriev): Call `w3m-filter' when decode.
+	(w3m-retrieve): Call `w3m-filter' when decode.
 
 2001-04-03  Yuuichi Teranishi  <teranisi@gohome.org>
 
