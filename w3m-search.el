@@ -1,6 +1,7 @@
 ;;; w3m-search.el --- functions convenient to access web search engines
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -168,7 +169,7 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
 	(setq initial default
 	      default nil))
       (when (w3m-region-active-p)
-	(deactivate-mark)))
+	(w3m-deactivate-mark)))
     (read-string (if default
 		     (format prompt-with-default default)
 		   prompt)

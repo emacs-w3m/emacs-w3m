@@ -1,5 +1,12 @@
 2004-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el (w3m-deactivate-mark): New function alias.
+
+	* w3m.el (w3m-active-region-or-url-at-point): Use it.
+	(w3m-open-all-links-in-new-session): Use it.
+
+	* w3m-search.el (w3m-search-read-query): Use it.
+
 	* shimbun/shimbun.el (shimbun-point-at-bol): New function
 	replacing `gnus-point-at-bol' which has been abolished in the Gnus
 	upstream.

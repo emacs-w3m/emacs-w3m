@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m
 
-;; Copyright (C) 2000, 2001, 2002, 2003
+;; Copyright (C) 2000, 2001, 2002, 2003, 2004
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -3398,7 +3398,7 @@ Like `ffap-url-at-point', except that text props will be stripped."
 In Transient Mark mode, deactivate the mark."
   (if (w3m-region-active-p)
       (prog1 (buffer-substring-no-properties (mark) (point))
-	(deactivate-mark))
+	(w3m-deactivate-mark))
     (w3m-url-at-point)))
 
 (defun w3m-input-url (&optional prompt initial default quick-start)
@@ -5135,7 +5135,7 @@ lines are picked up.  If ARG is non-nil, it forces to reload all links.
 If Transient Mark mode, deactivate the mark."
   (interactive "r\nP")
   (when (w3m-region-active-p)
-    (deactivate-mark))
+    (w3m-deactivate-mark))
   (let ((buffer (current-buffer))
 	(prev start)
 	(url (w3m-url-valid (w3m-anchor start)))

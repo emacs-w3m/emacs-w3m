@@ -1,6 +1,7 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -815,6 +816,10 @@ This is the XEmacs specific macro."
   (if (fboundp 'region-active-p)
       (list 'region-active-p)
     (list 'and 'transient-mark-mode 'mark-active)))
+
+(defalias 'w3m-deactivate-mark (if (fboundp 'deactivate-mark)
+				   'deactivate-mark
+				 'ignore))
 
 (provide 'w3m-util)
 
