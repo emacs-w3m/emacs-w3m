@@ -2336,7 +2336,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "I" 'w3m-view-image)
     (define-key map "\M-I" 'w3m-save-image)
     (define-key map "l" 'w3m-view-previous-page)
-    (define-key map [(control shift l)] 'w3m-reload-this-page)
+    (define-key map [(control L)] 'w3m-reload-this-page)
     (define-key map "\C-l" 'recenter)
     (define-key map "M" 'w3m-view-current-url-with-external-browser)
     (define-key map "n" 'w3m-view-next-page)
