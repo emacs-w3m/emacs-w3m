@@ -1,3 +1,8 @@
+2001-05-08  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-hns.el (shimbun-hns-article): Support "RLNEW".
+	(shimbun-article): Fixed problem when header contain multibyte string.
+
 2001-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-about-history): Run `set-buffer-multibyte' after
