@@ -1,5 +1,14 @@
 2004-12-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-nikkansports.el (shimbun-nikkansports-group-table):
+	Remove the world-soccer group.
+	(shimbun-nikkansports-from-address): Remove.
+	(shimbun-nikkansports-content-start): Chnage the value.
+	(shimbun-nikkansports-content-end): Ditto.
+	(shimbun-get-headers): Make the from address unreachable; change
+	the message-id form; extract the hour:minute data.
+	(shimbun-make-contents): New function.
+
 	* w3m-util.el (w3m-tag-regexp-of): Remove.
 	(w3m-search-tag-1): New function.
 	(w3m-search-tag): New macro.
