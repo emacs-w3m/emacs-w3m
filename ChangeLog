@@ -1,3 +1,10 @@
+2002-06-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3mhack.el (w3mhack-nonunix-lispdir): New option.
+	(w3mhack-nonunix-icondir): Ditto.
+	(w3mhack-nonunix-dryrun): Ditto.
+	(w3mhack-nonunix-install): New function.
+
 2002-06-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (DOCS): Add `TIPS'.
