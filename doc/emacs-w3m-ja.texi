@@ -611,13 +611,6 @@ autoload の設定を行なう必要はありません。そうでなければ、以下の行
 (require 'w3m-load)
 @end lisp
 
-もし Emacs と XEmacs の両方を使っているならば、次の方法がお勧めの一つで
-す:
-
-@lisp
-(load "w3m-load" t t)
-@end lisp
-
 @item Startup File
 @cindex Startup file
 @vindex w3m-init-file
