@@ -1,3 +1,8 @@
+2002-09-10  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-unseen-remove-one): Use
+	`mew-cinfo-set-fld|msg|time|size' instead of `mew-cinfo-set'.
+
 2002-09-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna-setup): Check new entries registered
