@@ -1232,7 +1232,7 @@ is non-nil."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-pop-up-frame-parameters nil
+(defcustom w3m-popup-frame-parameters nil
   "Alist of frame parameters used when creating a new w3m frame.  It
 allows a kludge that it can also be a plist of frame properties."
   :group 'w3m
@@ -2313,15 +2313,15 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		    (not (compiled-function-p (symbol-function fn))))
 	   (byte-compile fn))))))
 
-(defmacro w3m-pop-up-frame-parameters ()
+(defmacro w3m-popup-frame-parameters ()
   "Return a pop-up frame plist if this file is compiled for XEmacs,
 otherwise return an alist."
   (if (featurep 'xemacs)
-      '(let ((params (or w3m-pop-up-frame-parameters pop-up-frame-plist)))
+      '(let ((params (or w3m-popup-frame-parameters pop-up-frame-plist)))
 	 (if (consp (car-safe params))
 	     (alist-to-plist params)
 	   params))
-    '(let ((params (or w3m-pop-up-frame-parameters pop-up-frame-alist))
+    '(let ((params (or w3m-popup-frame-parameters pop-up-frame-alist))
 	   alist)
        (if (consp (car-safe params))
 	   params
@@ -2330,29 +2330,34 @@ otherwise return an alist."
 	   (setq params (cddr params)))
 	 (nreverse alist)))))
 
-(defmacro w3m-popup-frame-p (&optional force interactive-p)
-  "Return non-nil if the command `w3m' should popup a new frame.  If
-optional FORCE is non-nil, treat as if the last command is called
-interactively."
-  (list 'and 'w3m-pop-up-frames
-	(list 'or force (if interactive-p
-			    interactive-p
-			  '(interactive-p)))
-	(if (featurep 'xemacs)
-	    '(device-on-window-system-p)
-	  'window-system)))
+(defmacro w3m-popup-frame-p ()
+  "Return non-nil if `w3m-pop-up-frames' is non-nil and Emacs really
+supports separate frames."
+  (if (featurep 'xemacs)
+      '(and w3m-pop-up-frames (device-on-window-system-p))
+    '(and w3m-pop-up-frames window-system)))
+
+(defmacro w3m-use-tab-p ()
+  "Return non-nil if `w3m-use-tab' is non-nil and Emacs really supports
+tabs line."
+  (cond ((featurep 'xemacs)
+	 '(and w3m-use-tab (device-on-window-system-p)))
+	((<= emacs-major-version 19)
+	 nil)
+	(t
+	 '(and w3m-use-tab (>= emacs-major-version 21)))))
 
 (defmacro w3m-popup-window-p ()
   "Return non-nil if `w3m-pop-up-windows' is non-nil and the present
 situation allows it."
   (cond ((featurep 'xemacs)
-	 '(and w3m-pop-up-windows (not w3m-use-tab)))
+	 '(and w3m-pop-up-windows (not (w3m-use-tab-p))))
 	((<= emacs-major-version 19)
 	 'w3m-pop-up-windows)
 	(t
 	 '(and w3m-pop-up-windows
 	       (or (< emacs-major-version 21)
-		   (not w3m-use-tab))))))
+		   (not (w3m-use-tab-p)))))))
 
 (defun w3m-message (&rest args)
   "Alternative function of `message' for emacs-w3m."
@@ -4737,8 +4742,8 @@ described in Section 5.2 of RFC 2396.")
 	  (if w3m-view-this-url-new-session-in-background
 	      (set-buffer buffer)
 	    (let ((pop-up-windows (w3m-popup-window-p))
-		  (pop-up-frames (unless w3m-use-tab
-				   w3m-pop-up-frames)))
+		  (pop-up-frames (unless (w3m-use-tab-p)
+				   (w3m-popup-frame-p))))
 	      (if (or pop-up-windows pop-up-frames)
 		  (pop-to-buffer buffer)
 		(switch-to-buffer buffer)))))
@@ -5381,15 +5386,15 @@ new buffer is shows itself with `pop-to-buffer' which is affected by
 			  (w3m-history-element (cadr positions) t))
 	    (setcar w3m-history positions))))
       (when and-pop
-	(let* ((pop-up-frames (unless w3m-use-tab
-				w3m-pop-up-frames))
-	       (pop-up-frame-alist (w3m-pop-up-frame-parameters))
+	(let* ((pop-up-frames (unless (w3m-use-tab-p)
+				(w3m-popup-frame-p)))
+	       (pop-up-frame-alist (w3m-popup-frame-parameters))
 	       (pop-up-frame-plist pop-up-frame-alist))
 	  (if (or pop-up-windows pop-up-frames)
 	      (pop-to-buffer new)
 	    (switch-to-buffer new))))
       (setq w3m-initial-frame
-	    (when w3m-pop-up-frames
+	    (when (w3m-popup-frame-p)
 	      (if (eq oframe (selected-frame))
 		  init-frame
 		(selected-frame))))
@@ -5425,7 +5430,7 @@ terminating the emacs-w3m session."
     (if (= 1 num)
 	(w3m-quit force)
       (setq cur (current-buffer))
-      (if w3m-use-tab
+      (if (w3m-use-tab-p)
 	  (w3m-next-buffer -1)
 	;; List buffers being shown in the other windows of the frame.
 	(save-current-buffer
@@ -6443,8 +6448,8 @@ the current page."
     (w3m-buffer-setup)			; Setup buffer.
     (w3m-arrived-setup)			; Setup arrived database.
     (let ((pop-up-windows (w3m-popup-window-p))
-	  (pop-up-frames (unless w3m-use-tab
-			   w3m-pop-up-frames)))
+	  (pop-up-frames (unless (w3m-use-tab-p)
+			   (w3m-popup-frame-p))))
       (if (or pop-up-windows pop-up-frames)
 	  (pop-to-buffer (current-buffer))
 	(switch-to-buffer (current-buffer))))
@@ -6829,10 +6834,11 @@ Optional NEW-SESSION is intended to be used by the command
   (let* ((nofetch (eq url 'popup))
 	 (buffer (unless new-session
 		   (w3m-alive-p)))
-	 (params (w3m-pop-up-frame-parameters))
+	 (params (w3m-popup-frame-parameters))
 	 (pop-up-windows w3m-pop-up-windows)
-	 (pop-up-frames (w3m-popup-frame-p new-session interactive-p))
-	 (pop-up-frame-alist (w3m-pop-up-frame-parameters))
+	 (pop-up-frames (and (or new-session interactive-p)
+			     (w3m-popup-frame-p)))
+	 (pop-up-frame-alist (w3m-popup-frame-parameters))
 	 (pop-up-frame-plist pop-up-frame-alist)
 	 (oframe (selected-frame))
 	 window frame)
@@ -7657,7 +7663,7 @@ w3m-mode buffers."
   "Insert the header line to this buffer."
   (when (and (or (featurep 'xemacs)
 		 (< emacs-major-version 21)
-		 w3m-use-tab)
+		 (w3m-use-tab-p))
 	     w3m-use-header-line
 	     w3m-current-url
 	     (eq 'w3m-mode major-mode))
