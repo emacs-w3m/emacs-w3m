@@ -70,14 +70,21 @@
 (put 'w3m-static-if 'lisp-indent-function 2)
 (eval-and-compile
   (defmacro w3m-static-if (cond then &rest else)
-    (if (eval cond) then (` (progn  (,@ else))))))
+    (if (eval cond) then (` (progn  (,@ else)))))
+  (defmacro w3m-static-cond (&rest clauses)
+    (while (and clauses
+		(not (eval (car (car clauses)))))
+      (setq clauses (cdr clauses)))
+    (if clauses
+	(cons 'progn (cdr (car clauses))))))
 
-(w3m-static-if (not (fboundp 'find-coding-system))
-    (w3m-static-if (fboundp 'coding-system-p)
-	(defsubst find-coding-system (obj)
-	  "Return OBJ if it is a coding-system."
-	  (if (coding-system-p obj) obj))
-      (require 'pces)))
+(w3m-static-cond ((fboundp 'find-coding-system))
+		 ((fboundp 'coding-system-p)
+		  (defsubst find-coding-system (obj)
+		    "Return OBJ if it is a coding-system."
+		    (if (coding-system-p obj) obj)))
+		 (t
+		  (require 'pces)))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
