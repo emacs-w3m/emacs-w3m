@@ -1,5 +1,12 @@
 2001-05-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-xmas.el (w3m-unoptimize-animated-gif): New function which is
+	separated from `w3m-create-image'; improve a way to check whether
+	a data should be unoptimized or not.
+	(w3m-create-image): Use it.
+
+2001-05-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-xmas.el (w3m-create-image): Attempt to extract the first
 	frame of an animated gif when the unoptimization is failed.
 
