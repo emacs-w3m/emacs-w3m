@@ -3962,25 +3962,23 @@ If input is nil, use default coding-system on w3m."
 
 
 ;;;###autoload
-(defun w3m (&optional url)
-  "Visit the World Wide Web page using the external command w3m or w3mmee.
-If you invoke this command interactively for the first time, it will
-prompt you for the URL where you wish to go, otherwise it will pop up
-an existing window or frame.  In addition, you can run this command in
-the batch mode like \"emacs -f w3m URL&\".  URL should be a string
-which defaults to the value of `w3m-home-page' or \"about:\".  The
-value of `w3m-pop-up-frames' specifies whether to pop up a new frame,
-however, it will be ignored (treated as nil) when this command is
-called non-interactively."
-  (interactive (list (or (w3m-alive-p)
-			 (w3m-input-url))))
-  (unless url
-    ;; It may be called non-interactively.
-    (setq url (or (when (= 1 (length command-line-args-left))
-		    (pop command-line-args-left))
-		  w3m-home-page
-		  "about:")))
-  (let ((focusing-function
+(defun w3m (&optional url nofetch)
+  "Visit the World Wide Web page using the external command w3m, w3mmee
+or w3m-m17n.  When you invoke this command interactively, it will
+prompt you for a URL where you wish to go.  Except that if the prefix
+argument NOFETCH is given and the buffer for w3m exists, it will just
+pop up the buffer.  URL should be a string which defaults to the value
+of `w3m-home-page' or \"about:\".  Otherwise, you can run this command
+in the batch mode like \"emacs -f w3m http://emacs-w3m.namazu.org/&\".
+The value of `w3m-pop-up-frames' specifies whether to pop up a new
+frame, however, it will be ignored (treated as nil) when this command
+is called non-interactively."
+  (interactive (let ((arg (and current-prefix-arg (w3m-alive-p))))
+		 (list (unless arg
+			 (w3m-input-url))
+		       arg)))
+  (let ((buffer (w3m-alive-p))
+	(focusing-function
 	 (append '(lambda (frame)
 		    (raise-frame frame)
 		    (select-frame frame))
@@ -3991,9 +3989,19 @@ called non-interactively."
 	(params (w3m-pop-up-frame-parameters))
 	(popup-frame-p (w3m-popup-frame-p))
 	window frame)
-    (if (bufferp url)
+    (unless (and (stringp url)
+		 (> (length url) 0))
+      (if buffer
+	  (setq nofetch t)
+	;; It may be called non-interactively.
+	(setq url (or (when (= 1 (length command-line-args-left))
+			(pop command-line-args-left))
+		      w3m-home-page
+		      "about:")
+	      nofetch nil)))
+    (if (bufferp buffer)
 	(progn
-	  (when (setq window (get-buffer-window url t))
+	  (when (setq window (get-buffer-window buffer t))
 	    (setq frame (window-frame window)))
 	  (cond (frame
 		 (funcall focusing-function frame)
@@ -4001,18 +4009,29 @@ called non-interactively."
 		 (setq frame nil))
 		(window
 		 (select-window window))
+		(popup-frame-p
+		 (funcall focusing-function (setq frame (make-frame params)))
+		 (switch-to-buffer buffer))
 		(t
-		 (when popup-frame-p
-		   (funcall focusing-function
-			    (setq frame (make-frame params))))
-		 (switch-to-buffer url)))
-	  (setq w3m-initial-frame frame))
-      (when popup-frame-p
-	(funcall focusing-function (setq frame (make-frame params)))
-	(switch-to-buffer (or (w3m-alive-p)
-			      (get-buffer-create "*w3m*"))))
-      (unwind-protect
-	  (w3m-goto-url url)
+		 (switch-to-buffer buffer))))
+      (setq buffer (get-buffer-create "*w3m*"))
+      (if popup-frame-p
+	  (progn
+	    (funcall focusing-function (setq frame (make-frame params)))
+	    (switch-to-buffer buffer))
+	(switch-to-buffer buffer))
+      (erase-buffer)
+      (insert (make-string (max 0 (/ (1- (window-height)) 2)) ?\n)
+	      "Reading " url "...")
+      (beginning-of-line)
+      (let ((fill-column (window-width)))
+	(center-region (point) (point-max)))
+      (goto-char (point-min))
+      (sit-for 0))
+    (unwind-protect
+	(unless nofetch
+	  (w3m-goto-url url))
+      (when frame
 	(setq w3m-initial-frame frame)))))
 
 (eval-when-compile

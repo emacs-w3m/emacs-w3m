@@ -1,3 +1,7 @@
+2001-10-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m): Always prompts user for a URL string.
+
 2001-10-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-weather.el (w3m-weather-url-alist): Refer
