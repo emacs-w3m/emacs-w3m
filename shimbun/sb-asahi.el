@@ -206,9 +206,8 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	(save-excursion
 	  (save-match-data
 	    (setq kansai-special
-		  (if (re-search-backward
-		       ">[\t\n ]*\\([^<>]+\\)[\t\n ]*<[\t\n ]*/th[\t\n ]*>"
-		       nil t)
+		  (if (re-search-backward ">[\t\n ]*\\([^<>]+\\)[\t\n ]*</th>"
+					  nil t)
 		      (match-string 1))))))
       (setq month (string-to-number (match-string (nth 4 numbers)))
 	    year (cond ((and (= 12 month) (= 1 cmonth))
@@ -242,6 +241,11 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	      (cond (kansai-special
 		     (concat "[" kansai-special "] "
 			     (match-string (nth 3 numbers))))
+		    ((and (string-equal group "international")
+			  (string-equal (substring serial
+						   0 (min 7 (length serial)))
+					"jinmin."))
+		     (concat "[人民日報] " (match-string (nth 3 numbers))))
 		    ((and (setq num (nth 7 numbers))
 			  (match-beginning num))
 		     (concat "[" (match-string num) "] "
