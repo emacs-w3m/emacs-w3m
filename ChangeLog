@@ -1,3 +1,8 @@
+2003-12-05  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/sb-tdiary.el (shimbun-get-headers): Erase buffer before
+	retrieving.
+
 2003-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-view-this-url-new-session): Abolish the optional arg.
