@@ -1,3 +1,15 @@
+2005-03-11  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-squeak-ja.el (shimbun-squeak-ja-url): Improve url.
+
+	* shimbun/sb-squeak-dev.el (shimbun-squeak-dev-url): Ditto.
+
+	* shimbun/sb-sml.el (shimbun-sml-url): Ditto.
+
+	* shimbun/sb-pilot-mailsync.el (shimbun-pilot-mailsync-url): Ditto.
+
+	* shimbun/sb-pilot-link.el (shimbun-index-url): Improve url generating rule.
+
 2005-03-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-tcup.el (shimbun-tcup-group-alist): Revert; update

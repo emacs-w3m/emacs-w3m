@@ -35,7 +35,7 @@
 (luna-define-class shimbun-squeak-ja (shimbun-mailman-ja) ())
 
 (defvar shimbun-squeak-ja-url
-  "http://lists.squeakfoundation.org/pipermail/squeak-ja")
+  "http://www.smalltalk.jp/pipermail/squeak-ja/")
 
 (defvar shimbun-squeak-ja-groups '("main"))
 

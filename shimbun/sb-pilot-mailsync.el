@@ -31,7 +31,7 @@
 
 (luna-define-class shimbun-pilot-mailsync (shimbun-mailman) ())
 
-(defvar shimbun-pilot-mailsync-url "http://lists.gnu-designs.com/pipermail/pilot-mailsync")
+(defvar shimbun-pilot-mailsync-url "http://lists.gnu-designs.com/pipermail/pilot-mailsync/")
 
 (defvar shimbun-pilot-mailsync-groups '("main"))
 

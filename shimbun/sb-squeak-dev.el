@@ -36,7 +36,7 @@
 (luna-define-class shimbun-squeak-dev (shimbun-mailman) ())
 
 (defvar shimbun-squeak-dev-url
-  "http://lists.squeakfoundation.org/pipermail/squeak-dev")
+  "http://lists.squeakfoundation.org/pipermail/squeak-dev/")
 
 (defvar shimbun-squeak-dev-groups '("main"))
 

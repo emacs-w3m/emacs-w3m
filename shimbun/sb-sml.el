@@ -31,7 +31,7 @@
 
 (luna-define-class shimbun-sml (shimbun-mailman) ())
 
-(defvar shimbun-sml-url "http://www.sra.co.jp/smalltalk/SML/archives")
+(defvar shimbun-sml-url "http://www.akademia.co.jp/Smalltalk/SML/archives/archive/")
 
 (defvar shimbun-sml-groups '("main"))
 
