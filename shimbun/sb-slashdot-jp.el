@@ -1,6 +1,6 @@
 ;;; sb-slashdot-jp.el --- shimbun backend for slashdot.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;         TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -97,6 +97,7 @@
   (with-temp-buffer
     (let (begin)
       (when (and (shimbun-retrieve-url (shimbun-header-xref head))
+		 (goto-char (point-min))
 		 (search-forward
 		  shimbun-slashdot-jp-story-article-start-pattern nil t)
 		 (setq begin (point))
@@ -110,6 +111,7 @@
   (with-temp-buffer
     (let (begin end)
       (when (and (shimbun-retrieve-url (shimbun-header-xref head))
+		 (goto-char (point-min))
 		 (shimbun-slashdot-jp-search-comment-head shimbun sid cid)
 		 (re-search-forward "<table[^>]*><tr><td[^>]*>" nil t))
 	(delete-region (point-min) (match-beginning 0))
@@ -204,6 +206,7 @@
 			   (* num shimbun-slashdot-jp-story-count))
 		   (shimbun-url-internal shimbun))
 		  'reload)
+		 (goto-char (point-min))
 		 (search-forward
 		  shimbun-slashdot-jp-story-head-start-pattern nil t)
 		 (setq begin (point))
@@ -247,6 +250,7 @@
     (with-temp-buffer
       (when (shimbun-retrieve-url
 	     (shimbun-slashdot-jp-sid-url shimbun sid) 'reload)
+	(goto-char (point-min))
 	(while (setq head
 		     (shimbun-slashdot-jp-search-comment-head shimbun sid
 							      nil parent))
