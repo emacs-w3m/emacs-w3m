@@ -202,21 +202,35 @@ the documentation for the option `w3m-command-arguments-alist'."
   :type '(repeat string))
 
 (defcustom w3m-command-arguments-alist nil
-  "*Alist of a regexp matching hostnames and additional arguments passed
-to the w3m command.  This lets you, for instance, use or not use proxy
+  "*Alist of a regexp matching urls and additional arguments passed to
+the w3m command.  This lets you, for instance, use or not use proxy
 server for the particular hosts.  The first match made will be used.
 Here is an example of how to set this option:
 
 \(setq w3m-command-arguments-alist
-      '(;; Don't use proxy server to visit local hosts.
-	(\".*\\\\.your-company\\\\.com$\" \"-no-proxy\")
-	;; Use the proxy server to visit any foreign hosts.
-	(\"\" \"-o\" \"http://proxy.your-company.com:8080/\")))"
+      '(;; Don't use any additional options to visit local web pages.
+	(\"^http://\\\\([^/]*\\\\.\\\\)*your-company\\\\.com\\\\(/\\\\|$\\\\)\"
+	 \"-no-proxy\")
+	;; Use the proxy server to visit any foreign urls.
+	(\"\"
+	 \"-o\" \"http://proxy.your-company.com:8080/\")))
+
+Where the first element matches the url that the scheme is \"http\" and
+the hostname is either \"your-company.com\" or a name ended with
+\".your-company.com\".  If you are a novice on the regexps, you can use
+the option `w3m-no-proxy-hosts' instead."
   :group 'w3m
   :type '(repeat (cons :format "%v"
-		       (regexp :tag "Host names regexp")
+		       regexp
 		       (repeat :tag "Arguments passed to w3m command"
 			       (string :tag "Arg")))))
+
+(defcustom w3m-no-proxy-hosts nil
+  "*List of hostnames that emacs-w3m will not use a proxy server to
+connect to.  Each element should be exactly a name of a host machine,
+not a regexp."
+  :group 'w3m
+  :type '(repeat (string :tag "Hostname")))
 
 (defcustom w3m-command-environment
   (delq nil
@@ -2838,21 +2852,23 @@ complete."
 
 (defun w3m-additional-command-arguments (url)
   "Return a list of additional arguments passed to the w3m command.
-You may specify additional arguments for the particular hosts using
-the option `w3m-command-arguments-alist'."
-  (when (and w3m-command-arguments-alist
-	     url
-	     (string-match "^[a-z]+://\\([^/]+\\)" url))
-    (let ((hostname (match-string 1 url))
-	  (defs w3m-command-arguments-alist)
-	  def args)
-      (while (and defs
-		  (null args))
-	(setq def (car defs)
-	      defs (cdr defs))
-	(when (string-match (car def) hostname)
-	  (setq args (cdr def))))
-      args)))
+You may specify additional arguments for the particular urls using the
+option `w3m-command-arguments-alist', or using `w3m-no-proxy-hosts' to
+add the option \"-no-proxy\"."
+  (let ((defs w3m-command-arguments-alist)
+	def args)
+    (while (and defs
+		(null args))
+      (setq def (car defs)
+	    defs (cdr defs))
+      (when (string-match (car def) url)
+	(setq args (cdr def))))
+    (when (and w3m-no-proxy-hosts
+	       (not (member "-no-proxy" args))
+	       (string-match "^[a-z]+://\\([^/]+\\)" url)
+	       (member (match-string 1 url) w3m-no-proxy-hosts))
+      (push "-no-proxy" args))
+    args))
 
 (defun w3m-w3m-retrieve (url no-decode no-cache post-data referer handler)
   "Retrieve content pointed by URL with w3m, insert it to this buffer,

@@ -1,5 +1,13 @@
 2002-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-command-arguments-alist): Change the meaning that
+	the car of each element will be compared with a url instead of a
+	hostname.
+	(w3m-no-proxy-hosts): New user option.
+	(w3m-additional-command-arguments): Look into it.
+
+2002-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-command-arguments-alist): New user option.
 	(w3m-additional-command-arguments): New function.
 	(w3m-w3m-retrieve): Use it.
