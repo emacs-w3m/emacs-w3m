@@ -104,7 +104,7 @@ x|3Z|D*vbQ%UY!38ikbc/EnUU_tbHVH\"9Sfk{\n w>zvk!?===x`]c5_-+<@ooVVV#D~F`e0")))
 	  (push (shimbun-make-header
 		 0
 		 (shimbun-mime-encode-string subject)
-		 (shimbun-from-address-internal shimbun)
+		 (shimbun-from-address shimbun)
 		 (shimbun-make-date-string year month day)
 		 id  "" 0 0
 		 (cond ((equal group "gamespot") (concat (shimbun-index-url shimbun) url))

@@ -43,7 +43,7 @@
   ((shimbun shimbun-ibm-dev) header &optional outbuf)
   (let* ((case-fold-search t)
 	 (count 0)
-	 (from (shimbun-from-address-internal shimbun))
+	 (from (shimbun-from-address shimbun))
 	 (group (shimbun-current-group-internal shimbun))
 	 (baseurl (concat (shimbun-url-internal shimbun) group "/"))
 	 aux headers id url subject date datelist)

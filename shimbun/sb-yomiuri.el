@@ -194,7 +194,7 @@ It does also shorten too much spaces."
   "Return a list of headers."
   (let ((group (shimbun-current-group-internal entity))
 	(parent (shimbun-url-internal entity))
-	(from (shimbun-from-address-internal entity))
+	(from (shimbun-from-address entity))
 	(case-fold-search t)
 	regexp numbers cyear cmonth month year day headers)
     (setq regexp (assoc group shimbun-yomiuri-group-regexp-alist)

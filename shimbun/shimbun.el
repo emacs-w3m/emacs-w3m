@@ -462,6 +462,16 @@ Return nil if all pages should be retrieved."
 Return nil when articles are not expired."
   (shimbun-expiration-days-internal shimbun))
 
+(luna-define-generic shimbun-from-address (shimbun)
+  "Make a From address like \"SERVER (GROUP) <ADDRESS>\".")
+
+(luna-define-method shimbun-from-address ((shimbun shimbun))
+  (format "%s (%s) <%s>"
+	  (shimbun-server-internal shimbun)
+	  (shimbun-current-group-internal shimbun)
+	  (or (shimbun-from-address-internal shimbun)
+	      (shimbun-reply-to shimbun))))
+
 (luna-define-generic shimbun-article (shimbun header &optional outbuf)
   "Retrieve a SHIMBUN article which corresponds to HEADER to the OUTBUF.
 HEADER is a shimbun-header which is obtained by `shimbun-headers'.

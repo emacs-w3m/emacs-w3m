@@ -85,7 +85,7 @@ egh`b:Uwy`8}#Db-kyCsr_UMRz=,U|>-:&`05lXB4(;h{[&~={Imb-az7\n &U\
 					(progn (search-forward "</b>" nil t) (point)))
 				       "<[^>]+>")
 				      ""))
-			  (shimbun-from-address-internal shimbun)
+			  (shimbun-from-address shimbun)
 			  date id "" 0 0 url))
 		 (x (assoc group group-header-alist)))
 	    (unless (member id ids)

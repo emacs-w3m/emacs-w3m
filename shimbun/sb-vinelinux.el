@@ -89,9 +89,10 @@
 	(if (shimbun-search-id shimbun id)
 	    (throw 'stop nil))
 	(forward-line 1)
-	(push (shimbun-make-header
-	       0 (shimbun-mime-encode-string subject)
-	       shimbun-vinelinux-from-address date id "" 0 0 url)
+	(push (shimbun-make-header 0
+				   (shimbun-mime-encode-string subject)
+				   (shimbun-from-address shimbun)
+				   date id "" 0 0 url)
 	      headers)))
     headers))
 

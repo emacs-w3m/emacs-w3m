@@ -59,7 +59,7 @@ w9O17:Z>!\n vmZQ.BUpki=FZ:m[;]TP%D\\#uN6/)}c`/DPxKB?rQhBc\"")))
 	  (shimbun-current-group-internal shimbun)))
 
 (defun shimbun-nikkei-get-headers (shimbun range)
-  (let ((from (shimbun-from-address-internal shimbun))
+  (let ((from (shimbun-from-address shimbun))
 	(group (shimbun-current-group-internal shimbun))
 	(parent (shimbun-url-internal shimbun))
 	(date "")

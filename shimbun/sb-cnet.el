@@ -68,7 +68,7 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 	    (push (shimbun-make-header
 		   0
 		   (shimbun-mime-encode-string subject)
-		   (shimbun-from-address-internal shimbun)
+		   (shimbun-from-address shimbun)
 		   date id "" 0 0 (concat (shimbun-url-internal shimbun) url))
 		  headers)))
 	(goto-char point)))

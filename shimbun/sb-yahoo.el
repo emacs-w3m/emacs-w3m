@@ -112,7 +112,7 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 	      (push (shimbun-make-header
 		     0
 		     (shimbun-mime-encode-string subject)
-		     (shimbun-from-address-internal shimbun)
+		     (shimbun-from-address shimbun)
 		     (shimbun-make-date-string (string-to-number year)
 					       (string-to-number month)
 					       (string-to-number day) time)

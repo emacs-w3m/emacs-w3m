@@ -29,11 +29,7 @@
 (require 'shimbun)
 (require 'sb-asahi)
 
-(luna-define-class shimbun-asahi-html (shimbun shimbun-asahi) ())
-
-(defvar shimbun-asahi-html-url shimbun-asahi-url)
-(defvar shimbun-asahi-html-groups shimbun-asahi-groups)
-(defvar shimbun-asahi-html-from-address shimbun-asahi-from-address)
+(luna-define-class shimbun-asahi-html (shimbun-asahi) ())
 
 (defvar shimbun-asahi-html-content-start
   "<!--[\t\n ]*Start of photo[\t\n ]*-->\

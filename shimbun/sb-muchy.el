@@ -86,7 +86,7 @@
   headers))
 
 (defun shimbun-muchy-get-headers (shimbun headers date-list)
-  (let* ((from (shimbun-from-address-internal shimbun))
+  (let* ((from (shimbun-from-address shimbun))
 	 (group (shimbun-current-group-internal shimbun))
 	 (baseurl (shimbun-url-internal shimbun))
 	 case-fold-search date)

@@ -92,9 +92,7 @@
 	 (idbase (concat "palmwarefan."
 			 (if (string-match "^http://\\([^/]+\\)/" url)
 			     (match-string 1 url)
-			   url)
-			 ))
-	 (from "brian@palmfan.com")
+			   url)))
 	 headers)
     (with-temp-buffer
       (shimbun-retrieve-url url 'no-cache 'no-decode)
@@ -183,9 +181,10 @@
 		  (while (string-match "alt=\"\\([^\"]+\\)\"" addition)
 		    (setq subject (concat subject "/" (match-string 1 addition))
 			  addition (substring addition (match-end 0)))))
-		(push (shimbun-make-header
-		       0 (shimbun-mime-encode-string subject)
-		       from date id "" 0 0 url)
+		(push (shimbun-make-header 0
+					   (shimbun-mime-encode-string subject)
+					   (shimbun-from-address shimbun)
+					   date id "" 0 0 url)
 		      headers))))))
     (nreverse headers))))
 

@@ -1,3 +1,66 @@
+2003-06-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/shimbun.el: Changes to add a server name and a current
+	group name to From: header.
+	(shimbun-from-address): New method.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-groups,
+	shimbun-asahi-group-index-alist,
+	shimbun-asahi-group-regexp-alist): Abolished.
+	(shimbun-asahi-group-table): New variable.
+	(shimbun-groups, shimbun-from-address): New methods.
+	(shimbun-index-url): Reimplemented.
+	(shimbun-asahi-index-url): Removed.
+	(shimbun-asahi-get-headers): Use `shimbun-from-address' instead of
+	`shimbun-from-address-internal'; Refer `shimbun-asahi-group-table'
+	instead of `shimbun-asahi-group-regexp-alist'.
+
+	* shimbun/sb-asahi-html.el (toplevel): Inherit only from
+	`shimbun-asahi'.
+	(shimbun-asahi-html-url, shimbun-asahi-html-groups,
+	shimbun-asahi-html-from-address): Abolished.
+
+	* shimbun/sb-kantei.el (shimbun-kantei-from-address): Changed its
+	default value.
+	(shimbun-from-address): New method.
+	(shimbun-get-headers): Use `shimbun-from-address' instead of
+	`shimbun-from-address-internal'.
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-palmwarefan-headers): Use
+	`shimbun-from-address' instead of using literal string.
+
+	* shimbun/sb-palmoslove.el (shimbun-palmoslove-from-address): New
+	variable.
+	(shimbun-headers): Use `shimbun-from-address' instead of using
+	literal string.
+
+	* shimbun/sb-vinelinux.el (shimbun-get-headers): Use
+	`shimbun-from-address' instead of using the value of
+	`shimbun-vinelinux-from-address'.
+
+	* shimbun/sb-cnet.el (shimbun-get-headers)
+	* shimbun/sb-dennou.el (shimbun-headers)
+	* shimbun/sb-f1express.el (shimbun-get-headers)
+	* shimbun/sb-f1fan.el (shimbun-get-headers)
+	* shimbun/sb-ibm-dev.el (shimbun-headers)
+	* shimbun/sb-impress.el (shimbun-get-headers)
+	* shimbun/sb-japantimes.el (shimbun-get-headers)
+	* shimbun/sb-jpo.el (shimbun-jpo-headers-1)
+	* shimbun/sb-lotusex.el (shimbun-get-headers)
+	* shimbun/sb-mainichi.el (shimbun-get-headers)
+	* shimbun/sb-makanai.el (shimbun-makanai-scan-articles)
+	* shimbun/sb-muchy.el (shimbun-get-headers)
+	* shimbun/sb-nikkansports.el (shimbun-get-headers)
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers)
+	* shimbun/sb-pcweb-column.el (shimbun-get-headers)
+	* shimbun/sb-sponichi.el (shimbun-get-headers)
+	* shimbun/sb-wincefan.el (shimbun-get-headers)
+	* shimbun/sb-wired.el (shimbun-get-group-header-alist)
+	* shimbun/sb-yahoo.el (shimbun-get-headers)
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-get-headers)
+	* shimbun/sb-zdnet.el (shimbun-get-headers): Use
+	`shimbun-from-address' instead of `shimbun-from-address-internal'.
+
 2003-06-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-jpo.el (shimbun-jpo-headers-1): Use

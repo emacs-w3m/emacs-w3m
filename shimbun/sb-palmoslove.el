@@ -31,6 +31,7 @@
 
 (defvar shimbun-palmoslove-content-hash-length 31)
 (defvar shimbun-palmoslove-url "http://palmoslove.com")
+(defvar shimbun-palmoslove-from-address "webmaster@palmoslove.com")
 (defvar shimbun-palmoslove-coding-system 'japanese-shift-jis)
 
 (defvar shimbun-palmoslove-groups
@@ -57,7 +58,6 @@
 	(url (shimbun-index-url shimbun))
 	(group (shimbun-current-group-internal shimbun))
 	(idbase "palmoslove")
-	(from "webmaster@palmoslove.com")
 	(year (string-to-number (substring (current-time-string) 20)))
 	headers)
     (with-temp-buffer
@@ -132,9 +132,10 @@
 		  (setq subject (concat
 				 (substring subject 0 (match-beginning 0))
 				 (substring subject (match-end 0)))))
-		(push (shimbun-make-header
-		       0 (shimbun-mime-encode-string subject)
-		       from date id "" 0 0 url)
+		(push (shimbun-make-header 0
+					   (shimbun-mime-encode-string subject)
+					   (shimbun-from-address shimbun)
+					   date id "" 0 0 url)
 		      headers)))))))
     headers))
 

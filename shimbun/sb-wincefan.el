@@ -50,7 +50,7 @@
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-wincefan)
 					 &optional outbuf)
-  (let* ((from (shimbun-from-address-internal shimbun))
+  (let* ((from (shimbun-from-address shimbun))
 	 (group (shimbun-current-group-internal shimbun))
 	 (baseurl (when (string-match "^http://\\([^/]+\\)/*$"
 				      shimbun-wincefan-url)

@@ -112,7 +112,7 @@
 
 (defun shimbun-jpo-headers-1 (shimbun origurl &optional urlregexp unmatchregexp)
   (let ((case-fold-search t)
-	(from (shimbun-from-address-internal shimbun))
+	(from (shimbun-from-address shimbun))
 	(group (shimbun-current-group-internal shimbun))
 	(regexp (format "<td><font color=\"[#0-9A-Z]+\"><a href=\"\\(%s\\.html*\\)\">\\(.*\\)</a>[　 ]*\\([.0-9]+\\)" (or urlregexp "\\(.*\\)")))
 	(urlprefix
