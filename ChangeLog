@@ -1,3 +1,19 @@
+2001-03-05  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el (w3m-command-arguments): Add "-S" option for w3m.
+	(w3m-search-engine-alist): Add new spec for google with JA lang.
+	(w3m-current-url): Make variable buffer local at top leve.
+	(w3m-current-title): Likewise.
+	(w3m-url-history): Likewise.
+	(w3m-process-temp-file): Likewise.
+	(w3m-rendering-region): Do not make local variable for the reason
+	above.
+	(w3m-exec): Likewise.
+	(w3m-external-view): Likewise.
+	(w3m-goto-next-anchor): Bug fix.
+	(w3m-goto-previous-anchor): Bug fix.
+	(w3m-escape-query-string): Bug: Escape SPC char as "+" not "%20".
+
 2001-03-04  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
 	* w3m.el: Add Keisuke Nishida as author.
