@@ -75,9 +75,10 @@
 
 (defun w3mhack-compile ()
   "Byte-compile the w3m modules."
-  (let (elc el modules)
+  (let (modules)
     (let* ((buffer (generate-new-buffer " *modules*"))
-	   (standard-output buffer))
+	   (standard-output buffer)
+	   elc el)
       (w3mhack-examine-modules)
       (save-excursion
 	(set-buffer buffer)
