@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -390,5 +390,22 @@ Otherwise return nil."
 	  (substring str 0 idx)))
     'truncate-string))
 
+(defun w3m-prin1 (object &optional stream)
+  "Like `prin1', except that control chars will be represented with ^ as
+`cat -v' does."
+  (if (stringp object)
+      (let (rest)
+	(dolist (char (append (format "%s" object) nil) rest)
+	  (cond ((eq char ?\C-?)
+		 (push "^?" rest))
+		((or (memq char '(?\t ?\n))
+		     (>= char ?\ ))
+		 (push (char-to-string char) rest))
+		(t
+		 (push (concat "^" (char-to-string (+ 64 char))) rest))))
+	(prin1 (apply 'concat (nreverse rest)) stream))
+    (prin1 object stream)))
+
 (provide 'w3m-util)
+
 ;;; w3m-util.el ends here

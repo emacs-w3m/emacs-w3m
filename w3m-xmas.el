@@ -471,7 +471,7 @@ option, it is recommended a bit that setting both the option
 (when (boundp 'gutter-buffers-tab-enabled)
   (defadvice format-buffers-tab-line
     (around w3m-xmas-show-current-title-in-buffer-tab (buffer) activate)
-    "Advised by Emacs-W3M.
+    "Advised by emacs-w3m.
 Show the current title string in the buffer tab.  Unfortunately,
 existing XEmacs does not support showing non-ascii characters.  When a
 title contains non-ascii characters, show a url name by default."

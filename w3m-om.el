@@ -129,7 +129,7 @@ variants in this alist.")
     (vscii		. *coding-category-bin*))
   "*Alist of a modern coding-system and a traditional coding-category.")
 
-(let ((id "(generated automatically by Emacs-W3M)")
+(let ((id "(generated automatically by emacs-w3m)")
       to from info-vector document i)
   (dolist (elem w3m-om-coding-system-alist)
     (setq to (car elem)
@@ -310,7 +310,7 @@ empty input."
 							  history
 							  default-value)
 				    activate)
-	"Advised by Emacs-W3M.
+	"Advised by emacs-w3m.
 Allow the optional fourth argument DEFAULT-VALUE which will be used as
 the value to return if the user enters the empty string."
 	(, (if (and (= emacs-major-version 19) (>= emacs-minor-version 29))

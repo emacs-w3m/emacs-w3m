@@ -1,5 +1,13 @@
 2002-02-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el (w3m-prin1): New function.
+	* w3m.el (w3m-save-list): Use it instead of `prin1'.
+
+	* w3mhack.el, w3m.el, w3m-xmas.el, w3m-om.el: Say emacs-w3m not
+	Emacs-W3M.
+
+2002-02-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* mime-w3m.el (mime-w3m-mode-dont-bind-keys): New variable.
 	(mime-setup-w3m): Don't bind keys listed in the above.
 
