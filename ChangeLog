@@ -1,5 +1,11 @@
 2002-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-bitmap.el (w3m-bitmap-image-face-inherit): Default to t.
+
+	* w3m-om.el (w3m-om-use-overstrike-to-make-face-bold): New var.
+	(custom-declare-face): Advise to make it use `set-face-bold-p' to
+	make faces bold by overstriking.
+
 	* w3m-util.el (w3m-default-face-colors): New constant.
 	* w3m.el (w3m-bold-face, w3m-underline-face): Use it.
 

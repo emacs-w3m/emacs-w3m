@@ -356,6 +356,29 @@ If COLUMN is within a multi-column character, replace it by
 spaces and tab."
   (inline (move-to-column-strictly column t)))
 
+;;; Faces:
+(defvar w3m-om-use-overstrike-to-make-face-bold 'w3m
+  "*If non-nil, use `set-face-bold-p' to make faces bold by overstriking.
+If it is the symbol `w3m', only 'w3m-' prefixed faces will be affected.")
+
+(defadvice custom-declare-face (around set-face-bold-with-overstrike activate)
+  "Advised by emacs-w3m.
+Use `set-face-bold-p' to make faces bold by overstriking.  See also the
+documentation for `w3m-om-use-overstrike-to-make-face-bold'."
+  (if (if (eq w3m-om-use-overstrike-to-make-face-bold 'w3m)
+	  (string-match "\\`w3m-" (symbol-name (ad-get-arg 0)))
+	w3m-om-use-overstrike-to-make-face-bold)
+      (let ((si:custom-set-face-bold (symbol-function 'custom-set-face-bold))
+	    (si:custom-face-bold (symbol-function 'custom-face-bold)))
+	(defalias 'custom-set-face-bold 'set-face-bold-p)
+	(defalias 'custom-face-bold (lambda (face &rest args)
+				      (face-bold-p face)))
+	(unwind-protect
+	    ad-do-it
+	  (fset 'custom-set-face-bold si:custom-set-face-bold)
+	  (fset 'custom-face-bold si:custom-face-bold)))
+    ad-do-it))
+
 ;;; Widget:
 (defun w3m-om-define-missing-widgets ()
   "Define some missing widget(s)."

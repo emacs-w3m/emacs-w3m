@@ -232,7 +232,8 @@ managing column numbers on bitmap characters."
      (:foreground "Black"))
     (t
      (:background "White") (:foreground "Black")))
-  "Face used to highlight bitmap images."
+  "Face used to highlight bitmap images.  Note that it won't be used if
+`w3m-bitmap-image-face-inherit' is non-nil."
   :group 'w3m-face)
 
 (defcustom w3m-bitmap-convert-arguments nil
@@ -240,8 +241,10 @@ managing column numbers on bitmap characters."
   :group 'w3m
   :type '(repeat string))
 
-(defcustom w3m-bitmap-image-face-inherit nil
-  "*If non-nil, inherit image face from the original face."
+(defcustom w3m-bitmap-image-face-inherit t
+  "*If non-nil, inherit image face from the original face.
+It means that the face `w3m-bitmap-image-face' won't be used to
+highlight bitmap images."
   :group 'w3m
   :type 'boolean)
 
