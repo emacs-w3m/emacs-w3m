@@ -1,5 +1,7 @@
 2004-04-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* Release emacs-w3m-1.4 from emacs-w3m-1_4 branch.
+
 	* Makefile.in (install-package): Install w3m-load.el.
 	(dist, tarball): Reimplemented, in order to keep time stamps of
 	source files.
