@@ -113,25 +113,8 @@ x|3Z|D*vbQ%UY!38ikbc/EnUU_tbHVH\"9Sfk{\n w>zvk!?===x`]c5_-+<@ooVVV#D~F`e0")))
 		headers))))
     headers))
 
-(luna-define-method shimbun-make-contents :before ((shimbun shimbun-zdnet) header)
-  (let ((case-fold-search t)
-	(start))
-    (and
-     (search-forward "<!--DATE-->" nil t)
-     (looking-at "[ 　]+\\([0-9]+\\)年\\(1[012]\\|[2-9]\\)月\
-\\([12][0-9]?\\|3[01]?\\|[4-9]\\)日[ 　]+\
-\\(0[0-9]\\|1[0-2]\\):\\([0-5][0-9]\\)[ 　]+\\([AP]M\\)")
-     (shimbun-header-set-date
-      header
-      (shimbun-make-date-string
-       (string-to-number (match-string 1))
-       (string-to-number (match-string 2))
-       (string-to-number (match-string 3))
-       (if (string= "PM" (match-string 6))
-	   (format "%02d:%s"
-		   (+ 12 (string-to-number (match-string 4)))
-		   (match-string 5))
-	 (buffer-substring (match-beginning 4) (match-end 5))))))
+(defun shimbun-zdnet-clean-text-page ()
+  (let ((case-fold-search t) (start))
     (goto-char (point-min))
     (when (and (search-forward "<!--BODY-->" nil t)
 	       (setq start (match-beginning 0))
@@ -153,8 +136,89 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>"
 	    "<A [^>]*HREF=\"http:/[^\"]*/\\(ad\\.zdnet\\.co\\.jp\\|\
 a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>"
 	    nil t)
-      (delete-region (match-beginning 0) (match-end 0)))
-    (goto-char (point-min))))
+      (delete-region (match-beginning 0) (match-end 0)))))
+
+(defun shimbun-zdnet-retrieve-next-pages (shimbun base-id url &optional images)
+  (let ((case-fold-search t) (next))
+    (goto-char (point-min))
+    (when (re-search-forward
+	   "<a href=\"\\([^\"]+\\)\"><b>次のページ</b></a>" nil t)
+      (setq next (shimbun-expand-url (match-string 1) url)))
+    (shimbun-zdnet-clean-text-page)
+    (goto-char (point-min))
+    (insert "<html>\n<head>\n<base href=\"" url "\">\n</head>\n<body>\n")
+    (goto-char (point-max))
+    (insert "\n</body>\n</html>\n")
+    (when shimbun-encapsulate-images
+      (setq images (shimbun-mime-replace-image-tags base-id url images)))
+    (cons (list "text/html" nil (buffer-string))
+	  (if next
+	      (with-temp-buffer
+		(shimbun-fetch-url shimbun next)
+		(shimbun-zdnet-retrieve-next-pages shimbun base-id next images))
+	    (shimbun-mime-retrieve-images (nreverse images))))))
+
+(luna-define-method shimbun-make-contents ((shimbun shimbun-zdnet) header)
+  (let ((case-fold-search t))
+    (when (and (search-forward "<!--DATE-->" nil t)
+	       (looking-at "[ 　]+\\([0-9]+\\)年\\(1[012]\\|[2-9]\\)月\
+\\([12][0-9]?\\|3[01]?\\|[4-9]\\)日[ 　]+\
+\\(0[0-9]\\|1[0-2]\\):\\([0-5][0-9]\\)[ 　]+\\([AP]M\\)"))
+      (shimbun-header-set-date
+       header
+       (shimbun-make-date-string
+	(string-to-number (match-string 1))
+	(string-to-number (match-string 2))
+	(string-to-number (match-string 3))
+	(if (string= "PM" (match-string 6))
+	    (format "%02d:%s"
+		    (+ 12 (string-to-number (match-string 4)))
+		    (match-string 5))
+	  (buffer-substring (match-beginning 4) (match-end 5))))))
+    (let ((base-id (shimbun-header-id header))
+	  (contents))
+      (when (string-match "\\`<\\([^>]+\\)>\\'" base-id)
+	(setq base-id (match-string 1 base-id)))
+      (setq contents
+	    (shimbun-zdnet-retrieve-next-pages shimbun
+					       base-id
+					       (shimbun-header-xref header)))
+      (if (> (length contents) 1)
+	  (let (texts others)
+	    (erase-buffer)
+	    (dolist (content contents)
+	      (if (string-match "\\`text/" (car content))
+		  (push content texts)
+		(push content others)))
+	    (setq texts (nreverse texts)
+		  others (nreverse others))
+	    (shimbun-mime-make-multipart-message
+	     base-id
+	     (if others
+		 (cons (if (> (length texts) 1)
+			   (with-temp-buffer
+			     (let ((boundary
+				    (shimbun-mime-make-multipart-message
+				     base-id texts "mixed")))
+			       (list "multipart/mixed"
+				     nil
+				     (buffer-string)
+				     boundary)))
+			 (car texts))
+		       others)
+	       texts)
+	     (unless others "mixed")))
+	(let ((charset
+	       (upcase
+		(symbol-name
+		 (detect-mime-charset-region (point-min) (point-max))))))
+	  (encode-coding-region (point-min) (point-max)
+				(mime-charset-to-coding-system charset))
+	  (insert "Content-Type: text/html; charset=" charset "\n\n")))
+      (goto-char (point-min))
+      (shimbun-header-insert shimbun header)
+      (insert "MIME-Version: 1.0\n")
+      (buffer-string))))
 
 (provide 'sb-zdnet)
 

@@ -328,82 +328,135 @@ Generated article have a multipart/related content-type."
   :group 'shimbun
   :type 'boolean)
 
+(defun shimbun-mime-replace-image-tags (message-id &optional base-url images)
+  "Replace all occurrences of IMG tags with references to inlined
+image parts.  This function takes a Message-ID as a base string for
+CIDs of inlined image parts, and returns an alist of URLs and CIDs."
+  (goto-char (point-min))
+  (let (beg end url img)
+    (while (re-search-forward "<img" nil t)
+      (setq beg (point))
+      (when (search-forward ">" nil t)
+	(setq end (point))
+	(goto-char beg)
+	(when (re-search-forward
+	       "src[ \t\r\f\n]*=[ \t\r\f\n]*\"\\([^\"]*\\)\"" end t)
+	  (setq url (shimbun-expand-url (match-string 1) base-url))
+	  (unless (setq img (assoc url images))
+	    (push (setq img (cons url
+				  (format "shimbun.inline.%d.%s"
+					  (length images)
+					  message-id)))
+		  images))
+	  (replace-match (concat "src=\"cid:" (cdr img) "\""))))))
+  images)
+
+(defvar shimbun-mime-boundary-counter 0)
+
+(defun shimbun-mime-make-multipart-message (message-id contents
+						       &optional subtype)
+  "Create a multipart message from Message-ID and CONTENTS.
+CONTENTS must be a list of 3-tuples: each 3-tuple consists of a
+content type, a content id, and a content body.  When no content id is
+specified, Message-ID is used as a base string to create a content id."
+  (let ((boundary (apply 'format "===shimbun_%d_%d_%d_%d==="
+			 (incf shimbun-mime-boundary-counter)
+			 (current-time)))
+	(count 0)
+	(start))
+    (while contents
+      (multiple-value-bind (type cid data parameter) (pop contents)
+	(unless (eq (char-before) ?\n)
+	  (insert "\n"))
+	(cond
+	 ((string-match "\\`text/" type)
+	  (let* ((begin (point))
+		 (charset (upcase
+			   (symbol-name
+			    (detect-mime-charset-region begin
+							(progn (insert data)
+							       (point)))))))
+	    (encode-coding-region begin
+				  (point-max)
+				  (mime-charset-to-coding-system charset))
+	    (goto-char begin)
+	    (insert "--" boundary
+		    "\nContent-Type: " type "; charset=" charset
+		    "\nContent-ID: <"
+		    (or cid
+			(setq cid (format "shimbun.text.%d.%s"
+					  (incf count) message-id)))
+		    ">\n\n")))
+	 ((string-match "\\`image/" type)
+	  (insert "--" boundary
+		  "\nContent-Type: " type
+		  "\nContent-ID: <"
+		  (if cid
+		      (concat cid ">\nContent-Disposition: inline")
+		    (concat (setq cid (format "shimbun.image.%d.%s"
+					      (incf count) message-id))
+			    ">"))
+		  "\nContent-Transfer-Encoding: base64\n\n"
+		  (shimbun-base64-encode-string data)))
+	 ((string-match "\\`multipart/" type)
+	  (insert "--" boundary
+		  "\nContent-ID: <"
+		  (or cid
+		      (setq cid
+			    (format "shimbun.multipart.%d.%s"
+				    (incf count) message-id)))
+		  ">\n"
+		  data)))
+	(unless start
+	  (setq start cid))
+	(goto-char (point-max))))
+    (unless (eq (char-before) ?\n)
+      (insert "\n"))
+    (insert "--" boundary "--\n")
+    (goto-char (point-min))
+    (insert "Content-Type: multipart/" (or subtype (setq subtype "related"))
+	    "; boundary=\"" boundary
+	    (if (string= subtype "related")
+		(concat "\"; start=\"<" start ">\"")
+	      "\"")
+	    "\n")
+    boundary))
+
+(defun shimbun-mime-retrieve-images (images)
+  "Returns a list of contents for an alist of IMAGES."
+  (mapcar (lambda (pair)
+	    (with-temp-buffer
+	      (set-buffer-multibyte nil)
+	      (list (shimbun-retrieve-url (car pair) nil t)
+		    (cdr pair)
+		    (buffer-string))))
+	  images))
+
 (defun shimbun-make-mime-article (shimbun header)
   "Make a MIME article according to SHIMBUN and HEADER.
 If article have inline images, generated article have a multipart/related
 content-type if `shimbun-encapsulate-images' is non-nil."
-  (let ((case-fold-search t)
-	(count 0)
-	(msg-id (shimbun-header-id header))
-	beg end
-	url type img imgs boundary charset)
-    (when (string-match "^<\\([^>]+\\)>$" msg-id)
-      (setq msg-id (match-string 1 msg-id)))
-    (setq charset
-	  (upcase (symbol-name
-		   (detect-mime-charset-region (point-min)(point-max)))))
-    (goto-char (point-min))
+  (let ((message-id (shimbun-header-id header)) images)
+    (when (string-match "\\`<\\([^>]+\\)>\\'" message-id)
+      (setq message-id (match-string 1 message-id)))
     (when shimbun-encapsulate-images
-      (while (re-search-forward "<img" nil t)
-	(setq beg (point))
-	(when (search-forward ">" nil t)
-	  (setq end (point))
-	  (goto-char beg)
-	  (when (re-search-forward
-		 "src[ \t\r\f\n]*=[ \t\r\f\n]*\"\\([^\"]*\\)\"" end t)
-	    (save-match-data
-	      (setq url (match-string 1))
-	      (unless (setq img (assoc url imgs))
-		(setq imgs (cons
-			    (setq img (list
-				       url
-				       (format "shimbun.%d.%s"
-					       (incf count)
-					       msg-id)
-				       (with-temp-buffer
-					 (set-buffer-multibyte nil)
-					 (setq
-					  type
-					  (shimbun-fetch-url
-					   shimbun
-					   (shimbun-expand-url
-					    url
-					    (shimbun-header-xref header))
-					   'no-cache 'no-decode))
-					 (buffer-string))
-				       type))
-			    imgs))))
-	    (replace-match (concat "src=\"cid:" (nth 1 img) "\"")))))
-      (setq imgs (nreverse imgs)))
+      (setq images
+	    (shimbun-mime-replace-image-tags message-id
+					     (shimbun-header-xref header))))
+    (if images
+	(shimbun-mime-make-multipart-message
+	 message-id
+	 (cons (list "text/html" nil (prog1 (buffer-string) (erase-buffer)))
+	       (shimbun-mime-retrieve-images images)))
+      (let ((charset (upcase
+		      (symbol-name
+		       (detect-mime-charset-region (point-min) (point-max))))))
+	(encode-coding-region (point-min) (point-max)
+			      (mime-charset-to-coding-system charset))
+	(insert "Content-Type: text/html; charset=" charset "\n\n")))
     (goto-char (point-min))
     (shimbun-header-insert shimbun header)
-    (if imgs
-	(progn
-	  (setq boundary (apply 'format "===shimbun_%d_%d_%d==="
-				(current-time)))
-	  (insert "Content-Type: multipart/related; type=\"text/html\"; "
-		  "boundary=\"" boundary "\"; start=\"<shimbun.0." msg-id ">\""
-		  "\nMIME-Version: 1.0\n\n"
-		  "--" boundary
-		  "\nContent-Type: text/html; charset=" charset
-		  "\nContent-ID: <shimbun.0." msg-id ">\n\n"))
-      (insert "Content-Type: text/html; charset=" charset "\n"
-	      "MIME-Version: 1.0\n\n"))
-    (encode-coding-region (point-min) (point-max)
-			  (mime-charset-to-coding-system charset))
-    (goto-char (point-max))
-    (dolist (img imgs)
-      (unless (eq (char-before) ?\n) (insert "\n"))
-      (insert "--" boundary "\n"
-	      "Content-Type: " (or (nth 3 img) "application/octed-stream")
-	      "\nContent-Disposition: inline"
-	      "\nContent-ID: <" (nth 1 img) ">"
-	      "\nContent-Transfer-Encoding: base64"
-	      "\n\n"
-	      (shimbun-base64-encode-string (nth 2 img))))
-    (when imgs
-      (unless (eq (char-before) ?\n) (insert "\n"))
-      (insert "--" boundary "--\n"))))
+    (insert "MIME-Version: 1.0\n")))
 
 (defsubst shimbun-make-html-contents (shimbun header)
   (let ((case-fold-search t)

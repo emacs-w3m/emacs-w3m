@@ -1,3 +1,17 @@
+2003-10-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-zdnet.el (shimbun-zdnet-clean-text-page): New
+	function.
+	(shimbun-zdnet-retrieve-next-pages): Likewise.
+	(shimbun-make-contents): Reimplemented.
+
+	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): New
+	function.
+	(shimbun-mime-boundary-counter): New internal variable.
+	(shimbun-mime-make-multipart-message): New function.
+	(shimbun-mime-retrieve-images): Likewise.
+	(shimbun-make-mime-article): Rewritten to use the above functions.
+
 2003-10-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Improve regexp
