@@ -145,14 +145,14 @@ The APEL package and the @samp{gifsicle} program are required
 
 @item Emacs 20.x
 No additional package is required.  Furthermore, you can see monochrome
-bitmap images inline by using the BITMAP-MULE package.  @xref{Other
-Requirements}
+bitmap images inline by using the BITMAP-MULE package (@pxref{Other
+Requirements}.
 
 @item Emacs 19.34 (including Mule 2.3)
 The APEL package, the @samp{new custom} package and the
 @file{regexp-opt.el} module are required.  If you are using Mule 2.3
 based on Emacs 19.34, you can see monochrome bitmap images inline by
-using the BITMAP-MULE package.  @xref{Other Requirements}
+using the BITMAP-MULE package (@pxref{Other Requirements}).
 
 @end table
 
