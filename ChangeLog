@@ -1,3 +1,18 @@
+2003-05-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Simplify functions that rewrite URIs.
+	(toplevel): Autoload `w3m-search-uri-replace' instead of
+	`w3m-search-quick-search-handler'.
+	(w3m-uri-replace-alist): Changed its default value and its
+	customize spec.
+	(w3m-pattern-uri-replace): New function.
+	(w3m-uri-replace): Reimplemented.
+
+	* w3m-search.el (w3m-search-quick-search-engine-alist): Abolished.
+	(w3m-search-quick-search-engines): Removed.
+	(w3m-search-quick-search-handler): Removed.
+	(w3m-search-uri-replace): New function.	
+
 2003-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-highlight-current-anchor): Don't infloop even if a

@@ -137,25 +137,6 @@ See also `w3m-search-engine-alist'."
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-search-quick-search-engine-alist
-  '(("gg"   . "google")
-    ("ggg"  . "google groups")
-    ("ya"   . "yahoo")
-    ("al"   . "altavista")
-    ("bts"  . "debian-bts")
-    ("dpkg" . "debian-pkg")
-    ("archie" . "iij-archie"))
-  "*An alist of short names for defined search engine names.
-Each element follows the scheme (NAME . ENGINE)
-NAME if the short name you want to use for this engine.
-ENGINE is the name of the engine as defined in `w3m-search-engine-alist'.
-Be careful: the names you use here must match exactly the names of the
-engines defined in `w3m-search-engine-alist'."
-  :group 'w3m
-  :type '(repeat (cons :format "%v"
-		       (string :tag "Abbrev")
-		       (string :tag "Engine"))))
-
 (defcustom w3m-search-word-at-point t
   "*Non-nil means that the word at point is used as initial string."
   :group 'w3m
@@ -167,15 +148,6 @@ engines defined in `w3m-search-engine-alist'."
      (w3m-url-encode-string s (or coding w3m-default-coding-system)))
    (split-string str)
    "+"))
-
-(defun w3m-search-quick-search-engines ()
-  "Return an alist of short names and engines merging the options
-`w3m-search-engine-alist' and `w3m-search-quick-search-engine-alist'."
-  (let ((alist w3m-search-quick-search-engine-alist)
-	engine)
-    (dolist (element w3m-search-engine-alist alist)
-      (unless (rassoc (setq engine (car element)) alist)
-	(push (cons engine engine) alist)))))
 
 ;;;###autoload
 (defun w3m-search (search-engine query)
@@ -216,22 +188,13 @@ the search engines defined in `w3m-search-engine-alist'.  Otherwise use
 	(error "Unknown search engine: %s" search-engine)))))
 
 ;;;###autoload
-(defun w3m-search-quick-search-handler (url)
-  "Check if the url is a quicksearch url.
-If URL is a quicksearch url, replace it with the real url needed to access
-the search engine.  If not, leave it alone."
-  (let ((ret url)
-	query engine info)
-    (dolist (quick-search-engine (w3m-search-quick-search-engines) ret)
-      (when (string-match (concat "\\`" (car quick-search-engine) ":") url)
-	(setq query (substring url (match-end 0)))
-	(unless (string= query "")
-	  (setq engine (cdr quick-search-engine)
-		info (assoc engine w3m-search-engine-alist))
-	  (when info
-	    (setq ret (format (cadr info)
-			      (w3m-search-escape-query-string
-			       query (caddr info))))))))))
+(defun w3m-search-uri-replace (uri engine)
+  "Generate query string for ENGINE from URI matched by last search."
+  (let ((query (substring uri (match-end 0)))
+	(info (assoc engine w3m-search-engine-alist)))
+    (when info
+      (format (cadr info)
+	      (w3m-search-escape-query-string query (caddr info))))))
 
 (provide 'w3m-search)
 

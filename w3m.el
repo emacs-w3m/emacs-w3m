@@ -104,7 +104,7 @@
     "Add link of current page to bookmark." t)
   (autoload 'w3m-search "w3m-search"
     "Search QUERY using SEARCH-ENGINE." t)
-  (autoload 'w3m-search-quick-search-handler "w3m-search")
+  (autoload 'w3m-search-uri-replace "w3m-search")
   (autoload 'w3m-weather "w3m-weather"
     "Display weather report." t)
   (autoload 'w3m-about-weather "w3m-weather")
@@ -1180,34 +1180,44 @@ will disclose your private informations, for example:
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-uri-replace-alist nil
-  "*Alist of a regexp matching uri and replacement.
+(defcustom w3m-uri-replace-alist
+  '(("\\`gg:" w3m-search-uri-replace "google")
+    ("\\`ggg:" w3m-search-uri-replace "google groups")
+    ("\\`ya:" w3m-search-uri-replace "yahoo")
+    ("\\`al:" w3m-search-uri-replace "altavista")
+    ("\\`bts:" w3m-search-uri-replace "debian-bts")
+    ("\\`dpkg:" w3m-search-uri-replace "debian-pkg")
+    ("\\`archie:" w3m-search-uri-replace "iij-archie")
+    ("\\`urn:ietf:rfc:\\([0-9]+\\)" w3m-pattern-uri-replace
+     "http://www.ietf.org/rfc/rfc\\1.txt"))
+  "*Alist of a regexp matching a uri and its replacement.
 
-Each element of the alist is (REGEXP . REPLACEMENT) or (REGEXP . FUNCTION).
+Each element of this alist is (REGEXP FUNCTION OPTIONS...).  FUNCTION
+should take one or more arguments, a uri and OPTIONS.  When this
+FUNCTION is called, sub-strings found in matching REGEXP can be
+refered.  Here are some predefined functions meant for use in this
+way:
 
-REGEXP is a regular expression for uri.
+`w3m-pattern-uri-replace'
+    Replace a uri with PATTERN.  In PATTERN, `\' is treated as special
+    in the same manner of `replace-match'.
 
-Matched string is replaced with REPLACEMENT.
-You can refer matched substring of REGEXP. See `replace-match' for more detail.
-
-If FUNCTION is specified, it will be called with the uri, and replaced with
-the return value.
-
-
-Here is an example of how to set this option:
-
-\(setq w3m-uri-replace-alist
-      '((\"^urn:ietf:rfc:\\\\([0-9]+\\\\)\" . \"http://www.ietf.org/rfc/rfc\\\\1.txt\")
-	(\"^urn:isbn:\" .
-	 (lambda (uri)
-	   (concat \"http://www.amazon.co.jp/exec/obidos/ASIN/\"
-		   (apply 'concat (split-string (substring uri 9) \"-\"))
-		   \"/\")))))
+`w3m-search-uri-replace'
+    Generate a query from a uri for specified engine.
 "
   :group 'w3m
-  :type '(repeat (cons (string :tag "Regexp")
-		       (choice (string :tag "Replacement")
-			       (function :tag "Function")))))
+  :type '(repeat
+	  (cons
+	   (string :tag "Regexp" :value "")
+	   (choice (list :tag "Replacement Using Pattern"
+			 (function-item :format "" w3m-pattern-uri-replace)
+			 (string :tag "Pattern" :value ""))
+		   (list :tag "Quick Search"
+			 (function-item :format "" w3m-search-uri-replace)
+			 (string :tag "Engine"))
+		   (list :tag "User Defined Function"
+			 (function)
+			 (repeat :tag "Options" sexp))))))
 
 (defconst w3m-entity-alist		; html character entities and values
   (append
@@ -5771,17 +5781,27 @@ positions around there (+/-3 lines) visible."
   (w3m-set-window-hscroll (selected-window)
 			  (max (- arg (window-width) -2) 0)))
 
+(defun w3m-pattern-uri-replace (uri format)
+  "Create a new uri based on FORMAT from URI matched by last search."
+  (replace-match format nil nil uri))
+
 (defun w3m-uri-replace (uri)
-  (let ((alist w3m-uri-replace-alist))
-    (while (and alist
-		(not (string-match (car (car alist)) uri)))
-      (setq alist (cdr alist)))
-    (if alist
-	(cond ((functionp (cdr (car alist)))
-	       (funcall (cdr (car alist)) uri))
-	      ((stringp (cdr (car alist)))
-	       (replace-match (cdr (car alist)) nil nil uri)))
-      uri)))
+  "Rewrite a given URI based on rules of `w3m-uri-replace-alist'."
+  (catch 'found-replacement
+    (dolist (elem w3m-uri-replace-alist uri)
+      (when (string-match (car elem) uri)
+	(if (setq uri
+		  (cond
+		   ((consp (cdr elem))
+		    (apply (cadr elem) uri (cddr elem)))
+		   ;; Rest conditions are inserted to keep backward
+		   ;; compatibility.
+		   ((functionp (cdr elem))
+		    (funcall (cdr elem) uri))
+		   ((stringp (cdr elem))
+		    (w3m-pattern-uri-replace uri (cdr elem)))))
+	    (throw 'found-replacement uri)
+	  (error "Invalid replacement: %s" elem))))))
 
 (defun w3m-goto-mailto-url (url &optional post-data)
   (let ((before (nreverse (buffer-list)))
@@ -5958,8 +5978,7 @@ If the fifth argument REFERER is specified, it is used for a Referer:
 field for this request.
 You can also use \"quicksearch\" url schemes such as \"gg:emacs\" which
 would search for the term \"emacs\" with the Google search engine.  See
-the `w3m-search' function and the variable
-`w3m-search-quick-search-engine-alist'."
+the `w3m-search' function and the variable `w3m-uri-replace-alist'."
   (interactive
    (list
     (w3m-input-url nil
@@ -5978,11 +5997,6 @@ the `w3m-search' function and the variable
     t)) ;; qsearch
   (set-text-properties 0 (length url) nil url)
   (setq url (w3m-uri-replace url))
-  (when (or qsearch
-	    (equal referer "about://bookmark/"))
-    ;; quicksearch
-    (setq qsearch t
-	  url (w3m-search-quick-search-handler url)))
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:\\(.*\\)" url)
