@@ -37,9 +37,10 @@
 
 ;;; Code:
 
-;; Variables which are used in the following inline functions.
-;; They should be defined in the other module at run-time.
 (eval-when-compile
+  (require 'cl)
+  ;; Variable(s) which are used in the following inline functions.
+  ;; They should be defined in the other module at run-time.
   (defvar w3m-work-buffer-list))
 
 (defmacro w3m-static-if (cond then &rest else)

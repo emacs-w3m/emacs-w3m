@@ -1,6 +1,7 @@
 2001-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-macro.el (w3m-tag-regexp-of): Reverted; add a documentation.
+	(TopLevel): Require `cl' when compiling.
 
 2001-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
