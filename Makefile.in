@@ -25,10 +25,8 @@ default: Makefile
 install: default
 	@$(SHELL) ./mkinstalldirs $(lispdir);\
 	for p in ChangeLog *.el; do\
-	  if test $$p != w3mkwds.el; then\
-	    echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
-	    $(INSTALL_DATA) $$p $(lispdir)/$$p;\
-	  fi;\
+	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
+	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
 	done;\
 	for p in *.elc; do\
 	  if test -f "$$p"; then\
@@ -96,7 +94,7 @@ tarball:
 	rm -rf $(DISTDIR)
 
 clean:
-	-rm -rf *~ *.elc shimbun/*.elc $(PACKAGE)* w3mkwds.el
+	-rm -rf *~ *.elc shimbun/*.elc $(PACKAGE)* w3m-kwds.el
 
 distclean: clean
 	-rm -f config.log config.status config.cache Makefile;\
@@ -115,13 +113,11 @@ slow: Makefile
 	for i in `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
 	do $(MAKE) -s $$i; done
 
-## Create the file w3mkwds.el if it is needed for $(EMACS).
+## Create the file w3m-kwds.el if it is needed for $(EMACS).
 keywords:
-	@ echo "rm -f w3mkwds.el; $(EMACS) $(FLAGS)";\
-	rm -f w3mkwds.el; $(EMACS) $(FLAGS);\
-	if test -f w3mkwds.el; then\
-	  echo "The file w3mkwds.el is created.";\
-	else\
+	@ echo "$(EMACS) $(FLAGS)";\
+	$(EMACS) $(FLAGS);\
+	if test ! -f w3m-kwds.el; then\
 	  echo "There is no need to bind colon keywords for \"$(EMACS)\".";\
-	  echo "The file w3mkwds.el is not created.";\
+	  echo "The file w3m-kwds.el is not created.";\
 	fi

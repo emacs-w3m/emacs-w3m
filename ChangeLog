@@ -1,3 +1,18 @@
+2001-09-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-generate-colon-keywords-file): Renamed from
+	`w3mhack-bind-colon-keywords'; generate a file which contains a
+	list of colon keywords; don't bind colon keywords.
+	(w3mhack-colon-keywords-file): New constant.
+
+	* w3m.el: Load w3m-kwds.el if a colon keyword is not avaulable.
+	(w3m-colon-keywords): Abolished.
+
+	* Makefile.in (keywords): Create w3m-kwds.el instead of
+	w3mkwds.el; don't remove w3m-kwds.el in advance.
+	(clean): Remove w3m-kwds.el instead of w3mkwds.el.
+	(install): Install w3m-kwds.el if it exists.
+
 2001-09-17  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m.el (w3m-expand-url): Use `w3m-expand-path-name' instead of
