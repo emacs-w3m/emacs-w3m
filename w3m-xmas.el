@@ -39,9 +39,13 @@
 
 ;;; Handle images:
 
+;; Function which returns non-nil when the current display device can
+;; show images inline.
+(defalias 'w3m-display-graphic-p 'device-on-window-system-p)
+
 (defun w3m-display-inline-image-p ()
   "Returns non-nil when images can be displayed under the present
-circumstances"
+circumstances."
   (and w3m-display-inline-image (device-on-window-system-p)))
 
 (defvar w3m-should-unoptimize-animated-gifs

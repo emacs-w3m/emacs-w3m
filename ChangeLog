@@ -1,3 +1,14 @@
+2001-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-toggle-inline-images): Signal an error when the
+	function `w3m-display-graphic-p' returns nil.
+	(w3m-display-graphic-p): Alias to `ignore' by default.
+	(w3m-menubar): Disable a menu button "Toggle Images" when the
+	function `w3m-display-graphic-p' returns nil.
+	* w3m-xmas.el (w3m-display-graphic-p): Alias to
+	`device-on-window-system-p'.
+	* w3m-e21.el (w3m-display-graphic-p): Alias to `display-graphic-p'.
+
 2001-05-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-find-coding-system): New function to replace

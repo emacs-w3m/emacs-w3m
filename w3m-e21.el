@@ -34,9 +34,13 @@
 (provide 'w3m-e21);; It is needed to avoid circular dependencies.
 (require 'w3m)
 
+;; Function which returns non-nil when the current display device can
+;; show images inline.
+(defalias 'w3m-display-graphic-p 'display-graphic-p)
+
 (defun w3m-display-inline-image-p ()
   "Returns non-nil when images can be displayed under the present
-circumstances"
+circumstances."
   (and w3m-display-inline-image (display-graphic-p)))
 
 (defun w3m-create-image (url &optional no-cache)

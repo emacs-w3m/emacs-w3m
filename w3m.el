@@ -717,10 +717,7 @@ allows a kludge that it can also be a plist of frame properties."
     ["Go to..." w3m-goto-url t]
     ["Go to Home Page" w3m-gohome w3m-home-page]
     ["Search the Internet" w3m-search t]
-    ["Toggle Images" w3m-toggle-inline-images
-     (or (featurep 'xemacs)
-	 (and (boundp 'emacs-major-version)
-	      (>= emacs-major-version 21)))]
+    ["Toggle Images" w3m-toggle-inline-images (w3m-display-graphic-p)]
     ["Make a Copy of This Session" w3m-copy-buffer t]
     ["Weather Forecast" w3m-weather t]
     ["Investigate with Antenna" w3m-antenna t]
@@ -1343,9 +1340,13 @@ If N is negative, last N items of LIST is returned."
   (unless (fboundp 'w3m-update-toolbar)
     (defun w3m-update-toolbar ()))
   ;; Images
+  (unless (fboundp 'w3m-display-graphic-p)
+    ;; Function which returns non-nil when the current display device
+    ;; can show images inline.
+    (defalias 'w3m-display-graphic-p 'ignore))
   (unless (fboundp 'w3m-display-inline-image-p)
     ;; Function which returns non-nil when images can be displayed
-    ;; under the present circumstances"
+    ;; under the present circumstances.
     (defalias 'w3m-display-inline-image-p 'ignore)))
 
 (defun w3m-fontify-images ()
@@ -1377,6 +1378,8 @@ half-dumped data."
 If optional argument FORCE is non-nil, displaying is forced.
 If second optional argument NO-CACHE is non-nil, cache is not used."
   (interactive "P")
+  (unless (w3m-display-graphic-p)
+    (error "Can't display images in this environment."))
   (unless (and force (eq w3m-display-inline-image-status 'on))
     (let ((cur-point (point))
 	  (buffer-read-only)
