@@ -1320,12 +1320,7 @@ for a refresh indication")
 
 (defconst w3m-dump-head-source-command-arguments
   (cond ((eq w3m-type 'w3mmee)
-	 (list
-	  '(if w3m-accept-languages "-o")
-	  '(if w3m-accept-languages
-	       (concat "request_header Accept-Language: "
-		       (mapconcat 'identity w3m-accept-languages " ")))
-	  "-dump=extra,head,source"))
+	 (list "-dump=extra,head,source"))
 	(t
 	 (list
 	  '(if w3m-accept-languages "-o")
@@ -2941,10 +2936,48 @@ to add the option \"-no-proxy\"."
       (append
        (list "-no-cookie")
        (list "-o" "follow_redirection=0") ; Don't follow redirection.
-       (let ((cookie-header (w3m-cookie-get url)))
-	 (when cookie-header
-	   (list "-header" (concat "Cookie: " cookie-header)))))
+       (unless (eq w3m-type 'w3mmee)
+	 (let ((cookie-header (w3m-cookie-get url)))
+	   (when cookie-header
+	     (list "-header" (concat "Cookie: " cookie-header))))))
     (list "-no-cookie")))
+
+;; Currently, -request argument is supported only by w3mmee.
+(defun w3m-request-arguments (method url temp-file
+				     &optional body referer content-type)
+  "Make an `-request' argument.
+METHOD is an HTTP method name.
+TEMP-FILE is a name of temporal file to write request content to.
+Optional BODY is the body content string. 
+Second optional REFERER is the Referer: field content.
+Third optional CONTENT-TYPE is the Content-Type: field content."
+  (with-temp-buffer
+    (let ((modes (default-file-modes))
+	  (cookie (w3m-cookie-get url)))
+      (when w3m-add-user-agent (insert "User-Agent: " w3m-user-agent "\n"))
+      (when (and (stringp referer)
+		 (not (and (cdr w3m-add-referer-regexps)
+			   (string-match (cdr w3m-add-referer-regexps)
+					 referer)))
+		 (car w3m-add-referer-regexps)
+		 (string-match (car w3m-add-referer-regexps) referer))
+	(insert "Referer: " referer "\n"))
+      (when w3m-accept-languages
+	(insert "Accept-Language: "
+		(mapconcat 'identity w3m-accept-languages " ") "\n"))
+      (when cookie
+	(insert "Cookie: " cookie "\n"))
+      (when content-type
+	(insert "Content-Type: " content-type "\n"))
+      (insert "\n")
+      (when body
+	(insert body))
+      (unwind-protect
+	  (let ((coding-system-for-write 'binary))
+	    (set-default-file-modes (* 64 6))
+	    (write-region (point-min) (point-max) temp-file nil 'silent))
+	(set-default-file-modes modes))))
+  (list "-request" (concat method ":" temp-file)))
 
 (defun w3m-w3m-retrieve (url no-decode no-cache post-data referer handler)
   "Retrieve content pointed by URL with w3m, insert it to this buffer,
@@ -2958,38 +2991,51 @@ argument, when retrieve is complete."
 	 w3m-broken-proxy-cache
 	 (setq w3m-command-arguments
 	       (append w3m-command-arguments '("-o" "no_cache=1"))))
-    (if w3m-add-user-agent
+    (if (eq w3m-type 'w3mmee)
+	(progn
+	  (setq temp-file (make-temp-name
+			   (expand-file-name "w3mel" w3m-profile-directory)))
+	  (setq w3m-command-arguments
+		(append w3m-command-arguments
+			(w3m-request-arguments
+			 (if post-data "post" "get")
+			 url
+			 temp-file
+			 (if (consp post-data)
+			     (cdr post-data)
+			   post-data)
+			 referer
+			 (if (consp post-data) (car post-data))))))
+      (if w3m-add-user-agent
+	  (setq w3m-command-arguments
+		(append w3m-command-arguments
+			`("-o" ,(concat "user_agent=" w3m-user-agent)))))
+      (when post-data
+	(setq temp-file (make-temp-name
+			 (expand-file-name "w3mel" w3m-profile-directory)))
+	(with-temp-buffer
+	  (insert (if (consp post-data) (cdr post-data) post-data))
+	  (let ((modes (default-file-modes)))
+	    (unwind-protect
+		(let ((coding-system-for-write 'binary))
+		  (set-default-file-modes (* 64 6))
+		  (write-region (point-min) (point-max) temp-file nil 'silent))
+	      (set-default-file-modes modes))))
 	(setq w3m-command-arguments
 	      (append w3m-command-arguments
-		      (if (eq w3m-type 'w3mmee)
-			  `("-header" ,(concat "User-Agent: " w3m-user-agent))
-			`("-o" ,(concat "user_agent=" w3m-user-agent))))))
-    (when post-data
-      (setq temp-file (make-temp-name
-		       (expand-file-name "w3mel" w3m-profile-directory)))
-      (with-temp-buffer
-	(insert (if (consp post-data) (cdr post-data) post-data))
-	(let ((modes (default-file-modes)))
-	  (unwind-protect
-	      (let ((coding-system-for-write 'binary))
-		(set-default-file-modes (* 64 6))
-		(write-region (point-min) (point-max) temp-file nil 'silent))
-	    (set-default-file-modes modes))))
-      (setq w3m-command-arguments
-	    (append w3m-command-arguments
-		    (if (consp post-data)
-			(list "-header" (concat "Content-Type: "
-						(car post-data))))
-		    (list "-post" temp-file))))
-    (when (and (stringp referer)
-	       (not (and (cdr w3m-add-referer-regexps)
-			 (string-match (cdr w3m-add-referer-regexps)
-				       referer)))
-	       (car w3m-add-referer-regexps)
-	       (string-match (car w3m-add-referer-regexps) referer))
-      (setq w3m-command-arguments
-	    (append w3m-command-arguments
-		    (list "-header" (concat "Referer: " referer)))))
+		      (if (consp post-data)
+			  (list "-header" (concat "Content-Type: "
+						  (car post-data))))
+		      (list "-post" temp-file))))
+      (when (and (stringp referer)
+		 (not (and (cdr w3m-add-referer-regexps)
+			   (string-match (cdr w3m-add-referer-regexps)
+					 referer)))
+		 (car w3m-add-referer-regexps)
+		 (string-match (car w3m-add-referer-regexps) referer))
+	(setq w3m-command-arguments
+	      (append w3m-command-arguments
+		      (list "-header" (concat "Referer: " referer))))))
     (lexical-let ((url url)
 		  (no-decode no-decode)
 		  (temp-file temp-file))

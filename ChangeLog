@@ -1,3 +1,12 @@
+2002-03-28  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-dump-head-source-command-arguments)[w3mmee]: Don't
+	add Accept-Language header option.
+	(w3m-cookie-command-arguments)[w3mmee]: Don't add Cookie header option.
+	(w3m-request-arguments): New function to generate -request option.
+	(w3m-w3m-retrieve)[w3mmee]: Use w3m-request-arguments to make request
+	header and body.
+
 2002-03-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-at-point (ffap)): Strip text props under XEmacs.
