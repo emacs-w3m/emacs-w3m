@@ -1,3 +1,10 @@
+2004-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Allow a subject
+	to contain `<...>'s.
+	(shimbun-asahi-get-headers): Use w3m-fontify to remove `<...>'s
+	from a subject when parsing the kansai-special group.
+
 2004-07-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 	NOMIYA Masaru <nomiya@ttmy.ne.jp>,
 	Katsumi Yamaoka <yamaoka@jpl.org>
