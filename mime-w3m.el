@@ -68,23 +68,10 @@
 	   ))
     (cons 'progn body)))
 
-(defun mime-w3m-get-xref ()
-  ;; Check Xref: header in this buffer.
-  (let ((p (point)))
-    (unwind-protect
-	(save-restriction
-	  (nnheader-narrow-to-headers)
-	  (goto-char (point-min))
-	  (let ((case-fold-search t))
-	    (when (search-forward "\nxref: " nil t)
-	      (buffer-substring-no-properties
-	       (match-end 0) (std11-field-end)))))
-      (goto-char p))))
-
 (defun mime-w3m-preview-text/html (entity situation)
   (goto-char (point-max))
   (let ((p (point))
-	(xref (mime-w3m-get-xref)))
+	(xref (mime-entity-fetch-field entity "xref")))
     ;; For nnshimbun.el.
     (and (stringp xref)
 	 (string-match "^http://" xref)
