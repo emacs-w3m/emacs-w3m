@@ -6,7 +6,8 @@
 	(w3m-form-mee-select-value): Fixed select value.
 	(w3m-form-resume): Fixed checkbox resuming.
 	(w3m-form-parse-and-fontify): Use `form' instead of `(car forms)';
-	Search the form which corresponds to input_alt by fid.
+	Search the form which corresponds to input_alt by fid;
+	Use `nconc' instead of `push'.
 
 	* w3m-form.el (w3m-form-mee-select-value): New function.
 	(w3m-form-parse-and-fontify)[w3mmee]: Set select value.
