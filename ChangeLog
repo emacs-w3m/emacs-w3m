@@ -1,3 +1,12 @@
+2001-09-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-goto-url): Change effect of the 3rd argument
+	`charset'.
+	(w3m-redisplay-with-charset): Reimplemented.
+	(w3m-view-source): Improved to handle `about://header/...'.
+	(w3m-about-header): Show title etc.
+	(w3m-view-header): Improved to handle `about://source/...'.
+
 2001-09-28  kkonishi <ironbeat@mail.st.rim.or.jp>
 
 	* w3m-search.el (w3m-search-engine-alist): New search engines,

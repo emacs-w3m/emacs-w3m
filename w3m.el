@@ -3602,14 +3602,14 @@ or prefix ARG columns."
 (defun w3m-goto-url (url &optional reload charset post-data referer)
   "Retrieve contents of URL.
 If second argument RELOAD is non-nil, content is re-loaded.
-Third argument CHARSET specifies content charset.
-Fourth argument POST-DATA should be a string or a cons cell.
-If string is specified, it is used as request body and content-type is
-set as \"x-www-form-urlencoded\".
-If cons cell is specified, car of the cell is used as content-type and
-cdr of the cell is used as body.
-If fifth argument REFERER is specified, it is used as Referer: field of
-the request."
+Third argument CHARSET specifies content charset.  If CHARSET equals
+t, reset charset entry in arrived DB.
+Fourth argument POST-DATA should be a string or a cons cell.  If
+string is specified, it is used as request body and content-type is
+set as \"x-www-form-urlencoded\".  If cons cell is specified, car of
+the cell is used as content-type and cdr of the cell is used as body.
+If fifth argument REFERER is specified, it is used as Referer: field
+of the request."
   (interactive
    (list
     (w3m-input-url nil
@@ -3660,7 +3660,8 @@ the request."
 	(setq name (match-string 1 url)
 	      url (substring url 0 (match-beginning 0))))
       (let ((ct (w3m-arrived-content-type url))
-	    (cs (or charset (w3m-arrived-content-charset url))))
+	    (cs (unless (eq t charset)
+		  (or charset (w3m-arrived-content-charset url)))))
 	(if ct
 	    (when reload
 	      (let* ((minibuffer-setup-hook
@@ -3680,6 +3681,7 @@ the request."
 		 (setq ct (if (string= "" s) w3m-default-content-type s)))))
 	(cond
 	 ((and (not reload)
+	       (not charset)
 	       (stringp w3m-current-url)
 	       (string= url w3m-current-url))
 	  (w3m-refontify-anchor)
@@ -3763,22 +3765,18 @@ the request."
 	  (message ""))
       (w3m-goto-url w3m-current-url 'reload nil nil referer))))
 
-;; FIXME: 現在はどの文字コードとして解釈されているのか表示して欲しい
-;; FIXME: 一旦、このコマンドによって指定された文字コードの記録を解除する方法は?
 (defun w3m-redisplay-with-charset (&optional arg)
   "Redisplay current page with specified coding-system.
 If input is nil, use default coding-system on w3m."
   (interactive "P")
   (let ((w3m-display-inline-image (if arg t w3m-display-inline-image))
-	(default
-	  (or w3m-current-coding-system
-	      (w3m-content-charset w3m-current-url))))
-    (w3m-goto-url w3m-current-url nil
-		  (w3m-read-content-charset
-		   (if default
-		       (format "Content-charset (default %s): " default)
-		     "Content-charset: ")
-		   default))))
+	(charset
+	 (w3m-read-content-charset
+	  (format "Content-charset (current %s, default reset): "
+		  w3m-current-coding-system)
+	  t ;; Default action is reseting charset entry in arrived DB.
+	  )))
+    (w3m-goto-url w3m-current-url nil charset)))
 
 
 ;;;###autoload
@@ -3913,31 +3911,50 @@ works on Emacs.
 (defun w3m-view-source ()
   "Display source of this current buffer."
   (interactive)
-  (if (string-match "^about://header/" w3m-current-url)
-      (message "Can't load a source for %s" w3m-current-url)
-    (w3m-goto-url (if (string-match "^about://source/" w3m-current-url)
-		      (substring w3m-current-url (match-end 0))
-		    (concat "about://source/" w3m-current-url)))))
+  (w3m-goto-url
+   (cond
+    ((string-match "\\`about://source/" w3m-current-url)
+     (substring w3m-current-url (match-end 0)))
+    ((string-match "\\`about://header/" w3m-current-url)
+     (concat "about://source/" (substring w3m-current-url (match-end 0))))
+    ((string-match "\\`about:" w3m-current-url)
+     (error "Can't load a source for %s" w3m-current-url))
+    (t (concat "about://source/" w3m-current-url)))))
 
 (defun w3m-about-header (url &optional no-decode no-cache)
   (when (string-match "^about://header/" url)
+    (setq url (substring url (match-end 0)))
     (w3m-with-work-buffer
       (delete-region (point-min) (point-max))
-      (let ((header (w3m-w3m-get-header (substring url (match-end 0)) no-cache)))
+      (insert "Information about current page\n"
+	      "\nTitle:          " (w3m-arrived-title url)
+	      "\nURL:            " url
+	      "\nDocument Type:  " (w3m-content-type url)
+	      "\nLast Modified:  "
+	      (let ((time (w3m-arrived-last-modified url)))
+		(if time (current-time-string time) "")))
+      (let ((charset (w3m-arrived-content-charset url)))
+	(when charset
+	  (insert "\nDocument Code:  " charset)))
+      (let ((header (w3m-w3m-get-header url no-cache)))
 	(when header
-	  (insert header)
-	  "text/plain")))))
+	  (insert
+	   "\n\n━━━━━━━━━━━━━━━━━━━\n\nHeader information\n\n"
+	   header))))
+    "text/plain"))
 
 (defun w3m-view-header ()
   "Display header of this current buffer."
   (interactive)
-  (if (or (and (string-match "^about:" w3m-current-url)
-	       (not (string-match "^about://header/" w3m-current-url)))
-	  (string-match "^file://" w3m-current-url))
-      (message "Can't load a header for %s" w3m-current-url)
-    (w3m-goto-url (if (string-match "^about://header/" w3m-current-url)
-		      (substring w3m-current-url (match-end 0))
-		    (concat "about://header/" w3m-current-url)))))
+  (w3m-goto-url
+   (cond
+    ((string-match "\\`about://header/" w3m-current-url)
+     (substring w3m-current-url (match-end 0)))
+    ((string-match "\\`about://source/" w3m-current-url)
+     (concat "about://header/" (substring w3m-current-url (match-end 0))))
+    ((string-match "\\`about:" w3m-current-url)
+     (error "Can't load a header for %s" w3m-current-url))
+    (t (concat "about://header/" w3m-current-url)))))
 
 (defvar w3m-about-history-max-indentation '(/ (* (window-width) 2) 3)
   "*Number to limit the indentation when showing a tree-structured
