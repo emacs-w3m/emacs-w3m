@@ -873,7 +873,7 @@ visited before known as ``Back'' and ``Forward'' familiarly in the other
 web browsers, and the ``Go to the home page'' command in emacs-w3m as
 well.  The emacs-w3m strictly manages internally a list (history) of
 pages which have been visited before.  There are only fundamental
-functiond in this section, although the advanced history commands than
+functions in this section, although the advanced history commands than
 just the ``Back'' or ``Forward'' commands are also implemented.  See
 @xref{Tracing History}, for details of the advanced history commands.
 
