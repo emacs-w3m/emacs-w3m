@@ -271,7 +271,7 @@ In order to use this function, `xml.el' is required."
 		(site site))
     (w3m-process-do-with-temp-buffer
 	(type (w3m-retrieve url nil t nil nil handler))
-      (let (link date)
+      (let (link date dc-dates)
 	(when type
 	  (w3m-decode-buffer url)
 	  (let* ((xml (ignore-errors
@@ -285,11 +285,16 @@ In order to use this function, `xml.el' is required."
 				xml))))
 	    (setq link (nth 2 (car (w3m-rss-find-el
 				    (intern (concat rss-ns "link"))
-				    channel)))
-		  date (w3m-rss-parse-date-string
-			(nth 2 (car (w3m-rss-find-el
-				     (intern (concat dc-ns "date"))
-				     channel)))))))
+				    channel))))
+	    (setq dc-dates (w3m-rss-find-el
+			    (intern (concat dc-ns "date"))
+			    channel))
+	    (when dc-dates
+	      (setq date '(0 0))
+	      (dolist (tmp dc-dates)
+		(setq tmp (w3m-rss-parse-date-string (nth 2 tmp)))
+		(when (w3m-time-newer-p tmp date)
+		  (setq date tmp))))))
 	(if (and link date)
 	    (w3m-antenna-site-update site link date nil)
 	  (w3m-antenna-check-page site handler))))))
