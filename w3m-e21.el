@@ -341,12 +341,13 @@ Buffer string between BEG and END are replaced with IMAGE."
 	  (let ((xpm (w3m-imagick-convert-data
 		      w3m-current-favicon-data
 		      "ico" "xpm" "-geometry" w3m-favicon-size)))
-	    (and xpm
-		 (setq w3m-current-favicon-image
-		       (create-image xpm
-				     'xpm
-				     t
-				     :ascent 'center))))))))
+	    (if xpm
+		(setq w3m-current-favicon-image
+		      (create-image xpm
+				    'xpm
+				    t
+				    :ascent 'center))
+	      (setq w3m-current-favicon-data nil)))))))
 
 (defun w3m-retrieve-favicon (url target &optional handler)
   (lexical-let ((url url)
