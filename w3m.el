@@ -334,7 +334,7 @@ If BUFFER is nil, all data is placed to the current buffer."
   (unless arg (setq arg 1))
   (let ((url (nth arg w3m-url-history)))
     (when url
-      (let (w3m-url-history) (w3m url))
+      (let (w3m-url-history) (w3m-goto-url url))
       (setq w3m-url-history
 	    (nthcdr arg w3m-url-history)))))
 
@@ -361,7 +361,7 @@ If BUFFER is nil, all data is placed to the current buffer."
   "*View the URL of the link under point."
   (interactive)
   (let ((url (get-text-property (point) 'w3m-href-anchor)))
-    (if url (w3m (w3m-expand-url url w3m-current-url)))))
+    (if url (w3m-goto-url (w3m-expand-url url w3m-current-url)))))
 
 
 (defun w3m-view-image ()
@@ -445,7 +445,39 @@ If BUFFER is nil, all data is placed to the current buffer."
 (defun w3m-view-bookmark ()
   (interactive)
   (if (file-readable-p w3m-bookmark-file)
-      (w3m w3m-bookmark-file)))
+      (w3m-goto-url w3m-bookmark-file)))
+
+
+(defun w3m-copy-buffer (buf &optional newname and-pop) "\
+Create a twin copy of the current buffer.
+if NEWNAME is nil, it defaults to the current buffer's name.
+if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
+  (interactive (list (current-buffer)
+		     (if current-prefix-arg (read-string "Name: "))
+		     t))
+  (setq newname (or newname (buffer-name)))
+  (if (string-match "<[0-9]+>\\'" newname)
+      (setq newname (substring newname 0 (match-beginning 0))))
+  (with-current-buffer buf
+    (let ((ptmin (point-min))
+	  (ptmax (point-max))
+	  (content (save-restriction (widen) (buffer-string)))
+	  (mode major-mode)
+	  (lvars (buffer-local-variables))
+	  (new (generate-new-buffer (or newname (buffer-name)))))
+      (with-current-buffer new
+	;;(erase-buffer)
+	(insert content)
+	(narrow-to-region ptmin ptmax)
+	(funcall mode)			;still needed??  -sm
+	(mapcar (lambda (v)
+		  (if (not (consp v)) (makunbound v)
+		    (condition-case ()	;in case var is read-only
+			(set (make-local-variable (car v)) (cdr v))
+		      (error nil))))
+		lvars)
+	(when and-pop (pop-to-buffer new))
+	new))))
 
 
 (defvar w3m-mode-map nil)
@@ -482,6 +514,7 @@ If BUFFER is nil, all data is placed to the current buffer."
   (define-key w3m-mode-map "v" 'w3m-view-bookmark)
   (define-key w3m-mode-map "q" 'w3m-quit)
   (define-key w3m-mode-map "Q" (lambda () (interactive) (w3m-quit t)))
+  (define-key w3m-mode-map "\M-n" 'w3m-copy-buffer)
   )
 
 
@@ -495,27 +528,31 @@ If BUFFER is nil, all data is placed to the current buffer."
 
 (defun w3m-mode ()
   "Major mode to browsing w3m buffer."
-  (or (eq major-mode 'w3m-mode)
-      (kill-all-local-variables))
+  (kill-all-local-variables)
   (setq major-mode 'w3m-mode
 	mode-name "w3m")
   (use-local-map w3m-mode-map)
   (run-hooks 'w3m-mode-hook))
 
 
+(defun w3m-goto-url (url)
+  "Retrieve URL and display it in this buffer."
+  (let ((buffer-read-only nil))
+    (w3m-exec url)
+    (w3m-fontify))
+  (setq buffer-read-only t)
+  (set-buffer-modified-p nil)
+  (goto-char (point-min)))
+
+
 (defun w3m (url)
   (interactive (list (w3m-input-url)))
-  (save-current-buffer
-    (set-buffer (get-buffer-create "*w3m*"))
-    (w3m-mode)
-    (let ((buffer-read-only nil))
-      (w3m-exec url)
-      (w3m-fontify))
-    (setq buffer-read-only t)
-    (set-buffer-modified-p nil)
-    (switch-to-buffer (current-buffer))
-    (goto-char (point-min))
-    (run-hooks 'w3m-hook)))
+  (set-buffer (get-buffer-create "*w3m*"))
+  (or (eq major-mode 'w3m-mode)
+      (w3m-mode))
+  (w3m-goto-url url)
+  (switch-to-buffer (current-buffer))
+  (run-hooks 'w3m-hook))
 
 
 (provide 'w3m)
