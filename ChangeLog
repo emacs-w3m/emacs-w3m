@@ -4,6 +4,8 @@
 	for w3m(en).
 	(w3m-input-coding-system): Ditto.
 	(w3m-default-coding-system): Ditto.
+	(w3m-iso-latin-1-decoder): Fixed for latin-iso8859-1 under old Emacsen.
+	(w3m-ccl-write-repeat): Ditto.
 
 2001-10-29  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

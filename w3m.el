@@ -2957,9 +2957,9 @@ to nil.
 			 (cdr spec)
 		       '(charset-id charset)))))
       (if (fboundp 'ccl-compile-write-multibyte-character)
-	  (` ((,@ (when (car spec)
-		    '((r1 &= ?\x7f)
-		      (r1 |= ((r0 & ?\x7f) << 7)))))
+	  (` ((r1 &= ?\x7f)
+	      (,@ (when (car spec)
+		    '((r1 |= ((r0 & ?\x7f) << 7)))))
 	      (r0 = (, id))
 	      (write-multibyte-character r0 r1)
 	      (repeat)))
@@ -3012,7 +3012,7 @@ to nil.
 	   (write-repeat r0))
        ;; Process Latin-1 characters.
        (if (r0 > ?\xa0)
-	   ((r1 = (r0 & ?\x7f))
+	   ((r1 = (r0 | 0)) ; Use `|' for avoiding Mule-2.3 bug.
 	    (,@ (w3m-ccl-write-repeat 'latin-iso8859-1))))
        ;; Process internal characters used in w3m.
        (,@ (mapcar (lambda (pair)
