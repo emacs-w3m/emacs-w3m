@@ -758,10 +758,11 @@ If optional argument NO-CACHE is non-nil, cache is not used."
     (require 'parse-time))
   (defun w3m-time-parse-string (string)
     "Parse the time-string STRING and return its time as Emacs style."
-    (let ((fn (when (fboundp 'parse-time-string)
-		'parse-time-string)))
-      (when fn
-	(apply (function encode-time) (funcall fn string))))))
+    (ignore-errors
+      (let ((fn (when (fboundp 'parse-time-string)
+		  'parse-time-string)))
+	(when fn
+	  (apply (function encode-time) (funcall fn string)))))))
 
 (defsubst w3m-time-newer-p (a b)
   "Return t, if A is newer than B.  Otherwise return nil.
@@ -2546,9 +2547,9 @@ or prefix ARG columns."
 (defun w3m-goto-ftp-url (url)
   (let* ((ftp (w3m-convert-ftp-url-for-emacsen url))
 	 (file (file-name-nondirectory ftp)))
-    (if (string-match "\\(\\.gz\\|\\.bz2\\|\\.zip\\|\\.lzh\\)$" file)
-	(copy-file ftp (w3m-read-file-name nil nil file))
-      (dired-other-window ftp))))
+    (if (file-directory-p ftp)
+	(dired-other-window ftp)
+      (copy-file ftp (w3m-read-file-name nil nil file)))))
 
 (defun w3m-goto-url (url &optional reload cs)
   "*Retrieve contents of URL."
