@@ -108,7 +108,7 @@ distclean: clean
 .SUFFIXES: .elc .el
 
 .el.elc:
-	echo "$$(EMACS) $$(FLAGS) -f batch-byte-compile $*.el";\
+	echo "$(EMACS) $(FLAGS) -f batch-byte-compile $*.el";\
 	$(EMACS) $(FLAGS) -f batch-byte-compile $*.el
 
 slow: Makefile

@@ -1,5 +1,7 @@
 2001-11-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* Makefile.in: Fix the macro rule to generate *.elc files.
+
 	* w3m.el (w3m-display-hook): Add `w3m-select-buffer-update'.
 	(w3m-select-buffer-name): Move the definition position to avoid
 	byte-compile warning.
