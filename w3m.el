@@ -148,12 +148,7 @@
   (unless (fboundp 'char-to-int)
     (defalias 'char-to-int 'identity)))
 
-(defconst emacs-w3m-version
-  (eval-when-compile
-    (let ((rev "$Revision$"))
-      (and (string-match "\\.\\([0-9]+\\) \\$\\'" rev)
-	   (setq rev (- (string-to-number (match-string 1 rev)) 1020))
-	   (concat "1.3.90" (if (> rev 0) (format ".%d" rev) "")))))
+(defconst emacs-w3m-version "1.3.90"
   "Version number of this package.")
 
 (defgroup w3m nil
