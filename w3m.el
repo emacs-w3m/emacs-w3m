@@ -950,7 +950,7 @@ If N is negative, last N items of LIST is returned."
     ;; return value of specified entity, or empty string for unknown entity.
     (or (symbol-value (intern-soft (match-string 1) w3m-entity-db))
 	(if (not (char-equal (string-to-char name) ?#))
-	    ""				; unknown etity
+	    (concat "&" name)		; unknown entity
 	  ;; case of immediate character (accept only 0x20 .. 0x7e)
 	  (let ((char (string-to-int (substring name 1)))
 		sym)
@@ -959,7 +959,6 @@ If N is negative, last N items of LIST is returned."
 		 (if (or (< char 32) (< 127 char))
 		     "~"		; un-supported character
 		   (char-to-string char)))))))
-
 
 (defun w3m-fontify-bold ()
   "Fontify bold characters in this buffer which contains half-dumped data."

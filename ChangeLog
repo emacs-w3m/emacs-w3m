@@ -13,6 +13,8 @@
 	(w3m-weather-url-alist): New associative list of AREA vs. URL.
 	(w3m-weather-default-area): New customize variable.
 	(w3m-weather-default-area): Ditto.
+	(w3m-entity-value): When unknown entity is specified, return
+	original string instead of null string.
 
 2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
