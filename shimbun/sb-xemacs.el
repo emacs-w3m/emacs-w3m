@@ -40,8 +40,8 @@
 (defvar shimbun-xemacs-groups '("xemacs-announce"
 				"xemacs-beta-ja" "xemacs-beta"
 				"xemacs-build-reports" "xemacs-cvs"
-				"xemacs-mule" "xemacs-nt" "xemacs-patches"
-				"xemacs-users-ja" "xemacs"))
+				"xemacs-design" "xemacs-mule" "xemacs-nt"
+				"xemacs-patches" "xemacs-users-ja" "xemacs"))
 (defvar shimbun-xemacs-coding-system 'euc-jp)
 (defvar shimbun-xemacs-reverse-flag nil)
 (defvar shimbun-xemacs-litemplate-regexp

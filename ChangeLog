@@ -1,3 +1,7 @@
+2002-04-12  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-xemacs.el (shimbun-xemacs-groups): Add xemacs-design.
+
 2002-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bitmap.el (w3m-bitmap-image-get-overlay): Speed up a bit.

@@ -114,8 +114,8 @@ w3m-dev		w3m-dev.w3m-dev
 digiko-ml	digiko.digiko
 xemacs 関連	xemacs.xemacs-announce xemacs.xemacs-beta-ja
 		xemacs.xemacs-beta xemacs.xemacs-build-reports
-		xemacs.xemacs-cvs xemacs.xemacs-mule xemacs.xemacs-nt
-		xemacs.xemacs-patches xemacs.xemacs-users-ja
+		xemacs.xemacs-cvs xemacs.xemacs-design xemacs.xemacs-mule
+		xemacs.xemacs-nt xemacs.xemacs-patches xemacs.xemacs-users-ja
 		xemacs.xemacs
 セキュリティーMEMO security-memo.memo
 Debian JP 関連	debian-jp.debian-announce debian-jp.debian-devel
