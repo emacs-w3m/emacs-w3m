@@ -1235,7 +1235,7 @@ If optional argument NO-CACHE is non-nil, cache is not used."
     (w3m-fontify-images)
     ;; Remove other markups.
     (goto-char (point-min))
-    (while (re-search-forward "</?[A-z][^>]*>" nil t)
+    (while (re-search-forward "</?[A-z_][^>]*>" nil t)
       (delete-region (match-beginning 0) (match-end 0)))
     ;; Decode escaped characters (entities).
     (goto-char (point-min))
