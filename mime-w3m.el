@@ -65,7 +65,7 @@ consider all the urls to be safe."
 
 (eval-and-compile
   (when (featurep 'xemacs)
-    (autoload 'font-set-face-background "font" nil t)))
+    (require 'font)))
 
 (defun mime-w3m-insinuate ()
   "Insinuate `mime-w3m' module to SEMI."
@@ -162,8 +162,7 @@ will not be substituted.")
       `(let ((color (color-name (face-background 'default))))
 	 (prog1
 	     (progn ,@body)
-	   (font-set-face-background 'default color (current-buffer))
-	   ))
+	   (font-set-face-background 'default color (current-buffer))))
     (cons 'progn body)))
 
 ;;;###autoload

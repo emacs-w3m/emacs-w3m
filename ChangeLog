@@ -1,5 +1,7 @@
 2002-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mime-w3m.el: Always require `font' under XEmacs.
+
 	* shimbun/sb-debian.el (shimbun-debian-groups): Add debian-med,
 	debian-newmaint-discuss, debian-qa-packages, debian-ssh,
 	debian-user-de and debian-user-german.
