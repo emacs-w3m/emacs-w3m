@@ -783,6 +783,7 @@ If nil, use an internal CGI of w3m."
   (condition-case nil
       :symbol-for-testing-whether-colon-keyword-is-available-or-not
     (void-variable
+     (eval '(defconst :bool ':bool))
      (eval '(defconst :case-ignore ':case-ignore))
      (eval '(defconst :integer ':integer)))))
 
