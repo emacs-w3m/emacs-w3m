@@ -1,3 +1,8 @@
+2002-01-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-arrived-setup): Ignore database of arrived URLs in
+	too old style.
+
 2002-01-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-url-encode-string): Add a period to the set of
