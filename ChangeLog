@@ -20,8 +20,8 @@
 	(w3m-select-buffer-current-buffer): Use `line-beginning-position'.
 	(w3m-select-buffer-copy-buffer): Revert the 2003-11-05 change;
 	simplify.
-	(w3m-select-buffer-delete-buffer): Call `w3m-alive-p' if there is
-	the sole emacs-w3m buffer.
+	(w3m-select-buffer-delete-buffer): Call `w3m-quit' if there is the
+	sole emacs-w3m buffer.
 	(w3m-select-buffer-delete-other-buffers): Revert the 2003-11-07
 	change.
 	(w3m-select-buffer-quit): Revert the 2003-11-05 change; bind
