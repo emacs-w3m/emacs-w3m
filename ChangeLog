@@ -1,3 +1,18 @@
+2001-10-15  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-fml.el (shimbun-get-headers): Call
+	`shimbun-retrieve-url' with arg NO-DECODE when CODING-SYSTEM is
+	non-nil.
+	Call `shimbun-retrieve-url' with arg RELOAD.
+	Set enable-multibyte-characters to t and decode region according
+	to CODING-SYSTEM when CODING-SYSTEM is non-nil.
+	
+	* shimbun/sb-w3m-dev.el (shimbun-w3m-dev-coding-system): New
+	variable.
+
+	* shimbun/shimbun.el (shimbun-retrieve-url): Reindent.
+	Set enable-multibyte-characters to nil when NO-DECODE is non-nil.
+
 2001-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (top): Removed autoload for `regexp-opt'.

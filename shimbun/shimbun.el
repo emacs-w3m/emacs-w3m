@@ -115,10 +115,12 @@ Return content-type of URL as string when retrieval succeeded."
   (let (type)
     (when (and url (setq type (w3m-retrieve url no-decode no-cache)))
       (w3m-with-work-buffer
-      (unless no-decode
-	(w3m-decode-buffer url)))
+	(unless no-decode
+	  (w3m-decode-buffer url)))
       (unless (eq (current-buffer)
 		  (get-buffer w3m-work-buffer-name))
+	(when no-decode
+	  (set-buffer-multibyte nil))
 	(insert-buffer w3m-work-buffer-name)))
     type))
 

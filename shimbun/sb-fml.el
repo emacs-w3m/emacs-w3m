@@ -52,6 +52,7 @@
 					 &optional range)
   (let ((case-fold-search t)
 	(pages (shimbun-header-index-pages range))
+	(coding-system (shimbun-coding-system-internal shimbun))
 	(count 0)
 	headers auxs aux)
     (while (and (if pages (<= (incf count) pages) t)
@@ -61,7 +62,11 @@
       (while auxs
 	(with-temp-buffer
 	  (shimbun-retrieve-url
-	   (concat (shimbun-url-internal shimbun) (setq aux (car auxs)) "/"))
+	   (concat (shimbun-url-internal shimbun) (setq aux (car auxs)) "/")
+	   'reload (when coding-system 'binary))
+	  (when coding-system
+	    (set-buffer-multibyte t)
+	    (decode-coding-region (point-min) (point-max) coding-system))
 	  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
 	  (let ((case-fold-search t)
 		id url date subject from)

@@ -32,6 +32,7 @@
 
 (defvar shimbun-w3m-dev-url "http://mi.med.tohoku.ac.jp/~satodai/w3m-dev/")
 (defvar shimbun-w3m-dev-groups '("w3m-dev"))
+(defvar shimbun-w3m-dev-coding-system 'euc-japan)
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-w3m-dev))
   "w3m-dev@mi.med.tohoku.ac.jp")
