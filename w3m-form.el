@@ -287,7 +287,7 @@ If no field in forward, return nil without moving."
 	      (let ((value (w3m-form-get form id)))
 		(when value
 		  (w3m-form-replace
-		   (if (member (nth 3 (w3m-action (point))) value)
+		   (if (member (nth 4 (w3m-action (point))) value)
 		       "*" " ")))
 		(unless (eq form cform)
 		  (w3m-form-put cform id name value))))
