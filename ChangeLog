@@ -1,3 +1,8 @@
+2004-04-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-expand-path-name): In Emacs, don't bind
+	directory-sep-char which is an obsolete variable.
+
 2004-04-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el, w3m-favicon.el: Move snippets managing
