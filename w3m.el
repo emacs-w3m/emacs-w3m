@@ -3435,7 +3435,14 @@ also make a new frame for the copied session."
     (cond
      (url
       (when new-session
-	(switch-to-buffer (w3m-copy-buffer nil nil t)))
+	(switch-to-buffer (w3m-copy-buffer nil nil t 'empty))
+	;; When new URL has `name' portion, we have to goto the base url
+	;; because generated buffer has no content at this moment.
+	(when (and (string-match w3m-url-components-regexp url)
+		   (match-beginning 8))
+	  (let ((name (match-string 9 url))
+		(url (substring url 0 (match-beginning 8))))
+	    (w3m-goto-url url arg nil nil w3m-current-url))))
       (w3m-goto-url url arg nil nil w3m-current-url))
      (act (eval act))
      ((w3m-image)
@@ -3685,11 +3692,12 @@ session."
     (w3m-print-this-url)))
 
 
-(defun w3m-copy-buffer (&optional buf newname and-pop)
+(defun w3m-copy-buffer (&optional buf newname and-pop empty)
   "Create a copy of the buffer BUF which defaults to the current buffer.
 If NEWNAME is nil, it defaults to the current buffer's name.
 If AND-POP is non-nil, the new buffer is shown with `pop-to-buffer',
-that is affected by `w3m-pop-up-frames'."
+that is affected by `w3m-pop-up-frames'.
+If EMPTY is non-nil, the created buffer has empty content."
   (interactive (list (current-buffer)
 		     (if current-prefix-arg (read-string "Name: "))
 		     t))
@@ -3708,7 +3716,7 @@ that is affected by `w3m-pop-up-frames'."
 	  (new (generate-new-buffer newname)))
       (with-current-buffer new
 	(funcall mode)			;still needed??  -sm
-	(w3m-goto-url url)
+	(unless empty (w3m-goto-url url))
 	(dolist (v lvars)
 	  (cond ((not (consp v))
 		 (makunbound v))
@@ -3722,6 +3730,7 @@ that is affected by `w3m-pop-up-frames'."
 		   (error nil)))))
 	;; Make copies of `w3m-history' and `w3m-history-flat'.
 	(w3m-history-copy buf)
+	(when empty (setq w3m-current-url nil))
 	(when and-pop
 	  (let* ((pop-up-windows w3m-pop-up-windows)
 		 (pop-up-frames w3m-pop-up-frames)
@@ -4285,7 +4294,14 @@ the current session.  Otherwise, the new session will start afresh."
 	coding-system-for-read)))
   (if (eq 'w3m-mode major-mode)
       (progn
-	(switch-to-buffer (w3m-copy-buffer nil nil (interactive-p)))
+	(switch-to-buffer (w3m-copy-buffer nil nil (interactive-p) 'empty))
+	;; When new URL has `name' portion, we have to goto the base url
+	;; because generated buffer has no content at this moment.
+	(when (and (string-match w3m-url-components-regexp url)
+		   (match-beginning 8))
+	  (let ((name (match-string 9 url))
+		(url (substring url 0 (match-beginning 8))))
+	    (w3m-goto-url url reload charset post-data referer)))
 	(w3m-goto-url url reload charset post-data referer))
     (w3m url t)))
 
