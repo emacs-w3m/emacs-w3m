@@ -4670,7 +4670,7 @@ lines are picked up.  If ARG is non-nil, force reload all links."
       (goto-char start)
       (setq all (not (and (bolp)
 			  w3m-current-url
-			  (string-match "\\`http://\\([^/]+\\.\\)?google\\."
+			  (string-match "\\`http://\\([^/]+\\.\\)*google\\."
 					w3m-current-url))))
       (while (progn
 	       (w3m-next-anchor)
@@ -6527,30 +6527,37 @@ If input is nil, use default content-type on w3m."
 
 (defun w3m-examine-command-line-args ()
   "Return a url string if it seems that the `w3m' command is invoked from
-the command line like: ``emacs -f w3m'' or ``emacs -f w3m url''."
+the command line like: ``emacs -f w3m'' or ``emacs -f w3m url''.  This
+function is used only when Emacs 21.4 or later is running."
   (let ((url (car command-line-args-left))
-	args num)
-    (if url
-	(if (and (setq args (memq url command-line-args))
-		 (>= (setq num (- (length command-line-args) (length args) 1))
-		     2)
-		 (equal (nth num command-line-args) "w3m")
-		 (equal (nth (1- num) command-line-args) "-f"))
-	    (progn
-	      (setq command-line-args-left (cdr command-line-args-left))
-	      (setcdr (nthcdr (- num 2) command-line-args)
+	(directives '("-f" "-funcall" "--funcall" "-e"))
+	args directive num)
+    (if (and url
+	     (not (string-match "\\`-" url)))
+	(when (and
+	       (setq args (memq url command-line-args))
+	       (>= (setq num (- (length command-line-args) (length args) 1))
+		   2)
+	       (equal (nth num command-line-args) "w3m")
+	       (member (setq directive (nth (1- num) command-line-args))
+		       directives))
+	  (setq command-line-args-left (cdr command-line-args-left))
+	  (setcdr (nthcdr (- num 2) command-line-args)
+		  (cons (concat directive " w3m " url)
+			(nthcdr (+ num 2) command-line-args)))
+	  url)
+      (when (and
+	     (setq args (member "w3m" command-line-args))
+	     (member
+	      (setq directive
+		    (nth (setq num
+			       (- (length command-line-args) (length args) 1))
+			 command-line-args))
+	      directives))
+	(setcdr (nthcdr (1- num) command-line-args)
+		(cons (concat directive " w3m")
 		      (nthcdr (+ num 2) command-line-args)))
-	  (set url nil))
-      (if (and (setq args (member "w3m" command-line-args))
-	       (equal
-		(nth (setq num (- (length command-line-args) (length args) 1))
-		     command-line-args)
-		"-f"))
-	  (progn
-	    (setq url (or w3m-home-page "about:"))
-	    (setcdr (nthcdr (1- num) command-line-args)
-		    (nthcdr (+ num 2) command-line-args)))))
-    url))
+	(or w3m-home-page "about:")))))
 
 ;;;###autoload
 (defun w3m (&optional url new-session interactive-p)
