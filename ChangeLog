@@ -1,3 +1,9 @@
+2001-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-make-html-contents): Define it before
+	it is use.
+	(shimbun-make-html-contents): Ditto.
+
 2001-05-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Add support code of w3mmee.  Reorganaized codes to
