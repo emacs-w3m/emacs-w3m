@@ -183,7 +183,7 @@ return it."
 	  (sit-for 0.1))))))
 
 (defun w3m-process-start-process (object &optional no-sentinel)
-  "Start a process spcified by the OBJECT, return always nil.
+  "Start a process specified by the OBJECT, return always nil.
 When NO-SENTINEL is not equal to nil, all status changes of the
 generated asynchronous process is ignored.  Otherwise,
 `w3m-process-sentinel' is given to the process as the sentinel."
