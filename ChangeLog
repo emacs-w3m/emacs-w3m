@@ -1,3 +1,21 @@
+2004-06-27  Yoshitaka Taki  <taki@tawagoto.org>
+
+	* shimbun/sb-impress.el (shimbun-impress-groups-alist): Improve
+	regexp for pc, akiba, game and av groups.
+	(shimbun-index-url): Don't add an excessive slash.
+	(shimbun-get-headers): Use shimbun-create-header instead of
+	shimbun-make-header; don't encode subject string.
+
+	* shimbun/sb-itmedia.el (shimbun-itmedia-content-start): Don't
+	declare it since it has never been used.
+	(shimbun-itmedia-content-end): Ditto.
+	(shimbun-itmedia-expiration-days): Don't declare it.
+	(shimbun-get-headers): Use shimbun-create-header instead of
+	shimbun-make-header; don't encode subject string; remove a relic
+	lingered when it was sb-zdnet.el.
+	(shimbun-itmedia-clean-text-page): Look for the body end securely.
+	(shimbun-make-contents): Improve regexp to find date string.
+
 2004-06-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-quickml.el: Removed.
