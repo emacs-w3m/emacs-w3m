@@ -48,7 +48,7 @@
 
 (defun w3mhack-examine-modules ()
   "Examine w3m modules should be byte-compile'd."
-  (let ((modules (directory-files default-directory nil "\\.el$"))
+  (let ((modules (directory-files default-directory nil "^[^#]+\\.el$"))
 	(deletes (cond ((featurep 'xemacs)
 			'("w3m-e21.el" "w3m-om.el"))
 		       ((and (boundp 'emacs-major-version)
@@ -127,7 +127,7 @@ Examples of the optimization:
 	      (when (eq 'let* (car form))
 		(while (setq element (rassoc (list obsolete) elements))
 		  (setcdr element (list value))))
-	    (setq varlist (cons element varlist))))
+	    (push element varlist)))
 	(setq varlist (nreverse varlist)))
       (setcar (cdr form) varlist))
     form)
@@ -137,7 +137,65 @@ Examples of the optimization:
     "Byte optimize `let' or `let*' FORM in the source level
 to remove some obsolete variables in the first argument VARLIST."
     (when (memq (car-safe (ad-get-arg 0)) '(let let*))
-      (ad-set-arg 0 (w3mhack-byte-optimize-letX (ad-get-arg 0))))))
+      (ad-set-arg 0 (w3mhack-byte-optimize-letX (ad-get-arg 0)))))
+
+  (defun w3mhack-make-package ()
+    "Make some files in the XEmacs package directory."
+    (let* ((package-dir (pop command-line-args-left))
+	   (lisp-dir (expand-file-name "lisp/w3m/" package-dir))
+	   (custom-load (expand-file-name "custom-load.el" lisp-dir))
+	   (generated-autoload-file (expand-file-name "auto-autoloads.el"
+						      lisp-dir))
+	   (els (directory-files default-directory nil "^[^#]+\\.el$"))
+	   (elcs (with-temp-buffer
+		   (let ((standard-output (current-buffer)))
+		     (w3mhack-examine-modules)
+		     (split-string (buffer-string)))))
+	   (icons (directory-files (expand-file-name "icons/") nil
+				   "^[^#]+\\.xpm$"))
+	   (si:message (symbol-function 'message))
+	   manifest make-backup-files noninteractive)
+      (with-temp-buffer
+	(let ((standard-output (current-buffer)))
+	  (Custom-make-dependencies lisp-dir))
+	;; Print messages into stderr.
+	(message "%s" (buffer-string)))
+      (when (file-exists-p custom-load)
+	(require 'cus-load)
+	(byte-compile-file custom-load)
+	(push "lisp/w3m/custom-load.el" els)
+	(push "lisp/w3m/custom-load.elc" elcs))
+      (message "Updating autoloads for directory %s..." lisp-dir)
+      (when (file-exists-p generated-autoload-file)
+	(delete-file generated-autoload-file))
+      (defun message (fmt &rest args)
+	"Ignore useless messages while generating autoloads."
+	(cond ((and (string-equal "Generating autoloads for %s..." fmt)
+		    (file-exists-p (file-name-nondirectory (car args))))
+	       (funcall si:message
+			fmt (file-name-nondirectory (car args))))
+	      ((string-equal "No autoloads found in %s" fmt))
+	      ((string-equal "Generating autoloads for %s...done" fmt))
+	      (t (apply si:message fmt args))))
+      (unwind-protect
+	  (update-autoloads-from-directory lisp-dir)
+	(fset 'message si:message))
+      (when (file-exists-p generated-autoload-file)
+	(byte-compile-file generated-autoload-file)
+	(push "lisp/w3m/auto-autoloads.el" els)
+	(push "lisp/w3m/auto-autoloads.elc" elcs))
+      (when (file-directory-p (expand-file-name "pkginfo/" package-dir))
+	(setq manifest (expand-file-name "pkginfo/MANIFEST.w3m" package-dir))
+	(message "Generating %s..." manifest)
+	(with-temp-file manifest
+	  (insert "pkginfo/MANIFEST.w3m\n")
+	  (dolist (el els)
+	    (insert "lisp/w3m/" el "\n")
+	    (when (member (concat el "c") elcs)
+	      (insert "lisp/w3m/" el "c\n")))
+	  (dolist (icon icons)
+	    (insert "etc/w3m/" icon "\n")))
+	(message "Generating %s...done" manifest)))))
 
  ((boundp 'MULE)
   ;; Bind defcustom'ed variables.

@@ -1,9 +1,12 @@
-prefix  = @prefix@
-lispdir = @lispdir@
-INSTALL = @INSTALL@
+INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
+prefix       = @prefix@
+lispdir      = @lispdir@
+PACKAGEDIR   = @PACKAGEDIR@
+ICONDIR      = @ICONDIR@
 ADDITIONAL_LOAD_PATH = @ADDITIONAL_LOAD_PATH@
-ICONDIR = @ICONDIR@
+
+SHELL        = /bin/sh
 
 @SET_MAKE@
 EMACS   = @EMACS@
@@ -35,28 +38,36 @@ default:
 	$(ECC) $<
 
 install: default
-	@for p in ChangeLog *.el; do\
+	@$(SHELL) ./mkinstalldirs $(lispdir);\
+	for p in ChangeLog *.el; do\
 	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
 	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
-	done
-	@for p in *.elc; do\
+	done;\
+	for p in *.elc; do\
 	  echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
 	  $(INSTALL_DATA) $$p $(lispdir)/$$p;\
 	done
 
 install-icons:
 	@if test $(ICONDIR) = NONE; then\
-	  echo "You don't have to install icons for $(EMACS).";\
+	  echo "You don't have to install icon files for \"$(EMACS)\".";\
 	else\
-	  if test -d $(ICONDIR); then\
-	    cd icons;\
-	    for i in *.xpm; do\
-	      echo " $(INSTALL_DATA) $$i $(ICONDIR)/$$i";\
-	      $(INSTALL_DATA) $$i $(ICONDIR)/$$i;\
-	    done;\
-	  else\
-	    echo "You shuold mkdir $(ICONDIR) in advance.";\
-	  fi\
+	  $(SHELL) ./mkinstalldirs $(ICONDIR);\
+	  cd icons;\
+	  for i in *.xpm; do\
+	    echo " $(INSTALL_DATA) $$i $(ICONDIR)/$$i";\
+	    $(INSTALL_DATA) $$i $(ICONDIR)/$$i;\
+	  done;\
+	fi
+
+install-package:
+	@if test $(PACKAGEDIR) = NONE; then\
+	  echo "What a pity!  Your \"$(EMACS)\" does not support"\
+		"a package system.";\
+	else\
+	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install;\
+	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/w3m" install-icons;\
+	  $(EMACS) $(FLAGS) -f w3mhack-make-package $(PACKAGEDIR);\
 	fi
 
 dist:

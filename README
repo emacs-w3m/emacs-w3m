@@ -20,8 +20,22 @@ This package contains a interface program of w3m.
       to an appropriate directory.
 
           % ./configure
-	  % make
-	  % make install
+          % make
+          % make install
+
+      In addition, you can install some image files used to the icons
+      for XEmacs or Emacs 21 as follows.
+
+          % make install-icons
+
+      You can also install program files as an XEmacs package using
+      `install-package' instead of `install'.
+
+          % ./configure
+          % make
+          % make install-package
+
+      In this case, you have no need to execute `install-icons' command.
 
    c) Put these lines into your ~/.emacs.
 

@@ -1,3 +1,23 @@
+2001-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* README: Update for `install-package' and `install-icons'.
+	* README.ja: Ditto.
+
+	* w3mhack.el (w3mhack-make-package): New function.
+	(w3mhack-examine-modules): Ignore auto-save files.
+
+	* mkinstalldirs: New file.
+
+	* configure.in: Call `AC_PATH_PACKAGEDIR'.
+
+	* aclocal.m4 (AC_PATH_PACKAGEDIR): New function.
+	(AC_EXAMINE_PACKAGEDIR): New function.
+	(AC_CHECK_EMACS_FLAVOR): Merged into `AC_CHECK_EMACS'.
+
+	* Makefile.in (install-package): New rule.
+	(install-icons, install): Exec mkinstalldirs.
+	(SHELL, PACKAGEDIR): New variable.
+
 2001-03-16  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-goto-url): Force swith to '*w3m*' buffer.

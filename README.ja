@@ -23,8 +23,22 @@
       ンストールするため，次のコマンドを実行してください．
 
           % ./configure
-	  % make
-	  % make install
+          % make
+          % make install
+
+      加えて，XEmacs や Emacs 21 用のアイコンを，以下のようにインストー
+      ルすることができます．
+
+          % make install-icons
+
+      install の代わりに install-package を使うと，XEmacs の package と
+      してインストールすることもできます．
+
+          % ./configure
+          % make
+          % make install-package
+
+      この場合 install-icons を実行する必要はありません．
 
    c) 次の設定を ~/.emacs に追加してください．
 
