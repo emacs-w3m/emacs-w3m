@@ -1,3 +1,15 @@
+2005-03-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-url-readable-string): Decide a scheme to guess
+	encodings based on the target URL, instead of the current URL.
+	(w3m-show-decoded-url): Doc fix to follow the above change.
+	(w3m-copy-buffer): Do not set `w3m-current-url' and
+	`w3m-current-coding-system'.
+	(w3m-goto-url-new-session): Simplified.
+
+	* shimbun/nnshimbun.el (nnshimbun-parse-nov): Remove redundant
+	`function'.
+
 2005-03-22  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-yahoo-auctions.el (shimbun-yahoo-auctions-content-start)

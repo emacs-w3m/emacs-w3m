@@ -1295,9 +1295,8 @@ See the balloon-help.el file for more information."
 This variable can take one of the following five kinds of forms:
 
 1. t
-  Decode URIs using the encoding assumed by the default presumption rule
-  based on the priority list including the encoding used to decode the
-  current page and the value of `w3m-coding-system-priority-list'.
+  Decode URIs using the encoding guessed from the value of
+  `w3m-coding-system-priority-list'.
 
 2. Coding system
   Decode URIs using this value.
@@ -1309,11 +1308,12 @@ This variable can take one of the following five kinds of forms:
   Each element looks like the `(PREDICATE . ENCODING)' form.  PREDICATE
   should be a regexp, a function or a Lisp form, and ENCODING should be
   one of the forms described here excluding this form.  If PREDICATE is
-  a regexp, it will be tested whether it matches to the current url.
-  If it is a function, it will be called with no argument.  If it is a
-  Lisp form, it will be simply evaluated.  Elements are tested in turn
-  until the result of the test of the predicate is true and the encoding
-  which is associated to the predicate is used for decoding URIs.
+  a regexp, it will be tested whether it matches to the target url.
+  If it is a function, it will be called with the target url.  If it
+  is a Lisp form, it will be simply evaluated.  Elements are tested in
+  turn until the result of the test of the predicate is true and the
+  encoding which is associated to the predicate is used for decoding
+  URIs.
 
 5. nil
   Don't decode URIs."
@@ -2913,23 +2913,18 @@ a decoding scheme."
 	       (catch 'found-rule
 		 (save-match-data
 		   (dolist (elem w3m-show-decoded-url)
-		     (when (if (and (stringp w3m-current-url)
-				    (stringp (car elem)))
-			       (string-match (car elem) w3m-current-url)
+		     (when (if (stringp (car elem))
+			       (string-match (car elem) url)
 			     (if (functionp (car elem))
-				 (funcall (car elem))
+				 (funcall (car elem) url)
 			       (eval (car elem))))
 		       (throw 'found-rule (cdr elem))))))
 	     w3m-show-decoded-url)))
       (if rule
-	  (w3m-url-decode-string
-	   url
-	   (if (eq t rule)
-	       (if w3m-current-coding-system
-		   (cons w3m-current-coding-system
-			 w3m-coding-system-priority-list)
-		 w3m-coding-system-priority-list)
-	     rule))
+	  (w3m-url-decode-string url
+				 (if (eq t rule)
+				     w3m-coding-system-priority-list
+				   rule))
 	url))))
 
 (defsubst w3m-url-transfer-encode-string (url &optional coding)
@@ -6187,9 +6182,7 @@ a page in a new buffer with the correct width."
       (w3m-mode)
       ;; Make copies of `w3m-history' and `w3m-history-flat'.
       (w3m-history-copy buffer)
-      (setq w3m-current-url url
-	    w3m-current-coding-system coding
-	    w3m-initial-frames init-frames
+      (setq w3m-initial-frames init-frames
 	    w3m-display-inline-images
 	    (if w3m-toggle-inline-images-permanently
 		images
@@ -7593,9 +7586,6 @@ session will start afresh."
 			    ;; has no content at this moment.
 			    (and (string-match w3m-url-components-regexp url)
 				 (match-beginning 8)
-				 'redisplay)
-			    (and (stringp w3m-current-url)
-				 (string= w3m-current-url url)
 				 'redisplay))
 			charset post-data referer)
 	  ;; Delete useless newly created buffer if it is empty.

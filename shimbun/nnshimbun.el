@@ -711,7 +711,7 @@ allowed for each string."
 		       (goto-char (match-end 0)))
 		     (nnheader-nov-field)))
 	  (extra   (nnheader-nov-parse-extra)))
-      (mapc #'(lambda (elem) (setcdr elem (eword-decode-string (cdr elem))))
+      (mapc (lambda (elem) (setcdr elem (eword-decode-string (cdr elem))))
 	    extra)
       (shimbun-make-header number subject from date
 			   (or (cdr (assq 'X-Nnshimbun-Id extra)) id)
