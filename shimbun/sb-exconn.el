@@ -60,7 +60,7 @@ http://support.microsoft.com/default.aspx\\?scid=kb;ja;\\([0-9]+\\)" url)
 						&optional range)
   (let ((headers (luna-call-next-method)))
     (dolist (header headers)
-      (shimbun-header-set-from header shimbun-exconn-from-address))
+      (shimbun-header-set-from header (shimbun-from-address shimbun)))
     headers))
 
 (provide 'sb-exconn)
