@@ -34,9 +34,7 @@
 
    The following w3m versions have been checked for emacs-w3m support:
 
-        w3m-0.2.2
-	w3mmee-p20-5
-	w3m-0.2.3.1-m17n
+        w3m-0.3
 
 * Troubleshooting
 
