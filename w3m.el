@@ -1917,10 +1917,17 @@ instead of this hook.")
   "Return the file name which is pointed by URL.
 When URL does not point any local files, it returns nil."
   ;; Remove scheme part and net_loc part.  NOTE: This function accepts
-  ;; only urls whose net_loc part is empty or NULL string.
+  ;; only urls whose net_loc part is empty, NULL string or the localhost
+  ;; name.
   (cond
-   ((string-match "\\`\\(file:\\(//\\)?\\|about://dtree\\)/" url)
+   ((string-match "\\`\\(\\(file:\\(//\\)?\\)\\|about://dtree\\)/" url)
     (setq url (substring url (match-end 1)))
+    ;; Strip the localhost name.
+    (when (and (match-beginning 2) ;; file:
+	       (string-match (concat "\\`//\\(localhost\\|127\\.0\\.0\\.1\\|"
+				     (regexp-quote (system-name)) "\\)/")
+			     url))
+      (setq url (substring url (match-end 1))))
     ;; Process abs_path part in Windows.
     (setq url
 	  (if (and w3m-treat-drive-letter
