@@ -2172,7 +2172,8 @@ or prefix ARG columns."
 	  (sit-for 0)
 	  (w3m-toggle-inline-images 'force reload))
 	(setq buffer-read-only t)
-	(set-buffer-modified-p nil))))))
+	(set-buffer-modified-p nil)
+	(switch-to-buffer (current-buffer)))))))
 
 
 (defun w3m-reload-this-page (&optional arg)
@@ -2246,10 +2247,11 @@ ex.) c:/dir/file => //c/dir/file"
 (defun w3m-view-source ()
   "*Display source of this current buffer."
   (interactive)
-  (w3m-goto-url
-   (if (string-match "^about://source/" w3m-current-url)
-       (substring w3m-current-url (match-end 0))
-     (concat "about://source/" w3m-current-url))))
+  (let (w3m-url-history w3m-url-yrotsih)
+    (w3m-goto-url
+     (if (string-match "^about://source/" w3m-current-url)
+	 (substring w3m-current-url (match-end 0))
+       (concat "about://source/" w3m-current-url)))))
 
 (defun w3m-about-header (url &optional no-decode no-cache)
   (when (string-match "^about://header/" url)

@@ -96,19 +96,21 @@ This variable effected only XEmacs or Emacs 21.")
 	       (cache (mew-cache-hit fld msg 'must-hit))
 	       (syntax (mew-cache-decode-syntax cache))
 	       (part2 1)
-	       part1 len cid cidpart cidstx beg end)
-	  (setq part1 (nreverse (nthcdr 1 (nreverse part))))
+	       len cid cidpart cidstx beg end)
+	  (if (< (length part) 2)
+	      (setq part nil)
+	    (setcdr (nthcdr (- (length part) 2) part) nil))
 	  (setq len
 		(- (length
-		    (mew-syntax-get-part (mew-syntax-get-entry syntax part1)))
+		    (mew-syntax-get-part (mew-syntax-get-entry syntax part)))
 		   mew-syntax-magic))
 	  (setq cidpart
 		(catch 'detcid
 		  (while (>= len part2)
 		    (setq cid (mew-syntax-get-cid
-			       (mew-syntax-get-entry syntax (append part1 (list part2)))))
+			       (mew-syntax-get-entry syntax (append part (list part2)))))
 		    (when (and cid (string= cid url))
-		      (throw 'detcid (append part1 (list part2))))
+		      (throw 'detcid (append part (list part2))))
 		    (setq part2 (1+ part2)))))
 	  (when cidpart
 	    (setq cidstx (mew-syntax-get-entry syntax cidpart))

@@ -1,3 +1,10 @@
+2001-03-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-goto-url): Force swith to '*w3m*' buffer.
+	(w3m-view-source): Don't add current-url to w3m-url-history|yrotsih.
+
+	* mew-w3m.el (mew-w3m-cid-retrieve): Change mime-part handling.
+
 2001-03-16  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m-antenna.el (w3m-antenna-sort-function): Removed.
