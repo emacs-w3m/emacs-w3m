@@ -33,9 +33,11 @@
 	`w3m-process' object.
 	(w3m-process-push): Likewise; Follow change of `w3m-process-new';
 	No check for `w3m-process-queue-registrable-p'.
+	(w3m-process-kill-process): Check process status before stopping
+	them.
 	(w3m-process-start-process): Follow the structural change of
 	`w3m-process' object.
-	(w3m-process-stop): Ditto.
+	(w3m-process-stop): Ditto; Start queued processes. 
 	(w3m-process-with-null-handler): No check for
 	`w3m-process-queue-registrable-p'.
 

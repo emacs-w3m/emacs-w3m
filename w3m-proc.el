@@ -162,9 +162,11 @@ return it."
 
 (defsubst w3m-process-kill-process (process)
   "Kill process PROCESS safely."
-  (set-process-filter process 'ignore)
-  (set-process-sentinel process 'ignore)
-  (kill-process process))
+  (when (processp process)
+    (set-process-filter process 'ignore)
+    (set-process-sentinel process 'ignore)
+    (when (eq (process-status process) 'run)
+      (kill-process process))))
 
 (defun w3m-process-start-process (object)
   "Start a process spcified by the OBJECT."
@@ -243,7 +245,8 @@ which have no handler."
 		       (w3m-kill-buffer (w3m-process-handler-buffer handler)))
 		     nil)))
 	       w3m-process-queue))
-	w3m-current-process nil))
+	w3m-current-process nil)
+  (w3m-process-start-queued-processes))
 
 (defun w3m-process-shutdown ()
   (let ((list w3m-process-queue))
