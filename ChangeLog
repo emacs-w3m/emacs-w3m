@@ -1,3 +1,18 @@
+2001-03-09  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-mode-map): Add `w3m-close-window',
+	`w3m-view-source', `w3m-view-header', and `w3m-history'.  Keybind
+	of `w3m-quit' is changed.
+	(w3m-close-window, w3m-about-source, w3m-view-source,
+	w3m-about-header, w3m-view-header, w3m-about-history,
+	w3m-history): New functions.
+
+	* mime-w3m.el (mime-put-keymap-region): Removed.
+	(mime-w3m-save-background-color): Old name is
+	`mime-save-background-color'.
+	(mime-w3m-mode-map): Add workaround for `w3m-close-window',
+	`w3m-view-source', `w3m-view-header', and `w3m-history'.
+
 2001-03-09  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-cid-retrieve-function-alist): New variable.

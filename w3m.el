@@ -620,6 +620,8 @@ See also `w3m-search-engine-alist'."
     ("image/x-xpm" . xpm))
   "An alist of CONTENT-TYPE and IMAGE-TYPE.")
 
+(defvar w3m-cid-retrieve-function-alist nil)
+
 (defvar w3m-work-buffer-list nil)
 (defconst w3m-work-buffer-name " *w3m-work*")
 
@@ -1818,8 +1820,6 @@ are retrieved."
 		    (w3m-decode-buffer type charset))
 	       type))))))))
 
-(defvar w3m-cid-retrieve-function-alist nil)
-
 (defun w3m-retrieve (url &optional no-decode accept-type-regexp no-cache)
   "Retrieve content of URL and insert it to the working buffer.
 This function will return content-type of URL as string when retrieval
@@ -2243,8 +2243,8 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "U" 'w3m)
     (define-key map "V" 'w3m)
     (define-key map "v" 'w3m-view-bookmark)
-    (define-key map "q" 'w3m-quit)
-    (define-key map "Q" (lambda () (interactive) (w3m-quit t)))
+    (define-key map "q" 'w3m-close-window)
+    (define-key map "Q" 'w3m-quit)
     (define-key map "\M-n" 'w3m-copy-buffer)
     (define-key map "R" 'w3m-reload-this-page)
     (define-key map "?" 'describe-mode)
@@ -2252,6 +2252,9 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "a" 'w3m-bookmark-add-current-url)
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
+    (define-key map "\\" 'w3m-view-source)
+    (define-key map "=" 'w3m-view-header)
+    (define-key map "s" 'w3m-history)
     (setq w3m-mode-map map)))
 
 (defun w3m-alive-p ()
@@ -2265,6 +2268,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     nil))
 
 (defun w3m-quit (&optional force)
+  "Quit browsing WWW after updateing arrived URLs list."
   (interactive "P")
   (when (or force
 	    (y-or-n-p "Do you want to exit w3m? "))
@@ -2274,6 +2278,12 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
       (w3m-cache-shutdown)
       (w3m-arrived-shutdown)
       (w3m-kill-all-buffer))))
+
+(defun w3m-close-window ()
+  "Close this window and make the other buffer current."
+  (interactive)
+  (bury-buffer (current-buffer))
+  (set-window-buffer (selected-window) (other-buffer)))
 
 
 (defun w3m-mode ()
@@ -2650,6 +2660,46 @@ engine deinfed in `w3m-search-engine-alist'.  Otherwise use
   (w3m-with-work-buffer
     (delete-region (point-min) (point-max)))
   "text/html")
+
+(defun w3m-about-source (url &optional no-decode accept-type-regexp no-cache)
+  (when (string-match "^about://source/" url)
+    (let ((type (w3m-retrieve (substring url (match-end 0))
+			      no-decode accept-type-regexp no-cache)))
+      (and type "text/plain"))))
+
+(defun w3m-view-source ()
+  "*Display source of this current buffer."
+  (interactive)
+  (w3m (concat "about://source/" w3m-current-url)))
+
+(defun w3m-about-header (url &optional no-decode accept-type-regexp no-cache)
+  (when (string-match "^about://header/" url)
+    (w3m-with-work-buffer
+      (delete-region (point-min) (point-max))
+      (let ((header (w3m-w3m-get-header (substring url (match-end 0)) no-cache)))
+	(when header
+	  (insert header)
+	  "text/plain")))))
+
+(defun w3m-view-header ()
+  "*Display header of this current buffer."
+  (interactive)
+  (w3m (concat "about://header/" w3m-current-url)))
+
+(defun w3m-about-history (&rest args)
+  (let ((history w3m-url-history))
+    (w3m-with-work-buffer
+      (delete-region (point-min) (point-max))
+      (insert "<head><title>URL history</title></head><body>\n")
+      (dolist (url history)
+	(unless (string-match "^about://\\(header\\|source\\|history\\)/" url)
+	  (insert (format "<a href=\"%s\">%s</a><br>\n" url url))))
+      (insert "</body>")))
+  "text/html")
+
+(defun w3m-history ()
+  (interactive)
+  (w3m "about://history/"))
 
 
 ;;; Weather:

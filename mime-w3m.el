@@ -51,15 +51,10 @@
 (eval-when-compile (require 'cl))
 
 (defvar mime-w3m-mode-map nil)
+(defvar mime-w3m-message-structure nil)
 
-(defmacro mime-put-keymap-region (start end keymap)
-  `(put-text-property ,start ,end
-		      ',(if (featurep 'xemacs)
-			    'keymap
-			  'local-map)
-		      ,keymap))
-
-(defmacro mime-save-background-color (&rest body)
+(put 'mime-w3m-save-background-color 'edebug-form-spec '(&rest body))
+(defmacro mime-w3m-save-background-color (&rest body)
   (if (featurep 'xemacs)
       `(let ((color (color-name (face-background 'default))))
 	 (prog1
@@ -67,8 +62,6 @@
 	   (font-set-face-background 'default color (current-buffer))
 	   ))
     (cons 'progn body)))
-
-(defvar mime-w3m-message-structure nil)
 
 (defun mime-w3m-preview-text/html (entity situation)
   (setq mime-w3m-message-structure (mime-find-root-entity entity))
@@ -81,7 +74,7 @@
     (goto-char p)
     (insert "\n")
     (goto-char p)
-    (mime-save-background-color
+    (mime-w3m-save-background-color
      (save-restriction
        (narrow-to-region p p)
        (mime-insert-text-content entity)
@@ -89,7 +82,11 @@
        (condition-case err
 	   (w3m-region p (point-max))
 	 (error (message (format "%s" err))))
-       (mime-put-keymap-region p (point-max) mime-w3m-mode-map)
+       (put-text-property p (point-max)
+			  (w3m-static-if (featurep 'xemacs)
+			      'keymap
+			    'local-map)
+			  mime-w3m-mode-map)
        ))))
 
 (defun mime-w3m-cid-retrieve (url &optional no-decode accept-type-regexp
@@ -111,8 +108,12 @@
     (substitute-key-definition 'w3m-view-this-url 'mime-w3m-view-this-url map)
     (substitute-key-definition 'w3m-mouse-view-this-url 'mime-w3m-view-this-url map)
     (substitute-key-definition 'w3m-quit 'mime-preview-quit map)
+    (substitute-key-definition 'w3m-close-window 'mime-preview-quit map)
     (substitute-key-definition 'w3m-view-previous-page nil map)
     (substitute-key-definition 'w3m-reload-this-page nil map)
+    (substitute-key-definition 'w3m-view-source nil map)
+    (substitute-key-definition 'w3m-view-header nil map)
+    (substitute-key-definition 'w3m-history nil map)
     (setq mime-w3m-mode-map map)))
 
 (defun mime-w3m-view-this-url ()
