@@ -1,5 +1,7 @@
 2003-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-favicon.el: Silence the compile warning for `w3m-message'.
+
 	* w3m.el (w3m-url-to-file-name): Enable it to interpret
 	file://localhost/ urls.
 
