@@ -39,16 +39,16 @@
 
 (require 'w3m)
 
-(defcustom w3m-link-numbering-mode-hook nil
-  "*Hook run after `w3m-link-numbering-mode' initialization."
-  :group 'w3m
-  :type 'hook)
-
 (defface w3m-link-numbering-face
   '((((class color) (background light)) (:foreground "gray60"))
     (((class color) (background dark)) (:foreground "gray50")))
   "Face used to highlight link numbers."
   :group 'w3m-face)
+
+(defcustom w3m-link-numbering-mode-hook nil
+  "*Hook run after `w3m-link-numbering-mode' initialization."
+  :group 'w3m
+  :type 'hook)
 
 (defvar w3m-link-numbering-mode-map
   (let ((keymap (make-sparse-keymap)))
@@ -59,7 +59,7 @@
   "Keymap used when `w3m-link-numbering-mode' is active.")
 
 (defvar w3m-link-numbering-mode nil
-  "Non-nil if w3m link numberring mode is enabled.")
+  "Non-nil if w3m operations using link numbers are enabled.")
 (make-variable-buffer-local 'w3m-link-numbering-mode)
 (unless (assq 'w3m-link-numbering-mode minor-mode-map-alist)
   (push (cons 'w3m-link-numbering-mode w3m-link-numbering-mode-map)
@@ -70,12 +70,16 @@
   "Minor mode to enable operations using link numbers."
   (interactive "P")
   (add-hook 'w3m-display-functions 'w3m-link-numbering)
-  (when (prog1 (setq w3m-link-numbering-mode
-		     (if arg
-			 (> (prefix-numeric-value arg) 0)
-		       (not w3m-link-numbering-mode)))
-	  (w3m-link-numbering))
-    (run-hooks 'w3m-link-numbering-mode-hook)))
+  (if (setq w3m-link-numbering-mode
+	    (if arg
+		(> (prefix-numeric-value arg) 0)
+	      (not w3m-link-numbering-mode)))
+      (progn
+	(w3m-link-numbering)
+	(run-hooks 'w3m-link-numbering-mode-hook))
+    (dolist (overlay (overlays-in (point-min) (point-max)))
+      (when (overlay-get overlay 'w3m-link-numbering-overlay)
+	(delete-overlay overlay)))))
 
 (defun w3m-link-numbering (&rest args)
   "Make overlays that display link numbers."
