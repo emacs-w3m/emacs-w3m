@@ -3,6 +3,7 @@
 	* shimbun/sb-cnet.el: Major change for the new CNET Japan site.
 	(shimbun-cnet-url, shimbun-cnet-groups, shimbun-cnet-from-address,
 	shimbun-cnet-content-start, shimbun-cnet-content-end): Do.
+	(shimbun-cnet-server-name): New.
 	(shimbun-index-url): Use the top page.
 	(shimbun-get-headers): Rewrite.
 	(shimbun-make-contents): Remove advertisements embedded with table
