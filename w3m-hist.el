@@ -132,6 +132,8 @@ documentation for the variable `w3m-history' for more information.")
   (caddar w3m-history))
 
 (eval-when-compile
+  ;; Internal macros.  They are not serviceable in the other modules.
+
   (defmacro w3m-history-current-1 (position)
     "Return a history element located in the POSITION of `w3m-history'."
     (` (let* ((position (, position))
@@ -139,7 +141,86 @@ documentation for the variable `w3m-history' for more information.")
 	 (while position
 	   (setq element (nth (pop position) (cddr element))
 		 element (nth (pop position) element)))
-	 element))))
+	 element)))
+
+  (defmacro w3m-history-forward-1 ()
+    "Move one element forward in the history and return a position of the
+element.  The position pointers of `w3m-history' will have new values."
+    '(let ((next (caddar w3m-history)))
+       (prog1
+	   next
+	 (when next
+	   ;; Examine the next of the next history.
+	   (let (branch number element branches)
+	     (setq branch (cdr w3m-history)
+		   number (pop next)
+		   element (nth number branch))
+	     (while next
+	       (setq branch (nth (pop next) (cddr element))
+		     number (pop next)
+		     element (nth number branch)))
+	     ;; (The value of `next' is nil.)
+	     (cond ((setq branches (cddr element))
+		    ;; The next element has branch(es).
+		    (setq number (1- (length branches))
+			  next (copy-sequence (caddar w3m-history)))
+		    (setcdr (nthcdr (1- (length next)) next) (list number 0)))
+		   ((> (length branch) (setq number (1+ number)))
+		    ;; The next of the next element exists in the branch.
+		    (setq next (copy-sequence (caddar w3m-history)))
+		    (setcar (nthcdr (1- (length next)) next) number))))
+	   ;; Shift left the position pointers.
+	   (setcar w3m-history
+		   (nconc (cdar w3m-history) (list next)))))))
+
+  (defmacro w3m-history-backward-1 ()
+    "Move one element backward in the history and return a position of the
+element.  The position pointers of `w3m-history' will have new values."
+    '(let ((previous (caar w3m-history)))
+       (prog1
+	   previous
+	 (when previous
+	   ;; Examine the previous of the previous history.
+	   (let* ((class (1- (length previous)))
+		  (number (nth class previous)))
+	     (if (zerop number)
+		 ;; The previous element is the first of the branch.
+		 (if (zerop class)
+		     ;; There is no previous of the previous element.
+		     (setq previous nil)
+		   ;; The previous element has a parent.
+		   (setq previous (copy-sequence previous))
+		   (setcdr (nthcdr (- class 2) previous) nil))
+	       ;; The previous of the previous element exists in the branch.
+	       (setq previous (copy-sequence previous))
+	       (setcar (nthcdr class previous) (1- number))))
+	   ;; Shift right the position pointers.
+	   (setcdr (cdar w3m-history) nil)
+	   (setcar w3m-history (cons previous (car w3m-history)))))))
+
+  (defmacro w3m-history-with-elements (url set-current
+					   error-message-if-no-elements
+					   &rest forms)
+    "Bind the variables `tree' and `flat', and evaluate FORMS like `progn'.
+The variable `tree' will have a history element which comes from
+`w3m-history'.  The variable `flat' will also have a history element
+which comes from `w3m-history-flat'.  URL specifies the position in
+the history structure, and defaults to the current position.  If
+SET-CURRENT is non-nil, the position pointer will come to point the
+element in the history structure.  If history elements are not
+available, signal an error with ERROR-MESSAGE-IF-NO-ELEMENTS."
+    (` (let (flat tree)
+	 (if (let ((url (, url)))
+	       (if url
+		   (when (setq flat (w3m-history-assoc url
+						       (, set-current) t))
+		     (setq tree (w3m-history-current-1 (caddr flat))))
+		 (when (setq tree (w3m-history-current))
+		   (setq flat (w3m-history-assoc (car tree))))))
+	     (progn
+	       (,@ forms))
+	   (error "%s" (, error-message-if-no-elements))))))
+  (put 'w3m-history-with-elements 'lisp-indent-function 'defun))
 
 (defun w3m-history-current ()
   "Return a history element of the current position.  The value looks
@@ -152,64 +233,41 @@ information."
   (when w3m-history
     (w3m-history-current-1 (cadar w3m-history))))
 
-(defun w3m-history-forward ()
-  "Move forward in the history and return a history element of the
-position.  The position pointers of `w3m-history' will go forward.
-If the next element does not exist in the history, it returns a
-history element of the current position."
+(defun w3m-history-forward (&optional count)
+  "Move forward COUNT times in the history structure and return a history
+element of the position.  The position pointers of `w3m-history' will
+have new values.  If COUNT is omitted, it defaults to number one.  If
+COUNT is negative, moving backward is performed.  If there is no room
+in the history, move as far as possible."
   (when w3m-history
-    (let ((next (caddar w3m-history)))
-      (prog1
-	  (w3m-history-current-1 (or next (cadar w3m-history)))
-	(when next
-	  ;; Examine the next of the next history.
-	  (let (branch number element branches)
-	    (setq branch (cdr w3m-history)
-		  number (pop next)
-		  element (nth number branch))
-	    (while next
-	      (setq branch (nth (pop next) (cddr element))
-		    number (pop next)
-		    element (nth number branch)))
-	    ;; (The value of `next' is nil.)
-	    (cond ((setq branches (cddr element))
-		   ;; The next element has branch(es).
-		   (setq number (1- (length branches))
-			 next (copy-sequence (caddar w3m-history)))
-		   (setcdr (nthcdr (1- (length next)) next) (list number 0)))
-		  ((> (length branch) (setq number (1+ number)))
-		   ;; The next of the next element exists in the branch.
-		   (setq next (copy-sequence (caddar w3m-history)))
-		   (setcar (nthcdr (1- (length next)) next) number))))
-	  ;; Shift left the position pointers.
-	  (setcar w3m-history
-		  (nconc (cdar w3m-history) (list next))))))))
+    (let (goal)
+      (cond ((or (unless count
+		   (setq (setq count 1)))
+		 (> count 0))
+	     (while (and (setq goal (w3m-history-forward-1))
+			 (> (setq count (1- count)) 0))))
+	    ((< count 0)
+	     (while (and (setq goal (w3m-history-backward-1))
+			 (< (setq count (1+ count)) 0)))))
+      (w3m-history-current-1 (or goal (cadar w3m-history))))))
 
-(defun w3m-history-backward ()
-  "Move backward in the history and return a history element of the
-position.  The position pointers of `w3m-history' will go backward.
-If the previous element does not exist in the history, it returns a
-history element of the current position."
+(defun w3m-history-backward (&optional count)
+  "Move backward COUNT times in the history structure and return a history
+element of the position.  The position pointers of `w3m-history' will
+have new values.  If COUNT is omitted, it defaults to number one.  If
+COUNT is negative, moving forward is performed.  If there is no room
+in the history, move as far as possible."
   (when w3m-history
-    (let ((previous (copy-sequence (caar w3m-history))))
-      (prog1
-	  (w3m-history-current-1 (or previous (cadar w3m-history)))
-	(when previous
-	  ;; Examine the previous of the previous history.
-	  (let* ((class (1- (length previous)))
-		 (number (nth class previous)))
-	    (if (zerop number)
-		;; The previous element is the first of the branch.
-		(if (zerop class)
-		    ;; There is no previous of the previous element.
-		    (setq previous nil)
-		  ;; The previous element has a parent.
-		  (setcdr (nthcdr (- class 2) previous) nil))
-	      ;; The previous of the previous element exists in the branch.
-	      (setcar (nthcdr class previous) (1- number))))
-	  ;; Shift right the position pointers.
-	  (setcdr (cdar w3m-history) nil)
-	  (setcar w3m-history (cons previous (car w3m-history))))))))
+    (let (goal)
+      (cond ((or (unless count
+		   (setq count 1))
+		 (> count 0))
+	     (while (and (setq goal (w3m-history-backward-1))
+			 (> (setq count (1- count)) 0))))
+	    ((< count 0)
+	     (while (and (setq goal (w3m-history-forward-1))
+			 (< (setq count (1+ count)) 0)))))
+      (w3m-history-current-1 (or goal (cadar w3m-history))))))
 
 (defun w3m-history-flat (&optional history position alist)
   "Set the buffer-local variable `w3m-history-flat' with the value of a
@@ -389,31 +447,6 @@ point the element in the history structure."
     (if element
 	(plist-get (cadr element) keyword)
       (error "No history element found to be extracted."))))
-
-(eval-when-compile
-  (defmacro w3m-history-with-elements (url set-current
-					   error-message-if-no-elements
-					   &rest forms)
-    "Bind the variables `tree' and `flat', and evaluate FORMS like `progn'.
-The variable `tree' will have a history element which comes from
-`w3m-history'.  The variable `flat' will also have a history element
-which comes from `w3m-history-flat'.  URL specifies the position in
-the history structure, and defaults to the current position.  If
-SET-CURRENT is non-nil, the position pointer will come to point the
-element in the history structure.  If history elements are not
-available, signal an error with ERROR-MESSAGE-IF-NO-ELEMENTS."
-    (` (let (flat tree)
-	 (if (let ((url (, url)))
-	       (if url
-		   (when (setq flat (w3m-history-assoc url
-						       (, set-current) t))
-		     (setq tree (w3m-history-current-1 (caddr flat))))
-		 (when (setq tree (w3m-history-current))
-		   (setq flat (w3m-history-assoc (car tree))))))
-	     (progn
-	       (,@ forms))
-	   (error "%s" (, error-message-if-no-elements))))))
-  (put 'w3m-history-with-elements 'lisp-indent-function 'defun))
 
 (defun w3m-history-plist-put (keyword value &optional url set-current)
   "Change value in the properties of a history element of KEYWORD to
