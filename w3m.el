@@ -2700,6 +2700,16 @@ use `w3m-url-encode-string' instead."
     (apply 'concat
 	   (nreverse (cons (substring url start) buf)))))
 
+(defmacro w3m-delete-all-overlays (&optional all)
+  "Delete all momentary overlays.
+If ALL is non-nil, simply delete all overlays."
+  (if all
+      '(dolist (overlay (overlays-in (point-min) (point-max)))
+	 (delete-overlay overlay))
+    '(dolist (overlay (overlays-in (point-min) (point-max)))
+       (if (overlay-get overlay 'w3m-momentary-overlay)
+	   (delete-overlay overlay)))))
+
 
 ;;; HTML character entity handling:
 (defun w3m-entity-db-setup ()
@@ -4804,6 +4814,7 @@ specified in the `w3m-content-type-alist' variable."
       (let (buffer-read-only)
 	(widen)
 	(delete-region (point-min) (point-max))
+	(w3m-delete-all-overlays 'all)
 	(insert-buffer-substring result-buffer)
 	(w3m-copy-local-variables result-buffer)
 	(set-buffer-file-coding-system w3m-current-coding-system)
@@ -4819,6 +4830,7 @@ specified in the `w3m-content-type-alist' variable."
 	      w3m-current-title (file-name-nondirectory url))
 	(widen)
 	(delete-region (point-min) (point-max))
+	(w3m-delete-all-overlays 'all)
 	(insert w3m-current-title)
 	(w3m-add-text-properties (point-min) (point-max)
 				 (list 'face 'w3m-image-face
@@ -5402,12 +5414,6 @@ url."
 		   (or url
 		       (and (w3m-action) "There is a form")
 		       "There is no url")))))
-
-(defmacro w3m-delete-all-overlays ()
-  "Delete all momentary overlays."
-  '(dolist (overlay (overlays-in (point-min) (point-max)))
-     (if (overlay-get overlay 'w3m-momentary-overlay)
-	 (delete-overlay overlay))))
 
 (defun w3m-highlight-current-anchor-1 (seq)
   "Highlight an anchor in the line if the anchor sequence is the same as SEQ.

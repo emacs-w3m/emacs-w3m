@@ -1,3 +1,10 @@
+2004-04-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-delete-all-overlays): Simply delete all overlays if
+	the optional arg is given.
+	(w3m-create-text-page): Delete zombie overlays.
+	(w3m-create-image-page): Ditto.
+
 2004-04-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-search.el (w3m-search-engine-alist): Improve custom.
