@@ -294,7 +294,7 @@ Third optional argument SIZE is currently ignored."
 		    (w3m-retrieve url 'raw no-cache nil referer handler)
 		  (error (message "While retrieving %s: %s" url err) nil)))
 	(let ((data (buffer-string))
-	      fixed glyph)
+	      glyph)
 	  (setq glyph
 		(when (w3m-image-type-available-p (setq type 
 							(w3m-image-type type)))
@@ -302,10 +302,9 @@ Third optional argument SIZE is currently ignored."
 			   (or w3m-should-unoptimize-animated-gifs
 			       w3m-should-convert-interlaced-gifs)
 			   w3m-gifsicle-program
-			   (prog1 (w3m-fix-gif url data no-cache)
-			     (setq fixed t)))
+			   (w3m-fix-gif url data no-cache))
 		      (w3m-make-glyph data type))))
-	  (if (and w3m-resize-images set-size (not fixed))
+	  (if (and w3m-resize-images set-size)
 	      (progn
 		(setq size (cons (glyph-width glyph)
 				 (glyph-height glyph)))
