@@ -1,3 +1,57 @@
+2001-12-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Merge obvious fixes on the main trunk.
+	(w3m-image-viewer): New variable.
+	(w3m-content-type-alist): Refer it.
+
+2001-12-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-mailto-url): Use the property `composefunc' to
+	get the function to compose a mail from `mail-user-agent'.
+
+2001-12-11  Mito  <mito@mxa.nes.nec.co.jp>
+
+	* w3m.el (w3m-scroll-left): Modify doc-string.
+	(w3m-scroll-right): Ditto.
+
+2001-12-06  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-decode-buffer): When content-charset is unknown,
+	detect coding-system automatically.
+
+2001-11-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (top, w3m-about): Change the URL of w3m's official page.
+
+2001-11-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-scroll-left, w3m-scroll-right): Use
+	`call-interactively' to avoid a strange behavior of Emacs21.  This
+	change is suggested by Hironori FUJII
+	<fujii@chi.its.hiroshima-cu.ac.jp>.
+
+2001-11-19  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-print-this-url): View current image info.
+	(w3m-goto-next-image, w3m-next-image, w3m-goto-previous-image)
+	(w3m-previous-image): New functions.
+	(w3m-lynx-like-map, w3m-info-like-map): Bind "}" as the key to
+	call `w3m-next-image'. Bind "{" as the key to call
+	`w3m-previous-image'.
+	(w3m-mode): Modify dos-string.
+
+2001-11-19  Masatake YAMATO  <jet@gyve.org>
+
+	* w3m.el (w3m-goto-next-form, w3m-next-form)
+	(w3m-goto-previous-form, w3m-previous-form): New functions.
+	(w3m-lynx-like-map, w3m-info-like-map): Bind "]" as the key to
+	call `w3m-next-form'. Bind "[" as the key to call
+	`w3m-previous-form'.
+
+2001-11-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-search.el: Require `cl' when compiling.
+
 2001-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-load-list): Removed a bogus code for XEmacs; don't
@@ -14,11 +68,15 @@
 
 2001-12-21  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
-	* w3m.el (w3m-type): Use "w3m-m17n" if exists.
+	* w3m.el (w3m-type): Changed condition to decide type.
 	(w3m-decoder-alist): Use `w3m-command' for inflate command path.
 	(w3m-dirlist-cgi-program): Use `w3m-command'.
-	(w3m-dump-head-source-command-arguments) [w3mmee]: Don't
-	add "-o accept_language=xxx".
+	(w3m-dump-head-source-command-arguments) [w3mmee]: Don't add "-o
+	accept_language=xxx".
+
+2001-11-16  OKAZAKI Tetsurou <okazaki@be.to>
+
+	* w3m.el (w3m-type): Use "w3m-m17n" if exists.
 
 2001-12-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

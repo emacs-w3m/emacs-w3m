@@ -35,7 +35,7 @@
 ;; emacs-w3m is the interface program of w3m on Emacs.  For more
 ;; detail about w3m, see:
 ;;
-;;    http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/
+;;    http://w3m.sourceforge.net/
 
 
 ;;; How to install:
@@ -507,6 +507,15 @@ to input URL when URL-like string is not detected under the cursor."
   :group 'w3m
   :type 'string)
 
+(defvar w3m-image-viewer
+  (or (w3m-which-command "display")
+      (w3m-which-command "eeyes")
+      (w3m-which-command "xloadimage")
+      (w3m-which-command "xv"))
+  "*Command to view image files.
+Note: this option is installed temporally.  It will be abolished by
+the implement of the mailcap parser to set `w3m-content-type-alist'.")
+
 ;; FIXME: 本当は mailcap を適切に読み込んで設定する必要がある
 (defcustom w3m-content-type-alist
   (if (eq system-type 'windows-nt)
@@ -524,25 +533,24 @@ to input URL when URL-like string is not detected under the cursor."
 	("video/quicktime" "\\.mov$" ("fiber.exe" "-s" file))
 	("application/postscript" "\\.\\(ps\\|eps\\)$" ("fiber.exe" "-s" file))
 	("application/pdf" "\\.pdf$" ("fiber.exe" "-s" file)))
-    (cons
-     (list "text/html" "\\.s?html?$"
-	   (if (and (condition-case nil (require 'browse-url) (error nil))
-		    (fboundp 'browse-url-netscape))
-	       'browse-url-netscape
-	     '("netscape" url)))
-     '(("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
-       ("image/jpeg" "\\.jpe?g$" ("xv" file))
-       ("image/png" "\\.png$" ("xv" file))
-       ("image/gif" "\\.gif$" ("xv" file))
-       ("image/tiff" "\\.tif?f$" ("xv" file))
-       ("image/x-xwd" "\\.xwd$" ("xv" file))
-       ("image/x-xbm" "\\.xbm$" ("xv" file))
-       ("image/x-xpm" "\\.xpm$" ("xv" file))
-       ("image/x-bmp" "\\.bmp$" ("xv" file))
-       ("video/mpeg" "\\.mpe?g$" ("mpeg_play" file))
-       ("video/quicktime" "\\.mov$" ("mpeg_play" file))
-       ("application/postscript" "\\.\\(ps\\|eps\\)$" ("gv" file))
-       ("application/pdf" "\\.pdf$" ("acroread" file)))))
+    `(("text/html" "\\.s?html?$"
+       ,(if (and (condition-case nil (require 'browse-url) (error nil))
+		 (fboundp 'browse-url-netscape))
+	    'browse-url-netscape
+	  '("netscape" url)))
+      ("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
+      ("image/jpeg" "\\.jpe?g$" (,w3m-image-viewer file))
+      ("image/png" "\\.png$" (,w3m-image-viewer file))
+      ("image/gif" "\\.gif$" (,w3m-image-viewer file))
+      ("image/tiff" "\\.tif?f$" (,w3m-image-viewer file))
+      ("image/x-xwd" "\\.xwd$" (,w3m-image-viewer file))
+      ("image/x-xbm" "\\.xbm$" (,w3m-image-viewer file))
+      ("image/x-xpm" "\\.xpm$" (,w3m-image-viewer file))
+      ("image/x-bmp" "\\.bmp$" (,w3m-image-viewer file))
+      ("video/mpeg" "\\.mpe?g$" ("mpeg_play" file))
+      ("video/quicktime" "\\.mov$" ("mpeg_play" file))
+      ("application/postscript" "\\.\\(ps\\|eps\\)$" ("gv" file))
+      ("application/pdf" "\\.pdf$" ("acroread" file))))
   "*Alist of file suffixes vs. content type."
   :group 'w3m
   :type '(repeat
@@ -2501,33 +2509,36 @@ If the user enters null input, return second argument DEFAULT."
 			t '(t nil) nil (cadr x)))))))
 
 (defun w3m-decode-buffer (url &optional content-charset content-type)
-  (unless content-charset
-    (setq content-charset
-	  (or (w3m-content-charset url)
-	      (when (string= "text/html"
-			     (or content-type (w3m-content-type url)))
-		(let ((case-fold-search t))
-		  (goto-char (point-min))
-		  (when (or (re-search-forward
-			     w3m-meta-content-type-charset-regexp nil t)
-			    (re-search-forward
-			     w3m-meta-charset-content-type-regexp nil t))
-		    (match-string-no-properties 2)))))))
-  (when (and (eq w3m-type 'w3mmee)
-	     (or (and (stringp content-charset)
-		      (string= "x-moe-internal" (downcase content-charset)))
-		 (eq content-charset 'x-moe-internal)))
-    (setq content-charset (w3m-x-moe-decode-buffer)))
-  (decode-coding-region
-   (point-min) (point-max)
-   (setq w3m-current-coding-system
-	 (if content-charset
-	     (w3m-charset-to-coding-system content-charset)
-	   (w3m-detect-coding-region (point-min) (point-max)
-				     (if (w3m-url-local-p url)
-					 nil
-				       w3m-coding-system-priority-list)))))
-  (set-buffer-multibyte t))
+  (let (cs)
+    (unless content-charset
+      (setq content-charset
+	    (or (w3m-content-charset url)
+		(when (string= "text/html"
+			       (or content-type (w3m-content-type url)))
+		  (let ((case-fold-search t))
+		    (goto-char (point-min))
+		    (when (or (re-search-forward
+			       w3m-meta-content-type-charset-regexp nil t)
+			      (re-search-forward
+			       w3m-meta-charset-content-type-regexp nil t))
+		      (match-string-no-properties 2)))))))
+    (when content-charset
+      (setq cs (w3m-charset-to-coding-system content-charset)))
+    (when (and (eq w3m-type 'w3mmee)
+	       (or (and (stringp content-charset)
+			(string= "x-moe-internal" (downcase content-charset)))
+		   (eq content-charset 'x-moe-internal)))
+      (setq cs (w3m-x-moe-decode-buffer)))
+    (decode-coding-region
+     (point-min) (point-max)
+     (setq w3m-current-coding-system
+	   (or cs
+	       (w3m-detect-coding-region
+		(point-min) (point-max)
+		(if (w3m-url-local-p url)
+		    nil
+		  w3m-coding-system-priority-list)))))
+    (set-buffer-multibyte t)))
 
 (defun w3m-x-moe-decode-buffer ()
   (let ((args '("-i" "-cs" "x-moe-internal"))
@@ -3603,11 +3614,11 @@ session."
 (defun w3m-print-this-url (&optional add-kill-ring)
   "Print the URL of the link under point."
   (interactive (list t))
-  (let ((url (w3m-anchor)))
+  (let ((url (or (w3m-anchor) (w3m-image))))
     (and add-kill-ring url (kill-new url))
     (message "%s" (or url
-		      (and (w3m-action) "There's a form")
-		      "There's no url"))))
+		      (and (w3m-action) "There is a form")
+		      "There is no url"))))
 
 (defun w3m-edit-url (url)
   "Edit the local file pointed by URL."
@@ -3719,6 +3730,153 @@ session."
 		    w3m-goto-anchor-hist))))
     (w3m-print-this-url)))
 
+(defun w3m-goto-next-form ()
+  ;; move to the end of the current form
+  (when (w3m-action (point))
+    (goto-char (next-single-property-change (point) 'w3m-action)))
+  ;; find the next form
+  (or (w3m-action (point))
+      (let ((pos (next-single-property-change (point) 'w3m-action)))
+	(when pos
+	  (goto-char pos)
+	  t))))
+ 
+(defun w3m-next-form (&optional arg)
+  "Move cursor to the next form."
+  (interactive "p")
+  (unless arg (setq arg 1))
+  (if (null (memq last-command '(w3m-next-form w3m-previous-form)))
+      (setq w3m-goto-anchor-hist
+	    (list (get-text-property (point) 'w3m-action)))
+    (if (eq last-command 'w3m-previous-form)
+	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
+  (if (< arg 0)
+      (w3m-previous-form (- arg))
+    (while (> arg 0)
+      (unless (w3m-goto-next-form)
+	;; search from the beginning of the buffer
+	(setq w3m-goto-anchor-hist nil)
+	(goto-char (point-min))
+	(w3m-goto-next-form))
+      (setq arg (1- arg))
+      (if (member (w3m-action) w3m-goto-anchor-hist)
+	  (setq arg (1+ arg))
+	(setq w3m-goto-anchor-hist
+	      (cons (get-text-property (point) 'w3m-action)
+		    w3m-goto-anchor-hist))))
+    (w3m-print-this-url)))
+
+(defun w3m-goto-previous-form ()
+  ;; move to the beginning of the current form
+  (when (w3m-action (point))
+    (goto-char (previous-single-property-change (1+ (point))
+						'w3m-action)))
+  ;; find the previous form
+  (let ((pos (previous-single-property-change (point) 'w3m-action)))
+    (if pos
+	(goto-char
+	 (if (w3m-action pos) pos
+	   (previous-single-property-change pos 'w3m-action))))))
+
+(defun w3m-previous-form (&optional arg)
+  "Move cursor to the previous form."
+  (interactive "p")
+  (unless arg (setq arg 1))
+  (if (null (memq last-command '(w3m-next-form w3m-previous-form)))
+      (setq w3m-goto-anchor-hist
+	    (list (get-text-property (point) 'w3m-action)))
+    (if (eq last-command 'w3m-next-form)
+	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
+  (if (< arg 0)
+      (w3m-next-form (- arg))
+    (while (> arg 0)
+      (unless (w3m-goto-previous-form)
+	;; search from the end of the buffer
+	(setq w3m-goto-anchor-hist nil)
+	(goto-char (point-max))
+	(w3m-goto-previous-form))
+      (setq arg (1- arg))
+      (if (member (w3m-action) w3m-goto-anchor-hist)
+	  (setq arg (1+ arg))
+	(setq w3m-goto-anchor-hist
+	      (cons (get-text-property (point) 'w3m-action)
+		    w3m-goto-anchor-hist))))
+    (w3m-print-this-url)))
+
+(defun w3m-goto-next-image ()
+  ;; move to the end of the current image
+  (when (w3m-image (point))
+    (goto-char (next-single-property-change (point) 'w3m-image)))
+  ;; find the next form or image
+  (or (w3m-image (point))
+      (let ((pos (next-single-property-change (point) 'w3m-image)))
+	(when pos
+	  (goto-char pos)
+	  t))))
+
+(defun w3m-next-image (&optional arg)
+  "Move cursor to the next image."
+  (interactive "p")
+  (unless arg (setq arg 1))
+  (if (null (memq last-command
+		  '(w3m-next-image w3m-previous-image)))
+      (setq w3m-goto-anchor-hist
+	    (list (get-text-property (point) 'w3m-action)))
+    (if (eq last-command 'w3m-previous-image)
+	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
+  (if (< arg 0)
+      (w3m-previous-image (- arg))
+    (while (> arg 0)
+      (unless (w3m-goto-next-image)
+	;; search from or image the beginning of the buffer
+	(setq w3m-goto-anchor-hist nil)
+	(goto-char (point-min))
+	(w3m-goto-next-image))
+      (setq arg (1- arg))
+      (if (member (w3m-image) w3m-goto-anchor-hist)
+	  (setq arg (1+ arg))
+	(setq w3m-goto-anchor-hist
+	      (cons (get-text-property (point) 'w3m-image)
+		    w3m-goto-anchor-hist))))
+    (w3m-print-this-url)))
+
+(defun w3m-goto-previous-image ()
+  ;; move to the beginning of the current image
+  (when (w3m-image (point))
+    (goto-char (previous-single-property-change (1+ (point))
+						'w3m-image)))
+  ;; find the previous form or image
+  (let ((pos (previous-single-property-change (point) 'w3m-image)))
+    (if pos
+	(goto-char
+	 (if (w3m-image pos) pos
+	   (previous-single-property-change pos 'w3m-image))))))
+
+(defun w3m-previous-image (&optional arg)
+  "Move cursor to the previous image."
+  (interactive "p")
+  (unless arg (setq arg 1))
+  (if (null (memq last-command
+		  '(w3m-next-image w3m-previous-image)))
+      (setq w3m-goto-anchor-hist
+	    (list (get-text-property (point) 'w3m-action)))
+    (if (eq last-command 'w3m-next-image)
+	(setq w3m-goto-anchor-hist (list (car w3m-goto-anchor-hist)))))
+  (if (< arg 0)
+      (w3m-next-image (- arg))
+    (while (> arg 0)
+      (unless (w3m-goto-previous-image)
+	;; search from the end of the buffer
+	(setq w3m-goto-anchor-hist nil)
+	(goto-char (point-max))
+	(w3m-goto-previous-image))
+      (setq arg (1- arg))
+      (if (member (w3m-image) w3m-goto-anchor-hist)
+	  (setq arg (1+ arg))
+	(setq w3m-goto-anchor-hist
+	      (cons (get-text-property (point) 'w3m-image)
+		    w3m-goto-anchor-hist))))
+    (w3m-print-this-url)))
 
 (defun w3m-copy-buffer (&optional buf newname and-pop empty)
   "Create a copy of the buffer BUF which defaults to the current buffer.
@@ -3838,6 +3996,10 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
     (define-key map "+" 'w3m-antenna-add-current-url)
+    (define-key map "]" 'w3m-next-form)
+    (define-key map "[" 'w3m-previous-form)
+    (define-key map "}" 'w3m-next-image)
+    (define-key map "{" 'w3m-previous-image)
     (define-key map "H" 'w3m-gohome)
     (define-key map "A" 'w3m-antenna)
     (define-key map "W" 'w3m-weather)
@@ -3934,6 +4096,10 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "<" 'w3m-scroll-right)
     (define-key map "." 'beginning-of-buffer)
     (define-key map "^" 'w3m-view-parent-page)
+    (define-key map "]" 'w3m-next-form)
+    (define-key map "[" 'w3m-previous-form)
+    (define-key map "}" 'w3m-next-image)
+    (define-key map "{" 'w3m-previous-image)
     (define-key map "\C-c\C-c" 'w3m-submit-form)
     (setq w3m-info-like-map map)))
 
@@ -4016,6 +4182,11 @@ Return t if deleting current frame or window is succeeded."
 
 \\[w3m-next-anchor]	Jump to next anchor.
 \\[w3m-previous-anchor]	Jump to previous anchor.
+\\[w3m-next-form]	Jump to next form.
+\\[w3m-previous-form]	Jump to previous form.
+\\[w3m-next-image]	Jump to next image.
+\\[w3m-previous-image]	Jump to previous image.
+
 \\[w3m-view-previous-page]	Back to previous page.
 \\[w3m-view-next-page]	Forward to next page.
 \\[w3m-view-parent-page]	Upward to parent page.
@@ -4108,21 +4279,29 @@ Return t if deleting current frame or window is succeeded."
 
 (defun w3m-scroll-left (arg)
   "Scroll to left.
-Scroll size is `w3m-horizontal-scroll-size' columns
+Scroll size is `w3m-horizontal-scroll-columns' columns
 or prefix ARG columns."
   (interactive "P")
-  (scroll-left (if arg
-		   (prefix-numeric-value arg)
-		 w3m-horizontal-scroll-columns)))
+  ;; When `scroll-left' is called non-interactively in Emacs21, it
+  ;; doesn't work correctly.
+  (let ((current-prefix-arg
+	 (if arg
+	     (prefix-numeric-value arg)
+	   w3m-horizontal-scroll-columns)))
+    (call-interactively 'scroll-left)))
 
 (defun w3m-scroll-right (arg)
   "Scroll to right.
-Scroll size is `w3m-horizontal-scroll-size' columns
+Scroll size is `w3m-horizontal-scroll-columns' columns
 or prefix ARG columns."
   (interactive "P")
-  (scroll-right (if arg
-		    (prefix-numeric-value arg)
-		  w3m-horizontal-scroll-columns)))
+  ;; When `scroll-right' is called non-interactively in Emacs21, it
+  ;; doesn't work correctly.
+  (let ((current-prefix-arg
+	 (if arg
+	     (prefix-numeric-value arg)
+	   w3m-horizontal-scroll-columns)))
+    (call-interactively 'scroll-right)))
 
 (defun w3m-goto-mailto-url (url)
   (if (and (symbolp w3m-mailto-url-function)
@@ -4130,12 +4309,14 @@ or prefix ARG columns."
       (funcall w3m-mailto-url-function url)
     (let (comp)
       ;; Require `mail-user-agent' setting
-      (if (not (and (boundp 'mail-user-agent)
-		    mail-user-agent
-		    (setq comp (intern-soft (concat (symbol-name mail-user-agent)
-						    "-compose")))
-		    (fboundp comp)))
-	  (error "You must specify valid `mail-user-agent'"))
+      (unless (and (boundp 'mail-user-agent)
+		   (symbol-value 'mail-user-agent))
+	(error "You must specify the valid value to `mail-user-agent'"))
+      (unless (and (setq comp (get (symbol-value 'mail-user-agent)
+				   'composefunc))
+		   (fboundp comp))
+	(error "No function to compose a mail in `%s'"
+	       (symbol-value 'mail-user-agent)))
       ;; Use rfc2368.el if exist.
       ;; rfc2368.el is written by Sen Nagata.
       ;; You can find it in "contrib" directory of Mew package
@@ -4554,7 +4735,7 @@ Welcome to <a href=\"http://emacs-w3m.namazu.org/\">\
 <img src=\"about://emacs-w3m.gif\" alt=\"emacs-w3m\"></a>!
 <br><br>
 emacs-w3m is an interface program of
-<a href=\"http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/\">w3m</a>,
+<a href=\"http://w3m.sourceforge.net/\">w3m</a>,
 works on Emacs.
 </center>
 </body>

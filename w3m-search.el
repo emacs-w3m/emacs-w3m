@@ -43,6 +43,10 @@
 
 
 ;;; Code:
+
+(eval-when-compile
+  (require 'cl))
+
 (require 'w3m)
 
 (defcustom w3m-search-engine-alist
