@@ -261,7 +261,13 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	    (setq modules (nconc modules (list (concat shimbun-dir file)))))
 	  ;; mew-shimbun check
 	  (unless (locate-library "mew-nntp")
-	    (push (concat shimbun-dir "mew-shimbun.el") ignores)))
+	    (push (concat shimbun-dir "mew-shimbun.el") ignores))
+	  ;; nnshimbun check
+	  (unless (let ((gnus (locate-library "gnus")))
+		    (when gnus
+		      (let ((load-path (list (file-name-directory gnus))))
+			(locate-library "nnimap"))))
+	    (push (concat shimbun-dir "nnshimbun.el") ignores)))
       (push "mime-w3m.el" ignores)
       (push "octet.el" ignores))
     (unless (featurep 'mule)
@@ -773,6 +779,8 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 	 (setq x (locate-library "regexp-opt"))
 	 (push (file-name-directory x) paths))
     (if (setq x (locate-library "mew"))
+	(push (file-name-directory x) paths))
+    (if (setq x (locate-library "gnus"))
 	(push (file-name-directory x) paths))
     (and (if (featurep 'xemacs)
 	     ;; Mule-UCS does not support XEmacs versions prior to 21.2.37.
