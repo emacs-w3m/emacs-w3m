@@ -1,3 +1,7 @@
+2005-02-24  Felix E. Klee  <felix.klee@inka.de>
+
+	* shimbun/sb-ffii.el (shimbun-ffii-group-alist): Renamed.
+
 2005-02-23  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el: Changes to retrieve printable pages instead
@@ -32,7 +36,7 @@
 	(shimbun-clear-contents): Call the above instead of calling
 	`shimbun-header-xref'.
 
-2005-02-23  Felix E. Klee <felix.klee@inka.de>
+2005-02-23  Felix E. Klee  <felix.klee@inka.de>
 
 	* shimbun/sb-ffii.el: New module.
 
