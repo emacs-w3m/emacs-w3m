@@ -244,10 +244,10 @@ stored in the `w3m-favicon-image' buffer-local variable."
 		 (w3m-process-do-with-temp-buffer
 		     (ok (w3m-retrieve url 'raw nil nil nil handler))
 		   (let (idata image)
-		     (when ok
-		       (w3m-message "")
-		       (setq idata (buffer-string)
-			     image (w3m-favicon-convert idata type)))
+		     (if ok
+			 (setq idata (buffer-string)
+			       image (w3m-favicon-convert idata type))
+		       (w3m-message "Reading %s...done (no favicon)" url))
 		     (with-current-buffer target
 		       (w3m-favicon-set-image image)
 		       (push (list url idata (current-time) w3m-favicon-image)
