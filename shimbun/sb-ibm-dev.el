@@ -1,6 +1,6 @@
 ;;; sb-ibm-dev.el --- shimbun backend for www-6.ibm.com/ja/developerworks -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2001, 2003, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -32,55 +32,76 @@
 
 (defvar shimbun-ibm-dev-url "http://www-6.ibm.com/jp/developerworks/")
 (defvar shimbun-ibm-dev-groups
-  '("java" "linux" "opensource" "webservices" "xml"))
+  '("autonomic" "java" "linux" "opensource" "webservices" "xml"))
 (defvar shimbun-ibm-dev-from-address "webmaster@www-6.ibm.com")
 (defvar shimbun-ibm-dev-coding-system 'japanese-shift-jis-unix)
-(defvar shimbun-ibm-dev-content-start "<!--[ 　]*Title[ 　]*-->")
+(defvar shimbun-ibm-dev-content-start "<!--[ 　]*Contents[ 　]*-->")
 (defvar shimbun-ibm-dev-content-end
-  "^\\(<td colspan=\"[0-9]+\"><b>この記事についてどう思われますか？</b>\\|<!--footer information start-->\\)")
+  "<!--[ 　]*\\(\\(//\\|End[ 　]+of[ 　]\\)[ 　]*Contents\\|PDF Mail\\)[ 　]*-->")
 
-(luna-define-method shimbun-headers
-  ((shimbun shimbun-ibm-dev) header &optional outbuf)
-  (let* ((case-fold-search t)
-	 (from (shimbun-from-address shimbun))
-	 (group (shimbun-current-group-internal shimbun))
-	 (baseurl (concat (shimbun-url-internal shimbun) group "/"))
-	 aux headers id url subject date datelist)
-    (catch 'stop
-      (with-temp-buffer
-	(shimbun-retrieve-url
-	 (shimbun-expand-url "library.html" baseurl)
-	 'reload)
-	(subst-char-in-region (point-min) (point-max) ?\t ?\  t)
-	(goto-char (point-min))
-	(while (re-search-forward
-		;; getting URL, SUBJECT and DATE
-		"<td><a href=\"\\(.*\\.html\\)\"\\([^>]+\\)?>\\(.*\\)</a> (\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)) *<br */?>"
-		nil t)
-	  (setq url (match-string 1)
-		subject (match-string 3)
-		datelist (list (string-to-number (match-string 4))
-			       (string-to-number (match-string 5))
-			       (string-to-number (match-string 6)))
-		date (apply 'shimbun-make-date-string datelist))
-	  ;; adjusting URL
-	  (setq url (shimbun-expand-url url baseurl))
-	  ;; building ID
-	  (setq aux (if (string-match "\\([^/]+\\)\\.html" url)
-			(match-string 1 url)
-		      url))
-	  (setq id (format "<%s%%%02d%02d%02d%%%s@www-6.ibm.com>" aux
-			   (car datelist) (car (cdr datelist))
-			   (car (cdr (cdr datelist)))
-			   group))
-	  (if (shimbun-search-id shimbun id)
+(luna-define-method shimbun-get-headers ((shimbun shimbun-ibm-dev)
+					 &optional range)
+  (with-temp-buffer
+    (let* ((case-fold-search t)
+	   (from (shimbun-from-address shimbun))
+	   (pages (shimbun-header-index-pages range))
+	   (group (shimbun-current-group-internal shimbun))
+	   (baseurl (concat (shimbun-url-internal shimbun) group "/"))
+	   (count 0)
+	   aux headers id url subject date datelist indexes index)
+      (setq index (shimbun-expand-url "library.html" baseurl))
+      (shimbun-retrieve-url index 'reload)
+      (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
+      (goto-char (point-min))
+      (push index indexes) ;; push latest
+      ;; check old lib
+      (while (re-search-forward "<a +href=\".*\\(library.+\\.html\\)\"" nil t)
+	(push (shimbun-expand-url (match-string-no-properties 1) baseurl)
+	      indexes))
+      (nreverse indexes)
+      (catch 'stop
+	(while (or (not pages)
+		   (<= (incf count) pages))
+	  (setq index (pop indexes))
+	  (unless index
+	    (throw 'stop nil))
+	  (erase-buffer)
+	  (shimbun-retrieve-url index 'reload)
+	  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
+	  (goto-char (point-min))
+	  (while (re-search-forward
+		  ;; getting URL, SUBJECT and DATE
+		  "<td><a href=\"\\(.*\\.html\\)\"\\([^>]+\\)?>\\(.*\\)</a> (\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)) *<br */?>"
+		  nil t)
+	    (setq url (match-string 1)
+		  subject (match-string 3)
+		  datelist (list (string-to-number (match-string 4))
+				 (string-to-number (match-string 5))
+				 (string-to-number (match-string 6)))
+		  date (apply 'shimbun-make-date-string datelist))
+	    ;; remove <b>...</b>(bold tag) if exist in subject
+	    (let ((start 0))
+	      (while (string-match "</?b>" subject start)
+		(setq subject (replace-match "" nil nil subject)
+		      start (match-beginning 0))))
+	    ;; adjusting URL
+	    (setq url (shimbun-expand-url url baseurl))
+	    ;; building ID
+	    (setq aux (if (string-match "\\([^/]+\\)\\.html" url)
+			  (match-string 1 url)
+			url))
+	    (setq id (format "<%s%%%02d%02d%02d%%%s@www-6.ibm.com>" aux
+			     (car datelist) (car (cdr datelist))
+			     (car (cdr (cdr datelist)))
+			     group))
+	    (when (shimbun-search-id shimbun id)
 	      (throw 'stop nil))
-	  (push (shimbun-make-header
-		 0 (shimbun-mime-encode-string subject)
-		 from date id "" 0 0 url)
-		headers)
-	  (forward-line 1))))
-    headers))
+	    (push (shimbun-make-header
+		   0 (shimbun-mime-encode-string subject)
+		   from date id "" 0 0 url)
+		  headers)
+	    (forward-line 1))))
+      headers)))
 
 (luna-define-method shimbun-article ((shimbun shimbun-ibm-dev)
 				     header &optional outbuf)
@@ -92,7 +113,7 @@
 	     (message "shimbun: Make contents...")
 	     (goto-char (point-min))
 	     (if (re-search-forward
-		  "<meta http-equiv=\"refresh\" +content=\"0;URL=\\(.+\\)\">"
+		  "<meta http-equiv=\"refresh\" +content=\"0;URL=\\(.+\\)\" */?>"
 		  nil t)
 		 (let ((url (match-string 1)))
 		   (message "shimbun: Redirecting...")
@@ -107,76 +128,14 @@
 	       (message "shimbun: Make contents...done")))
 	   "")))))
 
-(luna-define-method shimbun-make-contents :before
-  ((shimbun shimbun-ibm-dev) header)
-  (save-excursion
-    (catch 'stop
-      (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
-      ;; cleaning up
-      (let (beg end pdflink url label)
-	(while (re-search-forward "<!--[ 　]*PDF Mail[ 　]*-->" nil t)
-	  (setq beg (progn
-		      (beginning-of-line)
-		      (point))
-		end (progn
-		      (search-forward "</noscript>" nil t)
-		      (point)))
-	  (goto-char beg)
-	  (unless pdflink
-	    (when (re-search-forward "\
-<a href=\"\\(.*\\.pdf\\)\">.+alt=\"\\(PDF *- *[0-9]+[A-Z]+\\)\".*>"
-				     end t)
-	      (setq url (match-string 1)
-		    label (match-string 2)
-		    pdflink (format "<a href=\"%s\">この記事の%s</a>"
-				    (shimbun-expand-url
-				     url
-				     (shimbun-article-url shimbun header))
-				    label))))
-	  (delete-region beg end))
-	(goto-char (point-min))
-	;; Remove sidebar if exist
-	(when (and (re-search-forward "<!--[ 　]*Contents[ 　]*-->" nil t)
-		   (re-search-forward "<!--[ 　]*Sidebar Gutter[ 　]*-->" nil t))
-	  (let ((sidebar-start (search-backward "<table")))
-	    (if (re-search-forward "<!--[ 　]*Start TOC[ 　]*-->" nil t)
-		(delete-region (point)
-			       (search-forward "</table>" nil t)))
-	    (delete-region sidebar-start
-			   (search-forward "</table>" nil t))))
-	(when pdflink
-	  (goto-char (point-max))
-	  (insert pdflink)))
-      (goto-char (point-min))
-      ;; getting SUBJECT field infomation
-      (when (re-search-forward "<h1>\\(.*\\)</h1>" nil t)
-	(let ((subject (match-string 1)))
-	  (shimbun-header-set-subject
-	   header
-	   (shimbun-mime-encode-string
-	    (mapconcat 'identity
-		       (split-string subject "</?\\(font\\|span\\)[^>]*>")
-		       "")))))
-      ;; getting FROM field information
-      (let (author address)
-	(if (re-search-forward "\
-<a href=\"#author.*\">\\(.*\\)</a> (<a href=\"mailto:\\(.*\\)\">\\2</a>) *\n*"
-			       nil t)
-	    (progn
-	      (setq author (match-string 1)
-		    address (match-string 2))
-	      (delete-region (match-beginning 0) (match-end 0)))
-	  (when (re-search-forward "<a href=\"#author.*\">\\(.+\\)</a>" nil t)
-	    (setq author (match-string 1))
-	    (goto-char (point-min)))
-	  (when (re-search-forward "<a href=\"mailto:\\(.+\\)\">\\1</a>" nil t)
-	    (setq address (match-string 1))))
-	(when address
-	  (shimbun-header-set-from
-	   header (shimbun-mime-encode-string
-		   (if author
-		       (format "%s <%s>" author address)
-		     address))))))))
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-ibm-dev)
+						    header)
+  (when (luna-call-next-method)
+    (goto-char (point-min))
+    (when (re-search-forward "<p><a href=\"[^\"]*#author1\">" nil t)
+      (search-backward "<h2>" nil t)
+      (delete-region (point-min) (match-beginning 0)))
+    t))
 
 (provide 'sb-ibm-dev)
 
