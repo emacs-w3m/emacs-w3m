@@ -1787,10 +1787,11 @@ this function returns t.  Otherwise, returns nil."
      (t (message "No URL at point.")))))
 
 (defun w3m-external-view (url)
-  (let ((method (nth 2 (assoc (w3m-content-type url) w3m-content-type-alist))))
+  (let* ((type (w3m-content-type url))
+	 (method (nth 2 (assoc type w3m-content-type-alist))))
     (cond
      ((not method)
-      (error "Unknown content type: %s" (w3m-content-type url)))
+      (error "Unknown content type: %s" type))
      ((functionp method)
       (funcall method url))
      ((consp method)
