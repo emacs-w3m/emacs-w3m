@@ -37,12 +37,17 @@
 (defvar shimbun-chalow-content-start "</span>")
 (defvar shimbun-chalow-content-end "</div>")
 
-(defvar shimbun-chalow-group-alist nil
-  "An alist of CHALOW shimbun group definition.
-Each element looks like (NAME URL ADDRESS).
+(defcustom shimbun-chalow-group-alist nil
+  "*An alist of CHALOW shimbun group definition.
+Each element looks like \(NAME URL ADDRESS\).
 NAME is a shimbun group name.
 URL is the URL for CHALOW access point of the group.
-ADDRESS is the e-mail address for the diary owner.")
+ADDRESS is the e-mail address for the diary owner."
+  :group 'shimbun
+  :type '(repeat
+	  (group (string :tag "Group name")
+		 (string :tag "URL")
+		 (string :tag "Mail address"))))
 
 (luna-define-method shimbun-groups ((shimbun shimbun-chalow))
   (mapcar 'car shimbun-chalow-group-alist))

@@ -37,7 +37,14 @@
   (luna-define-class shimbun-2ch (shimbun) (content-hash))
   (luna-define-internal-accessors 'shimbun-2ch))
 
-(defvar shimbun-2ch-group-alist nil)
+(defcustom shimbun-2ch-group-alist nil
+  "*An alist of groups and their URLs."
+  :group 'shimbun
+  :type '(repeat
+	  (cons :format "%v" :indent 4
+		(string :tag "Name")
+		(string :tag "      URL"))))
+
 (defvar shimbun-2ch-coding-system 'shift_jis)
 (defvar shimbun-2ch-content-hash-length 31)
 

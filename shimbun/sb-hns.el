@@ -32,15 +32,21 @@
   (luna-define-class shimbun-hns (shimbun) (content-hash))
   (luna-define-internal-accessors 'shimbun-hns))
 
-(defvar shimbun-hns-group-alist nil
-  "An alist of HNS shimbun group definition.
+(defcustom shimbun-hns-group-alist nil
+  "*An alist of HNS shimbun group definition.
 Each element looks like (NAME URL ADDRESS X-FACE).
 NAME is a shimbun group name.
 URL is the URL for HNS access point of the group.
 ADDRESS is the e-mail address for the diary owner.
 Optional X-FACE is a string for X-Face field.
 It can be defined in the `shimbun-hns-x-face-alist', too.
-(X-FACE in this definition precedes `shimbun-hns-x-face-alist' entry).")
+\(X-FACE in this definition precedes `shimbun-hns-x-face-alist' entry\)."
+  :group 'shimbun
+  :type '(repeat
+	  (group (string :tag "Group name")
+		 (string :tag "URL")
+		 (string :tag "Mail address")
+		 (string :tag "X-Face"))))
 
 (defvar shimbun-hns-content-hash-length 31)
 

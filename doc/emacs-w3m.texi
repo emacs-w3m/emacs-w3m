@@ -4593,6 +4593,11 @@ This is an example to browse Meadow BBS and emacs-w3m BBS on 2ch.
          "http://pc.2ch.net/test/read.cgi/unix/1013710106")))
 @end lisp
 
+@item @uref{http://www.math.tohoku.ac.jp/~kuroki/support/, Bulletin Board Systems using CGI_Board}
+
+Set your favorite browse bulletin board systems using CGI_Board to
+@code{shimbun-cgi-board-group-alist}, and you can browse them.
+
 @item HNS
 This is an example to use @samp{sb-hns}.
 @lisp

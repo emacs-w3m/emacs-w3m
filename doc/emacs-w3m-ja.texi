@@ -4666,6 +4666,11 @@ Requirements}) をインストールしておく必要があります。
          "http://pc.2ch.net/test/read.cgi/unix/1013710106")))
 @end lisp
 
+@item @uref{http://www.math.tohoku.ac.jp/~kuroki/support/, CGI_Board を使っている掲示板}
+
+CGI_Board を使っている掲示板の URL を調べて、
+@code{shimbun-cgi-board-group-alist} に適切な設定を加えて使います。
+
 @item HNS による日記
 閲覧したい日記の URL を調べて、以下のように設定して使います。
 
