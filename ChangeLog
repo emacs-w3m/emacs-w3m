@@ -1,5 +1,9 @@
 2001-10-22  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* shimbun/mew-shimbun.el: New file.
+
+	* w3mhack.el (w3mhack-examine-modules): Handle `mew-shimbun.el'.
+
 	* w3m-dtree.el (w3m-dtree-indent-strings, w3m-dtree-stop-strings):
 	Throw out the "Japanese Character" for non-mule's environments.
 

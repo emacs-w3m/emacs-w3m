@@ -80,9 +80,13 @@
       (push "w3m-ucs.el" ignores))
     (if (locate-library "mime-def")
 	;; Add shimbun modules.
-	(dolist (file (directory-files (expand-file-name shimbun-dir)
-				       nil "^[^#]+\\.el$"))
-	  (setq modules (nconc modules (list (concat shimbun-dir file)))))
+	(progn
+	  (dolist (file (directory-files (expand-file-name shimbun-dir)
+					 nil "^[^#]+\\.el$"))
+	    (setq modules (nconc modules (list (concat shimbun-dir file)))))
+	  ;; mew-shimbun check
+	  (unless (locate-library "mew")
+	    (push (concat shimbun-dir "mew-shimbun.el") ignores)))
       (push "mime-w3m.el" ignores))
     ;; To byte-compile w3m-macro.el and a version specific module first.
     (princ "w3m-macro.elc ")
