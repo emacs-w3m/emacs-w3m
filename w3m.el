@@ -132,7 +132,7 @@
 				  "w3m-xmas"
 				"w3m-e21")))
 
-(defconst emacs-w3m-version "1.2.1rc2"
+(defconst emacs-w3m-version "1.2.1"
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -3452,7 +3452,7 @@ described in Section 5.2 of RFC 2396.")
      ((match-beginning 6)
       ;; URL has a query part.
       (string-match w3m-url-components-regexp base)
-      (concat (substring base 0 (or (match-beginning 6) (match-beginning 8)))
+      (concat (file-name-directory (substring base 0 (match-end 5)))
 	      url))
      (t
       ;; URL has only fragment part.
