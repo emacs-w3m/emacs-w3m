@@ -1,5 +1,8 @@
 2005-03-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m.el (w3m-decode-buffer): Decode the buffer within buffer set
+	the `multibyte'.
+	
 	* shimbun/mew-shimbun.el (mew-shimbun-retrieve-article): Treat
 	folder surely over again.
 
