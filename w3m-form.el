@@ -301,6 +301,9 @@ If no field in forward, return nil without moving."
 				   (list 'face 'w3m-form-face
 					 'w3m-action
 					 `(w3m-form-submit ,form ,name ,value)
+					 'w3m-submit
+					 `(w3m-form-submit ,form ,name
+							   (w3m-form-get ,form ,name))
 					 'w3m-cursor-anchor
 					 `(w3m-form-submit ,form))))
 	     ((string= type "reset")
@@ -309,12 +312,15 @@ If no field in forward, return nil without moving."
 					 'w3m-action
 					 `(w3m-form-reset ,form)
 					 'w3m-cursor-anchor
-					 `(w3m-form-submit ,form))))
+					 `(w3m-form-reset ,form))))
 	     ((string= type "textarea")
 	      (add-text-properties start (point)
 				   (list 'face 'w3m-form-face
 					 'w3m-action
 					 `(w3m-form-input-textarea ,form ,name)
+					 'w3m-submit
+					 `(w3m-form-submit ,form ,name
+							   (w3m-form-get ,form ,name))
 					 'w3m-cursor-anchor
 					 `(w3m-form-input-textarea ,form ,name))))
 	     ((string= type "select")
@@ -355,6 +361,9 @@ If no field in forward, return nil without moving."
 							  ,width
 							  ,maxlength
 							  ,value)
+					 'w3m-submit
+					 `(w3m-form-submit ,form ,name
+							   (w3m-form-get ,form ,name))
 					 'w3m-cursor-anchor
 					 `(w3m-form-input ,form
 							  ,name

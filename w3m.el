@@ -923,6 +923,8 @@ cursor position and around there."
   (` (w3m-get-text-property-around 'w3m-image (, position))))
 (defmacro w3m-action (&optional position)
   (` (w3m-get-text-property-around 'w3m-action (, position))))
+(defmacro w3m-submit (&optional position)
+  (` (w3m-get-text-property-around 'w3m-submit (, position))))
 
 (defmacro w3m-cursor-anchor (&optional position)
   (if position
@@ -2575,11 +2577,22 @@ this function returns t.  Otherwise, returns nil."
 (defun w3m-mouse-view-this-url (event)
   (interactive "e")
   (mouse-set-point event)
-  (let ((url (w3m-anchor)) (img (w3m-image)))
+  (let ((url (w3m-anchor))
+	(act (w3m-action))
+	(img (w3m-image)))
     (cond
      (url (w3m-view-this-url))
+     (act (eval act))
      (img (w3m-view-image))
      (t (message "No URL at point")))))
+
+(defun w3m-submit-form ()
+  "Submit form at point."
+  (interactive)
+  (let ((submit (w3m-submit)))
+    (if submit
+	(eval submit)
+      (message "Can't Submit at this point"))))
 
 (defun w3m-external-view (url &optional no-cache)
   (let* ((type (w3m-content-type url))
@@ -2890,6 +2903,7 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map "s" 'w3m-history)
     (define-key map "E" 'w3m-edit-current-url)
     (define-key map "e" 'w3m-edit-this-url)
+    (define-key map "\C-c\C-c" 'w3m-submit-form)
     (setq w3m-lynx-like-map map)))
 
 (defvar w3m-info-like-map nil
@@ -2946,6 +2960,7 @@ that is affected by `w3m-pop-up-frames'."
     (define-key map ">" 'w3m-scroll-left)
     (define-key map "<" 'w3m-scroll-right)
     (define-key map "." 'beginning-of-buffer)
+    (define-key map "\C-c\C-c" 'w3m-submit-form)
     (setq w3m-info-like-map map)))
 
 (defun w3m-alive-p ()
@@ -3016,6 +3031,8 @@ Return t if deleting current frame or window is succeeded."
 
 \\[w3m-view-this-url]	View this url.
 \\[w3m-mouse-view-this-url]	View this url use mouse.
+	If w3m-use-form is t, \\[w3m-view-this-url] and \\[w3m-mouse-view-this-url] action a form input.
+\\[w3m-submit-form]	Submit the form at point.
 
 \\[w3m-reload-this-page]	Reload this page.
 \\[w3m-redisplay-with-charset]	Redisplay this page with specified coding-system.
