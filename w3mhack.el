@@ -251,9 +251,7 @@ emacs-w3m.")
 			    (copy-sequence version-specific-modules))))
 	 (shimbun-dir (file-name-as-directory shimbun-module-directory))
 	 print-level print-length)
-    (unless (and (boundp 'emacs-major-version) ; Mew 2.x and later do not
-		 (>= emacs-major-version 20)   ; support Mule2.3/Emacs19.
-		 (locate-library "mew"))
+    (unless (locate-library "mew")
       (push "mew-w3m.el" ignores))
     (unless (if (featurep 'xemacs)
 		(and (featurep 'mule) (locate-library "pccl"))

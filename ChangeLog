@@ -1,8 +1,8 @@
 2003-07-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3mhack.el (w3mhack-examine-modules): Because Mew 2.x and later
-	do not support Mule2.3 and Emacs19, ignore mew-w3m.el and
-	mew-shimbun.el when compiling on such Emacsen.
+	do not support Mule2.3 and Emacs19, ignore mew-shimbun.el when
+	compiling on such Emacsen.
 
 2003-07-24  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
