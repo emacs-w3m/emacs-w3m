@@ -1,5 +1,8 @@
 2002-04-02  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-form.el (w3m-form-submit): Confirm when posting from secure page
+	to normal page.
+
 	* w3m.el (w3m-redirect-with-get): New user option.
 	(w3m-w3m-retrieve): If w3m-redirect-with-get is non-nil, use GET
 	method after redirection; Ask user to use POST data after redirection.
@@ -9,6 +12,7 @@
 	one of 302, 303, 307.
 	(w3m-w3m-retrieve): Change POST redirection behavior according to
 	response code.
+	(w3m-retrieve-and-render): Confirm leaving secure pages.
 
 	* octet.el (mime-preview-octet): Change behavior according to
 	whether the return value of mime-entity-content is multibyte or not.

@@ -3572,20 +3572,28 @@ argument.  Otherwise, it will be called with nil."
   (lexical-let ((url url)
 		(content-type content-type)
 		(content-charset content-charset)
-		(output-buffer (current-buffer)))
+		(output-buffer (current-buffer))
+		(secure w3m-current-ssl))
     (w3m-process-do-with-temp-buffer
 	(type (progn
 		(w3m-clear-local-variables)
 		(w3m-retrieve url nil no-cache post-data referer handler)))
       (when (buffer-live-p output-buffer)
 	(setq url (w3m-url-strip-authinfo url))
-	(if type
-	    (prog1 (w3m-prepare-content url (or content-type type)
-					output-buffer content-charset)
-	      (and w3m-verbose
-		   (not (get-buffer-window output-buffer))
-		   (message "The content (%s) has been retrieved in %s"
-			    url (buffer-name output-buffer))))
+	(cond
+	 ((and secure
+	       (string-match "^http://" url)
+	       (not
+		(y-or-n-p "You are about to leave secure page. continue?")))
+	  (ding))
+	 (type
+	  (prog1 (w3m-prepare-content url (or content-type type)
+				      output-buffer content-charset)
+	    (and w3m-verbose
+		 (not (get-buffer-window output-buffer))
+		 (message "The content (%s) has been retrieved in %s"
+			  url (buffer-name output-buffer)))))
+	 (t
 	  (ding)
 	  (if (eq (car w3m-current-forms) t)
 	      (setq w3m-current-forms (cdr w3m-current-forms)))
@@ -3595,7 +3603,7 @@ argument.  Otherwise, it will be called with nil."
 			   (format " (exit status: %s)"
 				   w3m-process-exit-status)
 			 ""))
-	  nil)))))
+	  nil))))))
 
 (defconst w3m-content-prepare-functions
   '(("\\`text/" . w3m-prepare-text-content)
