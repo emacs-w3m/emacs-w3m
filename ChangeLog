@@ -1,3 +1,9 @@
+2002-04-09  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
+
+	* w3m-e20.el (w3m-create-image): Return nil if
+	w3m-imagick-convert-buffer is failed.
+	(w3m-insert-image): Not insert image if image is nil.
+
 2002-04-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-coding-system): Change default value to

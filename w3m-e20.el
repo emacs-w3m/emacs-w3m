@@ -220,32 +220,33 @@ If second optional argument REFERER is non-nil, it is used as Referer: field."
 	(ignore-errors
 	  (when (and (stringp type) (string-match "^image/" type))
 	    (setq type (replace-match "" nil nil type))
-	    (w3m-imagick-convert-buffer type "xbm")
-	    (let ((str (buffer-string)))
-	      (with-temp-buffer
-		(insert str)
-		(let ((image (w3m-bitmap-image-buffer (current-buffer))))
-		  (push (cons url image) w3m-bitmap-image-cache-alist)
-		  image)))))))))
+	    (when (w3m-imagick-convert-buffer type "xbm")
+	      (let ((str (buffer-string)))
+		(with-temp-buffer
+		  (insert str)
+		  (let ((image (w3m-bitmap-image-buffer (current-buffer))))
+		    (push (cons url image) w3m-bitmap-image-cache-alist)
+		    image))))))))))
 
 (defun w3m-insert-image (beg end image)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
-  (save-excursion
-    (let ((properties (text-properties-at beg))
-	  (name (buffer-substring beg end))
-	  (len (length (car image))))
-      (w3m-bitmap-image-delete-string beg (- end beg))
-      (goto-char beg)
-      (w3m-bitmap-image-insert (point) image)
-      (apply 'w3m-bitmap-image-add-text-properties
-	     (point) len
-	     'w3m-image-status 'on
-	     'face 'w3m-image-face
-	     'w3m-bitmap-image t
-	     'w3m-bitmap-image-width len
-	     'w3m-image-name name
-	     properties))))
+  (when image
+    (save-excursion
+      (let ((properties (text-properties-at beg))
+	    (name (buffer-substring beg end))
+	    (len (length (car image))))
+	(w3m-bitmap-image-delete-string beg (- end beg))
+	(goto-char beg)
+	(w3m-bitmap-image-insert (point) image)
+	(apply 'w3m-bitmap-image-add-text-properties
+	       (point) len
+	       'w3m-image-status 'on
+	       'face 'w3m-image-face
+	       'w3m-bitmap-image t
+	       'w3m-bitmap-image-width len
+	       'w3m-image-name name
+	       properties)))))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."
