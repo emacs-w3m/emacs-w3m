@@ -1,9 +1,3 @@
-2004-02-01  Hiroshi Fujishima  <pooh@nature.tsukuba.ac.jp>
-
-	* w3m-util.el (w3m-goto-info-page): New function.
-
-	* w3m.el (w3m-lynx-like-map): Bind `C-c C-i' to w3m-goto-info-page.
-
 2004-01-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-edit-function-alist): New option.
