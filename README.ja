@@ -58,10 +58,19 @@
       shimbun ライブラリについて更に詳しくは，README.shimbun.ja をご覧下
       さい．
 
-   f) 同梱されている emacs-lisp のソースファイルを適当なディレクトリにイ
-      ンストールするため，次のコマンドを実行してください．
+   f) configure スクリプトを実行してください．
 
           % ./configure
+
+      APEL や FLIM などの必要なモジュールが，標準的ではないディレクトリ
+      にインストールされている場合には，`--with-addpath' オプションを使っ
+      て，そのディレクトリを指定する必要があります．
+
+          % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
+
+   g) 同梱されている emacs-lisp のソースファイルを適当なディレクトリにイ
+      ンストールするため，次のコマンドを実行してください．
+
           % make
           % make install
 
@@ -73,17 +82,16 @@
       install の代わりに install-package を使うと，XEmacs の package と
       してインストールすることもできます．
 
-          % ./configure
           % make
           % make install-package
 
       この場合 install-icons を実行する必要はありません．
 
-   g) 次の設定を ~/.emacs に追加してください．
+   h) 次の設定を ~/.emacs に追加してください．
 
           (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
 
-   h) その他の付属プログラムを使用するには，追加の設定が必要です．詳細に
+   i) その他の付属プログラムを使用するには，追加の設定が必要です．詳細に
       ついては，個々の付属プログラムのソースファイルの先頭に記載されてい
       るコメントを参照してください．
 

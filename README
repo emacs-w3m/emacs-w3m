@@ -56,10 +56,19 @@ This package contains a interface program of w3m.
       For more detail abut shimbun library, see README.shimbun.ja
       (sorry, Japanese only).
 
-   f) Execlute these commands to put emacs-lisp programs of this package
-      to an appropriate directory.
+   f) Run `configure' script.
 
           % ./configure
+
+      If you have installed modules such as APEL and FLIM into
+      unstandard directories, you will have to use `--with-addpath'
+      option in order to specify them.
+
+          % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
+
+   g) Execute these commands to put emacs-lisp programs of this package
+      to an appropriate directory.
+
           % make
           % make install
 
@@ -71,17 +80,16 @@ This package contains a interface program of w3m.
       You can also install program files as an XEmacs package using
       `install-package' instead of `install'.
 
-          % ./configure
           % make
           % make install-package
 
       In this case, you have no need to execute `install-icons' command.
 
-   g) Put these lines into your ~/.emacs.
+   h) Put these lines into your ~/.emacs.
 
           (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
 
-   h) If you want to use contributed programs, some additional settings
+   i) If you want to use contributed programs, some additional settings
       are required.  Please see the head of those programs for more
       detail.
 
