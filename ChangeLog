@@ -1,3 +1,7 @@
+2003-01-27  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-ucs.el (w3m-ucs-to-char): Guard error for Mule-UCS 0.85.
+
 2003-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-byte-optimize-letX): Add
