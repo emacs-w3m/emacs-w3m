@@ -66,7 +66,7 @@ This package contains a interface program of w3m.
 
           % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 
-   g) Execlute these commands to put emacs-lisp programs of this package
+   g) Execute these commands to put emacs-lisp programs of this package
       to an appropriate directory.
 
           % make
