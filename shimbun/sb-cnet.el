@@ -41,6 +41,11 @@
 (defvar shimbun-cnet-from-address  "cnet@sphere.ad.jp")
 (defvar shimbun-cnet-content-start "\n<!--KIJI-->\n")
 (defvar shimbun-cnet-content-end "\n<!--/KIJI-->\n")
+(defvar shimbun-cnet-x-face-alist
+  '(("default" .
+       "X-Face: 0p7.+XId>z%:!$ahe?x%+AEm37Abvn]n*GGh+>v=;[3`a{1l
+        qO[$,~3C3xU_ri>[JwJ!9l0~Y`b*eXAQ:*q=bBI_=ro*?]4:
+        |n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-cnet))
   (format "%s/News/Oneweek/" (shimbun-url-internal shimbun)))

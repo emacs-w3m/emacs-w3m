@@ -1,5 +1,4 @@
-;;; sb-text.el --- shimbun backend class for text content.
-
+;;; sb-text.el -- shimbun backend class for text content -*- coding: junet; -*-
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 ;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>
 ;;         Yuuichi Teranishi <teranisi@gohome.org>
@@ -32,6 +31,65 @@
 
 (require 'shimbun)
 (luna-define-class shimbun-text (shimbun) ())
+
+;; Fast fill-region function
+
+(defvar shimbun-fill-column (min 80 (- (frame-width) 4)))
+
+(defconst shimbun-kinsoku-bol-list
+  (append "!)-_~}]:;',.?、。，．・：；？！゛゜´｀¨＾￣＿ヽヾゝゞ〃\
+仝々〆〇ー―‐／＼〜‖｜…‥’”）〕］｝〉》」』】°′″℃ぁぃぅぇぉ\
+っゃゅょゎァィゥェォッャュョヮヵヶ" nil))
+
+(defconst shimbun-kinsoku-eol-list
+  (append "({[`‘“（〔［｛〈《「『【°′″§" nil))
+
+(defun shimbun-fill-line ()
+  (forward-line 0)
+  (let ((top (point)) chr)
+    (while (if (>= (move-to-column shimbun-fill-column)
+		   shimbun-fill-column)
+	       (not (progn
+		      (if (memq (preceding-char) shimbun-kinsoku-eol-list)
+			  (progn
+			    (backward-char)
+			    (while (memq (preceding-char) shimbun-kinsoku-eol-list)
+			      (backward-char))
+			    (insert "\n"))
+			(while (memq (setq chr (following-char)) shimbun-kinsoku-bol-list)
+			  (forward-char))
+			(if (looking-at "\\s-+")
+			    (or (eolp) (delete-region (point) (match-end 0)))
+			  (or (> (char-width chr) 1)
+			      (re-search-backward "\\<" top t)
+			      (end-of-line)))
+			(or (eolp) (insert "\n"))))))
+      (setq top (point))))
+  (forward-line 1)
+  (not (eobp)))
+
+(defsubst shimbun-shallow-rendering ()
+  (goto-char (point-min))
+  (while (search-forward "<p>" nil t)
+    (insert "\n\n"))
+  (goto-char (point-min))
+  (while (search-forward "<br>" nil t)
+    (insert "\n"))
+  (shimbun-remove-markup)
+  (shimbun-decode-entities)
+  (goto-char (point-min))
+  (while (shimbun-fill-line))
+  (goto-char (point-min))
+  (when (skip-chars-forward "\n")
+    (delete-region (point-min) (point)))
+  (while (search-forward "\n\n" nil t)
+    (let ((p (point)))
+      (when (skip-chars-forward "\n")
+	(delete-region p (point)))))
+  (goto-char (point-max))
+  (when (skip-chars-backward "\n")
+    (delete-region (point) (point-max)))
+  (insert "\n"))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-text)
 					   header)

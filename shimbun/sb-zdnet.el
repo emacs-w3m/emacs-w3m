@@ -40,6 +40,11 @@
 (defvar shimbun-zdnet-from-address "zdnn@softbank.co.jp")
 (defvar shimbun-zdnet-content-start "\\(<!--BODY-->\\|<!--DATE-->\\)")
 (defvar shimbun-zdnet-content-end "\\(<!--BODYEND-->\\|<!--BYLINEEND-->\\)")
+(defvar shimbun-zdnet-x-face-alist
+  '(("default" .
+     "X-Face: 88Zbg!1nj{i#[*WdSZNrn1$Cdfat,zsG`P)OLo=U05q:RM#72\\p;3XZ
+        ~j|7T)QC7\"(A;~HrfP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
+
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-zdnet))
   (let ((case-fold-search t) headers)

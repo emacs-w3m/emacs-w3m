@@ -43,6 +43,11 @@
 
 (defvar shimbun-asahi-content-start "\n<!-- Start of kiji -->\n")
 (defvar shimbun-asahi-content-end "\n<!-- End of kiji -->\n")
+(defvar shimbun-asahi-x-face-alist
+  '(("default" .
+     "X-Face:  +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|bIy3rr^<Q#lf&~ADU:X!t5t>
+        gW5)Q]N{MmnL]suPpL|gFjV{S|]a-:)\\FR7GRf9uL:ue5_=;h{V%@()={u
+        Td@l?eXBppF%`6W%;h`#]2q+f*81n$Bh|t")))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-asahi))
   (format "%s%s/update/list.html"

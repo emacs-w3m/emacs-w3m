@@ -1,3 +1,24 @@
+2001-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun): Added `x-face-alist' slot.
+	(shimbun-x-face-alist): Eliminated.
+	(shimbun-x-face): New variable.
+	(shimbun-attributes): Added `x-face-alist'.
+	(shimbun-open): Set `x-face-alist'.
+	(shimbun-open-group): Follow changes above.
+
+	* shimbun/sb-text.el (shimbun-fill-column,
+	shimbun-kinsoku-bol-list, shimbun-kinsoku-eol-list,
+	shimbun-fill-line, shimbun-shallow-rendering): Moved from shimbun.el.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-x-face-alist): New variable.
+
+	* shimbun/sb-zdnet.el (shimbun-zdnet-x-face-alist): Ditto.
+
+	* shimbun/sb-wired.el (shimbun-wired-x-face-alist): Ditto.
+
+	* shimbun/sb-cnet.el (shimbun-cnet-x-face-alist): Ditto.
+
 2001-04-04  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-w3m-retrieve): Add 'cs(coding-system)' option.

@@ -1,4 +1,4 @@
-;;; shimbun.el --- interfacing with web newspapers -*- coding: junet; -*-
+;;; shimbun.el --- interfacing with web newspapers
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 ;;         Akihiro Arisawa    <ari@atesoft.advantest.co.jp>
@@ -71,50 +71,16 @@
 
 (eval-and-compile
   (luna-define-class shimbun ()
-		     (server current-group groups headers hash x-face
+		     (server current-group groups headers hash
+			     x-face x-face-alist
 			     url coding-system from-address
 			     content-start content-end use-entire-index))
   (luna-define-internal-accessors 'shimbun))
 
-(defvar shimbun-x-face-alist
-  '(("asahi" .
-     (("default" .
-       "X-Face:  +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|bIy3rr^<Q#lf&~ADU:X!t5t>
-        gW5)Q]N{MmnL]suPpL|gFjV{S|]a-:)\\FR7GRf9uL:ue5_=;h{V%@()={u
-        Td@l?eXBppF%`6W%;h`#]2q+f*81n$Bh|t")))
-    ("cnet" .
-     (("default" .
-       "X-Face: 0p7.+XId>z%:!$ahe?x%+AEm37Abvn]n*GGh+>v=;[3`a{1l
-        qO[$,~3C3xU_ri>[JwJ!9l0~Y`b*eXAQ:*q=bBI_=ro*?]4:
-        |n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
-    ("wired" .
-     (("default" .
-       "X-Face: \"yhMDxMBowCFKt;5Q$s_Wx)/'L][0@c\"#n2BwH{7mg]5^w1D]\"K^R
-        ]&fZ5xtt1Ynu6V;Cv(@BcZUf9IV$($6TZ`L)$,cegh`b:Uwy`8}#D
-        b-kyCsr_UMRz=,U|>-:&`05lXB4(;h{[&~={Imb-az7&U5?|&X_8c
-        ;#'L|f.P,]|\\50pgSVw_}byL+%m{TrS[\"Ew;dbskaBL[ipk2m4V")))
-    ("zdnet" .
-     (("default" .
-       "X-Face: 88Zbg!1nj{i#[*WdSZNrn1$Cdfat,zsG`P)OLo=U05q:RM#72\\p;3XZ
-        ~j|7T)QC7\"(A;~HrfP.D}o>Z.]=f)rOBz:A^G*M3Ea5JCB$a>BL/y!")))
-    ("default" .
-     (("default" .
-       "X-Face: Ygq$6P.,%Xt$U)DS)cRY@k$VkW!7(X'X'?U{{osjjFG\"E]hND;SPJ-J?O?R|a?L
-        g2$0rVng=O3Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%"))))
-  "Alist of server vs. alist of group vs. X-Face field.  It looks like:
-
-\((\"asahi\" . ((\"national\" . \"X-face: ***\")
-	     (\"business\" . \"X-Face: ***\")
-		;;
-		;;
-	     (\"default\" . \"X-face: ***\")))
- (\"sponichi\" . ((\"baseball\" . \"X-face: ***\")
-		(\"soccer\" . \"X-Face: ***\")
-		;;
-		;;
-		(\"default\" . \"X-face: ***\")))
-		;;
- (\"default\" . ((\"default\" . \"X-face: ***\")))")
+(defvar shimbun-x-face
+  "X-Face: Ygq$6P.,%Xt$U)DS)cRY@k$VkW!7(X'X'?U{{osjjFG\"E]hND;SPJ-J?O?R|a?L
+        g2$0rVng=O3Lt}?~IId8Jj&vP^3*o=LKUyk(`t%0c!;t6REk=JbpsEn9MrN7gZ%"
+  "Default X-Face field for shimbun.")
 
 (defvar shimbun-hash-length 997
   "Length of header hashtable.")
@@ -212,15 +178,15 @@
 
 ;;; Implementation of Shimbun API.
 
-(defvar shimbun-attributes
+(defconst shimbun-attributes
   '(url groups coding-system from-address content-start content-end
-	use-entire-index))
+	use-entire-index x-face-alist))
 
 (defun shimbun-open (server)
   "Open a shimbun for SERVER."
   (require (intern (concat "sb-" server)))
   (let (url groups coding-system from-address content-start content-end
-	    use-entire-index)
+	    use-entire-index x-face-alist)
     (dolist (attr shimbun-attributes)
       (set attr
 	   (symbol-value (intern-soft 
@@ -233,7 +199,8 @@
 		      :from-address from-address
 		      :content-start content-start
 		      :content-end content-end
-		      :use-entire-index use-entire-index)))
+		      :use-entire-index use-entire-index
+		      :x-face-alist x-face-alist)))
 
 (defun shimbun-groups (shimbun)
   "Return a list of groups which are available in the SHIMBUN."
@@ -244,12 +211,11 @@
   (if (member group (shimbun-groups-internal shimbun))
       (progn
 	(shimbun-set-current-group-internal shimbun group)
-	(let ((x-faces (cdr (or (assoc (shimbun-server-internal shimbun)
-				       shimbun-x-face-alist)
-				(assoc "default" shimbun-x-face-alist)))))
-	  (shimbun-set-x-face-internal shimbun
-				       (cdr (or (assoc group x-faces)
-						(assoc "default" x-faces)))))
+	(shimbun-set-x-face-internal
+	 shimbun
+	 (or (cdr (assoc group (shimbun-x-face-alist-internal shimbun)))
+	     (cdr (assoc "default" (shimbun-x-face-alist-internal shimbun)))
+	     shimbun-x-face))
 	(with-temp-buffer
 	  (shimbun-retrieve-url (shimbun-index-url shimbun))
 	  (shimbun-set-headers-internal shimbun
@@ -374,65 +340,6 @@ quoted or not.  If optional PAREN is non-nil, ensure that the returned regexp
 is enclosed by at least one regexp grouping construct."
     (let ((open-paren (if paren "\\(" "")) (close-paren (if paren "\\)" "")))
       (concat open-paren (mapconcat 'regexp-quote strings "\\|") close-paren))))
-;; Fast fill-region function
-
-(defvar shimbun-fill-column (min 80 (- (frame-width) 4)))
-
-(defconst shimbun-kinsoku-bol-list
-  (append "!)-_~}]:;',.?、。，．・：；？！゛゜´｀¨＾￣＿ヽヾゝゞ〃\
-仝々〆〇ー―‐／＼〜‖｜…‥’”）〕］｝〉》」』】°′″℃ぁぃぅぇぉ\
-っゃゅょゎァィゥェォッャュョヮヵヶ" nil))
-
-(defconst shimbun-kinsoku-eol-list
-  (append "({[`‘“（〔［｛〈《「『【°′″§" nil))
-
-(defun shimbun-fill-line ()
-  (forward-line 0)
-  (let ((top (point)) chr)
-    (while (if (>= (move-to-column shimbun-fill-column)
-		   shimbun-fill-column)
-	       (not (progn
-		      (if (memq (preceding-char) shimbun-kinsoku-eol-list)
-			  (progn
-			    (backward-char)
-			    (while (memq (preceding-char) shimbun-kinsoku-eol-list)
-			      (backward-char))
-			    (insert "\n"))
-			(while (memq (setq chr (following-char)) shimbun-kinsoku-bol-list)
-			  (forward-char))
-			(if (looking-at "\\s-+")
-			    (or (eolp) (delete-region (point) (match-end 0)))
-			  (or (> (char-width chr) 1)
-			      (re-search-backward "\\<" top t)
-			      (end-of-line)))
-			(or (eolp) (insert "\n"))))))
-      (setq top (point))))
-  (forward-line 1)
-  (not (eobp)))
-
-(defsubst shimbun-shallow-rendering ()
-  (goto-char (point-min))
-  (while (search-forward "<p>" nil t)
-    (insert "\n\n"))
-  (goto-char (point-min))
-  (while (search-forward "<br>" nil t)
-    (insert "\n"))
-  (shimbun-remove-markup)
-  (shimbun-decode-entities)
-  (goto-char (point-min))
-  (while (shimbun-fill-line))
-  (goto-char (point-min))
-  (when (skip-chars-forward "\n")
-    (delete-region (point-min) (point)))
-  (while (search-forward "\n\n" nil t)
-    (let ((p (point)))
-      (when (skip-chars-forward "\n")
-	(delete-region p (point)))))
-  (goto-char (point-max))
-  (when (skip-chars-backward "\n")
-    (delete-region (point) (point-max)))
-  (insert "\n"))
-
 (defun shimbun-decode-entities-string (string)
   "Decode entities in the STRING."
   (with-temp-buffer
