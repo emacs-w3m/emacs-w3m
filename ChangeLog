@@ -1,3 +1,10 @@
+2002-12-08  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+		
+	* shimbun/sb-palmfan.el (shimbun-palmfan-date-regexp): Modify
+	regexp.
+	(shimbun-palmfan-news-headers): Pick up MONTH, DAY and YEAR
+	properly.
+		
 2002-12-07  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* shimbun/sb-quickml.el (shimbun-quickml-groups): Added some groups.
