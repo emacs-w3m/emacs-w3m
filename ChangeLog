@@ -1,3 +1,7 @@
+2003-04-28  NAKAJIMA Mikio  <minakaji@namazu.org>
+
+	* shimbun/sb-sml.el: New file.
+
 2003-04-26  NAKAJIMA Mikio  <minakaji@namazu.org>
 
 	* shimbun/sb-mailman.el (shimbun-mailman-headers): Call
