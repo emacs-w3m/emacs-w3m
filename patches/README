@@ -1,23 +1,3 @@
-* w3m-m17n-mnc.patch
-
-  This is the cumulative patch which was posted by
-  ARISAWA Akihiro <ari@mbf.sphere.ne.jp> in [emacs-w3m:02029].  It
-  includes
-
-  (1) the patch to define `-dump_extra' option which was posted
-      by Akinori ITO <aito@ei5sun.yz.yamagata-u.ac.jp> in [w3m-dev 01887],
-
-  (2) the patch to make w3m-m17n print half-dumped contents in the
-      specified coding system which was posted by
-      Hironori Sakamoto <h-saka@lsi.nec.co.jp> in [emacs-w3m:00849], and
-
-  (3) the patch to add `-post' option and `-header' option which was
-      posted by Yuuichi Teranishi <teranisi@gohome.org> in
-      [emacs-w3m:01322].
-      
-  To use w3m-m17n, you must apply this patch.
-
-
 * no-proxy.patch
 
   This patch was posted by Hironori Sakamoto <h-saka@lsi.nec.co.jp> in
@@ -26,6 +6,7 @@
   If the caching configuration of your proxy server is broken, you
   should apply this patch and set non-nil value to
   `w3m-broken-proxy-cache'.
+
 
 * w3m-0.2.1-inu-1.5-solaris-xemacs.patch
 
