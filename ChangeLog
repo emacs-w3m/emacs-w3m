@@ -1,3 +1,7 @@
+2001-04-12  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-asahi-html.el: New file.
+
 2001-04-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (TopLevel): Set w3m-mode-map if not exec w3m-mode() yet.
