@@ -1,3 +1,7 @@
+2001-11-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (top, w3m-about): Change the URL of w3m's official page.
+
 2001-11-16  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-select-buffer-window-ratio): New user option.
