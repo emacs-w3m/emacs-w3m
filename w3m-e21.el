@@ -1,4 +1,4 @@
-;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs-21
+;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs 21 and 22
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -28,8 +28,8 @@
 
 ;;; Commentary:
 
-;; This file contains the stuffs to use emacs-w3m on Emacs-21.  For
-;; more detail about emacs-w3m, see:
+;; This file contains the stuffs to use emacs-w3m on Emacs 21 and 22.
+;; For more detail about emacs-w3m, see:
 ;;
 ;;    http://emacs-w3m.namazu.org/
 
@@ -162,10 +162,6 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 (defun w3m-add-local-hook (hook function &optional append)
   "Add to the buffer-local value of HOOK the function FUNCTION."
   (add-hook hook function append t))
-
-;; `display-images-p' has not been available prior to Emacs 21.0.105.
-(unless (fboundp 'display-images-p)
-  (defalias 'display-images-p 'display-graphic-p))
 
 ;; Function which returns non-nil when the current display device can
 ;; show images inline.
