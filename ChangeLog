@@ -1,9 +1,29 @@
+2001-05-22  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/shimbun.el (shimbun-retrieve-url): Decode buffer with
+	w3m-output-coding-system.
+	(shimbun-retrieve-url-buffer): Ditto.
+
+	* w3m.el (w3m-region): Call w3m-render-region for the region
+	from `point-min' to `point-max' because buffer is already narrowed.
+
+	* shimbun/sb-fml.el (shimbun-make-contents): Don't make new header
+	structure.
+	(shimbun-make-contents): Process content as HTML.
+
+2001-05-21  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-w3m-dev.el: New file.
+
+	* shimbun/sb-fml.el (shimbun-make-contents): Use `delete-region'
+	instead of `kill-line' not to destroy kill-ring.
+
 2001-05-22  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-mime-text/html-w3m): Fix condition when
 	mew-mime-text/html() call, again. Avoid byte-compile warning when
 	compiling.
-	
+
 2001-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-make-html-contents): Define it before

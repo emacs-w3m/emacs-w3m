@@ -92,15 +92,14 @@
     (if (search-backward "</SPAN>")
 	(progn
 	  (beginning-of-line)
-	  (kill-line))
+ 	  (delete-region (point) (save-excursion (end-of-line) (point))))
       (throw 'stop nil))
     (save-restriction
       (narrow-to-region (point-min) (point))
       (subst-char-in-region (point-min) (point-max) ?\t ?  t)
       (shimbun-decode-entities)
       (goto-char (point-min))
-      (let ((header (shimbun-make-header))
-	    field value start value-beg end)
+      (let (field value start value-beg end)
 	(while (and (setq start (point))
 		    (re-search-forward "<SPAN CLASS=\\(.*\\)>\\(.*\\)</SPAN>:"
 				       nil t)
@@ -127,13 +126,13 @@
 		(t
 		 (insert (concat field ": " value "\n")))))
 	(goto-char (point-min))
-	(shimbun-header-insert shimbun header))
-      (goto-char (point-max)))
-    ;; Processing body.
-    (save-restriction
-      (narrow-to-region (point) (point-max))
-      (shimbun-remove-markup)
-      (shimbun-decode-entities)))
+	(shimbun-header-insert shimbun header)
+	(insert
+	 "Content-Type: text/html; charset=ISO-2022-JP\nMIME-Version: 1.0\n"))
+      (goto-char (point-max))))
+  (insert "<PRE>\n")
+  (goto-char (point-max))
+  (insert "</PRE>")
   (encode-coding-string (buffer-string)
 			(mime-charset-to-coding-system "ISO-2022-JP")))
 

@@ -2986,7 +2986,7 @@ ex.) c:/dir/file => //c/dir/file"
   (save-restriction
     (narrow-to-region start end)
     (encode-coding-region (point-min) (point-max) w3m-input-coding-system)
-    (setq w3m-current-title (w3m-rendering-region start end))
+    (setq w3m-current-title (w3m-rendering-region (point-min) (point-max)))
     (w3m-fontify)
     (setq w3m-display-inline-image-status 'off)
     (when w3m-display-inline-image
