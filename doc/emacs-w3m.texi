@@ -2020,7 +2020,7 @@ slow line.
 If it is possible, @samp{nnshimbun} won't check the index page which has
 already been checked at the time of the last connection.  If you want to
 save time more, use @code{last}.  It makes @samp{nnshimbun} refer to
-only the latest index page for checking new news.
+only the latest index page for checking new articles.
 
 In the group where the @code{index-range} group parameter is not set or
 its value is @code{nil}, the value of the @code{nnshimbun-index-range}
