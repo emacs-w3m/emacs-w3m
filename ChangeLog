@@ -1,3 +1,7 @@
+2001-11-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-macro.el (w3m-condition-case): New macro.
+
 2001-11-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in: Fix the macro rule to generate *.elc files.
