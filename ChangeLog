@@ -1,5 +1,8 @@
 2002-04-04  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
 
+	* w3m.el (w3m-toggle-inline-images-internal): Support
+	w3m-bitmap-image.
+
 	* w3m-e21.el (w3m-imagick-convert-program): Move to w3m-util.el.
 	(w3m-imagick-convert-buffer): Ditto.
 	(w3m-imagick-convert-data): Ditto.
