@@ -141,17 +141,43 @@ since nnshimbun uses the backlog to keep the prefetched articles."
   "A type definition for customizing the nnshimbun group parameters.")
 
 (eval-and-compile
-  (unless (fboundp 'gnus-define-group-parameter)
-    ;; The `gnus-define-group-parameter' macro isn't available in old Gnusae.
-    (defmacro gnus-define-group-parameter (&rest args) nil)
-    (defun nnshimbun-find-group-parameters (name)
-      "Return an nnshimbun GROUP's group parameters."
-      (when name
-	(or (gnus-group-find-parameter name 'nnshimbun-group-parameters t)
-	    (assoc-default name
-			   (when (boundp 'nnshimbun-group-parameters-alist)
-			     (symbol-value 'nnshimbun-group-parameters-alist))
-			   (function string-match)))))))
+  (defconst nnshimbun-is-compiled-for-modern-gnus
+    (eval-when-compile
+      ;; The `gnus-define-group-parameter' macro isn't available in old Gnusae,
+      ;; e.g. installed Emacs 21 may contain Gnus v5.9 which is the old Gnus.
+      (fboundp 'gnus-define-group-parameter))
+    "Non-nil means the nnshimbun.elc file is compiled for the modern Gnus.
+Users should never modify the value."))
+
+(eval-and-compile
+  (let ((flag (if nnshimbun-is-compiled-for-modern-gnus
+		  (if (fboundp 'gnus-define-group-parameter)
+		      nil
+		    (message "\
+Warning: nnshimbun.elc is compiled for the newer Gnus,\
+ you should recompile it")
+		    (sit-for 1)
+		    nil)
+		(if (fboundp 'gnus-define-group-parameter)
+		    (progn
+		      (message "\
+Warning: nnshimbun.elc is compiled for the old Gnus,\
+ you should recompile it")
+		      (sit-for 1)
+		      '(nil . t))
+		  '(t . t)))))
+    (when (car flag)
+      (defmacro gnus-define-group-parameter (&rest args) nil))
+    (when (cdr flag)
+      (defun nnshimbun-find-group-parameters (name)
+	"Return an nnshimbun GROUP's group parameters."
+	(when name
+	  (or (gnus-group-find-parameter name 'nnshimbun-group-parameters t)
+	      (assoc-default
+	       name
+	       (when (boundp 'nnshimbun-group-parameters-alist)
+		 (symbol-value 'nnshimbun-group-parameters-alist))
+	       (function string-match))))))))
 
 (gnus-define-group-parameter
  ;; This definition provides the `nnshimbun-group-parameters' group
