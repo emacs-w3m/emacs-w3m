@@ -4987,6 +4987,14 @@ msdn.japan.msdn-us
 
 @item @uref{http://haiku-os.org/, Haiku OS}
 haiku-os.news haiku-os.forums haiku-os.newsletters
+
+@item @uref{http://www.ffii.org/, Foundation for a Free Information Infrastructure}
+ffii.en.software-patents ffii.en.software-patents.ffii
+ffii.en.information-infrastructure ffii.en.project
+ffii.de.software-patente ffii.de.software-patente.ffii
+ffii.de.informations-infrastruktur ffii.fr.brevets-logiciels
+ffii.fr.brevets-logiciels.ffii ffii.nl.softwarepatenten
+ffii.nl.softwarepatenten.ffii
 @end table
 
 @node Shimbun Basics
