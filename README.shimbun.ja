@@ -286,15 +286,13 @@ mew-shimbun.el は Mew version 2.1 以降を使って shimbun を楽しむ elisp で
 (require 'mew-shimbun)
 (define-key mew-summary-mode-map "G"  (make-sparse-keymap))
 (define-key mew-summary-mode-map "Gg" 'mew-shimbun-goto-folder)
+(define-key mew-summary-mode-map "GG" 'mew-shimbun-goto-unseen-folder)
 (define-key mew-summary-mode-map "Gi" 'mew-shimbun-retrieve)
 (define-key mew-summary-mode-map "GI" 'mew-shimbun-retrieve-all)
 (define-key mew-summary-mode-map "Gr" 'mew-shimbun-re-retrieve)
 (define-key mew-summary-mode-map "GR" 'mew-shimbun-re-retrieve-all)
 (define-key mew-summary-mode-map "Ge" 'mew-shimbun-expire)
 (define-key mew-summary-mode-map "GE" 'mew-shimbun-expire-all)
-(when mew-shimbun-use-unseen
-  (define-key mew-summary-mode-map "Gu" 'mew-shimbun-unseen-check)
-  (define-key mew-summary-mode-map "GU" 'mew-shimbun-unseen-remove-all))
 
 ;;; (*1) は後述する未読管理をするときに設定します。この変数は、
 ;;; 必ず (require 'mew-shimbun) の前で設定しないといけません。
@@ -337,8 +335,7 @@ mew-shimbun-folder-groups で設定した shimbun folder が "+shimbun" 以下に
 通常の "g (mew-summary-goto-folder)" でも shimbun folder への移動はでき
 ますが、"Gg (mew-shimbun-goto-folder)" を使うと shimbun folder 限定で移
 動できます。また、"C-u Gg" と prefix をつけたときは、新規記事のある
-folder (まだ scan をしていない folder) のみ、最後に "*" をつけて補完候補
-に表示します。
+folder (まだ scan をしていない folder) のみ表示します。"GG" でも同様です。
 
 (3) folder 単位での記事の取得
 shimbun folder で "Gi (mew-shimbun-retrieve)" すると、現在の shimbun
@@ -360,10 +357,6 @@ folder で新規記事を取得します。
 mew-shimbun-mark-unseen で設定したマーク(デファルトは '*') がつくように
 なり、読むと自動的に消えます。
 
-未読管理を導入すると "C-u Gg" で未読記事のある folder も表示するようにな
-ります。新規記事のある folder は最後に "*", 未読記事のある folder は最後
-に "%" をつけて表示するようになります。
-
 通常、Mew の summary モードでマークをつける、あるいは消した後、scan をし
 ないと .mew-cache に反映されませんが、
 
@@ -374,19 +367,6 @@ mew-shimbun-mark-unseen で設定したマーク(デファルトは '*') がつくように
 確実 (*2) に保存するわけではありません。既読になった情報を確実に cache
 に保存するには、その folder を読み終わったときに "scan update" をする習
 慣をつけると良いでしょう。
-
-また、なんらかの原因で未読情報が狂って summary に表示されたときは、"Gu
-(mew-shimbun-unseen-check)" または "Scan all" で正常な表示に戻ります。
-
-未読管理を使うと弊害として、動作が遅くなる、複数の Emacs で同じ shimbun
-folder を読んでいると、それぞれの Emacs 間で矛盾が生じる、といったことが
-あげられますので、注意して使ってください。
-
-その他の未読管理サポートとして、現在の folder をすべて既読にするには 
-"GU (mew-shimbun-remove-unseen-all)" を使います。"C-u GU" でリージョン内
-のみ既読にします。
-あとで全部読み直そうというときには "M-x mew-shimbun-all-unseen" も有効か
-もしれません。
 
 未読に使うマークが "*" じゃダメ、という方は、
 http://www.mew.org/ml/mew-dist-2.0/msg01251.html

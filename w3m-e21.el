@@ -407,6 +407,16 @@ If this variable is nil, never expired."
   :group 'w3m
   :type 'integer)
 
+(defcustom w3m-favicon-type 'xpm
+  "*Image type of display favicon."
+  :group 'w3m
+  :type (cons 'choice
+	      (mapcar (lambda (x)
+			`(const :tag ,(symbol-name x) ,x))
+		      (delq 'postscript
+			    (delq 'xbm
+				  (delq 'pbm (copy-sequence image-types)))))))
+
 (defvar w3m-favicon-cache-data nil
   "A list of favicon cache (internal variable).
 Each information is a list whose elements are:
@@ -430,7 +440,8 @@ Each information is a list whose elements are:
 	w3m-favicon-converted nil)
   (when (and w3m-use-favicon
 	     w3m-current-url
-	     (w3m-image-type-available-p 'xpm))
+	     (w3m-image-type-available-p 'xpm)
+	     (w3m-image-type-available-p w3m-favicon-type))
     (cond
      ((string-match "\\`about://\\([^/]+\\)/" url)
       (let ((icon (intern-soft (concat "w3m-about-" (match-string 1 url)
@@ -461,17 +472,18 @@ Each information is a list whose elements are:
 			handler)
 	    (setq w3m-favicon-converted t)
 	    (w3m-process-do
-		(xpm (w3m-imagick-start-convert-data
+		(img (w3m-imagick-start-convert-data
 		      handler
 		      (car w3m-current-favicon-data)
 		      (symbol-name (cdr w3m-current-favicon-data))
-		      "xpm" "-geometry" (or w3m-favicon-size
-					    (concat height "x" height))))
+		      (symbol-name w3m-favicon-type)
+		      "-geometry" (or w3m-favicon-size
+				      (concat height "x" height))))
 	      (with-current-buffer buffer
-		(if xpm
+		(if img
 		    (setq w3m-current-favicon-image
-			  (create-image xpm
-					'xpm
+			  (create-image img
+					w3m-favicon-type
 					t
 					:ascent 'center))
 		  (setq w3m-current-favicon-data nil)))))))))

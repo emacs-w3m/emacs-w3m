@@ -1,3 +1,29 @@
+2002-10-01  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-e21.el (w3m-favicon-type): New user variable.
+	(w3m-setup-favicon): Check `w3m-favicon-type'.
+	(w3m-buffer-favicon): Convert image to `w3m-favicon-type' instead
+	of 'xpm.
+	
+	* shimbun/mew-shimbun.el (mew-shimbun-use-expire-pack): New user
+	variable.
+	(mew-shimbun-scan): Remove.
+	(mew-shimbun-goto-unseen-folder): New function.
+	(mew-shimbun-goto-folder): Don't display the unseen indicator of
+	folder.
+	(mew-shimbun-retrieve): Change how to scan the summary.
+	(mew-shimbun-retrieve-article): Ditto.
+	(mew-shimbun-re-retrieve-all): Ditto.
+	(mew-shimbun-re-retrieve-article): Ditto.
+	(mew-shimbun-retrieve-all): Rewrite.
+	(mew-shimbun-scan-message): New function.
+	(mew-shimbun-all-unseen): Remove.
+	(mew-shimbun-unseen-check): Ditto.
+	(mew-shimbun-unseen-remove): Ditt.
+	(mew-shimbun-unseen-remove-all): Ditto.
+	(mew-shimbun-unseen-remove-advice): Rewrite.
+	(mew-shimbun-unseen-setup): Ditto.
+
 2002-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter-server-regexp): Fix the value;
