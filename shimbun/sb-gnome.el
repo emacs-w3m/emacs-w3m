@@ -102,8 +102,7 @@
 				 (aref date-parsed 0)
 				 (aref date-parsed 1)
 				 (aref date-parsed 2)
-				 (shimbun-current-group-internal shimbun)
-				 (match-string 1)))
+				 (shimbun-current-group-internal shimbun)))
 		(if (shimbun-search-id shimbun id)
 		    (throw 'stop (nreverse headers)))
 		(push

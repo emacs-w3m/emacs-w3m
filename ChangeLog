@@ -1,3 +1,7 @@
+2004-02-04  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* shimbun/sb-gnome.el (shimbun-get-headers): Removed last argument.
+
 2004-02-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-examine-modules): Exclude w3m-e22.el except
