@@ -610,6 +610,16 @@ See also `w3m-search-engine-alist'."
 (defvar w3m-bookmark-section-history nil)
 (defvar w3m-bookmark-title-history nil)
 
+(defvar w3m-display-inline-image-status nil) ; 'on means image is displayed
+
+(defconst w3m-image-type-alist
+  '(("image/jpeg" . jpeg)
+    ("image/gif" . gif)
+    ("image/png" . png)
+    ("image/x-xbm" . xbm)
+    ("image/x-xpm" . xpm))
+  "An alist of CONTENT-TYPE and IMAGE-TYPE.")
+
 (defconst w3m-work-buffer-name " *w3m-work*")
 
 (defconst w3m-meta-content-type-charset-regexp
@@ -639,6 +649,15 @@ for a charset indication")
 		w3m-fill-column		; fixed columns
 	      (+ (frame-width) (or w3m-fill-column -1)))) ; fit for frame
   "Arguments for execution of w3m.")
+
+(defsubst w3m-anchor (&optional point)
+  (get-text-property (or point (point)) 'w3m-href-anchor))
+
+(defsubst w3m-image (&optional point)
+  (get-text-property (or point (point)) 'w3m-image))
+ 
+(defsubst w3m-action (&optional point)
+  (get-text-property (or point (point)) 'w3m-action))
 
 (defun w3m-message (&rest args)
   "Alternative function of `message' for w3m.el."
@@ -1064,19 +1083,12 @@ If N is negative, last N items of LIST is returned."
 	       (setq end (match-beginning 0))
 	       (put-text-property start end 'w3m-name-anchor tag)))))))
 
-(defvar w3m-image-type-alist
-  '(("image/jpeg" . jpeg)
-    ("image/gif" . gif)
-    ("image/png" . png)
-    ("image/x-xbm" . xbm)
-    ("image/x-xpm" . xpm))
-  "An alist of CONTENT-TYPE and IMAGE-TYPE.")
-
 (w3m-static-if (and (not (featurep 'xemacs))
 		    (>= emacs-major-version 21)) (progn    
-(defun w3m-create-image (url)
-  "Retrieve data from URL and create an image object."
-  (let ((type (w3m-retrieve url t)))
+(defun w3m-create-image (url &optional no-cache)
+  "Retrieve data from URL and create an image object.
+If optional argument NO-CACHE is non-nil, cache is not used."
+  (let ((type (w3m-retrieve url 'raw nil no-cache)))
     (when type
       (with-current-buffer (get-buffer-create w3m-work-buffer-name)
 	(create-image (buffer-string) 
@@ -1091,12 +1103,17 @@ Buffer string between BEG and END are replaced with IMAGE."
 		       (list 'display image
 			     'intangible image
 			     'invisible nil)))
+
+(defun w3m-remove-image (beg end)
+  "Remove an image which is inserted between BEG and END."
+  (remove-text-properties beg end '(display intangible)))
 ;; end of Emacs 21 definition.
 )
 (w3m-static-if (featurep 'xemacs) (progn
-(defun w3m-create-image (url)
-  "Retrieve data from URL and create an image object."
-  (let ((type (w3m-retrieve url t)))
+(defun w3m-create-image (url &optional no-cache)
+  "Retrieve data from URL and create an image object.
+If optional argument NO-CACHE is non-nil, cache is not used."
+  (let ((type (w3m-retrieve url 'raw nil no-cache)))
     (when type
       (let ((data (with-current-buffer
 		      (get-buffer-create w3m-work-buffer-name)
@@ -1113,10 +1130,19 @@ Buffer string between BEG and END are replaced with IMAGE."
 Buffer string between BEG and END are replaced with IMAGE."
   (let ((extent (make-extent beg end)))
     (set-extent-property extent 'invisible t)
+    (set-extent-property extent 'w3m-xmas-icon t)
     (set-extent-end-glyph extent image)))
+
+(defun w3m-remove-image (beg end)
+  "Remove an image which is inserted between BEG and END."
+  (let (extent)
+    (while (setq extent (extent-at beg nil 'w3m-xmas-icon extent 'at))
+      (if (extent-end-glyph extent)
+	  (set-extent-end-glyph extent nil))
+      (set-extent-property extent 'invisible nil))))
 ;; end of XEmacs definition.
 )
-(defun w3m-create-image (url))
+(defun w3m-create-image (url &optional no-cache))
 (defun w3m-insert-image (beg end image))
 ;; end of w3m-static-if
 ))
@@ -1127,18 +1153,46 @@ Buffer string between BEG and END are replaced with IMAGE."
   (while (re-search-forward "<img_alt src=\"\\([^\"]*\\)\">" nil t)
     (let ((src (match-string 1))
 	  (start (match-beginning 0))
-	  (end)
-	  (image))
+	  (end))
       (delete-region start (match-end 0))
       (setq src (w3m-expand-url src w3m-current-url))
-      (if w3m-display-inline-image
-	  (setq image (w3m-create-image src)))
       (when (search-forward "</img_alt>" nil t)
 	(delete-region (setq end (match-beginning 0)) (match-end 0))
 	(put-text-property start end 'face 'w3m-image-face)
 	(put-text-property start end 'w3m-image src)
-	(put-text-property start end 'mouse-face 'highlight)
-	(if image (w3m-insert-image start end image))))))
+	(put-text-property start end 'mouse-face 'highlight)))))
+
+(defun w3m-toggle-inline-images (&optional force no-cache)
+  "Toggle displaying of inline images on current buffer.
+If optional argument NO-CACHE is non-nil, cache is not used."
+  (interactive "P")
+  (unless (and force (eq w3m-display-inline-image-status 'on))
+    (let ((cur-point (point)) 
+	  (buffer-read-only)
+	  point end url image)
+      (if (or force (eq w3m-display-inline-image-status 'off))
+	  (save-excursion
+	    (goto-char (point-min))
+	    (while (setq point (next-single-property-change (point)
+							    'w3m-image))
+	      (setq end (next-single-property-change point 'w3m-image))
+	      (goto-char end)
+	      (setq url (w3m-expand-url (w3m-image (1- end)) w3m-current-url))
+	      (when (setq image (w3m-create-image url no-cache))
+		(w3m-insert-image point end image)
+		;; Redisplay
+		(save-excursion
+		  (goto-char cur-point)
+		  (sit-for 0))))
+	    (setq w3m-display-inline-image-status 'on))
+	(save-excursion
+	  (goto-char (point-min))
+	  (while (setq point (next-single-property-change (point)
+							  'w3m-image))
+	    (setq end (next-single-property-change point 'w3m-image))
+	    (goto-char end)
+	    (w3m-remove-image point end))
+	  (setq w3m-display-inline-image-status 'off))))))
 
 (defun w3m-fontify ()
   "Fontify this buffer."
@@ -1852,15 +1906,6 @@ this function returns t.  Otherwise, returns nil."
 	(if (string-match "^.:" path)
 	    (setq path (substring path (match-end 0))))
 	(concat server path))))))
-
-(defsubst w3m-anchor (&optional point)
-  (get-text-property (or point (point)) 'w3m-href-anchor))
-
-(defsubst w3m-image (&optional point)
-  (get-text-property (or point (point)) 'w3m-image))
- 
-(defsubst w3m-action (&optional point)
-  (get-text-property (or point (point)) 'w3m-action))
  
 (defun w3m-view-this-url (&optional arg)
   "*View the URL of the link under point."
@@ -2095,6 +2140,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "c" 'w3m-print-current-url)
     (define-key map "M" 'w3m-view-current-url-with-external-browser)
     (define-key map "g" 'w3m)
+    (define-key map "t" 'w3m-toggle-inline-images)
     (define-key map "U" 'w3m)
     (define-key map "V" 'w3m)
     (define-key map "v" 'w3m-view-bookmark)
@@ -2236,6 +2282,9 @@ or prefix ARG columns."
       (if (not (w3m-exec url nil reload))
 	  (w3m-refontify-anchor)
 	(w3m-fontify)
+	(setq w3m-display-inline-image-status 'off)
+	(if w3m-display-inline-image
+	    (w3m-toggle-inline-images 'force reload))
 	(setq buffer-read-only t)
 	(set-buffer-modified-p nil)
 	(or (and name (w3m-search-name-anchor name))
@@ -2457,7 +2506,11 @@ ex.) c:/dir/file => //c/dir/file"
   (save-restriction
     (narrow-to-region start end)
     (w3m-rendering-region start end)
-    (w3m-fontify)))
+    (w3m-fontify)
+    (setq w3m-display-inline-image-status 'off)
+    (if w3m-display-inline-image
+	(w3m-toggle-inline-images 'force))))
+
 
 (defun w3m-escape-query-string (str &optional coding)
   (mapconcat

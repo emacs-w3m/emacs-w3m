@@ -1,3 +1,19 @@
+2001-03-08  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-display-inline-image-status): New variable.
+	(w3m-image-type-alist): Define as constant.
+	(w3m-anchor): Moved position.
+	(w3m-image): Ditto.
+	(w3m-action): Ditto.
+	(w3m-create-image): Added argument `no-cache'.
+	(w3m-remove-image): New function.
+	(w3m-fontify-images): Don't display inline image here.
+	(w3m-toggle-inline-images): New function.
+	(w3m-mode-map): Bind 't' to `w3m-toggle-inline-images'.
+	(w3m-goto-url): Call `w3m-toggle-inline-images';
+	Set `w3m-display-inline-image-status'.
+	(w3m-region): Ditto.
+
 2001-03-08  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 
 	* mime-w3m.el (mime-w3m-preview-text/html): Use
