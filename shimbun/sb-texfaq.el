@@ -1,10 +1,12 @@
-;;; sb-texfaq.el --- shimbun backend for www.matsusaka-u.ac.jp
+;;; sb-texfaq.el --- shimbun backend for TeX Q&A Bullettein Board.
 
-;; Author: Hidetaka Iwai <tyuyu@mb6.seikyou.ne.jp>
+;; Copyright (C) 2002 Hidetaka Iwai <tyuyu@mb6.seikyou.ne.jp>
 
+;; Author: Hidetaka Iwai <tyuyu@mb6.seikyou.ne.jp>,
+;;         TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news
 
-;;; Copyright:
+;; This file is a part of shimbun.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -21,11 +23,6 @@
 ;; program's maintainer or write to: The Free Software Foundation,
 ;; Inc.; 59 Temple Place, Suite 330; Boston, MA 02111-1307, USA.
 
-;;; Commentary:
-
-;; Original code was nnshimbun.el written by
-;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
-
 ;;; Code:
 
 (require 'shimbun)
@@ -33,52 +30,60 @@
 (luna-define-class shimbun-texfaq (shimbun) ())
 
 (defvar shimbun-texfaq-url "http://oku.edu.mie-u.ac.jp/~okumura/texfaq/qa/")
-(defvar shimbun-texfaq-groups
-  '("qanda"))
+(defvar shimbun-texfaq-groups '("qanda"))
 (defvar shimbun-texfaq-content-start "</h2>\n")
 (defvar shimbun-texfaq-content-end  "\n<hr>\n<p>")
-(defvar shimbun-texfaq-group-path-alist
-  '(("qanda" . "")))
-(defvar shimbun-texfaq-expiration-days 7)
-(defvar shimbun-texfaq-coding-system 'euc-jp)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-texfaq))
-  (concat (shimbun-url-internal shimbun)
-	  (cdr (assoc (shimbun-current-group-internal shimbun)
-		      shimbun-texfaq-group-path-alist))))
+  (shimbun-url-internal shimbun))
+
+(defun shimbun-texfaq-make-id (shimbun string)
+  (concat "<"
+	  string
+	  "."
+	  (shimbun-current-group-internal shimbun)
+	  "@"
+	  (save-match-data
+	    (let ((url (shimbun-index-url shimbun)))
+	      (if (string-match "\\`[^:/]+://\\([^/]+\\)/" url)
+		  (match-string 1 url)
+		(error "Cannot extract host name from %s" url))))
+	  ">"))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-texfaq)
 					 &optional range)
   (let ((case-fold-search t) headers)
+    (catch 'found
+      (goto-char (point-min))
+      (while (re-search-forward "[0-9]+: \
+\\([0-9][0-9][0-9][0-9]\\)-\\([0-1][0-9]\\)-\\([0-3][0-9]\\) \
+\\([0-2][0-9]:[0-5][0-9]:[0-5][0-9]\\) \
+<a href=\"\\(\\([0-9]+\\)\\.html\\)\">\\([^<]+\\)</a>\\([^<]+\\)<br>" nil t)
+	(let ((date (shimbun-make-date-string
+		     (string-to-number (match-string 1))
+		     (string-to-number (match-string 2))
+		     (string-to-number (match-string 3))
+		     (match-string 4)))
+	      (subject (match-string 7))
+	      (author (match-string 8))
+	      (url (shimbun-expand-url (match-string 5)
+				       (shimbun-index-url shimbun)))
+	      (id (shimbun-texfaq-make-id shimbun (match-string 6))))
+	  (when (shimbun-search-id shimbun id)
+	    (throw 'found headers))
+	  (push (shimbun-create-header 0 subject author date id "" 0 0 url)
+		headers)))
+      headers)))
+
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-texfaq)
+						   header)
+  (save-excursion
     (goto-char (point-min))
-    (while (re-search-forward "[0-9]+: \\([0-9][0-9][0-9][0-9]\\)-\\([0-1][0-9]\\)-\\([0-3][0-9]\\) \\([0-2][0-9]\\):\\([0-5][0-9]\\):\\([0-5][0-9]\\) <a href=\"\\([0-9]+.html\\)\">\\([^<]+\\)</a>\\([^<]+\\)<br>" nil t)
-      (let* ((url (match-string 7))
-	     (year (match-string 1))
-	     (month (match-string 2))
-	     (day (match-string 3))
-	     (hour (match-string 4))
-	     (min (match-string 5))
-	     (sec (match-string 6))
-	     (subject (match-string 8))
-	     (from (match-string 9))
-	     id date)
-	(setq id (format "<%s.%s.%s.%s.%s.%s%%%s@www.texfaq.ac.jp>"
-			 sec min hour day month year
-			 (shimbun-current-group-internal shimbun)))
-	(setq date (shimbun-make-date-string
-		    (string-to-number year)
-		    (string-to-number month)
-		    (string-to-number day)
-		    (concat hour ":" min ":" sec)))
-	(push (shimbun-make-header
-	       0
-	       (shimbun-mime-encode-string subject)
-	       (shimbun-mime-encode-string from)
-	       date id "" 0 0 (concat
-			       (shimbun-url-internal shimbun)
-			       url))
-	      headers)))
-      headers))
+    (when (re-search-forward
+	   "<hr>\n<a href=\"\\([0-9]+\\)\\.html\">&gt;&gt;[0-9]+</a>" nil t)
+      (shimbun-header-set-references
+       header
+       (shimbun-texfaq-make-id shimbun (match-string 1))))))
 
 (provide 'sb-texfaq)
 
