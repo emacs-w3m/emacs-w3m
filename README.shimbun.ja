@@ -98,7 +98,7 @@ mew 関連	mew.mew-dist mew.mew-win32 mew.mew-int
 mgp 関連	mew.mgp-users mew.mgp-users-jp
 namazu 関連	namazu.namazu-users-ja namazu.namazu-win32-users-ja
 		namazu.namazu-users-en namazu.namazu-devel-ja
-		namazu.namazu-devel.en
+		namazu.namazu-devel-en
 emacs-w3m	namazu.emacs-w3m
 migemo		namazu.migemo
 netbsd 関連	netbsd.announce-ja netbsd.junk-ja netbsd.tech-misc-ja
