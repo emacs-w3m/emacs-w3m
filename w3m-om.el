@@ -35,6 +35,9 @@
 (require 'poem)
 (require 'pcustom)
 
+(provide 'w3m-om);; It is needed to avoid circular dependencies.
+(require 'w3m)
+
 
 ;; Generate some coding-systems which have a modern name.
 ;; No need to contain the eol-type variants in the following alist
@@ -114,6 +117,4 @@ Optional DEFAULT is a default password to use instead of empty input."
 
 (defalias 'coding-system-category 'get-code-mnemonic)
 
-
-(provide 'w3m-om)
 ;;; w3m-om.el ends here

@@ -926,16 +926,17 @@ If N is negative, last N items of LIST is returned."
   "Return image type which corresponds to CONTENT-TYPE."
   (cdr (assoc content-type w3m-image-type-alist)))
 
-(unless (fboundp 'w3m-create-image)
-  (defun w3m-create-image (url &optional no-cache)))
-(unless (fboundp 'w3m-insert-image)
-  (defun w3m-insert-image (beg end image)))
-(unless (fboundp 'w3m-image-type-available-p)
-  (defun w3m-image-type-available-p (image-type)
-    "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
-    nil))
-(unless (fboundp 'w3m-setup-toolbar)
-  (defun w3m-setup-toolbar ()))
+(eval-and-compile
+  (unless (fboundp 'w3m-create-image)
+    (defun w3m-create-image (url &optional no-cache)))
+  (unless (fboundp 'w3m-insert-image)
+    (defun w3m-insert-image (beg end image)))
+  (unless (fboundp 'w3m-image-type-available-p)
+    (defun w3m-image-type-available-p (image-type)
+      "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
+      nil))
+  (unless (fboundp 'w3m-setup-toolbar)
+    (defun w3m-setup-toolbar ())))
 
 (defun w3m-fontify-images ()
   "Fontify image alternate strings in this buffer which contains half-dumped data."
@@ -2289,6 +2290,8 @@ or prefix ARG columns."
 	(switch-to-buffer (current-buffer)))
     (w3m-goto-url url)))
 
+(eval-when-compile
+  (autoload 'browse-url-interactive-arg "browse-url"))
 
 (defun w3m-browse-url (url &optional new-window)
   "w3m interface function for browse-url.el."

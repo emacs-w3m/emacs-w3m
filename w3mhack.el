@@ -251,10 +251,9 @@ to the specified name LIBRARY (a la calling `load' instead of `load-library')."
 	nil))
     (byte-compile 'locate-library))))
 
-(require 'w3m)
-
 (defun w3mhack-version ()
   "Print version of w3m.el."
+  (require 'w3m)
   (princ emacs-w3m-version))
 
 ;;; w3mhack.el ends here

@@ -32,6 +32,8 @@
 ;;; Code:
 (require 'poem)
 
+(provide 'w3m-xmas);; It is needed to avoid circular dependencies.
+(require 'w3m)
 
 ;;; Handle images:
 (defun w3m-create-image (url &optional no-cache)
@@ -151,6 +153,4 @@ Buffer string between BEG and END are replaced with IMAGE."
 (unless (fboundp 'coding-system-category)
   (defalias 'coding-system-category 'coding-system-type))
 
-
-(provide 'w3m-xmas)
 ;;; w3m-xmas.el ends here.

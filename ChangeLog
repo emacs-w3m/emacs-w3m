@@ -1,7 +1,13 @@
 2001-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3mhack.el (w3mhack-version): Take back the last change; require
-	`w3m' in the top level.
+	* w3m.el: Encolose the defining procedures for the unbound
+	functions with `eval-and-compile'.
+	(browse-url-interactive-arg): Bind it only at the compile-time as
+	an autoload'ed function.
+	* w3m-xmas.el: Provide `w3m-xmas' and then require `w3m'.
+	* w3m-om.el: Provide `w3m-om' and then require `w3m'.
+	* w3m-form.el: Require `w3m'.
+	* w3m-e21.el: Provide `w3m-e21' and then require `w3m'.
 
 2001-03-22  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 

@@ -31,6 +31,9 @@
 
 ;;; Code:
 
+(provide 'w3m-e21);; It is needed to avoid circular dependencies.
+(require 'w3m)
+
 (defun w3m-create-image (url &optional no-cache)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used."
@@ -125,5 +128,4 @@ Buffer string between BEG and END are replaced with IMAGE."
     (w3m-e21-make-toolbar-buttons w3m-toolbar-buttons)
     (w3m-e21-setup-toolbar w3m-mode-map w3m-toolbar)))
 
-(provide 'w3m-e21)
 ;;; w3m-e21.el ends here.

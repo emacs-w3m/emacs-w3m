@@ -30,6 +30,8 @@
 
 ;;; Code:
 
+(require 'w3m)
+
 (defface w3m-form-face
   '((((class color) (background light)) (:foreground "cyan" :underline t))
     (((class color) (background dark)) (:foreground "red" :underline t))
