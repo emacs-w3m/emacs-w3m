@@ -3796,26 +3796,51 @@ session."
      (if (overlay-get overlay 'w3m-momentary-overlay)
 	 (delete-overlay overlay))))
 
-(defun w3m-highlight-current-anchor ()
-  "Highlight an anchor under point."
-  (w3m-delete-all-overlays)
-  (let ((seq (w3m-anchor-sequence))
-	(limit (save-excursion
-		 (goto-char (window-start (selected-window)))
-		 (forward-line (frame-height))
-		 (point)))
-	ov pos beg)
-    (setq pos (point-min))
-    (while (and (setq pos (next-single-property-change pos
-						       'w3m-anchor-sequence))
-		(< pos limit))
-      (when (and seq
-		 (eq seq (get-text-property pos 'w3m-anchor-sequence)))
+(defun w3m-highlight-current-anchor-1 (seq)
+  "Highlight an anchor in the current line if anchor sequence is same as SEQ.
+Return t if current line has a same anchor sequence."
+  (let ((limit (save-excursion (end-of-line)
+			       (point)))
+	ov beg pos pseq)
+    (save-excursion
+      (beginning-of-line)
+      (setq pos (point))
+      (while (and (< pos limit)
+		  (not (eq seq (setq pseq (get-text-property 
+					   pos
+					   'w3m-anchor-sequence)))))
+	(setq pos (next-single-property-change pos 'w3m-anchor-sequence)))
+      (when (and (< pos limit) (eq seq pseq))
 	(setq beg pos)
 	(setq pos (next-single-property-change pos 'w3m-anchor-sequence))
 	(setq ov (make-overlay beg pos))
 	(overlay-put ov 'face 'w3m-current-anchor-face)
-	(overlay-put ov 'w3m-momentary-overlay t)))))
+	(overlay-put ov 'w3m-momentary-overlay t)
+	t))))
+
+(defun w3m-highlight-current-anchor ()
+  "Highlight an anchor under point."
+  (when (let ((ovs (overlays-at (point))) ov)
+	  ;; If already exists, do nothing.
+	  (or (null ovs)
+	      (while ovs
+		(if (overlay-get (car ovs) 'w3m-momentary-overlay)
+		    (setq ov (car ovs)
+			  ovs nil))
+		(setq ovs (cdr ovs)))
+	      ov))
+    (w3m-delete-all-overlays)
+    (save-excursion
+      (let ((seq (w3m-anchor-sequence))
+	    (pos (point)))
+	(when (and seq (w3m-highlight-current-anchor-1 seq))
+	  (forward-line 1)
+	  (while (w3m-highlight-current-anchor-1 seq)
+	    (forward-line 1))
+	  (goto-char pos)
+	  (forward-line -1)
+	  (while (w3m-highlight-current-anchor-1 seq)
+	    (forward-line -1)))))))
 
 (defun w3m-edit-url (url)
   "Edit the local file pointed by URL."
