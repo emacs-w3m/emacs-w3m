@@ -72,7 +72,9 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 					 (string-to-number (match-string 3)))
 	       (concat "<"
 		       (shimbun-replace-in-string
-			(file-name-sans-extension url)
+			(if (string-match "\\.[^/]*\\'" url)
+			    (substring url 0 (match-beginning 0))
+			  url)
 			"[,/]" ".")
 		       "%japan.cnet.com>")
 	       "" 0 0
