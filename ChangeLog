@@ -1,5 +1,8 @@
 2003-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* doc/Makefile.in (install): Don't run install-info for non-
+	existent info files.
+
 	* shimbun/shimbun.el (shimbun-x-face): Renew.
 
 	* shimbun/sb-mainichi.el (shimbun-get-headers): Enrich subjects.
