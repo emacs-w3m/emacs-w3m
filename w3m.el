@@ -175,7 +175,9 @@
       (delete-region (match-beginning 0) (match-end 0)))
     ;; Decode escaped characters.
     (goto-char (point-min))
-    (while (re-search-forward "&\\(\\(nbsp\\)\\|\\(gt\\)\\|\\(lt\\)\\|\\(amp\\)\\|\\(quot\\)\\|\\(apos\\)\\);" nil t)
+    (while (re-search-forward
+	    "&\\(\\(nbsp\\)\\|\\(gt\\)\\|\\(lt\\)\\|\\(amp\\)\\|\\(quot\\)\\|\\(apos\\)\\);"
+	    nil t)
       (delete-region (match-beginning 0) (match-end 0))
       (insert (if (match-beginning 2) " "
 		(if (match-beginning 3) ">"
@@ -338,6 +340,20 @@ If BUFFER is nil, all data is placed to the current buffer."
 		  (cons url (default-value 'w3m-url-history)))))
 
 
+(defun w3m-search-name-anchor (name &optional quiet)
+  (interactive "sName: ")
+  (let ((pos (point-min)))
+    (catch 'found
+      (while (setq pos (next-single-property-change pos 'w3m-name-anchor))
+	(when (equal name (get-text-property pos 'w3m-name-anchor))
+	  (goto-char pos)
+	  (throw 'found t))
+	(setq pos (next-single-property-change pos 'w3m-name-anchor)))
+      (unless quiet
+	(message "Not found such name anchor."))
+      nil)))
+	  
+
 (defun w3m-view-previous-page (&optional arg)
   (interactive "p")
   (unless arg (setq arg 1))
@@ -358,7 +374,10 @@ If BUFFER is nil, all data is placed to the current buffer."
     (if (string-match "^\\([^:]+://[^/]*\\)/" base)
 	(concat (match-string 1 base) url)
       url))
-   (t ;; URL is relative on BASE.
+   ;; URL is relative on BASE.
+   ((string-match "^#" url)
+    (concat base url))
+   (t
     (let ((server ""))
       (if (string-match "^\\([^:]+://[^/]*\\)/" base)
 	  (setq server (match-string 1 base)
@@ -546,12 +565,17 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 
 (defun w3m-goto-url (url)
   "Retrieve URL and display it in this buffer."
-  (let ((buffer-read-only nil))
+  (let (name)
+    (when (string-match "#\\([^#]+\\)$" url)
+      (setq name (match-string 1 url)
+	    url (substring url 0 (match-beginning 0))))
+    (setq buffer-read-only nil)
     (w3m-exec url)
-    (w3m-fontify))
-  (setq buffer-read-only t)
-  (set-buffer-modified-p nil)
-  (goto-char (point-min)))
+    (w3m-fontify)
+    (setq buffer-read-only t)
+    (set-buffer-modified-p nil)
+    (or (and name (w3m-search-name-anchor name))
+	(goto-char (point-min)))))
 
 
 (defun w3m (url)
