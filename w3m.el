@@ -3216,7 +3216,8 @@ ex.) c:/dir/file => //c/dir/file"
     (narrow-to-region start end)
     (when (eq w3m-type 'w3mmee)
       (encode-coding-region (point-min) (point-max) w3m-coding-system))
-    (setq w3m-current-title
+    (setq w3m-current-buffer (current-buffer)
+	  w3m-current-title
 	  (w3m-rendering-region (point-min) (point-max)))
     (w3m-fontify)
     (setq w3m-display-inline-image-status 'off)

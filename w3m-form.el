@@ -129,8 +129,11 @@
 	  ;; 実装するのに等しい労力が必要であるので、今回は手抜きして
 	  ;; おく。
 	  )))
-      (with-current-buffer w3m-current-buffer
-	(setq w3m-current-forms (nreverse forms))))))
+      (save-current-buffer
+	(when (or (bufferp w3m-current-buffer)
+		  (stringp w3m-current-buffer))
+	  (set-buffer w3m-current-buffer))
+	(setq w3m-current-forms w3m-current-buffer)))))
 
 ;;;###autoload
 (defun w3m-fontify-forms ()

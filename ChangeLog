@@ -1,3 +1,11 @@
+2001-06-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-form.el (w3m-form-parse-region): Check the value of
+	`w3m-current-buffer' to avoid wrong type argument error.
+
+	* w3m.el (w3m-rendering-region): Set `w3m-current-buffer' refered
+	in `w3m-form-parse-region'.
+
 2001-06-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-attributes): Remove URL fragments before checking
