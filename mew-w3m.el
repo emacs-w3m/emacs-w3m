@@ -214,7 +214,7 @@ This variable effected only XEmacs or Emacs 21."
 	      (setq end (mew-syntax-get-end cidstx))
 	      (with-current-buffer output-buffer
 		(insert-buffer-substring cache beg end))
-	      (car (mew-syntax-get-ct cidstx)))))))))
+	      (downcase (car (mew-syntax-get-ct cidstx))))))))))
 
 (push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
       w3m-cid-retrieve-function-alist)
