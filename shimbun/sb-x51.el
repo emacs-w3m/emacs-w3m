@@ -90,18 +90,18 @@
 
 (luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-x51)
 						  url date)
-		    (unless (string-match "http://[^\/]+/x/\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\).php" url)
-		      (error "Cannot find message-id base"))
-		    (format "<%s%s%s@x51.org>"
-			    (match-string-no-properties 1 url)
-			    (match-string-no-properties 2 url)
-			    (match-string-no-properties 3 url)))
+  (unless (string-match "http://[^\/]+/x/\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\).php" url)
+    (error "Cannot find message-id base"))
+  (format "<%s%s%s@x51.org>"
+	  (match-string-no-properties 1 url)
+	  (match-string-no-properties 2 url)
+	  (match-string-no-properties 3 url)))
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-x51)
 						 &optional range)
   (with-temp-buffer
     (let* ((case-fold-search t) (url (shimbun-index-url shimbun)) headers)
-    (shimbun-retrieve-url url)
+      (shimbun-retrieve-url url)
       (if (string-match "top" (car (assoc (shimbun-current-group-internal shimbun)
 					  shimbun-x51-group-alist)))
 	  (progn
@@ -122,53 +122,60 @@
 		(narrow-to-region beg end)
 		(goto-char (point-min))
 		(let* ((count 2))
-		       (while (and (if pages (<= count pages) t)
-				   (re-search-forward (format "<a href=\"[^?]*\\?page=%d\"" count) nil t))
-			 (push (cons (format "%d" count)
-				     (format "%s%s%d" url "?page=" count)) indexes) ;; push linked for page 2-end
-			 (incf count)
-			 ))
+		  (while (and (if pages (<= count pages) t)
+			      (re-search-forward (format "<a href=\"[^?]*\\?page=%d\"" count) nil t))
+		    (push (cons (format "%d" count)
+				(format "%s%s%d" url "?page=" count)) indexes) ;; push linked for page 2-end
+		    (incf count)
+		    ))
 		(widen)
 		))
-	    (dolist (elem (reverse indexes))
-	      (shimbun-retrieve-url (cdr elem) t) ;; retrieve target page
-	      (goto-char (point-min))
-	      (re-search-forward "<!--top article-->")
-	      (setq beg (point))
-	      (search-forward "<!--/ middle bar  -->")
-	      (setq end (point))
-	      (goto-char beg)
-	      (save-excursion
-		(narrow-to-region beg end) ;; narrow
-		;; get header source
+	    (reverse indexes)
+	    (catch 'stop
+	      (dolist (elem indexes)
+		(shimbun-retrieve-url (cdr elem) t) ;; retrieve target page
 		(goto-char (point-min))
-		(let (title url date id)
-		  (while (re-search-forward
-			  "<a ?href=\"http://x51\\.org/x/\\([0-9]*\\)/\\([0-9]*\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\.php\" +class=\"title[^\"]*\">\\([^<]*\\)</a>"
-			  nil t)
-		    (setq url (shimbun-expand-url (concat
-						   "http://x51.org/x/"
-						   (match-string 1) "/"
-						   (match-string 2) "/"
-						   (match-string 3) (match-string 4)
-						   ".php")
-						  (shimbun-index-url shimbun))) ; url
-		    (setq title (match-string 5)) ; title
-		    (setq date  (shimbun-make-date-string
-				 (string-to-int (match-string 1))
-				 (string-to-int (match-string 2))
-				 (string-to-int (match-string 3)))) ; date
-		    (setq id (shimbun-rss-build-message-id shimbun url date)) ; id
-		    ;; create header & push header
-		    ;; from sb-rss
-		    (push (shimbun-create-header
-			   0
-			   title
-			   (shimbun-from-address shimbun)
-			   date
-			   id "" 0 0 url)
-			  headers))
-		  (widen))))
+		(setq beg (point-min)
+		      end (point-max))
+		(when (re-search-forward "<!-- *top article *-->")
+		  (setq beg (match-beginning 0)))
+		(when (re-search-forward "<!--/ *middle bar *-->")
+		  (setq end (match-beginning 0)))
+		(goto-char beg)
+		(save-excursion
+		  (narrow-to-region beg end) ;; narrow
+		  ;; get header source
+		  (goto-char (point-min))
+		  (let (title url date id)
+		    (while (re-search-forward
+			    "<a +href=\"http://x51\\.org/x/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\.php\" +class=\"title[^\"]*\">\\([^<]*\\)</a>"
+			    nil t)
+		      (setq url (shimbun-expand-url (concat
+						     "http://x51.org/x/"
+						     (match-string 1) "/"
+						     (match-string 2) "/"
+						     (match-string 3) (match-string 4)
+						     ".php")
+						    (shimbun-index-url shimbun))) ; url
+		      (setq title (match-string 5)) ; title
+		      (setq date  (shimbun-make-date-string
+				   (string-to-int (match-string 1))
+				   (string-to-int (match-string 2))
+				   (string-to-int (match-string 3)))) ; date
+		      (setq id (shimbun-rss-build-message-id shimbun url date))	; id
+		      ;; check old id
+		      (when (shimbun-search-id shimbun id)
+			(throw 'stop nil))
+		      ;; create header & push header
+		      ;; from sb-rss
+		      (push (shimbun-create-header
+			     0
+			     title
+			     (shimbun-from-address shimbun)
+			     date
+			     id "" 0 0 url)
+			    headers))
+		    (widen)))))
 	    headers))))))
 
 ;; date normalize
@@ -200,7 +207,7 @@ information available."
   (shimbun-x51-prepare-article shimbun header))
 
 (luna-define-method shimbun-clear-contents :before
-		    ((shimbun shimbun-x51) header)
+  ((shimbun shimbun-x51) header)
   (shimbun-strip-cr)
   (shimbun-remove-tags "<script" "</script>")
   (shimbun-remove-tags "<noscript" "</noscript>")
