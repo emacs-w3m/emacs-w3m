@@ -4127,7 +4127,9 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 		;; Asahi-shimbun sometimes says gif as jpeg mistakenly, for
 		;; example.  So, we cannot help trusting the data itself.
 		(when (and (setq type (w3m-image-type-from-data
-				       (buffer-substring (point) (point-max))))
+				       (buffer-substring (point)
+							 (min (+ (point) 300)
+							      (point-max)))))
 			   (re-search-backward "^content-type: image/\\(.+\\)$"
 					       nil t))
 		  (delete-region (goto-char (match-beginning 1)) (match-end 1))
