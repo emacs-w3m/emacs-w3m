@@ -1,7 +1,7 @@
 2001-03-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-hist): Provide as a feature.
-	(w3m-history-copy, w3m-history-copy-1): New function.
+	(w3m-history-copy, w3m-history-copy-1): New functions.
 	(w3m-history-push): Handle the variable `w3m-history-flat' as well
 	as `w3m-history'.
 	(w3m-history-assoc): Ditto.
