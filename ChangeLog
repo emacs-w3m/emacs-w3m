@@ -1,3 +1,11 @@
+2002-03-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-w3m-attributes) [w3mmee]: Fetch content-encoding from
+	"x-w3m-content-encoding" filed.
+
+	* shimbun/sb-impress.el (shimbun-impress-groups-alist): Follow
+	the change of PC Watch page.
+
 2002-03-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-w3m-cid-retrieve): Return lowercase string
