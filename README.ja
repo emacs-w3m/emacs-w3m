@@ -96,7 +96,33 @@
       るコメントを参照してください．
 
 
-3. w3m のバージョンについて
+3. proxy ゲートウェイの設定
+
+   これにはいくつかの方法があります．一つは環境変数 http_proxy を shell
+   上で，こんなふうにグローバルに設定することです:
+
+      setenv http_proxy http://proxy.hogege.com:8000/
+
+   他に，オプション `w3m-command-arguments' をカスタマイズして，"-o" お
+   よび "http_proxy=http://PROXY_SERVER_NAME:PORT/" を追加する方法があり
+   ます．これは .emacs ファイルで以下のように行なうこともできます．
+
+      (eval-after-load "w3m"
+        '(setq w3m-command-arguments
+               (nconc w3m-command-arguments
+                      '("-o" "http_proxy=http://proxy.hogege.com:8000/"))))
+
+   これは特定のホストに接続するときに proxy ゲートウェイを使わないように
+   する一つの例です．
+
+      (setq w3m-no-proxy-hosts
+            '("www.local.com" "www.neighbor.com"))
+
+   no-proxy ホストの設定に正規表現を使うには，オプション
+   `w3m-command-arguments-alist' のドキュメントを見て下さい．
+
+
+4. w3m のバージョンについて
 
    このプログラムは，w3m のバージョンに強く依存していますので，なるべく
    最新の w3m を使うようにしてください．最新は2002年3月6日に公開された
@@ -105,12 +131,12 @@
       http://prdownloads.sourceforge.net/w3m/w3m-0.3.tar.gz
 
 
-4. 連絡先
+5. 連絡先
 
    メールを <emacs-w3m@namazu.org> 宛に送ってください．
 
 
-5. 謝辞
+6. 謝辞
 
    伊藤彰則さんによって開発された w3m がなければ，このプログラムは存在し
    ませんでした．最大の謝意を，伊藤さんに捧げたいと思います．

@@ -94,7 +94,34 @@ This package contains a interface program of w3m.
       detail.
 
 
-3. Version of w3m
+3. How to specify proxy gateways
+
+   There are some ways to do this.  One is to set the environment
+   variable http_proxy globally in the shell something like:
+
+      setenv http_proxy http://proxy.hogege.com:8000/
+
+   Another way is to customize the option `w3m-command-arguments' to
+   add the items "-o" and "http_proxy=http://PROXY_SERVER_NAME:PORT/".
+   This can also be done in your .emacs file as shown below:
+
+      (eval-after-load "w3m"
+        '(setq w3m-command-arguments
+               (nconc w3m-command-arguments
+                      '("-o" "http_proxy=http://proxy.hogege.com:8000/"))))
+
+   Here is one example not to use a proxy gateway to connect to the
+   particular hosts:
+
+      (setq w3m-no-proxy-hosts
+            '("www.local.com" "www.neighbor.com"))
+
+   See also the documentation for the option
+   `w3m-command-arguments-alist' to use regexps to specify the no-proxy
+   hosts.
+
+
+4. Version of w3m
 
    Because this program is sensitive to version of w3m, the latest
    version of w3m should be used.  Its latest official version is 0.3,
@@ -104,12 +131,12 @@ This package contains a interface program of w3m.
       http://prdownloads.sourceforge.net/w3m/w3m-0.3.tar.gz
 
 
-4. Contact
+5. Contact
 
    In order to contact us, please send a mail to <emacs-w3m@namazu.org>.
 
 
-5. Acknowledgments
+6. Acknowledgments
 
    w3m, which is an essential part of this package, was written by
    Akinori ITO.  We'd like to address our thanks to him for his nice
