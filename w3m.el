@@ -1167,12 +1167,14 @@ When URL does not point any local files, it returns nil."
    ((string-match "\\`\\(file:\\(//\\)?\\|about://dtree\\)/" url)
     (setq url (substring url (match-end 1)))
     ;; Process abs_path part in Windows.
-    (if (string-match
-	 "\\`/\\(\\([a-zA-Z]\\)[|:]?\\|cygdrive/\\([a-zA-Z]\\)\\)/" url)
-	(concat (or (match-string 2 url) (match-string 3 url))
-		":/"
-		(substring url (match-end 0)))
-      url))
+    (w3m-url-decode-string
+     (if (string-match
+	  "\\`/\\(\\([a-zA-Z]\\)[|:]?\\|cygdrive/\\([a-zA-Z]\\)\\)/" url)
+	 (concat (or (match-string 2 url) (match-string 3 url))
+		 ":/"
+		 (substring url (match-end 0)))
+       url)
+     w3m-file-name-coding-system))
    ((string-match "\\`\\([~/]\\|[a-zA-Z]:/\\|\\.\\.?/\\)" url) url)
    (t
     (catch 'found-file
@@ -1181,8 +1183,10 @@ When URL does not point any local files, it returns nil."
 				   (regexp-quote
 				    (file-name-as-directory (car pair))))
 			   url)
-	     (let ((file (expand-file-name (substring url (match-end 0))
-					   (cdr pair))))
+	     (let ((file (expand-file-name
+			  (w3m-url-decode-string (substring url (match-end 0))
+						 w3m-file-name-coding-system)
+			  (cdr pair))))
 	       (when (file-exists-p file)
 		 (throw 'found-file file)))))))))
 
@@ -1190,11 +1194,13 @@ When URL does not point any local files, it returns nil."
   "Return URL which points the FILE."
   (setq file (expand-file-name file directory))
   (concat "file://"
-	  (if (string-match "\\`\\([a-zA-Z]\\):" file)
-	      (format (if w3m-use-cygdrive "/cygdrive/%s%s" "/%s|%s")
-		      (match-string 1 file)
-		      (substring file (match-end 0)))
-	    file)))
+	  (w3m-url-encode-string
+	   (if (string-match "\\`\\([a-zA-Z]\\):" file)
+	       (format (if w3m-use-cygdrive "/cygdrive/%s%s" "/%s|%s")
+		       (match-string 1 file)
+		       (substring file (match-end 0)))
+	     file)
+	   w3m-file-name-coding-system)))
 
 ;; Generic macros and inline functions:
 (defun w3m-attributes (url &optional no-cache handler)
