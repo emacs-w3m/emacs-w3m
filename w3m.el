@@ -83,7 +83,10 @@
 (eval-when-compile
   (autoload 'w3m-fontify-forms "w3m-form")
   (autoload 'w3m-form-parse-region "w3m-form")
-  (autoload 'rfc2368-parse-mailto-url "rfc2368"))
+  (autoload 'rfc2368-parse-mailto-url "rfc2368")
+  (autoload 'w3m-remove-image (if (featurep 'xemacs)
+				  "w3m-xmas"
+				"w3m-e21")))
 
 (defconst emacs-w3m-version
   (eval-when-compile
