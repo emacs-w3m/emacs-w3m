@@ -604,10 +604,12 @@ evaluated in a temporary buffer."
 	      (process-send-string process
 				   (concat w3m-process-user "\n"))))
 	   ((progn
-	      (goto-char (point-max))
+	      (or (search-forward "\nW3m-current-url:" nil t)
+		  (goto-char (process-mark process)))
 	      (re-search-backward
-	       "^W3m-progress: \\([.0-9]+/[.0-9]+[a-zA-Z]?b\\)$" nil t))
-	    (let ((str (w3m-process-modeline-format (match-string 1)))
+	       "^W3m-\\(in-\\)?progress: \\([.0-9]+/[.0-9]+[a-zA-Z]?b\\)$"
+	       nil t))
+	    (let ((str (w3m-process-modeline-format (match-string 2)))
 		  (buf))
 	      (save-current-buffer
 		(dolist (handler (w3m-process-handlers w3m-process-object))
