@@ -1,5 +1,9 @@
 2003-07-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* Release emacs-w3m-1.3.6 from emacs-w3m-1_3 branch.
+
+2003-07-18  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
 	* shimbun/sb-fml.el (shimbun-get-headers): Call
 	`shimbun-create-header' instead of `shimbun-make-header'
 	(shimbun-make-contents): Do not encode header attributes, to
