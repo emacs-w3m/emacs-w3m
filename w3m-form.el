@@ -113,6 +113,17 @@
   (` (w3m-form-put-property (, form) (, id) :value (cons (, name) (, value)))))
 (defmacro w3m-form-get (form id)
   (` (cdr (w3m-form-get-property (, form) (, id) :value))))
+(defun w3m-form-get-by-name (form name)
+  (let ((plist (w3m-form-plist form))
+	pair value)
+    (while plist
+      (setq pair (plist-get (cadr plist) :value))
+      (when (and pair
+		 (string= (car pair) name))
+	(setq value (cdr pair)
+	      plist nil))
+      (setq plist (cddr plist)))
+    value))
 
 (defun w3m-form-goto-next-field ()
   "Move to next form field and return the point.
@@ -775,6 +786,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
     (delete-region (point)
 		   (next-single-property-change (point) 'w3m-action))
     (add-text-properties start (point) prop)
+    (set-buffer-modified-p nil)
     (prog1 (point)
       (goto-char p))))
 
@@ -806,30 +818,32 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
       (w3m-form-replace "*"))))
 
 (defsubst w3m-form-field-parse (fid)
-  (when (string-match
-	 "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
-	 fid)
+  (when (and fid
+	     (string-match
+	      "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
+	      fid))
     (list (match-string 1 fid)
 	  (match-string 2 fid)
 	  (match-string 3 fid)
 	  (match-string 4 fid))))
 
 (defun w3m-form-input-radio (form id name value)
-  ;; Uncheck all RADIO input having same NAME
   (save-excursion
     (let ((fid (w3m-form-field-parse
 		(get-text-property (point) 'w3m-form-field-id)))
 	  cur-fid)
-      (goto-char 1)
-      (while (w3m-form-goto-next-field)
-	(setq cur-fid (w3m-form-field-parse
-		       (get-text-property (point)
-					  'w3m-form-field-id)))
-	(when (and (string= (nth 0 fid) (nth 0 cur-fid))
-		   (string= (nth 1 fid) (nth 1 cur-fid))
-		   (string= (nth 2 fid) (nth 2 cur-fid)))
-	  (w3m-form-put form (string-to-number (nth 3 fid)) (nth 2 fid) nil)
-	  (w3m-form-replace " "))))) ; erase check
+      (when fid
+	;; Uncheck all RADIO input having same NAME
+	(goto-char 1)
+	(while (w3m-form-goto-next-field)
+	  (setq cur-fid (w3m-form-field-parse
+			 (get-text-property (point)
+					    'w3m-form-field-id)))
+	  (when (and (string= (nth 0 fid) (nth 0 cur-fid))
+		     (string= (nth 1 fid) (nth 1 cur-fid))
+		     (string= (nth 2 fid) (nth 2 cur-fid)))
+	    (w3m-form-put form (string-to-number (nth 3 fid)) (nth 2 fid) nil)
+	    (w3m-form-replace " ")))))) ; erase check
   ;; Then set this field as checked.
   (w3m-form-put form id name value)
   (w3m-form-replace "*"))
@@ -1291,7 +1305,7 @@ character."
   (run-hooks 'w3m-form-input-map-mode-hook))
 
 (defun w3m-form-input-map (form name)
-  (let* ((value (w3m-form-get form name))
+  (let* ((value (w3m-form-get-by-name form name))
 	 (cur-win (selected-window))
 	 (wincfg (current-window-configuration))
 	 (w3mbuffer (current-buffer))
