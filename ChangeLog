@@ -15,12 +15,22 @@
 	Thanks to Mito for his report.
 	(w3m-about): Add `witdh' and `height' property to <img> tag.
 
+2002-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-emacs-w3m-icon): Use helvetica-bold to widen image.
+
 2002-10-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-lynx-like-map): Don't define key bindings for
 	`w3m-zoom-out-image' and `w3m-zoom-in-image' when emacs-w3m in
 	running in non-graphical display.
 	(w3m-info-like-map): Ditto.
+
+2002-10-15  KAMO Tomoyuki  <kamo@ITmanage.co.jp>
+
+	* shimbun/sb-tcup.el (shimbun-tcup-get-group-key): Return
+	(hostname . board-id) to support Tripod "personal BBS".
+	(shimbun-tcup-make-id): Follow the above change.
 
 2002-10-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
@@ -50,29 +60,6 @@
 	* shimbun/sb-f1fan.el: Ditto.
 
 	* shimbun/sb-isize-sports.el: Removed.
-
-2002-10-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
-
-	* shimbun/sb-ibm-dev.el (shimbun-make-contents): Strip SPAN tag
-	from subject.
-
-2002-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
-
-	* shimbun/sb-zdnet.el (shimbun-make-contents): Set date string.
-	Remove the part which is not considered as the body.
-
-	* shimbun/shimbun.el (shimbun-make-date-string): Accept the 5th
-	optional argument, `timezone'.
-
-2002-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
-
-	* w3m.el (w3m-emacs-w3m-icon): Use helvetica-bold to widen image.
-
-2002-10-15  KAMO Tomoyuki  <kamo@ITmanage.co.jp>
-
-	* shimbun/sb-tcup.el (shimbun-tcup-get-group-key): Return
-	(hostname . board-id) to support Tripod "personal BBS".
-	(shimbun-tcup-make-id): Follow the above change.
 
 2002-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -140,6 +127,11 @@
 	* w3m-filter.el (w3m-filter-server-regexp): Fix the value;
 	translate the comment into English.
 
+2002-10-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-ibm-dev.el (shimbun-make-contents): Strip SPAN tag
+	from subject.
+
 2002-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-lynx-like-map): Bind key M-] to `w3m-zoom-in-image';
@@ -179,6 +171,14 @@
 	`w3m-view-next-page'.  Thanks to Satoshi TAOKA for his report.
 	(w3m-mode): Fix its docstring for `w3m-antenna-add-current-url'.
 	Thanks to Satoshi TAOKA and Yoichi NAKAYAMA for the advice.
+
+2002-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-zdnet.el (shimbun-make-contents): Set date string.
+	Remove the part which is not considered as the body.
+
+	* shimbun/shimbun.el (shimbun-make-date-string): Accept the 5th
+	optional argument, `timezone'.
 
 2002-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
