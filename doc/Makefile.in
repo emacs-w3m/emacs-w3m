@@ -2,24 +2,35 @@ INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 prefix       = @prefix@
 infodir      = @infodir@
+srcdir       = @srcdir@
+subdir       = doc
+top_srcdir   = @top_srcdir@
 MAKEINFO     = @MAKEINFO@
 EMACS        = @EMACS@
 ADDITIONAL_LOAD_PATH = @ADDITIONAL_LOAD_PATH@
-FLAGS = -q -no-site-file -batch -l w3mhack.el $(ADDITIONAL_LOAD_PATH)
-EMACSINFO    = cd .. && $(EMACS) $(FLAGS) -f w3mhack-makeinfo
+FLAGS = -q -no-site-file -batch -l ./w3mhack.el $(ADDITIONAL_LOAD_PATH)
+EMACSINFO    = cd $(top_srcdir) && $(EMACS) $(FLAGS) -f w3mhack-makeinfo
 
 SHELL        = /bin/sh
 
-INFO_DEPS    = emacs-w3m.info
+INFO_DEPS    = emacs-w3m.info emacs-w3m-ja.info
+INFO_DEPS_EN = emacs-w3m.info
 INFO_DEPS_JA = emacs-w3m-ja.info
 
 default: $(INFO_DEPS)
 
+en: $(INFO_DEPS_EN)
+
 ja: $(INFO_DEPS_JA)
 
-emacs-w3m.info: emacs-w3m.texi
+version.texi: $(top_srcdir)/w3m.el
+	@version=`cd $(top_srcdir)\
+		&& $(EMACS) $(FLAGS) -f w3mhack-version 2>/dev/null`;\
+	echo "@set VERSION $$version"> version.texi
 
-emacs-w3m-ja.info: emacs-w3m-ja.texi
+emacs-w3m.info: version.texi emacs-w3m.texi
+
+emacs-w3m-ja.info: version.texi emacs-w3m-ja.texi
 
 %-ja.info: %-ja.texi
 	@rm -f $@;\
@@ -37,7 +48,7 @@ emacs-w3m-ja.info: emacs-w3m-ja.texi
 	fi
 
 install: $(INFO_DEPS)
-	$(SHELL) ../mkinstalldirs $(infodir)
+	$(SHELL) $(top_srcdir)/mkinstalldirs $(infodir)
 	@list='$(INFO_DEPS)';\
 	for file in $$list; do\
 	  for ifile in `echo $$file $$file-[0-9] $$file-[0-9][0-9]`; do\
@@ -55,6 +66,10 @@ install: $(INFO_DEPS)
 	    install-info --info-dir=$(infodir) $(infodir)/$$file || :;\
 	  done;\
 	else : ; fi
+
+install-en: $(INFO_DEPS_EN)
+	$(MAKE) INFO_DEPS='$(INFO_DEPS_EN)' EMACS="$(EMACS)"\
+		infodir="$(infodir)" install
 
 install-ja: $(INFO_DEPS_JA)
 	$(MAKE) INFO_DEPS='$(INFO_DEPS_JA)' EMACS="$(EMACS)"\
