@@ -1,6 +1,7 @@
 2004-03-14  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
-	* w3m-symbol.el (w3m-mule-unicode-symbol): Fixed 24th character.
+	* w3m-symbol.el (w3m-mule-unicode-symbol): Fixed 32th character.
+	Thanks to Taichi KAWABATA for his report.
 
 2004-03-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
