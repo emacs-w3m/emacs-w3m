@@ -2019,7 +2019,7 @@ Emacs Lisp expressions in your emacs-w3m initialization file, which is
 @noindent
 would set the default homepage to @uref{http://emacs-w3m.namazu.org/}.
 The syntax to use is the same as in your @file{~/.emacs}
-file.  @xref{(emacs)Init File}.
+file.  @xref{Init File, ,Init File, emacs, The Emacs Manual}.
 
 Please note that some variables from external modules could be undefined
 at the time the @file{~/.emacs-w3m} file is loaded, thus making them
@@ -3015,8 +3015,9 @@ commands are replaced by others similar to them, for security reasons
 @item
 What do you have to do?
 
-Read the Gnus manual (@pxref{(emacs-mime)Display Customization}).  The
-easiest way is to put the following line in your @file{~/.gnus.el} file:
+Read the Gnus manual (@pxref{Display Customization, ,Display
+Customization, emacs-mime, The Emacs MIME Manual}).  The easiest way is
+to put the following line in your @file{~/.gnus.el} file:
 
 @lisp
 (setq mm-text-html-renderer 'w3m)
@@ -3638,9 +3639,10 @@ gnus-group-make-shimbun-group}.
 @samp{Nnshimbun} simply fetches HTML contents from the web server and
 displays them as an article, but it will never save articles in the
 local file system, except if you use persistent articles
-(@pxref{(gnus)Persistent Articles}).  @samp{Nnshimbun} uses
-@acronym{NOV} files for each @samp{nnshimbun} group, and its back end is
-almost the same as @samp{nnml}.
+(@pxref{Persistent Articles, ,Persistent Articles, gnus, The Gnus
+Manual}).  @samp{Nnshimbun} uses @acronym{NOV} files for each
+@samp{nnshimbun} group, and its back end is almost the same as
+@samp{nnml}.
 
 The following @samp{nnshimbun} variables can be customized:
 
@@ -3649,12 +3651,12 @@ The following @samp{nnshimbun} variables can be customized:
 @vindex nnshimbun-keep-backlog
 @vindex gnus-keep-backlog
 This variable overrides the @code{gnus-keep-backlog} variable
-(@pxref{(gnus)Article Backlog}) in @samp{nnshimbun} groups.  If you set
-@code{nnshimbun-keep-backlog} to a number @var{n}, @samp{nnshimbun} will
-store at most @var{n} old articles in a buffer for later re-fetching.
-If this variable is non-@code{nil} and is not a number, @samp{nnshimbun}
-will store @emph{all} read articles (this is not a good idea).  The
-default value is 300.
+(@pxref{Article Backlog, ,Article Backlog, gnus, The Gnus Manual}) in
+@samp{nnshimbun} groups.  If you set @code{nnshimbun-keep-backlog} to a
+number @var{n}, @samp{nnshimbun} will store at most @var{n} old articles
+in a buffer for later re-fetching.  If this variable is non-@code{nil}
+and is not a number, @samp{nnshimbun} will store @emph{all} read
+articles (this is not a good idea).  The default value is 300.
 
 Note that smaller values may spoil the @code{prefetch-articles} feature
 (see below), since @samp{nnshimbun} uses the backlog to keep the
@@ -3671,10 +3673,10 @@ You can use the specially made group parameter for @samp{nnshimbun} in
 addition to the standard group parameters provided by Gnus@footnote{The
 easiest way to specify group parameters is to type @kbd{G c} in the
 group buffer after moving the point to the group you'd like to customize
-(@pxref{(gnus)Group Parameters}).}.  Several parameters for
-@samp{nnshimbun} are collected into the single group parameter
-@code{nnshimbun-group-parameters} which is a property list (the values
-can be different for every group).  Here's an example:
+(@pxref{Group Parameters, ,Group Parameters, gnus, The Gnus Manual}).}.
+Several parameters for @samp{nnshimbun} are collected into the single
+group parameter @code{nnshimbun-group-parameters} which is a property
+list (the values can be different for every group).  Here's an example:
 
 @lisp
 '(index-range all prefetch-articles off encapsulate-images on
@@ -4135,7 +4137,7 @@ like to replace the @samp{$} mark with another.
 
 Wanderlust includes @samp{elmo-shimbun} as an ELMO module, so you can
 read @samp{shimbun} by just accessing a folder beginning with @samp{@@}
-(@pxref{(wl)Shimbun Folder}).
+(@pxref{Shimbun Folder, ,Shimbun Folder, wl, The Wanderlust Manual}).
 
 @node Shimbun Sites
 @section Sites supported by Shimbun
