@@ -6132,23 +6132,30 @@ appropriate buffer and select it."
       (w3m-mode)))
   (w3m-add-local-hook 'pre-command-hook 'w3m-store-current-position)
   (w3m-add-local-hook 'post-command-hook 'w3m-check-current-position)
+  (w3m-static-when (featurep 'xemacs)
+    (w3m-make-spinner-image))
   (setq mode-line-buffer-identification
-	(list "%b "
-	      '((w3m-current-process
-		 w3m-modeline-process-status-on
-		 (w3m-current-ssl
+	(list
+	 "%b "
+	 (list
+	  (list 'w3m-current-process
+		(w3m-static-if (featurep 'xemacs)
+		    '(w3m-spinner-image ("  " w3m-spinner-image)
+					w3m-modeline-process-status-on)
+		  'w3m-modeline-process-status-on)
+		'(w3m-current-ssl
 		  (w3m-display-inline-images
 		   w3m-modeline-ssl-image-status-on
 		   w3m-modeline-ssl-status-off)
 		  (w3m-display-inline-images
 		   w3m-modeline-image-status-on
 		   w3m-modeline-status-off))))
-	      (w3m-static-if (featurep 'xemacs)
-		  '(w3m-use-favicon
-		    (w3m-favicon-image ("  " w3m-favicon-image) " / ")
-		    " / ")
-		" / ")
-	      'w3m-current-title)))
+	 (w3m-static-if (featurep 'xemacs)
+	     '(w3m-use-favicon
+	       (w3m-favicon-image ("  " w3m-favicon-image) " / ")
+	       " / ")
+	   " / ")
+	 'w3m-current-title)))
 
 ;;;###autoload
 (defun w3m-goto-url
