@@ -3589,7 +3589,7 @@ Mew $B$J$I$N(B MUA $B$rMxMQ$7!"%&%'%V%3%s%F%s%D$r%a!<%k$HF1$8%f!<%6%$%s%?!<%U
 * Inheriting shimbun module::   shimbun $B%b%8%e!<%k$N7Q>5(B
 @end menu
 
-@node $B35N,(B
+@node Overview
 @subsection $B35N,(B
 
 @uref{http://www.foobar.net} $B$N%3%s%F%s%D$r1\Mw$9$k?7$?(B
@@ -3822,7 +3822,7 @@ Message-ID $B$H$7$FI=<($5$l$^$9!#Nc$($P!"2<5-$N(B
 $B$G$9!#%0%k!<%W$NL>A0$N7h$aJ}$KFC$K7h$^$j$O$"$j$^$;$s$,!"%0%k!<%WL>$KG:$s(B
 $B$@$i!"(B@samp{news} $B$H$+(B @samp{main} $B$J$I$HIU$1$F$*$-$^$7$g$&!#(B
 
-@node $B5-;v$NI=<((B
+@node Displaying an article
 @subsection $B5-;v$NI=<((B
 
 @file{shimbun.el} $B$KDj5A$5$l$?(B @code{shimbun-article} $B%a%=%C%I$O!"%X%C%@(B
