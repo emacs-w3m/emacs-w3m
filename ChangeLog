@@ -1,5 +1,13 @@
 2003-07-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m-antenna.el (w3m-about-antenna): Fix the expression to decide
+	changed sites.
+
+	* w3m.el (w3m-retrieve-and-render): Do not overwrite an arrived
+	time with a modified time, even if the modified time is newer than
+	the arrived time.  Store a real URL to arrived DB.
+	(w3m-about-db-history): Small clean up.
+
 	* attic/xml.el: Import contrib/xml.el of Oort Gnus.  Require cl
 	and poe.
 

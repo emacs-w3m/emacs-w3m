@@ -4198,8 +4198,6 @@ argument.  Otherwise, it will be called with nil."
 	  (setq url (w3m-url-strip-authinfo url))
 	  (if type
 	      (let ((modified-time (w3m-last-modified url)))
-		(when (w3m-time-newer-p modified-time arrived-time)
-		  (setq arrived-time modified-time))
 		(w3m-arrived-add url nil modified-time arrived-time)
 		(unless modified-time
 		  (setf (w3m-arrived-last-modified url) nil))
@@ -4209,6 +4207,17 @@ argument.  Otherwise, it will be called with nil."
 					(or charset
 					    (w3m-arrived-content-charset url))
 					page-buffer)
+		  ;; FIXME: w3m-cache-* は，ユーザーから入力された URL
+		  ;; に基づいてキャッシュを管理しているので，
+		  ;; w3m-content-type() などの引数としては，real URL
+		  ;; が使えない．
+		  (let ((real (w3m-real-url url)))
+		    (unless (string= url real)
+		      (w3m-arrived-add real nil nil arrived-time)
+		      (setf (w3m-arrived-title real)
+			    (w3m-arrived-title url))
+		      (setf (w3m-arrived-last-modified real)
+			    (w3m-arrived-last-modified url))))
 		  (and w3m-verbose
 		       (not (get-buffer-window page-buffer))
 		       (message "The content (%s) has been retrieved in %s"
@@ -6722,7 +6731,7 @@ showing a tree-structured history by the command `w3m-about-history'.")
 		    (+ (window-width) (or w3m-fill-column -1)))
 		  18))
 	(now (current-time))
-	title time alist date prev next page total)
+	title time alist prev next page total)
     (when (string-match "\\`about://db-history/\\?" url)
       (dolist (s (split-string (substring url (match-end 0)) "&"))
 	(when (string-match "\\`\\(start\\|\\(size\\)\\)=" s)
@@ -6780,35 +6789,26 @@ showing a tree-structured history by the command `w3m-about-history'.")
       (while (and alist
 		  (or (not size)
 		      (>= (decf size) 0)))
-	(setq url (car (car alist)))
-	(setq title (w3m-arrived-title url))
+	(setq url (car (car alist))
+	      time (cdr (car alist))
+	      alist (cdr alist)
+	      title (w3m-arrived-title url))
 	(if (or (null title)
 		(string= "<no-title>" title))
-	    (setq title (concat
-			 "<"
-			 (if (<= (length url) width)
-			     url
-			   (substring url 0 width)) ;; only ASCII characters.
-			 ">"))
+	    (setq title (concat "<" (w3m-truncate-string url width) ">"))
 	  (when (>= (string-width title) width)
-	    (setq title
-		  (concat
-		   (with-temp-buffer
-		     (insert title)
-		     (move-to-column width)
-		     (buffer-substring (point-min) (point)))
-		   "..."))))
+	    (setq title (concat (w3m-truncate-string title width) "..."))))
 	(insert (format "<tr><td><a href=\"%s\">%s</a></td>"
 			url
 			(w3m-encode-specials-string title)))
-	(when (cdr (car alist))
-	  (if (<= (w3m-time-lapse-seconds (cdr (car alist)) now)
-		  64800) ;; = (* 60 60 18) 18hours ago.
-	      (setq date (format-time-string "%H:%M:%S" (cdr (car alist))))
-	    (setq date (format-time-string "%Y-%m-%d" (cdr (car alist)))))
-	  (insert "<td>" date "</td>"))
-	(insert "</tr>\n")
-	(setq alist (cdr alist)))
+	(when time
+	  (insert "<td>"
+		  (if (<= (w3m-time-lapse-seconds time now)
+			  64800) ;; = (* 60 60 18) 18hours.
+		      (format-time-string "%H:%M:%S" time)
+		    (format-time-string "%Y-%m-%d" time))
+		  "</td>"))
+	(insert "</tr>\n"))
       (insert "</table>"
 	      (if next "\n<br>\n<hr>\n" "")
 	      prev))
