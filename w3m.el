@@ -5,6 +5,7 @@
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
 ;;          Satoru Takabayashi <satoru-t@is.aist-nara.ac.jp>
+;;          Hideyuki SHIRAI    <shirai@meadowy.org>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; w3m.el is free software; you can redistribute it and/or modify it
@@ -297,15 +298,18 @@
       (delete-region (match-beginning 0) (match-end 0)))
     ;; Decode escaped characters.
     (goto-char (point-min))
-    (while (re-search-forward
-	    "&\\(\\(nbsp\\)\\|\\(gt\\)\\|\\(lt\\)\\|\\(amp\\)\\|\\(quot\\)\\|\\(apos\\)\\);"
-	    nil t)
-      (delete-region (match-beginning 0) (match-end 0))
-      (insert (if (match-beginning 2) " "
-		(if (match-beginning 3) ">"
-		  (if (match-beginning 4) "<"
-		    (if (match-beginning 5) "&"
-		      (if (match-beginning 6) "\"" "'")))))))
+    (let (prop)
+      (while (re-search-forward
+	      "&\\(\\(nbsp\\)\\|\\(gt\\)\\|\\(lt\\)\\|\\(amp\\)\\|\\(quot\\)\\|\\(apos\\)\\);"
+	      nil t)
+	(setq prop (text-properties-at (match-beginning 0)))
+	(delete-region (match-beginning 0) (match-end 0))
+	(insert (if (match-beginning 2) " "
+		  (if (match-beginning 3) ">"
+		    (if (match-beginning 4) "<"
+		      (if (match-beginning 5) "&"
+			(if (match-beginning 6) "\"" "'"))))))
+	(if prop (add-text-properties (1- (point)) (point) prop))))
     (run-hooks 'w3m-fontify-after-hook)))
 
 
@@ -670,6 +674,9 @@ If BUFFER is nil, all data is placed to the current buffer."
   (if (string-match "^[^:]+://[^/]*$" base)
       (setq base (concat base "/")))
   (cond
+   ;; URL is relative on BASE.
+   ((string-match "^#" url)
+    (concat base url))
    ;; URL has absolute spec.
    ((string-match "^[^:]+:" url)
     url)
@@ -677,9 +684,6 @@ If BUFFER is nil, all data is placed to the current buffer."
     (if (string-match "^\\([^:]+://[^/]*\\)/" base)
 	(concat (match-string 1 base) url)
       url))
-   ;; URL is relative on BASE.
-   ((string-match "^#" url)
-    (concat base url))
    (t
     (let ((server "") path)
       (if (string-match "^\\([^:]+://[^/]*\\)/" base)

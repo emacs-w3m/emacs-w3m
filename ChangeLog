@@ -1,3 +1,10 @@
+2000-10-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (top-level): Add authors.
+	(w3m-expand-url): Check relative URL first.
+	(w3m-fontify): Add original text properties when replace 'escaped
+	character'.
+
 2000-10-11  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-mailto-url-function, w3m-use-cygdrive,
