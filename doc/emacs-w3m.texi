@@ -157,7 +157,7 @@ Known Problems
 
 Shimbun Library
 
-* Shimbun Sites:                Sites supported by Shimbun
+* Shimbun Sites::               Sites supported by Shimbun
 * Nnshimbun::                   Making Gnus into a web browser!
 * Mew Shimbun::                 Reading web newspapers with Mew
 * Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
@@ -2204,7 +2204,7 @@ emacs-w3m.  The @sc{flim} package requires the @sc{apel} package.  You
 might also want to see @xref{Other Requirements}.
 
 @menu
-* Shimbun Sites:                Sites supported by Shimbun
+* Shimbun Sites::               Sites supported by Shimbun
 * Nnshimbun::                   Turning Gnus into a web browser!
 * Mew Shimbun::                 Reading web newspapers with Mew
 * Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
