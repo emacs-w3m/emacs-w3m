@@ -1,5 +1,9 @@
 2001-03-05  Keisuke Nishida  <kxn30@po.cwru.edu>
 
+	* w3m.el (w3m-anchor, w3m-image, w3m-action): Use defsubst.
+
+2001-03-05  Keisuke Nishida  <kxn30@po.cwru.edu>
+
 	* w3m.el (and-let*): Removed
 	(w3m-save-this-url): Updated.
 

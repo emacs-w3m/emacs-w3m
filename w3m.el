@@ -1757,13 +1757,13 @@ this function returns t.  Otherwise, returns nil."
 	    (setq path (substring path (match-end 0))))
 	(concat server path))))))
 
-(defun w3m-anchor (&optional point)
+(defsubst w3m-anchor (&optional point)
   (get-text-property (or point (point)) 'w3m-href-anchor))
 
-(defun w3m-image (&optional point)
+(defsubst w3m-image (&optional point)
   (get-text-property (or point (point)) 'w3m-image))
  
-(defun w3m-action (&optional point)
+(defsubst w3m-action (&optional point)
   (get-text-property (or point (point)) 'w3m-action))
  
 (defun w3m-view-this-url (&optional arg)
