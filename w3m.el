@@ -1813,10 +1813,10 @@ for a refresh indication")
 	 (list "-dump=extra,head,source"))
 	(t
 	 (list
-	  '(if w3m-accept-languages "-o")
 	  '(if w3m-accept-languages
-	       (concat "accept_language="
-		       (mapconcat 'identity w3m-accept-languages " ")))
+	       '("-o"
+		 (concat "accept_language="
+			 (mapconcat 'identity w3m-accept-languages " "))))
 	  "-dump_extra")))
   "Arguments for 'dump_extra' execution of w3m.")
 
@@ -1828,15 +1828,14 @@ for a refresh indication")
 	 (list '(if w3m-treat-image-size
 		    "-dump=half-buffer,single-row-image"
 		  "-dump=half-buffer")
-	       '(if charset "-I")
-	       'charset
+	       '(if charset (list "-I" 'charset))
 	       "-o" "concurrent=0"))
 	((eq w3m-type 'w3m-m17n)
 	 (list "-halfdump"
 	       "-o" "ext_halfdump=1"
 	       "-o" "strict_iso2022=0"
 	       "-o" "ucs_conv=1"
-	       '(if charset "-I") 'charset
+	       '(if charset (list "-I" 'charset))
 	       "-O"
 	       '(if (eq w3m-output-coding-system 'utf-8)
 		    "UTF-8"
@@ -3629,18 +3628,21 @@ If optional argument NO-CACHE is non-nil, cache is not used."
 		      (cdr (assoc "w3m-current-url" alist))
 		      url)))))))))
 
-(defmacro w3m-w3m-expand-arguments (arguments)
-  (` (delq nil
-	   (mapcar
-	    (lambda (x)
-	      (cond
-	       ((stringp x) x)
-	       ((setq x (eval x))
-		(if (stringp x)
-		    x
-		  (let (print-level print-length)
-		    (prin1-to-string x))))))
-	    (, arguments)))))
+(defun w3m-w3m-expand-arguments (arguments)
+  (apply 'append
+	 (mapcar
+	  (lambda (x)
+	    (cond
+	     ((stringp x) (list x))
+	     ((setq x (eval x))
+	      (cond ((stringp x)
+		     (list x))
+		    ((listp x)
+		     (w3m-w3m-expand-arguments x))
+		    (t
+		     (let (print-level print-length)
+		       (list (prin1-to-string x))))))))
+		arguments)))
 
 (defun w3m-w3m-dump-head-source (url orig-url handler)
   "Retrive headers and content pointed by URL, and call the HANDLER

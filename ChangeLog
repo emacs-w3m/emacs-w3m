@@ -1,3 +1,10 @@
+2003-10-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-w3m-expand-arguments): Redefine as a function rather
+	than a macro.
+	(w3m-dump-head-source-command-arguments): Simplify.
+	(w3m-halfdump-command-arguments): Ditto.
+
 2003-10-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-proc.el (w3m-process-filter): Check return value of
