@@ -1,3 +1,11 @@
+2003-10-05  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m-form.el (w3m-form-replace): Call `set-buffer-modified-p'.
+	(w3m-form-field-parse): Do nothing when fid is nil.
+	(w3m-form-input-radio): Likewise.
+	(w3m-form-get-by-name): New function.
+	(w3m-form-input-map): Use it.
+
 2003-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-tab-line): Fix the logic determining whether to
