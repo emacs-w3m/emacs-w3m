@@ -3201,6 +3201,9 @@ succeed."
 		(cfile (make-temp-name
 			(expand-file-name "w3melck" w3m-profile-directory)))
 		file beg end)
+	    (with-temp-buffer
+	      (insert lcookie)
+	      (write-region (point-min) (point-max) cfile 'nomsg))
 	    (w3m-process-with-environment
 		(list
 		 (cons "LOCAL_COOKIE" lcookie)
