@@ -284,7 +284,9 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 				  (t
 				   "w3m-e19.el"))
 			    (copy-sequence version-specific-modules))))
-	 (shimbun-dir (file-name-as-directory shimbun-module-directory))
+	 (shimbun-dir (when (and (file-exists-p shimbun-module-directory)
+				 (file-directory-p shimbun-module-directory))
+			(file-name-as-directory shimbun-module-directory)))
 	 print-level print-length)
     (unless (locate-library "mew")
       (push "mew-w3m.el" ignores))
@@ -306,10 +308,11 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
     (if (and (featurep 'mule)
 	     (locate-library "mime-def"))
 	(progn
-	  ;; Add shimbun modules.
-	  (dolist (file (directory-files (expand-file-name shimbun-dir)
-					 nil "^[^#]+\\.el$"))
-	    (setq modules (nconc modules (list (concat shimbun-dir file)))))
+	  (when shimbun-dir ;; It may be running install-package.
+	    ;; Add shimbun modules.
+	    (dolist (file (directory-files (expand-file-name shimbun-dir)
+					   nil "^[^#]+\\.el$"))
+	      (setq modules (nconc modules (list (concat shimbun-dir file))))))
 	  ;; mew-shimbun check
 	  (unless
 	      ;; Mew 2.x and later do not support Mule2.3/Emacs19.
@@ -676,18 +679,8 @@ to remove some obsolete variables in the first argument VARLIST."
 	(when (file-exists-p (concat custom-load "c"))
 	  (delete-file (concat custom-load "c"))))
       (message "Updating autoloads for the directory %s..." lisp-dir)
-      (defun message (fmt &rest args)
-	"Ignore useless messages while generating autoloads."
-	(cond ((and (string-equal "Generating autoloads for %s..." fmt)
-		    (file-exists-p (file-name-nondirectory (car args))))
-	       (funcall si:message
-			fmt (file-name-nondirectory (car args))))
-	      ((string-equal "No autoloads found in %s" fmt))
-	      ((string-equal "Generating autoloads for %s...done" fmt))
-	      (t (apply si:message fmt args))))
-      (unwind-protect
-	  (update-autoloads-from-directory temp-dir)
-	(fset 'message si:message))
+      (let ((default-directory temp-dir))
+	(w3mhack-generate-load-file generated-autoload-file))
       (if (file-exists-p generated-autoload-file)
 	  (progn
 	    (copy-file generated-autoload-file
@@ -1110,46 +1103,82 @@ NOTE: This function must be called from the top directory."
 	 (setq error 1))))
     (kill-emacs error)))
 
-(defun w3mhack-generate-load-file ()
+(defun w3mhack-update-files-autoloads (files)
+  "Run `update-file-autoloads' with FILES, silently in XEmacs."
+  (if (featurep 'xemacs)
+      (let ((si:message (symbol-function 'message)))
+	(defun message (fmt &rest args)
+	  "Ignore useless messages while generating autoloads."
+	  (cond ((and (string-equal "Generating autoloads for %s..." fmt)
+		      (file-exists-p (file-name-nondirectory (car args))))
+		 (funcall si:message
+			  fmt (file-name-nondirectory (car args))))
+		((string-equal "No autoloads found in %s" fmt))
+		((string-equal "Generating autoloads for %s...done" fmt))
+		(t (apply si:message fmt args))))
+	(unwind-protect
+	    (dolist (file files)
+	      (update-file-autoloads file))
+	  (fset 'message si:message)))
+    (dolist (file files)
+      (update-file-autoloads file))))
+
+(defun w3mhack-generate-load-file (&optional autoload-file)
   "Generate a file including all autoload stubs."
   (require 'autoload)
-  (let ((files (w3mhack-module-list)))
-    (if (and (file-exists-p w3mhack-load-file)
+  (let ((files (w3mhack-module-list))
+	(generated-autoload-file (or autoload-file
+				     (expand-file-name w3mhack-load-file)))
+	(make-backup-files nil)
+	(autoload-package-name "emacs-w3m"))
+    (setq autoload-file (file-name-nondirectory generated-autoload-file))
+    (if (and (file-exists-p generated-autoload-file)
 	     (not (catch 'modified
 		    (dolist (file files)
-		      (when (file-newer-than-file-p file w3mhack-load-file)
+		      (when (file-newer-than-file-p file
+						    generated-autoload-file)
 			(throw 'modified t))))))
-	(message " `%s' is up to date" w3mhack-load-file)
-      (let ((generated-autoload-file (expand-file-name w3mhack-load-file))
-	    (make-backup-files nil)
-	    (autoload-package-name "emacs-w3m"))
-	(save-excursion
-	  (set-buffer (find-file-noselect generated-autoload-file))
-	  (erase-buffer)
-	  (goto-char (point-min))
-	  (insert ";;; " w3mhack-load-file "\
+	(message " `%s' is up to date" autoload-file)
+      (when (fboundp 'autoload-ensure-default-file)
+	(autoload-ensure-default-file generated-autoload-file))
+      (save-excursion
+	(set-buffer (find-file-noselect generated-autoload-file))
+	(if (fboundp 'autoload-ensure-default-file)
+	    (let ((case-fold-search t))
+	      (goto-char (point-min))
+	      (when (re-search-forward
+		     "^[\t ]*\\(;+[\t ]*Local[\t ]+Variables:\\)"
+		     nil t)
+		(delete-region (point-min) (match-beginning 1))
+		(goto-char (point-min))))
+	  (erase-buffer))
+	(insert ";;; " autoload-file "\
  --- automatically extracted autoload
 ;;
 ;; This file should be generated by make in emacs-w3m source directory.
 ;;
 ;;; Code:
+
 ")
-	  ;; When missing ^L, `update-file-autoloads' of old emacsen
-	  ;; such as Mule2.3 signals an error.
-	  (insert ?\014)
-	  ;; In Emacs 21.3.50 and up, `update-file-autoloads' requires
-	  ;; the file and contents aren't modified.
-	  (save-buffer)
-	  (dolist (file files)
-	    (update-file-autoloads file))
-	  (goto-char (point-max))
+	(if (featurep 'xemacs)
+	    (insert "\
+\(if (featurep 'w3m-autoloads) (error \"Already loaded\"))
+\(provide 'w3m-autoloads)
+\(provide '" (file-name-sans-extension w3mhack-load-file) ")
+")
 	  (insert "\
-
-\(provide '" (file-name-sans-extension w3mhack-load-file) "\)
-
-;;; " w3mhack-load-file " ends here
-")
-	  (save-buffer))))))
+\(provide '" (file-name-sans-extension autoload-file) ")
+"))
+	;; When missing ^L, `update-file-autoloads' of old emacsen
+	;; such as Mule2.3 signals an error.
+	(unless (featurep 'xemacs)
+	  (insert "\C-l\n"))
+	(w3mhack-update-files-autoloads files)
+	(unless (fboundp 'autoload-ensure-default-file)
+	  (goto-char (point-max))
+	  (insert (if (featurep 'xemacs) "\C-l\n" "")
+		  ";;; " autoload-file " ends here\n"))
+	(save-buffer)))))
 
 (defun w3mhack-locate-library ()
   "Print the precise file name of Emacs library remaining on the commane line."
