@@ -1188,6 +1188,8 @@ If N is negative, last N items of LIST is returned."
 	 (mapcar
 	  (lambda (ch)
 	    (cond
+	     ((eq ch ?\n) ; newline
+	      "%0D%0A")
 	     ((string-match "[-a-zA-Z0-9_:/]" (char-to-string ch)) ; xxx?
 	      (char-to-string ch))	; printable
 	     (t

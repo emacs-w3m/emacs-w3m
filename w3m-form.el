@@ -42,7 +42,7 @@
 (defvar w3m-current-forms nil "Forms of this buffer.")
 (make-variable-buffer-local 'w3m-current-forms)
 
-(defcustom w3m-form-default-coding-system 'shift_jis-dos
+(defcustom w3m-form-default-coding-system 'shift_jis
   "*Default coding system for form encoding."
   :group 'w3m
   :type 'coding-system)
@@ -87,14 +87,13 @@
 	(coding (or coding (w3m-charset-to-coding-system
 			    (w3m-content-charset w3m-current-url))
 		    w3m-form-default-coding-system))
-	(buf) str)
+	buf)
     (while plist
       (setq buf (cons
 		 (format "%s=%s"
-			 (w3m-url-encode-string (symbol-name (car plist)))
-			 (if (listp (setq str (nth 1 plist)))
-			     (w3m-url-encode-string (car str) coding)
-			   (w3m-url-encode-string str coding)))
+			 (w3m-url-encode-string (symbol-name (car plist))
+						coding)
+			 (w3m-url-encode-string (nth 1 plist) coding))
 		 buf)
 	    plist (nthcdr 2 plist)))
     (when buf

@@ -1,5 +1,11 @@
 2001-07-06  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* w3m-form.el (w3m-form-default-coding-system): Changed default value
+	to shift_jis.
+	(w3m-form-make-form-urlencoded): Removed redundant local variable.
+
+	* w3m.el (w3m-url-encode-string): Encode newline as "%0D%0A"
+
 	* w3m-form.el (w3m-form-default-coding-system): New user option.
 	(w3m-form-make-form-urlencoded): Use it.
 	(w3m-form-input-textarea-set): Get values of buffer local variables
