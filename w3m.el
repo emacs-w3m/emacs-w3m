@@ -2884,7 +2884,7 @@ For example:
 		(setq w (widget-convert-button 'default start end
 					       :button-keymap nil
 					       :help-echo href))
-		(static-unless (featurep 'xemacs)
+		(w3m-static-unless (featurep 'xemacs)
 		  (overlay-put (widget-get w :button-overlay) 'evaporate t))))
 	    (when name
 	      (w3m-add-text-properties start (point-max)
