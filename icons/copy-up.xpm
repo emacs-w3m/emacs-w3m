@@ -1,5 +1,5 @@
 /* XPM */
-static char *copy-cap-up[] = {
+static char *copy_up_xpm[] = {
 /* width height ncolors chars_per_pixel */
 "32 30 7 1",
 /* colors */
