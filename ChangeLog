@@ -1,3 +1,7 @@
+2002-01-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-version): Release 1.2.4.
+
 2002-01-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-arrived-setup): Ignore database of arrived URLs in
