@@ -98,7 +98,7 @@
 dJrT4Cd<Ls?U!G4}0S%FA~KegR;YZWieoc%`|$4M\\\"i*2avWm?"
   "*Default X-Face field for shimbun."
   :group 'shimbun
-  :type 'string)
+  :type '(string :format "%{%t%}:\n%v" :size 0))
 
 ;;; Shimbun MUA
 (eval-and-compile
@@ -339,9 +339,9 @@ content-type if `shimbun-encapsulate-images' is non-nil."
 set to t when the initial value is nil and BBDB is loaded.  You can
 set this to `never' if you never want to use BBDB."
   :group 'shimbun
-  :type '(choice (const :tag "Default" nil)
-		 (const :tag "Use BBDB" t)
-		 (const :tag "No use BBDB" never)))
+  :type '(radio (const :tag "Default" nil)
+		(const :tag "Use BBDB" t)
+		(const :tag "No use BBDB" never)))
 
 (defun shimbun-header-insert (shimbun header)
   (let ((from (shimbun-header-from header))

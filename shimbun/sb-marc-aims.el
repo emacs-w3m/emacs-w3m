@@ -1,6 +1,6 @@
 ;;; sb-marc-aims.el --- shimbun backend for marc.theaimsgroup.com.
 
-;; Copyright (C) 2002 NOKUBI Takatsugu <knok@daionet.gr.jp>
+;; Copyright (C) 2002, 2003 NOKUBI Takatsugu <knok@daionet.gr.jp>
 
 ;; Author: NOKUBI Takatsugu <knok@daionet.gr.jp>
 ;; Keywords: news
@@ -37,12 +37,15 @@
   "Table of mailing lists archives kept at http://marc.theaimsgroup.com/."
   :group 'shimbun
   :type '(repeat
-	  (list (string :tag "Group Name")
-		(string :tag "List Name")
-		(choice (const :tag "No Reply-To" nil)
-			(string :tag "Reply-To"))
-		(choice (const :tag "No X-Face" nil)
-			(string :tag "X-Face")))))
+	  (group :indent 0
+		 (string :format "Group Name: %v\n" :size 0)
+		 (string :format " List Name: %v\n" :size 0)
+		 (radio :format "  Reply-To: %v"
+			(const :format "None " nil)
+			(string :format "Address: %v\n" :size 0))
+		 (radio :format "    X-Face: %v"
+			(const :format "None " nil)
+			(string :format "%t: %v\n" :size 0)))))
 
 (defvar shimbun-marc-aims-content-start "RAW</a>\\]</b>")
 (defvar shimbun-marc-aims-content-end "<p>\\[<font ")

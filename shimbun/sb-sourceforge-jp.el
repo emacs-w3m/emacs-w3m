@@ -44,10 +44,12 @@
   :group 'shimbun
   :type '(repeat
 	  (cons
-	   (string :tag "Group Name")
-	   (choice
-	    (const :tag "Group Name and Mailing List Name are the same" nil)
-	    (string :tag "Mailing List Name")))))
+	   :format "%v" :indent 2
+	   (string :format "Group Name: %v\n" :size 0)
+	   (radio
+	    :format "Mailing List Name: %v"
+	    (const :format "Same as Group Name " nil)
+	    (string :format "%t: %v\n" :size 0)))))
 
 (defconst shimbun-sourceforge-jp-base-url
   "http://lists.sourceforge.jp/pipermail/"
