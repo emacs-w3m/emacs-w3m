@@ -1,3 +1,10 @@
+2002-07-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (toplevel): Bind `mew-set-file-modes' and
+	`mew-file-mode' to avoid byte-compile warnings.
+	(mew-shimbun-retrieve-article, mew-shimbun-re-retrieve-article):
+	Use `mew-set-file-modes' if exist.
+
 2002-07-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-ucs-to-char): Return char for tilde by default.
