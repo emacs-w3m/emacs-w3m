@@ -122,6 +122,7 @@ Basic Usage
 Pretty Good Features
 
 * Using Search Engines::        A convenient way to search the web
+* Grouping URLs::               Visiting several web pages in one URL
 * Weather Information::         It will be fine tomorrow
 * Using Antenna::               Raise your antenna
 * Showing Directory Tree::      Showing the tree structure of local directory
@@ -600,6 +601,7 @@ See also the documentation for the option
 
 @menu
 * Using Search Engines::        Convenient ways to search the web
+* Grouping URLs::               Visiting several web pages in one URL
 * Weather Information::         It will be fine tomorrow
 * Using Antenna::               Raise your antenna
 * Showing Directory Tree::      Showing the tree structure of local directory
@@ -611,13 +613,13 @@ See also the documentation for the option
 @node Using Search Engines
 @section Convenient ways to search the web
 @cindex Search engines
-@findex w3m-search 
+@findex w3m-search
 
 Emacs-w3m comes with advanced features related to search engines, they
 are accessible through two interfaces:
 
 @itemize
-@item 
+@item
 The regular interface, invoked by the @kbd{S} key in any emacs-w3m
 buffer.  It is a simple interactive way to choose which search engine to
 use and input a search term; see @ref{The Search Interface}.
@@ -629,7 +631,7 @@ information about this feature, see @ref{Quick Searching}.
 @end itemize
 
 @menu
-* The Search Interface::        How to search with emacs-w3m 
+* The Search Interface::        How to search with emacs-w3m
 * Quick Searching::             An alternative (and fast) way to search the web
 * Adding New Search Engines::   Using your favorite engines
 @end menu
@@ -668,6 +670,7 @@ search results.
 @cindex Special URLs
 @vindex w3m-search-quick-search-engine-alist
 @vindex w3m-search-engine-alist
+@vindex w3m-default-coding-system
 
 If you're a ``Web Power User'' (and since you're reading this, you
 probably are), you need a quick and efficient way to perform searches.
@@ -693,11 +696,11 @@ URL.
 It works with the grouping feature.  You can launch two searches at the
 same time, with a URL like @uref{group:gg:emacs&ya:w3m}.  This would
 for instance launch a search for ``emacs'' on Google and for ``w3m'' on
-Yahoo!. @c @xref{Grouping URLs} FIXME FIXME FIXME
+Yahoo!.  @xref{Grouping URLs}.
 @end itemize
 
 Using it is very simple: suppose you want to search for the word ``gnu''
-on Google.  Hit @kbd{g} to go to a new url, and type ``gg:gnu''.  The
+on Google.  Hit @kbd{g} to go to a new URL, and type ``gg:gnu''.  The
 first part of this expression, ``gg'' indicates that we want to use the
 Google search engine.  The second term is the word we will be searching
 for.  The prefix and the search term must be separated by a colon.  Hit
@@ -733,14 +736,14 @@ want to add, for example:
 
 @uref{http://my.searchengine.com/?query=foobar}
 
-where foobar is the term you want to search for.  
+where foobar is the term you want to search for.
 
 @item
 Once you have this information, add this to your .emacs:
 
-@lisp        
+@lisp
 (eval-after-load "w3m-search"
-  '(add-to-list 'w3m-search-engine-alist 
+  '(add-to-list 'w3m-search-engine-alist
                 '("My engine"
                   "http://my.searchengine.com/?query=%s"
                   nil)))
@@ -749,8 +752,13 @@ Once you have this information, add this to your .emacs:
 Replace the first field ``My engine'' with the description of your
 engine, the second field with the entry point (the @samp{%s} is
 important, it will be replaced by the search term when you issue the
-search), and the third field is the encoding to use, @code{nil} means to
-use a regular encoding (e.g. not Japanese).
+search), and the third field is the encoding to use, @code{nil} or
+omitting this field means to use the value of
+@code{w3m-default-coding-system} as a regular encoding.
+
+For your information about an encoding, you have scarcely to consider it
+for English search engines.  However, for a certain Japanese search
+engine, you may need to specify something (e.g. @code{euc-japan}) to it.
 
 @item
 You can now use this engine to search, using the normal @kbd{S} key in
@@ -768,10 +776,14 @@ prefix, by adding this to your @file{.emacs} instead:
      (add-to-list 'w3m-search-quick-search-engine-alist
                   '("my" . "My engine"))))
 @end lisp
-	
+
 This way you can also use a URL like @uref{my:foobar} to search for the
 term ``foobar'' with your engine.
 @end enumerate
+
+@node Grouping URLs
+@section Visiting several web pages in one URL
+
 
 @node Weather Information
 @section It will be fine tomorrow
@@ -791,7 +803,7 @@ You can start Antenna using the @kbd{A} key in any emacs-w3m buffer.
 Alternatively, you can go to the special URL @uref{about://antenna/}; it
 does the same thing.
 
-@menu 
+@menu
 * Setting up Antenna::          How to add your web sites to Antenna
 * Daily web tracking::          Tracking changes with Antenna
 @end menu
