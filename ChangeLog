@@ -1,3 +1,8 @@
+2002-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-select-buffer-mode): Add some key descriptions to
+	the doc-string.
+
 2002-10-17  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* icons/db-history-up.xpm: Add missing comma.

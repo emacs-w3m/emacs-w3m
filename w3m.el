@@ -6581,17 +6581,33 @@ buffers.  User can type following keys:
   "\\<w3m-select-buffer-mode-map>
 Major mode to select a buffer from the set of w3m-mode buffers.
 
-\\[w3m-select-buffer-next-line]	Next line.
-\\[w3m-select-buffer-previous-line]	Previous line.
+\\[w3m-select-buffer-next-line]\
+	Next line.
+\\[w3m-select-buffer-previous-line]\
+	Previous line.
 
-\\[w3m-select-buffer-show-this-line]	Show the current buffer or scroll up.
-\\[w3m-select-buffer-show-this-line-and-down]	Show the current buffer or scroll down.
-\\[w3m-select-buffer-show-this-line-and-switch]	Show the current buffer and set cusor to w3m buffer.
-\\[w3m-select-buffer-show-this-line-and-quit]	Show the current buffer and quit menu.
+\\[w3m-select-buffer-show-this-line]\
+	Show the current buffer or scroll up.
+\\[w3m-select-buffer-show-this-line-and-down]\
+	Show the current buffer or scroll down.
+\\[w3m-select-buffer-show-this-line-and-switch]\
+	Show the current buffer and set cusor to w3m buffer.
+\\[w3m-select-buffer-show-this-line-and-quit]\
+	Show the current buffer and quit menu.
 
-\\[w3m-select-buffer-toggle-style]	Toggle the type of split which horizon or vertical.
-\\[w3m-select-buffer-recheck]	Recheck buffers.
-\\[w3m-select-buffer-quit]	Quit menu.
+\\[w3m-select-buffer-copy-buffer]\
+	Create a copy of the buffer on the current menu line,\n\tand show it.
+\\[w3m-select-buffer-delete-buffer]\
+	Delete the buffer on the current menu line.
+\\[w3m-select-buffer-delete-other-buffers]\
+	Delete w3m buffers except for the current menu line.
+
+\\[w3m-select-buffer-toggle-style]\
+	Toggle the type of split which horizon or vertical.
+\\[w3m-select-buffer-recheck]\
+	Recheck buffers.
+\\[w3m-select-buffer-quit]\
+	Quit menu.
 "
   (setq major-mode 'w3m-select-buffer-mode
 	mode-name "w3m buffers"
