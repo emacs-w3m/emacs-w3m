@@ -1,3 +1,10 @@
+2003-09-19  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-underline-face): New face.
+	(w3m-strike-through-face): New user variable.
+	(w3m-fontify-strike-through): New function.
+	(w3m-fontify): Call `w3m-fontify-strike-through'
+
 2003-09-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-favicon.el (w3m-setup-favicon): Convert favicon data to an

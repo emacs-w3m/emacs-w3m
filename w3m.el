@@ -719,6 +719,16 @@ of the original request method. -- RFC2616"
   "Face used to fontify underlined part."
   :group 'w3m-face)
 
+(defface w3m-strike-through-face `((t (,@w3m-default-face-colors :strike-through t)))
+  "Face used to fontify strike-through part."
+  :group 'w3m-face)
+
+(defcustom w3m-fontify-strike-through
+  (and (featurep 'w3m-e21) window-system)
+  "*Fontify strike-through part."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-mode-hook nil
   "*Hook run after `w3m-mode' called."
   :group 'w3m
@@ -2463,6 +2473,18 @@ should use `w3m-url-encode-string' instead of this."
 	(w3m-add-text-properties start (match-beginning 0)
 				 '(face w3m-underline-face))))))
 
+(defun w3m-fontify-strike-through ()
+  "Fontify strike-through characters in this buffer which contains half-dumped data."
+  (when w3m-fontify-strike-through
+    (goto-char (point-min))
+    (while (search-forward "[DEL:" nil t)
+      (let ((start (match-beginning 0)))
+	(delete-region start (match-end 0))
+	(when (search-forward ":DEL]" nil t)
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (w3m-add-text-properties start (match-beginning 0)
+				   '(face w3m-strike-through-face)))))))
+
 (defsubst w3m-decode-anchor-string (str)
   ;; FIXME: This is a quite ad-hoc function to process encoded URL
   ;;        string.  More discussion about timing &-sequence decode is
@@ -2931,6 +2953,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 	   (delete-region start (match-end 0))))
     (w3m-fontify-bold)
     (w3m-fontify-underline)
+    (w3m-fontify-strike-through)
     (w3m-fontify-anchors)
     (when w3m-use-form
       (w3m-fontify-forms))
