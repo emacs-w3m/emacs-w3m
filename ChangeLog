@@ -1,3 +1,7 @@
+2002-12-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* doc/Makefile.in: Remove GNU make things.
+
 2002-12-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-makeinfo): Don't format Japanes info if the
