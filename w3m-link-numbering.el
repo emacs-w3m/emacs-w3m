@@ -44,6 +44,12 @@
   :group 'w3m
   :type 'hook)
 
+(defface w3m-link-numbering-face 
+  '((((class color) (background light)) (:foreground "gray60"))
+    (((class color) (background dark)) (:foreground "gray50")))
+  "Face of link number."
+  :group 'w3m-face)
+
 (defvar w3m-link-numbering-mode-map
   (let ((keymap (make-sparse-keymap)))
     (substitute-key-definition 'w3m-view-this-url
@@ -82,9 +88,14 @@
       (let ((i 0))
 	(while (w3m-goto-next-anchor)
 	  (when (w3m-anchor)
-	    (let ((overlay (make-overlay (point) (1+ (point)))))
-	      (overlay-put overlay 'w3m-link-numbering-overlay (incf i))
-	      (overlay-put overlay 'before-string (format "[%d]" i)))))))))
+	    (let ((overlay (make-overlay (point) (1+ (point))))
+		  (num (format "[%d]" (incf i))))
+	      (when (featurep 'w3m-e20)
+		(overlay-put overlay 'face (get-text-property (point) 'face)))
+	      (put-text-property 0 (length num) 'face 'w3m-link-numbering-face num)
+	      (overlay-put overlay 'w3m-link-numbering-overlay i)
+	      (overlay-put overlay 'before-string num)
+	      (overlay-put overlay 'evaporate t))))))))
 
 (defun w3m-view-numbered-link (&optional arg)
   "Display the page pointed to by the specified link."
