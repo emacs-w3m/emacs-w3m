@@ -1,5 +1,9 @@
 2003-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-horizontal-scroll-division): Mega doc fix; eliminate
+	illegal values.
+	(w3m-horizontal-on-screen): Rearrange.
+
 	* shimbun/shimbun.el (shimbun-entity-insert)
 	[shimbun-multipart-entity]: Honor RFC2046 5.1.1 that the boundary
 	delimiter must begin with a line break.

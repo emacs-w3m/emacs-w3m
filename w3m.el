@@ -1269,9 +1269,25 @@ This feature works with the specially made program in emacs-w3m; usual
   :type 'boolean)
 
 (defcustom w3m-horizontal-scroll-division 4
-  "*Division number of horizontal scroll."
+  "*Integer used by the program making the point visible when it is out
+of the window.
+
+Suppose that the value of this variable is N.  When the point is
+outside the left of the window, emacs-w3m scrolls the window so that
+the point may be displayed on the position within 1/N of the width of
+the window from the left.  Similarly, when the point is outside the
+right of the window, emacs-w3m scrolls the window so that the point
+may be displayed on the position of 1/N of the width of the window
+from the right.
+
+This feature doesn't work if `w3m-auto-show' is nil.  The value must
+be a larger integer than 1."
   :group 'w3m
-  :type '(integer :size 0))
+  :type '(integer :size 0)
+  :set (lambda (symbol value)
+	 (set-default symbol (if (and (integerp value) (> value 1))
+				 value
+			       4))))
 
 (defcustom w3m-show-error-information t
   "*Show error information."
@@ -6263,24 +6279,27 @@ commands `w3m-scroll-left', `w3m-scroll-right', `w3m-shift-left' and
 			     (w3m-static-if (featurep 'xemacs) -3 -2))))))))
 
 (defun w3m-horizontal-on-screen ()
-  "Scroll the window horizontally so that the current position is visible."
+  "Scroll the window horizontally so that the current position is visible.
+See the documentation for the `w3m-horizontal-scroll-division' variable
+for details."
   (when w3m-auto-show
     (setq w3m-horizontal-scroll-done t)
-    (let ((hs (w3m-window-hscroll))
+    (let ((cc (w3m-current-column))
+	  (hs (w3m-window-hscroll))
+	  (ww (window-width))
 	  (inhibit-point-motion-hooks t))
-      (unless (and (>= (- (current-column) hs) 0)
-		   (< (+ (- (current-column) hs)
-			 (if (eolp) 0
-			   (w3m-static-if (featurep 'xemacs)
-			       3 2)))	;; '$$'
-		      (window-width)))
+      (unless (and (>= (- cc hs) 0)
+		   (< (+ (- cc hs) (if (eolp)
+				       0
+				     (w3m-static-if (featurep 'xemacs)
+					 3 2)))	;; '$$'
+		      ww))
 	(w3m-set-window-hscroll
 	 (selected-window)
-	 (max 0 (- (current-column)
-		   (if (> (window-hscroll) (w3m-current-column))
-		       (/ (window-width) w3m-horizontal-scroll-division)
-		     (* (/ (window-width) w3m-horizontal-scroll-division)
-			(1- w3m-horizontal-scroll-division))))))))))
+	 (max 0 (- cc (if (> hs cc)
+			  (/ ww w3m-horizontal-scroll-division)
+			(* (/ ww w3m-horizontal-scroll-division)
+			   (1- w3m-horizontal-scroll-division))))))))))
 
 (defun w3m-horizontal-recenter (&optional arg)
   "Recenter horizontally.  With ARG, put the point on the column ARG.
