@@ -168,7 +168,7 @@
   "*Name of the executable file of the w3m command.
 You normally don't have to specify the value, since emacs-w3m looks
 for the existing commands in order of w3m, w3mmee and w3m-m17n in the
-`exec-path' directories in order if it is nil.
+`exec-path' directories in order if it is nil in the beginning.
 
 If you want to use the other w3m command, specify the value of this
 variable explicitly in the .emacs file or customize the value and save
@@ -1735,24 +1735,44 @@ This variable will be made buffer-local.")
 
 (defvar w3m-refresh-timer nil
   "Variable used to keep a timer object for refreshing a page
-according to the REFRESH attribute in a META tag.  It would be made
-buffer-local in each emacs-w3m buffer.")
+according to the value specified by the REFRESH attribute in the META
+tag.  It would be made buffer-local in each emacs-w3m buffer.")
 (make-variable-buffer-local 'w3m-refresh-timer)
 
-(defvar w3m-current-base-url nil "Base URL of this buffer.")
-(defvar w3m-current-forms nil "Forms of this buffer.")
-(defvar w3m-current-coding-system nil "Current coding-system of this buffer.")
-(defvar w3m-current-content-charset nil "Current content-charset of this buffer.")
+(defvar w3m-current-base-url nil
+  "URL specified by the <base...> tag in the <head> element of the current
+page source.")
+(defvar w3m-current-forms nil
+  "Variable used to keep forms data for the current emacs-w3m buffer.")
+(defvar w3m-current-coding-system nil
+  "Coding system used when decoding the current emacs-w3m buffer.")
+(defvar w3m-current-content-charset nil
+  "Content charset of the current page specified by the server
+or the META tag.")
 (defvar w3m-icon-data nil
-  "Cons cell of icon URL and its IMAGE-TYPE of this buffer.")
-(defvar w3m-next-url nil "Next URL of this buffer.")
-(defvar w3m-previous-url nil "Previous URL of this buffer.")
-(defvar w3m-start-url nil "Start URL of this buffer.")
-(defvar w3m-contents-url nil "Table of Contents URL of this buffer.")
-(defvar w3m-max-anchor-sequence nil "Maximum number of anchor sequence on this buffer.")
-(defvar w3m-current-refresh nil "Cons pair of refresh attribute, '(sec . url).")
-(defvar w3m-current-ssl nil "SSL certification indicator.")
-(defvar w3m-current-redirect nil "Redirect location.")
+  "Cons of icon data and its image-type for the current emacs-w3m buffer.
+It is used for favicon data and the type is often `ico'.")
+(defvar w3m-next-url nil
+  "URL as the next document in the author-defined sequence
+of the documents specified by the current page source.")
+(defvar w3m-previous-url nil
+  "URL as the previous document in the author-defined sequence
+of the documents specified by the current page source.")
+(defvar w3m-start-url nil
+  "URL as the first document in the author-defined sequence
+of the documents specified by the current page source.")
+(defvar w3m-contents-url nil
+  "URL as the table of contents for the current page.")
+(defvar w3m-max-anchor-sequence nil
+  "Maximum number of the anchor sequence in the current page.")
+(defvar w3m-current-refresh nil
+  "Cons of the number of seconds and a url specified by the REFRESH
+attribute in the META tag for the current emacs-w3m buffer.")
+(defvar w3m-current-ssl nil
+  "SSL certification indicator for the current emacs-w3m buffer.")
+(defvar w3m-current-redirect nil
+  "Cons of the code number 30* which a server responded and a url
+specifying how emacs-w3m handles the redirection.")
 
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-base-url)
@@ -1819,9 +1839,11 @@ buffer-local in each emacs-w3m buffer.")
 	  w3m-current-ssl ssl
 	  w3m-current-redirect redirect)))
 
-(defvar w3m-verbose t "Flag variable to control messages.")
+(defvar w3m-verbose t
+  "Flag controls whether emacs-w3m should be verbose.")
 
-(defvar w3m-safe-url-regexp nil "Regexp of URLs which point safe contents.")
+(defvar w3m-safe-url-regexp nil
+  "Regexp matching URLs which are considered to be safe.")
 
 (defvar w3m-current-buffer nil)
 (defvar w3m-cache-buffer nil)
@@ -1830,12 +1852,18 @@ buffer-local in each emacs-w3m buffer.")
 (defvar w3m-input-url-history nil)
 
 (defconst w3m-arrived-db-size 1023)
-(defvar w3m-arrived-db nil)		; nil means un-initialized.
+(defvar w3m-arrived-db nil
+  "Hash table, the arrived URLs database.
+The name of each symbol represents a url, the arrived time in the
+Emacs style (a list of three integers) is stored as the value, and
+informations include a title, a modified time, a content charset and a
+content type are stored as the symbol properties.  The nil value means
+it has not been initialized.")
 
 (defvar w3m-arrived-setup-functions nil
-  "Internal functions run at the end of `w3m-arrived-setup'.")
+  "Hook functions run after setting up the arrived URLs database.")
 (defvar w3m-arrived-shutdown-functions nil
-  "Functions run at the end of `w3m-arrived-shutdown'.")
+  "Hook functions run after saving the arrived URLs database.")
 (when (featurep 'w3m-favicon)
   (add-hook 'w3m-arrived-setup-functions 'w3m-favicon-load-cache-file)
   (add-hook 'w3m-arrived-shutdown-functions 'w3m-favicon-save-cache-file))
@@ -1846,12 +1874,12 @@ buffer-local in each emacs-w3m buffer.")
     ("image/png" . png)
     ("image/x-xbm" . xbm)
     ("image/x-xpm" . xpm))
-  "An alist of CONTENT-TYPE and IMAGE-TYPE.")
+  "Alist of content types and image types defined as the Emacs' features.")
 
 (defconst w3m-toolbar-buttons
   '("back" "parent" "forward" "reload" "open" "home" "search" "image"
     "copy" "weather" "antenna" "history" "db-history")
-  "Toolbar button list for w3m.")
+  "List of prefix strings for the toolbar buttons.")
 
 (defconst w3m-toolbar
   (if (equal "Japanese" w3m-language)
@@ -1903,7 +1931,7 @@ buffer-local in each emacs-w3m buffer.")
       [w3m-toolbar-antenna-icon w3m-antenna t "Investigate with Antenna"]
       [w3m-toolbar-history-icon w3m-history t "Show a History"]
       [w3m-toolbar-db-history-icon w3m-db-history t "View Arrived URLs"]))
-  "Toolbar definition for w3m.")
+  "Toolbar definition for emacs-w3m.")
 
 (defconst w3m-menubar
   '("W3M"
@@ -1945,7 +1973,7 @@ buffer-local in each emacs-w3m buffer.")
     ;;
     ["Send a Bug Report" report-emacs-w3m-bug t]
     )
-  "Menubar definition for w3m.")
+  "Menubar definition for emacs-w3m.")
 
 (defvar w3m-cid-retrieve-function-alist nil)
 (defvar w3m-force-redisplay t)
@@ -1959,35 +1987,39 @@ buffer-local in each emacs-w3m buffer.")
     (concat "<meta[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]+"
 	    "content=\"?\\([^;]+\\);[ \t\n]*charset=\\([^\"]+\\)\"?"
 	    "[ \t\n]*/?>"))
-  "Regexp used in parsing `<META HTTP-EQUIV=\"Content-Type\" content=\"...;charset=...\">
-for a charset indication")
+  "Regexp matching the META tag containing the following refresh info:
+
+<META HTTP-EQUIV=\"Content-Type\" content=\"...;charset=...\">")
 
 (defconst w3m-meta-charset-content-type-regexp
   (eval-when-compile
     (concat "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*charset=\\([^\"]+\\)\"?"
 	    "[ \t\n]+http-equiv=\"?Content-type\"?[ \t\n]*/?>"))
-  "Regexp used in parsing `<META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">
-for a charset indication")
+  "Regexp matching the META tag containing the following refresh info:
+
+<META content=\"...;charset=...\" HTTP-EQUIV=\"Content-Type\">")
 
 (defconst w3m-meta-refresh-content-regexp
   (eval-when-compile
     (concat "<meta[ \t\n]+http-equiv=\"?refresh\"?[ \t\n]+"
 	    "content=\"?\\([^;]+\\);[ \t\n]*url=\\([^\"]+\\)\"?"
 	    "[ \t\n]*/?>"))
-  "Regexp used in parsing `<META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">
-for a refresh indication")
+  "Regexp matching the META tag containing the following refresh info:
+
+<META HTTP-EQUIV=\"Refresh\" content=\"n;url=...\">")
 
 (defconst w3m-meta-content-refresh-regexp
   (eval-when-compile
     (concat "<meta[ \t\n]+content=\"?\\([^;]+\\);[ \t\n]*url=\\([^\"]+\\)\"?"
 	    "[ \t\n]+http-equiv=\"?refresh\"?[ \t\n]*/?>"))
-  "Regexp used in parsing `<META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">
-for a refresh indication")
+  "Regexp matching the META tag containing the following refresh info:
+
+<META content=\"n;url=...\" HTTP-EQUIV=\"Refresh\">")
 
 (eval-and-compile
   (defconst w3m-html-string-regexp
     "\\(\"\\([^\"]+\\)\"\\|'\\([^\']+\\)'\\|[^\"\'<> \t\r\f\n]*\\)"
-    "Regexp used in parsing to detect string."))
+    "Regexp matching a string of the field-value like `<a href=\"VALUE\">'."))
 
 (defconst w3m-dump-head-source-command-arguments
   (cond ((eq w3m-type 'w3mmee)
@@ -1999,10 +2031,11 @@ for a refresh indication")
 		 (concat "accept_language="
 			 (mapconcat 'identity w3m-accept-languages " "))))
 	  "-dump_extra")))
-  "Arguments for 'dump_extra' execution of w3m.")
+  "Arguments passed to the w3m command to run \"dump_extra\".")
 
 (defvar w3m-halfdump-command nil
-  "Name of the executable file of w3m.  If nil use `w3m-command'.")
+  "The alternative w3m command to run \"halfdump\".
+If it is nil, the command specified to `w3m-command' is used.")
 
 (defconst w3m-halfdump-command-arguments
   (cond ((eq w3m-type 'w3mmee)
@@ -2024,7 +2057,7 @@ for a refresh indication")
 	((eq w3m-input-coding-system 'w3m-euc-japan)
 	 (list "-halfdump" "-I" "e"))
 	(t (list "-halfdump")))
-  "Arguments for 'halfdump' execution of w3m.")
+  "Arguments passed to the w3m command to run \"halfdump\".")
 
 (defconst w3m-halfdump-command-common-arguments
   '("-T" "text/html" "-t" tab-width "-cols" (w3m-display-width))
@@ -6381,6 +6414,7 @@ appropriate buffer and select it."
     (set-buffer (get-buffer-create "*w3m*"))
     (unless (eq major-mode 'w3m-mode)
       (w3m-mode)))
+  ;; It may have been set to nil for viewing a page source or a header.
   (setq truncate-lines t)
   (w3m-add-local-hook 'pre-command-hook 'w3m-store-current-position)
   (w3m-add-local-hook 'post-command-hook 'w3m-check-current-position)
