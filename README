@@ -2,7 +2,7 @@ This package contains a interface program of w3m.
 
 1. Introduction
 
-   w3m is a a pager with WWW capability, developped by Akinori ITO.  It
+   w3m is a a pager with WWW capability, developed by Akinori ITO.  It
    is a pager, but it can be used as a text-mode WWW browser.  For more
    detail about it, see:
 
@@ -23,8 +23,8 @@ This package contains a interface program of w3m.
 
           (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
 
-   d) If you want to use contributed programes, some additional settings
-      are requied.  Please see the head of those programs for more
+   d) If you want to use contributed programs, some additional settings
+      are required.  Please see the head of those programs for more
       detail.
 
 
@@ -48,8 +48,8 @@ This package contains a interface program of w3m.
    (3) w3m-0.1.11-pre + w3m-0.1.11-pre-kokb23.patch.gz
 
        Okabe Katsuya maintains his private patch of w3m, which fixes
-       many bugs and addes many features.  This version of w3m has no
-       problem to corpolate with w3m.el.
+       many bugs and added many features.  This version of w3m has no
+       problem to corporate with w3m.el.
 
    Therefore, you should use the 3rd candidate of w3m, whose sources can
    be downloaded from:
