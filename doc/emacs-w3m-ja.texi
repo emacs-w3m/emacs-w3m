@@ -1,4 +1,4 @@
-\input texinfo @c -*-texinfo -*- coding: iso-2022-jp -*-
+\input texinfo @c -*- mode: texinfo; coding: iso-2022-7bit -*-
 @c %**start of header
 @setfilename emacs-w3m-ja.info
 @settitle Emacs-w3m -- an Emacs interface to w3m --
@@ -3631,6 +3631,21 @@ XEmacs 21.1 では SHIFT_JIS のページが化けることがあります。また、XEm
 は XEmacs をアップグレードして下さい。
 
 XEmacs 21.1 と 21.2 は、すでに公式にお役御免になったことを認識して下さい。
+
+@item
+@code{standard-display-european} を使わないで下さい
+
+それは概して有害です。例えば、文字 @samp{,A4} (本当は @samp{&#8217} の表
+現) を、文字 @samp{,Ay} (@samp{&#249}) で表してしまうように、それはしばし
+ば Latin 文字を正しく表示させません。あなたの @file{~/.emacs} ファ
+イルか、Emacs が起動時に読み込む site ファイルに、何か以下のよ
+うな行があるならば、それを取り除くことを強く勧めます。
+
+@lisp
+(standard-display-european 1)
+@end lisp
+
+そこでは、引数は @code{1} ではなくて @code{t} かもしれません。
 @end enumerate
 
 @item
