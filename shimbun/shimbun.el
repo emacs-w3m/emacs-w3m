@@ -216,7 +216,7 @@ If article have inline images, generated article have a multipart/related
 content-type if `shimbun-encapsulate-article' is non-nil."
   (let ((case-fold-search t)
 	(count 0)
-	url type imgs boundary charset)
+	url type img imgs boundary charset)
     (current-buffer)
     (setq charset
 	  (upcase (symbol-name
@@ -226,18 +226,23 @@ content-type if `shimbun-encapsulate-article' is non-nil."
       (while (re-search-forward "<img +src=\"\\([^\"]*\\)\"" nil t)
 	(save-match-data
 	  (setq url (match-string 1))
-	  (setq imgs (cons (list (concat (format "shimbun.%d" (incf count)))
-				 (with-temp-buffer
-				   (set-buffer-multibyte nil)
-				   (setq type (shimbun-retrieve-url
-					       (shimbun-expand-url
-						url
-						(shimbun-header-xref header))
-					       'no-cache 'no-decode))
-				   (buffer-string))
-				 type)
-			   imgs)))
-	(replace-match (concat "<img src=\"cid:" (car (car imgs)) "\"")))
+	  (unless (setq img (assoc url imgs))
+	    (setq imgs (cons (setq img (list
+					url
+					(concat (format "shimbun.%d"
+							(incf count)))
+					(with-temp-buffer
+					  (set-buffer-multibyte nil)
+					  (setq type
+						(shimbun-retrieve-url
+						 (shimbun-expand-url
+						  url
+						  (shimbun-header-xref header))
+						 'no-cache 'no-decode))
+					  (buffer-string))
+					type))
+			     imgs))))
+	(replace-match (concat "<img src=\"cid:" (nth 1 img) "\"")))
       (setq imgs (nreverse imgs)))
     (goto-char (point-min))
     (shimbun-header-insert shimbun header)
@@ -246,9 +251,11 @@ content-type if `shimbun-encapsulate-article' is non-nil."
 	  (setq boundary (apply 'format "===shimbun_%d_%d_%d==="
 				(current-time)))
 	  (insert "Content-Type: multipart/related; type=\"text/html\"; "
-		  "boundary=\"" boundary "\"\nMIME-Version: 1.0\n\n"
+		  "boundary=\"" boundary "\"; start=\"<shimbun.0>\""
+		  "\nMIME-Version: 1.0\n\n"
 		  "--" boundary
-		  "\nContent-Type: text/html; charset=" charset "\n\n"))
+		  "\nContent-Type: text/html; charset=" charset
+		  "\nContent-ID: <shimbun.0>\n\n"))
       (insert "Content-Type: text/html; charset=" charset "\n"
 	      "MIME-Version: 1.0\n\n"))
     (encode-coding-region (point-min) (point-max)
@@ -257,12 +264,12 @@ content-type if `shimbun-encapsulate-article' is non-nil."
     (dolist (img imgs)
       (unless (eq (char-before) ?\n) (insert "\n"))
       (insert "--" boundary "\n"
-	      "Content-Type: " (or (nth 2 img) "application/octed-stream")
+	      "Content-Type: " (or (nth 3 img) "application/octed-stream")
 	      "\nContent-Disposition: inline"
-	      "\nContent-ID: <" (car img) ">"
+	      "\nContent-ID: <" (nth 1 img) ">"
 	      "\nContent-Transfer-Encoding: base64"
 	      "\n\n"
-	      (shimbun-base64-encode-string (nth 1 img))))
+	      (shimbun-base64-encode-string (nth 2 img))))
     (when imgs
       (unless (eq (char-before) ?\n) (insert "\n"))
       (insert "--" boundary "--\n"))))

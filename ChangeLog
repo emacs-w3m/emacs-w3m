@@ -3,9 +3,11 @@
 	* shimbun/shimbun.el (shimbun-retrieve-url): Return content-type.
 	(shimbun-suffix-content-type-alist): Abolish.
 	(shimbun-encapsulate-article): Fixed docstring.
-	(shimbun-make-mime-article): Added docstring.
-	(shimbun-make-mime-article): Use return value of
-	`shimbun-retrieve-url'.
+	(shimbun-make-mime-article): Added docstring;
+	Use return value of `shimbun-retrieve-url';
+	Set start parameter for multipart/related;
+	If same image is used multiple time in the article, reuse its
+	content-id.
 
 2001-06-11  Yuuichi Teranishi  <teranisi@gohome.org>
 
