@@ -1,3 +1,8 @@
+2003-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-savannah.el (shimbun-savannah-reverse-flag): New var.
+	(shimbun-savannah-get-headers): Don't use `nreverse'; modify id.
+
 2003-01-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-savannah.el: Change it to be based on MHonArc.
