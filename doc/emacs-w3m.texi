@@ -17,7 +17,7 @@
 @ifinfo
 This file documents emacs-w3m, an Emacs interface to w3m.
 
-Copyright @copyright{} 2000, 2001, 2002 @w{TSUCHIYA Masatoshi}.
+Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}.
 
 This edition is for emacs-w3m version @value{VERSION}.
 
@@ -48,7 +48,7 @@ license to the document, as described in section 6 of the license.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000, 2001, 2002 @w{TSUCHIYA Masatoshi}.
+Copyright @copyright{} 2000, 2001, 2002, 2003 @w{TSUCHIYA Masatoshi}.
 
 This manual corresponds to emacs-w3m version @value{VERSION}.
 
@@ -701,9 +701,9 @@ be familiar to you if you already use Gnus or Mew (@code{w3m-goto-url}).
 
 @item c
 @kindex c
-@findex w3m-print-this-url
+@findex w3m-print-current-url
 Display the URL of the page being displayed in the echo area and put it
-into the @code{kill-ring} (@code{w3m-print-this-url}).
+into the @code{kill-ring} (@code{w3m-print-current-url}).
 
 @item u
 @kindex u
@@ -1032,7 +1032,6 @@ new page, the history is copied over to the new buffer, so that you can
 still access the pages you visited so far.  This is different from the
 way Mozilla and others work; in these browsers the history always starts
 from scratch in new buffers.
-
 
 The other way to have information about past pages is the ``arrived
 URLs'' list: it is a list of the last 500 URLs you have visited in
