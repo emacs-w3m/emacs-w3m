@@ -188,9 +188,10 @@ width using expression (+ (frame-width) VALUE)."
 
 (defun w3m-url-to-file-name (url)
   "Return the file name which is pointed by URL."
-  ;; Remove scheme part and net_loc part.
-  (when (string-match "^file://" url)
-    (setq url (substring url (match-end 0))))
+  ;; Remove scheme part and net_loc part.  NOTE: This function accepts
+  ;; only urls whose net_loc part is empty or NULL string.
+  (when (string-match "^\\(file:\\(//\\)?\\)/" url)
+    (setq url (substring url (match-end 1))))
   ;; Process abs_path part in Windows.
   (when (string-match "^/\\(\\([A-z]\\)[|:]?\\|cygdrive/\\([A-z]\\)\\)/" url)
     (setq url (concat
@@ -2255,9 +2256,10 @@ or prefix ARG columns."
 	(setq buffer-read-only t)
 	(set-buffer-modified-p nil))
       (setq default-directory
-	    (if (w3m-url-local-p url)
-		(file-name-directory (w3m-url-to-file-name url))
-	      w3m-profile-directory))
+	    (file-name-as-directory
+	     (if (w3m-url-local-p url)
+		 (file-name-directory (w3m-url-to-file-name url))
+	       w3m-profile-directory)))
       (w3m-arrived-put-title url w3m-current-title)
       (w3m-arrived-put-arrived-time url)
       (switch-to-buffer (current-buffer))))))

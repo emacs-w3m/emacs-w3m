@@ -1,3 +1,10 @@
+2001-03-22  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-url-to-file-name): Fix bug reported in
+	[emacs-w3m:00305].
+	(w3m-goto-url): Set the value interpreted as a directory to
+	`default-directory'.
+
 2001-03-21  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-about-db-history): Use w3m-arrived-arrived-time().
