@@ -1,3 +1,8 @@
+2001-04-12  Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-airs.el (shimbun-get-headers): Stop when
+	`shimbun-search-id' returns non-nil.
+
 2001-04-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-about-db-history): Change the format on display.
