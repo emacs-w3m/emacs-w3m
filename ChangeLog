@@ -1,3 +1,8 @@
+2003-11-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_ADD_LOAD_PATH): Refine the help message for the
+	--with-attic option.
+
 2003-11-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-buffer-setup): Make sure that `truncate-lines' is t.

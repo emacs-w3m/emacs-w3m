@@ -210,7 +210,8 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
       AC_MSG_RESULT(${ADDITIONAL_LOAD_PATH})],
     ADDITIONAL_LOAD_PATH=NONE)
   AC_ARG_WITH(attic,
-   [  --with-attic            install attic libraries (default: No)],
+   [  --with-attic            use attic libraries for compiling [default: no]
+                          (it does not mean installing attic libraries)],
    [if test "x${withval}" = xyes; then
       if test x"$ADDITIONAL_LOAD_PATH" = xNONE; then
         ADDITIONAL_LOAD_PATH=`pwd`/attic
