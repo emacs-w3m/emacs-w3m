@@ -17,7 +17,7 @@ This package contains a interface program of w3m.
       please install it in the first step.
       In addition, if you are using XEmacs 21.2.20 or later, to use
       the program "gifsicle" is recommended (it is not always needed,
-      except for showing unoptimized animated gif images).  It is
+      except for showing optimized animated gif images).  It is
       available from:
 
           http://www.lcdf.org/gifsicle/
