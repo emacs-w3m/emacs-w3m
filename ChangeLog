@@ -1,3 +1,16 @@
+2003-08-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-previous-position): New macro.
+	(w3m-history-next-position): New macro.
+	(w3m-history-forward-1): Simplified using new macro(s).
+	(w3m-history-backward-1): Ditto.
+	(w3m-history-regenerate-pointers): Ditto.
+	(w3m-history-assoc): Ditto.
+	(w3m-history-current-1): Don't use old-fashioned backquotes.
+	(w3m-history-save-position): Ditto.
+	(w3m-history-modify-properties): Ditto.
+	(w3m-history-with-element): Ditto.
+
 2003-08-10  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-namazu.el (w3m-about-namazu): Fixed problem when further links
