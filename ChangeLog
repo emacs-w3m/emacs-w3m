@@ -1,5 +1,8 @@
 2001-04-04  Yuuichi Teranishi  <teranisi@gohome.org>
 
+	* shimbun/sb-mhonarc.el (shimbun-make-contents):
+	Process content as text/html.
+
 	* shimbun/shimbun.el (shimbun): Added `x-face-alist' slot.
 	(shimbun-x-face-alist): Eliminated.
 	(shimbun-x-face): New variable.
