@@ -1,3 +1,15 @@
+2005-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yahoo.el (shimbun-get-headers): Leave garbages around
+	headers.
+
+	* shimbun/sb-atmarkit.el (shimbun-atmarkit-use-base-url): New var.
+	(shimbun-article-url): Switch the return value to the base url and
+	the printing url according to shimbun-atmarkit-use-base-url.
+	(shimbun-make-contents): Make shimbun-article-url return the base
+	url rather than the printing url because links in the print page
+	are relative to it.
+
 2005-03-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-make-help-echo): Fix the backquote form.

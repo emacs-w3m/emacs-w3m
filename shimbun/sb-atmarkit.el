@@ -85,8 +85,23 @@
   (format "<%s%%%s@atmarkit.co.jp>" (match-string-no-properties 1 url)
 	  (shimbun-current-group-internal shimbun)))
 
-(luna-define-method shimbun-article-url ((shimbun shimbun-atmarkit) header)
-  "http://www.atmarkit.co.jp/club/print/print.php")
+(defvar shimbun-atmarkit-use-base-url nil
+  "Non-nil means make `shimbun-article-url' return a base url.")
+
+(luna-define-method shimbun-article-url :around ((shimbun shimbun-atmarkit)
+						 header)
+  ;; Switch the return value to the base url and the printing url
+  ;; according to `shimbun-atmarkit-use-base-url'.
+  (if shimbun-atmarkit-use-base-url
+      (luna-call-next-method)
+    "http://www.atmarkit.co.jp/club/print/print.php"))
+
+(luna-define-method shimbun-make-contents :around ((shimbun shimbun-atmarkit)
+						   header)
+  ;; Make `shimbun-article-url' return the base url rather than the
+  ;; printing url because links in the print page are relative to it.
+  (let ((shimbun-atmarkit-use-base-url t))
+    (luna-call-next-method)))
 
 (luna-define-method shimbun-clear-contents :before ((shimbun shimbun-atmarkit)
 						    header)
