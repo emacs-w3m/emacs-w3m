@@ -34,11 +34,22 @@
 
    The following w3m versions have been checked for emacs-w3m support:
 
+        w3m-0.2.1 (limited functionality)
 	w3m-0.2.1-inu-1.3
 	w3mmee-p19-6
 	w3m-m17n-0.19 + w3m-m17n-mnc.patch
 
 * Troubleshooting
+
+** Q. Why doesn't it traverse links?
+
+   w3m-0.2.1 does not accept the argument `-dump_extra', so that
+   emacs-w3m cannot detect redirected link.  Therefore, if you are using
+   this version, there will be some links which cannot properly
+   traversed.  Dai SATO has released a highly recommended patch for w3m
+   (w3m-0.2.1-inu-patch) which is available from the following URL.
+
+       http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/src/index.en.html
 
 ** Q. Why can't I enter a password on pages which require authentication?
 
@@ -49,11 +60,6 @@
 
    Check if the option variable w3m-async-exe is set to a value
    other than nil.
-
-** Q. Why doesn't it traverse links?
-
-   The development version of emacs-w3m requires a w3m that understands
-   the argument `-header'.  Check the version of your using w3m.
 
 ** Q. Why do garbage characters appear?
 
@@ -84,28 +90,45 @@
            variable `w3m-command' to the appropriate value.  If this is
            set, emacs-w3m will use the programs' multilanguage features.
 
-   (3) Emacsen incompatibility.
+   (3) Compressed content.
+
+       To reduce network bandwidth usage, sometimes the http data stream
+       is compressed (i.e, http://freshmeat.net).  To peruse these kinds
+       of pages, use either a w3m patched with Dai SATO's publically
+       available w3m-0.2.1-inu-patch, either w3mmee-p19-3 or
+       greater. You can find the patch in this page:
+
+           http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/src/index.en.html
+
+       If you use w3m-m17n, it is necessary to apply
+       patches/w3m-m17n-mnc.patch.
+
+   (4) Emacsen incompatibility.
 
        Regarding XEmacs-21.2, there is a problem with previous versions
-       up to beta36.  If you use those versions, it is recommended that
+       up to beta36. If you use those versions, it is recommended that
        you upgrade.
 
 ** Q. Why does graphics not show up?
 
    It could be caused by the following:
 
-   Depending on the version of libungif in Emacs-21, GIF graphics may or
-   may not render correctly.  If you are using libungif-4.1.0b1 or
-   earlier, it is recommend you upgrade that library.
+   (1) Incompatible w3m version.
 
-   For XEmacs, install the "gifsicle" program.  Within
-   emacs-w3m-supported XEmacs 21.x, there is a bug which can be
-   countered by using this program. (Refer to the README, section 2
-   "Install")
+       Versions before w3m-0.1.11pre is not supported by emacs-w3m.  It
+       is required that you upgrade w3m.
 
-   If you use versions prior to w3m-0.2.1, graphics are not rendered
-   correctly.  If you use those versions, it is recommended that you
-   upgrade.
+   (2) Incompatible Emacsen.
+
+       Depending on the version of libungif in Emacs-21, GIF graphics
+       may or may not render correctly.  If you are using
+       libungif-4.1.0b1 or earlier, it is recommend you upgrade that
+       library.
+
+       For XEmacs, install the "gifsicle" program.  Within
+       emacs-w3m-supported XEmacs 21.x, there is a bug which can be
+       countered by using this program. (Refer to the README, section 2
+       "Install")
 
 ** Q. Why does inputting into a form not work?
 
@@ -122,7 +145,14 @@
    than nil.
 
    If you use this functionality, you will need to use a w3m that
-   understands the `-post' option.  Check the version of your using w3m.
+   understands the `-post' option.  Also, you will need to use either a
+   w3m patched with Dai SATO's publically available w3m-0.2.1-inu-patch,
+   or w3mmee-p19-6 or greater.  For the w3m-0.2.1-inu-patch, check the
+   following page.
+
+       http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/src/index.en.html
+
+   If you use w3m-m17n, apply the patches/w3m-m17n-mnc.patch.
 
 ** Q. Why do frames not render?
 
