@@ -1563,61 +1563,6 @@ If N is negative, last N items of LIST is returned."
 	 w3m-coding-system
 	 'iso-2022-7bit))))
 
-(put 'w3m-parse-attributes 'lisp-indent-function '1)
-(def-edebug-spec w3m-parse-attributes
-  ((&rest &or (symbolp &optional symbolp) symbolp) body))
-(defmacro w3m-parse-attributes (attributes &rest form)
-  (` (let ((,@ (mapcar
-		(lambda (attr)
-		  (if (listp attr) (car attr) attr))
-		attributes)))
-       (skip-chars-forward " \t\r\f\n")
-       (while
-	   (cond
-	    (,@ (mapcar
-		 (lambda (attr)
-		   (or (symbolp attr)
-		       (and (listp attr)
-			    (<= (length attr) 2)
-			    (symbolp (car attr)))
-		       (error "Internal error, type mismatch"))
-		   (let ((sexp (quote
-				(w3m-remove-redundant-spaces
-				 (or (match-string-no-properties 2)
-				     (match-string-no-properties 3)
-				     (match-string-no-properties 1)))))
-			 type)
-		     (when (listp attr)
-		       (setq type (nth 1 attr))
-		       (cond
-			((eq type :case-ignore)
-			 (setq sexp (list 'downcase sexp)))
-			((eq type :integer)
-			 (setq sexp (list 'string-to-number sexp)))
-			((eq type :bool)
-			 (setq sexp t))
-			((eq type :decode-entity)
-			 (setq sexp (list 'w3m-decode-entities-string sexp)))
-			((nth 1 attr)
-			 (error "Internal error, unknown modifier")))
-		       (setq attr (car attr)))
-		     (` ((looking-at
-			  (, (if (eq type :bool)
-				 (symbol-name attr)
-			       (format "%s[ \t\r\f\n]*=[ \t\r\f\n]*%s"
-				       (symbol-name attr)
-				       w3m-html-string-regexp))))
-			 (setq (, attr) (, sexp))))))
-		 attributes))
-	    ((looking-at
-	      (, (concat "[A-Za-z]*[ \t\r\f\n]*=[ \t\r\f\n]*" w3m-html-string-regexp))))
-	    ((looking-at "[^<> \t\r\f\n]+")))
-	 (goto-char (match-end 0))
-	 (skip-chars-forward " \t\r\f\n"))
-       (skip-chars-forward "^>")
-       (forward-char)
-       (,@ form))))
-
 
 ;;; HTML character entity handling:
 (defun w3m-entity-db-setup ()

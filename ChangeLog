@@ -1,5 +1,10 @@
 2001-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-parse-attributes): Moved it again to w3m-macro.el.
+	* w3m-macro.el: The opposite of above.
+
+2001-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el: Moved back some macros and inline functions from
 	w3m-macro.el.
 
