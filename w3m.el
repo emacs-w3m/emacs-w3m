@@ -1232,7 +1232,8 @@ text.  See also `w3m-use-tab'."
 If it is non-nil and there are already emacs-w3m buffers, the `w3m'
 command makes a new emacs-w3m buffer if a user specifies a url string
 in the minibuffer, and the `w3m-safe-view-this-url' command also makes
-a new buffer at any rate."
+a new buffer if a user invokes it in a buffer not being running the
+`w3m-mode'."
   :group 'w3m
   :type 'boolean)
 
@@ -8265,14 +8266,16 @@ Note that this command depends on the value of `w3m-safe-url-regexp'
 mind that there may be pages which cause security problems.
 
 This command makes a new emacs-w3m buffer if `w3m-make-new-session' is
-non-nil, otherwise use an existing emacs-w3m buffer."
+non-nil and a user invokes this command in a buffer not being running
+the `w3m-mode', otherwise use an existing emacs-w3m buffer."
   (interactive)
   (let ((w3m-pop-up-windows nil)
 	(url (w3m-url-valid (w3m-anchor))))
     (cond
      (url (or (when (fboundp w3m-goto-article-function)
 		(funcall w3m-goto-article-function url))
-	      (if w3m-make-new-session
+	      (if (and w3m-make-new-session
+		       (not (eq major-mode 'w3m-mode)))
 		  (w3m-goto-url-new-session url)
 		(w3m-goto-url url))))
      ((w3m-url-valid (w3m-image))
