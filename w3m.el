@@ -1987,10 +1987,8 @@ with ^ as `cat -v' does."
 	  (when (re-search-forward "[<\n]" nil t)
 	    (goto-char (setq end (match-beginning 0)))
 	    (when (= start end)
-	      (setq end (min (if (looking-at "\\(<[^>]*>\\)+")
-				 (1+ (match-end 0))
-			       (1+ end))
-			     (point-max))))
+	      (setq start (max (- start 1)
+			       (point-min))))
 	    (w3m-add-text-properties start end
 				     (list 'w3m-name-anchor name)))))))
     (when w3m-icon-data
@@ -4296,6 +4294,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "C" 'w3m-redisplay-with-charset)
     (define-key map "?" 'describe-mode)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
+    (define-key map "\M-k" 'w3m-cookie)
     (define-key map "a" 'w3m-bookmark-add-current-url)
     (define-key map "+" 'w3m-antenna-add-current-url)
     (define-key map "]" 'w3m-next-form)
@@ -4378,6 +4377,7 @@ If EMPTY is non-nil, the created buffer has empty content."
     (define-key map "n" 'w3m-view-next-page)
     (define-key map "N" 'w3m-namazu)
     (define-key map "\M-n" 'w3m-copy-buffer)
+    (define-key map "\M-k" 'w3m-cookie)
     (define-key map "\C-c\C-t" 'w3m-copy-buffer)
     (define-key map "\C-c\C-p" 'w3m-previous-buffer)
     (define-key map "\C-c\C-n" 'w3m-next-buffer)
