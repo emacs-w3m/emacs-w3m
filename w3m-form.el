@@ -614,7 +614,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	      (if (eq w3m-type 'w3mmee)
 		  (w3m-form-put form id name
 				(w3m-form-mee-select-value value))
-		(setq selects (cons (list selectnumber form name)
+		(setq selects (cons (list selectnumber form id name)
 				    selects)))
 	      (add-text-properties
 	       start end
@@ -717,8 +717,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		    (skip-chars-forward ">\n")))
 		(setq candidates (nreverse candidates))
 		(w3m-form-put (nth 0 selectinfo)
-			      id
 			      (nth 1 selectinfo)
+			      (nth 2 selectinfo)
 			      (cons (or current ; current value
 					(caar candidates))
 				    candidates))))))

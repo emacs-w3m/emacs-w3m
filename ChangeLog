@@ -23,6 +23,7 @@
 	(w3m-form-input-select-id): New buffer local variable.
 	(w3m-form-input-select-set): Use it.
 	(w3m-form-field-parse): New inline function.
+	(w3m-form-parse-and-fontify): Put id for selectinfo.
 
 2003-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
