@@ -1,3 +1,10 @@
+2002-02-08  Yuuichi Teranishi  <teranisi@gohome.org>
+
+	* w3m.el (w3m-pixels-per-line): Renamed from w3m-pixel-per-line;
+	Fixed custom type.
+	(w3m-pixels-per-character): Likewise.
+	(w3m-rendering-half-dump): Follow the changes above.
+
 2002-02-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-type): Considerd as an internal variable.

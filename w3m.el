@@ -244,24 +244,26 @@ width using expression (+ (window-width) VALUE)."
 
 (defcustom w3m-treat-image-size (and (member "image" w3m-compile-options) t)
   "*Non-nil means to let the w3m HTML rendering be conscious of image size.
-`w3m-pixel-per-character' is used for the `-ppc' argument of the w3m command.
-`w3m-pixel-per-line' is used for the `-ppl' argument of the w3m command."
+`w3m-pixels-per-character' is used for the `-ppc' argument of the w3m command.
+`w3m-pixels-per-line' is used for the `-ppl' argument of the w3m command."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-pixel-per-line 64
+(defcustom w3m-pixels-per-line 64
   "*This value is used for the `-ppl' argument of the w3m command.
 If nil, the height of the default face font is used.
 It is valid only when `w3m-treat-image-size' is non-nil."
   :group 'w3m
-  :type 'boolean)
+  :type '(choice (const :tag "Auto Detect" nil)
+		 (integer :tag "Specify Pixels")))
 
-(defcustom w3m-pixel-per-character nil
+(defcustom w3m-pixels-per-character nil
   "*This value is used for the `-ppc' argument of the w3m command.
 If nil, the width of the default face font is used.
 It is valid only when `w3m-treat-image-size' is non-nil."
   :group 'w3m
-  :type 'boolean)
+  :type '(choice (const :tag "Auto Detect" nil)
+		 (integer :tag "Specify Pixels")))
 
 (defvar w3m-accept-japanese-characters
   (and (featurep 'mule)
@@ -3165,7 +3167,7 @@ type as a string argument, when retrieve is complete."
 			       (when (w3m-display-graphic-p)
 				 (list "-ppl"
 				       (number-to-string 
-					(or w3m-pixel-per-line
+					(or w3m-pixels-per-line
 					    (w3m-static-if
 						(featurep 'xemacs)
 						(font-height
@@ -3173,7 +3175,7 @@ type as a string argument, when retrieve is complete."
 					      (frame-char-height))))
 				       "-ppc" 
 				       (number-to-string
-					(or w3m-pixel-per-character
+					(or w3m-pixels-per-character
 					    (w3m-static-if
 						(featurep 'xemacs)
 						(font-width
