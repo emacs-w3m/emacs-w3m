@@ -234,18 +234,18 @@ argument."
 			    w3m-namazu-default-index))
 	       (s (completing-read
 		   (if default
-		       (format "Index (default %s): " default)
-		     "Index: ")
+		       (format "Namazu Index (default %s): " default)
+		     "Namazu Index: ")
 		   'w3m-namazu-complete-index nil t nil
 		   'w3m-namazu-index-history)))
 	  (if (string= s "") default s))
       (or w3m-namazu-default-index
 	  (car w3m-namazu-index-history)))
-    (read-string "Query: " nil 'w3m-namazu-query-history)))
+    (read-string "Namazu Query: " nil 'w3m-namazu-query-history)))
   (unless (stringp index)
-    (error "Index is required"))
+    (error "%s" "Index is required"))
   (unless (stringp query)
-    (error "Query is required"))
+    (error "%s" "Query is required"))
   (w3m-goto-url (format "about://namazu/?index=%s&query=%s&whence=0"
 			(w3m-url-encode-string index)
 			(w3m-url-encode-string query))))

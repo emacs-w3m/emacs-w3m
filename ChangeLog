@@ -1,3 +1,24 @@
+2002-11-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-namazu.el (w3m-namazu): Change prompt.
+	(w3m-namazu): Change prompt; Small fix.
+
+	* w3m-bookmark.el: Experimental bookmark editer.
+	(w3m-bookmark-read-file): Removed.
+	(w3m-bookmark-buffer): New function.
+	(w3m-bookmark-sections): Use it.
+	(w3m-bookmark-write-file): Use it; Call `basic-save-buffer'.
+	(w3m-bookmark-view): View about://bookmark/ instead of
+	w3m-bookmark-file directly.
+	(w3m-about-bookmark, w3m-bookmark-current-number)
+	(w3m-bookmark-kill-entry, w3m-bookmark-kill-entries)
+	(w3m-bookmark-undo): New functions.
+	(w3m-bookmark-mode, w3m-bookmark-mode-map): New variables.
+	(w3m-bookmark-mode-hook): New hook.
+	(w3m-bookmark-mode): New minor mode.
+	(w3m-bookmark-mode-setter): New function.
+	(toplevel): Register it to `w3m-display-functions'.
+
 2002-10-31  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el: Fix comment.

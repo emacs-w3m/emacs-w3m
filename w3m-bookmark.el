@@ -79,18 +79,23 @@
 (defvar w3m-bookmark-title-history nil)
 
 
-(defsubst w3m-bookmark-read-file ()
-  "Insert contents of bookmark file to this buffer."
-  (when (file-readable-p w3m-bookmark-file)
-    (let ((file-coding-system-for-read w3m-bookmark-file-coding-system)
-	  (coding-system-for-read w3m-bookmark-file-coding-system))
-      (insert-file-contents w3m-bookmark-file))))
+(defun w3m-bookmark-buffer (&optional no-verify-modtime)
+  (with-current-buffer (w3m-get-buffer-create " *w3m bookmark*")
+    (unless (and (buffer-file-name)
+		 (or no-verify-modtime
+		     (verify-visited-file-modtime (current-buffer))))
+      (erase-buffer)
+      (when (file-readable-p w3m-bookmark-file)
+	(let ((file-coding-system-for-read w3m-bookmark-file-coding-system)
+	      (coding-system-for-read w3m-bookmark-file-coding-system))
+	  (insert-file-contents w3m-bookmark-file t)))
+      (buffer-enable-undo (current-buffer)))
+    (current-buffer)))
 
 (defun w3m-bookmark-sections ()
   "Return collection of registered sections."
   (let (sections)
-    (with-temp-buffer
-      (w3m-bookmark-read-file)
+    (with-current-buffer (w3m-bookmark-buffer)
       (goto-char (point-min))
       (while (search-forward "<h2>" nil t)
 	(push (cons (buffer-substring (point)
@@ -105,12 +110,12 @@
 
 (defun w3m-bookmark-write-file (url title section)
   "Make new bookmark with specified spec, and save it."
-  (with-temp-buffer
-    (w3m-bookmark-read-file)
+  (with-current-buffer (w3m-bookmark-buffer)
     (if (zerop (buffer-size))
 	;; New bookmark file.
 	(insert (format w3m-bookmark-initial-format
 			section url title))
+      (goto-char (point-min))
       (if (search-forward (format "<h2>%s</h2>" section) nil t)
 	  (progn
 	    (unless (search-forward w3m-bookmark-section-delimiter nil t)
@@ -123,17 +128,7 @@
 	(goto-char (match-beginning 0))
 	(insert (format w3m-bookmark-section-format
 			section url title))))
-    (let ((file-coding-system w3m-bookmark-file-coding-system)
-	  (coding-system-for-write w3m-bookmark-file-coding-system)
-	  (mode (and (file-exists-p w3m-bookmark-file)
-		     (file-modes w3m-bookmark-file))))
-      ;; Make backup.
-      (when (file-exists-p w3m-bookmark-file)
-	(rename-file w3m-bookmark-file
-		     (make-backup-file-name w3m-bookmark-file)
-		     t))
-      (write-region (point-min) (point-max) w3m-bookmark-file)
-      (when mode (set-file-modes w3m-bookmark-file mode)))))
+    (basic-save-buffer)))
 
 (defun w3m-bookmark-add (url &optional title)
   "Add URL to bookmark.
@@ -147,10 +142,10 @@ Optional argument TITLE is title of link."
     (and (string= section "")
 	 (setq section w3m-bookmark-default-section))
     (if (string-match section "^ *$")
-	(error "You must specify section name"))
+	(error "%s" "You must specify section name"))
     (setq title (read-string "Title: " title 'w3m-bookmark-title-history))
     (if (string-match title "^ *$")
-	(error "You must specify title"))
+	(error "%s" "You must specify title"))
     (w3m-bookmark-write-file url title section)))
 
 ;;;###autoload
@@ -175,10 +170,11 @@ With prefix, ask new url to add instead of current page."
 		    w3m-current-title)
   (message "Added"))
 
+;;;###autoload
 (defun w3m-bookmark-add-current-url-group ()
   "Add link of the group of current urls to the bookmark."
   (interactive)
-  (w3m-bookmark-add 
+  (w3m-bookmark-add
    (concat "group:"
 	   (mapconcat
 	    'w3m-url-encode-string
@@ -190,10 +186,107 @@ With prefix, ask new url to add instead of current page."
   (message "Added as URL group"))
 
 ;;;###autoload
-(defun w3m-bookmark-view ()
+(defun w3m-bookmark-view (&optional reload)
   (interactive)
-  (if (file-readable-p w3m-bookmark-file)
-      (w3m (w3m-expand-file-name-as-url w3m-bookmark-file))))
+  (w3m-goto-url "about://bookmark/" reload))
+
+;;;###autoload
+(defun w3m-about-bookmark (&rest args)
+  (insert-buffer (w3m-bookmark-buffer))
+  (let ((ident) (i 0))
+    (goto-char (point-min))
+    (while (search-forward (setq ident (format "w3mbk%d." i)) nil t)
+      (incf i))
+    (setq i 0)
+    (while (search-forward "\n<li>" nil t)
+      (forward-char -1)
+      (insert (format " id=\"%s%d\"" ident (incf i)))))
+  "text/html")
+
+(defun w3m-bookmark-current-number ()
+  "Return the ordinal number of the current bookmark entry."
+  (let ((pos (line-beginning-position))
+	(eol (line-end-position))
+	(val))
+    (catch 'found
+      (while (and (< pos eol)
+		  (setq pos
+			(next-single-property-change pos 'w3m-name-anchor
+						     nil eol)))
+	(and (setq val (car (get-text-property pos 'w3m-name-anchor)))
+	     (string-match "\\`w3mbk[0-9]+\\.\\([0-9]+\\)\\'" val)
+	     (throw 'found (string-to-number (match-string 1 val))))))))
+
+(defun w3m-bookmark-kill-entry (num)
+  "Kill the bookmark entry of the current line.
+With prefix argument, kill that many entries from point."
+  (interactive "p")
+  (let ((entries (list (w3m-bookmark-current-number))))
+    (while (> (decf num) 0)
+      (push (1+ (car entries)) entries))
+    (w3m-bookmark-kill-entries entries)
+    (w3m-bookmark-view t)))
+
+(defun w3m-bookmark-kill-entries (entries)
+  (with-current-buffer (w3m-bookmark-buffer t)
+    (unless (verify-visited-file-modtime (current-buffer))
+      (ask-user-about-supersession-threat w3m-bookmark-file))
+    (goto-char (point-min))
+    (let ((i 0))
+      (while (search-forward "\n<li>" nil t)
+	(when (memq (incf i) entries)
+	  (let* ((beg (line-beginning-position))
+		 (end (if (search-forward "\n<li>" nil t)
+			  (min
+			   (line-beginning-position)
+			   (progn
+			     (goto-char beg)
+			     (search-forward w3m-bookmark-section-delimiter)))
+			(search-forward w3m-bookmark-section-delimiter))))
+	    (delete-region beg end)
+	    (goto-char (1- beg))))))
+    (basic-save-buffer)))
+
+(defun w3m-bookmark-undo (&optional arg)
+  "Undo some previous changes on bookmark."
+  (interactive "p")
+  (with-current-buffer (w3m-bookmark-buffer)
+    (undo-more arg)
+    (basic-save-buffer))
+  (w3m-bookmark-view t))
+
+(defvar w3m-bookmark-mode-map
+  (let ((map (make-sparse-keymap))
+	(table '((kill-line . w3m-bookmark-kill-entry)
+		 (undo . w3m-bookmark-undo))))
+    (dolist (pair table)
+      (substitute-key-definition (car pair) (cdr pair) map global-map))
+    map)
+  "*Keymap for `w3m-bookmark-mode'.")
+
+(defcustom w3m-bookmark-mode-hook nil
+  "*Hook run at the end of function `w3m-bookmark-mode'."
+  :group 'w3m
+  :type 'hook)
+
+(defvar w3m-bookmark-mode nil "Non-nil if w3m bookmark mode is enabled.")
+(make-variable-buffer-local 'w3m-bookmark-mode)
+(unless (assq 'w3m-bookmark-mode minor-mode-map-alist)
+  (push (cons 'w3m-bookmark-mode w3m-bookmark-mode-map) minor-mode-map-alist))
+
+(defun w3m-bookmark-mode (&optional arg)
+  "Minor mode to edit bookmark."
+  (interactive)
+  (prog1 (setq w3m-bookmark-mode
+	       (if arg
+		   (> (prefix-numeric-value arg) 0)
+		 (not w3m-bookmark-mode)))
+    (run-hooks 'w3m-bookmark-mode-hook)))
+
+(defun w3m-bookmark-mode-setter (url)
+  (w3m-bookmark-mode (if (equal "about://bookmark/" url) 1 0)))
+
+(add-hook 'w3m-display-functions 'w3m-bookmark-mode-setter)
 
 
 (provide 'w3m-bookmark)
