@@ -3220,6 +3220,16 @@ Mew に関連するいくつかのカスタマイズ可能な変数があります:
 け (私たちはそれらを安全だと考えています) を許可することに注意して下さい。
 デフォルト値は @code{nil} です。
 
+ここで、@file{~/.mew.el} に
+
+@lisp
+(define-key mew-summary-mode-map "T" 'mew-w3m-view-inline-image)
+@end lisp
+
+と書くと、''T'' を押すことによって、画像表示の状態をトグルすることができ
+ます。また、''C-uT'' と prefix をつけると、メール本文に含まれていない画
+像も表示します。
+
 @item mew-w3m-cid-retrieve-hook
 @samp{cid:} URL を取り出した後で実行されるフックです。デフォルト値
 は @code{nil} です。

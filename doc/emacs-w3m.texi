@@ -3117,6 +3117,15 @@ you read a multipart/related message.  Note that mew-w3m only allows
 images contained in the message body with a @samp{cid:} URL to be
 displayed (as we consider them safe).  The default value is @code{nil}.
 
+To activate this feaeture, add following in your @file{~/.mew.el}.
+
+@lisp
+(define-key mew-summary-mode-map "T" 'mew-w3m-view-inline-image)
+@end lisp
+
+Press ``T'', toggle the visibility of the images included its message only.
+Press ``C-uT'', display the all images included its Text/Html part."
+
 @item mew-w3m-cid-retrieve-hook
 A hook run just after retrieving a @samp{cid:} URL.  The default value
 is @code{nil}.
