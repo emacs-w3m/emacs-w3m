@@ -4408,7 +4408,26 @@ xemacs.xemacs-design xemacs.xemacs-mule xemacs.xemacs-nt
 xemacs.xemacs-patches xemacs.xemacs-users-ja xemacs.xemacs
 
 @item @uref{http://memo.st.ryukoku.ac.jp/archive/, Security MEMO Mailing List}
-security-memo.memo
+security-memo.memo security-memo.free-memo security-memo.social-memo
+
+Please note that userid and passowrd are required for
+@samp{security-memo.*} so you have to write;
+
+@example
+machine memo.st.ryukoku.ac.jp
+realm input username/password = archives/archives 
+login archives
+passwd archives
+
+machine memo.st.ryukoku.ac.jp
+realm input user: archives / password: archives
+login archives
+passwd archives
+@end example
+
+@noindent
+in @file{~/.w3m/passwd} and remove group and others access permissions
+from the file.
 
 @item @uref{http://lists.debian.or.jp/, Debian JP Mailing List}
 debian-jp.debian-announce debian-jp.debian-devel
@@ -4555,11 +4574,6 @@ pilot-mailsync.main
 @item @uref{http://www.mozilla.gr.jp/ml/logs/moz-users/, Mozilla Users Mailing List in Japan}
 mozilla-jp.users
 
-@item @uref{http://www.tdiary.org/, tDiary Developers Mailing List in Japan}
-tdiary-ml.devel tdiary-ml.theme
-
-@end table
-
 Please note that userid and passowrd are required for
 @samp{mozilla-jp.users} so you have to write;
 
@@ -4573,6 +4587,11 @@ passwd mozilla
 @noindent
 in @file{~/.w3m/passwd} and remove group and others access permissions
 from the file.
+
+@item @uref{http://www.tdiary.org/, tDiary Developers Mailing List in Japan}
+tdiary-ml.devel tdiary-ml.theme
+
+@end table
 
 @node Sport Sites Supported by Shimbun
 @subsection Sport Sites Supported by Shimbun

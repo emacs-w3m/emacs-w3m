@@ -4542,7 +4542,26 @@ xemacs.xemacs-design xemacs.xemacs-mule xemacs.xemacs-nt
 xemacs.xemacs-patches xemacs.xemacs-users-ja xemacs.xemacs
 
 @item @uref{http://memo.st.ryukoku.ac.jp/archive/, セキュリティーMEMO Mailing List}
-security-memo.memo
+security-memo.memo security-memo.free-memo security-memo.social-memo
+
+なお、@samp{security-memo.*} はアドレス回収ロボット対策
+で userid と passowrd を求められるので @file{~/.w3m/passwd} に
+
+@example
+machine memo.st.ryukoku.ac.jp
+realm input username/password = archives/archives 
+login archives
+passwd archives
+
+machine memo.st.ryukoku.ac.jp
+realm input user: archives / password: archives
+login archives
+passwd archives
+@end example
+
+@noindent
+と書き、上記ファイルから group, others のアクセス権を取り除いておく必要
+があります。
 
 @item @uref{http://lists.debian.or.jp/, Debian JP Mailing List}
 debian-jp.debian-announce debian-jp.debian-devel
@@ -4689,11 +4708,6 @@ pilot-mailsync.main
 @item @uref{http://www.mozilla.gr.jp/ml/logs/moz-users/, Mozilla Users Mailing List in Japan}
 mozilla-jp.users
 
-@item @uref{http://www.tdiary.org/, tDiary Developers Mailing List in Japan}
-tdiary-ml.devel tdiary-ml.theme
-
-@end table
-
 なお、@samp{mozilla-jp.users} はアドレス回収ロボット対策
 で userid と passowrd を求められるので @file{~/.w3m/passwd} に
 
@@ -4707,6 +4721,11 @@ passwd mozilla
 @noindent
 と書き、上記ファイルから group, others のアクセス権を取り除いておく必要
 があります。
+
+@item @uref{http://www.tdiary.org/, tDiary Developers Mailing List in Japan}
+tdiary-ml.devel tdiary-ml.theme
+
+@end table
 
 @node Sport Sites Supported by Shimbun
 @subsection スポーツ
