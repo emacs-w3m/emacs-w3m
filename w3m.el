@@ -1138,80 +1138,156 @@ Here is an example of how to set this option:
 		       (choice (string :tag "Replacement")
 			       (function :tag "Function")))))
 
-(eval-and-compile
-  (defconst w3m-entity-alist		; html character entities and values
-    (eval-when-compile
-      (let ((basic-entity-alist
-	     '(("nbsp" . " ")
-	       ("gt" . ">")
-	       ("lt" . "<")
-	       ("amp" . "&")
-	       ("quot" . "\"")
-	       ("apos" . "'")))
-	    (latin1-entity
-	     '(;("nbsp" . 160)
-	       ("iexcl" . 161) ("cent" . 162) ("pound" . 163)
-	       ("curren" . 164) ("yen" . 165) ("brvbar" . 166) ("sect" . 167)
-	       ("uml" . 168) ("copy" . 169) ("ordf" . 170) ("laquo" . 171)
-	       ("not" . 172)  ("shy" . 173) ("reg" . 174) ("macr" . 175)
-	       ("deg" . 176) ("plusmn" . 177) ("sup2" . 178) ("sup3" . 179)
-	       ("acute" . 180) ("micro" . 181) ("para" . 182) ("middot" . 183)
-	       ("cedil" . 184) ("sup1" . 185) ("ordm" . 186) ("raquo" . 187)
-	       ("frac14" . 188) ("frac12" . 189) ("frac34" . 190) ("iquest" . 191)
-	       ("Agrave" . 192) ("Aacute" . 193) ("Acirc" . 194) ("Atilde" . 195)
-	       ("Auml" . 196) ("Aring" . 197) ("AElig" . 198) ("Ccedil" . 199)
-	       ("Egrave" . 200) ("Eacute" . 201) ("Ecirc" . 202) ("Euml" . 203)
-	       ("Igrave" . 204) ("Iacute" . 205) ("Icirc" . 206) ("Iuml" . 207)
-	       ("ETH"  . 208) ("Ntilde" . 209) ("Ograve" . 210) ("Oacute" . 211)
-	       ("Ocirc" . 212) ("Otilde" . 213) ("Ouml" . 214) ("times" . 215)
-	       ("Oslash" . 216) ("Ugrave" . 217) ("Uacute" . 218) ("Ucirc" . 219)
-	       ("Uuml" . 220) ("Yacute" . 221) ("THORN" . 222) ("szlig" . 223)
-	       ("agrave" . 224) ("aacute" . 225) ("acirc" . 226) ("atilde" . 227)
-	       ("auml" . 228) ("aring" . 229) ("aelig" . 230) ("ccedil" . 231)
-	       ("egrave" . 232) ("eacute" . 233) ("ecirc" . 234) ("euml" . 235)
-	       ("igrave" . 236) ("iacute" . 237) ("icirc" . 238) ("iuml" . 239)
-	       ("eth" . 240) ("ntilde" . 241) ("ograve" . 242) ("oacute" . 243)
-	       ("ocirc" . 244) ("otilde" . 245) ("ouml" . 246) ("divide" . 247)
-	       ("oslash" . 248) ("ugrave" . 249) ("uacute" . 250) ("ucirc" . 251)
-	       ("uuml" . 252) ("yacute" . 253) ("thorn" . 254) ("yuml" . 255)))
-	    (greek-entity
-	     '(("Alpha" . 65) ("Beta" . 66) ("Gamma" . 67) ("Delta" . 68)
-	       ("Epsilon" . 69) ("Zeta" . 70) ("Eta" . 71) ("Theta" . 72)
-	       ("Iota" . 73) ("Kappa" . 74) ("Lambda" . 75) ("Mu" . 76)
-	       ("Nu" . 77) ("Xi" . 78) ("Omicron" . 79) ("Pi" . 80)
-	       ("Rho" . 81) ; No ("Sigmaf" . 82)
-	       ("Sigma" . 83) ("Tau" . 84) ("Upsilon" . 85) ("Phi" . 86)
-	       ("Chi" . 87) ("Psi" . 88) ("Omega" . 89)
-	       ("alpha" . 97) ("beta" . 98) ("gamma" . 99) ("delta" . 100)
-	       ("epsilon" . 101) ("zeta" . 102) ("eta" . 103) ("theta" . 104)
-	       ("iota" . 105) ("kappa" . 106) ("lambda" . 107) ("mu" . 108)
-	       ("nu" . 109) ("xi" . 110) ("omicron" . 111) ("pi" . 112)
-	       ("rho" . 113) ("sigmaf" . 114) ("sigma" . 115) ("tau" . 116)
-	       ("upsilon" . 117) ("phi" . 118) ("chi" . 119) ("psi" . 120)
-	       ("omega" . 121) ("thetasym" . 122) ("upsih" . 123) ("piv" . 124))))
-	(append basic-entity-alist
-		;; latin1
-		(mapcar
-		 (function
-		  (lambda (entity)
-		    (cons (car entity)
-			  (char-to-string
-			   (make-char (w3m-static-if (boundp 'MULE)
-					  lc-ltn1
-					'latin-iso8859-1)
-				      (cdr entity))))))
-		 latin1-entity)
-		;; greek
-		(mapcar
-		 (function
-		  (lambda (entity)
-		    (cons (car entity)
-			  (char-to-string
-			   (make-char (w3m-static-if (boundp 'MULE)
-					  lc-grk
-					'greek-iso8859-7)
-				      (cdr entity))))))
-		 greek-entity))))))
+(defconst w3m-entity-alist		; html character entities and values
+  (append
+   (eval-when-compile
+     (let ((basic-entity-alist
+	    '(("nbsp" . " ")
+	      ("gt" . ">")
+	      ("lt" . "<")
+	      ("amp" . "&")
+	      ("quot" . "\"")
+	      ("apos" . "'")
+	      ("circ" . "^")
+	      ("tilde" . "~")))
+	   (latin1-entity
+	    '(;("nbsp" . 160)
+	      ("iexcl" . 161) ("cent" . 162) ("pound" . 163)
+	      ("curren" . 164) ("yen" . 165) ("brvbar" . 166) ("sect" . 167)
+	      ("uml" . 168) ("copy" . 169) ("ordf" . 170) ("laquo" . 171)
+	      ("not" . 172)  ("shy" . 173) ("reg" . 174) ("macr" . 175)
+	      ("deg" . 176) ("plusmn" . 177) ("sup2" . 178) ("sup3" . 179)
+	      ("acute" . 180) ("micro" . 181) ("para" . 182) ("middot" . 183)
+	      ("cedil" . 184) ("sup1" . 185) ("ordm" . 186) ("raquo" . 187)
+	      ("frac14" . 188) ("frac12" . 189) ("frac34" . 190) ("iquest" . 191)
+	      ("Agrave" . 192) ("Aacute" . 193) ("Acirc" . 194) ("Atilde" . 195)
+	      ("Auml" . 196) ("Aring" . 197) ("AElig" . 198) ("Ccedil" . 199)
+	      ("Egrave" . 200) ("Eacute" . 201) ("Ecirc" . 202) ("Euml" . 203)
+	      ("Igrave" . 204) ("Iacute" . 205) ("Icirc" . 206) ("Iuml" . 207)
+	      ("ETH"  . 208) ("Ntilde" . 209) ("Ograve" . 210) ("Oacute" . 211)
+	      ("Ocirc" . 212) ("Otilde" . 213) ("Ouml" . 214) ("times" . 215)
+	      ("Oslash" . 216) ("Ugrave" . 217) ("Uacute" . 218) ("Ucirc" . 219)
+	      ("Uuml" . 220) ("Yacute" . 221) ("THORN" . 222) ("szlig" . 223)
+	      ("agrave" . 224) ("aacute" . 225) ("acirc" . 226) ("atilde" . 227)
+	      ("auml" . 228) ("aring" . 229) ("aelig" . 230) ("ccedil" . 231)
+	      ("egrave" . 232) ("eacute" . 233) ("ecirc" . 234) ("euml" . 235)
+	      ("igrave" . 236) ("iacute" . 237) ("icirc" . 238) ("iuml" . 239)
+	      ("eth" . 240) ("ntilde" . 241) ("ograve" . 242) ("oacute" . 243)
+	      ("ocirc" . 244) ("otilde" . 245) ("ouml" . 246) ("divide" . 247)
+	      ("oslash" . 248) ("ugrave" . 249) ("uacute" . 250) ("ucirc" . 251)
+	      ("uuml" . 252) ("yacute" . 253) ("thorn" . 254) ("yuml" . 255)))
+	   (greek-entity
+	    '(("Alpha" . 65) ("Beta" . 66) ("Gamma" . 67) ("Delta" . 68)
+	      ("Epsilon" . 69) ("Zeta" . 70) ("Eta" . 71) ("Theta" . 72)
+	      ("Iota" . 73) ("Kappa" . 74) ("Lambda" . 75) ("Mu" . 76)
+	      ("Nu" . 77) ("Xi" . 78) ("Omicron" . 79) ("Pi" . 80)
+	      ("Rho" . 81)		; No ("Sigmaf" . 82)
+	      ("Sigma" . 83) ("Tau" . 84) ("Upsilon" . 85) ("Phi" . 86)
+	      ("Chi" . 87) ("Psi" . 88) ("Omega" . 89)
+	      ("alpha" . 97) ("beta" . 98) ("gamma" . 99) ("delta" . 100)
+	      ("epsilon" . 101) ("zeta" . 102) ("eta" . 103) ("theta" . 104)
+	      ("iota" . 105) ("kappa" . 106) ("lambda" . 107) ("mu" . 108)
+	      ("nu" . 109) ("xi" . 110) ("omicron" . 111) ("pi" . 112)
+	      ("rho" . 113) ("sigmaf" . 114) ("sigma" . 115) ("tau" . 116)
+	      ("upsilon" . 117) ("phi" . 118) ("chi" . 119) ("psi" . 120)
+	      ("omega" . 121))))
+       (append basic-entity-alist
+	       ;; latin1
+	       (mapcar
+		(function
+		 (lambda (entity)
+		   (cons (car entity)
+			 (char-to-string
+			  (make-char (w3m-static-if (boundp 'MULE)
+					 lc-ltn1
+				       'latin-iso8859-1)
+				     (cdr entity))))))
+		latin1-entity)
+	       ;; greek
+	       (mapcar
+		(function
+		 (lambda (entity)
+		   (cons (car entity)
+			 (char-to-string
+			  (make-char (w3m-static-if (boundp 'MULE)
+					 lc-grk
+				       'greek-iso8859-7)
+				     (cdr entity))))))
+		greek-entity))))
+   (when (and (w3m-charsetp 'mule-unicode-0100-24ff)
+	      (w3m-charsetp 'mule-unicode-2500-33ff))
+     (let ((latin-extended-a
+	    '((32 . (("OElig" . 114) ("oelig" . 115)))
+	      (33 . (("Scaron" . 32) ("scaron" . 33) ("Yuml" . 56)))))
+	   (latin-extended-b '((33 . (("fnof" . 82)))))
+					;(spacing-modifier-letters '(36 . (("circ" . 120) ("tilde" . 124))))
+	   (general-punctuation
+	    '((114 .
+		   (("ensp" . 98) ("emsp" . 99) ("thinsp" . 105) ("zwnj" . 108)
+		    ("zwj" . 109) ("lrm" . 110) ("rlm" . 111) ("ndash" . 115)
+		    ("mdash" . 116) ("lsquo" . 120) ("rsquo" . 121) ("sbquo" . 122)
+		    ("ldquo" . 124) ("rdquo" . 125) ("bdquo" . 126)))
+	      (115 .
+		   (("dagger" . 32) ("Dagger" . 33) ("permil" . 48)
+		    ("lsaquo" . 57) ("rsaquo" . 58) 
+		    ("bull" . 34) ("hellip" . 38) ("prime" . 50) ("Prime" . 51)
+		    ("oline" . 62) ("frasl" . 68)))
+	      (116 .
+		   (("euro" . 76)))))
+	   (greek '((39 . (("thetasym" . 81) ("upsih" . 82) ("piv" . 86)))))
+	   (letterlike-symbols
+	    '((117 .
+		   (("weierp" . 88) ("image" . 81) ("real" . 92)
+		    ("trade" . 98) ("alefsym" . 117)))))
+	   (arrows
+	    '((118 .
+		   (("larr" . 112) ("uarr" . 113) ("rarr" . 114) ("darr" . 115)
+		    ("harr" . 116)))
+	      (119 .
+		   (("crarr" . 53) ("lArr" . 80) ("uArr" . 81) ("rArr" . 81)
+		    ("dArr" . 83) ("hArr" . 84)))))
+	   (mathematical-operators
+	    '((120 .
+		   (("forall" . 32) ("part" . 34) ("exist" . 35) ("empty" . 37)
+		    ("nabla" . 39) ("isin" . 40) ("notin" . 41) ("ni" . 43)
+		    ("prod" . 47) ("sum" . 49) ("minus" . 50) ("lowast" . 55)
+		    ("radic" . 58) ("prop" . 61) ("infin" . 62) ("ang" . 64)
+		    ("and" . 71) ("or" . 72) ("cap" . 73) ("cup" . 74)
+		    ("int" . 75) ("there4" . 84) ("sim" . 92) ("cong" . 101)
+		    ("asymp" . 104)))
+	      (121 .
+		   (("ne" . 32) ("equiv" . 33) ("le" . 36) ("ge" . 37)
+		    ("sub" . 66) ("sup" . 67) ("nsub" . 68) ("sube" . 70)
+		    ("supe" . 71) ("oplus" . 85) ("otimes" . 87) ("perp" . 101)))
+	      (122 . (("sdot" . 37)))))
+	   (miscellaneous-technical
+	    '((122 . (("lceil" . 104) ("rceil" . 105) ("lfloor" . 106) ("rfloor" . 107)))
+	      (123 . (("lang" . 41) ("rang" . 42)))))
+	   (suit
+	    '(("loz" . (34 . 42)) ("spades" . (35 . 96)) ("clubs" . (35 . 99))
+	      ("hearts" . (35 . 101)) ("diams" . (35 . 102)))))
+       (append
+	(apply 'append
+	       (mapcar
+		(function
+		 (lambda (entities)
+		   (let ((code1 (car entities)))
+		     (mapcar
+		      (lambda (entity)
+			(cons (car entity)
+			      (char-to-string
+			       (make-char 'mule-unicode-0100-24ff code1 (cdr entity)))))
+		      (cdr entities)))))
+		`(,@latin-extended-a ,@latin-extended-b ,@general-punctuation
+		  ,@greek ,@letterlike-symbols ,@arrows ,@mathematical-operators
+		  ,@miscellaneous-technical)))
+	(mapcar
+	 (function
+	  (lambda (entity)
+	    (cons (car entity)
+		  (char-to-string
+		   (make-char 'mule-unicode-2500-33ff (car (cdr entity)) (cdr (cdr entity)))))))
+	 suit))))))
 
 (defconst w3m-entity-regexp
   "&\\([a-z][a-z0-9]*\\|#[0-9]+\\|#x[0-9a-f]+\\)\\(;\\)?")

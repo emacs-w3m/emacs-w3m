@@ -1,3 +1,18 @@
+2002-10-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-entity-alist): Use `w3m-chasetp' instead of
+	`w3m-use-mule-ucs'.
+
+	* w3m-xmas.el (w3m-charsetp): Set aliase to `find-charset'.
+
+	* w3m-fsf.el (w3m-charsetp): Set aliase to `charsetp'.
+
+	* w3m-om.el (w3m-charsetp): Set aliase to `ignore'.
+
+2002-10-25  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
+
+	* w3m.el (w3m-entity-alist): Support all entities using Mule-UCS.
+
 2002-10-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* mew-w3m.el: Cancel the last change.  Use `w3m-minor-mode'.

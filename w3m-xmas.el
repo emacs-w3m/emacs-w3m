@@ -626,6 +626,8 @@ title contains non-ascii characters, show a url name by default."
     (defalias 'multibyte-string-p 'stringp)
   (defalias 'multibyte-string-p 'ignore))
 
+(defalias 'w3m-charsetp 'find-charset)
+
 (provide 'w3m-xmas)
 
 ;;; w3m-xmas.el ends here

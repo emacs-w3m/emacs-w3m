@@ -55,6 +55,8 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
 	(push (cons category codesys) categories)))
     (car (detect-coding-with-priority start end (nreverse categories)))))
 
+(defalias 'w3m-charsetp 'charsetp)
+
 (provide 'w3m-fsf)
 
 ;;; w3m-fsf.el ends here
