@@ -155,7 +155,7 @@
 	      (goto-char beg)
 	      (w3m-parse-attributes (name)
 		(while (re-search-forward "<option[ \t\r\f\n]*" end t)
-		  (w3m-parse-attributes (value (selected :case-ignore))
+		  (w3m-parse-attributes (value (selected :bool))
 		    (setq vbeg (point))
 		    (skip-chars-forward "^<")
 		    (setq svalue

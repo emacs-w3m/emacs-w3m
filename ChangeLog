@@ -1,3 +1,10 @@
+2001-07-10  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
+
+	* w3m.el (w3m-parse-attributes): Support :bool type attribute.
+
+	* w3m-form.el (w3m-form-parse-region): Use :bool type for SELECTED
+	attribute of OPTION tag.
+
 2001-07-09  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* w3m-form.el (w3m-form-make-form-urlencoded): If second value of plist

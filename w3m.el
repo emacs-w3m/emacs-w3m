@@ -1219,20 +1219,26 @@ If N is negative, last N items of LIST is returned."
 				(w3m-remove-redundant-spaces
 				 (or (match-string-no-properties 2)
 				     (match-string-no-properties 3)
-				     (match-string-no-properties 1))))))
+				     (match-string-no-properties 1)))))
+			 type)
 		     (when (listp attr)
+		       (setq type (nth 1 attr))
 		       (cond
-			((eq (nth 1 attr) :case-ignore)
+			((eq type :case-ignore)
 			 (setq sexp (list 'downcase sexp)))
-			((eq (nth 1 attr) :integer)
+			((eq type :integer)
 			 (setq sexp (list 'string-to-number sexp)))
+			((eq type :bool)
+			 (setq sexp t))
 			((nth 1 attr)
 			 (error "Internal error, unknown modifier.")))
 		       (setq attr (car attr)))
 		     (` ((looking-at
-			  (, (format "%s[ \t\r\f\n]*=[ \t\r\f\n]*%s"
-				     (symbol-name attr)
-				     w3m-html-string-regexp)))
+			  (, (if (eq type :bool)
+				 (symbol-name attr)
+			       (format "%s[ \t\r\f\n]*=[ \t\r\f\n]*%s"
+				       (symbol-name attr)
+				       w3m-html-string-regexp))))
 			 (setq (, attr) (, sexp))))))
 		 attributes))
 	    ((looking-at
