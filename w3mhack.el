@@ -488,8 +488,7 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 		  (mapconcat 'symbol-name keywords "\n\t")
 		  "))\n")
 	  (write-region (point-min) (point) kwds-file))))
-    (kill-buffer buffer))
-  (byte-compile-file w3mhack-colon-keywords-file))
+    (kill-buffer buffer)))
 
 (condition-case nil
     (let ((kwds-file (expand-file-name w3mhack-colon-keywords-file)))
