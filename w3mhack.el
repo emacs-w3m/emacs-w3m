@@ -61,7 +61,6 @@
 	 (ignores (delete (cond
 			   ((featurep 'xemacs)
 			    (push "w3m-fsf.el" version-specific-modules)
-			    (push "w3m-tabmenu.el" version-specific-modules)
 			    "w3m-xmas.el")
 			   ((boundp 'MULE)
 			    (push "w3m-fsf.el" version-specific-modules)
