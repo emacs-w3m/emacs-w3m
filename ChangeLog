@@ -1,3 +1,11 @@
+2003-07-15  OHASHI Akira  <bg66@koka-in.org>
+
+	* shimbun/shimbun.el (shimbun-header-insert): Use LSDB records for
+	choosing the author's X-Face.
+	(shimbun-use-lsdb-for-x-face): New customize option. Users can set
+	this to `never' to inhibit the use of LSDB.
+	(toplevel): Attempt to load `lsdb' when compiling.
+
 2003-07-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-image-only-page): Abolished.

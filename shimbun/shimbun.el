@@ -343,6 +343,22 @@ set this to `never' if you never want to use BBDB."
 		 (const :tag "Use BBDB" t)
 		 (const :tag "No use BBDB" never)))
 
+(eval-when-compile
+  (condition-case nil
+      (require 'lsdb)
+    (error
+     (autoload 'lsdb-maybe-load-hash-tables "lsdb")
+     (autoload 'lsdb-lookup-records "lsdb"))))
+
+(defcustom shimbun-use-lsdb-for-x-face nil
+  "*Say whether to use LSDB for choosing the author's X-Face.  It will be
+set to t when the initial value is nil and LSDB is loaded.  You can
+set this to `never' if you never want to use LSDB."
+  :group 'shimbun
+  :type '(choice (const :tag "Default" nil)
+		 (const :tag "Use LSDB" t)
+		 (const :tag "No use LSDB" never)))
+
 (defun shimbun-header-insert (shimbun header)
   (let ((from (shimbun-header-from header))
 	(refs (shimbun-header-references header))
@@ -365,6 +381,11 @@ set this to `never' if you never want to use BBDB."
 		 (not (eq 'autoload
 			  (car-safe (symbol-function 'bbdb-get-field)))))
 	(setq shimbun-use-bbdb-for-x-face t)))
+    (unless shimbun-use-lsdb-for-x-face
+      (when (and (fboundp 'lsdb-lookup-records)
+		 (not (eq 'autoload
+			  (car-safe (symbol-function 'lsdb-lookup-records)))))
+	(setq shimbun-use-lsdb-for-x-face t)))
     (when (setq x-face
 		(or (and (eq t shimbun-use-bbdb-for-x-face)
 			 from
@@ -378,6 +399,20 @@ set this to `never' if you never want to use BBDB."
 				 (mapconcat 'identity
 					    (split-string x-face)
 					    "\nX-Face: ")))
+		    (and (eq t shimbun-use-lsdb-for-x-face)
+			 from
+			 ;; The library "mail-extr" will be autoload'ed.
+			 (setq from
+			       (car (mail-extract-address-components from)))
+			 (progn
+			   (lsdb-maybe-load-hash-tables)
+			   (setq x-face (car (lsdb-lookup-records from)))
+			   (setq x-face (cadr (assoc 'x-face x-face))))
+			 (not (zerop (length x-face)))
+			 (concat "X-Face: "
+				 (mapconcat 'identity
+					    (split-string x-face)
+					    "\n ")))
 		    (shimbun-x-face shimbun)))
       (insert x-face)
       (unless (bolp)
