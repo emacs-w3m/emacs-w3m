@@ -333,6 +333,11 @@
 
 	* w3m-ucs.el (w3m-ucs-to-char): Guard error for Mule-UCS 0.85.
 
+2003-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-byte-optimize-letX): Add
+	`pathname-coding-system' to be removed from `let' bindings.
+
 2003-01-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-function-max-args): Don't use the arglist
