@@ -1,3 +1,23 @@
+2004-01-04  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-unseen-regex): Delete macro.
+	(mew-shimbun-unseen-regex): New function.
+	(mew-shimbun-set-form): Ditto.
+	(mew-shimbun-pick): Ditto.
+	(mew-shimbun-jump-msg): Ditto.
+	(mew-shimbun-touch-folder-p): New variable.
+	(mew-shimbun-goto-folder): Support Mew 4.
+	(mew-shimbun-retrieve): Ditto.
+	(mew-shimbun-retrieve-all): Ditto.
+	(mew-shimbun-retrieve-article): Ditto.
+	(mew-shimbun-re-retrieve): Ditto.
+	(mew-shimbun-re-retrieve-all): Ditto.
+	(mew-shimbun-expire-all): Ditto.
+	(mew-shimbun-expire): Ditto.
+	(mew-shimbun-get-id-msgs): Ditto.
+	(mew-shimbun-folder-new-p): Ditto.
+	(mew-shimbun-unseen-remove-advice): Ditto.
+
 2004-01-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-util.el (w3m-region-active-p): New macro.

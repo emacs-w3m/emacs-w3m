@@ -226,13 +226,6 @@ show below example,
 
 (defvar mew-shimbun-unseen-regex nil)
 
-(defmacro mew-shimbun-unseen-regex ()
-  `(or mew-shimbun-unseen-regex
-       (setq mew-shimbun-unseen-regex
-	     (concat mew-regex-msg "\\("
-		     (regexp-quote (string mew-shimbun-mark-unseen))
-		     "\\)"))))
-
 (defvar mew-shimbun-folder-regex
   (mew-folder-regex (file-name-as-directory mew-shimbun-folder)))
 
@@ -284,6 +277,24 @@ show below example,
   (defun mew-shimbun-visit-folder (folder)
     (mew-summary-ls
      (mew-summary-switch-to-folder folder))))
+
+(defun mew-shimbun-unseen-regex ()
+  (static-if (boundp 'mew-regex-msg)
+      ;; Mew3
+      (setq mew-shimbun-unseen-regex
+	    (concat mew-regex-msg (regexp-quote (string mew-shimbun-mark-unseen))))
+    ;; Mew4
+    (setq mew-shimbun-unseen-regex
+	  (concat "^" (regexp-quote (string mew-shimbun-mark-unseen))))))
+  
+(defun mew-shimbun-set-form (fld)
+  (static-if (fboundp 'mew-summary-scan-form)
+      ;; Mew3
+      (unless (mew-sinfo-get-scan-form)
+	(mew-sinfo-set-scan-form (mew-summary-scan-form fld)))
+    ;; Mew4
+    (unless (mew-sinfo-get-summary-form)
+      (mew-sinfo-set-summary-form (mew-get-summary-form fld)))))
 
 (if (featurep 'xemacs)
     nil
@@ -340,7 +351,8 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	      (if (get-buffer fld)
 		  (with-current-buffer fld
 		    (goto-char (point-min))
-		    (when (re-search-forward (mew-shimbun-unseen-regex) nil t)
+		    (when (re-search-forward (or mew-shimbun-unseen-regex
+						 (mew-shimbun-unseen-regex)) nil t)
 		      (setq sbflds (cons fld sbflds))))
 		(setq cfile (mew-expand-folder fld mew-summary-cache-file))
 		(when (file-readable-p cfile)
@@ -349,7 +361,8 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		     mew-cs-text-for-read mew-cs-dummy
 		     (insert-file-contents cfile nil)
 		     (goto-char (point-min))
-		     (when (re-search-forward (mew-shimbun-unseen-regex) nil t)
+		     (when (re-search-forward (or mew-shimbun-unseen-regex
+						  (mew-shimbun-unseen-regex)) nil t)
 		       (setq sbflds (cons fld sbflds))))))))))))
     (mapcar (lambda (x)
 	      (setq alst (cons (list x) alst)))
@@ -378,7 +391,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
   (interactive)
   (when (mew-summary-exclusive-p)
     (mew-summary-only
-     (let ((fld (mew-summary-folder-name))
+     (let ((fld (mew-summary-folder-name 'ext))
 	   (mua (luna-make-entity 'shimbun-mew-mua))
 	   (count 0)
 	   alst server group range)
@@ -391,8 +404,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	   (mew-window-configure 'summary)
 	   (mew-current-set nil nil nil)
 	   (mew-decode-syntax-delete)
-	   (unless (mew-sinfo-get-scan-form)
-	     (mew-sinfo-set-scan-form (mew-summary-scan-form fld)))
+	   (mew-shimbun-set-form fld)
 	   (save-excursion
 	     (dolist (sgr (cdr alst))
 	       (mew-shimbun-element-body sgr group server
@@ -414,7 +426,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
   (interactive)
   (mew-summary-only
    (let ((mua (luna-make-entity 'shimbun-mew-mua))
-	 (cfld (mew-summary-folder-name))
+	 (cfld (mew-summary-folder-name 'ext))
 	 fld dir server group range)
      (run-hooks 'mew-shimbun-before-retrieve-hook)
      (mew-window-configure 'summary)
@@ -491,9 +503,9 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	      (setq dispcount (1+ dispcount))
 	      (mew-shimbun-mode-display group server count dispcount sum))))
       (mew-summary-unlock)
-      (static-if (fboundp 'mew-folder-insert)
-	  (mew-folder-insert fld)
-	(mew-local-folder-insert fld))
+      (static-if (fboundp 'mew-local-folder-insert)
+	  (mew-local-folder-insert fld)
+	(mew-folder-insert fld))
       (shimbun-close-group shimbun)
       (shimbun-close shimbun)
       (mew-shimbun-db-shutdown fld count))
@@ -506,7 +518,7 @@ If called with '\\[universal-argument]', re-retrieve messages marked with '@'."
   (interactive "P")
   (when (mew-summary-exclusive-p)
     (mew-summary-only
-     (let* ((fld (mew-summary-folder-name))
+     (let* ((fld (mew-summary-folder-name 'ext))
 	    (msgs (list (progn (mew-summary-goto-message)
 			       (mew-summary-message-number))))
 	    (mua (luna-make-entity 'shimbun-mew-mua))
@@ -522,8 +534,7 @@ If called with '\\[universal-argument]', re-retrieve messages marked with '@'."
 	   (mew-window-configure 'summary)
 	   (mew-current-set nil nil nil)
 	   (mew-decode-syntax-delete)
-	   (unless (mew-sinfo-get-scan-form)
-	     (mew-sinfo-set-scan-form (mew-summary-scan-form fld)))
+	   (mew-shimbun-set-form fld)
 	   (when args
 	     (setq msgs (mew-summary-mark-collect mew-shimbun-mark-re-retrieve)))
 	   (if (null msgs)
@@ -553,7 +564,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
   (interactive "P")
   (when (mew-summary-exclusive-p)
     (mew-summary-only
-     (let* ((fld (mew-summary-folder-name))
+     (let* ((fld (mew-summary-folder-name 'ext))
 	    (mua (luna-make-entity 'shimbun-mew-mua))
 	    (begend (cons (point-min) (point-max)))
 	    (newcount 0) (rplcount 0) (same 0)
@@ -576,8 +587,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	       (mew-summary-goto-message)
 	       (setq endmsg (mew-summary-message-number))))
 	   (setq id-msgs (mew-shimbun-get-id-msgs 'range fld begmsg endmsg))
-	   (unless (mew-sinfo-get-scan-form)
-	     (mew-sinfo-set-scan-form (mew-summary-scan-form fld)))
+	   (mew-shimbun-set-form fld)
 	   (mew-window-configure 'summary)
 	   (mew-current-set nil nil nil)
 	   (mew-decode-syntax-delete)
@@ -672,7 +682,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 (defun mew-shimbun-expire-all ()
   "Expire all shimbun folder."
   (interactive)
-  (let ((cfld (mew-summary-folder-name)) fld)
+  (let ((cfld (mew-summary-folder-name 'ext)) fld)
     (dolist (alst mew-shimbun-expires)
       (setq fld (concat (file-name-as-directory mew-shimbun-folder)
 			(car alst)))
@@ -687,13 +697,23 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	  (mew-kill-buffer (current-buffer)))))
     (mew-shimbun-visit-folder cfld)))
 
+(defun mew-shimbun-pick (&rest args)
+  (apply 'call-process
+	 (static-if (boundp 'mew-prog-mewl) mew-prog-mewl mew-prog-mewls)
+	 nil t nil args))
+
+(defun mew-shimbun-jump-msg (msg)
+  (static-if (fboundp 'mew-regex-jmp-msg)
+      (re-search-forward (mew-regex-jmp-msg msg) nil t)
+    (re-search-forward (format "\r  %s " msg) nil t)))
+
 ;;;###autoload
 (defun mew-shimbun-expire ()
   "Expire this shimbun folder."
   (interactive)
   (when (mew-summary-exclusive-p)
     (mew-summary-only
-     (let* ((fld (mew-summary-folder-name))
+     (let* ((fld (mew-summary-folder-name 'ext))
 	    (days (mew-shimbun-expire-day fld))
 	    (i 0)
 	    file msgs msg-alist begmsg endmsg t1)
@@ -715,11 +735,10 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	       (with-temp-buffer
 		 (mew-piolet
 		  mew-cs-text-for-read mew-cs-text-for-write
-		  (call-process mew-prog-mewls nil t nil
-				"-b" mew-mail-path
-				"-d" "Date:"
-				"-s" (format "%s %s-%s"
-					     fld begmsg endmsg))
+		  (mew-shimbun-pick "-b" mew-mail-path
+				    "-d" "Date:"
+				    "-s" (format "%s %s-%s"
+						 fld begmsg endmsg))
 		  (goto-char (point-min))
 		  (while (not (eobp))
 		    (when (looking-at "^\\([1-9][0-9]*\\): *\\([^\n]+\\)$")
@@ -747,7 +766,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 		 (setq i (1+ i))
 		 (when (zerop (% i 10))
 		   (message "Expire (%s) %d/%d..." fld i t1))
-		 (when (re-search-forward (mew-regex-jmp-msg msg) nil t)
+		 (when (mew-shimbun-jump-msg msg)
 		   (beginning-of-line)
 		   (mew-elet
 		    (delete-region (point)
@@ -762,7 +781,11 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 		(set-buffer-modified-p nil))
 	       (when (and mew-shimbun-use-expire-pack
 			  (> t1 0))
-		 (mew-summary-pack-body))
+		 (if (eq 1 (function-max-args 'mew-summary-pack-body))
+		     (dont-compile
+		       (mew-summary-pack-body fld))
+		   (dont-compile
+		     (mew-summary-pack-body))))
 	       (message "Expire (%s) %d/%d...done" fld t1 t1)))))))))
 
 (defun mew-shimbun-expire-day (fld)
@@ -793,10 +816,9 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
       (with-temp-buffer
 	(mew-piolet
 	 mew-cs-text-for-read mew-cs-text-for-write
-	 (call-process mew-prog-mewls nil t nil
-		       "-b" mew-mail-path
-		       "-d" "X-Shimbun-Id:"
-		       "-s" (format "%s %s-%s" (nth 0 args) (nth 1 args) (nth 2 args))))
+	 (mew-shimbun-pick "-b" mew-mail-path
+			   "-d" "X-Shimbun-Id:"
+			   "-s" (format "%s %s-%s" (nth 0 args) (nth 1 args) (nth 2 args))))
 	(goto-char (point-min))
 	(while (re-search-forward "^\\([1-9][0-9]*\\): \\([^\n]+\\)" nil t)
 	  (setq id-msgs (cons (cons (match-string 2) (match-string 1)) id-msgs))))
@@ -819,10 +841,10 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
       ;; xxxxx more fast
       (with-current-buffer fld
 	(goto-char (point-min))
-	(when (re-search-forward (mew-regex-jmp-msg msg) nil t)
+	(when (mew-shimbun-jump-msg msg)
 	  (mew-mark-put-mark mew-shimbun-mark-unseen))))
     ;; for summary redraw
-    (sit-for 0.1)))
+    (sit-for 0.01)))
 
 (defun mew-shimbun-sanity-convert ()
   (if (re-search-forward mew-eoh nil t)
@@ -973,9 +995,14 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	(mew-buffer-substring (point-min)
 			      (min (point-max) (+ (point-min) 4096))))))))
 
+(defvar mew-shimbun-touch-folder-p
+  (static-if (boundp 'mew-touch-folder-p)
+      mew-touch-folder-p
+    t)) ;; Mew 4
+
 (defun mew-shimbun-folder-new-p (fld)
   (let* ((dir (file-chase-links (mew-expand-folder fld)))
-	 (tdir (if mew-touch-folder-p
+	 (tdir (if mew-shimbun-touch-folder-p
 		   (mew-file-get-time
 		    (expand-file-name mew-summary-touch-file
 				      (mew-expand-folder dir)))
@@ -1001,7 +1028,8 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	(when (and fld msg (null part))
 	  (save-excursion
 	    (beginning-of-line)
-	    (when (looking-at (mew-shimbun-unseen-regex))
+	    (when (looking-at (or mew-shimbun-unseen-regex
+				  (mew-shimbun-unseen-regex)))
 	      ;; in normal or thread folder
 	      (mew-mark-unmark)
 	      (set-buffer-modified-p nil)
