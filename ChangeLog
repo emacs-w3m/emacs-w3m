@@ -1,5 +1,22 @@
 2002-10-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* w3m.el (w3m-key-binding): Remove the code to reset
+	`w3m-minor-mode-map'.
+	(w3m-minor-mode-command-alist): Update its docstring.
+	(w3m-minor-mode-map, w3m-minor-mode-hook, w3m-minor-mode):
+	Abolished.
+	(w3m-minor-mode): Removed.
+
+	* mime-w3m.el (mime-w3m-setup): Call `w3m-make-minor-mode-keymap'
+	without using `w3m-minor-mode-map'.
+
+	* mew-w3m.el (mew-use-w3m-minor-mode): Update its docstring.
+	(mew-w3m-minor-mode-map): New variable.
+	(toplevel): Revival the code to add a minor mode.
+	(mew-w3m-minor-mode-setter): Cancel the last change.
+
+2002-10-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
 	* w3m.el (w3m-lynx-like-map, w3m-info-like-map): Add [tab] for
 	`w3m-next-anchor'.
 	(w3m-safe-view-this-url, w3m-mouse-safe-view-this-url): New

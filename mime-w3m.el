@@ -107,7 +107,7 @@ consider all the urls to be safe."
     (push (cons 'mime-view-mode 'mime-w3m-cid-retrieve)
 	  w3m-cid-retrieve-function-alist))
   (unless mime-w3m-mode-map
-    (setq mime-w3m-mode-map (copy-keymap w3m-minor-mode-map))
+    (setq mime-w3m-mode-map (w3m-make-minor-mode-keymap))
     (set-keymap-parent mime-w3m-mode-map mime-view-mode-default-map)))
 
 (def-edebug-spec mime-w3m-save-background-color t)
