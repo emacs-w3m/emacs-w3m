@@ -29,6 +29,9 @@
 
 ■■ hnf-mode
 
+   以下のように設定しておくと、hnf-mode にて C-c C-b と入力すれば、
+   w3m で最新の日記が表示されるようになる。
+
 (autoload 'w3m-browse-url "w3m" nil t)
 (defun w3m-hnf-browse-url-w3m (url &optional new-window)
   (interactive (browse-url-interactive-arg "URL: "))
