@@ -1,5 +1,10 @@
 2003-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-make-contents): New
+	function to get a correct date header.
+	(shimbun-make-contents): Use it.
+	* shimbun/sb-yomiuri-html.el (shimbun-make-contents): Use it.
+
 	* shimbun/sb-mainichi.el (shimbun-make-contents): New function to
 	get a correct date header.
 
