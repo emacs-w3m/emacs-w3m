@@ -1001,7 +1001,8 @@ NOTE: This function must be called from the top directory."
 	output-coding-system
 	(error 0)
 	(load-path load-path)
-	(texinfmt (locate-library "texinfmt")))
+	(texinfmt (locate-library "texinfmt"))
+	(undo-outer-limit (eval '(lsh -1 -1))))
     ;; ptexinfmt.elc requires texinfmt.elc and texinfmt.elc requires
     ;; texinfo.elc in the same directory where texinfmt.elc is installed.
     ;; However, another version of texinfo.elc (e.g. auctex provides such
