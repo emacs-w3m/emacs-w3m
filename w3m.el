@@ -1918,7 +1918,7 @@ this function returns t.  Otherwise, returns nil."
   ;; find the previous anchor
   (let ((pos (previous-single-property-change (point) 'w3m-href-anchor)))
     (if pos (goto-char
-	     (if (w3m-anchor) pos
+	     (if (w3m-anchor pos) pos
 	       (previous-single-property-change pos 'w3m-href-anchor))))))
 
 (defun w3m-previous-anchor (&optional arg)
@@ -1990,6 +1990,7 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
     (define-key map "G" 'goto-line)
     (define-key map "\C-?" 'scroll-down)
     (define-key map "\t" 'w3m-next-anchor)
+    (define-key map [(shift tab)] 'w3m-previous-anchor)
     (define-key map [down] 'w3m-next-anchor)
     (define-key map "\M-\t" 'w3m-previous-anchor)
     (define-key map [up] 'w3m-previous-anchor)
@@ -2046,8 +2047,8 @@ if AND-POP is non-nil, the new buffer is shown with `pop-to-buffer'."
 \\[w3m-view-this-url]	View this url.
 \\[w3m-mouse-view-this-url]	View this url.
 \\[w3m-reload-this-page]	Reload this page.
-\\[w3m-next-anchor]	Jump next anchor.
-\\[w3m-previous-anchor]	Jump previous anchor.
+\\[w3m-next-anchor]	Jump to next anchor.
+\\[w3m-previous-anchor]	Jump to previous anchor.
 \\[w3m-view-previous-page]	Back to previous page.
 
 \\[w3m-download-this-url]	Download this url.
