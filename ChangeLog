@@ -1,3 +1,10 @@
+2004-06-12  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-output-coding-system): Change default value for w3m-m17n.
+
+	* w3m-bug.el (report-emacs-w3m-bug-system-informations): 
+	Add w3m-input-coding-system and w3m-output-coding-system.
+
 2004-06-11  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-meta-content-type-charset-regexp)

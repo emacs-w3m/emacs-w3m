@@ -461,7 +461,10 @@ terminal.)"
    ((not (featurep 'mule)) 'iso-8859-1)
    ((eq w3m-type 'w3mmee) 'ctext)
    ((eq w3m-type 'w3m-m17n)
-    (if (featurep 'un-define) 'utf-8 'iso-2022-7bit-ss2))
+    (if (or (equal "Japanese" w3m-language)
+	    (not (w3m-find-coding-system 'utf-8)))
+	'iso-2022-7bit-ss2
+      'utf-8))
    (w3m-accept-japanese-characters 'w3m-euc-japan)
    (t 'w3m-iso-latin-1))
   "*Coding system used when reading from w3m processes."
