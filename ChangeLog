@@ -1,5 +1,7 @@
 2004-12-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/nnshimbun.el (nnshimbun-request-delete-group): New function.
+
 	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist): Improve regexp.
 
 2004-12-17  Hideyuki SHIRAI  <shirai@rdmg.mgcs.mei.co.jp>
