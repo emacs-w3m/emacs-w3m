@@ -342,13 +342,17 @@ handler."
   (w3m-process-kill-process (w3m-process-process process))
   (signal (car error-data) (cdr error-data)))
 
+(defvar w3m-process-wait-discard-input nil
+  "Discard the inputs of user until process will exit.")
+
 (defun w3m-process-wait-process (process seconds)
   "Wait for SECONDS seconds or until PROCESS will exit.
 Returns the exit status of the PROCESS when it exit normally,
 otherwise returns nil."
   (catch 'timeout
     (let ((start (current-time)))
-      (while (or (w3m-static-if (and (not (featurep 'xemacs))
+      (while (or (and w3m-process-wait-discard-input (discard-input))
+		 (w3m-static-if (and (not (featurep 'xemacs))
 				     (>= emacs-major-version 21))
 		     (accept-process-output process 1)
 		   (not (sit-for 1)))
@@ -356,6 +360,7 @@ otherwise returns nil."
 	(and seconds
 	     (< seconds (w3m-time-lapse-seconds start (current-time)))
 	     (throw 'timeout nil)))
+      (and w3m-process-wait-discard-input (discard-input))
       (w3m-static-if (and (not (featurep 'xemacs))
 			  (>= emacs-major-version 21))
 	  (accept-process-output process 0 0)

@@ -268,12 +268,12 @@ show below example,
 (put 'mew-shimbun-element-body 'lisp-indent-function 1)
 
 (defmacro mew-shimbun-headers (shimbun range)
-  (shimbun-headers ,shimbun ,range)
-  (sit-for 0.1))
+  `(let ((w3m-process-wait-discard-input t))
+     (shimbun-headers ,shimbun ,range)))
 
 (defmacro mew-shimbun-article (shimbun head)
-  (shimbun-article ,shimbun ,head)
-  (sit-for 0.1))
+  `(let ((w3m-process-wait-discard-input t))
+     (shimbun-article ,shimbun ,head)))
 
 (defsubst mew-shimbun-mode-display (group server get count sum)
   (mew-summary-lock 'shimbun

@@ -1,5 +1,9 @@
 2004-01-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m-proc.el (w3m-process-wait-discard-input): New variable.
+	(w3m-process-wait-process): If `w3m-process-wait-discard-input'
+	is non-nil, call `discard-input'.
+
 	* shimbun/mew-shimbun.el (mew-shimbun-headers)
 	(mew-shimbun-article): New macro.
 	(mew-shimbun-retrieve-article)
