@@ -1,3 +1,16 @@
+2005-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-x51.el: Cosmetic fixes.
+
+2005-01-31  Tsuyoshi CHO  <mfalcon_sky@emailuser.net>
+
+	* shimbun/sb-x51.el (shimbun-get-headers): Remove useless list
+	operations.
+
+2005-01-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-x51.el (shimbun-get-headers): Fix nreverse usage.
+
 2005-01-30  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
 	* w3m.el (w3m-attributes): Support cid urls.
