@@ -5003,6 +5003,7 @@ module.
 * Getting web page and header information::
 * Displaying an article::
 * Inheriting shimbun module::
+* Coding convention of Shimbun::
 @end menu
 
 @node Overview
@@ -5376,6 +5377,39 @@ localized.
 If you want to read via @samp{shimbun} a web site that uses localized
 mailing list manager, you may have to overwrite some methods in the
 parent module.
+
+@node Coding convention of Shimbun
+@subsection Coding convention of Shimbun
+
+@itemize @bullet
+@item
+You can use all functions defined in emacs-w3m in @file{shimbun.el}.
+
+@item
+You can use no functions defined in emacs-w3m in @file{sb-*.el}.  If you
+want to use emacs-w3m functions in @file{sb-*.el}, you must add their
+stubs to @file{shimbun.el}.
+
+@item
+You must avoid file names that have already used in SpeedBar.  Here is a
+list of file names used in @samp{speedbar-0.14beta4}.
+
+@multitable @columnfractions .2 .2 .2 .2
+@item sb-ant.el @tab sb-html.el @tab sb-info.el @tab sb-texinfo.el
+@item sb-gud.el @tab sb-image.el @tab sb-rmail.el @tab sb-w3.el
+@end multitable
+
+@item
+You should select file names which remind their refering WEB servers'
+URIs.  It is allowed to remove coutry parts (Ex. jp,de,uk,etc),
+organization parts (Ex. edu,com,org,net,etc) and redundant parts
+(Ex. www) if removing does not increase vagueness.
+
+@item
+You should select group names in USENET style.  It means that small
+characters are preferred in group names, and that period(.)  is
+preferred as an delimiter to show hierarchical structure in groups.
+@end itemize
 
 @node Tips
 @chapter Some knick-knacks using emacs-w3m

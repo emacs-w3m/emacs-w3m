@@ -5064,6 +5064,7 @@ Mew $B$J$I$N(B MUA $B$rMxMQ$7!"%&%'%V%3%s%F%s%D$r%a!<%k$HF1$8%f!<%6%$%s%?!<%U
 * Getting web page and header information::  $B%&%'%V%Z!<%8$N%=!<%95Z$S%X%C%@>pJs$r<hF@$9$k(B
 * Displaying an article::       $B5-;v$NI=<((B
 * Inheriting shimbun module::   shimbun $B%b%8%e!<%k$N7Q>5(B
+* Coding convention of Shimbun:: $B%3!<%G%#%s%05,Ls(B
 @end menu
 
 @node Overview
@@ -5422,6 +5423,38 @@ fml mailing list server/manager.  $B>\:Y(B
 $BBP1~$7$F$$$^$9!#$3$l$iCO0h2=$5$l$?%a!<%j%s%0%j%9%H%^%M!<%8%c$rMxMQ$7$F$$(B
 $B$k%&%'%V%5%$%H$r(B @samp{shimbun} $B$GFI$_$?$$$H$-$O!"$$$/$D$+$N%a%=%C%I$r>e(B
 $B=q$-$7$J$1$l$P$J$i$J$$$+$b$7$l$^$;$s!#(B
+
+@node Coding convention of Shimbun
+@subsection Shimbun $B%i%$%V%i%j$N%3!<%G%#%s%05,Ls(B
+
+@itemize @bullet
+@item
+@file{shimbun.el} $B$G$O!"(Bemacs-w3m $B$N4X?t$r(B@emph{$B<+M3$K(B}$B;H$C$FNI$$!#(B
+
+@item
+@file{sb-*.el} $B$G$O!"$3$l$^$G$HF1MM$K(B emacs-w3m $B$N4X?t$rD>@\8F$S=P$9$3$H(B
+$B$O$7$J$$!#(B@file{sb-*.el} $B$GI,MW$K$J$k(B emacs-w3m $B$N4X?t$K$D$$$F$O!$(B
+@file{shimbun.el} $B$K%9%?%V$rMQ0U$9$k!%(B
+
+@item
+SpeedBar $B$GMxMQ$5$l$F$$$k%U%!%$%kL>$OHr$1$J$1$l$P$J$i$J$$!#(B
+@samp{speedbar-0.14beta4} $B$GMQ$$$i$l$F$$$k%U%!%$%kL>$r0J2<$K<($9!#(B
+
+@multitable @columnfractions .2 .2 .2 .2
+@item sb-ant.el @tab sb-html.el @tab sb-info.el @tab sb-texinfo.el
+@item sb-gud.el @tab sb-image.el @tab sb-rmail.el @tab sb-w3.el
+@end multitable
+
+@item
+$B;2>H$7$F$$$k(B WEB $B%5!<%P$N(B URI $B$rO"A[$5$;$k$h$&$J%U%!%$%kL>$rA*$V$Y$-$G$"(B
+$B$k!#$?$@$7!"[#Kf$K$J$i$J$$HO0O$G!"9qJL%3!<%I(B(Ex. jp,de,uk,etc)$B$d!"AH?%%3!<(B
+$B%I(B(Ex. edu,com,org,net,etc)$B!"M>J,$JItJ,(B(Ex. www)$B$r<h$j=|$$$F$bNI$$!#(B
+
+@item
+$B%0%k!<%WL>$K$O(B USENET $B$K;w$?7A<0$N$b$N$rA*$V$Y$-$G$"$k!#$9$J$o$A!"%0%k!<(B
+$B%WL>$K$O>.J8;z$,9%$^$l$k!#$^$?!"%0%k!<%W$N3,AX9=B$$rI=$9$?$a$N6h@Z$jJ8;z(B
+$B$H$7$F$O!"%T%j%*%I(B(.)$B$,9%$^$l$k!#(B
+@end itemize
 
 @node Tips
 @chapter Emacs-w3m $B$r;H$&^/Mn$?>.J*$?$A(B
