@@ -1,3 +1,11 @@
+2001-05-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-goto-url): Set 'default-directory' to
+	'w3m-profile-directory', if 'url' is local but not exist that directory.
+
+	* w3m-dtree.el (w3m-dtree-create): If 'path' is not a directory,
+	display warning message.
+
 2001-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-fontify): Initialize the value of

@@ -91,8 +91,10 @@
   (insert (format "<A HREF=\"%s%s\">%s</A>%s\n"
 		  dirprefix (w3m-dtree-expand-file-name path) path
 		  (if allfiles " (allfiles)" "")))
-  (w3m-dtree-create-sub path allfiles dirprefix fileprefix "")
-  (insert "</pre>\n"))
+  (if (file-directory-p path)
+      (w3m-dtree-create-sub path allfiles dirprefix fileprefix "")
+    (insert (format "<u>Warning. Directory not found.</u>\n")))
+ (insert "</pre>\n"))
 
 (defun w3m-about-dtree (url &optional nodecode allfiles)
   (let ((prelen (length "about://dtree"))
