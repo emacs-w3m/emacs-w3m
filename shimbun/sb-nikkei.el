@@ -927,7 +927,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			;; 1. base
 			"\\(ft\\.cfm"
 			;; 2. url
-			"\\(\\?id=de"
+			"\\(\\?id="
 			;; 3. serial number
 			"\\([^\"]+date=\\)"
 			;; 4. year
@@ -938,14 +938,11 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			;; 6. subject
 			"\\([^<]+\\)"
 			s0 "\\([(|（]\\)"
-			;; 7. month
+			;; 8. month
 			"\\([01]?[0-9]\\)"
 			"/"
-			;; 8. day
+			;; 9. day
 			"\\([0-3]?[0-9]\\)"
-;;			s1
-			;; 9. hour, minute
-;;			"\\([0-2]?[0-9]:[0-5]?[0-9]\\)"
 			"\\([）|)]\\)" s0 "※" s0 "</a>")))
 	    nil t)
       (push (shimbun-create-header
