@@ -113,7 +113,7 @@ emacs -q で起動時に load-path に FLIM のインストールされたディレクトリが
 通らない場合は，configure 時に --with-add-path で指定してください．
 
 	% ./configure --prefix=$HOME \
-		--with-add-path=$HOME/share/emacs/site-lisp/flim
+		--with-addpath=$HOME/share/emacs/site-lisp/flim
 
 Local Variables:
 mode: outline

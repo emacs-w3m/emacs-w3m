@@ -58,10 +58,19 @@
       shimbun ライブラリについて更に詳しくは，README.shimbun.ja をご覧下
       さい．
 
-   f) 同梱されている emacs-lisp のソースファイルを適当なディレクトリにイ
-      ンストールするため，次のコマンドを実行してください．
+   f) configure スクリプトを実行してください．
 
           % ./configure
+
+      APEL や FLIM などの必要なモジュールが，標準的ではないディレクトリ
+      にインストールされている場合には，`--with-addpath' オプションを使っ
+      て，そのディレクトリを指定する必要があります．
+
+          % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
+
+   g) 同梱されている emacs-lisp のソースファイルを適当なディレクトリにイ
+      ンストールするため，次のコマンドを実行してください．
+
           % make
           % make install
 
@@ -73,17 +82,16 @@
       install の代わりに install-package を使うと，XEmacs の package と
       してインストールすることもできます．
 
-          % ./configure
           % make
           % make install-package
 
       この場合 install-icons を実行する必要はありません．
 
-   g) 次の設定を ~/.emacs に追加してください．
+   h) 次の設定を ~/.emacs に追加してください．
 
           (autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
 
-   h) その他の付属プログラムを使用するには，追加の設定が必要です．詳細に
+   i) その他の付属プログラムを使用するには，追加の設定が必要です．詳細に
       ついては，個々の付属プログラムのソースファイルの先頭に記載されてい
       るコメントを参照してください．
 
@@ -96,14 +104,18 @@
 
       ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/w3m-0.2.1.tar.gz
 
-   なお，最新開発版を利用するためには，佐藤大さんによって公開されている
-   最新の w3m-0.2.1-inu-patch を適用しておく必要があります．以下のページ
-   で探してください．
+   なお，本パッケージの全ての機能を利用するためには，佐藤大さんによって
+   公開されている最新の w3m-0.2.1-inu-patch を適用しておく必要があります．
+   以下のページで探してください．
 
       http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/index.html
 
-   w3m-m17n / w3mmee などの w3m から派生したプログラムを利用する場合には，
-   patches/ 以下の必要なパッチを適用して，再コンパイルしてください．
+   このパッチを適用した w3m をインストールしてから，以下の指定を 
+   ~/.emacs に追加してください．
+
+      (setq w3m-type 'w3m)
+
+   この指定によって，本パッケージの全機能が利用できるように設定されます．
 
 
 4. 連絡先
