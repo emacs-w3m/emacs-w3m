@@ -1,11 +1,12 @@
 2001-12-14  YAMASHITA Junji  <ysjj@unixuser.org>
 
-	* shimbun/sb-ibm-dev.el (shimbun-make-contents): Remove sidebar.
+	* shimbun/sb-ibm-dev.el (shimbun-make-contents): Condition to
+	delete sidebar strictly more.
 
 2001-12-12  YAMASHITA Junji  <ysjj@unixuser.org>
 
-	* shimbun/sb-ibm-dev.el (shimbun-get-headers): Update the regexp
-	to find a url and a subject.
+	* shimbun/sb-ibm-dev.el (shimbun-get-headers): Follow change of
+	IBM developerWorks library page.
 
 2001-12-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
