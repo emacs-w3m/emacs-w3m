@@ -1,3 +1,13 @@
+2003-07-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-cnet.el: Major change for the new CNET Japan site.
+	(shimbun-cnet-url, shimbun-cnet-groups, shimbun-cnet-from-address,
+	shimbun-cnet-content-start, shimbun-cnet-content-end): Do.
+	(shimbun-index-url): Use the top page.
+	(shimbun-get-headers): Rewrite.
+	(shimbun-make-contents): Remove advertisements embedded with table
+	forms.
+
 2003-07-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-about-history): Encode special charactes included in
