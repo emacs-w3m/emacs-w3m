@@ -238,7 +238,8 @@ In other environment, use 'native."
 (defcustom w3m-content-type-alist
   '(("text/plain" "\\.\\(txt\\|tex\\|el\\)" nil)
     ("text/html" "\\.s?html?$" ("netscape" url))
-    ("application/image" "\\.jpg$" ("xv" file))
+    ("image/jpg" "\\.jpg$" ("xv" file))
+    ("image/png" "\\.png$" ("xv" file))
     ("application/postscript" "\\.\\(ps\\|eps\\|pdf\\)$" ("gv" file)))
   "Alist of file suffixes vs. content type."
   :group 'w3m
@@ -1159,7 +1160,8 @@ If BUFFER is nil, all data is placed to the current buffer."
 				(delete-file w3m-tmp-file)))
 			  (kill-buffer (process-buffer proc))))))
 	      (if (file-exists-p file)
-		  (unless (and (processp proc) (process-status proc 'run))
+		  (unless (and (processp proc)
+			       (memq (process-status proc) '(run stop)))
 		    (delete-file file)))))))
       (error "Unknown content type: %s" content-type))))
 
@@ -1168,8 +1170,8 @@ If BUFFER is nil, all data is placed to the current buffer."
   (interactive)
   (let ((file (get-text-property (point) 'w3m-image)))
     (if file
-	(w3m-external-view (w3m-content-type url)
-			   (w3m-expand-url file w3m-current-url))
+	(let ((url (w3m-expand-url file w3m-current-url)))
+	  (w3m-external-view (w3m-content-type url) url))
       (message "No file at point."))))
 
 (defun w3m-save-image ()

@@ -4,6 +4,9 @@
 	(w3m-anchor-face): Changed default face in dark backgraound.
 	(w3m-arrived-anchor-face): Ditto.
 	(w3m-download): Fix typo.
+	(w3m-content-type-alist): Accept .png file.
+	(w3m-external-view): Fix typo.
+	(w3m-view-image): Fix.
 
 2001-03-01  Shun-ichi GOTO  <gotoh@taiyo.co.jp>
 
