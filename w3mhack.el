@@ -1147,6 +1147,9 @@ NOTE: This function must be called from the top directory."
 ;;
 ;;; Code:
 ")
+	  ;; In Emacs 21.3.50 and up, `update-file-autoloads' requires
+	  ;; the file and contents aren't modified.
+	  (save-buffer)
 	  (dolist (file files)
 	    (update-file-autoloads file))
 	  (goto-char (point-max))

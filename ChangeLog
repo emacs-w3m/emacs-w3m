@@ -1,3 +1,8 @@
+2004-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-generate-load-file): Save w3m-load.el file
+	before performing `update-file-autoloads'.
+
 2004-04-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* Makefile.in (install-lisp): Do not install w3mhack.el.
