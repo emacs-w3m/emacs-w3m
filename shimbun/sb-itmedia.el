@@ -101,6 +101,7 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 	 (group (shimbun-current-group-internal shimbun))
 	 (url-regexp (nth 2 (assoc group shimbun-itmedia-group-alist)))
 	 (time-regexp (nth 3 (assoc group shimbun-itmedia-group-alist)))
+	 (table '(("：" ":") ("［" "[") ("］" "]")))
 	 next headers)
     (while (search-forward "\r" nil t)
       (replace-match "\n"))
@@ -112,30 +113,33 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 		 (goto-char (match-end 0)))
 	     (re-search-forward url-regexp nil t))
       (unless (string= "index" (match-string 6))
-	(let* ((url (match-string 1))
-	       (year (+ 2000 (string-to-number (match-string 3))))
-	       (month (string-to-number (match-string 4)))
-	       (day (string-to-number (match-string 5)))
-	       (id (format "<%s%s%s%s%%%s>"
-			   (match-string 3)
-			   (match-string 4)
-			   (match-string 5)
-			   (match-string 6)
-			   group))
-	       (subject (mapconcat 'identity
-				   (split-string
-				    (buffer-substring
-				     (match-end 0)
-				     (progn
-				       (search-forward "</A>" nil t)
-				       (point)))
-				    "<[^>]+>")
-				   ""))
-	       time)
-	  (unless (string-match "\\`[\t\n ]*\\'" subject)
-	    (while (string-match "\n" subject)
-	      (setq subject (concat (substring subject 0 (match-beginning 0))
-				    (substring subject (match-end 0)))))
+	(let ((url (match-string 1))
+	      (year (+ 2000 (string-to-number (match-string 3))))
+	      (month (string-to-number (match-string 4)))
+	      (day (string-to-number (match-string 5)))
+	      (id (format "<%s%s%s%s%%%s>"
+			  (match-string 3)
+			  (match-string 4)
+			  (match-string 5)
+			  (match-string 6)
+			  group))
+	      (subject (mapconcat
+			(lambda (s)
+			  (dolist (e table s)
+			    (setq s (apply 'shimbun-replace-in-string s e))))
+			(delete
+			 ""
+			 (split-string
+			  (buffer-substring (match-end 0)
+					    (progn
+					      (search-forward "</A>" nil t)
+					      (point)))
+			  "[\t\n ]*<[^>]+>[\t\n ]*\\|[\t\n 　]+"))
+			" "))
+	      time)
+	  (unless (zerop (length subject))
+	    (setq subject (shimbun-replace-in-string
+			   subject " ?\\([“”（）「」]\\) ?" "\\1"))
 	    (when time-regexp
 	      (setq next (point)
 		    next (when (re-search-forward url-regexp nil t)
