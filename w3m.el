@@ -1287,14 +1287,11 @@ half-dumped data."
 					       'balloon-help balloon)))))))
 
 (defvar w3m-cache-underline-faces nil
-  "Cache used to detach underlined faces from a buffer when showing
-images inline.  It is a buffer-local variable which contains a list of
-a flag and lists of a beginning position, an end position and a face.
-Flag will be set to t when caching is completed.
-
-** Is is currently needed for only pretest versions of Emacs 21.
-** Perhaps it becomes useless in the future, we should pay attention
-** to a trend of Emacs development.")
+  "Cache for Emacs 21's exclusive use.  It is used to keep underlined
+faces detached from a buffer when showing images inline.  It is a
+buffer-local variable which contains a list of a flag and lists of a
+beginning position, an end position and a face.  Flag will be set to
+t when caching is completed.")
 (make-variable-buffer-local 'w3m-cache-underline-faces)
 
 (defun w3m-toggle-inline-images (&optional force no-cache)

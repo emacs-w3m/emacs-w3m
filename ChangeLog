@@ -1,3 +1,8 @@
+2001-05-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-cache-underline-faces): Modified docs that it is for
+	Emacs 21's exclusive use.
+
 2001-05-18  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
 
 	* shimbun/sb-hns.el (shimbun-get-headers): Fixed problem when
