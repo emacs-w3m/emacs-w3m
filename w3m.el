@@ -475,45 +475,45 @@ If N is negative, last N items of LIST is returned."
 ;;; Form:
 (defun w3m-form-new (method action &optional baseurl)
   "Return new form object."
-  (vector (make-symbol "w3m-form-object")
+  (vector 'w3m-form-object
 	  (if (stringp method)
 	      (intern method)
 	    method)
 	  (if baseurl
 	      (w3m-expand-url action baseurl)
-	    action)))
+	    action)
+	  nil))
 
 (defsubst w3m-form-p (obj)
   "Return t if OBJ is a form object."
   (and (vectorp obj)
        (symbolp (aref 0 obj))
-       (string= (symbol-name (aref 0 obj)) "w3m-form-object")))
+       (eq (aref 0 obj) 'w3m-form-object)))
 
-(defmacro w3m-form-symbol (form)
-  `(aref ,form 0))
 (defmacro w3m-form-method (form)
   `(aref ,form 1))
 (defmacro w3m-form-action (form)
   `(aref ,form 2))
+(defmacro w3m-form-plist (form)
+  `(aref ,form 3))
 (defmacro w3m-form-put (form name value)
-  `(put (w3m-form-symbol ,form) (intern ,name) ,value))
+  (let ((tempvar (make-symbol "formobj")))
+    `(let ((,tempvar ,form))
+       (aset ,tempvar 3 (plist-put (w3m-form-plist ,tempvar) (intern ,name) ,value)))))
 (defmacro w3m-form-get (form name)
-  `(get (w3m-form-symbol ,form) (intern ,name)))
-
-;; FIXME: 与えられた文字列を URL として適当な形式になるように変換する
-;;        関数。きちんと規格を調べて実装する必要がある。
-(defun w3m-url-encode (str) str)
+  `(plist-get (w3m-form-plist ,form) (intern ,name)))
 
 (defun w3m-form-make-get-string (form)
   (when (eq 'get (w3m-form-method form))
-    (let ((plist (symbol-plist (w3m-form-symbol form)))
+    (let ((plist (w3m-form-plist form))
 	  (buf))
       (while plist
-	(setq buf (cons (format
-			 "%s=%s"
-			 (w3m-url-encode (car plist))
-			 (w3m-url-encode (nth 1 plist)))
-			buf)
+	(setq buf (cons
+		   (format
+		    "%s=%s"
+		    (w3m-escape-query-string (symbol-name (car plist)))
+		    (w3m-escape-query-string (nth 1 plist)))
+		   buf)
 	      plist (nthcdr 2 plist)))
       (if buf
 	  (format "%s?%s"
@@ -521,88 +521,124 @@ If N is negative, last N items of LIST is returned."
 		  (mapconcat #'identity buf "&"))
 	(w3m-form-action form)))))
 
+(put 'w3m-parse-attributes 'lisp-indent-function '1)
+(put 'w3m-parse-attributes 'edebug-form-spec '(&rest form))
+(defmacro w3m-parse-attributes (attributes &rest form)
+  `(let (,@(mapcar
+	    (lambda (attr)
+	      (if (listp attr)
+		  (car attr)
+		attr))
+	    attributes))
+     (while (cond
+	     ,@(mapcar
+		(lambda (attr)
+		  (unless (or (symbolp attr)
+			      (and (listp attr)
+				   (<= (length attr) 2)
+				   (symbolp (car attr))))
+		    (error "Internal error, type mismatch."))
+		  (let ((sexp '(or (match-string 2)
+				   (match-string 1))))
+		    (when (listp attr)
+		      (cond
+		       ((eq (nth 1 attr) :case-ignore)
+			(setq sexp
+			      '(downcase
+				(or (match-string 2)
+				    (match-string 1)))))
+		       ((eq (nth 1 attr) :integer)
+			(setq sexp
+			      '(string-to-number
+				(or (match-string 2)
+				    (match-string 1)))))
+		       ((nth 1 attr)
+			(error "Internal error, unknown modifier.")))
+		      (setq attr (car attr)))
+		    `((looking-at
+		       ,(format "%s=%s"
+				(symbol-name attr)
+				w3m-form-string-regexp))
+		      (setq ,attr ,sexp))))
+		attributes)
+	     ((looking-at ,(concat "[A-z]*=" w3m-form-string-regexp)))
+	     ((looking-at "[^<> \t\r\f\n]+")))
+       (goto-char (match-end 0))
+       (skip-chars-forward " \t\r\f\n"))
+     (skip-chars-forward "^>")
+     ,@form))
+
 (defun w3m-form-parse-region (start end)
   "Parse HTML data in this buffer and return form objects."
   (save-restriction
     (narrow-to-region start end)
-    (let (forms)
+    (let ((case-fold-search t)
+	  forms)
       (goto-char (point-min))
-      (while (re-search-forward "<form[ \t\r\f\n]+" nil t)
-	(let (action method)
-	  (while (cond
-		  ((looking-at (eval-when-compile
-				 (concat "action=" w3m-form-string-regexp)))
-		   (setq action (downcase (or (match-string 2) (match-string 1)))))
-		  ((looking-at (eval-when-compile
-				 (concat "method=" w3m-form-string-regexp)))
-		   (setq method (downcase (or (match-string 2) (match-string 1)))))
-		  ((looking-at (eval-when-compile
-				 (concat "[A-z]*=" w3m-form-string-regexp)))))
-	    (goto-char (match-end 0))
-	    (skip-chars-forward " \t\r\f\n"))
-	  (skip-chars-forward "^>")
-	  (setq forms
-		(cons (w3m-form-new (or method "get")
-				    (or action w3m-current-url)
-				    w3m-current-url)
-		      forms))))
+      (while (re-search-forward "<\\(\\(form\\)\\|\\(input\\)\\|select\\)[ \t\r\f\n]+" nil t)
+	(cond
+	 ((match-string 2)
+	  ;; When <FORM> is found.
+	  (w3m-parse-attributes (action (method :case-ignore))
+	    (setq forms
+		  (cons (w3m-form-new (or method "get")
+				      (or action w3m-current-url)
+				      w3m-current-url)
+			forms))))
+	 ((match-string 3)
+	  ;; When <INPUT> is found.
+	  (w3m-parse-attributes (name value (type :case-ignore))
+	    (when name
+	      (w3m-form-put (car forms)
+			    name
+			    (cons value (w3m-form-get (car forms) name))))))
+	 ;; When <SELECT> is found.
+	 (t
+	  ;; FIXME: この部分では、更に <OPTION> タグを処理して、後から
+	  ;; 利用できるように値のリストを作成し、保存しておく必要があ
+	  ;; る。しかし、これを実装するのは、まっとうな HTML parser を
+	  ;; 実装するのに等しい労力が必要であるので、今回は手抜きして
+	  ;; おく。
+	  )))
       (set (make-local-variable 'w3m-current-forms) (nreverse forms)))))
 
 (defun w3m-fontify-forms ()
   "Process half-dumped data in this buffer and fontify <input_alt> tags."
   (goto-char (point-min))
   (while (search-forward "<input_alt " nil t)
-    (let (start fid type name width maxlength value)
+    (let (start)
       (setq start (match-beginning 0))
       (goto-char (match-end 0))
-      (while (cond
-	      ((looking-at (eval-when-compile
-			     (concat "fid=" w3m-form-string-regexp)))
-	       (setq fid (string-to-number (or (match-string 2) (match-string 1)))))
-	      ((looking-at (eval-when-compile
-			     (concat "type=" w3m-form-string-regexp)))
-	       (setq type (downcase (or (match-string 2) (match-string 1)))))
-	      ((looking-at (eval-when-compile
-			     (concat "name=" w3m-form-string-regexp)))
-	       (setq name (downcase (or (match-string 2) (match-string 1)))))
-	      ((looking-at (eval-when-compile
-			     (concat "width=" w3m-form-string-regexp)))
-	       (setq width (string-to-number (or (match-string 2) (match-string 1)))))
-	      ((looking-at (eval-when-compile
-			     (concat "maxlength=" w3m-form-string-regexp)))
-	       (setq maxlength (string-to-number (or (match-string 2) (match-string 1)))))
-	      ((looking-at (eval-when-compile
-			     (concat "value=" w3m-form-string-regexp)))
-	       (setq value (downcase (or (match-string 2) (match-string 1)))))
-	      ((looking-at (eval-when-compile
-			     (concat "[A-z]*=" w3m-form-string-regexp)))))
+      (w3m-parse-attributes ((fid :integer)
+			     (type :case-ignore)
+			     (width :integer)
+			     (maxlength :integer)
+			     name value)
+	(search-forward "</input_alt>")
 	(goto-char (match-end 0))
-	(skip-chars-forward " \t\r\f\n"))
-      (search-forward "</input_alt>")
-      (goto-char (match-end 0))
-      (let ((form (nth fid w3m-current-forms)))
-	(when form
-	  (cond
-	   ((string= type "submit")
-	    (put-text-property start (point)
-			       'w3m-action
-			       `(w3m-form-submit ,form)))
-	   ((string= type "reset")
-	    (put-text-property start (point)
-			       'w3m-action
-			       `(w3m-form-reset ,form)))
-	   (t ;; input button.
-	    (put-text-property start (point)
-			       'w3m-action
-			       `(w3m-form-input ,form
-						,name
-						,type
-						,width
-						,maxlength
-						,value))
-	    (w3m-form-put form name value)))
-	  (put-text-property start (point) 'face 'w3m-form-face))
-	))))
+	(let ((form (nth fid w3m-current-forms)))
+	  (when form
+	    (cond
+	     ((string= type "submit")
+	      (put-text-property start (point)
+				 'w3m-action
+				 `(w3m-form-submit ,form)))
+	     ((string= type "reset")
+	      (put-text-property start (point)
+				 'w3m-action
+				 `(w3m-form-reset ,form)))
+	     (t ;; input button.
+	      (put-text-property start (point)
+				 'w3m-action
+				 `(w3m-form-input ,form
+						  ,name
+						  ,type
+						  ,width
+						  ,maxlength
+						  ,value))
+	      (w3m-form-put form name value)))
+	    (put-text-property start (point) 'face 'w3m-form-face))
+	  )))))
 
 (defun w3m-form-replace (string)
   (let* ((start (text-property-any

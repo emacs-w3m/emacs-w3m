@@ -1,3 +1,18 @@
+2001-03-05  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* w3m.el (w3m-form-new): Changed w3m-form structure.
+	(w3m-form-p): Likewise.
+	(w3m-form-put): Likewise.
+	(w3m-form-get): Likewise.
+	(w3m-form-plist): New macro.
+	(w3m-form-symbol): Removed.
+	(w3m-url-encode): Ditto.
+	(w3m-form-make-get-string): Follow change of w3m-form and use
+	w3m-escape-query-string instead of w3m-url-encode.
+	(w3m-parse-attributes): New macro.
+	(w3m-form-parse-region): Use w3m-parse-attributes.
+	(w3m-fontify-forms): Use w3m-parse-attributes.
+
 2001-03-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* w3m.el (w3m-fill-column): Revivaled.
