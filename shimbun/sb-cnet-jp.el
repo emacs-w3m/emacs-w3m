@@ -53,7 +53,7 @@
 (defvar shimbun-cnet-jp-server-name "CNET Japan")
 (defvar shimbun-cnet-jp-from-address  "webmaster@japan.cnet.com")
 (defvar shimbun-cnet-jp-content-start "<div class=\"leaf_body\">")
-(defvar shimbun-cnet-jp-content-end "<!--NEWS LETTER SUB-->")
+(defvar shimbun-cnet-jp-content-end "<!-- *\\(NEWS LETTER SUB\\|ZD CAMPAIGN SUB\\) *-->")
 (defvar shimbun-cnet-jp-x-face-alist
   '(("default" . "X-Face: 0p7.+XId>z%:!$ahe?x%+AEm37Abvn]n\
 *GGh+>v=;[3`a{1lqO[$,~3C3xU_ri>[JwJ!9l0\n ~Y`b*eXAQ:*q=bBI\

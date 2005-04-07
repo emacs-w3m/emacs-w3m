@@ -1,3 +1,7 @@
+2005-04-07  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-content-end): Fix value.
+
 2005-04-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-rss.el (shimbun-rss-compatible-encoding-alist): New
