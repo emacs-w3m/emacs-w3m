@@ -4004,11 +4004,17 @@ It supports the encoding types of gzip, bzip2, deflate, etc."
 (defun w3m-detect-xml-charset ()
   (let ((case-fold-search t))
     (goto-char (point-min))
-    (or (when (looking-at "[ \t\r\f\n]*<\\?xml[ \t\r\f\n]+")
-	  (goto-char (match-end 0))
-	  (w3m-parse-attributes ((encoding :case-ignore))
-	    encoding))
-	"utf-8")))
+    (when (looking-at "[ \t\r\f\n]*<\\?xml[ \t\r\f\n]+")
+      (goto-char (match-end 0))
+      (or (w3m-parse-attributes ((encoding :case-ignore))
+	    encoding)
+	  "utf-8"))))
+
+(defvar w3m-compatible-encoding-alist '((iso-8859-1 . windows-1252))
+  "Alist of encodings and those supersets.
+The cdr of each element is used to decode data if it is available when
+the car is what the data specify as the encoding.  Or, the car is used
+for decoding when the cdr that the data specify is not available.")
 
 (defun w3m-decode-buffer (url &optional content-charset content-type)
   (let (cs)
@@ -4019,10 +4025,7 @@ It supports the encoding types of gzip, bzip2, deflate, etc."
 	    (or (w3m-content-charset url)
 		(when (string= "text/html" content-type)
 		  (w3m-detect-meta-charset))
-		(when (string-match
-		       "\\`\\(application\\|text\\)/\\([a-z]+\\+\\)?xml\\'"
-		       content-type)
-		  (w3m-detect-xml-charset)))))
+		(w3m-detect-xml-charset))))
     (cond
      ((and (eq w3m-type 'w3mmee)
 	   (or (and (stringp content-charset)
@@ -4034,13 +4037,17 @@ It supports the encoding types of gzip, bzip2, deflate, etc."
       (setq content-charset (w3m-correct-charset content-charset))
       (setq cs (w3m-charset-to-coding-system content-charset))))
     (setq w3m-current-content-charset content-charset)
+    (unless cs
+      (setq cs (w3m-detect-coding-region (point-min) (point-max)
+					 (if (w3m-url-local-p url)
+					     nil
+					   w3m-coding-system-priority-list))))
     (setq w3m-current-coding-system
-	  (or cs
-	      (w3m-detect-coding-region
-	       (point-min) (point-max)
-	       (if (w3m-url-local-p url)
-		   nil
-		 w3m-coding-system-priority-list))))
+	  (or (w3m-find-coding-system
+	       (cdr (assq cs w3m-compatible-encoding-alist)))
+	      (w3m-find-coding-system cs)
+	      (w3m-find-coding-system
+	       (car (rassq cs w3m-compatible-encoding-alist)))))
     (set-buffer-multibyte t)
     (decode-coding-region (point-min) (point-max) w3m-current-coding-system)))
 

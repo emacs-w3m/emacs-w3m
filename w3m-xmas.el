@@ -96,9 +96,15 @@ It fixes an XEmacs 21.5 bug.  Advised by emacs-w3m."
 (require 'pccl)
 
 ;;; Handle coding system:
-(defalias 'w3m-find-coding-system (if (fboundp 'find-coding-system)
-				      'find-coding-system
-				    'ignore))
+(eval-when-compile
+  (unless (fboundp 'find-coding-system)
+    (defalias 'find-coding-system 'ignore)))
+
+(defalias 'w3m-find-coding-system
+  (if (fboundp 'find-coding-system)
+      (lambda (obj)
+	(and obj (find-coding-system obj)))
+    'ignore))
 
 ;; Under XEmacs 21.5-b6 and later, `make-ccl-coding-system' will
 ;; signal an error if the coding-system has already been defined.

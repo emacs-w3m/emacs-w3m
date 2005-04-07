@@ -208,20 +208,30 @@ but you can identify it from the URL, define this method in a backend.")
 
 ;;; XML functions
 
+(defvar shimbun-rss-compatible-encoding-alist '((iso-8859-1 . windows-1252))
+  "Alist of encodings and those supersets.
+The cdr of each element is used to decode data if it is available when
+the car is what the data specify as the encoding.  Or, the car is used
+for decoding when the cdr that the data specify is not available.")
+
 (defun shimbun-rss-get-encoding ()
-  (let (end encoding)
-    (cond
-     ((search-forward "<?" nil t nil)
-      (let ((pos (point)))
-	(setq end (search-forward "?>"))
-	(goto-char pos))
-      (setq encoding
-	    (if (re-search-forward "encoding=\"\\([^ ]+\\)\"" end t)
-		(downcase (match-string-no-properties 1))
-	      "utf-8")))
-     (t ;; XML Default encoding.
-      (setq encoding "utf-8")))
-    (intern-soft (concat encoding "-dos"))))
+  "Return an encoding attribute specified in the current xml contents.
+If `shimbun-rss-compatible-encoding-alist' specifies the compatible
+encoding, it is used instead.  If the xml contents doesn't specify the
+encoding, return `utf-8' which is the default encoding for xml if it
+is available, otherwise return nil."
+  (if (re-search-forward
+       "<\\?[^>]*encoding=\\(\"\\([^\">]+\\)\"\\|'\\([^'>]+\\)'\\)"
+       nil t)
+      (let ((encoding (intern (downcase (or (match-string 2)
+					    (match-string 3))))))
+	(or
+	 (shimbun-find-coding-system
+	  (cdr (assq encoding shimbun-rss-compatible-encoding-alist)))
+	 (shimbun-find-coding-system encoding)
+	 (shimbun-find-coding-system
+	  (car (rassq encoding shimbun-rss-compatible-encoding-alist)))))
+    (shimbun-find-coding-system 'utf-8)))
 
 (defun shimbun-rss-node-text (namespace local-name element)
   (let* ((node (assq (intern (concat namespace (symbol-name local-name)))
@@ -241,26 +251,23 @@ but you can identify it from the URL, define this method in a backend.")
     node))
 
 (defun shimbun-rss-find-el (tag data &optional found-list)
-  "Find the all matching elements in the data.  Careful with this on
-large documents!"
-  (if (listp data)
-      (mapcar (lambda (bit)
-		(if (car-safe bit)
-		    (progn (if (equal tag (car bit))
-			       (setq found-list
-				     (append found-list
-					     (list bit))))
-			   (if (and (listp (car-safe (caddr bit)))
-				    (not (stringp (caddr bit))))
-			       (setq found-list
-				     (append found-list
-					     (shimbun-rss-find-el
-					      tag (caddr bit))))
-			     (setq found-list
-				   (append found-list
-					   (shimbun-rss-find-el
-					    tag (cddr bit))))))))
-	      data))
+  "Find the all matching elements in the data.
+Careful with this on large documents!"
+  (when (consp data)
+    (dolist (bit data)
+      (when (car-safe bit)
+	(when (equal tag (car bit))
+	  ;; Old xml.el may return a list of string.
+	  (when (and (consp (caddr bit))
+		     (stringp (caaddr bit)))
+	    (setcar (cddr bit) (caaddr bit)))
+	  (setq found-list (append found-list (list bit))))
+	(if (and (consp (car-safe (caddr bit)))
+		 (not (stringp (caddr bit))))
+	    (setq found-list (append found-list
+				     (shimbun-rss-find-el tag (caddr bit))))
+	  (setq found-list (append found-list
+				   (shimbun-rss-find-el tag (cddr bit))))))))
   found-list)
 
 (defun shimbun-rss-get-namespace-prefix (el uri)

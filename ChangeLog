@@ -1,3 +1,21 @@
+2005-04-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-rss.el (shimbun-rss-compatible-encoding-alist): New
+	variable.
+	(shimbun-rss-get-encoding): Return a compatible encoding according
+	to shimbun-rss-compatible-encoding-alist.
+	(shimbun-rss-find-el): Use dolist instead of mapcar; use consp
+	instead of listp; make it work with old xml.el as well.
+
+	* w3m.el (w3m-detect-xml-charset): Return nil if the data don't
+	look like xml contents.
+	(w3m-compatible-encoding-alist): New variable.
+	(w3m-decode-buffer): Always use w3m-detect-xml-charset; use a
+	compatible encoding according to w3m-compatible-encoding-alist.
+
+	* w3m-xmas.el (w3m-find-coding-system): Don't return binary for
+	the nil argument.
+
 2005-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Improve regexp
