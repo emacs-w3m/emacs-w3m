@@ -34,9 +34,10 @@
 
 (defvar shimbun-rediff-url "http://www.rediff.com/rss/newsrss.xml")
 (defvar shimbun-rediff-groups '("news"))
-(defvar shimbun-rediff-from-address  "news@rediff.com")
+(defvar shimbun-rediff-from-address "news@rediff.com")
 (defvar shimbun-rediff-content-start "<BR></FONT>")
-(defvar shimbun-rediff-content-end "</P></FONT></TD></TR><TR><TD>")
+(defvar shimbun-rediff-content-end
+  "\\(</P>\\)?</FONT>\\(</FONT>\\)?</TD></TR><TR><TD>")
 
 (defconst shimbun-rediff-month-alist
   '(("January" . 1) ("February" . 2) ("March" . 3) ("April" . 4)
@@ -45,50 +46,51 @@
 
 ;; Print version has less ads
 
-(luna-define-method shimbun-article-url ((shimbun shimbun-rediff) header)
-  (let ((url (shimbun-article-base-url shimbun header)))
-    (if (string-match "http://www.rediff.com/rss/redirect.php\\?url=\
-http://www.rediff.com/\\(.+\\.htm\\)" url)
-	(concat "http://in.rediff.com/cms/print.jsp?docpath="
-		(match-string-no-properties 1 url))
-      url)))
+(luna-define-method shimbun-article :before
+  ((shimbun shimbun-rediff) header &optional outbuf)
+  (let ((url (shimbun-article-url shimbun header)))
+    (unless
+	(string-match
+	 "http://www.rediff.com/rss/redirect.php\\?url=\
+http://www.rediff.com/\\(.+\\.htm\\)"
+	 url)
+      (error "Malformed URL? %s" url))
+    (shimbun-header-set-xref
+     header
+     (concat
+      "http://in.rediff.com/cms/print.jsp?docpath="
+      (match-string-no-properties 1 url)))))
 
-;; Three kinds of tags to strip from the print version
-
-;; Type 1:
-;; <P align=center>
-;; <B><A class="" target=new href="blah"> blah blah </A></B>
-;; </P>
-
-;; Type 2:
-;;<TABLE cellSpacing=0 cellPadding=0 width=200 align=left border=0>
-;; blah blah!
-;; </TABLE></TD></TR></TABLE>
-
-;; Type 3:
-;;<UL><LI><STRONG>
-;; <A class="" href="blah" target=new> blah blah </A>
-;; </STRONG></LI></UL><P>
+;; Tags to strip from the print version
 
 (luna-define-method shimbun-clear-contents :before
   ((shimbun shimbun-rediff) header)
   (when (luna-call-next-method)
-    (shimbun-remove-tags "<P align=center><A [^>]+>" "</A>\\(</P>\\| \\)")
+    (shimbun-remove-tags "<A class=\"\" [^>]+>" "</A>")
+    (shimbun-remove-tags "<A target=new [^>]+>" "</A>")
+    (shimbun-remove-tags "<P><STRONG>" "</STRONG></A>")
+    (shimbun-remove-tags "<P><STRONG>Also read:" "</STRONG>\\(</P>\\)?")
+    (shimbun-remove-tags "<UL[^>]*><LI[^>]*>" "</LI></UL>")
     (shimbun-remove-tags
      "<TABLE cellSpacing=0 cellPadding=0 width=200 align=left border=0>"
-     "</TABLE></TD></TR></TABLE>"  )
-    (shimbun-remove-tags "<UL[^>]*><LI[^>]*><STRONG>" "</STRONG></LI></UL>")))
+     "</TABLE></TD></TR></TABLE>")))
 
 ;; The default header has no date string
 ;; We need to parse it from the contents and set the header
 
 (luna-define-method shimbun-make-contents :before
   ((shimbun shimbun-rediff) header)
+;;; <DEBUG>
+;;  (shimbun-rediff-make-contents shimbun header))
+;;
+;;(defun shimbun-rediff-make-contents (shimbun header)
+;;; </DEBUG>
   (setq case-fold-search nil)
   (when (re-search-forward
 	 "\\(January\\|February\\|March\\|April\\|May\\|June\
-\\|July\\|August\\|September\\|October\\|November\\|December\\)  \
-\\([0-3][0-9]\\), \\(20[0-9][0-9]\\) | \\([0-1][0-9]:[0-6][0-9]\\) IST" nil t)
+\\|July\\|August\\|September\\|October\\|November\\|December\\)[ ]+\
+\\([0-3][0-9]\\),[ ]+\\(20[0-9][0-9]\\) | \\([0-2][0-9]:[0-6][0-9]\\) IST"
+	 nil t)
     (shimbun-header-set-date
      header
      (shimbun-make-date-string
@@ -103,10 +105,12 @@ http://www.rediff.com/\\(.+\\.htm\\)" url)
 
 (luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-rediff)
 						  url date)
-  (unless (string-match "http://www.rediff.com/rss/redirect.php\\?url=\
+  (unless
+      (string-match
+       "http://www.rediff.com/rss/redirect.php\\?\url=\
 http://www.rediff.com/\\([A-Za-z]+\\)/\\([0-9]+\\)/\\([^/]+\\)/\\(.+\\)\\.htm"
-			url)
-    (error (concat "Cannot find a message-id base for " url) ))
+       url)
+    (error "Cannot find a message-id base for %s" url))
   (format "<%s%s%s%s@rediff.com>"
 	  (match-string-no-properties 1 url)
 	  (match-string-no-properties 2 url)

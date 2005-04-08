@@ -1,3 +1,12 @@
+2005-04-01  S V N Vishwanathan  <vishketan@yahoo.com>
+
+	* shimbun/sb-rediff.el (shimbun-rediff-content-end): Improve regexp.
+	(shimbun-article-url): Remove the method.
+	(shimbun-article): New method.
+	(shimbun-clear-contents): Add the deletion of some tags.
+	(shimbun-make-contents): Improve regexp.
+	(shimbun-rss-build-message-id): Improve regexp.
+
 2005-04-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-rss.el (shimbun-headers): Strip CRs before decoding.
