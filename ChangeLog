@@ -1,3 +1,8 @@
+2005-04-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-rss.el (shimbun-headers): Strip CRs before decoding.
+	(shimbun-rss-get-headers): Don't do it there.
+
 2005-04-07  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-content-end): Fix value.

@@ -137,7 +137,8 @@ but you can identify it from the URL, define this method in a backend.")
     (let ((case-fold-search t))
       (shimbun-retrieve-url
        (shimbun-index-url shimbun) 'no-cache 'no-decode)
-      (goto-char (point-min))
+      ;; In some rss feeds, LFs might be used mixed with CRLFs.
+      (shimbun-strip-cr)
       (decode-coding-region (point-min) (point-max) (shimbun-rss-get-encoding))
       (set-buffer-multibyte t)
       (shimbun-get-headers shimbun range))))
@@ -148,10 +149,6 @@ but you can identify it from the URL, define this method in a backend.")
 
 (defun shimbun-rss-get-headers (shimbun &optional range
 					need-descriptions need-all-items)
-  (static-when (featurep 'xemacs)
-    ;; It's one of many bugs in XEmacs that the coding systems *-dos
-    ;; provided by Mule-UCS don't convert CRLF to LF when decoding.
-    (shimbun-strip-cr))
   (let ((xml (condition-case err
 		 (xml-parse-region (point-min) (point-max))
 	       (error
