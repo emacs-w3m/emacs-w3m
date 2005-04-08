@@ -4048,6 +4048,17 @@ for decoding when the cdr that the data specify is not available.")
 	      (w3m-find-coding-system cs)
 	      (w3m-find-coding-system
 	       (car (rassq cs w3m-compatible-encoding-alist)))))
+    ;; Decode `&#nnn;' entities in 128..159.
+    (when (rassq w3m-current-coding-system w3m-compatible-encoding-alist)
+      (goto-char (point-min))
+      (while (re-search-forward "\
+\\(&#\\(12[89]\\|1[3-5][0-9]\\)\;\\)\\|\\(&#[Xx]\\([89][0-9A-Fa-f]\\)\;\\)"
+				nil t)
+	(insert (prog1
+		    (if (match-beginning 2)
+			(string-to-number (match-string 2))
+		      (string-to-number (match-string 4) 16))
+		  (delete-region (match-beginning 0) (match-end 0))))))
     (set-buffer-multibyte t)
     (decode-coding-region (point-min) (point-max) w3m-current-coding-system)))
 
