@@ -390,7 +390,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	  (mew-summary-ls newfld newfld))))))
 
 ;;;###autoload
-(defun mew-shimbun-retrieve ()
+(defun mew-shimbun-retrieve (&optional newfld)
   "Retrieve articles via SHIMBUN on this folder."
   (interactive)
   (when (mew-summary-exclusive-p)
@@ -414,7 +414,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	       (mew-shimbun-element-body sgr group server
 		 (setq count
 		       (+ (mew-shimbun-retrieve-article
-			   mua server group range fld)
+			   mua server group range fld newfld)
 			  count)))))
 	   (run-hooks 'mew-shimbun-retrieve-hook)
 	   (message "Getting %s %s in '%s' done"
@@ -431,7 +431,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
   (mew-summary-only
    (let ((mua (luna-make-entity 'shimbun-mew-mua))
 	 (cfld (mew-summary-folder-name 'ext))
-	 fld dir server group range)
+	 fld dir server group range newfld)
      (run-hooks 'mew-shimbun-before-retrieve-hook)
      (mew-window-configure 'summary)
      (mew-current-set nil nil nil)
@@ -442,17 +442,18 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 			   (car fldgrp)))
 	 (setq dir (mew-expand-folder fld))
 	 (unless (file-directory-p dir)
-	   (mew-make-directory dir))
+	   (mew-make-directory dir)
+	   (setq newfld t))
 	 (mew-shimbun-visit-folder fld)
 	 (sit-for 0.5)
 	 (mew-rendezvous mew-summary-buffer-process)
-	 (mew-shimbun-retrieve)
+	 (mew-shimbun-retrieve newfld)
 	 (unless (eq (get-buffer cfld) (current-buffer))
 	   (mew-kill-buffer (current-buffer)))))
      (mew-shimbun-visit-folder cfld)
      (message "Getting done"))))
 
-(defun mew-shimbun-retrieve-article (mua server group range fld)
+(defun mew-shimbun-retrieve-article (mua server group range fld &optional newfld)
   "Retrieve articles via SHIMBUN."
   (luna-define-method shimbun-mua-search-id ((mua shimbun-mew-mua) id)
     (let ((shimbun (shimbun-mua-shimbun mua)))
@@ -468,7 +469,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		  mew-use-biff))
 	(count 0)
 	(dispcount 0)
-	newfld msg file)
+	msg file)
     (if biff (mew-biff-clean-up))
     (shimbun-open-group shimbun group)
     (unless (file-exists-p (mew-expand-folder fld))
