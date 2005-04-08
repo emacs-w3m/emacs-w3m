@@ -1,6 +1,6 @@
 ;;; sb-laut-de.el --- shimbun backend for <http://www.laut.de/>
 
-;; Copyright (C) 2004 Andreas Seltenreich <seltenreich@gmx.de>
+;; Copyright (C) 2004, 2005 Andreas Seltenreich <seltenreich@gmx.de>
 
 ;; Author: Andreas Seltenreich <seltenreich@gmx.de>
 ;; Keywords: news
@@ -29,19 +29,22 @@
 (luna-define-class shimbun-laut-de (shimbun-rss) ())
 
 (defvar shimbun-laut-de-groups
-  '("platten"
-    "news"
-    "platten_rock"
-    "platten_pop"
+  '("news"
+    "platten"
     "platten_alternative"
-    "platten_metal"
-    "platten_rnb"
     "platten_dance"
+    "platten_hiphop"
     "platten_jazz"
-    "platten_hiphop"))
+    "platten_metal"
+    "platten_pop"
+    "platten_rnb"
+    "platten_rock"))
 
 (defvar shimbun-laut-de-content-start
-  "<!-- headline -->\\|<span class=\"ueberschriftnormalgrau[^>]*>")
+  (concat
+   "<!-- headline -->\\|"
+   "<span class=\"ueberschriftnormalgrau[^>]*>\\|"
+   "<span class=\"inhaltsueberschrift\">"))
 
 (defvar shimbun-laut-de-content-end
   (concat "<!-- /box weitere Links -->\\|"
@@ -50,10 +53,6 @@
 
 (defvar shimbun-laut-de-from-address "redaktion@laut.de")
 
-(luna-define-method shimbun-headers :before ((shimbun shimbun-laut-de)
-					     &rest range)
-  shimbun)
-
 (luna-define-method shimbun-groups ((shimbun shimbun-laut-de))
   shimbun-laut-de-groups)
 
@@ -61,7 +60,7 @@
   ((shimbun shimbun-laut-de) url date)
   (unless (string-match "laut.de/\\(.*\\)/" url)
     (error "Cannot find message-id base"))
-  (format "<%s@sb-laut-de.invalid>" 
+  (format "<%s@sb-laut-de.invalid>"
 	  (shimbun-replace-in-string
 	   (match-string-no-properties 1 url)
 	   "[^a-zA-Z0-9]" "%")))
@@ -69,6 +68,16 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-laut-de))
   (concat "http://www.laut.de/partner/allgemein/"
 	  (shimbun-current-group-internal shimbun) ".rdf"))
+
+(luna-define-method shimbun-clear-contents :after ((shimbun shimbun-laut-de)
+						     header)
+  (shimbun-remove-tags "<script" "</script>")
+  (shimbun-remove-tags
+   "<img src=\"/images/\\(?:voting\\|leer\\)[^\"]+gif" ">")
+  (shimbun-remove-tags
+   "<img[^>]+\\(?:width=\"1\"\\|height=\"1\"\\)[^>]*>")
+  (shimbun-remove-tags
+   "<a href=\"[^\"]+lautshop_preisvergleich_detail.php" "</a>"))
 
 (provide 'sb-laut-de)
 
