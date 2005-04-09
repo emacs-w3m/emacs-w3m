@@ -5,7 +5,7 @@
 ;; Author: NAKAJIMA Mikio     <minakaji@namazu.org>,
 ;;         TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Katsumi Yamaoka    <yamaoka@jpl.org>,
-;;         Tsuyoshi CHO       <mfalcon_sky@emailuser.net>
+;;         Tsuyoshi CHO       <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
 ;; Created: Jun 14, 2003
 
@@ -105,7 +105,7 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
     (when (re-search-forward
 	   "<a +href=\"\\([^\"]*\\)\"[^>]*>次のページ" nil t)
       (setq next (shimbun-expand-url (match-string 1) url)))
-    (shimbun-cnet-jp-clean-text-page)
+    (shimbun-clear-contents shimbun header)
     (goto-char (point-min))
     ;; remove page footer (last page is ignored)
     (when (re-search-forward "| [0-9]+ / [0-9]+ |" nil t)
@@ -133,42 +133,40 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 	  (result (when next
 		    (with-temp-buffer
 		      (shimbun-fetch-url shimbun next)
-		      (shimbun-clear-contents shimbun header)
 		      (shimbun-cnet-jp-retrieve-next-pages
 		       shimbun header base-cid next images)))))
       (list (cons body (car result))
 	    (or (nth 1 result) images)))))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-cnet-jp) header)
-  (let ((case-fold-search t))
-    (shimbun-clear-contents shimbun header)
-    (let ((base-cid (shimbun-header-id header)))
-      (when (string-match "\\`<\\([^>]+\\)>\\'" base-cid)
-	(setq base-cid (match-string 1 base-cid)))
-      (let (body)
-	(multiple-value-bind (texts images)
-	    (shimbun-cnet-jp-retrieve-next-pages shimbun header base-cid
-						 (shimbun-header-xref header))
-	  (erase-buffer)
-	  (if (= (length texts) 1)
-	      (setq body (car texts))
-	    (setq body (shimbun-make-multipart-entity))
-	    (let ((i 0))
-	      (dolist (text texts)
-		(setf (shimbun-entity-cid text)
-		      (format "shimbun.%d.%s" (incf i) base-cid))))
-	    (apply 'shimbun-entity-add-child body texts))
-	  (when images
-	    (setf (shimbun-entity-cid body) (concat "shimbun.0." base-cid))
-	    (let ((new (shimbun-make-multipart-entity)))
-	      (shimbun-entity-add-child new body)
-	      (apply 'shimbun-entity-add-child new
-		     (mapcar 'cdr (nreverse images)))
-	      (setq body new))))
-	(shimbun-header-insert shimbun header)
-	(insert "MIME-Version: 1.0\n")
-	(shimbun-entity-insert body)))
-    (buffer-string)))
+  (let ((case-fold-search t)
+	(base-cid (shimbun-header-id header)))
+    (when (string-match "\\`<\\([^>]+\\)>\\'" base-cid)
+      (setq base-cid (match-string 1 base-cid)))
+    (let (body)
+      (multiple-value-bind (texts images)
+	  (shimbun-cnet-jp-retrieve-next-pages shimbun header base-cid
+					       (shimbun-header-xref header))
+	(erase-buffer)
+	(if (= (length texts) 1)
+	    (setq body (car texts))
+	  (setq body (shimbun-make-multipart-entity))
+	  (let ((i 0))
+	    (dolist (text texts)
+	      (setf (shimbun-entity-cid text)
+		    (format "shimbun.%d.%s" (incf i) base-cid))))
+	  (apply 'shimbun-entity-add-child body texts))
+	(when images
+	  (setf (shimbun-entity-cid body) (concat "shimbun.0." base-cid))
+	  (let ((new (shimbun-make-multipart-entity)))
+	    (shimbun-entity-add-child new body)
+	    (apply 'shimbun-entity-add-child new
+		   (mapcar 'cdr (nreverse images)))
+	    (setq body new))))
+      (shimbun-header-insert shimbun header)
+      (insert "MIME-Version: 1.0\n")
+      (shimbun-entity-insert body)))
+  (buffer-string))
 
 (luna-define-method shimbun-clear-contents :before
   ((shimbun shimbun-cnet-jp) header)

@@ -4576,6 +4576,12 @@ yahoo.entertainment yahoo.sports yahoo.computer yahoo.hokkaido
 yahoo.tohoku yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
 yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
 
+@item @uref{http://japan.zdnet.com/, ZDNet Japan}
+zdnet-jp.news zdnet-jp.news.network zdnet-jp.news.hardware
+zdnet-jp.news.software zdnet-jp.news.manage zdnet-jp.news.security
+zdnet-jp.news.internet zdnet-jp.news.os zdnet-jp.news.db
+zdnet-jp.news.system zdnet-jp.column zdnet-jp.channel.security
+
 @item @uref{http://www.zeit.de/, Die Zeit}
 zeit-de.news
 @end table

@@ -1,3 +1,12 @@
+2005-04-09  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-zdnet-jp.el: New file.
+
+	* shimbun/sb-cnet-jp.el (top): Renew address
+	(shimbun-cnet-jp-clean-text-page): Remove.
+	(shimbun-cnet-jp-retrieve-next-pages): Replace
+	`shimbun-cnet-jp-clean-text-page' to `shimbun-clear-contents'.
+
 2005-04-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/mew-shimbun.el (mew-shimbun-retrieve): Add new argument `newfld'.
