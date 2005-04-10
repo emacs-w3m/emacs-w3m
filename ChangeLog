@@ -1,3 +1,8 @@
+2005-04-10  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-atmarkit.el (shimbun-article): New define method.
+	Before run it, replace xref in header to no param format.
+
 2005-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-rss.el (shimbun-rss-get-encoding): Goto the beginning

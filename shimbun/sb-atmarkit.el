@@ -105,6 +105,14 @@
   (let ((shimbun-atmarkit-use-base-url t))
     (luna-call-next-method)))
 
+(luna-define-method shimbun-article :before ((shimbun shimbun-atmarkit)
+					     header &optional outbuf)
+  (let ((xref (shimbun-header-xref header))
+	end)
+    (when (setq end (string-match "\\?" xref))
+      (setq xref (substring xref 0 end)))
+    (shimbun-header-set-xref header xref)))
+
 (luna-define-method shimbun-clear-contents :before ((shimbun shimbun-atmarkit)
 						    header)
   (shimbun-remove-tags "<script" "</script *>")
