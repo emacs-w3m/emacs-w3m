@@ -1,3 +1,8 @@
+2005-04-10  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
+
+	* shimbun/sb-msports-nifty.el (shimbun-get-headers): Follow the
+	change of the site design.
+
 2005-04-10  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-atmarkit.el (shimbun-article): New define method.
