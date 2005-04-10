@@ -1,3 +1,8 @@
+2005-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-rss.el (shimbun-rss-get-encoding): Goto the beginning
+	of the buffer first.
+
 2005-04-09  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-zdnet-jp.el: New file.

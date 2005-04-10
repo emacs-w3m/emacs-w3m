@@ -217,6 +217,7 @@ If `shimbun-rss-compatible-encoding-alist' specifies the compatible
 encoding, it is used instead.  If the xml contents doesn't specify the
 encoding, return `utf-8' which is the default encoding for xml if it
 is available, otherwise return nil."
+  (goto-char (point-min))
   (if (re-search-forward
        "<\\?[^>]*encoding=\\(\"\\([^\">]+\\)\"\\|'\\([^'>]+\\)'\\)"
        nil t)
