@@ -4535,7 +4535,7 @@ yomiuri.sports yomiuri.world
 
 @item @uref{http://www.sankei.co.jp/, 産経新聞}
 sankei.shakai sankei.sports sankei.keizai sankei.seiji sankei.kokusai
-sankei.bungei sankei.book sankei.person sankei.dead
+sankei.bungei sankei.book sankei.person sankei.dead sankei.editoria
 
 @item @uref{http://www.bbc.co.uk/, BBC}
 bbc.news

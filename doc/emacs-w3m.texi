@@ -4479,7 +4479,7 @@ The backend, @samp{yomiuri-html}, is also supported.
 
 @item @uref{http://www.sankei.co.jp/, Sankei Shimbun}
 sankei.shakai sankei.sports sankei.keizai sankei.seiji sankei.kokusai
-sankei.bungei sankei.book sankei.person sankei.dead
+sankei.bungei sankei.book sankei.person sankei.dead sankei.editoria
 
 @item @uref{http://www.bbc.co.uk/, BBC}
 bbc.news

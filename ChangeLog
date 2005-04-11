@@ -1,3 +1,15 @@
+2005-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-sankei.el (shimbun-sankei-from-address): Make it
+	unreachable.
+	(shimbun-sankei-group-table): Add the editoria group.
+	(shimbun-index-url): Use shimbun-expand-url.
+	(shimbun-get-headers): Use shimbun-sankei-get-headers-editoria for
+	the editoria group; make the from address unreachable.
+	(shimbun-sankei-get-headers-editoria): New function.
+	(shimbun-clear-contents): Put the content-end boundary for
+	articles in the editoria group.
+
 2005-04-10  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
 
 	* shimbun/sb-msports-nifty.el (shimbun-get-headers): Follow the
@@ -24,8 +36,8 @@
 
 2005-04-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* shimbun/mew-shimbun.el (mew-shimbun-retrieve): Add new argument `newfld'.
-	Call `mew-shimbun-retrieve-article' with `newfld'.
+	* shimbun/mew-shimbun.el (mew-shimbun-retrieve): Add new argument
+	`newfld'.  Call `mew-shimbun-retrieve-article' with `newfld'.
 	(mew-shimbun-retrieve-all): Treate `newfld' and call
 	`mew-shimbun-retrieve' with `newfld'.
 	(mew-shimbun-retrieve-article): Add new argument `newfld'.
