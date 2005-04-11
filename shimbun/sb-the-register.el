@@ -67,7 +67,7 @@
        (setq url (w3m-replace-in-string
 		  url
 		  "http://go\\.theregister\\.com/feed/"
-		  "http://www.theregister.co.uk/"))
+		  ""))
        (shimbun-header-set-xref
 	header (concat url "print.html")))
      header)
