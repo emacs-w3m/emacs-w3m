@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the Sankei Shimbun -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003, 2004 Katsumi Yamaoka
+;; Copyright (C) 2003, 2004, 2005 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -39,8 +39,7 @@
 
 (defvar shimbun-sankei-server-name "産経新聞")
 
-(defvar shimbun-sankei-from-address
-  (concat "webmaster@" shimbun-sankei-top-level-domain))
+(defvar shimbun-sankei-from-address "nobody@example.com")
 
 (defvar shimbun-sankei-content-start
   "<!--[\t\n ]*\\(photo\\.sta\\|\\(ad--\\)?hombun\\)[\t\n ]*-->[\t\n ]*")
@@ -57,7 +56,9 @@
     ("bungei" "文化・芸能" "news/bungei.htm")
     ("book" "読書" "news/book.htm")
     ("person" "ひと" "news/person.htm")
-    ("dead" "おくやみ" "news/dead.htm")))
+    ("dead" "おくやみ" "news/dead.htm")
+    ("editoria" "主張" "http://ez.st37.arena.ne.jp/cgi-bin/search/namazu.cgi\
+?query=%8E%E5%92%A3&whence=0&max=20&sort=date%3Alate&idxname=edit")))
 
 (defvar shimbun-sankei-x-face-alist
   '(("default" . "X-Face: J@?(qGKd~^Tfa]pqTbgVxl61=+G<g7\\$mJ4}jj\
@@ -74,25 +75,28 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
 		shimbun-sankei-group-table)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-sankei))
-  (concat (shimbun-url-internal shimbun)
-	  (nth 2 (assoc (shimbun-current-group-internal shimbun)
-			shimbun-sankei-group-table))))
+  (shimbun-expand-url (nth 2 (assoc (shimbun-current-group-internal shimbun)
+				    shimbun-sankei-group-table))
+		      (shimbun-url-internal shimbun)))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-sankei)
 					 &optional range)
-  (when (re-search-forward "<!--[\t\n ]*mlist[\t\n ]*-->[\t\n ]*" nil t)
-    (delete-region (point-min) (point)))
-  (when (re-search-forward "[\t\n ]*<!--" nil t)
-    (delete-region (match-beginning 0) (point-max)))
-  (goto-char (point-min))
-  (let ((from (shimbun-from-address shimbun))
-	(group (shimbun-current-group-internal shimbun))
-	(case-fold-search t)
-	cyear cmonth month year headers)
-    (setq cyear (decode-time)
-	  cmonth (nth 4 cyear)
-	  cyear (nth 5 cyear))
-    (while (re-search-forward "<a[\t\n ]+href=\"\
+  (if (string-equal (shimbun-current-group-internal shimbun) "editoria")
+      (shimbun-sankei-get-headers-editoria shimbun range)
+    (when (re-search-forward "<!--[\t\n ]*mlist[\t\n ]*-->[\t\n ]*" nil t)
+      (delete-region (point-min) (point)))
+    (when (re-search-forward "[\t\n ]*<!--" nil t)
+      (delete-region (match-beginning 0) (point-max)))
+    (goto-char (point-min))
+    (let ((from (concat (shimbun-server-name shimbun)
+			" (" (shimbun-current-group-name shimbun) ")"))
+	  (group (shimbun-current-group-internal shimbun))
+	  (case-fold-search t)
+	  cyear cmonth month year headers)
+      (setq cyear (decode-time)
+	    cmonth (nth 4 cyear)
+	    cyear (nth 5 cyear))
+      (while (re-search-forward "<a[\t\n ]+href=\"\
 \\(\
 \\([/0-9a-z]+\\)\
 \\.htm\\)\
@@ -105,48 +109,80 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
 \[\t\n ]+\
 \\([012][0-9]:[0-5][0-9]\\)\
 )"
+				nil t)
+	(setq month (string-to-number (match-string 5))
+	      year (cond ((>= (- month cmonth) 2)
+			  (1- cyear))
+			 ((and (= 1 month) (= 12 cmonth))
+			  (1+ cyear))
+			 (t
+			  cyear)))
+	(push (shimbun-create-header
+	       ;; number
+	       0
+	       ;; subject
+	       (match-string 3)
+	       ;; from
+	       from
+	       ;; date
+	       (shimbun-make-date-string year month
+					 (string-to-number (match-string 6))
+					 (match-string 7))
+	       ;; id
+	       (concat "<"
+		       (mapconcat 'identity
+				  (save-match-data
+				    (split-string (match-string 2) "/"))
+				  ".")
+		       "%" group "."
+		       shimbun-sankei-top-level-domain ">")
+	       ;; references, chars, lines
+	       "" 0 0
+	       ;; xref
+	       (concat shimbun-sankei-url "news/" (match-string 1)))
+	      headers))
+      headers)))
+
+(defun shimbun-sankei-get-headers-editoria (shimbun range)
+  (let ((from (concat (shimbun-server-name shimbun)
+		      " (" (shimbun-current-group-name shimbun) ")"))
+	year month day headers)
+    (while (re-search-forward "<a[\t\n ]+href=\"\
+\\(http://www\\.sankei\\.co\\.jp/news/\
+\\([0-9][0-9]\\)\\([01][0-9]\\)\\([0-3][0-9]\\)\
+/morning/editoria\\.htm\\)\
+\">[\t\n 　]*\\(\\(<[^>]+>\\|主張\\)[\t\n 　]*\\)\
++([01][0-9]/[0-3][0-9][\t\n ]+\
+\\([012][0-9]:[0-5][0-9]\\))"
 			      nil t)
-      (setq month (string-to-number (match-string 5))
-	    year (cond ((>= (- month cmonth) 2)
-			(1- cyear))
-		       ((and (= 1 month) (= 12 cmonth))
-			(1+ cyear))
-		       (t
-			cyear)))
+      (setq year (+ 2000 (string-to-number (match-string 2)))
+	    month (string-to-number (match-string 3))
+	    day (string-to-number (match-string 4)))
       (push (shimbun-create-header
-	     ;; number
 	     0
-	     ;; subject
-	     (match-string 3)
-	     ;; from
+	     (format "主張 (%d/%d)" month day)
 	     from
-	     ;; date
-	     (shimbun-make-date-string year month
-				       (string-to-number (match-string 6))
-				       (match-string 7))
-	     ;; id
-	     (concat "<"
-		     (mapconcat 'identity
-				(save-match-data
-				  (split-string (match-string 2) "/"))
-				".")
-		     "%" group "."
-		     shimbun-sankei-top-level-domain ">")
-	     ;; references, chars, lines
+	     (shimbun-make-date-string year month day (match-string 7))
+	     (format "<%d%02d%02d%%editoria.sankei.co.jp>"
+		     year month day)
 	     "" 0 0
-	     ;; xref
-	     (concat shimbun-sankei-url "news/" (match-string 1)))
+	     (match-string 1))
 	    headers))
     headers))
 
 (luna-define-method shimbun-clear-contents :before ((shimbun shimbun-sankei)
 						    header)
-  ;; Remove advertisements.
-  (shimbun-remove-tags "<!--[\t\n ]*AdSpace\\(.+=.+\\)+-->"
-		       "<!--[\t\n ]*/AdSpace[\t\n ]*-->")
-  ;; Remove an advertisement between photo and hombun.
-  (shimbun-remove-tags "<!--[\t\n ]*photo\\.end[\t\n ]*-->"
-		       "<!--[\t\n ]*hombun[\t\n ]*-->")
+  (if (string-equal (shimbun-current-group-internal shimbun) "editoria")
+      (when (and (re-search-forward shimbun-sankei-content-start nil t)
+		 (re-search-forward "[\t\n ]*<p>[\t\n ]*<p>" nil t))
+	(goto-char (match-beginning 0))
+	(insert "\n<!--hbnend-->"))
+    ;; Remove advertisements.
+    (shimbun-remove-tags "<!--[\t\n ]*AdSpace\\(.+=.+\\)+-->"
+			 "<!--[\t\n ]*/AdSpace[\t\n ]*-->")
+    ;; Remove an advertisement between photo and hombun.
+    (shimbun-remove-tags "<!--[\t\n ]*photo\\.end[\t\n ]*-->"
+			 "<!--[\t\n ]*hombun[\t\n ]*-->"))
   (goto-char (point-min)))
 
 (provide 'sb-sankei)
