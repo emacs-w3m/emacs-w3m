@@ -147,7 +147,7 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
   (let ((today (decode-time))
 	(from (concat (shimbun-server-name shimbun)
 		      " (" (shimbun-current-group-name shimbun) ")"))
-	year month day time headers)
+	year month day url time headers)
     (while (or (and today
 		    (if (or (and (>= (nth 2 today) 5)
 				 (<= (nth 2 today) 7))
