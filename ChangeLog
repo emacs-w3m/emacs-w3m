@@ -1,3 +1,8 @@
+2005-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-sankei.el (shimbun-sankei-get-headers-editoria):
+	Presume the url for that day.
+
 2005-04-11  David Hansen  <david.hansen@physik.fu-berlin.de>
 
 	* shimbun/sb-the-register.el (shimbun-get-headers): Follow their

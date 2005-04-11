@@ -144,29 +144,49 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
       headers)))
 
 (defun shimbun-sankei-get-headers-editoria (shimbun range)
-  (let ((from (concat (shimbun-server-name shimbun)
+  (let ((today (decode-time))
+	(from (concat (shimbun-server-name shimbun)
 		      " (" (shimbun-current-group-name shimbun) ")"))
-	year month day headers)
-    (while (re-search-forward "<a[\t\n ]+href=\"\
+	year month day time headers)
+    (while (or (and today
+		    (if (or (and (>= (nth 2 today) 5)
+				 (<= (nth 2 today) 7))
+			    (and (= (nth 2 today) 8)
+				 (<= (nth 1 today) 30)))
+			(prog1
+			    t
+			  (setq year (nth 5 today)
+				month (nth 4 today)
+				day (nth 3 today)
+				url (format "\
+http://www.sankei.co.jp/news/%02d%02d%02d/morning/editoria.htm"
+					    (% year 100) month day)
+				time "05:00"
+				today nil))
+		      (setq today nil)))
+	       (and (re-search-forward "<a[\t\n ]+href=\"\
 \\(http://www\\.sankei\\.co\\.jp/news/\
 \\([0-9][0-9]\\)\\([01][0-9]\\)\\([0-3][0-9]\\)\
 /morning/editoria\\.htm\\)\
 \">[\t\n 　]*\\(\\(<[^>]+>\\|主張\\)[\t\n 　]*\\)\
 +([01][0-9]/[0-3][0-9][\t\n ]+\
 \\([012][0-9]:[0-5][0-9]\\))"
-			      nil t)
-      (setq year (+ 2000 (string-to-number (match-string 2)))
-	    month (string-to-number (match-string 3))
-	    day (string-to-number (match-string 4)))
+				       nil t)
+		    (prog1
+			t
+		      (setq year (+ 2000 (string-to-number (match-string 2)))
+			    month (string-to-number (match-string 3))
+			    day (string-to-number (match-string 4))
+			    url (match-string 1)
+			    time (match-string 7)))))
       (push (shimbun-create-header
 	     0
 	     (format "主張 (%d/%d)" month day)
 	     from
-	     (shimbun-make-date-string year month day (match-string 7))
-	     (format "<%d%02d%02d%%editoria.sankei.co.jp>"
-		     year month day)
+	     (shimbun-make-date-string year month day time)
+	     (format "<%d%02d%02d%%editoria.sankei.co.jp>" year month day)
 	     "" 0 0
-	     (match-string 1))
+	     url)
 	    headers))
     headers))
 
