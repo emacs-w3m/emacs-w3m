@@ -61,9 +61,9 @@
 ?query=%8E%E5%92%A3&whence=0&max=20&sort=date%3Alate&idxname=edit")))
 
 (defvar shimbun-sankei-x-face-alist
-  '(("default" . "X-Face: J@?(qGKd~^Tfa]pqTbgVxl61=+G<g7\\$mJ4}jj\
-z*[c{L!Zi-@2H~S{M>\"Y?}\"]ly',1[6oe\n *b+4?PL^)c5+h&[O=$SZ}D\"I%>\
-DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
+  '(("default" . "X-Face: L%Y'jtF~2k?#oXVB%?3t/WE),tU/UwT%tl-omu#\
+6TiJ]WFcLa>}caCBN(M\\vvoi,&hpVy?p\n T{\"&&d2,fOsFk+j2}\\q6eSg5b$2\
+\"w'f{${CR\"PDL/E:Jo32\"T,k)!t666xNSH]?~M8gco<a$wp-$d;\n z#a%y#c}|")))
 
 (defvar shimbun-sankei-expiration-days 7)
 
