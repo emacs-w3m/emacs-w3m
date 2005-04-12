@@ -149,10 +149,8 @@ DP\\h.OTct|k28-/c`^B-=cDXV;.>3w`/X_.'n$~,<$:3nNe#Jy8Q\n 5l[|\"#w")))
 		      " (" (shimbun-current-group-name shimbun) ")"))
 	year month day url time headers)
     (while (or (and today
-		    (if (or (and (>= (nth 2 today) 5)
-				 (<= (nth 2 today) 7))
-			    (and (= (nth 2 today) 8)
-				 (<= (nth 1 today) 30)))
+		    (if (and (>= (nth 2 today) 5)
+			     (< (nth 2 today) 10))
 			(prog1
 			    t
 			  (setq year (nth 5 today)

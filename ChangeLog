@@ -1,3 +1,8 @@
+2005-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-sankei.el (shimbun-sankei-get-headers-editoria):
+	Extend the time slot in which to presume the url.
+
 2005-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-sankei.el (shimbun-sankei-get-headers-editoria):
