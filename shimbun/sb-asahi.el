@@ -396,7 +396,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	  regexp (format (nth 3 regexp)
 			 (regexp-quote (shimbun-subst-char-in-string
 					?. ?/ group)))
-	  cyear (decode-time)
+	  cyear (shimbun-decode-time nil 32400)
 	  cmonth (nth 4 cyear)
 	  cyear (nth 5 cyear)
 	  rss-p (string-equal group "rss")

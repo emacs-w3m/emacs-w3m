@@ -93,7 +93,7 @@
 	  (group (shimbun-current-group-internal shimbun))
 	  (case-fold-search t)
 	  cyear cmonth month year headers)
-      (setq cyear (decode-time)
+      (setq cyear (shimbun-decode-time nil 32400)
 	    cmonth (nth 4 cyear)
 	    cyear (nth 5 cyear))
       (while (re-search-forward "<a[\t\n ]+href=\"\

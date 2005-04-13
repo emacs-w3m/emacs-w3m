@@ -237,7 +237,7 @@ It does also shorten too much spaces."
 	(from (shimbun-from-address shimbun))
 	(case-fold-search t)
 	cyear cmonth month day time regexp numbers headers)
-    (setq cyear (decode-time)
+    (setq cyear (shimbun-decode-time nil 32400)
 	  cmonth (nth 4 cyear)
 	  cyear (nth 5 cyear))
     ;; Extracting top news.

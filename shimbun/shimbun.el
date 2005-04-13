@@ -1041,6 +1041,29 @@ zone."
   (let ((x (nreverse (append (timezone-fix-time string nil nil) nil))))
     (apply 'encode-time (nconc (cdr x) (list (car x))))))
 
+(defun shimbun-decode-time (&optional specified-time specified-zone)
+  "Decode a time value as (SEC MINUTE HOUR DAY MONTH YEAR DOW DST ZONE).
+This function behaves as well as `decode-time' if the optional 2nd arg
+SPECIFIED-ZONE is nil.  If it is an integer indicating the number of
+seconds ahead of UTC (east of Greenwich), the return value expresses
+the local time that the value indicates.  For instance, the following
+form returns the present time of Japan, wherever you are.
+
+\(shimbun-decode-time nil 32400)"
+  (if specified-zone
+      (let* ((tz (- (car (current-time-zone)) specified-zone))
+	     (ct (or specified-time (current-time)))
+	     (ms (car ct))
+	     (ls (- (cadr ct) tz)))
+	(cond ((< ls 0)
+	       (setq ls (+ ls 65536)
+		     ms (1- ms)))
+	      ((>= ls 65536)
+	       (setq ls (- ls 65536)
+		     ms (1+ ms))))
+	(nconc (nbutlast (decode-time (list ms ls))) (list specified-zone)))
+    (decode-time specified-time)))
+
 (defun shimbun-sort-headers (headers)
   "Return a list of sorted HEADERS by date in increasing order."
   (sort headers

@@ -1,5 +1,17 @@
 2005-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/shimbun.el (shimbun-decode-time): New function.
+
+	* shimbun/sb-asahi-mytown.el (shimbun-asahi-mytown-get-headers):
+	Use it.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Use it.
+
+	* shimbun/sb-sankei.el (shimbun-get-headers): Use it.
+	(shimbun-sankei-get-headers-editoria: Use it.
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-get-headers): Use it.
+
 	* w3m.el (w3m-decode-buffer): Decode "\240" into "&nbsp;".
 
 2005-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>

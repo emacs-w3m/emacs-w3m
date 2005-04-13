@@ -1,6 +1,6 @@
 ;;; sb-asahi-mytown.el --- mytown.asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003, 2004 Katsumi Yamaoka
+;; Copyright (C) 2003, 2004, 2005 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -127,7 +127,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	(from (shimbun-from-address shimbun))
 	(case-fold-search t)
 	cyear cmonth start href artnum limit month day subject year headers)
-    (setq cyear (decode-time)
+    (setq cyear (shimbun-decode-time nil 32400)
 	  cmonth (nth 4 cyear)
 	  cyear (nth 5 cyear))
     (while (and (re-search-forward "<[\t\n\r ]*a[\t\n\r ]+href=\"\
