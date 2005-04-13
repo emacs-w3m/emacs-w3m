@@ -1046,8 +1046,8 @@ zone."
 This function behaves as well as `decode-time' if the optional 2nd arg
 SPECIFIED-ZONE is nil.  If it is an integer indicating the number of
 seconds ahead of UTC (east of Greenwich), the return value expresses
-the local time that the value indicates.  For instance, the following
-form returns the present time of Japan, wherever you are.
+the local time of the zone that the value indicates.  For instance,
+the following form returns the present time of Japan, wherever you are.
 
 \(shimbun-decode-time nil 32400)"
   (if specified-zone
