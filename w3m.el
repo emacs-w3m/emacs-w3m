@@ -4062,7 +4062,7 @@ for decoding when the cdr that the data specify is not available.")
 		    (delete-region (match-beginning 0) (match-end 0)))))
 	(goto-char (point-min))
 	(while (re-search-forward "\240\\|&#160;\\|&#xa0;" nil t)
-	  (replace-match " "))))
+	  (replace-match "&nbsp;"))))
     (set-buffer-multibyte t)
     (decode-coding-region (point-min) (point-max) w3m-current-coding-system)))
 

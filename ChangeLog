@@ -1,6 +1,6 @@
 2005-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-decode-buffer): Decode "\240" into " ".
+	* w3m.el (w3m-decode-buffer): Decode "\240" into "&nbsp;".
 
 2005-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
