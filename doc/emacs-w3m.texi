@@ -2627,9 +2627,8 @@ This variable can take one of the following five kinds of forms:
 @item
 t
 
-Decode URIs using the encoding assumed by the default presumption rule
-based on the priority list including the encoding used to decode the
-current page and the value of @code{w3m-coding-system-priority-list}.
+Decode URIs using the encoding guessed from the value of
+@code{w3m-coding-system-priority-list}.
 
 @item
 Coding system
@@ -2648,8 +2647,8 @@ Each element looks like the @code{(PREDICATE . ENCODING)} form.
 @code{PREDICATE} should be a regexp, a function or a Lisp form, and
 @code{ENCODING} should be one of the forms described here excluding this
 form.  If @code{PREDICATE} is a regexp, it will be tested whether it
-matches to the current url.  If it is a function, it will be called with
-no argument.  If it is a Lisp form, it will be simply evaluated.
+matches to the target url.  If it is a function, it will be called with
+the target url.  If it is a Lisp form, it will be simply evaluated.
 Elements are tested in turn until the result of the test of the
 predicate is true and the encoding which is associated to the predicate
 is used for decoding URIs.
