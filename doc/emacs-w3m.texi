@@ -272,6 +272,9 @@ You must install the latest w3m, it is available at:
 @cindex New custom
 @cindex regexp-opt.el
 @cindex @acronym{FLIM} package
+@cindex xml.el
+@cindex Mule-UCS package
+@cindex codepage-ex
 
 Depending on the version of Emacs, third party packages may be required.
 This section provides resources to help you find and install them.
@@ -401,20 +404,35 @@ required for byte-compilation as follows:
 @end example
 
 @item Mule-UCS
-The Mule-UCS Emacs Lisp package makes your Emacs handle the Unicode
-system.  We recommend you install this package so that emacs-w3m can
-display pages written in UTF-8, etc.  It is available at:
+If you use Emacs 20 or XEmacs, or need to read Chinese text, Japanese
+text, Korean text, etc. using Emacs 21, we recommend you install the
+Mule-UCS Emacs Lisp package so as to enable emacs-w3m to display pages
+encoded by UTF-8, which is the typical coding system of the Unicode
+system.  Note that Emacs 21 supports the Unicode system partially (e.g.,
+for Latin text) and Emacs 22 or greater fully supports it.  The Mule-UCS
+Emacs Lisp package is available at:
 
 @uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
 
-When Mule-UCS is installed for Emacs-21.2, it is necessary
-to apply
+If you use it with Emacs 21.2, it is necessary to apply
 @uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html, this
 patch} before installation.
 
 If you are an XEmacs user, the compiled package is here:
 
 @uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.04-pkg.tar.gz}
+
+@item codepage-ex
+Some web sites in Europe use the @code{windows-1252} coding system for
+encoding text in spite of the @samp{charset=ISO-8859-1} label being
+specified there.  Since @code{iso-8859-1} is insufficient to decode such
+text, emacs-w3m uses @code{windows-1252} as a superset of
+@code{iso-8859-1} if it is available.  The @code{windows-1252} coding
+system is built-in since Emacs 22.  Even in Emacs 21, you can enable to
+use it using the module called @code{codepage-ex}.  See the following
+page:
+
+@uref{http://www.nijino.com/ari/emacs/codepage-ex.html}
 @end table
 
 @node Installing Emacs-w3m

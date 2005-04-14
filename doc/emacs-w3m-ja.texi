@@ -305,6 +305,9 @@ Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r!"%&%'%V%3%s%F%s%D$r<hF@$9$k$?$a$N%P%C%/
 @cindex New custom
 @cindex regexp-opt.el
 @cindex @acronym{FLIM} package
+@cindex xml.el
+@cindex Mule-UCS package
+@cindex codepage-ex
 
 Emacs $B$N%P!<%8%g%s$K$h$C$F$O!"%5!<%I%Q!<%F%#$N%Q%C%1!<%8$,I,MW$K$J$k$3$H(B
 $B$,$"$j$^$9!#$3$N9`$G$O!"$=$l$i$r8+$D$1$F%$%s%9%H!<%k$9$k$?$a$N;qNA$rDs6!(B
@@ -437,10 +440,14 @@ byte-compile $B$9$l$PNI$$$G$9(B:
 @end example
 
 @item Mule-UCS
-Mule-UCS Emacs Lisp $B%Q%C%1!<%8$r;H$&$3$H$K$h$C$F!"$"$J$?(B
-$B$N(B Emacs $B$,(B Unicode $B%7%9%F%`$r07$&$3$H$,$G$-$k$h$&$K$J$j$^$9!#(B
-Emacs-w3m $B$,(B UTF-8 $B$J$I$G=q$+$l$?%Z!<%8$rI=<($G$-$k$h$&$K$9$k$?$a$K!"$3(B
-$B$l$r%$%s%9%H!<%k$9$k$3$H$r4+$a$^$9!#0J2<$N>l=j$+$i<hF@$7$F2<$5$$(B:
+Emacs 20 $B$+(B XEmacs $B$r;H$&$+!"$^$?$O(B Emacs 21 $B$r;H$C$FCf9q8l!"F|K\8l!"4Z(B
+$B9q8l$J$I$N%F%-%9%H$rFI$`I,MW$,$"$k$J$i$P!"(Bemacs-w3m $B$,(B (Unicode $B%7%9%F%`(B
+$B$NBeI=E*$J(B coding system $B$G$"$k(B) UTF-8 $B$G%(%s%3!<%I$5$l$?%Z!<%8$rI=<($G(B
+$B$-$k$h$&$K$9$k$?$a$K!"(BMule-UCS Emacs Lisp $B%Q%C%1!<%8$r%$%s%9%H!<%k$9$k$3(B
+$B$H$r4+$a$^$9!#(BEmacs 21 $B$,(B Unicode $B%7%9%F%`$rItJ,E*$K(B ($BNc$($P%i%F%s!&%F%-(B
+$B%9%H$N$?$a$K(B) $B%5%]!<%H$7!"(BEmacs 22 $B0J>e$,$=$l$r40A4$K%5%]!<%H$9$k$3$H$K(B
+$BCm0U$7$F$/$@$5$$!#(BMule-UCS Emacs Lisp $B%Q%C%1!<%8$O0J2<$N>l=j$+$i<hF@$7$F(B
+$B2<$5$$(B:
 
 @uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
 
@@ -451,6 +458,18 @@ Mule-UCS $B$K(B @uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.htm
 XEmacs $B%f!<%68~$1$K$O!"$3$3$K%3%s%Q%$%k:Q$_$N%Q%C%1!<%8$,$"$j$^$9(B:
 
 @uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.04-pkg.tar.gz}
+
+@item codepage-ex
+$B%h!<%m%C%Q$N$$$/$D$+$N(B web $B%5%$%H$O!"(B@samp{charset=ISO-8859-1} $B$r;XDj$7(B
+$B$F$$$k$N$K$b$+$+$o$i$:!"%F%-%9%H$N%(%s%3!<%I$K(B @code{windows-1252}
+coding system $B$r;H$$$^$9!#$=$N$h$&$J%F%-%9%H$r%G%3!<%I$9$k$N(B
+$B$K(B @code{iso-8859-1} $B$OIT==J,$J$N$G!"(Bemacs-w3m $B$OMxMQ2DG=$J(B
+$B$i(B @code{windows-1252} $B$r(B @code{iso-8859-1} $B$N%9!<%Q!<%;%C%H$H$7$F;HMQ$7(B
+$B$^$9!#(BEmacs 22 $B$+$i(B @code{windows-1252} coding system $B$OAH$_9~$^$l$F$$$^(B
+$B$9$,!"(B@code{codepage-ex} $B$H$$$&%b%8%e!<%k$r;H$&$3$H$K$h$C$F!"(BEmacs 21 $B$G(B
+$B$b$=$l$r;H$($k$h$&$K$9$k$3$H$,$G$-$^$9!#0J2<$N%Z!<%8$r;2>H$7$F2<$5$$!#(B
+
+@uref{http://www.nijino.com/ari/emacs/codepage-ex.html}
 @end table
 
 @node Installing Emacs-w3m
