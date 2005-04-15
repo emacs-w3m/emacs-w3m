@@ -1,3 +1,8 @@
+2005-04-15  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/sb-palmfan.el (shimbun-palmfan-x-face-alist): New
+	variable. Tnx, Maruyama san.
+
 2005-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-decode-time): New function.

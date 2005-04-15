@@ -57,6 +57,12 @@
 
 (defvar shimbun-palmfan-expiration-days 6)
 
+(defvar shimbun-palmfan-x-face-alist
+  '(("default" . "X-Face: \"<kvsju9lZL34FJ5jQUOZ|uEZf2(W2aw>dU62umIQL4j!$\
+eGluPC0(*l4^GB8v\n diqCIs\\6@p\\TN#{@;s*NMI'@\\[8Z8M*:5g}\
+`c9yC}F6e\\}DqeZo!LB>(hEF|P+U.b|#\n >$@]5@PdGIwuU4=`imfei\
+i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
+
 (luna-define-method initialize-instance :after ((shimbun shimbun-palmfan)
 						&rest init-args)
   (shimbun-palmfan-set-content-hash-internal
