@@ -1,3 +1,7 @@
+2005-04-16  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-arch-bluegate.el: Re-Add for site re-opening.
+
 2005-04-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* shimbun/sb-palmfan.el (shimbun-palmfan-x-face-alist): New

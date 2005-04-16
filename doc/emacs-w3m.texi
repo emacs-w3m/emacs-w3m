@@ -4877,6 +4877,10 @@ from the file.
 @item @uref{http://www.tdiary.org/, tDiary Developers Mailing List in Japan}
 tdiary-ml.devel tdiary-ml.theme
 
+@item @uref{http://arch.bluegate.org/mailman/listinfo, arch.bluegate.org Mailing Lists}
+arch-bluegate.subversion-jp arch-bluegate.arch-jp arch-bluegate.mailman
+arch-bluegate.viewarch
+
 @item @uref{http://www.tigris.org/, Tigris.org:Open Source Software Engineering}
 All archives served by Tigris.org are supported by @samp{shimbun}
 library.  Add a group name of your favorite archive to the variable
