@@ -33,7 +33,9 @@
 (luna-define-class shimbun-yomiuri-html (shimbun-yomiuri) ())
 
 (defvar shimbun-yomiuri-html-content-start
-  "\n<!--// article_start //-->\n\\|\n<!--  honbun start  -->\n")
+  "\n<!--// article_start //-->\n\
+\\|\n<!-- ▼写真テーブル▼ -->\n\
+\\|\n<!--  honbun start  -->\n")
 
 (defvar shimbun-yomiuri-html-content-end
   "\n<!--// article_end //-->\n\\|\n<!--  honbun end  -->\n")

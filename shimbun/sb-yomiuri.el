@@ -152,9 +152,7 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 (luna-define-method initialize-instance :after ((shimbun shimbun-yomiuri)
 						 &rest init-args)
   (shimbun-set-server-name-internal shimbun "讀売新聞")
-  (shimbun-set-from-address-internal shimbun
-				     (concat "webmaster@www."
-					     shimbun-yomiuri-top-level-domain))
+  (shimbun-set-from-address-internal shimbun "nobody@example.com")
   ;; To share class variables between `shimbun-yomiuri' and its
   ;; successor `shimbun-yomiuri-html'.
   (shimbun-set-x-face-alist-internal shimbun shimbun-yomiuri-x-face-alist)
@@ -236,7 +234,8 @@ It does also shorten too much spaces."
 (defun shimbun-yomiuri-get-headers (shimbun)
   "Return a list of headers."
   (let ((group (shimbun-current-group-internal shimbun))
-	(from (shimbun-from-address shimbun))
+	(from (concat (shimbun-server-name shimbun)
+		      " (" (shimbun-current-group-name shimbun) ")"))
 	(case-fold-search t)
 	cyear cmonth month day time regexp numbers headers)
     (setq cyear (shimbun-decode-time nil 32400)
@@ -360,13 +359,16 @@ information available, removing useless contents, etc."
 	start)
     (if (string-equal group "kyoiku")
 	(progn
-	  (when (or (re-search-forward "\
-<!--[\t\n ]*▼写真▼[\t\n ]*-->[\t\n ]*"
-				       nil t)
+	  (when (or (re-search-forward
+		     (if (string-equal (shimbun-server-internal shimbun)
+				       "yomiuri")
+			 "<!--[\t\n ]*▲写真▲[\t\n ]*-->[\t\n ]*"
+		       "<!--[\t\n ]*▼写真▼[\t\n ]*-->[\t\n ]*")
+		     nil t)
 		    (re-search-forward "\
 <!--[\t\n ]*InstanceBeginEditable[\t\n ]+name=\"docbody\"[\t\n ]*-->[\t\n ]*"
 				       nil t))
-	    (delete-region (point-min) (point)))
+	    (insert "\n<!--// article_start //-->\n"))
 	  (when (or (re-search-forward
 		     "[\t\n ]*<!--[\t\n ]*▲日付▲[\t\n ]*-->"
 		     nil t)
@@ -376,7 +378,8 @@ information available, removing useless contents, etc."
 		    (re-search-forward
 		     "[\t\n ]*<!--[\t\n ]*InstanceEndEditable[\t\n ]*-->"
 		     nil t))
-	    (delete-region (match-beginning 0) (point-max)))
+	    (goto-char (match-beginning 0))
+	    (insert "\n<!--// article_end //-->\n"))
 	  (goto-char (point-min))
 	  (when (re-search-forward "\
 <div[\t\n ]+class=\"enlargedphoto\">\\([\t\n ]*写真の拡大[\t\n ]*\
@@ -385,10 +388,12 @@ information available, removing useless contents, etc."
 	    (delete-region (match-beginning 1) (match-end 1))))
       (when (and (re-search-forward (shimbun-content-start-internal shimbun)
 				    nil t)
-		 (setq start (point))
-		 (re-search-forward (shimbun-content-end-internal shimbun)
-				    nil t))
+		 (progn
+		   (setq start (point))
+		   (re-search-forward (shimbun-content-end-internal shimbun)
+				      nil t)))
 	(narrow-to-region start (match-beginning 0))
+	;; Correct the Date header.
 	(goto-char (point-max))
 	(forward-line -1)
 	(when (re-search-forward "\\(20[0-9][0-9]\\)/\\(1?[0-9]\\)/\
@@ -401,9 +406,35 @@ information available, removing useless contents, etc."
 	    (string-to-number (match-string 2))
 	    (string-to-number (match-string 3))
 	    (match-string 4))))
+	;; Remove garbage.
 	(goto-char (point-min))
-	(shimbun-remove-tags "<!--  rectangle start  -->"
-			     "<!--  rectangle end  -->")
+	(when (re-search-forward
+	       "[\t\n ]*<img[\t\n ]+src=.+フォトニュース[\t\n ]*</a>"
+	       nil t)
+	  (delete-region (match-beginning 0) (match-end 0)))
+	(goto-char (point-min))
+	(while (re-search-forward "[\t\n ]*<td[^>]+>[\t\n ]*\
+<img[\t\n ]+src=\"/g/d\\.gif\"[^>]+>[\t\n ]*</td>[\t\n ]*"
+				  nil t)
+	  (delete-region (match-beginning 0) (match-end 0)))
+	(goto-char (point-min))
+	(while (re-search-forward "[\t\n ]*</?\
+\\(font\\|table\\|td\\|tr\\)\\([\t\n ]+[^>]+\\)?>[\t\n ]*"
+				  nil t)
+	  (delete-region (match-beginning 0) (match-end 0)))
+	(shimbun-remove-tags "[\t\n ]*<!--  rectangle start  -->"
+			     "<!--  rectangle end  -->[\t\n ]*")
+	(shimbun-remove-tags "[\t\n ]*<script" "</script>[\t\n ]*")
+	(shimbun-remove-tags "[\t\n ]*<noscript>" "</noscript>[\t\n ]*")
+	;; Remove height="nn"
+	(goto-char (point-min))
+	(while (re-search-forward "[\t\n ]*height=\"[0-9]+\"[\t\n ]*" nil t)
+	  (replace-match " "))
+	;; Replace alt="whitespace" with alt="image".
+	(goto-char (point-min))
+	(while (re-search-forward "\\(<img[\t\n ]+[^>]*alt=\"\\)[\t\n ]*\""
+				  nil t)
+	  (replace-match "\\1image\""))
 	;; Break continuous lines.
 	(goto-char (point-min))
 	(when (and (string-equal group "editorial")
