@@ -4,10 +4,11 @@
 	(shimbun-yomiuri-content-end): Improve.
 	(initialize-instance): Make the from address unreachable.
 	(shimbun-yomiuri-get-headers): Ditto.
-	(shimbun-yomiuri-prepare-article): Exclude images when the server
-	is not yomiuri-html; make articles in the kyoiku group contain the
-	footers; remove garbage more; remove height="nn" in image tags;
-	replace alt="whitespace" with alt="image".
+	(shimbun-yomiuri-prepare-article): Remove images and garbage in
+	the beginning of articles when the server is not yomiuri-html;
+	make articles in the kyoiku group contain the footers; remove
+	garbage more; remove height="nn" in image tags; replace
+	alt="whitespace" with alt="image".
 
 	* shimbun/sb-yomiuri-html.el (shimbun-yomiuri-html-content-start),
 	(shimbun-yomiuri-html-content-end): Improve.

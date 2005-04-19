@@ -1,5 +1,7 @@
 ;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp -*- coding: iso-2022-7bit; -*-
 
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005 Authors
+
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;         Katsumi Yamaoka    <yamaoka@jpl.org>
@@ -355,13 +357,13 @@ It does also shorten too much spaces."
   "Prepare an article: adjusting a date header if there is a correct
 information available, removing useless contents, etc."
   (let ((group (shimbun-current-group-internal shimbun))
+	(text-p (string-equal (shimbun-server-internal shimbun) "yomiuri"))
 	(case-fold-search t)
 	start)
     (if (string-equal group "kyoiku")
 	(progn
 	  (when (or (re-search-forward
-		     (if (string-equal (shimbun-server-internal shimbun)
-				       "yomiuri")
+		     (if text-p
 			 "<!--[\t\n ]*▲写真▲[\t\n ]*-->[\t\n ]*"
 		       "<!--[\t\n ]*▼写真▼[\t\n ]*-->[\t\n ]*")
 		     nil t)
@@ -426,8 +428,11 @@ information available, removing useless contents, etc."
 			     "<!--  rectangle end  -->[\t\n ]*")
 	(shimbun-remove-tags "[\t\n ]*<script" "</script>[\t\n ]*")
 	(shimbun-remove-tags "[\t\n ]*<noscript>" "</noscript>[\t\n ]*")
-	;; Remove height="nn"
 	(goto-char (point-min))
+	(when (and text-p
+		   (looking-at "\\([\t\n ]*<[^>]+>\\)+[\t\n ]*"))
+	  (delete-region (match-beginning 0) (match-end 0)))
+	;; Remove height="nn"
 	(while (re-search-forward "[\t\n ]*height=\"[0-9]+\"[\t\n ]*" nil t)
 	  (replace-match " "))
 	;; Replace alt="whitespace" with alt="image".
