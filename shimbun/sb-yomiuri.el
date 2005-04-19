@@ -136,9 +136,11 @@ regexp-quoted group name.  Numbers point to the search result in order
 of [0]a url, [1,2]serial numbers, [3]a subject, [4]a month, [5]a day,
 \[6]an hour:minute and [7-]extra keywords.")
 
-(defvar shimbun-yomiuri-content-start "\n<!--  honbun start  -->\n")
+(defvar shimbun-yomiuri-content-start
+  "\n<!--// article_start //-->\n\\|\n<!--  honbun start  -->\n")
 
-(defvar shimbun-yomiuri-content-end  "\n<!--  honbun end  -->\n")
+(defvar shimbun-yomiuri-content-end
+  "\n<!--// article_end //-->\n\\|\n<!--  honbun end  -->\n")
 
 (defvar shimbun-yomiuri-x-face-alist
   '(("default" . "X-Face: #sUhc'&(fVr$~<rt#?PkH,u-.fV(>y)\

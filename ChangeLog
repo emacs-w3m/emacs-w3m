@@ -1,3 +1,11 @@
+2005-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-content-start),
+	(shimbun-yomiuri-content-end): Improve.
+
+	* shimbun/sb-yomiuri-html.el (shimbun-yomiuri-html-content-start),
+	(shimbun-yomiuri-html-content-end): Improve.
+
 2005-04-16  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-arch-bluegate.el: Re-Add for site re-opening.

@@ -1,6 +1,6 @@
 ;;; sb-yomiuri-html.el --- shimbun backend for yomiuri online (HTML version) -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003, 2005 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>,
 ;;         Katsumi Yamaoka   <yamaoka@jpl.org>
@@ -33,9 +33,10 @@
 (luna-define-class shimbun-yomiuri-html (shimbun-yomiuri) ())
 
 (defvar shimbun-yomiuri-html-content-start
-  "\n<!-- ▼写真テーブル▼ -->\n\\|\n<!--  honbun start  -->\n")
+  "\n<!--// article_start //-->\n\\|\n<!--  honbun start  -->\n")
 
-(defvar shimbun-yomiuri-html-content-end  "\n<!--  honbun end  -->\n")
+(defvar shimbun-yomiuri-html-content-end
+  "\n<!--// article_end //-->\n\\|\n<!--  honbun end  -->\n")
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-yomiuri-html)
 					   header)
