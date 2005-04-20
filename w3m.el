@@ -4930,6 +4930,24 @@ POST-DATA and REFERER will be sent to the web server with a request."
       (if (search-forward "-->" nil t)
 	  (delete-region beg (point))))))
 
+(defun w3m-remove-invisible-image-alt ()
+  "Remove alt=\"whitespace\" attributes in img tags.
+Such attributes not only obscure them but also might make images not
+be displayed especially in shimbun articles."
+  (goto-char (point-min))
+  (let ((case-fold-search t)
+	start end)
+    (while (and (re-search-forward "\\(<img\\)[\t\n\f\r ]+" nil t)
+		(progn
+		  (setq start (match-end 1))
+		  (search-forward ">" nil t))
+		(progn
+		  (setq end (match-beginning 0))
+		  (goto-char start)
+		  (re-search-forward "[\t\n\f\r ]+alt=\"[\t\n\f\r ]*\""
+				     end t)))
+      (delete-region (match-beginning 0) (match-end 0)))))
+
 (defun w3m-check-header-tags ()
   "Process header tags (<LINK>,<BASE>) in the current buffer."
   (let ((case-fold-search t)
@@ -5068,6 +5086,7 @@ POST-DATA and REFERER will be sent to the web server with a request."
   "Do rendering of contents in the currenr buffer as HTML and return title."
   (w3m-message "Rendering...")
   (w3m-remove-comments)
+  (w3m-remove-invisible-image-alt)
   (w3m-check-header-tags)
   (w3m-check-refresh-attribute)
   (unless (eq w3m-type 'w3m-m17n)

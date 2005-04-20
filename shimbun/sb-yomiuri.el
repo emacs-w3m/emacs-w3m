@@ -359,7 +359,7 @@ information available, removing useless contents, etc."
   (let ((group (shimbun-current-group-internal shimbun))
 	(text-p (string-equal (shimbun-server-internal shimbun) "yomiuri"))
 	(case-fold-search t)
-	start)
+	start end)
     (if (string-equal group "kyoiku")
 	(progn
 	  (when (or (re-search-forward
@@ -432,14 +432,16 @@ information available, removing useless contents, etc."
 	(when (and text-p
 		   (looking-at "\\([\t\n ]*<[^>]+>\\)+[\t\n ]*"))
 	  (delete-region (match-beginning 0) (match-end 0)))
-	;; Remove height="nn"
-	(while (re-search-forward "[\t\n ]*height=\"[0-9]+\"[\t\n ]*" nil t)
-	  (replace-match " "))
-	;; Replace alt="whitespace" with alt="image".
-	(goto-char (point-min))
-	(while (re-search-forward "\\(<img[\t\n ]+[^>]*alt=\"\\)[\t\n ]*\""
-				  nil t)
-	  (replace-match "\\1image\""))
+	;; Remove height="nn" attributes in img tags.
+	(while (and (re-search-forward "\\(<img\\)[\t\n ]+" nil t)
+		    (progn
+		      (setq start (match-end 1))
+		      (search-forward ">" nil t))
+		    (progn
+		      (setq end (match-beginning 0))
+		      (goto-char start)
+		      (re-search-forward "[\t\n ]+height=\"[0-9]+\"" end t)))
+	  (delete-region (match-beginning 0) (match-end 0)))
 	;; Break continuous lines.
 	(goto-char (point-min))
 	(when (and (string-equal group "editorial")
