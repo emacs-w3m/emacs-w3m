@@ -360,6 +360,17 @@ information available, removing useless contents, etc."
 	(text-p (string-equal (shimbun-server-internal shimbun) "yomiuri"))
 	(case-fold-search t)
 	start end)
+    ;; Remove height="nn" attributes in img tags.
+    (while (and (re-search-forward "\\(<img\\)[\t\n ]+" nil t)
+		(progn
+		  (setq start (match-end 1))
+		  (search-forward ">" nil t))
+		(progn
+		  (setq end (match-beginning 0))
+		  (goto-char start)
+		  (re-search-forward "[\t\n ]+height=\"[0-9]+\"" end t)))
+      (delete-region (match-beginning 0) (match-end 0)))
+    (goto-char (point-min))
     (if (string-equal group "kyoiku")
 	(progn
 	  (when (or (re-search-forward
@@ -383,11 +394,11 @@ information available, removing useless contents, etc."
 	    (goto-char (match-beginning 0))
 	    (insert "\n<!--// article_end //-->\n"))
 	  (goto-char (point-min))
-	  (when (re-search-forward "\
-<div[\t\n ]+class=\"enlargedphoto\">\\([\t\n ]*写真の拡大[\t\n ]*\
-<img[\t\n ]*src=[^>]+>[\t\n ]*\\)"
+	  (when (re-search-forward "[\t\n ]*<a[\t\n ]+[^>]+>[\t\n ]*\
+<div[\t\n ]+class=\"enlargedphoto\">[\t\n ]*写真の拡大[\t\n ]*\
+<img[\t\n ]*src=[^>]+>[\t\n ]*"
 				   nil t)
-	    (delete-region (match-beginning 1) (match-end 1))))
+	    (delete-region (match-beginning 0) (match-end 0))))
       (when (and (re-search-forward (shimbun-content-start-internal shimbun)
 				    nil t)
 		 (progn
@@ -432,22 +443,10 @@ information available, removing useless contents, etc."
 	(when (and text-p
 		   (looking-at "\\([\t\n ]*<[^>]+>\\)+[\t\n ]*"))
 	  (delete-region (match-beginning 0) (match-end 0)))
-	;; Remove height="nn" attributes in img tags.
-	(while (and (re-search-forward "\\(<img\\)[\t\n ]+" nil t)
-		    (progn
-		      (setq start (match-end 1))
-		      (search-forward ">" nil t))
-		    (progn
-		      (setq end (match-beginning 0))
-		      (goto-char start)
-		      (re-search-forward "[\t\n ]+height=\"[0-9]+\"" end t)))
-	  (delete-region (match-beginning 0) (match-end 0)))
 	;; Break continuous lines.
-	(goto-char (point-min))
 	(when (and (string-equal group "editorial")
 		   (string-match " \\(よみうり寸評\\|編集手帳\\)\\'"
 				 (shimbun-header-subject header 'no-encode)))
-	  (goto-char (point-min))
 	  (while (search-forward "◆" nil t)
 	    (replace-match "。<br>\\&<br>")))
 	(widen))))

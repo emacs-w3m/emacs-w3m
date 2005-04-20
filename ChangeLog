@@ -3,9 +3,9 @@
 	* w3m.el (w3m-remove-invisible-image-alt): New function.
 	(w3m-rendering-buffer): Use it.
 
-	* shimbun/sb-yomiuri.el (shimbun-yomiuri-prepare-article):
-	Carefully remove height="nn" in image tags; don't replace
-	alt="whitespace" with alt="image".
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-prepare-article): Always
+	remove height="nn" in image tags; remove garbage in the kyoiku
+	group more; don't replace alt="whitespace" with alt="image".
 
 2005-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
