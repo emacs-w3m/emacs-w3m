@@ -1,3 +1,34 @@
+2005-04-24  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-cnetnetworks.el: New file.
+
+	* shimbun/sb-zdnet-jp.el (Top): Replace new requirement.
+	(shimbun-zdnet-jp): Change parent from `shimbun-japanese-newspaper' and
+	`shimbun-rss' to `shimbun-cnetnetworks'.
+	(shimbun-zdnet-jp-server-name): Normalize.
+	(shimbun-zdnet-jp-content-start): Fix regexp.
+	(shimbun-zdnet-jp-content-end): Ditto.
+	(shimbun-zdnet-jp-x-face-alist): New variable.
+	(shimbun-rss-build-message-id): Fix build rule, but result do not
+	changing.
+	(shimbun-zdnet-jp-retrieve-next-pages): Replace to new parent's method.
+	(shimbun-make-contents): Ditto.
+	(shimbun-clear-contents): Move to parent.
+	(shimbun-cnetnetworks-clear-footer): New override define method.
+	(shimbun-cnetnetworks-header-reconfig): Ditto.
+
+	* shimbun/sb-cnet-jp.el (Top): Replace new requirement.
+	(shimbun-cnet-jp): Change parent from `shimbun-japanese-newspaper' and
+	`shimbun-rss' to `shimbun-cnetnetworks'.
+	(shimbun-cnet-jp-server-name): Normalize.
+	(shimbun-cnet-jp-from-address): Remove.
+	(shimbun-cnet-jp-clean-text-page): Ditto.
+	(shimbun-cnet-jp-retrieve-next-pages): Replace to new parent's method.
+	(shimbun-make-contents): Ditto.
+	(shimbun-clear-contents): Move to parent.
+	(shimbun-cnetnetworks-clear-footer): New override define method.
+	(shimbun-footer): Fix rule.
+
 2005-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Remove

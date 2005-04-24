@@ -38,10 +38,9 @@
   (require 'cl))
 
 (require 'shimbun)
-(require 'sb-rss)
-(require 'md5)
+(require 'sb-cnetnetworks)
 
-(luna-define-class shimbun-zdnet-jp (shimbun-japanese-newspaper shimbun-rss) ())
+(luna-define-class shimbun-zdnet-jp (shimbun-cnetnetworks) ())
 
 (defvar shimbun-zdnet-jp-group-alist
   '( ;; news
@@ -66,13 +65,16 @@
 (defvar shimbun-zdnet-jp-orphaned-group-list
   '())
 
-(defvar shimbun-zdnet-jp-server-name "ZDNet Japan")
-(defvar shimbun-zdnet-jp-content-start "<div class=\"leaf_body\">")
-(defvar shimbun-zdnet-jp-content-end "<!-- *\\(/leaf_foot\\|/leaf_body\\|/main_left\\) *-->")
-;; (defvar shimbun-zdnet-jp-x-face-alist
-;;   '(("default" . "X-Face: 0p7.+XId>z%:!$ahe?x%+AEm37Abvn]n\
-;; *GGh+>v=;[3`a{1lqO[$,~3C3xU_ri>[JwJ!9l0\n ~Y`b*eXAQ:*q=bBI\
-;; _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
+(defvar shimbun-zdnet-jp-content-start
+  "\\(<div class=\"leaf_body\">\\|<div class=\"leaf_body\">\\)")
+(defvar shimbun-zdnet-jp-content-end
+  "\\(<!-- *\\(/leaf_foot\\|/leaf_body\\|/main_left\\|NEWS LETTER SUB\\|ZD CAMPAIGN SUB\\) *-->\\)")
+
+(defvar shimbun-zdnet-jp-server-name "CNET Networks,Inc.")
+(defvar shimbun-zdnet-jp-x-face-alist
+  '(("default" . "X-Face: 0p7.+XId>z%:!$ahe?x%+AEm37Abvn]n\
+*GGh+>v=;[3`a{1lqO[$,~3C3xU_ri>[JwJ!9l0\n ~Y`b*eXAQ:*q=bBI\
+_=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 
 (luna-define-method shimbun-groups ((shimbun shimbun-zdnet-jp))
   (nconc (mapcar 'car shimbun-zdnet-jp-group-alist)
@@ -87,122 +89,55 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-zdnet-jp))
   (cdr (assoc (shimbun-current-group shimbun) shimbun-zdnet-jp-group-alist)))
 
-(luna-define-method shimbun-rss-build-message-id
+(luna-define-method shimbun-rss-build-message-id :around
   ((shimbun shimbun-zdnet-jp) url date)
-  (if (string-match "http://japan\\.zdnet\\.com/\\([^/]+\\)/\
+  (cond
+   ((string-match "http://japan\\.zdnet\\.com/\\([^/]+\\)/\
 \\([^/]+\\)/\\([^/]+\\)/\\([,0-9]+\\)\\.htm" url) ;; \\?ref=rss do not need
-      (shimbun-replace-in-string
-       (concat "<"
-	       (match-string-no-properties 4 url)
-	       "%" (concat (match-string-no-properties 2 url)
-			   "."
-			   (match-string-no-properties 1 url))
-	       "@japan.zdnet.com>")
-       "," ".")
-    (or (concat "<" (md5 url) "@japan.zdnet.com>")
-	(error "Cannot find message-id base"))))
+    (shimbun-replace-in-string
+     (concat "<" (match-string-no-properties 4 url)
+	     "%" (match-string-no-properties 2 url)
+	     "." (match-string-no-properties 1 url)
+	     "@japan.zdnet.com>")
+     "," "."))
+   (t
+    (luna-call-next-method))))
 
-(defun shimbun-zdnet-jp-retrieve-next-pages (shimbun header base-cid url
-						     &optional images)
-  (let ((case-fold-search t)
-	(next nil))
-    (goto-char (point-min))
-    ;; check next
-    (when (re-search-forward "<a +href=\"\\([^\"]*\\)\"[^>]*>次のページ" nil t)
-      (setq next (shimbun-expand-url (match-string 1) url)))
-    (shimbun-clear-contents shimbun header)
-    ;; remove page footer (last page is ignored)
-    (goto-char (point-min))
-    (when (and
-	   (re-search-forward "<a [^>]+>\\(前\\|次\\)のページ</a" nil t)
-	   (re-search-backward "<div class=\"leaf_body_page\">[ \t\r\n]*<ul>" nil t))
-      (let ((start (match-beginning 0))
-	    end)
-	(if next
-	    ;; isn't last
-	    (delete-region start (point-max))
-	  ;; last page
-	  (when (re-search-forward "<div class=\"leaf_foot\">" nil t)
-	    (setq end (match-end 0))
-	    (delete-region start end))))
-      (goto-char (point-min)))
-    (insert "<html>\n<head>\n<base href=\"" url "\">\n</head>\n<body>\n")
-    (goto-char (point-max))
-    (unless next
-      (insert (shimbun-footer shimbun header t)))
-    (insert "\n</body>\n</html>\n")
-    (when shimbun-encapsulate-images
-      (setq images (shimbun-mime-replace-image-tags base-cid url images)))
-    (let ((body (shimbun-make-text-entity "text/html" (buffer-string)))
-	  (result (when next
-		    (with-temp-buffer
-		      (shimbun-fetch-url shimbun next)
-		      (shimbun-zdnet-jp-retrieve-next-pages
-		       shimbun header base-cid next images)))))
-      (list (cons body (car result))
-	    (or (nth 1 result) images)))))
+(luna-define-method shimbun-cnetnetworks-clear-footer ((shimbun shimbun-zdnet-jp)
+						       header has-next)
+  (goto-char (point-min))
+  (when (and
+	 (re-search-forward "<a [^>]+>\\(前\\|次\\)のページ</a" nil t)
+	 (re-search-backward "<div class=\"leaf_body_page\">[ \t\r\n]*<ul>" nil t))
+    (let ((start (match-beginning 0))
+	  end)
+      (if has-next
+	  ;; isn't last
+	  (delete-region start (point-max))
+	;; last page
+	(when (re-search-forward "<div class=\"leaf_foot\">" nil t)
+	  (setq end (match-end 0))
+	  (delete-region start end))))))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-zdnet-jp) header)
-  (let ((case-fold-search t)
-	(base-cid (shimbun-header-id header)))
-    ;; check author in leaf_head
-    (goto-char (point-min))
-    (if (and (re-search-forward "<div class=\"leaf_head\">" nil t)
-	     (re-search-forward "<li>\\([^<]+\\)\\(<br[^>]*>\\([^<]+\\)\\)?\
+(luna-define-method shimbun-cnetnetworks-header-reconfig :around
+  ((shimbun shimbun-zdnet-jp) header)
+  (goto-char (point-min))
+  (if (and (re-search-forward "<div class=\"leaf_head\">" nil t)
+	   (re-search-forward "<li>\\([^<]+\\)\\(<br[^>]*>\\([^<]+\\)\\)?\
 </li>[ \n\r\t]*<li class=\"date\">" nil t))
-	(shimbun-header-set-from header
-				 (shimbun-mime-encode-string
-				  (concat
-				   (match-string-no-properties 1)
-				   (if (match-string-no-properties 2)
-				       " "
-				     "")
-				   (or (match-string-no-properties 3)
-				       ""))))
       (shimbun-header-set-from header
 			       (shimbun-mime-encode-string
-				(concat shimbun-zdnet-jp-server-name
-					" (" (shimbun-current-group-name shimbun) ")"))))
-    (goto-char (point-min))
-    (when (string-match "\\`<\\([^>]+\\)>\\'" base-cid)
-      (setq base-cid (match-string 1 base-cid)))
-    (let (body)
-      (multiple-value-bind (texts images)
-	  (shimbun-zdnet-jp-retrieve-next-pages shimbun header base-cid
-						(shimbun-header-xref header))
-	(erase-buffer)
-	(if (= (length texts) 1)
-	    (setq body (car texts))
-	  (setq body (shimbun-make-multipart-entity))
-	  (let ((i 0))
-	    (dolist (text texts)
-	      (setf (shimbun-entity-cid text)
-		    (format "shimbun.%d.%s" (incf i) base-cid))))
-	  (apply 'shimbun-entity-add-child body texts))
-	(when images
-	  (setf (shimbun-entity-cid body) (concat "shimbun.0." base-cid))
-	  (let ((new (shimbun-make-multipart-entity)))
-	    (shimbun-entity-add-child new body)
-	    (apply 'shimbun-entity-add-child new
-		   (mapcar 'cdr (nreverse images)))
-	    (setq body new))))
-      (shimbun-header-insert shimbun header)
-      (insert "MIME-Version: 1.0\n")
-      (shimbun-entity-insert body)))
-  (buffer-string))
+				(concat
+				 (match-string-no-properties 1)
+				 (if (match-string-no-properties 2)
+				     " "
+				   "")
+				 (or (match-string-no-properties 3)
+				     ""))))
+    (luna-call-next-method)))
 
-(luna-define-method shimbun-clear-contents :before
-  ((shimbun shimbun-zdnet-jp) header)
-  (shimbun-strip-cr)
-  ;; remove advertisement <div class="ad.*"> - </div>
-  (shimbun-remove-tags "<div +class=\"?ad" "</div>")
-  ;; remove column <div class="pall5( bd1)"> - </div>
-  (shimbun-remove-tags "<div +class=\"?pall5" "</div>")
-  (shimbun-remove-tags "<script" "</script>")
-  (shimbun-remove-tags "<noscript" "</noscript>"))
-
-(luna-define-method shimbun-footer :around ((shimbun shimbun-zdnet-jp) header
-					    &optional html)
+(luna-define-method shimbun-footer :around ((shimbun shimbun-zdnet-jp)
+					    header &optional html)
   (if (string-match "news" (shimbun-current-group shimbun))
       (luna-call-next-method)
     ""))
