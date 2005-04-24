@@ -191,8 +191,8 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
   (save-excursion
     ;; strip nasty "download" images
     (goto-char (point-min))
-    (while (re-search-forward "<TP:BUT>" nil t nil)
-      (delete-region (point) (re-search-forward "</TP:BUT>" nil t nil)))))
+    (while (re-search-forward "<TPxBUT>" nil t nil)
+      (delete-region (point) (re-search-forward "</TPxBUT>" nil t nil)))))
 
 (luna-define-method shimbun-make-contents
   :before ((shimbun shimbun-heise) header)

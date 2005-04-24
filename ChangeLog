@@ -1,10 +1,15 @@
+2005-04-23  David Hansen  <david.hansen@physik.fu-berlin.de>
+
+	* shimbun/sb-heise.el (shimbun-heise-wash-telepolis-article):
+	Follow changes in their html.
+
 2005-04-24  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-cnetnetworks.el: New file.
 
 	* shimbun/sb-zdnet-jp.el (Top): Replace new requirement.
-	(shimbun-zdnet-jp): Change parent from `shimbun-japanese-newspaper' and
-	`shimbun-rss' to `shimbun-cnetnetworks'.
+	(shimbun-zdnet-jp): Change parent from `shimbun-japanese-newspaper'
+	and `shimbun-rss' to `shimbun-cnetnetworks'.
 	(shimbun-zdnet-jp-server-name): Normalize.
 	(shimbun-zdnet-jp-content-start): Fix regexp.
 	(shimbun-zdnet-jp-content-end): Ditto.
@@ -18,8 +23,8 @@
 	(shimbun-cnetnetworks-header-reconfig): Ditto.
 
 	* shimbun/sb-cnet-jp.el (Top): Replace new requirement.
-	(shimbun-cnet-jp): Change parent from `shimbun-japanese-newspaper' and
-	`shimbun-rss' to `shimbun-cnetnetworks'.
+	(shimbun-cnet-jp): Change parent from `shimbun-japanese-newspaper'
+	and `shimbun-rss' to `shimbun-cnetnetworks'.
 	(shimbun-cnet-jp-server-name): Normalize.
 	(shimbun-cnet-jp-from-address): Remove.
 	(shimbun-cnet-jp-clean-text-page): Ditto.
