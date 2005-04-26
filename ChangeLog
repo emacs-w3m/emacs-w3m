@@ -1,5 +1,8 @@
 2005-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-asahi.el (shimbun-asahi-make-regexp): Improve regexp.
+	(shimbun-asahi-group-table): Ditto.
+
 	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Add
 	column groups; specify index pages, regexps and numbers.
 	(shimbun-mainichi-from-address): Make it unreachable.

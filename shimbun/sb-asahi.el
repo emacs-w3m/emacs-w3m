@@ -51,7 +51,7 @@
 Every `.' in NAME will be replaced with `/'."
   (list (let ((s0 "[\t\n 　]*")
 	      (s1 "[\t\n ]+")
-	      (no-nl "[^\n]+"))
+	      (no-nl "[^\n<>]+"))
 	  (concat "<a" s1 "href=\"/"
 		  ;; 1. url
 		  "\\(" (shimbun-subst-char-in-string ?. ?/ name) "/"
@@ -74,7 +74,7 @@ Every `.' in NAME will be replaced with `/'."
 (defvar shimbun-asahi-group-table
   (let* ((s0 "[\t\n 　]*")
 	 (s1 "[\t\n ]+")
-	 (no-nl "[^\n]+")
+	 (no-nl "[^\n<>]+")
 	 (default (list
 		   (concat
 		    "<a" s1 "href=\"/"
@@ -96,24 +96,24 @@ Every `.' in NAME will be replaced with `/'."
 	 (default2 (shimbun-asahi-make-regexp "%s"))
 	 (default3 (list
 		    (concat
-		     "<a" s1 "href=\"/+"
+		     "<li>" s0 "<a" s1 "href=\"/+"
 		     ;; 1. url
-		     "\\(.+/"
-		     ;; 2. serial number
+		     "\\(\\([^\"/<>]+/\\)+"
+		     ;; 3. serial number
 		     "\\([a-z]*"
-		     ;; 3. year
+		     ;; 4. year
 		     "\\(20[0-9][0-9]\\)"
-		     ;; 4. month
+		     ;; 5. month
 		     "\\([01][0-9]\\)"
-		     ;; 5. day
+		     ;; 6. day
 		     "\\([0-3][0-9]\\)"
 		     "[0-9]+\\)"
 		     "\\.html\\)"
 		     "\">" s0
-		     ;; 6. subject
+		     ;; 7. subject
 		     "\\(" no-nl "\\)"
 		     s0 "</a>")
-		    1 nil 2 6 3 4 5))
+		    1 nil 3 7 4 5 6))
 	 (edu (shimbun-asahi-make-regexp "edu.news"))
 	 (health (shimbun-asahi-make-regexp "health.news")))
     `(("book" "出版ニュース" "book/news/"
