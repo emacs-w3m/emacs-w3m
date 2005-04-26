@@ -1,3 +1,15 @@
+2005-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Add
+	column groups; specify index pages, regexps and numbers.
+	(shimbun-mainichi-from-address): Make it unreachable.
+	(shimbun-index-url): Refer to shimbun-mainichi-group-table.
+	(shimbun-mainichi-get-headers): Refer to
+	shimbun-mainichi-group-table for a regexp and numbers; make the
+	from address unreachable.
+	(shimbun-mainichi-prepare-article): Break continuous lines in the
+	yoroku group.
+
 2005-04-23  David Hansen  <david.hansen@physik.fu-berlin.de>
 
 	* shimbun/sb-heise.el (shimbun-heise-wash-telepolis-article):

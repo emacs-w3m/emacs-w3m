@@ -4463,10 +4463,12 @@ The Asahi Shimbun local-news sections including US and all the
 prefectures of Japan.
 
 @item @uref{http://www.mainichi-msn.co.jp/, MSN-Mainichi INTERACTIVE}
-mainichi.geinou mainichi.it mainichi.kagaku.env mainichi.kagaku.medical
-mainichi.kagaku.science mainichi.keizai mainichi.kokusai
-mainichi.kurashi mainichi.seiji mainichi.shakai mainichi.shakai.edu
-mainichi.sports
+mainichi.column.hassinbako mainichi.column.hito
+mainichi.column.kishanome mainichi.column.shasetsu
+mainichi.column.yoroku mainichi.geinou mainichi.it mainichi.kagaku.env
+mainichi.kagaku.medical mainichi.kagaku.science mainichi.keizai
+mainichi.kokusai mainichi.kurashi mainichi.seiji mainichi.shakai
+mainichi.shakai.edu mainichi.sports
 
 @item @uref{http://www.nikkansports.com/, Nikkan Sports}
 nikkansports.baseball nikkansports.mlb nikkansports.soccer
