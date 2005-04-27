@@ -50,7 +50,7 @@
 		  (concat
 		   "<a" s1 "href=\"/"
 		   ;; 1. url
-		   "\\(column/[^/]+/archive/news/20[0-9][0-9]/[01][0-9]/"
+		   "\\(column/[^/]+/news/"
 		   ;; 2. serial number
 		   "\\("
 		   ;; 3. year
@@ -96,11 +96,11 @@
 		    "\\([0-5]?[0-9]\\)"
 		    "\\)?")
 		   1 3 4 5 6 7 9 11 14 15)))
-    `(("column.hassinbako" "発信箱" "column/hassinbako/archive/" ,@column)
-      ("column.hito" "ひと" "column/hito/archive/" ,@column)
-      ("column.kishanome" "記者の目" "column/kishanome/archive/" ,@column)
-      ("column.shasetsu" "社説" "column/shasetsu/archive/" ,@column)
-      ("column.yoroku" "余録" "column/yoroku/archive/" ,@column)
+    `(("column.hassinbako" "発信箱" "column/hassinbako/" ,@column)
+      ("column.hito" "ひと" "column/hito/" ,@column)
+      ("column.kishanome" "記者の目" "column/kishanome/" ,@column)
+      ("column.shasetsu" "社説" "column/shasetsu/" ,@column)
+      ("column.yoroku" "余録" "column/yoroku/" ,@column)
       ("geinou" "芸能" nil ,@default)
       ("it" "IT" nil ,@default)
       ("kagaku.env" "環境" nil ,@default)

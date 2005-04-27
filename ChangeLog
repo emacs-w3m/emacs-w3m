@@ -1,3 +1,8 @@
+2005-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Use the
+	top pages instead of the archive pages for the column groups.
+
 2005-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-make-regexp): Improve regexp.
