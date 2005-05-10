@@ -26,7 +26,6 @@
 
 (require 'shimbun)
 (require 'sb-rss)
-(require 'md5)
 (eval-when-compile
   (require 'cl))
 
@@ -101,7 +100,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAQBAMAAACigOGCAAAABGdBTUEAALGPC/xhBQAAADB
 	       (buffer-substring (point)
 				 (if (search-forward "</a>" nil t)
 				     (match-beginning 0)
-				   (line-end-position)))
+				   (point-at-eol)))
 	       (format "%s (%s)"
 		       (shimbun-server-name shimbun)
 		       (shimbun-current-group shimbun))

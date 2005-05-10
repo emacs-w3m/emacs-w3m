@@ -60,30 +60,10 @@
     (defalias 'select-frame-set-input-focus 'ignore)))
 
 (eval-and-compile
-  (dont-compile
-    (condition-case nil
-	:symbol-for-testing-whether-colon-keyword-is-available-or-not
-      (void-variable
-       (let (w3m-colon-keywords)
-	 (load "w3m-kwds.el" nil t t)
-	 (while w3m-colon-keywords
-	   (set (car w3m-colon-keywords) (car w3m-colon-keywords))
-	   (setq w3m-colon-keywords (cdr w3m-colon-keywords))))))))
-
-(eval-and-compile
-  (cond
-   ((or (featurep 'xemacs)
-	(< emacs-major-version 20))
+  (when (featurep 'xemacs)
     (require 'poe)
-    (require 'poem))))
-
-(eval-and-compile
-  (cond ((= emacs-major-version 19)
-	 (autoload 'cancel-timer "timer")
-	 (autoload 'regexp-opt "regexp-opt")
-	 (require 'custom))
-	((featurep 'xemacs)
-	 (autoload 'cancel-timer "w3m-xmas"))))
+    (require 'poem)
+    (autoload 'cancel-timer "w3m-xmas")))
 
 ;;; Things should be defined in advance:
 
@@ -404,26 +384,15 @@ supports separate frames."
 the tabs line."
   (cond ((featurep 'xemacs)
 	 '(and w3m-use-tab (device-on-window-system-p)))
-	((<= emacs-major-version 19)
-	 nil)
 	(t
-	 '(and w3m-use-tab (>= emacs-major-version 21)))))
+	 'w3m-use-tab)))
 
 (defmacro w3m-popup-window-p ()
   "Return non-nil if `w3m-pop-up-windows' is non-nil and the present
 situation allows it."
-  (cond ((featurep 'xemacs)
-	 '(and w3m-pop-up-windows
-	       (not (w3m-use-tab-p))
-	       (not (get-buffer-window w3m-select-buffer-name))))
-	((<= emacs-major-version 19)
-	 '(and w3m-pop-up-windows
-	       (not (get-buffer-window w3m-select-buffer-name))))
-	(t
-	 '(and w3m-pop-up-windows
-	       (or (< emacs-major-version 21)
-		   (not (w3m-use-tab-p)))
-	       (not (get-buffer-window w3m-select-buffer-name))))))
+  '(and w3m-pop-up-windows
+	(not (w3m-use-tab-p))
+	(not (get-buffer-window w3m-select-buffer-name))))
 
 (defvar w3m-initial-frames nil
   "Variable used to keep a list of the frame-IDs when emacs-w3m sessions
@@ -505,17 +474,12 @@ This function is added to the hook which is different with the Emacs
 version as follows:
 
 XEmacs          `create-frame-hook'
-Emacs 20-22     `after-make-frame-functions'
+Emacs 21,22     `after-make-frame-functions'
 Emacs 19        `after-make-frame-hook'
 
 Note that `after-make-frame-hook' doesn't take an argument."
   (unless frame
-    (setq frame (if (and (= emacs-major-version 19)
-			 ;; See frame.el in Emacs 19.
-			 (boundp 'nframe)
-			 (framep (symbol-value 'nframe)))
-		    (symbol-value 'nframe)
-		  (selected-frame))))
+    (setq frame (selected-frame)))
   ;; Share the opened frame in `w3m-initial-frames' over all emacs-w3m
   ;; buffers if `w3m-use-tab' is non-nil.  Otherwise, the frame is
   ;; appended into `w3m-initial-frames' only in the current buffer.
@@ -529,12 +493,9 @@ Note that `after-make-frame-hook' doesn't take an argument."
 	  (unless (memq frame w3m-initial-frames)
 	    (push frame w3m-initial-frames)))))))
 
-(add-hook (cond ((featurep 'xemacs)
-		 'create-frame-hook)
-		((>= emacs-major-version 20)
-		 'after-make-frame-functions)
-		((= emacs-major-version 19)
-		 'after-make-frame-hook))
+(add-hook (if (featurep 'xemacs)
+	      'create-frame-hook
+	    'after-make-frame-functions)
 	  'w3m-add-w3m-initial-frames)
 
 (defun w3m-delete-w3m-initial-frames (frame)
@@ -550,13 +511,8 @@ using `defadvice'."
 
 (cond ((boundp 'delete-frame-functions)
        (add-hook 'delete-frame-functions 'w3m-delete-w3m-initial-frames))
-      ((>= emacs-major-version 21)
-       (add-hook 'delete-frame-hook 'w3m-delete-w3m-initial-frames))
       (t
-       (defadvice delete-frame (before delete-w3m-initial-frames activate)
-	 "Remove the frame to be deleted from `w3m-initial-frames'."
-	 (w3m-delete-w3m-initial-frames (or (ad-get-arg 0)
-					    (selected-frame))))))
+       (add-hook 'delete-frame-hook 'w3m-delete-w3m-initial-frames)))
 
 (defun w3m-delete-frames-and-windows (&optional exception)
   "Delete all frames and windows related to emacs-w3m buffers.
@@ -781,7 +737,8 @@ Otherwise return nil."
 	    (when (or (file-executable-p
 		       (setq bin (expand-file-name command dir)))
 		      (file-executable-p
-		       (setq bin (expand-file-name (concat command ".exe") dir))))
+		       (setq bin (expand-file-name (concat command ".exe")
+						   dir))))
 	      (throw 'found-command bin))))))))
 
 (defun w3m-cancel-refresh-timer (&optional buffer)
@@ -810,10 +767,8 @@ Otherwise return nil."
 	     (when (> column end-column)
 	       (setq idx (1- idx)))
 	     (substring str 0 idx))))
-	((fboundp 'truncate-string-to-width)
-	 'truncate-string-to-width)
 	(t
-	 'truncate-string)))
+	 'truncate-string-to-width)))
 
 (defsubst w3m-assoc-ignore-case (name alist)
   "Return the element of ALIST whose car equals NAME ignoring its case."
@@ -868,17 +823,6 @@ multibyteness of the buffer."
 		   (string-as-unibyte string))))
     `(insert ,string)))
 
-(defconst w3m-default-face-colors
-  (eval '(if (not (or (featurep 'xemacs)
-		      (>= emacs-major-version 21)))
-	     (let ((bg (face-background 'default))
-		   (fg (face-foreground 'default)))
-	       (append (if bg `(:background ,bg))
-		       (if fg `(:foreground ,fg))))))
-  "The initial `default' face color spec.  Since `defface' under Emacs
-versions prior to 21 won't inherit the `dafault' face colors by default,
-we will use this value for the default `defface' color spec.")
-
 (defun w3m-custom-hook-initialize (symbol value)
   "Initialize the hook option pointed by the SYMBOL with the default VALUE."
   (if (boundp symbol)
@@ -916,7 +860,7 @@ deactivated after evaluating the current command."
   (cond
    ((fboundp 'replace-in-string)
     (defalias 'w3m-replace-in-string 'replace-in-string))
-   ((fboundp 'replace-regexp-in-string)
+   (t
     (defun w3m-replace-in-string  (string regexp newtext &optional literal)
       ;;(replace-regexp-in-string regexp newtext string nil literal)))
       ;;
@@ -925,15 +869,7 @@ deactivated after evaluating the current command."
       ;; provide it is used.  The following form generates exactly the same
       ;; byte-code.
       (funcall (symbol-function 'replace-regexp-in-string)
-	       regexp newtext string nil literal)))
-   (t
-    (defun w3m-replace-in-string (string regexp newtext &optional literal)
-      (let ((start 0) tail)
-	(while (string-match regexp string start)
-	  (setq tail (- (length string) (match-end 0)))
-	  (setq string (replace-match newtext nil literal string))
-	  (setq start (- (length string) tail))))
-      string))))
+	       regexp newtext string nil literal)))))
 
 (eval-and-compile
   (if (fboundp 'compare-strings)

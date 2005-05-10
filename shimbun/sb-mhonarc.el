@@ -230,9 +230,10 @@
 	    (save-restriction
 	      (narrow-to-region start end)
 	      (goto-char (point-min))
-	      (while (re-search-forward (shimbun-regexp-opt
-					 '("<strong>" "</strong>" "<em>" "</em>" "</li>"))
-					nil t)
+	      (while (re-search-forward
+		      (regexp-opt
+		       '("<strong>" "</strong>" "<em>" "</em>" "</li>"))
+		      nil t)
 		(delete-region (match-beginning 0) (match-end 0))
 		(goto-char (match-beginning 0)))
 	      (shimbun-decode-entities)
@@ -244,7 +245,7 @@
 		    (push (cons (match-string 1)
 				(shimbun-mime-encode-string
 				 (buffer-substring (match-end 0)
-						   (line-end-position))))
+						   (point-at-eol))))
 			  alist)))
 		(forward-line 1))
 	      (delete-region (point-min) (point-max)))

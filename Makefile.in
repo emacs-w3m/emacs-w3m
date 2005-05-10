@@ -169,7 +169,7 @@ tarball: CVS/Root CVS/Repository
 
 clean:
 	-rm -rf $(PACKAGE)* ;\
-	rm -f *~ *.elc shimbun/*.elc w3m-load.el w3m-kwds.el ;\
+	rm -f *~ *.elc shimbun/*.elc w3m-load.el ;\
 	rm -f doc/*~ doc/*.info doc/*.info-[0-9] doc/*.info-[0-9][0-9]
 
 distclean: clean
@@ -180,14 +180,14 @@ distclean: clean
 .SUFFIXES: .elc .el
 
 .el.elc:
-	echo "$(EMACS) $(FLAGS) -f w3mhack-batch-compile $*.el";\
-	$(EMACS) $(FLAGS) -f w3mhack-batch-compile $*.el
+	echo "$(EMACS) $(FLAGS) -f batch-byte-compile $*.el";\
+	$(EMACS) $(FLAGS) -f batch-byte-compile $*.el
 
 slow: Makefile
 	@for i in `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
 	do $(MAKE) -s $$i; done
 
-very-slow: clean keywords Makefile
+very-slow: clean Makefile
 	@args="$(VANILLA_FLAG) -batch";\
 	args="$$args -l $(srcdir)/attic/addpath.el $(ADDITIONAL_LOAD_PATH)";\
 	echo "=============================================";\
@@ -213,12 +213,3 @@ very-slow: clean keywords Makefile
 	  echo "$(EMACS) ARGS -f batch-byte-compile $$j";\
 	  $(EMACS) $$args -f batch-byte-compile $$j;\
 	done
-
-## Create the file w3m-kwds.el if it is needed for $(EMACS).
-keywords:
-	@ echo "$(EMACS) $(FLAGS)";\
-	$(EMACS) $(FLAGS) -f w3mhack-check-colon-keywords-file ;\
-	if test ! -f w3m-kwds.el; then\
-	  echo "There is no need to bind colon keywords for \"$(EMACS)\".";\
-	  echo "The file w3m-kwds.el is not created.";\
-	fi

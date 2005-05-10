@@ -27,20 +27,6 @@
   of retrieved data asynchronously, this patch enables emacs-w3m to
   display status of retrieving process.
 
-
-* mule-2.3@19.34.patch
-
-  This patch consists of three parts.  The first part is contributed by
-  Ken'ichi HANDA <handa@etl.go.jp>, and provides the change to make Mule
-  2.3 based on Emacs 19.34 work correctly on managing column numbers for
-  bitmap characters.  The second part is contributed by
-  TSUCHIYA Masatoshi <tsuchiya@namazu.org>, and provides the change to
-  to make Mule 2.3 based on Emacs 19.34 work correctly on managing
-  column numbers on the overlay properties before-string or after-string
-  containing multibyte characters.  The last part is the change to
-  distinguish S-SPC key from SPC.  It is introduced to Emacs 20 by RMS.
-  Note that you have need of rebuilding Mule after applying this patch.
-
 
 Local Variables:
 mode: indented-text

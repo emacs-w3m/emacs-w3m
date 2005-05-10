@@ -176,7 +176,7 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
       (goto-char (point-min))
       (skip-chars-forward " \t\r\f\n")
       (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
-	(delete-region (point-min) (line-end-position))))
+	(delete-region (point-min) (point-at-eol))))
     (shimbun-remove-tags "<!-- AD START -->" "<!-- AD END -->")
     (shimbun-remove-tags "\
 <IMG [^>]*SRC=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\

@@ -110,9 +110,9 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAWAgMAAAD7mfc/AAAABGdBTUEAALGPC/xhBQAAAAx
 			     (match-string-no-properties 1 str)	; category
 			     shimbun-cnn-jp-top-level-domain)) ; domain
 	    (setq date (shimbun-make-date-string
-			(string-to-int year)
-			(string-to-int month)
-			(string-to-int day)))
+			(string-to-number year)
+			(string-to-number month)
+			(string-to-number day)))
 	    (push (shimbun-create-header
 		   0
 		   title

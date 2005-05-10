@@ -75,7 +75,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAQBAMAAACigOGCAAAABGdBTUEAALGPC/xhBQAAADB
 	(regexp (format
 		 "<a href=\"\\(%s\\|/\\)\\(news/\\(%s\\)/story/\\(\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\)[0-9]+\\)\\.html\\)[^>]*\">"
 		 (regexp-quote (shimbun-url-internal shimbun))
-		 (shimbun-regexp-opt (shimbun-groups-internal shimbun))))
+		 (regexp-opt (shimbun-groups-internal shimbun))))
 	ids)
     (dolist (xover (list (concat (shimbun-url-internal shimbun)
 				 "news/index.html")

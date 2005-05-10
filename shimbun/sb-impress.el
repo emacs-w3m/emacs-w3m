@@ -27,7 +27,6 @@
 
 ;;; Code:
 (require 'shimbun)
-(require 'md5)
 (eval-when-compile
   (require 'cl))
 

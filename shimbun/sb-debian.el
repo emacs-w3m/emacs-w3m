@@ -1,6 +1,6 @@
 ;;; sb-debian.el --- shimbun backend for debian.org
 
-;; Copyright (C) 2001, 2002, 2003 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2001, 2002, 2003, 2005 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -151,7 +151,7 @@
 	  (shimbun-retrieve-url (format base-url "list") t)
 	  (re-search-forward
 	   "<td\\( align=\"center\"><b\\)?>Page [0-9]+ of \\([0-9]+\\)\\(</b><br>\\)?</td>")
-	  (let* ((page-max (string-to-int (match-string 2)))
+	  (let* ((page-max (string-to-number (match-string 2)))
 		 (i page-max))
 	    (while (> i 1)
 	      (setq url (format base-url i))

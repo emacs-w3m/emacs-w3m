@@ -161,9 +161,9 @@
 			     (shimbun-index-url shimbun)))
 		  (setq title (match-string 5))
 		  (setq date  (shimbun-make-date-string
-			       (string-to-int (match-string 1))
-			       (string-to-int (match-string 2))
-			       (string-to-int (match-string 3))))
+			       (string-to-number (match-string 1))
+			       (string-to-number (match-string 2))
+			       (string-to-number (match-string 3))))
 		  (setq id (shimbun-rss-build-message-id shimbun url date))
 		  ;; check old id
 		  (when (shimbun-search-id shimbun id)

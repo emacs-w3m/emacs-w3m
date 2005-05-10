@@ -51,12 +51,13 @@
 
 ;;; Code:
 
-;; Developers, you must not use the cl functions (e.g., `butlast',
-;; `coerce', `merge', etc.) in any emacs-w3m or shimbun modules.  To
+;; Developers, you must not use the cl functions (e.g., `coerce',
+;; `equalp', `merge', etc.) in any emacs-w3m or shimbun modules.  To
 ;; exclude run-time cl is the policy of emacs-w3m.  However, XEmacs
 ;; employs the cl package for all time, or those functions are
 ;; possibly provided in the other modules like APEL, so you may use
-;; them only in w3m-xmas.el or w3m-om.el.
+;; them only in w3m-xmas.el.  Note that `caaaar', for example, is not
+;; a cl function if it is byte compiled; see cl-macs.el.
 (eval-when-compile
   (require 'cl))
 
@@ -113,12 +114,9 @@
 		       emacs-major-version))))))))
    ((>= emacs-major-version 21)
     (require 'w3m-e21))
-   ((= emacs-major-version 20)
-    (require 'w3m-e20))
-   ((boundp 'MULE)
-    (require 'w3m-om))
    (t
-    (require 'w3m-e19))))
+    (error "Emacs-w3m of this version no longer supports Emacs %d"
+	   emacs-major-version))))
 
 (require 'w3m-hist)
 (require 'timezone)
@@ -180,8 +178,8 @@
   (eval-when-compile
     (let ((rev "$Revision$"))
       (and (string-match "\\.\\([0-9]+\\) \\$\\'" rev)
-	   (setq rev (- (string-to-number (match-string 1 rev)) 1030))
-	   (concat "1.4.0" (if (>= rev 0) (format ".%d" (+ rev 50)) "")))))
+	   (setq rev (- (string-to-number (match-string 1 rev)) 1136))
+	   (format "1.4.%d" (+ rev 50)))))
   "Version number of this package.")
 
 (defgroup w3m nil
@@ -272,10 +270,8 @@ The value of `w3m-user-agent' is used for the field body."
   :type 'boolean)
 
 (defcustom w3m-language
-  (if (or (and (boundp 'current-language-environment)
-	       (string= "Japanese"
-			(symbol-value 'current-language-environment)))
-	  (boundp 'MULE))
+  (if (and (boundp 'current-language-environment)
+	   (string= "Japanese" (symbol-value 'current-language-environment)))
       "Japanese")
   "*Your preferred language used in emacs-w3m sessions."
   :group 'w3m
@@ -577,7 +573,7 @@ nil which provides Lynx-like keys."
   ;; should never use CL macros like `caaaar', `when', `unless' ...
   :set (lambda (symbol value)
 	 (prog1
-	     ;; XEmacs 21.4.8 or Emacs 19 don't have `custom-set-default'.
+	     ;; XEmacs 21.4.8 doesn't have `custom-set-default'.
 	     (set-default symbol value)
 	   (if (or noninteractive
 		   ;; Loading w3m.elc is just in progress...
@@ -864,7 +860,6 @@ of the original request method."
 	;; require `font' in Emacs/w3 and `cl' arbitrarily. :-/
 	(features (cons 'font features))
 	base-attributes attributes attribute)
-    (require 'wid-edit) ;; Needed only in Emacs 20.
     (setq base-attributes (funcall fn base nil)
 	  attributes (funcall fn 'w3m-arrived-anchor-face nil))
     (while base-attributes
@@ -877,19 +872,19 @@ of the original request method."
   "Face used to highlight the current url in the \"about://history/\" page."
   :group 'w3m-face)
 
-(defface w3m-bold-face `((t (,@w3m-default-face-colors :bold t)))
+(defface w3m-bold-face '((t (:bold t)))
   "Face used for displaying bold text."
   :group 'w3m-face)
 
-(defface w3m-underline-face `((t (,@w3m-default-face-colors :underline t)))
+(defface w3m-underline-face '((t (:underline t)))
   "Face used for displaying underlined text."
   :group 'w3m-face)
 
 (defface w3m-strike-through-face
-  `((t (,@w3m-default-face-colors ,(if (featurep 'xemacs)
-				       :strikethru
-				     :strike-through)
-				  t)))
+  `((t (,(if (featurep 'xemacs)
+	     :strikethru
+	   :strike-through)
+	t)))
   "Face used for displaying strike-through text."
   :group 'w3m-face)
 
@@ -953,7 +948,7 @@ way of `post-command-hook'."
   :group 'w3m
   :type 'boolean)
 
-;; As far as we know, Emacs 20/21 under Mac OS X[1] and XEmacs under
+;; As far as we know, Emacs 21 under Mac OS X[1] and XEmacs under
 ;; Solaris[2] won't run the asynchronous operations correctly when
 ;; both `w3m-async-exec' and `w3m-process-connection-type' are non-nil;
 ;; [1]the final kilobyte or so might get lost from raw data downloaded
@@ -1206,7 +1201,6 @@ See also `w3m-filter-rules'."
        (eq w3m-type 'w3m-m17n)
        (or (not (eq w3m-output-coding-system 'utf-8))
 	   (and (w3m-mule-unicode-p)
-		(>= emacs-major-version 21)
 		(or window-system (eq (terminal-coding-system) 'utf-8))))
        t)
   "*Non-nil means replace symbols that the <_SYMBOL> tags lead into.
@@ -1354,9 +1348,7 @@ This variable can take one of the following five kinds of forms:
 			     :match (lambda (widget value)
 				      (if (featurep 'xemacs)
 					  nil ;; ??
-					(or (and (< emacs-major-version 21)
-						 (not value))
-					    (w3m-find-coding-system value)))))
+					(w3m-find-coding-system value))))
 	      (const :tag "Prefer the encoding of the current page"
 		     :format "%t: %{t%}\n" :sample-face widget-field-face
 		     t)
@@ -1376,7 +1368,6 @@ This variable can take one of the following five kinds of forms:
   "Non-nil means make emacs-w3m a tab browser.
 It makes it possible to show all emacs-w3m buffers in a single window
 with the tabs line, and you can choose one by clicking a mouse on it.
-Unfortunately, users of Emacs 20 and less cannot enjoy the benefit.
 See also `w3m-use-tab-menubar'."
   :group 'w3m
   :type 'boolean)
@@ -1838,21 +1829,15 @@ Here are some predefined functions which can be used for those ways:
 	       (mapcar
 		(lambda (entity)
 		  (cons (car entity)
-			(char-to-string
-			 (make-char (w3m-static-if (boundp 'MULE)
-					lc-ltn1
-				      'latin-iso8859-1)
-				    (cdr entity)))))
+			(char-to-string (make-char 'latin-iso8859-1
+						   (cdr entity)))))
 		latin1-entity)
 	       ;; greek
 	       (mapcar
 		(lambda (entity)
 		  (cons (car entity)
-			(char-to-string
-			 (make-char (w3m-static-if (boundp 'MULE)
-					lc-grk
-				      'greek-iso8859-7)
-				    (cdr entity)))))
+			(char-to-string (make-char 'greek-iso8859-7
+						   (cdr entity)))))
 		greek-entity))))
    (when (w3m-mule-unicode-p)
      (let ((latin-extended-a
@@ -2680,19 +2665,17 @@ need to know what function will be made, use `macroexpand'."
   (if (featurep 'xemacs)
       (let ((str `(get-text-property (extent-start-position extent)
 				     ',property)))
-	`(if (>= emacs-major-version 21)
-	     (lambda (extent)
-	       (if (and w3m-track-mouse
-			(eq (extent-object extent) (current-buffer)))
-		   (w3m-url-readable-string ,str)))))
-    `(if (>= emacs-major-version 21)
-	 (lambda (window object pos)
-	   (if w3m-track-mouse
-	       (progn
-		 (w3m-message "")	; Clear the echo area.
-		 (w3m-url-readable-string
-		  (get-text-property pos ',property
-				     (window-buffer window)))))))))
+	`(lambda (extent)
+	   (if (and w3m-track-mouse
+		    (eq (extent-object extent) (current-buffer)))
+	       (w3m-url-readable-string ,str))))
+    `(lambda (window object pos)
+       (if w3m-track-mouse
+	   (progn
+	     (w3m-message "")	; Clear the echo area.
+	     (w3m-url-readable-string
+	      (get-text-property pos ',property
+				 (window-buffer window))))))))
 
 (defmacro w3m-make-balloon-help (property)
   "Make a function returning a string used for the `balloon-help' message.
@@ -3307,9 +3290,6 @@ If URL is specified, only the image with URL is toggled."
 	      ;; Remove dummy string.
 	      (delete-region start end)
 	      (setq end start))
-	     ((get-text-property start 'w3m-bitmap-image)
-	      (goto-char end)
-	      (setq end (w3m-remove-image start end)))
 	     (t (w3m-remove-image start end)))
 	    (w3m-add-text-properties start end '(w3m-image-status off))))
 	(set-buffer-modified-p nil)))))
@@ -3355,34 +3335,14 @@ non-nil, cached data will not be used."
 URL is a url of an image.  RATE is a number of percent used when
 resizing an image."
   (interactive "P")
-  (let ((buffer-read-only)
-	start end iurl image size iscale scale)
-    (if (or (featurep 'xemacs)
-	    (>= emacs-major-version 21))
-	(progn
-	  (setq start (point)
-		end (or (next-single-property-change start 'w3m-image)
-			(point-max))
-		iurl (w3m-image start)))
-      ;; The case of using BITMAP-MULE:
-      ;; Look for the start and the end positions of the first line of
-      ;; a bitmap image.
-      (setq end (point-min)
-	    iurl "")
-      (while (and (not (string-equal url iurl))
-		  (setq start
-			(if (w3m-image end)
-			    end
-			  (next-single-property-change end 'w3m-image))))
-	(setq end (or (next-single-property-change start 'w3m-image)
-		      (point-max))
-	      iurl (w3m-image start)))
-      (goto-char start)
-      ;; Remove an existing bitmap image.
-      (let ((inhibit-read-only t))
-	(setq end (or (w3m-remove-image start end) end))))
-    (setq size (get-text-property start 'w3m-image-size)
-	  iscale (or (get-text-property start 'w3m-image-scale) '100))
+  (let* ((buffer-read-only)
+	 (start (point))
+	 (end (or (next-single-property-change start 'w3m-image)
+		  (point-max)))
+	 (iurl (w3m-image start))
+	 (size (get-text-property start 'w3m-image-size))
+	 (iscale (or (get-text-property start 'w3m-image-scale) '100))
+	 scale image)
     (w3m-add-text-properties start end '(w3m-image-status on))
     (setq scale (truncate (* iscale rate 0.01)))
     (w3m-add-text-properties start end (list 'w3m-image-scale scale))
@@ -3637,75 +3597,62 @@ invalid url if Gmane doesn't handle the group cannot be helped."
 	     (w3m-url-encode-string (match-string-no-properties 1)))))))))
 
 (eval-and-compile
-  (cond
-   ((locate-library "ffap")
-    (autoload 'ffap-url-at-point "ffap")
-    (if (featurep 'xemacs)
-	(if (featurep 'mule)
-	    (defun w3m-url-at-point ()
-	      "\
+  (autoload 'ffap-url-at-point "ffap")
+  (defalias 'w3m-url-at-point
+    (cond ((and (featurep 'xemacs) (featurep 'mule))
+	   (lambda nil "\
 Like `ffap-url-at-point', except that text props will be stripped and
 iso646 characters are unified into ascii characters."
-	      (or (w3m-gmane-url-at-point)
-		  (let ((left (buffer-substring-no-properties (point-at-bol)
-							      (point)))
-			(right (buffer-substring-no-properties (point)
-							       (point-at-eol)))
-			(regexp (format "[%c-%c]"
-					(make-char 'latin-jisx0201 33)
-					(make-char 'latin-jisx0201 126)))
-			(diff (- (char-to-int (make-char 'latin-jisx0201 33))
-				 33))
-			index)
-		    (while (setq index (string-match regexp left))
-		      (aset left index (- (aref left index) diff)))
-		    (while (setq index (string-match regexp right))
-		      (aset right index (- (aref right index) diff)))
-		    (with-temp-buffer
-		      (insert right)
-		      (goto-char (point-min))
-		      (insert left)
-		      (ffap-url-at-point)))))
-	  (defun w3m-url-at-point ()
-	    "\
+	     (or (w3m-gmane-url-at-point)
+		 (let ((left (buffer-substring-no-properties (point-at-bol)
+							     (point)))
+		       (right (buffer-substring-no-properties (point)
+							      (point-at-eol)))
+		       (regexp (format "[%c-%c]"
+				       (make-char 'latin-jisx0201 33)
+				       (make-char 'latin-jisx0201 126)))
+		       (diff (- (char-to-int (make-char 'latin-jisx0201 33))
+				33))
+		       index)
+		   (while (setq index (string-match regexp left))
+		     (aset left index (- (aref left index) diff)))
+		   (while (setq index (string-match regexp right))
+		     (aset right index (- (aref right index) diff)))
+		   (with-temp-buffer
+		     (insert right)
+		     (goto-char (point-min))
+		     (insert left)
+		     (ffap-url-at-point))))))
+	  ((featurep 'xemacs)
+	   (lambda nil "\
 Like `ffap-url-at-point', except that text props will be stripped."
-	    (or (w3m-gmane-url-at-point)
-		(unless (fboundp 'ffap-url-at-point)
-		  ;; It is necessary to bind `ffap-xemacs'.
-		  (load "ffap" nil t))
-		(let (ffap-xemacs)
-		  (ffap-url-at-point)))))
-      (defun w3m-url-at-point ()
-	(or (w3m-gmane-url-at-point)
-	    (ffap-url-at-point))))
-    (eval-after-load "ffap"
-      '(progn
-	 ;; Under Emacs 19, 20 or XEmacs, `ffap-url-regexp' won't match
-	 ;; to https urls by default.
-	 (if (and ffap-url-regexp
-		  (not (string-match ffap-url-regexp "https://foo"))
-		  (string-match "\\((\\|\\\\|\\)\\(http\\)\\(\\\\|\\|\\\\)\\)"
-				ffap-url-regexp))
-	     (setq ffap-url-regexp (replace-match "\\1\\2s?\\3"
-						  nil nil ffap-url-regexp)))
-	 ;; Add nntp:.
-	 (if (and ffap-url-regexp
-		  (not (string-match ffap-url-regexp "nntp://bar"))
-		  (string-match "\\(\\\\(news\\\\(post\\\\)\\?:\\)\\(\\\\|\\)"
-				ffap-url-regexp))
-	     (setq ffap-url-regexp (replace-match "\\1\\\\|nntp:\\2"
-						  nil nil ffap-url-regexp))))))
-   ((locate-library "thingatpt")
-    (autoload 'thing-at-point "thingatpt")
-    (defun w3m-url-at-point ()
-      "Return url from around point if it exists, or nil."
-      (or (w3m-gmane-url-at-point)
-	  (let ((url (thing-at-point 'url)))
-	    (when url
-	      (set-text-properties 0 (length url) nil url)
-	      url)))))
-   (t
-    (defalias 'w3m-url-at-point 'w3m-gmane-url-at-point))))
+	     (or (w3m-gmane-url-at-point)
+		 (unless (fboundp 'ffap-url-at-point)
+		   ;; It is necessary to bind `ffap-xemacs'.
+		   (load "ffap" nil t))
+		 (let (ffap-xemacs)
+		   (ffap-url-at-point)))))
+	  (t
+	   (lambda nil
+	     (or (w3m-gmane-url-at-point)
+		 (ffap-url-at-point)))))))
+
+(eval-after-load "ffap"
+  '(progn
+     ;; Under XEmacs, `ffap-url-regexp' won't match to https urls.
+     (if (and ffap-url-regexp
+	      (not (string-match ffap-url-regexp "https://foo"))
+	      (string-match "\\((\\|\\\\|\\)\\(http\\)\\(\\\\|\\|\\\\)\\)"
+			    ffap-url-regexp))
+	 (setq ffap-url-regexp (replace-match "\\1\\2s?\\3"
+					      nil nil ffap-url-regexp)))
+     ;; Add nntp:.
+     (if (and ffap-url-regexp
+	      (not (string-match ffap-url-regexp "nntp://bar"))
+	      (string-match "\\(\\\\(news\\\\(post\\\\)\\?:\\)\\(\\\\|\\)"
+			    ffap-url-regexp))
+	 (setq ffap-url-regexp (replace-match "\\1\\\\|nntp:\\2"
+					      nil nil ffap-url-regexp)))))
 
 (defun w3m-active-region-or-url-at-point ()
   "Return an active region or a url around the cursor.
@@ -4688,22 +4635,13 @@ It will put the retrieved contents into the current buffer.  See
 `w3m-retrieve' for how does it work asynchronously with the arguments."
   (cond
    ((string= "about://emacs-w3m.gif" url)
-    (when (or (fboundp 'base64-decode-string)
-	      (condition-case nil
-		  ;; Emacs 19 doesn't provide the internal base64 functions.
-		  (require 'base64)
-		(error
-		 (message "You need to install the base64.el(c) module")
-		 nil)))
-      (let* ((b64d 'base64-decode-string)
-	     ;; Avoid compile warning under old Emacsen.
-	     (icon (funcall b64d w3m-emacs-w3m-icon)))
-	(if (featurep 'xemacs)
-	    (insert icon)
-	  (set-buffer-multibyte (multibyte-string-p icon))
+    (let ((icon (base64-decode-string w3m-emacs-w3m-icon)))
+      (if (featurep 'xemacs)
 	  (insert icon)
-	  (set-buffer-multibyte nil)))
-      "image/gif"))
+	(set-buffer-multibyte (multibyte-string-p icon))
+	(insert icon)
+	(set-buffer-multibyte nil)))
+    "image/gif")
    ((string-match "\\`about://source/" url)
     (w3m-process-do
 	(type (w3m-retrieve (substring url (match-end 0))
@@ -6390,7 +6328,6 @@ as if the folder command of MH performs with the -pack option."
     (define-key map [delete] 'w3m-scroll-down-or-previous-url)
     (if (featurep 'xemacs)
 	(define-key map [(shift space)] 'w3m-scroll-down-or-previous-url)
-      ;; Note: It does not have an effect on Emacs 19.
       (define-key map [?\S-\ ] 'w3m-scroll-down-or-previous-url))
     (define-key map "h" 'backward-char)
     (define-key map "j" 'next-line)
@@ -6503,7 +6440,6 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "\C-?" 'w3m-scroll-down-or-previous-url)
     (if (featurep 'xemacs)
 	(define-key map [(shift space)] 'w3m-scroll-down-or-previous-url)
-      ;; Note: It does not have an effect on Emacs 19.
       (define-key map [?\S-\ ] 'w3m-scroll-down-or-previous-url))
     (define-key map "\t" 'w3m-next-anchor)
     (define-key map [tab] 'w3m-next-anchor)
@@ -6676,12 +6612,9 @@ closed.  See also `w3m-quit'."
 	(setq window (pop windows))
 	(set-window-buffer
 	 window
-	 (w3m-static-cond ((featurep 'xemacs)
-			   (other-buffer buf (window-frame window) nil))
-			  ((>= emacs-major-version 20)
-			   (other-buffer buf nil (window-frame window)))
-			  (t
-			   (other-buffer buf)))))))
+	 (w3m-static-if (featurep 'xemacs)
+	     (other-buffer buf (window-frame window) nil)
+	   (other-buffer buf nil (window-frame window)))))))
   (w3m-select-buffer-close-window))
 
 (unless w3m-mode-map
@@ -7218,8 +7151,8 @@ The value will be held in the `w3m-current-position' variable.  This
 function is designed as the hook function which is registered to
 `pre-command-hook' by `w3m-buffer-setup'."
   (setq w3m-current-position (list (point)
-				   (copy-marker (line-beginning-position))
-				   (copy-marker (line-end-position)))))
+				   (copy-marker (point-at-bol))
+				   (copy-marker (point-at-eol)))))
 
 (defun w3m-check-current-position ()
   "Run `w3m-after-cursor-move-hook' if the point gets away from the window.
@@ -7242,9 +7175,7 @@ generate a new buffer."
   (setq truncate-lines t)
   (w3m-add-local-hook 'pre-command-hook 'w3m-store-current-position)
   (w3m-add-local-hook 'post-command-hook 'w3m-check-current-position)
-  (w3m-static-when (or (featurep 'xemacs)
-		       (> emacs-major-version 20))
-    (w3m-initialize-graphic-icons))
+  (w3m-initialize-graphic-icons)
   (setq mode-line-buffer-identification
 	`("%b "
 	  (w3m-current-process
@@ -7965,17 +7896,8 @@ works on Emacs.
 
 (defun w3m-make-separator ()
   (if (string= w3m-language "Japanese")
-      (w3m-static-if (boundp 'MULE)
-	  ;; `make-string' doesn't support Japanese chars
-	  ;; and the 1st arg to `make-char' should be int.
-	  (let ((default-mc-flag t))
-	    (with-temp-buffer
-	      (insert-char (make-char (symbol-value 'lc-jp)
-				      40 44)
-			   (/ (w3m-display-width) 2))
-	      (buffer-string)))
-	(make-string (/ (w3m-display-width) 2)
-		     (make-char 'japanese-jisx0208 40 44)))
+      (make-string (/ (w3m-display-width) 2)
+		   (make-char 'japanese-jisx0208 40 44))
     (make-string (w3m-display-width) ?-)))
 
 (defun w3m-about-header (url &optional no-decode no-cache &rest args)
@@ -8485,7 +8407,7 @@ buffer list.  The following command keys are available:
   (w3m-select-buffer-show-this-line))
 
 (defmacro w3m-select-buffer-current-buffer ()
-  '(get-text-property (line-beginning-position) 'w3m-select-buffer))
+  '(get-text-property (point-at-bol) 'w3m-select-buffer))
 
 (defun w3m-select-buffer-show-this-line (&optional interactive-p)
   "Show the buffer on the current menu line or scroll it up."
@@ -8665,7 +8587,6 @@ passed to the `w3m-quit' function (which see)."
 (defun w3m-header-line-insert ()
   "Put the header line into the current buffer."
   (when (and (or (featurep 'xemacs)
-		 (< emacs-major-version 21)
 		 (w3m-use-tab-p))
 	     w3m-use-header-line
 	     w3m-current-url
@@ -8684,13 +8605,8 @@ passed to the `w3m-quit' function (which see)."
       (w3m-add-text-properties start (point)
 			       `(face
 				 w3m-header-line-location-content-face
-				 mouse-face
-				 highlight
-				 ,(if (or (featurep 'xemacs)
-					  (>= emacs-major-version 21))
-				      'keymap
-				    'local-map)
-				 ,w3m-header-line-map
+				 mouse-face highlight
+				 keymap ,w3m-header-line-map
 				 ,@(if (featurep 'xemacs)
 				       '(help-echo
 					 "button2 prompts to input URL"

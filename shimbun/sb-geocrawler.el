@@ -117,7 +117,7 @@
 			    "http://www.geocrawler.com/mail/msg_raw.php3?msg_id="
 			    (match-string 1)))
 			  (id (concat "<" (match-string 1) "@geocrawler.com>"))
-			  (eol (line-end-position)))
+			  (eol (point-at-eol)))
 		      (when (shimbun-search-id shimbun id)
 			(throw 'stop nil))
 		      (push (shimbun-make-header

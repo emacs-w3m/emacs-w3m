@@ -678,7 +678,7 @@ allowed for each string."
 		  (search-forward id nil t)) ; We find the ID.
 	;; And the id is in the fourth field.
 	(if (not (and (search-backward "\t" nil t 4)
-		      (not (search-backward "\t" (shimbun-point-at-bol) t))))
+		      (not (search-backward "\t" (point-at-bol) t))))
 	    (forward-line 1)
 	  (forward-line 0)
 	  (setq found t)))
@@ -687,7 +687,7 @@ allowed for each string."
 	(setq id (concat "X-Nnshimbun-Id: " id))
 	(while (and (not found)
 		    (search-forward id nil t))
-	  (if (not (search-backward "\t" (shimbun-point-at-bol) t 8))
+	  (if (not (search-backward "\t" (point-at-bol) t 8))
 	      (forward-line 1)
 	    (forward-line 0)
 	    (setq found t))))
@@ -697,7 +697,7 @@ allowed for each string."
 ;; This function is defined as the alternative of `nnheader-parse-nov'
 ;; in order to keep the compatibility between T-gnus and Gnus.
 (defun nnshimbun-parse-nov ()
-  (let ((eol (shimbun-point-at-eol)))
+  (let ((eol (point-at-eol)))
     (let ((number  (nnheader-nov-read-integer))
 	  (subject (nnheader-nov-field))
 	  (from    (nnheader-nov-field))
@@ -784,7 +784,7 @@ article to be expired.  The optional fourth argument FORCE is ignored."
 	(while expirable
 	  (setq article (pop expirable))
 	  (when (and (nnheader-find-nov-line article)
-		     (setq end (shimbun-point-at-eol))
+		     (setq end (point-at-eol))
 		     (not (= (point-max) (1+ end))))
 	    (setq time (and (search-forward "\t" end t)
 			    (search-forward "\t" end t)
@@ -861,7 +861,7 @@ Other files in the directory are also deleted."
 	    (while (and (not found)
 			(search-forward url nil t)
 			(looking-at "[?\t]"))
-	      (if (not (search-backward "\t" (shimbun-point-at-bol) t 7))
+	      (if (not (search-backward "\t" (point-at-bol) t 7))
 		  (forward-line 1)
 		(forward-line 0)
 		(setq found t))))

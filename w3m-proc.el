@@ -51,13 +51,8 @@
 (require 'w3m-util)
 
 (eval-and-compile
-  (cond ((boundp 'MULE)
-	 (autoload 'read-passwd "w3m-om"))
-	((= emacs-major-version 19)
-	 (autoload 'read-passwd "w3m-19"))
-	((boundp 'header-line-format)
-	 (autoload 'w3m-force-window-update
-	   (format "w3m-e%d" emacs-major-version)))))
+  (w3m-static-when (boundp 'header-line-format)
+    (autoload 'w3m-force-window-update "w3m")))
 
 (eval-when-compile
   ;; Variable(s) which are used in the following inline functions.

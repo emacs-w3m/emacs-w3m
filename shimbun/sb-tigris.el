@@ -141,7 +141,7 @@
 		     (count 0)
 		     id)
 		(when (string-match ".*msgNo=\\([0-9]+\\).*" url)
-		  (setq count (string-to-int (match-string 1 url))))
+		  (setq count (string-to-number (match-string 1 url))))
 		(setq id (format "<%d%%%s.%s.%s>"
 				 count
 				 (shimbun-tigris-get-ml-name shimbun)
@@ -151,9 +151,9 @@
 		(if (and (stringp date)
 			 (string-match "\\([0-9]*\\)-\\([0-9]*\\)-\\([0-9]*\\)" date))
 		    (setq date (shimbun-make-date-string
-				(string-to-int (match-string 1 date))
-				(string-to-int (match-string 2 date))
-				(string-to-int (match-string 3 date))))
+				(string-to-number (match-string 1 date))
+				(string-to-number (match-string 2 date))
+				(string-to-number (match-string 3 date))))
 		  (setq date nil))
 		;; change to raw page
 		(setq url (shimbun-expand-url

@@ -270,17 +270,8 @@ Emacs-w3m Functions
 $B$9(B (@pxref{Other Requirements})$B!#:G$b0BDj$7$F$$$k:G?7$N(B XEmacs 21.4 $B$r;H(B
 $B$&$3$H$r?d>)$7$^$9!#(B
 
-@item Emacs 20.x
-$BDI2C$N%Q%C%1!<%8$OITMW$G$9!#$5$i$K(B @sc{bitmap-mule} $B%Q%C%1!<%8$r;H$&$3$H(B
-$B$K$h$C$F!"Gr9u$N%S%C%H%^%C%W2hA|$r%$%s%i%$%sI=<($9$k$3$H$,$G$-$^(B
-$B$9(B (@pxref{Other Requirements})$B!#(B
-
-@item Emacs 19.34 ($B4^(B Mule 2.3)
-@acronym{APEL} $B%Q%C%1!<%8!"(B@samp{$B?7$7$$(B custom} $B%Q%C%1!<%8$*$h(B
-$B$S(B @file{regexp-opt.el} $B%b%8%e!<%k$,I,MW$G$9!#(BEmacs 19.34 $B$r85$K$7(B
-$B$?(B Mule 2.3 $B$G$O!"(B@sc{bitmap-mule} $B%Q%C%1!<%8$r;H$&$3$H$K$h$C$F!"Gr9u$N(B
-$B%S%C%H%^%C%W2hA|$r%$%s%i%$%sI=<($9$k$3$H$,$G$-$^$9(B (@pxref{Other
-Requirements})$B!#(B
+@item Emacs 20.x, Emacs 19.34 ($B4^(B Mule 2.3)
+$B$3$l$i$N(B Emacs $B$r!$(Bemacs-w3m $B$O%5%]!<%H$7$^$;$s!%(B
 @end table
 
 @node You Need w3m
@@ -301,11 +292,7 @@ Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r!"%&%'%V%3%s%F%s%D$r<hF@$9$k$?$a$N%P%C%/
 @cindex @acronym{APEL} package
 @cindex Gifsicle program
 @cindex ImageMagick package
-@cindex @sc{bitmap-mule} package
-@cindex New custom
-@cindex regexp-opt.el
 @cindex @acronym{FLIM} package
-@cindex xml.el
 @cindex Mule-UCS package
 @cindex codepage-ex
 
@@ -315,9 +302,8 @@ Emacs $B$N%P!<%8%g%s$K$h$C$F$O!"%5!<%I%Q!<%F%#$N%Q%C%1!<%8$,I,MW$K$J$k$3$H(B
 
 @table @samp
 @item @acronym{APEL}
-XEmacs$B!"(BEmacs 19.34 $B$^$?$O(B Mule 2.3 $B$KIT2D7g$G$9!#(BEmacs-w3m $B$r9=C[$9$kA0(B
-$B$K(B @acronym{APEL} $B$r%$%s%9%H!<%k$7$J$1$l$P$J$j$^$;$s!#(B@acronym{APEL} $B$O(B
-$B0J2<$N>l=j$K$"$j$^$9(B:
+XEmacs $B$KIT2D7g$G$9!#(BEmacs-w3m $B$r9=C[$9$kA0$K(B @acronym{APEL} $B$r%$%s%9%H!<(B
+$B%k$7$J$1$l$P$J$j$^$;$s!#(B@acronym{APEL} $B$O0J2<$N>l=j$K$"$j$^$9(B:
 
 @uref{ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz}
 
@@ -358,60 +344,13 @@ emacs-w3m $B$O2hA|%5%$%:$NJQ99$d(B @samp{favicon} $B2hA|$r(B Emacs $B$,07$(
 $B$3$H$r?d>)$7$^$9!#0JA0$N%P!<%8%g%s$bF0$/$+$b$7$l$^$;$s$,!"$=$l$i$O40A4$K(B
 $B%A%'%C%/$5$l$F$$$^$;$s!#(B
 
-@item @sc{bitmap-mule}
-Emacs 20.x $B$+(B Emacs 19.34 $B$r85$K$7$?(B Mule 2.3 $B$GGr9u$N%S%C%H%^%C%W2hA|$r(B
-$BI=<($9$k$?$a$K;H$$$^$9!#2hA|$K6=L#$,L5$1$l$P!"I,$:$7$bI,MW$G$O$"$j$^$;$s!#(B
-$B0J2<$N>l=j$G<hF@$G$-$^$9(B:
-
-@uref{ftp://ftp.jpl.org/pub/elisp/bitmap/}
-
-@item new custom
-Emacs 19.34 ($B4^(B Mule 2.3) $B$KIT2D7g$G$9!#(BEmacs 19.34 $B$K4^$^$l$F$$(B
-$B$k(B @samp{custom} $B%i%$%V%i%j$O(B @emph{$B8E$$(B} $B$b$N$G!"$3$l(B
-$B$N(B @acronym{API} $B$O:G6a$N(B Emacs  $B$K4^$^$l$F$$$k(B @samp{$B?7$7$$(B custom} $B$H(B
-$B$O0c$C$F$$$^$9!#(BEmacs 19.34 $BMQ$N(B @samp{$B?7$7$$(B custom} $B$O!"0J2<$N>l=j$+$i(B
-$B<j$KF~$l$k$3$H$,$G$-$^$9(B:
-
-@uref{ftp://ftp.dina.kvl.dk/pub/Staff/Per.Abrahamsen/custom/custom-1.9962.tar.gz}
-
-Mule 2.3 $B$N%f!<%6$O!"0J2<$N%Q%C%A$rEv$F$F>/$7JQ99$7$J$1$l$P$J$i$J$$$3$H(B
-$B$KCm0U$7$F2<$5$$(B:
-
-@example
-----8<------8<------8<------8<------8<------8<------8<------8<----
---- custom-1.9962/cus-face.el~	Wed Mar  4 19:52:39 1998
-+++ custom-1.9962/cus-face.el	Mon Mar  9 08:05:33 1998
-@@@@ -96,7 +96,7 @@@@
-       "Define a new FACE on all frames, ignoring X resources."
-       (interactive "SMake face: ")
-       (or (internal-find-face name)
--	  (let ((face (make-vector 8 nil)))
-+	  (let ((face (make-vector face-vector-length nil)))
- 	    (aset face 0 'face)
- 	    (aset face 1 name)
- 	    (let* ((frames (frame-list))
-----8<------8<------8<------8<------8<------8<------8<------8<----
-@end example
-
-@item regexp-opt.el
-Emacs 19.34 ($B4^(B Mule 2.3) $B$KIT2D7g$G$9!#(B@file{regexp-opt.el} $B%U%!%$%k(B
-$B$O(B emacs-w3m $B$NG[I[$N(B @file{attic/} $B%G%#%l%/%H%j$K4^$^$l$F$$$^$9!#0J2<$N(B
-$B$h$&$K!"C1$K$I$3$+(B ($BNc$($P(B @file{site-lisp/} $B%G%#%l%/%H%j(B) $B$K%3%T!<$7$F!"(B
-byte-compile $B$9$l$PNI$$$G$9(B:
-
-@example
-# cp -p attic/regexp-opt.el /usr/local/share/emacs/19.34/site-lisp
-# cd /usr/local/share/emacs/19.34/site-lisp
-# emacs -batch -q -no-site-file -f batch-byte-compile regexp-opt.el
-@end example
-
 @item @acronym{FLIM}
 @samp{Shimbun} $B%i%$%V%i%j$r;H$&$?$a$K$O(B @acronym{FLIM} $B%Q%C%1!<%8$,I,MW(B
 $B$G$9!#(B@samp{Shimbun} $B%i%$%V%i%j$O%&%'%V>e$N?7J9$rFI$`$?$a$NF;6qN`$N%3%l(B
 $B%/%7%g%s$G!"(BGnus$B!"(BMew$B!"(BNana-gnus$B!"(BT-gnus$B!"(BWanderlust $B$J$I$H$H$b$K;H$&$3(B
 $B$H$,$G$-$^$9!#(B@xref{Shimbun Library}.
 
-$B$?$H$((B Emacs 20.x$B!"(BEmacs 21.x $B$^$?$O(B Emacs 22.x $B$r;H$C$F$$$k>l9g$G$b!"(B
+$B$?$H$((B Emacs 21.x $B$^$?$O(B Emacs 22.x $B$r;H$C$F$$$k>l9g$G$b!"(B
 @acronym{FLIM} $B%Q%C%1!<%8$K$O(B @acronym{APEL} $B%Q%C%1!<%8$,I,MW$G$"$k$3$H(B
 $B$KCm0U$7$F2<$5$$!#$7$?$,$C$F(B @samp{shimbun} $B%i%$%V%i%j$r;H$&$K$O!"(B
 @acronym{APEL} $B$H(B @acronym{FLIM} $B$NN>J}$r%$%s%9%H!<%k$7$J$1$l$P$J$j$^$;(B
@@ -419,35 +358,14 @@ byte-compile $B$9$l$PNI$$$G$9(B:
 
 @uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
 
-@item xml.el
-$B99?7>pJs$,(B RSS $B7A<0$GG[I[$5$l$F$$$k%5%$%H$rBP>]$H$7$F(B @samp{shimbun} $B%i(B
-$B%$%V%i%j$rMxMQ$9$k>l9g$KI,MW$G$9!#(BEmacs 21 $B0J>e$G$OF1:-$5$l$F$$$^$9$+$i!"(B
-$B%$%s%9%H!<%k$NI,MW$O$"$j$^$;$s!#$=$l0J30$N(B Emacsen $B$rMxMQ$7$F$$$k>l9g$O!"(B
-$B0J2<$N$h$&$K!"C1$K$I$3$+(B ($BNc$($P(B Emacs $B$N(B @file{site-lisp/} $B%G%#%l%/%H%j(B)
-$B$K%3%T!<$7$F(B byte-compile $B$9$l$PNI$$$G$9(B:
-
-@example
-# cp -p attic/xml.el /usr/local/share/emacs/20.7/site-lisp
-# cd /usr/local/share/emacs/20.7/site-lisp
-# emacs -batch -q -no-site-file -f batch-byte-compile xml.el
-@end example
-
-$B$?$@$7!"(BEmacs 19.34 ($B4^(B Mule 2.3) $B$G$O!"0J2<$N$h$&$K%*%W%7%g%s$r(B
-$BDI2C$7$F(B byte-compile $B$7$F$/$@$5$$!#(B
-
-@example
-# emacs -batch -eval '(put (quote char-after) (quote byte-compile) nil)' -f batch-byte-compile xml.el
-@end example
-
 @item Mule-UCS
-Emacs 20 $B$+(B XEmacs $B$r;H$&$+!"$^$?$O(B Emacs 21 $B$r;H$C$FCf9q8l!"F|K\8l!"4Z(B
-$B9q8l$J$I$N%F%-%9%H$rFI$`I,MW$,$"$k$J$i$P!"(Bemacs-w3m $B$,(B (Unicode $B%7%9%F%`(B
-$B$NBeI=E*$J(B coding system $B$G$"$k(B) UTF-8 $B$G%(%s%3!<%I$5$l$?%Z!<%8$rI=<($G(B
-$B$-$k$h$&$K$9$k$?$a$K!"(BMule-UCS Emacs Lisp $B%Q%C%1!<%8$r%$%s%9%H!<%k$9$k$3(B
-$B$H$r4+$a$^$9!#(BEmacs 21 $B$,(B Unicode $B%7%9%F%`$rItJ,E*$K(B ($BNc$($P%i%F%s!&%F%-(B
-$B%9%H$N$?$a$K(B) $B%5%]!<%H$7!"(BEmacs 22 $B0J>e$,$=$l$r40A4$K%5%]!<%H$9$k$3$H$K(B
-$BCm0U$7$F$/$@$5$$!#(BMule-UCS Emacs Lisp $B%Q%C%1!<%8$O0J2<$N>l=j$+$i<hF@$7$F(B
-$B2<$5$$(B:
+XEmacs $B$r;H$&$+!"$^$?$O(B Emacs 21 $B$r;H$C$FCf9q8l!"F|K\8l!"4Z9q8l$J$I$N%F(B
+$B%-%9%H$rFI$`I,MW$,$"$k$J$i$P!"(Bemacs-w3m $B$,(B (Unicode $B%7%9%F%`$NBeI=E*(B
+$B$J(B coding system $B$G$"$k(B) UTF-8 $B$G%(%s%3!<%I$5$l$?%Z!<%8$rI=<($G$-$k$h$&(B
+$B$K$9$k$?$a$K!"(BMule-UCS Emacs Lisp $B%Q%C%1!<%8$r%$%s%9%H!<%k$9$k$3$H$r4+$a(B
+$B$^$9!#(BEmacs 21 $B$,(B Unicode $B%7%9%F%`$rItJ,E*$K(B ($BNc$($P%i%F%s!&%F%-%9%H$N$?(B
+$B$a$K(B) $B%5%]!<%H$7!"(BEmacs 22 $B0J>e$,$=$l$r40A4$K%5%]!<%H$9$k$3$H$KCm0U$7$F(B
+$B$/$@$5$$!#(BMule-UCS Emacs Lisp $B%Q%C%1!<%8$O0J2<$N>l=j$+$i<hF@$7$F2<$5$$(B:
 
 @uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
 
@@ -457,7 +375,7 @@ Mule-UCS $B$K(B @uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.htm
 
 XEmacs $B%f!<%68~$1$K$O!"$3$3$K%3%s%Q%$%k:Q$_$N%Q%C%1!<%8$,$"$j$^$9(B:
 
-@uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.04-pkg.tar.gz}
+@uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.11-pkg.tar.gz}
 
 @item codepage-ex
 $B%h!<%m%C%Q$N$$$/$D$+$N(B web $B%5%$%H$O!"(B@samp{charset=ISO-8859-1} $B$r;XDj$7(B
@@ -1475,14 +1393,13 @@ Bookmark $B%^%$%J!<%b!<%I(B (@pxref{Consulting Bookmarks}) $B$O!"%V%C%/%^!<%/
 @section $B$_$s$J%?%V$,9%$-$@$h$M(B
 
 $B$[$H$s$I$NB>$N%F%-%9%H%Y!<%9$N%V%i%&%6!<$H0[$J$j!"(Bemacs-w3m $B$O%?%V$K$h$k(B
-$B1\Mw$r%5%]!<%H$7$F$$$^$9(B@footnote{$BC/$N$;$$$G$b$J$$$1$l$I!"(B
-Emacs 19 $B$+(B 20 $B$N%f!<%6$O%?%V$r;H$($^$;$s!#(B}$B!#%?%V$K$h$k1\Mw$C$F2?(B? $B$H?R(B
-$B$M$i$l$=$&$G$9$M!#$=$l$O$H$F$bC1=c$G!"%&%#%s%I%&$N$F$C$Z$s$N9T$K$9$Y$F$N(B
-$B%P%C%U%!$rC1=c$+$DJ,$+$j$d$9$$$d$jJ}$GI=<($9$k$3$H$K$h$C$F!"C10l$N%&%#%s(B
-$B%I%%$G$9$Y$F$N(B emacs-w3m $B$N%P%C%U%!$rI=8=$9$kJ}K!$G$9!#$=$l$>$l$N%P%C%U%!(B
-$B$O!V%?%V!W$H$7$FI=<($5$l$^$9!#$3$N9T$O!"B>$N%P%C%U%!$K0\F0$7$?$j!"%Z!<%8(B
-$B$N>uBV$rCN$k$3$H$,$G$-$k$h$&$K$9$k$?$a$K>o$K8+$($?$^$^$K$J$C$F$$$F!"%P%C(B
-$B%U%!$K$D$i$l$F%9%/%m!<%k$7$^$;$s!#(B
+$B1\Mw$r%5%]!<%H$7$F$$$^$9!#%?%V$K$h$k1\Mw$C$F2?(B? $B$H?R$M$i$l$=$&$G$9$M!#$=(B
+$B$l$O$H$F$bC1=c$G!"%&%#%s%I%&$N$F$C$Z$s$N9T$K$9$Y$F$N%P%C%U%!$rC1=c$+$DJ,(B
+$B$+$j$d$9$$$d$jJ}$GI=<($9$k$3$H$K$h$C$F!"C10l$N%&%#%s%I%%$G$9$Y$F(B
+$B$N(B emacs-w3m $B$N%P%C%U%!$rI=8=$9$kJ}K!$G$9!#$=$l$>$l$N%P%C%U%!$O!V%?%V!W(B
+$B$H$7$FI=<($5$l$^$9!#$3$N9T$O!"B>$N%P%C%U%!$K0\F0$7$?$j!"%Z!<%8$N>uBV$rCN(B
+$B$k$3$H$,$G$-$k$h$&$K$9$k$?$a$K>o$K8+$($?$^$^$K$J$C$F$$$F!"%P%C%U%!$K$D$i(B
+$B$l$F%9%/%m!<%k$7$^$;$s!#(B
 
 $B$=$N46?($r$D$+$`:G$b4JC1$JJ}K!$O!"C1$K;n$7$F$_$k$3$H$G$9!#$G$9$+$i!"0z$-(B
 $BB3$$$F(B emacs-w3m $B$N%;%C%7%g%s$r;O$a$F2<$5$$!#2?$b@_DjJQ99$r$7$F$$$J$1$l(B
@@ -2902,8 +2819,7 @@ and (X)Emacs handles unicode charsets.
 @c @vindex w3m-use-tab
 Non-@code{nil} means make emacs-w3m a tab browser.  It makes it possible
 to show all emacs-w3m buffers in a single window with the tabs line, and
-you can choose one by clicking a mouse on it.  Unfortunately, users of
-Emacs 20 and less cannot enjoy this feature.  See also
+you can choose one by clicking a mouse on it.  See also
 @code{w3m-use-tab-menubar}.
 
 @item w3m-use-tab-menubar
@@ -3611,24 +3527,15 @@ Q. $BF0:n$9$k(B Emacs $B$O(B?
 $B0J2<$N(B Emacsen $B$GF0:n$9$k$3$H$,3NG'$5$l$F$$$^$9!#(B
 
 @itemize @bullet
-@item Mule 2.3 (Emacs 19.34 $B$r85$K$7$?$b$N(B)
-@item Emacs 19.34
-@item Emacs 20
 @item Emacs 21
 @item Emacs 22
-@item XEmacs 21.1 with Mule
-@item XEmacs 21.2 with Mule (beta37$B0J9_(B)
 @item XEmacs 21.4 with/without Mule
 @item XEmacs 21.5 with/without Mule
 @item Meadow
 @end itemize
 
-$B$J$*!"(BMule 2.3, Emacs 19.34 $B$^$?$O(B XEmacs $B$G$O(B @acronym{APEL} $B$,I,MW$H$J(B
-$B$j$^$9!#>\$7$/$O(B @ref{Other Requirements} $B$r3NG'$7$F2<$5$$!#(B
-
-Emacs-w3m $B$O(B Emacs 19.34 $B$d(B Mule $B5!G=$,L5$$(B XEmacs $B$G$bF0:n$7$^$9!#$?$@(B
-$B$7!"F|K\$NE75$M=Js$r8+$k$J$I$N$$$/$D$+$N%3%^%s%I$O!"(BMule $B$N5!G=$K6/$/0M(B
-$BB8$7$F$$$k$N$G!";H$($^$;$s!#(B
+$B$J$*!"(BXEmacs $B$G$O(B @acronym{APEL} $B$,I,MW$H$J$j$^$9!#>\$7$/$O(B @ref{Other
+Requirements} $B$r3NG'$7$F2<$5$$!#(B
 
 @item
 Q. $BF0:n$9$k(B w3m $B$O(B?

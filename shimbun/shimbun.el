@@ -154,12 +154,6 @@ while shimbun is waiting for a server's response."
   "Return the shimbun object created by MUA."
   (shimbun-mua-shimbun-internal mua))
 
-;;; BASE 64
-(require 'mel)
-(eval-and-compile
-  (fset 'shimbun-base64-encode-string
-	(mel-find-function 'mime-encode-string "base64")))
-
 ;;; emacs-w3m implementation of url retrieval and entity decoding.
 (require 'w3m)
 (defun shimbun-retrieve-url (url &optional no-cache no-decode referer)
@@ -193,6 +187,7 @@ system of retrieved contents."
 (defalias 'shimbun-decode-entities 'w3m-decode-entities)
 (defalias 'shimbun-expand-url 'w3m-expand-url)
 (defalias 'shimbun-find-coding-system 'w3m-find-coding-system)
+(defalias 'shimbun-replace-in-string 'w3m-replace-in-string)
 (defalias 'shimbun-url-encode-string 'w3m-url-encode-string)
 
 ;;; Implementation of Header API.
@@ -509,8 +504,7 @@ Generated article have a multipart/related content-type."
 	  "Content-Disposition: "
 	  (shimbun-image-entity-disposition-internal entity) "\n")
   (luna-call-next-method)
-  (insert
-   (shimbun-base64-encode-string (shimbun-entity-data-internal entity))))
+  (insert (base64-encode-string (shimbun-entity-data-internal entity))))
 
 (defun shimbun-mime-replace-image-tags (base-cid &optional base-url images)
   "Replace all IMG tags with references to inlined image parts.
@@ -952,32 +946,6 @@ integer n:    Retrieve n pages of header indices.")
 	    " で公開されています。\n")))
 
 ;;; Misc Functions
-(static-cond
- ((fboundp 'point-at-bol)
-  (defalias 'shimbun-point-at-bol 'point-at-bol))
- ((fboundp 'line-beginning-position)
-  (defalias 'shimbun-point-at-bol 'line-beginning-position))
- (t
-  (defun shimbun-point-at-bol ()
-    "Return point at the beginning of the line."
-    (let ((p (point)))
-      (beginning-of-line)
-      (prog1 (point)
-	(goto-char p))))))
-
-(static-cond
- ((fboundp 'point-at-eol)
-  (defalias 'shimbun-point-at-eol 'point-at-eol))
- ((fboundp 'line-end-position)
-  (defalias 'shimbun-point-at-eol 'line-end-position))
- (t
-  (defun shimbun-point-at-eol ()
-    "Return point at the end of the line."
-    (let ((p (point)))
-      (end-of-line)
-      (prog1 (point)
-	(goto-char p))))))
-
 (defun shimbun-header-insert-and-buffer-string (shimbun header
 							&optional charset html)
   "Insert headers which are generated from SHIMBUN and HEADER, and
@@ -1082,16 +1050,6 @@ the following form returns the present time of Japan, wherever you are.
 	      (and (= (car a) (car b))
 		   (< (cadr a) (cadr b)))))))
 
-(if (fboundp 'regexp-opt)
-    (defalias 'shimbun-regexp-opt 'regexp-opt)
-  (defun shimbun-regexp-opt (strings &optional paren)
-    "Return a regexp to match a string in STRINGS.
-Each string should be unique in STRINGS and should not contain any regexps,
-quoted or not.  If optional PAREN is non-nil, ensure that the returned regexp
-is enclosed by at least one regexp grouping construct."
-    (let ((open-paren (if paren "\\(" "")) (close-paren (if paren "\\)" "")))
-      (concat open-paren (mapconcat 'regexp-quote strings "\\|") close-paren))))
-
 (defun shimbun-decode-entities-string (string)
   "Decode entities in the STRING."
   (with-temp-buffer
@@ -1129,29 +1087,6 @@ is enclosed by at least one regexp grouping construct."
   (goto-char (point-max))
   (while (search-backward "\r\n" nil t)
     (delete-char 1)))
-
-(eval-and-compile
-  (cond
-   ((fboundp 'replace-in-string)
-    (defalias 'shimbun-replace-in-string 'replace-in-string))
-   ((fboundp 'replace-regexp-in-string)
-    (defun shimbun-replace-in-string  (string regexp newtext &optional literal)
-      ;;(replace-regexp-in-string regexp newtext string nil literal)))
-      ;;
-      ;; Don't call the symbol function `replace-regexp-in-string' directly
-      ;; in order to silence the byte-compiler when an Emacs which doesn't
-      ;; provide it is used.  The following form generates exactly the same
-      ;; byte-code.
-      (funcall (symbol-function 'replace-regexp-in-string)
-	       regexp newtext string nil literal)))
-   (t
-    (defun shimbun-replace-in-string (string regexp newtext &optional literal)
-      (let ((start 0) tail)
-	(while (string-match regexp string start)
-	  (setq tail (- (length string) (match-end 0)))
-	  (setq string (replace-match newtext nil literal string))
-	  (setq start (- (length string) tail))))
-      string))))
 
 (if (fboundp 'subst-char-in-string)
     (defalias 'shimbun-subst-char-in-string 'subst-char-in-string)

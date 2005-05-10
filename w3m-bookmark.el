@@ -1,6 +1,7 @@
 ;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2005
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -203,7 +204,7 @@ exist, returns (0 . 0)."
 		     (point)
 		     (if (search-forward "</h2>" nil t)
 			 (match-beginning 0)
-		       (line-end-position)))
+		       (point-at-eol)))
 		    nil)
 	      sections)))
     (nreverse sections)))
@@ -233,10 +234,8 @@ exist, returns (0 . 0)."
 
 (defun w3m-bookmark-safe-string (string format)
   (labels ((filter (s c) (decode-coding-string (encode-coding-string s c) c)))
-    (if (let ((encoding
-	       (w3m-static-cond
-		((boundp 'MULE) file-coding-system)
-		((featurep 'mule) buffer-file-coding-system))))
+    (if (let ((encoding (w3m-static-when (featurep 'mule)
+			  buffer-file-coding-system)))
 	  (or (string= string (filter string encoding))
 	      (when w3m-use-mule-ucs
 		(string= (setq string
@@ -360,7 +359,7 @@ With prefix, ask new url to add instead of current page."
 
 (defun w3m-bookmark-current-number ()
   "Return the ordinal number of the current bookmark entry."
-  (let ((x (car (get-text-property (line-end-position) 'w3m-name-anchor))))
+  (let ((x (car (get-text-property (point-at-eol) 'w3m-name-anchor))))
     (and x
 	 (string-match "\\`w3mbk[0-9]+\\.[0-9]+\\.\\([0-9]+\\)\\'" x)
 	 (string-to-number (match-string 1 x)))))
@@ -387,13 +386,13 @@ With prefix argument, kill that many entries from point."
     (let ((i 0))
       (while (search-forward "\n<li>" nil t)
 	(when (memq (incf i) entries)
-	  (let ((beg (line-beginning-position))
+	  (let ((beg (point-at-bol))
 		(end (progn
 		       (search-forward w3m-bookmark-section-delimiter)
 		       (match-beginning 0))))
 	    (delete-region (goto-char beg)
 			   (if (search-forward "\n<li>" end t)
-			       (line-beginning-position)
+			       (point-at-bol)
 			     end))
 	    (goto-char (1- beg))))))
     (w3m-bookmark-save-buffer)))

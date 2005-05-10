@@ -1,6 +1,6 @@
 ;;; w3m-ucs.el --- CCL programs to process Unicode.
 
-;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
@@ -39,14 +39,7 @@
 (require 'w3m-ccl)
 
 (eval-and-compile
-  (autoload 'w3m-make-ccl-coding-system
-    (cond
-     ((featurep 'xemacs)
-      "w3m-xmas")
-     ((> emacs-major-version 20)
-      "w3m-e21")
-     ((= emacs-major-version 20)
-      "w3m-e20"))))
+  (autoload 'w3m-make-ccl-coding-system "w3m"))
 
 (defun w3m-ucs-to-char (codepoint)
   (condition-case nil

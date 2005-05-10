@@ -1,6 +1,6 @@
 ;;; w3m-bug.el --- command to report emacs-w3m bugs -*- coding: euc-japan -*-
 
-;; Copyright (C) 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2002, 2003, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -69,13 +69,6 @@
 
 (eval-when-compile
   (require 'cl))
-
-(eval-and-compile
-  (cond ((boundp 'MULE)
-	 (require 'w3m-om))
-	((and (not (featurep 'xemacs))
-	      (= emacs-major-version 19))
-	 (require 'w3m-e19))))
 
 (defun report-emacs-w3m-bug (topic &optional buffer)
   "Report a bug in emacs-w3m.

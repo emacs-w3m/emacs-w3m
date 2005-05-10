@@ -1,6 +1,6 @@
 ;;; w3m-search.el --- functions convenient to access web search engines
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
@@ -189,7 +189,7 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
   (let ((default
 	  (if (w3m-region-active-p)
 	      (buffer-substring (region-beginning) (region-end))
-	    (unless (eq (get-text-property (line-beginning-position) 'face)
+	    (unless (eq (get-text-property (point-at-bol) 'face)
 			'w3m-header-line-location-title-face)
 	      (thing-at-point 'word))))
 	(initial))

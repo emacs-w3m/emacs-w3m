@@ -104,7 +104,7 @@ but do not execute them.")
 				      (member "-funcall" command-line-args)
 				      (member "--funcall" command-line-args)
 				      (member "-e" command-line-args)))
-			   '("w3mhack-batch-compile" "w3mhack-compile"
+			   '("batch-byte-compile" "w3mhack-compile"
 			     "w3mhack-makeinfo" "w3mhack-make-package")))
 	      (error "%s" "\n\
 There seems to be no shell command which is equivalent to /bin/sh.
@@ -184,36 +184,6 @@ than subr.el."
 	      (put 'car 'side-effect-free tmp)))
 	ad-do-it))))
 
-(when (<= emacs-major-version 19)
-  ;; Make `locate-library' run quietly.
-  (let (current-load-list)
-    ;; Mainly for the compile-time.
-    (defun locate-library (library &optional nosuffix)
-      "Show the full path name of Emacs library LIBRARY.
-This command searches the directories in `load-path' like `M-x load-library'
-to find the file that `M-x load-library RET LIBRARY RET' would load.
-Optional second arg NOSUFFIX non-nil means don't add suffixes `.elc' or `.el'
-to the specified name LIBRARY (a la calling `load' instead of `load-library')."
-      (interactive "sLocate library: ")
-      (catch 'answer
-	(mapcar
-	 '(lambda (dir)
-	    (mapcar
-	     '(lambda (suf)
-		(let ((try (expand-file-name (concat library suf) dir)))
-		  (and (file-readable-p try)
-		       (null (file-directory-p try))
-		       (progn
-			 (or noninteractive
-			     (message "Library is file %s" try))
-			 (throw 'answer try)))))
-	     (if nosuffix '("") '(".elc" ".el" ""))))
-	 load-path)
-	(or noninteractive
-	    (message "No library %s in search path" library))
-	nil))
-    (byte-compile 'locate-library)))
-
 ;; Fix an XEmacs 21.5 bug in `call-process-region'.  It has been reported
 ;; as <URL:http://news.gmane.org/group/gmane.emacs.xemacs.beta/thread=16564>.
 (when (and (featurep 'xemacs)
@@ -275,8 +245,7 @@ It fixes an XEmacs 21.5 bug."
     (setq load-path (nconc (nreverse paths) load-path))))
 
 ;; Check for the required modules.
-(when (or (featurep 'xemacs)
-	  (<= emacs-major-version 19))
+(when (featurep 'xemacs)
   (let ((apel (locate-library "path-util"))
 	(emu (locate-library "pccl")))
     (if (and apel emu)
@@ -324,8 +293,6 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 
 (defconst shimbun-module-directory "shimbun")
 
-(defconst w3mhack-colon-keywords-file "w3m-kwds.el")
-
 (defvar w3mhack-load-file "w3m-load.el")
 
 ;; Needed for interdependencies among w3m and shimbun modules.
@@ -347,25 +314,17 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 (defun w3mhack-module-list ()
   "Returna a list of w3m modules should be byte-compile'd."
   (let* ((modules (directory-files default-directory nil "^[^#]+\\.el$"))
-	 (version-specific-modules '("w3m-e19.el" "w3m-e20.el" "w3m-e21.el"
-				     "w3m-e23.el"
-				     "w3m-fsf.el" "w3m-om.el" "w3m-xmas.el"))
+	 (version-specific-modules '("w3m-e21.el" "w3m-e23.el" "w3m-fsf.el"
+				     "w3m-xmas.el"))
 	 (ignores;; modules not to be byte-compiled.
 	  (append
-	   (list "w3mhack.el" "w3m-setup.el"
-		 w3mhack-load-file w3mhack-colon-keywords-file)
+	   (list "w3mhack.el" "w3m-setup.el" w3mhack-load-file)
 	   (w3mhack-mdelete (cond ((featurep 'xemacs)
 				   "w3m-xmas.el")
-				  ((boundp 'MULE)
-				   "w3m-om.el")
 				  ((>= emacs-major-version 23)
 				   '("w3m-e23.el" "w3m-fsf.el"))
-				  ((>= emacs-major-version 21)
-				   '("w3m-e21.el" "w3m-fsf.el"))
-				  ((= emacs-major-version 20)
-				   '("w3m-e20.el" "w3m-fsf.el"))
 				  (t
-				   "w3m-e19.el"))
+				   '("w3m-e21.el" "w3m-fsf.el")))
 			    (copy-sequence version-specific-modules))))
 	 (shimbun-dir (file-name-as-directory shimbun-module-directory))
 	 print-level print-length)
@@ -376,14 +335,6 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	      (locate-library "ccl"))
       (push "w3m-ccl.el" ignores))
     (unless (and (featurep 'mule)
-		 (if (featurep 'xemacs)
-		     ;; Mule-UCS does not support XEmacs versions prior
-		     ;; to 21.2.37.
-		     (and (>= emacs-major-version 21)
-			  (or (> emacs-minor-version 2)
-			      (and (= emacs-major-version 2)
-				   (>= emacs-beta-version 37))))
-		   (>= emacs-major-version 20))
 		 (locate-library "un-define"))
       (push "w3m-ucs.el" ignores))
     (if (and (featurep 'mule)
@@ -394,10 +345,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 					 nil "^[^#]+\\.el$"))
 	    (setq modules (nconc modules (list (concat shimbun-dir file)))))
 	  ;; mew-shimbun check
-	  (unless
-	      ;; Mew 2.x and later do not support Mule2.3/Emacs19.
-	      (and (>= emacs-major-version 20)
-		   (locate-library "mew-nntp"))
+	  (unless (locate-library "mew-nntp")
 	    (push (concat shimbun-dir "mew-shimbun.el") ignores))
 	  ;; nnshimbun check
 	  (unless (let ((gnus (locate-library "gnus")))
@@ -410,20 +358,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
     (unless (featurep 'mule)
       (push "w3m-weather.el" ignores)
       (push "w3m-symbol.el" ignores))
-    (if (and (not (featurep 'xemacs))
-	     (<= emacs-major-version 20)
-	     (locate-library "bitmap"))
-	;; Against the error "Already defined charset: 242".
-	(when (locate-library "un-define")
-	  (require 'un-define)
-	  (setq bitmap-alterable-charset 'tibetan-1-column)
-	  (require 'bitmap))
-      (push "w3m-bitmap.el" ignores))
-    (unless (>= emacs-major-version 21)
-      (push "w3m-favicon.el" ignores))
     ;; List shimbun modules which cannot be byte-compiled with this system.
-    (unless (locate-library "xml")
-      (setq ignores (nconc ignores (w3mhack-shimbun-modules-using-rss))))
     (let (list)
       ;; To byte-compile w3m-util.el and a version specific module first.
       (push "w3m-util.el" list)
@@ -445,41 +380,8 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
   (dolist (module (w3mhack-module-list))
     (princ (format "%sc " module))))
 
-(defun w3mhack-shimbun-modules-using-rss ()
-  "Return a list of shimbun modules using RSS."
-  (let* ((dir (file-name-as-directory shimbun-module-directory))
-	 ;; sb-rss.el exactly needs xml.el.
-	 (files (delete "sb-rss.el" (directory-files dir nil "\\.el\\'")))
-	 (rest (list (concat dir "sb-rss.el")))
-	 (buffer (generate-new-buffer " *temp*"))
-	 file form)
-    (save-excursion
-      (set-buffer buffer)
-      (while files
-	(setq file (concat dir (car files))
-	      files (cdr files))
-	(insert-file-contents file)
-	(goto-char (point-min))
-	(while (and file
-		    (setq form (condition-case nil
-				   (read (current-buffer))
-				 (error nil))))
-	  (when (equal form '(require (quote sb-rss)))
-	    (push file rest)
-	    (setq file nil)))
-	(erase-buffer)))
-    (kill-buffer buffer)
-    rest))
-
-(when (or (<= emacs-major-version 19)
-	  (and (= emacs-major-version 20)
-	       (<= emacs-minor-version 2)))
-  ;; Not to get the byte-code for `current-column' inlined.
-  (put 'current-column 'byte-compile nil))
-
 (defun w3mhack-compile ()
   "Byte-compile the w3m modules."
-  (w3mhack-check-colon-keywords-file)
   (w3mhack-generate-load-file)
   (let (modules)
     (dolist (el (w3mhack-module-list))
@@ -497,11 +399,6 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	(error))
       (setq modules (cdr modules)))))
 
-(defun w3mhack-batch-compile ()
-  "Wrapper function of `batch-byte-compile'."
-  (w3mhack-check-colon-keywords-file)
-  (batch-byte-compile))
-
 (defun w3mhack-nonunix-install ()
   "Byte-compile the w3m modules and install them."
   (w3mhack-compile)
@@ -509,8 +406,6 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
     (setq w3mhack-nonunix-lispdir
 	  (expand-file-name "../../site-lisp/w3m" data-directory)))
   (and (not w3mhack-nonunix-icondir)
-       (or (featurep 'xemacs)
-	   (> emacs-major-version 20))
        (setq w3mhack-nonunix-icondir
 	     (expand-file-name "images/w3m" data-directory)))
   (labels
@@ -789,188 +684,18 @@ to remove some obsolete variables in the first argument VARLIST."
 	    (insert "info/" info "\n")))
 	(message "Generating %s...done" manifest)))))
 
- ((>= emacs-major-version 21)
+ (t
   ;; Don't warn for the dummy autoloads and mis-judging of the cl
   ;; run-time functions.
   (setq byte-compile-warnings
 	(delq 'noruntime
 	      (delq 'cl-functions
-		    (copy-sequence byte-compile-warning-types)))))
-
- ((= emacs-major-version 19)
-  ;; Bind defcustom'ed variables.
-  (put 'custom-declare-variable 'byte-hunk-handler
-       (lambda (form)
-	 (if (memq 'free-vars byte-compile-warnings)
-	     (setq byte-compile-bound-variables
-		   (cons (nth 1 (nth 1 form)) byte-compile-bound-variables)))
-	 form))
-  ;; Make `locate-library' run quietly at run-time.
-  (put 'locate-library 'byte-optimizer
-       (lambda (form)
-	 (` (let ((fn (function locate-library))
-		  (msg (symbol-function 'message)))
-	      (fset 'message (function ignore))
-	      (unwind-protect
-		  (, (append '(funcall fn) (cdr form)))
-		(fset 'message msg))))))))
-
-(defun w3mhack-generate-colon-keywords-file ()
-  "Generate a file which contains a list of colon keywords to be bound at
-run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
-  (let* ((srcdir default-directory)
-	 (kwds-file (expand-file-name w3mhack-colon-keywords-file srcdir))
-	 (makefile (expand-file-name "Makefile" srcdir))
-	 (buffer (get-buffer-create " *colon keywords*"))
-	 (dirs '("./" "./shimbun/"))
-	 ;; This program ignores the `defface' form since the custom package
-	 ;; supports all the colon keywords used for the face attributes.
-	 ;; However, there is one exception `:strike-through' which is not
-	 ;; available in the old custom package (`:strikethru' is for only
-	 ;; avoiding byte-compile warning).
-	 (keywords '(:strike-through :strikethru))
-	 ignores files file directories dir form elem make-backup-files)
-    (save-excursion
-      (set-buffer buffer)
-      (let (buffer-file-format
-	    format-alist
-	    insert-file-contents-post-hook insert-file-contents-pre-hook
-	    jam-zcat-filename-list jka-compr-compression-info-list)
-	(unless (and (file-exists-p kwds-file)
-		     (file-exists-p makefile)
-		     (file-newer-than-file-p kwds-file makefile))
-	  (setq
-	   ignores
-	   '(:symbol-for-testing-whether-colon-keyword-is-available-or-not
-	     ;; The following keywords will be bound by CUSTOM.
-	     :get :group :initialize :link :load :options :prefix
-	     :require :set :tag :type))
-	  ;; Add el(c) files in the following list if necessary.
-	  ;; Each file should be representative file of a package
-	  ;; which will be used together with emacs-w3m.
-	  (setq files (list (locate-library "mailcap")
-			    (locate-library "mime-def")
-			    (locate-library "path-util")
-			    (locate-library "poem")))
-	  (while files
-	    (when (setq file (pop files))
-	      (setq dir (file-name-directory file))
-	      (unless (member dir dirs)
-		(push dir dirs))))
-	  (setq directories dirs)
-	  (message "Searching for all the colon keywords in:")
-	  (while dirs
-	    (setq dir (pop dirs))
-	    (message " %s" dir)
-	    (setq files (directory-files dir t "\\.el\\(\\.gz\\|\\.bz2\\)?$"))
-	    (while files
-	      (setq file (pop files))
-	      (if (string-match "\\(\\.gz$\\)\\|\\.bz2$" file)
-		  (let ((temp (expand-file-name "w3mtemp.el" srcdir)))
-		    (when
-			(let* ((binary (if (boundp 'MULE)
-					   '*noconv*
-					 'binary))
-			       (coding-system-for-read binary)
-			       (coding-system-for-write binary)
-			       (input-coding-system binary)
-			       (output-coding-system binary)
-			       (default-process-coding-system
-				 (cons binary binary))
-			       call-process-hook)
-			  (insert-file-contents file nil nil nil t)
-			  (when
-			      (condition-case code
-				  (progn
-				    (if (match-beginning 1)
-					(call-process-region (point-min)
-							     (point-max)
-							     "gzip" t buffer
-							     nil "-cd")
-				      (call-process-region (point-min)
-							   (point-max)
-							   "bzip2" t buffer
-							   nil "-d"))
-				    t)
-				(error
-				 (erase-buffer)
-				 (message "In file %s: %s" file code)
-				 nil))
-			    (write-region (point-min) (point-max) temp nil
-					  'silent)
-			    t))
-		      (unwind-protect
-			  (insert-file-contents temp nil nil nil t)
-			(delete-file temp))))
-		(insert-file-contents file nil nil nil t))
-	      (goto-char (point-min))
-	      (while (setq form (condition-case nil
-				    (read buffer)
-				  (error nil)))
-		(while form
-		  (setq elem (car-safe form)
-			form (cdr-safe form))
-		  (unless (memq (car-safe elem)
-				'(\` backquote defcustom defface defgroup
-				  define-widget quote))
-		    (while (consp elem)
-		      (push (car elem) form)
-		      (setq elem (cdr elem)))
-		    (when (and elem
-			       (symbolp elem)
-			       (not (eq ': elem))
-			       (eq ?: (aref (symbol-name elem) 0))
-			       (not (memq elem ignores))
-			       (not (memq elem keywords)))
-		      (push elem keywords)))))))
-	  ;; `string-lessp' allows symbols as well.
-	  (setq keywords (sort keywords 'string-lessp))
-	  (erase-buffer)
-	  (insert ";;; " w3mhack-colon-keywords-file "\
- --- List of colon keywords which will be bound at run-time
-
-;; This file should be generated by make in emacs-w3m source directory.
-;; There are some colon keywords which were found in the directories
-;; listed below:
-;;
-;; "
-		  (mapconcat 'identity directories "\n;; ")
-		  "\n
-\(defvar w3m-colon-keywords)
-\(setq w3m-colon-keywords
-      '(" (symbol-name (pop keywords)) "\n\t")
-	  (let (keyword)
-	    (while keywords
-	      (setq keyword (symbol-name (pop keywords)))
-	      (when (> (+ (current-column) (length keyword)) (if keywords
-								 79
-							       77))
-		(delete-char -1)
-		(insert "\n\t"))
-	      (insert keyword " ")))
-	  (delete-char -1)
-	  (insert "))\n")
-	  (write-region (point-min) (point) kwds-file))))
-    (kill-buffer buffer)))
-
-(defun w3mhack-check-colon-keywords-file ()
-  (let* ((kwds-file (expand-file-name w3mhack-colon-keywords-file))
-	 (dir (file-name-directory kwds-file)))
-    (when (and (file-writable-p dir)
-	       (file-exists-p (expand-file-name "Makefile.in" dir)))
-      (condition-case nil
-	  :symbol-for-testing-whether-colon-keyword-is-available-or-not
-	(when (file-exists-p kwds-file)
-	  (delete-file (expand-file-name w3mhack-colon-keywords-file)))
-	(void-variable
-	 (byte-compile 'w3mhack-generate-colon-keywords-file)
-	 (w3mhack-generate-colon-keywords-file))))))
+		    (copy-sequence byte-compile-warning-types))))))
 
 (defun w3mhack-load-path ()
   "Print default value of additional load paths for w3m.el."
   (let (paths x)
     (and (or (featurep 'xemacs)
-	     (boundp 'MULE)
 	     (locate-library "mime-def"))
 	 (setq x (locate-library "poe"))
 	 (progn
@@ -980,29 +705,12 @@ run-time.  The file name is specified by `w3mhack-colon-keywords-file'."
 	   (push x paths)))
     (if (setq x (locate-library "mime-def"))
 	(push (file-name-directory x) paths))
-    (and (boundp 'MULE)
-	 (setq x (locate-library "custom"))
-	 (push (file-name-directory x) paths))
-    (and (boundp 'MULE)
-	 (setq x (locate-library "regexp-opt"))
-	 (push (file-name-directory x) paths))
     (if (setq x (locate-library "mew"))
 	(push (file-name-directory x) paths))
     (if (setq x (locate-library "gnus"))
 	(push (file-name-directory x) paths))
-    (and (if (featurep 'xemacs)
-	     ;; Mule-UCS does not support XEmacs versions prior to 21.2.37.
-	     (and (>= emacs-major-version 21)
-		  (or (> emacs-minor-version 2)
-		      (and (= emacs-major-version 2)
-			   (>= emacs-beta-version 37))))
-	   (>= emacs-major-version 20))
-	 (setq x (locate-library "un-define"))
-	 (push (file-name-directory x) paths))
-    (and (not (featurep 'xemacs))
-	 (<= emacs-major-version 20)
-	 (setq x (locate-library "bitmap"))
-	 (push (file-name-directory x) paths))
+    (if (setq x (locate-library "un-define"))
+	(push (file-name-directory x) paths))
     (let (print-level print-length)
       (princ (mapconcat
 	      (function directory-file-name)
@@ -1081,11 +789,9 @@ NOTE: This function must be called from the top directory."
 	    (find-file file)
 	    (setq buffer-read-only nil)
 	    (buffer-disable-undo (current-buffer))
-	    (cond ((boundp 'MULE)
-		   (setq output-coding-system file-coding-system))
-		  ((boundp 'buffer-file-coding-system)
-		   (setq coding-system-for-write
-			 (symbol-value 'buffer-file-coding-system))))
+	    (when (boundp 'buffer-file-coding-system)
+	      (setq coding-system-for-write
+		    (symbol-value 'buffer-file-coding-system)))
 	    ;; process @include before updating node
 	    ;; This might produce some problem if we use @lowersection or
 	    ;; such.
@@ -1145,13 +851,7 @@ NOTE: This function must be called from the top directory."
 	       (cond ((featurep 'mule)
 		      ;; Encode messages to terminal.
 		      (byte-compile
-		       (cond ((boundp 'MULE)
-			      `(lambda (fmt &rest args)
-				 (funcall ,si:message "%s"
-					  (code-convert-string
-					   (apply 'format fmt args)
-					   '*internal* '*junet*))))
-			     ((featurep 'xemacs)
+		       (cond ((featurep 'xemacs)
 			      `(lambda (fmt &rest args)
 				 (unless (and (string-equal fmt "%s clean")
 					      (equal (car args)

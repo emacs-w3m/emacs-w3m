@@ -76,9 +76,6 @@ List is available at:
 (luna-define-method shimbun-rss-process-date ((shimbun shimbun-msdn) date)
   date)
 
-(eval-and-compile
-  (autoload 'md5 "md5"))
-
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-msdn) url date)
   ;; don't insert group name in domain-part for cross posted articles

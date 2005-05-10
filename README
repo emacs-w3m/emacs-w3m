@@ -45,15 +45,7 @@
       version of Emacs 22 (such as versions 21.3.50 or 22.0), make sure
       it is newer than March 2004.
 
-   c) Emacs 20.x
-      No additional package is required.
-
-      When BITMAP-MULE package is installed, you can see monochrome
-      bitmap images inline on an Emacs frame.  It is available at:
-
-          ftp://ftp.jpl.org/pub/elisp/bitmap/
-
-   d) XEmacs 21.x
+   c) XEmacs 21.x
       APEL package is required.  It is available at:
 
           ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz
@@ -79,43 +71,8 @@
 
           http://www.lcdf.org/gifsicle/
 
-   e) Mule 2.3 (based on Emacs 19.34)
-      APEL package, the "new custom" package, the regexp-opt.el(c)
-      module are required.  For more detail, see carefully the next
-      section about Emacs 19.34.
-
-      If you wish to use BITMAP-MULE package to show monochrome images
-      inline on the web pages, we strongly recommend you apply the patch
-      and rebuild Mule.  The patch named mule-2.3@19.34.patch is
-      included in the patches/ directory.  If you don't accept our
-      recommendation, Mule might be stuck.  And you wouldn't get out of
-      the difficulty except killing Mule.
-
-   f) Emacs 19.34 (without Mule)
-      APEL package, the "new custom" package, the regexp-opt.el(c)
-      module are required.
-
-      Emacs-w3m requires the "new custom" package.  If you use Emacs
-      19.34 or Mule 2.3, you have to install it before installing
-      emacs-w3m.  For more detail, visit the following page:
-
-          http://www.dina.kvl.dk/~abraham/custom/
-
-      Especially for Mule 2.3, see also the README.en file which is
-      included in the APEL distribution.
-
-      Emacs-w3m also requires the regexp-opt.el(c) module which might
-      not be provided in the old Emacsen (e.g. Emacs 19.34 and Mule
-      2.3).  If you are using such versions of Emacs, you have to
-      install the regexp-opt.el(c) module before installing emacs-w3m as
-      follows:
-
-          % cp attic/regexp-opt.el /usr/local/share/emacs/site-lisp
-          % cd /usr/local/share/emacs/site-lisp
-          % emacs -q -no-site-file -batch -f batch-byte-compile regexp-opt.el
-
-      (You will likely need to say `mule' instead of `emacs' for the
-      path name and the executable name if you are using Mule.)
+   d) Emacs 20.x, Emacs 19.34 (including Mule 2.3)
+      Emacs-w3m no longer supports those Emacs versions.
 
 
 3. Installation
@@ -263,14 +220,8 @@
        It can be downloaded from ftp://ftp.m17n.org/pub/mule/flim/.
        Before installing it, it is necessary to install APEL.
 
-   [3] BITMAP-MULE
-       It can be downloaded from ftp://ftp.jpl.org/pub/elisp/bitmap/.
-
-   [4] gifsicle
+   [3] gifsicle
        It can be downloaded from http://www.lcdf.org/gifsicle/.
-
-   [5] New custom
-       For more detail, check http://www.dina.kvl.dk/~abraham/custom/.
 
 
 Local Variables:

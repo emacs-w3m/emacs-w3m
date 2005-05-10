@@ -1,3 +1,158 @@
+2005-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (clean): Don't remove w3m-kwds.el.
+	(.el.elc): Use batch-byte-compile instead of w3mhack-batch-compile.
+	(very-slow): Don't run keywords.
+	(keywords): Remove.
+
+	* aclocal.m4 (AC_PATH_EMACS): Don't support Emacs 19 and 20.
+	(AC_PATH_LISPDIR): Follow the change of the EMACS_FLAVOR value.
+	(AC_PATH_ICONDIR): Ditto.
+	(AC_CHECK_ELISP): Remove.
+	(AC_CHECK_XML): Remove.
+
+	* configure.in: Don't check for regexp-opt; don't run AC_CHECK_XML.
+
+	* mime-w3m.el (mime-w3m-mode-map): Remove.
+	(mime-w3m-local-map-property): Remove.
+	(mime-w3m-preview-text/html): Don't use it.
+
+	* octet.el (octet-decode-image): Ignore Emacs 19 and 20.
+
+	* w3m-bitmap.el: Remove.
+
+	* w3m-bookmark.el (w3m-bookmark-sections): Use point-at-eol.
+	(w3m-bookmark-safe-string): Don't support Mule 2.3.
+	(w3m-bookmark-current-number): Use point-at-eol.
+	(w3m-bookmark-kill-entries): Use point-at-bol.
+
+	* w3m-bug.el: Don't require w3m-om or w3m-e19.
+
+	* w3m-ccl.el: Don't require w3m-om.
+
+	* w3m-e19.el: Remove.
+
+	* w3m-e20.el: Remove.
+
+	* w3m-hist.el: Don't load w3m-kwds.el.
+
+	* w3m-lnum.el (w3m-link-numbering): Don't support Emacs 20.
+
+	* w3m-om.el: Remove.
+
+	* w3m-proc.el: Don't require w3m-om or w3m-e19.
+
+	* w3m-search.el (w3m-search-read-query): Use point-at-bol.
+
+	* w3m-ucs.el: Ignore Emacs 20.
+
+	* w3m-util.el: Don't load w3m-kwds.el; don't support Emacs 19.
+	(w3m-use-tab-p): Ignore Emacs 19 and 20.
+	(w3m-popup-window-p): Ditto.
+	(w3m-add-w3m-initial-frames): Don't support Emacs 19.
+	(after-make-frame-hook): Don't use it.
+	(delete-frame): Don't advise it for Emacs 19 or 20.
+	(w3m-truncate-string): Don't support Emacs 19 and 20.
+	(w3m-default-face-colors): Remove.
+	(w3m-replace-in-string): Don't support Emacs 19 and 20.
+
+	* w3m-xmas.el (w3m-should-unoptimize-animated-gifs): Default to
+	always t.
+	(w3m-make-glyph): Use string-to-number instead of string-to-int.
+
+	* w3m.el: Don't require w3m-e20, w3m-om or w3m-e19.
+	(emacs-w3m-version): Reset to 1.4.50.
+	(w3m-language): Ignore Mule 2.3.
+	(w3m-history-current-url-face): Don't require wid-edit.
+	(w3m-bold-face): Don't use w3m-default-face-colors.
+	(w3m-underline-face): Ditto.
+	(w3m-strike-through-face): Ditto.
+	(w3m-use-symbol): Ignore Emacs 19 and 20.
+	(w3m-show-decoded-url): Ditto.
+	(w3m-use-tab): Doc fix.
+	(w3m-entity-alist): Don't support Mule 2.3.
+	(w3m-make-help-echo): Ignore Emacs version.
+	(w3m-toggle-inline-images-internal): Ignore bitmap images.
+	(w3m-resize-inline-image-internal): Don't support Emacs 19 and 20.
+	(w3m-url-at-point): Always use ffap.
+	(w3m-about-retrieve): Consider base64 codec is always available.
+	(w3m-close-window): Don't support Emacs 19 and 20.
+	(w3m-store-current-position): Use point-at-bol and point-at-eol.
+	(w3m-buffer-setup): Ditto.
+	(w3m-make-separator): Don't support Mule 2.3.
+	(w3m-select-buffer-current-buffer): Use point-at-bol.
+	(w3m-header-line-insert): Don't support Emacs 19 and 20.
+
+	* w3mhack.el: Consider w3mhack-batch-compile is not used.
+	(locate-library): Don't redefine it for Emacs 19.
+	(APEL): Don't check for it for Emacs.
+	(w3mhack-colon-keywords-file): Remove.
+	(w3mhack-module-list): Ignore Emacs 19, 20, old XEmacsen and
+	BITMAP-MULE.
+	(w3mhack-shimbun-modules-using-rss): Remove.
+	(current-column): Don't take care of it for old Emacsen.
+	(w3mhack-compile): Don't run w3mhack-check-colon-keywords-file.
+	(w3mhack-batch-compile): Remove.
+	(w3mhack-nonunix-install): Ignore Emacs 19 and 20.
+	(custom-declare-variable): Don't take care of it for Emacs 19.
+	(locate-library): Ditto.
+	(w3mhack-generate-colon-keywords-file): Remove.
+	(w3mhack-check-colon-keywords-file): Remove.
+	(w3mhack-load-path): Ignore Emacs 19, 20 and old XEmacsen.
+	(w3mhack-makeinfo): Ignore Mule 2.3.
+
+	* attic/regexp-opt.el: Remove.
+
+	* attic/xml.el: Remove.
+
+	* patches/mule-2.3@19.34.patch: Remove.
+
+	* shimbun/mew-shimbun.el (mew-shimbun-md5): Use md5 instead of
+	mew-md5.
+
+	* shimbun/nnshimbun.el (nnshimbun-search-id): Use point-at-bol.
+	(nnshimbun-parse-nov): Use point-at-eol.
+	(nnshimbun-request-expire-articles): Ditto.
+	(nnshimbun-search-xref): Use point-at-bol.
+
+	* shimbun/sb-cnn-jp.el (shimbun-get-headers): Use string-to-number
+	instead of string-to-int.
+
+	* shimbun/sb-debian.el (shimbun-get-headers): Ditto.
+
+	* shimbun/sb-geocrawler.el (shimbun-geocrawler-headers): Use
+	point-at-eol.
+
+	* shimbun/sb-impress.el: Don't require md5.
+
+	* shimbun/sb-itmedia.el (shimbun-itmedia-clean-text-page): Use
+	point-at-eol.
+
+	* shimbun/sb-makanai.el: Don't autoload md5.
+
+	* shimbun/sb-mhonarc.el (shimbun-make-contents): Use regexp-opt;
+	use point-at-eol.
+
+	* shimbun/sb-msdn.el: Don't autoload md5.
+
+	* shimbun/sb-tigris.el (shimbun-get-headers): Ditto.
+
+	* shimbun/sb-wired-jp.el: Don't require md5.
+	(shimbun-wired-jp-get-headers): Use point-at-eol.
+
+	* shimbun/sb-wired.el (shimbun-get-group-header-alist): Use
+	regexp-opt.
+
+	* shimbun/sb-x51.el (shimbun-get-headers): Ditto.
+
+	* shimbun/shimbun.el (shimbun-base64-encode-string): Remove.
+	(shimbun-replace-in-string): Alias to w3m-replace-in-string.
+	(shimbun-entity-insert): Use base64-encode-string.
+	(shimbun-point-at-bol): Remove.
+	(shimbun-point-at-eol): Remove.
+	(shimbun-regexp-opt): Remove.
+	(shimbun-replace-in-string): Don't support Emacs 19 and 20.
+
 2005-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Use the

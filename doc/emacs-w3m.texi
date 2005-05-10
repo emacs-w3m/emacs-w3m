@@ -238,16 +238,8 @@ The @acronym{APEL} package and the @samp{gifsicle} program are required
 (@pxref{Other Requirements}).  We recommend using the latest XEmacs 21.4
 which seems stable.
 
-@item Emacs 20.x
-No additional package is required.  Furthermore, you can see monochrome
-bitmap images inline by using the @sc{bitmap-mule} package (@pxref{Other
-Requirements}).
-
-@item Emacs 19.34 (including Mule 2.3)
-The @acronym{APEL} package, the @samp{new custom} package and the
-@file{regexp-opt.el} module are required.  If you are using Mule 2.3
-based on Emacs 19.34, you can see monochrome bitmap images inline by
-using the @sc{bitmap-mule} package (@pxref{Other Requirements}).
+@item Emacs 20.x, Emacs 19.34 (including Mule 2.3)
+Emacs-w3m no longer supports those Emacs versions.
 
 @end table
 
@@ -268,11 +260,7 @@ You must install the latest w3m, it is available at:
 @cindex @acronym{APEL} package
 @cindex Gifsicle program
 @cindex ImageMagick package
-@cindex BITMAP-MULE package
-@cindex New custom
-@cindex regexp-opt.el
 @cindex @acronym{FLIM} package
-@cindex xml.el
 @cindex Mule-UCS package
 @cindex codepage-ex
 
@@ -282,9 +270,8 @@ This section provides resources to help you find and install them.
 @table @samp
 
 @item @acronym{APEL}
-Indispensable to XEmacs, Emacs 19.34 or Mule 2.3.  You should install
-@acronym{APEL} before building emacs-w3m.  @acronym{APEL} is available
-at:
+Indispensable to XEmacs.  You should install @acronym{APEL} before
+building emacs-w3m.  @acronym{APEL} is available at:
 
 @uref{ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz}
 
@@ -322,52 +309,6 @@ your surfing experience.  You can get the ImageMagick package from:
 To manipulate @samp{favicon} images, we recommend version 5.4.0-5 and
 later, previous versions may work but we didn't check them thoroughly.
 
-@item BITMAP-MULE
-Used to display monochrome bitmap images inline in Emacs 20.x or Mule
-2.3 based on Emacs 19.34.  It isn't necessary if you aren't interested
-in images.  It is available at:
-
-@uref{ftp://ftp.jpl.org/pub/elisp/bitmap/}
-
-@item new custom
-Indispensable to Emacs 19.34 (including Mule 2.3).  The @samp{custom}
-library bundled with Emacs 19.34 is too @emph{old}, its API is
-incompatible with the @samp{new custom} bundled with recent Emacsen.
-The @samp{new custom} for Emacs 19.34 is available at:
-
-@uref{ftp://ftp.dina.kvl.dk/pub/Staff/Per.Abrahamsen/custom/custom-1.9962.tar.gz}
-
-Note that Mule 2.3 users should slightly modify it by applying the
-following patch:
-
-@example
-----8<------8<------8<------8<------8<------8<------8<------8<----
---- custom-1.9962/cus-face.el~	Wed Mar  4 19:52:39 1998
-+++ custom-1.9962/cus-face.el	Mon Mar  9 08:05:33 1998
-@@@@ -96,7 +96,7 @@@@
-       "Define a new FACE on all frames, ignoring X resources."
-       (interactive "SMake face: ")
-       (or (internal-find-face name)
--	  (let ((face (make-vector 8 nil)))
-+	  (let ((face (make-vector face-vector-length nil)))
- 	    (aset face 0 'face)
- 	    (aset face 1 name)
- 	    (let* ((frames (frame-list))
-----8<------8<------8<------8<------8<------8<------8<------8<----
-@end example
-
-@item regexp-opt.el
-Indispensable to Emacs 19.34 (including Mule 2.3).  The
-@file{regexp-opt.el} file is included in the @file{attic/} directory of
-the emacs-w3m distribution.  You may simply copy it somewhere (e.g.
-@file{site-lisp/} directory) and perform byte-compilation as follows:
-
-@example
-# cp -p attic/regexp-opt.el /usr/local/share/emacs/19.34/site-lisp
-# cd /usr/local/share/emacs/19.34/site-lisp
-# emacs -batch -q -no-site-file -f batch-byte-compile regexp-opt.el
-@end example
-
 @item @acronym{FLIM}
 The @acronym{FLIM} package is required to use the @samp{shimbun}
 library.  The @samp{shimbun} library is a collection of tools for
@@ -375,42 +316,20 @@ reading web newspapers, you can use it with Gnus, Mew, Nana-gnus,
 T-gnus, Wanderlust, etc. @xref{Shimbun Library}.
 
 Note that the @acronym{FLIM} package requires the @acronym{APEL} package
-even if you are using Emacs 20.x, Emacs 21.x or Emacs 22.x.  Therefore,
-you must install both @acronym{APEL} and @acronym{FLIM} if you would
-like to use the @samp{shimbun} library.  The @acronym{FLIM} package is
-available at:
+even if you are using Emacs 21.x or Emacs 22.x.  Therefore, you must
+install both @acronym{APEL} and @acronym{FLIM} if you would like to use
+the @samp{shimbun} library.  The @acronym{FLIM} package is available at:
 
 @uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
 
-@item xml.el
-This file is required to use @samp{shimbun} modules designed for sites
-which provide update information with RSS format.  Because it is
-distributed with Emacs 21 and later, you do not need to install it if
-you use Emacs 21 or later.  Otherwise, you may simply copy it somewhere
-(e.g. the Emacs @file{site-lisp/} directory) and perform
-byte-compilation as follows:
-
-@example
-# cp -p attic/xml.el /usr/local/share/emacs/20.7/site-lisp
-# cd /usr/local/share/emacs/20.7/site-lisp
-# emacs -batch -q -no-site-file -f batch-byte-compile xml.el
-@end example
-
-If you use Emacs 19.34 (including Mule 2.3), additional options are
-required for byte-compilation as follows:
-
-@example
-# emacs -batch -eval '(put (quote char-after) (quote byte-compile) nil)' -f batch-byte-compile xml.el
-@end example
-
 @item Mule-UCS
-If you use Emacs 20 or XEmacs, or need to read Chinese text, Japanese
-text, Korean text, etc. using Emacs 21, we recommend you install the
-Mule-UCS Emacs Lisp package so as to enable emacs-w3m to display pages
-encoded by UTF-8, which is the typical coding system of the Unicode
-system.  Note that Emacs 21 supports the Unicode system partially (e.g.,
-for Latin text) and Emacs 22 or greater fully supports it.  The Mule-UCS
-Emacs Lisp package is available at:
+If you use XEmacs, or need to read Chinese text, Japanese text, Korean
+text, etc. using Emacs 21, we recommend you install the Mule-UCS Emacs
+Lisp package so as to enable emacs-w3m to display pages encoded by
+UTF-8, which is the typical coding system of the Unicode system.  Note
+that Emacs 21 supports the Unicode system partially (e.g., for Latin
+text) and Emacs 22 or greater fully supports it.  The Mule-UCS Emacs
+Lisp package is available at:
 
 @uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
 
@@ -420,7 +339,7 @@ patch} before installation.
 
 If you are an XEmacs user, the compiled package is here:
 
-@uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.04-pkg.tar.gz}
+@uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.11-pkg.tar.gz}
 
 @item codepage-ex
 Some web sites in Europe use the @code{windows-1252} coding system for
@@ -1416,14 +1335,13 @@ Undo the last changes (@code{w3m-bookmark-undo}).
 @section Everybody likes tabs
 
 Unlike most other text-based browsers, emacs-w3m has support for tabbed
-browsing@footnote{It's nobody's fault but Emacs 19 or 20 users cannot
-use tabs.}.  What is tabbed browsing, you might ask?  It's very simple:
-it is a way to represent all active emacs-w3m buffers in a single
-window, by showing a line at the top which shows all the buffers in a
-simple and self-explaining way, each buffer being shown as a ``tab''.
-This line stays visible all the time and does not scroll with the rest
-of the buffer, so that you can switch to another buffer, or use the
-feedback it provides at any moment.
+browsing.  What is tabbed browsing, you might ask?  It's very simple: it
+is a way to represent all active emacs-w3m buffers in a single window,
+by showing a line at the top which shows all the buffers in a simple and
+self-explaining way, each buffer being shown as a ``tab''.  This line
+stays visible all the time and does not scroll with the rest of the
+buffer, so that you can switch to another buffer, or use the feedback it
+provides at any moment.
 
 The easiest way to get the feeling of it is to just try, so go on and
 open an emacs-w3m session.  If you didn't change anything to the
@@ -2810,8 +2728,7 @@ and (X)Emacs handles unicode charsets.
 @c @vindex w3m-use-tab
 Non-@code{nil} means make emacs-w3m a tab browser.  It makes it possible
 to show all emacs-w3m buffers in a single window with the tabs line, and
-you can choose one by clicking a mouse on it.  Unfortunately, users of
-Emacs 20 and less cannot enjoy this feature.  See also
+you can choose one by clicking a mouse on it.  See also
 @code{w3m-use-tab-menubar}.
 
 @item w3m-use-tab-menubar
@@ -3521,26 +3438,16 @@ Q. Which emacs versions are supported?
 The following Emacsen have been checked for emacs-w3m support:
 
 @itemize @bullet
-@item Mule 2.3 (based on Emacs 19.34)
-@item Emacs 19.34
-@item Emacs 20
 @item Emacs 21
 @item Emacs 22
-@item XEmacs 21.1 with Mule
-@item XEmacs 21.2 with Mule (beta37 or greater)
 @item XEmacs 21.4 with/without Mule
 @item XEmacs 21.5 with/without Mule
 @item Meadow
 @end itemize
 
 Note that you're required to use @acronym{APEL} if you'd like to run
-emacs-w3m under Mule 2.3, Emacs 19.34 or XEmacs.  For more information,
-see @ref{Other Requirements}.
-
-Emacs-w3m works on Emacs 19.34 or XEmacs without the Mule feature except
-for several commands, such as the command to look weather forecasts in
-Japan.  They strongly depends on the Mule feature, so that they must not
-work on Emacs 19.34 or XEmacs without Mule.
+emacs-w3m under XEmacs.  For more information, see @ref{Other
+Requirements}.
 
 @item
 Q. Which w3m versions are supported?

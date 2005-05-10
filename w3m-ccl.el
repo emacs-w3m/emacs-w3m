@@ -42,10 +42,6 @@
   (cond
    ((featurep 'xemacs)
     (require 'pccl))
-   ((boundp 'MULE)
-    (let ((features (cons 'w3m-ccl features)))
-      (require 'w3m-om)) ;; for `charset-id'
-    (require 'pccl))
    (t
     (require 'ccl))))
 

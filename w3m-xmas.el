@@ -236,14 +236,8 @@ list."
 circumstances."
   (and w3m-display-inline-images (device-on-window-system-p)))
 
-(defvar w3m-should-unoptimize-animated-gifs
-  (and (= emacs-major-version 21)
-       (or (>= emacs-minor-version 4)
-	   (and (= emacs-minor-version 2)
-		(>= (or emacs-patch-level emacs-beta-version) 20))))
-  "Specify whether w3m should unoptimize animated gif images for showing.
-It is applicable to XEmacs 21.2.20 or later, since which only support
-to show unoptimized animated gif images.")
+(defvar w3m-should-unoptimize-animated-gifs t
+  "Specify whether w3m should unoptimize animated gif images for showing.")
 
 (defvar w3m-should-convert-interlaced-gifs t
   "Specify whether w3m should convert interlaced gif images to be non-
@@ -384,12 +378,12 @@ new glyph image.  See also the documentation for the variable
 	       (insert data)
 	       (goto-char (point-min))
 	       (if (re-search-forward "width[ \t]+\\([0-9]+\\)")
-		   (setq width (string-to-int (match-string 1))))
+		   (setq width (string-to-number (match-string 1))))
 	       (if (re-search-forward "height[ \t]+\\([0-9]+\\)")
-		   (setq height (string-to-int (match-string 1))))
+		   (setq height (string-to-number (match-string 1))))
 	       (while (re-search-forward "0x\\(..\\)" nil t)
 		 (setq content (cons
-				(string-to-int
+				(string-to-number
 				 (match-string 1) 16) content)))
 	       (setq content (concat (nreverse content))))
 	     (make-glyph (vector 'xbm :data (list width height content)))))
