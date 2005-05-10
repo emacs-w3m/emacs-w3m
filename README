@@ -40,12 +40,7 @@
    a) Emacs 21.x
       No additional packages are required.
 
-   b) Emacs 22.x
-      No additional packages are required.  If you're using a prerelease
-      version of Emacs 22 (such as versions 21.3.50 or 22.0), make sure
-      it is newer than March 2004.
-
-   c) XEmacs 21.x
+   b) XEmacs 21.x
       APEL package is required.  It is available at:
 
           ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz
@@ -71,7 +66,7 @@
 
           http://www.lcdf.org/gifsicle/
 
-   d) Emacs 20.x, Emacs 19.34 (including Mule 2.3)
+   c) Emacs 20.x, Emacs 19.34 (including Mule 2.3)
       Emacs-w3m no longer supports those Emacs versions.
 
 

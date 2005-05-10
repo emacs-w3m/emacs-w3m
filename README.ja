@@ -43,12 +43,7 @@
       emacs-w3m を動かすために，余分にインストールが必要なモジュールはあ
       りません．
 
-   b) Emacs 22.x
-      emacs-w3m を動かすために，余分にインストールが必要なモジュールはあ
-      りません．CVS head の Emacs を使う場合，それは 2004年3月以降のバー
-      ジョンである必要があります．
-
-   c) XEmacs 21.x
+   b) XEmacs 21.x
       APEL を前もってインストールしておく必要があります．
 
           ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz
@@ -74,7 +69,7 @@
 
           http://www.lcdf.org/gifsicle/
 
-   d) Emacs 20.x, Emacs 19.34 (含 Mule 2.3)
+   c) Emacs 20.x, Emacs 19.34 (含 Mule 2.3)
       これらの Emacs を，emacs-w3m はサポートしません．
 
 
