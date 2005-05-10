@@ -274,6 +274,11 @@ Emacs-w3m Functions
 これらの Emacs を，emacs-w3m はサポートしません．
 @end table
 
+GNU Emacs の開発中のバージョン(Emacs 22 と呼ばれています)を使っている場
+合は、CVS 版の emacs-w3m なら動くかも知れません。CVS 版の emacs-w3m を利
+用される場合は、開発メーリングリストにも参加されることを強くお勧めします
+(@pxref{Mailing List})。
+
 @node You Need w3m
 @section w3m を使います: emacs-w3m が速いわけ
 @cindex w3m

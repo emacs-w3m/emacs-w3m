@@ -243,6 +243,11 @@ Emacs-w3m no longer supports those Emacs versions.
 
 @end table
 
+If you use the developing version of GNU Emacs, which is so called
+``Emacs 22'', perhaps you can run the CVS version of emacs-w3m on it.
+In such case, it is strongly recommended for you to join the
+@ref{Mailing List}.
+
 @node You Need w3m
 @section Using w3m: the reason why emacs-w3m is fast
 @cindex w3m
