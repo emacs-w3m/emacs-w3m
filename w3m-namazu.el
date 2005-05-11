@@ -168,10 +168,10 @@ argument."
   (let (index query (whence "0"))
     (when (string-match "\\`about://namazu/\\?" url)
       (dolist (s (split-string (substring url (match-end 0)) "&"))
-	(when (string-match "\\`\\(index\\|\\(query\\)\\|\\(whence\\)\\)=" s)
+	(when (string-match "\\`\\(?:index\\|\\(query\\)\\|\\(whence\\)\\)=" s)
 	  (set (cond
-		((match-beginning 2) 'query)
-		((match-beginning 3) 'whence)
+		((match-beginning 1) 'query)
+		((match-beginning 2) 'whence)
 		(t 'index))
 	       (substring s (match-end 0)))))
       (when (zerop (w3m-namazu-call-process (w3m-url-decode-string index)
@@ -205,7 +205,7 @@ argument."
 	    (forward-char -1)
 	    (insert "file://"))
 	  (goto-char (point-min))
-	  (while (re-search-forward "<a href=\"\\(\\?\\)&\\(amp;\\)?whence="
+	  (while (re-search-forward "<a href=\"\\(\\?\\)&\\(?:amp;\\)?whence="
 				    nil t)
 	    (goto-char (match-beginning 1))
 	    (delete-char 1)
@@ -274,4 +274,5 @@ argument."
 		reload))
 
 (provide 'w3m-namazu)
+
 ;;; w3m-namazu.el ends here

@@ -1,6 +1,6 @@
 ;;; w3m-cookie.el --- Functions for cookie processing
 
-;; Copyright (C) 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2002, 2003, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Teranishi Yuuichi  <teranisi@gohome.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -48,7 +48,7 @@
 Currently only browser local cookies are stored.")
 
 (defconst w3m-cookie-two-dot-domains-regexp
-  (concat "\\.\\("
+  (concat "\\.\\(?:"
 	  (mapconcat 'identity (list "com" "edu" "net" "org" "gov" "mil" "int")
 		     "\\|")
 	  "\\)$")
@@ -453,10 +453,10 @@ BEG and END should be an HTTP response header region on current buffer."
 	    data)
 	(goto-char beg)
 	(while (re-search-forward
-		"^\\(Set-Cookie\\(2\\)?:\\) *\\(.*\\(\n[ \t].*\\)*\\)\n"
+		"^\\(?:Set-Cookie\\(2\\)?:\\) *\\(.*\\(?:\n[ \t].*\\)*\\)\n"
 		end t)
-	  (setq data (match-string 3))
-	  (if (match-beginning 2)
+	  (setq data (match-string 2))
+	  (if (match-beginning 1)
 	      (setq version 1))
 	  (apply
 	   (case version

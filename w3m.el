@@ -232,14 +232,14 @@ The valid values include `w3m', `w3mmee', and `w3m-m17n'.")
 	  (call-process command nil t nil "-version")
 	  (goto-char (point-min))
 	  (when (re-search-forward "version \\(w3m/0\\.[3-9]\
-\\(\\.[0-9\\]\\)*\\(rc[0-9]+\\)?\
-\\(-stable\\|\\(\\+cvs\\(-[0-9]+\\.[0-9]+\\)?\\)\\)?\
-\\(-inu\\|\\(-m17n\\|\\(\\+mee\\)\\)\\)?[^,]*\\)" nil t)
+\\(?:\\.[0-9\\]\\)*\\(?:rc[0-9]+\\)?\
+\\(?:-stable\\|\\(?:\\+cvs\\(?:-[0-9]+\\.[0-9]+\\)?\\)\\)?\
+\\(?:-inu\\|\\(-m17n\\|\\(\\+mee\\)\\)\\)?[^,]*\\)" nil t)
 	    (setq w3m-version (match-string 1))
 	    (setq w3m-type
 		  (cond
-		   ((match-beginning 9) 'w3mmee)
-		   ((match-beginning 8) 'w3m-m17n)
+		   ((match-beginning 3) 'w3mmee)
+		   ((match-beginning 2) 'w3m-m17n)
 		   ((match-beginning 1) 'w3m)
 		   (t 'other))))
 	  (when (re-search-forward "options +" nil t)
@@ -301,7 +301,7 @@ Here is an example of how to set this variable:
 
 \(setq w3m-command-arguments-alist
       '(;; Don't use the proxy server to visit local web pages.
-	(\"^http://\\\\([^/]*\\\\.\\\\)*your-company\\\\.com\\\\(/\\\\|$\\\\)\"
+	(\"^http://\\\\(?:[^/]*\\\\.\\\\)*your-company\\\\.com\\\\(?:/\\\\|$\\\\)\"
 	 \"-no-proxy\")
 	;; Use the proxy server to visit any foreign urls.
 	(\"\"
@@ -1015,7 +1015,7 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
 			  ((w3m-which-command "xpdf") (list "xpdf" 'file))
 			  ((w3m-which-command "acroread")
 			   (list "acroread" 'file))))))
-    `(("text/plain" "\\.\\(txt\\|tex\\|el\\)\\'" nil nil)
+    `(("text/plain" "\\.\\(?:txt\\|tex\\|el\\)\\'" nil nil)
       ("text/html" "\\.s?html?\\'" ,external-browser nil)
       ("text/xml" "\\.xml\\'" nil "text/plain")
       ("image/jpeg" "\\.jpe?g\\'" ,image-viewer nil)
@@ -1283,7 +1283,7 @@ See the balloon-help.el file for more information."
   :type 'boolean)
 
 (defcustom w3m-show-decoded-url
-  '(("\\`http://\\([^./?#]+\\.\\)*wikipedia\\.org/" . utf-8)
+  '(("\\`http://\\(?:[^./?#]+\\.\\)*wikipedia\\.org/" . utf-8)
     (t . t))
   "*Non-nil means show decoded URIs in the echo area, the balloon, etc.
 This variable can take one of the following five kinds of forms:
@@ -1604,7 +1604,7 @@ If it is nil, the dirlist.cgi module of the w3m command will be used."
 (defcustom w3m-add-referer
   (if (boundp 'w3m-add-referer-regexps)
       (symbol-value 'w3m-add-referer-regexps)
-    (cons "\\`http:" "\\`http://\\(localhost\\|127\\.0\\.0\\.1\\)/"))
+    (cons "\\`http:" "\\`http://\\(?:localhost\\|127\\.0\\.0\\.1\\)/"))
   "*Rule of sending referers.
 There are five choices as the valid values of this option.
 
@@ -1628,7 +1628,7 @@ follows:
 
 \(setq w3m-add-referer
       '(\"\\\\`http:\"
-	. \"\\\\`http://\\\\([^./]+\\\\.\\\\)*example\\\\.net/\")\)
+	. \"\\\\`http://\\\\(?:[^./]+\\\\.\\\\)*example\\\\.net/\")\)
 "
   :group 'w3m
   :type '(choice
@@ -1742,11 +1742,11 @@ Here are some predefined functions which can be used for those ways:
 
 (defcustom w3m-relationship-estimate-rules
   `((w3m-relationship-simple-estimate
-     "\\`http://\\(www\\|groups\\)\\.google\\.[^/]+/\\(search\\|groups\\)"
+     "\\`http://\\(?:www\\|groups\\)\\.google\\.[^/]+/\\(?:search\\|groups\\)"
      ,(concat "<a href=" w3m-html-string-regexp
-	      "><img src=/\\(intl/[^/]+/\\)?nav_next\\.gif")
+	      "><img src=/\\(?:intl/[^/]+/\\)?nav_next\\.gif")
      ,(concat "<a href=" w3m-html-string-regexp
-	      "><img src=/\\(intl/[^/]+/\\)?nav_previous\\.gif")
+	      "><img src=/\\(?:intl/[^/]+/\\)?nav_previous\\.gif")
      nil nil)
     (w3m-relationship-simple-estimate
      "\\`http://www\\.zdnet\\.co\\.jp/news/"
@@ -2307,13 +2307,13 @@ If it is nil, the command specified to `w3m-command' is used.")
   "Arguments used in common by the w3m command variants to run \"halfdump\".")
 
 (defconst w3m-arrived-ignored-regexp
-  "\\`about:\\(//\\(header\\|source\\|history\\|\
+  "\\`about:\\(?://\\(?:header\\|source\\|history\\|\
 db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
 \\|\\`about:/*blank/?\\'"
   "Regexp matching urls which aren't stored in the arrived URLs database.")
 
 (defconst w3m-history-ignored-regexp
-  "\\`about:\\(//\\(header\\|source\\|history\\|\
+  "\\`about:\\(?://\\(?:header\\|source\\|history\\|\
 db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
 \\|\\`about:/*blank/?\\'"
   "Regexp matching urls which aren't stored in the history.")
@@ -2361,9 +2361,9 @@ to this function."
     (setq url
 	  (if (and w3m-treat-drive-letter
 		   (string-match
-		    "\\`/\\(\\([a-zA-Z]\\)[|:]?\\|cygdrive/\\([a-zA-Z]\\)\\)/"
+		    "\\`/\\(?:\\([a-zA-Z]\\)[|:]?\\|cygdrive/\\([a-zA-Z]\\)\\)/"
 		    url))
-	      (concat (or (match-string 2 url) (match-string 3 url))
+	      (concat (or (match-string 1 url) (match-string 2 url))
 		      ":/"
 		      (substring url (match-end 0)))
 	    url))
@@ -2371,7 +2371,7 @@ to this function."
 	url
       (let ((x (w3m-url-decode-string url w3m-file-name-coding-system)))
 	(if (file-exists-p x) x url))))
-   ((string-match "\\`\\([~/]\\|[a-zA-Z]:/\\|\\.\\.?/\\)" url) url)
+   ((string-match "\\`\\(?:[~/]\\|[a-zA-Z]:/\\|\\.\\.?/\\)" url) url)
    (t
     (catch 'found-file
       (dolist (pair w3m-url-local-directory-alist)
@@ -3015,10 +3015,10 @@ For example:
 		 (device-on-window-system-p)
 	       window-system))
     (goto-char (point-min))
-    (while (re-search-forward "\\[\\(DEL\\|S\\):" nil t)
+    (while (re-search-forward "\\[\\(?:DEL\\|S\\):" nil t)
       (let ((start (match-beginning 0)))
 	(delete-region start (match-end 0))
-	(when (re-search-forward ":\\(DEL\\|S\\)]" nil t)
+	(when (re-search-forward ":\\(?:DEL\\|S\\)]" nil t)
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (w3m-add-text-properties start (match-beginning 0)
 				   '(face w3m-strike-through-face)))))))
@@ -3497,7 +3497,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
       (w3m-fontify-textareas))
     (goto-char (point-min))
     (when w3m-delete-duplicated-empty-lines
-      (while (re-search-forward "^[ \t]*\n\\([ \t]*\n\\)+" nil t)
+      (while (re-search-forward "^[ \t]*\n\\(?:[ \t]*\n\\)+" nil t)
 	(delete-region (match-beginning 0) (1- (match-end 0)))))
     (w3m-message "Fontifying...done")
     (w3m-header-line-insert)
@@ -3523,7 +3523,7 @@ It replaces the faces on the arrived anchors from `w3m-anchor-face' to
 
 (defun w3m-url-completion (url predicate flag)
   "Completion function for URL."
-  (if (string-match "\\`\\(file:\\|[/~]\\|\\.\\.?/\\|[a-zA-Z]:\\)" url)
+  (if (string-match "\\`\\(?:file:\\|[/~]\\|\\.\\.?/\\|[a-zA-Z]:\\)" url)
       (if (eq flag 'lambda)
 	  (file-exists-p (w3m-url-to-file-name url))
 	(let* ((partial
@@ -3571,7 +3571,7 @@ invalid url if Gmane doesn't handle the group cannot be helped."
 	  (inhibit-point-motion-hooks t)
 	  md case-fold-search)
       (goto-char (point-min))
-      (re-search-forward (concat "^\\("
+      (re-search-forward (concat "^\\(?:"
 				 (regexp-quote mail-header-separator)
 				 "\\)?$")
 			 nil 'move)
@@ -3736,7 +3736,7 @@ In Transient Mark mode, deactivate the mark."
 (defsubst w3m-cache-header-delete-variable-part (header)
   (let (buf)
     (dolist (line (split-string header "\n+"))
-      (unless (string-match "\\`\\(Date\\|Server\\|W3m-[^:]+\\):" line)
+      (unless (string-match "\\`\\(?:Date\\|Server\\|W3m-[^:]+\\):" line)
 	(push line buf)))
     (mapconcat (function identity) (nreverse buf) "\n")))
 
@@ -3854,17 +3854,20 @@ BUFFER is nil, all contents will be inserted in the current buffer."
   (w3m-cache-setup)
   (when (stringp url)
     (let ((ident (intern url w3m-cache-hashtb)))
-      (and (memq ident w3m-cache-articles)
-	   (or w3m-prefer-cache
-	       (save-match-data
-		 (let ((case-fold-search t)
-		       (head (and (boundp ident) (symbol-value ident))))
-		   (and (string-match "^\\(Last-Modified\\|ETag\\):[ \t]" head)
-			(not (or (string-match "^Pragma:[ \t]+no-cache\n" head)
-				 (string-match
-				  "^Cache-control:[ \t]+\\(no-cache\\|max-age=0\\)\n"
-				  head)))))))
-	   ident))))
+      (and
+       (memq ident w3m-cache-articles)
+       (or
+	w3m-prefer-cache
+	(save-match-data
+	  (let ((case-fold-search t)
+		(head (and (boundp ident) (symbol-value ident))))
+	    (and
+	     (string-match "^\\(?:Last-Modified\\|ETag\\):[ \t]" head)
+	     (not (or (string-match "^Pragma:[ \t]+no-cache\n" head)
+		      (string-match
+		       "^Cache-control:[ \t]+\\(?:no-cache\\|max-age=0\\)\n"
+		       head)))))))
+       ident))))
 
 (defun w3m-read-file-name (&optional prompt dir default existing)
   (when default
@@ -4000,12 +4003,12 @@ for decoding when the cdr that the data specify is not available.")
       (goto-char (point-min))
       (let ((case-fold-search t))
 	(while (re-search-forward "\
-\\(&#\\(12[89]\\|1[3-5][0-9]\\)\;\\)\\|\\(&#x\\([89][0-9a-f]\\)\;\\)"
+\\(?:&#\\(12[89]\\|1[3-5][0-9]\\)\;\\)\\|\\(?:&#x\\([89][0-9a-f]\\)\;\\)"
 				  nil t)
 	  (insert (prog1
-		      (if (match-beginning 2)
-			  (string-to-number (match-string 2))
-			(string-to-number (match-string 4) 16))
+		      (if (match-beginning 1)
+			  (string-to-number (match-string 1))
+			(string-to-number (match-string 2) 16))
 		    (delete-region (match-beginning 0) (match-end 0)))))
 	(goto-char (point-min))
 	(while (re-search-forward "\240\\|&#160;\\|&#xa0;" nil t)
@@ -4115,7 +4118,7 @@ retrieval is successful."
 			  (format "%s.%d." (user-login-name) (emacs-pid))))
 		(cfile (make-temp-name
 			(expand-file-name "w3melck" w3m-profile-directory)))
-		file beg end)
+		file)
 	    (with-temp-buffer
 	      (insert lcookie)
 	      (write-region (point-min) (point-max) cfile 'nomsg))
@@ -4136,17 +4139,14 @@ retrieval is successful."
 	    (goto-char (point-min))
 	    (when (re-search-forward "^<html>" nil t)
 	      (delete-region (point-min) (match-beginning 0))
-	      (while (re-search-forward
-		      "<a href=\"\\([^\"]+\\)\"\\(>\\| \\)" nil t)
+	      (while (re-search-forward "<a href=\"\\([^\"]+\\)\"\\(?:>\\| \\)"
+					nil t)
 		(setq file (match-string 1))
-		(setq beg (match-beginning 1))
-		(setq end (match-end 1))
+		(delete-region (goto-char (match-beginning 1)) (match-end 1))
 		(if (file-directory-p file)
 		    (setq file (w3m-expand-file-name-as-url
 				(file-name-as-directory file)))
 		  (setq file (w3m-expand-file-name-as-url file)))
-		(delete-region beg end)
-		(goto-char beg)
 		(insert (encode-coding-string
 			 (w3m-url-decode-string file
 						w3m-file-name-coding-system)
@@ -4289,7 +4289,7 @@ Return a list which includes:
   ;; than URLs given by users, a minimum canonicalization may be
   ;; required in the backend side.  For more detail, please see
   ;; [emacs-w3m:07000].
-  (if (string-match "\\`\\(ht\\|f\\)tps?://[^/]+\\'" url)
+  (if (string-match "\\`\\(?:ht\\|f\\)tps?://[^/]+\\'" url)
       (concat url "/")
     url))
 
@@ -4426,7 +4426,7 @@ to add the option \"-no-proxy\"."
 	       (catch 'domain-match
 		 (setq host (match-string 1 url))
 		 (dolist (domain w3m-no-proxy-domains)
-		   (when (string-match (concat "\\(^\\|\\.\\)"
+		   (when (string-match (concat "\\(?:^\\|\\.\\)"
 					       (regexp-quote domain)
 					       "$")
 				       host)
@@ -4798,7 +4798,7 @@ POST-DATA and REFERER will be sent to the web server with a request."
    (let* ((url (w3m-input-url "Download URL (default HOME): "
 			      (when (stringp w3m-current-url)
 				(if (string-match
-				     "\\`about://\\(header\\|source\\)/"
+				     "\\`about://\\(?:header\\|source\\)/"
 				     w3m-current-url)
 				    (substring w3m-current-url (match-end 0))
 				  w3m-current-url))
@@ -4891,7 +4891,7 @@ be displayed especially in shimbun articles."
   (let ((case-fold-search t)
 	tag)
     (goto-char (point-min))
-    (when (re-search-forward "</head\\([ \t\r\f\n][^>]*\\)?>" nil t)
+    (when (re-search-forward "</head\\(?:[ \t\r\f\n][^>]*\\)?>" nil t)
       (save-restriction
 	(narrow-to-region (point-min) (point))
 	(goto-char (point-min))
@@ -5041,7 +5041,7 @@ The HANDLER function will be called when rendering is complete.  When
 a new content is retrieved in the buffer, the HANDLER function will be
 called with t as an argument.  Otherwise, it will be called with nil."
   (unless (and w3m-current-ssl
-	       (not (string-match "\\`\\(ht\\|f\\)tps://" url))
+	       (not (string-match "\\`\\(?:ht\\|f\\)tps://" url))
 	       (not (y-or-n-p "You are leaving secure page.  Continue? ")))
     (lexical-let ((url (w3m-url-strip-fragment url))
 		  (charset charset)
@@ -5147,7 +5147,7 @@ specified in the `w3m-content-type-alist' variable."
 	(if (string= "text/html" type)
 	    (setf (w3m-arrived-title url)
 		  (w3m-rendering-buffer charset))
-	  (or (when (string-match "\\`about://\\(source\\|header\\)/" url)
+	  (or (when (string-match "\\`about://\\(?:source\\|header\\)/" url)
 		(w3m-arrived-title (substring url (match-end 0))))
 	      (file-name-nondirectory (if (string-match "/\\'" url)
 					  (directory-file-name url)
@@ -5563,7 +5563,7 @@ point."
 		 (list current-prefix-arg nil)))
   (let ((w3m-prefer-cache
 	 (or w3m-prefer-cache
-	     (string-match "\\`about://\\(db-\\)?history/" w3m-current-url)))
+	     (string-match "\\`about://\\(?:db-\\)?history/" w3m-current-url)))
 	act url)
     (cond
      ((setq act (w3m-action))
@@ -5607,7 +5607,7 @@ If Transient Mark mode, deactivate the mark."
       (goto-char start)
       (setq all (not (and (bolp)
 			  w3m-current-url
-			  (string-match "\\`http://\\([^/]+\\.\\)*google\\."
+			  (string-match "\\`http://\\(?[^/]+\\.\\)*google\\."
 					w3m-current-url))))
       (while (progn
 	       (w3m-next-anchor)
@@ -5710,7 +5710,7 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 	    (set-process-sentinel
 	     proc
 	     (lambda (proc event)
-	       (and (string-match "^\\(finished\\|exited\\)" event)
+	       (and (string-match "^\\(?:finished\\|exited\\)" event)
 		    (buffer-name (process-buffer proc))
 		    (with-current-buffer (process-buffer proc)
 		      (and (stringp file)
@@ -5853,7 +5853,7 @@ Return t if highlighting is successful."
 (defun w3m-edit-url (url)
   "Edit the page pointed by URL."
   (interactive (list (w3m-input-url)))
-  (when (string-match "\\`about://\\(header\\|source\\)/" url)
+  (when (string-match "\\`about://\\(?:header\\|source\\)/" url)
     (setq url (substring url (match-end 0))))
   (catch 'found
     (dolist (pair w3m-edit-function-alist)
@@ -7074,7 +7074,7 @@ It makes the ends of upper and lower three lines visible.  If
 	(funcall function buffer)))))
 
 (defun w3m-convert-ftp-url-for-emacsen (url)
-  (or (and (string-match "^ftp://?\\([^/@]+@\\)?\\([^/]+\\)\\(/~/\\)?" url)
+  (or (and (string-match "^ftp://?\\([^/@]+@\\)?\\([^/]+\\)\\(?:/~/\\)?" url)
 	   (concat "/"
 		   (if (match-beginning 1)
 		       (substring url (match-beginning 1) (match-end 1))
@@ -7279,17 +7279,17 @@ already been registered in the `w3m-history-flat' variable.  It is
 corresponding to URL to be retrieved at this time, not for the url of
 the current page."
   (interactive
-   (list
-    (w3m-input-url nil
-		   (or (w3m-active-region-or-url-at-point)
-		       (when (stringp w3m-current-url)
-			 (if (string-match "\\`about://\\(header\\|source\\)/"
-					   w3m-current-url)
-			     (substring w3m-current-url (match-end 0))
-			   w3m-current-url))))
-    current-prefix-arg
-    (w3m-static-if (fboundp 'universal-coding-system-argument)
-	coding-system-for-read)))
+   (list (w3m-input-url
+	  nil
+	  (or (w3m-active-region-or-url-at-point)
+	      (when (stringp w3m-current-url)
+		(if (string-match "\\`about://\\(?:header\\|source\\)/"
+				  w3m-current-url)
+		    (substring w3m-current-url (match-end 0))
+		  w3m-current-url))))
+	 current-prefix-arg
+	 (w3m-static-if (fboundp 'universal-coding-system-argument)
+	     coding-system-for-read)))
   (set-text-properties 0 (length url) nil url)
   (setq url (w3m-uri-replace url))
   (unless (or (w3m-url-local-p url)
@@ -7532,7 +7532,7 @@ session will start afresh."
    (list
     (w3m-input-url nil
 		   (when (stringp w3m-current-url)
-		     (if (string-match "\\`about://\\(header\\|source\\)/"
+		     (if (string-match "\\`about://\\(?:header\\|source\\)/"
 				       w3m-current-url)
 			 (substring w3m-current-url (match-end 0))
 		       w3m-current-url)))
@@ -8076,8 +8076,8 @@ A history page is invoked by the `w3m-about-history' command.")
 	title time alist prev next page total)
     (when (string-match "\\`about://db-history/\\?" url)
       (dolist (s (split-string (substring url (match-end 0)) "&"))
-	(when (string-match "\\`\\(start\\|\\(size\\)\\)=" s)
-	  (set (if (match-beginning 2) 'size 'start)
+	(when (string-match "\\`\\(?:start\\|\\(size\\)\\)=" s)
+	  (set (if (match-beginning 1) 'size 'start)
 	       (string-to-number (substring s (match-end 0)))))))
     (when w3m-arrived-db
       (mapatoms
@@ -8170,7 +8170,7 @@ It does manage history position data as well."
       (w3m-next-anchor)
       (while (progn
 	       (setq start (point))
-	       (re-search-forward " (\\([0-9]+ \\)*[0-9]+)$" nil t))
+	       (re-search-forward " (\\(?:[0-9]+ \\)*[0-9]+)$" nil t))
 	(goto-char (match-beginning 0))
 	(put-text-property start (match-beginning 0)
 			   'history-position (read buffer))

@@ -191,66 +191,66 @@ If POSITION is omitted, the current position is assumed."
   ;; `eval-and-compile' is necessary since the value of the constant
   ;; is referred to at the compile time.
   (defconst w3m-html-string-regexp
-    "\\(\"\\([^\"]+\\)\"\\|'\\([^\']+\\)'\\|[^\"\'<> \t\r\f\n]*\\)"
+    "\\(\"\\([^\"]+\\)\"\\|'\\([^']+\\)'\\|[^\"'<> \t\r\f\n]*\\)"
     "Regexp matching a string of the field-value like <a href=\"VALUE\">."))
 
 (put 'w3m-parse-attributes 'lisp-indent-function '1)
 (def-edebug-spec w3m-parse-attributes
   ((&rest &or (symbolp &optional symbolp) symbolp) body))
 (defmacro w3m-parse-attributes (attributes &rest form)
-  (` (let ((,@ (mapcar
-		(lambda (attr)
-		  (if (listp attr) (car attr) attr))
-		attributes)))
-       (skip-chars-forward " \t\r\f\n")
-       (while
-	   (cond
-	    (,@ (mapcar
-		 (lambda (attr)
-		   (or (symbolp attr)
-		       (and (listp attr)
-			    (<= (length attr) 2)
-			    (symbolp (car attr)))
-		       (error "Internal error, type mismatch"))
-		   (let ((sexp (quote
-				(w3m-remove-redundant-spaces
-				 (or (match-string-no-properties 2)
-				     (match-string-no-properties 3)
-				     (match-string-no-properties 1)))))
-			 type)
-		     (when (listp attr)
-		       (setq type (nth 1 attr))
-		       (cond
-			((eq type :case-ignore)
-			 (setq sexp (list 'downcase sexp)))
-			((eq type :integer)
-			 (setq sexp (list 'string-to-number sexp)))
-			((eq type :bool)
-			 (setq sexp t))
-			((eq type :decode-entity)
-			 (setq sexp (list 'w3m-decode-entities-string sexp)))
-			((nth 1 attr)
-			 (error "Internal error, unknown modifier")))
-		       (setq attr (car attr)))
-		     (` ((looking-at
-			  (, (if (eq type :bool)
-				 (format "%s\\([ \t\r\f\n]*=[ \t\r\f\n]*%s\\)?"
-					 (symbol-name attr)
-					 w3m-html-string-regexp)
-			       (format "%s[ \t\r\f\n]*=[ \t\r\f\n]*%s"
-				       (symbol-name attr)
-				       w3m-html-string-regexp))))
-			 (setq (, attr) (, sexp))))))
-		 attributes))
-	    ((looking-at
-	      (, (concat "[A-Za-z]*[ \t\r\f\n]*=[ \t\r\f\n]*"
-			 w3m-html-string-regexp))))
-	    ((looking-at "[^<> \t\r\f\n]+")))
-	 (goto-char (match-end 0))
-	 (skip-chars-forward " \t\r\f\n"))
-       (skip-chars-forward "^>")
-       (forward-char)
-       (,@ form))))
+  `(let (,@(mapcar (lambda (attr)
+		     (if (listp attr)
+			 (car attr)
+		       attr))
+		   attributes))
+     (skip-chars-forward " \t\r\f\n")
+     (while
+	 (cond
+	  ,@(mapcar
+	     (lambda (attr)
+	       (or (symbolp attr)
+		   (and (listp attr)
+			(<= (length attr) 2)
+			(symbolp (car attr)))
+		   (error "Internal error, type mismatch"))
+	       (let ((sexp (quote
+			    (w3m-remove-redundant-spaces
+			     (or (match-string-no-properties 2)
+				 (match-string-no-properties 3)
+				 (match-string-no-properties 1)))))
+		     type)
+		 (when (listp attr)
+		   (setq type (nth 1 attr))
+		   (cond
+		    ((eq type :case-ignore)
+		     (setq sexp (list 'downcase sexp)))
+		    ((eq type :integer)
+		     (setq sexp (list 'string-to-number sexp)))
+		    ((eq type :bool)
+		     (setq sexp t))
+		    ((eq type :decode-entity)
+		     (setq sexp (list 'w3m-decode-entities-string sexp)))
+		    ((nth 1 attr)
+		     (error "Internal error, unknown modifier")))
+		   (setq attr (car attr)))
+		 `((looking-at
+		    ,(if (eq type :bool)
+			 (format "%s\\(?:[ \t\r\f\n]*=[ \t\r\f\n]*%s\\)?"
+				 (symbol-name attr)
+				 w3m-html-string-regexp)
+		       (format "%s[ \t\r\f\n]*=[ \t\r\f\n]*%s"
+			       (symbol-name attr)
+			       w3m-html-string-regexp)))
+		   (setq ,attr ,sexp))))
+	     attributes)
+	  ((looking-at ,(concat "[A-Za-z]*[ \t\r\f\n]*=[ \t\r\f\n]*"
+				w3m-html-string-regexp)))
+	  ((looking-at "[^<> \t\r\f\n]+")))
+       (goto-char (match-end 0))
+       (skip-chars-forward " \t\r\f\n"))
+     (skip-chars-forward "^>")
+     (forward-char)
+     ,@form))
 
 
 ;;; Working buffers:
@@ -687,14 +687,14 @@ Otherwise return nil."
   (string-match "\\`file:" url))
 
 (defconst w3m-url-authinfo-regexp
-  "\\`\\([^:/?#]+:\\)?//\\([^/?#:]+\\)\\(:\\([^/?#@]+\\)\\)?@"
+  "\\`\\([^:/?#]+:\\)?//\\([^/?#:]+\\)\\(?::\\([^/?#@]+\\)\\)?@"
   "Regular expression for parsing the authentication part of a URI reference")
 
 (defsubst w3m-url-authinfo (url)
   "Return a user name and a password to authenticate URL."
   (when (string-match w3m-url-authinfo-regexp url)
     (cons (match-string 2 url)
-	  (match-string 4 url))))
+	  (match-string 3 url))))
 
 (defsubst w3m-url-strip-authinfo (url)
   "Remove the authentication part from the URL."

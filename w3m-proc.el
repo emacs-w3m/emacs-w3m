@@ -600,16 +600,17 @@ evaluated in a temporary buffer."
 	(unless (string= "" string)
 	  (goto-char (point-min))
 	  (cond
-	   ((and (looking-at "\\(Accept [^\n]+\n\\)*\\([^\n]+: accept\\? \\)(y/n)")
+	   ((and (looking-at
+		  "\\(?:Accept [^\n]+\n\\)*\\([^\n]+: accept\\? \\)(y/n)")
 		 (= (match-end 0) (point-max)))
 	    ;; SSL certificate
 	    (message "")
-	    (let ((yn (w3m-process-y-or-n-p w3m-current-url (match-string 2))))
+	    (let ((yn (w3m-process-y-or-n-p w3m-current-url (match-string 1))))
 	      (ignore-errors
 		(process-send-string process (if yn "y\n" "n\n"))
 		(delete-region (point-min) (point-max)))))
-	   ((and (looking-at
-		  "\\(\n?Wrong username or password\n\\)?Proxy Username for \\(.*\\): Proxy Password: ")
+	   ((and (looking-at "\\(\n?Wrong username or password\n\\)?\
+Proxy Username for \\(?:.*\\): Proxy Password: ")
 		 (= (match-end 0) (point-max)))
 	    (when (or (match-beginning 1)
 		      (not (stringp w3m-process-proxy-passwd)))
@@ -619,8 +620,8 @@ evaluated in a temporary buffer."
 	      (process-send-string process
 				   (concat w3m-process-proxy-passwd "\n"))
 	      (delete-region (point-min) (point-max))))
-	   ((and (looking-at
-		  "\\(\n?Wrong username or password\n\\)?Proxy Username for \\(.*\\): ")
+	   ((and (looking-at "\\(\n?Wrong username or password\n\\)?\
+Proxy Username for \\(.*\\): ")
 		 (= (match-end 0) (point-max)))
 	    (when (or (match-beginning 1)
 		      (not (stringp w3m-process-proxy-user)))
@@ -631,8 +632,8 @@ evaluated in a temporary buffer."
 	    (ignore-errors
 	      (process-send-string process
 				   (concat w3m-process-proxy-user "\n"))))
-	   ((and (looking-at
-		  "\\(\n?Wrong username or password\n\\)?Username for [^\n]*\n?: Password: ")
+	   ((and (looking-at "\\(\n?Wrong username or password\n\\)?\
+Username for [^\n]*\n?: Password: ")
 		 (= (match-end 0) (point-max)))
 	    (when (or (match-beginning 1)
 		      (not (stringp w3m-process-passwd)))
@@ -645,8 +646,8 @@ evaluated in a temporary buffer."
 	      (process-send-string process
 				   (concat w3m-process-passwd "\n"))
 	      (delete-region (point-min) (point-max))))
-	   ((and (looking-at
-		  "\\(\n?Wrong username or password\n\\)?Username for \\(.*\\)\n?: ")
+	   ((and (looking-at "\\(\n?Wrong username or password\n\\)?\
+Username for \\(.*\\)\n?: ")
 		 (= (match-end 0) (point-max)))
 	    (setq w3m-process-realm (match-string 2))
 	    (when (or (match-beginning 1)
@@ -662,9 +663,9 @@ evaluated in a temporary buffer."
 	      (or (search-forward "\nW3m-current-url:" nil t)
 		  (goto-char (process-mark process)))
 	      (re-search-backward
-	       "^W3m-\\(in-\\)?progress: \\([.0-9]+/[.0-9]+[a-zA-Z]?b\\)$"
+	       "^W3m-\\(?:in-\\)?progress: \\([.0-9]+/[.0-9]+[a-zA-Z]?b\\)$"
 	       nil t))
-	    (let ((str (w3m-process-modeline-format (match-string 2)))
+	    (let ((str (w3m-process-modeline-format (match-string 1)))
 		  (buf))
 	      (save-current-buffer
 		(dolist (handler (w3m-process-handlers w3m-process-object))

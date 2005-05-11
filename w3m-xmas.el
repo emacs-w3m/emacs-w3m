@@ -300,7 +300,7 @@ new glyph image.  See also the documentation for the variable
 	      ;; Check whether a `data' is interlaced.
 	      (setq should-be-non-interlaced
 		    (re-search-forward
-		     "  \\+ image #[0-9]+ \\([0-9]+x[0-9]+\\).* interlaced"
+		     "  \\+ image #[0-9]+ \\(?:[0-9]+x[0-9]+\\).* interlaced"
 		     nil t))
 	      (goto-char (point-min))
 	      ;; Check whether a `data' is optimized or larger than

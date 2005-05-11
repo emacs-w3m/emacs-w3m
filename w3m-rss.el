@@ -105,9 +105,9 @@ which are supported by the `timezone-parse-date' function (which see)."
 	      year
 	      (aref vector 4)))))
 	((string-match "\
-\\([0-9][0-9][0-9][0-9]\\)\\(-\\([0-9][0-9]\\)\\)?\\(-\\([0-9][0-9]\\)\\)?\
-T?\\(\\([0-9][0-9]\\):\\([0-9][0-9]\\)\\(:\\([.0-9]+\\)\\)?\\)?\
-\\(\\([-+]\\)\\([0-9][0-9]\\):?\\([0-9][0-9]\\)\\|Z\\)?"
+\\([0-9][0-9][0-9][0-9]\\)\\(?:-\\([0-9][0-9]\\)\\)?\\(?:-\\([0-9][0-9]\\)\\)?\
+T?\\(?:\\([0-9][0-9]\\):\\([0-9][0-9]\\)\\(?::\\([.0-9]+\\)\\)?\\)?\
+\\(?:\\([-+]\\)\\([0-9][0-9]\\):?\\([0-9][0-9]\\)\\|Z\\)?"
 		       date)
 	 (labels ((substr (n default)
 			  (if (match-beginning n)
@@ -115,17 +115,17 @@ T?\\(\\([0-9][0-9]\\):\\([0-9][0-9]\\)\\(:\\([.0-9]+\\)\\)?\\)?\
 			       (match-string-no-properties n date))
 			    default)))
 	   (encode-time
-	    (substr 10 0) ;; seconds
-	    (substr 8  0) ;; minitue
-	    (substr 7  0) ;; hour
-	    (substr 5  1) ;; day
-	    (substr 3  1) ;; month
-	    (substr 1  0) ;; year
-	    (if (match-beginning 12)
-		(funcall (intern (match-string-no-properties 12 date))
+	    (substr 6 0) ;; seconds
+	    (substr 5 0) ;; minitue
+	    (substr 4 0) ;; hour
+	    (substr 3 1) ;; day
+	    (substr 2 1) ;; month
+	    (substr 1 0) ;; year
+	    (if (match-beginning 7)
+		(funcall (intern (match-string-no-properties 7 date))
 			 0
-			 (* 3600 (substr 13 0))
-			 (* 60 (substr 14 0)))
+			 (* 3600 (substr 8 0))
+			 (* 60 (substr 9 0)))
 	      0))))))
 
 (defun w3m-rss-find-el (tag data)

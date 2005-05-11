@@ -200,7 +200,7 @@ favicon is ready."
 	   (w3m-favicon-convert
 	    (base64-decode-string (symbol-value icon)) 'ico))))
        ((or (string-match "\\`https?://" url)
-	    (and (string-match "\\`about://\\(header\\|source\\)/https?://"
+	    (and (string-match "\\`about://\\(?:header\\|source\\)/https?://"
 			       url)
 		 (setq url (substring url 15))))
 	(if w3m-icon-data

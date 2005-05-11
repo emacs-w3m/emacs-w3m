@@ -1,6 +1,7 @@
 ;;; w3m-weather.el --- Look weather forecast -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2005
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -226,7 +227,7 @@
 	      table))
 	   ;; 対応表に乗っている文字列を探す正規表現
 	   (hepburn-regexp
-	    (format "\\(\\`\\|[aiueo]\\)\\(n\\([^aiueoy]\\)\\|%s\\)"
+	    (format "\\(?:\\`\\|[aiueo]\\)\\(n\\([^aiueoy]\\)\\|%s\\)"
 		    (regexp-opt (mapcar (function car) hepburn-table))))
 	   ;; 長音の有無による派生形の表
 	   (prolonged-table
@@ -258,21 +259,21 @@
 		      table))
 	      table))
 	   ;; 派生形の表に乗っている文字列を探す正規表現
-	   (prolonged-regexp (format "\\(\\`\\|[aiueo]\\)\\(%s\\)"
+	   (prolonged-regexp (format "\\(?:\\`\\|[aiueo]\\)\\(%s\\)"
 				     (regexp-opt (mapcar (function car)
 							 prolonged-table)))))
       (labels ((hepburn-candidates
 		(str)
 		"ヘボン式と訓令式の差によって生じる派生形を得る"
 		(if (string-match hepburn-regexp str)
-		    (let ((prefix (substring str 0 (match-beginning 2)))
-			  (candidates (if (match-beginning 3)
+		    (let ((prefix (substring str 0 (match-beginning 1)))
+			  (candidates (if (match-beginning 2)
 					  '("n" "nn")
-					(assoc (match-string 2 str)
+					(assoc (match-string 1 str)
 					       hepburn-table)))
 			  (suffixes
 			   (hepburn-candidates
-			    (substring str (or (match-beginning 3)
+			    (substring str (or (match-beginning 2)
 					       (match-end 0)))))
 			  (buf))
 		      (dolist (x candidates)
@@ -285,8 +286,8 @@
 		"長音の有無によって生じる派生形を得る"
 		(let (buf)
 		  (if (string-match prolonged-regexp str)
-		      (let ((prefix (substring str 0 (match-beginning 2)))
-			    (candidates (assoc (match-string 2 str)
+		      (let ((prefix (substring str 0 (match-beginning 1)))
+			    (candidates (assoc (match-string 1 str)
 					       prolonged-table))
 			    (suffixes (prolonged-candidates
 				       (substring str (match-end 0)))))
@@ -367,7 +368,7 @@
     (let ((kanji "")
 	  (romaji "")
 	  (romaji-partial partial))
-      (when (string-match "\\`\\([^-a-zA-Z]+\\)" partial)
+      (when (string-match "\\`\\(?:[^-a-zA-Z]+\\)" partial)
 	(let ((suffix (substring partial (match-end 0))))
 	  (setq kanji (substring partial 0 (match-end 0))
 		romaji (try-completion

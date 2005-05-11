@@ -232,13 +232,12 @@ It fixes an XEmacs 21.5 bug."
 
 ;; Add supplementary directories to `load-path'.
 (let ((addpath (or (pop command-line-args-left) "NONE"))
+      (index 0)
       path paths)
-  (while (string-match "\\([^\0-\37:]+\\)[\0-\37:]*" addpath)
+  (while (string-match "\\([^\0-\37:]+\\)[\0-\37:]*" addpath index)
     (setq path (file-name-as-directory
-		(expand-file-name (substring addpath
-					     (match-beginning 1)
-					     (match-end 1))))
-	  addpath (substring addpath (match-end 0)))
+		(expand-file-name (match-string 1 addpath)))
+	  index (match-end 0))
     (when (file-directory-p path)
       (push path paths)))
   (unless (null paths)
@@ -604,11 +603,11 @@ to remove some obsolete variables in the first argument VARLIST."
 	   (elcs (with-temp-buffer
 		   (let ((standard-output (current-buffer)))
 		     (w3mhack-examine-modules)
-		     (split-string (buffer-string) " \\(shimbun/\\)?"))))
+		     (split-string (buffer-string) " \\(?:shimbun/\\)?"))))
 	   (icons (directory-files (expand-file-name "icons30/") nil
 				   "^[^#]+\\.xpm\\'"))
 	   (infos (directory-files (expand-file-name "doc/") nil
-				   "^[^#]+\\.info\\(-[0-9]+\\)?\\'"))
+				   "^[^#]+\\.info\\(?:-[0-9]+\\)?\\'"))
 	   (si:message (symbol-function 'message))
 	   hardlink manifest make-backup-files noninteractive)
       ;; Non-Mule XEmacs cannot handle .el files containing non-ascii chars.
@@ -672,7 +671,7 @@ to remove some obsolete variables in the first argument VARLIST."
 	(with-temp-file manifest
 	  (insert "pkginfo/MANIFEST.w3m\n")
 	  (dolist (log (directory-files lisp-dir nil
-					"^ChangeLog\\(\\.[0-9]+\\)?\\'"))
+					"^ChangeLog\\(?:\\.[0-9]+\\)?\\'"))
 	    (insert "lisp/w3m/" log "\n"))
 	  (dolist (el els)
 	    (insert "lisp/w3m/" el "\n")
@@ -834,7 +833,7 @@ NOTE: This function must be called from the top directory."
 			       (point-max))))
 	    ;; Remove unsupported commands.
 	    (goto-char (point-min))
-	    (while (re-search-forward "@\\(end \\)?ifnottex" nil t)
+	    (while (re-search-forward "@\\(?:end \\)?ifnottex" nil t)
 	      (replace-match ""))
 	    (goto-char (point-min))
 	    (while (search-forward "\n@iflatex\n" nil t)
