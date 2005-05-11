@@ -28,39 +28,39 @@
 
 	* w3m.el: Use shy group in regexp when examining w3m-command.
 	(w3m-content-type-alist): Use shy group in regexp.
-	(w3m-show-decoded-url)
-	(w3m-add-referer)
-	(w3m-relationship-estimate-rules)
-	(w3m-arrived-ignored-regexp)
-	(w3m-history-ignored-regexp)
-	(w3m-url-to-file-name)
-	(w3m-fontify-strike-through)
-	(w3m-fontify)
-	(w3m-url-completion)
-	(w3m-gmane-url-at-point)
-	(w3m-cache-header-delete-variable-part)
-	(w3m-cache-available-p)
-	(w3m-decode-buffer)
-	(w3m-local-dirlist-cgi)
-	(w3m-w3m-canonicalize-url)
-	(w3m-additional-command-arguments)
-	(w3m-download)
-	(w3m-check-header-tags)
-	(w3m-retrieve-and-render)
-	(w3m-create-text-page)
-	(w3m-view-this-url)
-	(w3m-open-all-links-in-new-session)
-	(w3m-external-view-file)
-	(w3m-edit-url)
-	(w3m-convert-ftp-url-for-emacsen)
-	(w3m-goto-url)
-	(w3m-goto-url-new-session)
-	(w3m-about-db-history)
-	(w3m-history-highlight-current-url)
+	(w3m-show-decoded-url): Ditto.
+	(w3m-add-referer): Ditto.
+	(w3m-relationship-estimate-rules): Ditto.
+	(w3m-arrived-ignored-regexp): Ditto.
+	(w3m-history-ignored-regexp): Ditto.
+	(w3m-url-to-file-name): Ditto.
+	(w3m-fontify-strike-through): Ditto.
+	(w3m-fontify): Ditto.
+	(w3m-url-completion): Ditto.
+	(w3m-gmane-url-at-point): Ditto.
+	(w3m-cache-header-delete-variable-part): Ditto.
+	(w3m-cache-available-p): Ditto.
+	(w3m-decode-buffer): Ditto.
+	(w3m-local-dirlist-cgi): Ditto.
+	(w3m-w3m-canonicalize-url): Ditto.
+	(w3m-additional-command-arguments): Ditto.
+	(w3m-download): Ditto.
+	(w3m-check-header-tags): Ditto.
+	(w3m-retrieve-and-render): Ditto.
+	(w3m-create-text-page): Ditto.
+	(w3m-view-this-url): Ditto.
+	(w3m-open-all-links-in-new-session): Ditto.
+	(w3m-external-view-file): Ditto.
+	(w3m-edit-url): Ditto.
+	(w3m-convert-ftp-url-for-emacsen): Ditto.
+	(w3m-goto-url): Ditto.
+	(w3m-goto-url-new-session): Ditto.
+	(w3m-about-db-history): Ditto.
+	(w3m-history-highlight-current-url): Ditto.
 
 	* w3mhack.el: Fix the section adding dirs to load-path.
-	(w3mhack-make-package)
-	(w3mhack-makeinfo)
+	(w3mhack-make-package): Use shy group in regexp.
+	(w3mhack-makeinfo): Ditto.
 
 2005-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
