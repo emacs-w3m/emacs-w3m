@@ -156,7 +156,7 @@ Each parameters include a Japanese group name, an index page, a
 function used to get headers and a function used to prepare an article.")
 
 (defvar shimbun-nikkei-server-name "日本経済新聞")
-(defvar shimbun-nikkei-from-address "webmaster@nikkei.co.jp")
+(defvar shimbun-nikkei-from-address "nobody@example.com")
 (defvar shimbun-nikkei-content-start
   "<!--emacs-w3m-shimbun-nikkei-content-start-->")
 (defvar shimbun-nikkei-content-end
@@ -201,7 +201,9 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAATBAMAAAAkFJMsAAAABGdBTUEAALGPC/xhBQAAABJ
 					 &optional range)
   (let* ((group (shimbun-current-group-internal shimbun))
 	 (fn (nth 3 (assoc group shimbun-nikkei-group-table)))
-	 (shimbun-nikkei-from-address (shimbun-from-address shimbun))
+	 (shimbun-nikkei-from-address
+	  (concat (shimbun-server-name shimbun)
+		  " (" (shimbun-current-group-name shimbun) ")"))
 	 (case-fold-search t))
     (while (search-forward "\r" nil t)
       (delete-backward-char 1))

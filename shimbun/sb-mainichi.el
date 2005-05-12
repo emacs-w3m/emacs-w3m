@@ -71,31 +71,31 @@
 		    "<a" s1 "href=\"/"
 		    ;; 1. url
 		    "\\([^/]+/"
-		    "\\("
-		    ;; 3. subgroup
+		    "\\(?:"
+		    ;; 2. subgroup
 		    "\\([^/]+\\)"
 		    "/\\)?news/"
-		    ;; 4. serial number
+		    ;; 3. serial number
 		    "\\("
-		    ;; 5. year
+		    ;; 4. year
 		    "\\(20[0-9][0-9]\\)"
-		    ;; 6. month
+		    ;; 5. month
 		    "\\([01][0-9]\\)"
-		    ;; 7. day
+		    ;; 6. day
 		    "\\([0-3][0-9]\\)"
 		    "[0-9a-z]+\\)"
 		    "\\.html\\)"
-		    "[^>]*>\\(" s0 "<[^>]+>\\)*" s0
-		    ;; 9+11. subject
-		    "\\([^<]+\\)\\(<br[^>]+>\\)?\\([^<]+\\)"
-		    "\\(\\(" s0 "<[^>]+>\\)+" s0
-		    ;; 14. hour
+		    "[^>]*>\\(?:" s0 "<[^>]+>\\)*" s0
+		    ;; 7+8. subject
+		    "\\([^<]+\\)\\(?:<br[^>]+>\\)?\\([^<]+\\)"
+		    "\\(?:\\(?:" s0 "<[^>]+>\\)+" s0
+		    ;; 9. hour
 		    "\\([012]?[0-9]\\)"
 		    ":"
-		    ;; 15. minute
+		    ;; 10. minute
 		    "\\([0-5]?[0-9]\\)"
 		    "\\)?")
-		   1 3 4 5 6 7 9 11 14 15)))
+		   1 2 3 4 5 6 7 8 9 10)))
     `(("column.hassinbako" "発信箱" "column/hassinbako/" ,@column)
       ("column.hito" "ひと" "column/hito/" ,@column)
       ("column.kishanome" "記者の目" "column/kishanome/" ,@column)
@@ -123,7 +123,7 @@ in order of [0]a url, [1]a subgroup, [2]a serial number, [3]a year,
 (defvar shimbun-mainichi-content-start
   "<!--[\t\n ]+START[\t\n ]+Article[\t\n ]+-->[\t\n ]*")
 (defvar shimbun-mainichi-content-end
-  "\\([\t\n ]*<[^>]+>\\)*[\t\n ]*<!--[\t\n ]+END[\t\n ]+Article[\t\n ]+-->")
+  "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--[\t\n ]+END[\t\n ]+Article[\t\n ]+-->")
 
 (defvar shimbun-mainichi-x-face-alist
   '(("default" . "\

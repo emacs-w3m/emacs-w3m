@@ -98,22 +98,22 @@ Every `.' in NAME will be replaced with `/'."
 		    (concat
 		     "<li>" s0 "<a" s1 "href=\"/+"
 		     ;; 1. url
-		     "\\(\\([^\"/<>]+/\\)+"
-		     ;; 3. serial number
+		     "\\(\\(?:[^\"/<>]+/\\)+"
+		     ;; 2. serial number
 		     "\\([a-z]*"
-		     ;; 4. year
+		     ;; 3. year
 		     "\\(20[0-9][0-9]\\)"
-		     ;; 5. month
+		     ;; 4. month
 		     "\\([01][0-9]\\)"
-		     ;; 6. day
+		     ;; 5. day
 		     "\\([0-3][0-9]\\)"
 		     "[0-9]+\\)"
 		     "\\.html\\)"
 		     "\">" s0
-		     ;; 7. subject
+		     ;; 6. subject
 		     "\\(" no-nl "\\)"
 		     s0 "</a>")
-		    1 nil 3 7 4 5 6))
+		    1 nil 2 6 3 4 5))
 	 (edu (shimbun-asahi-make-regexp "edu.news"))
 	 (health (shimbun-asahi-make-regexp "health.news")))
     `(("book" "出版ニュース" "book/news/"
@@ -167,8 +167,9 @@ Every `.' in NAME will be replaced with `/'."
        ,@(shimbun-asahi-make-regexp "edu.nie.tamate.kiji"))
       ("english" "ENGLISH" "%s/index.html"
        ,@(let ((rest (shimbun-asahi-make-regexp "english.Herald-asahi")))
-	   (cons (concat (car rest)
-			 "\\(" s0 "<[^>]+>\\)*" s0 "([01]?[0-9]/[0-3]?[0-9])")
+	   (cons (concat
+		  (car rest)
+		  "\\(?:" s0 "<[^>]+>\\)*" s0 "([01]?[0-9]/[0-3]?[0-9])")
 		 (cdr rest))))
       ("health" "健康・生活" "%s/news/" ,@health)
       ("health.aged" "福祉・高齢" "health/news/aged.html" ,@health)
@@ -189,11 +190,11 @@ Every `.' in NAME will be replaced with `/'."
       ("job.special" "週刊朝日・ＡＥＲＡから" "job/special/"
        ,(concat
 	 (car default2)
-	 "\\(" s0 "<[^>]+>\\)*" s0 "（" s0
-	 ;; 8. extra
+	 "\\(?:" s0 "<[^>]+>\\)*" s0 "（" s0
+	 ;; 7. extra
 	 "\\(" no-nl "\\)"
 	 "：")
-       ,@(cdr default2) nil 8)
+       ,@(cdr default2) nil 7)
       ("kansai" "関西" "%s/news/" ,@(shimbun-asahi-make-regexp "kansai.news"))
       ("kansai.horiekenichi" "堀江謙一の世界一周ひとりぼっち"
        "kansai/horiekenichi/" ,@default2)
@@ -410,18 +411,18 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 		       (save-excursion
 			 (save-match-data
 			   (if (re-search-backward "\
-<h[0-9]\\([\n\t ]+[^>]+\\)?>[\t\n ]*\\([^&]+\\)[\t\n ]*&#[0-9]+"
+<h[0-9]\\(?:[\n\t ]+[^>]+\\)?>[\t\n ]*\\([^&]+\\)[\t\n ]*&#[0-9]+"
 						   nil t)
-			       (downcase (match-string 2)))))))
+			       (downcase (match-string 1)))))))
 		(t
 		 (setq hour-min
 		       (save-excursion
 			 (save-match-data
 			   (if (re-search-forward "\
-<span[\t\n ]+[^>]+>[\t\n ]*(\\([01]?[0-9]/[0-3]?[0-9][\t\n ]+\\)?
+<span[\t\n ]+[^>]+>[\t\n ]*(\\(?:[01]?[0-9]/[0-3]?[0-9][\t\n ]+\\)?
 \\([012]?[0-9]:[0-5][0-9]\\))[\t\n ]*</span>"
 						  nil t)
-			       (match-string 2)))))))
+			       (match-string 1)))))))
 	  (setq month (string-to-number (match-string (nth 5 numbers)))
 		year (if (setq num (nth 4 numbers))
 			 (string-to-number (match-string num))
@@ -597,7 +598,7 @@ and tenjin, it tries to fetch the article for that day if it failed."
     (cond
      ((string-equal group "editorial")
       (let ((regexp "\
-<h[0-9]\\([\t\n ]+[^>]+\\)?>[\t\n ]*<a[\t\n ]+name=\"syasetu[0-9]+\">")
+<h[0-9]\\(?:[\t\n ]+[^>]+\\)?>[\t\n ]*<a[\t\n ]+name=\"syasetu[0-9]+\">")
 	    (retry 0)
 	    index)
 	(while (<= retry 1)

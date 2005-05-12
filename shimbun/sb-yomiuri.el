@@ -57,7 +57,8 @@
 	     "\\(%s/news/"
 	     ;; 2,3. serial number
 	     "\\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\\([0-9a-z]+\\)"
-	     "\\.htm\\)\">" s0
+	     "\\.htm\\)"
+	     "\">" s0
 	     ;; 4. subject
 	     "\\(" no-nl "\\)"
 	     s0 "("
@@ -88,26 +89,27 @@
 		"\\([０-３]?[０-９]\\)"
 		"日付・"
 		;; 6. subject
-		"\\(" no-nl "\\)" s0 "</a>")
+		"\\(" no-nl "\\)"
+		s0 "</a>")
        1 2 3 6 4 5)
       ("kyoiku" "教育メール" "index.htm"
        ,(concat "<a" s1 "href=\"/"
 		;; 1. url
-		"\\(%s/\\([^\"/]+/\\)+"
-		;; 3,4. serial number
+		"\\(%s/\\(?:[^\"/]+/\\)+"
+		;; 2,3. serial number
 		"\\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\\([0-9a-z]+\\)"
 		"\\.htm\\)"
 		"\"[^>]+>" s0
-		;; 5. subject
+		;; 4. subject
 		"\\([^<]+\\)"
-		"\\(" s0 "<[^>]+>\\)+" s0
-		;; 7. month
+		"\\(?:" s0 "<[^>]+>\\)+" s0
+		;; 5. month
 		"\\([01]?[0-9]\\)"
-		"月\\(" s0 "<[^>]+>\\)+" s0
-		;; 9 day
+		"月\\(?:" s0 "<[^>]+>\\)+" s0
+		;; 6 day
 		"\\([0-3]?[0-9]\\)"
 		"日")
-       1 3 4 5 7 9)
+       1 2 3 4 5 6)
       ("national" "社会" "index.htm" ,@default)
       ("obit" "おくやみ" "index.htm"
        ,(concat "<a" s1 "href=\"/"
@@ -260,8 +262,8 @@ It does also shorten too much spaces."
 		    "\\([0-3][0-9]\\)"
 		    "[0-9a-z]+\\)"
 		    "\\.htm\\)"
-		    "\">[\t\n ]*\\(<[^<>]+>[\t\n ]*\\)+"
-		    ;; 6. subject
+		    "\">[\t\n ]*\\(?:<[^<>]+>[\t\n ]*\\)+"
+		    ;; 5. subject
 		    "\\([^<>]+\\)"
 		    "[\t\n ]*<"))
 		 (regexp-quote group))
@@ -281,7 +283,7 @@ It does also shorten too much spaces."
 	     ;; number
 	     0
 	     ;; subject
-	     (match-string 6)
+	     (match-string 5)
 	     ;; from
 	     from
 	     ;; date
@@ -421,7 +423,7 @@ information available, removing useless contents, etc."
 	  (delete-region (match-beginning 0) (match-end 0)))
 	(goto-char (point-min))
 	(while (re-search-forward "[\t\n ]*</?\
-\\(font\\|table\\|td\\|tr\\)\\([\t\n ]+[^>]+\\)?>[\t\n ]*"
+\\(?:font\\|table\\|td\\|tr\\)\\(?:[\t\n ]+[^>]+\\)?>[\t\n ]*"
 				  nil t)
 	  (delete-region (match-beginning 0) (match-end 0)))
 	(shimbun-remove-tags "[\t\n ]*<!--  rectangle start  -->"
@@ -430,11 +432,11 @@ information available, removing useless contents, etc."
 	(shimbun-remove-tags "[\t\n ]*<noscript>" "</noscript>[\t\n ]*")
 	(goto-char (point-min))
 	(when (and text-p
-		   (looking-at "\\([\t\n ]*<[^>]+>\\)+[\t\n ]*"))
+		   (looking-at "\\(?:[\t\n ]*<[^>]+>\\)+[\t\n ]*"))
 	  (delete-region (match-beginning 0) (match-end 0)))
 	;; Break continuous lines.
 	(when (and (string-equal group "editorial")
-		   (string-match " \\(よみうり寸評\\|編集手帳\\)\\'"
+		   (string-match " \\(?:よみうり寸評\\|編集手帳\\)\\'"
 				 (shimbun-header-subject header 'no-encode)))
 	  (while (search-forward "◆" nil t)
 	    (replace-match "。<br>\\&<br>")))

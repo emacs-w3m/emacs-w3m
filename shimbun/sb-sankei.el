@@ -42,7 +42,7 @@
 (defvar shimbun-sankei-from-address "nobody@example.com")
 
 (defvar shimbun-sankei-content-start
-  "<!--[\t\n ]*\\(photo\\.sta\\|\\(ad--\\)?hombun\\)[\t\n ]*-->[\t\n ]*")
+  "<!--[\t\n ]*\\(?:photo\\.sta\\|\\(?:ad--\\)?hombun\\)[\t\n ]*-->[\t\n ]*")
 
 (defvar shimbun-sankei-content-end
   "[\t\n ]*<!--[\t\n ]*hbnend[\t\n ]*-->")
@@ -96,13 +96,15 @@
       (setq cyear (shimbun-decode-time nil 32400)
 	    cmonth (nth 4 cyear)
 	    cyear (nth 5 cyear))
-      (while (re-search-forward "<a[\t\n ]+href=\"\
+      (while (re-search-forward
+	      ;; 1:url 2:serial 3:subject 4:month 5:day 6:time
+	      "<a[\t\n ]+href=\"\
 \\(\
 \\([/0-9a-z]+\\)\
 \\.htm\\)\
 \">[\t\n ]*\
 \\([^\n<>]+\\)\
-\[\t\n ]*</a>\\([\t\n ]*<[^<>]+>\\)*[\t\n ]*(\
+\[\t\n ]*</a>\\(?:[\t\n ]*<[^<>]+>\\)*[\t\n ]*(\
 \\([01][0-9]\\)\
 /\
 \\([0-3][0-9]\\)\
@@ -110,7 +112,7 @@
 \\([012][0-9]:[0-5][0-9]\\)\
 )"
 				nil t)
-	(setq month (string-to-number (match-string 5))
+	(setq month (string-to-number (match-string 4))
 	      year (cond ((>= (- month cmonth) 2)
 			  (1- cyear))
 			 ((and (= 1 month) (= 12 cmonth))
@@ -126,8 +128,8 @@
 	       from
 	       ;; date
 	       (shimbun-make-date-string year month
-					 (string-to-number (match-string 6))
-					 (match-string 7))
+					 (string-to-number (match-string 5))
+					 (match-string 6))
 	       ;; id
 	       (concat "<"
 		       (mapconcat 'identity
@@ -162,11 +164,13 @@ http://www.sankei.co.jp/news/%02d%02d%02d/morning/editoria.htm"
 				time "05:00"
 				today nil))
 		      (setq today nil)))
-	       (and (re-search-forward "<a[\t\n ]+href=\"\
+	       (and (re-search-forward
+		     ;; 1:url 2:year 3:month 4:day 5:time
+		     "<a[\t\n ]+href=\"\
 \\(http://www\\.sankei\\.co\\.jp/news/\
 \\([0-9][0-9]\\)\\([01][0-9]\\)\\([0-3][0-9]\\)\
 /morning/editoria\\.htm\\)\
-\">[\t\n 　]*\\(\\(<[^>]+>\\|主張\\)[\t\n 　]*\\)\
+\">[\t\n 　]*\\(?:\\(?:<[^>]+>\\|主張\\)[\t\n 　]*\\)\
 +([01][0-9]/[0-3][0-9][\t\n ]+\
 \\([012][0-9]:[0-5][0-9]\\))"
 				       nil t)
@@ -176,7 +180,7 @@ http://www.sankei.co.jp/news/%02d%02d%02d/morning/editoria.htm"
 			    month (string-to-number (match-string 3))
 			    day (string-to-number (match-string 4))
 			    url (match-string 1)
-			    time (match-string 7)))))
+			    time (match-string 5)))))
       (push (shimbun-create-header
 	     0
 	     (format "主張 (%d/%d)" month day)
@@ -196,7 +200,7 @@ http://www.sankei.co.jp/news/%02d%02d%02d/morning/editoria.htm"
 	(goto-char (match-beginning 0))
 	(insert "\n<!--hbnend-->"))
     ;; Remove advertisements.
-    (shimbun-remove-tags "<!--[\t\n ]*AdSpace\\(.+=.+\\)+-->"
+    (shimbun-remove-tags "<!--[\t\n ]*AdSpace\\(?:.+=.+\\)+-->"
 			 "<!--[\t\n ]*/AdSpace[\t\n ]*-->")
     ;; Remove an advertisement between photo and hombun.
     (shimbun-remove-tags "<!--[\t\n ]*photo\\.end[\t\n ]*-->"

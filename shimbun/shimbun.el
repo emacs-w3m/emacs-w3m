@@ -419,7 +419,7 @@ Generated article have a multipart/related content-type."
    (when (string= "multipart/related" (shimbun-entity-type-internal entity))
      (catch 'start
        (dolist (child (shimbun-entity-data-internal entity))
-	 (when (string-match "\\`\\(text/\\|multipart/mixed\\)"
+	 (when (string-match "\\`\\(?:text/\\|multipart/mixed\\)"
 			     (shimbun-entity-type child))
 	   (throw 'start
 		  (concat "; type=\""
@@ -526,14 +526,14 @@ image parts, and returns an alist of URLs and image entities."
 		       (concat "[" spc "]+"
 			       ;; 1. replaceable part
 			       "\\(src[" spc "]*=[" spc "]*"
-			       "\\(\""
-			       ;; 3. url quoted with \"
+			       "\\(?:\""
+			       ;; 2. url quoted with \"
 			       "\\([^\"]+\\)"
 			       "\"\\|'"
-			       ;; 4. url quoted with '
+			       ;; 3. url quoted with '
 			       "\\([^']+\\)"
 			       "'\\|"
-			       ;; 5. url unquoted
+			       ;; 4. url unquoted
 			       "\\([^" spc "\"']+\\)"
 			       "\\)\\)")))
 		   end t)))
@@ -547,9 +547,9 @@ image parts, and returns an alist of URLs and image entities."
 	  (delete-region (match-beginning 0) (match-end 0))))
       (setq start (match-beginning 1)
 	    end (match-end 1)
-	    url (shimbun-expand-url (or (match-string 3)
-					(match-string 4)
-					(match-string 5))
+	    url (shimbun-expand-url (or (match-string 2)
+					(match-string 3)
+					(match-string 4))
 				    base-url))
       (unless (setq img (assoc url images))
 	(with-temp-buffer

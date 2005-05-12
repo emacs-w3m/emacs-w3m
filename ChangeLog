@@ -1,7 +1,17 @@
 2005-05-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-default): Use
-	shy group in regexp.
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Use shy group
+	in regexp.
+	(shimbun-asahi-get-headers): Ditto.
+	(shimbun-asahi-prepare-article): Ditto.
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Ditto.
+	(shimbun-mainichi-content-end): Ditto.
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-from-address): Make it
+	unreachable.
+	(shimbun-get-headers): Make the from address unreachable.
+	(shimbun-nikkei-get-headers-default): Use shy group in regexp.
 	(shimbun-nikkei-get-headers-top): Ditto.
 	(shimbun-nikkei-get-headers-default2): Ditto.
 	(shimbun-nikkei-get-headers-kansai): Rearrange regexp.
@@ -22,6 +32,19 @@
 	(shimbun-nikkei-get-headers-newpro): Use shy group in regexp.
 	(shimbun-nikkei-get-headers-shasetsu): Ditto.
 	(shimbun-nikkei-prepare-article-market): Use shy group in regexp.
+
+	* shimbun/sb-sankei.el (shimbun-sankei-content-start): Use shy
+	group in regexp.
+	(shimbun-get-headers): Ditto.
+	(shimbun-sankei-get-headers-editoria): Ditto.
+	(shimbun-clear-contents): Ditto.
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Ditto.
+	(shimbun-yomiuri-get-headers): Ditto.
+	(shimbun-yomiuri-prepare-article): Ditto.
+
+	* shimbun/shimbun.el (shimbun-entity-type): Ditto.
+	(shimbun-mime-replace-image-tags): Ditto.
 
 2005-05-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
@@ -348,7 +371,7 @@
 	* shimbun/sb-asahi.el (shimbun-asahi-get-headers): Use it.
 
 	* shimbun/sb-sankei.el (shimbun-get-headers): Use it.
-	(shimbun-sankei-get-headers-editoria: Use it.
+	(shimbun-sankei-get-headers-editoria): Use it.
 
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-get-headers): Use it.
 
