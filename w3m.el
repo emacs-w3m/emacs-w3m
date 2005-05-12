@@ -5607,7 +5607,7 @@ If Transient Mark mode, deactivate the mark."
       (goto-char start)
       (setq all (not (and (bolp)
 			  w3m-current-url
-			  (string-match "\\`http://\\(?[^/]+\\.\\)*google\\."
+			  (string-match "\\`http://\\(?:[^/]+\\.\\)*google\\."
 					w3m-current-url))))
       (while (progn
 	       (w3m-next-anchor)

@@ -1,3 +1,7 @@
+2005-05-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-open-all-links-in-new-session): Fix regexp.
+
 2005-05-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bookmark.el (w3m-about-bookmark): Use shy group in regexp.
