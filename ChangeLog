@@ -1,3 +1,28 @@
+2005-05-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-default): Use
+	shy group in regexp.
+	(shimbun-nikkei-get-headers-top): Ditto.
+	(shimbun-nikkei-get-headers-default2): Ditto.
+	(shimbun-nikkei-get-headers-kansai): Rearrange regexp.
+	(shimbun-nikkei-get-headers-it): Ditto.
+	(shimbun-nikkei-get-headers-it-zensen): Ditto.
+	(shimbun-nikkei-get-headers-it-manage): Ditto.
+	(shimbun-nikkei-get-headers-it-seisaku): Ditto.
+	(shimbun-nikkei-get-headers-it-digicore): Ditto.
+	(shimbun-nikkei-get-headers-markets): Ditto.
+	(shimbun-nikkei-get-headers-kawase): Ditto.
+	(shimbun-nikkei-get-headers-bunkatsu2): Ditto.
+	(shimbun-nikkei-get-headers-kinri): Ditto.
+	(shimbun-nikkei-get-headers-ft): Ditto.
+	(shimbun-nikkei-get-headers-dj): Ditto.
+	(shimbun-nikkei-get-headers-gyoseki): Ditto.
+	(shimbun-nikkei-get-headers-market): Use shy group in regexp.
+	(shimbun-nikkei-get-headers-sports): Rearrange regexp.
+	(shimbun-nikkei-get-headers-newpro): Use shy group in regexp.
+	(shimbun-nikkei-get-headers-shasetsu): Ditto.
+	(shimbun-nikkei-prepare-article-market): Use shy group in regexp.
+
 2005-05-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-open-all-links-in-new-session): Fix regexp.
@@ -782,7 +807,7 @@
 	w3m.el(c) so as to exclude ones in other places; report the
 	precise error message if it doesn't exist.
 
-2005-03-10 Masaru Nomiya <nomiya@ttmy.ne.jp>
+2005-03-10  Masaru Nomiya  <nomiya@ttmy.ne.jp>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Use
 	http://www.asahi.com/national/list.html for the national group

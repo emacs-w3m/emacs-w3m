@@ -1,9 +1,9 @@
 ;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005
-;; Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>
+;; Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>
 
-;; Author: Kazuyoshi KOREEDA <Kazuyoshi.Koreeda@rdmg.mgcs.mei.co.jp>,
+;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
 ;;         Katsumi Yamaoka   <yamaoka@jpl.org>,
 ;;         NOMIYA Masaru     <nomiya@ttmy.ne.jp>
 ;; Keywords: news
@@ -255,35 +255,36 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		  (s1 "[\t\n ]+"))
 	      (concat "<a" s1 "href=\""
 		      ;; 1. url
-		      "\\(\\([^\"<>]+/\\)?"
-		      ;; 3. serial number
+		      "\\(\\(?:[^\"<>]+/\\)?"
+		      ;; 2. serial number
 		      "\\("
-		      ;; 4. year
+		      ;; 3. year
 		      "\\(20[0-9][0-9]\\)"
-		      ;; 5. month
+		      ;; 4. month
 		      "\\([01][0-9]\\)"
-		      ;; 6. day
+		      ;; 5. day
 		      "\\([0-3][0-9]\\)"
 		      "[0-9a-z]+\\)"
-		      "\\.html\\)\"" s0 ">\\(" s0 "<[^<>]+>" s0 "\\)*" s0
-		      ;; 8. subject
+		      "\\.html\\)"
+		      "\"" s0 ">\\(?:" s0 "<[^<>]+>" s0 "\\)*" s0
+		      ;; 6. subject
 		      "\\([^<>]+\\)"
-		      "\\(" s0 "<[^<>]+>" s0 "\\)*"
+		      "\\(?:" s0 "<[^<>]+>" s0 "\\)*"
 		      "("
-		      ;; 10. hour:minute
+		      ;; 7. hour:minute
 		      "\\([012][0-9]:[0-5][0-9]\\)"
 		      ")")))
 	  nil t)
     (push (shimbun-create-header
 	   0
-	   (match-string 8)
+	   (match-string 6)
 	   shimbun-nikkei-from-address
 	   (shimbun-nikkei-make-date-string
+	    (string-to-number (match-string 3))
 	    (string-to-number (match-string 4))
 	    (string-to-number (match-string 5))
-	    (string-to-number (match-string 6))
-	    (match-string 10))
-	   (concat "<" (match-string 3) "%" group "."
+	    (match-string 7))
+	   (concat "<" (match-string 2) "%" group "."
 		   shimbun-nikkei-top-level-domain ">")
 	   "" 0 0
 	   (shimbun-nikkei-expand-url (match-string 1) folder))
@@ -314,13 +315,13 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		       "<!--" s0 "FJZONE" s1 "START" s1 "NAME=\"MIDASHI\""
 		       s0 "-->" s0
 		       ;; 6. subject
-		       "\\([^<]+\\)"
+		       "\\([^<]+[^\t\n ]\\)"
 		       s0
 		       "<!--" s0 "FJZONE" s1 "END" s1 "NAME=\"MIDASHI\""
-		       s0 "-->\\(" s0 "<[^!]+>\\)*" s0
+		       s0 "-->\\(?:" s0 "<[^!]+>\\)*" s0
 		       "<!--" s0 "FJZONE" s1 "START" s1 "NAME=\"HONBUN\""
 		       s0 "-->[^<]+("
-		       ;; 8. hour:minute
+		       ;; 7. hour:minute
 		       "\\([0-2][0-9]:[0-5][0-9]\\)")))
 	   nil t)
       (push (shimbun-create-header
@@ -331,7 +332,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	      (string-to-number (match-string 3))
 	      (string-to-number (match-string 4))
 	      (string-to-number (match-string 5))
-	      (match-string 8))
+	      (match-string 7))
 	     (concat "<" (match-string 2) "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
@@ -348,29 +349,30 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		    (s1 "[\t\n ]+"))
 		(concat "<a" s1 "href=\""
 			;; 1. url
-			"\\(\\([^\"<>]+/\\)?"
-			;; 3. serial number
+			"\\(\\(?:[^\"<>]+/\\)?"
+			;; 2. serial number
 			"\\("
-			;; 4. year
+			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			;; 5. month
+			;; 4. month
 			"\\([01][0-9]\\)"
-			;; 6. day
+			;; 5. day
 			"\\([0-3][0-9]\\)"
 			"[0-9a-z]+\\)"
-			"\\.html\\)\"" s0 "\\(>\\)" s0
-			;; 8. subject
+			"\\.html\\)"
+			"\"" s0 ">" s0
+			;; 6. subject
 			"\\([^<>]+\\)")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 8)
+	     (match-string 6)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 3))
 	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 5))
-	      (string-to-number (match-string 6)))
-	     (concat "<" (match-string 3) "%" group "."
+	      (string-to-number (match-string 5)))
+	     (concat "<" (match-string 2) "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
 	     (shimbun-nikkei-expand-url (match-string 1) folder))
@@ -450,7 +452,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			       "月"
 			       ;; 3. day
 			       "\\([0-3]?[0-9]\\)"
-			       "日" s0 "(" "\\([^<]+\\)" ")"
+			       "日" s0 "([^<]+)"
 			       s0 "</strong></td>")))
 		   nil t)
 		  (prog1
@@ -470,25 +472,24 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"."
+		(concat "<a" s1 "href=\"\\./"
 			;; 1. url
-			"\\("
-			;; 2.
-			"\\([^\"<>]+/\\)"
-			;; 3. serial number
-			"\\([^\t\n ]+\\)\\)"
+			"\\([^\"<>]+/"
+			;; 2. serial number
+			"\\([^\t\n ]+\\)"
+			"\\)"
 			s0 "-frame" s0 "\\.html"
 			s0 "\">" s0
-			;; 4. subject
+			;; 3. subject
 			"\\([^<]+\\)"
 			s0 "<")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 4)
+	     (match-string 3)
 	     shimbun-nikkei-from-address
 	     date
-	     (concat "<" (match-string 3) "%" group "."
+	     (concat "<" (match-string 1) "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
 	     (shimbun-nikkei-expand-url (concat (match-string 1) ".html")
@@ -503,9 +504,9 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
+		(concat "<a" s1 "href=\"\\./"
 			;; 1. url
-			"\\(\\./index\\.cfm\\?i="
+			"\\(index\\.cfm\\?i="
 			;; 2. serial number
 			"\\("
 			;; 3. year
@@ -514,16 +515,17 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"\\([01][0-9]\\)"
 			;; 5. day
 			"\\([0-3][0-9]\\)"
-			;; 6. serial
-			"\\([0-9a-z]+\\)\\)\\)"
-			;;"\"\\)"
+			"[0-9a-z]+"
+			"\\)"
+			"\\)"
 			s0 "\">" s0
-			;; 7. subject
-			"\\([^<]+\\)" "</a>")))
+			;; 6. subject
+			"\\([^<]+\\)"
+			"</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 7)
+	     (match-string 6)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
 	      (string-to-number (match-string 3))
@@ -543,39 +545,38 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
+		(concat "<a" s1 "href=\"\\./zensen\\.cfm"
 			;; 1. url
-			"\\(\\./zensen\\.cfm"
 			"\\(\\?i="
-			;; 3. serial number
+			;; 2. serial number
 			"\\("
-			;; 4. year
+			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			;; 5. month
+			;; 4. month
 			"\\([01][0-9]\\)"
-			;; 6. day
+			;; 5. day
 			"\\([0-3][0-9]\\)"
-			;; 7. serial
-			"\\([0-9a-z]+\\)\\)\\)\\)"
-			;;"\"\\)"
-			"\"" s0 ">" s0 "\\(([01]?[0-9]/[0-3]?[0-9])\\)?" s0
-			;; 9. subject
-			"\\([^<]+\\)" "</a>")))
+			"[0-9a-z]+\\)"
+			"\\)"
+			"\"" s0 ">" s0 "\\(?:([01]?[0-9]/[0-3]?[0-9])\\)?" s0
+			;; 6. subject
+			"\\([^<]+\\)"
+			"</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 9)
+	     (match-string 6)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 3))
 	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 5))
-	      (string-to-number (match-string 6)))
-	     (concat "<" (match-string 3) "%" group "."
+	      (string-to-number (match-string 5)))
+	     (concat "<" (match-string 2) "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
 	     (shimbun-nikkei-expand-url
 	      (concat "http://it.nikkei.co.jp/it/column/zensen.cfm"
-		      (match-string 2)) folder))
+		      (match-string 1)) folder))
 	    headers))
     headers))
 
@@ -586,39 +587,38 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
+		(concat "<a" s1 "href=\"\\./foc\\.cfm"
 			;; 1. url
-			"\\(\\./foc\\.cfm"
 			"\\(\\?i="
-			;; 3. serial number
+			;; 2. serial number
 			"\\("
-			;; 4. year
+			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			;; 5. month
+			;; 4. month
 			"\\([01][0-9]\\)"
-			;; 6. day
+			;; 5. day
 			"\\([0-3][0-9]\\)"
-			;; 7. serial
-			"\\([0-9a-z]+\\)\\)\\)\\)"
-			;;"\"\\)"
+			"[0-9a-z]+\\)"
+			"\\)"
 			"\"" s0 ">" s0
-			;; 8. subject
-			"\\([^<]+\\)" "</a>")))
+			;; 6. subject
+			"\\([^<]+\\)"
+			"</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 8)
+	     (match-string 6)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 3))
 	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 5))
-	      (string-to-number (match-string 6)))
-	     (concat "<" (match-string 3) "%" group "."
+	      (string-to-number (match-string 5)))
+	     (concat "<" (match-string 2) "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
 	     (shimbun-nikkei-expand-url
 	      (concat "http://it.nikkei.co.jp/it/manage/foc.cfm"
-		      (match-string 2)) folder))
+		      (match-string 1)) folder))
 	    headers))
     headers))
 
@@ -629,37 +629,36 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
+		(concat "<a" s1 "href=\"\\./seisaku\\.cfm"
 			;; 1. url
-			"\\(\\./seisaku\\.cfm"
 			"\\(\\?i="
-			;; 3. serial number
+			;; 2. serial number
 			"\\("
-			;; 4. year
+			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			;; 5. month
+			;; 4. month
 			"\\([01][0-9]\\)"
-			;; 6. day
+			;; 5. day
 			"\\([0-3][0-9]\\)"
-			;; 7. serial
-			"\\([0-9a-z]+\\)\\)\\)\\)"
-			;;"\"\\)"
+			"[0-9a-z]+\\)"
+			"\\)"
 			"\"" s0 ">" s0
-			;; 8. subject
-			"\\([^<]+\\)" "</a>")))
+			;; 6. subject
+			"\\([^<]+\\)"
+			"</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 8)
+	     (match-string 6)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 3))
 	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 5))
-	      (string-to-number (match-string 6)))
-	     (concat "<" (match-string 3) "%" group "."
+	      (string-to-number (match-string 5)))
+	     (concat "<" (match-string 2) "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	     (shimbun-nikkei-expand-url (match-string 1) folder))
 	    headers))
     headers))
 
@@ -670,39 +669,38 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
+		(concat "<a" s1 "href=\"\\./digicore\\.cfm"
 			;; 1. url
-			"\\(./digicore\\.cfm"
 			"\\(\\?i="
-			;; 3. serial number
+			;; 2. serial number
 			"\\("
-			;; 4. year
+			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			;; 5. month
+			;; 4. month
 			"\\([01][0-9]\\)"
-			;; 6. day
+			;; 5. day
 			"\\([0-3][0-9]\\)"
-			;; 7. serial
-			"\\([0-9a-z]+\\)\\)\\)\\)"
-			;;"\"\\)"
-			"\"" s0 ">" s0 "\\(([01]?[0-9]/[0-3]?[0-9])\\)?" s0
-			;; 9. subject
-			"\\([^<]+\\)" "</a>")))
+			"[0-9a-z]+\\)"
+			"\\)"
+			"\"" s0 ">" s0 "\\(?:([01]?[0-9]/[0-3]?[0-9])\\)?" s0
+			;; 6. subject
+			"\\([^<]+\\)"
+			"</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 9)
+	     (match-string 6)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 3))
 	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 5))
-	      (string-to-number (match-string 6)))
-	     (concat "<" (match-string 3) "%" group "."
+	      (string-to-number (match-string 5)))
+	     (concat "<" (match-string 2) "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
 	     (shimbun-nikkei-expand-url
 	      (concat "http://it.nikkei.co.jp/it/column/digicore.cfm"
-		      (match-string 2)) folder))
+		      (match-string 1)) folder))
 	    headers))
     headers))
 
@@ -713,48 +711,48 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
-			;; 1. base
-			"\\(summary\\.cfm"
-			;; 2. url
+		(concat "<a" s1 "href=\"summary\\.cfm"
+			;; 1. url
 			"\\(\\?genre="
-			;; 3. serial number
-			"\\([^\"]+date=\\)"
-			;; 4. year
+			;; 2. serial number
+			"\\([^\"]+date="
+			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			;; 5. serial number
-			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
+			"[01][0-9][0-3][0-9]"
+			"\\)"
+			"\\)"
 			"\"" s0 ">" s0
-			;; 6. subject
-			"\\([^<]+\\)" s0 "（"
-			;; 7. month
+			;; 4. subject
+			"\\([^<]+\\)"
+			s0 "（"
+			;; 5. month
 			"\\([01]?[0-9]\\)"
 			"/"
-			;; 8. day
+			;; 6. day
 			"\\([0-3]?[0-9]\\)"
 			s1
-			;; 9. hour
+			;; 7. hour
 			"\\([0-2]?[0-9]\\)"
 			":"
-			;; 10. minute
+			;; 8. minute
 			"\\([0-5]?[0-9]\\)"
 			"）" s0 "</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 6)
+	     (match-string 4)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 7))
-	      (string-to-number (match-string 8))
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 5))
+	      (string-to-number (match-string 6))
 	      (format "%02d:%02d"
-		      (string-to-number (match-string 9))
-		      (string-to-number (match-string 10))))
-	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
-		     "%" group "." shimbun-nikkei-top-level-domain ">")
+		      (string-to-number (match-string 7))
+		      (string-to-number (match-string 8))))
+	     (concat "<" (match-string 2) "%" group "."
+		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	     (shimbun-nikkei-expand-url (match-string 1) folder))
 	    headers))
     (shimbun-sort-headers headers)))
 
@@ -765,48 +763,48 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
-			;; 1. base
-			"\\(summary\\.cfm"
-			;; 2. url
+		(concat "<a" s1 "href=\"summary\\.cfm"
+			;; 1. url
 			"\\(\\?id="
-			;; 3. serial number
-			"\\([^\"]+date=\\)"
-			;; 4. year
+			;; 2. serial number
+			"\\([^\"]+date="
+			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			;; 5. serial number
-			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
+			"[01][0-9][0-3][0-9]"
+			"\\)"
+			"\\)"
 			"\"" s0 ">" s0
-			;; 6. subject
-			"\\([^<]+\\)" s0 "（"
-			;; 7. month
+			;; 4. subject
+			"\\([^<]+\\)"
+			s0 "（"
+			;; 5. month
 			"\\([01]?[0-9]\\)"
 			"/"
-			;; 8. day
+			;; 6. day
 			"\\([0-3]?[0-9]\\)"
 			s1
-			;; 9. hour
+			;; 7. hour
 			"\\([0-2]?[0-9]\\)"
 			":"
-			;; 10. minute
+			;; 8. minute
 			"\\([0-5]?[0-9]\\)"
 			"）" s0 "</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 6)
+	     (match-string 4)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 7))
-	      (string-to-number (match-string 8))
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 5))
+	      (string-to-number (match-string 6))
 	      (format "%02d:%02d"
-		      (string-to-number (match-string 9))
-		      (string-to-number (match-string 10))))
-	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
-		     "%" group "." shimbun-nikkei-top-level-domain ">")
+		      (string-to-number (match-string 7))
+		      (string-to-number (match-string 8))))
+	     (concat "<" (match-string 2) "%" group "."
+		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	     (shimbun-nikkei-expand-url (match-string 1) folder))
 	    headers))
     (shimbun-sort-headers headers)))
 
@@ -817,50 +815,48 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
-			;; 1. base
-			"\\(bunkatsu3\\.cfm\\?genre=m4"
-			;; 2. url
+		(concat "<a" s1 "href=\"bunkatsu3\\.cfm\\?genre=m4"
+			;; 1. url
 			"\\(&id="
-			;; 3. serial number
-			"\\([^\"]+date=\\)"
-			;; 4. year
+			;; 2. serial number
+			"\\([^\"]+date="
+			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			;; 5. serial number
-			"\\([01][0-9][0-3][0-9]"
-			;; 6. serial number
-			"\\([^\"]+\\)\\)\\)\\)"
+			"[01][0-9][0-3][0-9][^\"]+"
+			"\\)"
+			"\\)"
 			"\"" s0 ">" s0
-			;; 7. subject
-			"\\([^<]+\\)" s0 "（"
-			;; 8. month
+			;; 4. subject
+			"\\([^<]+\\)"
+			s0 "（"
+			;; 5. month
 			"\\([01]?[0-9]\\)"
 			"/"
-			;; 9. day
+			;; 6. day
 			"\\([0-3]?[0-9]\\)"
 			s1
-			;; 10. hour
+			;; 7. hour
 			"\\([0-2]?[0-9]\\)"
 			":"
-			;; 11. minute
+			;; 8. minute
 			"\\([0-5]?[0-9]\\)"
 			"）" s0 "</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 7)
+	     (match-string 4)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 8))
-	      (string-to-number (match-string 9))
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 5))
+	      (string-to-number (match-string 6))
 	      (format "%02d:%02d"
-		      (string-to-number (match-string 10))
-		      (string-to-number (match-string 11))))
-	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
-		     "%" group "." shimbun-nikkei-top-level-domain ">")
+		      (string-to-number (match-string 7))
+		      (string-to-number (match-string 8))))
+	     (concat "<" (match-string 2) "%" group "."
+		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	     (shimbun-nikkei-expand-url (match-string 1) folder))
 	    headers))
     (shimbun-sort-headers headers)))
 
@@ -871,48 +867,48 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
-			;; 1. base
-			"\\(kinri\\.cfm"
-			;; 2. url
+		(concat "<a" s1 "href=\"kinri\\.cfm"
+			;; 1. url
 			"\\(\\?id="
-			;; 3. serial number
-			"\\([^\"]+date=\\)"
-			;; 4. year
+			;; 2. serial number
+			"\\([^\"]+date="
+			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			;; 5. serial number
-			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
+			"[01][0-9][0-3][0-9]"
+			"\\)"
+			"\\)"
 			"\"" s0 ">" s0
-			;; 6. subject
-			"\\([^<]+\\)" s0 "（"
-			;; 7. month
+			;; 4. subject
+			"\\([^<]+\\)"
+			s0 "（"
+			;; 5. month
 			"\\([01]?[0-9]\\)"
 			"/"
-			;; 8. day
+			;; 6. day
 			"\\([0-3]?[0-9]\\)"
 			s1
-			;; 9. hour
+			;; 7. hour
 			"\\([0-2]?[0-9]\\)"
 			":"
-			;; 10. minute
+			;; 8. minute
 			"\\([0-5]?[0-9]\\)"
 			"）" s0 "</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 6)
+	     (match-string 4)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 7))
-	      (string-to-number (match-string 8))
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 5))
+	      (string-to-number (match-string 6))
 	      (format "%02d:%02d"
-		      (string-to-number (match-string 9))
-		      (string-to-number (match-string 10))))
-	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
-		     "%" group "." shimbun-nikkei-top-level-domain ">")
+		      (string-to-number (match-string 7))
+		      (string-to-number (match-string 8))))
+	     (concat "<" (match-string 2) "%" group "."
+		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	     (shimbun-nikkei-expand-url (match-string 1) folder))
 	    headers))
     (shimbun-sort-headers headers)))
 
@@ -923,41 +919,39 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
-			;; 1. base
-			"\\(ft\\.cfm"
-			;; 2. url
+		(concat "<a" s1 "href=\"ft\\.cfm"
+			;; 1. url
 			"\\(\\?id="
-			;; 3. serial number
-			"\\([^\"]+date=\\)"
-			;; 4. year
+			;; 2. serial number
+			"\\([^\"]+date="
+			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			;; 5. serial number
-			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
+			"[01][0-9][0-3][0-9]"
+			"\\)"
+			"\\)"
 			"\"" s0 ">" s0
-			;; 6. subject
+			;; 4. subject
 			"\\([^<]+\\)"
-			s0 "\\([(|（]\\)"
-			;; 8. month
+			s0 "[(|（]"
+			;; 5. month
 			"\\([01]?[0-9]\\)"
 			"/"
-			;; 9. day
+			;; 6. day
 			"\\([0-3]?[0-9]\\)"
-			"\\([）|)]\\)" s0 "※" s0 "</a>")))
+			"[）|)]" s0 "※" s0 "</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 6)
+	     (match-string 4)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 8))
-	      (string-to-number (match-string 9)))
-;;	      (match-string 9))
-	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
-		     "%" group "." shimbun-nikkei-top-level-domain ">")
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 5))
+	      (string-to-number (match-string 6)))
+	     (concat "<" (match-string 2) "%" group "."
+		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	     (shimbun-nikkei-expand-url (match-string 1) folder))
 	    headers))
     headers))
 
@@ -968,48 +962,48 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
-			;; 1. base
-			"\\(dj\\.cfm"
-			;; 2. url
+		(concat "<a" s1 "href=\"dj\\.cfm"
+			;; 1. url
 			"\\(\\?id="
-			;; 3. serial number
-			"\\([^\"]+date=\\)"
-			;; 4. year
+			;; 2. serial number
+			"\\([^\"]+date="
+			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			;; 5. serial number
-			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
+			"[01][0-9][0-3][0-9]"
+			"\\)"
+			"\\)"
 			"\"" s0 ">" s0
-			;; 6. subject
-			"\\([^<]+\\)" s0 "（"
-			;; 7. month
+			;; 4. subject
+			"\\([^<]+\\)"
+			s0 "（"
+			;; 5. month
 			"\\([01]?[0-9]\\)"
 			"/"
-			;; 8. day
+			;; 6. day
 			"\\([0-3]?[0-9]\\)"
 			s1
-			;; 9. hour
+			;; 7. hour
 			"\\([0-2]?[0-9]\\)"
 			":"
-			;; 10. minute
+			;; 8. minute
 			"\\([0-5]?[0-9]\\)"
 			"）" s0 "</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 6)
+	     (match-string 4)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 7))
-	      (string-to-number (match-string 8))
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 5))
+	      (string-to-number (match-string 6))
 	      (format "%02d:%02d"
-		      (string-to-number (match-string 9))
-		      (string-to-number (match-string 10))))
-	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
-		     "%" group "." shimbun-nikkei-top-level-domain ">")
+		      (string-to-number (match-string 7))
+		      (string-to-number (match-string 8))))
+	     (concat "<" (match-string 2) "%" group "."
+		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	     (shimbun-nikkei-expand-url (match-string 1) folder))
 	    headers))
     (shimbun-sort-headers headers)))
 
@@ -1020,48 +1014,48 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
-			;; 1. base
-			"\\(gyoseki\\.cfm"
-			;; 2. url
+		(concat "<a" s1 "href=\"gyoseki\\.cfm"
+			;; 1. url
 			"\\(\\?id="
-			;; 3. serial number
-			"\\([^\"]+date=\\)"
-			;; 4. year
+			;; 2. serial number
+			"\\([^\"]+date="
+			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			;; 5. serial number
-			"\\([01][0-9][0-3][0-9]\\)\\)\\)"
+			"[01][0-9][0-3][0-9]"
+			"\\)"
+			"\\)"
 			"\"" s0 ">" s0
-			;; 6. subject
-			"\\([^<]+\\)" s0 "（"
-			;; 7. month
+			;; 4. subject
+			"\\([^<]+\\)"
+			s0 "（"
+			;; 5. month
 			"\\([01]?[0-9]\\)"
 			"/"
-			;; 8. day
+			;; 6. day
 			"\\([0-3]?[0-9]\\)"
 			s1
-			;; 9. hour
+			;; 7. hour
 			"\\([0-2]?[0-9]\\)"
 			":"
-			;; 10. minute
+			;; 8. minute
 			"\\([0-5]?[0-9]\\)"
 			"）" s0 "</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 6)
+	     (match-string 4)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 7))
-	      (string-to-number (match-string 8))
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 5))
+	      (string-to-number (match-string 6))
 	      (format "%02d:%02d"
-		      (string-to-number (match-string 9))
-		      (string-to-number (match-string 10))))
-	     (concat "<" (match-string 3) (match-string 4) (match-string 5)
-		     "%" group "." shimbun-nikkei-top-level-domain ">")
+		      (string-to-number (match-string 7))
+		      (string-to-number (match-string 8))))
+	     (concat "<" (match-string 2) "%" group "."
+		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 2) folder))
+	     (shimbun-nikkei-expand-url (match-string 1) folder))
 	    headers))
     (shimbun-sort-headers headers)))
 
@@ -1081,8 +1075,8 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		     "月"
 		     ;; 3. day
 		     "\\([0-3]?[0-9]\\)"
-		     "日\\(" s1
-		     ;; 5. hour:minute
+		     "日\\(?:" s1
+		     ;; 4. hour:minute
 		     "\\([012]?[0-9]:[0-5]?[0-9]\\)"
 		     "\\)?"))))
 	subdata start end subtitle month day time from year headers)
@@ -1102,7 +1096,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	(setq subtitle (match-string 1)
 	      month (string-to-number (match-string 2))
 	      day (string-to-number (match-string 3))
-	      time (match-string 5))
+	      time (match-string 4))
 	(setq from (shimbun-replace-in-string
 		    shimbun-nikkei-from-address
 		    ")" (concat "/"
@@ -1120,19 +1114,18 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			    "\\("
 			    ;; 3. year
 			    "\\(20[0-9][0-9]\\)"
-			    "\\([^.]+\\)"
+			    "[^.]+"
 			    "\\)"
-			    "\\.html\\)\""
-			    s0 ">\\(" s0 "<[^>]+>\\)*" s0
-			    ;; 6. subject
-
+			    "\\.html\\)"
+			    "\"" s0 ">\\(?:" s0 "<[^>]+>\\)*" s0
+			    ;; 4. subject
 			    "\\([^<]+\\)"
 			    s0)))
 		end t)
 	  (setq year (string-to-number (match-string 3)))
 	  (push (shimbun-create-header
 		 0
-		 (match-string 6)
+		 (match-string 4)
 		 from
 		 (shimbun-nikkei-make-date-string year month day time)
 		 (format "<%s%%%s.%s>"
@@ -1169,11 +1162,14 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"\\.html\\)"
 			"\"" s1 "ARTICLE_TIME=\""
 			;; 5. year
-			"\\(20[0-9][0-9]\\)" "/"
+			"\\(20[0-9][0-9]\\)"
+			"/"
 			;; 6. month
-			"\\([01][0-9]\\)" "/"
+			"\\([01][0-9]\\)"
+			"/"
 			;; 7. day
-			"\\([0-3][0-9]\\)" s1
+			"\\([0-3][0-9]\\)"
+			s1
 			;; 8. hour:minute
 			"\\([012][0-9]:[0-5][0-9]\\)")))
 	    nil t)
@@ -1202,32 +1198,33 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
+		(concat "<a" s1 "href=\"\\./"
 			;; 1. url
-			"\\(\\./news\\.cfm\\?i="
+			"\\(news\\.cfm\\?i="
 			;; 2. serial number
 			"\\("
 			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			"[01][0-9][0-3][0-9][^\"]+\\)\\)"
-			"\"[^>]+>" "\\(" s0 "<[^>]+>\\)*" s0 "(" s0
-			;; 5. month
+			"[01][0-9][0-3][0-9][^\"]+\\)"
+			"\\)"
+			"\"[^>]+>" "\\(?:" s0 "<[^>]+>\\)*" s0 "(" s0
+			;; 4. month
 			"\\([0-9]+\\)"
 			s0 "/" s0
-			;; 6. day
+			;; 5. day
 			"\\([0-9]+\\)"
 			s0 ")" s0
-			;; 7. subject
+			;; 6. subject
 			"\\([^<]+\\)")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 7)
+	     (match-string 6)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
 	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 5))
-	      (string-to-number (match-string 6)))
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 5)))
 	     (concat "<" (match-string 2) "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
@@ -1248,30 +1245,30 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		      (s1 "[\t\n ]+"))
 		  (concat "<a" s1 "href=\""
 			  ;; 1. url
-			  "\\(\\([^\"]+/\\)?"
-			  ;; 3. serial number
+			  "\\(\\(?:[^\"]+/\\)?"
+			  ;; 2. serial number
 			  "\\("
-			  ;; 4. year
+			  ;; 3. year
 			  "\\(20[0-9][0-9]\\)"
-			  ;; 5. month
+			  ;; 4. month
 			  "\\([01][0-9]\\)"
-			  ;; 6. day
+			  ;; 5. day
 			  "\\([0-3][0-9]\\)"
 			  "[0-9a-z]+\\)"
 			  "\\.html\\)"
 			  "\"" s0 ">" s0
-			  ;; 7. subject
+			  ;; 6. subject
 			  "\\([^<]+\\)")))
 	      nil t)
 	(push (shimbun-create-header
 	       0
-	       (match-string 7)
+	       (match-string 6)
 	       shimbun-nikkei-from-address
 	       (shimbun-nikkei-make-date-string
+		(string-to-number (match-string 3))
 		(string-to-number (match-string 4))
-		(string-to-number (match-string 5))
-		(string-to-number (match-string 6)))
-	       (concat "<" (match-string 3) "%" group "."
+		(string-to-number (match-string 5)))
+	       (concat "<" (match-string 2) "%" group "."
 		       shimbun-nikkei-top-level-domain ">")
 	       "" 0 0
 	       (shimbun-nikkei-expand-url (match-string 1) folder))
@@ -1291,7 +1288,8 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"\\(detail\\.cfm\\?relID="
 			;; 2. serial number
 			"\\([^\"]+\\)"
-			"\\)\"" s0 ">" s0
+			"\\)"
+			"\"" s0 ">" s0
 			;; 3. subject
 			"\\([^<]+\\)")))
 	    nil t)
@@ -1340,7 +1338,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"\\.html\\)"
 			"\"" s0 ">" s0
 			;; 6. subject
-			"\\(\\(社説\\|春秋\\)[^<]+\\)")))
+			"\\(\\(?:社説\\|春秋\\)[^<]+\\)")))
 	    nil t)
       (push (shimbun-create-header
 	     0
@@ -1538,13 +1536,13 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 <!--[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-->"
 			   nil t)
     (insert shimbun-nikkei-content-start)
-    (when (re-search-forward "\\((\\([012]?[0-9]:[0-5]?[0-9]\\))[\t\n ]*\\)?\
+    (when (re-search-forward "\\(?:(\\([012]?[0-9]:[0-5]?[0-9]\\))[\t\n ]*\\)?\
 <!--[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-->"
 			     nil t)
-      (if (match-beginning 2)
+      (if (match-beginning 1)
 	  (progn
-	    (goto-char (1+ (match-end 2)))
-	    (let ((new (match-string 2))
+	    (goto-char (1+ (match-end 1)))
+	    (let ((new (match-string 1))
 		  (date (shimbun-header-date header)))
 	      (when (string-match "[012]?[0-9]:[0-5]?[0-9]" date)
 		(shimbun-header-set-date
