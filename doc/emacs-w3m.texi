@@ -3407,9 +3407,14 @@ See also @ref{Nnshimbun} if you are using T-gnus or Nana-gnus.
 
 Emacs-w3m is not supporting VM positively.  It is simply because there
 is no VM user in the emacs-w3m team.  However, don't be pessimistic.
-There is the @file{vm-w3m.el} module in the attic directory of the
-emacs-w3m distribution.  You are a lucky person if it is helpful to you.
-Try it anyhow.  You can find how to use it in the file itself.
+There is the @file{vm-w3m.el} module in the @file{attic} directory of
+the emacs-w3m distribution.  You are a lucky person if it is helpful to
+you.  Try it anyhow.  You can find how to use it in the file itself.
+
+To enable also decoding of HTML mails when yanking them into the reply
+message, apply the patch named @file{vm-7.19.patch} (which is included
+in the @file{attic} directory in the emacs-w3m distribution) to
+@file{vm-reply.el} and re-compile it.
 
 If you want to toggle displaying of images in the presentation buffer
 when you are in any VM buffer, use the following:
