@@ -1,6 +1,6 @@
 ;;; vm-w3m.el --- additional functions to make VM use emacs-w3m for HTML mails
 
-;; Copyright (C) 2003 Katsumi Yamaoka
+;; Copyright (C) 2003, 2005 Katsumi Yamaoka
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -21,10 +21,18 @@
 
 ;; You need to have w3m and emacs-w3m installed for this module to
 ;; work.  Visit <URL:http://emacs-w3m.namazu.org/> for details.
-;; You don't have to change VM at all.  Simply load this module and
-;; you will see HTML mails inlined by emacs-w3m in the VM presentation
-;; buffer.  It was tested with VM 7.17, 7.18 and 7.19.
-
+;; Simply load this module like:
+;;
+;;(require 'vm-w3m)
+;;
+;; and you will see HTML mails inlined by emacs-w3m in the VM
+;; presentation buffer.  It was tested with VM 7.17, 7.18 and 7.19.
+;;
+;; To enable also decoding of HTML mails when yanking them into the
+;; reply message, apply the patch named vm-7.19.patch (which is
+;; included in the attic/ directory in the emacs-w3m distribution) to
+;; vm-reply.el and re-compile it.
+;;
 ;; Please don't complain to the author or the emacs-w3m team, even if
 ;; it becomes impossible to use this module in the future.  There is
 ;; currently no person familiar with VM in the emacs-w3m developers.
@@ -208,5 +216,7 @@ To re-install it, load the vm-w3m module again."
   (ad-unadvise 'vm-mime-can-display-internal)
   (ad-unadvise 'vm-mime-display-internal-text/html)
   (fmakunbound 'vm-mime-display-internal-multipart/related))
+
+(provide 'vm-w3m)
 
 ;;; vm-w3m.el ends here

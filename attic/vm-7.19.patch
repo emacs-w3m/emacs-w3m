@@ -1,0 +1,45 @@
+This patch enables VM to decode yanked html messages in the reply buffer.
+
+--- vm-7.19/vm-reply.el~	2003-08-19 02:17:52 +0000
++++ vm-7.19/vm-reply.el	2005-05-18 07:29:36 +0000
+@@ -308,12 +308,34 @@
+ 				   (car (vm-mm-layout-type (car parts))))
+ 				  (vm-mime-display-internal-text/enriched
+ 				   (car parts)))
+-;; no text/html for now
+-;;				 ((vm-mime-types-match
+-;;				   "text/html"
+-;;				   (car (vm-mm-layout-type (car parts))))
+-;;				  (vm-mime-display-internal-text/html
+-;;				   (car parts)))
++				 ((vm-mime-types-match
++				   "text/html"
++				   (car (vm-mm-layout-type (car parts))))
++				  (prog1
++				      (let (vm-w3m-display-inline-images)
++					(vm-mime-display-internal-text/html
++					 (car parts)))
++				    ;; Remove trailing whitespace.
++				    (let* ((start (text-property-any
++						   (point-min) (point-max)
++						   'text-rendered-by-emacs-w3m
++						   t))
++					   end)
++				      (if start
++					  (save-restriction
++					    (narrow-to-region
++					     start
++					     (or (text-property-not-all
++						  start (point-max)
++						  'text-rendered-by-emacs-w3m
++						  t)
++						 (point-max)))
++					    (goto-char start)
++					    (while (re-search-forward "[\t ]+$"
++								      nil t)
++					      (delete-region
++					       (match-beginning 0)
++					       (match-end 0))))))))
+ 				 ((vm-mime-display-internal-text/plain
+ 				   (car parts) t)))
+ 			   nil
