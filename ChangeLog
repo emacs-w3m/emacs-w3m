@@ -1,3 +1,19 @@
+2005-05-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yahoo.el (shimbun-yahoo): Make it not inherit sb-text.
+	(shimbun-yahoo-groups-table): Rename from
+	shimbun-yahoo-groups-alist; add Japanese group names.
+	(shimbun-yahoo-from-address): Make it unreachable.
+	(shimbun-index-url): Follow the shimbun-yahoo-groups-table change.
+	(shimbun-get-headers): Improve regexp; make the from address
+	unreachable; improve the uniqueness of Message-IDs; sort headers
+	by date.
+	(shimbun-make-contents): New function.
+
+	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Exclude
+	trailing whitespace in the url string; guess the content type by
+	the filename if it seems to be specified mistakenly.
+
 2005-05-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* attic/vm-w3m.el (vm-w3m): Provide the feature.

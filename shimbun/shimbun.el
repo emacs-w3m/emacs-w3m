@@ -547,15 +547,24 @@ image parts, and returns an alist of URLs and image entities."
 	  (delete-region (match-beginning 0) (match-end 0))))
       (setq start (match-beginning 1)
 	    end (match-end 1)
-	    url (shimbun-expand-url (or (match-string 2)
-					(match-string 3)
-					(match-string 4))
-				    base-url))
+	    url (or (match-string 2) (match-string 3) (match-string 4)))
+      (setq url (shimbun-expand-url
+		 (if (string-match "[\t\n\f\r ]+\\'" url)
+		     (substring url 0 (match-beginning 0))
+		   url)
+		 base-url))
       (unless (setq img (assoc url images))
 	(with-temp-buffer
 	  (set-buffer-multibyte nil)
 	  (setq type (shimbun-retrieve-url url nil t base-url))
-	  (when (and type (string-match "\\`image/" type))
+	  (when (or (and type (string-match "\\`image/" type))
+		    ;; headlines.yahoo.co.jp often specifies it mistakenly.
+		    (and (string-match "\\.\\(gif\\|jpe?g\\|png\\)\\'" url)
+			 (setq type (cdr (assoc (match-string 1 url)
+						'(("gif" . "image/gif")
+						  ("jpeg" . "image/jpeg")
+						  ("jpg" . "image/jpeg")
+						  ("png" . "image/png")))))))
 	    (push (setq img (cons url
 				  (shimbun-make-image-entity
 				   type
