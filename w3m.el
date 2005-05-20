@@ -2201,6 +2201,8 @@ nil value means it has not been initialized.")
      "----" ;; separator
      ["Close This Session" w3m-delete-buffer
       (> (safe-length (w3m-list-buffers)) 1)]
+     ["Close Other Sessions" w3m-delete-other-buffers
+      (> (safe-length (w3m-list-buffers)) 1)]
      ) ;; end session
     ["Download This URL" w3m-download-this-url t]
     ["Download to..." w3m-download t]
@@ -6315,7 +6317,8 @@ as if the folder command of MH performs with the -pack option."
       (when w3m-use-form
 	(w3m-form-kill-buffer buffer))))
   (run-hooks 'w3m-delete-buffer-hook)
-  (w3m-select-buffer-update))
+  (w3m-select-buffer-update)
+  (w3m-force-window-update))
 
 (defvar w3m-lynx-like-map nil
   "Lynx-like keymap used in emacs-w3m buffers.")
