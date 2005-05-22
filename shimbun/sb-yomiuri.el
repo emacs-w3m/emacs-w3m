@@ -367,93 +367,101 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 (defun shimbun-yomiuri-prepare-article (shimbun header)
   (shimbun-strip-cr)
   (goto-char (point-min))
-  ;; Remove trailing whitespace.
-  (while (re-search-forward "[\t ]+$" nil t)
-    (delete-region (match-beginning 0) (match-end 0)))
-  (goto-char (point-min))
-  (let ((case-fold-search t))
-    ;; Correct Date header.
-    (when (re-search-forward
-	   (eval-when-compile
-	     (let ((s0 "[\t\n ]*")
-		   (s1 "[\t\n ]+"))
-	       (concat
-		"<!--" s0 "//" s1 "date_start" s1 "//" s0 "-->" s0
-		;; 1. year
-		"\\(20[0-9][0-9]\\)"
-		s0 "年" s0
-		;; 2. month
-		"\\([01]?[0-9]\\)"
-		s0 "月" s0
-		;; 3. day
-		"\\([0-3]?[0-9]\\)"
-		s0 "日" s0
-		;; 4. hour
-		"\\([012]?[0-9]\\)"
-		s0 "時" s0
-		;; 5. minute
-		"\\([0-5]?[0-9]\\)"
-		s0 "分" s0 "<!--" s0 "//" s1 "date_end" s1 "//" s0 "-->")))
-	   nil t)
-      (shimbun-header-set-date
-       header
-       (shimbun-make-date-string
-	(string-to-number (match-string 1))
-	(string-to-number (match-string 2))
-	(string-to-number (match-string 3))
-	(format "%02d:%02d"
-		(string-to-number (match-string 4))
-		(string-to-number (match-string 5)))))
-      (goto-char (point-min)))
-    ;; Remove the フォトニュース, the 写真の拡大 buttons, etc.
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+")
-		    (n1 "[^\t\n >]+"))
-		(concat
-		 s0
-		 "\\(?:"
-		 "<a\\(?:" s1 n1 "\\)*" s1
-		 "\\(?:class=\"photo-pn\"\\|target=\"photoWin\"\\)"
-		 "\\(?:" s1 n1 "\\)*" s0 ">"
-		 "\\|"
-		 "<img\\(?:" s1 n1 "\\)*" s1
-		 "\\(?:alt=\"フォトニュース\"\\|class=\"photo-el\"\\)"
-		 "\\(?:" s1 n1 "\\)*" s0 ">"
-		 "\\|"
-		 "<div" s1
-		 "class=\"enlargedphoto\">\\(?:[^<>]+\\)?"
-		 "<img" s1 "[^>]+>" s0 "</div>"
-		 "\\|"
-		 "<div" s1 "class=\"[^\"]+\">" s0
-		 "<img\\(?:" s1 n1 "\\)*" s1 "src=\"/g/d\\.gif\""
-		 "\\(?:" s1 n1 "\\)*" s0 ">" s0 "</div>"
-		 "\\|"
-		 s0 "rectangle(\"[^\"]+\");" s0
-		 "\\)" s0)))
-	    nil t)
-      (delete-region (match-beginning 0) (match-end 0)))
-    (goto-char (point-min))
-    ;; Replace 写真の拡大 with 写真.
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s1 "[\t\n ]+")
-		    (n1 "[^\t\n >]+"))
-		(concat "<img\\(?:" s1 n1 "\\)*" s1
-			"alt=\"写真\\(の拡大\\)\"")))
-	    nil t)
-      (delete-region (match-beginning 1) (match-end 1)))
-    (goto-char (point-min))
-    ;; Break continuous lines in editorial articles.
-    (when (and (string-equal "editorial"
-			     (shimbun-current-group-internal shimbun))
-	       (string-match " \\(?:よみうり寸評\\|編集手帳\\)\\'"
-			     (shimbun-header-subject header 'no-encode)))
+  (let ((case-fold-search t)
+	start)
+    (when (and (re-search-forward shimbun-yomiuri-content-start nil t)
+	       (progn
+		 (setq start (match-end 0))
+		 (re-search-forward shimbun-yomiuri-content-end nil t)))
+      (narrow-to-region start (match-beginning 0))
       (goto-char (point-min))
-      (while (search-forward "◆" nil t)
-	(replace-match "。<br><br>　"))
-      (goto-char (point-min)))))
+      ;; Remove trailing whitespace.
+      (while (re-search-forward "[\t ]+$" nil t)
+	(delete-region (match-beginning 0) (match-end 0)))
+      (goto-char (point-min))
+      ;; Correct Date header.
+      (when (re-search-forward
+	     (eval-when-compile
+	       (let ((s0 "[\t\n ]*")
+		     (s1 "[\t\n ]+"))
+		 (concat
+		  "<!--" s0 "//" s1 "date_start" s1 "//" s0 "-->" s0
+		  ;; 1. year
+		  "\\(20[0-9][0-9]\\)"
+		  s0 "年" s0
+		  ;; 2. month
+		  "\\([01]?[0-9]\\)"
+		  s0 "月" s0
+		  ;; 3. day
+		  "\\([0-3]?[0-9]\\)"
+		  s0 "日" s0
+		  ;; 4. hour
+		  "\\([012]?[0-9]\\)"
+		  s0 "時" s0
+		  ;; 5. minute
+		  "\\([0-5]?[0-9]\\)"
+		  s0 "分" s0 "<!--" s0 "//" s1 "date_end" s1 "//" s0 "-->")))
+	     nil t)
+	(shimbun-header-set-date
+	 header
+	 (shimbun-make-date-string
+	  (string-to-number (match-string 1))
+	  (string-to-number (match-string 2))
+	  (string-to-number (match-string 3))
+	  (format "%02d:%02d"
+		  (string-to-number (match-string 4))
+		  (string-to-number (match-string 5)))))
+	(goto-char (point-min)))
+      ;; Remove the フォトニュース, the 写真の拡大 buttons, etc.
+      (while (re-search-forward
+	      (eval-when-compile
+		(let ((s0 "[\t\n ]*")
+		      (s1 "[\t\n ]+")
+		      (n1 "[^\t\n >]+"))
+		  (concat
+		   s0
+		   "\\(?:"
+		   "<a\\(?:" s1 n1 "\\)*" s1
+		   "\\(?:class=\"photo-pn\"\\|target=\"photoWin\"\\)"
+		   "\\(?:" s1 n1 "\\)*" s0 ">"
+		   "\\|"
+		   "<img\\(?:" s1 n1 "\\)*" s1
+		   "\\(?:alt=\"フォトニュース\"\\|class=\"photo-el\"\\)"
+		   "\\(?:" s1 n1 "\\)*" s0 ">"
+		   "\\|"
+		   "<div" s1
+		   "class=\"enlargedphoto\">\\(?:[^<>]+\\)?"
+		   "<img" s1 "[^>]+>" s0 "</div>"
+		   "\\|"
+		   "<div" s1 "class=\"[^\"]+\">" s0
+		   "<img\\(?:" s1 n1 "\\)*" s1 "src=\"/g/d\\.gif\""
+		   "\\(?:" s1 n1 "\\)*" s0 ">" s0 "</div>"
+		   "\\|"
+		   s0 "rectangle(\"[^\"]+\");" s0
+		   "\\)" s0)))
+	      nil t)
+	(delete-region (match-beginning 0) (match-end 0)))
+      (goto-char (point-min))
+      ;; Replace 写真の拡大 with 写真.
+      (while (re-search-forward
+	      (eval-when-compile
+		(let ((s1 "[\t\n ]+")
+		      (n1 "[^\t\n >]+"))
+		  (concat "<img\\(?:" s1 n1 "\\)*" s1
+			  "alt=\"写真\\(の拡大\\)\"")))
+	      nil t)
+	(delete-region (match-beginning 1) (match-end 1)))
+      (goto-char (point-min))
+      ;; Break continuous lines in editorial articles.
+      (when (and (string-equal "editorial"
+			       (shimbun-current-group-internal shimbun))
+		 (string-match " \\(?:よみうり寸評\\|編集手帳\\)\\'"
+			       (shimbun-header-subject header 'no-encode)))
+	(goto-char (point-min))
+	(while (search-forward "◆" nil t)
+	  (replace-match "。<br><br>　")))
+      (widen)))
+  (goto-char (point-min)))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-yomiuri)
 						   header)

@@ -1,3 +1,8 @@
+2005-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-prepare-article): Narrow
+	to the region in which there seems to be the article contents.
+
 2005-05-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Rewrite;
