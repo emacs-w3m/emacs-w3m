@@ -32,8 +32,9 @@
 ;;; Code:
 
 (require 'shimbun)
+(require 'sb-text)
 
-(luna-define-class shimbun-yahoo (shimbun) ())
+(luna-define-class shimbun-yahoo (shimbun-text) ())
 
 (defvar shimbun-yahoo-url "http://headlines.yahoo.co.jp/")
 
