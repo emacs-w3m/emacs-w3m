@@ -1,5 +1,32 @@
 2005-05-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-sankei.el (shimbun-clear-contents): Use
+	shimbun-content-start-internal instead of
+	shimbun-sankei-content-start.
+
+	* shimbun/sb-tdiary.el (shimbun-make-contents): Use
+	shimbun-content-start-internal instead of
+	shimbun-tdiary-content-start.
+
+	* shimbun/sb-welt-de.el (shimbun-clear-contents): Use
+	shimbun-content-start-internal instead of
+	shimbun-welt-de-content-start.
+
+	* shimbun/sb-x51.el (shimbun-x51-prepare-article): Use
+	shimbun-content-start-internal instead of
+	shimbun-x51-content-start; use shimbun-content-end-internal
+	instead of shimbun-x51-content-end.
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-prepare-article): Use
+	shimbun-content-start-internal instead of
+	shimbun-yomiuri-content-start; use shimbun-content-end-internal
+	instead of shimbun-yomiuri-content-end.
+
+	* shimbun/sb-zeit-de.el (shimbun-make-contents): Use
+	shimbun-content-start-internal instead of
+	shimbun-zeit-de-content-start; use shimbun-content-end-internal
+	instead of shimbun-zeit-de-content-end.
+
 	* shimbun/sb-yahoo.el (shimbun-yahoo): Inherit sb-text.
 
 2005-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>

@@ -183,9 +183,11 @@
 (defun shimbun-x51-prepare-article (shimbun header)
   "Adjust a date header if there's a correct information available."
   (let* ((case-fold-search t)
-	 (start (re-search-forward shimbun-x51-content-start nil t))
+	 (start (re-search-forward (shimbun-content-start-internal shimbun)
+				   nil t))
 	 (end (and start
-		   (re-search-forward shimbun-x51-content-end nil t)
+		   (re-search-forward (shimbun-content-end-internal shimbun)
+				       nil t)
 		   (prog1
 		       (match-beginning 0)
 		     (goto-char start)))))

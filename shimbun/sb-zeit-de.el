@@ -61,9 +61,11 @@
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-zeit-de)
 						   header)
   (let* ((case-fold-search t)
-	 (start (re-search-forward shimbun-zeit-de-content-start nil t))
+	 (start (re-search-forward (shimbun-content-start-internal shimbun)
+				   nil t))
 	 (end (and start
-		   (re-search-forward shimbun-zeit-de-content-end nil t)
+		   (re-search-forward (shimbun-content-end-internal shimbun)
+				      nil t)
 		   (prog1
 		       (match-beginning 0)
 		     (goto-char start)))))

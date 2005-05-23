@@ -1,6 +1,6 @@
 ;;; sb-tdiary.el --- shimbun backend for tDiary
 
-;; Copyright (C) 2003, 2004 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2003, 2004, 2005 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -143,7 +143,7 @@ URL is the URL for TDIARY access point of the group."
     (when (string-match "\\(p[0-9]+\\)\." id)
       (setq id (substring id (match-beginning 1) (match-end 1)))
       (re-search-forward (concat "<a name=\"" id) nil t)
-      (and (search-backward shimbun-tdiary-content-start nil t)
+      (and (search-backward (shimbun-content-start-internal shimbun) nil t)
 	   (goto-char (match-beginning 0))))
     (when (and (re-search-forward (shimbun-content-start-internal shimbun)
 				  nil t)
