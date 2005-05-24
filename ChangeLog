@@ -1,3 +1,66 @@
+2005-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi-html.el: Don't require shimbun.
+	(shimbun-asahi-html-prefer-text-plain): New constant.
+	(shimbun-asahi-html-content-start): Move to sb-asahi.el.
+	(shimbun-asahi-html-content-end): Ditto.
+	(shimbun-make-contents): Remove.
+
+	* shimbun/sb-asahi.el (shimbun-asahi): Don't inherit sb-text.
+	(shimbun-asahi-prefer-text-plain): New variable.
+	(shimbun-asahi-content-start): Move from sb-asahi-html.el.
+	(shimbun-asahi-content-end): Ditto.
+	(shimbun-asahi-text-content-start): Rename from
+	shimbun-asahi-content-start.
+	(shimbun-asahi-text-content-end): Rename from
+	shimbun-asahi-content-end.
+	(initialize-instance): Set the shimbun class variables
+	content-start and content-end for the html articles.
+
+	* shimbun/sb-text.el (shimbun-make-text-contents): New function
+	extracted from shimbun-make-contents.
+	(shimbun-make-contents): Use it.
+
+	* shimbun/sb-yahoo.el (shimbun-yahoo): Don't inherit sb-text.
+	(shimbun-yahoo-prefer-text-plain): New variable.
+	(shimbun-make-contents): Narrow to the region in which there seems
+	to be the article contents; fix the picture tag; correct the date
+	header; correct the position of the footer; break long Japanese
+	lines in html articles.
+
+	* shimbun/sb-yomiuri-html.el Don't require shimbun.
+	(shimbun-yomiuri-html-prefer-text-plain): New constant.
+	(shimbun-yomiuri-html-content-start): Move to sb-yomiuri.el.
+	(shimbun-yomiuri-html-content-end): Ditto.
+	(shimbun-make-contents): Remove.
+
+	* shimbun/sb-yomiuri.el:: Don't inherit sb-text.
+	(shimbun-yomiuri-prefer-text-plain): New variable.
+	(shimbun-yomiuri-content-start): Move from sb-yomiuri-html.el.
+	(shimbun-yomiuri-content-end): Ditto.
+	(shimbun-yomiuri-text-content-start): Rename from
+	shimbun-yomiuri-content-start.
+	(shimbun-yomiuri-text-content-end): Rename from
+	shimbun-yomiuri-content-end.
+	(initialize-instance): Set the shimbun class variables
+	content-start and content-end for the html articles.
+	(shimbun-yomiuri-prepare-article): Fix misplaced goto-char.
+
+	* shimbun/shimbun.el: Add the shimbun class variables
+	prefer-text-plain, text-content-start and text-content-end.
+	(shimbun-content-start-internal): Redefine it so that it may return
+	content-start or text-content-start according to prefer-text-plain.
+	(shimbun-content-end-internal): Redefine it so that it may return
+	content-end or text-content-end according to prefer-text-plain.
+	(shimbun-attributes): Add prefer-text-plain, text-content-start
+	and text-content-end.
+	(shimbun-open): Share content-start and text-content-start, and
+	content-end and text-content-end if the other one is void.
+	(shimbun-make-html-contents): Redefine it as a normal function.
+	(shimbun-make-text-contents): Autoload sb-text for it.
+	(shimbun-make-contents): Run one of shimbun-make-html-contents and
+	shimbun-make-text-contents according to prefer-text-plain.
+
 2005-05-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-sankei.el (shimbun-clear-contents): Use

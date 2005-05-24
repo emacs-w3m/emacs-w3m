@@ -34,10 +34,11 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-asahi
-		   (shimbun-japanese-newspaper shimbun-text) ())
+(luna-define-class shimbun-asahi (shimbun-japanese-newspaper shimbun) ())
+
+(defvar shimbun-asahi-prefer-text-plain t
+  "*Non-nil means prefer text/plain articles rather than html articles.")
 
 (defvar shimbun-asahi-top-level-domain "asahi.com"
   "Name of the top level domain for the Asahi shimbun.")
@@ -344,10 +345,19 @@ search result in order of [0]a url, [1,2]a serial number, [3]a subject,
 extra keyword.")
 
 (defvar shimbun-asahi-content-start
-  "<!--[\t\n ]*Start of Kiji[\t\n ]*-->\
+  "<!--[\t\n ]*Start of \\(Kiji\\|photo\\)[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-content-end
+  "<!--[\t\n ]*End of Kiji[\t\n ]*-->\
+\\|<!--[\t\n ]*End of related link[\t\n ]*-->\
+\\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
+
+(defvar shimbun-asahi-text-content-start
+  "<!--[\t\n ]*Start of Kiji[\t\n ]*-->\
+\\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
+
+(defvar shimbun-asahi-text-content-end
   "<!--[\t\n ]*End of Kiji[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
 
@@ -366,6 +376,8 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
   ;; successor `shimbun-asahi-html'.
   (shimbun-set-x-face-alist-internal shimbun shimbun-asahi-x-face-alist)
   (shimbun-set-expiration-days-internal shimbun shimbun-asahi-expiration-days)
+  (shimbun-set-content-start-internal shimbun shimbun-asahi-content-start)
+  (shimbun-set-content-end-internal shimbun shimbun-asahi-content-end)
   shimbun)
 
 (luna-define-method shimbun-groups ((shimbun shimbun-asahi))

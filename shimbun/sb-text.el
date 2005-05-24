@@ -1,6 +1,7 @@
 ;;; sb-text.el -- shimbun backend class for text content -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
@@ -91,8 +92,7 @@
     (delete-region (point) (point-max)))
   (insert "\n"))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-text)
-					   header)
+(defun shimbun-make-text-contents (shimbun header)
   (shimbun-header-insert-and-buffer-string
    shimbun header nil
    ;; When cleaning has been succeeded, this article is treated as a
@@ -101,6 +101,10 @@
    (if (shimbun-clear-contents shimbun header)
        (shimbun-shallow-rendering)
      t)))
+
+(luna-define-method shimbun-make-contents ((shimbun shimbun-text)
+					   header)
+  (shimbun-make-text-contents shimbun header))
 
 (provide 'sb-text)
 

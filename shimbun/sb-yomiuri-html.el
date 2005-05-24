@@ -25,25 +25,19 @@
 
 ;;; Commentary:
 
+;; This module is now semi-obsolete.  You can use sb-yomiuri.el to read
+;; html articles by putting the following line in your init file.
+;;
+;;(setq shimbun-yomiuri-prefer-text-plain nil)
+
 ;;; Code:
 
-(require 'shimbun)
 (require 'sb-yomiuri)
 
 (luna-define-class shimbun-yomiuri-html (shimbun-yomiuri) ())
 
-(defvar shimbun-yomiuri-html-content-start
-  "\n<!--// article_start //-->\n\
-\\|\n<!-- ▼写真テーブル▼ -->\n\
-\\|\n<!--  honbun start  -->\n")
-
-(defvar shimbun-yomiuri-html-content-end
-  "\n<!--// article_end //-->\n\\|\n<!--  honbun end  -->\n")
-
-(luna-define-method shimbun-make-contents ((shimbun shimbun-yomiuri-html)
-					   header)
-  (shimbun-yomiuri-prepare-article shimbun header)
-  (shimbun-make-html-contents shimbun header))
+(defconst shimbun-yomiuri-html-prefer-text-plain nil
+  "Non-nil means prefer text/plain articles rather than html articles.")
 
 (provide 'sb-yomiuri-html)
 

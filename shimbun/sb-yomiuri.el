@@ -33,10 +33,11 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-yomiuri
-		   (shimbun-japanese-newspaper shimbun-text) ())
+(luna-define-class shimbun-yomiuri (shimbun-japanese-newspaper shimbun) ())
+
+(defvar shimbun-yomiuri-prefer-text-plain t
+  "*Non-nil means prefer text/plain articles rather than html articles.")
 
 (defvar shimbun-yomiuri-top-level-domain "yomiuri.co.jp"
   "Name of the top level domain for the Yomiuri On-line.")
@@ -187,10 +188,17 @@ of [0]url, [1,2]serial numbers, [3]year, [4]subject, [5]month, [6]day,
 \[7]hour:minute, [8]ja month, [9]ja day and [10]subgroup.")
 
 (defvar shimbun-yomiuri-content-start
-  "\n<!--// article_start //-->\n\\|\n<!--  honbun start  -->\n")
+  "\n<!--// article_start //-->\n\
+\\|\n<!-- ▼写真テーブル▼ -->\n\
+\\|\n<!--  honbun start  -->\n")
 
 (defvar shimbun-yomiuri-content-end
   "\n<!--// article_end //-->\n\\|\n<!--  honbun end  -->\n")
+
+(defvar shimbun-yomiuri-text-content-start
+  "\n<!--// article_start //-->\n\\|\n<!--  honbun start  -->\n")
+
+(defvar shimbun-yomiuri-text-content-end shimbun-yomiuri-content-end)
 
 (defvar shimbun-yomiuri-x-face-alist
   '(("default" . "X-Face: #sUhc'&(fVr$~<rt#?PkH,u-.fV(>y)\
@@ -200,7 +208,7 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 (defvar shimbun-yomiuri-expiration-days 7)
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-yomiuri)
-						 &rest init-args)
+						&rest init-args)
   (shimbun-set-server-name-internal shimbun "讀売新聞")
   (shimbun-set-from-address-internal shimbun "nobody@example.com")
   ;; To share class variables between `shimbun-yomiuri' and its
@@ -208,6 +216,8 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
   (shimbun-set-x-face-alist-internal shimbun shimbun-yomiuri-x-face-alist)
   (shimbun-set-expiration-days-internal shimbun
 					shimbun-yomiuri-expiration-days)
+  (shimbun-set-content-start-internal shimbun shimbun-yomiuri-content-start)
+  (shimbun-set-content-end-internal shimbun shimbun-yomiuri-content-end)
   shimbun)
 
 (luna-define-method shimbun-groups ((shimbun shimbun-yomiuri))
@@ -459,9 +469,9 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 			       (shimbun-current-group-internal shimbun))
 		 (string-match " \\(?:よみうり寸評\\|編集手帳\\)\\'"
 			       (shimbun-header-subject header 'no-encode)))
-	(goto-char (point-min))
 	(while (search-forward "◆" nil t)
-	  (replace-match "。<br><br>　")))
+	  (replace-match "。<br><br>　"))
+	(goto-char (point-min)))
       (widen)))
   (goto-char (point-min)))
 

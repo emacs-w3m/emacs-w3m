@@ -25,26 +25,19 @@
 
 ;;; Commentary:
 
+;; This module is now semi-obsolete.  You can use sb-asahi.el to read
+;; html articles by putting the following line in your init file.
+;;
+;;(setq shimbun-asahi-prefer-text-plain nil)
+
 ;;; Code:
 
-(require 'shimbun)
 (require 'sb-asahi)
 
 (luna-define-class shimbun-asahi-html (shimbun-asahi) ())
 
-(defvar shimbun-asahi-html-content-start
-  "<!--[\t\n ]*Start of \\(Kiji\\|photo\\)[\t\n ]*-->\
-\\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
-
-(defvar shimbun-asahi-html-content-end
-  "<!--[\t\n ]*End of Kiji[\t\n ]*-->\
-\\|<!--[\t\n ]*End of related link[\t\n ]*-->\
-\\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
-
-(luna-define-method shimbun-make-contents ((shimbun shimbun-asahi-html)
-					   header)
-  (shimbun-asahi-prepare-article shimbun header)
-  (shimbun-make-html-contents shimbun header))
+(defconst shimbun-asahi-html-prefer-text-plain nil
+  "Non-nil means prefer text/plain articles rather than html articles.")
 
 (provide 'sb-asahi-html)
 

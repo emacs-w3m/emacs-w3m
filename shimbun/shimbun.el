@@ -5,7 +5,8 @@
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
-;;         Yuuichi Teranishi  <teranisi@gohome.org>
+;;         Yuuichi Teranishi  <teranisi@gohome.org>,
+;;         Katsumi Yamaoka    <yamaoka@jpl.org>
 ;; Keywords: news
 
 ;; This file is the main part of shimbun.
@@ -84,8 +85,40 @@
 			  x-face x-face-alist
 			  url coding-system from-address
 			  content-start content-end
-			  expiration-days server-name))
-  (luna-define-internal-accessors 'shimbun))
+			  expiration-days server-name
+			  prefer-text-plain
+			  text-content-start text-content-end))
+  (luna-define-internal-accessors 'shimbun)
+
+  ;; Modify the accessors for `content-start' and `content-end'.
+  (let* ((class (luna-find-class 'shimbun))
+	 (html (luna-class-slot-index class 'content-start))
+	 (text (luna-class-slot-index class 'text-content-start)))
+    (eval
+     `(defmacro shimbun-content-start-internal (shimbun)
+	"Return the `content-start' value according to SHIMBUN."
+	(list 'if (list 'shimbun-prefer-text-plain-internal shimbun)
+	      (list 'or
+		    (list 'aref shimbun ,text)
+		    (list 'aref shimbun ,html))
+	      (list 'or
+		    (list 'aref shimbun ,html)
+		    (list 'aref shimbun ,text)))))
+    (setq html (luna-class-slot-index class 'content-end)
+	  text (luna-class-slot-index class 'text-content-end))
+    (eval
+     `(defmacro shimbun-content-end-internal (shimbun)
+	"Return the `content-end' value according to SHIMBUN."
+	(list 'if (list 'shimbun-prefer-text-plain-internal shimbun)
+	      (list 'or
+		    (list 'aref shimbun ,text)
+		    (list 'aref shimbun ,html))
+	      (list 'or
+		    (list 'aref shimbun ,html)
+		    (list 'aref shimbun ,text))))))
+  ;; Remove useless accessors.
+  (fmakunbound 'shimbun-text-content-start-internal)
+  (fmakunbound 'shimbun-text-content-end-internal))
 
 (defgroup shimbun nil
   "shimbun - the backend library to read web newspapers."
@@ -720,31 +753,34 @@ you want to use no database."
 
 (defconst shimbun-attributes
   '(url groups coding-system server-name from-address
-	content-start content-end x-face-alist expiration-days))
+	content-start content-end x-face-alist expiration-days
+	prefer-text-plain text-content-start text-content-end))
 
 (defun shimbun-open (server &optional mua)
   "Open a shimbun for SERVER.
 Optional MUA is a `shimbun-mua' instance."
-  (let ((load-path (append shimbun-server-additional-path load-path)))
-    (require (intern (concat "sb-" server))))
-  (let (url groups coding-system server-name from-address
-	    content-start content-end x-face-alist shimbun expiration-days)
-    (dolist (attr shimbun-attributes)
-      (set attr
-	   (symbol-value (intern-soft
-			  (concat "shimbun-" server "-" (symbol-name attr))))))
-    (setq shimbun (luna-make-entity (intern (concat "shimbun-" server))
-				    :mua mua
-				    :server server
-				    :server-name server-name
-				    :url url
-				    :groups groups
-				    :coding-system coding-system
-				    :from-address from-address
-				    :content-start content-start
-				    :content-end content-end
-				    :expiration-days expiration-days
-				    :x-face-alist x-face-alist))
+  (let ((load-path (append shimbun-server-additional-path load-path))
+	rest subst shimbun)
+    (require (intern (concat "sb-" server)))
+    (setq shimbun
+	  (apply
+	   'luna-make-entity (intern (concat "shimbun-" server))
+	   :mua mua :server server
+	   (dolist (attr shimbun-attributes (nreverse rest))
+	     (push (intern (format ":%s" attr)) rest)
+	     (push (if (setq subst (assq attr
+					 '((content-start . text-content-start)
+					   (content-end . text-content-end)
+					   (text-content-start . content-start)
+					   (text-content-end . content-end))))
+		       (or (symbol-value (intern-soft (format "shimbun-%s-%s"
+							      server attr)))
+			   (symbol-value (intern-soft (format "shimbun-%s-%s"
+							      server
+							      (cdr subst)))))
+		     (symbol-value (intern-soft (format "shimbun-%s-%s"
+							server attr))))
+		   rest))))
     (when mua
       (shimbun-mua-set-shimbun-internal mua shimbun))
     shimbun))
@@ -878,7 +914,7 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
   "Return a content string of SHIMBUN article using current buffer content.
 HEADER is a header structure obtained via `shimbun-headers'.")
 
-(defsubst shimbun-make-html-contents (shimbun header)
+(defun shimbun-make-html-contents (shimbun header)
   (when (shimbun-clear-contents shimbun header)
     (goto-char (point-min))
     (insert "<html>\n<head>\n<base href=\""
@@ -890,8 +926,13 @@ HEADER is a header structure obtained via `shimbun-headers'.")
   (shimbun-make-mime-article shimbun header)
   (buffer-string))
 
+(eval-and-compile
+  (autoload 'shimbun-make-text-contents "sb-text"))
+
 (luna-define-method shimbun-make-contents ((shimbun shimbun) header)
-  (shimbun-make-html-contents shimbun header))
+  (if (shimbun-prefer-text-plain-internal shimbun)
+      (shimbun-make-text-contents shimbun header)
+    (shimbun-make-html-contents shimbun header)))
 
 (luna-define-generic shimbun-clear-contents (shimbun header)
   "Clear a content in this current buffer for an article of SHIMBUN.
