@@ -4366,12 +4366,19 @@ asahi.sports.column asahi.sports.football asahi.sports.spo asahi.tenjin
 asahi.travel asahi.travel.kaido asahi.travel.matsuri
 asahi.travel.zeitaku asahi.wakamiya
 
-These backends generates articles including only texts; in other hands,
-@samp{asahi-html} generates MIME articles that include texts and
-photographs.  In order to use the latter backend, specify
-asahi-html.business instead of asahi.business as the group name.
-Especially, it is recommended to use @samp{asahi-html} in order to see
-the groups in which there are pictures.
+Those groups generate articles including only text by default.  If you
+would like to make them generate HTML articles that include not only
+text but also photographs, add the following line to your
+@file{~/.emacs} file:
+
+@lisp
+(setq shimbun-asahi-prefer-text-plain nil)
+@end lisp
+
+On the other hand, you can also use the @samp{asahi-html} back end to
+generate HTML articles.  In order to use it, specify
+@samp{asahi-html.business} instead of @samp{asahi.business} as the group
+name for example.
 
 @item @uref{http://mytown.asahi.com/, Asahi Shimbun}
 asahi-mytown.(hokkaido@dots{}okinawa) asahi-mytown.usa
@@ -4411,7 +4418,19 @@ yomiuri.atmoney yomiuri.entertainment yomiuri.editorial yomiuri.kyoiku
 yomiuri.national yomiuri.obit yomiuri.politics yomiuri.science
 yomiuri.sports yomiuri.world
 
-The backend, @samp{yomiuri-html}, is also supported.
+Those groups generate articles including only text by default.  If you
+would like to make them generate HTML articles that include not only
+text but also photographs, add the following line to your
+@file{~/.emacs} file:
+
+@lisp
+(setq shimbun-yomiuri-prefer-text-plain nil)
+@end lisp
+
+On the other hand, you can also use the @samp{yomiuri-html} back end to
+generate HTML articles.  In order to use it, specify
+@samp{yomiuri-html.atmoney} instead of @samp{yomiuri.atmoney} as the
+group name for example.
 
 @item @uref{http://www.sankei.co.jp/, Sankei Shimbun}
 sankei.shakai sankei.sports sankei.keizai sankei.seiji sankei.kokusai
@@ -4511,6 +4530,15 @@ yahoo.market yahoo.stock yahoo.industry yahoo.international
 yahoo.entertainment yahoo.sports yahoo.computer yahoo.hokkaido
 yahoo.tohoku yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
 yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
+
+Those groups generate articles including only text by default.  If you
+would like to make them generate HTML articles that include not only
+text but also photographs, add the following line to your
+@file{~/.emacs} file:
+
+@lisp
+(setq shimbun-yahoo-prefer-text-plain nil)
+@end lisp
 
 @item @uref{http://japan.zdnet.com/, ZDNet Japan}
 zdnet-jp.news zdnet-jp.news.network zdnet-jp.news.hardware
@@ -5070,6 +5098,7 @@ module.
 * Getting web page and header information::
 * Displaying an article::
 * Inheriting shimbun module::
+* Making text/plain articles::
 * Coding convention of Shimbun::
 @end menu
 
@@ -5333,6 +5362,11 @@ module insert (i) header information to top of the buffer, (ii)
 (iii) @samp{</body>} and @samp{</html>} to end of the buffer.  MUA
 displays an article as a HTML mail.
 
+@quotation
+Not only HTML articles, but also articles in the @samp{text/plain}
+format can be generated.  @xref{Making text/plain articles}.
+@end quotation
+
 If you don't want to process an article, you don't have to define
 @code{shimbun-make-contents} in the @file{sb-foobar.el} module.
 
@@ -5419,7 +5453,6 @@ If you use the @file{sb-mailman.el} module, write the following S
 expressions to the top of the @file{sb-foobar.el} file:
 
 @lisp
-(require 'shimbun)
 (require 'sb-mailman)
 (luna-define-class shimbun-foobar (shimbun-mailman) ())
 @end lisp
@@ -5444,6 +5477,60 @@ localized.
 If you want to read via @samp{shimbun} a web site that uses localized
 mailing list manager, you may have to overwrite some methods in the
 parent module.
+
+@node Making text/plain articles
+@subsection Making text/plain articles
+
+Even if the MUA is reinforced by emacs-w3m so as to be able to read HTML
+articles, @samp{text/plain} articles might be more convenient in some
+cases.  To make the @samp{sb-foobar} module generate @samp{text/plain}
+articles rather than @samp{text/html} articles, there are two ways to do
+that.
+
+@itemize @bullet
+@item
+The one is to make the @samp{sb-foobar} module inherit
+(@pxref{Inheriting shimbun module}) the @samp{sb-text} module.  Here's
+an example you may put in the beginning of the @samp{sb-foobar} module.
+
+@lisp
+(require 'sb-text)
+(luna-define-class shimbun-foobar (shimbun-text) ())
+@end lisp
+
+The @samp{sb-text} module provides the @code{shimbun-make-contents}
+method which generates the articles in the @samp{text/plain} format.
+This will be useful for the @samp{shimbun} modules handling the web
+sites which put up only text articles.
+
+@item
+The other is to set the @code{shimbun-foobar-prefer-text-plain} variable
+to non-@code{nil}.  This makes the @code{shimbun-make-contents} method
+generate the articles in the @samp{text/plain} format (actually, it uses
+the functions provided by the @samp{sb-text} module).  Note that this is
+effective only to the modules which inherit the default
+@code{shimbun-make-contents} method (especially the modules which
+inherit the @samp{sb-text} module are not affected).  The advantage of
+this way is that users can easily switch @samp{text/plain} articles and
+@samp{text/html} articles.
+
+The default value for the @code{shimbun-foobar-prefer-text-plain}
+variable is @code{nil} if it is not defined.  So, it defaults to
+@code{nil} in every @samp{shimbun} module except for the modules
+@file{sb-asahi.el}, @file{sb-yahoo.el} and @file{sb-yomiuri.el}.
+
+In addition, you can use the variables
+@code{shimbun-foobar-text-content-start} and
+@code{shimbun-foobar-text-content-end} instead of
+@code{shimbun-foobar-content-start} and
+@code{shimbun-foobar-content-end} to extract significant text in web
+pages (@pxref{Displaying an article}).  If the formers are not defined,
+those values default to the latter values.
+@end itemize
+
+@noindent
+Whichever the ways you use, you should note that the @samp{text/plain}
+articles cannot contain images, links, etc.
 
 @node Coding convention of Shimbun
 @subsection Coding convention of Shimbun

@@ -276,8 +276,8 @@ Emacs-w3m Functions
 
 GNU Emacs $B$N3+H/Cf$N%P!<%8%g%s(B(Emacs 22 $B$H8F$P$l$F$$$^$9(B)$B$r;H$C$F$$$k>l(B
 $B9g$O!"(BCVS $BHG$N(B emacs-w3m $B$J$iF0$/$+$bCN$l$^$;$s!#(BCVS $BHG$N(B emacs-w3m $B$rMx(B
-$BMQ$5$l$k>l9g$O!"3+H/%a!<%j%s%0%j%9%H$K$b;22C$5$l$k$3$H$r6/$/$*4+$a$7$^$9(B
-(@pxref{Mailing List})$B!#(B
+$BMQ$5$l$k>l9g$O!"3+H/%a!<%j%s%0%j%9%H$K$b;22C$5$l$k$3$H$r6/$/$*4+$a$7$^(B
+$B$9(B (@pxref{Mailing List})$B!#(B
 
 @node You Need w3m
 @section w3m $B$r;H$$$^$9(B: emacs-w3m $B$,B.$$$o$1(B
@@ -4424,11 +4424,18 @@ asahi.sports.column asahi.sports.football asahi.sports.spo asahi.tenjin
 asahi.travel asahi.travel.kaido asahi.travel.matsuri
 asahi.travel.zeitaku asahi.wakamiya
 
-$B$3$l$i$O!"%F%-%9%H$N$_$N5-;v$r:n@.$7$^$9$,!"5-;vCf$K4^$^$l$k<L??$J$I$r%$(B
-$B%s%i%$%sI=<($9$k$h$&$K3HD%$5$l$?(B @samp{asahi-html} $B$H$$$&%P%C%/%(%s%I$b(B
-$B$"$j$^$9!#$3$A$i$rMxMQ$9$k>l9g$O!"(Basahi-html.business $B$H$$$&$h$&$J%0%k!<(B
-$B%WL>$K$J$j$^$9!#FC$K<L??$,$"$k%0%k!<%W$r8+$k$K$O!"(B@samp{asahi-html} $B$r;H(B
-$B$&$3$H$r$*4+$a$7$^$9!#(B
+$B$3$l$i$N%0%k!<%W$O!"%G%U%)%k%H$G%F%-%9%H$@$1$N5-;v$r:n$j$^$9!#$=$l$i$K!"(B
+$B%F%-%9%H$@$1$G$J$/<L??$r$b4^$`(B HTML $B$N5-;v$r@8@.$5$;$?$$$J$i$P!"0J2<$N9T(B
+$B$r(B @file{~/.emacs} $B%U%!%$%k$K2C$($F2<$5$$!#(B
+
+@lisp
+(setq shimbun-asahi-prefer-text-plain nil)
+@end lisp
+
+$B0lJ}!"(BHTML $B$N5-;v$r:n$k$?$a$K(B @samp{asahi-html} $B%P%C%/%(%s%I$r;H$&$3$H$b(B
+$B$G$-$^$9!#$=$l$r;H$&$K$O!"Nc$($P%0%k!<%WL>$H$7(B
+$B$F(B @samp{asahi.business} $B$NBe$o$j$K(B @samp{asahi-html.business} $B$r;XDj$7(B
+$B$F2<$5$$!#(B
 
 @item @uref{http://mytown.asahi.com/, $BD+F|?7J9(B}
 asahi-mytown.(hokkaido@dots{}okinawa) asahi-mytown.usa
@@ -4467,8 +4474,18 @@ yomiuri.atmoney yomiuri.entertainment yomiuri.editorial yomiuri.kyoiku
 yomiuri.national yomiuri.obit yomiuri.politics yomiuri.science
 yomiuri.sports yomiuri.world
 
-$BD+F|?7J9$N>l9g$HF1MM$K!"2hA|$r4^$`5-;v$r@8@.$9$k(B @samp{yomiuri-html} $B$b(B
-$BMxMQ$G$-$^$9!#(B
+$B$3$l$i$N%0%k!<%W$O!"%G%U%)%k%H$G%F%-%9%H$@$1$N5-;v$r:n$j$^$9!#$=$l$i$K!"(B
+$B%F%-%9%H$@$1$G$J$/<L??$r$b4^$`(B HTML $B$N5-;v$r@8@.$5$;$?$$$J$i$P!"0J2<$N9T(B
+$B$r(B @file{~/.emacs} $B%U%!%$%k$K2C$($F2<$5$$!#(B
+
+@lisp
+(setq shimbun-yomiuri-prefer-text-plain nil)
+@end lisp
+
+$B0lJ}!"(BHTML $B$N5-;v$r:n$k$?$a$K(B @samp{yomiuri-html} $B%P%C%/%(%s%I$r;H$&$3$H(B
+$B$b$G$-$^$9!#$=$l$r;H$&$K$O!"Nc$($P%0%k!<%WL>$H$7(B
+$B$F(B @samp{yomiuri.atmoney} $B$NBe$o$j$K(B @samp{yomiuri-html.atmoney} $B$r;XDj(B
+$B$7$F2<$5$$!#(B
 
 @item @uref{http://www.sankei.co.jp/, $B;:7P?7J9(B}
 sankei.shakai sankei.sports sankei.keizai sankei.seiji sankei.kokusai
@@ -4567,6 +4584,14 @@ yahoo.market yahoo.stock yahoo.industry yahoo.international
 yahoo.entertainment yahoo.sports yahoo.computer yahoo.hokkaido
 yahoo.tohoku yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
 yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
+
+$B$3$l$i$N%0%k!<%W$O!"%G%U%)%k%H$G%F%-%9%H$@$1$N5-;v$r:n$j$^$9!#$=$l$i$K!"(B
+$B%F%-%9%H$@$1$G$J$/<L??$r$b4^$`(B HTML $B$N5-;v$r@8@.$5$;$?$$$J$i$P!"0J2<$N9T(B
+$B$r(B @file{~/.emacs} $B%U%!%$%k$K2C$($F2<$5$$!#(B
+
+@lisp
+(setq shimbun-yahoo-prefer-text-plain nil)
+@end lisp
 
 @item @uref{http://japan.zdnet.com/, ZDNet Japan}
 zdnet-jp.news zdnet-jp.news.network zdnet-jp.news.hardware
@@ -5135,6 +5160,7 @@ Mew $B$J$I$N(B MUA $B$rMxMQ$7!"%&%'%V%3%s%F%s%D$r%a!<%k$HF1$8%f!<%6%$%s%?!<%U
 * Getting web page and header information::  $B%&%'%V%Z!<%8$N%=!<%95Z$S%X%C%@>pJs$r<hF@$9$k(B
 * Displaying an article::       $B5-;v$NI=<((B
 * Inheriting shimbun module::   shimbun $B%b%8%e!<%k$N7Q>5(B
+* Making text/plain articles::  text/plain $B$N5-;v$r:n$k$K$O(B
 * Coding convention of Shimbun:: $B%3!<%G%#%s%05,Ls(B
 @end menu
 
@@ -5385,6 +5411,11 @@ Message-ID $B$H$7$FI=<($5$l$^$9!#Nc$($P!"2<5-$N(B
 $B$NKvHx$K(B @samp{</body>}, @samp{</html>} $B$rA^F~$7$F$/$l$^$9!#$=$&$d$C(B
 $B$F(B HTML $B%a!<%k$H$7$FI=<($5$;$k$N$G$9!#(B
 
+@quotation
+HTML $B$N5-;v$@$1$G$J$/!"(B@samp{text/plain} $B7A<0$N5-;v$,@8@.$5$l$k$h$&$K$9(B
+$B$k$3$H$b$G$-$^$9!#(B@xref{Making text/plain articles}.
+@end quotation
+
 $B5-;v$r2?$b2C9)$9$kI,MW$,$J$1$l$P(B @file{sb-foobar.el} $B$NCf$G(B
 $B$O(B @code{shimbun-make-contents} $B$K$D$$$F?7$?$KDj5A$9$kI,MW$O$"$j$^$;$s!#(B
 
@@ -5470,7 +5501,6 @@ fml mailing list server/manager.  $B>\:Y(B
 $BNc$($P(B @file{sb-mailman.el} $B$rMxMQ$9$k$J$i(B @file{sb-foobar.el} $B$NKAF,$O!"(B
 
 @lisp
-(require 'shimbun)
 (require 'sb-mailman)
 (luna-define-class shimbun-foobar (shimbun-mailman) ())
 @end lisp
@@ -5494,6 +5524,57 @@ fml mailing list server/manager.  $B>\:Y(B
 $BBP1~$7$F$$$^$9!#$3$l$iCO0h2=$5$l$?%a!<%j%s%0%j%9%H%^%M!<%8%c$rMxMQ$7$F$$(B
 $B$k%&%'%V%5%$%H$r(B @samp{shimbun} $B$GFI$_$?$$$H$-$O!"$$$/$D$+$N%a%=%C%I$r>e(B
 $B=q$-$7$J$1$l$P$J$i$J$$$+$b$7$l$^$;$s!#(B
+
+@node Making text/plain articles
+@subsection text/plain $B$N5-;v$r:n$k$K$O(B
+
+$B$?$H$((B MUA $B$,(B HTML $B$N5-;v$rFI$`$3$H$,$G$-$k$h$&$K(B emacs-w3m $B$K$h$C$F6/2=(B
+$B$5$l$F$$$F$b!"$$$/$D$+$N>l9g$K$O(B @samp{text/plain} $B$N5-;v$,JXMx$J$3$H$b(B
+$B$"$k$+$b$7$l$^$;$s!#(B@samp{sb-foobar} $B%b%8%e!<%k$K(B @samp{text/html} $B$G$O(B
+$B$J$/$F(B @samp{text/plain} $B$N5-;v$r:n$i$;$k$K$O!"Fs$D$NJ}K!$,$"$j$^$9!#(B
+
+@itemize @bullet
+@item
+$B0l$D$O(B @samp{sb-foobar} $B%b%8%e!<%k$K(B @samp{sb-text} $B%b%8%e!<%k$r7Q>5$5$;(B
+$B$k(B (@pxref{Inheriting shimbun module}) $B$3$H$G$9!#0J2<(B
+$B$O(B @samp{sb-text} $B%b%8%e!<%k$NKAF,$KCV$/$3$H$,$G$-$kNc$G$9!#(B
+
+@lisp
+(require 'sb-text)
+(luna-define-class shimbun-foobar (shimbun-text) ())
+@end lisp
+
+@samp{sb-text} $B%b%8%e!<%k$O!"(B@samp{text/plain} $B7A<0$G5-;v$r@8@.$9(B
+$B$k(B @code{shimbun-make-contents} $B%a%=%C%I$rDs6!$7$^$9!#%F%-%9%H$@$1$N5-;v(B
+$B$r7G<($9$k%5%$%H$r07$&(B @samp{shimbun} $B%b%8%e!<%k$K$O!"Lr$KN)$D$G$7$g$&!#(B
+
+@item
+$B$b$&0l$D$O!"JQ?t(B @code{shimbun-foobar-prefer-text-plain} $B$r(B
+$BHs(B-@code{nil} $B$K@_Dj$9$k$3$H$G$9!#$3$l$O(B @code{shimbun-make-contents} $B%a(B
+$B%=%C%I$K!"(B@samp{text/plain} $B7A<0$G5-;v$r@8@.$5$;$^$9(B ($B<B:]$K$O!"$=$l(B
+$B$O(B @samp{sb-text} $B%b%8%e!<%k$,Ds6!$9$k4X?t$r;H$$$^$9(B)$B!#$3$l$O!"%G%U%)%k(B
+$B%H$N(B @code{shimbun-make-contents} $B$r7Q>5$9$k%b%8%e!<%k$@$1$K8z2L$,$"$k$3(B
+$B$H$KCm0U$7$F2<$5$$(B ($BFC$K(B @samp{sb-text} $B%b%8%e!<%k$r7Q>5$9$k%b%8%e!<%k$O!"(B
+$B1F6A$5$l$^$;$s(B)$B!#$3$NJ}<0$NMxE@$O!"%f!<%6$,4JC1$K(B @samp{text/plain} $B$N5-(B
+$B;v$H(B @samp{text/html} $B$N5-;v$r@Z$jBX$($k$3$H$,$G$-$k$3$H$G$9!#(B
+
+$B$=$l$,L$Dj5A$G$"$k>l9g!"JQ?t(B @code{shimbun-foobar-prefer-text-plain} $B$N(B
+$B%G%U%)%k%HCM$O(B @code{nil} $B$G$9!#$7$?$,$C$F!"(B@file{sb-asahi.el}$B!"(B
+@file{sb-yahoo.el} $B$*$h$S(B @file{sb-yomiuri.el} $B0J30$N$"$i$f(B
+$B$k(B @samp{shimbun} $B%b%8%e!<%k$K$*$$$F!"$=$N%G%U%)%k%HCM$O(B @code{nil} $B$G$9!#(B
+
+$B2C$($F!"(Bweb $B%Z!<%8$+$i0UL#$N$"$k%F%-%9%H$r@Z$j=P$9$?$a$K!"JQ(B
+$B?t(B @code{shimbun-foobar-content-start} $B$*$h(B
+$B$S(B @code{shimbun-foobar-content-end} $B$NBe$o$j$K!"(B
+@code{shimbun-foobar-text-content-start} $B$*$h(B
+$B$S(B @code{shimbun-foobar-text-content-end} $B$r;H$&$3$H$,$G$-$^(B
+$B$9(B (@pxref{Displaying an article})$B!#A0<T$,L$Dj5A$@$C$?$i!"$=$l$i$NCM$O%G(B
+$B%U%)%k%H$G8e<T$NCM$K$J$j$^$9!#(B
+@end itemize
+
+@noindent
+$B$I$A$i$NJ}<0$r;H$&$K$7$F$b!"(B@samp{text/plain} $B$N5-;v$O!"2hA|$d%j%s%/$J$I(B
+$B$r4^$`$3$H$,$G$-$J$$$3$H$KCm0U$7$F2<$5$$!#(B
 
 @node Coding convention of Shimbun
 @subsection Shimbun $B%i%$%V%i%j$N%3!<%G%#%s%05,Ls(B
