@@ -5537,7 +5537,7 @@ fml mailing list server/manager.  詳細
 @item
 一つは @samp{sb-foobar} モジュールに @samp{sb-text} モジュールを継承させ
 る (@pxref{Inheriting shimbun module}) ことです。以下
-は @samp{sb-text} モジュールの冒頭に置くことができる例です。
+は @samp{sb-foobar} モジュールの冒頭に置くことができる例です。
 
 @lisp
 (require 'sb-text)
