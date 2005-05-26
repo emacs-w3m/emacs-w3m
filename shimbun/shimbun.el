@@ -914,15 +914,22 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
   "Return a content string of SHIMBUN article using current buffer content.
 HEADER is a header structure obtained via `shimbun-headers'.")
 
+(defun shimbun-insert-footer (shimbun header &optional html &rest args)
+  "Insert the footer and ARGS."
+  (goto-char (point-min))
+  (when (re-search-forward
+	 "[\t\n ]*\\(?:<\\(?:![^>]+\\|br\\|/?div\\|/?p\\)>[\t\n ]*\\)*\\'"
+	 nil 'move)
+    (delete-region (match-beginning 0) (point-max)))
+  (apply 'insert "\n" (shimbun-footer shimbun header html) args))
+
 (defun shimbun-make-html-contents (shimbun header)
   (when (shimbun-clear-contents shimbun header)
     (goto-char (point-min))
     (insert "<html>\n<head>\n<base href=\""
 	    (shimbun-article-url shimbun header)
 	    "\">\n</head>\n<body>\n")
-    (goto-char (point-max))
-    (insert (shimbun-footer shimbun header t)
-	    "\n</body>\n</html>\n"))
+    (shimbun-insert-footer shimbun header t "</body>\n</html>\n"))
   (shimbun-make-mime-article shimbun header)
   (buffer-string))
 
@@ -983,13 +990,13 @@ integer n:    Retrieve n pages of header indices.")
 (luna-define-method shimbun-footer ((shimbun shimbun-japanese-newspaper) header
 				    &optional html)
   (if html
-      (concat "\n<p align=\"left\">\n-- <br>\nこの記事の著作権は、"
+      (concat "<div align=\"left\">\n--&nbsp;<br>\nこの記事の著作権は、"
 	      (shimbun-server-name shimbun)
 	      "社に帰属します。<br>\n原物は <a href=\""
 	      (shimbun-article-base-url shimbun header) "\">"
 	      (shimbun-article-base-url shimbun header)
-	      "</a> で公開されています。\n</p>\n")
-    (concat "\n-- \nこの記事の著作権は、"
+	      "</a> で公開されています。\n</div>\n")
+    (concat "-- \nこの記事の著作権は、"
 	    (shimbun-server-name shimbun)
 	    "社に帰属します。\n原物は "
 	    (shimbun-article-base-url shimbun header)
@@ -1008,14 +1015,11 @@ return the contents of this buffer as an encoded string."
 	  "\nMIME-Version: 1.0\n\n")
   (if html
       (progn
-	(insert "<html><head><base href=\""
+	(insert "<html>\n<head>\n<base href=\""
 		(shimbun-article-url shimbun header)
-		"\"></head><body>")
-	(goto-char (point-max))
-	(insert (shimbun-footer shimbun header html)
-		"\n</body></html>"))
-    (goto-char (point-max))
-    (insert (shimbun-footer shimbun header html)))
+		"\">\n</head>\n<body>\n")
+	(shimbun-insert-footer shimbun header t "</body>\n</html>\n"))
+    (shimbun-insert-footer shimbun header))
   (encode-coding-string (buffer-string)
 			(mime-charset-to-coding-system charset)))
 
