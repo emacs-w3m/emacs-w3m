@@ -1,3 +1,8 @@
+2005-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-truncate-string): Autoload mule-util for
+	truncate-string-to-width.
+
 2005-05-26  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
 	* w3m.el (w3m-safe-view-this-url): `unsecure' -> `insecure'.
