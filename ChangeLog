@@ -21,7 +21,7 @@
 
 	* shimbun/shimbun.el (shimbun-insert-footer): New function.
 	(shimbun-make-html-contents): Use it.
-	(shimbun-footer): Don't prepend a newline; use <dev align="left">
+	(shimbun-footer): Don't prepend a newline; use <div align="left">
 	instead of <p align="left">.
 	(shimbun-header-insert-and-buffer-string): Use
 	shimbun-insert-footer.
